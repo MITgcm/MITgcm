@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.16 2004/05/05 00:23:37 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.17 2004/05/06 13:32:44 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -136,8 +136,8 @@ C HERE YNEG IS THE OCEAN TEMP. DIFFERENCE WITH NO SUPER-COOLING
 C surfaceTendencyTice is the equivalent amount of surface heating
 C implied by above change in surface level temperature (YNEG).
 C Units are degrees/s (>0 for ocean warming).
-          surfaceTendencyTice(I,J,bi,bj)=YNEG(I,J,bi,bj)/deltaTtracer
-     &                     *maskC(I,J,1,bi,bj)
+          surfaceTendencyTice(I,J,bi,bj)=YNEG(I,J,bi,bj)/
+     &         SEAICE_deltaTtherm*maskC(I,J,1,bi,bj)
 C apply mask
           theta(I,J,1,bi,bj) = theta(I,J,1,bi,bj)*maskC(I,J,1,bi,bj)
          ENDDO
