@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.62 2002/03/04 17:26:41 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.63 2002/08/07 19:27:27 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -78,11 +78,19 @@ while ($#allargs)
    echo "-enable overrides -disable, ie. a package listed in both is enabled"
    exit
    breaksw
- case -ieee:
-   set IEEE
-   breaksw
  case -enable=*:
    set ENABLE = ( $ENABLE `echo $arg | sed 's/-enable=//' | sed 's/,/ /g' `)
+   breaksw
+ case -cpp:
+ case -cpp=:
+   echo "To define CPP macros use -cpp=arg"
+   exit
+   breaksw
+ case -cpp=*:
+   set DEFINES = ( $DEFINES `echo $arg | sed 's/-cpp=//' | sed 's/,/ /g' `)
+   breaksw
+ case -ieee:
+   set IEEE
    breaksw
  case -mpi:
    echo "Enabling MPI options"
@@ -91,6 +99,18 @@ while ($#allargs)
  case -jam:
    set include_jam_libs
    echo "Including paths to JAM libraries"
+   breaksw
+ case -fc:
+ case -fc=:
+   echo "To change the compiler (\$FC) you must specify one with -fc="
+   echo "eg. -fc=f90  or  -fc=g77"
+   exit
+   breaksw
+ case -fc*:
+   if ($?FC) then
+    echo Option -fc=... can only be specified once.; exit 1
+   endif
+   set FC = ( `echo $arg | sed 's/-fc=//' `)
    breaksw
  case -help:
    echo "usage: $0 [-help] [-makefile[=...]] [-platform=...] [-mpi] [-jam] [-disable=pkg1[,pkg2,...]] [-enable=pkg1[,pkg2,...]] [-mods=dir1[,dir2,...]] [-rootdir=dir]"
@@ -289,14 +309,40 @@ foreach dr ($STANDARDDIRS)
   set INCLUDEDIRS = ($INCLUDEDIRS $idr)
 end
 
+# Find possible compilers
+if ($?FC) then
+ echo "$FC was specified as the compiler"
+else
+ echo " "
+ set likelysuspects=(ifc g77 pgf77 f77 f90 f95)
+ foreach fc ($likelysuspects)
+  set foundfc=`which $fc |& cat - `
+  if (-x $foundfc[1]) then
+   if ($?possiblefc) then
+    set possiblefc=($possiblefc $fc)
+   else
+    set possiblefc=$fc
+   endif
+  endif
+ end
+ if ($?possiblefc) then
+  set FC=$possiblefc[1]
+  echo Found these compilers: $possiblefc.  Using \"$FC\" as the compiler
+ else
+  echo "No compiler found\!"
+  echo I tried looking for \"$likelysuspects\" in your \$PATH but found none
+  exit 13
+ endif
+endif
+
 # This is the generic configuration.
 # Platform specific options are chosen below
 set LN         = ( 'ln -s' )
 set CPP        = ( '/lib/cpp -P' )
 set S64        = ( '$(TOOLSDIR)/set64bitConst.sh' )
 set KPP        = (  )
-set FC         = ( 'f77' )
-set LINK       = ( 'f77' )
+#set FC         = ( 'f77' )
+set LINK       = $FC
 set MAKEDEPEND = ( 'makedepend' )
 set INCLUDES   = ( -I. )
 set FFLAGS     = (  )
@@ -486,12 +532,33 @@ switch ($platform$USEMPI)
     echo "Configuring for " $platform
     set LN         = ( '/bin/ln -s' )
     set CPP        = ( '/lib/cpp  -traditional -P' )
-    set DEFINES    = ( ${DEFINES} '-D_BYTESWAPIO -DWORDLENGTH=4' )
-    set FC         = ( 'g77' )
-    set FFLAGS     = ( '-Wimplicit -Wunused -Wuninitialized' )
-    if ($?IEEE) set FFLAGS     = ( $FFLAGS '-ffloat-store' )
-    set FOPTIM     = ( '-O3 -malign-double -funroll-loops' )
-    set LINK       = ( 'g77' )
+    switch ($FC)
+     case g77:
+      set DEFINES    = ( ${DEFINES} '-D_BYTESWAPIO -DWORDLENGTH=4' )
+      set FFLAGS     = ( '-Wimplicit -Wunused -Wuninitialized' )
+      if ($?IEEE) set FFLAGS = ( $FFLAGS '-ffloat-store' )
+      set FOPTIM     = ( '-O3 -malign-double -funroll-loops' )
+      breaksw
+     case pgf77:
+      set DEFINES    = ( ${DEFINES} '-DWORDLENGTH=4' )
+      set FC         = ( 'pgf77' )
+      set FFLAGS     = ( '-byteswapio -r8 -Mnodclchk -Mextend' )
+      set FOPTIM     = ( '-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee' )
+      breaksw
+     case ifc:
+      set DEFINES    = ( ${DEFINES} '-D_BYTESWAPIO -DWORDLENGTH=4' )
+      set FFLAGS     = ( '-132 -r8 -i4 -w95 -W0 -WB' )
+      if ($?IEEE) set FFLAGS     = ( $FFLAGS '-mp' )
+      set FOPTIM     = ( '-O3 -align' ) 
+#P3   set FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' ) 
+#P4   set FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' ) 
+      set LIBS       = ( '-lPEPCF90' )
+      breaksw
+     default:
+      echo Error: Linux compiler not recognized: \$FC=$FC
+      exit
+      breaksw
+    endsw      
     breaksw
   case T3E:
   case sn6312:
@@ -759,7 +826,7 @@ output.txt: \$(EXECUTABLE)
 	@\$(EXECUTABLE) > \$@
 
 clean:
-	-rm -rf *.o *.f *.p ${RMFILES}
+	-rm -rf *.o *.f *.p ${RMFILES} work.{pc,pcl}
 Clean:
 	@make clean
 	@make cleanlinks
