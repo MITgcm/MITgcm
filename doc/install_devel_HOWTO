@@ -27,4 +27,4 @@ mv devel_HOWTO ./build_dir/devel_HOWTO_onepage/
     ln -s devel_HOWTO_onepage html_onepage
 )
 
-scp -r ./build_dir/* mitgcm.org:/u/u0/httpd/html/devel_HOWTO
+scp -r ./build_dir/* mitgcm.org:/u/httpd/html/devel_HOWTO
