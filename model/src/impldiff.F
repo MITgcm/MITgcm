@@ -1,13 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.22 2004/10/22 20:14:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.23 2004/12/16 23:20:06 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
 C     !ROUTINE: IMPLDIFF
 C     !INTERFACE:
       SUBROUTINE IMPLDIFF( bi, bj, iMin, iMax, jMin, jMax,
-     I                     deltaTX,KappaRX,recip_hFac,
+     I                     tracerId, KappaRX, recip_hFac,
      U                     gXNm1,
      I                     myThid )
 C     !DESCRIPTION: \bv
@@ -36,8 +37,10 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
+C     tracerId :: tracer Identificator (if > 0) ; 
+C      = 0 or < 0 when solving vertical viscosity implicitly for U or V
       INTEGER bi,bj,iMin,iMax,jMin,jMax
-      _RL deltaTX
+      INTEGER tracerId
       _RL KappaRX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RS recip_hFac(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL gXnm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
@@ -46,18 +49,41 @@ C     == Routine Arguments ==
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j,k
+      _RL deltaTX(Nr)
       _RL gYnm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL a(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL b(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL c(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL gam(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+#ifdef ALLOW_DIAGNOSTICS
+      INTEGER     kk
+      CHARACTER*8 diagName
+      CHARACTER*4 diagSufx
+#ifdef ALLOW_GENERIC_ADVDIFF
+      CHARACTER*4 GAD_DIAG_SUFX
+      EXTERNAL    GAD_DIAG_SUFX
+#endif
+      LOGICAL     DIAGNOSTICS_IS_ON
+      EXTERNAL    DIAGNOSTICS_IS_ON
+      _RL df (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+#endif /* ALLOW_DIAGNOSTICS */
 CEOP
 
 cph(
 cph Not good for TAF: may create irreducible control flow graph
 cph      IF (Nr.LE.1) RETURN
 cph)
+
+      IF ( tracerId.GE.1 ) THEN
+        DO k=1,Nr
+         deltaTX(k) = dTtracerLev(k)
+        ENDDO
+      ELSE
+        DO k=1,Nr
+         deltaTX(k) = deltaTmom
+        ENDDO
+      ENDIF
 
 C--   Initialise
       DO k=1,Nr
@@ -77,7 +103,7 @@ C--   Old aLower
       DO k=2,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-          a(i,j,k) = -deltaTX*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
+          a(i,j,k) = -deltaTX(k)*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
      &               *KappaRX(i,j, k )*recip_drC( k )
           IF (recip_hFac(i,j,k-1,bi,bj).EQ.0.) a(i,j,k)=0.
         ENDDO
@@ -88,7 +114,7 @@ C--   Old aUpper
       DO k=1,Nr-1
        DO j=jMin,jMax
         DO i=iMin,iMax
-          c(i,j,k) = -deltaTX*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
+          c(i,j,k) = -deltaTX(k)*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
      &               *KappaRX(i,j,k+1)*recip_drC(k+1)
           IF (recip_hFac(i,j,k+1,bi,bj).EQ.0.) c(i,j,k)=0.
         ENDDO
@@ -184,6 +210,42 @@ CADJ loop = sequential
          ENDDO
         ENDDO
        ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics .AND.tracerId.GE.1 ) THEN
+C--   Set diagnostic suffix for the current tracer
+#ifdef ALLOW_GENERIC_ADVDIFF
+        diagSufx = GAD_DIAG_SUFX( tracerId, myThid )
+#else
+        diagSufx = 'aaaa'
+#endif
+        diagName = 'DFrI'//diagSufx
+        IF ( DIAGNOSTICS_IS_ON(diagName,myThid) ) THEN
+         DO k= 1,Nr
+          IF ( k.EQ.1 ) THEN
+C-  Note: Needs to call DIAGNOSTICS_FILL at level k=1 even if array == 0
+C         otherwise counter is not incremented !!
+            DO j=1-OLy,sNy+OLy
+             DO i=1-OLx,sNx+OLx
+               df(i,j) = 0. _d 0
+             ENDDO
+            ENDDO
+          ELSE
+            DO j=1,sNy
+             DO i=1,sNx
+               df(i,j) =
+     &              rA(i,j,bi,bj)
+     &            * KappaRX(i,j,k)*recip_drC(k)
+     &            * (gXnm1(i,j,k,bi,bj) - gXnm1(i,j,k-1,bi,bj))
+             ENDDO
+            ENDDO
+          ENDIF
+          kk = -k
+          CALL DIAGNOSTICS_FILL(df,diagName, kk,1, 2,bi,bj, myThid)
+         ENDDO
+        ENDIF
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END
