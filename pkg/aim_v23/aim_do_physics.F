@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.1 2002/11/22 17:17:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.2 2002/12/10 02:35:27 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -67,67 +67,16 @@ C      ==> move water wapor from the stratos to the surface level.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-c      CALL FORDATE
-C- extract parts of S/R FORDATE from Franco Molteni Physics :
-
 C-    Physics package needs to know time of year as a fraction
       yearLength = 86400.*360.
       tYear = mod(myTime/yearLength, 1. _d 0)
 c     tYear = myTime/(86400.*360.) -
 c    &        FLOAT(INT(myTime/(86400.*360.)))
 
-C-    Load external data needed by physics package
-C     1. Albedo                (between 0-1)
-C     2. Soil moisture         (between 0-1)
-C     3. Surface temperatures  (in situ Temp. [K])
-C     4. Snow depth            - assume no snow for now
-C     5. Sea ice               - assume no sea ice for now
-C     6. Land sea mask         - infer from exact zeros in soil moisture dataset
-C     7. Surface geopotential  - to be done when orography is in
-C                                dynamical kernel. Assume 0. for now.
-
-C      Load in surface albedo data (in [0,1]) from aim_albedo to alb1 :
-       DO J=1,sNy
-        DO I=1,sNx
-         I2 = (sNx)*(J-1)+I
-         alb1(I2,myThid) = 0.
-         alb1(I2,myThid) = aim_albedo(I,J,bi,bj)
-        ENDDO
-       ENDDO
-C      Load in surface temperature data from aim_surfTemp to stl1 & sst1 :
-       DO J=1,sNy
-        DO I=1,sNx
-         I2 = (sNx)*(J-1)+I
-         sst1(I2,myThid) = 300.
-         stl1(I2,myThid) = 300.
-         sst1(I2,myThid) = aim_surfTemp(I,J,bi,bj)
-         stl1(I2,myThid) = aim_surfTemp(I,J,bi,bj)
-        ENDDO
-       ENDDO
-
-C      Load in soil water availability (in [0,1]) from aim_soilWater to soilw1 :
-       DO J=1,sNy
-        DO I=1,sNx
-         I2 = (sNx)*(J-1)+I
-         soilw1(I2,myThid) = 0.
-         soilw1(I2,myThid) = aim_soilWater(I,J,bi,bj)
-        ENDDO
-       ENDDO
-C      Set snow depth, sea ice to zero for now
-C      Land-sea mask ( figure this out from where 
-C                      soil moisture is exactly zero ).
-       DO J=1,sNy
-        DO I=1,sNx
-         I2 = (sNx)*(J-1)+I
-         fMask1(I2,myThid) = 1.
-         IF ( soilw1(I2,myThid) .EQ. 0. ) fMask1(I2,myThid) = 0.
-         oice1(I2,myThid) = 0.
-         snow1(I2,myThid) = 0.
-        ENDDO
-       ENDDO
-C      open(77,file='lsmask',form='unformatted')
-C      write(77) fmask1
-C      close(77)
+C--   Set surface Boundary Conditions for atmos. physics package:
+C     (Albedo, Soil moisture, Surf Temp, Land sea mask)
+C     includes some parts of S/R FORDATE from F.Molteni SPEDDY code (ver23)
+      CALL AIM_SURF_BC( tYear, myTime, myIter, bi, bj, myThid )
 
 C--   Set surface geopotential: (g * orographic height)
       DO J=1,sNy

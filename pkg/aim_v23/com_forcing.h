@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_forcing.h,v 1.1 2002/11/22 17:16:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_forcing.h,v 1.2 2002/12/10 02:35:27 jmc Exp $
 C $Name:  $
 C $Namer: $
 
@@ -37,13 +37,15 @@ C     stl1   - land-surface temperature
 C     snow1  - snow depth (mm water)
 C     soilw1 - soil wetness (mm water)
 C     alb1   - land-surface albedo
-      COMMON /FORDAY/ sst1, oice1, stl1, snow1, soilw1, alb1
+c     COMMON /FORDAY/ sst1, oice1, stl1, snow1, soilw1, alb1
+      COMMON /FORDAY/ sst1, stl1, soilw1, alb1
       _RL sst1   (NGP,MAX_NO_THREADS)
-      _RL oice1  (NGP,MAX_NO_THREADS)
+c     _RL oice1  (NGP,MAX_NO_THREADS)
       _RL stl1   (NGP,MAX_NO_THREADS)
-      _RL snow1  (NGP,MAX_NO_THREADS)
+c     _RL snow1  (NGP,MAX_NO_THREADS)
       _RL soilw1 (NGP,MAX_NO_THREADS)
       _RL alb1   (NGP,MAX_NO_THREADS)
+      _RL oice1(NGP), snow1(NGP)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AIM */ 

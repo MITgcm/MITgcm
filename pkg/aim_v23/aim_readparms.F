@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.1 2002/11/22 17:17:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.2 2002/12/10 02:35:27 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -25,6 +25,7 @@ C     == Global variables ===
 #include "AIM_SIZE.h"
 #include "EEPARAMS.h"
 c #include "PARAMS.h"
+#include "AIM_PARAMS.h"
 
 C-   Physical constants + functions of sigma and latitude
 c #include "com_physcon.h"
@@ -51,6 +52,30 @@ C     iUnit       - Work variable for IO unit number
       INTEGER iUnit
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   AIM interface parameter (common AIM_PARM_?):
+C     aim_useFMsurfBC :: select surface B.C. from Franco Molteni
+C     aim_useMMsurfFc :: select Monthly Mean surface forcing (e.g., NCEP)
+C     aim_surfPotTemp :: surf.Temp input file is in Pot.Temp (aim_useMMsurfFc)
+C     aim_MMsufx   :: sufix for all Monthly Mean surface forcing files
+C     aim_MMsufxLength :: Length of sufix (Monthly Mean surf. forc. files)
+C     aim_LandFile :: file name for Land fraction       (F.M. surfBC)
+C     aim_albFile  :: file name for Albedo input file   (F.M. surfBC)
+C     aim_vegFile  :: file name for vegetation fraction (F.M. surfBC)
+C     aim_sstFile  :: file name for  Sea.Surf.Temp      (F.M. surfBC)
+C     aim_lstFile  :: file name for Land.Surf.Temp      (F.M. surfBC)
+C     aim_oiceFile :: file name for Sea Ice fraction    (F.M. surfBC)
+C     aim_snowFile :: file name for Snow depth          (F.M. surfBC)
+C     aim_swcFile  :: file name for Soil Water content  (F.M. surfBC)
+C     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
+C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
+      NAMELIST /AIM_PARAMS/
+     &    aim_useFMsurfBC, aim_useMMsurfFc, aim_surfPotTemp,
+     &    aim_MMsufx, aim_MMsufxLength,
+     &    aim_LandFile, aim_albFile, aim_vegFile,
+     &    aim_sstFile, aim_lstFile, aim_oiceFile, aim_snowFile,
+     &    aim_swcFile,
+     &    aim_diagFreq, aim_tendFreq
 
 C--   Physical constants (common PHYCON) :
 C      P0   = reference pressure
@@ -165,6 +190,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Read parameters from open data file:
 
+C-    Parameters for AIM interface code:
+      READ(UNIT=iUnit,NML=AIM_PARAMS)
+
 C-    Constants for boundary forcing
       READ(UNIT=iUnit,NML=AIM_PAR_FOR)
 
@@ -201,6 +229,21 @@ C--   Print out parameter values :
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '// ==================================='
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+
+C- namelist AIM_PARAMS:
+       CALL WRITE_0D_L( aim_useFMsurfBC, INDEX_NONE,
+     &                 'aim_useFMsurfBC =',
+     &'   /* F.Molteni surf. BC scheme on/off flag */')       
+       CALL WRITE_0D_L( aim_useMMsurfFc, INDEX_NONE,
+     &                 'aim_useMMsurfFc =',
+     &'   /* Monthly Mean surf. Forcing on/off flag */')       
+       CALL WRITE_0D_L( aim_surfPotTemp, INDEX_NONE,
+     &                 'aim_surfPotTemp =',
+     &'   /* Surf Temp file in Pot.Temp on/off flag */')       
+       CALL WRITE_0D_R8( aim_diagFreq, INDEX_NONE,'aim_diagFreq =',
+     &  '   /* Frequency^-1 for diagnostic output (s) */')
+       CALL WRITE_0D_R8( aim_tendFreq, INDEX_NONE,'aim_tendFreq =',
+     &  '   /* Frequency^-1 for tendencies output (s) */')
 
 C- namelist AIM_PAR_FOR:
        CALL WRITE_0D_R8( SOLC,  INDEX_NONE,'AIM_FOR:   SOLC =',
