@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.12 2004/04/28 12:00:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.13 2004/05/05 00:23:37 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -104,9 +104,9 @@ CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
         DO j=1,sNy
          DO i=1,sNx
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-     &                     +AMASS(I,J,bi,bj)/DELTAT*UICE(I,J,2,bi,bj)
+     &           +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn*UICE(I,J,2,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
-     &                     +AMASS(I,J,bi,bj)/DELTAT*VICE(I,J,2,bi,bj)
+     &           +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn*VICE(I,J,2,bi,bj)
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)*UVM(I,J,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)*UVM(I,J,bi,bj)
           ETAMEAN(I,J,bi,bj) =QUART*(ETA(I,J-1,bi,bj)+ETA(I-1,J-1,bi,bj)
@@ -146,7 +146,7 @@ CADJ &            key = ikey_dynamics + (ilcall-1)*nchklev_1
           BU(I,J,bi,bj)=((AA1+AA2)*DELX2(I,J,bi,bj)+(AA3+AA4)
      &           *DELY2(I,J,bi,bj)
      &           +AA5*DELYR(I,J,bi,bj)+AA6*RADIUS2
-     &           +AMASS(I,J,bi,bj)/DELTAT+DRAGS(I,J,bi,bj))
+     &           +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn+DRAGS(I,J,bi,bj))
      &           *UVM(I,J,bi,bj)+(ONE-UVM(I,J,bi,bj))
           CU(I,J,bi,bj)=-AA1*DELX2(I,J,bi,bj)*UVM(I,J,bi,bj)
          END DO
@@ -344,7 +344,7 @@ cph)
 cph 8001  CONTINUE
 C ITERATION END -----------------------------------------------------
 
-      IF ( debugLevel .GE. debLevA ) THEN
+      IF ( debugLevel .GE. debLevB ) THEN
        _BEGIN_MASTER( myThid )
         write(*,'(A,I6,1P2E22.14)')' U lsr iters, error = ',ICOUNT1,S1
        _END_MASTER( )
@@ -379,7 +379,7 @@ C NOW FOR VICE
           BV(I,J,bi,bj)=((AA1+AA2)*DELY2(I,J,bi,bj)
      &     +(AA3+AA4)*DELX2(I,J,bi,bj)
      &     +AA5*DELYR(I,J,bi,bj)+AA6*RADIUS2
-     &     +AMASS(I,J,bi,bj)/DELTAT+DRAGS(I,J,bi,bj))
+     &     +AMASS(I,J,bi,bj)/SEAICE_deltaTdyn+DRAGS(I,J,bi,bj))
      &     *UVM(I,J,bi,bj)+(ONE-UVM(I,J,bi,bj))
           CV(I,J,bi,bj)=(-AA1*DELY2(I,J,bi,bj)
      &     +(ZETAMEAN(I,J,bi,bj)-ETAMEAN(I,J,bi,bj))
@@ -569,7 +569,7 @@ cph)
 cph 9001  CONTINUE
 C ITERATION END -----------------------------------------------------
 
-      IF ( debugLevel .GE. debLevA ) THEN
+      IF ( debugLevel .GE. debLevB ) THEN
        _BEGIN_MASTER( myThid )
         write(*,'(A,I6,1P2E22.14)')' V lsr iters, error = ',ICOUNT2,S2
        _END_MASTER( )

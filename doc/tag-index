@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.286 2004/05/03 07:12:25 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.287 2004/05/05 00:23:37 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o pkg/seaice modifications
+  - added SEAICE_deltaTtherm and SEAICE_deltaTdyn in order to reduce cost
+    of pkg/seaice.  For time being, SEAICE_deltaTtherm = deltaTtracer
+    and SEAICE_deltaTdyn must be integer multiple of SEAICE_deltaTtherm
   - changed proxy for geostrophic velocity and updated 
     verification/lab_sea/results/* accordingly
   - removed ADI dynamic solver from pkg/seaice

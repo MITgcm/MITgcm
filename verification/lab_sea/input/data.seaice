@@ -2,4 +2,6 @@
  &SEAICE_PARM01
       SEAICEwriteState   = .TRUE.
       SEAICE_initialHEFF = 1.0
+      SEAICE_deltaTtherm = 3600.
+      SEAICE_deltaTdyn   = 3600.
  &

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.12 2004/05/03 06:09:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.13 2004/05/05 00:23:37 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -164,9 +164,6 @@ C--   NOW SET UP ICE PRESSURE AND VISCOSITIES
 CADJ STORE uice = comlev1, key=ikey_dynamics
 CADJ STORE vice = comlev1, key=ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-C TIMESTEP FOR PSEUDO-TIMESTEPPING
-      SEAICE_DT = DELTAT
 
 crg what about DWAIN,DRAGS,DRAGA,ETA,ZETA
 

@@ -1,6 +1,7 @@
 *akefile
 *.log
 *.f
+*.for
 *.o
 *.data
 *.meta

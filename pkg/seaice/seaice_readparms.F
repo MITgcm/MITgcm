@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.14 2004/05/03 06:09:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.15 2004/05/05 00:23:37 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -35,6 +35,7 @@ C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEwriteState, SEAICEuseDYNAMICS,
      & LAD, IMAX_TICE,
+     & SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      & SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      & SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
@@ -55,12 +56,12 @@ C--   SEAICE parameters
 
       _BEGIN_MASTER(myThid)
 
-      WRITE(msgBuf,'(A)') ' SEAICE_INIT: opening data.seaice'
+      WRITE(msgBuf,'(A)') ' SEAICE_READPARMS: opening data.seaice'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
       CALL OPEN_COPY_DATA_FILE(
-     I                          'data.seaice', 'SEAICE_INIT',
+     I                          'data.seaice', 'SEAICE_READPARMS',
      O                          iUnit,
      I                          myThid )
 
@@ -71,6 +72,8 @@ C--   set default sea ice parameters
 #else
       SEAICEuseDYNAMICS  = .FALSE.
 #endif
+      SEAICE_deltaTtherm = deltaTtracer
+      SEAICE_deltaTdyn   = deltaTtracer
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
       SEAICE_initialHEFF = ZERO
@@ -124,7 +127,7 @@ C DOUBLE HO BECAUSE OF MOD IN GROWTH
       SSSForcingPeriod  = -99999.
       StartingYear      = 1948.
       EndingYear        = 2000.
-      MAX_HEFF          = 10.      _d 0
+      MAX_HEFF          = 10.     _d 0
       MIN_ATEMP         = -50.    _d 0
       MIN_LWDOWN        = 60.     _d 0
       MAX_TICE          = 30.     _d 0
@@ -136,7 +139,7 @@ C--   Read settings from model parameter file "data.seaice".
       READ(UNIT=iUnit,NML=SEAICE_PARM01,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS'
+     &  'S/R SEAICE_READPARMS'
        CALL PRINT_ERROR( msgBuf , 1)
        WRITE(msgBuf,'(A)')
      &  'Error reading numerical model '
@@ -148,12 +151,13 @@ C--   Read settings from model parameter file "data.seaice".
      &  'Problem in namelist SEAICE_PARM01'
        CALL PRINT_ERROR( msgBuf , 1)
 C      CALL MODELDATA_EXAMPLE( myThid )
-       STOP 'ABNORMAL END: S/R SEAICE_INIT'
+       STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
 
       CLOSE(iUnit)
 
-      WRITE(msgBuf,'(A)') ' SEAICE_INIT: finished reading data.seaice'
+      WRITE(msgBuf,'(A)')
+     &     ' SEAICE_READPARMS: finished reading data.seaice'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
@@ -162,13 +166,32 @@ C      CALL MODELDATA_EXAMPLE( myThid )
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 
+C--   Check that requested time step size is supported.
+C     The combination below is the only one that is
+C     supported at this time.  Doesn't mean that something
+C     fancier will not work, just that it has not yet been
+C     tried nor thought through.
+      IF ( SEAICE_deltaTtherm .NE. deltaTtracer       .OR.
+     &     SEAICE_deltaTdyn   .LT. SEAICE_deltaTtherm .OR.
+     &     (SEAICE_deltaTdyn/SEAICE_deltaTtherm) .NE.
+     &     INT(SEAICE_deltaTdyn/SEAICE_deltaTtherm) ) THEN
+         WRITE(msgBuf,'(A)')
+     &        'Unsupported combination of SEAICE_deltaTtherm,'
+         CALL PRINT_ERROR( msgBuf , 1)
+         WRITE(msgBuf,'(A)')
+     &        ' SEAICE_deltaTdyn, and deltaTtracer'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
+      ENDIF
+
+
 #ifndef SEAICE_EXTERNAL_FORCING
       IF ( FluxForcingStart  .EQ. -99999. .OR.
      &     FluxForcingEnd    .EQ. -99999. .OR.
      &     FluxForcingPeriod .EQ. -99999.      ) THEN
          WRITE(msgBuf,'(A)') 'Specify FluxForcing* in data.seaice'
          CALL PRINT_ERROR( msgBuf , 1)
-         STOP 'ABNORMAL END: S/R SEAICE_GET_FORCING'
+         STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF
       IF ( WindForcingStart  .EQ. -99999. )
      &     WindForcingStart  = FluxForcingStart

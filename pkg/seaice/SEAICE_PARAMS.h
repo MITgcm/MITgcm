@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.12 2004/05/03 06:09:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.13 2004/05/05 00:23:37 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_SEAICE
@@ -59,9 +59,11 @@ C
      &	   HeffFile
 
 C--   COMMON /SEAICE_PARM_RL/ Real valued parameters of sea ice model.
-C     SEAICE_dumpFreq    - SEAICE dump frequency.                     (s)
-C     SEAICE_taveFreq    - SEAICE time-averaging frequency.           (s)
-C     SEAICE_initialHEFF - initial sea-ice thickness                  (m)
+C     SEAICE_deltaTtherm - Seaice timestep for thermodynamic equations (s)
+C     SEAICE_deltaTdyn   - Seaice timestep for dynamic solver          (s)
+C     SEAICE_dumpFreq    - SEAICE dump frequency.                      (s)
+C     SEAICE_taveFreq    - SEAICE time-averaging frequency.            (s)
+C     SEAICE_initialHEFF - initial sea-ice thickness                   (m)
 C     SEAICE_drag        - air-ice drag coefficient
 C     OCEAN_drag         - air-ocean drag coefficient
 C     SEAICE_waterDrag   - water-ice drag coefficient * water density
@@ -99,6 +101,7 @@ C     SSSForcingPeriod   - Period between SSS  forcing records (s)
 C     StartingYear       - Starting year of integration
 C     EndingYear         - Ending year of integration
 C
+      _RL SEAICE_deltaTtherm, SEAICE_deltaTdyn
       _RL SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF
       _RL SEAICE_drag, SEAICE_waterDrag,  SEAICE_dryIceAlb
       _RL SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb
@@ -113,6 +116,7 @@ C
       _RL SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod
       _RL StartingYear,     EndingYear
       COMMON /SEAICE_PARM_RL/
+     &    SEAICE_deltaTtherm, SEAICE_deltaTdyn,
      &    SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
      &    SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
      &    SEAICE_wetIceAlb, SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
@@ -140,10 +144,6 @@ C
       COMMON /SEAICE_BOUND_RL/
      &    MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
      &    SEAICE_EPS, SEAICE_EPS_SQ
-
-C--   Seaice time step
-      COMMON /SEAICE_R/ SEAICE_DT
-      _RL               SEAICE_DT
 
 C--   Constants used by sea-ice model
       _RL         ZERO           , ONE           , TWO

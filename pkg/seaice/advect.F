@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.9 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.10 2004/05/05 00:23:37 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -48,11 +48,11 @@ C     i,j,k,bi,bj - Loop counters
 C NOW DECIDE IF BACKWARD EULER OR LEAPFROG
       IF(LAD.EQ.1) THEN
 C LEAPFROG
-         DELTT=DELTAT*TWO
+         DELTT=SEAICE_deltaTtherm*TWO
          K3=3
       ELSE
 C BACKWARD EULER
-         DELTT=DELTAT
+         DELTT=SEAICE_deltaTtherm
          K3=2
       ENDIF
 

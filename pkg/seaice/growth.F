@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.15 2004/04/29 17:28:43 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.16 2004/05/05 00:23:37 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -197,7 +197,7 @@ cph)
 C NOW CALCULATE CORRECTED GROWTH
         DO J=1,sNy
          DO I=1,sNx
-          GHEFF(I,J)=-DELTAT*FICE(I,J,bi,bj)
+          GHEFF(I,J)=-SEAICE_deltaTtherm*FICE(I,J,bi,bj)
           GAREA(I,J)=HSNOW(I,J,bi,bj)*QS
           IF(GHEFF(I,J).GT.ZERO.AND.GHEFF(I,J).LE.GAREA(I,J)) THEN
            HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)-GHEFF(I,J)/QS
@@ -207,7 +207,7 @@ C The factor 0.920 is used to convert m of sea-ice to m of freshwater
      &                  -(GHEFF(I,J)/QS)/SDF/0.920 _d 0*AR(I,J,bi,bj)
            FICE(I,J,bi,bj)=ZERO
           ELSE IF(GHEFF(I,J).GT.GAREA(I,J)) THEN
-           FICE(I,J,bi,bj)=-(GHEFF(I,J)-GAREA(I,J))/DELTAT
+           FICE(I,J,bi,bj)=-(GHEFF(I,J)-GAREA(I,J))/SEAICE_deltaTtherm
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
      &               -HSNOW(I,J,bi,bj)/SDF/0.920 _d 0*AR(I,J,bi,bj)
            HSNOW(I,J,bi,bj)=0.0
@@ -228,8 +228,8 @@ C NOW GET TOTAL GROWTH RATE
 C NOW UPDATE AREA
         DO J=1,sNy
          DO I=1,sNx
-          GHEFF(I,J)=-DELTAT*FHEFF(I,J,bi,bj)*Q0
-          GAREA(I,J)=DELTAT*FO(I,J,bi,bj)*Q0
+          GHEFF(I,J)=-SEAICE_deltaTtherm*FHEFF(I,J,bi,bj)*Q0
+          GAREA(I,J)=SEAICE_deltaTtherm*FO(I,J,bi,bj)*Q0
           GHEFF(I,J)=-ONE*MIN(HEFF(I,J,1,bi,bj),GHEFF(I,J))
           GAREA(I,J)=MAX(ZERO,GAREA(I,J))
           HCORR(I,J,bi,bj)=MIN(ZERO,GHEFF(I,J))
@@ -247,13 +247,14 @@ C NOW UPDATE AREA
 C NOW UPDATE HEFF
         DO J=1,sNy
          DO I=1,sNx
-          GHEFF(I,J)=-DELTAT*FICE(I,J,bi,bj)*Q0*AR(I,J,bi,bj)
+          GHEFF(I,J)=-SEAICE_deltaTtherm*
+     &               FICE(I,J,bi,bj)*Q0*AR(I,J,bi,bj)
           GHEFF(I,J)=-ONE*MIN(HEFF(I,J,1,bi,bj),GHEFF(I,J))
           HEFF(I,J,1,bi,bj)=HEFF(I,J,1,bi,bj)+GHEFF(I,J)
           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)+GHEFF(I,J)
 C NOW CALCULATE QNETI UNDER ICE IF ANY
-          QNETI(I,J,bi,bj)=(GHEFF(I,J)-DELTAT*FICE(I,J,bi,bj)
-     &         *Q0*AR(I,J,bi,bj))/Q0/DELTAT
+          QNETI(I,J,bi,bj)=(GHEFF(I,J)-SEAICE_deltaTtherm*
+     &         FICE(I,J,bi,bj)*Q0*AR(I,J,bi,bj))/Q0/SEAICE_deltaTtherm
          ENDDO
         ENDDO
 
@@ -275,22 +276,23 @@ C NOW UPDATE OTHER THINGS
          DO I=1,sNx
           IF(FICE(I,J,bi,bj).GT.ZERO) THEN
 C FREEZING, PRECIP ADDED AS SNOW
-           HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)
-     &          +DELTAT*PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*SDF
+           HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)+SEAICE_deltaTtherm*
+     &            PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*SDF
           ELSE
 C ADD PRECIP AS RAIN, WATER CONVERTED INTO ICE BY /0.920 _d 0
-           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &         -PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*DELTAT/0.920 _d 0
+             SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
+     &            -PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*
+     &            SEAICE_deltaTtherm/0.920 _d 0
           ENDIF
 c Now add in precip over open water directly into ocean as negative salt
           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
      &         -PRECIP(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
-     &         *DELTAT/0.920 _d 0
+     &         *SEAICE_deltaTtherm/0.920 _d 0
 C NOW GET FRESH WATER FLUX
           EmPmR(I,J,bi,bj)= maskC(I,J,1,bi,bj)*(
-     &                     EVAP(I,J,bi,bj)-RUNOFF(I,J,bi,bj)
-     &                    +SEAICE_SALT(I,J,bi,bj)*0.92 _d 0/DELTAT
-     &                     )
+     &         EVAP(I,J,bi,bj)-RUNOFF(I,J,bi,bj)
+     &         +SEAICE_SALT(I,J,bi,bj)*0.92 _d 0/SEAICE_deltaTtherm
+     &         )
          ENDDO
         ENDDO
 

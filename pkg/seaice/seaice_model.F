@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.20 2004/05/03 22:13:32 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.21 2004/05/05 00:23:37 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -50,8 +50,9 @@ CEndOfInterface
 
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
-
       INTEGER i, j, bi, bj
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
 
 #ifdef SEAICE_EXTERNAL_FORCING
 C--   Atmospheric state and runoff are from
@@ -100,7 +101,13 @@ CADJ STORE area  = comlev1, key = ikey_dynamics
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C solve ice momentum equations and calculate ocean surface stress
-      CALL DYNSOLVER ( myTime, myIter, myThid )
+      IF ( DIFFERENT_MULTIPLE(
+     &     SEAICE_deltaTdyn,myTime,myTime-SEAICE_deltaTtherm) ) THEN
+       print*,'###dynsolver',myTime,SEAICE_deltaTdyn,SEAICE_deltaTtherm
+         CALL TIMER_START('DYNSOLVER          [SEAICE_MODEL]',myThid)
+         CALL DYNSOLVER ( myTime, myIter, myThid )
+         CALL TIMER_STOP ('DYNSOLVER          [SEAICE_MODEL]',myThid)
+      ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef SEAICE_ALLOW_DYNAMICS
