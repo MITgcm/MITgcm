@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.76 2004/09/02 09:13:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.77 2004/09/16 09:46:28 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -634,7 +634,7 @@ C--      Apply open boundary conditions
           CALL TIMEAVE_CUMULATE(ConvectCountTave, IVDConvCount,
      I                           Nr, deltaTclock, bi, bj, myThid)
         ENDIF
-        useVariableK = useKPP .OR. usePP81 .OR. useMY82
+        useVariableK = useKPP .OR. usePP81 .OR. useMY82 .OR. useGGL90
      &       .OR. useGMredi .OR. ivdc_kappa.NE.0.
         IF (taveFreq.GT.0. .AND. useVariableK ) THEN
          IF (implicitDiffusion) THEN

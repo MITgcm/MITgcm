@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.19 2004/09/13 18:42:11 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.20 2004/09/16 09:42:24 mlosch Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -54,7 +54,8 @@ C     useVariableK :: T when vertical diffusion is not constant
 C     Final Time Averages and Dump Files if needed
       IF (DIFFERENT_MULTIPLE(taveFreq,myTime,myTime-deltaTClock)) THEN
 
-        useVariableK = useKPP .OR. useGMredi .OR. ivdc_kappa.NE.0.
+        useVariableK = useKPP .OR. usePP81 .OR. useMY82 .OR. useGGL90
+     &      .OR. useGMredi .OR. ivdc_kappa.NE.0.
         WRITE(suff,'(I10.10)') myIter
 
         DO bj = myByLo(myThid), myByHi(myThid)
