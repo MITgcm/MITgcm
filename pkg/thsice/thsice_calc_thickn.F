@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.2 2004/04/18 22:19:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_calc_thickn.F,v 1.3 2004/05/07 21:33:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -89,7 +89,6 @@ C     == Local Variables ==
       INTEGER  k
 
       _RL  rnlyr         ! maximum number of ice layers (real value)
-      _RL  fswocn        ! SW passed through ice to ocean (W m-2)
 C     evap           ::  evaporation over snow/ice [kg/m2/s] (>0 if evaporate)
       _RL  evap
       _RL  etop          ! energy for top melting    (J m-2)
@@ -162,8 +161,8 @@ C  mass of fresh water and salt initially present in ice
       mwater0 = rhos*hs + rhoi*hi
       msalt0  = rhoi*hi*saltice 
 
-      IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: evpAtm,frzmlt,Fbot=',
-     &     evpAtm,frzmlt,Fbot
+      IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: evpAtm, frzmlt, Fbot =',
+     &                                       evpAtm, frzmlt, Fbot
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -315,8 +314,8 @@ C Compute new total ice thickness.
       do k = 1, nlyr
          hi = hi + hnew(k)
       enddo
-      IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: top,bot: etop,ebot,hs,hi=',
-     &    etop,ebot,hs,hi    
+      IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH:   etop, ebot, hi, hs =',
+     &                                         etop, ebot, hi, hs    
 
 C If hi < himin, melt the ice. 
       if ( hi.lt.himin .AND. (hi+hs).gt.0. _d 0 ) then
@@ -465,15 +464,15 @@ C Compute new total ice thickness.
          hi = hi + hnew(k)
       enddo
  
-      IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: b-Winton: hnew,qice=',
-     &    hnew,qicen
+      IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: b-Winton: hnew, qice =',
+     &                                                 hnew, qicen
 
        hlyr = hi/rnlyr
        CALL THSICE_RESHAPE_LAYERS(
      U                            qicen,
      I                            hlyr, hnew, myThid )
 
-      IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: compact,hi,qtot,hs=',
+      IF (dBug) WRITE(6,1020) 'ThSI_CALC_TH: compact,hi, qtot, hs =',
      &                  compact,hi,(qicen(1)+qicen(2))*0.5, hs
 
 200   continue
@@ -483,10 +482,9 @@ C-  Compute surplus energy left over from melting.
       if (hi.le.0. _d 0) compact=0. _d 0
 
 C.. heat fluxes left over for ocean
-c      qleft = fswocn
        qleft = qleft + (Fbot+(esurp+etop+ebot)/dt)
-       IF(dBug) WRITE(6,1020)'ThSI_CALC_TH: fswOc,[esurp,etop+ebot]/dt='
-     &                        ,fswocn,esurp/dt,etop/dt,ebot/dt
+       IF(dBug) WRITE(6,1020)'ThSI_CALC_TH: [esurp,etop+ebot]/dt ='
+     &                        ,esurp/dt,etop/dt,ebot/dt
 
 C-- Evaporation left to the ocean :
        fresh = fresh - evap
@@ -506,9 +504,9 @@ c     fresh = (mwater0 - (rhos*(hs) + rhoi*(hi)))/dt
 c    &      + snow(i,j,bi,bj)*rhos - evpAtm
       fsalt = (msalt0 - rhoi*hi*saltice)/dt
 
-      IF (dBug) WRITE(6,1020)'ThSI_CALC_TH: dH2O,Evap[kg],fresh,fsalt',
+      IF (dBug) WRITE(6,1020)'ThSI_CALC_TH:dH2O,Ev[kg],fresh,fsalt',
      &   (mwater0-(rhos*hs+rhoi*hi))/dt,evap,fresh,fsalt
-      IF (dBug) WRITE(6,1020)'ThSI_CALC_TH: Qleft,Fbot,extend/dt=',
+      IF (dBug) WRITE(6,1020)'ThSI_CALC_TH: Qleft,Fbot,extend/dt =',
      &            Qleft,Fbot,(etope+ebote)/dt
 
 C-- note: at this point, compact has not been changed (unless reset to zero)

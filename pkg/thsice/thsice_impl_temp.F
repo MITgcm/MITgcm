@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_impl_temp.F,v 1.1 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_impl_temp.F,v 1.2 2004/05/07 21:33:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -76,7 +76,7 @@ C     evptmp   :: evaporation to the atmosphere [kg/m2/s] (>0 if evaporate)
 
       DO j = jMin, jMax
        DO i = iMin, iMax
-c       dBug = ( bi.EQ.3 .AND. i.EQ.13 .AND. j.EQ.13 )
+c       dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.11 )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C    part.1 : ice-covered fraction ; 
@@ -93,6 +93,12 @@ C-------
           Tsf     = Tsrf(i,j,bi,bj)
           qicen(1)= Qice1(i,j,bi,bj)
           qicen(2)= Qice2(i,j,bi,bj)
+          IF ( dBug ) THEN
+           WRITE(6,'(A,2I4,2I2)') 'ThSI_IMPL_T: i,j=',i,j,bi,bj
+           WRITE(6,1010) 'ThSI_IMPL_T:-0- iceMask,hIc,hSn,Tsf=',
+     &                   iceMask(i,j,bi,bj), hIce, hSnow, Tsf
+          ENDIF
+
           CALL THSICE_SOLVE4TEMP(
      I          useBulkforce, flxExcSw, Tf, hIce, hSnow,
      U          flxSW, Tsf, qicen,
@@ -107,10 +113,18 @@ C--    Update Sea-Ice state :
           Tice2(i,j,bi,bj)=Tice(2)
           Qice1(i,j,bi,bj)=qicen(1)
           Qice2(i,j,bi,bj)=qicen(2)
+
+          IF ( dBug ) THEN
+           WRITE(6,1010) 'ThSI_IMPL_T: Tsf, Tice(1,2), dTsurf=',
+     &                              Tsf, Tice, dTsurf(i,j)
+           WRITE(6,1010) 'ThSI_IMPL_T: sHeat, flxCndBt, Qice =',
+     &           sHeating(i,j,bi,bj), flxCndBt(i,j,bi,bj), qicen
+          ENDIF
         ELSE
           dTsurf(i,j) = 0. _d 0
           Qsw(i,j,bi,bj) = 0. _d 0
         ENDIF
+
        ENDDO
       ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.2 2004/04/18 22:06:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.3 2004/05/07 21:33:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -120,13 +120,13 @@ c     _RL  Tsf_start     ! old value of Tsf
 
       dt  = thSIce_deltaT
       dBug = .FALSE.
-c     dBug = ( bi.EQ.3 .AND. i.EQ.13 .AND. j.EQ.13 )
+c     dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.11 )
 c     dBug = ( bi.EQ.6 .AND. i.EQ.18 .AND. j.EQ.10 )
-      IF ( dBug ) WRITE(6,'(A,2I4,2I2)') 'ThSI_THERM: i,j=',i,j,bi,bj
+      IF ( dBug ) WRITE(6,'(A,2I4,2I2)') 'ThSI_SOLVE4T: i,j=',i,j,bi,bj
 
       if ( hi.lt.himin ) then
 C If hi < himin, melt the ice.
-         STOP 'THSICE_THERM: should not enter if hi<himin'
+         STOP 'THSICE_SOLVE4TEMP: should not enter if hi<himin'
       endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -158,7 +158,7 @@ C compute ice temperatures
           write (6,*) 'BBerr Tice(1) > 0 = ',Tice(1)
           write (6,*) 'BBerr Tice(2) > 0 = ',Tice(2)
       endif
-      IF ( dBug ) WRITE(6,1010) 'ThSI_THERM: k,Tice=',0,Tsf,Tice
+      IF ( dBug ) WRITE(6,1010) 'ThSI_SOLVE4T: k,Tice=',0,Tsf,Tice
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C Compute coefficients used in quadratic formula.
@@ -209,7 +209,7 @@ C with different coefficients.
          dTsf = (flx0 + k12*(Tice(1)-Tsf)) / (k12-df0dT)
          Tsf = Tsf + dTsf
          if (Tsf .gt. 0. _d 0) then
-            IF(dBug) WRITE(6,1010) 'ThSI_THERM: k,tice=',
+            IF(dBug) WRITE(6,1010) 'ThSI_SOLVE4T: k,tice=',
      &                                          k,Tsf,Tice(1),dTsf
             a1 = a10 + k12
             b1 = b10          ! note b1 = b10 - k12*Tf0
@@ -242,7 +242,7 @@ C (Energy conservation is guaranteed within machine roundoff, even
 C if Tsfc has not converged.)
 C If no convergence, then repeat.
 
-         IF ( dBug ) WRITE(6,1010) 'ThSI_THERM: k,tice=',
+         IF ( dBug ) WRITE(6,1010) 'ThSI_SOLVE4T: k,tice=',
      &                                            k,Tsf,Tice(1),dTsf
          IF ( useBlkFlx ) THEN
           if (abs(dTsf).lt.Terrmax) then
@@ -271,7 +271,7 @@ C Compute new bottom layer temperature.
       Tice(2) = (2. _d 0*dt*k32*(Tice(1)+2. _d 0*Tf)
      &        + rhoi*cpice *hi*Tice(2))
      &         /(6. _d 0*dt*k32 + rhoi*cpice *hi)
-      IF ( dBug ) WRITE(6,1010) 'ThSI_THERM: k,Tice=',k,Tsf,Tice
+      IF ( dBug ) WRITE(6,1010) 'ThSI_SOLVE4T: k,Tice=',k,Tsf,Tice
 
 
 C Compute final flux values at surfaces.
@@ -296,7 +296,7 @@ C     use latent heat = Lvap (energy=0 for liq. water at 0.oC)
 C-    SW flux at sea-ice base left to the ocean
       flxSW = fswocn
 
-      IF (dBug) WRITE(6,1020) 'ThSI_THERM: flx0,fct,Dif,flxCnB=',
+      IF (dBug) WRITE(6,1020) 'ThSI_SOLVE4T: flx0,fct,Dif,flxCnB=',
      &    flx0,fct,flx0-fct,flxCnB
 
 C Compute new enthalpy for each layer.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.4 2004/04/08 18:54:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.5 2004/05/07 21:33:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -103,7 +103,7 @@ C-    Initialise flxAtm
       IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
        DO j = jMin, jMax
         DO i = iMin, iMax
-c        dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.15 )
+c        dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.11 )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C    part.1 : ice-covered fraction ; 
@@ -117,6 +117,11 @@ C-------
           Tsf     = Tsrf(i,j,bi,bj)
           qicen(1)= Qice1(i,j,bi,bj)
           qicen(2)= Qice2(i,j,bi,bj)
+          IF ( dBug ) THEN
+           WRITE(6,'(A,2I4,2I2)') 'ThSI_FWD: i,j=',i,j,bi,bj
+           WRITE(6,1010) 'ThSI_FWD:-0- iceMask, hIc, hSn, Tsf  =',
+     &                                 icFrac, hIce,hSnow,Tsf
+          ENDIF
 
           CALL THSICE_ALBEDO(
      I               hIce, hSnow, Tsf, snowAge(i,j,bi,bj),
@@ -146,6 +151,13 @@ C--    Update Sea-Ice state :
           ice_albedo_Ave(i,j,bi,bj) = ice_albedo_Ave(i,j,bi,bj)
      &                              + icFrac*albedo*thSIce_deltaT
 #endif /*ALLOW_TIMEAVE*/
+          IF ( dBug ) THEN
+           WRITE(6,1010) 'ThSI_FWD: Tsf, Tice(1,2), frzmltMxL =',
+     &                              Tsf, Tice, frzmltMxL
+           WRITE(6,1010) 'ThSI_FWD: sHeat,fxCndBt, fxAtm,evAtm=',
+     &                  sHeating(i,j,bi,bj), flxCndBt(i,j,bi,bj),
+     &                  flxAtm(i,j), evpAtm(i,j)
+          ENDIF
          ENDIF
         ENDDO
        ENDDO
@@ -161,7 +173,7 @@ C-------
       ageFac = 1. _d 0 - thSIce_deltaT/agingTime
       DO j = jMin, jMax
        DO i = iMin, iMax
-c       dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.15 )
+c       dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.11 )
 
         TFrzOce = -mu_Tf*sOceMxL(i,j,bi,bj)
         oceTs   = tOceMxL(i,j,bi,bj)
@@ -173,10 +185,12 @@ c       dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.15 )
         compact= iceMask(i,j,bi,bj)
 C-------
         IF (dBug .AND. (frzmltMxL.GT.0. .OR. compact.GT.0.) ) THEN
-          WRITE(6,1010) 'ThSI_FWD:-1- iceMask,hIc,hSn,Qnet=',
-     &                  compact, hIce, hSnow, Qnet(i,j,bi,bj)
-          WRITE(6,1010) 'ThSI_FWD: ocTs,TFrzOce,frzmltMxL=',
-     &                            oceTs,TFrzOce,frzmltMxL
+          WRITE(6,'(A,2I4,2I2)') 'ThSI_FWD: i,j=',i,j,bi,bj
+          WRITE(6,1010) 'ThSI_FWD:-1- iceMask, hIc, hSn, Tsf  =',
+     &                  compact, iceHeight(i,j,bi,bj), 
+     &                  snowHeight(i,j,bi,bj), Qnet(i,j,bi,bj)
+          WRITE(6,1010) 'ThSI_FWD:   ocTs, TFrzOce, frzmltMxL =',
+     &                              oceTs, TFrzOce, frzmltMxL
         ENDIF
 C-------
         IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN 
@@ -231,8 +245,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--    Update Sea-Ice state :
 c         iceMask(i,j,bi,bj)=compact
-          iceheight(i,j,bi,bj) = hIce
-          snowheight(i,j,bi,bj)= hSnow
+          iceHeight(i,j,bi,bj) = hIce
+          snowHeight(i,j,bi,bj)= hSnow
           Tsrf(i,j,bi,bj) =Tsf
           Qice1(i,j,bi,bj)=qicen(1)
           Qice2(i,j,bi,bj)=qicen(2)
@@ -248,8 +262,9 @@ C-     weighted average net fluxes:
           EmPmR(i,j,bi,bj)=-icFrac*frw2oc/rhofw+opFrac*EmPmR(i,j,bi,bj)
           saltFlux(i,j,bi,bj)=-icFrac*fsalt
 
-          IF (dBug) WRITE(6,1010)'ThSI_FWD:-3- compact,hIc,hSn,Qnet=',
-     &                      compact,hIce,hSnow,Qnet(i,j,bi,bj)
+          IF (dBug) WRITE(6,1010)
+     &          'ThSI_FWD:-3- compact, hIc, hSn, Qnet =',
+     &                        compact,hIce,hSnow,Qnet(i,j,bi,bj)
 
         ELSEIF (hOceMxL(i,j,bi,bj).gt.0. _d 0) THEN
           flxAtm(i,j) =  -Qnet(i,j,bi,bj)
@@ -297,14 +312,15 @@ C--    Update Sea-Ice state :
              Qice1(i,j,bi,bj) = qicen(1)
              Qice2(i,j,bi,bj) = qicen(2)
           ENDIF
-          iceheight(i,j,bi,bj) = hIce
-          snowheight(i,j,bi,bj)= hSnow
+          iceHeight(i,j,bi,bj) = hIce
+          snowHeight(i,j,bi,bj)= hSnow
 C--    Net fluxes :
           Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj) - flx2oc
           EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- frw2oc/rhofw 
           saltFlux(i,j,bi,bj)=saltFlux(i,j,bi,bj) - fsalt
 
-          IF (dBug) WRITE(6,1010)'ThSI_FWD:-4- compact,hIc,hSn,Qnet=',
+          IF (dBug) WRITE(6,1010)
+     &          'ThSI_FWD:-4- compact, hIc, hSn, Qnet =',
      &                        compact,hIce,hSnow,Qnet(i,j,bi,bj)
 C--   - if esurp > 0 : end
         ENDIF
