@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_write_tave.F,v 1.1 2003/06/12 17:54:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_write_tave.F,v 1.2 2004/01/18 22:49:52 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -54,11 +54,23 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF (land_taveFreq.LE.0.) RETURN
 
+      IF ( myIter.EQ.nIter0 ) THEN
+C      Initialize time-average arrays to zero
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         CALL TIMEAVE_RESET(land_grTtave,land_nLev, bi, bj, myThid)
+         CALL TIMEAVE_RESET(land_grWtave,land_nLev, bi, bj, myThid)
+         CALL TIMEAVE_RESET(land_ROftave,        1, bi, bj, myThid)
+         DO k=1,Nr
+           land_timeAve(k,bi,bj)=0.
+         ENDDO                     
+        ENDDO
+       ENDDO
+
 C     Dump files and restart average computation if needed
-      IF ( myIter.NE.nIter0 .AND.
-     &     DIFFERENT_MULTIPLE(land_taveFreq,myTime,
-     &     myTime-land_deltaT)
-     &     ) THEN
+      ELSEIF (
+     &  DIFFERENT_MULTIPLE(land_taveFreq, myTime, myTime-land_deltaT)
+     &       ) THEN
 
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
