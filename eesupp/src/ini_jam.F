@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/ini_jam.F,v 1.2 2000/03/24 18:51:56 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/ini_jam.F,v 1.3 2000/04/05 14:52:27 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -66,6 +66,19 @@ C     Set up connectivity
 
       numberOfProcs = jam_np
       myProcId      = jam_pid
+
+#ifdef JAM_WITH_TWO_PROCS_PER_NODE
+C     The following fixes the instance where MPI and
+C     James JAM arrive at a different id for this process
+C     *note* this assumes nPx=1 (no parallization in X)
+      myPid         = jam_pid
+      pidN          = mod(jam_pid+1,jam_np)
+      pidS          = mod(jam_pid-1+jam_np,jam_np)
+      pidW          = jam_pid
+      pidE          = jam_pid
+      myYGlobalLo   = sNy*nSy*jam_pid+1
+      myXGlobalLo   = 1
+#endif
 
 #endif
 #endif /* LETS_MAKE_JAM */
