@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.38 2003/11/14 12:52:56 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.39 2003/11/14 19:01:36 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -281,27 +281,28 @@ get_fortran_c_namemangling()  {
     cat > genmake_test.c <<EOF
 void tcall( char * string ) { tsub( string ); }
 EOF
-    $MAKE genmake_test.o > genmake_test.log 2>&1
+    $MAKE genmake_test.o >> genmake_warnings 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
-	cat genmake_test.log >> genmake_errors
 	FC_NAMEMANGLE=$default_nm
-	echo
-	echo "WARNING: C test compile fails -- please see \"genmake_errors\""
-	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
-	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
-	rm -f genmake_tcomp.* genmake_test.*
+	cat <<EOF>> genmake_errors
+
+WARNING: C test compile fails
+WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
+WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here
+EOF
 	return 1
     fi
     c_tcall=`nm genmake_test.o | grep tcall | cut -d ' ' -f 3`
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
-	echo
-	echo "WARNING: The \"nm\" command failed."
-	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
-	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
-	rm -f genmake_tcomp.* genmake_test.*
+	cat <<EOF>> genmake_warnings
+
+WARNING: The "nm" command failed.
+WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
+WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here
+EOF
 	return 1
     fi
     cat > genmake_tcomp.f <<EOF
@@ -310,27 +311,28 @@ EOF
       call tsub( string )
       end
 EOF
-    $FC $FFLAGS $DEFINES -c genmake_tcomp.f > genmake_tcomp.log 2>&1
+    $FC $FFLAGS $DEFINES -c genmake_tcomp.f >> genmake_warnings 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
-	cat genmake_tcomp.log >> genmake_errors
 	FC_NAMEMANGLE=$default_nm
-	echo
-	echo "WARNING: FORTRAN test compile fails -- please see \"genmake_errors\""
-	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
-	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
-	rm -f genmake_tcomp.* genmake_test.*
+	cat <<EOF>> genmake_warnings
+
+WARNING: FORTRAN test compile fails -- please see "genmake_errors"
+WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
+WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here.
+EOF
 	return 1
     fi
     f_tcall=`nm genmake_tcomp.o | grep tcall | cut -d ' ' -f 3`
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
-	echo
-	echo "WARNING: The \"nm\" command failed."
-	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
-	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
-	rm -f genmake_tcomp.* genmake_test.*
+	cat <<EOF>> genmake_warnings
+
+WARNING: The "nm" command failed.
+WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'
+WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here.
+EOF
 	return 1
     fi
 
@@ -356,6 +358,46 @@ EOF
     #  cleanup the testing files
     rm -f genmake_tcomp.* genmake_test.*
 }
+
+
+check_HAVE_CLOC()  {
+    get_fortran_c_namemangling
+    cat <<EOF > genmake_tc_1.c
+$FC_NAMEMANGLE
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <assert.h>
+#include <sys/time.h>
+void FC_NAMEMANGLE(cloc) ( double *curtim )
+{
+ struct timeval tv1;
+ gettimeofday(&tv1 , (void *)NULL );
+ *curtim =  (double)((tv1.tv_usec)+(tv1.tv_sec)*1.E6);
+ *curtim = *curtim/1.E6;
+}
+EOF
+    make genmake_tc_1.o >> genmake_tc.log 2>&1
+    RET_C=$?
+    cat <<EOF > genmake_tc_2.f
+      program hello
+      Real*8 wtime
+      external cloc
+      call cloc(wtime)
+      print *," HELLO WORLD", wtime
+      end program hello
+EOF
+    $FC $FFLAGS -o genmake_tc genmake_tc_2.f genmake_tc_1.o >> genmake_tc.log 2>&1
+    RET_F=$?
+    test -x ./genmake_tc  &&  ./genmake_tc >> genmake_tc.log 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" = x0 ; then
+	HAVE_CLOC=t
+	DEFINES="$DEFINES -DHAVE_CLOC"
+    fi
+    rm -f genmake_tc*
+}
+
 
 #  Set defaults here
 COMMANDL="$0 $@"
@@ -392,6 +434,7 @@ NOOPTFLAGS=
 HAVE_SYSTEM=
 HAVE_FDATE=
 FC_NAMEMANGLE=
+HAVE_CLOC=
 
 MODS=
 TOOLSDIR=
@@ -708,8 +751,8 @@ if test "x${AD_OPTFILE}" != xNONE ; then
     fi
 fi
 
-#  Check that FC, LINK, CPP, S64, and LN are defined.  If not,
-#  complain and abort!
+#  Check that FC, LINK, CPP, S64, LN, and MAKE are defined.  If not,
+#  either set defaults or complain and abort!
 if test "x$FC" = x ; then
     cat <<EOF 1>&2
 
@@ -725,6 +768,9 @@ if test "x$LINK" = x ; then
 fi
 if test "x$CPP" = x ; then
     CPP="cpp"
+fi
+if test "x$MAKE" = x ; then
+    MAKE="make"
 fi
 echo "#define A a" | $CPP > test_cpp 2>&1
 RETVAL=$?
@@ -761,6 +807,7 @@ EOF
     exit 1
 fi
 rm -f genmake_test_ln genmake_tlink
+
 
 printf "\n===  Checking system libraries  ===\n"
 echo -n "  Do we have the system() command using $FC...  "
@@ -802,18 +849,20 @@ else
 fi
 rm -f genmake_tcomp*
 
-echo "  The name mangling convention for $FC is...  "
-#FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
-if test "x$FC_NAMEMANGLE" = x ; then
-    get_fortran_c_namemangling
+echo -n "  Can we call simple C routines (here, \"cloc()\") using $FC...  "
+check_HAVE_CLOC
+if test "x$HAVE_CLOC" != x ; then
+    echo "yes"
+else
+    echo "no"
 fi
-echo "    '$FC_NAMEMANGLE'"
 echo "$FC_NAMEMANGLE" > FC_NAMEMANGLE.h.template
 cmp FC_NAMEMANGLE.h FC_NAMEMANGLE.h.template > /dev/null 2>&1
 RETVAL=$?
 if test "x$RETVAL" != x0 ; then
     mv -f FC_NAMEMANGLE.h.template FC_NAMEMANGLE.h
 fi
+rm -f genmake_t*
 
 
 printf "\n===  Setting defaults  ===\n"

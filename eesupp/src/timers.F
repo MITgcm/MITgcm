@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.14 2003/11/14 16:22:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.15 2003/11/14 19:01:36 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -498,9 +498,13 @@ C     EXTERNAL MPI_Wtime
       ACTUAL = ETIME(TARRAY)
       userTime      = TARRAY(1)
       systemTime    = TARRAY(2)
+#ifdef HAVE_CLOC
       CALL CLOC(wTime)
+#else 
+      wtime = 0.
+#endif /* HAVE_CLOC */
       wallClockTime = wtime
-#endif
+#endif /* CRAY defines */
 
 #ifdef ALLOW_USE_MPI
 C     wtime         = MPI_Wtime()
