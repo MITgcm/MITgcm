@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.13 2004/08/05 20:11:11 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.14 2004/09/01 18:35:33 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -68,7 +68,7 @@ C***********************************************************************
       _RL lats(nlat)
       _RL levs(nlev)
 
-      integer time
+      integer time0
       integer lat
       integer lev
 
@@ -90,19 +90,19 @@ c -----------------------------
 
 c Read Moisture Amounts by Month and Level
 c ----------------------------------------
-      do time=1,ntime
+      do time0=1,ntime
       read (ku,1001)
       do  lat=1,nlat
-      read(ku,1000) (qz(lat,lev,time),lev=1,nlev)
+      read(ku,1000) (qz(lat,lev,time0),lev=1,nlev)
       enddo
       enddo
 
 c Convert from Volume Mixing Ratio to Mass Mixing Ratio
 c -----------------------------------------------------
-      do time = 1,ntime
+      do time0 = 1,ntime
       do  lev = 1,nlev
       do  lat = 1,nlat
-      qz(lat,lev,time) = qz(lat,lev,time)*voltomas
+      qz(lat,lev,time0) = qz(lat,lev,time0)*voltomas
       enddo
       enddo
       enddo
@@ -136,7 +136,7 @@ C***********************************************************************
       _RL lats(nlat)
       _RL levs(nlev)
 
-      integer time
+      integer time0
       integer lat
       integer lev
       integer nrec
@@ -165,16 +165,16 @@ c -------------------------------------
       open(ku,file='gcmo3.data',form='unformatted',access='direct',
      .                                                 recl=nlat*4)
 
-      do time=1,ntime
+      do time0=1,ntime
       do lev=1,nlev
 C Note: 2 quantities in Ozone Dataset
-      nrec = lev+(time-1)*nlev*2   
+      nrec = lev+(time0-1)*nlev*2   
       read(ku,rec=nrec) o3
 #if defined( _BYTESWAPIO )
       call mds_byteswapr4(nlat,o3)
 #endif
            do lat=1,nlat
-           oz(lat,nlev-lev+1,time) = o3(lat)
+           oz(lat,nlev-lev+1,time0) = o3(lat)
            enddo
       enddo
       enddo
