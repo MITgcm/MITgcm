@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.6 2001/11/08 20:57:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.7 2002/01/30 04:17:19 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -141,6 +141,20 @@ C     Incorporate the Explicit part of -Divergence(Barotropic_Flow)
          ENDDO
         ENDDO
        ENDIF
+
+#ifdef ALLOW_OBCS
+#ifdef NONLIN_FRSURF
+C- note: 1) needs to apply OBC to etaH since viscous terms depend on hFacZ.
+C           that is not only function of boundaries hFac values.
+C        2) has to be done before calc_surf_dr; but since obcs_calc is 
+C           called later, hFacZ will lag 1 time step behind OBC update. 
+C        3) avoid also unrealistic value of etaH in OB regions that
+C           might produce many "WARNING" message from calc_surf_dr.  
+C-------
+        IF (useOBCS .AND. nonlinFreeSurf.GT.0 ) 
+     &    CALL OBCS_APPLY_ETA( bi, bj, etaH, myThid )   
+#endif /* NONLIN_FRSURF */
+#endif /* ALLOW_OBCS */
 
       ENDIF
 
