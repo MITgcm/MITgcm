@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.61 2004/01/15 04:27:39 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.62 2004/01/15 19:19:59 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -994,7 +994,7 @@ if test -r $ROOTDIR"/eesupp/src/Makefile" ; then
 	rm -f make_eesupp.errors
     else
 	echo "Error: problem encountered while building source files in eesupp:"
-	cat make_eesupp.errors
+	cat make_eesupp.errors 1>&2
 	exit 1
     fi
 fi
@@ -1008,7 +1008,7 @@ if test -r $ROOTDIR"/pkg/exch2/Makefile" ; then
         rm -f make_exch2.errors
     else
         echo "Error: problem encountered while building source files in exch2:"
-        cat make_exch2.errors
+        cat make_exch2.errors 1>&2
         exit 1
     fi
 fi
@@ -1196,11 +1196,21 @@ for i in $PACKAGES ; do
     fi
 done
 
-#  Check for ability to build and use NetCDF
+#  Build MNC templates and check for ability to build and use NetCDF
 echo $PACKAGES | grep ' mnc ' > /dev/null 2>&1
 RETVAL=$?
-if test "x$RETVAL" = x0 -a "x$HAVE_NETCDF" != xt ; then
-    cat <<EOF
+if test "x$RETVAL" = x0 ; then
+    ( cd $ROOTDIR"/pkg/mnc" && $MAKE templates ) > make_mnc.errors 2>&1
+    RETVAL=$?
+    if test "x${RETVAL}" = x0 ; then
+	rm -f make_mnc.errors
+    else
+	echo "Error: problem encountered while building source files in pkg/mnc:"
+	cat make_mnc.errors 1>&2
+	exit 1
+    fi
+    if test -a "x$HAVE_NETCDF" != xt ; then
+	cat <<EOF
 
 WARNING: the "mnc" package has been enabled but tests failed to 
   compile and/or execute NetCDF applications.  Please check that:
@@ -1210,6 +1220,7 @@ WARNING: the "mnc" package has been enabled but tests failed to
        NetCDF library to link against.
   
 EOF
+    fi
 fi
 
 # Create a list of #define and #undef to enable/disable packages
