@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_fields_load.F,v 1.3 2004/11/14 19:54:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_fields_load.F,v 1.4 2005/04/06 18:35:17 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -43,8 +43,6 @@ C     myIter - Simulation timestep number
 CEndOfInterface
  
 C     === Functions ===
-      LOGICAL DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 
 #ifdef ALLOW_AIM
 C     === Local variables ===

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.4 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.5 2005/04/06 18:36:47 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -30,8 +30,8 @@ CEndOfInterface
 
 
 C     == Local variables ==
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
       INTEGER bi, bj, k
       CHARACTER*(MAX_LEN_MBUF) suff
 
@@ -41,7 +41,7 @@ C     == Local variables ==
 #ifdef ALLOW_TIMEAVE
 
 C     Dump files and restart average computation if needed
-      IF ( DIFFERENT_MULTIPLE(taveFreq,myTime,myTime-deltaTClock)
+      IF ( DIFF_BASE_MULTIPLE(baseTime,taveFreq,myTime,deltaTClock)
      &     ) THEN
          
 C      Normalize by integrated time

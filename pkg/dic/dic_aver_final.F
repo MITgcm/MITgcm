@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_final.F,v 1.2 2004/07/13 18:03:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/dic_aver_final.F,v 1.3 2005/04/06 18:36:47 jmc Exp $
 C $Name:  $
 
 cswdcost -- add sunroutine ---
@@ -42,8 +42,6 @@ C     == Routine arguments ==
 #ifdef ALLOW_DIC_COST
 
 C     == Local variables ==
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
       INTEGER i, j, bi, bj, k, it
       _RL rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_init.F,v 1.3 2004/02/12 16:11:46 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_init.F,v 1.4 2005/04/06 18:36:47 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -28,8 +28,6 @@ C  myThid               :: thread number
 
 
 C !LOCAL VARIABLES: ====================================================
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
       INTEGER bi, bj, k
       CHARACTER*(MAX_LEN_MBUF) suff
 CEOP

@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_calc_diags.F,v 1.7 2002/09/27 20:05:11 jmc Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_calc_diags.F,v 1.8 2005/04/06 18:34:59 jmc Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -20,9 +20,6 @@ C-- size for MITgcm & Physics package :
 
 #include "AIM_DIAGS.h"
 #include "com_physvar.h"
-
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 
 C     == Routine arguments ==
 C     myTime - Current time of simulation ( s )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_diags.F,v 1.6 2003/11/23 01:36:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_diags.F,v 1.7 2005/04/06 18:36:22 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -35,14 +35,14 @@ CEndOfInterface
 #ifdef ALLOW_TIMEAVE
 
 C     == Function
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
 C     == Local variables ==
       INTEGER bi, bj
       CHARACTER*(MAX_LEN_MBUF) suff
 
 C     Dump files and restart average computation if needed
-      IF ( DIFFERENT_MULTIPLE(blk_taveFreq,myTime,myTime-deltaTClock)
+      IF ( DIFF_BASE_MULTIPLE(baseTime,blk_taveFreq,myTime,deltaTClock)
      &     ) THEN
 
        

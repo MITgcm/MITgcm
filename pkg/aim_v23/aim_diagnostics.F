@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.10 2004/12/20 19:09:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.11 2005/04/06 18:35:16 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -24,8 +24,8 @@ C-- size for MITgcm & Physics package :
 #include "com_physvar.h"
 #include "com_forcing.h"
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
 
 C     == Routine arguments ==
 C     bi,bj  - Tile index
@@ -58,8 +58,8 @@ C--  mean surf. temp. change:
          dTsurf(J,1,myThid) = ABS(dTsurf(J,1,myThid))
        ENDDO
 
-      IF (
-     &    DIFFERENT_MULTIPLE(aim_tendFreq,myTime+deltaTClock,myTime)
+      IF ( DIFF_BASE_MULTIPLE(baseTime,aim_tendFreq,
+     &                        myTime+deltaTClock,deltaTClock)
      &   ) THEN 
        WRITE(suff,'(I10.10)') myIter+1
 
@@ -91,8 +91,8 @@ C--   write clear-sky tendencies to files :
 #endif /* ALLOW_CLR_SKY_DIAG */
       ENDIF
 
-      IF (
-     &    DIFFERENT_MULTIPLE(aim_diagFreq,myTime+deltaTClock,myTime)
+      IF ( DIFF_BASE_MULTIPLE(baseTime,im_diagFreq,
+     &                        myTime+deltaTClock,deltaTClock)
      &   ) THEN 
        WRITE(suff,'(I10.10)') myIter+1
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.22 2005/02/28 19:29:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.23 2005/04/06 18:35:44 jmc Exp $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -36,8 +36,8 @@ C     == Global variables ===
 # include "adcommon.h"
 #endif
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
@@ -70,8 +70,7 @@ CEOP
       call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
       IF (
-     &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,
-     &                     mytime-deltaTClock)
+     &  DIFF_BASE_MULTIPLE(baseTime,adjDumpFreq,mytime,deltaTClock)
      & ) THEN
 
          write(*,*) 'myIter= ',myiter

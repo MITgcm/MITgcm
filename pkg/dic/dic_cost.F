@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.4 2004/07/13 18:03:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_cost.F,v 1.5 2005/04/06 18:36:47 jmc Exp $
 C $Name:  $
 
 cswdcost -- add sunroutine ---
@@ -42,8 +42,6 @@ C     == Routine arguments ==
 #ifdef ALLOW_DIC_COST
 
 C     == Local variables ==
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
       INTEGER i, j, bi, bj, k, it
 c
       _RL po4cost, o2cost, sumvol

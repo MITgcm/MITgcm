@@ -24,8 +24,6 @@ C     == Global variables ===
 # include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 
 C     ======== Routine arguments ======================
 C     myThid - Thread number for this instance of the routine.

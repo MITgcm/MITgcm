@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_ini_vars.F,v 1.2 2004/05/21 20:00:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_ini_vars.F,v 1.3 2005/04/06 18:33:04 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -81,7 +81,7 @@ c       vVelGroundTime(bi,bj) = 0.
        ENDDO
       ENDDO
 
-      IF ( startTime .NE. 0. .OR. nIter0 .NE. 0 ) THEN
+      IF ( startTime .NE. baseTime .OR. nIter0 .NE. 0 ) THEN
        CALL ATM_CPL_READ_PICKUP( nIter0, myThid )
       ENDIF
 

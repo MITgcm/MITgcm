@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.18 2005/03/29 20:10:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.19 2005/04/06 18:37:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -366,7 +366,7 @@ c--   NOT enabled.
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
-        nIter0 = INT( startTime/deltaTClock )
+        nIter0 = NINT( (startTime-baseTime)/deltaTClock )
         ikey_dynamics = ilev_1
 #endif
 
