@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4,v 1.5 2004/02/26 19:57:59 cnh Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4,v 1.6 2005/01/13 00:16:31 ce107 Exp $
 #
 
 #  tested on bluesky, EH3 2003-09-04
@@ -10,19 +10,14 @@
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
 MAKEDEPEND=makedepend
-DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DTARGET_PWR3 -DTARGET_SGI -DWORDLENGTH=4'
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DTARGET_AIX -DWORDLENGTH=4'
 
 #ph: e.g. bluesky.ucar.edu, marcellus.navo.hpc.mil
 INCLUDES='-I/usr/lpp/ppe.poe/include'
-#    set CPP        = ( '/lib/cpp' )
 CPP='/lib/cpp -P'
 FC='mpxlf95'
 LINK='mpxlf95'
-LIBS=' -L/usr/local/apps/mass -lmass'
-#   set FFLAGS     = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4' )
-FFLAGS='-qfixed=132 -O3 -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1 -bmaxdata:0x80000000'
-#    set FOPTIM     = ( '-O3' )
-#   set NOOPTFLAGS = ( '-O0' )
-#   set NOOPTFILES = ( 'barrier.F different_multiple.F ' \
-#                      'external_fields_load.F' )
-RMFILES='rii_files'
+LIBS='-L/usr/local/apps/mass -lmass'
+FFLAGS='-qfixed=132 -bmaxdata:0x80000000'
+FOPTIM='-O3 -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1'
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X"
