@@ -41,6 +41,7 @@
  writeStatePrec=64,
  globalFiles=.TRUE.,
  staggerTimeStep=.TRUE.,
+ vectorInvariantMomentum=.TRUE.,
  &
 
 # Elliptic solver parameters
