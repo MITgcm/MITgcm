@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.12 1998/07/17 02:25:15 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.13 1998/09/09 15:24:19 cnh Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint14
+ Consistent isomorphism chages made. These allow dynamical core
+ to support both pressure and meters as a vertical coordinate.
 
 checkpoint13
  Release which corrects global_max problem and a couple
