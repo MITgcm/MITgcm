@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.9 2003/09/24 04:52:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.10 2003/10/06 20:25:54 stephd Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -123,8 +123,16 @@ C (advection, [explicit] diffusion, parameterizations,...)
      I                     myThid )
 
 C External forcing term(s)
-cswdptr - add--
-#ifndef PTRACERS_SEPERATE_FORCING
+cswdptr --add --
+#ifdef ALLOW_GCHEM
+#ifndef PTRACERS_SEPARATE_FORCING
+       IF ( forcing_In_AB )
+     &    CALL GCHEM_FORCING_INT(
+     I                        bi,bj,iMin,iMax,jMin,jMax,k,
+     I                        iTracer,
+     I                        myTime,myIter, myThid)
+#endif
+#else
 cswdptr - end add ---
        IF ( forcing_In_AB )
      &   CALL PTRACERS_FORCING(
@@ -148,7 +156,15 @@ C If using Adams-Bashforth II, then extrapolate tendancies
 
 C External forcing term(s)
 cswdptr - add--
-#ifndef PTRACERS_SEPERATE_FORCING
+#ifdef ALLOW_GCHEM
+#ifndef PTRACERS_SEPARATE_FORCING
+       IF ( .NOT.forcing_In_AB )
+     &    CALL GCHEM_FORCING_INT(
+     I                        bi,bj,iMin,iMax,jMin,jMax,k,
+     I                        iTracer,
+     I                        myTime,myIter, myThid)
+#endif
+#else
 cswdptr - end add ---
        IF ( .NOT.forcing_In_AB )
      &   CALL PTRACERS_FORCING(
