@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.10 2003/03/06 00:47:33 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.11 2003/03/08 00:24:58 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -140,9 +140,10 @@ c     == local variables ==
 
 #ifdef ALLOW_BULKFORMULAE
 
+      _RL     aln
+
 #ifdef ALLOW_ATM_TEMP
       integer iter
-      _RL     aln
       _RL     delq
       _RL     deltap
       _RL     hqol
