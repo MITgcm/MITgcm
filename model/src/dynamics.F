@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.50 2000/06/21 19:13:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.51 2000/06/21 20:46:31 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -146,7 +146,7 @@ C                      index into fVerTerm.
 
       INTEGER act1, act2, act3, act4
       INTEGER max1, max2, max3
-      INTEGER ikact, iikey,kkey
+      INTEGER iikey, kkey
       INTEGER maximpl
 #endif
 
@@ -434,7 +434,7 @@ C--     Start of downward loop
         DO K=2,Nr
 
 #ifdef ALLOW_AUTODIFF_TAMC
-         kkey = ikact*(Nr-2+1) + (k-2) + 1
+         kkey = (ikey-1)*(Nr-2+1) + (k-2) + 1
 #endif
 
          BOTTOM_LAYER = K .EQ. Nr
@@ -599,7 +599,7 @@ C--     Start of upward loop
          jMax = sNy+OLy-1
 
 #ifdef ALLOW_AUTODIFF_TAMC 
-         kkey = ikact*(Nr-1+1) + (k-1) + 1
+         kkey = (ikey-1)*(Nr-1+1) + (k-1) + 1
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -718,13 +718,13 @@ C--      Cumulative diagnostic calculations (ie. time-averaging)
 
         ENDDO ! K
 
-C--     Implicit diffusion
-        IF (implicitDiffusion) THEN
-
 #ifdef ALLOW_AUTODIFF_TAMC
            maximpl = 6
-           iikey = ikact*maximpl
+           iikey = (ikey-1)*maximpl
 #endif
+
+C--     Implicit diffusion
+        IF (implicitDiffusion) THEN
 
          IF (tempStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
