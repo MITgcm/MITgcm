@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.1 2004/06/04 16:23:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.2 2004/06/07 18:11:38 molod Exp $
 C $Name:  $
 
        subroutine update_ocean_exports (myTime, myIter, myThid)
@@ -15,7 +15,7 @@ c-----------------------------------------------------------------------
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "GRID.h"
-#include "ocean_coms.h"
+#include "fizhi_ocean_coms.h"
 #include "EEPARAMS.h"
 
        integer myTime, myIter, myThid

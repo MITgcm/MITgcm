@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.3 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.4 2004/06/07 18:11:38 molod Exp $
 C $Name:  $
 
        subroutine step_fizhi_fg (myTime, myIter, myThid, dt)
@@ -14,7 +14,7 @@ c-----------------------------------------------------------------------
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
-#include "land_SIZE.h"
+#include "fizhi_land_SIZE.h"
 #include "fizhi_coms.h"
 #include "EEPARAMS.h"
 

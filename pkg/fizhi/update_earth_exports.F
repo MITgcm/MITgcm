@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.1 2004/06/04 16:23:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.2 2004/06/07 18:11:38 molod Exp $
 C $Name:  $
 
        subroutine update_earth_exports (myTime, myIter, myThid)
@@ -18,12 +18,12 @@ c-----------------------------------------------------------------------
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "GRID.h"
-#include "land_SIZE.h"
+#include "fizhi_land_SIZE.h"
 #include "fizhi_SIZE.h"
 #include "DYNVARS.h"
 #include "fizhi_coms.h"
 #include "gridalt_mapping.h"
-#include "land_coms.h"
+#include "fizhi_land_coms.h"
 #include "EEPARAMS.h"
 
        integer myTime, myIter, myThid

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.3 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.4 2004/06/07 18:11:37 molod Exp $
 C $Name:  $
 
       subroutine fizhi_tendency_apply_u(iMin, iMax, jMin, jMax,
@@ -26,7 +26,7 @@ C=======================================================================
 #include "EEPARAMS.h"
 #include "DYNVARS.h"
 #include "fizhi_SIZE.h"
-#include "land_SIZE.h"
+#include "fizhi_land_SIZE.h"
 #include "fizhi_coms.h"
 
       integer iMin, iMax, jMin, jMax, kLev, bi, bj, myThid
@@ -68,7 +68,7 @@ C=======================================================================
 #include "EEPARAMS.h"
 #include "DYNVARS.h"
 #include "fizhi_SIZE.h"
-#include "land_SIZE.h"
+#include "fizhi_land_SIZE.h"
 #include "fizhi_coms.h"
 
       integer iMin, iMax, jMin, jMax, kLev, bi, bj, myThid
@@ -109,7 +109,7 @@ C=======================================================================
 #include "EEPARAMS.h"
 #include "DYNVARS.h"
 #include "fizhi_SIZE.h"
-#include "land_SIZE.h"
+#include "fizhi_land_SIZE.h"
 #include "fizhi_coms.h"
 
       integer iMin, iMax, jMin, jMax, kLev, bi, bj, myThid
@@ -150,7 +150,7 @@ C=======================================================================
 #include "EEPARAMS.h"
 #include "DYNVARS.h"
 #include "fizhi_SIZE.h"
-#include "land_SIZE.h"
+#include "fizhi_land_SIZE.h"
 #include "fizhi_coms.h"
 
       integer iMin, iMax, jMin, jMax, kLev, bi, bj, myThid

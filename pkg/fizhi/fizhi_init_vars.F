@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.1 2004/06/04 16:23:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.2 2004/06/07 18:11:37 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_vars (myThid)
@@ -23,12 +23,12 @@ c-----------------------------------------------------------------------
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
-#include "land_SIZE.h"
+#include "fizhi_land_SIZE.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "gridalt_mapping.h"
 #include "fizhi_coms.h"
-#include "land_coms.h"
+#include "fizhi_land_coms.h"
 #include "EEPARAMS.h"
 #include "SURFACE.h"
 #include "PARAMS.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.1 2004/06/04 16:23:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.2 2004/06/07 18:11:38 molod Exp $
 C $Name:  $
 
        subroutine update_chemistry_exports (myTime, myIter, myThid)
@@ -16,7 +16,7 @@ c-----------------------------------------------------------------------
 #include "fizhi_SIZE.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "chemistry_coms.h"
+#include "fizhi_chemistry_coms.h"
 #include "gridalt_mapping.h"
 #include "EEPARAMS.h"
 

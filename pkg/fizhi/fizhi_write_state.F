@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_state.F,v 1.3 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_state.F,v 1.4 2004/06/07 18:11:37 molod Exp $
 C $Name:  $
 
 CBOP
@@ -22,9 +22,9 @@ C     == Global variables ===
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
-#include "land_SIZE.h"
+#include "fizhi_land_SIZE.h"
 #include "fizhi_coms.h"
-#include "land_coms.h"
+#include "fizhi_land_coms.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.5 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.6 2004/06/07 18:11:37 molod Exp $
 C $Name:  $
 
        subroutine step_fizhi_corr (myTime, myIter, myThid)
@@ -22,7 +22,7 @@ c-----------------------------------------------------------------------
 #include "SIZE.h"
 #include "GRID.h"
 #include "fizhi_SIZE.h"
-#include "land_SIZE.h"
+#include "fizhi_land_SIZE.h"
 #include "DYNVARS.h"
 #include "fizhi_coms.h"
 #include "gridalt_mapping.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.1 2004/06/04 16:23:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.2 2004/06/07 18:11:37 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_fixed (myThid)
@@ -24,10 +24,10 @@ c-----------------------------------------------------------------------
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
-#include "land_SIZE.h"
+#include "fizhi_land_SIZE.h"
 #include "EEPARAMS.h"
-#include "chemistry_coms.h"
-#include "earth_coms.h"
+#include "fizhi_chemistry_coms.h"
+#include "fizhi_earth_coms.h"
 
        integer myThid
 
