@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rs.F,v 1.6 2004/04/03 21:17:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rs.F,v 1.7 2005/01/27 16:36:24 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -61,7 +61,7 @@ C     !LOCAL VARIABLES:
             theMin=min(theMin,tmpVal)
             theMax=max(theMax,tmpVal)
             theMeanTile=theMeanTile+tmpVal
-            theVarTile=theVarTile+tmpVal**2
+            theVarTile=theVarTile+tmpVal*tmpVal
             numPnts=numPnts+1
            ENDIF
           ENDDO
@@ -76,10 +76,10 @@ C     !LOCAL VARIABLES:
       _GLOBAL_SUM_R8(theVar,myThid)
       tmpVal=FLOAT(numPnts)
       _GLOBAL_SUM_R8(tmpVal,myThid)
-      numPnts=INT(tmpVal+0.5)
+      numPnts=NINT(tmpVal)
 
       IF (tmpVal.GT.0.) THEN
-       rNumPnts=1./tmpVal
+       rNumPnts=1. _d 0/tmpVal
        theMean=theMean*rNumPnts
        theVar=theVar*rNumPnts
        IF ( noPnts ) theMin = theMean
