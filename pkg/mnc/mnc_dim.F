@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.10 2004/04/02 16:12:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.11 2004/12/17 21:28:26 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -27,7 +27,6 @@ CEOP
       RETURN
       END
 
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 1
 C     !ROUTINE: MNC_DIM_INIT_ALL
@@ -45,12 +44,42 @@ C     Create a dimension within the MNC look-up tables.
 
 C     !USES:
       implicit none
+
+C     !INPUT PARAMETERS:
+      integer myThid, dlen
+      character*(*) fname, dname
+      character*(1) doWrite
+CEOP
+
+      CALL MNC_DIM_INIT_ALL_CV(fname, dname, dlen, 'Y', -1,-1, myThid)
+      
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 1
+C     !ROUTINE: MNC_DIM_INIT_ALL_CV
+
+C     !INTERFACE:
+      SUBROUTINE MNC_DIM_INIT_ALL_CV( 
+     I     fname, 
+     I     dname, 
+     I     dlen, 
+     I     doWrite, 
+     I     bi,bj,
+     I     myThid ) 
+
+C     !DESCRIPTION:
+C     Create a dimension within the MNC look-up tables.
+
+C     !USES:
+      implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
-      integer myThid, dlen
+      integer myThid, dlen, bi,bj
       character*(*) fname, dname
       character*(1) doWrite
 CEOP
@@ -117,6 +146,14 @@ C     Create the dim within the file
      &       'dim ''', dname(dnf:dnl), ''' in file ''', fname(1:nf)
         CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
+C       Create and write the associated CF-convention
+C       coordinate variable
+        write(*,*) 'bi,bj = ',bi,',',bj,'   dname = ', dname(dnf:dnl)
+        IF (bi .GT. -1) THEN
+          CALL MNC_CW_WRITE_CVAR(fname, dname(dnf:dnl), 
+     &         mnc_f_info(indf,2), idd, bi, bj, myThid)
+        ENDIF
+
       ENDIF
 
 C     Add to tables
@@ -158,7 +195,7 @@ C     !LOCAL VARIABLES:
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Functions
-      integer ILNBLNK, IFNBLNK
+      integer ILNBLNK
 
       nf = ILNBLNK(fname)
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_init.F,v 1.1 2004/12/08 15:54:00 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_init.F,v 1.2 2004/12/17 21:28:25 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -75,6 +75,7 @@ C     ......12345....12345....12345....12345....12345...
       data time_dat /
      &     '-    ', 't    ', '     ', '     ', '     '  /
 
+C     Create the types
       ncomb = 0
       DO ihorz = 1,5
         DO is = 1,3

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.23 2004/10/21 13:38:45 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.24 2004/12/17 21:28:25 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -106,17 +106,23 @@ C     mnc_cw_viat (i,v) :: INT attributes
 C     mnc_cw_vdnm (i,v) :: REAL*8 attribute names
 C     mnc_cw_vdat (i,v) :: REAL*8 attributes
 C     .
+C     mnc_cw_cvnm  (c)  :: CV (coordinate variable) name
+C     mnc_cw_cvse (2,c) :: CV start,end indicies  ----+
+C     mnc_cw_cvdt (cdt) :: CV data pool       <-------+
+C     .
 C     f                 :: file group index
 C     g                 :: Gtype index
 C     v                 :: Vtype index
+C     c                 :: CV index
 CEOP
 
       integer MNC_MAX_ID, MNC_MAX_CHAR, MNC_MAX_INFO
-      integer MNC_CW_MAX_I
-      parameter ( MNC_MAX_ID   = 1000 )
-      parameter ( MNC_MAX_CHAR =  100 )
-      parameter ( MNC_MAX_INFO =  400 )
-      parameter ( MNC_CW_MAX_I =  150 )
+      integer MNC_CW_MAX_I, MNC_CW_CVDAT
+      parameter ( MNC_MAX_ID   =   1000 )
+      parameter ( MNC_MAX_CHAR =    100 )
+      parameter ( MNC_MAX_INFO =    400 )
+      parameter ( MNC_CW_MAX_I =    150 )
+      parameter ( MNC_CW_CVDAT =  50000 )
 
       COMMON /MNC_VARS_C/
      &     mnc_blank_name, 
@@ -146,6 +152,7 @@ CEOP
      &     mnc_cw_vtnm,  mnc_cw_vinm,  mnc_cw_vdnm,
      &     mnc_cw_vtat,
      &     mnc_cw_fgnm
+C     &     mnc_cw_cvnm
 
       COMMON /MNC_CW_VARS_I/
      &     mnc_cw_ndim,  mnc_cw_dims, 
@@ -153,9 +160,11 @@ CEOP
      &     mnc_cw_vgind, mnc_cw_vnat,
      &     mnc_cw_vbij,  mnc_cw_viat,
      &     mnc_cw_fgud,  mnc_cw_fgis,  mnc_cw_fgig
+C     &     mnc_cw_cvse
 
       COMMON /MNC_CW_VARS_R/
      &     mnc_cw_vdat
+C     &     mnc_cw_cvdt
 
       character*(MNC_MAX_CHAR) mnc_cw_gname(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_cw_dn(MNC_CW_MAX_I,MNC_MAX_ID)
@@ -179,6 +188,10 @@ CEOP
       integer mnc_cw_fgud(MNC_MAX_ID)
       integer mnc_cw_fgis(MNC_MAX_ID)
       integer mnc_cw_fgig(MNC_MAX_ID)
+
+C      character*(MNC_MAX_CHAR) mnc_cw_cvnm(MNC_MAX_ID)
+C      integer mnc_cw_cvse(2,MNC_MAX_ID)
+C      REAL*8  mnc_cw_cvdt(MNC_CW_CVDAT)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

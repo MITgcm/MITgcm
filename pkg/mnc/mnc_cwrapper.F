@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.23 2004/12/17 04:50:05 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.24 2004/12/17 21:28:26 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -659,4 +659,3 @@ C     Add the global attributes
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
