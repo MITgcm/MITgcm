@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.20 2004/10/07 00:06:09 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.21 2004/12/02 19:06:17 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
       subroutine moistio (ndmoist,istrip,npcs,
      .   lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup,
-     .   pz,plz,plze,dpres,pkht,pkl,tz,qz,bi,bj,ntracer,ptracer,
-     .   qqz,dumoist,dvmoist,dtmoist,dqmoist,
+     .   pz,plz,plze,dpres,pkht,pkl,uz,vz,tz,qz,bi,bj,ntracerin,ptracer,
+     .   qqz,dumoist,dvmoist,dtmoist,dqmoist,cumfric,
      .   im,jm,lm,ptop,
      .   iras,rainlsp,rainconv,snowfall,
      .   nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,
@@ -24,14 +24,16 @@ c Input Variables
 c ---------------
       integer im,jm,lm
       integer ndmoist,istrip,npcs
-      integer bi,bj,ntracer,ptracer         
+      integer bi,bj,ntracerin,ptracer         
       integer lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup
       _RL pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1),dpres(im,jm,lm)
       _RL pkht(im,jm,lm+1),pkl(im,jm,lm)
-      _RL tz(im,jm,lm),qz(im,jm,lm,ntracer)       
+      _RL tz(im,jm,lm),qz(im,jm,lm,ntracerin)       
+      _RL uz(im,jm,lm),vz(im,jm,lm)       
       _RL qqz(im,jm,lm)
       _RL dumoist(im,jm,lm),dvmoist(im,jm,lm)
-      _RL dtmoist(im,jm,lm),dqmoist(im,jm,lm,ntracer)
+      _RL dtmoist(im,jm,lm),dqmoist(im,jm,lm,ntracerin)
+      logical cumfric
       _RL ptop
       integer iras
       _RL rainlsp(im,jm),rainconv(im,jm),snowfall(im,jm)
@@ -88,8 +90,8 @@ c ---------------------------------------
       _RL    tmpgather(im*jm,lm)
       _RL   deltgather(im*jm,lm)
       _RL   delqgather(im*jm,lm)
-      _RL      ugather(im*jm,lm,ntracer)
-      _RL   delugather(im*jm,lm,ntracer)
+      _RL      ugather(im*jm,lm,ntracerin+2-ptracer)
+      _RL   delugather(im*jm,lm,ntracerin+2-ptracer)
       _RL     deltrnev(im*jm,lm)
       _RL     delqrnev(im*jm,lm)
 
@@ -101,8 +103,8 @@ c Stripped Arrays
 c ---------------
       _RL saveth (istrip,lm)
       _RL saveq  (istrip,lm)
-      _RL saveu  (istrip,lm,ntracer)
-      _RL usubcl (istrip,   ntracer)
+      _RL saveu  (istrip,lm,ntracerin+2-ptracer)
+      _RL usubcl (istrip,   ntracerin+2-ptracer)
 
       _RL     ple(istrip,lm+1)
       _RL      dp(istrip,lm)
@@ -111,8 +113,8 @@ c ---------------
       _RL    PLKE(ISTRIP,lm+1)
       _RL      TH(ISTRIP,lm)  ,CVTH(ISTRIP,lm)
       _RL   CVQ(ISTRIP,lm)
-      _RL      UL(ISTRIP,lm,ntracer)
-      _RL     cvu(istrip,lm,ntracer)
+      _RL      UL(ISTRIP,lm,ntracerin+2-ptracer)
+      _RL     cvu(istrip,lm,ntracerin+2-ptracer)
       _RL  CLMAXO(ISTRIP,lm),CLBOTH(ISTRIP,lm)
       _RL  CLSBTH(ISTRIP,lm)
       _RL    TMP1(ISTRIP,lm),  TMP2(ISTRIP,lm)
@@ -144,13 +146,21 @@ c ---------------
       _RL tmstp,tminv,sday,grav,alhl,cp,elocp,gamfac
       _RL rkappa,p0kappa,p0kinv,ptopkap,pcheck
       _RL tice,getcon,pi
-      integer ntracedim
+      integer ntracer,ntracedim, ntracex
  
 C **********************************************************************
 C ****                     INITIALIZATION                           ****
 C **********************************************************************
 
+C Add U and V components to tracer array for cumulus friction
+
+      if(cumfric) then
+       ntracer = ntracerin + 2
+      else
+       ntracer = ntracerin
+      endif
       ntracedim= max(ntracer-ptracer,1)
+      ntracex= ntracer-ptracer
       IMSTP  = nsecf(NDMOIST)
       TMSTP  = FLOAT(IMSTP)
       TMINV  = 1. /  TMSTP
@@ -263,13 +273,27 @@ c ----------------------------------------------------------------
          dpgather(indx,L) = dpres(pblindex(indx),1,L)
        enddo
       enddo
-c     do nt = 1,ntracer-ptracer
-c     do L = 1,lm
-c      do indx = 1,im*jm
-c       ugather(indx,L,nt) = qz(pblindex(indx),1,L,nt+ptracer)
-c      enddo
-c     enddo
-c     enddo
+C General Tracers
+C----------------
+      do nt = 1,ntracerin-ptracer
+      do L = 1,lm
+       do indx = 1,im*jm
+        ugather(indx,L,nt) = qz(pblindex(indx),1,L,nt+ptracer)
+       enddo
+      enddo
+      enddo
+
+      if(cumfric) then
+C Cumulus Friction - load u and v wind components into tracer array
+C------------------------------------------------------------------
+      do L = 1,lm
+       do indx = 1,im*jm
+        ugather(indx,L,ntracerin-ptracer+1) = uz(pblindex(indx),1,L)
+        ugather(indx,L,ntracerin-ptracer+2) = vz(pblindex(indx),1,L)
+       enddo
+      enddo
+
+      endif
 
 c bump the counter for number of calls to convection
 c --------------------------------------------------
@@ -283,8 +307,10 @@ c ----------------------------------------------------
       do l=1,lm
       do j=1,jm
       do i=1,im
+      dumoist(i,j,l) = 0.
+      dvmoist(i,j,l) = 0.
       dtmoist(i,j,l) = 0.
-        do nt = 1,ntracer
+        do nt = 1,ntracerin
         dqmoist(i,j,l,nt) = 0.
         enddo
       enddo
@@ -311,9 +337,9 @@ C **********************************************************************
        CALL STRIP (  shgather, SHL     ,im*jm,ISTRIP,lm,NN )
        CALL STRINT( levgather, pbl     ,im*jm,ISTRIP,1 ,NN )
 
-c      do nt = 1,ntracer-ptracer
-c      call strip ( ugather(1,1,nt), ul(1,1,nt),im*jm,istrip,lm,nn )
-c      enddo
+       do nt = 1,ntracer-ptracer
+        call strip ( ugather(1,1,nt), ul(1,1,nt),im*jm,istrip,lm,nn )
+       enddo
 
 C **********************************************************************
 C ****        SETUP FOR RAS CUMULUS PARAMETERIZATION                ****
@@ -378,25 +404,25 @@ c ------------------------------------------------------
 
 c Save initial value of tracers and compute sub-cloud value
 c ---------------------------------------------------------
-c      DO NT = 1,ntracer-ptracer
-c         do  L = 1,lm
-c         do  i = num,num+nindeces(nsubcl)-1
-c         saveu(i,L,nt) = ul(i,L,nt)
-c         enddo
-c         enddo
-c         DO I=num,num+nindeces(nsubcl)-1
-c         TMP1(I,2) = 0.
-c         ENDDO
-c         DO L=NSUBCL,lm
-c         DO I=num,num+nindeces(nsubcl)-1
-c          TMP1(I,2) = TMP1(I,2)+(PLE(I,L+1)-PLE(I,L))*UL(I,L,NT)/sp(i)
-c         ENDDO
-c         ENDDO
-c         DO I=num,num+nindeces(nsubcl)-1
-c         UL(I,NSUBCL,NT) = TMP1(I,2)*TMP1(I,4)
-c            usubcl(i,nt) = ul(i,nsubcl,nt)
-c         ENDDO
-c      ENDDO
+       DO NT = 1,ntracer-ptracer
+          do  L = 1,lm
+          do  i = num,num+nindeces(nsubcl)-1
+          saveu(i,L,nt) = ul(i,L,nt)
+          enddo
+          enddo
+          DO I=num,num+nindeces(nsubcl)-1
+          TMP1(I,2) = 0.
+          ENDDO
+          DO L=NSUBCL,lm
+          DO I=num,num+nindeces(nsubcl)-1
+           TMP1(I,2) = TMP1(I,2)+(PLE(I,L+1)-PLE(I,L))*UL(I,L,NT)/sp(i)
+          ENDDO
+          ENDDO
+          DO I=num,num+nindeces(nsubcl)-1
+          UL(I,NSUBCL,NT) = TMP1(I,2)*TMP1(I,4)
+             usubcl(i,nt) = ul(i,nsubcl,nt)
+          ENDDO
+       ENDDO
 
 c Compute Pressure Arrays for RAS
 c -------------------------------
@@ -481,7 +507,7 @@ c --------------------------------------------------------
       enddo
 
       CALL RAS ( NN,istrip,nindeces(nsubcl),NLRAS,NLTOP,lm,TMSTP
-     1, UL(num,1,1),ntracedim,TH(num,NLTOP),SHL(num,NLTOP)
+     1, UL(num,1,1),ntracedim,ntracex,TH(num,NLTOP),SHL(num,NLTOP)
      2, TMP4(num,NLTOP), TMP5(num,NLTOP),rnd, ncrnd, PCPEN(num,NLTOP)
      3, CLBOTH(num,NLTOP), CLFRAC(num,NLTOP)
      4, cldmas(num,nltop), detrain(num,nltop)
@@ -526,23 +552,23 @@ c ------------------------------------
 
 c Compute Tracer Tendency due to RAS
 c ----------------------------------
-c      do nt = 1,ntracer-ptracer
-c       DO L=1,nsubcl-1
-c       DO I=num,num+nindeces(nsubcl)-1
-c        CVU(I,L,nt) = ( UL(I,L,nt)-saveu(i,l,nt) )*sp(i)*tminv
-c       ENDDO
-c       ENDDO
-c       DO L=nsubcl,lm
-c       DO I=num,num+nindeces(nsubcl)-1
-c        if( usubcl(i,nt).ne.0.0 ) then
-c         cvu(i,L,nt) = ( ul(i,nsubcl,nt)-usubcl(i,nt) ) * 
-c    .                     ( saveu(i,L,nt)/usubcl(i,nt) )*sp(i)*tminv
-c        else
-c         cvu(i,L,nt) = 0.0
-c        endif
-c       ENDDO
-c       ENDDO
-c      enddo
+       do nt = 1,ntracer-ptracer
+        DO L=1,nsubcl-1
+        DO I=num,num+nindeces(nsubcl)-1
+         CVU(I,L,nt) = ( UL(I,L,nt)-saveu(i,l,nt) )*sp(i)*tminv
+        ENDDO
+        ENDDO
+        DO L=nsubcl,lm
+        DO I=num,num+nindeces(nsubcl)-1
+         if( usubcl(i,nt).ne.0.0 ) then
+          cvu(i,L,nt) = ( ul(i,nsubcl,nt)-usubcl(i,nt) ) * 
+     .                     ( saveu(i,L,nt)/usubcl(i,nt) )*sp(i)*tminv
+         else
+          cvu(i,L,nt) = 0.0
+         endif
+        ENDDO
+        ENDDO
+       enddo
 
 c Compute Diagnostic PSUBCLD (Subcloud Layer Pressure)
 c ----------------------------------------------------
@@ -573,9 +599,9 @@ C **********************************************************************
 
       call paste( CVTH,deltgather,istrip,im*jm,lm,NN )
       call paste(  CVQ,delqgather,istrip,im*jm,lm,NN )
-c     do nt = 1,ntracer-ptracer
-c     call paste( CVU(1,1,nt),delugather(1,1,nt),istrip,im*jm,lm,NN )
-c     enddo
+      do nt = 1,ntracer-ptracer
+      call paste( CVU(1,1,nt),delugather(1,1,nt),istrip,im*jm,lm,NN )
+      enddo
 
 C **********************************************************************
 C     And now paste some arrays for filling diagnostics
@@ -765,15 +791,42 @@ c ------------
      .                                              cldsr(1,1,L),im*jm)
       enddo
 
-c Tracers
-c -------
-c     do nt = 1,ntracer-ptracer
-c      do L = 1,lm
-c      call back2grd (delugather(1,L,nt),pblindex,
-c    .                                 dqmoist(1,1,L,ptracer+nt),im*jm)
-c      enddo
-c     enddo
+c General Tracers
+c ---------------
+      do nt = 1,ntracerin-ptracer
+       do L = 1,lm
+       call back2grd (delugather(1,L,nt),pblindex,
+     .                                 dqmoist(1,1,L,ptracer+nt),im*jm)
+       enddo
+      enddo
 
+      if(cumfric) then
+
+c U and V for cumulus friction
+c ----------------------------
+      do L = 1,lm
+       call back2grd (delugather(1,L,ntracerin-ptracer+1),pblindex,
+     .                                 dumoist(1,1,L),im*jm)
+       call back2grd (delugather(1,L,ntracerin-ptracer+2),pblindex,
+     .                                 dvmoist(1,1,L),im*jm)
+      enddo
+
+C Remove pi-weighting for u and v tendencies
+      do j = 1,jm
+      do i = 1,im
+       tmpimjm(i,j) = 1./pz(i,j)
+      enddo
+      enddo
+      do L = 1,lm
+      do j = 1,jm
+      do i = 1,im
+       dumoist(i,j,L) = dumoist(i,j,L) * tmpimjm(i,j)
+       dumoist(i,j,L) = dumoist(i,j,L) * tmpimjm(i,j)
+      enddo
+      enddo
+      enddo
+
+      endif
 
 C **********************************************************************
 C                          BUMP DIAGNOSTICS
@@ -829,6 +882,34 @@ c -------------------------------
       do i = 1,im
       qdiag(i,j,imoistq+L-1,bi,bj) = qdiag(i,j,imoistq+L-1,bi,bj) + 
      .                           (dqmoist(i,j,L,1)*sday*1000.0/pz(i,j))
+      enddo
+      enddo
+      enddo
+      endif
+
+c Moist Processes Change in U-Momentum (Cumulus Friction)
+c ------------------------------------------------------
+      if(iudiag1.gt.0) then
+      do L = 1,lm
+      do j = 1,jm
+      do i = 1,im
+       indgath = (j-1)*im + i
+      qdiag(i,j,iudiag1+L-1,bi,bj) = qdiag(i,j,iudiag1+L-1,bi,bj) + 
+     .    dumoist(i,j,L)*sday
+      enddo
+      enddo
+      enddo
+      endif
+
+c Moist Processes Change in V-Momentum (Cumulus Friction)
+c ------------------------------------------------------
+      if(iudiag2.gt.0) then
+      do L = 1,lm
+      do j = 1,jm
+      do i = 1,im
+       indgath = (j-1)*im + i
+      qdiag(i,j,iudiag2+L-1,bi,bj) = qdiag(i,j,iudiag2+L-1,bi,bj) + 
+     .    dvmoist(i,j,L)*sday
       enddo
       enddo
       enddo
@@ -1014,7 +1095,7 @@ c ------------------------------------------
       enddo
       enddo
  
-c Compute Instantanious Total 2-D Cloud Fraction
+c Compute Instantaneous Total 2-D Cloud Fraction
 c ----------------------------------------------
       do j = 1,jm
       do i = 1,im
@@ -1083,9 +1164,9 @@ C **********************************************************************
       RETURN
       END
       SUBROUTINE RAS( NN, LNG, LENC, K, NLTOP, nlayr, DT
-     *,               UOI, ntracer, POI, QOI, PRS, PRJ, rnd, ncrnd
-     *,               RAINS, CLN, CLF, cldmas, detrain
-     *,               cp,grav,rkappa,alhl,rhfrac,rasmax )
+     *,      UOI, ntracedim, ntracer, POI, QOI, PRS, PRJ, rnd, ncrnd
+     *,      RAINS, CLN, CLF, cldmas, detrain
+     *,      cp,grav,rkappa,alhl,rhfrac,rasmax )
 C
 C*********************************************************************
 C********************* SUBROUTINE  RAS   *****************************
@@ -1096,10 +1177,10 @@ C
 
 C Argument List
       integer nn,lng,lenc,k,nltop,nlayr
-      integer ntracer
+      integer ntracedim, ntracer
       integer ncrnd
       _RL dt
-      _RL UOI(lng,nlayr,ntracer),   POI(lng,K)
+      _RL UOI(lng,nlayr,ntracedim),   POI(lng,K)
       _RL QOI(lng,K), PRS(lng,K+1), PRJ(lng,K+1)
       _RL rnd(ncrnd)
       _RL RAINS(lng,K), CLN(lng,K), CLF(lng,K)
@@ -1108,7 +1189,7 @@ C Argument List
 
 C Local Variables
       _RL TCU(lng,K), QCU(lng,K)
-      _RL ucu(lng,K,ntracer)
+      _RL ucu(lng,K,ntracedim)
       _RL ALF(lng,K), BET(lng,K), GAM(lng,K)
      *,         ETA(lng,K), HOI(lng,K)
      *,         PRH(lng,K), PRI(lng,K)
@@ -1116,7 +1197,7 @@ C Local Variables
  
       _RL TX1(lng), TX2(lng), TX3(lng), TX4(lng), TX5(lng)
      *,         TX6(lng), TX7(lng), TX8(lng), TX9(lng)
-     *,         TX11(lng), TX12(lng), TX13(lng), TX14(lng,ntracer)
+     *,         TX11(lng), TX12(lng), TX13(lng), TX14(lng,ntracedim)
      *,         TX15(lng)
      *,         WFN(lng) 
       integer IA1(lng), IA2(lng), IA3(lng)
@@ -1160,7 +1241,8 @@ C
        KPRV  = KM1
 C Removed KRMAX parameter
        KCR   = MIN(KM1,nlayr-2)     
-       KFX   = KM1 - KCR
+CCC    KFX   = KM1 - KCR
+       KFX   = KM1
        NCMX  = KFX + NCRND
 C
        IF (KFX .GT. 0) THEN
@@ -1197,7 +1279,7 @@ c -------------------------------
 
        CALL CLOUD(nn,lng, LENC, K, NLTOP, nlayr, IB, RASBLF,SETRAS,FRAC
      *,           CP,  ALHL, RKAPPA, GRAV, P00, CRTMSF
-     *,           POI, QOI, UOI, Ntracer, PRS, PRJ
+     *,           POI, QOI, UOI, ntracedim, Ntracer, PRS, PRJ
      *,           PCU, CLOUDN, TCU, QCU, UCU, CMASS
      *,           ALF, BET, GAM, PRH, PRI, HOI, ETA
      *,           HST, QOL, GMH
@@ -1244,13 +1326,13 @@ c *****************************
         QOI(I,L) = QOI(I,L) + QCU(I,L) * DT * rhfrac(i)
        ENDDO
       ENDDO
-c     DO NT=1,Ntracer
-c     DO L=IB,K
-c      DO I=1,LENC
-c       UOI(I,L+nltop-1,NT)=UOI(I,L+nltop-1,NT)+UCU(I,L,NT)*DT*rhfrac(i)
-c      ENDDO
-c     ENDDO
-c     ENDDO
+      DO NT=1,Ntracer
+      DO L=IB,K
+       DO I=1,LENC
+        UOI(I,L+nltop-1,NT)=UOI(I,L+nltop-1,NT)+UCU(I,L,NT)*DT*rhfrac(i)
+       ENDDO
+      ENDDO
+      ENDDO
       DO I=1,LENC
        rains(I,ib) = rains(I,ib) + PCU(I)*dt * rhfrac(i)
       ENDDO
@@ -1369,7 +1451,7 @@ c --------------------------------------------------------------------
       SUBROUTINE CLOUD(nn,lng, LENC, K, NLTOP, nlayr, IC, RASALF
      *,                 SETRAS, FRAC
      *,                 CP,  ALHL, RKAP, GRAV, P00, CRTMSF
-     *,                 POI, QOI, UOI, Ntracer, PRS,  PRJ
+     *,                 POI, QOI, UOI, ntracedim, Ntracer, PRS,  PRJ
      *,                 PCU, CLN, TCU, QCU, UCU, CMASS
      *,                 ALF, BET, GAM, PRH, PRI, HOL, ETA
      *,                 HST, QOL, GMH
@@ -1502,14 +1584,14 @@ C
 C************************************************************************
       implicit none
 C Argument List declarations
-      integer nn,lng,LENC,K,NLTOP,nlayr,ic,ntracer
+      integer nn,lng,LENC,K,NLTOP,nlayr,ic,ntracedim, ntracer
       _RL rasalf
       LOGICAL SETRAS
       _RL frac, cp,  alhl, rkap, grav, p00, crtmsf
       _RL POI(lng,K),QOI(lng,K),PRS(lng,K+1),PRJ(lng,K+1)
-      _RL uoi(lng,nlayr,ntracer)
+      _RL uoi(lng,nlayr,ntracedim)
       _RL PCU(LENC), CLN(lng)
-      _RL TCU(lng,K),  QCU(lng,K),  ucu(lng,k,ntracer), CMASS(lng,K)
+      _RL TCU(lng,K),  QCU(lng,K),  ucu(lng,k,ntracedim), CMASS(lng,K)
       _RL ALF(lng,K), BET(lng,K),  GAM(lng,K), PRH(lng,K), PRI(lng,K)
       _RL HOL(LENC,K), ETA(LENC,K), HST(LENC,K), QOL(LENC,K)
       _RL GMH(LENC,K)
@@ -1517,7 +1599,7 @@ C Argument List declarations
       _RL TX5(LENC), TX6(LENC), TX7(LENC), TX8(LENC)
       _RL ALM(LENC), WFN(LENC), AKM(LENC), QS1(LENC)
       _RL WLQ(LENC), CLF(LENC)
-      _RL uht(lng,ntracer)
+      _RL uht(lng,ntracedim)
       integer IA(LENC), I1(LENC),I2(LENC)
       _RL      rhfrac(lng)
 
@@ -1546,6 +1628,7 @@ cfpp$ expand (qsat)
       ONEBG  = 1.0  / GRAV
       CPBG   = CP   * ONEBG
       TWOBAL = 2.0 / ALHL
+
 C
       KM1 = K  - 1
       IC1 = IC + 1
@@ -1585,13 +1668,13 @@ C
       CMASS(I,L) = 0.0
    10 CONTINUE
 
-c     do nt = 1,ntracer
-c     do L=1,K
-c     do I=1,LENC
-c     ucu(I,L,nt) = 0.0
-c     enddo
-c     enddo
-c     enddo
+      do nt = 1,ntracer
+      do L=1,K
+      do I=1,LENC
+      ucu(I,L,nt) = 0.0
+      enddo
+      enddo
+      enddo
 C
       DO 30 I=1,LENC
       TX1(I)   = PRJ(I,K+1) * POI(I,K)
@@ -1828,12 +1911,12 @@ C
       WLQ(I) = QOL(II,K) - QS1(I)     * ETA(I,IC)
       TX7(I) = HOL(II,K)
   620 CONTINUE
-c     DO NT=1,Ntracer
-c     DO 621 I=1,LENB
-c     II = I1(I)
-c     UHT(I,NT) = UOI(II,K+nltop-1,NT)-UOI(II,IC+nltop-1,NT) * ETA(I,IC)
-c 621 CONTINUE
-c     ENDDO
+      DO NT=1,Ntracer
+      DO 621 I=1,LENB
+      II = I1(I)
+      UHT(I,NT) = UOI(II,K+nltop-1,NT)-UOI(II,IC+nltop-1,NT) * ETA(I,IC)
+  621 CONTINUE
+      ENDDO
 C
       DO 635 L=KM1,IC,-1
       DO 630 I=1,LENB
@@ -1842,15 +1925,15 @@ C
       WLQ(I) = WLQ(I) + TEM * QOL(II,L)
   630 CONTINUE
   635 CONTINUE
-c     DO NT=1,Ntracer
-c     DO L=KM1,IC,-1
-c     DO I=1,LENB
-c     II = I1(I)
-c     TEM    = ETA(I,L) - ETA(I,L+1)
-c     UHT(I,NT) = UHT(I,NT) + TEM * UOI(II,L+nltop-1,NT)
-c     ENDDO
-c     ENDDO
-c     ENDDO
+      DO NT=1,Ntracer
+      DO L=KM1,IC,-1
+      DO I=1,LENB
+      II = I1(I)
+      TEM    = ETA(I,L) - ETA(I,L+1)
+      UHT(I,NT) = UHT(I,NT) + TEM *  UOI(II,L+nltop-1,NT)
+      ENDDO
+      ENDDO
+      ENDDO
 C
 C     CALCULATE GS AND PART OF AKM (THAT REQUIRES ETA)
 C
@@ -2066,47 +2149,47 @@ C
 C
 c Compute Tracer Tendencies
 c -------------------------
-c     do nt = 1,ntracer
+      do nt = 1,ntracer
 c
 c Tracer Tendency at the Bottom Layer
 c -----------------------------------
-c     DO 995 I=1,LENB
-c     II = I1(I)
-c     TEM    = half*TX5(I) * PRI(II,K)
-c     TX1(I) = (UOI(II,KM1+nltop-1,nt) - UOI(II,K+nltop-1,nt))
-c     ucu(II,K,nt) = TEM * TX1(I)
-c 995 CONTINUE
+      DO 995 I=1,LENB
+      II = I1(I)
+      TEM    = half*TX5(I) * PRI(II,K)
+      TX1(I) = ( UOI(II,KM1+nltop-1,nt) - UOI(II,K+nltop-1,nt))
+      ucu(II,K,nt) = TEM * TX1(I)
+  995 CONTINUE
 c
 c Tracer Tendency at all other Levels
 c -----------------------------------
-c     DO 1020 L=KM1,IC1,-1
-c     DO 1010 I=1,LENB
-c     II = I1(I)
-c     TEM = half*TX5(I) * PRI(II,L)
-c     TEM1   = TX1(I)
-c     TX1(I) = (UOI(II,L-1+nltop-1,nt)-UOI(II,L+nltop-1,nt)) * ETA(I,L)
-c     TX3(I) = (TX1(I) + TEM1) * TEM
-c1010 CONTINUE
-c     DO 1020 I=1,LENB
-c     II = I1(I)
-c     ucu(II,L,nt) = TX3(I)
-c1020 CONTINUE
-c
-c     DO 1030 I=1,LENB
-c     II = I1(I)
-c     IF (TX6(I) .GE. 1.0) THEN
-c        TEM    = half*TX5(I) * PRI(II,IC)
-c     ELSE
-c        TEM = 0.0
-c     ENDIF
-c     TX1(I) = (TX1(I) + UHT(I,nt) + UHT(I,nt)) * TEM
-c1030 CONTINUE
-c     DO 1040 I=1,LENB
-c     II = I1(I)
-c     ucu(II,IC,nt) = TX1(I)
-c1040 CONTINUE
-c
-c     enddo
+      DO 1020 L=KM1,IC1,-1
+      DO 1010 I=1,LENB
+      II = I1(I)
+      TEM = half*TX5(I) * PRI(II,L)
+      TEM1   = TX1(I)
+      TX1(I) = (UOI(II,L-1+nltop-1,nt)-UOI(II,L+nltop-1,nt)) * ETA(I,L)
+      TX3(I) = (TX1(I) + TEM1) * TEM
+ 1010 CONTINUE
+      DO 1020 I=1,LENB
+      II = I1(I)
+      ucu(II,L,nt) = TX3(I)
+ 1020 CONTINUE
+ 
+      DO 1030 I=1,LENB
+      II = I1(I)
+      IF (TX6(I) .GE. 1.0) THEN
+         TEM    = half*TX5(I) * PRI(II,IC)
+      ELSE
+         TEM = 0.0
+      ENDIF
+      TX1(I) = (TX1(I) + UHT(I,nt) + UHT(I,nt)) * TEM
+ 1030 CONTINUE
+      DO 1040 I=1,LENB
+      II = I1(I)
+      ucu(II,IC,nt) = TX1(I)
+ 1040 CONTINUE
+ 
+      enddo
 C
 C     PENETRATIVE CONVECTION CALCULATION OVER
 C

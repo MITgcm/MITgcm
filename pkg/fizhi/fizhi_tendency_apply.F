@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.6 2004/10/29 20:06:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.7 2004/12/02 19:06:17 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -31,13 +31,21 @@ C=======================================================================
 
       integer iMin, iMax, jMin, jMax, kLev, bi, bj, myThid
       _RL myTime
+      _RL rayleighdrag
 
       integer i, j
+
+      if(klev.eq.Nr)then
+       rayleighdrag = 1./(31.*86400.*2.)
+      else
+       rayleighdrag = 0.
+      endif
 
       do j=jMin,jMax
        do i=iMin,iMax
         gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj) + 
      .      maskW(i,j,kLev,bi,bj) * guphy(i,j,kLev,bi,bj)
+     . - rayleighdrag * maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)
        enddo
       enddo
 
@@ -72,13 +80,21 @@ C=======================================================================
 
       integer iMin, iMax, jMin, jMax, kLev, bi, bj, myThid
       _RL myTime
+      _RL rayleighdrag
 
       integer i, j
+
+      if(klev.eq.Nr)then
+       rayleighdrag = 1./(31.*86400.*2.)
+      else
+       rayleighdrag = 0.
+      endif
 
       do j=jMin,jMax
        do i=iMin,iMax
         gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj) + 
      .      maskS(i,j,kLev,bi,bj) * gvphy(i,j,kLev,bi,bj)
+     . - rayleighdrag * maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)
        enddo
       enddo
 
@@ -112,13 +128,26 @@ C=======================================================================
 
       integer iMin, iMax, jMin, jMax, kLev, bi, bj, myThid
       _RL myTime
+      _RL rayleighdrag,getcon,cp,kappa,pNrkappa
 
       integer i, j
+
+      if(klev.eq.Nr)then
+       cp = getcon('CP')
+       kappa = getcon('KAPPA')
+       pNrkappa = (rC(Nr)/100000.)**kappa 
+       rayleighdrag = 1./((31.*86400.*2.)*(pNrkappa*cp))
+      else
+       rayleighdrag = 0.
+      endif
 
       do j=jMin,jMax
        do i=iMin,iMax
         gT(i,j,kLev,bi,bj) = maskC(i,j,kLev,bi,bj)
      .       *( gT(i,j,kLev,bi,bj) + gthphy(i,j,kLev,bi,bj) )
+     . + rayleighdrag * 
+     . (maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)+ 
+     .  maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj))
        enddo
       enddo
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.31 2004/10/26 15:36:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.32 2004/12/02 19:06:17 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -115,7 +115,7 @@ c ---------------
       integer ndum,ndpnt
       _RL akap,getcon
       _RL ptop
-      logical lpnt
+      logical lpnt,cumfric
 
       istrip = im*jm
       npcs   = 1
@@ -144,6 +144,8 @@ C Fill array of model levels closest to a given pressure value
       nsubmin = pchecklevs(1)
       nsubmax = pchecklevs(2)
       Lup = pchecklevs(3)
+
+      cumfric = .false.
 
 C **********************************************************************        
 C ****                  Call Physics Mini-Drivers                   ****        
@@ -219,15 +221,15 @@ c -----------------------------------------
      .                                                bi,bj,rfu,rfv,rft)
 C Now Add Rayleigh Friction Tendencies to Turb Tendency
 
-      do L=1,lm
-      do j=1,jm
-      do i=1,im
-       turbu(i,j,L) = turbu(i,j,L) + rfu(i,j,L)
-       turbv(i,j,L) = turbv(i,j,L) + rfv(i,j,L)
-       turbt(i,j,L) = turbt(i,j,L) + rft(i,j,L)
-      enddo
-      enddo
-      enddo
+C     do L=1,lm
+C     do j=1,jm
+C     do i=1,im
+C      turbu(i,j,L) = turbu(i,j,L) + rfu(i,j,L)
+C      turbv(i,j,L) = turbv(i,j,L) + rfv(i,j,L)
+C      turbt(i,j,L) = turbt(i,j,L) + rft(i,j,L)
+C     enddo
+C     enddo
+C     enddo
 
       endif
                                                                                 
@@ -236,8 +238,8 @@ C ===============
       if ( alarm('moist') ) then
       call moistio (ndmoist,istrip,npcs,
      .    low_level,mid_level,nltop,nsubmin,nsubmax,Lup,
-     .    p,pl,ple,dpres,pkht,pkl,t,q,bi,bj,ntracer,ptracer,qq,
-     .    moistu,moistv,moistt,moistq,im,jm,lm,ptop,iras,
+     .    p,pl,ple,dpres,pkht,pkl,u,v,t,q,bi,bj,ntracer,ptracer,qq,
+     .    moistu,moistv,moistt,moistq,cumfric,im,jm,lm,ptop,iras,
      .    rainlsp,raincon,snowfall,
      .    nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,
      .    nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,
