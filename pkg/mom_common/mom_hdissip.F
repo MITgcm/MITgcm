@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_hdissip.F,v 1.1 2004/05/14 17:43:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_hdissip.F,v 1.2 2005/03/10 03:45:11 baylor Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -17,7 +17,9 @@ C       Dv = d/dx As Strain  - d/dy At Tension
 
 C     == Global variables ==
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "GRID.h"
+#include "PARAMS.h"
 
 C     == Routine arguments ==
       INTEGER bi,bj,k
@@ -32,41 +34,95 @@ C     == Routine arguments ==
 
 C     == Local variables ==
       INTEGER I,J
+      _RL viscA_t(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA_s(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL ASmag, smagfac
+      _RL vg2Min, vg2Max, AlinMax, AlinMin
+
+      IF (deltaTmom.NE.0.) THEN
+       vg2Min=viscAhGridMin/deltaTmom
+       vg2Max=viscAhGridMax/deltaTmom
+      ELSE
+       vg2Min=0.
+       vg2Max=0.
+      ENDIF
+
+C     - Calculate Smagorinsky Coefficients
+      smagfac=(viscC2smag/pi)**2
+      DO j=2-Oly,sNy+Oly-1
+       DO i=2-Olx,sNx+Olx-1
+        IF (viscC2smag.NE.0.) THEN
+         Asmag=smagfac*rA(i,j,bi,bj)
+     &    *sqrt(tension(i,j)**2
+     &          +0.25*(strain(i+1, j )**2+strain( i ,j+1)**2
+     &                +strain(i-1, j )**2+strain( i ,j-1)**2))
+         viscA_t(i,j)=min(viscAhMax,max(viscAt,Asmag))
+
+         IF (vg2Max.GT.0.) THEN
+            AlinMax=vg2Max*(rA ( i , j ,bi,bj))
+            viscA_t(i,j)=min(AlinMax,viscA_t(i,j))
+         ENDIF
+         AlinMin=vg2Min*(rA ( i , j ,bi,bj))
+         viscA_t(i,j)=max(AlinMin,viscA_t(i,j))
+
+         Asmag=smagfac*rAz(i,j,bi,bj)
+     &    *sqrt(strain(i,j)**2
+     &          +0.25*(tension( i , j )**2+tension( i ,j+1)**2
+     &                +tension(i+1, j )**2+tension(i+1,j+1)**2))
+         viscA_s(i,j)=min(viscAhMax,max(viscAs,Asmag))
+
+         IF (vg2Max.GT.0.) THEN
+            AlinMax=vg2Max*(rAz( i , j ,bi,bj))
+            viscA_s(i,j)=min(AlinMax,viscA_s(i,j))
+         ENDIF
+         AlinMin=vg2Min*(rAz( i , j ,bi,bj))
+         viscA_s(i,j)=max(AlinMin,viscA_s(i,j))
+ 
+        ELSE
+         viscA_t(i,j)=viscAt
+         viscA_s(i,j)=viscAs
+        ENDIF
+       ENDDO
+      ENDDO
 
 C     - Laplacian  and bi-harmonic terms
       DO j=2-Oly,sNy+Oly-1
        DO i=2-Olx,sNx+Olx-1
 
         uDissip(i,j) = 
-     &    viscAt
-     &   *recip_dyg(i,j,bi,bj)*recip_dyg(i,j,bi,bj)
+     &   recip_dyg(i,j,bi,bj)*recip_dyg(i,j,bi,bj)
      &   *recip_dxc(i,j,bi,bj)
      &   *(
-     &      dyf( i , j ,bi,bj)*dyf( i , j ,bi,bj)*tension( i , j )
-     &     -dyf(i-1, j ,bi,bj)*dyf(i-1, j ,bi,bj)*tension(i-1, j )
+     &      dyf( i , j ,bi,bj)*dyf( i , j ,bi,bj)
+     &        *viscA_t( i , j )*tension( i , j )
+     &     -dyf(i-1, j ,bi,bj)*dyf(i-1, j ,bi,bj)
+     &        *viscA_t(i-1, j )*tension(i-1, j )
      &    )
-     &   +viscAs
-     &   *recip_dxc(i,j,bi,bj)*recip_dxc(i,j,bi,bj)
+     &   +recip_dxc(i,j,bi,bj)*recip_dxc(i,j,bi,bj)
      &   *recip_dyg(i,j,bi,bj)
      &   *(
-     &      dxv( i ,j+1,bi,bj)*dxv( i ,j+1,bi,bj)*strain( i ,j+1)
-     &     -dxv( i , j ,bi,bj)*dxv( i , j ,bi,bj)*strain( i , j )
+     &      dxv( i ,j+1,bi,bj)*dxv( i ,j+1,bi,bj)
+     &        *viscA_s(i,j+1)*strain( i ,j+1)
+     &     -dxv( i , j ,bi,bj)*dxv( i , j ,bi,bj)
+     &        *viscA_s(i, j )*strain( i , j )
      &    )
 
         vDissip(i,j) = 
-     &    viscAs
-     &   *recip_dyc(i,j,bi,bj)*recip_dyc(i,j,bi,bj)
+     &   recip_dyc(i,j,bi,bj)*recip_dyc(i,j,bi,bj)
      &   *recip_dxg(i,j,bi,bj)
      &   *(
-     &      dyu(i+1, j ,bi,bj)*dyu(i+1, j ,bi,bj)*strain(i+1, j )
-     &     -dyu( i , j ,bi,bj)*dyu( i , j ,bi,bj)*strain( i , j )
+     &      dyu(i+1, j ,bi,bj)*dyu(i+1, j ,bi,bj)
+     &        *viscA_s(i+1,j)*strain(i+1,j)
+     &     -dyu( i , j ,bi,bj)*dyu( i , j ,bi,bj)
+     &        *viscA_s( i ,j)*strain( i ,j)
      &    )
-     &   -viscAt
-     &   *recip_dxg(i,j,bi,bj)*recip_dxg(i,j,bi,bj)
+     &   -recip_dxg(i,j,bi,bj)*recip_dxg(i,j,bi,bj)
      &   *recip_dyc(i,j,bi,bj)
      &   *(
-     &      dxf( i , j ,bi,bj)*dxf( i , j ,bi,bj)*tension( i , j )
-     &     -dxf( i ,j-1,bi,bj)*dxf( i ,j-1,bi,bj)*tension( i ,j-1)
+     &      dxf( i , j ,bi,bj)*dxf( i , j ,bi,bj)
+     &        *viscA_t(i, j )*tension(i, j )
+     &     -dxf( i ,j-1,bi,bj)*dxf( i ,j-1,bi,bj)
+     &        *viscA_t(i,j-1)*tension(i,j-1)
      &    )
 
        ENDDO

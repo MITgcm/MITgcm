@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.86 2005/03/10 02:39:56 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.87 2005/03/10 03:45:11 baylor Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -95,6 +95,7 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       viscAhMax           = 1.D21
       viscC2leith         = 0.D0
       viscC2leithD        = 0.D0
+      viscC2smag          = 0.D0
       viscAstrain         = 0.D3
       viscAtension        = 0.D3
       diffKhT             = 0.D3

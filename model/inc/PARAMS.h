@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.146 2005/03/10 02:39:55 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.147 2005/03/10 03:45:11 baylor Exp $
 C $Name:  $
 C
 
@@ -459,6 +459,7 @@ C     viscA4Z   :: Biharmonic viscosity coeff. for mixing of momentum laterally
 C                  (act on Vorticity  part) ( m^4/s )
 C     viscC2leith :: Leith non-dimensional viscosity factor (grad(vort))
 C     viscC2leithD :: Modified Leith non-dimensional viscosity factor (grad(div))
+C     viscC2smag  :: Smagorinsky non-dimensional viscosity factor
 C     viscAhMax :: Maximum eddy viscosity coeff. for mixing of
 C                 momentum laterally ( m^2/s )
 C     viscAhGridMax:: maximum and minimum harmonic viscosity coefficients ...
@@ -568,6 +569,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC2leithD,
+     & viscC2smag,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W, 
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
@@ -634,6 +636,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL viscAhGridMin
       _RL viscC2leith
       _RL viscC2leithD
+      _RL viscC2smag
       _RL viscAstrain
       _RL viscAtension
       _RL viscAr

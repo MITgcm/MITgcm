@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.68 2005/03/10 02:39:55 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.69 2005/03/10 03:45:11 baylor Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -110,9 +110,11 @@ C     zcoord ::
      &'useFullLeith =',
      &'   /* Use Full Form of Leith Viscosity on/off flag*/')
       CALL WRITE_0D_R8( viscC2leith, INDEX_NONE,'viscC2leith =',
-     &'   /* Leith harmonic viscosity factor ( on grad(vort), non-dom. ) */')
+     &'   /* Leith harmonic viscosity factor ( on grad(vort), non-dim. ) */')
       CALL WRITE_0D_R8( viscC2leithD, INDEX_NONE,'viscC2leithD =',
-     &'   /* Leith harmonic viscosity factor ( on grad(div), non-dom. ) */')
+     &'   /* Leith harmonic viscosity factor ( on grad(div), non-dim. ) */')
+      CALL WRITE_0D_R8( viscC2smag, INDEX_NONE,'viscC2smag =',
+     &'   /* Smagorinsky harmonic viscosity factor (non-dim.) */')
       CALL WRITE_0D_R8( viscA4, INDEX_NONE,'viscA4 =',
      &'   /* Lateral biharmonic viscosity ( m^4/s ) */')
       IF ( viscA4D.NE.viscA4 ) 

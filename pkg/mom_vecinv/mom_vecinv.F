@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.34 2005/03/10 02:39:56 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.35 2005/03/10 03:45:11 baylor Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -232,7 +232,8 @@ C      in terms of vorticity and divergence
      &                       myThid)
        ENDIF
 C      or in terms of tension and strain
-       IF (viscAstrain.NE.0. .OR. viscAtension.NE.0.) THEN
+       IF (viscAstrain.NE.0. .OR. viscAtension.NE.0.
+     O      .OR. viscC2smag.ne.0) THEN
          CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,
      O                         tension,
      I                         myThid)
