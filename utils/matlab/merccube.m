@@ -1,8 +1,16 @@
 function [] = merccube(XX,YY,C)
-% merccube(xg,yg,c)
+% merccube(x,y,c)
 %
-% Plots cubed-sphere data in mercator projection. (xg,yg) are grid-corners
+% Plots cubed-sphere data in mercator projection. (x,y) are
 % coordinates, c is cell-centered scalar to be plotted.
+% All arrays (x,y,c) should have dimensions of NxNx6 or 6NxN.
+%
+% The default plotting mode is shading faceted. Using this or
+% shading flat, (x,y) should be the coordinates of grid-corners
+% and can legitimately have dimension (N+1)x(N+1)x6.
+%
+% If using shading interp, then (x,y) must be the coordinates of
+% the cell centers.
 %
 % e.g.
 %
@@ -11,6 +19,10 @@ function [] = merccube(XX,YY,C)
 % ps=rdmds('Eta.0000000000');
 % mercube(xg,yg,ps);
 % colorbar;xlabel('Longitude');ylabel('Latitude');
+%
+% xc=rdmds('XC');
+% yc=rdmds('YC');
+% mercube(xc,yc,ps);shading interp
 
 if max(max(max(YY)))-min(min(min(YY))) < 3*pi
  X=XX*180/pi;
