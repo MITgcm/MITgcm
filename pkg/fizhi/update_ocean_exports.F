@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.10 2004/07/18 23:17:00 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.11 2004/07/19 22:06:59 molod Exp $
 C $Name:  $
 
        subroutine update_ocean_exports (myTime, myIter, myThid)
@@ -70,7 +70,7 @@ c --------------------------------
        end
 
        subroutine getsice(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
-     .           nSx,nSy,nPx,nPy,bi,bj,biglobal,bjglobal,nymd,nhms,sice)
+     .     nSumx,nSumy,nPgx,nPgy,bi,bj,biglobal,bjglobal,nymd,nhms,sice)
 C************************************************************************
 C
 C!ROUTINE:	GETSICE
@@ -89,10 +89,10 @@ C!      im1       Begin of x-direction span for filling sice
 C!      im2       End of x-direction span for filling sice
 C!      jm1       Begin of y-direction span for filling sice
 C!      jm2       End of y-direction span for filling sice
-C!      nSx       Number of processors in x-direction (local processor)
-C!      nSy       Number of processors in y-direction (local processor)
-C!      nPx       Number of processors in x-direction (global)
-C!      nPy       Number of processors in y-direction (global)
+C!      nSumx     Number of processors in x-direction (local processor)
+C!      nSumy     Number of processors in y-direction (local processor)
+C!      nPgx      Number of processors in x-direction (global)
+C!      nPgx      Number of processors in y-direction (global)
 C!      bi        Processor number in x-direction (local to processor)
 C!      bj        Processor number in y-direction (local to processor)
 C!      biglobal  Processor number in x-direction (global)
@@ -101,7 +101,7 @@ C!	nymd	  YYMMDD of the current model timestep
 C!	nhms	  HHMMSS of the model time
 C
 C!OUTPUT PARAMETERS:
-C!	sice(idim1:idim2,jdim1:jdim2,nSx,nSy) Sea ice depth in meters
+C!	sice(idim1:idim2,jdim1:jdim2,nSumx,nSumy) Sea ice depth in meters
 C
 C!ROUTINES CALLED:
 C
@@ -113,11 +113,12 @@ C--------------------------------------------------------------------------
 
       implicit none
 #include "CPP_EEOPTIONS.h"
+#include "SIZE.h"
 
-      integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,nSy
-      integer nPx,nPy,bi,bj,biglobal,bjglobal,nymd,nhms
+      integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSumx,nSumy
+      integer nPgx,nPgy,bi,bj,biglobal,bjglobal,nymd,nhms
 
-      _RL sice(idim1:idim2,jdim1:jdim2,nSx,nSy)
+      _RL sice(idim1:idim2,jdim1:jdim2,nSumx,nSumy)
 
 C Maximum number of dates in one year for the data
       integer 	ndmax
@@ -131,20 +132,19 @@ C Maximum number of dates in one year for the data
       integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
       integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
 
-      real sicebc1(im2,jm2,nPx,nPy),sicebc2(im2,jm2,nPx,nPy)
+      real sicebc1(sNx,sNy,nSx*nPx,nSy*nPy)
+      real sicebc2(sNx,sNy,nSx*nPx,nSy*nPy)
 
 C--------- Variable Initialization ---------------------------------
 
       data first /.true./
       data error /.false./
 
-      save
-
 c  save header info
-c     save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
-c     save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
-c     save first
-c     save sicebc1, sicebc2
+      save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
+      save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
+      save first
+      save sicebc1, sicebc2
 
 c  this only works for between 1950-2050
       if (nymd .lt. 500101) then
@@ -177,7 +177,7 @@ C---------- Read in Header file ----------------------------------
 
        close(iunit)
        open (iunit,form='unformatted',access='direct',
-     .                                          recl=im2*jm2*nPx*nPy*4)
+     .                                         recl=im2*jm2*nPgx*nPgy*4)
        nrec = 1
        call bcheader (iunit, ndmax, nrec,
      .          cname, cdscrip, imbc, jmbc, npxbc, npybc, lat0, lon0, 
@@ -192,10 +192,10 @@ C Check for correct data in boundary condition file
        endif
 
 C Check Horizontal Resolution
-       if(.not.error .and. imbc*jmbc*npxbc*npybc.ne.im2*jm2*npx*npy)then
+       if(.not.error.and.imbc*jmbc*npxbc*npybc.ne.im2*jm2*npgx*npgy)then
         write(6,*) ' B.C. Resolution DOES NOT match Model Resolution!'
         write(6,*) ' B.C. Resolution:  ',imbc*jmbc*npxbc*npybc
-        write(6,*) 'Model Resolution:  ',im2*jm2*npx*npy
+        write(6,*) 'Model Resolution:  ',im2*jm2*npgx*npgy
         error = .true.
        endif
 
@@ -265,7 +265,7 @@ c  from previous call to getsice then read new data
          nymdbc2 = nymdbc(nd)
          nhmsbc1 = nhmsbc(nd-1)
          nhmsbc2 = nhmsbc(nd)
-         call bcdata (iunit,imbc,jmbc,nPx,nPy,nd,nd+1,sicebc1,sicebc2)
+         call bcdata (iunit,imbc,jmbc,nPgx,nPgy,nd,nd+1,sicebc1,sicebc2)
          found = .true.
         else
          nd = nd + 1
@@ -317,7 +317,7 @@ C---------------------------------------------------------------------------
       return
       end
       subroutine getsst(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
-     .            nSx,nSy,nPx,nPy,bi,bj,biglobal,bjglobal,nymd,nhms,sst)
+     .      nSumx,nSumy,nPgx,nPgy,bi,bj,biglobal,bjglobal,nymd,nhms,sst)
 C************************************************************************
 C
 C!ROUTINE:	GETSST
@@ -336,10 +336,10 @@ C!      im1       Begin of x-direction span for filling sice
 C!      im2       End of x-direction span for filling sice
 C!      jm1       Begin of y-direction span for filling sice
 C!      jm2       End of y-direction span for filling sice
-C!      nSx       Number of processors in x-direction (local processor)
-C!      nSy       Number of processors in y-direction (local processor)
-C!      nPx       Number of processors in x-direction (global)
-C!      nPy       Number of processors in y-direction (global)
+C!      nSumx     Number of processors in x-direction (local processor)
+C!      nSumy     Number of processors in y-direction (local processor)
+C!      nPgx      Number of processors in x-direction (global)
+C!      nPgy      Number of processors in y-direction (global)
 C!      bi        Processor number in x-direction (local to processor)
 C!      bj        Processor number in y-direction (local to processor)
 C!      biglobal  Processor number in x-direction (global)
@@ -348,7 +348,7 @@ C!	nymd	  YYMMDD of the current model timestep
 C!	nhms	  HHMMSS of the model time
 C
 C!OUTPUT PARAMETERS:
-C!	sst(idim1:idim2,jdim1:jdim2,nSx,nSy) Sea surface temperature (K)
+C!	sst(idim1:idim2,jdim1:jdim2,nSumx,nSumy) Sea surface temperature (K)
 C
 C!ROUTINES CALLED:
 C
@@ -360,11 +360,12 @@ C--------------------------------------------------------------------------
 
       implicit none
 #include "CPP_EEOPTIONS.h"
+#include "SIZE.h"
 
-      integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,nSy
-      integer nPx,nPy,bi,bj,biglobal,bjglobal,nymd,nhms
+      integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSumx,nSumy
+      integer nPgx,nPgy,bi,bj,biglobal,bjglobal,nymd,nhms
 
-      _RL sst(idim1:idim2,jdim1:jdim2,nSx,nSy)
+      _RL sst(idim1:idim2,jdim1:jdim2,nSumx,nSumy)
 
 C Maximum number of dates in one year for the data
       integer 	ndmax
@@ -378,7 +379,8 @@ C Maximum number of dates in one year for the data
       integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
       integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
 
-      real sstbc1(im2,jm2,nPx,nPy),sstbc2(im2,jm2,nPx,nPy)
+      real sstbc1(sNx,sNy,nSx*nPx,nSy*nPy)
+      real sstbc2(sNx,sNy,nSx*nPx,nSy*nPy)
 
 C--------- Variable Initialization ---------------------------------
 
@@ -386,10 +388,10 @@ C--------- Variable Initialization ---------------------------------
       data error /.false./
 
 c  save header info
-c     save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
-c     save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
-c     save first
-c     save sstbc1, sstbc2
+      save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
+      save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
+      save first
+      save sstbc1, sstbc2
 
 c  this only works for between 1950-2050
       if (nymd .lt. 500101) then
@@ -421,7 +423,7 @@ C---------- Read in Header file ----------------------------------
 
        close(iunit)
        open (iunit,form='unformatted',access='direct',
-     .                                          recl=im2*jm2*nPx*nPy*4)
+     .                                        recl=im2*jm2*nPgx*nPgy*4)
        nrec = 1
        call bcheader (iunit, ndmax, nrec,
      .          cname, cdscrip, imbc, jmbc, npxbc, npybc, lat0, lon0, 
@@ -436,10 +438,10 @@ C Check for correct data in boundary condition file
        endif
 
 C Check Horizontal Resolution
-       if(.not.error .and. imbc*jmbc*npxbc*npybc.ne.im2*jm2*npx*npy)then
+       if(.not.error.and.imbc*jmbc*npxbc*npybc.ne.im2*jm2*npgx*npgy)then
         write(6,*) ' B.C. Resolution DOES NOT match Model Resolution!'
         write(6,*) ' B.C. Resolution:  ',imbc*jmbc*npxbc*npybc
-        write(6,*) 'Model Resolution:  ',im2*jm2*npx*npy
+        write(6,*) 'Model Resolution:  ',im2*jm2*npgx*npgy
         error = .true.
        endif
 
@@ -510,7 +512,7 @@ c  from previous call to getsst then read new data
          nymdbc2 = nymdbc(nd)
          nhmsbc1 = nhmsbc(nd-1)
          nhmsbc2 = nhmsbc(nd)
-         call bcdata (iunit,imbc,jmbc,nPx,nPy,nd,nd+1,sstbc1,sstbc2)
+         call bcdata (iunit,imbc,jmbc,nPgx,nPgy,nd,nd+1,sstbc1,sstbc2)
          found = .true.
         else
          nd = nd + 1
@@ -635,7 +637,7 @@ C--------------------------------------------------------------------------
       real lat0,lon0,undef
       logical error
 
-      integer i,n
+      integer i
       integer*4 im_32,jm_32,npx_32,npy_32
       integer*4 ndatebc_32,nhmsbc_32(ndmax),nymdbc_32(ndmax)
       real*4 lat0_32,lon0_32,undef_32
