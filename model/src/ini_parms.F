@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.141 2004/12/13 17:24:55 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.142 2005/01/03 23:16:32 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1138,14 +1138,8 @@ c      rkFac = -1.D0
       recip_horiVertRatio = 1./horiVertRatio
 
 c-- gradually replacing debugMode by debugLevel
-      IF ( debugLevel .EQ. 999 ) THEN
-         IF ( debugMode ) THEN
-            debugLevel = debLevB
-         ELSE
-            debugLevel = debLevA
-         ENDIF
-      ENDIF
-C
+      IF ( debugMode ) debugLevel = debLevB
+
       CLOSE(iUnit)
 
 C--   Check whether any retired parameters were found.

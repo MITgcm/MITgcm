@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.78 2004/12/13 17:24:55 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.79 2005/01/03 23:16:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -164,9 +164,7 @@ Cml      sBeta               = 7.4D-4
       upwindVorticity     = .FALSE.
       highOrderVorticity  = .FALSE.
       useAbsVorticity     = .FALSE.
-C hack to allow deblevelzero, until debugmode flag is removed
-      debugLevel          = 999
-C      debugLevel          = debLevA
+      debugLevel          = debLevA
 
 C--   Set (free)surface-related parameters
       implicitFreeSurface = .TRUE.
