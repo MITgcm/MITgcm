@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.147 2005/03/10 03:45:11 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.148 2005/03/10 17:58:21 baylor Exp $
 C $Name:  $
 C
 
@@ -573,7 +573,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W, 
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
-     & viscC4leith, viscAr, viscAstrain, viscAtension,
+     & viscC4leith, viscC4leithD, viscAr, viscAstrain, viscAtension,
      & diffKhT, diffK4T, diffKrNrT,
      & diffKhS, diffK4S, diffKrNrS,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
