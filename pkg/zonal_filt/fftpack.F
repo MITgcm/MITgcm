@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/fftpack.F,v 1.6 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/fftpack.F,v 1.7 2003/12/24 00:27:53 jmc Exp $
 C $Name:  $
 
 #include "ZONAL_FILT_OPTIONS.h"
@@ -17,7 +17,7 @@ C     END
 #ifdef ALLOW_ZONAL_FILT
 
       DIMENSION       CC(IDO,2,L1)           ,CH(IDO,L1,2)           ,
-     1                WA1(1)
+     1                WA1(*)
       DO 101 K=1,L1
          CH(1,K,1) = CC(1,1,K)+CC(IDO,2,K)
          CH(1,K,2) = CC(1,1,K)-CC(IDO,2,K)
@@ -48,7 +48,7 @@ C     END
       IMPLICIT INTEGER (I-N)
 
       DIMENSION       CC(IDO,3,L1)           ,CH(IDO,L1,3)           ,
-     1                WA1(1)     ,WA2(1)
+     1                WA1(*)     ,WA2(*)
       DATA TAUR,TAUI /-.5D0,.866025403784439D0/
       DO 101 K=1,L1
          TR2 = CC(IDO,2,K)+CC(IDO,2,K)
@@ -89,7 +89,7 @@ C     END
       IMPLICIT INTEGER (I-N)
 
       DIMENSION       CC(IDO,4,L1)           ,CH(IDO,L1,4)           ,
-     1                WA1(1)     ,WA2(1)     ,WA3(1)
+     1                WA1(*)     ,WA2(*)     ,WA3(*)
       DATA SQRT2 /1.414213562373095D0/
       DO 101 K=1,L1
          TR1 = CC(1,1,K)-CC(IDO,4,K)
@@ -150,7 +150,7 @@ C     END
       IMPLICIT INTEGER (I-N)
 
       DIMENSION       CC(IDO,5,L1)           ,CH(IDO,L1,5)           ,
-     1                WA1(1)     ,WA2(1)     ,WA3(1)     ,WA4(1)
+     1                WA1(*)     ,WA2(*)     ,WA3(*)     ,WA4(*)
       DATA TR11,TI11,TR12,TI12 /.309016994374947D0,.951056516295154D0,
      1-.809016994374947D0,.587785252292473D0/
       DO 101 K=1,L1
@@ -218,7 +218,7 @@ C     END
 
       DIMENSION       CH(IDO,L1,IP)          ,CC(IDO,IP,L1)          ,
      1                C1(IDO,L1,IP)          ,C2(IDL1,IP),
-     2                CH2(IDL1,IP)           ,WA(1)
+     2                CH2(IDL1,IP)           ,WA(*)
       DATA TPI/6.28318530717959D0/
       ARG = TPI/FLOAT(IP)
       DCP = COS(ARG)
@@ -380,7 +380,7 @@ C     END
       IMPLICIT REAL*8 (A-H,O-Z) 
       IMPLICIT INTEGER (I-N)
 
-      DIMENSION       CH(1)      ,C(1)       ,WA(1)      ,IFAC(1)
+      DIMENSION       CH(*)      ,C(*)       ,WA(*)      ,IFAC(*)
       NF = IFAC(2)
       NA = 0
       L1 = 1
@@ -453,7 +453,7 @@ C     END
       IMPLICIT INTEGER (I-N)
 
       DIMENSION       CH(IDO,2,L1)           ,CC(IDO,L1,2)           ,
-     1                WA1(1)
+     1                WA1(*)
       DO 101 K=1,L1
          CH(1,1,K) = CC(1,K,1)+CC(1,K,2)
          CH(IDO,2,K) = CC(1,K,1)-CC(1,K,2)
@@ -484,7 +484,7 @@ C     END
       IMPLICIT INTEGER (I-N)
 
       DIMENSION       CH(IDO,3,L1)           ,CC(IDO,L1,3)           ,
-     1                WA1(1)     ,WA2(1)
+     1                WA1(*)     ,WA2(*)
       DATA TAUR,TAUI /-.5D0,.866025403784439D0/
       DO 101 K=1,L1
          CR2 = CC(1,K,2)+CC(1,K,3)
@@ -523,7 +523,7 @@ C     END
       IMPLICIT INTEGER (I-N)
 
       DIMENSION       CC(IDO,L1,4)           ,CH(IDO,4,L1)           ,
-     1                WA1(1)     ,WA2(1)     ,WA3(1)
+     1                WA1(*)     ,WA2(*)     ,WA3(*)
       DATA HSQT2 /.7071067811865475D0/
       DO 101 K=1,L1
          TR1 = CC(1,K,2)+CC(1,K,4)
@@ -580,7 +580,7 @@ C     END
       IMPLICIT INTEGER (I-N)
 
       DIMENSION       CC(IDO,L1,5)           ,CH(IDO,5,L1)           ,
-     1                WA1(1)     ,WA2(1)     ,WA3(1)     ,WA4(1)
+     1                WA1(*)     ,WA2(*)     ,WA3(*)     ,WA4(*)
       DATA TR11,TI11,TR12,TI12 /.309016994374947D0,.951056516295154D0,
      1-.809016994374947D0,.587785252292473D0/
       DO 101 K=1,L1
@@ -644,7 +644,7 @@ C     END
 
       DIMENSION       CH(IDO,L1,IP)          ,CC(IDO,IP,L1)          ,
      1                C1(IDO,L1,IP)          ,C2(IDL1,IP),
-     2                CH2(IDL1,IP)           ,WA(1)
+     2                CH2(IDL1,IP)           ,WA(*)
       DATA TPI/6.28318530717959D0/
       ARG = TPI/FLOAT(IP)
       DCP = COS(ARG)
@@ -812,7 +812,7 @@ C
       IMPLICIT REAL*8 (A-H,O-Z) 
       IMPLICIT INTEGER (I-N)
 
-      DIMENSION       CH(1)      ,C(1)       ,WA(1)      ,IFAC(1)
+      DIMENSION       CH(*)      ,C(*)       ,WA(*)      ,IFAC(*)
       NF = IFAC(2)
       NA = 1
       L2 = N
@@ -885,7 +885,7 @@ C     END
       IMPLICIT REAL*8 (A-H,O-Z) 
       IMPLICIT INTEGER (I-N)
 
-      DIMENSION       WA(1)      ,IFAC(1)    ,NTRYH(4)
+      DIMENSION       WA(*)      ,IFAC(*)    ,NTRYH(4)
       DATA NTRYH(1),NTRYH(2),NTRYH(3),NTRYH(4)/4,2,3,5/
       NL = N
       NF = 0
@@ -952,7 +952,7 @@ C     END
       implicit real*8 (A-H,O-Z)
       IMPLICIT INTEGER (I-N)
       DIMENSION       CC(IDO,2,L1)           ,CH(IDO,L1,2)           ,
-     1                WA1(1)
+     1                WA1(*)
       DO 101 K=1,L1
          CH(1,K,1) = CC(1,1,K)+CC(IDO,2,K)
          CH(1,K,2) = CC(1,1,K)-CC(IDO,2,K)
@@ -981,7 +981,7 @@ C     END
       implicit real*8 (A-H,O-Z)
       IMPLICIT INTEGER (I-N)
       DIMENSION       CC(IDO,3,L1)           ,CH(IDO,L1,3)           ,
-     1                WA1(1)     ,WA2(1)
+     1                WA1(*)     ,WA2(*)
       DATA TAUR,TAUI /-.5D0,.866025403784439D0/
       DO 101 K=1,L1
          TR2 = CC(IDO,2,K)+CC(IDO,2,K)
@@ -1020,7 +1020,7 @@ C     END
       implicit real*8 (A-H,O-Z)
       IMPLICIT INTEGER (I-N)
       DIMENSION       CC(IDO,4,L1)           ,CH(IDO,L1,4)           ,
-     1                WA1(1)     ,WA2(1)     ,WA3(1)
+     1                WA1(*)     ,WA2(*)     ,WA3(*)
       DATA SQRT2 /1.414213562373095D0/
       DO 101 K=1,L1
          TR1 = CC(1,1,K)-CC(IDO,4,K)
@@ -1079,7 +1079,7 @@ C     END
       implicit real*8 (A-H,O-Z)
       IMPLICIT INTEGER (I-N)
       DIMENSION       CC(IDO,5,L1)           ,CH(IDO,L1,5)           ,
-     1                WA1(1)     ,WA2(1)     ,WA3(1)     ,WA4(1)
+     1                WA1(*)     ,WA2(*)     ,WA3(*)     ,WA4(*)
       DATA TR11,TI11,TR12,TI12 /.309016994374947D0,.951056516295154D0,
      1-.809016994374947D0,.587785252292473D0/
       DO 101 K=1,L1
@@ -1145,7 +1145,7 @@ C     END
       IMPLICIT INTEGER (I-N)
       DIMENSION       CH(IDO,L1,IP)          ,CC(IDO,IP,L1)          ,
      1                C1(IDO,L1,IP)          ,C2(IDL1,IP),
-     2                CH2(IDL1,IP)           ,WA(1)
+     2                CH2(IDL1,IP)           ,WA(*)
       DATA TPI/6.28318530717959D0/
       ARG = TPI/FLOAT(IP)
       DCP = COS(ARG)
@@ -1305,7 +1305,7 @@ C     END
       SUBROUTINE R8FFTB1 (N,C,CH,WA,IFAC)
       implicit real*8 (A-H,O-Z)
       IMPLICIT INTEGER (I-N)
-      DIMENSION       CH(1)      ,C(1)       ,WA(1)      ,IFAC(1)
+      DIMENSION       CH(*)      ,C(*)       ,WA(*)      ,IFAC(*)
       NF = IFAC(2)
       NA = 0
       L1 = 1
@@ -1374,7 +1374,7 @@ C     END
       implicit real*8 (A-H,O-Z)
       IMPLICIT INTEGER (I-N)
       DIMENSION       CH(IDO,2,L1)           ,CC(IDO,L1,2)           ,
-     1                WA1(1)
+     1                WA1(*)
       DO 101 K=1,L1
          CH(1,1,K) = CC(1,K,1)+CC(1,K,2)
          CH(IDO,2,K) = CC(1,K,1)-CC(1,K,2)
@@ -1403,7 +1403,7 @@ C     END
       implicit real*8 (A-H,O-Z)
       IMPLICIT INTEGER (I-N)
       DIMENSION       CH(IDO,3,L1)           ,CC(IDO,L1,3)           ,
-     1                WA1(1)     ,WA2(1)
+     1                WA1(*)     ,WA2(*)
       DATA TAUR,TAUI /-.5D0,.866025403784439D0/
       DO 101 K=1,L1
          CR2 = CC(1,K,2)+CC(1,K,3)
@@ -1440,7 +1440,7 @@ C     END
       implicit real*8 (A-H,O-Z)
       IMPLICIT INTEGER (I-N)
       DIMENSION       CC(IDO,L1,4)           ,CH(IDO,4,L1)           ,
-     1                WA1(1)     ,WA2(1)     ,WA3(1)
+     1                WA1(*)     ,WA2(*)     ,WA3(*)
       DATA HSQT2 /.7071067811865475D0/
       DO 101 K=1,L1
          TR1 = CC(1,K,2)+CC(1,K,4)
@@ -1495,7 +1495,7 @@ C     END
       implicit real*8 (A-H,O-Z)
       IMPLICIT INTEGER (I-N)
       DIMENSION       CC(IDO,L1,5)           ,CH(IDO,5,L1)           ,
-     1                WA1(1)     ,WA2(1)     ,WA3(1)     ,WA4(1)
+     1                WA1(*)     ,WA2(*)     ,WA3(*)     ,WA4(*)
       DATA TR11,TI11,TR12,TI12 /.309016994374947D0,.951056516295154D0,
      1-.809016994374947D0,.587785252292473D0/
       DO 101 K=1,L1
@@ -1557,7 +1557,7 @@ C     END
       IMPLICIT INTEGER (I-N)
       DIMENSION       CH(IDO,L1,IP)          ,CC(IDO,IP,L1)          ,
      1                C1(IDO,L1,IP)          ,C2(IDL1,IP),
-     2                CH2(IDL1,IP)           ,WA(1)
+     2                CH2(IDL1,IP)           ,WA(*)
       DATA TPI/6.28318530717959D0/
       ARG = TPI/FLOAT(IP)
       DCP = COS(ARG)
@@ -1723,7 +1723,7 @@ C
       SUBROUTINE R8FFTF1 (N,C,CH,WA,IFAC)
       implicit real*8 (A-H,O-Z)
       IMPLICIT INTEGER (I-N)
-      DIMENSION       CH(1)      ,C(1)       ,WA(1)      ,IFAC(1)
+      DIMENSION       CH(*)      ,C(*)       ,WA(*)      ,IFAC(*)
       NF = IFAC(2)
       NA = 1
       L2 = N
@@ -1791,7 +1791,7 @@ C     END
       SUBROUTINE R8FFTI1 (N,WA,IFAC)
       implicit real*8 (A-H,O-Z)
       IMPLICIT INTEGER (I-N)
-      DIMENSION       WA(1)      ,IFAC(1)    ,NTRYH(4)
+      DIMENSION       WA(*)      ,IFAC(*)    ,NTRYH(4)
       DATA NTRYH(1),NTRYH(2),NTRYH(3),NTRYH(4)/4,2,3,5/
       NL = N
       NF = 0
