@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.31 2004/11/19 01:33:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.32 2004/12/03 15:39:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -58,8 +58,10 @@ C     myThid -  Number of this instances
       INTEGER myThid
 CEOP
 
+#ifdef ALLOW_GENERIC_ADVDIFF
 C--   Initialize fixed params for GAD
       CALL GAD_INIT( myThid )
+#endif
 
 C--   Initialize fixed arrays for OBCS
 #ifdef ALLOW_OBCS

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.10 2001/09/28 02:26:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.11 2004/12/03 15:39:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -24,9 +24,6 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GAD.h"
-#include "GRID.h"
-#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth2.F,v 1.4 2004/07/27 00:16:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth2.F,v 1.5 2004/12/03 15:39:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -24,7 +24,6 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GAD.h"
 #include "GRID.h"
 #include "SURFACE.h"
 

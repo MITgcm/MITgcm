@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.82 2004/11/02 20:41:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.83 2004/12/03 15:39:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -77,7 +77,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
 #include "GAD.h"
+#endif
 #ifdef ALLOW_OFFLINE
 #include "OFFLINE.h"
 #endif
@@ -115,6 +117,7 @@ C     myThid - Thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
+#ifdef ALLOW_GENERIC_ADVDIFF
 C     !LOCAL VARIABLES:
 C     == Local variables
 C     xA, yA                 - Per block temporaries holding face areas
@@ -653,6 +656,8 @@ C--   end bi,bj loops.
          IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_LEAVE('THERMODYNAMICS',myThid)
 #endif
+
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
       RETURN
       END

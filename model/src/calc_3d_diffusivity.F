@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.2 2004/10/28 00:30:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_3d_diffusivity.F,v 1.3 2004/12/03 15:39:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,7 +31,9 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#ifdef ALLOW_GENERIC_ADVDIFF
 #include "GAD.h"
+#endif
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
@@ -53,6 +55,7 @@ C     KappaRTr   :: Net diffusivity for this tracer (trIdentity)
       _RL KappaRTr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       INTEGER myThid
 
+#ifdef ALLOW_GENERIC_ADVDIFF
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     i, j, k    :: Loop counters
@@ -194,6 +197,8 @@ c      DO i = 1-Olx, sNx+Olx
 c       KappaRTr(i,j,k) = maskUp(i,j)*KappaRTr(i,j,k)
 c      ENDDO
 c     ENDDO
+
+#endif /* ALLOW_GENERIC_ADVDIFF */
 
       RETURN
       END
