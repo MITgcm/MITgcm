@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.5 2004/07/13 18:04:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.6 2004/09/01 16:22:52 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,7 +25,7 @@ C !USES: ===============================================================
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #endif
-#ifdef DIC_BIOTIC
+#ifdef ALLOW_DIC
 #include "DIC_BIOTIC.h"
 #include "DIC_ABIOTIC.h"
 #endif
@@ -35,7 +35,7 @@ C  myThid               :: thread number
       INTEGER myThid, myIter
       _RL myTime
 
- !LOCAL VARIABLES: ====================================================
+c!LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
 C  bi,bj                :: tile indices
 C  k                    :: vertical level
