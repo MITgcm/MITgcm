@@ -1,7 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.164 2003/06/20 15:11:40 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.165 2003/06/23 22:37:30 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint50i_post
+o Preparing next differentiable checkpoint and sync
+  of MAIN vs. ecco-branch
+  - 1st step: this one is differentiable
+  - 2nd step: next(! not this) checkpoint will have updated packages 
+              from ecco-branch)
 
 checkpoint50h_post
 o new package "land": provide surface BC for AIM.
