@@ -2,5 +2,8 @@ Makefile
 *.tex
 .targets
 .dir_list_nocomments
-
+*.aux
+*.dvi
+*.log
+*.out
 

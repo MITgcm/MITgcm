@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.1 2004/03/26 19:41:44 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.2 2004/03/26 23:46:11 edhill Exp $
 #
 #  A script to generate the Makefile for the API Reference
 
@@ -18,13 +18,19 @@ cat ./dir_list | grep -v '^[ ]*#' | grep -v '^[ ]*$' > ./.dir_list_nocomments
 name=$0
 cat <<EOF > Makefile
 #
+#  ========================================
+#
 #  CREATED BY $name -- DO NOT EDIT !!!
 #
+#  ========================================
+#
+
+.SUFFIXES:
 
 all: all_protex
 
 clean:
-	-rm -f *.tex
+	-rm -f *.tex *.aux *.dvi *.log *.toc
 
 EOF
 
@@ -72,13 +78,13 @@ $target: $d_F $d_h $d_c
 	-rm -f $target
 EOF
     if test ! "x$F_files" = x ; then
-	printf '\t%s\n' "-./protex -7 $d_F >> $target" >> Makefile
+	printf '\t%s\n' "-./protex -b7 $d_F >> $target" >> Makefile
     fi
     if test ! "x$h_files" = x ; then
-	printf '\t%s\n' "-./protex -7 $d_h >> $target" >> Makefile
+	printf '\t%s\n' "-./protex -b7 $d_h >> $target" >> Makefile
     fi
     if test ! "x$c_files" = x ; then
-	printf '\t%s\n' "-./protex -C $d_c >> $target" >> Makefile
+	printf '\t%s\n' "-./protex -bC $d_c >> $target" >> Makefile
     fi
 
     if test ! "x$target" = x ; then
@@ -98,13 +104,18 @@ cat <<EOF >> Makefile
 makefile:
 	$0
 
+api_main.tex: \$(ALLTEX)
+	-./build_main \$(ALLTEX)
 
-all_protex: \$(ALLTEX)
-	-echo "hi"
+api_main.dvi:  api_main.tex
+	latex api_main
+	latex api_main
+	latex api_main
 
+all_protex: api_main.dvi
 
 EOF
 
 rm -f ./.dir_list_nocomments
-
+rm -f ./.targets
 

@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/doc/api_reference/dir_list,v 1.1 2004/03/26 19:41:44 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/doc/api_reference/dir_list,v 1.2 2004/03/26 23:46:11 edhill Exp $
 #
 #
 #  The following is a list of directories to search in for *.[chF] files 
@@ -18,51 +18,53 @@
 #  consistent directory structure for source and header files.
 
 
-eesupp/src eesupp/inc
-model/src model/inc
-diags/src diags/inc
-lsopt
-optim
-pkg/aim
-pkg/aim_compon_interf
-pkg/aim_ocn_coupler
-pkg/aim_v23
-pkg/autodiff
-pkg/bulk_force
-pkg/cal
-pkg/cd_code
-pkg/cfc
-pkg/compon_communic
-pkg/cost
-pkg/ctrl
-pkg/debug
-pkg/dic
-pkg/ecco
-pkg/exch2
-pkg/exf
-pkg/fizhi
-pkg/flt
-pkg/gchem
-pkg/generic_advdiff
+#  eesupp/src eesupp/inc
+#  model/src model/inc
+#  diags/src diags/inc
+#  lsopt
+#  optim
+#  pkg/aim
+#  pkg/aim_compon_interf
+#  pkg/aim_ocn_coupler
+#  pkg/aim_v23
+#  pkg/autodiff
+#  pkg/bulk_force
+#  pkg/cal
+#  pkg/cd_code
+#  pkg/cfc
+#  pkg/compon_communic
+#  pkg/cost
+#  pkg/ctrl
+#  pkg/debug
+#  pkg/dic
+#  pkg/ecco
+#  pkg/exch2
+#  pkg/exf
+#  pkg/fizhi
+#  pkg/flt
+#  pkg/gchem
+#  pkg/generic_advdiff
+
 pkg/gmredi
-pkg/grdchk
-pkg/gridalt
-pkg/kpp
-pkg/land
-pkg/mdsio
-pkg/mnc
-pkg/mom_fluxform
-pkg/mom_vecinv
-pkg/monitor
-pkg/obcs
-pkg/ocn_compon_interf
-pkg/ptracers
-pkg/rw
-pkg/sbo
-pkg/seaice
-pkg/shap_filt
-pkg/thsice
-pkg/timeave
-pkg/zonal_filt 
+
+#  pkg/grdchk
+#  pkg/gridalt
+#  pkg/kpp
+#  pkg/land
+#  pkg/mdsio
+#  pkg/mnc
+#  pkg/mom_fluxform
+#  pkg/mom_vecinv
+#  pkg/monitor
+#  pkg/obcs
+#  pkg/ocn_compon_interf
+#  pkg/ptracers
+#  pkg/rw
+#  pkg/sbo
+#  pkg/seaice
+#  pkg/shap_filt
+#  pkg/thsice
+#  pkg/timeave
+#  pkg/zonal_filt 
 
 

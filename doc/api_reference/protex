@@ -1,6 +1,6 @@
 #! /usr/bin/env perl
 #
-#  $Id: protex,v 1.1 2004/03/26 19:41:44 edhill Exp $
+#  $Id: protex,v 1.2 2004/03/26 23:46:11 edhill Exp $
 #
 #BOP
 #
@@ -273,6 +273,7 @@ ARG:
 
 #    Print page header
 #    -----------------
+     chomp($Date);
      printf "\n\\markboth{Left}{Source File: %s,  Date: %s}\n\n",
                                $FileBaseName,    $Date;
 
@@ -888,6 +889,7 @@ sub print_help {
     print "     -A   Ada code";
     print "     -C   C++ code";
     print "     -F   F90 code";
+    print "     -7   F77 code";
     print "     -S   Shell script";
     print " ";
     print "  The options can appear in any order.  The options, -h and -b,";
