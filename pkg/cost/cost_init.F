@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/Attic/cost_init.F,v 1.1 2001/03/25 22:33:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/Attic/cost_init.F,v 1.2 2001/07/13 13:37:45 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -66,6 +66,7 @@ c--   Initialize the tiled cost function contributions.
           objf_ctdt(bi,bj) = 0. _d 0
           objf_ctds(bi,bj) = 0. _d 0
           objf_test(bi,bj) = 0. _d 0
+          objf_tracer(bi,bj) = 0. _d 0
         enddo
       enddo
 

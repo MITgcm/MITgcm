@@ -156,7 +156,8 @@ c                  function contributions.
      &                objf_atl,
      &                objf_ctdt,
      &                objf_ctds,
-     &                objf_test
+     &                objf_test,
+     &                objf_tracer
 
       _RL  fc
       _RL  objf_hflux   (nsx,nsy)
@@ -172,6 +173,7 @@ c                  function contributions.
       _RL  objf_ctdt (nsx,nsy)
       _RL  objf_ctds (nsx,nsy)
       _RL  objf_test (nsx,nsy)
+      _RL  objf_tracer (nsx,nsy)
 
       common /cost_aux_r/
      &                    mult_hq,
@@ -186,7 +188,8 @@ c                  function contributions.
      &                    mult_atl,
      &                    mult_ctdt,
      &                    mult_ctds,
-     &                    mult_test
+     &                    mult_test,
+     &                    mult_tracer
 
       _RL  mult_hq
       _RL  mult_hs
@@ -201,6 +204,7 @@ c                  function contributions.
       _RL  mult_ctdt
       _RL  mult_ctds
       _RL  mult_test
+      _RL  mult_tracer
 
 
 c     Record counters relevant for the cost function evaluation.
