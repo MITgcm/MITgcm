@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.88 2004/07/20 19:43:45 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.89 2004/07/21 16:34:46 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -483,6 +483,12 @@ EOF
 
 #  Build a CPP macro to automate calling C routines from FORTRAN
 get_fortran_c_namemangling()  {
+
+    #echo "FC_NAMEMANGLE = \"$FC_NAMEMANGLE\""
+    if test ! "x$FC_NAMEMANGLE" = x ; then
+        return 0
+    fi
+
     default_nm="#define FC_NAMEMANGLE(X) X ## _"
     
     cat > genmake_test.c <<EOF
@@ -619,7 +625,8 @@ check_netcdf_libs()  {
       IF (iret .NE. NF_NOERR) write(*,*) NF_STRERROR(iret)
       end
 EOF
-    $CPP genmake_tnc.for > genmake_tnc.f  \
+    #echo "$CPP $DEFINES $INCLUDES"
+    $CPP $DEFINES $INCLUDES genmake_tnc.for > genmake_tnc.f  \
 	&&  $FC $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.f $LIBS >> genmake_tnc.log 2>&1
     RET_COMPILE=$?
     test -x ./genmake_tnc  &&  ./genmake_tnc >> genmake_tnc.log 2>&1
@@ -628,7 +635,7 @@ EOF
 	HAVE_NETCDF=t
     else
 	# try again with "-lnetcdf" added to the libs
-	$CPP genmake_tnc.for > genmake_tnc.f  \
+	$CPP $DEFINES $INCLUDES genmake_tnc.for > genmake_tnc.f  \
 	    &&  $FC $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.f \
 	    $LIBS -lnetcdf >> genmake_tnc_2.log 2>&1
 	RET_COMPILE=$?

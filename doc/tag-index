@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.332 2004/07/18 14:20:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.333 2004/07/21 16:34:46 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o genmake2 fixes so netcdf now works on halem ("osf1_alpha_*")
 
 checkpoint54c_post
 o replace surfaceTendency U,V,S,T,Tice,Ptr by surfaceForcing U,V,S,T,Tice,Ptr

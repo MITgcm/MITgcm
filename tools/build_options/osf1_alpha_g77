@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/osf1_alpha_g77,v 1.2 2004/07/17 02:05:34 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/osf1_alpha_g77,v 1.3 2004/07/21 16:34:47 edhill Exp $
 #  $Name:  $
 #
 
@@ -14,7 +14,12 @@ NOOPTFLAGS='-O0'
 #EH3  MAKEDEPEND='mkdep -f depend.out'
 
 # netcdf
-# LIBS="-lnetcdf"
+# DOES NOT (YET) WORK because the netcdf library installed on Halem
+# was compiled with the "f77" compiler and the library is not 
+# compatible with g77 -- so we need to either build our own lib for 
+# g77 or ask the admins to do so.
+#   INCLUDES="$INCLUDES -I/usr/ulocal/stow/netcdf-3.5.1/include"
+#   LIBS="-L/usr/ulocal/stow/netcdf-3.5.1/lib -lnetcdf"
 
 #  For IEEE, use the "-ffloat-store" option
 if test "x$IEEE" = x ; then
