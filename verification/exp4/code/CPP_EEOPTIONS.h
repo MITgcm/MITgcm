@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp4/code/Attic/CPP_EEOPTIONS.h,v 1.3 2000/03/14 16:23:32 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp4/code/Attic/CPP_EEOPTIONS.h,v 1.4 2000/04/05 15:23:21 adcroft Exp $
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
@@ -44,59 +44,6 @@ C     safe, on Sun it is not possible - if you are unsure then
 C     undef this option.
 #undef  FMTFTN_IO_THREADSAFE
 
-C     Flag used to indicate which flavour of multi-threading
-C     compiler directives to use. Only set one of these.
-C     USE_SOLARIS_THREADING  - Takes directives for SUN Workshop
-C                              compiler.
-C     USE_KAP_THREADING      - Takes directives for Kuck and 
-C                              Associates multi-threading compiler
-C                              ( used on Digital platforms ).
-C     USE_IRIX_THREADING     - Takes directives for SGI MIPS
-C                              Pro Fortran compiler.
-C     USE_EXEMPLAR_THREADING - Takes directives for HP SPP series
-C                              compiler.
-C     USE_C90_THREADING      - Takes directives for CRAY/SGI C90
-C                              system F90 compiler.
-#ifdef TARGET_SUN
-#define USE_SOLARIS_THREADING
-#endif
-
-#ifdef TARGET_DEC
-#define USE_KAP_THREADING
-#endif
-
-#ifdef TARGET_SGI
-#define USE_IRIX_THREADING
-#endif
-
-#ifdef TARGET_HP
-#define USE_EXEMPLAR_THREADING
-#endif
-
-#ifdef TARGET_CRAY_VECTOR
-#define USE_C90_THREADING
-#endif
-
-C--   Define the mapping for the _BARRIER macro
-C     On some systems low-level hardware support can be accessed through
-C     compiler directives here.
-#define _BARRIER CALL BARRIER(myThid)
-
-C--   Define the mapping for the BEGIN_CRIT() and  END_CRIT() macros. 
-C     On some systems we simply execute this section only using the
-C     master thread i.e. its not really a critical section. We can
-C     do this because we do not use critical sections in any critical
-C     sections of our code!
-#define _BEGIN_CRIT(a) _BEGIN_MASTER(a)
-#define _END_CRIT(a)   _END_MASTER(a)
-
-C--   Define the mapping for the BEGIN_MASTER_SECTION() and
-C     END_MASTER_SECTION() macros. These are generally implemented by
-C     simply choosing a particular thread to be "the master" and have
-C     it alone execute the BEGIN_MASTER..., END_MASTER.. sections.
-#define _BEGIN_MASTER(a)  IF ( a .EQ. 1 ) THEN
-#define _END_MASTER(a)    ENDIF
-
 C--   Control MPI based parallel processing
 #undef  ALLOW_USE_MPI
 #undef  ALWAYS_USE_MPI
@@ -116,11 +63,6 @@ C     These invoke optimized versions of "exchange" and "sum" that
 C     utilize the programmable aspect of Artic cards.
 #undef  LETS_MAKE_JAM
 #undef  JAM_WITH_TWO_PROCS_PER_NODE
-#ifdef LETS_MAKE_JAM
-#define _JAMEXT _jam
-#else
-#define _JAMEXT
-#endif
 
 C--   Control storage of floating point operands
 C     On many systems it improves performance only to use
@@ -132,41 +74,9 @@ C     set size. However, on vector CRAY systems this degrades
 C     performance.
 #define REAL4_IS_SLOW
  
-#ifdef REAL4_IS_SLOW
-#define real Real*8
-#define REAL Real*8
-#define _RS  Real*8
-#define _RL  Real*8
-#define RS_IS_REAL8
-#define _EXCH_XY_R4(a,b)       CALL EXCH_XY_R8 ( a, b )
-#define _EXCH_XYZ_R4(a,b)      CALL EXCH_XYZ_R8 ( a, b )
-#define _GLOBAL_SUM_R4(a,b)    CALL GLOBAL_SUM_R8( a, b )
-#define _GLOBAL_MAX_R4(a,b)    CALL GLOBAL_MAX_R8( a, b )
-#endif
-
-#ifndef REAL4_IS_SLOW
-#define real Real*4
-#define REAL Real*8
-#define _RS  Real*4
-#define _RL  Real*8
-#define RS_IS_REAL4
-#define _EXCH_XY_R4(a,b)       CALL EXCH_XY_R4 ( a, b )
-#define _EXCH_XYZ_R4(a,b)      CALL EXCH_XYZ_R4 ( a, b )
-#define _GLOBAL_SUM_R4(a,b)    CALL GLOBAL_SUM_R4( a, b )
-#define _GLOBAL_MAX_R4(a,b)    CALL GLOBAL_MAX_R4( a, b )
-#endif
- 
-#define _EXCH_XY_R8(a,b)       CALL EXCH_XY_R8 ( a, b )
-#define _EXCH_XYZ_R8(a,b)      CALL EXCH_XYZ_R8 ( a, b )
-#define _GLOBAL_SUM_R8(a,b)    CALL GLOBAL_SUM_R8( a, b )
-#define _GLOBAL_MAX_R8(a,b)    CALL GLOBAL_MAX_R8( a, b )
- 
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16
 #define D0 d0
-#ifdef REAL_D0_IS_16BYTES
-#define D0
-#endif
 
 C--   Control XY periodicity in processor to grid mappings
 C     Note: Model code does not need to know whether a domain is 
@@ -178,17 +88,6 @@ C           filled in some way.
 #define CAN_PREVENT_X_PERIODICITY
 #define CAN_PREVENT_Y_PERIODICITY
 
-C--   Substitue for 1.D variables
-C     Sun compilers do not use 8-byte precision for literals
-C     unless .Dnn is specified. CRAY vector machines use 16-byte
-C     precision when they see .Dnn which runs very slowly!
-#ifdef REAL_D0_IS_16BYTES
-#define _d
-#define _F64( a ) a
-#endif
-#ifndef REAL_D0_IS_16BYTES
-#define _d D
-#define _F64( a ) DFLOAT( a )
-#endif
-
 #endif /* _CPP_EEOPTIONS_H_ */
+
+#include "CPP_EEMACROS.h"
