@@ -1,8 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.69 2004/09/07 21:32:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.70 2004/09/10 12:19:30 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: SET_DEFAULTS
 C     !INTERFACE:
@@ -11,23 +12,11 @@ C     !INTERFACE:
      O   hFacMinDrDefault, delRdefault, rkFacDefault,
      I   myThid )
 
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE SET_DEFAULTS                                   
-C     | o Routine to set model "parameters"                       
-C     *==========================================================*
-C     | Notes:                                                    
-C     | ======                                                    
-C     | The present version of this routine is a place-holder.    
-C     | A production version needs to handle parameters from an   
-C     | external file and possibly reading in some initial field  
-C     | values.                                                   
-C     *==========================================================*
-C     \ev
+C     !DESCRIPTION:
+C     Routine to set model "parameter defaults".
 
 C     !USES:
       IMPLICIT NONE
-C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -35,7 +24,6 @@ Cml#include "EOS.h"
 #include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myThid - Number of this instance of INI_PARMS
       INTEGER myThid
       _RL viscArDefault
@@ -46,7 +34,6 @@ C     myThid - Number of this instance of INI_PARMS
       _RS rkFacDefault
 
 C     !LOCAL VARIABLES:
-C     === Local variables ===
 C     K, I, J - Loop counters
       INTEGER K, I, J
 CEOP
@@ -228,12 +215,17 @@ C--   Time stepping parameters
       abEps             = 0.01
       pchkPtFreq        = deltaT*0
       chkPtFreq         = deltaT*0
+      pickup_read_mdsio = .TRUE.
+      pickup_write_mdsio= .TRUE.
+      pickup_write_immed= .FALSE.
       dumpFreq          = deltaT*0
       adjDumpFreq       = deltaT*0
       diagFreq          = deltaT*0
+      snapshot_mdsio    = .TRUE.
       monitorFreq       = -1.
-      mon_iotype        = 1
+      monitor_mdsio     = .TRUE.
       taveFreq          = deltaT*0
+      timeave_mdsio     = .TRUE.
       tave_lastIter     = 0.5 _d 0
       writeStatePrec    = precFloat64
       writeBinaryPrec   = precFloat32
@@ -250,7 +242,6 @@ C--   Time stepping parameters
       externForcingPeriod     = 0.
       externForcingCycle      = 0.
       tCyl              = 0.
-
 
 C--   Input files
       bathyFile       = ' '
@@ -271,9 +262,6 @@ C--   Input files
       dQdTFile        = ' '
       ploadFile       = ' '
       mdsioLocalDir   = ' '
-      DO k = 1,MAX_LEN_FNAM
-        the_run_name(k:k) = ' '
-      ENDDO
 
 C
       RETURN

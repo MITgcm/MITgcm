@@ -1,42 +1,34 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.120 2004/09/07 21:32:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.121 2004/09/10 12:19:29 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: INI_PARMS
 C     !INTERFACE:
       SUBROUTINE INI_PARMS( myThid )
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE INI_PARMS                                      
-C     | o Routine to set model "parameters"                       
-C     *==========================================================*
-C     | Notes:                                                    
-C     | ======                                                    
-C     | The present version of this routine is a place-holder.    
-C     | A production version needs to handle parameters from an   
-C     | external file and possibly reading in some initial field  
-C     | values.                                                   
-C     *==========================================================*
-C     \ev
 
+C     !DESCRIPTION:
+C     Routine to set model "parameters".                       
+      
 C     !USES:
       IMPLICIT NONE
-C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "EOS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     === Routine arguments ===
 C     myThid - Number of this instance of INI_PARMS
       INTEGER myThid
 
 C     !LOCAL VARIABLES:
-C     === Local variables ===
 C     dxSpacing, dySpacing - Default spacing in X and Y.
 C                            Units are that of coordinate system
 C                            i.e. cartesian => metres
@@ -118,6 +110,10 @@ C                 salt vertically ( Pa^2/s )
       _RL diffKzS
       _RL diffKpS
 
+C     IO Parameters
+      LOGICAL pickup_write_ioinc, timeave_ioinc
+      LOGICAL snapshot_ioinc, monitor_ioinc
+
 C     Retired main data file parameters. Kept here to trap use of old data files.
 C     zonal_filt_lat  - Moved to package "zonal_filt"
 C     nRetired :: Counter used to trap gracefully namelists containing "retired" 
@@ -125,7 +121,6 @@ C              :: parameters. These are parameters that are either no-longer use
 C                 or that have moved to a different input file and/or namelist.
       _RL zonal_filt_lat
       INTEGER nRetired
-CEOP
 
 C--   Continuous equation parameters
       NAMELIST /PARM01/
@@ -186,7 +181,8 @@ C--   Time stepping parammeters
      & startTime, endTime, chkPtFreq,
      & dumpFreq, adjDumpFreq, taveFreq, tave_lastIter, deltaTClock,
      & diagFreq, monitorFreq, pChkPtFreq, cAdjFreq, 
-     & mon_iotype, 
+     & pickup_write_ioinc, timeave_ioinc, 
+     & snapshot_ioinc, monitor_ioinc, 
      & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax, 
      & tauTr1ClimRelax,
      & periodicExternalForcing, externForcingPeriod, externForcingCycle
@@ -209,6 +205,7 @@ C--   Input files
      & dQdTFile, ploadFile,tCyl,
      & mdsioLocalDir,
      & the_run_name
+CEOP
 
 C
       _BEGIN_MASTER(myThid)
@@ -226,6 +223,12 @@ C--   Initialise "which vertical coordinate system used" flags.
       usingPCoords    = .FALSE.
       usingZCoords    = .FALSE.
       coordsSet       = 0
+
+C     Initialize local IO flags
+      pickup_write_ioinc = .FALSE.
+      timeave_ioinc      = .FALSE.
+      snapshot_ioinc     = .FALSE.
+      monitor_ioinc      = .FALSE.
 
 C--   Iniialise retired parameters to unlikely value
       nRetired = 0
@@ -724,6 +727,26 @@ C     o Monitor (should also add CPP flag for monitor?)
      &         monitorFreq=pChkPtFreq
        IF (monitorFreq.EQ.0.) monitorFreq=deltaTclock
       ENDIF
+
+#ifdef ALLOW_MNC
+C     IO handling is done in one of two senses:
+C     
+C     [*_ioinc=.TRUE.] is an "inclusive-or" meaning that one or more
+C          write methods can occur simultaneously
+C     [*_ioinc=.FALSE.] is an "exclusive-or" meaning that only write
+C          method can occur
+C     
+C     Since all the *_mdsio flags default to .TRUE. and all *_ioinc
+C     default to .FALSE., the logic here is simple:
+      IF ( (.NOT. pickup_write_ioinc) 
+     &     .AND. pickup_write_mnc ) pickup_write_mdsio = .FALSE.
+      IF ( (.NOT. timeave_ioinc) 
+     &     .AND. timeave_mnc ) timeave_mdsio = .FALSE.
+      IF ( (.NOT. snapshot_ioinc) 
+     &     .AND. snapshot_mnc ) snapshot_mdsio = .FALSE.
+      IF ( (.NOT. monitor_ioinc) 
+     &     .AND. monitor_mnc ) monitor_mdsio = .FALSE.
+#endif
 
 C--   Grid parameters
 C     In cartesian coords distances are in metres

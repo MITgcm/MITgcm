@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.8 2004/04/06 01:44:26 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.9 2004/09/10 12:19:30 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -22,6 +22,7 @@ C     !USES:
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "MNC_PARAMS.h"
 
 C     !INPUT PARAMETERS:
       integer myThid
@@ -34,10 +35,11 @@ C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_PREC) record
       NAMELIST /MNC_01/
      &     useMNC,
-     &     mnc_use_outdir, mnc_outdir_date, 
-     &     mnc_outdir_str, mnc_indir_str, 
-     &     mnc_echo_gvtypes, mnc_pickup_write, mnc_pickup_read,
-     &     mnc_use_for_mon
+     &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
+     &     mnc_echo_gvtypes,
+     &     pickup_write_mnc, pickup_read_mnc,
+     &     timeave_mnc, snapshot_mnc, monitor_mnc,
+     &     mnc_outdir_str, mnc_indir_str
       LOGICAL  exst
 
 C     Functions
@@ -53,11 +55,13 @@ C     Set default values for MNC run-time parameters
       mnc_use_outdir        =  .FALSE.
         mnc_outdir_str(1:4) =  'mnc_'
         mnc_outdir_date     =  .FALSE.
-      mnc_pickup_write      =  .FALSE.
-      mnc_pickup_read       =  .FALSE.
+      pickup_write_mnc      =  .FALSE.
+      pickup_read_mnc       =  .FALSE.
       mnc_use_indir         =  .FALSE.
         mnc_indir_str(1:4)  =  '    '
-      mnc_use_for_mon       =  .FALSE.
+      monitor_mnc           =  .FALSE.
+      timeave_mnc           =  .FALSE.
+      snapshot_mnc          =  .FALSE.
 
 C     Set the file name
       DO i=1,MAX_LEN_MBUF
@@ -178,6 +182,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "MNC_PARAMS.h"
 
 C     !INPUT PARAMETERS:
       integer myThid

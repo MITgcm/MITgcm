@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_statv_write.F,v 1.7 2004/09/04 03:08:03 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_statv_write.F,v 1.8 2004/09/10 12:19:31 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -22,6 +22,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 c #include "DYNVARS.h"
 c #include "GRID.h"
 c #include "TIMEAVE_STATV.h"
@@ -89,21 +92,8 @@ C       Write to files
         _BARRIER
         _BEGIN_MASTER( myThid )
 
-
-C       Set IO "context" for writing state
-#ifdef USE_DFILE
-        CALL DFILE_SET_RW
-        CALL DFILE_SET_CONT_ON_ERROR
-#endif
-C       Read IO error counter
-        beginIOErrCount = IO_ERRCOUNT(myThid)
-c       prevPrec = writeBinaryPrec
-c       writeBinaryPrec = precFloat32
-        
 #ifdef ALLOW_MNC
-        IF (useMNC
-     &       .AND. (mod(PTRACERS_iotypes,4) .GT. 1)
-     &       .AND. PTRACERS_mnc_write ) THEN
+        IF (useMNC .AND. PTRACERS_write_mnc) THEN
           CALL MNC_CW_SET_UDIM('ptr_tave', -1, myThid)
           CALL MNC_CW_I_W('I','ptr_tave',0,0,'iter',myIter,myThid)
           CALL MNC_CW_SET_UDIM('ptr_tave', 0, myThid)
@@ -124,14 +114,24 @@ c       writeBinaryPrec = precFloat32
         ENDIF
 #endif /*  ALLOW_MNC  */
 
-C        IF (mod(PTRACERS_iotypes,2) .GT. 0) THEN
-
+        IF (PTRACERS_write_mdsio) THEN
+        
+C         Set IO "context" for writing state
+#ifdef USE_DFILE
+          CALL DFILE_SET_RW
+          CALL DFILE_SET_CONT_ON_ERROR
+#endif
+C         Read IO error counter
+          beginIOErrCount = IO_ERRCOUNT(myThid)
+c         prevPrec = writeBinaryPrec
+c         writeBinaryPrec = precFloat32
+          
           do iTracer=1,PTRACERS_numInUse
             WRITE(suff,'(A7,I2.2,A1,I10.10)') 'PtrFluxtave',
      &           iTracer,'.',myIter
             CALL WRITE_FLD_XY_RL (suff,' ',
      &           ptracerFluxtave(1-Olx,1-Oly,  1,1,iTracer),
-     &         myIter,myThid)
+     &           myIter,myThid)
             WRITE(suff,'(A7,I2.2,A1,I10.10)') 'PTRtave',
      &           iTracer,'.',myIter
             CALL WRITE_FLD_XYZ_RL(suff,' ',
@@ -139,30 +139,30 @@ C        IF (mod(PTRACERS_iotypes,2) .GT. 0) THEN
      &           myIter,myThid)
           enddo
 
-C        ENDIF
-
-c       writeBinaryPrec = prevPrec
-C       Reread IO error counter
-        endIOErrCount = IO_ERRCOUNT(myThid)
-
-C       Check for IO errors
-        IF ( endIOErrCount .NE. beginIOErrCount ) THEN
-          WRITE(msgBuf,'(A)')  'S/R WRITE_TIME_AVERAGES'
-          CALL PRINT_ERROR( msgBuf, 1 )
-          WRITE(msgBuf,'(A)')  'Error writing out data'
-          CALL PRINT_ERROR( msgBuf, 1 )
-          WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
-          CALL PRINT_ERROR( msgBuf, 1 )
-        ELSE
-          WRITE(msgBuf,'(A,I10)')  
-     &         '// Time-average data written, t-step', myIter
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &         SQUEEZE_RIGHT, 1 )
-          WRITE(msgBuf,'(A)')  ' '
-          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &         SQUEEZE_RIGHT, 1 )
-        ENDIF
+c         writeBinaryPrec = prevPrec
+C         Reread IO error counter
+          endIOErrCount = IO_ERRCOUNT(myThid)
+          
+C         Check for IO errors
+          IF ( endIOErrCount .NE. beginIOErrCount ) THEN
+            WRITE(msgBuf,'(A)')  'S/R WRITE_TIME_AVERAGES'
+            CALL PRINT_ERROR( msgBuf, 1 )
+            WRITE(msgBuf,'(A)')  'Error writing out data'
+            CALL PRINT_ERROR( msgBuf, 1 )
+            WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
+            CALL PRINT_ERROR( msgBuf, 1 )
+          ELSE
+            WRITE(msgBuf,'(A,I10)')  
+     &           '// Time-average data written, t-step', myIter
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &           SQUEEZE_RIGHT, 1 )
+            WRITE(msgBuf,'(A)')  ' '
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &           SQUEEZE_RIGHT, 1 )
+          ENDIF
         
+        ENDIF
+
         _END_MASTER( myThid )
         _BARRIER
         

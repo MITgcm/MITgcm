@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.33 2004/07/09 14:24:19 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.34 2004/09/10 12:19:30 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -71,6 +71,9 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==

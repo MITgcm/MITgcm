@@ -1,45 +1,42 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.56 2004/09/07 21:32:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.57 2004/09/10 12:19:29 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: CONFIG_SUMMARY
+
 C     !INTERFACE:
       SUBROUTINE CONFIG_SUMMARY( myThid )
-C     !DESCRIPTION: \bv
-C     *=========================================================*
-C     | SUBROUTINE CONFIG_SUMMARY                                 
-C     | o Summarize model parameter settings.                     
-C     *=========================================================* 
-C     | This routine writes a tabulated summary of the kernel     
-C     | model configuration. Information describes all the 
-C     | parameter setting in force and the meaning and units of
-C     | those parameters. Individal packages report a similar
-C     | table for each package using the same format as employed
-C     | here. If parameters are missing or incorrectly described
-C     | or dimensioned please contact support@mitgcm.org
-C     *=========================================================* 
-C     \ev
+
+C     !DESCRIPTION:
+C     This routine summarizes the model parameter settings by writing a
+C     tabulated list of the kernel model configuration variables.  It
+C     describes all the parameter settings in force and the meaning and
+C     units of those parameters. Individal packages report a similar
+C     table for each package using the same format as employed here. If
+C     parameters are missing or incorrectly described or dimensioned
+C     please contact <MITgcm-support@mitgcm.org>
 
 C     !USES:
       IMPLICIT NONE
-C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "EOS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     myThid -  Number of this instance of CONFIG_SUMMARY
+C     myThid ::  Number of this instance of CONFIG_SUMMARY
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     msgBuf :: Temp. for building output string.
 C     I,J,K  :: Loop counters.
 C     bi,bj  :: Tile loop counters.
@@ -54,7 +51,6 @@ C     zcoord ::
       _RL                     rcoord(Nr+1)
       INTEGER coordLine
       INTEGER tileLine
-CEOP
 
 
       _BARRIER
@@ -365,12 +361,34 @@ CEOP
      &'   /* Permanent restart/checkpoint file interval ( s ). */')
       CALL WRITE_0D_R8( chkPtFreq, INDEX_NONE,'chkPtFreq =',
      &'   /* Rolling restart/checkpoint file interval ( s ). */')
+      CALL WRITE_0D_L(pickup_write_mdsio,INDEX_NONE,
+     &     'pickup_write_mdsio =', '   /* Model IO flag. */')
+      CALL WRITE_0D_L(pickup_read_mdsio,INDEX_NONE,
+     &     'pickup_read_mdsio =', '   /* Model IO flag. */')
+#ifdef ALLOW_MNC
+      CALL WRITE_0D_L(pickup_write_mnc,INDEX_NONE,
+     &     'pickup_write_mnc =', '   /* Model IO flag. */')
+      CALL WRITE_0D_L(pickup_read_mnc,INDEX_NONE,
+     &     'pickup_read_mnc =', '   /* Model IO flag. */')
+#endif
+      CALL WRITE_0D_L(pickup_write_immed,INDEX_NONE,
+     &     'pickup_write_immed =','   /* Model IO flag. */')
       CALL WRITE_0D_R8( dumpFreq, INDEX_NONE,'dumpFreq =',
      &'   /* Model state write out interval ( s ). */')
+      CALL WRITE_0D_L(snapshot_mdsio,INDEX_NONE,
+     &     'snapshot_mdsio =', '   /* Model IO flag. */')
+#ifdef ALLOW_MNC
+      CALL WRITE_0D_L(snapshot_mnc,INDEX_NONE,
+     &     'snapshot_mnc =', '   /* Model IO flag. */')
+#endif
       CALL WRITE_0D_R8( monitorFreq, INDEX_NONE,'monitorFreq =',
      &'   /* Monitor output interval ( s ). */')
-      CALL WRITE_0D_I( mon_iotype, INDEX_NONE,'mon_iotype =',
-     &'   /* Monitor IO flags. */')
+      CALL WRITE_0D_L(monitor_mdsio,INDEX_NONE,
+     &     'monitor_mdsio =', '   /* Model IO flag. */')
+#ifdef ALLOW_MNC
+      CALL WRITE_0D_L(monitor_mnc,INDEX_NONE,
+     &     'monitor_mnc =', '   /* Model IO flag. */')
+#endif
       CALL WRITE_0D_R8( externForcingPeriod, INDEX_NONE,
      &   'externForcingPeriod =', '   /* forcing period (s) */')
       CALL WRITE_0D_R8( externForcingCycle, INDEX_NONE,

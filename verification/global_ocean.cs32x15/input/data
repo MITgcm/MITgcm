@@ -65,6 +65,7 @@
 # 2yrs restoring timescale for salinity
  tauSaltClimRelax = 62208000.,
  monitorFreq =1.,
+ monitor_ioinc=.TRUE.,
  &
 
 # Gridding parameters

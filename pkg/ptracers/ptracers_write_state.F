@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.4 2004/09/03 20:10:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.5 2004/09/10 12:19:31 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -18,6 +18,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 
@@ -42,23 +45,18 @@ C     iRec      :: record number
 #ifdef ALLOW_MNC
       INTEGER ii
 
-      IF (useMNC
-     &     .AND. (mod(PTRACERS_iotypes,4) .GT. 1)
-     &     .AND. PTRACERS_mnc_write ) THEN
+      IF (useMNC .AND. PTRACERS_write_mnc) THEN
         CALL MNC_CW_SET_UDIM('ptracers', -1, myThid)
         CALL MNC_CW_I_W('I','ptracers',0,0,'iter',myIter,myThid)
         CALL MNC_CW_SET_UDIM('ptracers', 0, myThid)
         DO ii = 1,PTRACERS_numInUse
-CEH3          WRITE(*,*) 'PTRACERS_names(',ii,') = ''',
-CEH3     &         PTRACERS_names(ii),''''
           CALL MNC_CW_RL_W('D','ptracers',0,0,PTRACERS_names(ii),
      &         pTracer(1-OLx,1-OLy,1,1,1,ii),myThid)
         ENDDO
       ENDIF
 #endif /*  ALLOW_MNC  */
 
-      IF (mod(PTRACERS_iotypes,2) .GT. 0) THEN
-C       use MDSIO
+      IF (PTRACERS_write_mdsio) THEN
 
 C       Loop over tracers
         DO iTracer=1,PTRACERS_numInUse

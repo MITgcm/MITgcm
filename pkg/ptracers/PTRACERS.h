@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.9 2004/09/03 20:10:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.10 2004/09/10 12:19:31 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -32,9 +32,11 @@ C     PTRACERS parameters
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_names(PTRACERS_num)
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_long_names(PTRACERS_num)
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_units(PTRACERS_num)
-      INTEGER PTRACERS_iotypes
-      LOGICAL PTRACERS_mnc_read
-      LOGICAL PTRACERS_mnc_write
+      LOGICAL PTRACERS_read_mdsio
+      LOGICAL PTRACERS_read_mnc
+      LOGICAL PTRACERS_write_mdsio
+      LOGICAL PTRACERS_write_mnc
+      LOGICAL PTRACERS_write_ioinc
       COMMON /PTRACERS_PARAMS/
      &     PTRACERS_taveFreq,
      &     PTRACERS_diffKh,
@@ -49,9 +51,11 @@ C     PTRACERS parameters
      &     PTRACERS_names,
      &     PTRACERS_long_names,
      &     PTRACERS_units,
-     &     PTRACERS_mnc_read,
-     &     PTRACERS_mnc_write,
-     &     PTRACERS_iotypes
+     &     PTRACERS_read_mdsio,
+     &     PTRACERS_read_mnc, 
+     &     PTRACERS_write_mdsio,
+     &     PTRACERS_write_mnc,
+     &     PTRACERS_write_ioinc
 
 C     pTracer  :: passive tracer concentration (tr per unit volume).
 C     gPtr     :: work-space for time-stepping

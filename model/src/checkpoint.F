@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.43 2004/07/06 00:54:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.44 2004/09/10 12:19:29 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,6 +54,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "DYNVARS.h"
 #include "SURFACE.h"
 #ifdef ALLOW_NONHYDROSTATIC
@@ -78,48 +81,7 @@ C     fn      :: Temp. for building file name.
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(10) suff
 
-C--    Going to really do some IO. Make everyone except master thread wait.
-      _BARRIER
-      _BEGIN_MASTER( myThid )
-
-#ifdef OLD_STYLE_WITH_MANY_FILES
-
-C     Force 64-bit IO
-      oldPrec        = readBinaryPrec
-      readBinaryPrec = precFloat64
-
-C--   Read model fields
-C     Raw fields
-      CALL READ_REC_XYZ_RL(  'uVel',   uVel, 1,myIter, myThid)
-      CALL READ_REC_XYZ_RL(    'gU',     gU, 1,myIter, myThid)
-      CALL READ_REC_XYZ_RL( 'guNm1',  gUNm1, 1,myIter, myThid)
-      CALL READ_REC_XYZ_RL(  'vVel',   vVel, 1,myIter, myThid)
-      CALL READ_REC_XYZ_RL(    'gV',     gV, 1,myIter, myThid)
-      CALL READ_REC_XYZ_RL( 'gvNm1',  gVNm1, 1,myIter, myThid)
-      CALL READ_REC_XYZ_RL( 'theta',  theta, 1,myIter, myThid)
-      CALL READ_REC_XYZ_RL(    'gT',     gT, 1,myIter, myThid)
-      CALL READ_REC_XYZ_RL( 'gtNm1',  gTNm1, 1,myIter, myThid)
-      CALL READ_REC_XYZ_RL(  'salt',   salt, 1,myIter, myThid)
-      CALL READ_REC_XYZ_RL(    'gS',     gS, 1,myIter, myThid)
-      CALL READ_REC_XYZ_RL( 'gsNm1',  gSNm1, 1,myIter, myThid)
-      CALL READ_REC_XY_RL ('etaN', etaN, 1,myIter, myThid)
-      
-#ifdef ALLOW_NONHYDROSTATIC
-      IF ( nonHydrostatic ) THEN
-        CALL READ_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
-        CALL READ_REC_XYZ_RL( 'gW',gW,       1,myIter,myThid)
-c       CALL READ_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
-      ENDIF
-#endif
-
-C     Reset default IO precision
-      readBinaryPrec = oldPrec
-      
-#else /* OLD_STYLE_WITH_MANY_FILES */
-      
-      prec = precFloat64
-      
-C--   Suffix for pickup files
+C     Suffix for pickup files
       DO i = 1,MAX_LEN_FNAM
         fn(i:i) = ' '
       ENDDO
@@ -130,9 +92,108 @@ C--   Suffix for pickup files
       ENDIF
       WRITE(fn,'(A,A10)') 'pickup.',suff
       
+C     Going to really do some IO. Make everyone except master thread wait.
+      _BARRIER
+      _BEGIN_MASTER( myThid )
+
+      IF (pickup_read_mdsio) THEN
+      
+#ifdef OLD_STYLE_WITH_MANY_FILES
+
+C       Force 64-bit IO
+        oldPrec        = readBinaryPrec
+        readBinaryPrec = precFloat64
+
+C       Read model fields
+C       Raw fields
+        CALL READ_REC_XYZ_RL(  'uVel',   uVel, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL(    'gU',     gU, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL( 'guNm1',  gUNm1, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL(  'vVel',   vVel, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL(    'gV',     gV, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL( 'gvNm1',  gVNm1, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL( 'theta',  theta, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL(    'gT',     gT, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL( 'gtNm1',  gTNm1, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL(  'salt',   salt, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL(    'gS',     gS, 1,myIter,myThid)
+        CALL READ_REC_XYZ_RL( 'gsNm1',  gSNm1, 1,myIter,myThid)
+        CALL READ_REC_XY_RL (  'etaN',   etaN, 1,myIter,myThid)
+        
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( nonHydrostatic ) THEN
+          CALL READ_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
+          CALL READ_REC_XYZ_RL(    'gW',    gW,1,myIter,myThid)
+c         CALL READ_REC_XYZ_RL( 'gWnm1', gWnm1,1,myIter,myThid)
+        ENDIF
+#endif
+
+C       Reset default IO precision
+        readBinaryPrec = oldPrec
+      
+#else /* OLD_STYLE_WITH_MANY_FILES */
+      
+        prec = precFloat64
+
+C       Read model fields
+        IF ( usePickupBeforeC54 ) THEN
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,uVel,   1,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gU,     2,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gUnm1,  3,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,vVel,   4,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gV,     5,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gVnm1,  6,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,theta,  7,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gT,     8,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gTnm1,  9,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,salt,  10,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gS,    11,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gSnm1, 12,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL', 1,etaN,12*Nr+1,myThid)
+#ifdef NONLIN_FRSURF
+          IF (nonlinFreeSurf .GE. 0) THEN
+            CALL MDSREADFIELD(fn,prec,'RL',1,etaH,12*Nr+2,myThid)
+          ENDIF
+#endif
+        ELSE 
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,uVel,   1,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gUnm1,  2,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,vVel,   3,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gVnm1,  4,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,theta,  5,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gTnm1,  6,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,salt,   7,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gSnm1,  8,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL', 1,etaN, 8*Nr+1,myThid)
+#ifdef EXACT_CONSERV
+          IF (exactConserv) THEN
+            CALL MDSREADFIELD(fn,prec,'RL',1,dEtaHdt,8*Nr+2,myThid)
+          ENDIF
+          IF (nonlinFreeSurf .GT. 0) THEN 
+            CALL MDSREADFIELD(fn,prec,'RL',1,etaH,   8*Nr+3,myThid)
+          ENDIF
+#endif
+        ENDIF 
+
+        IF ( useDynP_inEos_Zc ) THEN
+          WRITE(fn,'(A,A10)') 'pickup_ph.',suff
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,totPhiHyd,1,myThid)
+        ENDIF
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( nonHydrostatic ) THEN
+          WRITE(fn,'(A,A10)') 'pickup_nh.',suff
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,phi_nh,1,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,    gW,2,myThid)
+c         CALL MDSREADFIELD(fn,prec,'RL',Nr, gWnm1,3,myThid)
+        ENDIF
+#endif
+
+#endif /* OLD_STYLE_WITH_MANY_FILES */
+
+      ENDIF
+      
 #ifdef ALLOW_MNC
-      IF (useMNC .AND. mnc_pickup_read) THEN
-C       Read variables from the pickup file
+      IF (pickup_read_mnc) THEN
         CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
         CALL MNC_CW_SET_UDIM(fn, 1, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'U',uVel, myThid)
@@ -144,90 +205,34 @@ C       Read variables from the pickup file
         CALL MNC_CW_RL_R('D',fn,0,0,'gVnm1',gVnm1, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'gTnm1',gTnm1, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'gSnm1',gSnm1, myThid)
-#ifdef NONLIN_FRSURF
-        IF ( nonlinFreeSurf.GE.0 .AND. usePickupBeforeC54 )
-     &    CALL MNC_CW_RL_R('D',fn,0,0,'EtaH', etaH, myThid)
-#endif
+C#ifdef NONLIN_FRSURF
+C        IF ( nonlinFreeSurf.GE.0 .AND. usePickupBeforeC54 )
+C     &    CALL MNC_CW_RL_R('D',fn,0,0,'EtaH', etaH, myThid)
+C#endif
 #ifdef EXACT_CONSERV
-        IF ( .NOT. usePickupBeforeC54 ) THEN
-         IF ( exactConserv ) 
-     &    CALL MNC_CW_RL_R('D',fn,0,0,'dEtaHdt', dEtaHdt, myThid)
-         IF ( nonlinFreeSurf.GT.0 ) 
-     &    CALL MNC_CW_RL_R('D',fn,0,0,'EtaH', etaH, myThid)
+        IF (exactConserv) THEN
+          CALL MNC_CW_RL_R('D',fn,0,0,'dEtaHdt',dEtaHdt,myThid)
+        ENDIF
+        IF (nonlinFreeSurf .GT. 0) THEN
+          CALL MNC_CW_RL_R('D',fn,0,0,'EtaH', etaH, myThid)
         ENDIF
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
-        IF ( nonHydrostatic ) THEN
+        IF (nonHydrostatic) THEN
           CALL MNC_CW_RL_R('D',fn,0,0,'phi_nh', phi_nh, myThid)
           CALL MNC_CW_RL_R('D',fn,0,0,'gW', gW, myThid)
         ENDIF
 #endif
         IF ( useDynP_inEos_Zc ) THEN
-          CALL MNC_CW_RL_R('D',fn,0,0,'phiHyd', totPhiHyd, myThid)
+          CALL MNC_CW_RL_R('D',fn,0,0,'phiHyd',totPhiHyd,myThid)
         ENDIF
-      ELSE
-#endif /*  ALLOW_MNC  */
-
-C--     Read model fields
-       IF ( usePickupBeforeC54 ) THEN
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,uVel,   1,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gU,     2,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gUnm1,  3,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,vVel,   4,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gV,     5,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gVnm1,  6,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,theta,  7,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gT,     8,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gTnm1,  9,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,salt,  10,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gS,    11,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gSnm1, 12,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL', 1,etaN,12*Nr+1,myThid)
-#ifdef NONLIN_FRSURF
-        IF ( nonlinFreeSurf.GE.0 )
-     &    CALL MDSREADFIELD(fn,prec,'RL',1,etaH,12*Nr+2,myThid)
-#endif
-       ELSE 
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,uVel,   1,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gUnm1,  2,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,vVel,   3,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gVnm1,  4,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,theta,  5,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gTnm1,  6,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,salt,   7,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gSnm1,  8,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL', 1,etaN, 8*Nr+1,myThid)
-#ifdef EXACT_CONSERV
-        IF ( exactConserv ) 
-     &    CALL MDSREADFIELD(fn,prec,'RL',1,dEtaHdt,8*Nr+2,myThid)
-        IF ( nonlinFreeSurf.GT.0 ) 
-     &    CALL MDSREADFIELD(fn,prec,'RL',1,etaH,   8*Nr+3,myThid)
-#endif
-       ENDIF 
-
-        IF ( useDynP_inEos_Zc ) THEN
-          WRITE(fn,'(A,A10)') 'pickup_ph.',suff
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,totPhiHyd,1,myThid)
-        ENDIF
-#ifdef ALLOW_NONHYDROSTATIC
-        IF ( nonHydrostatic ) THEN
-          WRITE(fn,'(A,A10)') 'pickup_nh.',suff
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,phi_nh,1,myThid)
-          CALL MDSREADFIELD(fn,prec,'RL',Nr,gW,   2,myThid)
-c         CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
-        ENDIF
-#endif
-
-#ifdef ALLOW_MNC
       ENDIF
 #endif /*  ALLOW_MNC  */
-
-#endif /* OLD_STYLE_WITH_MANY_FILES */
 
       _END_MASTER( myThid )
       _BARRIER
       
-C--   Fill in edge regions
+C     Fill in edge regions
       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
       CALL EXCH_UV_XYZ_RL(gU,gV,.TRUE.,myThid)
       CALL EXCH_UV_XYZ_RL(gUnm1,gVnm1,.TRUE.,myThid)
@@ -255,7 +260,7 @@ C--   Fill in edge regions
 c       _EXCH_XYZ_R8(gWNM1 , myThid )
       ENDIF
 #endif
-
+      
       RETURN
       END
 
@@ -288,18 +293,10 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#include "SURFACE.h"
-#ifdef ALLOW_NONHYDROSTATIC
-#include "GW.h"
-#include "SOLVE_FOR_PRESSURE3D.h"
-#endif
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
-      COMMON /PCKP_GBLFLS/ globalFile
-      LOGICAL globalFile
 
 C     !INPUT PARAMETERS:
 C     modelEnd  :: Checkpoint call at end of model run.
@@ -317,17 +314,8 @@ C     permCheckPoint :: Flag indicating whether a permanent checkpoint will
 C                       be written.
 C     tempCheckPoint :: Flag indicating if it is time to write a non-permanent
 C                       checkpoint (that will be permanent if permCheckPoint=T)
-C     oldPrc :: Temp. for holding I/O precision
-C     fn     :: Temp. for building file name string.
-C     lgf    :: Flag to indicate whether to use global file mode.
       LOGICAL permCheckPoint, tempCheckPoint  
-      INTEGER i, oldPrec, prec
-      CHARACTER*(MAX_LEN_FNAM) fn
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      LOGICAL lgf
-      COMMON /PCKP_SWAP/ pickup_ext
-      CHARACTER*(1) pickup_ext
-
+      
       permCheckPoint = .FALSE.
       tempCheckPoint = .FALSE.
       permCheckPoint =
@@ -341,156 +329,213 @@ C     lgf    :: Flag to indicate whether to use global file mode.
      &     ( modelEnd .AND. .NOT.(permCheckPoint.OR.tempCheckPoint) )
      &     ) THEN
 
-C--     Going to really do some IO. Make everyone except master thread wait.
-        _BARRIER
-        _BEGIN_MASTER( myThid )
+        CALL WRITE_CHECKPOINT_NOW(
+     &       permCheckPoint, myTime, myIter, myThid )
+
+
+      ENDIF
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: WRITE_CHECKPOINT_NOW
+C     !INTERFACE:
+      SUBROUTINE WRITE_CHECKPOINT_NOW( 
+     I     permCheckPoint, myTime, 
+     I     myIter, myThid )
+
+C     !DESCRIPTION:
+C     Write the checkpoint and do it NOW.
+
+C     !USES:
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
+#include "DYNVARS.h"
+#include "SURFACE.h"
+#ifdef ALLOW_NONHYDROSTATIC
+#include "GW.h"
+#include "SOLVE_FOR_PRESSURE3D.h"
+#endif
+      INTEGER  IO_ERRCOUNT
+      EXTERNAL IO_ERRCOUNT
+      COMMON /PCKP_GBLFLS/ globalFile
+      LOGICAL globalFile
+
+C     !INPUT PARAMETERS:
+C     permCheckPoint  :: Is or is not a permanent checkpoint.
+C     myThid          :: Thread number for this instance of the routine.
+C     myIter          :: Iteration number
+C     myTime          :: Current time of simulation ( s )
+      LOGICAL permCheckPoint
+      INTEGER myThid
+      INTEGER myIter
+      _RL     myTime
+CEOP
+
+C     !LOCAL VARIABLES:
+C     oldPrc :: Temp. for holding I/O precision
+C     fn     :: Temp. for building file name string.
+C     lgf    :: Flag to indicate whether to use global file mode.
+      INTEGER i, oldPrec, prec
+      CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      LOGICAL lgf
+      COMMON /PCKP_SWAP/ pickup_ext
+      CHARACTER*(1) pickup_ext
+
+C     Write model fields
+      DO i = 1,MAX_LEN_FNAM
+        fn(i:i) = ' '
+      ENDDO
+      IF ( permCheckPoint ) THEN
+        WRITE(fn,'(A,I10.10)') 'pickup.',myIter
+      ELSE
+        WRITE(fn,'(A,A)') 'pickup.',checkPtSuff(nCheckLev)
+      ENDIF
+          
+C     Going to really do some IO. Make everyone except master thread wait.
+      _BARRIER
+      _BEGIN_MASTER( myThid )
+      
+      IF (pickup_write_mdsio) THEN
 
 #ifdef OLD_STYLE_WITH_MANY_FILES
       
 C       Force 64-bit IO
         oldPrec = writeBinaryPrec
         writeBinaryPrec = precFloat64
-C--     Write model fields
+C       Write model fields
 C       Raw fields
-        CALL WRITE_REC_XYZ_RL(  'uVel',   uVel,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(    'gU',     gU,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL( 'gUNm1',  gUNm1,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'vVel',   vVel,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(    'gV',     gV,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL( 'gVNm1',  gVNm1,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL( 'theta',  theta,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(    'gT',     gT,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL( 'gTNm1',  gTNm1,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'salt',   salt,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(    'gS',     gS,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL( 'gSNm1',  gSNm1,  1,myIter, myThid)
-        CALL WRITE_REC_XY_RL ('etaN', etaN,  1,myIter, myThid)
+        CALL WRITE_REC_XYZ_RL(  'uVel',   uVel, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL(    'gU',     gU, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL( 'gUNm1',  gUNm1, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL(  'vVel',   vVel, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL(    'gV',     gV, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL( 'gVNm1',  gVNm1, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL( 'theta',  theta, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL(    'gT',     gT, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL( 'gTNm1',  gTNm1, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL(  'salt',   salt, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL(    'gS',     gS, 1,myIter,myThid)
+        CALL WRITE_REC_XYZ_RL( 'gSNm1',  gSNm1, 1,myIter,myThid)
+        CALL WRITE_REC_XY_RL (  'etaN',  etaN,  1,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
           CALL WRITE_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
-          CALL WRITE_REC_XYZ_RL( 'gW',gW, 1,myIter,myThid)
-c         CALL WRITE_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
+          CALL WRITE_REC_XYZ_RL(    'gW',    gW,1,myIter,myThid)
+C         CALL WRITE_REC_XYZ_RL( 'gWnm1', gWnm1,1,myIter,myThid)
         ENDIF
 #endif
-C--       Reset binary precision
+C       Reset binary precision
         writeBinaryPrec = oldPrec
-
+        
 #else /* OLD_STYLE_WITH_MANY_FILES */
       
         prec = precFloat64
         lgf = globalFile
-        
-C--     Write model fields
-        DO i = 1,MAX_LEN_FNAM
-          fn(i:i) = ' '
-        ENDDO
-        IF ( permCheckPoint ) THEN
-          WRITE(fn,'(A,I10.10)') 'pickup.',myIter
-        ELSE
-          WRITE(fn,'(A,A)') 'pickup.',checkPtSuff(nCheckLev)
-        ENDIF
 
-#ifdef ALLOW_MNC
-        IF (useMNC .AND. mnc_pickup_write) THEN
-C         Write dynvars using the MNC package
-          CALL MNC_CW_SET_UDIM(fn, -1, myThid)
-          CALL MNC_CW_I_W('I',fn,0,0,'iter', myIter, myThid)
-          CALL MNC_CW_SET_UDIM(fn, 0, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'U', uVel, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'V', vVel, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'T', theta, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'S', salt, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'Eta', etaN, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'gUnm1', gUnm1, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'gVnm1', gVnm1, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'gTnm1', gTnm1, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'gSnm1', gSnm1, myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVel, 1,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gUnm1,2,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVel, 3,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gVnm1,4,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,theta,5,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gTnm1,6,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,salt, 7,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gSnm1,8,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaN, 8*Nr+1,
+     &       myIter,myThid)
 #ifdef EXACT_CONSERV
-          CALL MNC_CW_RL_W('D',fn,0,0,'dEtaHdt', dEtaHdt, myThid)
-          CALL MNC_CW_RL_W('D',fn,0,0,'EtaH', etaHnm1, myThid)
-#endif
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,dEtaHdt,8*Nr+2,
+     &       myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaHnm1,8*Nr+3,
+     &       myIter,myThid)
+#endif /* EXACT_CONSERV */
+        IF ( useDynP_inEos_Zc ) THEN
+          IF ( permCheckPoint ) THEN
+            WRITE(fn,'(A,I10.10)') 'pickup_ph.',myIter
+          ELSE
+            WRITE(fn,'(A,A)') 'pickup_ph.',checkPtSuff(nCheckLev)
+          ENDIF
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,totPhiHyd,
+     &         1,myIter,myThid)
+        ENDIF
 #ifdef ALLOW_NONHYDROSTATIC
-          IF ( nonHydrostatic ) THEN
-            CALL MNC_CW_RL_W('D',fn,0,0,'phi_nh', phi_nh, myThid)
-            CALL MNC_CW_RL_W('D',fn,0,0,'gW', gW, myThid)
+        IF ( nonHydrostatic ) THEN
+          IF ( permCheckPoint ) THEN
+            WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
+          ELSE
+            WRITE(fn,'(A,A)') 'pickup_nh.',checkPtSuff(nCheckLev)
           ENDIF
-#endif
-          IF ( useDynP_inEos_Zc ) THEN
-            CALL MNC_CW_RL_W('D',fn,0,0,'phiHyd', totPhiHyd, myThid)
-          ENDIF
-        ELSE
-#endif /*  ALLOW_MNC  */
-
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVel, 1,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gUnm1,2,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVel, 3,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gVnm1,4,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,theta,5,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gTnm1,6,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,salt, 7,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gSnm1,8,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaN, 8*Nr+1,
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,phi_nh, 1,
      &         myIter,myThid)
-#ifdef EXACT_CONSERV
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,dEtaHdt,8*Nr+2,
-     &      myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaHnm1,8*Nr+3,
-     &      myIter,myThid)
-#endif
-          IF ( useDynP_inEos_Zc ) THEN
-            IF ( permCheckPoint ) THEN
-              WRITE(fn,'(A,I10.10)') 'pickup_ph.',myIter
-            ELSE
-              WRITE(fn,'(A,A)') 'pickup_ph.',checkPtSuff(nCheckLev)
-            ENDIF
-            CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,totPhiHyd,
-     &           1,myIter,myThid)
-          ENDIF
-#ifdef ALLOW_NONHYDROSTATIC
-          IF ( nonHydrostatic ) THEN
-            IF ( permCheckPoint ) THEN
-              WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
-            ELSE
-              WRITE(fn,'(A,A)') 'pickup_nh.',checkPtSuff(nCheckLev)
-            ENDIF
-            CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,phi_nh, 1,
-     &           myIter,myThid)
-            CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gW,     2,
-     &             myIter,myThid)
-C           CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,  3,
-C           &    myIter,myThid)
-          ENDIF
-#endif
-
-#ifdef ALLOW_MNC
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gW,     2,
+     &         myIter,myThid)
+C         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,  3,
+C         &    myIter,myThid)
         ENDIF
-#endif /*  ALLOW_MNC  */
+#endif /* ALLOW_NONHYDROSTATIC */
 
 #endif /* OLD_STYLE_WITH_MANY_FILES */
 
-C--     Write suffix for stdout information
-        IF ( permCheckPoint ) THEN
-          WRITE(fn,'(I10.10)') myIter
-        ELSE
-          WRITE(fn,'(A)') checkPtSuff(nCheckLev)
-        ENDIF
-        
-        IF ( .NOT. permCheckPoint ) THEN
-          nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
-        ENDIF
-        
-        _END_MASTER(myThid)
-        _BARRIER
-        
-C--     Write information to stdout so there is a record that the
-C       checkpoint was completed
-        _BEGIN_MASTER(myThid)
-        WRITE(msgBuf,'(A11,I10,1X,A10)')
-     &       "%CHECKPOINT ",myIter,fn
-        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-        _END_MASTER(myThid)
-        
       ENDIF
 
+#ifdef ALLOW_MNC
+      IF (pickup_write_mnc) THEN
+        CALL MNC_CW_SET_UDIM(fn, -1, myThid)
+        CALL MNC_CW_I_W('I',fn,0,0,'iter', myIter, myThid)
+        CALL MNC_CW_SET_UDIM(fn, 0, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'U', uVel, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'V', vVel, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'T', theta, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'S', salt, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'Eta', etaN, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'gUnm1', gUnm1, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'gVnm1', gVnm1, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'gTnm1', gTnm1, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'gSnm1', gSnm1, myThid)
+#ifdef EXACT_CONSERV
+        CALL MNC_CW_RL_W('D',fn,0,0,'dEtaHdt', dEtaHdt, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'EtaH', etaHnm1, myThid)
+#endif
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( nonHydrostatic ) THEN
+          CALL MNC_CW_RL_W('D',fn,0,0,'phi_nh', phi_nh, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'gW', gW, myThid)
+        ENDIF
+#endif
+        IF ( useDynP_inEos_Zc ) THEN
+          CALL MNC_CW_RL_W('D',fn,0,0,'phiHyd', totPhiHyd, myThid)
+        ENDIF
+      ENDIF
+#endif /*  ALLOW_MNC  */
+
+C     Write suffix for stdout information
+      IF ( permCheckPoint ) THEN
+        WRITE(fn,'(I10.10)') myIter
+      ELSE
+        WRITE(fn,'(A)') checkPtSuff(nCheckLev)
+      ENDIF
+      
+      IF ( .NOT. permCheckPoint ) THEN
+        nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
+      ENDIF
+      
+      _END_MASTER(myThid)
+      _BARRIER
+      
+C     Write information to stdout so there is a record that the
+C     checkpoint was completed
+      _BEGIN_MASTER(myThid)
+      WRITE(msgBuf,'(A11,I10,1X,A10)')
+     &     "%CHECKPOINT ",myIter,fn
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      _END_MASTER(myThid)
+      
       RETURN
       END

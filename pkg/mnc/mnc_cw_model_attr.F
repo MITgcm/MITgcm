@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.9 2004/09/04 18:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.10 2004/09/10 12:19:30 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -24,6 +24,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "PARAMS.h"
+#include "MNC_PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_TOPOLOGY.h"

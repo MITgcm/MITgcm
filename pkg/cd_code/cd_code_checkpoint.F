@@ -1,32 +1,41 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/Attic/cd_code_checkpoint.F,v 1.3 2004/07/06 18:33:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/Attic/cd_code_checkpoint.F,v 1.4 2004/09/10 12:19:30 edhill Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: CD_CODE_READ_CHECKPOINT
+
+C     !INTERFACE:
       SUBROUTINE CD_CODE_READ_CHECKPOINT( myIter, myThid )
 
+C     !DESCRIPTION:
+C     Read the checkpoint.
+
+C     !USES:
       IMPLICIT NONE
-C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "CD_CODE_VARS.h"
 
-C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_UVEL 
+C     !INPUT/OUTPUT PARAMETERS:
       INTEGER myIter
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_CD_CODE
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(10) suff
       INTEGER prec
-CEOP
 
-C--   Suffix for pickup files
+C     Suffix for pickup files
       IF (pickupSuff.EQ.' ') THEN
          WRITE(suff,'(I10.10)') myIter
       ELSE
@@ -37,16 +46,31 @@ C--   Suffix for pickup files
       _BEGIN_MASTER( myThid )
 
       prec = precFloat64
-      
       WRITE(fn,'(A,A10)') 'pickup_cd.',suff
-      CALL MDSREADFIELD(fn,prec,'RL',Nr,uVelD,    1,myThid)
-      CALL MDSREADFIELD(fn,prec,'RL',Nr,vVelD,    2,myThid)
-      CALL MDSREADFIELD(fn,prec,'RL',Nr,uNM1,     3,myThid)
-      CALL MDSREADFIELD(fn,prec,'RL',Nr,vNM1,     4,myThid)
-      IF ( usePickupBeforeC54 ) THEN
-        CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,6*Nr+1,myThid)
-      ELSE
-        CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,4*Nr+1,myThid)
+      
+#ifdef ALLOW_MNC
+      IF (useMNC .AND. pickup_read_mnc) THEN
+C       Read variables from the pickup file
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'uVelD',uVelD, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'vVelD',vVelD, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Unm1',Unm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Vnm1',Vnm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'etaNm1', etaNm1, myThid)
+      ENDIF
+#endif /*  ALLOW_MNC  */
+
+      IF (pickup_read_mdsio) THEN
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,uVelD,    1,myThid)
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,vVelD,    2,myThid)
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,uNM1,     3,myThid)
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,vNM1,     4,myThid)
+        IF ( usePickupBeforeC54 ) THEN
+          CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,6*Nr+1,myThid)
+        ELSE
+          CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,4*Nr+1,myThid)
+        ENDIF
       ENDIF
       
       _END_MASTER( myThid )
@@ -62,46 +86,71 @@ C--   Suffix for pickup files
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: CD_CODE_WRITE_CHECKPOINT
 
-
+C     !INTERFACE:
       SUBROUTINE CD_CODE_WRITE_CHECKPOINT( 
-     &     prec, lgf, permCheckPoint, myIter, myThid )
+     I     prec, 
+     I     lgf, 
+     I     permCheckPoint, 
+     I     myIter, 
+     I     myThid )
 
+C     !DESCRIPTION:
+C     Read the pickup.
+
+C     !USES:
       IMPLICIT NONE
-C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "CD_CODE_VARS.h"
 
-C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_UVEL 
+C     !INPUT/OUTPUT PARAMETERS:
       INTEGER prec
       LOGICAL lgf
       LOGICAL permCheckPoint  
       INTEGER myIter
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_CD_CODE
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
-c     CHARACTER*(MAX_LEN_MBUF) msgBuf
-c     CHARACTER*(10) suff
-CEOP
 
-        IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIter
-        ELSE
-         WRITE(fn,'(A,A)') 'pickup_cd.',checkPtSuff(nCheckLev)
-        ENDIF
+      IF ( permCheckPoint ) THEN
+        WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIter
+      ELSE
+        WRITE(fn,'(A,A)') 'pickup_cd.',checkPtSuff(nCheckLev)
+      ENDIF
+      
+#ifdef ALLOW_MNC
+      IF (useMNC .AND. pickup_write_mnc) THEN
+C       Read variables from the pickup file
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'uVelD',uVelD, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'vVelD',vVelD, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'Unm1',Unm1, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'Vnm1',Vnm1, myThid)
+        CALL MNC_CW_RL_W('D',fn,0,0,'etaNm1', etaNm1, myThid)
+      ENDIF
+#endif /*  ALLOW_MNC  */
+
+      IF (pickup_write_mdsio) THEN
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVelD,1,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVelD,2,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uNM1, 3,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vNM1, 4,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaNm1,4*Nr+1,
-     &                     myIter,myThid)
+     &       myIter,myThid)
+      ENDIF
 
 #endif /*  ALLOW_CD_CODE  */
 

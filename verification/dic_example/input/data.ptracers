@@ -1,8 +1,7 @@
  &PTRACERS_PARM01
  PTRACERS_numInUse=5,
- PTRACERS_iotypes=3,
- PTRACERS_mnc_write=.TRUE.,
- PTRACERS_mnc_read=.FALSE.,
+ PTRACERS_write_mnc=.TRUE.,
+ PTRACERS_write_ioinc=.TRUE.,
 #
 # tracer 1 - dic
  PTRACERS_names(1)='dic',

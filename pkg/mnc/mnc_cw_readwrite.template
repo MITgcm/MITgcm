@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.17 2004/04/02 16:12:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.18 2004/09/10 12:19:30 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -26,6 +26,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "MNC_PARAMS.h"
 
 C     !INPUT PARAMETERS:
       integer myThid, bi,bj, indu
@@ -360,6 +361,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "MNC_PARAMS.h"
 
 C     !INPUT PARAMETERS:
       integer myThid, bi,bj, indu

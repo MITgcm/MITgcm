@@ -1,20 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.123 2004/09/07 21:32:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.124 2004/09/10 12:19:29 edhill Exp $
 C $Name:  $
 C
+
 CBOP
-C    !ROUTINE: PARAMS.h
-C    !INTERFACE:
-C    include PARAMS.h
-C    !DESCRIPTION: \bv
-C     *==========================================================*
-C     | PARAMS.h                                                  
-C     | o Header file defining model "parameters".                
-C     *==========================================================*
-C     | The values from the model standard input file are         
-C     | stored into the variables held here. Notes describing     
-C     | the parameters can also be found here.                    
-C     *==========================================================*
-C     \ev
+C     !ROUTINE: PARAMS.h
+C     !INTERFACE:
+C     #include PARAMS.h
+
+C     !DESCRIPTION:
+C     Header file defining model "parameters".  The values from the
+C     model standard input file are stored into the variables held
+C     here. Notes describing the parameters can also be found here.
+
 CEOP
 
 C     Macros for special grid options
@@ -76,6 +73,7 @@ C     buoyancyRelation :: Flag used to indicate which relation to use to
 C                        get buoyancy.
 C     eosType         :: choose the equation of state:
 C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
+C     the_run_name    :: string identifying the name of the model "run"
       COMMON /PARM_C/ checkPtSuff,
      &                bathyFile, topoFile,
      &                hydrogThetaFile, hydrogSaltFile,
@@ -85,7 +83,8 @@ C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                dQdTfile, ploadFile,
      &                eosType, pickupSuff,
-     &                mdsioLocalDir
+     &                mdsioLocalDir, 
+     &                the_run_name
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
       CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
@@ -105,6 +104,7 @@ C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
       CHARACTER*(MAX_LEN_FNAM) dQdTfile
       CHARACTER*(MAX_LEN_FNAM) ploadFile
       CHARACTER*(MAX_LEN_FNAM) mdsioLocalDir
+      CHARACTER*(MAX_LEN_FNAM) the_run_name
       CHARACTER*(6) eosType
       CHARACTER*(10) pickupSuff
 
@@ -136,7 +136,6 @@ C     tempVertAdvScheme   :: Temp. Vert. Advection scheme selector
 C     saltAdvScheme       :: Salt. Horiz.advection scheme selector
 C     saltVertAdvScheme   :: Salt. Vert. Advection scheme selector
 C     debugLevel          :: debug level selector: higher -> more writing
-C     mon_iotype          :: flag for monitor output (MNC vs. STDOUT)
 
       COMMON /PARM_I/
      &        cg2dMaxIters,
@@ -151,8 +150,7 @@ C     mon_iotype          :: flag for monitor output (MNC vs. STDOUT)
      &        tempAdvScheme, tempVertAdvScheme,
      &        saltAdvScheme, saltVertAdvScheme,
      &        tracerAdvScheme,
-     &        debugLevel,
-     &        mon_iotype
+     &        debugLevel
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
       INTEGER cg2dPreCondFreq
@@ -172,7 +170,6 @@ C     mon_iotype          :: flag for monitor output (MNC vs. STDOUT)
       INTEGER saltAdvScheme, saltVertAdvScheme
       INTEGER tracerAdvScheme
       INTEGER debugLevel
-      INTEGER mon_iotype
 
 C
       INTEGER debLevZero
@@ -266,6 +263,12 @@ C                       outputs from master mpi process only.
 C     allowFreezing  :: Allows surface water to freeze and form ice
 C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
 C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
+C     pickup_write_mdsio :: use mdsio to write pickups
+C     pickup_read_mdsio  :: use mdsio to read  pickups
+C     pickup_write_immed :: echo the pickup immediately (for conversion)
+C     timeave_mdsio      :: use mdsio for timeave output
+C     snapshot_mdsio     :: use mdsio for "snapshot" (dumpfreq/diagfreq) output
+C     monitor_mdsio      :: use mdsio for monitor output
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid, usingCylindricalGrid,
      & no_slip_sides,no_slip_bottom,
@@ -292,7 +295,9 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, useOldFreezing, groundAtK1,
      & usePickupBeforeC35, usePickupBeforeC54, debugMode,
-     & readPickupWithTracer, writePickupWithTracer
+     & readPickupWithTracer, writePickupWithTracer,
+     & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
+     & timeave_mdsio, snapshot_mdsio, monitor_mdsio
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingCylindricalGrid
@@ -363,6 +368,9 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL debugMode
       LOGICAL readPickupWithTracer
       LOGICAL writePickupWithTracer
+      LOGICAL pickup_read_mdsio, pickup_write_mdsio
+      LOGICAL pickup_write_immed
+      LOGICAL timeave_mdsio, snapshot_mdsio, monitor_mdsio
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
@@ -703,24 +711,6 @@ C Logical flags for selecting packages
      &        usePTRACERS,  useSBO, useSEAICE, useThSIce, useBulkForce, 
      &        usefizhi,  usegridalt, usediagnostics, useEBM,
      &        usePP81, useMY82
-
-C     Run-time flags for early-initialization of MNC
-      LOGICAL
-     &     useMNC,
-     &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
-     &     mnc_echo_gvtypes, mnc_pickup_write, mnc_pickup_read,
-     &     mnc_use_for_mon
-      CHARACTER*(MAX_LEN_FNAM) mnc_outdir_str
-      CHARACTER*(MAX_LEN_FNAM) mnc_indir_str
-      CHARACTER*(MAX_LEN_FNAM) the_run_name
-      COMMON /PARM_MNC/
-     &     useMNC,
-     &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date, 
-     &     mnc_echo_gvtypes, mnc_pickup_write, mnc_pickup_read, 
-     &     mnc_use_for_mon,
-     &     mnc_outdir_str, mnc_indir_str, 
-     &     the_run_name
-
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

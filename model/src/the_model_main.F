@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.78 2004/07/25 03:00:16 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.79 2004/09/10 12:19:30 edhill Exp $
 C $Name:  $
 
 CBOI
@@ -469,6 +469,9 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
 # include "CG3D.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.6 2004/09/03 20:10:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.7 2004/09/10 12:19:31 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -20,7 +20,10 @@ C     !USES:
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #include "PARAMS.h"
-      
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
+
 C     !INPUT PARAMETERS:
       INTEGER myThid
 CEOP
@@ -52,9 +55,9 @@ C                          are written to post-processing files.
      &     PTRACERS_names,
      &     PTRACERS_long_names,
      &     PTRACERS_units,
-     &     PTRACERS_mnc_read, 
-     &     PTRACERS_mnc_write,
-     &     PTRACERS_iotypes
+     &     PTRACERS_write_ioinc,
+     &     PTRACERS_read_mnc,
+     &     PTRACERS_write_mnc
 
 C     This routine has been called by the main model so we set our
 C     internal flag to indicate we are in business
@@ -77,10 +80,12 @@ C     Set defaults values for parameters in PTRACERS.h
           PTRACERS_units(iTracer)(ic:ic) = ' '
         ENDDO
       ENDDO
-      PTRACERS_useRecords=.FALSE.
-      PTRACERS_iotypes = -1
-      PTRACERS_mnc_read = .true.
-      PTRACERS_mnc_write = .true.
+      PTRACERS_useRecords  = .FALSE.
+      PTRACERS_read_mdsio  = .TRUE.
+      PTRACERS_read_mnc    = .FALSE.
+      PTRACERS_write_mdsio = .TRUE.
+      PTRACERS_write_mnc   = .FALSE.
+      PTRACERS_write_ioinc = .FALSE.
 
 C     Open and read the data.ptracers file
       _BEGIN_MASTER(myThid)
@@ -133,14 +138,14 @@ C     Check that enough parameters were specified
         ENDIF
       ENDDO
 
-C     Set the default I/O Types
-      IF (PTRACERS_iotypes .EQ. -1) THEN
-        PTRACERS_iotypes = 1
-      ENDIF
-
 #ifdef ALLOW_MNC
-C     Initialize the MNC variable types for PTRACERS 
       IF (useMNC) THEN
+C       Set the default I/O Types
+        IF (PTRACERS_read_mnc) PTRACERS_read_mdsio = .FALSE.
+        IF ( (.NOT. PTRACERS_write_ioinc) 
+     &       .AND. PTRACERS_write_mnc ) pickup_write_mdsio = .FALSE.
+        
+C       Initialize the MNC variable types for PTRACERS 
         CALL PTRACERS_MNC_INIT( myThid )
       ENDIF
 #endif /*  ALLOW_MNC  */

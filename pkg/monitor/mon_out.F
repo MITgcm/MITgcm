@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.9 2004/09/07 21:32:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.10 2004/09/10 12:19:31 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -97,6 +97,9 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "EESUPPORT.h"
 #include "MONITOR.h"
       INTEGER IFNBLNK

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.25 2004/07/07 22:23:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.26 2004/09/10 12:19:30 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -65,6 +65,7 @@ C--   Initialize fixed arrays for OBCS
        CALL OBCS_INIT_FIXED( myThid )
       ENDIF
 #endif
+
 #ifdef ALLOW_FLT
 C--   Initialise Float positions
       IF (useFLT) THEN
@@ -72,6 +73,13 @@ C--   Initialise Float positions
       _BARRIER
       ENDIF
 #endif
+
+#ifdef ALLOW_TIMEAVE
+C     IF (useTIMEAVE) THEN
+      CALL timeave_init( myThid )
+C     ENDIF
+#endif
+
 #ifdef ALLOW_ZONAL_FILT
 C--   Latitude circle filter initialisation
       IF (useZONAL_FILT) THEN
