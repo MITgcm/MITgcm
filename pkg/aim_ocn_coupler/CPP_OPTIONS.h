@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_ocn_coupler/Attic/CPP_OPTIONS.h,v 1.1 2003/12/15 02:28:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_ocn_coupler/Attic/CPP_OPTIONS.h,v 1.2 2004/04/19 19:01:06 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -7,10 +7,8 @@ C $Name:  $
 C CPP flags controlling particular source code features
 
 C o Shortwave heating as extra term in external_forcing.F
-C Note: this should be a run-time option and not necessarily dependent on KPP
-#ifdef ALLOW_KPP
-#define  SHORTWAVE_HEATING
-#endif
+C Note: this should be a run-time option
+#undef SHORTWAVE_HEATING
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
@@ -20,6 +18,9 @@ C o Include/exclude call to S/R CONVECT
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
+
+C o Include/exclude Implicit vertical advection code
+#define INCLUDE_IMPLVERTADV_CODE
 
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
