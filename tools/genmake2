@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.74 2004/03/24 17:12:51 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.75 2004/04/07 20:28:09 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -72,6 +72,48 @@ expand_pkg_groups() {
 	echo "Warning: can't read package groups definition file: $PKG_GROUPS"
     fi
 }
+
+#  Check for broken environments (eg. cygwin, MacOSX w/HFS+) that
+#  cannot distinguish [*.F/*.F90] from [*.f/*.f90] files.
+check_for_broken_Ff()  {
+    #  First check the ability to create a *.F/.f pair.
+    cat <<EOF >> ./hello.F
+      program hello
+      write(*,*) 'hi'
+      stop
+      end
+EOF
+    cp ./hello.F ./hello.f
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+	FEXT='fp'
+	F90EXT='fp90'
+	return
+    fi
+    rm -f ./hello.f
+
+    #  Then check the ability of ${MAKE} to use the two.
+    test -e Makefile  &&  mv -f Makefile Makefile.bak
+    cat <<EOF >> Makefile
+.SUFFIXES:
+hello.f: hello.F
+	cp -f hello.F hello.f
+EOF
+    ( $MAKE hello.f ) > /dev/null 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" != x0 -o ! -f ./hello.f ; then
+	FEXT='fp'
+	F90EXT='fp90'
+	return
+    fi
+    rm -f ./hello.f ./hello.F Makefile
+    test -e Makefile  &&  mv -f Makefile.bak Makefile
+
+    #  Both tests passed, so use the default.
+    FEXT='F'
+    F90EXT='F90'
+}
+
 
 # Guess possible config options for this host
 find_possible_configs()  {
@@ -497,7 +539,7 @@ EOF
 
 
 check_netcdf_libs()  {
-    cat <<EOF > genmake_tnc.F
+    cat <<EOF > genmake_tnc.for
       program fgennc
 #include "netcdf.inc"
       integer iret, ncid, xid
@@ -509,7 +551,7 @@ check_netcdf_libs()  {
       IF (iret .NE. NF_NOERR) write(*,*) NF_STRERROR(iret)
       end
 EOF
-    $CPP genmake_tnc.F > genmake_tnc.f  \
+    $CPP genmake_tnc.for > genmake_tnc.f  \
 	&&  $FC $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.f $LIBS >> genmake_tnc.log 2>&1
     RET_COMPILE=$?
     test -x ./genmake_tnc  &&  ./genmake_tnc >> genmake_tnc.log 2>&1
@@ -518,7 +560,7 @@ EOF
 	HAVE_NETCDF=t
     else
 	# try again with "-lnetcdf" added to the libs
-	$CPP genmake_tnc.F > genmake_tnc.f  \
+	$CPP genmake_tnc.for > genmake_tnc.f  \
 	    &&  $FC $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.f \
 	    $LIBS -lnetcdf >> genmake_tnc_2.log 2>&1
 	RET_COMPILE=$?
@@ -604,6 +646,8 @@ IEEE=
 if test "x$MITGCM_IEEE" != x ; then
     IEEE=$MITGCM_IEEE
 fi
+FEXT=
+F90EXT=
 
 AUTODIFF_PKG_USED=f
 AD_OPTFILE=
@@ -888,6 +932,11 @@ if test "x$OPTFILE" != xNONE ; then
 	echo "Error: can't read OPTFILE=\"$OPTFILE\""
 	exit 1
     fi
+fi
+
+#  Check for broken systems that cannot correctly distinguish *.F and *.f files
+if test "x$FEXT" = x -a "x$F90EXT" = x ; then
+    check_for_broken_Ff
 fi
 
 echo "  getting AD_OPTFILE information:  "
@@ -1648,18 +1697,18 @@ cat csrclist.inc      >> $MAKEFILE
 cat f90srclist.inc    >> $MAKEFILE
 cat hlist.inc         >> $MAKEFILE
 cat ad_flow_files.inc >> $MAKEFILE
-echo               >> $MAKEFILE
-echo 'F77FILES =  $(SRCFILES:.F=.f)'                                           >> $MAKEFILE
-echo 'F90FILES =  $(F90SRCFILES:.F90=.f90)'                                    >> $MAKEFILE
-echo 'OBJFILES =  $(SRCFILES:.F=.o) $(CSRCFILES:.c=.o) $(F90SRCFILES:.F90=.o)' >> $MAKEFILE
+echo >> $MAKEFILE
+echo 'F77FILES =  $(SRCFILES:.'$FEXT'=.f)'        >> $MAKEFILE
+echo 'F90FILES =  $(F90SRCFILES:.'$F90EXT'=.f90)' >> $MAKEFILE
+echo 'OBJFILES =  $(SRCFILES:.'$FEXT'=.o) $(CSRCFILES:.c=.o) $(F90SRCFILES:.'$F90EXT'=.o)' >> $MAKEFILE
+echo >> $MAKEFILE
+echo '.SUFFIXES:' >> $MAKEFILE
+echo '.SUFFIXES: .o .f .p .'$FEXT' .c .'$F90EXT' .f90' >> $MAKEFILE
 
 rm -f srclist.inc csrclist.inc hlist.inc flist.tmp clist.tmp f90srclist.inc
 rm -f ad_flow_files.inc
 
 cat >>$MAKEFILE <<EOF
-
-.SUFFIXES:
-.SUFFIXES: .o .f .p .F .c .F90 .f90
 
 all: \$(EXECUTABLE)
 \$(EXECUTABLE): \$(SPECIAL_FILES) \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(OBJFILES)
@@ -1710,20 +1759,20 @@ FC_NAMEMANGLE.h:
 	@echo Creating \$@ ...
 	echo "$FC_NAMEMANGLE" > \$@
 
-# The normal chain of rules is (  .F - .f - .o  )
-.F.f:
+# The normal chain of rules is (  .$FEXT - .f - .o  )
+.$FEXT.f:
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
 .f.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
-.F90.f90:
+.$F90EXT.f90:
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
 .f90.o:
 	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$<
 .c.o:
 	\$(CC) \$(CFLAGS) -c \$<
 
-# Special exceptions that use the ( .F - .p - .f - .o ) rule-chain
-.F.p:
+# Special exceptions that use the ( .$FEXT - .p - .f - .o ) rule-chain
+.$FEXT.p:
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
 .p.f:
 	\$(KPP) \$(KFLAGS1)\$@ \$(KFLAGS2) \$<
