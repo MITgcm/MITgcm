@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.1 2004/12/20 01:53:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_switch_onoff.F,v 1.2 2005/02/06 23:19:02 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -52,7 +52,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
        IF ( freq(n).LT.0 ) THEN
 C--    Select diagnostics list that uses instantaneous output
 
-        IF ( MOD(newIter,freq(n)).EQ.0 ) THEN
+c       IF ( MOD(newIter,freq(n)).EQ.0 ) THEN
+        IF ( MOD(myIter,-freq(n)).EQ.INT(-freq(n)/2) ) THEN
 C--     switch ON diagnostics of output-stream # n
           DO m=1,nActive(n)
             j = jdiag(m,n)
