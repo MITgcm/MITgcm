@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_update_time.F,v 1.2 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_update_time.F,v 1.3 2004/07/29 15:19:44 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -17,13 +17,16 @@ C***********************************************************************
 
 #include "chronos.h"
 
-      integer myThid, deltat
+      integer myThid
+      _RL deltat
+
+      integer ndt
 
 C **********************************************************************
 C ****           Call Routine to Tick the Clock                     ****
 C **********************************************************************
-
-      call tick(nymd,nhms,deltat)
+      ndt = deltat
+      call tick(nymd,nhms,ndt)
 
       if(mythid.eq.1) then
       print *, 'Current Date ',nymd,' Current Time ',nhms
