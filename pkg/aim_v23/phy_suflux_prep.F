@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_prep.F,v 1.2 2004/06/24 23:43:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_prep.F,v 1.3 2004/06/25 18:24:17 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -144,7 +144,8 @@ c       T1(J) = TA(J,Ktmp)*(SIGH(Ktmp)/SIG(Ktmp))**kappa
       ENDDO
 
       DO J=1,NGP
-        T0(J) = FTEMP0*T0(J)+GTEMP0*T1(J)
+c       T0(J) = FTEMP0*T0(J)+GTEMP0*T1(J)
+        T0(J) = FTEMP0*MIN(T0(J),T1(J))+GTEMP0*T1(J)
       ENDDO
 
 C     1.3 Spec. humidity
