@@ -1,19 +1,65 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.3 2001/09/17 19:48:04 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.4 2001/09/19 20:45:09 adcroft Exp $
 C $Name:  $
+
+CBOI
+C !TITLE: pkg/generic\_advdiff
+C !AUTHORS: adcroft@mit.edu
+C !INTRODUCTION:
+C \section{Generica Advection Diffusion Package}
+C
+C Package "generic\_advdiff" provides a common set of routines for calculating
+C advective/diffusive fluxes for tracers (cell centered quantities on a C-grid).
+C
+C Many different advection schemes are available: the standard centered
+C second order, centered fourth order and upwind biased third order schemes
+C are known as linear methods and require some stable time-stepping method
+C such as Adams-Bashforth. Alternatives such as flux-limited schemes are
+C stable in the forward sense and are best combined with the multi-dimensional
+C method provided in gad\_advection.
+C
+C There are two high-level routines:
+C  \begin{itemize}
+C  \item{GAD\_CALC\_RHS} calculates all fluxes at time level "n" and is used
+C  for the standard linear schemes. This must be used in conjuction with
+C  Adams-Bashforth time-stepping. Diffusive and parameterized fluxes are
+C  always calculated here.
+C  \item{GAD\_ADVECTION} calculates just the advective fluxes using the
+C  non-linear schemes and can not be used in conjuction with Adams-Bashforth
+C  time-stepping.
+C  \end{itemize}
+CEOI
 
 #include "GAD_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GAD_ADVECTION
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GAD_ADVECTION(bi,bj,advectionScheme,tracerIdentity,
      U                         Tracer,Gtracer,
      I                         myTime,myIter,myThid)
-C     /==========================================================\
-C     | SUBROUTINE GAD_ADVECTION                                 |
-C     | o Solves the pure advection tracer equation.             |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
 
-C     == Global variables ===
+C !DESCRIPTION:
+C Calculates the tendancy of a tracer due to advection.
+C It uses the multi-dimensional method given in \ref{sect:multiDimAdvection}
+C and can only be used for the non-linear advection schemes such as the
+C direct-space-time method and flux-limiters. 
+C
+C The algorithm is as follows:
+C \begin{itemize}
+C \item{$\theta^{(n+1/3)} = \theta^{(n)}
+C      - \Delta t \partial_x (u\theta) + \theta \partial_x u$}
+C \item{$\theta^{(n+2/3)} = \theta^{(n+1/3)}
+C      - \Delta t \partial_y (v\theta) + \theta \partial_y v$}
+C \item{$\theta^{(n+3/3)} = \theta^{(n+2/3)}
+C      - \Delta t \partial_r (w\theta) + \theta \partial_r w$}
+C \item{$G_\theta = ( \theta^{(n+3/3)} - \theta^{(n)} )/\Delta t$}
+C \end{itemize}
+C
+C The tendancy (output) is over-written by this routine.
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -21,17 +67,44 @@ C     == Global variables ===
 #include "GRID.h"
 #include "GAD.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  advectionScheme      :: advection scheme to use
+C  tracerIdentity       :: identifier for the tracer (required only for OBCS)
+C  Tracer               :: tracer field
+C  myTime               :: current time
+C  myIter               :: iteration number
+C  myThid               :: thread number
       INTEGER bi,bj
       INTEGER advectionScheme
       INTEGER tracerIdentity
-      _RL Tracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL Gtracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL myTime
       INTEGER myIter
       INTEGER myThid
 
-C     == Local variables
+C !OUTPUT PARAMETERS: ==================================================
+C  gTracer              :: tendancy array
+      _RL Tracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+
+C !LOCAL VARIABLES: ====================================================
+C  maskUp               :: 2-D array for mask at W points
+C  iMin,iMax,jMin,jMax  :: loop range for called routines
+C  i,j,k                :: loop indices
+C  kup                  :: index into 2 1/2D array, toggles between 1 and 2
+C  kdown                :: index into 2 1/2D array, toggles between 2 and 1
+C  kp1                  :: =k+1 for k<Nr, =Nr for k=Nr
+C  xA,yA                :: areas of X and Y face of tracer cells
+C  uTrans,vTrans,rTrans :: 2-D arrays of volume transports at U,V and W points
+C  af                   :: 2-D array for horizontal advective flux
+C  fVerT                :: 2 1/2D arrays for vertical advective flux
+C  localTij             :: 2-D array used as temporary local copy of tracer fld
+C  localTijk            :: 3-D array used as temporary local copy of tracer fld
+C  kp1Msk               :: flag (0,1) to act as over-riding mask for W levels
+C  calc_fluxes_X        :: logical to indicate to calculate fluxes in X dir
+C  calc_fluxes_Y        :: logical to indicate to calculate fluxes in Y dir
+C  nipass               :: number of passes to make in multi-dimensional method
+C  ipass                :: number of the current pass being made
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i,j,k,kup,kDown,kp1
@@ -47,6 +120,7 @@ C     == Local variables
       _RL kp1Msk
       LOGICAL calc_fluxes_X,calc_fluxes_Y
       INTEGER nipass,ipass
+CEOP
 
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They

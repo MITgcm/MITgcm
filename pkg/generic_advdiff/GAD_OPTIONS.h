@@ -1,5 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.1 2001/05/30 19:34:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.2 2001/09/19 20:45:09 adcroft Exp $
 C $Name:  $
+
+CBOP
+C !ROUTINE: GAD_OPTIONS.h
+
+C !INTERFACE:
+C #include "GAD_OPTIONS.h" 
+
+C !DESCRIPTION:
+C Contains CPP macros/flags for controlling optional features of package.
+CEOP
 
 C CPP options file for GAD (Generic Advection Diffusion) package
 C

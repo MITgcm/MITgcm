@@ -1,8 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.10 2001/09/13 17:46:49 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.11 2001/09/19 20:45:09 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GAD_CALC_RHS
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GAD_CALC_RHS( 
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
@@ -10,13 +14,28 @@ C $Name:  $
      I           tracerIdentity, advectionScheme,
      U           fVerT, gTracer,
      I           myThid )
-C     /==========================================================\
-C     | SUBROUTINE GAD_CALC_RHS                                  |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
 
-C     == GLobal variables ==
+C !DESCRIPTION:
+C Calculates the tendancy of a tracer due to advection and diffusion.
+C It calculates the fluxes in each direction indepentently and then
+C sets the tendancy to the divergence of these fluxes. The advective
+C fluxes are only calculated here when using the linear advection schemes
+C otherwise only the diffusive and parameterized fluxes are calculated.
+C
+C Contributions to the flux are calculated and added:
+C \begin{equation*}
+C {\bf F} = {\bf F}_{adv} + {\bf F}_{diff} +{\bf F}_{GM} + {\bf F}_{KPP}
+C \end{equation*}
+C
+C The tendancy is the divergence of the fluxes:
+C \begin{equation*}
+C G_\theta = G_\theta + \nabla \cdot {\bf F}
+C \end{equation*}
+C
+C The tendancy is assumed to contain data on entry.
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -24,9 +43,24 @@ C     == GLobal variables ==
 #include "DYNVARS.h"
 #include "GAD.h"
 
-C     == Routine arguments ==
-      INTEGER k,kUp,kDown,kM1
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  iMin,iMax,jMin,jMax  :: loop range for called routines
+C  kup                  :: index into 2 1/2D array, toggles between 1 and 2
+C  kdown                :: index into 2 1/2D array, toggles between 2 and 1
+C  kp1                  :: =k+1 for k<Nr, =Nr for k=Nr
+C  xA,yA                :: areas of X and Y face of tracer cells
+C  uTrans,vTrans,rTrans :: 2-D arrays of volume transports at U,V and W points
+C  maskUp               :: 2-D array for mask at W points
+C  diffKh               :: horizontal diffusion coefficient
+C  diffK4               :: bi-harmonic diffusion coefficient
+C  KappaRT              :: 3-D array for vertical diffusion coefficient
+C  Tracer               :: tracer field
+C  tracerIdentity       :: identifier for the tracer (required only for KPP)
+C  advectionScheme      :: advection scheme to use
+C  myThid               :: thread number
       INTEGER bi,bj,iMin,iMax,jMin,jMax
+      INTEGER k,kUp,kDown,kM1
       _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -38,21 +72,30 @@ C     == Routine arguments ==
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER tracerIdentity
       INTEGER advectionScheme
-      _RL fVerT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
 
-C     == Local variables ==
-C     I, J, K - Loop counters
+C !OUTPUT PARAMETERS: ==================================================
+C  gTracer              :: tendancy array
+C  fVerT                :: 2 1/2D arrays for vertical advective flux
+      _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fVerT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+C  df4                  :: used for storing del^2 T for bi-harmonic term
+C  fZon                 :: zonal flux
+C  fmer                 :: meridional flux
+C  af                   :: advective flux
+C  df                   :: diffusive flux
+C  localT               :: local copy of tracer field
       INTEGER i,j
-      LOGICAL TOP_LAYER
-      _RL afFacT, dfFacT
       _RL df4   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fZon  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fMer  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL localT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   only the kUp part of fverT is set in this subroutine
@@ -66,10 +109,6 @@ C--   the kDown is still required
         fVerT(i,j,kUp) = 0.0
        ENDDO
       ENDDO
-
-      afFacT = 1. _d 0
-      dfFacT = 1. _d 0
-      TOP_LAYER = K .EQ. 1
 
 C--   Make local copy of tracer array
       DO j=1-OLy,sNy+OLy
@@ -300,7 +339,7 @@ C-    Surface "correction" term at k=1 :
 C-    add the advective flux to fVerT
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        fVerT(i,j,kUp) = fVerT(i,j,kUp) + afFacT*af(i,j)
+        fVerT(i,j,kUp) = fVerT(i,j,kUp) + af(i,j)
        ENDDO
       ENDDO
       ENDIF
@@ -319,7 +358,7 @@ C           boundary condition.
       ENDIF
 c     DO j=1-Oly,sNy+Oly
 c      DO i=1-Olx,sNx+Olx
-c       fVerT(i,j,kUp) = fVerT(i,j,kUp) + dfFacT*df(i,j)*maskUp(i,j)
+c       fVerT(i,j,kUp) = fVerT(i,j,kUp) + df(i,j)*maskUp(i,j)
 c      ENDDO
 c     ENDDO
 
@@ -334,7 +373,7 @@ C *note* should update GMREDI_RTRANSPORT to set df  *aja*
      I     myThid)
 c      DO j=1-Oly,sNy+Oly
 c       DO i=1-Olx,sNx+Olx
-c        fVerT(i,j,kUp) = fVerT(i,j,kUp) + dfFacT*df(i,j)*maskUp(i,j)
+c        fVerT(i,j,kUp) = fVerT(i,j,kUp) + df(i,j)*maskUp(i,j)
 c       ENDDO
 c      ENDDO
       ENDIF
@@ -342,7 +381,7 @@ c      ENDDO
 
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        fVerT(i,j,kUp) = fVerT(i,j,kUp) + dfFacT*df(i,j)*maskUp(i,j)
+        fVerT(i,j,kUp) = fVerT(i,j,kUp) + df(i,j)*maskUp(i,j)
        ENDDO
       ENDDO
 
@@ -370,7 +409,7 @@ C *note* should update KPP_TRANSPORT_T to set df  *aja*
        ENDIF
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         fVerT(i,j,kUp) = fVerT(i,j,kUp) + dfFacT*df(i,j)*maskUp(i,j)
+         fVerT(i,j,kUp) = fVerT(i,j,kUp) + df(i,j)*maskUp(i,j)
         ENDDO
        ENDDO
       ENDIF
