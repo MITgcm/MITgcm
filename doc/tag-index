@@ -1,8 +1,26 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.295 2004/05/14 21:04:01 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.296 2004/05/14 21:15:08 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint53b_post
+o Commiting new energy balance model to repository
+  * package is pkg/ebm
+  * verif. is verification/global_ocean_ebm
+  * references are in ebm_driver.F
+C      * X. Wang, P. Stone and J. Marotzke, 1999:
+C        Global thermohaline circulation. Part I:
+C        Sensitivity to atmospheric moisture transport.
+C        J. Climate 12(1), 71-82
+C      * X. Wang, P. Stone and J. Marotzke, 1999:
+C        Global thermohaline circulation. Part II:
+C        Sensitivity with interactive transport.
+C        J. Climate 12(1), 83-91
+C      * M. Nakamura, P. Stone and J. Marotzke, 1994:
+C        Destabilization of the thermohaline circulation
+C        by atmospheric eddy transports.
+C        J. Climate 7(12), 1870-1882
+o Will need long integration testing.
 checkpoint53b_pre
 
 o created pkg/mom_common in preparation for variable viscosity code
