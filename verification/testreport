@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.53 2004/12/07 22:14:35 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.54 2004/12/08 21:49:05 edhill Exp $
 #  $Name:  $
 #
 
@@ -535,7 +535,7 @@ int main( int argc, char** argv )  {
       }
     }
     else {
-      if (best == -16 && abave != 0)  best = -22;
+      if (best == -16)  best = -22;
     }
   }
   if (lncnt == 999) best=-29;
