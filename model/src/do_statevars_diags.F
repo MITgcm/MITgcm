@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.5 2005/01/28 01:00:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.6 2005/01/31 19:45:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -49,7 +49,9 @@ C     selectVars :: select which group of dianostics variables to fill-in
 C            = 1 :: fill-in diagnostics for tracer   variables only
 C            = 2 :: fill-in diagnostics for momentum variables only
 C            = 3 :: fill-in diagnostics for momentum & tracer variables
+C     bi,bj      :: tile indices
       INTEGER selectVars
+      INTEGER bi, bj
 
 C--   Fill-in Diagnostics pkg storage array (for state-variables)
       IF ( usediagnostics ) THEN
@@ -72,6 +74,16 @@ C                    and stagger/synchronous TimeStep
           CALL PTRACERS_DIAGNOSTICS_FILL(myThid)
         ENDIF
 #endif
+
+#ifdef ALLOW_THSICE
+       IF ( seqFlag.EQ.0 .AND. useThSIce ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          CALL THSICE_DIAGNOSTICS_FILL( myTime,myIter, bi,bj, myThid )
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* ALLOW_THSICE */
 
       ENDIf
 #endif /* ALLOW_DIAGNOSTICS */
