@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.10 2004/07/26 20:11:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.11 2004/07/26 20:28:29 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -652,9 +652,6 @@ c-----------------------------------------------------------------------
 
       _RL VT1(IM,JM)
       integer i
-
-      print *,' In msc2grd ',(igrd(i),i=1,nchp)
-      print *,' In msc2grd ',(chfr(i),i=1,nchp)
 
       IF(NCHP.GE.0) THEN
         DO I=1,IM*JM

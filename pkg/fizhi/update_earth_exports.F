@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.18 2004/07/26 20:23:16 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.19 2004/07/26 20:28:29 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -105,7 +105,7 @@ C                      Compute Surface Emissivity
 C **********************************************************************
 
        if( alarm('radlw') ) then
-        call grd2msc(fraci,im2,jm2,igrd,ficetile,nchp,nchp)
+        call grd2msc(fraci,im2,jm2,igrd,ficetile,nchp,nchptot)
         call getemiss(fracl,im2,jm2,nchp,nchptot,nSx,nSy,bi,bj,
      .   igrd,ityp,chfr,snodep,ficetile,emiss)
        endif
@@ -892,9 +892,6 @@ C and now call sibalb
 
 C finally some transformations back to grid space for albedos
  
-      print *,' In getalb, chfr: '
-      print *,(chfr(i,1,1),i=1,nchptot)
-
       DO I=1,IM
       DO J=1,JM
        tmpij(i,j) = albvr(i,j,bi,bj)
