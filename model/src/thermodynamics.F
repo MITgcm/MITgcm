@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.18 2002/03/05 14:15:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.19 2002/03/06 01:59:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -509,6 +509,16 @@ C--       Get temporary terms used by tendency routines
      I         bi,bj,iMin,iMax,jMin,jMax,k,
      O         xA,yA,uTrans,vTrans,rTrans,maskUp,
      I         myThid)
+
+#ifdef ALLOW_GMREDI
+C--   Residual transp = Bolus transp + Eulerian transp
+          IF (useGMRedi) THEN
+            CALL GMREDI_CALC_UVFLOW(
+     &            uTrans, vTrans, bi, bj, k, myThid) 
+            IF (K.GE.2) CALL GMREDI_CALC_WFLOW(
+     &                    rTrans, bi, bj, k, myThid) 
+          ENDIF
+#endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_AUTODIFF_TAMC 
 CADJ STORE KappaRT(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte

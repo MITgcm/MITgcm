@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.10 2002/03/05 15:17:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.11 2002/03/06 02:01:54 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -99,6 +99,7 @@ C  kdown                :: index into 2 1/2D array, toggles between 2 and 1
 C  kp1                  :: =k+1 for k<Nr, =Nr for k=Nr
 C  xA,yA                :: areas of X and Y face of tracer cells
 C  uTrans,vTrans,rTrans :: 2-D arrays of volume transports at U,V and W points
+C  rTransKp1            :: vertical volume transport at interface k+1
 C  af                   :: 2-D array for horizontal advective flux
 C  fVerT                :: 2 1/2D arrays for vertical advective flux
 C  localTij             :: 2-D array used as temporary local copy of tracer fld
@@ -110,12 +111,13 @@ C  nipass               :: number of passes to make in multi-dimensional method
 C  ipass                :: number of the current pass being made
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin,iMax,jMin,jMax
-      INTEGER i,j,k,kup,kDown,kp1
+      INTEGER i,j,k,kup,kDown
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL localTij(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -152,6 +154,7 @@ C     uninitialised but inert locations.
         rTrans(i,j)  = 0. _d 0
         fVerT(i,j,1) = 0. _d 0
         fVerT(i,j,2) = 0. _d 0
+        rTransKp1(i,j)= 0. _d 0
        ENDDO
       ENDDO
 
@@ -172,6 +175,13 @@ C--   Get temporary terms used by tendency routines
      I         bi,bj,iMin,iMax,jMin,jMax,k,
      O         xA,yA,uTrans,vTrans,rTrans,maskUp,
      I         myThid)
+
+#ifdef ALLOW_GMREDI
+C--   Residual transp = Bolus transp + Eulerian transp
+       IF (useGMRedi)
+     &   CALL GMREDI_CALC_UVFLOW(
+     &            uTrans, vTrans, bi, bj, k, myThid)
+#endif /* ALLOW_GMREDI */
 
 C--   Make local copy of tracer array
       DO j=1-OLy,sNy+OLy
@@ -373,27 +383,47 @@ C--   kup    Cycles through 1,2 to point to w-layer above
 C--   kDown  Cycles through 2,1 to point to w-layer below
       kup  = 1+MOD(k+1,2)
       kDown= 1+MOD(k,2)
-
-C--   Get temporary terms used by tendency routines
-      CALL CALC_COMMON_FACTORS (
-     I         bi,bj,iMin,iMax,jMin,jMax,k,
-     O         xA,yA,uTrans,vTrans,rTrans,maskUp,
-     I         myThid)
-
-C-    Advective flux in R
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        af(i,j) = 0.
-       ENDDO
-      ENDDO
+c     kp1=min(Nr,k+1)
+      kp1Msk=1.
+      if (k.EQ.Nr) kp1Msk=0.
 
 #ifdef ALLOW_AUTODIFF_TAMC 
 CADJ STORE localTijk(:,:,k)  
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+C-- Compute Vertical transport
 C     Note: wVel needs to be masked 
-      IF (K.GE.2) THEN
+
+      IF (k.EQ.1) THEN
+C- Surface interface :
+
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         rTransKp1(i,j) = rTrans(i,j)
+         rTrans(i,j) = 0.
+         fVerT(i,j,kUp) = 0.
+        ENDDO
+       ENDDO
+
+      ELSE
+C- Interior interface :
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         rTransKp1(i,j) = kp1Msk*rTrans(i,j)
+         rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)
+     &               *maskC(i,j,k-1,bi,bj)
+         af(i,j) = 0.
+        ENDDO
+       ENDDO
+
+#ifdef ALLOW_GMREDI
+C--   Residual transp = Bolus transp + Eulerian transp
+       IF (useGMRedi) 
+     &   CALL GMREDI_CALC_WFLOW(
+     &                    rTrans, bi, bj, k, myThid)
+#endif /* ALLOW_GMREDI */
+
 C-    Compute vertical advective flux in the interior:
        IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
         CALL GAD_FLUXLIMIT_ADV_R(
@@ -407,43 +437,24 @@ C-    Compute vertical advective flux in the interior:
        ELSE
         STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
        ENDIF
-C-    Surface "correction" term at k>1 :
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         af(i,j) = af(i,j)
-     &           + (maskC(i,j,k,bi,bj)-maskC(i,j,k-1,bi,bj))*
-     &             rTrans(i,j)*tracer(i,j,k,bi,bj)
-c    &             rTrans(i,j)*localTijk(i,j,k)
-        ENDDO
-       ENDDO 
-      ELSE
-C-    Surface "correction" term at k=1 :
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
-         af(i,j) = rTrans(i,j)*tracer(i,j,k,bi,bj)
-c        af(i,j) = rTrans(i,j)*localTijk(i,j,k)
-        ENDDO
-       ENDDO 
-      ENDIF
 C-    add the advective flux to fVerT
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        fVerT(i,j,kUp) = af(i,j)
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         fVerT(i,j,kUp) = af(i,j)
+        ENDDO
        ENDDO
-      ENDDO
+
+C- end Surface/Interior if bloc
+      ENDIF
 
 C--   Divergence of fluxes
-      kp1=min(Nr,k+1)
-      kp1Msk=1.
-      if (k.EQ.Nr) kp1Msk=0.
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
         localTij(i,j)=localTijk(i,j,k)-deltaTtracer*
      &    _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &    *recip_rA(i,j,bi,bj)
      &    *( fVerT(i,j,kUp)-fVerT(i,j,kDown)
-     &      -tracer(i,j,k,bi,bj)*rA(i,j,bi,bj)*
-     &        (wVel(i,j,k,bi,bj)-kp1Msk*wVel(i,j,kp1,bi,bj))
+     &      -tracer(i,j,k,bi,bj)*(rTrans(i,j)-rTransKp1(i,j))
      &     )*rkFac
         gTracer(i,j,k,bi,bj)=
      &   (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTtracer
