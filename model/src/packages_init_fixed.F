@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.35 2005/01/04 00:29:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.36 2005/02/15 01:54:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,6 +35,8 @@ C       |
 C       |-- FLT_INIT
 C       |
 C       |-- TIMEAVE_INIT_FIXED
+C       |
+C       |-- SHAP_FILT_INIT_FIZED
 C       |
 C       |-- ZONAL_FILT_INIT
 C       |
@@ -121,8 +123,16 @@ C--   Initialise Float positions
 
 #ifdef ALLOW_TIMEAVE
 C     IF (useTIMEAVE) THEN
-      CALL TIMEAVE_INIT_FIXED( myThid )
-C     ENDIF
+      IF ( taveFreq.GT.0. ) THEN
+       CALL TIMEAVE_INIT_FIXED( myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_SHAP_FILT
+C--   Shapiro filter initialisation
+      IF (useSHAP_FILT) THEN
+       CALL SHAP_FILT_INIT_FIXED( myThid )
+      ENDIF
 #endif
 
 #ifdef ALLOW_ZONAL_FILT
