@@ -11,8 +11,10 @@ c
 c***********************************************************************
        implicit none
 c
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
 #include "fizhi_SIZE.h"
@@ -33,21 +35,27 @@ c
        i2 = sNx
        j1 = 1
        j2 = sNy
+
+#ifdef ALLOW_FIZHI
                                                                                          
-       do bj = myByLo(myThid), myByHi(myThid)
-       do bi = myBxLo(myThid), myBxHi(myThid)
+       if(usefizhi)then
+        do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
 c
-        do L = 1,Nrphys
-         do j = j1,j2
-         do i = i1,i2
-          dpphys(i,j,L,bi,bj) = dpphys0(i,j,L,bi,bj) *
+         do L = 1,Nrphys
+          do j = j1,j2
+          do i = i1,i2
+           dpphys(i,j,L,bi,bj) = dpphys0(i,j,L,bi,bj) *
      .                     rstarfacC(i,j,bi,bj)
+          enddo
+          enddo
          enddo
-         enddo
-        enddo
 c
-       enddo
-       enddo
+        enddo
+        enddo
+       endif
+
+#endif
 
        return
        end
