@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.101 2002/11/07 21:53:31 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.102 2002/11/07 21:55:45 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint46m_post
 o modified testscript to return -- when there are no lines of "%MON" output 
 o added new flag "quasiHydrostatic" for QH mode
   and new routine quasihydrostaticterms()
