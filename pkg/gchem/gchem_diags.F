@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_diags.F,v 1.3 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_diags.F,v 1.4 2003/11/20 03:52:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -28,7 +28,8 @@ cccccccccccccccccccccc
 
 #ifdef DIC_BIOTIC
 #ifdef ALLOW_TIMEAVE
-       call dic_biotic_diags( myTime, myIter, myThid )
+       IF (myIter.NE.nIter0)
+     & call dic_biotic_diags( myTime, myIter, myThid )
 #endif
 #endif
 
