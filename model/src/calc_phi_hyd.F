@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.10 2001/02/04 14:38:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.11 2001/03/08 20:21:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -10,23 +10,23 @@ C $Name:  $
      I                         myThid)
 C     /==========================================================\
 C     | SUBROUTINE CALC_PHI_HYD                                  |
-C     | o Integrate the hydrostatic relation to find phiHyd.     |
-C     |                                                          |
+C     | o Integrate the hydrostatic relation to find the Hydros. | 
+C     |    Potential (ocean: Pressure/rho ; atmos = geopotential)|
 C     | On entry:                                                |
 C     |   theta,salt    are the current thermodynamics quantities|
 C     |                 (unchanged on exit)                      |
-C     |   phiHyd(i,j,1:k-1) is the hydrostatic pressure/geopot.  |
+C     |   phiHyd(i,j,1:k-1) is the hydrostatic Potential         |
 C     |                 at cell centers (tracer points)          |
 C     |                 - 1:k-1 layers are valid                 |
 C     |                 - k:Nr layers are invalid                |
-C     |   phiHyd(i,j,k) is the hydrostatic pressure/geop.        |
+C     |   phiHyd(i,j,k) is the hydrostatic Potential             |
 C     |                 at cell the interface k (w point above)  |
 C     | On exit:                                                 |
-C     |   phiHyd(i,j,1:k) is the hydrostatic pressure/geopot.    |
+C     |   phiHyd(i,j,1:k) is the hydrostatic Potential           |
 C     |                 at cell centers (tracer points)          |
 C     |                 - 1:k layers are valid                   |
 C     |                 - k+1:Nr layers are invalid              |
-C     |   phiHyd(i,j,k+1) is the hydrostatic pressure/geop.      |
+C     |   phiHyd(i,j,k+1) is the hydrostatic Potential (P/rho)   |
 C     |                 at cell the interface k+1 (w point below)|
 C     |                                                          |
 C     \==========================================================/
@@ -94,23 +94,22 @@ C           which has not been used to date since it does not
 C           conserve KE+PE exactly even though it is more natural
 C
 c           IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
-c    &              drF(K)*gravity*alphaRho(i,j)
+c    &              drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
 c           phiHyd(i,j,k)=phiHyd(i,j,k)+
-c    &          0.5*drF(K)*gravity*alphaRho(i,j)
+c    &          0.5*drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
 C-----------------------------------------------------------------------
 
 C---------- This discretization is the "energy conserving" form
 C           which has been used since at least Adcroft et al., MWR 1997
 C
             phiHyd(i,j,k)=phiHyd(i,j,k)+
-     &          0.5*dRloc*gravity*alphaRho(i,j)
+     &          0.5*dRloc*gravity*alphaRho(i,j)*recip_rhoConst
             IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
-     &          0.5*dRlocKp1*gravity*alphaRho(i,j)
+     &          0.5*dRlocKp1*gravity*alphaRho(i,j)*recip_rhoConst
 C-----------------------------------------------------------------------
           ENDDO
         ENDDO
         
-
 
 
       ELSEIF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
@@ -185,5 +184,5 @@ Cold &      (theta(I,J,K-1,bi,bj)+theta(I,J,K,bi,bj)-2.*tRef(K))
 
 #endif
 
-      return
-      end
+      RETURN
+      END
