@@ -25,15 +25,16 @@
  rhoConst=1.0,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
-#exactConserv=.TRUE.,
-#uniformLin_PhiSurf=.FALSE.,
+ exactConserv=.TRUE.,
+ uniformLin_PhiSurf=.FALSE.,
  staggerTimeStep=.TRUE.,
  nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
- hFacMin=1.0,
+ hFacMin=0.2,
  saltAdvScheme=3,
  vectorInvariantMomentum=.TRUE.,
+#useJamartWetPoints=.TRUE.,
  &
 
 # Elliptic solver parameters
@@ -45,17 +46,17 @@
 
 # Time stepping parameters
  &PARM03
- niter0=0,
+ niter0=17280,
  nTimeSteps=10,
- monitorFreq=1.,
 #endTime=31104000.,
- deltaT=600.0,
+ deltaT=450.0,
  abEps=0.1,
  cAdjFreq=0.,
  pChkptFreq=2592000.0,
  dumpFreq=2592000.0,
  taveFreq=2592000.0,
 #monitorFreq=86400.,
+ monitorFreq=1.,
  &
 
 # Gridding parameters
@@ -71,5 +72,5 @@
 
 # Input datasets
  &PARM05
- bathyFile='orography_fullcell.cs.bin',
+ topoFile='topo.cs.bin',
  &
