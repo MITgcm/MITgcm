@@ -30,7 +30,6 @@
  eosType='LINEAR',
  implicitDiffusion=.true.,
  readBinaryPrec=32,
- tr1Stepping=.TRUE.,
  exactConserv=.TRUE.,
  useCDscheme=.TRUE.,
 # readPickupWithTracer  = .FALSE.,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad_ptracers/Attic/ptracers_init.F,v 1.1 2003/10/26 01:45:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad_ptracers/Attic/ptracers_init.F,v 1.2 2004/09/17 23:03:55 heimbach Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -21,6 +21,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 cswdptr -- add ---
 #ifdef ALLOW_GCHEM

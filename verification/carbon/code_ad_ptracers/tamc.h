@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad_ptracers/Attic/tamc.h,v 1.3 2004/07/13 18:14:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad_ptracers/Attic/tamc.h,v 1.4 2004/09/17 23:03:55 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -106,15 +106,13 @@ c     and writing data.
       PARAMETER( isbyte      = 8 )
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
-      INTEGER    maxpass
 #ifdef ALLOW_PTRACERS
-      PARAMETER( maxpass     = PTRACERS_num + 2 )
+cph moved this to PTRACERS_SIZE.h
+cph      INTEGER    maxpass
+cph      PARAMETER( maxpass     = PTRACERS_num + 2 )
 #else
-# ifdef ALLOW_PASSIVE_TRACER
-      PARAMETER( maxpass     = 3 )
-# else
+      INTEGER    maxpass
       PARAMETER( maxpass     = 2 )
-# endif
 #endif
       INTEGER    maxcube
       PARAMETER( maxcube     = 1 )
