@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.7 2004/02/06 19:59:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.8 2004/02/19 21:02:39 adcroft Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -53,10 +53,10 @@ C     === Local variables ====
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        theDel2 = 0.
-        theVol = 0.
-        theMean = 0.
-        theVar = 0.
+        theDel2Tile = 0.
+        theVolTile = 0.
+        theMeanTile = 0.
+        theVarTile = 0.
         DO K=1,myNr
          DO J=1,sNy
           DO I=1,sNx
