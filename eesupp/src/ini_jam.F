@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/ini_jam.F,v 1.1 2000/03/14 16:10:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/ini_jam.F,v 1.2 2000/03/24 18:51:56 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -24,7 +24,7 @@ C     == Global data ==
 #endif
 
 C     == Local variables ==
-      REAL*8  dummyVal
+      Real*8  dummyVal
       INTEGER rc
       CHARACTER*(MAX_LEN_FNAM) fnam
 #ifdef JAM_WITH_TWO_PROCS_PER_NODE
