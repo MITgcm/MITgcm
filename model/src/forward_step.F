@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.84 2004/02/24 00:00:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.85 2004/03/03 20:42:05 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,6 +59,7 @@ C     == Global variables ==
 # include "EOS.h"
 # ifdef ALLOW_EXF
 #  include "exf_fields.h"
+#  include "exf_clim_fields.h"
 #  ifdef ALLOW_BULKFORMULAE
 #   include "exf_constants.h"
 #  endif
