@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.64 2005/01/31 19:26:24 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.65 2005/02/04 14:43:20 jmc Exp $
 #  $Name:  $
 #
 
@@ -1072,11 +1072,11 @@ fi
 rm -f tmp_cmpnum.c tmp_cmpnum
 
 if test "x$CLEANUP" != xt ; then
-    cat $SUMMARY
+    cat $SUMMARY | sed 's/ -- -- -- --//g'
     if test -e tr_out.txt ; then
         mv tr_out.txt tr_out.txt.old
     fi
-    cat $SUMMARY > tr_out.txt
+    cat $SUMMARY | sed 's/ -- -- -- --//g' > tr_out.txt
 fi
 
 if test "x$DELDIR" = xt ; then
