@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.3 2004/12/03 06:58:48 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.4 2005/02/07 16:29:16 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -40,9 +40,9 @@ CEOP
 C       Print some statistics about input forcing fields
         CALL MON_SET_PREF('exf',myThid)
         CALL MON_PRINTSTATS_RL(1,ustress,'_ustress',
-     &       maskW,maskW,rAw,drF,myThid)
+     &       maskH,maskH,rAw,drF,myThid)
         CALL MON_PRINTSTATS_RL(1,vstress,'_vstress',
-     &       maskS,maskS,rAs,drF,myThid)
+     &       maskH,maskH,rAs,drF,myThid)
         CALL MON_PRINTSTATS_RL(1,hflux,'_hflux',
      &       maskH,maskH,rA ,drF,myThid)
         CALL MON_PRINTSTATS_RL(1,sflux,'_sflux',
