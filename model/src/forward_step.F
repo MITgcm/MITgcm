@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.99 2004/07/13 16:48:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.100 2004/07/26 20:18:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -187,20 +187,6 @@ c--   Add control vector for forcing and parameter fields
      &     CALL CTRL_MAP_FORCING (mythid)
 #endif
 
-#ifdef ALLOW_THSICE
-      IF ( useThSIce .AND. buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
-#ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB )
-     &    CALL DEBUG_CALL('THSICE_MAIN',myThid)
-#endif
-C--     Step forward Therm.Sea-Ice variables
-C       and modify forcing terms including effects from ice
-        CALL TIMER_START('THSICE_MAIN        [FORWARD_STEP]', myThid)
-        CALL THSICE_MAIN( myTime, myIter, myThid )
-        CALL TIMER_STOP( 'THSICE_MAIN        [FORWARD_STEP]', myThid)
-      ENDIF
-#endif /* ALLOW_THSICE */
-
 # ifdef ALLOW_SEAICE
 C--   Call sea ice model to compute forcing/external data fields.  In
 C     addition to computing prognostic sea-ice variables and diagnosing the
@@ -222,15 +208,6 @@ C     theta is dumped or time-averaged.
          CALL TIMER_STOP ('SEAICE_MODEL       [FORWARD_STEP]',myThid)
       ENDIF
 # endif /* ALLOW_SEAICE */
-
-C--   Freeze water at the surface
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta = comlev1, key = ikey_dynamics
-#endif
-      IF ( allowFreezing .AND. .NOT. useSEAICE
-     &                   .AND. .NOT. useThSIce ) THEN
-        CALL FREEZE_SURFACE(  myTime, myIter, myThid )
-      ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_PTRACERS
@@ -254,12 +231,6 @@ C      Read in coupling data that I import.
          CALL CPL_IMPORT_EXTERNAL_DATA( myIter, myTime, myThid )
          CALL TIMER_STOP ('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
        ENDIF
-# ifndef ALLOW_AIM
-C jmc: don't know precisely where to put this call. leave it here for now.
-       IF ( useCoupler ) THEN
-         CALL OCN_APPLY_IMPORT( .TRUE., myTime, myIter, myThid )
-       ENDIF
-# endif
 #endif /* COMPONENT_MODULE */
 
 #ifdef ALLOW_EBM

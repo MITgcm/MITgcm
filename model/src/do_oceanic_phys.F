@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.4 2004/07/18 01:04:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.5 2004/07/26 20:18:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -99,10 +99,43 @@ C                      index into fVerTerm.
 CEOP
 
 #ifdef ALLOW_DEBUG
-         IF ( debugLevel .GE. debLevB ) 
+      IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_ENTER('DO_OCEANIC_PHYS',myThid)
 #endif
  
+#ifdef ALLOW_THSICE
+      IF ( useThSIce .AND. buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('THSICE_MAIN',myThid)
+#endif
+C--     Step forward Therm.Sea-Ice variables
+C       and modify forcing terms including effects from ice
+        CALL TIMER_START('THSICE_MAIN     [DO_OCEANIC_PHYS]', myThid)
+        CALL THSICE_MAIN( myTime, myIter, myThid )
+        CALL TIMER_STOP( 'THSICE_MAIN     [DO_OCEANIC_PHYS]', myThid)
+      ENDIF
+#endif /* ALLOW_THSICE */
+
+C--   Freeze water at the surface
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta = comlev1, key = ikey_dynamics
+#endif
+      IF ( allowFreezing .AND. .NOT. useSEAICE
+     &                   .AND. .NOT. useThSIce ) THEN
+        CALL FREEZE_SURFACE(  myTime, myIter, myThid )
+      ENDIF
+
+#ifdef COMPONENT_MODULE
+# ifndef ALLOW_AIM
+C--    Apply imported data (from coupled interface) to forcing fields
+C jmc: don't know precisely where to put this call (bf or af thSIce ?) 
+       IF ( useCoupler ) THEN
+         CALL OCN_APPLY_IMPORT( .TRUE., myTime, myIter, myThid )
+       ENDIF
+# endif
+#endif /* COMPONENT_MODULE */
+
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   dummy statement to end declaration part
       ikey = 1
