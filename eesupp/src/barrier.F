@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.9 2001/09/21 03:54:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.10 2003/05/13 17:23:56 adcroft Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -154,7 +154,7 @@ C     ENDIF
 CcnhDebugEnds
 
 C--   I can now shut door3 because I know everyone has reached
-C--   door1. I can't shut door1 because I don't know if everyone
+C--   door1. I can not shut door1 because I do not know if everyone
 C--   has "gone" through the door yet. Nobody has yet reached
 C--   door3 because they have to go through door2 first.
       IF ( myThid .EQ. 1 ) THEN
@@ -195,7 +195,7 @@ C--   Invalidate keys for door2 here as it is now open
       key2(1,myThid) = INVALID
 
 C--   I can now shut door1 because I know everyone has reached
-C--   door2. I can't shut door2 because I don't know if everyone
+C--   door2. I can not shut door2 because I do not know if everyone
 C--   has "gone" through the door yet. Nobody has yet reached
 C--   door1 because they have to go through door3 first.
       IF ( myThid .EQ. 1 ) THEN
@@ -231,7 +231,7 @@ C--   Invalidate keys for door3 here as it is now open
       key3(1,myThid) = INVALID
 
 C--   I can now shut door2 because I know everyone has reached
-C--   door3. I can't shut door3 because I don't know if everyone
+C--   door3. I can not shut door3 because I do not know if everyone
 C--   has "gone" through the door yet. Nobody has yet reached
 C--   door2 because they have to go through door1 first.
       IF ( myThid .EQ. 1 ) THEN
