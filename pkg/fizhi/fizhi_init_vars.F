@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.14 2005/03/21 20:09:52 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.15 2005/03/21 20:15:05 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -47,6 +47,8 @@ c pe on dynamics and physics grid refers to bottom edge
 
        integer i, j, L, bi, bj, Lbotij
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
+       logical alarm
+       external alarm
 
        im1 = 1-OLx
        im2 = sNx+OLx
@@ -57,8 +59,8 @@ c pe on dynamics and physics grid refers to bottom edge
        jdim1 = 1
        jdim2 = sNy
 
-C First Check to see if we can start a fizhi experiment at current time
-C  All Fizhi alarms must be on for the first time step of a segment
+c   First Check to see if we can start a fizhi experiment at current time
+c    All Fizhi alarms must be on for the first time step of a segment
 
      if( .not.alarm('moist') .or. .not.alarm('turb')   .or.
      .    .not.alarm('radsw') .or. .not.alarm('radlw') ) then
