@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_send_put_y.F,v 1.3 1999/03/22 17:37:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_send_put_y.F,v 1.4 2001/01/29 20:00:15 heimbach Exp $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_SEND_PUT_Y( array,
@@ -116,14 +116,15 @@ C
          iMax = sNx+exchWidthX
         ENDIF
 
+
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+
 C       o Send or Put south edge
         IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
          jMin = 1
          jMax = 1+exchWidthY-1
-        ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
-         jMin = 1-exchWidthY
-         jMax = 0
-        ENDIF
         IF ( southCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
@@ -168,13 +169,8 @@ C        Send the data
         ENDIF
 
 C       o Send or Put north edge
-        IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
          jMin = sNy-exchWidthY+1
          jMax = sNy
-        ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
-         jMin = sNy+1
-         jMax = sNy+exchWidthY
-        ENDIF
         IF ( northCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
@@ -218,6 +214,106 @@ C        Send the data
          STOP ' S/R EXCH: Invalid commN mode.'
         ENDIF
 
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+
+        ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
+         jMin = 1-exchWidthY
+         jMax = 0
+        IF ( southCommMode .EQ. COMM_MSG  ) THEN
+         iB = 0
+         DO K=1,myNz
+          DO J=jMin,jMax
+           DO I=iMin,iMax
+            iB = iB + 1
+            southSendBuf_RL(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
+            array(I,J,K,bi,bj) = 0.0
+           ENDDO
+          ENDDO
+         ENDDO
+C        Send the data
+#ifdef ALLOW_USE_MPI
+#ifndef ALWAYS_USE_MPI
+         IF ( usingMPI ) THEN
+#endif
+          theProc = tilePidS(bi,bj)
+          theTag  = _tileTagSendS(bi,bj)
+          theSize = iB
+          theType = MPI_DOUBLE_PRECISION
+          exchNreqsY(1,bi,bj) = exchNreqsY(1,bi,bj)+1
+          CALL MPI_Isend(southSendBuf_RL(1,eBl,bi,bj), theSize, theType,
+     &                   theProc, theTag, MPI_COMM_MODEL,
+     &                   exchReqIdY(exchNreqsY(1,bi,bj),1,bi,bj), mpiRc)
+#ifndef ALWAYS_USE_MPI
+         ENDIF
+#endif
+#endif /* ALLOW_USE_MPI */
+         northRecvAck(eBl,biS,bjS) = 1.
+        ELSEIF ( southCommMode .EQ. COMM_PUT  ) THEN
+         iB  = 0
+         DO K=1,myNz
+          DO J=jMin,jMax
+           DO I=iMin,iMax
+            iB = iB + 1
+            northRecvBuf_RL(iB,eBl,biS,bjS) = array(I,J,K,bi,bj)
+            array(I,J,K,bi,bj) = 0.0
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSEIF ( southCommMode .NE. COMM_NONE 
+     &   .AND.   southCommMode .NE. COMM_GET ) THEN
+         STOP ' S/R EXCH: Invalid commS mode.'
+        ENDIF
+
+C       o Send or Put north edge
+         jMin = sNy+1
+         jMax = sNy+exchWidthY
+        IF ( northCommMode .EQ. COMM_MSG  ) THEN
+         iB = 0
+         DO K=1,myNz
+          DO J=jMin,jMax
+           DO I=iMin,iMax
+            iB = iB + 1
+            northSendBuf_RL(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
+            array(I,J,K,bi,bj) = 0.0
+           ENDDO
+          ENDDO
+         ENDDO
+C        Send the data
+#ifdef ALLOW_USE_MPI
+#ifndef ALWAYS_USE_MPI
+         IF ( usingMPI ) THEN
+#endif
+         theProc = tilePidN(bi,bj)
+         theTag  = _tileTagSendN(bi,bj)
+         theSize = iB
+         theType = MPI_DOUBLE_PRECISION
+         exchNreqsY(1,bi,bj) = exchNreqsY(1,bi,bj)+1
+         CALL MPI_Isend(northSendBuf_RL(1,eBl,bi,bj), theSize, theType,
+     &                  theProc, theTag, MPI_COMM_MODEL,
+     &                  exchReqIdY(exchNreqsY(1,bi,bj),1,bi,bj), mpiRc )
+#ifndef ALWAYS_USE_MPI
+         ENDIF
+#endif
+#endif /* ALLOW_USE_MPI */
+         southRecvAck(eBl,biN,bjN) = 1.
+        ELSEIF ( northCommMode .EQ. COMM_PUT  ) THEN
+         iB  = 0
+         DO K=1,myNz
+          DO J=jMin,jMax
+           DO I=iMin,iMax
+            iB = iB + 1
+            southRecvBuf_RL(iB,eBl,biN,bjN) = array(I,J,K,bi,bj)
+            array(I,J,K,bi,bj) = 0.0
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSEIF ( northCommMode .NE. COMM_NONE
+     &   .AND.   northCommMode .NE. COMM_GET  ) THEN
+         STOP ' S/R EXCH: Invalid commN mode.'
+        ENDIF
+        endif
        ENDDO
       ENDDO
 
@@ -370,13 +466,13 @@ C
         ENDIF
 
 C       o Send or Put south edge
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+
         IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
          jMin = 1
          jMax = 1+exchWidthY-1
-        ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
-         jMin = 1-exchWidthY
-         jMax = 0
-        ENDIF
         IF ( southCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
@@ -424,13 +520,8 @@ C        Send the data
         ENDIF
 
 C       o Send or Put north edge
-        IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
          jMin = sNy-exchWidthY+1
          jMax = sNy
-        ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
-         jMin = sNy+1
-         jMax = sNy+exchWidthY
-        ENDIF
         IF ( northCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
@@ -477,6 +568,113 @@ C        Send the data
          STOP ' S/R EXCH: Invalid commN mode.'
         ENDIF
 
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>> ADJOINT RUN <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+        ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
+
+         jMin = 1-exchWidthY
+         jMax = 0
+        IF ( southCommMode .EQ. COMM_MSG  ) THEN
+         iB = 0
+         DO K=1,myNz
+          DO J=jMin,jMax
+           DO I=iMin,iMax
+            iB = iB + 1
+            southSendBuf_RS(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
+            array(I,J,K,bi,bj) = 0.0
+           ENDDO
+          ENDDO
+         ENDDO
+C        Send the data
+#ifdef ALLOW_USE_MPI
+#ifndef ALWAYS_USE_MPI
+         IF ( usingMPI ) THEN
+#endif
+          theProc = tilePidS(bi,bj)
+          theTag  = _tileTagSendS(bi,bj)
+          theSize = iB
+          theType = MPI_DOUBLE_PRECISION
+#ifdef RS_IS_REAL4
+         theType = MPI_REAL4
+#endif
+          exchNreqsY(1,bi,bj) = exchNreqsY(1,bi,bj)+1
+          CALL MPI_Isend(southSendBuf_RS(1,eBl,bi,bj), theSize, theType,
+     &                   theProc, theTag, MPI_COMM_MODEL,
+     &                   exchReqIdY(exchNreqsY(1,bi,bj),1,bi,bj), mpiRc)
+#ifndef ALWAYS_USE_MPI
+         ENDIF
+#endif
+#endif /* ALLOW_USE_MPI */
+         northRecvAck(eBl,biS,bjS) = 1.
+        ELSEIF ( southCommMode .EQ. COMM_PUT  ) THEN
+         iB  = 0
+         DO K=1,myNz
+          DO J=jMin,jMax
+           DO I=iMin,iMax
+            iB = iB + 1
+            northRecvBuf_RS(iB,eBl,biS,bjS) = array(I,J,K,bi,bj)
+            array(I,J,K,bi,bj) = 0.0
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSEIF ( southCommMode .NE. COMM_NONE 
+     &   .AND.   southCommMode .NE. COMM_GET ) THEN
+         STOP ' S/R EXCH: Invalid commS mode.'
+        ENDIF
+
+C       o Send or Put north edge
+         jMin = sNy+1
+         jMax = sNy+exchWidthY
+        IF ( northCommMode .EQ. COMM_MSG  ) THEN
+         iB = 0
+         DO K=1,myNz
+          DO J=jMin,jMax
+           DO I=iMin,iMax
+            iB = iB + 1
+            northSendBuf_RS(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
+            array(I,J,K,bi,bj) = 0.0
+           ENDDO
+          ENDDO
+         ENDDO
+C        Send the data
+#ifdef ALLOW_USE_MPI
+#ifndef ALWAYS_USE_MPI
+         IF ( usingMPI ) THEN
+#endif
+         theProc = tilePidN(bi,bj)
+         theTag  = _tileTagSendN(bi,bj)
+         theSize = iB
+         theType = MPI_DOUBLE_PRECISION
+#ifdef RS_IS_REAL4
+         theType = MPI_REAL4
+#endif
+         exchNreqsY(1,bi,bj) = exchNreqsY(1,bi,bj)+1
+         CALL MPI_Isend(northSendBuf_RS(1,eBl,bi,bj), theSize, theType,
+     &                  theProc, theTag, MPI_COMM_MODEL,
+     &                  exchReqIdY(exchNreqsY(1,bi,bj),1,bi,bj), mpiRc )
+#ifndef ALWAYS_USE_MPI
+         ENDIF
+#endif
+#endif /* ALLOW_USE_MPI */
+         southRecvAck(eBl,biN,bjN) = 1.
+        ELSEIF ( northCommMode .EQ. COMM_PUT  ) THEN
+         iB  = 0
+         DO K=1,myNz
+          DO J=jMin,jMax
+           DO I=iMin,iMax
+            iB = iB + 1
+            southRecvBuf_RS(iB,eBl,biN,bjN) = array(I,J,K,bi,bj)
+            array(I,J,K,bi,bj) = 0.0
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSEIF ( northCommMode .NE. COMM_NONE
+     &   .AND.   northCommMode .NE. COMM_GET  ) THEN
+         STOP ' S/R EXCH: Invalid commN mode.'
+        ENDIF
+
+        ENDIF
        ENDDO
       ENDDO
 

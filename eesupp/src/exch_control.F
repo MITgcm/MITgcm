@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_control.F,v 1.4 2000/03/14 15:55:50 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_control.F,v 1.5 2001/01/29 20:00:14 heimbach Exp $
 
 C      MITgcmUV Exchange routine
 C      -------------------------
@@ -85,7 +85,7 @@ C
 CStartOfInterface
        SUBROUTINE EXCH_RL( 
      U            array,
-     I            myOLw, myOLe, myOLn, myOLs, myNz,
+     I            myOLw, myOLe, myOLs, myOLn, myNz,
      I            exchWidthX, exchWidthY,
      I            simulationMode, cornerMode, myThid )
 C     /==========================================================\
@@ -196,6 +196,7 @@ C--    Error checks
 C--    Cycle edge buffer level
        CALL EXCH_CYCLE_EBL( myThid )
 
+       IF ( theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
 C--    "Put" east and west edges.
        CALL EXCH_RL_SEND_PUT_X( array,
      I             myOLw, myOLe, myOLs, myOLn, myNz,
@@ -230,6 +231,44 @@ C--    not active).
      I            myOLw, myOLe, myOLs, myOLn, myNz,
      I            exchWidthX, exchWidthY,
      I            theSimulationMode, theCornerMode, myThid )
+       ENDIF
+
+       IF ( theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
+C       "Put" north and south edges.
+        CALL EXCH_RL_SEND_PUT_Y( array,
+     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              exchWidthX, exchWidthY,
+     I              theSimulationMode, theCornerMode, myThid )
+C--     If corners are important then sync and update east and west edges
+C--     before doing north and south exchanges.
+        IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
+         CALL EXCH_RL_RECV_GET_Y( array,
+     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              exchWidthX, exchWidthY,
+     I              theSimulationMode, theCornerMode, myThid )
+        ENDIF
+C--     "Put" east and west edges.
+        CALL EXCH_RL_SEND_PUT_X( array,
+     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              exchWidthX, exchWidthY,
+     I              theSimulationMode, theCornerMode, myThid )
+C--     Sync and update east, west (and north, south if corner updating
+C--     not active).
+        IF ( theCornerMode .NE. EXCH_UPDATE_CORNERS ) THEN
+         CALL EXCH_RL_RECV_GET_Y( array,
+     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              exchWidthX, exchWidthY,
+     I              theSimulationMode, theCornerMode, myThid )
+        ENDIF
+        CALL EXCH_RL_RECV_GET_X( array,
+     I             myOLw, myOLe, myOLs, myOLn, myNz,
+     I             exchWidthX, exchWidthY,
+     I             theSimulationMode, theCornerMode, myThid )
+       ENDIF
+
+
+
+
 C      Special case for zonal average model i.e. case where sNx == 1
 C      In this case a forward mode exchange simply sets array to
 C      the i=1 value for all i.
@@ -253,7 +292,7 @@ C      the i=1 value for all i.
 CStartOfInterface
        SUBROUTINE EXCH_RS( 
      U            array,
-     I            myOLw, myOLe, myOLn, myOLs, myNz,
+     I            myOLw, myOLe, myOLs, myOLn, myNz,
      I            exchWidthX, exchWidthY,
      I            simulationMode, cornerMode, myThid )
 C     /==========================================================\

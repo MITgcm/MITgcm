@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.9 2000/03/27 22:25:40 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.10 2001/01/29 20:00:14 heimbach Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -35,7 +35,7 @@ C     errIO - IO unit error flag
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
       NAMELIST /EEPARMS/
-     & nTx, nTy
+     & nTx, nTy,usingMPI
 
 
 C--   For now these options are fixed as the code does
