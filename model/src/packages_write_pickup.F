@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.4 2004/01/29 14:17:58 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.5 2004/04/07 23:45:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -117,7 +117,7 @@ C SPK 4/9/01: Open boundary checkpointing
 
 #ifdef ALLOW_THSICE
         IF (useThSIce) THEN
-          CALL THSICE_WRITE_CHECKPOINT(
+          CALL THSICE_WRITE_PICKUP(
      &               prec, lgf, permCheckPoint, myIter, myThid)
         ENDIF
 #endif /* ALLOW_THSICE */
