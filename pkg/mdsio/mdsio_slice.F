@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice.F,v 1.2 2001/09/27 18:24:45 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice.F,v 1.3 2001/12/14 18:56:01 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -65,8 +65,8 @@ C Local variables
       character*(80) dataFName
       integer iG,jG,irec,bi,bj,k,dUnit,IL
       logical exst
-      Real*4 r4seg(sNx+2*oLx)
-      Real*8 r8seg(sNx+2*oLx)
+      Real*4 r4seg(sNx)
+      Real*8 r8seg(sNx)
       logical globalFile,fileIsOpen
       integer length_of_rec
       character*(max_len_mbuf) msgbuf
@@ -121,7 +121,7 @@ C If negative check for global file with MDS name (ie. fName.data)
 
 C If we are reading from a global file then we open it here
       if (globalFile) then
-       length_of_rec=MDS_RECLEN( filePrec, sNx+2*oLx, mythid )
+       length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
        open( dUnit, file=dataFName, status='old',
      &      access='direct', recl=length_of_rec )
        fileIsOpen=.TRUE.
@@ -144,7 +144,7 @@ C (This is a place-holder for the active/passive mechanism
      &      ' MDSREADFIELDXZ: opening file: ',dataFName
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
-          length_of_rec=MDS_RECLEN( filePrec, sNx+2*oLx, mythid )
+          length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
           open( dUnit, file=dataFName, status='old',
      &        access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
@@ -176,7 +176,7 @@ C (This is a place-holder for the active/passive mechanism
            if (filePrec .eq. precFloat32) then
             read(dUnit,rec=irec) r4seg
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR4(sNx+2*oLx,r4seg)
+            call MDS_BYTESWAPR4(sNx,r4seg)
 #endif
             if (arrType .eq. 'RS') then
              call MDS_SEG4toRS_2D(sNx,oLx,nNz,bi,bj,k,.TRUE.,r4seg,arr)
@@ -191,7 +191,7 @@ C (This is a place-holder for the active/passive mechanism
            elseif (filePrec .eq. precFloat64) then
             read(dUnit,rec=irec) r8seg
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8( sNx+2*oLx, r8seg )
+            call MDS_BYTESWAPR8( sNx, r8seg )
 #endif
             if (arrType .eq. 'RS') then
              call MDS_SEG8toRS_2D(sNx,oLx,nNz,bi,bj,k,.TRUE.,r8seg,arr)
@@ -288,8 +288,8 @@ C Local variables
       character*(80) dataFName
       integer iG,jG,irec,bi,bj,k,dUnit,IL
       logical exst
-      Real*4 r4seg(sNy+2*oLy)
-      Real*8 r8seg(sNy+2*oLy)
+      Real*4 r4seg(sNy)
+      Real*8 r8seg(sNy)
       logical globalFile,fileIsOpen
       integer length_of_rec
       character*(max_len_mbuf) msgbuf
@@ -344,7 +344,7 @@ C If negative check for global file with MDS name (ie. fName.data)
 
 C If we are reading from a global file then we open it here
       if (globalFile) then
-       length_of_rec=MDS_RECLEN( filePrec, sNy+2*oLy, mythid )
+       length_of_rec=MDS_RECLEN( filePrec, sNy, mythid )
        open( dUnit, file=dataFName, status='old',
      &      access='direct', recl=length_of_rec )
        fileIsOpen=.TRUE.
@@ -367,7 +367,7 @@ C (This is a place-holder for the active/passive mechanism
      &      ' MDSREADFIELDYZ: opening file: ',dataFName
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
-          length_of_rec=MDS_RECLEN( filePrec, sNy+2*oLy, mythid )
+          length_of_rec=MDS_RECLEN( filePrec, sNy, mythid )
           open( dUnit, file=dataFName, status='old',
      &        access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
@@ -387,9 +387,9 @@ C (This is a place-holder for the active/passive mechanism
         if (fileIsOpen) then
          do k=1,nNz
            if (globalFile) then
-            iG = myXGlobalLo-1 + (bi-1)*sNx
-            jG = (myYGlobalLo-1)/sNy + (bj-1)
-            irec=1 + INT(iG/sNx) + nSx*nPx*jG + nSx*nPx*nSy*nPy*(k-1)
+            iG = (myXGlobalLo-1)/sNx + (bi-1)
+            jG = myYGlobalLo-1 + (bj-1)*sNy
+            irec=1 + INT(jG/sNy) + nSy*nPy*iG + nSx*nPx*nSy*nPy*(k-1)
      &           + nSx*nPx*nSy*nPy*nNz*(irecord-1)
            else
             iG = 0
@@ -399,7 +399,7 @@ C (This is a place-holder for the active/passive mechanism
            if (filePrec .eq. precFloat32) then
             read(dUnit,rec=irec) r4seg
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR4(sNy+2*oLy,r4seg)
+            call MDS_BYTESWAPR4(sNy,r4seg)
 #endif
             if (arrType .eq. 'RS') then
              call MDS_SEG4toRS_2D(sNy,oLy,nNz,bi,bj,k,.TRUE.,r4seg,arr)
@@ -414,7 +414,7 @@ C (This is a place-holder for the active/passive mechanism
            elseif (filePrec .eq. precFloat64) then
             read(dUnit,rec=irec) r8seg
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8( sNy+2*oLy, r8seg )
+            call MDS_BYTESWAPR8( sNy, r8seg )
 #endif
             if (arrType .eq. 'RS') then
              call MDS_SEG8toRS_2D(sNy,oLy,nNz,bi,bj,k,.TRUE.,r8seg,arr)
@@ -516,8 +516,8 @@ C Functions
 C Local variables
       character*(80) dataFName
       integer iG,jG,irec,bi,bj,k,dUnit,IL
-      Real*4 r4seg(sNx+2*oLx)
-      Real*8 r8seg(sNx+2*oLx)
+      Real*4 r4seg(sNx)
+      Real*8 r8seg(sNx)
       integer length_of_rec
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
@@ -549,12 +549,12 @@ C If we are writing to a global file then we open it here
       if (globalFile) then
        write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
        if (irecord .EQ. 1) then
-        length_of_rec=MDS_RECLEN( filePrec, sNx+2*oLx, mythid )
+        length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
         open( dUnit, file=dataFName, status=_NEW_STATUS,
      &      access='direct', recl=length_of_rec )
         fileIsOpen=.TRUE.
        else
-        length_of_rec=MDS_RECLEN( filePrec, sNx+2*oLx, mythid )
+        length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
         open( dUnit, file=dataFName, status='old',
      &      access='direct', recl=length_of_rec )
         fileIsOpen=.TRUE.
@@ -571,12 +571,12 @@ C If we are writing to a tiled MDS file then we open each one here
          write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
-          length_of_rec=MDS_RECLEN( filePrec, sNx+2*oLx, mythid )
+          length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
           open( dUnit, file=dataFName, status=_NEW_STATUS,
      &       access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          else
-          length_of_rec=MDS_RECLEN( filePrec, sNx+2*oLx, mythid )
+          length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
           open( dUnit, file=dataFName, status='old',
      &       access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
@@ -606,7 +606,7 @@ C If we are writing to a tiled MDS file then we open each one here
              stop 'ABNORMAL END: S/R MDSWRITEFIELDXZ'
             endif
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR4(sNx+2*oLx,r4seg)
+            call MDS_BYTESWAPR4(sNx,r4seg)
 #endif
             write(dUnit,rec=irec) r4seg
            elseif (filePrec .eq. precFloat64) then
@@ -621,7 +621,7 @@ C If we are writing to a tiled MDS file then we open each one here
              stop 'ABNORMAL END: S/R MDSWRITEFIELDXZ'
             endif              
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8( sNx+2*oLx, r8seg )
+            call MDS_BYTESWAPR8( sNx, r8seg )
 #endif
             write(dUnit,rec=irec) r8seg
            else
@@ -725,8 +725,8 @@ C Functions
 C Local variables
       character*(80) dataFName
       integer iG,jG,irec,bi,bj,k,dUnit,IL
-      Real*4 r4seg(sNy+2*oLy)
-      Real*8 r8seg(sNy+2*oLy)
+      Real*4 r4seg(sNy)
+      Real*8 r8seg(sNy)
       integer length_of_rec
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
@@ -758,12 +758,12 @@ C If we are writing to a global file then we open it here
       if (globalFile) then
        write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
        if (irecord .EQ. 1) then
-        length_of_rec=MDS_RECLEN( filePrec, sNy+2*oLy, mythid )
+        length_of_rec=MDS_RECLEN( filePrec, sNy, mythid )
         open( dUnit, file=dataFName, status=_NEW_STATUS,
      &      access='direct', recl=length_of_rec )
         fileIsOpen=.TRUE.
        else
-        length_of_rec=MDS_RECLEN( filePrec, sNy+2*oLy, mythid )
+        length_of_rec=MDS_RECLEN( filePrec, sNy, mythid )
         open( dUnit, file=dataFName, status='old',
      &      access='direct', recl=length_of_rec )
         fileIsOpen=.TRUE.
@@ -780,12 +780,12 @@ C If we are writing to a tiled MDS file then we open each one here
          write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
-          length_of_rec=MDS_RECLEN( filePrec, sNy+2*oLy, mythid )
+          length_of_rec=MDS_RECLEN( filePrec, sNy, mythid )
           open( dUnit, file=dataFName, status=_NEW_STATUS,
      &       access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          else
-          length_of_rec=MDS_RECLEN( filePrec, sNy+2*oLy, mythid )
+          length_of_rec=MDS_RECLEN( filePrec, sNy, mythid )
           open( dUnit, file=dataFName, status='old',
      &       access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
@@ -794,9 +794,9 @@ C If we are writing to a tiled MDS file then we open each one here
         if (fileIsOpen) then
          do k=1,nNz
            if (globalFile) then
-            iG = myXGlobalLo-1 + (bi-1)*sNx
-            jG = (myYGlobalLo-1)/sNy + (bj-1)
-            irec=1 + INT(iG/sNx) + nSx*nPx*jG + nSx*nPx*nSy*nPy*(k-1)
+            iG = (myXGlobalLo-1)/sNx + (bi-1)
+            jG = myYGlobalLo-1 + (bj-1)*sNy
+            irec=1 + INT(jG/sNy) + nSy*nPy*iG + nSx*nPx*nSy*nPy*(k-1)
      &           + nSx*nPx*nSy*nPy*nNz*(irecord-1)
            else
             iG = 0
@@ -815,7 +815,7 @@ C If we are writing to a tiled MDS file then we open each one here
              stop 'ABNORMAL END: S/R MDSWRITEFIELDYZ'
             endif
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR4(sNy+2*oLy,r4seg)
+            call MDS_BYTESWAPR4(sNy,r4seg)
 #endif
             write(dUnit,rec=irec) r4seg
            elseif (filePrec .eq. precFloat64) then
@@ -830,7 +830,7 @@ C If we are writing to a tiled MDS file then we open each one here
              stop 'ABNORMAL END: S/R MDSWRITEFIELDYZ'
             endif             
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8( sNy+2*oLy, r8seg )
+            call MDS_BYTESWAPR8( sNy, r8seg )
 #endif
             write(dUnit,rec=irec) r8seg
            else
@@ -893,19 +893,19 @@ C Global variables / common blocks
 C Arguments
       integer sn,ol,nNz,bi,bj,k
       logical copyTo
-      Real*4 seg(sn+2*ol)
+      Real*4 seg(sn)
       _RL arr(1-ol:sn+ol,nNz,nSx,nSy)
      
 C Local
       integer ii
 C     ------------------------------------------------------------------
       if (copyTo) then
-       do ii=1-ol,sn+ol
-        arr(ii,k,bi,bj)=seg(ii+ol)
+       do ii=1,sn
+        arr(ii,k,bi,bj)=seg(ii)
        enddo
       else
-       do ii=1-ol,sn+ol
-        seg(ii+ol)=arr(ii,k,bi,bj)
+       do ii=1,sn
+        seg(ii)=arr(ii,k,bi,bj)
        enddo
       endif
 C     ------------------------------------------------------------------
@@ -933,19 +933,19 @@ C Global variables / common blocks
 C Arguments
       integer sn,ol,nNz,bi,bj,k
       logical copyTo
-      Real*4 seg(sn+2*ol)
+      Real*4 seg(sn)
       _RS arr(1-ol:sn+ol,nNz,nSx,nSy)
      
 C Local
       integer ii
 C     ------------------------------------------------------------------
       if (copyTo) then
-       do ii=1-ol,sn+ol
-        arr(ii,k,bi,bj)=seg(ii+ol)
+       do ii=1,sn
+        arr(ii,k,bi,bj)=seg(ii)
        enddo
       else
-       do ii=1-ol,sn+ol
-        seg(ii+ol)=arr(ii,k,bi,bj)
+       do ii=1,sn
+        seg(ii)=arr(ii,k,bi,bj)
        enddo
       endif
 C     ------------------------------------------------------------------
@@ -973,19 +973,19 @@ C Global variables / common blocks
 C Arguments
       integer sn,ol,nNz,bi,bj,k
       logical copyTo
-      Real*8 seg(sn+2*ol)
+      Real*8 seg(sn)
       _RL arr(1-ol:sn+ol,nNz,nSx,nSy)
      
 C Local
       integer ii
 C     ------------------------------------------------------------------
       if (copyTo) then
-       do ii=1-ol,sn+ol
-        arr(ii,k,bi,bj)=seg(ii+ol)
+       do ii=1,sn
+        arr(ii,k,bi,bj)=seg(ii)
        enddo
       else
-       do ii=1-ol,sn+ol
-        seg(ii+ol)=arr(ii,k,bi,bj)
+       do ii=1,sn
+        seg(ii)=arr(ii,k,bi,bj)
        enddo
       endif
 C     ------------------------------------------------------------------
@@ -1013,19 +1013,19 @@ C Global variables / common blocks
 C Arguments
       integer sn,ol,nNz,bi,bj,k
       logical copyTo
-      Real*8 seg(sn+2*ol)
+      Real*8 seg(sn)
       _RS arr(1-ol:sn+ol,nNz,nSx,nSy)
      
 C Local
       integer ii
 C     ------------------------------------------------------------------
       if (copyTo) then
-       do ii=1-ol,sn+ol
-        arr(ii,k,bi,bj)=seg(ii+ol)
+       do ii=1,sn
+        arr(ii,k,bi,bj)=seg(ii)
        enddo
       else
-       do ii=1-ol,sn+ol
-        seg(ii+ol)=arr(ii,k,bi,bj)
+       do ii=1,sn
+        seg(ii)=arr(ii,k,bi,bj)
        enddo
       endif
 C     ------------------------------------------------------------------
