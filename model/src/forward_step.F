@@ -1,7 +1,10 @@
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.13 2001/07/20 15:53:10 adcroft Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-      subroutine forward_step( iloop, mytime, myiter, mythid )
+      SUBROUTINE FORWARD_STEP( iloop, myTime, myIter, myThid )
+      IMPLICIT NONE
 
 c     ==================================================================
 c     SUBROUTINE forward_step
@@ -15,17 +18,8 @@ c     of the model was split into two parts. Those parameters that do
 c     not depend on a specific model run are set in *initialise_fixed*,
 c     whereas those that do depend on the specific realization are
 c     initialized in *initialise_varia*. 
-c     This routine is to be used in conjuction with the MITgcmuv 
-c     checkpoint 37.
-c
-c     ==================================================================
-c     SUBROUTINE forward_step
-c     ==================================================================
 
-      implicit none
-
-c     == global variables ==
-
+C     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -44,45 +38,42 @@ c     == global variables ==
 #include "cost.h"
 #endif
 
-c     == routine arguments ==
-c     note: under the multi-threaded model myiter and 
-c           mytime are local variables passed around as routine 
-c           arguments. Although this is fiddly it saves the need to 
-c           impose additional synchronisation points when they are 
-c           updated.
-c     myiter - iteration counter for this thread
-c     mytime - time counter for this thread
-c     mythid - thread number for this instance of the routine.
+C     == routine arguments ==
+C     note: under the multi-threaded model myiter and 
+C           mytime are local variables passed around as routine 
+C           arguments. Although this is fiddly it saves the need to 
+C           impose additional synchronisation points when they are 
+C           updated.
+C     myiter - iteration counter for this thread
+C     mytime - time counter for this thread
+C     mythid - thread number for this instance of the routine.
       integer iloop
       integer mythid 
       integer myiter
       _RL     mytime
 
-c     == local variables ==
+C     == local variables ==
 
-c--   == end of interface ==
-
-c--     >>> Loop body start <<<
 
 #ifdef ALLOW_AUTODIFF_TAMC
-c--     Set the model iteration counter and the model time.
+C--     Set the model iteration counter and the model time.
         myiter = nIter0 + (iloop-1)
         mytime = startTime + float(iloop-1)*deltaTclock
 
-c       Include call to a dummy routine. Its adjoint will be 
-c       called at the proper place in the adjoint code.
-c       The adjoint routine will print out adjoint values 
-c       if requested. The location of the call is important, 
-c       it has to be after the adjoint of the exchanges 
-c       (DO_GTERM_BLOCKING_EXCHANGES).
-        call dummy_in_stepping( myTime, myIter, myThid )
+C       Include call to a dummy routine. Its adjoint will be 
+C       called at the proper place in the adjoint code.
+C       The adjoint routine will print out adjoint values 
+C       if requested. The location of the call is important, 
+C       it has to be after the adjoint of the exchanges 
+C       (DO_GTERM_BLOCKING_EXCHANGES).
+        CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
 #endif
 
-c--     Load forcing/external data fields.
+C--     Load forcing/external data fields.
 #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
-c       NOTE, that although the exf package is part of the
-c       distribution, it is not currently maintained, i.e.
-c       exf is disabled by default in genmake.
+C       NOTE, that although the exf package is part of the
+C       distribution, it is not currently maintained, i.e.
+C       exf is disabled by default in genmake.
         CALL EXF_GETFORCING( mytime, myiter, mythid )
 #else
         CALL TIMER_START('EXTERNAL_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
@@ -90,13 +81,12 @@ c       exf is disabled by default in genmake.
         CALL TIMER_STOP ('EXTERNAL_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
 #endif
 
-c--     Step forward fields and calculate time tendency terms.
+C--     Step forward fields and calculate time tendency terms.
         CALL TIMER_START('DYNAMICS            [THE_MAIN_LOOP]',mythid)
         CALL DYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('DYNAMICS            [THE_MAIN_LOOP]',mythid)
 
 #ifndef ALLOW_AUTODIFF_TAMC
-
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Step forward W field in N-H algorithm
         IF ( nonHydrostatic ) THEN
@@ -105,32 +95,36 @@ C--   Step forward W field in N-H algorithm
           CALL TIMER_STOP ('CALC_GW          [THE_MAIN_LOOP]',myThid)
         ENDIF
 #endif
-
-#ifdef ALLOW_SHAP_FILT
-C--   Step forward all tiles, filter and exchange.
-      CALL TIMER_START('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
-      CALL SHAP_FILT_APPLY( 
-     I                     gUnm1, gVnm1, gTnm1, gSnm1,
-     I                     myTime, myIter, myThid )
-      IF (implicDiv2Dflow.LT.1.) THEN
-C--   Explicit+Implicit part of the Barotropic Flow Divergence
-C      => Filtering of uVel,vVel is necessary
-         CALL SHAP_FILT_UV( uVel, vVel, myTime, myThid )
-      ENDIF
-      CALL TIMER_STOP ('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
-#endif
-
-#ifdef ALLOW_ZONAL_FILT
-      IF (zonal_filt_lat.LT.90.) THEN 
-        CALL TIMER_START('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
-        CALL ZONAL_FILT_APPLY(
-     U           gUnm1, gVnm1, gTnm1, gSnm1,
-     I           myThid )
-        CALL TIMER_STOP ('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
-      ENDIF
-#endif
-
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+C-- This block has been moved to the_correction_step(). We have
+C   left this code here to indicate where the filters used to be
+C   in the algorithm before JMC moved them to after the pressure
+C   solver.
+C
+C#ifdef ALLOW_SHAP_FILT
+CC--   Step forward all tiles, filter and exchange.
+C      CALL TIMER_START('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
+C      CALL SHAP_FILT_APPLY( 
+C     I                     gUnm1, gVnm1, gTnm1, gSnm1,
+C     I                     myTime, myIter, myThid )
+C      IF (implicDiv2Dflow.LT.1.) THEN
+CC--   Explicit+Implicit part of the Barotropic Flow Divergence
+CC      => Filtering of uVel,vVel is necessary
+C         CALL SHAP_FILT_UV( uVel, vVel, myTime, myThid )
+C      ENDIF
+C      CALL TIMER_STOP ('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
+C#endif
+C
+C#ifdef ALLOW_ZONAL_FILT
+C      IF (zonal_filt_lat.LT.90.) THEN 
+C        CALL TIMER_START('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
+C        CALL ZONAL_FILT_APPLY(
+C     U           gUnm1, gVnm1, gTnm1, gSnm1,
+C     I           myThid )
+C        CALL TIMER_STOP ('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
+C      ENDIF
+C#endif
 
 C--   Solve elliptic equation(s).
 C     Two-dimensional only for conventional hydrostatic or 
@@ -187,7 +181,5 @@ C     at time level 1
       CALL TIMER_STOP ('WRITE_CHECKPOINT    [THE_MAIN_LOOP]',myThid)
 
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-c--           >>> Loop body end <<<
 
       END
