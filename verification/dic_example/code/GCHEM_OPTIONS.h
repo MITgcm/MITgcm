@@ -6,7 +6,7 @@ C    !INTERFACE:
 
 C    !DESCRIPTION:
 c options for biogeochemistry package
-#define PTRACERS_SEPARATE_FORCING
+#define GCHEM_SEPARATE_FORCING
 #define DIC_BIOTIC
 #undef  ALLOW_FE
 
