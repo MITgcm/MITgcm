@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_f77,v 1.1 2003/10/21 18:35:08 edhill Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+AWK='gawk'
+MAKE='gmake'
+MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
+FC='f77'
+LN='/usr/bin/ln -s'
+CPP='/usr/ccs/lib/cpp -P'
+FFLAGS='-stackvar -explicitpar -vpara -e -u -noautopar -xtypemap=real:64,double:64,integer:32 -fsimple=0'
+FOPTIM='-dalign -O3 -xarch=v9'
+CFLAGS='-dalign -O3 -xarch=v9'
+NOOPTFLAGS='-dalign -O0 -xarch=v9'

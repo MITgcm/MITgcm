@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.14 2003/10/21 15:29:20 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.15 2003/10/21 18:35:08 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -46,14 +46,14 @@ expand_pkg_groups() {
     PKG_GROUPS=$ROOTDIR"/pkg/pkg_groups"
     if test -r $PKG_GROUPS ; then
 	cat $PKG_GROUPS | sed -e 's/#.*$//g' | sed -e 's/:/ : /g' > ./p1.tmp
-	cat ./p1.tmp | awk '(NF>2 && $2==":"){ print $0 }' > ./p2.tmp
+	cat ./p1.tmp | $AWK '(NF>2 && $2==":"){ print $0 }' > ./p2.tmp
 	matched=0
 	for i in $PACKAGES ; do
 	    line=`grep "^ *$i" ./p2.tmp`
 	    RETVAL=$?
 	    if test "x$RETVAL" = x0 ; then
 		matched=1
-		replace=`echo $line | awk '{ $1=""; $2=""; print $0 }'`
+		replace=`echo $line | $AWK '{ $1=""; $2=""; print $0 }'`
 		echo "    replacing \"$i\" with: $replace"
 		new_packages="$new_packages $replace"
 	    else
@@ -136,7 +136,7 @@ EOF
 	echo "  The possible FORTRAN compilers found in your path are:"
 	echo "   "$p_FC
 	if test "x$FC" = x ; then
-	    FC=`echo $p_FC | awk '{print $1}'`
+	    FC=`echo $p_FC | $AWK '{print $1}'`
 	fi
     fi
 
@@ -202,7 +202,7 @@ get_pdepend_list()  {
     #  strip the comments and then convert the dependency file into
     #  two arrays: PNAME, DNAME
     cat $1 | sed -e 's/#.*$//g' \
-	| awk 'BEGIN{nn=0;} (NF>0){ for(i=2;i<=NF;i++){nn++; print "PNAME["nn"]="$1"\nDNAME["nn"]="$i} }' \
+	| $AWK 'BEGIN{nn=0;} (NF>0){ for(i=2;i<=NF;i++){nn++; print "PNAME["nn"]="$1"\nDNAME["nn"]="$i} }' \
 	> ./.pd_tmp
     source ./.pd_tmp
     rm -f ./.pd_tmp
@@ -319,6 +319,7 @@ STANDARDDIRS=
 
 PWD=`pwd`
 MAKE=make
+AWK=awk
 THISHOSTNAME=`hostname`
 THISCWD=`pwd`
 THISDATE=`date`
@@ -721,7 +722,7 @@ echo "  getting package dependency info from  $PDEPEND"
 #  Strip the comments and then convert the dependency file into
 #  two arrays: PNAME, DNAME
 cat $PDEPEND | sed -e 's/#.*$//g' \
-    | awk 'BEGIN{nn=-1;} (NF>0){ for(i=2;i<=NF;i++){nn++; print "PNAME_"nn"="$1"\nDNAME_"nn"="$i}} END{print "nname="nn}' \
+    | $AWK 'BEGIN{nn=-1;} (NF>0){ for(i=2;i<=NF;i++){nn++; print "PNAME_"nn"="$1"\nDNAME_"nn"="$i}} END{print "nname="nn}' \
     > ./.pd_tmp
 RETVAL=$?
 if test ! "x${RETVAL}" = x0 ; then
@@ -755,7 +756,7 @@ else
     else
 	echo "  using PDEFAULT=\"$PDEFAULT\""
         #  Strip the comments and add all the names
-	def=`cat $PDEFAULT | sed -e 's/#.*$//g' | awk '(NF>0){print $0}'`
+	def=`cat $PDEFAULT | sed -e 's/#.*$//g' | $AWK '(NF>0){print $0}'`
 	RETVAL=$?
 	if test "x${RETVAL}" != x0 ; then
 	    echo -n "Error: can't parse default package list "
@@ -935,7 +936,7 @@ for n in $names ; do
 	    fi
 	done
 	if test "x$has_pack" = xf ; then
-	    undef=`echo "ALLOW_$n" | awk '{print toupper($0)}'`
+	    undef=`echo "ALLOW_$n" | $AWK '{print toupper($0)}'`
 	    echo "#undef $undef" >> $PACKAGES_DOT_H".tmp"
 #           DEFINES="$DEFINES -U$undef"
 
@@ -961,7 +962,7 @@ cat <<EOF >>$PACKAGES_DOT_H".tmp"
 C  Packages enabled by genmake:
 EOF
 for i in $PACKAGES ; do
-    def=`echo "ALLOW_$i" | awk '{print toupper($0)}'`
+    def=`echo "ALLOW_$i" | $AWK '{print toupper($0)}'`
     echo "#define $def" >> $PACKAGES_DOT_H".tmp"
 #eh3 DEFINES="$DEFINES -D$def"
 
@@ -1096,7 +1097,7 @@ for d in $alldirs ; do
     for sf in $sfiles ; do
 	if test ! -r ".links.tmp/$sf" ; then
 	    if test -f "$d/$sf" ; then
-		extn=`echo $sf | awk -F '.' '{print $NF}'`
+		extn=`echo $sf | $AWK -F '.' '{print $NF}'`
 		touch .links.tmp/$sf
 		deplist="$deplist $sf"
 		case $extn in
