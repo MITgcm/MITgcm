@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.48 2001/03/08 20:19:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.49 2001/05/14 21:50:49 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -535,14 +535,18 @@ C-  No-slip BCs impose a drag at bottom
        DO j=jMin,jMax
         DO i=iMin,iMax
          maskDown=_maskW(i,j,kp1,bi,bj)
-         IF (k.EQ.Nr) maskDown=0.
+         IF (k.EQ.Nr) maskDown=0. _d 0
          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)
      &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
      &   *(
      &      2.*KappaRU(i,j,kp1)*rkFac*rdrckp1
      &     + bottomDragLinear
-     &     + bottomDragQuadratic*sqrt(KE(i,j)+KE(i-1,j))
      &    )*(1.-maskDown)*uVel(i,j,k,bi,bj)
+         IF (KE(i,j)+KE(i-1,j) .NE. 0.)
+     &    gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)
+     &    -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &    *bottomDragQuadratic*sqrt(KE(i,j)+KE(i-1,j))
+     &    *(1.-maskDown)*uVel(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -866,8 +870,12 @@ C-  No-slip BCs impose a drag at bottom
      &   *(
      &      2.*KappaRV(i,j,kp1)*rkFac*rdrckp1
      &     + bottomDragLinear
-     &     + bottomDragQuadratic*sqrt(KE(i,j)+KE(i,j-1))
      &    )*(1.-maskDown)*vVel(i,j,k,bi,bj)
+         IF (KE(i,j)+KE(i,j-1) .NE. 0.)
+     &    gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)
+     &    -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &    *bottomDragQuadratic*sqrt(KE(i,j)+KE(i,j-1))
+     &    *(1.-maskDown)*vVel(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDIF
