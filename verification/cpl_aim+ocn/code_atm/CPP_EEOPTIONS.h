@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/code_atm/CPP_EEOPTIONS.h,v 1.3 2004/01/22 14:45:01 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/code_atm/CPP_EEOPTIONS.h,v 1.4 2004/01/23 19:19:31 adcroft Exp $
 C $Name:  $
 
 C
@@ -47,8 +47,11 @@ C     undef this option.
 #undef  FMTFTN_IO_THREADSAFE
 
 C--   Control MPI based parallel processing
-#define ALLOW_USE_MPI
-#define ALWAYS_USE_MPI
+CXXX We no longer select the use of MPI via this file (CPP_EEOPTIONS.h)
+	CXXX To use MPI, use an appropriate genmake2 options file or use
+	CXXX genmake2 -mpi .
+	CXXX #undef  ALLOW_USE_MPI
+	CXXX #undef  ALWAYS_USE_MPI
  
 C--   Control use of communication with other component: 
 C     allow to import and export from/to Coupler interface.

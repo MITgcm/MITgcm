@@ -1,10 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/Attic/CPP_EEOPTIONS.h,v 1.2 2004/01/12 20:41:59 afe Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/Attic/CPP_EEOPTIONS.h,v 1.3 2004/01/23 19:19:31 adcroft Exp $
 C $Name:  $
 
+CBOP
+C     !ROUTINE: CPP_EEOPTIONS.h
+C     !INTERFACE:
+C     include "CPP_EEOPTIONS.h"
 C
-C     /==========================================================\
+C     !DESCRIPTION:
+C     *==========================================================*
 C     | CPP_EEOPTIONS.h                                          |
-C     |==========================================================|
+C     *==========================================================*
 C     | C preprocessor "execution environment" supporting        |
 C     | flags. Use this file to set flags controlling the        |
 C     | execution environment in which a model runs - as opposed |
@@ -23,7 +28,8 @@ C     |       set all options as selectable at runtime but then  |
 C     |       once an experimental configuration has been        |
 C     |       identified, rebuild the code with the appropriate  |
 C     |       options set at compile time.                       |
-C     \==========================================================/
+C     *==========================================================*
+CEOP
 
 #ifndef _CPP_EEOPTIONS_H_
 #define _CPP_EEOPTIONS_H_
@@ -47,8 +53,11 @@ C     undef this option.
 #undef  FMTFTN_IO_THREADSAFE
 
 C--   Control MPI based parallel processing
-#undef  ALLOW_USE_MPI
-#undef  ALWAYS_USE_MPI
+CXXX We no longer select the use of MPI via this file (CPP_EEOPTIONS.h)
+CXXX To use MPI, use an appropriate genmake2 options file or use
+CXXX genmake2 -mpi .
+CXXX #undef  ALLOW_USE_MPI
+CXXX #undef  ALWAYS_USE_MPI
  
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.
@@ -90,6 +99,9 @@ C           filled in some way.
 #define CAN_PREVENT_X_PERIODICITY
 #define CAN_PREVENT_Y_PERIODICITY
 
+C--   Select the new EXCH2 (wrapper2) exchange software
+C     Note: this is a temporarily mis-named CPP-macro that will be renamed
+C     later.
 #define USE_W2
 
 #endif /* _CPP_EEOPTIONS_H_ */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.19 2004/01/21 21:10:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.20 2004/01/23 19:19:27 adcroft Exp $
 C $Name:  $
 
 CBOP
@@ -98,6 +98,11 @@ C           filled in some way.
 #undef  ALWAYS_PREVENT_Y_PERIODICITY
 #define CAN_PREVENT_X_PERIODICITY
 #define CAN_PREVENT_Y_PERIODICITY
+
+C--   Select the new EXCH2 (wrapper2) exchange software
+C     Note: this is a temporarily mis-named CPP-macro that will be renamed
+C     later.
+#undef  USE_W2
 
 #endif /* _CPP_EEOPTIONS_H_ */
 
