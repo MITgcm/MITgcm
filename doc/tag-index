@@ -1,7 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.144 2003/03/08 00:35:53 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.145 2003/03/21 23:20:36 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint50a_post
+o Bug fix for merging between c50 and KPP.
+  ikey was passed from thermodynamics to kpp_calc via
+  common block rather than being recomputed in kpp_calc,
+  in contradiction with new key itdkey.
+  New key ikppkey created, and tamc.h headers updated.
 
 checkpoint50
 - 2nd step of merge with ecco-branch:
