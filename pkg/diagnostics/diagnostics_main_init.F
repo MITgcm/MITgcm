@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.2 2004/12/15 00:20:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.3 2004/12/16 21:48:43 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -58,6 +58,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
+      INTEGER       diagNum
       CHARACTER*8   diagName
       CHARACTER*16  diagCode
       CHARACTER*16  diagUnits
@@ -73,35 +74,35 @@ C----------------------------------------------------------------------
       diagTitle = 'Hydrostatic (ocean) pressure / (atmos) geo-Potential'
       diagUnits = 'm2/s2           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST(
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'PHIBOT  '
       diagTitle = 'ocean bottom pressure / top. atmos geo-Potential'
       diagUnits = 'm2/s2           '
       diagCode  = 'SM      MR      '
-      CALL DIAGNOSTICS_ADD2LIST(
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'PHIBOTSQ'
       diagTitle = 'Square of ocean bottom pressure / top. geo-Potential'
       diagUnits = 'm4/s4           '
       diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADD2LIST(
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'DRHODR  '
       diagTitle = 'Stratification: d.Sigma/dr (kg/m3/r_unit)       '
       diagUnits = 'kg/m4           '
       diagCode  = 'SM      LR      '
-      CALL DIAGNOSTICS_ADD2LIST(
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'DETADT2 '
       diagTitle = 'Square of Eta (Surf.P,SSH) Tendency ((r_unit/s)^2)'
       diagUnits = 'm2 or Pa2 /sec2 '
       diagCode  = 'SM      M1      '
-      CALL DIAGNOSTICS_ADD2LIST(
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
