@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_fixed.F,v 1.4 2004/11/19 21:28:47 mlosch Exp $
+C$Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_fixed.F,v 1.5 2004/12/18 23:56:03 jmc Exp $
 C$Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -25,6 +25,8 @@ CEOP
 
 #ifdef ALLOW_GCHEM
 
+C     !LOCAL VARIABLES:
+
          _BEGIN_MASTER( mythid )
 ccccccccccccccccccccccccccc
 c initialize parameters   c
@@ -42,6 +44,12 @@ ccccccccccccccccccccccccccc
 #endif /* ALLOW_CFC */
           _END_MASTER( mythid )
 
+#ifdef ALLOW_DIAGNOSTICS
+C     Define diagnostics Names :
+      IF ( useDiagnostics ) THEN
+        CALL GCHEM_DIAGNOSTICS_INIT( myThid )
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_GCHEM */
 
