@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/code/Attic/thermodynamics.F,v 1.1 2001/08/03 19:06:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/code/Attic/thermodynamics.F,v 1.2 2001/08/03 20:21:29 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -636,11 +636,14 @@ Ccs-
       IF ( useAIM ) THEN
        CALL AIM_AIM2DYN_EXCHANGES( myTime, myThid )
       ENDIF
-#endif /* ALLOW_AIM */
-c     IF (staggerTimeStep.AND.useCubedSphereExchange) THEN
        _EXCH_XYZ_R8(gTnm1,myThid)
        _EXCH_XYZ_R8(gSnm1,myThid)
-c     ENDIF
+#else
+      IF (staggerTimeStep.AND.useCubedSphereExchange) THEN
+       _EXCH_XYZ_R8(gTnm1,myThid)
+       _EXCH_XYZ_R8(gSnm1,myThid)
+      ENDIF
+#endif /* ALLOW_AIM */
 
       RETURN
       END
