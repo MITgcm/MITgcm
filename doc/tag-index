@@ -1,7 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.180 2003/10/02 21:23:59 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.181 2003/10/06 20:54:01 stephd Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint 51h_pre
+o modify gchem pkg to be more versatile
+o modifications to clean up dic pkg
+o add pkg/cfc
 
 checkpoint51f_post
 o update advect_xz/output.txt (left from chekpoint50f_pre, ini_vel modif)
