@@ -1,7 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.155 2003/05/14 09:22:09 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.156 2003/05/15 16:15:57 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+ o added missing .cvsignores and made uniform across expts
+ o changed configuration of tidal_basin_2d expt
+ o added pkg/debug functions for tracing code in fatal crashes
+ o tidied pkg/monitor to use MONITOR_OPTIONS.h
+ o new fn in pkg/monitor to stop model if solution grows too big
+ o removed lots of single quotes from comments
+ o fixed gather/scatter inital MPI dialogue in ini_procs.F
+
 checkpoint50e_post
 o make KPP work with PTRACERS
  - fix gad_calc_rhs to call new routine kpp_transport_ptr, which is
