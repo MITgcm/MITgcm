@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.8 2002/11/14 22:43:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.9 2003/01/10 00:48:39 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -35,10 +35,12 @@ C     GM/Redi parameters
      &                   GM_Scrit,
      &                   GM_Sd
 
-      _RL        GM_Small_Number
-      PARAMETER( GM_Small_Number=   1. _d -8 )
-      _RL        GM_adjointRescale
-      PARAMETER( GM_adjointRescale= 1. _d 0 )
+      _RL GM_Small_Number
+      _RL op5
+      _RL op25
+      PARAMETER( GM_Small_Number = 1. _d -12 )
+      PARAMETER( op5 = 0.5 _d 0 )
+      PARAMETER( op25 = 0.25 _d 0 )
 
 C     More GM/Redi parameters diagnosed from previous block
 C     (not directly user configured)

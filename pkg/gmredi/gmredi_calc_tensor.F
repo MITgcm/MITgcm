@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.13 2002/11/28 17:30:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.14 2003/01/10 00:48:39 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -52,8 +52,8 @@ C     == Local variables ==
       _RL maskp1, maskm1, Kgm_tmp
 
 #ifdef GM_VISBECK_VARIABLE_K
-      _RS deltaH,zero_rs
-      PARAMETER(zero_rs=0.)
+      _RL deltaH,zero_rs
+      PARAMETER(zero_rs=0.D0)
       _RL N2,SN
       _RL Ssq(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #endif
@@ -118,10 +118,10 @@ C-- 1rst loop on k : compute Tensor Coeff. at W points.
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
 C      Gradient of Sigma at rVel points
-        dSigmaDx(i,j)=0.25*( sigmaX(i+1, j ,km1) +sigmaX(i,j,km1)
+        dSigmaDx(i,j)=op25*( sigmaX(i+1, j ,km1) +sigmaX(i,j,km1)
      &                    +sigmaX(i+1, j , k ) +sigmaX(i,j, k ) )
      &                  *maskC(i,j,k,bi,bj)*maskm1
-        dSigmaDy(i,j)=0.25*( sigmaY( i ,j+1,km1) +sigmaY(i,j,km1)
+        dSigmaDy(i,j)=op25*( sigmaY( i ,j+1,km1) +sigmaY(i,j,km1)
      &                    +sigmaY( i ,j+1, k ) +sigmaY(i,j, k ) )
      &                  *maskC(i,j,k,bi,bj)*maskm1
         dSigmaDrReal(i,j)=sigmaR(i,j,k)*maskm1
@@ -155,13 +155,7 @@ C       Mask Iso-neutral slopes
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE SlopeX(:,:)          = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE SlopeY(:,:)          = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE SlopeSqr(:,:)        = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE taperFct(:,:)        = comlev1_bibj_k, key=kkey, byte=isbyte
-#ifdef GM_VISBECK_VARIABLE_K
-CADJ STORE dSigmaDrReal(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif
+CADJ STORE SlopeSqr(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO j=1-Oly+1,sNy+Oly-1
@@ -238,10 +232,10 @@ C-- 2nd loop on k : compute Tensor Coeff. at U,V levels.
 
 #ifdef ALLOW_AUTODIFF_TAMC
        kkey = (igmkey-1)*Nr + k
-#ifdef GM_VISBECK_VARIABLE_K
-CADJ STORE Kwx(:,:,k,bi,bj) = comlev1_bibj, key=kkey, byte=isbyte
-CADJ STORE Kwy(:,:,k,bi,bj) = comlev1_bibj, key=kkey, byte=isbyte
-CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj, key=kkey, byte=isbyte
+#ifdef GM_NON_UNITY_DIAGONAL
+CADJ STORE Kwx(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE Kwy(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 #endif
 
@@ -261,12 +255,6 @@ C-    express the Tensor in term of Diffusivity (= m**2 / s )
      &                    )*Kwz(i,j,k,bi,bj)
        ENDDO
       ENDDO
-#ifdef ALLOW_AUTODIFF_TAMC
-#ifdef GM_VISBECK_VARIABLE_K
-CADJ STORE VisbeckK(:,:,bi,bj) =
-CADJ &     comlev1_bibj, key=kkey, byte=isbyte
-#endif
-#endif
 
 #if ( defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) )
 
@@ -275,12 +263,12 @@ C     Gradient of Sigma at U points
        DO i=1-Olx+1,sNx+Olx-1
         dSigmaDx(i,j)=sigmaX(i,j,k)
      &          *_maskW(i,j,k,bi,bj)
-        dSigmaDy(i,j)=0.25*( sigmaY(i-1,j+1,k) +sigmaY(i,j+1,k)
+        dSigmaDy(i,j)=op25*( sigmaY(i-1,j+1,k) +sigmaY(i,j+1,k)
      &                      +sigmaY(i-1, j ,k) +sigmaY(i, j ,k) )
      &          *_maskW(i,j,k,bi,bj)
-        dSigmaDrReal(i,j)=0.25*( sigmaR(i-1,j, k ) +sigmaR(i,j, k )
+        dSigmaDrReal(i,j)=op25*( sigmaR(i-1,j, k ) +sigmaR(i,j, k )
      &                  +maskp1*(sigmaR(i-1,j,kp1) +sigmaR(i,j,kp1)) )
-     &          *_maskW(i,j,k,bi,bj)
+     &          *_maskW(i,j,k,bi,bj)*maskp1
        ENDDO
       ENDDO
 
@@ -305,7 +293,7 @@ C     Calculate slopes for use in tensor, taper and/or clip
           Kux(i,j,k,bi,bj) =
      &     ( GM_isopycK
 #ifdef GM_VISBECK_VARIABLE_K
-     &     +0.5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))
+     &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))
 #endif
      &     )
      &     *taperFct(i,j)
@@ -335,7 +323,7 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
           Kuz(i,j,k,bi,bj) =
      &     ( GM_isopycK - GM_skewflx*GM_background_K
 #ifdef GM_VISBECK_VARIABLE_K
-     &     +0.5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))*GM_advect
+     &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))*GM_advect
 #endif
      &     )*SlopeX(i,j)*taperFct(i,j)
          ENDDO
@@ -346,14 +334,14 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 C     Gradient of Sigma at V points
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
-        dSigmaDx(i,j)=0.25*( sigmaX(i, j ,k) +sigmaX(i+1, j ,k)
+        dSigmaDx(i,j)=op25*( sigmaX(i, j ,k) +sigmaX(i+1, j ,k)
      &                    +sigmaX(i,j-1,k) +sigmaX(i+1,j-1,k) )
      &          *_maskS(i,j,k,bi,bj)
         dSigmaDy(i,j)=sigmaY(i,j,k)
      &          *_maskS(i,j,k,bi,bj)
-        dSigmaDrReal(i,j)=0.25*( sigmaR(i,j-1, k ) +sigmaR(i,j, k )
+        dSigmaDrReal(i,j)=op25*( sigmaR(i,j-1, k ) +sigmaR(i,j, k )
      &                  +maskp1*(sigmaR(i,j-1,kp1) +sigmaR(i,j,kp1)) )
-     &          *_maskS(i,j,k,bi,bj)
+     &          *_maskS(i,j,k,bi,bj)*maskp1
        ENDDO
       ENDDO
 
@@ -378,7 +366,7 @@ C     Calculate slopes for use in tensor, taper and/or clip
           Kvy(i,j,k,bi,bj) =
      &     ( GM_isopycK
 #ifdef GM_VISBECK_VARIABLE_K
-     &     +0.5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
+     &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
 #endif
      &     )
      &     *taperFct(i,j)
@@ -408,7 +396,7 @@ CADJ STORE taperFct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
           Kvz(i,j,k,bi,bj) =
      &     ( GM_isopycK - GM_skewflx*GM_background_K
 #ifdef GM_VISBECK_VARIABLE_K
-     &     +0.5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))*GM_advect
+     &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))*GM_advect
 #endif
      &     )*SlopeY(i,j)*taperFct(i,j)
          ENDDO

@@ -90,7 +90,7 @@ C--   Area integrated meridional flux
 #else
      &    *(GM_isopycK
 #ifdef GM_VISBECK_VARIABLE_K
-cph     &     +0.5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
+cph     &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
 #endif
      &     )
 #endif /* GM_NON_UNITY_DIAGONAL */
@@ -108,14 +108,14 @@ cph     &     +0.5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
         DO i=iMin,iMax
  
 C-      Vertical gradients interpolated to V points
-        dTdz =  0.5*(
-     &   +0.5*recip_drC(k)*
+        dTdz =  op5*(
+     &   +op5*recip_drC(k)*
      &       ( maskC(i,j-1,k,bi,bj)*
      &           (Tracer(i,j-1,km1,bi,bj)-Tracer(i,j-1,k,bi,bj))
      &        +maskC(i, j ,k,bi,bj)*
      &           (Tracer(i, j ,km1,bi,bj)-Tracer(i, j ,k,bi,bj))
      &       )
-     &   +0.5*recip_drC(kp1)*
+     &   +op5*recip_drC(kp1)*
      &       ( maskC(i,j-1,kp1,bi,bj)*
      &           (Tracer(i,j-1,k,bi,bj)-Tracer(i,j-1,kp1,bi,bj))
      &        +maskC(i, j ,kp1,bi,bj)*
@@ -141,7 +141,7 @@ C-      Off-diagonal components of horizontal flux
      &                            -GM_PsiY(i,j,k,bi,bj) )
      &                          *maskS(i,j,k,bi,bj)
          df(i,j) = df(i,j)
-     &    +vTrans*0.5*(Tracer(i,j,k,bi,bj)+Tracer(i,j-1,k,bi,bj))
+     &    +vTrans*op5*(Tracer(i,j,k,bi,bj)+Tracer(i,j-1,k,bi,bj))
         ENDDO
        ENDDO
       ENDIF
