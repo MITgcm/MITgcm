@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.19 2003/11/25 17:22:47 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.20 2003/11/26 15:04:42 edhill Exp $
 #  $Name:  $
 #
 
@@ -13,16 +13,18 @@ usage()
     echo "  (-help|-h)               print usage"
     echo "  (-mpi)                   use MPI input files"
     echo "  (-ieee|-noieee)          if possible, use IEEE compiler flags"
+    echo "                             (DEF=\"noieee\")"
     echo "  (-optfile=|-of=)STRING   list of optfiles to use"
-    echo "  (-a|-addr)STRING         list of email recipients"
+    echo "  (-a|-addr) STRING        list of email recipients"
     echo "                             (DEF=\"edhill@mitgcm.org\")"
-    echo "  (-t|-tdir)STRING         list of test dirs to use"
+    echo "  (-t|-tdir) STRING        list of test dirs to use"
     echo "                             (DEF=\"\" which builds all)"
-    echo "  (-b|-bash)STRING         location of \"bash\" executable"
-    echo "                             (DEF=\"\" for \"/bin/bash\")"
-    echo "  (-command)STRING         command to run"
+    echo "  (-b|-bash) STRING        preferred location of a \"bash\" or"
+    echo "                             Bourne-compatible \"sh\" shell"
+    echo "                             (DEF=\"\" for \"bash\")"
+    echo "  (-command) STRING        command to run"
     echo "                             (DEF=\"make output.txt\")"
-    echo "  (-m|-make)STRING         command to use for \"make\""
+    echo "  (-m|-make) STRING        command to use for \"make\""
     echo "                             (DEF=\"make\")"
     echo "  (-clean)                 *ONLY* run \"make CLEAN\""
     echo "  (-quick|-q)              same as \"-nogenmake -noclean -nodepend\""
@@ -44,10 +46,12 @@ build_mpack()
     echo -n "building the mpack utility...  "
     if test ! -x "$MPACKDIR/mpack" ; then
 	if test ! -d $MPACKDIR ; then
+	    echo
 	    echo "Error: can't find \"$MPACKDIR\""
 	    echo "  are you sure this program is being run in the correct "
 	    echo "  (that is, \"MITGCM_ROOT\verification\") directory?"
-	    exit 1
+	    echo
+	    HAVE_MPACK=f
 	fi
 	echo -n "building mpack...  "
 	( cd $MPACKDIR && ./configure && $MAKE ) > build_mpack.out 2>&1
@@ -55,8 +59,13 @@ build_mpack()
 	if test "x$RETVAL" != x0 ; then
 	    echo
 	    echo "Error building the mpack tools at: $MPACK_DIR"
-	    exit 1
+	    echo
+	    HAVE_MPACK=f
+	else
+	    HAVE_MPACK=t
 	fi
+    else
+	HAVE_MPACK=t
     fi
     echo "OK"
 }
@@ -209,7 +218,7 @@ genmakemodel()
 		cp make.log $CDIR
 		return 1
 	    else
-		echo "succesful" 1>&2
+		echo "successful" 1>&2
 	    fi
 	)
     fi
@@ -237,7 +246,7 @@ makeclean()
 		    return 1
 		fi
 	    fi
-	    echo succesful 1>&2
+	    echo successful 1>&2
 	    exit 0
 	)
     fi
@@ -260,7 +269,7 @@ makedependmodel()
 		cp make.log $CDIR"/make.log"
 		return 1
 	    else
-		echo succesful 1>&2
+		echo successful 1>&2
 	    fi
 	)
     fi
@@ -281,7 +290,7 @@ makemodel()
 		cp make.log $CDIR"/make.log"
 		return 1
 	    else
-		echo succesful 1>&2
+		echo successful 1>&2
 	    fi
 	fi
     )
@@ -313,14 +322,18 @@ runmodel()
     #  (where "$COMMAND" is relative to "directory")
     (
 	cd $1
-	printf 'runmodel: ' 1>&2
+	printf 'runmodel ... ' 1>&2
 	# make output.txt
-	$COMMAND
+	$COMMAND >> run.log 2>&1
 	RETVAL=$?
 	if test "x$RETVAL" = x0 ; then
+	    echo successful 1>&2
 	    cp output.txt $CDIR"/output.txt"
 	    return 0
 	else
+	    tail run.log
+	    echo failed 1>&2
+	    cp run.log $CDIR"/run.log"
 	    return 1
 	fi
     )
@@ -450,6 +463,7 @@ OPTFILE=NONE
 ADDRESSES=
 TESTDIRS=
 MPACKDIR="../tools/mpack-1.6"
+HAVE_MPACK=
 MPACK="$MPACKDIR/mpack"
 COMMAND="make output.txt"
 MAKE=make
@@ -575,14 +589,14 @@ done
 mkdir $DRESULTS
 RETVAL=$?
 if test "x$RETVAL" != x0 ; then
-    echo "Error: can't create results directory \"./$DRESULTS\""
+    echo "ERROR: Can't create results directory \"./$DRESULTS\""
     exit 1
 fi
 SUMMARY="$DRESULTS/summary.txt"
 echo -n "Start time:  " >> $SUMMARY
 start_date=`date`
 echo $start_date > $SUMMARY
-cat << EOF >> $SUMMARY
+cat << EOF | tee -a $SUMMARY
                 T           S           U           V
 G D M    c        m  s        m  s        m  s        m  s
 E p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
@@ -693,9 +707,9 @@ for dir in $TESTDIRS ; do
     fi
     
     #  Create an output dir for each OPTFILE/tdir combination
-    CDIR=$DRESULTS"/"$DRESULTS"_"$NDIR
-    mkdir $CDIR
-    CDIR=`pwd`"/$CDIR"
+    rel_CDIR=$DRESULTS"/"$dir
+    mkdir $rel_CDIR
+    CDIR=`pwd`"/$rel_CDIR"
     
     if test "x$CLEANUP" = xt ; then
 	makeclean $dir/$builddir
@@ -724,24 +738,6 @@ for dir in $TESTDIRS ; do
     echo "DATE='$DATE'" >> $CDIR"/summary.txt"
     echo "tdir='$dir'" >> $CDIR"/summary.txt"
     
-    (
-	cd $DRESULTS
-	tar -cf $NDIR".tar" $DRESULTS"_"$NDIR > /dev/null 2>&1
-	gzip $NDIR".tar"
-    )
-    
-    if test "x$ADDRESSES" = xNONE -o "x$ADDRESSES" = x ; then
-	echo "No mail sent"
-    else
-	$MPACK -s MITgcm-test -m 1000000 $DRESULTS"/"$NDIR".tar.gz" $ADDRESSES
-	RETVAL=$?
-	if test "x$RETVAL" != x0 ; then
-	    echo "Warning: \"$MPACK\" failed -- please contact <edhill@mitgcm.org>"
-	else
-	    rm -f $DRESULTS"/"$NDIR".tar*"
-	fi
-    fi
-
     echo "-------------------------------------------------------------------------------"
     
     NDIR=$(( $NDIR + 1 ))
@@ -752,6 +748,33 @@ echo -n "Start time:  " >> $SUMMARY
 echo $start_date >> $SUMMARY
 echo -n "End time:    " >> $SUMMARY
 date >> $SUMMARY
+
+#  If addresses were supplied and mpack built successfully, then try
+#  to send email using mpack.
+if test "x$ADDRESSES" = xNONE -o "x$ADDRESSES" = x ; then
+    echo "No results email was sent."
+else
+    if test "x$HAVE_MPACK" = xt ; then
+	tar -cf $DRESULTS".tar" $DRESULTS > /dev/null 2>&1 \
+	    && gzip $DRESULTS".tar" \
+	    && $MPACK -s MITgcm-test -m 1500000 $DRESULTS".tar.gz" $ADDRESSES
+	RETVAL=$?
+	if test "x$RETVAL" != x0 ; then
+	    echo
+	    echo "Warning: The tar, gzip, & mpack step failed.  Please send email"
+	    echo "  to <MITgcm-support@mitgcm.org> for help.  You may copy the "
+	    echo "  summary of results from the directory \"$DRESULTS\"."
+	    echo
+	else
+	    echo
+	    echo "An email containing results was sent to the following addresses:"
+	    echo "  \"$ADDRESSES\""
+	    echo
+	fi
+	test -f $DRESULTS".tar"  &&  rm -f $DRESULTS".tar"
+	test -f $DRESULTS".tar.gz"  &&  rm -f $DRESULTS".tar.gz"
+    fi
+fi
 
 rm tmp_cmpnum.f a.out
 
