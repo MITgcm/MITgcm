@@ -1,5 +1,3 @@
-mom_u_bottomdrag.f
-mom_v_bottomdrag.f
 mom_vecinv.f
 mom_vi_coriolis.f
 mom_vi_del2uv.f
