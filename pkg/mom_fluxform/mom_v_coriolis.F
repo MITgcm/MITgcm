@@ -1,17 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_coriolis.F,v 1.2 2001/05/29 14:01:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_coriolis.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C !ROUTINE: MOM_V_CORIOLIS
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_V_CORIOLIS( 
      I        bi,bj,k,uFld,
      U        vCoriolisTerm,
      I        myThid)
+
+C !DESCRIPTION:
+C Calculates the horizontal Coriolis term in the meridional equation:
+C \begin{equation*}
+C -\overline{f}^j \overline{u}^{ij}
+C \end{equation*}
+
+C !USES: ===============================================================
       IMPLICIT NONE
-
-C     Calculates Coriolis term, f*U, in V equation
-
-C     == Global variables ==
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -19,15 +27,23 @@ C     == Global variables ==
 #include "GRID.h"
 #include "SURFACE.h"
 
-C     == Routine arguments ==
-C     myThid - Instance number for this innvocation of CALC_MOM_RHS
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  uFld                 :: zonal flow
+C  myThid               :: thread number
       INTEGER bi,bj,K
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vCoriolisTerm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
-      INTEGER i,j
+C !OUTPUT PARAMETERS: ==================================================
+C  vCoriolisTerm        :: Coriolis term
+      _RL vCoriolisTerm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+      INTEGER I,J
+CEOP
 
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx,sNx+Olx-1

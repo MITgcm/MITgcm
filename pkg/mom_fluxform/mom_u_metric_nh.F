@@ -1,35 +1,51 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_u_metric_nh.F,v 1.2 2001/05/29 14:01:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_u_metric_nh.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C !ROUTINE: MOM_U_METRIC_NH
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_U_METRIC_NH(
      I        bi,bj,k,
      I        uFld, wFld,
      O        uMetricTerms,
      I        myThid)
-      IMPLICIT NONE
-C
-C     Calculate viscous flux in X direction for U eqn
-C       - is not vector invariant ...
-C
 
-C     == Global variables ==
+C !DESCRIPTION:
+C Calculates the zonal metric term due to non-hydrostaticity on the sphere:
+C \begin{equation}
+C \frac{u}{a} \overline{w}^{ik}
+C \end{equation}
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  uFld                 :: zonal flow 
+C  wFld                 :: vertical flow
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL wFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL uMetricTerms(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
-      INTEGER I,J,Kp1
+C !OUTPUT PARAMETERS: ==================================================
+C  uMetricTerms         :: metric term
+      _RL uMetricTerms(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+      INTEGER i,j,Kp1
       _RL wVelBottomOverride
+CEOP
 
       Kp1=min(k+1,Nr)
       wVelBottomOverride=1.

@@ -1,36 +1,51 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_v_rviscflux.F,v 1.2 2001/05/29 14:01:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_v_rviscflux.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C !ROUTINE: MOM_V_RVISCFLUX
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_V_RVISCFLUX(
      I        bi,bj,k,
      I        vFld, KappaRV,
      O        rViscFluxV,
      I        myThid)
-      IMPLICIT NONE
-C
-C     Calculate viscous flux in R direction for V eqn
-C     This only calculates interior fluxes and assumes zero
-C     flux at solid boundaries.  "no-slip" fluxes are added
-C     as a drag (mom_u_bottomdrag.F).
-C
 
-C     == Global variables ==
+C !DESCRIPTION:
+C Calculates the area integrated vertical viscous fluxes of V:
+C \begin{equation*}
+C F^r = - \frac{ {\cal A}_s }{\Delta r_c} A_r \delta_k v
+C \end{equation*}
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  vFld                 :: meridional flow
+C  KappaRV              :: vertical viscosity
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL rViscFluxV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  rViscFluxV           :: viscous fluxes
+      _RL rViscFluxV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+C  Kp1                  :: =k+1 for k<Nr, k=Nr for k>=Nr
       INTEGER I,J,Kp1
+CEOP
 
       Kp1=min(K+1,Nr)
 

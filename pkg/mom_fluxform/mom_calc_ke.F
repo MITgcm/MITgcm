@@ -1,32 +1,48 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_calc_ke.F,v 1.2 2001/05/29 14:01:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_calc_ke.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C !ROUTINE: MOM_CALC_KE
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_CALC_KE(
      I        bi,bj,k,
      I        uFld, vFld,
      O        KE,
      I        myThid)
-      IMPLICIT NONE
-C
-C     Calculate Kinetic Energy, KE, with units (m/s)^2
-C       - assumes hydrostatic formulation only
-C
 
-C     == Global variables ==
+C !DESCRIPTION:
+C Calculates the Kinetic energy of horizontal flow
+C \begin{equation*}
+C KE = \frac{1}{2} \left( h_w \overline{u^2}^i + h_s \overline{v^2}^j \right)
+C \end{equation*}
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  uFld                 :: zonal flow
+C  vFld                 :: meridional flow
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  KE                   :: Kinetic energy
+      _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
       INTEGER I,J
+CEOP
 
       DO J=1-OLy,sNy+OLy-1
        DO I=1-OLx,sNx+OLx-1

@@ -1,38 +1,51 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_del2u.F,v 1.2 2001/05/29 14:01:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_del2u.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C !ROUTINE: MOM_U_DEL2U
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_U_DEL2U(
      I        bi,bj,k,
      I        uFld, hFacZ,
      O        del2u,
      I        myThid)
-      IMPLICIT NONE
-C
-C     Calculate horizontal del^2 of uFld
-C       - is not vector invariant ...
-C
 
-C     == Global variables ==
+C !DESCRIPTION:
+C Calculates the Laplacian of zonal flow
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  uFld                 :: zonal flow
+C  hFacZ                :: fractional thickness at vorticity points
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL del2u(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  del2u                :: Laplacian
+      _RL del2u(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
       INTEGER I,J
       _RL fZon(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fMer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZClosedS,hFacZClosedN
+CEOP
 
 C     Zonal flux d/dx U
       DO j=1-Oly,sNy+Oly

@@ -1,15 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_cdscheme.F,v 1.2 2001/05/29 14:01:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_cdscheme.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C !ROUTINE: MOM_CDSCHEME
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_CDSCHEME( 
      I        bi,bj,k,phi_hyd,
      I        myThid)
 
-      IMPLICIT NONE
+C !DESCRIPTION:
+C The C-D scheme. The less said the better :-)
 
+C !USES: ===============================================================
 C     == Global variables ==
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -17,20 +24,28 @@ C     == Global variables ==
 #include "GRID.h"
 #include "SURFACE.h"
 
-C     == Routine arguments ==
-C     myThid - Instance number for this innvocation of CALC_MOM_RHS
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  phi_hyd              :: hydrostatic pressure
+C  myThid               :: thread number
       INTEGER bi,bj,K
       _RL phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
-#ifdef INCLUDE_CD_CODE
 
-C     == Local variables ==
+C !LOCAL VARIABLES: ====================================================
+#ifdef INCLUDE_CD_CODE
+C  i,j                  :: loop indices
+C  pF                   :: pressure gradient
+C  vF                   :: work space
+C  aF                   :: work space
       _RL pF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL aF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER i,j,iMin,iMax,jMin,jMax
       _RL ab15,ab05
+CEOP
 
 C     Compute ranges
       iMin=1-Olx+1

@@ -1,31 +1,50 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.2 2001/08/17 18:40:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
 C $Name:  $
+
+CBOI
+C !TITLE: pkg/mom\_advdiff
+C !AUTHORS: adcroft@mit.edu
+C !INTRODUCTION:
+C \section{Flux-form Momentum Equations Package}
+C
+C Package "mom\_fluxform" provides methods for calculating explicit terms
+C in the momentum equation cast in flux-form:
+C \begin{eqnarray*}
+C G^u & = & -\frac{1}{\rho} \partial_x \phi_h
+C           -\nabla \cdot {\bf v} u
+C           -fv
+C           +\frac{1}{\rho} \nabla \cdot {\bf \tau}^x
+C           + \mbox{metrics}
+C \\
+C G^v & = & -\frac{1}{\rho} \partial_y \phi_h
+C           -\nabla \cdot {\bf v} v
+C           +fu
+C           +\frac{1}{\rho} \nabla \cdot {\bf \tau}^y
+C           + \mbox{metrics}
+C \end{eqnarray*}
+C where ${\bf v}=(u,v,w)$ and $\tau$, the stress tensor, includes surface
+C stresses as well as internal viscous stresses.
+CEOI
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C !ROUTINE: MOM_FLUXFORM
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_FLUXFORM( 
      I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
      I        phi_hyd,KappaRU,KappaRV,
      U        fVerU, fVerV,
-     I        myCurrentTime, myIter, myThid)
-C     /==========================================================\
-C     | S/R MOM_FLUXFORM                                         |
-C     | o Form the right hand-side of the momentum equation.     |
-C     |==========================================================|
-C     | Terms are evaluated one layer at a time working from     |
-C     | the bottom to the top. The vertically integrated         |
-C     | barotropic flow tendency term is evluated by summing the |
-C     | tendencies.                                              |
-C     | Notes:                                                   |
-C     | We have not sorted out an entirely satisfactory formula  |
-C     | for the diffusion equation bc with lopping. The present  |
-C     | form produces a diffusive flux that does not scale with  |
-C     | open-area. Need to do something to solidfy this and to   |
-C     | deal "properly" with thin walls.                         |
-C     \==========================================================/
-      IMPLICIT NONE
+     I        myCurrentTime,myIter,myThid)
 
+C !DESCRIPTION:
+C Calculates all the horizontal accelerations except for the implicit surface
+C pressure gradient and implciit vertical viscosity.
+
+C !USES: ===============================================================
 C     == Global variables ==
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
@@ -34,33 +53,55 @@ C     == Global variables ==
 #include "GRID.h"
 #include "SURFACE.h"
 
-C     == Routine arguments ==
-C     fZon    - Work array for flux of momentum in the east-west
-C               direction at the west face of a cell.
-C     fMer    - Work array for flux of momentum in the north-south
-C               direction at the south face of a cell.
-C     fVerU   - Flux of momentum in the vertical
-C     fVerV     direction out of the upper face of a cell K
-C               ( flux into the cell above ).
-C     phi_hyd - Hydrostatic pressure
-C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
-C                                      results will be set.
-C     kUp, kDown                     - Index for upper and lower layers.
-C     myThid - Instance number for this innvocation of CALC_MOM_RHS
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  iMin,iMax,jMin,jMAx  :: loop ranges
+C  k                    :: vertical level
+C  kUp                  :: =1 or 2 for consecutive k
+C  kDown                :: =2 or 1 for consecutive k
+C  phi_hyd              :: hydrostatic pressure (perturbation)
+C  KappaRU              :: vertical viscosity
+C  KappaRV              :: vertical viscosity
+C  fVerU                :: vertical flux of U, 2 1/2 dim for pipe-lining
+C  fVerV                :: vertical flux of V, 2 1/2 dim for pipe-lining
+C  myCurrentTime        :: current time
+C  myIter               :: current time-step number
+C  myThid               :: thread number
+      INTEGER bi,bj,iMin,iMax,jMin,jMax
+      INTEGER k,kUp,kDown
       _RL phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL fVerU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      INTEGER kUp,kDown
       _RL     myCurrentTime
       INTEGER myIter
       INTEGER myThid
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
 
-C     == Local variables ==
-C     ab15, ab05    - Weights for Adams-Bashforth time stepping scheme.
-C     i,j,k         - Loop counters
+C !OUTPUT PARAMETERS: ==================================================
+C None - updates gU() and gV() in common blocks
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+C  aF                   :: advective flux
+C  vF                   :: viscous flux
+C  v4F                  :: bi-harmonic viscous flux
+C  vrF                  :: vertical viscous flux
+C  cF                   :: Coriolis acceleration
+C  mT                   :: Metric terms
+C  pF                   :: Pressure gradient
+C  fZon                 :: zonal fluxes
+C  fMer                 :: meridional fluxes
+      INTEGER i,j
+      _RL aF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL v4F(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vrF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL cF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL mT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL pF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fZon(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fMer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     wMaskOverride - Land sea flag override for top layer.
 C     afFacMom      - Tracer parameters for turning terms
 C     vfFacMom        on and off.
@@ -70,21 +111,7 @@ C     mTFacMom        pfFacMom - Pressure terms
 C                     cfFacMom - Coriolis terms
 C                     foFacMom - Forcing
 C                     mTFacMom - Metric term
-C     vF            - Temporary holding viscous term (Laplacian)
-C     v4F           - Temporary holding viscous term (Biharmonic)
-C     cF            - Temporary holding coriolis term.
-C     mT            - Temporary holding metric terms(s).
-C     pF            - Temporary holding pressure|potential gradient terms.
 C     uDudxFac, AhDudxFac, etc ... individual term tracer parameters
-      _RL      aF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      vF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      v4F(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      vrF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      cF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      mT (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      pF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL    fZon (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL    fMer (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS    hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS  r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS      xA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -94,7 +121,6 @@ C     uDudxFac, AhDudxFac, etc ... individual term tracer parameters
       _RL  uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     I,J,K - Loop counters
-      INTEGER i,j,k
 C     rVelMaskOverride - Factor for imposing special surface boundary conditions
 C                        ( set according to free-surface condition ).
 C     hFacROpen        - Lopped cell factos used tohold fraction of open
@@ -124,12 +150,11 @@ C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  phyFac
       _RL  vForcFac
       _RL  mtFacV
-C     ab05, ab15 - Adams-Bashforth time-stepping weights.
-      _RL  ab05, ab15
       INTEGER km1,kp1
       _RL wVelBottomOverride
       LOGICAL bottomDragTerms
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+CEOP
 
       km1=MAX(1,k-1)
       kp1=MIN(Nr,k+1)
@@ -194,10 +219,6 @@ C-- with stagger time stepping, grad Phi_Hyp is directly incoporated in TIMESTEP
         phyFac = 0.
       ENDIF
 
-C--   Adams-Bashforth weighting factors
-      ab15   =  1.5 _d 0 + abEps
-      ab05   = -0.5 _d 0 - abEps
-  
 C--   Calculate open water fraction at vorticity points
       CALL MOM_CALC_HFACZ(bi,bj,k,hFacZ,r_hFacZ,myThid)
 

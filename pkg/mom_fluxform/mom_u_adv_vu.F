@@ -1,34 +1,50 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_adv_vu.F,v 1.2 2001/05/29 14:01:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_adv_vu.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C !ROUTINE: MOM_U_ADV_VU
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_U_ADV_VU(
      I        bi,bj,k,
      I        vTrans, uFld,
      O        AdvectFluxVU,
      I        myThid)
-      IMPLICIT NONE
-C
-C     Calculate meridional advective flux of U using centered second order diff.
-C       - is not vector invariant ...
-C
 
-C     == Global variables ==
+C !DESCRIPTION:
+C Calculates the meridional advective flux of zonal momentum:
+C \begin{equation*}
+C F^y = \overline{V}^i \overline{u}^{j}
+C \end{equation*}
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  vTrans               :: meridional transport
+C  uFld                 :: zonal flow
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL AdvectFluxVU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  AdvectFluxVU         :: advective flux 
+      _RL AdvectFluxVU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
       INTEGER I,J
+CEOP
 
       DO j=1-Oly+1,sNy+Oly
        DO i=1-Olx+1,sNx+Olx

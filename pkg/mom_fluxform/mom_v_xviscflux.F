@@ -1,35 +1,52 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_xviscflux.F,v 1.2 2001/05/29 14:01:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_xviscflux.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C !ROUTINE: MOM_V_XVISCFLUX
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_V_XVISCFLUX(
      I        bi,bj,k,
      I        vFld, del2v, hFacZ,
      O        xViscFluxV,
      I        myThid)
-      IMPLICIT NONE
-C
-C     Calculate viscous flux in X direction for V eqn
-C       - is not vector invariant ...
-C
 
-C     == Global variables ==
+C !DESCRIPTION:
+C Calculates the area integrated zonal viscous fluxes of V:
+C \begin{equation*}
+C F^x = - \frac{ \Delta x_u \Delta r_f h_z }{\Delta x_v}
+C  ( A_h \delta_i v - A_4 \delta_i \nabla^2 v )
+C \end{equation*}
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  vFld                 :: meridional flow
+C  del2v                :: Laplacian of meridional flow
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2v(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL xViscFluxV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  xViscFluxU           :: viscous fluxes
+      _RL xViscFluxV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
       INTEGER I,J
+CEOP
 
 C     - Laplacian  and bi-harmonic terms
       DO j=1-Oly,sNy+Oly
