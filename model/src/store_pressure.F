@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/store_pressure.F,v 1.1 2002/08/07 16:55:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/store_pressure.F,v 1.2 2002/08/15 17:25:31 adcroft Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -41,31 +41,29 @@ C     == Local variables ==
 C     I,J
       INTEGER  I,  J
 
-C              
+C
 C     compute the pressure for use in the equation of state
 C
-Cml      if ( buoyancyRelation .eq. 'OCEANIC' ) then
-      if ( equationOfState .eq. 'JMD95P' 
-     &         .or. equationOfState .eq. 'UNESCO' ) then
+      if ( buoyancyRelation .eq. 'OCEANIC' ) then
          do J=1-Oly,sNy+Oly
             do I=1-Olx,sNx+Olx
-               pressure(i,j,k,bi,bj) = rhonil * ( 
+               pressure(i,j,k,bi,bj) = rhonil * (
      &              - gravity*rC(k)
      &              + gravity*etaN(i,j,bi,bj)
      &              + phiHyd(i,j,k)
      &                                           )
             end do
          end do
+      elseif ( buoyancyRelation .eq. 'ATMOSPHERIC'
+     &    .or. buoyancyRelation .eq. 'OCEANICP' ) then
+C     in pressure coordinates the pressure is just the coordinate of
+C     the tracer point
+         do J=1-Oly,sNy+Oly
+            do I=1-Olx,sNx+Olx
+               pressure(i,j,k,bi,bj) = rC(k)
+            end do
+         end do
       endif
-Cml      elseif ( buoyancyRelation .eq. 'ATMOSPHERIC' ) then
-CmlC     in pressure coordinates the pressure is just the coordinate of 
-CmlC     the tracer point
-Cml         do J=1-Oly,sNy+Oly
-Cml            do I=1-Olx,sNx+Olx
-Cml               pressure(i,j,k,bi,bj) = rC(k)
-Cml            end do
-Cml         end do
-Cml      endif	
 
       return
       end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.18 2002/07/31 16:38:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.19 2002/08/15 17:25:31 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -50,6 +50,7 @@ C     == Global variables ==
 #include "tamc.h"
 #include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
+#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -66,7 +67,7 @@ C     == Local variables ==
       INTEGER i,j, Kp1
       _RL zero, one, half
       _RL alphaRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dRloc,dRlocKp1
+      _RL dRloc,dRlocKp1,locAlpha
       _RL ddPI, ddPIm, ddPIp, ratioRp, ratioRm
 CEOP
 
@@ -170,7 +171,67 @@ C-----------------------------------------------------------------------
           ENDDO
         ENDDO
         
+      ELSEIF ( buoyancyRelation .eq. 'OCEANICP' ) THEN
+C       This is the hydrostatic pressure calculation for the Ocean
+C       which uses the FIND_RHO() routine to calculate density
+C       before integrating g*rho over the current layer/interface
 
+        dRloc=drC(k)
+        IF (k.EQ.1) dRloc=drF(1)
+        IF (k.EQ.Nr) THEN
+          dRlocKp1=0.
+        ELSE
+          dRlocKp1=drC(k+1)
+        ENDIF
+
+        IF (k.EQ.1) THEN
+          DO j=jMin,jMax
+            DO i=iMin,iMax
+              phiHyd(i,j,k)=0.
+              phiHyd(i,j,k)=pload(i,j,bi,bj)
+c    &  -Ro_surf(i,j,bi,bj)*recip_rhoNil
+c    &  -(Ro_surf(i,j,bi,bj)-.5*drF( kSurfC(i,j,bi,bj) ))/1000.
+c    &  -(Ro_surf(i,j,bi,bj)-.5*drF( kSurfC(i,j,bi,bj) ))*recip_rhoNil
+            ENDDO
+          ENDDO
+        ENDIF
+
+C       Calculate density
+#ifdef ALLOW_AUTODIFF_TAMC
+            kkey = (ikey-1)*Nr + k
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+        CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax, k, k, eosType,
+     &                 theta, salt,
+     &                 alphaRho, myThid)
+
+C       Hydrostatic pressure at cell centers
+        DO j=jMin,jMax
+          DO i=iMin,iMax
+            locAlpha=alphaRho(i,j)+rhoNil
+            IF (locAlpha.NE.0.) locAlpha=maskC(i,j,k,bi,bj)/locAlpha
+
+C---------- This discretization is the "finite volume" form
+C           which has not been used to date since it does not
+C           conserve KE+PE exactly even though it is more natural
+C
+c           IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
+c    &              drF(K)*locAlpha
+c           phiHyd(i,j,k)=phiHyd(i,j,k)+
+c    &          0.5*drF(K)*locAlpha
+C-----------------------------------------------------------------------
+
+C---------- This discretization is the "energy conserving" form
+C           which has been used since at least Adcroft et al., MWR 1997
+C
+            phiHyd(i,j,k)=phiHyd(i,j,k)+
+     &          0.5*dRloc*locAlpha
+            IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)+
+     &          0.5*dRlocKp1*locAlpha
+C-----------------------------------------------------------------------
+          ENDDO
+        ENDDO
 
       ELSEIF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

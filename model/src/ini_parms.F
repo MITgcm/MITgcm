@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.82 2002/08/07 16:55:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.83 2002/08/15 17:25:31 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -100,6 +100,7 @@ CEOP
 
 C--   Continuous equation parameters
       NAMELIST /PARM01/
+     & gravitySign,
      & gravity, gBaro, rhonil, tAlpha, sBeta, f0, beta, omega,
      & viscAh,  viscAz,  viscA4, cosPower, viscAstrain, viscAtension,
      & diffKhT, diffKzT, diffK4T, 
@@ -153,7 +154,7 @@ C--   Gridding parameters
       NAMELIST /PARM04/
      & usingCartesianGrid, dxSpacing, dySpacing, delX, delY, delZ,
      & usingSphericalPolarGrid, phiMin, thetaMin, rSphere,
-     & usingCurvilinearGrid,
+     & usingCurvilinearGrid, gravitySign,
      & delP, delR, rkFac, Ro_SeaLevel, groundAtK1, delRc,
      & delXfile, delYfile
 
@@ -886,6 +887,8 @@ C     being combined and a single frame of reference is needed.
        horiVertRatio = 1.D0
       ENDIF
       IF (buoyancyRelation.EQ.'ATMOSPHERIC')
+     &   horiVertRatio = Gravity * rhoConst                                     
+      IF (buoyancyRelation.EQ.'OCEANICP')
      &   horiVertRatio = Gravity * rhoConst                                     
       IF ( rkFac .EQ. UNSET_RS ) rkFac=rkFacDefault
       recip_rkFac = 1.D0 / rkFac

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.16 2002/08/07 16:55:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.17 2002/08/15 17:25:31 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -207,13 +207,12 @@ C     abbreviations
             t3 = t2*t
             t4 = t3*t
 
-            if ( sFld(i,j,k,bi,bj) .lt. 0. _d 0 ) then
+            s  = sFld(i,j,k,bi,bj)
+            if ( s .lt. 0. _d 0 ) then
 C     issue a warning
                write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
      &           ' FIND_RHOP0:   WARNING, s(',i,',',j,',',k,') = ', s
                s = 0. _d 0
-            else
-               s  = sFld(i,j,k,bi,bj)
             end if
             s3o2 = s*sqrt(s)
             
@@ -300,13 +299,12 @@ C     abbreviations
             t3 = t2*t
             t4 = t3*t
 
-            if ( sFld(i,j,k,bi,bj) .lt. 0. _d 0 ) then
+            s  = sFld(i,j,k,bi,bj)
+            if ( s .lt. 0. _d 0 ) then
 C     issue a warning
                write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
      &           ' FIND_BULKMOD: WARNING, s(',i,',',j,',',k,') = ', s
                s = 0. _d 0
-            else
-               s  = sFld(i,j,k,bi,bj)
             end if
             s3o2 = s*sqrt(s)
 C

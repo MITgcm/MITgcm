@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_ivdc.F,v 1.3 2001/09/26 18:09:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_ivdc.F,v 1.4 2002/08/15 17:25:31 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -57,7 +57,7 @@ C--    Where statically unstable, mix the heat and salt
        DO j=jMin,jmax
         DO i=iMin,imax
          IF ( _hFacC(i,j,k,bi,bj) .GT. 0. .AND.
-     &        rhokm1(i,j) .GT. rhokp1(i,j) ) THEN
+     &        (rhokm1(i,j)-rhokp1(i,j))*rkFac*gravitySign .GT. 0. ) THEN
           KappaRT(i,j,k) = ivdc_kappa
           KappaRS(i,j,k) = ivdc_kappa
           ConvectCount(i,j,k) = ConvectCount(i,j,k) + 1.
