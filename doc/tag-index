@@ -1,7 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.44 2001/07/31 18:42:13 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.45 2001/08/13 18:26:15 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint40pre6
+o split dynamics into thermodynamics & dynamics
+o corresponding split of calc_diffusivity into
+  calc_diffusivity, calc_viscosity
+  (kpp_calc_diff, kpp_calc_visc).
+o Added diffkr, kapgm to control variables
+o bug fix in gmredi_slope_limit for ldd97
 
 checkpoint40pre5
 o proper initialization of Adams-Bashforth time stepping
