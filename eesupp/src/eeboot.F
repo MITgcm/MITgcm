@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.5 1999/05/18 17:39:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.6 2000/03/14 16:10:22 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -103,6 +103,9 @@ C     o Do other miscellaneous multi-processing set up steps. For
 C       example under MPI we create datatypes for communication
 C       of array edges.
       CALL INI_PROCS
+#ifdef LETS_MAKE_JAM
+      CALL INI_JAM
+#endif
       IF ( eeBootError ) GOTO 999
 
 C--   Initialise variables to support "nThreads" of computation.

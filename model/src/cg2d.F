@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.22 1999/07/30 16:00:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.23 2000/03/14 16:09:41 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -109,7 +109,12 @@ C--   Normalise RHS
         ENDDO
        ENDDO
       ENDDO
+#ifdef LETS_MAKE_JAM
       _GLOBAL_MAX_R8( rhsMax, myThid )
+C     rhsMax=1.
+#else
+      _GLOBAL_MAX_R8( rhsMax, myThid )
+#endif
       rhsNorm = 1. _d 0
       IF ( rhsMax .NE. 0. ) rhsNorm = 1. _d 0 / rhsMax
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -161,6 +166,9 @@ C--   Initial residual calculation
        ENDDO
       ENDDO
 C     _EXCH_XY_R8( cg2d_r, myThid )
+#ifdef LETS_MAKE_JAM
+      CALL EXCH_XY_O1_R8_JAM( cg2d_r )
+#else
        OLw        = 1
        OLe        = 1
        OLn        = 1
@@ -172,7 +180,11 @@ C     _EXCH_XY_R8( cg2d_r, myThid )
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+#endif
 C     _EXCH_XY_R8( cg2d_s, myThid )
+#ifdef LETS_MAKE_JAM
+      CALL EXCH_XY_O1_R8_JAM( cg2d_s )
+#else
        OLw        = 1
        OLe        = 1
        OLn        = 1
@@ -184,6 +196,7 @@ C     _EXCH_XY_R8( cg2d_s, myThid )
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+#endif
       _GLOBAL_SUM_R8( sumRHS, myThid )
 C     WRITE(6,*) ' mythid, err = ', mythid, SQRT(err)
       _GLOBAL_SUM_R8( err   , myThid )
@@ -255,6 +268,9 @@ CcnhDebugEnds
 C--    Do exchanges that require messages i.e. between
 C--    processes.
 C      _EXCH_XY_R8( cg2d_s, myThid )
+#ifdef LETS_MAKE_JAM
+      CALL EXCH_XY_O1_R8_JAM( cg2d_s )
+#else
        OLw        = 1
        OLe        = 1
        OLn        = 1
@@ -266,7 +282,7 @@ C      _EXCH_XY_R8( cg2d_s, myThid )
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
-
+#endif
 
 C==    Evaluate laplace operator on conjugate gradient vector
 C==    q = A.s
@@ -321,6 +337,9 @@ C      Now compute "interior" points.
        actualResidual = err
        IF ( err .LT. cg2dTargetResidual ) GOTO 11
 C      _EXCH_XY_R8(cg2d_r, myThid )
+#ifdef LETS_MAKE_JAM
+      CALL EXCH_XY_O1_R8_JAM( cg2d_r )
+#else
        OLw        = 1
        OLe        = 1
        OLn        = 1
@@ -332,6 +351,7 @@ C      _EXCH_XY_R8(cg2d_r, myThid )
      I             OLw, OLe, OLs, OLn, myNz,
      I             exchWidthX, exchWidthY,
      I             FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+#endif
 
    10 CONTINUE
    11 CONTINUE
