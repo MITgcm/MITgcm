@@ -1,0 +1,29 @@
+#
+# *********************
+# External Forcing Data
+# *********************
+ &EXF_NML
+ hfluxstartdate1=19920101,
+ hfluxstartdate2=000000,
+ hfluxperiod=2592000.0,
+#
+ sfluxstartdate1=19920101,
+ sfluxstartdate2=000000,
+ sfluxperiod=2592000.0,
+#
+ ustressstartdate1=19920101,
+ ustressstartdate2=000000,
+ ustressperiod=2592000.0,
+#
+ vstressstartdate1=19920101,
+ vstressstartdate2=000000,
+ vstressperiod=2592000.0,
+#
+ hfluxfile    = 'ncep_qnet.bin',
+# sfluxfile    = 'ncep_emp.bin',
+ ustressfile  = 'trenberth_taux.bin',
+ vstressfile  = 'trenberth_tauy.bin',
+#
+ exf_iprec         = 32,
+ exf_yftype        = 'RL',
+ &

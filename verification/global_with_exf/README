@@ -1,0 +1,15 @@
+heimbach@mit.edu 07-Nov-2002.
+This verification experiment is almost identical to the
+global_ocean.90x40x15 experiment, except that it uses
+the exf (and cal) package instead of the 
+external_fields_load routine.
+To obtain identical results between the two experiments,
+the following 2 modifications are necessary:
+1. in external_fields_load.F:
+   replace the line
+      Imytm=int(myTime*rdt+0.5)
+   by
+      Imytm=int((myTime+1296000.)*rdt+0.5)
+2. in exf_set_climsst.F:
+   comment the 'quality' check, i.e. avoid the setting
+   to freezing temperature if less than climtempfreeze.
