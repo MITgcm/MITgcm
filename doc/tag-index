@@ -1,7 +1,8 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.258 2004/02/23 19:20:16 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.259 2004/02/23 21:00:05 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+o aim.5l_cs: modify sea-ice fraction input file ; update output
 
 checkpoint52k_post
 o removed top-level directory "diags"
