@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.5 2002/09/16 18:11:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.6 2002/12/19 14:00:08 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -88,7 +88,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_theta_file(1:il),'.',optimcycle
+     &           yadprefix, xx_theta_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_theta_file(1:il),'.',optimcycle
@@ -114,7 +114,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_salt_file(1:il),'.',optimcycle
+     &           yadprefix, xx_salt_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_salt_file(1:il),'.',optimcycle
@@ -140,7 +140,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_hflux_file(1:il),'.',optimcycle
+     &           yadprefix, xx_hflux_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_hflux_file(1:il),'.',optimcycle
@@ -166,7 +166,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_sflux_file(1:il),'.',optimcycle
+     &           yadprefix, xx_sflux_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sflux_file(1:il),'.',optimcycle
@@ -192,7 +192,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_tauu_file(1:il),'.',optimcycle
+     &           yadprefix, xx_tauu_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_tauu_file(1:il),'.',optimcycle
@@ -218,7 +218,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_tauv_file(1:il),'.',optimcycle
+     &           yadprefix, xx_tauv_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_tauv_file(1:il),'.',optimcycle
@@ -244,7 +244,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_tr1_file(1:il),'.',optimcycle
+     &           yadprefix, xx_tr1_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_tr1_file(1:il),'.',optimcycle
@@ -270,7 +270,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_sst_file(1:il),'.',optimcycle
+     &           yadprefix, xx_sst_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sst_file(1:il),'.',optimcycle
@@ -296,7 +296,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_sss_file(1:il),'.',optimcycle
+     &           yadprefix, xx_sss_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_sss_file(1:il),'.',optimcycle
@@ -322,7 +322,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_hfacc_file(1:il),'.',optimcycle
+     &           yadprefix, xx_hfacc_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_hfacc_file(1:il),'.',optimcycle
@@ -365,7 +365,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_efluxy_file(1:il),'.',optimcycle
+     &           yadprefix, xx_efluxy_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_efluxy_file(1:il),'.',optimcycle
@@ -391,7 +391,7 @@ c--   == end of interface ==
          write(fname(1:80),'(80a)') ' '
          if ( theSimulationMode .EQ. TANGENT_SIMULATION ) then
             write(fname(1:80),'(3a,i10.10)')
-     &           yadmark, xx_efluxp_file(1:il),'.',optimcycle
+     &           yadprefix, xx_efluxp_file(1:il),'.',optimcycle
          else if ( theSimulationMode .EQ. FORWARD_SIMULATION ) then
             write(fname(1:80),'(2a,i10.10)')
      &           xx_efluxp_file(1:il),'.',optimcycle
