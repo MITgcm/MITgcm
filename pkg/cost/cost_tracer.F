@@ -1,6 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tracer.F,v 1.3 2002/07/13 03:01:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tracer.F,v 1.4 2003/06/27 01:54:20 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_OPTIONS.h"
+#endif
 
       subroutine cost_tracer( bi, bj, myThid )
 C     /==========================================================\
@@ -20,7 +23,13 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#include "TR1.h"
+#ifdef ALLOW_COST_TRACER
+# if (defined (ALLOW_PASSIVE_TRACER))
+#  include "TR1.h"
+# elif (defined (ALLOW_PTRACERS))
+#  include "PTRACERS.h"
+# endif
+#endif
 
 #include "cost.h"
 
@@ -44,21 +53,27 @@ ce    some reference temperature
       k=1
       DO j=1,sNy
          DO i=1,sNx
+#if (defined (ALLOW_PASSIVE_TRACER))
             locfc = locfc + maskC(i,j,k,bi,bj)*
      &           lambdaTr1ClimRelax*Tr1(i,j,k,bi,bj)*
      &           rA(i,j,bi,bj)*drF(k)*deltaTtracer
+#elif (defined (ALLOW_PTRACERS))
+            locfc = locfc + maskC(i,j,k,bi,bj)*
+     &           lambdaTr1ClimRelax*ptracer(i,j,k,bi,bj,1)*
+     &           rA(i,j,bi,bj)*drF(k)*deltaTtracer
+#endif
          ENDDO
       ENDDO
 
-cph(
-      print *, 'COST TRACER vor ', objf_tracer(bi,bj)
-cph)
-
       objf_tracer(bi,bj) = objf_tracer(bi,bj) + locfc
 
-cph(
-      print *, 'COST TRACER nach', objf_tracer(bi,bj)
-cph)
+#if (defined (ALLOW_PASSIVE_TRACER))
+      print *, 'COST TRACER nach', objf_tracer(bi,bj),
+     &     Tr1(83,33,1,1,1), Tr1(83,33,2,1,1)
+#elif (defined (ALLOW_PTRACERS))
+      print *, 'COST TRACER nach', objf_tracer(bi,bj),
+     &     ptracer(83,33,1,1,1,1), ptracer(83,33,2,1,1,1)
+#endif
 
 #endif /* ALLOW_COST_TRACER */
 
