@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.26 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.27 2002/11/22 03:01:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -35,6 +35,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -43,11 +44,6 @@ C     myThid -  Number of this instance of INI_DEPTHS
 CEndOfInterface
 
 C     !LOCAL VARIABLES:
-C     == Local variables in common ==
-C     Hloc  - Temporary array used to read surface topography
-C             has to be in common for multi threading    
-      COMMON / LOCAL_INI_DEPTHS / Hloc
-      _RS Hloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy) 
 C     == Local variables ==
 C     iG, jG - Global coordinate index
 C     bi,bj  - Loop counters
@@ -78,6 +74,7 @@ C------
          DO i=1-Olx,sNx+Olx
           R_low(i,j,bi,bj) = 0.
           Ro_surf(i,j,bi,bj) = 0.
+          topoZ(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
        ENDDO
@@ -154,7 +151,7 @@ C------ read from file:
 
 C- read surface topography (in m) from topoFile (case topoFile.NE.' '):
         _BEGIN_MASTER( myThid )
-        CALL READ_REC_XY_RS( topoFile, Hloc, 1, 0, myThid )
+        CALL READ_REC_XY_RS( topoFile, topoZ, 1, 0, myThid )
         _END_MASTER(myThid)
         _BARRIER
 
@@ -164,10 +161,10 @@ C   Convert Surface Geopotential to (reference) Surface Pressure
 C   according to Tref profile, using same discretisation as in calc_phi_hyd
 C----
 c         _BEGIN_MASTER( myThid )
-c         CALL WRITE_FLD_XY_RS( 'topo_Z',' ',Hloc,0,myThid) 
+c         CALL WRITE_FLD_XY_RS( 'topo_Z',' ',topoZ,0,myThid) 
 c         _END_MASTER(myThid)
 
-          CALL INI_P_GROUND( Hloc, Ro_surf, myThid )
+          CALL INI_P_GROUND( topoZ, Ro_surf, myThid )
 
           _BARRIER
           _BEGIN_MASTER( myThid )
@@ -181,7 +178,7 @@ C   Direct Transfer to Ro_surf :
            DO bi = myBxLo(myThid), myBxHi(myThid)
             DO j=1,sNy
              DO i=1,sNx
-              Ro_surf(i,j,bi,bj) = Hloc(i,j,bi,bj)
+              Ro_surf(i,j,bi,bj) = topoZ(i,j,bi,bj)
              ENDDO
             ENDDO
            ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.32 2002/11/21 19:11:42 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.33 2002/11/22 03:01:18 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -500,11 +500,10 @@ CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 
 #ifdef ALLOW_AIM
 C       AIM - atmospheric intermediate model, physics package code.
-C note(jmc) : phiHyd=0 at this point but is not really used in Molteni Physics
         IF ( useAIM ) THEN
-         CALL TIMER_START('AIM_DO_ATMOS_PHYS      [DYNAMICS]', myThid)
-         CALL AIM_DO_ATMOS_PHYSICS( bi, bj, myTime, myThid )
-         CALL TIMER_STOP ('AIM_DO_ATMOS_PHYS      [DYNAMICS]', myThid)
+         CALL TIMER_START('AIM_DO_PHYSICS   [THERMODYNAMICS]', myThid)
+         CALL AIM_DO_PHYSICS( bi, bj, myTime, myIter, myThid )
+         CALL TIMER_STOP( 'AIM_DO_PHYSICS   [THERMODYNAMICS]', myThid)
         ENDIF
 #endif /* ALLOW_AIM */
 
