@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.51 2003/12/03 19:46:10 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.52 2003/12/04 15:00:01 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -13,30 +13,35 @@
 test_for_package_in_cpp_options() {
     cpp_options=$1
     pkg=$2
-    grep -i "#define.*ALLOW_$pkg" $cpp_options > /dev/null 2>&1
+    test_for_string_in_file $cpp_options "^[ ]*#define.*ALLOW_$pkg" || exit 99
+    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALLOW_$pkg" || exit 99
+    test_for_string_in_file $cpp_options "^[ ]*#define.*DISABLE_$pkg" || exit 99
+    test_for_string_in_file $cpp_options "^[ ]*#undef.*DISABLE_$pkg" || exit 99
+}
+
+# Search for particular CPP #cmds associated with MPI
+# usage: test_for_mpi_in_cpp_eeoptions CPP_file
+test_for_mpi_in_cpp_eeoptions() {
+    cpp_options=$1
+    test_for_string_in_file $cpp_options "^[ ]*#define.*ALLOW_USE_MPI" || exit 99
+    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALLOW_USE_MPI" || exit 99
+    test_for_string_in_file $cpp_options "^[ ]*#define.*ALWAYS_USE_MPI" || exit 99
+    test_for_string_in_file $cpp_options "^[ ]*#undef.*ALWAYS_USE_MPI" || exit 99
+}
+
+# Search for particular string in a file. Return 1 if detected, 0 if not
+# usage: test_for_string_in_file file string
+test_for_string_in_file() {
+    file=$1
+    strng=$2
+    grep -i "$strng" $file > /dev/null 2>&1
     RETVAL=$?
     if test "x${RETVAL}" = x0 ; then
-	echo "Error: In $cpp_options there is an illegal line: #define ALLOW_$pkg"
-	exit 99
+	echo -n "Error: In $file there is an illegal line: "
+        grep -i "$strng" $file
+	return 1
     fi
-    grep -i "#undef.*ALLOW_$pkg" $cpp_options > /dev/null 2>&1
-    RETVAL=$?
-    if test "x${RETVAL}" = x0 ; then
-	echo "Error: In $cpp_options there is an illegal line: #undef ALLOW_$pkg"
-	exit 99
-    fi
-    grep -i "#define.*DISABLE_$pkg" $cpp_options > /dev/null 2>&1
-    RETVAL=$?
-    if test "x${RETVAL}" = x0 ; then
-	echo "Error: In $cpp_options there is an illegal line: #define DISABLE_$pkg"
-	exit 99
-    fi
-    grep -i "#undef.*DISABLE_$pkg" $cpp_options > /dev/null 2>&1
-    RETVAL=$?
-    if test "x${RETVAL}" = x0 ; then
-	echo "Error: In $cpp_options there is an illegal line: #undef DISABLE_$pkg"
-	exit 99
-   fi
+    return 0
 }
 
 # Read the $ROOTDIR/pkg/pkg_groups file and expand any references to
@@ -888,12 +893,6 @@ if test "x$HAVE_CLOC" != x ; then
 else
     echo "no"
 fi
-echo "$FC_NAMEMANGLE" > FC_NAMEMANGLE.h.template
-cmp FC_NAMEMANGLE.h FC_NAMEMANGLE.h.template > /dev/null 2>&1
-RETVAL=$?
-if test "x$RETVAL" != x0 ; then
-    mv -f FC_NAMEMANGLE.h.template FC_NAMEMANGLE.h
-fi
 rm -f genmake_t*
 
 
@@ -1211,29 +1210,36 @@ for d in $STANDARDDIRS ; do
     fi
 done
 
-echo "  Searching for CPP_OPTIONS.h in order to warn about the presence"
-echo "    of \"#define ALLOW_PKGNAME\"-type statements:"
+echo "  Searching for *OPTIONS.h files in order to warn about the presence"
+echo "    of \"#define \"-type statements that are no longer allowed:"
 CPP_OPTIONS=
+CPP_EEOPTIONS=
 spaths=". $INCLUDEDIRS"
+names=`ls -1 "$ROOTDIR/pkg"`
 for i in $spaths ; do
     try="$i/CPP_OPTIONS.h"
-    #  echo -n "    trying $try : "
-    if test -f $try -a -r $try ; then
+    if test -f $try -a -r $try -a "x$CPP_OPTIONS" == x ; then
 	echo "    found CPP_OPTIONS=\"$try\""
 	CPP_OPTIONS="$try"
-	break
+        # New safety test: make sure packages are not mentioned in CPP_OPTIONS.h
+        for n in $names ; do
+            test_for_package_in_cpp_options $CPP_OPTIONS $n
+        done
+    fi
+    try="$i/CPP_EEOPTIONS.h"
+    if test -f $try -a -r $try -a "x$CPP_EEOPTIONS" == x ; then
+	echo "    found CPP_EEOPTIONS=\"$try\""
+        # New safety test: make sure MPI is not determined by CPP_EEOPTIONS.h
+#**** not yet enabled ****
+#        test_for_mpi_in_cpp_eeoptions $try
+#**** not yet enabled ****
+	CPP_EEOPTIONS="$try"
     fi
 done
 if test "x$CPP_OPTIONS" = x ; then
     echo "Error: can't find \"CPP_OPTIONS.h\" in the path list: $spaths"
     exit 1
 fi
-# New safety test: make sure packages are not mentioned in CPP_OPTIONS.h
-names=`ls -1 "$ROOTDIR/pkg"`
-for n in $names ; do
-    test_for_package_in_cpp_options $CPP_OPTIONS $n
-done
-
 
 #  Here, we build the list of files to be "run through" the adjoint
 #  compiler.
@@ -1383,6 +1389,9 @@ EXE_SVD     = ${EXE_SVD}
 ENABLED_PACKAGES = ${ENABLED_PACKAGES}
 DISABLED_PACKAGES = ${DISABLED_PACKAGES}
 
+# These files are created by Makefile
+SPECIAL_FILES = ${PACKAGES_DOT_H} AD_CONFIG.h FC_NAMEMANGLE.h
+
 EOF
 
 #  Note: figure out some way to add Hyades JAM libraries here
@@ -1447,7 +1456,7 @@ cat >>$MAKEFILE <<EOF
 .SUFFIXES: .o .f .p .F .c .F90 .f90
 
 all: \$(EXECUTABLE)
-\$(EXECUTABLE): ${PACKAGES_DOT_H} AD_CONFIG.h \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(OBJFILES)
+\$(EXECUTABLE): \$(SPECIAL_FILES) \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(OBJFILES)
 	@echo Creating \$@ ...
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(LIBS)
 depend:
@@ -1455,7 +1464,7 @@ depend:
 	\$(MAKEDEPEND) -o .f \$(DEFINES) \$(INCLUDES) \$(SRCFILES)
 	\$(TOOLSDIR)/f90mkdepend >> \$(MAKEFILE)
 
-links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) ${PACKAGES_DOT_H} AD_CONFIG.h
+links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(SPECIAL_FILES)
 
 small_f: \$(F77FILES) \$(F90FILES)
 
@@ -1468,7 +1477,7 @@ clean:
 Clean:
 	@make clean
 	@make cleanlinks
-	-rm -f ${PACKAGES_DOT_H} AD_CONFIG.h
+	-rm -f \$(SPECIAL_FILES)
 	-rm -f genmake_state genmake_*optfile genmake_warnings make.log run.log *.bak
 CLEAN:
 	@make Clean
@@ -1483,13 +1492,16 @@ makefile:
 cleanlinks:
 	-find . -type l -exec rm {} \;
 
-# Special targets
+# Special targets ($SPECIAL_FILES) which are create by make
 ${PACKAGES_DOT_H}:
 	@echo Creating \$@ ...
 	@\$(TOOLSDIR)/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -bPACKAGES_CONFIG_H "Disabled packages:" \$(DISABLED_PACKAGES) " " "Enabled packages:" \$(ENABLED_PACKAGES) > \$@
 AD_CONFIG.h:
 	@echo Creating \$@ ...
 	@\$(TOOLSDIR)/convert_cpp_cmd2defines "Warning - this file is automatically generated - do NOT edit" -bAD_CONFIG_H -UALLOW_ADJOINT_RUN -UALLOW_TANGENTLINEAR_RUN -UALLOW_ECCO_OPTIMIZATION > \$@
+FC_NAMEMANGLE.h:
+	@echo Creating \$@ ...
+	echo "$FC_NAMEMANGLE" > \$@
 
 # The normal chain of rules is (  .F - .f - .o  )
 .F.f:
