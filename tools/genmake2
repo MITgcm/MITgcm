@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.54 2003/12/05 18:09:35 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.55 2003/12/06 00:34:29 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1177,9 +1177,8 @@ for i in $PACKAGES ; do
 #EH3  WARNING :  This is an UGLY HACK that needs to be removed!!!
     case $i in 
 	aim_v23)
-	    DEFINES="$DEFINES -DALLOW_AIM"
             ENABLED_PACKAGES="$ENABLED_PACKAGES -DALLOW_AIM"
-	    echo "Warning: ALLOW_AIM is set to enable aim_v23. This is REALLY ugly Jean-Michel :-)"
+	    echo "Warning: ALLOW_AIM is set to enable aim_v23."
 	    ;;
     esac
 #EH3  WARNING :  This is an UGLY HACK that needs to be removed!!!
