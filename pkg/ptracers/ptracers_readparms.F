@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.17 2004/12/20 16:22:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.18 2005/02/07 19:07:18 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -57,7 +57,6 @@ C                          are written to post-processing files.
      &     PTRACERS_names,
      &     PTRACERS_long_names,
      &     PTRACERS_units,
-     &     PTRACERS_read_mnc,
      &     PTRACERS_write_mnc
 
 C     This routine has been called by the main model so we set our
@@ -88,8 +87,6 @@ C     Set defaults values for parameters in PTRACERS.h
         ENDDO
       ENDDO
       PTRACERS_useRecords  = .FALSE.
-      PTRACERS_read_mdsio  = .TRUE.
-      PTRACERS_read_mnc    = .FALSE.
       PTRACERS_write_mdsio = .TRUE.
       PTRACERS_write_mnc   = .FALSE.
 
@@ -171,7 +168,6 @@ C     Check that enough parameters were specified
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
 C       Set the default I/O Types
-        IF (PTRACERS_read_mnc) PTRACERS_read_mdsio = .FALSE.
         IF ( (.NOT. outputTypesInclusive) 
      &       .AND. PTRACERS_write_mnc ) PTRACERS_write_mdsio = .FALSE.
         
