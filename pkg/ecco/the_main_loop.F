@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.15 2005/01/23 00:40:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.16 2005/02/10 05:33:22 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -374,6 +374,10 @@ c--     Set the model iteration counter and the model time.
         myiter = nIter0 + (iloop-1)
         mytime = startTime + float(iloop-1)*deltaTclock
 
+#ifdef ALLOW_AUTODIFF_TAMC
+        CALL AUTODIFF_INADMODE_UNSET( myThid )
+#endif
+
 #ifdef ALLOW_COST
 
 c--     Accumulate time averages of temperature, salinity, and SSH.
@@ -691,6 +695,10 @@ C--   Calculate float trajectories
         CALL FLT_MAIN(myIter,myTime, myThid)
         CALL TIMER_STOP ('FLOATS            [FORWARD_STEP]',myThid)
       ENDIF
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+        CALL AUTODIFF_INADMODE_SET( myThid )
 #endif
 
 C--   State-variables statistics (time-aver, diagnostics ...)
