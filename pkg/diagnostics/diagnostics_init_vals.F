@@ -327,6 +327,21 @@ c ----------------
       cdiag(263) = 'UVELSLT '
       cdiag(264) = 'VVELSLT '
       cdiag(265) = 'WVELSLT '
+      cdiag(266) = 'UTRAC1  '
+      cdiag(267) = 'VTRAC1  '
+      cdiag(268) = 'WTRAC1  '
+      cdiag(269) = 'UTRAC2  '
+      cdiag(270) = 'VTRAC2  '
+      cdiag(271) = 'WTRAC2  '
+      cdiag(272) = 'UTRAC3  '
+      cdiag(273) = 'VTRAC3  '
+      cdiag(274) = 'WTRAC3  '
+      cdiag(275) = 'UTRAC4  '
+      cdiag(276) = 'VTRAC4  '
+      cdiag(277) = 'WTRAC4  '
+      cdiag(278) = 'UTRAC5  '
+      cdiag(279) = 'VTRAC5  '
+      cdiag(280) = 'WTRAC5  '
 
 c Diagnostic Descriptions
 c ----------------------------------------------------------------------
@@ -668,6 +683,21 @@ c ----------------------------------------------------------------------
       tdiag(263)  = 'Zonal Transp of Salt (m-kg/s-kg)'
       tdiag(264)  = 'Meridional Transp of Salt (m-kg/s-kg)'
       tdiag(265)  = 'Vertical Transp of Salt (m-kg/s-kg)'
+      tdiag(266)  = 'Zonal Mass-Weighted Transp of Tracer 1 (m-kg/s-kg)'
+      tdiag(267)  = 'Merid Mass-Weighted Transp of Tracer 1 (m-kg/s-kg)'
+      tdiag(268)  = 'Vert  Mass-Weighted Transp of Tracer 1 (m-kg/s-kg)'
+      tdiag(269)  = 'Zonal Mass-Weighted Transp of Tracer 2 (m-kg/s-kg)'
+      tdiag(270)  = 'Merid Mass-Weighted Transp of Tracer 2 (m-kg/s-kg)'
+      tdiag(271)  = 'Vert  Mass-Weighted Transp of Tracer 2 (m-kg/s-kg)'
+      tdiag(272)  = 'Zonal Mass-Weighted Transp of Tracer 3 (m-kg/s-kg)'
+      tdiag(273)  = 'Merid Mass-Weighted Transp of Tracer 3 (m-kg/s-kg)'
+      tdiag(274)  = 'Vert  Mass-Weighted Transp of Tracer 3 (m-kg/s-kg)'
+      tdiag(275)  = 'Zonal Mass-Weighted Transp of Tracer 4 (m-kg/s-kg)'
+      tdiag(276)  = 'Merid Mass-Weighted Transp of Tracer 4 (m-kg/s-kg)'
+      tdiag(277)  = 'Vert  Mass-Weighted Transp of Tracer 4 (m-kg/s-kg)'
+      tdiag(278)  = 'Zonal Mass-Weighted Transp of Tracer 5 (m-kg/s-kg)'
+      tdiag(279)  = 'Merid Mass-Weighted Transp of Tracer 5 (m-kg/s-kg)'
+      tdiag(280)  = 'Vert  Mass-Weighted Transp of Tracer 5 (m-kg/s-kg)'
 
 c Diagnostic Units
 c ----------------
@@ -936,6 +966,21 @@ c ----------------
       udiag(263) = 'm-kg/s-kg       '
       udiag(264) = 'm-kg/s-kg       '
       udiag(265) = 'm-kg/s-kg       '
+      udiag(266) = 'm-kg/s-kg       '
+      udiag(267) = 'm-kg/s-kg       '
+      udiag(268) = 'm-kg/s-kg       '
+      udiag(269) = 'm-kg/s-kg       '
+      udiag(270) = 'm-kg/s-kg       '
+      udiag(271) = 'm-kg/s-kg       '
+      udiag(272) = 'm-kg/s-kg       '
+      udiag(273) = 'm-kg/s-kg       '
+      udiag(274) = 'm-kg/s-kg       '
+      udiag(275) = 'm-kg/s-kg       '
+      udiag(276) = 'm-kg/s-kg       '
+      udiag(277) = 'm-kg/s-kg       '
+      udiag(278) = 'm-kg/s-kg       '
+      udiag(279) = 'm-kg/s-kg       '
+      udiag(280) = 'm-kg/s-kg       '
 
 c Diagnostic Parms
 c ----------------
@@ -1204,6 +1249,21 @@ c ----------------
       gdiag(263) = 'UU   264M       '
       gdiag(264) = 'VV   263M       '
       gdiag(265) = 'WM      M       '
+      gdiag(266) = 'UU   267M       '
+      gdiag(267) = 'VV   266M       '
+      gdiag(268) = 'WM      M       '
+      gdiag(269) = 'UU   270M       '
+      gdiag(270) = 'VV   269M       '
+      gdiag(271) = 'WM      M       '
+      gdiag(272) = 'UU   273M       '
+      gdiag(273) = 'VV   272M       '
+      gdiag(274) = 'WM      M       '
+      gdiag(275) = 'UU   276M       '
+      gdiag(276) = 'VV   275M       '
+      gdiag(277) = 'WM      M       '
+      gdiag(278) = 'UU   279M       '
+      gdiag(279) = 'VV   278M       '
+      gdiag(280) = 'WM      M       '
         
 c Diagnostic Levels
 c -----------------
@@ -1472,6 +1532,21 @@ c -----------------
       KDIAG(263)= Nr
       KDIAG(264)= Nr
       KDIAG(265)= Nr
+      KDIAG(266)= Nr
+      KDIAG(267)= Nr
+      KDIAG(268)= Nr
+      KDIAG(269)= Nr
+      KDIAG(270)= Nr
+      KDIAG(271)= Nr
+      KDIAG(272)= Nr
+      KDIAG(273)= Nr
+      KDIAG(274)= Nr
+      KDIAG(275)= Nr
+      KDIAG(276)= Nr
+      KDIAG(277)= Nr
+      KDIAG(278)= Nr
+      KDIAG(279)= Nr
+      KDIAG(280)= Nr
 
       do n=1,ndiagt
       idiag (n) = 0
