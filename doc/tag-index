@@ -1,14 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.154 2003/05/13 13:32:52 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.155 2003/05/14 09:22:09 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
-checkpint50d_post
+checkpoint50e_post
+o make KPP work with PTRACERS
+ - fix gad_calc_rhs to call new routine kpp_transport_ptr, which is
+   nearly a copy of kpp_transport_s
+ - there is no analogue to SurfaceTendencyS, so I have to use 
+   gPtr(of the surface layer) instead
+o add a new platform SunFire+mpi (SunFire 15000) to genmake
+checkpoint50e_pre
+
+checkpoint50d_post
 o change kpp output from multiple-record state files to single-record state 
   files analogous to write_state.F
 o reduce the output frequency of cg3d-related stuff to the monitor frequency, 
   analogous to the cg2d-related output. 
-o fix small problem with in ptracers_write_checkpoint.F: len(suff)=512, so that
-  writing to internal file fn (with length 512) fails.
+o fix small problem with in ptracers_write_checkpoint.F: len(suff)=512, 
+  so that writing to internal file fn (with length 512) fails.
 checkpoint50d_pre
 
 checkpoint50c_post
