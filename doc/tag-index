@@ -1,7 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.209 2003/11/17 23:45:57 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.210 2003/11/20 02:30:16 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o sort out interplay between tamc.h and PTRACERS_OPTIONS.h
+  (need info on NUMBER_OF_PTRACERS)
+o missing PTRACERS headers in some routines
+o default tamc.h in pkg/autodiff supposed to crash
+  to ensure proper customization
 
 checkpoint52a_post
 o modifications to make FREEZE (_SURFACE) flux visible to pkg/kpp
