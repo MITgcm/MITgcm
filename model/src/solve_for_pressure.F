@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.16 2001/02/20 15:08:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.17 2001/03/06 16:57:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -18,7 +18,7 @@ C     == Global variables
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#include "CG2D.h"
+#include "SURFACE.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "CG3D.h"
 #include "GW.h"
@@ -33,9 +33,32 @@ C     myThid - Number of this instance of SOLVE_FOR_PRESSURE
 CEndOfInterface
 
 C     Local variables
+C     cg2d_x - Conjugate Gradient 2-D solver : Solution vector
+C     cg2d_b - Conjugate Gradient 2-D solver : Right-hand side vector
       INTEGER i,j,k,bi,bj
       _RS uf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RS vf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+C--   Save previous solution & Initialise Vector solution and source term :
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+#ifdef INCLUDE_CD_CODE
+          etaNm1(i,j,bi,bj) = etaN(i,j,bi,bj)
+#endif
+          cg2d_x(i,j,bi,bj) = etaN(i,j,bi,bj)
+          cg2d_b(i,j,bi,bj) = 0.
+#ifdef USE_NATURAL_BCS
+     &     + freeSurfFac*_rA(i,j,bi,bj)*horiVertRatio*
+     &       EmPmR(I,J,bi,bj)/deltaTMom
+#endif
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -51,23 +74,11 @@ C     Local variables
          CALL CALC_DIV_GHAT(
      I       bi,bj,1,sNx,1,sNy,K,
      I       uf,vf,
+     U       cg2d_b,
      I       myThid)
         ENDDO
        ENDDO
       ENDDO
-
-#ifdef INCLUDE_CD_CODE
-C--   Save previous solution.
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          cg2d_xNM1(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif
 
 C--   Add source term arising from w=d/dt (p_s + p_nh)
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -128,13 +139,24 @@ C Western boundary
 
 C--   Find the surface pressure using a two-dimensional conjugate
 C--   gradient solver.
-C     see CG2D.h for the interface to this routine.
+C     see CG2D_INTERNAL.h for the interface to this routine.
       CALL CG2D(
      I           cg2d_b,
      U           cg2d_x,
      I           myThid )
 
       _EXCH_XY_R8(cg2d_x, myThid )
+
+C--   Transfert the 2D-solution to "etaN" :
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          etaN(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
 #ifdef ALLOW_NONHYDROSTATIC
       IF ( nonHydrostatic ) THEN
