@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.6 2000/11/13 16:32:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.7 2000/11/14 03:43:37 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -78,7 +78,7 @@ C
      I     mytime, myiter, mythid )
       jwtype=jerl(count0)
 #else /* ALLOW_CALENDAR undef */
-      jwtype=3
+      jwtype=2
 #endif /* ALLOW_CALENDAR */
 
       DO i = 1,imax
