@@ -49,6 +49,12 @@ c     ==================================================================
       _RL  adobjf_ctds (nsx,nsy)
       _RL  adobjf_ctdt (nsx,nsy)
 
+#ifdef ALLOW_COST_VECTOR
+      common /adcost_array/
+     &                  adobjf_vector
+      _RL  adobjf_vector(snx,nsx,nsy)
+#endif
+
 c     ==================================================================
 c     END OF HEADER ADCOST
 c     ==================================================================

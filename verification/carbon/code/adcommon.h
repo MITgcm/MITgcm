@@ -1,4 +1,10 @@
-C--   copied stuff from _ad.f file
+C     These common blocks are extracted from the
+C     automatically created adjoint code.
+C     You need to make sure that they are up-to-date
+C     (i.e. in right order), and customize them
+C     accordingly.
+C 
+C     heimbach@mit.edu 11-Jan-2001
 
       common /addynvars_r/ 
      &                     adetan,
@@ -21,6 +27,7 @@ C--   copied stuff from _ad.f file
       _RL advvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adwvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
+#ifdef INCLUDE_CD_CODE
       common /addynvars_cd/ 
      &                      aduveld, advveld,
      &                      adetanm1, 
@@ -33,6 +40,7 @@ C--   copied stuff from _ad.f file
       _RL advnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgucd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgvcd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
 
       common /adffields/
      &                   adfu, adfv, adqnet, adempmr, adsst, adsss

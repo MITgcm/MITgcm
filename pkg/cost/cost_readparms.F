@@ -1,11 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.2 2001/07/13 13:37:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.3 2002/01/17 17:03:34 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
 
-      subroutine cost_readparms(
-     I                           mythid
-     &                         )
+      subroutine cost_readparms( mythid )
 
 c     ==================================================================
 c     SUBROUTINE cost_readparms

@@ -175,6 +175,12 @@ c                  function contributions.
       _RL  objf_test (nsx,nsy)
       _RL  objf_tracer (nsx,nsy)
 
+#ifdef ALLOW_COST_VECTOR
+      common /cost_array/
+     &                objf_vector
+      _RL  objf_vector (snx,nsx,nsy)
+#endif
+
       common /cost_aux_r/
      &                    mult_hq,
      &                    mult_hs,
