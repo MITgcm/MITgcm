@@ -12,4 +12,7 @@ exch2_uv_agrid_xy_r[ls48].F
 exch2_uv_agrid_xyz_r[ls48].F
 exch_uv_agrid_xy_r[ls48].F
 exch_uv_agrid_xyz_r[ls48].F
-
+exch2_z_xy_r4.F
+exch2_z_xy_r8.F
+exch2_z_xy_rl.F
+exch2_z_xy_rs.F
