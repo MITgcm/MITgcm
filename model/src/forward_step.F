@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.32 2002/05/30 02:32:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.33 2002/06/15 03:21:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -175,14 +175,12 @@ C--   Step forward W field in N-H algorithm
 
 #ifdef NONLIN_FRSURF
 C--   update hfacC,W,S and recip_hFac according to etaH(n+1) :
-      IF ( momStepping ) THEN
       IF ( nonlinFreeSurf.GT.0) THEN
         CALL UPDATE_SURF_DR( myTime, myIter, myThid )
       ENDIF
 C-    update also CG2D matrix (and preconditioner)
-      IF ( nonlinFreeSurf.GT.2) THEN
+      IF ( momStepping .AND. nonlinFreeSurf.GT.2 ) THEN
         CALL UPDATE_CG2D( myTime, myIter, myThid )
-      ENDIF
       ENDIF
 #endif
 
