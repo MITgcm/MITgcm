@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.3 1998/04/24 02:10:21 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.4 1998/04/24 03:24:29 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -52,6 +52,7 @@ C--   Set model initial conditions
 
 C--   Begin time stepping loop
       DO I=1, nTimeSteps
+
 C--    Do IO if needed.
        CALL DO_THE_MODEL_IO( myCurrentIter, myThid )
 
