@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.29 2004/10/21 16:35:23 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.30 2004/10/26 01:03:41 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -99,6 +99,7 @@ c ----------------
 
 c Local Variables
 c ---------------
+      _RL rfu(im,jm,lm),rfv(im,jm,lm),rft(im,jm,lm)
       logical     alarm
       external    alarm
       integer numpcheck
@@ -210,6 +211,23 @@ C Need to see how to get zonal wavelengths on the cube.
 c     call gwdrag (myid,p,pl,ple,dpres,pkht,pkl,u,v,t,q,phis_var,
 c    .   turbu,turbv,turbt,im,jm,lm,ptop,istrip,npcs,
 c    .   imglobal)
+
+c Add Rayleigh Friction Damping Above 70 Km
+c -----------------------------------------
+
+      call rayleigh(myid,pl,pkl,pkht,surfz,u,v,t,q,im,jm,lm,
+     .                                                bi,bj,rfu,rfv,rft)
+C Now Add Rayleigh Friction Tendencies to Turb Tendency
+
+      do L=1,lm
+      do j=1,jm
+      do i=1,im
+       turbu(i,j,L) = turbu(i,j,L) + rfu(i,j,L)
+       turbv(i,j,L) = turbv(i,j,L) + rfv(i,j,L)
+       turbt(i,j,L) = turbt(i,j,L) + rft(i,j,L)
+      enddo
+      enddo
+      enddo
 
       endif
                                                                                 
