@@ -10,9 +10,11 @@ c                                       to make_phys_grid
 c  Calls: make_phys_grid (define the physics grid and mappings)
 c-----------------------------------------------------------------------
        implicit none
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "GRID.h"
 #include "fizhi_SIZE.h"
 #include "gridalt_mapping.h"
@@ -33,21 +35,25 @@ c-----------------------------------------------------------------------
        jdim1 = 1
        jdim2 = sNy
 
-       do bj = myByLo(myThid), myByHi(myThid)
-       do bi = myBxLo(myThid), myBxHi(myThid)
+#ifdef ALLOW_FIZHI
+       if(usefizhi) then
+        do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
 
-       call make_phys_grid(drF,hfacC,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
+         call make_phys_grid(drF,hfacC,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
      .       1,sNx,1,sNy,bi,bj,Nrphys,ksurfC,dpphys0,nlph,nlperdyn)
 
-        if( NrPhys.ne.nlph ) then
-         print *,' ERROR CONDITION - Model has been brought down '
-         print *,' Physics dimension in fizhi_size is ',Nrphys,
-     .                    ' New grid has ',nlph,' levels '
-         stop
-        endif
+         if( NrPhys.ne.nlph ) then
+          print *,' ERROR CONDITION - Model has been brought down '
+          print *,' Physics dimension in fizhi_size is ',Nrphys,
+     .                     ' New grid has ',nlph,' levels '
+          stop
+         endif
 
-       enddo
-       enddo
+        enddo
+        enddo
+       endif
+#endif
 
        return
        end
