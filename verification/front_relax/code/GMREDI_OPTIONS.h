@@ -1,21 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code/Attic/GMREDI_OPTIONS.h,v 1.2 2003/01/13 19:53:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code/Attic/GMREDI_OPTIONS.h,v 1.3 2003/10/31 20:35:32 edhill Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
 C
 C Use this file for selecting options within the GM/Redi package
-C
-C GM/Redi is enabled with ALLOW_GMREDI in CPP_OPTIONS.h
+
+#ifndef GMREDI_OPTIONS_H
+#define GMREDI_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#ifdef ALLOW_GMREDI
 
 #include "CPP_OPTIONS.h"
-
-#ifdef ALLOW_GMREDI
 
 C Designed to simplify the Ajoint code:
 C  exclude the clipping/tapering part of the code that is not used
 C #define GM_EXCLUDE_CLIPPING
 C #define GM_EXCLUDE_AC02_TAP
-C #define GM_EXCLUDE_TAPERING 
+C #define GM_EXCLUDE_TAPERING
  
 C This allows to use Visbeck et al formulation to compute K_GM+Redi
 #undef GM_VISBECK_VARIABLE_K
@@ -34,3 +35,4 @@ C  instead of the Skew-Flux form (=default)
 
 
 #endif /* ALLOW_GMREDI */
+#endif /* GMREDI_OPTIONS_H */

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.14 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.15 2003/10/31 20:35:32 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP

@@ -1,7 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.24 2003/10/30 12:00:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.25 2003/10/31 20:35:32 edhill Exp $
 C $Name:  $
-
-#include "PACKAGES_CONFIG.h"
 
 CBOP
 C     !ROUTINE: DYNVARS.h

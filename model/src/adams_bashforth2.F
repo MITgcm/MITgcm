@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth2.F,v 1.2 2001/09/26 18:09:13 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/adams_bashforth2.F,v 1.3 2003/10/31 20:35:32 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP

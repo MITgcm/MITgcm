@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.23 2003/10/15 22:57:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.24 2003/10/31 20:35:32 edhill Exp $
 C $Name:  $
 C
 CBOP
@@ -295,8 +295,6 @@ C     |
 C     *==========================================================*
 C     \ev
 CEOP
-
-#include "PACKAGES_CONFIG.h"
 
 C     Macros that override/modify standard definitions
 #include "GRID_MACROS.h"

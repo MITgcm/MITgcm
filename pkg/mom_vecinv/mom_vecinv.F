@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.9 2003/10/26 01:01:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.10 2003/10/31 20:35:32 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE MOM_VECINV( 

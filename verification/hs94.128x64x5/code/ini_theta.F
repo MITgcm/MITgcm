@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.128x64x5/code/Attic/ini_theta.F,v 1.6 2002/07/18 15:59:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.128x64x5/code/Attic/ini_theta.F,v 1.7 2003/10/31 20:35:33 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
