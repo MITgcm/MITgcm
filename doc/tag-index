@@ -1,9 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.141 2003/02/28 05:21:22 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.142 2003/03/05 00:59:10 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-checkpoint49
+checkpoint48i_post
 o Changes to restore differentiability of code w.r.t. previous tag
   (mostly adding new routines to make list and replacing
   pressure by totPhiHyd).
