@@ -98,8 +98,8 @@ C east
           component1(sNx+i,j,bi,bj) = dummy1(sNx+i,j,bi,bj)
           component2(sNx+i,j,bi,bj) = dummy2(sNx+i,j,bi,bj)
 C west
-          component1(i-OLx,j,bi,bj) = dummy2(j,sNy+i,bi,bj)
-          component2(i-OLx,j,bi,bj) = -dummy1(j,sNy+i,bi,bj)
+          component1(i-OLx,j,L,bi,bj) = dummy2(i-OLx,j,L,bi,bj)
+          component2(i-OLx,j,L,bi,bj) = -dummy1(i-OLx,j,L,bi,bj)
 C north
           component1(j,sNy+i,bi,bj) = -dummy2(j,sNy+i,bi,bj)
           component2(j,sNy+i,bi,bj) = dummy1(j,sNy+i,bi,bj)
