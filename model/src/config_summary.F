@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.30 2001/09/26 18:09:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.31 2002/02/10 00:35:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -143,6 +143,7 @@ CEOP
      &'   /* Reference coriolis parameter ( 1/s ) */')
       CALL WRITE_0D_R8( beta,    INDEX_NONE,'beta =',
      &'   /* Beta ( 1/(m.s) ) */')
+
       CALL WRITE_0D_R8( freeSurfFac, INDEX_NONE,'freeSurfFac =',
      &'   /* Implicit free surface factor */')
       CALL WRITE_0D_L( implicitFreeSurface, INDEX_NONE,
@@ -157,6 +158,44 @@ CEOP
       CALL WRITE_0D_R8( implicDiv2Dflow, INDEX_NONE,
      &'implicDiv2Dflow =',
      &'   /* Barot. Flow Div. implicit factor (0-1)*/')
+      CALL WRITE_0D_L( exactConserv, INDEX_NONE,
+     &'exactConserv =',
+     &'   /* Exact Volume Conservation on/off flag*/')
+      CALL WRITE_0D_L( uniformLin_PhiSurf, INDEX_NONE,
+     &'uniformLin_PhiSurf =',
+     &'   /* use uniform Bo_surf on/off flag*/')
+      CALL WRITE_0D_I( nonlinFreeSurf, INDEX_NONE,
+     &'nonlinFreeSurf =',
+     &'   /* Non-linear Free Surf. options (-1,0,1,2,3)*/')
+      WRITE(msgBuf,'(2A)') '     -1,0= Off ; 1,2,3= On,',
+     &  ' 2=+rescale gU,gV, 3=+update cg2d solv.'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
+      CALL WRITE_0D_R8( hFacInf, INDEX_NONE,
+     &'hFacInf =',
+     &'   /* lower threshold for hFac (nonlinFreeSurf only)*/')
+      CALL WRITE_0D_R8( hFacSup, INDEX_NONE,
+     &'hFacSup =',
+     &'   /* upper threshold for hFac (nonlinFreeSurf only)*/')
+      CALL WRITE_0D_L( useRealFreshWaterFlux, INDEX_NONE,
+     &'useRealFreshWaterFlux =',
+     &'   /* Real Fresh Water Flux on/off flag*/')
+      IF (useRealFreshWaterFlux .AND. nonlinFreeSurf.GT.0) THEN
+      CALL WRITE_0D_R8( temp_EvPrRn, INDEX_NONE,
+     &'temp_EvPrRn =',
+     &' /* Temp. of Evap/Prec/R (UNSET=use local T)(oC)*/')
+      CALL WRITE_0D_R8( salt_EvPrRn, INDEX_NONE,
+     &'salt_EvPrRn =',
+     &' /* Salin. of Evap/Prec/R (UNSET=use local S)(ppt)*/')
+      CALL WRITE_0D_R8( trac_EvPrRn, INDEX_NONE,
+     &'trac_EvPrRn =',
+     &' /* Tracer in Evap/Prec/R (UNSET=use local Tr)*/')
+      ELSE
+      CALL WRITE_0D_R8( convertFW2Salt, INDEX_NONE,
+     &'convertFW2Salt =',
+     &' /* convert F.W. Flux to Salt Flux (-1=use local S)(ppt)*/')
+      ENDIF
+
       CALL WRITE_0D_L( staggerTimeStep, INDEX_NONE,
      &                 'staggerTimeStep =',
      &'   /* Stagger time stepping on/off flag */')

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.2 2002/01/31 15:02:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.3 2002/02/10 00:35:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,10 +43,10 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
       IF (nonHydrostatic) THEN 
         WRITE(msgBuf,'(A)') 
      &   'CONFIG_CHECK: #undef ALLOW_NONHYDROSTATIC and'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: nonHydrostatic is TRUE'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 #endif
@@ -55,10 +55,10 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
       IF (exactConserv) THEN 
         WRITE(msgBuf,'(A)') 
      &   'CONFIG_CHECK: #undef EXACT_CONSERV and'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: exactConserv is TRUE'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 #endif
@@ -67,54 +67,74 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
       IF (nonlinFreeSurf.NE.0) THEN 
         WRITE(msgBuf,'(A)') 
      &   'CONFIG_CHECK: #undef NONLIN_FRSURF and'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: nonlinFreeSurf is non-zero'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 #endif
+
+#ifdef USE_NATURAL_BCS
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: USE_NATURAL_BCS option has been replaced'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: by useRealFreshWaterFlux=TRUE in data file'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+#endif
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-  check parameter consistency :
 
-#ifdef USE_NATURAL_BCS
-      IF (rigidLid) THEN
-        WRITE(msgBuf,'(A)') 
-     &   'CONFIG_CHECK: #define USE_NATURAL_BCS and'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: rigidLid are not compatible'
-        CALL PRINT_ERROR( msgBuf , 1)
+      IF ( rigidLid .AND. implicitFreeSurface ) THEN
+        WRITE(msgBuf,'(A,A)')
+     &  'CONFIG_CHECK: Cannot select both implicitFreeSurface',
+     &  ' and rigidLid.'
+        CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
-      ENDIF
-      IF (exactConserv) THEN
-        WRITE(msgBuf,'(A)') 
-     &   'CONFIG_CHECK: #define USE_NATURAL_BCS with'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: exactConserv not yet implemented'
-        CALL PRINT_ERROR( msgBuf , 1)
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
-      ENDIF
-#endif
+      ENDIF                 
 
       IF (rigidLid .AND. exactConserv) THEN
         WRITE(msgBuf,'(A)') 
      &   'CONFIG_CHECK: exactConserv not compatible with'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: rigidLid (meaningless in that case)'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
+      IF (rigidLid .AND. useRealFreshWaterFlux) THEN
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: useRealFreshWaterFlux not compatible with'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: rigidLid (meaningless in that case)'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
+      IF ( (implicSurfPress.NE.1. .OR. implicDiv2DFlow.NE.1.)
+     &    .AND. nonHydrostatic ) THEN
+        WRITE(msgBuf,'(A,A)') 'CONFIG_CHECK: nonHydrostatic',
+     & ' NOT SAFE with non-fully implicit Barotropic solver'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A,A)') 'CONFIG_CHECK: To by-pass this',
+     &    'STOP, comment this test and re-compile config_check'
+        CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
       IF (nonlinFreeSurf.NE.0 .AND. .NOT.exactConserv) THEN
         WRITE(msgBuf,'(A)') 
      &   'CONFIG_CHECK: nonlinFreeSurf cannot be used'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: without exactConserv'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
@@ -132,12 +152,47 @@ c     ENDIF
       IF (nonlinFreeSurf.NE.0 .AND. nonHydrostatic) THEN
         WRITE(msgBuf,'(A)') 
      &   'CONFIG_CHECK: nonlinFreeSurf not yet implemented'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: in nonHydrostatic code'
-        CALL PRINT_ERROR( msgBuf , 1)
+        CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
+
+      IF (nonlinFreeSurf.NE.0 .AND. deltaTmom.NE.deltaTtracer) THEN
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: WARNING: nonlinFreeSurf might cause'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)                      
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: problems with different time-steps'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)                      
+      ENDIF
+
+      IF (useRealFreshWaterFlux .AND. exactConserv
+     &    .AND.startTime.NE.0. .AND. implicSurfPress.EQ.0. _d 0) THEN
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: RealFreshWaterFlux+implicSurfP=0+exactConserv:'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: restart not implemented in this config'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
+#ifndef NONLIN_FRSURF
+      IF (useRealFreshWaterFlux .AND. exactConserv
+     &            .AND. implicSurfPress.NE.1. _d 0 ) THEN
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: Pb with restart in this config'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: ==> use #define NONLIN_FRSURF to fix it'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif
 
       WRITE(msgBuf,'(A)') 'CONFIG_CHECK: OK'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,

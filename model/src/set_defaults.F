@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.32 2001/12/11 14:57:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.33 2002/02/10 00:35:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -104,17 +104,8 @@ C--   Set default "physical" parameters
       sBeta               = 7.4D-4
       eosType             = 'LINEAR'
       buoyancyRelation    = 'OCEANIC'
-      implicitFreeSurface = .TRUE.
-      rigidLid            = .FALSE.
-      implicSurfPress     = 1.D0
-      implicDiv2DFlow     = 1.D0
       hFacMin             = 1.D0
       hFacMinDrDefault    = 0.D0
-      exactConserv        = .FALSE.
-      uniformLin_PhiSurf  = .TRUE.
-      nonlinFreeSurf      = 0
-      hFacInf             = 1.D0
-      hFacSup             = 1.D0
       staggerTimeStep     = .FALSE.
       momViscosity        = .TRUE.
       momAdvection        = .TRUE.
@@ -146,6 +137,21 @@ C--   Set default "physical" parameters
       multiDimAdvection   = .TRUE.
       useEnergyConservingCoriolis = .FALSE.
       useJamartWetPoints  = .FALSE.
+
+C--   Set (free)surface-related parameters
+      implicitFreeSurface = .TRUE.
+      rigidLid            = .FALSE.
+      implicSurfPress     = 1.D0
+      implicDiv2DFlow     = 1.D0
+      exactConserv        = .FALSE.
+      uniformLin_PhiSurf  = .TRUE.
+      nonlinFreeSurf      = 0
+      hFacInf             = 1.D0
+      hFacSup             = 1.D0
+      useRealFreshWaterFlux = .FALSE.
+      temp_EvPrRn = UNSET_RL
+      salt_EvPrRn = 0.
+      trac_EvPrRn = UNSET_RL
 
 C--   Atmospheric physical parameters (e.g.: EOS)
       atm_po =  1.D5

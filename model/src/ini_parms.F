@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.75 2001/12/13 17:27:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.76 2002/02/10 00:35:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -127,6 +127,8 @@ C--   Continuous equation parameters
      & tempAdvScheme, saltAdvScheme, tracerAdvScheme,
      & multiDimAdvection, useEnergyConservingCoriolis,
      & useJamartWetPoints, 
+     & useRealFreshWaterFlux, convertFW2Salt,
+     & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & zonal_filt_lat
 
 C--   Elliptic solver parameters
@@ -259,6 +261,7 @@ C--   Set default "physical" parameters
       hFacMinDr           = UNSET_RL
       hFacMinDz           = UNSET_RL
       hFacMinDp           = UNSET_RL
+      convertFW2Salt = UNSET_RL
       READ(UNIT=iUnit,NML=PARM01) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
@@ -349,28 +352,15 @@ C--   z,p,r coord input switching.
       IF ( hFacMinDr .EQ. UNSET_RL ) hFacMinDr       = hFacMinDp
       IF ( hFacMinDr .EQ. UNSET_RL ) hFacMinDr       = hFacMinDrDefault
 
+      IF (convertFW2Salt.EQ.UNSET_RL) THEN
+        convertFW2Salt = 35.
+        IF (useRealFreshWaterFlux) convertFW2Salt=-1
+      ENDIF
+
       IF ( ivdc_kappa .NE. 0. .AND. .NOT. implicitDiffusion ) THEN
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: To use ivdc_kappa you must enable implicit',
      &  ' vertical diffusion.'
-       CALL PRINT_ERROR( msgBuf , myThid)
-       STOP 'ABNORMAL END: S/R INI_PARMS'
-      ENDIF
-
-      IF ( implicitFreeSurface .AND.  rigidLid ) THEN
-       WRITE(msgBuf,'(A,A)')
-     & 'S/R INI_PARMS: Cannot select both implicitFreeSurface',
-     & ' and rigidLid.'
-       CALL PRINT_ERROR( msgBuf , myThid)
-       STOP 'ABNORMAL END: S/R INI_PARMS'
-      ENDIF
-      IF ( (implicSurfPress.NE.1. .OR. implicDiv2DFlow.NE.1.)
-     &    .AND. nonHydrostatic ) THEN 
-       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: nonHydrostatic', 
-     & ' NOT SAFE with non-fully implicit Barotropic solver' 
-       CALL PRINT_ERROR( msgBuf , myThid)
-       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: To by-pass this',
-     &    'STOP, comment this test and re-compile ini_params'
        CALL PRINT_ERROR( msgBuf , myThid)
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
