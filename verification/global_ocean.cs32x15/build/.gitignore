@@ -10,4 +10,5 @@ mfile*
 mitgcmuv*
 work.pc*
 PACKAGES_CONFIG.h
-genmake_*
+AD_CONFIG.h
+genmake_state
