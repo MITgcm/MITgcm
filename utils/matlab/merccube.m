@@ -34,7 +34,6 @@ end
 Q=C;
 
 if ndims(X)==2 & size(X,1)==6*size(X,2)
- disp('1');
  [nx ny nt]=size(X);
  X=permute( reshape(X,[nx/6 6 ny]),[1 3 2]);
  Y=permute( reshape(Y,[nx/6 6 ny]),[1 3 2]);
