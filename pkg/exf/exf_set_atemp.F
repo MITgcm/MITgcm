@@ -1,11 +1,6 @@
 #include "EXF_CPPOPTIONS.h"
 
-      subroutine exf_set_atemp(
-     O                            atemp
-     I                          , mycurrenttime
-     I                          , mycurrentiter
-     I                          , mythid
-     &                          )
+      subroutine exf_set_atemp( mycurrenttime, mycurrentiter, mythid )
 
 c     ==================================================================
 c     SUBROUTINE exf_set_atemp
@@ -14,6 +9,7 @@ c
 c     o set external forcing atemp
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
+c     changed: heimbach@mit.edu 10-Jan-2002
 
 c     ==================================================================
 c     SUBROUTINE exf_set_atemp
@@ -29,18 +25,15 @@ c     == global variables ==
 
 #include "exf_param.h"
 #include "exf_constants.h"
-
-      common /exfl_atemp_r/ atemp0, atemp1
-      _RL atemp0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL atemp1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#include "exf_fields.h"
 
 c     == routine arguments ==
 
-      _RL     atemp(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     mycurrenttime
       integer mycurrentiter
       integer mythid
 
+#ifdef ALLOW_ATM_TEMP
 c     == local variables ==
 
       logical first, changed
@@ -60,9 +53,7 @@ c     get record numbers and interpolation factor for atemp
      I                     , mycurrenttime, mycurrentiter, mythid
      &                     )
 
-#ifndef ALLOW_AUTODIFF_TAMC
       if ( first ) then
-#endif
         call mdsreadfield( atempfile, exf_iprec, exf_yftype, 1
      &                   , atemp1, count0, mythid
      &                   )
@@ -71,13 +62,9 @@ c     get record numbers and interpolation factor for atemp
         else
            call exf_filter_rs( atemp1, atempmask, mythid )
         end if
-#ifndef ALLOW_AUTODIFF_TAMC
       endif
-#endif
 
-#ifndef ALLOW_AUTODIFF_TAMC
       if (( first ) .or. ( changed )) then
-#endif
         call exf_SwapFFields( atemp0, atemp1, mythid )
 
         call mdsreadfield( atempfile, exf_iprec, exf_yftype, 1
@@ -88,9 +75,7 @@ c     get record numbers and interpolation factor for atemp
         else
            call exf_filter_rs( atemp1, atempmask, mythid )
         end if
-#ifndef ALLOW_AUTODIFF_TAMC
       endif
-#endif
 
 c     Loop over tiles.
       do bj = mybylo(mythid),mybyhi(mythid)
@@ -108,13 +93,13 @@ c             Interpolate linearly onto the current time.
         enddo
       enddo
 
+#endif
+
       end
 
 
 
-      subroutine exf_init_atemp(
-     I                             mythid
-     &                           )
+      subroutine exf_init_atemp( mythid )
 
 c     ==================================================================
 c     SUBROUTINE exf_init_atemp
@@ -123,6 +108,7 @@ c
 c     o 
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
+c     changed: heimbach@mit.edu 10-Jan-2002
 c
 c     ==================================================================
 c     SUBROUTINE exf_init_atemp
@@ -136,15 +122,13 @@ c     == global variables ==
 #include "SIZE.h"
 
 #include "exf_param.h"
-
-      common /exfl_atemp_r/ atemp0, atemp1
-      _RL atemp0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL atemp1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#include "exf_fields.h"
 
 c     == routine arguments ==
 
       integer mythid
 
+#ifdef ALLOW_ATM_TEMP
 c     == local variables ==
 
       integer bi, bj
@@ -162,5 +146,7 @@ c     == end of interface ==
           enddo
         enddo
       enddo
+
+#endif
 
       end

@@ -1,11 +1,6 @@
 #include "EXF_CPPOPTIONS.h"
 
-      subroutine exf_set_hflux(
-     O                            hflux
-     I                          , mycurrenttime
-     I                          , mycurrentiter
-     I                          , mythid
-     &                          )
+      subroutine exf_set_hflux( mycurrenttime, mycurrentiter, mythid )
 
 c     ==================================================================
 c     SUBROUTINE exf_set_hflux
@@ -14,6 +9,7 @@ c
 c     o set external forcing hflux
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
+c     changed: heimbach@mit.edu 10-Jan-2002
 
 c     ==================================================================
 c     SUBROUTINE exf_set_hflux
@@ -29,18 +25,15 @@ c     == global variables ==
 
 #include "exf_param.h"
 #include "exf_constants.h"
-
-      common /exfl_hflux_r/ hflux0, hflux1
-      _RL hflux0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL hflux1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#include "exf_fields.h"
 
 c     == routine arguments ==
 
-      _RL     hflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     mycurrenttime
       integer mycurrentiter
       integer mythid
 
+#ifndef ALLOW_ATM_TEMP
 c     == local variables ==
 
       logical first, changed
@@ -60,37 +53,31 @@ c     get record numbers and interpolation factor for hflux
      I                     , mycurrenttime, mycurrentiter, mythid
      &                     )
 
-#ifndef ALLOW_AUTODIFF_TAMC
       if ( first ) then
-#endif
         call mdsreadfield( hfluxfile, exf_iprec, exf_yftype, 1
      &                   , hflux1, count0, mythid
      &                   )
+
         if (exf_yftype .eq. 'RL') then
            call exf_filter_rl( hflux1, hfluxmask, mythid )
         else
            call exf_filter_rs( hflux1, hfluxmask, mythid )
         end if
-#ifndef ALLOW_AUTODIFF_TAMC
       endif
-#endif
 
-#ifndef ALLOW_AUTODIFF_TAMC
       if (( first ) .or. ( changed )) then
-#endif
         call exf_SwapFFields( hflux0, hflux1, mythid )
 
         call mdsreadfield( hfluxfile, exf_iprec, exf_yftype, 1
      &                   , hflux1, count1, mythid
      &                   )
+
         if (exf_yftype .eq. 'RL') then
            call exf_filter_rl( hflux1, hfluxmask, mythid )
         else
            call exf_filter_rs( hflux1, hfluxmask, mythid )
         end if
-#ifndef ALLOW_AUTODIFF_TAMC
       endif
-#endif
 
 c     Loop over tiles.
       do bj = mybylo(mythid),mybyhi(mythid)
@@ -108,13 +95,13 @@ c             Interpolate linearly onto the current time.
         enddo
       enddo
 
+#endif
+
       end
 
 
 
-      subroutine exf_init_hflux(
-     I                             mythid
-     &                           )
+      subroutine exf_init_hflux( mythid )
 
 c     ==================================================================
 c     SUBROUTINE exf_init_hflux
@@ -123,6 +110,7 @@ c
 c     o 
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
+c     changed: heimbach@mit.edu 10-Jan-2002
 c
 c     ==================================================================
 c     SUBROUTINE exf_init_hflux
@@ -136,15 +124,13 @@ c     == global variables ==
 #include "SIZE.h"
 
 #include "exf_param.h"
-
-      common /exfl_hflux_r/ hflux0, hflux1
-      _RL hflux0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL hflux1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#include "exf_fields.h"
 
 c     == routine arguments ==
 
       integer mythid
 
+#ifndef ALLOW_ATM_TEMP
 c     == local variables ==
 
       integer bi, bj
@@ -162,5 +148,7 @@ c     == end of interface ==
           enddo
         enddo
       enddo
+
+#endif
 
       end

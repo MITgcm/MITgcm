@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ecco_init.F,v 1.1 2001/05/14 22:10:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ecco_init.F,v 1.2 2002/01/11 19:24:24 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
 
-      subroutine ecco_Init(
+      subroutine ecco_init(
      I                      mythid
      &                    )
 
 c     ==================================================================
-c     SUBROUTINE ecco_Init
+c     SUBROUTINE ecco_init
 c     ==================================================================
 c
 c     o Initialize the ECCO release of the MITgcmUV.
@@ -20,7 +20,7 @@ c
 c     changed: Christian Eckert eckert@mit.edu
 c
 c     ==================================================================
-c     SUBROUTINE ecco_Init
+c     SUBROUTINE ecco_init
 c     ==================================================================
 
       implicit none
@@ -53,10 +53,6 @@ c--   Initialise the cost function.
 
 c--   Initialise the time averages.
       call cost_AveragesInit( mythid )
-#endif
-
-#ifndef INCLUDE_EXTERNAL_FORCING_PACKAGE
-      call ini_forcing( mythid )
 #endif
 
 #endif

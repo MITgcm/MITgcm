@@ -1,12 +1,8 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.2 2001/07/30 20:41:20 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.3 2002/01/11 19:24:24 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
-      subroutine exf_GetFFields(
-     I                           mycurrenttime,
-     I                           mycurrentiter,
-     I                           mythid
-     &                         )
+      subroutine exf_GetFFields( mycurrenttime, mycurrentiter, mythid )
 
 c     ==================================================================
 c     SUBROUTINE exf_GetFFields
@@ -137,6 +133,10 @@ c     == global variables ==
 #include "exf_fields.h"
 #include "exf_constants.h"
 
+#ifdef ALLOW_AUTODIFF_TAMC
+#include "tamc.h"
+#endif
+
 c     == routine arguments ==
 
       integer mythid
@@ -165,18 +165,25 @@ c     == local variables ==
       _RL     re
       _RL     rdn
       _RL     rh
+      _RL     ssttmp
       _RL     ssq
       _RL     stable
-      _RL     tau
       _RL     tstar
       _RL     t0
       _RL     ustar
       _RL     uzn
+      _RL     shn
       _RL     xsq
       _RL     x
+      _RL     tau
       _RL     evap(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#ifdef ALLOW_AUTODIFF_TAMC
+      integer ikey_1
+      integer ikey_2
+#endif
 #endif /* ALLOW_ATM_TEMP */
 
+      _RL     ustmp
       _RL     us
       _RL     cw
       _RL     sw
@@ -207,45 +214,47 @@ c     determine forcing field records
 
 #ifdef ALLOW_BULKFORMULAE
 
+#if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
+      aln = log(ht/zref)
+#endif
+
 c     Determine where we are in time and set counters, flags and
 c     the linear interpolation factors accordingly.
 #ifdef ALLOW_ATM_TEMP
 c     Atmospheric temperature.
-      call exf_set_atemp( atemp
-     &                  , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_atemp( mycurrenttime, mycurrentiter, mythid )
 
 c     Atmospheric humidity.
-      call exf_set_aqh( aqh
-     &                , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_aqh( mycurrenttime, mycurrentiter, mythid )
 
 c     Net long wave radiative flux.
-      call exf_set_lwflux( lwflux
-     &                   , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_lwflux( mycurrenttime, mycurrentiter, mythid )
 
 c     Net short wave radiative flux.
-      call exf_set_swflux( swflux
-     &                   , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_swflux( mycurrenttime, mycurrentiter, mythid )
 
 c     Precipitation.
-      call exf_set_precip( precip
-     &                   , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_precip( mycurrenttime, mycurrentiter, mythid )
 
-      aln = log(ht/zref)
+#ifdef ALLOW_ATEMP_CONTROL
+      call ctrl_getatemp ( mycurrenttime, mycurrentiter, mythid )
+#endif
+
+#ifdef ALLOW_AQH_CONTROL
+      call ctrl_getaqh ( mycurrenttime, mycurrentiter, mythid )
+#endif
 
 #else
 
 c     Atmospheric heat flux.
-      call exf_set_hflux( hflux
-     &                  , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_hflux( mycurrenttime, mycurrentiter, mythid )
 
 c     Salt flux.
-      call exf_set_sflux( sflux
-     &                  , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_sflux( mycurrenttime, mycurrentiter, mythid )
 
 #ifdef ALLOW_KPP
 c     Net short wave radiative flux.
-      call exf_set_swflux( swflux
-     &                   , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_swflux( mycurrenttime, mycurrentiter, mythid )
 
 #endif /* ALLOW_KPP */
 
@@ -253,52 +262,60 @@ c     Net short wave radiative flux.
 
 #ifdef ALLOW_ATM_WIND
 c     Zonal wind.
-      call exf_set_uwind( uwind
-     &                  , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_uwind( mycurrenttime, mycurrentiter, mythid )
 
 c     Meridional wind.
-      call exf_set_vwind( vwind
-     &                  , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_vwind( mycurrenttime, mycurrentiter, mythid )
+
+#ifdef ALLOW_UWIND_CONTROL
+      call ctrl_getuwind ( mycurrenttime, mycurrentiter, mythid )
+#endif
+
+#ifdef ALLOW_VWIND_CONTROL
+      call ctrl_getvwind ( mycurrenttime, mycurrentiter, mythid )
+#endif
 
 #else
 c     Zonal wind stress.
-      call exf_set_ustress( ustress
-     &                    , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_ustress( mycurrenttime, mycurrentiter, mythid )
 
 c     Meridional wind stress.
-      call exf_set_vstress( vstress
-     &                    , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_vstress( mycurrenttime, mycurrentiter, mythid )
 
 #endif /* ALLOW_ATM_WIND */
 
 #else /* ALLOW_BULKFORMULAE undefined */
 c     Atmospheric heat flux.
-      call exf_set_hflux( hflux
-     &                  , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_hflux( mycurrenttime, mycurrentiter, mythid )
 
 c     Salt flux.
-      call exf_set_sflux( sflux
-     &                  , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_sflux( mycurrenttime, mycurrentiter, mythid )
 
 c     Zonal wind stress.
-      call exf_set_ustress( ustress
-     &                    , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_ustress( mycurrenttime, mycurrentiter, mythid )
 
 c     Meridional wind stress.
-      call exf_set_vstress( vstress
-     &                    , mycurrenttime, mycurrentiter, mythid )
+      call exf_set_vstress( mycurrenttime, mycurrentiter, mythid )
 
 #ifdef ALLOW_KPP
 c     Net short wave radiative flux.
-      call exf_set_swflux( swflux
-     &                   , mycurrenttime, mycurrentiter, mythid )
-#endif /* ALLOW_KPP */
+      call exf_set_swflux( mycurrenttime, mycurrentiter, mythid )
+#endif
 
 #endif /* ALLOW_BULKFORMULAE */
 
 c     Loop over tiles.
+#ifdef ALLOW_AUTODIFF_TAMC
+C--   HPF directive to help TAMC
+CHPF$ INDEPENDENT
+#endif /* ALLOW_AUTODIFF_TAMC */
       do bj = mybylo(mythid),mybyhi(mythid)
+#ifdef ALLOW_AUTODIFF_TAMC
+C--    HPF directive to help TAMC
+CHPF$  INDEPENDENT
+#endif
         do bi = mybxlo(mythid),mybxhi(mythid)
+
           k = 1
 
           do j = 1-oly,sny+oly
@@ -306,17 +323,36 @@ c     Loop over tiles.
 
 #ifdef ALLOW_BULKFORMULAE
 
+#ifdef ALLOW_AUTODIFF_TAMC
+               act1 = bi - myBxLo(myThid)
+               max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+               act2 = bj - myByLo(myThid)
+               max2 = myByHi(myThid) - myByLo(myThid) + 1
+               act3 = myThid - 1
+               max3 = nTx*nTy
+               act4 = ikey_dynamics - 1
+
+               ikey_1 = i
+     &              + sNx*(j-1)
+     &              + sNx*sNy*act1
+     &              + sNx*sNy*max1*act2
+     &              + sNx*sNy*max1*max2*act3
+     &              + sNx*sNy*max1*max2*max3*act4
+#endif
+
 c             Compute the turbulent surface fluxes.
 c                  (Bulk formulae estimates)
 
 #ifdef ALLOW_ATM_WIND
 c             Wind speed and direction.
-              us = sqrt(uwind(i,j,bi,bj)*uwind(i,j,bi,bj) +
-     &                  vwind(i,j,bi,bj)*vwind(i,j,bi,bj))
-              if ( us .ne. 0. _d 0 ) then
+              ustmp = uwind(i,j,bi,bj)*uwind(i,j,bi,bj) +
+     &                vwind(i,j,bi,bj)*vwind(i,j,bi,bj)
+              if ( ustmp .ne. 0. _d 0 ) then
+                us = sqrt(ustmp)
                 cw = uwind(i,j,bi,bj)/us
                 sw = vwind(i,j,bi,bj)/us
               else
+                us = 0. _d 0
                 cw = 0. _d 0
                 sw = 0. _d 0
               endif
@@ -324,17 +360,23 @@ c             Wind speed and direction.
 #else
 #ifdef ALLOW_ATM_TEMP
 
-c             The variables us, sh and rdn have to be computed from given
-c             wind stresses inverting relationship for neutral drag coeff.
-c             cdn.
+c             The variables us, sh and rdn have to be computed from
+c             given wind stresses inverting relationship for neutral
+c             drag coeff. cdn.
 c             The inversion is based on linear and quadratic form of
 c             cdn(umps); ustar can be directly computed from stress;
 
-              ustar = sqrt(ustress(i,j,bi,bj)*ustress(i,j,bi,bj) + 
-     &                     vstress(i,j,bi,bj)*vstress(i,j,bi,bj))/
-     &                    atmrho
-              cw = ustress(i,j,bi,bj)/ustar
-              sw = ustress(i,j,bi,bj)/ustar
+              ustmp = ustress(i,j,bi,bj)*ustress(i,j,bi,bj) + 
+     &                vstress(i,j,bi,bj)*vstress(i,j,bi,bj)
+              if ( ustmp .ne. 0. _d 0 ) then
+                ustar = sqrt(ustmp/atmrho)
+                cw = ustress(i,j,bi,bj)/sqrt(ustmp)
+                sw = vstress(i,j,bi,bj)/sqrt(ustmp)
+              else
+                 ustar = 0. _d 0
+                 cw    = 0. _d 0
+                 sw    = 0. _d 0
+              endif
 
               if ( ustar .eq. 0. _d 0 ) then
                 us = 0. _d 0
@@ -362,6 +404,7 @@ c             cdn(umps); ustar can be directly computed from stress;
 #endif /* ALLOW_ATM_WIND */
 
 #ifdef ALLOW_ATM_TEMP
+
 c             Initial guess: z/l=0.0; hu=ht=hq=z
 c             Iterations:    converge on z/l and hence the fluxes.
 c             t0     : virtual temperature (K)
@@ -371,19 +414,42 @@ c             deltap : potential temperature diff (K)
               if ( atemp(i,j,bi,bj) .ne. 0. _d 0 ) then
                 t0     = atemp(i,j,bi,bj)*
      &                   (exf_one + humid_fac*aqh(i,j,bi,bj))
+                ssttmp = theta(i,j,k,bi,bj)
                 ssq    = saltsat*
-     &                   exf_BulkqSat(theta(i,j,1,bi,bj) + cen2kel)/
+     &                   exf_BulkqSat(ssttmp + cen2kel)/
      &                   atmrho
                 deltap = atemp(i,j,bi,bj)   + gamma_blk*ht -
-     &                   theta(i,j,1,bi,bj) - cen2kel
+     &                   ssttmp - cen2kel
                 delq   = aqh(i,j,bi,bj) - ssq
                 stable = exf_half + sign(exf_half, deltap)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE sh     = comlev1_exf_1, key = ikey_1
+#endif
                 rdn    = sqrt(exf_BulkCdn(sh))
                 ustar  = rdn*sh
                 tstar  = exf_BulkRhn(stable)*deltap 
                 qstar  = cdalton*delq 
 
                 do iter = 1,niter_bulk
+
+#ifdef ALLOW_AUTODIFF_TAMC
+                   ikey_2 = iter
+     &                  + niter_bulk*(i-1)
+     &                  + sNx*niter_bulk*(j-1)
+     &                  + sNx*niter_bulk*sNy*act1
+     &                  + sNx*niter_bulk*sNy*max1*act2
+     &                  + sNx*niter_bulk*sNy*max1*max2*act3
+     &                  + sNx*niter_bulk*sNy*max1*max2*max3*act4
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE rdn    = comlev1_exf_2, key = ikey_2
+CADJ STORE ustar  = comlev1_exf_2, key = ikey_2
+CADJ STORE qstar  = comlev1_exf_2, key = ikey_2
+CADJ STORE tstar  = comlev1_exf_2, key = ikey_2
+CADJ STORE sh     = comlev1_exf_2, key = ikey_2
+CADJ STORE us     = comlev1_exf_2, key = ikey_2
+#endif
 
                   huol   = czol*(tstar/t0 +
      &                     qstar/(exf_one/humid_fac+aqh(i,j,bi,bj)))/
@@ -406,12 +472,15 @@ c                 Evaluate all stability functions assuming hq = ht.
      &                     exf_two*log((exf_one + xsq)/exf_two)
 
 c                 Shift wind speed using old coefficient
-c                 rd   = rdn/(exf_one + rdn/karman*(log(hu/zref) - psimh) )
+ccc                  rd   = rdn/(exf_one + rdn/karman*
+ccc     &                 (log(hu/zref) - psimh) )
                   rd   = rdn/(exf_one - rdn/karman*psimh )
-                  uzn  = max(sh*rd/rdn, umin)
+                  shn  = sh*rd/rdn
+                  uzn  = max(shn, umin)
 
 c                 Update the transfer coefficients at 10 meters
 c                 and neutral stability.
+
                   rdn = sqrt(exf_BulkCdn(uzn))
 
 c                 Shift all coefficients to the measurement height
@@ -428,11 +497,20 @@ c                 coefficients.
                   ustar = rd*sh  
                   qstar = re*delq 
                   tstar = rh*deltap
+                  tau   = atmrho*ustar**2
+                  tau   = tau*us/sh
 
                 enddo
 
-                tau                = atmrho*ustar**2   
-                tau                = tau*us/sh
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ustar  = comlev1_exf_1, key = ikey_1
+CADJ STORE qstar  = comlev1_exf_1, key = ikey_1
+CADJ STORE tstar  = comlev1_exf_1, key = ikey_1
+CADJ STORE tau    = comlev1_exf_1, key = ikey_1
+CADJ STORE cw     = comlev1_exf_1, key = ikey_1
+CADJ STORE sw     = comlev1_exf_1, key = ikey_1
+#endif
+
                 hs(i,j,bi,bj)      = atmcp*tau*tstar/ustar
                 hl(i,j,bi,bj)      = flamb*tau*qstar/ustar
 
@@ -464,7 +542,6 @@ ce     &                             flamb*tau*qstar/ustar
       enddo
 
 c     Add all contributions.
-      k = 1
       do bj = mybylo(mythid),mybyhi(mythid)
         do bi = mybxlo(mythid),mybxhi(mythid)
           do j = 1,sny
@@ -479,14 +556,14 @@ c             Net surface heat flux.
               hfl = hfl + swflux(i,j,bi,bj)
 #endif /* ALLOW_KPP undef */
 c             Heat flux:
-              hflux(i,j,bi,bj) = hfl*maskc(i,j,k,bi,bj)
+              hflux(i,j,bi,bj) = hfl*maskc(i,j,1,bi,bj)
 c             Salt flux from Precipitation and Evaporation.
               sflux(i,j,bi,bj) = precip(i,j,bi,bj) - evap(i,j,bi,bj)
 #endif /* ALLOW_ATM_TEMP */
 
 #else
-              hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskc(i,j,k,bi,bj)
-              sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskc(i,j,k,bi,bj)
+              hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskc(i,j,1,bi,bj)
+              sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskc(i,j,1,bi,bj)
 #endif /* ALLOW_BULKFORMULAE */
             enddo
           enddo

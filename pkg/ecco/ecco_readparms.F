@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.2 2001/07/13 13:42:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.3 2002/01/11 19:24:24 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -113,8 +113,7 @@ C--   Initialise the calendar package.
 C--   Custom routine to set forcing fields.
 #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
       call exf_readparms  ( mythid )
-      call exf_init( mythid )
-#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+#endif
 
 #ifdef ALLOW_ECCO_OPTIMIZATION
 c--   Initialise the optimization-related parts of the ECCO State

@@ -1,11 +1,6 @@
 #include "EXF_CPPOPTIONS.h"
 
-      subroutine exf_set_sflux(
-     O                            sflux
-     I                          , mycurrenttime
-     I                          , mycurrentiter
-     I                          , mythid
-     &                          )
+      subroutine exf_set_sflux( mycurrenttime, mycurrentiter, mythid )
 
 c     ==================================================================
 c     SUBROUTINE exf_set_sflux
@@ -14,6 +9,7 @@ c
 c     o set external forcing sflux
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
+c     changed: heimbach@mit.edu 10-Jan-2002
 
 c     ==================================================================
 c     SUBROUTINE exf_set_sflux
@@ -29,14 +25,11 @@ c     == global variables ==
 
 #include "exf_param.h"
 #include "exf_constants.h"
+#include "exf_fields.h"
 
-      common /exfl_sflux_r/ sflux0, sflux1
-      _RL sflux0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL sflux1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-
+#ifndef ALLOW_ATM_TEMP
 c     == routine arguments ==
 
-      _RL     sflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     mycurrenttime
       integer mycurrentiter
       integer mythid
@@ -60,9 +53,7 @@ c     get record numbers and interpolation factor for sflux
      I                     , mycurrenttime, mycurrentiter, mythid
      &                     )
 
-#ifndef ALLOW_AUTODIFF_TAMC
       if ( first ) then
-#endif
         call mdsreadfield( sfluxfile, exf_iprec, exf_yftype, 1
      &                   , sflux1, count0, mythid
      &                   )
@@ -71,13 +62,9 @@ c     get record numbers and interpolation factor for sflux
         else
            call exf_filter_rs( sflux1, sfluxmask, mythid )
         end if
-#ifndef ALLOW_AUTODIFF_TAMC
       endif
-#endif
 
-#ifndef ALLOW_AUTODIFF_TAMC
       if (( first ) .or. ( changed )) then
-#endif
         call exf_SwapFFields( sflux0, sflux1, mythid )
 
         call mdsreadfield( sfluxfile, exf_iprec, exf_yftype, 1
@@ -88,9 +75,7 @@ c     get record numbers and interpolation factor for sflux
         else
            call exf_filter_rs( sflux1, sfluxmask, mythid )
         end if
-#ifndef ALLOW_AUTODIFF_TAMC
       endif
-#endif
 
 c     Loop over tiles.
       do bj = mybylo(mythid),mybyhi(mythid)
@@ -108,13 +93,13 @@ c             Interpolate linearly onto the current time.
         enddo
       enddo
 
+#endif
+
       end
 
 
 
-      subroutine exf_init_sflux(
-     I                             mythid
-     &                           )
+      subroutine exf_init_sflux( mythid )
 
 c     ==================================================================
 c     SUBROUTINE exf_init_sflux
@@ -123,6 +108,7 @@ c
 c     o 
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
+c     changed: heimbach@mit.edu 10-Jan-2002
 c
 c     ==================================================================
 c     SUBROUTINE exf_init_sflux
@@ -136,15 +122,13 @@ c     == global variables ==
 #include "SIZE.h"
 
 #include "exf_param.h"
-
-      common /exfl_sflux_r/ sflux0, sflux1
-      _RL sflux0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL sflux1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#include "exf_fields.h"
 
 c     == routine arguments ==
 
       integer mythid
 
+#ifndef ALLOW_ATM_TEMP
 c     == local variables ==
 
       integer bi, bj
@@ -162,5 +146,7 @@ c     == end of interface ==
           enddo
         enddo
       enddo
+
+#endif
 
       end

@@ -1,11 +1,6 @@
 #include "EXF_CPPOPTIONS.h"
 
-      subroutine exf_set_ustress(
-     O                            ustress
-     I                          , mycurrenttime
-     I                          , mycurrentiter
-     I                          , mythid
-     &                          )
+      subroutine exf_set_ustress( mycurrenttime, mycurrentiter, mythid )
 
 c     ==================================================================
 c     SUBROUTINE exf_set_ustress
@@ -14,6 +9,7 @@ c
 c     o set external forcing ustress
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
+c     changed: heimbach@mit.edu 10-Jan-2002
 
 c     ==================================================================
 c     SUBROUTINE exf_set_ustress
@@ -29,18 +25,15 @@ c     == global variables ==
 
 #include "exf_param.h"
 #include "exf_constants.h"
-
-      common /exfl_ustress_r/ ustress0, ustress1
-      _RL ustress0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL ustress1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#include "exf_fields.h"
 
 c     == routine arguments ==
 
-      _RL     ustress(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     mycurrenttime
       integer mycurrentiter
       integer mythid
 
+#ifndef ALLOW_ATM_WIND
 c     == local variables ==
 
       logical first, changed
@@ -60,9 +53,7 @@ c     get record numbers and interpolation factor for ustress
      I                     , mycurrenttime, mycurrentiter, mythid
      &                     )
 
-#ifndef ALLOW_AUTODIFF_TAMC
       if ( first ) then
-#endif
         call mdsreadfield( ustressfile, exf_iprec, exf_yftype, 1
      &                   , ustress1, count0, mythid
      &                   )
@@ -71,13 +62,9 @@ c     get record numbers and interpolation factor for ustress
         else
            call exf_filter_rs( ustress1, ustressmask, mythid )
         end if
-#ifndef ALLOW_AUTODIFF_TAMC
       endif
-#endif
 
-#ifndef ALLOW_AUTODIFF_TAMC
       if (( first ) .or. ( changed )) then
-#endif
         call exf_SwapFFields( ustress0, ustress1, mythid )
 
         call mdsreadfield( ustressfile, exf_iprec, exf_yftype, 1
@@ -88,9 +75,7 @@ c     get record numbers and interpolation factor for ustress
         else
            call exf_filter_rs( ustress1, ustressmask, mythid )
         end if
-#ifndef ALLOW_AUTODIFF_TAMC
       endif
-#endif
 
 c     Loop over tiles.
       do bj = mybylo(mythid),mybyhi(mythid)
@@ -108,13 +93,13 @@ c             Interpolate linearly onto the current time.
         enddo
       enddo
 
+#endif
+
       end
 
 
 
-      subroutine exf_init_ustress(
-     I                             mythid
-     &                           )
+      subroutine exf_init_ustress( mythid )
 
 c     ==================================================================
 c     SUBROUTINE exf_init_ustress
@@ -123,6 +108,7 @@ c
 c     o 
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
+c     changed: heimbach@mit.edu 10-Jan-2002
 c
 c     ==================================================================
 c     SUBROUTINE exf_init_ustress
@@ -136,15 +122,13 @@ c     == global variables ==
 #include "SIZE.h"
 
 #include "exf_param.h"
-
-      common /exfl_ustress_r/ ustress0, ustress1
-      _RL ustress0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL ustress1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#include "exf_fields.h"
 
 c     == routine arguments ==
 
       integer mythid
 
+#ifndef ALLOW_ATM_WIND
 c     == local variables ==
 
       integer bi, bj
@@ -162,5 +146,7 @@ c     == end of interface ==
           enddo
         enddo
       enddo
+
+#endif
 
       end
