@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.10 2001/09/27 18:06:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.11 2001/09/27 20:12:10 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -208,15 +208,11 @@ CHPF$&                  )
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-
           act2 = bj - myByLo(myThid)
           max2 = myByHi(myThid) - myByLo(myThid) + 1
-
           act3 = myThid - 1
           max3 = nTx*nTy
-
           act4 = ikey_dynamics - 1
-
           ikey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
@@ -260,8 +256,12 @@ C This is currently also used by IVDC and Diagnostics
 
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+#ifdef ALLOW_KPP
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Start of diagnostic loop
@@ -338,7 +338,7 @@ C--     end of diagnostic k loop (Nr:1)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph avoids recomputation of integrate_for_w
-CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  ALLOW_OBCS
@@ -415,7 +415,6 @@ C--     Compute KPP mixing coefficients
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE KPPghat   (:,:,:,bi,bj)
-CADJ &   , KPPviscAz (:,:,:,bi,bj) 
 CADJ &   , KPPdiffKzT(:,:,:,bi,bj)
 CADJ &   , KPPdiffKzS(:,:,:,bi,bj)
 CADJ &   , KPPfrac   (:,:  ,bi,bj)
@@ -425,14 +424,14 @@ CADJ &                 = comlev1_bibj, key=ikey, byte=isbyte
 #endif  /* ALLOW_KPP */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KappaRT(:,:,:)     = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE KappaRS(:,:,:)     = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE KappaRT(:,:,:)     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE KappaRS(:,:,:)     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 #ifdef ALLOW_PASSIVE_TRACER
-CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -448,23 +447,27 @@ C note(jmc) : phiHyd=0 at this point but is not really used in Molteni Physics
 
 C--     Some advection schemes are better calculated using a multi-dimensional
 C       method in the absence of any other terms and, if used, is done here.
+
+#ifdef ALLOW_MULTIDIM_ADVECTION
         IF (multiDimAdvection) THEN
          IF (tempStepping .AND.
      &       tempAdvScheme.NE.ENUM_CENTERED_2ND .AND.
      &       tempAdvScheme.NE.ENUM_UPWIND_3RD .AND.
-     &       tempAdvScheme.NE.ENUM_CENTERED_4TH )
-     &   CALL GAD_ADVECTION(bi,bj,tempAdvScheme,GAD_TEMPERATURE,theta,
-     U                      gT,
+     &       tempAdvScheme.NE.ENUM_CENTERED_4TH ) THEN
+          CALL GAD_ADVECTION(bi,bj,tempAdvScheme,GAD_TEMPERATURE,
+     U                      theta,gT,
      I                      myTime,myIter,myThid)
+         ENDIF
          IF (saltStepping .AND.
      &       saltAdvScheme.NE.ENUM_CENTERED_2ND .AND.
      &       saltAdvScheme.NE.ENUM_UPWIND_3RD .AND.
-     &       saltAdvScheme.NE.ENUM_CENTERED_4TH )
-     &   CALL GAD_ADVECTION(bi,bj,saltAdvScheme,GAD_SALINITY,salt,
-     U                      gS,
+     &       saltAdvScheme.NE.ENUM_CENTERED_4TH ) THEN
+          CALL GAD_ADVECTION(bi,bj,saltAdvScheme,GAD_SALINITY,
+     U                      salt,gS,
      I                      myTime,myIter,myThid)
+         ENDIF
         ENDIF
-
+#endif /* ALLOW_MULTIDIM_ADVECTION */
 
 C--     Start of thermodynamics loop
         DO k=Nr,1,-1
@@ -525,7 +528,6 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
            CALL TIMESTEP_TRACER(
      I         bi,bj,iMin,iMax,jMin,jMax,k,tempAdvScheme,
      I         theta, gT,
-     U         gTnm1,
      I         myIter, myThid)
          ENDIF
          IF ( saltStepping ) THEN
@@ -538,7 +540,6 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
            CALL TIMESTEP_TRACER(
      I         bi,bj,iMin,iMax,jMin,jMax,k,saltAdvScheme,
      I         salt, gS,
-     U         gSnm1,
      I         myIter, myThid)
          ENDIF
 #ifdef ALLOW_PASSIVE_TRACER
@@ -552,7 +553,6 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
            CALL TIMESTEP_TRACER(
      I         bi,bj,iMin,iMax,jMin,jMax,k,tracerAdvScheme,
      I         Tr1, gTr1,
-     U         gTr1NM1,
      I         myIter,myThid)
          ENDIF
 #endif
@@ -567,7 +567,7 @@ C--      Apply open boundary conditions
 C--      Freeze water
          IF (allowFreezing) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gTNm1(:,:,k,bi,bj) = comlev1_bibj_k
+CADJ STORE gT(:,:,k,bi,bj) = comlev1_bibj_k
 CADJ &   , key = kkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, k, myThid )
@@ -593,7 +593,7 @@ C--     Implicit diffusion
          IF (tempStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
             idkey = iikey + 1
-CADJ STORE gTNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
+CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -605,7 +605,7 @@ CADJ STORE gTNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
          IF (saltStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
          idkey = iikey + 2
-CADJ STORE gSNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
+CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -617,7 +617,7 @@ CADJ STORE gSNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #ifdef ALLOW_PASSIVE_TRACER
          IF (tr1Stepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gTr1Nm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
+CADJ STORE gTr1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I      bi, bj, iMin, iMax, jMin, jMax,

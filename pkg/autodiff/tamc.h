@@ -1,7 +1,7 @@
 
-c     ==================================================================
+c     ================================================================
 c     HEADER TAMC
-c     ==================================================================
+c     ================================================================
 c
 c     o Header for the use of the Tangent Linear and Adjoint Model
 c       Compiler (TAMC).
@@ -14,9 +14,9 @@ c                common blocks in the undef ALLOW_TAMC_CHECKPOINTING case
 c              - nhreads_chkpt was declared at the wrong place
 c
 c
-c     ==================================================================
+c     ================================================================
 c     HEADER TAMC
-c     ==================================================================
+c     ================================================================
 
 
 c     TAMC checkpointing parameters:
@@ -55,37 +55,20 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
       parameter ( nthreads_chkpt = 1 )
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
-#ifdef ALLOW_YMDS_TREE
-
-      integer nchklev_1
-      integer nchklev_2
-      integer nchklev_3
-
-      parameter( nchklev_1 =     4 )
-      parameter( nchklev_2 =     6 )
-      parameter( nchklev_3 =     1 )
-
-ce    --> Set lengths of common blocks.
-ce        e.g. parameter( nklev3_1 = nsx*nsy    ) for common /comlev3_1/
-ce             parameter( nklev3_2 = nsx*nsy*nr ) for common /comlev3_2/
-ce        etc.
-#else /* ALLOW_YMDS_TREE undefined */
 
       integer    nchklev_1
-      parameter( nchklev_1      =  24 )
+      parameter( nchklev_1      =  36 )
       integer    nchklev_2
       parameter( nchklev_2      =  30 )
       integer    nchklev_3
-      parameter( nchklev_3      =  12 )
+      parameter( nchklev_3      =  60 )
 
 c--   Note always check for the correct sizes of the common blocks!
-
-#endif /* ALLOW_YMDS_TREE */
 
 #else /* ALLOW_TAMC_CHECKPOINTING undefined */
 
       integer    nchklev_0
-      parameter( nchklev_0      =  48 )
+      parameter( nchklev_0      =  64800 )
 
 #endif /* ALLOW_TAMC_CHECKPOINTING */
 
@@ -118,13 +101,15 @@ c     and writing data.
       PARAMETER( isbyte = 4 )
       INTEGER    maximpl
       PARAMETER( maximpl = 6 )
+      INTEGER    maxpass
+      PARAMETER( maxpass = 3 )
 
       INTEGER act1, act2, act3, act4
       INTEGER max1, max2, max3
-      INTEGER iikey, kkey
+      INTEGER iikey, kkey, passkey
 
-c     ==================================================================
+c     ================================================================
 c     END OF HEADER TAMC
-c     ==================================================================
+c     ================================================================
 
 

@@ -101,10 +101,12 @@ c     and writing data.
       PARAMETER( isbyte = 4 )
       INTEGER    maximpl
       PARAMETER( maximpl = 6 )
+      INTEGER    maxpass
+      PARAMETER( maxpass = 3 )
 
       INTEGER act1, act2, act3, act4
       INTEGER max1, max2, max3
-      INTEGER iikey, kkey
+      INTEGER iikey, kkey, passkey
 
 c     ================================================================
 c     END OF HEADER TAMC

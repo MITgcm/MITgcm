@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.82 2001/09/26 18:09:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.83 2001/09/27 20:12:10 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -260,15 +260,11 @@ CHPF$&                  )
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-
           act2 = bj - myByLo(myThid)
           max2 = myByHi(myThid) - myByLo(myThid) + 1
-
           act3 = myThid - 1
           max3 = nTx*nTy
-
           act4 = ikey_dynamics - 1
-
           ikey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
@@ -291,8 +287,6 @@ C--     Start computation of dynamics
         jMax = sNy+OLy-1
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
-CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -305,6 +299,15 @@ C       (note: this loop will be replaced by CALL CALC_GRAD_ETA)
      O         phiSurfX,phiSurfY,
      I         myThid )                         
         ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+#ifdef ALLOW_KPP
+CADJ STORE KPPviscAz (:,:,:,bi,bj) 
+CADJ &                 = comlev1_bibj, key=ikey, byte=isbyte
+#endif /* ALLOW_KPP */
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
 C--      Calculate the total vertical diffusivity

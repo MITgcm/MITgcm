@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.8 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.9 2001/09/27 20:12:11 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -10,7 +10,6 @@ C     !INTERFACE:
      I                     bi, bj, iMin, iMax, jMin, jMax, K,
      I                     advection_scheme,
      I                     tracer, gTracer,
-     O                     gTrNm1,
      I                     myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -35,14 +34,12 @@ C     == Routine Arguments ==
       INTEGER advection_scheme
       _RL  tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  gTrNm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myIter, myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER i,j
       _RL ab15,ab05
-      _RL gTrtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
 C     Adams-Bashforth timestepping weights

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.11 2001/09/19 20:45:09 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.12 2001/09/27 20:12:11 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -104,9 +104,9 @@ C--   the kDown is still required
 #endif
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        fZon(i,j)      = 0.0
-        fMer(i,j)      = 0.0
-        fVerT(i,j,kUp) = 0.0
+        fZon(i,j)      = 0. _d 0
+        fMer(i,j)      = 0. _d 0
+        fVerT(i,j,kUp) = 0. _d 0
        ENDDO
       ENDDO
 
@@ -125,7 +125,7 @@ C     the tendency to zero.
      &    advectionScheme.EQ.ENUM_CENTERED_4TH ) THEN
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         gTracer(i,j,k,bi,bj)=0.
+         gTracer(i,j,k,bi,bj)=0. _d 0
         ENDDO
        ENDDO
       ENDIF
@@ -140,7 +140,7 @@ C--   Pre-calculate del^2 T if bi-harmonic coefficient is non-zero
 C--   Initialize net flux in X direction
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        fZon(i,j) = 0.
+        fZon(i,j) = 0. _d 0
        ENDDO
       ENDDO
 
@@ -180,7 +180,7 @@ C-    Diffusive flux in X
       ELSE
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         df(i,j) = 0.
+         df(i,j) = 0. _d 0
         ENDDO
        ENDDO
       ENDIF
@@ -215,7 +215,7 @@ C-    Bi-harmonic duffusive flux in X
 C--   Initialize net flux in Y direction
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        fMer(i,j) = 0.
+        fMer(i,j) = 0. _d 0
        ENDDO
       ENDDO
 
@@ -255,7 +255,7 @@ C-    Diffusive flux in Y
       ELSE
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         df(i,j) = 0.
+         df(i,j) = 0. _d 0
         ENDDO
        ENDDO
       ENDIF
@@ -286,13 +286,6 @@ C-    Bi-harmonic flux in Y
         ENDDO
        ENDDO
       ENDIF
-
-C--   Initialize net flux in R
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        fVerT(i,j,kUp) = 0.
-       ENDDO
-      ENDDO
 
 C-    Advective flux in R
       IF (.NOT. multiDimAdvection .OR.
@@ -350,7 +343,7 @@ C           boundary condition.
       IF (implicitDiffusion) THEN
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         df(i,j) = 0.
+         df(i,j) = 0. _d 0
         ENDDO
        ENDDO
       ELSE
@@ -390,7 +383,7 @@ C-    Add non local KPP transport term (ghat) to diffusive T flux.
       IF (useKPP) THEN
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         df(i,j) = 0.
+         df(i,j) = 0. _d 0
         ENDDO
        ENDDO
        IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN

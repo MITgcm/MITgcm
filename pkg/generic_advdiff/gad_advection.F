@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.5 2001/09/21 13:11:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.6 2001/09/27 20:12:11 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -66,6 +66,10 @@ C !USES: ===============================================================
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "GAD.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -122,6 +126,19 @@ C  ipass                :: number of the current pass being made
       INTEGER nipass,ipass
 CEOP
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They
 C     just ensure that all memory references are to valid floating
@@ -146,6 +163,10 @@ C     uninitialised but inert locations.
 
 C--   Start of k loop for horizontal fluxes
       DO k=1,Nr
+#ifdef ALLOW_AUTODIFF_TAMC 
+         kkey = (ikey-1)*Nr + k
+CADJ STORE tracer(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Get temporary terms used by tendency routines
       CALL CALC_COMMON_FACTORS (
@@ -165,10 +186,17 @@ C--   Make local copy of tracer array
       ELSE
        nipass=1
       ENDIF
-       nipass=1
+cph       nipass=1
 
 C--   Multiple passes for different directions on different tiles
       DO ipass=1,nipass
+#ifdef ALLOW_AUTODIFF_TAMC
+         passkey = ipass + (k-1)   *maxpass
+     &                   + (ikey-1)*maxpass*Nr
+         IF (nipass .GT. maxpass) THEN
+          STOP 'GAD_ADVECTION: nipass > maxpass. check tamc.h'
+         ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (nipass.EQ.3) THEN
        calc_fluxes_X=.FALSE.
@@ -212,6 +240,13 @@ C-    Advective flux in X
         af(i,j) = 0.
        ENDDO
       ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_MULTIDIM_ADVECTION
+CADJ STORE localTij(:,:)  = comlev1_bibj_pass, key=passkey, byte=isbyte
+#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
       IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
        CALL GAD_FLUXLIMIT_ADV_X(
      &      bi,bj,k,deltaTtracer,uTrans,uVel,localTij,af,myThid)
@@ -224,6 +259,7 @@ C-    Advective flux in X
       ELSE
        STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
       ENDIF
+
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx-1
         localTij(i,j)=localTij(i,j)-deltaTtracer*
@@ -270,6 +306,13 @@ C-    Advective flux in Y
         af(i,j) = 0.
        ENDDO
       ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef ALLOW_MULTIDIM_ADVECTION
+CADJ STORE localTij(:,:)  = comlev1_bibj_pass, key=passkey, byte=isbyte
+#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
       IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
        CALL GAD_FLUXLIMIT_ADV_Y(
      &       bi,bj,k,deltaTtracer,vTrans,vVel,localTij,af,myThid)
@@ -282,6 +325,7 @@ C-    Advective flux in Y
       ELSE
        STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
       ENDIF
+
       DO j=1-Oly,sNy+Oly-1
        DO i=1-Olx,sNx+Olx
         localTij(i,j)=localTij(i,j)-deltaTtracer*
@@ -321,6 +365,9 @@ C--   End of K loop for horizontal fluxes
 
 C--   Start of k loop for vertical flux
       DO k=Nr,1,-1
+#ifdef ALLOW_AUTODIFF_TAMC 
+         kkey = (ikey-1)*Nr + k
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   kup    Cycles through 1,2 to point to w-layer above
 C--   kDown  Cycles through 2,1 to point to w-layer below
@@ -339,6 +386,11 @@ C-    Advective flux in R
         af(i,j) = 0.
        ENDDO
       ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC 
+CADJ STORE localTijk(:,:,k)  
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Note: wVel needs to be masked 
       IF (K.GE.2) THEN

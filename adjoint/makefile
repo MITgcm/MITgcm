@@ -7,11 +7,12 @@ DEST             = .
 SOURCE_CODE      = ../bin
 ADJOINT_SCRIPT   = ../adjoint
 BASE             = ..
-ADTAMCFLAGS      = -reverse -i4 -r4 -admark  ad
-ADTAFFLAGS       = -reverse -i4 -r4 -admark  ad -warn_step -flow taf_flow.log
-TLTAMCFLAGS      = -forward -i4 -r4 -ftlmark g_
-TLTAFFLAGS       = -forward -i4 -r4 -ftlmark g_ -warn_step -flow taf_flow.log
 PKG		= $(BASE)/pkg
+ADTAMCFLAGS      = -reverse -i4 -r4 -admark  ad
+ADTAFFLAGS       = -reverse -i4 -r4 -admark  ad
+TLTAMCFLAGS      = -forward -i4 -r4 -ftlmark g_
+TLTAFFLAGS       = -forward -i4 -r4 -ftlmark g_
+# -warn_step -flow taf_flow.log
 
 DIFF_FLAGS       = -toplevel the_main_loop		\
 		   -input  '    xx_theta_dummy		\
@@ -88,6 +89,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/find_rho.f			\
 		$(SOURCE_CODE)/forward_step.f			\
 		$(SOURCE_CODE)/freeze.f				\
+								\
 		$(SOURCE_CODE)/gad_advection.f			\
 		$(SOURCE_CODE)/gad_biharm_x.f			\
 		$(SOURCE_CODE)/gad_biharm_y.f			\
@@ -116,6 +118,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/gad_u3_adv_r.f			\
 		$(SOURCE_CODE)/gad_u3_adv_x.f			\
 		$(SOURCE_CODE)/gad_u3_adv_y.f			\
+								\
 		$(SOURCE_CODE)/grad_sigma.f			\
 		$(SOURCE_CODE)/impldiff.f			\
 		$(SOURCE_CODE)/ini_cartesian_grid.f		\
@@ -144,6 +147,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/initialise_varia.f		\
 		$(SOURCE_CODE)/integrate_for_w.f		\
 		$(SOURCE_CODE)/modeldata_example.f		\
+								\
 		$(SOURCE_CODE)/mom_fluxform.f			\
 		$(SOURCE_CODE)/mom_hdissip.f			\
 		$(SOURCE_CODE)/mom_vecinv.f			\
@@ -187,6 +191,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/mom_vi_v_coriolis.f		\
 		$(SOURCE_CODE)/mom_vi_v_grad_ke.f		\
 		$(SOURCE_CODE)/mom_vi_v_vertshear.f		\
+		  						\
 		$(SOURCE_CODE)/packages_init_variables.f	\
 		$(SOURCE_CODE)/plot_field.f			\
 		$(SOURCE_CODE)/solve_for_pressure.f		\

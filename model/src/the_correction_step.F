@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.14 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.15 2001/09/27 20:12:10 heimbach Exp $
 C Tag $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -77,15 +77,11 @@ CEOP
 #ifdef ALLOW_AUTODIFF_TAMC
           act1 = bi - myBxLo(myThid)
           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
-
           act2 = bj - myByLo(myThid)
           max2 = myByHi(myThid) - myByLo(myThid) + 1
-
           act3 = myThid - 1
           max3 = nTx*nTy
-
           act4 = ikey_dynamics - 1
-
           ikey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
@@ -151,6 +147,9 @@ CADJ STORE uvel (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE vvel (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#ifdef ALLOW_PASSIVE_TRACER
+CADJ STORE tr1  (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
           IF (useOBCS) THEN
             CALL OBCS_APPLY_UV(bi,bj,K,uVel,vVel,myThid)
