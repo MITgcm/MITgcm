@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.20 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.21 2003/12/06 00:08:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,13 +52,21 @@ C     number of surface interface layer
       INTEGER kSurface
 CEOP
 
-      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+      if ( buoyancyRelation .eq. 'AMTMOSPHERIC' ) then
+       kSurface = 0
+      elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
        kSurface = Nr
       else
        kSurface = 1
       endif
 
 C--   Forcing term
+#ifdef ALLOW_AIM
+      IF ( useAIM ) CALL AIM_TENDENCY_APPLY_U(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myCurrentTime, myThid )
+#endif /* ALLOW_AIM */
+
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=jMin,jMax
@@ -125,13 +133,21 @@ C     number of surface interface layer
       INTEGER kSurface
 CEOP
 
-      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+      if ( buoyancyRelation .eq. 'AMTMOSPHERIC' ) then
+       kSurface = 0
+      elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
        kSurface = Nr
       else
        kSurface = 1
       endif
 
 C--   Forcing term
+#ifdef ALLOW_AIM
+      IF ( useAIM ) CALL AIM_TENDENCY_APPLY_V(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myCurrentTime, myThid )
+#endif /* ALLOW_AIM */
+
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=jMin,jMax
@@ -205,13 +221,21 @@ C     number of surface interface layer
       INTEGER kSurface
 CEOP
 
-      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+      if ( buoyancyRelation .eq. 'AMTMOSPHERIC' ) then
+       kSurface = 0
+      elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
        kSurface = Nr
       else
        kSurface = 1
       endif
 
 C--   Forcing term
+#ifdef ALLOW_AIM
+      IF ( useAIM ) CALL AIM_TENDENCY_APPLY_T(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myCurrentTime, myThid )
+#endif /* ALLOW_AIM */
+
 C     Add heat in top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=jMin,jMax
@@ -295,7 +319,9 @@ C     number of surface interface layer
       INTEGER kSurface
 CEOP
 
-      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+      if ( buoyancyRelation .eq. 'AMTMOSPHERIC' ) then
+       kSurface = 0
+      elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
        kSurface = Nr
       else
        kSurface = 1
@@ -303,6 +329,12 @@ CEOP
 
 
 C--   Forcing term
+#ifdef ALLOW_AIM
+      IF ( useAIM ) CALL AIM_TENDENCY_APPLY_S(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myCurrentTime, myThid )
+#endif /* ALLOW_AIM */
+
 C     Add fresh-water in top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=jMin,jMax

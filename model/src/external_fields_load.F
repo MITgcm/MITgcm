@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.15 2003/11/01 04:50:02 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.16 2003/12/06 00:08:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -253,6 +253,13 @@ C endif for periodicForcing
       ENDIF
 
 #endif /* ALLOW_EXF */
+
+#ifdef ALLOW_AIM
+      IF ( useAIM ) THEN
+C      Update AIM bottom boundary data
+       CALL AIM_FIELDS_LOAD( myTime, myIter, myThid )
+      ENDIF
+#endif
 
       RETURN
       END
