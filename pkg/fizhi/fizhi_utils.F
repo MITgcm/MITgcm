@@ -665,6 +665,9 @@ c-----------------------------------------------------------------------
       real VT1(IM,JM)
       integer i
 
+      print *,' In msc2grd ',(igrd(i),i=1,nchp)
+      print *,' In msc2grd ',(chfr(i),i=1,nchp)
+
       IF(NCHP.GE.0) THEN
         DO I=1,IM*JM
          VT1(I,1) = ZERO
@@ -673,6 +676,8 @@ c-----------------------------------------------------------------------
         DO I=1,NCHP
          VT1(IGRD(I),1) = VT1(IGRD(I),1) + B(I)*CHFR(I)
         ENDDO
+
+        stop
 
         DO I=1,IM*JM
          A(I,1) = A(I,1)*(ONE-FRACG(I,1)) + VT1(I,1)

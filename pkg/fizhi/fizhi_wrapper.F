@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.12 2004/07/16 16:11:36 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.13 2004/07/23 22:32:28 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -115,7 +115,7 @@ c Compute physics increments
      .  tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,snodep,capac,
      .  o3,qstr,co2,cfc11,cfc12,cfc22,n2o,methane,
      .  idim1,idim2,jdim1,jdim2,Nrphys,Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,
-     .  nchp,nchpland,
+     .  nchp,nchptot,nchpland,
      .  duphy,dvphy,dthphy,dsphy)
        enddo
        enddo

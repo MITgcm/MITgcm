@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.14 2004/07/22 15:56:01 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.15 2004/07/23 22:32:28 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
 
       subroutine fizhi_init_veg(mythid,vegdata,im,jm,Nsx,Nsy,Nxg,Nyg,
-     . maxtyp,nchp,nchpland,lons,lats,surftype,tilefrac,igrd,ityp,chfr,
-     . chlt,chlon)
+     . maxtyp,nchp,nchptot,nchpland,lons,lats,surftype,tilefrac,
+     . igrd,ityp,chfr,chlt,chlon)
 C***********************************************************************
 C Subroutine fizhi_init_veg - routine to read in the land surface types,
 C      interpolate to the models grid, and set up tile space for use by 
@@ -54,7 +54,7 @@ C***********************************************************************
       implicit none
 #include "EEPARAMS.h"
 
-      integer mythid,im,jm,maxtyp,nchp,nchpland,Nsx,Nsy,Nxg,Nyg
+      integer mythid,im,jm,maxtyp,nchp,nchptot,nchpland,Nsx,Nsy,Nxg,Nyg
       integer surftype(im,jm,maxtyp,Nsx,Nsy)
       integer igrd(nchp,Nsx,Nsy),ityp(nchp,Nsx,Nsy)
       _RL tilefrac(im,jm,maxtyp,Nsx,Nsy)
@@ -62,7 +62,7 @@ C***********************************************************************
       _RL chfr(nchp,Nsx,Nsy),chlt(nchp,Nsx,Nsy),chlon(nchp,Nsx,Nsy)
       character*40 vegdata
       integer imdata,jmdata,Nxgdata,Nygdata
-      integer nchplocal,biglobal,bjglobal
+      integer biglobal,bjglobal
 
       integer*4 im_32, jm_32, Nxg_32, Nyg_32
       integer*4 iveg_32(im,jm,maxtyp,Nxg,Nyg)
@@ -160,7 +160,7 @@ c      chfr :  vegetation fraction
 c      chlon:  chip longitude
 c      chlt :  chip latitude
 
-c     nchpland<=nchplocal is the actual number of land chips
+c     nchpland<=nchptot is the actual number of land chips
 
       DO BJ = myByLo(myThid), myByHi(myThid)
         DO BI = myBxLo(myThid), myBxHi(myThid)
@@ -186,28 +186,29 @@ c         -----------
           
 c         ocean points
 c         ------------
-          nchplocal = nchpland
+          nchptot = nchpland
           
           do k=1,maxtyp
             do j=1,jm
               do i=1,im
                 if(surftype(i,j,k,bi,bj).ge.100 .and. 
      .               tilefrac(i,j,k,bi,bj).gt.0.) then
-                  nchplocal  = nchplocal + 1
-                  igrd (nchplocal,bi,bj) = i + (j-1)*im
-                  ityp (nchplocal,bi,bj) = surftype(i,j,k,bi,bj)
-                  chfr (nchplocal,bi,bj) = tilefrac(i,j,k,bi,bj)
-                  chlon(nchplocal,bi,bj) = lons(i,j,bi,bj)
-                  chlt (nchplocal,bi,bj) = lats(i,j,bi,bj)
+                  nchptot  = nchptot + 1
+                  igrd (nchptot,bi,bj) = i + (j-1)*im
+                  ityp (nchptot,bi,bj) = surftype(i,j,k,bi,bj)
+                  chfr (nchptot,bi,bj) = tilefrac(i,j,k,bi,bj)
+                  chlon(nchptot,bi,bj) = lons(i,j,bi,bj)
+                  chlt (nchptot,bi,bj) = lats(i,j,bi,bj)
                 endif
               enddo
             enddo
           enddo
           
-          print *, 'bi ',bi,' bj ',bj
-          print *, 'Number of Total Tiles: ',nchplocal
+          if(bi.eq.1.and.bj.eq.1)then
+          print *, 'Number of Total Tiles: ',nchptot
           print *, 'Number of Land  Tiles: ',nchpland
           print *
+          endif
           
         ENDDO
       ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.12 2004/07/16 20:08:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.13 2004/07/23 22:32:28 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,7 +8,8 @@ C $Name:  $
      2 ,plz,plze,dpres,pkht,pkz,ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke
      3 ,tgz,fracland,landtype
      4 ,tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac
-     5 ,nchp,nchplnd,chfr,chlt,chlon,igrd,ityp,alai,agrn,thkz,tprof
+     5 ,nchp,nchptot,nchplnd,chfr,chlt,chlon,igrd,ityp,alai,agrn,thkz
+     6 ,tprof
      8 ,duturb, dvturb, dtturb,dqturb,radlwg,st4,dst4,radswg,radswt
      9 ,fdifpar,fdirpar,rainlsp,rainconv,snowfall,tempref
      1 ,imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw
@@ -104,7 +105,7 @@ c-----------------------------------------------------------------------
 
       integer im,jm,nlay,istrip,nymd,nhms,bi,bj,ndturb
       integer ntracers, ptracers
-      integer nchp,nchplnd
+      integer nchp,nchptot,nchplnd
       real ptop
       real pz(im,jm),uz(im,jm,nlay),vz(im,jm,nlay),tz(im,jm,nlay)
       real qz(im,jm,nlay,ntracers)
@@ -303,7 +304,7 @@ c **********************************************************************
 
       sum = 0.0
       do L=1,nlay
-      do n=1,nchp
+      do n=1,nchptot
       sum = sum + tke(n,L)
       enddo
       enddo
@@ -344,39 +345,39 @@ c       do conversion of model state variables to tile space
 c        (ocean points appended to tile space land point arrays)
 c **********************************************************************
 
-      numstrips   = ((nchp-1)/istrip) + 1
+      numstrips   = ((nchptot-1)/istrip) + 1
 
-      call grd2msc(pz(1,1),im,jm,igrd,pmsc,nchp,nchp)
-      call grd2msc(tgz,im,jm,igrd,tground,nchp,nchp)
+      call grd2msc(pz(1,1),im,jm,igrd,pmsc,nchp,nchptot)
+      call grd2msc(tgz,im,jm,igrd,tground,nchp,nchptot)
       do i = 1,ijall
        tmpdiag(i,1) = st4(i,1) + dst4(i,1)*(tgz(i,1)-tempref(i,1)) 
      1                         - dst4(i,1)* tgz(i,1)
       enddo
-      call grd2msc(tmpdiag,im,jm,igrd,alwcoeff,nchp,nchp)
+      call grd2msc(tmpdiag,im,jm,igrd,alwcoeff,nchp,nchptot)
       do i = 1,ijall
        tmpdiag(i,1) = dst4(i,1)
       enddo
-      call grd2msc(tmpdiag,im,jm,igrd,blwcoeff,nchp,nchp)
+      call grd2msc(tmpdiag,im,jm,igrd,blwcoeff,nchp,nchptot)
       do i = 1,ijall
        tmpdiag(i,1) = fdifpar(i,1) * radswt(i,1)
       enddo
-      call grd2msc(tmpdiag,im,jm,igrd,pardiff,nchp,nchp)
+      call grd2msc(tmpdiag,im,jm,igrd,pardiff,nchp,nchptot)
       do i = 1,ijall
        tmpdiag(i,1) = fdirpar(i,1) * radswt(i,1)
       enddo
-      call grd2msc(tmpdiag,im,jm,igrd,pardirct,nchp,nchp)
+      call grd2msc(tmpdiag,im,jm,igrd,pardirct,nchp,nchptot)
       do i = 1,ijall
        tmpdiag(i,1) = radswg(i,1) * radswt(i,1)
       enddo
-      call grd2msc(tmpdiag,im,jm,igrd,netsw,nchp,nchp)
+      call grd2msc(tmpdiag,im,jm,igrd,netsw,nchp,nchptot)
       do i = 1,ijall
        tmpdiag(i,1) = radlwg(i,1) + dst4(i,1)*(tgz(i,1)-tempref(i,1))
       enddo
-      call grd2msc(tmpdiag,im,jm,igrd,netlw,nchp,nchp)
-      call grd2msc(thkz,im,jm,igrd,icethk,nchp,nchp)
-      call grd2msc(rainlsp,im,jm,igrd,lsprec,nchp,nchp)
-      call grd2msc(rainconv,im,jm,igrd,cnvprec,nchp,nchp)
-      call grd2msc(snowfall,im,jm,igrd,snowprec,nchp,nchp)
+      call grd2msc(tmpdiag,im,jm,igrd,netlw,nchp,nchptot)
+      call grd2msc(thkz,im,jm,igrd,icethk,nchp,nchptot)
+      call grd2msc(rainlsp,im,jm,igrd,lsprec,nchp,nchptot)
+      call grd2msc(rainconv,im,jm,igrd,cnvprec,nchp,nchptot)
+      call grd2msc(snowfall,im,jm,igrd,snowprec,nchp,nchptot)
 
 C Call chpprm to get non-varying vegetation and soil characteristics
 
@@ -389,14 +390,14 @@ c **********************************************************************
 
 c   set water
 
-      do i = 1,nchp
+      do i = 1,nchptot
        water(i) = 0
        if((ityp(i).eq.100).and.(icethk(i).eq.0. ))water(i) = 1
       enddo
 
 c   roughness length z0
 c
-      do i =1,nchp
+      do i =1,nchptot
        if (icethk(i).gt.0.) then
         z0(i) = 1.e-4
        else if (ityp(i).eq.100) then
@@ -415,7 +416,7 @@ c  (it has sst from the tgz array over the sea ice and ocean tiles)
 
 C value of sh at ground
 C ---------------------
-      do I =1,nchp
+      do I =1,nchptot
       utility(I) = pmsc(i) + ptop
       call qsat ( tground(i),utility(i),shg(i),dqsdt(i),.true. )
       enddo
@@ -426,19 +427,19 @@ c  (it has qstar at tground over the sea ice and ocean tiles)
       do i = 1,nchplnd
        qground(i) = ecanopy(i)
       enddo
-      do i = nchplnd+1,nchp
+      do i = nchplnd+1,nchptot
        qground(i) = shg(i)
       enddo
 
 c Fill Array Swetshal with Value 1. over oceans and sea ice
-      do i = nchplnd+1,nchp
+      do i = nchplnd+1,nchptot
        swetshal(i) = 1.
       enddo
 
 c compute heat conduction through ice
 c -----------------------------------
       const = ( cti / hice ) * cltj10
-      do i =1,nchp
+      do i =1,nchptot
              qice(i) =  0.0
             dqice(i) =  0.0
        if( icethk(i).gt.0.0 ) then
@@ -451,7 +452,7 @@ c -----------------------------------
       do i =1,ijall
       tmpdiag(i,1) = 0.0
       enddo
-      call msc2grd (igrd,chfr,qice,nchp,nchp,fracland,tmpdiag,im,jm)
+      call msc2grd (igrd,chfr,qice,nchp,nchptot,fracland,tmpdiag,im,jm)
       do i =1,ijall
       qdiag(i,1,iqice,bi,bj) = qdiag(i,1,iqice,bi,bj) + tmpdiag(i,1)
       enddo
@@ -478,54 +479,54 @@ c**********************************************************************
      1                                             ijall,istrip,nlay,nn)
        enddo
 
-       call stripit  (z0,stz0,nchp,nchp,istrip,1,nn)
-       call stripit  (tground,th(1,nlay+1),nchp,nchp,istrip,1,nn)
-       call stripit  (pmsc,pe(1,nlay+1),nchp,nchp,istrip,1,nn)
-       call stripit  (tke,qq,nchp,nchp,istrip,nlay-1,nn)
-       call stripit  (ctmt,ctsave,nchp,nchp,istrip,1,nn)
-       call stripit  (xxmt,xxsave,nchp,nchp,istrip,1,nn)
-       call stripit  (yymt,yysave,nchp,nchp,istrip,1,nn)
-       call stripit  (zetamt,zetasave,nchp,nchp,istrip,1,nn)
-       call stripit  (xlmt,xlsave,nchp,nchp,istrip,nlay,nn)
-       call stripit  (khmt,khsave,nchp,nchp,istrip,nlay,nn)
-       call stripitint (water,stwatr,nchp,nchp,istrip,1,nn)
+       call stripit  (z0,stz0,nchptot,nchp,istrip,1,nn)
+       call stripit  (tground,th(1,nlay+1),nchptot,nchp,istrip,1,nn)
+       call stripit  (pmsc,pe(1,nlay+1),nchptot,nchp,istrip,1,nn)
+       call stripit  (tke,qq,nchptot,nchp,istrip,nlay-1,nn)
+       call stripit  (ctmt,ctsave,nchptot,nchp,istrip,1,nn)
+       call stripit  (xxmt,xxsave,nchptot,nchp,istrip,1,nn)
+       call stripit  (yymt,yysave,nchptot,nchp,istrip,1,nn)
+       call stripit  (zetamt,zetasave,nchptot,nchp,istrip,1,nn)
+       call stripit  (xlmt,xlsave,nchptot,nchp,istrip,nlay,nn)
+       call stripit  (khmt,khsave,nchptot,nchp,istrip,nlay,nn)
+       call stripitint (water,stwatr,nchptot,nchp,istrip,1,nn)
 
-       call stripitint (igrd,igrdstr,nchp,nchp,istrip,1,nn)
-       call stripit  (chfr,chfrstr,nchp,nchp,istrip,1,nn)
-       call stripit  (icethk,icest,nchp,nchp,istrip,1,nn)
-       call stripit  (pardiff,pardf,nchp,nchp,istrip,1,nn)
-       call stripit  (pardirct,pardr,nchp,nchp,istrip,1,nn)
-       call stripit  (chlt,lats,nchp,nchp,istrip,1,nn)
-       call stripit  (chlon,lons,nchp,nchp,istrip,1,nn)
-       call stripit  (lsprec,rainls,nchp,nchp,istrip,1,nn)
-       call stripit  (cnvprec,raincon,nchp,nchp,istrip,1,nn)
-       call stripit  (snowprec,newsnow,nchp,nchp,istrip,1,nn)
-       call stripit  (netsw,swnet,nchp,nchp,istrip,1,nn)
-       call stripit  (netlw,lwstrip,nchp,nchp,istrip,1,nn)
-       call stripit  (alwcoeff,alwrad,nchp,nchp,istrip,1,nn)
-       call stripit  (blwcoeff,blwrad,nchp,nchp,istrip,1,nn)
-       call stripit  (alai,laistrip,nchp,nchp,istrip,1,nn)
-       call stripit  (agrn,grnstrip,nchp,nchp,istrip,1,nn)
-       call stripit  (z2ch,z2str,nchp,nchp,istrip,1,nn)
-       call stripit  (sqscat,scatstr,nchp,nchp,istrip,1,nn)
-       call stripit  (rsoil1,rs1str,nchp,nchp,istrip,1,nn)
-       call stripit  (rsoil2,rs2str,nchp,nchp,istrip,1,nn)
-       call stripit  (rdc,rdcstr,nchp,nchp,istrip,1,nn)
-       call stripit  (u2fac,u2fstr,nchp,nchp,istrip,1,nn)
-       call stripit  (shg,shgstr,nchp,nchp,istrip,1,nn)
-       call stripit  (dqsdt,dqsdtstr,nchp,nchp,istrip,1,nn)
-       call stripit  ( qice, qicestr,nchp,nchp,istrip,1,nn)
-       call stripit  (dqice,dqicestr,nchp,nchp,istrip,1,nn)
-       call stripitint (ityp,types,nchp,nchp,istrip,1,nn)
+       call stripitint (igrd,igrdstr,nchptot,nchp,istrip,1,nn)
+       call stripit  (chfr,chfrstr,nchptot,nchp,istrip,1,nn)
+       call stripit  (icethk,icest,nchptot,nchp,istrip,1,nn)
+       call stripit  (pardiff,pardf,nchptot,nchp,istrip,1,nn)
+       call stripit  (pardirct,pardr,nchptot,nchp,istrip,1,nn)
+       call stripit  (chlt,lats,nchptot,nchp,istrip,1,nn)
+       call stripit  (chlon,lons,nchptot,nchp,istrip,1,nn)
+       call stripit  (lsprec,rainls,nchptot,nchp,istrip,1,nn)
+       call stripit  (cnvprec,raincon,nchptot,nchp,istrip,1,nn)
+       call stripit  (snowprec,newsnow,nchptot,nchp,istrip,1,nn)
+       call stripit  (netsw,swnet,nchptot,nchp,istrip,1,nn)
+       call stripit  (netlw,lwstrip,nchptot,nchp,istrip,1,nn)
+       call stripit  (alwcoeff,alwrad,nchptot,nchp,istrip,1,nn)
+       call stripit  (blwcoeff,blwrad,nchptot,nchp,istrip,1,nn)
+       call stripit  (alai,laistrip,nchptot,nchp,istrip,1,nn)
+       call stripit  (agrn,grnstrip,nchptot,nchp,istrip,1,nn)
+       call stripit  (z2ch,z2str,nchptot,nchp,istrip,1,nn)
+       call stripit  (sqscat,scatstr,nchptot,nchp,istrip,1,nn)
+       call stripit  (rsoil1,rs1str,nchptot,nchp,istrip,1,nn)
+       call stripit  (rsoil2,rs2str,nchptot,nchp,istrip,1,nn)
+       call stripit  (rdc,rdcstr,nchptot,nchp,istrip,1,nn)
+       call stripit  (u2fac,u2fstr,nchptot,nchp,istrip,1,nn)
+       call stripit  (shg,shgstr,nchptot,nchp,istrip,1,nn)
+       call stripit  (dqsdt,dqsdtstr,nchptot,nchp,istrip,1,nn)
+       call stripit  ( qice, qicestr,nchptot,nchp,istrip,1,nn)
+       call stripit  (dqice,dqicestr,nchptot,nchp,istrip,1,nn)
+       call stripitint (ityp,types,nchptot,nchp,istrip,1,nn)
 
-       call stripit  (tground,tc,nchp,nchp,istrip,1,nn)
-       call stripit  (tdeep,td,nchp,nchp,istrip,1,nn)
-       call stripit  (qground,qa,nchp,nchp,istrip,1,nn)
-       call stripit  (swetshal,swet1,nchp,nchp,istrip,1,nn)
-       call stripit  (swetroot,swet2,nchp,nchp,istrip,1,nn)
-       call stripit  (swetdeep,swet3,nchp,nchp,istrip,1,nn)
-       call stripit  (snodep,snowdepth,nchp,nchp,istrip,1,nn)
-       call stripit  (capac,capacity,nchp,nchp,istrip,1,nn)
+       call stripit  (tground,tc,nchptot,nchp,istrip,1,nn)
+       call stripit  (tdeep,td,nchptot,nchp,istrip,1,nn)
+       call stripit  (qground,qa,nchptot,nchp,istrip,1,nn)
+       call stripit  (swetshal,swet1,nchptot,nchp,istrip,1,nn)
+       call stripit  (swetroot,swet2,nchptot,nchp,istrip,1,nn)
+       call stripit  (swetdeep,swet3,nchptot,nchp,istrip,1,nn)
+       call stripit  (snodep,snowdepth,nchptot,nchp,istrip,1,nn)
+       call stripit  (capac,capacity,nchptot,nchp,istrip,1,nn)
 
        call astro ( nymd,nhms,lats,lons,istrip,cosz,ra )
 
@@ -625,16 +626,16 @@ c -----------
      6 hsturb,dhsdqa,dhsdtc,transth,transsh,
      7 ctsave,xxsave,yysave,zetasave,xlsave,khsave,qliq,turbfcc)
 
-      call pastit (qq,tke,istrip,nchp,nchp,nlay,nn)
-      call pastit (ctsave,ctmt,istrip,nchp,nchp,1,nn)
-      call pastit (xxsave,xxmt,istrip,nchp,nchp,1,nn)
-      call pastit (yysave,yymt,istrip,nchp,nchp,1,nn)
-      call pastit (zetasave,zetamt,istrip,nchp,nchp,1,nn)
-      call pastit (xlsave,xlmt,istrip,nchp,nchp,nlay,nn)
-      call pastit (khsave,khmt,istrip,nchp,nchp,nlay,nn)
+      call pastit (qq,tke,istrip,nchp,nchptot,nlay,nn)
+      call pastit (ctsave,ctmt,istrip,nchp,nchptot,1,nn)
+      call pastit (xxsave,xxmt,istrip,nchp,nchptot,1,nn)
+      call pastit (yysave,yymt,istrip,nchp,nchptot,1,nn)
+      call pastit (zetasave,zetamt,istrip,nchp,nchptot,1,nn)
+      call pastit (xlsave,xlmt,istrip,nchp,nchptot,nlay,nn)
+      call pastit (khsave,khmt,istrip,nchp,nchptot,nlay,nn)
 
-      call pastit (qliq  ,qliqmsc,istrip,nchp,nchp,nlay,nn)
-      call pastit (turbfcc,fccmsc,istrip,nchp,nchp,nlay,nn)
+      call pastit (qliq  ,qliqmsc,istrip,nchp,nchptot,nlay,nn)
+      call pastit (turbfcc,fccmsc,istrip,nchp,nchptot,nlay,nn)
 
 c  New diagnostic: potential evapotranspiration
       do i = 1,istrip
@@ -859,54 +860,54 @@ c***********************************************************************
 c***********************************************************************
 
       if( ndlsm.gt.1 ) then
-      call pstbitint(types,qdiaglsm(1,1),istrip,nchp,nchp,1,nn)
-      call pstbmpit(chfrstr,qdiaglsm(1,2),istrip,nchp,nchp,1,nn)
-      call pstbmpit(lats,qdiaglsm(1,3),istrip,nchp,nchp,1,nn)
-      call pstbmpit(lons,qdiaglsm(1,4),istrip,nchp,nchp,1,nn)
-c     call pstbmpit(igrdstr,qdiaglsm(1,5),istrip,nchp,nchp,1,nn)
-      call pstbmpit(tc,qdiaglsm(1,6),istrip,nchp,nchp,1,nn)
-      call pstbmpit(td,qdiaglsm(1,7),istrip,nchp,nchp,1,nn)
-      call pstbmpit(qa,qdiaglsm(1,8),istrip,nchp,nchp,1,nn)
-      call pstbmpit(swet1,qdiaglsm(1,9),istrip,nchp,nchp,1,nn)
-      call pstbmpit(swet2,qdiaglsm(1,10),istrip,nchp,nchp,1,nn)
-      call pstbmpit(swet3,qdiaglsm(1,11),istrip,nchp,nchp,1,nn)
-      call pstbmpit(capacity,qdiaglsm(1,12),istrip,nchp,nchp,1,nn)
-      call pstbmpit(snowdepth,qdiaglsm(1,13),istrip,nchp,nchp,1,nn)
-      call pstbmpit(eturb,qdiaglsm(1,14),istrip,nchp,nchp,1,nn)
-      call pstbmpit(hsturb,qdiaglsm(1,15),istrip,nchp,nchp,1,nn)
-      call pstbmpit(cd,qdiaglsm(1,16),istrip,nchp,nchp,1,nn)
-      call pstbmpit(laistrip,qdiaglsm(1,17),istrip,nchp,nchp,1,nn)
-      call pstbmpit(grnstrip,qdiaglsm(1,18),istrip,nchp,nchp,1,nn)
-      call pstbmpit(eint,qdiaglsm(1,19),istrip,nchp,nchp,1,nn)
-      call pstbmpit(esoi,qdiaglsm(1,20),istrip,nchp,nchp,1,nn)
-      call pstbmpit(eveg,qdiaglsm(1,21),istrip,nchp,nchp,1,nn)
-      call pstbmpit(esno,qdiaglsm(1,22),istrip,nchp,nchp,1,nn)
-      call pstbmpit(strdg1,qdiaglsm(1,23),istrip,nchp,nchp,1,nn)
-      call pstbmpit(strdg2,qdiaglsm(1,24),istrip,nchp,nchp,1,nn)
-      call pstbmpit(strdg3,qdiaglsm(1,25),istrip,nchp,nchp,1,nn)
-      call pstbmpit(strdg4,qdiaglsm(1,26),istrip,nchp,nchp,1,nn)
-      call pstbmpit(strdg5,qdiaglsm(1,27),istrip,nchp,nchp,1,nn)
-      call pstbmpit(strdg6,qdiaglsm(1,28),istrip,nchp,nchp,1,nn)
-      call pstbmpit(strdg7,qdiaglsm(1,29),istrip,nchp,nchp,1,nn)
-      call pstbmpit(strdg8,qdiaglsm(1,30),istrip,nchp,nchp,1,nn)
-      call pstbmpit(strdg9,qdiaglsm(1,31),istrip,nchp,nchp,1,nn)
-      call pstbmpit(smelt,qdiaglsm(1,32),istrip,nchp,nchp,1,nn)
-      call pstbmpit(gdrain,qdiaglsm(1,33),istrip,nchp,nchp,1,nn)
-      call pstbmpit(runsrf,qdiaglsm(1,34),istrip,nchp,nchp,1,nn)
-      call pstbmpit(fwsoil,qdiaglsm(1,35),istrip,nchp,nchp,1,nn)
-      call pstbmpit(evpot,qdiaglsm(1,36),istrip,nchp,nchp,1,nn)
-      call pstbmpit(stt2m,qdiaglsm(1,37),istrip,nchp,nchp,1,nn)
-      call pstbmpit(stq2m,qdiaglsm(1,38),istrip,nchp,nchp,1,nn)
+      call pstbitint(types,qdiaglsm(1,1),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(chfrstr,qdiaglsm(1,2),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(lats,qdiaglsm(1,3),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(lons,qdiaglsm(1,4),istrip,nchp,nchptot,1,nn)
+c     call pstbmpit(igrdstr,qdiaglsm(1,5),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(tc,qdiaglsm(1,6),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(td,qdiaglsm(1,7),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(qa,qdiaglsm(1,8),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(swet1,qdiaglsm(1,9),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(swet2,qdiaglsm(1,10),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(swet3,qdiaglsm(1,11),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(capacity,qdiaglsm(1,12),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(snowdepth,qdiaglsm(1,13),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(eturb,qdiaglsm(1,14),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(hsturb,qdiaglsm(1,15),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(cd,qdiaglsm(1,16),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(laistrip,qdiaglsm(1,17),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(grnstrip,qdiaglsm(1,18),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(eint,qdiaglsm(1,19),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(esoi,qdiaglsm(1,20),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(eveg,qdiaglsm(1,21),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(esno,qdiaglsm(1,22),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(strdg1,qdiaglsm(1,23),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(strdg2,qdiaglsm(1,24),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(strdg3,qdiaglsm(1,25),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(strdg4,qdiaglsm(1,26),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(strdg5,qdiaglsm(1,27),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(strdg6,qdiaglsm(1,28),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(strdg7,qdiaglsm(1,29),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(strdg8,qdiaglsm(1,30),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(strdg9,qdiaglsm(1,31),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(smelt,qdiaglsm(1,32),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(gdrain,qdiaglsm(1,33),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(runsrf,qdiaglsm(1,34),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(fwsoil,qdiaglsm(1,35),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(evpot,qdiaglsm(1,36),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(stt2m,qdiaglsm(1,37),istrip,nchp,nchptot,1,nn)
+      call pstbmpit(stq2m,qdiaglsm(1,38),istrip,nchp,nchptot,1,nn)
       endif
 
-      call pastit (tc,tground,istrip,nchp,nchp,1,nn)
-      call pastit (td,tdeep,istrip,nchp,nchp,1,nn)
-      call pastit (qa,qground,istrip,nchp,nchp,1,nn)
-      call pastit (swet1,swetshal,istrip,nchp,nchp,1,nn)
-      call pastit (swet2,swetroot,istrip,nchp,nchp,1,nn)
-      call pastit (swet3,swetdeep,istrip,nchp,nchp,1,nn)
-      call pastit (capacity,capac,istrip,nchp,nchp,1,nn)
-      call pastit (snowdepth,snodep,istrip,nchp,nchp,1,nn)
+      call pastit (tc,tground,istrip,nchp,nchptot,1,nn)
+      call pastit (td,tdeep,istrip,nchp,nchptot,1,nn)
+      call pastit (qa,qground,istrip,nchp,nchptot,1,nn)
+      call pastit (swet1,swetshal,istrip,nchp,nchptot,1,nn)
+      call pastit (swet2,swetroot,istrip,nchp,nchptot,1,nn)
+      call pastit (swet3,swetdeep,istrip,nchp,nchptot,1,nn)
+      call pastit (capacity,capac,istrip,nchp,nchptot,1,nn)
+      call pastit (snowdepth,snodep,istrip,nchp,nchptot,1,nn)
 
 c**********************************************************************
 c  Now update the theta and sh profiles with the new ground temperature
@@ -945,28 +946,28 @@ c ----------------
       do i =1,istrip
       tends(i) = ( u(i,l)-tmpstrip(i) )
       enddo
-      call pastit (tends,dumsc(1,l),istrip,nchp,nchp,1,nn)
+      call pastit (tends,dumsc(1,l),istrip,nchp,nchptot,1,nn)
 
       call strip2tile(vz(1,1,l),igrd,tmpstrip,nchp,ijall,
      1                                                 istrip,1,nn)
       do i =1,istrip
       tends(i) = ( v(i,l)-tmpstrip(i) )
       enddo
-      call pastit (tends,dvmsc(1,l),istrip,nchp,nchp,1,nn)
+      call pastit (tends,dvmsc(1,l),istrip,nchp,nchptot,1,nn)
 
       call strip2tile(tz(1,1,l),igrd,tmpstrip,nchp,ijall,
      1                                                 istrip,1,nn)
       do i =1,istrip
       tends(i) = ( th(i,l)-tmpstrip(i) )
       enddo
-      call pastit (tends,dtmsc(1,l),istrip,nchp,nchp,1,nn)
+      call pastit (tends,dtmsc(1,l),istrip,nchp,nchptot,1,nn)
 
       call strip2tile(qz(1,1,l,1),igrd,tmpstrip,nchp,ijall,
      1                                                 istrip,1,nn)
       do i =1,istrip
       tends(i) = ( sh(i,l)-tmpstrip(i) )
       enddo
-      call pastit (tends,dqmsc(1,l,1),istrip,nchp,nchp,1,nn)
+      call pastit (tends,dqmsc(1,l,1),istrip,nchp,nchptot,1,nn)
 
       do nt = 1,ntracers-ptracers
        call strip2tile(qz(1,1,L,ptracers+nt),igrd,tmpstrip,nchp,
@@ -974,7 +975,8 @@ c ----------------
        do i =1,istrip
         tends(i) = ( tracers(i,L,nt)-tmpstrip(i) )
        enddo
-       call pastit (tends,dqmsc(1,L,ptracers+nt),istrip,nchp,nchp,1,nn)
+       call pastit(tends,dqmsc(1,L,ptracers+nt),istrip,nchp,
+     .                                     nchptot,1,nn)
       enddo
 
       enddo
@@ -1156,7 +1158,7 @@ c ---------------------------------------------------------------------
 
 c prevent ice or snow from melting
 c ---------------------------------------------------------------------
-      do i =1,nchp
+      do i =1,nchptot
       if( (icethk(i).gt.0.).and.(tground(i).gt.tice) ) tground(i)=tice
       enddo
 
@@ -1189,22 +1191,22 @@ c -----------------------------------
 C Return Tendencies and Couplings to Grid Space
 c ---------------------------------------------
       do l = 1,nlay
-      call msc2grd(igrd,chfr,dumsc(1,L),nchp,nchp,fracland,
+      call msc2grd(igrd,chfr,dumsc(1,L),nchp,nchptot,fracland,
      .                                              duturb(1,1,L),im,jm)
-      call msc2grd(igrd,chfr,dvmsc(1,L),nchp,nchp,fracland,
+      call msc2grd(igrd,chfr,dvmsc(1,L),nchp,nchptot,fracland,
      .                                              dvturb(1,1,L),im,jm)
-      call msc2grd(igrd,chfr,dtmsc(1,L),nchp,nchp,fracland,
+      call msc2grd(igrd,chfr,dtmsc(1,L),nchp,nchptot,fracland,
      .                                              dtturb(1,1,L),im,jm)
       do nt = 1,ntracers
-      call msc2grd(igrd,chfr,dqmsc(1,L,nt),nchp,nchp,fracland,
+      call msc2grd(igrd,chfr,dqmsc(1,L,nt),nchp,nchptot,fracland,
      .                                           dqturb(1,1,L,nt),im,jm)
       enddo
-      call msc2grd(igrd,chfr,  tke(1,L),nchp,nchp,fracland,
+      call msc2grd(igrd,chfr,  tke(1,L),nchp,nchptot,fracland,
      .                                              qqgrid(1,1,L),im,jm)
 
-      call msc2grd(igrd,chfr, fccmsc(1,L),nchp,nchp,fracland, 
+      call msc2grd(igrd,chfr, fccmsc(1,L),nchp,nchptot,fracland, 
      .                                              fcctmp(1,1,L),im,jm)
-      call msc2grd(igrd,chfr,qliqmsc(1,L),nchp,nchp,fracland,
+      call msc2grd(igrd,chfr,qliqmsc(1,L),nchp,nchptot,fracland,
      .                                             qliqtmp(1,1,L),im,jm)
       enddo
 
@@ -1251,7 +1253,7 @@ C Ground Temperature, snow depth and shallow layer ground wetness
          tgz(i,j) = 0.
        enddo
       enddo
-      call msc2grd(igrd,chfr,tground ,nchp,nchp,fracland,tgz ,im,jm)
+      call msc2grd(igrd,chfr,tground ,nchp,nchptot,fracland,tgz ,im,jm)
 
 c *********************************************************************
 c **** increment diagnostic array for ground and surface temperatures,

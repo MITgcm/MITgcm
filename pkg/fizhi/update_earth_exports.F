@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.14 2004/07/16 20:08:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.15 2004/07/23 22:32:28 molod Exp $
 C $Name:  $
 
        subroutine update_earth_exports (myTime, myIter, myThid)
@@ -68,6 +68,7 @@ c-----------------------------------------------------------------------
 
        call get_landfrac(im2,jm2,nSx,nSy,bi,bj,maxtyp,surftype,tilefrac,
      .                                                            fracl)
+
        do j = jm1,jm2
        do i = im1,im2
         if(sice(i,j,bi,bj).gt.0.) then
@@ -83,7 +84,7 @@ C*              Get Leaf-Area-Index and Greenness Index                *
 C***********************************************************************
 
        if( alarm('turb') .or. alarm('radsw') ) then
-       call getlgr (sec,month,day,chlt,ityp,nchpland,nSx,nSy,bi,bj,
+       call getlgr (sec,month,day,chlt,ityp,nchpland,nchp,nSx,nSy,bi,bj,
      .                                                       alai,agrn )
        endif
 
@@ -94,8 +95,8 @@ C **********************************************************************
        if( alarm('radsw') ) then
         call astro(nymd,nhms,lats,lons,im2*jm2,cosz,radius)
         call getalb(sec,month,day,cosz,snodep,fraci,fracl,im2,jm2,nchp,
-     .             nchpland,nSx,nSy,bi,bj,igrd,ityp,chfr,chlt,alai,agrn,
-     .             albvisdr,albvisdf,albnirdr,albnirdf )
+     .    nchptot,nchpland,nSx,nSy,bi,bj,igrd,ityp,chfr,chlt,alai,agrn,
+     .    albvisdr,albvisdf,albnirdr,albnirdf )
        endif
 
 
@@ -124,7 +125,7 @@ C*********************************************************************
         tmpchp(i) = tcanopy(i,bi,bj)
        enddo
        call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),tmpchp,
-     .                           nchp,nchp,fracl,tmpij,im2,jm2)
+     .                           nchp,nchptot,fracl,tmpij,im2,jm2)
        do j = jm1,jm2
        do i = im1,im2
         tgz(i,j,bi,bj) = tmpij(i,j)
@@ -690,8 +691,8 @@ cfpp$ expand (coeff)
       RETURN
       END
 
-      SUBROUTINE GETLGR(sec,IMON,IDAY,ALAT,ITYP,NCHPS,nSx,nSy,bi,bj,
-     .                                                      ALAI,AGRN)
+      SUBROUTINE GETLGR(sec,IMON,IDAY,ALAT,ITYP,NCHPS,nchpdim,
+     .    nSx,nSy,bi,bj,ALAI,AGRN)
 C*********************************************************************
       implicit none
 #include "CPP_EEOPTIONS.h"
@@ -702,10 +703,10 @@ C*********************************************************************
       parameter (one = 1.)
       parameter (daylen = 86400.)
 
-      integer sec, imon, iday, nchps, nSx, nSy, bi, bj
-      _RL ALAI(NCHPS,nSx,nSy), AGRN(NCHPS,nSx,nSy) 
-      _RL ALAT(NCHPS)
-      integer ITYP(NCHPS,nSx,nSy)
+      integer sec, imon, iday, nchps, nchpdim, nSx, nSy, bi, bj
+      _RL ALAI(nchpdim,nSx,nSy), AGRN(nchpdim,nSx,nSy) 
+      _RL ALAT(nchpdim)
+      integer ITYP(nchpdim,nSx,nSy)
 
       integer i,midmon,midm,midp,id,k1,k2,kk1,kk2
       _RL fac
@@ -808,8 +809,8 @@ C*********************************************************************
       END
 
       subroutine getalb(sec,month,day,cosz,snodep,fraci,fracg,im,jm,
-     .                  nchp,nchpland,nSx,nSy,bi,bj,igrd,ityp,chfr,chlt,
-     .                  alai,agrn,albvr,albvf,albnr,albnf)
+     .        nchp,nchptot,nchpland,nSx,nSy,bi,bj,igrd,ityp,chfr,chlt,
+     .        alai,agrn,albvr,albvf,albnr,albnf)
 C***********************************************************************
 C  PURPOSE
 C     To act as an interface to routine sibalb, which calculates
@@ -850,7 +851,7 @@ C***********************************************************************
       implicit none
 #include "CPP_EEOPTIONS.h"
 
-      integer sec,month,day,im,jm,nchp,nchpland,nSx,nSy,bi,bj
+      integer sec,month,day,im,jm,nchp,nchptot,nchpland,nSx,nSy,bi,bj
       real cosz(im,jm),fraci(im,jm),fracg(im,jm)
       _RL snodep(nchp,nSx,nSy),chfr(nchp,nSx,nSy),chlt(nchp,nSx,nSy)
       integer igrd(nchp,nSx,nSy),ityp(nchp,nSx,nSy)
@@ -883,7 +884,6 @@ C***********************************************************************
        ALBNF(I,J,bi,bj) = ALBVF(I,J,bi,bj)
       ENDDO
       ENDDO
- 
 
 C and now some conversions from grid space to tile space before sibalb
  
@@ -893,16 +893,23 @@ C and now call sibalb
  
       call sibalb(avisdr,anirdr,avisdf,anirdf,alai(1,bi,bj),
      .  agrn(1,bi,bj),zenith,snodep(1,bi,bj),ityp(1,bi,bj),nchpland)
- 
+
 C finally some transformations back to grid space for albedos
  
+      print *,' In getalb, chfr: '
+      print *,(chfr(i,1,1),i=1,nchptot)
+
       DO I=1,IM
       DO J=1,JM
-       tmpij(i,j) = 0.
+       tmpij(i,j) = albvr(i,j,bi,bj)
       ENDDO
       ENDDO
       call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),avisdr,nchp,nchpland,
      .                                     fracg,tmpij,im,jm)
+
+      print *,' back from first msc2grd call '
+      stop
+
       DO I=1,IM
       DO J=1,JM
        albvr(i,j,bi,bj) = tmpij(i,j)
@@ -910,7 +917,7 @@ C finally some transformations back to grid space for albedos
       ENDDO
       DO I=1,IM
       DO J=1,JM
-       tmpij(i,j) = 0.
+       tmpij(i,j) = albvf(i,j,bi,bj)
       ENDDO
       ENDDO
       call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),avisdf,nchp,nchpland,
@@ -922,7 +929,7 @@ C finally some transformations back to grid space for albedos
       ENDDO
       DO I=1,IM
       DO J=1,JM
-       tmpij(i,j) = 0.
+       tmpij(i,j) = albnr(i,j,bi,bj)
       ENDDO
       ENDDO
       call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),anirdr,nchp,nchpland,
@@ -934,7 +941,7 @@ C finally some transformations back to grid space for albedos
       ENDDO
       DO I=1,IM
       DO J=1,JM
-       tmpij(i,j) = 0.
+       tmpij(i,j) = albnf(i,j,bi,bj)
       ENDDO
       ENDDO
       call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),anirdf,nchp,nchpland,

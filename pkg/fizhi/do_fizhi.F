@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.22 2004/07/19 22:06:59 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.23 2004/07/23 22:32:27 molod Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
        subroutine do_fizhi(myid,uphy,vphy,thphy,sphy,pephy,lons,lats,
@@ -8,7 +8,7 @@ C $Name:  $
      . tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,snodep,capac,
      . o3,qstr,co2,cfc11,cfc12,cfc22,n2o,methane,
      . idim1,idim2,jdim1,jdim2,Nrphin,Nsxin,Nsyin,im1,im2,jm1,jm2,bi,bj,
-     . nchp,nchpland,
+     . nchp,nchptot,nchpland,
      . duphy,dvphy,dthphy,dsphy)
 c-----------------------------------------------------------------------
 c Interface routine to calculate physics increments - calls fizhi_driver.
@@ -27,7 +27,7 @@ c-----------------------------------------------------------------------
 
 C Argument list declarations
       integer myid,im1,im2,jm1,jm2,idim1,idim2,jdim1,jdim2
-      integer Nrphin,Nsxin,Nsyin,bi,bj,nchp,nchpland
+      integer Nrphin,Nsxin,Nsyin,bi,bj,nchp,nchptot,nchpland
       _RL uphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL vphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL thphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
@@ -175,8 +175,8 @@ C compute pressures - all pressure are converted here to hPa
      . dpres(1,1,1,bi,bj),pkle(1,1,1,bi,bj),pkl(1,1,1,bi,bj),
      . fracland(1,1,bi,bj),landtype(1,1,bi,bj),radswt(1,1,bi,bj),
      . phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,nchp,chlat(1,bi,bj),
-     . chlon(1,bi,bj),igrd(1,bi,bj),nchpland,chfr(1,bi,bj),ityp(1,bi,bj)
-     . ,tcanopy(1,bi,bj),tdeep(1,bi,bj),ecanopy(1,bi,bj),
+     . chlon(1,bi,bj),igrd(1,bi,bj),nchptot,nchpland,chfr(1,bi,bj),
+     . ityp(1,bi,bj),tcanopy(1,bi,bj),tdeep(1,bi,bj),ecanopy(1,bi,bj),
      . swetshal(1,bi,bj),swetroot(1,bi,bj),swetdeep(1,bi,bj),
      . capac(1,bi,bj),snodep(1,bi,bj),
      . ctmt(1,bi,bj),xxmt(1,bi,bj),yymt(1,bi,bj),zetamt(1,bi,bj),

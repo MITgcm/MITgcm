@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.7 2004/07/22 22:33:55 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.8 2004/07/23 22:32:28 molod Exp $
 C $Name:  $
 
       subroutine fizhi_init_chem(mythid,nozlats,nozlevs,ntimesoz,
@@ -14,9 +14,6 @@ C
 C mythid   - thread number (processor number)
 C
 C OUTPUT:
-C
-C chfr     - real array in tile space of land surface type fraction for 
-C            each tile [nchp,Nsx,Nsy]
 C
 C***********************************************************************
       implicit none

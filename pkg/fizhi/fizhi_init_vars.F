@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.3 2004/06/14 20:34:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.4 2004/07/23 22:32:28 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_vars (myThid)
@@ -29,6 +29,7 @@ c-----------------------------------------------------------------------
 #include "gridalt_mapping.h"
 #include "fizhi_coms.h"
 #include "fizhi_land_coms.h"
+#include "fizhi_earth_coms.h"
 #include "EEPARAMS.h"
 #include "SURFACE.h"
 #include "PARAMS.h"
@@ -166,21 +167,21 @@ c         Physics works top-down. so -> need to flip arrays
 c Now initialize tke, xlmt, khmt, xxmt, yymt, ctmt, zetamt,
 c Now initialize land state too - tcanopy, etc...
         do L = 1,Nrphys
-        do i = 1,nchp
+        do i = 1,nchptot
          tke(i,L,bi,bj) = 0.
          xlmt(i,L,bi,bj) = 0.
          khmt(i,L,bi,bj) = 0.
         enddo
         enddo
-c Now initialize land state too - tcanopy, etc... ZERO FOR NOW, 
+c Now initialize land state too - tcanopy, etc... SET FOR NOW, 
 c                                              READ CLIM FOR REAL
-        do i = 1,nchp
-        tcanopy(i,bi,bj) = 0.
-        tdeep(i,bi,bj) = 0.
-        ecanopy(i,bi,bj) = 0.
-        swetshal(i,bi,bj) = 0.
-        swetroot(i,bi,bj) = 0.
-        swetdeep(i,bi,bj) = 0.
+        do i = 1,nchptot
+        tcanopy(i,bi,bj) = 283.
+        tdeep(i,bi,bj) = 282.5
+        ecanopy(i,bi,bj) = 2.e-2
+        swetshal(i,bi,bj) = 0.6
+        swetroot(i,bi,bj) = 0.5
+        swetdeep(i,bi,bj) = 0.5
         capac(i,bi,bj) = 0.
         snodep(i,bi,bj) = 0.
         enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.11 2004/07/13 18:26:45 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.12 2004/07/23 22:32:27 molod Exp $
 C $Name:  $
                                                                                  
 #include "CPP_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
      . xlats,xlons,
      . p,u,v,t,q,pl,ple,dpres,pkht,pkl,fracland,landtype,radswt,
      . phis_var,tgz,sea_ice,
-     . nchp,chlat,chlon,igrd,nchpland,chfr,ityp,
+     . nchp,chlat,chlon,igrd,nchptot,nchpland,chfr,ityp,
      . tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,capac,snodep,
      . ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
      . albvisdr,albvisdf,albnirdr,albnirdf,emiss,alai,agrn,
@@ -47,7 +47,7 @@ c -------------
 c Input Parameters
 c ----------------
       integer myid,im,jm,lm,bi,bj,ptracer,ntracer
-      integer nchp,igrd(nchp),nchpland,ityp(nchp)
+      integer nchp,igrd(nchp),nchptot,nchpland,ityp(nchp)
       integer iras,nlwcld,nlwlz,nswcld,nswlz
       integer imstturbsw,imstturblw
 
@@ -186,7 +186,8 @@ C ==========
      .  ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
      .  tgz,fracland,landtype,
      .  tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac,
-     .  nchp,nchpland,chfr,chlat,chlon,igrd,ityp,alai,agrn,sea_ice,lpnt,
+     .  nchp,nchptot,nchpland,chfr,chlat,chlon,igrd,ityp,
+     .  alai,agrn,sea_ice,lpnt,
      .  turbu,turbv,turbt,turbq,radlwg,st4,dst4,radswg,radswt,
      .  fdifpar,fdirpar,rainlsp,raincon,snowfall,tg0,
      .  imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw,qq,
