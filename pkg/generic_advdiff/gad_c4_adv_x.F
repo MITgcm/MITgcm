@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c4_adv_x.F,v 1.4 2001/09/21 13:11:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c4_adv_x.F,v 1.5 2003/05/01 16:12:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -59,14 +59,13 @@ CEOP
        uT(sNx+Olx,j)=0.
        DO i=1-Olx+2,sNx+Olx-1
         Rjp=(tracer(i+1,j)-tracer(i,j))
-c    &     *maskW(i+1,j,k,bi,bj)
+     &     *maskW(i+1,j,k,bi,bj)
         Rj =(tracer(i,j)-tracer(i-1,j))
-c    &     *maskW(i,j,k,bi,bj)
+     &     *maskW(i,j,k,bi,bj)
         Rjm=(tracer(i-1,j)-tracer(i-2,j))
-c    &     *maskW(i-1,j,k,bi,bj)
-C- jmc: mask not needed here above if Rjjp & Rjjm & uTrans are masked
-        Rjjp=(Rjp-Rj)*maskW(i+1,j,k,bi,bj)
-        Rjjm=(Rj-Rjm)*maskW(i-1,j,k,bi,bj)
+     &     *maskW(i-1,j,k,bi,bj)
+        Rjjp=(Rjp-Rj)
+        Rjjm=(Rj-Rjm)
         uT(i,j) =
      &   uTrans(i,j)*(
      &     Tracer(i,j)+Tracer(i-1,j)-oneSixth*( Rjjp+Rjjm )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c4_adv_y.F,v 1.4 2001/09/21 13:11:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c4_adv_y.F,v 1.5 2003/05/01 16:12:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -61,14 +61,13 @@ CEOP
       DO j=1-Oly+2,sNy+Oly-1
        DO i=1-Olx,sNx+Olx
         Rjp=(tracer(i,j+1)-tracer(i,j))
-c    &     *maskS(i,j+1,k,bi,bj)
+     &     *maskS(i,j+1,k,bi,bj)
         Rj =(tracer(i,j)-tracer(i,j-1))
-c    &     *maskS(i,j,k,bi,bj)
+     &     *maskS(i,j,k,bi,bj)
         Rjm=(tracer(i,j-1)-tracer(i,j-2))
-c    &     *maskS(i,j-1,k,bi,bj)
-C- jmc: mask not needed here above if Rjjp & Rjjm & vTrans are masked
-        Rjjp=(Rjp-Rj)*maskS(i,j+1,k,bi,bj)
-        Rjjm=(Rj-Rjm)*maskS(i,j-1,k,bi,bj)
+     &     *maskS(i,j-1,k,bi,bj)
+        Rjjp=(Rjp-Rj)
+        Rjjm=(Rj-Rjm)
         vT(i,j) =
      &   vTrans(i,j)*(
      &     Tracer(i,j)+Tracer(i,j-1)-oneSixth*( Rjjp+Rjjm )
