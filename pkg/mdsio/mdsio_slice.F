@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice.F,v 1.1 2001/03/25 22:31:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice.F,v 1.2 2001/09/27 18:24:45 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
