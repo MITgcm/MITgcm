@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.6 2004/01/25 00:22:57 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.7 2004/01/27 05:47:32 edhill Exp $
 C $Name:  $
-
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C
 C     ==========================================
 C     MNC : an MITgcm wrapper package for NetCDF
 C     ==========================================
@@ -37,7 +38,7 @@ C     a NetCDF file:
 C     - contains: [ name, 0+ attr, 0+ grid-ref, 0+ var-ref ]
 C
 C     ==================================================
-C     Implemented using:
+C     MNC "Internals" Implemented using:
 C
 C     mnc_blank_name    : (convenience) just MNC_MAX_CHAR spaces
 C
@@ -63,18 +64,34 @@ C
 C     fi  :  file index
 C     vi  :  variable index
 C     di  :  dimension index
+C
+C     ==================================================
+C     MNC "Convenience Wrapper" Implemented using:
+C
+C     mnc_cw_names (g)  : Gtype names
+C     mnc_cw_ndim  (g)  : number of dimensions
+C     mnc_cw_dn   (i,g) : dname1, dname2, ...
+C     mnc_cw_dims (i,g) : d1, d2, d3, ...
+C     mnc_cw_is   (i,g) : starting indicies: is1, is2, ...
+C     mnc_cw_ie   (i,g) : ending indicies:   ie1, ie2, ...
+C
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       integer MNC_MAX_ID, MNC_MAX_CHAR, MNC_MAX_INFO
+      integer MNC_CW_MAX_I
       parameter ( MNC_MAX_ID   = 1000 )
       parameter ( MNC_MAX_CHAR =  100 )
       parameter ( MNC_MAX_INFO =  100 )
+      parameter ( MNC_CW_MAX_I =  100 )
 
       COMMON /MNC_VARS/
      &     mnc_blank_name, 
      &     mnc_f_names, mnc_g_names, mnc_v_names, 
      &     mnc_d_names, mnc_d_ids,   mnc_d_size, 
      &     mnc_f_info,  mnc_fd_ind,  mnc_fv_ids, 
-     &     mnc_f_alld
+     &     mnc_f_alld,
+     &     mnc_cw_names, mnc_cw_ndim, mnc_cw_dims, 
+     &     mnc_cw_dn, mnc_cw_is, mnc_cw_ie
 
       character*(MNC_MAX_CHAR) mnc_blank_name
       character*(MNC_MAX_CHAR) mnc_f_names(MNC_MAX_ID)
@@ -88,6 +105,12 @@ C     di  :  dimension index
       integer mnc_d_size(MNC_MAX_ID)
       integer mnc_d_ids(MNC_MAX_ID)
 
+      character*(MNC_MAX_CHAR) mnc_cw_names(MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_cw_dn(MNC_CW_MAX_I,MNC_MAX_ID)
+      integer mnc_cw_ndim(MNC_MAX_ID)
+      integer mnc_cw_dims(MNC_CW_MAX_I,MNC_MAX_ID)
+      integer mnc_cw_is(MNC_CW_MAX_I,MNC_MAX_ID)
+      integer mnc_cw_ie(MNC_CW_MAX_I,MNC_MAX_ID)
 
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***

@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.7 2004/01/25 00:22:57 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.8 2004/01/27 05:47:32 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
-C==================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_GRID_INIT( 
      I     myThid, 
@@ -30,7 +30,7 @@ C     Local Variables
       RETURN
       END
 
-C==================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_GRID_INIT_ALL( 
      I     myThid, 
@@ -152,7 +152,7 @@ C     Grid successfully added, so update file table
       RETURN
       END
       
-C==================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_GRID_GET_DIMIND( 
      I     indf, 
@@ -192,3 +192,4 @@ C     Local Variables
       RETURN
       END
       
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.5 2004/01/25 00:22:57 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.6 2004/01/27 05:47:32 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
-C==================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_INIT()
 
@@ -12,7 +12,7 @@ C==================================================================
 C     Arguments
 
 C     Local Variables
-      integer i,j
+      integer i,j, g
       character blank*(MNC_MAX_CHAR)
 
 C     Write blanks or zeros to all the name and ID tables
@@ -35,10 +35,21 @@ C     Write blanks or zeros to all the name and ID tables
         ENDDO
       ENDDO
 
+      DO g = 1,MNC_MAX_ID
+        mnc_cw_names(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
+        mnc_cw_ndim(g) = 0
+        DO i = 1,MNC_CW_MAX_I
+          mnc_cw_dn(i,g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
+          mnc_cw_dims(i,g) = 0
+          mnc_cw_is(i,g) = 0
+          mnc_cw_ie(i,g) = 0
+        ENDDO
+      ENDDO
+
       RETURN
       END
 
-C==================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_DUMP()
 
@@ -94,3 +105,4 @@ C     n_id = mnc_max_id
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

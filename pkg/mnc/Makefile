@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.6 2004/01/25 00:22:57 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.7 2004/01/27 05:47:32 edhill Exp $
 #
 #  A Makefile for MNC templates and testing
 #
@@ -27,7 +27,8 @@ FILES = \
   mnc_grid.F \
   mnc_init.F \
   mnc_utils.F \
-  mnc_var.F
+  mnc_var.F \
+  mnc_cwrapper.F
 
 TEST_OBJECTS = $(TEST_FILES:.F=.o)
 OBJECTS = $(FILES:.F=.o)
@@ -64,13 +65,16 @@ tag = ../../doc/tag-index
 mnc_id_header.h:
 	-./parse_local_info > $@
 
-test: all mnc_test_001
+test: all mnc_test_001 mnc_test_002
 	echo "running mnc_test_001 ..."
-	./mnc_test_001 && ncdump test_001.nc | head -50
-
+	./mnc_test_001 > t_out_001 && ncdump test_001.nc | head -20
+	./mnc_test_002
 
 mnc_test_001: $(ALL_TEST) $(FILES) $(OBJECTS) mnc_test_001.o
 	$(FC) -o mnc_test_001 mnc_test_001.o $(OBJECTS) $(TEST_OBJECTS) -lnetcdf
+
+mnc_test_002: $(ALL_TEST) $(FILES) $(OBJECTS) mnc_test_002.o
+	$(FC) -o mnc_test_002 mnc_test_002.o $(OBJECTS) $(TEST_OBJECTS) -lnetcdf
 
 CLEAN:
 	@make clean
@@ -78,5 +82,5 @@ Clean:
 	@make clean
 clean:
 	-rm -f *.o $(TEST_LINKS) $(TEST_HEADERS) $(TEST_FILES) $(TEST_OBJECTS)
-	-rm -f mnc_test_???.F mnc_test_??? test_???.nc
+	-rm -f mnc_test_???.F mnc_test_??? test_???.nc t_out_???
 	-rm -f MNC_RESHAPE_R?_?.F mnc_id_header.h

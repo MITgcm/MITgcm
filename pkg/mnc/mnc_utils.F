@@ -1,9 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.6 2004/01/25 00:22:57 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.7 2004/01/27 05:47:33 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
 
-C==================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 
       SUBROUTINE MNC_HANDLE_ERR( myThid, status, msg )
 
@@ -39,7 +40,8 @@ C     Locals
       RETURN
       END
 
-C==================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 
       SUBROUTINE MNC_GET_IND(
      I     myThid,
@@ -88,7 +90,8 @@ C     Search for the index
       RETURN
       END
 
-C==================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 
       SUBROUTINE MNC_GET_NEXT_EMPTY_IND(
      I     myThid,
@@ -130,7 +133,7 @@ C     If this is code is reached, we have exceeded the array size
       RETURN
       END
 
-C==================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_GET_FVINDS( 
      I     myThid, 
@@ -182,3 +185,4 @@ C     Find the vID
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

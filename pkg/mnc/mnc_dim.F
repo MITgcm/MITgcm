@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.3 2004/01/25 00:22:57 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.4 2004/01/27 05:47:32 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
-C==================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_DIM_INIT( 
      I     myThid, 
@@ -21,7 +21,7 @@ C     Arguments
       END
 
 
-C==================================================================
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_DIM_INIT_ALL( 
      I     myThid, 

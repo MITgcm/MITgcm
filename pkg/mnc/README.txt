@@ -66,21 +66,22 @@ using a simple interface such as:
   ...
   MNC_VAR_READ(          myThid, fname, vname, var )
 
+  MNC_FILE_SYNC(         myThid, fname )
   MNC_FILE_CLOSE(        myThid, fname )
 
 
 Heres a further "convenience wrapper" written on top of the above UI:
 
-  MNC_UGRID_INIT(        myThid, ugname, Htype, Hsub, Vtype, Ttype )
+  MNC_CW_INIT(  myThid, Gtype, Htype, Hsub, Vtype, Ttype, wHalo )
 
-    with pre-defined individual          -      xy    -      -
-    types and combinations:              U      x     c      t
-                                         V      y     i
-    'U_xy_i_t' or 'Cor_x_-_-'            Cen
-                                         Cor
+    with pre-defined           -      xy    -      -      n
+    combinations:              U      x     c      t      y
+    'Cen_xy_c_t_Hn'            V      y     i
+    'U_xy_i_t_Hn',             Cen
+    'Cor_x_-_-_Hy'             Cor
 
-  MNC_UGRID_W_VAR(       myThid, myIter, fbase,bi,bj, ugname, 'RX', var )
-
+  MNC_CW_WRITE( myThid,myIter, filebn,bi,bj, Gtype, RX, vname, var )
+  MNC_CW_READ(  myThid,myIter, filebn,bi,bj, Gtype, RX, vname, var )
 
 
 
