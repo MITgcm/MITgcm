@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.17 2004/09/01 18:32:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.18 2004/09/28 19:30:24 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -34,6 +34,9 @@ c-----------------------------------------------------------------------
 #include "gridalt_mapping.h"
 #include "GRID.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
        integer myThid
 
@@ -54,6 +57,12 @@ c-----------------------------------------------------------------------
        jm2 = sNy
        nymdb = nymd0
        nhmsb = nhms0
+
+#ifdef ALLOW_MNC
+       if (useMNC) then
+        call fizhi_mnc_init(myThid)
+       endif
+#endif
 
        call fizhi_alarms(nymdb,nhmsb,deltaTClock)
 
