@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.18 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.19 2001/09/21 14:31:12 adcroft Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -939,7 +939,6 @@ C     |      plots - one for K=1, one for K=3 and one for K=5.
 C     |      Each plot would have extents iMin:iMax step iStr     
 C     |      and jMin:jMax step jStr.                             
 C     *==========================================================*
-      IMPLICIT NONE
 
 C     !USES:
 C     == Global variables ==

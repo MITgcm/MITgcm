@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.10 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.11 2001/09/21 14:31:12 adcroft Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -30,7 +30,6 @@ C     *==========================================================*
 C     | Return index in timer data structure of timer named       
 C     | by the function argument "name".                          
 C     *==========================================================*
-      IMPLICIT NONE
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguements ==
