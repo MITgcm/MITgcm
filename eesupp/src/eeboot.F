@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.10 2001/09/21 03:54:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.11 2002/03/24 02:07:14 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -72,8 +72,6 @@ C                               it does is using shared memory.
 C     threadIsRunning used during startup to enable check that all 
 C                     the threads are running.
       fatalError          = .FALSE.
-      errorMessageUnit    = 0
-      standardMessageUnit = 6
       eeBootError         = .FALSE.
       eeEndError          = .FALSE.
       DO I=1, MAX_NO_THREADS
@@ -83,10 +81,14 @@ C                     the threads are running.
        threadIsComplete(I)          = .FALSE.
        ioErrorCount(I)              = 0
       ENDDO
-      scrUnit1      = 11
-      scrUnit2      = 12
-      eeDataUnit    = 13
-      modelDataUnit = 14
+      standardMessageUnit = 6
+      scrUnit1            = 11
+      scrUnit2            = 12
+      eeDataUnit          = 13
+      modelDataUnit       = 14
+      errorMessageUnit    = 15
+cph   errorMessageUnit = 0 is not allowed on some platforms, e.g. SP3
+C
 C     Annoyingly there is no universal way to have the usingMPI
 C     parameter work as one might expect. This is because, on some
 C     systems I/O does not work until MPI_Init has been called. The
