@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_diags.F,v 1.1 2004/05/21 19:39:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_cpl_diags.F,v 1.2 2005/04/06 18:44:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -18,9 +18,6 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "OCNCPL.h"
 #include "CPL_DIAGS.h"
-
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 
 C     == Routine arguments ==
 C     bi,bj  - Tile index

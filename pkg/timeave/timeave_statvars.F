@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.19 2005/02/20 11:46:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.20 2005/04/06 18:47:28 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -19,8 +19,8 @@ C     == Global variables ===
 #include "GRID.h"
 #include "TIMEAVE_STATV.h"
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -107,7 +107,7 @@ C-    Yearly  taveFreq:
      &  (thisdate(1)-prevdate(1)).GT.5000)DDTT=deltaTclock*tave_lastIter
 #endif
       ELSEIF ( 
-     &  DIFFERENT_MULTIPLE(taveFreq, myTime, myTime-deltaTClock)) THEN
+     &  DIFF_BASE_MULTIPLE(baseTime,taveFreq,myTime,deltaTClock) ) THEN
         DDTT = deltaTclock*tave_lastIter
       ENDIF
 

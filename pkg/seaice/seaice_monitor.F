@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.1 2004/12/23 21:28:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_monitor.F,v 1.2 2005/04/06 18:46:34 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -25,8 +25,6 @@ C     !USES:
 # include "MONITOR.h"
 #endif
 #include "SEAICE.h"
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 
 C     !INPUT PARAMETERS:
       INTEGER myIter

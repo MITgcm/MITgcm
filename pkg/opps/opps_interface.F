@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_interface.F,v 1.1 2004/09/16 11:28:16 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/opps/opps_interface.F,v 1.2 2005/04/06 18:44:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,9 +45,6 @@ C     == Global data ==
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
 #endif 
-
-      EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIFFERENT_MULTIPLE
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_ini_vars.F,v 1.2 2004/05/21 19:42:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_ini_vars.F,v 1.3 2005/04/06 18:44:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -65,7 +65,7 @@ c         vVelGround(I,J,bi,bj)  = 0.
        ENDDO
       ENDDO
 
-      IF ( ( startTime.NE.0. .OR. nIter0.NE.0 )
+      IF ( ( startTime.NE.baseTime .OR. nIter0.NE.0 )
      &           .AND. .NOT. cpl_earlyExpImpCall ) THEN
        CALL OCN_CPL_READ_PICKUP( nIter0, myThid )
       ENDIF

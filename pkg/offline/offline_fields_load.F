@@ -38,9 +38,6 @@ C     === Global variables ===
 #include "OFFLINE.h"
 #endif
 
-      LOGICAL DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
- 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_statvars.F,v 1.6 2004/07/18 01:12:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_statvars.F,v 1.7 2005/04/06 18:45:48 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -26,8 +26,8 @@ c #include "TIMEAVE_STATV.h"
 #include "PTRACERS.h"
 #include "PTRACERS_STATV.h"
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -60,8 +60,8 @@ C-    Initialize fields for the first call ever
       ENDIF
 
 C--   Cumulate state-variables with Half or Full time step :
-      IF ( myIter .EQ. nIter0 .OR. DIFFERENT_MULTIPLE
-     &     (PTRACERS_taveFreq, myTime, myTime-deltaTClock) ) THEN
+      IF ( myIter .EQ. nIter0 .OR. DIFF_BASE_MULTIPLE
+     &     (baseTime,PTRACERS_taveFreq, myTime, deltaTClock) ) THEN
        DDTT=0.5*deltaTclock
       ELSE
        DDTT=deltaTclock

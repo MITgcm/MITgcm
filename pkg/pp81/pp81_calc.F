@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc.F,v 1.2 2004/10/17 23:12:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc.F,v 1.3 2005/04/06 18:45:20 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -41,9 +41,6 @@ C !USES: ============================================================
 #else /* ALLOW_AUTODIFF_TAMC */
       integer ikppkey
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-      EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIFFERENT_MULTIPLE
 
 C !INPUT PARAMETERS: ===================================================
 c Routine arguments

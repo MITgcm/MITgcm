@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.1 2005/01/04 00:23:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.2 2005/04/06 18:47:11 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -42,8 +42,8 @@ CEOP
 #ifdef ALLOW_THSICE
 
 C     == Local variables ==
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
       INTEGER bi, bj, kl
       CHARACTER*(MAX_LEN_MBUF) suff, fn
       LOGICAL gf
@@ -75,7 +75,7 @@ c set arrays to zero if first timestep
 
 C     Dump files and restart average computation if needed
       ELSEIF ( 
-     &  DIFFERENT_MULTIPLE(thSIce_taveFreq,myTime,myTime-deltaTClock)
+     &  DIFF_BASE_MULTIPLE(baseTime,thSIce_taveFreq,myTime,deltaTClock)
      &     ) THEN
 
 C--    Normalize by integrated time
@@ -252,7 +252,8 @@ C--    Reset averages to zero
 #endif /* ALLOW_TIMEAVE */
 
 C     Dump a snap-shot of main state variables:
-      IF ( DIFFERENT_MULTIPLE(thSIce_diagFreq,myTime,myTime-deltaTClock)
+      IF ( 
+     &  DIFF_BASE_MULTIPLE(baseTime,thSIce_diagFreq,myTime,deltaTClock)
      &     .OR. myTime.EQ.startTime
      &     .OR. myTime.EQ.endTime ) THEN
 

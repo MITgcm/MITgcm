@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.6 2004/12/01 22:54:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.7 2005/04/06 18:45:48 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -36,8 +36,8 @@ C  myTime               :: current time
       INTEGER myThid
 
 C     === Functions ====
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
 
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_MONITOR
@@ -54,8 +54,8 @@ CEOP
 
       dT=deltaTclock
 
-      IF (DIFFERENT_MULTIPLE(
-     &     PTRACERS_monitorFreq,myTime,myTime-dT)) THEN
+      IF (DIFF_BASE_MULTIPLE(
+     &     baseTime,PTRACERS_monitorFreq,myTime,dT)) THEN
 
 C     Ptracers field monitor start 
        _BEGIN_MASTER(myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.4 2004/12/18 02:18:56 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.5 2005/04/06 18:44:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -21,8 +21,8 @@ C     === Global variables ===
 #include "OCNCPL.h"
 #include "CPL_DIAGS.h"
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
 
 C     == Routine arguments ==
 C     myTime - Current time of simulation ( s )
@@ -45,7 +45,7 @@ C     bi,bj  - Tile index
 
 C     Dump files and restart average computation if needed
       IF ( myIter.NE.nIter0 .AND.
-     &     DIFFERENT_MULTIPLE(cpl_taveFreq,myTime,myTime-deltaTClock)
+     &     DIFF_BASE_MULTIPLE(baseTime,cpl_taveFreq,myTime,deltaTClock)
      &     ) THEN
 
 C       Normalize by integrated time
