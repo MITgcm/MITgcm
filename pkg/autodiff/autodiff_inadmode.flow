@@ -1,0 +1,24 @@
+C     /==========================================================\
+C     | SUBROUTINE AUTODIFF_INADMODE_SET                         |
+C     \==========================================================/
+cadj SUBROUTINE autodiff_inadmode_set INPUT   = 1
+cadj SUBROUTINE autodiff_inadmode_set OUTPUT  = 
+cadj SUBROUTINE autodiff_inadmode_set ACTIVE  = 
+cadj SUBROUTINE autodiff_inadmode_set DEPEND  = 1
+cadj SUBROUTINE autodiff_inadmode_set REQUIRED
+cadj SUBROUTINE autodiff_inadmode_set INFLUENCED
+cadj SUBROUTINE autodiff_inadmode_set ADNAME  = 
+CADJ & adautodiff_inadmode_set
+
+C     /==========================================================\
+C     | SUBROUTINE AUTODIFF_INADMODE_UNSET                         |
+C     \==========================================================/
+cadj SUBROUTINE autodiff_inadmode_unset INPUT   = 1
+cadj SUBROUTINE autodiff_inadmode_unset OUTPUT  = 
+cadj SUBROUTINE autodiff_inadmode_unset ACTIVE  = 
+cadj SUBROUTINE autodiff_inadmode_unset DEPEND  = 1
+cadj SUBROUTINE autodiff_inadmode_unset REQUIRED
+cadj SUBROUTINE autodiff_inadmode_unset INFLUENCED
+cadj SUBROUTINE autodiff_inadmode_unset ADNAME  = 
+CADJ & adautodiff_inadmode_unset
+
