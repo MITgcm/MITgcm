@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.33 2003/11/13 15:10:40 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.34 2003/11/13 19:33:29 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -216,7 +216,7 @@ get_pdepend_list()  {
     cat $1 | sed -e 's/#.*$//g' \
 	| $AWK 'BEGIN{nn=0;} (NF>0){ for(i=2;i<=NF;i++){nn++; print "PNAME["nn"]="$1"\nDNAME["nn"]="$i} }' \
 	> ./.pd_tmp
-    source ./.pd_tmp
+    . ./.pd_tmp
     rm -f ./.pd_tmp
 
     echo -n "PNAME = "${}
@@ -450,14 +450,14 @@ echo "===  Processing options files and arguments  ==="
 gm_local="genmake_local"
 for i in . $MODS ; do
     if test -r $i/$gm_local ; then
-	source $i/$gm_local
+	. $i/$gm_local
 	break
     fi
 done
 echo -n "  getting local config information:  "
 if test -e $gm_local ; then
     echo "using $gm_local"
-    source $gm_local
+    . $gm_local
     # echo "DISABLE=$DISABLE"
     # echo "ENABLE=$ENABLE"
 else
@@ -661,7 +661,7 @@ fi
 if test "x$OPTFILE" != xNONE ; then
     if test -f "$OPTFILE" -a -r "$OPTFILE" ; then
 	echo "    using OPTFILE=\"$OPTFILE\""
-	source "$OPTFILE"
+	. "$OPTFILE"
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    echo -n "Error: failed to source OPTFILE \"$OPTFILE\""
@@ -688,7 +688,7 @@ fi
 if test "x${AD_OPTFILE}" != xNONE ; then
     if test -f "$AD_OPTFILE" -a -r "$AD_OPTFILE" ; then
 	echo "    using AD_OPTFILE=\"$AD_OPTFILE\""
-	source "$AD_OPTFILE"
+	. "$AD_OPTFILE"
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    echo -n "Error: failed to source AD_OPTFILE \"$AD_OPTFILE\""
@@ -886,7 +886,7 @@ if test ! "x${RETVAL}" = x0 ; then
     echo "Error: unable to parse package dependencies -- please check PDEPEND=\"$PDEPEND\""
     exit 1
 fi
-source ./.pd_tmp
+. ./.pd_tmp
 rm -f ./.pd_tmp
 
 #  Search for default packages.  Note that a "$ROOTDIR/pkg/pkg_groups"
