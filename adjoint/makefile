@@ -25,7 +25,7 @@ DIFF_FLAGS       = -toplevel the_main_loop		\
 
 TAMCFLAG         = $(TAMCFLAGS) $(DIFF_FLAGS) -admark ad
 
-TAFFLAG          = $(TAFFLAGS) $(DIFF_FLAGS) -l list_uv -admark ad
+TAFFLAG          = $(TAFFLAGS) $(DIFF_FLAGS) -admark ad
 
 
 # Source files for the MITgcmUV
@@ -115,6 +115,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/ini_fields.f			\
 		$(SOURCE_CODE)/ini_forcing.f			\
 		$(SOURCE_CODE)/ini_grid.f			\
+		$(SOURCE_CODE)/ini_linear_phisurf.f		\
 		$(SOURCE_CODE)/ini_masks_etc.f			\
 		$(SOURCE_CODE)/ini_p_ground.f			\
 		$(SOURCE_CODE)/ini_pnh.f			\
