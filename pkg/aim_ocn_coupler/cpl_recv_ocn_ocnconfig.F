@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_ocn_coupler/Attic/cpl_recv_ocn_ocnconfig.F,v 1.1 2003/12/15 02:28:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_ocn_coupler/Attic/cpl_recv_ocn_ocnconfig.F,v 1.2 2004/05/21 19:31:50 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,8 +26,9 @@ C     == Local variables ==
 CEndOfInterface
 
 C     Get config from ocean component
-      CALL COUPRECV_R8TILES( ocnCompName, ocnBathyName, Nx_ocn, Ny_ocn, 
-     &                       OcnDepths_ocn )
+      CALL COUPRECV_R8TILES( ocnCompName, 
+     I                       ocnMxlDName, Nx_ocn, Ny_ocn, 
+     O                       OcMxlD_ocn )
 
       RETURN
       END

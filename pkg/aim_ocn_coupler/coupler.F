@@ -1,5 +1,5 @@
-C $ Header: $
-C $ Name:   $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_ocn_coupler/Attic/coupler.F,v 1.2 2004/05/21 19:31:50 jmc Exp $
+C $Name:  $
 
       PROGRAM COUPLER
 C     /==========================================================\
@@ -36,31 +36,12 @@ C     between components
       DO I=1,nCouplingSteps
 
 C      Receive updated state
-       CALL CPL_RECV_OCN_SST
-       CALL CPL_RECV_ATM_TAUX
-       CALL CPL_RECV_ATM_TAUY
-       CALL CPL_RECV_ATM_HEATFLUX
-       CALL CPL_RECV_ATM_EVMPR
-       CALL CPL_RECV_ATM_RUNOFF
-       CALL CPL_RECV_ATM_UVELGROUND
-       CALL CPL_RECV_ATM_VVELGROUND
-       CALL CPL_RECV_ATM_QLATENT
-       CALL CPL_RECV_ATM_QSENSIBLE
-       CALL CPL_RECV_ATM_QLONGWAVE
-       CALL CPL_RECV_ATM_QSHORTWAVE
+       CALL CPL_RECV_OCN_FIELDS
+       CALL CPL_RECV_ATM_FIELDS
 
 C      Send out fields
-       CALL CPL_SEND_ATM_SST
-       CALL CPL_SEND_OCN_TAUX
-       CALL CPL_SEND_OCN_TAUY
-       CALL CPL_SEND_OCN_HEATFLUX
-       CALL CPL_SEND_OCN_FWFLUX
-       CALL CPL_SEND_OCN_UVELGROUND
-       CALL CPL_SEND_OCN_VVELGROUND
-       CALL CPL_SEND_OCN_QLATENT
-       CALL CPL_SEND_OCN_QSENSIBLE
-       CALL CPL_SEND_OCN_QLONGWAVE
-       CALL CPL_SEND_OCN_QSHORTWAVE
+       CALL CPL_SEND_ATM_FIELDS
+       CALL CPL_SEND_OCN_FIELDS
 
       ENDDO
 
