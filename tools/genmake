@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.33 2001/03/06 16:12:45 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.34 2001/05/14 22:04:44 heimbach Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -8,7 +8,7 @@
 #   modified by aja 01/00
 
 # Default lists
-set DISABLE = ( aim )
+set DISABLE = ( aim autodiff cal cost ctrl ecco exf )
 set ENABLE  = ( )
 set MODS  = ( )
 
