@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.6 1998/06/22 15:26:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.7 1998/08/20 18:43:11 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
 C     /==========================================================\
 C     | S/R CORRECTION_STEP                                      |
 C     | o Corrects the horizontal flow fields with the surface   |
-C     |   pressure gradient.                                     |
+C     |   slope.                                                 |
 C     \==========================================================/
       SUBROUTINE CORRECTION_STEP( bi, bj, iMin, iMax, jMin, jMax,
-     I                       K, pSurfX, pSurfY,
+     I                       K, etaX, etaY,
      I                       myCurrentTime, myThid )
-      implicit none
+      IMPLICIT NONE
 ! Common
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -19,12 +19,17 @@ C     \==========================================================/
 #include "GRID.h"
 #include "CG2D.h"
 C     == Routine Arguments ==
+C     etaX, etaY - Surface slope
+C     bi,bj,iMin,iMax,jMin,jMax, K - Loop counters
+C     myThid - Instance number for this call to S/R CORRECTION_STEP
+C     myCurrentTime - Current simulation time for this instance.
+      _RL  etaX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL  etaY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER K
-      _RL  pSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL  pSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
       _RL myCurrentTime
+
 C     == Local variables ==
       INTEGER i,j
       _RL hxFac,hyFac,rRhoNil
@@ -33,13 +38,11 @@ C     On/off scaling paramters
       hxFac = pfFacMom
       hyFac = pfFacMom
 
-      rRhoNil=1. / rhonil
-
 C     Step forward zonal velocity
       DO j=jMin,jMax
        DO i=iMin,iMax
         uVel(i,j,k,bi,bj)=( gUNm1(i,j,k,bi,bj)
-     &       -deltaTmom*hxFac*rRhonil *pSurfX(i,j)
+     &       -deltaTmom*hxFac*gBaro *pSurfX(i,j)
      &                    )*_maskW(i,j,k,bi,bj)
         gUNm1(i,j,k,bi,bj)=gU(i,j,k,bi,bj)
        ENDDO
