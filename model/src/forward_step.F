@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.26 2001/11/20 23:27:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.27 2001/12/11 14:58:46 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -35,6 +35,13 @@ C     == Global variables ==
 
 #ifdef ALLOW_NONHYDROSTATIC
 #include "CG3D.h"
+#endif
+
+#ifdef ALLOW_SHAP_FILT
+#include "SHAP_FILT.h"
+#endif
+#ifdef ALLOW_ZONAL_FILT
+#include "ZONAL_FILT.h"
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -123,12 +130,21 @@ C--     Step forward fields and calculate time tendency terms.
         CALL TIMER_STOP ('THERMODYNAMICS      [THE_MAIN_LOOP]',mythid)
 
 #ifdef ALLOW_SHAP_FILT
-       IF (staggerTimeStep .AND. useSHAP_FILT) THEN
-c       CALL TIMER_START('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
+       IF (useSHAP_FILT .AND. 
+     &     staggerTimeStep .AND. shap_filt_TrStagg ) THEN
+        CALL TIMER_START('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
         CALL SHAP_FILT_APPLY_TS( gT, gS, myTime, myIter, myThid )
-c       CALL TIMER_STOP ('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
+        CALL TIMER_STOP ('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
        ENDIF
 #endif
+#ifdef ALLOW_ZONAL_FILT
+       IF (useZONAL_FILT .AND. 
+     &     staggerTimeStep .AND. zonal_filt_TrStagg ) THEN
+        CALL TIMER_START('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
+        CALL ZONAL_FILT_APPLY_TS( gT, gS, myThid )
+        CALL TIMER_STOP ('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
+      ENDIF
+#endif   
 
 C--     Step forward fields and calculate time tendency terms.
         IF ( momStepping ) THEN
@@ -159,34 +175,31 @@ C-    update also CG2D matrix (and preconditioner)
       ENDIF
 #endif
 
-C-- This block has been moved to the_correction_step(). We have
-C   left this code here to indicate where the filters used to be
-C   in the algorithm before JMC moved them to after the pressure
-C   solver.
-C
-C#ifdef ALLOW_SHAP_FILT
-CC--   Step forward all tiles, filter and exchange.
-C      CALL TIMER_START('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
-C      CALL SHAP_FILT_APPLY( 
-C     I                     gUnm1, gVnm1, gTnm1, gSnm1,
-C     I                     myTime, myIter, myThid )
-C      IF (implicDiv2Dflow.LT.1.) THEN
-CC--   Explicit+Implicit part of the Barotropic Flow Divergence
-CC      => Filtering of uVel,vVel is necessary
-C         CALL SHAP_FILT_UV( uVel, vVel, myTime, myThid )
-C      ENDIF
-C      CALL TIMER_STOP ('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
-C#endif
-C
-C#ifdef ALLOW_ZONAL_FILT
-C      IF (zonal_filt_lat.LT.90.) THEN 
-C        CALL TIMER_START('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
-C        CALL ZONAL_FILT_APPLY(
-C     U           gUnm1, gVnm1, gTnm1, gSnm1,
-C     I           myThid )
-C        CALL TIMER_STOP ('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
-C      ENDIF
-C#endif
+C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
+#ifdef ALLOW_SHAP_FILT
+      IF (useSHAP_FILT .AND. shap_filt_uvStar) THEN
+        CALL TIMER_START('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
+        CALL SHAP_FILT_APPLY_UV( gUnm1,gVnm1, myTime,myIter,myThid )
+        IF (implicDiv2Dflow.LT.1.) THEN
+C--   Explicit+Implicit part of the Barotropic Flow Divergence
+C      => Filtering of uVel,vVel is necessary
+          CALL SHAP_FILT_APPLY_UV( uVel,vVel, myTime,myIter,myThid )
+        ENDIF
+        CALL TIMER_STOP ('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
+      ENDIF
+#endif
+#ifdef ALLOW_ZONAL_FILT
+      IF (useZONAL_FILT .AND. zonal_filt_uvStar) THEN
+        CALL TIMER_START('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
+        CALL ZONAL_FILT_APPLY_UV( gUnm1, gVnm1, myThid )
+        IF (implicDiv2Dflow.LT.1.) THEN
+C--   Explicit+Implicit part of the Barotropic Flow Divergence
+C      => Filtering of uVel,vVel is necessary
+          CALL ZONAL_FILT_APPLY_UV( uVel, vVel, myThid )
+        ENDIF
+        CALL TIMER_STOP ('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
+      ENDIF
+#endif  
 
 C--   Solve elliptic equation(s).
 C     Two-dimensional only for conventional hydrostatic or 

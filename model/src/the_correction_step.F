@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.15 2001/09/27 20:12:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.16 2001/12/11 14:58:46 jmc Exp $
 C Tag $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -46,6 +46,14 @@ C     == Global variables ===
 #ifdef ALLOW_PASSIVE_TRACER
 #include "TR1.h"
 #endif
+
+#ifdef ALLOW_SHAP_FILT
+#include "SHAP_FILT.h"
+#endif
+#ifdef ALLOW_ZONAL_FILT   
+#include "ZONAL_FILT.h"
+#endif
+
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"
@@ -168,20 +176,24 @@ C
 C       Static stability is calculated and the tracers are
 C       convective adjusted where statically unstable.
 
+C--   Filter (and exchange)
 #ifdef ALLOW_SHAP_FILT
       IF (useSHAP_FILT) THEN
-C--   Filter (and exchange).
-      CALL SHAP_FILT_APPLY(
-     I                     uVel, vVel, theta, salt,
-     I                     myTime, myIter, myThid )
+       IF ( .NOT.shap_filt_uvStar )
+     &  CALL SHAP_FILT_APPLY_UV( uVel, vVel, myTime, myIter, myThid )
+
+       IF ( .NOT.(staggerTimeStep .AND. shap_filt_TrStagg) )
+     &  CALL SHAP_FILT_APPLY_TS( theta,salt, myTime, myIter, myThid )
       ENDIF
 #endif 
-
 #ifdef ALLOW_ZONAL_FILT
-      IF (zonal_filt_lat.LT.90.) THEN
-      CALL ZONAL_FILT_APPLY(
-     U                      uVel, vVel, theta, salt,
-     I                      myThid )
+      IF (useZONAL_FILT) THEN
+       IF ( .NOT.zonal_filt_uvStar )
+     &  CALL ZONAL_FILT_APPLY_UV( uVel, vVel, myThid )
+
+       IF ( .NOT.(staggerTimeStep .AND. zonal_filt_TrStagg) )
+     &  CALL ZONAL_FILT_APPLY_TS( theta, salt, myThid )  
+
       ENDIF
 #endif 
 
