@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.4 2004/10/19 02:42:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.5 2005/01/04 00:25:31 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -86,14 +86,12 @@ c      CALL TIMEAVE_CUMULATE(ice_snowPr_Ave, snowPrc,
 c    &                       1, thSIce_deltaT, bi, bj, myThid )
 
 C-- average of atmospheric fluxes : 
-#ifdef ALLOW_TIMEAVE
       IF ( fluidIsWater ) THEN
        CALL TIMEAVE_CUMUL_1T(ice_flxAtm_Ave, flxAtm,
      &                       1, thSIce_deltaT, bi, bj, myThid )
        CALL TIMEAVE_CUMUL_1T(ice_frwAtm_Ave, frwAtm,
      &                       1, thSIce_deltaT, bi, bj, myThid )
       ENDIF
-#endif /*ALLOW_TIMEAVE*/
 
 C-- average of oceanic fluxes : 
 #ifndef CHECK_ENERGY_CONSERV
@@ -125,6 +123,12 @@ C-- average of Ocean Mixed-Layer temp. & salinity
      &                      bi,bj,1,wrtIter,myThid)
         CALL WRITE_LOCAL_RL('ice_frwAtm','I10',1,frwAtm,
      &                      bi,bj,1,wrtIter,myThid)
+      ENDIF
+
+      IF ( useDiagnostics ) THEN
+        CALL THSICE_DIAGNOSTICS_FILL( 
+     I                   frwAtm, flxAtm,
+     I                   myTime, myIter, bi,bj, myThid )
       ENDIF
 
 #endif  /* ALLOW_THSICE */
