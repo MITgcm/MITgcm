@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.18 2004/03/02 08:45:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.19 2004/03/08 21:20:03 adcroft Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -21,10 +21,10 @@ C     === Global variables ===
 #include "SEAICE_GRID.h"
 #include "SEAICE_DIAGS.h"
 #include "SEAICE_PARAMS.h"
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
@@ -119,7 +119,7 @@ C--   Initialize grid info
          ENDDO
         ENDDO
 
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
 C--   Special stuff for cubed sphere: assume grid is rectangular and
 C     set UV mask to zero except for Arctic and Antarctic cube faces.
         IF (useCubedSphereExchange) THEN
@@ -155,7 +155,7 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
           ENDDO
          ENDIF
         ENDIF
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx

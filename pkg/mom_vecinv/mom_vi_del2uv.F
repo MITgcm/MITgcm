@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_del2uv.F,v 1.5 2004/02/06 20:52:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_del2uv.F,v 1.6 2004/03/08 21:20:03 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -17,10 +17,10 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
 
 C     == Routine arguments ==
       INTEGER bi,bj,k
@@ -36,13 +36,13 @@ C     == Local variables ==
       _RL Zip,Zij,Zpj,Dim,Dij,Dmj,uDij
       LOGICAL northWestCorner, northEastCorner,
      &        southWestCorner, southEastCorner
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
       INTEGER myTile
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
 
 C     Special stuff for Cubed Sphere
       IF (useCubedSphereExchange) THEN
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
          southWestCorner = .FALSE.
          southEastCorner = .FALSE.
          northWestCorner = .FALSE.
@@ -69,7 +69,7 @@ C     Special stuff for Cubed Sphere
          southEastCorner = .TRUE.
          northWestCorner = .TRUE.
          northEastCorner = .TRUE.
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
       ENDIF
 
 C     - Laplacian  and bi-harmonic terms

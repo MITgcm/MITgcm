@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.1 2004/03/01 20:36:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.2 2004/03/08 21:20:03 adcroft Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -63,10 +63,10 @@ C Global variables / common blocks
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "PARAMS.h"
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
 
 C Routine arguments
       character*(*) fName
@@ -93,9 +93,9 @@ C Local variables
       integer length_of_rec
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
       integer domainHeight,domainLength,tby,tgx,tny,tnx,tn
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
 #ifdef ALLOW_USE_MPI
       integer i
       Real*8  global(Nx,Ny)
@@ -240,7 +240,7 @@ C If we are writing to a global file then we open it here
        endif
       endif
 
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
       if (globalFile) then
       domainLength = exch2_domain_nxt
       domainHeight = exch2_domain_nyt
@@ -312,7 +312,7 @@ C End of k loop
        enddo
        else ! not global file
 
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
 C Loop over all tiles
       do bj=1,nSy
        do bi=1,nSx
@@ -421,11 +421,11 @@ C Create meta-file for each tile if we are tiling
 C End of bi,bj loops
        enddo
       enddo
-c#endif /* USE_W2 */
+c#endif /* ALLOW_EXCH2 */
 
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
       endif ! global fle
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
 
 C If global file was opened then close it
       if (fileIsOpen .AND. globalFile) then

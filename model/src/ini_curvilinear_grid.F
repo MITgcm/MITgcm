@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.9 2004/02/25 01:44:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.10 2004/03/08 21:20:02 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,16 +26,16 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
 #endif
 
-#ifndef USE_W2
+#ifndef ALLOW_EXCH2
 C- note: default is to use "new" grid files (OLD_GRID_IO undef) with EXCH2
 C    but can still use (on 1 cpu) OLD_GRID_IO and EXCH2 independently
 #define OLD_GRID_IO
-#endif
+#endif /* ALLOW_EXCH2 */
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -256,7 +256,7 @@ C--   Only do I/O if I am the master thread
         iG=bi+(myXGlobalLo-1)/sNx
         WRITE(fName(1:15),'("tile",I3.3,".mitgrid")') iG
         WRITE(msgBuf,'(A,I4)') 'tile:',iG
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
       myTile = W2_myTileList(bi)
       write(fName(1:15),'("tile",I3.3,".mitgrid")')
      &  exch2_myface(myTile)
@@ -331,14 +331,14 @@ C !!! _EXCH_OUV_XY_R4(DXF, DYF, unSigned, myThid )
 c     CALL EXCH_XY_RS(DXF,myThid)
 c     CALL EXCH_XY_RS(DYF,myThid)
       CALL EXCH_XY_RS(RA,myThid )
-#ifndef USE_W2
+#ifndef ALLOW_EXCH2
       CALL EXCH_Z_XY_RS(XG,myThid)
       CALL EXCH_Z_XY_RS(YG,myThid)
 C !!! _EXCH_ZUV_XY_R4(DXV, DYU, unSigned, myThid)
 c     CALL EXCH_Z_XY_RS(DXV,myThid)
 c     CALL EXCH_Z_XY_RS(DYU,myThid)
       CALL EXCH_Z_XY_RS(RAZ,myThid)
-#endif
+#endif /* ALLOW_EXCH2 */
       CALL EXCH_UV_XY_RS(DXC,DYC,.FALSE.,myThid)
       CALL EXCH_UV_XY_RS(RAW,RAS,.FALSE.,myThid)
       CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
@@ -367,21 +367,21 @@ C     \==========================================================/
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
-#endif
+#endif /* ALLOW_EXCH2 */
 
 C     == Routine arguments ==
       CHARACTER*(*) fName
       INTEGER irec
       _RS array(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       INTEGER bi,bj,myThid
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
       _RL buf(1:sNx*nSx*nPx+1)
 #else
       _RL buf(1:sNx+1,1:sNy+1)
-#endif
+#endif /* ALLOW_EXCH2 */
 
 C     == Local variables ==
       INTEGER I,J,dUnit
@@ -389,7 +389,7 @@ C     == Local variables ==
       INTEGER MDS_RECLEN
       INTEGER TN, DNX, DNY, TBX, TBY, TNX, TNY, II, iBase
 
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
 C     Figure out offset of tile within face
       TN  = W2_myTileList(bi)
       DNX = exch2_mydnx(TN)
@@ -421,7 +421,7 @@ C     Figure out offset of tile within face
       ENDDO
       CLOSE( dUnit )
       
-#else /* USE_W2 */
+#else /* ALLOW_EXCH2 */
 
       CALL MDSFINDUNIT( dUnit, mythid )
       length_of_rec=MDS_RECLEN( 64, (sNx+1)*(sNy+1), myThid )
@@ -445,7 +445,7 @@ C     Figure out offset of tile within face
       ENDDO
 c       write(0,*) irec,buf(1,1),array(1,1,1,1)
 
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
 
       RETURN
       END

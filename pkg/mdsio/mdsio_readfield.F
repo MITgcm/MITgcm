@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.9 2004/02/03 22:51:50 afe Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.10 2004/03/08 21:20:02 adcroft Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -45,10 +45,10 @@ C Global variables / common blocks
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "EESUPPORT.h"
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
 
 C Routine arguments
       character*(*) fName
@@ -74,9 +74,9 @@ C Local variables
       Real*4 global_r4(Nx,Ny)
       Real*8 global   (Nx,Ny)
       _RL local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
       integer domainHeight,domainLength,tby,tgx,tny,tnx,tn
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -149,7 +149,7 @@ C If we are reading from a global file then we open it here
        fileIsOpen=.TRUE.
       endif
 
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
 
       if (globalFile) then
        domainLength = exch2_domain_nxt
@@ -237,8 +237,8 @@ C End of bi,bj loops
        enddo
       enddo
       else ! if globalFile
-c#else /* .not. USE_W2 */
-#endif /* USE_W2 */
+c#else /* .not. ALLOW_EXCH2 */
+#endif /* ALLOW_EXCH2 */
 
 
 C Loop over all tiles
@@ -339,10 +339,10 @@ C End of bi,bj loops
        enddo
       enddo
 
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
       endif ! globalFile
 
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
 
 C If global file was opened then close it
       if (fileIsOpen .AND. globalFile) then
@@ -357,13 +357,13 @@ c     endif ( .not. ( globalFile .and. useSingleCPUIO ) )
 
       if ( globalFile .and. useSingleCPUIO ) then
 
-#ifdef USE_W2
+#ifdef ALLOW_EXCH2
         write(msgbuf,'(a)')
      &         ' MDSREADFIELD: useSingleCPUIO not 
      &           implemented with exch2'
         call print_error( msgbuf, mythid )
         stop 'ABNORMAL END: S/R MDSREADFIELD'
-#endif /* USE_W2 */
+#endif /* ALLOW_EXCH2 */
 
 C master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
