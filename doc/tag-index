@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.400 2004/12/03 16:47:45 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.401 2004/12/04 00:24:17 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o depth convergence accelerator: replace deltaTtracer by dTtracerLev(k)
+  (not yet implemented for implicit vertical diffusion & advection)
 o OBCS: extend application of tracer open boundary conditions
   to a strip beyond the boundary of width Olx/Oly
 
