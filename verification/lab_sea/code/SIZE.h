@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SIZE.h,v 1.3 2002/12/28 10:11:12 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SIZE.h,v 1.4 2005/02/07 16:59:33 jmc Exp $
 C
 CBOP
 C    !ROUTINE: SIZE.h
@@ -42,11 +42,11 @@ C     Nr  :: No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =  20,
+     &           sNx =  10,
      &           sNy =  16,
      &           OLx =   3,
      &           OLy =   3,
-     &           nSx =   1,
+     &           nSx =   2,
      &           nSy =   1,
      &           nPx =   1,
      &           nPy =   1,
