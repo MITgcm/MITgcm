@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.13 1998/08/22 17:51:07 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.14 1998/08/24 00:24:44 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -64,6 +64,8 @@ C     == Local variables ==
      &'   /* Reference salinity profile ( ppt ) */')
       CALL WRITE_1D_R8( viscAh, 1, INDEX_NONE,'viscAh =',
      &'   /* Lateral eddy viscosity ( m^2/s ) */')
+      CALL WRITE_1D_R8( viscA4, 1, INDEX_NONE,'viscAh =',
+     &'   /* Lateral biharmonic viscosity ( m^4/s ) */')
       CALL WRITE_1D_R8( viscAz, 1, INDEX_NONE,'viscAz =',
      &'   /* Vertical eddy viscosity ( m^2/s ) */')
       CALL WRITE_1D_R8( diffKhT, 1, INDEX_NONE,'diffKhT =',

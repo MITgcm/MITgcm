@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.6 1998/08/22 17:51:06 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.7 1998/08/24 00:24:43 cnh Exp $
 C
 C     /==========================================================\
 C     | GRID.h                                                   |
@@ -310,9 +310,9 @@ C              Note: The code needs terms like MIN(hFac,hFac(I+1))
 C                    On some platforms it may be better to precompute
 C                    hFacW, hFacE, ... here than do MIN on the fly.
 C     rkFac     - Vertical coordinate to vertical index orientation.
-C                 ( 1 same orientation, -1 opposite orientation )
-C                 ( vertical coord == m  -> rkFac = -1 )
-C                 ( vertical coord == Pa -> rkFac =  1 )
+C                 ( -1 same orientation, 1 opposite orientation )
+C                 ( vertical coord == m  -> rkFac =  1 )
+C                 ( vertical coord == Pa -> rkFac = -1 )
 C     maskW  - West face land mask
 C     maskS  - South face land mask
 C     recip_dxC   - Recipricol of dxC
