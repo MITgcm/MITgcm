@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/Attic/ebm_forcing_surf.F,v 1.1 2004/05/14 21:10:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/Attic/ebm_forcing_surf.F,v 1.2 2004/05/19 20:38:53 heimbach Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -74,7 +74,7 @@ c     Net heat flux Qnet:
      &      -Qnet(i,j,bi,bj)*recip_Cp*horiVertRatio*recip_rhoConst
      &         *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
      &      -lambdaThetaZonRelax*maskC(i,j,kSurface,bi,bj)*
-     &         (theta(i,j,kSurface,bi,bj)-ZonalMeanSST(j))
+     &         (theta(i,j,kSurface,bi,bj)-ZonalMeanSST(j,bj))
 
 C     Net Salt Flux : 
           surfaceTendencyS(i,j,bi,bj) = 

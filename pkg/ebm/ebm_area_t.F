@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_area_t.F,v 1.1 2004/05/14 21:10:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_area_t.F,v 1.2 2004/05/19 20:38:53 heimbach Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -117,15 +117,24 @@ C--   Sum over the tiles
        ENDDO
       ENDDO
 
-      TmlS = TmlS/CountmlS + t_mlt
-      TmlN = TmlN/CountmlN + t_mlt
-      TtS = TtS/CounttS + t_mlt
-      TtN = TtN/CounttN + t_mlt
+      print *, 'ph-ebm a ', TmlS
 
-      _GLOBAL_SUM_R4( TmlS, myThid )
-      _GLOBAL_SUM_R4( TmlN, myThid )
-      _GLOBAL_SUM_R4( TtS, myThid )
-      _GLOBAL_SUM_R4( TtN, myThid )
+      _GLOBAL_SUM_R8( TmlS, myThid )
+      _GLOBAL_SUM_R8( TmlN, myThid )
+      _GLOBAL_SUM_R8( TtS, myThid )
+      _GLOBAL_SUM_R8( TtN, myThid )
+c
+      _GLOBAL_SUM_R8( CountmlS, myThid )
+      _GLOBAL_SUM_R8( CountmlN, myThid )
+      _GLOBAL_SUM_R8( CounttS, myThid )
+      _GLOBAL_SUM_R8( CounttN, myThid )
+
+      if ( CountmlS .NE. 0.) TmlS = TmlS/CountmlS + t_mlt
+      if ( CountmlN .NE. 0.) TmlN = TmlN/CountmlN + t_mlt
+      if ( CounttS .NE. 0.) TtS = TtS/CounttS + t_mlt
+      if ( CounttN .NE. 0.) TtN = TtN/CounttN + t_mlt
+
+      print *, 'ph-ebm b ', TmlS
 
 #endif /* ALLOW_EBM */
 

@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.297 2004/05/19 08:43:38 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.298 2004/05/19 20:38:53 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -10,6 +10,7 @@ o changes to calc_gw.F
   - because the bug fix changes two verification experiments anyway (exp5
     and plume on slope), change the lateral boundary condition from half slip
     to the value of no_slip_sides
+o ebm package wasnt quite up to the parallel task. Fixed that.
 
 checkpoint53b_post
 o Commiting new energy balance model to repository

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_zonalmean.F,v 1.1 2004/05/14 21:10:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_zonalmean.F,v 1.2 2004/05/19 20:38:53 heimbach Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -43,9 +43,11 @@ C--   Top layer only
       k = 1
 
 c--   Initialise
-      DO j=1-OLy,sNy+OLy
-         ZonalMeanSST(j) = 0.0
-         CountX(j) = 0.0
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO j=1-OLy,sNy+OLy
+         ZonalMeanSST(j,bj) = 0.0
+         CountX(j,bj) = 0.0
+       ENDDO
       ENDDO
 
 C--   Calculate the zonal mean
@@ -60,16 +62,21 @@ C--   Calculate the zonal mean
           CountX_tile(j,bi,bj) = CountX_tile(j,bi,bj) +  
      &         maskC(i,j,k,bi,bj)
          ENDDO
-         ZonalMeanSST(j) = ZonalMeanSST(j) + ZonalMean_tile(j,bi,bj)
-         CountX(j) = CountX(j) + CountX_tile(j,bi,bj)
         ENDDO
+        ZonalMeanSST(j,bj) = ZonalMeanSST(j,bj) + 
+     &   ZonalMean_tile(j,bi,bj)
+        CountX(j,bj) = CountX(j,bj) + CountX_tile(j,bi,bj)
        ENDDO
       ENDDO
 
-      DO j=1-OLy,sNy+OLy
-       IF ( CountX(j) .GT. 0.0) THEN
-          ZonalMeanSST(j) = ZonalMeanSST(j)/CountX(j)
-       ENDIF
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO j=1-OLy,sNy+OLy
+        _GLOBAL_SUM_R8( CountX(j,bj), myThid )
+        _GLOBAL_SUM_R8( ZonalMeanSST(j,bj), myThid )
+        IF ( CountX(j,bj) .GT. 0.0) THEN
+          ZonalMeanSST(j,bj) = ZonalMeanSST(j,bj)/CountX(j,bj)
+        ENDIF
+       ENDDO
       ENDDO
 
 #endif /* ALLOW_EBM */

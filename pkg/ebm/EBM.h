@@ -9,8 +9,8 @@ C     winPert - weather  patterns added to the background wind.
       COMMON /EBM_FLD_RL/      
      &               ZonalMeanSST, CountX,
      &               TmlN, TmlS, TtN, TtS
-      _RL ZonalMeanSST(1-OLy:sNy+OLy)
-      _RL CountX(1-OLy:sNy+OLy)
+      _RL ZonalMeanSST(1-OLy:sNy+OLy,nSy)
+      _RL CountX(1-OLy:sNy+OLy,nSy)
       _RL TmlS, TmlN, TtS, TtN
 
       COMMON /EBM_FLD_RS/            
@@ -35,28 +35,28 @@ C     Constant parameters
       _RL t_mlt, lv, cp, rho_air
       PARAMETER (t_mlt = 273.15, lv = 2.5e6, cp = 1004., rho_air = 1.27)
 C     sin(lat) and Legendre polynomials
-      _RL S(1-OLy:sNy+OLy)
-      _RL P2(1-OLy:sNy+OLy), P4(1-OLy:sNy+OLy)
+      _RL S(1-OLy:sNy+OLy,nSy)
+      _RL P2(1-OLy:sNy+OLy,nSy), P4(1-OLy:sNy+OLy,nSy)
 C     Shortwave and albedo parameters
-      _RL SW(1-OLy:sNy+OLy)
+      _RL SW(1-OLy:sNy+OLy,nSy)
       _RL Q0, Q2, A0, A2, A4
       PARAMETER ( Q0 = 1365., Q2 = -0.482) 
       PARAMETER ( A0 = 0.322, A2 = 0.231, A4 = 0.086 ) 
 C     Longwave parameters
-      _RL LW(1-OLy:sNy+OLy)
+      _RL LW(1-OLy:sNy+OLy,nSy)
       _RL LW0, LW1
       PARAMETER ( LW0 = 195., LW1 = 2.78 )
 C     Heat transport parameters
-      _RL Hd(1-OLy:sNy+OLy), Hd35(2)
+      _RL Hd(1-OLy:sNy+OLy,nSy), Hd35(2)
       _RL H1, H3, H5
       PARAMETER ( H1 = 3.866, H3 = -2.851, H5 = -1.016 )
 C     Freshwater flux parameters
-      _RL Fw(1-OLy:sNy+OLy), Fw35(2)
+      _RL Fw(1-OLy:sNy+OLy,nSy), Fw35(2)
       _RL F1, F2, F3, F4, F5
       PARAMETER ( F1 = 2.092, F2 = 5.796, F3 = 8.472, 
      &     F4 = 7.728, F5 = 2.362 )
 C     Temperature parameterization
-      _RL T(1-OLy:sNy+OLy)
+      _RL T(1-OLy:sNy+OLy,nSy)
       _RL T_var(4), T0(2), T2(2), T35(2), DTDy35(2)
 C     Parameters used to calculate the transport efficiency
       _RL Cl, Cf, Cs, C
