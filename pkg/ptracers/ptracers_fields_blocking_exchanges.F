@@ -1,0 +1,50 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fields_blocking_exchanges.F,v 1.1 2002/03/04 19:01:29 adcroft Exp $
+C $Name:  $
+
+#include "PTRACERS_OPTIONS.h"
+
+CBOP
+C !ROUTINE: PTRACERS_FIELDS_BLOCKING_EXCHANGES
+
+C !INTERFACE: ==========================================================
+      SUBROUTINE PTRACERS_FIELDS_BLOCKING_EXCHANGES( myThid )
+
+C !DESCRIPTION:
+C     Exchange data to update overlaps for passive tracers
+
+C !USES: ===============================================================
+      IMPLICIT NONE
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PTRACERS.h"
+
+C !INPUT PARAMETERS: ===================================================
+C  myThid               :: thread number
+      INTEGER myThid
+
+C !OUTPUT PARAMETERS: ==================================================
+C  none
+
+#ifdef ALLOW_PTRACERS
+
+C !LOCAL VARIABLES: ====================================================
+C  iTracer 		:: loop indices
+      INTEGER iTracer
+CEOP
+
+      IF (PTRACERSisON) THEN
+
+C Loop over passive tracers
+      DO iTracer=1,PTRACERS_numInUse
+
+C Exchange overlaps
+      _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
+
+C End of tracer loop
+      ENDDO
+
+      ENDIF
+#endif /* ALLOW_PTRACERS */
+
+      RETURN
+      END
