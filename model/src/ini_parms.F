@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.65 2001/08/15 15:51:46 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.66 2001/08/16 17:12:24 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -89,7 +89,7 @@ C--   Continuous equation parameters
      & tRef, sRef, eosType, Integr_GeoPot,
      & no_slip_sides,no_slip_bottom,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
-     & momPressureForcing, metricTerms,
+     & momPressureForcing, metricTerms, vectorInvariantMomentum,
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
      & implicSurfPress, implicDiv2DFlow,

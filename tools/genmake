@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.43 2001/08/14 14:33:34 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.44 2001/08/16 17:12:24 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -10,6 +10,7 @@
 
 # Default lists
 set DISABLE = ( aim autodiff cal cost ctrl ecco exf grdchk )
+set DEFINES = ( )
 set ENABLE  = ( )
 set MODS  = ( )
 
@@ -253,6 +254,14 @@ foreach dr ($PACKAGES)
     set INCLUDEDIRS = ($INCLUDEDIRS $adr)
   else
     echo "                                      *" Package \"$dr\" NOT enabled.
+    switch ($dr)
+      case mom_fluxform:
+        set DEFINES = ($DEFINES '-DDISABLE_MOM_FLUXFORM'); breaksw
+      case mom_vecinv:
+        set DEFINES = ($DEFINES '-DDISABLE_MOM_MOMVECINV'); breaksw
+      default:
+        breaksw
+    endsw
   endif
 end
 if (! $?STANDARDDIRS) set STANDARDDIRS=(eesupp model)
@@ -274,7 +283,6 @@ set CPP        = ( '/lib/cpp -P' )
 set KPP        = (  )
 set FC         = ( 'f77' )
 set LINK       = ( 'f77' )
-set DEFINES    = (  )
 set INCLUDES   = ( -I. )
 set FFLAGS     = (  )
 set FOPTIM     = (  )

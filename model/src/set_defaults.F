@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.24 2001/08/15 15:51:46 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.25 2001/08/16 17:12:24 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -110,6 +110,7 @@ C--   Set default "physical" parameters
       useCoriolis         = .TRUE.
       momPressureForcing  = .TRUE.
       momStepping         = .TRUE.
+      vectorInvariantMomentum = .FALSE.
       tempStepping        = .TRUE.
       saltStepping        = .TRUE.
       tr1Stepping         = .FALSE.

@@ -30,7 +30,7 @@
  writeBinaryPrec=64,
  tempStepping=.FALSE.,
  saltStepping=.TRUE.,
-#debugMode=.TRUE.,
+ vectorInvariantMomentum=.TRUE.,
  &
 
 # Elliptic solver parameters

@@ -37,6 +37,7 @@
 #zonal_filt_lat=90.0,
 #saltStepping=.FALSE.
 #tempStepping=.FALSE.
+ vectorInvariantMomentum=.TRUE.,
  &
 
 # Elliptic solver parameters

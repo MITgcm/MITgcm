@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.78 2001/08/14 00:19:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.79 2001/08/16 17:12:24 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -76,7 +76,6 @@ C     bi, bj
 C     k, kup,        - Index for layer above and below. kup and kDown
 C     kDown, km1       are switched with layer to be the appropriate 
 C                      index into fVerTerm.
-C     tauAB - Adams-Bashforth timestepping weight: 0=forward ; 1/2=Adams-Bashf.
       _RL fVerU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL phiHyd  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -89,7 +88,6 @@ C     tauAB - Adams-Bashforth timestepping weight: 0=forward ; 1/2=Adams-Bashf.
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL tauAB
 
 C This is currently used by IVDC and Diagnostics
       _RL ConvectCount (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -284,11 +282,20 @@ C        distinguishe between Stagger and Non Stagger time stepping
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gUnm1, gVnm1, etc...
          IF ( momStepping ) THEN
-           CALL CALC_MOM_RHS(
+#ifndef DISABLE_MOM_FLUXFORM
+           IF (.NOT. vectorInvariantMomentum) CALL MOM_FLUXFORM(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
      I         phiHyd,KappaRU,KappaRV,
      U         fVerU, fVerV,
      I         myTime, myThid)
+#endif
+#ifndef DISABLE_MOM_VECINV
+           IF (vectorInvariantMomentum) CALL MOM_VECINV(
+     I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
+     I         phiHyd,KappaRU,KappaRV,
+     U         fVerU, fVerV,
+     I         myTime, myThid)
+#endif
            CALL TIMESTEP(
      I         bi,bj,iMin,iMax,jMin,jMax,k,
      I         phiHyd, phiSurfX, phiSurfY,
@@ -395,7 +402,7 @@ Cjmc(end)
        ENDDO
       ENDDO
 
-#ifndef EXCLUDE_DEBUGMODE
+#ifndef DISABLE_DEBUGMODE
       If (debugMode) THEN
        CALL DEBUG_STATS_RL(1,EtaN,'EtaN (DYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,uVel,'Uvel (DYNAMICS)',myThid)

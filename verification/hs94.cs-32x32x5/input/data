@@ -25,14 +25,12 @@
  rhoConst=1.0,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
-# Oh boy - forgot about this one <= can't stagger on cubed sphere !!!!
  staggerTimeStep=.TRUE.,
  nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
  hFacMin=1.0,
-#momAdvection=.FALSE.,
-#tempStepping=.FALSE.,
+ vectorInvariantMomentum=.TRUE.,
  &
 
 # Elliptic solver parameters
