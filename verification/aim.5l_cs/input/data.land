@@ -12,6 +12,8 @@
  &LAND_MODEL_PAR
 # land_calc_grT=.FALSE.,
 # land_calc_grW=.FALSE.,
+  land_grT_iniFile='land_grT_ini.bin',
+  land_grW_iniFile='land_grW_ini.bin',
   land_dzF= 0.1, 4.0,
  &
 

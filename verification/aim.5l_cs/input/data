@@ -4,38 +4,34 @@
 #
 # Continuous equation parameters
  &PARM01
- tRef=281.089, 289.321, 307.191, 331.377, 432.413,
+ tRef=289.6, 298.1, 314.5, 335.8, 437.4,
  sRef=5*0.,
- viscAr=0.E3,
- viscAh=0.E6,
- viscA4=0.E17,
  no_slip_sides=.FALSE.,
  no_slip_bottom=.FALSE.,
- diffKhT=0.E3,
- diffKrT=0.,
- diffK4T=0.E17,
- diffKrS=0.E2,
- diffKhS=0.E3,
- diffK4S=0.E17,
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALGAS',
-#atm_Rq=0.6078E-3,
+ atm_Rq=0.6078E-3,
  Integr_GeoPot=2,
+ selectFindRoSurf=1,
  gravity=9.81,
  rhonil=1.0,
  rhoConst=1.0,
- rigidLid=.FALSE.,
+ rhoConstFresh=1000.,
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,
+ select_rStar=2,
+ nonlinFreeSurf=4,
+ hFacInf=0.2,
+ hFacSup=2.0,
  uniformLin_PhiSurf=.FALSE.,
  staggerTimeStep=.TRUE.,
- nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
  hFacMin=0.2,
+#tempAdvScheme=77,
  saltAdvScheme=3,
  vectorInvariantMomentum=.TRUE.,
-#useJamartWetPoints=.TRUE.,
+ useJamartWetPoints=.TRUE.,
  &
 
 # Elliptic solver parameters
@@ -47,16 +43,18 @@
 
 # Time stepping parameters
  &PARM03
- niter0=17280,
+ nIter0=207360,
  nTimeSteps=10,
+# 1yr, 10yr:
 #endTime=31104000.,
+#endTime=311040000.,
  deltaT=450.0,
- forcing_In_AB=.FALSE.,
  abEps=0.1,
+ forcing_In_AB=.FALSE.,
  cAdjFreq=0.,
- pChkptFreq=2592000.0,
- dumpFreq=2592000.0,
- taveFreq=2592000.0,
+ pChkptFreq=2592000.,
+ taveFreq=2592000.,
+ dumpFreq=7776000.,
 #monitorFreq=86400.,
  monitorFreq=1.,
  &
@@ -64,9 +62,8 @@
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.FALSE.,
- usingSphericalPolarGrid=.FALSE.,
  usingCurvilinearGrid=.TRUE.,
- delR=1.E4, 2.5E4, 3.E4, 2.E4, 1.5E4,
+ delR=100.E2, 250.E2, 300.E2, 200.E2, 150.E2,
  Ro_SeaLevel=1.E5,
  groundAtK1=.TRUE.,
  rSphere=6370.E3,
@@ -74,5 +71,5 @@
 
 # Input datasets
  &PARM05
- topoFile='topo.cs.bin',
+ topoFile='topo.2f2_FM.bin',
  &

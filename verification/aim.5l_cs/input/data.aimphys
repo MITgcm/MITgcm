@@ -15,15 +15,25 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #     aim_snowFile :: file name for Snow depth          (F.M. surfBC)
 #     aim_swcFile  :: file name for Soil Water content  (F.M. surfBC)
 #     aim_dragStrato :: stratospheric-drag damping time scale (s)
+#     aim_taveFreq :: Frequency^-1 for time-average output (s)
 #     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 #     aim_tendFreq :: Frequency^-1 for tendencies output (s)
  &AIM_PARAMS
-   aim_useFMsurfBC=.FALSE.,
-   aim_useMMsurfFc=.TRUE.,
+#  aim_useFMsurfBC=.FALSE.,
+#  aim_useMMsurfFc=.TRUE.,
 #  aim_surfPotTemp=.TRUE.,
-   aim_MMsufx = '.cs.bin',
-   aim_MMsufxLength = 7,
+#  aim_MMsufx = '.cs.bin',
+#  aim_MMsufxLength = 7,
+   aim_LandFile= 'landFrc.2f2.bin',
+   aim_albFile = 'albedo.FM.bin',
+   aim_vegFile = 'vegetFrc.FM.bin',
+   aim_sstFile = 'seaSurfT.FM.bin',
+   aim_lstFile = 'lndSurfT.2f2.bin',
+   aim_oiceFile= 'seaIce.FM.bin',
+   aim_snowFile= 'snowDepth.FM.bin',
+   aim_swcFile = 'soilMoist.FM.bin',
 #  aim_dragStrato= 2592000.,
+#  aim_diagFreq=3600.,
  &
 
 #--   Physical constants
@@ -32,7 +42,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #      RD   = gas constant for dry air
 #      CP   = specific heat at constant pressure
 #      ALHC = latent heat of condensation
-#      SBC  = Stefan-Boltzmann constant            
+#      SBC  = Stefan-Boltzmann constant
 
 #--   Constants for forcing fields (namelist AIM_PAR_FOR):
 #      SOLC   = Solar constant (area averaged) in W/m^2
@@ -45,7 +55,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
  &AIM_PAR_FOR
  &
 
-#--   Constants for surface fluxes (namelist AIM_PAR_SFL): 
+#--   Constants for surface fluxes (namelist AIM_PAR_SFL):
 #      FWIND0 = ratio of near-sfc wind to lowest-level wind
 #      FTEMP0 = weight for near-sfc temperature extrapolation (0-1) :
 #               1 : linear extrapolation from two lowest levels
@@ -64,6 +74,8 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #      HDRAG  = Height scale for orographic correction
 #      FHDRAG = Amplitude of orographic correction (fraction)
  &AIM_PAR_SFL
+#  FTEMP0 = 0.,
+#  FHUM0  = 0.,
  &
 
 #--   Convection constants (namelist AIM_PAR_CNV):
@@ -77,7 +89,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
  &AIM_PAR_CNV
  &
 
-#--   Constants for large-scale condendation (namelist AIM_PAR_LSC): 
+#--   Constants for large-scale condendation (namelist AIM_PAR_LSC):
 #      TRLSC  = Relaxation time (in hours) for specific humidity
 #      RHLSC  = Maximum relative humidity threshold (at sigma=1)
 #      DRHLSC = Vertical range of relative humidity threshold
@@ -111,7 +123,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
  &AIM_PAR_RAD
  &
 
-#--   Constants for vertical dif. and sh. conv. (namelist AIM_PAR_VDI): 
+#--   Constants for vertical dif. and sh. conv. (namelist AIM_PAR_VDI):
 #      TRSHC  = relaxation time (in hours) for shallow convection
 #      TRVDI  = relaxation time (in hours) for moisture diffusion
 #      TRVDS  = relaxation time (in hours) for super-adiab. conditions

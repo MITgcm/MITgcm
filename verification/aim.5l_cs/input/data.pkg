@@ -3,6 +3,6 @@
 #     useLand :: use (simple) Land package to compute surf. BC over land
  &PACKAGES
  useAIM=.TRUE.,
-#useLand=.TRUE.,
+ useLand=.TRUE.,
  useSHAP_FILT=.TRUE.,
  &
