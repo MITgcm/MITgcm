@@ -1,7 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.148 2003/04/17 12:56:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.149 2003/04/17 15:36:50 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint50b_post
+o store u*,v* in gU,V instead of in guNm1,gvNm1
+o in order to put the momForcing out of the Adams-Bashforth:
+  move forcing & CD-scheme calls from mom_fluxform & mom_vecinv
+  to timestep.F
+o new flag "useCDscheme" (default=F); replace guCD,gvCD by local arrays
+o re-generate output for highly sensitive test-exp:
+   global_ocean_pressure, ideal_2D_oce, lab_sea, natl_box
 
 checkpoint50b_pre
 o restore the use of momAdvection & useCoriolis flags (mom_vecinv)
