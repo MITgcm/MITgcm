@@ -9,6 +9,7 @@ C     | o Sum over time a product of two arrays depending on the |
 C     |   type of the second array (tracer_grid, u_grid, v_grid) |
 C     |   The first array must be on tracer_grid                 |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ===
 #include "SIZE.h"

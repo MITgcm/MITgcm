@@ -5,6 +5,7 @@ C     /==========================================================\
 C     | SUBROUTINE WRITE_TIME_AVERAGES                           |
 C     |                                                          |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ===
 #include "SIZE.h"

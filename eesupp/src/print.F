@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.13 1998/11/06 22:44:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.14 1999/05/24 15:15:11 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -34,6 +34,7 @@ C     |   ignored!                                                 |
 C     | o In a non-parallel form these routines can still be used. |
 C     |   to produce pretty printed output!                        |
 C     \============================================================/
+      IMPLICIT NONE
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -116,6 +117,7 @@ C     | duplicate values collected into                          |
 C     |    n @ value                                             |
 C     | record.                                                  |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global data ==  
 #include "SIZE.h"
@@ -229,6 +231,7 @@ C     | duplicate values collected into                          |
 C     |    n @ value                                             |
 C     | record.                                                  |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global data ==  
 #include "SIZE.h"
@@ -342,6 +345,7 @@ C     | duplicate values collected into                          |
 C     |    n @ value                                             |
 C     | record.                                                  |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global data ==  
 #include "SIZE.h"
@@ -475,6 +479,7 @@ C     |      plots - one for K=1, one for K=3 and one for K=5.   |
 C     |      Each plot would have extents iMin:iMax step iStr    |
 C     |      and jMin:jMax step jStr.                            |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -883,6 +888,7 @@ C     |      plots - one for K=1, one for K=3 and one for K=5.   |
 C     |      Each plot would have extents iMin:iMax step iStr    |
 C     |      and jMin:jMax step jStr.                            |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -1276,6 +1282,7 @@ C     |   ignored!                                                 |
 C     | o In a non-parallel form these routines can still be used. |
 C     |   to produce pretty printed output!                        |
 C     \============================================================/
+      IMPLICIT NONE
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"

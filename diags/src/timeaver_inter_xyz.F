@@ -10,6 +10,7 @@ C     /==========================================================\
 C     | SUBROUTINE TIMEAVER_INTER_XYZ                            |
 C     | o Sum over time a single array                           |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ===
 #include "SIZE.h"

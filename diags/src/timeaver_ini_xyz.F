@@ -6,6 +6,7 @@ C     /==========================================================\
 C     | SUBROUTINE TIMEAVER_INI_XYZ                              |
 C     | o Initialize 3D array                                    |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ===
 #include "SIZE.h"

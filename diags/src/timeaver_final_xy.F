@@ -6,6 +6,7 @@ C     /==========================================================\
 C     | SUBROUTINE TIMEAVER_FINAL_XY                             |
 C     | o Get final average of field                             |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ===
 #include "SIZE.h"

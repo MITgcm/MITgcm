@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.4 1998/10/28 03:11:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.5 1999/05/24 15:15:11 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -23,6 +23,7 @@ C     |==========================================================|
 C     | Return index in timer data structure of timer named      |
 C     | by the function argument "name".                         |
 C     \==========================================================/
+      IMPLICIT NONE
       INTEGER maxTimers
       INTEGER nTimers
       CHARACTER*(*) name
@@ -54,6 +55,7 @@ C     | User callable interface to timing routines. Timers are   |
 C     | created, stopped, started and queried only through this  |
 C     | rtouine.                                                 |
 C     \==========================================================/
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
@@ -407,6 +409,7 @@ C     | Three times are returned that conventionally are used as |
 C     | user time, system time and wall-clock time. Not all these|
 C     | numbers are available on all machines.                   |
 C     \==========================================================/
+      IMPLICIT NONE
       Real*8 userTime
       Real*8 systemTime
       Real*8 wallClockTime
@@ -443,6 +446,7 @@ C     | o Print timer information                                |
 C     |==========================================================|
 C     | Request print out of table of timing from all timers.    |
 C     \==========================================================/
+      IMPLICIT NONE
       INTEGER myThreadId
 CEndOfInterface
 C     Print out value for every timer.
@@ -455,6 +459,7 @@ C
 C***********************************************************************
       SUBROUTINE TIMER_START ( string , myThreadId )
 C     Return start timer named "string".
+      IMPLICIT NONE
       CHARACTER*(*) string
       INTEGER myThreadId
 C
@@ -465,6 +470,7 @@ C
 C***********************************************************************
       SUBROUTINE TIMER_STOP  ( string , myThreadId)
 C     Return start timer named "string".
+      IMPLICIT NONE
       CHARACTER*(*) string
       INTEGER myThreadId
 C

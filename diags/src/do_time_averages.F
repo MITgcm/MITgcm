@@ -9,6 +9,7 @@ C     | SUBROUTINE DO_TIME_AVERAGES                              |
 C     | o Time averaging routine for U, V, T, S, UT, VT in model |
 C     |   main time-stepping                                     |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ===
 #include "SIZE.h"

@@ -25,6 +25,7 @@ C     | This routine does true-shared-memory copies for blocks   |
 C     | within a thread. It will also do MPI meesaging between   |
 C     | different processes.                                     |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global data ===
 #include "SIZE.h"
@@ -82,6 +83,7 @@ C     | This routine does true-shared-memory copies for blocks   |
 C     | within a thread. It will also do MPI meesaging between   |
 C     | different processes.                                     |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global data ===
 #include "SIZE.h"
@@ -146,6 +148,7 @@ C     | exchange is for an edge width of OLx, and OLy and        |
 C     | updates corner points as well as edges ( slightly more   |
 C     | synchronisation required).                               |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global data ===
 #include "SIZE.h"
@@ -220,6 +223,7 @@ C     | existed before the thread was created. This means that   |
 C     | for Fortran we declare arrays with overlap regions in    |
 C     | COMMON blocks.                                           |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global data ===
 #include "SIZE.h"
@@ -261,4 +265,4 @@ C                begine.
       RETURN
       END
 
-C $Id: exch.F,v 1.8 1998/10/28 03:11:34 cnh Exp $
+C $Id: exch.F,v 1.9 1999/05/24 15:15:11 adcroft Exp $

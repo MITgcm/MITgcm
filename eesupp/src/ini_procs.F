@@ -12,6 +12,7 @@ C     | Note: This routine can also be compiled with CPP         |
 C     | directives set so that no multi-processing is initialise.|
 C     | This is OK and should work fine.                         |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global data ===
 #include "SIZE.h"
@@ -481,4 +482,4 @@ C
       RETURN
       END
 
-C $Id: ini_procs.F,v 1.9 1999/05/03 21:37:55 adcroft Exp $
+C $Id: ini_procs.F,v 1.10 1999/05/24 15:15:11 adcroft Exp $
