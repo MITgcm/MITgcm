@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.326 2004/07/08 16:27:31 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.327 2004/07/08 20:58:24 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add testreport "-j JOBS" option for parallel builds (tested and pretty 
+   impressive on Altix and Opteron systems)
 o diagnostics can now write NetCDF files through the mnc package
 o staggerTimeStep & NLFS: update pkg aim_v23 & thsice; update aim.5l_cs output
 o staggerTimeStep & multi-Dim-Advec: Exch(U,V) added 

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.42 2004/07/08 15:47:19 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.43 2004/07/08 20:58:24 edhill Exp $
 #  $Name:  $
 #
 
@@ -27,6 +27,7 @@ usage()
     echo "                             (DEF=\"make output.txt\")"
     echo "  (-m|-make) STRING        command to use for \"make\""
     echo "                             (DEF=\"make\")"
+    echo "  (-j) JOBS                use \"make -j JOBS\" for parallel builds"
     echo "  (-clean)                 *ONLY* run \"make CLEAN\""
     echo "  (-quick|-q)              same as \"-nogenmake -noclean -nodepend\""
     echo "  (-nogenmake|-ng)         skip the genmake stage"
@@ -307,7 +308,11 @@ makemodel()
 	if test -r Makefile ; then
 	    printf 'make ... ' 1>&2
 	    if test "x$ADM" = x ; then
-		$MAKE >> make.log 2>&1
+		if test "x$JOBS" = x ; then
+		    $MAKE >> make.log 2>&1
+		else
+		    $MAKE -j $JOBS >> make.log 2>&1
+		fi
 	    else
 		$MAKE adall >> make.log 2>&1
 	    fi
@@ -567,6 +572,7 @@ HAVE_MPACK=
 MPACK="$MPACKDIR/mpack"
 COMMAND=
 MAKE=make
+JOBS=
 MPI=f
 DELDIR=
 
@@ -620,6 +626,9 @@ for ac_option ; do
 	    ac_prev=MAKE ;;
 	-make=* | --make=*)
 	    MAKE=$ac_optarg ;;
+
+	-j) ac_prev=JOBS ;;
+	-j=*) JOBS=$ac_optarg ;;
 
 	-clean | --clean)
 	    CLEANUP=t ;;
