@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/ini_depths.F,v 1.8 2002/12/10 03:05:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/ini_depths.F,v 1.9 2003/03/17 16:42:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -46,8 +46,8 @@ CEndOfInterface
 C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     iG, jG - Global coordinate index
-C     bi,bj  - Loop counters
-C     I,J,K
+C     bi,bj  - Tile indices
+C     I,J,K  - Loop counters
 C     oldPrec - Temporary used in controlling binary input dataset precision
 C     msgBuf    - Informational/error meesage buffer 
       INTEGER iG, jG
@@ -164,7 +164,7 @@ c         _BEGIN_MASTER( myThid )
 c         CALL WRITE_FLD_XY_RS( 'topo_Z',' ',topoZ,0,myThid) 
 c         _END_MASTER(myThid)
 
-          CALL INI_P_GROUND( selectFindRoSurf, topoZ,
+          CALL INI_P_GROUND( 2, topoZ,
      O                       Ro_surf,
      I                       myThid )
 
@@ -175,7 +175,8 @@ c         _END_MASTER(myThid)
 
         ELSE
 C----
-C   Direct Transfer to Ro_surf :
+C   Direct Transfer to Ro_surf (e.g., to specify upper ocean boundary 
+C    below an ice-shelf - NOTE - actually not yet implemented )
           DO bj = myByLo(myThid), myByHi(myThid)
            DO bi = myBxLo(myThid), myBxHi(myThid)
             DO j=1,sNy
