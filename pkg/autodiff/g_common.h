@@ -55,6 +55,12 @@ cph     &                 , g_sst, g_sss
 cph      _RL g_sst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 cph      _RL g_sss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
+#ifdef ALLOW_DIFFKR_CONTROL
+      COMMON /G_DYNVARS_DIFFKR/
+     &                       g_diffKr
+      _RL  g_diffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+
 #ifdef ALLOW_EXF
       _RL g_hflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL g_sflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)

@@ -55,6 +55,12 @@ cph     &                 , adsst, adsss
 cph      _RL adsst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 cph      _RL adsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
+#ifdef ALLOW_DIFFKR_CONTROL
+      COMMON /ADDYNVARS_DIFFKR/
+     &                       addiffKr
+      _RL  addiffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif 
+
 #ifdef ALLOW_EXF
       _RL adhflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adsflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
