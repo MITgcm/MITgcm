@@ -1,7 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.184 2003/10/09 04:19:17 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.185 2003/10/10 23:04:46 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint51j_post
+o Added some AD-related initialisations in mom_vecinv/ mom_fluxform/
+o adjusted some flow directives (dynamics, thermodynamics)
+o added cubed-sphere case to test cost function
+o heckpoint_lev?_directives.h now include
+  pkg-specific directives, whenever those are enabled.
+o Moving pkg-specific flow directives to corresponding pkg
+  Moving pkg-specific differentiation list to corresponding pkg
+  Moving pkg-specific checkpoint-lev storing to corresponding pkg
+  ---> conventions are
+       - pkg_ad.flow
+       - pkg_ad_diff.list
+       - pkg_ad_check_lev?_dir.h
 
 checkpoint51i_post
 o merge of the branch-genmake2
