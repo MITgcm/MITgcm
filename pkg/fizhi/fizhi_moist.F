@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.22 2004/12/03 23:05:56 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.23 2004/12/03 23:12:14 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1596,7 +1596,7 @@ C Argument List declarations
       _RL POI(lng,K),QOI(lng,K),PRS(lng,K+1),PRJ(lng,K+1)
       _RL uoi(lng,nlayr,ntracedim)
       _RL PCU(LENC), CLN(lng)
-      _RL TCU(lng,K),  QCU(lng,K),  ucu(lng,k,ntracedim), CMASS(lng,K)
+      _RL TCU(lng,K),QCU(lng,K),ucu(lng,k,ntracedim),CMASS(lng,K)
       _RL ALF(lng,K), BET(lng,K),  GAM(lng,K), PRH(lng,K), PRI(lng,K)
       _RL HOL(LENC,K), ETA(LENC,K), HST(LENC,K), QOL(LENC,K)
       _RL GMH(LENC,K)
