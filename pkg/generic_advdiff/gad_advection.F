@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.9 2002/03/04 17:26:41 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.10 2002/03/05 15:17:45 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -412,14 +412,16 @@ C-    Surface "correction" term at k>1 :
         DO i=1-Olx,sNx+Olx
          af(i,j) = af(i,j)
      &           + (maskC(i,j,k,bi,bj)-maskC(i,j,k-1,bi,bj))*
-     &             rTrans(i,j)*localTijk(i,j,k)
+     &             rTrans(i,j)*tracer(i,j,k,bi,bj)
+c    &             rTrans(i,j)*localTijk(i,j,k)
         ENDDO
        ENDDO 
       ELSE
 C-    Surface "correction" term at k=1 :
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         af(i,j) = rTrans(i,j)*localTijk(i,j,k)
+         af(i,j) = rTrans(i,j)*tracer(i,j,k,bi,bj)
+c        af(i,j) = rTrans(i,j)*localTijk(i,j,k)
         ENDDO
        ENDDO 
       ENDIF
