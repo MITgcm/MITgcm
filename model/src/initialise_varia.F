@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.16 2001/08/13 18:07:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.17 2001/08/27 18:50:41 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -100,6 +100,19 @@ CADJ loop = parallel
 
 C--   Initialize variable data for packages
       CALL PACKAGES_INIT_VARIABLES( myThid )
+
+#ifdef NONLIN_FRSURF
+C--   Compute the surface level thickness, function of eta_n-1
+C     and modify hFac(C,W,S) accordingly :
+      IF (nonlinFreeSurf.GT.0) THEN
+        CALL CALC_SURF_DR(etaNm1, startTime, nIter0, myThid )
+        CALL UPDATE_SURF_DR( startTime, nIter0, myThid )
+      ENDIF
+C-    update also CG2D matrix (and preconditioner)
+      IF ( nonlinFreeSurf.GT.2) THEN
+        CALL UPDATE_CG2D( startTime, nIter0, myThid )
+      ENDIF
+#endif
 
 C--   Finally summarise the model state
       CALL STATE_SUMMARY( myThid )

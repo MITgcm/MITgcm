@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.17 2001/08/14 00:20:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.18 2001/08/27 18:50:41 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -70,6 +70,14 @@ C       (DO_GTERM_BLOCKING_EXCHANGES).
         CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
 #endif
 
+#ifdef NONLIN_FRSURF
+C--   compute the future surface level thickness
+C      according to the current Eta field 
+        IF ( nonlinFreeSurf.GT.0) THEN
+          CALL CALC_SURF_DR(etaN, myTime, myIter, myThid )
+        ENDIF
+#endif
+
 C--     Load forcing/external data fields.
 #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
 C       NOTE, that although the exf package is part of the
@@ -102,6 +110,17 @@ C--   Step forward W field in N-H algorithm
         ENDIF
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef NONLIN_FRSURF
+C--   update hfacC,W,S and recip_hFac according to the current Eta field
+      IF ( nonlinFreeSurf.GT.0) THEN
+        CALL UPDATE_SURF_DR( myTime, myIter, myThid )
+      ENDIF
+C-    update also CG2D matrix (and preconditioner)
+      IF ( nonlinFreeSurf.GT.2) THEN
+        CALL UPDATE_CG2D( myTime, myIter, myThid )
+      ENDIF
+#endif
 
 C-- This block has been moved to the_correction_step(). We have
 C   left this code here to indicate where the filters used to be
