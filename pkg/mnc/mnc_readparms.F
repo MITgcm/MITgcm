@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.15 2004/10/21 13:38:45 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.16 2004/11/19 16:01:23 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -158,6 +158,9 @@ C--   Report contents of model parameter file
       WRITE(msgBuf,'(a)') ' MNC_READPARMS: finished reading data.mnc'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
+
+C     Pickups must always be read in an EXCLUSIVE fashion
+      IF (pickup_read_mnc)  pickup_read_mdsio = .FALSE.
 
 C     IO handling is done in one of two senses:
 C     (1) outputTypesInclusive=.TRUE. is an "inclusive-or" meaning that
