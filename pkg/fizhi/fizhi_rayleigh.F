@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_rayleigh.F,v 1.2 2004/10/22 14:52:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_rayleigh.F,v 1.3 2004/10/22 16:33:39 molod Exp $
 C $Name:  $
-                                                                                               
+
 #include "FIZHI_OPTIONS.h"
       subroutine rayleigh(myid,pres,pkap,pekap,zsurf,u,v,t,s,im,jm,lm,
      .                                                bi,bj,rfu,rfv,rft)
 C **********************************************************************
 C
 C  PURPOSE
-C     To implement Rayleigh Friction
+C     Rayleigh Friction -- Linear Drag (Strong Damping) Above 70 Km
 C
 C  ARGUMENTS   DESCRIPTION
 C
@@ -50,7 +50,7 @@ C **********************************************************************
       _RL rf(im,jm,lm)
       _RL z(im,jm,lm)
       _RL dz(im,jm,lm)
-      _RL cpog, cpinv, virtcon, getcon
+      _RL cpog, cpinv, virtcon, getcon, dampcoef
 
 C **********************************************************************
 C ****   APPLY RAYLEIGH FRICTION TO WIND (INCLUDE HEATING)           ***
@@ -59,6 +59,7 @@ C **********************************************************************
       cpog = getcon('CP')/getcon('GRAVITY')
       cpinv = 1.0/getcon('CP')
       virtcon = getcon('VIRTCON')
+      dampcoef = 2./3.
 
       do L=1,lm
        do j=1,jm
@@ -95,7 +96,7 @@ C **********************************************************************
       do L=1,lm
        do j=1,jm
        do i=1,im
-        rf(i,j,L) = (2./3.)*(1+tanh((z(i,j,L)-80000.)/5000.))/86400.
+        rf(i,j,L) = dampcoef*(1+tanh((z(i,j,L)-80000.)/5000.))/86400.
         rfu(i,j,L) = - rf(i,j,L) * u(i,j,L)
         rfv(i,j,L) = - rf(i,j,L) * v(i,j,L)
         rft(i,j,L) = -(u(i,j,L)*rfu(i,j,L) + v(i,j,L)*rfv(i,j,L) )*cpinv
