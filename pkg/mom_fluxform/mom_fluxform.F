@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.9 2003/02/08 02:13:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.10 2003/02/11 04:06:15 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -295,7 +295,7 @@ C---  Calculate vertical transports (at k+1) below U & V points :
 C---- Zonal momentum equation starts here
 
 C     Bi-harmonic term del^2 U -> v4F
-      IF (momViscosity)
+      IF (momViscosity .AND. viscA4.NE.0. ) 
      & CALL MOM_U_DEL2U(bi,bj,k,uFld,hFacZ,v4f,myThid)
 
 C---  Calculate mean and eddy fluxes between cells for zonal flow.
@@ -328,7 +328,7 @@ C     Laplacian and bi-harmonic term
      & CALL MOM_U_YVISCFLUX(bi,bj,k,uFld,v4F,hFacZ,vF,myThid)
 
 C     Combine fluxes -> fMer
-      DO j=jMin,jMax
+      DO j=jMin,jMax+1
        DO i=iMin,iMax
         fMer(i,j) = vDudyFac*aF(i,j) + AhDudyFac*vF(i,j)
        ENDDO
@@ -447,7 +447,7 @@ C--   Set du/dt on boundaries to zero
 C---- Meridional momentum equation starts here
 
 C     Bi-harmonic term del^2 V -> v4F
-      IF (momViscosity)
+      IF (momViscosity .AND. viscA4.NE.0. ) 
      & CALL MOM_V_DEL2V(bi,bj,k,vFld,hFacZ,v4f,myThid)
 
 C---  Calculate mean and eddy fluxes between cells for meridional flow.
@@ -464,7 +464,7 @@ C     Laplacian and bi-harmonic terms -> vF
 
 C     Combine fluxes -> fZon
       DO j=jMin,jMax
-       DO i=iMin,iMax
+       DO i=iMin,iMax+1
         fZon(i,j) = uDvdxFac*aF(i,j) + AhDvdxFac*vF(i,j)
        ENDDO
       ENDDO

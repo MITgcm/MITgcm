@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.92 2003/02/08 02:09:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.93 2003/02/11 04:05:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -280,10 +280,10 @@ C--     Set up work arrays that need valid initial values
         ENDDO
 
 C--     Start computation of dynamics
-        iMin = 1-OLx+2
-        iMax = sNx+OLx-1
-        jMin = 1-OLy+2
-        jMax = sNy+OLy-1
+        iMin = 0
+        iMax = sNx+1
+        jMin = 0
+        jMax = sNy+1
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE wvel (:,:,:,bi,bj) = 

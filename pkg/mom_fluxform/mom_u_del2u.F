@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_del2u.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_del2u.F,v 1.4 2003/02/11 04:06:15 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -48,7 +48,7 @@ C  i,j                  :: loop indices
 CEOP
 
 C     Zonal flux d/dx U
-      DO j=1-Oly,sNy+Oly
+      DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx,sNx+Olx-1
         fZon(i,j) = drF(k)*_hFacC(i,j,k,bi,bj)
      &   *_dyF(i,j,bi,bj)
@@ -62,7 +62,7 @@ C     Zonal flux d/dx U
 
 C     Meridional flux d/dy U
       DO j=1-Oly+1,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+       DO i=1-Olx+1,sNx+Olx-1
         fMer(i,j) = drF(k)*hFacZ(i,j)
      &   *_dxV(i,j,bi,bj)
      &   *_recip_dyU(i,j,bi,bj)
@@ -71,8 +71,8 @@ C     Meridional flux d/dy U
       ENDDO
 
 C     del^2 U
-      DO j=0,sNy+1
-       DO i=0,sNx+2
+      DO j=1-Oly+1,sNy+Oly-1
+       DO i=1-Olx+1,sNx+Olx-1
         del2u(i,j) =
      &  recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
      &  *recip_rAw(i,j,bi,bj)
@@ -84,8 +84,8 @@ C     del^2 U
 
       IF (no_slip_sides) THEN
 C-- No-slip BCs impose a drag at walls...
-      DO j=0,sNy+1
-       DO i=0,sNx+2
+      DO j=1-Oly+1,sNy+Oly-1
+       DO i=1-Olx+1,sNx+Olx-1
         hFacZClosedS = _hFacW(i,j,k,bi,bj) - hFacZ(i,j)
         hFacZClosedN = _hFacW(i,j,k,bi,bj) - hFacZ(i,j+1)
         del2u(i,j) = del2u(i,j)
