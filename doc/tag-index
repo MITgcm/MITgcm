@@ -1,7 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.128 2003/02/06 22:43:09 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.129 2003/02/08 03:45:30 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint48d_pre
+o in preparation for r*:
+  new S/R (calc_grad_phi_hyd.F) to compute Hydrostatic potential gradient.
+  pass the 2 comp. of the grad. as arguments to momentum S/R.
+  but for the moment, only used if it does not change the results. 
+o add finite volume form of calc_phi_hyd for buoyancyRelation OCEANIC & OCEANICP
 
 checkpoint48c_post
 Modifications in treatment of initial flux forcing controls
