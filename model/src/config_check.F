@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.13 2004/01/03 00:34:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.14 2004/03/25 15:35:53 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -42,11 +42,15 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
 
 #ifndef ALLOW_CD_CODE
       IF (useCDscheme) THEN
-        WRITE(msgBuf,'(A)') 
-     &   'CONFIG_CHECK: #undef ALLOW_CD_CODE and'
-        CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: useCDscheme is TRUE'
+     &   'CONFIG_CHECK: useCDscheme is TRUE and #undef ALLOW_CD_CODE'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+      IF (tauCD.NE.0.) THEN
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: tauCD has been set but the cd_code package is',
+     &   ' enabled'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
