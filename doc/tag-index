@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.351 2004/09/22 21:19:44 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.352 2004/09/22 21:31:35 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o obcs stuff
+  - new runtime flags useOBCSprescribe, useOBCSbalance
+  - re-arranged obcs_calc
+  - moved exf_getobcs to obcs_prescibe_read
+    obcs_prescibe_read is called after ORLANSKI stuff
+    and independent of it (executable can contain all).
+  - updated obcs_check
 o make the MNC_CW_ADD_VATTR_* subroutines all take scalar arguments
   which simplifies the calls and passes the ifc check-bounds test
 

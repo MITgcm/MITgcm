@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.3 2002/01/30 23:03:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.4 2004/09/22 21:31:35 heimbach Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -60,6 +60,26 @@ C     msgBuf      - Informational/error meesage buffer
          STOP 'ABNORMAL END: S/R OBCS_CHECK'
        ENDIF
       ENDIF
+
+#ifdef ALLOW_OBCS_PRESCRIBE
+# ifndef ALLOW_EXF
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ERROR: ALLOW_OBCS_PRESCRIBE'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: needs to ALLOW_EXF, ALLOW_CAL'
+        STOP 'ABNORMAL END: S/R OBCS_CHECK'
+# endif
+#else
+        IF (useOBCSprescribe) THEN
+         WRITE(msgBuf,'(A)')
+     &   'OBCS_CHECK: ERROR: useOBCSprescribe = .TRUE. for'
+         CALL PRINT_ERROR( msgBuf , 1)
+         WRITE(msgBuf,'(A)')
+     &   'OBCS_CHECK: undef ALLOW_OBCS_PRESCRIBE
+         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+        ENDIF
+#endif
 
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: OK'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
