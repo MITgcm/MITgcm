@@ -60,8 +60,8 @@ C
 #include "EEPARAMS.h"
 #ifdef ALLOW_USE_MPI
 # include "EESUPPORT.h"
-# include "PARAMS.h"
 #endif /* ALLOW_USE_MPI */
+#include "PARAMS.h"
 
 C subroutine variables
       character*(*) infile
