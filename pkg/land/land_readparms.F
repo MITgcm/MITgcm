@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.4 2004/03/11 14:42:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.5 2004/05/14 16:14:48 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -82,6 +82,8 @@ C     land_fractRunOff:: fraction of water in excess which run-off
 C     land_rhoLiqW    :: density of liquid water (kg/m3)
 C     land_rhoSnow    :: density of snow (kg/m3)
 C     land_Lfreez     :: Latent heat of freezing (J/kg)
+C     land_hMaxSnow   :: Maximum snow-thickness  (m)
+C     diffKsnow       :: thermal conductivity of snow (W/m/K)
 C     timeSnowAge     :: snow aging time scale   (s)
 C     hNewSnowAge     :: new snow thickness that refresh the snow-age (by 1/e)
 C     albColdSnow     :: albedo of cold (=dry) new snow (Tsfc < -10)
@@ -94,7 +96,7 @@ C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
      &    land_wTauDiff, land_waterCap, land_fractRunOff,
      &    land_rhoLiqW,
      &    land_rhoSnow, land_Lfreez, 
-     &    diffKsnow, timeSnowAge, hNewSnowAge,
+     &    land_hMaxSnow, diffKsnow, timeSnowAge, hNewSnowAge,
      &    albColdSnow, albWarmSnow, albOldSnow, hAlbSnow
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -124,6 +126,7 @@ c     land_CpWater  = HeatCapacity_Cp
 C-    snow parameters:
       land_rhoSnow  = 330. _d 0
       land_Lfreez   = 334. _d 3
+      land_hMaxSnow = 1. _d 3
       diffKsnow     = 0.30 _d 0
       timeSnowAge   = 50. _d 0 * 86400. _d 0
       hNewSnowAge   = 2. _d -3
@@ -307,6 +310,8 @@ C- namelist LAND_PHYS_PAR:
      &   ' /* density of snow (kg/m3) */')
        CALL WRITE_0D_R8(land_Lfreez,INDEX_NONE,'land_Lfreez =',
      &   ' /* Latent heat of freezing (J/kg) */')
+       CALL WRITE_0D_R8(land_hMaxSnow,INDEX_NONE,'land_hMaxSnow =',
+     &   ' /* maximum snow-thickness (m) */')
        CALL WRITE_0D_R8(diffKsnow,INDEX_NONE,'diffKsnow =',
      &   ' /* thermal conductivity of snow (W/m/K) */')
        CALL WRITE_0D_R8(timeSnowAge,INDEX_NONE,'timeSnowAge =',

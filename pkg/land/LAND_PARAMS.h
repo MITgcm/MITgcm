@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_PARAMS.h,v 1.3 2004/03/11 14:42:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_PARAMS.h,v 1.4 2004/05/14 16:14:48 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAND
@@ -53,6 +53,7 @@ C     land_rhoSnow    :: density of snow (kg/m3)
 C     land_rhoLiqW    :: density of liquid water (kg/m3)
 C     land_Lfreez     :: Latent heat of freezing (J/kg)
 C     recip_Lfreez    :: reciprol of Latent heat (kg/J)
+C     land_hMaxSnow   :: Maximum snow-thickness  (m)
 C     diffKsnow       :: thermal conductivity of snow (W/m/K)
 C     timeSnowAge     :: snow aging time scale   (s)
 C     hNewSnowAge     :: new snow thickness that refreshes snow-age (by 1/e)
@@ -67,7 +68,7 @@ C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
      &    land_wTauDiff, land_waterCap, land_fractRunOff,
      &    land_rhoLiqW, 
      &    land_rhoSnow, land_Lfreez, recip_Lfreez, 
-     &    diffKsnow, timeSnowAge, hNewSnowAge,
+     &    land_hMaxSnow, diffKsnow, timeSnowAge, hNewSnowAge,
      &    albColdSnow, albWarmSnow, albOldSnow, hAlbSnow
 
       _RL land_deltaT, land_taveFreq, land_diagFreq, land_monFreq
@@ -75,7 +76,7 @@ C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
       _RL land_wTauDiff, land_waterCap, land_fractRunOff
       _RL land_rhoLiqW
       _RL land_rhoSnow, land_Lfreez, recip_Lfreez
-      _RL diffKsnow, timeSnowAge, hNewSnowAge
+      _RL land_hMaxSnow, diffKsnow, timeSnowAge, hNewSnowAge
       _RL albColdSnow, albWarmSnow, albOldSnow, hAlbSnow
 
 C--   COMMON /LAND_GRID_R/: layer dependent parameters

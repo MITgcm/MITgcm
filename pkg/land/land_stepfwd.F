@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_stepfwd.F,v 1.2 2004/03/11 14:42:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_stepfwd.F,v 1.3 2004/05/14 16:14:48 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -44,15 +44,18 @@ C     == Local variables ==
 C     i,j,k        :: loop counters
 C     kp1          :: k+1
 C     grd_HeatCp   :: Heat capacity of the ground [J/m3/K]
+C     enthalpGrdW  :: enthalpy of ground water [J/m3]
 C     fieldCapac   :: field capacity (of water) [m]
 C     mWater       :: water content of the ground [kg/m3]
-C     fractRunOff  :: fraction of water in excess which leaves as runoff
+C     groundWnp1   :: hold temporary future soil moisture []
 C     grdWexcess   :: ground water in excess [m/s]
-C     groundWnp1   :: hold temporary future soil moisture
-C     enthalpGrdW  :: enthalpy of ground water [J/m3]
+C     fractRunOff  :: fraction of water in excess which leaves as runoff
 C     flxkup       :: downward flux of water, upper interface (k-1,k)
 C     flxdwn       :: downward flux of water, lower interface (k,k+1)
-C     flxEng       :: downward energy flux associated with water flux
+C     flxEngU      :: downward energy flux associated with water flux (W/m2)
+C                     upper interface (k-1,k)
+C     flxEngL      :: downward energy flux associated with water flux (W/m2)
+C                     lower interface (k,k+1)
 C     temp_af      :: ground temperature if above freezing
 C     temp_bf      :: ground temperature if below freezing
 C     mPmE         :: hold temporary (liquid) Precip minus Evap [kg/m2/s]
@@ -62,14 +65,19 @@ C     mSnow        :: mass of snow         [kg/m2]
 C     dMsn         :: mass of melting snow [kg/m2]
 C     snowPrec     :: snow precipitation [kg/m2/s]
 C     hNewSnow     :: fresh snow accumulation [m]
+C     dhSnowMx     :: potential snow increase [m]
+C     dhSnow       :: effective snow increase [m]
+C     mIceDt       :: ground-ice growth rate (<- excess of snow) [kg/m2/s]
 C     ageFac       :: snow aging factor [1]
-      _RL grd_HeatCp, fieldCapac, mWater
-      _RL fractRunOff, grdWexcess, groundWnp1, enthalpGrdW
+      _RL grd_HeatCp, enthalpGrdW 
+      _RL fieldCapac, mWater
+      _RL groundWnp1, grdWexcess, fractRunOff
       _RL flxkup(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL flxkdw(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL flxEng(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL temp_af, temp_bf, mPmE, enWfx, enGr1
-      _RL mSnow, dMsn, snowPrec, hNewSnow, ageFac
+      _RL flxEngU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL flxEngL, temp_af, temp_bf, mPmE, enWfx, enGr1
+      _RL mSnow, dMsn, snowPrec  
+      _RL hNewSnow, dhSnowMx, dhSnow, mIceDt, ageFac
       INTEGER i,j,k,kp1
 
       IF (land_calc_grT .AND. .NOT.land_impl_grT ) THEN
@@ -118,8 +126,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef LAND_OLD_VERSION
       IF ( .TRUE. ) THEN
 #else
-      IF ( land_calc_snow ) THEN
+      IF ( land_calc_grW ) THEN
 #endif
+C--   Initialize run-off arrays.
+        DO j=1,sNy
+         DO i=1,sNx
+           land_runOff(i,j,bi,bj) = 0. _d 0
+           land_enRnOf(i,j,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
 C--   need (later on) ground temp. to be consistent with updated enthalpy:
         DO k=1,land_nLev
          DO j=1,sNy
@@ -157,12 +172,21 @@ C     => start to melt (until ground at freezing point) and then accumulate
             snowPrec = -enWfx -MAX( enGr1/land_deltaT, 0. _d 0 )
             snowPrec = MAX( snowPrec*recip_Lfreez , 0. _d 0 )
             mPmE = mPmE - snowPrec
-            flxEng(i,j) = enWfx + land_Lfreez*snowPrec
+            flxEngU(i,j) = enWfx + land_Lfreez*snowPrec
             hNewSnow = land_deltaT * snowPrec / land_rhoSnow
-            land_hSnow(i,j,bi,bj) = land_hSnow(i,j,bi,bj) + hNewSnow
 C-    refresh snow age:
             land_snowAge(i,j,bi,bj) = land_snowAge(i,j,bi,bj)
      &                          *EXP( -hNewSnow/hNewSnowAge )
+C-    update snow thickness:
+c           land_hSnow(i,j,bi,bj) = land_hSnow(i,j,bi,bj) + hNewSnow
+C     glacier & ice-sheet missing: excess of snow put directly into run-off
+            dhSnowMx = MAX( 0. _d 0, 
+     &                      land_hMaxSnow - land_hSnow(i,j,bi,bj) )
+            dhSnow = MIN( hNewSnow, dhSnowMx )
+            land_hSnow(i,j,bi,bj) = land_hSnow(i,j,bi,bj) + dhSnow
+            mIceDt = land_rhoSnow * (hNewSnow-dhSnow) / land_deltaT
+            land_runOff(i,j,bi,bj) = mIceDt/land_rhoLiqW
+            land_enRnOf(i,j,bi,bj) = -mIceDt*land_Lfreez
            ELSE
 C-    rain precip (whatever Evap is) or Evap exceeds snow precip :
 C     => snow melts or sublimates
@@ -173,9 +197,9 @@ c    &                 land_hSnow(i,j,bi,bj)*land_rhoSnow/land_deltaT )
             IF ( dMsn .GE. mSnow ) THEN
               dMsn = mSnow
               land_hSnow(i,j,bi,bj) = 0. _d 0
-              flxEng(i,j) = enWfx - land_Lfreez*mSnow/land_deltaT
+              flxEngU(i,j) = enWfx - land_Lfreez*mSnow/land_deltaT
             ELSE
-              flxEng(i,j) = 0. _d 0
+              flxEngU(i,j) = 0. _d 0
               land_hSnow(i,j,bi,bj) = land_hSnow(i,j,bi,bj)
      &                              - dMsn / land_rhoSnow 
             ENDIF
@@ -199,7 +223,7 @@ c          ENDIF
         DO j=1,sNy
          DO i=1,sNx
            flxkup(i,j) = land_Pr_m_Ev(i,j,bi,bj)/land_rhoLiqW
-           flxEng(i,j) = 0. _d 0
+           flxEngU(i,j) = 0. _d 0
          ENDDO
         ENDDO
       ENDIF
@@ -219,57 +243,91 @@ C--   Step forward ground Water:
        ENDIF
        fieldCapac = land_waterCap*land_dzF(k)
 
-       IF (k.EQ.1) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-           land_runOff(i,j,bi,bj) = 0. _d 0
-           land_enRnOf(i,j,bi,bj) = 0. _d 0
-         ENDDO
-        ENDDO
-       ELSE
-        DO j=1,sNy
-         DO i=1,sNx
-           flxkup(i,j) = flxkdw(i,j)
-         ENDDO
-        ENDDO
-       ENDIF
-
        DO j=1,sNy
         DO i=1,sNx
          IF ( land_frc(i,j,bi,bj).GT.0. ) THEN
+
+#ifdef LAND_OLD_VERSION
+          IF ( .TRUE. ) THEN
+           IF ( k.EQ.land_nLev ) THEN
+#else
+          IF ( land_groundT(i,j,k,bi,bj).LT.0. _d 0 ) THEN
+C-     Frozen level: only account for upper level fluxes
+           IF ( flxkup(i,j) .LT. 0. _d 0 ) THEN
+C-     Step forward soil moisture (& enthapy), level k :
+            land_groundW(i,j,k,bi,bj) = land_groundW(i,j,k,bi,bj)
+     &       + land_deltaT * flxkup(i,j) / fieldCapac
+            IF ( land_calc_snow )
+     &      land_enthalp(i,j,k,bi,bj) = land_enthalp(i,j,k,bi,bj)
+     &       + land_deltaT * flxEngU(i,j) / land_dzF(k)
+           ELSE
+C-     Frozen level: incoming water flux goes directly into run-off
+            land_runOff(i,j,bi,bj) = land_runOff(i,j,bi,bj)
+     &                             + flxkup(i,j)
+            land_enRnOf(i,j,bi,bj) = land_enRnOf(i,j,bi,bj)
+     &                             + flxEngU(i,j)
+           ENDIF
+C-     prepare fluxes for next level:
+           flxkup(i,j)  = 0. _d 0
+           flxEngU(i,j) = 0. _d 0
+
+          ELSE
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-     Diffusion flux of water, lower interface (k,k+1):
-          flxkdw(i,j) = fieldCapac*
-     &                ( land_groundW(i,j,k,bi,bj)
-     &                 -land_groundW(i,j,kp1,bi,bj) )
-     &                / land_wTauDiff
+           IF ( k.EQ.land_nLev .OR.
+     &         land_groundT(i,j,kp1,bi,bj).LT.0. _d 0 ) THEN
+#endif /* LAND_OLD_VERSION */
+C-     no Diffusion of water if one level is frozen :
+             flxkdw(i,j) = 0. _d 0
+             flxEngL =     0. _d 0
+           ELSE
+             flxkdw(i,j) = fieldCapac*
+     &                   ( land_groundW(i,j,k,bi,bj)
+     &                    -land_groundW(i,j,kp1,bi,bj) )
+     &                   / land_wTauDiff
+C-     energy flux associated with water flux: take upwind Temp
+             IF ( flxkdw(i,j).GE.0. ) THEN
+              flxEngL = flxkdw(i,j)*land_rhoLiqW*land_CpWater
+     &                 *land_groundT(i,j,k,bi,bj)
+             ELSE
+              flxEngL = flxkdw(i,j)*land_rhoLiqW*land_CpWater
+     &                 *land_groundT(i,j,kp1,bi,bj)
+             ENDIF
+           ENDIF
  
 C-     Step forward soil moisture, level k :
-          groundWnp1 = land_groundW(i,j,k,bi,bj)
+           groundWnp1 = land_groundW(i,j,k,bi,bj)
      &       + land_deltaT * (flxkup(i,j)-flxkdw(i,j)) / fieldCapac
-          land_groundW(i,j,k,bi,bj) = MIN(1. _d 0, groundWnp1)
+
+C-     Water in excess will leave as run-off or go to level below
+           land_groundW(i,j,k,bi,bj) = MIN(1. _d 0, groundWnp1)
+           grdWexcess = ( groundWnp1 - MIN(1. _d 0, groundWnp1) )
+     &                 *fieldCapac/land_deltaT
 
 C-     Run off: fraction 1-fractRunOff enters level below
-          grdWexcess = ( groundWnp1 - MIN(1. _d 0, groundWnp1) )
-     &                *fieldCapac/land_deltaT
-          land_runOff(i,j,bi,bj) = land_runOff(i,j,bi,bj)
-     &                           + fractRunOff*grdWexcess
-
-          IF ( land_calc_snow ) THEN
-C-     account for water fluxes in energy budget:
-           enthalpGrdW = land_enthalp(i,j,k,bi,bj) 
-     &                 - land_heatCs*land_groundT(i,j,k,bi,bj)
-           land_enRnOf(i,j,bi,bj) = land_enRnOf(i,j,bi,bj)
-     &                            + fractRunOff*grdWexcess*enthalpGrdW
-           land_enthalp(i,j,k,bi,bj) = land_enthalp(i,j,k,bi,bj)
-     &          + ( flxEng(i,j) - (flxkdw(i,j)+grdWexcess)*enthalpGrdW
-     &            )*land_deltaT/land_dzF(k)
-          ELSE
-           enthalpGrdW = 0. _d 0
-          ENDIF
+           land_runOff(i,j,bi,bj) = land_runOff(i,j,bi,bj)
+     &                        + fractRunOff*grdWexcess
 C-     prepare fluxes for next level:
-          flxkdw(i,j) = flxkdw(i,j)
-     &                + (1. _d 0-fractRunOff)*grdWexcess
-          flxEng(i,j) = flxkdw(i,j)*enthalpGrdW
+           flxkup(i,j) = flxkdw(i,j)
+     &              + (1. _d 0-fractRunOff)*grdWexcess
+
+           IF ( land_calc_snow ) THEN
+            enthalpGrdW = land_rhoLiqW*land_CpWater
+     &                   *land_groundT(i,j,k,bi,bj)
+C--    Account for water fluxes in energy budget: update ground Enthalpy
+            land_enthalp(i,j,k,bi,bj) = land_enthalp(i,j,k,bi,bj)
+     &         + ( flxEngU(i,j) - flxEngL - grdWexcess*enthalpGrdW 
+     &           )*land_deltaT/land_dzF(k)
+
+            land_enRnOf(i,j,bi,bj) = land_enRnOf(i,j,bi,bj)
+     &                        + fractRunOff*grdWexcess*enthalpGrdW
+C-     prepare fluxes for next level:
+            flxEngU(i,j) = flxEngL
+     &              + (1. _d 0-fractRunOff)*grdWexcess*enthalpGrdW
+           ENDIF
+          ENDIF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
          ENDIF
         ENDDO
@@ -281,8 +339,8 @@ C--   step forward ground Water: end
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF (land_calc_grT ) THEN
-C--   Compute ground temperature from enthalpy :
+      IF ( land_calc_grT ) THEN
+C--   Compute ground temperature from enthalpy (if not already done):
 
        DO k=1,land_nLev
         DO j=1,sNy
