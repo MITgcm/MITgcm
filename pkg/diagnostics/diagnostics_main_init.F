@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.9 2005/02/10 15:01:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.10 2005/02/15 20:57:38 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -228,7 +228,7 @@ C-    state variables of the main code (and related quadratic var):
       diagName  = 'WVELMASS'
       diagTitle = 'Vertical Mass-Weighted Comp of Velocity (m/s)'
       diagUnits = DIAGS_MK_UNITS( rUnit2c//'/s', myThid )
-      diagCode  = 'WM      MR      '
+      diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -249,7 +249,7 @@ C-    state variables of the main code (and related quadratic var):
       diagName  = 'WTHMASS '
       diagTitle = 'Vertical Mass-Weight Transp of Pot Temp (K.m/s)'
       diagUnits = DIAGS_MK_UNITS(tUnit4c//'.'//rUnit2c//'/s', myThid )
-      diagCode  = 'WM      MR      '
+      diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -270,7 +270,7 @@ C-    state variables of the main code (and related quadratic var):
       diagName  = 'WSLTMASS'
       diagTitle = 'Vertical Mass-Weight Transp of Salt (g/kg.m/s)'
       diagUnits = DIAGS_MK_UNITS(sUnit4c//'.'//rUnit2c//'/s', myThid )
-      diagCode  = 'WM      MR      '
+      diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -291,7 +291,7 @@ C-    state variables of the main code (and related quadratic var):
       diagName  = 'WVELTH  '
       diagTitle = 'Vertical Transp of Pot Temp (K.m/s)'
       diagUnits = DIAGS_MK_UNITS(tUnit4c//'.'//rUnit2c//'/s', myThid )
-      diagCode  = 'WM      MR      '
+      diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -312,7 +312,7 @@ C-    state variables of the main code (and related quadratic var):
       diagName  = 'WVELSLT '
       diagTitle = 'Vertical Transp of Salt (g/kg.m/s)'
       diagUnits = DIAGS_MK_UNITS(sUnit4c//'.'//rUnit2c//'/s', myThid )
-      diagCode  = 'WM      MR      '
+      diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
@@ -322,6 +322,34 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       diagTitle = 'Density Anomaly (=Rho-rhoConst)'
       diagUnits = 'kg/m^3          '
       diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'RHOANOSQ'
+      diagTitle = 'Square of Density Anomaly (=(Rho-rhoConst)^2)'
+      diagUnits = 'kg^2/m^6          '
+      diagCode  = 'SM      MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'URHOMASS'
+      diagTitle = 'Zonal Transport of Density'
+      diagUnits = 'kg/m^2/s        '
+      WRITE(diagCode,'(A,I3.3,A)') 'UU   ',diagNum+2,'MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'VRHOMASS'
+      diagTitle = 'Meridional Transport of Density'
+      diagUnits = 'kg/m^2/s        '
+      WRITE(diagCode,'(A,I3.3,A)') 'VV   ',diagNum,'MR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'WRHOMASS'
+      diagTitle = 'Vertical Transport of Potential Density'
+      diagUnits = 'kg/m^2/s        '
+      diagCode  = 'WM      LR      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
