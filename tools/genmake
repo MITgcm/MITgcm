@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.52 2001/09/10 15:58:26 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.53 2001/09/10 20:54:01 cnh Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -280,7 +280,7 @@ end
 # Platform specific options are chosen below
 set LN         = ( 'ln -s' )
 set CPP        = ( '/lib/cpp -P' )
-set S64        = ( '\$(TOOLSDIR)/set64bitConst.sh' )
+set S64        = ( '$(TOOLSDIR)/set64bitConst.sh' )
 set KPP        = (  )
 set FC         = ( 'f77' )
 set LINK       = ( 'f77' )
