@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.7 2001/08/21 15:27:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.8 2001/12/04 15:09:34 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -40,13 +40,14 @@ C     == Local variables ==
       _RL SlopeX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL SlopeY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dSigmaDrReal(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL dRdSigmaLtd(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL Ssq
+      _RL SlopeSqr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL taperFct(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
 #ifdef GM_VISBECK_VARIABLE_K
       _RS deltaH,zero_rs
       PARAMETER(zero_rs=0.)
       _RL N2,SN
+      _RL Ssq
 #endif
 
 
@@ -66,14 +67,11 @@ C     == Local variables ==
 C      Gradient of Sigma at rVel points
         SlopeX(i,j)=0.25*( sigmaX(i+1, j ,km1) +sigmaX(i,j,km1)
      &                    +sigmaX(i+1, j , k ) +sigmaX(i,j, k ) )
+     &                  *maskC(i,j,k,bi,bj)
         SlopeY(i,j)=0.25*( sigmaY( i ,j+1,km1) +sigmaY(i,j,km1)
      &                    +sigmaY( i ,j+1, k ) +sigmaY(i,j, k ) )
+     &                  *maskC(i,j,k,bi,bj)
         dSigmaDrReal(i,j)=sigmaR(i,j,k)
-
-        if (hFacC(i,j,k,bi,bj).eq.0.) then
-         SlopeX(i,j)=0.
-         SlopeY(i,j)=0.
-        endif
 
        ENDDO
       ENDDO
@@ -83,25 +81,29 @@ C     Calculate slopes for use in tensor, taper and/or clip
      I             dSigmadRReal,
      I             rF(K),
      U             SlopeX, SlopeY,
-     O             dRdSigmaLtd,
+     O             SlopeSqr, taperFct,
      I             bi, bj, myThid )
 
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
 
 C       Mask Iso-neutral slopes
-        if (hFacC(i,j,k,bi,bj).eq.0.) then
-         SlopeX(i,j)=0.
-         SlopeY(i,j)=0.
-        endif
-        Ssq=SlopeX(i,j)*SlopeX(i,j)+SlopeY(i,j)*SlopeY(i,j)
+        SlopeX(i,j)=SlopeX(i,j)*maskC(i,j,k,bi,bj)
+        SlopeY(i,j)=SlopeY(i,j)*maskC(i,j,k,bi,bj)
+        SlopeSqr(i,j)=SlopeSqr(i,j)*maskC(i,j,k,bi,bj)
+c       Ssq=SlopeX(i,j)*SlopeX(i,j)+SlopeY(i,j)*SlopeY(i,j)
 
 C       Components of Redi/GM tensor
-        Kwx(i,j,k,bi,bj)=2.*SlopeX(i,j)
-        Kwy(i,j,k,bi,bj)=2.*SlopeY(i,j)
-        Kwz(i,j,k,bi,bj)=Ssq
+        Kwx(i,j,k,bi,bj)=2.*SlopeX(i,j)*taperFct(i,j)
+        Kwy(i,j,k,bi,bj)=2.*SlopeY(i,j)*taperFct(i,j)
+        Kwz(i,j,k,bi,bj)= SlopeSqr(i,j)*taperFct(i,j)
 
 #ifdef GM_VISBECK_VARIABLE_K
+
+C- note (jmc) : moved here since only used in VISBECK_VARIABLE_K 
+C           but don't know if *taperFct (or **2 ?) is necessary 
+        Ssq=SlopeSqr(i,j)*taperFct(i,j)
+
 C--     Depth average of M^2/N^2 * N
 
 C       Calculate terms for mean Richardson number
@@ -115,15 +117,13 @@ C       If negative then we are below the integration level
 C       Now we convert deltaH to a non-dimensional fraction
         deltaH=deltaH/GM_Visbeck_depth
 
-        if (K.eq.2) VisbeckK(i,j,bi,bj)=0.
-Calt?   if (dSigmaDrReal(i,j).NE.0.) then
-Calt?    N2=(-Gravity*recip_Rhonil)*dSigmaDrReal(i,j)
-        if ( dRdSigmaLtd(i,j).NE.0. .AND. Ssq.NE.0. ) then
-         N2=(-Gravity*recip_Rhonil)/dRdSigmaLtd(i,j)
+        IF (K.eq.2) VisbeckK(i,j,bi,bj)=0.
+        IF (Ssq.NE.0.) THEN
+         N2= -Gravity*recip_Rhonil*dSigmaDrReal(i,j)
          SN=sqrt(Ssq*N2)
          VisbeckK(i,j,bi,bj)=VisbeckK(i,j,bi,bj)+deltaH
      &      *GM_Visbeck_alpha*GM_Visbeck_length*GM_Visbeck_length*SN
-        endif
+        ENDIF
 
 C       Limit range that KapGM can take
         VisbeckK(i,j,bi,bj)=
@@ -174,12 +174,12 @@ C     Calculate slopes for use in tensor, taper and/or clip
      I             dSigmadRReal,
      I             rF(K),
      U             SlopeX, SlopeY,
-     O             dRdSigmaLtd,
+     O             SlopeSqr, taperFct,
      I             bi, bj, myThid )
 
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
-        Kux(i,j,k,bi,bj)=(dSigmaDrReal(i,j)*dRdSigmaLtd(i,j))**2
+        Kux(i,j,k,bi,bj)=taperFct(i,j)
        ENDDO
       ENDDO
 
@@ -202,12 +202,12 @@ C     Calculate slopes for use in tensor, taper and/or clip
      I             dSigmadRReal,
      I             rF(K),
      U             SlopeX, SlopeY,
-     O             dRdSigmaLtd,
+     O             SlopeSqr, taperFct,
      I             bi, bj, myThid )
 
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
-        Kvy(i,j,k,bi,bj)=(dSigmaDrReal(i,j)*dRdSigmaLtd(i,j))**2
+        Kvy(i,j,k,bi,bj)=taperFct(i,j)
        ENDDO
       ENDDO
 
