@@ -1,9 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.61 2002/02/15 21:31:57 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.62 2002/02/27 21:19:59 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o real fresh water flux implemented with non-linear free-surface.
+
+checkpoint44e_pre,post
+o re-wrote convective adjustment to use pre-calculated weights
+  Affects: model/src/convective_adjustment.F, convective_adjustment_ini.F
+  Adds:    model/src/convective_weights.F, convectively_mixtracer.F
+  Original calls to convect() still in place.
 
 chkpt44d_pre,post
 o added missing EXCLUDE_MONITOR flags
