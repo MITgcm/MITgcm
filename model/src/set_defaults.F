@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.43 2002/12/10 02:55:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.44 2003/01/24 18:26:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -161,6 +161,7 @@ C--   Set (free)surface-related parameters
       nonlinFreeSurf      = 0
       hFacInf             = 1.D0
       hFacSup             = 1.D0
+      select_rStar        = 0
       useRealFreshWaterFlux = .FALSE.
       temp_EvPrRn = UNSET_RL
       salt_EvPrRn = 0.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.89 2002/12/10 02:55:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.90 2003/01/24 18:26:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -119,6 +119,7 @@ C--   Continuous equation parameters
      & implicSurfPress, implicDiv2DFlow,
      & implicitFreeSurface, rigidLid, freeSurfFac, hFacMin, hFacMinDz,
      & exactConserv,uniformLin_PhiSurf,nonlinFreeSurf,hFacInf,hFacSup,
+     & select_rStar,
      & staggerTimeStep,
      & tempStepping, saltStepping, momStepping, tr1Stepping,
      & implicitDiffusion, implicitViscosity,

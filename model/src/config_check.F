@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.4 2002/12/10 02:55:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.5 2003/01/24 18:26:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -248,6 +248,17 @@ c     ENDIF
      &                    SQUEEZE_RIGHT , myThid)                      
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: ==> use #define NONLIN_FRSURF to fix it'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)                      
+      ENDIF
+
+      IF (select_rStar .NE. 0) THEN
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: rStar is part of NonLin-FS '
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)                      
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: ==> use #define NONLIN_FRSURF to use it'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)                      
       ENDIF
