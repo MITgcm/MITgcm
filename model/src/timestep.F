@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.16 1998/11/06 22:44:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.17 1999/08/30 18:25:33 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -8,7 +8,7 @@ C     | o Step model fields forward in time                      |
 C     \==========================================================/
       SUBROUTINE TIMESTEP( bi, bj, iMin, iMax, jMin, jMax,
      I                     K,
-     I                     myThid )
+     I                     myIter, myThid )
       implicit none
 ! Common
 #include "SIZE.h"
@@ -19,14 +19,19 @@ C     \==========================================================/
 C     == Routine Arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER K
-      INTEGER myThid
+      INTEGER myIter, myThid
 C     == Local variables ==
       INTEGER i,j
       _RL ab15,ab05
 
 C     Adams-Bashforth timestepping weights
-      ab15=1.5+abeps
-      ab05=-0.5-abeps
+Caja  IF (myIter .EQ. 0) THEN
+Caja   ab15=1.0
+Caja   ab05=0.0
+Caja  ELSE
+       ab15=1.5+abeps
+       ab05=-0.5-abeps
+Caja  ENDIF
 
 C     Step forward zonal velocity (store in Gu)
        DO j=jMin,jMax

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.45 1999/08/26 17:47:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.46 1999/08/30 18:25:33 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -491,7 +491,7 @@ C--      Calculate active tracer tendencies
 C--      Prediction step (step forward all model variables)
          CALL TIMESTEP(
      I       bi,bj,iMin,iMax,jMin,jMax,K,
-     I       myThid)
+     I       myIter, myThid)
 #ifdef ALLOW_OBCS
 C--      Apply open boundary conditions
          IF (openBoundaries) CALL APPLY_OBCS2( bi, bj, K, myThid )
