@@ -19,6 +19,7 @@ CADJ STORE SST0    = comlev1, key = ikey_dynamics
 CADJ STORE SST1    = comlev1, key = ikey_dynamics
 CADJ STORE SSS0    = comlev1, key = ikey_dynamics
 CADJ STORE SSS1    = comlev1, key = ikey_dynamics
+CADJ STORE surfacetendencyTice = comlev1, key = ikey_dynamics
 #ifdef SHORTWAVE_HEATING
 CADJ STORE Qsw0    = comlev1, key = ikey_dynamics
 CADJ STORE Qsw1    = comlev1, key = ikey_dynamics

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.74 2003/11/13 21:54:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.75 2003/11/17 23:43:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -231,9 +231,13 @@ C     theta is dumped or time-averaged.
 # endif /* ALLOW_SEAICE */
 
 C--   Freeze water at the surface
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta = comlev1, key = ikey_dynamics
+#endif
       IF ( allowFreezing .AND. .NOT. useSEAICE
-     &                   .AND. .NOT. useThermSeaIce )
-     &   CALL FREEZE_SURFACE(  myTime, myIter, myThid )
+     &     .AND. .NOT. useThermSeaIce ) THEN
+        CALL FREEZE_SURFACE(  myTime, myIter, myThid )
+      ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_PTRACERS

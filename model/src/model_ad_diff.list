@@ -31,6 +31,7 @@ find_alpha.f
 find_rho.f	
 forward_step.f	
 freeze.f
+freeze_surface.f
 grad_sigma.f	
 impldiff.f	
 ini_autodiff.f	

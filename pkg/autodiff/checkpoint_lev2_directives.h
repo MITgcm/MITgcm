@@ -46,6 +46,7 @@ CADJ STORE SST0    = tapelev2, key = ilev_2
 CADJ STORE SST1    = tapelev2, key = ilev_2
 CADJ STORE SSS0    = tapelev2, key = ilev_2
 CADJ STORE SSS1    = tapelev2, key = ilev_2
+CADJ STORE surfacetendencyTice = tapelev2, key = ilev_2
 #ifdef SHORTWAVE_HEATING
 CADJ STORE Qsw0    = tapelev2, key = ilev_2
 CADJ STORE Qsw1    = tapelev2, key = ilev_2
