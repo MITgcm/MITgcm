@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.3 2001/07/13 19:06:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.4 2001/07/30 20:42:45 heimbach Exp $
 C $Name:  $
 
 C Parameter common bloack
@@ -27,7 +27,7 @@ C Non-linear flux limiter
 
 C Third/fourth order interpolation factor
       _RL oneSixth
-      PARAMETER(oneSixth=1. _d 0/6. _d 0)
+      PARAMETER(oneSixth=1.D0/6.D0)
 
 C Differentiate between tracers (only needed for KPP -  arrgh!!!)
       INTEGER GAD_TEMPERATURE
