@@ -2,16 +2,19 @@ SHELL		 = /bin/tcsh
 RM               = rm -f
 LOC              = $(PWD)
 TAMC             = tamc
+TAF              = ~fastopt/bin/taf
 DEST             = .
 SOURCE_CODE      = ../bin
 ADJOINT_SCRIPT   = ../adjoint
 BASE             = ..
-TAMCFLAGS        = -adjoint -i4 -r4
+TAMCFLAGS        = -reverse -i4 -r4
+TAFFLAGS         = -reverse -i4 -r4
 PKG		= $(BASE)/pkg
 
-DIFF_FLAGS       = -module the_main_loop		\
+DIFF_FLAGS       = -toplevel the_main_loop		\
 		   -input  '    xx_theta_dummy		\
 				xx_salt_dummy		\
+                                xx_tr1_dummy		\
 				xx_hflux_dummy		\
 				xx_sflux_dummy		\
 				xx_tauu_dummy		\
@@ -20,32 +23,37 @@ DIFF_FLAGS       = -module the_main_loop		\
 				xx_sst_dummy'		\
                    -output 'fc'
 
-TAMCFLAG         = $(TAMCFLAGS) $(DIFF_FLAGS) -l list_uv -admark ad
+TAMCFLAG         = $(TAMCFLAGS) $(DIFF_FLAGS) -admark ad
+
+TAFFLAG          = $(TAFFLAGS) $(DIFF_FLAGS) -l list_uv -admark ad
 
 
 # Source files for the MITgcmUV
-SRC_MODEL	= $(PKG)/autodiff/read_write.flow	\
+SRC_MODEL	= \
+		$(PKG)/autodiff/read_write.flow	\
 		$(PKG)/autodiff/read_write_fld.flow	\
 		$(PKG)/autodiff/read_write_rec.flow	\
-		$(PKG)/autodiff/cg2d.flow		\
-		$(PKG)/autodiff/initialisation.flow	\
 		$(PKG)/autodiff/diags.flow		\
+		$(PKG)/autodiff/cg2d.flow		\
+		$(PKG)/autodiff/debug.flow		\
 		$(PKG)/autodiff/dummy_in_stepping.flow	\
 		$(PKG)/autodiff/external_fields_load.flow	\
 		$(PKG)/autodiff/eesupp.flow		\
 		$(PKG)/autodiff/active_file.flow	\
 		$(PKG)/autodiff/write_state.flow	\
-		$(PKG)/autodiff/write_time_averages.flow\
 		$(PKG)/autodiff/exch_ad.flow		\
+		$(PKG)/autodiff/exch_z_ad.flow		\
+		$(PKG)/autodiff/exch_uv_ad.flow		\
 		$(PKG)/autodiff/global_sum_ad.flow	\
 		$(PKG)/autodiff/global_max_ad.flow	\
+		$(PKG)/autodiff/initialisation.flow	\
 		$(PKG)/autodiff/mdsio.flow		\
+		$(PKG)/autodiff/monitor.flow		\
 		$(PKG)/autodiff/checkpoint.flow		\
 		$(PKG)/autodiff/print_message.flow	\
 		$(PKG)/autodiff/open_copy_data_file.flow\
 		$(PKG)/autodiff/timeave.flow		\
 		  		  				\
-		$(SOURCE_CODE)/grad_sigma.f			\
 		$(SOURCE_CODE)/calc_buoyancy.f			\
 		$(SOURCE_CODE)/calc_common_factors.f		\
 		$(SOURCE_CODE)/calc_diffusivity.f		\
@@ -53,6 +61,7 @@ SRC_MODEL	= $(PKG)/autodiff/read_write.flow	\
 		$(SOURCE_CODE)/calc_grad_phi_surf.f		\
 		$(SOURCE_CODE)/calc_gs.f			\
 		$(SOURCE_CODE)/calc_gt.f			\
+		$(SOURCE_CODE)/calc_gtr1.f			\
 		$(SOURCE_CODE)/calc_ivdc.f			\
 		$(SOURCE_CODE)/calc_mom_rhs.f			\
 		$(SOURCE_CODE)/calc_phi_hyd.f			\
@@ -72,29 +81,74 @@ SRC_MODEL	= $(PKG)/autodiff/read_write.flow	\
 		$(SOURCE_CODE)/find_rho.f			\
 		$(SOURCE_CODE)/freeze.f				\
 		$(SOURCE_CODE)/get_offline_fields.f		\
+		$(SOURCE_CODE)/gad_biharm_x.f			\
+		$(SOURCE_CODE)/gad_biharm_y.f			\
+		$(SOURCE_CODE)/gad_c2_adv_r.f			\
+		$(SOURCE_CODE)/gad_c2_adv_x.f			\
+		$(SOURCE_CODE)/gad_c2_adv_y.f			\
+		$(SOURCE_CODE)/gad_c4_adv_r.f			\
+		$(SOURCE_CODE)/gad_c4_adv_x.f			\
+		$(SOURCE_CODE)/gad_c4_adv_y.f			\
+		$(SOURCE_CODE)/gad_calc_rhs.f			\
+		$(SOURCE_CODE)/gad_del2.f			\
+		$(SOURCE_CODE)/gad_diff_r.f			\
+		$(SOURCE_CODE)/gad_diff_x.f			\
+		$(SOURCE_CODE)/gad_diff_y.f			\
+		$(SOURCE_CODE)/gad_fluxlimit_adv_r.f		\
+		$(SOURCE_CODE)/gad_fluxlimit_adv_x.f		\
+		$(SOURCE_CODE)/gad_fluxlimit_adv_y.f		\
+		$(SOURCE_CODE)/gad_grad_x.f			\
+		$(SOURCE_CODE)/gad_grad_y.f			\
+		$(SOURCE_CODE)/grad_sigma.f			\
 		$(SOURCE_CODE)/impldiff.f			\
 		$(SOURCE_CODE)/ini_cartesian_grid.f		\
 		$(SOURCE_CODE)/ini_cg2d.f			\
 		$(SOURCE_CODE)/ini_communication_patterns.f	\
 		$(SOURCE_CODE)/ini_cori.f			\
+		$(SOURCE_CODE)/ini_curvilinear_grid.f		\
 		$(SOURCE_CODE)/ini_depths.f			\
 		$(SOURCE_CODE)/ini_fields.f			\
 		$(SOURCE_CODE)/ini_forcing.f			\
 		$(SOURCE_CODE)/ini_grid.f			\
 		$(SOURCE_CODE)/ini_masks_etc.f			\
+		$(SOURCE_CODE)/ini_pnh.f			\
 		$(SOURCE_CODE)/ini_procs.f			\
 		$(SOURCE_CODE)/ini_psurf.f			\
 		$(SOURCE_CODE)/ini_salt.f			\
 		$(SOURCE_CODE)/ini_spherical_polar_grid.f	\
 		$(SOURCE_CODE)/ini_theta.f			\
-		$(SOURCE_CODE)/ini_uvel.f			\
+		$(SOURCE_CODE)/ini_tr1.f			\
+		$(SOURCE_CODE)/ini_dynvars.f			\
+		$(SOURCE_CODE)/ini_vel.f			\
 		$(SOURCE_CODE)/ini_vertical_grid.f		\
-		$(SOURCE_CODE)/ini_vvel.f			\
-		$(SOURCE_CODE)/ini_wvel.f			\
 		$(SOURCE_CODE)/initialise_varia.f		\
 		$(SOURCE_CODE)/integrate_for_w.f		\
 		$(SOURCE_CODE)/modeldata_example.f		\
-		$(SOURCE_CODE)/nml_filter.f			\
+		$(SOURCE_CODE)/mom_calc_hfacz.f			\
+		$(SOURCE_CODE)/mom_calc_ke.f			\
+		$(SOURCE_CODE)/mom_cdscheme.f			\
+		$(SOURCE_CODE)/mom_u_adv_uu.f			\
+		$(SOURCE_CODE)/mom_u_adv_vu.f			\
+		$(SOURCE_CODE)/mom_u_adv_wu.f			\
+		$(SOURCE_CODE)/mom_u_bottomdrag.f		\
+		$(SOURCE_CODE)/mom_u_del2u.f			\
+		$(SOURCE_CODE)/mom_u_metric_nh.f		\
+		$(SOURCE_CODE)/mom_u_metric_sphere.f		\
+		$(SOURCE_CODE)/mom_u_rviscflux.f		\
+		$(SOURCE_CODE)/mom_u_sidedrag.f			\
+		$(SOURCE_CODE)/mom_u_xviscflux.f		\
+		$(SOURCE_CODE)/mom_u_yviscflux.f		\
+		$(SOURCE_CODE)/mom_v_adv_uv.f			\
+		$(SOURCE_CODE)/mom_v_adv_vv.f			\
+		$(SOURCE_CODE)/mom_v_adv_wv.f			\
+		$(SOURCE_CODE)/mom_v_bottomdrag.f		\
+		$(SOURCE_CODE)/mom_v_del2v.f			\
+		$(SOURCE_CODE)/mom_v_metric_nh.f		\
+		$(SOURCE_CODE)/mom_v_metric_sphere.f		\
+		$(SOURCE_CODE)/mom_v_rviscflux.f		\
+		$(SOURCE_CODE)/mom_v_sidedrag.f			\
+		$(SOURCE_CODE)/mom_v_xviscflux.f		\
+		$(SOURCE_CODE)/mom_v_yviscflux.f		\
 		$(SOURCE_CODE)/packages_init_variables.f	\
 		$(SOURCE_CODE)/plot_field.f			\
 		$(SOURCE_CODE)/solve_for_pressure.f		\
@@ -128,7 +182,9 @@ SRC_MODEL	= $(PKG)/autodiff/read_write.flow	\
 		  						\
 		$(SOURCE_CODE)/cost_final.f			\
 		$(SOURCE_CODE)/cost_init.f			\
+		$(SOURCE_CODE)/cost_tile.f			\
 		$(SOURCE_CODE)/cost_test.f			\
+		$(SOURCE_CODE)/cost_tracer.f			\
 		  						\
 
 
@@ -138,9 +194,12 @@ SRC_MODEL	= $(PKG)/autodiff/read_write.flow	\
 
 adcode:
 	cd $(DEST) ; cat $(SRC_MODEL) >! tamc_code_ecco.f
-admodel:
+admodeltamc:
 	cd $(DEST) ; $(TAMC) $(TAMCFLAG) tamc_code_ecco.f	\
            >! tamc_code_ecco_ad.prot
+
+admodeltaf:
+	cd $(DEST) ; $(TAF) $(TAFFLAG) tamc_code_ecco.f
 
 adchange:
 	${ADJOINT_SCRIPT}/adjoint_ecco_sed.com \
@@ -151,4 +210,7 @@ adchange:
 adrestore:
 	cp $(PKG)/autodiff/adjoint_model.F_template	\
            $(PKG)/autodiff/adjoint_model.F
-adall:  adcode admodel
+
+adtamc:  adcode admodeltamc
+
+adtaf:  adcode admodeltaf

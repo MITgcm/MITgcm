@@ -1,11 +1,11 @@
 
  sed 's/call adopen(/call adopen ( mythid,\
-     \&             /g
+     \&           /g
      s/call adclose(/call adclose( mythid,\
-     \&             /g
+     \&           /g
      s/call adread(/call adread ( mythid,\
-     \&             /g
+     \&           /g
      s/call adwrite(/call adwrite( mythid,\
-     \&             /g' < tamc_code_ecco_ad.f
+     \&           /g' < tamc_code_ecco_ad.f
 
 
