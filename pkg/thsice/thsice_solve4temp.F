@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.3 2004/05/07 21:33:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_solve4temp.F,v 1.4 2004/07/22 22:52:59 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -122,7 +122,7 @@ c     _RL  Tsf_start     ! old value of Tsf
       dBug = .FALSE.
 c     dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.11 )
 c     dBug = ( bi.EQ.6 .AND. i.EQ.18 .AND. j.EQ.10 )
-      IF ( dBug ) WRITE(6,'(A,2I4,2I2)') 'ThSI_SOLVE4T: i,j=',i,j,bi,bj
+      IF (dBug) WRITE(6,'(A,2I4,2I2)') 'ThSI_SOLVE4T: i,j=',i,j,bi,bj
 
       if ( hi.lt.himin ) then
 C If hi < himin, melt the ice.
@@ -158,8 +158,7 @@ C compute ice temperatures
           write (6,*) 'BBerr Tice(1) > 0 = ',Tice(1)
           write (6,*) 'BBerr Tice(2) > 0 = ',Tice(2)
       endif
-      IF ( dBug ) WRITE(6,1010) 'ThSI_SOLVE4T: k,Tice=',0,Tsf,Tice
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      IF (dBug) WRITE(6,1010) 'ThSI_SOLVE4T: k, Ts, Tice=',0,Tsf,Tice
 
 C Compute coefficients used in quadratic formula.
 
@@ -173,6 +172,7 @@ C Compute coefficients used in quadratic formula.
      &       / (6. _d 0*dt*k32 + rhoi*cpice *hi) - fswint
       c1 = rhoi*Lfresh*hi*Tmlt1 / (2. _d 0*dt)
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C Compute new surface and internal temperatures; iterate until
 C Tsfc converges.
 
@@ -198,6 +198,8 @@ C Compute top surface flux.
          flx0 = fswdn + flxExcSw(1)
          df0dT = flxExcSw(2)
         ENDIF
+        IF ( dBug ) WRITE(6,1020) 'ThSI_SOLVE4T: flx0,df0dT,k12,D=',
+     &                                     flx0,df0dT,k12,k12-df0dT
 
 C Compute new top layer and surface temperatures.
 C If Tsfc is computed to be > 0 C, fix Tsfc = 0 and recompute T1
@@ -209,7 +211,7 @@ C with different coefficients.
          dTsf = (flx0 + k12*(Tice(1)-Tsf)) / (k12-df0dT)
          Tsf = Tsf + dTsf
          if (Tsf .gt. 0. _d 0) then
-            IF(dBug) WRITE(6,1010) 'ThSI_SOLVE4T: k,tice=',
+            IF(dBug) WRITE(6,1010) 'ThSI_SOLVE4T: k,ts,t1,dTs=',
      &                                          k,Tsf,Tice(1),dTsf
             a1 = a10 + k12
             b1 = b10          ! note b1 = b10 - k12*Tf0
@@ -242,7 +244,7 @@ C (Energy conservation is guaranteed within machine roundoff, even
 C if Tsfc has not converged.)
 C If no convergence, then repeat.
 
-         IF ( dBug ) WRITE(6,1010) 'ThSI_SOLVE4T: k,tice=',
+         IF ( dBug ) WRITE(6,1010) 'ThSI_SOLVE4T: k,ts,t1,dTs=',
      &                                            k,Tsf,Tice(1),dTsf
          IF ( useBlkFlx ) THEN
           if (abs(dTsf).lt.Terrmax) then
@@ -271,7 +273,7 @@ C Compute new bottom layer temperature.
       Tice(2) = (2. _d 0*dt*k32*(Tice(1)+2. _d 0*Tf)
      &        + rhoi*cpice *hi*Tice(2))
      &         /(6. _d 0*dt*k32 + rhoi*cpice *hi)
-      IF ( dBug ) WRITE(6,1010) 'ThSI_SOLVE4T: k,Tice=',k,Tsf,Tice
+      IF (dBug) WRITE(6,1010) 'ThSI_SOLVE4T: k, Ts, Tice=',k,Tsf,Tice
 
 
 C Compute final flux values at surfaces.
