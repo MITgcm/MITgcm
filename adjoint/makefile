@@ -8,9 +8,9 @@ SOURCE_CODE      = ../bin
 ADJOINT_SCRIPT   = ../adjoint
 BASE             = ..
 ADTAMCFLAGS      = -reverse -i4 -r4 -admark  ad
-ADTAFFLAGS       = -reverse -i4 -r4 -admark  ad
+ADTAFFLAGS       = -reverse -i4 -r4 -admark  ad -warn_step -flow taf_flow.log
 TLTAMCFLAGS      = -forward -i4 -r4 -ftlmark g_
-TLTAFFLAGS       = -forward -i4 -r4 -ftlmark g_
+TLTAFFLAGS       = -forward -i4 -r4 -ftlmark g_ -warn_step -flow taf_flow.log
 PKG		= $(BASE)/pkg
 
 DIFF_FLAGS       = -toplevel the_main_loop		\
@@ -87,6 +87,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/find_rho.f			\
 		$(SOURCE_CODE)/forward_step.f			\
 		$(SOURCE_CODE)/freeze.f				\
+		$(SOURCE_CODE)/gad_advection.f			\
 		$(SOURCE_CODE)/gad_biharm_x.f			\
 		$(SOURCE_CODE)/gad_biharm_y.f			\
 		$(SOURCE_CODE)/gad_c2_adv_r.f			\
@@ -102,8 +103,10 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/gad_diff_y.f			\
 		$(SOURCE_CODE)/gad_dst3_adv_x.f                 \
 		$(SOURCE_CODE)/gad_dst3_adv_y.f                 \
+		$(SOURCE_CODE)/gad_dst3_adv_r.f			\
 		$(SOURCE_CODE)/gad_dst3fl_adv_x.f               \
 		$(SOURCE_CODE)/gad_dst3fl_adv_y.f               \
+		$(SOURCE_CODE)/gad_dst3fl_adv_r.f		\
 		$(SOURCE_CODE)/gad_fluxlimit_adv_r.f		\
 		$(SOURCE_CODE)/gad_fluxlimit_adv_x.f		\
 		$(SOURCE_CODE)/gad_fluxlimit_adv_y.f		\
@@ -141,9 +144,12 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/integrate_for_w.f		\
 		$(SOURCE_CODE)/modeldata_example.f		\
 		$(SOURCE_CODE)/mom_fluxform.f			\
+		$(SOURCE_CODE)/mom_hdissip.f			\
 		$(SOURCE_CODE)/mom_vecinv.f			\
 		$(SOURCE_CODE)/mom_calc_hfacz.f			\
 		$(SOURCE_CODE)/mom_calc_ke.f			\
+		$(SOURCE_CODE)/mom_calc_strain.f		\
+		$(SOURCE_CODE)/mom_calc_tension.f		\
 		$(SOURCE_CODE)/mom_cdscheme.f			\
 		$(SOURCE_CODE)/mom_u_adv_uu.f			\
 		$(SOURCE_CODE)/mom_u_adv_vu.f			\
