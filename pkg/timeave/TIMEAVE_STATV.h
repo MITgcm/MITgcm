@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.15 2004/04/29 16:02:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.16 2004/12/04 01:54:04 dimitri Exp $
 C $Name:  $
 
 #include "TIMEAVE_OPTIONS.h"
@@ -66,18 +66,18 @@ C     ConvectCountTave :: Average number of convective adjustment event
       COMMON /TAVE_STATEVARS/
      &                  uFluxtave,vFluxtave,tFluxtave,sFluxtave
      &                 ,etatave,uVeltave,vVeltave,wVeltave
-     &                 ,thetatave,salttave
+     &                 ,thetatave,salttave,phiHydLowtave
+#ifndef MINIMAL_TAVE_OUTPUT
      &                 ,UTtave,VTtave,WTtave,UStave,VStave,WStave
-#ifndef HRCUBE
      &                 ,Eta2tave,TTtave,UUtave,VVtave,UVtave
      &                 ,TdiffRtave
 #ifdef ALLOW_MOM_VECINV
      &                 ,uZetatave, vZetatave
 #endif /* ALLOW_MOM_VECINV */
      &                 ,phiHydtave
-     &                 ,phiHydLowtave,phiHydLow2Tave
+     &                 ,phiHydLow2Tave
      &                 ,ConvectCountTave
-#endif /* ndef HRCUBE */
+#endif /* ndef MINIMAL_TAVE_OUTPUT */
       _RL  uFluxtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  vFluxtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  tFluxtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -88,13 +88,14 @@ C     ConvectCountTave :: Average number of convective adjustment event
       _RL  wVeltave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  thetatave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  salttave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL phiHydLowtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifndef MINIMAL_TAVE_OUTPUT
       _RL  UTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  VTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  WTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  UStave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  VStave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  WStave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#ifndef HRCUBE
       _RL  eta2Tave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  TTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  UUtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -106,10 +107,9 @@ C     ConvectCountTave :: Average number of convective adjustment event
       _RL vZetatave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_MOM_VECINV */
       _RL phiHydtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL phiHydLowtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL phiHydLow2Tave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL ConvectCountTave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif /* ndef HRCUBE */
+#endif /* ndef MINIMAL_TAVE_OUTPUT */
 
 #ifdef NONLIN_FRSURF
 C     hUtave       :: average zonal flow (=hFacW*uVel) (still in m/s !)
@@ -118,7 +118,7 @@ C     hFacCtave    :: average thickness fraction of open water, Center
 C     hFacWtave    :: average thickness fraction of open water, West side
 C     hFacStave    :: average thickness fraction of open water, South side
 
-#ifndef HRCUBE
+#ifndef MINIMAL_TAVE_OUTPUT
       COMMON /TAVE_THICKNESS/ 
      &              hUtave, hVtave
 c    &            , hFacCtave, hFacWtave, hFacStave 
@@ -127,7 +127,7 @@ c    &            , hFacCtave, hFacWtave, hFacStave
 c     _RL  hFacCtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c     _RL  hFacWtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c     _RL  hFacStave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif /* ndef HRCUBE */
+#endif /* ndef MINIMAL_TAVE_OUTPUT */
 #endif /* NONLIN_FRSURF */
 
 #endif /* ALLOW_TIMEAVE */ 
