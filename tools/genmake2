@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.72 2004/03/12 15:50:06 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.73 2004/03/16 18:20:34 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -586,6 +586,7 @@ SOURCEDIRS=
 INCLUDEDIRS=
 STANDARDDIRS="USE_THE_DEFAULT"
 
+G2ARGS=
 BASH=
 PWD=`pwd`
 MAKE=make
@@ -678,6 +679,8 @@ fi
 #parse_options
 ac_prev=
 for ac_option ; do
+
+    G2ARGS="$G2ARGS \"$ac_option\""
 
     # If the previous option needs an argument, assign it.
     if test -n "$ac_prev"; then
@@ -1536,7 +1539,7 @@ echo "#    $MACHINE" >> $MAKEFILE
 echo "# This makefile was generated automatically on" >> $MAKEFILE
 echo "#    $THISDATE" >> $MAKEFILE
 echo "# by the command:" >> $MAKEFILE
-echo "#    $0 $@" >> $MAKEFILE
+echo "#    $0 $G2ARGS" >> $MAKEFILE
 echo "# executed by:" >> $MAKEFILE
 echo "#    $USER@${THISHOSTNAME}:${THISCWD}" >> $MAKEFILE
 
@@ -1683,7 +1686,7 @@ CLEAN:
 
 #eh3 Makefile: makefile
 makefile:
-	$THIS_SCRIPT $@
+	$THIS_SCRIPT $G2ARGS
 cleanlinks:
 	-find . -type l -exec rm {} \;
 
