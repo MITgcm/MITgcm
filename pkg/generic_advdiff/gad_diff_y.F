@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_y.F,v 1.2 2001/09/20 20:07:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_y.F,v 1.3 2001/09/21 13:11:43 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -15,9 +15,10 @@ C !INTERFACE: ==========================================================
      I           myThid )
 
 C !DESCRIPTION:
-C Calculates the meridional flux due to down-gradient diffusion of a tracer:
+C Calculates the area integrated meridional flux due to down-gradient
+C diffusion of a tracer:
 C \begin{equation*}
-C F^y_{diff} = - \kappa_h \partial_y \theta
+C F^y_{diff} = - A^y \kappa_h \frac{1}{\Delta y_c} \delta_j \theta
 C \end{equation*}
 
 C !USES: ===============================================================

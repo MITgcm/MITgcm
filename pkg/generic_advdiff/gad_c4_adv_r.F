@@ -1,38 +1,62 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c4_adv_r.F,v 1.3 2001/08/20 20:45:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c4_adv_r.F,v 1.4 2001/09/21 13:11:43 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GAD_C4_ADV_R
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GAD_C4_ADV_R( 
      I           bi,bj,k,
      I           rTrans,
      I           tracer,
      O           wT,
      I           myThid )
-C     /==========================================================\
-C     | SUBROUTINE GAD_C4_ADV_R                                  |
-C     | o Compute vertical advective Flux of Tracer using        |
-C     |   4th Order Centered Scheme                              |
-C     | o reduced to 2nd or 3rd Order near a boundary            |
-C     |==========================================================|
-      IMPLICIT NONE
 
-C     == GLobal variables ==
+C !DESCRIPTION:
+C Calculates the area integrated vertical flux due to advection of a tracer
+C using centered fourth-order interpolation:
+C \begin{equation*}
+C F^r_{adv} = W \overline{ \theta - \frac{1}{6} \delta_{kk} \theta }^k
+C \end{equation*}
+C Near boundaries, the scheme reduces to a second if the flow is away
+C from the boundary and to third order if the flow is towards
+C the boundary.
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 #include "GAD.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  rTrans               :: vertical volume transport
+C  tracer               :: tracer field
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL wT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  wT                   :: vertical advective flux
+      _RL wT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+C  kp1                  :: =min( k+1 , Nr )
+C  km1                  :: =max( k-1 , 1 )
+C  km2                  :: =max( k-2 , 1 )
+C  Rjm,Rj,Rjp           :: differences at i-1,i,i+1
+C  Rjjm,Rjjp            :: second differences at i-1,i
+C  maskP1               :: =1 for k<Nr, =0 for k>=Nr
       INTEGER i,j,kp1,km1,km2
       _RL Rjm,Rj,Rjp,Rjjm,Rjjp
       _RL maskP1
+CEOP
 
       km2=MAX(1,k-2)
       km1=MAX(1,k-1)

@@ -1,38 +1,57 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c4_adv_y.F,v 1.3 2001/08/20 20:45:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c4_adv_y.F,v 1.4 2001/09/21 13:11:43 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GAD_C4_ADV_Y
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GAD_C4_ADV_Y( 
      I           bi,bj,k,
      I           vTrans,
      I           tracer,
      O           vT,
      I           myThid )
-C     /==========================================================\
-C     | SUBROUTINE GAD_C4_ADV_Y                                  |
-C     | o Compute Meridional advective Flux of Tracer using      |
-C     |   4th Order Centered Scheme                              |
-C     | o reduced to 2nd or 3rd Order near a boundary            |
-C     |==========================================================|
-      IMPLICIT NONE
 
-C     == GLobal variables ==
+C !DESCRIPTION:
+C Calculates the area integrated meridional flux due to advection of a tracer
+C using centered fourth-order interpolation:
+C \begin{equation*}
+C F^y_{adv} = V \overline{ \theta - \frac{1}{6} \delta_{jj} \theta }^j
+C \end{equation*}
+C Near boundaries, the scheme reduces to a second if the flow is away
+C from the boundary and to third order if the flow is towards
+C the boundary.
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 #include "GAD.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  vTrans               :: meridional volume transport
+C  tracer               :: tracer field
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  uT                   :: zonal advective flux
+      _RL vT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+C  Rjm,Rj,Rjp           :: differences at j-1,j,j+1
+C  Rjjm,Rjjp            :: second differences at j-1,j
       INTEGER i,j
       _RL Rjm,Rj,Rjp,Rjjm,Rjjp
-
+CEOP
 
       DO i=1-Olx,sNx+Olx
        vT(i,1-Oly)=0.

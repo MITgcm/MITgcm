@@ -1,38 +1,64 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_y.F,v 1.2 2001/07/11 22:46:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_y.F,v 1.3 2001/09/21 13:11:43 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GAD_FLUXLIMIT_ADV_Y
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GAD_FLUXLIMIT_ADV_Y( 
      I           bi,bj,k,deltaT,
      I           vTrans, vVel,
      I           tracer,
      O           vT,
      I           myThid )
-C     /==========================================================\
-C     | SUBROUTINE GAD_FLUXLIMIT_ADV_Y                           |
-C     | o Compute Meridional advective Flux of Tracer using      |
-C     |   Flux Limiter Scheme                                    |
-C     |==========================================================|
-      IMPLICIT NONE
 
-C     == GLobal variables ==
+C !DESCRIPTION:
+C Calculates the area integrated meridional flux due to advection of a tracer
+C using second-order interpolation with a flux limiter:
+C \begin{equation*}
+C F^y_{adv} = V \overline{ \theta }^j
+C - \frac{1}{2} \left(
+C     [ 1 - \psi(C_r) ] |V|
+C    + V \frac{v \Delta t}{\Delta y_c} \psi(C_r)
+C              \right) \delta_j \theta
+C \end{equation*}
+C where the $\psi(C_r)$ is the limiter function and $C_r$ is
+C the slope ratio.
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  vTrans               :: meridional volume transport
+C  vVel                 :: meridional flow
+C  tracer               :: tracer field
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL deltaT
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL vT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  vT                   :: meridional advective flux
+      _RL vT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+C  Cr                   :: slope ratio
+C  Rjm,Rj,Rjp           :: differences at j-1,j,j+1
       INTEGER i,j
       _RL Cr,Rjm,Rj,Rjp
+C Statement function provides Limiter(Cr)
 #include "GAD_FLUX_LIMITER.h"
+CEOP
 
       DO i=1-Olx,sNx+Olx
        vT(i,1-Oly)=0.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_adv_r.F,v 1.3 2001/09/20 20:07:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_adv_r.F,v 1.4 2001/09/21 13:11:43 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -15,10 +15,10 @@ C !INTERFACE: ==========================================================
      I           myThid )
 
 C !DESCRIPTION:
-C Calculates the vertical flux due to advection of a tracer using
-C centered second-order interpolation:
+C Calculates the area integrated vertical flux due to advection of a tracer
+C using centered second-order interpolation:
 C \begin{equation*}
-C F^r_{adv} = w \theta
+C F^r_{adv} = W \overline{\theta}^k
 C \end{equation*}
 
 C !USES: ===============================================================

@@ -1,40 +1,70 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.4 2001/09/10 13:09:04 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.5 2001/09/21 13:11:43 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GAD_FLUXLIMIT_ADV_R
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GAD_FLUXLIMIT_ADV_R( 
      I           bi_arg,bj_arg,k,dTarg,
      I           rTrans, wVel,
      I           tracer,
      O           wT,
      I           myThid )
-C     /==========================================================\
-C     | SUBROUTINE GAD_FLUXLIMIT_ADV_R                           |
-C     | o Compute vertical advective Flux of Tracer using        |
-C     |   Flux Limiter Scheme                                    |
-C     |==========================================================|
-      IMPLICIT NONE
 
-C     == GLobal variables ==
+C !DESCRIPTION:
+C Calculates the area integrated vertical flux due to advection of a tracer
+C using second-order interpolation with a flux limiter:
+C \begin{equation*}
+C F^x_{adv} = W \overline{ \theta }^k
+C - \frac{1}{2} \left(
+C     [ 1 - \psi(C_r) ] |W|
+C    + W \frac{w \Delta t}{\Delta r_c} \psi(C_r)
+C              \right) \delta_k \theta
+C \end{equation*}
+C where the $\psi(C_r)$ is the limiter function and $C_r$ is
+C the slope ratio.
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi_arg,bj_arg        :: tile indices
+C  k                    :: vertical level
+C  rTrans               :: vertical volume transport
+C  wVel                 :: vertical flow
+C  tracer               :: tracer field
+C  myThid               :: thread number
       INTEGER bi_arg,bj_arg,k
       _RL dTarg
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL wT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  wT                   :: vertical advective flux
+      _RL wT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+C  kp1                  :: =min( k+1 , Nr )
+C  km1                  :: =max( k-1 , 1 )
+C  km2                  :: =max( k-2 , 1 )
+C  bi,bj                :: tile indices or (1,1) depending on use
+C  Cr                   :: slope ratio
+C  Rjm,Rj,Rjp           :: differences at i-1,i,i+1
       INTEGER i,j,kp1,km1,km2,bi,bj
       _RL Cr,Rjm,Rj,Rjp
+C Statement function provides Limiter(Cr)
 #include "GAD_FLUX_LIMITER.h"
+CEOP
 
       IF (.NOT. multiDimAdvection) THEN
 C      If using the standard time-stepping/advection schemes (ie. AB-II)

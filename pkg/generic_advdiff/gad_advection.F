@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.4 2001/09/19 20:45:09 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.5 2001/09/21 13:11:43 adcroft Exp $
 C $Name:  $
 
 CBOI
@@ -48,11 +48,11 @@ C
 C The algorithm is as follows:
 C \begin{itemize}
 C \item{$\theta^{(n+1/3)} = \theta^{(n)}
-C      - \Delta t \partial_x (u\theta) + \theta \partial_x u$}
+C      - \Delta t \partial_x (u\theta^{(n)}) + \theta^{(n)} \partial_x u$}
 C \item{$\theta^{(n+2/3)} = \theta^{(n+1/3)}
-C      - \Delta t \partial_y (v\theta) + \theta \partial_y v$}
+C      - \Delta t \partial_y (v\theta^{(n+1/3)}) + \theta^{(n)} \partial_y v$}
 C \item{$\theta^{(n+3/3)} = \theta^{(n+2/3)}
-C      - \Delta t \partial_r (w\theta) + \theta \partial_r w$}
+C      - \Delta t \partial_r (w\theta^{(n+2/3)}) + \theta^{(n)} \partial_r w$}
 C \item{$G_\theta = ( \theta^{(n+3/3)} - \theta^{(n)} )/\Delta t$}
 C \end{itemize}
 C

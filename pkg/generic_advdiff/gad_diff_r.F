@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_r.F,v 1.2 2001/09/20 20:07:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_r.F,v 1.3 2001/09/21 13:11:43 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -15,9 +15,10 @@ C !INTERFACE: ==========================================================
      I           myThid )
 
 C !DESCRIPTION:
-C Calculates the vertical flux due to down-gradient diffusion of a tracer:
+C Calculates the area integrated vertical flux due to down-gradient
+C diffusion of a tracer:
 C \begin{equation*}
-C F^r_{diff} = - \kappa_r \partial_r \theta
+C F^r_{diff} = - A^r \kappa_r \frac{1}{\Delta r_c} \delta_k \theta
 C \end{equation*}
 
 C !USES: ===============================================================
@@ -46,6 +47,7 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
 C  km1                  :: =k+1 for k<Nr, =Nr for k>-Nr
       INTEGER i,j,km1
+CEOP
 
       km1=max(1,k-1)
 

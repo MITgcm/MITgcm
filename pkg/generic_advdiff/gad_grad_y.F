@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_y.F,v 1.2 2001/09/20 20:07:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_y.F,v 1.3 2001/09/21 13:11:43 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -15,7 +15,9 @@ C !INTERFACE: ==========================================================
      I           myThid )
 
 C !DESCRIPTION:
-C Calculates the meridional gradient of a tracer: $\partial_y \theta$
+C Calculates the meridional gradient of a tracer: $\partial_y \theta
+C = \frac{1}{\Delta y_c} \delta_j \theta$
+C and multiplies by the area.
 
 C !USES: ===============================================================
       IMPLICIT NONE
