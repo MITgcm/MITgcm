@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/configure,v 1.3 1998/07/01 19:49:37 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/configure,v 1.4 1998/07/03 18:45:03 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -8,22 +8,44 @@
 
 # Process command-line arguments
 set allargs=( $argv )
-foreach arg ($allargs)
+while ($#allargs)
+ set arg = $allargs[1]
  switch ($arg)
+ case -makefile*:
+   if ($arg == "-makefile") then
+     set mfile = ( Makefile )
+   else
+     set mfile = ( `echo $arg | sed 's/-makefile=//' `)
+   endif
+   breaksw
+ case -platform:
+ case -platform=:
+   echo "To change platform you must specify one with -platform="
+   echo "eg. -platform=sparc  or  -platform=mips"
+   exit
+   breaksw
+ case -platform*:
+   set platform = ( `echo $arg | sed 's/-platform=//' `)
+   breaksw
  case -mpi:
    echo "Enabling MPI options"
    set USEMPI
    breaksw
+ case -help:
+   echo "usage: $0 [-help] [-makefile[=...]] [-platform=...] [-mpi]"
+   exit
+   breaksw
  default:
    echo "Unknown command-line option: " $arg
+   echo $0 "-help to show usage"
    exit
    breaksw
  endsw
  shift allargs
 end
  
-set platform = (`uname -p`)
-set mfile = ( Makefile.$platform )
+if ($?platform == 0) set platform = (`uname -p`)
+if ($?mfile == 0) set mfile = ( Makefile.$platform )
 set mach  = ( `uname -a` )
 echo Operating system: $mach
 
@@ -88,7 +110,7 @@ switch ($platform$USEMPI)
   case mips+mpi:
     echo "Configuring for SGI Mips with MPI"
     set DEFINES    = ( ${DEFINES} '-DTARGET_SGI' )
-    set INCLUDES   = ( ${INCLUDES} '-I/usr/local/mpi/include' )
+    set INCLUDES   = ( '-I/usr/local/mpi/include' )
     set FC         = ( 'mpif77' )
     set LINK       = ( 'mpif77' )
     set FFLAGS     = ( '-extend_source -bytereclen -r10000' )
@@ -98,8 +120,12 @@ switch ($platform$USEMPI)
   case mips:
     echo "Configuring for SGI Mips"
     set DEFINES    = ( ${DEFINES} '-DTARGET_SGI' )
+    set INCLUDES   = ( '-I/usr/local/mpi/include' )
     set FFLAGS     = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4' )
-    set FOPTIM     = ( '-O3' )
+    set FOPTIM     = ( '-O2' )
+    set NOOPTFLAGS = ( '-O0' )
+    set NOOPTFILES = ( 'barrier.F different_multiple.F ' \
+                       'load_external_fields.F' )
     set RMFILES    = ( 'rii_files' )
     breaksw
   case sparc:
@@ -128,17 +154,23 @@ endsw
 ###############################################################################
 
 # Create list of files
-set Fsrclist = ( )
-set fsrclist = ( )
-set objlist = ( )
 set flist = `ls -1 ${SOURCEDIRS} | grep '.*\.F'`
 if ( $#flist ) then
+ echo -n "SRCFILES = " > srclist.inc
+ echo -n "F77FILES = " > f77list.inc
+ echo -n "OBJFILES = " > objlist.inc
  foreach ff ( ${flist} )
   set fname = ( ${ff:t}       )
-  set Fsrclist = ( ${Fsrclist} ${fname:r}.F  )
-  set fsrclist = ( ${fsrclist} ${fname:r}.f  )
-  set objlist = ( ${objlist} ${fname:r}.o )
+  echo " \\" >> srclist.inc
+  echo -n "           " ${fname:r}.F >> srclist.inc
+  echo " \\" >> f77list.inc
+  echo -n "           " ${fname:r}.f >> f77list.inc
+  echo " \\" >> objlist.inc
+  echo -n "           " ${fname:r}.o >> objlist.inc
  end
+ echo >> srclist.inc
+ echo >> f77list.inc
+ echo >> objlist.inc
 else
  echo No source files found...\!
  exit
@@ -220,11 +252,12 @@ NOOPTFLAGS = ${NOOPTFLAGS}
 # Flags and libraries needed for linking
 LIBS = ${LIBS}
 
-SRCFILES = ${Fsrclist}
+EOF
 
-F77FILES = ${fsrclist}
+cat srclist.inc f77list.inc objlist.inc >> ${mfile}
+rm -f srclist.inc f77list.inc objlist.inc
 
-OBJFILES = ${objlist}
+cat >> ${mfile} <<EOF
 
 .SUFFIXES:
 .SUFFIXES: .o .f .p .F
