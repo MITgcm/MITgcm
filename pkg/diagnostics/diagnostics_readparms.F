@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.1 2004/12/13 21:43:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.2 2004/12/14 03:48:23 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -137,7 +137,7 @@ C     Fill Diagnostics Common Block with Namelist Info
      &          nfields(n).LT.numperlist ) THEN
              nfields(n) = nfields(n) + 1
              flds(nfields(n),n) = fields(m,l)
-           ELSEIF ( fields(m,n).NE.blk8c ) THEN
+           ELSEIF ( fields(m,l).NE.blk8c ) THEN
              WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
      &        'Exceed Max.Num. of Fields/list numperlist=', numperlist
              CALL PRINT_ERROR( msgBuf , myThid )
@@ -151,6 +151,7 @@ C     Fill Diagnostics Common Block with Namelist Info
            ENDIF
          ENDDO
          nlists = nlists + 1
+c        write(6,*) 'list summary:',n,nfields(n),nlevels(n)
        ELSEIF ( frequency(l).NE.0 ) THEN
          WRITE(msgBuf,'(2A,I3)') 'DIAGNOSTICS_READPARMS: ',
      &            'Exceed Max.Num. of list numlists=', numlists
