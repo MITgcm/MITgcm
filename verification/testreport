@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.44 2004/07/12 14:02:25 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.45 2004/07/17 02:08:45 edhill Exp $
 #  $Name:  $
 #
 
@@ -340,7 +340,7 @@ symlink_mpifiles()
     code_dir=$2
     BUILD_DIR=$dir/$3
     CODE_DIR=$dir/$code_dir
-
+    
     # These are files that should replace their counter-part when using -mpi
     MPI_FILES=`(cd $CODE_DIR; find . -name "*_mpi")`
 
@@ -355,20 +355,21 @@ symlink_mpifiles()
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
 		if ! test -f $BUILD_DIR/$i ; then
-	        #echo Linking $name to $i
+	            #echo Linking $name to $i
 		    (cd $BUILD_DIR; ln -sf ../$code_dir/$i $name)
 		fi
 	    fi
 	done
     else
-    # NO: We undo any _mpi symbolically linked files
+        # NO: We undo any _mpi symbolically linked files
 	for ii in $MPI_FILES ; do
 	    i=`echo $ii | sed 's:^\./::'`
 	    name=`echo $i | sed 's:_mpi::' `
 	    if test -L $BUILD_DIR/$name ; then
-		linktarg=`(cd $BUILD_DIR; readlink $name)`
-		if test $linktarg = "../$code_dir/$name"_mpi ; then
-	        #echo Un-linking $name from $linktarg
+		cmp $BUILD_DIR/$name "../$code_dir/$name"_mpi > /dev/null 2>&1
+		RETVAL=$?
+		if test "x$RETVAL" = x0 ; then
+		    #echo Un-linking $name from $linktarg
 		    rm -f $BUILD_DIR/$name
 		fi
 	    fi
@@ -690,7 +691,7 @@ if test "x$ADM" = xt -a "x$COMMAND" = x ; then
 fi
 
 if test "x$COMMAND" = x ; then
-    COMMAND="make output.txt"
+    COMMAND="$MAKE output.txt"
 fi
 
 echo "OK"
