@@ -35,7 +35,6 @@
  multiDimAdvection=.TRUE.,
  tempAdvScheme=77,
  saltAdvScheme=77,
- tracerAdvScheme=77,
  readBinaryPrec=64,
  writeBinaryPrec=64,
  writeStatePrec=64,
