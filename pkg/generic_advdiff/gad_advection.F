@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.25 2004/06/30 23:45:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.26 2004/07/07 20:09:42 cnh Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -306,16 +306,32 @@ C      ----------------|--||-------
 C                      |  \/
 C                      |   x T(sNx+1,    0)
        IF ( southWestCorner ) THEN
-        localTij(0    ,0    )= localTij(0    ,1  )
+        DO J=1,OLy
+         DO I=1,OLx
+          localTij(1-I, 1-J   )= localTij(1-J  ,1  )
+         ENDDO
+        ENDDO
        ENDIF
        IF ( southEastCorner ) THEN
-        localTij(sNx+1,0    )= localTij(sNx+1,1  )
+        DO J=1,OLy
+         DO I=1,OLx
+          localTij(sNx+I, 1-J )=localTij(sNx+J, I  )
+         ENDDO
+        ENDDO
        ENDIF
        IF ( northWestCorner ) THEN
-        localTij(0    ,sNy+1)= localTij(0    ,sNy)
+        DO J=1,OLy
+         DO I=1,OLx
+          localTij( 1-I ,sNy+J)=localTij( 1-J , sNy+1-I )
+         ENDDO
+        ENDDO
        ENDIF
        IF ( northEastCorner ) THEN
-        localTij(sNx+1,sNy+1)= localTij(sNx+1,sNy)
+        DO J=1,OLy
+         DO I=1,OLx
+          localTij(sNx+I,sNy+J)=localTij(sNx+J, sNy+1-I )
+         ENDDO
+        ENDDO
        ENDIF
       ENDIF
 
@@ -413,16 +429,32 @@ C      ----------------|-----------
 C                      |     
 C         x T(sNx,0) =====>x T(sNx+1,    0)
        IF ( southWestCorner ) THEN
-         localTij(    0,0    ) = localTij(  1,0    )
+        DO J=1,Oly
+         DO I=1,Olx
+          localTij( 1-i , 1-j ) = localTij(j   , 1-i )
+         ENDDO
+        ENDDO
        ENDIF
        IF ( southEastCorner ) THEN
-         localTij(sNx+1,0    ) = localTij(sNx,0    )
+        DO J=1,Oly
+         DO I=1,Olx
+          localTij(sNx+i, 1-j ) = localTij(sNx+1-j, 1-i )
+         ENDDO
+        ENDDO
        ENDIF
        IF ( northWestCorner ) THEN
-         localTij(0    ,sNy+1) = localTij(  1,sNy+1)
+        DO J=1,Oly
+         DO I=1,Olx
+          localTij( 1-i ,sNy+j) = localTij(j   ,sNy+i)
+         ENDDO
+        ENDDO
        ENDIF
        IF ( northEastCorner ) THEN
-         localTij(sNx+1,sNy+1) = localTij(sNx,sNy+1)
+        DO J=1,Oly
+         DO I=1,Olx
+          localTij(sNx+i,sNy+j) = localTij(sNx+1-j,sNy+i)
+         ENDDO
+        ENDDO
        ENDIF
       ENDIF
 
