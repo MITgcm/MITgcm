@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.19 2003/12/28 17:25:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.20 2004/01/02 23:07:14 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -130,7 +130,7 @@ C--    Beginning of forward sweep (top level)
       ENDIF
 
 C--   Middle of forward sweep
-      IF (Nr.GT.2) THEN
+      IF (Nr.GE.2) THEN
 
 CADJ loop = sequential
        DO k=2,Nr
