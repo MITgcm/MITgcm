@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.25 2000/06/21 19:15:33 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.26 2000/09/11 22:59:09 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -162,7 +162,7 @@ C     o Diffusive component of zonal flux
        ENDDO
       ENDDO
 #ifdef ALLOW_GMREDI
-      IF (use_GMRedi) CALL GMREDI_XTRANSPORT(
+      IF (useGMRedi) CALL GMREDI_XTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
      I     xA,theta,
      U     df,
@@ -205,7 +205,7 @@ C     o Diffusive component of meridional flux
        ENDDO
       ENDDO
 #ifdef ALLOW_GMREDI
-      IF (use_GMRedi) CALL GMREDI_YTRANSPORT(
+      IF (useGMRedi) CALL GMREDI_YTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
      I     yA,theta,
      U     df,
@@ -305,7 +305,7 @@ C           boundary condition.
 #endif /* INCLUDE_T_DIFFUSION_CODE */
 
 #ifdef ALLOW_GMREDI
-      IF (use_GMRedi) CALL GMREDI_RTRANSPORT(
+      IF (useGMRedi) CALL GMREDI_RTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
      I     maskUp,theta,
      U     df,
@@ -314,7 +314,7 @@ C           boundary condition.
 
 #ifdef ALLOW_KPP
 C--   Add non local KPP transport term (ghat) to diffusive T flux.
-      IF (use_KPPmixing) CALL KPP_TRANSPORT_T(
+      IF (useKPP) CALL KPP_TRANSPORT_T(
      I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
      I     maskC,KappaRT,
      U     df )
