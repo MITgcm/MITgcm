@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/atm_store_heatflux.F,v 1.3 2004/05/21 20:00:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/atm_store_heatflux.F,v 1.4 2004/12/04 00:13:48 jmc Exp $
 C $Name:  $  
 
 #include "CPP_OPTIONS.h"
@@ -57,7 +57,6 @@ C       is the incoming short-wave radiation that is absorbed by the ocean/land.
 C       Variable ALHC is the latent heat of evaporation/condensation (see 
 C       COMMON/PHYCON/, com_phycon.h).
 C        HeatFlux is defined with positive into the atmosphere, units are W/m^2 
-C       (* deltaTtracer).
 
        cplTimeFraction = 1. _d 0 / DFLOAT(cplSendFrq_iter)
        HeatFluxTime(bi,bj) = HeatFluxTime(bi,bj) + cplTimeFraction
