@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp2/Attic/SIZE.h,v 1.1 1998/06/10 01:49:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp2/Attic/SIZE.h,v 1.2 1998/07/01 13:34:19 adcroft Exp $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |
@@ -36,7 +36,7 @@ C     Nz  - No. points in Z for full process domain.
       INTEGER Nz
       PARAMETER (
      &           sNx =  90,
-     &           sNy =  41,
+     &           sNy =  40,
      &           OLx =   3,
      &           OLy =   3,
      &           nSx =   1,
