@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/calc_mom_rhs.F,v 1.2 2001/05/29 14:01:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/calc_mom_rhs.F,v 1.3 2001/06/27 19:28:04 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -180,7 +180,9 @@ C     o V momentum equation
       phyFac       = pfFacMom*1.
       vForcFac     = foFacMom*1.
 
-      IF (no_slip_bottom) THEN
+      IF (     no_slip_bottom
+     &    .OR. bottomDragQuadratic.NE.0.
+     &    .OR. bottomDragLinear.NE.0.) THEN
        bottomDragTerms=.TRUE.
       ELSE
        bottomDragTerms=.FALSE.
