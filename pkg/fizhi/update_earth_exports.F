@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.8 2004/06/10 20:53:19 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.9 2004/06/10 21:50:33 molod Exp $
 C $Name:  $
 
        subroutine update_earth_exports (myTime, myIter, myThid)
@@ -155,14 +155,22 @@ C*******************************************************************
       _RL minval
       external     minval
 
-      PARAMETER (  ALVDRS  = 0.100 )  ! Albedo of soil         for visible   direct solar radiation.
-      PARAMETER (  ALIDRS  = 0.200 )  ! Albedo of soil         for infra-red direct solar radiation.
-      PARAMETER (  ALVDRDL = 0.300 )  ! Albedo of light desert for visible   direct solar radiation.
-      PARAMETER (  ALIDRDL = 0.350 )  ! Albedo of light desert for infra-red direct solar radiation.
-      PARAMETER (  ALVDRDD = 0.250 )  ! Albedo of dark  desert for visible   direct solar radiation.
-      PARAMETER (  ALIDRDD = 0.300 )  ! Albedo of dark  desert for infra-red direct solar radiation.
-      PARAMETER (  ALVDRI  = 0.800 )  ! Albedo of ice          for visible   direct solar radiation.
-      PARAMETER (  ALIDRI  = 0.800 )  ! Albedo of ice          for infra-red direct solar radiation.
+C Albedo of soil         for visible   direct solar radiation.
+      PARAMETER (  ALVDRS  = 0.100 )  
+C Albedo of soil         for infra-red direct solar radiation.
+      PARAMETER (  ALIDRS  = 0.200 )  
+C Albedo of light desert for visible   direct solar radiation.
+      PARAMETER (  ALVDRDL = 0.300 )  
+C Albedo of light desert for infra-red direct solar radiation.
+      PARAMETER (  ALIDRDL = 0.350 )  
+C Albedo of dark  desert for visible   direct solar radiation.
+      PARAMETER (  ALVDRDD = 0.250 )  
+C Albedo of dark  desert for infra-red direct solar radiation.
+      PARAMETER (  ALIDRDD = 0.300 )  
+C Albedo of ice          for visible   direct solar radiation.
+      PARAMETER (  ALVDRI  = 0.800 )  
+C Albedo of ice          for infra-red direct solar radiation.
+      PARAMETER (  ALIDRI  = 0.800 )  
 
 * --------------------------------------------------------------------------------------------
 
@@ -621,9 +629,6 @@ C**** -----------------------------------------------------------
 #if f77
 cfpp$ expand (coeff)
 #endif
-#if f90
-!DIR$ inline always coeff
-#endif
 #endif
 
       DO 100 I=1,IRUN
@@ -1026,27 +1031,38 @@ c      band 12: 35.7 -  oo  um
 c 
 c-------------------------------------------------------------------------
       data ((emis(i,j),i=1,12),j=1,11) /
-     &   0.9891, 0.9892, 0.9900, 0.9914, 0.9908, 0.9903, ! evergreen needleleaf
+C evergreen needleleaf
+     &   0.9891, 0.9892, 0.9900, 0.9914, 0.9908, 0.9903, 
      &   0.9898, 0.9948, 1.0000, 1.0000, 1.0000, 1.0000,
-     &   0.9849, 0.9856, 0.9841, 0.9831, 0.9789, 0.9805, ! deciduous needleleaf
+C deciduous needleleaf
+     &   0.9849, 0.9856, 0.9841, 0.9831, 0.9789, 0.9805, 
      &   0.9733, 0.9869, 1.0000, 1.0000, 1.0000, 1.0000,
-     &   0.9891, 0.9892, 0.9900, 0.9914, 0.9908, 0.9903, ! evergreen needleleaf
+C evergreen needleleaf
+     &   0.9891, 0.9892, 0.9900, 0.9914, 0.9908, 0.9903, 
      &   0.9898, 0.9948, 1.0000, 1.0000, 1.0000, 1.0000,
-     &   0.9867, 0.9897, 0.9920, 0.9933, 0.9830, 0.9752, ! grasslands
+C grasslands
+     &   0.9867, 0.9897, 0.9920, 0.9933, 0.9830, 0.9752, 
      &   0.9853, 0.9928, 1.0000, 1.0000, 1.0000, 1.0000,
-     &   0.9490, 0.9697, 0.9738, 0.9712, 0.9474, 0.9582, ! closed shrublands
+C closed shrublands
+     &   0.9490, 0.9697, 0.9738, 0.9712, 0.9474, 0.9582, 
      &   0.9663, 0.9747, 0.9836, 0.9836, 0.9836, 0.9836,
-     &   0.9469, 0.9670, 0.9883, 0.9795, 0.9751, 0.9767, ! tundra
+C tundra
+     &   0.9469, 0.9670, 0.9883, 0.9795, 0.9751, 0.9767, 
      &   0.9920, 0.9888, 0.9888, 0.9888, 0.9888, 0.9888,
-     &   0.8353, 0.9163, 0.9342, 0.9229, 0.8354, 0.8766, ! barren
+C barren
+     &   0.8353, 0.9163, 0.9342, 0.9229, 0.8354, 0.8766, 
      &   0.9210, 0.9262, 0.9345, 0.9345, 0.9345, 0.9345,
-     &   0.8353, 0.9163, 0.9342, 0.9229, 0.8354, 0.8766, ! barren
+C barren
+     &   0.8353, 0.9163, 0.9342, 0.9229, 0.8354, 0.8766, 
      &   0.9210, 0.9262, 0.9345, 0.9345, 0.9345, 0.9345,
-     &   0.9998, 0.9998, 0.9998, 0.9998, 0.9998, 0.9999, ! snow/ice
+C snow/ice
+     &   0.9998, 0.9998, 0.9998, 0.9998, 0.9998, 0.9999, 
      &   0.9997, 0.9994, 0.9995, 0.9995, 0.9995, 0.9995,
-     &   0.8353, 0.9163, 0.9342, 0.9229, 0.8354, 0.8766, ! barren
+C barren
+     &   0.8353, 0.9163, 0.9342, 0.9229, 0.8354, 0.8766, 
      &   0.9210, 0.9262, 0.9345, 0.9345, 0.9345, 0.9345,
-     &   0.9788, 0.9833, 0.9819, 0.9820, 0.9835, 0.9865, ! water
+C water
+     &   0.9788, 0.9833, 0.9819, 0.9820, 0.9835, 0.9865, 
      &   0.9886, 0.9719, 0.9719, 0.9719, 0.9719, 0.9719/
 
       include 'snwmid.h'
@@ -1073,16 +1089,26 @@ c modify emissivity for snow based on snow depth (like albedo)
 c-------------------------------------------------------------
         if(snowdepth (i).gt.0.) then
          fac = snowdepth(i) / (snowdepth(i) + snwmid(ityp(i)))
-         newemis(i, 1) = newemis(i, 1) + (((emis( 1,9)+emis( 2,9))/2.) - newemis(i, 1)) * fac
-         newemis(i, 2) = newemis(i, 2) + (((emis( 2,9)+emis( 3,9))/2.) - newemis(i, 2)) * fac
-         newemis(i, 3) = newemis(i, 3) + (((emis( 4,9)+emis( 5,9))/2.) - newemis(i, 3)) * fac
-         newemis(i, 4) = newemis(i, 4) +              (emis( 6,9)      - newemis(i, 4)) * fac
-         newemis(i, 5) = newemis(i, 5) +              (emis( 7,9)      - newemis(i, 5)) * fac
-         newemis(i, 6) = newemis(i, 6) +              (emis( 8,9)      - newemis(i, 6)) * fac
-         newemis(i, 7) = newemis(i, 7) +              (emis( 9,9)      - newemis(i, 7)) * fac
-         newemis(i, 8) = newemis(i, 8) + (((emis(10,9)+emis(11,9))/2.) - newemis(i, 8)) * fac
-         newemis(i, 9) = newemis(i, 9) +              (emis(12,9)      - newemis(i, 9)) * fac
-         newemis(i,10) = newemis(i,10) +              (emis( 4,9)      - newemis(i,10)) * fac
+         newemis(i, 1) = newemis(i, 1) + (((emis( 1,9)+emis( 2,9))/2.) 
+     .                                           - newemis(i, 1)) * fac
+         newemis(i, 2) = newemis(i, 2) + (((emis( 2,9)+emis( 3,9))/2.) 
+     .                                           - newemis(i, 2)) * fac
+         newemis(i, 3) = newemis(i, 3) + (((emis( 4,9)+emis( 5,9))/2.) 
+     .                                           - newemis(i, 3)) * fac
+         newemis(i, 4) = newemis(i, 4) +              (emis( 6,9)      
+     .                                           - newemis(i, 4)) * fac
+         newemis(i, 5) = newemis(i, 5) +              (emis( 7,9)      
+     .                                           - newemis(i, 5)) * fac
+         newemis(i, 6) = newemis(i, 6) +              (emis( 8,9)      
+     .                                           - newemis(i, 6)) * fac
+         newemis(i, 7) = newemis(i, 7) +              (emis( 9,9)      
+     .                                           - newemis(i, 7)) * fac
+         newemis(i, 8) = newemis(i, 8) + (((emis(10,9)+emis(11,9))/2.) 
+     .                                           - newemis(i, 8)) * fac
+         newemis(i, 9) = newemis(i, 9) +              (emis(12,9)      
+     .                                           - newemis(i, 9)) * fac
+         newemis(i,10) = newemis(i,10) +              (emis( 4,9)      
+     .                                           - newemis(i,10)) * fac
         endif
 
 c open water

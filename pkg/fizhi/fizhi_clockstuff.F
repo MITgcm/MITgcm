@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.6 2004/06/10 20:53:19 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.7 2004/06/10 21:50:33 molod Exp $
 C $Name:  $
 
       subroutine set_alarm (tag,date,time,freq)
@@ -811,3 +811,100 @@ C***********************************************************************
 
       RETURN
       END
+
+      subroutine time_bound(nymd,nhms,nymd1,nhms1,nymd2,nhms2,imnm,imnp)
+C***********************************************************************
+C  PURPOSE
+C     Compute Date and Time boundaries.
+C
+C  ARGUMENTS   DESCRIPTION
+C     nymd .... Current    Date
+C     nhms .... Current    Time
+C     nymd1 ... Previous   Date Boundary
+C     nhms1 ... Previous   Time Boundary
+C     nymd2 ... Subsequent Date Boundary
+C     nhms2 ... Subsequent Time Boundary
+C
+C     imnm .... Previous   Time Index for Interpolation
+C     imnp .... Subsequent Time Index for Interpolation
+C
+C***********************************************************************
+C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
+C***********************************************************************
+
+      implicit none
+      integer  nymd,nhms, nymd1,nhms1, nymd2,nhms2
+
+c Local Variables
+c ---------------
+      integer  month,day,nyear,midmon1,midmon,midmon2
+      integer  imnm,imnp
+      INTEGER  DAYS(14), daysm, days0, daysp
+      DATA     DAYS /31,31,28,31,30,31,30,31,31,30,31,30,31,31/
+
+      integer nmonf,ndayf,n
+      NMONF(N) = MOD(N,10000)/100
+      NDAYF(N) = MOD(N,100)
+
+C*********************************************************************
+C**** Find Proper Month and Time Boundaries for Climatological Data **
+C*********************************************************************
+
+      MONTH  = NMONF(NYMD)
+      DAY    = NDAYF(NYMD)
+
+      daysm  = days(month  )
+      days0  = days(month+1)
+      daysp  = days(month+2)
+
+c Check for Leap Year
+c -------------------
+      nyear = nymd/10000
+      if( 4*(nyear/4).eq.nyear ) then
+      if( month.eq.3 ) daysm = daysm+1
+      if( month.eq.2 ) days0 = days0+1
+      if( month.eq.1 ) daysp = daysp+1
+      endif
+
+      MIDMON1 = daysm/2 + 1
+      MIDMON  = days0/2 + 1
+      MIDMON2 = daysp/2 + 1
+
+
+      IF(DAY.LT.MIDMON) THEN
+         imnm = month
+         imnp = month + 1
+         nymd2 = (nymd/10000)*10000 + month*100 + midmon
+         nhms2 = 000000
+         nymd1 = nymd2
+         nhms1 = nhms2
+         call tick ( nymd1,nhms1,       -midmon  *86400 )
+         call tick ( nymd1,nhms1,-(daysm-midmon1)*86400 )
+      ELSE
+         IMNM = MONTH + 1
+         IMNP = MONTH + 2
+         nymd1 = (nymd/10000)*10000 + month*100 + midmon
+         nhms1 = 000000
+         nymd2 = nymd1
+         nhms2 = nhms1
+         call tick ( nymd2,nhms2,(days0-midmon)*86400 )
+         call tick ( nymd2,nhms2,       midmon2*86400 )
+      ENDIF
+
+c -------------------------------------------------------------
+c Note:  At this point, imnm & imnp range between 01-14, where
+c        01    -> Previous years December
+c        02-13 -> Current  years January-December
+c        14    -> Next     years January
+c -------------------------------------------------------------
+
+      imnm = imnm-1
+      imnp = imnp-1
+
+      if( imnm.eq.0  ) imnm = 12
+      if( imnp.eq.0  ) imnp = 12
+      if( imnm.eq.13 ) imnm = 1
+      if( imnp.eq.13 ) imnp = 1
+
+      return
+      end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.3 2004/06/04 20:42:34 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.4 2004/06/10 21:50:33 molod Exp $
 C $Name:  $
 
       subroutine fizhi_alarms (nymdb,nhmsb,ndt)
@@ -42,8 +42,10 @@ c -------------------
 #endif
       if( ndt.ne.0 ) then
 
-      ndlw = 030000   ! Longwave  Radiation Frequency
-      ndsw = 010000   ! Shortwave Radiation Frequency
+C Longwave  Radiation Frequency
+      ndlw = 030000   
+C Shortwave Radiation Frequency
+      ndsw = 010000   
 
 c Turbulence
 c ----------
@@ -95,10 +97,14 @@ c ---------------
 
 c For NDT = 0, all Alarms set to 1 second
 c ---------------------------------------
-      ndlw    = 000001   ! Longwave  Radiation Frequency
-      ndsw    = 000001   ! Shortwave Radiation Frequency
-      ndturb  = 000001   ! Turbulence          Frequency
-      ndmoist = 000001   ! Moist Processes     Frequency
+C Longwave  Radiation Frequency
+      ndlw    = 000001   
+C Shortwave Radiation Frequency
+      ndsw    = 000001   
+C Turbulence          Frequency
+      ndturb  = 000001   
+C Moist Processes     Frequency
+      ndmoist = 000001   
 
       endif
 

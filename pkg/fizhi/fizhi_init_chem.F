@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.4 2004/06/10 20:53:19 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.5 2004/06/10 21:50:33 molod Exp $
 C $Name:  $
 
       subroutine fizhi_init_chem(mythid,nozlats,nozlevs,ozlats,ozlevs,
-     . ozone,nwatlats,nwatlevs,watlats,watlevs,water,
+     . o3,nwatlats,nwatlevs,watlats,watlevs,water,
      . Nrphys,pressure,n20,methane,co2,cfc11,cfc12,cfc22)
 C***********************************************************************
 C Subroutine fizhi_init_chem - routine to read in the ozone and upper
@@ -21,7 +21,7 @@ C***********************************************************************
       implicit none
 #include "CPP_EEOPTIONS.h"
       integer mythid,nozlevs,nozlats,nwatlevs,nwatlats,Nrphys
-      _RL oz(nozlats,nozlevs), water(nwatlats,nwatlevs)
+      _RL o3(nozlats,nozlevs,12), water(nwatlats,nwatlevs,12)
       _RL ozlats(nozlats), ozlevs(nozlevs)
       _RL watlats(nwatlats), watlevs(nwatlevs)
       _RL pressure(Nrphys),methane(Nrphys),n2o(Nrphys)
@@ -169,7 +169,8 @@ c -------------------------------------
 
       do time=1,ntime
       do lev=1,nlev
-      nrec = lev+(time-1)*nlev*2   ! Note: 2 quantities in Ozone Dataset
+C Note: 2 quantities in Ozone Dataset
+      nrec = lev+(time-1)*nlev*2   
       read(ku,rec=nrec) o3
            do lat=1,nlat
            oz(lat,nlev-lev+1,time) = o3(lat)
