@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.139 2004/12/04 00:10:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.140 2004/12/09 09:01:07 mlosch Exp $
 C $Name:  $
 C
 
@@ -426,6 +426,9 @@ C     viscAr    :: Eddy viscosity coeff. for mixing of
 C                 momentum vertically ( units of r^2/s )
 C     viscA4    :: Biharmonic viscosity coeff. for mixing of
 C                 momentum laterally ( m^4/s )
+C     viscA4W   :: Biharmonic viscosity coeff. for mixing of vertical
+C                 momentum laterally, no effect for hydrostatic
+C                 model, defaults to viscA4 if unset ( m^2/s )
 C     viscAhD   :: Eddy viscosity coeff. for mixing of momentum laterally
 C                  (act on Divergence part) ( m^2/s )
 C     viscAhZ   :: Eddy viscosity coeff. for mixing of momentum laterally
@@ -540,7 +543,8 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & fCori, fCoriG, fCoriCos,
      & viscAh, viscAhW, viscAhMax, viscAhGrid, viscC2leith,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
-     & viscA4,  viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
+     & viscA4, viscA4W, 
+     & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
      & viscC4leith, viscAr, viscAstrain, viscAtension,
      & diffKhT, diffK4T, diffKrNrT,
      & diffKhS, diffK4S, diffKrNrS,
@@ -605,6 +609,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL viscAtension
       _RL viscAr
       _RL viscA4 
+      _RL viscA4W
       _RL viscA4D
       _RL viscA4Z
       _RL viscA4Max

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.17 2004/10/01 16:15:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.18 2004/12/09 09:01:07 mlosch Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -54,11 +54,16 @@ C     flx_Dn       :: Temp. used for fVol vertical terms.
       _RL    flx_EW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    flx_Dn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    flx_Up(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    fZon(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    fMer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    del2w(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     I,J,K - Loop counters
       INTEGER i,j,k, kP1, kUp
       _RL  wOverride
       _RS  hFacWtmp
       _RS  hFacStmp
+      _RS  hFacCtmp
+      _RS  recip_hFacCtmp
       _RL ab15,ab05
       _RL slipSideFac
       _RL tmp_VbarZ, tmp_UbarZ, tmp_WbarZ
@@ -84,8 +89,8 @@ C     Lateral friction (no-slip, free slip, or half slip):
       ELSE
         slipSideFac =  1. _d 0 
       ENDIF
-CML   half slip was used before ; keep it for now, but half slip is
-CML   not used anywhere in the code as far as I can see
+CML   half slip was used before ; keep the line for now, but half slip is
+CML   not used anywhere in the code as far as I can see.
 C        slipSideFac = 0. _d 0
 
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -123,6 +128,77 @@ C Sweep down column
           Kp1=Nr
           wOverRide=0.
          endif
+C     horizontal bi-harmonic dissipation
+         IF (momViscosity .AND. viscA4W.NE.0. ) THEN
+C     calculate the horizontal Laplacian of vertical flow
+C     Zonal flux d/dx W
+          DO j=1-Oly,sNy+Oly
+           fZon(1-Olx,j)=0.
+           DO i=1-Olx+1,sNx+Olx
+            fZon(i,j) = drF(k)*_hFacC(i,j,k,bi,bj)
+     &           *_dyG(i,j,bi,bj)
+     &           *_recip_dxC(i,j,bi,bj)
+     &           *(wVel(i,j,k,bi,bj)-wVel(i-1,j,k,bi,bj))
+#ifdef COSINEMETH_III
+     &           *sqcosFacU(J,bi,bj)
+#endif
+           ENDDO
+          ENDDO	
+C     Meridional flux d/dy W
+          DO i=1-Olx,sNx+Olx
+           fMer(I,1-Oly)=0.
+          ENDDO
+          DO j=1-Oly+1,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            fMer(i,j) = drF(k)*_hFacC(i,j,k,bi,bj)
+     &           *_dxG(i,j,bi,bj)
+     &           *_recip_dyC(i,j,bi,bj)
+     &           *(wVel(i,j,k,bi,bj)-wVel(i,j-1,k,bi,bj))
+#ifdef ISOTROPIC_COS_SCALING
+#ifdef COSINEMETH_III
+     &           *sqCosFacV(j,bi,bj)
+#endif
+#endif
+           ENDDO
+          ENDDO
+          
+C     del^2 W
+C     Difference of zonal fluxes ...
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx-1
+            del2w(i,j)=fZon(i+1,j)-fZon(i,j)
+           ENDDO
+           del2w(sNx+Olx,j)=0.
+          ENDDO
+
+C     ... add difference of meridional fluxes and divide by volume
+          DO j=1-Oly,sNy+Oly-1
+           DO i=1-Olx,sNx+Olx
+C     First compute the fraction of open water for the w-control volume
+C     at the southern face
+            hFacCtmp=max(hFacC(I,J,K-1,bi,bj)-Half,0. _d 0)
+     &           +   min(hFacC(I,J,K  ,bi,bj),Half)
+            recip_hFacCtmp = 0. _d 0
+            IF (hFacCtmp .GT. 0.) THEN
+             recip_hFacCtmp = 1./hFacCtmp
+            ELSE
+             recip_hFacCtmp = 0. _d 0
+            ENDIF
+            del2w(i,j)=recip_rA(i,j,bi,bj)
+     &           *recip_drC(k)*recip_hFacCtmp
+     &           *(
+     &           del2w(i,j)
+     &           +( fMer(i,j+1)-fMer(i,j) )
+     &           )
+           ENDDO
+          ENDDO
+C-- No-slip BCs impose a drag at walls...
+CML ************************************************************
+CML   No-slip Boundary conditions for bi-harmonic dissipation
+CML   need to be implemented here!
+CML ************************************************************
+         ENDIF
+
 C Flux on Southern face
          DO J=jMin,jMax+1
           DO I=iMin,iMax
@@ -139,6 +215,14 @@ C     at the southern face
      &       *(hFacStmp*(wVel(I,J,K,bi,bj)-wVel(I,J-1,K,bi,bj))
      &        +(1. _d 0 - hFacStmp)*(1. _d 0 - slipSideFac)
      &         *wVel(I,J,K,bi,bj))
+     &    +viscA4W*_recip_dyC(I,J,bi,bj)*(del2w(I,J)-del2w(I,J-1))
+#ifdef ISOTROPIC_COS_SCALING
+#ifdef COSINEMETH_III
+     &    *sqCosFacV(j,bi,bj)
+#else
+     &    *CosFacV(j,bi,bj)
+#endif
+#endif
 C     The last term is the weighted average of the viscous stress at the open
 C     fraction of the w control volume and at the closed fraction of the
 C     the control volume. A more compact but less intelligible version
@@ -163,6 +247,12 @@ C     at the western face
      &      *(hFacWtmp*(wVel(I,J,K,bi,bj)-wVel(I-1,J,K,bi,bj))
      &       +(1 _d 0 - hFacWtmp)*(1 _d 0 - slipSideFac)
      &        *wVel(I,J,K,bi,bj) )
+     &    +viscA4W*_recip_dxC(I,J,bi,bj)*(del2w(I,J)-del2w(I-1,J))
+#ifdef COSINEMETH_III
+     &                *sqCosFacU(j,bi,bj)
+#else 
+     &                *CosFacU(j,bi,bj)
+#endif
 C     The last term is the weighted average of the viscous stress at the open
 C     fraction of the w control volume and at the closed fraction of the
 C     the control volume. A more compact but less intelligible version
