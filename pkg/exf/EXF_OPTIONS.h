@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.3 2003/11/23 23:24:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.4 2003/11/25 16:07:03 heimbach Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -10,8 +10,12 @@ C $Name:  $
 
 C Despite the comments below, this package is currently configured by
 C ECCO_CPPOPTIONS.h and so you should not customize this file.
-#define ALLOW_ECCO
-#include "ECCO_CPPOPTIONS.h"
+
+CPH >>>>>> THIS SHOULD BE INCLUDED BY CPP_OPTIONS.h <<<<<<
+CPH >>>>>> TO AVOID ORDERING OF HEADERS TO MATTER   <<<<<<
+CPH >>>>>> UNTIL WE DECIDE ON CONSISTENT CHANGE IN  <<<<<<
+CPH >>>>>> POLICY                                   <<<<<<
+CPH#include "ECCO_CPPOPTIONS.h"
 
 C CPP flags controlling which code is included in the files that
 C will be compiled.

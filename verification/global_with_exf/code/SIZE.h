@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/SIZE.h,v 1.3 2003/02/11 14:17:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/SIZE.h,v 1.4 2003/11/25 16:07:03 heimbach Exp $
 C $Name:  $
 
 C

@@ -1,10 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/Attic/ECCO_CPPOPTIONS.h,v 1.6 2003/11/23 23:24:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/Attic/ECCO_CPPOPTIONS.h,v 1.7 2003/11/25 16:07:03 heimbach Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
 #define ECCO_CPPOPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_ECCO
 
 #include "CPP_OPTIONS.h"
 
@@ -12,41 +11,19 @@ C CPP flags controlling which code is included in the files that
 C will be compiled.
 C
 C ********************************************************************
-C ***                         ECCO Package                         ***
-C ********************************************************************
-C
-
-C ********************************************************************
-C ***                  Adjoint Support Package                     ***
-C ********************************************************************
-
-
-C ********************************************************************
 C ***                     Calendar Package                         ***
 C ********************************************************************
 C 
 C CPP flags controlling which code is included in the files that
 C will be compiled.
-C
 
 C o Include the calendar tool.
 #define ALLOW_CALENDAR
 #define ALLOW_CAL_NENDITER
 
 C ********************************************************************
-C ***                Cost function Package                         ***
-C ********************************************************************
-C
-
-C ********************************************************************
-C ***               Control vector Package                         ***
-C ********************************************************************
-C 
-
-C ********************************************************************
 C ***             External forcing Package                         ***
 C ********************************************************************
-C 
 
 C   Do more printout for the protocol file than usual.
 #define EXF_VERBOSE
@@ -82,5 +59,4 @@ C   Use spatial interpolation to interpolate
 C   forcing files from input grid to model grid.
 #define USE_EXF_INTERPOLATION
 
-#endif /* ALLOW_ECCO */
 #endif /* ECCO_CPPOPTIONS_H */
