@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.3 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.4 2003/11/25 19:04:16 heimbach Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -106,11 +106,6 @@ c     (version 0.1.3 >> END << )
 
 
       _BEGIN_MASTER(myThid)
-
-#ifndef ALLOW_CAL_NENDITER
-      print *, 'WARNING: ALLOW_CAL_NENDITER must be defined in CPP file'
-      STOP 'undef ALLOW_CAL_NENDITER no longer supported by cal package'
-#endif
 
 c       Initialise the calendar's parameters
         TheCalendar = ' '

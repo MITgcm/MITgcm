@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/ECCO_CPPOPTIONS.h,v 1.3 2003/10/27 22:43:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/ECCO_CPPOPTIONS.h,v 1.4 2003/11/25 19:04:16 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -32,10 +32,8 @@ C ********************************************************************
 C
 C CPP flags controlling which code is included in the files that
 C will be compiled.
-C
-C o Include the calendar tool.
-#undef ALLOW_CALENDAR
-#undef ALLOW_CAL_NENDITER
+
+CPH >>>>>> THERE ARE NO MORE CAL OPTIONS TO BE SET <<<<<<
 
 C ********************************************************************
 C ***                Cost function Package                         ***

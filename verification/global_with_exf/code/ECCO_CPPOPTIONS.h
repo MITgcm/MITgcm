@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/Attic/ECCO_CPPOPTIONS.h,v 1.7 2003/11/25 16:07:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/Attic/ECCO_CPPOPTIONS.h,v 1.8 2003/11/25 19:04:17 heimbach Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -17,9 +17,7 @@ C
 C CPP flags controlling which code is included in the files that
 C will be compiled.
 
-C o Include the calendar tool.
-#define ALLOW_CALENDAR
-#define ALLOW_CAL_NENDITER
+CPH >>>>>> THERE ARE NO MORE CAL OPTIONS TO BE SET <<<<<<
 
 C ********************************************************************
 C ***             External forcing Package                         ***

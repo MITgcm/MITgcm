@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.5 2003/10/26 01:22:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.6 2003/11/25 19:04:16 heimbach Exp $
 C $Name:  $
 
 C CPP flags controlling which code is included in the files that
@@ -29,10 +29,8 @@ C ********************************************************************
 C
 C CPP flags controlling which code is included in the files that
 C will be compiled.
-C
-C o Include the calendar tool.
-#undef ALLOW_CALENDAR
-#undef ALLOW_CAL_NENDITER
+
+CPH >>>>>> THERE ARE NO MORE CAL OPTIONS TO BE SET <<<<<<
 
 C ********************************************************************
 C ***                Cost function Package                         ***
