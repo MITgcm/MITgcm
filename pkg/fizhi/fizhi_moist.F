@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.17 2004/08/12 15:21:22 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.18 2004/09/01 22:42:18 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -144,11 +144,13 @@ c ---------------
       _RL tmstp,tminv,sday,grav,alhl,cp,elocp,gamfac
       _RL rkappa,p0kappa,p0kinv,ptopkap,pcheck
       _RL tice,getcon,pi
+      integer ntracedim
  
 C **********************************************************************
 C ****                     INITIALIZATION                           ****
 C **********************************************************************
 
+      ntracedim= max(ntracer-ptracer,1)
       IMSTP  = nsecf(NDMOIST)
       TMSTP  = FLOAT(IMSTP)
       TMINV  = 1. /  TMSTP
@@ -260,13 +262,13 @@ c ----------------------------------------------------------------
          dpgather(indx,L) = dpres(pblindex(indx),1,L)
        enddo
       enddo
-      do nt = 1,ntracer-ptracer
-      do L = 1,lm
-       do indx = 1,im*jm
-        ugather(indx,L,nt) = qz(pblindex(indx),1,L,nt+ptracer)
-       enddo
-      enddo
-      enddo
+c     do nt = 1,ntracer-ptracer
+c     do L = 1,lm
+c      do indx = 1,im*jm
+c       ugather(indx,L,nt) = qz(pblindex(indx),1,L,nt+ptracer)
+c      enddo
+c     enddo
+c     enddo
 
 c bump the counter for number of calls to convection
 c --------------------------------------------------
@@ -308,9 +310,9 @@ C **********************************************************************
        CALL STRIP (  shgather, SHL     ,im*jm,ISTRIP,lm,NN )
        CALL STRINT( levgather, pbl     ,im*jm,ISTRIP,1 ,NN )
 
-       do nt = 1,ntracer-ptracer
-       call strip ( ugather(1,1,nt), ul(1,1,nt),im*jm,istrip,lm,nn )
-       enddo
+c      do nt = 1,ntracer-ptracer
+c      call strip ( ugather(1,1,nt), ul(1,1,nt),im*jm,istrip,lm,nn )
+c      enddo
 
 C **********************************************************************
 C ****        SETUP FOR RAS CUMULUS PARAMETERIZATION                ****
@@ -375,25 +377,25 @@ c ------------------------------------------------------
 
 c Save initial value of tracers and compute sub-cloud value
 c ---------------------------------------------------------
-       DO NT = 1,ntracer-ptracer
-          do  L = 1,lm
-          do  i = num,num+nindeces(nsubcl)-1
-          saveu(i,L,nt) = ul(i,L,nt)
-          enddo
-          enddo
-          DO I=num,num+nindeces(nsubcl)-1
-          TMP1(I,2) = 0.
-          ENDDO
-          DO L=NSUBCL,lm
-          DO I=num,num+nindeces(nsubcl)-1
-           TMP1(I,2) = TMP1(I,2)+(PLE(I,L+1)-PLE(I,L))*UL(I,L,NT)/sp(i)
-          ENDDO
-          ENDDO
-          DO I=num,num+nindeces(nsubcl)-1
-          UL(I,NSUBCL,NT) = TMP1(I,2)*TMP1(I,4)
-             usubcl(i,nt) = ul(i,nsubcl,nt)
-          ENDDO
-       ENDDO
+c      DO NT = 1,ntracer-ptracer
+c         do  L = 1,lm
+c         do  i = num,num+nindeces(nsubcl)-1
+c         saveu(i,L,nt) = ul(i,L,nt)
+c         enddo
+c         enddo
+c         DO I=num,num+nindeces(nsubcl)-1
+c         TMP1(I,2) = 0.
+c         ENDDO
+c         DO L=NSUBCL,lm
+c         DO I=num,num+nindeces(nsubcl)-1
+c          TMP1(I,2) = TMP1(I,2)+(PLE(I,L+1)-PLE(I,L))*UL(I,L,NT)/sp(i)
+c         ENDDO
+c         ENDDO
+c         DO I=num,num+nindeces(nsubcl)-1
+c         UL(I,NSUBCL,NT) = TMP1(I,2)*TMP1(I,4)
+c            usubcl(i,nt) = ul(i,nsubcl,nt)
+c         ENDDO
+c      ENDDO
 
 c Compute Pressure Arrays for RAS
 c -------------------------------
@@ -478,7 +480,7 @@ c --------------------------------------------------------
       enddo
 
       CALL RAS ( NN,istrip,nindeces(nsubcl),NLRAS,NLTOP,lm,TMSTP
-     1, UL(num,1,1),ntracer-ptracer,TH(num,NLTOP),SHL(num,NLTOP)
+     1, UL(num,1,1),ntracedim,TH(num,NLTOP),SHL(num,NLTOP)
      2, TMP4(num,NLTOP), TMP5(num,NLTOP),rnd, ncrnd, PCPEN(num,NLTOP)
      3, CLBOTH(num,NLTOP), CLFRAC(num,NLTOP)
      4, cldmas(num,nltop), detrain(num,nltop)
@@ -523,23 +525,23 @@ c ------------------------------------
 
 c Compute Tracer Tendency due to RAS
 c ----------------------------------
-       do nt = 1,ntracer-ptracer
-        DO L=1,nsubcl-1
-        DO I=num,num+nindeces(nsubcl)-1
-         CVU(I,L,nt) = ( UL(I,L,nt)-saveu(i,l,nt) )*sp(i)*tminv
-        ENDDO
-        ENDDO
-        DO L=nsubcl,lm
-        DO I=num,num+nindeces(nsubcl)-1
-         if( usubcl(i,nt).ne.0.0 ) then
-          cvu(i,L,nt) = ( ul(i,nsubcl,nt)-usubcl(i,nt) ) * 
-     .                     ( saveu(i,L,nt)/usubcl(i,nt) )*sp(i)*tminv
-         else
-          cvu(i,L,nt) = 0.0
-         endif
-        ENDDO
-        ENDDO
-       enddo
+c      do nt = 1,ntracer-ptracer
+c       DO L=1,nsubcl-1
+c       DO I=num,num+nindeces(nsubcl)-1
+c        CVU(I,L,nt) = ( UL(I,L,nt)-saveu(i,l,nt) )*sp(i)*tminv
+c       ENDDO
+c       ENDDO
+c       DO L=nsubcl,lm
+c       DO I=num,num+nindeces(nsubcl)-1
+c        if( usubcl(i,nt).ne.0.0 ) then
+c         cvu(i,L,nt) = ( ul(i,nsubcl,nt)-usubcl(i,nt) ) * 
+c    .                     ( saveu(i,L,nt)/usubcl(i,nt) )*sp(i)*tminv
+c        else
+c         cvu(i,L,nt) = 0.0
+c        endif
+c       ENDDO
+c       ENDDO
+c      enddo
 
 c Compute Diagnostic PSUBCLD (Subcloud Layer Pressure)
 c ----------------------------------------------------
@@ -570,9 +572,9 @@ C **********************************************************************
 
       call paste( CVTH,deltgather,istrip,im*jm,lm,NN )
       call paste(  CVQ,delqgather,istrip,im*jm,lm,NN )
-      do nt = 1,ntracer-ptracer
-      call paste( CVU(1,1,nt),delugather(1,1,nt),istrip,im*jm,lm,NN )
-      enddo
+c     do nt = 1,ntracer-ptracer
+c     call paste( CVU(1,1,nt),delugather(1,1,nt),istrip,im*jm,lm,NN )
+c     enddo
 
 C **********************************************************************
 C     And now paste some arrays for filling diagnostics
@@ -764,12 +766,12 @@ c ------------
 
 c Tracers
 c -------
-      do nt = 1,ntracer-ptracer
-       do L = 1,lm
-       call back2grd (delugather(1,L,nt),pblindex,
-     .                                 dqmoist(1,1,L,ptracer+nt),im*jm)
-       enddo
-      enddo
+c     do nt = 1,ntracer-ptracer
+c      do L = 1,lm
+c      call back2grd (delugather(1,L,nt),pblindex,
+c    .                                 dqmoist(1,1,L,ptracer+nt),im*jm)
+c      enddo
+c     enddo
 
 
 C **********************************************************************
@@ -1241,13 +1243,13 @@ c *****************************
         QOI(I,L) = QOI(I,L) + QCU(I,L) * DT * rhfrac(i)
        ENDDO
       ENDDO
-      DO NT=1,Ntracer
-      DO L=IB,K
-       DO I=1,LENC
-        UOI(I,L+nltop-1,NT)=UOI(I,L+nltop-1,NT)+UCU(I,L,NT)*DT*rhfrac(i)
-       ENDDO
-      ENDDO
-      ENDDO
+c     DO NT=1,Ntracer
+c     DO L=IB,K
+c      DO I=1,LENC
+c       UOI(I,L+nltop-1,NT)=UOI(I,L+nltop-1,NT)+UCU(I,L,NT)*DT*rhfrac(i)
+c      ENDDO
+c     ENDDO
+c     ENDDO
       DO I=1,LENC
        rains(I,ib) = rains(I,ib) + PCU(I)*dt * rhfrac(i)
       ENDDO
@@ -1293,6 +1295,7 @@ c ---------------------------------------------------------
 c First Time In From a Continuing RESTART (IRAS.GT.1) or Reading a New RESTART
 c ----------------------------------------------------------------------------
       if( first.and.(iras.gt.1) .or. iras.ne.iras0+1 )then
+       print *,' first ',first,' iras ',iras,' iras0 ',iras0
        if( myid.eq.1 ) print *, 'Recreating Rand Numb Array in RNDCLOUD'
        if( myid.eq.1 ) print *, 'IRAS: ',iras,'  IRAS0: ',iras0
        numrand = mod(iras,irm/nrnd) * nrnd
@@ -1581,13 +1584,13 @@ C
       CMASS(I,L) = 0.0
    10 CONTINUE
 
-      do nt = 1,ntracer
-      do L=1,K
-      do I=1,LENC
-      ucu(I,L,nt) = 0.0
-      enddo
-      enddo
-      enddo
+c     do nt = 1,ntracer
+c     do L=1,K
+c     do I=1,LENC
+c     ucu(I,L,nt) = 0.0
+c     enddo
+c     enddo
+c     enddo
 C
       DO 30 I=1,LENC
       TX1(I)   = PRJ(I,K+1) * POI(I,K)
@@ -1824,12 +1827,12 @@ C
       WLQ(I) = QOL(II,K) - QS1(I)     * ETA(I,IC)
       TX7(I) = HOL(II,K)
   620 CONTINUE
-      DO NT=1,Ntracer
-      DO 621 I=1,LENB
-      II = I1(I)
-      UHT(I,NT) = UOI(II,K+nltop-1,NT)-UOI(II,IC+nltop-1,NT) * ETA(I,IC)
-  621 CONTINUE
-      ENDDO
+c     DO NT=1,Ntracer
+c     DO 621 I=1,LENB
+c     II = I1(I)
+c     UHT(I,NT) = UOI(II,K+nltop-1,NT)-UOI(II,IC+nltop-1,NT) * ETA(I,IC)
+c 621 CONTINUE
+c     ENDDO
 C
       DO 635 L=KM1,IC,-1
       DO 630 I=1,LENB
@@ -1838,15 +1841,15 @@ C
       WLQ(I) = WLQ(I) + TEM * QOL(II,L)
   630 CONTINUE
   635 CONTINUE
-      DO NT=1,Ntracer
-      DO L=KM1,IC,-1
-      DO I=1,LENB
-      II = I1(I)
-      TEM    = ETA(I,L) - ETA(I,L+1)
-      UHT(I,NT) = UHT(I,NT) + TEM * UOI(II,L+nltop-1,NT)
-      ENDDO
-      ENDDO
-      ENDDO
+c     DO NT=1,Ntracer
+c     DO L=KM1,IC,-1
+c     DO I=1,LENB
+c     II = I1(I)
+c     TEM    = ETA(I,L) - ETA(I,L+1)
+c     UHT(I,NT) = UHT(I,NT) + TEM * UOI(II,L+nltop-1,NT)
+c     ENDDO
+c     ENDDO
+c     ENDDO
 C
 C     CALCULATE GS AND PART OF AKM (THAT REQUIRES ETA)
 C
@@ -2062,47 +2065,47 @@ C
 C
 c Compute Tracer Tendencies
 c -------------------------
-      do nt = 1,ntracer
-
+c     do nt = 1,ntracer
+c
 c Tracer Tendency at the Bottom Layer
 c -----------------------------------
-      DO 995 I=1,LENB
-      II = I1(I)
-      TEM    = half*TX5(I) * PRI(II,K)
-      TX1(I) = (UOI(II,KM1+nltop-1,nt) - UOI(II,K+nltop-1,nt))
-      ucu(II,K,nt) = TEM * TX1(I)
-  995 CONTINUE
-
+c     DO 995 I=1,LENB
+c     II = I1(I)
+c     TEM    = half*TX5(I) * PRI(II,K)
+c     TX1(I) = (UOI(II,KM1+nltop-1,nt) - UOI(II,K+nltop-1,nt))
+c     ucu(II,K,nt) = TEM * TX1(I)
+c 995 CONTINUE
+c
 c Tracer Tendency at all other Levels
 c -----------------------------------
-      DO 1020 L=KM1,IC1,-1
-      DO 1010 I=1,LENB
-      II = I1(I)
-      TEM = half*TX5(I) * PRI(II,L)
-      TEM1   = TX1(I)
-      TX1(I) = (UOI(II,L-1+nltop-1,nt)-UOI(II,L+nltop-1,nt)) * ETA(I,L)
-      TX3(I) = (TX1(I) + TEM1) * TEM
- 1010 CONTINUE
-      DO 1020 I=1,LENB
-      II = I1(I)
-      ucu(II,L,nt) = TX3(I)
- 1020 CONTINUE
-
-      DO 1030 I=1,LENB
-      II = I1(I)
-      IF (TX6(I) .GE. 1.0) THEN
-         TEM    = half*TX5(I) * PRI(II,IC)
-      ELSE
-         TEM = 0.0
-      ENDIF
-      TX1(I) = (TX1(I) + UHT(I,nt) + UHT(I,nt)) * TEM
- 1030 CONTINUE
-      DO 1040 I=1,LENB
-      II = I1(I)
-      ucu(II,IC,nt) = TX1(I)
- 1040 CONTINUE
-
-      enddo
+c     DO 1020 L=KM1,IC1,-1
+c     DO 1010 I=1,LENB
+c     II = I1(I)
+c     TEM = half*TX5(I) * PRI(II,L)
+c     TEM1   = TX1(I)
+c     TX1(I) = (UOI(II,L-1+nltop-1,nt)-UOI(II,L+nltop-1,nt)) * ETA(I,L)
+c     TX3(I) = (TX1(I) + TEM1) * TEM
+c1010 CONTINUE
+c     DO 1020 I=1,LENB
+c     II = I1(I)
+c     ucu(II,L,nt) = TX3(I)
+c1020 CONTINUE
+c
+c     DO 1030 I=1,LENB
+c     II = I1(I)
+c     IF (TX6(I) .GE. 1.0) THEN
+c        TEM    = half*TX5(I) * PRI(II,IC)
+c     ELSE
+c        TEM = 0.0
+c     ENDIF
+c     TX1(I) = (TX1(I) + UHT(I,nt) + UHT(I,nt)) * TEM
+c1030 CONTINUE
+c     DO 1040 I=1,LENB
+c     II = I1(I)
+c     ucu(II,IC,nt) = TX1(I)
+c1040 CONTINUE
+c
+c     enddo
 C
 C     PENETRATIVE CONVECTION CALCULATION OVER
 C
