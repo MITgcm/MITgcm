@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield.F,v 1.2 2003/02/18 05:33:55 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield.F,v 1.3 2003/06/12 18:38:07 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -183,9 +183,9 @@ C Close data-file and create meta-file
          dimList(1,2)=Ny
          dimList(2,2)=1
          dimList(3,2)=Ny
-         dimList(1,3)=Nr
+         dimList(1,3)=nNz
          dimList(2,3)=1
-         dimList(3,3)=Nr
+         dimList(3,3)=nNz
          ndims=3
          if (nNz .EQ. 1) ndims=2
          call MDSWRITEMETA( metaFName, dataFName,
@@ -312,9 +312,9 @@ C Create meta-file for each tile if we are tiling
          dimList(1,2)=Ny
          dimList(2,2)=myYGlobalLo+(bj-1)*sNy
          dimList(3,2)=myYGlobalLo+bj*sNy-1
-         dimList(1,3)=Nr
+         dimList(1,3)=nNz
          dimList(2,3)=1
-         dimList(3,3)=Nr
+         dimList(3,3)=nNz
          ndims=3
          if (nNz .EQ. 1) ndims=2
          call MDSWRITEMETA( metaFName, dataFName,
@@ -364,9 +364,9 @@ C writing their data before we update the meta-file
        dimList(1,2)=Ny
        dimList(2,2)=1
        dimList(3,2)=Ny
-       dimList(1,3)=Nr
+       dimList(1,3)=nNz
        dimList(2,3)=1
-       dimList(3,3)=Nr
+       dimList(3,3)=nNz
        ndims=3
        if (nNz .EQ. 1) ndims=2
        call MDSWRITEMETA( metaFName, dataFName,
