@@ -1,0 +1,348 @@
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.1 2002/11/22 17:17:03 jmc Exp $
+C $Name:  $
+
+#include "AIM_OPTIONS.h"
+
+CBOP
+C     !ROUTINE: AIM_READPARMS
+C     !INTERFACE:
+      SUBROUTINE AIM_READPARMS( myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R AIM_READPARMS
+C     | o Read AIM physics package parameters
+C     *==========================================================*
+C     | Initialized parameter in common blocks: 
+C     |  FORCON, SFLCON, CNVCON, LSCCON, RADCON, VDICON
+C     *==========================================================*
+C     \ev
+ 
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global variables ===
+#include "AIM_SIZE.h"
+#include "EEPARAMS.h"
+c #include "PARAMS.h"
+
+C-   Physical constants + functions of sigma and latitude
+c #include "com_physcon.h"
+C-   Constants for sub-grid-scale physics
+#include "com_forcon.h"
+#include "com_sflcon.h"
+#include "com_cnvcon.h"
+#include "com_lsccon.h"
+#include "com_radcon.h"  
+#include "com_vdicon.h"  
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine Arguments ==       
+C     myThid -  Number of this instance
+      INTEGER myThid
+CEOP
+
+#ifdef ALLOW_AIM
+
+C     == Local Variables == 
+C     msgBuf      - Informational/error meesage buffer
+C     iUnit       - Work variable for IO unit number
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER iUnit
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   Physical constants (common PHYCON) :
+C      P0   = reference pressure
+C      GG   = gravity accel.
+C      RD   = gas constant for dry air
+C      CP   = specific heat at constant pressure
+C      ALHC = latent heat of condensation
+C      SBC  = Stefan-Boltzmann constant            
+
+C--   Constants for forcing fields (common FORCON) :
+C      SOLC   = Solar constant (area averaged) in W/m^2
+C      ALBSEA = Albedo over sea
+C      ALBICE = Albedo over sea ice (for ice fraction = 1)
+C      ALBSN  = Albedo over snow (for snow depth > SDALB)
+C      SDALB  = Snow depth (mm water) corresponding to maximum albedo
+C      SWCAP  = Soil wetness at field capacity (volume fraction)
+C      SWWIL  = Soil wetness at wilting point  (volume fraction)
+      NAMELIST /AIM_PAR_FOR/
+     &    SOLC, ALBSEA, ALBICE, ALBSN,
+     &    SDALB, SWCAP, SWWIL
+
+C--   Constants for surface fluxes (common SFLCON) : 
+C      FWIND0 = ratio of near-sfc wind to lowest-level wind
+C      FTEMP0 = weight for near-sfc temperature extrapolation (0-1) :
+C               1 : linear extrapolation from two lowest levels
+C               0 : constant potential temperature ( = lowest level)
+C      FHUM0  = weight for near-sfc specific humidity extrapolation (0-1) :
+C               1 : extrap. with constant relative hum. ( = lowest level)
+C               0 : constant specific hum. ( = lowest level)
+C      CDL    = drag coefficient for momentum over land
+C      CDS    = drag coefficient for momentum over sea
+C      CHL    = heat exchange coefficient over land
+C      CHS    = heat exchange coefficient over sea
+C      VGUST  = wind speed for sub-grid-scale gusts
+C      CTDAY  = daily-cycle correction (dTskin/dSSRad)
+C      DTHETA = Potential temp. gradient for stability correction
+C      FSTAB  = Amplitude of stability correction (fraction)
+C      HDRAG  = Height scale for orographic correction
+C      FHDRAG = Amplitude of orographic correction (fraction)
+      NAMELIST /AIM_PAR_SFL/
+     &    FWIND0, FTEMP0, FHUM0,
+     &    CDL, CDS, CHL, CHS, VGUST, CTDAY,
+     &    DTHETA, FSTAB, HDRAG, FHDRAG
+
+C--   Convection constants (common CNVCON) :
+C      PSMIN  = minimum (norm.) sfc. pressure for the occurrence of convection
+C      TRCNV  = time of relaxation (in hours) towards reference state
+C      QBL    = specific hum. threshold in the boundary layer
+C      RHBL   = relative hum. threshold in the boundary layer
+C      RHIL   = rel. hum. threshold in intermed. layers for secondary mass flux
+C      ENTMAX = max. entrainment as a fraction of cloud-base mass flux
+C      SMF    = ratio between secondary and primary mass flux at cloud-base
+      NAMELIST /AIM_PAR_CNV/
+     &    PSMIN, TRCNV, QBL, RHBL, RHIL, ENTMAX, SMF
+
+
+C--   Constants for large-scale condendation (common LSCCON) : 
+C      TRLSC  = Relaxation time (in hours) for specific humidity
+C      RHLSC  = Maximum relative humidity threshold (at sigma=1)
+C      DRHLSC = Vertical range of relative humidity threshold
+C      QSMAX  = used to define the maximum latent heat release
+      NAMELIST /AIM_PAR_LSC/
+     &    TRLSC, RHLSC, DRHLSC, QSMAX
+
+C--    Radiation constants (common RADCON) :
+C      RHCL1  = relative hum. corresponding to cloud cover = 0
+C      RHCL2  = relative hum. corresponding to cloud cover = 1
+C      QACL1  = specific hum. threshold for cloud cover in the upper troposphere
+C      QACL2  = specific hum. threshold for cloud cover in the upper troposphere
+C      ALBCL  = cloud albedo (for cloud cover = 1)
+C      EPSSW  = fraction of incoming solar radiation absorbed by ozone
+C      EPSLW  = fraction of surface LW radiation emitted directly to space
+C      EMISFC = longwave surface emissivity
+C--:            shortwave absorptivities (for dp = 10^5 Pa) :
+C      ABSDRY = abs. of dry air      (visible band)
+C      ABSAER = abs. of aerosols     (visible band)
+C      ABSWV1 = abs. of water vapour (visible band, for dq = 1 g/kg)
+C      ABSWV2 = abs. of water vapour (near IR band, for dq = 1 g/kg)
+C      ABSCL1 = abs. of clouds       (visible band, constant term)
+C      ABSCL2 = abs. of clouds       (visible band, for dw = 1 g/kg)
+C--:            longwave absorptivities (per dp = 10^5 Pa) :
+C      ABLWIN = abs. of air in "window" band
+C      ABLCO2 = abs. of air in CO2 band
+C      ABLWV1 = abs. of water vapour in H2O band 1 (weak),   for dq = 1 g/kg
+C      ABLWV2 = abs. of water vapour in H2O band 2 (strong), for dq = 1 g/kg
+C      ABLCL1 = abs. of clouds       in "window" band,       constant term
+C      ABLCL2 = abs. of clouds       in "window" band,       for dw = 1 g/kg
+      NAMELIST /AIM_PAR_RAD/
+     &    RHCL1,  RHCL2,  QACL1,  QACL2,  ALBCL,
+     &    EPSSW,  EPSLW,  EMISFC,
+     &    ABSDRY, ABSAER, ABSWV1, ABSWV2, ABSCL1, ABSCL2,
+     &    ABLWIN, ABLCO2, ABLWV1, ABLWV2, ABLCL1, ABLCL2 
+
+C--   Constants for vertical dif. and sh. conv. (common VDICON) : 
+C      TRSHC  = relaxation time (in hours) for shallow convection
+C      TRVDI  = relaxation time (in hours) for moisture diffusion
+C      TRVDS  = relaxation time (in hours) for super-adiab. conditions
+C      RHGRAD = maximum gradient of relative humidity (d_RH/d_sigma)
+C      SEGRAD = minimum gradient of dry static energy (d_DSE/d_phi)
+      NAMELIST /AIM_PAR_VDI/
+     &    TRSHC, TRVDI, TRVDS, RHGRAD, SEGRAD
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      _BEGIN_MASTER(myThid)
+      
+      WRITE(msgBuf,'(A)') ' AIM_READ_PHYSPARMS: opening data.aimphys'
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+
+      CALL OPEN_COPY_DATA_FILE( 'data.aimphys', 'AIM_READ_PHYSPARMS',
+     O                          iUnit, myThid )
+
+C--   Read parameters from open data file:
+
+C-    Constants for boundary forcing
+      READ(UNIT=iUnit,NML=AIM_PAR_FOR)
+
+C-    Constants for surface fluxes
+      READ(UNIT=iUnit,NML=AIM_PAR_SFL)
+ 
+C-    Constants for convection
+      READ(UNIT=iUnit,NML=AIM_PAR_CNV)
+
+C-    Constants for large-scale condensation
+      READ(UNIT=iUnit,NML=AIM_PAR_LSC)
+
+C-    Constants for radiation
+      READ(UNIT=iUnit,NML=AIM_PAR_RAD)
+
+C-    Constants for vertical diffusion and sh. conv.
+      READ(UNIT=iUnit,NML=AIM_PAR_VDI)
+
+      WRITE(msgBuf,'(A)') 
+     &   ' AIM_READ_PHYSPARMS: finished reading data.aimphys'
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+ 
+C--   Close the open data file
+      CLOSE(iUnit)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Print out parameter values :
+
+      WRITE(msgBuf,'(A)') ' '
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '// ==================================='
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '// AIM physics parameters :'
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '// ==================================='
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+
+C- namelist AIM_PAR_FOR:
+       CALL WRITE_0D_R8( SOLC,  INDEX_NONE,'AIM_FOR:   SOLC =',
+     &  '   /* Solar constant (area averaged) in W/m2 */')
+       CALL WRITE_0D_R8( ALBSEA,INDEX_NONE,'AIM_FOR: ALBSEA =',
+     &  '   /* Albedo over sea [0-1]      */')
+       CALL WRITE_0D_R8( ALBICE,INDEX_NONE,'AIM_FOR: ALBICE =',
+     &  '   /* Albedo over sea ice (for ice fraction =1) */')
+       CALL WRITE_0D_R8( ALBSN, INDEX_NONE,'AIM_FOR:  ALBSN =',
+     &  '   /* Albedo over snow (for snow depth > SDALB) */')
+       CALL WRITE_0D_R8( SDALB, INDEX_NONE,'AIM_FOR:  SDALB =',
+     &  '   /* Snow depth (mm H2O) corresp. maximum albedo */')
+       CALL WRITE_0D_R8( SWCAP, INDEX_NONE,'AIM_FOR:  SWCAP =',
+     &  '   /* Soil wetness at field capacity (Vol.fract.) */')
+       CALL WRITE_0D_R8( SWWIL, INDEX_NONE,'AIM_FOR:  SWWIL =',
+     &  '   /* Soil wetness at wilting point  (Vol.fract.) */')
+
+C- namelist AIM_PAR_SFL:
+       CALL WRITE_0D_R8( FWIND0,INDEX_NONE,'AIM_SFL: FWIND0 =',
+     &  '   /* ratio of near-sfc wind to lowest-level wind */')
+       CALL WRITE_0D_R8( FTEMP0,INDEX_NONE,'AIM_SFL: FTEMP0 =',
+     &  '  /* weight for near-sfc temp. extrapolation (0-1)*/')
+       CALL WRITE_0D_R8( FHUM0, INDEX_NONE,'AIM_SFL:  FHUM0 =',
+     &  '  /* weight for near-sfc spec.humid. extrap. (0-1)*/')
+       CALL WRITE_0D_R8( CDL,   INDEX_NONE,'AIM_SFL:    CDL =',
+     &  '   /* drag coefficient for momentum over land */')
+       CALL WRITE_0D_R8( CDS,   INDEX_NONE,'AIM_SFL:    CDS =',
+     &  '   /* drag coefficient for momentum over sea  */')
+       CALL WRITE_0D_R8( CHL,   INDEX_NONE,'AIM_SFL:    CHL =',
+     &  '   /* heat exchange coefficient over land */')
+       CALL WRITE_0D_R8( CHS,   INDEX_NONE,'AIM_SFL:    CHS =',
+     &  '   /* heat exchange coefficient over sea  */')
+       CALL WRITE_0D_R8( VGUST, INDEX_NONE,'AIM_SFL:  VGUST =',
+     &  '   /* wind speed [m/s] for sub-grid-scale gusts */')
+       CALL WRITE_0D_R8( CTDAY, INDEX_NONE,'AIM_SFL:  CTDAY =',
+     &  '   /* daily-cycle correction (dTskin/dSSRad) */')
+       CALL WRITE_0D_R8( DTHETA,INDEX_NONE,'AIM_SFL: DTHETA =',
+     &  '   /* Pot.Temp. gradient for stability correction */')
+       CALL WRITE_0D_R8( FSTAB, INDEX_NONE,'AIM_SFL:  FSTAB =',
+     &  '   /* Amplitude of stability correction (fract.) */')
+       CALL WRITE_0D_R8( HDRAG, INDEX_NONE,'AIM_SFL:  HDRAG =',
+     &  '   /* Height scale for orographic correction */')
+       CALL WRITE_0D_R8( FHDRAG,INDEX_NONE,'AIM_SFL: FHDRAG =',
+     &  '   /* Amplitude of orographic correction (fract.)*/')
+
+C- namelist AIM_PAR_CNV:
+       CALL WRITE_0D_R8( PSMIN, INDEX_NONE,'AIM_CNV:  PSMIN =',
+     &  '   /* min norm.sfc.P. for occurrence of convect. */')
+       CALL WRITE_0D_R8( TRCNV, INDEX_NONE,'AIM_CNV:  TRCNV =',
+     &  '   /* time of relaxation [h] towards ref state */')
+       CALL WRITE_0D_R8( QBL,   INDEX_NONE,'AIM_CNV:    QBL =',
+     &  '   /* specific hum. threshold in the Bound.layer */')
+       CALL WRITE_0D_R8( RHBL,  INDEX_NONE,'AIM_CNV:   RHBL =',
+     &  '   /* relative hum. threshold in the Bound.layer */')
+       CALL WRITE_0D_R8( RHIL,  INDEX_NONE,'AIM_CNV:   RHIL =',
+     &  '   /* rel.hum. threshold (intern) for 2nd mass.Flx*/')
+       CALL WRITE_0D_R8( ENTMAX,INDEX_NONE,'AIM_CNV: ENTMAX =',
+     &  '   /* time of relaxation [h] towards neutral eq. */')
+       CALL WRITE_0D_R8( SMF,   INDEX_NONE,'AIM_CNV:    SMF =',
+     &  '   /* ratio 2ndary/primary mass.Flx at cloud-base*/')
+
+C- namelist AIM_PAR_LSC:
+       CALL WRITE_0D_R8( TRLSC, INDEX_NONE,'AIM_LSC:  TRLSC =',
+     &  '   /* relaxation time [h] for supersat. spec.hum. */')
+       CALL WRITE_0D_R8( RHLSC, INDEX_NONE,'AIM_LSC:  RHLSC =',
+     &  '   /* Max rel.humidity threshold (at sigma=1) */')
+       CALL WRITE_0D_R8( DRHLSC,INDEX_NONE,'AIM_LSC: DRHLSC =',
+     &  '   /* Vertical range of rel.humidity threshold */')
+       CALL WRITE_0D_R8( QSMAX, INDEX_NONE,'AIM_LSC:  QSMAX =',
+     &  '   /* Define the maximum latent heat release */')
+
+C- namelist AIM_PAR_RAD:
+       CALL WRITE_0D_R8( RHCL1, INDEX_NONE,'AIM_RAD:  RHCL1 =',
+     &  '   /*  rel.hum. corresponding to cloud cover = 0 */')
+       CALL WRITE_0D_R8( RHCL2, INDEX_NONE,'AIM_RAD:  RHCL2 =',
+     &  '   /*  rel.hum. corresponding to cloud cover = 1 */')
+       CALL WRITE_0D_R8( QACL1, INDEX_NONE,'AIM_RAD:  QACL1 =',
+     &  '   /* spec.hum. threshold for cloud, upper trop. */')
+       CALL WRITE_0D_R8( QACL2, INDEX_NONE,'AIM_RAD:  QACL2 =',
+     &  '   /* spec.hum. threshold for cloud, upper trop. */')
+       CALL WRITE_0D_R8( ALBCL, INDEX_NONE,'AIM_RAD:  ALBCL =',
+     &  '   /*  cloud albedo (for cloud cover = 1) */')
+       CALL WRITE_0D_R8( EPSSW, INDEX_NONE,'AIM_RAD:  EPSSW =',
+     &  '   /*  fract. of inc.solar rad. absorbed by ozone */')   
+       CALL WRITE_0D_R8( EPSLW, INDEX_NONE,'AIM_RAD:  EPSLW =',
+     &  '   /*  fract. of sfc LW emitted directly to space */')   
+       CALL WRITE_0D_R8( EMISFC,INDEX_NONE,'AIM_RAD: EMISFC =',
+     &  '   /*  longwave surface emissivity */')   
+
+       WRITE(msgBuf,'(A)')
+     &  ' AIM_RAD : ShortWave absorptivities (for dp = 10^5 Pa) :'
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+       CALL WRITE_0D_R8( ABSDRY,INDEX_NONE,'AIM_RAD: ABSDRY =',
+     &  '   /* abs. of dry air (visible band) */')
+       CALL WRITE_0D_R8( ABSAER,INDEX_NONE,'AIM_RAD: ABSAER =',
+     &  '   /* abs. of aerosols (visible band) */')
+       CALL WRITE_0D_R8( ABSWV1,INDEX_NONE,'AIM_RAD: ABSWV1 =',
+     &  '   /* abs. of water vap. (vis. band)(/dq, 1g/kg) */')
+       CALL WRITE_0D_R8( ABSWV1,INDEX_NONE,'AIM_RAD: ABSWV1 =',
+     &  '   /* abs. of water vap. (vis. band)(/dq, 1g/kg) */')
+       CALL WRITE_0D_R8( ABSWV2,INDEX_NONE,'AIM_RAD: ABSWV2 =',
+     &  '   /* abs. of water vap.(near IR bd)(/dq, 1g/kg) */')
+       CALL WRITE_0D_R8( ABSCL1,INDEX_NONE,'AIM_RAD: ABSCL1 =',
+     &  '   /* abs. of clouds (vis.band)(constant term) */')
+       CALL WRITE_0D_R8( ABSCL2,INDEX_NONE,'AIM_RAD: ABSCL2 =',
+     &  '   /* abs. of clouds (vis.band) (/dw, 1g/kg) */')
+
+       WRITE(msgBuf,'(A)')
+     &  ' AIM_RAD : LongWave absorptivities (per dp = 10^5 Pa) :'
+       CALL WRITE_0D_R8( ABLWIN,INDEX_NONE,'AIM_RAD: ABLWIN =',
+     &  '   /* abs. of air in "window" band */')
+       CALL WRITE_0D_R8( ABLCO2,INDEX_NONE,'AIM_RAD: ABLCO2 =',
+     &  '   /* abs. of air in CO2 band */')
+       CALL WRITE_0D_R8( ABLWV1,INDEX_NONE,'AIM_RAD: ABLWV1 =',
+     &  '   /* abs. of Water vap. H2O bd-1(weak)(/dq,1g/kg)*/')
+       CALL WRITE_0D_R8( ABLWV2,INDEX_NONE,'AIM_RAD: ABLWV2 =',
+     &  '   /* abs. of W. vap., H2O bd-2(strong)(/dq,1g/kg)*/')
+       CALL WRITE_0D_R8( ABLCL1,INDEX_NONE,'AIM_RAD: ABLCL1 =',
+     &  '   /* abs. of clouds in window band (const term) */')
+       CALL WRITE_0D_R8( ABLCL2,INDEX_NONE,'AIM_RAD: ABLCL2 =',
+     &  '   /* abs. of clouds in window band (/dw, 1g/kg) */')
+
+C- namelist AIM_PAR_VDI:
+       CALL WRITE_0D_R8( TRSHC, INDEX_NONE,'AIM_VDI:  TRSHC =',
+     &  '   /* relaxation time [h] for shallow convection */')
+       CALL WRITE_0D_R8( TRVDI, INDEX_NONE,'AIM_VDI:  TRVDI =',
+     &  '   /* relaxation time [h] for moisture diffusion */')
+       CALL WRITE_0D_R8( TRVDS, INDEX_NONE,'AIM_VDI:  TRVDS =',
+     &  '   /* relaxation time [h] for super-adiab. cond. */')
+       CALL WRITE_0D_R8( RHGRAD,INDEX_NONE,'AIM_VDI: RHGRAD =',
+     &  '   /* max gradient of rel.humidity (d_RH/d_sigma)*/')
+       CALL WRITE_0D_R8( RHGRAD,INDEX_NONE,'AIM_VDI: RHGRAD =',
+     &  '   /* max grad. of dry static Energy(d_DSE/d_phi)*/')
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      _END_MASTER(myThid)
+ 
+C--   Everyone else must wait for the parameters to be loaded
+      _BARRIER
+
+#endif /* ALLOW_AIM */
+
+      RETURN
+      END

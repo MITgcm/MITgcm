@@ -37,7 +37,8 @@ lrwxrwxrwx    1 jmc            12 Oct 26 14:57 atparam1.h -> par_verres.h
 
 -----------------
 mv ini_inphys.f --> phy_inphys.f
- include "cls_inphys.h" in phy_inphys.f
+mv cls_inphys.h --> phy_const.h
+ include "cls_inphys.h" with CPP #include "phy_const.h" in phy_inphys.F
 
 phy_phypar.f --> phy_driver.F
 
