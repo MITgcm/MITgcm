@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/adjust_nlfs.cs-32x32x1/code/Attic/CPP_OPTIONS.h,v 1.6 2003/11/04 21:04:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/adjust_nlfs.cs-32x32x1/code/Attic/CPP_OPTIONS.h,v 1.7 2004/04/06 01:20:15 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -7,10 +7,8 @@ C $Name:  $
 C CPP flags controlling particular source code features
 
 C o Shortwave heating as extra term in external_forcing.F
-C Note: this should be a run-time option and not necessarily dependent on KPP
-#ifdef ALLOW_KPP
-#define  SHORTWAVE_HEATING
-#endif
+C Note: this should be a run-time option
+#undef SHORTWAVE_HEATING
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
@@ -20,6 +18,9 @@ C o Include/exclude call to S/R CONVECT
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
+
+C o Include/exclude Implicit vertical advection code
+#define INCLUDE_IMPLVERTADV_CODE
 
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
@@ -44,10 +45,14 @@ C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
 
 C o Include/exclude code specific to the ECCO/SEALION version.
-#undef INCLUDE_ECCO_PACKAGE
-#ifdef INCLUDE_ECCO_PACKAGE
-#include "ECCO_CPPOPTIONS.h"
-#endif
+C   AUTODIFF or EXF package.
+C   Currently controled by a single header file
+C   For this to work, PACKAGES_CONFIG.h needs to be included!
+cph#if (defined (ALLOW_AUTODIFF) || \
+cph     defined (ALLOW_ECCO) || \
+cph     defined (ALLOW_EXF))
+cph# include "ECCO_CPPOPTIONS.h"
+cph#endif
 
 #endif /* CPP_OPTIONS_H */
 
