@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_msg.F,v 1.1 2003/05/13 17:42:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_msg.F,v 1.2 2003/06/06 16:36:29 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,7 +25,7 @@ C     === Local variables ====
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
       _BEGIN_MASTER( myThid )
-      WRITE(msgBuf,'(A,A)') 'DEBUG_MSG: ',text
+      WRITE(msgBuf,'(A11,A40)') 'DEBUG_MSG: ',text
       CALL PRINT_MESSAGE( msgBuf,
      &   standardMessageUnit, SQUEEZE_RIGHT, myThid )
       _END_MASTER( )
