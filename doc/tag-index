@@ -1,7 +1,35 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.77 2002/07/12 21:00:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.78 2002/07/13 05:00:16 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint46
+further merges from release1_p5
+o new ctrl package
+  - adopted from ECCO environment to enable optimization
+  - added Eliassen Palm fluxes to controls
+o added Eliassen Palm flux controls to gradient check package
+o cost package
+  - Compatible with new ctrl package
+  - added Eliassen Palm cost hooks
+  - modif's of existing cost functions
+o Adjoint-related bug fixes in kpp:
+  - kpp_calc: sore of kpphbl avoids recomputation/call to S/R kppmix
+  - kpp_routines: store of Rib avoids partial recomputation bug of TAF.
+o autodiff package
+  - flow directives:
+    + new for S/R do_the_model_io
+    + enhanced for S/R checkpoint
+    + new gmredi.flow
+  - Introduced CPP option ALLOW_AUTODIFF_MONITOR to
+    disable adcommon.h/g_common.h by default.
+  - fixed problem for adjoint of global_max
+o modified verification/carbon/
+o New setup for adjoint of global_ocean
+o added hooks for Eliassen Palm fluxes (dynamics.F, ini_fields.F)
+o cleaned TAF keys iikey, idkey (dynamics.F, thermodynamics.F)
+o incorporated hooks for sponge layer code (external_forcing.F)
+
 checkpoint45d_post
 o import 2 fixes from release1_p5 (CG2D.h & packages_readparms.F)
 o use recip_dx*,recip_dy* instead of /dx*,/dy* in orlanski_E,W,N,S
