@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.27 2004/09/16 09:35:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.28 2004/10/13 18:37:26 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -140,6 +140,12 @@ C--   Initialise the control variables
        call GCHEM_INIT_FIXED(mythid)
       ENDIF
 #endif
+#endif
+
+#ifdef ALLOW_CD_CODE
+      IF (useCDscheme) then
+       call CD_CODE_INIT_FIXED(mythid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_OPPS
