@@ -1,0 +1,50 @@
+#!/bin/bash
+#
+#PBS -q four
+#PBS -N eh3_ifc
+#PBS -l nodes=2:ppn=1
+#PBS -e /home/edhill/test_outp/eh3_intel.stderr
+#PBS -o /home/edhill/test_outp/eh3_intel.stdout
+#PBS -V
+ 
+if test -f /etc/profile.d/modules.sh ; then
+    . /etc/profile.d/modules.sh
+fi
+module add mpich/intel
+
+HERE='/home/edhill/test_outp'
+cd $HERE
+
+FC=ifc
+RUNIT=$HERE"/runit_"$FC
+MF=$HERE"/mf_"$FC
+cat $PBS_NODEFILE > $MF
+NCPU=`wc -l $MF | awk '{print $1}'`
+EXE="mpirun -machinefile $MF -v -np $NCPU ./mitgcmuv"
+
+cat << EOF > $RUNIT
+#!/bin/bash
+
+$EXE
+
+cp STDOUT.0000 output.txt
+
+EOF
+chmod a+x $RUNIT
+
+# cat << EOF > $HERE"/.cvspass"
+# /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
+# EOF
+TDIR="/net/itrda/scratch-5/edhill/tmp_"$FC
+if test -e $TDIR ; then
+    rm -rf $TDIR
+fi
+mkdir $TDIR
+cd $TDIR
+cvs -d :pserver:cvsanon@mitgcm.org:/u/gcmpack co MITgcm > /dev/null 2>&1
+#  cvs co MITgcm
+cd MITgcm/verification
+OPTFILE="../tools/build_options/linux_ia32_"$FC"+mpi_itrda"
+# ./testreport -j 2 -mpi -of $OPTFILE -command $RUNIT -a 'edhill@mitgcm.org'
+./testreport -j 2 -mpi -of $OPTFILE -command $RUNIT
+
