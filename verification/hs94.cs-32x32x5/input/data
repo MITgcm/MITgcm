@@ -46,12 +46,13 @@
  niter0=0,
  nTimeSteps=20,
 #endTime=864000.0,
- deltaT=720.0,
+ deltaT=600.0,
  abEps=0.1,
  cAdjFreq=0.,
  pChkptFreq=2592000.0,
  chkptFreq=0.0,
  dumpFreq=21600.0,
+ monitorFreq=1.,
  &
 
 # Gridding parameters
