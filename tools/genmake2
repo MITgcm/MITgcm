@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.60 2004/01/14 03:44:48 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.61 2004/01/15 04:27:39 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1743,7 +1743,7 @@ $TOOLSDIR/convert_cpp_cmd2defines "Warning - this file is automatically generate
 if test ! -f $PACKAGES_DOT_H ; then
     mv -f $PACKAGES_DOT_H".tmp" $PACKAGES_DOT_H
 else
-    cmp $PACKAGES_DOT_H".tmp" $PACKAGES_DOT_H
+    cmp $PACKAGES_DOT_H".tmp" $PACKAGES_DOT_H > /dev/null 2>&1
     RETVAL=$?
     if test "x$RETVAL" = x0 ; then
 	rm -f $PACKAGES_DOT_H".tmp"
