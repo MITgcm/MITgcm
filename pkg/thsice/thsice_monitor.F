@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.3 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.4 2004/09/08 02:07:48 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -64,6 +64,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( DIFFERENT_MULTIPLE(thSIce_monFreq,myTime,myTime-deltaTclock)
      &     .OR. myIter.EQ.nIter0 ) THEN
+
+        mon_write_stdout = .TRUE.
 
        _BEGIN_MASTER(myThid)
         WRITE(msgBuf,'(A)')
@@ -209,6 +211,8 @@ C-- 2nd  level (volume-mean) Temp. :
      &'// ======================================================='
         CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
        _END_MASTER(myThid)
+
+        mon_write_stdout = .FALSE.
 
       ENDIF
 
