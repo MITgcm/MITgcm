@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.290 2004/05/11 20:59:19 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.291 2004/05/12 18:45:44 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -10,6 +10,11 @@ o Additional storing in KPP in an attempt to fix
   TAMC problem with adjoint of KPP code.
   (no success...)
   Identical code works fine with TAF.
+o Fixed verification/natl_box_adjoint experiments.
+  Initial conditions for Experiments 4 and 5 are now
+  set to "SEAICE_initialHEFF=0", which is more reasonable,
+  and hence gives results closer to that of Experiment 2.
+  Experiment 6 requires "SEAICE_initialHEFF=1" and is working once again.
 
 checkpoint53
 o stable checkpoint with up to date adjoint
