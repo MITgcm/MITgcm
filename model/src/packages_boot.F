@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.16 2003/11/23 01:28:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.17 2003/11/23 04:17:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -90,12 +90,8 @@ C--   Default package configuration
       usePTRACERS=.FALSE.
       useSBO=.FALSE.
       useSeaIce=.FALSE.
-cswdblk -- add
       useBulkForce=.FALSE.
-cswdblk -- end add ---
-cswdice --- add ---
       useThSIce=.FALSE.
-cswdice --- end add ---
 
 
 C--   Read parameters from open data file
