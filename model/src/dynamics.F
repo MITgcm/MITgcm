@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.25 1998/07/16 15:23:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.26 1998/08/19 16:20:49 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -59,6 +59,12 @@ C                              o fVer: Vertical flux term - note fVer
 C                                      is "pipelined" in the vertical
 C                                      so we need an fVer for each
 C                                      variable.
+C     rhoK, rhoKM1   - Density at current level, level above and level below.
+C     rhoKP1                                                                  
+C     buoyK, buoyKM1 - Buoyancy at current level and level above.
+C     phiHyd         - Hydrostatic part of the potential phi.
+C                      In z coords phiHyd is the hydrostatic pressure anomaly
+C                      In p coords phiHyd is the geopotential surface height anomaly.
 C     iMin, iMax - Ranges and sub-block indices on which calculations
 C     jMin, jMax   are applied.
 C     bi, bj
@@ -84,10 +90,12 @@ C                          into fVerTerm
       _RL fVerS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL pH    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL rhokm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhokp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhok  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL buoyKM1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL buoyK (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhotmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -178,6 +186,8 @@ C     uninitialised but inert locations.
         rhok  (i,j)  = 0. _d 0
         rhokp1(i,j)  = 0. _d 0
         rhotmp(i,j)  = 0. _d 0
+        buoyKM1(i,j) = 0. _d 0
+        buoyK  (i,j) = 0. _d 0
         maskC (i,j)  = 0. _d 0
        ENDDO
       ENDDO
@@ -230,7 +240,6 @@ C--      Update fields in layer below according to tendency terms
          CALL CORRECTION_STEP(
      I        bi,bj,iMin,iMax,jMin,jMax,K+1,pSurfX,pSurfY,myTime,myThid)
         ENDIF
-
 C--     Density of 1st level (below W(1)) reference to level 1
         CALL FIND_RHO(
      I     bi, bj, iMin, iMax, jMin, jMax, K, K, eosType,
@@ -238,6 +247,7 @@ C--     Density of 1st level (below W(1)) reference to level 1
      I     myThid )
 
         IF ( .NOT. BOTTOM_LAYER ) THEN
+
 C--      Check static stability with layer below
 C        and mix as needed.
          CALL FIND_RHO(
@@ -254,25 +264,26 @@ C--      Recompute density after mixing
      I      myThid )
         ENDIF
 
+C--     Calculate buoyancy
+        CALL CALC_BUOY(
+     I      bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,
+     O      buoyKm1,
+     I      myThid )
+
 C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
-        CALL CALC_PH(
-     I      bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoKm1,
-     U      pH,
+        CALL CALC_PHI_HYD(
+     I      bi,bj,iMin,iMax,jMin,jMax,K,buoyKm1,buoyKm1,
+     U      phiHyd,
      I      myThid )
 
         DO K=2,Nz
 
          BOTTOM_LAYER = K .EQ. Nz
-
          IF ( .NOT. BOTTOM_LAYER ) THEN
 C--       Update fields in layer below according to tendency terms
           CALL CORRECTION_STEP(
      I         bi,bj,iMin,iMax,jMin,jMax,K+1,pSurfX,pSurfY,myTime,myThid)
          ENDIF
-C--      Update fields in layer below according to tendency terms
-C        CALL CORRECTION_STEP(
-C    I        bi,bj,iMin,iMax,jMin,jMax,K,pSurfX,pSurfY,myTime,myThid)
-
 C--      Density of K level (below W(K)) reference to K level
          CALL FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax,  K, K, eosType,
@@ -295,10 +306,17 @@ C--       Recompute density after mixing
      O       rhoK,
      I       myThid )
          ENDIF
+
+C--      Calculate buoyancy
+         CALL CALC_BUOY(
+     I       bi,bj,iMin,iMax,jMin,jMax,K,rhoK,
+     O       buoyK,
+     I       myThid )
+
 C--      Integrate hydrostatic balance for pH with BC of pH(z=0)=0
-         CALL CALC_PH(
-     I       bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoK,
-     U       pH,
+         CALL CALC_PHI_HYD(
+     I       bi,bj,iMin,iMax,jMin,jMax,K,buoyKm1,buoyK,
+     U       phiHyd,
      I       myThid )
 C--      Calculate iso-neutral slopes for the GM/Redi parameterisation
          CALL FIND_RHO(
@@ -312,7 +330,8 @@ C--      Calculate iso-neutral slopes for the GM/Redi parameterisation
      I             myThid )
          DO J=jMin,jMax
           DO I=iMin,iMax
-           rhoKm1(I,J)=rhoK(I,J)
+           rhoKm1(I,J) =rhoK(I,J)
+           buoyKm1(I,J)=buoyK(I,J)
           ENDDO
          ENDDO
 
@@ -345,7 +364,7 @@ C--      Calculate accelerations in the momentum equations
           CALL CALC_MOM_RHS(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I         xA,yA,uTrans,vTrans,wTrans,wVel,maskC,
-     I         pH,
+     I         phiHyd,
      U         aTerm,xTerm,cTerm,mTerm,pTerm,
      U         fZon, fMer, fVerU, fVerV,
      I         myThid)
