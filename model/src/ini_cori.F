@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.20 2004/10/13 04:37:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.21 2005/01/26 00:45:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -43,7 +43,7 @@ C     Initialise coriolis parameter
 C       Constant F case
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO K=1,Nr
+c           DO K=1,Nr
               DO J=1-Oly,sNy+Oly
                 DO I=1-Olx,sNx+Olx
                   fCori(i,j,bi,bj)=f0
@@ -51,7 +51,7 @@ C       Constant F case
                   fCoriCos(i,j,bi,bj)=0.
                 ENDDO
               ENDDO
-            ENDDO
+c           ENDDO
           ENDDO
         ENDDO
       ELSEIF ( useBetaPlaneF ) THEN
@@ -60,7 +60,7 @@ C       Beta plane case
         IF ( usingSphericalPolarGrid ) facGrid = deg2rad*rSphere
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO K=1,Nr
+c           DO K=1,Nr
               DO J=1-Oly,sNy+Oly
                 DO I=1-Olx,sNx+Olx
                   fCori(i,j,bi,bj)=f0+beta*_yC(i,j,bi,bj)*facGrid
@@ -68,7 +68,7 @@ C       Beta plane case
                   fCoriCos(i,j,bi,bj)=0.
                 ENDDO
               ENDDO
-            ENDDO
+c           ENDDO
           ENDDO
         ENDDO
       ELSEIF ( useSphereF ) THEN
@@ -76,7 +76,7 @@ C       Spherical case
 C       Note in this case we assume yC is in degrees.
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO K=1,Nr
+c           DO K=1,Nr
               DO J=1-Oly,sNy+Oly
                 DO I=1-Olx,sNx+Olx
                   fCori(i,j,bi,bj)=
@@ -87,14 +87,17 @@ C       Note in this case we assume yC is in degrees.
      &                 2. _d 0*omega*cos(_yC(i,j,bi,bj)*deg2rad)
                 ENDDO
               ENDDO
-            ENDDO
+c           ENDDO
           ENDDO
         ENDDO
+c       CALL WRITE_FLD_XY_RL('fCoriC',' ',fCori ,  0,myThid)
+c       CALL WRITE_FLD_XY_RL('fCoriG',' ',fCoriG , 0,myThid)
+c       CALL WRITE_FLD_XY_RL('fCorCs',' ',fCoriCos,0,myThid)
       ELSE
 C       Special custom form
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO K=1,Nr
+c           DO K=1,Nr
               DO J=1-Oly,sNy+Oly
                 DO I=1-Olx,sNx+Olx
                   fCori(i,j,bi,bj)=0.
@@ -102,14 +105,38 @@ C       Special custom form
                   fCoriCos(i,j,bi,bj)=0.
                 ENDDO
               ENDDO
-            ENDDO
+c           ENDDO
           ENDDO
         ENDDO
+        CALL READ_REC_XY_RS( 'fCoriC.bin', fCori,   1, 0, myThid )
+        CALL READ_REC_XY_RS( 'fCoriG.bin', fCoriG,  1, 0, myThid )
+        CALL READ_REC_XY_RS( 'fCorCs.bin', fCoriCos,1, 0, myThid )
+        IF ( useCubedSphereExchange ) THEN
+C-       deal with the 2 missing corners (for fCoriG):
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+C-  Notes: this will only works with 6 tiles (1 per face) and
+C    with 2 polar faces + 4 equatorials:
+           IF (bi.LE.3 .OR. bi.GE.5) THEN
+             fCoriG(sNx+1,1,bi,bj) = fCoriG(1,1,bi,bj)
+           ELSE
+             fCoriG(sNx+1,1,bi,bj) = -fCoriG(1,1,bi,bj)
+           ENDIF
+           IF (bi.GE.3) THEN
+             fCoriG(1,sNy+1,bi,bj) = fCoriG(1,1,bi,bj)
+             fCoriG(sNx+1,sNy+1,bi,bj) = fCoriG(sNx+1,1,bi,bj)
+           ELSE
+             fCoriG(1,sNy+1,bi,bj) = -fCoriG(1,1,bi,bj)
+             fCoriG(sNx+1,sNy+1,bi,bj) = -fCoriG(sNx+1,1,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDIF
+
+        _EXCH_XY_R4(fCori,myThid)
+        CALL EXCH_Z_XY_RS(fCoriG,myThid)
+        _EXCH_XY_R4(fCoriCos,myThid)
       ENDIF
-C     
-C     _EXCH_XY_R4(fCori,myThid)
-C     CALL EXCH_Z_XY_RS(fCoriG,myThid)
-C     _EXCH_XY_R4(fCoriCos,myThid)
 
 #ifdef ALLOW_MONITOR
       mon_write_stdout = .FALSE.
