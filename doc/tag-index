@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.402 2004/12/04 18:52:28 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.403 2004/12/04 23:26:49 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -7,6 +7,10 @@ o depth convergence accelerator: replace deltaTtracer by dTtracerLev(k)
   (implemented also for implicit vertical diffusion & advection)
 o OBCS: extend application of tracer open boundary conditions
   to a strip beyond the boundary of width Olx/Oly
+o add call monitor to TAF set of required calls (flow directives)
+  and include in natl_box_adjoint
+o untangle a few ifdefs related to cost, ctrl, autodiff
+  untangel a few ALLOW_ECCO_OPTIMIZATION
 
 checkpoint56c_post
 o OBCS as control variables
