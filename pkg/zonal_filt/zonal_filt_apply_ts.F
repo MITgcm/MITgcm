@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/Attic/zonal_filt_apply.F,v 1.3 2001/02/04 14:38:51 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_apply_ts.F,v 1.1 2001/12/11 14:49:07 jmc Exp $
 C $Name:  $
 
 #include "ZONAL_FILT_OPTIONS.h"
 
-      SUBROUTINE ZONAL_FILT_APPLY( 
-     U           uFld, vFld, tFld, sFld,
+      SUBROUTINE ZONAL_FILT_APPLY_TS( 
+     U           tFld, sFld,
      I           myThid )
 C     /==========================================================\
-C     | S/R ZONAL_FILT_APPLY                                     |
+C     | S/R ZONAL_FILT_APPLY_TS                                  |
 C     | o Apply FFT filter to a latitude circle.                 |
 C     \==========================================================/
       IMPLICIT NONE
@@ -19,8 +19,6 @@ C     == Global data ==
 #include "GRID.h"
 
 C     == Routine arguments ==
-      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
@@ -34,10 +32,6 @@ C     == Local data ==
       DO bi=myBxLo(myThid),myBxHi(myThid)
 
       DO k=1,Nr
-        CALL ZONAL_FILTER(
-     &    uFld, hFacW, 1-1, sNy+1, k, k, bi, bj, 1, myThid)
-        CALL ZONAL_FILTER(
-     &    vFld, hFacS, 1-1, sNy+1, k, k, bi, bj, 2, myThid)
         IF ( tempStepping ) CALL ZONAL_FILTER(
      &    tFld, hFacC, 1, sNy, k, k, bi, bj, 1, myThid)
         IF ( saltStepping ) CALL ZONAL_FILTER(
