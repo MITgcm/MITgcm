@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.50 2001/09/27 14:24:19 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.51 2001/09/27 14:25:32 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint41
+o re-formatted/added comments in prologues of key subroutines
+  to work with protex
 
 checkpoint40
 o moved calc_gs, calc_gt and calc_tr1 back to model/src
