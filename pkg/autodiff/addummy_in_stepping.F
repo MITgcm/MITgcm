@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.4 2001/07/13 13:33:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.5 2001/08/13 18:07:35 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -14,10 +14,6 @@ C     == Global variables ===
 #include "PARAMS.h"
 
 #include "adcommon.h"
-
-cph      common /adgrid_r/ addiffkr, adkapgm
-cph      _RS addiffkr(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
-cph      _RS adkapgm(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -70,8 +66,10 @@ c
      &       'ADJgunm1.',suff, adgunm1, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL( 
      &       'ADJgvnm1.',suff, adgvnm1, myIter, myThid)
+#ifdef ALLOW_TR10_CONTROL
         CALL WRITE_FLD_XYZ_RL( 
      &       'ADJgtr1nm1. ',suff, adgtr1nm1, myIter, myThid)
+#endif
 c
         CALL WRITE_FLD_XYZ_RL( 
      &       'ADJtheta.',suff, adtheta, myIter, myThid)
@@ -81,15 +79,22 @@ c
      &       'ADJuvel.',suff, aduvel, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL( 
      &       'ADJvvel.',suff, advvel, myIter, myThid)
+
+#ifdef ALLOW_TR10_CONTROL
         CALL WRITE_FLD_XYZ_RL( 
      &       'ADJtr1. ',suff, adtr1, myIter, myThid)
-c
-cph        CALL WRITE_FLD_XY_RL ( 'ADJ_sst.',suff, adsst, myIter, myThid)
-cph        CALL WRITE_FLD_XY_RL ( 'ADJ_sss.',suff, adsss, myIter, myThid)
-cph        CALL WRITE_FLD_XYZ_RL ( 'ADJdiff.',suff, addiffkr, 
-cph     &       myIter, myThid)
-cph        CALL WRITE_FLD_XYZ_RL ( 'ADJkagm.',suff, adkapgm, 
-cph     &       myIter, myThid)
+#endif
+#ifdef ALLOW_DIFFKR_CONTROL
+        CALL WRITE_FLD_XYZ_RL ( 'ADJdiffkr.',suff, addiffkr, 
+     &       myIter, myThid)
+#endif
+#ifdef ALLOW_KAPGM_CONTROL
+        CALL WRITE_FLD_XYZ_RL ( 'ADJkagm.',suff, adkapgm, 
+     &       myIter, myThid)
+#endif
+
+cph        CALL WRITE_FLD_XY_RL( 'ADJ_sst.',suff, adsst, myIter, myThid)
+cph        CALL WRITE_FLD_XY_RL( 'ADJ_sss.',suff, adsss, myIter, myThid)
 
 C--     Reread IO error counter
         endIOErrCount = IO_ERRCOUNT(myThid)

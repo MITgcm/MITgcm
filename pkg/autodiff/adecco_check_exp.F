@@ -125,6 +125,15 @@ cph     &                  )
       print *, 'pathei: in check_exp: adfu    ', adfu(10,10,1,1)
       print *, 'pathei: in check_exp: adfv    ', adfv(10,10,1,1)
       print *, 'pathei: in check_exp: adetan  ', adetan(10,10,1,1)
+#ifdef ALLOW_TR10_CONTROL
+      print *, 'pathei: in check_exp: adtr1   ', adtr1(10,10,1,1,1)
+#endif
+#ifdef ALLOW_DIFFKR_CONTROL
+      print *, 'pathei: in check_exp: addiffkr', addiffkr(10,10,2,1,1)
+#endif
+#ifdef ALLOW_KAPGM_CONTROL
+      print *, 'pathei: in check_exp: adkapgm ', adkapgm(10,10,1,1,1)
+#endif
 cph)
 
 c--     Potential temperature:
@@ -156,11 +165,38 @@ c--     Meridional velocity:
      &                      mycurrentiter, mythid )
 
 c--     Surface pressure:
-cph        write(yfname,'(128a)') ' '
-cph        write(yfname,'(2a)') yprefix, 'snapshot_adcg2d_x'
-cph        call mdswritefield( yfname, 32, .false.,
-cph     &                      'RL', 1, adcg2d_x, irec,
-cph     &                      mycurrentiter, mythid )
+        write(yfname,'(128a)') ' '
+        write(yfname,'(2a)') yprefix, 'snapshot_adetan'
+        call mdswritefield( yfname, 32, .false.,
+     &                      'RL', 1, adetan, irec,
+     &                      mycurrentiter, mythid )
+
+#ifdef ALLOW_TR10_CONTROL
+c--     Passive tracer:
+        write(yfname,'(128a)') ' '
+        write(yfname,'(2a)') yprefix, 'snapshot_adtr1'
+        call mdswritefield( yfname, 32, .false.,
+     &                      'RL', nr, adtr1, irec,
+     &                      mycurrentiter, mythid )
+#endif
+
+#ifdef ALLOW_DIFFKR_CONTROL
+c--     diapycnal diffusion:
+        write(yfname,'(128a)') ' '
+        write(yfname,'(2a)') yprefix, 'snapshot_addiffkr'
+        call mdswritefield( yfname, 32, .false.,
+     &                      'RL', nr, addiffkr, irec,
+     &                      mycurrentiter, mythid )
+#endif
+
+#ifdef ALLOW_KAPGM_CONTROL
+c--     isopycnal diffusion:
+        write(yfname,'(128a)') ' '
+        write(yfname,'(2a)') yprefix, 'snapshot_adkapgm'
+        call mdswritefield( yfname, 32, .false.,
+     &                      'RL', nr, adkapgm, irec,
+     &                      mycurrentiter, mythid )
+#endif
 
 c--     Surface heat flux:
       DO bj = myByLo(myThid), myByHi(myThid)

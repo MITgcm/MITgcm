@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.14 2001/06/29 17:14:49 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.15 2001/08/13 18:07:35 heimbach Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -37,6 +37,7 @@ C     vVelD  - D grid meridional velocity
       _RL  gvNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gtNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gsNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+
 #ifdef INCLUDE_CD_CODE
       COMMON /DYNVARS_CD/ 
      &                   uVelD, vVelD,
@@ -49,7 +50,19 @@ C     vVelD  - D grid meridional velocity
       _RL  guCD  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gvCD  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
+
 #ifdef ALLOW_NONHYDROSTATIC
       COMMON /DYNVARS_NH/ phi_nh
       _RL  phi_nh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif /* ALLOW_NONHYDROSTATIC */
+
+#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
+      COMMON /DYNVARS_DIFFKR/
+     &                       diffKr
+      _RL  diffKr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif
+#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_KAPGM_CONTROL))
+      COMMON /DYNVARS_KAPGM/
+     &                       kapgm
+      _RL  kapgm  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.15 2001/07/30 20:39:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.16 2001/08/13 18:07:35 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -50,8 +50,12 @@ C--   Set laplace operators for use in 3D conjugate gradient solver.
 #endif
 
 #endif /* ALLOW_TAMC_CHECKPOINTING */
-
       _BARRIER
+
+C--   Initialise 3-dim. diffusivities
+      CALL INI_MIXING( myThid )
+      _BARRIER
+
 C--   Initialize DYNVARS arrays (state fields + G terms: Gu,Gv,...) to zero [always]
       CALL INI_DYNVARS( myThid )
 
