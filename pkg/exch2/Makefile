@@ -1,12 +1,10 @@
-# $Header: /u/gcmpack/MITgcm/pkg/exch2/Makefile,v 1.6 2004/09/22 15:23:00 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/exch2/Makefile,v 1.7 2004/11/16 17:28:02 jmc Exp $
 # $Name:  $
 
 # Makefile for generate eesupp source code from templates.
 # Why do we do this?  Answer: saves typing!
 
-RL_FILES = exch_xy_rl.F  exch_uv_xy_rl.F  \
-           exch_uv_xyz_rl.F \
-           exch2_recv_rl1.F \
+RL_FILES = exch2_recv_rl1.F \
            exch2_recv_rl2.F \
            exch2_rl1_cube.F \
            exch2_rl2_cube.F \
@@ -18,13 +16,9 @@ RL_FILES = exch_xy_rl.F  exch_uv_xy_rl.F  \
            exch2_xyz_rl.F \
            exch2_z_xy_rl.F \
            exch2_uv_agrid_xy_rl.F \
-           exch2_uv_agrid_xyz_rl.F \
-           exch_uv_agrid_xy_rl.F \
-           exch_uv_agrid_xyz_rl.F
+           exch2_uv_agrid_xyz_rl.F
 
-RS_FILES = exch_xy_rs.F  exch_uv_xy_rs.F  \
-           exch_uv_xyz_rs.F \
-           exch2_recv_rs1.F \
+RS_FILES = exch2_recv_rs1.F \
            exch2_recv_rs2.F \
            exch2_rs1_cube.F \
            exch2_rs2_cube.F \
@@ -36,13 +30,9 @@ RS_FILES = exch_xy_rs.F  exch_uv_xy_rs.F  \
            exch2_xyz_rs.F \
            exch2_z_xy_rs.F \
            exch2_uv_agrid_xy_rs.F \
-           exch2_uv_agrid_xyz_rs.F \
-           exch_uv_agrid_xy_rs.F \
-           exch_uv_agrid_xyz_rs.F
+           exch2_uv_agrid_xyz_rs.F
 
-R4_FILES = exch_xy_r4.F  exch_uv_xy_r4.F  \
-           exch_uv_xyz_r4.F \
-           exch2_recv_r41.F \
+R4_FILES = exch2_recv_r41.F \
            exch2_recv_r42.F \
            exch2_r41_cube.F \
            exch2_r42_cube.F \
@@ -54,13 +44,9 @@ R4_FILES = exch_xy_r4.F  exch_uv_xy_r4.F  \
            exch2_xyz_r4.F \
            exch2_z_xy_r4.F \
            exch2_uv_agrid_xy_r4.F \
-           exch2_uv_agrid_xyz_r4.F \
-           exch_uv_agrid_xy_r4.F \
-           exch_uv_agrid_xyz_r4.F
+           exch2_uv_agrid_xyz_r4.F
 
-R8_FILES = exch_xy_r8.F  exch_uv_xy_r8.F  \
-           exch_uv_xyz_r8.F \
-           exch2_recv_r81.F \
+R8_FILES = exch2_recv_r81.F \
            exch2_recv_r82.F \
            exch2_r81_cube.F \
            exch2_r82_cube.F \
@@ -72,9 +58,7 @@ R8_FILES = exch_xy_r8.F  exch_uv_xy_r8.F  \
            exch2_xyz_r8.F \
            exch2_z_xy_r8.F \
            exch2_uv_agrid_xy_r8.F \
-           exch2_uv_agrid_xyz_r8.F \
-           exch_uv_agrid_xy_r8.F \
-           exch_uv_agrid_xyz_r8.F
+           exch2_uv_agrid_xyz_r8.F
 
 all: $(RL_FILES) $(RS_FILES) $(R4_FILES) $(R8_FILES)
 
