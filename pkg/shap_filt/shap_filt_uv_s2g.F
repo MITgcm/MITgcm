@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_uv_s2g.F,v 1.3 2002/03/04 01:32:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_uv_s2g.F,v 1.4 2002/03/04 02:28:25 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -63,14 +63,10 @@ CEOP
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO K=1,kSize
-           DO J=1,sNy
-            DO I=1,sNx+1
+           DO J=1-OLy,sNy+OLy
+            DO I=1-OLx,sNx+OLx
              tmpFldU(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
      &                *_maskW(i,j,k,bi,bj)
-            ENDDO
-           ENDDO
-           DO J=1,sNy+1
-            DO I=1,sNx
              tmpFldV(i,j,k,bi,bj)=vFld(i,j,k,bi,bj)
      &                *_maskS(i,j,k,bi,bj)
             ENDDO

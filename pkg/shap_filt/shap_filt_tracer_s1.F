@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s1.F,v 1.3 2002/03/04 01:32:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_tracer_s1.F,v 1.4 2002/03/04 02:28:25 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -55,8 +55,8 @@ CEOP
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO K=1,kSize
-           DO J=1,sNy
-            DO I=1,sNx
+           DO J=1-OLy,sNy+OLy
+            DO I=1-OLx,sNx+OLx
              tmpFld(i,j,k,bi,bj)=field(i,j,k,bi,bj)
             ENDDO
            ENDDO
