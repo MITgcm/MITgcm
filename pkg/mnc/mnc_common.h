@@ -1,6 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.7 2004/01/27 05:47:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.8 2004/01/29 05:30:37 edhill Exp $
 C $Name:  $
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C
 C     ==========================================
 C     MNC : an MITgcm wrapper package for NetCDF
@@ -37,8 +36,9 @@ C
 C     a NetCDF file:
 C     - contains: [ name, 0+ attr, 0+ grid-ref, 0+ var-ref ]
 C
-C     ==================================================
-C     MNC "Internals" Implemented using:
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C
+C     MNC "Internals" : implemented on a PER-NetDCF-FILE basis
 C
 C     mnc_blank_name    : (convenience) just MNC_MAX_CHAR spaces
 C
@@ -65,15 +65,30 @@ C     fi  :  file index
 C     vi  :  variable index
 C     di  :  dimension index
 C
-C     ==================================================
-C     MNC "Convenience Wrapper" Implemented using:
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C
-C     mnc_cw_names (g)  : Gtype names
-C     mnc_cw_ndim  (g)  : number of dimensions
-C     mnc_cw_dn   (i,g) : dname1, dname2, ...
-C     mnc_cw_dims (i,g) : d1, d2, d3, ...
-C     mnc_cw_is   (i,g) : starting indicies: is1, is2, ...
-C     mnc_cw_ie   (i,g) : ending indicies:   ie1, ie2, ...
+C     MNC "Convenience Wrapper" : implemented independently of any
+C     .                           NetCDF files
+C
+C     mnc_cw_gname (g)  : Gtype names              <--------+
+C     mnc_cw_ndim  (g)  : number of dimensions              |
+C     mnc_cw_dn   (i,g) : dname1, dname2, ...               |
+C     mnc_cw_dims (i,g) : d1, d2, d3, ...                   |
+C     mnc_cw_is   (i,g) : starting indicies: is1, is2, ...  |
+C     mnc_cw_ie   (i,g) : ending indicies:   ie1, ie2, ...  |
+C     .                                                     |
+C     mnc_cw_vname (v)  : Vtype names                       |
+C     mnc_cw_vgind (v)  : index into                --------+
+C     mnc_cw_vnat (3,v) : number of attributes [T,I,D]
+C     mnc_cw_vtnm (i,v) : text (character) attribute names
+C     mnc_cw_vtat (i,v) : text (character) attributes
+C     mnc_cw_vinm (i,v) : INT attribute names
+C     mnc_cw_viat (i,v) : INT attributes
+C     mnc_cw_vdnm (i,v) : REAL*8 attribute names
+C     mnc_cw_vdat (i,v) : REAL*8 attributes
+C
+C     g : Gtype index
+C     v : Vtype index
 C
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -89,9 +104,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &     mnc_f_names, mnc_g_names, mnc_v_names, 
      &     mnc_d_names, mnc_d_ids,   mnc_d_size, 
      &     mnc_f_info,  mnc_fd_ind,  mnc_fv_ids, 
-     &     mnc_f_alld,
-     &     mnc_cw_names, mnc_cw_ndim, mnc_cw_dims, 
-     &     mnc_cw_dn, mnc_cw_is, mnc_cw_ie
+     &     mnc_f_alld
+
+      COMMON /MNC_CW_VARS/
+     &     mnc_cw_gname, mnc_cw_ndim, mnc_cw_dims, 
+     &     mnc_cw_dn, mnc_cw_is, mnc_cw_ie,
+     &     mnc_cw_vname, mnc_cw_vnat, mnc_cw_vgind,
+     &     mnc_cw_vtnm, mnc_cw_vdnm, mnc_cw_vinm,
+     &     mnc_cw_vtat, mnc_cw_vdat, mnc_cw_viat
 
       character*(MNC_MAX_CHAR) mnc_blank_name
       character*(MNC_MAX_CHAR) mnc_f_names(MNC_MAX_ID)
@@ -105,13 +125,24 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       integer mnc_d_size(MNC_MAX_ID)
       integer mnc_d_ids(MNC_MAX_ID)
 
-      character*(MNC_MAX_CHAR) mnc_cw_names(MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_cw_gname(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_cw_dn(MNC_CW_MAX_I,MNC_MAX_ID)
       integer mnc_cw_ndim(MNC_MAX_ID)
       integer mnc_cw_dims(MNC_CW_MAX_I,MNC_MAX_ID)
       integer mnc_cw_is(MNC_CW_MAX_I,MNC_MAX_ID)
       integer mnc_cw_ie(MNC_CW_MAX_I,MNC_MAX_ID)
 
+      character*(MNC_MAX_CHAR) mnc_cw_vname(MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_cw_vtnm(MNC_CW_MAX_I,MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_cw_vinm(MNC_CW_MAX_I,MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_cw_vdnm(MNC_CW_MAX_I,MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_cw_vtat(MNC_CW_MAX_I,MNC_MAX_ID)
+      integer mnc_cw_vgind(MNC_MAX_ID)
+      integer mnc_cw_vnat(3,MNC_MAX_ID)
+      integer mnc_cw_viat(MNC_CW_MAX_I,MNC_MAX_ID)
+      REAL*8  mnc_cw_vdat(MNC_CW_MAX_I,MNC_MAX_ID)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
 CEH3 ;;; End: ***

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.1 2004/01/27 05:47:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.2 2004/01/29 05:30:37 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -32,7 +32,7 @@ C       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      SUBROUTINE MNC_CW_ADD_NAME( 
+      SUBROUTINE MNC_CW_ADD_GNAME( 
      I     myThid, 
      I     name, 
      I     ndim, 
@@ -44,14 +44,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Functions
-      integer IFNBLNK, ILNBLNK
-
 C     Arguments
       integer myThid, ndim
       character*(*) name
       integer dlens(*), inds_beg(*), inds_end(*)
       character*(*) dnames(*)
+
+C     Functions
+      integer IFNBLNK, ILNBLNK
 
 C     Local Variables
       integer i, nnf,nnl, indg
@@ -61,18 +61,18 @@ C     Local Variables
       nnl = ILNBLNK(name)
 
 C     Check that this name is not already defined
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, name, mnc_cw_names, indg)
+      CALL MNC_GET_IND(myThid, MNC_MAX_ID, name, mnc_cw_gname, indg)
       IF (indg .GT. 0) THEN
-        write(msgbuf,'(3a)') 'MNC_CW_ADD_NAME ERROR: ''', name, 
+        write(msgbuf,'(3a)') 'MNC_CW_ADD_GNAME ERROR: ''', name, 
      &       ''' is already defined'
         CALL print_error(msgbuf, mythid)
-        stop 'ABNORMAL END: S/R MNC_CW_ADD_NAME'
+        stop 'ABNORMAL END: S/R MNC_CW_ADD_GNAME'
       ENDIF
-      CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_cw_names, 
+      CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_cw_gname, 
      &     indg)
 
-      mnc_cw_names(indg)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
-      mnc_cw_names(indg)(1:(nnl-nnf+1)) = name(nnf:nnl)
+      mnc_cw_gname(indg)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
+      mnc_cw_gname(indg)(1:(nnl-nnf+1)) = name(nnf:nnl)
       mnc_cw_ndim(indg) = ndim
 
       DO i = 1,ndim
@@ -88,6 +88,35 @@ C     Check that this name is not already defined
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MNC_CW_DUMP()
+
+      implicit none
+#include "mnc_common.h"
+
+C     Local Variables
+      integer i,j, ntot
+
+      ntot = 0
+      DO j = 1,MNC_MAX_ID
+        IF (mnc_cw_gname(j)(1:MNC_MAX_CHAR) 
+     &       .NE. mnc_blank_name(1:MNC_MAX_CHAR)) THEN
+          
+          ntot = ntot + 1
+          write(*,'(2i5,a3,a20,i3,a3,5i4,a4,5i4,a4,5i4,6a4)')
+     &         j, ntot, ' : ', mnc_cw_gname(j)(1:20), mnc_cw_ndim(j), 
+     &         ' : ', (mnc_cw_dims(i,j), i=1,5), 
+     &         '  | ', (mnc_cw_is(i,j), i=1,5),
+     &         '  | ', (mnc_cw_ie(i,j), i=1,5),
+     &         '  | ', (mnc_cw_dn(i,j)(1:4), i=1,5)
+          
+
+        ENDIF
+      ENDDO
+
+      RETURN
+      END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -109,8 +138,8 @@ C     Functions
 C     Local Variables
       integer CW_MAX_LOC
       parameter ( CW_MAX_LOC = 5 )
-      integer i, ihorz,ihsub,ivert,itime,ihalo, is, n,ntot
-      integer ndim
+      integer i, ihorz,ihsub,ivert,itime,ihalo, is,ih, n,ntot
+      integer ndim, ncomb
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) name
       character*(MNC_MAX_CHAR) dn(CW_MAX_LOC)
@@ -124,31 +153,33 @@ C     ......12345....12345....12345....12345....12345...
      &     '-    ', 'U    ', 'V    ', 'Cen  ', 'Cor  '  /
       data hsub_dat /
      &     'xy   ', 'x    ', 'y    ', '-    ', '     '  /
+      data halo_dat /
+     &     'Hn   ', 'Hy   ', '--   ', '     ', '     '  /
       data vert_dat /
      &     '-    ', 'C    ', 'I    ', '     ', '     '  /
       data time_dat /
      &     '-    ', 't    ', '     ', '     ', '     '  /
-      data halo_dat /
-     &     'Hn   ', 'Hy   ', '     ', '     ', '     '  /
 
-
+      ncomb = 0
       DO ihorz = 1,5
         DO is = 1,3
-
-C         Loop just ONCE if the Horiz component is "-"
-          ihsub = is
-          IF (ihorz .EQ. 1) THEN
-            IF (is .EQ. 1) THEN
-              ihsub = 4
-            ELSE
-              GOTO 10
+          DO ih = 1,2
+            
+C           Loop just ONCE if the Horiz component is "-"
+            ihsub = is
+            ihalo = ih
+            IF (ihorz .EQ. 1) THEN
+              IF ((is .EQ. 1) .AND. (ih .EQ. 1)) THEN
+                ihsub = 4
+                ihalo = 3
+              ELSE
+                GOTO 10
+              ENDIF
             ENDIF
-          ENDIF
-
-          DO ivert = 1,3
-            DO itime = 1,2
-              DO ihalo = 1,2
-
+            
+            DO ivert = 1,3
+              DO itime = 1,2
+                
 C               horiz and hsub
                 name(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
                 n = ILNBLNK(horz_dat(ihorz))
@@ -160,15 +191,17 @@ C               horiz and hsub
                 ntot = ntot + n
 
 C               vert, time, and halo
-                write(name((ntot+1):(ntot+7)), '(5a1,a2)') '_', 
-     &               vert_dat(ivert)(1:1), '_', 
-     &               time_dat(itime)(1:1), '_', 
-     &               halo_dat(ihalo)(1:2)
+                write(name((ntot+1):(ntot+9)), '(a1,2a2,a1,a2,a1)') 
+     &               '_', halo_dat(ihalo)(1:2), '__',
+     &               vert_dat(ivert)(1:1), '__', 
+     &               time_dat(itime)(1:1)
 
                 ndim = 0
                 DO i = 1,CW_MAX_LOC
                   dn(i)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
                   dim(i) = 0
+                  ib(i) = 0
+                  ie(i) = 0
                 ENDDO
 
 C               Horizontal dimensions
@@ -225,7 +258,7 @@ C               Horizontal dimensions
                     dn(ndim)(1:3) = 'Ywh'
                     dim(ndim) = sNy + 2*OLy
                     ib(ndim)  = 1
-                    ie(ndim)  = sNx + 2*OLx
+                    ie(ndim)  = sNy + 2*OLy
                   ENDIF
 
                 ENDIF
@@ -255,21 +288,163 @@ C               Time dimension
                   ie(ndim)  = 1
                 ENDIF
 
-                write(*,*) name(1:15), ndim, ' : ', (dim(i), i=1,5)
-
                 IF (ndim .GT. 0) THEN
-                  CALL MNC_CW_ADD_NAME(myThid, name, ndim, 
+#ifdef MNC_DEBUG
+                  ncomb = ncomb + 1
+                  write(*,'(i4,a3,a15,i3,a3,5i4,a4,5i4,a4,5i4,6a4)')
+     &                 ncomb, ' : ', name(1:15), ndim, 
+     &                 ' : ', (dim(i), i=1,5), 
+     &                 '  | ', (ib(i), i=1,5),
+     &                 '  | ', (ie(i), i=1,5),
+     &                 '  | ', (dn(i)(1:4), i=1,5)
+#endif
+
+                  CALL MNC_CW_ADD_GNAME(myThid, name, ndim, 
      &                 dim, dn, ib, ie)
                 ENDIF
 
               ENDDO
             ENDDO
-          ENDDO
 
- 10       CONTINUE
+ 10         CONTINUE
+          ENDDO
         ENDDO
       ENDDO
       
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MNC_CW_ADD_VNAME( 
+     I     myThid, 
+     I     vname, 
+     I     gname ) 
+
+      implicit none
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+
+C     Arguments
+      integer myThid
+      character*(*) vname, gname
+
+C     Functions
+      integer IFNBLNK, ILNBLNK
+
+C     Local Variables
+      integer i, nvf,nvl, ngf,ngl, indv,indg
+      character*(MAX_LEN_MBUF) msgbuf
+
+      nvf = IFNBLNK(vname)
+      nvl = ILNBLNK(vname)
+      ngf = IFNBLNK(gname)
+      ngl = ILNBLNK(gname)
+
+C     Check that this vname is not already defined
+      CALL MNC_GET_IND(myThid, MNC_MAX_ID, vname, mnc_cw_vname, indv)
+      IF (indv .GT. 0) THEN
+        write(msgbuf,'(3a)') 'MNC_CW_ADD_VNAME ERROR: ''', 
+     &       vname(nvf:nvl), ''' is already defined'
+        CALL print_error(msgbuf, mythid)
+        stop 'ABNORMAL END: S/R MNC_CW_ADD_VNAME'
+      ENDIF
+      CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_cw_vname, 
+     &     indv)
+
+C     Check that gname exists
+      CALL MNC_GET_IND(myThid, MNC_MAX_ID, gname, mnc_cw_gname, indg)
+      IF (indg .LT. 1) THEN
+        write(msgbuf,'(3a)') 'MNC_CW_ADD_VNAME ERROR: ''', 
+     &       gname(ngf:ngl), ''' is not defined'
+        CALL print_error(msgbuf, mythid)
+        stop 'ABNORMAL END: S/R MNC_CW_ADD_VNAME'
+      ENDIF
+      CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_cw_gname, 
+     &     indg)
+
+      mnc_cw_vname(indv)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
+      mnc_cw_vname(indv)(1:(nvl-nvf+1)) = vname(nvf:nvl)
+      mnc_cw_vgind(indv) = indg
+      DO i = 1,3
+        mnc_cw_vnat(i,indv) = 0
+      ENDDO
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MNC_CW_ADD_VATTR_ANY( 
+     I     myThid, 
+     I     vname, 
+     I     ntat,   niat,   ndat,
+     I     tnames, inames, dnames,
+     I     tvals,  ivals,  dvals ) 
+
+      implicit none
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+
+C     Arguments
+      integer myThid, ntat, niat, ndat
+      character*(*) vname
+      character*(*) tnames(*), inames(*), dnames(*)
+      character*(*) tvals(*)
+      integer ivals(*)
+      REAL*8 dvals(*)
+
+C     Functions
+      integer IFNBLNK, ILNBLNK
+
+C     Local Variables
+      integer i, n, nvf,nvl, n1,n2, indv
+      character*(MAX_LEN_MBUF) msgbuf
+
+      nvf = IFNBLNK(vname)
+      nvl = ILNBLNK(vname)
+
+C     Check that vname is defined
+      CALL MNC_GET_IND(myThid, MNC_MAX_ID, vname, mnc_cw_vname, indv)
+      IF (indv .LT. 1) THEN
+        write(msgbuf,'(3a)') 'MNC_CW_ADD_VATTR_ANY ERROR: ''', 
+     &       vname(nvf:nvl), ''' is not defined'
+        CALL print_error(msgbuf, mythid)
+        stop 'ABNORMAL END: S/R MNC_CW_ADD_VATTR_ANY'
+      ENDIF
+
+C     Text Attributes
+      n = mnc_cw_vnat(1,indv)
+      DO i = 1,ntat
+        n1 = IFNBLNK(tnames(i))
+        n2 = ILNBLNK(tnames(i))
+        mnc_cw_vtnm(n+i,indv)(1:(n2-n1+1)) = tnames(i)(n1:n2)
+        n1 = IFNBLNK(tvals(i))
+        n2 = ILNBLNK(tvals(i))
+        mnc_cw_vtat(n+i,indv)(1:(n2-n1+1)) = tvals(i)(n1:n2)
+      ENDDO
+      mnc_cw_vnat(1,indv) = n + ntat
+
+C     Integer Attributes
+      n = mnc_cw_vnat(2,indv)
+      DO i = 1,niat
+        n1 = IFNBLNK(inames(i))
+        n2 = ILNBLNK(inames(i))
+        mnc_cw_vinm(n+i,indv)(1:(n2-n1+1)) = inames(i)(n1:n2)
+        mnc_cw_viat(n+i,indv) = ivals(i)
+      ENDDO
+      mnc_cw_vnat(2,indv) = n + niat
+
+C     Double Attributes
+      n = mnc_cw_vnat(3,indv)
+      DO i = 1,ndat
+        n1 = IFNBLNK(dnames(i))
+        n2 = ILNBLNK(dnames(i))
+        mnc_cw_vdnm(n+i,indv)(1:(n2-n1+1)) = dnames(i)(n1:n2)
+        mnc_cw_vdat(n+i,indv) = dvals(i)
+      ENDDO
+      mnc_cw_vnat(3,indv) = n + ndat
+
       RETURN
       END
 

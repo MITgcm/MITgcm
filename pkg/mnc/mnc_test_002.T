@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_002.T,v 1.1 2004/01/27 05:47:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_002.T,v 1.2 2004/01/29 05:30:37 edhill Exp $
 C $Name:  $
 
 C     Simple test program for MNC
@@ -20,6 +20,8 @@ C     Local Variables
       CALL MNC_INIT()
       CALL MNC_CW_INIT( 0,
      &     20,16, 4,4, 1,1, 1,1, 13 )
+
+      CALL MNC_CW_DUMP()
 
       print*, '=== Ending Program:    mnc_test_002 ==='
 
