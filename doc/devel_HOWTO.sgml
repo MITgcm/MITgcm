@@ -182,48 +182,45 @@
       <title>Branches</title>
 
       <para>As shown in the online <ulink
-      url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm/doc/tag-index?graph=1.174">ViewCVS-generated
-      tree</ulink>, the MITgcm codebase is split into to two branches
-      or "lines" under which development proceeds.  These two lines
-      are referred to as the "MAIN" and "ecco" versions of the code.
-      While not identical, the bulk of the MAIN and ecco lines are
-      composed of files from the same codebase.
+      url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm/doc/tag-index?graph=1.174">
+      ViewCVS-generated tree</ulink>, the MITgcm codebase is split into to two
+      branches or "lines" under which development proceeds.  These two lines are
+      referred to as the "MAIN" and "ecco" versions of the code.  While not
+      identical, the bulk of the MAIN and ecco lines are composed of files from
+      the same codebase.
       </para>
 
       <para>Periodically, a "Release" branch is formed from the "MAIN"
-      development branch.  This is done in order to create a
-      relatively stable reference point for both users and developers.
-      The intent is that once a relese branch has been created, only
-      bug-fixes will be added to it.  Meanwhile, development (which
-      might "break" or otherwise render invalid the documentation,
-      tutorials, and/or examples contained within a release branch) is
-      allowed to continue along the MAIN and ecco lines.</para>
+      development branch.  This is done in order to create a relatively stable
+      reference point for both users and developers.  The intent is that once a
+      relese branch has been created, only bug-fixes will be added to it.
+      Meanwhile, development (which might "break" or otherwise render invalid
+      the documentation, tutorials, and/or examples contained within a release
+      branch) is allowed to continue along the MAIN and ecco lines.</para>
     </sect2>
 
     <sect2>
       <title>Tagging</title>
 
-      <para>The intent of tagging is to create "known-good"
-      checkpoints that developers can use as references.
-      Traditionally, MITgcm tagging has maintained the following
-      conventions:</para>
+      <para>The intent of tagging is to create "known-good" checkpoints that
+      developers can use as references.  Traditionally, MITgcm tagging has
+      maintained the following conventions:</para>
 
       <orderedlist>
 	<listitem>
-	  <para>Developer checks out code into a local CVS-managed
-	  directory, makes various changes/additions, tests these
-	  edits, and eventually reaches a point where (s)he is
-	  satisfied that the changes form a new "useful" point in the
-	  evolution of the code.</para>
+	  <para>Developer checks out code into a local CVS-managed directory,
+	  makes various changes/additions, tests these edits, and eventually
+	  reaches a point where (s)he is satisfied that the changes form a new
+	  "useful" point in the evolution of the code.</para>
 	</listitem>
 
 	<listitem>
 	  <para>The developer then runs the <ulink
-          url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm/verification/testscript">testscript</ulink>
-          shell script to see if any problems are introduced.  While
-          not intended to be exhaustive, the test cases within the
-          verification directory do provide some indication whether
-          gross errors have been introduced.
+          url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm/verification/testscript">
+          testscript</ulink> shell script to see if any problems are introduced.
+          While not intended to be exhaustive, the test cases within the
+          verification directory do provide some indication whether gross errors
+          have been introduced.
           </para>
 	</listitem>
 
@@ -233,23 +230,23 @@
 	  then:</para>
 	  <orderedlist>
 	    <listitem>
-	      <para>adds a "checkpointXY_pre" comment (where X is a
-	      checkpoint number and Y is a letter) to the <ulink
-	      url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm/doc/tag-index">tag-index</ulink>
-	      file and checks it into the CVS repository</para>
+	      <para>adds a "checkpointXY_pre" comment (where X is a checkpoint
+	      number and Y is a letter) to the <ulink
+	      url="http://dev.mitgcm.org/cgi-bin/viewcvs.cgi/MITgcm/doc/tag-index">
+	      tag-index</ulink> file and checks it into the CVS
+	      repository</para>
 	    </listitem>
 	    <listitem>
-	      <para>submits the set of changes to the CVS repository
-	      and adds comments to <filename>tag-index</filename>
-	      describing what the changes are along with a matching
-	      "checkpointXY_post" entry</para>
+	      <para>submits the set of changes to the CVS repository and adds
+	      comments to <filename>tag-index</filename> describing what the
+	      changes are along with a matching "checkpointXY_post" entry</para>
 	    </listitem>
 	  </orderedlist>
 	</listitem>
       </orderedlist>
 
-      <para>The result of this tagging procedure is a sequence of
-      development checkpoints with comments which resembles:</para>
+      <para>The result of this tagging procedure is a sequence of development
+      checkpoints with comments which resembles:</para>
 
 <programlisting>
 checkpoint50e_post
@@ -271,11 +268,10 @@ o fix small problem with in ptracers_write_checkpoint.F: len(suff)=512,
 checkpoint50d_pre
 </programlisting>
 
-      <para>This information can be used to refer to various stages of
-      the code development.  For example, bugs can be traced to
-      individual sets of CVS checkins based upon their first
-      appearance when comparing the results from different
-      checkpoints.</para>
+      <para>This information can be used to refer to various stages of the code
+      development.  For example, bugs can be traced to individual sets of CVS
+      checkins based upon their first appearance when comparing the results from
+      different checkpoints.</para>
 
     </sect2>
   </sect1>
@@ -287,48 +283,43 @@ checkpoint50d_pre
     <sect2 id="documentation_getting">
       <title>Getting the Docs and Code</title>
 
-      <para>The first step towards editing the documentation is to
-      checkout a copy of code, docs, and build scripts from the CVS
-      server using:</para>
+      <para>The first step towards editing the documentation is to checkout a
+      copy of code, docs, and build scripts from the CVS server using:</para>
 
 <screen>
   $ export CVS_RSH=ssh
-  $ export CVSROOT=':ext:auden.lcs.mit.edu:/u/u3/gcmpack'
+  $ export CVSROOT=':ext:NAME@mitgcm.org:/u/gcmpack'
   $ mkdir scratch
   $ cvs co MITgcm manual mitgcm.org
 </screen>
 
-      <para>These commands extract the necessary information from the
-      CVS server and create a temporary (called
-      <filename>scratch</filename>) directory for the storage of the
-      HTML and other files that will be created.  Please note that you
-      must either create <filename>scratch</filename> as shown or edit
-      the various <filename>Makefile</filename>s and scripts used to
-      create the documentation.</para>
+      <para>These commands extract the necessary information from the CVS server
+      and create a temporary (called <filename>scratch</filename>) directory for
+      the storage of the HTML and other files that will be created.  Please note
+      that you must either create <filename>scratch</filename> as shown or edit
+      the various <filename>Makefile</filename>s and scripts used to create the
+      documentation.</para>
     </sect2>
 
     <sect2>
       <title>Editing the Documentation</title>
 
-      <para>The documentation is contained in the
-      <filename>manual</filename> directory in a raw LaTeX format.
-      The main document is <filename>manual.tex</filename> and it uses
-      <command>\input{}</command>s to include the chapters and
-      subsections.</para>
+      <para>The documentation is contained in the <filename>manual</filename>
+      directory in a raw LaTeX format.  The main document is
+      <filename>manual.tex</filename> and it uses <command>\input{}</command>s
+      to include the chapters and subsections.</para>
 
-      <para>Since the same LaTeX source is used to produce PostScript,
-      PDF, and HTML output, care should be taken to follow certain
-      conventions.  Two of the most important are the usage of the
-      <command>\filelink{}{}</command> and
-      <command>\varlink{}{}</command> commands.  Both of these
-      commands have been defined to simplify the connection between
-      the automatically generated ("code browser") HTML and the HTML
-      version of the manual produced by LaTeX2HTML.  They each take
-      two arguments (corresponding to the contents of the two sets of
-      curly braces) which are the text that the author wishes to be
-      "wrapped" within the link, and a specially formatted link thats
-      relative to the <filename>MITgcm</filename> directory within the
-      CVS tree.</para>
+      <para>Since the same LaTeX source is used to produce PostScript, PDF, and
+      HTML output, care should be taken to follow certain conventions.  Two of
+      the most important are the usage of the <command>\filelink{}{}</command>
+      and <command>\varlink{}{}</command> commands.  Both of these commands have
+      been defined to simplify the connection between the automatically
+      generated ("code browser") HTML and the HTML version of the manual
+      produced by LaTeX2HTML.  They each take two arguments (corresponding to
+      the contents of the two sets of curly braces) which are the text that the
+      author wishes to be "wrapped" within the link, and a specially formatted
+      link thats relative to the <filename>MITgcm</filename> directory within
+      the CVS tree.</para>
 
       <para>The result is a command that resembles either</para>
       
@@ -367,19 +358,16 @@ checkpoint50d_pre
   $ make All
 </screen>
 
-      <para>Which builds the PDF from the LaTeX source, creates the
-      HTML output from the LaTeX source, parses the FORTRAN code base
-      to produce a hyperlinked HTML version of the source, and then
-      determines the cross-linking between the various HTML
-      components.</para>
+      <para>Which builds the PDF from the LaTeX source, creates the HTML output
+      from the LaTeX source, parses the FORTRAN code base to produce a
+      hyperlinked HTML version of the source, and then determines the
+      cross-linking between the various HTML components.</para>
 
-      <para>If there are no errors, the result of the build process
-      (which can take 30+ minutes on a P4/2.5Ghz) will be contained
-      within a single directory called
-      <filename>scratch/dev_docs</filename>.  This is a freshly built
-      version of the entire on-line users manual.  If you have the
-      correct permissions, it can be directly copied to the web server
-      area:</para>
+      <para>If there are no errors, the result of the build process (which can
+      take 30+ minutes on a P4/2.5Ghz) will be contained within a single
+      directory called <filename>scratch/dev_docs</filename>.  This is a freshly
+      built version of the entire on-line users manual.  If you have the correct
+      permissions, it can be directly copied to the web server area:</para>
 
 <screen>
   $ mv scratch/dev_docs /u/u0/httpd/html
