@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.6 2001/03/06 17:02:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.7 2001/03/08 20:45:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -80,7 +80,7 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       INTEGER exchWidthX
       INTEGER exchWidthY
       INTEGER myNz
-      _RL     topLevFac
+      _RL     topLevTerm
 
 C--   Initialise inverter
       eta_qrNM1 = 1. D0
@@ -119,62 +119,7 @@ C--   Update overlaps
       _EXCH_XYZ_R8( cg3d_b, myThid )
       _EXCH_XYZ_R8( cg3d_x, myThid )
 
-#ifdef NONO
-CcnhDebugStarts
-C--   Initial residual calculation
-      err    = 0. _d 0
-      sumRHS = 0. _d 0
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO J=1,sNy
-          DO I=1,sNx
-          alpha = 0. _d 0
-          DO K=1,Nr
-           KM1 = K-1
-           IF ( KM1 .EQ. 0 )    KM1 = 1
-           KP1 = K+1
-           IF ( KP1 .EQ. Nr+1 ) KP1 = 1 
-            cg3d_r(I,J,K,bi,bj) = cg3d_b(I,J,K,bi,bj) -( 0.
-     &     +aW3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I-1,J  ,K  ,bi,bj)
-     &     +aW3d(I+1,J  ,K  ,bi,bj)*cg3d_x(I+1,J  ,K  ,bi,bj)
-     &     +aS3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I  ,J-1,K  ,bi,bj)
-     &     +aS3d(I  ,J+1,K  ,bi,bj)*cg3d_x(I  ,J+1,K  ,bi,bj)
-     &     +aV3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I  ,J  ,KM1,bi,bj)
-     &     +aV3d(I  ,J  ,KP1,bi,bj)*cg3d_x(I  ,J  ,KP1,bi,bj)
-     &     -aW3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
-     &     -aW3d(I+1,J  ,K  ,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
-     &     -aS3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
-     &     -aS3d(I  ,J+1,K  ,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
-     &     -aV3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
-     &     -aV3d(I  ,J  ,KP1,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
-     &     )
-           alpha = alpha
-     &     +cg3d_r(I,J,K,bi,bj)
-           sumRHS = sumRHS
-     &     +cg3d_b(I,J,K,bi,bj)
-          ENDDO
-          err = err + alpha*alpha
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      WRITE(6,*) 'DEBUG  mythid, err = ', mythid, SQRT(err)
-      _GLOBAL_SUM_R8( err   , myThid )
-      _GLOBAL_SUM_R8( sumRHS   , myThid )
-      _BEGIN_MASTER( myThid )
-      write(0,*) 'DEBUG cg3d: Sum(rhs) = ',sumRHS
-      _END_MASTER( )
-      actualIts      = 0
-      actualResidual = SQRT(err)
-C     _BARRIER
-      _BEGIN_MASTER( myThid )
-       WRITE(0,'(A,I6,1PE30.14)') 'DEBUG  CG3D iters, err = ',
-     &  actualIts, actualResidual
-      _END_MASTER( )
-CcnhDebugEnds
-#endif
-
-C--   Initial residual calculation
+C--   Initial residual calculation (with free-Surface term)
       err    = 0. _d 0
       sumRHS = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -184,8 +129,9 @@ C--   Initial residual calculation
          IF ( K .EQ. 1 ) KM1 = 1
          KP1 = K+1
          IF ( K .EQ. Nr ) KP1 = 1 
-         topLevFac = 0.
-         IF ( K .EQ. 1) topLevFac = 1.
+         topLevTerm = 0.
+         IF ( K .EQ. 1) topLevTerm = freeSurfFac*cg3dNorm*
+     &      (horiVertRatio/gravity)/deltaTMom/deltaTMom
          DO J=1,sNy
           DO I=1,sNx
            cg3d_s(I,J,K,bi,bj) = 0.
@@ -202,9 +148,7 @@ C--   Initial residual calculation
      &     -aS3d(I  ,J+1,K  ,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
      &     -aV3d(I  ,J  ,K  ,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
      &     -aV3d(I  ,J  ,KP1,bi,bj)*cg3d_x(I  ,J  ,K  ,bi,bj)
-     &     -freeSurfFac*_rA(i,j,bi,bj)* horiVertRatio*
-     &      cg3d_x(I  ,J  ,K,bi,bj)/deltaTMom/deltaTMom*cg3dNorm
-     &      *topLevFac
+     &     -topLevTerm*_rA(I,J,bi,bj)*cg3d_x(I,J,K,bi,bj)
      &     )
            err = err
      &     +cg3d_r(I,J,K,bi,bj)*cg3d_r(I,J,K,bi,bj)
@@ -367,6 +311,8 @@ CcnhDebugEnds
 C==    Evaluate laplace operator on conjugate gradient vector
 C==    q = A.s
        alpha = 0. _d 0
+       topLevTerm = freeSurfFac*cg3dNorm*
+     &      (horiVertRatio/gravity)/deltaTMom/deltaTMom
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          IF ( Nr .GT. 1 ) THEN
@@ -384,8 +330,7 @@ C==    q = A.s
      &      -aS3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
      &      -aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
      &      -aV3d(I  ,J  ,K+1,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -freeSurfFac*_rA(i,j,bi,bj)* horiVertRatio*
-     &       cg3d_s(I  ,J  ,K,bi,bj)/deltaTMom/deltaTMom*cg3dNorm
+     &      -topLevTerm*_rA(I,J,bi,bj)*cg3d_s(I,J,K,bi,bj)
              alpha = alpha+cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
             ENDDO
            ENDDO
@@ -403,8 +348,7 @@ C==    q = A.s
      &      -aW3d(I+1,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
      &      -aS3d(I  ,J  ,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
      &      -aS3d(I  ,J+1,K  ,bi,bj)*cg3d_s(I  ,J  ,K  ,bi,bj)
-     &      -freeSurfFac*_rA(i,j,bi,bj)* horiVertRatio*
-     &       cg3d_s(I  ,J  ,K,bi,bj)/deltaTMom/deltaTMom*cg3dNorm
+     &      -topLevTerm*_rA(I,J,bi,bj)*cg3d_s(I,J,K,bi,bj)
              alpha = alpha+cg3d_s(I,J,K,bi,bj)*cg3d_q(I,J,K,bi,bj)
             ENDDO
            ENDDO
@@ -519,32 +463,6 @@ Cadj  _EXCH_XYZ_R8(cg3d_x, myThid )
        WRITE(0,'(A,I6,1PE30.14)') ' CG3D iters, err = ',
      &  actualIts, actualResidual
       _END_MASTER( )
-
-CcnhDebugStarts
-C     CALL PLOT_FIELD_XYRL( cg2d_x, 'CALC_MOM_RHS CG2D_X' , 1, myThid )
-C     err    = 0. _d 0
-C     DO bj=myByLo(myThid),myByHi(myThid)
-C      DO bi=myBxLo(myThid),myBxHi(myThid)
-C       DO J=1,sNy
-C        DO I=1,sNx
-C         cg2d_r(I,J,bi,bj) = cg2d_b(I,J,bi,bj) -
-C    &    (aW2d(I  ,J  ,bi,bj)*cg2d_x(I-1,J  ,bi,bj)
-C    &    +aW2d(I+1,J  ,bi,bj)*cg2d_x(I+1,J  ,bi,bj)
-C    &    +aS2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J-1,bi,bj)
-C    &    +aS2d(I  ,J+1,bi,bj)*cg2d_x(I  ,J+1,bi,bj)
-C    &    -aW2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
-C    &    -aW2d(I+1,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
-C    &    -aS2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
-C    &    -aS2d(I  ,J+1,bi,bj)*cg2d_x(I  ,J  ,bi,bj))
-C         err            = err            + 
-C    &     cg2d_r(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
-C        ENDDO
-C       ENDDO
-C      ENDDO
-C     ENDDO
-C     _GLOBAL_SUM_R8( err   , myThid )
-C     write(0,*) 'cg2d: Ax - b = ',SQRT(err)
-CcnhDebugEnds
 
 #endif /* ALLOW_NONHYDROSTATIC */
 

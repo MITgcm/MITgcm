@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.9 2001/02/04 14:38:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.10 2001/03/08 20:45:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -19,7 +19,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
+c_jmc #include "DYNVARS.h"
 #include "CG3D.h"
 #ifdef ALLOW_OBCS
 #include "OBCS.h"
@@ -65,10 +65,10 @@ C     aV3d: Ar/dR
           DO I=1,sNx
            faceArea = _dyG(I,J,bi,bj)*drF(K)
      &                *_hFacW(I,J,K,bi,bj)
-           aW3d(I,J,K,bi,bj) =  Gravity*faceArea*recip_dxC(I,J,bi,bj)
+           aW3d(I,J,K,bi,bj) = faceArea*recip_dxC(I,J,bi,bj)
            faceArea = _dxG(I,J,bi,bj)*drF(K)
      &                *_hFacS(I,J,K,bi,bj)
-           aS3d(I,J,K,bi,bj) = Gravity*faceArea*recip_dyC(I,J,bi,bj)
+           aS3d(I,J,K,bi,bj) = faceArea*recip_dyC(I,J,bi,bj)
            myNorm = MAX(ABS(aW3d(I,J,K,bi,bj)),myNorm)
            myNorm = MAX(ABS(aS3d(I,J,K,bi,bj)),myNorm)
           ENDDO
@@ -96,8 +96,8 @@ caja &      drF(K  )*_hFacC(i,j,k  ,bi,bj)*0.5
 caja &     +drF(K-1)*_hFacC(i,j,k-1,bi,bj)*0.5
            IF ( theRecip_Dr .NE. 0. ) 
      &      theRecip_Dr = 1. _d 0/theRecip_Dr
-           aV3d(I,J,K,bi,bj) =  
-     &      Gravity*faceArea*theRecip_Dr
+           aV3d(I,J,K,bi,bj) = faceArea*theRecip_Dr
+     &                 *horiVertRatio*horiVertRatio 
            myNorm = MAX(ABS(aV3d(I,J,K,bi,bj)),myNorm)
           ENDDO
          ENDDO
@@ -208,8 +208,8 @@ C     assuming zML is lower and zMU is upper!
            aC = -aW-aE-aN-aS-aU-aL
            IF ( K .EQ. 1 .AND. aC .NE. 0. ) THEN
             aC = aC
-     &           -freeSurfFac*myNorm* horiVertRatio*
-     &            rA(I,J,bi,bj)/deltaTMom/deltaTMom
+     &         -freeSurfFac*myNorm*(horiVertRatio/gravity)*
+     &          rA(I,J,bi,bj)/deltaTMom/deltaTMom
            ENDIF
            IF ( aC .NE. 0. ) THEN
             zMC(i,j,k,bi,bj) = aC
