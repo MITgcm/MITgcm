@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/Attic/ggl90_init.F,v 1.1 2004/09/16 11:27:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/Attic/ggl90_init.F,v 1.2 2004/09/27 08:02:04 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -40,7 +40,7 @@ C-      3D arrays
          DO J=1-Oly,sNy+Oly
           DO I=1-Olx,sNx+Olx
 CML           GGL90TKE(I,J,K,bi,bj)=0. _d 0
-           GGL90TKE(I,J,K,bi,bj)=GGL90TKEmin
+           GGL90TKE(I,J,K,bi,bj)=GGL90TKEmin*maskC(I,J,K,bi,bj)
 C
 C     hfacs for w (=tke) control volume
 C     
@@ -72,7 +72,7 @@ C--   Read initial turbulent kinetic energy thickness from file if available.
            DO j=1-OLy,sNy+OLy
             DO i=1-OLx,sNx+OLx
              GGL90TKE(I,J,K,bi,bj) = MAX(GGL90TKE(I,J,K,bi,bj),
-     &            GGL90TKEmin)
+     &            GGL90TKEmin)*maskC(I,J,K,bi,bj)
             ENDDO
            ENDDO
           ENDDO

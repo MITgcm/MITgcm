@@ -1,8 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.355 2004/09/24 17:10:22 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.356 2004/09/27 08:02:05 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o GGL90 (Gaspar's TKE mixed layer)
+  - add horizontal diffusion of TKE, requires exchanges in 
+    do_fields_blocking_exchanges, horizontal diffusivity is zero by 
+    default. In OPA there is no horizontal diffusion of TKE but the 
+    mixing coefficients are computed from a horizontal average of TKE of
+    6 points or so. I think that diffusion has a little more physical
+    justification.
+  - clean up ggl90_calc in the hope of reducing memory usage (this hope 
+    was in vain)
+  - mask tke-variable in ggl90_init
 o fix mask Pb in multidimAdvection on CS-grid (still a small Pb with ipass)
 o fix biharmonic diffusion on CS-grid.
 o more obcs stuff

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90.h,v 1.1 2004/09/16 11:27:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/GGL90.h,v 1.2 2004/09/27 08:02:05 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_GGL90
@@ -57,6 +57,7 @@ CEOP
 
       _RL    GGL90ck, GGL90ceps
       _RL    GGL90alpha, GGL90m2
+      _RL    GGL90diffTKEh
       _RL    GGL90mixingLengthMin
       _RL    GGL90TKEmin, GGL90TKEbottom
       _RL    GGL90viscMax, GGL90diffMax
@@ -64,6 +65,7 @@ CEOP
       COMMON /GGL90_PARMS_R/  
      &     GGL90ck, GGL90ceps,
      &     GGL90alpha, GGL90m2,
+     &     GGL90diffTKEh,
      &     GGL90mixingLengthMin,
      &     GGL90TKEmin, GGL90TKEbottom,
      &     GGL90viscMax, GGL90diffMax,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.1 2004/09/16 11:27:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.2 2004/09/27 08:02:04 mlosch Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -95,6 +95,14 @@ C     tri-diagonal matrix
       _RL     a(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL     c(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+#ifdef ALLOW_GGL90_HORIZDIFF
+C     xA, yA   - area of lateral faces
+C     dfx, dfy - diffusive flux across lateral faces
+      _RL     xA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     yA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     dfx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     dfy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif /* ALLOW_GGL90_HORIZDIFF */
 CEOP
       iMin = 2-OLx
       iMax = sNx+OLx-1
@@ -192,12 +200,68 @@ C     sum up contributions to form the right hand side
      &        )
         ENDDO	
        ENDDO
-      ENDDO	
-C     
-C     Implicit time step to update TKE for k=1,Nr; TKE(Nr+1)=0 by default
-C     
+      ENDDO
+C     horizontal diffusion of TKE (requires an exchange in 
+C	do_fields_blocking_exchanges)
+#ifdef ALLOW_GGL90_HORIZDIFF
+      IF ( GGL90diffTKEh .GT. 0. _d 0 ) THEN
+       DO K=2,Nr
+C     common factors
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          xA(i,j) = _dyG(i,j,bi,bj)
+     &         *drF(k)*_hFacW(i,j,k,bi,bj)
+          yA(i,j) = _dxG(i,j,bi,bj)
+     &         *drF(k)*_hFacS(i,j,k,bi,bj)
+         ENDDO
+        ENDDO	
+C     Compute diffusive fluxes
+C     ... across x-faces
+        DO j=1-Oly,sNy+Oly
+         dfx(1-Olx,j)=0.
+         DO i=1-Olx+1,sNx+Olx
+          dfx(i,j) = -GGL90diffTKEh*xA(i,j)
+     &      *_recip_dxC(i,j,bi,bj)
+     &      *(GGL90TKE(i,j,k,bi,bj)-GGL90TKE(i-1,j,k,bi,bj))
+     &      *CosFacU(j,bi,bj)
+         ENDDO
+        ENDDO
+C     ... across y-faces
+        DO i=1-Olx,sNx+Olx
+         dfy(i,1-Oly)=0.
+        ENDDO
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          dfy(i,j) = -GGL90diffTKEh*yA(i,j)
+     &      *_recip_dyC(i,j,bi,bj)
+     &      *(GGL90TKE(i,j,k,bi,bj)-GGL90TKE(i,j-1,k,bi,bj))
+#ifdef ISOTROPIC_COS_SCALING
+     &      *CosFacV(j,bi,bj)
+#endif /* ISOTROPIC_COS_SCALING */
+         ENDDO
+        ENDDO	
+C     Compute divergence of fluxes
+        DO j=1-Oly,sNy+Oly-1
+         DO i=1-Olx,sNx+Olx-1
+          gTKE(i,j,k)=gTKE(i,j,k)
+     &   -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)*recip_rA(i,j,bi,bj)
+     &         *( (dfx(i+1,j)-dfx(i,j))
+     &           +(dfy(i,j+1)-dfy(i,j)) 
+     &           )
+         ENDDO	
+        ENDDO
+C	end of k-loop
+       ENDDO
+C     end if GGL90diffTKEh .eq. 0.
+      ENDIF
+#endif /* ALLOW_GGL90_HORIZDIFF */
+
+C     ============================================
+C     Implicit time step to update TKE for k=1,Nr;
+C     TKE(Nr+1)=0 by default
+C     ============================================
 C     set up matrix
-C--   Old aLower
+C--   Lower diagonal
       DO j=jMin,jMax
        DO i=iMin,iMax
          a(i,j,1) = 0. _d 0 
@@ -215,8 +279,7 @@ C--   Old aLower
         ENDDO
        ENDDO
       ENDDO
-
-C--   Old aUpper
+C--   Upper diagonal
       DO j=jMin,jMax
        DO i=iMin,iMax
          c(i,j,1)  = 0. _d 0
@@ -224,7 +287,7 @@ C--   Old aUpper
        ENDDO
       ENDDO
 CML      DO k=1,Nr-1
-      DO k=2,Nr
+      DO k=2,Nr-1
        kp1=min(Nr,k+1)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -232,12 +295,11 @@ CML      DO k=1,Nr-1
      &        *recip_drF( k )*recip_hFacI(i,j,k,bi,bj)
      &               *.5*(KappaE(i,j,k)+KappaE(i,j,kp1))
      &        *recip_drC(k)
-C          IF (recip_hFacI(i,j,kp1,bi,bj).EQ.0.) c(i,j,k)=0.
+          IF (recip_hFacI(i,j,kp1,bi,bj).EQ.0.) c(i,j,k)=0.
         ENDDO
        ENDDO
       ENDDO
-
-C--   Old aCenter
+C--   Center diagonal
       DO k=1,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -286,13 +348,12 @@ C
 C     impose minimum TKE to avoid numerical undershoots below zero
          GGL90TKE(I,J,K,bi,bj) = MAX( gTKE(I,J,K), GGL90TKEmin ) 
      &        * maskC(I,J,K,bi,bj)
-C
-C     end of time step
-C
         ENDDO
        ENDDO
       ENDDO	
 C
+C     end of time step
+C     ===============================
 C     compute viscosity coefficients
 C     
       DO K=2,Nr
