@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.223 2003/12/14 23:30:13 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.224 2003/12/15 02:21:14 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -17,6 +17,12 @@ o changes to permit hi-res, cubed-sphere, configuration
 o packages pickup: $PKG_write_pickup called from packages_write_pickup ;
    but call to $PKG_read_pickup remains in $PKG_ini_vars: change CD_code
    to conform to the common rule.
+o check-in the first version of the coupler + interfaces for multi-components 
+   set-up (Chris's version, adapted to work on cubed-sphere grid); use MPI.
+   - imply modification in eesupp (MPI_COMM_MODEL < MPI_COMM_WORLD).
+   - atmosphere: use pkg aim_v23 ; no sea-ice for now. 
+   - ocean and atmos. share the same horizontal grid (no interpolation).
+   - exchanges between component and coupler is done in forward_step
 
 checkpoint52d_pre
 o surface flux time-av diagnostic modified for NLFS & RealFreshWater 
