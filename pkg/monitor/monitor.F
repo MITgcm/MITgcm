@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.7 2001/07/05 16:09:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.8 2001/11/08 16:47:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,12 +59,18 @@ C      Print the time to make grepping the stdout easier
        CALL MON_OUT_I( '_secondsi', time_as_int,mon_string_none,myThid)
 C      Print the basic statistics of model state variables
        CALL MON_SET_PREF('dynstat',myThid)
-       CALL MON_PRINTSTATS_RL(1,EtaN,'_eta',myThid)
-       CALL MON_PRINTSTATS_RL(Nr,uVel,'_uvel',myThid)
-       CALL MON_PRINTSTATS_RL(Nr,vVel,'_vvel',myThid)
-       CALL MON_PRINTSTATS_RL(Nr,wVel,'_wvel',myThid)
-       CALL MON_PRINTSTATS_RL(Nr,theta,'_theta',myThid)
-       CALL MON_PRINTSTATS_RL(Nr,salt,'_salt',myThid)
+       CALL MON_PRINTSTATS_RL(1,EtaN,'_eta',
+     &                        maskH,maskH,rA ,drF,myThid)
+       CALL MON_PRINTSTATS_RL(Nr,uVel,'_uvel',
+     &                        maskW,hFacW,rAw,drF,myThid)
+       CALL MON_PRINTSTATS_RL(Nr,vVel,'_vvel',
+     &                        maskS,hFacS,rAs,drF,myThid)
+       CALL MON_PRINTSTATS_RL(Nr,wVel,'_wvel',
+     &                        maskC,maskC,rA ,drC,myThid)
+       CALL MON_PRINTSTATS_RL(Nr,theta,'_theta',
+     &                        maskC,hFacC,rA ,drF,myThid)
+       CALL MON_PRINTSTATS_RL(Nr,salt,'_salt',
+     &                        maskC,hFacC,rA ,drF,myThid)
 
 C      Print the numerical stablility parameters for current state
        CALL MON_SET_PREF('advcfl',myThid)

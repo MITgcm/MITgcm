@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/MONITOR.h,v 1.1 2001/06/18 17:39:59 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/MONITOR.h,v 1.2 2001/11/08 16:47:34 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -26,6 +26,12 @@ C--   Monitor head and tail strings
       PARAMETER ( mon_foot_sd = '_sd'     )
       CHARACTER*(*) mon_foot_mean
       PARAMETER ( mon_foot_mean = '_mean' )
+      CHARACTER*(*) mon_foot_volint
+      PARAMETER ( mon_foot_volint = '_volint' )
+      CHARACTER*(*) mon_foot_volmean
+      PARAMETER ( mon_foot_volmean = '_volmean' )
+      CHARACTER*(*) mon_foot_del2
+      PARAMETER ( mon_foot_del2 = '_del2' )
       CHARACTER*(*) mon_string_none
       PARAMETER ( mon_string_none = 'NONE')
 
