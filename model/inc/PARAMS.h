@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.149 2005/04/03 05:16:43 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.150 2005/04/06 18:23:21 jmc Exp $
 C $Name:  $
 C
 
@@ -427,7 +427,6 @@ C     rhoConst  :: Vertically constant reference density
 C     rhoConstFresh :: Constant reference density for fresh water (rain)
 C     tRef      :: reference vertical profile for potential temperature
 C     sRef      :: reference vertical profile for salinity/specific humidity 
-C     startTime :: Start time for model ( s )
 C     phiMin    :: Latitude of southern most cell face.
 C     thetaMin  :: Longitude of western most cell face (this
 C                 is an "inert" parameter but it is included
@@ -515,6 +514,7 @@ C     hFacInf      :: Threshold (inf and sup) for fraction size of surface cell
 C     hFacSup        that control vanishing and creating levels
 C     tauCD        :: CD scheme coupling timescale ( 1/s )
 C     rCD          :: CD scheme normalised coupling parameter ( 0-1 )
+C     baseTime      :: model base time (time origin) = time @ iteration zero
 C     startTime     :: Starting time for this integration ( s ).
 C     endTime       :: Ending time for this integration ( s ).
 C     chkPtFreq     :: Frequency of rolling check pointing ( s ).
@@ -565,9 +565,8 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & cg2dpcOffDFac, cg3dTargetResidual,
      & delR, delRc, delX, delY,
      & deltaT, deltaTmom, dTtracerLev, deltaTfreesurf, deltaTClock,
-     & abeps, startTime, 
+     & abeps,
      & phiMin, thetaMin, rSphere, recip_RSphere, f0, beta,
-     & fCori, fCoriG, fCoriCos,
      & viscAh, viscAhW, viscAhMax,
      & viscAhGrid, viscAhGridMax, viscAhGridMin,
      & viscC2leith, viscC2leithD,
@@ -584,7 +583,8 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
      & recip_rhoConst, rhoConst, 
      & rhoConstFresh, convertEmP2rUnit, tRef, sRef,
-     & endTime, chkPtFreq, pchkPtFreq, dumpFreq, adjDumpFreq,
+     & baseTime, startTime, endTime, 
+     & chkPtFreq, pchkPtFreq, dumpFreq, adjDumpFreq,
      & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cosPower, cAdjFreq, omega, rotationPeriod,
@@ -674,9 +674,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL convertEmP2rUnit
       _RL tRef(Nr)
       _RL sRef(Nr)
-      _RS fCori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS fCoriG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS fCoriCos(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL baseTime
       _RL startTime
       _RL endTime
       _RL chkPtFreq
