@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.1 2004/01/03 00:41:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_tridiagonal.F,v 1.2 2004/12/05 17:29:36 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,9 +29,9 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     a3d :: matrix upper diagnonal
+C     a3d :: matrix lower diagnonal
 C     b3d :: matrix main  diagnonal
-C     c3d :: matrix lower diagnonal
+C     c3d :: matrix upper diagnonal
 C     y3d :: Input = Y vector ; Output = X = solution of A*X=Y
 C     errCode :: > 0 if singular matrix
       INTEGER iMin,iMax,jMin,jMax
