@@ -136,6 +136,7 @@ genmakemodel()
  ( cd $1;
    if [ $quick -eq 0 -o ! -r Makefile ]; then
     printf 'genmake ... ' 1>&2
+    find . -type l -exec rm {} \;
     if [ $ieee -eq 0 ]; then
      ../../../tools/genmake2 -mods=../code > make.log 2>&1
     else
