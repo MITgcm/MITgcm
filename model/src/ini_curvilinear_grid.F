@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.18 2005/02/07 18:37:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.19 2005/02/11 00:30:45 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,7 +54,11 @@ C     == Local variables ==
 #ifdef ALLOW_MNC
       CHARACTER*(80) mncFn
 #endif
+#ifdef ALLOW_EXCH2
+      _RL buf(sNx*nSx*nPx+1)
+#else
       _RL buf(sNx+1,sNy+1)
+#endif
       INTEGER iG, iL
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER  ILNBLNK
