@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.36 2004/08/12 15:21:22 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.37 2004/08/19 23:45:54 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -138,7 +138,7 @@ c     save pl,ple,dpres,pkle,pkl
       common /saver/ lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq
       common /saver/ moistu,moistv,moistt,moistq
       common /saver/ radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
-      common /saver/ st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras
+      common /saver/ st4,dst4,dlwdtg,rainlsp,raincon,snowfall
       common /saver/ cldtot_lw,cldras_lw,cldlsp_lw,lwlz
       common /saver/ cldtot_sw,cldras_sw,cldlsp_sw,swlz
       common /saver/ imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw
@@ -147,6 +147,7 @@ c     save pl,ple,dpres,pkle,pkl
       common /saver/ pl,ple,dpres,pkle,pkl
       common /saver/ nlwcld,nlwlz
       common /saver/ nswcld,nswlz
+      common /saver/ iras
  
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
