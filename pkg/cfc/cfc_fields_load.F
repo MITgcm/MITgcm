@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.3 2004/07/13 18:09:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.4 2004/11/28 23:53:01 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -93,7 +93,7 @@ cswd QQ  need nIter0+1 since chem forcing after time step
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
         WRITE(*,*)
-     &    'S/R EXTERNAL_FIELDS_LOAD: Reading new dic data',
+     &    'S/R EXTERNAL_FIELDS_LOAD: Reading new cfc data',
      &                 myTime,myIter
 
        IF ( WindFile .NE. ' '  ) THEN

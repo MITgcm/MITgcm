@@ -28,6 +28,8 @@ CEndOfInterface
 C     == Local variables ==
       integer  nTimePnts, Iunit, it
       _RL year(100)
+C     msgBuf     :: message buffer
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 #ifdef ALLOW_CFC
 
@@ -42,6 +44,10 @@ C     == Local variables ==
          ENDDO
         ENDDO
         ENDDO
+        WRITE(msgBuf,'(A)') 
+     &       'S/R CFC_ATMOS: reading CFC atmospheric data'
+        CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT , 1)
 c
 C read in CFC atmospheric timeseries data
       cfc_yearbeg = 31
@@ -57,9 +63,12 @@ C Read in CFC11 and CFC12, N and S Hemisphere time histories
       DO it = 1,nTimePnts
          READ(Iunit,*) year(it),ACFC11(it,1),ACFC12(it,1),
      &        ACFC11(it,2),ACFC12(it,2)
-         write(0,*) 'year,acfc11_n,acfc12_n,acfc11_s,acfc12_s =',
+         WRITE(msgBuf,'(A,4F8.2)') 
+     &        'year,acfc11_n,acfc12_n,acfc11_s,acfc12_s =',
      &        ACFC11(it,1),ACFC12(it,1),
      &        ACFC11(it,2),ACFC12(it,2)
+         CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
+     &        SQUEEZE_RIGHT , 1)
 
       ENDDO
       _END_MASTER(myThid)
