@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.17 2004/06/24 19:57:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.18 2004/07/07 19:33:48 molod Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
        subroutine do_fizhi(myid,uphy,vphy,thphy,sphy,pephy,lons,lats,
@@ -134,11 +134,12 @@ C***********************************************************************
       if( alarm('moist') .or. alarm('turb')   .or.
      .    alarm('radsw') .or. alarm('radlw') ) then
 
+C compute pressures - all pressure are converted here to hPa
       do j = jm1,jm2
       do i = im1,im2
-       ple(i,j,Nrphys+1,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)
-       pkle(i,j,Nrphys+1,bi,bj) = pephy(i,j,Nrphys+1,bi,bj) **kappa
-       p(i,j,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)
+       ple(i,j,Nrphys+1,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)/100.
+       pkle(i,j,Nrphys+1,bi,bj)=(pephy(i,j,Nrphys+1,bi,bj)/100.) **kappa
+       p(i,j,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)/100.
        xlats(i,j) = lats(i,j,bi,bj)
        xlons(i,j) = lons(i,j,bi,bj)
        sea_ice(i,j) = sice(i,j,bi,bj)
@@ -151,10 +152,10 @@ C***********************************************************************
        v(i,j,L) = vphy(i,j,L,bi,bj)
        t(i,j,L) = thphy(i,j,L,bi,bj)/p0kappa
        q(i,j,L,1) = sphy(i,j,L,bi,bj)
-       pl(i,j,L,bi,bj) = (pephy(i,j,L,bi,bj)+pephy(i,j,L+1))/2.
-       dpres(i,j,L,bi,bj) = pephy(i,j,L+1,bi,bj)-pephy(i,j,L)
-       ple(i,j,L,bi,bj) = pephy(i,j,L,bi,bj)
-       pkle(i,j,L,bi,bj) = ple(i,j,L) **kappa
+       pl(i,j,L,bi,bj) = (pephy(i,j,L,bi,bj)+pephy(i,j,L+1))/200.
+       dpres(i,j,L,bi,bj) = (pephy(i,j,L+1,bi,bj)-pephy(i,j,L))/100.
+       ple(i,j,L,bi,bj) = pephy(i,j,L,bi,bj)/100.
+       pkle(i,j,L,bi,bj) = (ple(i,j,L) /100.) **kappa
       enddo
       enddo
       enddo

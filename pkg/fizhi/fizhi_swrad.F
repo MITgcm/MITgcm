@@ -1,13 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.4 2004/06/24 19:57:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.5 2004/07/07 19:33:48 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
       subroutine swrio (nymd,nhms,bi,bj,ndswr,myid,istrip,npcs,
-     .        pz,tz,qz,pkht,oz,co2,
+     .        low_level,mid_level,
+     .        pz,plz,plze,dpres,pkht,pkz,tz,qz,oz,co2,
      .        albvisdr,albvisdf,albnirdr,albnirdf,
      .        dtradsw,dtswclr,radswg,swgclr,
      .        fdifpar,fdirpar,osr,osrclr,
-     .        im,jm,lm,sige,sig,dsig,ptop,
+     .        im,jm,lm,ptop,
      .        nswcld,cldsw,cswmo,nswlz,swlz,
      .        lpnt,imstturb,qliqave,fccave,landtype,xlats,xlons)
 
@@ -18,51 +19,30 @@ C $Name:  $
 
 c Input Variables
 c ---------------
-      integer nymd,nhms,ndswr,istrip,npcs,bi,bj
-
+      integer nymd,nhms,bi,bj,ndswr,myid,istrip,npcs
+      integer mid_level,low_level
       integer im,jm,lm        
-      real  ptop              
-      real  sige(lm+1)        
-      real   sig(lm)          
-      real  dsig(lm)          
-
-      real    pz(im,jm)       
-      real    tz(im,jm,lm)    
-      real  pkht(im,jm,lm)    
-
-      real    co2             
-      real    oz(im,jm,lm)    
-      real    qz(im,jm,lm)    
-
-      real albvisdr(im,jm)    
-      real albvisdf(im,jm)    
-      real albnirdr(im,jm)    
-      real albnirdf(im,jm)    
-
-      real   radswg(im,jm)    
-      real   swgclr(im,jm)    
-      real  fdifpar(im,jm)    
-      real  fdirpar(im,jm)    
-      real      osr(im,jm)    
-      real   osrclr(im,jm)    
-      real  dtradsw(im,jm,lm) 
-      real  dtswclr(im,jm,lm) 
-
+      real  ptop
+      real pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1),dpres(im,jm,lm)
+      real pkht(im,jm,lm+1),pkz(im,jm,lm)
+      real tz(im,jm,lm),qz(im,jm,lm)
+      real oz(im,jm,lm)
+      real co2
+      real albvisdr(im,jm),albvisdf(im,jm),albnirdr(im,jm)
+      real albnirdf(im,jm)
+      real radswg(im,jm),swgclr(im,jm),fdifpar(im,jm),fdirpar(im,jm)
+      real osr(im,jm),osrclr(im,jm),dtradsw(im,jm,lm),dtswclr(im,jm,lm)
       integer nswcld,nswlz    
-      real  cldsw(im,jm,lm)   
-      real  cswmo(im,jm,lm)   
-      real   swlz(im,jm,lm)   
-
+      real cldsw(im,jm,lm),cswmo(im,jm,lm),swlz(im,jm,lm)   
       logical lpnt            
       integer imstturb        
-      real qliqave(im,jm,lm)  
-      real  fccave(im,jm,lm)  
-
+      real qliqave(im,jm,lm),fccave(im,jm,lm)  
       integer landtype(im,jm) 
+      real xlats(im,jm),xlons(im,jm)
 
 c Local Variables
 c ---------------
-      integer   i,j,L,nn,nsecf,mid_level, low_level
+      integer   i,j,L,nn,nsecf
       integer   nb2,ntmstp,nymd2,nhms2
       real      getcon,grav,cp,undef,pcheck
       real      ra,alf,reffw,reffi,tminv
@@ -70,60 +50,51 @@ c ---------------
       parameter ( reffw = 10.0 )   
       parameter ( reffi = 65.0 )   
 
-      real      alat(im,jm)
-      real      alon(im,jm)
+      real tdry(im,jm,lm)
+      real TEMP1(im,jm)
+      real TEMP2(im,jm)
+      real zenith (im,jm)
+      real cldtot (im,jm,lm)
+      real cldmxo (im,jm,lm)
+      real totcld (im,jm)
+      real cldlow (im,jm)
+      real cldmid (im,jm)
+      real cldhi  (im,jm)
+      real taulow (im,jm)
+      real taumid (im,jm)
+      real tauhi  (im,jm)
+      real tautype(im,jm,lm,3)
+      real tau(im,jm,lm)
+      real albedo(im,jm)    
 
-      real          PKZ(im,jm,lm)
-      real          PLZ(im,jm,lm)
-      real         tdry(im,jm,lm)
-      real         PLZE(im,jm,lm+1)
-      real        TEMP1(im,jm)
-      real        TEMP2(im,jm)
-      real      zenith (im,jm)
-      real      cldtot (im,jm,lm)
-      real      cldmxo (im,jm,lm)
-      real      totcld (im,jm)
-      real      cldlow (im,jm)
-      real      cldmid (im,jm)
-      real      cldhi  (im,jm)
-      real      taulow (im,jm)
-      real      taumid (im,jm)
-      real      tauhi  (im,jm)
-      real      tautype(im,jm,lm,3)
-      real      tau    (im,jm,lm)
-      real      albedo(im,jm)    
+      real PK(ISTRIP,lm)
+      real qzl(ISTRIP,lm),CLRO(ISTRIP,lm)
+      real TZL(ISTRIP,lm)
+      real OZL(ISTRIP,lm)
+      real PLE(ISTRIP,lm+1)
+      real OSZ(ISTRIP)
+      real dpstrip(ISTRIP,lm)
 
-      real          PK(ISTRIP,lm)
-      real         qzl(ISTRIP,lm),  CLRO(ISTRIP,lm)
-      real         TZL(ISTRIP,lm)
-      real         OZL(ISTRIP,lm)
-      real         PLE(ISTRIP,lm+1)
-      real        COSZ(ISTRIP)
+      real albuvdr(ISTRIP),albuvdf(ISTRIP)
+      real albirdr(ISTRIP),albirdf(ISTRIP)
+      real difpar (ISTRIP),dirpar (ISTRIP)
 
-      real      albuvdr(ISTRIP),albuvdf(ISTRIP)
-      real      albirdr(ISTRIP),albirdf(ISTRIP)
-      real      difpar (ISTRIP),dirpar (ISTRIP)
+      real fdirir(istrip),fdifir(istrip)
+      real fdiruv(istrip),fdifuv(istrip)
 
-      real      fdirir(istrip),fdifir(istrip)
-      real      fdiruv(istrip),fdifuv(istrip)
+      real flux(istrip,lm+1)
+      real fluxclr(istrip,lm+1)
+      real dtsw(istrip,lm)
+      real dtswc(istrip,lm)
 
-      real      flux   (istrip,lm+1)
-      real      fluxclr(istrip,lm+1)
-      real      dtsw   (istrip,lm)
-      real      dtswc  (istrip,lm)
+      real taul   (istrip,lm)
+      real reff   (istrip,lm,2)
+      real tauc   (istrip,lm,2)
+      real taua   (istrip,lm)
+      real tstrip (istrip)
 
-      real      taul   (istrip,lm)
-      real      reff   (istrip,lm,2)
-      real      tauc   (istrip,lm,2)
-      real      taua   (istrip,lm)
-      real      tstrip (istrip)
-
-      logical   first
-      data      first /.true./
-
-      integer   koz, kh2o
-      data      KOZ  /20/
-      data      kh2o /18/
+      logical first
+      data first /.true./
 
 C **********************************************************************
 C ****                       INITIALIZATION                         ****
@@ -136,23 +107,6 @@ C **********************************************************************
       NTMSTP = nsecf(NDSWR)
       TMINV  = 1./float(ntmstp)
 
-      do j = 1,jm
-      do i = 1,im
-      PLZE(I,j,1) = SIGE(1)*PZ(I,j) + PTOP
-      enddo
-      enddo
-      
-      DO L = 1,lm
-      do j = 1,jm
-      DO I = 1,im
-      PLZ (I,j,L  ) = SIG (L)  *PZ(I,j) + PTOP
-      PLZE(I,j,L+1) = SIGE(L+1)*PZ(I,j) + PTOP
-      ENDDO
-      ENDDO
-      ENDDO
-
-      call pkappa ( pz,pkht,pkz,ptop,sige,dsig,im,jm,lm )
- 
 C Compute Temperature from Theta
 C ------------------------------
       do L=1,lm
@@ -161,16 +115,6 @@ C ------------------------------
       tdry(i,j,L) = tz(i,j,L)*pkz(i,j,L)
       enddo
       enddo
-      enddo
-
-c Determine Level Indices for Low-Mid-High Cloud Regions
-c ------------------------------------------------------
-      low_level = lm
-      mid_level = lm
-      do L = lm-1,1,-1
-      pcheck = (1000.-ptop)*sig(l) + ptop
-      if (pcheck.gt.700.0) low_level = L
-      if (pcheck.gt.400.0) mid_level = L
       enddo
 
       if (first .and. myid.eq.0 ) then
@@ -187,11 +131,11 @@ C **********************************************************************
 C ****             CALCULATE COSINE OF THE ZENITH ANGLE             ****
 C **********************************************************************
 
-      CALL ASTRO ( NYMD,   NHMS,  ALAT,ALON, im*jm, TEMP1,RA )
+      CALL ASTRO ( NYMD,   NHMS,  XLATS,XLONS, im*jm, TEMP1,RA )
                    NYMD2 = NYMD
                    NHMS2 = NHMS
       CALL TICK  ( NYMD2,  NHMS2, NTMSTP )
-      CALL ASTRO ( NYMD2,  NHMS2, ALAT,ALON, im*jm, TEMP2,RA )
+      CALL ASTRO ( NYMD2,  NHMS2, XLATS,XLONS, im*jm, TEMP2,RA )
 
       do j = 1,jm
       do i = 1,im
@@ -491,12 +435,13 @@ C **********************************************************************
 
       CALL STRIP ( zenith,COSZ,im*jm,ISTRIP,1,NN )
 
-      CALL STRIP ( plze, ple   ,im*jm,ISTRIP,lm+1,NN)
-      CALL STRIP ( pkz , pk    ,im*jm,ISTRIP,lm  ,NN)
-      CALL STRIP ( tdry, tzl   ,im*jm,ISTRIP,lm  ,NN)
-      CALL STRIP ( qz  , qzl   ,im*jm,ISTRIP,lm  ,NN)
-      CALL STRIP ( oz  , ozl   ,im*jm,ISTRIP,lm  ,NN)
-      CALL STRIP ( tau , taul  ,im*jm,ISTRIP,lm  ,NN)
+      CALL STRIP ( plze,  ple   ,im*jm,ISTRIP,lm+1,NN)
+      CALL STRIP ( pkz ,  pk    ,im*jm,ISTRIP,lm  ,NN)
+      CALL STRIP ( dpres,dpstrip,im*jm,ISTRIP,lm  ,NN)
+      CALL STRIP ( tdry,  tzl   ,im*jm,ISTRIP,lm  ,NN)
+      CALL STRIP ( qz  ,  qzl   ,im*jm,ISTRIP,lm  ,NN)
+      CALL STRIP ( oz  ,  ozl   ,im*jm,ISTRIP,lm  ,NN)
+      CALL STRIP ( tau ,  taul  ,im*jm,ISTRIP,lm  ,NN)
 
       CALL STRIP ( albvisdr,albuvdr,im*jm,ISTRIP,1,NN )
       CALL STRIP ( albvisdf,albuvdf,im*jm,ISTRIP,1,NN )
@@ -543,8 +488,8 @@ C ****     Compute Mass-Weighted Theta Tendencies from Fluxes       ****
 C **********************************************************************
 
       do l=1,lm
-      alf = grav/(cp*dsig(L)*100)
       do i=1,istrip
+      alf = grav*(ple(i,L+1)-ptop)/(cp*dpstrip(i,L)*100)
       dtsw (i,L) = alf*( flux   (i,L)-flux   (i,L+1) )/pk(i,L)
       dtswc(i,L) = alf*( fluxclr(i,L)-fluxclr(i,L+1) )/pk(i,L)
       enddo

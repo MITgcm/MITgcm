@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.7 2004/07/06 20:20:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.8 2004/07/07 19:33:48 molod Exp $
 C $Name:  $
                                                                                  
 #include "CPP_OPTIONS.h"
@@ -105,6 +105,7 @@ c ---------------
       real pcheckpress(numpcheck)
       data pcheckpress/950.,750.,700.,400.,10./
 
+      integer low_level,mid_level,nltop,nsubmin,nsubmax,Lup
       integer ndmoist,ndturb,ndlw,ndsw
       integer istrip,npcs
       integer i,j,L,n
@@ -133,6 +134,12 @@ C **********************************************************************
 C Fill array of model levels closest to a given pressure value
 
       call getpwhere(myid,numpcheck,pcheckpress,pchecklevs)
+      low_level = pchecklevs(3)
+      mid_level = pchecklevs(4)
+      nltop = pchecklevs(5)
+      nsubmin = pchecklevs(1)
+      nsubmax = pchecklevs(2)
+      Lup = pchecklevs(3)
 
 C **********************************************************************        
 C ****                  Call Physics Mini-Drivers                   ****        
@@ -143,6 +150,7 @@ C ====================
       IF ( alarm('radsw') ) THEN
 
       call swrio ( nymd,nhms,bi,bj,ndsw,myid,istrip,npcs,
+     .   low_level,mid_level,
      .   p,pl,ple,dpres,pkht,pkl,t,chemq,chemo3,co2,
      .   albvisdr,albvisdf,albnirdr,albnirdf,swdt,swdtclr,
      .   radswg,swgclr,fdifpar,fdirpar,osr,osrclr,im,jm,lm,
@@ -165,6 +173,7 @@ c --------------------------------
       enddo
 
       call lwrio ( nymd,nhms,bi,bj,istrip,npcs,
+     .   low_level,mid_level,
      .   p,pl,ple,dpres,pkht,pkl,t,chemq,pkht,chemo3,co2,
      .   cfc11,cfc12,cfc22,methane,n2o,emiss,tgz,radlwg,st4,dst4,
      .   lwdt,dlwdtg,lwdtclr,lwgclr,im,jm,lm,ptop,
@@ -204,6 +213,7 @@ C MOIST PROCESSES
 C ===============
       if ( alarm('moist') ) then
       call moistio (ndmoist,istrip,npcs,
+     .    low_level,mid_level,nltop,nsubmin,nsubmax,Lup,
      .    p,pl,ple,dpres,pkht,pkl,t,q,bi,bj,ntracer,ptracer,qq,
      .    moistu,moistv,moistt,moistq,im,jm,lm,ptop,iras,
      .    rainlsp,rainconv,snowfall,

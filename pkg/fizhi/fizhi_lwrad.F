@@ -1,8 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.3 2004/06/24 19:57:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.4 2004/07/07 19:33:48 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
       subroutine lwrio (nymd,nhms,bi,bj,istrip,npcs,
+     .                  low_level,mid_level,
      .                  pz,tz,qz,plz,plze,pkz,pkht,oz,co2,
      .                  cfc11,cfc12,cfc22,
      .                  methane,n2o,emissivity,
@@ -20,6 +21,7 @@ C $Name:  $
 c Input Variables
 c ---------------
       integer nymd,nhms,istrip,npcs,bi,bj
+      integer mid_level,low_level
  
       integer im,jm,lm        
       real  ptop              
@@ -60,7 +62,6 @@ c ---------------
 c Local Variables
 c ---------------
       integer i,j,l,n,nn
-      integer mid_level,low_level
 
       real          PLZ(im,jm,lm)
       real          PKZ(im,jm,lm)
@@ -112,17 +113,6 @@ C **********************************************************************
  
       SECDAY = GETCON('SDAY')
       CONVRT = GETCON('GRAVITY') / ( 100.0 * GETCON('CP') )
-
-c Determine Level Indices for Low-Mid-High Cloud Regions
-c ------------------------------------------------------
-      low_level = lm
-      mid_level = lm
-      do L = lm-1,1,-1
-      pcheck = plz(
-
-      if (pcheck.gt.700.0) low_level = L
-      if (pcheck.gt.400.0) mid_level = L
-      enddo
 
 c Adjust cloud fractions and cloud liquid water due to moist turbulence
 c ---------------------------------------------------------------------

@@ -1,11 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.3 2004/06/24 19:57:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.4 2004/07/07 19:33:48 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
       subroutine moistio (ndmoist,istrip,npcs,pz,tz,qz,bi,bj,
      .   ntracer,ptracer,
+     .   lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup,
      .   pkht,qqz,dumoist,dvmoist,dtmoist,dqmoist,
-     .   im,jm,lm,sige,sig,dsig,ptop,
+     .   im,jm,lm,ptop,
      .   iras,rainlsp,rainconv,snowfall,
      .   nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,
      .   nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,
@@ -18,12 +19,10 @@ C $Name:  $
 c Input Variables
 c ---------------
       integer ndmoist,istrip,npcs,myid,bi,bj
+      integer lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup
 
       integer im,jm,lm                
       real  ptop                      
-      real  sige(lm+1)                
-      real   sig(lm)                  
-      real  dsig(lm)                  
 
       integer ntracer,ptracer         
 
@@ -61,10 +60,10 @@ c ---------------
 
 c Local Variables
 c ---------------
-      integer    ncrnd,nsecf,nsubmax
+      integer    ncrnd,nsecf
 
       real       fracqq, rh,temp1,temp2,dum
-      integer    snowcrit, lup
+      integer    snowcrit
       parameter (fracqq = 0.1)
 
       real   cldsr(im,jm,lm)
@@ -75,7 +74,6 @@ c ---------------
       real cldprs(im,jm),cldtmp(im,jm)
       real cldhi (im,jm),cldlow(im,jm)
       real cldmid(im,jm),totcld(im,jm)
-      integer midlevel,lowlevel
 
       real   CLDLS(im,jm,lm)  , CPEN(im,jm,lm)
       real    tmpimjm(im,jm)
@@ -149,7 +147,7 @@ c ---------------
       real rnd(lm/2)
       DATA      FIRST /.TRUE./
 
-      integer imstp,nltop,nsubcl,nlras,nsubmin
+      integer imstp,nsubcl,nlras
       integer i,j,iloop,index,l,nn,num,numdeps,nt
       real tmstp,tminv,sday,grav,alhl,cp,elocp,gamfac
       real rkappa,p0kappa,p0kinv,ptopkap,pcheck
@@ -192,39 +190,15 @@ C Threshold for Cloud Liquid Water Memory
       tice     = getcon('FREEZING-POINT')
       PI       = 4.*atan(1.)
 
-c Determine Upper  Level for Cumulus Convection
-c and Total number of Random Clouds to Check
+c Determine Total number of Random Clouds to Check
 c ---------------------------------------------
-
-      NLTOP = 1
-      DO L=1,lm
-       PCHECK = (1000.-ptop)*SIG(L) + PTOP
-       IF (PCHECK.GE.10.) THEN
-        NLTOP = L
-        GO TO 2
-       ENDIF
-      ENDDO
- 2    CONTINUE
       ncrnd = (lm-nltop+1)/2
-
-c Determine Minimum Number of Levels in Sub-Cloud (50 mb) Layer
-c -------------------------------------------------------------
-      nsubmin = lm
-      nsubmax = 1
-      DO L=lm-1,1,-1
-          PCHECK = (1000.-ptop)*SIG(L) + PTOP
-      IF( PCHECK.GE.950.0 ) nsubmin = L
-      IF( PCHECK.GE.750.0 ) nsubmax = L
-      ENDDO
 
       if(first .and. myid.eq.0) then
        print *
-       print *,'Top Level Allowed for Convection : ',nltop,
-     .                    ' (',(1000.-ptop)*SIG(nltop) + PTOP,' mb)'
-       print *,'          Highest Sub-Cloud Level: ',nsubmax,
-     .                    ' (',(1000.-ptop)*SIG(nsubmax) + PTOP,' mb)'
-       print *,'          Lowest  Sub-Cloud Level: ',nsubmin,
-     .                    ' (',(1000.-ptop)*SIG(nsubmin) + PTOP,' mb)'
+       print *,'Top Level Allowed for Convection : ',nltop
+       print *,'          Highest Sub-Cloud Level: ',nsubmax
+       print *,'          Lowest  Sub-Cloud Level: ',nsubmin
        print *,'    Total Number of Random Clouds: ',ncrnd
        print *
        first = .false.
@@ -286,6 +260,7 @@ c ----------------------------------------------------------------
          thgather(index,L) =   tz(pblindex(index),1,L)
          shgather(index,L) =   qz(pblindex(index),1,L,1)
         pkegather(index,L) = pkht(pblindex(index),1,L)
+        pkzgather(index,L) = pkl (pblindex(index),1,L)
        enddo
       enddo
       do nt = 1,ntracer-ptracer
@@ -295,8 +270,6 @@ c ----------------------------------------------------------------
        enddo
       enddo
       enddo
-
-      call pkappa(pigather,pkegather,pkzgather,ptop,sige,dsig,im,jm,lm)
 
 c bump the counter for number of calls to convection
 c --------------------------------------------------
@@ -729,20 +702,8 @@ c  snow algorthm:
 c  if temperature profile from the surface level to 700 mb 
 c  uniformaly c  below zero, then precipitation (total) is 
 c  snowfall.  Else there is no snow.
-c  For version of level 70, the sigma level corresponding
-c  to 700mb (assume the surface pressure is 1000mb) is
-c  the 13th level from the surface
-c   Runhua Yang Aug. 24 98
-c  added pcheck for 700mb - sharon sept 18, 1998
 c-------------------------------------------------------
 
-        pup = 700.
-        do L = lm, 1, -1
-          pcheck = (1000.-ptop)*sig(L) + ptop
-          if (pcheck .ge. pup) then
-            lup = L
-          endif
-        enddo
         do i = 1,istrip
           snowcrit=0
           do l=lup,lm
@@ -826,17 +787,6 @@ C **********************************************************************
 C                          BUMP DIAGNOSTICS
 C **********************************************************************
 
-c Determine Level Indices for Low-Mid-High Cloud Regions
-c ------------------------------------------------------
-      lowlevel = lm
-      midlevel = lm
-      do L = lm-1,1,-1
-      pcheck = (1000.-ptop)*sig(l) + ptop
-      if (pcheck.gt.700.0) lowlevel = L
-      if (pcheck.gt.400.0) midlevel = L
-      enddo
-
- 
 c Clear-Sky (Above 400mb) Temperature
 c -----------------------------------
       if( itmpuclr.ne.0 .or. isphuclr.ne.0 ) then
