@@ -1,7 +1,8 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.11 2003/10/30 19:09:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.12 2003/11/06 22:05:08 heimbach Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
 
       subroutine ctrl_unpack( first, mythid )
@@ -45,9 +46,14 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "ecco.h"
 #include "ctrl.h"
 #include "cost.h"
+
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#else
+# include "ctrl_weights.h"
+#endif
 
 #ifdef ALLOW_ECCO_OPTIMIZATION
 # include "optim.h"

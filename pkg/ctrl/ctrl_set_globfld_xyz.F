@@ -1,9 +1,8 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_xyz.F,v 1.6 2003/10/30 19:09:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_xyz.F,v 1.7 2003/11/06 22:05:08 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
-
 
       subroutine ctrl_set_globfld_xyz( 
      I     fname, ivartype, mythid )
@@ -28,7 +27,6 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ctrl.h"
-#include "cost.h"
 
 #ifdef ALLOW_ECCO_OPTIMIZATION
 #include "optim.h"

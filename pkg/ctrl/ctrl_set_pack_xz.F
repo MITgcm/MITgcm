@@ -1,9 +1,5 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_xz.F,v 1.6 2003/10/30 19:09:05 heimbach Exp $
-C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
-
 
       subroutine ctrl_set_pack_xz(
      &     cunit, ivartype, fname, masktype,weighttype,
@@ -36,7 +32,6 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ctrl.h"
-#include "cost.h"
 
 #ifdef ALLOW_ECCO_OPTIMIZATION
 #include "optim.h"
@@ -77,7 +72,7 @@ cgg(
       character*(80) weightname
 cgg)
 
-      _RL     cbuff      ( snx*nsx*npx*nsy*npy )
+      real*4     cbuff      ( snx*nsx*npx*nsy*npy )
       _RL     globfldxz  ( snx,nsx,npx,nsy,npy,nr )
       _RL     globfld3d  ( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globmskxz  ( snx,nsx,npx,nsy,npy,nr,nobcs )
@@ -211,10 +206,10 @@ cgg    Get rid of any sensitivity to barotropic velocity.
                do ip = 1,nPx
                 do bi = itlo,ithi
                  do i = imin,imax
+                  jj=mod((j-1)*nr+k-1,sny)+1
+                  kk=int((j-1)*nr+K-1)/sny+1
                   if (globmskxz(i,bi,ip,bj,jp,k,iobcs)  .ne. 0. ) then
                      cbuffindex = cbuffindex + 1
-                     jj=mod((j-1)*nr+k-1,sny)+1
-                     kk=int((j-1)*nr+K-1)/sny+1
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
                         cbuff(cbuffindex) = 

@@ -98,6 +98,11 @@ c                       south (s), and western (w) mask, resp. .
       character*(1) ncvargrd(maxcvars)
       character*(2) yadprefix
 
+c     Define unit weight as a placeholder
+      common /ctrl_weights_unit_r/
+     &                        wunit
+      _RL wunit   ( nr,nsx,nsy )
+
 c     Control variables:
 c     ==================
 c

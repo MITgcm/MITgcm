@@ -1,9 +1,5 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xz.F,v 1.6 2003/10/30 19:09:06 heimbach Exp $
-C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
-
 
       subroutine ctrl_set_unpack_xz(
      &     cunit, ivartype, fname, masktype, weighttype,
@@ -35,7 +31,6 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ctrl.h"
-#include "cost.h"
 
 #ifdef ALLOW_ECCO_OPTIMIZATION
 #include "optim.h"
@@ -71,7 +66,7 @@ c     == local variables ==
 
       integer cbuffindex
 
-      _RL     cbuff    ( snx*nsx*npx*nsy*npy )
+      real*4     cbuff    ( snx*nsx*npx*nsy*npy )
       _RL     globfldxz( snx,nsx,npx,nsy,npy,nr )
       _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globmskxz( snx,nsx,npx,nsy,npy,nr,nobcs )
@@ -225,6 +220,8 @@ cgg       And now back-calculate what iobcs should be.
                   read(cunit) (cbuff(ii), ii=1,cbuffindex)
                endif
                cbuffindex = 0
+               jj=mod((j-1)*nr+k-1,sny)+1
+               kk=int((j-1)*nr+k-1)/sny+1
                do jp = 1,nPy
                 do bj = jtlo,jthi
                  do ip = 1,nPx
@@ -232,8 +229,6 @@ cgg       And now back-calculate what iobcs should be.
                    do i = imin,imax
                     if ( globmskxz(i,bi,ip,bj,jp,k,iobcs) .ne. 0. ) then
                        cbuffindex = cbuffindex + 1
-                       jj=mod((j-1)*nr+k-1,sny)+1
-                       kk=int((j-1)*nr+k-1)/sny+1
                        globfld3d(i,bi,ip,jj,bj,jp,kk) = 
      &                      cbuff(cbuffindex)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO

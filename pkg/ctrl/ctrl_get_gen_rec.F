@@ -1,5 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.2 2003/06/24 16:07:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen_rec.F,v 1.3 2003/11/06 22:05:08 heimbach Exp $
 
+#include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
 
 
@@ -36,7 +37,7 @@ c     == global variables ==
 #include "SIZE.h"
 
 #include "ctrl.h"
-#ifdef ALLOW_CALENDAR
+#ifdef ALLOW_CAL
 # include "cal.h"
 #endif
 
@@ -55,7 +56,7 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-#ifdef ALLOW_CALENDAR
+#ifdef ALLOW_CAL
 
       integer mydate(4)
       integer previousdate(4)
@@ -170,7 +171,7 @@ c     Do some printing for the protocol.
       _END_MASTER( mythid )
 #endif
 
-#endif /* ALLOW_CALENDAR */
+#endif /* ALLOW_CAL */
 
       return
       end

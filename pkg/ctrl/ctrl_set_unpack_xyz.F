@@ -1,9 +1,5 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_unpack_xyz.F,v 1.5 2003/10/30 19:09:06 heimbach Exp $
-C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
-
 
       subroutine ctrl_set_unpack_xyz(
      &     cunit, ivartype, fname, masktype, weighttype,
@@ -32,7 +28,6 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ctrl.h"
-#include "cost.h"
 
 #ifdef ALLOW_ECCO_OPTIMIZATION
 #include "optim.h"
@@ -68,7 +63,7 @@ c     == local variables ==
 
       integer cbuffindex
 
-      _RL     cbuff    ( snx*nsx*npx*sny*nsy*npy )
+      real*4     cbuff    ( snx*nsx*npx*sny*nsy*npy )
       _RL     globmsk  ( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
 #ifdef CTRL_UNPACK_PRECISE

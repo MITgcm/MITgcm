@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_obcs_variables.F,v 1.4 2003/10/30 19:09:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_obcs_variables.F,v 1.5 2003/11/06 22:05:08 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -29,9 +29,6 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ctrl.h"
-#ifdef ALLOW_CALENDAR
-# include "cal.h"
-#endif
 #ifdef ALLOW_OBCS_CONTROL
 # include "OBCS.h"
 #endif

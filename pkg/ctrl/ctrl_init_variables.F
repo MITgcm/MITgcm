@@ -1,7 +1,6 @@
 
 #include "CTRL_CPPOPTIONS.h"
 
-
       subroutine ctrl_init_variables( mythid )
 
 c     ==================================================================
@@ -26,9 +25,6 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "ctrl.h"
-#ifdef ALLOW_CALENDAR
-# include "cal.h"
-#endif
 
 c     == routine arguments ==
 

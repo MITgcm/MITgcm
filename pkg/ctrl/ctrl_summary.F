@@ -1,11 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.2 2003/06/24 16:07:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_summary.F,v 1.3 2003/11/06 22:05:08 heimbach Exp $
 
+#include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
 
-
-      subroutine ctrl_Summary(
-     I                         mythid
-     &                       )
+      subroutine ctrl_Summary( mythid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_Summary
@@ -28,7 +26,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-#ifdef ALLOW_CALENDAR
+#ifdef ALLOW_CAL
 # include "cal.h"
 #endif
 #include "ctrl.h"

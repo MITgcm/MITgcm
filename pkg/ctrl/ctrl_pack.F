@@ -1,7 +1,8 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.11 2003/10/30 19:09:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.12 2003/11/06 22:05:08 heimbach Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
 
       subroutine ctrl_pack( first, mythid )
@@ -26,7 +27,7 @@ c
 c              G. Gebbie, added open boundary control packing,
 c                  gebbie@mit.edu  18 -Mar- 2003
 c
-c              heimbach@mit.edu totally restrucured 28-Oct-2003
+c              heimbach@mit.edu totally restructured 28-Oct-2003
 c
 c     ==================================================================
 c     SUBROUTINE ctrl_pack
@@ -41,12 +42,17 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 
-#include "ecco.h"
 #include "ctrl.h"
 #include "cost.h"
 
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#else
+# include "ctrl_weights.h"
+#endif
+
 #ifdef ALLOW_ECCO_OPTIMIZATION
-#include "optim.h"
+# include "optim.h"
 #endif
 
 c     == routine arguments ==
@@ -131,10 +137,8 @@ c
 c--     Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
-      print *, 'ph-pack in pack '
       if ( first .AND. optimcycle .EQ. 0 ) then
 c     >>> Initialise control vector for optimcycle=0 <<<
-      print *, 'ph-pack in ctrl '
           lxxadxx   = .TRUE.
           ictrlgrad = 1
           fcloc     = fmin
@@ -142,7 +146,6 @@ c     >>> Initialise control vector for optimcycle=0 <<<
      &      ctrlname(1:9),'_',yctrlid(1:10),'.opt', optimcycle
       else
 c     >>> Write gradient vector <<<
-      print *, 'ph-pack in cost '
           lxxadxx   = .FALSE.
           ictrlgrad = 2
           fcloc     = fc
@@ -150,7 +153,6 @@ c     >>> Write gradient vector <<<
      &    costname(1:9),'_',yctrlid(1:10),'.opt', optimcycle
        endif
 
-      print *, 'ph-pack vor open ', optimcycle, cfile
        call mdsfindunit( cunit, mythid )
        open( cunit, file   = cfile,
      &      status = 'unknown',

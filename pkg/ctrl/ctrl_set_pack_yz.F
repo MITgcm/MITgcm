@@ -1,9 +1,5 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_yz.F,v 1.6 2003/10/30 19:09:06 heimbach Exp $
-C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
-
 
       subroutine ctrl_set_pack_yz(
      &     cunit, ivartype, fname, masktype, weighttype,
@@ -36,7 +32,6 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ctrl.h"
-#include "cost.h"
 
 #ifdef ALLOW_ECCO_OPTIMIZATION
 #include "optim.h"
@@ -62,7 +57,7 @@ c     == local variables ==
       integer bi,bj
       integer ip,jp
       integer i,j,k
-      integer ii,kk
+      integer ii,jj,kk
       integer il
       integer irec,iobcs,nrec_nl
       integer itlo,ithi
@@ -76,7 +71,7 @@ cgg(
       _RL     gg
       character*(80) weightname
 cgg)
-      _RL     cbuff      ( nsx*npx*sny*nsy*npy )
+      real*4     cbuff      ( nsx*npx*sny*nsy*npy )
       _RL     globfldyz  ( nsx,npx,sny,nsy,npy,nr )
       _RL     globfld3d  ( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globmskyz  ( nsx,npx,sny,nsy,npy,nr,nobcs )
@@ -214,14 +209,15 @@ cgg    Get rid of any sensitivity to barotropic velocity.
                do ip = 1,nPx
                 do bi = itlo,ithi
                  do j = jmin,jmax
+                  ii=mod((i-1)*nr*sny+(k-1)*sny+j-1,snx)+1
+                  jj=mod(((i-1)*nr*sny+(k-1)*sny+j-1)/snx,sny)+1
+                  kk=int((i-1)*nr*sny+(k-1)*sny+j-1)/(snx*sny)+1
                   if (globmskyz(bi,ip,j,bj,jp,k,iobcs)  .ne. 0. ) then
                      cbuffindex = cbuffindex + 1
-                     ii=mod((i-1)*nr+k-1,snx)+1
-                     kk=int((i-1)*nr+k-1)/snx+1
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
                         cbuff(cbuffindex) = 
-     &                       globfld3d(ii,bi,ip,j,bj,jp,kk) *
+     &                       globfld3d(ii,bi,ip,jj,bj,jp,kk) *
 #ifdef CTRL_PACK_PRECISE
      &                       sqrt(weightfldyz(bi,ip,j,bj,jp,k,iobcs))
 #else
@@ -229,7 +225,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
 #endif
                      else
                         cbuff(cbuffindex) = 
-     &                       globfld3d(ii,bi,ip,j,bj,jp,kk) /
+     &                       globfld3d(ii,bi,ip,jj,bj,jp,kk) /
 #ifdef CTRL_PACK_PRECISE
      &                       sqrt(weightfldyz(bi,ip,j,bj,jp,k,iobcs))
 #else
@@ -237,7 +233,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
 #endif
                      endif
 #else /* ALLOW_NONDIMENSIONAL_CONTROL_IO undef */
-                     cbuff(cbuffindex) = globfld3d(ii,bi,ip,j,bj,jp,kk)
+                     cbuff(cbuffindex) = globfld3d(ii,bi,ip,jj,bj,jp,kk)
 #endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
                   endif
                  enddo

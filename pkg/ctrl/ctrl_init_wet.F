@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.1 2003/10/30 19:09:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_wet.F,v 1.2 2003/11/06 22:05:08 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -373,6 +373,16 @@ c
       print*, 'ctrl_init: no. of control variables: ', nvartype
       print*, 'ctrl_init: control vector length:    ', nvarlength
       _END_MASTER( mythid )
+
+c     Set unit weight to 1
+c
+      do bj=1,nSy
+         do bi=1,nSx
+            do k=1, nr
+               wunit(k,bi,bj) = 1. _d 0
+            enddo
+         enddo
+      enddo
 
 c     write masks and weights to files to be read by a master process
 c

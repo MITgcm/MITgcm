@@ -35,10 +35,6 @@ c     == global variables ==
 # include "OBCS.h"
 #endif
 
-#ifdef ALLOW_CALENDAR
-# include "cal.h"
-#endif
-#include "cost.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
