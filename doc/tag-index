@@ -1,7 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.7 1998/06/22 16:24:50 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.8 1998/07/01 22:49:29 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint10
+ Introduced the configure script.
+ Separated out the diags package.
+ Added template for writing time-averages of tile/intermediate quantities.
+ Updated SIZE.h in exp2 and made the data big-endian.
 
 checkpoint9
  MPI fix. Filename changes (meta/data). salbin*y stuff.
