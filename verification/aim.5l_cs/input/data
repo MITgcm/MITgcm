@@ -50,6 +50,7 @@
  nTimeSteps=10,
 #endTime=31104000.,
  deltaT=450.0,
+ forcing_In_AB=.FALSE.,
  abEps=0.1,
  cAdjFreq=0.,
  pChkptFreq=2592000.0,
