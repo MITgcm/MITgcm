@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.9 2004/09/22 20:44:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.10 2004/10/12 18:37:38 heimbach Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -255,7 +255,7 @@ c                OBWv(J,K,bi,bj) = 0.
             J_obc=OB_Jn(I,bi,bj)
             IF (J_obc.ne.0) THEN
 c                OBNu(I,K,bi,bj) = 0.
-                OBWv(I,K,bi,bj) = OBNv(I,K,bi,bj) + Tr_T
+                OBNv(I,K,bi,bj) = OBNv(I,K,bi,bj) + Tr_T
             ENDIF
           ENDDO
         ENDDO
