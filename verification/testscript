@@ -202,18 +202,25 @@ runmodel()
 
  ( cd $1
    if [ -x $2 ]; then
-    if [ ! -r output.txt -o $quick -eq 0 ]; then
-     echo runmodel: running... 1>&2
+    if [ $quick -eq 0 ]; then
      rm -f output.txt
-     ( ./$2 > output.txt 2>&1 ) && return 0
-     return 1
-    else
-     echo runmodel: output.txt is newer than executable 1>&2
-     return 0
     fi
-   else
-    echo runmodel: executable \"$1/$2\" is missing 1>&2
-    return 1
+    echo -n "runmodel: " 1>&2
+    make output.txt && return 0
+#   if [ ! -r output.txt -o $quick -eq 0 ]; then
+#    echo runmodel: running... 1>&2
+#    ( ./$2 > output.txt 2>&1 ) && return 0
+#    rm -f output.txt
+#    ( make output.txt ) && return 0
+#    return 1
+#   else
+#    echo runmodel: output.txt is newer than executable 1>&2
+#    ( make output.txt ) && return 0
+#    return 0
+#   fi
+#  else
+#   echo runmodel: executable \"$1/$2\" is missing 1>&2
+#   return 1
    fi
  )
 }
