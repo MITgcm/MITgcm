@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.28 2004/09/21 12:13:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.29 2004/09/24 16:52:44 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -84,6 +84,8 @@ C  gTracer           :: tendancy array
 
 C !LOCAL VARIABLES: ====================================================
 C  maskUp        :: 2-D array for mask at W points
+C  maskLocW      :: 2-D array for mask at West points
+C  maskLocS      :: 2-D array for mask at South points
 C  iMin,iMax,    :: loop range for called routines
 C  jMin,jMax     :: loop range for called routines
 C  i,j,k         :: loop indices
@@ -94,7 +96,8 @@ C  xA,yA         :: areas of X and Y face of tracer cells
 C  uTrans,vTrans :: 2-D arrays of volume transports at U,V points
 C  rTrans        :: 2-D arrays of volume transports at W points
 C  rTransKp1     :: vertical volume transport at interface k+1
-C  af            :: 2-D array for horizontal advective flux
+C  afx           :: 2-D array for horizontal advective flux, x direction
+C  afy           :: 2-D array for horizontal advective flux, y direction
 C  fVerT         :: 2 1/2D arrays for vertical advective flux
 C  localTij      :: 2-D array, temporary local copy of tracer fld
 C  localTijk     :: 3-D array, temporary local copy of tracer fld
@@ -107,6 +110,8 @@ C  myTile        :: variables used to determine which cube face
 C  nCFace        :: owns a tile for cube grid runs using
 C                :: multi-dim advection.
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i,j,k,kup,kDown
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -115,18 +120,15 @@ C                :: multi-dim advection.
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL af      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL afx     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL afy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL localTij(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL localTijk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL kp1Msk
-      LOGICAL calc_fluxes_X,calc_fluxes_Y
+      LOGICAL calc_fluxes_X, calc_fluxes_Y, withSigns
       INTEGER nipass,ipass
       INTEGER myTile, nCFace
-      LOGICAL southWestCorner
-      LOGICAL southEastCorner
-      LOGICAL northWestCorner
-      LOGICAL northEastCorner
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -194,31 +196,23 @@ C--   Residual transp = Bolus transp + Eulerian transp
      &            uTrans, vTrans, bi, bj, k, myThid)
 #endif /* ALLOW_GMREDI */
 
-C--   Make local copy of tracer array
+C--   Make local copy of tracer array and mask West & South
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         localTij(i,j)=tracer(i,j,k,bi,bj)
+        maskLocW(i,j)=maskW(i,j,k,bi,bj)
+        maskLocS(i,j)=maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
-cph  The following block is needed for useCubedSphereExchange only,
-cph  but needs to be set for all cases to avoid spurious 
-cph  TAF dependencies
-       southWestCorner = .TRUE.
-       southEastCorner = .TRUE.
-       northWestCorner = .TRUE.
-       northEastCorner = .TRUE.
+      IF (useCubedSphereExchange) THEN
+        withSigns = .FALSE.
+        CALL FILL_CS_CORNER_UV_RS( 
+     &            withSigns, maskLocW,maskLocS, bi,bj, myThid )
+      ENDIF
 #ifdef ALLOW_EXCH2
        myTile = W2_myTileList(bi)
        nCFace = exch2_myFace(myTile)
-       southWestCorner = exch2_isWedge(myTile).EQ.1
-     &             .AND. exch2_isSedge(myTile).EQ.1
-       southEastCorner = exch2_isEedge(myTile).EQ.1
-     &             .AND. exch2_isSedge(myTile).EQ.1
-       northEastCorner = exch2_isEedge(myTile).EQ.1
-     &             .AND. exch2_isNedge(myTile).EQ.1
-       northWestCorner = exch2_isWedge(myTile).EQ.1
-     &             .AND. exch2_isNedge(myTile).EQ.1
 #else
        nCFace = bi
 #endif
@@ -232,7 +226,6 @@ cph  TAF dependencies
       ELSE
        nipass=1
       ENDIF
-cph       nipass=1
 
 C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
@@ -266,82 +259,19 @@ C--   For cube need one pass for each of red, green and blue axes.
        calc_fluxes_Y=.TRUE.
       ENDIF
  
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   X direction
       IF (calc_fluxes_X) THEN
 
 C--   Internal exchange for calculations in X
       IF (useCubedSphereExchange) THEN
-C--    For cube face corners we need to duplicate the
-C--    i-1 and i+1 values into the null space as follows:
-C
-C
-C      o NW corner: copy T(    0,sNy  ) into T(    0,sNy+1) e.g.
-C                      |
-C         x T(0,sNy+1) |
-C        /\            |
-C      --||------------|-----------
-C        ||            |
-C         x T(0,sNy)   |   x T(1,sNy)
-C                      |
-C
-C      o SW corner: copy T(0,1) into T(0,0) e.g.
-C                      |
-C         x T(0,1)     |  x T(1,1)
-C        ||            |
-C      --||------------|-----------
-C        \/            |
-C         x T(0,0)     |
-C                      |
-C
-C      o NE corner: copy T(sNx+1,sNy  ) into T(sNx+1,sNy+1) e.g.
-C                      |
-C                      |   x T(sNx+1,sNy+1)
-C                      |  /\
-C      ----------------|--||-------
-C                      |  ||
-C         x T(sNx,sNy) |   x T(sNx+1,sNy  )
-C                      |
-C      o SE corner: copy T(sNx+1,1    ) into T(sNx+1,0    ) e.g.
-C                      |
-C         x T(sNx,1)   |   x T(sNx+1,    1) 
-C                      |  ||
-C      ----------------|--||-------
-C                      |  \/
-C                      |   x T(sNx+1,    0)
-       IF ( southWestCorner ) THEN
-        DO j=1,OLy
-         DO i=1,OLx
-          localTij( 1-i , 1-j )=localTij( 1-j , i  )
-         ENDDO
-        ENDDO
-       ENDIF
-       IF ( southEastCorner ) THEN
-        DO J=1,OLy
-         DO I=1,OLx
-          localTij(sNx+I, 1-J )=localTij(sNx+J, I  )
-         ENDDO
-        ENDDO
-       ENDIF
-       IF ( northWestCorner ) THEN
-        DO J=1,OLy
-         DO I=1,OLx
-          localTij( 1-I ,sNy+J)=localTij( 1-J , sNy+1-I )
-         ENDDO
-        ENDDO
-       ENDIF
-       IF ( northEastCorner ) THEN
-        DO J=1,OLy
-         DO I=1,OLx
-          localTij(sNx+I,sNy+J)=localTij(sNx+J, sNy+1-I )
-         ENDDO
-        ENDDO
-       ENDIF
+         CALL FILL_CS_CORNER_TR_RL( .TRUE., localTij, bi,bj, myThid )
       ENDIF
 
 C-    Advective flux in X
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        af(i,j) = 0.
+        afx(i,j) = 0.
        ENDDO
       ENDDO
 
@@ -353,14 +283,17 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-       CALL GAD_FLUXLIMIT_ADV_X(
-     &      bi,bj,k,deltaTtracer,uTrans,uVel,localTij,af,myThid)
+        CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, deltaTtracer,
+     I                            uTrans, uVel, maskLocW, localTij,
+     O                            afx, myThid )
       ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-       CALL GAD_DST3_ADV_X(
-     &       bi,bj,k,deltaTtracer,uTrans,uVel,localTij,af,myThid)
+        CALL GAD_DST3_ADV_X(      bi,bj,k, deltaTtracer,
+     I                            uTrans, uVel, maskLocW, localTij,
+     O                            afx, myThid )
       ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-       CALL GAD_DST3FL_ADV_X(
-     &       bi,bj,k,deltaTtracer,uTrans,uVel,localTij,af,myThid)
+        CALL GAD_DST3FL_ADV_X(    bi,bj,k, deltaTtracer,
+     I                            uTrans, uVel, maskLocW, localTij,
+     O                            afx, myThid )
       ELSE
        STOP 'GAD_ADVECTION: adv. scheme incompatibale with multi-dim'
       ENDIF
@@ -370,7 +303,7 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
         localTij(i,j)=localTij(i,j)-deltaTtracer*
      &    _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &    *recip_rA(i,j,bi,bj)
-     &    *( af(i+1,j)-af(i,j)
+     &    *( afx(i+1,j)-afx(i,j)
      &      -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
      &     )
        ENDDO
@@ -390,81 +323,19 @@ C--   Apply open boundary conditions
 C--   End of X direction
       ENDIF
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Y direction
       IF (calc_fluxes_Y) THEN
 
-      IF (useCubedSphereExchange) THEN
 C--   Internal exchange for calculations in Y
-C--    For cube face corners we need to duplicate the
-C--    j-1 and j+1 values into the null space as follows:
-C
-C      o SW corner: copy T(0,1) into T(0,0) e.g.
-C                      |
-C                      |  x T(1,1)
-C                      |
-C      ----------------|-----------
-C                      |
-C         x T(0,0)<====== x T(1,0)
-C                      |
-C
-C      o NW corner: copy T(    0,sNy  ) into T(    0,sNy+1) e.g.
-C                      |
-C         x T(0,sNy+1)<=== x T(1,sNy+1)
-C                      |
-C      ----------------|-----------
-C                      |
-C                      |   x T(1,sNy)
-C                      |
-C
-C      o NE corner: copy T(sNx+1,sNy  ) into T(sNx+1,sNy+1) e.g.
-C                      |
-C      x T(sNx,sNy+1)=====>x T(sNx+1,sNy+1)
-C                      |     
-C      ----------------|-----------
-C                      |     
-C      x T(sNx,sNy)    |                       
-C                      |
-C      o SE corner: copy T(sNx+1,1    ) into T(sNx+1,0    ) e.g.
-C                      |
-C         x T(sNx,1)   |                    
-C                      |    
-C      ----------------|-----------
-C                      |     
-C         x T(sNx,0) =====>x T(sNx+1,    0)
-       IF ( southWestCorner ) THEN
-        DO J=1,Oly
-         DO I=1,Olx
-          localTij( 1-i , 1-j ) = localTij(j   , 1-i )
-         ENDDO
-        ENDDO
-       ENDIF
-       IF ( southEastCorner ) THEN
-        DO J=1,Oly
-         DO I=1,Olx
-          localTij(sNx+i, 1-j ) = localTij(sNx+1-j, 1-i )
-         ENDDO
-        ENDDO
-       ENDIF
-       IF ( northWestCorner ) THEN
-        DO J=1,Oly
-         DO I=1,Olx
-          localTij( 1-i ,sNy+j) = localTij(j   ,sNy+i)
-         ENDDO
-        ENDDO
-       ENDIF
-       IF ( northEastCorner ) THEN
-        DO J=1,Oly
-         DO I=1,Olx
-          localTij(sNx+i,sNy+j) = localTij(sNx+1-j,sNy+i)
-         ENDDO
-        ENDDO
-       ENDIF
+      IF (useCubedSphereExchange) THEN
+         CALL FILL_CS_CORNER_TR_RL(.FALSE., localTij, bi,bj, myThid )
       ENDIF
 
 C-    Advective flux in Y
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        af(i,j) = 0.
+        afy(i,j) = 0.
        ENDDO
       ENDDO
 
@@ -476,14 +347,17 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-       CALL GAD_FLUXLIMIT_ADV_Y(
-     &       bi,bj,k,deltaTtracer,vTrans,vVel,localTij,af,myThid)
+        CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, deltaTtracer,
+     I                            vTrans, vVel, maskLocS, localTij,
+     O                            afy, myThid )
       ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-       CALL GAD_DST3_ADV_Y(
-     &       bi,bj,k,deltaTtracer,vTrans,vVel,localTij,af,myThid)
+        CALL GAD_DST3_ADV_Y(      bi,bj,k, deltaTtracer,
+     I                            vTrans, vVel, maskLocS, localTij,
+     O                            afy, myThid )
       ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-       CALL GAD_DST3FL_ADV_Y(
-     &       bi,bj,k,deltaTtracer,vTrans,vVel,localTij,af,myThid)
+        CALL GAD_DST3FL_ADV_Y(    bi,bj,k, deltaTtracer,
+     I                            vTrans, vVel, maskLocS, localTij,
+     O                            afy, myThid )
       ELSE
        STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
       ENDIF
@@ -493,7 +367,7 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
         localTij(i,j)=localTij(i,j)-deltaTtracer*
      &    _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &    *recip_rA(i,j,bi,bj)
-     &    *( af(i,j+1)-af(i,j)
+     &    *( afy(i,j+1)-afy(i,j)
      &      -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
      &     )
        ENDDO
@@ -533,8 +407,20 @@ C-    horizontal advection done; store intermediate result in 3D array:
        ENDDO
       ENDIF
 
+#ifdef ALLOW_DEBUG
+      IF ( debugLevel .GE. debLevB
+     &   .AND. k.EQ.3 .AND. myIter.EQ.1+nIter0
+     &   .AND. nPx.EQ.1 .AND. nPy.EQ.1
+     &   .AND. useCubedSphereExchange ) THEN
+        CALL DEBUG_CS_CORNER_UV( ' afx,afy from GAD_ADVECTION',
+     &             afx,afy, k, standardMessageUnit,bi,bj,myThid )
+      ENDIF
+#endif /* ALLOW_DEBUG */
+
 C--   End of K loop for horizontal fluxes
       ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( .NOT.implicitAdvection ) THEN
 C--   Start of k loop for vertical flux
@@ -566,7 +452,6 @@ C- Surface interface :
            rTransKp1(i,j) = kp1Msk*rTrans(i,j)
            rTrans(i,j) = 0.
            fVerT(i,j,kUp) = 0.
-           af(i,j) = 0.
           ENDDO
          ENDDO
 
@@ -578,7 +463,7 @@ C- Interior interface :
            rTransKp1(i,j) = kp1Msk*rTrans(i,j)
            rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)
      &                 *maskC(i,j,k-1,bi,bj)
-           af(i,j) = 0.
+           fVerT(i,j,kUp) = 0.
           ENDDO
          ENDDO
 
@@ -598,23 +483,21 @@ CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 
 C-    Compute vertical advective flux in the interior:
          IF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
-          CALL GAD_FLUXLIMIT_ADV_R(
-     &        bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+           CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTtracer,
+     I                               rTrans, wVel, localTijk,
+     O                               fVerT(1-Olx,1-Oly,kUp), myThid )
          ELSEIF (vertAdvecScheme.EQ.ENUM_DST3 ) THEN
-          CALL GAD_DST3_ADV_R(
-     &        bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
+           CALL GAD_DST3_ADV_R(      bi,bj,k, deltaTtracer,
+     I                               rTrans, wVel, localTijk,
+     O                               fVerT(1-Olx,1-Oly,kUp), myThid )
          ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-          CALL GAD_DST3FL_ADV_R(
-     &        bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
+           CALL GAD_DST3FL_ADV_R(    bi,bj,k, deltaTtracer,
+     I                               rTrans, wVel, localTijk,
+     O                               fVerT(1-Olx,1-Oly,kUp), myThid )
          ELSE
           STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
          ENDIF
-C-    add the advective flux to fVerT
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           fVerT(i,j,kUp) = af(i,j)
-          ENDDO
-         ENDDO
 
 C- end Surface/Interior if bloc
         ENDIF
