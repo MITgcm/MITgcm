@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/CPP_EEOPTIONS.h,v 1.3 2000/03/14 16:23:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/CPP_EEOPTIONS.h,v 1.4 2000/03/14 16:41:26 adcroft Exp $
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
@@ -111,7 +111,7 @@ C     Under MPI selects/deselects "blocking" sends and receives.
 #define ALLOW_SYNC_COMMUNICATION
 #undef  ALWAYS_USE_SYNC_COMMUNICATION
 
---   Control use of JAM routines for Artic network
+C--   Control use of JAM routines for Artic network
 C     These invoke optimized versions of "exchange" and "sum" that
 C     utilize the programmable aspect of Artic cards.
 #undef  LETS_MAKE_JAM
