@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.4 2002/07/13 02:55:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.5 2002/09/16 18:11:58 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -46,7 +46,9 @@ c     == local variables ==
       _RL xxmemo_pert
       _RL gfd
       _RL adxxmemo
-      _RL ratio
+      _RL ftlxxmemo
+      _RL ratio_ad
+      _RL ratio_ftl
 
       integer i
       integer itile
@@ -116,18 +118,20 @@ c--   Individual checks.
         xxmemo_ref   = xxmemref  (i)
         xxmemo_pert  = xxmempert (i)
         adxxmemo     = adxxmem   (i)
+        ftlxxmemo    = ftlxxmem  (i)
         fcref        = fcrmem    (i)
         fcpertplus   = fcppmem   (i)
         fcpertminus  = fcppmem   (i)
-        gfd      = gfdmem  (i)
-        ratio    = ratiomem(i)
-        itile    = bimem   (i)
-        jtile    = bjmem   (i)
-        itilepos = ilocmem (i)
-        jtilepos = jlocmem (i)
-        layer    = klocmem (i)
-        icomp    = icompmem(i)
-        ierr     = ierrmem (i)
+        gfd          = gfdmem      (i)
+        ratio_ad     = ratioadmem  (i)
+        ratio_ftl    = ratioftlmem (i)
+        itile        = bimem   (i)
+        jtile        = bjmem   (i)
+        itilepos     = ilocmem (i)
+        jtilepos     = jlocmem (i)
+        layer        = klocmem (i)
+        icomp        = icompmem(i)
+        ierr         = ierrmem (i)
 
         write(msgbuf,'(A,4(I16),2(1x,D15.9))')
      &       'grdchk output:  ', i, itilepos, jtilepos, layer, 
@@ -137,7 +141,7 @@ c--   Individual checks.
         if ( ierr .eq. 0 ) then
           write(msgbuf,'(A,6(1x,D15.9))')
      &      'grdchk output:  ',
-     &          fcref, fcpertplus, fcpertminus, gfd, adxxmemo, ratio
+     &          fcref, fcpertplus, fcpertminus, gfd, adxxmemo, ratio_ad
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
         else

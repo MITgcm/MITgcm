@@ -74,7 +74,7 @@ c     Initialise temporary file
                   do bi = itlo,ithi
                      do i = imin,imax
 #ifdef ALLOW_TANGENTLINEAR_RUN
-                        globfldxz(i,bi,ip,bj,jp,k) = 1. _d 0
+                        globfldxz(i,bi,ip,bj,jp,k) = 0. _d 0
 #else
                         globfldxz(i,bi,ip,bj,jp,k) = 0. _d 0
 #endif

@@ -232,6 +232,28 @@ c       Set active_var to zero.
         _END_MASTER( mythid )
       endif
 
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+
+      if (theSimulationMode .eq. TANGENT_SIMULATION) then
+
+        _BEGIN_MASTER( mythid )
+
+c       Read the active variable from file.
+
+        call mdsreadfield( 
+     &                     active_var_file, 
+     &                     prec, 
+     &                     'RL',
+     &                     mynr,      
+     &                     active_var,
+     &                     irec, 
+     &                     mythid )
+
+        _END_MASTER( mythid )
+      endif
+
 c     Reset default io precision.
       readBinaryPrec = oldPrec
 
@@ -378,6 +400,29 @@ c             Add active_var from appropriate location to data.
      &                            myOptimIter,
      &                            mythid )
         enddo
+
+        _END_MASTER( mythid )
+
+      endif
+
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+
+      if (theSimulationMode .eq. TANGENT_SIMULATION) then
+
+        _BEGIN_MASTER( mythid )
+
+          call mdswritefield( 
+     &                        active_var_file, 
+     &                        prec, 
+     &                        globalfile,
+     &                        'RL', 
+     &                        mynr, 
+     &                        active_var, 
+     &                        irec, 
+     &                        myOptimIter,
+     &                        mythid )
 
         _END_MASTER( mythid )
 
@@ -636,6 +681,54 @@ c       mapping.
 
       endif
 
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+
+      if (theSimulationMode .eq. TANGENT_SIMULATION) then
+
+        _BEGIN_MASTER( mythid )
+
+c       Read the active variable from file.
+        if ( .not. globalfile ) then
+          bj = jtile
+          bi = itile
+c         Read the layers individually.
+          do k=1,mynr
+            call mdsreadvector( active_var_file, prec, 'RL',
+     &                          (snx+2*olx)*(sny+2*oly),
+     &                          active_data_t, bi, bj,
+     &                          (irec-1)*mynr+k, mythid )
+
+c           Copy data to appropriate location in active_var.
+            index_t = 0
+            do j=1-oly,sny+oly
+              do i=1-olx,snx+olx
+                index_t   = index_t + 1
+                index_var = 1 +
+     &                     (i-1+olx) +
+     &                     (j-1+oly)*(snx+2*olx) +
+     &                     (  k-1  )*(snx+2*olx)*(sny+2*oly) +
+     &                     (  bi-1 )*(snx+2*olx)*(sny+2*oly)*nr +
+     &                     (  bj-1 )*(snx+2*olx)*(sny+2*oly)*nr*nsx
+
+                active_var(index_var) = active_data_t(index_t)
+              enddo
+            enddo
+          enddo
+
+        else if ( globalfile ) then
+          do i=1,(snx+2*olx)*(sny+2*oly)*mynr*nsx*nsy
+            active_var(i) = 0. _d 0
+          enddo
+          call mdsreadfield( active_var_file, prec, 'RL',
+     &                       mynr, active_var, irec, mythid )
+        endif
+
+        _END_MASTER( mythid )
+
+      endif
+
 c     Reset default io precision.
       readBinaryPrec = oldPrec
 
@@ -804,6 +897,43 @@ c         Add active_var from appropriate location to data.
      &                         active_data_t, bi, bj,
      &                         (irec-1)*mynr+k, myOptimIter,
      &                         mythid )
+        enddo
+
+        _END_MASTER( mythid )
+
+      endif
+
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+
+      if (theSimulationMode .eq. TANGENT_SIMULATION) then
+
+        _BEGIN_MASTER( mythid )
+
+        bj = jtile
+        bi = itile
+        do k=1,mynr
+          index_t = 0
+          do j=1-oly,sny+oly
+            do i=1-olx,snx+olx
+              index_t   = index_t + 1
+              index_var = 1 +
+     &                   (i-1+olx) +
+     &                   (j-1+oly)*(snx+2*olx) +
+     &                   (  k-1  )*(snx+2*olx)*(sny+2*oly) +
+     &                   (  bi-1 )*(snx+2*olx)*(sny+2*oly)*nr +
+     &                   (  bj-1 )*(snx+2*olx)*(sny+2*oly)*nr*nsx
+
+              active_data_t(index_t) = active_var(index_var)
+            enddo
+          enddo
+          call mdswritevector( active_var_file, prec, globalfile,
+     &                         'RL', (snx+2*olx)*(sny+2*oly),
+     &                         active_data_t, bi, bj,
+     &                         (irec-1)*mynr+k, myOptimIter,
+     &                          mythid )
+
         enddo
 
         _END_MASTER( mythid )

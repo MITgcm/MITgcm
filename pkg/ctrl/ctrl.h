@@ -27,7 +27,11 @@ c                       south (s), and western (w) mask, resp. .
       parameter ( ctrlprec = 64 )
 
       character*2 yadprefix
+#ifdef ALLOW_TANGENTLINEAR_RUN
+      parameter ( yadprefix = 'g_')
+#else
       parameter ( yadprefix = 'ad')
+#endif
 
       common /controlvars_i/
      &                       nvartype,

@@ -212,6 +212,29 @@ c       Set active_var to zero.
         _END_MASTER( mythid )
       endif
 
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+
+      if (theSimulationMode .eq. TANGENT_SIMULATION) then
+
+        _BEGIN_MASTER( mythid )
+
+c       Read the active variable from file.
+
+        call mdsreadfieldxz( 
+     &                     active_var_file, 
+     &                     prec, 
+     &                     'RL',
+     &                     mynr,      
+     &                     active_var,
+     &                     irec, 
+     &                     mythid )
+
+        _END_MASTER( mythid )
+
+      endif
+
 c     Reset default io precision.
       readBinaryPrec = oldPrec
 
@@ -344,6 +367,29 @@ c             Add active_var from appropriate location to data.
      &                            myOptimIter,
      &                            mythid )
         enddo
+
+        _END_MASTER( mythid )
+
+      endif
+
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+
+      if (theSimulationMode .eq. TANGENT_SIMULATION) then
+
+        _BEGIN_MASTER( mythid )
+
+          call mdswritefieldxz( 
+     &                        active_var_file, 
+     &                        prec, 
+     &                        globalfile,
+     &                        'RL', 
+     &                        mynr, 
+     &                        active_var, 
+     &                        irec, 
+     &                        myOptimIter,
+     &                        mythid )
 
         _END_MASTER( mythid )
 
@@ -550,6 +596,29 @@ c       Set active_var to zero.
         _END_MASTER( mythid )
       endif
 
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>> TANGENT RUN <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+
+      if (theSimulationMode .eq. TANGENT_SIMULATION) then
+
+        _BEGIN_MASTER( mythid )
+
+c       Read the active variable from file.
+
+        call mdsreadfieldyz( 
+     &                     active_var_file, 
+     &                     prec, 
+     &                     'RL',
+     &                     mynr,      
+     &                     active_var,
+     &                     irec, 
+     &                     mythid )
+
+        _END_MASTER( mythid )
+
+      endif
+
 c     Reset default io precision.
       readBinaryPrec = oldPrec
 
@@ -682,6 +751,29 @@ c             Add active_var from appropriate location to data.
      &                            myOptimIter,
      &                            mythid )
         enddo
+
+        _END_MASTER( mythid )
+
+      endif
+
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>> TANGENTY RUN <<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
+
+      if (theSimulationMode .eq. TANGENT_SIMULATION) then
+
+        _BEGIN_MASTER( mythid )
+
+          call mdswritefieldyz( 
+     &                        active_var_file, 
+     &                        prec, 
+     &                        globalfile,
+     &                        'RL', 
+     &                        mynr, 
+     &                        active_var, 
+     &                        irec, 
+     &                        myOptimIter,
+     &                        mythid )
 
         _END_MASTER( mythid )
 

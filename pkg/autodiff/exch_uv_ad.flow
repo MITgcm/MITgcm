@@ -16,28 +16,28 @@ C     | only the array argument is active                        |
 C     | only myThid is required for the adjoint subroutine       |
 C     \==========================================================/
 cadj SUBROUTINE exch_uv_xy_rs INPUT   = 1, 2, 3, 4
-cadj SUBROUTINE exch_uv_xy_rs OUTPUT  = 1, 2, 3
+cadj SUBROUTINE exch_uv_xy_rs OUTPUT  = 1, 2
 cadj SUBROUTINE exch_uv_xy_rs ACTIVE  = 1, 2
 cadj SUBROUTINE exch_uv_xy_rs DEPEND  = 3, 4
 cadj SUBROUTINE exch_uv_xy_rs ADNAME  = adexch_uv_xy_rs
 cadj SUBROUTINE exch_uv_xy_rs FTLNAME = exch_uv_xy_rs
 
 cadj SUBROUTINE exch_uv_xy_rl INPUT   = 1, 2, 3, 4
-cadj SUBROUTINE exch_uv_xy_rl OUTPUT  = 1, 2, 3
+cadj SUBROUTINE exch_uv_xy_rl OUTPUT  = 1, 2
 cadj SUBROUTINE exch_uv_xy_rl ACTIVE  = 1, 2
 cadj SUBROUTINE exch_uv_xy_rl DEPEND  = 3, 4
 cadj SUBROUTINE exch_uv_xy_rl ADNAME  = adexch_uv_xy_rl
 cadj SUBROUTINE exch_uv_xy_rl FTLNAME = exch_uv_xy_rl
 
 cadj SUBROUTINE exch_uv_xyz_rs INPUT   = 1, 2, 3, 4
-cadj SUBROUTINE exch_uv_xyz_rs OUTPUT  = 1, 2, 3
+cadj SUBROUTINE exch_uv_xyz_rs OUTPUT  = 1, 2
 cadj SUBROUTINE exch_uv_xyz_rs ACTIVE  = 1, 2
 cadj SUBROUTINE exch_uv_xyz_rs DEPEND  = 3, 4
 cadj SUBROUTINE exch_uv_xyz_rs ADNAME  = adexch_uv_xyz_rs
 cadj SUBROUTINE exch_uv_xyz_rs FTLNAME = exch_uv_xyz_rs
 
 cadj SUBROUTINE exch_uv_xyz_rl INPUT   = 1, 2, 3, 4
-cadj SUBROUTINE exch_uv_xyz_rl OUTPUT  = 1, 2, 3
+cadj SUBROUTINE exch_uv_xyz_rl OUTPUT  = 1, 2
 cadj SUBROUTINE exch_uv_xyz_rl ACTIVE  = 1, 2
 cadj SUBROUTINE exch_uv_xyz_rl DEPEND  = 3, 4
 cadj SUBROUTINE exch_uv_xyz_rl ADNAME  = adexch_uv_xyz_rl

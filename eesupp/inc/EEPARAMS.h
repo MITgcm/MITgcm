@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.10 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.11 2002/09/16 18:11:58 heimbach Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
@@ -74,10 +74,13 @@ C                           an edge exchange.
 
 C     FORWARD_SIMULATION
 C     REVERSE_SIMULATION
+C     TANGENT_SIMULATION
       INTEGER FORWARD_SIMULATION
       INTEGER REVERSE_SIMULATION
+      INTEGER TANGENT_SIMULATION
       PARAMETER ( FORWARD_SIMULATION = 0,
-     &            REVERSE_SIMULATION = 1 )
+     &            REVERSE_SIMULATION = 1,
+     &            TANGENT_SIMULATION = 2 )
 
 
 C     Particularly weird and obscure voodoo numbers

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.4 2002/07/13 02:55:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.5 2002/09/16 18:11:58 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -10,7 +10,7 @@ C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getadxx.F,v 1.4 2002/07/13 02:55:
      I                       layer,
      I                       itilepos,
      I                       jtilepos,
-     I                       xx_comp,
+     I                       adxx_comp,
      I                       mythid
      &                     )
 
@@ -45,7 +45,7 @@ c     == routine arguments ==
       integer layer
       integer itilepos
       integer jtilepos
-      _RL     xx_comp
+      _RL     adxx_comp
       integer mythid
 
 #ifdef ALLOW_GRADIENT_CHECK
@@ -87,7 +87,7 @@ c--   == end of interface ==
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, dummy)
 
-         xx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         adxx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
 
 #endif /* ALLOW_THETA0_CONTROL */
 
@@ -102,7 +102,7 @@ c--   == end of interface ==
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, dummy)
 
-         xx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         adxx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
 
 #endif /* ALLOW_SALT0_CONTROL */
 
@@ -117,7 +117,7 @@ c--   == end of interface ==
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
 
-         xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         adxx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
 
 #endif /* ALLOW_HFLUX_CONTROL */
 
@@ -132,7 +132,7 @@ c--   == end of interface ==
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
 
-         xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         adxx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
 
 #endif /* ALLOW_SFLUX_CONTROL */
 
@@ -147,7 +147,7 @@ c--   == end of interface ==
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
 
-         xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         adxx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
 
 #endif /* ALLOW_USTRESS_CONTROL */
 
@@ -162,7 +162,7 @@ c--   == end of interface ==
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
 
-         xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         adxx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
 
 #endif /* ALLOW_VSTRESS_CONTROL */
 
@@ -177,7 +177,7 @@ c--   == end of interface ==
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, dummy)
 
-         xx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         adxx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
 
 #endif /* ALLOW_TR10_CONTROL */
 
@@ -192,7 +192,7 @@ c--   == end of interface ==
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
 
-         xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         adxx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
 
 #endif /* ALLOW_SST0_CONTROL */
 
@@ -207,7 +207,7 @@ c--   == end of interface ==
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
 
-         xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         adxx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
 
 #endif /* ALLOW_SSS0_CONTROL */
 
@@ -224,7 +224,7 @@ c--   == end of interface ==
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
 
-         xx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         adxx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
 
 #else
 
@@ -232,7 +232,7 @@ c--   == end of interface ==
      &                        doglobalread, ladinit, optimcycle,
      &                        mythid, dummy)
 
-         xx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         adxx_comp = tmpfld2d( itilepos,jtilepos,itile,jtile )
 
 #endif /* ALLOW_HFACC3D_CONTROL */
 #endif /* ALLOW_HFACC_CONTROL */
@@ -248,7 +248,7 @@ c--   == end of interface ==
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, dummy)
 
-         xx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         adxx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
 
 #endif /* ALLOW_THETA0_CONTROL */
 
@@ -263,7 +263,7 @@ c--   == end of interface ==
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, dummy)
 
-         xx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         adxx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
 
 #endif /* ALLOW_EFLUXY0_CONTROL */
 
@@ -278,7 +278,7 @@ c--   == end of interface ==
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, dummy)
 
-         xx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         adxx_comp = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
 
 #endif /* ALLOW_EFLUXP0_CONTROL */
 
