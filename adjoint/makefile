@@ -79,6 +79,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/external_forcing_surf.f		\
 		$(SOURCE_CODE)/find_alpha.f			\
 		$(SOURCE_CODE)/find_rho.f			\
+		$(SOURCE_CODE)/forward_step.f			\
 		$(SOURCE_CODE)/freeze.f				\
 		$(SOURCE_CODE)/get_offline_fields.f		\
 		$(SOURCE_CODE)/gad_biharm_x.f			\
