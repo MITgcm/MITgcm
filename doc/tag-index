@@ -1,7 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.88 2002/09/27 20:19:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.89 2002/10/07 16:35:31 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint46j_post
+o split calc_exact_eta in 2 S/R : integr_continuity & update_etaH
+o move wVel computation at the end of the time step, in S/R integr_continuity
+o create specific S/R to exchange T,S before DYNAMICS (for stagger time step)
+o update timeave pkg for wVel diagnostic.
+checkpoint46j_pre
 
 checkpoint46i_post
 o Clean up AIM package (and keep the results unchanged):
