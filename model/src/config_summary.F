@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.54 2004/07/09 22:32:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.55 2004/09/01 14:04:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -107,30 +107,20 @@ CEOP
      &'   /* Leith biharmonic viscosity factor ( non-dom. ) */')
       CALL WRITE_0D_L( no_slip_sides, INDEX_NONE,
      & 'no_slip_sides =', '  /* Viscous BCs: No-slip sides */')
-c     IF ( viscAz .NE. UNSET_RL ) THEN
-c      CALL WRITE_0D_R8( viscAz, INDEX_NONE,'viscAz =',
-c    & '   /* Vertical eddy viscosity ( m^2/s ) */')
-c     ENDIF
-c     IF ( viscAp .NE. UNSET_RL ) THEN
-c      CALL WRITE_0D_R8( viscAp, INDEX_NONE,'viscAp =',
-c    & '   /* Vertical eddy viscosity ( Pa^2/s ) */')
-c     ENDIF
       CALL WRITE_0D_R8( viscAr,  INDEX_NONE,'viscAr =',
      &'   /* Vertical eddy viscosity ( units of r^2/s ) */')
+      CALL WRITE_0D_L( no_slip_bottom, INDEX_NONE,
+     & 'no_slip_bottom =', '  /* Viscous BCs: No-slip bottom */')
       CALL WRITE_0D_R8( diffKhT, INDEX_NONE,'diffKhT =',
      &'   /* Laplacian diffusion of heat laterally ( m^2/s ) */')
       CALL WRITE_0D_R8( diffK4T, INDEX_NONE,'diffK4T =',
      &'   /* Bihaarmonic diffusion of heat laterally ( m^4/s ) */')
-c     CALL WRITE_0D_R8( diffKzT, INDEX_NONE,'diffKzT =',
-c    &'   /* Laplacian diffusion of heat vertically ( m^2/s ) */')
       CALL WRITE_0D_R8( diffKrT, INDEX_NONE,'diffKrT =',
      &'   /* Laplacian diffusion of heat vertically ( m^2/s ) */')
       CALL WRITE_0D_R8( diffKhS, INDEX_NONE,'diffKhS =',
      &'   /* Laplacian diffusion of salt laterally ( m^2/s ) */')
       CALL WRITE_0D_R8( diffK4S, INDEX_NONE,'diffK4S =',
      &'   /* Bihaarmonic diffusion of salt laterally ( m^4/s ) */')
-c     CALL WRITE_0D_R8( diffKzS, INDEX_NONE,'diffKzS =',
-c    &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
       CALL WRITE_0D_R8( diffKrS, INDEX_NONE,'diffKrS =',
      &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
       CALL WRITE_0D_R8( diffKrBL79surf, INDEX_NONE,'diffKrBL79surf =',
