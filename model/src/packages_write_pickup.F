@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.9 2004/09/16 09:35:10 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.10 2004/09/30 18:59:02 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -193,6 +193,7 @@ C     Write pickup file for fizhi package
       IF (usefizhi) THEN
         CALL FIZHI_WRITE_PICKUP(fn,myTime,myIter,myThid)
         CALL FIZHI_WRITE_VEGTILES(fn,0,myTime,myIter,myThid)
+        CALL FIZHI_WRITE_DATETIME(myTime,myIter,myThid)
       ENDIF
 #endif
 
