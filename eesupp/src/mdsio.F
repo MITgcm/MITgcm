@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio.F,v 1.6 2000/03/27 19:01:14 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio.F,v 1.7 2000/06/09 14:25:54 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -33,6 +33,13 @@ C To be modified to work with MITgcmuv message routines.
 #else
 #define _NEW_STATUS 'unknown'
 #endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+#define _OLD_STATUS 'unknown'
+#else
+#define _OLD_STATUS 'old'
+#endif
+
 
 C=======================================================================
       SUBROUTINE MDSREADFIELD(
@@ -308,6 +315,9 @@ C will record the number of records to be 2. This, again, is because
 C we have read the meta information. To be fixed.
 C
 C Created: 03/16/99 adcroft@mit.edu
+C
+C Changed: 05/31/00 heimbach@mit.edu
+C          open(dUnit, ..., status='old', ... -> status='unknown'
 
       implicit none
 C Global variables / common blocks
@@ -371,7 +381,7 @@ C If we are writing to a global file then we open it here
         fileIsOpen=.TRUE.
        else
         length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
-        open( dUnit, file=dataFName, status='old',
+        open( dUnit, file=dataFName, status=_OLD_STATUS,
      &      access='direct', recl=length_of_rec )
         fileIsOpen=.TRUE.
        endif
@@ -393,7 +403,7 @@ C If we are writing to a tiled MDS file then we open each one here
           fileIsOpen=.TRUE.
          else
           length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
-          open( dUnit, file=dataFName, status='old',
+          open( dUnit, file=dataFName, status=_OLD_STATUS,
      &       access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          endif
@@ -1132,6 +1142,8 @@ C Modified: 03/29/99 adcroft@mit.edu + eckert@mit.edu
 C           Fixed to work work with _RS and _RL declarations
 C Modified: 07/27/99 eckert@mit.edu
 C           Customized  for state estimation (--> active_file_control.F)
+C Changed: 05/31/00 heimbach@mit.edu
+C          open(dUnit, ..., status='old', ... -> status='unknown'
 
       implicit none
 C Global variables / common blocks
@@ -1197,7 +1209,7 @@ C If we are writing to a global file then we open it here
         fileIsOpen=.TRUE.
        else
         length_of_rec = MDS_RECLEN( filePrec, narr, mythid )
-        open( dUnit, file=dataFName, status='old',
+        open( dUnit, file=dataFName, status=_OLD_STATUS,
      &      access='direct', recl=length_of_rec )
         fileIsOpen=.TRUE.
        endif
@@ -1219,7 +1231,7 @@ C If we are writing to a tiled MDS file then we open each one here
           fileIsOpen=.TRUE.
          else
           length_of_rec = MDS_RECLEN( filePrec, narr, mythid )
-          open( dUnit, file=dataFName, status='old',
+          open( dUnit, file=dataFName, status=_OLD_STATUS,
      &       access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          endif
