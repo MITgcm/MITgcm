@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.395 2004/11/29 20:30:52 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.396 2004/11/29 22:50:47 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add another verification experiment that tests both the cfc-pkg and
+  the gchem-pkg with GCHEM_SEPARATE_FORCING undefined, that is with 
+  reactive tendencies treated inline with regular timestepping
 o testreport previously did a lousy job of comparing small numbers, so
   we (Ed and Martin) changed the  way the cut-off of 1.e-12 is
   implemented in the little c-progam tmp_cmpnum.c which is embedded in
