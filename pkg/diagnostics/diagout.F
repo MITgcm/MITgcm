@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.22 2004/10/10 06:08:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.23 2004/10/11 22:44:59 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -208,7 +208,7 @@ C             Z is special since it varies
               CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),'units',
      &             udiag(m),myThid)
 
-              CALL MNC_CW_RL_W_S('D',diag_mnc_bn,0,0,
+              CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
      &             cdiag(m), qtmp1, myThid)
 
               CALL MNC_CW_DEL_VNAME(cdiag(m), myThid)
