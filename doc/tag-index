@@ -1,7 +1,8 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.74 2002/06/15 04:22:21 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.75 2002/06/20 23:52:03 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+o NONLIN_FRSURF: rescale gNm1 to get a better conservation with A-B
 o change phiMin in exp1 (to agree with documentation)
 o add new flags: 
  - T,S forcing inside/outside Adams-Bashforth
