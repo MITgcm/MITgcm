@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.13 2003/10/10 18:38:57 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.14 2003/10/21 15:29:20 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -332,6 +332,9 @@ if test "x$MITGCM_IEEE" != x ; then
     IEEE=$MITGCM_IEEE
 fi
 
+AUTODIFF_PKG_USED=f
+AD_OPTFILE=
+
 #  The following state can be set directly by command-line switches
 gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE NOOPT"
 gm_s2="FC IEEE MPI JAM DUMPSTATE STANDARDDIRS"
@@ -342,7 +345,12 @@ gm_s4="CFLAGS KFLAGS1 KFLAGS2 LIBS KPPFILES NOOPTFILES NOOPTFLAGS"
 gm_s5="TOOLSDIR SOURCEDIRS INCLUDEDIRS PWD MAKE THISHOSTNAME THISDATE MACHINE"
 gm_s6="EXECUTABLE EXEHOOK EXEDIR PACKAGES_CONF"
 
-gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6"
+#  The following are all related to adjoint/tangent-linear stuff
+gm_s7="AUTODIFF_PKG_USED AD_OPTFILE TAMC TAF DIFF_FLAGS AD_TAMC_FLAGS AD_TAF_FLAGS"
+gm_s8="FTL_TAMC_FLAGS FTL_TAF_FLAGS SVD_TAMC_FLAGS SVD_TAF_FLAGS"
+gm_s9=""
+
+gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7 $gm_s8"
 
 
 echo
@@ -375,7 +383,6 @@ fi
 #   n=$(( $n + 1 ))
 #done
 #parse_options
-
 ac_prev=
 for ac_option ; do
 
@@ -399,6 +406,11 @@ for ac_option ; do
 	    ac_prev=OPTFILE ;;
 	-optfile=* | --optfile=* | -of=* | --of=*)
 	    OPTFILE=$ac_optarg ;;
+	
+	-adoptfile | --adoptfile | -ad | --ad)
+	    ac_prev=AD_OPTFILE ;;
+	-adoptfile=* | --adoptfile=* | -adof=* | --adof=*)
+	    AD_OPTFILE=$ac_optarg ;;
 	
 	-pdepend | --pdepend)
 	    ac_prev=PDEPEND ;;
@@ -559,6 +571,33 @@ if test "x$OPTFILE" != xNONE ; then
 	fi
     else
 	echo "Error: can't read OPTFILE=\"$OPTFILE\""
+	exit 1
+    fi
+fi
+
+echo "  getting AD_OPTFILE information:  "
+if test "x${AD_OPTFILE}" = x ; then
+    if test "x$MITGCM_AD_OF" = x ; then
+	AD_OPTFILE=$ROOTDIR/tools/adjoint_options/adjoint_default
+    else
+	AD_OPTFILE=$MITGCM_AD_OF
+    fi
+fi
+if test "x${AD_OPTFILE}" != xNONE ; then
+    if test -f "$AD_OPTFILE" -a -r "$AD_OPTFILE" ; then
+	echo "    using AD_OPTFILE=\"$AD_OPTFILE\""
+	source "$AD_OPTFILE"
+	RETVAL=$?
+	if test "x$RETVAL" != x0 ; then
+	    echo -n "Error: failed to source AD_OPTFILE \"$AD_OPTFILE\""
+	    echo "--please check that variable syntax is bash-compatible"
+	    exit 1
+	fi
+	if test "x$DUMPSTATE" != xf ; then
+	    cp -f $AD_OPTFILE "genmake_ad_optfile"
+	fi
+    else
+	echo "Error: can't read AD_OPTFILE=\"$AD_OPTFILE\""
 	exit 1
     fi
 fi
@@ -838,6 +877,9 @@ for i in $PACKAGES ; do
     if test -d $adr ; then
 	SOURCEDIRS="$SOURCEDIRS $adr"
 	INCLUDEDIRS="$INCLUDEDIRS $adr"
+	if test "x$i" = xautodiff ; then
+	    AUTODIFF_PKG_USED=t
+	fi
     else
 	echo "Error: the directory \"$adr\" for package $i doesn't exist"
 	exit 1
@@ -1000,6 +1042,31 @@ for n in $names ; do
 done
 
 
+#  Here, we build the list of files to be "run through" the adjoint
+#  compiler.
+if test -f ./ad_files ; then
+    rm -f ./ad_files
+fi
+echo "  Creating the list of files for the adjoint compiler."
+for i in $SOURCEDIRS ; do
+    list_files=`( cd $i && ls -1 *.list 2>/dev/null )`
+    for j in $list_files ; do
+	cat $i/$j >> ad_files
+    done
+done
+
+cat <<EOF > adjoint_sed
+s/call adopen(/call adopen ( mythid,\\
+     \&           /g
+s/call adclose(/call adclose( mythid,\\
+     \&           /g
+s/call adread(/call adread ( mythid,\\
+     \&           /g
+s/call adwrite(/call adwrite( mythid,\\
+     \&           /g
+
+EOF
+
 echo
 echo "===  Creating the Makefile  ==="
 echo "  setting INCLUDES"
@@ -1020,10 +1087,11 @@ echo -n 'SRCFILES = '    > srclist.inc
 echo -n 'CSRCFILES = '   > csrclist.inc
 echo -n 'F90SRCFILES = ' > f90srclist.inc
 echo -n 'HEADERFILES = ' > hlist.inc
+echo -n 'AD_FLOW_FILES = ' > ad_flow_files.inc
 alldirs="$SOURCEDIRS $INCLUDEDIRS ."
 for d in $alldirs ; do
     deplist=
-    sfiles=`( cd $d; echo *.[h,c,F] )`
+    sfiles=`( cd $d; echo *.[h,c,F] *.flow )`
     sfiles=`( echo $sfiles; cd $d; echo *.F90 )`
     for sf in $sfiles ; do
 	if test ! -r ".links.tmp/$sf" ; then
@@ -1048,6 +1116,10 @@ for d in $alldirs ; do
 			echo    " \\"  >> hlist.inc
 			echo -n " $sf" >> hlist.inc
 			;;
+		    flow)
+			echo    " \\"  >> ad_flow_files.inc
+			echo -n " $sf" >> ad_flow_files.inc
+			;;
 		esac
 	    fi
 	fi
@@ -1064,6 +1136,7 @@ echo "" >> srclist.inc
 echo "" >> csrclist.inc
 echo "" >> f90srclist.inc
 echo "" >> hlist.inc
+echo "" >> ad_flow_files.inc
 
 if test -e $MAKEFILE ; then
     mv -f $MAKEFILE "$MAKEFILE.bak"
@@ -1104,6 +1177,9 @@ INCLUDEDIRS = ${INCLUDEDIRS}
 EXEDIR      = ${EXEDIR}
 EXECUTABLE  = \$(EXEDIR)/${EXECUTABLE}
 TOOLSDIR    = ${TOOLSDIR}
+
+#eh3  new defines for the adjoint work
+AUTODIFF    = ${ROOTDIR}/pkg/autodiff
 
 EOF
 
@@ -1150,15 +1226,18 @@ MAKEFILE=${MAKEFILE}
 
 EOF
 
-cat srclist.inc    >> $MAKEFILE
-cat csrclist.inc   >> $MAKEFILE
-cat f90srclist.inc >> $MAKEFILE
-cat hlist.inc      >> $MAKEFILE
+cat srclist.inc       >> $MAKEFILE
+cat csrclist.inc      >> $MAKEFILE
+cat f90srclist.inc    >> $MAKEFILE
+cat hlist.inc         >> $MAKEFILE
+cat ad_flow_files.inc >> $MAKEFILE
+echo               >> $MAKEFILE
 echo 'F77FILES =  $(SRCFILES:.F=.f)'                                           >> $MAKEFILE
 echo 'F90FILES =  $(F90SRCFILES:.F90=.f90)'                                    >> $MAKEFILE
 echo 'OBJFILES =  $(SRCFILES:.F=.o) $(CSRCFILES:.c=.o) $(F90SRCFILES:.F90=.o)' >> $MAKEFILE
 
 rm -f srclist.inc csrclist.inc hlist.inc flist.tmp clist.tmp f90srclist.inc
+rm -f ad_flow_files.inc
 
 cat >>$MAKEFILE <<EOF
 
@@ -1194,6 +1273,7 @@ CLEAN:
 	-find \$(EXEDIR) -name "fort.*" -exec rm {} \;
 	-rm -f \$(EXECUTABLE) output.txt
 
+Makefile: makefile
 makefile:
 	${0} $@
 cleanlinks:
@@ -1216,6 +1296,70 @@ cleanlinks:
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
 .p.f:
 	\$(KPP) \$(KFLAGS1)\$@ \$(KFLAGS2) \$<
+
+#=========================================
+#===  Automatic Differentiation Rules  ===
+
+TAMC           = ${TAMC}
+TAF            = ${TAF}
+
+EOF
+
+ad_vars="AD_TAMC_FLAGS AD_TAF_FLAGS"
+ad_vars="$ad_vars FTL_TAMC_FLAGS FTL_TAF_FLAGS"
+ad_vars="$ad_vars SVD_TAMC_FLAGS SVD_TAF_FLAGS"
+for i in $ad_vars ; do
+    name=$i
+    t1="t2=\$"`echo $i`
+    eval $t1
+    printf "%-20s = " $name >> $MAKEFILE
+    echo $t2 >> $MAKEFILE
+done
+
+echo "  Add the source list for AD code generation"
+echo >> $MAKEFILE
+echo -n "AD_FILES = " >> $MAKEFILE
+AD_FILES=`cat ad_files`
+for i in $AD_FILES ; do
+    echo    " \\" >> $MAKEFILE
+    echo -n " $i" >> $MAKEFILE
+done
+echo >> $MAKEFILE
+
+cat >>$MAKEFILE <<EOF
+
+
+ad_input_code.f: \$(F77FILES)
+	@make \$(AD_FLOW_FILES)
+	cat \$(AD_FLOW_FILES) \$(AD_FILES) > ad_input_code.f
+
+
+ad_taf_output.f: ad_input_code.f
+	\$(TAF) \$(AD_TAF_FLAGS) ad_input_code.f
+	cat ad_input_code_ad.f | sed -f adjoint_sed > ad_taf_output.f
+
+ad_taf: ad_taf_output.o \$(OBJFILES)
+	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_taf_output.o \$(LIBS) 
+
+
+ad_tamc_output.f: ad_input_code.f
+	\$(TAMC) \$(AD_TAMC_FLAGS) ad_input_code.f
+	cat ad_input_code_ad.f | sed -f adjoint_sed > ad_taf_output.f
+
+ad_tamc: ad_tamc_output.o \$(OBJFILES)
+	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_tamc_output.o \$(LIBS) 
+
+
+flt_taf_output.f: ad_input_code.f
+	\$(TAF) \$(FTL_TAF_FLAGS) ad_input_code.f
+	cat ad_input_code_ad.f | sed -f adjoint_sed > flt_taf_output.f
+
+flt_taf: flt_taf_output.o \$(OBJFILES)
+	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) flt_taf_output.o \$(LIBS) 
+
+
+
+#=========================================
 
 EOF
 

@@ -1,15 +1,3 @@
-diags.flow
-read_write.flow
-read_write_fld.flow
-read_write_rec.flow
-cg2d.flow
-do_the_model_io.flow
-dummy_in_stepping.flow
-initialisation.flow
-checkpoint.flow
-print_message.flow
-open_copy_data_file.flow
-write_state.flow
 adams_bashforth2.f
 calc_buoyancy.f	
 calc_common_factors.f
