@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.408 2004/12/09 17:41:09 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.409 2004/12/10 20:10:46 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint57a_pre
+o some modifs in tools/build_options for sunos
+o call ctrl_pack for ctrl at end for optimcycle=0
 
 checkpoint57
 o add horizontal bi-harmonic viscosity for vertical velocity
