@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/input/Attic/.genmakerc,v 1.7 2002/11/23 22:36:39 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/input/Attic/.genmakerc,v 1.8 2003/03/19 23:40:03 jmc Exp $
 # $Name:  $
 
 # Force use of PGI f77
@@ -13,3 +13,6 @@ set ENABLE=( aim )
 # We can also specify other defaults
 set ROOTDIR=../../..
 set MODS=../code
+
+# high Optimization level causes Pb to some compilers with those S/R:
+set NOOPTFILES=( aim_do_atmos_physics.F )
