@@ -1,29 +1,44 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.1 2004/12/13 21:55:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.2 2004/12/19 20:27:42 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
 
-      subroutine diagnostics_fill (arrayin, chardiag, 
-     .                       levflg, nlevs, bibjflg, bi, bj, myThid) 
+CBOP
+C     !ROUTINE: DIAGNOSTICS_FILL
+C     !INTERFACE:
+      SUBROUTINE DIAGNOSTICS_FILL (inpFld, chardiag, 
+     I                kLev, nLevs, bibjFlg, biArg, bjArg, myThid) 
+
+C     !DESCRIPTION:
 C***********************************************************************
-C  Purpose
-C  -------
 C   Wrapper routine to increment the diagnostics array with a field
-C
+C***********************************************************************
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global variables ===
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS.h"
+
+C     !INPUT PARAMETERS:
+C***********************************************************************
 C  Arguments Description
 C  ----------------------
-C     arrayin .... Field to increment diagnostics array
+C     inpFld ..... Field to increment diagnostics array
 C     chardiag ... Character expression for diag to fill
-C     levflg ..... Integer flag for vertical levels:
+C     kLev   ..... Integer flag for vertical levels:
 C                  0 indicates multiple levels incremented in qdiag
 C                  non-0 (any integer) - WHICH single level to increment.
-C                  negative integer - the input data array is single-leveled
-C                  positive integer - the input data array is multi-leveled
-C     nlevs ...... indicates Number of levels to be filled (1 if levflg <> 0)
-C                  positive: fill in "nlevs" levels in the same order as
+C                  negative INTEGER - the input data array is single-leveled
+C                  positive INTEGER - the input data array is multi-leveled
+C     nLevs ...... indicates Number of levels of the input field array:
+C                  |nLevs| = 3rd dimension size of inpFld array (=1 if kLev <0)
+C                  positive: fill in "nLevs" levels in the same order as
 C                            the input array 
-C                  negative: fill in -nlevs levels in reverse order.
-C     bibjflg .... Integer flag to indicate instructions for bi bj loop
+C                  negative: fill in -nLevs levels in reverse order.
+C     bibjFlg .... Integer flag to indicate instructions for bi bj loop
 C                  0 indicates that the bi-bj loop must be done here
 C                  1 indicates that the bi-bj loop is done OUTSIDE
 C                  2 indicates that the bi-bj loop is done OUTSIDE
@@ -31,32 +46,31 @@ C                     AND that we have been sent a local array (with overlap reg
 C                  3 indicates that the bi-bj loop is done OUTSIDE
 C                     AND that we have been sent a local array
 C                     AND that the array has no overlap region (interior only)
-C     bi ......... X-direction process(or) number - used for bibjflg=1-3
-C     bj ......... Y-direction process(or) number - used for bibjflg=1-3
+C     biArg ...... X-direction tile number - used for bibjFlg=1-3
+C     bjArg ...... Y-direction tile number - used for bibjFlg=1-3
 C     myThid     ::  my thread Id number
 C***********************************************************************
 C                  NOTE: User beware! If a local (1 tile only) array
-C                        is sent here, bibjflg MUST NOT be set to 0
+C                        is sent here, bibjFlg MUST NOT be set to 0
 C                        or there will be out of bounds problems!
 C***********************************************************************
-       implicit none
-#include "EEPARAMS.h"
-#include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
-#include "DIAGNOSTICS.h"
+      _RL inpFld(*)
+      CHARACTER*8 chardiag
+      INTEGER kLev, nLevs, bibjFlg, biArg, bjArg
+      INTEGER myThid
+CEOP
 
-      integer myThid,levflg,nlevs,bibjflg,bi,bj
-      character *8 chardiag
-      _RL arrayin(*)
-
-c Local variables
-c ===============
-      integer i, j, m, n 
-      integer ndiagnum, bihere, bjhere, levhere, ipointer
-      _RL array(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL arrayloc(sNx,sNy)
-      integer irun,jrun,krun,birun,bjrun
-      integer level
+C     !LOCAL VARIABLES:
+C ===============
+      INTEGER m, n 
+      INTEGER ndiagnum, ipointer
+      INTEGER sizI1,sizI2,sizJ1,sizJ2
+      INTEGER sizK,sizTx,sizTy
+      INTEGER iRun, jRun, kl, bi, bj
+      INTEGER k, kFirst, kLast
+      INTEGER kd, kd0, ksgn, kStore
+      CHARACTER*8 parms1
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C Run through list of active diagnostics to make sure
 C we are trying to fill a valid diagnostic
@@ -67,237 +81,206 @@ C we are trying to fill a valid diagnostic
        DO m=1,nActive(n)
         IF ( chardiag.EQ.flds(m,n) ) THEN
          ndiagnum = jdiag(m,n)
-         ipointer = idiag(ndiagnum)
+         IF (ndiag(ndiagnum).GE.0) ipointer = idiag(ndiagnum)
         ENDIF
        ENDDO
       ENDDO
 
 C If-sequence to see if we are a valid and an active diagnostic
 
-      IF ( ndiagnum.ne.0 .and. ipointer.ne.0 ) THEN
+      IF ( ndiagnum.NE.0 .AND. ipointer.NE.0 ) THEN
 
-C Increment the counter for the diagnostic (if we are at bi=bj=1)
-      _BEGIN_MASTER(myThid)
-      if ((bi.eq.1).and.(bj.eq.1).and.(abs(levflg).le.1) ) 
-     .                     ndiag(ndiagnum) = ndiag(ndiagnum) + 1
-      _END_MASTER(myThid)
-
-C   Check to see if we need to do a bi-bj loop here
+C Increment the counter for the diagnostic (if we are at bi=bj=myThid=1)
+       _BEGIN_MASTER(myThid)
+        IF ((biArg.EQ.1).AND.(bjArg.EQ.1).AND.(ABS(kLev).LE.1) ) 
+     &                     ndiag(ndiagnum) = ndiag(ndiagnum) + 1
+       _END_MASTER(myThid)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      if(bibjflg.eq.0) then
-       irun = sNx+2*OLx
-       jrun = sNy+2*OLy
-       krun = abs(nlevs)
-       birun = nSx
-       bjrun = nSy
 
-       do bjhere=myByLo(myThid), myByHi(myThid)
-       do bihere=myBxLo(myThid), myBxHi(myThid)
+C-      select range for 1rst & 2nd indices to accumulate
+C         depending on variable location on C-grid, 
+        parms1 = gdiag(ndiagnum)(1:8)
+        IF ( parms1(2:2).EQ.'M' ) THEN
+         iRun = sNx
+         jRun = sNy
+        ELSEIF ( parms1(2:2).EQ.'U' ) THEN
+         iRun = sNx+1
+         jRun = sNy
+        ELSEIF ( parms1(2:2).EQ.'V' ) THEN
+         iRun = sNx
+         jRun = sNy+1
+        ELSEIF ( parms1(2:2).EQ.'Z' ) THEN
+         iRun = sNx+1
+         jRun = sNy+1
+        ELSE
+         iRun = sNx
+         jRun = sNy
+        ENDIF
 
-       if(levflg.eq.0)then
-        do levhere = 1,krun
-         level = levhere
-         IF (nlevs.LT.0) level=1-nlevs-levhere
-         call diagnostics_fillit(arrayin,irun,jrun,krun,levhere,
-     .                           birun,bjrun,bihere,bjhere,array,myThid)
-         do j = 1,sNy
-         do i = 1,sNx
-          qdiag(i,j,ipointer+level-1,bihere,bjhere) = 
-     .  qdiag(i,j,ipointer+level-1,bihere,bjhere) + 
-     .                       array(i,j)
-         enddo
-         enddo
-        enddo
-       elseif(levflg.gt.0)then
-        call diagnostics_fillit(arrayin,irun,jrun,krun,levflg,
-     .                           birun,bjrun,bihere,bjhere,array,myThid)
-        do j = 1,sNy
-        do i = 1,sNx
-         qdiag(i,j,ipointer+levflg-1,bihere,bjhere) = 
-     .  qdiag(i,j,ipointer+levflg-1,bihere,bjhere) + 
-     .                       array(i,j)
-        enddo
-        enddo
-       else
-        level = -1 * levflg
-        call diagnostics_fillit(arrayin,irun,jrun,1,1,birun,bjrun,
-     .                                       bihere,bjhere,array,myThid)
-        do j = 1,sNy
-        do i = 1,sNx
-         qdiag(i,j,ipointer+level-1,bihere,bjhere) = 
-     .  qdiag(i,j,ipointer+level-1,bihere,bjhere) + 
-     .                       array(i,j)
-        enddo
-        enddo
-       endif
+C-      Dimension of the input array:
+        IF (bibjFlg.EQ.3) THEN
+          sizI1 = 1
+          sizI2 = sNx
+          sizJ1 = 1
+          sizJ2 = sNy
+          iRun = sNx
+          jRun = sNy
+        ELSE
+          sizI1 = 1-OLx
+          sizI2 = sNx+OLx
+          sizJ1 = 1-OLy
+          sizJ2 = sNy+OLy
+        ENDIF
+        IF (bibjFlg.GE.2) THEN
+         sizTx = 1
+         sizTy = 1
+        ELSE
+         sizTx = nSx
+         sizTy = nSy
+        ENDIF
+        IF (kLev.GE.0) THEN
+         sizK = ABS(nLevs)
+        ELSE
+         sizK = 1
+        ENDIF
+C-      Which part of inpFld to add : kl = 3rd index,
+C         and do the loop >> do k=kFirst,kLast ; kl = min(k,sizK) <<
+        IF (kLev.EQ.0) THEN
+          kFirst = 1
+          kLast  = sizK
+        ELSE
+          kFirst = ABS(kLev)
+          kLast  = ABS(kLev)
+        ENDIF
+C-      Which part of qdiag to update: kd = 3rd index, 
+C         and do the loop >> do k=kFirst,kLast ; kd = kd0 + k*ksgn <<
+        IF ( nLevs.GT.0 ) THEN
+          ksgn = 1
+          kd0 = ipointer - 1
+        ELSE
+          ksgn = -1
+          kd0 = ipointer + sizK
+        ENDIF
 
-       enddo
-       enddo
+C-      Check for consistency with Nb of levels reserved in storage array
+        kStore = kd0 + MAX(ksgn*kFirst,ksgn*kLast) - ipointer + 1
+        IF ( kStore.GT.kdiag(ndiagnum) ) THEN
+         _BEGIN_MASTER(myThid)
+          WRITE(msgBuf,'(2A,I3,A)') 'DIAGNOSTICS_FILL: ',
+     &     'exceed Nb of levels(=',kdiag(ndiagnum),' ) reserved '
+          CALL PRINT_ERROR( msgBuf , myThid )
+          WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_FILL: ',
+     &     'for Diagnostics #', ndiagnum, ' : ', chardiag
+          CALL PRINT_ERROR( msgBuf , myThid )
+          WRITE(msgBuf,'(2A,2I4,I3)') 'calling DIAGNOSTICS_FILL ',
+     I     'with kLev,nLevs,bibjFlg=', kLev,nLevs,bibjFlg
+          CALL PRINT_ERROR( msgBuf , myThid )
+          WRITE(msgBuf,'(2A,I6,A)') 'DIAGNOSTICS_FILL: ',
+     I     '==> trying to store up to ', kStore, ' levels'
+          CALL PRINT_ERROR( msgBuf , myThid )
+          STOP 'ABNORMAL END: S/R DIAGNOSTICS_FILL'
+         _END_MASTER(myThid)
+        ENDIF
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      elseif(bibjflg.eq.1) then
-       irun = sNx+2*OLx
-       jrun = sNy+2*OLy
-       krun = abs(nlevs)
-       birun = nSx
-       bjrun = nSy
-
-       if(levflg.eq.0)then
-        do levhere = 1,krun
-         level = levhere
-         IF (nlevs.LT.0) level=1-nlevs-levhere
-         call diagnostics_fillit(arrayin,irun,jrun,krun,levhere,
-     .                           birun,bjrun,bi,bj,array,myThid)
-         do j = 1,sNy
-         do i = 1,sNx
-          qdiag(i,j,ipointer+level-1,bi,bj) =
-     .  qdiag(i,j,ipointer+level-1,bi,bj) +
-     .                       array(i,j)
-         enddo
-         enddo
-        enddo
-       elseif(levflg.gt.0)then
-        call diagnostics_fillit(arrayin,irun,jrun,krun,levflg,
-     .                           birun,bjrun,bi,bj,array,myThid)
-        do j = 1,sNy
-        do i = 1,sNx
-         qdiag(i,j,ipointer+levflg-1,bi,bj) =
-     .  qdiag(i,j,ipointer+levflg-1,bi,bj) + array(i,j)
-        enddo
-        enddo
-       else
-        level = -1 * levflg
-        call diagnostics_fillit(arrayin,irun,jrun,1,1,birun,bjrun,
-     .                                       bi,bj,array,myThid)
-        do j = 1,sNy
-        do i = 1,sNx
-         qdiag(i,j,ipointer+level-1,bi,bj) =
-     .  qdiag(i,j,ipointer+level-1,bi,bj) + array(i,j)
-        enddo
-        enddo
-       endif
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      elseif(bibjflg.eq.3) then
-       irun = sNx
-       jrun = sNy
-       krun = abs(nlevs)
-       birun = 1
-       bjrun = 1
-
-       if(levflg.eq.0)then
-        do levhere = 1,krun
-         level = levhere
-         IF (nlevs.LT.0) level=1-nlevs-levhere
-         call diagnostics_fillit(arrayin,irun,jrun,krun,levhere,
-     .                           birun,bjrun,1,1,arrayloc,myThid)
-         do j = 1,sNy
-         do i = 1,sNx
-          qdiag(i,j,ipointer+level-1,bi,bj) =
-     .  qdiag(i,j,ipointer+level-1,bi,bj) + arrayloc(i,j)
-         enddo
-         enddo
-        enddo
-       elseif(levflg.gt.0)then
-        call diagnostics_fillit(arrayin,irun,jrun,krun,levflg,
-     .                           birun,bjrun,1,1,arrayloc,myThid)
-        do j = 1,sNy
-        do i = 1,sNx
-         qdiag(i,j,ipointer+levflg-1,bi,bj) =
-     .  qdiag(i,j,ipointer+levflg-1,bi,bj) + arrayloc(i,j)
-        enddo
-        enddo
-       else
-        level = -1 * levflg
-        call diagnostics_fillit(arrayin,irun,jrun,1,1,birun,bjrun,
-     .                                       1,1,arrayloc,myThid)
-        do j = 1,sNy
-        do i = 1,sNx
-         qdiag(i,j,ipointer+level-1,bi,bj) =
-     .  qdiag(i,j,ipointer+level-1,bi,bj) + arrayloc(i,j)
-        enddo
-        enddo
-       endif
+        IF (bibjFlg.EQ.0) THEN
+         
+         DO bj=myByLo(myThid), myByHi(myThid)
+          DO bi=myBxLo(myThid), myBxHi(myThid)
+           DO k = kFirst,kLast
+            kd = kd0 + ksgn*k
+            kl = MIN(k,sizK)
+            CALL DIAGNOSTICS_DO_FILL(
+     U                  qdiag(1-OLx,1-OLy,kd,bi,bj),
+     I                  inpFld,
+     I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
+     I                  iRun,jRun,kl,bi,bj,
+     I                  myThid)
+           ENDDO
+          ENDDO
+         ENDDO
+        ELSE
+          bi = MIN(biArg,sizTx)
+          bj = MIN(bjArg,sizTy)
+          DO k = kFirst,kLast
+            kd = kd0 + ksgn*k
+            kl = MIN(k,sizK)
+            CALL DIAGNOSTICS_DO_FILL(
+     U                  qdiag(1-OLx,1-OLy,kd,biArg,bjArg),
+     I                  inpFld,
+     I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
+     I                  iRun,jRun,kl,bi,bj,
+     I                  myThid)
+          ENDDO
+        ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      elseif(bibjflg.eq.2) then
-       irun = sNx+2*OLx
-       jrun = sNy+2*OLy
-       krun = abs(nlevs)
-       birun = 1
-       bjrun = 1
-
-       if(levflg.eq.0)then
-        do levhere = 1,krun
-         level = levhere
-         IF (nlevs.LT.0) level=1-nlevs-levhere
-         call diagnostics_fillit(arrayin,irun,jrun,krun,levhere,
-     .                              birun,bjrun,1,1,array,myThid)
-         do j = 1,sNy
-         do i = 1,sNx
-          qdiag(i,j,ipointer+level-1,bi,bj) =
-     .  qdiag(i,j,ipointer+level-1,bi,bj) + array(i,j)
-         enddo
-         enddo
-        enddo
-       elseif(levflg.gt.0)then
-        call diagnostics_fillit(arrayin,irun,jrun,krun,levflg,
-     .                              birun,bjrun,1,1,array,myThid)
-        do j = 1,sNy
-        do i = 1,sNx
-         qdiag(i,j,ipointer+levflg-1,bi,bj) =
-     .  qdiag(i,j,ipointer+levflg-1,bi,bj) + array(i,j)
-        enddo
-        enddo
-       else
-        level = -1 * levflg
-        call diagnostics_fillit(arrayin,irun,jrun,1,1,birun,bjrun,
-     .                                          1,1,array,myThid)
-        do j = 1,sNy
-        do i = 1,sNx
-         qdiag(i,j,ipointer+level-1,bi,bj) =
-     .  qdiag(i,j,ipointer+level-1,bi,bj) + array(i,j)
-        enddo
-        enddo
-       endif
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      endif
-
-      ELSE
-
-C     if (myThid.eq.1) write(6,1000) chardiag
+c     ELSE
+c     IF (myThid.EQ.1) WRITE(6,1000) chardiag
 
       ENDIF
 
  1000 format(' ',' Warning: Trying to write to diagnostic ',a8,
-     .        ' But it is not a valid (or active) name ')
-      return
-      end
+     &        ' But it is not a valid (or active) name ')
+      RETURN 
+      END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      subroutine diagnostics_fillit(
-     I                  arrayin,irun,jrun,krun,klevf,birun,bjrun,bi,bj,
-     O                  arrayout,
+CBOP
+C     !ROUTINE: DIAGNOSTICS_DO_FILL
+C     !INTERFACE:
+      SUBROUTINE DIAGNOSTICS_DO_FILL(
+     U                  cumFld,
+     I                  inpFld,
+     I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
+     I                  iRun,jRun,k,bi,bj,
      I                  myThid)
 
-      implicit none
+C     !DESCRIPTION:
+C     Update array cumFld 
+C     by adding content of input field array inpFld
+C     over the range [1:iRun],[1:jRun]
+
+C     !USES:
+      IMPLICIT NONE
+
 #include "EEPARAMS.h"
+#include "SIZE.h"
 
-      integer irun, jrun, krun, klevf, birun, bjrun, bi, bj
-      _RL arrayin(irun,jrun,krun,birun,bjrun)
-      _RL arrayout(irun,jrun)
-      integer myThid
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine Arguments ==
+C     cumFld      :: cumulative array (updated)
+C     inpFld      :: input field array to add to cumFld
+C     sizI1,sizI2 :: size of inpFld array: 1rst index range (min,max)
+C     sizJ1,sizJ2 :: size of inpFld array: 2nd  index range (min,max)
+C     sizK        :: size of inpFld array: 3rd  dimension
+C     sizTx,sizTy :: size of inpFld array: tile dimensions
+C     iRun,jRun   :: range of 1rst & 2nd index
+C     k,bi,bj     :: level and tile indices of inFld array 
+C                    to add to cumFld array
+C     myThid      :: my Thread Id number
+      _RL cumFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      INTEGER sizI1,sizI2,sizJ1,sizJ2
+      INTEGER sizK,sizTx,sizTy
+      _RL inpFld(sizI1:sizI2,sizJ1:sizJ2,sizK,sizTx,sizTy)
+      INTEGER iRun, jRun, k, bi, bj
+      INTEGER myThid
+CEOP
 
-      integer i, j
+C     !LOCAL VARIABLES:
+C     i,j    :: loop indices
+      INTEGER i, j
 
-      do j = 1,jrun
-       do i = 1,irun
-        arrayout(i,j) = arrayin(i,j,klevf,bi,bj)
-       enddo
-      enddo
+c     DO j = 1,jRun
+c      DO i = 1,iRun
+C- jmc: try with fixed ranges, that are known at compiling stage 
+C        (might produce a better cash optimisation ?)
+      DO j = 1,sNy
+       DO i = 1,sNx
+        cumFld(i,j) = cumFld(i,j) + inpFld(i,j,k,bi,bj)
+       ENDDO
+      ENDDO
 
-      return
-      end
+      RETURN 
+      END
