@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.31 2005/02/24 21:05:23 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.32 2005/02/24 23:26:03 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -234,7 +234,7 @@ C Set fmu and ed to zero for no background diffusion
 
       integer ndlsm
       parameter ( ndlsm = 1)
-      _RL qdiaglsm(nchp,ndlsm)
+c     _RL qdiaglsm(nchp,ndlsm)
 
       _RL pi,secday,sdayopi2,rgas,akap,cp,alhl
       _RL faceps,grav,caltoj,virtcon,getcon
@@ -331,15 +331,6 @@ c **********************************************************************
           endif
       endif
 
-      call diagnostics_fill(tgz,'TGROUND ',0,1,3,bi,bj,myid)
-c     if(itground.gt.0) then
-c     do j =1,jm
-c     do i =1,im
-c     qdiag(i,j,itground,bi,bj) = qdiag(i,j,itground,bi,bj) + tgz(i,j)
-c     enddo
-c     enddo
-c     endif
-
 c **********************************************************************
 c                            Initialization
 c **********************************************************************
@@ -347,11 +338,11 @@ c **********************************************************************
 c Initialize diagnostic for ground temperature change
 c ---------------------------------------------------
       if(idtg.gt.0) then
-      do j =1,jm
-      do i =1,im
-      qdiag(i,j,idtg,bi,bj) = qdiag(i,j,idtg,bi,bj) - tgz(i,j)
-      enddo
-      enddo
+       do j =1,jm
+       do i =1,im
+        qdiag(i,j,idtg,bi,bj) = qdiag(i,j,idtg,bi,bj) - tgz(i,j)
+       enddo
+       enddo
       endif
 
 c **********************************************************************
@@ -464,22 +455,17 @@ c -----------------------------------
        endif
       enddo
 
-      if( iqice.gt.0 ) then
-      do i =1,ijall
-      tmpdiag(i,1) = 0.0
-      enddo
-      call msc2grd (igrd,chfr,qice,nchp,nchptot,fracland,tmpdiag,im,jm)
-      do j =1,jm
-      do i =1,im
-      qdiag(i,j,iqice,bi,bj) = qdiag(i,j,iqice,bi,bj) + tmpdiag(i,j)
-      enddo
-      enddo
-      nqice = nqice + 1
+      if(diagnostics_is_on('QICE    ',myid) ) then
+       do i =1,ijall
+        tmpdiag(i,1) = 0.0
+       enddo
+       call msc2grd (igrd,chfr,qice,nchp,nchptot,fracland,tmpdiag,im,jm)
+       call diagnostics_fill(tmpdiag,'QICE    ',0,1,3,bi,bj,myid)
       endif
 
-c**********************************************************************
+c***********************************************************************
 c                        loop over regions
-c**********************************************************************
+c***********************************************************************
 
       do 2000 nn = 1, numstrips
 
@@ -582,13 +568,13 @@ c --------------------------------------------------------------------
       sh(i,nlay+1) = qa(i)
       enddo
 
-c     if(iqg.gt.0) then
-c     do i=1,istrip
-c     tmpstrip(i) = sh(i,nlay+1)*1000
-c     enddo
-c     call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-c    1                        qdiag(1,1,iqg,bi,bj),ijall,1,nn,.false.)
-c     endif
+      if(diagnostics_is_on('QG      ',myid) ) then
+      do i=1,istrip
+      tmpstrip(i) = sh(i,nlay+1)*1000
+      enddo
+      call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'QG      ', 1, 1, bi, bj, myid)
+      endif
 
 c value of tracers at the ground
 c ------------------------------
@@ -632,14 +618,13 @@ c -------------------------------
 
 c increment diagnostic arrays for quantities calculated before trbfl
 c ------------------------------------------------------------------
-c     do i =1,istrip
-c     stdiag(i) = ( thv(i,nlay+1)-thv(i,nlay) ) / pke(i,nlay+1)
-c     enddo
-c     if(idtsrf.gt.0) then
-c     call paste2grd(stdiag,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,idtsrf,bi,bj),ijall,1,nn,.false.)
-c     endif
-
+      if(diagnostics_is_on('DTSRF   ',myid) ) then
+       do i=1,istrip
+        stdiag(i) = ( thv(i,nlay+1)-thv(i,nlay) ) / pke(i,nlay+1)
+       enddo
+       call diag_vegtile_fill (stdiag,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'DTSRF   ', 1, 1, bi, bj, myid)
+      endif
 
       if(2.eq.1)then
       print *,' In turb before trbflx - strip ',nn,' out of ',numstrips
@@ -675,26 +660,6 @@ c -----------
      5 dshdthg,dshdshg,dthdthg,dthdshg,eturb,dedqa,dedtc,
      6 hsturb,dhsdqa,dhsdtc,transth,transsh,
      7 ctsave,xxsave,yysave,zetasave,xlsave,khsave,qliq,turbfcc)
-
-
-      if(2.eq.1)then
-      print *,' In turbio, Just after trbflx for strip ',nn,' bi = ',bi
-      print *,' field: stuflux ',stuflux
-      print *,' field: stvflux ',stvflux
-      print *,' field: dshdthg ',dshdthg
-      print *,' field: dshdshg ',dshdshg
-      print *,' field: dthdthg ',dthdthg
-      print *,' field: dthdshg ',dthdshg
-      print *,' field: scu ',scu
-      print *,' field: eturb ',eturb
-      print *,' field: dedqa ',dedqa
-      print *,' field: dedtc ',dedtc
-      print *,' field: hsturb ',hsturb
-      print *,' field: dhsdqa ',dhsdqa
-      print *,' field: dhsdtc ',dhsdtc
-      print *,' field: transth ',transth
-      print *,' field: transsh ',transsh
-      endif
 
       call pastit (qq,tke,istrip,nchp,nchptot,nlay,nn)
       call pastit (ctsave,ctmt,istrip,nchp,nchptot,1,nn)
@@ -767,13 +732,13 @@ ccc   rainls (i) = rainls (i)*dtfac
 c**********************************************************************
 c   diagnostics: fill arrays for lsm input fields
 c**********************************************************************
-c     if(isnowfall.gt.0) then
-c     do i = 1,istrip
-c     tmpstrip(i) = newsnow(i)*86400   
-c     enddo
-c     call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-c    1                   qdiag(1,1,isnowfall,bi,bj),ijall,1,nn,.false.)
-c     endif
+      if(diagnostics_is_on('SNOWFALL',myid) ) then
+      do i = 1,istrip
+      tmpstrip(i) = newsnow(i)*86400   
+      enddo
+      call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'SNOWFALL', 1, 1, bi, bj, myid)
+      endif
       if(diagnostics_is_on('RAINCON ',myid) ) then
       do i = 1,istrip
       tmpstrip(i) = raincon(i)*86400   
@@ -788,93 +753,49 @@ c     endif
       call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'RAINLSP ', 1, 1, bi, bj, myid)
       endif
-c     if(igreen.gt.0) then
-c     call paste2grd(grnstrip,igrd,chfrstr,istrip,nchp,
-c    1                    qdiag(1,1,igreen,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(ilai.gt.0) then
-c     call paste2grd(laistrip,igrd,chfrstr,istrip,nchp,
-c    1                    qdiag(1,1,ilai,bi,bj),ijall,1,nn,.false.)
-c     endif
+      if(diagnostics_is_on('GREEN   ',myid) ) then
+      call diag_vegtile_fill (grnstrip,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'GREEN   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('LAI     ',myid) ) then
+      call diag_vegtile_fill (laistrip,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'LAI     ', 1, 1, bi, bj, myid)
+      endif
       if(diagnostics_is_on('PARDR   ',myid) ) then
       call diag_vegtile_fill (pardr,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'PARDR   ', 1, 1, bi, bj, myid)
       endif
-c     if(ipardf.gt.0) then
-c     call paste2grd(pardf,igrd,chfrstr,istrip,nchp,
-c    1                 qdiag(1,1,ipardf,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(idlwdtc.gt.0) then
-c     call paste2grd(blwrad,igrd,chfrstr,istrip,nchp,
-c    1                  qdiag(1,1,idlwdtc,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(idhdtc.gt.0) then
-c     call paste2grd(dhsdtc,igrd,chfrstr,istrip,nchp,
-c    1                  qdiag(1,1,idhdtc,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(idedtc.gt.0) then
-c     call paste2grd(dedtc,igrd,chfrstr,istrip,nchp,
-c    1                 qdiag(1,1,idedtc,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(idhdqa.gt.0) then
-c     call paste2grd(dhsdqa,igrd,chfrstr,istrip,nchp,
-c    1                  qdiag(1,1,idhdqa,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(idedqa.gt.0) then
-c     call paste2grd(dedqa,igrd,chfrstr,istrip,nchp,
-c    1                 qdiag(1,1,idedqa,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(ilwgdown.gt.0) then
-c     call paste2grd(hlwdwn,igrd,chfrstr,istrip,nchp,
-c    1                  qdiag(1,1,ilwgdown,bi,bj),ijall,1,nn,.false.)
-c     endif
+      if(diagnostics_is_on('PARDF   ',myid) ) then
+      call diag_vegtile_fill (pardf,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'PARDF   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('DLWDTC  ',myid) ) then
+      call diag_vegtile_fill (blwrad,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'DLWDTC  ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('DHDTC   ',myid) ) then
+      call diag_vegtile_fill (dhsdtc,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'DHDTC   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('DEDTC   ',myid) ) then
+      call diag_vegtile_fill (dedtc,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'DEDTC   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('DHDQA   ',myid) ) then
+      call diag_vegtile_fill (dhsdqa,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'DHDQA   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('DEDQA   ',myid) ) then
+      call diag_vegtile_fill (dedqa,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'DEDQA   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('LWGDOWN ',myid) ) then
+      call diag_vegtile_fill (hlwdwn,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'LWGDOWN ', 1, 1, bi, bj, myid)
+      endif
 c**********************************************************************
 
       if(nland.gt.0)then
-
-      if(2.eq.1)then
-      print *,' In turbio, Just before tile for strip ',nn,' bi = ',bi
-      print *,' calling tile for ',nland,' land points '
-      print *,' field: types ',types
-      print *,' field: chfrstr ',chfrstr
-c     print *,' field: rainls ',rainls
-c     print *,' field: newsnow ',newsnow
-c     print *,' field: wspeed ',wspeed
-      print *,' field: eturb ',eturb
-      print *,' field: dedqa ',dedqa
-      print *,' field: dedtc ',dedtc
-      print *,' field: hsturb ',hsturb
-      print *,' field: dhsdqa ',dhsdqa
-      print *,' field: dhsdtc ',dhsdtc
-c     print *,' field: tmpnlay ',tmpnlay
-c     print *,' field: sh(nlay) ',(sh(i,nlay),i=1,istrip)
-c     print *,' field: cd ',cd
-c     print *,' field: cosz ',cosz
-c     print *,' field: pardr ',pardr
-c     print *,' field: pardf ',pardf
-      print *,' field: swnet ',swnet
-      print *,' field: hlwdwn ',hlwdwn
-c     print *,' field: psurf ',psurf
-c     print *,' field: laistrip ',laistrip
-c     print *,' field: grnstrip ',grnstrip
-c     print *,' field: z2str ',z2str
-c     print *,' field: scatstr ',scatstr
-c     print *,' field: z2str ',z2str
-c     print *,' field: rs1str ',rs1str
-c     print *,' field: rs1str ',rs2str
-c     print *,' field: rdcstr ',rdcstr
-c     print *,' field: u2fstr ',u2fstr
-c     print *,' field: dqsdtstr ',dqsdtstr
-      print *,' field: alwrad ',alwrad
-      print *,' field: blwrad ',blwrad
-      print *,' field: tc ',tc
-      print *,' field: td ',td
-c     print *,' field: swet1 ',swet1
-c     print *,' field: swet2 ',swet2
-c     print *,' field: swet3 ',swet3
-c     print *,' field: capacity ',capacity
-c     print *,' field: snowdepth ',snowdepth
-      endif
 
        call tile (
      I   nland, timstp, types, rainls, raincon,  newsnow,  wspeed,
@@ -891,28 +812,7 @@ c     print *,' field: snowdepth ',snowdepth
      O   strdg5, strdg6, strdg7, strdg8, strdg9)
       endif
 
-      if(2.eq.1)then
-      print *,' In turbio, Just after tile for strip ',nn
-      print *,' calling tile for ',nland,' land points '
-      print *,' field: tc ',tc
-c     print *,' field: td ',td
-      print *,' field: strdg1 ',strdg1
-      print *,' field: strdg2 ',strdg2
-      print *,' field: strdg3 ',strdg3
-      print *,' field: strdg4 ',strdg4
-      print *,' field: strdg5 ',strdg5
-      print *,' field: strdg6 ',strdg6
-      print *,' field: strdg7 ',strdg7
-      print *,' field: strdg8 ',strdg8
-      print *,' field: strdg9 ',strdg9
-c     print *,' field: swet1 ',swet1
-c     print *,' field: swet2 ',swet2
-c     print *,' field: swet3 ',swet3
-c     print *,' field: capacity ',capacity
-c     print *,' field: snowdepth ',snowdepth
-      endif
       if( nice.gt.0 ) then
-       print *,' Calling sea ice routine - SHOULD NOT BE HERE!'
        call seaice ( nocean, timstp,     hice,
      .               eturb(nland+1),    dedtc(nland+1),
      .              hsturb(nland+1),   dhsdtc(nland+1), 
@@ -926,74 +826,74 @@ c***********************************************************************
 c   diagnostics: fill arrays for lsm output fields
 c***********************************************************************
 
-c     if(irunoff.gt.0) then
-c     call paste2grd(runoff,igrd,chfrstr,istrip,nchp,
-c    1                  qdiag(1,1,irunoff,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(ifwsoil.gt.0) then
-c     call paste2grd(fwsoil,igrd,chfrstr,istrip,nchp,
-c    1                  qdiag(1,1,ifwsoil,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(igdrain.gt.0) then
-c     call paste2grd(gdrain,igrd,chfrstr,istrip,nchp,
-c    1                  qdiag(1,1,igdrain,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(isnowmelt.gt.0) then
-c     call paste2grd(smelt,igrd,chfrstr,istrip,nchp,
-c    1                 qdiag(1,1,isnowmelt,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(ieveg.gt.0) then
-c     call paste2grd(eveg,igrd,chfrstr,istrip,nchp,
-c    1                    qdiag(1,1,ieveg,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(iesnow.gt.0) then
-c     call paste2grd(esno,igrd,chfrstr,istrip,nchp,
-c    1                    qdiag(1,1,iesnow,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(iesoil.gt.0) then
-c     call paste2grd(esoi,igrd,chfrstr,istrip,nchp,
-c    1                    qdiag(1,1,iesoil,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(ieresv.gt.0) then
-c     call paste2grd(eint,igrd,chfrstr,istrip,nchp,
-c    1                    qdiag(1,1,ieresv,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(ievpot.gt.0) then
-c     call paste2grd(evpot,igrd,chfrstr,istrip,nchp,
-c    1                     qdiag(1,1,ievpot,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(idtc.gt.0) then
-c     call paste2grd(strdg1,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,idtc,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(idqc.gt.0) then
-c     call paste2grd(strdg2,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,idqc,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(itcdtc.gt.0) then
-c     call paste2grd(strdg3,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,itcdtc,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(iraddtc.gt.0) then
-c     call paste2grd(strdg4,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,iraddtc,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(isensdtc.gt.0) then
-c     call paste2grd(strdg5,igrd,chfrstr,istrip,nchp,
-c    1                     qdiag(1,1,isensdtc,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(ilatdtc.gt.0) then
-c     call paste2grd(strdg6,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,ilatdtc,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(itddtc.gt.0) then
-c     call paste2grd(strdg7,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,itddtc,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(iqcdtc.gt.0) then
-c     call paste2grd(strdg8,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,iqcdtc,bi,bj),ijall,1,nn,.false.)
-c     endif
+      if(diagnostics_is_on('RUNOFF  ',myid) ) then
+      call diag_vegtile_fill (runoff,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'RUNOFF  ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('FWSOIL  ',myid) ) then
+      call diag_vegtile_fill (fwsoil,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'FWSOIL  ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('GDRAIN  ',myid) ) then
+      call diag_vegtile_fill (gdrain,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'GDRAIN  ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('SNOWMELT',myid) ) then
+      call diag_vegtile_fill (smelt,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'SNOWMELT', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('EVEG    ',myid) ) then
+      call diag_vegtile_fill (eveg,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'EVEG    ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('ESNOW   ',myid) ) then
+      call diag_vegtile_fill (esnow,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'ESNOW   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('ESOIL   ',myid) ) then
+      call diag_vegtile_fill (esoil,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'ESOIL   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('ERESV   ',myid) ) then
+      call diag_vegtile_fill (eint,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'ERESV   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('EVPOT   ',myid) ) then
+      call diag_vegtile_fill (evpot,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'EVPOT   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('DTC     ',myid) ) then
+      call diag_vegtile_fill (strdg1,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'DTC     ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('DQC     ',myid) ) then
+      call diag_vegtile_fill (strdg2,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'DQC     ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('TCDTC   ',myid) ) then
+      call diag_vegtile_fill (strdg3,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'TCDTC   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('RADDTC  ',myid) ) then
+      call diag_vegtile_fill (strdg4,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'RADDTC  ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('SENSDTC ',myid) ) then
+      call diag_vegtile_fill (strdg5,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'SENSDTC ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('LATDTC  ',myid) ) then
+      call diag_vegtile_fill (strdg6,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'LATDTC  ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('TDDTC   ',myid) ) then
+      call diag_vegtile_fill (strdg7,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'TDDTC   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('QCDTC   ',myid) ) then
+      call diag_vegtile_fill (strdg8,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'QCDTC   ', 1, 1, bi, bj, myid)
+      endif
 c***********************************************************************
 
       if( ndlsm.gt.1 ) then
@@ -1144,27 +1044,27 @@ c note: the order, logic, and scaling of the heat and moisture flux
 c       diagnostics is critical!
 c ------------------------------
 
-c     if(ievap.gt.0) then
-c     do i=1,istrip
-c     tmpstrip(i) = stqflux(i,nlay) * 86400
-c     enddo
-c     call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-c    1                    qdiag(1,1,ievap,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(ieflux.gt.0) then
-c     do i=1,istrip
-c     tmpstrip(i) = stqflux(i,nlay) * alhl
-c     enddo
-c     call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-c    1                    qdiag(1,1,ieflux,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(ihflux.gt.0) then
-c     do i=1,istrip
-c     tmpstrip(i) = sttflux(i,nlay) * cp
-c     enddo
-c     call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-c    1                    qdiag(1,1,ihflux,bi,bj),ijall,1,nn,.false.)
-c     endif
+      if(diagnostics_is_on('EVAP    ',myid) ) then
+      do i=1,istrip
+      tmpstrip(i) = stqflux(i,nlay) * 86400
+      enddo
+      call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'EVAP    ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('EFLUX   ',myid) ) then
+      do i=1,istrip
+      tmpstrip(i) = stqflux(i,nlay) * alhl
+      enddo
+      call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'EFLUX   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('HFLUX   ',myid) ) then
+      do i=1,istrip
+      tmpstrip(i) = sttflux(i,nlay) * cp
+      enddo
+      call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'HFLUX   ', 1, 1, bi, bj, myid)
+      endif
       if(diagnostics_is_on('TUFLUX  ',myid) ) then
       call diag_vegtile_fill (stuflux,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'TUFLUX  ', 0, nlay, bi, bj, myid)
@@ -1173,10 +1073,6 @@ c     endif
       call diag_vegtile_fill (stvflux,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'TVFLUX  ', 0, nlay, bi, bj, myid)
       endif
-c     if(ituflux.gt.0) then
-c     call paste2grd(stuflux,igrd,chfrstr,istrip,nchp,
-c    1                   qdiag(1,1,ituflux,bi,bj),ijall,nlay,nn,.false.)
-c     endif
       if(diagnostics_is_on('TTFLUX  ',myid) ) then
       do l=1,nlay
       do i=1,istrip
@@ -1207,114 +1103,121 @@ c     endif
       call diag_vegtile_fill (skm,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'KM      ', 0, nlay, bi, bj, myid)
       endif
-c     if(iri.gt.0) call paste2grd(sri,igrd,chfrstr,istrip,nchp,
-c    1                       qdiag(1,1,iri,bi,bj),ijall,nlay,nn,.false.)
-c     if(ikh.gt.0) call paste2grd(skh,igrd,chfrstr,istrip,nchp,
-c    1                       qdiag(1,1,ikh,bi,bj),ijall,nlay,nn,.false.)
-c     if(ikm.gt.0) call paste2grd(skm,igrd,chfrstr,istrip,nchp,
-c    1                       qdiag(1,1,ikm,bi,bj),ijall,nlay,nn,.false.)
-c     if(ict.gt.0) then
-c     call paste2grd(sct,igrd,chfrstr,istrip,nchp,
-c    1                   qdiag(1,1,ict,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(icu.gt.0) then
-c     call paste2grd(scu,igrd,chfrstr,istrip,nchp,
-c    1                   qdiag(1,1,icu,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(iwinds.gt.0) then
-c     call paste2grd(swinds,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,iwinds,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(iuflux.gt.0) then
-c     call paste2grd(stuflux(1,nlay),igrd,chfrstr,istrip,nchp,
-c    1                       qdiag(1,1,iuflux,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(ivflux.gt.0) then
-c     call paste2grd(stvflux(1,nlay),igrd,chfrstr,istrip,nchp,
-c    1                       qdiag(1,1,ivflux,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(iustar.gt.0) then
-c     call paste2grd(sustar,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,iustar,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(iz0.gt.0) then
-c     call paste2grd(sz0,igrd,chfrstr,istrip,nchp,
-c    1                   qdiag(1,1,iz0,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(ifrqtrb.gt.0) then
-c     call paste2grd(frqtrb,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,ifrqtrb,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(ipbl.gt.0) then
-c     call paste2grd(pbldpth,igrd,chfrstr,istrip,nchp,
-c    1                       qdiag(1,1,ipbl,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(iu2m.gt.0) then
-c     call paste2grd(stu2m,igrd,chfrstr,istrip,nchp,
-c    1                     qdiag(1,1,iu2m,bi,bj),ijall,1,nn,.true.)
-c     endif
-c     if(iv2m.gt.0) then
-c     call paste2grd(stv2m,igrd,chfrstr,istrip,nchp,
-c    1                     qdiag(1,1,iv2m,bi,bj),ijall,1,nn,.true.)
-c     endif
-c     if(it2m.gt.0) then
-c     call paste2grd(stt2m,igrd,chfrstr,istrip,nchp,
-c    1                     qdiag(1,1,it2m,bi,bj),ijall,1,nn,.true.)
-c     endif
-c     if(iq2m.gt.0) then
-c     do i=1,istrip
-c        if( stq2m(i).ne.undef ) then
-c            tmpstrip(i) = stq2m(i) * 1000
-c        else
-c            tmpstrip(i) = undef
-c        endif
-c     enddo
-c     call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-c    1                     qdiag(1,1,iq2m,bi,bj),ijall,1,nn,.true.)
-c     endif
-c     if(iu10m.gt.0) then
-c     call paste2grd(stu10m,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,iu10m,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(iv10m.gt.0) then
-c     call paste2grd(stv10m,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,iv10m,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(it10m.gt.0) then
-c     call paste2grd(stt10m,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,it10m,bi,bj),ijall,1,nn,.false.)
-c     endif
-c     if(iq10m.gt.0) then
-c     do i=1,istrip
-c        if( stq10m(i).ne.undef ) then
-c            tmpstrip(i) = stq10m(i) * 1000
-c        else
-c            tmpstrip(i) = undef
-c        endif
-c     enddo
-c     call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-c    1                      qdiag(1,1,iq10m,bi,bj),ijall,1,nn,.false.)
-c     endif
+      if(diagnostics_is_on('CT      ',myid) ) then
+      call diag_vegtile_fill (sct,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'CT      ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('CU      ',myid) ) then
+      call diag_vegtile_fill (scu,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'CU      ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('WINDS   ',myid) ) then
+      call diag_vegtile_fill (swinds,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'WINDS   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('UFLUX   ',myid) ) then
+      call diag_vegtile_fill (stuflux(1,nlay),igrd,chfrstr,istrip,nchp,
+     . nn,.false., 'UFLUX   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('VFLUX   ',myid) ) then
+      call diag_vegtile_fill (stvflux(1,nlay),igrd,chfrstr,istrip,nchp,
+     . nn,.false., 'VFLUX   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('USTAR   ',myid) ) then
+      call diag_vegtile_fill (sustar,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'USTAR   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('Z0      ',myid) ) then
+      call diag_vegtile_fill (sz0,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'Z0      ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('FRQTRB  ',myid) ) then
+      call diag_vegtile_fill (frqtrb,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'FRQTRB  ', 0, nlay-1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('PBL     ',myid) ) then
+      call diag_vegtile_fill (pbldpth,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'PBL     ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('U2M     ',myid) ) then
+      call diag_vegtile_fill (stu2m,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'U2M     ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('V2M     ',myid) ) then
+      call diag_vegtile_fill (stv2m,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'V2M     ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('T2M     ',myid) ) then
+      call diag_vegtile_fill (stt2m,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'T2M     ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('Q2M     ',myid) ) then
+      do i=1,istrip
+         if( stq2m(i).ne.undef ) then
+             tmpstrip(i) = stq2m(i) * 1000
+         else
+             tmpstrip(i) = undef
+         endif
+      enddo
+      call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'Q2M     ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('U10M    ',myid) ) then
+      call diag_vegtile_fill (stu10m,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'U10M    ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('V10M    ',myid) ) then
+      call diag_vegtile_fill (stv10m,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'V10M    ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('T10M    ',myid) ) then
+      call diag_vegtile_fill (stt10m,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'T10M    ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('Q10M    ',myid) ) then
+      do i=1,istrip
+         if( stq10m(i).ne.undef ) then
+             tmpstrip(i) = stq10m(i) * 1000
+         else
+             tmpstrip(i) = undef
+         endif
+      enddo
+      call diag_vegtile_fill (tmpstrip,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'Q10M    ', 1, 1, bi, bj, myid)
+      endif
 
 c**********************************************************************
 c   more diagnostics: land surface model parameters
 c**********************************************************************
  
-c     if(itdeep.gt.0)call paste2grd(td,igrd,chfrstr,istrip,nchp,
-c    .                     qdiag(1,1,itdeep,bi,bj),ijall,1,nn,.false.)
-c     if(iqcanopy .gt.0)call paste2grd(qa,igrd,chfrstr,istrip,nchp,
-c    .                  qdiag(1,1,iqcanopy,bi,bj) ,ijall,1,nn,.false.)
-c     if(ismshal  .gt.0)call paste2grd(swet1,igrd,chfrstr,istrip,nchp,
-c    .                  qdiag(1,1,ismshal,bi,bj)  ,ijall,1,nn,.false.)
-c     if(ismroot  .gt.0)call paste2grd(swet2,igrd,chfrstr,istrip,nchp,
-c    .                  qdiag(1,1,ismroot,bi,bj)  ,ijall,1,nn,.false.)
-c     if(ismdeep  .gt.0)call paste2grd(swet3,igrd,chfrstr,istrip,nchp,
-c    .                  qdiag(1,1,ismdeep,bi,bj)  ,ijall,1,nn,.false.)
-c     if(icapacity.gt.0)call paste2grd(capacity,igrd,chfrstr,istrip,
-c    .             nchp,qdiag(1,1,icapacity,bi,bj),ijall,1,nn,.false.)
-c     if(isnow.gt.0)call paste2grd(snowdepth,igrd,chfrstr,istrip,nchp,
-c    .                  qdiag(1,1,isnow,bi,bj)    ,ijall,1,nn,.false.)
-
+      if(diagnostics_is_on('TDEEP   ',myid) ) then
+      call diag_vegtile_fill (td,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'TDEEP   ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('QCANOPY ',myid) ) then
+      call diag_vegtile_fill (qa,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'QCANOPY ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('SMSHAL  ',myid) ) then
+      call diag_vegtile_fill (swet1,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'SMSHAL  ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('SMROOT  ',myid) ) then
+      call diag_vegtile_fill (swet2,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'SMROOT  ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('SMDEEP  ',myid) ) then
+      call diag_vegtile_fill (swet3,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'SMDEEP  ', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('CAPACITY',myid) ) then
+      call diag_vegtile_fill (capacity,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'CAPACITY', 1, 1, bi, bj, myid)
+      endif
+      if(diagnostics_is_on('SNOW    ',myid) ) then
+      call diag_vegtile_fill (snowdepth,igrd,chfrstr,istrip,nchp,nn,
+     . .false., 'SNOW    ', 1, 1, bi, bj, myid)
+      endif
 c**********************************************************************
 c end regions loop
 
@@ -1397,25 +1300,17 @@ c ------------------------------------------------------------------
        enddo
        enddo
 
-       if (itrbfcc.gt.0) then
-       do j=1,jm
-       do i=1,im
-       qdiag(i,j,itrbfcc+L-1,bi,bj) =  qdiag(i,j,itrbfcc+L-1,bi,bj) + 
-     .                                              fcctmp(i,j,L)
-       enddo
-       enddo
+       if(diagnostics_is_on('TRBFCC  ',myid) ) then
+        call diagnostics_fill(fcctmp(i,j,L),'TRBFCC  ',L,1,3,bi,bj,myid)
        endif
-
-       if (itrbqliq.gt.0) then
-       do j=1,jm
-       do i=1,im
-       qdiag(i,j,itrbqliq+L-1,bi,bj)=qdiag(i,j,itrbqliq+L-1,bi,bj)+
-     .                                             qliqtmp(i,j,L)*1.e6
-       enddo
-       enddo
+       if(diagnostics_is_on('TRBQLIQ ',myid) ) then
+        do j = 1,jm
+        do i = 1,im
+         tmpdiag(i,j) = qliqtmp(i,j,L)*1.e6
+        enddo
+        enddo
+        call diagnostics_fill(tmpdiag,'TRBQLIQ ',L,1,3,bi,bj,myid)
        endif
-      enddo
-
 C**********************************************************************
 C And some other variables to be transformed back to grid space:
 C Ground Temperature, snow depth and shallow layer ground wetness
@@ -1431,33 +1326,20 @@ c **** increment diagnostic array for ground and surface temperatures,
 c ***       ground temp tendency, and ground humidity
 c *********************************************************************
  
-c     if(itground.gt.0) then
-c     do j =1,jm
-c     do i =1,im
-c     qdiag(i,j,itground,bi,bj) = qdiag(i,j,itground,bi,bj) + tgz(i,j)
-c     enddo
-c     enddo
-c     endif
-
-      if(itcanopy.gt.0) then
-      do j =1,jm
-      do i =1,im
-      qdiag(i,j,itcanopy,bi,bj) = qdiag(i,j,itcanopy,bi,bj) + tgz(i,j)
-      enddo
-      enddo
+      if(diagnostics_is_on('TGROUND ',myid) ) then
+       call diagnostics_fill(tgz,'TGROUND ',0,1,3,bi,bj,myid)
+      endif
+      if(diagnostics_is_on('TCANOPY ',myid) ) then
+       call diagnostics_fill(tgz,'TCANOPY ',0,1,3,bi,bj,myid)
       endif
 
-      if(its.gt.0) then
-      do j =1,jm
-      do i =1,im
-      tmpdiag(i,j) = tz(i,j,nlay) * pkht(i,j,nlay)
-      enddo
-      enddo
-      do j =1,jm
-      do i =1,im
-      qdiag(i,j,its,bi,bj) = qdiag(i,j,its,bi,bj) + tmpdiag(i,j)
-      enddo
-      enddo
+      if(diagnostics_is_on('TS      ',myid) ) then
+       do j =1,jm
+       do i =1,im
+        tmpdiag(i,j) = tz(i,j,nlay) * pkht(i,j,nlay)
+       enddo
+       enddo
+       call diagnostics_fill(tmpdiag,'TS      ',0,1,3,bi,bj,myid)
       endif
 
       if(idtg.gt.0) then
@@ -1473,40 +1355,40 @@ c ****           increment diagnostic arrays for tendencies        ****
 c *********************************************************************
       do L = 1,nlay
  
-       if(iturbu.gt.0) then
-       do j =1,jm
-       do i =1,im
-        qdiag(i,j,iturbu+l-1,bi,bj) =  qdiag(i,j,iturbu+l-1,bi,bj)
-     .                      + duturb(i,j,l) * atimstp * secday
-       enddo
-       enddo
+       if(diagnostics_is_on('TURBV   ',myid) ) then
+        do j = 1,jm
+        do i = 1,im
+         tmpdiag(i,j) = dvturb(i,j,l) * atimstp * secday
+        enddo
+        enddo
+        call diagnostics_fill(tmpdiag,'TURBV   ',L,1,3,bi,bj,myid)
        endif
 
-       if(iturbv.gt.0) then
-       do j =1,jm
-       do i =1,im
-        qdiag(i,j,iturbv+l-1,bi,bj) =  qdiag(i,j,iturbv+l-1,bi,bj)
-     .                      + dvturb(i,j,l) * atimstp * secday
-       enddo
-       enddo
+       if(diagnostics_is_on('TURBU   ',myid) ) then
+        do j = 1,jm
+        do i = 1,im
+         tmpdiag(i,j) = duturb(i,j,l) * atimstp * secday
+        enddo
+        enddo
+        call diagnostics_fill(tmpdiag,'TURBU   ',L,1,3,bi,bj,myid)
        endif
 
-       if(iturbq.gt.0) then
-       do j =1,jm
-       do i =1,im
-        qdiag(i,j,iturbq+l-1,bi,bj) =  qdiag(i,j,iturbq+l-1,bi,bj)
-     .                      + dqturb(i,j,l,1) * atimstp * secday * 1000
-       enddo
-       enddo
+       if(diagnostics_is_on('TURBQ   ',myid) ) then
+        do j = 1,jm
+        do i = 1,im
+         tmpdiag(i,j) = dqturb(i,j,l,1) * atimstp * secday * 1000.
+        enddo
+        enddo
+        call diagnostics_fill(tmpdiag,'TURBQ   ',L,1,3,bi,bj,myid)
        endif
 
-       if(iturbt.gt.0) then
-       do j =1,jm
-       do i =1,im
-        qdiag(i,j,iturbt+l-1,bi,bj) =  qdiag(i,j,iturbt+l-1,bi,bj)
-     .                   + dtturb(i,j,l) * pkz(i,j,l)*atimstp*secday
-       enddo
-       enddo
+       if(diagnostics_is_on('TURBT   ',myid) ) then
+        do j = 1,jm
+        do i = 1,im
+         tmpdiag(i,j) = dtturb(i,j,l) * pkz(i,j,l)*atimstp*secday
+        enddo
+        enddo
+        call diagnostics_fill(tmpdiag,'TURBT   ',L,1,3,bi,bj,myid)
        endif
 
       enddo
@@ -1553,84 +1435,8 @@ c *********************************************************************
       nturbq    = nturbq    + 1
       nturbu    = nturbu    + 1
       nturbv    = nturbv    + 1
-      ntuflux   = ntuflux   + 1
-      ntvflux   = ntvflux   + 1
-      nttflux   = nttflux   + 1
-      ntqflux   = ntqflux   + 1
-      nwinds    = nwinds    + 1
-      nkm       = nkm       + 1
-      nkh       = nkh       + 1
-      nri       = nri       + 1
-      nct       = nct       + 1
-      ncu       = ncu       + 1
-      ntground  = ntground  + 1
-      nts       = nts       + 1
       ndtg      = ndtg      + 1
-      nqg       = nqg       + 1
-      nqs       = nqs       + 1
-      nhflux    = nhflux    + 1
-      neflux    = neflux    + 1
-      nevap     = nevap     + 1
-      nuflux    = nuflux    + 1
-      nvflux    = nvflux    + 1
-      ndtsrf    = ndtsrf    + 1
-      nustar    = nustar    + 1
-      nz0       = nz0       + 1
-      nfrqtrb   = nfrqtrb   + 1
-      npbl      = npbl      + 1
-      nu2m      = nu2m      + 1
-      nv2m      = nv2m      + 1
-      nt2m      = nt2m      + 1
-      nq2m      = nq2m      + 1
-      nu10m     = nu10m     + 1
-      nv10m     = nv10m     + 1
-      nt10m     = nt10m     + 1
-      nq10m     = nq10m     + 1
-      ntcanopy  = ntcanopy  + 1
-      ntdeep    = ntdeep    + 1
-      nqcanopy  = nqcanopy  + 1
-      nsmshal   = nsmshal   + 1
-      nsmroot   = nsmroot   + 1
-      nsmdeep   = nsmdeep   + 1
-      nsnow     = nsnow     + 1
-      ncapacity = ncapacity + 1
-      nraincon  = nraincon  + 1
-      nrainlsp  = nrainlsp  + 1
-      nsnowfall = nsnowfall + 1
-      nrunoff   = nrunoff   + 1
-      nfwsoil   = nfwsoil   + 1
-      ngdrain   = ngdrain   + 1
-      nsnowmelt = nsnowmelt + 1
-      neresv    = neresv    + 1
-      nesoil    = nesoil    + 1
-      neveg     = neveg     + 1
-      nesnow    = nesnow    + 1
-      npardf    = npardf    + 1
-      npardr    = npardr    + 1
-      nlai      = nlai      + 1
-      ngreen    = ngreen    + 1
-      ndlwdtc   = ndlwdtc   + 1
-      ndhdtc    = ndhdtc    + 1
-      ndedtc    = ndedtc    + 1
-      nevpot    = nevpot    + 1
-      nlwgdown  = nlwgdown  + 1
-      ndhdqa    = ndhdqa    + 1
-      ndedqa    = ndedqa    + 1
-      ndtc      = ndtc      + 1
-      ndqc      = ndqc      + 1
-      ntcdtc    = ntcdtc    + 1
-      nraddtc   = nraddtc   + 1
-      nsensdtc  = nsensdtc  + 1
-      nlatdtc   = nlatdtc   + 1
-      ntddtc    = ntddtc    + 1
-      nqcdtc    = nqcdtc    + 1
-      ntrbqliq  = ntrbqliq  + 1
-      ntrbfcc   = ntrbfcc   + 1
-
-      nsdiag1 = nsdiag1 + 1
-      nsdiag2 = nsdiag2 + 1
       endif
-
 #endif
 
       return
