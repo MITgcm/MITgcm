@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.2 2001/04/10 22:35:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.3 2001/05/14 21:48:13 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -16,9 +16,9 @@ C     == Global variables ===
 #include "addynvars.h"
 #include "adffields.h"
 
-      common /adgrid_r/ addiffkr, adkapgm
-      _RS addiffkr(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
-      _RS adkapgm(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
+cph      common /adgrid_r/ addiffkr, adkapgm
+cph      _RS addiffkr(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
+cph      _RS adkapgm(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -58,20 +58,20 @@ C--     Set suffix for this set of data files.
 C--     Read IO error counter
         beginIOErrCount = IO_ERRCOUNT(myThid)
 
-        CALL WRITE_FLD_XY_RS ( 'ADJtaux.',suff, adfu, myIter, myThid)
-        CALL WRITE_FLD_XY_RS ( 'ADJtauy.',suff, adfv, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RS ( 'ADJdiff.',suff, addiffkr, 
-     &       myIter, myThid)
-        CALL WRITE_FLD_XYZ_RS ( 'ADJkagm.',suff, adkapgm, 
-     &       myIter, myThid)
-        CALL WRITE_FLD_XY_RS ( 'ADJqnet.',suff, adqnet, myIter, myThid)
-        CALL WRITE_FLD_XY_RS ('ADJempr.',suff, adempmr, myIter, myThid)
-        CALL WRITE_FLD_XY_RS ( 'ADJ_sst.',suff, adsst, myIter, myThid)
-        CALL WRITE_FLD_XY_RS ( 'ADJ_sss.',suff, adsss, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL ( 'ADJtemp.',suff, adgt, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL ( 'ADJsalt.',suff, adgs, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL ( 'ADJuvel.',suff, adgu, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL ( 'ADJvvel.',suff, adgv, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJtaux.',suff, adfu, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJtauy.',suff, adfv, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJqnet.',suff, adqnet, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJempr.',suff, adempmr, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL( 'ADJtemp.',suff, adgtnm1, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL( 'ADJsalt.',suff, adgsnm1, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL( 'ADJuvel.',suff, adgunm1, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL( 'ADJvvel.',suff, adgvnm1, myIter, myThid)
+cph        CALL WRITE_FLD_XY_RL ( 'ADJ_sst.',suff, adsst, myIter, myThid)
+cph        CALL WRITE_FLD_XY_RL ( 'ADJ_sss.',suff, adsss, myIter, myThid)
+cph        CALL WRITE_FLD_XYZ_RL ( 'ADJdiff.',suff, addiffkr, 
+cph     &       myIter, myThid)
+cph        CALL WRITE_FLD_XYZ_RL ( 'ADJkagm.',suff, adkapgm, 
+cph     &       myIter, myThid)
 
 C--     Reread IO error counter
         endIOErrCount = IO_ERRCOUNT(myThid)
