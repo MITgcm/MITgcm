@@ -32,6 +32,7 @@
  hFacMin=.1,
  hFacMinDr=20.,
  readBinaryPrec=64,
+ usePickupBeforeC54=.TRUE.,
  &
 
 # Elliptic solver parameters

@@ -27,6 +27,7 @@
  staggerTimeStep=.TRUE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
+ usePickupBeforeC54=.TRUE.,
  hFacMin=0.2,
 #tempAdvScheme=77,
  saltAdvScheme=3,

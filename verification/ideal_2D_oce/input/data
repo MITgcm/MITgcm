@@ -30,6 +30,7 @@
  useCDscheme=.TRUE.,
  readBinaryPrec=64,
  tempAdvScheme=77,
+ usePickupBeforeC54=.TRUE.,
  &
 
 # Elliptic solver parameters
