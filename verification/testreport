@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.13 2003/11/03 14:32:05 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.14 2003/11/07 21:32:19 edhill Exp $
 #  $Name:  $
 #
 
@@ -757,5 +757,9 @@ rm tmp_cmpnum.f a.out dfile
 
 if test "x$CLEANUP" != xt ; then
     cat $SUMMARY
+    if test -e tr.out ; then
+        mv tr.out tr.out.old
+    fi
+    cat $SUMMARY > tr.out
 fi
 
