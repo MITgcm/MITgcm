@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.7 2004/07/18 01:13:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing.F,v 1.8 2004/08/06 19:50:52 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -42,7 +42,7 @@ c  PTR_CO2              :: DIC tracer field
       INTEGER iMin,iMax,jMin,jMax, bi, bj
 
 C !OUTPUT PARAMETERS: ===================================================
-c GDC                   :: surface flux due to air-sea exchange
+c GDC                   :: tendency due to air-sea exchange
       _RL  GDC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 #ifdef ALLOW_PTRACERS
@@ -186,9 +186,8 @@ c
 C update tendency      
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-           GDC(i,j)= maskC(i,j,kLev,bi,bj)*(
-     &                    FluxCO2(i,j,bi,bj)
-     &                    + VirtualFlux(i,j)
+           GDC(i,j)= maskC(i,j,kLev,bi,bj)*recip_drF(kLev)*(
+     &                    FluxCO2(i,j,bi,bj) + VirtualFlux(i,j)
      &                                              )
           ENDDO
          ENDDO
