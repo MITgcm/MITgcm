@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.3 1998/04/23 20:56:54 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.4 1998/06/10 15:27:32 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -270,8 +270,8 @@ C--    Get MPI id for neighboring procs.
        ENDIF
        pidNW = mpiPidNW
        mpiGridSpec(1) = mpiPx+1
-       IF ( mpiPeriodicity(1) .EQ. _mpiTRUE_ .AND. mpiGridSpec(1) .LT. 0     )
-     &  mpiGridSpec(1) = nPx-1
+       IF ( mpiPeriodicity(1) .EQ. _mpiTRUE_ .AND. mpiGridSpec(1) .GT. nPx-1 )
+     &  mpiGridSpec(1) = 0
        mpiGridSpec(2) = mpiPy+1
        IF ( mpiPeriodicity(2) .EQ. _mpiTRUE_ .AND. mpiGridSpec(2) .GT. nPy-1 )
      &  mpiGridSpec(2) = 0
