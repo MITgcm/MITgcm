@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.121 2005/03/22 19:45:03 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.122 2005/03/22 20:10:32 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1827,7 +1827,7 @@ for i in $SOURCEDIRS ; do
     done
 done
 if test ! "x"$FS = "x.f" ; then
-    cat ad_files | sed -e "s/\.f/$FS/g" > ad_files_f
+    cat ad_files | sed -e "s/\.f/.$FS/g" > ad_files_f
     mv -f ad_files_f ad_files
 fi
 
