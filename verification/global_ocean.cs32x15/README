@@ -1,0 +1,29 @@
+global ocean using the cubed-sphere grid 32x32x32 with 15 levels
+=================================================================
+
+Specific option:
+* Use Non-Linear Free surface formulation with z* coordinate
+   with real fresh-water flux.
+* Oceanic set-up on the cubed-sphere grid using the vector-invariant 
+   formulation.
+
+Forcing : 
+ use Monthly mean climatological forcing (except P-E-R, annual mean).
+ same data set as global-ocean lat-long experiments but interpolated
+  on CS-32 grid.
+
+Comments:
+* bathymetry : 
+ designed to be coupled to Atmospheric model, therefore includes
+ most of the semi-enclosed sea (Mediterranean, Black-Sea, Red-Sea,
+   Hudson Bay ...)
+ bathy_cs32.bin: initial bathymetry
+   h < 0 is meant to stay wet-point whatever delZ(1) is ; Consequently
+   the global ocean area is not affected by the vertical resolution.
+ bathy_Hmin50.bin: bathymetry file used in the current set-up
+    generated from bathy_cs32.bin using matlab script mk_bathy4gcm.m
+ mk_bathy4gcm.m matlab script that deepen all shallow point up to 50m.
+* global integral of E-P-R and annual mean net Q flux are zero.
+* package therm_seaice and bulk_forc are included but not yet used.
+  (might come later)
+
