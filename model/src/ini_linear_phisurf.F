@@ -1,19 +1,26 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.2 2001/08/27 18:43:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.3 2001/09/26 18:09:15 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: INI_LINEAR_PHISURF
+C     !INTERFACE:
       SUBROUTINE INI_LINEAR_PHISURF( myThid )
-C     /==========================================================\
-C     | SUBROUTINE INI_LINEAR_PHISURF                            |
-C     | o Initialise the Linear Relation Phi_surf(eta)           |
-C     |==========================================================|
-C     | Presently: Initialise -Boyancy at surface level (Bo_surf)|
-C     |  to setup the Linear relation: Phi_surf(eta)=Bo_surf*eta |
-C     | Futur: might add other things for Non-Linear FreeSurface |
-C     \==========================================================/
-      IMPLICIT NONE
 
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE INI_LINEAR_PHISURF                             
+C     | o Initialise the Linear Relation Phi_surf(eta)            
+C     *==========================================================*
+C     | Presently: Initialise -Boyancy at surface level (Bo_surf) 
+C     |  to setup the Linear relation: Phi_surf(eta)=Bo_surf*eta  
+C     | Futur: might add other things for Non-Linear FreeSurface  
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -21,10 +28,12 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SURFACE.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     bi,bj  - Loop counters
 C     I,J,K
@@ -32,6 +41,7 @@ C     I,J,K
       INTEGER bi, bj
       INTEGER I, J, K
       _RL     dPIdp
+CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

@@ -1,35 +1,77 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.19 2001/09/19 13:58:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.20 2001/09/26 18:09:15 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: INITIALISE_VARIA
+C     !INTERFACE:
       SUBROUTINE INITIALISE_VARIA(myThid)
-C     /==========================================================\
-C     | SUBROUTINE INITIALISE_VARIA                              |
-C     | o Set the initial conditions for dynamics variables      |
-C     |   and time dependent arrays                              |
-C     |==========================================================|
-C     | This routine reads/writes  data from an input file and   |
-C     | from various binary files.                               |
-C     | Each thread invokes an instance of this routine as does  |
-C     | each process in a multi-process parallel environment like|
-C     | MPI.                                                     |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE INITIALISE_VARIA                               
+C     | o Set the initial conditions for dynamics variables       
+C     |   and time dependent arrays                               
+C     *==========================================================*
+C     | This routine reads/writes  data from an input file and    
+C     | from various binary files.                                
+C     | Each thread invokes an instance of this routine as does   
+C     | each process in a multi-process parallel environment like 
+C     | MPI.                                                      
+C     *==========================================================*
+C     \ev
 
+C     !CALLING SEQUENCE:
+C     INITIALISE_VARIA
+C       |
+C       |-- INI_LINEAR_PHISURF
+C       |
+C       |-- INI_CORI
+C       |
+C       |-- INI_CG2D
+C       |
+C       |-- INI_CG3D
+C       |
+C       |-- INI_MIXING
+C       |
+C       |-- INI_DYNVARS
+C       |
+C       |-- INI_FIELDS
+C       |
+C       |-- INI_TR1
+C       |
+C       |-- THE_CORRECTION_STEP
+C       |
+C       |-- CALL CONVECTIVE_ADJUSTMENT_INI
+C       |
+C       |-- PACKAGES_INIT_VARIABLES
+C       |
+C       |-- CALC_SURF_DR
+C       |
+C       |-- UPDATE_SURF_DR
+C       |
+C       |-- UPDATE_CG2D
+C       |
+C       |-- STATE_SUMMARY
+C       |
+C       |-- TIMEAVE_STATVARS
+
+C     !USES:
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi,bj,K,iMin,iMax,jMin,jMax
+CEOP
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
 

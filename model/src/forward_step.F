@@ -1,25 +1,32 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.21 2001/09/19 13:58:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.22 2001/09/26 18:09:15 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: FORWARD_STEP
+C     !INTERFACE:
       SUBROUTINE FORWARD_STEP( iloop, myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
+C     *==================================================================
+C     | SUBROUTINE forward_step
+C     | o Run the ocean model and, optionally, evaluate a cost function.
+C     *==================================================================
+C     |
+C     | THE_MAIN_LOOP is the toplevel routine for the Tangent Linear and
+C     | Adjoint Model Compiler (TAMC). For this purpose the initialization
+C     | of the model was split into two parts. Those parameters that do
+C     | not depend on a specific model run are set in INITIALISE_FIXED,   
+C     | whereas those that do depend on the specific realization are
+C     | initialized in INITIALISE_VARIA.   
+C     |
+C     *==================================================================
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
-
-c     ==================================================================
-c     SUBROUTINE forward_step
-c     ==================================================================
-c
-c     o Run the ocean model and evaluate the specified cost function.
-c
-c     *the_main_loop* is the toplevel routine for the Tangent Linear and
-c     Adjoint Model Compiler (TAMC). For this purpose the initialization
-c     of the model was split into two parts. Those parameters that do
-c     not depend on a specific model run are set in *initialise_fixed*,
-c     whereas those that do depend on the specific realization are
-c     initialized in *initialise_varia*. 
-
-C     == global variables ==
+C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -37,7 +44,8 @@ C     == global variables ==
 #include "cost.h"
 #endif
 
-C     == routine arguments ==
+C     !LOCAL VARIABLES:
+C     == Routine arguments ==
 C     note: under the multi-threaded model myiter and 
 C           mytime are local variables passed around as routine 
 C           arguments. Although this is fiddly it saves the need to 
@@ -52,7 +60,7 @@ C     mythid - thread number for this instance of the routine.
       _RL     mytime
       INTEGER bi,bj
 
-C     == local variables ==
+CEOP
 
 
 #ifdef ALLOW_AUTODIFF_TAMC

@@ -1,31 +1,37 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.2 2001/08/30 18:44:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.3 2001/09/26 18:09:14 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: CALC_SURF_DR
+C     !INTERFACE:
       SUBROUTINE CALC_SURF_DR(etaFld,
      I                        myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE CALC_SURF_DR                                  |
-C     | o Calculate the new surface level thickness according to |
-C     |   the surface r-position  (Non-Linear Free-Surf)         |
-C     | o take decision if grid box becomes too thin or too thick|
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE CALC_SURF_DR                                   
+C     | o Calculate the new surface level thickness according to  
+C     |   the surface r-position  (Non-Linear Free-Surf)          
+C     | o take decision if grid box becomes too thin or too thick 
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     == Global variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-c #include "DYNVARS.h"
 #include "GRID.h"
 #include "SURFACE.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime - Current time in simulation
-C     myIter - Current iteration number in simulation
-C     myThid - Thread number for this instance of the routine.
-C     etaFld - current eta field used to update the hFactor
+C     myTime :: Current time in simulation
+C     myIter :: Current iteration number in simulation
+C     myThid :: Thread number for this instance of the routine.
+C     etaFld :: current eta field used to update the hFactor
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -33,24 +39,24 @@ C     etaFld - current eta field used to update the hFactor
 
 #ifdef NONLIN_FRSURF
 
+C     !LOCAL VARIABLES:
 C     Local variables in common block
-C     Rmin_surf : minimum r_value of the free surface position 
+C     Rmin_surf :: minimum r_value of the free surface position 
 C                  that satisfy  the hFacInf criteria
       COMMON /LOCAL_CALC_SURF_DR/ Rmin_surf
       _RL Rmin_surf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 C     Local variables
-C     i,j,k,bi,bj - loop counter
-C     rSurftmp : free surface r-position that is used to compute hFac_surf
-C     adjust_nb_pt : Nb of grid points where rSurf is adjusted (hFactInf)
-C     adjust_volum : adjustment effect on the volume (domain size)
-
+C     i,j,k,bi,bj  :: loop counter
+C     rSurftmp     :: free surface r-position that is used to compute hFac_surf
+C     adjust_nb_pt :: Nb of grid points where rSurf is adjusted (hFactInf)
+C     adjust_volum :: adjustment effect on the volume (domain size)
       INTEGER i,j,k,bi,bj
       INTEGER ks
       _RL hFacInfMOM, Rmin_tmp, hFactmp, adjust_nb_pt, adjust_volum
       _RL rSurftmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hhm, hhp
       CHARACTER*(MAX_LEN_MBUF) suff
+CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

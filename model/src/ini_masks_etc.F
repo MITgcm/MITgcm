@@ -1,22 +1,27 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.23 2001/08/27 18:42:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.24 2001/09/26 18:09:15 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: INI_MASKS_ETC
+C     !INTERFACE:
       SUBROUTINE INI_MASKS_ETC( myThid )
-C     /==========================================================\
-C     | SUBROUTINE INI_MASKS_ETC                                 |
-C     | o Initialise masks and topography factors                |
-C     |==========================================================|
-C     | These arrays are used throughout the code and describe   |
-C     | the topography of the domain through masks (0s and 1s)   |
-C     | and fractional height factors (0<hFac<1). The latter     |
-C     | distinguish between the lopped-cell and full-step        |
-C     | topographic representations.                             |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE INI_MASKS_ETC                                  
+C     | o Initialise masks and topography factors                 
+C     *==========================================================*
+C     | These arrays are used throughout the code and describe    
+C     | the topography of the domain through masks (0s and 1s)    
+C     | and fractional height factors (0<hFac<1). The latter      
+C     | distinguish between the lopped-cell and full-step         
+C     | topographic representations.                              
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -24,17 +29,17 @@ C     === Global variables ===
 #include "GRID.h"
 #include "SURFACE.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_MASKS_ETC
       INTEGER myThid
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables in common ==
 C     tmpfld  - Temporary array used to compute & write Total Depth
 C               has to be in common for multi threading
       COMMON / LOCAL_INI_MASKS_ETC / tmpfld
       _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 C     == Local variables ==
 C     bi,bj  - Loop counters
 C     I,J,K
@@ -46,6 +51,7 @@ C     I,J,K
 #endif
       _RL hFacCtmp
       _RL hFacMnSz
+CEOP
 
 C- Calculate lopping factor hFacC : over-estimate the part inside of the domain
 C    taking into account the lower_R Boundary (Bathymetrie / Top of Atmos)

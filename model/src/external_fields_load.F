@@ -1,34 +1,39 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.7 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.8 2001/09/26 18:09:14 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
  
-CStartOfInterface
+CBOP
+C     !ROUTINE: EXTERNAL_FIELDS_LOAD
+C     !INTERFACE:
       SUBROUTINE EXTERNAL_FIELDS_LOAD( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE EXTERNAL_FIELDS_LOAD                          |
-C     | o Control reading of fields from external source.        |
-C     |==========================================================|
-C     | External source field loading routine.                   |
-C     | This routine is called every time we want to             |
-C     | load a a set of external fields. The routine decides     |
-C     | which fields to load and then reads them in.             |
-C     | This routine needs to be customised for particular       |
-C     | experiments.                                             |
-C     | Notes                                                    |
-C     | =====                                                    |
-C     | Two-dimensional and three-dimensional I/O are handled in |
-C     | the following way under MITgcmUV. A master thread        |
-C     | performs I/O using system calls. This threads reads data |
-C     | into a temporary buffer. At present the buffer is loaded |
-C     | with the entire model domain. This is probably OK for now|
-C     | Each thread then copies data from the buffer to the      |
-C     | region of the proper array it is responsible for.        |
-C     | =====                                                    |
-C     | Conversion of flux fields are described in FFIELDS.h     |
-C     \==========================================================/
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE EXTERNAL_FIELDS_LOAD                           
+C     | o Control reading of fields from external source.         
+C     *==========================================================*
+C     | External source field loading routine.                    
+C     | This routine is called every time we want to              
+C     | load a a set of external fields. The routine decides      
+C     | which fields to load and then reads them in.              
+C     | This routine needs to be customised for particular        
+C     | experiments.                                              
+C     | Notes                                                     
+C     | =====                                                     
+C     | Two-dimensional and three-dimensional I/O are handled in  
+C     | the following way under MITgcmUV. A master thread         
+C     | performs I/O using system calls. This threads reads data  
+C     | into a temporary buffer. At present the buffer is loaded  
+C     | with the entire model domain. This is probably OK for now 
+C     | Each thread then copies data from the buffer to the       
+C     | region of the proper array it is responsible for.         
+C     | =====                                                     
+C     | Conversion of flux fields are described in FFIELDS.h      
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
- 
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -36,7 +41,10 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+      LOGICAL DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
  
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
 C     myTime - Simulation time
@@ -44,13 +52,20 @@ C     myIter - Simulation timestep number
       INTEGER myThid
       _RL     myTime
       INTEGER myIter
-CEndOfInterface
  
-C     === Functions ===
-      LOGICAL DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 
+C     !LOCAL VARIABLES:
 C     === Local arrays ===
+C     taux[01]  :: Temp. for zonal wind stress
+C     tauy[01]  :: Temp. for merid. wind stress
+C     qnet[01]  :: Temp. for heat flux
+C     empmr[01] :: Temp. for fresh water flux
+C     sst[01]   :: Temp. for theta climatalogy
+C     sss[01]   :: Temp. for theta climatalogy
+C     qsw[01]   :: Temp. for short wave component of heat flux
+C     [01]      :: End points for interpolation
+C     Above use static heap storage to allow exchange.
+C     aWght, bWght :: Interpolation weights
       COMMON /TDFIELDS/
      &                 taux0, tauy0, Qnet0, EmPmR0, SST0, SSS0, Qsw0,
      &                 taux1, tauy1, Qnet1, EmPmR1, SST1, SSS1, Qsw1
@@ -68,12 +83,10 @@ C     === Local arrays ===
       _RS  SST1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SSS1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-C     === Local variables ===
       INTEGER bi,bj,i,j,intime0,intime1
-
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+CEOP
 
       IF ( periodicExternalForcing ) THEN
 
@@ -225,18 +238,27 @@ C endif for periodicForcing
       RETURN
       END
 
+CBOP
+C     !ROUTINE: LEF_ZERO
+C     !INTERFACE:
       SUBROUTINE LEF_ZERO( arr ,myThid )
+C     !DESCRIPTION: \bv
 C     This routine simply sets the argument array to zero
 C     Used only by EXTERNAL_FIELDS_LOAD
+C     \ev
+C     !USES:
       IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Arguments ===
       _RS  arr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
+C     !LOCAL VARIABLES:
 C     === Local variables ===
       INTEGER i,j,bi,bj
+CEOP
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)

@@ -1,14 +1,27 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.8 2001/03/12 20:51:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.9 2001/09/26 18:09:14 cnh Exp $
+C     !DESCRIPTION: \bv
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: CALC_GW
+C     !INTERFACE:
       SUBROUTINE CALC_GW(     
      I        myThid)
-C     /==========================================================\
-C     | S/R CALC_GW                                              |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R CALC_GW                                               
+C     | o Calculate vert. velocity tendency terms ( NH, QH only ) 
+C     *==========================================================*
+C     | In NH and QH, the vertical momentum tendency must be
+C     | calculated explicitly and included as a source term 
+C     | for a 3d pressure eqn. Calculate that term here.
+C     | This routine is not used in HYD calculations.
+C     *==========================================================*
+C     \ev 
 
+C     !USES:
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -19,23 +32,23 @@ C     == Global variables ==
 #include "GW.h"
 #include "CG3D.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid - Instance number for this innvocation of CALC_GW
       INTEGER myThid
 
 #ifdef ALLOW_NONHYDROSTATIC
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     bi, bj,      :: Loop counters
+C     iMin, iMax,
+C     jMin, jMax
+C     flx_NS       :: Temp. used for fVol meridional terms.
+C     flx_EW       :: Temp. used for fVol zonal terms.
+C     flx_Up       :: Temp. used for fVol vertical terms.
+C     flx_Dn       :: Temp. used for fVol vertical terms.
       INTEGER bi,bj,iMin,iMax,jMin,jMax
-      _RL      aF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      vF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      v4F(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      cF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      mT (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      pF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL    fZon (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL    fMer (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-
       _RL    flx_NS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    flx_EW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL    flx_Dn(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -55,6 +68,7 @@ C     I,J,K - Loop counters
 #define In sNx
 #define J0 1
 #define Jn sNy
+CEOP
 
 C     Adams-Bashforth timestepping weights
       ab15=1.5+abeps

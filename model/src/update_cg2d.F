@@ -1,18 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.1 2001/08/27 18:50:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.2 2001/09/26 18:09:16 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-
+CBOP
+C     !ROUTINE: UPDATE_CG2D
+C     !INTERFACE:
       SUBROUTINE UPDATE_CG2D( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE UPDATE_CG2D                                   |
-C     | o Update 2d conjugate gradient solver operators          |
-C     |   account for Free-Surf effect on total column thickness |
-C     |==========================================================|
-C     | This routine is based on INI_CG2D, and simplified        |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE UPDATE_CG2D                                    
+C     | o Update 2d conjugate gradient solver operators           
+C     |   account for Free-Surf effect on total column thickness  
+C     *==========================================================*
+C     | This routine is based on INI_CG2D, and simplified. It is 
+C     | only active when the non-linear free surface mode of 
+C     | equations is active.
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -24,6 +31,7 @@ C     === Global variables ===
 #include "OBCS.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myTime - Current time in simulation
 C     myIter - Current iteration number in simulation
@@ -31,11 +39,11 @@ C     myThid - Thread number for this instance of the routine.
       _RL myTime
       INTEGER myIter
       INTEGER myThid
-                                                                                        
+
+C     !LOCAL VARIABLES:
 #ifdef NONLIN_FRSURF
 C-- Note : compared to "INI_CG2D", no needs to compute again
 C   the solver norn=malisation factor of the solver tolerance
-     
 C     === Local variables ===
 C     bi,bj  - Loop counters
 C     I,J,K
@@ -44,6 +52,7 @@ C     faceArea - Temporary used to hold cell face areas.
       INTEGER I, J, K
       _RL     faceArea
       _RL     aC, aCw, aCs
+CEOP
 
 C--   Initialise laplace operator
 C     aW2d: integral in Z Ax/dX

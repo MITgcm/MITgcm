@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/port_rand.F,v 1.2 2001/02/02 21:04:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/port_rand.F,v 1.3 2001/09/26 18:09:16 cnh Exp $
 C $Name:  $
 
 C Portable random number generator
@@ -6,7 +6,16 @@ C Portable random number generator
 #undef _USE_INTEGERS
 
 ! ==============================================================================
+CBOP
+C     !ROUTINE: port_rand
+C     !INTERFACE:
       real*8 function port_rand()
+
+C     !DESCRIPTION: \bv
+C     Portable random number generator
+C     \ev
+
+C     !LOCAL VARIABLES:
       implicit none
       integer nff
       parameter(nff=55)
@@ -31,6 +40,7 @@ C Portable random number generator
       logical firstCall
       save firstCall,inext,inextp,ma
       data firstCall /.true./
+CEOP
 ! ------------------------------------------------------------------------------
       if(firstCall)then
         firstCall=.false.

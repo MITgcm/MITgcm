@@ -1,27 +1,31 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.17 2001/07/30 20:20:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.18 2001/09/26 18:09:13 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C     !ROUTINE: CALC_COMMON_FACTORS
+C     !INTERFACE: 
       SUBROUTINE CALC_COMMON_FACTORS( 
      I        bi,bj,iMin,iMax,jMin,jMax,k,
      O        xA,yA,uTrans,vTrans,rTrans,maskUp,
      I        myThid)
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE CALC_COMMON_FACTORS                            
+C     | o Calculate common data (such as volume flux) for use     
+C     |   by "Right hand side" subroutines.                       
+C     *==========================================================*
+C     | Here, we calculate terms or spatially varying factors     
+C     | that are used at various points in the "RHS" subroutines. 
+C     | This reduces the amount of total work, total memory       
+C     | and therefore execution time and is generally a good      
+C     | idea.                                                     
+C     *==========================================================*
+C     \ev
 
-C     /==========================================================\
-C     | SUBROUTINE CALC_COMMON_FACTORS                           |
-C     | o Calculate common data (such as volume flux) for use    |
-C     |   by "Right hand side" subroutines.                      |
-C     |==========================================================|
-C     | Here, we calculate terms or spatially varying factors    |
-C     | that are used at various points in the "RHS" subroutines.|
-C     | This reduces the amount of total work, total memory      |
-C     | and therefore execution time and is generally a good     |
-C     | idea.                                                    |
-C     \==========================================================/
+C     !USES:
       IMPLICIT NONE
-
 C     == GLobal variables ==
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -32,16 +36,17 @@ C     == GLobal variables ==
 #include "GW.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
+C     bi, bj, iMin, iMax, jMin, jMax :: Range of points for which calculation
 C                                      results will be set.
-C     xA      - Tracer cell face area normal to X
-C     yA      - Tracer cell face area normal to X
-C     uTrans  - Zonal volume transport through cell face
-C     vTrans  - Meridional volume transport through cell face
-C     rTrans  - R-direction volume transport through cell face
-C     maskUp  - land/water mask for Wvel points (above tracer level)
-C     myThid - Instance number for this innvocation of CALC_COMMON_FACTORS
+C     xA      :: Tracer cell face area normal to X
+C     yA      :: Tracer cell face area normal to X
+C     uTrans  :: Zonal volume transport through cell face
+C     vTrans  :: Meridional volume transport through cell face
+C     rTrans  :: R-direction volume transport through cell face
+C     maskUp  :: land/water mask for Wvel points (above tracer level)
+C     myThid  ::Instance number for this innvocation of CALC_COMMON_FACTORS
 C
       INTEGER bi,bj,iMin,iMax,jMin,jMax,k
       _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -52,11 +57,12 @@ C
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C
       INTEGER myThid
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     I, J, K - Loop counters
+C     I, J :: Loop counters
       INTEGER i,j
+CEOP
 
 C--   Initialisation
       DO j=1-OLy,sNy+OLy

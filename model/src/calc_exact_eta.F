@@ -1,18 +1,24 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.4 2001/09/19 13:58:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.5 2001/09/26 18:09:13 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: CALC_EXACT_ETA
+C     !INTERFACE:
       SUBROUTINE CALC_EXACT_ETA( UpdateEtaN_EtaH, 
      I                           bi,bj, uFld,vFld,
      I                           myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE CALC_EXACT_ETA                                |
-C     | o Compute again the surface "r-anomaly" (eta) to satisfy |
-C     |   exactly the convervation of the Total Volume           |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE CALC_EXACT_ETA                                 
+C     | o Compute again the surface "r-anomaly" (eta) to satisfy  
+C     |   exactly the convervation of the Total Volume            
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     == Global variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -21,15 +27,17 @@ C     == Global variables
 #include "GRID.h"
 #include "SURFACE.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C    UpdateEtaN_EtaH - flag to distinguishe if this S/R is called
+C    UpdateEtaN_EtaH :: flag to distinguishe if this S/R is called
 C           at the end of a time step (TRUE) to update EtaN,
 C        or at the beginning of the time sptep (FALSE) to update EtaH
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     bi,bj   - tile index
-C     myTime - Current time in simulation
-C     myIter - Current iteration number in simulation
-C     myThid - Thread number for this instance of the routine.
+C     uFld    :: Zonal velocity ( m/s )
+C     vFld    :: Meridional velocity ( m/s )
+C     bi,bj   :: tile index
+C     myTime  :: Current time in simulation
+C     myIter  :: Current iteration number in simulation
+C     myThid  :: Thread number for this instance of the routine.
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -38,16 +46,21 @@ C     myThid - Thread number for this instance of the routine.
       _RL uFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL vFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy) 
 
+C     !LOCAL VARIABLES:
 #ifdef EXACT_CONSERV
 C     Local variables in common block
-C     hDivFlow - Div. Barotropic Flow at current time_step [transport unit m3/s]
+C     hDivFlow :: Div. Barotropic Flow at current time [transport unit m3/s]
       COMMON /EXACT_ETA_LOCAL/ hDivFlow
       _RL hDivFlow(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 
 C     Local variables
+C     i,j,k  :: Loop counters
+C     uTrans :: Volume transports ( uVel.xA )
+C     vTrans :: Volume transports ( vVel.yA )
       INTEGER i,j,k
       _RL uTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL vTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

@@ -1,27 +1,43 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.13 2001/09/19 13:58:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.14 2001/09/26 18:09:16 cnh Exp $
 C Tag $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: THE_CORRECTION_STEP
+C     !INTERFACE:
       SUBROUTINE THE_CORRECTION_STEP(myTime, myIter, myThid)
-C     /==========================================================\
-C     | SUBROUTINE THE_CORRECTION_STEP                           |
-C     |==========================================================|
-C     |part1: update U,V,T,S                                     |
-C     |  U*,V* (contained in gUnm1,gVnm1) have the surface       |
-C     |     pressure gradient term added and the result stored   |
-C     |     in U,V (contained in uVel, vVel)                     |
-C     |  T* (contained in gTnm1) is copied to T (theta)          |
-C     |  S* (contained in gSnm1) is copied to S (salt)           |
-C     |                                                          |
-C     |part2: Adjustments.                                       |
-C     |   o Filter  U,V,T,S (Shapiro Filter, Zonal_Filter)       |
-C     |   o Convective Adjustment                                |
-C     |   o Compute again Eta (exact volume conservation)        |
-C     |   o Diagmnostic of state variables (Time average)        |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE THE_CORRECTION_STEP                            
+C     *==========================================================*
+C     |1rst Part : Update U,V,T,S.
+C     |
+C     | The arrays used for time stepping are cycled.
+C     | Tracers:
+C     |           T(n) = Gt(n-1)
+C     |           Gt(n-1) = Gt(n)
+C     | Momentum:
+C     |           V(n) = Gv(n-1) - dt * grad Eta
+C     |           Gv(n-1) = Gv(n)
+C     |
+C     |part1: update U,V,T,S                                      
+C     |  U*,V* (contained in gUnm1,gVnm1) have the surface        
+C     |     pressure gradient term added and the result stored    
+C     |     in U,V (contained in uVel, vVel)                      
+C     |  T* (contained in gTnm1) is copied to T (theta)           
+C     |  S* (contained in gSnm1) is copied to S (salt)            
+C     |                                                           
+C     |part2: Adjustments.                                        
+C     |   o Filter  U,V,T,S (Shapiro Filter, Zonal_Filter)        
+C     |   o Convective Adjustment                                 
+C     |   o Compute again Eta (exact volume conservation)         
+C     |   o Diagmnostic of state variables (Time average)         
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -30,12 +46,12 @@ C     == Global variables ===
 #ifdef ALLOW_PASSIVE_TRACER
 #include "TR1.h"
 #endif
-
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myTime - Current time in simulation
 C     myIter - Current iteration number in simulation
@@ -44,6 +60,7 @@ C     myThid - Thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     == Local variables
       _RL phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -52,16 +69,7 @@ C     == Local variables
       INTEGER bi,bj
       INTEGER k,i,j
 
-C--- 1rst Part : Update U,V,T,S.
-C
-C       The arrays used for time stepping are cycled.
-C       Tracers:
-C                 T(n) = Gt(n-1)
-C                 Gt(n-1) = Gt(n)
-C       Momentum:
-C                 V(n) = Gv(n-1) - dt * grad Eta
-C                 Gv(n-1) = Gv(n)
-C
+CEOP
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

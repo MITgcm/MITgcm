@@ -1,34 +1,72 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.7 2001/07/06 21:39:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.8 2001/09/26 18:09:15 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: INITIALISE_FIXED
+C     !INTERFACE:
       SUBROUTINE INITIALISE_FIXED(myThid)
-C     /==========================================================\
-C     | SUBROUTINE INITIALISE_FIXED                              |
-C     | o Routine for setting fixed model arrays such as         |
-C     |   topography, grid, solver matrices, etc.                |
-C     |==========================================================|
-C     | INITIALISE_FIXED is invoked at the start of the model to |
-C     | set fixed model arrays. It reads data from an input file |
-C     | and from various binary files.                           |
-C     | Each thread invokes an instance of this routine as does  |
-C     | each process in a multi-process parallel environment like|
-C     | MPI.                                                     |
-C     \==========================================================/
-      IMPLICIT NONE
 
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE INITIALISE_FIXED                               
+C     | o Routine for setting fixed model arrays such as          
+C     |   topography, grid, solver matrices, etc.                 
+C     *==========================================================*
+C     | INITIALISE_FIXED is invoked at the start of the model to  
+C     | set fixed model arrays. It reads data from an input file  
+C     | and from various binary files.                            
+C     | Each thread invokes an instance of this routine as does   
+C     | each process in a multi-process parallel environment like 
+C     | MPI.                                                      
+C     *==========================================================*
+C     \ev
+
+C     !CALLING SEQUENCE:
+C     INITIALISE_FIXED
+C      |
+C      |-- INI_PARMS
+C      |
+C      |-- MON_INIT
+C      |
+C      |-- INI_GRID
+C      |
+C      |-- INI_DEPTHS
+C      |
+C      |-- INI_MASKS_ETC
+C      |
+C      |-- INI_LINEAR_PHSURF
+C      |
+C      |-- INI_CORI
+C      |
+C      |-- PACKAGES_BOOT
+C      |
+C      |-- PACKAGES_READPARMS
+C      |
+C      |-- PACKAGES_CHECK
+C      |
+C      |-- PACKAGES_INIT_FIXED
+C      |
+C      |-- ZONAL_FILT_INIT
+C      |
+C      |-- INI_CG2D
+C      |
+C      |-- INI_CG3D
+C      |
+C      |-- CONFIG_SUMMARY
+
+C     !USES:
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       INTEGER myThid
-CEndOfInterface
-
-C     == Local variables ==
+CEOP
 
 C--   Set model parameters.
 C     Parameters are set to defaults and then updates are read from

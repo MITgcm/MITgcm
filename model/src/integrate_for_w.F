@@ -1,45 +1,48 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.6 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.7 2001/09/26 18:09:16 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C     !ROUTINE: INTEGRATE_FOR_W
+C     !INTERFACE:
       SUBROUTINE INTEGRATE_FOR_W( 
      I        bi,bj,k,uFld,vFld,
      O        wFld,
      I        myThid)
 
-C     /==========================================================\
-C     | SUBROUTINE CALC_COMMON_FACTORS                           |
-C     | o Calculate common data (such as volume flux) for use    |
-C     |   by "Right hand side" subroutines.                      |
-C     |==========================================================|
-C     | Here, we calculate terms or spatially varying factors    |
-C     | that are used at various points in the "RHS" subroutines.|
-C     | This reduces the amount of total work, total memory      |
-C     | and therefore execution time and is generally a good     |
-C     | idea.                                                    |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE CALC_COMMON_FACTORS                            
+C     | o Integrate for vertical velocity.
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     == GLobal variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
+C     uFld, vFld :: Zonal and meridional flow
+C     wFld       :: Vertical flow
       INTEGER bi,bj,k
       _RL  uFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  wFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     uTrans, vTrans :: Temps. for volume transports
       INTEGER i,j
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+CEOP
 
 C--   Calculate velocity field "volume transports" through
 C     tracer cell faces.

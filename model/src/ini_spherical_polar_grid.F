@@ -1,54 +1,44 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.18 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.19 2001/09/26 18:09:15 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 #undef  USE_BACKWARD_COMPATIBLE_GRID
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: INI_SPHERICAL_POLAR_GRID
+C     !INTERFACE:
       SUBROUTINE INI_SPHERICAL_POLAR_GRID( myThid )
+C     !DESCRIPTION: \bv
 C     /==========================================================\
 C     | SUBROUTINE INI_SPHERICAL_POLAR_GRID                      |
-C     | o Initialise model coordinate system                     |
+C     | o Initialise model coordinate system arrays              |
 C     |==========================================================|
 C     | These arrays are used throughout the code in evaluating  |
 C     | gradients, integrals and spatial avarages. This routine  |
 C     | is called separately by each thread and initialise only  |
 C     | the region of the domain it is "responsible" for.        |
-C     | Notes:                                                   |
-C     | Two examples are included. One illustrates the           |
-C     | initialisation of a cartesian grid. The other shows the  |
-C     | inialisation of a spherical polar grid. Other orthonormal|
-C     | grids can be fitted into this design. In this case       |
-C     | custom metric terms also need adding to account for the  |
-C     | projections of velocity vectors onto these grids.        |
-C     | The structure used here also makes it possible to        |
-C     | implement less regular grid mappings. In particular      |
-C     | o Schemes which leave out blocks of the domain that are  |
-C     |   all land could be supported.                           |
-C     | o Multi-level schemes such as icosohedral or cubic       |
-C     |   grid projections onto a sphere can also be fitted      |
-C     |   within the strategy we use.                            |
-C     |   Both of the above also require modifying the support   |
-C     |   routines that map computational blocks to simulation   |
-C     |   domain blocks.                                         |
 C     | Under the spherical polar grid mode primitive distances  |
 C     | in X and Y are in degrees. Distance in Z are in m or Pa  |
 C     | depending on the vertical gridding mode.                 |
 C     \==========================================================/
-      IMPLICIT NONE
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_CARTESIAN_GRID
       INTEGER myThid
 CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     xG, yG - Global coordinate location.
 C     xBase  - South-west corner location for process.
@@ -72,33 +62,34 @@ C     I,J,K
       _RL lat, dlat, dlon, xG0, yG0
 
 
-C "Long" real for temporary coordinate calculation
-C  NOTICE the extended range of indices!!
+C     "Long" real for temporary coordinate calculation
+C      NOTICE the extended range of indices!!
       _RL xGloc(1-Olx:sNx+Olx+1,1-Oly:sNy+Oly+1)
       _RL yGloc(1-Olx:sNx+Olx+1,1-Oly:sNy+Oly+1)
 
-C The functions iGl, jGl return the "global" index with valid values beyond
-C halo regions
-C cnh wrote:
-C >    I don't understand why we would ever have to multiply the
-C >    overlap by the total domain size e.g
-C >    OLx*Nx, OLy*Ny.
-C >    Can anybody explain? Lines are in ini_spherical_polar_grid.F.
-C >    Surprised the code works if its wrong, so I am puzzled.        
-C jmc relied:
-C Yes, I can explain this since I put this modification to work
-C with small domain (where Oly > Ny, as for instance, zonal-average
-C case):
-C This has no effect on the acuracy of the evaluation of iGl(I,bi)
-C and jGl(J,bj) since we take mod(a+OLx*Nx,Nx) and mod(b+OLy*Ny,Ny).
-C But in case a or b is negative, then the FORTRAN function "mod"
-C does not return the matematical value of the "modulus" function,
-C and this is not good for your purpose.
-C This is why I add +OLx*Nx and +OLy*Ny to be sure that the 1rst 
-C argument of the mod function is positive.
+C     The functions iGl, jGl return the "global" index with valid values beyond
+C     halo regions
+C     cnh wrote:
+C     >    I don't understand why we would ever have to multiply the
+C     >    overlap by the total domain size e.g
+C     >    OLx*Nx, OLy*Ny.
+C     >    Can anybody explain? Lines are in ini_spherical_polar_grid.F.
+C     >    Surprised the code works if its wrong, so I am puzzled.        
+C     jmc replied:
+C     Yes, I can explain this since I put this modification to work
+C     with small domain (where Oly > Ny, as for instance, zonal-average
+C     case):
+C     This has no effect on the acuracy of the evaluation of iGl(I,bi)
+C     and jGl(J,bj) since we take mod(a+OLx*Nx,Nx) and mod(b+OLy*Ny,Ny).
+C     But in case a or b is negative, then the FORTRAN function "mod"
+C     does not return the matematical value of the "modulus" function,
+C     and this is not good for your purpose.
+C     This is why I add +OLx*Nx and +OLy*Ny to be sure that the 1rst 
+C     argument of the mod function is positive.
       INTEGER iGl,jGl
       iGl(I,bi) = 1+mod(myXGlobalLo-1+(bi-1)*sNx+I+Olx*Nx-1,Nx)
       jGl(J,bj) = 1+mod(myYGlobalLo-1+(bj-1)*sNy+J+Oly*Ny-1,Ny)
+CEOP
 
 
 C     For each tile ...

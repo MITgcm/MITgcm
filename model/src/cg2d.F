@@ -1,8 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.33 2001/05/29 14:01:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.34 2001/09/26 18:09:14 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: CG2D
+C     !INTERFACE:
       SUBROUTINE CG2D(  
      I                cg2d_b,
      U                cg2d_x,
@@ -10,30 +13,33 @@ C $Name:  $
      O                lastResidual,
      U                numIters,
      I                myThid )
-C     /==========================================================\
-C     | SUBROUTINE CG2D                                          |
-C     | o Two-dimensional grid problem conjugate-gradient        |
-C     |   inverter (with preconditioner).                        |
-C     |==========================================================|
-C     | Con. grad is an iterative procedure for solving Ax = b.  |
-C     | It requires the A be symmetric.                          |
-C     | This implementation assumes A is a five-diagonal         |
-C     | matrix of the form that arises in the discrete           |
-C     | representation of the del^2 operator in a                |
-C     | two-dimensional space.                                   |
-C     | Notes:                                                   |
-C     | ======                                                   |
-C     | This implementation can support shared-memory            | 
-C     | multi-threaded execution. In order to do this COMMON     | 
-C     | blocks are used for many of the arrays - even ones that  | 
-C     | are only used for intermedaite results. This design is   | 
-C     | OK if you want to all the threads to collaborate on      | 
-C     | solving the same problem. On the other hand if you want  | 
-C     | the threads to solve several different problems          | 
-C     | concurrently this implementation will not work.          |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE CG2D                                           
+C     | o Two-dimensional grid problem conjugate-gradient         
+C     |   inverter (with preconditioner).                         
+C     *==========================================================*
+C     | Con. grad is an iterative procedure for solving Ax = b.   
+C     | It requires the A be symmetric.                           
+C     | This implementation assumes A is a five-diagonal          
+C     | matrix of the form that arises in the discrete            
+C     | representation of the del^2 operator in a                 
+C     | two-dimensional space.                                    
+C     | Notes:                                                    
+C     | ======                                                    
+C     | This implementation can support shared-memory              
+C     | multi-threaded execution. In order to do this COMMON       
+C     | blocks are used for many of the arrays - even ones that    
+C     | are only used for intermedaite results. This design is     
+C     | OK if you want to all the threads to collaborate on        
+C     | solving the same problem. On the other hand if you want    
+C     | the threads to solve several different problems            
+C     | concurrently this implementation will not work.           
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -42,6 +48,7 @@ C     === Global data ===
 #include "CG2D.h"
 #include "SURFACE.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid    - Thread on which I am working.
 C     cg2d_b    - The source term or "right hand side"
@@ -57,6 +64,7 @@ C                 Exit:  the actual number of iterations used
       INTEGER numIters
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     === Local variables ====
 C     actualIts      - Number of iterations taken
 C     actualResidual - residual
@@ -92,6 +100,7 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       INTEGER exchWidthX
       INTEGER exchWidthY
       INTEGER myNz
+CEOP
 
 
 CcnhDebugStarts

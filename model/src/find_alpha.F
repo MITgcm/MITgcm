@@ -1,33 +1,41 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.4 2001/04/10 22:35:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.5 2001/09/26 18:09:14 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 #define USE_FACTORIZED_POLY
 
-      subroutine FIND_ALPHA (
+CBOP
+C     !ROUTINE: FIND_ALPHA
+C     !INTERFACE:
+      SUBROUTINE FIND_ALPHA (
      I     bi, bj, iMin, iMax, jMin, jMax,  k, kRef, eqn,
      O     alphaloc )
-C     /==========================================================\
-C     | o SUBROUTINE FIND_ALPHA                                  |
-C     |   Calculates [drho(S,T,z) / dT] of a horizontal slice    |
-C     |==========================================================|
-C     |                                                          |
-C     | k - is the Theta/Salt level                              |
-C     | kRef - determines pressure reference level               |
-C     |        (not used in 'LINEAR' mode)                       |
-C     | eqn - determines the eqn. of state: 'LINEAR' or 'POLY3'  |
-C     |                                                          |
-C     | alphaloc - drho / dT (kg/m^3/C)                          |
-C     |                                                          |
-C     \==========================================================/
-      implicit none
 
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE FIND_ALPHA                                   
+C     |   Calculates [drho(S,T,z) / dT] of a horizontal slice     
+C     *==========================================================*
+C     |                                                           
+C     | k - is the Theta/Salt level                               
+C     | kRef - determines pressure reference level                
+C     |        (not used in 'LINEAR' mode)                        
+C     | eqn - determines the eqn. of state: 'LINEAR' or 'POLY3'   
+C     |                                                           
+C     | alphaloc - drho / dT (kg/m^3/C)                           
+C     |                                                           
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
 c Common
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c Arguments
       integer bi,bj,iMin,iMax,jMin,jMax
       integer k			! Level of Theta/Salt slice
@@ -35,9 +43,11 @@ c Arguments
       character*(*) eqn
       _RL alphaloc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
+C     !LOCAL VARIABLES:
 c Local
       integer i,j
       _RL refTemp,refSalt,tP,sP
+CEOP
 
       if (eqn.eq.'LINEAR') then
 

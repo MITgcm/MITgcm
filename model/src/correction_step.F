@@ -1,18 +1,24 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.18 2001/06/29 17:14:49 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.19 2001/09/26 18:09:14 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-C     /==========================================================\
-C     | S/R CORRECTION_STEP                                      |
-C     | o Corrects the horizontal flow fields with the surface   |
-C     |   slope.                                                 |
-C     \==========================================================/
+CBOP
+C     !ROUTINE: CORRECTION_STEP
+C     !INTERFACE:
       SUBROUTINE CORRECTION_STEP( bi, bj, iMin, iMax, jMin, jMax,
      I                       K, phiSurfX, phiSurfY,
      I                       myCurrentTime, myThid )
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R CORRECTION_STEP                                       
+C     | o Corrects the horizontal flow fields with the surface    
+C     |   slope.                                                  
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -22,6 +28,8 @@ C     == Global variables ==
 #ifdef ALLOW_NONHYDROSTATIC
 #include "SOLVE_FOR_PRESSURE3D.h"
 #endif
+
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     phiSurfX, phiSurfY           - Surface Potential gradient
 C     bi,bj,iMin,iMax,jMin,jMax, K - Loop counters
@@ -35,10 +43,15 @@ C     myCurrentTime                - Current simulation time for this instance.
       INTEGER myThid
       _RL myCurrentTime
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     i,j             :: Loop counters
+C     hxFac, hyFac    :: Tracer parameters for supressing gradients
+C     hx3dFac,hy3dFac
       INTEGER i,j
       _RL hxFac,hyFac
       _RL hx3dFac,hy3dFac
+CEOP
 
 C     On/off scaling paramters
       hxFac = pfFacMom

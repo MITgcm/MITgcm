@@ -1,13 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vel.F,v 1.4 2001/08/28 12:58:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vel.F,v 1.5 2001/09/26 18:09:16 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: INI_VEL
+C     !INTERFACE:
       SUBROUTINE INI_VEL( myThid )
+
+C     !DESCRIPTION: \bv
+C     *=================================================================
+C     | SUBROUTINE INI_VEL
+C     | o Initialize 3D flow field (either to zero or from input files)
+C     *=================================================================
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
-
-C     Initialize 3D flow field (either to zero or from input files)
-
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -15,13 +24,16 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_UVEL 
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bi,bj,i,j,k - Loop counters
       INTEGER bi,bj,i,j,k
+CEOP
 
 C--   Initialise velocity fields to zero
 C

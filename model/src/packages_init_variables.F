@@ -1,24 +1,52 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.7 2001/07/30 20:39:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.8 2001/09/26 18:09:16 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: PACKAGES_INIT_VARIABLES
+C     !INTERFACE:
       SUBROUTINE PACKAGES_INIT_VARIABLES( myThid )
-C     /==========================================================\
-C     | SUBROUTINE PACKAGES_INIT_VARIABLES                       |
-C     | o Does initialisation of package-related variable data   |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
 
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE PACKAGES_INIT_VARIABLES                        
+C     | o Does initialisation of package-related variable data    
+C     *==========================================================*
+C     \ev
+
+C     !CALLING SEQUENCE:
+C     PACKAGES_INIT_VARIABLES
+C       |
+C       |-- GMREDI_INIT
+C       |
+C       |-- KPP_INIT
+C       |-- KPP_OPEN_DIAGS
+C       |
+C       |-- OBCS_INIT_VARIABLES
+C       |
+C       |-- AIM_INIT
+C       |
+C       |-- CTRL_MAP_INI
+C       |
+C       |-- COST_INIT
+C       |
+C       |-- ECCO_INIT
+C       |
+C       |-- INI_FORCING
+
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid -  Number of this instances
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_GMREDI
 C--   Initialize GM/Redi parameterization

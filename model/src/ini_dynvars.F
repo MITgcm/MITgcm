@@ -1,19 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.4 2001/09/19 13:53:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.5 2001/09/26 18:09:15 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: INI_DYNVARS
+C     !INTERFACE:
       SUBROUTINE INI_DYNVARS( myThid )
-C     /==========================================================\
-C     | SUBROUTINE INI_DYNVARS                                   |
-C     | o Initialise to zero all DYNVARS.h arrays                | 
-C     \==========================================================/
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE INI_DYNVARS                                    
+C     | o Initialise to zero all DYNVARS.h arrays                  
+C     *==========================================================*
+C     | Sets all the State variables to zero.
+C     | Sets all the Gs (arrays used for multi-level time-stepping)
+C     | to zero.
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
-
-C     Sets all the State variables to zero.
-C     Sets all the Gs (arrays used for multi-level time-stepping)
-C     to zero.
-
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -23,16 +29,18 @@ C     === Global variables ===
 #include "GW.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_UVEL 
       INTEGER myThid
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bi,bj  - Loop counters
 C     I,J,K
       INTEGER bi, bj
       INTEGER  I,  J, K
+CEOP
 
 C--   Over all tiles
       DO bj = myByLo(myThid), myByHi(myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.12 2001/03/06 17:10:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.13 2001/09/26 18:09:16 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -10,29 +10,36 @@ C--    o plot_field_xyrs  - Writes a XY  _RS field
 C--    o plot_field_xyrl  - Writes a XY  _RL field
 C--    o plot_field_xyzrs - Writes a XYZ _RS field
 C--    o plot_field_xyzrl - Writes a XYZ _RL field
+CBOP
+C     !ROUTINE: PLOT_FIELD_XYRS
+C     !INTERFACE:
       SUBROUTINE PLOT_FIELD_XYRS( 
      I                            fld, fldNam , myIter, myThid )
 
-C     /==========================================================\
-C     | SUBROUTINE PLOT_FIELD_XYRS                               |
-C     | Print out an XY _RS field using text map.                |
-C     |==========================================================|
-C     | This routine references "numerical model" parameters like|
-C     | like the integration time. It uses these to create a     |
-C     | title for the field before calling a generic execution   |
-C     | environment support routine.                             |
-C     | This routine can also be edited to cause only some region|
-C     | of a field to be printed by default, or every other      |
-C     | point etc..                                              |
-C     | Other plot formats can also be substituted here.         |
-C     | _RS is usually REAL*4                                    |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE PLOT_FIELD_XYRS                                
+C     | Print out an XY _RS field using text map.                 
+C     *==========================================================*
+C     | This routine references "numerical model" parameters like 
+C     | like the integration time. It uses these to create a      
+C     | title for the field before calling a generic execution    
+C     | environment support routine.                              
+C     | This routine can also be edited to cause only some region 
+C     | of a field to be printed by default, or every other       
+C     | point etc..                                               
+C     | Other plot formats can also be substituted here.          
+C     | _RS is usually REAL*4                                     
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     fld - Field to plot
 C     fldNam - Name of field
@@ -43,6 +50,7 @@ C     myThid - Thread id of thread instance calling plot_field
       INTEGER myThid
       INTEGER myIter
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) fldTitle
       INTEGER iStart, iEnd, iStride
@@ -50,6 +58,7 @@ C     == Local variables ==
       INTEGER kStart, kEnd, kStride
       INTEGER biStart, biEnd, biStride
       INTEGER bjStart, bjEnd, bjStride
+CEOP
 
 C--   To get around synchronisation and multi-threaded I/O issues
 C--   thread 1 will do all the writes.
@@ -93,29 +102,37 @@ C      Substitute other plotting utilities here!
 
       RETURN
       END
+
+CBOP
+C     !ROUTINE: PLOT_FIELD_XYRL
+C     !INTERFACE:
       SUBROUTINE PLOT_FIELD_XYRL( 
      I                            fld, fldNam , myIter, myThid )
 
-C     /==========================================================\
-C     | SUBROUTINE PLOT_FIELD_XYRL                               |
-C     | Print out an XY _RL field using text map.                |
-C     |==========================================================|
-C     | This routine references "numerical model" parameters like|
-C     | like the integration time. It uses these to create a     |
-C     | title for the field before calling a generic execution   |
-C     | environment support routine.                             |
-C     | This routine can also be edited to cause only some region|
-C     | of a field to be printed by default, or every other      |
-C     | point etc..                                              |
-C     | Other plot formats can also be substituted here.         |
-C     | _RL is usually REAL*8                                    |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE PLOT_FIELD_XYRL                                
+C     | Print out an XY _RL field using text map.                 
+C     *==========================================================*
+C     | This routine references "numerical model" parameters like 
+C     | like the integration time. It uses these to create a      
+C     | title for the field before calling a generic execution    
+C     | environment support routine.                              
+C     | This routine can also be edited to cause only some region 
+C     | of a field to be printed by default, or every other       
+C     | point etc..                                               
+C     | Other plot formats can also be substituted here.          
+C     | _RL is usually REAL*8                                     
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     fld - Field to plot
 C     fldNam - Name of field
@@ -126,6 +143,7 @@ C     myThid - Thread id of thread instance calling plot_field
       INTEGER myThid
       INTEGER myIter
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) fldTitle
       INTEGER iStart, iEnd, iStride
@@ -133,6 +151,7 @@ C     == Local variables ==
       INTEGER kStart, kEnd, kStride
       INTEGER biStart, biEnd, biStride
       INTEGER bjStart, bjEnd, bjStride
+CBOP
 
 C--   To get around synchronisation and multi-threaded I/O issues
 C--   thread 1 will do all the writes.
@@ -176,29 +195,36 @@ C      Substitute other plotting utilities here!
 
       RETURN
       END
+CBOP
+C     !ROUTINE: PLOT_FIELD_XYZRS
+C     !INTERFACE:
       SUBROUTINE PLOT_FIELD_XYZRS( 
      I                            fld, fldNam , fldNz, myIter, myThid )
 
-C     /==========================================================\
-C     | SUBROUTINE PLOT_FIELD_XYZR4                              |
-C     | Print out an XYZ _RS field using text map.               |
-C     |==========================================================|
-C     | This routine references "numerical model" parameters like|
-C     | like the integration time. It uses these to create a     |
-C     | title for the field before calling a generic execution   |
-C     | environment support routine.                             |
-C     | This routine can also be edited to cause only some region|
-C     | of a field to be printed by default, or every other      |
-C     | point etc..                                              |
-C     | Other plot formats can also be substituted here.         |
-C     | _RS is usually a REAL*4 field                            |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE PLOT_FIELD_XYZR4                               
+C     | Print out an XYZ _RS field using text map.                
+C     *==========================================================*
+C     | This routine references "numerical model" parameters like 
+C     | like the integration time. It uses these to create a      
+C     | title for the field before calling a generic execution    
+C     | environment support routine.                              
+C     | This routine can also be edited to cause only some region 
+C     | of a field to be printed by default, or every other       
+C     | point etc..                                               
+C     | Other plot formats can also be substituted here.          
+C     | _RS is usually a REAL*4 field                             
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     fld - Field to plot
 C     fldNam - Name of field
@@ -214,6 +240,7 @@ C     myThid - Thread id of thread instance calling plot_field
       INTEGER myThid
       INTEGER myIter
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) fldTitle
       INTEGER iStart, iEnd, iStride
@@ -221,6 +248,7 @@ C     == Local variables ==
       INTEGER kStart, kEnd, kStride
       INTEGER biStart, biEnd, biStride
       INTEGER bjStart, bjEnd, bjStride
+CEOP
 
 C--   To get around synchronisation and multi-threaded I/O issues
 C--   thread 1 will do all the writes.

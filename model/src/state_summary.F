@@ -1,25 +1,31 @@
-C $Header: /u/gcmpack/MITgcm/model/src/state_summary.F,v 1.6 2001/02/04 14:38:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/state_summary.F,v 1.7 2001/09/26 18:09:16 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: STATE_SUMMARY
+C     !INTERFACE:
       SUBROUTINE STATE_SUMMARY( myThid )
-C     /==========================================================\
-C     | SUBROUTINE STATE_SUMMARY                                 |
-C     | o Summarize model prognostic variables.                  |
-C     |==========================================================|
-C     | This routine can be called at any time during an         |
-C     | integration to provide a summary of the model state.     |
-C     | Note                                                     |
-C     |  1. Under multi-process parallelism the state summary    |
-C     |     is only given for the per-process data.              |
-C     |  2. Under multi-threading the summary is produced by     |
-C     |     the master thread. This threads reads data managed by|
-C     |     other threads.                                       |
-C     \==========================================================/
-      IMPLICIT NONE
 
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE STATE_SUMMARY                                  
+C     | o Summarize model prognostic variables.                   
+C     *==========================================================*
+C     | This routine can be called at any time during an          
+C     | integration to provide a summary of the model state.      
+C     | Note                                                      
+C     |  1. Under multi-process parallelism the state summary     
+C     |     is only given for the per-process data.               
+C     |  2. Under multi-threading the summary is produced by      
+C     |     the master thread. This threads reads data managed by 
+C     |     other threads.                                        
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -27,13 +33,15 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid -  Number of this instance of STATE_SUMMARY
       INTEGER myThid
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
 
       _BARRIER
 

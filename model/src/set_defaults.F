@@ -1,31 +1,39 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.28 2001/09/10 01:22:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.29 2001/09/26 18:09:16 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: SET_DEFAULTS
+C     !INTERFACE:
       SUBROUTINE SET_DEFAULTS(
      O   viscArDefault, diffKrTDefault, diffKrSDefault,
      O   hFacMinDrDefault, delRdefault, rkFacDefault,
      I   myThid )
-C     /==========================================================\
-C     | SUBROUTINE SET_DEFAULTS                                  |
-C     | o Routine to set model "parameters"                      |
-C     |==========================================================|
-C     | Notes:                                                   |
-C     | ======                                                   |
-C     | The present version of this routine is a place-holder.   |
-C     | A production version needs to handle parameters from an  |
-C     | external file and possibly reading in some initial field |
-C     | values.                                                  |
-C     \==========================================================/
-      IMPLICIT NONE
 
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE SET_DEFAULTS                                   
+C     | o Routine to set model "parameters"                       
+C     *==========================================================*
+C     | Notes:                                                    
+C     | ======                                                    
+C     | The present version of this routine is a place-holder.    
+C     | A production version needs to handle parameters from an   
+C     | external file and possibly reading in some initial field  
+C     | values.                                                   
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid - Number of this instance of INI_PARMS
       INTEGER myThid
@@ -36,9 +44,11 @@ C     myThid - Number of this instance of INI_PARMS
       _RL delRDefault(Nr)
       _RS rkFacDefault
 
+C     !LOCAL VARIABLES:
 C     === Local variables ===
 C     K, I, J - Loop counters
       INTEGER K, I, J
+CEOP
 
 C--   Grid parameters
 C     Vertical gridding

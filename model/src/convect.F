@@ -1,17 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.17 2001/07/30 20:23:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.18 2001/09/26 18:09:14 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: CONVECT
+C     !INTERFACE:
       SUBROUTINE CONVECT( bi, bj, iMin, iMax, jMin, jMax, K,
      &       rhoKm1, rhoKp1, ConvectCount,
      &       myTime,myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE CONVECT                                       |
-C     | o Does vertical mixing of unstable water columns         |
-C     \==========================================================/
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE CONVECT                                        
+C     | o Does vertical mixing of unstable water columns          
+C     *==========================================================*
+C     | Uses simple homgenisation scheme between unstable 
+C     | layers.
+C     *==========================================================*
+C     \ev
+C     !USES:
       IMPLICIT NONE
-
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -21,10 +29,10 @@ C     == Global data ==
 #ifdef ALLOW_PASSIVE_TRACER
 #include "TR1.h"
 #endif
-
       EXTERNAL DIFFERENT_MULTIPLE
       LOGICAL  DIFFERENT_MULTIPLE
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     bi,bj,iMin,iMax,jMin,jMax,K - Loop counters
 C     rhoKm1 - rho in layer above
@@ -40,7 +48,13 @@ C     myThid - Thread number of this instance of S/R CONVECT
       INTEGER myIter
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     i,j    :: Loop counter
+C     tMix   :: Temp. for calculation of mixed theta.
+C     sMix   :: Temp. for calculation of mixed salt. 
+C     tr1Mix :: Temp. for calculation of mixed tracer.
+C     dSum   :: Temp. for layer thicknesses
       INTEGER i,j
       _RL tMix(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sMix(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -48,6 +62,7 @@ C     == Local variables ==
       _RL tr1Mix(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
       _RL dSum(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+CEOP
 
 C--   Check to see if should convect now
       IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,myTime-deltaTClock) ) THEN

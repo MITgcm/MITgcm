@@ -1,9 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.6 2001/07/30 20:23:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.7 2001/09/26 18:09:14 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: DO_FIELDS_BLOCKING_EXCHANGES
+C     !INTERFACE:
       SUBROUTINE DO_FIELDS_BLOCKING_EXCHANGES(myThid)
+C     !DESCRIPTION: \bv
 C     /==========================================================\
 C     | SUBROUTINE DO_FIELDS_BLOCKING_EXCHANGES                  |
 C     | o Controlling routine for exchanging edge info.          |
@@ -12,8 +16,9 @@ C     | One key trick used in UV us that we over-compute and     |
 C     | arrange our time-stepping loop so that we only need one  |
 C     | edge exchange for the explicit code per timestep.        |
 C     \==========================================================/
+C     \ev
+C     !USES:
       IMPLICIT NONE
-
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -22,9 +27,11 @@ C     == Global variables ===
 #include "TR1.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
       INTEGER myThid
+CEOP
 
 c     _EXCH_XYZ_R8( Gu , myThid )
 c     _EXCH_XYZ_R8( Gv , myThid )

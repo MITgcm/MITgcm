@@ -1,28 +1,72 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.81 2001/09/19 02:43:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.82 2001/09/26 18:09:14 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: DYNAMICS
+C     !INTERFACE:
       SUBROUTINE DYNAMICS(myTime, myIter, myThid)
-C     /==========================================================\
-C     | SUBROUTINE DYNAMICS                                      |
-C     | o Controlling routine for the explicit part of the model |
-C     |   dynamics.                                              |
-C     |==========================================================|
-C     | This routine evaluates the "dynamics" terms for each     |
-C     | block of ocean in turn. Because the blocks of ocean have |
-C     | overlap regions they are independent of one another.     |
-C     | If terms involving lateral integrals are needed in this  |
-C     | routine care will be needed. Similarly finite-difference |
-C     | operations with stencils wider than the overlap region   |
-C     | require special consideration.                           |
-C     | Notes                                                    |
-C     | =====                                                    |
-C     | C*P* comments indicating place holders for which code is |
-C     |      presently being developed.                          |
-C     \==========================================================/
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE DYNAMICS                                       
+C     | o Controlling routine for the explicit part of the model  
+C     |   dynamics.                                               
+C     *==========================================================*
+C     | This routine evaluates the "dynamics" terms for each      
+C     | block of ocean in turn. Because the blocks of ocean have  
+C     | overlap regions they are independent of one another.      
+C     | If terms involving lateral integrals are needed in this   
+C     | routine care will be needed. Similarly finite-difference  
+C     | operations with stencils wider than the overlap region    
+C     | require special consideration.                            
+C     | The algorithm...
+C     |
+C     | "Correction Step"
+C     | =================
+C     | Here we update the horizontal velocities with the surface
+C     | pressure such that the resulting flow is either consistent
+C     | with the free-surface evolution or the rigid-lid:
+C     |   U[n] = U* + dt x d/dx P
+C     |   V[n] = V* + dt x d/dy P
+C     |
+C     | "Calculation of Gs"
+C     | ===================
+C     | This is where all the accelerations and tendencies (ie.
+C     | physics, parameterizations etc...) are calculated
+C     |   rho = rho ( theta[n], salt[n] )
+C     |   b   = b(rho, theta)
+C     |   K31 = K31 ( rho )
+C     |   Gu[n] = Gu( u[n], v[n], wVel, b, ... )
+C     |   Gv[n] = Gv( u[n], v[n], wVel, b, ... )
+C     |   Gt[n] = Gt( theta[n], u[n], v[n], wVel, K31, ... )
+C     |   Gs[n] = Gs( salt[n], u[n], v[n], wVel, K31, ... )
+C     |
+C     | "Time-stepping" or "Prediction"
+C     | ================================
+C     | The models variables are stepped forward with the appropriate
+C     | time-stepping scheme (currently we use Adams-Bashforth II)
+C     | - For momentum, the result is always *only* a "prediction"
+C     | in that the flow may be divergent and will be "corrected"
+C     | later with a surface pressure gradient.
+C     | - Normally for tracers the result is the new field at time
+C     | level [n+1} *BUT* in the case of implicit diffusion the result
+C     | is also *only* a prediction.
+C     | - We denote "predictors" with an asterisk (*).
+C     |   U* = U[n] + dt x ( 3/2 Gu[n] - 1/2 Gu[n-1] )
+C     |   V* = V[n] + dt x ( 3/2 Gv[n] - 1/2 Gv[n-1] )
+C     |   theta[n+1] = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C     |   salt[n+1] = salt[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C     | With implicit diffusion:
+C     |   theta* = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C     |   salt* = salt[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C     |   (1 + dt * K * d_zz) theta[n] = theta*
+C     |   (1 + dt * K * d_zz) salt[n] = salt*
+C     |
+C     *==========================================================*
+C     \ev
+C     !USES:
       IMPLICIT NONE
-
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -32,7 +76,6 @@ C     == Global variables ===
 #ifdef ALLOW_PASSIVE_TRACER
 #include "TR1.h"
 #endif
-
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -44,11 +87,36 @@ C     == Global variables ===
 #  include "GMREDI.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
 #endif
 
+C     !CALLING SEQUENCE:
+C     DYNAMICS()
+C      |
+C      |-- CALC_GRAD_PHI_SURF
+C      |
+C      |-- CALC_VISCOSITY
+C      |
+C      |-- CALC_PHI_HYD  
+C      |
+C      |-- MOM_FLUXFORM  
+C      |
+C      |-- MOM_VECINV    
+C      |
+C      |-- TIMESTEP      
+C      |
+C      |-- OBCS_APPLY_UV 
+C      |
+C      |-- IMPLDIFF      
+C      |
+C      |-- OBCS_APPLY_UV
+C      |
+C      |-- CALL TIMEAVE_CUMUL_1T
+C      |-- CALL TIMEAVE_CUMULATE
+C      |-- CALL DEBUG_STATS_RL
+
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myTime - Current time in simulation
 C     myIter - Current iteration number in simulation
@@ -57,6 +125,7 @@ C     myThid - Thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     == Local variables
 C     fVer[STUV]               o fVer: Vertical flux term - note fVer
 C                                      is "pipelined" in the vertical
@@ -147,6 +216,7 @@ C         salt* = salt[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
 C         (1 + dt * K * d_zz) theta[n] = theta*
 C         (1 + dt * K * d_zz) salt[n] = salt*
 C---
+CEOP
 
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They

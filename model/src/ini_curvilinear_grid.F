@@ -1,29 +1,42 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.2 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.3 2001/09/26 18:09:15 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: INI_CURVILINEAR_GRID
+C     !INTERFACE:
       SUBROUTINE INI_CURVILINEAR_GRID( myThid )
-C     /==========================================================\
-C     | SUBROUTINE INI_CURVILINEAR_GRID                          |
-C     | o Initialise curvilinear coordinate system               |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE INI_CURVILINEAR_GRID                           
+C     | o Initialise curvilinear coordinate system                
+C     *==========================================================*
+C     | Curvilinear grid settings are read from a file rather
+C     | than coded in-line as for cartesian and spherical polar.
+C     | This is more general but you have to create the grid
+C     | yourself.
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_CARTESIAN_GRID
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       INTEGER bi,bj
       INTEGER I,J
+CEOP
 
 C--   Set everything to zero everywhere
       DO bj = myByLo(myThid), myByHi(myThid)

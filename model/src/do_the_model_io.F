@@ -1,38 +1,44 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.21 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.22 2001/09/26 18:09:14 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: DO_THE_MODEL_IO
+C     !INTERFACE:
       SUBROUTINE DO_THE_MODEL_IO(myCurrentTime, myIter, myThid)
-C     /==========================================================\
-C     | SUBROUTINE DO_THE_MODEL_IO                               |
-C     | o Controlling routine for IO in model main time-stepping |
-C     |   loop.                                                  |
-C     |==========================================================|
-C     | Many systems do not have thread safe IO so it is easier  |
-C     | to lump everything together and do dumping of fields     |
-C     | and updating of forcing terms in a single place.         |
-C     | The approach to IO used here is that writes are only     |
-C     | performed by thread 1 and that a process only writes out |
-C     | its data ( it does not know about anyone elses data!)    |
-C     | Reading on the other hand is assumed to be from a file   |
-C     | containing all the data for all the processes. Only the  |
-C     | portion of data of interest to this process is actually  |
-C     | loaded. To work well this assumes the existence of some  |
-C     | reliable tool to join datasets together at the end of a  |
-C     | run - see joinds.p                                       |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE DO_THE_MODEL_IO                                
+C     | o Controlling routine for IO in model main time-stepping  
+C     |   loop.                                                   
+C     *==========================================================*
+C     | Many systems do not have thread safe IO so it is easier   
+C     | to lump everything together and do dumping of fields      
+C     | and updating of forcing terms in a single place.          
+C     | The approach to IO used here is that writes are only      
+C     | performed by thread 1 and that a process only writes out  
+C     | its data ( it does not know about anyone elses data!)     
+C     | Reading on the other hand is assumed to be from a file    
+C     | containing all the data for all the processes. Only the   
+C     | portion of data of interest to this process is actually   
+C     | loaded. To work well this assumes the existence of some   
+C     | reliable tool to join datasets together at the end of a   
+C     | run - see joinds.p                                        
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
 C     myIter - Iteration number
@@ -41,7 +47,7 @@ C     myCurrentTime - Current time of simulation ( s )
       INTEGER myIter
       _RL    myCurrentTime
 
-C     == Local variables ==
+CEOP
 
 C--   Generaly only thread 1 does IO here. It can not start until 
 C--   all threads fields are ready.

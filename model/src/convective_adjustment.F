@@ -1,36 +1,40 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.7 2001/05/14 21:46:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.8 2001/09/26 18:09:14 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: CONVECTIVE_ADJUSTMENT
+C     !INTERFACE:
       SUBROUTINE CONVECTIVE_ADJUSTMENT(
      I       bi, bj, iMin, iMax, jMin, jMax,
      I       myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE CONVECTIVE_ADJUSTMENT                         |
-C     | o Calls vertical mixing or similar parameterization      |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE CONVECTIVE_ADJUSTMENT                          
+C     | o Driver for vertical mixing or similar parameterization       
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
 #endif 
-
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
-
       EXTERNAL DIFFERENT_MULTIPLE
       LOGICAL  DIFFERENT_MULTIPLE
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     bi,bj,iMin,iMax,jMin,jMax,K - Loop counters
 C     myTime - Current time in simulation
@@ -43,11 +47,15 @@ C     myThid - Thread number of this instance of S/R CONVECT
 
 #ifdef INCLUDE_CONVECT_CALL
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     rhoKm1, rhoK :: Density at adjacent levels (common ref. level)
+C     ConvectCount :: Convection mixing freq. counter.
       INTEGER i, j, K
       _RL rhoKm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoK  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ConvectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+CEOP
 
 C--   Check to see if should convect now
       IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,myTime-deltaTClock) ) THEN

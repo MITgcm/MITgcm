@@ -1,16 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.21 2001/02/04 14:38:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.22 2001/09/26 18:09:15 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: INI_FORCING
+C     !INTERFACE:
       SUBROUTINE INI_FORCING( myThid )
-C     /==========================================================\
-C     | SUBROUTINE INI_FORCING                                   |
-C     | o Set model initial forcing fields.                      |
-C     \==========================================================/
-      IMPLICIT NONE
 
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE INI_FORCING                                    
+C     | o Set model initial forcing fields.                       
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -18,16 +24,18 @@ C     === Global variables ===
 #include "GRID.h"
 #include "FFIELDS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_FORCING
       INTEGER myThid
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bi,bj  - Loop counters
 C     I,J
       INTEGER bi, bj
       INTEGER  I,  J
+CEOP
 
       _BARRIER
 

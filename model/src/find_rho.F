@@ -1,31 +1,40 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.14 2001/02/04 14:38:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.15 2001/09/26 18:09:15 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 #define USE_FACTORIZED_POLY
 
+CBOP
+C     !ROUTINE: FIND_RHO
+C     !INTERFACE:
       subroutine FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax,  k, kRef, eqn,
      I      tFld, sFld,
      O      rholoc,
      I      myThid )
-C     /==========================================================\
-C     | o SUBROUTINE FIND_RHO                                    |
-C     |   Calculates [rho(S,T,z)-Rhonil] of a slice              |
-C     |==========================================================|
-C     |                                                          |
-C     | k - is the Theta/Salt level                              |
-C     | kRef - determines pressure reference level               |
-C     |        (not used in 'LINEAR' mode)                       |
-C     | eqn - determines the eqn. of state: 'LINEAR' or 'POLY3'  |
-C     |                                                          |
-C     \==========================================================/
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE FIND_RHO                                     
+C     |   Calculates [rho(S,T,z)-Rhonil] of a slice               
+C     *==========================================================*
+C     |                                                           
+C     | k - is the Theta/Salt level                               
+C     | kRef - determines pressure reference level                
+C     |        (not used in 'LINEAR' mode)                        
+C     | eqn - determines the eqn. of state: 'LINEAR' or 'POLY3'   
+C     |                                                           
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       implicit none
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       integer bi,bj,iMin,iMax,jMin,jMax
       integer k			! Level of Theta/Salt slice
@@ -36,10 +45,12 @@ C     == Routine arguments ==
       _RL rholoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       integer myThid
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       integer i,j
       _RL refTemp,refSalt,sigRef,tP,sP,deltaSig
       character*(max_len_mbuf) msgbuf
+CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
       DO j=1-OLy,sNy+OLy

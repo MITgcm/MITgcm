@@ -1,19 +1,24 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_tr1.F,v 1.1 2001/07/13 14:26:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_tr1.F,v 1.2 2001/09/26 18:09:16 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: INI_TR1
+C     !INTERFACE:
       SUBROUTINE INI_TR1( myThid )
-C     /==========================================================\
-C     | SUBROUTINE INI_TR1                                       |
-C     | o Set initial tracer 1 distribution.                     |
-C     |==========================================================|
-C     | Passive tracers 1-N can be initialised so as to          |
-C     | dye fluid.                                               |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE INI_TR1                                        
+C     | o Set initial tracer 1 distribution.                      
+C     *==========================================================*
+C     | Passive tracers 1-N can be initialised so as to           
+C     | dye fluid.                                                
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -22,11 +27,12 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "TR1.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_TR1
       INTEGER myThid
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     iC, jC - Center of domain
 C     iD, jD - Disitance from domain center.
@@ -41,6 +47,7 @@ C     I,J,K
       INTEGER I, J, K, localWarnings
       _RL     rad, rD
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
 
       _BARRIER
 

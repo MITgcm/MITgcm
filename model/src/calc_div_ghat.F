@@ -1,21 +1,28 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.16 2001/09/19 13:58:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.17 2001/09/26 18:09:13 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-
-C     /==========================================================\
-C     | S/R CALC_DIV_GHAT                                        |
-C     | o Form the right hand-side of the surface pressure eqn.  |
-C     |==========================================================|
-C     \==========================================================/
-      SUBROUTINE CALC_DIV_GHAT( 
+CBOP
+C     !ROUTINE: CALC_DIV_GHAT
+C     !INTERFACE:
+      SUBROUTINE CALC_DIV_GHAT(
      I        bi,bj,iMin,iMax,jMin,jMax,K,
      I        xA,yA,
      U        cg2d_b,
      I        myThid)
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R CALC_DIV_GHAT                                         
+C     | o Form the right hand-side of the surface pressure eqn.   
+C     *==========================================================*
+C     | Right hand side of pressure equation is divergence
+C     | of veclocity tendency (GHAT) term along with a relaxation
+C     | term equal to the barotropic flow field divergence.
+C     *==========================================================*
+C     \ev
 
+C     !USES:
       IMPLICIT NONE
-
 C     == Global variables ==
 #include "SIZE.h"
 #include "DYNVARS.h"
@@ -25,6 +32,7 @@ C     == Global variables ==
 #include "GRID.h"
 #include "SOLVE_FOR_PRESSURE3D.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
 C                                      results will be set.
@@ -39,9 +47,13 @@ C     myThid - Instance number for this call of CALC_DIV_GHAT
       _RL cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     i,j :: Loop counters
+C     pf  :: Intermediate array for building RHS source term.
       INTEGER i,j
       _RL pf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+CEOP
 
 C--   Pressure equation source term
 C     Term is the vertical integral of the divergence of the 

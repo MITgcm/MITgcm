@@ -1,10 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.11 2001/06/29 17:14:49 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.12 2001/09/26 18:09:14 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 #define VERBOSE
 
+CBOP
+C     !ROUTINE: CG3D
+C     !INTERFACE:
       SUBROUTINE CG3D(  
      I                cg3d_b,
      U                cg3d_x,
@@ -12,30 +15,33 @@ C $Name:  $
      O                lastResidual,
      U                numIters,
      I                myThid )
-C     /==========================================================\
-C     | SUBROUTINE CG3D                                          |
-C     | o Three-dimensional grid problem conjugate-gradient      |
-C     |   inverter (with preconditioner).                        |
-C     |==========================================================|
-C     | Con. grad is an iterative procedure for solving Ax = b.  |
-C     | It requires the A be symmetric.                          |
-C     | This implementation assumes A is a five-diagonal         |
-C     | matrix of the form that arises in the discrete           |
-C     | representation of the del^2 operator in a                |
-C     | two-dimensional space.                                   |
-C     | Notes:                                                   |
-C     | ======                                                   |
-C     | This implementation can support shared-memory            | 
-C     | multi-threaded execution. In order to do this COMMON     | 
-C     | blocks are used for many of the arrays - even ones that  | 
-C     | are only used for intermedaite results. This design is   | 
-C     | OK if you want to all the threads to collaborate on      | 
-C     | solving the same problem. On the other hand if you want  | 
-C     | the threads to solve several different problems          | 
-C     | concurrently this implementation will not work.          |
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE CG3D                                           
+C     | o Three-dimensional grid problem conjugate-gradient       
+C     |   inverter (with preconditioner).                         
+C     *==========================================================*
+C     | Con. grad is an iterative procedure for solving Ax = b.   
+C     | It requires the A be symmetric.                           
+C     | This implementation assumes A is a seven-diagonal          
+C     | matrix of the form that arises in the discrete            
+C     | representation of the del^2 operator in a                 
+C     | three-dimensional space.                                    
+C     | Notes:                                                    
+C     | ======                                                    
+C     | This implementation can support shared-memory              
+C     | multi-threaded execution. In order to do this COMMON       
+C     | blocks are used for many of the arrays - even ones that    
+C     | are only used for intermedaite results. This design is     
+C     | OK if you want to all the threads to collaborate on        
+C     | solving the same problem. On the other hand if you want    
+C     | the threads to solve several different problems            
+C     | concurrently this implementation will not work.           
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -43,6 +49,7 @@ C     === Global data ===
 #include "GRID.h"
 #include "CG3D.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid    - Thread on which I am working.
 C     cg2d_b    - The source term or "right hand side"
@@ -61,6 +68,7 @@ C                 Exit:  the actual number of iterations used
 
 #ifdef ALLOW_NONHYDROSTATIC
 
+C     !LOCAL VARIABLES:
 C     === Local variables ====
 C     actualIts      - Number of iterations taken
 C     actualResidual - residual
@@ -98,6 +106,7 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       INTEGER exchWidthY
       INTEGER myNz
       _RL     topLevTerm
+CEOP
 
 C--   Initialise inverter
       eta_qrNM1 = 1. D0

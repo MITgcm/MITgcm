@@ -1,17 +1,66 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.8 2001/09/19 16:07:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.9 2001/09/26 18:09:16 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: THERMODYNAMICS
+C     !INTERFACE:
       SUBROUTINE THERMODYNAMICS(myTime, myIter, myThid)
-C     /==========================================================\
-C     | SUBROUTINE THERMODYNAMICS                                |
-C     | o Controlling routine for the prognostic part of the     |
-C     |   thermo-dynamics.                                       |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE THERMODYNAMICS                                 
+C     | o Controlling routine for the prognostic part of the      
+C     |   thermo-dynamics.                                        
+C     *===========================================================
+C     | The algorithm...
+C     |
+C     | "Correction Step"
+C     | =================
+C     | Here we update the horizontal velocities with the surface
+C     | pressure such that the resulting flow is either consistent
+C     | with the free-surface evolution or the rigid-lid:
+C     |   U[n] = U* + dt x d/dx P
+C     |   V[n] = V* + dt x d/dy P
+C     |
+C     | "Calculation of Gs"
+C     | ===================
+C     | This is where all the accelerations and tendencies (ie.
+C     | physics, parameterizations etc...) are calculated
+C     |   rho = rho ( theta[n], salt[n] )
+C     |   b   = b(rho, theta)
+C     |   K31 = K31 ( rho )
+C     |   Gu[n] = Gu( u[n], v[n], wVel, b, ... )
+C     |   Gv[n] = Gv( u[n], v[n], wVel, b, ... )
+C     |   Gt[n] = Gt( theta[n], u[n], v[n], wVel, K31, ... )
+C     |   Gs[n] = Gs( salt[n], u[n], v[n], wVel, K31, ... )
+C     |
+C     | "Time-stepping" or "Prediction"
+C     | ================================
+C     | The models variables are stepped forward with the appropriate
+C     | time-stepping scheme (currently we use Adams-Bashforth II)
+C     | - For momentum, the result is always *only* a "prediction"
+C     | in that the flow may be divergent and will be "corrected"
+C     | later with a surface pressure gradient.
+C     | - Normally for tracers the result is the new field at time
+C     | level [n+1} *BUT* in the case of implicit diffusion the result
+C     | is also *only* a prediction.
+C     | - We denote "predictors" with an asterisk (*).
+C     |   U* = U[n] + dt x ( 3/2 Gu[n] - 1/2 Gu[n-1] )
+C     |   V* = V[n] + dt x ( 3/2 Gv[n] - 1/2 Gv[n-1] )
+C     |   theta[n+1] = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C     |   salt[n+1] = salt[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C     | With implicit diffusion:
+C     |   theta* = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C     |   salt* = salt[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C     |   (1 + dt * K * d_zz) theta[n] = theta*
+C     |   (1 + dt * K * d_zz) salt[n] = salt*
+C     |
+C     *==========================================================*
+C     \ev
 
+C     !USES:
+      IMPLICIT NONE
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -22,7 +71,6 @@ C     == Global variables ===
 #ifdef ALLOW_PASSIVE_TRACER
 #include "TR1.h"
 #endif
-
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -34,11 +82,11 @@ C     == Global variables ===
 #  include "GMREDI.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myTime - Current time in simulation
 C     myIter - Current iteration number in simulation
@@ -47,6 +95,7 @@ C     myThid - Thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     == Local variables
 C     xA, yA                 - Per block temporaries holding face areas
 C     uTrans, vTrans, rTrans - Per block temporaries holding flow 
@@ -94,10 +143,8 @@ C                      index into fVerTerm.
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-
-C This is currently used by IVDC and Diagnostics
+C     This is currently used by IVDC and Diagnostics
       _RL ConvectCount (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       INTEGER bi, bj
@@ -109,51 +156,8 @@ c     CHARACTER*(MAX_LEN_MBUF) suff
 c     LOGICAL  DIFFERENT_MULTIPLE
 c     EXTERNAL DIFFERENT_MULTIPLE
 Cjmc(end)
+CEOP
  
-C---    The algorithm...
-C
-C       "Correction Step"
-C       =================
-C       Here we update the horizontal velocities with the surface
-C       pressure such that the resulting flow is either consistent
-C       with the free-surface evolution or the rigid-lid:
-C         U[n] = U* + dt x d/dx P
-C         V[n] = V* + dt x d/dy P
-C
-C       "Calculation of Gs"
-C       ===================
-C       This is where all the accelerations and tendencies (ie.
-C       physics, parameterizations etc...) are calculated
-C         rho = rho ( theta[n], salt[n] )
-C         b   = b(rho, theta)
-C         K31 = K31 ( rho )
-C         Gu[n] = Gu( u[n], v[n], wVel, b, ... )
-C         Gv[n] = Gv( u[n], v[n], wVel, b, ... )
-C         Gt[n] = Gt( theta[n], u[n], v[n], wVel, K31, ... )
-C         Gs[n] = Gs( salt[n], u[n], v[n], wVel, K31, ... )
-C
-C       "Time-stepping" or "Prediction"
-C       ================================
-C       The models variables are stepped forward with the appropriate
-C       time-stepping scheme (currently we use Adams-Bashforth II)
-C       - For momentum, the result is always *only* a "prediction"
-C       in that the flow may be divergent and will be "corrected"
-C       later with a surface pressure gradient.
-C       - Normally for tracers the result is the new field at time
-C       level [n+1} *BUT* in the case of implicit diffusion the result
-C       is also *only* a prediction.
-C       - We denote "predictors" with an asterisk (*).
-C         U* = U[n] + dt x ( 3/2 Gu[n] - 1/2 Gu[n-1] )
-C         V* = V[n] + dt x ( 3/2 Gv[n] - 1/2 Gv[n-1] )
-C         theta[n+1] = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
-C         salt[n+1] = salt[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
-C       With implicit diffusion:
-C         theta* = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
-C         salt* = salt[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
-C         (1 + dt * K * d_zz) theta[n] = theta*
-C         (1 + dt * K * d_zz) salt[n] = salt*
-C---
-
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   dummy statement to end declaration part
       ikey = 1
