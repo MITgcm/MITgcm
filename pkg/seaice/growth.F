@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.21 2004/09/07 08:47:31 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.22 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -33,8 +33,6 @@ C     myThid - Thread no. that called this routine.
       _RL myTime
       INTEGER myIter, myThid
 CEndOfInterface
-
-#ifdef ALLOW_SEAICE
 
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
@@ -361,8 +359,6 @@ c          HEFF(I,J,1,bi,bj)=MIN(MAX_HEFF,HEFF(I,J,1,bi,bj))
 
        ENDDO
       ENDDO
-
-#endif /* ALLOW_SEAICE */
 
       RETURN
       END

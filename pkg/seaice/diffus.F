@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/diffus.F,v 1.8 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/diffus.F,v 1.9 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -25,8 +25,6 @@ C     myThid - Thread no. that called this routine.
       _RL DELTT
       INTEGER myThid
 CEndOfInterface
- 
-#ifdef ALLOW_SEAICE
 
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
@@ -77,8 +75,6 @@ C NOW DO DIFFUSION WITH NUIT CONVERSION
         ENDDO
        ENDDO
       ENDDO
-
-#endif /* ALLOW_SEAICE */
 
       RETURN
       END

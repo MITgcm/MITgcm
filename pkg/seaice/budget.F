@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/budget.F,v 1.13 2004/07/22 23:43:43 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/budget.F,v 1.14 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -38,8 +38,6 @@ C     === Routine arguments ===
       INTEGER KOPEN
       INTEGER bi, bj
 CEndOfInterface
-
-#ifdef ALLOW_SEAICE
 
 C     === Local variables ===
 C     i,j,k,bi,bj - Loop counters
@@ -233,8 +231,6 @@ C SW PENETRATION UNDER ICE
          ENDDO
 
       END IF
-
-#endif /* ALLOW_SEAICE */
 
       RETURN
       END

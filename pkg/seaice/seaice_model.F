@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.24 2004/07/05 20:05:07 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.25 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -53,8 +53,6 @@ C     myThid - Thread no. that called this routine.
       INTEGER myIter
       INTEGER myThid
 CEndOfInterface
-
-#ifdef ALLOW_SEAICE
 
 C !LOCAL VARIABLES: ====================================================
 C     === Local variables ===
@@ -161,8 +159,6 @@ CRG CADJ store UICE,VICE,AREA,HEFF,fu,fv,EmPmR,Qnet,Qsw = comlev1_bibj
 
 C--   Call sea-ice cost function routine
 CRG      CALL SEAICE_COST( myTime, myIter, myThid )
-
-#endif /* ALLOW_SEAICE */
 
       RETURN
       END

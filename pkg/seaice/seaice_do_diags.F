@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.7 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.8 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -27,8 +27,6 @@ C     myThid        - Number of this instance of SEAICE_DO_DIAGS
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-
-#ifdef ALLOW_SEAICE
 
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
@@ -256,7 +254,5 @@ C      Reset averages to zero
       
 #endif /* ALLOW_TIMEAVE */
 
-#endif /* ALLOW_SEAICE */
-      
       RETURN
       END

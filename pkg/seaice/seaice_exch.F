@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_exch.F,v 1.3 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_exch.F,v 1.4 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -21,8 +21,6 @@ C     myThid - Thread number for this instance of the routine.
       _RL fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
       INTEGER myThid
 CEndofinterface
-
-#ifdef ALLOW_SEAICE
 
 C     == Local variables ==
       INTEGER i,j,k,bi,bj
@@ -50,8 +48,6 @@ C--   Update overlap regions
             ENDDO
          ENDDO
       ENDDO
-
-#endif /* ALLOW_SEAICE */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.12 2004/12/22 01:25:20 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.13 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -26,8 +26,6 @@ C     myThid - Thread no. that called this routine.
       _RL COR_ICE        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       INTEGER myThid
 CEndOfInterface
-
-#ifdef ALLOW_SEAICE
 
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
@@ -130,8 +128,6 @@ C--   Compute ice-affected wind stress
       ENDDO
       CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
 #endif /* SEAICE_TEST_ICE_STRESS_1 */
-
-#endif /* ALLOW_SEAICE */
 
       RETURN
       END

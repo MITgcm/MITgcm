@@ -1,4 +1,3 @@
-#ifdef ALLOW_SEAICE
 CADJ STORE area          = comlev1, key = ikey_dynamics
 CADJ STORE heff          = comlev1, key = ikey_dynamics
 CADJ STORE hsnow         = comlev1, key = ikey_dynamics
@@ -13,4 +12,3 @@ CADJ STORE vice          = comlev1, key = ikey_dynamics
 # ifdef SEAICE_MULTILEVEL
 CADJ STORE tices         = comlev1, key = ikey_dynamics
 # endif
-#endif /* ALLOW_SEAICE */

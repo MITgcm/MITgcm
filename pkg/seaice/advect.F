@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.11 2004/10/05 14:03:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.12 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -31,8 +31,6 @@ C     myThid - Thread no. that called this routine.
       _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       INTEGER myThid
 CEndOfInterface
-
-#ifdef ALLOW_SEAICE
 
 C     === Local variables ===
 C     i,j,k,bi,bj - Loop counters
@@ -211,8 +209,6 @@ C NOW CALCULATE DIFFUSION COEF ROUGHLY
         ENDDO
        ENDDO
       ENDDO
-
-#endif /* ALLOW_SEAICE */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/groatb.F,v 1.11 2003/11/06 22:13:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/groatb.F,v 1.12 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -36,8 +36,6 @@ C     myThid - Thread no. that called this routine.
       _RL A22
       INTEGER myThid
 CEndOfInterface
- 
-#ifdef ALLOW_SEAICE
 
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
@@ -180,8 +178,6 @@ CADJ &                           key = iicekey, byte = isbyte
 
        ENDDO
       ENDDO
-
-#endif /* ALLOW_SEAICE */
 
       RETURN
       END

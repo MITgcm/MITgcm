@@ -1,7 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_FFIELDS.h,v 1.8 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_FFIELDS.h,v 1.9 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
-
-#ifdef ALLOW_SEAICE
 
 C     /==========================================================\
 C     | SEAICE_FFIELDS.h                                         |
@@ -112,5 +110,3 @@ C--   Define forcing fields internally.
       _RS  SSTsi1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #endif /* SEAICE_EXTERNAL_FORCING */
-
-#endif /* ALLOW_SEAICE */

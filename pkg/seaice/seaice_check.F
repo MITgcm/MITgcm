@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.9 2004/11/29 21:39:45 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.10 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -20,8 +20,6 @@ C     === Global variables ===
 C     === Routine arguments ===
 C     myThid -  Number of this instance of SEAICE_CHECK
       INTEGER myThid
-
-#ifdef ALLOW_SEAICE
 
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
@@ -115,8 +113,6 @@ C     At present this option is hardwired for pkg/exf.
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
 #endif /* SEAICE_EXTERNAL_FLUXES */
-
-#endif /* ALLOW_SEAICE */
 
       return
       end

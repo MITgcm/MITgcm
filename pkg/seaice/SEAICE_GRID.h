@@ -1,7 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_GRID.h,v 1.7 2004/04/28 12:00:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_GRID.h,v 1.8 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
-
-#ifdef ALLOW_SEAICE
 
 C     /==========================================================\
 C     | SEAICE_GRID.h                                            |
@@ -52,5 +50,3 @@ C
       COMMON/SEAICE_GRID/ TNGTICE, TNGICE, CSTICE, CSUICE, SINEICE,
      &                    RECIP_CSTICE, RECIP_CSUICE,
      &                    DXTICE, DXUICE, DYTICE, DYUICE
-
-#endif /* ALLOW_SEAICE */

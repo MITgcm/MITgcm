@@ -1,7 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_DIAGS.h,v 1.4 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/SEAICE_DIAGS.h,v 1.5 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
-
-#ifdef ALLOW_SEAICE
 
 C     /==========================================================\
 C     | SEAICE_DIAGS.h                                           |
@@ -29,5 +27,3 @@ C     Storage arrays for time-averages
      &        UICEtave, VICEtave, HEFFtave, AREAtave
 
 #endif /* ALLOW_TIMEAVE */
-
-#endif /* ALLOW_SEAICE */

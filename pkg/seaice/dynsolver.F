@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.14 2004/12/22 00:49:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/dynsolver.F,v 1.15 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -35,8 +35,6 @@ C     myThid - Thread no. that called this routine.
       INTEGER myIter
       INTEGER myThid
 CEndOfInterface
-
-#ifdef ALLOW_SEAICE
 
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
@@ -432,8 +430,6 @@ CADJ STORE vice = comlev1, key=ikey_dynamics
 
       ENDIF
 #endif /* SEAICE_ALLOW_DYNAMICS */
-
-#endif /* ALLOW_SEAICE */
 
       RETURN
       END

@@ -1,7 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.13 2004/07/22 23:43:43 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.14 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
-
-#ifdef ALLOW_SEAICE
 
 CBOP
 C !ROUTINE: SEAICE.h
@@ -93,5 +91,3 @@ CEOP
 C--   KGEO    Level used as a proxy for geostrophic velocity.
       COMMON/SEAICE_KGEO/KGEO
       integer KGEO   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-
-#endif /* ALLOW_SEAICE */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.10 2004/12/22 00:49:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_OPTIONS.h,v 1.11 2004/12/27 20:34:11 dimitri Exp $
 
 C     /==========================================================\
 C     | SEAICE_OPTIONS.h                                         |
@@ -11,8 +11,6 @@ C     \==========================================================/
 #ifndef SEAICE_OPTIONS_H
 #define SEAICE_OPTIONS_H
 #include "PACKAGES_CONFIG.h"
-#ifdef ALLOW_SEAICE
-
 #include "CPP_OPTIONS.h"
 
 C--   Write "text-plots" of certain fields in STDOUT for debugging.
@@ -64,5 +62,4 @@ C     following options are available.
 #undef SEAICE_ORIGINAL_BAD_ICE_STRESS
 #undef SEAICE_TEST_ICE_STRESS_1
 
-#endif /* ALLOW_SEAICE */
 #endif /* SEAICE_OPTIONS_H */

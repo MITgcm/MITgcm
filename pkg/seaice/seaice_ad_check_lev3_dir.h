@@ -1,4 +1,3 @@
-#ifdef ALLOW_SEAICE
 CADJ STORE area     = tapelev3, key = ilev_3
 CADJ STORE heff     = tapelev3, key = ilev_3
 CADJ STORE hsnow    = tapelev3, key = ilev_3
@@ -11,4 +10,3 @@ CADJ STORE vice     = tapelev3, key = ilev_3
 # ifdef SEAICE_MULTILEVEL
 CADJ STORE tices    = tapelev3, key = ilev_3
 # endif
-#endif /* ALLOW_SEAICE */

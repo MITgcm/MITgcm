@@ -1,7 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.14 2004/09/07 08:47:31 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE_PARAMS.h,v 1.15 2004/12/27 20:34:11 dimitri Exp $
 C $Name:  $
-
-#ifdef ALLOW_SEAICE
 
 C     /==========================================================\
 C     | SEAICE_PARAMS.h                                          |
@@ -72,7 +70,7 @@ C     SEAICE_wetIceAlb   - summer albedo
 C     SEAICE_drySnowAlb  - dry snow albedo
 C     SEAICE_wetSnowAlb  - wet snow albedo
 C     SEAICE_waterAlbedo - water albedo
-C     SEAICE_strength    - sea-ice strength
+C     SEAICE_strength    - sea-ice strength Pstar
 C     SEAICE_sensHeat    - sensible heat transfer coefficient
 C     SEAICE_latentWater - latent heat transfer coefficient for water
 C     SEAICE_latentIce   - latent heat transfer coefficient for ice
@@ -151,5 +149,3 @@ C--   Constants used by sea-ice model
       parameter ( ZERO = 0.0 _d 0, ONE = 1.0 _d 0, TWO = 2.0 _d 0 )
       _RL         QUART            , HALF
       parameter ( QUART = 0.25 _d 0, HALF = 0.5 _d 0 ) 
-
-#endif /* ALLOW_SEAICE */
