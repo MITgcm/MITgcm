@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.3 2003/12/15 18:40:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.4 2004/01/29 14:17:58 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -142,6 +142,14 @@ C--     Write pickup file for Lnad package:
           CALL LAND_WRITE_PICKUP(fn,myTime,myIter,myThid)
         ENDIF
 #endif
+
+#ifdef ALLOW_FIZHI
+C--     Write pickup file for fizhi package
+        IF (usefizhi) THEN
+          CALL FIZHI_WRITE_PICKUP(fn,myTime,myIter,myThid)
+        ENDIF
+#endif
+
 
        _END_MASTER( myThid )
        _BARRIER
