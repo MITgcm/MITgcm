@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.22 2005/03/24 19:41:15 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.23 2005/03/28 15:40:20 adcroft Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -47,8 +47,11 @@ C     == Local variables ==
       _RL Zip,Zij,Zpj,Dim,Dij,Dmj,uD2,vD2,uD4,vD4
       _RL Alin,AlinMin,AlinMax,Alth2,Alth4,grdVrt,grdDiv
       _RL vg2,vg2Min,vg2Max,vg4,vg4Min,vg4Max
-      _RL recip_dt,L2,L3,L4,L5
+      _RL recip_dt,L2,L3,L4,L5,L2rdt,L4rdt
       LOGICAL useVariableViscosity
+      LOGICAL useSophisticatedLengthScale
+
+      useSophisticatedLengthScale=.FALSE.
 
       useVariableViscosity=
      &      (viscAhGrid.NE.0.)
@@ -80,7 +83,14 @@ C These are (powers of) length scales used in the Leith viscosity calculation
          L3=(L2**1.5)
          L4=(L2**2)
          L5=0.125*(L2**2.5)
-
+         IF (useSophisticatedLengthScale) THEN
+         L2rdt=recip_dt/( 2.*(recip_DXF(I,J,bi,bj)**2
+     &                       +recip_DYF(I,J,bi,bj)**2) )
+         L4rdt=recip_dt/( 6.*(recip_DXF(I,J,bi,bj)**4
+     &                       +recip_DYF(I,J,bi,bj)**4)
+     &                   +8.*((recip_DXF(I,J,bi,bj)
+     &                        *recip_DYF(I,J,bi,bj))**2) )
+         ENDIF
 
          IF (useFullLeith) THEN
 C This is the vector magnitude of the vorticity gradient squared
@@ -127,9 +137,16 @@ c This approximation is good to the same order as above...
 C  Harmonic Modified Leith on Div.u points
          Alin=viscAhD+vg2*L2+Alth2
          viscAh_D(i,j)=min(viscAhMax,Alin)
+         IF (useSophisticatedLengthScale) THEN
+         IF (viscAhGridMax.GT.0.) THEN
+            AlinMax=viscAhGridMax*L2rdt
+            viscAh_D(i,j)=min(AlinMax,viscAh_D(i,j))
+         ENDIF
+         ELSE
          IF (vg2Max.GT.0.) THEN
             AlinMax=vg2Max*L2
             viscAh_D(i,j)=min(AlinMax,viscAh_D(i,j))
+         ENDIF
          ENDIF
          AlinMin=vg2Min*L2
          viscAh_D(i,j)=max(AlinMin,viscAh_D(i,j))
@@ -137,9 +154,16 @@ C  Harmonic Modified Leith on Div.u points
 C  BiHarmonic Modified Leith on Div.u points
          Alin=viscA4D+vg4*L4+Alth4
          viscA4_D(i,j)=min(viscA4Max,Alin)
+         IF (useSophisticatedLengthScale) THEN
+         IF (viscA4GridMax.GT.0.) THEN
+            AlinMax=viscA4GridMax*L4rdt
+            viscA4_D(i,j)=min(AlinMax,viscA4_D(i,j))
+         ENDIF
+         ELSE
          IF (vg4Max.GT.0.) THEN
             AlinMax=vg4Max*L4
             viscA4_D(i,j)=min(AlinMax,viscA4_D(i,j))
+         ENDIF
          ENDIF
          AlinMin=vg4Min*L4
          viscA4_D(i,j)=max(AlinMin,viscA4_D(i,j))
@@ -149,6 +173,14 @@ C These are (powers of) length scales used in the Leith viscosity calculation
          L3=(L2**1.5)
          L4=(L2**2)
          L5=0.125*(L2**2.5)
+         IF (useSophisticatedLengthScale) THEN
+         L2rdt=recip_dt/( 2.*(recip_DXV(I,J,bi,bj)**2
+     &                       +recip_DYU(I,J,bi,bj)**2) )
+         L4rdt=recip_dt/( 6.*(recip_DXV(I,J,bi,bj)**4
+     &                       +recip_DYU(I,J,bi,bj)**4)
+     &                   +8.*((recip_DXV(I,J,bi,bj)
+     &                        *recip_DYU(I,J,bi,bj))**2) )
+         ENDIF
 
 C This is the vector magnitude of the vorticity gradient squared
          IF (useFullLeith) THEN
@@ -193,9 +225,16 @@ C This if statement is just to prevent bitwise changes when leithd=0
 C  Harmonic Modified Leith on Zeta points
          Alin=viscAhZ+vg2*L2+Alth2
          viscAh_Z(i,j)=min(viscAhMax,Alin)
+         IF (useSophisticatedLengthScale) THEN
+         IF (viscAhGridMax.GT.0.) THEN
+            AlinMax=viscAhGridMax*L2rdt
+            viscAh_Z(i,j)=min(AlinMax,viscAh_Z(i,j))
+         ENDIF
+         ELSE
          IF (vg2Max.GT.0.) THEN
             AlinMax=vg2Max*L2
             viscAh_Z(i,j)=min(AlinMax,viscAh_Z(i,j))
+         ENDIF
          ENDIF
          AlinMin=vg2Min*L2
          viscAh_Z(i,j)=max(AlinMin,viscAh_Z(i,j))
@@ -203,9 +242,16 @@ C  Harmonic Modified Leith on Zeta points
 C  BiHarmonic Modified Leith on Zeta Points
          Alin=viscA4Z+vg4*L4+Alth4
          viscA4_Z(i,j)=min(viscA4Max,Alin)
+         IF (useSophisticatedLengthScale) THEN
+         IF (viscA4GridMax.GT.0.) THEN
+            AlinMax=viscA4GridMax*L4rdt
+            viscA4_Z(i,j)=min(AlinMax,viscA4_Z(i,j))
+         ENDIF
+         ELSE
          IF (vg4Max.GT.0.) THEN
             AlinMax=vg4Max*L4
             viscA4_Z(i,j)=min(AlinMax,viscA4_Z(i,j))
+         ENDIF
          ENDIF
          AlinMin=vg4Min*L4
          viscA4_Z(i,j)=max(AlinMin,viscA4_Z(i,j))
