@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_mon_print.F,v 1.4 2004/11/19 20:17:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_mon_print.F,v 1.5 2004/11/19 21:28:47 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -32,7 +32,6 @@ C     === Routine arguments ===
       CHARACTER*(*) arrName
       INTEGER myThid
 
-#ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
 
 C     === Local variables ====
@@ -54,8 +53,8 @@ C     === Local variables ====
       CALL MON_OUT_RL( arrName, theMin,  mon_foot_min  ,myThid)
       CALL MON_OUT_RL( arrName, theMean, mon_foot_mean ,myThid)
 
-#endif
-#endif
+#endif /* ALLOW_GCHEM */
+CML#endif
 
       RETURN
       END

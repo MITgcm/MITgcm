@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM_OPTIONS.h,v 1.4 2004/01/28 18:49:05 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM_OPTIONS.h,v 1.5 2004/11/19 21:28:47 mlosch Exp $
 C $Name:  $
 
 #ifndef GCHEM_OPTIONS_H
@@ -16,9 +16,7 @@ C    !DESCRIPTION:
 c options for biogeochemistry package
 CEOP
 
-#ifdef ALLOW_PTRACERS
 #define PTRACERS_SEPARATE_FORCING
-#endif
 #define DIC_BIOTIC
 #undef  ALLOW_CFC
 #undef  ALLOW_FE

@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_fixed.F,v 1.3 2004/11/19 20:17:48 mlosch Exp $
+C$Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_fixed.F,v 1.4 2004/11/19 21:28:47 mlosch Exp $
 C$Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -23,7 +23,6 @@ C  myThid               :: thread number
       INTEGER myThid
 CEOP
 
-#ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
 
          _BEGIN_MASTER( mythid )
@@ -34,18 +33,17 @@ ccccccccccccccccccccccccccc
           print*,'QQ load dic parameters, initial fixed' 
           call DIC_ABIOTIC_PARAM( myThid )
           call DIC_BIOTIC_PARAM( myThid )
-#endif
+#endif /* DIC_BIOTIC */
 #ifdef ALLOW_CFC
           print*,'QQ start cfc params'
           call CFC_PARAM( myThid )
           print*,'QQ read cfc atmos data'
           call CFC_ATMOS( myThid )
-#endif
+#endif /* ALLOW_CFC */
           _END_MASTER( mythid )
 
 
 #endif /* ALLOW_GCHEM */
-#endif /* ALLOW_PTRACERS */
 
       RETURN
       END

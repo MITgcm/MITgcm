@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_diags.F,v 1.6 2004/11/19 20:17:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_diags.F,v 1.7 2004/11/19 21:28:47 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -25,7 +25,6 @@ C  myThid               :: thread number
       _RL myTime
 CEOP
 
-#ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
 cccccccccccccccccccccc
 c diagnostics        c
@@ -35,8 +34,8 @@ cccccccccccccccccccccc
 #ifdef ALLOW_TIMEAVE
        IF (myIter.NE.nIter0)
      & call dic_biotic_diags( myTime, myIter, myThid )
-#endif
-#endif
+#endif /* ALLOW_TIMEAVE */
+#endif /* DIC_BIOTIC */
 
 ccccccccccccccccccccccccc
 c  monitor              c
@@ -44,7 +43,6 @@ ccccccccccccccccccccccccc
         call gchem_monitor(myIter, myTime, myThid )
 
 #endif /* ALLOW_GCHEM */
-#endif /* ALLOW_PTRACERS */
 
       RETURN
       END

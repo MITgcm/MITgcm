@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_fields_load.F,v 1.3 2004/11/19 20:17:48 mlosch Exp $
+C$Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_fields_load.F,v 1.4 2004/11/19 21:28:47 mlosch Exp $
 C$Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -25,7 +25,6 @@ C  myTime               :: current timestep
 C !LOCAL VARIABLES: ====================================================
 CEOP
 
-#ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
 
          _BEGIN_MASTER( mythid )
@@ -48,7 +47,6 @@ c
          _END_MASTER(mythid)
 
 #endif /* ALLOW_GCHEM */
-#endif /* ALLOW_PTRACERS */
 
       RETURN
       END

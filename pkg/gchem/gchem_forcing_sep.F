@@ -1,16 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.8 2004/11/19 20:17:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.9 2004/11/19 21:28:47 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
 
 CBOP
+C !ROUTINE: GCHEM_FORCING_SEP
 C !INTERFACE: ==========================================================
       SUBROUTINE GCHEM_FORCING_SEP(myTime,myIter, myThid )
 
 C !DESCRIPTION:
-C calls subroutine that will update tracers values.
-C this will be in a secondary timestep after that used for
-C advection and diffusion in ptracers_intergrate.F
+C     calls subroutine that will update passive tracers values
+C     with a separate timestep. Since GCHEM_FORCING_SEP is now
+C     called before DO_FIELDS_BLOCKING_EXCHANGES, the passive 
+C     tracer values in the halo regions are not up to date and 
+C     must not be used.
 
 C !USES: ===============================================================
       IMPLICIT NONE
@@ -19,14 +22,12 @@ C !USES: ===============================================================
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
-#endif
 #ifdef ALLOW_DIC
 #include "DIC_BIOTIC.h"
 #include "DIC_ABIOTIC.h"
-#endif
+#endif /* ALLOW_DIC */
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -42,7 +43,6 @@ C  k                    :: vertical level
       INTEGER niter
 CEOP
 
-#ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
 
        _BARRIER
@@ -116,7 +116,6 @@ c
        ENDDO
 
 #endif /* ALLOW_GCHEM */
-#endif /* ALLOW_PTRACERS */
 
       RETURN
       END

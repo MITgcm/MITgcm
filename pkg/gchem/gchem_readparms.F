@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.5 2004/11/19 20:17:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_readparms.F,v 1.6 2004/11/19 21:28:47 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -25,7 +25,6 @@ C  myThid               :: thread number
 C !OUTPUT PARAMETERS: ==================================================
 C  none
 
-#ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
 
 C !LOCAL VARIABLES: ====================================================
@@ -69,8 +68,7 @@ C Close the open data file
 C Everyone else must wait for the parameters to be loaded
       _BARRIER
 
-#endif
-#endif /* ALLOW_PTRACERS */
+#endif /* ALLOW_GCHEM */
 
       RETURN
       END

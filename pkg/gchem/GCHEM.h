@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM.h,v 1.5 2004/01/28 18:49:05 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/GCHEM.h,v 1.6 2004/11/19 21:28:47 mlosch Exp $
 C $Name:  $
 
-#ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
 
 CBOP
@@ -53,5 +52,4 @@ C
      &                   nsubtime
 CEOP
 
-#endif
-#endif /* ALLOW_PTRACERS */
+#endif /* ALLOW_GCHEM */

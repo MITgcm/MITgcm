@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_forcing_int.F,v 1.4 2004/11/19 20:17:48 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_forcing_int.F,v 1.5 2004/11/19 21:28:47 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -22,10 +22,8 @@ C !USES: ===============================================================
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -45,14 +43,13 @@ C  i,j                  :: loop indices
       INTEGER niter
 CEOP
 
-#ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
 c
 
 ccccccccccccccccccccccccc
 c chemical forcing      c
 ccccccccccccccccccccccccc
-ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
+ccccccccccccccccccccccccccc CFC cccccccccccccccccccccccccccccccc
 c
 #ifdef ALLOW_CFC
          if (iTracer.eq.1.and.k.eq.1)  
@@ -65,11 +62,10 @@ c
      &                          gPtr(1-Olx,1-Oly,1,bi,bj,2),
      &                          bi,bj,imin,imax,jmin,jmax,
      &                          myIter,myTime,myThid)
-#endif
-cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
+#endif /* ALLOW_CFC */
+cccccccccccccccccccccccccc END CFC cccccccccccccccccccccccccccccccccc
 c
-#endif
-#endif /* ALLOW_PTRACERS */
+#endif /* ALLOW_GCHEM */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_monitor.F,v 1.5 2004/09/08 00:23:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_monitor.F,v 1.6 2004/11/19 21:28:47 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -107,8 +107,8 @@ C      Dynamics field monitor finish
 
       ENDIF
 
-#endif
-#endif
+#endif /* ALLOW_MONITOR */
+#endif /* ALLOW_GCHEM */
 
       RETURN
       END
