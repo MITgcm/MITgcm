@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.433 2005/01/04 22:08:07 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.434 2005/01/13 00:59:53 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -20,8 +20,15 @@ o exf_getffields interpolation defaults to bilinear for all scalar forcing
   fields (remains bicubic for wind velocity and stress).  This avoids, e.g.,
   spurious negative numbers for precipitation and humidity.  Will cause
   some small numerical differences for integrations using pkg/exf/exf_interp.F.
-o Add ctrlvec diagnostics in pack/unpack for nondimensional I/O
-  May be enabled via doPackDiag
+o pkg/ctrl/
+  * Add ctrlvec diagnostics in pack/unpack for nondimensional I/O
+    May be enabled via doPackDiag
+  *  introduce z-scaling of 
+     + gradient (doZscalePack) and 
+     + control (doZscaleUnpack)
+o pkg/mdsio/
+  * enable useSingleCpuIO for state estimation (ctrl_pack/unpack) mdsio_gl.F
+  * N.B.: leave tiled I/O for tapelev (i.e. mds...vector)
 
 checkpoint57b_post
 o simplify options in diagnostics_fill arguments (remove weird combinations)
