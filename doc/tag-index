@@ -1,7 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.92 2002/10/23 18:17:20 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.93 2002/11/01 22:00:32 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint46l_post
+o made convective adjustment work with pressure coordinates:
+ - changed the direction of k-loop in convective_adjustment.F for the
+   case of pressure coordinates (OCEANICP,ATMOSPHERIC buoyancyRelation)
+ - adjusted the reference pressure k-index in convective_adjustment.F
+ - adjusted the convection condition in convect.F (in analogy to
+   calc_ivdc.F)
+ - convective_adjustment no longer computes anything on the halos
+ - removed the warnings about negative salinity from find_rho.F and
+   find_alpha.F; instead the new routine look_for_neg_salinity, called
+   at the beginning of find_rho, find_alpha, and find_beta, does a 
+   check of the entire slice, if CPP-option 
+   CHECK_SALINITY_FOR_NEGATIVE_VALUES is defined
+checkpoint46l_pre
 
 checkpoint46k_post
 o fixed the verification/global_ocean.90x40x15 experiment:

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.21 2002/09/25 19:36:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.22 2002/11/01 22:00:33 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -64,6 +64,11 @@ CEOP
         bulkMod(i,j) = 0. _d 0
        ENDDO
       ENDDO
+#endif
+
+#ifdef CHECK_SALINITY_FOR_NEGATIVE_VALUES
+      CALL LOOK_FOR_NEG_SALINITY( bi, bj, iMin, iMax, jMin, jMax,  k,
+     &     sFld, myThid )
 #endif
 
       if (equationOfState.eq.'LINEAR') then
@@ -229,13 +234,6 @@ C     abbreviations
             t4 = t3*t
 
             s  = sFld(i,j,k,bi,bj)
-            if ( s .lt. 0. _d 0 ) then
-C     issue a warning
-               write(*,'(a,i3,a,i3,a,i3,a,i3,a,i3,a,e13.5)') 
-     &           ' FIND_RHOP0:   WARNING, salinity(',
-     &              i,',',j,',',k,',',bi,',',bj,') = ', s
-               s = 0. _d 0
-            end if
             s3o2 = s*sqrt(s)
             
 C     density of freshwater at the surface
@@ -324,13 +322,6 @@ C     abbreviations
             t4 = t3*t
 
             s  = sFld(i,j,k,bi,bj)
-            if ( s .lt. 0. _d 0 ) then
-C     issue a warning
-               write(*,'(a,i3,a,i3,a,i3,a,i3,a,i3,a,e13.5)') 
-     &           ' FIND_BULKMOD: WARNING, salinity(',
-     &              i,',',j,',',k,',',bi,',',bj,') = ', s
-               s = 0. _d 0
-            end if
             s3o2 = s*sqrt(s)
 C
             p = pressure(i,j,kRef,bi,bj)*SItoBar
@@ -506,13 +497,6 @@ C     abbreviations
             t1  = tFld(i,j,k,bi,bj) 
             t2 = t1*t1
             s1  = sFld(i,j,k,bi,bj)
-            if ( s1 .lt. 0. _d 0 ) then
-C     issue a warning
-               write(*,'(a,i3,a,i3,a,i3,a,i3,a,i3,a,e13.5)') 
-     &           ' FIND_RHODEN: WARNING, salinity(',
-     &              i,',',j,',',k,',',bi,',',bj,') = ', s1
-               s1 = 0. _d 0
-            end if
             sp5 = sqrt(s1) 
             
             p1   = pressure(i,j,kRef,bi,bj)*SItodBar
@@ -734,6 +718,70 @@ C
        call print_error( msgbuf, mythid )
        stop 'ABNORMAL END: S/R FIND_RHO_SCALAR'
       endif
+
+      return
+      end
+
+CBOP
+C     !ROUTINE: LOOK_FOR_NEG_SALINITY
+C     !INTERFACE:
+      subroutine LOOK_FOR_NEG_SALINITY(
+     I     bi, bj, iMin, iMax, jMin, jMax,  k, 
+     I     sFld,
+     I     myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE LOOK_FOR_NEG_SALINITY
+C     |   looks for and fixes negative salinity values
+C     |   this is necessary if the equation of state uses
+C     |   the square root of salinity
+C     *==========================================================*
+C     |                                                           
+C     | k - is the Salt level                               
+C     |                                                           
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      implicit none
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+      integer bi,bj,iMin,iMax,jMin,jMax
+      integer k			! Level of Salt slice
+      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      integer myThid
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      integer i,j, localWarning
+      character*(max_len_mbuf) msgbuf
+CEOP
+
+      localWarning = 0
+      do j=jMin,jMax
+       do i=iMin,iMax
+C     abbreviations
+        if ( sFld(i,j,k,bi,bj) .lt. 0. _d 0 ) then
+         localWarning = localWarning + 1
+         sFld(i,j,k,bi,bj) = 0. _d 0
+        end if
+       end do
+      end do
+C     issue a warning
+      if ( localWarning .gt. 0 ) then
+       write(*,'(a,a)') 
+     &      'S/R LOOK_FOR_NEG_SALINITY: found negative salinity',
+     &      'values and reset them to zero.'
+       write(*,'(a,I3)') 
+     &      'S/R LOOK_FOR_NEG_SALINITY: current level is k = ', k
+      end if
 
       return
       end

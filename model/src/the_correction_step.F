@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.19 2002/10/07 16:24:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.20 2002/11/01 22:00:33 mlosch Exp $
 C Tag $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -177,10 +177,10 @@ C--   Filter (and exchange)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C--     Convectively adjust new fields to be statically stable
-        iMin = 1-OLx+1
-        iMax = sNx+OLx
-        jMin = 1-OLy+1
-        jMax = sNy+OLy
+        iMin = 1
+        iMax = sNx
+        jMin = 1
+        jMax = sNy
         CALL CONVECTIVE_ADJUSTMENT(
      I       bi, bj, iMin, iMax, jMin, jMax,
      I       myTime, myIter, myThid )
