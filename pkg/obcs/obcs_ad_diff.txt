@@ -1,7 +1,0 @@
-obcs_apply_sloc.f
-obcs_apply_tloc.f
-obcs_apply_ts.f	
-obcs_apply_uv.f	
-obcs_calc.f	
-obcs_init_variables.f
-obcs_sponge.f	
