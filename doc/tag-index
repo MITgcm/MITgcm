@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.321 2004/07/05 23:56:43 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.322 2004/07/06 02:44:27 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-tag before changing staggerTimeStep
+checkpoint54a_post
+o re-write staggerTimeStep: step fwd U,V and then T,S (reverse the order).
+o change pickup file (to restart from old pickup, set usePickupBeforeC54=.T.)
+o get a perfect restart when using RealFreshWaterFlux + NLFS (not finished)
+o update output of all exp. that use staggerTimeStep (except hs94.cs & 2D)
+  + internal_wave (shift in writing cg2d_ini_res)
 checkpoint54a_pre
 
 o require forcing_In_AB=.FALSE. and remove surfaceTendencyTice from pkg/seaice
