@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.2 2001/02/02 21:36:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.3 2002/01/30 23:03:29 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -14,6 +14,7 @@ C     \==========================================================/
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "OBCS.h"
 
 C     === Routine arguments ===
@@ -46,6 +47,19 @@ C     msgBuf      - Informational/error meesage buffer
          STOP 'ABNORMAL END: S/R OBCS_CHECK'
       ENDIF 
 #endif /* ALLOW_ORLANSKI */
+
+      IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.
+     &    useOrlanskiEast.OR.useOrlanskiWest) THEN
+       IF (nonlinFreeSurf.GT.0) THEN
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ERROR: useOrlanski* Rad OBC with'
+         CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'OBCS_CHECK: ERROR: nonlinFreeSurf not yet implemented'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R OBCS_CHECK'
+       ENDIF
+      ENDIF
 
       WRITE(msgBuf,'(A)') 'OBCS_CHECK: OK'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
