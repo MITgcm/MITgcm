@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.1 2004/01/05 06:20:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.2 2004/01/05 21:38:27 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -192,7 +192,7 @@ C     Is the file open?
         CALL print_error( msgbuf, mythid )
         stop 'ABNORMAL END: S/R MNC_FILE_ADD_ATTR_INT'
       ENDIF
-      fid = mnc_fids(ind,2)
+      fid = mnc_f_info(ind,2)
 
 C     Enter define mode
       err = NF_REDEF(fid)
