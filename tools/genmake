@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.13 2000/03/14 20:29:19 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.14 2000/03/24 18:29:29 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -182,26 +182,27 @@ switch ($platform$USEMPI)
     breaksw
   case Linux+mpi:
     set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
+    set INCLUDES   = ( '-I/usr/local/include' )
   case Linux:
     set LN         = ( '/bin/ln -fs' )
-    set CPP        = ( '/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/cpp  -traditional -P' )
+    set CPP        = ( '/lib/cpp  -traditional -P' )
     set DEFINES    = ( ${DEFINES} '-D_BYTESWAPIO -DWORDLENGTH=4' )
-    set INCLUDES   = ( '-I/usr/local/include' )
     set FC         = ( 'g77' )
-    set FFLAGS     = ( ' ' )
-    set FOPTIM     = ( '-O3 -funroll-loops ' )
+    set FFLAGS     = ( '-Wimplicit -Wunused -Wuninitialized' )
+    set FOPTIM     = ( '-O3 -malign-double -funroll-loops ' )
     set LINK       = ( 'g77' )
     breaksw
+  case Linux+pgi+mpi:
+    set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
+    set INCLUDES   = ( '-I/usr/local/include' )
   case Linux+pgi:
     set LN         = ( '/bin/ln -fs' )
-    set CPP        = ( '/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/cpp -P' )
+    set CPP        = ( '/lib/cpp -traditional -P' )
     set DEFINES    = ( ${DEFINES} '-DWORDLENGTH=4' )
-    set INCLUDES   = ( '-I/usr/local/include' )
     set FC         = ( 'pgf77' )
     set FFLAGS     = ( '-byteswapio' )
     set FOPTIM     = ( '-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee' )
     set LINK       = ( 'pgf77' )
-    set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich -Kieee' )
     breaksw
   case T3E:
   case sn6312:
