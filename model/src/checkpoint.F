@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.25 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.26 2003/10/09 21:38:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -143,7 +143,7 @@ C--     Read model fields
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gSnm1, 12,myThid)
         CALL MDSREADFIELD(fn,prec,'RL', 1,etaN,12*Nr+1,myThid)
 #ifdef NONLIN_FRSURF
-        IF ( nonlinFreeSurf.GT.0)
+        IF ( nonlinFreeSurf.GE.0)
      &  CALL MDSREADFIELD(fn,prec,'RL',1,etaH,12*Nr+2,myThid)
 #endif
 
