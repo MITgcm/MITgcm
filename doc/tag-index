@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.389 2004/11/19 13:55:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.390 2004/11/21 22:22:31 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o GMredi:
+  - fix ldd97 slope limit ; extend valid domain of Psi-Bolus ;
+  - change S/R GRAD_SIGMA to be valid in the overlap on CS-grid.
+  - change the default GMREDI_OPTIONS.h: compile everything except Visbeck
 o GCHEM: 
   - move call to GCHEM_FORCING_SEP, so that it is now called before
     the blocking exchanges to avoid computing halos in GCHEM_FORCING_SEP
