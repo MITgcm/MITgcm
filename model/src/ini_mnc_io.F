@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_mnc_io.F,v 1.10 2004/03/24 15:29:33 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_mnc_io.F,v 1.11 2004/03/29 16:00:48 edhill Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -6,15 +6,26 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: INI_MNC_IO
+
+C     !INTERFACE:
       SUBROUTINE INI_MNC_IO( myThid )
 
+C     !DESCRIPTION:
+C     Initialize the MNC state (\texttt{state.xxxxx.nc}) files and
+C     variable types
+      
+C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
+C     !INPUT PARAMETERS:
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
