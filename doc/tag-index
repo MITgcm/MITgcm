@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.306 2004/06/03 16:49:35 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.307 2004/06/09 14:03:30 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o Added Bryan and Lewis, 1979, vertical diffusivity profile
 o pkg/land: fix problem in land_impl_temp.F when Ts arround freezing. 
 o added Sadourny discretization of Coriolis
   - moved some PARAMETERS from mom_*_coriolis.F to PARAMS.h

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.61 2004/06/02 13:23:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.62 2004/06/09 14:03:35 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -107,6 +107,10 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       no_slip_bottom      = .TRUE.
       diffKrTDefault      = 0.D-3
       diffKrSDefault      = 0.D-3
+      diffKrBL79surf      = 0.D0
+      diffKrBL79deep      = 0.D0
+      diffKrBL79scl       = 200.D0
+      diffKrBL79Ho        = -2000.D0
       viscA4              = 0.D11
       viscA4Grid          = 0.D0
       viscA4Max           = 1.D21

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.49 2004/06/02 13:23:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.50 2004/06/09 14:03:35 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -133,6 +133,14 @@ c     CALL WRITE_0D_R8( diffKzS, INDEX_NONE,'diffKzS =',
 c    &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
       CALL WRITE_0D_R8( diffKrS, INDEX_NONE,'diffKrS =',
      &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
+      CALL WRITE_0D_R8( diffKrBL79surf, INDEX_NONE,'diffKrBL79surf =',
+     &'   /* Surface diffusion for Bryan and Lewis 1979 ( m^2/s ) */')
+      CALL WRITE_0D_R8( diffKrBL79deep, INDEX_NONE,'diffKrBL79deep =',
+     &'   /* Deep diffusion for Bryan and Lewis 1979 ( m^2/s ) */')
+      CALL WRITE_0D_R8( diffKrBL79scl, INDEX_NONE,'diffKrBL79scl =',
+     &'   /* Depth scale for Bryan and Lewis 1979 ( m ) */')
+      CALL WRITE_0D_R8( diffKrBL79Ho, INDEX_NONE,'diffKrBL79Ho =',
+     &'   /* Turning depth for Bryan and Lewis 1979 ( m ) */')
       WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &                    SQUEEZE_RIGHT , 1)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.18 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.19 2004/06/09 14:03:35 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,7 +53,11 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     I, J :: Loop counters
       INTEGER i,j
+      _RL KbryanLewis79
 CEOP
+
+      KbryanLewis79=diffKrBL79surf+(diffKrBL79deep-diffKrBL79surf)
+     & *( atan( -( rF(k)-diffKrBL79Ho )/diffKrBL79scl )/PI+0.5 _d 0)
 
       DO j = 1-Oly, sNy+Oly
        DO i = 1-Olx, sNx+Olx
@@ -65,6 +69,7 @@ CEOP
 #else
      &       + diffKrT
 #endif
+     &       + KbryanLewis79
      &      )
        ENDDO
       ENDDO
@@ -79,6 +84,7 @@ CEOP
 #else
      &       + diffKrS
 #endif
+     &       + KbryanLewis79
      &      )
        ENDDO
       ENDDO

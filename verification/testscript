@@ -277,6 +277,7 @@ runmodel()
     pwd 1>&2
    fi
     printf 'runmodel: ' 1>&2
+     rm -f *.nc
      make output.txt && return 0
      return 1
    fi

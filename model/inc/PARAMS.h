@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.111 2004/06/02 13:23:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.112 2004/06/09 14:03:35 adcroft Exp $
 C $Name:  $
 C
 CBOP
@@ -410,6 +410,10 @@ C     diffKrS   :: Laplacian diffusion coeff. for mixing of
 C                 salt vertically ( units of r^2/s )
 C     diffK4S   :: Biharmonic diffusion coeff. for mixing of
 C                 salt laterally ( m^4/s )
+C     diffKrBL79surf :: T/S surface diffusivity (m^2/s) Bryan and Lewis, 1979
+C     diffKrBL79deep :: T/S deep diffusivity (m^2/s) Bryan and Lewis, 1979
+C     diffKrBL79scl  :: depth scale for arctan fn (m) Bryan and Lewis, 1979
+C     diffKrBL79Ho   :: depth offset for arctan fn (m) Bryan and Lewis, 1979
 C     deltaT    :: Default timestep ( s )
 C     deltaTClock  :: Timestep used as model "clock". This determines the
 C                    IO frequencies and is used in tagging output. It can
@@ -494,6 +498,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & viscAr, viscAstrain, viscAtension,
      & diffKhT, diffK4T, diffKrT,
      & diffKhS, diffK4S, diffKrS,
+     & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
      & delT, tauCD, rCD, freeSurfFac, implicSurfPress, implicDiv2Dflow,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
@@ -559,6 +564,10 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL diffKhS 
       _RL diffKrS
       _RL diffK4S 
+      _RL diffKrBL79surf
+      _RL diffKrBL79deep
+      _RL diffKrBL79scl
+      _RL diffKrBL79Ho
       _RL delt
       _RL tauCD
       _RL rCD
