@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/osf1_halem,v 1.2 2003/11/13 22:03:39 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/osf1_halem,v 1.3 2005/02/14 22:13:45 molod Exp $
 #
 
 #  confirmed on Halem by eh3, 2003-09-03
@@ -10,7 +10,7 @@ MAKEDEPEND='mkdep -f depend.out'
 DEFINES='-DTARGET_DEC -DWORDLENGTH=1'
 
 
-CPP='/usr/bin/cpp -P'
+CPP='/usr/local/bin/cpp -P -traditional'
 #ph: makedepend not available on some/many DEC Alpha's; use mkdep instead
 FC='f77'
 LINK='f77'
