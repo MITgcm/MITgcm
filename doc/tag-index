@@ -1,8 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.364 2004/10/08 17:03:43 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.365 2004/10/11 16:42:30 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint55d_post
+o ECCO specific cost function terms (up-to-date with 1x1 runs)
+o ecco_cost_weights is modified to 1x1 runs
+o modifs to allow observations to be read in as
+  single file or yearly files
+o enable to read exf forcing fields as either
+  single file or yearly files (flag useExfYearlyFields)
+checkpoint55d_pre
+
+o switch between 2-level and 3-level checkpointing
 o add ability of MNC to write local and "partial" (eg. 2D slices where 
   the full 3D field is never actually stored) arrays to NetCDF files
   with the correct (that is, the complete multi-dimensional) set of 
