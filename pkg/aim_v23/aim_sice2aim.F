@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.1 2004/04/08 00:14:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.2 2004/04/22 21:45:02 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -10,8 +10,9 @@ CBOP
 C     !ROUTINE: AIM_SICE2AIM
 C     !INTERFACE:
       SUBROUTINE AIM_SICE2AIM(
-     I               land_frc, aimTsoce,
-     U               aimSIfrc, aimTsice, aimAlb,
+     I               land_frc,
+     U               aimTsoce, aimSIfrc, 
+     O               aimTsice, aimAlb,
      I               myTime, myIter, bi, bj, myThid ) 
 
 C     !DESCRIPTION: \bv
@@ -123,18 +124,29 @@ C-    Surface Albedo : (from F.M. FORDATE S/R)
         ENDDO
       ENDIF
 
-C-- fill in ocean mixed layer variables:
-C   notes: needs to be done before call to phy_driver (since freezing
+C-- fill in ocean mixed layer variables
+C   notes: this replace reading initial conditions from files.
+C          needs to be done before call to phy_driver (since freezing
 C          temp. is fct of salinity) ; but would be better somewhere else.
       IF ( tauRelax_MxL .EQ. -1. _d 0 
      &     .OR. ( stepFwd_oceMxL  .AND. StartIceModel.NE.0
      &                            .AND. myIter.EQ.nIter0   )
+     &     .OR. ( myIter.EQ.0  .AND. myTime .EQ. 0. )
      &   ) THEN
         DO j=1,sNy
          DO i=1,sNx
           IF ( land_frc(i,j,bi,bj) .LT. 1. _d 0 ) THEN
            tOceMxL(i,j,bi,bj) = aimTsoce(i,j)-celsius2K
            sOceMxL(i,j,bi,bj) = sMxL_default
+          ENDIF
+         ENDDO
+        ENDDO
+      ELSE
+C-- Use ocean mixed layer Temp as Atmos. SST (instead of prescribed Temp)
+        DO j=1,sNy
+         DO i=1,sNx
+          IF ( land_frc(i,j,bi,bj) .LT. 1. _d 0 ) THEN
+           aimTsoce(i,j) = tOceMxL(i,j,bi,bj)+celsius2K
           ENDIF
          ENDDO
         ENDDO
