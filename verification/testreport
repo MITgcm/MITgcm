@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.58 2004/12/10 17:36:43 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.59 2004/12/11 02:48:45 edhill Exp $
 #  $Name:  $
 #
 
@@ -636,7 +636,12 @@ MPACKDIR="../tools/mpack-1.6"
 HAVE_MPACK=
 MPACK="$MPACKDIR/mpack"
 COMMAND=
-MAKE=make
+if test "x$MAKE" = x ; then
+    MAKE=make
+fi
+if test "x$CC" = x ; then
+    CC=cc
+fi
 JOBS=
 MPI=f
 DELDIR=
