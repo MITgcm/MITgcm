@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_OPTIONS.h,v 1.5 2004/06/24 23:41:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_OPTIONS.h,v 1.6 2004/07/22 23:01:05 jmc Exp $
 C $Name:  $
 
 C  CPP options file for AIM package 
@@ -14,6 +14,9 @@ C  restore the old AIM interface (ref: coupled run, summer 2000):
 C  - use a simple shift of 1/2 mesh for mapping A.grid <-> C.grid.
 C  - do not include minor changes (added to avoid negative Q).
 #undef OLD_AIM_INTERFACE
+
+C  allow dew to form on land (=negative evaporation)
+#undef ALLOW_DEW_ON_LAND
 
 C  allow time average diagnostic:
 #define ALLOW_AIM_TAVE

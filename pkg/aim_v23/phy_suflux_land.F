@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_land.F,v 1.3 2004/06/24 23:43:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_land.F,v 1.4 2004/07/22 23:01:05 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -140,6 +140,25 @@ C     2.2 Evaporation
       CALL SHTORH (0, NGP, TSFC, PSA, 1. _d 0, QDUMMY, RDUMMY,
      &                QSAT0(1,2), myThid)
 
+#ifdef ALLOW_DEW_ON_LAND
+C--   allow negative evaporation (dew):
+      IF ( dTstab.GT.0. _d 0 ) THEN
+C-    account for stability function derivative relative to Tsurf:
+       DO J=1,NGP
+        EVAP(J) = CDENVV(J)*SWAV(J)*(QSAT0(J,1)-Q0(J))
+        Evp0(J) =   Shf0(J)*SWAV(J)*(QSAT0(J,2)-Q0(J))
+        dEvp(J) = CDENVV(J)*SWAV(J)*dEvp(J)
+     &            + dShf(J)*SWAV(J)*(QSAT0(J,1)-Q0(J))
+       ENDDO
+      ELSE
+       DO J=1,NGP
+        EVAP(J) = CDENVV(J)*SWAV(J)*(QSAT0(J,1)-Q0(J))
+        Evp0(J) = CDENVV(J)*SWAV(J)*(QSAT0(J,2)-Q0(J))
+        dEvp(J) = CDENVV(J)*SWAV(J)*dEvp(J)
+       ENDDO
+      ENDIF
+#else /* ALLOW_DEW_ON_LAND */
+C--   allow only positive evaporation (no dew):
       IF ( dTstab.GT.0. _d 0 ) THEN
 C-    account for stability function derivative relative to Tsurf:
        DO J=1,NGP
@@ -158,6 +177,7 @@ Cjmc: try the other formulation (= described in F.M paper):
         dEvp(J) = CDENVV(J)*SWAV(J)*dEvp(J)
        ENDDO
       ENDIF
+#endif /* ALLOW_DEW_ON_LAND */
 
 C     2.3 Sensible heat flux
 
@@ -169,6 +189,10 @@ C-    account for stability function derivative relative to Tsurf:
         dShf(J) = CDENVV(J)*CP
      &            + dShf(J)*CP*(TSKIN(J)-T0(J))
         dShf(J) = MAX( dShf(J), 0. _d 0 )
+C--   do not allow negative derivative vs Ts of Sensible+Latent H.flux:
+C     a) quiet unrealistic ;
+C     b) garantee positive deriv. of total H.flux (needed for implicit solver)
+        dEvp(J) = MAX( dEvp(J), -dShf(J)/ALHC )
        ENDDO
       ELSE
        DO J=1,NGP
