@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.13 2004/04/06 00:31:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.14 2004/05/19 08:42:00 mlosch Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -64,15 +64,17 @@ C     I,J,K - Loop counters
       _RL tmp_VbarZ, tmp_UbarZ, tmp_WbarZ
 
       _RL  Half
+      _RL  One
       PARAMETER(Half=0.5D0)
-
-#define I0 1
-#define In sNx
-#define J0 1
-#define Jn sNy
+      PARAMETER(One=0.5D0)
 CEOP
 
 ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
+
+      iMin = 1
+      iMax = sNx
+      jMin = 1
+      jMax = sNy
 
 C     Adams-Bashforth timestepping weights
       ab15 =  1.5 _d 0 + abeps
@@ -80,12 +82,12 @@ C     Adams-Bashforth timestepping weights
 
 C     Lateral friction (no-slip, free slip, or half slip):
       IF ( no_slip_sides ) THEN
-        slipSideFac = -Half
+        slipSideFac = -One
       ELSE
-        slipSideFac =  Half
+        slipSideFac =  One 
       ENDIF
 C-    half slip was used before ; keep it for now.
-        slipSideFac = 0. _d 0
+C        slipSideFac = 0. _d 0
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -108,8 +110,8 @@ C For each tile
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
 C Boundaries condition at top
-        DO J=J0,Jn
-         DO I=I0,In
+        DO J=jMin,jMax
+         DO I=iMin,iMax
           Flx_Dn(I,J,bi,bj)=0.
          ENDDO
         ENDDO
@@ -123,8 +125,8 @@ C Sweep down column
           wOverRide=0.
          endif
 C Flux on Southern face
-         DO J=J0,Jn+1
-          DO I=I0,In
+         DO J=jMin,jMax+1
+          DO I=iMin,iMax
            tmp_VbarZ=Half*(
      &          _hFacS(I,J,K-1,bi,bj)*vVel( I ,J,K-1,bi,bj)
      &         +_hFacS(I,J, K ,bi,bj)*vVel( I ,J, K ,bi,bj))
@@ -132,13 +134,15 @@ C Flux on Southern face
      &     tmp_VbarZ*Half*(wVel(I,J,K,bi,bj)+wVel(I,J-1,K,bi,bj))
      &    -viscAh*_recip_dyC(I,J,bi,bj)  
      &      *(1. _d 0 + slipSideFac*
-     &         (maskS(I,J,K-1,bi,bj)+maskS(I,J,K,bi,bj)-2. _d 0))
+     &         (maskS(I,J,K-1,bi,bj)*maskS(I,J,K,bi,bj)-2. _d 0))
+     &        *(max(hFacS(I,J,K-1,bi,bj)-Half,0) 
+     &         +min(hFacS(I,J,K,bi,bj),Half))
      &                   *(wVel(I,J,K,bi,bj)-wVel(I,J-1,K,bi,bj))
           ENDDO
          ENDDO
 C Flux on Western face
-         DO J=J0,Jn
-          DO I=I0,In+1
+         DO J=jMin,jMax
+          DO I=iMin,iMax+1
            tmp_UbarZ=Half*(
      &         _hFacW(I,J,K-1,bi,bj)*uVel( I ,J,K-1,bi,bj)
      &        +_hFacW(I,J, K ,bi,bj)*uVel( I ,J, K ,bi,bj))
@@ -146,15 +150,18 @@ C Flux on Western face
      &     tmp_UbarZ*Half*(wVel(I,J,K,bi,bj)+wVel(I-1,J,K,bi,bj))
      &    -viscAh*_recip_dxC(I,J,bi,bj)
      &      *(1. _d 0 + slipSideFac*
-     &         (maskW(I,J,K-1,bi,bj)+maskW(I,J,K,bi,bj)-2. _d 0))
+     &         (maskW(I,J,K-1,bi,bj)*maskW(I,J,K,bi,bj)-1. _d 0))
+     &        *(max(hFacW(I,J,K-1,bi,bj)-Half,0) 
+     &         +min(hFacW(I,J,K,bi,bj),Half))
      &                   *(wVel(I,J,K,bi,bj)-wVel(I-1,J,K,bi,bj))
           ENDDO
          ENDDO
 C Flux on Lower face
-         DO J=J0,Jn
-          DO I=I0,In
+         DO J=jMin,jMax
+          DO I=iMin,iMax
            Flx_Up(I,J,bi,bj)=Flx_Dn(I,J,bi,bj)
-           tmp_WbarZ=Half*(wVel(I,J,K,bi,bj)+wVel(I,J,Kp1,bi,bj))
+           tmp_WbarZ=Half*(wVel(I,J,K,bi,bj) 
+     &         +wOverRide*wVel(I,J,Kp1,bi,bj))
            Flx_Dn(I,J,bi,bj)=
      &     tmp_WbarZ*tmp_WbarZ
      &    -viscAr*recip_drF(K) 
@@ -162,8 +169,8 @@ C Flux on Lower face
           ENDDO
          ENDDO
 C        Divergence of fluxes
-         DO J=J0,Jn
-          DO I=I0,In
+         DO J=jMin,jMax
+          DO I=iMin,iMax
            gW(I,J,K,bi,bj) = 0.
      &      -(
      &        +_recip_dxF(I,J,bi,bj)*(
@@ -187,8 +194,8 @@ caja           and an hFacUS (above V points) too...
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO K=2,Nr
-         DO j=J0,Jn
-          DO i=I0,In
+         DO j=jMin,jMax
+          DO i=iMin,iMax
            wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj) 
      &     +deltatMom*( ab15*gW(i,j,k,bi,bj)
      &                 +ab05*gWNM1(i,j,k,bi,bj) )
