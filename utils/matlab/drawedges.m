@@ -13,7 +13,6 @@ else
 end
 
 if ndims(xg)==2 & size(xg,1)==6*size(xg,2)
- disp('1');
  [nx ny nt]=size(xg);
  x=permute( reshape(xg,[nx/6 6 ny]),[1 3 2]);
  y=permute( reshape(yg,[nx/6 6 ny]),[1 3 2]);
