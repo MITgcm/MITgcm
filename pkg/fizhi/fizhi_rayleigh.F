@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_rayleigh.F,v 1.3 2004/10/22 16:33:39 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_rayleigh.F,v 1.4 2004/10/22 17:56:03 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -42,7 +42,8 @@ C **********************************************************************
 #endif
 
       integer myid,im,jm,lm,bi,bj
-      _RL zsurf(im,jm),pres(im,jm,lm),pkap(im,jm,lm),pekap(im,jm,lm+1)
+      _RL zsurf(im,jm),pres(im,jm,lm),pkap(im,jm,lm)
+      _RL pekap(im,jm,lm+1)
       _RL u(im,jm,lm),v(im,jm,lm),t(im,jm,lm),s(im,jm,lm)
       _RL rfu(im,jm,lm),rfv(im,jm,lm),rft(im,jm,lm)
 
