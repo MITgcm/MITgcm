@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/CPP_OPTIONS.h,v 1.5 2003/10/30 16:53:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/CPP_OPTIONS.h,v 1.6 2003/11/04 21:04:52 edhill Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -6,20 +6,11 @@ C $Name:  $
 
 C CPP flags controlling particular source code features
 
-C o Include/exclude temperature forcing code
-C#define  INCLUDE_T_FORCING_CODE
-
 C o Shortwave heating as extra term in external_forcing.F
 C Note: this should be a run-time option and not necessarily dependent on KPP
 #ifdef ALLOW_KPP
 #define  SHORTWAVE_HEATING
 #endif
-
-C o Include/exclude momentum forcing code
-#define INCLUDE_MOMENTUM_FORCING_CODE
-
-C o Include/exclude momentum eqn metric terms code
-#define INCLUDE_MOMENTUM_METRIC_TERM_CODE
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
@@ -48,11 +39,6 @@ C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F
 C          because the old code did not have no-slip BCs
 #undef  OLD_ADV_BCS
-
-C o Use "OLD" UV geometry on sphere (definately *NOT* recommended)
-C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F
-C          because the old code did not have no-slip BCs
-#undef  OLD_UV_GEOMETRY
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"

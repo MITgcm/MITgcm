@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad_ptracers/Attic/CPP_OPTIONS.h,v 1.4 2003/11/03 22:40:22 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad_ptracers/Attic/CPP_OPTIONS.h,v 1.5 2003/11/04 21:04:51 edhill Exp $
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -12,9 +12,6 @@ C o Shortwave heating as extra term in external_forcing.F
 #ifdef ALLOW_KPP
 #define  SHORTWAVE_HEATING
 #endif
-
-C o Include/exclude momentum eqn metric terms code
-#define INCLUDE_MOMENTUM_METRIC_TERM_CODE
 
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
