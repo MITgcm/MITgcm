@@ -1,26 +1,61 @@
-$Header: /u/gcmpack/MITgcm/doc/README,v 1.6 1998/04/27 04:39:41 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/README,v 1.7 1998/06/16 23:04:39 cnh Exp $
 
 MITgcmUV Getting Started
 ========================
 
 o Introduction
 
-o Install
-  tar -xvf ...
-  cd tools
-  genmake.dec
-  cd ../bin
-  ln -s ../tools/Makefile.dec makefile
-  make depend
-  make
-  setenv PARALLEL 1
-  ../exe/barrier
+  This note is a guide to using the MIT General Circulation Model Ultra Verstaile
+  implementation, MITgmcUV. MITgcmUV is a Fortran code that implements the 
+  algorithm described in Marshall et. al. 1997, Hill, Adcroft, ...
+   The MITgcmUV implementation is designed to work efficiently on all classes
+  of computer platforms. It can be used in both a single processor mode
+  and a parallel processor mode. Parallel processing can be either multi-threaded
+  shared memory such as that found on CRAY T90 machines or it can be multi-process
+  distributed memory. A set of "execution enviroment" support routines are 
+  used to allow the same numerical code to run on top of a single-process, multi-threaded
+  or distributed multi-process configuration.
+
+o Installing
+  To setup the model on a particular computer the code tree must be created
+  and appropriate compile and run scripts set up. For some platforms
+  the necessary scripts are included in the release - in this case follow
+  the steps below:
+
+  1. Extract MITgcmUV from the downloadable archive
+     tar -xvf MITgcmUV.2.0.tar 
+
+  2. Create platform specific make file
+     For example on a Digital UNIX machine the script "genmake.dec" can
+     be used as shown below
+
+     cd MITgcmUV.2.0/tools
+     genmake.dec
+     cd ../bin
+     ln -s ../tools/Makefile.dec makefile
+
+  3. Now create header file dependency entries
+     make depend
+
+  4. Compile code
+     make
+  
+  5. Run baseline test case
+     setenv PARALLEL 1
+     ../exe/MITgcmUV.2.0
 
 o Running
-  
-  - Inout files
-    eedata
-    data
+
+  - Input and output files
+
+    Required files
+    ==============
+    The model is configured to look for two files with fixed names.
+    These files are called
+     "eedata" and "data".
+    The file eedata contains "execution environment" data. At present
+    this consists of a specification of the number of threads to
+    use in X and Y under multithreaded execution.
 
   - Serial execution
 
@@ -42,3 +77,4 @@ o References
               Sun
               Linux threads
               CRAY multitasking
+              PPT notes
