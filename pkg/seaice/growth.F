@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.17 2004/05/06 13:32:44 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.18 2004/07/05 20:05:07 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,11 +41,20 @@ C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
       _RL  TBC, salinity_ice, SDF, Q0, QS
-      _RL  theta_old
+      _RL  theta_new
 
       _RL GAREA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy           )
       _RL GHEFF( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy           )
       _RL AR   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
+
+C     number of surface interface layer
+      INTEGER kSurface
+
+      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+       kSurface        = Nr 
+      else
+       kSurface        = 1
+      endif
 
       salinity_ice=4.0 _d 0      ! ICE SALINITY
       TBC=271.2 _d 0-273.16 _d 0 ! FREEZING TEMP. OF SEA WATER
@@ -117,7 +126,6 @@ C SUPERCOOLING, CONVERT TO ICE
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)-YNEG(I,J,bi,bj)
 C HERE YNEG IS THE OCEAN TEMP. DIFFERENCE WITH SUPER-COOLING
            YNEG(I,J,bi,bj)=TBC-theta(I,J,1,bi,bj)
-           theta(I,J,1,bi,bj)=TBC
           ELSE
 C NOW CORRECT ICE THICKNESS
            GHEFF(I,J)=HEFF(I,J,1,bi,bj)
@@ -127,19 +135,10 @@ C NOW CORRECT YNEG
            YNEG(I,J,bi,bj)=HEFF(I,J,1,bi,bj)-HEFF(I,J,3,bi,bj)
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
      &                          +(HEFF(I,J,1,bi,bj)-GHEFF(I,J))
-           theta_old=theta(I,J,1,bi,bj)
-           theta(I,J,1,bi,bj)= 
-     &                    (YNEG(I,J,bi,bj)*72.0764 _d 0/dRf(1)+TBC)
+           theta_new=     (YNEG(I,J,bi,bj)*72.0764 _d 0/dRf(1)+TBC)
 C HERE YNEG IS THE OCEAN TEMP. DIFFERENCE WITH NO SUPER-COOLING
-           YNEG(I,J,bi,bj)=theta(I,J,1,bi,bj)-theta_old
+           YNEG(I,J,bi,bj)=theta_new -theta(I,J,1,bi,bj)
           ENDIF
-C surfaceTendencyTice is the equivalent amount of surface heating
-C implied by above change in surface level temperature (YNEG).
-C Units are degrees/s (>0 for ocean warming).
-          surfaceTendencyTice(I,J,bi,bj)=YNEG(I,J,bi,bj)/
-     &         SEAICE_deltaTtherm*maskC(I,J,1,bi,bj)
-C apply mask
-          theta(I,J,1,bi,bj) = theta(I,J,1,bi,bj)*maskC(I,J,1,bi,bj)
          ENDDO
         ENDDO
 c
@@ -268,6 +267,11 @@ C NOW GET TOTAL QNET AND QSW
 #ifndef SHORTWAVE_HEATING
           QNET(I,J,bi,bj)=QNET(I,J,bi,bj)+QSW(I,J,bi,bj)
 #endif
+C Add YNEG contribution to QNET
+          QNET(I,J,bi,bj)=QNET(I,J,bi,bj)
+     &         -YNEG(I,J,bi,bj)/SEAICE_deltaTtherm*maskC(I,J,1,bi,bj)
+     &         *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
+     &         *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
          ENDDO
         ENDDO
 

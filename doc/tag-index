@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.319 2004/07/02 17:59:46 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.320 2004/07/05 20:05:07 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o require forcing_In_AB=.FALSE. and remove surfaceTendencyTice from pkg/seaice
+  - modified verification/lab_sea and natl_box_adjoint accordingly
 
 checkpoint54
 checkpoint53g_post

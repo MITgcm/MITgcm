@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.7 2003/11/01 04:50:02 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.8 2004/07/05 20:05:07 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -31,6 +31,13 @@ C--   ALLOW_SEAICE
       WRITE(msgBuf,'(A)') 'SEAICE_CHECK: #define ALLOW_SEAICE'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , myThid )
+
+C--   SEAICE needs forcing_In_AB FALSE
+      IF (forcing_In_AB) THEN
+         WRITE(msgBuf,'(A)') 'Need forcing_In_AB = .FALSE.'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
 
 C--   SEAICE_ALLOW_DYNAMICS and SEAICEuseDYNAMICS
 #ifndef SEAICE_ALLOW_DYNAMICS
