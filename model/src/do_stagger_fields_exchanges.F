@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.2 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.3 2004/04/22 21:38:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -42,7 +42,7 @@ c       _EXCH_XYZ_R8( salt , myThid )
 
 #ifdef ALLOW_AIM
       IF ( useAIM ) THEN
-       CALL AIM_AIM2DYN_EXCHANGES( myTime, myThid )
+       CALL AIM_AIM2DYN_EXCHANGES( myTime, myIter, myThid )
       ENDIF
 #endif /* ALLOW_AIM */
 
