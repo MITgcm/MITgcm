@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.316 2004/06/29 23:24:26 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.317 2004/07/01 21:46:48 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o prepare splitting of thermodynamics: store convect.counter in common block
 o store d.etaH/dt (instead of Div.hV) in common ; affects (truncation error)
   output of: global_ocean.cs32x15, global_ocean_pressure & internal_wave
 o cnh's modifs to gad_advection.F for cube-sphere multi-dim advection
