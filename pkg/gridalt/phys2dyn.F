@@ -7,7 +7,7 @@ C               grid to the higher resolution physics grid
 C Algorithm:
 C   Routine works one layer (edge to edge pressure) at a time.
 C   Physics -> Dynamics computes the physics layer mean value,
-C   weighted by dp**kappa
+C   weighted by dp**kappa (interp1) or by dp.
 C
 C Input:
 C   qphy..... [im,jm,lmphy] Arbitrary Quantity on Input Grid
@@ -45,7 +45,7 @@ C***********************************************************************
       integer Lbot(im1:im2,jm1:jm2,Nsx,Nsy)
 
       integer  i,j,L,Lout1,Lout1p1,Lout2,Lphy
-      _RL getcon, kappa, dpkephy, dpkedyn, dpksum, dpsum
+      _RL getcon, kappa, dpkephy, dpkedyn, dpksum
 
       kappa = getcon('KAPPA')
 
@@ -64,16 +64,16 @@ c Check to make sure we are above ground - otherwise do nothing
           endif
           Lout2 = nlperdyn(i,j,L,bi,bj)
 c do loop for all physics levels contained in this dynamics level
-          dpkedyn = (pedyn(i,j,L,bi,bj)**kappa)-
-     .                                     (pedyn(i,j,L+1,bi,bj)**kappa)
+cinterp1  dpkedyn = (pedyn(i,j,L,bi,bj)**kappa)-
+cinterp1                                   (pedyn(i,j,L+1,bi,bj)**kappa)
+          dpkedyn = pedyn(i,j,L,bi,bj)-pedyn(i,j,L+1,bi,bj)
           dpksum = 0.
-          dpsum = 0.
           Lout1p1 = Lout1+1
           do Lphy = Lout1p1,Lout2
-           dpkephy = (pephy(i,j,Lphy,bi,bj)**kappa)-
-     .                                  (pephy(i,j,Lphy+1,bi,bj)**kappa)
+cinterp1   dpkephy = (pephy(i,j,Lphy,bi,bj)**kappa)-
+cinterp1                                (pephy(i,j,Lphy+1,bi,bj)**kappa)
+           dpkephy = pephy(i,j,Lphy,bi,bj)-pephy(i,j,Lphy+1,bi,bj)
            dpksum=dpksum+dpkephy
-           dpsum=dpsum+(pephy(i,j,Lphy,bi,bj)-pephy(i,j,Lphy+1,bi,bj))
            qdyn(i,j,L,bi,bj) = qdyn(i,j,L,bi,bj) + 
      .                            qphy(i,j,Lphy,bi,bj)*(dpkephy/dpkedyn)
           enddo

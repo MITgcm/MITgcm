@@ -71,12 +71,14 @@ c Check to make sure we are above ground - if not, do nothing
           Lout2 = nlperdyn(i,j,L,bi,bj)
 c for U and V fields, need to compute for the weights:
           if(flg.eq.1)then
-           dpkedyn = (pedyn(i,j,L,bi,bj)**kappa)-
-     .                                     (pedyn(i,j,L+1,bi,bj)**kappa)
+cinterp1   dpkedyn = (pedyn(i,j,L,bi,bj)**kappa)-
+cinterp1                                   (pedyn(i,j,L+1,bi,bj)**kappa)
+           dpkedyn = pedyn(i,j,L,bi,bj)-pedyn(i,j,L+1,bi,bj)
            windsum = 0.
            do Lphy = Lout1+1,Lout2
-            dpkephy = (pephy(i,j,Lphy,bi,bj)**kappa)-
-     .                                  (pephy(i,j,Lphy+1,bi,bj)**kappa)
+cinterp1    dpkephy = (pephy(i,j,Lphy,bi,bj)**kappa)-
+cinterp1                                (pephy(i,j,Lphy+1,bi,bj)**kappa)
+            dpkephy = pephy(i,j,Lphy,bi,bj)-pephy(i,j,Lphy+1,bi,bj)
             windsum = windsum+(windphy(i,j,Lphy,bi,bj)*dpkephy)/dpkedyn
            enddo
           endif
