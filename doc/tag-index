@@ -1,7 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.244 2004/01/20 17:02:40 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.245 2004/01/21 21:33:35 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint52i_post
+o removed CPP_EEOPTIONS.h from verification/*/code
+o updated the tiling for global_ocean_pressure
+checkpoint52i_pre
 
 checkpoint52h_pre
 o shortened offending lines in exch2_send_rx?.template
