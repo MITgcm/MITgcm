@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.69 2004/02/25 19:12:10 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.70 2004/02/28 05:01:12 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -561,6 +561,7 @@ FOPTIM=
 CFLAGS=
 KFLAGS1=
 KFLAGS2=
+#LDADD=
 LIBS=
 KPPFILES=
 NOOPTFILES=
@@ -1589,7 +1590,7 @@ FC = ${FC}
 # Fortran compiler
 F90C = ${F90C}
 # Link editor
-LINK = ${LINK}
+LINK = ${LINK} ${LDADD}
 
 # Defines for CPP
 DEFINES = ${DEFINES}
