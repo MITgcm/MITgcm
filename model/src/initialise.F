@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.2 1998/04/24 02:05:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.3 1998/04/24 02:10:20 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -67,5 +67,3 @@ C--   Finally summarise the model cofiguration and state
       CALL STATE_SUMMARY( myThid )
 
       END
-
-C $Id: initialise.F,v 1.2 1998/04/24 02:05:41 cnh Exp $

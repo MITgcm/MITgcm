@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.2 1998/04/24 02:05:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.3 1998/04/24 02:10:21 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -85,5 +85,3 @@ C*P*   CALL CHECKPOINT( myThid )
 
       RETURN
       END
-
-C $Id: the_model_main.F,v 1.2 1998/04/24 02:05:42 cnh Exp $

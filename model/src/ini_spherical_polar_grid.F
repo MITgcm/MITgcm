@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.2 1998/04/24 02:05:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.3 1998/04/24 02:10:20 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -200,5 +200,3 @@ C     Calculate vertical face area
 C
       RETURN
       END
-
-C     $Id: ini_spherical_polar_grid.F,v 1.2 1998/04/24 02:05:41 cnh Exp $

@@ -1,4 +1,4 @@
-C $Id: PARAMS.h,v 1.1.1.1 1998/04/22 19:15:31 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.2 1998/04/24 02:11:37 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
