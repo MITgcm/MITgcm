@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.38 2004/03/24 15:29:33 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.39 2004/05/12 17:12:53 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -68,7 +68,6 @@ C     == Global variables ===
       EXTERNAL IO_ERRCOUNT
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
 C     myIter - Iteration number
 C     myTime - Current time of simulation ( s )
@@ -77,7 +76,6 @@ C     myTime - Current time of simulation ( s )
       INTEGER myIter
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
       INTEGER iRec
 #ifdef ALLOW_MNC
