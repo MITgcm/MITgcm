@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.35 2004/03/12 16:45:38 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.36 2004/03/12 16:50:42 edhill Exp $
 #  $Name:  $
 #
 
@@ -863,14 +863,14 @@ for dir in $TESTDIRS ; do
 	for ex in $extra_runs ; do
 	    test -e "$dir/tr_run" && rm -rf "$dir/tr_run"
 	    mkdir "$dir/tr_run"
-	    ( cd "$dir/input" ; links=`ls -1 | grep -v CVS` )
+	    links=`( cd "$dir/input" > /dev/null 2>&1 ; ls -1 | grep -v CVS )`
 	    (
 		cd "$dir/tr_run"
 		for i in $links; do
 		    ln -s ../input/$i $i
 		done
 	    )
-	    ( cd "$dir/input.$ex" ; links=`ls -1 | grep -v CVS` )
+	    links=`( cd "$dir/input.$ex" > /dev/null 2>&1 ; ls -1 | grep -v CVS )`
 	    ( 
 		cd "$dir/tr_run"
 		for i in $links; do
