@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.12 2001/09/28 02:26:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.13 2001/09/28 03:36:16 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -446,14 +446,16 @@ C note(jmc) : phiHyd=0 at this point but is not really used in Molteni Physics
 #endif /* ALLOW_AIM */
 
 #ifndef DISABLE_MULTIDIM_ADVECTION
-C The CPP flag DISABLE_MULTIDIM_ADVECTION is currently set in GAD_OPTIONS.h
-C and is currently set only for auto-differentiating. Ideally this would
-C not be necessary. If you need mutli-dimensional advection in a
-C differentiated code, it does work but costs more), you can edit
-C GAD_OPTIONS.h to re-enable it.
-
 C--     Some advection schemes are better calculated using a multi-dimensional
 C       method in the absence of any other terms and, if used, is done here.
+C
+C The CPP flag DISABLE_MULTIDIM_ADVECTION is currently unset in GAD_OPTIONS.h
+C The default is to use multi-dimensinal advection for non-linear advection
+C schemes. However, for the sake of efficiency of the adjoint it is necessary
+C to be able to exclude this scheme to avoid excessive storage and
+C recomputation. It *is* differentiable, if you need it.
+C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
+C disable this section of code.
         IF (multiDimAdvection) THEN
          IF (tempStepping .AND.
      &       tempAdvScheme.NE.ENUM_CENTERED_2ND .AND.
