@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_solution.F,v 1.1 2003/05/13 18:18:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_solution.F,v 1.2 2003/12/15 02:13:13 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -46,7 +46,9 @@ C     Statistics for T
          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
         _END_MASTER(myThid)
 
-        CALL EEDIE
+C jmc: add this "if not ..." to avoid beeing stuck when using coupler; 
+       IF ( .NOT. useCoupler )
+     &  CALL EEDIE
         STOP 'MON_SOLUTION: STOPPED DUE TO EXTREME VALUES OF SOLUTION'
       ENDIF
 

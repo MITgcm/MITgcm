@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.12 2003/05/13 18:18:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.13 2003/12/15 02:13:13 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -88,11 +88,11 @@ C-     Print stats for KE
 C-     Print stats for (relative,absolute) Vorticity AND Pot.Vort. 
        CALL MON_VORT3(myIter, myThid)
 
-C      Check that solution is within reasonable bounds
-       CALL MON_SOLUTION(myIter,myTime,myThid)
-
 C      Print stats for surface correction terms (Linear Free-Surf)
        CALL MON_SURFCOR(myThid)
+
+C      Check that solution is within reasonable bounds
+       CALL MON_SOLUTION(myIter,myTime,myThid)
 
 C      Dynamics field monitor finish
        _BEGIN_MASTER(myThid)
