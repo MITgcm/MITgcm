@@ -1,0 +1,527 @@
+# Example: Subtropical North Atlantic and Labrador Sea Areas
+# ==========================================================
+# - forward/adjoint run
+# - optimization cost function
+# - The input data is real*8
+
+>>>>>>>>>>>>>>>>>>>> DO THESE THINGS FIRST <<<<<<<<<<<<<<<<<<<<
+mkdir verification/natl_box_adjoint/exe
+cd verification/natl_box_adjoint/exe
+ln -s ../build/mitgcmuv_ad .
+ln -s ../build/mitgcmuv_ftl .
+>>>>>>>>>>>>>>>>>>>> DO THESE THINGS FIRST <<<<<<<<<<<<<<<<<<<<
+
+####################
+# Experiment no. 1 #
+####################
+# Use air-sea fluxes as controls (standard case):
+# perform gradient checks for first four elements of the
+# heat flux part of the control vector (grdchkvarindex = 3).
+# - with GMREDI, KPP, and shortwave heating
+# - 4 timesteps
+
+# Compile code in build/:
+ cd ../build
+ ../../../tools/genmake2 -mods=../code
+ make depend
+ make adall
+
+# To run: 
+ cd ../exe
+ cp ../input/* .
+ ./mitgcmuv_ad >&! output.txt
+# To verify the results of the gradient check, type:
+ grep grad-res output.txt
+# A reference output is in:
+ grep grad-res ../results/output.txt_adm
+
+
+####################
+# Experiment no. 2 #
+####################
+# Use bulk formulae and atmospheric state controls
+# (only differences to experiment 1 are in
+# ECCO_CPPOPTIONS.h and in data.grdchk):
+# perform gradient checks for first four elements of the
+# air temperture part of the control vector (grdchkvarindex = 7).
+
+# Compile code in build/:
+ cd ../build
+ rm -f *.o *.f *.p rii_files *.flow
+ rm -f *.F *.h *.c Makefile* *.template genmake_*
+ ../../../tools/genmake2 -mods=../code_bulk
+ make depend
+ make adall
+
+# To run:
+ cd ../exe
+ cp ../input_bulk/* .
+ cp ../input/PH_*.data .
+ ./mitgcmuv_ad >&! output.txt
+# To verify the results of the gradient check, type:
+ grep grad-res output.txt
+# A reference output is in:
+ grep grad-res ../results_bulk/output.txt_adm
+
+
+####################
+# Experiment no. 4 #
+####################
+# Same as exp. 2, but with ALLOW_SEAICE defined and useseaice = .true.
+
+# Compile code in build/:
+ cd ../build
+ rm -f *.o *.f *.p rii_files *.flow
+ rm -f *.F *.h *.c Makefile* *.template genmake_*
+ ../../../tools/genmake2 -mods=../code_seaice
+ cp ../code_seaice/SEAICE_OPTIONS.h.FLUXES SEAICE_OPTIONS.h
+ make depend
+ make adall
+
+# To run:
+ cd ../exe
+ cp ../input_bulk/* .
+ cp ../input_seaice/data.seaice.cgrid data.seaice
+ cp ../input_seaice/data.pkg .
+ cp ../input/PH_*.data .
+ ./mitgcmuv_ad >&! output.txt
+# To verify the results of the gradient check, type:
+ grep grad-res output.txt
+# A reference output is in:
+ grep grad-res ../results_seaice/output_exp4.txt_adm
+
+
+####################
+# Experiment no. 5 #
+####################
+# Same as exp. 4, but using sea-ice bulk formulae.
+# This experiment tests pkg/seaice bulk formulae over open water.
+# No sea-ice is formed anywhere in the domain.
+
+# Compile code in build/:
+ cd ../build
+ rm -f *.o *.f *.p rii_files *.flow
+ rm -f *.F *.h *.c Makefile* *.template genmake_*
+ ../../../tools/genmake2 -mods=../code_seaice
+ make depend
+ make adall
+
+# To run:
+ cd ../exe
+ cp ../input_bulk/* .
+ cp ../input_seaice/data.seaice.cgrid data.seaice
+ cp ../input_seaice/data.pkg .
+ cp ../input/PH_*.data .
+ ./mitgcmuv_ad >&! output.txt
+# To verify the results of the gradient check, type:
+ grep grad-res output.txt
+# A reference output is in:
+ grep grad-res ../results_seaice/output_exp5.txt_adm
+
+
+####################
+# Experiment no. 6 #
+####################
+# Same as experiment 5, but in the Labrador Sea rather than in
+# the North Atlantic subduction region.  The cost function is
+# total ice volume over the 4-hour test period.
+#
+# The cost function data files are not used.  They contain:
+# labsea_TP_fields   : filled with -9999
+# labsea_TP_mean     : hour 100 ssh (cm) of lab_sea experiment
+# labsea_ERS_fields  : filled with -9999
+# labsea_SST_fields  : 14 * Levitus annual mean SST
+# labsea_Lev.ptmp    : 14 * Levitus annual mean temperature
+# labsea_Lev.salt    : 14 * Levitus annual mean salinity
+# labsea_ssh.err     : filled with -9999
+# labsea_geoid.err   : constant 0.2 with -9999 landmask
+# labsea_totflux.err : 100 with -9999 landmask
+# labsea_pme.err     : 4e-8 with -9999 landmask
+# labsea_ustress.err : 3 with -9999 landmask
+# labsea_vstress.err : 3 with -9999 landmask
+
+# To run:
+ cd ../exe
+ cp ../input_seaice/* .
+ cp ../input_bulk/data.grdchk .
+ ./mitgcmuv_ad >&! output.txt
+# To verify the results of the gradient check, type:
+ grep grad-res output.txt
+# A reference output is in:
+ grep grad-res ../results_seaice/output_exp6.txt_adm
+
+
+####################
+# Experiment no. 7 #
+####################
+# Same as experiment 6, but finite difference gradient check for
+# air temperature is computed and compared for the complete domain.
+#
+# Notes:
+# variables xx_* contain control vector perturbation
+# variables adxx_* contain cost function gradient relative to control
+
+# To run:
+ cd ../exe
+ cp ../input_seaice/* .
+ ./mitgcmuv_ad >&! output.txt
+# To verify the results of the gradient check, type:
+ grep grad-res output.txt > grad-res.txt
+# A reference output is in:
+ grep grad-res ../results_seaice/output_exp6.txt_adm
+# plot with matlab:
+ cd ../results_seaice
+ matlab
+ lookat_exp8
+
+
+####################
+# Experiment no. 8 #
+####################
+>>>>>>>>>> PH: THIS ONE NOT YET UPDATED <<<<<<<<<<
+# Same as experiment 7, but starting from a checkpoint file.
+
+# To run:
+ cd ../../../exe
+ cp ../verification/natl_box_adjoint/input_seaice/* .
+ cp data.001 data
+ ./mitgcmuv >&! output.txt
+# To verify the results of the gradient check, type:
+ grep "ph-grd 3" output.txt > ph-grd.txt
+ cd ../verification/natl_box_adjoint/results_seaice
+ matlab
+ lookat_exp8
+
+
+####################
+# Experiment no. 9 #
+####################
+>>>>>>>>>> PH: THIS ONE NOT YET UPDATED <<<<<<<<<<
+# Same as experiment 8, but starting from time step 180.
+# This includes a location (12,8) which experiences a phase
+# transition from no-ice to sea-ice, and which therefore has
+# a very large and inaccurate gradient.
+
+# To run:
+ cd ../../../exe
+ cp ../verification/natl_box_adjoint/input_seaice/* .
+ cp data.180 data
+ ./mitgcmuv >&! output.txt
+# To verify the results of the gradient check, type:
+ grep "ph-grd 3" output.txt > ph-grd.txt
+ cd ../verification/natl_box_adjoint/results_seaice
+ matlab
+ lookat_exp8
+
+
+#####################
+# Experiment no. 10 #
+#####################
+# Set up a 100-day sensitivity experiment.
+# Things start falling apart, see below.
+# Longer integrations periods cause NANs in adjoint gradient.
+# Note: cost_ssh is hardwired for 1-day ssh records
+#       "topexperiod" in data.cost is never used.
+
+# Compile code in build/:
+ cd ../build
+ rm -f *.o *.f *.p rii_files *.flow
+ rm -f *.F *.h *.c Makefile* *.template genmake_*
+ ../../../tools/genmake2 -mods=../code_seaice
+ make depend
+ make adall
+ make ftlall
+
+# To run:
+# PH: I modified data to run 24 timesteps only
+ cd ../exe
+ cp ../input_seaice/* .
+ cp data.24 data
+ cp ../input_bulk/data.grdchk .
+# run the ADM
+ ./mitgcmuv_ad >&! output.txt_adm
+# run the TLM
+ ./mitgcmuv_ftl >&! output.txt_tlm
+
+# For 100 days, adjoint gradient is NAN
+
+# Following table compares finite difference gradient for various choices
+# of grdchk_eps.
+ 1.d-12   -.177327175E+20 0.140230277E+20 -.254542273E+20 0.138603531E+19
+ 1.d-8    0.174714613E+16 -.527867903E+15 0.403581037E+15 0.377322748E+12
+ 1.d-4    0.999954825E+11 0.156018218E+12 -.474931072E+11 -.357260091E+11
+ 1.d-2    0.634576350E+09 -.185440863E+10 -.599212833E+09 -.334417056E+10
+
+# Following table compares adjoint and finite difference gradient for
+# various choices of nTimeSteps
+# with nTimeSteps=4
+ adj grad  0.103151639E+00 0.308058453E+00 -.732758366E+04 -.161844794E+06
+ 1.d-4     0.305175781E+00 0.305175781E+00 -.732757568E+04 -.161844788E+06
+# with nTimeSteps=24
+ adj grad  0.137444822E+04 0.365984818E+04 0.256198267E+05 -.204077640E+06
+ 1.d-4     0.137313843E+04 0.365982056E+04 0.256221008E+05 -.204077454E+06
+# with nTimeSteps=240
+ adj grad  0.443328852E+39 -.133652133E+38 -.905448973E+38 -.598093614E+40
+ 1.d-4     -.209616183E+10 0.257127391E+10 -.917457365E+10 0.104622205E+10
+# with nTimeSteps=480
+ adj grad  -.217869560E+39 0.656820132E+37 0.444973903E+38 0.293927165E+40
+ 1.d-4     -.848343350E+09 0.186724144E+10 -.768266406E+10 0.188919420E+10
+# with nTimeSteps=960
+ adj grad  -.125255788E+49 0.377613667E+47 0.255820763E+48 0.168982206E+50
+ 1.d-4     0.683065531E+10 -.241320782E+11 -.359080729E+11 0.222805821E+11
+# with nTimeSteps=1920
+ adj grad  0.993422132E+94 -.299490969E+93 -.202895220E+94 -.134022280E+96
+ 1.d-4     0.677603652E+12 0.115923780E+12 -.383606246E+12 -.393716060E+12
+# with nTimeSteps=2400
+ adj grad  0.204800998+114 -.617421814+112 -.418282846+113 -.276296408+115
+ 1.d-4     0.796041873E+12 0.280172355E+12 -.429971310E+12 -.655627972E+12
+# with nTimeSteps=3600
+ adj grad  0.123800977+143 -.373227788+141 -.252849475+142 -.167019524+144
+ 1.d-4     0.154270431E+12 0.246315840E+12 0.392679620E+12 0.816557457E+11
+
+# With cost_ice_flag = 2
+# adj grad  0.500216760+194 -.353450868+194 -.799381224+195 -.173412383+194
+# 1.d-04    -.327859949E+08 -.300222927E+10 0.252204364E+09 -.658448165E+10
+# 1.d-03    -.572185323E+08 0.614938314E+08 -.850914638E+09 0.248982808E+08
+# 1.d-02    -.624721639E+07 -.147537212E+08 -.114497432E+09 -.358163526E+08
+# 1.d-01    0.603974309E+07 -.684786020E+07 -.149337451E+09 -.601790080E+07
+# 1.d-00    -.497381448E+06 -.404972657E+05 -.142684281E+09 -.501277195E+08
+
+# 100 day experiment with cost_ice_flag = 3, but in North Atlantic
+# domain, i.e., with no sea-ice is OK
+ adj grad  0.234593317E+17 0.166950683E+17 0.238665515E+17 0.249850733E+17
+ 1.d-4     0.234313954E+17 0.166674930E+17 0.238322031E+17 0.249217155E+17
+
+# with same order of magnitude results as those from pkg/exf bulk formulae
+ adj grad  0.279968788E+17 0.226979382E+17 0.269224396E+17 0.323359773E+17
+ 1.d-4     0.279944626E+17 0.226935335E+17 0.269274317E+17 0.323399293E+17
+
+# 10 day experiment with cost_ice_flag = 3 is OK
+ adj grad  0.353941629E+17 0.955451129E+16 -.265793314E+17 0.232229067E+16
+ 1.d-4     0.353943893E+17 0.955563114E+16 -.265195776E+17 0.232137949E+16
+ 1-fd/adj  -.639540199E-05 -.117207086E-03 0.224813073E-02 0.392362727E-03
+
+# 100 day experiment with cost_ice_flag = 3 fails
+ adj grad  0.134326162+285 0.434825818+285 0.353667347+285 -.121707013+286
+ 1.d-4     -.248910431E+20 -.581887317E+20 0.530805948E+18 0.554441614E+20
+
+# 100 day experiment with cost_ice_flag = 4 fails
+ adj grad  0.942881479+279 0.305219181+280 0.248251262+280 -.854303341+280
+ 1.d-4     0.550158678E+19 -.107685572E+20 -.139042495E+20 0.445855968E+20
+
+# 100 day experiment with cost_ice_flag = 5 fails
+ adj grad  0.149606733+285 0.484290396+285 0.393899563+285 -.135552065+286
+ 1.d-4     -.300535490E+20 -.689378119E+20 0.300954675E+19 0.767231924E+20
+
+
+# With cost_ice_flag = 6, i.e., a quadratic cost function
+# 1.d-04    -.525101466E+01 -.328685504E+03 0.267928050E+02 -.563072857E+03
+# 1.d-03    -.313705632E+01 0.463320361E+01 -.458088751E+02 0.571140277E+00
+# 1.d-02    -.232806373E+00 -.104311448E+01 0.173597838E+02 -.394705606E+01
+# 1.d-01    0.515424287E+00 -.578962143E+00 0.108556846E+02 -.563596055E+00
+# 1.d-00    -.480177391E-01 -.327366136E-02 0.107190195E+02 -.498391127E+01
+# adj grad  NAN             NAN             NAN             NAN
+
+# 100 day experiments with all albedos set to a constant 0.4, with
+# IMAX_TICE=50, and with HSNOW=0 also fail with NANs
+
+# 100-day with undef  ALLOW_GMREDI
+ adj grad  0.846385475+258 0.198955589+259 0.729012228+259 0.320320183+256
+ 1.d-4     -.577220699E+12 -.987464011E+12 -.342421713E+12 -.553564700E+12
+
+# Adjoint gradient is OK for 100 days is KPP and GM
+# are undefined in CPP_OPTIONS file:
+ adj grad  0.717330426E+06 0.106802371E+07 0.443223909E+06 -.581863641E+08
+ 1.d-4     0.717581787E+06 0.106213684E+07 0.441527100E+06 -.581863293E+08
+# Above experiment fails with NANs when extended to 375 days
+# but it works OK is SEAICE_initialHEFF = 0.0 instead of 1.0
+ adj grad  -.256772533E+05 -.782710992E+05 -.273621212E+05 -.133527839E+09
+ 1.d-4     -.256640625E+05 -.779858398E+05 -.272338867E+05 -.133528066E+09
+# 10-yr experiment with above parameters fails with NANs
+
+# 100-day with yneg=0 in growth.F
+ adj grad  -.246704815E+07 -.171229406E+09 -.113862028E+08 -.156706660E+08
+ 1.d-4     -.246699463E+07 -.171229277E+09 -.113861792E+08 -.156706763E+08
+# 375-day with yneg=0 in growth.F
+ (in progress)
+
+
+#####################
+# Experiment no. 11 #
+#####################
+>>>>>>>>>> PH: THIS ONE NOT YET UPDATED <<<<<<<<<<
+# Same as experiment 8, but using 2-CPU MPI configuration.
+
+# Compile code in bin/:
+ cd ../bin
+ rm -rf *.o *.f *.p rii_files
+ rm -rf *.F *.h *.c Makefile*
+ cp ../verification/natl_box_adjoint/code_seaice/*.h .
+ cp ../verification/natl_box_adjoint/code_seaice/.genmakerc .
+ cp ../verification/natl_box_adjoint/code_seaice/SIZE.h.MPI SIZE.h
+ cp ../verification/natl_box_adjoint/code_seaice/CPP_EEOPTIONS.h.MPI CPP_EEOPTIONS.h
+# Configure and compile the code:
+ ../tools/genmake -mpi -makefile
+# ==> on alhena use:
+# ../tools/genmake -platform=o2k -mpi -makefile
+ make depend
+# Generate the adjoint code:
+ cd ../adjoint
+ cp ../verification/natl_box_adjoint/code_seaice/makefile .
+ make adtaf
+ make adchange
+ rm -f makefile
+# Go back and compile the code:
+ cd ../bin
+ make
+# To run:
+ cd ../exe
+ cp ../verification/natl_box_adjoint/input_seaice/* .
+ cp data.001 data
+ cp ../verification/natl_box_adjoint/input_bulk/data.grdchk .
+ mpirun -np 2 mitgcmuv
+# To verify the results of the gradient check, type:
+ grep "ph-grd 3" STDOUT.0000
+# To plot adjoint sensitivy fields
+ cd ../verification/natl_box_adjoint/results_seaice
+ matlab
+ lookat_exp10
+
+
+#####################
+# Experiment no. 12 #
+#####################
+# Same as experiment 6, but including LSR dynamic solver.
+
+# Compile code in build/:
+ cd ../build
+ rm -f *.o *.f *.p rii_files *.flow
+ rm -f *.F *.h *.c Makefile* *.template genmake_*
+ ../../../tools/genmake2 -mods=../code_seaice
+ cp ../code_seaice/SEAICE_OPTIONS.h.DYN SEAICE_OPTIONS.h
+ make depend
+ make adall
+ make ftlall
+
+# To run:
+ cd ../exe
+ cp ../input_seaice/* .
+ cp data.seaice.lsr data.seaice
+ cp ../input_bulk/data.grdchk .
+# run the ADM
+ ./mitgcmuv_ad >&! output.txt_adm
+# run the TLM
+ ./mitgcmuv_tlm >&! output.txt_tlm
+
+# To verify the results of the gradient check, type:
+ grep grad-res output.txt_adm
+# A reference output is in:
+ grep grad-res ../results_seaice/output_exp12.txt_adm
+
+
+#####################
+# Experiment no. 13 #
+#####################
+# Same as experiment 12, but finite difference gradient check for
+# air temperature is computed and compared for the complete domain.
+
+# To run:
+ cd ../exe
+ cp ../input_seaice/* .
+ cp data.seaice.lsr data.seaice
+ ./mitgcmuv_ad >&! output.txt_adm
+# To verify the results of the gradient check, type:
+ grep grad-res output.txt_adm > grad-res.txt
+ cd ../results_seaice
+ matlab
+ lookat_exp8
+
+
+#####################
+# Experiment no. 14 #
+#####################
+>>>>>>>>>> PH: THIS ONE NOT YET UPDATED <<<<<<<<<<
+# Same as in 12 but for a 100-day sensitivity experiment.
+
+# Compile code in bin/:
+ cd ../bin
+ rm -rf *.o *.f *.p rii_files
+ rm -rf *.F *.h *.c Makefile*
+ cp ../verification/natl_box_adjoint/code_seaice/*.h .
+ rm -f tamc.h
+ cp ../verification/natl_box_adjoint/code_seaice/.genmakerc .
+ cp ../verification/natl_box_adjoint/code_seaice/SEAICE_OPTIONS.h.MULTILEVEL SEAICE_OPTIONS.h
+# Configure and compile the code:
+ ../tools/genmake -makefile
+ make depend
+# Generate the adjoint code:
+ cd ../adjoint
+ cp ../verification/natl_box_adjoint/code_seaice/makefile .
+ make adtaf
+ make adchange
+ rm -f makefile
+# Go back and compile the code:
+ cd ../bin
+ make
+# To run:
+ cd ../exe
+ cp ../verification/natl_box_adjoint/input_seaice/* .
+ cp data.100day data
+ cp ../verification/natl_box_adjoint/input_bulk/data.grdchk .
+ cp data.seaice.lsr data.seaice
+ ./mitgcmuv >&! output.txt
+# To verify the results of the gradient check, type:
+ grep "ph-grd 3" output.txt
+
+# For 100-day experiment, with cost_ice_flag = 1, the adjoint gradient
+# blows up, as in Exp. 10
+# 1.d-04    0.251994583E+11 -.899637862E+10 0.372048919E+10 -.344972301E+10
+# adj grad  -.160660304+210 -.378763253+210 -.239235971+211 -.386444881+209
+
+# With cost_ice_flag = 2, i.e., mean sea-ice area
+# 1.d-04    -.152618243E+11 0.605974121E+06 -.155375485E+11 -.153368205E+11
+# adj grad  0.000000000E+00 0.000000000E+00 -.124076923E+09 0.000000000E+00
+
+# With cost_ice_flag = 6, i.e., a quadratic cost function
+# 1.d-12    -.106128607E+12 0.106330784E+12 -.106446555E+12 -.106237252E+12
+# 1.d-08    0.106450924E+08 0.103670536E+05 0.349155947E+05 0.335081902E+05
+# 1.d-04    -.106143365E+04 0.206965778E+00 -.105672737E+04 -.106326894E+04
+# 1.d-02    -.120891636E-02 0.106325012E+02 0.841459268E+01 -.107119297E+02
+# 1.d-01    -.102221209E-02 -.124805738E-02 0.821489714E+01 -.331974254E-02
+# 1.d-00    0.113825328E-03 -.105881751E+00 0.104550010E+02 -.106209116E+00
+# adj grad  0.000000000E+00 0.000000000E+00 0.887775373E+01 0.000000000E+00
+
+
+#####################
+# Experiment no. 15 #
+#####################
+# Same as experiment 6, but with SEAICE_MULTILEVEL.
+
+# Compile code in build/:
+ rm -f *.o *.f *.p rii_files *.flow
+ rm -f *.F *.h *.c Makefile* *.template genmake_*
+ ../../../tools/genmake2 -mods=../code_seaice
+ cp ../code_seaice/SEAICE_OPTIONS.h.MULTILEVEL SEAICE_OPTIONS.h
+ make depend
+ make adall
+
+# To run:
+ cd ../exe
+ cp ../input_seaice/* .
+ cp ../input_bulk/data.grdchk .
+ ./mitgcmuv_ad >&! output.txt
+
+# To verify the results of the gradient check, type:
+ grep grad-res output.txt
+# The reference output is in:
+ grep grad-res ../results_seaice/output_exp15.txt_adm
+
+# This test suggests that SEAICE_MULTILEVEL decreases the accuracy of
+# the adjoint model, perhaps because the adjoint model is not handling
+# multiple recomputations in budget properly.
+
+
+#####################
+# Experiment no. 20 #
+#####################
+# Same as experiment 10, but using divided adjoint.
