@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.324 2004/07/07 22:47:13 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.325 2004/07/08 16:15:20 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o staggerTimeStep & NLFS: update pkg aim_v23 & thsice; update aim.5l_cs output
 o staggerTimeStep & multi-Dim-Advec: Exch(U,V) added 
 o staggerTimeStep & NLFS: rescale T & S surface tendencies.
   affects (truncation error) output of lab_sea & natl_box exp.: updated
