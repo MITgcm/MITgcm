@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.23 2003/10/24 05:52:05 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.24 2003/10/29 13:42:10 cnh Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -104,7 +104,7 @@ find_possible_configs()  {
     fi
 
     # look for possible fortran compilers
-    tmp="$MITGCM_FC $FC g77 f77 pgf77 pgf95 ifc f90 f95 mpif77 mpf77 mpxlf95"
+    tmp="$MITGCM_FC $FC efc g77 f77 pgf77 pgf95 ifc f90 f95 mpif77 mpf77 mpxlf95"
     p_FC=
     for c in $tmp ; do
 	rm -f ./hello.f ./hello
