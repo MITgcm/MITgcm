@@ -23,6 +23,7 @@ C*=====================================================================*
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+#include "EXCH.h"
 
 C     == Argument list variables ==
       _RX component1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

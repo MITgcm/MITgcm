@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EXCH.h,v 1.5 2004/04/02 15:33:58 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EXCH.h,v 1.6 2004/04/03 04:46:34 edhill Exp $
 C $Name:  $
 C
 CBOP
@@ -22,6 +22,14 @@ CEOP
 
 #ifndef _RS
 #define _RS Real*4
+#endif
+
+#ifndef _R8
+#define _R8 Real*8
+#endif
+
+#ifndef _R4
+#define _R4 Real*4
 #endif
 
 #ifndef _tileCommModeW
