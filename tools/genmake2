@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.87 2004/07/17 03:29:08 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.88 2004/07/20 19:43:45 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -122,7 +122,7 @@ EOF
       stop
       end
 EOF
-    test -e Makefile  &&  mv -f Makefile Makefile.bak
+    test -f Makefile  &&  mv -f Makefile Makefile.bak
     cat <<EOF >> Makefile
 %.$tfs : %.F
 .SUFFIXES:
@@ -131,7 +131,7 @@ genmake_hello.$tfs: genmake_hello.F
 EOF
     $MAKE "genmake_hello."$tfs > /dev/null 2>&1
     RETVAL=$?
-    if test "x$RETVAL" != x0 -o ! -e "genmake_hello."$tfs ; then
+    if test "x$RETVAL" != x0 -o ! -f "genmake_hello."$tfs ; then
 	if test "x$FS" = x ; then
 	    FS='for'
 	    FS90='fr9'
@@ -149,7 +149,7 @@ EOF
 	fi
     fi
     rm -f genmake_hello.* Makefile
-    test -e Makefile  &&  mv -f Makefile.bak Makefile
+    test -f Makefile  &&  mv -f Makefile.bak Makefile
 
     #  If we make it here, use the extensions
     FS=$tfs
@@ -771,7 +771,7 @@ for i in . $MODS ; do
     fi
 done
 printf "  getting local config information:  "
-if test -e $gm_local ; then
+if test -f $gm_local ; then
     echo "using $gm_local"
     . $gm_local
     # echo "DISABLE=$DISABLE"
@@ -1690,7 +1690,7 @@ echo "" >> f90srclist.inc
 echo "" >> hlist.inc
 echo "" >> ad_flow_files.inc
 
-if test -e $MAKEFILE ; then
+if test -f $MAKEFILE ; then
     mv -f $MAKEFILE "$MAKEFILE.bak"
 fi
 echo "  Writing makefile: $MAKEFILE"
