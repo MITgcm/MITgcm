@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.8 2004/11/16 05:42:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.9 2004/12/04 17:12:00 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -33,9 +33,6 @@ c     == global variables ==
 
 #ifdef ALLOW_OBCS_CONTROL
 # include "OBCS.h"
-#endif
-#ifdef ALLOW_ECCO_OPTIMIZATION
-# include "optim.h"
 #endif
 
 c     == routine arguments ==

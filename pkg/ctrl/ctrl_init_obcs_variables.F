@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_obcs_variables.F,v 1.5 2003/11/06 22:05:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_obcs_variables.F,v 1.6 2004/12/04 17:12:00 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -31,9 +31,6 @@ c     == global variables ==
 #include "ctrl.h"
 #ifdef ALLOW_OBCS_CONTROL
 # include "OBCS.h"
-#endif
-#ifdef ALLOW_ECCO_OPTIMIZATION
-# include "optim.h"
 #endif
 
 c     == routine arguments ==
