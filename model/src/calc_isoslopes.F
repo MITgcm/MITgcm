@@ -29,8 +29,10 @@
       _RL gradSmod,stratLimit,rMaxSlope,deltaH
       _RL Small_Number
       parameter(Small_Number=1. _d -12)
+      logical TOP_LEVEL
 ! ------------------------------------------------------------------------------
 
+      TOP_LEVEL = K.EQ.1
       deltaH=dzC(k)/GMdepth
       if (k.gt.11) deltaH=0.
       rMaxSlope=0.
@@ -77,7 +79,6 @@
 ! Depth average of M^2/N^2 * N
         KapGM(i,j)=KapGM(i,j)+deltaH*
      &      GMalpha*GMlength*GMlength* sqrt(K33(i,j,k))
-     &      + GMkbackground
 
        ENDDO
       ENDDO

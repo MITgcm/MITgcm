@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.21 1998/06/22 15:26:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.22 1998/06/23 02:35:59 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -203,7 +203,7 @@ C--     Set up work arrays that need valid initial values
           K13(i,j,1) = 0. _d 0
           K23(i,j,1) = 0. _d 0
           K33(i,j,1) = 0. _d 0
-          KapGM(i,j) = 0. _d 0
+          KapGM(i,j) = GMkbackground
          ENDDO
         ENDDO
 
