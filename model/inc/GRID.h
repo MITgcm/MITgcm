@@ -1,293 +1,300 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.15 2001/05/29 14:01:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.16 2001/09/21 15:13:31 cnh Exp $
 C $Name:  $
 C
-C     /==========================================================\
-C     | GRID.h                                                   |
-C     | o Header file defining model grid.                       |
-C     |==========================================================|
-C     | Model grid is defined for each process by reference to   |
-C     | the arrays set here.                                     |
-C     | Notes                                                    |
-C     | =====                                                    |
-C     | The standard MITgcm convention of westmost, southern most|
-C     | and upper most having the (1,1,1) index is used here.    |
-C     | i.e.                                                     |
-C     |----------------------------------------------------------|
-C     | (1)  Plan view schematic of model grid (top layer i.e. ) |
-C     |      ================================= ( ocean surface ) |
-C     |                                        ( or top of     ) |
-C     |                                        ( atmosphere    ) |
-C     |      This diagram shows the location of the model        |
-C     |      prognostic variables on the model grid. The "T"     |
-C     |      location is used for all tracers. The figure also   |
-C     |      shows the southern most, western most indexing      |
-C     |      convention that is used for all model variables.    |
-C     |                                                          |
-C     |                                                          |
-C     |             V(i=1,                     V(i=Nx,           |
-C     |               j=Ny+1,                    j=Ny+1,         |
-C     |               k=1)                       k=1)            |
-C     |                /|\                       /|\  "PWX"      |
-C     |       |---------|------------------etc..  |---- *---     |
-C     |       |                     |                   *  |     |
-C     |"PWY"*******************************etc..  **********"PWY"|
-C     |       |                     |                   *  |     |
-C     |       |                     |                   *  |     |
-C     |       |                     |                   *  |     |
-C     |U(i=1, ==>       x           |             x     *==>U    |
-C     |  j=Ny,|      T(i=1,         |          T(i=Nx,  *(i=Nx+1,|
-C     |  k=1) |        j=Ny,        |            j=Ny,  *  |j=Ny,|
-C     |       |        k=1)         |            k=1)   *  |k=1) |
-C     |                                                          |
-C     |       .                     .                      .     |
-C     |       .                     .                      .     |
-C     |       .                     .                      .     |
-C     |       e                     e                   *  e     |
-C     |       t                     t                   *  t     |
-C     |       c                     c                   *  c     |
-C     |       |                     |                   *  |     |
-C     |       |                     |                   *  |     |
-C     |U(i=1, ==>       x           |             x     *  |     |
-C     |  j=2, |      T(i=1,         |          T(i=Nx,  *  |     |
-C     |  k=1) |        j=2,         |            j=2,   *  |     |
-C     |       |        k=1)         |            k=1)   *  |     |
-C     |       |                     |                   *  |     |
-C     |       |        /|\          |            /|\    *  |     |
-C     |      -----------|------------------etc..  |-----*---     |
-C     |       |       V(i=1,        |           V(i=Nx, *  |     |
-C     |       |         j=2,        |             j=2,  *  |     |
-C     |       |         k=1)        |             k=1)  *  |     |
-C     |       |                     |                   *  |     |
-C     |U(i=1, ==>       x         ==>U(i=2,       x     *==>U    |
-C     |  j=1, |      T(i=1,         |  j=1,    T(i=Nx,  *(i=Nx+1,|
-C     |  k=1) |        j=1,         |  k=1)      j=1,   *  |j=1, |
-C     |       |        k=1)         |            k=1)   *  |k=1) |
-C     |       |                     |                   *  |     |
-C     |       |        /|\          |            /|\    *  |     |
-C     |"SB"++>|---------|------------------etc..  |-----*---     |
-C     |      /+\      V(i=1,                    V(i=Nx, *        |
-C     |       +         j=1,                      j=1,  *        |
-C     |       +         k=1)                      k=1)  *        |
-C     |     "WB"                                      "PWX"      |
-C     |                                                          |
-C     |   N, y increasing northwards                             |
-C     |  /|\ j increasing northwards                             |
-C     |   |                                                      |
-C     |   |                                                      |
-C     |   ======>E, x increasing eastwards                       |
-C     |             i increasing eastwards                       |
-C     |                                                          |
-C     |    i: East-west index                                    |
-C     |    j: North-south index                                  |
-C     |    k: up-down index                                      |
-C     |    U: x-velocity (m/s)                                   |
-C     |    V: y-velocity (m/s)                                   |
-C     |    T: potential temperature (oC)                         |
-C     | "SB": Southern boundary                                  |
-C     | "WB": Western boundary                                   |
-C     |"PWX": Periodic wrap around in X.                         |
-C     |"PWY": Periodic wrap around in Y.                         |
-C     |----------------------------------------------------------|
-C     | (2) South elevation schematic of model grid              |
-C     |     =======================================              |
-C     |     This diagram shows the location of the model         |
-C     |     prognostic variables on the model grid. The "T"      |
-C     |     location is used for all tracers. The figure also    |
-C     |     shows the upper most, western most indexing          |
-C     |     convention that is used for all model variables.     |
-C     |                                                          |
-C     |      "WB"                                                |
-C     |       +                                                  |
-C     |       +                                                  |
-C     |      \+/       /|\                       /|\             |
-C     |"UB"++>|-------- | -----------------etc..  | ----*---     |
-C     |       |    rVel(i=1,        |        rVel(i=Nx, *  |     |
-C     |       |         j=1,        |             j=1,  *  |     |
-C     |       |         k=1)        |             k=1)  *  |     |
-C     |       |                     |                   *  |     |
-C     |U(i=1, ==>       x         ==>U(i=2,       x     *==>U    |
-C     |  j=1, |      T(i=1,         |  j=1,    T(i=Nx,  *(i=Nx+1,|
-C     |  k=1) |        j=1,         |  k=1)      j=1,   *  |j=1, |
-C     |       |        k=1)         |            k=1)   *  |k=1) |
-C     |       |                     |                   *  |     |
-C     |       |        /|\          |            /|\    *  |     |
-C     |       |-------- | -----------------etc..  | ----*---     |
-C     |       |    rVel(i=1,        |        rVel(i=Nx, *  |     |
-C     |       |         j=1,        |             j=1,  *  |     |
-C     |       |         k=2)        |             k=2)  *  |     |
-C     |                                                          |
-C     |       .                     .                      .     |
-C     |       .                     .                      .     |
-C     |       .                     .                      .     |
-C     |       e                     e                   *  e     |
-C     |       t                     t                   *  t     |
-C     |       c                     c                   *  c     |
-C     |       |                     |                   *  |     |
-C     |       |                     |                   *  |     |
-C     |       |                     |                   *  |     |
-C     |       |                     |                   *  |     |
-C     |       |        /|\          |            /|\    *  |     |
-C     |       |-------- | -----------------etc..  | ----*---     |
-C     |       |    rVel(i=1,        |        rVel(i=Nx, *  |     |
-C     |       |         j=1,        |             j=1,  *  |     |
-C     |       |         k=Nr)       |             k=Nr) *  |     |
-C     |U(i=1, ==>       x         ==>U(i=2,       x     *==>U    |
-C     |  j=1, |      T(i=1,         |  j=1,    T(i=Nx,  *(i=Nx+1,|
-C     |  k=Nr)|        j=1,         |  k=Nr)     j=1,   *  |j=1, |
-C     |       |        k=Nr)        |            k=Nr)  *  |k=Nr)|
-C     |       |                     |                   *  |     |
-C     |"LB"++>==============================================     |
-C     |                                               "PWX"      |
-C     |                                                          |
-C     | Up   increasing upwards.                                 | 
-C     |/|\                                                       |
-C     | |                                                        |
-C     | |                                                        |
-C     | =====> E  i increasing eastwards                         |
-C     | |         x increasing eastwards                         |
-C     | |                                                        |
-C     |\|/                                                       |
-C     | Down,k increasing downwards.                             |
-C     |                                                          |
-C     | Note: r => height (m) => r increases upwards             |
-C     |       r => pressure (Pa) => r increases downwards        |
-C     |                                                          |
-C     |                                                          |
-C     |    i: East-west index                                    |
-C     |    j: North-south index                                  |
-C     |    k: up-down index                                      |
-C     |    U: x-velocity (m/s)                                   |
-C     | rVel: z-velocity ( units of r )                          |
-C     |       The vertical velocity variable rVel is in units of |
-C     |       "r" the vertical coordinate. r in m will give      |
-C     |       rVel m/s. r in Pa will give rVel Pa/s.             |
-C     |    T: potential temperature (oC)                         |
-C     | "UB": Upper boundary.                                    |
-C     | "LB": Lower boundary (always solid - therefore om|w == 0)|
-C     | "WB": Western boundary                                   |
-C     |"PWX": Periodic wrap around in X.                         |
-C     |----------------------------------------------------------|
-C     | (3) Views showing nomenclature and indexing              |
-C     |     for grid descriptor variables.                       |
-C     |                                                          |
-C     |      Fig 3a. shows the orientation, indexing and         |
-C     |      notation for the grid spacing terms used internally |
-C     |      for the evaluation of gradient and averaging terms. |
-C     |      These varaibles are set based on the model input    |
-C     |      parameters which define the model grid in terms of  |
-C     |      spacing in X, Y and Z.                              |
-C     |                                                          |
-C     |      Fig 3b. shows the orientation, indexing and         |
-C     |      notation for the variables that are used to define  |
-C     |      the model grid. These varaibles are set directly    |
-C     |      from the model input.                               |
-C     |                                                          |
-C     | Figure 3a                                                |
-C     | =========                                                |
-C     |       |------------------------------------              |
-C     |       |                       |                          |
-C     |"PWY"********************************* etc...             |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |                                                          |
-C     |       .                       .                          |
-C     |       .                       .                          |
-C     |       .                       .                          |
-C     |       e                       e                          |
-C     |       t                       t                          |
-C     |       c                       c                          |
-C     |       |-----------v-----------|-----------v----------|-  |
-C     |       |                       |                      |   |
-C     |       |                       |                      |   |
-C     |       |                       |                      |   |
-C     |       |                       |                      |   |
-C     |       |                       |                      |   |
-C     |       u<--dxF(i=1,j=2,k=1)--->u           t          |   |
-C     |       |/|\       /|\          |                      |   |
-C     |       | |         |           |                      |   |
-C     |       | |         |           |                      |   |
-C     |       | |         |           |                      |   |
-C     |       |dyU(i=1,  dyC(i=1,     |                      |   |
-C     | ---  ---|--j=2,---|--j=2,-----------------v----------|-  |
-C     | /|\   | |  k=1)   |  k=1)     |          /|\         |   |
-C     |  |    | |         |           |          dyF(i=2,    |   |
-C     |  |    | |         |           |           |  j=1,    |   |
-C     |dyG(   |\|/       \|/          |           |  k=1)    |   |
-C     |   i=1,u---        t<---dxC(i=2,j=1,k=1)-->t          |   |
-C     |   j=1,|                       |           |          |   |
-C     |   k=1)|                       |           |          |   |
-C     |  |    |                       |           |          |   |
-C     |  |    |                       |           |          |   |
-C     | \|/   |           |<---dxV(i=2,j=1,k=1)--\|/         |   |
-C     |"SB"++>|___________v___________|___________v__________|_  |
-C     |       <--dxG(i=1,j=1,k=1)----->                          |
-C     |      /+\                                                 |
-C     |       +                                                  |
-C     |       +                                                  |
-C     |     "WB"                                                 |
-C     |                                                          |
-C     |   N, y increasing northwards                             |
-C     |  /|\ j increasing northwards                             |
-C     |   |                                                      |
-C     |   |                                                      |
-C     |   ======>E, x increasing eastwards                       |
-C     |             i increasing eastwards                       |
-C     |                                                          |
-C     |    i: East-west index                                    |
-C     |    j: North-south index                                  |
-C     |    k: up-down index                                      |
-C     |    u: x-velocity point                                   |
-C     |    V: y-velocity point                                   |
-C     |    t: tracer point                                       |
-C     | "SB": Southern boundary                                  |
-C     | "WB": Western boundary                                   |
-C     |"PWX": Periodic wrap around in X.                         |
-C     |"PWY": Periodic wrap around in Y.                         |
-C     |                                                          |
-C     | Figure 3b                                                |
-C     | =========                                                |
-C     |                                                          |
-C     |       .                       .                          |
-C     |       .                       .                          |
-C     |       .                       .                          |
-C     |       e                       e                          |
-C     |       t                       t                          |
-C     |       c                       c                          |
-C     |       |-----------v-----------|-----------v--etc...      |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |       u<--delX(i=1)---------->u           t              |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |       |                       |                          |
-C     |       |-----------v-----------------------v--etc...      |
-C     |       |          /|\          |                          |
-C     |       |           |           |                          |
-C     |       |           |           |                          |
-C     |       |           |           |                          |
-C     |       u        delY(j=1)      |           t              |
-C     |       |           |           |                          |
-C     |       |           |           |                          |
-C     |       |           |           |                          |
-C     |       |           |           |                          |
-C     |       |          \|/          |                          |
-C     |"SB"++>|___________v___________|___________v__etc...      |
-C     |      /+\                                                 |
-C     |       +                                                  |
-C     |       +                                                  |
-C     |     "WB"                                                 |
-C     |                                                          |
-C     \==========================================================/
+CBOP
+C    !ROUTINE: GRID.h
+C    !INTERFACE:
+C    include GRID.h
+C    !DESCRIPTION: \bv
+C     *==========================================================*
+C     | GRID.h                                                    
+C     | o Header file defining model grid.                        
+C     *==========================================================*
+C     | Model grid is defined for each process by reference to    
+C     | the arrays set here.                                      
+C     | Notes                                                     
+C     | =====                                                     
+C     | The standard MITgcm convention of westmost, southern most 
+C     | and upper most having the (1,1,1) index is used here.     
+C     | i.e.                                                      
+C     |---------------------------------------------------------- 
+C     | (1)  Plan view schematic of model grid (top layer i.e. )  
+C     |      ================================= ( ocean surface )  
+C     |                                        ( or top of     )  
+C     |                                        ( atmosphere    )  
+C     |      This diagram shows the location of the model         
+C     |      prognostic variables on the model grid. The "T"      
+C     |      location is used for all tracers. The figure also    
+C     |      shows the southern most, western most indexing       
+C     |      convention that is used for all model variables.     
+C     |                                                           
+C     |                                                           
+C     |             V(i=1,                     V(i=Nx,            
+C     |               j=Ny+1,                    j=Ny+1,          
+C     |               k=1)                       k=1)             
+C     |                /|\                       /|\  "PWX"       
+C     |       |---------|------------------etc..  |---- *---      
+C     |       |                     |                   *  |      
+C     |"PWY"*******************************etc..  **********"PWY" 
+C     |       |                     |                   *  |      
+C     |       |                     |                   *  |      
+C     |       |                     |                   *  |      
+C     |U(i=1, ==>       x           |             x     *==>U     
+C     |  j=Ny,|      T(i=1,         |          T(i=Nx,  *(i=Nx+1, 
+C     |  k=1) |        j=Ny,        |            j=Ny,  *  |j=Ny, 
+C     |       |        k=1)         |            k=1)   *  |k=1)  
+C     |                                                           
+C     |       .                     .                      .      
+C     |       .                     .                      .      
+C     |       .                     .                      .      
+C     |       e                     e                   *  e      
+C     |       t                     t                   *  t      
+C     |       c                     c                   *  c      
+C     |       |                     |                   *  |      
+C     |       |                     |                   *  |      
+C     |U(i=1, ==>       x           |             x     *  |      
+C     |  j=2, |      T(i=1,         |          T(i=Nx,  *  |      
+C     |  k=1) |        j=2,         |            j=2,   *  |      
+C     |       |        k=1)         |            k=1)   *  |      
+C     |       |                     |                   *  |      
+C     |       |        /|\          |            /|\    *  |      
+C     |      -----------|------------------etc..  |-----*---      
+C     |       |       V(i=1,        |           V(i=Nx, *  |      
+C     |       |         j=2,        |             j=2,  *  |      
+C     |       |         k=1)        |             k=1)  *  |      
+C     |       |                     |                   *  |      
+C     |U(i=1, ==>       x         ==>U(i=2,       x     *==>U     
+C     |  j=1, |      T(i=1,         |  j=1,    T(i=Nx,  *(i=Nx+1, 
+C     |  k=1) |        j=1,         |  k=1)      j=1,   *  |j=1,  
+C     |       |        k=1)         |            k=1)   *  |k=1)  
+C     |       |                     |                   *  |      
+C     |       |        /|\          |            /|\    *  |      
+C     |"SB"++>|---------|------------------etc..  |-----*---      
+C     |      /+\      V(i=1,                    V(i=Nx, *         
+C     |       +         j=1,                      j=1,  *         
+C     |       +         k=1)                      k=1)  *         
+C     |     "WB"                                      "PWX"       
+C     |                                                           
+C     |   N, y increasing northwards                              
+C     |  /|\ j increasing northwards                              
+C     |   |                                                       
+C     |   |                                                       
+C     |   ======>E, x increasing eastwards                        
+C     |             i increasing eastwards                        
+C     |                                                           
+C     |    i: East-west index                                     
+C     |    j: North-south index                                   
+C     |    k: up-down index                                       
+C     |    U: x-velocity (m/s)                                    
+C     |    V: y-velocity (m/s)                                    
+C     |    T: potential temperature (oC)                          
+C     | "SB": Southern boundary                                   
+C     | "WB": Western boundary                                    
+C     |"PWX": Periodic wrap around in X.                          
+C     |"PWY": Periodic wrap around in Y.                          
+C     |---------------------------------------------------------- 
+C     | (2) South elevation schematic of model grid               
+C     |     =======================================               
+C     |     This diagram shows the location of the model          
+C     |     prognostic variables on the model grid. The "T"       
+C     |     location is used for all tracers. The figure also     
+C     |     shows the upper most, western most indexing           
+C     |     convention that is used for all model variables.      
+C     |                                                           
+C     |      "WB"                                                 
+C     |       +                                                   
+C     |       +                                                   
+C     |      \+/       /|\                       /|\              
+C     |"UB"++>|-------- | -----------------etc..  | ----*---      
+C     |       |    rVel(i=1,        |        rVel(i=Nx, *  |      
+C     |       |         j=1,        |             j=1,  *  |      
+C     |       |         k=1)        |             k=1)  *  |      
+C     |       |                     |                   *  |      
+C     |U(i=1, ==>       x         ==>U(i=2,       x     *==>U     
+C     |  j=1, |      T(i=1,         |  j=1,    T(i=Nx,  *(i=Nx+1, 
+C     |  k=1) |        j=1,         |  k=1)      j=1,   *  |j=1,  
+C     |       |        k=1)         |            k=1)   *  |k=1)  
+C     |       |                     |                   *  |      
+C     |       |        /|\          |            /|\    *  |      
+C     |       |-------- | -----------------etc..  | ----*---      
+C     |       |    rVel(i=1,        |        rVel(i=Nx, *  |      
+C     |       |         j=1,        |             j=1,  *  |      
+C     |       |         k=2)        |             k=2)  *  |      
+C     |                                                           
+C     |       .                     .                      .      
+C     |       .                     .                      .      
+C     |       .                     .                      .      
+C     |       e                     e                   *  e      
+C     |       t                     t                   *  t      
+C     |       c                     c                   *  c      
+C     |       |                     |                   *  |      
+C     |       |                     |                   *  |      
+C     |       |                     |                   *  |      
+C     |       |                     |                   *  |      
+C     |       |        /|\          |            /|\    *  |      
+C     |       |-------- | -----------------etc..  | ----*---      
+C     |       |    rVel(i=1,        |        rVel(i=Nx, *  |      
+C     |       |         j=1,        |             j=1,  *  |      
+C     |       |         k=Nr)       |             k=Nr) *  |      
+C     |U(i=1, ==>       x         ==>U(i=2,       x     *==>U     
+C     |  j=1, |      T(i=1,         |  j=1,    T(i=Nx,  *(i=Nx+1, 
+C     |  k=Nr)|        j=1,         |  k=Nr)     j=1,   *  |j=1,  
+C     |       |        k=Nr)        |            k=Nr)  *  |k=Nr) 
+C     |       |                     |                   *  |      
+C     |"LB"++>==============================================      
+C     |                                               "PWX"       
+C     |                                                           
+C     | Up   increasing upwards.                                  
+C     |/|\                                                        
+C     | |                                                         
+C     | |                                                         
+C     | =====> E  i increasing eastwards                          
+C     | |         x increasing eastwards                          
+C     | |                                                         
+C     |\|/                                                        
+C     | Down,k increasing downwards.                              
+C     |                                                           
+C     | Note: r => height (m) => r increases upwards              
+C     |       r => pressure (Pa) => r increases downwards         
+C     |                                                           
+C     |                                                           
+C     |    i: East-west index                                     
+C     |    j: North-south index                                   
+C     |    k: up-down index                                       
+C     |    U: x-velocity (m/s)                                    
+C     | rVel: z-velocity ( units of r )                           
+C     |       The vertical velocity variable rVel is in units of  
+C     |       "r" the vertical coordinate. r in m will give       
+C     |       rVel m/s. r in Pa will give rVel Pa/s.              
+C     |    T: potential temperature (oC)                          
+C     | "UB": Upper boundary.                                     
+C     | "LB": Lower boundary (always solid - therefore om|w == 0) 
+C     | "WB": Western boundary                                    
+C     |"PWX": Periodic wrap around in X.                          
+C     |---------------------------------------------------------- 
+C     | (3) Views showing nomenclature and indexing               
+C     |     for grid descriptor variables.                        
+C     |                                                           
+C     |      Fig 3a. shows the orientation, indexing and          
+C     |      notation for the grid spacing terms used internally  
+C     |      for the evaluation of gradient and averaging terms.  
+C     |      These varaibles are set based on the model input     
+C     |      parameters which define the model grid in terms of   
+C     |      spacing in X, Y and Z.                               
+C     |                                                           
+C     |      Fig 3b. shows the orientation, indexing and          
+C     |      notation for the variables that are used to define   
+C     |      the model grid. These varaibles are set directly     
+C     |      from the model input.                                
+C     |                                                           
+C     | Figure 3a                                                 
+C     | =========                                                 
+C     |       |------------------------------------               
+C     |       |                       |                           
+C     |"PWY"********************************* etc...              
+C     |       |                       |                           
+C     |       |                       |                           
+C     |       |                       |                           
+C     |       |                       |                           
+C     |       |                       |                           
+C     |       |                       |                           
+C     |       |                       |                           
+C     |                                                           
+C     |       .                       .                           
+C     |       .                       .                           
+C     |       .                       .                           
+C     |       e                       e                           
+C     |       t                       t                           
+C     |       c                       c                           
+C     |       |-----------v-----------|-----------v----------|-   
+C     |       |                       |                      |    
+C     |       |                       |                      |    
+C     |       |                       |                      |    
+C     |       |                       |                      |    
+C     |       |                       |                      |    
+C     |       u<--dxF(i=1,j=2,k=1)--->u           t          |    
+C     |       |/|\       /|\          |                      |    
+C     |       | |         |           |                      |    
+C     |       | |         |           |                      |    
+C     |       | |         |           |                      |    
+C     |       |dyU(i=1,  dyC(i=1,     |                      |    
+C     | ---  ---|--j=2,---|--j=2,-----------------v----------|-   
+C     | /|\   | |  k=1)   |  k=1)     |          /|\         |    
+C     |  |    | |         |           |          dyF(i=2,    |    
+C     |  |    | |         |           |           |  j=1,    |    
+C     |dyG(   |\|/       \|/          |           |  k=1)    |    
+C     |   i=1,u---        t<---dxC(i=2,j=1,k=1)-->t          |    
+C     |   j=1,|                       |           |          |    
+C     |   k=1)|                       |           |          |    
+C     |  |    |                       |           |          |    
+C     |  |    |                       |           |          |    
+C     | \|/   |           |<---dxV(i=2,j=1,k=1)--\|/         |    
+C     |"SB"++>|___________v___________|___________v__________|_   
+C     |       <--dxG(i=1,j=1,k=1)----->                           
+C     |      /+\                                                  
+C     |       +                                                   
+C     |       +                                                   
+C     |     "WB"                                                  
+C     |                                                           
+C     |   N, y increasing northwards                              
+C     |  /|\ j increasing northwards                              
+C     |   |                                                       
+C     |   |                                                       
+C     |   ======>E, x increasing eastwards                        
+C     |             i increasing eastwards                        
+C     |                                                           
+C     |    i: East-west index                                     
+C     |    j: North-south index                                   
+C     |    k: up-down index                                       
+C     |    u: x-velocity point                                    
+C     |    V: y-velocity point                                    
+C     |    t: tracer point                                        
+C     | "SB": Southern boundary                                   
+C     | "WB": Western boundary                                    
+C     |"PWX": Periodic wrap around in X.                          
+C     |"PWY": Periodic wrap around in Y.                          
+C     |                                                           
+C     | Figure 3b                                                 
+C     | =========                                                 
+C     |                                                           
+C     |       .                       .                           
+C     |       .                       .                           
+C     |       .                       .                           
+C     |       e                       e                           
+C     |       t                       t                           
+C     |       c                       c                           
+C     |       |-----------v-----------|-----------v--etc...       
+C     |       |                       |                           
+C     |       |                       |                           
+C     |       |                       |                           
+C     |       |                       |                           
+C     |       |                       |                           
+C     |       u<--delX(i=1)---------->u           t               
+C     |       |                       |                           
+C     |       |                       |                           
+C     |       |                       |                           
+C     |       |                       |                           
+C     |       |                       |                           
+C     |       |-----------v-----------------------v--etc...       
+C     |       |          /|\          |                           
+C     |       |           |           |                           
+C     |       |           |           |                           
+C     |       |           |           |                           
+C     |       u        delY(j=1)      |           t               
+C     |       |           |           |                           
+C     |       |           |           |                           
+C     |       |           |           |                           
+C     |       |           |           |                           
+C     |       |          \|/          |                           
+C     |"SB"++>|___________v___________|___________v__etc...       
+C     |      /+\                                                  
+C     |       +                                                   
+C     |       +                                                   
+C     |     "WB"                                                  
+C     |                                                           
+C     *==========================================================*
+C     \ev
+CEOP
 
 C     Macros that override/modify standard definitions
 #include "GRID_MACROS.h"

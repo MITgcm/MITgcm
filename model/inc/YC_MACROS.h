@@ -1,13 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/YC_MACROS.h,v 1.2 2001/02/04 14:38:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/YC_MACROS.h,v 1.3 2001/09/21 15:13:31 cnh Exp $
 C $Name:  $
 C
-C     /==========================================================\
-C     | YC_MACROS.h                                              |
-C     |==========================================================|
-C     | These macros are used to reduce memory requirement and/or|
-C     | memory references when variables are fixed along a given |
-C     | axis or axes.                                            |
-C     \==========================================================/
+CBOP
+C    !ROUTINE: YC_MACROS.h
+C    !INTERFACE:
+C    include YC_MACROS.h
+C    !DESCRIPTION: \bv
+C     *==========================================================*
+C     | YC_MACROS.h                                               
+C     *==========================================================*
+C     | These macros are used to reduce memory requirement and/or 
+C     | memory references when variables are fixed along a given  
+C     | axis or axes.                                             
+C     *==========================================================*
+C     \ev
+CEOP
 
 #ifdef YC_CONST
 #define  _yC(i,j,bi,bj) yC(1,1,1,1)

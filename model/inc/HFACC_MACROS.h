@@ -1,13 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/HFACC_MACROS.h,v 1.2 2001/02/04 14:38:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/HFACC_MACROS.h,v 1.3 2001/09/21 15:13:31 cnh Exp $
 C $Name:  $
 C
-C     /==========================================================\
-C     | HFACC_MACROS.h                                           |
-C     |==========================================================|
-C     | These macros are used to reduce memory requirement and/or|
-C     | memory references when variables are fixed along a given |
-C     | axis or axes.                                            |
-C     \==========================================================/
+CBOP
+C    !ROUTINE: HFACC_MACROS.h
+C    !INTERFACE:
+C    include HFACC_MACROS.h
+C    !DESCRIPTION: \bv
+C     *==========================================================*
+C     | HFACC_MACROS.h                                            
+C     *==========================================================*
+C     | These macros are used to reduce memory requirement and/or 
+C     | memory references when variables are fixed along a given  
+C     | axis or axes.                                             
+C     *==========================================================*
+C     \ev
+CEOP
 
 #ifdef HFACC_CONST
 #define  _hFacC(i,j,k,bi,bj) hFacC(1,1,1,1,1)
