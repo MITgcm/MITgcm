@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.27 1998/08/20 16:03:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.28 1998/08/20 19:25:05 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -227,7 +227,7 @@ C--     Set up work arrays that need valid initial values
         BOTTOM_LAYER = K .EQ. Nz
 
 C--     Calculate gradient of surface pressure
-        CALL GRAD_PSURF(
+        CALL CALC_GRAD_ETA_SURF(
      I       bi,bj,iMin,iMax,jMin,jMax,
      O       pSurfX,pSurfY,
      I       myThid)
