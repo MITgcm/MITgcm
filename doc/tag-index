@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.125 2003/01/27 21:42:19 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.126 2003/01/30 00:12:34 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o can use r* Coordinate with OBC (but Orlanski Rad. BC not yet implemented) 
 
 checkpoint48b_post
 o r* coordinate added in #ifdef NONLIN_FRSURF block.
