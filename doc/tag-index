@@ -1,7 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.22 1999/05/26 23:01:16 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.23 1999/08/02 15:39:41 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint24
+ o Removed some spurious "REAL"s
+ o Updated KPP to latest version from JPL
+ o Added a COS(latitude) in horizontal viscosity
 
 checkpoint23
  o Added del^4 diffusion for salt and temperature
