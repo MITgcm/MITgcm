@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.16 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.17 2003/10/10 20:30:14 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,6 +55,15 @@ CEOP
       IF (useOBCS) CALL OBCS_CHECK( myThid )
 #else
       IF (useOBCS) CALL PACKAGES_CHECK_ERROR('OBCS', myThid)
+#endif
+
+#ifndef ALLOW_BULK_FORCE
+      IF (useBulkforce) CALL PACKAGES_CHECK_ERROR('BULK?FORCE',myThid)
+#endif
+
+#ifndef ALLOW_THERM_SEAICE
+      IF (useThermSeaIce) 
+     &   CALL PACKAGES_CHECK_ERROR('THERM?SEAICE', myThid)
 #endif
 
 #ifndef ALLOW_AIM
