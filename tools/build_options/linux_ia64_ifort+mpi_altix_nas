@@ -1,6 +1,8 @@
 #!/bin/bash
 #
-#  tested on
+# tested on columbia using:
+# module purge
+# module load modules scsl.1.5.0.0 intel-comp.8.0.070 mpt.1.11-85
 
 CPP='/lib/cpp  -traditional -P'
 
@@ -13,7 +15,7 @@ LIBS='-L/opt/sgi/mpt/1.11-85/lib -lmpi'
 
 FC=ifort
 
-DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -D_BYTESWAPIO -DWORDLENGTH=4'
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -D_BYTESWAPIO -DWORDLENGTH=1'
 
 INCLUDES='-I/opt/sgi/mpt/1.11-85/include'
 INCLUDEDIRS='/opt/sgi/mpt/1.11-85/include'
