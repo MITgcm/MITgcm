@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_calc_diff.F,v 1.1 2004/10/22 16:02:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_calc_diff.F,v 1.2 2005/03/25 00:28:43 heimbach Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -88,7 +88,6 @@ C Loop over tracers
          CALL KPP_CALC_DIFF_S(
      I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,1,
      U        KappaRtr(1-Olx,1-Oly,iTr),
-     U        KappaRtr,
      I        myThid)
         ENDIF
 #endif
