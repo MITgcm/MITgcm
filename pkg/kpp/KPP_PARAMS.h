@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.9 2004/10/07 19:31:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.10 2004/10/20 21:54:17 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -66,13 +66,18 @@ c
 C     KPPmixingMaps     - if true, include KPP diagnostic maps in STDOUT
 C     KPPwriteState     - if true, write KPP state to file
 C     minKPPhbl                    - KPPhbl minimum value               (m)
+C     KPP_ghatUseTotalDiffus -
+C                       if T : Compute the non-local term using 
+C                            the total vertical diffusivity ; 
+C                       if F (=default): use KPP vertical diffusivity 
+C     Note: prior to checkpoint55h_post, was using the total Kz
 C
 C-----------------------------------------------------------------------
 
-      LOGICAL KPPmixingMaps, KPPwriteState
+      LOGICAL KPPmixingMaps, KPPwriteState, KPP_ghatUseTotalDiffus
 
       COMMON /KPP_PARM_L/
-     &        KPPmixingMaps, KPPwriteState
+     &        KPPmixingMaps, KPPwriteState, KPP_ghatUseTotalDiffus
 
       _KPP_RL minKPPhbl
 
