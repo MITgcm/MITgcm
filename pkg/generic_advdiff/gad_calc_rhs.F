@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.33 2004/12/20 19:10:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.34 2005/02/17 00:03:07 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -390,6 +390,9 @@ C-     add the advective flux to fVerT
         IF ( useDiagnostics ) THEN
           diagName = 'ADVr'//diagSufx
           CALL DIAGNOSTICS_FILL(af,diagName, k,1, 2,bi,bj, myThid)
+C- note: needs to explicitly increment the counter since DIAGNOSTICS_FILL
+C        does it only if k=1 (never the case here)
+          IF ( k.EQ.2 ) CALL DIAGNOSTICS_COUNT(diagName,bi,bj,myThid)
         ENDIF
 #endif
       ENDIF
