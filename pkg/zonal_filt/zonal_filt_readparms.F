@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_readparms.F,v 1.1 2001/12/11 14:47:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/zonal_filt_readparms.F,v 1.2 2002/07/31 21:02:06 jmc Exp $
 C $Name:  $
 
 #include "ZONAL_FILT_OPTIONS.h"
@@ -92,10 +92,10 @@ C    with some option of the code.
         ELSEIF ( .NOT.exactConserv ) THEN
          WRITE(msgBuf,'(2A)') 'S/R ZONAL_FILT_READPARMS: WARNING <<< ',
      &    'applying Filter after SOLVE_FOR_P (zonal_filt_uvStar=FALSE)'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_MESSAGE(msgBuf, errorMessageUnit, SQUEEZE_RIGHT,1)
          WRITE(msgBuf,'(2A)') 'S/R ZONAL_FILT_READPARMS: WARNING <<< ',
      &    'requires to recompute Eta after ==> turn on exactConserv !'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_MESSAGE(msgBuf, errorMessageUnit, SQUEEZE_RIGHT,1)
         ENDIF                                       
 
        ENDIF                                       

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.6 2002/03/04 01:31:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.7 2002/07/31 21:01:25 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -145,10 +145,10 @@ C    with some option of the code.
         ELSEIF ( .NOT.exactConserv ) THEN
          WRITE(msgBuf,'(2A)') 'S/R SHAP_FILT_READPARMS: WARNING <<< ',
      &    'applying Filter after SOLVE_FOR_P (shap_filt_uvStar=FALSE)'
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_MESSAGE(msgBuf, errorMessageUnit, SQUEEZE_RIGHT,1)
          WRITE(msgBuf,'(2A)') 'S/R SHAP_FILT_READPARMS: WARNING <<< ',
      &    'requires to recompute Eta after ==> turn on exactConserv '
-         CALL PRINT_ERROR( msgBuf , 1)
+         CALL PRINT_MESSAGE(msgBuf, errorMessageUnit, SQUEEZE_RIGHT,1)
         ENDIF
  
        ENDIF                    
