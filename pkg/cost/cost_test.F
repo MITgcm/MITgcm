@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.2 2001/04/10 22:35:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.3 2001/11/20 21:06:48 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -30,7 +30,6 @@ C     myThid - Thread number for this instance of the routine.
 
 #ifdef ALLOW_COST_TEST
 C     == Local variables
-      _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL thetaRef
 
       integer i, j, k
@@ -52,17 +51,6 @@ ce    some reference temperature
 
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)
       k=1
-
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do j=1,sNy
-            do i=1,sNx
-              maskC(i,j) = 1.
-              if (_hFacC(i,j,k,bi,bj) .eq. 0.) maskC(i,j)=0.
-            end do
-          end do
-        end do
-      end do
 
 C--   Calculate cost function on tile of this instance
       do bj = jtlo,jthi
