@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.7 2004/09/27 17:50:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.8 2004/09/29 03:45:14 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -198,6 +198,10 @@ C     Write coordinates to "state" file
       CALL MNC_CW_RS_W('R','state',0,0,'YG',yG, myThid)
       CALL MNC_CW_RS_W('R','state',0,0,'RC',rC, myThid)
       CALL MNC_CW_RS_W('R','state',0,0,'RF',rF, myThid)
+
+#ifdef ALLOW_AUTODIFF_MONITOR
+      CALL AUTODIFF_INI_MODEL_IO( myThid )
+#endif
 
       ENDIF
 #endif

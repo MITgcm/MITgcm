@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.13 2004/09/17 22:57:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.14 2004/09/29 03:45:14 heimbach Exp $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -28,6 +28,10 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h" 
+#ifdef ALLOW_MNC
+# include "MNC_PARAMS.h"
+#endif
 #ifdef ALLOW_AUTODIFF_MONITOR
 # include "adcommon.h"
 #endif
@@ -149,31 +153,28 @@ c
 #endif
 c
 
-C--     Reread IO error counter
-        endIOErrCount = IO_ERRCOUNT(myThid)
-
-C--     Check for IO errors
-        IF ( endIOErrCount .NE. beginIOErrCount ) THEN
-         WRITE(msgBuf,'(A)')  'S/R WRITE_STATE'
-         CALL PRINT_ERROR( msgBuf, 1 )
-         WRITE(msgBuf,'(A)')  'Error writing out model state'
-         CALL PRINT_ERROR( msgBuf, 1 )
-         WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
-         CALL PRINT_ERROR( msgBuf, 1 )
-        ELSE
-         WRITE(msgBuf,'(A,I10)')  
-     &    '// Model state written, timestep', myIter
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &    SQUEEZE_RIGHT, 1 )
-         WRITE(msgBuf,'(A)')  ' '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &    SQUEEZE_RIGHT, 1 )
-        ENDIF
-
        _END_MASTER( myThid )
        _BARRIER
 
       ENDIF
+
+#ifdef ALLOW_MNC
+        IF (useMNC .AND. autodiff_mnc) THEN
+c
+          CALL MNC_CW_SET_UDIM('adstate', -1, myThid)
+          CALL MNC_CW_I_W('I','adstate',0,0,'iter', myIter, myThid)
+          CALL MNC_CW_SET_UDIM('adstate', 0, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'model_time',myTime,myThid)
+c
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adU', aduVel, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adV', advVel, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adT', adtheta, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adS', adsalt, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adEta', adetaN, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adW', adwVel, myThid)
+c
+        ENDIF
+#endif /* ALLOW_MNC */
 
       call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
