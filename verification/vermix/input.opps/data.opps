@@ -1,0 +1,8 @@
+# =========================================
+# | Parameters for OPPS convection scheme |
+# =========================================
+ &OPPS_PARM01
+#OPPSdebugLevel=1,
+#VERTICAL_VELOCITY=0.03,
+ OPPSwriteState=.true.,
+ &

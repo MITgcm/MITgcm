@@ -1,0 +1,8 @@
+# =====================================================================
+# | Parameters for Pacanowski&Philander (1981) vertical mixing scheme |
+# =====================================================================
+ &MY_PARM01
+ MYwriteState=.TRUE.,
+ MYdiffMax = 10.,
+#MYhblScale = 1.,
+ &
