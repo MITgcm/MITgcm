@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_surf_flux.F,v 1.1 2003/12/05 02:33:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_surf_flux.F,v 1.2 2004/07/18 01:16:36 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -75,9 +75,8 @@ C     tFlux (=Heat flux [W/m2], positive <-> increasing Theta)
 #ifdef SHORTWAVE_HEATING
      &    -Qsw(i,j,bi,bj)+
 #endif
-     &    (surfaceTendencyT(i,j,bi,bj)+surfaceTendencyTice(I,J,bi,bj))
+     &    (surfaceForcingT(i,j,bi,bj)+surfaceForcingTice(I,J,bi,bj))
      &    *HeatCapacity_Cp*recip_horiVertRatio*rhoConst
-     &    *drF(k)*hFacC(i,j,k,bi,bj) 
         ENDDO
        ENDDO
 #ifdef NONLIN_FRSURF
@@ -99,8 +98,8 @@ C     sFlux (=salt flux [psu.kg/m2/s], positive <-> increasing Theta)
        DO j=1,sNy
         DO i=1,sNx
          tmpFld(i,j)=
-     &    surfaceTendencyS(i,j,bi,bj)*
-     &    recip_horiVertRatio*rhoConst*drF(k)*hFacC(i,j,k,bi,bj)
+     &    surfaceForcingS(i,j,bi,bj)*
+     &    recip_horiVertRatio*rhoConst
         ENDDO
        ENDDO
 #ifdef NONLIN_FRSURF
