@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.4 2005/01/03 02:29:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.5 2005/02/25 16:43:39 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -6,8 +6,8 @@ C $Name:  $
 CBOP
 C     !ROUTINE: DIAGNOSTICS_FILL
 C     !INTERFACE:
-      SUBROUTINE DIAGNOSTICS_FILL (inpFld, chardiag, 
-     I                kLev, nLevs, bibjFlg, biArg, bjArg, myThid) 
+      SUBROUTINE DIAGNOSTICS_FILL (inpfld, chardiag, 
+     I                kLev, nLevs, bibjflg, biArg, bjArg, myThid) 
 
 C     !DESCRIPTION:
 C***********************************************************************
@@ -26,7 +26,7 @@ C     !INPUT PARAMETERS:
 C***********************************************************************
 C  Arguments Description
 C  ----------------------
-C     inpFld ..... Field to increment diagnostics array
+C     inpfld ..... Field to increment diagnostics array
 C     chardiag ... Character expression for diag to fill
 C     kLev   ..... Integer flag for vertical levels:
 C                  > 0 (any integer): WHICH single level to increment in qdiag.
@@ -35,7 +35,7 @@ C                  0 : fill-in in the same order as the input array
 C                  -1: fill-in in reverse order.
 C     nLevs ...... indicates Number of levels of the input field array
 C                  (whether to fill-in all the levels (kLev<1) or just one (kLev>0))
-C     bibjFlg .... Integer flag to indicate instructions for bi bj loop
+C     bibjflg .... Integer flag to indicate instructions for bi bj loop
 C                  0 indicates that the bi-bj loop must be done here
 C                  1 indicates that the bi-bj loop is done OUTSIDE
 C                  2 indicates that the bi-bj loop is done OUTSIDE
@@ -43,17 +43,18 @@ C                     AND that we have been sent a local array (with overlap reg
 C                  3 indicates that the bi-bj loop is done OUTSIDE
 C                     AND that we have been sent a local array
 C                     AND that the array has no overlap region (interior only)
-C     biArg ...... X-direction tile number - used for bibjFlg=1-3
-C     bjArg ...... Y-direction tile number - used for bibjFlg=1-3
+C                  NOTE - bibjflg can be NEGATIVE to indicate not to increment counter
+C     biArg ...... X-direction tile number - used for bibjflg=1-3
+C     bjArg ...... Y-direction tile number - used for bibjflg=1-3
 C     myThid     ::  my thread Id number
 C***********************************************************************
 C                  NOTE: User beware! If a local (1 tile only) array
-C                        is sent here, bibjFlg MUST NOT be set to 0
+C                        is sent here, bibjflg MUST NOT be set to 0
 C                        or there will be out of bounds problems!
 C***********************************************************************
-      _RL inpFld(*)
+      _RL inpfld(*)
       CHARACTER*8 chardiag
-      INTEGER kLev, nLevs, bibjFlg, biArg, bjArg
+      INTEGER kLev, nLevs, bibjflg, biArg, bjArg
       INTEGER myThid
 CEOP
 
@@ -89,11 +90,9 @@ C If-sequence to see if we are a valid and an active diagnostic
 
 C Increment the counter for the diagnostic (if we are at bi=bj=myThid=1)
        _BEGIN_MASTER(myThid)
-        IF ((biArg.EQ.1).AND.(bjArg.EQ.1).AND.(ABS(kLev).LE.1) ) 
-     &                     ndiag(ndiagnum) = ndiag(ndiagnum) + 1
+        IF((biArg.EQ.1).AND.(bjArg.EQ.1).AND.(ABS(kLev).LE.1).and.
+     .      (bibjflg.ge.0) ) ndiag(ndiagnum) = ndiag(ndiagnum) + 1
        _END_MASTER(myThid)
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-      select range for 1rst & 2nd indices to accumulate
 C         depending on variable location on C-grid, 
@@ -116,7 +115,7 @@ C         depending on variable location on C-grid,
         ENDIF
 
 C-      Dimension of the input array:
-        IF (bibjFlg.EQ.3) THEN
+        IF (abs(bibjflg).EQ.3) THEN
           sizI1 = 1
           sizI2 = sNx
           sizJ1 = 1
@@ -129,14 +128,14 @@ C-      Dimension of the input array:
           sizJ1 = 1-OLy
           sizJ2 = sNy+OLy
         ENDIF
-        IF (bibjFlg.GE.2) THEN
+        IF (abs(bibjflg).GE.2) THEN
          sizTx = 1
          sizTy = 1
         ELSE
          sizTx = nSx
          sizTy = nSy
         ENDIF
-C-      Which part of inpFld to add : k = 3rd index,
+C-      Which part of inpfld to add : k = 3rd index,
 C         and do the loop >> do k=kFirst,kLast <<
         IF (kLev.LE.0) THEN
           kFirst = 1
@@ -183,7 +182,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
          _END_MASTER(myThid)
         ENDIF
 
-        IF (bibjFlg.EQ.0) THEN
+        IF (abs(bibjflg).EQ.0) THEN
          
          DO bj=myByLo(myThid), myByHi(myThid)
           DO bi=myBxLo(myThid), myBxHi(myThid)
@@ -191,7 +190,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
             kd = kd0 + ksgn*k
             CALL DIAGNOSTICS_DO_FILL(
      U                  qdiag(1-OLx,1-OLy,kd,bi,bj),
-     I                  inpFld,
+     I                  inpfld,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
      I                  myThid)
@@ -205,7 +204,7 @@ C-      Check for consistency with Nb of levels reserved in storage array
             kd = kd0 + ksgn*k
             CALL DIAGNOSTICS_DO_FILL(
      U                  qdiag(1-OLx,1-OLy,kd,biArg,bjArg),
-     I                  inpFld,
+     I                  inpfld,
      I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
      I                  myThid)
@@ -230,14 +229,14 @@ C     !ROUTINE: DIAGNOSTICS_DO_FILL
 C     !INTERFACE:
       SUBROUTINE DIAGNOSTICS_DO_FILL(
      U                  cumFld,
-     I                  inpFld,
+     I                  inpfld,
      I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
      I                  iRun,jRun,k,bi,bj,
      I                  myThid)
 
 C     !DESCRIPTION:
 C     Update array cumFld 
-C     by adding content of input field array inpFld
+C     by adding content of input field array inpfld
 C     over the range [1:iRun],[1:jRun]
 
 C     !USES:
@@ -249,11 +248,11 @@ C     !USES:
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     cumFld      :: cumulative array (updated)
-C     inpFld      :: input field array to add to cumFld
-C     sizI1,sizI2 :: size of inpFld array: 1rst index range (min,max)
-C     sizJ1,sizJ2 :: size of inpFld array: 2nd  index range (min,max)
-C     sizK        :: size of inpFld array: 3rd  dimension
-C     sizTx,sizTy :: size of inpFld array: tile dimensions
+C     inpfld      :: input field array to add to cumFld
+C     sizI1,sizI2 :: size of inpfld array: 1rst index range (min,max)
+C     sizJ1,sizJ2 :: size of inpfld array: 2nd  index range (min,max)
+C     sizK        :: size of inpfld array: 3rd  dimension
+C     sizTx,sizTy :: size of inpfld array: tile dimensions
 C     iRun,jRun   :: range of 1rst & 2nd index
 C     k,bi,bj     :: level and tile indices of inFld array 
 C                    to add to cumFld array
@@ -261,7 +260,7 @@ C     myThid      :: my Thread Id number
       _RL cumFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER sizI1,sizI2,sizJ1,sizJ2
       INTEGER sizK,sizTx,sizTy
-      _RL inpFld(sizI1:sizI2,sizJ1:sizJ2,sizK,sizTx,sizTy)
+      _RL inpfld(sizI1:sizI2,sizJ1:sizJ2,sizK,sizTx,sizTy)
       INTEGER iRun, jRun, k, bi, bj
       INTEGER myThid
 CEOP
@@ -276,7 +275,7 @@ C- jmc: try with fixed ranges, that are known at compiling stage
 C        (might produce a better cash optimisation ?)
 c     DO j = 1,sNy
 c      DO i = 1,sNx
-        cumFld(i,j) = cumFld(i,j) + inpFld(i,j,k,bi,bj)
+        cumFld(i,j) = cumFld(i,j) + inpfld(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
