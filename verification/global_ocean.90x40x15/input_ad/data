@@ -4,86 +4,93 @@
 #
 # Continuous equation parameters
  &PARM01
- tRef= 16.0 , 15.2 , 14.5 , 13.9 , 13.3 ,
-       12.4 , 11.3 ,  9.9 ,  8.4 ,  6.7 ,
-        5.2 ,  3.8 ,  2.9 ,  2.3 ,  1.8 ,
- sRef= 34.65, 34.75, 34.82, 34.87, 34.90,
-       34.90, 34.86, 34.78, 34.69, 34.60,
-       34.58, 34.62, 34.68, 34.72, 34.73,
- viscAz=1.E-3,
+ tRef = 15*20.,
+ sRef = 15*35.,
+ viscAr=1.E-3,
  viscAh=5.E5,
- no_slip_sides=.FALSE.,
- no_slip_bottom=.TRUE.,
- diffKhT=1.E3,
- diffKzT=3.E-5,
- diffKhS=1.E3,
- diffKzS=3.E-5,
- beta=1.E-11,
- f0=1.e-4,
- tAlpha=2.E-4,
- sBeta =7.4E-4,
- gravity=9.81,
- gBaro=9.81,
+ diffKhT=0.0, 
+ diffKrT=3.E-5,
+ diffKhS=0.0,  
+ diffKrS=3.E-5,
  rhonil=1035.,
- rigidLid=.FALSE.,
- implicitFreeSurface=.TRUE.,
- eosType='LINEAR',
+ gravity=9.81,
+ eosType = 'POLY3',
  ivdc_kappa=100.,
- implicitDiffusion=.true.,
+ implicitDiffusion=.TRUE.,
  allowFreezing=.TRUE.,
+ useRealFreshWaterFlux=.TRUE.,
+# turn on looped cells
+ hFacMin=.05,
+ hFacMindr=50.,
+# set precision of data files
  readBinaryPrec=32,
-# readPickupWithTracer  = .FALSE.,
-# writePickupWithTracer = .FALSE.,
  &
 
 # Elliptic solver parameters
  &PARM02
- cg2dMaxIters=1000,
- cg2dTargetResidual=1.E-17,
+ cg2dMaxIters=500,
+ cg2dTargetResidual=1.E-13,
  &
 
 # Time stepping parameters
  &PARM03
-# startTime         = 49766400000.,
- startTime         = 0.,
-# endTime           = 49767264000.,
- endTime           = 259200.,
- deltaTmom         = 2400.0,
- tauCD=321428.,
- deltaTtracer      = 86400.0,
- deltaTClock       = 86400.0,
-# cAdjFreq=-1.,
- abEps=0.1,
- pChkptFreq        = 86400000.,
- chkptFreq         = 86400000.,
- dumpFreq          = 86400.,
+ nIter0 =      0,
+ nTimeSteps = 60,
+#ph should perform at least 60 timesteps (30 days) for gradient
+#ph checks to allow signal to propagate away from cost function.
 #
- tauThetaClimRelax = 2592000.0,
- tauSaltClimRelax  = 2592000.0,
- tauTr1ClimRelax   = 31104000.0,
+# 100 years of integration will yield a reasonable flow field
+# startTime  =          0.,
+# endTime    = 3110400000.,
+ deltaTmom = 1200.0,
+ tauCD =     321428.,
+ deltaTtracer= 43200.0,
+ deltaTClock = 43200.0,
+# if you are using a version later than checkpoint45d on the main branch
+# you can uncomment the following line and increase the time step 
+# deltaTtracer and deltaTClock to 172800.0 as well to speed up the 
+# asynchronous time stepping
+# deltaTfreesurf = 172800.0,
+ abEps = 0.1,
+ pChkptFreq= 311040000.,
+ dumpFreq=   311040000.,
+ dumpFreq=   864000.,
+ taveFreq=   311040000.,
+ taveFreq=   864000.,
+#monitorFreq=31104000.,
+ monitorFreq=1.,
+# 2 months restoring timescale for temperature
+ tauThetaClimRelax =  5184000.0,
+# 6 months restoring timescale for salinity
+ tauSaltClimRelax = 15552000.0,
+ periodicExternalForcing=.TRUE.,
+ externForcingPeriod=2592000.,
+ externForcingCycle=31104000.,
  &
 
 # Gridding parameters
  &PARM04
  usingCartesianGrid=.FALSE.,
  usingSphericalPolarGrid=.TRUE.,
- delZ=  50.,  70., 100., 140., 190.,
-       240., 290., 340., 390., 440.,
-       490., 540., 590., 640., 690.,  
- phiMin=-78.,
- delY=40*4,
- delX=90*4,
+ delR= 50., 70., 100., 140., 190., 
+       240., 290., 340., 390., 440., 
+       490., 540., 590., 640., 690.,
+ phiMin=-80.,
+ dySpacing=4.,
+ dxSpacing=4.,
  &
 
 # Input datasets
  &PARM05
- bathyFile=      'bathy.bin',
- hydrogThetaFile='theta.bin',
- hydrogSaltFile= 'sal.bin',
- zonalWindFile=  'tren_taux.bin',
- meridWindFile=  'tren_tauy.bin',
- thetaClimFile=  'theta_surf.bin',
- saltClimFile=   'sal_surf.bin',
- surfQFile=      'shi_qnet.bin',
- EmPmRFile=      'shi_empr.bin', 
+ bathyFile=      'bathymetry.bin',
+ hydrogThetaFile='lev_t.bin',
+ hydrogSaltFile= 'lev_s.bin',
+ zonalWindFile=  'trenberth_taux.bin',
+ meridWindFile=  'trenberth_tauy.bin',
+ thetaClimFile=  'lev_sst.bin',
+ saltClimFile=   'lev_sss.bin',
+ surfQFile=      'ncep_qnet.bin',
+# fresh water flux is turned off, uncomment next line to turn on
+# (not recommened together with surface salinity restoring)
+# EmPmRFile=      'ncep_emp.bin',
  &

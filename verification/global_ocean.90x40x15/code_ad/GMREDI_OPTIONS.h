@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/GMREDI_OPTIONS.h,v 1.2 2002/07/13 03:50:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/GMREDI_OPTIONS.h,v 1.3 2002/11/28 17:30:34 heimbach Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -11,6 +11,12 @@ C GM/Redi is enabled with ALLOW_GMREDI in CPP_OPTIONS.h
 
 #ifdef ALLOW_GMREDI
 
+C Specify as tapering scheme either 'orig' or 'clipping',
+C otherwise one of the following is used:
+C 'linear', 'gkw91', 'dm95', 'ldd97'
+#undef GM_TAPER_ORIG_CLIPPING
+#undef GM_TAPER_AC02
+#define GM_TAPER_REST
 
 C This allows the leading diagonal (top two rows) to be non-unity
 C (a feature required when tapering adiabatically).

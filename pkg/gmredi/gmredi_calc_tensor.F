@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.12 2002/11/14 22:43:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.13 2002/11/28 17:30:34 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -155,7 +155,13 @@ C       Mask Iso-neutral slopes
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE SlopeSqr(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE SlopeX(:,:)          = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE SlopeY(:,:)          = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE SlopeSqr(:,:)        = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE taperFct(:,:)        = comlev1_bibj_k, key=kkey, byte=isbyte
+#ifdef GM_VISBECK_VARIABLE_K
+CADJ STORE dSigmaDrReal(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO j=1-Oly+1,sNy+Oly-1
@@ -186,7 +192,7 @@ C       Now we convert deltaH to a non-dimensional fraction
         deltaH=deltaH/GM_Visbeck_depth
 
         IF (K.eq.2) VisbeckK(i,j,bi,bj)=0.
-        IF (Ssq(i,j).NE.0.) THEN
+        IF ( Ssq(i,j).NE.0. .AND. dSigmaDrReal(i,j).NE.0. ) THEN
          N2= -Gravity*recip_RhoConst*dSigmaDrReal(i,j)
          SN=sqrt(Ssq(i,j)*N2)
          VisbeckK(i,j,bi,bj)=VisbeckK(i,j,bi,bj)+deltaH
@@ -232,7 +238,7 @@ C-- 2nd loop on k : compute Tensor Coeff. at U,V levels.
 
 #ifdef ALLOW_AUTODIFF_TAMC
        kkey = (igmkey-1)*Nr + k
-#ifdef GM_NON_UNITY_DIAGONAL
+#ifdef GM_VISBECK_VARIABLE_K
 CADJ STORE Kwx(:,:,k,bi,bj) = comlev1_bibj, key=kkey, byte=isbyte
 CADJ STORE Kwy(:,:,k,bi,bj) = comlev1_bibj, key=kkey, byte=isbyte
 CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj, key=kkey, byte=isbyte
@@ -255,6 +261,12 @@ C-    express the Tensor in term of Diffusivity (= m**2 / s )
      &                    )*Kwz(i,j,k,bi,bj)
        ENDDO
       ENDDO
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef GM_VISBECK_VARIABLE_K
+CADJ STORE VisbeckK(:,:,bi,bj) =
+CADJ &     comlev1_bibj, key=kkey, byte=isbyte
+#endif
+#endif
 
 #if ( defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) )
 
