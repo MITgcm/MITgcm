@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.3 2004/12/09 15:35:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.4 2005/01/13 00:24:45 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -400,7 +400,15 @@ c--   Set all tile edges to zero.
         do bi = itlo,ithi
           do j = jmin,jmax
             do i = imin,imax
-              wp    (i,j,bi,bj) = wp(i,j,bi,bj)*frame(i,j)
+              wp(i,j,bi,bj) = wp(i,j,bi,bj)*frame(i,j)
+cph-indonesian(
+              if ( xC(i,j,bi,bj) .GT. 120. .AND.
+     &             xC(i,j,bi,bj) .LT. 130. .AND.
+     &             yC(i,j,bi,bj) .GT. -10. .AND.
+     &             yC(i,j,bi,bj) .LT.  10. ) then
+                 wp(i,j,bi,bj) = wp(i,j,bi,bj)*100.
+              endif
+cph-indonesian)
             enddo
           enddo
         enddo
@@ -440,6 +448,15 @@ c--           T/P error + 5cm
                 wers(i,j,bi,bj) = ( wtp(i,j,bi,bj) + 0.05 )
      &                            *frame(i,j)
               endif
+cph-indonesian(
+              if ( xC(i,j,bi,bj) .GT. 120. .AND.
+     &             xC(i,j,bi,bj) .LT. 130. .AND.
+     &             yC(i,j,bi,bj) .GT. -10. .AND.
+     &             yC(i,j,bi,bj) .LT.  10. ) then
+                 wtp(i,j,bi,bj)  = wtp(i,j,bi,bj)*100.
+                 wers(i,j,bi,bj) = wers(i,j,bi,bj)*100.
+              endif
+cph-indonesian)
             enddo
           enddo
         enddo
