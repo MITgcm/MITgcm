@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.18 2004/05/03 16:30:20 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.19 2004/05/03 21:13:07 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -69,20 +69,15 @@ C--   Load atmospheric state and runoff.
       CALL SEAICE_GET_FORCING ( myTime, myIter, myThid )
 #endif /* SEAICE_EXTERNAL_FORCING */
 
-C--   As a proxy for geostrophic velocity,
-C     choose the level that is >= 50 m with kgeo > 1
-      KGEO = 2
-      DO WHILE ( abs(rC(KGEO)) .LT. 50.0 .AND. KGEO .LT. Nr )
-         KGEO = KGEO + 1
-      ENDDO
+C--   Compute proxy for geostrophic velocity,
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=0,sNy+1
          DO i=0,sNx+1
-          GWATX(I,J,bi,bj)=HALF*(uVel(i,j,KGEO,bi,bj)
-     &                         +uVel(i,j-1,KGEO,bi,bj))
-          GWATY(I,J,bi,bj)=HALF*(vVel(i,j,KGEO,bi,bj)
-     &                         +vVel(i-1,j,KGEO,bi,bj))
+          GWATX(I,J,bi,bj)=HALF*(uVel(i,j,KGEO(I,J,bi,bj),bi,bj)
+     &                         +uVel(i,j-1,KGEO(I,J,bi,bj),bi,bj))
+          GWATY(I,J,bi,bj)=HALF*(vVel(i,j,KGEO(I,J,bi,bj),bi,bj)
+     &                         +vVel(i-1,j,KGEO(I,J,bi,bj),bi,bj))
 #ifdef SEAICE_DEBUG
 c          write(*,'(2i4,2i2,f7.1,7f12.3)')
 c     &     ,i,j,bi,bj,UVM(I,J,bi,bj)

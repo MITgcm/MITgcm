@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.9 2004/04/28 12:00:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.10 2004/05/03 21:13:07 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_SEAICE
@@ -84,5 +84,9 @@ C
       COMMON/COUNT/ICOUNT
       COMMON/DAY/IDELT
       INTEGER ICOUNT, IDELT
+
+C--   KGEO    Level used as a proxy for geostrophic velocity.
+      COMMON/SEAICE_KGEO/KGEO
+      _RL KGEO       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
 #endif /* ALLOW_SEAICE */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.23 2004/04/28 12:35:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.24 2004/05/03 21:13:07 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -219,6 +219,22 @@ C--   Make sure that DXTICE and DYTICE do not contain any zeros
           AMASS(I,J,bi,bj)=1000.0 _d 0
          ENDDO
         ENDDO
+
+C--   Choose a proxy level for geostrophic velocity,
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          IF (klowc(i,j,bi,bj) .LT. 2) THEN
+           KGEO(I,J,bi,bj) = 1
+          ELSE
+           KGEO(I,J,bi,bj) = 2
+           DO WHILE ( abs(rC(KGEO(I,J,bi,bj))) .LT. 50.0 .AND.
+     &          KGEO(I,J,bi,bj) .LT. (klowc(i,j,bi,bj)-1) )
+              KGEO(I,J,bi,bj) = KGEO(I,J,bi,bj) + 1
+           ENDDO
+          ENDIF
+         ENDDO
+        ENDDO
+
        ENDDO
       ENDDO
 
