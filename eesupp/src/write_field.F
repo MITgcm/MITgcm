@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/write_field.F,v 1.1 1998/04/27 18:54:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/write_field.F,v 1.2 1998/04/27 18:58:11 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
-      SUBROUTINE READ_FIELD_XYZR8(
+      SUBROUTINE WRITE_FIELD_XYZR8(
      O                   fld,
      I                   filNam, filFmt, myThid )
 C     /==========================================================\
