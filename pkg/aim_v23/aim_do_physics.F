@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.8 2004/06/24 23:43:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.9 2005/02/14 00:43:25 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -129,8 +129,8 @@ C-    Step forward land model
      I                     myTime, myIter, myThid )
 
 C-    Land diagnostics : write snap-shot & cumulate for TimeAve output
-      CALL LAND_DIAGNOSTICS( aim_landFr, bi, bj, 
-     I                       myTime, myIter, myThid )
+      CALL LAND_DO_DIAGS(  aim_landFr, bi, bj, 
+     I                     myTime, myIter, myThid )
 
       ENDIF
 #endif /* ALLOW_LAND */
