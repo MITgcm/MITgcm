@@ -1,8 +1,26 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.393 2004/11/23 21:25:24 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.394 2004/11/28 23:54:20 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint56a_post
+o GCHEM: finish reorganizating the package
+  - forward_step calls GCHEM_CALC_TENDENDY, which computes gchemTendency 
+    (introduces another 3D-array for each passive tracer, but only if
+    GCHEM_SEPARATE_FORCING is undefined. For GCHEM_SEPARATE_FORCING
+    gchemTendency is not needed because the timestep is done separately)
+  - gchemTendency is added to gPtr in GCHEM_ADD_TENDENCY
+  - GCHEM is now---more or less cleanly---separate from PTRACERS
+  - to bo done: handling of surfaceForcingPtr that is needed for KPP not
+    so clear to me how that should be done in a general way.
+o CFC: improve formatting of output in CFC_ATMOS
+o PTRACERS:
+  - rename GCHEM_MONITOR to PTRACERS_MONITOR and call it from MONITOR, so
+    that ALL experiments with ptracers enable can be checked. This makes
+    GCHEM_MONITOR obsolete.
+  - include a runtime parameter PTRACERS_monitorFreq that defaults to
+    monitorFreq
+  - set default PTRACERS_write_mdsio to false if PTRACERS_write_mnc is true 
 o add PTRACERS (PTR0[1-5]) to testreport output
 o exf_check_range:
   * default changed to .TRUE.
@@ -25,7 +43,7 @@ o GCHEM:
     be replaced by a 3D array that is computed before thermodynamics; for 
     this, the tracer ID iTracer had to be included into the parameter list
     of ptracers_forcing
-  - set up forward_step for a call to gchem_forcing, that will replace 
+  - set up forward_step to call gchem_forcing, that will replace 
     gchem_forcing_int in ptracers_forcing
   - cleaning up
 o small cleaning of exch2: remove files that are also in eesupp/src
