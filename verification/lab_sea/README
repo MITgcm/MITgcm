@@ -1,0 +1,221 @@
+Example: Labrador Sea Region with Sea-Ice
+=========================================
+
+This example sets up a small (20x16x23) Labrador Sea experiment
+coupled to a dynamic thermodynamic sea-ice model.
+A brief description of the sea-ice model is in "doc/seaice.ps".
+
+The domain of integration spans 280E to 320E and 46N to 78N.
+Horizontal grid spacing is 2 degrees.
+The 23 vertical levels and the bathymetry file
+  bathyFile      = 'bathy.labsea'
+are obtained from the the 2-degree ECCO configuration.
+
+Integration is initialized from annual-mean Levitus climatology
+ hydrogThetaFile = 'LevCli_temp.labsea'
+ hydrogSaltFile  = 'LevCli_salt.labsea'
+
+Surface salinity relaxation is to the monthly mean Levitus climatology
+ saltClimFile    = 'SSS.labsea'
+
+Forcing files are a 1979-1999 monthly climatology computed from the
+NCEP reanalysis (see pkg/seaice/SEAICE_FFIELDS.h for units and signs)
+  gairxFile      = 'u10m.labsea79'    # 10-m zonal wind
+  gairyFile      = 'v10m.labsea79'    # 10-m meridional wind
+  tairFile       = 'tair.labsea1979'  # 2-m air temperature
+  qaFile         = 'qa.labsea1979'    # 2-m specific humidity
+  floFile        = 'flo.labsea1979'   # longwave radiation
+  fshFile        = 'fsh.labsea1979'   # shortwave radiation
+  rainFile       = 'prate.labsea1979' # precipitation
+  evapFile       = 'evap.labsea1979'  # evaporation
+
+
+Instructions for running Experiment 1
+=====================================
+
+This is a 1-cpu, 10-hour integration used to make sure that all the
+files are available and that the model compiles and integrates.
+
+To configure and compile the code:
+  cd MITgcmUV
+  mkdir bin exe
+  cd bin
+  ln -sf ../verification/lab_sea/code/SIZE.h .
+  ln -sf ../verification/lab_sea/code/CPP_OPTIONS.h .
+  ln -sf ../verification/lab_sea/code/CPP_EEOPTIONS.h .
+  ../tools/genmake -makefile
+  make depend
+  make
+
+To run:
+  cd ../exe
+  cp ../verification/lab_sea/input/* .
+  ln -sf data.10hours data
+  ln -sf data.seaice.adi data.seaice
+  mv mitgcmuv mitgcmuv1
+  mitgcmuv1 >&! output.txt
+  mkdir exp1
+  mv *tave.0000000010.data exp1
+
+There is comparison output in:
+  diff output.txt ../verification/lab_sea/results/output.txt | more
+
+Use the matlab script lookat_exp1.m to compare the output
+of exp1 with that from release1_beta1 sea-ice code:
+  cd ../verification/lab_sea/matlab
+  matlab
+  lookat_exp1
+
+Instructions for running Experiment 2
+=====================================
+
+This is a 1-cpu test of the LSR solver.  The solution is
+compared to that of experiment 1, which used the ADI solver.
+1-CPU executable from experiment 1 is required.
+
+To run:
+  cd ../exe
+  cp ../verification/lab_sea/input/* .
+  ln -sf data.10hours data
+  ln -sf data.seaice.lsr data.seaice
+  mitgcmuv1 >&! output.txt
+  mkdir exp2
+  mv *tave.0000000010.data exp2
+
+Use the matlab script lookat_exp2.m to compare
+the output of exp2 to that of exp1:
+  cd ../verification/lab_sea/matlab
+  matlab
+  lookat_exp2
+
+Instructions for running Experiment 3
+=====================================
+
+This is a test of periodic boundary conditions for LSR
+and ADI solvers.  The domain has a flat bottom and
+is periodic both in the x and the y directions.
+All forcing files are null or constant
+(u10m = v10m = 5 m/s).
+
+1-CPU executable from experiment 1 is required.
+
+To run:
+  cd ../exe
+  cp ../verification/lab_sea/input/* .
+  ln -sf data.1hour data
+  ln -sf data.seaice.testadi data.seaice
+  mitgcmuv1 >&! output.txt
+  mkdir exp3a
+  mv *tave.0000000001.data exp3a
+  ln -sf data.seaice.testlsr data.seaice
+  mitgcmuv1 >&! output.txt
+  mkdir exp3b
+  mv *tave.0000000001.data exp3b
+
+Use the matlab script lookat_exp3.m to compare
+the output of exp2 to that of exp1:
+  cd ../verification/lab_sea/matlab
+  matlab
+  lookat_exp3
+
+If the dynamic ice solvers are correct, they should converge to a
+constant solution.  The tests above show that both the ADI and the LSR
+solver are unable to handle periodic domains and therefore that they
+cannot be "correctly" parallelized.
+
+Instructions for running Experiment 4
+=====================================
+
+This is a 2-cpu, 10-hour integration used to test
+tile edges for sea-ice dynamic solvers.
+
+To configure and compile the code:
+  cd ../bin
+  rm -rf *.f
+  rm -rf *.o
+  ln -sf ../verification/lab_sea/code/SIZE_2x1.h SIZE.h
+  ln -sf ../verification/lab_sea/code/CPP_OPTIONS.h .
+  ln -sf ../verification/lab_sea/code/CPP_EEOPTIONS_MPI.h CPP_EEOPTIONS.h
+  ../tools/genmake -mpi -makefile
+     ( on alhena use: ../tools/genmake -mpi -platform=o2k -makefile )
+  make depend
+  make
+
+To run:
+  cd ../exe
+  cp ../verification/lab_sea/input/* .
+  ln -sf data.10hours data
+  ln -sf data.seaice.adi data.seaice
+  mv mitgcmuv mitgcmuv_2x1
+  mpirun -np 2 mitgcmuv_2x1
+  mkdir exp4
+  mv *tave.0000000010.data exp4
+
+Use the matlab script lookat_exp4.m to compare
+the 2-cpu output to that of exp1:
+  cd ../verification/lab_sea/matlab
+  matlab
+  lookat_exp4
+
+The inaccuracy at the tile boundary can be decreased by increasing
+NPSEUDO in data.seaice at the expense of computation time.
+Also as sea-ice ages (thickens) the difference at the tiles becomes
+increasingly small.  For solver pkg/seaice/adi.F a value of NPSEUDO=10
+appears adequate for forward integrations but cannot be used for sea-ice
+adjoint model.  Work is underway to fix this problem.
+
+
+Instructions for running Experiment 5
+=====================================
+
+This is a 2-cpu, 2-year, test integration.  It illustrates
+convention used for forcing data files by seaice_get_forcing.F.
+
+To run:
+  cd ../exe
+  cp ../verification/lab_sea/input/* .
+  cp eedata_mpi eedata
+  ln -sf data.2years data
+  ln -sf data.seaice.adi data.seaice
+  ln -sf evap.labsea1979  evap.labsea1980  
+  ln -sf flo.labsea1979   flo.labsea1980   
+  ln -sf fsh.labsea1979   fsh.labsea1980   
+  ln -sf prate.labsea1979 prate.labsea1980 
+  ln -sf qa.labsea1979    qa.labsea1980    
+  ln -sf tair.labsea1979  tair.labsea1980  
+  ln -sf u10m.labsea79    u10m.labsea80    
+  ln -sf v10m.labsea79    v10m.labsea80    
+  mpirun -np 2 mitgcmuv_2x1
+
+Use the matlab script lookat_exp3.m to compare
+the 2-cpu output to SMMR-SSM/I data:
+  cd ../verification/lab_sea/matlab
+  matlab
+  lookat_exp5
+
+Disclaimer:
+The comparison here is just for fun, not really supposed
+to look anything like the data.
+Otherwise it would put a lot of people out of business :-)
+
+Instructions for running Experiment 6
+=====================================
+
+This is a 1-cpu test of sea-ice thermodynamics (no dynamics).
+The solution is compared to that of experiment 1.
+1-CPU executable from experiment 1 is required.
+
+To run:
+  cd ../exe
+  cp ../verification/lab_sea/input/* .
+  ln -sf data.10hours data
+  ln -sf data.seaice.nodynamics data.seaice
+  mitgcmuv1 >&! output.txt
+  mkdir exp6
+  mv *tave.0000000010.data exp6
+
+Use the matlab script lookat_exp6.m to compare
+the output of exp2 to that of exp1:
+  cd ../verification/lab_sea/matlab
+  matlab
+  lookat_exp6

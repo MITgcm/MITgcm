@@ -1,0 +1,7 @@
+# Packages
+ &PACKAGES
+  useGMRedi = .TRUE.,
+  useKPP    = .TRUE.,
+  useSEAICE = .TRUE.,
+  useECCO   = .FALSE.,
+ &

@@ -1,0 +1,5 @@
+# GMREDI parameters
+ &GM_PARM01
+  GM_background_K = 571.0
+  GM_taper_scheme = 'ldd97'
+ &

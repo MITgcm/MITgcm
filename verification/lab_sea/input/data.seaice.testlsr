@@ -1,0 +1,27 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+      SEAICEuseLSR = .TRUE.
+      npseudo      = 1
+      LSR_ERROR    = 1e-40
+      SEAICEwriteState = .TRUE.
+      gairxFile = 'constantWind79'
+      gairyFile = 'constantWind79'
+      tairFile  = ' '
+      qaFile    = ' '
+      floFile   = ' '
+      fshFile   = ' '
+      rainFile  = ' '
+      evapFile  = ' '
+      runoffFile= ' '
+      WindForcingStart  = -1317600.
+      WindForcingEnd    = 32940000.
+      WindForcingPeriod = 2635200.
+      FluxForcingStart  = -1317600.
+      FluxForcingEnd    = 32940000.
+      FluxForcingPeriod = 2635200.
+      SSSForcingStart   = -1317600.
+      SSSForcingEnd     = 32940000.
+      SSSForcingPeriod  = 2635200.
+      StartingYear      = 1979.
+      EndingYear        = 1980.
+ &
