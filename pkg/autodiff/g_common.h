@@ -1,16 +1,12 @@
+C--   These common blocks are extracted from the
+C--   automatically created tangent linear code.
+C--   You need to make sure that they are up-to-date
+C--   (i.e. in right order), and customize them
+C--   accordingly.
+C--
+C--   heimbach@mit.edu 11-Jan-2001
 
 #ifdef ALLOW_AUTODIFF_MONITOR
-
-   These lines are uncommented on purpose to provoke
-   a model crash. You need to customize this header file
-   to your problem.
-   These common blocks are extracted from the
-   automatically created tangent linear code.
-   You need to make sure that they are up-to-date
-   (i.e. in right order), and customize them
-   accordingly.
-
-   heimbach@mit.edu 11-Jan-2001
 
       common /g_dynvars_r/ 
      &                     g_etan,
@@ -33,6 +29,7 @@
       _RL g_vvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_wvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
+#ifdef ALLOW_CD_CODE
       common /g_dynvars_cd/ 
      &                      g_uveld, g_vveld,
      &                      g_etanm1, 
@@ -45,12 +42,7 @@
       _RL g_vnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_gucd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_gvcd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-
-cph      common /g_tr1_r/ 
-cph     &                 g_tr1, g_gtr1, g_gtr1nm1
-cph      _RL g_gtr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-cph      _RL g_gtr1nm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-cph      _RL g_tr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
 
       common /g_ffields/
      &                   g_fu, g_fv
@@ -63,4 +55,25 @@ cph     &                 , g_sst, g_sss
 cph      _RL g_sst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 cph      _RL g_sss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
-#endif /* ALLOW_AUTODIFF_MONITOR */
+#ifdef ALLOW_EXF
+      _RL g_hflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL g_sflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /g_exf_hsflux_r/ g_hflux, g_sflux
+      _RL g_ustress(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL g_vstress(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /g_exf_stress_r/ g_ustress, g_vstress
+# ifdef ALLOW_ATEMP
+      _RL g_atemp     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL g_aqh       (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL g_lwflux    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL g_precip    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /g_exf_atm_temp_r/ g_atemp, g_aqh, g_lwflux, g_precip
+# endif
+# ifdef ALLOW_ATM_WIND
+      _RL g_uwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL g_vwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /g_exf_atm_wind_r/ g_uwind, g_vwind
+# endif
+#endif
+
+#endif ALLOW_AUTODIFF_MONITOR

@@ -1,16 +1,12 @@
+C--   These common blocks are extracted from the
+C--   automatically created tangent linear code.
+C--   You need to make sure that they are up-to-date
+C--   (i.e. in right order), and customize them
+C--   accordingly.
+C--
+C--   heimbach@mit.edu 11-Jan-2001
 
 #ifdef ALLOW_AUTODIFF_MONITOR
-
-   These lines are uncommented on purpose to provoke
-   a model crash. You need to customize this header file
-   to your problem.
-   These common blocks are extracted from the
-   automatically created tangent linear code.
-   You need to make sure that they are up-to-date
-   (i.e. in right order), and customize them
-   accordingly.
-
-   heimbach@mit.edu 11-Jan-2001
 
       common /addynvars_r/ 
      &                     adetan,
@@ -33,6 +29,7 @@
       _RL advvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adwvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
+#ifdef ALLOW_CD_CODE
       common /addynvars_cd/ 
      &                      aduveld, advveld,
      &                       adetanm1, 
@@ -45,12 +42,7 @@
       _RL advnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgucd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgvcd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-
-cph      common /adtr1_r/ 
-cph     &                 adtr1, adgtr1, adgtr1nm1
-cph      _RL adgtr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-cph      _RL adgtr1nm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-cph      _RL adtr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
 
       common /adffields/
      &                   adfu, adfv
@@ -62,5 +54,26 @@ cph     &                 , adsst, adsss
       _RL adempmr(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 cph      _RL adsst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 cph      _RL adsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+
+#ifdef ALLOW_EXF
+      _RL adhflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL adsflux(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /adexf_hsflux_r/ adhflux, adsflux
+      _RL adustress(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL advstress(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /adexf_stress_r/ adustress, advstress
+# ifdef ALLOW_ATEMP
+      _RL adatemp     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL adaqh       (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL adlwflux    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL adprecip    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /adexf_atm_temp_r/ adatemp, adaqh, adlwflux, adprecip
+# endif
+# ifdef ALLOW_ATM_WIND
+      _RL aduwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL advwind     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      common /adexf_atm_wind_r/ aduwind, advwind
+# endif
+#endif
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
