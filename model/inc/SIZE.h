@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.20 1998/11/06 22:44:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.21 2000/07/13 18:08:47 adcroft Exp $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |
@@ -46,14 +46,6 @@ C     Nr  - No. points in Z for full process domain.
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
      &           Nr  =  20)
-
-C     l - Runtime global problem size in X
-C     m - Runtime global problem size in Y
-C     n - Runtime global problem size in Z
-      COMMON /RUNSIZ/ l, m, n
-      INTEGER l
-      INTEGER m
-      INTEGER n
 
 C     MAX_OLX  - Set to the maximum overlap region size of any array
 C     MAX_OLY    that will be exchanged. Controls the sizing of exch
