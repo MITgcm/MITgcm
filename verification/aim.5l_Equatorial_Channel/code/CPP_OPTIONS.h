@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/CPP_OPTIONS.h,v 1.3 2001/02/08 04:20:39 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/CPP_OPTIONS.h,v 1.4 2001/02/20 14:46:29 jmc Exp $
 C $Name:  $
 C
 
@@ -15,6 +15,11 @@ C o Include/exclude code for GM/Redi parameterization
 
 C o Include/exclude code for KPP mixing scheme
 #undef  ALLOW_KPP
+
+C o Shortwave heating as extra term in external_forcing.F
+#ifdef ALLOW_KPP
+#define  SHORTWAVE_HEATING
+#endif
 
 C o Include/exclude code for Shapiro filters
 #define ALLOW_SHAP_FILT
@@ -100,30 +105,8 @@ C o Include/exclude momentum eqn metric terms code
 C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
 
-C o Include/exclude prognostic variable shapiro filter code
-C   Note - Shapiro filter of prognostics variables requires the
-C          three steps "step forward including edges", filter, 
-C          "communicate edges".
-C           If the filtering code is included then we do not use the 
-C          pipelined "step forward including edges" in S/R DYNAMICS. 
-C          Instead the three steps are performed before DYNAMICS one 
-C          after another in an un-pipelined fashion.
-#undef INCLUDE_SHAPIRO_FILTER_CODE
-#ifdef  INCLUDE_SHAPIRO_FILTER_CODE
-#undef  DO_PIPELINED_CORRECTION_STEP
-#endif
-#ifndef INCLUDE_SHAPIRO_FILTER_CODE
-#define DO_PIPELINED_CORRECTION_STEP
-#endif
-
-C o Include/exclude call to S/R FIND_RHO
-#define INCLUDE_FIND_RHO_CALL
-
 C o Include/exclude call to S/R CONVECT
 #define INCLUDE_CONVECT_CALL
-
-C o Include/exclude call to S/R CALC_ISOSLOPES
-#define INCLUDE_CALC_ISOSLOPES_CALL
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
@@ -153,6 +136,4 @@ C o Include/exclude code specific to the ECCO/SEALION version.
 #ifdef INCLUDE_ECCO_PACKAGE
 #include "ECCO_CPPOPTIONS.h"
 #endif
-
-
 
