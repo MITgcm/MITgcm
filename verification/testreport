@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.49 2004/11/23 21:25:24 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.50 2004/11/24 17:06:07 edhill Exp $
 #  $Name:  $
 #
 
@@ -27,6 +27,8 @@ usage()
     echo "                             (DEF=\"make output.txt\")"
     echo "  (-m|-make) STRING        command to use for \"make\""
     echo "                             (DEF=\"make\")"
+    echo "  (-ptracers|-ptr) STRING  specify which ptracers to test"
+    echo "                             (DEF=\"1 2 3 4 5\")"
     echo "  (-j) JOBS                use \"make -j JOBS\" for parallel builds"
     echo "  (-clean)                 *ONLY* run \"make CLEAN\""
     echo "  (-quick|-q)              same as \"-nogenmake -noclean -nodepend\""
@@ -35,10 +37,14 @@ usage()
     echo "  (-nodepend|-nd)          skip the \"make depend\" stage"
     echo "  (-deldir|-dd)            on success, delete the output directory"
     echo
-    echo "and where STRING follows a whitespace-delimited format"
+    echo "and where STRING can be a whitespace-delimited list"
     echo "such as:"
+    echo
     echo "  -t 'exp0 exp2 exp3' "
     echo "  -addr='abc@123.com testing@home.org'"
+    echo
+    echo "provided that the expression is properly quoted within the current"
+    echo "shell (note the use of single quotes to protect white space)."
     echo
     exit 1
 }
@@ -178,9 +184,13 @@ check_for_add_mon_output()
 	return
     fi
 
+    for ii in $PTRACERS_NUM ; do
+	eval "HAVE_PTR0"$ii"=f"
+    done
+
     ptr_add="trcstat_ptracerXX_min trcstat_ptracerXX_max"
     ptr_add="$ptr_add trcstat_ptracerXX_mean trcstat_ptracerXX_sd"
-    for ii in 1 2 3 4 5 ; do
+    for ii in $PTRACERS_NUM ; do
 	for jj in $ptr_add ; do
 	    name=`eval "echo $jj | sed -e 's|XX|0"$ii"|g'"`
 	    tst=`grep $name $1 | wc -l | awk '{print $1}'`
@@ -222,15 +232,25 @@ testoutput()
 	testoutput_for_prop $1 "dynstat_vvel_mean" "V mean" $2 $3; vmean=$?
 	testoutput_for_prop $1 "dynstat_vvel_sd" "V s.d." $2 $3; vsd=$?
 
-	for ii in 1 2 3 4 5 ; do
-	    testoutput_for_prop $1 "trcstat_ptracer0"$ii"_min"  "p0"$ii"_min"  $2 $3
-	    RETVAL=$? ; eval `echo "p0"$ii"_min="$RETVAL`
-	    testoutput_for_prop $1 "trcstat_ptracer0"$ii"_max"  "p0"$ii"_max"  $2 $3
-	    RETVAL=$? ; eval `echo "p0"$ii"_max="$RETVAL`
-	    testoutput_for_prop $1 "trcstat_ptracer0"$ii"_mean" "p0"$ii"_mean" $2 $3
-	    RETVAL=$? ; eval `echo "p0"$ii"_mean="$RETVAL`
-	    testoutput_for_prop $1 "trcstat_ptracer0"$ii"_sd"   "p0"$ii"_sd"   $2 $3
-	    RETVAL=$? ; eval `echo "p0"$ii"_sd="$RETVAL`
+	#  This is for PTRACERS
+	for ii in $PTRACERS_NUM ; do
+	    eval `echo "p0"$ii"_min=99"`
+	    eval `echo "p0"$ii"_max=99"`
+	    eval `echo "p0"$ii"_mean=99"`
+	    eval `echo "p0"$ii"_sd=99"`
+	    tst=`eval 'echo "$HAVE_PTR0'$ii'"'`
+	    #echo 'tst = '$tst
+	    if test "x$tst" = xt ; then
+		a="trcstat_ptracer0"
+		testoutput_for_prop $1 "$a"$ii"_min"  "p0"$ii"_min"  $2 $3
+		RETVAL=$? ; eval `echo "p0"$ii"_min="$RETVAL`
+		testoutput_for_prop $1 "$a"$ii"_max"  "p0"$ii"_max"  $2 $3
+		RETVAL=$? ; eval `echo "p0"$ii"_max="$RETVAL`
+		testoutput_for_prop $1 "$a"$ii"_mean" "p0"$ii"_mean" $2 $3
+		RETVAL=$? ; eval `echo "p0"$ii"_mean="$RETVAL`
+		testoutput_for_prop $1 "$a"$ii"_sd"   "p0"$ii"_sd"   $2 $3
+		RETVAL=$? ; eval `echo "p0"$ii"_sd="$RETVAL`
+	    fi
 	done
 
 	allargs="$cg2dres $tmin $tmax $tmean $tsd $smin $smax $smean $ssd"
@@ -627,11 +647,7 @@ DELDIR=
 ADM=
 
 # Additional monitor types
-# HAVE_PTR01=
-# HAVE_PTR02=
-# HAVE_PTR03=
-# HAVE_PTR04=
-# HAVE_PTR05=
+PTRACERS_NUM="1 2 3 4 5"
 
 printf "parsing options...  "
 
@@ -681,6 +697,11 @@ for ac_option ; do
 	    ac_prev=MAKE ;;
 	-make=* | --make=*)
 	    MAKE=$ac_optarg ;;
+
+	-ptracers | --ptracers | -ptr | --ptr)
+	    ac_prev=PTRACERS_NUM ;;
+	-ptracers=* | --ptracers=* | -ptr=* | --ptr=*)
+	    PTRACERS_NUM=$ac_optarg ;;
 
 	-j) ac_prev=JOBS ;;
 	-j=*) JOBS=$ac_optarg ;;
@@ -813,7 +834,7 @@ if test "x$ADM" = x ; then
     line_2="E p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  ."
     line_3="N n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d"
     line_4="2 d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  ."
-    for ii in 1 2 3 4 5 ; do
+    for ii in $PTRACERS_NUM ; do
 	#  tst=`eval 'echo $HAVE_PTR0'$ii`
 	#  if test "x$tst" = xt ; then
 	line_0="$line_0  --PTR 0"$ii"--"
@@ -860,6 +881,7 @@ for dir in $TESTDIRS ; do
     fout=
     if test "x$ADM" = x ; then
 	fout=$dir"/results/output.txt"
+	check_for_add_mon_output  $fout
     else
 	fout=$dir"/results_ad/output.txt_adm"
     fi
@@ -869,7 +891,6 @@ for dir in $TESTDIRS ; do
     fi
 
     # Check for additional types of monitor output
-    check_for_add_mon_output  $fout
 
     builddir="input"
     rundir="input"
