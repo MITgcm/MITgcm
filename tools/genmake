@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.69 2002/11/12 20:45:41 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.70 2002/11/15 17:18:57 cheisey Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -604,6 +604,17 @@ switch ($platform$USEMPI)
     set FOPTIM     = ( '-O0' )
     set NOOPTFLAGS = ( '-O0' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F')
+    breaksw
+  case cg01+pgi:
+    set LN         = ( '/bin/ln -s' )
+    set CPP        = ( '/lib/cpp -traditional -P' )
+    set INCLUDES   = ( '-I/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/include' )
+    set DEFINES    = ( ${DEFINES} '-DWORDLENGTH=4' )
+    set FC         = ( '/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpif77' )
+    set FFLAGS     = ( '-byteswapio -r8 -Mnodclchk -Mextend' )
+#    set LIBS       = ( '-L/home/cnh/src/gm-1.4/libgm')
+    set FOPTIM     = ( '-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee' )
+    set LINK       = ( '/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpif77' )
     breaksw
   case SP3:
 # originally from A. Biastoch, SIO.
