@@ -6,9 +6,9 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #     aim_surfPotTemp :: surf.Temp input file is in Pot.Temp (aim_useMMsurfFc)
 #     aim_energPrecip :: account for energy of precipitation (snow & rain temp)
 #     aim_splitSIOsFx :: compute separately Sea-Ice & Ocean surf. Flux
+#     aim_LandFile :: file name for Land fraction [0-1]
 #     aim_MMsufx   :: sufix for all Monthly Mean surface forcing files
 #     aim_MMsufxLength :: Length of sufix (Monthly Mean surf. forc. files)
-#     aim_LandFile :: file name for Land fraction       (F.M. surfBC)
 #     aim_albFile  :: file name for Albedo input file   (F.M. surfBC)
 #     aim_vegFile  :: file name for vegetation fraction (F.M. surfBC)
 #     aim_sstFile  :: file name for  Sea.Surf.Temp      (F.M. surfBC)
@@ -27,8 +27,6 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #  aim_surfPotTemp=.TRUE.,
 #  aim_energPrecip=.TRUE.,
 #  aim_splitSIOsFx=.TRUE.,
-#  aim_MMsufx = '.cs.bin',
-#  aim_MMsufxLength = 7,
    aim_LandFile= 'landFrc.2f2.bin',
    aim_albFile = 'albedo.FM.bin',
    aim_vegFile = 'vegetFrc.FM.bin',
@@ -101,7 +99,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
  &AIM_PAR_CNV
  &
 
-#--   Constants for large-scale condendation (namelist AIM_PAR_LSC):
+#--   Constants for large-scale condensation (namelist AIM_PAR_LSC):
 #      TRLSC  = Relaxation time (in hours) for specific humidity
 #      RHLSC  = Maximum relative humidity threshold (at sigma=1)
 #      DRHLSC = Vertical range of relative humidity threshold
