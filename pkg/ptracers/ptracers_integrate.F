@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.19 2004/10/28 00:33:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.20 2004/11/19 01:34:27 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -120,7 +120,7 @@ C External forcing term(s)
 cswdptr --add --
 #ifdef ALLOW_GCHEM
 #ifndef PTRACERS_SEPARATE_FORCING
-       IF ( forcing_In_AB )
+       IF ( forcing_In_AB .AND. useGCHEM )
      &    CALL GCHEM_FORCING_INT(
      I                        bi,bj,iMin,iMax,jMin,jMax,k,
      I                        iTracer,
@@ -153,7 +153,7 @@ C External forcing term(s)
 cswdptr - add--
 #ifdef ALLOW_GCHEM
 #ifndef PTRACERS_SEPARATE_FORCING
-       IF ( .NOT.forcing_In_AB )
+       IF ( .NOT.forcing_In_AB .AND. useGCHEM )
      &    CALL GCHEM_FORCING_INT(
      I                        bi,bj,iMin,iMax,jMin,jMax,k,
      I                        iTracer,
