@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_fillnegs.F,v 1.6 2004/08/04 22:50:41 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_fillnegs.F,v 1.7 2004/08/05 14:39:30 molod Exp $
 C $Name:  $
                                                                                      
 #include "FIZHI_OPTIONS.h"
@@ -17,7 +17,7 @@ C     IM1 ...... Start Zonal Span
 C     IM2 ...... End Zonal Span
 C     JM1 ...... Start Meridional Span
 C     JM2 ...... End Meridional Span
-C     LM ....... Vertical   Dimension
+C     LDIM ..... Vertical   Dimension
 C     DP ....... Delta Pressure
 C     PZ ........Surface Pressure
 C     QZ ........Specific Humidity (g/g)
@@ -26,7 +26,8 @@ C***********************************************************************
 
       integer idim1,idim2,jdim1,jdim2,Ldim,im1,im2,jm1,jm2
       _RL delt
-      _RL qz(idim1:idim2,jdim1:jdim2,lm),dp(idim1:idim2,jdim1:jdim2,lm)
+      _RL qz(idim1:idim2,jdim1:jdim2,ldim)
+      _RL dp(idim1:idim2,jdim1:jdim2,ldim)
       _RL pz(idim1:idim2,jdim1:jdim2)
 
       integer i,j,L,LM1
