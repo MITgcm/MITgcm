@@ -23,3 +23,12 @@ o the code directory also contains dynamics.F which calls
   remove_mean_rl.F, a generic routine, to remove the mean from the
   diagnostic variable phiHydLow (sea surface height/gravity in pressure
   coordinates) 
+
+changes: 07 Feb. 2003 (jmc):
+o find difficult to maintain the local version of dynamics.F up to date.
+  therefore, has been remove from the code directory.
+  One can recover the same version (but up to date) simply 
+  by activating the commented lines [between lines Cml( and Cml) ],
+  at the end of the standard version of dynamics.F
+o finite volume form of calc_phi_hyd.F is now a standard option.
+  only needs to set integr_GeoPot=1 in file "data" to select this form.
