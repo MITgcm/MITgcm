@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.80 2004/01/29 14:45:47 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.81 2004/02/02 14:45:08 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -85,11 +85,6 @@ C     mythid - thread number for this instance of the routine.
       integer mythid 
       integer myiter
       _RL     mytime
-#ifdef ALLOW_BULK_FORCE
-      INTEGER bi,bj
-#endif
-
-      INTEGER bi,bj
       integer i,L
 CEOP
 
