@@ -1,11 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/nml_set_terminator.F,v 1.1 2004/02/24 19:46:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/nml_set_terminator.F,v 1.2 2004/02/24 20:41:08 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 #define FTN_NML_F90
 #ifndef NML_TERMINATOR
-#define NML_TERMINATOR ' &'
+#define NML_TERMINATOR  ' &'
+#else
+#define NML_TERMINATOR  ' /'
 #endif
 
 CBOP
