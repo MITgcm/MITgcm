@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.59 2001/08/17 18:40:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.60 2001/09/06 14:23:57 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -401,7 +401,7 @@ C         "     Quadratic  ( linear: 1/s, quadratic: 1/m )
      & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, 
      & phiMin, thetaMin, rSphere, recip_RSphere, f0, beta,
      & fCori, fCoriG,
-     & viscAh,  viscAz,  viscA4,  viscAr,
+     & viscAh,  viscAz,  viscA4,  viscAr, viscAstrain, viscAtension,
      & diffKhT, diffKzT, diffK4T, diffKrT,
      & diffKhS, diffKzS, diffK4S, diffKrS,
      & delT, tauCD, rCD, freeSurfFac, implicSurfPress, implicDiv2Dflow,
@@ -451,6 +451,8 @@ C         "     Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL hFacSup
       _RL beta
       _RL viscAh
+      _RL viscAstrain
+      _RL viscAtension
       _RL viscAz
       _RL viscAp
       _RL viscAr

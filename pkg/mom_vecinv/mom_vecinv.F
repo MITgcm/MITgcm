@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.2 2001/08/17 18:40:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.3 2001/09/06 14:23:58 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -66,6 +66,8 @@ C     == Local variables ==
       _RL      pF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2u(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2v(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS xA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -241,6 +243,19 @@ C      in terms of vorticity and divergence
          CALL MOM_VI_HDISSIP(bi,bj,k,hDiv,vort3,hFacZ,dStar,zStar,
      O                       uDiss,vDiss,
      &                       myThid)
+       ENDIF
+C      or in terms of tension and strain
+       IF (viscAstrain.NE.0. .OR. viscAtension.NE.0.) THEN
+         CALL MOM_CALC_TENSION(bi,bj,k,uFld,vFld,
+     O                         tension,
+     I                         myThid)
+         CALL MOM_CALC_STRAIN(bi,bj,k,uFld,vFld,hFacZ,
+     O                        strain,
+     I                        myThid)
+         CALL MOM_HDISSIP(bi,bj,k,
+     I                    tension,strain,hFacZ,viscAtension,viscAstrain,
+     O                    uDiss,vDiss,
+     I                    myThid)
        ENDIF
       ENDIF
 
@@ -478,10 +493,16 @@ C--   Bernoulli term
      &                     myCurrentTime-deltaTClock)
      & ) THEN
        CALL WRITE_LOCAL_RL('Ph','I10',Nr,phi_hyd,bi,bj,1,myIter,myThid)
+       CALL WRITE_LOCAL_RL('Ds','I10',1,strain,bi,bj,k,myIter,myThid)
+       CALL WRITE_LOCAL_RL('Dt','I10',1,tension,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('fV','I10',1,uCf,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('fU','I10',1,vCf,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('Du','I10',1,uDiss,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('Dv','I10',1,vDiss,bi,bj,k,myIter,myThid)
+       CALL WRITE_LOCAL_RL('Z3','I10',1,vort3,bi,bj,k,myIter,myThid)
+       CALL WRITE_LOCAL_RL('W3','I10',1,omega3,bi,bj,k,myIter,myThid)
+       CALL WRITE_LOCAL_RL('KE','I10',1,KE,bi,bj,k,myIter,myThid)
+       CALL WRITE_LOCAL_RL('D','I10',1,hdiv,bi,bj,k,myIter,myThid)
       ENDIF
 
       RETURN

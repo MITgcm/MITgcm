@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.26 2001/08/17 18:40:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.27 2001/09/06 14:23:57 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -76,6 +76,8 @@ C--   Set default "physical" parameters
       beta                = 1.D-11
       omega               = 2.D0 * PI / ( 3600.D0 * 24.D0 )
       viscAh              = 0.D3
+      viscAstrain         = 0.D3
+      viscAtension        = 0.D3
       diffKhT             = 0.D3
       diffKhS             = 0.D3
       viscArDefault       = 0.D-3
