@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.6 2001/09/14 17:22:58 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.7 2001/09/19 02:43:27 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -517,7 +517,7 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         xA,yA,uTrans,vTrans,rTrans,maskUp,
      I         KappaRT,
      U         fVerT,
-     I         myTime, myThid)
+     I         myTime,myIter,myThid)
            CALL TIMESTEP_TRACER(
      I         bi,bj,iMin,iMax,jMin,jMax,k,tempAdvScheme,
      I         theta, gT,
@@ -530,7 +530,7 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         xA,yA,uTrans,vTrans,rTrans,maskUp,
      I         KappaRS,
      U         fVerS,
-     I         myTime, myThid)
+     I         myTime,myIter,myThid)
            CALL TIMESTEP_TRACER(
      I         bi,bj,iMin,iMax,jMin,jMax,k,saltAdvScheme,
      I         salt, gS,
@@ -549,14 +549,14 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         bi,bj,iMin,iMax,jMin,jMax,k,tracerAdvScheme,
      I         Tr1, gTr1,
      U         gTr1NM1,
-     I         myIter, myThid)
+     I         myIter,myIter,myThid)
          ENDIF
 #endif
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
          IF (useOBCS) THEN
-           CALL OBCS_APPLY_TS( bi, bj, k, gTnm1, gSnm1, myThid )
+           CALL OBCS_APPLY_TS( bi, bj, k, gT, gS, myThid )
          END IF
 #endif   /* ALLOW_OBCS */
 
@@ -594,7 +594,7 @@ CADJ STORE gTNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
             CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         deltaTtracer, KappaRT, recip_HFacC,
-     U         gTNm1,
+     U         gT,
      I         myThid )
          ENDIF
 
@@ -606,7 +606,7 @@ CADJ STORE gSNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
             CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         deltaTtracer, KappaRS, recip_HFacC,
-     U         gSNm1,
+     U         gS,
      I         myThid )
          ENDIF
 
@@ -618,7 +618,7 @@ CADJ STORE gTr1Nm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
           CALL IMPLDIFF(
      I      bi, bj, iMin, iMax, jMin, jMax,
      I      deltaTtracer, KappaRT, recip_HFacC,
-     U      gTr1Nm1,
+     U      gTr1,
      I      myThid )
          ENDIF
 #endif
@@ -627,7 +627,7 @@ CADJ STORE gTr1Nm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 C--      Apply open boundary conditions
          IF (useOBCS) THEN
            DO K=1,Nr
-             CALL OBCS_APPLY_TS( bi, bj, k, gTnm1, gSnm1, myThid )
+             CALL OBCS_APPLY_TS( bi, bj, k, gT, gS, myThid )
            ENDDO
          END IF
 #endif   /* ALLOW_OBCS */
@@ -643,12 +643,12 @@ Ccs-
       IF ( useAIM ) THEN
        CALL AIM_AIM2DYN_EXCHANGES( myTime, myThid )
       ENDIF
-       _EXCH_XYZ_R8(gTnm1,myThid)
-       _EXCH_XYZ_R8(gSnm1,myThid)
+       _EXCH_XYZ_R8(gT,myThid)
+       _EXCH_XYZ_R8(gS,myThid)
 #else
       IF (staggerTimeStep.AND.useCubedSphereExchange) THEN
-       _EXCH_XYZ_R8(gTnm1,myThid)
-       _EXCH_XYZ_R8(gSnm1,myThid)
+       _EXCH_XYZ_R8(gT,myThid)
+       _EXCH_XYZ_R8(gS,myThid)
       ENDIF
 #endif /* ALLOW_AIM */
 

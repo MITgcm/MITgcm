@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.80 2001/08/17 18:40:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.81 2001/09/19 02:43:27 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -268,7 +268,7 @@ C        distinguishe between Stagger and Non Stagger time stepping
          IF (staggerTimeStep) THEN
            CALL CALC_PHI_HYD(
      I        bi,bj,iMin,iMax,jMin,jMax,k,
-     I        gTnm1, gSnm1,
+     I        gT, gS,
      U        phiHyd,
      I        myThid )
          ELSE

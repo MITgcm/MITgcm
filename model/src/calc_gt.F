@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.34 2001/09/18 19:07:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.35 2001/09/19 02:43:27 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -8,7 +8,7 @@ C $Name:  $
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
      I           KappaRT,
      U           fVerT,
-     I           myCurrentTime, myThid )
+     I           myTime,myIter,myThid )
 C     /==========================================================\
 C     | SUBROUTINE CALC_GT                                       |
 C     | o Calculate the temperature tendency terms.              |
@@ -65,8 +65,9 @@ C     myThid - Instance number for this innvocation of CALC_GT
       _RL KappaRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER k,kUp,kDown,kM1
       INTEGER bi,bj,iMin,iMax,jMin,jMax
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
-      _RL     myCurrentTime
 
 C     == Local variables ==
 
@@ -88,8 +89,26 @@ C--   the kDown is still required
 C--   External thermal forcing term(s)
       CALL EXTERNAL_FORCING_T(
      I     iMin,iMax,jMin,jMax,bi,bj,k,
-     I     myCurrentTime,myThid)
+     I     myTime,myThid)
 #endif /*  INCLUDE_T_FORCING_CODE */
+
+      IF ( tempAdvScheme.EQ.ENUM_CENTERED_2ND
+     & .OR.tempAdvScheme.EQ.ENUM_UPWIND_3RD
+     & .OR.tempAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
+        CALL ADAMS_BASHFORTH2(
+     I                        bi, bj, K,
+     U                        gT, gTnm1,
+     I                        myIter, myThid )
+      ENDIF
+
+#ifdef NONLIN_FRSURF
+      IF (nonlinFreeSurf.GT.0) THEN
+        CALL FREESURF_RESCALE_G(
+     I                          bi, bj, K,
+     U                          gT,
+     I                          myThid )
+      ENDIF
+#endif /* NONLIN_FRSURF */
 
       RETURN
       END

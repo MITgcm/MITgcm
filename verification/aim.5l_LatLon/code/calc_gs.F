@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/code/Attic/calc_gs.F,v 1.2 2001/05/29 14:01:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/code/Attic/calc_gs.F,v 1.3 2001/09/19 02:43:27 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -13,7 +13,7 @@ CStartOfInterFace
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
      I           KappaRS,
      U           fVerS,
-     I           myCurrentTime, myThid )
+     I           myCurrentTime,myIter,myThid )
 C     /==========================================================\
 C     | SUBROUTINE CALC_GS                                       |
 C     | o Calculate the salt tendency terms.                     |
@@ -48,6 +48,7 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "FFIELDS.h"
+#include "GAD.h"
 
 C     == Routine arguments ==
 C     fVerS   - Flux of salt (S) in the vertical 
@@ -72,6 +73,7 @@ C     myThid - Instance number for this innvocation of CALC_GT
       INTEGER k,kUp,kDown,kM1
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       _RL     myCurrentTime
+      INTEGER myIter
       INTEGER myThid
 CEndOfInterface
 
@@ -468,6 +470,24 @@ C--   External forcing term(s)
       CALL EXTERNAL_FORCING_S(
      I     iMin,iMax,jMin,jMax,bi,bj,k,
      I     myCurrentTime,myThid)
+
+      IF ( saltAdvScheme.EQ.ENUM_CENTERED_2ND
+     & .OR.saltAdvScheme.EQ.ENUM_UPWIND_3RD
+     & .OR.saltAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
+        CALL ADAMS_BASHFORTH2(
+     I                        bi, bj, K,
+     U                        gS, gSnm1,
+     I                        myIter, myThid )
+      ENDIF
+
+#ifdef NONLIN_FRSURF
+      IF (nonlinFreeSurf.GT.0) THEN
+        CALL FREESURF_RESCALE_G(
+     I                          bi, bj, K,
+     U                          gS,
+     I                          myThid )
+      ENDIF
+#endif /* NONLIN_FRSURF */
 
       RETURN
       END

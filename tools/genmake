@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.53 2001/09/10 20:54:01 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.54 2001/09/19 02:43:27 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -259,6 +259,8 @@ foreach dr ($PACKAGES)
         set DEFINES = ($DEFINES '-DDISABLE_MOM_FLUXFORM'); breaksw
       case mom_vecinv:
         set DEFINES = ($DEFINES '-DDISABLE_MOM_VECINV'); breaksw
+      case generic_advdiff:
+        set DEFINES = ($DEFINES '-DDISABLE_GENERIC_ADVDIFF'); breaksw
       default:
         breaksw
     endsw
@@ -689,7 +691,7 @@ all: \$(EXECUTABLE)
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(LIBS)
 depend:
 	@make links
-	makedepend -o .f \$(INCLUDES) \$(SRCFILES)
+	makedepend -o .f \$(DEFINES) \$(INCLUDES) \$(SRCFILES)
 
 links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES)
 
