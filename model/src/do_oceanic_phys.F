@@ -1,0 +1,440 @@
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.1 2004/07/06 00:58:40 jmc Exp $
+C $Name:  $
+
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
+c #ifdef ALLOW_PTRACERS
+c # include "PTRACERS_OPTIONS.h"
+c #endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_GMREDI
+#  include "GMREDI_OPTIONS.h"
+# endif
+# ifdef ALLOW_KPP
+#  include "KPP_OPTIONS.h"
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+CBOP
+C     !ROUTINE: DO_OCEANIC_PHYS
+C     !INTERFACE:
+      SUBROUTINE DO_OCEANIC_PHYS(myTime, myIter, myThid)
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE DO_OCEANIC_PHYS                                 
+C     | o Controlling routine for oceanic physics and 
+C     |   parameterization
+C     *==========================================================*
+C     | o originally, part of S/R thermodynamics
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "DYNVARS.h"
+#include "GRID.h"
+c #include "GAD.h"
+c #ifdef ALLOW_PASSIVE_TRACER
+c #include "TR1.h"
+c #endif
+c #ifdef ALLOW_PTRACERS
+c #include "PTRACERS.h"
+c #endif
+c #ifdef ALLOW_TIMEAVE
+c #include "TIMEAVE_STATV.h"
+c #endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
+# include "FFIELDS.h"
+# include "EOS.h"
+# ifdef ALLOW_KPP
+#  include "KPP.h"
+# endif
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
+# endif
+# ifdef ALLOW_EBM
+#  include "EBM.h"
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     myTime - Current time in simulation
+C     myIter - Current iteration number in simulation
+C     myThid - Thread number for this instance of the routine.
+      _RL myTime
+      INTEGER myIter
+      INTEGER myThid
+
+C     !LOCAL VARIABLES:
+C     == Local variables
+C     rhoK, rhoKM1   - Density at current level, and level above 
+C     useVariableK   = T when vertical diffusion is not constant
+C     iMin, iMax     - Ranges and sub-block indices on which calculations
+C     jMin, jMax       are applied.
+C     bi, bj
+C     k, kup,        - Index for layer above and below. kup and kDown
+C     kDown, km1       are switched with layer to be the appropriate 
+C                      index into fVerTerm.
+      _RL rhokm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhok    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL kp1Msk
+      LOGICAL useVariableK
+      INTEGER iMin, iMax
+      INTEGER jMin, jMax
+      INTEGER bi, bj
+      INTEGER i, j
+      INTEGER k, km1, kup, kDown
+      INTEGER iTracer, ip
+
+CEOP
+
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_ENTER('DO_OCEANIC_PHYS',myThid)
+#endif
+ 
+#ifdef ALLOW_AUTODIFF_TAMC
+C--   dummy statement to end declaration part
+      ikey = 1
+      itdkey = 1
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C--   HPF directive to help TAMC
+CHPF$ INDEPENDENT
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C--    HPF directive to help TAMC
+CHPF$  INDEPENDENT, NEW (rTrans,fVerT,fVerS
+CHPF$&                  ,utrans,vtrans,xA,yA
+CHPF$&                  )
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          itdkey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C--   Set up work arrays with valid (i.e. not NaN) values
+C     These inital values do not alter the numerical results. They
+C     just ensure that all memory references are to valid floating
+C     point numbers. This prevents spurious hardware signals due to
+C     uninitialised but inert locations.
+
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          rhok   (i,j)   = 0. _d 0
+          rhoKM1 (i,j)   = 0. _d 0
+         ENDDO
+        ENDDO
+
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+C This is currently also used by IVDC and Diagnostics
+           sigmaX(i,j,k) = 0. _d 0
+           sigmaY(i,j,k) = 0. _d 0
+           sigmaR(i,j,k) = 0. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
+cph all the following init. are necessary for TAF
+cph although some of these are re-initialised later.
+           IVDConvCount(i,j,k,bi,bj) = 0.
+# ifdef ALLOW_GMREDI
+           Kwx(i,j,k,bi,bj)  = 0. _d 0
+           Kwy(i,j,k,bi,bj)  = 0. _d 0
+           Kwz(i,j,k,bi,bj)  = 0. _d 0
+#  ifdef GM_NON_UNITY_DIAGONAL
+           Kux(i,j,k,bi,bj)  = 0. _d 0
+           Kvy(i,j,k,bi,bj)  = 0. _d 0
+#  endif
+#  ifdef GM_EXTRA_DIAGONAL
+           Kuz(i,j,k,bi,bj)  = 0. _d 0
+           Kvz(i,j,k,bi,bj)  = 0. _d 0
+#  endif
+#  ifdef GM_BOLUS_ADVEC
+           GM_PsiX(i,j,k,bi,bj)  = 0. _d 0
+           GM_PsiY(i,j,k,bi,bj)  = 0. _d 0
+#  endif
+#  ifdef GM_VISBECK_VARIABLE_K
+           VisbeckK(i,j,bi,bj)   = 0. _d 0
+#  endif
+# endif /* ALLOW_GMREDI */
+#endif /* ALLOW_AUTODIFF_TAMC */
+          ENDDO
+         ENDDO
+        ENDDO
+
+        iMin = 1-OLx
+        iMax = sNx+OLx
+        jMin = 1-OLy
+        jMax = sNy+OLy
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE totphihyd
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+#ifdef ALLOW_KPP
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_MSG('ENTERING UPWARD K LOOP',myThid)
+#endif
+
+C--     Start of diagnostic loop
+        DO k=Nr,1,-1
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C? Patrick, is this formula correct now that we change the loop range?
+C? Do we still need this?
+cph kkey formula corrected. 
+cph Needed for rhok, rhokm1, in the case useGMREDI.
+         kkey = (itdkey-1)*Nr + k
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C--       Calculate gradients of potential density for isoneutral
+C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
+c         IF ( k.GT.1 .AND. (useGMRedi.OR.ivdc_kappa.NE.0.) ) THEN
+          IF ( useGMRedi .OR. (k.GT.1 .AND. ivdc_kappa.NE.0.) ) THEN
+#ifdef ALLOW_DEBUG
+            IF ( debugLevel .GE. debLevB ) 
+     &       CALL DEBUG_CALL('FIND_RHO',myThid)
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+            CALL FIND_RHO(
+     I        bi, bj, iMin, iMax, jMin, jMax, k, k,
+     I        theta, salt,
+     O        rhoK,
+     I        myThid )
+
+            IF (k.GT.1) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+             CALL FIND_RHO(
+     I        bi, bj, iMin, iMax, jMin, jMax, k-1, k,
+     I        theta, salt,
+     O        rhoKm1,
+     I        myThid )
+            ENDIF
+#ifdef ALLOW_DEBUG
+            IF ( debugLevel .GE. debLevB ) 
+     &       CALL DEBUG_CALL('GRAD_SIGMA',myThid)
+#endif
+            CALL GRAD_SIGMA(
+     I             bi, bj, iMin, iMax, jMin, jMax, k,
+     I             rhoK, rhoKm1, rhoK,
+     O             sigmaX, sigmaY, sigmaR,
+     I             myThid )
+          ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE rhok   (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
+CADJ STORE rhokm1 (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+C--       Implicit Vertical Diffusion for Convection
+c ==> should use sigmaR !!!
+          IF (k.GT.1 .AND. ivdc_kappa.NE.0.) THEN
+#ifdef ALLOW_DEBUG
+            IF ( debugLevel .GE. debLevB ) 
+     &       CALL DEBUG_CALL('CALC_IVDC',myThid)
+#endif
+            CALL CALC_IVDC(
+     I        bi, bj, iMin, iMax, jMin, jMax, k,
+     I        rhoKm1, rhoK,
+     I        myTime, myIter, myThid)
+          ENDIF
+
+C--     end of diagnostic k loop (Nr:1)
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+cph avoids recomputation of integrate_for_w
+CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef  ALLOW_OBCS
+C--     Calculate future values on open boundaries
+        IF (useOBCS) THEN
+#ifdef ALLOW_DEBUG
+          IF ( debugLevel .GE. debLevB ) 
+     &     CALL DEBUG_CALL('OBCS_CALC',myThid)
+#endif
+          CALL OBCS_CALC( bi, bj, myTime+deltaT, myIter+1,
+     I            uVel, vVel, wVel, theta, salt,
+     I            myThid )
+        ENDIF
+#endif  /* ALLOW_OBCS */
+
+#ifndef ALLOW_AUTODIFF_TAMC
+        IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
+#endif
+C--     Determines forcing terms based on external fields
+C       relaxation terms, etc.
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
+#endif
+         CALL EXTERNAL_FORCING_SURF(
+     I             bi, bj, iMin, iMax, jMin, jMax,
+     I             myTime, myIter, myThid )
+#ifndef ALLOW_AUTODIFF_TAMC
+        ENDIF
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+cph needed for KPP
+CADJ STORE surfacetendencyU(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE surfacetendencyV(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE surfacetendencyS(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE surfacetendencyT(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+# ifdef ALLOW_SEAICE
+CADJ STORE surfacetendencyTice(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef  ALLOW_GMREDI
+
+#ifdef ALLOW_AUTODIFF_TAMC
+cph storing here is needed only for one GMREDI_OPTIONS:
+cph define GM_BOLUS_ADVEC
+cph but I've avoided the #ifdef for now, in case more things change
+CADJ STORE sigmaX(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE sigmaY(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE sigmaR(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
+        IF (useGMRedi) THEN
+#ifdef ALLOW_DEBUG
+          IF ( debugLevel .GE. debLevB ) 
+     &     CALL DEBUG_CALL('GMREDI_CALC_TENSOR',myThid)
+#endif
+          CALL GMREDI_CALC_TENSOR(
+     I             bi, bj, iMin, iMax, jMin, jMax,
+     I             sigmaX, sigmaY, sigmaR,
+     I             myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+        ELSE
+          CALL GMREDI_CALC_TENSOR_DUMMY(
+     I             bi, bj, iMin, iMax, jMin, jMax,
+     I             sigmaX, sigmaY, sigmaR,
+     I             myThid )
+#endif /* ALLOW_AUTODIFF_TAMC */
+        ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE Kwx(:,:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE Kwy(:,:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE Kwz(:,:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#endif  /* ALLOW_GMREDI */
+
+#ifdef  ALLOW_KPP
+C--     Compute KPP mixing coefficients
+        IF (useKPP) THEN
+#ifdef ALLOW_DEBUG
+          IF ( debugLevel .GE. debLevB ) 
+     &     CALL DEBUG_CALL('KPP_CALC',myThid)
+#endif
+          CALL KPP_CALC(
+     I                  bi, bj, myTime, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+        ELSE
+          CALL KPP_CALC_DUMMY(
+     I                  bi, bj, myTime, myThid )
+#endif /* ALLOW_AUTODIFF_TAMC */
+        ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KPPghat   (:,:,:,bi,bj)
+CADJ &   , KPPfrac   (:,:  ,bi,bj)
+CADJ &                 = comlev1_bibj, key=itdkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#endif  /* ALLOW_KPP */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+#ifdef ALLOW_PASSIVE_TRACER
+CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+#endif
+#ifdef ALLOW_PTRACERS
+cph-- moved to forward_step to avoid key computation
+cphCADJ STORE ptracer(:,:,:,bi,bj,itracer) = comlev1_bibj,
+cphCADJ &                              key=itdkey, byte=isbyte
+#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_AIM
+C       AIM - atmospheric intermediate model, physics package code.
+        IF ( useAIM ) THEN
+#ifdef ALLOW_DEBUG
+          IF ( debugLevel .GE. debLevB ) 
+     &     CALL DEBUG_CALL('AIM_DO_PHYSICS',myThid)
+#endif
+         CALL TIMER_START('AIM_DO_PHYSICS   [THERMODYNAMICS]', myThid)
+         CALL AIM_DO_PHYSICS( bi, bj, myTime, myIter, myThid )
+         CALL TIMER_STOP( 'AIM_DO_PHYSICS   [THERMODYNAMICS]', myThid)
+        ENDIF
+#endif /* ALLOW_AIM */
+
+C--   end bi,bj loops.
+       ENDDO
+      ENDDO
+
+#ifdef ALLOW_AIM
+      IF ( useAIM ) THEN
+       CALL AIM_AIM2DYN_EXCHANGES( myTime, myIter, myThid )
+      ENDIF
+#endif /* ALLOW_AIM */
+
+#ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_LEAVE('DO_OCEANIC_PHYS',myThid)
+#endif
+
+      RETURN
+      END
