@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.145 2003/03/21 23:20:36 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.146 2003/03/25 22:48:11 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o corrected CPP option mismatch in exf_Bulk... functions for case 
+  #define ALLOW_ATM_WIND && #undef ALLOW_ATM_TEMP
 
 checkpoint50a_post
 o Bug fix for merging between c50 and KPP.
