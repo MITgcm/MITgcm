@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/write_field.F,v 1.2 1998/04/27 18:58:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/write_field.F,v 1.3 1998/05/21 18:30:08 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -6,54 +6,18 @@ C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/write_field.F,v 1.2 1998/04/27 18:
      O                   fld,
      I                   filNam, filFmt, myThid )
 C     /==========================================================\
-C     | SUBROUTINE READ_FIELD_XYZR8                              |
-C     | o Reads a file into three-dimensional model array        |
+C     | SUBROUTINE WRITE_FIELD_XYZR8                             |
+C     | o Writes out a three-dimensional model array             |
 C     |==========================================================|
-C     | Routine that controls the reading of external datasets   |
+C     | Routine that controls the writing of external datasets   |
 C     | into the model. In a multi-threaded and/or MPI world     |
 C     | this can be a non-trivial exercise. Here we use the      |
 C     | following approach:                                      |
-C     | Thread 1. reads data for the complete domain i.e. all    |
-C     | processes and all threads into a buffer. Each individual |
-C     | thread then reads its portion of data into the actual    |
-C     | model array. This is clean because there is just one     |
-C     | input file with a single format irrespective of the      |
-C     | of processes or threads in use. However, it has several  |
-C     | potential difficulties.                                  |
-C     |  1. Very large problems may have individual fields of    |
-C     |     several GB. For example 1/20th degree global and     |
-C     |     fifty levels is 10GB per field at 8 byte precision.  |
-C     |  2. MPI 1.nn is vague about I/O support - not all        |
-C     |     processes have to support I/O.                       |
-C     |  MPI 2. includes a standard API for distributed data,    |
-C     |  parallel I/O. If applications funnel all their field    |
-C     |  I/O through this routine then adopting this or some     |
-C     |  alternative should be fairly straight-forward.          |
-C     |   In the light of problem 1. the following strategy      |
-C     |  is adopted. Files are read one layer at a time. After   |
-C     |  each layer has been read there is a barrier and then    |
-C     |  the threads all copy data from the buffer to the arrays.|
-C     |  This creates a lower-performance I/O code but reduces   |
-C     |  the degree to which a single large array is required for|
-C     |  the master thread. To be consistent with this binary    |
-C     |  input files must be written by code of the form         |
-C     |  WRITE(N) ((array(I,J,K),I=1,Nx),J=1,Ny)                 |
-C     |  rather than of the form                                 |
-C     |  WRITE(N) array                                          |
-C     |   The approach taken here also avoids one other ugly     |
-C     |  behaviour. On several systems even Fortran internal     |
-C     |  reads and writes are not thread-safe. This means that   |
-C     |  the portion of the code that builds file names has to   |
-C     |  be a critical section. However, if only the master      |
-C     |  thread is interested in the value of the file name then |
-C     |  only the master need set its value.                     |
-C     |   Finally the IO performed here is for the whole XY      |
-C     |  domain - even under MPI. The input files can stay the   |
-C     |  same no matter what processor count is being used.      |
-C     |  This is not a scalable approach to IO and MPI 2 has much|
-C     |  better support for this. Output is handled differently. |
-C     |  By default output files are written split and have to be|
-C     |  merged in a post-processing stage - YUK!                |
+C     | Thread 1. writes data for the process domain i.e. all    |
+C     | threads into a buffer. This thread then writes out       |
+C     | the data for process.                                    |
+C     | By default output files are written split and have to be |
+C     | merged in a post-processing stage - YUK!                 |
 C     \==========================================================/
 
 C     == GLobal variables ==

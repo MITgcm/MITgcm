@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.6 1998/05/20 21:29:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.7 1998/05/21 18:25:49 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -63,12 +63,12 @@ C--   Continuous equation parameters
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
-     & cg2dMaxIters, cg2dChkResFreq, cg2dTargetResidual
+     & cg2dMaxIters, cg2dChkResFreq, cg2dTargetResidual, cg2dpcOffDFac
 
 C--   Time stepping parammeters
       NAMELIST /PARM03/
      & nIter0, nTimeSteps, deltaT, deltaTmom, deltaTtracer, abEps, tauCD, rCD,
-     & startTime, endTime, chkPtFreq, dumpFreq
+     & startTime, endTime, chkPtFreq, dumpFreq, deltaTClock, pChkPtFreq
 
 C--   Gridding parameters
       NAMELIST /PARM04/
@@ -184,6 +184,7 @@ C--   Elliptic solver parameters
       cg2dMaxIters   = 150
       cg2dTargetResidual = 1. _d -7
       cg2dChkResFreq = 1
+      cg2dpcOffDFac  = 0.51 _d 0
       READ(UNIT=iUnit,NML=PARM02,IOSTAT=errIO,err=5)
       IF ( errIO .GE. 0 ) GOTO 6
     5 CONTINUE
@@ -209,11 +210,17 @@ C--   Time stepping parameters
       endTime        = 0.
       nIter0         = 0
       deltaT         = 0.
+      deltaTClock    = 0.
       deltaTtracer   = 0.
       deltaTMom      = 0.
       abEps          = 0.01
+      pchkPtFreq     = 0.
       chkPtFreq      = 3600.*25
       dumpFreq       = 3600.*100
+      writeStatePrec = precFloat32
+      nCheckLev      = 1
+      checkPtSuff(1) = 'ckptA'
+      checkPtSuff(2) = 'ckptB'
       READ(UNIT=iUnit,NML=PARM03,IOSTAT=errIO,err=7)
       IF ( errIO .GE. 0 ) GOTO 8
     7 CONTINUE
@@ -238,12 +245,14 @@ C     o Time step size
       IF ( deltaT       .EQ. 0. ) deltaT       = deltaTtracer
       IF ( deltaTmom    .EQ. 0. ) deltaTmom    = deltaT
       IF ( deltaTtracer .EQ. 0. ) deltaTtracer = deltaT
+      IF ( deltaTClock  .EQ. 0. ) deltaTClock  = deltaT
 C     o Time step count
       IF ( endTime .NE. 0 ) THEN
-       IF ( deltaT .NE. 0 ) nTimeSteps = INT(endTime/deltaT)
+       IF ( deltaTClock .NE. 0 ) nTimeSteps = 
+     &  INT((endTime-startTime)/deltaTClock)
       ENDIF
 C     o Finish time
-      IF ( endTime .EQ. 0. ) endTime = FLOAT(nTimeSteps)*deltaT
+      IF ( endTime .EQ. 0. ) endTime = FLOAT(nTimeSteps)*deltaTClock
  
 C--   Grid parameters
 C     In cartesian coords distances are in metres

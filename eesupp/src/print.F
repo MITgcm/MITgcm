@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.5 1998/04/27 04:24:22 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.6 1998/05/21 18:30:08 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -77,7 +77,7 @@ C       The write statement may need to be marked as a critical section.
 #ifndef FMTFTN_IO_THREAD_SAFE
         _BEGIN_CRIT(myThid)
 #endif
-        WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)') 
+        WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999) 
      &  '(',PROCESS_HEADER,idString,')',ERROR_HEADER,' ', 
      &  ' '
 #ifndef FMTFTN_IO_THREAD_SAFE
@@ -87,7 +87,7 @@ C       The write statement may need to be marked as a critical section.
 #ifndef FMTFTN_IO_THREAD_SAFE
         _BEGIN_CRIT(myThid)
 #endif
-        WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)') 
+        WRITE(errorMessageUnit,'(A,A,1X,A,A,A,A,A)',ERR=999) 
      &  '(',PROCESS_HEADER,idString,')',ERROR_HEADER,' ', 
      &  message(iStart:iEnd)
 #ifndef FMTFTN_IO_THREAD_SAFE
@@ -96,7 +96,12 @@ C       The write statement may need to be marked as a critical section.
        ENDIF
       ENDIF
 C
+ 1000 CONTINUE
       RETURN
+
+  999 CONTINUE
+       ioErrorCount(myThid) = ioErrorCount(myThid)+1
+      GOTO 1000
       END
 
 CStartofinterface
@@ -177,7 +182,7 @@ C     K    - Loop counter
      &    WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
      &    commOpen,index_lab,iLo,':',iHi,commClose
         ENDIF
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
         iLo  = K
         iHi  = K
         xOld = xNew
@@ -197,7 +202,7 @@ C     K    - Loop counter
      &  WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
      &  commOpen,index_lab,iLo,':',iHi,commClose
       ENDIF
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
       RETURN
       END
@@ -280,7 +285,7 @@ C     K    - Loop counter
      &    WRITE(msgBuf(45:),'(A,1X,A,L3,A,I3,1X,A)') 
      &    commOpen,index_lab,iLo,':',iHi,commClose
         ENDIF
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
         iLo  = K
         iHi  = K
         xOld = xNew
@@ -300,7 +305,7 @@ C     K    - Loop counter
      &  WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
      &  commOpen,index_lab,iLo,':',iHi,commClose
       ENDIF
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+      CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
       RETURN
       END
@@ -1267,7 +1272,7 @@ C       The write statement may need to ne marked as a critical section.
 #ifndef FMTFTN_IO_THREAD_SAFE
         _BEGIN_CRIT(myThid)
 #endif
-         WRITE(unit,'(A,A,A,A,A,A)') 
+         WRITE(unit,'(A,A,A,A,A,A)',ERR=999) 
      &   '(',PROCESS_HEADER,' ',idString,')',' '
 #ifndef FMTFTN_IO_THREAD_SAFE
         _END_CRIT(myThid)
@@ -1276,7 +1281,7 @@ C       The write statement may need to ne marked as a critical section.
 #ifndef FMTFTN_IO_THREAD_SAFE
         _BEGIN_CRIT(myThid)
 #endif
-         WRITE(unit,'(A,A,A,A,A,A,A)') 
+         WRITE(unit,'(A,A,A,A,A,A,A)',ERR=999) 
      &   '(',PROCESS_HEADER,' ',idString(1:ILNBLNK(idString)),')',' ', 
      &   message(iStart:iEnd)
 #ifndef FMTFTN_IO_THREAD_SAFE
@@ -1285,5 +1290,10 @@ C       The write statement may need to ne marked as a critical section.
        ENDIF
       ENDIF
 C
+ 1000 CONTINUE
       RETURN
+  999 CONTINUE
+       ioErrorCount(myThid) = ioErrorCount(myThid)+1
+      GOTO 1000
+
       END

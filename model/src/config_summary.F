@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.6 1998/04/27 04:24:22 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.7 1998/05/21 18:25:48 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -127,8 +127,10 @@ C     == Local variables ==
      &'   /* Run start time ( s ). */')
       CALL WRITE_1D_R8( endTime,1, INDEX_NONE,'endTime =',
      &'   /* Integration ending time ( s ). */')
+      CALL WRITE_1D_R8( pChkPtFreq,1, INDEX_NONE,'pChkPtFreq =',
+     &'   /* Permanent restart/checkpoint file interval ( s ). */')
       CALL WRITE_1D_R8( chkPtFreq,1, INDEX_NONE,'chkPtFreq =',
-     &'   /* Restart/checkpoint file interval ( s ). */')
+     &'   /* Rolling restart/checkpoint file interval ( s ). */')
       CALL WRITE_1D_R8( dumpFreq,1, INDEX_NONE,'dumpFreq =',
      &'   /* Model state write out interval ( s ). */')
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.2 1998/04/24 02:05:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.3 1998/05/21 18:25:49 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -53,7 +53,7 @@ C--   thread 1 will do all the writes.
       IF ( myThid .EQ. 1 ) THEN
 C--    Form name for identifying "plot"
        IF ( myIter .GE. 0 ) THEN
-        WRITE(fldTitle,'(A,A,A,I4)') '// Field ', fldNam, ' at iteration ',
+        WRITE(fldTitle,'(A,A,A,I10)') '// Field ', fldNam, ' at iteration ',
      &  myIter
        ELSE
         WRITE(fldTitle,'(A,A)') '// Field ', fldNam
@@ -131,7 +131,7 @@ C--   thread 1 will do all the writes.
       IF ( myThid .EQ. 1 ) THEN
 C--    Form name for identifying "plot"
        IF ( myIter .GE. 0 ) THEN
-        WRITE(fldTitle,'(A,A,A,I4)') '// Field ', fldNam, ' at iteration ',
+        WRITE(fldTitle,'(A,A,A,I10)') '// Field ', fldNam, ' at iteration ',
      &  myIter
        ELSE
         WRITE(fldTitle,'(A,A)') '// Field ', fldNam
@@ -214,7 +214,7 @@ C--   thread 1 will do all the writes.
       IF ( myThid .EQ. 1 ) THEN
 C--    Form name for identifying "plot"
        IF ( myIter .GE. 0 ) THEN
-        WRITE(fldTitle,'(A,A,A,I4)') '// Field ', fldNam, ' at iteration ',
+        WRITE(fldTitle,'(A,A,A,I10)') '// Field ', fldNam, ' at iteration ',
      &  myIter
        ELSE
         WRITE(fldTitle,'(A,A)') '// Field ', fldNam
@@ -310,7 +310,7 @@ C--   thread 1 will do all the writes.
       IF ( myThid .EQ. 1 ) THEN
 C--    Form name for identifying "plot"
        IF ( myIter .GE. 0 ) THEN
-        WRITE(fldTitle,'(A,A,A,I4)') '// Field ', fldNam, ' at iteration ',
+        WRITE(fldTitle,'(A,A,A,I10)') '// Field ', fldNam, ' at iteration ',
      &  myIter
        ELSE
         WRITE(fldTitle,'(A,A)') '// Field ', fldNam

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.6 1998/05/20 21:29:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.7 1998/05/21 18:28:50 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -10,19 +10,29 @@ C     | the parameters can also be found here.                   |
 C     \==========================================================/
 
 C--   Contants
-C     nOBands - No. of offline data time bands
-      INTEGER nOBands
-      PARAMETER ( nOBands = 12 )
 C     Useful physical values
       Real*8 PI
       PARAMETER ( PI    = 3.14159265358979323844D0   )
       Real*8 deg2rad
       PARAMETER ( deg2rad = 2.D0*PI/360.D0           )
 
+C     Symbolic values
+C     precXXXX - Used to indicate what precision to use for
+C                dumping model state.
+      INTEGER precFloat32
+      PARAMETER ( precFloat32 = 0 )
+      INTEGER precFloat64
+      PARAMETER ( precFloat64 = 1 )
+
+C     Checkpoint data
+      INTEGER maxNoChkptLev
+      PARAMETER ( maxNoChkptLev = 2 )
+
 C--   COMMON /PARM_C/ Character valued parameters used by the model.
-C     oBandId  - Offline dataset identifiers for different periods.
-      COMMON /PARM_C/ oBandId
-      CHARACTER*3 oBandId(nOBands)
+C     checkPtSuff - List of checkpoint file suffices
+      COMMON /PARM_C/ checkPtSuff
+      CHARACTER*(5) checkPtSuff(maxNoChkptLev)
+
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        - Maximum number of iterations in the
 C                           two-dimensional con. grad solver.
@@ -32,16 +42,26 @@ C     nIter0              - Start time-step number of for this run
 C     nTimeSteps          - Number of timesteps to execute
 C     numStepsPerPickup   - For offline setup. Frequency of pickup
 C                           of flow fields.
+C     writeStatePrec      - Precision used for writing model state.
+C     writeBinaryPrec     - Precision used for writing binary files
+C     readBinaryPrec      - Precision used for reading binary files
+C     nCheckLev           - Holds current checkpoint level
       COMMON /PARM_I/
      &        cg2dMaxIters,
      &        cg2dChkResFreq,
      &        nIter0, nTimeSteps,
-     &        numStepsPerPickup
+     &        numStepsPerPickup,
+     &        writeStatePrec, nCheckLev,
+     &        writeBinaryPrec, readBinaryPrec
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
       INTEGER nIter0
       INTEGER nTimeSteps
       INTEGER numStepsPerPickup
+      INTEGER writeStatePrec
+      INTEGER writeBinaryPrec
+      INTEGER readBinaryPrec
+      INTEGER nCheckLev
 
 C--   COMMON /PARM_L/ Logical valued parameters used by the model.
 C     usingCartesianGrid - If TRUE grid generation will be in a cartesian
@@ -85,6 +105,20 @@ C                     and off.
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
 C               - Target residual for cg2d solver.
+C     cg2dpcOffDFac - Averaging weight for preconditioner off-diagonal.
+C     Note. 20th May 1998
+C           I made a weird discovery! In the model paper we argue
+C           for the form of the preconditioner used here ( see
+C           A Finite-volume, Incompressible Navier-Stokes Model
+C           ...., Marshall et. al ). The algebra gives a simple
+C           0.5 factor for the averaging of ac and aCw to get a
+C           symmettric pre-conditioner. By using a factor of 0.51
+C           i.e. scaling the off-diagonal terms in the
+C           preconditioner down slightly I managed to get the
+C           number of iterations for convergence in a test case to
+C           drop form 192 -> 134! Need to investigate this further!
+C           For now I have introduced a parameter cg2dpcOffDFac which
+C           defaults to 0.51 but can be set at runtime.
 C     delZ      - Vertical grid spacing ( m ) - delZ is the distance
 C                 between "w" surfaces.
 C     delX      - Separation between cell faces (m) or (deg), depending
@@ -119,6 +153,12 @@ C                 salt vertically ( m^2/s )
 C     diffK4S   - Biharmonic diffusion coeff. for mixing of
 C                 salt laterally ( m^4/s )
 C     deltaT    - Default timestep ( s )
+C     deltaTClock  - Timestep used as model "clock". This determines the
+C                    IO frequencies and is used in tagging output. It can
+C                    be totally different to the dynamical time. Typically
+C                    it will be the deep-water timestep for accelerated runs.
+C                    Frequency of checkpointing and dumping of the model state
+C                    are referenced to this clock. ( s )
 C     deltaTMom    - Timestep for momemtum equations ( s )
 C     deltaTtracer - Timestep for tracer equations ( s )
 C     tauCD     - CD scheme coupling timescale ( 1/s )
@@ -130,21 +170,25 @@ C     GMdepth   - Depth over which to integrate Richardson # (Visbeck et al.)
 C     GMbackground - background value of GM/Redi coefficient
 C     startTime - Starting time for this integration ( s ).
 C     endTime   - Ending time for this integration ( s ).
-C     chkPtFreq - Frequency of check pointing ( s ).
+C     chkPtFreq  - Frequency of rolling check pointing ( s ).
+C     pChkPtFreq - Frequency of permanent check pointing ( s ).
 C     dumpFreq  - Frequency with which model state is written to
 C                 post-processing files ( s ).
-      COMMON /PARM_R/ cg2dTargetResidual, delZ, delX, delY, deltaT,
-     & deltaTmom, deltaTtracer, abeps, startTime, phiMin, thetaMin, 
-     & rSphere, f0, fCori, beta, viscAh, viscAz, viscA4, diffKhT, diffKzT, 
-     & diffK4T, diffKhS, diffKzS, diffK4S, delT, tauCD, rCD,
+      COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, delZ, delX, delY, 
+     & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, phiMin, 
+     & thetaMin, rSphere, f0, fCori, beta, viscAh, viscAz, viscA4, 
+     & diffKhT, diffKzT, diffK4T, diffKhS, diffKzS, diffK4S, delT, 
+     & tauCD, rCD, 
      & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,
      & gravity, rhonil, tRef, sRef,
-     & endTime, chkPtFreq, dumpFreq
+     & endTime, chkPtFreq, pchkPtFreq, dumpFreq
       _RL cg2dTargetResidual
+      _RL cg2dpcOffDFac
       _RL delZ(Nz)
       _RL delX(Nx)
       _RL delY(Ny)
       _RL deltaT
+      _RL deltaTClock
       _RL deltaTmom
       _RL deltaTtracer
       _RL abeps
@@ -178,6 +222,7 @@ C                 post-processing files ( s ).
       _RL startTime
       _RL endTime
       _RL chkPtFreq
+      _RL pChkPtFreq
       _RL dumpFreq
 
       COMMON /PARM_A/ HeatCapacity_Cp,
@@ -194,3 +239,4 @@ C     sBeta     - Linear EOS haline contraction coefficient.
       COMMON /PARM_EOS_LIN/ tAlpha,sBeta
       _RL tAlpha
       _RL sBeta
+

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.2 1998/04/24 02:05:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.3 1998/05/21 18:25:49 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -31,6 +31,10 @@ C--   Set model variables to initial/restart conditions
        CALL INI_THETA( myThid )
        CALL INI_SALT( myThid )
       ELSE
+       IF ( nIter0 .EQ. 0 ) THEN
+        nIter0 = INT(startTime/deltaTClock )
+       ENDIF
+       CALL READ_CHECKPOINT( nIter0, myThid )
       ENDIF
 
       RETURN
