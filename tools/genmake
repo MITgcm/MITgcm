@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.24 2001/02/05 18:46:14 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.25 2001/02/06 04:22:36 cnh Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -231,7 +231,7 @@ switch ($platform$USEMPI)
     set KPPFILES   = ( 'main.F' )
     set KFLAGS1    = ( '-scan=132 -noconc -cmp=' )
     set FC         = ( 'f77' )
-    set FFLAGS     = ( '-convert big_endian -r8 -extend_source -u -automatic -call_shared -notransform_loops -align dcommons' )
+    set FFLAGS     = ( '-convert big_endian -r8 -extend_source -automatic -call_shared -notransform_loops -align dcommons' )
     set FOPTIM     = ( '-O5 -fast -tune host -inline all' )
     set NOOPTFLAGS = ( '-O0' )
     set LIBS       = ( '-lfmpi -lmpi -lkmp_osfp10 -pthread' )
