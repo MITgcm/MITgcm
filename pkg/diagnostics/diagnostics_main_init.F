@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.3 2004/12/16 21:48:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.4 2004/12/16 22:26:08 dimitri Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -80,7 +80,7 @@ C----------------------------------------------------------------------
       diagName  = 'PHIBOT  '
       diagTitle = 'ocean bottom pressure / top. atmos geo-Potential'
       diagUnits = 'm2/s2           '
-      diagCode  = 'SM      MR      '
+      diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
