@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.15 2005/02/28 17:29:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.16 2005/02/28 19:05:12 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -348,7 +348,7 @@ c--   bottom drag
       enddo
 #endif
 
-fdef ALLOW_EDTAUX_CONTROL
+#ifdef ALLOW_EDTAUX_CONTROL
 c-- zonal eddy stress : edtaux
       il=ilnblnk( xx_edtaux_file )
       write(fnameedtaux(1:80),'(2a,i10.10)')
