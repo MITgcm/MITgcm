@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_mnc_init.F,v 1.1 2004/07/09 02:41:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_mnc_init.F,v 1.2 2004/07/13 23:44:43 molod Exp $
 C $Name:  $
       
 #include "FIZHI_OPTIONS.h"
@@ -36,13 +36,13 @@ C         Cor  &   &      &     &     \\\hline
 C       \end{tabular}
 C     \end{center}
 
+      implicit none
 C     !INPUT PARAMETERS:
       integer myThid
       integer sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy
       integer NrPhys
 
 C     !USES:
-      implicit none
 #ifdef ALLOW_MNC
 #include "mnc_common.h"
 #endif  /*  ALLOW_MNC  */

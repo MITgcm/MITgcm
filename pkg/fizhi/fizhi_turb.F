@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.8 2004/07/13 21:18:41 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.9 2004/07/13 23:44:43 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -97,6 +97,8 @@ c-----------------------------------------------------------------------
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
+#include "SIZE.h"
+#include "diagnostics_SIZE.h"
 #include "diagnostics.h"
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.7 2004/07/13 21:18:41 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.8 2004/07/13 23:44:43 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -13,22 +13,26 @@ C $Name:  $
      .   nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,
      .   lpnt,myid)
 
+       implicit none
+
 #ifdef ALLOW_DIAGNOSTICS
+#include "SIZE.h"
+#include "diagnostics_SIZE.h"
 #include "diagnostics.h"
 #endif
 
 c Input Variables
 c ---------------
+      integer im,jm,lm
       integer ndmoist,istrip,npcs
+      integer bi,bj,ntracer,ptracer         
       integer lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup
       real pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1),dpres(im,jm,lm)
       real pkht(im,jm,lm+1),pkl(im,jm,lm)
       real tz(im,jm,lm),qz(im,jm,lm,ntracer)       
-      integer bi,bj,ntracer,ptracer         
       real qqz(im,jm,lm)
       real dumoist(im,jm,lm),dvmoist(im,jm,lm)
       real dtmoist(im,jm,lm),dqmoist(im,jm,lm,ntracer)
-      integer im,jm,lm
       real ptop
       integer iras
       real rainlsp(im,jm),rainconv(im,jm),snowfall(im,jm)
@@ -53,7 +57,8 @@ c ---------------
       real   srcld(istrip,lm)
 
       real plev
-      real cldnow,cldlsp_mem,cldras_mem,cldras,watnow,watmin,cldmin
+      real cldnow,cldlsp_mem,cldlsp,cldras_mem,cldras
+      real watnow,watmin,cldmin
       real cldprs(im,jm),cldtmp(im,jm)
       real cldhi (im,jm),cldlow(im,jm)
       real cldmid(im,jm),totcld(im,jm)
@@ -241,7 +246,7 @@ c ----------------------------------------------------------------
        levgather(index) = levpbl(pblindex(index),1)
         pigather(index) =     pz(pblindex(index),1)
         pkegather(index,lm+1) = pkht(pblindex(index),1,lm+1)
-        plegather(index,lm+1) = ple(pblindex(index),1,lm+1)
+        plegather(index,lm+1) = plze(pblindex(index),1,lm+1)
       enddo
 
       do L = 1,lm
@@ -771,46 +776,6 @@ C **********************************************************************
 C                          BUMP DIAGNOSTICS
 C **********************************************************************
 
-c Clear-Sky (Above 400mb) Temperature
-c -----------------------------------
-      if( itmpuclr.ne.0 .or. isphuclr.ne.0 ) then
-      do j = 1,jm
-      do i = 1,im
-      totcld(i,j) = 0.0
-      enddo
-      enddo
-      do L = 1,midlevel
-      do j = 1,jm
-      do i = 1,im
-       if(cldls(i,j,L).ne.0.0.or.cpen(i,j,L).ne.0.0)totcld(i,j) = 1.0
-      enddo
-      enddo
-      enddo
-      do L = 1,lm
-       if( itmpuclr.ne.0 ) then
-        do i = 1,im*jm
-        if( totcld(i,1).eq.0.0 ) then
-         qdiag(i,1,itmpuclr +L-1,bi,bj) = 
-     .         qdiag(i,1,itmpuclr +L-1,bi,bj) + tz(i,1,L)*pkzgather(i,L)
-         qdiag(i,1,itmpuclrc+L-1,bi,bj) = 
-     .                            qdiag(i,1,itmpuclrc+L-1,bi,bj)+1.0
-        endif
-        enddo
-       endif
- 
-       if( isphuclr.ne.0 ) then
-        do i = 1,im*jm
-        if( totcld(i,1).eq.0.0 ) then
-         qdiag(i,1,isphuclr +L-1,bi,bj) = 
-     .              qdiag(i,1,isphuclr +L-1,bi,bj) + qz(i,1,L,1)*1000.0
-         qdiag(i,1,isphuclrc+L-1,bi,bj) = 
-     .                      qdiag(i,1,isphuclrc+L-1,bi,bj) + 1.0
-        endif
-        enddo
-       endif
-      enddo
-      endif
-
 c Sub-Cloud Layer
 c -------------------------
       if( ipsubcld.ne.0 ) then
@@ -1102,44 +1067,52 @@ C********************* SUBROUTINE  RAS   *****************************
 C********************** 16 MARCH   1988 ******************************
 C*********************************************************************
 C
+      implicit none
+
+      integer ntracer
+      integer nltop,nlayr
+      real UOI(len,nlayr,ntracer),   POI(len,K)
+      real QOI(len,K), PRS(len,K+1), PRJ(len,K+1)
+      real rnd(ncrnd)
+C
+      real RAINS(len,K), CLN(len,K), CLF(len,K)
+      real cldmas(len,K), detrain(len,K)
+      real TCU(len,K), QCU(len,K)
+      real ucu(len,K,ntracer)
+      real ALF(len,K), BET(len,K), GAM(len,K)
+     *,         ETA(len,K), HOI(len,K)
+     *,         PRH(len,K), PRI(len,K)
+      real HST(len,K), QOL(len,K), GMH(len,K)
+ 
+      real TX1(len), TX2(len), TX3(len), TX4(len), TX5(len)
+     *,         TX6(len), TX7(len), TX8(len), TX9(len)
+     *,         TX11(len), TX12(len), TX13(len), TX14(len,ntracer)
+     *,         TX15(len), TX16(len)
+     *,         WFN(len), IA1(len), IA2(len), IA3(len)
+      real cloudn(len), pcu(len)
+
+      real rhfrac(len),rasmax
+ 
+      integer IC(ICM),   IRND(icm)
+      real cmass(len,K)
+      LOGICAL SETRAS
+
+      integer krmin,icm
+      real rknob, cmb2pa
       PARAMETER (KRMIN=01)
       PARAMETER (ICM=1000)
       PARAMETER (CMB2PA=100.0)
       PARAMETER (rknob = 10.)
 C
-      integer ntracer
-      integer nltop,nlayr
-      DIMENSION UOI(len,nlayr,ntracer),   POI(len,K)
-      DIMENSION QOI(len,K), PRS(len,K+1), PRJ(len,K+1)
-      dimension rnd(ncrnd)
-C
-      DIMENSION RAINS(len,K), CLN(len,K), CLF(len,K)
-      DIMENSION cldmas(len,K), detrain(len,K)
-      DIMENSION TCU(len,K), QCU(len,K)
-      real ucu(len,K,ntracer)
-      DIMENSION ALF(len,K), BET(len,K), GAM(len,K)
-     *,         ETA(len,K), HOI(len,K)
-     *,         PRH(len,K), PRI(len,K)
-      DIMENSION HST(len,K), QOL(len,K), GMH(len,K)
- 
-      DIMENSION TX1(len), TX2(len), TX3(len), TX4(len), TX5(len)
-     *,         TX6(len), TX7(len), TX8(len), TX9(len)
-     *,         TX11(len), TX12(len), TX13(len), TX14(len,ntracer)
-     *,         TX15(len), TX16(len)
-     *,         WFN(len), IA1(len), IA2(len), IA3(len)
-      DIMENSION cloudn(len), pcu(len)
+      integer i,L,nc
+      integer km1,kp1,kprv,kcr,kfx,ncmx
+      real p00, crtmsf, frac, rasblf
 
-      real rhfrac(len),rasmax
- 
-      DIMENSION IC(ICM),   IRND(icm)
-      dimension cmass(len,K)
-      LOGICAL SETRAS
- 
-         do L = 1,k
-         do I = 1,LENC
-         rains(i,l) = 0.
-         enddo
-         enddo
+      do L = 1,k
+      do I = 1,LENC
+       rains(i,l) = 0.
+      enddo
+      enddo
  
       p00 = 1000.
       crtmsf = 0.
