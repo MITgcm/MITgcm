@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp4/code/Attic/set_obcs.F,v 1.1 1998/12/15 00:02:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp4/code/Attic/set_obcs.F,v 1.2 1999/05/18 17:45:36 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -73,7 +73,7 @@ c    &       *max(myCurrentTime/obTimeScale,1.)
 
 #ifdef SIMPLE_OBCS
 C This is an example of some rudimentary OBCs.
-C These work but aren't very sophisticated...
+C These work but are not very sophisticated...
 C (The above specified OBCs produce nicer results!)
 C [Remove the CPP #ifdef and #endif to use this code]
 
