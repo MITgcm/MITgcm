@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.86 2004/03/17 22:09:55 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.87 2004/03/24 22:19:50 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -485,11 +485,19 @@ C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
 #endif /* ALLOW_MONITOR */
 
-C AMM  -- Testing diagnostics package
+C AMM  -- Diagnostics package
 #ifdef ALLOW_DIAGNOSTICS
+
        if(usediagnostics)then
         call diagnostics_fill_state(myThid)
        endif
+
+# ifdef ALLOW_PTRACERS
+      if(useptracers)then
+       call diagnostics_fill_ptracers(myThid)
+      endif
+# endif
+
 #endif
 C AMM
 
