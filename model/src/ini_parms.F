@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.4 1998/04/26 23:41:54 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.5 1998/04/27 04:24:22 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -66,7 +66,7 @@ C--   Elliptic solver parameters
 
 C--   Time stepping parammeters
       NAMELIST /PARM03/
-     & nIter0, nTimeSteps, deltaTmom, deltaTtracer, abEps, tauCD, rCD,
+     & nIter0, nTimeSteps, deltaT, deltaTmom, deltaTtracer, abEps, tauCD, rCD,
      & startTime, endTime, chkPtFreq, dumpFreq
 
 C--   Gridding parameters

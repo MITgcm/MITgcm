@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.3 1998/04/26 23:41:54 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.4 1998/04/27 04:24:22 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -118,6 +118,8 @@ C     diffKzS   - Laplacian diffusion coeff. for mixing of
 C                 salt vertically ( m^2/s )
 C     diffK4S   - Biharmonic diffusion coeff. for mixing of
 C                 salt laterally ( m^4/s )
+C     tAlpha    - Linear EOS thermal expansion coefficient ( 1/degree ).
+C     sBeta     - Linear EOS haline contraction coefficient.
 C     deltaT    - Default timestep ( s )
 C     deltaTMom    - Timestep for momemtum equations ( s )
 C     deltaTtracer - Timestep for tracer equations ( s )
