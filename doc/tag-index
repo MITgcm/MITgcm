@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.238 2004/01/10 00:48:49 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.239 2004/01/12 20:41:59 afe Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o modded aim.5l_cs and global_ocean.cs32x15 to use exch2, removed
+  old grid files, moved CPP_EEMACROS.h to pkg/exch2
 
 o added useSingleCPUIO flag to monitor.F and mon_out.F
 
