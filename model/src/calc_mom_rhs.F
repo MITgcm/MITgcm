@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.21 1998/08/22 17:51:07 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.22 1998/08/23 16:13:07 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -92,15 +92,20 @@ C     mTFacMom        pfFacMom - Pressure terms
 C                     cfFacMom - Coriolis terms
 C                     foFacMom - Forcing
 C                     mTFacMom - Metric term
+C     vF            - Temporary holding viscous term (Laplacian)
+C     v4F           - Temporary holding viscous term (Biharmonic)
+C     cF            - Temporary holding coriolis term.
+C     mT            - Temporary holding metric terms(s).
+C     pF            - Temporary holding pressure|potential gradient terms.
 C     uDudxFac, AhDudxFac, etc ... individual term tracer parameters
-      _RL      aF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      vF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      cF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      sF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      mT(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      pF(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL    fZon(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL    fMer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL      aF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL      vF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL      v4F(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL      cF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _rl      mT (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL      pF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    fZon (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL    fMer (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     I,J,K - Loop counters
       INTEGER i,j,k
 C     rVelMaskOverride - Factor for imposing special surface boundary conditions
@@ -140,6 +145,7 @@ C     Initialise intermediate terms
        DO I=1-OLx,sNx+OLx
         aF(i,j)   = 0.*1. _d 37
         vF(i,j)   = 0.*1. _d 37
+        v4F(i,j)  = 0.*1. _d 37
         cF(i,j)   = 0.*1. _d 37
         mT(i,j)   = 0.*1. _d 37
         pF(i,j)   = 0.*1. _d 37
@@ -149,27 +155,31 @@ C     Initialise intermediate terms
       ENDDO
 C--   Term by term tracer parmeters
 C     o U momentum equation
-      uDudxFac  = afFacMom 
-      AhDudxFac = vfFacMom
-      vDudyFac  = afFacMom
-      AhDudyFac = vfFacMom
+      uDudxFac     = afFacMom 
+      AhDudxFac    = vfFacMom
+      A4DudxFac    = vfFacMom
+      vDudyFac     = afFacMom
+      AhDudyFac    = vfFacMom
+      A4DudyFac    = vfFacMom
       rVelDudrFac  = afFacMom
-      ArDudrFac = vfFacMom
-      mTFacU    = mtFacMom
-      fuFac     = cfFacMom
-      phxFac    = pfFacMom
-      uForcFac  = foFacMom
+      ArDudrFac    = vfFacMom
+      mTFacU       = mtFacMom
+      fuFac        = cfFacMom
+      phxFac       = pfFacMom
+      uForcFac     = foFacMom
 C     o V momentum equation
-      uDvdxFac  = afFacMom 
-      AhDvdxFac = vfFacMom
-      vDvdyFac  = afFacMom
-      AhDvdyFac = vfFacMom
+      uDvdxFac     = afFacMom 
+      AhDvdxFac    = vfFacMom
+      A4DvdxFac    = vfFacMom
+      vDvdyFac     = afFacMom
+      AhDvdyFac    = vfFacMom
+      A4DvdyFac    = vfFacMom
       rVelDvdrFac  = afFacMom
-      ArDvdrFac = vfFacMom
-      mTFacV    = mtFacMom
-      fvFac     = cfFacMom
-      phyFac    = pfFacMom
-      vForcFac  = foFacMom
+      ArDvdrFac    = vfFacMom
+      mTFacV       = mtFacMom
+      fvFac        = cfFacMom
+      phyFac       = pfFacMom
+      vForcFac     = foFacMom
 
 C--   Adams-Bashforth weighting factors
       ab15   =  1.5 _d 0 + abEps
@@ -186,18 +196,46 @@ C     Mean flow component of zonal flux
        ENDDO
       ENDDO
 C     Eddy component of zonal flux
+C     o Biharmonic terms
       DO j=jMin,jMax
-       DO i=iMin,iMax
+       DO i=1-2, sNx+2
 #define _XAatP(i,j,k,bi,bj) ( XA(i,j)+XA(i+1,j) )* 0.5 _d 0
-        vf(i,j) =
-     &   -viscAh*_XAatP(i,j,k,bi,bj)
+        v4F(i,j) =
+     &   _XAatP(i,j,k,bi,bj)
      &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))*_recip_dxF(i,j,bi,bj)
        ENDDO
       ENDDO
       DO j=jMin,jMax
+       DO i=1-1, sNx+1
+        vF(i,j) = 
+     &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)/
+     &    ( 0.5 _d 0 *(_rA(i,j,bi,bj)+_rA(i-1,j,bi,bj)) )
+     &    *( v4F(i,j)-v4F(i-1,j) )
+       ENDDO
+      ENDDO
+      DO j=jMin,jMax
+       DO i=1-2, sNx+2
+#define _XAatP(i,j,k,bi,bj) ( XA(i,j)+XA(i+1,j) )* 0.5 _d 0
+        v4F(i,j) =
+     &   viscA4*_XAatP(i,j,k,bi,bj)
+     &    *(vF(i+1,j,k,bi,bj)-vF(i,j,k,bi,bj))*_recip_dxF(i,j,bi,bj)
+       ENDDO
+      ENDDO
+C     o Laplacian terms
+      DO j=jMin,jMax
        DO i=iMin,iMax
-        fZon(i,j) = uDudxFac  * af(i,j) 
-     &            + AhDudxFac * vf(i,j)
+#define _XAatP(i,j,k,bi,bj) ( XA(i,j)+XA(i+1,j) )* 0.5 _d 0
+        vF(i,j) =
+     &   -viscAh*_XAatP(i,j,k,bi,bj)
+     &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))*_recip_dxF(i,j,bi,bj)
+       ENDDO
+      ENDDO
+
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        fZon(i,j) = uDudxFac  * aF (i,j) 
+     &            + AhDudxFac * vF (i,j)
+     &            + A4DudxFac * v4F(i,j)
        ENDDO
       ENDDO
 C--   Meridional flux (fMer is at south face of "u" cell)
@@ -215,6 +253,7 @@ C       Note!!!! omitted.
        ENDDO
       ENDDO
 C     Eddy component of meridional flux
+C     o Laplacian term
       DO j=jMin,jMax
        DO i=iMin,iMax
         hFacROpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
@@ -237,6 +276,8 @@ C     Eddy component of meridional flux
 #endif
        ENDDO
       ENDDO
+C     o Biharmonic term
+
       DO j=jMin,jMax
        DO i=iMin,iMax
         fMer(i,j) = vDudyFac  * af(i,j) 
