@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_VARS.h,v 1.2 2004/03/11 14:42:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_VARS.h,v 1.3 2004/06/21 16:50:21 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAND
@@ -37,13 +37,13 @@ C
       _RL land_enRnOf (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C---  COMMON /LAND_FORCFIELDS/
-C     land_HeatFLx :: net surface downward Heat flux  [W/m2]
+C     land_HeatFlx :: net surface downward Heat flux  [W/m2]
 C     land_Pr_m_Ev :: Precipitation minus Evaporation [kg/m2/s]
 C     land_EnWFlux :: Energy flux associated with Precip [W/m2] (snow, T_rain)
       COMMON /LAND_FORCFIELDS/
-     &  land_HeatFLx, land_Pr_m_Ev, land_EnWFlux
+     &  land_HeatFlx, land_Pr_m_Ev, land_EnWFlux
 
-      _RL land_HeatFLx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL land_HeatFlx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL land_Pr_m_Ev(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL land_EnWFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 

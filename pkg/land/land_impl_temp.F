@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_impl_temp.F,v 1.2 2004/06/03 16:43:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_impl_temp.F,v 1.3 2004/06/21 16:50:21 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -150,6 +150,8 @@ C--   initialise local variables
           dBug = bi.eq.lprt .AND. i.EQ.iprt .AND. j.EQ.jprt
           IF (dBug) write(6,1010)
      &         'LAND_IMPL_TEMP: 0 , ts,tg1&2,mSw=',0,tSurf,tg,mSnow
+          IF (dBug) write(6,1010)
+     &         'LAND_IMPL_TEMP: 0 , sFlx=', 0,(sFlx(i,j,k),k=0,2)
 #endif
 
 C---   Solve for temp as if no freezing/melting was occuring :

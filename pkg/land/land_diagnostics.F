@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_diagnostics.F,v 1.2 2004/03/11 14:42:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_diagnostics.F,v 1.3 2004/06/21 16:50:21 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -81,6 +81,13 @@ C--   Write ground Temp and soil moisture :
      &       land_runOff(1-OLx,1-OLy,bi,bj), bi,bj,1,iterWr,myThid)
         CALL WRITE_LOCAL_RL('land_enRnOf','I10',1,
      &       land_enRnOf(1-OLx,1-OLy,bi,bj), bi,bj,1,iterWr,myThid)
+
+        CALL WRITE_LOCAL_RL('land_HeatFx','I10',1,
+     &       land_HeatFlx(1-OLx,1-OLy,bi,bj), bi,bj,1,iterWr,myThid)
+        CALL WRITE_LOCAL_RL('land_frWaFx','I10',1,
+     &       land_Pr_m_Ev(1-OLx,1-OLy,bi,bj), bi,bj,1,iterWr,myThid)
+        CALL WRITE_LOCAL_RL('land_EnWaFx','I10',1,
+     &       land_EnWFlux(1-OLx,1-OLy,bi,bj), bi,bj,1,iterWr,myThid)
 
 c      _END_MASTER( myThid )
 c      _BARRIER
