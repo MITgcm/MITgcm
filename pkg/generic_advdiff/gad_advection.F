@@ -1,32 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.19 2004/03/27 03:51:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.20 2004/03/28 19:28:34 edhill Exp $
 C $Name:  $
-
-CBOI
-C !TITLE: pkg/generic\_advdiff
-C !AUTHORS: adcroft@mit.edu
-C !INTRODUCTION: Generic Advection Diffusion Package
-C
-C Package ``generic\_advdiff'' provides a common set of routines for calculating
-C advective/diffusive fluxes for tracers (cell centered quantities on a C-grid).
-C
-C Many different advection schemes are available: the standard centered
-C second order, centered fourth order and upwind biased third order schemes
-C are known as linear methods and require some stable time-stepping method
-C such as Adams-Bashforth. Alternatives such as flux-limited schemes are
-C stable in the forward sense and are best combined with the multi-dimensional
-C method provided in gad\_advection.
-C
-C There are two high-level routines:
-C  \begin{itemize}
-C  \item{GAD\_CALC\_RHS} calculates all fluxes at time level "n" and is used
-C  for the standard linear schemes. This must be used in conjuction with
-C  Adams-Bashforth time-stepping. Diffusive and parameterized fluxes are
-C  always calculated here.
-C  \item{GAD\_ADVECTION} calculates just the advective fluxes using the
-C  non-linear schemes and can not be used in conjuction with Adams-Bashforth
-C  time-stepping.
-C  \end{itemize}
-CEOI
 
 #include "GAD_OPTIONS.h"
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.15 2004/03/22 05:10:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.16 2004/03/28 19:28:34 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -37,61 +37,73 @@ C     a NetCDF file:
 C     - contains: [ name, 0+ attr, 0+ grid-ref, 0+ var-ref ]
 C
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP
+C     !ROUTINE: mnc_common.h
+
+C     !INTERFACE:
+C     #include "mnc_common.h"
+
+C     !DESCRIPTION:
+C     Contains the ``look-up'' tables for the MNC package.  These tables
+C     contain the mappings between the various names and the NetCDF
+C     entities.
+
+C     !LOCAL VARIABLES:
+C     The following MNC "Internals" are implemented on a 
+C     PER-NetDCF-FILE basis:
+C     .
+C     mnc_blank_name    :: (convenience) just MNC_MAX_CHAR spaces
+C     .
+C     mnc_f_names (fi)  :: file names
+C     mnc_g_names (gi)  :: grid names    <----+-----------+
+C     .                                       |           |
+C     mnc_f_info (fi,-) :: isDEF, fID, Ngrid, g1,ds1,de1, g2,ds2,de2...
+C     .                                          |   |       |   |
+C     mnc_fd_ind (fi,-) :: dim indicies  <-------+---+-------+---+
+C     .                              |
+C     mnc_d_names (di)  :: names  <--+  <--+  |           |
+C     mnc_d_ids   (di)  :: IDs    <--+  <--+  +-----+-----+
+C     mnc_d_size  (di)  :: sizes  <--+  <--+        | starting
+C     .                                    |        | indicies of
+C     mnc_f_alld (fi,di):: ndim, id1,id2,id3, ...   | grids in
+C     .                                             | mnc_f_info
+C     .                                 +-----------+
+C     .                                 |           |
+C     mnc_fv_ids (fi,-) :: nVar, n1,ID1,ig1, n2,ID2,ig2, ...
+C     .                          |           |
+C     mnc_v_names (vi)  ::   <---+-----------+
 C
-C     MNC "Internals" : implemented on a PER-NetDCF-FILE basis
-C
-C     mnc_blank_name    : (convenience) just MNC_MAX_CHAR spaces
-C
-C     mnc_f_names (fi)  : file names
-C     mnc_g_names (gi)  : grid names    <----+-----------+
-C     .                                      |           |
-C     mnc_f_info (fi,-) : isDEF, fID, Ngrid, g1,ds1,de1, g2,ds2,de2...
-C     .                                         |   |       |   |
-C     mnc_fd_ind (fi,-) : dim indicies  <-------+---+-------+---+
-C     .                             |
-C     mnc_d_names (di)  : names  <--+  <--+  |           |
-C     mnc_d_ids   (di)  : IDs    <--+  <--+  +-----+-----+
-C     mnc_d_size  (di)  : sizes  <--+  <--+        | starting
-C     .                                   |        | indicies of
-C     mnc_f_alld (fi,di): ndim, id1,id2,id3, ...   | grids in
-C     .                                            | mnc_f_info
-C     .                                +-----------+
-C     .                                |           |
-C     mnc_fv_ids (fi,-) : nVar, n1,ID1,ig1, n2,ID2,ig2, ...
-C     .                         |           |
-C     mnc_v_names (vi)  :   <---+-----------+
-C
-C     fi  :  file index
-C     vi  :  variable index
-C     di  :  dimension index
-C
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C
-C     MNC "Convenience Wrapper" : implemented independently of any
-C     .                           NetCDF files
-C
-C     mnc_cw_gname (g)  : Gtype names              <--------+
-C     mnc_cw_ndim  (g)  : number of dimensions              |
-C     mnc_cw_dn   (i,g) : dname1, dname2, ...               |
-C     mnc_cw_dims (i,g) : d1, d2, d3, ...                   |
-C     mnc_cw_is   (i,g) : starting indicies: is1, is2, ...  |
-C     mnc_cw_ie   (i,g) : ending indicies:   ie1, ie2, ...  |
-C     .                                                     |
-C     mnc_cw_vname (v)  : Vtype names                       |
-C     mnc_cw_vgind (v)  : index into                --------+
-C     mnc_cw_vnat (3,v) : number of attributes [T,I,D]
-C     mnc_cw_vbij (2,v) : bi,bi indicies (0 if not applicable)
-C     mnc_cw_vtnm (i,v) : text (character) attribute names
-C     mnc_cw_vtat (i,v) : text (character) attributes
-C     mnc_cw_vinm (i,v) : INT attribute names
-C     mnc_cw_viat (i,v) : INT attributes
-C     mnc_cw_vdnm (i,v) : REAL*8 attribute names
-C     mnc_cw_vdat (i,v) : REAL*8 attributes
-C
-C     g : Gtype index
-C     v : Vtype index
-C
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     fi                ::  file index
+C     vi                ::  variable index
+C     di                ::  dimension index
+C     .
+C     .
+C     The following MNC "Convenience Wrapper" variables are 
+C     implemented independently of any NetCDF files
+C     .
+C     mnc_cw_gname (g)  :: Gtype names              <--------+
+C     mnc_cw_ndim  (g)  :: number of dimensions              |
+C     mnc_cw_dn   (i,g) :: dname1, dname2, ...               |
+C     mnc_cw_dims (i,g) :: d1, d2, d3, ...                   |
+C     mnc_cw_is   (i,g) :: starting indicies: is1, is2, ...  |
+C     mnc_cw_ie   (i,g) :: ending indicies:   ie1, ie2, ...  |
+C     .                                                      |
+C     mnc_cw_vname (v)  :: Vtype names                       |
+C     mnc_cw_vgind (v)  :: index into                --------+
+C     mnc_cw_vnat (3,v) :: number of attributes [T,I,D]
+C     mnc_cw_vbij (2,v) :: bi,bi indicies (0 if not applicable)
+C     mnc_cw_vtnm (i,v) :: text (character) attribute names
+C     mnc_cw_vtat (i,v) :: text (character) attributes
+C     mnc_cw_vinm (i,v) :: INT attribute names
+C     mnc_cw_viat (i,v) :: INT attributes
+C     mnc_cw_vdnm (i,v) :: REAL*8 attribute names
+C     mnc_cw_vdat (i,v) :: REAL*8 attributes
+C     .
+C     g                 :: Gtype index
+C     v                 :: Vtype index
+C     .
+C     .
 
       integer MNC_MAX_ID, MNC_MAX_CHAR, MNC_MAX_INFO
       integer MNC_CW_MAX_I
@@ -151,7 +163,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       character*(MNC_MAX_CHAR) mnc_out_path
 
+CEOP
+
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 CEH3 ;;; Local Variables: ***
 CEH3 ;;; mode:fortran ***
 CEH3 ;;; End: ***

@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.2 2004/03/26 23:46:11 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.3 2004/03/28 19:28:34 edhill Exp $
 #
 #  A script to generate the Makefile for the API Reference
 
@@ -18,11 +18,11 @@ cat ./dir_list | grep -v '^[ ]*#' | grep -v '^[ ]*$' > ./.dir_list_nocomments
 name=$0
 cat <<EOF > Makefile
 #
-#  ========================================
+#  ================================================
 #
-#  CREATED BY $name -- DO NOT EDIT !!!
+#  CREATED BY "$name" -- DO NOT EDIT !!!
 #
-#  ========================================
+#  ================================================
 #
 
 .SUFFIXES:
@@ -30,7 +30,7 @@ cat <<EOF > Makefile
 all: all_protex
 
 clean:
-	-rm -f *.tex *.aux *.dvi *.log *.toc
+	-rm -f *.tex *.aux *.dvi *.log *.toc *.out
 
 EOF
 
@@ -41,18 +41,20 @@ cat ./.dir_list_nocomments | while read line ; do
     base_target=`echo $line | awk '{print $1}' | sed -e 's|/|__|g'`
     target=$base_target".tex"
     echo "Finding files for \"$target\" in: $line"
-    F_files=""
+    tex_files=""
     h_files=""
+    F_files=""
     c_files=""
     for i in $line ; do
-	F_files="$F_files"`ls -1 ../../$i/*.F  2>/dev/null`
+	tex_files="$tex_files"`ls -1 ../../$i/*.tex  2>/dev/null`
 	h_files="$h_files"`ls -1 ../../$i/*.h  2>/dev/null`
+	F_files="$F_files"`ls -1 ../../$i/*.F  2>/dev/null`
 	c_files="$c_files"`ls -1 ../../$i/*.c  2>/dev/null`
     done
 
-    # *.F
-    printf '%s' $base_target"_F = " >> Makefile
-    for i in $F_files ; do
+    # *.tex
+    printf '%s' $base_target"_tex = " >> Makefile
+    for i in $tex_files ; do
 	printf '\\\n%s' " $i " >> Makefile
     done
     printf '\n' >> Makefile
@@ -64,24 +66,35 @@ cat ./.dir_list_nocomments | while read line ; do
     done
     printf '\n' >> Makefile
 
+    # *.F
+    printf '%s' $base_target"_F = " >> Makefile
+    for i in $F_files ; do
+	printf '\\\n%s' " $i " >> Makefile
+    done
+    printf '\n' >> Makefile
+
     # *.c
     printf '%s' $base_target"_c = " >> Makefile
     for i in $c_files ; do
 	printf '\\\n%s' " $i " >> Makefile
     done
     printf '\n' >> Makefile
-    d_F="\$("$base_target"_F)"
+    d_tex="\$("$base_target"_tex)"
     d_h="\$("$base_target"_h)"
+    d_F="\$("$base_target"_F)"
     d_c="\$("$base_target"_c)"
     cat <<EOF >> Makefile
-$target: $d_F $d_h $d_c
+$target: $d_tex $d_h $d_F $d_c
 	-rm -f $target
 EOF
-    if test ! "x$F_files" = x ; then
-	printf '\t%s\n' "-./protex -b7 $d_F >> $target" >> Makefile
+    if test ! "x$tex_files" = x ; then
+	printf '\t%s\n' "-cat $d_tex >> $target" >> Makefile
     fi
     if test ! "x$h_files" = x ; then
 	printf '\t%s\n' "-./protex -b7 $d_h >> $target" >> Makefile
+    fi
+    if test ! "x$F_files" = x ; then
+	printf '\t%s\n' "-./protex -b7 $d_F >> $target" >> Makefile
     fi
     if test ! "x$c_files" = x ; then
 	printf '\t%s\n' "-./protex -bC $d_c >> $target" >> Makefile
@@ -108,6 +121,7 @@ api_main.tex: \$(ALLTEX)
 	-./build_main \$(ALLTEX)
 
 api_main.dvi:  api_main.tex
+	latex api_main
 	latex api_main
 	latex api_main
 	latex api_main

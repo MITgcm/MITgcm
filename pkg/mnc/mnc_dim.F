@@ -1,19 +1,27 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.7 2004/03/19 03:28:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.8 2004/03/28 19:28:34 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+CBOP
+C     !ROUTINE: MNC_DIM_INIT
+C     !INTERFACE:
       SUBROUTINE MNC_DIM_INIT( 
      I     fname, 
      I     dname, 
      I     dlen, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Creates a NetCDF dimension within an existing NetCDF file
+
+C     !INPUT PARAMETERS:
 C     Arguments
       integer myThid, dlen
       character*(*) fname, dname
+CEOP
 
       CALL MNC_DIM_INIT_ALL(fname, dname, dlen, 'Y', myThid)
 
@@ -23,6 +31,9 @@ C     Arguments
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+CBOP
+C     !ROUTINE: MNC_DIM_INIT_ALL
+C     !INTERFACE:
       SUBROUTINE MNC_DIM_INIT_ALL( 
      I     fname, 
      I     dname, 
@@ -30,12 +41,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     doWrite, 
      I     myThid ) 
 
+C     !DESCRIPTION:
+C     Creates a NetCDF dimension within an existing NetCDF file
+
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, dlen
       character*(*) fname, dname
       character*(1) doWrite
@@ -43,9 +58,10 @@ C     Arguments
 C     Functions
       integer ILNBLNK, IFNBLNK
 
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i,j, indf,indd, n,nf, dnf,dnl, ntmp, idd, err, tlen
       character*(MAX_LEN_MBUF) msgbuf
+CEOP
 
       nf = ILNBLNK(fname)
 

@@ -6,4 +6,5 @@ Makefile
 *.dvi
 *.log
 *.out
+*.toc
 
