@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.21 2004/05/05 00:23:37 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.22 2004/05/05 02:50:36 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -103,7 +103,6 @@ CADJ STORE area  = comlev1, key = ikey_dynamics
 C solve ice momentum equations and calculate ocean surface stress
       IF ( DIFFERENT_MULTIPLE(
      &     SEAICE_deltaTdyn,myTime,myTime-SEAICE_deltaTtherm) ) THEN
-       print*,'###dynsolver',myTime,SEAICE_deltaTdyn,SEAICE_deltaTtherm
          CALL TIMER_START('DYNSOLVER          [SEAICE_MODEL]',myThid)
          CALL DYNSOLVER ( myTime, myIter, myThid )
          CALL TIMER_STOP ('DYNSOLVER          [SEAICE_MODEL]',myThid)
