@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.1 2003/06/12 17:54:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.2 2003/07/31 18:22:10 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -35,12 +35,16 @@ CEOP
 
 #ifdef ALLOW_LAND
 
+C Functions
+      INTEGER ILNBLNK
+
 C     == Local Variables == 
 C     msgBuf     :: Informational/error meesage buffer
 C     iUnit      :: Work variable for IO unit number
 C     k          :: loop counter
+C     iL         :: Work variable for length of file-name
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit, k
+      INTEGER iUnit, k, iL
       _RL tmpvar
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -48,12 +52,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Land model parameters:
 C     land_calc_grT :: step forward ground Temperature
 C     land_calc_grW :: step forward soil moiture
+C     land_grT_iniFile :: File containing initial ground Temp.
+C     land_grW_iniFile :: File containing initial ground Water.
 C     land_deltaT   :: land model time-step
 C     land_taveFreq :: Frequency^-1 for time-Aver. output (s)
 C     land_diagFreq :: Frequency^-1 for diagnostic output (s)
 C     land_dzF      :: layer thickness
       NAMELIST /LAND_MODEL_PAR/
      &    land_calc_grT, land_calc_grW, 
+     &    land_grT_iniFile, land_grW_iniFile,
      &    land_deltaT, land_taveFreq, land_diagFreq,
      &    land_dzF
 
@@ -74,6 +81,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-    Set default value:
       land_calc_grT = .TRUE. 
       land_calc_grW = .TRUE.
+      land_grT_iniFile = ' '
+      land_grW_iniFile = ' '
       land_deltaT   = deltaTclock
       land_taveFreq = taveFreq
       land_diagFreq = dumpFreq
@@ -139,14 +148,15 @@ C-    derive other parameters:
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Print out parameter values :
 
+      iUnit = standardMessageUnit
       WRITE(msgBuf,'(A)') ' '
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '// Land package parameters :'
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '// ==================================='
-      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
 
 C- namelist LAND_MODEL_PAR:
        CALL WRITE_0D_L( land_calc_grT, INDEX_NONE,
@@ -155,6 +165,28 @@ C- namelist LAND_MODEL_PAR:
        CALL WRITE_0D_L( land_calc_grW, INDEX_NONE,
      &                 'land_calc_grW =',
      &   ' /* step forward soil moiture on/off flag */')       
+      iL = ILNBLNK( land_grT_iniFile )
+c     IF ( iL.EQ.LEN(land_grT_iniFile) ) iL=0
+      IF ( iL.GE.1 ) THEN 
+       WRITE(msgBuf,'(A,A)') 'land_grT_iniFile = ', 
+     &                       '/* Initial ground-Temp Input-File */'
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       WRITE(msgBuf,'(16X,A)') land_grT_iniFile(1:iL)
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       msgBuf='    ;'
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+      ENDIF
+      iL = ILNBLNK( land_grW_iniFile )
+c     IF ( iL.EQ.LEN(land_grW_iniFile) ) iL=0
+      IF ( iL.GE.1 ) THEN 
+       WRITE(msgBuf,'(A,A)') 'land_grW_iniFile = ', 
+     &                       '/* Initial soil-Water Input-File */'
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       WRITE(msgBuf,'(16X,A)') land_grW_iniFile(1:iL)
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       msgBuf='    ;'
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+      ENDIF
        CALL WRITE_0D_R8( land_deltaT, INDEX_NONE,'land_deltaT =',
      &  ' /* land model Time-Step (s) */')
        CALL WRITE_0D_R8( land_taveFreq, INDEX_NONE,'land_taveFreq =',

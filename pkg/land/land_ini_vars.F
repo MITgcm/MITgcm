@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_ini_vars.F,v 1.1 2003/06/12 17:54:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_ini_vars.F,v 1.2 2003/07/31 18:22:10 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -28,6 +28,7 @@ C-- size for MITgcm & Land package :
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "LAND_PARAMS.h"
+#include "LAND_VARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==       
@@ -43,18 +44,29 @@ c     CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+
       IF ( startTime.EQ.0. .AND. nIter0.EQ.0 ) THEN
 
-C--   Define the initial state
-C     for now, loaded from AIM surf. BC in S/R aim_land2aim
+C--   Define the initial state : read from file
+       _BEGIN_MASTER( myThid )
+       IF ( land_grT_iniFile .NE. ' ' ) THEN
+        CALL MDSREADFIELD( land_grT_iniFile, readBinaryPrec, 'RL',
+     &                     land_nLev, land_groundT, 1, myThid)
+       ENDIF
+       IF ( land_grW_iniFile .NE. ' ' ) THEN
+        CALL MDSREADFIELD( land_grW_iniFile, readBinaryPrec, 'RL',
+     &                     land_nLev, land_groundW, 1, myThid)
+       ENDIF
+       _END_MASTER(myThid)
 
-c     ELSE
-C-    a trick to allow to start without a land pickup:
       ELSEIF ( land_calc_grT .OR. land_calc_grW ) THEN
 
 C--   Read Land package state variables from pickup file
         CALL LAND_READ_PICKUP( nIter0, myThid )
 
+c     ELSE
+C-    a trick to allow to start without a land pickup:
+C        load grT & grW from AIM surf. BC in S/R aim_land2aim
       ENDIF
 
 #endif /* ALLOW_LAND */
