@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.14 2004/12/10 20:15:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.15 2004/12/14 04:51:18 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -10,7 +10,7 @@ C $Name:  $
      I        myThid)
 
 cph(
-cph The following line was commented in the parameter list
+cph The following line was commented in the argument list
 cph TAMC cannot digest commented lines within continuing lines
 c    I        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
 cph)
@@ -268,11 +268,11 @@ C and should be less than 1/8, for example viscAh=0.01
       ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
-      if (useDiagnostics) then
+      IF (useDiagnostics) THEN
        klev = -1 * k
-       call fill_diagnostics(myThid,'VISCAH  ',klev,1,3,bi,bj,viscAh_D)
-       call fill_diagnostics(myThid,'VISCA4  ',klev,1,3,bi,bj,viscA4_D)
-      endif
+       CALL DIAGNOSTICS_FILL(viscAh_D,'VISCAH  ',klev,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(viscA4_D,'VISCA4  ',klev,1,2,bi,bj,myThid)
+      ENDIF
 #endif
 
       RETURN
