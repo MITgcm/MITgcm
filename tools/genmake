@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.65 2002/08/07 19:57:48 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.66 2002/08/08 15:24:00 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -292,6 +292,8 @@ foreach dr ($PACKAGES)
         set DEFINES = ($DEFINES '-DDISABLE_MOM_VECINV'); breaksw
       case generic_advdiff:
         set DEFINES = ($DEFINES '-DDISABLE_GENERIC_ADVDIFF'); breaksw
+      case debug:
+        set DEFINES = ($DEFINES '-DDISABLE_DEBUGMODE'); breaksw
       default:
         breaksw
     endsw
