@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.20 2005/03/23 18:21:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.21 2005/03/24 14:32:46 baylor Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -111,8 +111,22 @@ c (and differs by as much as 4X)
            grdVrt=max(grdVrt,
      &      abs((vort3(i+1,j+1)-vort3(i+1,j))*recip_DYG(i+1,j,bi,bj)))
 
-           Alth2=viscC2leith*grdVrt*L3
-           Alth4=viscC4leith*grdVrt*L5
+           grdDiv=abs((hDiv(i+1,j)-hDiv(i,j))*recip_DXG(i,j,bi,bj))
+           grdDiv=max(grdDiv,
+     &      abs((hDiv(i,j+1)-hDiv(i,j))*recip_DYG(i,j,bi,bj)))
+           grdDiv=max(grdDiv,
+     &      abs((hDiv(i-1,j)-hDiv(i,j))*recip_DXG(i-1,j,bi,bj)))
+           grdDiv=max(grdDiv,
+     &      abs((hDiv(i,j-1)-hDiv(i,j))*recip_DYG(i,j-1,bi,bj)))
+
+C This if statement is just to prevent bitwise changes when leithd=0
+           IF ((viscC2leithd.eq.0).and.(viscc4leithd.eq.0)) THEN
+            Alth2=viscC2leith*grdVrt*L3
+            Alth4=viscC4leith*grdVrt*L5
+           ELSE
+            Alth2=sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)*L3
+            Alth4=sqrt(viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)*L5
+           ENDIF
          ENDIF
 
 C  Harmonic Modified Leith on Div.u points
@@ -168,8 +182,22 @@ C but this approximation will work on cube (and differs by as much as 4X)
            grdVrt=max(grdVrt,
      &       abs((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj)))
 
-           Alth2=viscC2leith*grdVrt*L3
-           Alth4=viscC4leith*grdVrt*L5
+           grdDiv=abs((hDiv(i+1,j)-hDiv(i,j))*recip_DXG(i,j,bi,bj))
+           grdDiv=max(grdDiv,
+     &      abs((hDiv(i,j+1)-hDiv(i,j))*recip_DYG(i,j,bi,bj)))
+           grdDiv=max(grdDiv,
+     &      abs((hDiv(i+1,j+1)-hDiv(i,j+1))*recip_DXG(i-1,j,bi,bj)))
+           grdDiv=max(grdDiv,
+     &      abs((hDiv(i+1,j+1)-hDiv(i+1,j))*recip_DYG(i,j-1,bi,bj)))
+
+C This if statement is just to prevent bitwise changes when leithd=0
+           IF ((viscC2leithd.eq.0).and.(viscc4leithd.eq.0)) THEN
+            Alth2=viscC2leith*grdVrt*L3
+            Alth4=viscC4leith*grdVrt*L5
+           ELSE
+            Alth2=sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)*L3
+            Alth4=sqrt(viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)*L5
+           ENDIF
          ENDIF
 
 C  Harmonic Modified Leith on Zeta points
