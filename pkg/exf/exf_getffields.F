@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.24 2004/12/20 23:32:52 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.25 2005/02/23 21:52:58 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -119,14 +119,14 @@ c     Zonal and meridional wind.
 #ifdef ALLOW_UWIND_CONTROL
       call ctrl_get_gen (
      &     xx_uwind_file, xx_uwindstartdate, xx_uwindperiod,
-     &     maskw, uwind, xx_uwind0, xx_uwind1, xx_uwind_dummy,
+     &     maskc, uwind, xx_uwind0, xx_uwind1, xx_uwind_dummy,
      &     mycurrenttime, mycurrentiter, mythid )
 #endif /* ALLOW_UWIND_CONTROL */
 
 #ifdef ALLOW_VWIND_CONTROL
       call ctrl_get_gen (
      &     xx_vwind_file, xx_vwindstartdate, xx_vwindperiod,
-     &     masks, vwind, xx_vwind0, xx_vwind1, xx_vwind_dummy,
+     &     maskc, vwind, xx_vwind0, xx_vwind1, xx_vwind_dummy,
      &     mycurrenttime, mycurrentiter, mythid )
 #endif /* ALLOW_VWIND_CONTROL */
 
