@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.29 2004/11/05 18:39:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.30 2004/11/05 19:23:06 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -85,11 +85,6 @@ c     _RL      mT (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vDiss(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     I,J,K - Loop counters
       INTEGER i,j,k
-C     rVelMaskOverride - Factor for imposing special surface boundary conditions
-C                        ( set according to free-surface condition ).
-C     hFacROpen        - Lopped cell factos used tohold fraction of open
-C     hFacRClosed        and closed cell wall.
-      _RL  rVelMaskOverride
 C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  ArDudrFac
       _RL  phxFac
@@ -97,7 +92,6 @@ c     _RL  mtFacU
       _RL  ArDvdrFac
       _RL  phyFac
 c     _RL  mtFacV
-      _RL wVelBottomOverride
       LOGICAL bottomDragTerms
       LOGICAL writeDiag
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -118,10 +112,6 @@ C--   (at least in part)
       fVerV(1,1,kUp) = fVerV(1,1,kUp)
 #endif
 
-      rVelMaskOverride=1.
-      IF ( k .EQ. 1 ) rVelMaskOverride=freeSurfFac
-      wVelBottomOverride=1.
-      IF (k.EQ.Nr) wVelBottomOverride=0.
       writeDiag = DIFFERENT_MULTIPLE(diagFreq, myTime,
      &                                         myTime-deltaTClock)
 
@@ -214,7 +204,8 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
 
       IF (momViscosity) THEN
 C      Calculate del^2 u and del^2 v for bi-harmonic term
-       IF (viscA4.NE.0.
+       IF ( (viscA4.NE.0. .AND. no_slip_sides)
+     &     .OR. viscA4D.NE.0. .OR. viscA4Z.NE.0.
      &     .OR. viscA4Grid.NE.0.
      &     .OR. viscC4leith.NE.0.
      &    ) THEN
