@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.33 2003/11/12 21:52:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.34 2003/11/20 03:50:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -7,7 +7,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: DO_THE_MODEL_IO
 C     !INTERFACE:
-      SUBROUTINE DO_THE_MODEL_IO(myCurrentTime, myIter, myThid)
+      SUBROUTINE DO_THE_MODEL_IO( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE DO_THE_MODEL_IO                                
@@ -45,23 +45,21 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
 C     myIter - Iteration number
-C     myCurrentTime - Current time of simulation ( s )
+C     myTime - Current time of simulation ( s )
       INTEGER myThid
       INTEGER myIter
-      _RL    myCurrentTime
+      _RL     myTime
 
 CEOP
 
 C--   Generaly only thread 1 does IO here. It can not start until 
 C--   all threads fields are ready.
-      IF (
-     &  DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,
-     &                     myCurrentTime-deltaTClock)
-     & ) THEN
+      IF (debugMode) THEN 
+       IF ( DIFFERENT_MULTIPLE(dumpFreq,myTime, myTime-deltaTClock)
+     &    ) THEN
 
        _BARRIER
 
-       IF (debugMode) THEN 
 C--    Write "text-plots" of certain fields
        CALL PLOT_FIELD_XYZRL( uVel , 'Current uVel  ' , 
      &                        Nr, myIter, myThid )
@@ -71,72 +69,70 @@ C--    Write "text-plots" of certain fields
      &                        Nr, myIter, myThid )
        CALL PLOT_FIELD_XYRL( etaN  , 'Current etaN  ' , 
      &                        myIter, myThid )
-       ENDIF
 
+       ENDIF
       ENDIF
 
 C--   Write model state to binary file
-      CALL WRITE_STATE( myCurrentTime, myIter, myThid )
+      CALL WRITE_STATE( myTime, myIter, myThid )
 
 #ifdef ALLOW_TIMEAVE
 C--   Do time averages
-ceh3 should this have an IF ( useTIMEAVE ) THEN
-      IF (taveFreq.GT.0.) THEN
-       CALL TIMEAVE_STATV_WRITE( myCurrentTime, myIter, myThid )
-cswdptr -- add ---
+      IF (taveFreq.GT.0. .AND. myIter.NE.nIter0 ) THEN
+       CALL TIMEAVE_STATV_WRITE( myTime, myIter, myThid )
 #ifdef ALLOW_PTRACERS
-ceh3 this needs an IF ( usePTRACERS ) THEN
-       CALL PTRACERS_STATV_WRITE( myCurrentTime, myIter, myThid )
+       IF ( usePTRACERS )
+     & CALL PTRACERS_STATV_WRITE( myTime, myIter, myThid )
 #endif
-cswdptr -- end add ---
       ENDIF
 #endif
+
 #ifdef ALLOW_AIM
 C--   Do AIM time averages
-      IF (useAIM)
-     &  CALL AIM_WRITE_TAVE( myCurrentTime, myIter, myThid )
+      IF (useAIM .AND. myIter.NE.nIter0 )
+     &  CALL AIM_WRITE_TAVE( myTime, myIter, myThid )
 #endif                                                             
 #ifdef ALLOW_LAND
 C--   Do LAND time averages
-      IF (useLAND)
-     &  CALL LAND_WRITE_TAVE( myCurrentTime, myIter, myThid )
+      IF (useLAND .AND. myIter.NE.nIter0 )
+     &  CALL LAND_WRITE_TAVE( myTime, myIter, myThid )
 #endif                                                             
 
 #ifdef ALLOW_OBCS
-      IF (useOBCS)
-     & CALL OBCS_DIAGS( myCurrentTime, myIter, myThid )
+      IF (useOBCS .AND. myIter.NE.nIter0 )
+     & CALL OBCS_DIAGS( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_GMREDI
 C--   Do KPP diagnostics.
-      IF (useGMRedi)
-     & CALL GMREDI_DIAGS( myCurrentTime, myIter, myThid )
+      IF (useGMRedi .AND. myIter.NE.nIter0 )
+     & CALL GMREDI_DIAGS( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_KPP
 C--   Do KPP diagnostics.
-      IF (useKPP)
-     & CALL KPP_DO_DIAGS( myCurrentTime, myIter, myThid )
+      IF (useKPP .AND. myIter.NE.nIter0 )
+     & CALL KPP_DO_DIAGS( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_SBO
 C--   Do SBO diagnostics.
-      IF (useSBO) THEN
-         CALL SBO_CALC ( myCurrentTime, myIter, myThid )
-         CALL SBO_DIAGS( myCurrentTime, myIter, myThid )
+      IF (useSBO .AND. myIter.NE.nIter0 ) THEN
+         CALL SBO_CALC ( myTime, myIter, myThid )
+         CALL SBO_DIAGS( myTime, myIter, myThid )
       ENDIF
 #endif
 
 #ifdef ALLOW_BULK_FORCE
 C--   Do bulkf diagnostics.
-      IF (useBulkforce)
-     & CALL BULKF_DIAGS( myCurrentTime, myIter, myThid )
+      IF (useBulkforce .AND. myIter.NE.nIter0 )
+     & CALL BULKF_DIAGS( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_THERM_SEAICE
 C--   Do seaice diagnostics.
       IF (useThermSeaice)
-     & CALL ICE_DIAGS( myCurrentTime, myIter, myThid )
+     & CALL ICE_DIAGS( myTime, myIter, myThid )
 #endif
 
 cswdptr ---  add ---
@@ -144,10 +140,9 @@ cswdptr ---  add ---
 ceh3 ???  why is one package depending upon another here?
 C--   Do ptracer diagnostics.
       IF (usePTRACERS)
-     & CALL GCHEM_DIAGS( myCurrentTime, myIter, myThid )
+     & CALL GCHEM_DIAGS( myTime, myIter, myThid )
 #endif
 cswdptr -- end add ---
 
       RETURN
       END
- 
