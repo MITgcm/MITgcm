@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.24 2004/10/17 23:03:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.25 2004/10/22 01:42:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,7 +8,7 @@ CBOP
 C     !ROUTINE: CALC_DIFFUSIVITY
 C     !INTERFACE: 
       SUBROUTINE CALC_DIFFUSIVITY( 
-     I        bi,bj,iMin,iMax,jMin,jMax,K,
+     I        bi,bj,iMin,iMax,jMin,jMax,k,
      I        maskUp,
      O        KappaRT,KappaRS,
      I        myThid)
@@ -34,8 +34,8 @@ C     == GLobal variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     bi, bj, :: Range of points for which calculation
-C     iMin,      is performed.
+C     bi, bj, :: tile indices
+C     iMin,   :: Range of points for which calculation is performed.
 C     iMax, 
 C     jMin, 
 C     jMax
@@ -61,8 +61,7 @@ CEOP
 
       DO j = 1-Oly, sNy+Oly
        DO i = 1-Olx, sNx+Olx
-        KappaRT(i,j,k) = maskUp(i,j)*
-     &      (
+        KappaRT(i,j,k) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
      &       + diffKr(i,j,k,bi,bj)
@@ -70,14 +69,12 @@ CEOP
      &       + diffKrNrT(k)
 #endif
      &       + KbryanLewis79
-     &      )
        ENDDO
       ENDDO
 
       DO j = 1-Oly, sNy+Oly
        DO i = 1-Olx, sNx+Olx
-        KappaRS(i,j,k) = maskUp(i,j)*
-     &      (
+        KappaRS(i,j,k) =
      &         IVDConvCount(i,j,k,bi,bj)*ivdc_kappa
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
      &       + diffKr(i,j,k,bi,bj)
@@ -85,49 +82,83 @@ CEOP
      &       + diffKrNrS(k)
 #endif
      &       + KbryanLewis79
-     &      )
        ENDDO
       ENDDO
 
 #ifdef ALLOW_GMREDI
-      IF (useGMRedi) CALL GMREDI_CALC_DIFF(
-     I        bi,bj,iMin,iMax,jMin,jMax,K,
-     I        maskUp,
-     O        KappaRT,KappaRS,
+      IF (useGMRedi) THEN 
+         CALL GMREDI_CALC_DIFF(
+     I        bi,bj,iMin,iMax,jMin,jMax,k,Nr,
+     U        KappaRT,
      I        myThid)
+         CALL GMREDI_CALC_DIFF(
+     I        bi,bj,iMin,iMax,jMin,jMax,k,Nr,
+     U        KappaRS,
+     I        myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_KPP
-      IF (useKPP) CALL KPP_CALC_DIFF(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,K,
-     I        maskUp,
-     O        KappaRT,KappaRS,
+      IF (useKPP) THEN
+         CALL KPP_CALC_DIFF_T(
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     U        KappaRT,
      I        myThid)
+         CALL KPP_CALC_DIFF_S(
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     U        KappaRS,
+     I        myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_PP81
-      IF (usePP81) CALL PP81_CALC_DIFF(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,K,
-     I        maskUp,
-     O        KappaRT,KappaRS,
+      IF (usePP81) THEN
+         CALL PP81_CALC_DIFF(
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     U        KappaRT,
      I        myThid)
+         CALL PP81_CALC_DIFF(
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     U        KappaRS,
+     I        myThid)
+      ENDIF
 #endif
 
 #ifdef ALLOW_MY82
-      IF (useMY82) CALL MY82_CALC_DIFF(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,K,
-     I        maskUp,
-     O        KappaRT,KappaRS,
+      IF (useMY82) THEN
+         CALL MY82_CALC_DIFF(
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     U        KappaRT,
      I        myThid)
+         CALL MY82_CALC_DIFF(
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     U        KappaRS,
+     I        myThid)
+      ENDIF
 #endif
       
 #ifdef ALLOW_GGL90
-      IF (useGGL90) CALL GGL90_CALC_DIFF(
-     I        bi,bj,iMin+1,iMax,jMin+1,jMax,K,
-     I        maskUp,
-     O        KappaRT,KappaRS,
+      IF (useGGL90) THEN
+         CALL GGL90_CALC_DIFF(
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     O        KappaRT,
      I        myThid)
+         CALL GGL90_CALC_DIFF(
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,k,Nr,
+     O        KappaRS,
+     I        myThid)
+      ENDIF
 #endif
       
+C-    Apply mask to vertical diffusivity 
+C jmc: don't have the impression that masking is needed 
+C      but could be removed later if it's the case.
+      DO j = 1-Oly, sNy+Oly
+       DO i = 1-Olx, sNx+Olx
+        KappaRT(i,j,k) = maskUp(i,j)*KappaRT(i,j,k)
+        KappaRS(i,j,k) = maskUp(i,j)*KappaRS(i,j,k)
+       ENDDO
+      ENDDO
+
       RETURN
       END
