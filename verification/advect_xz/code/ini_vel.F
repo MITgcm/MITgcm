@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_xz/code/Attic/ini_vel.F,v 1.1 2001/09/28 02:28:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_xz/code/Attic/ini_vel.F,v 1.2 2003/05/15 15:20:26 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,9 +25,11 @@ C     bi,bj,i,j,k - Loop counters
 
       _RL psi,Lfac,Rpi
       psi(i,j,k,bi,bj)=Lfac*sin(XG(i,j,bi,bj)*Rpi/Lfac)
-     &    *sin( max(RF(k),R_low(i,j,bi,bj))*Rpi*recip_Rcol(i,j,bi,bj))
+     &    *sin( max(RF(k),
+     &       max(R_low(i,j,bi,bj),R_low(i-1,j,bi,bj))
+     &                   )*Rpi*recip_Rcol(i,j,bi,bj))
 
-      Rpi=3.14159265358979
+      Rpi=3.14159265358979 _d 0
       Lfac=(DELX(1)*float(Nx))
 
 
@@ -42,7 +44,7 @@ C
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+          DO i=1-Olx+1,sNx+Olx
            uVel (I,J,K,bi,bj) = 0. _d 0
      &         + (psi(I,J,K,bi,bj)-psi(I,J,K+1,bi,bj))*recip_dRF(k)
      &         *recip_hFacW(i,j,k,bi,bj)
