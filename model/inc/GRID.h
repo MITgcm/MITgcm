@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.22 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.23 2003/10/15 22:57:43 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -322,14 +322,11 @@ C              "lopped" a cell is (dimensionless scale factor).
 C              Note: The code needs terms like MIN(hFac,hFac(I+1))
 C                    On some platforms it may be better to precompute
 C                    hFacW, hFacE, ... here than do MIN on the fly.
-C     gravitySign - indicates whether gravity points in the opposite
-C                   direction of R or not.
-C                 ( = +1 for R=Z (gravity points downward in Z)
-C                 ( = -1 for R=P (gravity points upward in P)
+C     gravitySign - indicates the direction of gravity relative to R direction
+C                  (= -1 for R=Z (Z increases upward, -gravity direction  )
+C                  (= +1 for R=P (P increases downward, +gravity direction)
 C     rkFac     - Vertical coordinate to vertical index orientation.
 C                 ( -1 same orientation, 1 opposite orientation )
-C                 ( vertical coord == m  -> rkFac =  1 )
-C                 ( vertical coord == Pa -> rkFac = -1 )
 C     maskH  - cell Center full-column mask (= 2D mask)
 C     maskC  - cell Center land mask
 C     maskW  - West face land mask

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.42 2003/08/01 01:45:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.43 2003/10/15 22:55:51 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -329,7 +329,16 @@ CEOP
      &'   /* Rolling restart/checkpoint file interval ( s ). */')
       CALL WRITE_0D_R8( dumpFreq, INDEX_NONE,'dumpFreq =',
      &'   /* Model state write out interval ( s ). */')
-
+      CALL WRITE_0D_R8( externForcingPeriod, INDEX_NONE,
+     &   'externForcingPeriod =', '   /* forcing period (s) */')
+      CALL WRITE_0D_R8( externForcingCycle, INDEX_NONE,
+     &   'externForcingCycle =', '   /* period of the cyle (s). */')
+      CALL WRITE_0D_R8( tauThetaClimRelax, INDEX_NONE,
+     &   'tauThetaClimRelax =', '   /* relaxation time scale (s) */')
+      CALL WRITE_0D_R8( tauSaltClimRelax, INDEX_NONE,
+     &   'tauSaltClimRelax =',  '   /* relaxation time scale (s) */')
+      CALL WRITE_0D_R8( latBandClimRelax, INDEX_NONE,
+     &   'latBandClimRelax =', '   /* max. Lat. where relaxation */')
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &                    SQUEEZE_RIGHT , 1)

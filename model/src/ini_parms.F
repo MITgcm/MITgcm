@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.98 2003/08/01 01:45:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.99 2003/10/15 22:55:51 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -154,7 +154,8 @@ C--   Time stepping parammeters
      & startTime, endTime, chkPtFreq,
      & dumpFreq, taveFreq, tave_lastIter, deltaTClock, diagFreq,
      & monitorFreq, pChkPtFreq, cAdjFreq, 
-     & tauThetaClimRelax, tauSaltClimRelax, tauTr1ClimRelax,
+     & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax, 
+     & tauTr1ClimRelax,
      & periodicExternalForcing, externForcingPeriod, externForcingCycle
 
 C--   Gridding parameters
@@ -195,6 +196,7 @@ C--   Initialise "which vertical coordinate system used" flags.
 C--   Iniialise retired parameters to unlikely value
       nRetired = 0
       zonal_filt_lat  = UNSET_RL
+      gravitySign     = UNSET_RL
 
 C--   Open the parameter file
       OPEN(UNIT=scrUnit1,STATUS='SCRATCH')
@@ -468,6 +470,13 @@ C     Check for retired parameters still being used
      &  ' now read from file "data.zonfilt".'
        CALL PRINT_ERROR( msgBuf , myThid)
       ENDIF
+      IF ( gravitySign .NE. UNSET_RL ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_PARMS: "gravitySign" is set according to vertical ',
+     &  ' coordinate and is no longer allowed in file "data".'
+       CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
 
 C--   Elliptic solver parameters
       READ(UNIT=iUnit,NML=PARM02) !,IOSTAT=errIO)
@@ -494,6 +503,7 @@ C--   Elliptic solver parameters
 
 C--   Time stepping parameters
       rCD               = -1.D0
+      latBandClimRelax  = UNSET_RL
       READ(UNIT=iUnit,NML=PARM03) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
@@ -816,6 +826,12 @@ C--   Make metric term settings consistent with underlying grid.
        metricTerms = .FALSE.
        useNHMTerms = .FALSE.
       ENDIF
+C--   Set default for latitude-band where relaxation to climatology applies
+      IF ( latBandClimRelax .EQ. UNSET_RL) THEN
+        IF ( usingCartesianGrid ) latBandClimRelax = delY(1)*Ny*Ny
+        IF ( usingSphericalPolarGrid ) latBandClimRelax= 180. _d 0
+        IF ( usingCurvilinearGrid )    latBandClimRelax= 180. _d 0
+      ENDIF
 C--   set cell Center depth and put Interface at the middle between 2 C
       setCenterDr = .FALSE.
       IF (delRc(1).NE.UNSET_RL) setCenterDr=.TRUE.
@@ -903,10 +919,14 @@ c      rkFac = -1.D0
        rkFac =  1.D0
        horiVertRatio = 1.D0
       ENDIF
+      gravitySign = -1. _d 0
       convertEmP2rUnit = 1. _d 0
-      IF (buoyancyRelation.EQ.'ATMOSPHERIC')
-     &   horiVertRatio = Gravity * rhoConst
+      IF (buoyancyRelation.EQ.'ATMOSPHERIC') THEN
+         gravitySign = 1. _d 0
+         horiVertRatio = Gravity * rhoConst
+      ENDIF
       IF (buoyancyRelation.EQ.'OCEANICP') THEN
+         gravitySign = 1. _d 0
          horiVertRatio = Gravity * rhoConst
          convertEmP2rUnit = Gravity * rhoConstFresh
       ENDIF

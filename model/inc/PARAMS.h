@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.94 2003/08/01 01:44:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.95 2003/10/15 22:57:43 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -448,6 +448,8 @@ C     tauThetaClimRelax :: Relaxation to climatology time scale ( s ).
 C     lambdaThetaClimRelax :: Inverse time scale for relaxation ( 1/s ).
 C     tauSaltClimRelax :: Relaxation to climatology time scale ( s ).
 C     lambdaSaltClimRelax :: Inverse time scale for relaxation ( 1/s ).
+C     latBandClimRelax :: latitude band where Relaxation to Clim. is applied,
+C                         i.e. where |yC| <= latBandClimRelax
 C     externForcingPeriod :: Is the period of which forcing varies (eg. 1 month)
 C     externForcingCycle :: Is the repeat time of the forcing (eg. 1 year)
 C                          (note: externForcingCycle must be an integer
@@ -488,7 +490,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & cosPower, cAdjFreq, omega, rotationPeriod,
      & tauThetaClimRelax, lambdaThetaClimRelax,
      & tauSaltClimRelax, lambdaSaltClimRelax,
-     & tauTr1ClimRelax, lambdaTr1ClimRelax,
+     & tauTr1ClimRelax, lambdaTr1ClimRelax, latBandClimRelax,
      & externForcingCycle, externForcingPeriod,
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & viscAp, diffKpT, diffKpS, hFacMinDr, hFacMinDp,
@@ -586,6 +588,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL lambdaSaltClimRelax
       _RL tauTr1ClimRelax
       _RL lambdaTr1ClimRelax
+      _RL latBandClimRelax
       _RL externForcingCycle
       _RL externForcingPeriod
       _RL convertFW2Salt

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.51 2003/08/01 01:45:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.52 2003/10/15 22:55:51 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -85,7 +85,6 @@ C--   Set default "physical" parameters
        tRef(K) = 30.D0 - FLOAT( K )
 Cml       sRef(K) = 35.D0
       ENDDO
-      gravitySign         = 1.D0
       gravity             = 9.81D0
       rhoNil              = 999.8D0
       rhoConstFresh       = 999.8D0
