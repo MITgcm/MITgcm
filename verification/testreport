@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.66 2005/02/04 16:41:42 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.67 2005/02/06 16:58:08 jmc Exp $
 #  $Name:  $
 #
 
@@ -95,8 +95,8 @@ testoutput_for_prop()
     fi
     if [ -r $1/$4/output.txt ]; then
 	grep "$2" $1/$4/output.txt | sed 's/.*=//' | cat -n > tmp1.txt
-	lncnt=`wc -l tmp1.txt | awk '{print $1}' `
-	if [ $lncnt -lt 3 ]; then
+	lncntA=`wc -l tmp1.txt | awk '{print $1}' `
+	if [ $lncntA -lt 3 ]; then
 	    if [ $verbose -gt 0 ]; then
 		echo Not enough lines of output when searching for "$2" 1>&2
 	    fi
@@ -110,12 +110,18 @@ testoutput_for_prop()
 	echo testoutput_for_prop: grep "$2" $1/results/output.txt$5 1>&2
     fi
     grep "$2" $1/results/output.txt$5 | sed 's/.*=//' | cat -n > tmp2.txt
-    lncnt=`wc -l tmp2.txt | awk '{print $1}' `
-    if [ $lncnt -lt 3 ]; then
+    lncntB=`wc -l tmp2.txt | awk '{print $1}' `
+    if [ $lncntB -lt 3 ]; then
 	if [ $verbose -gt 0 ]; then
 	    echo Not enough lines of output when searching for "$2" 1>&2
 	fi
 	return 99
+    fi
+    if [ $lncntA -ne $lncntB ]; then
+        if [ $verbose -gt 0 ]; then
+            echo Not same Nb of lines when searching for "$2" ":" $lncntA $lncntB 1>&2
+        fi
+        return 99
     fi
     if [ $debug -gt 0 ]; then
 	echo testoutput_for_prop: join tmp1.txt tmp2.txt 1>&2
