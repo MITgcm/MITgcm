@@ -19,6 +19,7 @@
  implicitDiffusion=.TRUE.,
  allowFreezing=.TRUE.,
  useRealFreshWaterFlux=.TRUE.,
+ useCDscheme=.TRUE.,
 # turn on looped cells
  hFacMin=.05,
  hFacMindr=50.,

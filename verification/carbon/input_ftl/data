@@ -31,6 +31,7 @@
  implicitDiffusion=.TRUE.,
  readBinaryPrec=32,
  tr1Stepping=.TRUE.,
+ useCDscheme=.TRUE.,
 # readPickupWithTracer  = .FALSE.,
 # writePickupWithTracer = .FALSE.,
  &
