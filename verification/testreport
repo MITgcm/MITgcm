@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.8 2003/09/16 17:46:52 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.9 2003/09/16 18:16:03 edhill Exp $
 #
 
 usage()
@@ -179,7 +179,7 @@ genmakemodel()
 	cd $1;
 	printf 'genmake ... ' 1>&2
         # ../../../tools/genmake -ieee -mods=../code > make.log 2>&1
-	$GENMAKE2  -ds --mods=../code "--optfile="$OPTFILE > make.log 2>&1
+	$GENMAKE2  -ds -m $MAKE --mods=../code "--optfile="$OPTFILE > make.log 2>&1
 	RETVAL=$?
 	for i in gm_state gm_optfile gm_local Makefile ; do
 	    if test -r $i ; then
