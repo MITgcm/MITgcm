@@ -1,6 +1,6 @@
-#! /usr/bin/env sh
+#! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.85 2004/07/14 21:26:53 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.86 2004/07/17 02:52:14 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
