@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/timestep_tracer.F,v 1.2 2001/07/12 00:31:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/timestep_tracer.F,v 1.3 2001/07/31 15:01:33 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -32,8 +32,13 @@ C     == Local variables ==
       _RL ab15,ab05
 
 C     Adams-Bashforth timestepping weights
-      ab15 = 1.+ tauAB
-      ab05 = -tauAB
+      IF (myIter .EQ. 0) THEN
+       ab15=1.0
+       ab05=0.0
+      ELSE
+       ab15=1.+tauAB
+       ab05=-tauAB
+      ENDIF
 
 C     Step forward temperature
       IF ( gad_advection_scheme.EQ.ENUM_CENTERED_2ND

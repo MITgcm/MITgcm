@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.24 2001/06/05 15:29:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.25 2001/07/31 15:01:33 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -37,13 +37,13 @@ C     == Local variables ==
       _RL phxFac,phyFac, psFac
 
 C     Adams-Bashforth timestepping weights
-Caja  IF (myIter .EQ. 0) THEN
-Caja   ab15=1.0
-Caja   ab05=0.0
-Caja  ELSE
+      IF (myIter .EQ. 0) THEN
+       ab15=1.0
+       ab05=0.0
+      ELSE
        ab15=1.5+abeps
        ab05=-0.5-abeps
-Caja  ENDIF
+      ENDIF
 
 C     Step forward zonal velocity (store in Gu)
       psFac = pfFacMom*(1. _d 0 - implicSurfPress)
