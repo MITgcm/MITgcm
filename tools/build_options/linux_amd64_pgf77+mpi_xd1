@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77+mpi_xd1,v 1.1 2005/03/16 15:27:26 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77+mpi_xd1,v 1.2 2005/03/24 13:28:09 mlosch Exp $
 #  $Name:  $
 #
 # tested on xd1.awi-bremerhaven.de
@@ -23,8 +23,8 @@ LIBS='-Mmpi -Mfmpi'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
-    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-tp amd64 -O2 -Munroll'
+    FFLAGS='-byteswapio -Mnodclchk -Mextend'
+    FOPTIM='-O2 -Munroll'
 else
     #  Try to follow IEEE-754
     FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
