@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_apply.F,v 1.4 2001/05/29 14:01:40 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_apply.F,v 1.5 2001/10/27 02:13:46 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -87,7 +87,8 @@ C--        Update fields in top level according to tendency terms
           ENDIF
         ENDIF
 
-        IF ( tempStepping .AND. nShapT.GT.0) THEN
+        IF ( tempStepping .AND. nShapT.GT.0 
+     &           .AND. .NOT.staggerTimeStep ) THEN
           IF (Shap_funct.EQ.1) THEN
             CALL SHAP_FILT_TRACER_S1(
      U           tFld,
@@ -108,7 +109,8 @@ C--        Update fields in top level according to tendency terms
            STOP 'SHAP_FILT_APPLY: Ooops! Bad Shap_funct in T block'
           ENDIF
         ENDIF
-        IF ( saltStepping .AND. nShapT.GT.0) THEN 
+        IF ( saltStepping .AND. nShapT.GT.0
+     &           .AND. .NOT.staggerTimeStep ) THEN
           IF (Shap_funct.EQ.1) THEN
             CALL SHAP_FILT_TRACER_S1(
      U           sFld,
