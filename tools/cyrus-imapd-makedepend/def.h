@@ -77,10 +77,10 @@ in this Software without prior written authorization from the X Consortium.
 #define MAXDEFINES	512
 #define MAXFILES	512
    === EH3 === */
-#define MAXDEFINES      2048
-#define MAXFILES        2048
+#define MAXDEFINES      4096
+#define MAXFILES        4096
 /* === EH3 === */
-#define MAXDIRS		64
+#define MAXDIRS		256
 #define SYMTABINC	10	/* must be > 1 for define() to work right */
 #define	TRUE		1
 #define	FALSE		0
