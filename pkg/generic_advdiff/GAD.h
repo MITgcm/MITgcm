@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.2 2001/07/12 00:31:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.3 2001/07/13 19:06:50 heimbach Exp $
 C $Name:  $
 
 C Parameter common bloack
@@ -31,6 +31,8 @@ C Third/fourth order interpolation factor
 
 C Differentiate between tracers (only needed for KPP -  arrgh!!!)
       INTEGER GAD_TEMPERATURE
-      PARAMETER(GAD_TEMPERATURE=123)
+      PARAMETER(GAD_TEMPERATURE=101)
       INTEGER GAD_SALINITY
-      PARAMETER(GAD_SALINITY=321)
+      PARAMETER(GAD_SALINITY=102)
+      INTEGER GAD_TR1
+      PARAMETER(GAD_TR1=103)
