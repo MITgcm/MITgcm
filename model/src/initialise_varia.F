@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.17 2001/08/27 18:50:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.18 2001/09/10 16:35:27 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -72,6 +72,7 @@ C--   Initialise passive tracer(s)
       _BARRIER
 #endif
 
+#ifndef ALLOW_AUTODIFF_TAMC
       IF ( usePickupBeforeC35 ) THEN
 C-- IMPORTANT : Need to activate the following call to restart from 
 C     a pickup file written by MITgcmUV_checkpoint34 or earlier.
@@ -79,6 +80,7 @@ C     a pickup file written by MITgcmUV_checkpoint34 or earlier.
        CALL THE_CORRECTION_STEP(startTime, nIter0, myThid)
       ENDIF
       ENDIF
+#endif
 
 C--   Initial conditions are convectively adjusted (for historical reasons)
       IF ( startTime .EQ. 0. ) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.4 2001/09/10 01:22:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.5 2001/09/10 16:35:27 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -238,6 +238,13 @@ C This is currently also used by IVDC and Diagnostics
            ConvectCount(i,j,k) = 0.
            KappaRT(i,j,k) = 0. _d 0
            KappaRS(i,j,k) = 0. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
+           gT(i,j,k,bi,bj) = 0. _d 0
+           gS(i,j,k,bi,bj) = 0. _d 0
+#ifdef ALLOW_PASSIVE_TRACER
+           gTr1(i,j,k,bi,bj) = 0. _d 0
+#endif
+#endif
           ENDDO
          ENDDO
         ENDDO
@@ -437,22 +444,22 @@ C note(jmc) : phiHyd=0 at this point but is not really used in Molteni Physics
 
 C--     Some advection schemes are better calculated using a multi-dimensional
 C       method in the absence of any other terms and, if used, is done here.
-        IF (multiDimAdvection) THEN
-         IF (tempStepping .AND.
-     &       tempAdvScheme.NE.ENUM_CENTERED_2ND .AND.
-     &       tempAdvScheme.NE.ENUM_UPWIND_3RD .AND.
-     &       tempAdvScheme.NE.ENUM_CENTERED_4TH )
-     &   CALL GAD_ADVECTION(bi,bj,tempAdvScheme,GAD_TEMPERATURE,theta,
-     U                      gT,
-     I                      myTime,myIter,myThid)
-         IF (saltStepping .AND.
-     &       saltAdvScheme.NE.ENUM_CENTERED_2ND .AND.
-     &       saltAdvScheme.NE.ENUM_UPWIND_3RD .AND.
-     &       saltAdvScheme.NE.ENUM_CENTERED_4TH )
-     &   CALL GAD_ADVECTION(bi,bj,saltAdvScheme,GAD_SALINITY,salt,
-     U                      gS,
-     I                      myTime,myIter,myThid)
-        ENDIF
+cph        IF (multiDimAdvection) THEN
+cph         IF (tempStepping .AND.
+cph     &       tempAdvScheme.NE.ENUM_CENTERED_2ND .AND.
+cph     &       tempAdvScheme.NE.ENUM_UPWIND_3RD .AND.
+cph     &       tempAdvScheme.NE.ENUM_CENTERED_4TH )
+cph     &   CALL GAD_ADVECTION(bi,bj,tempAdvScheme,GAD_TEMPERATURE,theta,
+cph     U                      gT,
+cph     I                      myTime,myIter,myThid)
+cph         IF (saltStepping .AND.
+cph     &       saltAdvScheme.NE.ENUM_CENTERED_2ND .AND.
+cph     &       saltAdvScheme.NE.ENUM_UPWIND_3RD .AND.
+cph     &       saltAdvScheme.NE.ENUM_CENTERED_4TH )
+cph     &   CALL GAD_ADVECTION(bi,bj,saltAdvScheme,GAD_SALINITY,salt,
+cph     U                      gS,
+cph     I                      myTime,myIter,myThid)
+cph        ENDIF
 
 
 C--     Start of thermodynamics loop
