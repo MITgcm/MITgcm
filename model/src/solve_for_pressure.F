@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.28 2002/02/08 22:13:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.29 2002/02/10 00:39:22 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: SOLVE_FOR_PRESSURE
 C     !INTERFACE:
-      SUBROUTINE SOLVE_FOR_PRESSURE(myTime, myIter, myThid) 
+      SUBROUTINE SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
@@ -42,7 +42,7 @@ C     myIter - Current iteration number in simulation
 C     myThid - Thread number for this instance of SOLVE_FOR_PRESSURE
       _RL myTime
       INTEGER myIter
-      INTEGER myThid 
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -50,6 +50,7 @@ C     == Local variables ==
       _RS uf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RS vf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL firstResidual,lastResidual
+      _RL tmpFac
       INTEGER numIters
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
@@ -64,12 +65,18 @@ C--   Save previous solution & Initialise Vector solution and source term :
 #endif
           cg2d_x(i,j,bi,bj) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
           cg2d_b(i,j,bi,bj) = 0.
-#ifdef USE_NATURAL_BCS
-     &     + freeSurfFac*_rA(i,j,bi,bj)*
-     &       EmPmR(I,J,bi,bj)/deltaTMom
-#endif
          ENDDO
         ENDDO
+        IF (useRealFreshWaterFlux) THEN
+         tmpFac = freeSurfFac
+         IF (exactConserv) tmpFac = freeSurfFac*implicDiv2DFlow
+         DO j=1,sNy
+          DO i=1,sNx
+           cg2d_b(i,j,bi,bj) = 
+     &       tmpFac*_rA(i,j,bi,bj)*EmPmR(i,j,bi,bj)/deltaTMom
+          ENDDO
+         ENDDO
+        ENDIF
        ENDDO
       ENDDO
 
