@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_itrda,v 1.8 2004/11/16 18:59:30 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_itrda,v 1.9 2005/02/03 20:08:57 jmc Exp $
 #  $Name:  $
 #
 # adapted to itrda.acesgrid.org
@@ -20,7 +20,8 @@ if test "x$IEEE" = x ; then
     FOPTIM='-O3 -malign-double -funroll-loops'
 else
     #  Try to follow IEEE-754
-    FFLAGS='-Wimplicit -Wunused -ffloat-store'
+   #FFLAGS='-Wimplicit -Wunused -ffloat-store'
+    FFLAGS='-Wimplicit -Wunused -mfpmath=sse -msse -msse2'
     FOPTIM='-O0 -malign-double'
 fi
 NOOPTFLAGS='-O0'
