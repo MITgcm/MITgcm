@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.391 2004/11/22 21:12:48 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.392 2004/11/23 20:22:12 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -18,6 +18,15 @@ o GCHEM:
   - move call to GCHEM_FORCING_SEP, so that it is now called before
     the blocking exchanges to avoid computing halos in GCHEM_FORCING_SEP
   - introduced a useGCHEM runtime flag and applied it everywhere. 
+  - renamed PTRACERS_SEPARATE_FORCING to GCHEM_SEPARATE_FORCING;
+    this flag is now only visible within GCHEM-pkg routines.
+  - moved gchem_forcing_int temporarily into ptracers_forcing, this will
+    be replaced by a 3D array that is computed before thermodynamics; for 
+    this, the tracer ID iTracer had to be included into the parameter list
+    of ptracers_forcing
+  - set up forward_step for a call to gchem_forcing, that will replace 
+    gchem_forcing_int in ptracers_forcing
+  - cleaning up
 o small cleaning of exch2: remove files that are also in eesupp/src
 
 checkpoint56
