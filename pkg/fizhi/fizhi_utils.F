@@ -860,3 +860,41 @@ C*********************************************************************
 
       return
       end
+
+      subroutine pkappa (ple,pkle,im,jm,lm,pkz)
+C***********************************************************************
+C  Purpose
+C     Calculate Phillips P**Kappa
+C
+C  Arguments
+C     PLE .... edge-level pressure
+C     PKLE ... edge-level pressure**kappa
+C     IM ..... longitude  dimension
+C     JM ..... latitude   dimension
+C     LM ..... vertical   dimension
+C     PKZ .... mid-level pressure**kappa
+C***********************************************************************
+      implicit  none
+
+      integer   im,jm,lm
+      real      ple (im,jm,lm+1)
+      real      pkle(im,jm,lm+1)
+      real      pkz (im,jm,lm)
+
+      real akap1,getcon
+      integer i,j,L
+ 
+      akap1 = 1.0 + getcon('KAPPA')
+                  
+      do L = 1,lm
+      do j = 1,jm
+      do i = 1,im
+       pkz(i,j,L) = ( ple (i,j,l+1)*pkle(i,j,l+1)
+     .             - ple (i,j,l)*pkle(i,j,l) )
+     .           /  ( akap1* (ple (i,j,l+1)-ple (i,j,l)) )
+      enddo
+      enddo
+      enddo
+
+      return
+      end

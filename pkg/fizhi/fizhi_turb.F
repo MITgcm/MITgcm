@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.4 2004/06/16 19:19:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.5 2004/06/17 21:45:29 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
       subroutine turbio (im,jm,nlay,istrip,nymd,nhms
      1 ,ndturb,ptop, pz, uz, vz, tz, qz, ntracers,ptracers,
      2 ,plz,plze,dpres,pkht,pkz,ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke
-     3 ,tgz,gwet,snow,fracland,landtype
+     3 ,tgz,fracland,landtype
      4 ,tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac
      5 ,nchp,nchplnd,chfr,chlt,chlon,igrd,ityp,alai,agrn,thkz,tprof
      8 ,duturb, dvturb, dtturb,dqturb,radlwg,st4,dst4,radswg,radswt
      9 ,fdifpar,fdirpar,rainlsp,rainconv,snowfall,tempref
      1 ,imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw
-     2 ,qqgrid,u2m,v2m,t2m,q2m,u10m,v10m,t10m,q10m,myid,comm)
+     2 ,qqgrid,myid,comm)
 c-----------------------------------------------------------------------
 c subroutine turbio - model interface routine to trbflx, the turbulence
 c        parameterization, and tile, the land surface parameterization
@@ -64,8 +64,6 @@ c      snowfall- total snowfall rate in mm/sec - real[lon,lat]
 c updated:
 c      tke     - turbulent k.e. in m**2/s**2 - real[tiles,levels]
 c      tgz     - surface skin temperature in deg K - real[lon,lat]
-c      gwet    - surface ground wetness fraction - real[lon,lat]
-c      snow    - depth of snow pack in cm liquid water equiv real[lon,lat]
 c      tcanopy - canopy temperature in deg K real[tiles]
 c                 (sea surface temp over the ocean tiles)
 c      ecanopy - canopy vapor pressure in mb real[tiles]
@@ -90,15 +88,6 @@ c      qliqavesw - Moist   Turbulence Liquid Water   for Shortwave - real[lon,la
 c      fccavelw  - Moist   Turbulence Cloud Fraction for Longwave  - real[lon,lat,levels]
 c      fccavesw  - Moist   Turbulence Cloud Fraction for Shortwave - real[lon,lat,levels]
 c      qqgrid    - Gridded Turbulent Kinetic Energy                - real[lon,lat,levels]
-c      u2m       - Gridded U-Wind      real[lon,lat] at  2 meters
-c      v2m       - Gridded V-Wind      real[lon,lat] at  2 meters
-c      t2m       - Gridded Temperature real[lon,lat] at  2 meters
-c      q2m       - Gridded Spec.Humd.  real[lon,lat] at  2 meters
-c      u10m      - Gridded U-Wind      real[lon,lat] at 10 meters
-c      v10m      - Gridded V-Wind      real[lon,lat] at 10 meters
-c      t10m      - Gridded Temperature real[lon,lat] at 10 meters
-c      q10m      - Gridded Spec.Humd.  real[lon,lat] at 10 meters
-c
 c-----------------------------------------------------------------------
       implicit none
 
@@ -127,7 +116,7 @@ c-----------------------------------------------------------------------
       real ctmt(nchp),xxmt(nchp),yymt(nchp),zetamt(nchp)
       real xlmt(nchp,nlay),khmt(nchp,nlay)
 
-      real tgz(im, jm),gwet(im,jm),snow(im,jm)
+      real tgz(im, jm)
       real  tcanopy(nchp)
       real    tdeep(nchp)
       real  ecanopy(nchp)
@@ -154,12 +143,6 @@ c-----------------------------------------------------------------------
       real fccavelw (im,jm,nlay),fccavesw (im,jm,nlay)
       real qqgrid   (im,jm,nlay)
 
-C Couplings for Output Purposes, Not Reproduceable
-      real u2m(im,jm), u10m(im,jm)  
-      real v2m(im,jm), v10m(im,jm)  
-      real t2m(im,jm), t10m(im,jm)  
-      real q2m(im,jm), q10m(im,jm)  
-
       integer numstrips
       integer ijall
       real fmu,hice,tref,pref,cti,ed
@@ -177,6 +160,11 @@ C Set fmu and ed to zero for no background diffusion
       real  fcctmp(im,jm,nlay)
       real tmpdiag(im,jm)
       real   thtgz(im*jm)
+
+      real u2m(im,jm), u10m(im,jm)  
+      real v2m(im,jm), v10m(im,jm)  
+      real t2m(im,jm), t10m(im,jm)  
+      real q2m(im,jm), q10m(im,jm)  
 
       integer nland
       real alwcoeff(nchp),blwcoeff(nchp)
@@ -1319,13 +1307,9 @@ C Ground Temperature, snow depth and shallow layer ground wetness
       do j = 1,jm
        do i = 1,im
          tgz(i,j) = 0.
-        snow(i,j) = 0.
-        gwet(i,j) = 0.
        enddo
       enddo
       call msc2grd(igrd,chfr,tground ,nchp,nchp,fracland,tgz ,im,jm)
-      call msc2grd(igrd,chfr,snodep  ,nchp,nchp,fracland,snow,im,jm)
-      call msc2grd(igrd,chfr,swetshal,nchp,nchp,fracland,gwet,im,jm)
 
 c *********************************************************************
 c **** increment diagnostic array for ground and surface temperatures,

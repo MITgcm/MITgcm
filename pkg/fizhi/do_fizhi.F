@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.12 2004/06/17 16:07:06 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.13 2004/06/17 21:45:29 molod Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
        subroutine do_fizhi(myid,uphy,vphy,thphy,sphy,pephy,lons,lats,
@@ -63,8 +63,9 @@ c
       real xlats(im2,jm2), xlons(im2,jm2), sea_ice(im2,jm2), p(im2,jm2)
       real u(im2,jm2,Nrphys), v(im2,jm2,Nrphys), t(im2,jm2,Nrphys)
       real q(im2,jm2,Nrphys,ntracer)
-      real pl(im2,jm2,Nrphys),ple(im2,jm2,Nrphys+1)
-      real dpres(im2,jm2,Nrphys),pkht(im2,jm2,Nrphys)
+      real pl(im2,jm2,Nrphys),pkl(im2,jm2,Nrphys+1)
+      real ple(im2,jm2,Nrphys+1),pkle(im2,jm2,Nrphys)
+      real dpres(im2,jm2,Nrphys)
       real lwdt(im2,jm2,Nrphys),lwdtclr(im2,jm2,Nrphys) 
       real swdt(im2,jm2,Nrphys),swdtclr(im2,jm2,Nrphys)
       real turbu(im2,jm2,Nrphys),turbv(im2,jm2,Nrphys)
@@ -72,7 +73,7 @@ c
       real moistu(im2,jm2,Nrphys),moistv(im2,jm2,Nrphys)
       real moistt(im2,jm2,Nrphys),moistq(im2,jm2,Nrphys)
       real radswt(im2,jm2),radswg(im2,jm2),swgclr(im2,jm2)
-      real albedo(im2,jm2),fdirpar(im2,jm2),fdifpar(im2,jm2)
+      real fdirpar(im2,jm2),fdifpar(im2,jm2)
       real osr(im2,jm2),osrclr(im2,jm2)
       real tg0(im2,jm2),radlwg(im2,jm2),st4(im2,jm2)
       real dst4(im2,jm2),dlwdtg(im2,jm2,Nrphys)
@@ -84,13 +85,22 @@ c
       real qliqavesw(im2,jm2,Nrphys),qliqavelw(im2,jm2,Nrphys)
       real fccavesw(im2,jm2,Nrphys),fccavelw(im2,jm2,Nrphys)
       real qq(im2,jm2,Nrphys)
-      real u2m(im2,jm2),v2m(im2,jm2),t2m(im2,jm2),q2m(im2,jm2)
-      real u10m(im2,jm2),v10m(im2,jm2),t10m(im2,jm2),q10m(im2,jm2)
-      real gwet(im2,jm2),snow(im2,jm2)
 
       integer i,j,L
       real getcon, kappa, p0kappa, s0, ra
       real cosz(im2,jm2)
+
+      logical alarm
+      external alarm
+
+      save lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq
+      save moistu,moistv,moistt,moistq
+      save radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
+      save st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras
+      save nlwcld,cldtot_lw,clras_lw,cldlsp_lw,nlwlz,lwlz
+      save nswcld,cldtot_sw,clras_sw,cldlsp_sw,nswlz,swlz,
+      save imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw,fccavelw
+      save qq
 
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
@@ -100,25 +110,6 @@ C***********************************************************************
       p0kappa = 1000.0 ** kappa
       S0 = getcon('S0')
       
-      do L = 1,Nrphys
-      do j = jm1,jm2
-      do i = im1,im2
-       u(i,j,L) = uphys(i,j,L,bi,bj)
-       v(i,j,L) = vphys(i,j,L,bi,bj)
-       t(i,j,L) = thphys(i,j,L,bi,bj)/p0kappa
-       q(i,j,L,1) = sphys(i,j,L,bi,bj)
-      enddo
-      enddo
-      enddo
-      do j = jm1,jm2
-      do i = im1,im2
-       p(i,j) = pephys(i,j,Nrphys+1,bi,bj)
-       xlats(i,j) = lats(i,j,bi,bj)
-       xlons(i,j) = lons(i,j,bi,bj)
-       sea_ice(i,j) = sice(i,j,bi,bj)
-      enddo
-      enddo
-
       call astro ( nymd,nhms, xlats,xlons, im2*jm2, cosz,ra )
       do j=jm1,jm2
       do i=im1,im2
@@ -126,12 +117,41 @@ C***********************************************************************
       enddo
       enddo
 
-
       ptracer = 1
       ntracer = 1
 
+      if( alarm('moist') .or. alarm('turb')   .or.
+     .    alarm('radsw') .or. alarm('radlw') ) then
+
+      do j = jm1,jm2
+      do i = im1,im2
+       ple(i,j,Nrphys+1) = pephy(i,j,Nrphys+1,bi,bj)
+       pkle(i,j,Nrphys+1) = pephy(i,j,Nrphys+1,bi,bj) **kappa
+       p(i,j) = pephy(i,j,Nrphys+1,bi,bj)
+       xlats(i,j) = lats(i,j,bi,bj)
+       xlons(i,j) = lons(i,j,bi,bj)
+       sea_ice(i,j) = sice(i,j,bi,bj)
+      enddo
+      enddo
+      do L = 1,Nrphys
+      do j = jm1,jm2
+      do i = im1,im2
+       u(i,j,L) = uphy(i,j,L,bi,bj)
+       v(i,j,L) = vphy(i,j,L,bi,bj)
+       t(i,j,L) = thphy(i,j,L,bi,bj)/p0kappa
+       q(i,j,L,1) = sphy(i,j,L,bi,bj)
+       pl(i,j,L) = (pephy(i,j,L,bi,bj)+pephy(i,j,L+1))/2.
+       dpres(i,j,L) = pephy(i,j,L+1,bi,bj)-pephy(i,j,L)
+       ple(i,j,L) = pephy(i,j,L,bi,bj)
+       pkle(i,j,L) = ple(i,j,L) **kappa
+      enddo
+      enddo
+      enddo
+
+      call pkappa (ple,pkle,im2,jm2,Nrphys,pkl)
+
       call fizhi_driver(myid,im2,jm2,Nrphys,ptracer,ntracer,xlats,xlons,
-     . p,u,v,t,q,pl,ple,dpres,pkht,pkl,fracland(1,1,bi,bj),
+     . p,u,v,t,q,pl,ple,dpres,pkle,pkl,fracland(1,1,bi,bj),
      . landtype(1,1,bi,bj),radswt,
      . phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,
      . nchp,chlat(1,bi,bj),chlon(1,bi,bj),igrd(1,bi,bj),nchpland,
@@ -146,22 +166,23 @@ C***********************************************************************
      . qstr(1,1,bi,bj),o3(1,1,bi,bj),co2,cfc11,cfc12,cfc22,methane,n2o,
      . lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq,
      . moistu,moistv,moistt,moistq,
-     . radswg,swgclr,albedo,fdirpar,fdifpar,osr,osrclr,tg0,radlwg,
+     . radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg,
      . st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras,nlwcld,
      . cldtot_lw,clras_lw,cldlsp_lw,nlwlz,lwlz,nswcld,cldtot_sw,
      . clras_sw,cldlsp_sw,nswlz,swlz,imstturbsw,imstturblw,qliqavesw,
-     . qliqavelw,fccavesw,fccavelw,qq,u2m,v2m,t2m,q2m,u10m,v10m,t10m,
-     . q10m,gwet,snow)
+     . qliqavelw,fccavesw,fccavelw,qq)
+
+      endif
 
       do L = 1,Nrphys
       do j = jm1,jm2
       do i = im1,im2
-       duphys(i,j,L,bi,bj) = moistu(i,j,L) + turbu(i,j,L)
-       dvphys(i,j,L,bi,bj) = moistv(i,j,L) + turbv(i,j,L)
-       dthphys(i,j,L,bi,bj) = ( ( moistt(i,j,L) + turbt(i,j,L) +
+       duphy(i,j,L,bi,bj) = moistu(i,j,L) + turbu(i,j,L)
+       dvphy(i,j,L,bi,bj) = moistv(i,j,L) + turbv(i,j,L)
+       dthphy(i,j,L,bi,bj) = ( ( moistt(i,j,L) + turbt(i,j,L) +
      .           lwdt(i,j,L) + dlwdtg(i,j,L) * (tgz(i,j)-tg0(i,j)) +
      .           swdt(i,j,L) * radswt(i,j) ) * p0kappa ) / p(i,j)
-       dsphys(i,j,L,bi,bj) = (moistq(i,j,L,1) + turbq(i,j,L,1))/p(i,j)
+       dsphy(i,j,L,bi,bj) = (moistq(i,j,L,1) + turbq(i,j,L,1))/p(i,j)
       enddo
       enddo
       enddo

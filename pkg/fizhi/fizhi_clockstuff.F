@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.8 2004/06/15 16:06:03 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.9 2004/06/17 21:45:29 molod Exp $
 C $Name:  $
 
       subroutine set_alarm (tag,date,time,freq)
@@ -133,6 +133,7 @@ c -------------
 #endif
 
       logical set,alarm
+      external alarm
       integer n,nymd,nhms,nalarm,nsecf
 
 #ifdef ALLOW_USE_MPI

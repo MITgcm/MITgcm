@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.10 2004/06/16 19:19:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.11 2004/06/17 21:45:29 molod Exp $
 C $Name:  $
 
        subroutine update_earth_exports (myTime, myIter, myThid)
@@ -27,6 +27,8 @@ c-----------------------------------------------------------------------
 
       integer myTime, myIter, myThid
 
+      logical alarm
+      external alarm
       _RL lats(sNx,sNy), lons(sNx,sNy), cosz(sNx,sNy)
       _RL fraci(sNx,sNy), fracl(sNx,sNy)
       _RL ficetile(nchp)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.5 2004/06/14 20:34:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.6 2004/06/17 21:45:29 molod Exp $
 C $Name:  $
 
        subroutine update_chemistry_exports (myTime, myIter, myThid)
@@ -34,6 +34,8 @@ c pe on physics grid refers to bottom edge
       integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
       integer nhms1,nymd1,nhms2,nymd2,imns,ipls
       _RL facm, facp
+      logical alarm
+      external alarm
 
       im1 = 1-OLx
       im2 = sNx+OLx

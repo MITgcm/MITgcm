@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.3 2004/06/17 16:07:06 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.4 2004/06/17 21:45:29 molod Exp $
 C $Name:  $
                                                                                  
 #include "CPP_OPTIONS.h"
@@ -13,12 +13,11 @@ C $Name:  $
      . chemq,chemo3,co2,cfc11,cfc12,cfc22,methane,n2o,
      . lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq,
      . moistu,moistv,moistt,moistq,
-     . radswg,swgclr,albedo,fdirpar,fdifpar,osr,osrclr,tg0,radlwg,
+     . radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg,
      . st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras,nlwcld,
      . cldtot_lw,clras_lw,cldlsp_lw,nlwlz,lwlz,nswcld,cldtot_sw,
      . clras_sw,cldlsp_sw,nswlz,swlz,imstturbsw,imstturblw,qliqavesw,
-     . qliqavelw,fccavesw,fccavelw,qq,u2m,v2m,t2m,q2m,u10m,v10m,t10m,
-     . q10m,gwet,snow)
+     . qliqavelw,fccavesw,fccavelw,qq)
 C***********************************************************************        
 C  Purpose                                                                      
 C  -------                                                                      
@@ -81,7 +80,7 @@ c ----------------
       real albvisdr(im,jm),albvisdf(im,jm),albnirdr(im,jm)
       real albnirdf(im,jm),emiss(im,jm)
       real alai(nchp),agrn(nchp)
-      real radswg(im,jm),swgclr(im,jm),albedo(im,jm)
+      real radswg(im,jm),swgclr(im,jm)
       real fdirpar(im,jm),fdifpar(im,jm),osr(im,jm),osrclr(im,jm)
       real tg0(im,jm),radlwg(im,jm),st4(im,jm),dst4(im,jm)
       real dlwdtg(im,jm,lm)
@@ -93,9 +92,7 @@ c ----------------
       real qliqavesw(im,jm,lm),qliqavelw(im,jm,lm)
       real fccavesw(im,jm,lm),fccavelw(im,jm,lm)
       real qq(im,jm,lm)
-      real u2m(im,jm),v2m(im,jm),t2m(im,jm),q2m(im,jm),u10m(im,jm)
-      real v10m(im,jm),t10m(im,jm),q10m(im,jm),tgz(im,jm)
-      real gwet(im,jm),snow(im,jm)
+      real tgz(im,jm)
 
 c Local Variables
 c ---------------
@@ -142,7 +139,7 @@ C ====================
       call swrio ( nymd,nhms,ndsw,myid,istrip,npcs,
      .   p,pl,ple,dpres,pkht,pkl,t,chemq,chemo3,co2,
      .   albvisdr,albvisdf,albnirdr,albnirdf,swdt,swdtclr,
-     .   radswg,swgclr,albedo,fdifpar,fdirpar,osr,osrclr,im,jm,lm,
+     .   radswg,swgclr,fdifpar,fdirpar,osr,osrclr,im,jm,lm,
      .   ptop,nswcld,cldtot_sw,cldras_sw,nswlz,swlz,
      .   .false.,imstturbsw,qliqavesw,
      .   fccavesw,landtype,xlats,xlons )
@@ -178,13 +175,13 @@ C ==========
       call turbio (im,jm,lm,1,nymd,nhms,ndturb,
      .   ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
      .   ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     .   tgz,gwet,snow,fracland,landtype,
+     .   tgz,fracland,landtype,
      .   tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac,
      .   nchp,nchpland,chfr,chlt,chlon,igrd,ityp,alai,agrn,sea_ice,lpnt,
      .   turbu,turbv,turbt,turbq,radlwg,st4,dst4,radswg,radswt,
      .   fdifpar,fdirpar,rainlsp,rainconv,snowfall,tg0,
      .   imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw,qq,
-     .   u2m ,v2m ,t2m ,q2m,u10m,v10m,t10m,q10m,myid,comm )
+     .   myid,comm )
 
 c Add Gravity-Wave Drag Tendency
 c ------------------------------
