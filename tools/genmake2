@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.83 2004/07/06 18:06:49 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.84 2004/07/12 15:49:08 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -158,35 +158,7 @@ EOF
 }
 
 
-# Guess possible config options for this host
-find_possible_configs()  {
-
-    tmp1=`uname`"_"`uname -m`
-    tmp2=`echo $tmp1 | sed -e 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
-    tmp3=`echo $tmp2 | sed -e 's/power macintosh/ppc/'`
-    tmp1=`echo $tmp3 | sed -e 's|x86_64|amd64|'`
-    tmp2=`echo $tmp1 | sed -e 's/i[3-6]86/ia32/' | sed -e 's/athlon/ia32/'`
-    tmp3=`echo $tmp2 | sed -e 's/cray sv1/craysv1/'`
-    PLATFORM=$tmp3
-    echo $PLATFORM | grep cygwin > /dev/null 2>&1  &&  PLATFORM=cygwin_ia32
-    OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
-    echo "  The platform appears to be:  $PLATFORM"
-    
-    echo "test" > test
-    ln -s ./test link
-    RETVAL=$?
-    if test "x${RETVAL}" = x0 ; then
-	LN="ln -s"
-    else
-	echo "Error: \"ln -s\" does not appear to work on this system!"
-	echo "  For help, please contact <MITgcm-support@mitgcm.org>."
-	exit 1
-    fi
-    rm -f test link
-
-    if test "x$CPP" = x ; then
-	CPP="cpp -traditional -P"
-    fi
+look_for_makedepend()  {
 
     #  The "original" makedepend is part of the Imake system that is
     #  most often distributed with XFree86 or with an XFree86 source
@@ -242,6 +214,40 @@ EOF
 	 rm -f ./genmake_cy_md
       fi
     fi
+}
+
+
+# Guess possible config options for this host
+find_possible_configs()  {
+
+    tmp1=`uname`"_"`uname -m`
+    tmp2=`echo $tmp1 | sed -e 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
+    tmp3=`echo $tmp2 | sed -e 's/power macintosh/ppc/'`
+    tmp1=`echo $tmp3 | sed -e 's|x86_64|amd64|'`
+    tmp2=`echo $tmp1 | sed -e 's/i[3-6]86/ia32/' | sed -e 's/athlon/ia32/'`
+    tmp3=`echo $tmp2 | sed -e 's/cray sv1/craysv1/'`
+    PLATFORM=$tmp3
+    echo $PLATFORM | grep cygwin > /dev/null 2>&1  &&  PLATFORM=cygwin_ia32
+    OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
+    echo "  The platform appears to be:  $PLATFORM"
+    
+    echo "test" > test
+    ln -s ./test link
+    RETVAL=$?
+    if test "x${RETVAL}" = x0 ; then
+	LN="ln -s"
+    else
+	echo "Error: \"ln -s\" does not appear to work on this system!"
+	echo "  For help, please contact <MITgcm-support@mitgcm.org>."
+	exit 1
+    fi
+    rm -f test link
+
+    if test "x$CPP" = x ; then
+	CPP="cpp -traditional -P"
+    fi
+
+    look_for_makedepend
 
     # look for possible fortran compilers
     tmp="$MITGCM_FC $FC efc g77 f77 pgf77 pgf95 ifc f90 f95 mpif77 mpf77 mpxlf95"
@@ -1085,9 +1091,7 @@ EOF
 else
     rm -f test_cpp
 fi
-if test "x$MAKEDEPEND" = x ; then
-    MAKEDEPEND=makedepend
-fi
+look_for_makedepend
 if test "x$LN" = x ; then
     LN="ln -s"
 fi
