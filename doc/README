@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/README,v 1.8 1998/06/22 16:24:50 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/README,v 1.9 1998/07/08 15:24:05 cnh Exp $
 
 
 MITgcmUV Getting Started
@@ -24,16 +24,15 @@ o Installing
   the steps below:
 
   1. Extract MITgcmUV from the downloadable archive
-     tar -xvf MITgcmUV.2.0.tar 
+     tar -xvf checkpoint12.tar 
 
   2. Create platform specific make file
      For example on a Digital UNIX machine the script "genmake.dec" can
      be used as shown below
 
-     cd MITgcmUV.2.0/tools
-     genmake.dec
-     cd ../bin
-     ln -s ../tools/Makefile.dec makefile
+     cd bin
+     ../tools/genmake 
+     cp Makefile.alpha Makefile
 
   3. Now create header file dependency entries
      make depend
@@ -42,11 +41,11 @@ o Installing
      make
 
   5. Copy input files
-     cp ../verification/exp2/[a-z]* .
+     cp ../verification/exp2/[a-z]* ../verification/exp2/*bin .
   
   6. Run baseline test case
      setenv PARALLEL 1
-     ../exe/mitgcmuv
+     dmpirun -np 2 ../exe/mitgcmuv
 
      This runs a 4 degree global ocean climatological simulation.
      By default this code is set to use two porcessors splitting

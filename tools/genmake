@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/configure,v 1.6 1998/07/03 20:47:04 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.1 1998/07/08 15:24:05 cnh Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -96,9 +96,9 @@ switch ($platform$USEMPI)
     echo "Configuring for DEC Alpha"
     set CPP        = ( '/usr/bin/cpp -P' )
     set DEFINES    = ( ${DEFINES}  '-DTARGET_DEC' )
-    set KPP        = ( 'kapf90' )
+    set KPP        = ( 'kapf' )
     set KFLAGS1    = ( '-scan=132 -noconc -cmp=' )
-    set FC         = ( 'f90' )
+    set FC         = ( 'f77' )
     set FFLAGS     = ( '-convert big_endian -r8 -extend_source -u -automatic -call_shared -notransform_loops -align dcommons -p1' )
     set FOPTIM     = ( '-O5 -fast -tune host -inline all' )
     set NOOPTFLAGS = ( '-O0' )
