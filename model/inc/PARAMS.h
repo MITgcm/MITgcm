@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.5 1998/04/30 13:25:01 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.6 1998/05/20 21:29:31 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -123,6 +123,11 @@ C     deltaTMom    - Timestep for momemtum equations ( s )
 C     deltaTtracer - Timestep for tracer equations ( s )
 C     tauCD     - CD scheme coupling timescale ( 1/s )
 C     rCD       - CD scheme normalised coupling parameter ( 0-1 )
+C     GMmaxslope  - max. slope allowed in GM/Redi tensor
+C     GMlength  - Length to use in Visbeck et al. formula for K
+C     GMalpha   - alpha to use in Visbeck et al. formula for K
+C     GMdepth   - Depth over which to integrate Richardson # (Visbeck et al.)
+C     GMbackground - background value of GM/Redi coefficient
 C     startTime - Starting time for this integration ( s ).
 C     endTime   - Ending time for this integration ( s ).
 C     chkPtFreq - Frequency of check pointing ( s ).
@@ -132,53 +137,60 @@ C                 post-processing files ( s ).
      & deltaTmom, deltaTtracer, abeps, startTime, phiMin, thetaMin, 
      & rSphere, f0, fCori, beta, viscAh, viscAz, viscA4, diffKhT, diffKzT, 
      & diffK4T, diffKhS, diffKzS, diffK4S, delT, tauCD, rCD,
+     & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,
      & gravity, rhonil, tRef, sRef,
      & endTime, chkPtFreq, dumpFreq
-      REAL cg2dTargetResidual
-      REAL delZ(Nz)
-      REAL delX(Nx)
-      REAL delY(Ny)
-      REAL deltaT
-      REAL deltaTmom
-      REAL deltaTtracer
-      REAL abeps
-      REAL phiMin
-      REAL thetaMin
-      REAL rSphere
-      REAL f0
-      _RL  beta
-      REAL viscAh
-      REAL viscAz
-      REAL viscA4 
-      REAL diffKhT 
-      REAL diffKzT
-      REAL diffK4T 
-      REAL diffKhS 
-      REAL diffKzS
-      REAL diffK4S 
-      REAL delt
-      REAL tauCD
-      REAL rCD
-      REAL gravity
-      REAL rhonil
-      REAL tRef(Nz)
-      REAL sRef(Nz)
-      real Fcori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      REAL startTime
-      REAL endTime
-      REAL chkPtFreq
-      REAL dumpFreq
+      _RL cg2dTargetResidual
+      _RL delZ(Nz)
+      _RL delX(Nx)
+      _RL delY(Ny)
+      _RL deltaT
+      _RL deltaTmom
+      _RL deltaTtracer
+      _RL abeps
+      _RL phiMin
+      _RL thetaMin
+      _RL rSphere
+      _RL f0
+      _RL beta
+      _RL viscAh
+      _RL viscAz
+      _RL viscA4 
+      _RL diffKhT 
+      _RL diffKzT
+      _RL diffK4T 
+      _RL diffKhS 
+      _RL diffKzS
+      _RL diffK4S 
+      _RL delt
+      _RL tauCD
+      _RL rCD
+      _RL GMmaxslope
+      _RL GMlength
+      _RL GMalpha
+      _RL GMdepth
+      _RL GMkbackground
+      _RL gravity
+      _RL rhonil
+      _RL tRef(Nz)
+      _RL sRef(Nz)
+      _RL Fcori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL startTime
+      _RL endTime
+      _RL chkPtFreq
+      _RL dumpFreq
+
       COMMON /PARM_A/ HeatCapacity_Cp,
      &                Lamba_theta
-      REAL HeatCapacity_Cp
-      REAL Lamba_theta
+      _RL HeatCapacity_Cp
+      _RL Lamba_theta
 
 C Equation of State (polynomial coeffients)
       COMMON /PARM_EOS_NL/ eosC,eosSig0,eosRefT,eosRefS
-      REAL eosC(Nz+1,9),eosSig0(Nz+1),eosRefT(Nz+1),eosRefS(Nz+1)
+      _RL eosC(Nz+1,9),eosSig0(Nz+1),eosRefT(Nz+1),eosRefS(Nz+1)
 C Linear equation of state
 C     tAlpha    - Linear EOS thermal expansion coefficient ( 1/degree ).
 C     sBeta     - Linear EOS haline contraction coefficient.
       COMMON /PARM_EOS_LIN/ tAlpha,sBeta
-      REAL tAlpha
-      REAL sBeta
+      _RL tAlpha
+      _RL sBeta

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.2 1998/04/24 02:05:40 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.3 1998/05/20 21:29:31 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -6,6 +6,7 @@ CStartOfInterFace
       SUBROUTINE CALC_GT( 
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,wTrans,maskup,
+     I           K13,K23,K33,KapGM,
      U           af,df,fZon,fMer,fVerT,
      I           myThid )
 C     /==========================================================\
@@ -69,18 +70,24 @@ C     myThid - Instance number for this innvocation of CALC_GT
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL wTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL K33   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL KapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER kUp,kDown,kM1
+      INTEGER k,kUp,kDown,kM1
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER myThid
 CEndOfInterface
 
 C     == Local variables ==
 C     I, J, K - Loop counters
-      INTEGER i,j,k
-      REAL afFacT, dfFacT
-      REAL dutdxFac
+      INTEGER i,j
+      _RL afFacT, dfFacT
+      _RL dutdxFac
+      _RL dTdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dTdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       afFacT = 1. _d 0
       dfFacT = 1. _d 0
@@ -98,12 +105,18 @@ C     Advective component of zonal flux
      &   uTrans(i,j)*(theta(i,j,k,bi,bj)+theta(i-1,j,k,bi,bj))*0.5 _d 0
        ENDDO
       ENDDO
+C     Zonal tracer gradient
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        dTdx(i,j) = rdxC(i,j,bi,bj)*
+     &  (theta(i,j,k,bi,bj)-theta(i-1,j,k,bi,bj))
+       ENDDO
+      ENDDO
 C     Diffusive component of zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-        df(i,j) = 
-     &   -diffKhT*xA(i,j)*rdxC(i,j,bi,bj)
-     &   *(theta(i,j,k,bi,bj)-theta(i-1,j,k,bi,bj))
+        df(i,j) = -(diffKhT+0.5*(KapGM(i,j)+KapGM(i-1,j)))*
+     &            xA(i,j)*dTdx(i,j)
        ENDDO
       ENDDO
 C     Net zonal flux
@@ -122,14 +135,18 @@ C       Advective component of meridional flux
      &   vTrans(i,j)*(theta(i,j,k,bi,bj)+theta(i,j-1,k,bi,bj))*0.5 _d 0
        ENDDO
       ENDDO
+C     Zonal tracer gradient
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        dTdy(i,j) = rdyC(i,j,bi,bj)*
+     &  (theta(i,j,k,bi,bj)-theta(i,j-1,k,bi,bj))
+       ENDDO
+      ENDDO
 C     Diffusive component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-        df(i,j) =
-     &   -diffKhT*yA(i,j)*rdyC(i,j,bi,bj)
-C    &   -1.D3*rdyC(i,j,bi,bj)*dZF(K)*delX(1)*hFacC(i,j,k,bi,bj)*
-C    &    hFacC(i,j-1,k,bi,bj)
-     &   *(theta(i,j,k,bi,bj)-theta(i,j-1,k,bi,bj))
+        df(i,j) = -(diffKhT+0.5*(KapGM(i,j)+KapGM(i,j-1)))*
+     &            yA(i,j)*dTdy(i,j)
        ENDDO
       ENDDO
 C     Net meridional flux
@@ -139,10 +156,40 @@ C     Net meridional flux
        ENDDO
       ENDDO
 
+C--   Interpolate terms for Redi/GM scheme
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        dTdx(i,j) = 0.5*( 
+     &   +0.5*(maskW(i+1,j,k,bi,bj)*rdxC(i+1,j,bi,bj)*
+     &           (theta(i+1,j,k,bi,bj)-theta(i,j,k,bi,bj))
+     &        +maskW(i,j,k,bi,bj)*rdxC(i,j,bi,bj)*
+     &           (theta(i,j,k,bi,bj)-theta(i-1,j,k,bi,bj)))
+     &   +0.5*(maskW(i+1,j,km1,bi,bj)*rdxC(i+1,j,bi,bj)*
+     &           (theta(i+1,j,km1,bi,bj)-theta(i,j,km1,bi,bj))
+     &        +maskW(i,j,km1,bi,bj)*rdxC(i,j,bi,bj)*
+     &           (theta(i,j,km1,bi,bj)-theta(i-1,j,km1,bi,bj)))
+     &       )
+       ENDDO
+      ENDDO
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        dTdy(i,j) = 0.5*(
+     &   +0.5*(maskS(i,j,k,bi,bj)*rdyC(i,j,bi,bj)*
+     &           (theta(i,j,k,bi,bj)-theta(i,j-1,k,bi,bj))
+     &        +maskS(i,j+1,k,bi,bj)*rdyC(i,j+1,bi,bj)*
+     &           (theta(i,j+1,k,bi,bj)-theta(i,j,k,bi,bj)))
+     &   +0.5*(maskS(i,j,km1,bi,bj)*rdyC(i,j,bi,bj)*
+     &           (theta(i,j,km1,bi,bj)-theta(i,j-1,km1,bi,bj))
+     &        +maskS(i,j+1,km1,bi,bj)*rdyC(i,j+1,bi,bj)*
+     &           (theta(i,j+1,km1,bi,bj)-theta(i,j,km1,bi,bj)))
+     &       )
+       ENDDO
+      ENDDO
+
 C--   Vertical flux (fVerT) above
-C     Note: For K=1 then KM1=1 this gives a dT/dz = 0 upper
-C           boundary condition.
 C     Advective component of vertical flux
+C     Note: For K=1 then KM1=1 this gives a barZ(T) = T
+C     (this plays the role of the free-surface correction)
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) =
@@ -150,11 +197,16 @@ C     Advective component of vertical flux
        ENDDO
       ENDDO
 C     Diffusive component of vertical flux
+C     Note: For K=1 then KM1=1 this gives a dT/dz = 0 upper
+C           boundary condition.
       DO j=jMin,jMax
        DO i=iMin,iMax
-        df(i,j) =
-     &   -diffKzT*zA(i,j,bi,bj)*rdzC(k)
+        df(i,j) = zA(i,j,bi,bj)*(
+     &   -(diffKzT+KapGM(i,j)*K33(i,j,k))*rdzC(k)
      &   *(theta(i,j,kM1,bi,bj)-theta(i,j,k,bi,bj))
+     &   -KapGM(i,j)*K13(i,j,k)*dTdx(i,j)
+     &   -KapGM(i,j)*K23(i,j,k)*dTdy(i,j)
+     &   )
        ENDDO
       ENDDO
 C     Net vertical flux

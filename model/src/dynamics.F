@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.5 1998/05/04 16:32:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.6 1998/05/20 21:29:31 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -25,6 +25,7 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "CG2D.h"
+#include "PARAMS.h"
 #include "DYNVARS.h"
 
 C     == Routine arguments ==
@@ -81,6 +82,10 @@ C                          into fVerTerm
       _RL rhokp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL K33   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL KapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       INTEGER bi, bj
@@ -107,6 +112,9 @@ C     uninitialised but inert locations.
         fMer(i,j)    = 0. _d 0
         DO K=1,nZ
          pH (i,j,k)  = 0. _d 0
+         K13(i,j,k) = 0. _d 0
+         K23(i,j,k) = 0. _d 0
+         K33(i,j,k) = 0. _d 0
         ENDDO
         rhokm1(i,j)  = 0. _d 0
         rhokp1(i,j)  = 0. _d 0
@@ -134,6 +142,10 @@ C--   Boundary condition on hydrostatic pressure is pH(z=0)=0
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           pH(i,j,1) = 0. _d 0
+          K13(i,j,1) = 0. _d 0
+          K23(i,j,1) = 0. _d 0
+          K33(i,j,1) = 0. _d 0
+          KapGM(i,j) = 0. _d 0
          ENDDO
         ENDDO
 
@@ -177,6 +189,12 @@ C Density of K level (below W(K)) reference to K level
      I      bi, bj, iMin, iMax, jMin, jMax,  K, K, 'LINEAR',
      O      rhoKp1,
      I      myThid )
+C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
+         CALL CALC_ISOSLOPES(
+     I             bi, bj, iMin, iMax, jMin, jMax, K,
+     I             rhoKm1, rhoKp1,
+     O             K13, K23, K33, KapGM,
+     I             myThid )
 C--     Calculate static stability and mix where convectively unstable
          CALL CONVECT(
      I       bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoKp1,myThid)
@@ -226,11 +244,13 @@ C--      Calculate active tracer tendencies
          CALL CALC_GT(
      I        bi,bj,iMin,iMax,jMin,jMax, k,kM1,kUp,kDown,
      I        xA,yA,uTrans,vTrans,wTrans,maskUp,
+     I        K13,K23,K33,KapGM,
      U        aTerm,xTerm,fZon,fMer,fVerT,
      I        myThid)
 Cdbg     CALL CALC_GS(
 Cdbg I        bi,bj,iMin,iMax,jMin,jMax, k,kM1,kUp,kDown,
 Cdbg I        xA,yA,uTrans,vTrans,wTrans,maskUp,
+Cdbg I        K13,K23,K33,KapGM,
 Cdbg U        aTerm,xTerm,fZon,fMer,fVerS,
 Cdbg I        myThid)
 
@@ -238,6 +258,18 @@ Cdbg I        myThid)
  
        ENDDO
       ENDDO
+
+!dbg  write(0,*) 'dynamics: pS',minval(cg2d_x),maxval(cg2d_x)
+!dbg  write(0,*) 'dynamics: U',minval(uVel(1:sNx,1:sNy,:,:,:)),
+!dbg &                         maxval(uVel(1:sNx,1:sNy,:,:,:))
+!dbg  write(0,*) 'dynamics: V',minval(vVel(1:sNx,1:sNy,:,:,:)),
+!dbg &                         maxval(vVel(1:sNx,1:sNy,:,:,:))
+!dbg  write(0,*) 'dynamics: gT',minval(gT(1:sNx,1:sNy,:,:,:)),
+!dbg &                         maxval(gT(1:sNx,1:sNy,:,:,:))
+!dbg  write(0,*) 'dynamics: T',minval(Theta(1:sNx,1:sNy,:,:,:)),
+!dbg &                         maxval(Theta(1:sNx,1:sNy,:,:,:))
+!dbg  write(0,*) 'dynamics: pH',minval(pH/(Gravity*Rhonil)),
+!dbg &                          maxval(pH/(Gravity*Rhonil))
 
       RETURN
       END
