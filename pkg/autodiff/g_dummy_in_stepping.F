@@ -45,6 +45,7 @@ C     myThid - Thread number for this instance of the routine.
       integer myiter
       _RL     mytime
 
+#ifdef ALLOW_TANGENTLINEAR_RUN
 #ifdef ALLOW_AUTODIFF_MONITOR
 
 C     !LOCAL VARIABLES:
@@ -64,7 +65,7 @@ CEOP
       call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
       IF (
-     &  DIFFERENT_MULTIPLE(dumpFreq,mytime,
+     &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,
      &                     mytime-deltaTClock)
      & ) THEN
 
@@ -152,6 +153,7 @@ C--     Check for IO errors
       call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
+#endif /* ALLOW_TANGENTLINEAR_RUN */
 
       end
 

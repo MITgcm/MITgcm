@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.10 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.11 2004/03/04 04:00:12 heimbach Exp $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -46,6 +46,7 @@ C     myThid - Thread number for this instance of the routine.
       integer myiter
       _RL     mytime 
 
+#ifdef ALLOW_ADJOINT_RUN
 #ifdef ALLOW_AUTODIFF_MONITOR
 
 C     !LOCAL VARIABLES:
@@ -65,7 +66,7 @@ CEOP
       call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
       IF (
-     &  DIFFERENT_MULTIPLE(dumpFreq,mytime,
+     &  DIFFERENT_MULTIPLE(adjDumpFreq,mytime,
      &                     mytime-deltaTClock)
      & ) THEN
 
@@ -180,6 +181,7 @@ C--     Check for IO errors
       call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
 #endif /* ALLOW_AUTODIFF_MONITOR */
+#endif /* ALLOW_ADJOINT_RUN */
 
       end
 

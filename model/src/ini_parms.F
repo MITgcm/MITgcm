@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.107 2004/02/24 16:54:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.108 2004/03/04 04:00:12 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -180,8 +180,8 @@ C--   Time stepping parammeters
      & deltaT, deltaTmom, deltaTtracer, deltaTfreesurf,
      & forcing_In_AB, abEps, tauCD, rCD,
      & startTime, endTime, chkPtFreq,
-     & dumpFreq, taveFreq, tave_lastIter, deltaTClock, diagFreq,
-     & monitorFreq, pChkPtFreq, cAdjFreq, 
+     & dumpFreq, adjDumpFreq, taveFreq, tave_lastIter, deltaTClock,
+     & diagFreq, monitorFreq, pChkPtFreq, cAdjFreq, 
      & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax, 
      & tauTr1ClimRelax,
      & periodicExternalForcing, externForcingPeriod, externForcingCycle

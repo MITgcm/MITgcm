@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.102 2004/02/07 16:27:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.103 2004/03/04 04:00:11 heimbach Exp $
 C $Name:  $
 C
 CBOP
@@ -487,7 +487,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
      & recip_rhoConst, rhoConst, 
      & rhoConstFresh, convertEmP2rUnit, tRef, sRef,
-     & endTime, chkPtFreq, pchkPtFreq, dumpFreq,
+     & endTime, chkPtFreq, pchkPtFreq, dumpFreq, adjDumpFreq,
      & diagFreq, taveFreq, tave_lastIter, monitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cosPower, cAdjFreq, omega, rotationPeriod,
@@ -567,6 +567,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL chkPtFreq
       _RL pChkPtFreq
       _RL dumpFreq
+      _RL adjDumpFreq
       _RL diagFreq
       _RL taveFreq
       _RL tave_lastIter

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF_OPTIONS.h,v 1.2 2003/10/21 15:26:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/AUTODIFF_OPTIONS.h,v 1.3 2004/03/04 04:00:12 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -19,6 +19,7 @@ CEOP
 #define AUTODIFF_OPTIONS_H
 
 #include "PACKAGES_CONFIG.h"
+#include "AD_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 #endif /* AUTODIFF_CPPOPTIONS_H */
