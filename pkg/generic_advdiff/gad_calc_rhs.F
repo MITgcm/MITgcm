@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.28 2004/09/27 14:45:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.29 2004/10/20 21:54:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -386,30 +386,27 @@ C *note* should update GMREDI_RTRANSPORT to set df  *aja*
       ENDDO
 
 #ifdef ALLOW_KPP
-C-    Add non local KPP transport term (ghat) to diffusive T flux.
-      IF (useKPP) THEN
+C-    Set non local KPP transport term (ghat):
+      IF ( useKPP .AND. k.GE.2 ) THEN
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          df(i,j) = 0. _d 0
         ENDDO
        ENDDO
        IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN
-C *note* should update KPP_TRANSPORT_T to set df  *aja*
         CALL KPP_TRANSPORT_T(
      I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
-     I     KappaRT,
-     U     df )
+     O     df )
        ELSEIF (tracerIdentity.EQ.GAD_SALINITY) THEN
         CALL KPP_TRANSPORT_S(
      I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
-     I     KappaRT,
-     U     df )
+     O     df )
 #ifdef ALLOW_PTRACERS
        ELSEIF (tracerIdentity .GE. GAD_TR1) THEN
         CALL KPP_TRANSPORT_PTR(
      I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
-     I     tracerIdentity-GAD_TR1+1,KappaRT,
-     U     df )
+     I     tracerIdentity-GAD_TR1+1,
+     O     df )
 #endif
        ELSE
         PRINT*,'invalid tracer indentity: ', tracerIdentity

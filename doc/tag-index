@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.371 2004/10/20 14:59:23 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.372 2004/10/20 21:59:35 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+o Compute the non-local term using either KPP vertical diffusivity (=default) 
+   or the total vertical diffusivity (when KPP_ghatUseTotalDiffus=T)
 
 checkpoint55h_post
 o add verification test "vermix"
