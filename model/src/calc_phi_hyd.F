@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.12 2001/03/25 22:33:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.13 2001/05/14 21:51:24 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -36,6 +36,11 @@ C     == Global variables ==
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+#include "tamc.h"
+#include "tamc_keys.h"
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C     == Routine arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax,K
       _RL theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -51,6 +56,23 @@ C     == Local variables ==
       _RL dRloc,dRlocKp1
       _RL ddRm1, ddRp1, ddRm, ddRp
       _RL atm_cp, atm_kappa, atm_po
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+
+          act3 = myThid - 1
+          max3 = nTx*nTy
+
+          act4 = ikey_dynamics - 1
+
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       IF ( buoyancyRelation .eq. 'OCEANIC' ) THEN
 C       This is the hydrostatic pressure calculation for the Ocean
@@ -77,6 +99,11 @@ C             *NOTE* The loading should go here but has not been implemented yet
         ENDIF
 
 C       Calculate density
+#ifdef ALLOW_AUTODIFF_TAMC
+            kkey = (ikey-1)*Nr + k
+CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
         CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax, k, k, eosType,
      &                 theta, salt,
      &                 alphaRho, myThid)
@@ -85,7 +112,10 @@ C       Hydrostatic pressure at cell centers
         DO j=jMin,jMax
           DO i=iMin,iMax
 #ifdef      ALLOW_AUTODIFF_TAMC
-c           Is this directive correct or even necessary in this new code?
+c           Patrick, is this directive correct or even necessary in 
+c           this new code?
+c           Yes, because of phiHyd(i,j,k+1)=phiHyd(i,j,k)+...
+c           within the k-loop.
 CADJ GENERAL
 #endif      /* ALLOW_AUTODIFF_TAMC */
 
