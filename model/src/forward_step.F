@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.18 2001/08/27 18:50:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.19 2001/09/04 14:44:54 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -96,14 +96,16 @@ C--     Step forward fields and calculate time tendency terms.
         CALL TIMER_STOP ('THERMODYNAMICS      [THE_MAIN_LOOP]',mythid)
 
 C--     Step forward fields and calculate time tendency terms.
+        IF ( momStepping ) THEN
         CALL TIMER_START('DYNAMICS            [THE_MAIN_LOOP]',mythid)
         CALL DYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('DYNAMICS            [THE_MAIN_LOOP]',mythid)
+        ENDIF
 
 #ifndef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Step forward W field in N-H algorithm
-        IF ( nonHydrostatic ) THEN
+        IF ( momStepping .AND. nonHydrostatic ) THEN
           CALL TIMER_START('CALC_GW          [THE_MAIN_LOOP]',myThid)
           CALL CALC_GW(myThid)
           CALL TIMER_STOP ('CALC_GW          [THE_MAIN_LOOP]',myThid)
@@ -113,12 +115,14 @@ C--   Step forward W field in N-H algorithm
 
 #ifdef NONLIN_FRSURF
 C--   update hfacC,W,S and recip_hFac according to the current Eta field
+      IF ( momStepping ) THEN
       IF ( nonlinFreeSurf.GT.0) THEN
         CALL UPDATE_SURF_DR( myTime, myIter, myThid )
       ENDIF
 C-    update also CG2D matrix (and preconditioner)
       IF ( nonlinFreeSurf.GT.2) THEN
         CALL UPDATE_CG2D( myTime, myIter, myThid )
+      ENDIF
       ENDIF
 #endif
 
@@ -154,9 +158,11 @@ C#endif
 C--   Solve elliptic equation(s).
 C     Two-dimensional only for conventional hydrostatic or 
 C     three-dimensional for non-hydrostatic and/or IGW scheme.
+      IF ( momStepping ) THEN
       CALL TIMER_START('SOLVE_FOR_PRESSURE  [THE_MAIN_LOOP]',myThid)
       CALL SOLVE_FOR_PRESSURE( myThid )
       CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [THE_MAIN_LOOP]',myThid)
+      ENDIF
 
 C--   Correct divergence in flow field and cycle time-stepping
 C     arrays (for all fields) ; update time-counter
