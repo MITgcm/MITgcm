@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_vertshear.F,v 1.2 2001/05/29 14:01:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_vertshear.F,v 1.3 2001/09/06 17:59:36 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -48,10 +48,10 @@ c1    PARAMETER(upwindShear=.FALSE.)
       mask_Km1=1.
       IF (K.EQ.1) mask_Km1=0.
 
-      DO J=2-Oly,sNy+Oly
-       DO I=1-Olx,sNx+Olx
+      DO J=1-Oly,sNy+Oly
+       DO I=2-Olx,sNx+Olx
 
-        umask_K=_maskW(i,j,k,bi,bj)
+c       umask_K=_maskW(i,j,k,bi,bj)
 
 C barZ( barX( W ) )
 c       wBarXm=0.5*(wFld(I,J,K,bi,bj)+wFld(I-1,J,K,bi,bj))
@@ -67,14 +67,14 @@ C       Transport at interface k+1
      &             +wFld(I-1,J,Kp1,bi,bj)*rA(i-1,j,bi,bj))*mask_Kp1
 
 C delta_Z( U )  @ interface k
-        umask_Km1=mask_Km1*umask_K
+        umask_Km1=mask_Km1*maskW(i,j,Km1,bi,bj)
         uZm=(umask_Km1*uFld(I,J,Km1,bi,bj)-uFld(I,J,K,bi,bj))
 c2   &      *recip_dRC(K)
         IF (freeslip1) uZm=uZm*umask_Km1
         IF (noslip1.AND.umask_Km1.EQ.0.) uZm=uZm*2.
 
 C delta_Z( U )  @ interface k+1
-        umask_Kp1=mask_Kp1*umask_K
+        umask_Kp1=mask_Kp1*maskW(i,j,Kp1,bi,bj)
         uZp=(uFld(I,J,K,bi,bj)-umask_Kp1*uFld(I,J,Kp1,bi,bj))
 c2   &      *recip_dRC(Kp1)
         IF (freeslipK) uZp=uZp*umask_Kp1

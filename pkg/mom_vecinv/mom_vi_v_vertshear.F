@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_vertshear.F,v 1.2 2001/05/29 14:01:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_vertshear.F,v 1.3 2001/09/06 17:59:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -48,10 +48,10 @@ c1    PARAMETER(upwindShear=.FALSE.)
       mask_Km1=1.
       IF (K.EQ.1) mask_Km1=0.
 
-      DO J=1-Oly,sNy+Oly
-       DO I=2-Olx,sNx+Olx
+      DO J=2-Oly,sNy+Oly
+       DO I=1-Olx,sNx+Olx
 
-        vmask_K=_maskS(i,j,k,bi,bj)
+c       vmask_K=_maskS(i,j,k,bi,bj)
 
 C barZ( barY( W ) )
 c       wBarYm=0.5*(wFld(I,J,K,bi,bj)+wFld(I,J-1,K,bi,bj))
@@ -67,14 +67,14 @@ C       Transport at interface k+1
      &             +wFld(I,J-1,Kp1,bi,bj)*rA(i,j-1,bi,bj))*mask_Kp1
 
 C delta_Z( V )  @ interface k
-        vmask_Km1=mask_Km1*vmask_K
+        vmask_Km1=mask_Km1*maskS(i,j,Km1,bi,bj)
         vZm=(mask_Km1*vFld(I,J,Km1,bi,bj)-vFld(I,J,K,bi,bj))
 c2   &      *recip_dRC(K)
         IF (freeslip1) vZm=vZm*vmask_Km1
         IF (noslip1.AND.vmask_Km1.EQ.0.) vZm=vZm*2.
 
 C delta_Z( V )  @ interface k+1
-        vmask_Kp1=mask_Kp1*vmask_K
+        vmask_Kp1=mask_Kp1*maskS(i,j,Kp1,bi,bj)
         vZp=(vFld(I,J,K,bi,bj)-mask_Kp1*vFld(I,J,Kp1,bi,bj))
 c2   &      *recip_dRC(Kp1)
         IF (freeslipK) vZp=vZp*vmask_Kp1
