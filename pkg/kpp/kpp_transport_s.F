@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_s.F,v 1.7 2001/05/29 14:01:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_s.F,v 1.8 2002/03/07 14:27:47 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -50,7 +50,7 @@ C     I, J - Loop counters
       DO j=jMin,jMax
        DO i=iMin,iMax
         df(i,j) = df(i,j) - _rA(i,j,bi,bj) * 
-     &         KappaRS(i,j,k) * KPPghat(i,j,km1,bi,bj) * delZ(1) *
+     &         KappaRS(i,j,k) * KPPghat(i,j,km1,bi,bj) * drF(1) *
      &         SurfaceTendencyS(i,j,bi,bj)
        ENDDO
       ENDDO

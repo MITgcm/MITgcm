@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.4 2001/02/04 14:38:50 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.5 2002/03/07 14:27:47 jmc Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -65,7 +65,7 @@ C--   set default KPP vertical mixing parameters
       kpp_taveFreq  = 0.
       KPPmixingMaps = .FALSE.
       KPPwriteState = .FALSE.
-      minKPPhbl     = delZ(1)*0.5
+      minKPPhbl     = drF(1)*0.5
 
 C-----------------------------------------------------------------------
 C define some non-dimensional constants and

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.9 2001/09/27 18:08:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.10 2002/03/07 14:27:47 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -302,12 +302,12 @@ c     so that the subroutine "bldepth" works correctly
 c------------------------------------------------------------------------
 c     friction velocity, turbulent and radiative surface buoyancy forcing
 c     -------------------------------------------------------------------
-c     taux / rho = SurfaceTendencyU * delZ(1)                     (N/m^2)
-c     tauy / rho = SurfaceTendencyV * delZ(1)                     (N/m^2)
-c     ustar = sqrt( sqrt( taux^2 + tauy^2 ) / rho )                 (m/s)
+c     taux / rho = SurfaceTendencyU * drF(1)                     (N/m^2)
+c     tauy / rho = SurfaceTendencyV * drF(1)                     (N/m^2)
+c     ustar = sqrt( sqrt( taux^2 + tauy^2 ) / rho )                (m/s)
 c     bo    = - g * ( alpha*SurfaceTendencyT +
-c                     beta *SurfaceTendencyS ) * delZ(1) / rho  (m^2/s^3)
-c     bosol = - g * alpha * Qsw * delZ(1) / rho                 (m^2/s^3)
+c                     beta *SurfaceTendencyS ) * drF(1) / rho  (m^2/s^3)
+c     bosol = - g * alpha * Qsw * drF(1) / rho                 (m^2/s^3)
 c------------------------------------------------------------------------
 
 c initialize arrays to zero
@@ -329,19 +329,19 @@ c initialize arrays to zero
      &   (SurfaceTendencyV(i,j,bi,bj) + SurfaceTendencyV(i,jp1,bi,bj)) *
      &   (SurfaceTendencyV(i,j,bi,bj) + SurfaceTendencyV(i,jp1,bi,bj))
         if ( tempVar1 .lt. (phepsi*phepsi) ) then
-           ustar(i,j) = SQRT( phepsi * p5 * delZ(1) )
+           ustar(i,j) = SQRT( phepsi * p5 * drF(1) )
         else
-           tempVar2 =  SQRT( tempVar1 ) * p5 * delZ(1)
+           tempVar2 =  SQRT( tempVar1 ) * p5 * drF(1)
            ustar(i,j) = SQRT( tempVar2 )
         endif
         bo(I,J) = - gravity *
      &       ( vddiff(I,J,1,1) * SurfaceTendencyT(i,j,bi,bj) +
      &         vddiff(I,J,1,2) * SurfaceTendencyS(i,j,bi,bj)
      &       ) *
-     &       delZ(1) / work2(I,J)
+     &       drF(1) / work2(I,J)
         bosol(I,J) = gravity * vddiff(I,J,1,1) * Qsw(i,j,bi,bj) *
      &       recip_Cp*recip_rhoNil*recip_dRf(1) *
-     &       delZ(1) / work2(I,J)
+     &       drF(1) / work2(I,J)
        END DO
       END DO
 

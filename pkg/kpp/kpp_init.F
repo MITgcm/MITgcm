@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.7 2001/02/04 14:38:50 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.8 2002/03/07 14:27:47 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -104,13 +104,17 @@ C-----------------------------------------------------------------------
 
       zgrid(0)  =  phepsi
       hwide(0)  =  phepsi
-      zgrid(1)  = -delZ(1)*0.5
-      hwide(1)  =  delZ(1)
-
-      do k = 2, Nr
-         zgrid(k) = zgrid(k-1) - (delZ(k-1)+delZ(k))*0.5
-         hwide(k) = delZ(k)
-      end do
+c     zgrid(1)  = -drF(1)*0.5
+c     hwide(1)  =  drF(1)
+c     do k = 2, Nr
+c        zgrid(k) = zgrid(k-1) - (drF(k-1)+drF(k))*0.5
+c        hwide(k) = drF(k)
+c     end do
+C- jmc : use the model vertical grid :
+      do k = 1, Nr
+         zgrid(k) = rC(k)
+         hwide(k) = drF(k)
+      enddo
 
       zgrid(Nrp1) = zgrid(Nr) * 100.
 
