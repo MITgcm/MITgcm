@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.38 2003/01/24 18:26:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.39 2003/02/26 03:21:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -204,8 +204,6 @@ CEOP
       CALL WRITE_0D_I( select_rStar, INDEX_NONE,
      &'select_rStar =',
      &'   /* r* Coordinate options (not yet implemented)*/')
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
-     &                    SQUEEZE_RIGHT , 1)
       CALL WRITE_0D_L( useRealFreshWaterFlux, INDEX_NONE,
      &'useRealFreshWaterFlux =',
      &'   /* Real Fresh Water Flux on/off flag*/')
