@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.275 2004/04/08 00:25:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.276 2004/04/08 05:09:20 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o no SHORTWAVE HEATING lost at the bottom; affects lab_sea output; updated
 o re-work pkg/thsice interface with ocean & bulk_force pkg to allow
   atmospheric model (AIM) to use it ; add a "slab ocean" component.
 o pkg/aim_v23 : add interface to call thermodynamic sea-ice (thsice)
