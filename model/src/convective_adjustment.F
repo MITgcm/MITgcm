@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.24 2004/12/04 05:59:50 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.25 2005/04/06 18:29:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -32,8 +32,8 @@ C     == Global data ==
 #include "tamc.h"
 #include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
-      EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -61,7 +61,8 @@ C     ConvectCount :: Convection mixing freq. counter.
 CEOP
 
 C--   Check to see if should convect now
-      IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,myTime-deltaTClock) ) THEN
+      IF ( DIFF_BASE_MULTIPLE(baseTime,cAdjFreq,myTime,deltaTClock)
+     &   ) THEN
 
 C--   Initialise counters
         kTop    = 0
@@ -180,7 +181,7 @@ ceh3 needs an IF ( useTIMEAVE ) THEN
 #endif /* ndef MINIMAL_TAVE_OUTPUT */
 #endif /* ALLOW_TIMEAVE */
 
-C--   End IF (DIFFERENT_MULTIPLE)
+C--   End IF (DIFF_BASE_MULTIPLE)
       ENDIF
 
 #endif /* INCLUDE_CONVECT_CALL */

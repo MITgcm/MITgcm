@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.11 2004/12/30 19:27:55 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.12 2005/04/06 18:29:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -104,7 +104,7 @@ C-    End DO k=1,Nr
 C------------------------------------
        facEmP = 0.
        IF (useRealFreshWaterFlux) facEmP = convertEmP2rUnit
-       IF ( myTime.EQ.startTime .AND. myTime.NE. 0. _d 0 
+       IF ( myTime.EQ.startTime .AND. myTime.NE.baseTime
      &                          .AND. useRealFreshWaterFlux) THEN
 
 C     needs previous time-step value of E-P-R, that has not been loaded

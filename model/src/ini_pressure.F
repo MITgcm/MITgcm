@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.6 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_pressure.F,v 1.7 2005/04/06 18:29:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -73,8 +73,6 @@ CEOP
        ENDDO
       ENDDO
 
-c     IF ( startTime .NE. 0. ) RETURN
-c     IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
       IF ( useDynP_inEos_Zc ) THEN
 
 #ifndef ALLOW_AUTODIFF_TAMC

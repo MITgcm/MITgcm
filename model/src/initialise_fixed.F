@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.39 2004/12/09 19:45:53 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.40 2005/04/06 18:29:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -150,7 +150,7 @@ C     to the core dynamical model
 
 C--   Write grid data and geometry arrays
 #ifdef MINIMAL_TAVE_OUTPUT
-      IF ( startTime .EQ. 0.0 ) CALL WRITE_GRID( myThid )
+      IF ( startTime .EQ. baseTime ) CALL WRITE_GRID( myThid )
 #else
       CALL WRITE_GRID( myThid )
 #endif /* MINIMAL_TAVE_OUTPUT */

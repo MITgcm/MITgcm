@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.42 2005/02/28 17:37:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.43 2005/04/06 18:29:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -91,7 +91,7 @@ CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
 
-      nIter0 = INT( startTime/deltaTClock )
+      nIter0 = NINT( (startTime-baseTime)/deltaTClock )
 
 C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
 #ifdef ALLOW_DEBUG
@@ -169,7 +169,7 @@ C--   Initialize variable data for packages
       IF ( usePickupBeforeC35 ) THEN
 C-- IMPORTANT : Need to activate the following call to restart from 
 C     a pickup file written by MITgcmUV_checkpoint34 or earlier.
-      IF ( startTime .NE. 0. ) THEN
+      IF ( startTime .NE. baseTime ) THEN
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('THE_CORRECTION_STEP',myThid)
 #endif
@@ -180,7 +180,7 @@ C     a pickup file written by MITgcmUV_checkpoint34 or earlier.
 
 C--   Initial conditions are convectively adjusted (for historical reasons)
 #ifndef ALLOW_OFFLINE
-      IF ( startTime .EQ. 0. .AND. cAdjFreq .NE. 0. ) THEN
+      IF ( startTime .EQ. baseTime .AND. cAdjFreq .NE. 0. ) THEN
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('CONVECTIVE_ADJUSTMENT_INI',myThid)
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.60 2005/04/03 11:38:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.61 2005/04/06 18:29:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -137,7 +137,7 @@ CADJ  INIT tapelev2 = USER
 CADJ  INIT tapelev3 = USER
 #endif
 
-      nIter0 = INT( startTime/deltaTClock )
+      nIter0 = NINT( (startTime-baseTime)/deltaTClock )
       ikey_dynamics = 1
 
       CALL TIMER_START('ADJOINT SPIN-UP', mythid)
@@ -313,7 +313,7 @@ c--   NOT enabled.
 c--     >>> Loop body start <<<
 
 #ifdef ALLOW_AUTODIFF_TAMC
-        nIter0 = INT( startTime/deltaTClock )
+        nIter0 = NINT( (startTime-baseTime)/deltaTClock )
         ikey_dynamics = ilev_1
         CALL AUTODIFF_INADMODE_UNSET( myThid )
 #endif

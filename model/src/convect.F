@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.22 2004/09/17 22:57:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.23 2005/04/06 18:29:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,8 +28,8 @@ C     == Global data ==
 #include "DYNVARS.h"
 #include "GRID.h"
 
-      EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -60,7 +60,8 @@ C     dSum   :: Temp. for layer thicknesses
 CEOP
 
 C--   Check to see if should convect now
-      IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,myTime-deltaTClock) ) THEN
+      IF ( DIFF_BASE_MULTIPLE(baseTime,cAdjFreq,myTime,deltaTClock)
+     &   ) THEN
 
 C--    Calculate heat content of two level column
        DO j=jMin,jmax

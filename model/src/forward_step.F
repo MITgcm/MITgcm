@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.113 2005/02/04 11:01:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.114 2005/04/06 18:29:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -119,8 +119,8 @@ CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   Reset the model iteration counter and the model time.
-      myiter = nIter0 + (iloop-1)
-      mytime = startTime + float(iloop-1)*deltaTclock
+      myIter = nIter0 + (iloop-1)
+      myTime = startTime + float(iloop-1)*deltaTclock
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.12 2005/02/20 11:46:24 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.13 2005/04/06 18:29:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,8 +28,8 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
@@ -60,9 +60,9 @@ CEOP
       permCheckPoint = .FALSE.
       tempCheckPoint = .FALSE.
       permCheckPoint=
-     &     DIFFERENT_MULTIPLE(pChkptFreq,myTime,myTime-deltaTClock)
+     &     DIFF_BASE_MULTIPLE(baseTime,pChkptFreq,myTime,deltaTClock)
       tempCheckPoint=
-     &     DIFFERENT_MULTIPLE( ChkptFreq,myTime,myTime-deltaTClock)
+     &     DIFF_BASE_MULTIPLE(baseTime, ChkptFreq,myTime,deltaTClock)
 
 #ifdef ALLOW_CAL
       IF ( calendarDumps ) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.113 2005/01/28 01:00:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.114 2005/04/06 18:29:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -159,9 +159,6 @@ C                      index into fVerTerm.
       INTEGER bi, bj
       INTEGER i, j
       INTEGER k, km1, kp1, kup, kDown
-
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 
 #ifdef ALLOW_DIAGNOSTICS
       _RL tmpFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)

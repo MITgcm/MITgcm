@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.16 2004/10/19 02:39:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.17 2005/04/06 18:29:52 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,8 +36,8 @@ C     == Global data ==
 #include "tamc.h"
 #include "tamc_keys.h"
 #endif /* ALLOW_AUTODIFF_TAMC */
-      EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -66,7 +66,8 @@ C     ConvectCount :: Convection freq. counter
 CEOP
 
 C--   Check to see if should convect now
-      IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,myTime-deltaTClock) ) THEN
+      IF ( DIFF_BASE_MULTIPLE(baseTime,cAdjFreq,myTime,deltaTClock)
+     &   ) THEN
 
 C--   Initialise counters
         kTop    = 0
@@ -179,7 +180,7 @@ C-          Convectively mix passive tracers across interface K
 C--       End DO K=1,Nr
           ENDDO
        
-C--   End IF (DIFFERENT_MULTIPLE)
+C--   End IF (DIFF_BASE_MULTIPLE)
       ENDIF
 
 #endif /* INCLUDE_CONVECT_CALL */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.19 2004/09/10 12:19:29 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.20 2005/04/06 18:29:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -27,7 +27,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     Set model variables to initial/restart conditions
-      IF ( startTime .EQ. 0. .AND.  nIter0 .EQ. 0
+      IF ( startTime .EQ. baseTime .AND.  nIter0 .EQ. 0
      &     .AND. pickupSuff .EQ. ' ' ) THEN
         CALL INI_VEL( myThid )
         CALL INI_THETA( myThid )
@@ -39,9 +39,9 @@ C     Set model variables to initial/restart conditions
 #endif
         IF (nonHydrostatic) CALL INI_PNH( myThid )
       ELSE
-        IF ( nIter0 .EQ. 0 ) THEN
-          nIter0 = INT(startTime/deltaTClock )
-        ENDIF
+c       IF ( nIter0 .EQ. 0 ) THEN
+c         nIter0 = INT(startTime/deltaTClock )
+c       ENDIF
         CALL READ_CHECKPOINT( nIter0, myThid )
 
 CEH3        IF (pickup_write_immed) THEN

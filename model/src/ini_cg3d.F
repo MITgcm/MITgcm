@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.15 2003/10/31 20:35:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.16 2005/04/06 18:29:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -309,7 +309,7 @@ C     CALL PLOT_FIELD_XYRS( zML, 'zML INI_CG3D.1' , Nr, 1, myThid )
 CcnhDebugEnds
 
 C--   Set default values for initial guess and RHS
-      IF ( startTime .EQ. 0 ) THEN
+      IF ( startTime .EQ. baseTime ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO K=1,Nr
