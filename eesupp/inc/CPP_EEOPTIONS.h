@@ -1,5 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.16 2001/02/04 14:38:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.17 2001/03/09 19:36:39 adcroft Exp $
 C $Name:  $
+
+  These lines are here to deliberately cause a compile-time error.
+  If you see these lines in your .F files or the compiler shows them
+  as an error then it means you have not placed your configuration
+  files in the appropriate place. 
+  You need to place you own copy of CPP_EEOPTIONS.h in the include
+  path for the model.
+
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
