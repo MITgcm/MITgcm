@@ -1,7 +1,25 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.140 2003/02/28 02:09:29 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.141 2003/02/28 05:21:22 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint49
+o Changes to restore differentiability of code w.r.t. previous tag
+  (mostly adding new routines to make list and replacing
+  pressure by totPhiHyd).
+o Updated and merged grdchk package
+  - has both ADM and TLM checks
+  - works for single- and multi-proc.
+  - output cleaned
+  - worked successfully for parallel DIVA
+o genmake:
+  - Adding -platform=SP4
+  - Modif. for DEC Alpha (many don't have makedepend; use mkdep instead).
+o Modif. for DIVA:
+  ctrl_unpack should not be called in intermediate DIVA interval.
+  (similar thing would apply for active files such as
+  tbar, sbar, psbar, which should not be reinitialised;
+  only relevant for ecco-branch)
 
 checkpoint48h_post
 o improve "ini_p_ground" when using finite difference form for calc_phi_hyd
