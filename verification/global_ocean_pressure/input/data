@@ -29,7 +29,7 @@
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,
- nonlinFreeSurf=3,
+ nonlinFreeSurf=4,
  hFacInf=0.2,
  hFacSup=2.0,
 #useRealFreshWaterFlux=.TRUE.,
