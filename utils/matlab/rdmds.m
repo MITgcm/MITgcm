@@ -43,7 +43,7 @@ function [AA] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %  
 %  
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.11 2001/11/27 19:21:29 adcroft Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.12 2001/11/27 19:21:56 adcroft Exp $
 
 % Default options
 ieee='b';
@@ -340,9 +340,9 @@ arr=reshape(arr,N);
 %
 function [iters] = scanforfiles(fname)
 
-allfiles=dir([fname '.*.001.001.meta'])
+allfiles=dir([fname '.*.001.001.meta']);
 if isempty(allfiles)
- allfiles=dir([fname '.*.meta'])
+ allfiles=dir([fname '.*.meta']);
  ioff=0;
 else
  ioff=8;
