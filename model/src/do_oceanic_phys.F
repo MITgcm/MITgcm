@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.12 2004/10/13 07:05:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.13 2004/10/14 05:22:21 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -366,6 +366,7 @@ CADJ STORE surfaceForcingT(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE surfaceForcingTice(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  ALLOW_GMREDI

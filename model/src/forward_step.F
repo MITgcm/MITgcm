@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.103 2004/09/27 18:00:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.104 2004/10/14 05:22:21 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -10,7 +10,9 @@ C $Name:  $
 #ifdef ALLOW_OFFLINE
 # include "OFFLINE_OPTIONS.h"
 #endif
-
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: FORWARD_STEP
@@ -85,6 +87,12 @@ C     == Global variables ==
 # endif
 # ifdef EXACT_CONSERV
 #  include "SURFACE.h"
+# endif
+# ifdef ALLOW_KPP
+#  include "KPP.h"
+# endif
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -264,6 +272,20 @@ C--     Step forward fields and calculate time tendency terms.
        CALL DO_ATMOSPHERIC_PHYS( myTime, myIter, myThid )
        CALL TIMER_STOP ('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',mythid)
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta              = comlev1, key = ikey_dynamics
+CADJ STORE salt               = comlev1, key = ikey_dynamics
+CADJ STORE totphihyd          = comlev1, key = ikey_dynamics
+CADJ STORE surfaceforcingtice = comlev1, key = ikey_dynamics
+# ifdef ALLOW_KPP
+CADJ STORE uvel               = comlev1, key = ikey_dynamics
+CADJ STORE vvel               = comlev1, key = ikey_dynamics
+# endif
+# ifdef EXACT_CONSERV
+CADJ STORE pmepr              = comlev1, key = ikey_dynamics
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #ifndef ALLOW_OFFLINE
 #ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB ) 
@@ -273,6 +295,39 @@ C--     Step forward fields and calculate time tendency terms.
        CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
 #endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+cph needed to be moved here from do_oceanic_physics
+cph to be visible down the road
+c
+CADJ STORE surfaceForcingS    = comlev1, key = ikey_dynamics
+CADJ STORE surfaceForcingT    = comlev1, key = ikey_dynamics
+CADJ STORE surfaceForcingTice = comlev1, key = ikey_dynamics
+ctest(
+# ifdef EXACT_CONSERV
+CADJ STORE pmepr              = comlev1, key = ikey_dynamics
+# endif
+ctest)
+c
+# ifdef ALLOW_GMREDI
+CADJ STORE Kwx                = comlev1, key = ikey_dynamics
+CADJ STORE Kwy                = comlev1, key = ikey_dynamics
+CADJ STORE Kwz                = comlev1, key = ikey_dynamics
+#  ifdef GM_BOLUS_ADVEC
+CADJ STORE GM_PsiX            = comlev1, key = ikey_dynamics
+CADJ STORE GM_PsiY            = comlev1, key = ikey_dynamics
+#  endif
+# endif
+c
+# ifdef ALLOW_KPP
+CADJ STORE KPPghat            = comlev1, key = ikey_dynamics
+CADJ STORE KPPfrac            = comlev1, key = ikey_dynamics
+ctest(
+CADJ STORE KPPdiffKzS    = comlev1, key = ikey_dynamics
+CADJ STORE KPPdiffKzT    = comlev1, key = ikey_dynamics
+ctest) 
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       IF ( .NOT.staggerTimeStep ) THEN
 #ifdef ALLOW_DEBUG
@@ -526,8 +581,6 @@ C--   Check status of solution (statistics, cfl, etc...)
 #ifdef ALLOW_COST
 C--     compare model with data and compute cost function
 C--     this is done after exchanges to allow interpolation
-ceh3 perhaps needs an IF ( useCOST ) THEN
-CADJ STORE theta, uvel, vvel = comlev1, key = ikey_dynamics
       CALL TIMER_START('COST_TILE           [FORWARD_STEP]',myThid)
       CALL COST_TILE  ( mytime, myiter, myThid )
       CALL TIMER_STOP ('COST_TILE           [FORWARD_STEP]',myThid)

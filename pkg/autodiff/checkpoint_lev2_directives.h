@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.23 2004/09/27 18:00:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.24 2004/10/14 05:22:21 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 2
@@ -90,4 +90,8 @@ CADJ STORE empmr = tapelev2, key = ilev_2
 CADJ STORE cMeanTheta = tapelev2, key = ilev_2
 CADJ STORE cMeanUVel  = tapelev2, key = ilev_2
 CADJ STORE cMeanVVel  = tapelev2, key = ilev_2
+#endif
+
+#ifdef ALLOW_COST_TRACER
+CADJ STORE objf_tracer = tapelev2, key = ilev_2
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.56 2004/10/08 17:25:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.57 2004/10/14 05:22:21 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -124,6 +124,7 @@ c--   Initialize storage for the cost function evaluation.
 CADJ  INIT dummytape = common, 1
 c--   Initialize storage for the outermost loop.
 CADJ  INIT tapelev_ini_bibj_k   = USER
+CADJ  INIT tapelev_init   = USER
 #ifdef AUTODIFF_2_LEVEL_CHECKPOINT
 CADJ  INIT tapelev2 = USER
 #else
