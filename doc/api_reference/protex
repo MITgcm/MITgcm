@@ -1,6 +1,6 @@
 #! /usr/bin/env perl
 #
-#  $Id: protex,v 1.4 2004/04/01 04:23:33 edhill Exp $
+#  $Id: protex,v 1.5 2004/04/01 05:00:06 edhill Exp $
 #
 #BOP
 #
@@ -420,10 +420,11 @@ $begdoc = 0;            # has \begin{document} been written?
 			printf "\\newpage\n";
 		    }
 		    unless ($opt_f) {
-			printf "\\subsubsection{%s (File: %s)}\n\n", $_, $FileBaseName;
+			printf "\\subsection{%s (File: %s)}\n\n", $_, $FileBaseName;
 		    }
 		    else {
-			printf "\\subsubsection{%s }\n\n", $_;
+			printf "\\subsection{%s}\n\n", $_;
+			printf "\n{\\sf FILE:} %s\n\\medskip\n", $FileBaseName;
 		    }
 		    $have_name = 1;
 		    $not_first = 1;

@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.4 2004/04/01 04:23:33 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.5 2004/04/01 05:00:06 edhill Exp $
 #
 #  A script to generate the Makefile for the API Reference
 
@@ -91,13 +91,13 @@ EOF
 	printf '\t%s\n' "-cat $d_tex >> $target" >> Makefile
     fi
     if test ! "x$h_files" = x ; then
-	printf '\t%s\n' "-./protex -b7 $d_h >> $target" >> Makefile
+	printf '\t%s\n' "-./protex -b7f $d_h >> $target" >> Makefile
     fi
     if test ! "x$F_files" = x ; then
-	printf '\t%s\n' "-./protex -b7 $d_F >> $target" >> Makefile
+	printf '\t%s\n' "-./protex -b7f $d_F >> $target" >> Makefile
     fi
     if test ! "x$c_files" = x ; then
-	printf '\t%s\n' "-./protex -bC $d_c >> $target" >> Makefile
+	printf '\t%s\n' "-./protex -bCf $d_c >> $target" >> Makefile
     fi
 
     if test ! "x$target" = x ; then
