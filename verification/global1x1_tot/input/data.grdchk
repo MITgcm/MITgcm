@@ -9,4 +9,4 @@
  nstep            = 1,
  nend             = 4,
  grdchkvarindex   = 1,
- &
+ /

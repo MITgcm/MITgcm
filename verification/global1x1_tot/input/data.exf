@@ -1,60 +1,46 @@
-# $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/input/Attic/data.exf,v 1.2 2003/11/06 22:28:42 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/input/Attic/data.exf,v 1.3 2004/10/29 22:05:14 heimbach Exp $
 #
 # *********************
 # External Forcing Data
 # *********************
  &EXF_NML
+#
+ useExfYearlyFields = .TRUE.,
+#
  hfluxstartdate1   = 19920101,
- hfluxstartdate2   = 60000,
- hfluxperiod       = 86400.0,
+ hfluxstartdate2   = 30000,
+ hfluxperiod       = 21600.0,
 #
  sfluxstartdate1   = 19920101,
- sfluxstartdate2   = 60000,
- sfluxperiod       = 86400.0,
+ sfluxstartdate2   = 30000,
+ sfluxperiod       = 21600.0,
 #
  ustressstartdate1 = 19920101,
- ustressstartdate2 = 30000,
- ustressperiod     = 43200.0,
+ ustressstartdate2 = 00000,
+ ustressperiod     = 21600.0,
 #
  vstressstartdate1 = 19920101,
- vstressstartdate2 = 30000,
- vstressperiod     = 43200.0,
-#
- atempstartdate1   = 19920101,
- atempstartdate2   = 60000,
- atempperiod       = 86400.0,
-#
- aqhstartdate1     = 19920101,
- aqhstartdate2     = 60000,
- aqhperiod         = 86400.0,
-#
- precipstartdate1  = 19920101,
- precipstartdate2  = 60000,
- precipperiod      = 86400.0,
-#
- uwindstartdate1   = 19920101,
- uwindstartdate2   = 30000,
- uwindperiod       = 43200.0,
-#
- vwindstartdate1   = 19920101,
- vwindstartdate2   = 30000,
- vwindperiod       = 43200.0,
+ vstressstartdate2 = 00000,
+ vstressperiod     = 21600.0,
 #
  swfluxstartdate1  = 19920101,
- swfluxstartdate2  = 60000,
- swfluxperiod      = 86400.0,
+ swfluxstartdate2  = 30000,
+ swfluxperiod      = 21600.0,
 #
  lwfluxstartdate1  = 19920101,
- lwfluxstartdate2  = 60000,
- lwfluxperiod      = 86400.0,
+ lwfluxstartdate2  = 30000,
+ lwfluxperiod      = 21600.0,
 #
- hfluxfile         = 'NCEP_R_turbflux_92-01_1x1',
- sfluxfile         = 'NCEP_R_emp_92-01_1x1',
- ustressfile       = 'NCEP_R_ustr_92-01_1x1',
- vstressfile       = 'NCEP_R_vstr_92-01_1x1',
- swfluxfile        = 'NCEP_R_sw_92-01_1x1',
+ hfluxfile         = 'NCEP_R6_turbflux',
+ sfluxfile         = 'NCEP_R6_emp',
+ ustressfile       = 'NCEP_R6_ustr',
+ vstressfile       = 'NCEP_R6_vstr',
+ swfluxfile        = 'NCEP_R6_sw',
  runofffile	   = 'run-off.bin_1x1',
+#
+ exf_inscal_ustress    = -1.,
+ exf_inscal_vstress    = -1.,
 #
  exf_iprec         = 32,
  exf_yftype        = 'RL',
- &
+ /

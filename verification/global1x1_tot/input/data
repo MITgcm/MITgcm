@@ -18,10 +18,16 @@
  no_slip_bottom=.TRUE.,
  viscAz=1.E-3,
  viscAh=1.E4,
- diffKhT=1.E3,
+#ph(
+# diffKhT=1.E3,
+# diffKzT=1.E-5,
+# diffKhS=1.E3,
+# diffKzS=1.E-5,
+ diffKhT=1.E2,
  diffKzT=1.E-5,
- diffKhS=1.E3,
+ diffKhS=1.E2,
  diffKzS=1.E-5,
+#ph)
  beta=1.E-11,
  tAlpha=2.E-4,
  sBeta =7.4E-4,
@@ -41,37 +47,54 @@
  allowFreezing=.false.,
  globalFiles=.false.,
  useCDscheme=.true.,
+ useNHMTerms=.TRUE.,
+#ph(
+ tempAdvScheme = 3,
+ saltAdvScheme = 3,
+# hFacMin=0.2,
+# hFacMinDz = 50,
+#ph)
  debugLevel=1, 
- &
+ /
 
 # **************************
 # Elliptic solver parameters
 # **************************
  &PARM02
- cg2dMaxIters=1000,
- cg2dTargetResidual=1.E-13,
- &
+ cg2dMaxIters=500,
+ cg2dTargetResidual=1.E-7,
+ /
 
 # ************************
 # Time stepping parameters
 # ************************
  &PARM03
  tauCD=172800.,
-### startTime=3600.0,
- nTimeSteps=87599,
  startTime=0.0,
-### nTimeSteps=4,
+# 2 months
+ nTimeSteps=1,
+# 1 year
+# nTimeSteps=8760,
+# 2 years
+### nTimeSteps=17440,
+# 11 years
+### nTimeSteps=96398,
+# 12 years
+### nTimeSteps=105120,
  deltaTmom=3600.0,
  deltaTtracer=3600.0,
  deltaTClock =3600.0,
  cAdjFreq=0.,
  abEps=0.1,
- pChkptFreq=31536000.0,
- chkptFreq=31536000.0,
- dumpFreq =31536000.0,
+# pChkptFreq  = 31536000.0,
+# chkptFreq   = 31536000.0,
+# dumpFreq    = 31536000.0,
+# adjDumpFreq = 31536000.0, 
+ taveFreq    = 31536000.0,
+ monitorFreq = 31536000.0,
  tauThetaClimRelax=0.,
  tauSaltClimRelax=0.,
- &
+ /
 
 # *******************
 # Gridding parameters
@@ -84,14 +107,18 @@
  delZ=10.,10.,15.,20.,20.,25.,35.,50.,75.,100.,150.,200.,275.,350.,415.,450.,500.,500.,500.,500.,500.,500.,500.,
  phimin=-80.,
  thetamin=0.,
- &
+ /
 
 # **********
 # Data Files
 # **********
  &PARM05
  bathyFile='bathy_fl.bin',
- hydrogThetaFile='lev_monthly_temp_fl.bin',
- hydrogSaltFile='lev_monthly_salt_fl.bin',
- &
+### hydrogThetaFile='lev_monthly_temp_fl.bin',
+### hydrogSaltFile='lev_monthly_salt_fl.bin',
+### hydrogThetaFile = 'lev01_monthly_ptmp.bin_corK',
+### hydrogSaltFile  = 'lev01_monthly_salt.bin_corK',
+ hydrogThetaFile = 'LEVITUS_1x1_ptmp_NEW_corK',
+ hydrogSaltFile  = 'LEVITUS_1x1_salt_NEW_corK',
+ /
 

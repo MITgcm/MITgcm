@@ -5,7 +5,7 @@
 # ***************
  &PACKAGES
  useKPP	      = .TRUE.,
- useGMRedi    = .FALSE.,
+ useGMRedi    = .TRUE.,
  useGrdchk    = .FALSE.,
  useECCO      = .TRUE.,
- &
+ /

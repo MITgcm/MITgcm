@@ -22,7 +22,7 @@
  xx_tauvstartdate1=19920101,
  xx_tauvstartdate2=60000,
  xx_tauvperiod=172800.0,
- &
+ /
 #
 # *********************
 # names for ctrl_pack/unpack
@@ -30,8 +30,5 @@
  &ctrl_packnames
  ctrlname='ecco_ctrl',
  costname='ecco_cost',
- scalname='ecco_scal',
- maskname='ecco_mask',
- metaname='ecco_meta',
- &
+ /
 
