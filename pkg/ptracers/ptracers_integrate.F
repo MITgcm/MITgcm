@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.1 2002/03/04 19:01:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.2 2002/05/23 15:17:20 adcroft Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -111,7 +111,7 @@ C (advection, [explicit] diffusion, parameterizations,...)
 C External forcing term(s)
          CALL PTRACERS_FORCING(
      I                        bi,bj,k,iTracer,
-     U                        gPtr,
+     U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                        myIter,myTime,myThid)
 
 C If using Adams-Bashforth II, then extrapolate tendancies
