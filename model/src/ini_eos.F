@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.8 2002/11/06 03:45:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.9 2003/02/03 21:58:09 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -94,8 +94,7 @@ C
          end do
         end do
        end do
-      elseif ( buoyancyRelation .eq. 'ATMOSPHERIC'
-     &      .or. buoyancyRelation .eq. 'OCEANICP' ) then
+      elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
 C     
 C     in pressure coordinates the pressure is just the coordinate of
 C     the tracer point, that is, its constant in time
@@ -111,8 +110,6 @@ C
          end do
         end do
        end do
-      else
-       STOP 'INI_EOS: We should never reach this point!'
       endif
 
       if ( equationOfState .eq. 'LINEAR' ) then
@@ -306,7 +303,28 @@ C
       end if
 
       _BEGIN_MASTER( myThid )
+C--   Check EOS initialisation:
+
       call check_eos( myThid )
+
+      IF ( buoyancyRelation .EQ. 'OCEANIC' .AND.
+     &     ( equationOfState .EQ. 'JMD95P'.OR.
+     &       equationOfState .EQ. 'MDJWF' .OR.
+     &       equationOfState .EQ. 'UNESCO'   ) ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'S/R INI_EOS: WARNING >>> Wrong Restart !!!'
+        CALL PRINT_MESSAGE(msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT,myThid)
+        WRITE(msgBuf,'(2A)') 'S/R INI_EOS: ',
+     &   'not correct using Z-coord with EOS function of P'
+        CALL PRINT_MESSAGE(msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT,myThid)
+        WRITE(msgBuf,'(A)')
+     &   'S/R INI_EOS: WARNING <<< Wrong Restart !!!'
+        CALL PRINT_MESSAGE(msgBuf, errorMessageUnit,
+     &                     SQUEEZE_RIGHT,myThid)
+      ENDIF                                         
+
       _END_MASTER( myThid )
 
       return
