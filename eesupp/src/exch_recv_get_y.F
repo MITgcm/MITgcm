@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_y.F,v 1.2 1998/10/28 03:11:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_y.F,v 1.3 1999/03/22 17:37:43 adcroft Exp $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_RECV_GET_Y( array,
@@ -105,7 +105,7 @@ C--   iii. Set data read flag + memory sync.
          IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS )
      &    theSize = (sNx+2*exchWidthX)*exchWidthY*myNz
          CALL MPI_Recv( southRecvBuf_RL(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_WORLD,
+     &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
@@ -124,7 +124,7 @@ C--   iii. Set data read flag + memory sync.
          IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS )
      &    theSize = (sNx+2*exchWidthX)*exchWidthY*myNz
          CALL MPI_Recv( northRecvBuf_RL(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_WORLD,
+     &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
@@ -431,7 +431,7 @@ C--   iii. Set data read flag + memory sync.
          IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS )
      &    theSize = (sNx+2*exchWidthX)*exchWidthY*myNz
          CALL MPI_Recv( southRecvBuf_RS(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_WORLD,
+     &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
@@ -453,7 +453,7 @@ C--   iii. Set data read flag + memory sync.
          IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS )
      &    theSize = (sNx+2*exchWidthX)*exchWidthY*myNz
          CALL MPI_Recv( northRecvBuf_RS(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_WORLD,
+     &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 #ifndef ALWAYS_USE_MPI
         ENDIF                 

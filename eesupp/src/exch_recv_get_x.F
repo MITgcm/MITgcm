@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_x.F,v 1.2 1998/10/28 03:11:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_x.F,v 1.3 1999/03/22 17:37:42 adcroft Exp $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_RECV_GET_X( array,
@@ -102,7 +102,7 @@ C--   iii. Set data read flag + memory sync.
          theType = MPI_DOUBLE_PRECISION
          theSize = sNy*exchWidthX*myNz
          CALL MPI_Recv( westRecvBuf_RL(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_WORLD,
+     &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
@@ -119,7 +119,7 @@ C--   iii. Set data read flag + memory sync.
          theType = MPI_DOUBLE_PRECISION
          theSize = sNy*exchWidthX*myNz
          CALL MPI_Recv( eastRecvBuf_RL(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_WORLD,
+     &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
@@ -416,7 +416,7 @@ C--   iii. Set data read flag + memory sync.
 #endif
          theSize = sNy*exchWidthX*myNz
          CALL MPI_Recv( westRecvBuf_RS(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_WORLD,
+     &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 #ifndef ALWAYS_USE_MPI
         ENDIF                 
@@ -436,7 +436,7 @@ C--   iii. Set data read flag + memory sync.
 #endif
          theSize = sNy*exchWidthX*myNz
          CALL MPI_Recv( eastRecvBuf_RS(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_WORLD,
+     &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
 #ifndef ALWAYS_USE_MPI
         ENDIF                 

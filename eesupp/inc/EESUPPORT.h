@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EESUPPORT.h,v 1.4 1998/09/29 18:50:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EESUPPORT.h,v 1.5 1999/03/22 17:37:42 adcroft Exp $
 C
 C     /==========================================================\
 C     | EESUPPORT.h                                              |
@@ -277,5 +277,9 @@ C                     threads.
       INTEGER mpiTagE
       INTEGER mpiTagN
       INTEGER mpiTagS
-#endif /* ALLOW_USE_MPI */
 
+C MPI communicator describing this model realization
+      COMMON /MPI_COMMS/
+     &        MPI_COMM_MODEL
+      INTEGER MPI_COMM_MODEL
+#endif /* ALLOW_USE_MPI */

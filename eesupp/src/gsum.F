@@ -98,7 +98,7 @@ C
 #endif
         tmp = answer
         CALL MPI_Allreduce(tmp,sumPhi,1,MPI_DOUBLE_PRECISION,MPI_SUM,
-     &                   MPI_COMM_WORLD,mpiRC)
+     &                   MPI_COMM_MODEL,mpiRC)
         answer = sumPhi
 #ifndef ALWAYS_USE_MPI
        ENDIF

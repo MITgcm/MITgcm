@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.4 1998/10/28 03:11:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.5 1999/03/22 17:37:43 adcroft Exp $
 
 C--   File global_sum.F: Routines that perform global sum on an array
 C                        of thread values.
@@ -65,7 +65,7 @@ C--   Sum within the process first
        IF ( usingMPI ) THEN
 #endif
         CALL MPI_Allreduce(tmp,sumPhi,1,MPI_REAL,MPI_SUM,
-     &                   MPI_COMM_WORLD,mpiRC)
+     &                   MPI_COMM_MODEL,mpiRC)
 #ifndef ALWAYS_USE_MPI
        ENDIF
 #endif
@@ -137,7 +137,7 @@ C--   Sum within the process first
        IF ( usingMPI ) THEN
 #endif
         CALL MPI_Allreduce(tmp,sumPhi,1,MPI_DOUBLE_PRECISION,MPI_SUM,
-     &                   MPI_COMM_WORLD,mpiRC)
+     &                   MPI_COMM_MODEL,mpiRC)
 #ifndef ALWAYS_USE_MPI
        ENDIF
 #endif

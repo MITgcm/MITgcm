@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.4 1998/10/28 03:11:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.5 1999/03/22 17:37:42 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -69,8 +69,15 @@ C      forked within mpirun - now thats an open standard!
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
        ENDIF
+C--    MPI has now been initialized but now we need to either
+C      ask for a communicator or pretend that we have:
+C      Ask coupler interface for a communicator
+c      call MITCOMPONENT_init( 'MITgcmUV', MPI_COMM_MODEL )
+C      Pretend that we have asked for a communicator
+       MPI_COMM_MODEL = MPI_COMM_WORLD
+
 C--    Get my process number
-       CALL MPI_COMM_RANK( MPI_COMM_WORLD, mpiMyId, mpiRC )
+       CALL MPI_COMM_RANK( MPI_COMM_MODEL, mpiMyId, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
@@ -93,7 +100,7 @@ C--    Get my process number
 C--    Synchronise all processes
 C      Strictly this is superfluous, but by using it we can guarantee to 
 C      find out about processes that did not start up.
-       CALL MPI_BARRIER( MPI_COMM_WORLD, mpiRC )
+       CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')
@@ -104,7 +111,7 @@ C      find out about processes that did not start up.
        ENDIF
 
 C--    Get number of MPI processes
-       CALL MPI_COMM_SIZE ( MPI_COMM_WORLD, mpiNProcs, mpiRC )
+       CALL MPI_COMM_SIZE ( MPI_COMM_MODEL, mpiNProcs, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I)')

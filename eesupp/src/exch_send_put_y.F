@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_send_put_y.F,v 1.2 1998/10/28 03:11:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_send_put_y.F,v 1.3 1999/03/22 17:37:43 adcroft Exp $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_SEND_PUT_Y( array,
@@ -145,7 +145,7 @@ C        Send the data
           theType = MPI_DOUBLE_PRECISION
           exchNreqsY(1,bi,bj) = exchNreqsY(1,bi,bj)+1
           CALL MPI_Isend(southSendBuf_RL(1,eBl,bi,bj), theSize, theType,
-     &                   theProc, theTag, MPI_COMM_WORLD,
+     &                   theProc, theTag, MPI_COMM_MODEL,
      &                   exchReqIdY(exchNreqsY(1,bi,bj),1,bi,bj), mpiRc)
 #ifndef ALWAYS_USE_MPI
          ENDIF
@@ -196,7 +196,7 @@ C        Send the data
          theType = MPI_DOUBLE_PRECISION
          exchNreqsY(1,bi,bj) = exchNreqsY(1,bi,bj)+1
          CALL MPI_Isend(northSendBuf_RL(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_WORLD,
+     &                  theProc, theTag, MPI_COMM_MODEL,
      &                  exchReqIdY(exchNreqsY(1,bi,bj),1,bi,bj), mpiRc )
 #ifndef ALWAYS_USE_MPI
          ENDIF
@@ -401,7 +401,7 @@ C        Send the data
 #endif
           exchNreqsY(1,bi,bj) = exchNreqsY(1,bi,bj)+1
           CALL MPI_Isend(southSendBuf_RS(1,eBl,bi,bj), theSize, theType,
-     &                   theProc, theTag, MPI_COMM_WORLD,
+     &                   theProc, theTag, MPI_COMM_MODEL,
      &                   exchReqIdY(exchNreqsY(1,bi,bj),1,bi,bj), mpiRc)
 #ifndef ALWAYS_USE_MPI
          ENDIF
@@ -455,7 +455,7 @@ C        Send the data
 #endif
          exchNreqsY(1,bi,bj) = exchNreqsY(1,bi,bj)+1
          CALL MPI_Isend(northSendBuf_RS(1,eBl,bi,bj), theSize, theType,
-     &                  theProc, theTag, MPI_COMM_WORLD,
+     &                  theProc, theTag, MPI_COMM_MODEL,
      &                  exchReqIdY(exchNreqsY(1,bi,bj),1,bi,bj), mpiRc )
 #ifndef ALWAYS_USE_MPI
          ENDIF
