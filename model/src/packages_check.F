@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.19 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.20 2003/10/30 12:00:41 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -100,6 +100,10 @@ CEOP
       IF (useSEAICE) CALL SEAICE_CHECK( myThid )
 #else
       IF (useSEAICE) CALL PACKAGES_CHECK_ERROR('SEAICE', myThid)
+#endif
+
+#ifndef ALLOW_CD_CODE
+      IF (useCDscheme) CALL PACKAGES_CHECK_ERROR('CD_CODE', myThid)
 #endif
 
 #ifdef ALLOW_AUTODIFF

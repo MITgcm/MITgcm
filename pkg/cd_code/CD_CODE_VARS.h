@@ -1,5 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/CD_CODE_VARS.h,v 1.1 2003/10/29 15:36:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/CD_CODE_VARS.h,v 1.2 2003/10/30 12:00:41 edhill Exp $
 C $Name:  $
+
+C     uVelD  - D grid zonal velocity
+C     vVelD  - D grid meridional velocity
 
 #ifdef ALLOW_CD_CODE
       COMMON /DYNVARS_CD/ 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.102 2003/10/28 22:57:59 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.103 2003/10/30 12:00:41 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -73,6 +73,9 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_CD_CODE
+#include "CD_CODE_VARS.h"
+#endif
 #include "GRID.h"
 #ifdef ALLOW_PASSIVE_TRACER
 #include "TR1.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.23 2003/10/28 22:57:59 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.24 2003/10/30 12:00:41 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,8 +25,6 @@ C     vVel  - meridional velocity (m/s, j=1 held at southern face)
 C     theta - potential temperature (oC, held at pressure/tracer point)
 C     salt  - salinity (ppt, held at pressure/tracer point)
 C     gX, gXNM1 - Time tendencies at current and prvious time levels.
-C     uVelD  - D grid zonal velocity
-C     vVelD  - D grid meridional velocity
 C     etaH   - surface r-anomaly, advanced in time consistently 
 C              with 2.D flow divergence (Exact-Conservation): 
 C                etaH^n+1 = etaH^n - delta_t*Div.(H^n U^n)   
@@ -53,18 +51,6 @@ C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
       _RL  gvNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gtNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gsNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-
-#ifdef ALLOW_CD_CODE
-      COMMON /DYNVARS_CD/ 
-     &                   uVelD, vVelD,
-     &                   etaNm1,
-     &                   uNM1,  vNM1
-      _RL  uVeld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  vVeld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  etaNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  uNm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  vNm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#endif
 
 #ifdef ALLOW_NONHYDROSTATIC
       COMMON /DYNVARS_NH/ phi_nh

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.27 2003/10/28 22:57:59 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.28 2003/10/30 12:00:41 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,6 +52,7 @@ C     == Global variables ===
 #include "GW.h"
 #include "SOLVE_FOR_PRESSURE3D.h"
 #endif
+
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
@@ -97,17 +98,6 @@ C       Raw fields
         CALL READ_REC_XYZ_RL(    'gS',     gS, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL( 'gsNm1',  gSNm1, 1,myIter, myThid)
         CALL READ_REC_XY_RL ('etaN', etaN, 1,myIter, myThid)
-#ifdef ALLOW_CD_CODE
-        IF (useCDscheme) THEN
-        CALL READ_REC_XY_RL ('etaNm1', etaNm1, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'uVelD', uVelD, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'vVelD', vVelD, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'uNm1',  uNM1, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'vNm1',  vNM1, 1,myIter, myThid)
-c       CALL READ_REC_XYZ_RL(  'guCD',  guCD, 1,myIter, myThid)
-c       CALL READ_REC_XYZ_RL(  'gvCD',  gvCD, 1,myIter, myThid)
-        ENDIF
-#endif
 
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
@@ -151,19 +141,6 @@ C--     Read model fields
          WRITE(fn,'(A,A10)') 'pickup_ph.',suff
          CALL MDSREADFIELD(fn,prec,'RL',Nr,totPhiHyd,1,myThid)
         ENDIF
-
-#ifdef ALLOW_CD_CODE
-        IF (useCDscheme) THEN
-        WRITE(fn,'(A,A10)') 'pickup_cd.',suff
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,uVelD,    1,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,vVelD,    2,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,uNM1,     3,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,vNM1,     4,myThid)
-c       CALL MDSREADFIELD(fn,prec,'RL',Nr,guCD,     5,myThid)
-c       CALL MDSREADFIELD(fn,prec,'RL',Nr,gvCD,     6,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,6*Nr+1,myThid)
-        ENDIF
-#endif /* ALLOW_CD_CODE */
 
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
@@ -220,20 +197,6 @@ c     _EXCH_XYZ_R8(gvNM1 , myThid )
       IF ( useDynP_inEos_Zc )
      & _EXCH_XYZ_RL( totPhiHyd, myThid )
 
-#ifdef ALLOW_CD_CODE
-       IF (useCDscheme) THEN
-c**** CALL EXCH_DUV_XYZ_RL(uVelD,vVelD,.TRUE.,myThid)
-c**** CALL EXCH_DUV_XYZ_RL(guCD,gvCD,.TRUE.,myThid)
-      _EXCH_XYZ_R8( uVelD,    myThid )
-      _EXCH_XYZ_R8( vVelD,    myThid )
-      CALL EXCH_UV_XYZ_RL(uNM1,vNM1,.TRUE.,myThid)
-c     _EXCH_XYZ_R8( uNM1,     myThid )
-c     _EXCH_XYZ_R8( vNM1,     myThid )
-c     _EXCH_XYZ_R8( guCD,     myThid )
-c     _EXCH_XYZ_R8( gvCD,     myThid )
-      _EXCH_XY_R8( etaNm1, myThid )
-      ENDIF
-#endif /* ALLOW_CD_CODE */
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
          _EXCH_XYZ_R8(phi_nh, myThid )
@@ -280,6 +243,9 @@ C     == Global variables ===
 #ifdef ALLOW_NONHYDROSTATIC
 #include "GW.h"
 #include "SOLVE_FOR_PRESSURE3D.h"
+#endif
+#ifdef ALLOW_CD_CODE
+#include "CD_CODE_VARS.h"
 #endif
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE

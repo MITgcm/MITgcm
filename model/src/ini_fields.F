@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.15 2003/06/05 16:03:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.16 2003/10/30 12:00:41 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -50,6 +51,10 @@ C--   Set model variables to initial/restart conditions
        ENDIF
        CALL READ_CHECKPOINT( nIter0, myThid )
       ENDIF
+
+#ifdef ALLOW_CD_CODE
+      IF (useCDscheme) CALL CD_CODE_INIT_VARS( nIter0, myThid )
+#endif
 
       RETURN
       END

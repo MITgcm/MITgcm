@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.11 2003/10/28 22:57:59 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.12 2003/10/30 12:00:41 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,6 +28,9 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "GW.h"
+#endif
+#ifdef ALLOW_CD_CODE
+#include "CD_CODE_VARS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

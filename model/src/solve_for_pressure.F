@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.40 2003/10/28 22:57:59 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.41 2003/10/30 12:00:41 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -24,6 +24,9 @@ C     == Global variables
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_CD_CODE
+#include "CD_CODE_VARS.h"
+#endif
 #include "GRID.h"
 #include "SURFACE.h"
 #include "FFIELDS.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/SIZE.h,v 1.2 2001/02/04 14:38:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/SIZE.h,v 1.3 2003/10/30 12:00:41 edhill Exp $
 C $Name:  $
 C
 C     /==========================================================\

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/Attic/cd_scheme.F,v 1.2 2003/10/28 22:57:59 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/Attic/cd_scheme.F,v 1.3 2003/10/30 12:00:41 edhill Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -20,6 +20,9 @@ C     == Global variables ==
       IMPLICIT NONE
 #include "SIZE.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_CD_CODE
+#include "CD_CODE_VARS.h"
+#endif
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"

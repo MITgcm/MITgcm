@@ -1,9 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.198 2003/10/28 22:57:59 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.199 2003/10/30 12:00:41 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o create initial cd_code package
+  - WARNING: the initialization of fields within packages
+    is broken because INI_FIELDS (where READ_CHECKPOINT is
+    called) is called *before* PACKAGES_INIT_VARIABLES.
+    This seems to be backwards since
+    1) its important to initially zero the entire field including 
+       the "halo" region
+    2) zeroing needs to be done *before* reading pickup info
+       and the pickup call might or might not happen in any 
+       particular run
+  - this needs an overhaul for R2
 o cleanup verification/*/code/GMREDI_OPTIONS.h
 o cleanup testreport
 
