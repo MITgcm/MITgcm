@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.11 2004/06/29 22:21:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.12 2004/07/06 00:51:35 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -39,9 +39,11 @@ C IMPORTANT:  ksurfC,W,S = Nr+1  where the fluid column is empty (continent)
       INTEGER ksurfS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef EXACT_CONSERV
+C     etaHnm1 :: surface r-anomaly, etaH, at previous time level
 C     dEtaHdt :: time derivative of total column height [r_unit/s = w unit]
 C     PmEpR   :: keep the fresh water input (=-EmPmR) of the previous time step
-      COMMON /EXACT_ETA_LOCAL/ dEtaHdt, PmEpR
+      COMMON /EXACT_ETA_LOCAL/ etaHnm1, dEtaHdt, PmEpR
+      _RL etaHnm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RL dEtaHdt(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       _RS  PmEpR (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.116 2004/07/02 15:09:46 afe Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.117 2004/07/06 00:51:35 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -281,7 +281,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & usingPCoords, usingZCoords, useDynP_inEos_Zc, setCenterDr,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, useOldFreezing, groundAtK1,
-     & usePickupBeforeC35, debugMode,
+     & usePickupBeforeC35, usePickupBeforeC54, debugMode,
      & readPickupWithTracer, writePickupWithTracer
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
@@ -348,6 +348,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL useOldFreezing
       LOGICAL groundAtK1
       LOGICAL usePickupBeforeC35
+      LOGICAL usePickupBeforeC54
       LOGICAL debugMode
       LOGICAL readPickupWithTracer
       LOGICAL writePickupWithTracer

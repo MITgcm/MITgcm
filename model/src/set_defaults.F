@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.64 2004/06/24 20:25:44 afe Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.65 2004/07/06 00:54:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -161,6 +161,7 @@ Cml      sBeta               = 7.4D-4
       bottomDragLinear    = 0.
       bottomDragQuadratic = 0.
       usePickupBeforeC35    = .FALSE.
+      usePickupBeforeC54    = .FALSE.
       debugMode             = .FALSE.
       readPickupWithTracer  = .FALSE.
       writePickupWithTracer = .FALSE.

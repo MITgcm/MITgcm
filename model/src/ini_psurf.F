@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.7 2003/10/30 12:00:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.8 2004/07/06 00:54:07 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -28,6 +29,7 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "SURFACE.h"
 #ifdef ALLOW_CD_CODE
 #include "CD_CODE_VARS.h"
 #endif
@@ -79,18 +81,20 @@ C--   By default, initialize etaNm1 with etaN :
 C     _EXCH_XY_R8(etaNm1, myThid)
 #endif
 
-#ifdef NONLIN_FRSURF
+#ifdef EXACT_CONSERV
 C--   By default, initialize etaH with etaN : 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          etaH(I,J,bi,bj) = etaN(I,J,bi,bj)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          etaH(i,j,bi,bj) = etaN(i,j,bi,bj)
+          etaHnm1(i,j,bi,bj) = etaN(i,j,bi,bj)
+          dEtaHdt(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-#endif
+#endif /* EXACT_CONSERV */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.2 2004/07/02 17:43:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.3 2004/07/06 00:54:07 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -171,6 +171,7 @@ C     Create MNC definitions for DYNVARS.h variables
       CALL MNC_CW_ADD_VATTR_TEXT('EtaH',1,'units','m', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('EtaH',1,
      &     'coordinates','XC YC RC iter', myThid)
+      CALL MNC_CW_ADD_VNAME('dEtaHdt', 'Cen_xy_Hn__-__t', 3,4, myThid)
 
       CALL MNC_CW_ADD_VNAME('W', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('W',1,'units','m/s', myThid)

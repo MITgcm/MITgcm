@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.42 2004/07/02 17:43:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.43 2004/07/06 00:54:07 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,6 +55,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#include "SURFACE.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "GW.h"
 #include "SOLVE_FOR_PRESSURE3D.h"
@@ -139,14 +140,22 @@ C       Read variables from the pickup file
         CALL MNC_CW_RL_R('D',fn,0,0,'T',theta, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'S',salt, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'Eta',etaN, myThid)
-#ifdef NONLIN_FRSURF
-        IF ( nonlinFreeSurf.GE.0)
-     &    CALL MNC_CW_RL_R('D',fn,0,0,'EtaH', etaH, myThid)
-#endif
         CALL MNC_CW_RL_R('D',fn,0,0,'gUnm1',gUnm1, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'gVnm1',gVnm1, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'gTnm1',gTnm1, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'gSnm1',gSnm1, myThid)
+#ifdef NONLIN_FRSURF
+        IF ( nonlinFreeSurf.GE.0 .AND. usePickupBeforeC54 )
+     &    CALL MNC_CW_RL_R('D',fn,0,0,'EtaH', etaH, myThid)
+#endif
+#ifdef EXACT_CONSERV
+        IF ( .NOT. usePickupBeforeC54 ) THEN
+         IF ( exactConserv ) 
+     &    CALL MNC_CW_RL_R('D',fn,0,0,'dEtaHdt', dEtaHdt, myThid)
+         IF ( nonlinFreeSurf.GT.0 ) 
+     &    CALL MNC_CW_RL_R('D',fn,0,0,'EtaH', etaH, myThid)
+        ENDIF
+#endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
           CALL MNC_CW_RL_R('D',fn,0,0,'phi_nh', phi_nh, myThid)
@@ -160,6 +169,7 @@ C       Read variables from the pickup file
 #endif /*  ALLOW_MNC  */
 
 C--     Read model fields
+       IF ( usePickupBeforeC54 ) THEN
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uVel,   1,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gU,     2,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gUnm1,  3,myThid)
@@ -174,9 +184,27 @@ C--     Read model fields
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gSnm1, 12,myThid)
         CALL MDSREADFIELD(fn,prec,'RL', 1,etaN,12*Nr+1,myThid)
 #ifdef NONLIN_FRSURF
-        IF ( nonlinFreeSurf.GE.0)
+        IF ( nonlinFreeSurf.GE.0 )
      &    CALL MDSREADFIELD(fn,prec,'RL',1,etaH,12*Nr+2,myThid)
 #endif
+       ELSE 
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,uVel,   1,myThid)
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,gUnm1,  2,myThid)
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,vVel,   3,myThid)
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,gVnm1,  4,myThid)
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,theta,  5,myThid)
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,gTnm1,  6,myThid)
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,salt,   7,myThid)
+        CALL MDSREADFIELD(fn,prec,'RL',Nr,gSnm1,  8,myThid)
+        CALL MDSREADFIELD(fn,prec,'RL', 1,etaN, 8*Nr+1,myThid)
+#ifdef EXACT_CONSERV
+        IF ( exactConserv ) 
+     &    CALL MDSREADFIELD(fn,prec,'RL',1,dEtaHdt,8*Nr+2,myThid)
+        IF ( nonlinFreeSurf.GT.0 ) 
+     &    CALL MDSREADFIELD(fn,prec,'RL',1,etaH,   8*Nr+3,myThid)
+#endif
+       ENDIF 
+
         IF ( useDynP_inEos_Zc ) THEN
           WRITE(fn,'(A,A10)') 'pickup_ph.',suff
           CALL MDSREADFIELD(fn,prec,'RL',Nr,totPhiHyd,1,myThid)
@@ -211,6 +239,11 @@ C--   Fill in edge regions
       _EXCH_XYZ_R8(gsNM1 , myThid )
       _EXCH_XY_R8 (etaN, myThid )
       _EXCH_XY_R8( etaH, myThid )
+
+#ifdef EXACT_CONSERV
+      _EXCH_XY_R8( etaH,    myThid )
+      _EXCH_XY_R8( detaHdt, myThid )
+#endif
 
       IF ( useDynP_inEos_Zc )
      &     _EXCH_XYZ_RL( totPhiHyd, myThid )
@@ -256,6 +289,7 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#include "SURFACE.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "GW.h"
 #include "SOLVE_FOR_PRESSURE3D.h"
@@ -367,14 +401,14 @@ C         Write dynvars using the MNC package
           CALL MNC_CW_RL_W('D',fn,0,0,'T', theta, myThid)
           CALL MNC_CW_RL_W('D',fn,0,0,'S', salt, myThid)
           CALL MNC_CW_RL_W('D',fn,0,0,'Eta', etaN, myThid)
-#ifdef NONLIN_FRSURF
-          IF ( nonlinFreeSurf .GE. 0)
-     &      CALL MNC_CW_RL_W('D',fn,0,0,'EtaH', etaH, myThid)
-#endif
           CALL MNC_CW_RL_W('D',fn,0,0,'gUnm1', gUnm1, myThid)
           CALL MNC_CW_RL_W('D',fn,0,0,'gVnm1', gVnm1, myThid)
           CALL MNC_CW_RL_W('D',fn,0,0,'gTnm1', gTnm1, myThid)
           CALL MNC_CW_RL_W('D',fn,0,0,'gSnm1', gSnm1, myThid)
+#ifdef EXACT_CONSERV
+          CALL MNC_CW_RL_W('D',fn,0,0,'dEtaHdt', dEtaHdt, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'EtaH', etaHnm1, myThid)
+#endif
 #ifdef ALLOW_NONHYDROSTATIC
           IF ( nonHydrostatic ) THEN
             CALL MNC_CW_RL_W('D',fn,0,0,'phi_nh', phi_nh, myThid)
@@ -387,22 +421,20 @@ C         Write dynvars using the MNC package
         ELSE
 #endif /*  ALLOW_MNC  */
 
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVel,  1,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gU,    2,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gUnm1, 3,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVel,  4,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gV,    5,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gVnm1, 6,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,theta, 7,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gT,    8,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gTnm1, 9,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,salt, 10,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gS,   11,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gSnm1,12,myIter,myThid)
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaN,12*Nr+1,
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVel, 1,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gUnm1,2,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVel, 3,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gVnm1,4,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,theta,5,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gTnm1,6,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,salt, 7,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gSnm1,8,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaN, 8*Nr+1,
      &         myIter,myThid)
-#ifdef NONLIN_FRSURF
-          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaH,12*Nr+2,
+#ifdef EXACT_CONSERV
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,dEtaHdt,8*Nr+2,
+     &      myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaHnm1,8*Nr+3,
      &      myIter,myThid)
 #endif
           IF ( useDynP_inEos_Zc ) THEN
