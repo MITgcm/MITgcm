@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_read_checkpoint.F,v 1.3 2003/06/12 18:41:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_read_checkpoint.F,v 1.4 2003/06/25 23:47:05 stephd Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: PTRACERS_READ_CHECKPOINT
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE PTRACERS_READ_CHECKPOINT( myIter,suff,myThid )
+      SUBROUTINE PTRACERS_READ_CHECKPOINT( myIter,myThid )
 
 C !DESCRIPTION:
 C     Reads current state of passive tracers from a pickup file
@@ -42,7 +42,7 @@ C  fn                   :: suffix for pickup file (eg. 0000000010)
       CHARACTER*(MAX_LEN_MBUF) fn
 CEOP
 
-      WRITE(fn,'(A,A10)') 'pickup_ptracers.',suff
+      WRITE(fn,'(A,I10.10)') 'pickup_ptracers.',myIter
       prec = precFloat64
 
 C Write fields as consecutive records
