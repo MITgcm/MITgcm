@@ -260,10 +260,10 @@ C **********************************************************************
           IDIAG(NUM) = IPOINTER
           IPOINTER   = IPOINTER + KDIAG(NUM)
           ndiagmx    = ndiagmx  + KDIAG(NUM)
-          if(myThid.eq.0) WRITE(6,2000)KDIAG(NUM),NUM,CDIAG(NUM),ndiagmx
+          if(myThid.eq.1) WRITE(6,2000)KDIAG(NUM),NUM,CDIAG(NUM),ndiagmx
         endif
       ELSE
-          if(myThid.eq.0) WRITE(6,3000) NUM, CDIAG(NUM)
+          if(myThid.eq.1) WRITE(6,3000) NUM, CDIAG(NUM)
       ENDIF
 
 c Check for Counter Diagnostic
@@ -278,10 +278,10 @@ c ----------------------------
         IDIAG(mate) = IPOINTER
         IPOINTER    = IPOINTER + KDIAG(mate)
         ndiagmx     = ndiagmx  + KDIAG(mate)
-        if(myThid.eq.0)WRITE(6,2000)KDIAG(mate),mate,CDIAG(mate),ndiagmx
+        if(myThid.eq.1)WRITE(6,2000)KDIAG(mate),mate,CDIAG(mate),ndiagmx
        endif
       ELSE
-          if(myThid.eq.0) WRITE(6,3000) mate, CDIAG(mate)
+          if(myThid.eq.1) WRITE(6,3000) mate, CDIAG(mate)
       ENDIF
       endif
 

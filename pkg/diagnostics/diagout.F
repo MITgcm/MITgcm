@@ -27,7 +27,7 @@ C***********************************************************************
 
       integer myThid, listnum
 
-      integer k, m, n
+      integer i, j, k, m, n, bi, bj
       character*8 parms1
       character*1 parse1(8)
       character*3 mate_index
@@ -45,66 +45,63 @@ C***********************************************************************
       do n=1,nfields(listnum)
        do m=1,ndiagt
         if( flds(n,listnum).eq.cdiag(m) .and. idiag(m).ne.0 ) then
-
          parms1 =  gdiag(m)
-         if(ndiag(m).ne.0.and.idiag(m).ne.0.and.parse1(5).ne.'D')then
-          if( myThid.eq.0 ) write(6,2000) n,cdiag(n),ndiag(n),gdiag(n)
-           if(parse1(5).ne.'C') then
-            do k=1,kdiag(n)
-             call getdiag ( myThid,k,n,undef,qtmp1)
+         if(ndiag(m).ne.0.and.parse1(5).ne.'D')then
+          if( myThid.eq.1 ) write(6,2000) m,cdiag(m),ndiag(m),gdiag(m)
+          if(parse1(5).ne.'C') then
+           do k=1,kdiag(m)
+            call getdiag ( myThid,k,m,undef,qtmp1)
+           enddo
+
+c Check for Mate of a Vector Diagnostic
+c -------------------------------------
+           if( parse1(1).eq.'U' .or. parse1(1).eq.'V' ) then
+            read (mate_index,100) mate
+            if( idiag(mate).ne.0 ) then
+             if( myThid.eq.1 ) write(6,2001) cdiag(m),mate,cdiag(mate)
+            else
+             if( myThid.eq.1 ) write(6,2002) cdiag(m),mate,cdiag(mate)
+            endif
+           endif
+
+          else
+
+c Check for Mate of a Counter Diagnostic
+c --------------------------------------
+           read (mate_index,100) mate
+           do k=1,kdiag(m)
+            call getdiag2 ( myThid,k,m,undef,qtmp1)
+            call getdiag2 ( myThid,k,mate,undef,qtmp2)
+            do bj=myByLo(myThid), myByHi(myThid)
+            do bi=myBxLo(myThid), myBxHi(myThid)
+            do j = 1,sNy
+             do i = 1,sNx
+              if(qtmp2(i,j,k,bi,bj).ne.0.) then
+               qtmp1(i,j,k,bi,bj) = 
+     .                       qtmp1(i,j,k,bi,bj) / qtmp2(i,j,k,bi,bj)
+              else
+               qtmp1(i,j,k,bi,bj) = undef
+              endif
+             enddo
             enddo
+            enddo
+            enddo
+           enddo
 
-c Check for Vector Diagnostic and Mate
-c ------------------------------------
-      if( parse1(1).eq.'U' .or. parse1(1).eq.'V' ) then
-      read (mate_index,100) mate
-  100 format(i3)
-                                                                                   
-        if( idiag(mate).ne.0 ) then
-          if(first) then
-          if( myThid.eq.0 ) write(6,2001) cdiag(n),mate,cdiag(mate)
- 2001     format(1x,'Computing Vector  Mate for  ',a8,5x,
-     .                              'Diagnostic # ',i3,2x,a8)
           endif
-          do k=1,kdiag(mate)
-          CALL GETDIAG ( myThid,k,mate,undef,qtmp1(1,1,k))
-          enddo
-          parms2 =  gdiag(mate)
-        else
-          if(first) then
-          if( myThid.eq.0 ) write(6,2002) cdiag(n),mate,cdiag(mate)
- 2002     format(1x,'        Vector  Mate for  ',a8,5x,
-     .                   'Diagnostic # ',i3,2x,a8,' not enabled')
-          endif
-        endif
-                                                                                   
-      endif
-
-      ELSE
-                                                                                   
-      read (mate_index,100) mate
-      do k=1,kdiag(n)
-       call getdiag2 ( myThid,k,n,undef,qtmp1(1,1,k))
-       call getdiag2 ( myThid,k,mate,undef,qtmp1(1,1,k))
-       do j = 1,jm
-        do i = 1,im
-         if(qtmp2(i,j,k).ne.0.) then
-          qtmp1(i,j,k) = qtmp1(i,j,k) / qtmp2(i,j,k)
-         else
-          qtmp1(i,j,k) = undef
          endif
-        enddo
+        endif
        enddo
-      enddo
-                                                                                   
-      ENDIF
-
-
-       call mdswritefield(
-
+       call mdswritefield(k)
       enddo
 
+  100 format(i3)
  2000 format(1x,'Computing Diagnostic # ',i3,2x,a8,5x,'Counter: ',
      .                                         i3,6x,'Parms: ',a16)
-      RETURN                                                                    
-      END                                                                       
+ 2001     format(1x,'          Vector  Mate for  ',a8,5x,
+     .                              'Diagnostic # ',i3,2x,a8,' exists ')
+ 2002     format(1x,'        Vector  Mate for  ',a8,5x,
+     .                   'Diagnostic # ',i3,2x,a8,' not enabled')
+
+      return                                                                    
+      end                                                                       

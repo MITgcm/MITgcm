@@ -41,7 +41,7 @@ C **********************************************************************
           found = .true.
          endif
         enddo
-        if( .not.found .and. myThid.eq.0 ) then
+        if( .not.found .and. myThid.eq.1 ) then
          print *, 'Note:  ',flds(n,m),' is not a Diagnostic.'
         endif
 

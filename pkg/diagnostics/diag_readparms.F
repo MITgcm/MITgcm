@@ -9,11 +9,15 @@ C  ----------------------
 C     myThid ... Process(or) number
 C***********************************************************************
       implicit none
-      integer myThid
 
+#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
+#include "SIZE.h"
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"
 #include "EEPARAMS.h"
+
+      integer myThid
 
 c Declare Local Variables
 c -----------------------
