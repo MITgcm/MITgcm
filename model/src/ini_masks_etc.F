@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.11 1998/11/06 22:44:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.12 1998/12/08 18:01:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -74,11 +74,7 @@ C           Base of domain is below bottom of this cell
            ELSE
 C           Base of domain is in this cell
 C           Set hFac to the fraction of the cell that is open.
-C           hFacC(I,J,K,bi,bj) = (rF(K)*rkFac-H(I,J,bi,bj)*rkFac)*recip_drF(K)
-CcnhDebugStarts
-C Impose full-step
-            hFacC(I,J,K,bi,bj) = 1.
-CCnhDebugEnds
+            hFacC(I,J,K,bi,bj) = (rF(K)*rkFac-H(I,J,bi,bj)*rkFac)*recip_drF(K)
            ENDIF
 C Impose minimum fraction
            IF (hFacC(I,J,K,bi,bj).LT.hFacMin) THEN
