@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.25 1998/08/22 17:51:06 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.26 1998/08/23 15:34:39 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -44,10 +44,12 @@ C     thetaClimFile   - File containing theta climataology used
 C                       in relaxation term -lambda(theta-theta*)
 C     saltClimFile    - File containing salt climataology used
 C                       in relaxation term -lambda(salt-salt*)
+C     buoyancyRelation - Flag used to indicate which relation to use to
+C                        get buoyancy.
       COMMON /PARM_C/ checkPtSuff,
      &                bathyFile, hydrogThetaFile, hydrogSaltFile,
      &                zonalWindFile, meridWindFile, thetaClimFile,
-     &                saltClimFile
+     &                saltClimFile, buoyancyRelation
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
       CHARACTER*(MAX_LEN_FNAM) bathyFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
@@ -56,6 +58,7 @@ C                       in relaxation term -lambda(salt-salt*)
       CHARACTER*(MAX_LEN_FNAM) meridWindFile
       CHARACTER*(MAX_LEN_FNAM) thetaClimFile
       CHARACTER*(MAX_LEN_FNAM) saltClimFile
+      CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        - Maximum number of iterations in the
@@ -282,7 +285,8 @@ C                           number times externForcingPeriod)
      & diffKhS, diffKzS, diffK4S, diffKrS,
      & delT, tauCD, rCD, freeSurfFac, hFacMin, hFacMinDz,
      & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,GMmaxval,
-     & gravity, gBaro, rhonil, recip_rhonil, rhoConst, tRef, sRef,
+     & gravity, gBaro, rhonil, recip_rhonil, 
+     & recip_rhoConst, rhoConst, tRef, sRef, theta_S, specVol_S,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cAdjFreq, omega, tauThetaClimRelax, lambdaThetaClimRelax,
@@ -335,7 +339,10 @@ C                           number times externForcingPeriod)
       _RL rhonil
       _RL recip_rhonil
       _RL rhoConst
+      _RL recip_rhoConst
+      _RL specVol_S(Nr)
       _RL tRef(Nr)
+      _RL theta_S(Nr)
       _RL sRef(Nr)
       _RS Fcori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL startTime

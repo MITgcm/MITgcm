@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.31 1998/08/22 17:51:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.32 1998/08/23 15:34:40 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -273,7 +273,7 @@ C--      Recompute density after mixing
      I      myThid )
         ENDIF
 C--     Calculate buoyancy
-        CALL CALC_BUOY(
+        CALL CALC_BUOYANCY(
      I      bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,
      O      buoyKm1,
      I      myThid )
@@ -313,7 +313,7 @@ C--       Recompute density after mixing
      I       myThid )
          ENDIF
 C--      Calculate buoyancy
-         CALL CALC_BUOY(
+         CALL CALC_BUOYANCY(
      I       bi,bj,iMin,iMax,jMin,jMax,K,rhoK,
      O       buoyK,
      I       myThid )
