@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.21 2004/12/02 19:06:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.22 2004/12/03 23:05:56 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -821,10 +821,11 @@ C Remove pi-weighting for u and v tendencies
       do j = 1,jm
       do i = 1,im
        dumoist(i,j,L) = dumoist(i,j,L) * tmpimjm(i,j)
-       dumoist(i,j,L) = dumoist(i,j,L) * tmpimjm(i,j)
+       dvmoist(i,j,L) = dvmoist(i,j,L) * tmpimjm(i,j)
       enddo
       enddo
       enddo
+
 
       endif
 
@@ -1158,6 +1159,10 @@ C **********************************************************************
 
        ndtls  = ndtls  + 1
        ndqls  = ndqls  + 1
+
+       nudiag1  = nudiag1  + 1
+       nudiag2  = nudiag2  + 1
+
        endif
 #endif
  
@@ -2174,7 +2179,7 @@ c -----------------------------------
       II = I1(I)
       ucu(II,L,nt) = TX3(I)
  1020 CONTINUE
- 
+
       DO 1030 I=1,LENB
       II = I1(I)
       IF (TX6(I) .GE. 1.0) THEN
