@@ -1,6 +1,0 @@
-
-C----------------------------------------
-C subroutine  write_time_averages
-C----------------------------------------
-CADJ SUBROUTINE write_time_averages INPUT  = 1,2,3
-CADJ SUBROUTINE write_time_averages OUTPUT =
