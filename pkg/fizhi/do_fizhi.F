@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.50 2005/03/21 18:18:56 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.51 2005/03/21 19:58:48 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myIter,myid,
@@ -161,7 +161,6 @@ c Local Variables
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
 C***********************************************************************
-
       kappa = getcon('KAPPA')
       p0kappa = 1000.0 ** kappa
       S0 = getcon('S0')
@@ -171,9 +170,6 @@ C***********************************************************************
        xlats(i,j) = lats(i,j,bi,bj)
        xlons(i,j) = lons(i,j,bi,bj)
        surfZ(i,j) = Zsurf(i,j,bi,bj)
-       raincon(i,j) = rainconin(i,j,bi,bj)
-       rainlsp(i,j) = rainlspin(i,j,bi,bj)
-       snowfall(i,j) = snowfallin(i,j,bi,bj)
       enddo
       enddo
 
@@ -194,6 +190,9 @@ C compute pressures - all pressure are converted here to hPa
        pkle(i,j,Nrphys+1,bi,bj)=(pephy(i,j,Nrphys+1,bi,bj)/100.) **kappa
        p(i,j,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)/100.
        sea_ice(i,j) = sice(i,j,bi,bj)
+       raincon(i,j) = rainconin(i,j,bi,bj)
+       rainlsp(i,j) = rainlspin(i,j,bi,bj)
+       snowfall(i,j) = snowfallin(i,j,bi,bj)
       enddo
       enddo
       do L = 1,Nrphys
@@ -263,21 +262,6 @@ C compute pressures - all pressure are converted here to hPa
       do L = 1,Nrphys
       do j = jm1,jm2
       do i = im1,im2
-       duphy(i,j,L,bi,bj) = moistu(i,j,L,bi,bj) + turbu(i,j,L,bi,bj)
-       dvphy(i,j,L,bi,bj) = moistv(i,j,L,bi,bj) + turbv(i,j,L,bi,bj)
-       dthphy(i,j,L,bi,bj) = ((moistt(i,j,L,bi,bj)+turbt(i,j,L,bi,bj)+
-     .   lwdt(i,j,L,bi,bj) + 
-     .   dlwdtg(i,j,L,bi,bj) * (tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) +
-     .   swdt(i,j,L,bi,bj)*radswt(i,j,bi,bj) )*p0kappa ) / p(i,j,bi,bj)
-       dsphy(i,j,L,bi,bj) = (moistq(i,j,L,1,bi,bj)+turbq(i,j,L,1,bi,bj))
-     .                                    /p(i,j,bi,bj)
-      enddo
-      enddo
-      enddo
-
-      do L = 1,Nrphys
-      do j = jm1,jm2
-      do i = im1,im2
        cldtotlwin(i,j,L,bi,bj) = cldtot_lw(i,j,L)
        cldlsplwin(i,j,L,bi,bj) = cldlsp_lw(i,j,L)
        cldraslwin(i,j,L,bi,bj) = cldras_lw(i,j,L)
@@ -303,6 +287,21 @@ C compute pressures - all pressure are converted here to hPa
       enddo
 
       endif
+
+      do L = 1,Nrphys
+      do j = jm1,jm2
+      do i = im1,im2
+       duphy(i,j,L,bi,bj) = moistu(i,j,L,bi,bj) + turbu(i,j,L,bi,bj)
+       dvphy(i,j,L,bi,bj) = moistv(i,j,L,bi,bj) + turbv(i,j,L,bi,bj)
+       dthphy(i,j,L,bi,bj) = ((moistt(i,j,L,bi,bj)+turbt(i,j,L,bi,bj)+
+     .   lwdt(i,j,L,bi,bj) + 
+     .   dlwdtg(i,j,L,bi,bj) * (tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) +
+     .   swdt(i,j,L,bi,bj)*radswt(i,j,bi,bj) )*p0kappa ) / p(i,j,bi,bj)
+       dsphy(i,j,L,bi,bj) = (moistq(i,j,L,1,bi,bj)+turbq(i,j,L,1,bi,bj))
+     .                                    /p(i,j,bi,bj)
+      enddo
+      enddo
+      enddo
 
       call fizhi_step_diag(myid,p,uphy,vphy,thphy,sphy,qq,pkl,dpres,
      .  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,

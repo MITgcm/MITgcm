@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.12 2005/03/21 18:37:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.13 2005/03/21 19:58:48 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -209,7 +209,7 @@ c Initialize tke, xlmt, khmt, xxmt, yymt, ctmt, zetamt,
          enddo
          enddo
         else
-         print *,' Need initial Values for TKE - don't have them! '
+         print *,' Need initial Values for TKE - dont have them! '
          stop
         endif
 
@@ -237,36 +237,26 @@ c                                              READ CLIM FOR REAL
         do L = 1,Nrphys
         do j = 1,sNy
         do i = 1,sNx
-         swlz(i,j,L) = 0.
-         lwlz(i,j,L) = 0.
-         qliqavesw(i,j,L) = 0.
-         qliqavelw(i,j,L) = 0.
-         fccavesw(i,j,L) = 0.
-         fccavelw(i,j,L) = 0.
-         cldtot_sw(i,j,L) = 0.
-         cldras_sw(i,j,L) = 0.
-         cldlsp_sw(i,j,L) = 0.
-         cldtot_lw(i,j,L) = 0.
-         cldras_lw(i,j,L) = 0.
-         cldlsp_lw(i,j,L) = 0.
-         lwdt(i,j,L,bi,bj) = 0.
-         swdt(i,j,L,bi,bj) = 0.
-         turbt(i,j,L,bi,bj) = 0.
-         moistt(i,j,L,bi,bj) = 0.
-         turbq(i,j,L,1,bi,bj) = 0.
-         moistq(i,j,L,1,bi,bj) = 0.
-         turbu(i,j,L,bi,bj) = 0.
-         moistu(i,j,L,bi,bj) = 0.
-         turbv(i,j,L,bi,bj) = 0.
-         moistv(i,j,L,bi,bj) = 0.
+         swlz(i,j,L,bi,bj) = 0.
+         lwlz(i,j,L,bi,bj) = 0.
+         qliqavesw(i,j,L,bi,bj) = 0.
+         qliqavelw(i,j,L,bi,bj) = 0.
+         fccavesw(i,j,L,bi,bj) = 0.
+         fccavelw(i,j,L,bi,bj) = 0.
+         cldtot_sw(i,j,L,bi,bj) = 0.
+         cldras_sw(i,j,L,bi,bj) = 0.
+         cldlsp_sw(i,j,L,bi,bj) = 0.
+         cldtot_lw(i,j,L,bi,bj) = 0.
+         cldras_lw(i,j,L,bi,bj) = 0.
+         cldlsp_lw(i,j,L,bi,bj) = 0.
         enddo
         enddo
         enddo
         do j = 1,sNy
         do i = 1,sNx
-         rainlsp(i,j) = 0.
-         raincon(i,j) = 0.
-         snowfall(i,j) = 0.
+         rainlsp(i,j,bi,bj) = 0.
+         raincon(i,j,bi,bj) = 0.
+         snowfall(i,j,bi,bj) = 0.
         enddo
         enddo
 
