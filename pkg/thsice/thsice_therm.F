@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_therm.F,v 1.1 2003/11/23 01:20:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_therm.F,v 1.2 2003/12/31 17:44:32 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
 
       SUBROUTINE THSICE_THERM(
-     I                     solar, oceHs, oceV2s, oceSs, oceTs,
+     I                     fSWabs, oceHs, oceV2s, oceSs, oceTs,
      U                     compact, hi, hs, Tsf, Tice, qicen,
      O                     qleft, fresh, fsalt, Fbot,
      O                     flxAtm, evpAtm,
@@ -24,7 +24,7 @@ c #include "THSICE.h"
 #include "THSICE_PARAMS.h"
 
 C     === Routine arguments ===
-C     solar   :: downward shortwave radiation (W/m^2)
+C     fSWabs  :: net Short-Wave flux (+=down) at surface (W/m^2)
 C     oceHs   :: thickness  of the ocean surface level [m]
 C     oceV2s  :: square of ocean surface-level velocity [m^2/s^2]
 C     oceSs   :: surface level oceanic salinity [g/kg]
@@ -44,7 +44,7 @@ C                without snow precip. (energy=0 for liquid water at 0.oC)
 C     evpAtm  :: evaporation to the atmosphere (m/s) (>0 if evaporate)
 C   i,j,bi,bj :: indices of current grid point
 C     myThid  :: Thread no. that called this routine.
-      _RL solar, oceHs, oceV2s, oceSs, oceTs
+      _RL  fSWabs, oceHs, oceV2s, oceSs, oceTs
       _RL compact
       _RL  hi
       _RL  hs
@@ -87,14 +87,11 @@ C Local variables
       _RL  rnlyr         ! maximum number of ice layers (real value)
 
       _RL  frsnow        ! fractional snow cover
-      _RL  snowAge       ! snow age (not used here)
 
-      _RL  fswabs        ! net SW down at surface (W m-2)
       _RL  fswpen        ! SW penetrating beneath surface (W m-2)
       _RL  fswdn         ! SW absorbed at surface (W m-2)
       _RL  fswint        ! SW absorbed in ice (W m-2)
       _RL  fswocn        ! SW passed through ice to ocean (W m-2)
-      _RL  albedo        ! surface albedo
 
       _RL  flxExceptSw   ! net surface heat flux, except short-wave (W/m2)
       _RL  flx0          ! net surf heat flux, from Atmos. to sea-ice (W m-2)
@@ -147,7 +144,6 @@ c     dBug = ( bi.EQ.3 .AND. i.EQ.13 .AND. j.EQ.13 )
 c     dBug = ( bi.EQ.6 .AND. i.EQ.18 .AND. j.EQ.10 )
       IF ( dBug ) WRITE(6,'(A,2I4,2I2)') 'ThSI_THERM: i,j=',i,j,bi,bj
 
-      snowAge = dt
       esurp = 0. _d 0   ! initialize energies
 
 C.. specific melting temperature for grid cell
@@ -195,13 +191,11 @@ C fractional snow cover
 
 C Compute SW flux absorbed at surface and penetrating to layer 1.
 
-      call sfc_albedo(hi,hs,Tsf,snowAge,albedo)
-      fswabs  =  solar * (1. _d 0 - albedo)
-      fswpen  = fswabs * (1. _d 0 - frsnow) * i0
+      fswpen  = fSWabs * (1. _d 0 - frsnow) * i0
       fswocn = fswpen * exp(-ksolar*hi)
       fswint = fswpen - fswocn
 
-      fswdn = fswabs - fswpen
+      fswdn = fSWabs - fswpen
 
 C Compute conductivity terms at layer interfaces.
 
@@ -330,7 +324,7 @@ C Compute final flux values at surfaces.
       evpAtm = evap
 C-    energy flux to Atmos: use net short-wave flux at surf. and
 C     use latent heat = Lvap (energy=0 for liq. water at 0.oC)
-      flxAtm = fswabs + flxExceptSw + df0dT*dTsf
+      flxAtm = fSWabs + flxExceptSw + df0dT*dTsf
      &                + evap*rhofw*Lfresh
 c     if (Tsf.lt.0. _d 0) flx0 = flx0 + df0dT*dTsf
 
@@ -772,69 +766,6 @@ C Local variables
       endif
 
 #endif  /* ALLOW_THSICE */
-
-      RETURN
-      END
-C --------------------------------------------------------------------
-CStartofinterface
-      SUBROUTINE SFC_ALBEDO(hi,hs,Tsf,age,albedo)
-C.. Compute surface albedo
-      IMPLICIT NONE
-C     == Global data ==
-#include "THSICE_PARAMS.h"
-
-C     == Routine Arguments ==
-      _RL  hi                  ! ice height
-      _RL  hs                  ! snow height
-      _RL  Tsf                 ! surface temperature
-      _RL  age                 ! snow age
-      _RL  albedo              ! surface albedo
-
-#ifdef ALLOW_THSICE
-C     == Local variables ==
-      _RL  frsnow              ! fractional snow cover
-      _RL frsnalb, salb  
-      _RL albsno, albice
-
-C LANL albedo calculation
-      frsnow = 0.
-      if (hs .gt. 0.) frsnow = 1.
-      if (Tsf .lt. 0.) then
-         albedo = frsnow*albsnodry +
-     &     (1.-frsnow)*(albicemin + (albicemax - albicemin)
-     &                *(1.-exp(-hi/halb)))
-      else
-         albedo = frsnow*albsnowet +
-     &     (1.-frsnow)*(albicemin + (albicemax - albicemin)
-     &                *(1.-exp(-hi/halb)))
-      endif
-cQQ use LANL ice albedo equation 
-      albice=albicemin + (albicemax - albicemin)
-     &                *(1. _d 0-exp(-hi/halb))
-
-C GISS model albedo calculation
-c     if (Tsf.lt.-10. _d 0) then
-c        frsnalb=0.3 _d 0
-c     elseif (Tsf.le.0. _d 0) then
-c        frsnalb=0.3 _d 0 - 0.015 _d 0*(Tsf+10. _d 0)
-c     else
-c        frsnalb=0.15 _d 0
-c     endif
-
-c     albice=0.7 _d 0
-C-    make age units into days :
-c     albsno=0.55 _d 0+frsnalb*exp(-0.2 _d 0*age/86400. _d 0)
-c     albedo=albice*exp(-hs/0.3 _d 0)
-c    &      +albsno*(1. _d 0-exp(-hs/0.3 _d 0))
-
-c     if (albedo.gt.1. _d 0 .or. albedo.lt. .2 _d 0) then
-c       print*,'QQ - albedo problem', albedo, age, hs, albsno
-c       stop
-c     endif
-
-#endif  /* ALLOW_THSICE */
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       RETURN
       END

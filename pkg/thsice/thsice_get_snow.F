@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_get_snow.F,v 1.1 2003/11/23 01:20:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_get_snow.F,v 1.2 2003/12/31 17:44:32 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -49,17 +49,19 @@ C     === Local variables ===
      &                     .and. hi.gt.0. _d 0) THEN
           frsnow = 1. _d 0
 cQQ change if reading in snow -- including left over value of rain
-          sage(i,j,bi,bj)= ( thSIce_deltaT
-     &           +sage(i,j,bi,bj)*(1. _d 0-thSIce_deltaT/agingTime)
-     &                     )*exp(-rain(i,j,bi,bj))
           snow(i,j,bi,bj)=rain(i,j,bi,bj)*rhofw/rhos
           rain(i,j,bi,bj)=0. _d 0
+          sage(i,j,bi,bj)= 
+     &        ( thSIce_deltaT
+     &         +sage(i,j,bi,bj)*(1. _d 0-thSIce_deltaT/agingTime)
+     &        )*exp( -snow(i,j,bi,bj)*thSIce_deltaT/hNewSnowAge )
           hs = hs + snow(i,j,bi,bj)*thSIce_deltaT
         ELSE
           snow(i,j,bi,bj)=0. _d 0
-          sage(i,j,bi,bj)= ( thSIce_deltaT
-     &           +sage(i,j,bi,bj)*(1. _d 0-thSIce_deltaT/agingTime)
-     &                     )
+          sage(i,j,bi,bj)= 
+     &        ( thSIce_deltaT
+     &         +sage(i,j,bi,bj)*(1. _d 0-thSIce_deltaT/agingTime)
+     &        )
         ENDIF
 
         IF (sage(i,j,bi,bj).gt.agingTime) THEN

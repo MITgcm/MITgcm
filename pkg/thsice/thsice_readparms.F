@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.1 2003/11/23 01:20:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.2 2003/12/31 17:44:32 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -37,7 +37,8 @@ C--   Th-Sea-ICE parameter
      &  cpice, cpwater,
      &  kice, ksnow,
      &  transcoef, Lfresh, qsnow,
-     &  albsnodry, albsnowet, albicemax, albicemin, halb,
+     &  albColdSnow, albWarmSnow, albOldSnow, hNewSnowAge,
+     &  albIceMax, albIceMin, hAlbIce, hAlbSnow,
      &  i0, ksolar,
      &  saltice, S_winton, mu_Tf,
      &  Tf0kel,
@@ -74,11 +75,14 @@ C--   Default values (constants)
       transcoef=0.006 _d 0
       Lfresh   = 3.34 _d 5
       qsnow    = Lfresh
-      albsnodry= 0.85 _d 0
-      albsnowet= 0.75 _d 0
-      albicemax= 0.65 _d 0
-      albicemin= 0.20 _d 0
-      halb     = 0.5 _d 0
+      albColdSnow= 0.85 _d 0
+      albWarmSnow= 0.70 _d 0
+      albOldSnow = 0.55 _d 0
+      albIceMax  = 0.65 _d 0
+      albIceMin  = 0.20 _d 0
+      hAlbIce    = 0.50 _d 0
+      hAlbSnow   = 0.30 _d 0
+      hNewSnowAge= 2. _d -3
       i0       = 0.3 _d 0
       ksolar   = 1.5 _d 0
       saltice  = 4. _d 0
@@ -138,11 +142,14 @@ c     OPEN(iUnit,file='thsice_check_params',status='unknown')
       WRITE(iUnit,*) 'ThSI: transcoef=',transcoef
       WRITE(iUnit,*) 'ThSI: Lfresh  =',Lfresh
       WRITE(iUnit,*) 'ThSI: qsnow   =',qsnow
-      WRITE(iUnit,*) 'ThSI: albsnodry=',albsnodry
-      WRITE(iUnit,*) 'ThSI: albsnowet=',albsnowet
-      WRITE(iUnit,*) 'ThSI: albicemax=',albicemax
-      WRITE(iUnit,*) 'ThSI: albicemin=',albicemin
-      WRITE(iUnit,*) 'ThSI: halb    =',halb
+      WRITE(iUnit,*) 'ThSI: albColdSnow=',albColdSnow
+      WRITE(iUnit,*) 'ThSI: albWarmSnow=',albWarmSnow
+      WRITE(iUnit,*) 'ThSI: albOldSnow =',albOldSnow
+      WRITE(iUnit,*) 'ThSI: hNewSnowAge=',hNewSnowAge
+      WRITE(iUnit,*) 'ThSI: albIceMax =',albIceMax
+      WRITE(iUnit,*) 'ThSI: albIceMin =',albIceMin
+      WRITE(iUnit,*) 'ThSI: hAlbIce   =',hAlbIce
+      WRITE(iUnit,*) 'ThSI: hAlbSnow  =',hAlbSnow
       WRITE(iUnit,*) 'ThSI: i0      =',i0
       WRITE(iUnit,*) 'ThSI: ksolar  =',ksolar
       WRITE(iUnit,*) 'ThSI: saltice =',saltice

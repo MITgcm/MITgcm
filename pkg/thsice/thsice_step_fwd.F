@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.1 2003/11/23 01:20:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.2 2003/12/31 17:44:32 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -45,6 +45,9 @@ C     myThid :: thread number for this instance of the routine.
 #ifdef ALLOW_THSICE
 C     !LOCAL VARIABLES:
 C     === Local variables ===
+C     snowAge       :: snow age (s)
+C     albedo        :: surface albedo [0-1]
+C     fSWabs        :: net Short-Wave (+ = down) at surface (W m-2)
 C     Fbot          :: the oceanic heat flux already incorporated (ice_therm)
 C     flxAtm        :: net heat flux from the atmosphere ( >0 downward)
 C     evpAtm        :: evaporation to the atmosphere
@@ -53,7 +56,10 @@ C     qleft         :: net heat flux from the ice to the ocean
 C     ffresh        :: fresh-water flux from the ice to the ocean
 C     fsalt         :: mass salt flux to the ocean
       INTEGER i,j
-      _RL fswdown, qleft, qNewIce 
+      _RL snowAge
+      _RL albedo
+      _RL fSWabs
+      _RL qleft, qNewIce 
       _RL fsalt
       _RL ffresh
       _RL Tf, cphm, frzmlt
@@ -74,18 +80,20 @@ c       dBug = ( bi.EQ.3 .AND. i.EQ.13 .AND. j.EQ.13 )
 
         Tf     = -mu_Tf*salt(i,j,1,bi,bj)
         cphm   = cpwater*rhosw*drF(1)*hFacC(i,j,1,bi,bj)
-        frzmlt = (Tf-theta(i,j,1,bi,bj))*cphm/thSIce_deltaT
+        oceTs  = theta(i,j,1,bi,bj)
+        frzmlt = (Tf-oceTs)*cphm/thSIce_deltaT
+        compact= iceMask(i,j,bi,bj)
+        hIce   = iceHeight(i,j,bi,bj)
+        hSnow  = snowHeight(i,j,bi,bj)
         Fbot   = 0. _d 0
-        compact= 0. _d 0
         snow(i,j,bi,bj)     = 0. _d 0
         saltFlux(i,j,bi,bj) = 0. _d 0
 
-        IF (dBug.AND.(frzmlt.GT.0. .OR.iceMask(i,j,bi,bj).GT.0.)) THEN
+        IF (dBug .AND. (frzmlt.GT.0. .OR. compact.GT.0.) ) THEN
           WRITE(6,1010) 'ThSI_FWD:-0- iceMask,hIc,hSn,Qnet=',
-     &       iceMask(i,j,bi,bj),iceHeight(i,j,bi,bj),
-     &       snowHeight(i,j,bi,bj), Qnet(i,j,bi,bj)
+     &                  compact, hIce, hSnow, Qnet(i,j,bi,bj)
           WRITE(6,1010) 'ThSI_FWD: ocTs,Tf,frzmlt=',
-     &              theta(i,j,1,bi,bj),Tf,frzmlt
+     &                            oceTs,Tf,frzmlt
         ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -93,24 +101,23 @@ C    part.1 : ice-covered fraction ;
 C     can only reduce the ice-fraction but not increase it.
 C-------
         IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN 
-          fswdown = solar(i,j,bi,bj)
           oceHs   = hfacC(i,j,1,bi,bj)*drF(1)
-          oceTs   = theta(i,j,1,bi,bj)
           oceSs   = salt (i,j,1,bi,bj)
           oceV2s  = ( uvel(i,j,1,bi,bj)*uvel(i,j,1,bi,bj)
      &              + uvel(i+1,j,1,bi,bj)*uvel(i+1,j,1,bi,bj)
      &              + vvel(i,j+1,1,bi,bj)*vvel(i,j+1,1,bi,bj)
      &              + vvel(i,j,1,bi,bj)*vvel(i,j,1,bi,bj) )*0.5 _d 0
-          compact = iceMask(i,j,bi,bj)
-          hIce    = iceHeight(i,j,bi,bj)
-          hSnow   = snowHeight(i,j,bi,bj)
+          snowAge = sage(i,j,bi,bj)
+c         snowAge = thSIce_deltaT
           Tsf     = Tsrf(i,j,bi,bj)
           Tice(1) = Tice1(i,j,bi,bj)
           Tice(2) = Tice2(i,j,bi,bj)
           qicen(1)= Qice1(i,j,bi,bj)
           qicen(2)= Qice2(i,j,bi,bj)
+          CALL THSICE_ALBEDO(hIce,hSnow,Tsf,snowAge,albedo)
+          fSWabs = solar(i,j,bi,bj)*(1. _d 0 - albedo)
           CALL THSICE_THERM(
-     I          fswdown, oceHs, oceV2s, oceSs, oceTs,
+     I          fSWabs, oceHs, oceV2s, oceSs, oceTs,
      U          compact, hIce, hSnow, Tsf, Tice, qicen,
      O          qleft, ffresh, fsalt, Fbot,
      O          flxAtm, evpAtm,
@@ -137,7 +144,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--    Update Sea-Ice state :
-c         theta(i,j,1,bi,bj) = oceTs
 c         iceMask(i,j,bi,bj)=compact
           iceheight(i,j,bi,bj) = hIce
           snowheight(i,j,bi,bj)= hSnow
@@ -160,6 +166,8 @@ C--    Net fluxes :
           ICE_FWfx_AVE(i,j,bi,bj) = ICE_FWfx_AVE(i,j,bi,bj)
      &          + ( iceFrac*frwAtm + openFrac*EmPmR(i,j,bi,bj)
      &            )*thSIce_deltaT
+          ICE_albedo_AVE(i,j,bi,bj) = ICE_albedo_AVE(i,j,bi,bj)
+     &          + iceFrac*albedo*thSIce_deltaT
 #endif /*ALLOW_TIMEAVE*/
           Qnet(i,j,bi,bj)=-iceFrac*qleft + openFrac*Qnet(i,j,bi,bj)
           EmPmR(i,j,bi,bj)=iceFrac*ffresh+openFrac*EmPmR(i,j,bi,bj)
@@ -195,9 +203,6 @@ C-------
             qicen(2)= -cpice *Tf + Lfresh 
           ENDIF
           qicAv = rhoi*(qicen(1)+qicen(2))*0.5 _d 0
-          oceTs = theta(i,j,1,bi,bj)
-          hIce  = iceHeight(i,j,bi,bj)
-          hSnow = snowHeight(i,j,bi,bj)
           CALL THSICE_START( myThid,
      I             esurp, qicAv, Tf,
      O             qNewIce, ffresh, fsalt,
@@ -221,7 +226,6 @@ C--    Update Sea-Ice state :
              Tice2(i,j,bi,bj) = Tf
              Qice1(i,j,bi,bj) = qicen(1)
              Qice2(i,j,bi,bj) = qicen(2)
-c            theta(i,j,1,bi,bj)= oceTs
           ENDIF
           iceheight(i,j,bi,bj) = hIce
           snowheight(i,j,bi,bj)= hSnow
@@ -237,11 +241,13 @@ C--   - if esurp > 0 : end
 
         IF ( compact .GT. 0. _d 0 ) THEN
           iceMask(i,j,bi,bj)=compact
+          IF ( hSnow .EQ. 0. _d 0 ) sage(i,j,bi,bj) = 0. _d 0
         ELSE
           iceMask(i,j,bi,bj)  = 0. _d 0
           iceHeight(i,j,bi,bj)= 0. _d 0
           snowHeight(i,j,bi,bj)=0. _d 0
-          Tsrf(i,j,bi,bj)=theta(i,j,1,bi,bj)
+          sage(i,j,bi,bj)     = 0. _d 0
+          Tsrf(i,j,bi,bj)     = oceTs
           Tice1(i,j,bi,bj)    = 0. _d 0
           Tice2(i,j,bi,bj)    = 0. _d 0
           Qice1(i,j,bi,bj)    = 0. _d 0

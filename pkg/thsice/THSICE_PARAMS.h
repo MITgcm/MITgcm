@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.1 2003/11/23 01:20:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.2 2003/12/31 17:44:32 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -30,15 +30,18 @@ C .. heat transfer coefficient
 C     transcoef ::   transfer coef between ice and water (unitless)
 C .. latent heat
 C     Lfresh    ::   latent heat of melting of pure ice (J/kg)
-C.. Enthalpy
+C .. Enthalpy
 C     qsnow     ::   snow enthalpy (J/kg)
 C .. Albedo
-C     albsnodry ::   albedo of dry snow (Tsfc < 0)
-C     albsnowet ::   albedo of melting snow (Tsfc = 0)
-C     albicemax ::   max albedo of bare ice
-C     albicemin ::   minimum ice albedo (thin melting ice)
-C     halb      ::   melt rate parameter for albedo QQ units
-C.. Solar parameters
+C     albColdSnow :: albedo of cold (=dry) new snow (Tsfc < -10)
+C     albWarmSnow :: albedo of warm (=wet) new snow (Tsfc = 0)
+C     albOldSnow  :: albedo of old snow (snowAge > 35.d)
+C     albIceMax   :: max albedo of bare ice (thick ice)
+C     albIceMin   :: minimum ice albedo (very thin ice)
+C     hAlbIce     :: ice thickness for albedo transition: thin/thick ice albedo
+C     hAlbSnow    :: snow thickness for albedo transition: snow/ice albedo
+C     hNewSnowAge :: new snow thickness that refresh the snow-age (by 1/e)
+C .. Solar parameters
 C     i0        ::   fraction of penetrating solar rad
 C     ksolar    ::   bulk solar abs coeff of sea ice (m-1)
 C .. Salinity
@@ -67,7 +70,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &  cpice, cpwater,
      &  kice, ksnow,
      &  transcoef, Lfresh, qsnow,
-     &  albsnodry, albsnowet, albicemax, albicemin, halb,
+     &  albColdSnow, albWarmSnow, albOldSnow, hNewSnowAge,
+     &  albIceMax, albIceMin, hAlbIce, hAlbSnow,
      &  i0, ksolar,
      &  saltice, S_winton, mu_Tf,
      &  Tf0kel, Tmlt1,
@@ -87,11 +91,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       _RL  transcoef
       _RL  Lfresh
       _RL  qsnow
-      _RL  albsnodry
-      _RL  albsnowet
-      _RL  albicemax
-      _RL  albicemin
-      _RL  halb
+      _RL  albColdSnow
+      _RL  albWarmSnow
+      _RL  albOldSnow
+      _RL  hNewSnowAge
+      _RL  albIceMax
+      _RL  albIceMin
+      _RL  hAlbIce
+      _RL  hAlbSnow
       _RL  i0
       _RL  ksolar
       _RL  saltice
