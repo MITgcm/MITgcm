@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield.F,v 1.6 2004/01/23 21:26:55 afe Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield.F,v 1.7 2004/01/26 19:44:46 afe Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -311,7 +311,7 @@ C End of k loop
        enddo
        else ! not global file
 
-#else /* .not. USE_W2 */
+#endif /* USE_W2 */
 C Loop over all tiles
       do bj=1,nSy
        do bi=1,nSx
@@ -420,7 +420,7 @@ C Create meta-file for each tile if we are tiling
 C End of bi,bj loops
        enddo
       enddo
-#endif /* USE_W2 */
+c#endif /* USE_W2 */
 
 #ifdef USE_W2
       endif ! global fle
