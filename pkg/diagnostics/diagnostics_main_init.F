@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.8 2005/01/28 01:06:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_main_init.F,v 1.9 2005/02/10 15:01:34 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -197,6 +197,19 @@ C-    state variables of the main code (and related quadratic var):
       CALL DIAGNOSTICS_ADD2LIST( diagNum,
      I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
+      diagName  = 'WU_VEL  '
+      diagTitle = 'Vertical Transport of Zonal Momentum (m^2/s^2)'
+      diagUnits = DIAGS_MK_UNITS( 'm.'//rUnit2c//'/s^2', myThid )
+      diagCode  = 'WU      LR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
+
+      diagName  = 'WV_VEL  '
+      diagTitle ='Vertical Transport of Meridional Momentum (m^2/s^2)'
+      diagUnits = DIAGS_MK_UNITS( 'm.'//rUnit2c//'/s^2', myThid )
+      diagCode  = 'WV      LR      '
+      CALL DIAGNOSTICS_ADD2LIST( diagNum,
+     I          diagName, diagCode, diagUnits, diagTitle, myThid )
 
       diagName  = 'UVELMASS'
       diagTitle = 'Zonal Mass-Weighted Comp of Velocity (m/s)'
