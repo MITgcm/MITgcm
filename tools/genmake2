@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.73 2004/03/16 18:20:34 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.74 2004/03/24 17:12:51 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -67,6 +67,7 @@ expand_pkg_groups() {
 	done
 	PACKAGES=$new_packages
 	rm -f ./p[1,2].tmp
+	return $matched
     else
 	echo "Warning: can't read package groups definition file: $PKG_GROUPS"
     fi
@@ -1190,12 +1191,19 @@ else
 	    PACKAGES="$PACKAGES $i"
 	done
 	echo "    before group expansion packages are: $PACKAGES"
-	expand_pkg_groups
+	while ! expand_pkg_groups; do echo > /dev/null; done
 	echo "    after group expansion packages are:  $PACKAGES"
     fi
 fi
 
 echo "  applying DISABLE settings"
+for i in $PACKAGES ; do
+    echo $i >> ./.tmp_pack
+done
+for i in `grep  "-" ./.tmp_pack` ; do
+    j=`echo $i | sed 's/[-]//'`
+    DISABLE="$DISABLE $j"
+done
 pack=
 for p in $PACKAGES ; do
     addit="t"
@@ -1212,19 +1220,20 @@ PACKAGES="$pack"
 echo "  applying ENABLE settings"
 echo "" > ./.tmp_pack
 PACKAGES="$PACKAGES $ENABLE"
+# Test if each explicitly referenced package exists
 for i in $PACKAGES ; do
-    if test ! -d "$ROOTDIR/pkg/$i" ; then
+    j=`echo $i | sed 's/[-+]//'`
+    if test ! -d "$ROOTDIR/pkg/$j" ; then
 	echo "Error: can't find package $i at \"$ROOTDIR/pkg/$i\""
-	exit 1
+ 	exit 1
     fi
     echo $i >> ./.tmp_pack
 done
-pack=`cat ./.tmp_pack | sort | uniq`
-rm -f ./.tmp_pack
 PACKAGES=
-for i in $pack ; do
+for i in `grep -v "-" ./.tmp_pack | sort | uniq` ; do
     PACKAGES="$PACKAGES $i"
 done
+rm -f ./.tmp_pack
 echo "    packages are:  $PACKAGES"
 
 echo "  applying package dependency rules"
