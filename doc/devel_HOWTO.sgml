@@ -398,10 +398,304 @@ $ mv scratch/dev_docs /u/u0/httpd/html
   </sect1>
 
   <sect1 id="coding">
-    <title>Coding</title>
+    <title>Coding for MITgcm</title>
+
+    <sect2 id="build_tools">
+      <title>Build Tools</title>
+
+      <para>Many Open Source projects use the "GNU Autotools" to help
+      streamline the build process for various Unix and Unix-like
+      architectures.  For a user, the result is the common "configure"
+      (that is, "<filename>./configure && make && make
+      install</filename>") commands.  For MITgcm, the process is
+      similar.  Typical commands are:</para>
+
+<screen>
+$ genmake -mods=../code
+$ make depend
+$ make
+</screen>
+
+      <para>The following sections describe the individual steps in
+      the build process.</para>
+
+      <sect3 id="genmake">
+	<title>The <filename>genmake2</> Utility</title>
+
+	<para><emphasis>Please note that the older
+	<filename>genmake</> is deprecated and will eventually
+	be replaced by <filename>genmake2</>.  This HOWTO only
+	describes the newer tool.</emphasis></para>
+
+	<para>The first step in any MITgcm build is to create a
+	Unix-style <filename>Makefile</filename> which will be parsed
+	by <filename>make</filename> to specify how to compile the
+	MITgcm source files.  For more detailed descriptions of what
+	the make tools are and how they are used, please see:</para>
+
+	<itemizedlist>
+	  <listitem>
+	    <para><ulink url="http://www.gnu.org/software/make/make.html">http://www.gnu.org/software/make/make.html</></para>
+	  </listitem>
+	  <listitem>
+	    <para><ulink url="http://www.oreilly.com/catalog/make2/">http://www.oreilly.com/catalog/make2/</></para>
+	  </listitem>
+	</itemizedlist>
+
+	<para>Due to the poor handling of soft-links and other bugs
+	common with the <filename>make</filename> versions provided by
+	commercial Unix vendors, GNU <filename>make</filename>
+	(sometimes called <filename>gmake</filename>) should be
+	preferred.</para>
+
+	<para>As the name implies, <filename>genmake2</filename>
+	generates a <filename>Makefile</filename>.  It does so by
+	first parsing the information supplied from the following
+	sources</para>
+
+	<orderedlist>
+	  <listitem>
+	    <para>a <filename>gm_local</filename> file in the current
+	    directory</para>
+	  </listitem>
+	  <listitem>
+	    <para>directly from command-line options</para>
+	  </listitem>
+	  <listitem>
+	    <para>an "options file" as specified by the command-line
+	    option <filename>-optfile='FILENAME'</filename></para>
+	  </listitem>
+	</orderedlist>
+
+	<para>then checking certain dependency rules (the package
+	dependencies), and then writing a
+	<filename>Makefile</filename> based upon the source code that
+	it finds.  For convenience with the various Unix shells,
+	<filename>genmake2</> supports both "long"- and "shor"-style
+	options.  A complete list of the available options can be
+	obtained from:</para>
+
+<screen>
+$ genmake2 -help
+</screen>
+
+	<para>The most important options for <filename>genmake2</>
+	are:</para>
+
+	<variablelist>
+
+	  <varlistentry>
+	    <term><filename>--optfile=/PATH/FILENAME</></term>
+	    <listitem>
+	      <para>This specifies the "options file" that should be
+	      used for a particular build.  The options file is a
+	      convenient and machine-indepenent way of specifying
+	      parameters such as the FORTRAN compiler
+	      (<filename>FC=</>), FORTRAN compiler optimization flags
+	      (<filename>FFLAGS=</>), and the locations of various
+	      platform- and/or machine-specific tools
+	      (eg. <filename>MAKEDEPEND=</>).  As with
+	      <filename>genmake2</>, all options files should be
+	      written a BASH v1-compatible syntax.  Examples of
+	      various options files can be found in
+	      <filename>$ROOTDIR/tools/build_options</>.  Everyone is
+	      encouraged to submit their options files to the MITgcm
+	      project for inclusion (please send to
+	      <email>MITgcm-support@mitgcm.org</email>).  We are
+	      particularly grateful for options files tested on new or
+	      unique platforms!</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>-pdepend=/PATH/FILENAME</></term>
+	    <listitem>
+	      <para>This specifies the dependency file used for
+	      packages.  If not specified, the default dependency file
+	      is <filename>$ROOTDIR/pkg/pkg_depend</>.  The syntax for
+	      this file is parsed on a line-by-line basis where each
+	      line containes either a comment ("#") or a simple
+	      "PKGNAME1 (+|-)PKGNAME2" pairwise rule where the "+" or
+	      "-" symbol specifies a "must be used with" or a "must
+	      not be used with" relationship, respectively.  If no
+	      rule is specified, then it is assumed that the two
+	      packages are compatible and will function either with or
+	      without each other.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>-pdefault=PKG</></term>
+	    <term><filename>-pdefault='PKG1 [PKG2 PKG3 ...]'</></term>
+	    <listitem>
+	      <para>This option specifies the default set of packages
+	      to be used.  If not set, the default package list will
+	      be read from
+	      <filename>$ROOTDIR/pkg/pkg_default</>.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename></>-mods=DIR</term>
+	    <term><filename></>-mods='DIR1 [DIR2 ...]'</term>
+	    <listitem>
+	      <para>This option specifies a list of directories
+	      containing "modifications".  These are files that may
+	      (or may not) exist in the main MITgcm source tree but
+	      will be overridden by any identically-named sources
+	      within the "MODS" directories.</para>
+	    </listitem>
+	  </varlistentry>
+
+	</variablelist>
+	
+	<para>A successful run of <filename>genmake2</> will produce
+	both a <filename>Makefile</> and a locally modified copy of
+	the specified <filename>CPP_OPTIONS.h</> file.  The local copy
+	of <filename>CPP_OPTIONS.h</> will contain a list of
+	<filename>genmake2</>-created #DEFINE and #UNDEF statements
+	that reflect the list of packages that will be compiled into
+	the code (either directly through enable/disable/defaults
+	options or indirectly through dependencies).</para>
+
+	<para>In general, it is best to use <filename>genmake2</> on a
+	"clean" directory that is free of all source
+	(*.[F,f],*.[F,f]90) and header (*.h,*.inc) files.  Generally,
+	this can be accomplished in an "un-clean" directory by running
+	"make CLEAN" followed by "make makefile".</para>
+
+      </sect3>
+
+      <sect3 id="makefile_use">
+	<title>Using <filename>Makefile</></title>
+
+	<para>Once a <filename>Makefile</> has been created, one can
+	build the executable using:</para>
+
+<screen>
+$ make CLEAN
+$ make depend
+$ make
+</screen>
+
+	<para>The "make CLEAN" step will remove any local source
+	files, include files, and links.  It is strongly recommended
+	for "un-clean" directories which may contain the (partial?)
+	results of previous builds.  Such "debris" can interfere with
+	the next stage of the build.</para>
+
+	<para>The "make depend" step will create a large number of
+	symbolic links from the local directory to the source file
+	locations.  It also parses these files and creates an
+	extensive list of dependencies within the
+	<filename>Makefile</> itself.  The links that exist at this
+	stage are mostly "large F" files (*.F and *.F90) that need to
+	be processed by a C preprocessor ("CPP").
+	</para>
+
+	<para>The final "make" invokes the C preprocessor to produce
+	the "little f" files (*.f and *.f90) and then compiles them to
+	object code using the specified FORTRAN compiler and options.
+	An intermediate script is often used during this stage to
+	further process (usually, make simple substitutions) custom
+	definitions such as variable types within the source files.
+	This additional stage is necessary in order to overcome some
+	of the inconsistencies in the sizes of objects (bytes) between
+	different compilers.</para>
+
+	<para>Please report compilation failures or other problems to
+	<email>MITgcm-support@mitgcm.org</email>.</para>
+
+      </sect3>
+
+    </sect2>
+
+    <sect2 id="verification">
+      <title>The Verification Suite</title>
+
+      <para>The MITgcm CVS tree (within the
+      <filename>$ROOTDIR/verification/</> directory) includes more
+      than a dozen examples intended for regression testing.  Each one
+      of these example directories contains "known-good" output files
+      along with all the input (including both code and data files)
+      required for their re-calculation.  These example directories
+      are further broken down into sets of subdirectories
+      (eg. <filename>/input</>, <filename>/code</>) intended to
+      expedite the testing process.</para>
+
+      <sect3 id="testreport">
+	<title>The <filename>testreport</> Utility</title>
+
+	<para>Also included in <filename>$ROOTDIR/verification/</> are
+	shell scripts for automated testing.  The newest script (which
+	was written to work with <filename>genmake2</>) is called
+	<filename>testreport</>.  Ths script can be used to build the
+	different versions of the MITgcm code, run the various
+	examples, compare the output, and (if specified) email the
+	results of each one of these tests to a central
+	repository.</para>
+
+	<para>The <filename>testreport</> script accepts a number of
+	command-line options which can be listed using the
+	<filename>-help</> option.  The most important ones are:</para>
+
+	<variablelist>
+
+	  <varlistentry>
+	    <term><filename>-tdir TESTDIR</></term>
+	    <term><filename>-tdir 'TDIR1 TDIR2 [...]'</></term>
+	    <listitem>
+	      <para>This option specifies the test directory or list
+	      of test directories that should be used.  Each of these
+	      entries should exactly (note: they're case sensitive!)
+	      match the names of directries in
+	      <filename>$ROOTDIR/verification/</>.  If this option is
+	      omitted, then all directories that are properly
+	      formatted (that is, containing an <filename>input</>
+	      sub-directory and example output) will be used.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>-optfile=/PATH/FILENAME</></term>
+	    <term><filename>-optfile '/PATH/F1 [/PATH/F2 ...]'</></term>
+	    <listitem>
+	      <para>This specifies a list of "options files" that will
+	      be passed to <filename>genmake2</>.  If multiple options
+	      files are used (say, to test different compilers or
+	      different sets of options for the same compiler), then
+	      each options file will be used with each of the test
+	      directories.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>-addr EMAIL</></term>
+	    <term><filename>-addr 'EMAIL1 EMAIL2 [...]'</></term>
+	    <listitem>
+	      <para>Send the results (namely, <filename>output.txt</>,
+	      <filename>gm_local</>, <filename>gm_state</>, and
+	      <filename>Makefile</>) to the specified email addresses.
+	      The results are gzipped, placed in a tar file, MIME
+	      encoded, and sent to an @mitgcm.org address.  If no
+	      email addresses are specified, no mail is sent.</para>
+	    </listitem>
+	  </varlistentry>
+
+	</variablelist>
+
+	<para>The <filename>testreport</> script will write progress
+	to the screen (stdout) as it runs.  In addition, it will
+	create a <filename>summary.txt</> file that contains a brief
+	comparison of the current output with the "known-good"
+	output.</para>
+
+      </sect3>
+
+    </sect2>
 
     <sect2 id="packages">
-      <title>Coding Packages</title>
+      <title>Creating MITgcm Packages</title>
 
       <para>Optional parts of code have been separated from the MITgcmUV
       core driver code and organised into packages. The packaging
