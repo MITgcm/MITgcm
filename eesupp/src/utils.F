@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.12 2003/07/14 21:34:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.13 2003/11/11 20:38:26 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -48,10 +48,8 @@ C
       lDate = 24
       IF ( LEN(string) .LT. lDate ) GOTO 901
       string = ' '
-#ifndef TARGET_T3E
-#ifndef TARGET_CRAY_VECTOR
+#ifdef HAVE_FDATE
       CALL FDATE( string )
-#endif
 #endif
 C   
  1000 CONTINUE

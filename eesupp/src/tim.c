@@ -1,21 +1,18 @@
 /*
+ * $Header: /u/gcmpack/MITgcm/eesupp/src/tim.c,v 1.6 2003/11/11 20:38:26 edhill Exp $
+ * $Name:  $
+
 //BOP
 // !ROUTINE: cloc
 // !INTERFACE:
    cloc(  double *curtim )
 */
-#ifdef TARGET_LINUX
-#undef  FORTRAN_MANGLE_TRAILING_UNDERSCORE
-#else
-#define FORTRAN_MANGLE_TRAILING_UNDERSCORE
-#endif
+
+/*  Here, we get the definition of the FC_NAMEMANGLE() macro. */
+#include "FC_NAMEMANGLE.h"
+
 #define TIM_USES_GETTIMEOFDAY
 
-#ifdef FORTRAN_MANGLE_TRAILING_UNDERSCORE
-#define procedure_cloc cloc_
-#else
-#define procedure_cloc cloc
-#endif
 /*
 // !DESCRIPTION:
 // *======================================================*
@@ -46,7 +43,7 @@ void procedure_cloc ( double *curtim )
 #include <unistd.h>
 #include <assert.h>
 #include <sys/time.h>
-void procedure_cloc ( double *curtim )
+void FC_NAMEMANGLE(cloc) ( double *curtim )
 {
  struct timeval tv1;
  gettimeofday(&tv1 , (void *)NULL );

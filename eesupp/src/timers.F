@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.12 2001/11/08 23:40:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.13 2003/11/11 20:38:26 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -467,15 +467,11 @@ C     wallClockTime :: Wall clock time returned
       Real*8 wallClockTime
 
 C     !USES:
-#ifndef TARGET_T3E
-# ifndef TARGET_CRAY_VECTOR
-#  ifdef TARGET_PWR3
+#ifndef HAVE_FDATE
       Real*8 system_time, user_time, timenow
-#  else
+#else
       Real*4 ETIME
       EXTERNAL ETIME
-#  endif
-# endif
 #endif
 
 C     !LOCAL VARIABLES:

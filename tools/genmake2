@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.28 2003/11/04 19:51:54 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.29 2003/11/11 20:38:27 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -313,6 +313,11 @@ KPPFILES=
 NOOPTFILES=
 NOOPTFLAGS=
 
+# DEFINES checked by test compilation
+HAVE_SYSTEM=
+HAVE_FDATE=
+FC_NAMEMANGLE=
+
 MODS=
 TOOLSDIR=
 SOURCEDIRS=
@@ -358,13 +363,15 @@ gm_s3="LN S64 KPP LINK PACKAGES MAKEDEPEND PDEPEND PDEFAULT INCLUDES FFLAGS FOPT
 gm_s4="CFLAGS KFLAGS1 KFLAGS2 LIBS KPPFILES NOOPTFILES NOOPTFLAGS"
 gm_s5="TOOLSDIR SOURCEDIRS INCLUDEDIRS PWD MAKE THISHOSTNAME THISDATE MACHINE"
 gm_s6="EXECUTABLE EXEHOOK EXEDIR PACKAGES_CONF"
+gm_s7="HAVE_SYSTEM HAVE_FDATE FC_NAMEMANGLE"
 
 #  The following are all related to adjoint/tangent-linear stuff
-gm_s7="AUTODIFF_PKG_USED AD_OPTFILE TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
-gm_s8="FTL_TAMC_FLAGS FTL_TAF_FLAGS SVD_TAMC_FLAGS SVD_TAF_FLAGS"
-gm_s9="TAF_EXTRA TAMC_EXTRA"
+gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
+gm_s11="FTL_TAMC_FLAGS FTL_TAF_FLAGS SVD_TAMC_FLAGS SVD_TAF_FLAGS"
+gm_s12="TAF_EXTRA TAMC_EXTRA"
 
-gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7 $gm_s8 $gm_s9"
+gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7"
+gm_state="$gm_state $gm_s10 $gm_s11 $gm_s12"
 
 
 echo
@@ -662,6 +669,89 @@ fi
 if test "x$MAKEDEPEND" = x ; then
     MAKEDEPEND=makedepend
 fi
+
+
+printf "\n===  Checking system libraries  ===\n"
+echo -n "  Do we have the system() command using $FC...  "
+cat > genmake_tcomp.f <<EOF
+      program hello
+      call system('echo hi')
+      end
+EOF
+$FC $FFLAGS $DEFINES -o genmake_tcomp genmake_tcomp.f > genmake_tcomp.log 2>&1
+RETVAL=$?
+if test "x$RETVAL" = x0 ; then
+    HAVE_SYSTEM=t
+    DEFINES="$DEFINES -DHAVE_SYSTEM"
+    echo "yes"
+else
+    HAVE_SYSTEM=
+    echo "no"
+fi
+rm -f genmake_tcomp*
+
+echo -n "  Do we have the fdate() command using $FC...  "
+cat > genmake_tcomp.f <<EOF
+      program hello
+      CHARACTER(128) string
+      string = ' '
+      call fdate( string )
+      print *, string
+      end
+EOF
+$FC $FFLAGS $DEFINES -o genmake_tcomp genmake_tcomp.f > genmake_tcomp.log 2>&1
+RETVAL=$?
+if test "x$RETVAL" = x0 ; then
+    HAVE_FDATE=t
+    DEFINES="$DEFINES -DHAVE_FDATE"
+    echo "yes"
+else
+    HAVE_FDATE=
+    echo "no"
+fi
+rm -f genmake_tcomp*
+
+echo -n "  The name mangling convention for $FC is...  "
+if test "x$FC_NAMEMANGLE" = x ; then
+    FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _" 
+fi
+cat > genmake_tcomp.f <<EOF
+      subroutine tcall( string )
+      character*(*) string
+      call tsub( string )
+      end
+EOF
+$FC $FFLAGS $DEFINES -c genmake_tcomp.f > genmake_tcomp.log 2>&1
+RETVAL=$?
+if test "x$RETVAL" != x0 ; then
+    cat genmake_tcomp.log >> genmake_errors
+    echo
+    echo "WARNING: test compile fails -- please see \"genmake_errors\""
+    echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
+    echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
+else
+    tcall=`nm genmake_tcomp.o | grep tcall | cut -d ' ' -f 3`
+    RETVAL=$?
+    if test "x$RETVAL" != x0 ; then
+	echo
+	echo "WARNING: The \"nm\" command failed."
+	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
+	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
+    else
+	t0=`echo $tcall | sed -e 's|_tcall|_ ## X|g'`
+	nmres=`echo $t0 | sed -e 's|tcall_|X ## _|g'`
+	FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  $nmres"
+	echo "'$FC_NAMEMANGLE'"
+    fi
+fi
+echo "$FC_NAMEMANGLE" > FC_NAMEMANGLE.h.template
+cmp FC_NAMEMANGLE.h FC_NAMEMANGLE.h.template > /dev/null 2>&1
+RETVAL=$?
+if test "x$RETVAL" != x0 ; then
+    mv -f FC_NAMEMANGLE.h.template FC_NAMEMANGLE.h
+fi
+rm -f genmake_tcomp*
+
 
 printf "\n===  Setting defaults  ===\n"
 echo -n "  Adding MODS directories:  "
