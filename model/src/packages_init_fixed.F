@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.9 2003/06/23 22:32:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.10 2003/10/06 20:37:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -91,6 +91,15 @@ C--   Initialise ecco-specific cost function.
        IF (useECCO) CALL COST_INIT_FIXED( myThid )
 # endif
 #endif
+
+#ifdef ALLOW_PTRACERS
+#ifdef ALLOW_GCHEM
+      IF (usePTRACERS) then
+       call GCHEM_INIT_FIXED(mythid)
+      ENDIF
+#endif
+#endif
+
 
       RETURN
       END

@@ -87,6 +87,9 @@ cph#endif
       IF ( usePTRACERS ) THEN
 # endif
          CALL PTRACERS_INIT( mythid )
+#ifdef ALLOW_GCHEM
+         CALL GCHEM_INIT_VARI( mythid )
+#endif
 # ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
 # endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.58 2003/10/02 21:33:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.59 2003/10/06 20:37:30 stephd Exp $
 C $Name:  $
 
 CBOI
@@ -91,6 +91,8 @@ C    | | |-CTRL_INIT           :: Control vector support package. see pkg/ctrl
 C    | | |-OPTIM_READPARMS     :: Optimisation support package. see pkg/ctrl 
 C    | | |-GRDCHK_READPARMS    :: Gradient check package. see pkg/grdchk
 C    | | |-ECCO_READPARMS      :: ECCO Support Package. see pkg/ecco
+C    | | |-PTRACERS_READPARMS  :: multiple tracer package, see pkg/ptracers
+C    | | |-GCHEM_READPARMS     :: tracer interface package, see pkg/gchem
 C    | |
 C    | |-PACKAGES_CHECK
 C    | | |
@@ -101,6 +103,7 @@ C    | |
 C    | |-PACKAGES_INIT_FIXED
 C    | | |-OBCS_INIT_FIXED     :: Open bndy Package. see pkg/obcs
 C    | | |-FLT_INIT            :: Floats Package. see pkg/flt
+C    | | |-GCHEM_INIT_FIXED    :: tracer interface pachage, see pkg/gchem
 C    | |
 C    | |-ZONAL_FILT_INIT       :: FFT filter Package. see pkg/zonal_filt
 C    | |
@@ -178,6 +181,8 @@ C    | | | |-GMREDI_INIT          :: GM package. ( see pkg/gmredi )
 C    | | | |-KPP_INIT             :: KPP package. ( see pkg/kpp )
 C    | | | |-KPP_OPEN_DIAGS    
 C    | | | |-OBCS_INIT_VARIABLES  :: Open bndy. package. ( see pkg/obcs )
+C    | | | |-PTRACERS_INIT        :: multi. tracer package,(see pkg/ptracers)
+C    | | | |-GCHEM_INIT           : : tracer interface pkg (see pkh/gchem)
 C    | | | |-AIM_INIT             :: Interm. atmos package. ( see pkg/aim )
 C    | | | |-CTRL_MAP_INI         :: Control vector package.( see pkg/ctrl )
 C    | | | |-COST_INIT            :: Cost function package. ( see pkg/cost )
@@ -221,6 +226,7 @@ C/\  | | | |                    :: for forcing datasets.
 C/\  | | | |                  
 C/\  | | | |-EXCH :: Sync forcing. in overlap regions.
 C/\  | | |-SEAICE_MODEL   :: Compute sea-ice terms. ( pkg/seaice )
+C/\  | | |-GCHEM_FIELD_LOAD :: load tracer forcing fields (pkg/gchem)
 C/\  | | |
 C/\  | | |-THERMODYNAMICS :: theta, salt + tracer equations driver.
 C/\  | | | |
@@ -290,6 +296,8 @@ C/\  | | | | | |                  :: ( see pkg/gad )
 C/\  | | | | | |-KPP_TRANSPORT_PTR:: KPP non-local transport ( see pkg/kpp ).
 C/\  | | | | |
 C/\  | | | | |-PTRACERS_FORCING   :: Problem specific forcing for tracer.
+C/\  | | | | |-GCHEM_FORCING_INT  :: tracer forcing for gchem pkg (if all
+C/\  | | | | |                       tendancy terms calcualted together)
 C/\  | | | | |-ADAMS_BASHFORTH2   :: Extrapolate tendencies forward in time.
 C/\  | | | | |-FREESURF_RESCALE_G :: Re-scale Gs for free-surface height.
 C/\  | | | | |-TIMESTEP_TRACER    :: Step tracer field forward in time
@@ -354,6 +362,10 @@ C/\  | | |
 C/\  | | |-DO_FIELDS_BLOCKING_EXCHANGES :: Sync up overlap regions.
 C/\  | | | |-EXCH                                                   
 C/\  | | |
+C/\  | | |-GCHEM_FORCING_SEP :: tracer forcing for gchem pkg (if
+C/\  | | |                      tracer dependent tendencies calculated
+C/\  | | |                      separatly)
+C/\  | | |
 C/\  | | |-FLT_MAIN         :: Float package ( pkg/flt ).
 C/\  | | |
 C/\  | | |-MONITOR          :: Monitor package ( pkg/monitor ).
@@ -366,6 +378,7 @@ C/\  | | | |-GMREDI_DIAGS        :: GM diags. see pkg/gmredi
 C/\  | | | |-KPP_DO_DIAGS        :: KPP diags. see pkg/kpp
 C/\  | | | |-SBO_CALC            :: SBO diags. see pkg/sbo
 C/\  | | | |-SBO_DIAGS           :: SBO diags. see pkg/sbo
+C/\  | | | |-GCHEM_DIAGS         :: gchem diags. see pkg/gchem
 C/\  | | |
 C/\  | | |-WRITE_CHECKPOINT :: Do I/O for restart files.
 C/\  | |

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.61 2003/10/02 21:33:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.62 2003/10/06 20:37:30 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -234,6 +234,13 @@ cph this replaces _bibj storing of ptracer within thermodynamics
 CADJ STORE ptracer  = comlev1, key = ikey_dynamics
 # endif
 #endif
+
+#ifdef ALLOW_PTRACERS
+# ifdef ALLOW_GCHEM
+         CALL GCHEM_FIELDS_LOAD( mytime, myiter, mythid )
+# endif
+#endif
+
 C--     Step forward fields and calculate time tendency terms.
 #ifndef DISABLE_DEBUGMODE
       IF ( debugLevel .GE. debLevB ) 
@@ -388,8 +395,8 @@ C--   Do "blocking" sends and receives for field "overlap" terms
 cswdptr -- add for seperate timestepping of chemical/biological/forcing
 cswdptr    of ptracers ---
 #ifdef ALLOW_GCHEM
-#ifdef PTRACERS_SEPERATE_FORCING
-        call GCHEM_FORCING( myTime,myIter,myThid )
+#ifdef PTRACERS_SEPARATE_FORCING
+        call GCHEM_FORCING_SEP( myTime,myIter,myThid )
 #endif
 #endif
 cswdptr -- end add ---
