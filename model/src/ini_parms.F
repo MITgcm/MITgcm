@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.108 2004/03/04 04:00:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.109 2004/05/13 15:40:53 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -495,12 +495,13 @@ C--   z,p,r coord input switching.
       ELSE
        recip_gravity = 1.D0 / gravity
       ENDIF
+C     This flags are now passed to RW and MDSIO packages in ini_model_io.F
 C     Set globalFiles flag for READ_WRITE_FLD package
-      CALL SET_WRITE_GLOBAL_FLD( globalFiles )
+c     CALL SET_WRITE_GLOBAL_FLD( globalFiles )
 C     Set globalFiles flag for READ_WRITE_REC package
-      CALL SET_WRITE_GLOBAL_REC( globalFiles )
+c     CALL SET_WRITE_GLOBAL_REC( globalFiles )
 C     Set globalFiles flag for READ_WRITE_REC package
-      CALL SET_WRITE_GLOBAL_PICKUP( globalFiles )
+c     CALL SET_WRITE_GLOBAL_PICKUP( globalFiles )
 
 C     Check for retired parameters still being used
       nRetired = 0

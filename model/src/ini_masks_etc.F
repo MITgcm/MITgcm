@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.28 2004/01/08 15:28:45 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.29 2004/05/13 15:40:53 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -217,14 +217,15 @@ C     We should really supply a flag for doing this.
 
 C-    Write to disk: Total Column Thickness & hFac(C,W,S):
       _BARRIER
-      _BEGIN_MASTER( myThid )
+c     _BEGIN_MASTER( myThid )
+C     This I/O is now done in write_grid.F
 C     CALL MDSWRITEFIELD( 'Depth', writeBinaryPrec, .TRUE.,
 C    &                    'RS', 1, tmpfld, 1, -1, myThid )
-      CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,0,myThid)
-      CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
-      CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
-      CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
-      _END_MASTER(myThid)
+c     CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,0,myThid)
+c     CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
+c     CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
+c     CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
+c     _END_MASTER(myThid)
 
       CALL PLOT_FIELD_XYZRS( hFacC, 'hFacC' , Nr, 1, myThid )
       CALL PLOT_FIELD_XYZRS( hFacW, 'hFacW' , Nr, 1, myThid )

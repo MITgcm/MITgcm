@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.15 2003/12/10 19:37:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.16 2004/05/13 15:40:53 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -98,17 +98,18 @@ C     and the interpolation weights are pre-computed.
 
 C--   Write certain grid data to files (useful for creating netCDF
 C     and general post-analysis)
-      CALL WRITE_FLD_XY_RS( 'XC',' ',XC,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'YC',' ',YC,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'XG',' ',XG,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'YG',' ',YG,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'RAC',' ',rA,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'RAW',' ',rAw,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'RAS',' ',rAs,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'DXG',' ',DXG,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,0,myThid)
+C     This I/O is now done in write_grid.F
+c     CALL WRITE_FLD_XY_RS( 'XC',' ',XC,0,myThid)
+c     CALL WRITE_FLD_XY_RS( 'YC',' ',YC,0,myThid)
+c     CALL WRITE_FLD_XY_RS( 'XG',' ',XG,0,myThid)
+c     CALL WRITE_FLD_XY_RS( 'YG',' ',YG,0,myThid)
+c     CALL WRITE_FLD_XY_RS( 'RAC',' ',rA,0,myThid)
+c     CALL WRITE_FLD_XY_RS( 'RAW',' ',rAw,0,myThid)
+c     CALL WRITE_FLD_XY_RS( 'RAS',' ',rAs,0,myThid)
+c     CALL WRITE_FLD_XY_RS( 'DXG',' ',DXG,0,myThid)
+c     CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,0,myThid)
+c     CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,0,myThid)
+c     CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,0,myThid)
 
 C--   Print out statistics of each horizontal grid array (helps when debugging)
 

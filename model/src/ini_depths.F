@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.29 2003/02/26 03:11:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.30 2004/05/13 15:40:53 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -169,9 +169,10 @@ c         _END_MASTER(myThid)
      I                       myThid )
 
           _BARRIER
-          _BEGIN_MASTER( myThid )
-          CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,0,myThid) 
-          _END_MASTER(myThid)
+C         This I/O is now done in write_grid.F
+c         _BEGIN_MASTER( myThid )
+c         CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,0,myThid) 
+c         _END_MASTER(myThid)
 
         ELSE
 C----
