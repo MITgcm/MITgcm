@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.94 2004/07/31 13:01:12 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.95 2004/08/05 16:04:32 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -520,8 +520,8 @@ Usage: "$0" [OPTIONS]
           Include MPI header files and link to MPI libraries
     -mpi=PATH | --mpi=PATH
           Include MPI header files and link to MPI libraries using MPI_ROOT
-          set to PATH. i.e. Include files from $PATH/include, link to libraries
-          from $PATH/lib and use binaries from $PATH/bin.
+          set to PATH. i.e. Include files from \$PATH/include, link to libraries
+          from \$PATH/lib and use binaries from \$PATH/bin.
 
     -bash NAME
           Explicitly specify the Bourne or BASH shell to use
