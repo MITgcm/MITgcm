@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.8 2001/11/08 16:47:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.9 2002/06/15 03:14:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -55,8 +55,9 @@ C      Print the time to make grepping the stdout easier
        CALL MON_SET_PREF('time',myThid)
        CALL MON_OUT_I( '_tsnumber', myIter,mon_string_none,myThid)
        CALL MON_OUT_RL('_secondsf', myTime,mon_string_none,myThid)
-       time_as_int = NINT( myTime )
-       CALL MON_OUT_I( '_secondsi', time_as_int,mon_string_none,myThid)
+C- cause floating point error on some platform (cf Martin Losch)
+c      time_as_int = NINT( myTime )
+c      CALL MON_OUT_I( '_secondsi', time_as_int,mon_string_none,myThid)
 C      Print the basic statistics of model state variables
        CALL MON_SET_PREF('dynstat',myThid)
        CALL MON_PRINTSTATS_RL(1,EtaN,'_eta',

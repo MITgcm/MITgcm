@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.3 2001/11/08 16:47:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.4 2002/06/15 03:14:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE MON_STATS_RL(
      I                myNr, arr, arrMask,arrhFac, arrArea, arrDr,
-     O                theMin,theMax,theMean,theSD,theDel2,
+     O                theMin,theMax,theMean,theSD,theDel2,theVol,
      I                myThid )
 C     /==========================================================\
 C     | SUBROUTINE MON_STATS_RL                                  |
@@ -30,6 +30,7 @@ C     === Routine arguments ===
       _RL theMean
       _RL theSD
       _RL theDel2
+      _RL theVol
       INTEGER myThid
 
 C     === Local variables ====
@@ -38,7 +39,7 @@ C     === Local variables ====
       LOGICAL noPnts
       _RL tmpVal,rNumPnts
       _RL theVar
-      _RL theVol, tmpVol
+      _RL tmpVol
 
       theMin=0.
       theMax=0.
