@@ -1,0 +1,321 @@
+#!/bin/sh
+
+similar()
+{
+# similar digits a b
+#
+#  compare the floating point number a and b and successively reduced
+#  truncation until a match is found
+ for digits in 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
+ do
+   a=`printf '%22.'$digits'e\n' $1`
+   b=`printf '%22.'$digits'e\n' $2`
+   if [ $a = $b ]; then
+    if [ $verbose -gt 1 ]; then
+     echo $1 $2 $a 1>&2
+    fi
+    break
+   fi
+ done
+ return $digits
+}
+
+compare_lines()
+{
+# compare_lines digits < file
+#
+#  read each line of file and test the 2nd and 3rd column values for
+#  similarity based on the function similar()
+ worst_so_far=$1
+ while read linenum a b
+ do
+  if [ $debug -gt 0 ]; then
+   echo compare_lines: similar a=$a b=$b 1>&2
+  fi
+  similar $a $b
+  digits=$?
+  if [ $digits -lt $worst_so_far ]; then
+   worst_so_far=$digits
+  fi
+ done
+  if [ $debug -gt 0 ]; then
+   echo compare_lines: worst_so_far=$worst_so_far 1>&2
+  fi
+ return $worst_so_far
+}
+
+testoutput_for_prop()
+{
+# testoutput_for_prop dir s1 label
+#
+#  compares files in $dir/input/output.txt and $dir/results.output.txt
+#  using search strings s1 and text label 
+ 
+ if [ $debug -gt 0 ]; then
+  echo testoutput_for_prop: grep "$2" $1/input/output.txt 1>&2
+ fi
+ if [ -r $1/input/output.txt ]; then
+  grep "$2" $1/input/output.txt | sed 's/.*=//' | nl > tmp1.txt
+ else
+  echo testoutput_for_prop: output.txt from model run was not readable 1>&2
+  return 99
+ fi
+ if [ $debug -gt 0 ]; then
+  echo testoutput_for_prop: grep "$2" $1/results/output.txt 1>&2
+ fi
+ grep "$2" $1/results/output.txt | sed 's/.*=//' | nl > tmp2.txt
+ if [ $debug -gt 0 ]; then
+  echo testoutput_for_prop: join tmp1.txt tmp2.txt 1>&2
+ fi
+ join tmp1.txt tmp2.txt | awk '{print $1 " " $2 " " $3}' > tmp3.txt
+ if [ $debug -gt 0 ]; then
+  echo testoutput_for_prop: compare_lines 1>&2
+ fi
+ compare_lines 99 < tmp3.txt
+ digits_of_similarity=$?
+ if [ $digits_of_similarity -eq 99 ]; then
+  if [ $verbose -gt 0 ]; then
+   echo testoutput_for_prop: No comparison was available for \"$2\" 1>&2
+  fi
+  digits_of_similarity=99
+ else
+  if [ $verbose -gt 0 ]; then
+   echo There were $digits_of_similarity decimal places of similarity for \"$2\" 1>&2
+  fi
+ fi
+ rm tmp1.txt tmp2.txt tmp3.txt
+
+ return $digits_of_similarity
+}
+
+dashnum()
+{
+# dashnum n1 n2 n3 ...
+#
+#  print numbers using %3i format or "--" if number = 99
+for num in $@
+do
+ if [ $num = 99 ]; then
+  printf ' --'
+ else
+  printf '%3i' $num
+ fi
+done
+}
+
+testoutput()
+{
+# testoutput diretory
+#
+#  test output in "directory"
+
+if [ $debug -gt 0 ]; then
+ echo testoutput: testoutput_for_prop $1 cg2d_init_res 1>&2
+fi
+testoutput_for_prop $1 "cg2d_init_res" "cg2d init. residual"; cg2dres=$?
+if [ $debug -gt 0 ]; then
+ echo testoutput: cg2dres=$cg2dres 1>&2
+fi
+testoutput_for_prop $1 "dynstat_theta_min" "theta minimum"; tmin=$?
+testoutput_for_prop $1 "dynstat_theta_max" "theta maximum"; tmax=$?
+testoutput_for_prop $1 "dynstat_salt_min" "salt minimum"; smin=$?
+testoutput_for_prop $1 "dynstat_salt_max" "salt maximum"; smax=$?
+testoutput_for_prop $1 "dynstat_uvel_min" "U minimum"; umin=$?
+testoutput_for_prop $1 "dynstat_uvel_max" "U maximum"; umax=$?
+testoutput_for_prop $1 "dynstat_vvel_min" "V minimum"; vmin=$?
+testoutput_for_prop $1 "dynstat_vvel_max" "V maximum"; vmax=$?
+
+#testoutput_for_prop $1 "dynstat_theta_mean" "theta mean"; tmean=$?
+#testoutput_for_prop $1 "dynstat_theta_sd" "theta s.d."; tsd=$?
+#testoutput_for_prop $1 "dynstat_salt_mean" "salt mean"; smean=$?
+#testoutput_for_prop $1 "dynstat_salt_sd" "salt s.d."; ssd=$?
+#testoutput_for_prop $1 "dynstat_uvel_mean" "U mean"; umean=$?
+#testoutput_for_prop $1 "dynstat_uvel_sd" "U s.d."; usd=$?
+#testoutput_for_prop $1 "dynstat_vvel_mean" "V mean"; vmean=$?
+#testoutput_for_prop $1 "dynstat_vvel_sd" "V s.d."; vsd=$?
+
+dashnum $cg2dres $tmin $tmax $tmean $tsd $smin $smax $smean $ssd \
+        $umin $umax $umean $usd $vmin $vmax $vmean $vsd
+#printf '%3i' $cg2dres $tmin $tmax $tmean $tsd $smin $smax $smean $ssd \
+#       $umin $umax $umean $usd $vmin $vmax $vmean $vsd
+}
+
+genmakemodel()
+{
+# genmakemodel directory
+ ( cd $1;
+   if [ $quick -eq 0 -o ! -r Makefile ]; then
+    printf 'genmake ... ' 1>&2
+    ../../../tools/genmake -mods=../code > make.log 2>&1
+    if [ $? -ne 0 ]; then
+     tail make.log
+     echo makemodel: genmake failed 1>&2
+     return 1
+    else
+      echo succesful 1>&2
+    fi
+   fi
+ )
+}
+
+makedependmodel()
+{
+# makedependmodel directory
+ ( cd $1;
+   if [ $quick -eq 0 -o ! -r Makefile ]; then
+    printf 'make depend ... ' 1>&2
+    make depend >> make.log 2>&1
+    if [ $? -ne 0 ]; then
+      tail make.log
+      echo makemodel: make depend failed 1>&2
+      return 1
+    else
+      echo succesful 1>&2
+    fi
+   fi
+ )
+}
+
+makemodel()
+{
+# makemodel directory
+ ( cd $1;
+   if [ -r Makefile ]; then
+    printf 'make ... ' 1>&2
+    make >> make.log 2>&1
+    if [ $? -ne 0 ]; then
+     tail make.log
+     echo failed 1>&2
+     return 1
+    else
+     echo succesful 1>&2
+    fi
+   fi
+ )
+}
+
+runmodel()
+{
+# runmodel directory exe
+#
+#  runs the model "exe" in "directory" (exe is relative to directory)
+
+ ( cd $1
+   if [ -x $2 ]; then
+    if [ ! -r output.txt -o $quick -eq 0 ]; then
+     echo runmodel: running... 1>&2
+     ( ./$2 > output.txt 2>&1 ) && return 0
+     return 1
+    else
+     echo runmodel: output.txt is newer than executable 1>&2
+     return 0
+    fi
+   else
+    echo runmodel: executable \"$1/$2\" is missing 1>&2
+    return 1
+   fi
+ )
+}
+
+formatresults()
+{
+# formatresults expt genmake depend make run results*
+
+ nm=$1
+ printf '%s %s %s %s' $2 $3 $4 $5
+ shift; shift; shift; shift; shift;
+ printf '%3s' $@
+
+ if [ $1 = '--' ]; then
+  printf ' N/O '
+ else
+  if [ $1 -gt 12 ]; then
+   printf ' pass'
+  else
+   printf ' FAIL'
+  fi
+ fi
+ printf '  %s' $nm
+ printf '\n'
+
+}
+
+show_help()
+{
+cat - << EOF
+$0 [-help] [-quick] [-verbose] dir1 [dir2] [...]
+ -help      Show this help message
+ -quick     Skip "genmake" and "make depend" if the Makefile exists
+ -quiet     Reduce the amount of output
+ -verbose   Produce copious amounts of output
+
+Normal usage:
+ $0 *       Configure, compile, run and analyze in all experiment directories
+EOF
+}
+
+# Main function
+dir=$1/input
+
+# Default properties
+debug=0
+verbose=1
+quick=0
+expts=''
+
+# Process arguments
+for arg in $@
+do
+ case $arg in
+   -quick) quick=1;;
+   -verbose) verbose=2;;
+   -debug) debug=1;;
+   -quiet) verbose=0;;
+   -help) show_help; exit 0;;
+   *) test -d $arg && expts=`echo $expts $arg`;;
+ esac
+done
+
+cat << EOF > summary.txt
+                T           S           U           V
+C D M    c        m  s        m  s        m  s        m  s
+n p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
+f n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
+g d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
+
+EOF
+cat << EOF > summary.txt
+              T     S     U     V
+C D M    c                        
+n p a R  g  m  m  m  m  m  m  m  m
+f n k u  2  i  a  i  a  i  a  i  a
+g d e n  d  n  x  n  x  n  x  n  x
+
+EOF
+
+# Now configue, make, run and test in each directory
+for dir in $expts
+do
+ if [ -r $dir/results/output.txt ]; then
+ echo -------------------------------------------------------------------------------
+ echo
+ echo Experiment: $dir
+ echo
+ unset genmake makedepend make run
+ results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
+ results='-- -- -- -- -- -- -- -- --'
+ genmakemodel $dir/input && genmake=Y \
+ && makedependmodel $dir/input && makedepend=Y \
+ && makemodel $dir/input && make=Y \
+ && runmodel $dir/input mitgcmuv && run=Y \
+ && results=`testoutput $dir`
+ echo
+ formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results
+ echo
+ formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results >> summary.txt
+ fi
+done
+
+echo -------------------------------------------------------------------------------
+echo 
+cat summary.txt
