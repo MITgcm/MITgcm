@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.27 2001/12/11 14:58:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.28 2002/01/11 19:00:43 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -114,8 +114,10 @@ C--     Load forcing/external data fields.
 C       NOTE, that although the exf package is part of the
 C       distribution, it is not currently maintained, i.e.
 C       exf is disabled by default in genmake.
-#ifdef ALLOW_BULKFORMULAE
-CADJ STORE theta     = comlev1, key = ikey_dynamics
+#ifdef ALLOW_AUTODIFF_TAMC
+c**************************************
+#include "checkpoint_lev1_directives.h"
+c**************************************
 #endif
         CALL EXF_GETFORCING( mytime, myiter, mythid )
 #else

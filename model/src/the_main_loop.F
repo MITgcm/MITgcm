@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.23 2001/11/20 21:14:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.24 2002/01/11 19:00:43 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -144,70 +144,18 @@ c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
 
       do ilev_3 = 1,nchklev_3
          if(ilev_3.le.max_lev3) then
-CADJ STORE gsnm1     = tapelev3, key = ilev_3
-CADJ STORE gtnm1     = tapelev3, key = ilev_3
-CADJ STORE gunm1     = tapelev3, key = ilev_3
-CADJ STORE gvnm1     = tapelev3, key = ilev_3
-CADJ STORE theta     = tapelev3, key = ilev_3
-CADJ STORE salt      = tapelev3, key = ilev_3
-CADJ STORE uvel      = tapelev3, key = ilev_3
-CADJ STORE vvel      = tapelev3, key = ilev_3
-CADJ STORE wvel      = tapelev3, key = ilev_3
-CADJ STORE etan      = tapelev3, key = ilev_3
-CADJ STORE gu        = tapelev3, key = ilev_3
-CADJ STORE gv        = tapelev3, key = ilev_3
-#ifdef INCLUDE_CD_CODE
-CADJ STORE etanm1    = tapelev3, key = ilev_3
-CADJ STORE uveld     = tapelev3, key = ilev_3
-CADJ STORE vveld     = tapelev3, key = ilev_3
-CADJ STORE unm1      = tapelev3, key = ilev_3
-CADJ STORE vnm1      = tapelev3, key = ilev_3
-CADJ STORE gucd      = tapelev3, key = ilev_3
-CADJ STORE gvcd      = tapelev3, key = ilev_3
-#endif
-#ifdef ALLOW_PASSIVE_TRACER
-CADJ STORE tr1       = tapelev3, key = ilev_3
-CADJ STORE gtr1nm1   = tapelev3, key = ilev_3
-#endif
-#ifdef EXACT_CONSERV
-CADJ STORE etaH      = tapelev3, key = ilev_3
-CADJ STORE hDivFlow  = tapelev3, key = ilev_3
-#endif
+c**************************************
+#include "checkpoint_lev3_directives.h"
+c**************************************
 
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev2 = USER
 
         do ilev_2 = 1,nchklev_2
          if(ilev_2.le.max_lev2) then
-CADJ STORE gsnm1     = tapelev2, key = ilev_2
-CADJ STORE gtnm1     = tapelev2, key = ilev_2
-CADJ STORE gunm1     = tapelev2, key = ilev_2
-CADJ STORE gvnm1     = tapelev2, key = ilev_2
-CADJ STORE theta     = tapelev2, key = ilev_2
-CADJ STORE salt      = tapelev2, key = ilev_2
-CADJ STORE uvel      = tapelev2, key = ilev_2
-CADJ STORE vvel      = tapelev2, key = ilev_2
-CADJ STORE wvel      = tapelev2, key = ilev_2
-CADJ STORE etan      = tapelev2, key = ilev_2
-CADJ STORE gu        = tapelev2, key = ilev_2
-CADJ STORE gv        = tapelev2, key = ilev_2
-#ifdef INCLUDE_CD_CODE
-CADJ STORE etanm1    = tapelev2, key = ilev_2
-CADJ STORE uveld     = tapelev2, key = ilev_2
-CADJ STORE vveld     = tapelev2, key = ilev_2
-CADJ STORE unm1      = tapelev2, key = ilev_2
-CADJ STORE vnm1      = tapelev2, key = ilev_2
-CADJ STORE gucd      = tapelev2, key = ilev_2
-CADJ STORE gvcd      = tapelev2, key = ilev_2
-#endif
-#ifdef ALLOW_PASSIVE_TRACER
-CADJ STORE tr1       = tapelev2, key = ilev_2
-CADJ STORE gtr1nm1   = tapelev2, key = ilev_2
-#endif
-#ifdef EXACT_CONSERV
-CADJ STORE etaH      = tapelev2, key = ilev_2
-CADJ STORE hDivFlow  = tapelev2, key = ilev_2
-#endif
+c**************************************
+#include "checkpoint_lev2_directives.h"
+c**************************************
 
 c--       Initialize storage for the innermost loop.
 c--       Always check common block sizes for the checkpointing!
