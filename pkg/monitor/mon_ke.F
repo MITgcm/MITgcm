@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.2 2001/06/04 13:53:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.3 2001/06/04 14:25:53 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -52,7 +52,7 @@ C     === Local variables ====
       _GLOBAL_SUM_R8(theMean,myThid)
       tmpVal=float(numPnts)
       _GLOBAL_SUM_R8(tmpVal,myThid)
-      theMean=theMean/tmpVal
+      IF (tmpVal.NE.0.) theMean=theMean*tmpVal
 
       _BEGIN_MASTER( myThid )
       WRITE(*,'(A,24x,A,1PE22.14)')
