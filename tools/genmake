@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.46 2001/08/21 15:54:36 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.47 2001/08/23 19:33:44 heimbach Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -388,7 +388,7 @@ switch ($platform$USEMPI)
     set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar')
     set FOPTIM     = ( '-fast -O3' )
     set NOOPTFLAGS = ( '-O0' )
-    set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F ini_vertical_grid.F ini_spherical_polar_grid.F ini_cori.F')
+    set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F ini_vertical_grid.F ini_spherical_polar_grid.F ini_cori.F mon_printstats_rl.F mon_printstats_rs.F')
     breaksw
   case SunOS+mpi:
     set LN         = ( '/usr/bin/ln -s' )
@@ -400,7 +400,7 @@ switch ($platform$USEMPI)
     set NOOPTFLAGS = ( '-O0' )
     set LIBS       = ( '-L/usr/local/mpi/lib/solaris/ch_shmem -lmpi -lthread' \
                        '-lsocket -lnsl' )
-    set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F ini_vertical_grid.F ini_spherical_polar_grid.F ini_cori.F')
+    set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F ini_vertical_grid.F ini_spherical_polar_grid.F ini_cori.F mon_printstats_rl.F mon_printstats_rs.F')
     breaksw
   case IRIX32:
     echo "Configuring for SGI ONYX running IRIX64"
