@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.12 2004/12/10 15:41:59 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.13 2004/12/13 15:07:53 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -62,7 +62,7 @@ c     == end of interface ==
             do i = imin,imax
 c
 c             Heat flux.
-              if ( ( hflux(i,j,bi,bj) .GT. 1300. .OR.
+              if ( ( hflux(i,j,bi,bj) .GT. 1500. .OR.
      &               hflux(i,j,bi,bj) .LT. -500. ) .AND.
      &              hFacC(i,j,1,bi,bj) .NE. 0. ) then
                  print *, 'EXF WARNING: hflux out of range for i,j= ',
