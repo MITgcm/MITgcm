@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.123 2004/09/17 22:57:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.124 2004/09/21 00:08:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -321,6 +321,9 @@ C--   Set default "physical" parameters
       tempVertAdvScheme = 0
       saltVertAdvScheme = 0
 C--   z,p,r coord input switching.
+      WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM01'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1) 
       READ(UNIT=iUnit,NML=PARM01) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
@@ -539,6 +542,9 @@ C     Check for retired parameters still being used
       ENDIF
 
 C--   Elliptic solver parameters
+      WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM02'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1) 
       READ(UNIT=iUnit,NML=PARM02) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
@@ -564,6 +570,9 @@ C--   Elliptic solver parameters
 C--   Time stepping parameters
       rCD               = -1.D0
       latBandClimRelax  = UNSET_RL
+      WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM03'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1) 
       READ(UNIT=iUnit,NML=PARM03) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
@@ -762,6 +771,9 @@ C     In spherical polar distances are in degrees
       dySpacing = UNSET_RL
       delXfile = ' '
       delYfile = ' '
+      WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM04'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1) 
       READ(UNIT=iUnit,NML=PARM04,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
@@ -979,6 +991,9 @@ c     useDynP_inEos_Zc = .FALSE.
      &                      eosType .EQ. 'MDJWF'       )  )
 
 C--   Input files
+      WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; starts to read PARM05'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1) 
       READ(UNIT=iUnit,NML=PARM05) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN    
        WRITE(msgBuf,'(A)')
