@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/aim_utvt2dyn.F,v 1.1 2001/02/08 04:20:39 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/aim_utvt2dyn.F,v 1.2 2001/03/06 19:40:59 jmc Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -31,7 +31,6 @@ C     MITgcm
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "CG2D.h"
 #include "GRID.h"
 
 C     === Routine arguments ===
