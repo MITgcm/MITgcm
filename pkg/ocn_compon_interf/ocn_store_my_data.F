@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.1 2004/05/21 19:42:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_store_my_data.F,v 1.2 2004/07/26 20:13:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,7 +59,8 @@ C     i,j :: Loop variables
        ENDDO
       ENDIF
 #ifdef NONLIN_FRSURF
-      IF ( nonlinFreeSurf.GT.0 .AND. .NOT.cpl_earlyExpImpCall ) THEN
+      IF ( nonlinFreeSurf.GT.0 .AND.
+     &    (staggerTimeStep .OR. .NOT.cpl_earlyExpImpCall ) ) THEN 
        IF ( select_rStar.GT.0 ) THEN
         DO j=1,sNy
          DO i=1,sNx

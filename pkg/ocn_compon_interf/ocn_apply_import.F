@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.2 2004/05/21 19:42:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/ocn_apply_import.F,v 1.3 2004/07/26 20:13:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,11 +48,14 @@ C     === Local arrays ===
 CEOP
 
 C--  Use imported coupling data in place of input files data:
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+
+C--     Aplly import to all coupling fields (standard way)
+        IF ( apply2AllFields ) THEN
 
 C-   Dynamical forcing
-         IF ( useImportTau .AND. apply2AllFields ) THEN
+         IF ( useImportTau ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
               fu(i,j,bi,bj) = tauX(i,j,bi,bj)
@@ -68,32 +71,10 @@ C-   Dynamical forcing
             ENDDO
            ENDDO
          ENDIF
-         IF ( useImportFW .AND.
-     &        nonlinFreeSurf.GT.0 .AND. useRealFreshWaterFlux ) THEN
+         IF ( useImportSIce ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
-c             pLoad(i,j,bi,bj) = pLoad(i,j,bi,bj)
-c    &            + gravity*seaIceMass(i,j,bi,bj)
-C- note: might need to change directly phi0surf if OCN_APPLY_IMPORT 
-C        is called after EXTERNAL_FORCING_SURF
-              phi0surf(i,j,bi,bj) = pload(i,j,bi,bj)*recip_rhoConst
-     &               + gravity*seaIceMass(i,j,bi,bj)*recip_rhoConst
-            ENDDO
-           ENDDO
-         ELSE
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
-              phi0surf(i,j,bi,bj) = pload(i,j,bi,bj)*recip_rhoConst
-            ENDDO
-           ENDDO
-         ENDIF
-#else /* ATMOSPHERIC_LOADING */
-         IF ( useImportFW .AND.
-     &        nonlinFreeSurf.GT.0 .AND. useRealFreshWaterFlux ) THEN
-           DO j=1-Oly,sNy+Oly
-            DO i=1-Olx,sNx+Olx
-              phi0surf(i,j,bi,bj) =
-     &                 gravity*seaIceMass(i,j,bi,bj)*recip_rhoConst
+              sIceLoad(i,j,bi,bj) = seaIceMass(i,j,bi,bj)
             ENDDO
            ENDDO
          ENDIF
@@ -107,7 +88,7 @@ C-   Fresh-Water & Salinity forcing
             ENDDO
            ENDDO
          ENDIF
-         IF ( useImportFW .AND. apply2AllFields ) THEN
+         IF ( useImportFW ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
               saltFlux(i,j,bi,bj)= iceSaltFlx(i,j,bi,bj)
@@ -116,7 +97,7 @@ C-   Fresh-Water & Salinity forcing
          ENDIF
 
 C-   Heat Flux forcing
-         IF ( useImportHFlx .AND. apply2AllFields ) THEN
+         IF ( useImportHFlx ) THEN
            DO j=1-Oly,sNy+Oly
             DO i=1-Olx,sNx+Olx
               Qnet(i,j,bi,bj)= HeatFlux  (i,j,bi,bj)
@@ -131,15 +112,57 @@ C-   Heat Flux forcing
 #endif
          ENDIF
 
+C--     Apply only to forcings relevant for eta/surf.press variations
+        ELSE
+
+#ifdef ATMOSPHERIC_LOADING
+         IF ( useImportSIce .AND. useImportSLP ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+              phi0surf(i,j,bi,bj) = atmSLPr(i,j,bi,bj)*recip_rhoConst
+     &                 + gravity*seaIceMass(i,j,bi,bj)*recip_rhoConst
+            ENDDO
+           ENDDO
+         ELSEIF ( useImportSIce ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+              phi0surf(i,j,bi,bj) = pload(i,j,bi,bj)*recip_rhoConst
+     &                 + gravity*seaIceMass(i,j,bi,bj)*recip_rhoConst
+            ENDDO
+           ENDDO
+         ELSEIF ( useImportSLP ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+              phi0surf(i,j,bi,bj) = atmSLPr(i,j,bi,bj)*recip_rhoConst
+            ENDDO
+           ENDDO
+         ENDIF
+#endif /* ATMOSPHERIC_LOADING */
+
+         IF ( useImportFW ) THEN
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+              EmPmR(i,j,bi,bj) = FWFlux    (i,j,bi,bj)
+            ENDDO
+           ENDDO
+         ENDIF
+
+C--     end if apply2AllFields / else blocks
+        ENDIF
+
 C--  end bi,bj loop
-        ENDDO
        ENDDO
+      ENDDO
 
 C--  Fill in Halo region with valid values
 
 #ifdef ATMOSPHERIC_LOADING
-c      IF ( useImportSLP ) _EXCH_XY_R4(pload, myThid )
-       _EXCH_XY_R4(phi0surf, myThid )
+       IF ( apply2AllFields ) THEN
+        IF ( useImportSLP )  _EXCH_XY_R4( pload,    myThid )
+        IF ( useImportSIce)  _EXCH_XY_R4( sIceload, myThid )
+       ELSEIF ( useImportSLP .OR. useImportSIce ) THEN
+         _EXCH_XY_R4( phi0surf, myThid )
+       ENDIF
 #endif
        IF ( useImportFW  ) _EXCH_XY_R4(EmPmR, myThid )
        IF ( apply2AllFields ) THEN

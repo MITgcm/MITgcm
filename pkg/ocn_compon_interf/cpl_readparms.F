@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.2 2004/05/21 19:42:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.3 2004/07/26 20:13:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -57,20 +57,23 @@ C     useImportHFlx :: True => use the Imported HeatFlux from couler
 C     useImportFW   :: True => use the Imported Fresh Water flux fr cpl
 C     useImportTau  :: True => use the Imported Wind-Stress from couler
 C     useImportSLP  :: True => use the Imported Sea-level Atmos. Pressure
+C     useImportSIce :: True => use the Imported Sea-Ice loading
 C     cpl_taveFreq  :: Frequency^-1 for time-Aver. output (s)
       NAMELIST /CPL_OCN_PARAM/
      &    cpl_earlyExpImpCall,
-     &    useImportHFlx, useImportFW, useImportTau, useImportSLP,
+     &    useImportHFlx, useImportFW, useImportTau,
+     &    useImportSLP, useImportSIce,
      &    cpl_taveFreq
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Set default value:
-      cpl_earlyExpImpCall = .FALSE. 
+      cpl_earlyExpImpCall = .TRUE. 
       useImportHFlx = .TRUE. 
       useImportFW   = .TRUE.
       useImportTau  = .TRUE.
       useImportSLP  = .TRUE.
+      useImportSIce = .TRUE.
       cpl_taveFreq  = taveFreq
       
       _BEGIN_MASTER(myThid)
@@ -100,15 +103,46 @@ C-    If land_taveFreq is positive, then must compile the land-diagnostics code
 #ifndef ALLOW_TIMEAVE
       IF (cpl_taveFreq.GT.0.) THEN
         WRITE(msgBuf,'(A)')
-     &  'CPL_READPARMS: cpl_taveFreq > 0 but ALLOW_TIMEAVE undefined'
+     &  'CPL_READPARMS: cpl_taveFreq > 0 but not compiled pkg/timeave'
         CALL PRINT_ERROR( msgBuf, myThid)
-        WRITE(msgBuf,'(2A)')
-     &  'Re-compile with: #define ALLOW_TIMEAVE',
-     &                    '  or -DALLOW_TIMEAVE'
+        WRITE(msgBuf,'(A)')
+     &  'Re-compile with pkg "timeave" in packages.conf'
         CALL PRINT_ERROR( msgBuf, myThid)
         STOP 'ABNORMAL END: S/R CPL_READPARMS'
       ENDIF
 #endif /* ALLOW_TIMEAVE */
+
+#ifndef ATMOSPHERIC_LOADING
+      IF ( useImportSLP ) THEN
+        WRITE(msgBuf,'(A)')
+     &  'CPL_READPARMS: useImportSLP is set but' 
+        CALL PRINT_ERROR( msgBuf , myThid)
+      ELSEIF ( useImportSIce ) THEN
+        WRITE(msgBuf,'(A)')
+     &  'CPL_READPARMS: useImportSIce is set but'
+        CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+      IF ( useImportSLP .OR. useImportSIce ) THEN
+        WRITE(msgBuf,'(A)')
+     &  'CPL_READPARMS: pressure loading code is not compiled.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &  'Re-compile with:  #define ATMOSPHERIC_LOADING',
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CPL_READPARMS'
+      ENDIF
+#endif
+
+      IF ( .NOT.cpl_earlyExpImpCall .AND. staggerTimeStep ) THEN
+        WRITE(msgBuf,'(A,L5,A,L5)')
+     &  'CPL_READPARMS: staggerTimeStep=',staggerTimeStep,
+     &  ' ; cpl_earlyExpImpCall=', cpl_earlyExpImpCall
+        CALL PRINT_ERROR( msgBuf, myThid)
+        WRITE(msgBuf,'(A)')
+     &  'CPL_READPARMS: taggerTimeStep requires cpl_earlyExpImpCall'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        STOP 'ABNORMAL END: S/R CPL_READPARMS'
+      ENDIF
 
 C-    derive other parameters:
 
@@ -141,6 +175,9 @@ C- namelist CPL_OCN_PARAM:
        CALL WRITE_0D_L( useImportSLP , INDEX_NONE,
      &                 'useImportSLP =',
      &   ' /* use Imported Sea-level Atm Press on/off flag */')       
+       CALL WRITE_0D_L( useImportSIce , INDEX_NONE,
+     &                 'useImportSIce=',
+     &   ' /* use Imported Sea-Ice loading on/off flag */')       
        CALL WRITE_0D_R8( cpl_taveFreq, INDEX_NONE, 'cpl_taveFreq =',
      &   ' /* Frequency^-1 for time-Aver. output (s) */')
 
