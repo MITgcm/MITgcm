@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.2 2004/12/15 00:18:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.3 2004/12/16 21:46:36 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -53,6 +53,7 @@ C     !LOCAL VARIABLES:
       INTEGER  dUnit, stdUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(72) ccHead, ccLine
+      CHARACTER*8 blk8c
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
 
@@ -127,6 +128,28 @@ C     write a summary of the (long) list of all available diagnostics:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ENDIF
+
+C--   Check for multiple definition of the same diagnostic name
+      blk8c  = '        '
+      DO n = 2,ndiagt
+       IF ( cdiag(n).NE.blk8c ) THEN
+        DO l = 1,n-1
+         IF ( cdiag(l).EQ.cdiag(n) ) THEN
+            WRITE(msgBuf,'(4A)') 'DIAGNOSTICS_SET_LEVELS: ',
+     &       'diag.Name: ',cdiag(n),' registered 2 times :'
+            CALL PRINT_ERROR( msgBuf , myThid )
+            WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_SET_LEVELS: ',
+     &       '1rst (l=', l, ' ), title= ',tdiag(l)
+            CALL PRINT_ERROR( msgBuf , myThid )
+            WRITE(msgBuf,'(2A,I4,2A)') 'DIAGNOSTICS_SET_LEVELS: ',
+     &       ' 2nd (n=', n, ' ), title= ',tdiag(n)
+            CALL PRINT_ERROR( msgBuf , myThid )
+            STOP 'ABNORMAL END: S/R DIAGNOSTICS_SET_LEVELS'
+         ENDIF
+        ENDDO
+       ENDIF
+      ENDDO
+
       _END_MASTER( myThid )
 
       RETURN
