@@ -1,4 +1,5 @@
-C $Id: main.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+C $Id: main.F,v 1.2 1998/04/23 20:26:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.2 1998/04/23 20:26:42 cnh Exp $
 
 C--   Get C preprocessor options
 #include "CPP_OPTIONS.h"
@@ -89,4 +90,4 @@ C--   Write closedown status
 C
       END
 
-C $Id: main.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+C $Id: main.F,v 1.2 1998/04/23 20:26:42 cnh Exp $
