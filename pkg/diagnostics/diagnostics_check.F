@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_check.F,v 1.1 2004/12/13 21:43:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_check.F,v 1.2 2004/12/16 21:39:53 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -70,6 +70,7 @@ C-    Check for field that appears 2 times (or more) with differents frequency:
             WRITE(msgBuf,'(2A,I3,A,I6,2A)') 'DIAGNOSTICS_CHECK: ',
      &       ' 2nd (n=', n, ' ), freq=', freq(n),' file:',fnames(n)
             CALL PRINT_ERROR( msgBuf , myThid )
+            STOP 'ABNORMAL END: S/R DIAGNOSTICS_CHECK'
            ENDIF
           ENDDO
          ENDDO
