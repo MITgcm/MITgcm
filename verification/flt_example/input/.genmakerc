@@ -1,0 +1,13 @@
+# $Header: /u/gcmpack/MITgcm/verification/flt_example/input/Attic/.genmakerc,v 1.1 2001/11/26 16:04:00 adcroft Exp $
+# $Name:  $
+
+# Disable packages that are not needed
+set DISABLE=( $DISABLE kpp gmredi obcs mom_vecinv shap_filt zonal_filt )
+
+# Enable packages that are needed but are disabled by default
+set ENABLE=( $ENABLE flt )
+
+# We can also specify other defaults
+set ROOTDIR=../../..
+set MODS=../code
+
