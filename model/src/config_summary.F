@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.70 2005/03/10 15:36:57 baylor Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.71 2005/03/10 17:41:37 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -110,11 +110,9 @@ C     zcoord ::
      &'useFullLeith =',
      &'   /* Use Full Form of Leith Viscosity on/off flag*/')
       CALL WRITE_0D_R8( viscC2leith, INDEX_NONE,'viscC2leith =',
-     &'   /* Leith harmonic viscosity factor
-     & (on grad(vort),non-dim.) */')
+     &' /* Leith harmonic viscosity factor (on grad(vort),non-dim.) */')
       CALL WRITE_0D_R8( viscC2leithD, INDEX_NONE,'viscC2leithD =',
-     &'   /* Leith harmonic viscosity factor
-     & (on grad(div),non-dim.) */')
+     &' /* Leith harmonic viscosity factor (on grad(div),non-dim.) */')
       CALL WRITE_0D_R8( viscC2smag, INDEX_NONE,'viscC2smag =',
      &'   /* Smagorinsky harmonic viscosity factor (non-dim.) */')
       CALL WRITE_0D_R8( viscA4, INDEX_NONE,'viscA4 =',
@@ -130,11 +128,9 @@ C     zcoord ::
       CALL WRITE_0D_R8( viscA4Grid, INDEX_NONE,'viscA4Grid =',
      &'   /* Grid dependent biharmonic viscosity ( non-dim. ) */')
       CALL WRITE_0D_R8( viscC4leith, INDEX_NONE,'viscC4leith =',
-     &'   /* Leith biharmonic viscosity factor
-     & ( on grad(vort), non-dom. ) */')
+     &' /* Leith biharm viscosity factor (on grad(vort), non-dim.) */')
       CALL WRITE_0D_R8( viscC4leithD, INDEX_NONE,'viscC4leithD =',
-     &'   /* Leith biharmonic viscosity factor
-     & ( on grad(div), non-dom. ) */')
+     &' /* Leith biharm viscosity factor (on grad(div), non-dim.) */')
       CALL WRITE_0D_L( no_slip_sides, INDEX_NONE,
      & 'no_slip_sides =', '  /* Viscous BCs: No-slip sides */')
       CALL WRITE_0D_R8( viscAr,  INDEX_NONE,'viscAr =',
