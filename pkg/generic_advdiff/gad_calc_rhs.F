@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.8 2001/09/10 01:22:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.9 2001/09/10 13:09:04 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -273,13 +273,11 @@ C-    Compute vertical advective flux in the interior:
        ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
         CALL GAD_C4_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
        ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-c       CALL GAD_DST3_ADV_R(
-c    &       bi,bj,k,deltaTtracer,rTrans,wVel,tracer,af,myThid)
-        STOP 'GAD_CALC_RHS: GAD_DST3_ADV_R not coded yet'
+        CALL GAD_DST3_ADV_R(
+     &       bi,bj,k,deltaTtracer,rTrans,wVel,tracer,af,myThid)
        ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-c       CALL GAD_DST3FL_ADV_R(
-c    &       bi,bj,k,deltaTtracer,rTrans,wVel,tracer,af,myThid)
-        STOP 'GAD_CALC_RHS: GAD_DST3FL_ADV_R not coded yet'
+        CALL GAD_DST3FL_ADV_R(
+     &       bi,bj,k,deltaTtracer,rTrans,wVel,tracer,af,myThid)
        ELSE
         STOP 'GAD_CALC_RHS: Bad advectionScheme (R)'
        ENDIF

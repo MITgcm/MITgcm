@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.1 2001/09/10 01:22:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.2 2001/09/10 13:09:04 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -200,13 +200,11 @@ C-    Compute vertical advective flux in the interior:
         CALL GAD_FLUXLIMIT_ADV_R(
      &       bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
        ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-c       CALL GAD_DST3_ADV_R(
-c    &       bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
-        STOP 'GAD_ADVECTION: adv. scheme not avail. yet'
+        CALL GAD_DST3_ADV_R(
+     &       bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
        ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-c       CALL GAD_DST3FL_ADV_R(
-c    &       bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
-        STOP 'GAD_ADVECTION: adv. scheme not avail. yet'
+        CALL GAD_DST3FL_ADV_R(
+     &       bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
        ELSE
         STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
        ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.3 2001/09/10 01:22:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.4 2001/09/10 13:09:04 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -68,13 +68,13 @@ C      for maskC(...) and wVel(...)
          Rjm=(tracer(i,j,km1,bi,bj)-tracer(i,j,kM2,bi,bj))
      &        *maskC(i,j,km2,bi,bj)
          IF (Rj.NE.0.) THEN
-          IF (rTrans(i,j).LT.0) THEN
+          IF (rTrans(i,j).LT.0.) THEN
             Cr=Rjm/Rj
           ELSE
             Cr=Rjp/Rj
           ENDIF
          ELSE
-          IF (rTrans(i,j).LT.0) THEN
+          IF (rTrans(i,j).LT.0.) THEN
             Cr=Rjm*1.E20
           ELSE
             Cr=Rjp*1.E20
