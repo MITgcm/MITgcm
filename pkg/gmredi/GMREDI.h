@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.2 2000/11/13 16:35:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.3 2001/01/29 20:07:39 heimbach Exp $
 
 #ifdef ALLOW_GMREDI
 
@@ -38,17 +38,17 @@ C     Bottom row of tensor corresponds to W points
 C     Kwx is K_31 element, X direction at W point
 C     Kwy is K_32 element, Y direction at W point
 C     Kwz is K_33 element, Z direction at W point
-      _RL Kwx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,MAX_NO_THREADS)
-      _RL Kwy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,MAX_NO_THREADS)
-      _RL Kwz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,MAX_NO_THREADS)
+      _RL Kwx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL Kwy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL Kwz(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       COMMON /GM_Wtensor/ Kwx,Kwy,Kwz
 
 #ifdef GM_NON_UNITY_DIAGONAL
 C     First/second rows of tensor corresponds to U/V points
 C     Kux is K_11 element, X direction at U point
 C     Kvy is K_22 element, Y direction at V point
-      _RL Kux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,MAX_NO_THREADS)
-      _RL Kvy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,MAX_NO_THREADS)
+      _RL Kux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL Kvy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       COMMON /GM_UVtensor/ Kux,Kvy
 #else
       _RL Kux,Kvy
@@ -58,7 +58,7 @@ C     Kvy is K_22 element, Y direction at V point
 #ifdef GM_VISBECK_VARIABLE_K
 C     GM mixing/stirring coefficient (spatially variable in horizontal
 C     for Visbeck et al. parameterization)
-      _RL VisbeckK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,MAX_NO_THREADS)
+      _RL VisbeckK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /GM_Visbeck/ VisbeckK
 #endif
 

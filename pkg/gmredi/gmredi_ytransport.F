@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.2 2000/11/13 16:35:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.3 2001/01/29 20:07:39 heimbach Exp $
 
 #include "GMREDI_OPTIONS.h"
 
@@ -49,11 +49,11 @@ C--   Area integrated meridional flux
      &    -yA(i,j)
      &    *(GM_background_K
 #ifdef GM_VISBECK_VARIABLE_K
-     &    +0.5*(VisbeckK(i,j,myThid)+VisbeckK(i,j-1,myThid))
+     &    +0.5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
 #endif
      &    )
 #ifdef GM_NON_UNITY_DIAGONAL
-     &    *Kvy(i,j,k,myThid)
+     &    *Kvy(i,j,k,bi,bj)
 #endif
      &    *_recip_dyC(i,j,bi,bj)
      &    *(Tracer(i,j,k,bi,bj)-Tracer(i,j-1,k,bi,bj))

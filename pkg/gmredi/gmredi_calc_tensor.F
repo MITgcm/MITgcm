@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.2 2001/01/08 20:11:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.3 2001/01/29 20:07:39 heimbach Exp $
 
 #include "GMREDI_OPTIONS.h"
 
@@ -96,9 +96,9 @@ C       Mask Iso-neutral slopes
         Ssq=SlopeX(i,j)*SlopeX(i,j)+SlopeY(i,j)*SlopeY(i,j)
 
 C       Components of Redi/GM tensor
-        Kwx(i,j,k,myThid)=2.*SlopeX(i,j)
-        Kwy(i,j,k,myThid)=2.*SlopeY(i,j)
-        Kwz(i,j,k,myThid)=Ssq
+        Kwx(i,j,k,bi,bj)=2.*SlopeX(i,j)
+        Kwy(i,j,k,bi,bj)=2.*SlopeY(i,j)
+        Kwz(i,j,k,bi,bj)=Ssq
 
 #ifdef GM_VISBECK_VARIABLE_K
 C--     Depth average of M^2/N^2 * N
@@ -114,19 +114,19 @@ C       If negative then we are below the integration level
 C       Now we convert deltaH to a non-dimensional fraction
         deltaH=deltaH/GM_Visbeck_depth
 
-        if (K.eq.2) VisbeckK(i,j,myThid)=0.
+        if (K.eq.2) VisbeckK(i,j,bi,bj)=0.
 Calt?   if (dSigmaDrReal(i,j).NE.0.) then
 Calt?    N2=(-Gravity*recip_Rhonil)*dSigmaDrReal(i,j)
         if (dRdSigmaLtd(i,j).NE.0.) then
          N2=(-Gravity*recip_Rhonil)/dRdSigmaLtd(i,j)
          SN=sqrt(Ssq*N2)
-         VisbeckK(i,j,myThid)=VisbeckK(i,j,myThid)+deltaH
+         VisbeckK(i,j,bi,bj)=VisbeckK(i,j,bi,bj)+deltaH
      &      *GM_Visbeck_alpha*GM_Visbeck_length*GM_Visbeck_length*SN
         endif
 
 C       Limit range that KapGM can take
-        VisbeckK(i,j,myThid)=
-     &     min(VisbeckK(i,j,myThid),GM_Visbeck_maxval_K)
+        VisbeckK(i,j,bi,bj)=
+     &     min(VisbeckK(i,j,bi,bj),GM_Visbeck_maxval_K)
 
 #endif /* GM_VISBECK_VARIABLE_K */
 
@@ -134,15 +134,15 @@ C       Limit range that KapGM can take
 #ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
 C--     Time-average
         GM_Kwx_T(i,j,k,bi,bj)=GM_Kwx_T(i,j,k,bi,bj)
-     &                       +Kwx(i,j,k,myThid)*deltaTclock
+     &                       +Kwx(i,j,k,bi,bj)*deltaTclock
         GM_Kwy_T(i,j,k,bi,bj)=GM_Kwy_T(i,j,k,bi,bj)
-     &                       +Kwy(i,j,k,myThid)*deltaTclock
+     &                       +Kwy(i,j,k,bi,bj)*deltaTclock
         GM_Kwz_T(i,j,k,bi,bj)=GM_Kwz_T(i,j,k,bi,bj)
-     &                       +Kwz(i,j,k,myThid)*deltaTclock
+     &                       +Kwz(i,j,k,bi,bj)*deltaTclock
 #ifdef GM_VISBECK_VARIABLE_K
         IF (K.EQ.Nr)
      &  Visbeck_K_T(i,j,bi,bj)=Visbeck_K_T(i,j,bi,bj)
-     &                       +VisbeckK(i,j,myThid)*deltaTclock
+     &                       +VisbeckK(i,j,bi,bj)*deltaTclock
 #endif
        ENDDO
       ENDDO
@@ -176,7 +176,7 @@ C     Calculate slopes for use in tensor, taper and/or clip
 
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
-        Kux(i,j,k,myThid)=(dSigmaDrReal(i,j)*dRdSigmaLtd(i,j))**2
+        Kux(i,j,k,bi,bj)=(dSigmaDrReal(i,j)*dRdSigmaLtd(i,j))**2
        ENDDO
       ENDDO
 
@@ -204,7 +204,7 @@ C     Calculate slopes for use in tensor, taper and/or clip
 
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
-        Kvy(i,j,k,myThid)=(dSigmaDrReal(i,j)*dRdSigmaLtd(i,j))**2
+        Kvy(i,j,k,bi,bj)=(dSigmaDrReal(i,j)*dRdSigmaLtd(i,j))**2
        ENDDO
       ENDDO
 
@@ -252,9 +252,9 @@ CEndOfInterface
 
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
-        Kwx(i,j,k,myThid) = 0.0
-        Kwy(i,j,k,myThid) = 0.0
-        Kwz(i,j,k,myThid) = 0.0
+        Kwx(i,j,k,bi,bj) = 0.0
+        Kwy(i,j,k,bi,bj) = 0.0
+        Kwz(i,j,k,bi,bj) = 0.0
        ENDDO
       ENDDO
 #endif /* ALLOW_GMREDI */

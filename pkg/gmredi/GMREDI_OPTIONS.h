@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.1 2000/06/21 19:42:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.2 2001/01/29 20:07:39 heimbach Exp $
 
 C CPP options file for GM/Redi package
 C

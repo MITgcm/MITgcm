@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.2 2000/11/13 16:35:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.3 2001/01/29 20:07:39 heimbach Exp $
 
 #include "GMREDI_OPTIONS.h"
 
@@ -83,9 +83,9 @@ C-      Off-diagonal components of vertical flux
      &      - _rA(i,j,bi,bj)
      &      *(GM_background_K
 #ifdef GM_VISBECK_VARIABLE_K
-     &      +VisbeckK(i,j,myThid)
+     &      +VisbeckK(i,j,bi,bj)
 #endif
-     &      )*( Kwx(i,j,k,myThid)*dTdx  +Kwy(i,j,k,myThid)*dTdy )
+     &      )*( Kwx(i,j,k,bi,bj)*dTdx  +Kwy(i,j,k,bi,bj)*dTdy )
 
        ENDDO
       ENDDO
@@ -99,7 +99,7 @@ c
 c      DO j=jMin,jMax
 c       DO i=iMin,iMax
 c        df(i,j) = df(i,j) - _rA(i,j,bi,bj)
-c    &    *maskUp(i,j)*VisbeckK(i,j,myThid)*Kwz(i,j,k,myThid)
+c    &    *maskUp(i,j)*VisbeckK(i,j,bi,bj)*Kwz(i,j,k,bi,bj)
 c    &    *recip_drC(k)*rkfac
 c    &    *(Tracer(i,j,k-1,bi,bj)-Tracer(i,j,k,bi,bj))
 c       ENDDO

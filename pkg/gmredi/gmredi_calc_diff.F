@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_diff.F,v 1.1 2000/06/21 19:42:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_diff.F,v 1.2 2001/01/29 20:07:39 heimbach Exp $
 
 #include "GMREDI_OPTIONS.h"
 
       SUBROUTINE GMREDI_CALC_DIFF( 
      I        bi,bj,iMin,iMax,jMin,jMax,K,
      I        maskUp,
-     O        KappaRT,KappaRS,
+     U        KappaRT,KappaRS,
      I        myThid)
 
 C     /==========================================================\
@@ -43,9 +43,9 @@ C     I, J, K - Loop counters
         KappaRT(i,j,k) = KappaRT(i,j,k)+maskUp(i,j)*
      &       ( GM_background_K
 #ifdef GM_VISBECK_VARIABLE_K
-     &          + VisbeckK(i,j,myThid)
+     &          + VisbeckK(i,j,bi,bj)
 #endif
-     &       )*Kwz(i,j,k,myThid)
+     &       )*Kwz(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
@@ -54,9 +54,9 @@ C     I, J, K - Loop counters
         KappaRS(i,j,k) = KappaRS(i,j,k)+maskUp(i,j)*
      &       ( GM_background_K
 #ifdef GM_VISBECK_VARIABLE_K
-     &          + VisbeckK(i,j,myThid)
+     &          + VisbeckK(i,j,bi,bj)
 #endif
-     &       )*Kwz(i,j,k,myThid)
+     &       )*Kwz(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
