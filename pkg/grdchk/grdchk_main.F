@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.13 2004/02/23 19:16:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.14 2004/03/23 19:42:53 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -197,6 +197,8 @@ cphadmtlm)
 c--   Compute the finite difference approximations.
 c--   Cycle through all processes doing NINT(nend-nbeg+1)/nstep
 c--   gradient checks.
+
+      if ( nbeg .EQ. 0 ) call grdchk_get_position( mythid )
 
       do icomp = nbeg, nend, nstep
 

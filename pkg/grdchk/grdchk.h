@@ -34,12 +34,23 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
      &                       nend,
      &                       nstep,
      &                       grdchkvarindex,
-     &                       grdchkwhichproc
+     &                       grdchkwhichproc,
+     &                       iGloPos,
+     &                       jGloPos,
+     &                       kGloPos,
+     &                       obcsglo,
+     &                       recglo
+
       integer nbeg
       integer nend
       integer nstep
       integer grdchkvarindex
       integer grdchkwhichproc
+      integer iGloPos
+      integer jGloPos
+      integer kGloPos
+      integer obcsglo
+      integer recglo
 
       common /grdchk_r/
      &                  fcrmem, fcppmem, fcpmmem,

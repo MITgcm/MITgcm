@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.7 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.8 2004/03/23 19:42:53 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -62,7 +62,12 @@ c--   Optimization parameters.
      &                  nend,
      &                  grdchkvarindex,
      &                  useCentralDiff,
-     &                  grdchkwhichproc
+     &                  grdchkwhichproc,
+     &                  iGloPos,
+     &                  jGloPos,
+     &                  kGloPos,
+     &                  obcsglo,
+     &                  recglo
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -77,11 +82,16 @@ c--   Optimization parameters.
 
 c--     Set default values.
         grdchk_eps      = 1. _d 0
-        nbeg            = 1
-        nend            = 1
-        nstep           = 1
+        nbeg            = 0
+        nend            = 0
+        nstep           = 0
         useCentralDiff  = .TRUE.
         grdchkwhichproc = 0
+        iGloPos         = 0
+        jGloPos         = 0
+        kGloPos         = 1
+        obcsglo         = 1
+        recglo          = 1
 
 c--     Check versions.
 
