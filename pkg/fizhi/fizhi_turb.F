@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.30 2005/02/22 22:51:42 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.31 2005/02/24 21:05:23 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -567,6 +567,13 @@ c     print *,'Problem Stripping Land/Ocean/Ice points in Turbulence'
 c     print *
 c     stop
 c     endif
+
+c Zero out velocities at the bottom edge of the model
+c ---------------------------------------------------
+      do i =1,istrip
+       u(i,nlay+1) = 0.
+       v(i,nlay+1) = 0.
+      enddo
 
 c convert temperature of level nlay+1 to theta & value of sh at ground
 c --------------------------------------------------------------------
