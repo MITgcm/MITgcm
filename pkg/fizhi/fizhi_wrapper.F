@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.17 2004/07/30 20:37:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.18 2004/08/04 18:23:44 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -177,7 +177,7 @@ C   into bottom-up arrays for interpolation to dynamics grid
           tempij(i,j) = guphy(i,j,L,bi,bj)
          enddo
          enddo
-         print *,' guphy at level ',l,' ',tempij
+c        print *,' guphy at level ',l,' ',tempij
         enddo
         do L = 1,Nr
          do j = 1,sNy
@@ -185,7 +185,7 @@ C   into bottom-up arrays for interpolation to dynamics grid
           tempij(i,j) = gvphy(i,j,L,bi,bj)
          enddo
          enddo
-         print *,' gvphy at level ',l,' ',tempij
+c        print *,' gvphy at level ',l,' ',tempij
         enddo
         do L = 1,Nr
          do j = 1,sNy
@@ -201,7 +201,7 @@ C   into bottom-up arrays for interpolation to dynamics grid
           tempij(i,j) = gsphy(i,j,L,bi,bj)
          enddo
          enddo
-         print *,' gsphy at level ',l,' ',tempij
+c        print *,' gsphy at level ',l,' ',tempij
         enddo
         endif
        enddo
@@ -227,8 +227,8 @@ c Call the a-grid exchange routine to fill in the halo regions (dth,ds)
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
-        if( (1.eq.1) ) then
-        print *,' In fizhi wrapper after phys2dyn before exchange ',bi
+        if( (2.eq.1) ) then
+        print *,' In fizhi wrapper after exchange ',bi
         do L = 1,Nr
          do j = 1,sNy
          do i = 1,sNx

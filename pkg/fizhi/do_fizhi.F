@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.32 2004/07/30 20:37:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.33 2004/08/04 18:23:44 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -249,7 +249,7 @@ C compute pressures - all pressure are converted here to hPa
       call pkappa (im2,jm2,Nrphys,ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),
      .                                                 pkl(1,1,1,bi,bj))
 
-      if(bi.eq.1 .and. 2.eq.1 )then
+      if(1.eq.1 )then
       print *,' In do fizhi, before fizhi driver - bi = ',bi
       do L = 1,Nrphys+1
        do j = jm1,jm2
@@ -257,7 +257,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = pephy(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' pephy at level ',l,' ',tempij
+c      print *,' pephy at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -265,7 +265,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = u(i,j,L)
        enddo
        enddo
-       print *,' u at level ',l,' ',tempij
+c      print *,' u at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -273,7 +273,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = v(i,j,L)
        enddo
        enddo
-       print *,' v at level ',l,' ',tempij
+c      print *,' v at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -289,7 +289,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = q(i,j,L,1)
        enddo
        enddo
-       print *,' q at level ',l,' ',tempij
+c      print *,' q at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -297,7 +297,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = pl(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' pl at level ',l,' ',tempij
+c      print *,' pl at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys+1
        do j = jm1,jm2
@@ -305,7 +305,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = ple(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' ple at level ',l,' ',tempij
+c      print *,' ple at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -313,7 +313,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = pkl(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' pkl at level ',l,' ',tempij
+c      print *,' pkl at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys+1
        do j = jm1,jm2
@@ -321,7 +321,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = pkle(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' pkle at level ',l,' ',tempij
+c      print *,' pkle at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -329,14 +329,14 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = dpres(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' dpres at level ',l,' ',tempij
+c      print *,' dpres at level ',l,' ',tempij
       enddo
       do j = jm1,jm2
       do i = im1,im2
        tempij(i,j) = tgz(i,j,bi,bj)
       enddo
       enddo
-      print *,' tgz ',tempij
+c     print *,' tgz ',tempij
 
       print *,' Just before fizhi driver call '
 
@@ -377,7 +377,7 @@ C compute pressures - all pressure are converted here to hPa
      . qliqavelw(1,1,1,bi,bj),fccavesw(1,1,1,bi,bj),
      . fccavelw(1,1,1,bi,bj),qq(1,1,1,bi,bj))
 
-      if(bi.eq.1 .and. (2.eq.1))then
+      if(1.eq.1)then
       print *,' In do fizhi, after fizhi driver - bi = ',bi
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -385,7 +385,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = turbu(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' turbu at level ',l,' ',tempij
+c      print *,' turbu at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -393,7 +393,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = turbv(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' turbv at level ',l,' ',tempij
+c      print *,' turbv at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -409,7 +409,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = turbq(i,j,L,1,bi,bj)/p(i,j,bi,bj)
        enddo
        enddo
-       print *,' turbq at level ',l,' ',tempij
+c      print *,' turbq at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -417,7 +417,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = moistu(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' moistu at level ',l,' ',tempij
+c      print *,' moistu at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -425,7 +425,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = moistv(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' moistv at level ',l,' ',tempij
+c      print *,' moistv at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -441,7 +441,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = moistq(i,j,L,1,bi,bj)/p(i,j,bi,bj)
        enddo
        enddo
-       print *,' moistq at level ',l,' ',tempij
+c      print *,' moistq at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -487,7 +487,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = duphy(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' duphy at level ',l,' ',tempij
+c      print *,' duphy at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -495,7 +495,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = dvphy(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' dvphy at level ',l,' ',tempij
+c      print *,' dvphy at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -511,7 +511,7 @@ C compute pressures - all pressure are converted here to hPa
         tempij(i,j) = dsphy(i,j,L,bi,bj)
        enddo
        enddo
-       print *,' dsphy at level ',l,' ',tempij
+c      print *,' dsphy at level ',l,' ',tempij
       enddo
       endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.8 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.9 2004/08/04 18:23:44 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -48,6 +48,8 @@ c pe on dynamics and physics grid refers to bottom edge
        integer i, j, L, Lbotij, bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
        _RL dt
+
+       _RL tempij(sNx,sNy)
 
        im1 = 1-OLx
        im2 = sNx+OLx
@@ -245,6 +247,43 @@ c    Last: Increment physics state by the correction term
         call step_physics(uphy,vphy,thphy,sphy,dt,im1,im2,jm1,jm2,
      .   Nrphys,Nsx,Nsy,1,sNx,1,sNy,bi,bj,
      .                            uphytemp,vphytemp,thphytemp,sphytemp)
+
+      if(1.eq.1 )then
+      print *,' In step fizhi corr, new fizhi fields ',bi,' dt= ',dt
+      do L = 1,Nrphys
+       do j = jdim1,jdim2
+       do i = idim1,idim2
+        tempij(i,j) = uphy(i,j,L,bi,bj)
+       enddo
+       enddo
+c      print *,' uphy at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jdim1,jdim2
+       do i = idim1,idim2
+        tempij(i,j) = vphy(i,j,L,bi,bj)
+       enddo
+       enddo
+c      print *,' vphy at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jdim1,jdim2
+       do i = idim1,idim2
+        tempij(i,j) = thphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' thphy at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jdim1,jdim2
+       do i = idim1,idim2
+        tempij(i,j) = sphy(i,j,L,bi,bj)
+       enddo
+       enddo
+c      print *,' sphy at level ',l,' ',tempij
+      enddo
+      endif
+
 
        enddo
        enddo

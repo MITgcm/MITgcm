@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.6 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.7 2004/08/04 18:23:44 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -24,21 +24,62 @@ c-----------------------------------------------------------------------
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
        _RL dt
 
-       im1 = 1-OLx
-       im2 = sNx+OLx
-       jm1 = 1-OLy
-       jm2 = sNy+OLy
-       idim1 = 1
-       idim2 = sNx
-       jdim1 = 1
-       jdim2 = sNy
+       _RL tempij(sNx,sNy)
+       integer i,j,L
+
+       idim1 = 1-OLx
+       idim2 = sNx+OLx
+       jdim1 = 1-OLy
+       jdim2 = sNy+OLy
+       im1 = 1
+       im2 = sNx
+       jm1 = 1
+       jm2 = sNy
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
 
 c  Step forward the physics state using physics tendencies
-        call step_physics(uphy,vphy,thphy,sphy,dt,im1,im2,jm1,jm2,
+        call step_physics(uphy,vphy,thphy,sphy,dt,idim1,idim2,
+     .      jdim1,jdim2,
      .      Nrphys,Nsx,Nsy,1,sNx,1,sNy,bi,bj,duphy,dvphy,dthphy,dsphy)
+
+      if(1.eq.1 )then
+      print *,' In step fizhi fg, new fizhi fields ',bi,' dt= ',dt
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = uphy(i,j,L,bi,bj)
+       enddo
+       enddo
+c      print *,' uphy at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = vphy(i,j,L,bi,bj)
+       enddo
+       enddo
+c      print *,' vphy at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = thphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' thphy at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = sphy(i,j,L,bi,bj)
+       enddo
+       enddo
+c      print *,' sphy at level ',l,' ',tempij
+      enddo
+      endif
+
 
        enddo
        enddo
