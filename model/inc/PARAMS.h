@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.8 1998/05/25 16:17:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.9 1998/05/25 20:05:55 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -72,6 +72,8 @@ C     momViscosity  - Flag which turns momentum friction terms on and off.
 C     momAdvection  - Flag which turns advection of momentum on and off.
 C     momForcing    - Flag which turns external forcing of momentum on
 C                     and off.
+C     momPressureForcing - Flag which turns pressure term in momentum equation
+C                          on and off.
 C     useCoriolis   - Flag which turns the coriolis terms on and off.
 C     tempDiffusion - Flag which turns diffusion of temperature on
 C                     and off.
@@ -88,7 +90,7 @@ C                     and off.
 C     implicitFreeSurface - Set to true to use implcit free surface
 C     rigidLid            - Set to true to use rigid lid
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
-     & momViscosity, momAdvection, momForcing, useCoriolis,
+     & momViscosity, momAdvection, momForcing, useCoriolis, momPressureForcing,
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
      & implicitFreeSurface, rigidLid
@@ -97,6 +99,7 @@ C     rigidLid            - Set to true to use rigid lid
       LOGICAL momViscosity
       LOGICAL momAdvection
       LOGICAL momForcing
+      LOGICAL momPressureForcing
       LOGICAL useCoriolis
       LOGICAL tempDiffusion
       LOGICAL tempAdvection
@@ -183,6 +186,12 @@ C     chkPtFreq  - Frequency of rolling check pointing ( s ).
 C     pChkPtFreq - Frequency of permanent check pointing ( s ).
 C     dumpFreq  - Frequency with which model state is written to
 C                 post-processing files ( s ).
+C     afFacMom  - Advection of momentum term scaling parameter
+C     vfFacMom  - Momentum viscosity scaling parameter
+C     pfFacMom  - Momentum pressure forcing parameter
+C     cfFacMom  - Coriolis term scaling parameter
+C     foFacMom  - Momentum forcing scaling parameter
+C     cAdjFreq  - Frequency of convective adjustment
       COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, delZ, delX, delY, 
      & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, phiMin, 
      & thetaMin, rSphere, f0, fCori, beta, viscAh, viscAz, viscA4, 
@@ -190,7 +199,9 @@ C                 post-processing files ( s ).
      & tauCD, rCD, freeSurfFac,
      & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,
      & gravity, gBaro, rhonil, tRef, sRef,
-     & endTime, chkPtFreq, pchkPtFreq, dumpFreq
+     & endTime, chkPtFreq, pchkPtFreq, dumpFreq,
+     & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom,
+     & cAdjFreq
       _RL cg2dTargetResidual
       _RL cg2dpcOffDFac
       _RL delZ(Nz)
@@ -235,6 +246,12 @@ C                 post-processing files ( s ).
       _RL chkPtFreq
       _RL pChkPtFreq
       _RL dumpFreq
+      _RL afFacMom
+      _RL vfFacMom
+      _RL pfFacMom
+      _RL cfFacMom
+      _RL foFacMom
+      _RL cAdjFreq
 
       COMMON /PARM_A/ HeatCapacity_Cp,
      &                Lamba_theta

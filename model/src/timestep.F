@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.4 1998/04/30 14:03:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.5 1998/05/25 20:05:55 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -26,17 +26,22 @@ C     == Routine Arguments ==
 C     == Local variables ==
       INTEGER i,j
       REAL ab15,ab05
+      _RL  hxFac, hyFac
 
 C     Adams-Bashforth timestepping weights
       ab15=1.5+abeps
       ab05=-0.5-abeps
+
+C     On/off scaling paramters
+      hxFac = pfFacMom
+      hyFac = pfFacMom
 
 C     Step forward zonal velocity
        DO j=jMin,jMax
         DO i=iMin,iMax
          uVel(i,j,k,bi,bj)=uVel(i,j,k,bi,bj)
      &    +deltaTmom*(ab15*gU(i,j,k,bi,bj)+ab05*gUNm1(i,j,k,bi,bj)
-     &                -pSurfX(i,j)/rhonil 
+     &                -hxFac*pSurfX(i,j)/rhonil 
      &    )*maskW(i,j,k,bi,bj)
          gUNm1(i,j,k,bi,bj)=gU(i,j,k,bi,bj)
         ENDDO
@@ -46,7 +51,7 @@ C     Step forward meridional velocity
         DO i=iMin,iMax
          vVel(i,j,k,bi,bj)=vVel(i,j,k,bi,bj)
      &    +deltaTmom*(ab15*gV(i,j,k,bi,bj)+ab05*gVNm1(i,j,k,bi,bj)
-     &                -pSurfY(i,j)/rhonil 
+     &                -hyFac*pSurfY(i,j)/rhonil 
      &               )*maskS(i,j,k,bi,bj)
          gVNm1(i,j,k,bi,bj)=gV(i,j,k,bi,bj)
         ENDDO

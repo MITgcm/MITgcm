@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.7 1998/05/25 16:17:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.8 1998/05/25 20:05:55 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
-      SUBROUTINE DYNAMICS(myThid)
+      SUBROUTINE DYNAMICS(myTime, myIter, myThid)
 C     /==========================================================\
 C     | SUBROUTINE DYNAMICS                                      |
 C     | o Controlling routine for the explicit part of the model |
@@ -29,8 +29,12 @@ C     == Global variables ===
 #include "DYNVARS.h"
 
 C     == Routine arguments ==
+C     myTime - Current time in simulation
+C     myIter - Current iteration number in simulation
 C     myThid - Thread number for this instance of the routine.
       INTEGER myThid
+      _RL myTime
+      INTEGER myIter
 
 C     == Local variables
 C     xA, yA                 - Per block temporaries holding face areas
@@ -198,7 +202,8 @@ C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
      I            myThid )
 C--     Calculate static stability and mix where convectively unstable
         CALL CONVECT(
-     I      bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoKp1,myThid)
+     I      bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoKp1,
+     I      myTime,myIter,myThid)
 C--     Density of K-1 level (above W(K)) reference to K-1 level
         CALL FIND_RHO(
      I     bi, bj, iMin, iMax, jMin, jMax,  K-1, K-1, 'LINEAR',

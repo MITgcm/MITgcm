@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.8 1998/05/25 16:17:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.9 1998/05/25 20:05:55 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -100,6 +100,17 @@ C     == Local variables ==
       CALL WRITE_1D_L( rigidLid,1, INDEX_NONE,
      &                 'rigidLid =',
      &'   /* Rigid lid on/off flag */')
+      CALL WRITE_1D_L( momAdvection,1, INDEX_NONE,
+     & 'momAdvection =', 
+     & '  /* Momentum advection on/off flag */')
+      CALL WRITE_1D_L( momViscosity,1, INDEX_NONE,
+     & 'momViscosity =', '  /* Momentum viscosity on/off flag */')
+      CALL WRITE_1D_L( useCoriolis,1, INDEX_NONE,
+     & 'useCoriolis =', '  /* Coriolis on/off flag */')
+      CALL WRITE_1D_L( momForcing,1, INDEX_NONE,
+     & 'momForcing =', '  /* Momentum forcing on/off flag */')
+      CALL WRITE_1D_L( momPressureForcing,1, INDEX_NONE,
+     & 'momPressureForcing =', '  /* Momentum pressure term on/off flag */')
       CALL WRITE_1D_R8( GMMaxSlope,1, INDEX_NONE,'GMMaxSlope =',
      &'   /* Max. slope allowed in GM/Redi tensor */')
       CALL WRITE_1D_R8( GMLength,1, INDEX_NONE,'GMLength =',
@@ -112,6 +123,7 @@ C     == Local variables ==
      &'   /* background value of GM/Redi coefficient m^2/s */')
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+
       WRITE(msgBuf,'(A)') '// Elliptic solver(s) paramters ( PARM02 in namelist ) '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '//  '
@@ -137,6 +149,8 @@ C     == Local variables ==
      &'   /* Momentum equation timestep ( s ) */')
       CALL WRITE_1D_R8( deltaTtracer,1, INDEX_NONE,'deltatTtracer =',
      &'   /* Tracer equation timestep ( s ) */')
+      CALL WRITE_1D_R8( cAdjFreq,1, INDEX_NONE,'cAdjFreq =',
+     &'   /* Convective adjustment interval ( s ) */')
       CALL WRITE_1D_R8( abEps,1, INDEX_NONE,'abEps =',
      &'   /* Adams-Bashforth stabilizing weight */')
       CALL WRITE_1D_R8( tauCD,1, INDEX_NONE,'tauCD =',

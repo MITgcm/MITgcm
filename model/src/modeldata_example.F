@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/modeldata_example.F,v 1.2 1998/04/24 02:05:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/modeldata_example.F,v 1.3 1998/05/25 20:05:55 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -97,6 +97,10 @@ C     -- Local variables --
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '>#                  self transport.         '
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '>#   momPressureForcing - On/Off flag for momentum'
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '>#                        pressure terms.         '
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '>#   useCoriolis  - On/Off flag for momentum'
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '>#                  equation coriolis term. '
@@ -162,6 +166,8 @@ C     -- Local variables --
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '> momAdvection=.TRUE.'
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '> momPressureForcing=.TRUE.'
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '> momForcing=.TRUE.'
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '> useCoriolis=.TRUE.'
@@ -181,6 +187,20 @@ C     -- Local variables --
       WRITE(msgBuf,'(A)') '> tRef=20.,'
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '> sRef=35.,'
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '> implicitFreeSurface=.TRUE.,'
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '> rigidLid=.FALSE.,'
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '> GMmaxSlope=1.d-2,'
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '> GMlength=200.d3,'
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '> GMalpha=200.d3,'
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '> GMdepth=1000.,'
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '> GMkBackground=0.,'
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '>/                     '
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
@@ -234,6 +254,8 @@ C     -- Local variables --
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '>#   endTime - Integration ending time (s)'
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '>#   cAdjFreq - Convective adjustment period (s)'
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '>#   chkPtFreq - Frequency at which check  '
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '>#               pointing is done ( s ).   '
@@ -263,6 +285,8 @@ C     -- Local variables --
       WRITE(msgBuf,'(A)') '> chkPtFreq=864000.,'
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '> dumpFreq=2592000.,'
+      CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A)') '> cAdjFreq=86400.,'
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       WRITE(msgBuf,'(A)') '>/                     '
       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)

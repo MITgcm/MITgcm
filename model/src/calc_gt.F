@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.3 1998/05/20 21:29:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.4 1998/05/25 20:05:55 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -85,17 +85,13 @@ C     == Local variables ==
 C     I, J, K - Loop counters
       INTEGER i,j
       _RL afFacT, dfFacT
-      _RL dutdxFac
       _RL dTdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       afFacT = 1. _d 0
       dfFacT = 1. _d 0
-      dutdxFac = afFacT
 
-C---
 C---  Calculate advective and diffusive fluxes between cells.
-C---
 
 C--   Zonal flux (fZon is at west face of "theta" cell)
 C     Advective component of zonal flux

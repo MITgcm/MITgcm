@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.7 1998/05/21 18:25:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.8 1998/05/25 20:05:55 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -64,7 +64,7 @@ C       CALL LOAD_OFFLINE_FIELDS( myCurrentTime, myCurrentIter, myThid )
        ENDIF
 
 C--    Step forward fields and calculate time tendency terms
-       CALL DYNAMICS( myThid )
+       CALL DYNAMICS( myCurrentTime, myCurrentIter, myThid )
 
 C--    Do IO if needed.
 C      Note:

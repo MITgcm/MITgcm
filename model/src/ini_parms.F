@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.8 1998/05/25 16:17:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.9 1998/05/25 20:05:55 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -58,6 +58,7 @@ C--   Continuous equation parameters
      &  GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,
      &  tRef, sRef,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
+     & momPressureForcing,
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
      & implicitFreeSurface, rigidLid, freeSurfFac
@@ -69,7 +70,8 @@ C--   Elliptic solver parameters
 C--   Time stepping parammeters
       NAMELIST /PARM03/
      & nIter0, nTimeSteps, deltaT, deltaTmom, deltaTtracer, abEps, tauCD, rCD,
-     & startTime, endTime, chkPtFreq, dumpFreq, deltaTClock, pChkPtFreq
+     & startTime, endTime, chkPtFreq, dumpFreq, deltaTClock, pChkPtFreq,
+     & cAdjFreq
 
 C--   Gridding parameters
       NAMELIST /PARM04/
@@ -166,6 +168,11 @@ C--   Set default "physical" parameters
       implicitFreeSurface = .TRUE.
       rigidLid            = .FALSE.
       freeSurfFac         = 1. _d 0
+      momViscosity        = .TRUE.
+      momAdvection        = .TRUE.
+      momForcing          = .TRUE.
+      useCoriolis         = .TRUE.
+      momPressureForcing  = .TRUE.
       READ(UNIT=iUnit,NML=PARM01,IOSTAT=errIO,err=3)
       IF ( errIO .GE. 0 ) GOTO 4
     3 CONTINUE
@@ -186,6 +193,31 @@ C--   Set default "physical" parameters
    4  CONTINUE
       IF ( implicitFreeSurface ) freeSurfFac = 1. _d 0
       IF ( rigidLid            ) freeSurfFac = 0. _d 0
+      IF ( momViscosity        ) THEN
+       vfFacMom = 1. _d 0
+      ELSE
+       vfFacMom = 0. _d 0
+      ENDIF
+      IF ( momAdvection        ) THEN
+       afFacMom = 1. _d 0
+      ELSE
+       afFacMom = 0. _d 0
+      ENDIF
+      IF ( momForcing ) THEN
+       foFacMom = 1. _d 0
+      ELSE
+       foFacMom = 0. _d 0
+      ENDIF
+      IF ( useCoriolis ) THEN
+       cfFacMom = 1. _d 0
+      ELSE
+       cfFacMom = 0. _d 0
+      ENDIF
+      IF ( momPressureForcing ) THEN
+       pfFacMom = 1. _d 0
+      ELSE
+       pfFacMom = 0. _d 0
+      ENDIF
 
       IF ( implicitFreeSurface .AND.  rigidLid ) THEN
        WRITE(msgBuf,'(A)')
@@ -235,6 +267,7 @@ C--   Time stepping parameters
       nCheckLev      = 1
       checkPtSuff(1) = 'ckptA'
       checkPtSuff(2) = 'ckptB'
+      cAdjFreq       = -1. _d 0
       READ(UNIT=iUnit,NML=PARM03,IOSTAT=errIO,err=7)
       IF ( errIO .GE. 0 ) GOTO 8
     7 CONTINUE
@@ -260,6 +293,10 @@ C     o Time step size
       IF ( deltaTmom    .EQ. 0. ) deltaTmom    = deltaT
       IF ( deltaTtracer .EQ. 0. ) deltaTtracer = deltaT
       IF ( deltaTClock  .EQ. 0. ) deltaTClock  = deltaT
+C     o Convection frequency
+      IF ( cAdjFreq .LT. 0. ) THEN
+       cAdjFreq = deltaTClock
+      ENDIF
 C     o Time step count
       IF ( endTime .NE. 0 ) THEN
        IF ( deltaTClock .NE. 0 ) nTimeSteps = 

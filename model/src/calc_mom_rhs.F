@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.3 1998/05/25 16:17:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.4 1998/05/25 20:05:55 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -104,11 +104,6 @@ C     uDudxFac, AhDudxFac, etc ... individual term tracer parameters
       REAL hFacZOpen
       REAL hFacZClosed
 
-      REAL afFacMom
-      REAL vfFacMom
-      REAL cfFacMom
-      REAL pfFacMom
-      REAL foFacMom
       REAL uDudxFac
       REAL AhDudxFac
       REAL vDudyFac
@@ -145,12 +140,6 @@ C     uDudxFac, AhDudxFac, etc ... individual term tracer parameters
         fMer(i,j) = 0.*1. _d 37
        ENDDO
       ENDDO
-C--   Tracer parameters
-      afFacMom  = 1. _d 0
-      vfFacMom  = 1. _d 0
-      pfFacMom  = 1. _d 0
-      cfFacMom  = 1. _d 0
-      foFacMom  = 1. _d 0
 C--   Term by term tracer parmeters
 C     o U momentum equation
       uDudxFac  = afFacMom 
