@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.17 2003/10/21 20:10:12 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.18 2003/10/21 20:42:16 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1295,7 +1295,7 @@ CLEAN:
 	-find \$(EXEDIR) -name "fort.*" -exec rm {} \;
 	-rm -f \$(EXECUTABLE) output.txt
 
-Makefile: makefile
+#eh3 Makefile: makefile
 makefile:
 	${0} $@
 cleanlinks:
