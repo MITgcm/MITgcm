@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.4 2003/02/18 05:33:54 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.5 2003/03/05 23:41:43 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -90,8 +90,8 @@ c     Determine the current date.
 c     Determine the flux record just before mycurrentdate.
       call cal_TimePassed( fldstartdate, mydate, difftime, mythid )
       call cal_ToSeconds( difftime, fldsecs, mythid )
-      fldsecs  = int(fldsecs/fldperiod)*fldperiod
-      fldcount = int(fldsecs/fldperiod) + 1
+      fldsecs  = int((fldsecs+0.5)/fldperiod)*fldperiod
+      fldcount = int((fldsecs+0.5)/fldperiod) + 1
 
 c     If using repeating data (e.g. monthly means) then make
 c     fldsecs cycle around
