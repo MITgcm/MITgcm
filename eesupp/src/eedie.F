@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.6 2001/04/10 22:35:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.7 2003/12/15 02:02:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -64,6 +64,9 @@ C--   MPI style multiple-process termination
 C--   ======================================
 #ifndef ALWAYS_USE_MPI
       IF ( usingMPI ) THEN
+#endif
+#ifdef COMPONENT_MODULE
+       IF ( useCoupler) CALL MPI_BARRIER( MPI_COMM_WORLD, mpiRC )
 #endif
        CALL MPI_FINALIZE  ( mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN

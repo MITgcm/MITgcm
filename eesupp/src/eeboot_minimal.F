@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.10 2003/05/12 19:45:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.11 2003/12/15 02:02:38 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -79,12 +79,22 @@ C      forked within mpirun - now thats an open standard!
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
        ENDIF
+
 C--    MPI has now been initialized but now we need to either
 C      ask for a communicator or pretend that we have:
 C      Pretend that we have asked for a communicator
        MPI_COMM_MODEL = MPI_COMM_WORLD
-C      Ask coupler interface for a communicator
-c hook call MITCOMPONENT_init( 'MITgcmUV', MPI_COMM_MODEL )
+#ifdef COMPONENT_MODULE
+C- jmc: test:
+C      add a 1rst preliminary call EESET_PARAMS to set useCoupler
+C      (needed to decide either to call CPL_INIT or not)
+       CALL EESET_PARMS
+       IF ( eeBootError ) GOTO 999
+C- jmc: test end ; otherwise, uncomment next line:
+c      useCoupler = .TRUE.
+C--    Ask coupler interface for a communicator
+       IF ( useCoupler) CALL CPL_INIT
+#endif
 
 C--    Get my process number
        CALL MPI_COMM_RANK( MPI_COMM_MODEL, mpiMyId, mpiRC )

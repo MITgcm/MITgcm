@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.11 2002/03/24 02:07:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.12 2003/12/15 02:02:38 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -109,6 +109,11 @@ C       MPI is started. This makes is hard to trap the case
 C       where mpirun is used to start a non-MPI run or 
 C       we try to start MPI when mpirun was not used.
 C       after it is started.
+C jmc: test:    
+C     If necessary ( COMPONENT_MODULE defined ) add a 1rst preliminary 
+C     call to eeset_params (in EEBOOT_MINIMAL) to set useCoupler (needed
+C     very early, and the stardard call eeset_params below comes too late)
+C jmc: This needs to be sorted-out in a cleaner way.
       CALL EEBOOT_MINIMAL
       IF ( eeBootError ) GOTO 999
 
@@ -139,6 +144,11 @@ C     o Note the program is still running with a single thread of
 C       execution at this stage.
       CALL INI_THREADING_ENVIRONMENT
       IF ( eeBootError ) GOTO 999
+
+C--   Pass attributes to the coupler
+#ifdef COMPONENT_MODULE
+      IF ( useCoupler ) CALL CPL_REGISTER
+#endif
 
 #ifdef USE_DFILE
 C--   Initiialise the multi-process IO package

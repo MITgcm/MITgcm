@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.14 2002/03/26 18:03:50 jamous Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.15 2003/12/15 02:02:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -45,7 +45,7 @@ C     record :: Temp. for textual I/O
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
       NAMELIST /EEPARMS/
-     & nTx, nTy,usingMPI,useCubedSphereExchange
+     & nTx, nTy, usingMPI, useCoupler, useCubedSphereExchange
 CEOP
 
 
@@ -82,10 +82,14 @@ C     used to launch the program then an internal MPI error
 C     may be generated when the first MPI call ( CALL MPI_Init )
 C     is made.
 C
+C     useCoupler is a flag which controls communications with other
+C     model components through a coupler interface.
+C
       notUsingXPeriodicity       = .FALSE.
       notUsingYPeriodicity       = .FALSE.
       useCubedSphereExchange     = .FALSE.
       usingMPI                   = .FALSE.
+      useCoupler                 = .FALSE.
       nTx                        = 1
       nTy                        = 1
 

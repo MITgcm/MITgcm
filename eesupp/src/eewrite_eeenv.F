@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eewrite_eeenv.F,v 1.7 2001/09/21 03:54:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eewrite_eeenv.F,v 1.8 2003/12/15 02:02:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -153,6 +153,16 @@ CEOP
      & '   /*  "mpirun -np 64 ......"                    */'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
+
+      WRITE(msgBuf,'(A,L4,A)') 'useCoupler=', useCoupler,
+     & ' ; /* Flag used to control communications with */'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &  SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A,A,A)') '          ', '     ' ,
+     & '   /*  other model components, through a coupler */'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &  SQUEEZE_RIGHT , 1)
+
 
       WRITE(msgBuf,'(A)') '                '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
