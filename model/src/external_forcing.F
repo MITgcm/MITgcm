@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.22 2003/12/11 21:23:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.23 2003/12/15 23:00:44 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -66,6 +66,13 @@ C--   Forcing term
      &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
      &                      myCurrentTime, myThid )
 #endif /* ALLOW_AIM */
+C AMM
+#ifdef ALLOW_FIZHI
+      IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_U(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myCurrentTime, myThid )
+#endif /* ALLOW_FIZHI */
+C AMM
 
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. kSurface ) THEN
@@ -148,6 +155,13 @@ C--   Forcing term
      &                      myCurrentTime, myThid )
 #endif /* ALLOW_AIM */
 
+C AMM
+#ifdef ALLOW_FIZHI
+      IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_V(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myCurrentTime, myThid )
+#endif /* ALLOW_FIZHI */
+C AMM
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=jMin,jMax
@@ -236,6 +250,13 @@ C--   Forcing term
      &                      myCurrentTime, myThid )
 #endif /* ALLOW_AIM */
 
+C AMM
+#ifdef ALLOW_FIZHI
+      IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_T(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myCurrentTime, myThid )
+#endif /* ALLOW_FIZHI */
+C AMM
 C     Add heat in top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=jMin,jMax
@@ -335,6 +356,13 @@ C--   Forcing term
      &                      myCurrentTime, myThid )
 #endif /* ALLOW_AIM */
 
+C AMM
+#ifdef ALLOW_FIZHI
+      IF ( useFIZHI ) CALL FIZHI_TENDENCY_APPLY_S(
+     &                      iMin,iMax, jMin,jMax, bi,bj, kLev,
+     &                      myCurrentTime, myThid )
+#endif /* ALLOW_FIZHI */
+C AMM
 C     Add fresh-water in top-layer
       IF ( kLev .EQ. kSurface ) THEN
        DO j=jMin,jMax

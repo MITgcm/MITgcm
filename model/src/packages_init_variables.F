@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.30 2003/12/15 02:07:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.31 2003/12/15 23:00:44 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -150,6 +150,13 @@ C--   Open boundaries data
 #ifdef COMPONENT_MODULE
       IF ( useCoupler ) CALL CPL_INI_VARS( mythid )
 #endif
+
+C AMM
+#ifdef ALLOW_FIZHI
+C Initialize FIZHI state variables
+      IF (useFIZHI) CALL FIZHI_INIT_VARS( mythid)
+#endif
+C AMM
 
       RETURN
       END

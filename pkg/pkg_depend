@@ -42,6 +42,8 @@ bulk_force	-exf
 thsice		+bulk_force
 gchem           +ptracers
 dic             +gchem
+fizhi           -aim
+fizhi           +gridalt
 
 
 #  Need more information on the following:

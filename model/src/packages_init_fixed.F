@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.14 2003/11/06 22:01:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.15 2003/12/15 23:00:44 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -72,6 +72,18 @@ C--   Latitude circle filter initialisation
 C--   Initialise & Read AIM physical parameters
       IF (useAIM) CALL AIM_INITIALISE( myThid )
 #endif
+
+C AMM
+#ifdef ALLOW_GRIDALT
+C--   Initialise GRIDALT parameters - the alternative grid
+      IF (useGRIDALT) CALL GRIDALT_INITIALISE( myThid )
+#endif
+
+#ifdef ALLOW_FIZHI
+C--   Initialise & Read FIZHI physical parameters
+      IF (useFIZHI) CALL FIZHI_INIT_FIXED( myThid )
+#endif
+C AMM
 
 #ifdef ALLOW_LAND
 C--   Initialise & Read Land package parameters
