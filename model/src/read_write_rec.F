@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write_rec.F,v 1.5 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write_rec.F,v 1.6 2003/09/27 19:24:28 dimitri Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -493,7 +493,7 @@ C     ENDIF
 C
       fType='RS'
       nNz=1
-      globalFile=.FALSE.
+C     globalFile=.FALSE.
       CALL MDSWRITEFIELD( fullName, writeBinaryPrec, globalFile,
      &     fType, nNz, field, irec, myIter, myThid )
 C
@@ -548,7 +548,7 @@ C     ENDIF
 C
       fType='RL'
       nNz=1
-      globalFile=.FALSE.
+C     globalFile=.FALSE.
       CALL MDSWRITEFIELD( fullName, writeBinaryPrec, globalFile,
      &     fType, nNz, field, irec, myIter, myThid )
 C
@@ -603,7 +603,7 @@ C     ENDIF
 C
       fType='RS'
       nNz=Nr
-      globalFile=.FALSE.
+C     globalFile=.FALSE.
       CALL MDSWRITEFIELD( fullName, writeBinaryPrec, globalFile,
      &     fType, nNz, field, irec, myIter, myThid )
 C
@@ -658,7 +658,7 @@ C     ENDIF
 C
       fType='RL'
       nNz=Nr
-      globalFile=.FALSE.
+C     globalFile=.FALSE.
       CALL MDSWRITEFIELD( fullName, writeBinaryPrec, globalFile,
      &     fType, nNz, field, irec, myIter, myThid )
 C
