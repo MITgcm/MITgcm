@@ -1,7 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.45 2001/08/13 18:26:15 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.46 2001/08/14 00:25:20 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint40pre7
+o bug fix in dynamics.F
+  calc_viscosity called before k=1,Nr loop.
+o added some #ifdef's ALLOW_PASSIVE_TRACER
+o cleaned initialisations in ctrl_map_ini
+  related to TAF
 
 checkpoint40pre6
 o split dynamics into thermodynamics & dynamics
