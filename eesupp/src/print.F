@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.15 1999/05/24 15:22:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.16 1999/05/24 15:26:08 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -180,7 +180,7 @@ C     K    - Loop counter
       xOld = fld(1)
       DO K=2,lFld
        xNew = fld(K  )
-       IF ( .NOT. compact .OR. xNew .NE. xOld ) THEN
+       IF ( .NOT. compact .OR. (xNew .NE. xOld) ) THEN
         nDup = iHi-iLo+1
         IF ( nDup .EQ. 1 ) THEN
          WRITE(msgBuf,'(A,I9,A)') '              ',xOld,punc
@@ -294,7 +294,7 @@ C     K    - Loop counter
       xOld = fld(1)
       DO K=2,lFld
        xNew = fld(K  )
-       IF ( .NOT. compact .OR. xNew .NEQV. xOld ) THEN
+       IF ( .NOT. compact .OR. (xNew .NEQV. xOld) ) THEN
         nDup = iHi-iLo+1
         IF ( nDup .EQ. 1 ) THEN
          WRITE(msgBuf,'(A,L5,A)') '              ',xOld,punc
@@ -408,7 +408,7 @@ C     K    - Loop counter
       xOld = fld(1)
       DO K=2,lFld
        xNew = fld(K  )
-       IF ( .NOT. compact .OR. xNew .NE. xOld ) THEN
+       IF ( .NOT. compact .OR. (xNew .NE. xOld) ) THEN
         nDup = iHi-iLo+1
         IF ( nDup .EQ. 1 ) THEN
          WRITE(msgBuf,'(A,1PE23.15,A)') '              ',xOld,punc
