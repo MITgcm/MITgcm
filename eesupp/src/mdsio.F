@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio.F,v 1.4 1999/07/28 17:39:17 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio.F,v 1.5 2000/03/14 15:49:40 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -494,7 +494,7 @@ C If global file was opened then close it
 
 C Create meta-file for the global-file
       if (globalFile) then
-C We can't do this operation using threads (yet) because of the
+C We can not do this operation using threads (yet) because of the
 C "barrier" at the next step. The barrier could be removed but
 C at the cost of "safe" distributed I/O.
        if (nThreads.NE.1) then
