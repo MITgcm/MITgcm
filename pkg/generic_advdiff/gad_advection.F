@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.2 2001/09/10 13:09:04 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.3 2001/09/17 19:48:04 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -45,6 +45,8 @@ C     == Local variables
       _RL localTij(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL localTijk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL kp1Msk
+      LOGICAL calc_fluxes_X,calc_fluxes_Y
+      INTEGER nipass,ipass
 
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They
@@ -83,6 +85,52 @@ C--   Make local copy of tracer array
         localTij(i,j)=tracer(i,j,k,bi,bj)
        ENDDO
       ENDDO
+
+      IF (useCubedSphereExchange) THEN
+       nipass=3
+      ELSE
+       nipass=1
+      ENDIF
+       nipass=1
+
+C--   Multiple passes for different directions on different tiles
+      DO ipass=1,nipass
+
+      IF (nipass.EQ.3) THEN
+       calc_fluxes_X=.FALSE.
+       calc_fluxes_Y=.FALSE.
+       IF (ipass.EQ.1 .AND. (bi.EQ.1 .OR. bi.EQ.2) ) THEN
+        calc_fluxes_X=.TRUE.
+       ELSEIF (ipass.EQ.1 .AND. (bi.EQ.4 .OR. bi.EQ.5) ) THEN
+        calc_fluxes_Y=.TRUE.
+       ELSEIF (ipass.EQ.2 .AND. (bi.EQ.1 .OR. bi.EQ.6) ) THEN
+        calc_fluxes_Y=.TRUE.
+       ELSEIF (ipass.EQ.2 .AND. (bi.EQ.3 .OR. bi.EQ.4) ) THEN
+        calc_fluxes_X=.TRUE.
+       ELSEIF (ipass.EQ.3 .AND. (bi.EQ.2 .OR. bi.EQ.3) ) THEN
+        calc_fluxes_Y=.TRUE.
+       ELSEIF (ipass.EQ.3 .AND. (bi.EQ.5 .OR. bi.EQ.6) ) THEN
+        calc_fluxes_X=.TRUE.
+       ENDIF
+      ELSE
+       calc_fluxes_X=.TRUE.
+       calc_fluxes_Y=.TRUE.
+      ENDIF
+ 
+C--   X direction
+      IF (calc_fluxes_X) THEN
+
+C--   Internal exchange for calculations in X
+      IF (useCubedSphereExchange) THEN
+       DO j=1,Oly
+        DO i=1,Olx
+         localTij( 1-i , 1-j )=localTij( 1-j ,    i    )
+         localTij( 1-i ,sNy+j)=localTij( 1-j , sNy+1-i )
+         localTij(sNx+i, 1-j )=localTij(sNx+j,    i    )
+         localTij(sNx+i,sNy+j)=localTij(sNx+j, sNy+1-i )
+        ENDDO
+       ENDDO
+      ENDIF
 
 C-    Advective flux in X
       DO j=1-Oly,sNy+Oly
@@ -124,6 +172,24 @@ C--   Apply open boundary conditions
       END IF
 #endif /* ALLOW_OBCS */
 
+C--   End of X direction
+      ENDIF
+
+C--   Y direction
+      IF (calc_fluxes_Y) THEN
+
+C--   Internal exchange for calculations in Y
+      IF (useCubedSphereExchange) THEN
+       DO j=1,Oly
+        DO i=1,Olx
+         localTij( 1-i , 1-j )=localTij(   j   , 1-i )
+         localTij( 1-i ,sNy+j)=localTij(   j   ,sNy+i)
+         localTij(sNx+i, 1-j )=localTij(sNx+1-j, 1-i )
+         localTij(sNx+i,sNy+j)=localTij(sNx+1-j,sNy+i)
+        ENDDO
+       ENDDO
+      ENDIF
+
 C-    Advective flux in Y
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
@@ -152,6 +218,7 @@ C-    Advective flux in Y
      &     )
        ENDDO
       ENDDO
+
 #ifdef ALLOW_OBCS
 C--   Apply open boundary conditions
       IF (useOBCS) THEN
@@ -162,12 +229,18 @@ C--   Apply open boundary conditions
        END IF
       END IF
 #endif /* ALLOW_OBCS */
-      DO j=1-Oly,sNy+Oly-1
+
+C--   End of Y direction
+      ENDIF
+
+      DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
         localTijk(i,j,k)=localTij(i,j)
        ENDDO
       ENDDO
 
+C--   End of ipass loop
+      ENDDO
 
 C--   End of K loop for horizontal fluxes
       ENDDO
