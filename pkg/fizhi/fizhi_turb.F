@@ -1,14 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.3 2004/06/15 20:22:26 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.4 2004/06/16 19:19:49 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-      subroutine turbio (im,jm,nlay,maxtypes,istrip,nymd,nhms
+      subroutine turbio (im,jm,nlay,istrip,nymd,nhms
      1 ,ndturb,ptop, pz, uz, vz, tz, qz, ntracers,ptracers,
      2 ,plz,plze,dpres,pkht,pkz,ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke
      3 ,tgz,gwet,snow,fracland,landtype
      4 ,tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac
-     5 ,nchp,nchplnd,chfr,chlt,chlon,igrd,ityp,alai,agrn
-     6 ,surftype,tilefrac,thkz,tprof
+     5 ,nchp,nchplnd,chfr,chlt,chlon,igrd,ityp,alai,agrn,thkz,tprof
      8 ,duturb, dvturb, dtturb,dqturb,radlwg,st4,dst4,radswg,radswt
      9 ,fdifpar,fdirpar,rainlsp,rainconv,snowfall,tempref
      1 ,imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw
@@ -21,7 +20,6 @@ c  input:
 c      im      - number of points in the longitude direction
 c      jm      - number of points in the latitude direction
 c      nlay    - number of vertical levels
-c      maxtypes- maximum number of different surface types in any one grid cell
 c      istrip  - number of horizontal points to be handled at a time on
 c      nymd    - year and date integer in YYMMDD format (ie, 790212)
 c      nhms    - date and time integer in HHMMSS format (ie, 123000)
@@ -46,10 +44,6 @@ c      igrd    - tile space grid number - integer[nchp]
 c      ityp    - tile space vegetation type - integer[nchp]
 c      alai    - leaf area index - real[nchp]
 c      agrn    - greenness fraction - real[nchp]
-c      surftype- surface type designation - integer[lon,lat,maxtype]
-c                where maxtype is the maximum number of tiles in a grid cell
-c      tilefrac- fraction of grid box covered by the corresponding surface type 
-c                designation - real[lon,lat,maxtype]
 c      thkz    - sea ice thickness in m (0. for no ice) - real[lon,lat]
 c      tprof   - logical flag for point by point diagnostic output
 c      ndiagsiz- number of diagnostic 2-D arrays allocated
@@ -113,7 +107,7 @@ c-----------------------------------------------------------------------
 #include "diagnostics.h"
 #endif
 
-      integer n,im,jm,nlay,maxtypes,istrip,nymd,nhms,ndturb
+      integer n,im,jm,nlay,istrip,nymd,nhms,ndturb
       real   ptop
       integer nchp,nchplnd,landtype(im,jm),igrd(nchp)
       integer ityp(nchp)
@@ -143,8 +137,6 @@ c-----------------------------------------------------------------------
       real   snodep(nchp)
       real    capac(nchp)
 
-      integer surftype(im,jm,maxtypes)
-      real    tilefrac(im,jm,maxtypes)
       real thkz(im,jm)
 
       logical tprof

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.9 2004/06/15 21:18:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.10 2004/06/16 19:19:49 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -37,6 +37,7 @@ c pe on dynamics and physics grid refers to bottom edge
        _RL pephy(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nrphys+1,nSx,nSy)
        _RL pedyn(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr+1,nSx,nSy)
        _RL tempphy(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nrphys,nSx,nSy)
+       _RL fracland(sNx,sNy,Nsx,Nsy)
 
        integer i, j, L, Lbotij, bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
@@ -105,16 +106,18 @@ c Do not use a zero field as the top edge pressure for interpolation
        CALL TIMER_START ('DO_FIZHI          [FIZHI_WRAPPER]',mythid)
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
+        call get_landfrac(im2,jm2,Nsx,Nsy,bi,bj,maxtyp,
+     .        surftype,tilefrac,fracland)
 c
 c Compute physics increments
-        call do_fizhi(uphy,vphy,thphy,sphy,pephy4fiz,xC,yC,
+        call do_fizhi(myThid,uphy,vphy,thphy,sphy,pephy4fiz,xC,yC,
      .   ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     .   sst,sice,phis_var,landtype,emiss,albnidr,albnirdf,
+     .   tgz,sst,sice,phis_var,landtype,fracland,emiss,albnidr,albnirdf,
      .   albvisdr,albvisdf,ityp,chfr,alai,agrn,igrd,chlat,chlon,
      .   tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,snodep,capac,
      .   o3,qstr,co2,cfc11,cfc12,cfc22,n2o,methane,
      .   idim1,idim2,jdim1,jdim2,Nrphys,Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,
-     .   nchp,
+     .   nchp,nchpland,
      .   duphy,dvphy,dthphy,dsphy)
        enddo
        enddo

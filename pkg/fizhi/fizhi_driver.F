@@ -1,17 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.1 2004/06/15 16:06:03 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.2 2004/06/16 19:19:49 molod Exp $
 C $Name:  $
                                                                                  
 #include "CPP_OPTIONS.h"
-      subroutine fizhi_driver (nymd,nhms,myid,im,jm,lm,ptracer,ntracer,
-     . ndmoist,ndturb,ndlw,ndsw,xlats,xlons,
+      subroutine fizhi_driver (myid,im,jm,lm,ptracer,ntracer,
+     . xlats,xlons,
      . p,u,v,t,q,pl,ple,dpres,pkht,pkl,fracland,landtype,radswt,
-     . maxtyp,surftype,tilefrac,phis_var,sea_ice,
+     . phis_var,tgz,sea_ice,
      . nchp,chlat,chlon,igrd,nchpland,chfr,ityp,
      . tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,capac,snodep,
      . ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     . stratq,nwatlevs,nwatlats,watlevs,watlats,ozone,nozolevs,
      . albvisdr,albvisdf,albnirdr,albnirdf,emiss,alai,agrn,
-     . nozolats,ozolevs,ozolats,co2,cfc11,cfc12,cfc22,methane,n2o,
+     . chemq,chemo3,co2,cfc11,cfc12,cfc22,methane,n2o,
      . lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq,
      . moistu,moistv,moistt,moistq,
      . radswg,swgclr,albedo,fdirpar,fdifpar,osr,osrclr,tg0,tg0c,radlwg,
@@ -19,7 +18,7 @@ C $Name:  $
      . cldtot_lw,clras_lw,cldlsp_lw,nlwlz,lwlz,nswcld,cldtot_sw,
      . clras_sw,cldlsp_sw,nswlz,swlz,imstturbsw,imstturblw,qliqavesw,
      . qliqavelw,fccavesw,fccavelw,qq,u2m,v2m,t2m,q2m,u10m,v10m,t10m,
-     . q10m,tgz,gwet,snow,chemo3,chemq)
+     . q10m,gwet,snow)
 C***********************************************************************        
 C  Purpose                                                                      
 C  -------                                                                      
@@ -48,14 +47,12 @@ c -------------
 
 c Input Parameters
 c ----------------
-      integer nymd,nhms,myid,im,jm,lm,ptracer,ntracer
-      integer maxtyp
+      integer myid,im,jm,lm,ptracer,ntracer
       integer nchp,chlat,chlon,igrd,nchpland,chfr,ityp
       integer nwatlevs,nwatlats
       integer nozolevs,nozolats
       integer iras,nlwcld,nlwlz,nswcld,nswlz
       integer imstturbsw,imstturblw
-      integer ndmoist,ndturb,ndlw,ndsw
 
       real xlats(im,jm), xlons(im,jm)
       real p(im,jm)
@@ -63,8 +60,6 @@ c ----------------
       real q(im,jm,lm,ntracer)
       real pl(im,jm,lm),ple(im,jm,lm+1),dpres(im,jm,lm),pkht(im,jm,lm)
       real radswt(im,jm), fracland(im,jm), landtype(im,jm)
-      integer surftype(im,jm,maxtyp)
-      real tilefrac(im,jm,maxtyp)
       real phis_var(im,jm), sea_ice(im,jm)
       real tcanopy(nchp),tdeep(nchp),ecanopy(nchp),swetshal(nchp)
       real swetroot(nchp),swetdeep(nchp),capac(nchp),snodep(nchp)
@@ -107,6 +102,7 @@ c ---------------
       logical     alarm
       external    alarm
 
+      integer ndmoist,ndturb,ndlw,ndsw
       integer istrip,npcs
       integer i,j,L,n
       integer ndum,ndpnt
@@ -123,7 +119,11 @@ c ---------------
 C **********************************************************************        
 C ****                         Initialization                       ****        
 C **********************************************************************        
-                                                                                
+      call get_alarm ( 'radlw',ndum,ndum,ndlw   ,ndum )
+      call get_alarm ( 'radsw',ndum,ndum,ndsw   ,ndum )
+      call get_alarm ( 'turb' ,ndum,ndum,ndturb ,ndum )
+      call get_alarm ( 'moist',ndum,ndum,ndmoist,ndum )
+
       call get_alarm ( 'pnt',ndum,ndum,ndpnt,ndum )
       lpnt = ndpnt.ne.0
 
@@ -180,13 +180,12 @@ C TURBULENCE
 C ==========
       IF ( alarm('turb') ) THEN
 
-      call turbio (im,jm,lm,maxtyp,1,nymd,nhms,ndturb,
+      call turbio (im,jm,lm,1,nymd,nhms,ndturb,
      .   ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
      .   ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
      .   tgz,gwet,snow,fracland,landtype,
      .   tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac,
-     .   nchp,nchpland,chfr,chlt,chlon,igrd,ityp,alai,agrn,
-     .   surftype,tilefrac,sea_ice,lpnt,
+     .   nchp,nchpland,chfr,chlt,chlon,igrd,ityp,alai,agrn,sea_ice,lpnt,
      .   turbu,turbv,turbt,turbq,radlwg,st4,dst4,radswg,radswt,
      .   fdifpar,fdirpar,rainlsp,rainconv,snowfall,tg0,
      .   imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw,qq,

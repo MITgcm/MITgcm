@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.9 2004/06/10 21:50:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.10 2004/06/16 19:19:49 molod Exp $
 C $Name:  $
 
        subroutine update_earth_exports (myTime, myIter, myThid)
@@ -75,44 +75,52 @@ C***********************************************************************
 C*              Get Leaf-Area-Index and Greenness Index                *
 C***********************************************************************
 
-      if( alarm('turb') .or. alarm('radsw') ) then
-      call getlgr (sec,month,day,chlt,ityp,nchpland,nSx,nSy,bi,bj,
+       if( alarm('turb') .or. alarm('radsw') ) then
+       call getlgr (sec,month,day,chlt,ityp,nchpland,nSx,nSy,bi,bj,
      .                                                       alai,agrn )
-      endif
+       endif
 
 C **********************************************************************
 C                      Compute Surface Albedo
 C **********************************************************************
 
-      if( alarm('radsw') ) then
-       call astro(nymd,nhms,lats,lons,im2*jm2,cosz,ra)
-       call getalb(sec,month,day,cosz,snodep,fraci,fracl,im2,jm2,nchp,
+       if( alarm('radsw') ) then
+        call astro(nymd,nhms,lats,lons,im2*jm2,cosz,ra)
+        call getalb(sec,month,day,cosz,snodep,fraci,fracl,im2,jm2,nchp,
      .             nchpland,nSx,nSy,bi,bj,igrd,ityp,chfr,chlt,alai,agrn,
      .             albvisdr,albvisdf,albnirdr,albnirdf )
-      endif
+       endif
 
 
 C **********************************************************************
 C                      Compute Surface Emissivity
 C **********************************************************************
 
-      if( alarm('radlw') ) then
-       call grd2msc(fraci,im2,jm2,igrd,ficetile,nchp,nchp)
-       call getemiss(fracl,im2,jm2,nchp,nSx,nSy,bi,bj,igrd,ityp,chfr,
+       if( alarm('radlw') ) then
+        call grd2msc(fraci,im2,jm2,igrd,ficetile,nchp,nchp)
+        call getemiss(fracl,im2,jm2,nchp,nSx,nSy,bi,bj,igrd,ityp,chfr,
      .      snodep,ficetile,emiss)
-      endif
+       endif
 
 
 C*********************************************************************
 C            Ground Temperature Over Ocean is from SST array,
+C               Over land is from tcanopy
 C*********************************************************************
 
-      do j = 1,jm
-      do i = 1,im
-      if(fracl(i,j).lt.0.3.and.sea_ice(i,j).eq.0.0)tgz(i,j) = sst(i,j)
-      endif
-      enddo
-      enddo
+       do j = jm1,jm2
+       do i = im1,im2
+        tgz(i,j,bi,bj) = 0.
+       enddo
+       enddo
+       call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),tcanopy(1,bi,bj),
+     .                           nchp,nchp,fracl,tgz(1,bi,bj),im2,jm2)
+       do j = jm1,jm2
+       do i = im1,im2
+        if(fracl(i,j).lt.0.3.and.sea_ice(i,j,bi,bj).eq.0.0)
+     .                                 tgz(i,j,bi,bj) = sst(i,j,bi,bj)
+       enddo
+       enddo
 
       enddo
       enddo
