@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.468 2005/04/03 05:16:43 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.469 2005/04/03 16:11:00 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -17,6 +17,10 @@ o change port_rand funtion to allow to set the seed.
 o fix obscure MNC bug involving conversion between reals and integers
   - it caused no problems with certain (eg. gcc, ifc) compilers but the 
     new version is now more standards-compliant
+o adjoint-related modifications
+  * gad_dst3_adv_?: to be able to use advscheme=30 in adjoint
+  * gad_calc_rhs: fool adjoint, revert to advscheme=30 in reverse when using 33
+  * mom_vi_hdissip: to be able to use Leith scheme in adjoint
 
 checkpoint57e_post
 o Adding eddy stress controls a la Ferreira et al.
