@@ -61,13 +61,19 @@ c     == local variables ==
 
 c     == end of interface ==
 
+      print *, 'pathei-lsopt in simul'
+
 c--   Call the combined modified forward model and the adjoint model.
       do i = 1,nn
-        adxx(i) = 0.0
+        adxx(i) = 0.
       enddo
-      adobjf = 1.0
+
+      adobjf = 1.
 c
       lheaderonly = .false.
+
+      print *, 'pathei-lsopt vor optim_readdata'
+
       call optim_readdata( nn, ctrlname, lheaderonly, objf,   xx )
       call optim_readdata( nn, costname, lheaderonly, objf, adxx )
 

@@ -79,14 +79,14 @@ c     == local variables ==
 
       character*(128) fname
 
-      integer         filei
-      integer         filej
-      integer         filek
+c      integer         filei
+c      integer         filej
+c      integer         filek
+c      integer         fileig
+c      integer         filejg
+c      integer         filensx
+c      integer         filensy
       integer         filenopt
-      integer         fileig
-      integer         filejg
-      integer         filensx
-      integer         filensy
       _RL             fileff
 
 cgg(
@@ -96,6 +96,8 @@ cgg(
 cgg)
 
 c     == end of interface ==
+
+      print *, 'pathei-lsopt in optim_readdata'
 
 c--   The reference i/o unit.
       funit = 20
@@ -146,10 +148,6 @@ c--   Read the header.
       read( funit ) filejG
       read( funit ) filensx
       read( funit ) filensy
-
-cph(
-      print *,'ph-opt 1 ', nvartype, nvarlength, filensx, filensy
-cph)
 
       read( funit ) (nWetcGlobal(k), k=1,nr)
       read( funit ) (nWetsGlobal(k), k=1,nr)
