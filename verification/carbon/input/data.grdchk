@@ -4,9 +4,9 @@
 # *******************
  &GRDCHK_NML
 # grdchk_eps       = 0.,
- grdchk_eps       = 1.d-6,
+ grdchk_eps       = 1.d+2,
  nbeg             = 1,
  nstep            = 1,
  nend             = 20,
- grdchkvarindex   = 17,
+ grdchkvarindex   = 1,
  /
