@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.32 2005/02/24 23:26:03 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.33 2005/02/25 01:48:31 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -234,7 +234,7 @@ C Set fmu and ed to zero for no background diffusion
 
       integer ndlsm
       parameter ( ndlsm = 1)
-c     _RL qdiaglsm(nchp,ndlsm)
+      _RL qdiaglsm(nchp,ndlsm)
 
       _RL pi,secday,sdayopi2,rgas,akap,cp,alhl
       _RL faceps,grav,caltoj,virtcon,getcon
@@ -847,11 +847,11 @@ c***********************************************************************
      . .false., 'EVEG    ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('ESNOW   ',myid) ) then
-      call diag_vegtile_fill (esnow,igrd,chfrstr,istrip,nchp,nn,
+      call diag_vegtile_fill (esno,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'ESNOW   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('ESOIL   ',myid) ) then
-      call diag_vegtile_fill (esoil,igrd,chfrstr,istrip,nchp,nn,
+      call diag_vegtile_fill (esoi,igrd,chfrstr,istrip,nchp,nn,
      . .false., 'ESOIL   ', 1, 1, bi, bj, myid)
       endif
       if(diagnostics_is_on('ERESV   ',myid) ) then
@@ -1311,6 +1311,7 @@ c ------------------------------------------------------------------
         enddo
         call diagnostics_fill(tmpdiag,'TRBQLIQ ',L,1,3,bi,bj,myid)
        endif
+      enddo
 C**********************************************************************
 C And some other variables to be transformed back to grid space:
 C Ground Temperature, snow depth and shallow layer ground wetness
