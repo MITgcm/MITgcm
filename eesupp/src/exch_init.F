@@ -11,8 +11,6 @@ C     == Global data ==
 #include "EXCH.h"
 
 C     == Routine arguments ==
-C     myThid - Thread number of this instance of the routine
-      INTEGER myThid
 
 C     == Local variables ==
 C     bi, bj - Loop counters
