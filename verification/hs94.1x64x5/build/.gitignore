@@ -18,3 +18,4 @@ genmake_state
 genmake_ad_optfile
 genmake_optfile
 genmake_warnings
+mnc_test_*
