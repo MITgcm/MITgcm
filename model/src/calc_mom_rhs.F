@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.46 2001/03/01 16:45:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.47 2001/03/06 16:51:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -33,7 +33,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "CG2D.h"
 
 C     == Routine arguments ==
 C     fZon    - Work array for flux of momentum in the east-west
@@ -928,8 +927,8 @@ C     Pressure extrapolated forward in time
       DO j=jMin,jMax
        DO i=iMin,iMax
         pf(i,j) = 
-     &   ab15*(   cg2d_x(i,j,bi,bj)*gBaro )
-     &  +ab05*(cg2d_xNM1(i,j,bi,bj)*gBaro )
+     &   ab15*(   etaN(i,j,bi,bj)*gBaro )
+     &  +ab05*(etaNm1(i,j,bi,bj)*gBaro )
        ENDDO
       ENDDO
       IF (staggerTimeStep) THEN

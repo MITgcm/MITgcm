@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.12 2001/02/20 15:06:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.13 2001/03/06 16:51:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -9,9 +9,9 @@ C     | o Form the right hand-side of the surface pressure eqn.  |
 C     |==========================================================|
 C     \==========================================================/
       SUBROUTINE CALC_DIV_GHAT( 
-     I        bi,bj,iMin,iMax,jMin,jMax,
-     I        K,
+     I        bi,bj,iMin,iMax,jMin,jMax,K,
      I        xA,yA,
+     U        cg2d_b,
      I        myThid)
 
       IMPLICIT NONE
@@ -23,7 +23,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "CG2D.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "CG3D.h"
 #endif
@@ -33,11 +32,13 @@ C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
 C                                      results will be set.
 C     k                              - Index of layer.
 C     xA, yA                         - Cell face areas
-C     myThid - Instance number for this innvocation of CALC_MOM_RHS
+C     cg2d_b - Conjugate Gradient 2-D solver : Right-hand side vector 
+C     myThid - Instance number for this call of CALC_DIV_GHAT
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER K
       _RS xA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
 
 C     == Local variables ==
@@ -48,21 +49,6 @@ C--   Pressure equation source term
 C     Term is the vertical integral of the divergence of the 
 C     time tendency terms along with a relaxation term that
 C     pulls div(U) + dh/dt back toward zero.
-
-      IF ( k .EQ. Nr ) THEN
-C      Initialise source term on first pass
-       DO j=1,sNy
-        DO i=1,sNx
-C Note: The source term containing cg2d_x and cg3d_x (at k=1)
-C       has been moved to solve_for_pressure.F for convenience.
-         cg2d_b(i,j,bi,bj) = 0.
-#ifdef USE_NATURAL_BCS
-     &     + freeSurfFac*_rA(i,j,bi,bj)*horiVertRatio*
-     &       EmPmR(I,J,bi,bj)/deltaTMom
-#endif
-        ENDDO
-       ENDDO
-      ENDIF
 
       IF (implicDiv2Dflow.EQ.1.) then
 C     Fully Implicit treatment of the Barotropic Flow Divergence

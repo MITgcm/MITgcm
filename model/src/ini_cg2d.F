@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.30 2001/02/20 15:06:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.31 2001/03/06 16:51:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -20,7 +20,8 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "CG2D.h"
+#include "SURFACE.h"
+#include "CG2D_INTERNAL.h"
 #ifdef ALLOW_OBCS
 #include "OBCS.h"
 #endif
@@ -44,6 +45,41 @@ C     myNorm - Work variable used in clculating normalisation factor
       _RL     faceArea
       _RS     myNorm
       _RL     aC, aCw, aCs
+
+C-- Initialise -Boyancy at surface level : Bo_surf
+C   Bo_surf is defined as d/dr(Phi_surf) and set to g/rtoz (linear free surface)
+C     with rtoz = conversion factor from r-unit to z-unit  (=horiVertRatio)
+C   an acurate formulation will include P_surf and T,S_surf effects on rho_surf:
+C    z-ocean (rtoz=1) : Bo_surf = - Boyancy = gravity * rho_surf/rho_0 
+C    p-atmos (rtoz=rho_c*g) : Bo_surf = (1/rho)_surf
+C--
+      IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO J=1-Oly,sNy+Oly
+           DO I=1-Olx,sNx+Olx
+             Bo_surf(I,J,bi,bj) = recip_rhoConst
+             recip_Bo(I,J,bi,bj) = rhoConst
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ELSE
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO J=1-Oly,sNy+Oly
+           DO I=1-Olx,sNx+Olx
+             Bo_surf(I,J,bi,bj) = gravity
+             recip_Bo(I,J,bi,bj) = recip_Gravity
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
+
+C--   Update overlap regions
+      _EXCH_XY_R8(Bo_surf, myThid)
+      _EXCH_XY_R8(recip_Bo, myThid)
 
 C--   Initialise laplace operator
 C     aW2d: integral in Z Ax/dX
@@ -206,29 +242,6 @@ C     CALL PLOT_FIELD_XYRS( pC, 'pC   INI_CG2D.2' , 1, myThid )
 C     CALL PLOT_FIELD_XYRS( pW, 'pW   INI_CG2D.2' , 1, myThid )
 C     CALL PLOT_FIELD_XYRS( pS, 'pS   INI_CG2D.2' , 1, myThid )
 CcnhDebugEnds
-
-C--   Set default values for initial guess and RHS
-      IF ( startTime .EQ. 0 ) THEN
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO J=1,sNy
-          DO I=1,sNx
-           cg2d_x(I,J,bi,bj) = 0. _d 0
-           cg2d_b(I,J,bi,bj) = 0. _d 0
-#ifdef INCLUDE_CD_CODE
-           cg2d_xNM1(I,J,bi,bj) = 0. _d 0
-#endif
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-C--    Update overlap regions
-       _EXCH_XY_R8(cg2d_x, myThid)
-       _EXCH_XY_R8(cg2d_b, myThid)
-#ifdef INCLUDE_CD_CODE
-       _EXCH_XY_R8(cg2d_xNM1, myThid)
-#endif
-      ENDIF
 
       RETURN
       END

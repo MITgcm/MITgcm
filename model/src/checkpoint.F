@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.5 2001/02/20 19:58:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.6 2001/03/06 16:51:02 jmc Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -42,7 +42,6 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "CG2D.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "GW.h"
 #endif
@@ -85,10 +84,10 @@ C       Raw fields
         CALL READ_REC_XYZ_RL(  'salt',   salt, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(    'gS',     gS, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL( 'gsNm1',  gSNm1, 1,myIter, myThid)
-        CALL READ_REC_XY_RL ('cg2d_x', cg2d_x, 1,myIter, myThid)
+        CALL READ_REC_XY_RL ('etaN', etaN, 1,myIter, myThid)
 #ifdef INCLUDE_CD_CODE
         CALL READ_REC_XY_RL
-     &               ( 'cg2d_xNm1', cg2d_xNM1, 1,myIter, myThid)
+     &               ( 'etaNm1', etaNm1, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'uVelD', uVelD, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'vVelD', vVelD, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'uNm1',  uNM1, 1,myIter, myThid)
@@ -121,7 +120,7 @@ C--     Read model fields
         CALL MDSREADFIELD(fn,prec,'RL',Nr,salt,  10,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gS,    11,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gSnm1, 12,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL', 1,cg2d_x,12*Nr+1,myThid)
+        CALL MDSREADFIELD(fn,prec,'RL', 1,etaN,12*Nr+1,myThid)
 #ifdef INCLUDE_CD_CODE
         WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIter
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uVelD,    1,myThid)
@@ -130,7 +129,7 @@ C--     Read model fields
         CALL MDSREADFIELD(fn,prec,'RL',Nr,vNM1,     4,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,guCD,     5,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gvCD,     6,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL', 1,cg2d_xNM1,6*Nr+1,myThid)
+        CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,6*Nr+1,myThid)
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
@@ -162,9 +161,9 @@ C--    Fill in edge regions
       _EXCH_XYZ_R8(salt  , myThid )
       _EXCH_XYZ_R8(gs    , myThid )
       _EXCH_XYZ_R8(gsNM1 , myThid )
-      _EXCH_XY_R8 (cg2d_x, myThid )
+      _EXCH_XY_R8 (etaN, myThid )
 #ifdef INCLUDE_CD_CODE
-      _EXCH_XY_R8( cg2d_xNM1, myThid )
+      _EXCH_XY_R8( etaNm1, myThid )
       _EXCH_XYZ_R8( uVelD,    myThid )
       _EXCH_XYZ_R8( vVelD,    myThid )
       _EXCH_XYZ_R8( uNM1,     myThid )
@@ -210,7 +209,6 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "CG2D.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "GW.h"
 #endif
@@ -291,10 +289,10 @@ C       Raw fields
         CALL WRITE_REC_XYZ_RL(  'salt',   salt,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL(    'gS',     gS,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL( 'gSNm1',  gSNm1,  1,myIter, myThid)
-        CALL WRITE_REC_XY_RL ('cg2d_x', cg2d_x,  1,myIter, myThid)
+        CALL WRITE_REC_XY_RL ('etaN', etaN,  1,myIter, myThid)
 #ifdef INCLUDE_CD_CODE
         CALL WRITE_REC_XY_RL
-     &   ( 'cg2d_xNM1', cg2d_xNM1,  1,myIter, myThid)
+     &   ( 'etaNm1', etaNm1,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL(  'uVelD', uVelD,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL(  'vVelD', vVelD,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL(  'uNM1',  uNM1,  1,myIter, myThid)
@@ -333,7 +331,7 @@ C--     Write model fields
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,salt, 10,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gS,   11,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gSnm1,12,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,cg2d_x,12*Nr+1,
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaN,12*Nr+1,
      &                     myIter,myThid)
 #ifdef INCLUDE_CD_CODE
         IF ( permCheckPoint ) THEN
@@ -347,7 +345,7 @@ C--     Write model fields
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vNM1, 4,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,guCD, 5,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gvCD, 6,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,cg2d_xNM1,6*Nr+1,
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaNm1,6*Nr+1,
      &                     myIter,myThid)
 #endif
 #ifdef ALLOW_NONHYDROSTATIC

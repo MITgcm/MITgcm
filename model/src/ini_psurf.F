@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.2 2001/02/04 14:38:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.3 2001/03/06 16:51:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,10 +7,10 @@ CStartOfInterface
       SUBROUTINE INI_PSURF( myThid )
 C     /==========================================================\
 C     | SUBROUTINE INI_PSURF                                     |
-C     | o Set model initial free-surface height/pressue.         |
+C     | o Set model initial free-surface height/pressure.        |
 C     |==========================================================|
 C     | There are several options for setting the initial        |
-C     | zonal velocity field.                                    |
+C     | surface displacement (r unit) field.                     |
 C     |  1. Inline code                                          |
 C     |  2. Two-dimensional data from a file.                    |
 C     \==========================================================/
@@ -21,10 +21,10 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "CG2D.h"
+#include "DYNVARS.h"
 
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_UVEL 
+C     myThid -  Number of this instance of INI_PSURF 
       INTEGER myThid
 CEndOfInterface
 
@@ -34,12 +34,12 @@ C     I,J
       INTEGER bi, bj
       INTEGER  I,  J
 
-C--   Initialise velocity field to zero
+C--   Initialise surface position anomaly to zero
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
-          cg2d_x(I,J,bi,bj) = 0. _d 0
+        DO J=1-Oly,sNy+Oly
+         DO I=1-Olx,sNx+Olx
+          etaN(I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
@@ -47,11 +47,26 @@ C--   Initialise velocity field to zero
 C     Read an initial state
       IF (pSurfInitFile .NE. ' ') THEN
        _BEGIN_MASTER( myThid )
-       CALL READ_FLD_XY_RL( pSurfInitFile, ' ', cg2d_x, 0, myThid )
+       CALL READ_FLD_XY_RL( pSurfInitFile, ' ', etaN, 0, myThid )
        _END_MASTER(myThid)
       ENDIF
 C
-      _EXCH_XY_R8(cg2d_x, myThid)
+      _EXCH_XY_R8(etaN, myThid)
+
+#ifdef INCLUDE_CD_CODE
+C--   By default, initialize etaNm1 with etaN : 
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=1-Oly,sNy+Oly
+         DO I=1-Olx,sNx+Olx
+          etaNm1(I,J,bi,bj) = etaN(I,J,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+C     _EXCH_XY_R8(etaNm1, myThid)
+#endif
 
       RETURN
       END

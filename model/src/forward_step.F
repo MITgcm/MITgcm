@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.9 2001/02/20 22:08:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.10 2001/03/06 16:51:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -60,7 +60,6 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "CG2D.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "CG3D.h"
 #endif
@@ -154,10 +153,10 @@ C     Because of the ordering of the timestepping code and
 C     tendency term code at end of loop model arrays hold
 C     U,V,T,S  at "time-level" N but gu, gv, gs, gt, guNM1,... 
 C     at "time-level" N+1/2 (guNM1 at "time-level" N+1/2 is 
-C     gu at "time-level" N-1/2) and cg2d_x at "time-level" N+1/2.
+C     gu at "time-level" N-1/2) and etaN at "time-level" N+1/2.
 C      where N = I+timeLevBase-1
 C     Thus a checkpoint contains U.0000000000, GU.0000000001 and 
-C     cg2d_x.0000000001 in the indexing scheme used for the model 
+C     etaN.0000000001 in the indexing scheme used for the model 
 C     "state" files. This example is referred to as a checkpoint 
 C     at time level 1 
       CALL TIMER_START('I/O (WRITE)        [FORWARD_STEP]',myThid)
