@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.21 2003/10/28 22:23:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.22 2003/11/06 22:12:09 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -372,21 +372,24 @@ cph)
            ustar(i,j) = SQRT( tempVar2 )
         endif
 
-        if ( .NOT. useSEAICE )
-     &       bo(I,J) = - gravity *
+#ifdef ALLOW_SEAICE
+        if ( .NOT. useSEAICE ) then
+#endif
+           bo(I,J) = - gravity *
      &       ( vddiff(I,J,1,1) * SurfaceTendencyT(i,j,bi,bj) +
      &         vddiff(I,J,1,2) * SurfaceTendencyS(i,j,bi,bj)
      &       ) *
      &       drF(1) / work2(I,J)
 
 #ifdef ALLOW_SEAICE
-        if ( useSEAICE )
-     &       bo(I,J) = - gravity *
+        else
+           bo(I,J) = - gravity *
      &       ( vddiff(I,J,1,1) * (SurfaceTendencyT(i,j,bi,bj)+
      &                            SurfaceTendencyTice(i,j,bi,bj)) +
      &         vddiff(I,J,1,2) * SurfaceTendencyS(i,j,bi,bj)
      &       ) *
      &       drF(1) / work2(I,J)
+        endif
 #endif /* ALLOW_SEAICE */
 
         bosol(I,J) = gravity * vddiff(I,J,1,1) * Qsw(i,j,bi,bj) *
