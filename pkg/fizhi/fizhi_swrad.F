@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.1 2004/06/15 14:47:23 molod Exp $
+C $Name:  $
+                                                                                    
       subroutine swrio (nymd,nhms,ndswr,myid,istrip,npcs,
      .                  pz,tz,qz,pkht,oz,co2,
      .                  albvisdr,albvisdf,albnirdr,albnirdf,
@@ -9,53 +12,53 @@
      .                  imstturb,qliqave,fccave,landtype,xlats,xlons)
 
       implicit none
-#include "diagnostics.h"
+      include 'diag.com'
 
 c Input Variables
 c ---------------
       integer nymd,nhms,ndswr,istrip,npcs,nd
 
-      integer im,jm,lm        
-      real  ptop              
-      real  sige(lm+1)        
-      real   sig(lm)          
-      real  dsig(lm)          
+      integer im,jm,lm        ! Physics Grid
+      real  ptop              ! Physics Grid
+      real  sige(lm+1)        ! Physics Grid
+      real   sig(lm)          ! Physics Grid
+      real  dsig(lm)          ! Physics Grid
 
-      real    pz(im,jm)       
-      real    tz(im,jm,lm)    
-      real  pkht(im,jm,lm)    
+      real    pz(im,jm)       ! Dynamics State
+      real    tz(im,jm,lm)    ! Dynamics State
+      real  pkht(im,jm,lm)    ! Dynamics State
 
-      real    co2             
-      real    oz(im,jm,lm)    
-      real    qz(im,jm,lm)    
+      real    co2             ! Chemistry State
+      real    oz(im,jm,lm)    ! Chemistry Coupling
+      real    qz(im,jm,lm)    ! Chemistry Coupling + Dynamics State
 
-      real albvisdr(im,jm)    
-      real albvisdf(im,jm)    
-      real albnirdr(im,jm)    
-      real albnirdf(im,jm)    
+      real albvisdr(im,jm)    ! Land Coupling
+      real albvisdf(im,jm)    ! Land Coupling
+      real albnirdr(im,jm)    ! Land Coupling
+      real albnirdf(im,jm)    ! Land Coupling
 
-      real   radswg(im,jm)    
-      real   swgclr(im,jm)    
-      real   albedo(im,jm)    
-      real  fdifpar(im,jm)    
-      real  fdirpar(im,jm)    
-      real      osr(im,jm)    
-      real   osrclr(im,jm)    
-      real  dtradsw(im,jm,lm) 
-      real  dtswclr(im,jm,lm) 
+      real   radswg(im,jm)    ! Shortwave Coupling
+      real   swgclr(im,jm)    ! Shortwave Coupling
+      real   albedo(im,jm)    ! Shortwave Coupling
+      real  fdifpar(im,jm)    ! Shortwave Coupling
+      real  fdirpar(im,jm)    ! Shortwave Coupling
+      real      osr(im,jm)    ! Shortwave Coupling
+      real   osrclr(im,jm)    ! Shortwave Coupling
+      real  dtradsw(im,jm,lm) ! Shortwave Tendency
+      real  dtswclr(im,jm,lm) ! Shortwave Tendency
 
-      integer nswcld,nswlz    
-      real  cldsw(im,jm,lm)   
-      real  cswmo(im,jm,lm)   
-      real   swlz(im,jm,lm)   
+      integer nswcld,nswlz    ! Moist Coupling
+      real  cldsw(im,jm,lm)   ! Moist Coupling
+      real  cswmo(im,jm,lm)   ! Moist Coupling
+      real   swlz(im,jm,lm)   ! Moist Coupling
 
-      real  qdiag(im,jm,nd)   
-      logical lpnt            
-      integer imstturb        
-      real qliqave(im,jm,lm)  
-      real  fccave(im,jm,lm)  
+      real  qdiag(im,jm,nd)   ! Diagnostics
+      logical lpnt            ! Point by Point Flag
+      integer imstturb        ! Turb Coupling
+      real qliqave(im,jm,lm)  ! Turb Coupling
+      real  fccave(im,jm,lm)  ! Turb Coupling
 
-      integer landtype(im,jm) 
+      integer landtype(im,jm) ! Surface Land Type
 
 c Local Variables
 c ---------------
@@ -64,8 +67,8 @@ c ---------------
       real      getcon,grav,cp,undef,pcheck
       real      ra,alf,reffw,reffi,tminv
 
-      parameter ( reffw = 10.0 )   
-      parameter ( reffi = 65.0 )   
+      parameter ( reffw = 10.0 )   ! Effective radius for water droplets
+      parameter ( reffi = 65.0 )   ! Effective radius for ice   particles
 
       real      alat(im,jm)
       real      alon(im,jm)
@@ -220,9 +223,9 @@ c ---------------------------------------------------------------------
         do L =1,lm
         do j =1,jm
         do i =1,im
-         cldtot(i,j,L)=min(1.0,max(cldsw(i,j,L),fccave(i,j,L)/imstturb))
-         cldmxo(i,j,L)=min(1.0,cswmo(i,j,L))
-           swlz(i,j,L)=swlz(i,j,L)+qliqave(i,j,L)/imstturb
+         cldtot(i,j,L) =  min( 1.0,max(cldsw(i,j,L),fccave(i,j,L)/imstturb) )
+         cldmxo(i,j,L) =  min( 1.0,    cswmo(i,j,L) )
+           swlz(i,j,L) =                swlz(i,j,L)+qliqave(i,j,L)/imstturb
         enddo
         enddo
         enddo
@@ -380,13 +383,12 @@ c ------------------
 
 C Compute Optical Thicknesses and Diagnostics
 C -------------------------------------------
-      call opthk(tdry,plz,plze,swlz,cldtot,cldmxo,landtype,im,jm,lm,
-     .                                                          tautype)
+      call opthk ( tdry,plz,plze,swlz,cldtot,cldmxo,landtype,im,jm,lm,tautype )
 
       do L = 1,lm
       do j = 1,jm
       do i = 1,im
-      tau(i,j,L) = tautype(i,j,L,1)+tautype(i,j,L,2)+tautype(i,j,L,3)
+      tau(i,j,L) = tautype(i,j,L,1) + tautype(i,j,L,2) + tautype(i,j,L,3)
       enddo
       enddo
       enddo
@@ -395,8 +397,7 @@ C -------------------------------------------
       do L=1,lm
       do j=1,jm
       do i=1,im
-      qdiag(i,j,itauave+L-1) = qdiag(i,j,itauave+L-1) + 
-     .                        tau(i,j,L)*100/(plze(i,j,L+1)-plze(i,j,L))
+      qdiag(i,j,itauave+L-1) = qdiag(i,j,itauave+L-1) + tau(i,j,L)*100/(plze(i,j,L+1)-plze(i,j,L))
       enddo
       enddo
       enddo
@@ -407,11 +408,10 @@ C -------------------------------------------
       do L=1,lm
       do j=1,jm
       do i=1,im
-       if( cldtot(i,j,L).ne.0.0 ) then
-        qdiag(i,j,itaucld +L-1) = qdiag(i,j,itaucld +L-1) + 
-     .                        tau(i,j,L)*100/(plze(i,j,L+1)-plze(i,j,L))
-        qdiag(i,j,itaucldc+L-1) = qdiag(i,j,itaucldc+L-1) + 1.0
-       endif
+         if( cldtot(i,j,L).ne.0.0 ) then
+              qdiag(i,j,itaucld +L-1) = qdiag(i,j,itaucld +L-1) + tau(i,j,L)*100/(plze(i,j,L+1)-plze(i,j,L))
+              qdiag(i,j,itaucldc+L-1) = qdiag(i,j,itaucldc+L-1) + 1.0
+         endif
       enddo
       enddo
       enddo
@@ -550,13 +550,13 @@ C **********************************************************************
 c Calculate Mean Albedo
 c ---------------------
       do i=1,istrip
-       if( cosz(i).gt.0.0 ) then
-        tstrip(i) = 1.0 - flux(i,lm+1)/
-     . ( fdirir(i)+fdifir(i)+dirpar(i)+difpar(i) + fdiruv(i)+fdifuv(i) )
+      if( cosz(i).gt.0.0 ) then
+            tstrip(i) = 1.0 - flux(i,lm+1)/( fdirir(i)+fdifir(i)+dirpar(i)+difpar(i)
+     .                                     + fdiruv(i)+fdifuv(i) )
         if( tstrip(i).lt.0.0 ) tstrip(i) = undef
-       else
-        tstrip(i) = undef
-       endif
+      else
+            tstrip(i) = undef
+      endif
       enddo
       call paste ( tstrip,albedo,istrip,im*jm,1,nn )
 
@@ -672,20 +672,17 @@ c ---------------
 
 c Large-Scale Water
 c -----------------
-C Over Land
          if( lwi(i,j).le.10 ) then
-          tauh2o = max( 0.0020, 0.200*min(200*lz(i,j,L)*1000,1.0) )  
-          tau(i,j,L,3) = fracls*alf*tauh2o*dp
+                tauh2o = max( 0.0020, 0.200*min(200*lz(i,j,L)*1000,1.0) )  ! Over Land
+                tau(i,j,L,3) = fracls*alf*tauh2o*dp
          else
-C Non-Precipitation Clouds Over Ocean
-          if( lz(i,j,L).eq.0.0 ) then
-           tauh2o = .12                      
-           tau(i,j,L,2) = fracls*alf*tauh2o*dp
-          else
-C Over Ocean
-           tauh2o = max( 0.0020, 0.120*min( 20*lz(i,j,L)*1000,1.0) )  
-           tau(i,j,L,3) = fracls*alf*tauh2o*dp
-          endif
+            if( lz(i,j,L).eq.0.0 ) then
+                tauh2o = .12                      ! Non-Precipitation Clouds Over Ocean
+                tau(i,j,L,2) = fracls*alf*tauh2o*dp
+            else
+                tauh2o = max( 0.0020, 0.120*min( 20*lz(i,j,L)*1000,1.0) )  ! Over Ocean
+                tau(i,j,L,3) = fracls*alf*tauh2o*dp
+            endif
          endif
 
 c Sub-Grid Convective
@@ -811,6 +808,9 @@ c-----Explicit Inline Directives
 #if CRAY
 #if f77
 cfpp$ expand (expmn)
+#endif
+#if f90
+!DIR$ inline always expmn
 #endif
 #endif
       real expmn
@@ -1274,6 +1274,11 @@ cfpp$ expand (deledd)
 cfpp$ expand (sagpol)
 cfpp$ expand (expmn) 
 #endif 
+#if f90 
+!DIR$ inline always deledd
+!DIR$ inline always sagpol
+!DIR$ inline always expmn
+#endif 
 #endif 
       real expmn
 
@@ -1683,6 +1688,10 @@ c-----Explicit Inline Directives
 cfpp$ expand (deledd) 
 cfpp$ expand (sagpol) 
 #endif  
+#if f90  
+!DIR$ inline always deledd
+!DIR$ inline always sagpol
+#endif
 #endif
 
 c-----input parameters
@@ -1999,6 +2008,9 @@ c-----Explicit Inline Directives
 #if f77  
 cfpp$ expand (expmn)
 #endif  
+#if f90  
+!DIR$ inline always expmn
+#endif
 #endif
       real expmn
 
@@ -2123,6 +2135,9 @@ c-----Explicit Inline Directives
 #if f77  
 cfpp$ expand (expmn)
 #endif  
+#if f90  
+!DIR$ inline always expmn
+#endif
 #endif
       real expmn
 

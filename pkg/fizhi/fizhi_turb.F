@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.1 2004/06/15 14:47:24 molod Exp $
+C $Name:  $
+                                                                                    
       subroutine turbio (im,jm,nlay,maxtypes,istrip,nymd,nhms
      1 ,ndturb,ptop, pz, uz, vz, tz, qz, ntracers,ptracers,
      2 ,plz,plze,dpres,pkht,pkz,ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke
