@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.2 2001/05/29 14:01:40 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.3 2001/06/15 15:14:56 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -28,6 +28,15 @@ C     == Routine arguments
       INTEGER myThid
 
 #ifdef ALLOW_SHAP_FILT
+C------
+C  Combine computational Filter of Div & Vorticity 
+C   and Physical Filter of U,V field 
+C   nShapUVPhys = 0  ==> use only computational Filter
+C   nShapUVPhys = 1  ==> compute Div & Vort. with  Grid factors, 
+C                        Filter Div & Vort. Numerically (power nShapUV-1)
+C                        and return filtered U.V in physical space 
+C   nShapUVPhys = nShapUV  ==> Filter in Physical space only (power nShapUV)
+C------  
 
 C     == Local variables ==
       INTEGER bi,bj,K,I,J,N
@@ -35,22 +44,16 @@ C     == Local variables ==
       _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy) 
       _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tmpGrdU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL tmpGrdV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-      IF (nShapUV.gt.0 .AND. Shap_uvtau.GT.0.) THEN
+      IF (nShapUV.GT.0 .AND. Shap_uvtau.GT.0.) THEN
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO K=1,Nr
-           DO J=1,sNy
-            DO I=1,sNx+1
+           DO J=1-Oly,sNy+Oly
+            DO I=1-Olx,sNx+Olx 
              tmpFldU(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
      &                *_maskW(i,j,k,bi,bj)
-            ENDDO
-           ENDDO
-           DO J=1,sNy+1
-            DO I=1,sNx
              tmpFldV(i,j,k,bi,bj)=vFld(i,j,k,bi,bj)
      &                *_maskS(i,j,k,bi,bj)
             ENDDO
@@ -59,6 +62,7 @@ C     == Local variables ==
          ENDDO
         ENDDO
 
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C    [d_xx+d_yy]^n tmpFld
 
@@ -71,21 +75,24 @@ C    [d_xx+d_yy]^n tmpFld
           DO K=1,Nr
 
 C    [d_xx+d_yy] tmpFld
+         IF (N.LE.nShapUVPhys) THEN
            CALL MOM_CALC_HFACZ(bi,bj,k,hFacZ,r_hFacZ,myThid)
-c          CALL MOM_VI_CALC_HDIV(bi,bj,k,
-c    I                    tmpFldU(1-OLx,1-OLy,k,bi,bj),
-c    I                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
-c    &                    hDiv,myThid)
+           CALL MOM_VI_CALC_HDIV(bi,bj,k,
+     I                    tmpFldU(1-OLx,1-OLy,k,bi,bj),
+     I                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
+     &                    hDiv,myThid)
+           CALL MOM_VI_CALC_RELVORT3(bi,bj,k,
+     I                    tmpFldU(1-OLx,1-OLy,k,bi,bj),
+     I                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
+     &                    hFacZ,vort3,myThid)
+         ELSE
+C-  replace Physical calc Div & Vort by computational one :
            DO J=0,sNy+1
             DO I=0,sNx+1
              hDiv(i,j)=tmpFldU(i+1,j,k,bi,bj)-tmpFldU(i,j,k,bi,bj)
      &                +tmpFldV(i,j+1,k,bi,bj)-tmpFldV(i,j,k,bi,bj)
             ENDDO
            ENDDO
-c          CALL MOM_VI_CALC_RELVORT3(bi,bj,k,
-c    I                    tmpFldU(1-OLx,1-OLy,k,bi,bj),
-c    I                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
-c    &                    hFacZ,vort3,myThid)
            DO J=1,sNy+1
             DO I=1,sNx+1
              vort3(i,j)=(tmpFldV(i,j,k,bi,bj)-tmpFldV(i-1,j,k,bi,bj)
@@ -94,77 +101,106 @@ c    &                    hFacZ,vort3,myThid)
             ENDDO
            ENDDO
 C     Special stuff for Cubed Sphere
-      IF (useCubedSphereExchange) THEN
-         I=1
-         J=1
-         vort3(I,J)=
-     &      tmpFldV(I,J,k,bi,bj)
-c    &     -tmpFldV(I-1,J,k,bi,bj)
-     &     -tmpFldU(I,J,k,bi,bj)
-     &     +tmpFldU(I,J-1,k,bi,bj)
-         I=sNx+1
-         J=1
-         vort3(I,J)=
-c    &      tmpFldV(I,J,k,bi,bj)
-     &     -tmpFldV(I-1,J,k,bi,bj)
-     &     -tmpFldU(I,J,k,bi,bj)
-     &     +tmpFldU(I,J-1,k,bi,bj)
-         I=1
-         J=sNy+1
-         vort3(I,J)=
-     &      tmpFldV(I,J,k,bi,bj)
-c    &     -tmpFldV(I-1,J,k,bi,bj)
-     &     -tmpFldU(I,J,k,bi,bj)
-     &     +tmpFldU(I,J-1,k,bi,bj)
-         I=sNx+1
-         J=sNy+1
-         vort3(I,J)=
-c    &      tmpFldV(I,J,k,bi,bj)
-     &     -tmpFldV(I-1,J,k,bi,bj)
-     &     -tmpFldU(I,J,k,bi,bj)
-     &     +tmpFldU(I,J-1,k,bi,bj)
-       ENDIF
+           IF (useCubedSphereExchange) THEN
+             I=1
+             J=1
+             vort3(I,J)=
+     &          tmpFldV(I,J,k,bi,bj)
+c    &         -tmpFldV(I-1,J,k,bi,bj)
+     &         -tmpFldU(I,J,k,bi,bj)
+     &         +tmpFldU(I,J-1,k,bi,bj)
+             I=sNx+1
+             J=1
+             vort3(I,J)=
+c    &          tmpFldV(I,J,k,bi,bj)
+     &         -tmpFldV(I-1,J,k,bi,bj)
+     &         -tmpFldU(I,J,k,bi,bj)
+     &         +tmpFldU(I,J-1,k,bi,bj)
+             I=1
+             J=sNy+1
+             vort3(I,J)=
+     &          tmpFldV(I,J,k,bi,bj)
+c    &         -tmpFldV(I-1,J,k,bi,bj)
+     &         -tmpFldU(I,J,k,bi,bj)
+     &         +tmpFldU(I,J-1,k,bi,bj)
+             I=sNx+1
+             J=sNy+1
+             vort3(I,J)=
+c    &          tmpFldV(I,J,k,bi,bj)
+     &         -tmpFldV(I-1,J,k,bi,bj)
+     &         -tmpFldU(I,J,k,bi,bj)
+     &         +tmpFldU(I,J-1,k,bi,bj)
+           ENDIF
+         ENDIF
 
-c          CALL MOM_VI_DEL2UV(
-c    I                    bi,bj,k,hDiv,vort3,hFacZ,
-c    O                    tmpGrdU,tmpGrdV,
-c    &                    myThid) 
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+         IF (N.GT.nShapUV-nShapUVPhys) THEN
+           CALL MOM_CALC_HFACZ(bi,bj,k,hFacZ,r_hFacZ,myThid)
+           CALL MOM_VI_DEL2UV(
+     I                    bi,bj,k,hDiv,vort3,hFacZ,
+     O                    tmpFldU(1-OLx,1-OLy,k,bi,bj),
+     O                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
+     I                    myThid) 
+           IF (Shap_uvLength.EQ.0.) THEN
+            DO J=1,sNy+1
+             DO I=1,sNx+1
+              tmpFldU(i,j,k,bi,bj) = -0.125*tmpFldU(i,j,k,bi,bj)
+     &                       *rAw(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
+              tmpFldV(i,j,k,bi,bj) = -0.125*tmpFldV(i,j,k,bi,bj)
+     &                       *rAs(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
+             ENDDO
+            ENDDO
+           ELSE
+            DO J=1,sNy+1
+             DO I=1,sNx+1
+              tmpFldU(i,j,k,bi,bj) = -0.125*tmpFldU(i,j,k,bi,bj)
+     &           *Shap_uvLength*Shap_uvLength*_maskW(i,j,k,bi,bj)
+              tmpFldV(i,j,k,bi,bj) = -0.125*tmpFldV(i,j,k,bi,bj)
+     &           *Shap_uvLength*Shap_uvLength*_maskS(i,j,k,bi,bj)
+             ENDDO
+            ENDDO
+           ENDIF 
+         ELSE
            DO J=1,sNy
             DO I=1,sNx+1
-             tmpGrdU(i,j)=(hDiv(i,j)-hDiv(i-1,j)
+             tmpFldU(i,j,k,bi,bj) = -0.125*
+     &                   ( hDiv(i,j)-hDiv(i-1,j)
      &                    -vort3(i,j+1)+vort3(i,j)
-     &                    )*maskW(i,j,k,bi,bj)
+     &                   )*maskW(i,j,k,bi,bj)
             ENDDO
            ENDDO
            DO J=1,sNy+1
             DO I=1,sNx
-             tmpGrdV(i,j)=(vort3(i+1,j)-vort3(i,j)
+             tmpFldV(i,j,k,bi,bj) = -0.125*
+     &                   ( vort3(i+1,j)-vort3(i,j)
      &                    +hDiv(i,j)-hDiv(i,j-1)
-     &                    )*maskS(i,j,k,bi,bj)
+     &                   )*maskS(i,j,k,bi,bj)
             ENDDO
            ENDDO
 
-           DO J=1,sNy+1
-            DO I=1,sNx+1
-             tmpFldU(i,j,k,bi,bj) = -0.125*tmpGrdU(i,j)
-             tmpFldV(i,j,k,bi,bj) = -0.125*tmpGrdV(i,j)
-            ENDDO
-           ENDDO
+         ENDIF
 
           ENDDO
          ENDDO
         ENDDO
-
+C end loop N=1,nShapUV
        ENDDO
+
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C      F <-  [1 - (d_xx+d_yy)^n *deltat/tau].F
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO K=1,Nr
           DO J=1,sNy+1
-           DO I=1,sNx+1
+           DO I=1,sNx
             uFld(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
      &             -tmpFldU(i,j,k,bi,bj)*deltaTmom/Shap_uvtau
+           ENDDO
+          ENDDO
+          DO J=1,sNy+1
+           DO I=1,sNx
             vFld(i,j,k,bi,bj)=vFld(i,j,k,bi,bj)
      &             -tmpFldV(i,j,k,bi,bj)*deltaTmom/Shap_uvtau
            ENDDO
