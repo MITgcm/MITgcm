@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.13 2003/12/14 23:24:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.14 2004/07/01 21:45:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -73,6 +73,7 @@ ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
 #endif
 
            totPhiHyd(I,J,K,bi,bj)=0. _d 0
+           IVDConvCount(i,j,k,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO

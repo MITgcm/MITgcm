@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.69 2004/06/26 02:38:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.70 2004/07/01 21:45:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -131,8 +131,6 @@ C                                      is "pipelined" in the vertical
 C                                      so we need an fVer for each
 C                                      variable.
 C     rhoK, rhoKM1   - Density at current level, and level above 
-C     phiSurfX, - gradient of Surface potentiel (Pressure/rho, ocean)
-C     phiSurfY             or geopotentiel (atmos) in X and Y direction
 C     KappaRT,       - Total diffusion in vertical for T and S.
 C     KappaRS          (background + spatially varying, isopycnal term).
 C     useVariableK   = T when vertical diffusion is not constant
@@ -159,15 +157,11 @@ C                      index into fVerTerm.
 #endif
       _RL rhokm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhok    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRT (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRS (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-C     This is currently used by IVDC and Diagnostics
-      _RL ConvectCount (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL kp1Msk
       LOGICAL useVariableK
       INTEGER iMin, iMax
@@ -234,8 +228,6 @@ C     uninitialised but inert locations.
           vTrans(i,j)    = 0. _d 0
           rhok   (i,j)   = 0. _d 0
           rhoKM1 (i,j)   = 0. _d 0
-          phiSurfX(i,j)  = 0. _d 0
-          phiSurfY(i,j)  = 0. _d 0
           rTrans (i,j)   = 0. _d 0
           rTransKp1(i,j) = 0. _d 0
           fVerT  (i,j,1) = 0. _d 0
@@ -262,7 +254,6 @@ C This is currently also used by IVDC and Diagnostics
            sigmaX(i,j,k) = 0. _d 0
            sigmaY(i,j,k) = 0. _d 0
            sigmaR(i,j,k) = 0. _d 0
-           ConvectCount(i,j,k) = 0.
            KappaRT(i,j,k)    = 0. _d 0
            KappaRS(i,j,k)    = 0. _d 0
 C- tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
@@ -411,7 +402,6 @@ c ==> should use sigmaR !!!
             CALL CALC_IVDC(
      I        bi, bj, iMin, iMax, jMin, jMax, k,
      I        rhoKm1, rhoK,
-     U        ConvectCount, KappaRT, KappaRS,
      I        myTime, myIter, myThid)
           ENDIF
 
@@ -872,7 +862,7 @@ C--      Apply open boundary conditions
 #ifdef ALLOW_TIMEAVE
 #ifndef HRCUBE
         IF (taveFreq.GT.0. .AND. ivdc_kappa.NE.0.) THEN
-          CALL TIMEAVE_CUMUL_1T(ConvectCountTave, ConvectCount,
+          CALL TIMEAVE_CUMULATE(ConvectCountTave, IVDConvCount,
      I                           Nr, deltaTclock, bi, bj, myThid)
         ENDIF
         useVariableK = useKPP .OR. useGMredi .OR. ivdc_kappa.NE.0.

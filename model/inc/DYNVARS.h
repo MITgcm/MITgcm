@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.25 2003/10/31 20:35:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.26 2004/07/01 21:44:34 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -83,6 +83,10 @@ C                  (bottom in z-coordinates, top in p-coordinates)
 C     totPhiHyd :: total hydrostatic Potential (anomaly, for now), 
 C                  at cell center level ; includes surface contribution.
 C                 (for diagnostic + used in Z-coord with EOS_funct_P)
-      COMMON /DYNVARS_DIAG/ phiHydLow, totPhiHyd
+C     IVDConvCount :: Impl.Vert.Diffusion convection counter:
+C                   = 0 (not convecting) or 1 (convecting)
+      COMMON /DYNVARS_DIAG/ phiHydLow, totPhiHyd, IVDConvCount
       _RL  phiHydLow(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  totPhiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  IVDConvCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+	
