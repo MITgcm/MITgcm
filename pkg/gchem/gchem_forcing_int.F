@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_forcing_int.F,v 1.5 2004/11/19 21:28:47 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_forcing_int.F,v 1.6 2004/11/23 20:20:46 mlosch Exp $
 C $Name:  $
 
 #include "GCHEM_OPTIONS.h"
@@ -44,6 +44,7 @@ C  i,j                  :: loop indices
 CEOP
 
 #ifdef ALLOW_GCHEM
+# ifndef GCHEM_SEPARATE_FORCING
 c
 
 ccccccccccccccccccccccccc
@@ -65,6 +66,7 @@ c
 #endif /* ALLOW_CFC */
 cccccccccccccccccccccccccc END CFC cccccccccccccccccccccccccccccccccc
 c
+# endif /* GCHEM_SEPARATE_FORCING */
 #endif /* ALLOW_GCHEM */
 
       RETURN
