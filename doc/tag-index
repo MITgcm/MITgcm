@@ -1,7 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.167 2003/06/24 18:27:09 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.168 2003/06/25 21:17:05 stephd Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint51a_post
+o added code for biogeochemistry package
+  - new pkgs: dic, gchem
+  - new subroutine in ptracers
+o modify code for biogeo packages
+  - in model/src and pkg/ptracers
 
 checkpoint51
 o merged improved packages from ecco-branch (ecco_c51_e34) to MAIN
