@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.4 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.5 2004/11/12 17:31:16 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -202,7 +202,14 @@ c          localTijk(i,j,k)     = gTracer(i,j,k,bi,bj)
           ENDDO
         ENDDO
 
-        IF (K.GE.2) THEN
+#ifdef ALLOW_AIM
+C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
+        IF ( K.GE.2 .AND.
+     &     (.NOT.useAIM .OR.tracerIdentity.NE.GAD_SALINITY .OR.K.LT.Nr)
+     &              ) THEN
+#else
+        IF ( K.GE.2 ) THEN
+#endif
 
          IF ( advectionScheme.EQ.ENUM_CENTERED_2ND ) THEN
           diagonalNumber = 3
