@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_mpf77+mpi_sunfire,v 1.1 2004/12/10 16:08:41 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_mpf77+mpi_sunfire,v 1.2 2004/12/17 07:56:19 mlosch Exp $
 #
 # developed and tested on 
 # SunOS model 5.9 Generic_112233-11 sun4u sparc SUNW,Sun-Fire-15000
@@ -14,8 +14,9 @@ DEFINES='-DWORDLENGTH=4'
 
 MPI='true'
 AWK='gawk'
-MAKE='gmake'
-MAKEDEPEND='makedepend'
+# if regular make does not work try gmake
+#MAKE='gmake'
+MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
 # compiler
 FC='mpf77'
 LINK='mpf77'
