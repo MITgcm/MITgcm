@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.10 2004/12/04 00:19:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.11 2005/02/12 23:02:36 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -121,11 +121,6 @@ C- print out some kee parameters :
      & 'Shap_diagFreq =',
      & '   /* Frequency^-1 for diagnostic output (s)*/')  
 
-      _END_MASTER(myThid)
-
-C--   Everyone else must wait for the parameters to be loaded
-      _BARRIER
-
 C--   Check the Options :
 #ifndef USE_OLD_SHAPIRO_FILTERS
 #ifdef NO_SLIP_SHAP
@@ -142,7 +137,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Check the parameters :
  
-       IF ( .NOT.shap_filt_uvStar ) THEN
+      IF ( .NOT.shap_filt_uvStar ) THEN
  
 C- Notes: applying the filter at the end of the time step (after SOLVE_FOR_P)
 C    affects the barotropic flow divergence ; this might not be consistent
@@ -162,7 +157,31 @@ C    with some option of the code.
          CALL PRINT_MESSAGE(msgBuf, errorMessageUnit, SQUEEZE_RIGHT,1)
         ENDIF
  
+      ENDIF                    
+
+C-    Some Filters / options are not available on CS-grid:
+      IF (useCubedSphereExchange) THEN
+       IF ( Shap_funct.EQ.1 .OR. Shap_funct.EQ.4 ) THEN
+         WRITE(msgBuf,'(2A,I3)') 'SHAP_FILT on CS-grid ',
+     &           'does not work with Shap_funct=', Shap_funct
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R SHAP_FILT_READPARMS'
+       ELSEIF ( Shap_funct.EQ.21 .AND. nShapUV.GT.0
+     &                 .AND. nSx*nSy*nPx*nPy .NE. 6 ) THEN
+         WRITE(msgBuf,'(2A)') 'SHAP_FILT on CS-grid:',
+     &     ' multi-tiles / face not implemented with'
+         CALL PRINT_ERROR( msgBuf , 1)
+         WRITE(msgBuf,'(A,I3,A)') ' Shap_funct=', Shap_funct,
+     &     ' ; => use instead Shap_funct=2 & nShap[]Phys=0'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R SHAP_FILT_READPARMS'
        ENDIF                    
+      ENDIF                    
+
+      _END_MASTER(myThid)
+
+C--   Everyone else must wait for the parameters to be loaded
+      _BARRIER
 
 #endif /* ALLOW_SHAP_FILT */
       RETURN
