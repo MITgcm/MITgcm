@@ -77,8 +77,8 @@ in this Software without prior written authorization from the X Consortium.
 #define MAXDEFINES	512
 #define MAXFILES	512
    === EH3 === */
-#define MAXDEFINES      4096
-#define MAXFILES        4096
+#define MAXDEFINES      8192
+#define MAXFILES        8192
 /* === EH3 === */
 #define MAXDIRS		256
 #define SYMTABINC	10	/* must be > 1 for define() to work right */
