@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.12 2004/04/03 04:57:11 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.13 2005/01/27 16:38:22 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -31,6 +31,7 @@ C     !LOCAL VARIABLES:
       INTEGER bi,bj,I,J,K
       _RL numPnts,theVol,tmpVal,tmpVol
       _RL theMax,theMean,theVolMean,potEnMean
+      _RL meanTile, volMeanTile, potEnMnTile, volTile
 
       numPnts=0.
       theVol=0.
@@ -41,17 +42,21 @@ C     !LOCAL VARIABLES:
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+        volTile     = 0. _d 0
+        meanTile    = 0. _d 0 
+        volMeanTile = 0. _d 0
+        potEnMnTile = 0. _d 0
         DO K=1,Nr
          DO J=1,sNy
           DO I=1,sNx
-           theVol=theVol+rA(i,j,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
+           volTile=volTile+rA(i,j,bi,bj)*drF(k)*hFacC(i,j,k,bi,bj)
 
 C- Vector Invariant form (like in pkg/mom_vecinv/mom_vi_calc_ke.F)
 c          tmpVal=0.25*( uVel( I , J ,K,bi,bj)*uVel( I , J ,K,bi,bj)
 c    &                  +uVel(I+1, J ,K,bi,bj)*uVel(I+1, J ,K,bi,bj)
 c    &                  +vVel( I , J ,K,bi,bj)*vVel( I , J ,K,bi,bj)
 c    &                  +vVel( I ,J+1,K,bi,bj)*vVel( I ,J+1,K,bi,bj) )
-c          theVolMean=theVolMean+tmpVal
+c          volMeanTile=volMeanTile+tmpVal
 c    &           *ra(i,j,bi,bj)*drf(k)*hFacC(i,j,k,bi,bj)
 
 C- Energy conservative form (like in pkg/mom_fluxform/mom_calc_ke.F)
@@ -67,12 +72,12 @@ C    with no assumption on how grid spacing & area are defined.
      &      +vVel(i,j+1,k,bi,bj)*vVel(i,j+1,k,bi,bj)
      &         *dxG(i,j+1,bi,bj)*dyC(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)
      &        )
-           theVolMean= theVolMean + tmpVal*drF(k)
+           volMeanTile= volMeanTile + tmpVal*drF(k)
            tmpVal= tmpVal*recip_hFacC(i,j,k,bi,bj)*recip_rA(i,j,bi,bj)
 
            theMax=max(theMax,tmpVal)
            IF (tmpVal.NE.0.) THEN
-            theMean=theMean+tmpVal
+            meanTile=meanTile+tmpVal
             numPnts=numPnts+1.
            ENDIF
 
@@ -88,15 +93,19 @@ C- jmc: if geoid not flat (phi0surf), needs to add this term.
 C       not sure for atmos/ocean in P ; or atmos. loading in ocean-Z
            tmpVal = tmpVal
      &            + phi0surf(i,j,bi,bj)*etaN(i,j,bi,bj)
-           potEnMean = potEnMean
+           potEnMnTile = potEnMnTile
      &               + tmpVal*rA(i,j,bi,bj)*maskH(i,j,bi,bj)
 c          tmpVal = etaN(i,j,bi,bj)
 c    &            + phi0surf(i,j,bi,bj)*recip_Bo(i,j,bi,bj)
-c          potEnMean = potEnMean
+c          potEnMnTile = potEnMnTile
 c    &        + 0.5 _d 0*Bo_surf(i,j,bi,bj)*tmpVal*tmpVal
 c    &                  *rA(i,j,bi,bj)*maskH(i,j,bi,bj)
           ENDDO
          ENDDO
+         theMean    = theMean    + meanTile
+         theVol     = theVol     + volTile
+         theVolMean = theVolMean + volMeanTile
+         potEnMean  = potEnMean  + potEnMnTile
 C- end bi,bj loops
        ENDDO
       ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.8 2004/04/03 21:17:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.9 2005/01/27 16:38:22 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,8 +35,9 @@ CEOP
 C     !LOCAL VARIABLES:
       INTEGER bi,bj,i,j,k
       INTEGER iMax,jMax
-      _RL numPnts, theVol, theArea, tmpVal, tmpAre, tmpVol
+      _RL theVol, theArea, tmpVal, tmpAre, tmpVol
       _RL theMin, theMax, theMean, theVar, volMean, volVar, theSD
+      _RL areaTile, volTile, sumTile, sqsTile, vSumTile, vSqsTile 
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL AZcorner
@@ -61,6 +62,12 @@ C     !LOCAL VARIABLES:
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+         areaTile= 0. _d 0
+         volTile = 0. _d 0
+         sumTile = 0. _d 0
+         sqsTile = 0. _d 0
+         vSumTile= 0. _d 0
+         vSqsTile= 0. _d 0
 #ifdef MONITOR_TEST_HFACZ
          tmpFac = 0.
          IF( implicDiv2Dflow.GT.0 .AND. abEps.GT.-0.5 ) 
@@ -275,24 +282,30 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
             tmpVal = vort3(i,j)
             tmpAre = rAz(i,j,bi,bj)*drF(k)
             tmpVol = rAz(i,j,bi,bj)*drF(k)*hFacZ(i,j)
-            theArea= theArea + tmpAre
+            areaTile = areaTile + tmpAre
 C-       min,max of relative vorticity ("r")
             theMin = MIN(theMin,tmpVal)
             theMax = MAX(theMax,tmpVal)
 C-       average & std.dev of absolute vorticity ("a")
             tmpVal = tmpVal + fCoriG(i,j,bi,bj)
-            theMean= theMean+ tmpAre*tmpVal
-            theVar = theVar + tmpAre*tmpVal*tmpVal
+            sumTile = sumTile + tmpAre*tmpVal
+            sqsTile = sqsTile + tmpAre*tmpVal*tmpVal
 C-       average & std.dev of potential vorticity ("p")
             tmpVal = tmpVal / hFacZ(i,j)
-            theVol = theVol + tmpVol
-            volMean= volMean+ tmpVol*tmpVal
-            volVar = volVar + tmpVol*tmpVal*tmpVal
+            volTile  = volTile  + tmpVol
+            vSumTile = vSumTile + tmpVol*tmpVal
+            vSqsTile = vSqsTile + tmpVol*tmpVal*tmpVal
            ENDIF
           ENDDO
          ENDDO
 
         ENDDO
+        theArea= theArea + areaTile
+        theVol = theVol  + volTile
+        theMean= theMean + sumTile
+        theVar = theVar  + sqsTile
+        volMean= volMean + vSumTile
+        volVar = volVar  + vSqsTile
        ENDDO
       ENDDO
 
