@@ -35,7 +35,7 @@ chmod a+x $RUNIT
 # cat << EOF > $HERE"/.cvspass"
 # /1 :pserver:cvsanon@mitgcm.org:2401/u/gcmpack Ah<Zy=0=
 # EOF
-TDIR="/net/itrda/scratch-5/edhill/tmp_"$FC
+TDIR="/net/ds-01/scratch-5/edhill/tmp_"$FC
 if test -e $TDIR ; then
     rm -rf $TDIR
 fi

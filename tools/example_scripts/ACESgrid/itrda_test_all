@@ -27,7 +27,7 @@ while test ! "x_"$M_g77"_"$M_ifc"_"$M_pgf77 = x_done_done_done ; do
         if test "x_$ready_to_send" = x__0 ; then
             pat="/tmp/tr_itrda-$i"'*'
             rm -rf $pat
-            run_dir="/net/itrda/scratch-5/edhill/tmp_"$i"/MITgcm/verification"
+            run_dir="/net/ds-01/scratch-5/edhill/tmp_"$i"/MITgcm/verification"
             tdir=`ls -1 $run_dir | grep -v tr_out | grep '^tr' | head -1`
             if test ! "x$tdir" = x ; then
                 cp -ra $run_dir"/"$tdir "/tmp/tr_itrda-"$i"_"$date_str
