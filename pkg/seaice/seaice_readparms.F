@@ -131,7 +131,7 @@ C DOUBLE HO BECAUSE OF MOD IN GROWTH
       MAX_TICE          = 30.     _d 0
       MIN_TICE          = -50.    _d 0
       SEAICE_EPS        = 1.      _d -10
-      SEAICE_EPS_SQ     = 1.      _d -20
+      SEAICE_EPS_SQ     = SEAICE_EPS * SEAICE_EPS
 
 C--   Read settings from model parameter file "data.seaice".
       READ(UNIT=iUnit,NML=SEAICE_PARM01,IOSTAT=errIO)

@@ -45,6 +45,7 @@ C     i,j,bi,bj - Loop counters
       INTEGER i, j, bi, bj, kii
       _RL DWAT, DAIR, RHOICE, RHOAIR, SINWIN, COSWIN, SINWAT, COSWAT
       _RL GRAV, ECCEN, ECM2, GMIN, RADIUS, DELT1, DELT2, PSTAR, AAA
+      _RL TEMPVAR
 
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
@@ -212,8 +213,8 @@ crg later c$taf loop = iteration uice,vice
 
       DO 5000 KII=1,NPSEUDO
 
-c$taf store uice,vice = comlev1_seaice_ds,
-c$taf&                key = kii + (ikey_dynamics-1)*NPSEUDO
+cdmc$taf store uice,vice = comlev1_seaice_ds,
+cdmc$taf&                key = kii + (ikey_dynamics-1)*NPSEUDO
 
 C NOW DO PREDICTOR TIME STEP
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -234,9 +235,13 @@ C NOW DO PREDICTOR TIME STEP
         DO j=1,sNy
          DO i=1,sNx
 C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
-          DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT((UICE(I,J,1,bi,bj)
-     &                    -GWATX(I,J,bi,bj))**2
-     &                    +(VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj))**2)
+          TEMPVAR=(UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj))**2
+     &           +(VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj))**2
+          IF ( TEMPVAR .LT. SEAICE_EPS_SQ ) THEN
+             DWATN(I,J,bi,bj)=SEAICE_waterDrag*SEAICE_EPS
+          ELSE
+             DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
+          ENDIF
           DWATN(I,J,bi,bj)=MAX(DWATN(I,J,bi,bj),QUART) 
 C NOW SET UP SYMMETTRIC DRAG
           DRAGS(I,J,bi,bj)=DWATN(I,J,bi,bj)*COSWAT
@@ -283,7 +288,11 @@ C  NOW EVALUATE VISCOSITIES
           DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(ONE+ECM2)
      &        +4.0 _d 0*ECM2*E12(I,J,bi,bj)**2
      1        +TWO*E11(I,J,bi,bj)*E22(I,J,bi,bj)*(ONE-ECM2)
-          DELT2=SQRT(DELT1)
+          IF ( DELT1 .LT. SEAICE_EPS_SQ ) THEN
+             DELT2=SEAICE_EPS
+          ELSE
+             DELT2=SQRT(DELT1)
+          ENDIF
           DELT2=MAX(GMIN,DELT2)
           ZETA(I,J,bi,bj)=HALF*PRESS(I,J,bi,bj)/DELT2
 C NOW PUT MIN AND MAX VISCOSITIES IN
@@ -302,11 +311,15 @@ C--   Update overlap regions
       _EXCH_XY_R8(ZETA, myThid)
 
 C NOW ADI SCHEME (ZHANG-J/ROTHROCK 1999,bi,bj)
+#ifdef ALLOW_AUTODIFF_TAMC
+      CALL ADI( myThid )
+#else /* ALLOW_AUTODIFF_TAMC */
       IF ( SEAICEuseLSR ) THEN
          CALL LSR( myThid )
       ELSE
          CALL ADI( myThid )
       ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C NOW DO MODIFIED EULER STEP
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -327,9 +340,13 @@ C NOW DO MODIFIED EULER STEP
         DO j=1,sNy
          DO i=1,sNx
 C NOW SET UP NON-LINEAR WATER DRAG
-          DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT((UICE(I,J,1,bi,bj)
-     &                    -GWATX(I,J,bi,bj))**2
-     &                    +(VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj))**2)
+          TEMPVAR=(UICE(I,J,1,bi,bj)-GWATX(I,J,bi,bj))**2
+     &           +(VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj))**2
+          IF ( TEMPVAR .LT. SEAICE_EPS_SQ ) THEN
+             DWATN(I,J,bi,bj)=SEAICE_waterDrag*SEAICE_EPS
+          ELSE
+             DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT(TEMPVAR)
+          ENDIF
           DWATN(I,J,bi,bj)=MAX(DWATN(I,J,bi,bj),QUART) 
 C NOW SET UP SYMMETTRIC DRAG
           DRAGS(I,J,bi,bj)=DWATN(I,J,bi,bj)*COSWAT
@@ -376,7 +393,11 @@ C  NOW EVALUATE VISCOSITIES
           DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(ONE+ECM2)
      &        +4. _d 0*ECM2*E12(I,J,bi,bj)**2
      1        +TWO*E11(I,J,bi,bj)*E22(I,J,bi,bj)*(ONE-ECM2)
-          DELT2=SQRT(DELT1)
+          IF ( DELT1 .LT. SEAICE_EPS_SQ ) THEN
+             DELT2=SEAICE_EPS
+          ELSE
+             DELT2=SQRT(DELT1)
+          ENDIF
           DELT2=MAX(GMIN,DELT2)
           ZETA(I,J,bi,bj)=HALF*PRESS(I,J,bi,bj)/DELT2
 C NOW PUT MIN AND MAX VISCOSITIES IN
@@ -407,15 +428,19 @@ C GET READY FOR SECOND CALL OF ADI
       ENDDO
 
 C NOW ADI SCHEME (ZHANG-J/ROTHROCK 1999)
+#ifdef ALLOW_AUTODIFF_TAMC
+      CALL ADI( myThid )
+#else /* ALLOW_AUTODIFF_TAMC */
       IF ( SEAICEuseLSR ) THEN
          CALL LSR( myThid )
       ELSE
          CALL ADI( myThid )
       ENDIF
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 5000  CONTINUE
 
-c$taf store uice,vice = comlev1, key=ikey_dynamics
+cdm c$taf store uice,vice = comlev1, key=ikey_dynamics
 
       ENDIF
 #endif /* SEAICE_ALLOW_DYNAMICS */
