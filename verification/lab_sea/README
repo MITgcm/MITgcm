@@ -32,6 +32,10 @@ The experiment uses pkg/gmredi, pkg/kpp, pkg/seaice, and pkg/exf.
 The test is a 1-cpu, 10-hour integration.   Both the atmospheric
 state and the open-water surface fluxes are provided by pkg/exf.
 
+More pkg/seaice test experiments, configured for low and
+high-resolution global cube-sphere domains are described
+in MITgcm_contrib/high_res_cube/README_ice.
+
 
 Using testscript to test sea-ice code
 =====================================
@@ -39,8 +43,11 @@ Using testscript to test sea-ice code
 Running the testscript experiment:
   cd MITgcm/verification
   ./testreport -t lab_sea
-The default experiment is Experiment 8, below.
-It uses pkg/gmredi, pkg/kpp, pkg/seaice, and pkg/exf.
+
+To look at output using matlab:
+  cd lab_sea/matlab
+  matlab -nojvm -nosplash
+  
 
 Note that fairly large differences in accuracy occur across different
 platforms.  For example, testscript comparisons between g77 (Linux)

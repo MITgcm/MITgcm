@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.19 2004/03/08 21:20:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.20 2004/03/13 14:57:54 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -68,7 +68,7 @@ c
         DO K=1,3
          DO J=1-OLy,sNy+OLy
           DO I=1-OLx,sNx+OLx
-           HEFF(I,J,k,bi,bj)=SEAICE_initialHEFF
+           HEFF(I,J,k,bi,bj)=ZERO
            AREA(I,J,k,bi,bj)=ZERO
            UICE(I,J,k,bi,bj)=ZERO
            VICE(I,J,k,bi,bj)=ZERO
@@ -78,7 +78,7 @@ c
 c
         DO J=1-OLy,sNy+OLy
          DO I=1-OLx,sNx+OLx
-          HSNOW(I,J,bi,bj)=0.2 _d 0
+          HSNOW(I,J,bi,bj)=ZERO
           ZETA(I,J,bi,bj)=ZERO
          ENDDO
         ENDDO
@@ -207,44 +207,53 @@ C--   Set model variables to initial/restart conditions
 
       ELSE
 
-         DO bj=myByLo(myThid),myByHi(myThid)
-            DO bi=myBxLo(myThid),myBxHi(myThid)
-               DO j=1-OLy,sNy+OLy
-                  DO i=1-OLx,sNx+OLx
-                     HSNOW(I,J,bi,bj)=0.2 _d 0
-                     YNEG(I,J,bi,bj)=ZERO
-                     TMIX(I,J,bi,bj)=TICE(I,J,bi,bj)
-                     DO k=1,3
-                        HEFF(I,J,k,bi,bj)=SEAICE_initialHEFF
-                        AREA(I,J,k,bi,bj)=HEFFM(i,j,bi,bj)
-                        UICE(I,J,k,bi,bj)=ZERO
-                        VICE(I,J,k,bi,bj)=ZERO
-                     ENDDO
-                  ENDDO
-               ENDDO
-            ENDDO
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           HSNOW(I,J,bi,bj)=0.2*HEFFM(i,j,bi,bj)
+           YNEG(I,J,bi,bj)=ZERO
+           TMIX(I,J,bi,bj)=TICE(I,J,bi,bj)
+           DO k=1,3
+            HEFF(I,J,k,bi,bj)=SEAICE_initialHEFF*HEFFM(i,j,bi,bj)
+            UICE(I,J,k,bi,bj)=ZERO
+            VICE(I,J,k,bi,bj)=ZERO
+           ENDDO
+          ENDDO
          ENDDO
+        ENDDO
+       ENDDO
 
 C--   Read initial sea-ice thickness from file if available.
-         IF ( HeffFile .NE. ' ' ) THEN
-            _BEGIN_MASTER( myThid )
-            CALL READ_FLD_XY_RL( HeffFile, ' ', ZETA, 0, myThid )
-            _END_MASTER(myThid)
-            _EXCH_XY_R8(ZETA,myThid)
-            DO bj=myByLo(myThid),myByHi(myThid)
-               DO bi=myBxLo(myThid),myBxHi(myThid)
-                  DO j=1-OLy,sNy+OLy
-                     DO i=1-OLx,sNx+OLx
-                        DO k=1,3
-                         HEFF(I,J,k,bi,bj) = MAX(ZETA(i,j,bi,bj),ZERO)
-                         IF ( ZETA(i,j,bi,bj).EQ.ZERO )
-     &                        AREA(I,J,k,bi,bj) = ZERO
-                        ENDDO
-                     ENDDO
-                  ENDDO
-               ENDDO
+       IF ( HeffFile .NE. ' ' ) THEN
+        _BEGIN_MASTER( myThid )
+        CALL READ_FLD_XY_RL( HeffFile, ' ', ZETA, 0, myThid )
+        _END_MASTER(myThid)
+        _EXCH_XY_R8(ZETA,myThid)
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-OLy,sNy+OLy
+           DO i=1-OLx,sNx+OLx
+            DO k=1,3
+             HEFF(I,J,k,bi,bj) = MAX(ZETA(i,j,bi,bj),ZERO)
             ENDDO
-         ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           DO k=1,3
+            IF(HEFF(I,J,k,bi,bj).GT.ZERO) AREA(I,J,k,bi,bj)=ONE
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
          
       ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.12 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.13 2004/03/13 14:57:54 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -74,7 +74,7 @@ C--   set default sea ice parameters
       SEAICEuseADI       = .FALSE.
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
-      SEAICE_initialHEFF = ONE
+      SEAICE_initialHEFF = ZERO
       SEAICE_drag        = 0.002  _d 0
       OCEAN_drag         = 0.001  _d 0
       SEAICE_waterDrag   = 5.5    _d 0
