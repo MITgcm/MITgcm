@@ -6,7 +6,7 @@ To apply the changes to the default configuration of MITgcmUV:
   ln -s ../verification/exp2/code/SIZE.h ../bin/
   ln -s ../verification/exp2/code/CPP_OPTIONS.h ../bin/
   ln -s ../verification/exp2/code/CPP_EEOPTIONS.h ../bin/
-  ln -s ../verification/exp2/code/external_fields_* ../bin/
+  ln -s ../verification/exp2/code/external_fields_load.F ../bin/
 
 Configure and compile the code:
   cd ../bin

@@ -9,7 +9,7 @@ To apply the changes to the default configuration of MITgcmUV:
   ln -s ../verification/natl_box/code/CPP_OPTIONS.h ../bin/
   ln -s ../verification/natl_box/code/CPP_EEOPTIONS.h ../bin/
   ln -s ../verification/natl_box/code/KPP_OPTIONS.h ../bin/
-  ln -s ../verification/natl_box/code/external_fields_* ../bin/
+  ln -s ../verification/natl_box/code/external_fields_load.F ../bin/
 
 Configure and compile the code:
   cd ../bin
