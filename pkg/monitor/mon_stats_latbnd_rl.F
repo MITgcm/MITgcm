@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_latbnd_rl.F,v 1.2 2004/03/03 14:15:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_latbnd_rl.F,v 1.3 2004/03/03 23:45:55 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -22,7 +22,7 @@ C     === Global data ===
 
 C     === Routine arguments ===
 C     nSepBnd :: Number of latitude bands
-C     ySepBnd :: latitude band egdes (from 1 to nSepBnd-1)
+C     ySepBnd :: Southern latitude egde (from 2 to nSepBnd, 1 is not used)
       INTEGER myNr, mskNr, kLoc
       INTEGER nSepBnd
       _RS ySepBnd(nSepBnd)
@@ -83,8 +83,8 @@ C-    set k index range [k1,k2]
             noPnts(n)=.FALSE.
            ENDIF
            IF (arrMask(i,j,km,bi,bj).NE.0.) THEN
-            theMin(n)=min(theMin(n),tmpVal)
-            theMax(n)=max(theMax(n),tmpVal)
+            theMin(n)=MIN(theMin(n),tmpVal)
+            theMax(n)=MAX(theMax(n),tmpVal)
             tmpVol = arrArea(i,j,bi,bj)*arrhFac(i,j,km,bi,bj)*arrDr(k)
      &                                 *arrMask(i,j,km,bi,bj)
             theVol(n) = theVol(n) + tmpVol
@@ -131,8 +131,8 @@ C     | o Find the latidude band of yLoc in nSep strip
 C     *==========================================================*
 C
 C     !INPUT PARAMETERS:
-C     nBnd :: Nb of latitude band
-C     yBnd :: latitude of band boundaries
+C     nBnd :: Number of latitude bands
+C     yBnd :: latitude of southern boundary (for each lat. band)
 C     yLoc :: current latitude
       INTEGER nBnd
       _RS yBnd(nBnd) 
@@ -141,9 +141,9 @@ C     yLoc :: current latitude
 C     !LOCAL VARIABLES:
       INTEGER n
 
-      NLATBND = nBnd
-      DO n=1,nBnd-1
-       IF (yLoc .LE. yBnd(n)) NLATBND = n
+      NLATBND = 1
+      DO n=2,nBnd
+       IF (yLoc .GT. yBnd(n)) NLATBND = n
       ENDDO
 
       RETURN
