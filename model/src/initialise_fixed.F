@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.22 2004/02/05 05:42:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.23 2004/02/05 19:38:55 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -60,7 +60,6 @@ C      |
 C      |-- CONFIG_SUMMARY
 C      |
 C      |-- MNC_INIT
-C      |-- MNC_W_GRIDINFO
 
 C     !USES:
       IMPLICIT NONE
@@ -144,13 +143,21 @@ C     and get config. info for other component(s).
       IF ( useCoupler ) CALL CPL_EXCH_CONFIGS( myThid )
 #endif
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 #ifdef ALLOW_MNC
-C     Test the MNC package
+
+C     Initialize the MNC package
       CALL MNC_INIT(myThid)
       CALL MNC_CW_INIT(myThid, sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr)
 
+C     Write the grid information
+      CALL MNC_CW_WRITE_GRID_INFO(myThid, 'grid')
+
+C     Create MNC definitions for DYNVARS.h variables
       CALL MNC_CW_ADD_VNAME(myThid, 'iter', '-_-_--__-__t', 0,0)
-      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'iter',1,'units','s')
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'iter',1,
+     &     'long_name','iteration_count')
 
       CALL MNC_CW_ADD_VNAME(myThid, 'U', 'U_xy_Hn__C__t', 4,5)
       CALL MNC_CW_ADD_VATTR_TEXT(myThid,'U',1,'units','m/s')
@@ -164,13 +171,23 @@ C     Test the MNC package
      &     'potential_temperature')
 
       CALL MNC_CW_ADD_VNAME(myThid, 'S', 'Cen_xy_Hn__C__t', 4,5)
-      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'T',1,'long_name',
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'S',1,'long_name',
      &     'salinity')
 
       CALL MNC_CW_ADD_VNAME(myThid, 'Eta', 'Cen_xy_Hn__-__t', 3,4)
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'Eta',1,'long_name',
+     &     'free-surface_r-anomaly')
 
       CALL MNC_CW_ADD_VNAME(myThid, 'W', 'Cen_xy_Hn__C__t', 4,5)
-      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'U',1,'units','m/s')
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'W',1,'units','m/s')
+
+      CALL MNC_CW_ADD_VNAME(myThid, 'totPhiHyd', 'Cen_xy_Hn__C__t', 4,5)
+      CALL MNC_CW_ADD_VNAME(myThid, 'phiHydLow', 'Cen_xy_Hn__-__t', 3,4)
+      CALL MNC_CW_ADD_VNAME(myThid, 'phi_nh', 'Cen_xy_Hn__C__t', 4,5)
+
+      CALL MNC_CW_ADD_VNAME(myThid, 'tr1', 'Cen_xy_Hn__C__t', 4,5)
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'tr1',1,
+     &     'long_name','passive_tracer_1')
 #endif
 
       RETURN

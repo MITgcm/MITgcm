@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.31 2004/02/05 05:42:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.32 2004/02/05 19:38:55 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -81,7 +81,7 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
       INTEGER iRec
 #ifdef ALLOW_MNC
-      _RL mnc_d_iter
+      _RL mnc_iter
 #endif
 CEOP
 
@@ -168,16 +168,39 @@ c       CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
          _BARRIER
 
 #ifdef ALLOW_MNC
-C     Test the MNC package
-      mnc_d_iter = myIter
-      CALL MNC_CW_RL_W_R(myThid,'state',0,0,'iter',-1,mnc_d_iter)
+
+C     Write dynvars using the MNC package
+      mnc_iter = myIter
+      CALL MNC_CW_RL_W_R(myThid,'state',0,0,'iter',-1,mnc_iter)
       CALL MNC_CW_RL_W_D(myThid,'state',0,0,'U', 0, uVel)
       CALL MNC_CW_RL_W_D(myThid,'state',0,0,'V', 0, vVel)
       CALL MNC_CW_RL_W_D(myThid,'state',0,0,'T', 0, theta)
       CALL MNC_CW_RL_W_D(myThid,'state',0,0,'S', 0, salt)
       CALL MNC_CW_RL_W_D(myThid,'state',0,0,'Eta', 0, etaN)
       CALL MNC_CW_RL_W_D(myThid,'state',0,0,'W', 0, wVel)
-#endif
+      IF ( useDynP_inEos_Zc .OR. myIter.NE.nIter0 ) THEN
+        CALL MNC_CW_RL_W_R(myThid,'totPhiHyd',0,0,'iter',-1,mnc_iter)
+        CALL MNC_CW_RL_W_D(myThid,'totPhiHyd',0,0,'totPhiHyd',
+     &       0,totPhiHyd)
+      ENDIF
+      IF ((buoyancyRelation .NE. 'ATMOSPHERIC')
+     &     .AND. (myIter .NE. nIter0)) THEN
+        CALL MNC_CW_RL_W_R(myThid,'phiHydLow',0,0,'iter',-1,mnc_iter)
+        CALL MNC_CW_RL_W_D(myThid,'phiHydLow',0,0,'phiHydLow',
+     &       0,phiHydLow)
+      ENDIF
+
+#ifdef ALLOW_PASSIVE_TRACER
+      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'tr1', 0, tr1)
+#endif /*  ALLOW_PASSIVE_TRACER  */
+
+#ifdef ALLOW_NONHYDROSTATIC
+      IF (nonHydroStatic) THEN
+        CALL MNC_CW_RL_W_D(myThid,'state',0,0,'phi_nh', 0, phi_nh)
+      ENDIF
+#endif /* ALLOW_NONHYDROSTATIC */
+
+#endif /*  ALLOW_MNC  */
 
       ENDIF
 
