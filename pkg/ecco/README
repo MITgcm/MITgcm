@@ -1,0 +1,27 @@
+c
+c
+c   =====================================================
+c   ECCO Environment Main Driver Package for the MITgcmUV
+c   =====================================================
+c
+c   Current Version: 0.0.1 (20-Jun-2000)
+c
+c
+c   General Outline:
+c   ----------------
+c
+c
+c   ========
+c   HISTORY:
+c   ========
+c
+c
+c   started: Christian Eckert eckert@mit.edu  1999
+c
+c   changed: Patrick Heimbach heimbach@mit.edu 20-Jun-2000
+c
+c            - Many changes in ecco_main.F
+c
+c            - the_model_main.F is also part of this package
+c              replacing the standard MITgcmUV top level 
+c              (model/src/) routine of that same name
