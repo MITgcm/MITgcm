@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.4 1998/09/29 18:50:57 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.5 1998/09/29 21:22:33 cnh Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -181,7 +181,7 @@ endsw
 ###############################################################################
 
 # Create list of files
-set flist = `ls -1 ${SOURCEDIRS} | grep '.*\.F'`
+set flist = `ls -1 ${SOURCEDIRS} | grep '.*\.[F]$'`
 if ( $#flist ) then
  echo -n "SRCFILES = " > srclist.inc
  echo -n "F77FILES = " > f77list.inc
@@ -195,13 +195,20 @@ if ( $#flist ) then
   echo ' \' >> objlist.inc
   echo -n "           " ${fname:r}.o >> objlist.inc
  end
- echo " " >> srclist.inc
- echo " " >> f77list.inc
- echo " " >> objlist.inc
 else
  echo No source files found...\!
  exit
 endif
+set flist = `ls -1 ${SOURCEDIRS} | grep '.*\.[c]$'`
+if ( $#flist ) then
+ foreach ff ( ${flist} )
+  set fname = ( ${ff:t}       )
+  echo ' \' >> objlist.inc
+  echo -n "           " ${fname:r}.o >> objlist.inc
+endif
+echo " " >> srclist.inc
+echo " " >> f77list.inc
+echo " " >> objlist.inc
 
 # Convert lists of directories into command-line options
 foreach inc ($INCLUDEDIRS)
@@ -209,7 +216,7 @@ foreach inc ($INCLUDEDIRS)
 end
 set SRCSTARS = ( )
 foreach dr ($SOURCEDIRS)
- set SRCSTARS = ("${SRCSTARS}" $dr/\*.F)
+ set SRCSTARS = ("${SRCSTARS}" $dr\*.F $dr\*.c )
 end
 
 set THISHOSTNAME = ( `hostname` )
@@ -289,7 +296,7 @@ rm -f srclist.inc f77list.inc objlist.inc
 cat >> ${mfile} <<EOF
 
 .SUFFIXES:
-.SUFFIXES: .o .f .p .F
+.SUFFIXES: .o .f .p .F .c
 
 all: \$(EXECUTABLE)
 \$(EXECUTABLE): \$(OBJFILES)
