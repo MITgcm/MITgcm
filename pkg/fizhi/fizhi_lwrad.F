@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.18 2004/08/26 14:37:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.19 2004/08/29 19:46:19 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -221,7 +221,7 @@ C **********************************************************************
        do L = 1,lm
        do i = 1,istrip
          dtrad(i,L) = (   flx(i,L)-   flx(i,L+1))*adelpl(i,L)
-         tmpstrip(i,L) = (   flx(i,L)-   flx(i,L+1))
+         tmpstrip(i,L) = flx(i,L)
          dtdtg(i,L) = ( dfdts(i,L)- dfdts(i,L+1))*adelpl(i,L)
         dtradc(i,L) = (flxclr(i,L)-flxclr(i,L+1))*adelpl(i,L)
        enddo
@@ -815,7 +815,7 @@ c     o3 (band 5), and h2o (bands 1, 2, and 7) transmission functions.
 c     save c1,c2,c3,o1,o2,o3
 c     save h11,h12,h13,h21,h22,h23,h81,h82,h83
 
-c     if (first) then
+      if (first) then
 
 c-----tables co2 and h2o are only used with 'high' option
 
@@ -883,9 +883,9 @@ c-----always use table look-up for ozone transmittance
          enddo
         enddo
 
-c      first=.false.
+       first=.false.
 
-c     endif
+      endif
 
 c-----set the pressure at the top of the model atmosphere
 c     to 1.0e-4 if it is zero
@@ -1493,6 +1493,7 @@ c-----All use table look-up to compute o3 transmittance.
           dpe=0.2
           call tablup(k1,k2,m,n,np,nx,no,nt,sco3,scopre,scotem,
      *                w1,p1,dwe,dpe,o1,o2,o3,trant)
+
       endif
 
 c***** for trace gases *****
