@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_u_yviscflux.F,v 1.2 2001/05/29 14:01:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_u_yviscflux.F,v 1.3 2001/08/16 20:18:08 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,7 +25,6 @@ C     == Routine arguments ==
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2u(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL yViscFluxU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
