@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.33 2005/02/25 01:48:31 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.34 2005/02/25 17:02:46 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -94,12 +94,6 @@ c-----------------------------------------------------------------------
 
 #ifdef ALLOW_USE_MPI
 #include "mpif.h"
-#endif
-
-#ifdef ALLOW_DIAGNOSTICS
-#include "SIZE.h"
-#include "DIAGNOSTICS_SIZE.h"
-#include "DIAGNOSTICS.h"
 #endif
 
       integer im,jm,nlay,istrip,nymd,nhms,bi,bj,ndturb
@@ -337,12 +331,13 @@ c **********************************************************************
       
 c Initialize diagnostic for ground temperature change
 c ---------------------------------------------------
-      if(idtg.gt.0) then
+      if(diagnostics_is_on('DTG     ',myid) ) then
        do j =1,jm
        do i =1,im
-        qdiag(i,j,idtg,bi,bj) = qdiag(i,j,idtg,bi,bj) - tgz(i,j)
+        tmpdiag(i,j) =  -tgz(i,j)
        enddo
        enddo
+       call diagnostics_fill(tmpdiag,'DTG     ',0,1,-3,bi,bj,myid)
       endif
 
 c **********************************************************************
@@ -1343,12 +1338,8 @@ c *********************************************************************
        call diagnostics_fill(tmpdiag,'TS      ',0,1,3,bi,bj,myid)
       endif
 
-      if(idtg.gt.0) then
-      do j =1,jm
-      do i =1,im
-      qdiag(i,j,idtg,bi,bj) = qdiag(i,j,idtg,bi,bj) + tgz(i,j)
-      enddo
-      enddo
+      if(diagnostics_is_on('DTG     ',myid) ) then
+       call diagnostics_fill(tgz,'DTG     ',0,1,3,bi,bj,myid)
       endif
 
 c *********************************************************************
@@ -1425,20 +1416,6 @@ c *********************************************************************
       enddo
       enddo
       endif
-
-c *********************************************************************
-c ****                bump diagnostic counters                      ***
-c *********************************************************************
-
-#ifdef ALLOW_DIAGNOSTICS
-      if( (bi.eq.1) .and. (bj.eq.1) ) then
-      nturbt    = nturbt    + 1
-      nturbq    = nturbq    + 1
-      nturbu    = nturbu    + 1
-      nturbv    = nturbv    + 1
-      ndtg      = ndtg      + 1
-      endif
-#endif
 
       return
       end
