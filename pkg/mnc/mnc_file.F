@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.16 2004/04/02 16:12:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.17 2004/09/23 16:17:57 jmc Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -128,9 +128,11 @@ C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname, atname, sval
 CEOP
+      real*4 sZero
+      sZero = 0.
 
       CALL MNC_FILE_ADD_ATTR_ANY(fname,atname, 1, 
-     &     sval, 0, 0.0D0, 0.0, 0, myThid )
+     &     sval, 0, 0.0D0, sZero, 0, myThid )
       RETURN
       END
 
@@ -157,9 +159,11 @@ C     !INPUT PARAMETERS:
       character*(*) fname, atname
       REAL*8 dval
 CEOP
+      real*4 sZero
+      sZero = 0.
 
       CALL MNC_FILE_ADD_ATTR_ANY(fname,atname, 2, 
-     &     ' ', len, dval, 0.0, 0, myThid )
+     &     ' ', len, dval, sZero, 0, myThid )
       RETURN
       END
 
@@ -214,9 +218,11 @@ C     !INPUT PARAMETERS:
       integer myThid, len, ival
       character*(*) fname, atname
 CEOP
+      real*4 sZero
+      sZero = 0.
 
       CALL MNC_FILE_ADD_ATTR_ANY(fname,atname, 4, 
-     &     ' ', len, 0.0D0, 0.0, ival, myThid )
+     &     ' ', len, 0.0D0, sZero, ival, myThid )
       RETURN
       END
 

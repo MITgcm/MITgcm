@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.16 2004/04/02 16:12:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.17 2004/09/23 16:17:57 jmc Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -242,9 +242,15 @@ C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname,vname,atname,sval
 CEOP
+      real*8 dZero(1)
+      real*4 sZero(1)
+      integer iZero(1)
+      dZero(1) = 0.0D0
+      sZero(1) = 0.0
+      iZero(1) = 0
 
       CALL MNC_VAR_ADD_ATTR_ANY(fname,vname,atname, 
-     &     1, sval, 0, 0.0D0, 0.0, 0, myThid)
+     &     1, sval, 0, dZero, sZero, iZero, myThid)
       RETURN
       END
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -272,9 +278,13 @@ C     !INPUT PARAMETERS:
       character*(*) fname,vname,atname
       REAL*8 dval(*)
 CEOP
+      real*4 sZero(1)
+      integer iZero(1)
+      sZero(1) = 0.0
+      iZero(1) = 0
 
       CALL MNC_VAR_ADD_ATTR_ANY(fname,vname,atname, 
-     &     2, ' ', nv, dval, 0.0, 0, myThid)
+     &     2, ' ', nv, dval, sZero, iZero, myThid)
       RETURN
       END
 
@@ -303,9 +313,13 @@ C     !INPUT PARAMETERS:
       character*(*) fname,vname,atname
       REAL*4 rval(*)
 CEOP
+      real*8 dZero(1)
+      integer iZero(1)
+      dZero(1) = 0.0D0
+      iZero(1) = 0
 
       CALL MNC_VAR_ADD_ATTR_ANY(fname,vname,atname, 
-     &     3, ' ', nv, 0.0D0, rval, 0, myThid)
+     &     3, ' ', nv, dZero, rval, iZero, myThid)
       RETURN
       END
 
@@ -334,9 +348,13 @@ C     !INPUT PARAMETERS:
       character*(*) fname,vname,atname
       integer ival(*)
 CEOP
+      real*8 dZero(1)
+      real*4 sZero(1)
+      dZero(1) = 0.0D0
+      sZero(1) = 0.0
 
       CALL MNC_VAR_ADD_ATTR_ANY(fname,vname,atname, 
-     &     4, ' ', nv, 0.0D0, 0.0, ival, myThid)
+     &     4, ' ', nv, dZero, sZero, ival, myThid)
       RETURN
       END
 
