@@ -1,3 +1,6 @@
+
+#ifdef ALLOW_AUTODIFF_MONITOR
+
    These lines are uncommented on purpose to provoke
    a model crash. You need to customize this header file
    to your problem.
@@ -59,3 +62,5 @@ cph     &                 , adsst, adsss
       _RL adempmr(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 cph      _RL adsst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 cph      _RL adsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+
+#endif /* ALLOW_AUTODIFF_MONITOR */

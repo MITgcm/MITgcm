@@ -233,7 +233,7 @@ c     == local variables ==
 c     == end of interface ==
 CEOP
 
-      mynr = 1
+      mynr = nr
       call active_read_xz_rl( active_var_file, active_var, doglobalread,
      &                     lAdInit, irec, mynr,
      &                     FORWARD_SIMULATION, myOptimIter, mythid)
@@ -303,7 +303,7 @@ c     == local variables ==
 c     == end of interface ==
 CEOP
 
-      mynr = 1
+      mynr = nr
       call active_read_yz_rl( active_var_file, active_var, doglobalread,
      &                     lAdInit, irec, mynr,
      &                     FORWARD_SIMULATION, myOptimIter, mythid)
@@ -489,7 +489,7 @@ c     == local variables ==
 c     == end of interface ==
 CEOP
 
-      mynr = 1
+      mynr = nr
       globalfile = .false.
 
       call active_write_xz_rl( active_var_file, active_var, globalfile,
@@ -552,7 +552,7 @@ c     == local variables ==
 c     == end of interface ==
 CEOP
 
-      mynr = 1
+      mynr = nr
       globalfile = .false.
 
       call active_write_yz_rl( active_var_file, active_var, globalfile,

@@ -271,7 +271,7 @@ c     == local variables ==
 c     == end of interface ==
 CEOP
 
-      mynr = 1
+      mynr = nr
       pref = 'g_'
       write(fname(1:80),'(a)') ' '
       il     = ilnblnk(active_var_file)
@@ -357,7 +357,7 @@ c     == local variables ==
 c     == end of interface ==
 CEOP
 
-      mynr = 1
+      mynr = nr
       pref = 'g_'
       write(fname(1:80),'(a)') ' '
       il     = ilnblnk(active_var_file)
@@ -576,7 +576,7 @@ c     == local variables ==
 c     == end of interface ==
 CEOP
 
-      mynr = 1
+      mynr = nr
       globalfile = .false.
       pref = 'g_'
       write(fname(1:80),'(a)') ' '
@@ -648,7 +648,7 @@ c     == local variables ==
 c     == end of interface ==
 CEOP
 
-      mynr = 1
+      mynr = nr
       globalfile = .false.
       pref = 'g_'
       write(fname(1:80),'(a)') ' '
