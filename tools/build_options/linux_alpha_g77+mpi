@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_alpha_g77+mpi,v 1.1 2003/09/29 16:15:24 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_alpha_g77+mpi,v 1.2 2004/08/29 15:38:33 edhill Exp $
 #
 
 FC='g77'
@@ -9,3 +9,14 @@ DEFINES='-DWORDLENGTH=4'
 LIBS='-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich'
 INCLUDES='-I/usr/local/include'
 CPP='cpp  -traditional -P'
+
+
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+    FFLAGS='-Wimplicit -Wunused -Wuninitialized'
+    FOPTIM='-O3 -funroll-loops'
+else
+    FFLAGS='-Wimplicit -Wunused -ffloat-store'
+    FOPTIM='-O0'
+fi
+

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_g77,v 1.2 2003/11/13 22:03:39 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia64_g77,v 1.3 2004/08/29 15:38:33 edhill Exp $
 #
 
 
@@ -14,7 +14,7 @@ if test "x$IEEE" = x ; then
     FFLAGS='-Wimplicit -Wunused -Wuninitialized'
     FOPTIM='-O3 -funroll-loops'
 else
-    FFLAGS='-Wimplicit -Wunused -Wuninitialized -ffloat-store'
+    FFLAGS='-Wimplicit -Wunused -ffloat-store'
     FOPTIM='-O0'
 fi
 
