@@ -19,6 +19,7 @@
  diffK4S=0.E17,
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALGAS',
+ Integr_GeoPot=1,
  gravity=9.81,
  rhonil=1.0,
  rhoConst=1.0,
