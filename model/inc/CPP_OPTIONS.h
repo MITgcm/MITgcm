@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.25 2003/10/15 14:00:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.26 2003/10/16 15:47:57 edhill Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 
-#include "PACKAGES_CONFIG.h"
+ceh3 #include "PACKAGES_CONFIG.h"
 
 C CPP flags controlling particular source code features
 

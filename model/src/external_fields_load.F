@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.12 2002/11/12 20:39:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.13 2003/10/16 15:47:57 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
  
 CBOP
