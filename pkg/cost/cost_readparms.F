@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.6 2004/09/27 18:00:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.7 2004/12/03 00:43:24 mlosch Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -23,6 +23,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
+#include "PARAMS.h"
 
 #include "cost.h"
 
@@ -55,6 +56,10 @@ c--     Next, read the cost data file.
         end if
         read(  scrunit1, nml = cost_nml )
         close( scrunit1 )
+
+        IF ( MOD(lastinterval,deltaTclock) .GT. 0. ) 
+     &       lastinterval = MAX(
+     &       INT(lastinterval/deltaTclock-1)*deltaTclock,deltaTclock)
 
       _END_MASTER( mythid )
 

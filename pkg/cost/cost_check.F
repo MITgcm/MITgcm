@@ -25,6 +25,7 @@ C     msgBuf      - Informational/error meesage buffer
       WRITE(msgBuf,'(A)') 'COST_CHECK: cost package'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
+#ifdef ALLOW_ECCO
 
 #if ((defined (ALLOW_HFLUX_CONTROL) && \
       !defined (ALLOW_HFLUX_COST_CONTRIBUTION)) || \
@@ -105,6 +106,8 @@ C     msgBuf      - Informational/error meesage buffer
       CALL PRINT_ERROR( msgBuf , 1)
       STOP 'ABNORMAL END: S/R COST_CHECK'
 #endif
+
+#endif /* ALLOW_ECCO */
 
       return
       end
