@@ -1,34 +1,52 @@
 #include <sys/types.h>
 #include <sys/times.h>
 #include <sys/time.h>
+#include <unistd.h>
+/*  Here, we get the definition of the FC_NAMEMANGLE() macro. */
+#include "FC_NAMEMANGLE.h"
 
-   double user_time(void);
-   double system_time(void);
-   double timenow();
+   static long clktck = 0;
+   static double invclktck = 0.0;
 
-  double user_time(void)
+   double FC_NAMEMANGLE(user_time) (void);
+   double FC_NAMEMANGLE(system_time) (void);
+   double FC_NAMEMANGLE(timenow) ();
+   void init_timer();
+
+  void init_timer()
+   {
+     clktck = sysconf(_SC_CLK_TCK);
+     invclktck = 1.0/clktck;
+     return;
+   }
+
+  double FC_NAMEMANGLE(user_time) (void)
    {
      clock_t blabla;
      struct tms timest;
-     
+/* This is useless overhead but we'd need to call init_timer() elsewhere */ 
+     if (clktck == 0) init_timer();
+ 
      blabla = times(&timest);
-     return timest.tms_utime;
+     return invclktck*timest.tms_utime;
   
    }
 
-  double system_time(void)
+  double FC_NAMEMANGLE(system_time) (void)
    {
      clock_t blabla;
      struct tms timest;
+/* This is useless overhead but we'd need to call init_timer() elsewhere */
+     if (clktck == 0) init_timer();
      
      blabla = times(&timest);
-     return timest.tms_stime;
+     return invclktck*timest.tms_stime;
   
    }
 
 
 
- double timenow(void)
+ double FC_NAMEMANGLE(timenow) (void)
   {
 struct timeval timestr;
    void *Tzp=0;
