@@ -16,7 +16,7 @@ C     | 2) The sea surface height variable etaN lags other       |
 C     |    prognostic variables by half a time step.  This lag   |
 C     |    is ignored in SBO computations.                       |
 C     | 3) Density is computed using function SBO_RHO which is   |
-C     |    not exaclty equivalent to the model's FIND_RHO.       |
+C     |    not exaclty equivalent to the model s FIND_RHO.       |
 C     \==========================================================/
       IMPLICIT NONE
 
@@ -62,7 +62,7 @@ c               returns density of sea water given salinity s and temperature t
 c               (a default version of rho1 has been included with calc_sbo,
 c               however in general this should be replaced by a function that
 c               returns the density of the model ocean so that the same density
-c               as the model's is used to compute the sbo products)
+c               as the model s is used to compute the sbo products)
 c
 c       Assumptions
 c           1. the input velocity, temperature, salinity, and sea surface
@@ -143,9 +143,9 @@ c     t         - temperature at grid point (deg C)
 c     u         - eastward  velocity at grid point (m/s)
 c     v         - northward velocity at grid point (m/s)
 c     density   - density at grid point (kg/m**3)
-c     ae        - earth's mean radius  (m) (PREM value)
-c     grav      - earth's mean gravity (m/s**2) (PREM)
-c     sbo_omega - earth's mean angular velocity (rad/s)
+c     ae        - earth s mean radius  (m) (PREM value)
+c     grav      - earth s mean gravity (m/s**2) (PREM)
+c     sbo_omega - earth s mean angular velocity (rad/s)
       integer bi, bj, I, J, K
       _RL lat, lat_deg, lon, radius, darea, dradius, dvolume, depth
       _RL s, t, u, v, density
