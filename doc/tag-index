@@ -1,7 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.73 2002/05/30 22:52:25 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.74 2002/06/15 04:22:21 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+o change phiMin in exp1 (to agree with documentation)
+o add new flags: 
+ - T,S forcing inside/outside Adams-Bashforth
+ - turn off temp,salt advection and/or forcing
+ - for each tracer, define internal flag for multiDimAdvection & A-B
+o monitor: change definition of KE to check conservation of Energy
 
 checkpoint45c_post
 o Removed f90 comments ("!")
