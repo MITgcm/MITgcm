@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.50 2004/06/09 14:03:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.51 2004/06/14 17:48:17 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -267,6 +267,8 @@ c    &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
      & 'useCDscheme =', '  /* CD scheme on/off flag */')
       CALL WRITE_0D_L( useJamartWetPoints,  INDEX_NONE,
      & 'useJamartWetPoints=',' /* Coriolis WetPoints method flag */')
+      CALL WRITE_0D_L( useJamartMomAdv,  INDEX_NONE,
+     & 'useJamartMomAdv=',' /* V.I. Non-linear terms Jamart flag */')
       CALL WRITE_0D_L( SadournyCoriolis,  INDEX_NONE,
      & 'SadournyCoriolis=',' /* Sadourny Coriolis discr. flag */')
       CALL WRITE_0D_L( upwindVorticity,  INDEX_NONE,

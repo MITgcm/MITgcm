@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.62 2004/06/09 14:03:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.63 2004/06/14 17:48:17 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -168,6 +168,7 @@ Cml      sBeta               = 7.4D-4
       useCDscheme         = .FALSE.
       useEnergyConservingCoriolis = .FALSE.
       useJamartWetPoints  = .FALSE.
+      useJamartMomAdv     = .FALSE.
       SadournyCoriolis    = .FALSE.
       upwindVorticity     = .FALSE.
       highOrderVorticity  = .FALSE.

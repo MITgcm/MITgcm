@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.112 2004/06/09 14:03:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.113 2004/06/14 17:48:17 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -164,7 +164,7 @@ C--   Continuous equation parameters
      & readPickupWithTracer, writePickupWithTracer,
      & tempAdvScheme, saltAdvScheme, tracerAdvScheme,
      & multiDimAdvection, useEnergyConservingCoriolis,
-     & useCDscheme, useJamartWetPoints, useNHMTerms,
+     & useCDscheme, useJamartWetPoints, useJamartMomAdv, useNHMTerms,
      & SadournyCoriolis, upwindVorticity, highOrderVorticity,
      & useAbsVorticity,
      & useRealFreshWaterFlux, convertFW2Salt,

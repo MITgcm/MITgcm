@@ -32,6 +32,7 @@
  saltAdvScheme=3,
  vectorInvariantMomentum=.TRUE.,
  useJamartWetPoints=.TRUE.,
+ useJamartMomAdv=.FALSE.,
  &
 
 # Elliptic solver parameters
