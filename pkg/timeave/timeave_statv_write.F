@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.4 2002/09/18 16:38:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.5 2002/10/07 16:29:04 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -38,15 +38,12 @@ C     suff - Hold suffix part of a filename
 C     TimeAve - total time over average
       INTEGER prevPrec
       CHARACTER*(MAX_LEN_FNAM) suff
-      _RL DDTT
       INTEGER bi,bj,k
       INTEGER beginIOErrCount
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
  
 C-    Final Time Averages and Dump Files if needed
-c     IF ( myIter.NE.nIter0 .AND. 
-c    &  DIFFERENT_MULTIPLE(taveFreq,myTime,myTime-deltaTClock) ) THEN
       IF(DIFFERENT_MULTIPLE(taveFreq,myTime,myTime-deltaTClock) )THEN
 
        WRITE(suff,'(I10.10)') myIter
@@ -59,6 +56,7 @@ C-     Normalize by integrated time
           CALL TIMEAVE_NORMALIZ(salttave, TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(uVeltave, TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(vVeltave, TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(wVeltave, TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(Eta2tave, TimeAve_half,1 ,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(TTtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(UUtave,   TimeAve_half,Nr,bi,bj,myThid)
@@ -74,9 +72,8 @@ c         CALL TIMEAVE_NORMALIZ(hFacStave,TimeAve_half,Nr,bi,bj,myThid)
 #endif /* NONLIN_FRSURF */ 
           CALL TIMEAVE_NORMALIZ(UTtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(VTtave,   TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(WTtave,   TimeAve_half,Nr,bi,bj,myThid)
 
-          CALL TIMEAVE_NORMALIZ(wVeltave, TimeAve_full,Nr,bi,bj,myThid)
-          CALL TIMEAVE_NORMALIZ(WTtave,   TimeAve_full,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(phiHydtave,TimeAve_full,Nr,
      &                            bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(phiHydLowtave,TimeAve_full,1,
@@ -103,10 +100,6 @@ c      prevPrec = writeBinaryPrec
 c      writeBinaryPrec = precFloat32
        CALL WRITE_FLD_XY_RL('ETAtave.',suff,etatave,myIter,myThid)
        CALL WRITE_FLD_XY_RL('Eta2tave.',suff,Eta2tave,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('PHLtave.',suff,phiHydLowtave,
-     &      myIter,myThid)
-       CALL WRITE_FLD_XY_RL('PHL2tave.',suff,phiHydLow2tave,
-     &      myIter,myThid)
 
        CALL WRITE_FLD_XYZ_RL('Ttave.',suff,thetatave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('Stave.',suff,salttave,myIter,myThid)
@@ -120,9 +113,17 @@ c      CALL WRITE_FLD_XYZ_RL('KEtave.',suff,KEtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('UTtave.',suff,UTtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('VTtave.',suff,VTtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('WTtave.',suff,WTtave,myIter,myThid)
+
        CALL WRITE_FLD_XYZ_RL('PhHytave.',suff,phiHydtave,myIter,myThid)
+       IF ( buoyancyRelation .NE. 'ATMOSPHERIC' ) THEN
+       CALL WRITE_FLD_XY_RL('PHLtave.',suff,phiHydLowtave,
+     &      myIter,myThid)
+       CALL WRITE_FLD_XY_RL('PHL2tave.',suff,phiHydLow2tave,
+     &      myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('Convtave.',suff,ConvectCountTave,
      &                       myIter,myThid)
+       ENDIF
+
 #ifdef NONLIN_FRSURF
        CALL WRITE_FLD_XYZ_RL('hUtave.',suff,hUtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('hVtave.',suff,hVtave,myIter,myThid)

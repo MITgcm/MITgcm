@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.4 2002/09/18 16:38:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.5 2002/10/07 16:29:04 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -71,12 +71,16 @@ c       CALL TIMEAVE_RESET(hFacStave, Nr, bi, bj, myThid)
       ENDIF
       
 C--   Cumulate state-variables with Half or Full time step : 
-      IF ( myIter .EQ. nIter0 .OR.
+      IF ( myIter .EQ. nIter0 ) THEN
+        DDTT = deltaTclock*(1. _d 0 - tave_lastIter)
+      ELSEIF ( 
      &  DIFFERENT_MULTIPLE(taveFreq, myTime, myTime-deltaTClock)) THEN
-       DDTT=0.5*deltaTclock
+        DDTT = deltaTclock*tave_lastIter
       ELSE
-       DDTT=deltaTclock
+        DDTT = deltaTclock
       ENDIF
+
+      IF ( DDTT .NE. 0. _d 0) THEN
 
 C-    Time Averages of single fields (no hFactor)
       CALL TIMEAVE_CUMULATE(etatave,  etaN,  1 , DDTT, bi, bj, myThid)
@@ -84,6 +88,7 @@ C-    Time Averages of single fields (no hFactor)
       CALL TIMEAVE_CUMULATE(salttave, salt,  Nr, DDTT, bi, bj, myThid)
       CALL TIMEAVE_CUMULATE(uVeltave, uVel,  Nr, DDTT, bi, bj, myThid)
       CALL TIMEAVE_CUMULATE(vVeltave, vVel,  Nr, DDTT, bi, bj, myThid)
+      CALL TIMEAVE_CUMULATE(wVeltave, wVel, Nr,  DDTT, bi, bj, myThid)
 
 C-    Time Averages of "double" fields (no hFactor)
       CALL TIMEAVE_CUMUL_2V(Eta2tave, etaN,etaN, 1,  0,
@@ -96,6 +101,8 @@ C-    Time Averages of "double" fields (no hFactor)
      &     DDTT, bi, bj, myThid)
 c     CALL TIMEAVE_CUMUL_KE(KEtave, uVel,  vVel, Nr,
 c    &     DDTT, bi, bj, myThid)
+      CALL TIMEAVE_CUMUL_2V(WTtave, theta, wVel, Nr, 3,
+     &     DDTT, bi, bj, myThid)
 
 #ifdef NONLIN_FRSURF
 
@@ -129,16 +136,11 @@ C-    Keep record of how much time has been integrated over
         TimeAve_half(k,bi,bj)=TimeAve_half(k,bi,bj)+DDTT
       ENDDO
 
-C- CAUTIOUS : wVel and theta are not synchronously updated during the model 
-C   time-stepping, so that the time-average diagnostic of the cross product 
-C   W*Theta is not perfectly accurate.
+C-- end if DDTT ...
+      ENDIF
 
 C-    Time Averages of "intermediate" fields (no hFactor)
       IF ( myIter .NE. nIter0 ) THEN
-        CALL TIMEAVE_CUMULATE(wVeltave, wVel, Nr, deltaTclock, 
-     &                          bi, bj, myThid)
-        CALL TIMEAVE_CUMUL_2V(WTtave, theta, wVel, Nr, 3,
-     &                        deltaTclock, bi, bj, myThid)
         CALL TIMEAVE_CUMULATE(phiHydLowtave, phiHydLow, 1, deltaTclock, 
      &                          bi, bj, myThid)
         CALL TIMEAVE_CUMUL_2V(phiHydLow2Tave, 
