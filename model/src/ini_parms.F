@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.43 1999/05/18 18:01:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.44 1999/06/29 18:33:26 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -84,7 +84,7 @@ C
 C--   Continuous equation parameters
       NAMELIST /PARM01/
      & gravity, gBaro, rhonil, tAlpha, sBeta, f0, beta,
-     &   viscAh,  viscAz,  viscA4,
+     &   viscAh,  viscAz,  viscA4, cosPower,
      &  diffKhT, diffKzT, diffK4T, 
      &  diffKhS, diffKzS, diffK4S,
      &  GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,GMmaxval,

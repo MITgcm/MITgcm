@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.39 1999/05/18 18:01:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.40 1999/06/29 18:33:25 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -77,7 +77,7 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
       INTEGER kUp,kDown,kM1
       INTEGER myThid
       _RL     myCurrentTime
-      INTEGER bi,bj,iMin,iMax,jMin,jMax
+      INTEGER bi,bj,iMin,iMax,jMin,jMax,jG
 
 C     == Local variables ==
 C     ab15, ab05    - Weights for Adams-Bashforth time stepping scheme.
@@ -144,7 +144,8 @@ C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  mtFacV
 C     ab05, ab15 - Adams-Bashforth time-stepping weights.
       _RL  ab05, ab15
-      _RL cosfac(sNy)
+      _RL cosfacU(1-Oly:sNy+Oly)
+      _RL cosfacV(1-Oly:sNy+Oly)
 
       rVelMaskOverride=1.
       IF ( k .EQ. 1 ) rVelMaskOverride=freeSurfFac
@@ -160,6 +161,20 @@ C     Initialise intermediate terms
         fZon(i,j) = 0.
         fMer(i,j) = 0.
        ENDDO
+      ENDDO
+C     COS(latitude) at U points and V points
+      DO J=1-OLy,sNy+OLy
+       jG = myYGlobalLo + (bj-1)*sNy + J-1
+       jG = min(max(1,jG),Ny)
+       IF (cosPower.NE.0.) THEN
+        cosFacU(J) = COS( yC(1,J,bi,bj) *deg2rad )
+     &                  ** cosPower
+        cosFacV(J) = COS( (yC(1,J,bi,bj)-0.5*delY(jG)) *deg2rad )
+     &                  ** cosPower
+       ELSE
+        cosFacU(J) = 1.
+        cosFacV(J) = 1.
+       ENDIF
       ENDDO
 C--   Term by term tracer parmeters
 C     o U momentum equation
@@ -285,12 +300,12 @@ C     - Laplacian  and bi-harmonic terms
 #endif /* OLD_UV_GEOMETRY */
      &     *(
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
-     &        -viscAh*(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))
+     &       -viscAh*(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))*cosFacU(J)
 #else
      &        0.
 #endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
 #ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
-     &        +viscA4*( v4F(i+1,j)        -v4F(i,j)         )
+     &       +viscA4*( v4F(i+1,j)        -v4F(i,j)         )*cosFacU(J)
 #endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
      &      )*_recip_dxF(i,j,bi,bj)
 
@@ -330,12 +345,12 @@ C     o Laplacian and bi-harmonic term
         vF(i,j) = _dxV(i,j,bi,bj)*drF(k)*hFacZ(i,j)
      &     *(
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
-     &        -viscAh*(uVel(i,j,k,bi,bj)-uVel(i,j-1,k,bi,bj))
+     &       -viscAh*(uVel(i,j,k,bi,bj)-uVel(i,j-1,k,bi,bj))*cosFacV(J)
 #else
      &        0.
 #endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
 #ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
-     &        +viscA4*( v4F(i,j)        -v4F(i,j-1)         )
+     &       +viscA4*( v4F(i,j)        -v4F(i,j-1)         )*cosFacV(J)
 #endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
      &      )
      &       *_recip_dyU(i,j,bi,bj)
@@ -474,7 +489,7 @@ C-- No-slip BCs impose a drag at walls...
      &   *( hFacZClosedS*_dxV(i, j ,bi,bj)*_recip_dyU(i, j ,bi,bj)
      &     +hFacZClosedN*_dxV(i,j+1,bi,bj)*_recip_dyU(i,j+1,bi,bj) )
      &   *drF(k)*2.*( viscAh*uVel(i,j,k,bi,bj)
-     &               -viscA4*v4F(i,j) )
+     &               -viscA4*v4F(i,j) ) *cosFacU(J)
        ENDDO
       ENDDO
       ENDIF
@@ -605,12 +620,12 @@ C     o Laplacian term
         vf(i,j) = _dyU(i,j,bi,bj)*drF(K)*hFacZ(i,j)
      &     *(
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
-     &        -viscAh*(vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj))
+     &       -viscAh*(vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj))*cosFacV(J)
 #else
      &        0.
 #endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
 #ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
-     &        +viscA4*(v4F(i,j)         -v4F(i-1,j))
+     &       +viscA4*(v4F(i,j)         -v4F(i-1,j)         )*cosFacV(J)
 #endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
      &      )*_recip_dxV(i,j,bi,bj)
        ENDDO
@@ -645,10 +660,10 @@ C     o Laplacian term
 #endif /* OLD_UV_GEOMETRY */
      &     *( 0.
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
-     &        -viscAh*(vVel(i,j+1,k,bi,bj)-vVel(i,j,k,bi,bj))
+     &       -viscAh*(vVel(i,j+1,k,bi,bj)-vVel(i,j,k,bi,bj))*cosFacU(J)
 #endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
 #ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
-     &        +viscA4*(v4F(i,j+1)         -v4F(i,j))
+     &       +viscA4*(v4F(i,j+1)         -v4F(i,j)         )*cosFacU(J)
 #endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
      &      )*_recip_dyF(i,j,bi,bj)
 
@@ -785,7 +800,7 @@ C-- No-slip BCs impose a drag at walls...
      &   *( hFacZClosedW*_dyU( i ,j,bi,bj)*_recip_dxV( i ,j,bi,bj)
      &     +hFacZClosedE*_dyU(i+1,j,bi,bj)*_recip_dxV(i+1,j,bi,bj) )
      &   *rkFac*drF(k)*2.*( viscAh*vVel(i,j,k,bi,bj)
-     &                     -viscA4*v4F(i,j) )
+     &                     -viscA4*v4F(i,j) ) *cosFacV(J)
        ENDDO
       ENDDO
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.38 1999/05/05 18:32:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.39 1999/06/29 18:33:21 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -328,6 +328,7 @@ C     pfFacMom      - Momentum pressure forcing tracer parameter
 C     cfFacMom      - Coriolis term tracer parameter
 C     foFacMom      - Momentum forcing tracer parameter
 C     mtFacMom      - Metric terms tracer parameter
+C     cosPower      - Power of cosine of latitude to multiply viscosity
 C     cAdjFreq      - Frequency of convective adjustment
 C
 C     taveFreq      - Frequency with which time-averaged model state is written to
@@ -359,6 +360,7 @@ C                          circles ( see filter*.F )
      & recip_rhoConst, rhoConst, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
+     & cosPower,
      & cAdjFreq, omega, tauThetaClimRelax, lambdaThetaClimRelax,
      & tauSaltClimRelax, lambdaSaltClimRelax,
      & externForcingCycle, externForcingPeriod,
@@ -438,6 +440,7 @@ C                          circles ( see filter*.F )
       _RL cfFacMom
       _RL foFacMom
       _RL mTFacMom
+      _RL cosPower
       _RL cAdjFreq
       _RL omega
       _RL tauThetaClimRelax

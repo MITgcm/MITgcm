@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.3 1999/05/05 18:32:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.4 1999/06/29 18:33:26 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -82,6 +82,7 @@ C--   Set default "physical" parameters
       viscA4              = 0.D11
       diffK4T             = 0.D11
       diffK4S             = 0.D11
+      cosPower            = 0.
       GMmaxslope          = 1.D-2
       GMlength            = 200.D3
       GMalpha             = 0.D0
