@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.18 2004/07/28 21:57:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.19 2004/07/29 15:21:50 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -279,6 +279,9 @@ c
        timstp   = nsecf(ndturb)
        timstp2  = nsecf(ndmoist)
        dtfac    = min( 1.0, timstp/timstp2 )
+
+       print *,' turb time step ',timstp
+       print *,' moist time step ',timstp2
 
 c delttrb is the internal turbulence time step
 c a value equal to ndturb means one internal iteration

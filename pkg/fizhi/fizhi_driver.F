@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.18 2004/07/28 21:57:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.19 2004/07/29 15:21:50 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -191,17 +191,17 @@ C TURBULENCE
 C ==========
       IF ( alarm('turb') ) THEN
 
-c     call turbio (im,jm,lm,1,nymd,nhms,bi,bj,ndturb,
-c    .  ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
-c    .  ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-c    .  tgz,fracland,landtype,
-c    .  tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac,
-c    .  nchp,nchptot,nchpland,chfr,chlat,chlon,igrd,ityp,
-c    .  alai,agrn,sea_ice,lpnt,
-c    .  turbu,turbv,turbt,turbq,radlwg,st4,dst4,radswg,radswt,
-c    .  fdifpar,fdirpar,rainlsp,raincon,snowfall,tg0,
-c    .  imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw,qq,
-c    .  myid)
+      call turbio (im,jm,lm,1,nymd,nhms,bi,bj,ndturb,
+     .  ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
+     .  ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
+     .  tgz,fracland,landtype,
+     .  tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac,
+     .  nchp,nchptot,nchpland,chfr,chlat,chlon,igrd,ityp,
+     .  alai,agrn,sea_ice,lpnt,
+     .  turbu,turbv,turbt,turbq,radlwg,st4,dst4,radswg,radswt,
+     .  fdifpar,fdirpar,rainlsp,raincon,snowfall,tg0,
+     .  imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw,qq,
+     .  myid)
 
 c Add Gravity-Wave Drag Tendency
 c ------------------------------

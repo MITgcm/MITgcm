@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.28 2004/07/28 21:57:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.29 2004/07/29 15:21:50 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -119,6 +119,8 @@ c Local Variables
       _RL getcon, kappa, p0kappa, s0, ra
       _RL cosz(sNx,sNy)
 
+      _RL tempij(sNx,sNy)
+
       logical alarm
       external alarm
 
@@ -137,6 +139,8 @@ C Unshadow input arrays (and make 'fizhi theta' from true theta)
 C***********************************************************************
 
       if( (nhms.eq.nhms0) .and. (nymd.eq.nymd0) ) then
+       if(myid.eq.1) print *,' nhms, nhms0 ',nhms,' ',nhms0
+       if(myid.eq.1) print *,' nymd, nymd0 ',nymd,' ',nymd0
        if(myid.eq.1) print *,' Initializing fizhi arrays '
        imstturblw = 0
        imstturbsw = 0
@@ -264,6 +268,91 @@ C compute pressures - all pressure are converted here to hPa
      . fccavelw(1,1,1,bi,bj),qq(1,1,1,bi,bj))
 
       endif
+
+      print *,' In do fizhi, bi = ',bi
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = turbu(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' turbu at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = turbv(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' turbv at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = turbt(i,j,L,bi,bj)*p0kappa/p(i,j,bi,bj)
+       enddo
+       enddo
+       print *,' turbt at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = turbq(i,j,L,1,bi,bj)/p(i,j,bi,bj)
+       enddo
+       enddo
+       print *,' turbq at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = moistu(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' moistu at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = moistv(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' moistv at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = moistt(i,j,L,bi,bj)*p0kappa/p(i,j,bi,bj)
+       enddo
+       enddo
+       print *,' moistt at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = moistq(i,j,L,1,bi,bj)/p(i,j,bi,bj)
+       enddo
+       enddo
+       print *,' moistq at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = swdt(i,j,L,bi,bj)*radswt(i,j,bi,bj) *p0kappa /
+     .                        p(i,j,bi,bj)
+       enddo
+       enddo
+       print *,' swdt at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = (lwdt(i,j,L,bi,bj)+
+     .         dlwdtg(i,j,L,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj)))
+     .                 *p0kappa/p(i,j,bi,bj)
+       enddo
+       enddo
+       print *,' lwdt at level ',l,' ',tempij
+      enddo
 
       do L = 1,Nrphys
       do j = jm1,jm2
