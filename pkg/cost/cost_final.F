@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.7 2003/11/06 22:03:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.8 2003/11/14 23:07:30 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -58,7 +58,9 @@ c     == end of interface ==
 #elif (defined (ALLOW_COST_STATE_FINAL))
       CALL COST_STATE_FINAL (myThid)
 
-#else /* above stuff undef */
+#endif /* above stuff undef */
+
+#ifndef ALLOW_ECCO
 
 # ifdef ALLOW_COST_TEST
       CALL COST_TEST (myThid)
