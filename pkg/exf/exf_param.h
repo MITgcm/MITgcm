@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.20 2004/12/03 07:36:58 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.21 2004/12/09 17:58:51 dimitri Exp $
 c
 c
 c     ==================================================================
@@ -372,9 +372,9 @@ c-- set dummy dimension 1
        integer MAX_LAT_INC
        parameter(MAX_LAT_INC = 1)
 #else
-c for lat interpolation, arraysize currently set to 250 max data values
+c for lat interpolation, arraysize currently set to 2176 max data values
        integer MAX_LAT_INC
-       parameter(MAX_LAT_INC = 1088)
+       parameter(MAX_LAT_INC = 2176)
       _RL ustress_lon0, ustress_lon_inc
       _RL ustress_lat0, ustress_lat_inc(MAX_LAT_INC)
       INTEGER ustress_nlon, ustress_nlat
