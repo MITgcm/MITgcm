@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.15 1998/06/22 15:26:26 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.16 1998/06/30 17:21:11 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -70,8 +70,8 @@ C /|\   |  |
 C  |    |  |
 C  |<== |  | ** Time stepping loop finishes here **
 C       |  |
+C       |  |--WRITE_CHECKPOINT 
 C       |  |--WRITE_STATE
-C       |  |--WRITE_CHECKPOINT
 C       |
 C       .
 C       .
