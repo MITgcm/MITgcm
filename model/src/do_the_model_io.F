@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.48 2004/12/13 22:01:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.49 2005/01/04 00:27:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -98,9 +98,9 @@ C     Do LAND time averages
 #endif
 
 #ifdef ALLOW_GMREDI
-C     Do GMRedi diagnostics.
+C     Do GMRedi output.
       IF (useGMRedi .AND. myIter.NE.nIter0 )
-     &     CALL GMREDI_DIAGS( myTime, myIter, myThid )
+     &     CALL GMREDI_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_KPP
@@ -154,9 +154,9 @@ C     Do bulkf diagnostics.
 #endif
 
 #ifdef ALLOW_THSICE
-C     Do seaice diagnostics.
+C     Do seaice output.
       IF (useThSIce)
-     &     CALL THSICE_DIAGS( myTime, myIter, myThid )
+     &     CALL THSICE_OUTPUT( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_PTRACERS
