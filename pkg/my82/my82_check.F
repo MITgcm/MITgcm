@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_check.F,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_check.F,v 1.2 2004/09/23 12:02:54 mlosch Exp $
 C $Name:  $
 #include "MY82_OPTIONS.h"
 
@@ -28,6 +28,14 @@ C     msgBuf      - Informational/error meesage buffer
       WRITE(msgBuf,'(A)') 'MY82_CHECK: #define ALLOW_MY82'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
+
+C     So far, MY82 works only with oceanic z-coordinates
+      IF ( buoyancyRelation .NE. 'OCEANIC' ) THEN
+         WRITE(msgBuf,'(A)')
+     &      'MY82 works only with buoyancyRelation = ''OCEANIC'''
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R MY82_CHECK'
+      ENDIF
 
 C     MY82 needs convection turned off (will be packaged later)
       IF (cAdjFreq.NE.0.  .OR.

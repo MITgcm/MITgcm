@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_check.F,v 1.1 2004/09/16 11:27:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_check.F,v 1.2 2004/09/23 12:02:54 mlosch Exp $
 C $Name:  $
 #include "GGL90_OPTIONS.h"
 
@@ -28,6 +28,14 @@ C     msgBuf      - Informational/error meesage buffer
       WRITE(msgBuf,'(A)') 'GGL90_CHECK: #define ALLOW_GGL90'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
+
+C     So far, GGL90 works only with oceanic z-coordinates
+      IF ( buoyancyRelation .NE. 'OCEANIC' ) THEN
+         WRITE(msgBuf,'(A)')
+     &      'GGL90 works only with buoyancyRelation = ''OCEANIC'''
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R GGL90_CHECK'
+      ENDIF
 
 C     GGL90 needs convection turned off (will be packaged later)
       IF (cAdjFreq.NE.0.  .OR.
