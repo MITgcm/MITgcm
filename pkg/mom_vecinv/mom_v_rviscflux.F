@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_v_rviscflux.F,v 1.2 2001/05/29 14:01:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_v_rviscflux.F,v 1.3 2004/05/14 17:10:34 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -42,6 +42,7 @@ C     - Laplacian  and bi-harmonic terms
      &   *rAs(i,j,bi,bj)
      &   *( vFld(i,j,k,bi,bj)-vFld(i,j,kp1,bi,bj)
      &    )*rkFac*recip_drC(kp1)
+     &    *_maskS(i,j,k,bi,bj)
      &    *_maskS(i,j,kp1,bi,bj)
        ENDDO
       ENDDO
