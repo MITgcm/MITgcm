@@ -34,12 +34,15 @@ generic_advdiff
 gmredi
 
 #  Known dependencies
-cd_code		+mom_fluxform
 shap_filt	+mom_vecinv
 seaice		-therm_seaice
 therm_seaice	-seaice
 exf		-bulk_force
 bulk_force	-exf
+therm_seaice	+bulk_force
+gchem           +ptracers
+dic             +gchem
+
 
 #  Need more information on the following:
 
