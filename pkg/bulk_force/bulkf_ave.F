@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_ave.F,v 1.5 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_ave.F,v 1.6 2003/11/23 01:36:55 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -16,26 +16,21 @@ C     !USES:
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
-#ifdef ALLOW_BULK_FORCE
 #include "FFIELDS.h"
 #include "BULKF.h"
 #include "BULKF_INT.h"
 #include "BULKF_DIAG.h" 
-#endif
 c     == routine arguments ==
 
       integer mythid
       integer bi,bj
-      integer i,j,k
-
 
 #ifdef ALLOW_BULK_FORCE
 #ifdef ALLOW_TIMEAVE
 
+      integer i,j,k
 
 C--     Time-average
           do j = 1,sny
@@ -72,6 +67,6 @@ c    &           (recip_Cp*recip_rhoNil*recip_dRf(1))*deltaTclock
 
 #endif  /*ALLOW_TIMEAVE*/
 #endif  /*ALLOW_BULK_FORCE*/
-       return
-      end
+      RETURN
+      END
 

@@ -1,6 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_diags.F,v 1.5 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_diags.F,v 1.6 2003/11/23 01:36:55 jmc Exp $
 C $Name:  $
-cswdblk modified for bulk formula -- Dec 01
 
 #include "BULK_FORCE_OPTIONS.h"
 
@@ -11,18 +10,17 @@ C     | SUBROUTINE BULKF_DIAGS                                  |
 C     | o Do BULKF diagnostic output                           |
 C     |==========================================================|
 C     \==========================================================/
+cswdblk modified for bulk formula -- Dec 01
       IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-cswdblk --- add --
-#ifdef ALLOW_BULK_FORCE
 #include "BULKF.h"
+#include "BULKF_PARAMS.h"
 #include "BULKF_DIAG.h" 
-#endif 
-cswdblk -- end add ---
+
 C     == Routine arguments ==
 C     myTime - Current time of simulation ( s )
 C     myIter - Iteration number
@@ -33,23 +31,18 @@ C     myThid -  Number of this instance
 
 CEndOfInterface
 
+#ifdef ALLOW_BULK_FORCE
+#ifdef ALLOW_TIMEAVE
 
-C     == Local variables ==
+C     == Function
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
+C     == Local variables ==
       INTEGER bi, bj
       CHARACTER*(MAX_LEN_MBUF) suff
 
-      INTEGER I,J
-
-#ifdef ALLOW_BULK_FORCE
-
-
-#ifdef ALLOW_TIMEAVE
-
-
 C     Dump files and restart average computation if needed
-      IF ( DIFFERENT_MULTIPLE(taveFreq,myTime,myTime-deltaTClock)
+      IF ( DIFFERENT_MULTIPLE(blk_taveFreq,myTime,myTime-deltaTClock)
      &     ) THEN
 
        

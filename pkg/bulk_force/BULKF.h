@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/BULKF.h,v 1.4 2003/11/23 01:36:55 jmc Exp $
+C $Name:  $
+
 #ifdef ALLOW_BULK_FORCE
 cswdblk
 c     !ROUTINE: BULKF.h
@@ -10,9 +13,10 @@ c   FORCING VARIABLES
 C Mandatory:
 c  tair      - air temperature (K)
 c  qair      - specific humidity at surface (Kg/Kg)
-c  rain      - precipitation, which may become snow (m/s), <0 decreases salinity
-c  solar     - shortwave radiation (W/m^2), <0 for ocean warming
-c  flw       - downward longwave flux (W/m^2), <0 for ocean warming
+c  rain      - precipitation, which may become snow (m/s), (>0: rain)
+c  solar     - downward shortwave radiation (W/m^2), (>0: downward)
+c  flw       - downward longwave radiation  (W/m^2), (>0: downward)
+c              (jmc:  flwdwn  would be a better name)
 c  wspeed    - wind speed (m/s)
 C
 C Optional:
@@ -26,12 +30,13 @@ c
       COMMON /BULKF_FFIELDS_PARMS/
      &       Tair, Qair, Rain, Solar,  flw, 
      &       uwind, vwind, runoff, wspeed,
-     &       qnetch, empch, cloud, evapora,  
+     &       qnetch, empch, cloud,
      &       AirTempFile, AirHumidityFile, RainFile,
      &       SolarFile, LongwaveFile, UWindFile, VWindFile,
      &       RunoffFile, WSpeedFile, readwindstress, 
      &       readsurface,
      &       QnetFile,EmPFile, CloudFile, SnowFile
+c    &    ,evapora  
 
       _RL  Tair  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  Qair  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -45,7 +50,7 @@ c
       _RL qnetch  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL empch   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL cloud   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL evapora (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+c     _RL evapora (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       CHARACTER*(MAX_LEN_FNAM) AirTempFile
       CHARACTER*(MAX_LEN_FNAM) AirHumidityFile
       CHARACTER*(MAX_LEN_FNAM) RainFile
@@ -61,5 +66,5 @@ c
       CHARACTER*(MAX_LEN_FNAM) SnowFile
       LOGICAL readwindstress
       LOGICAL readsurface
-#endif
 
+#endif /* ALLOW_BULK_FORCE */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.6 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.7 2003/11/23 01:36:55 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -36,15 +36,11 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-#include "GRID.h"
-#include "DYNVARS.h"
-cswdblk -- add ---
-#ifdef ALLOW_BULK_FORCE
+c #include "GRID.h"
+c #include "DYNVARS.h"
 #include "BULKF.h"
-#endif
-cswdblk -- end add ---
-#ifdef ALLOW_THERM_SEAICE
-#include "ICE.h"
+#ifdef ALLOW_THSICE
+#include "THSICE.h"
 #endif
       LOGICAL DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -58,6 +54,7 @@ C     myIter - Simulation timestep number
       _RL     myTime
       INTEGER myIter
  
+#ifdef ALLOW_BULK_FORCE
 
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
@@ -131,7 +128,6 @@ C     aWght, bWght :: Interpolation weights
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 
-#ifdef ALLOW_BULK_FORCE
 
       IF ( periodicExternalForcing ) THEN
 
@@ -379,69 +375,70 @@ c        -- dasilva data in C, ncep data in K ---
      &                       +aWght*tair1(i,j,bi,bj)   !+273.15
 cswdblkf -- QQQQQ set to kg.kg??? ---
 c       -- dasilva data in g, ncep in kg ---
-          QAIR(i,j,bi,bj)   =( bWght*qair0(i,j,bi,bj)  
-     &                       +aWght*qair1(i,j,bi,bj) )
+          QAIR(i,j,bi,bj)    =(bWght*qair0(i,j,bi,bj)  
+     &                        +aWght*qair1(i,j,bi,bj) )
           RAIN(i,j,bi,bj)    = bWght*rain0(i,j,bi,bj) 
-     &                       +aWght*rain1(i,j,bi,bj)
-          SOLAR(i,j,bi,bj)    =  bWght*solar0(i,j,bi,bj)
-     &                       +aWght*solar1(i,j,bi,bj)
-          FLW(i,j,bi,bj)    =   bWght*flw0(i,j,bi,bj)
-     &                       +aWght*flw1(i,j,bi,bj)
-          UWIND(i,j,bi,bj)    = bWght*uwind0(i,j,bi,bj)
-     &                       +aWght*uwind1(i,j,bi,bj)
-          VWIND(i,j,bi,bj)    = bWght*vwind0(i,j,bi,bj)
-     &                       +aWght*vwind1(i,j,bi,bj)
-          RUNOFF(i,j,bi,bj)    = bWght*runoff0(i,j,bi,bj)
-     &                       +aWght*runoff1(i,j,bi,bj)
-          WSPEED(i,j,bi,bj)    = bWght*wspeed0(i,j,bi,bj)
-     &                       +aWght*wspeed1(i,j,bi,bj)
-          QNETCH(i,j,bi,bj)    = bWght*qnetch0(i,j,bi,bj)
-     &                       +aWght*qnetch1(i,j,bi,bj)
-          EMPCH(i,j,bi,bj)    = bWght*empch0(i,j,bi,bj)
-     &                       +aWght*empch1(i,j,bi,bj)
-          CLOUD(i,j,bi,bj)    = bWght*cloud0(i,j,bi,bj)
-     &                       +aWght*cloud1(i,j,bi,bj)
-#ifdef ALLOW_THERM_SEAICE
+     &                        +aWght*rain1(i,j,bi,bj)
+          SOLAR(i,j,bi,bj)   = bWght*solar0(i,j,bi,bj)
+     &                        +aWght*solar1(i,j,bi,bj)
+          FLW(i,j,bi,bj)     = bWght*flw0(i,j,bi,bj)
+     &                        +aWght*flw1(i,j,bi,bj)
+          UWIND(i,j,bi,bj)   = bWght*uwind0(i,j,bi,bj)
+     &                        +aWght*uwind1(i,j,bi,bj)
+          VWIND(i,j,bi,bj)   = bWght*vwind0(i,j,bi,bj)
+     &                        +aWght*vwind1(i,j,bi,bj)
+          RUNOFF(i,j,bi,bj)  = bWght*runoff0(i,j,bi,bj)
+     &                        +aWght*runoff1(i,j,bi,bj)
+          WSPEED(i,j,bi,bj)  = bWght*wspeed0(i,j,bi,bj)
+     &                        +aWght*wspeed1(i,j,bi,bj)
+          QNETCH(i,j,bi,bj)  = bWght*qnetch0(i,j,bi,bj)
+     &                        +aWght*qnetch1(i,j,bi,bj)
+          EMPCH(i,j,bi,bj)   = bWght*empch0(i,j,bi,bj)
+     &                        +aWght*empch1(i,j,bi,bj)
+          CLOUD(i,j,bi,bj)   = bWght*cloud0(i,j,bi,bj)
+     &                        +aWght*cloud1(i,j,bi,bj)
+#ifdef ALLOW_THSICE
           SNOW(i,j,bi,bj)    = bWght*snow0(i,j,bi,bj)
-     &                       +aWght*snow1(i,j,bi,bj)
+     &                        +aWght*snow1(i,j,bi,bj)
 #endif
           if (readwindstress) then
             fu(i,j,bi,bj)    = bWght*taux0Local(i,j,bi,bj)
-     &                         +aWght*taux1Local(i,j,bi,bj)
+     &                        +aWght*taux1Local(i,j,bi,bj)
             fv(i,j,bi,bj)    = bWght*tauy0Local(i,j,bi,bj)
-     &                         +aWght*tauy1Local(i,j,bi,bj)
+     &                        +aWght*tauy1Local(i,j,bi,bj)
           endif
           if (readsurface) then
             SST(i,j,bi,bj)   = bWght*SST0Local(i,j,bi,bj)
-     &                       +aWght*SST1Local(i,j,bi,bj)
+     &                        +aWght*SST1Local(i,j,bi,bj)
             SSS(i,j,bi,bj)   = bWght*SSS0Local(i,j,bi,bj)
-     &                       +aWght*SSS1Local(i,j,bi,bj)
+     &                        +aWght*SSS1Local(i,j,bi,bj)
           endif
          ENDDO
         ENDDO
        ENDDO
       ENDDO
 
-       _EXCH_XY_R8(tair , myThid )
-       _EXCH_XY_R8(qair , myThid )
-       _EXCH_XY_R8(rain, myThid )
-       _EXCH_XY_R8(solar, myThid )
-       _EXCH_XY_R8(flw, myThid )
-       _EXCH_XY_R8(uwind, myThid )
-       _EXCH_XY_R8(vwind, myThid )
-       _EXCH_XY_R8(runoff, myThid )
-       _EXCH_XY_R8(wspeed, myThid )
-       _EXCH_XY_R8(qnetch, myThid )
-       _EXCH_XY_R8(empch, myThid )
-       if (readwindstress) then
-c       _EXCH_XY_R8(fu , myThid )
-c       _EXCH_XY_R8(fv , myThid )
-       CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
-       endif
-       if (readsurface) then
-       _EXCH_XY_R8(SST  , myThid )
-       _EXCH_XY_R8(SSS  , myThid )
-       endif
+C- jmc: not needed since local fields have been exchanged.
+c      _EXCH_XY_R8(tair , myThid )
+c      _EXCH_XY_R8(qair , myThid )
+c      _EXCH_XY_R8(rain, myThid )
+c      _EXCH_XY_R8(solar, myThid )
+c      _EXCH_XY_R8(flw, myThid )
+c      _EXCH_XY_R8(uwind, myThid )
+c      _EXCH_XY_R8(vwind, myThid )
+c      _EXCH_XY_R8(runoff, myThid )
+c      _EXCH_XY_R8(wspeed, myThid )
+c      _EXCH_XY_R8(qnetch, myThid )
+c      _EXCH_XY_R8(empch, myThid )
+c      if (readwindstress) then
+cc      _EXCH_XY_R8(fu , myThid )
+cc      _EXCH_XY_R8(fv , myThid )
+c      CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
+c      endif
+c      if (readsurface) then
+c      _EXCH_XY_R8(SST  , myThid )
+c      _EXCH_XY_R8(SSS  , myThid )
+c      endif
 
 
 
@@ -463,9 +460,7 @@ c      ENDIF
 C endif for periodicForcing
       ENDIF
 
-#endif   
-c end ifdef ALLOW_BULK_FORCE
+#endif /*ALLOW_BULK_FORCE*/
 
       RETURN
       END
-

@@ -1,5 +1,6 @@
-c $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/exf_bulkcdn.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/exf_bulkcdn.F,v 1.3 2003/11/23 01:36:55 jmc Exp $
 C $Name:  $
+
 
 #include "BULK_FORCE_OPTIONS.h"
 
@@ -33,26 +34,18 @@ c     ==================================================================
 
       implicit none
 
-#ifdef ALLOW_BULK_FORCE
-
 c     == global variables ==
 
-#include "SIZE.h"
-#include "BULKF_ICE_CONSTANTS.h"
+#include "BULKF_PARAMS.h"
 
 c     == function arguments ==
       _RL umps
 
 c     == end of interface ==
+#ifdef ALLOW_BULK_FORCE
 
       exf_BulkCdn = cdrag_1/umps + cdrag_2 + cdrag_3*umps
 
-#else
-
-c     == function arguments ==
-      _RL umps
-
-      exf_BulkCdn = 0.0
 #endif
 
       end

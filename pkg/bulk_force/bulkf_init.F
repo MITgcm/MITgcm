@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_init.F,v 1.4 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_init.F,v 1.5 2003/11/23 01:36:55 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -15,57 +15,52 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "GRID.h"
-#include "DYNVARS.h"
+c #include "GRID.h"
+c #include "DYNVARS.h"
 #include "FFIELDS.h"
-cswdblk -- add ---
-#ifdef ALLOW_BULK_FORCE
 #include "BULKF.h"
 #include "BULKF_DIAG.h"
 #ifdef CONSERV_BULKF
 #include "BULKF_CONSERV.h"
 #endif
-#endif
-cswdblk -- end add --
 
 C     == Routine arguments ==
 C     myThid -  Number of this instance of BULKF_INIT
       INTEGER myThid
 CEndOfInterface
 
+#ifdef ALLOW_BULK_FORCE
 C     == Local variables ==
 C     bi,bj  - Loop counters
 C     I,J
       INTEGER bi, bj
       INTEGER I, J
-      INTEGER prec
-      CHARACTER*(MAX_LEN_FNAM) fn
+c     INTEGER prec
+c     CHARACTER*(MAX_LEN_FNAM) fn
 
       _BARRIER
 
-cswdblk -- add ----
-#ifdef ALLOW_BULK_FORCE
 c     set up bulk formula arrays to zero
         DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
+              BULKF_timeave(1,bi,bj)=0. _d 0
           DO J=1,sNy
            DO I=1,sNx
-              evapora(i,j,bi,bj)=0.d0
-              BULK_Qnet_AVE(i,j,bi,bj)=0.e0
-              BULK_EmPmR_AVE(i,j,bi,bj)=0.e0
-              BULK_fu_AVE(i,j,bi,bj)=0.e0
-              BULK_fv_AVE(i,j,bi,bj)=0.e0
-              BULK_latent_AVE(i,j,bi,bj)=0.e0
-              BULK_sensible_AVE(i,j,bi,bj)=0.e0
-              BULK_evap_AVE(i,j,bi,bj)=0.e0
-              BULK_flwup_AVE(i,j,bi,bj)=0.e0
-              BULK_flwupnet_AVE(i,j,bi,bj)=0.e0
-              BULK_solar_AVE(i,j,bi,bj)=0.e0
-              BULK_ssq_AVE(i,j,bi,bj)=0.e0
-              BULKF_timeave(1,bi,bj)=0.e0
+c             evapora(i,j,bi,bj)=0. _d 0
+              BULK_Qnet_AVE(i,j,bi,bj)=0. _d 0
+              BULK_EmPmR_AVE(i,j,bi,bj)=0. _d 0
+              BULK_fu_AVE(i,j,bi,bj)=0. _d 0
+              BULK_fv_AVE(i,j,bi,bj)=0. _d 0
+              BULK_latent_AVE(i,j,bi,bj)=0. _d 0
+              BULK_sensible_AVE(i,j,bi,bj)=0. _d 0
+              BULK_evap_AVE(i,j,bi,bj)=0. _d 0
+              BULK_flwup_AVE(i,j,bi,bj)=0. _d 0
+              BULK_flwupnet_AVE(i,j,bi,bj)=0. _d 0
+              BULK_solar_AVE(i,j,bi,bj)=0. _d 0
+              BULK_ssq_AVE(i,j,bi,bj)=0. _d 0
 #ifdef CONSERV_BULKF
-              CONS_Qnet(i,j,bi,bj)=0.e0
-              CONS_EmPmR(i,j,bi,bj)=0.e0
+              CONS_Qnet(i,j,bi,bj)=0. _d 0
+              CONS_EmPmR(i,j,bi,bj)=0. _d 0
 #endif 
               if (.NOT.readsurface) then
 c if not reading in surface fields, make sure we do not relax
@@ -84,8 +79,7 @@ c if not reading in surface fields, make sure we do not relax
 #endif
 
 c
-#endif
-cswdblk -------
+#endif /* ALLOW_BULK_FORCE */
 
       RETURN
       END

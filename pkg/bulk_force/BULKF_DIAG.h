@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/BULKF_DIAG.h,v 1.4 2002/12/11 14:23:35 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/BULKF_DIAG.h,v 1.5 2003/11/23 01:36:55 jmc Exp $
 C $Name:  $
-cswdblk -- change to keep bulk formula fields --
 
 C     /==========================================================\
 C     | BULKF_DIAG.h                                             |
 C     | o Header for Bulk formula diagnostic output              |
 C     \==========================================================/
+cswdblk -- change to keep bulk formula fields --
 
 #ifdef ALLOW_BULK_FORCE
 
