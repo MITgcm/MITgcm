@@ -39,6 +39,7 @@ DIFF_FLAGS       = -toplevel the_main_loop		\
 				xx_efluxy_dummy		\
 				xx_efluxp_dummy'	\
                    -output 'fc'
+#
 #                   -output 'objf_state_final'
 #                   -output 'objf_vector'
 #                   -output 'fc'
@@ -54,31 +55,37 @@ SVDTAFFLAG          = $(SVDTAFFLAGS)  $(DIFF_FLAGS)
 
 # Source files for the MITgcmUV
 SRC_MODEL	= \
-		$(PKG)/autodiff/read_write.flow	\
+		$(PKG)/autodiff/diags.flow		\
+		$(PKG)/autodiff/read_write.flow		\
 		$(PKG)/autodiff/read_write_fld.flow	\
 		$(PKG)/autodiff/read_write_rec.flow	\
-		$(PKG)/autodiff/diags.flow		\
 		$(PKG)/autodiff/cg2d.flow		\
-		$(PKG)/autodiff/debug.flow		\
 		$(PKG)/autodiff/do_the_model_io.flow	\
 		$(PKG)/autodiff/dummy_in_stepping.flow	\
-		$(PKG)/autodiff/eesupp.flow		\
-		$(PKG)/autodiff/active_file.flow	\
-		$(PKG)/autodiff/active_file_loc.flow	\
+		$(PKG)/autodiff/initialisation.flow	\
+		$(PKG)/autodiff/checkpoint.flow		\
+		$(PKG)/autodiff/print_message.flow	\
+		$(PKG)/autodiff/open_copy_data_file.flow\
 		$(PKG)/autodiff/write_state.flow	\
-		$(PKG)/autodiff/ecco_check_exp.flow	\
+		  		  			\
+		  						\
 		$(PKG)/autodiff/exch_ad.flow		\
 		$(PKG)/autodiff/exch_z_ad.flow		\
 		$(PKG)/autodiff/exch_uv_ad.flow		\
 		$(PKG)/autodiff/global_sum_ad.flow	\
 		$(PKG)/autodiff/global_max_ad.flow	\
-		$(PKG)/autodiff/initialisation.flow	\
-		$(PKG)/autodiff/mdsio.flow		\
-		$(PKG)/autodiff/monitor.flow		\
-		$(PKG)/autodiff/checkpoint.flow		\
-		$(PKG)/autodiff/print_message.flow	\
-		$(PKG)/autodiff/open_copy_data_file.flow\
-		$(PKG)/autodiff/timeave.flow		\
+		$(PKG)/autodiff/active_file.flow	\
+		$(PKG)/autodiff/active_file_loc.flow	\
+		  		  			\
+		$(PKG)/eesupp/src/eesupp.flow		\
+		$(PKG)/debug/debug_ad.flow		\
+		$(PKG)/ecco/ecco_ad.flow		\
+		$(PKG)/gmredi/gmredi_ad.flow		\
+		$(PKG)/mdsio/mdsio_ad.flow		\
+		$(PKG)/monitor/monitor_ad.flow		\
+		$(PKG)/obcs/obcs_ad.flow		\
+		$(PKG)/ptracers/ptracers_ad.flow	\
+		$(PKG)/timeave/timeave_ad.flow		\
 		  		  				\
 		$(SOURCE_CODE)/adams_bashforth2.f		\
 		$(SOURCE_CODE)/calc_buoyancy.f			\
@@ -259,15 +266,15 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/cost_tracer.f			\
 		$(SOURCE_CODE)/cost_atlantic_heat.f		\
 		$(SOURCE_CODE)/cost_vector.f			\
-		$(SOURCE_CODE)/cost_state_final.f		\
-		  						\
+		$(SOURCE_CODE)/cost_state_final.f
 
-#		$(PKG)/autodiff/ptracers.flow			\
+
 #		$(SOURCE_CODE)/ptracers_advection.f		\
 #		$(SOURCE_CODE)/ptracers_convect.f		\
 #		$(SOURCE_CODE)/ptracers_cycle.f			\
 #		$(SOURCE_CODE)/ptracers_fields_blocking_exchanges.f\
 #		$(SOURCE_CODE)/ptracers_forcing.f		\
+#		$(SOURCE_CODE)/ptracers_forcing_surf.f		\
 #		$(SOURCE_CODE)/ptracers_impldiff.f		\
 #		$(SOURCE_CODE)/ptracers_init.f			\
 #		$(SOURCE_CODE)/ptracers_integrate.f		\
@@ -301,7 +308,7 @@ SRC_MODEL	= \
 #		$(SOURCE_CODE)/cost_entropy.f			\
 #		$(SOURCE_CODE)/cost_t_misfit.f			\
 #		$(SOURCE_CODE)/cost_eflux_regul.f		\
-#		  						\
+#
 
 
 #--------------------------------------------------------
