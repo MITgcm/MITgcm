@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.9 2004/07/08 20:24:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.10 2004/07/12 21:33:37 molod Exp $
 C $Name:  $
                                                                                  
 #include "CPP_OPTIONS.h"
@@ -190,7 +190,7 @@ C ==========
      .   turbu,turbv,turbt,turbq,radlwg,st4,dst4,radswg,radswt,
      .   fdifpar,fdirpar,rainlsp,rainconv,snowfall,tg0,
      .   imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw,qq,
-     .   myid,comm )
+     .   myid)
 
 c Add Gravity-Wave Drag Tendency
 c ------------------------------

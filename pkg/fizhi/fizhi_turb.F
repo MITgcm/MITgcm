@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.6 2004/06/24 19:57:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.7 2004/07/12 21:33:37 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -11,7 +11,7 @@ C $Name:  $
      8 ,duturb, dvturb, dtturb,dqturb,radlwg,st4,dst4,radswg,radswt
      9 ,fdifpar,fdirpar,rainlsp,rainconv,snowfall,tempref
      1 ,imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw
-     2 ,qqgrid,myid,comm)
+     2 ,qqgrid,myid)
 c-----------------------------------------------------------------------
 c subroutine turbio - model interface routine to trbflx, the turbulence
 c        parameterization, and tile, the land surface parameterization
@@ -91,57 +91,46 @@ c      qqgrid    - Gridded Turbulent Kinetic Energy                - real[lon,la
 c-----------------------------------------------------------------------
       implicit none
 
-#include "mpif.h"
+#ifdef ALLOW_USE_MPI
+      include 'mpif.h'
+#endif
+
 #ifdef ALLOW_DIAGNOSTICS
 #include "diagnostics.h"
 #endif
 
-      integer n,im,jm,nlay,istrip,nymd,nhms,bi,bj,ndturb
-      real   ptop
-      integer nchp,nchplnd,landtype(im,jm),igrd(nchp)
-      integer ityp(nchp)
-      real fracland(im,jm),chfr(nchp),chlt(nchp)
-      real chlon(nchp)
-      real alai(nchp),agrn(nchp)
-      
-      real pz(im,jm)
-      real uz(im,jm,nlay)
-      real vz(im,jm,nlay)
-      real tz(im,jm,nlay)
-      integer ntracers, ptracers
+      integer im,jm,nlay,istrip,nymd,nhms,bi,bj,ndturb
+      real ptop
+      real pz(im,jm),uz(im,jm,nlay),vz(im,jm,nlay),tz(im,jm,nlay)
       real qz(im,jm,nlay,ntracers)
-      real pkht(im,jm,nlay)
-      real tke(nchp,nlay)
-      integer imstturblw, imstturbsw
+      integer ntracers, ptracers
+      real plz(im,jm,nlay),plze(im,jm,nlay+1),dpres(im,jm,nlay)
+      real pkht(im,jm,nlay+1),pkz(im,jm,nlay)
       real ctmt(nchp),xxmt(nchp),yymt(nchp),zetamt(nchp)
-      real xlmt(nchp,nlay),khmt(nchp,nlay)
-
-      real tgz(im, jm)
-      real  tcanopy(nchp)
-      real    tdeep(nchp)
-      real  ecanopy(nchp)
-      real swetshal(nchp)
-      real swetroot(nchp)
-      real swetdeep(nchp)
-      real   snodep(nchp)
-      real    capac(nchp)
-
-      real thkz(im,jm)
-
+      real xlmt(nchp,nlay),khmt(nchp,nlay),tke(nchp,nlay)
+      real tgz(im, jm),fracland(im,jm)
+      integer landtype(im,jm)
+      real tcanopy(nchp),tdeep(nchp),ecanopy(nchp),swetshal(nchp)
+      real swetroot(nchp),swetdeep(nchp),snodep(nchp),capac(nchp)
+      integer nchp,nchplnd
+      real chfr(nchp),chlt(nchp),chlon(nchp)
+      integer igrd(nchp),ityp(nchp)
+      real alai(nchp),agrn(nchp),thkz(im,jm)
       logical tprof
-
       real duturb(im,jm,nlay),dvturb(im,jm,nlay)
       real dtturb(im,jm,nlay),dqturb(im,jm,nlay,ntracers)
-
       real st4(im,jm),dst4(im,jm)
       real radswg(im,jm),radswt(im,jm),radlwg(im,jm)
       real fdifpar(im,jm),fdirpar(im,jm)
       real rainlsp(im,jm),rainconv(im,jm),snowfall(im,jm)
       real tempref (im,jm)
-
+      integer imstturblw, imstturbsw
       real qliqavesw(im,jm,nlay),qliqavelw(im,jm,nlay)
       real fccavelw (im,jm,nlay),fccavesw (im,jm,nlay)
       real qqgrid   (im,jm,nlay)
+      integer myid
+
+C Local Variables
 
       integer numstrips
       integer ijall
@@ -154,8 +143,6 @@ C Set fmu and ed to zero for no background diffusion
       parameter ( cti    =   0.0052   )
       parameter ( ed     =   0.0      )
 
-      real     pkz(im,jm,nlay)
-      real     plz(im,jm,nlay)
       real qliqtmp(im,jm,nlay)
       real  fcctmp(im,jm,nlay)
       real tmpdiag(im,jm)
@@ -259,7 +246,7 @@ C Set fmu and ed to zero for no background diffusion
       real faceps,grav,caltoj,virtcon,getcon
       real heatw,undef,timstp,delttrb,dttrb,ra
       real edle,rmu,cltj10,atimstp,tice,const
-      integer istnp1,istnlay,itrtrb,i,j,L,k,nn,nt
+      integer istnp1,istnlay,itrtrb,i,j,L,k,n,nn,nt
       integer nocean, nice
       integer ndmoist,time_left,ndum
       integer ntracedim
@@ -326,7 +313,7 @@ c **********************************************************************
       enddo
       enddo
       call mpi_allreduce(sum,const,1,mpi_double_precision,mpi_sum,
-     .                                                           comm,n)
+     .                                                mpi_comm_world,n)
 
       if( const.eq.0.0 ) then
       qbeg = .true.

@@ -1,12 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.4 2004/07/07 19:33:48 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.5 2004/07/12 21:33:37 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-      subroutine lwrio (nymd,nhms,bi,bj,istrip,npcs,
-     .                  low_level,mid_level,
-     .                  pz,tz,qz,plz,plze,pkz,pkht,oz,co2,
-     .                  cfc11,cfc12,cfc22,
-     .                  methane,n2o,emissivity,
+      subroutine lwrio (nymd,nhms,bi,bj,istrip,npcs,low_level,mid_level,
+     .                  pz,plz,plze,dpres,pkht,pkz,tz,qz,oz,
+     .                  co2,cfc11,cfc12,cfc22,methane,n2o,emissivity,
      .                  tgz,radlwg,st4,dst4,
      .                  dtradlw,dlwdtg,dtradlwc,lwgclr,
      .                  im,jm,lm,ptop,
@@ -22,90 +20,61 @@ c Input Variables
 c ---------------
       integer nymd,nhms,istrip,npcs,bi,bj
       integer mid_level,low_level
- 
       integer im,jm,lm        
       real  ptop              
-
-      real    pz(im,jm)       
-      real    tz(im,jm,lm)    
-      real  pkht(im,jm,lm)    
-
-      real    co2,cfc11       
-      real    cfc12,cfc22     
-      real    methane (lm)    
-      real    n2o     (lm)    
-      real    oz(im,jm,lm)    
-      real    qz(im,jm,lm)    
-
-      real  radlwg(im,jm)     
-      real  lwgclr(im,jm)     
-      real     st4(im,jm)     
-      real    dst4(im,jm)     
-      real dtradlw (im,jm,lm) 
-      real dtradlwc(im,jm,lm) 
-      real  dlwdtg (im,jm,lm) 
-
-      integer nlwcld,nlwlz    
-      real  cldlw(im,jm,lm)   
-      real  clwmo(im,jm,lm)   
-      real   lwlz(im,jm,lm)   
-
-      real emissivity(im,jm,10)  
-      real        tgz(im,jm)     
-      logical   lpnt             
-      integer   imstturb         
-      real    qliqave(im,jm,lm)  
-      real     fccave(im,jm,lm)  
-
-      integer landtype(im,jm) 
+      real pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1)
+      real dpres(im,jm,lm),pkht(im,jm,lm+1),pkz(im,jm,lm)
+      real tz(im,jm,lm),qz(im,jm,lm),oz(im,jm,lm)
+      real co2,cfc11,cfc12,cfc22,methane(lm),n2o(lm)    
+      real emissivity(im,jm,10)
+      real tgz(im,jm),radlwg(im,jm),st4(im,jm),dst4(im,jm)     
+      real dtradlw(im,jm,lm),dlwdtg (im,jm,lm) 
+      real dtradlwc(im,jm,lm),lwgclr(im,jm)     
+      integer nlwcld,nlwlz
+      real cldlw(im,jm,lm),clwmo(im,jm,lm),lwlz(im,jm,lm)
+      logical lpnt
+      integer imstturb
+      real qliqave(im,jm,lm),fccave(im,jm,lm)
+      integer landtype(im,jm)
 
 c Local Variables
 c ---------------
       integer i,j,l,n,nn
 
-      real          PLZ(im,jm,lm)
-      real          PKZ(im,jm,lm)
-      real         PLZE(im,jm,lm+1)
-      real      cldtot (im,jm,lm)
-      real      cldmxo (im,jm,lm)
+      real cldtot (im,jm,lm)
+      real cldmxo (im,jm,lm)
 
-      real       pl(istrip,lm)
-      real       pk(istrip,lm)
-      real      pke(istrip,lm)
-      real      ple(istrip,lm+1)
+      real pl(istrip,lm)
+      real pk(istrip,lm)
+      real pke(istrip,lm)
+      real ple(istrip,lm+1)
 
-      real       ADELPL(ISTRIP,lm)
-      real        dtrad(istrip,lm)   , dtradc(istrip,lm)
-      real          OZL(ISTRIP,lm)   ,    TZL(ISTRIP,lm)
-      real         SHZL(ISTRIP,lm)   ,   CLRO(ISTRIP,lm)
-      real         CLMO(ISTRIP,lm)
-      real          flx(ISTRIP,lm+1) , flxclr(ISTRIP,lm+1)
-      real        cldlz(istrip,lm)
-      real        dfdts(istrip,lm+1) , dtdtg(istrip,lm)
+      real ADELPL(ISTRIP,lm)
+      real dtrad(istrip,lm),dtradc(istrip,lm)
+      real OZL(ISTRIP,lm),TZL(ISTRIP,lm)
+      real SHZL(ISTRIP,lm),CLRO(ISTRIP,lm)
+      real CLMO(ISTRIP,lm)
+      real flx(ISTRIP,lm+1),flxclr(ISTRIP,lm+1)
+      real cldlz(istrip,lm)
+      real dfdts(istrip,lm+1),dtdtg(istrip,lm)
 
-      real        emiss(istrip,10)
-      real        taual(istrip,lm,10)
-      real        ssaal(istrip,lm,10)
-      real        asyal(istrip,lm,10)
-      real          cwc(istrip,lm,3)
-      real         reff(istrip,lm,3)
-      real         tauc(istrip,lm,3)
+      real emiss(istrip,10)
+      real taual(istrip,lm,10)
+      real ssaal(istrip,lm,10)
+      real asyal(istrip,lm,10)
+      real cwc(istrip,lm,3)
+      real reff(istrip,lm,3)
+      real tauc(istrip,lm,3)
 
-      real        SGMT4(ISTRIP)
-      real        TSURF(ISTRIP)
-      real       dsgmt4(ISTRIP)
-      integer       lwi(istrip)
+      real SGMT4(ISTRIP),TSURF(ISTRIP),dsgmt4(ISTRIP)
+      integer lwi(istrip)
 
-      real    getcon,secday,convrt,pcheck
+      real getcon,secday,convrt,pcheck
 
-      integer  koz, kh2o
-      DATA     KOZ  /20/
-      data     kh2o /18/
-      logical  high,  trace, cldwater
-      data     high /.true./
-      data    trace /.true./
+      logical high,  trace, cldwater
+      data high /.true./
+      data trace /.true./
       data cldwater /.false./
-
 
 C **********************************************************************
 C ****                     INITIALIZATION                           ****
