@@ -1,0 +1,60 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef=20.,
+ sRef=35.,
+ viscAh=1.E2,
+ viscAz=1.E-3,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
+ diffKhT=1.E2,
+ diffKzT=1.E-5,
+ diffKhS=1.E2,
+ diffKzS=1.E-5,
+ tAlpha=2.E-4,
+ f0=0.,
+ beta=0.,
+ sBeta =0.,
+ gravity=9.81,
+ rigidLid=.FALSE.,
+ implicitFreeSurface=.TRUE.,
+ eosType='LINEAR',
+ readBinaryPrec=64,
+ hFacMin=0.01,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+ cg2dTargetResidual=1.E-13,
+ &
+
+# Time stepping parameters
+ &PARM03
+ startTime=0.,
+ endTime=216000.,
+ deltaT=1200.0,
+ cAdjFreq=0.,
+ abEps=0.02,
+ pChkptFreq=0.0,
+ chkptFreq=0.0,
+ dumpFreq=3600.0,
+ monitorFreq=1.,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.TRUE.,
+ usingSphericalPolarGrid=.FALSE.,
+ delZ=500.,
+ delY=10.e3,
+ delX=80*50.e3,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='topog.bin',
+ &
