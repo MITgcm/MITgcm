@@ -1,4 +1,5 @@
 # Packages
  &PACKAGES
-  use_GMRedi=.TRUE.,
+  useGMRedi=.TRUE.,
+  useKPP=.FALSE.,
  &
