@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.12 2004/03/10 05:50:16 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.13 2004/03/19 15:09:03 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -92,6 +92,14 @@ C     g : Gtype index
 C     v : Vtype index
 C
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      COMMON /MNC_OPTIONS/
+     &     mnc_echo_gtypes,
+     &     mnc_pickup_create, mnc_pickup_read
+
+      logical 
+     &     mnc_echo_gtypes,
+     &     mnc_pickup_create, mnc_pickup_read
 
       integer MNC_MAX_ID, MNC_MAX_CHAR, MNC_MAX_INFO
       integer MNC_CW_MAX_I
