@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.452 2005/02/12 23:13:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.453 2005/02/14 01:03:06 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o allow to use pkg diagnostics for LAND pkg output.
 o pkg/shap_filt: fix for multi-tiles per face (CS-grid with EXCH2)
 
 checkpoint57d_post
