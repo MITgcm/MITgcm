@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_atmosphere.F,v 1.3 2004/05/21 21:45:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/ebm_atmosphere.F,v 1.4 2004/07/28 19:54:37 heimbach Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -165,28 +165,34 @@ CADJ STORE DTDy35(:) = comlev1_bibj, key=iebmkey, byte=isbyte
 #endif
 
         DO no_so = 1, 2
-         gamma = -T35(no_so)*beta*Hw*Nw*Nw/
+         IF ( DTDy35(no_so).NE.0. .AND. T35(no_so).NE.0. ) THEN
+          gamma = -T35(no_so)*beta*Hw*Nw*Nw/
      <        (gravity*f0*DTDy35(no_so))
-         kappa = Hw/(1 + gamma)
-         De = Hw/(0.48 + 1.48*gamma)
-         C = 0.6*gravity*kappa*kappa*Nw/
+          kappa = Hw/(1 + gamma)
+          De = Hw/(0.48 + 1.48*gamma)
+          C = 0.6*gravity*kappa*kappa*Nw/
      <        (Tw*f0*f0)
-         Cs = rho_air*cp*C*
+          Cs = rho_air*cp*C*
      <        (1/(1/Hw+1/De) - 1/(1/Hw+1/De+1/dz))
-         Cf = htil*2.97e12*C/(T35(no_so)**3)*(
+          Cf = htil*2.97e12*C/(T35(no_so)**3)*(
      <        1/(1/De + (5420*tau /(T35(no_so)**2)))
-     <     - 1/(1/De+5420*tau/(T35(no_so)**2)+1/dz))
-         Cl = Cf*lv
-         Hd35(no_so) = 2.*PI*rSphere*COS(lat(2)*deg2rad)
+     <        - 1/(1/De+5420*tau/(T35(no_so)**2)+1/dz))
+          Cl = Cf*lv
+          Hd35(no_so) = 2.*PI*rSphere*COS(lat(2)*deg2rad)
      <        *(Cs + Cl*exp(-5420./T35(no_so)))
      <        *(abs(DTDy35(no_so))**trans_eff)
-         Fw35(no_so) = 2.*PI*rSphere*COS(lat(2)*deg2rad)
+          Fw35(no_so) = 2.*PI*rSphere*COS(lat(2)*deg2rad)
      <        *(abs(DTDy35(no_so))**trans_eff)
      <        *Cf*exp(-5420./T35(no_so))
-c        write(0,*) no_so, Hd35(no_so), Fw35(no_so)
+         ELSE
+          Hd35(no_so) = 0.
+          Fw35(no_so) = 0.
+         ENDIF
         ENDDO
+c
         Fw35(1) = 929944128.
         Fw35(2) = 678148032.
+c
 #ifdef EBM_VERSION_1BASIN
 c      Fw35(2) = 0.7*Fw35(2)
 #else
