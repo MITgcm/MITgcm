@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.12 2003/11/13 21:54:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.13 2004/01/03 00:34:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,6 +59,36 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: nonHydrostatic is TRUE'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif
+
+#ifndef INCLUDE_IMPLVERTADV_CODE
+      IF ( momImplVertAdv ) THEN 
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: #undef INCLUDE_IMPLVERTADV_CODE'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: but momImplVertAdv is TRUE'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+      IF ( tempImplVertAdv ) THEN 
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: #undef INCLUDE_IMPLVERTADV_CODE'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: but tempImplVertAdv is TRUE'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+      IF ( saltImplVertAdv ) THEN 
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: #undef INCLUDE_IMPLVERTADV_CODE'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: but saltImplVertAdv is TRUE'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
@@ -131,7 +161,6 @@ C       code is being compiled
 C     o If taveFreq is finite, then we must make sure the diagnostics
 C       code is being compiled
 #ifndef ALLOW_TIMEAVE
-ceh3 needs an IF ( useTIMEAVE ) THEN
       IF (taveFreq.NE.0.) THEN
         WRITE(msgBuf,'(A)')
      &  'CONFIG_CHECK: taveFreq <> 0  but you have'

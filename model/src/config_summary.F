@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.45 2003/12/15 22:42:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.46 2004/01/03 00:34:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -229,43 +229,53 @@ c    &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
      &' /* convert F.W. Flux to Salt Flux (-1=use local S)(ppt)*/')
       ENDIF
 
-      CALL WRITE_0D_L( multiDimAdvection, INDEX_NONE, 
-     & 'multiDimAdvection =',
-     &'   /* enable/disable Multi-Dim Advection */')
-      CALL WRITE_0D_L( staggerTimeStep, INDEX_NONE,
-     &                 'staggerTimeStep =',
-     &'   /* Stagger time stepping on/off flag */')
+      CALL WRITE_0D_L( nonHydrostatic, INDEX_NONE,
+     & 'nonHydrostatic =', '  /* Non-Hydrostatic on/off flag */')
       CALL WRITE_0D_L( momStepping,  INDEX_NONE,
      & 'momStepping =', '  /* Momentum equation on/off flag */')
       CALL WRITE_0D_L( momAdvection, INDEX_NONE,
      & 'momAdvection =', '  /* Momentum advection on/off flag */')
       CALL WRITE_0D_L( momViscosity, INDEX_NONE,
      & 'momViscosity =', '  /* Momentum viscosity on/off flag */')
+      CALL WRITE_0D_L( momImplVertAdv, INDEX_NONE, 'momImplVertAdv =',
+     &                '/* Momentum implicit vert. advection on/off*/')
+      CALL WRITE_0D_L( implicitViscosity, INDEX_NONE,
+     & 'implicitViscosity =', ' /* Implicit viscosity on/off flag */')
       CALL WRITE_0D_L( useCoriolis,  INDEX_NONE,
      & 'useCoriolis =', '  /* Coriolis on/off flag */')
+      CALL WRITE_0D_L( useCDscheme,  INDEX_NONE,
+     & 'useCDscheme =', '  /* CD scheme on/off flag */')
+      CALL WRITE_0D_L( useJamartWetPoints,  INDEX_NONE,
+     & 'useJamartWetPoints=',' /* Coriolis WetPoints method flag */')
       CALL WRITE_0D_L( momForcing,   INDEX_NONE,
      & 'momForcing =', '  /* Momentum forcing on/off flag */')
       CALL WRITE_0D_L( momPressureForcing, INDEX_NONE,
      & 'momPressureForcing =',  
      & '  /* Momentum pressure term on/off flag */')
+      CALL WRITE_0D_L( staggerTimeStep, INDEX_NONE,
+     &                 'staggerTimeStep =',
+     &'   /* Stagger time stepping on/off flag */')
+      CALL WRITE_0D_L( multiDimAdvection, INDEX_NONE, 
+     & 'multiDimAdvection =',
+     &'   /* enable/disable Multi-Dim Advection */')
+      CALL WRITE_0D_L( implicitDiffusion, INDEX_NONE,
+     & 'implicitDiffusion =','/* Implicit Diffusion on/off flag */')
       CALL WRITE_0D_L( tempStepping,  INDEX_NONE,
      & 'tempStepping =', '  /* Temperature equation on/off flag */')
       CALL WRITE_0D_L( tempAdvection,  INDEX_NONE,
      & 'tempAdvection=', '  /* Temperature advection on/off flag */')
+      CALL WRITE_0D_L( tempImplVertAdv,INDEX_NONE,'tempImplVertAdv =',
+     &                '/* Temp. implicit vert. advection on/off */')
       CALL WRITE_0D_L( tempForcing,  INDEX_NONE,
      & 'tempForcing  =', '  /* Temperature forcing on/off flag */')
       CALL WRITE_0D_L( saltStepping,  INDEX_NONE,
      & 'saltStepping =', '  /* Salinity equation on/off flag */')
       CALL WRITE_0D_L( saltAdvection,  INDEX_NONE,
      & 'saltAdvection=', '  /* Salinity advection on/off flag */')
+      CALL WRITE_0D_L( saltImplVertAdv,INDEX_NONE,'saltImplVertAdv =',
+     &                '/* Sali. implicit vert. advection on/off */')
       CALL WRITE_0D_L( saltForcing,  INDEX_NONE,
      & 'saltForcing  =', '  /* Salinity forcing on/off flag */')
-      CALL WRITE_0D_L( nonHydrostatic, INDEX_NONE,
-     & 'nonHydrostatic =', '  /* Non-Hydrostatic on/off flag */')
-      CALL WRITE_0D_L( useCDscheme,  INDEX_NONE,
-     & 'useCDscheme =', '  /* CD scheme on/off flag */')
-      CALL WRITE_0D_L( useJamartWetPoints,  INDEX_NONE,
-     & 'useJamartWetPoints=',' /* Coriolis WetPoints method flag */')
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &                    SQUEEZE_RIGHT , 1)

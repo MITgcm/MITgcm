@@ -1,4 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.103 2003/12/28 17:04:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -149,6 +148,7 @@ C--   Continuous equation parameters
      & staggerTimeStep,
      & tempStepping, saltStepping, momStepping, tr1Stepping,
      & implicitDiffusion, implicitViscosity,
+     & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & viscAr, diffKrT, diffKrS, hFacMinDr,
      & viscAp, diffKpT, diffKpS, hFacMinDp,
      & rhoConst, rhoConstFresh, buoyancyRelation, HeatCapacity_Cp,
@@ -345,6 +345,17 @@ C--   Set default "physical" parameters
       ELSE
         atm_kappa = atm_Rd / atm_Cp
       ENDIF
+C--   On/Off flags for each terms of the momentum equation 
+      nonHydrostatic   = momStepping .AND. nonHydrostatic
+      quasiHydrostatic = momStepping .AND. quasiHydrostatic
+      momAdvection = momStepping .AND. momAdvection
+      momViscosity = momStepping .AND. momViscosity
+      momForcing   = momStepping .AND. momForcing
+      useCoriolis  = momStepping .AND. useCoriolis
+      useCDscheme  = momStepping .AND. useCDscheme
+      momPressureForcing= momStepping .AND. momPressureForcing
+      momImplVertAdv   = momAdvection .AND. momImplVertAdv
+      implicitViscosity= momViscosity .AND. implicitViscosity
 C--   Momentum viscosity on/off flag.
       IF ( momViscosity        ) THEN
        vfFacMom = 1.D0
@@ -393,6 +404,8 @@ C--   Advection and Forcing for Temp and salt  on/off flags
       tempForcing   = tempStepping .AND. tempForcing
       saltAdvection = saltStepping .AND. saltAdvection
       saltForcing   = saltStepping .AND. saltForcing
+      tempImplVertAdv = tempAdvection .AND. tempImplVertAdv
+      saltImplVertAdv = saltAdvection .AND. saltImplVertAdv
 C--   z,p,r coord input switching.
       IF ( viscAz .NE. UNSET_RL ) zCoordInputData = .TRUE.
       IF ( viscAp .NE. UNSET_RL ) pCoordInputData = .TRUE.
