@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.113 2004/06/14 17:48:17 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.114 2004/06/24 20:25:44 afe Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -193,7 +193,7 @@ C--   Gridding parameters
       NAMELIST /PARM04/
      & usingCartesianGrid, dxSpacing, dySpacing, delX, delY, delZ,
      & usingSphericalPolarGrid, phiMin, thetaMin, rSphere,
-     & usingCurvilinearGrid,
+     & usingCurvilinearGrid,usingCylindricalGrid,
      & delP, delR, rkFac, Ro_SeaLevel, groundAtK1, delRc,
      & delXfile, delYfile
 
@@ -204,7 +204,7 @@ C--   Input files
      & thetaClimFile, saltClimFile,
      & surfQfile, EmPmRfile, surfQswfile, 
      & uVelInitFile, vVelInitFile, pSurfInitFile,
-     & dQdTFile, ploadFile,
+     & dQdTFile, ploadFile,tCyl,
      & mdsioLocalDir
 
 C
@@ -844,6 +844,7 @@ C--   Check for conflicting grid definitions.
       IF ( usingCartesianGrid )      goptCount = goptCount+1
       IF ( usingSphericalPolarGrid ) goptCount = goptCount+1
       IF ( usingCurvilinearGrid )    goptCount = goptCount+1
+      IF ( usingCylindricalGrid )    goptCount = goptCount+1
       IF ( goptCount .GT. 1 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: More than one coordinate system requested'
@@ -870,6 +871,19 @@ C--   Make metric term settings consistent with underlying grid.
        mTFacMom = 0.
        useBetaPlaneF = .TRUE.
       ENDIF
+C--   Make metric term settings consistent with underlying grid.
+      IF ( usingCylindricalGrid) THEN
+       usingSphericalPolarMterms = .FALSE.
+       metricTerms = .FALSE.
+       useNHMTerms = .FALSE.
+       mTFacMom = 1.
+       useBetaPlaneF = .TRUE.
+       WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; Cylinder OK'
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+                                                                                
+      ENDIF
+
       IF ( usingSphericalPolarGrid ) THEN
        useConstantF  = .FALSE.
        useBetaPlaneF = .FALSE.

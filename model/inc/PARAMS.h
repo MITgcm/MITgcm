@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.113 2004/06/14 17:48:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.114 2004/06/24 20:25:44 afe Exp $
 C $Name:  $
 C
 CBOP
@@ -83,7 +83,7 @@ C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                dQdTfile, ploadFile,
      &                eosType, pickupSuff,
-     &                mdsioLocalDir
+     &                mdsioLocalDir, tCyl
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
       CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
@@ -104,6 +104,7 @@ C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
       CHARACTER*(MAX_LEN_FNAM) mdsioLocalDir
       CHARACTER*(6) eosType
       CHARACTER*(10) pickupSuff
+      _RL tCyl
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        :: Maximum number of iterations in the
@@ -171,6 +172,7 @@ C     usingCartesianGrid :: If TRUE grid generation will be in a cartesian
 C                          coordinate frame.
 C     usingSphericalPolarGrid :: If TRUE grid generation will be in a 
 C                               spherical polar frame.
+C     usingCylindricalGrid :: If TRUE grid generation will be Cylindrical
 C     no_slip_sides :: Impose "no-slip" at lateral boundaries.
 C     no_slip_bottom :: Impose "no-slip" at bottom boundary.
 C     staggerTimeStep :: enable a Stagger time stepping T,S Rho then U,V
@@ -249,7 +251,7 @@ C     allowFreezing  :: Allows surface water to freeze and form ice
 C     useOldFreezing :: use the old version (before checkpoint52a_pre, 2003-11-12)
 C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
-     & usingCurvilinearGrid,
+     & usingCurvilinearGrid, usingCylindricalGrid,
      & no_slip_sides,no_slip_bottom,
      & staggerTimeStep,
      & momViscosity, momAdvection, momForcing, useCoriolis, 
@@ -277,6 +279,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & readPickupWithTracer, writePickupWithTracer
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
+      LOGICAL usingCylindricalGrid
       LOGICAL usingCurvilinearGrid
       LOGICAL usingSphericalPolarMTerms
       LOGICAL useNHMTerms

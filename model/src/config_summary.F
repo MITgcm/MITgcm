@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.51 2004/06/14 17:48:17 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.52 2004/06/24 20:25:44 afe Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -394,6 +394,9 @@ c    &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
      &'   /* Cartesian coordinates flag ( True / False ) */')
       CALL WRITE_0D_L( usingSphericalPolarGrid, INDEX_NONE,
      & 'usingSphericalPolarGrid =',
+     &'   /* Spherical coordinates flag ( True / False ) */')
+      CALL WRITE_0D_L( usingCylindricalGrid, INDEX_NONE,
+     & 'usingCylindricalGrid =',
      &'   /* Spherical coordinates flag ( True / False ) */')
       CALL WRITE_0D_L( groundAtK1, INDEX_NONE, 'groundAtK1 =',
      &'   /* Lower Boundary (ground) at the surface(k=1) ( T / F ) */')

@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.16 2004/05/13 15:40:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.17 2004/06/24 20:25:44 afe Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -54,9 +53,6 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     msgBuf - Used for informational I/O.
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-#ifdef ALLOW_EXF
-      INTEGER i, j, bi, bj
-#endif /* ALLOW_EXF */
 CEOP
 
 C--   Set up vertical grid and coordinate system
@@ -69,6 +65,8 @@ C--   Set up horizontal grid and coordinate system
        CALL INI_SPHERICAL_POLAR_GRID( myThid )
       ELSEIF ( usingCurvilinearGrid ) THEN
        CALL INI_CURVILINEAR_GRID( myThid )
+      ELSEIF ( usingCylindricalGrid ) THEN
+       CALL INI_CYLINDER( myThid )
       ELSE
        _BEGIN_MASTER(myThid)
         WRITE(msgBuf,'(A)') 
@@ -78,42 +76,23 @@ C--   Set up horizontal grid and coordinate system
        _END_MASTER(myThid)
       ENDIF
 
-#ifdef ALLOW_EXF
-C--   exf_interp assumes that 0 <= xG, xC <= 360
-C     This is a quick fix until this assumption is relaxed
-C     and the interpolation weights are pre-computed.
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-          IF ( xG(I,J,bi,bj) .LT. 0 )
-     &           xG(I,J,bi,bj) = xG(I,J,bi,bj) + 360
-          IF ( xC(I,J,bi,bj) .LT. 0 )
-     &           xC(I,J,bi,bj) = xC(I,J,bi,bj) + 360
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#endif /* ALLOW_EXF */
-
 C--   Write certain grid data to files (useful for creating netCDF
 C     and general post-analysis)
-C     This I/O is now done in write_grid.F
-c     CALL WRITE_FLD_XY_RS( 'XC',' ',XC,0,myThid)
-c     CALL WRITE_FLD_XY_RS( 'YC',' ',YC,0,myThid)
-c     CALL WRITE_FLD_XY_RS( 'XG',' ',XG,0,myThid)
-c     CALL WRITE_FLD_XY_RS( 'YG',' ',YG,0,myThid)
-c     CALL WRITE_FLD_XY_RS( 'RAC',' ',rA,0,myThid)
-c     CALL WRITE_FLD_XY_RS( 'RAW',' ',rAw,0,myThid)
-c     CALL WRITE_FLD_XY_RS( 'RAS',' ',rAs,0,myThid)
-c     CALL WRITE_FLD_XY_RS( 'DXG',' ',DXG,0,myThid)
-c     CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,0,myThid)
-c     CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,0,myThid)
-c     CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'XC',' ',XC,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'YC',' ',YC,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'XG',' ',XG,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'YG',' ',YG,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'RAC',' ',rA,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'RAW',' ',rAw,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'RAS',' ',rAs,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'DXG',' ',DXG,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,0,myThid)
 
 C--   Print out statistics of each horizontal grid array (helps when debugging)
 
-#ifdef ALLOW_MONITOR
+#ifndef EXCLUDE_MONITOR
       CALL MON_PRINTSTATS_RS(1,XC,'XC',myThid)
       CALL MON_PRINTSTATS_RS(1,XG,'XG',myThid)
       CALL MON_PRINTSTATS_RS(1,DXC,'DXC',myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.63 2004/06/14 17:48:17 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.64 2004/06/24 20:25:44 afe Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -79,6 +79,9 @@ C     In spherical polar distances are in degrees
       rSphere              = 6370. * 1.D3
 C     General curvilinear coordinate system
       usingCurvilinearGrid = .FALSE.
+C     General cylindrical coordinate system
+      usingCylindricalGrid = .FALSE.
+
 
 C--   Set default "physical" parameters
       DO K =1,Nr
@@ -243,6 +246,8 @@ C--   Time stepping parameters
       periodicExternalForcing = .FALSE.
       externForcingPeriod     = 0.
       externForcingCycle      = 0.
+      tCyl              = 0.
+
 
 C--   Input files
       bathyFile       = ' '
