@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.8 2003/01/13 19:02:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.9 2003/11/12 03:58:48 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -94,6 +94,13 @@ C--   Default values Visbeck
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=GM_PARM01)
 
+      WRITE(msgBuf,'(A)') ' GM_READPARMS: finished reading data.gmredi'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                    SQUEEZE_RIGHT , 1)
+
+C--   Close the open data file
+      CLOSE(iUnit)
+
 C     Default value for GM_isopycK is equal to GM_background_K :
       IF (GM_isopycK.EQ.-999.) GM_isopycK = GM_background_K
 
@@ -111,55 +118,6 @@ C     Some constants
         GM_ExtraDiag = GM_isopycK.NE.GM_background_K
       ENDIF
 
-C     Unspecified I/O control parameters default to model pars
-c      if (GM_dumpFreq.EQ.-1.) GM_dumpFreq=dumpFreq
-c      if (GM_taveFreq.EQ.-1.) GM_taveFreq=taveFreq
-
-#ifndef GM_VISBECK_VARIABLE_K
-C     Make sure we are not trying to use something that is unavailable
-      IF (GM_Visbeck_alpha .NE. 0.) THEN
-       WRITE(msgBuf,'(A)')
-     &   ' GM_READPARMS: Visbeck variables used in data.gmredi'
-       CALL PRINT_ERROR( msgBuf, 1 )
-       WRITE(msgBuf,'(A)')
-     &   ' GM_READPARMS: without #define GM_VISBECK_VARIABLE_K'
-       CALL PRINT_ERROR( msgBuf, 1 )
-       STOP 'ABNORMAL END: S/R GM_READPARMS'
-      ENDIF
-#endif
-
-#ifndef GM_BOLUS_ADVEC
-C     Make sure we are not trying to use some arrays that are unavailable
-      IF (GM_AdvForm) THEN
-       WRITE(msgBuf,'(A)')
-     &   ' GM_READPARMS: GM Advection form used in data.gmredi'
-       CALL PRINT_ERROR( msgBuf, 1 )
-       WRITE(msgBuf,'(A)')
-     &   ' GM_READPARMS: without #define GM_BOLUS_ADVEC'
-       CALL PRINT_ERROR( msgBuf, 1 )
-       STOP 'ABNORMAL END: S/R GM_READPARMS'
-      ENDIF
-#endif
-
-#ifndef GM_EXTRA_DIAGONAL
-C     Make sure we are not trying to use some arrays that are unavailable
-      IF (GM_ExtraDiag) THEN
-       WRITE(msgBuf,'(A)')
-     &   ' GM_READPARMS: GM_skew_Flux_K & GM_isopycK not equal'
-       CALL PRINT_ERROR( msgBuf, 1 )
-       WRITE(msgBuf,'(A)')
-     &   ' GM_READPARMS: without #define GM_EXTRA_DIAGONAL'
-       CALL PRINT_ERROR( msgBuf, 1 )
-       STOP 'ABNORMAL END: S/R GM_READPARMS'
-      ENDIF
-#endif
-
-      WRITE(msgBuf,'(A)') ' GM_READPARMS: finished reading data.gmredi'
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)
-
-C--   Close the open data file
-      CLOSE(iUnit)
       _END_MASTER(myThid)
 
 C--   Everyone else must wait for the parameters to be loaded
