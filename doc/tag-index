@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.415 2004/12/16 14:27:40 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.416 2004/12/17 00:52:42 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add diagnostics of advective & diffusive flux for T & S (pTracers coming soon)
+  this is based directly on what the model compute, so that the content of
+  each diagnostics might be affected by switching options (e.g., implicitDiffusion)
+o small changes for diagnostics (gad_biharm_?.F, arguments of S/R impldiff.F)
 o clean up build options files for SunOS, in particular 
   - remove -traditional from xmakedepend
   - change -xarch=v9 to -xarch=native for f77
