@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.40 2001/08/06 15:11:03 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.41 2001/08/13 19:34:57 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -506,8 +506,8 @@ echo "# This section creates symbolic links" > srclinks.tmp
 echo "" >> srclinks.tmp
 echo -n 'SRCFILES = ' > srclist.inc
 echo -n 'CSRCFILES = ' > csrclist.inc
-#echo -n 'HEADERFILES = ' > hlist.inc
-foreach dr ($SOURCEDIRS)
+echo -n 'HEADERFILES = ' > hlist.inc
+foreach dr ($SOURCEDIRS $INCLUDEDIRS)
  set deplist=( )
  foreach srcfile (`cd $dr; ls *.[hcF]`)
   if (! -r .links.tmp/$srcfile) then
@@ -526,10 +526,10 @@ foreach dr ($SOURCEDIRS)
      echo -n "           " $srcfile >> csrclist.inc
      breaksw
     case h:
-#     touch .links.tmp/$srcfile
-#     set deplist=($deplist $srcfile)
-#     echo    ' \'                   >> hlist.inc
-#     echo -n "           " $srcfile >> hlist.inc
+      touch .links.tmp/$srcfile
+      set deplist=($deplist $srcfile)
+      echo    ' \'                   >> hlist.inc
+      echo -n "           " $srcfile >> hlist.inc
      breaksw
     endsw
    endif
@@ -544,7 +544,7 @@ end
 rm -rf .links.tmp
 echo "" >> srclist.inc
 echo "" >> csrclist.inc
-#echo "" >> hlist.inc
+echo "" >> hlist.inc
 
 set THISHOSTNAME = ( `hostname` )
 set THISCWD = ( `pwd` )
@@ -658,6 +658,7 @@ EOF
 
 cat srclist.inc  >> ${mfile}
 cat csrclist.inc >> ${mfile}
+cat hlist.inc >> ${mfile}
 echo 'F77FILES =  $(SRCFILES:.F=.f)'                    >> ${mfile}
 echo 'OBJFILES =  $(SRCFILES:.F=.o) $(CSRCFILES:.c=.o)' >> ${mfile}
 
@@ -675,7 +676,7 @@ depend:
 	@make links
 	makedepend -o .f \$(INCLUDES) \$(SRCFILES)
 
-links: \$(SRCFILES)
+links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES)
 
 small_f: \$(F77FILES)
 
