@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_initialise.F,v 1.3 2004/09/03 20:10:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_initialise.F,v 1.4 2004/12/19 00:02:47 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -46,6 +46,12 @@ c         PTRACERS_multiDimAdv(iTracer) = .TRUE.
 
 C       end of Tracer loop
       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL PTRACERS_DIAGNOSTICS_INIT( myThid )
+      ENDIF
+#endif
 
 #endif /* ALLOW_PTRACERS */
 

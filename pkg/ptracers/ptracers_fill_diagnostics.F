@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fill_diagnostics.F,v 1.4 2004/12/14 04:56:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fill_diagnostics.F,v 1.5 2004/12/19 00:02:47 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -41,15 +41,15 @@ C     !LOCAL VARIABLES:
 c     DO N = 1,PTRACERS_numInUse
 C-    due to format (I1) and diagnostics name limitation, 
 C      => do not go beyong 9 tracers
-      DO N = 1,MIN(9,PTRACERS_numInUse)
+      DO N = 1,MIN(99,PTRACERS_numInUse)
         
         diagname = '        '
-        WRITE(diagname,'(A4,I1)') 'TRAC',N
+        WRITE(diagname,'(A4,I2.2)') 'TRAC',N
         CALL DIAGNOSTICS_FILL( ptracer(1-Olx,1-Oly,1,1,1,N), diagname,
      &                         0,Nr,0,1,1,myThid )
         
         diagname = '        '
-        WRITE(diagname,'(A5,I1)') 'UTRAC',N
+        WRITE(diagname,'(A5,I2.2)') 'UTRAC',N
         IF ( DIAGNOSTICS_IS_ON(diagname,myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -69,7 +69,7 @@ C      => do not go beyong 9 tracers
         ENDIF
         
         diagname = '        '
-        WRITE(diagname,'(A5,I1)') 'VTRAC',N
+        WRITE(diagname,'(A5,I2.2)') 'VTRAC',N
         IF ( DIAGNOSTICS_IS_ON(diagname,myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -89,7 +89,7 @@ C      => do not go beyong 9 tracers
         ENDIF
         
         diagname = '        '
-        WRITE(diagname,'(A5,I1)') 'WTRAC',N
+        WRITE(diagname,'(A5,I2.2)') 'WTRAC',N
         IF ( DIAGNOSTICS_IS_ON(diagname,myThid) ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)
