@@ -1,8 +1,47 @@
+C----------------------------------------
+C subroutine  DO_TIME_AVERAGES
+C----------------------------------------
+CADJ SUBROUTINE DO_TIME_AVERAGES  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE DO_TIME_AVERAGES  OUTPUT =
+                                       
+C----------------------------------------
+C subroutine  TIMEAVER_1FLD_XYZ
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVER_1FLD_XYZ  INPUT  = 1,  3,4,5,6,7
+CADJ SUBROUTINE TIMEAVER_1FLD_XYZ  OUTPUT =   2
 
-c----------------------------------------
-c subroutine  do_time_averages
-c----------------------------------------
+C----------------------------------------
+C subroutine  TIMEAVER_2FLD_XYZ
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVER_2FLD_XYZ  INPUT  = 1,2,  4,5,6,7,8,9
+CADJ SUBROUTINE TIMEAVER_2FLD_XYZ  OUTPUT =     3
 
-CADJ SUBROUTINE do_time_averages INPUT  = 1,2,3,4,5,6,7,8,9,10,11,12
-CADJ SUBROUTINE do_time_averages OUTPUT =
+C----------------------------------------
+C subroutine  TIMEAVER_FINAL_XY
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVER_FINAL_XY  INPUT  =   2,3,4,5
+CADJ SUBROUTINE TIMEAVER_FINAL_XY  OUTPUT = 1
 
+C----------------------------------------
+C subroutine  TIMEAVER_FINAL_XYZ
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVER_FINAL_XYZ  INPUT  =   2,3,4,5,6
+CADJ SUBROUTINE TIMEAVER_FINAL_XYZ  OUTPUT = 1
+
+C----------------------------------------
+C subroutine  TIMEAVER_INI_XY
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVER_INI_XY  INPUT  =   2,3,4
+CADJ SUBROUTINE TIMEAVER_INI_XY  OUTPUT = 1
+
+C----------------------------------------
+C subroutine  TIMEAVER_INI_XYZ
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVER_INI_XYZ  INPUT  =   2,3,4,5
+CADJ SUBROUTINE TIMEAVER_INI_XYZ  OUTPUT = 1
+
+C----------------------------------------
+C subroutine  WRITE_TIME_AVERAGES
+C----------------------------------------
+CADJ SUBROUTINE WRITE_TIME_AVERAGES  INPUT  = 1,2,3
+CADJ SUBROUTINE WRITE_TIME_AVERAGES  OUTPUT = 

@@ -1,0 +1,13 @@
+
+C----------------------------------------
+C flow directives for S/R DEBUG_STATS_RL
+C----------------------------------------
+CADJ SUBROUTINE DEBUG_STATS_RL INPUT  = 1,2,3,4
+CADJ SUBROUTINE DEBUG_STATS_RL OUTPUT =
+
+C----------------------------------------
+C flow directives for S/R DEBUG_STATS_RS
+C----------------------------------------
+CADJ SUBROUTINE DEBUG_STATS_RS INPUT  = 1,2,3,4
+CADJ SUBROUTINE DEBUG_STATS_RS  OUTPUT =
+

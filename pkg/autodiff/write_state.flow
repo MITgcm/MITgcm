@@ -2,5 +2,5 @@
 C----------------------------------------
 C subroutine  write_state
 C----------------------------------------
-CADJ SUBROUTINE write_state  INPUT  = 1,2,3,4
+CADJ SUBROUTINE write_state  INPUT  = 1,2,3
 CADJ SUBROUTINE write_state  OUTPUT =

@@ -1,0 +1,18 @@
+
+C----------------------------------------
+C subroutine  MONITOR
+C----------------------------------------
+CADJ SUBROUTINE MONITOR INPUT  = 1,2,3
+CADJ SUBROUTINE MONITOR OUTPUT =
+
+C----------------------------------------
+C subroutine  MON_PRINTSTATS_RL
+C----------------------------------------
+CADJ SUBROUTINE MON_PRINTSTATS_RL INPUT  = 1,2,3,4
+CADJ SUBROUTINE MON_PRINTSTATS_RL OUTPUT =
+
+C----------------------------------------
+C subroutine  MON_PRINTSTATS_RS
+C----------------------------------------
+CADJ SUBROUTINE MON_PRINTSTATS_RS INPUT  = 1,2,3,4
+CADJ SUBROUTINE MON_PRINTSTATS_RS OUTPUT =

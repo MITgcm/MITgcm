@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.3 2001/05/14 21:48:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.4 2001/07/13 13:33:49 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -13,8 +13,7 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-#include "addynvars.h"
-#include "adffields.h"
+#include "adcommon.h"
 
 cph      common /adgrid_r/ addiffkr, adkapgm
 cph      _RS addiffkr(1-olx:snx+olx,1-oly:sny+oly,1:nr,nsx,nsy)
@@ -62,10 +61,29 @@ C--     Read IO error counter
         CALL WRITE_FLD_XY_RL ( 'ADJtauy.',suff, adfv, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'ADJqnet.',suff, adqnet, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'ADJempr.',suff, adempmr, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 'ADJtemp.',suff, adgtnm1, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 'ADJsalt.',suff, adgsnm1, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 'ADJuvel.',suff, adgunm1, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 'ADJvvel.',suff, adgvnm1, myIter, myThid)
+c
+        CALL WRITE_FLD_XYZ_RL( 
+     &       'ADJgtnm1.',suff, adgtnm1, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL( 
+     &       'ADJgsnm1.',suff, adgsnm1, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL( 
+     &       'ADJgunm1.',suff, adgunm1, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL( 
+     &       'ADJgvnm1.',suff, adgvnm1, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL( 
+     &       'ADJgtr1nm1. ',suff, adgtr1nm1, myIter, myThid)
+c
+        CALL WRITE_FLD_XYZ_RL( 
+     &       'ADJtheta.',suff, adtheta, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL( 
+     &       'ADJsalt.',suff, adsalt, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL( 
+     &       'ADJuvel.',suff, aduvel, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL( 
+     &       'ADJvvel.',suff, advvel, myIter, myThid)
+        CALL WRITE_FLD_XYZ_RL( 
+     &       'ADJtr1. ',suff, adtr1, myIter, myThid)
+c
 cph        CALL WRITE_FLD_XY_RL ( 'ADJ_sst.',suff, adsst, myIter, myThid)
 cph        CALL WRITE_FLD_XY_RL ( 'ADJ_sss.',suff, adsss, myIter, myThid)
 cph        CALL WRITE_FLD_XYZ_RL ( 'ADJdiff.',suff, addiffkr, 

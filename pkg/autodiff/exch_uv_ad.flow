@@ -1,0 +1,40 @@
+C     /==========================================================\
+C     | TAMC flow directives                                     |
+C     | for library subroutines    exch_uv_xy_rs  exch_uv_xyz_rs |
+C     |                            exch_uv_xy_rl  exch_uv_xyz_rl |
+C     |==========================================================|
+C     | These directives are for standard adjoint code           |
+C     | generation (vector Jacobian product).                    |
+C     |   tamc -reverse  ....                                    |
+C     |                                                          |
+C     | written and tested by Ralf Giering, Jan. 14th 1999       |
+C     | added new S/R's for _xz_ , _yz_ heimbach@mit.edu May-01  |
+C     |==========================================================|
+C     | SUBROUTINE EXCH_UV_*_R* is linear                        |
+C     | only the array argument is active                        |
+C     | only myThid is required for the adjoint subroutine       |
+C     \==========================================================/
+cadj SUBROUTINE exch_uv_xy_rs INPUT   = 1, 2, 3, 4
+cadj SUBROUTINE exch_uv_xy_rs OUTPUT  = 1, 2, 3
+cadj SUBROUTINE exch_uv_xy_rs ACTIVE  = 1, 2
+cadj SUBROUTINE exch_uv_xy_rs DEPEND  = 3, 4
+cadj SUBROUTINE exch_uv_xy_rs ADNAME  = adexch_uv_xy_rs
+
+cadj SUBROUTINE exch_uv_xy_rl INPUT   = 1, 2, 3, 4
+cadj SUBROUTINE exch_uv_xy_rl OUTPUT  = 1, 2, 3
+cadj SUBROUTINE exch_uv_xy_rl ACTIVE  = 1, 2
+cadj SUBROUTINE exch_uv_xy_rl DEPEND  = 3, 4
+cadj SUBROUTINE exch_uv_xy_rl ADNAME  = adexch_uv_xy_rl
+
+cadj SUBROUTINE exch_uv_xyz_rs INPUT   = 1, 2, 3, 4
+cadj SUBROUTINE exch_uv_xyz_rs OUTPUT  = 1, 2, 3
+cadj SUBROUTINE exch_uv_xyz_rs ACTIVE  = 1, 2
+cadj SUBROUTINE exch_uv_xyz_rs DEPEND  = 3, 4
+cadj SUBROUTINE exch_uv_xyz_rs ADNAME  = adexch_uv_xyz_rs
+
+cadj SUBROUTINE exch_uv_xyz_rl INPUT   = 1, 2, 3, 4
+cadj SUBROUTINE exch_uv_xyz_rl OUTPUT  = 1, 2, 3
+cadj SUBROUTINE exch_uv_xyz_rl ACTIVE  = 1, 2
+cadj SUBROUTINE exch_uv_xyz_rl DEPEND  = 3, 4
+cadj SUBROUTINE exch_uv_xyz_rl ADNAME  = adexch_uv_xyz_rl
+

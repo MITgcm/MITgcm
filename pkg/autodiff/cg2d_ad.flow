@@ -3,7 +3,7 @@ C----------------------------------------
 C subroutine  cg2d
 C----------------------------------------
 CADJ SUBROUTINE cg2d ADNAME = cg2d
-CADJ SUBROUTINE cg2d INPUT  = 1,2,3
-CADJ SUBROUTINE cg2d OUTPUT =   2
+CADJ SUBROUTINE cg2d INPUT  = 1,2,3,4,5,6
+CADJ SUBROUTINE cg2d OUTPUT =   2,3,4,5
 CADJ SUBROUTINE cg2d ACTIVE = 1,2
-CADJ SUBROUTINE cg2d DEPEND =     3
+CADJ SUBROUTINE cg2d DEPEND =           6
