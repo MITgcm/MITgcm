@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.1 1998/06/01 20:36:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.2 1998/06/01 22:27:14 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -55,14 +55,6 @@ C     Step forward meridional velocity
      &       -deltaTmom*hyFac*rRhonil *pSurfY(i,j)
      &                    )*_maskS(i,j,k,bi,bj)
         gVNm1(i,j,k,bi,bj)=gV(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
-
-C     Step forward temperature velocity
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        theta(i,j,k,bi,bj)=gTNm1(i,j,k,bi,bj)
-        gTNm1(i,j,k,bi,bj)=gT(i,j,k,bi,bj)
        ENDDO
       ENDDO
 

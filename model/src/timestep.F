@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.7 1998/06/01 20:36:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.8 1998/06/01 22:27:14 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -46,8 +46,9 @@ C     Step forward meridional velocity (store in Gv)
 C     Step forward temperature
        DO j=jMin,jMax
         DO i=iMin,iMax
-         gTNm1(i,j,k,bi,bj)=theta(i,j,k,bi,bj)
+         theta(i,j,k,bi,bj)=theta(i,j,k,bi,bj)
      &    +deltaTtracer*(ab15*gT(i,j,k,bi,bj)+ab05*gTNm1(i,j,k,bi,bj))
+         gTNm1(i,j,k,bi,bj)=gT(i,j,k,bi,bj)
         ENDDO
        ENDDO
 

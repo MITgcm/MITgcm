@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/init_predictor.F,v 1.1 1998/06/01 20:36:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/init_predictor.F,v 1.2 1998/06/01 22:27:14 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -26,8 +26,6 @@ C     == Local variables ==
           DO i=1-Olx,sNx+Olx
            gUNm1(i,j,k,bi,bj)=uVel(i,j,k,bi,bj)
            gVNm1(i,j,k,bi,bj)=vVel(i,j,k,bi,bj)
-           gTNm1(i,j,k,bi,bj)=theta(i,j,k,bi,bj)
-           gSNm1(i,j,k,bi,bj)=salt(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO

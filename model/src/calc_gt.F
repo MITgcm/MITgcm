@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.8 1998/05/30 02:10:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.9 1998/06/01 22:27:14 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -6,7 +6,7 @@ CStartOfInterFace
       SUBROUTINE CALC_GT( 
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,wTrans,maskup,
-     I           K13,K23,K33,KapGM,
+     I           K13,K23,KappaZT,KapGM,
      U           af,df,fZon,fMer,fVerT,
      I           myThid )
 C     /==========================================================\
@@ -72,7 +72,7 @@ C     myThid - Instance number for this innvocation of CALC_GT
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
-      _RL K33   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL KappaZT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL KapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -198,13 +198,21 @@ C           boundary condition.
       DO j=jMin,jMax
        DO i=iMin,iMax
         df(i,j) = _zA(i,j,bi,bj)*(
-     &   -(diffKzT+KapGM(i,j)*K33(i,j,k))*rdzC(k)
-     &   *(theta(i,j,kM1,bi,bj)-theta(i,j,k,bi,bj))
      &   -KapGM(i,j)*K13(i,j,k)*dTdx(i,j)
      &   -KapGM(i,j)*K23(i,j,k)*dTdy(i,j)
      &   )
        ENDDO
       ENDDO
+      IF (.NOT.implicitDiffusion) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         df(i,j) = df(i,j) + _zA(i,j,bi,bj)*(
+     &    -KappaZT(i,j,k)*rdzC(k)
+     &    *(theta(i,j,kM1,bi,bj)-theta(i,j,k,bi,bj))
+     &    )
+        ENDDO
+       ENDDO
+      ENDIF
 C     Net vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
