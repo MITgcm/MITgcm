@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.35 2003/11/23 01:28:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.36 2003/12/15 02:07:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -143,6 +143,11 @@ C--   Do ptracer diagnostics.
      & CALL GCHEM_DIAGS( myTime, myIter, myThid )
 #endif
 cswdptr -- end add ---
+
+#ifdef COMPONENT_MODULE
+      IF ( useCoupler )
+     &  CALL CPL_WRITE_DIAGS( myTime, myIter, myThid )
+#endif
 
       RETURN
       END

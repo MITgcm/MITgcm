@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.77 2003/12/14 23:18:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.78 2003/12/15 02:07:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -256,6 +256,26 @@ CADJ STORE ptracer  = comlev1, key = ikey_dynamics
          CALL GCHEM_FIELDS_LOAD( mytime, myiter, mythid )
 # endif
 #endif
+
+#ifdef COMPONENT_MODULE
+       IF ( useCoupler ) THEN
+C      Post coupling data that I export.
+C      Read in coupling data that I import.
+         CALL TIMER_START('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
+         CALL CPL_EXPORT_MY_DATA(       myIter, myTime, myThid )
+         CALL CPL_IMPORT_EXTERNAL_DATA( myIter, myTime, myThid )
+         CALL TIMER_STOP ('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
+       ENDIF
+#endif /* COMPONENT_MODULE */
+
+#ifdef COMPONENT_MODULE
+# ifndef ALLOW_AIM
+C jmc: don't know precisely where to put this call. leave it here for now.
+       IF ( useCoupler ) THEN
+         CALL OCN_APPLY_IMPORT( myTime, myIter, myThid )
+       ENDIF
+# endif
+#endif /* COMPONENT_MODULE */
 
 C--     Step forward fields and calculate time tendency terms.
 #ifdef ALLOW_DEBUG

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.27 2003/11/23 01:28:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.28 2003/12/15 02:07:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,6 +51,8 @@ C       |
 C       |-- GRDCHK_READPARMS
 C       |
 C       |-- ECCO_READPARMS
+C       |
+C       |-- CPL_READPARMS
 
 
 C     !USES:
@@ -147,6 +149,11 @@ ceh3 needs an IF ( useEXF ) THEN
 c--   Initialize ECCO package parameters
       IF (useECCO) call ecco_readparms ( myThid )
 #endif
+
+#ifdef COMPONENT_MODULE
+C--   set Coupling parameters
+      IF ( useCoupler ) CALL CPL_READPARMS( myThid )
+#endif /* COMPONENT_MODULE */
 
       RETURN
       END

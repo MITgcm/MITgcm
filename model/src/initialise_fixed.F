@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.15 2003/11/12 04:15:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.16 2003/12/15 02:07:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -134,6 +134,12 @@ C--   Check parameters and model cofiguration
 
 C--   Finally summarise the model cofiguration
       CALL CONFIG_SUMMARY( myThid )
+
+#ifdef COMPONENT_MODULE
+C--   Post component-model configuration information to coupler
+C     and get config. info for other component(s).
+      IF ( useCoupler ) CALL CPL_EXCH_CONFIGS( myThid )
+#endif
 
       RETURN
       END

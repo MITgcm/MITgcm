@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.29 2003/12/14 23:24:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.30 2003/12/15 02:07:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -47,6 +47,8 @@ C       |
 C       |-- BULKF_INIT
 C       |
 C       |-- THSICE_INI_VARS
+C       |
+C       |-- CPL_INI_VARS
 
 C     !USES:
       IMPLICIT NONE
@@ -145,6 +147,9 @@ C--   Open boundaries data
       IF (useThSIce) CALL THSICE_INI_VARS( mythid)
 #endif
 
+#ifdef COMPONENT_MODULE
+      IF ( useCoupler ) CALL CPL_INI_VARS( mythid )
+#endif
 
       RETURN
       END
