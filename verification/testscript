@@ -21,6 +21,13 @@ testoutput_for_prop()
  fi
  if [ -r $1/input/output.txt ]; then
   grep "$2" $1/input/output.txt | sed 's/.*=//' | nl > tmp1.txt
+  lncnt=`wc -l tmp1.txt | awk '{print $1}' `
+  if [ $lncnt -lt 3 ]; then
+   if [ $verbose -gt 0 ]; then
+    echo Not enough lines of output when searching for "$2" 1>&2
+   fi
+   return 99
+  fi
  else
   echo testoutput_for_prop: output.txt from model run was not readable 1>&2
   return 99
@@ -29,6 +36,13 @@ testoutput_for_prop()
   echo testoutput_for_prop: grep "$2" $1/results/output.txt 1>&2
  fi
  grep "$2" $1/results/output.txt | sed 's/.*=//' | nl > tmp2.txt
+  lncnt=`wc -l tmp2.txt | awk '{print $1}' `
+  if [ $lncnt -lt 3 ]; then
+   if [ $verbose -gt 0 ]; then
+    echo Not enough lines of output when searching for "$2" 1>&2
+   fi
+   return 99
+  fi
  if [ $debug -gt 0 ]; then
   echo testoutput_for_prop: join tmp1.txt tmp2.txt 1>&2
  fi

@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.100 2002/11/07 21:51:11 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.101 2002/11/07 21:53:31 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o modified testscript to return -- when there are no lines of "%MON" output 
 o added new flag "quasiHydrostatic" for QH mode
   and new routine quasihydrostaticterms()
 o added 2*Omega*Cos(phi)*W to u equations (non-hydrostatic Coriolis term)
