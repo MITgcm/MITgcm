@@ -34,7 +34,6 @@
  chkptFreq=120000.0,
  dumpFreq=2592000.0,
  monitorFreq=1.,
- monitor_ioinc=.TRUE.,
  &
 # Gridding parameters
  &PARM04

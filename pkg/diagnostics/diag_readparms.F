@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.14 2004/10/10 06:08:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.15 2004/10/18 16:04:20 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -37,12 +37,12 @@ C     !LOCAL VARIABLES:
       character*8 fields(ndim,ndim)  ! List Output Fields
       character*8 filename(ndim)     ! List Output Filename
       character*8 blank
-      LOGICAL diag_mdsio, diag_mnc, diag_ioinc
+      LOGICAL diag_mdsio, diag_mnc
       INTEGER mnc_lev_used(ndim)
 
       namelist / diagnostics_list /
      &     frequency, levels, fields, filename,
-     &     diag_mdsio, diag_mnc, diag_ioinc
+     &     diag_mdsio, diag_mnc
 
 C     Initialize and Read Diagnostics Namelist
       _BEGIN_MASTER(myThid)
@@ -60,7 +60,6 @@ C     Initialize and Read Diagnostics Namelist
 
       diag_mdsio = .true.
       diag_mnc   = .false.
-      diag_ioinc = .false.
 
 #ifdef ALLOW_MNC
       IF (useMNC .and. diag_use_mnc) THEN
@@ -95,7 +94,7 @@ C     Initialise diag_choices common block
 C     Fill Diagnostics Common Block with Namelist Info
       diag_use_mdsio = diag_mdsio
       diag_use_mnc   = diag_mnc
-      IF (diag_mnc .AND. (.NOT. diag_ioinc)) THEN
+      IF (diag_mnc .AND. (.NOT. outputTypesInclusive)) THEN
         diag_use_mdsio = .FALSE.
       ENDIF
       

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.131 2004/10/17 23:03:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.132 2004/10/18 16:04:20 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -177,8 +177,7 @@ C--   Time stepping parammeters
      & startTime, endTime, chkPtFreq,
      & dumpFreq, adjDumpFreq, taveFreq, tave_lastIter, deltaTClock,
      & diagFreq, monitorFreq, pChkPtFreq, cAdjFreq, 
-     & pickup_write_ioinc, timeave_ioinc, 
-     & snapshot_ioinc, monitor_ioinc, 
+     & outputTypesInclusive, 
      & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax, 
      & tauTr1ClimRelax,
      & periodicExternalForcing, externForcingPeriod, externForcingCycle

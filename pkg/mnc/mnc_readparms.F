@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.12 2004/10/14 13:44:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.13 2004/10/18 16:04:20 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -158,21 +158,21 @@ C--   Report contents of model parameter file
      &     SQUEEZE_RIGHT , 1)
 
 C     IO handling is done in one of two senses:
+C     (1) outputTypesInclusive=.TRUE. is an "inclusive-or" meaning that
+C     one or more write methods can occur simultaneously and
+C     (2) outputTypesInclusive=.FALSE. is an "exclusive-or" meaning that
+C     only one write method can occur in a given run
 C     
-C     [*_ioinc=.TRUE.] is an "inclusive-or" meaning that one or more
-C       write methods can occur simultaneously
-C     [*_ioinc=.FALSE.] is an "exclusive-or" meaning that only one 
-C       write method can occur in a given run
-C     
-C     Since all the *_mdsio flags default to .TRUE. and all *_ioinc
-C     default to .FALSE., the logic here is simple:
-      IF ( (.NOT. pickup_write_ioinc) 
+C     Since all the *_mdsio flags default to .TRUE. and
+C     outputTypesInclusive defaults to .FALSE., the logic here is
+C     simple:
+      IF ( (.NOT. outputTypesInclusive) 
      &     .AND. pickup_write_mnc ) pickup_write_mdsio = .FALSE.
-      IF ( (.NOT. timeave_ioinc) 
+      IF ( (.NOT. outputTypesInclusive) 
      &     .AND. timeave_mnc ) timeave_mdsio = .FALSE.
-      IF ( (.NOT. snapshot_ioinc) 
+      IF ( (.NOT. outputTypesInclusive) 
      &     .AND. snapshot_mnc ) snapshot_mdsio = .FALSE.
-      IF ( (.NOT. monitor_ioinc) 
+      IF ( (.NOT. outputTypesInclusive) 
      &     .AND. monitor_mnc ) monitor_stdio = .FALSE.
 
 C     Create the MNC output directory

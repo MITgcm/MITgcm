@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.369 2004/10/17 23:29:14 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.370 2004/10/18 16:04:19 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o remove all the *_ioinc flags and replace with the single global
+  outputTypesInclusive flag
 o allow to set a vertical profile of vertical diffusivity for T & S
 
 checkpoint55g_post

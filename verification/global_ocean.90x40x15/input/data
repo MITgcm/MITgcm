@@ -58,7 +58,6 @@
  taveFreq=   216000.,
 #monitorFreq=31104000.,
  monitorFreq=1.,
- monitor_ioinc=.TRUE.,
 # 2 months restoring timescale for temperature
  tauThetaClimRelax =  5184000.0,
 # 6 months restoring timescale for salinity

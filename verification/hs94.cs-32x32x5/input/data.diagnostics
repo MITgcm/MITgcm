@@ -1,7 +1,6 @@
 # Diagnostic Package Choices
  &diagnostics_list
   diag_mnc=.TRUE.,
-  diag_ioinc=.TRUE.,
   frequency(1) = 10,
    levels(1,1) = 1.,
    fields(1,1) = 'ETAN    ','ETANSQ  ',

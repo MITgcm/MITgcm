@@ -8,6 +8,5 @@
  PTRACERS_initialFile='lev_s.bin',
 #EH3 added for MNC
  PTRACERS_write_mnc=.TRUE.,
- PTRACERS_write_ioinc=.TRUE.,
  PTRACERS_names(1)='salt_mimic',
  &

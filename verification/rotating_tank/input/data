@@ -49,7 +49,7 @@
  chkptFreq=1.0,
  dumpFreq=1.0,
  monitorFreq=0.1,
- monitor_ioinc=.TRUE.,
+ outputTypesInclusive=.TRUE.,
  &
 
 # Gridding parameters

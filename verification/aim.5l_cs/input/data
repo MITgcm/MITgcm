@@ -59,7 +59,6 @@
  dumpFreq=7776000.,
 #monitorFreq=86400.,
  monitorFreq=1.,
- monitor_ioinc=.TRUE.,
 #diagFreq=2250.0,
  &
 

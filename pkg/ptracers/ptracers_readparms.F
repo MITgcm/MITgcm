@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.9 2004/10/17 23:06:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.10 2004/10/18 16:04:20 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -52,7 +52,6 @@ C                          are written to post-processing files.
      &     PTRACERS_names,
      &     PTRACERS_long_names,
      &     PTRACERS_units,
-     &     PTRACERS_write_ioinc,
      &     PTRACERS_read_mnc,
      &     PTRACERS_write_mnc
 
@@ -82,7 +81,6 @@ C     Set defaults values for parameters in PTRACERS.h
       PTRACERS_read_mnc    = .FALSE.
       PTRACERS_write_mdsio = .TRUE.
       PTRACERS_write_mnc   = .FALSE.
-      PTRACERS_write_ioinc = .FALSE.
 
 C     Open and read the data.ptracers file
       _BEGIN_MASTER(myThid)
@@ -139,7 +137,7 @@ C     Check that enough parameters were specified
       IF (useMNC) THEN
 C       Set the default I/O Types
         IF (PTRACERS_read_mnc) PTRACERS_read_mdsio = .FALSE.
-        IF ( (.NOT. PTRACERS_write_ioinc) 
+        IF ( (.NOT. outputTypesInclusive) 
      &       .AND. PTRACERS_write_mnc ) pickup_write_mdsio = .FALSE.
         
 C       Initialize the MNC variable types for PTRACERS 

@@ -6,7 +6,7 @@
  mnc_use_outdir=.TRUE.,
  mnc_outdir_str='mnc_test_',
  mnc_outdir_date=.TRUE.,
- monitor_mnc=.TRUE.,
+# monitor_mnc=.FALSE.,
 # pickup_write_mnc=.TRUE.,
  &
 # Note: Some systems use & as the
