@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio.F,v 1.7 2000/06/09 14:25:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio.F,v 1.8 2000/11/13 16:18:21 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -331,7 +331,10 @@ C Routine arguments
       logical globalFile
       character*(2) arrType
       integer nNz
-      Real arr(*)
+cph(
+cph      Real arr(*)
+      _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nNz,nSx,nSy)
+cph)
       integer irecord
       integer myIter
       integer myThid
