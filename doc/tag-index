@@ -1,10 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.54 2001/10/27 03:10:52 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.55 2002/01/18 22:13:27 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
-next checkpoint
+checkpoint44
 o apply Shapiro filter on T&S before calc_PhiHyd (stagger time stepping)
 o fix bug in mom_vi_del2uv
+o added some stuff for AD
 
 checkpoint43
 o added two new advection tests
