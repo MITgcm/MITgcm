@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_suflux.F,v 1.6 2002/09/27 20:05:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_suflux.F,v 1.7 2003/12/24 00:25:36 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -100,7 +100,7 @@ c     SAVE Q0moy
 
 C- jmc: declare all local variables: 
       _RL GTEMP0, GHUM0, RCP, PRD, VG2, DTHETAF, FSTAB, RDTH
-      _RL FSLAND, FSSEA, CHLCP, CHSCP, QDUMMY, RDUMMY
+      _RL FSLAND, FSSEA, CHLCP, CHSCP, QDUMMY(1), RDUMMY(1)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   1. Extrapolation of wind, temp, hum. and density to the surface
