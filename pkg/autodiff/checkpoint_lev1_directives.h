@@ -15,12 +15,24 @@ CADJ STORE lwflux0   = comlev1, key = ikey_dynamics
 CADJ STORE lwflux1   = comlev1, key = ikey_dynamics
 CADJ STORE swflux0   = comlev1, key = ikey_dynamics
 CADJ STORE swflux1   = comlev1, key = ikey_dynamics
+#  ifdef EXF_READ_EVAP
+CADJ STORE evap0     = comlev1, key = ikey_dynamics
+CADJ STORE evap1     = comlev1, key = ikey_dynamics
+#  else
+CADJ STORE evap      = comlev1, key = ikey_dynamics
+#  endif
+#  ifdef ALLOW_DOWNWARD_RADIATION
+CADJ STORE swdown0   = comlev1, key = ikey_dynamics
+CADJ STORE swdown1   = comlev1, key = ikey_dynamics
+CADJ STORE lwdown0   = comlev1, key = ikey_dynamics
+CADJ STORE lwdown1   = comlev1, key = ikey_dynamics
+#  endif
 # else
 CADJ STORE hflux0    = comlev1, key = ikey_dynamics
 CADJ STORE hflux1    = comlev1, key = ikey_dynamics
 CADJ STORE sflux0    = comlev1, key = ikey_dynamics
 CADJ STORE sflux1    = comlev1, key = ikey_dynamics
-#  ifdef ALLOW_KPP
+#  ifdef SHORTWAVE_HEATING
 CADJ STORE swflux0   = comlev1, key = ikey_dynamics
 CADJ STORE swflux1   = comlev1, key = ikey_dynamics
 #  endif
@@ -39,13 +51,48 @@ CADJ STORE vstress1  = comlev1, key = ikey_dynamics
 # ifdef ALLOW_BULKFORMULAE
 CADJ STORE theta     = comlev1, key = ikey_dynamics
 # endif
+# ifdef ALLOW_CLIMSSS_RELAXATION
+CADJ STORE climsss0   = comlev1, key = ikey_dynamics
+CADJ STORE climsss1   = comlev1, key = ikey_dynamics
+# endif
+#ifdef ALLOW_CLIMSST_RELAXATION
+CADJ STORE climsst0   = comlev1, key = ikey_dynamics
+CADJ STORE climsst1   = comlev1, key = ikey_dynamics
+# endif
+#ifdef ALLOW_CLIMSALT_RELAXATION
+cph not used so far
+cphCADJ STORE climsalt0  = comlev1, key = ikey_dynamics
+cphCADJ STORE climsalt1  = comlev1, key = ikey_dynamics
+# endif
+#ifdef ALLOW_CLIMTEMP_RELAXATION
+cph not used so far
+cphCADJ STORE climtemp0  = comlev1, key = ikey_dynamics
+cphCADJ STORE climtemp1  = comlev1, key = ikey_dynamics
+# endif
+# ifdef ATMOSPHERIC_LOADING
+CADJ STORE apressure0    = comlev1, key = ikey_dynamics
+CADJ STORE apressure1    = comlev1, key = ikey_dynamics
+# endif
+
+# ifdef ALLOW_HFLUX_CONTROL
+CADJ STORE xx_hflux0     = comlev1, key = ikey_dynamics
+CADJ STORE xx_hflux1     = comlev1, key = ikey_dynamics
+# endif
+# ifdef ALLOW_SFLUX_CONTROL
+CADJ STORE xx_sflux0     = comlev1, key = ikey_dynamics
+CADJ STORE xx_sflux1     = comlev1, key = ikey_dynamics
+# endif
+# ifdef ALLOW_USTRESS_CONTROL
+CADJ STORE xx_tauu0      = comlev1, key = ikey_dynamics
+CADJ STORE xx_tauu1      = comlev1, key = ikey_dynamics
+# endif
+# ifdef ALLOW_VSTRESS_CONTROL
+CADJ STORE xx_tauv0      = comlev1, key = ikey_dynamics
+CADJ STORE xx_tauv1      = comlev1, key = ikey_dynamics
+# endif
 
 #else /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
 
-cph empmr is needed for case buoyancyrelation .eq. 'OCEANICP'
-cph Probably not anymore after some changes...
-cph CADJ STORE empmr   = comlev1, key = ikey_dynamics
-c
 CADJ STORE taux0   = comlev1, key = ikey_dynamics
 CADJ STORE taux1   = comlev1, key = ikey_dynamics
 CADJ STORE tauy0   = comlev1, key = ikey_dynamics
@@ -69,6 +116,9 @@ CADJ STORE pload1  = comlev1, key = ikey_dynamics
 
 #endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
 
+cph The following storing may not be needed anymore
+cph but cannot tell for sure, so leave them.
+cph 
 #ifdef ALLOW_OBCS
 #ifdef ALLOW_OBCS_NORTH
 CADJ STORE OBNt    = comlev1, key = ikey_dynamics
@@ -87,4 +137,12 @@ CADJ STORE OBWt    = comlev1, key = ikey_dynamics
 CADJ STORE OBWs    = comlev1, key = ikey_dynamics
 #endif /* ALLOW_OBCS_WEST */
 #endif  /* ALLOW_OBCS */
+
+#ifdef ALLOW_SEAICE
+CADJ STORE area          = comlev1, key = ikey_dynamics
+CADJ STORE heff          = comlev1, key = ikey_dynamics
+CADJ STORE hsnow         = comlev1, key = ikey_dynamics
+CADJ STORE tice          = comlev1, key = ikey_dynamics
+CADJ STORE runoff        = comlev1, key = ikey_dynamics
+#endif
 
