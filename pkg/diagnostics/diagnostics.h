@@ -317,6 +317,11 @@ C diagarrays common
       CHARACTER*8   CDICCFLX
       CHARACTER*8   CDICPCO2
       CHARACTER*8   CDICPHAV
+      CHARACTER*8   CDTCONV
+      CHARACTER*8   CDQCONV
+      CHARACTER*8   CRELHUM
+      CHARACTER*8   CPRECLS
+      CHARACTER*8   CENPREC
 
       EQUIVALENCE ( CDIAG( 1) ,  CUFLUX  )
       EQUIVALENCE ( CDIAG( 2) ,  CVFLUX  )
@@ -602,6 +607,11 @@ C diagarrays common
       EQUIVALENCE ( CDIAG(290),  CDICCFLX  )
       EQUIVALENCE ( CDIAG(291),  CDICPCO2  )
       EQUIVALENCE ( CDIAG(292),  CDICPHAV  )
+      EQUIVALENCE ( CDIAG(293),  CDTCONV   )
+      EQUIVALENCE ( CDIAG(294),  CDQCONV   )
+      EQUIVALENCE ( CDIAG(295),  CRELHUM   )
+      EQUIVALENCE ( CDIAG(296),  CPRECLS   )
+      EQUIVALENCE ( CDIAG(297),  CENPREC   )
 
       integer       iUFLUX   , kUFLUX   , nUFLUX
       integer       iVFLUX   , kVFLUX   , nVFLUX
@@ -887,6 +897,11 @@ C diagarrays common
       integer       iDICCFLX , kDICCFLX , nDICCFLX
       integer       iDICPCO2 , kDICPCO2 , nDICPCO2
       integer       iDICPHAV , kDICPHAV , nDICPHAV
+      integer       iDTCONV  , kDTCONV ,  nDTCONV
+      integer       iDQCONV  , kDQCONV ,  nDQCONV
+      integer       iRELHUM  , kRELHUM ,  nRELHUM
+      integer       iPRECLS  , kPRECLS ,  nPRECLS
+      integer       iENPREC  , kENPREC ,  nENPREC
 
 
 c Diagnostic Pointers
@@ -1175,6 +1190,11 @@ c -------------------
       EQUIVALENCE ( IDIAG(290),  IDICCFLX  )
       EQUIVALENCE ( IDIAG(291),  IDICPCO2  )
       EQUIVALENCE ( IDIAG(292),  IDICPHAV  )
+      EQUIVALENCE ( CDIAG(293),  CDTCONV   )
+      EQUIVALENCE ( CDIAG(294),  CDQCONV   )
+      EQUIVALENCE ( CDIAG(295),  CRELHUM   )
+      EQUIVALENCE ( CDIAG(296),  CPRECLS   )
+      EQUIVALENCE ( CDIAG(297),  CENPREC   )
 
 
 c Diagnostic Levels
@@ -1463,6 +1483,11 @@ c -----------------
       EQUIVALENCE ( KDIAG(290),  KDICCFLX  )
       EQUIVALENCE ( KDIAG(291),  KDICPCO2  )
       EQUIVALENCE ( KDIAG(292),  KDICPHAV  )
+      EQUIVALENCE ( CDIAG(293),  CDTCONV   )
+      EQUIVALENCE ( CDIAG(294),  CDQCONV   )
+      EQUIVALENCE ( CDIAG(295),  CRELHUM   )
+      EQUIVALENCE ( CDIAG(296),  CPRECLS   )
+      EQUIVALENCE ( CDIAG(297),  CENPREC   )
 
 
 c Diagnostic Counters
@@ -1751,6 +1776,11 @@ c -------------------
       EQUIVALENCE ( NDIAG(290),  NDICCFLX  )
       EQUIVALENCE ( NDIAG(291),  NDICPCO2  )
       EQUIVALENCE ( NDIAG(292),  NDICPHAV  )
+      EQUIVALENCE ( CDIAG(293),  CDTCONV   )
+      EQUIVALENCE ( CDIAG(294),  CDQCONV   )
+      EQUIVALENCE ( CDIAG(295),  CRELHUM   )
+      EQUIVALENCE ( CDIAG(296),  CPRECLS   )
+      EQUIVALENCE ( CDIAG(297),  CENPREC   )
 
 
 C diagnostics common

@@ -354,6 +354,11 @@ c ----------------
       cdiag(290) = 'DICCFLX '
       cdiag(291) = 'DICPCO2 '
       cdiag(292) = 'DICPHAV '
+      cdiag(293) = 'DTCONV  '
+      cdiag(294) = 'DQCONV  '
+      cdiag(295) = 'RELHUM  '
+      cdiag(296) = 'PRECLS  '
+      cdiag(297) = 'ENPREC  '
 
 c Diagnostic Descriptions
 c ----------------------------------------------------------------------
@@ -722,6 +727,11 @@ c ----------------------------------------------------------------------
       tdiag(290)  = 'Flux of CO2 - air-sea exch (mol/m2/s)'
       tdiag(291)  = 'Partial Pressure of CO2 (atm)'
       tdiag(292)  = 'pH (dimensionless)'
+      tdiag(293)  = 'Temp Change due to Convection (K/sec)'
+      tdiag(294)  = 'Humidity Change due to Convection (g/kg/sec)'
+      tdiag(295)  = 'Relative Humidity (fraction)'
+      tdiag(296)  = 'Large Scale Precipitation (g/m2/sec)'
+      tdiag(297)  = 'Energy of Precipitation (snow, rain Temp) in (J/g)'
 
 c Diagnostic Units
 c ----------------
@@ -1017,6 +1027,11 @@ c ----------------
       udiag(290) = 'mol/m2/sec      '
       udiag(291) = 'atm             '
       udiag(292) = 'dimensionless   '
+      udiag(293) = 'k/sec           '
+      udiag(294) = 'g/kg/sec        '
+      udiag(295) = 'Fraction        '
+      udiag(296) = 'g/m2/sec        '
+      udiag(297) = 'J/g             '
 
 c Diagnostic Parms
 c ----------------
@@ -1312,6 +1327,11 @@ c ----------------
       gdiag(290) = 'SM P    L       '
       gdiag(291) = 'SM P    M       '
       gdiag(292) = 'SM P    M       '
+      gdiag(293) = 'SM      M       '
+      gdiag(294) = 'SM      M       '
+      gdiag(295) = 'SM      M       '
+      gdiag(296) = 'SM      M       '
+      gdiag(297) = 'SM      M       '
         
 c Diagnostic Levels
 c -----------------
@@ -1607,6 +1627,11 @@ c -----------------
       KDIAG(290)= 1
       KDIAG(291)= 1
       KDIAG(292)= 1
+      KDIAG(293)= Nr
+      KDIAG(294)= Nr
+      KDIAG(295)= Nr
+      KDIAG(296)= 1
+      KDIAG(297)= 1
 
       do n=1,ndiagt
       idiag (n) = 0
