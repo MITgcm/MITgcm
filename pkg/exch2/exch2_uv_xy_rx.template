@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_xy_rx.template,v 1.3 2004/04/05 15:27:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_xy_rx.template,v 1.4 2004/09/21 21:10:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -103,6 +103,8 @@ C          Uphi(snx+1,sny+1,bi,bj)= vPhi(snx+1,sny+1,bi,bj)
          ENDIF
 
 C        Now zero out the null areas that should not be used in the numerics
+C-       Also add one valid u,v value next to the corner, that allows
+C         to compute vorticity on a wider stencil (e.g., vort3(0,1) & (1,0))
          IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
 C         Zero SW corner points
@@ -116,6 +118,8 @@ C         Zero SW corner points
             vPhi(I,J,bi,bj)=0.
            ENDDO
           ENDDO
+            uPhi(0,0,bi,bj)=vPhi(1,0,bi,bj)
+            vPhi(0,0,bi,bj)=uPhi(0,1,bi,bj)
          ENDIF
          IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
@@ -130,6 +134,13 @@ C         Zero NW corner points
             vPhi(I,J,bi,bj)=0.
            ENDDO
           ENDDO
+          IF ( withSigns ) THEN
+            uPhi(0,sNy+1,bi,bj)=-vPhi(1,sNy+2,bi,bj)
+            vPhi(0,sNy+2,bi,bj)=-uPhi(0,sNy,bi,bj)
+          ELSE
+            uPhi(0,sNy+1,bi,bj)= vPhi(1,sNy+2,bi,bj)
+            vPhi(0,sNy+2,bi,bj)= uPhi(0,sNy,bi,bj)
+          ENDIF
          ENDIF
          IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
@@ -144,6 +155,13 @@ C         Zero SE corner points
             vPhi(I,J,bi,bj)=0.
            ENDDO
           ENDDO
+          IF ( withSigns ) THEN
+            uPhi(sNx+2,0,bi,bj)=-vPhi(sNx,0,bi,bj)
+            vPhi(sNx+1,0,bi,bj)=-uPhi(sNx+2,1,bi,bj)
+          ELSE
+            uPhi(sNx+2,0,bi,bj)= vPhi(sNx,0,bi,bj)
+            vPhi(sNx+1,0,bi,bj)= uPhi(sNx+2,1,bi,bj)
+          ENDIF
          ENDIF
          IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
@@ -158,6 +176,8 @@ C         Zero NE corner points
             vPhi(I,J,bi,bj)=0.
            ENDDO
           ENDDO
+            uPhi(sNx+2,sNy+1,bi,bj)=vPhi(sNx,sNy+2,bi,bj)
+            vPhi(sNx+1,sNy+2,bi,bj)=uPhi(sNx+2,sNy,bi,bj)
          ENDIF
         ENDDO
        ENDDO
