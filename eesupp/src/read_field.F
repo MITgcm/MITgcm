@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/read_field.F,v 1.3 1999/05/18 17:39:22 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/read_field.F,v 1.4 1999/07/30 15:42:56 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -69,7 +69,7 @@ C     filNam - Name of file to read.
 C     filFmt - Format to use to read the file.
 C     myNz   - No. vertical layers for array fld.
 C     myThid - Thread number for this instance of the routine.
-      REAL fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx, nSy )
+      _RL fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx, nSy )
       CHARACTER*(*) filNam
       CHARACTER*(*) filFmt
       INTEGER       myThid

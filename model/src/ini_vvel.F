@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_vvel.F,v 1.7 1998/12/09 16:11:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_vvel.F,v 1.8 1999/07/30 15:42:59 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -37,7 +37,6 @@ C     I,J,K
       INTEGER iG, jG
       INTEGER bi, bj
       INTEGER  I,  J, K
-      REAL rad, rD
 
 C--   Initialise velocity field to zero
       DO bj = myByLo(myThid), myByHi(myThid)

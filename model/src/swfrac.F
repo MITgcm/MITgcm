@@ -43,7 +43,7 @@ C     output arguments
 
 C     === Local variables ===
       _RS facz
-      REAL  rfac(nwtype),a1(nwtype),a2(nwtype)
+      _RS rfac(nwtype),a1(nwtype),a2(nwtype)
       INTEGER i
 C
 C     Jerlov water type :  I       IA      IB      II      III

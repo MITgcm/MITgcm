@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.1 1999/05/05 18:32:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.2 1999/07/30 15:42:58 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -237,7 +237,7 @@ C     myCurrentTime - Current time of simulation ( s )
       LOGICAL modelEnd    
       INTEGER myThid
       INTEGER myIt
-      REAL    myCurrentTime
+      _RL     myCurrentTime
 CEndofinterface
 
 C     == Common blocks ==

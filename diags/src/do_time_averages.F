@@ -27,14 +27,14 @@ C     myIter - Iteration number
 C     myCurrentTime - Current time of simulation ( s )
       INTEGER myThid
       INTEGER myIter, bi, bj, K, kUp, kDown
-      REAL    myCurrentTime
+      _RL     myCurrentTime
       _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL KapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     == Local variables ==
-      REAL DDTT
+      _RL DDTT
       LOGICAL TOP_LEVEL
  
       TOP_LEVEL=K.EQ.1

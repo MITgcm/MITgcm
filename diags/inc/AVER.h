@@ -15,8 +15,8 @@ C     uttave    - uVel * theta
 C     vttave    - vVel * theta
 C
       COMMON /TAVE_0/ TimeAve,InterTimeAve
-      REAL TimeAve(Nr,nSx,nSy)
-      REAL InterTimeAve(Nr,nSx,nSy)
+      _RL TimeAve(Nr,nSx,nSy)
+      _RL InterTimeAve(Nr,nSx,nSy)
 C
       COMMON /DYNVARS_A/ 
      &                  uVeltave,vVeltave,thetatave,salttave,

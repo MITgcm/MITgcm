@@ -25,7 +25,7 @@ C     fldtave - time averaged Field
       _RL fld2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER dir
-      REAL deltaT
+      _RL deltaT
       INTEGER bi, bj, K, myThid
 
 CEndofinterface

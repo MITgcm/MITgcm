@@ -96,7 +96,7 @@ c     myTime - Current time in simulation
       INTEGER bi, bj
       INTEGER ikey
       INTEGER myThid
-      _RS     myTime
+      _RL     myTime
 
 c Local arrays and variables
 c                            horizontal working arrays

@@ -25,14 +25,14 @@ C     myIter - Iteration number
 C     myCurrentTime - Current time of simulation ( s )
       INTEGER myThid
       INTEGER myIter
-      REAL    myCurrentTime
+      _RL     myCurrentTime
       INTEGER prevPrec
 
 C     == Local variables ==
 C     suff - Hold suffix part of a filename
 C     TimeAve - total time over average
       CHARACTER*(MAX_LEN_FNAM) suff
-      REAL DDTT
+      _RL DDTT
       INTEGER bi,bj,k
       INTEGER beginIOErrCount
       INTEGER endIOErrCount

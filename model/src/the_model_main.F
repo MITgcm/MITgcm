@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.28 1999/05/24 15:42:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.29 1999/07/30 15:43:00 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -105,8 +105,7 @@ C     myCurrentIter - Iteration counter for this thread
 C     myCurrentTime - Time counter for this thread
 C     I             - Loop counter
       INTEGER I, myCurrentIter
-      REAL    myCurrentTime
-      CHARACTER*(30) suff
+      _RL     myCurrentTime
 
 C--   This timer encompasses the whole code
       CALL TIMER_START('ALL',myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.20 1999/03/22 15:54:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.21 1999/07/30 15:42:58 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -35,9 +35,9 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER                  I,J,K
       INTEGER                  bi, bj
-      REAL                     xcoord(Nx)
-      REAL                     ycoord(Ny)
-      REAL                     rcoord(Nr)
+      _RL                      xcoord(Nx)
+      _RL                      ycoord(Ny)
+      _RL                      rcoord(Nr)
 
 
       _BARRIER
