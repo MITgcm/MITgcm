@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.15 2004/07/07 03:10:15 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.16 2004/07/08 00:34:21 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -66,7 +66,6 @@ CEOP
       integer dim(CW_DIMS), ib(CW_DIMS), ie(CW_DIMS)
       character*(NLEN) dn(CW_DIMS)
       character*(NLEN) dn_blnk
-      integer klevs(Nr+Nrphys)
 #endif /*  ALLOW_MNC  */
 
       undef = getcon('UNDEF')
@@ -90,6 +89,26 @@ C       Update the record dimension by writing the iteration number
         CALL MNC_CW_SET_UDIM(diag_mnc_bn, -1, myThid)
         CALL MNC_CW_I_W('I',diag_mnc_bn,0,0,'iter', myIter, myThid)
         CALL MNC_CW_SET_UDIM(diag_mnc_bn, 0, myThid)
+
+        dn(1)(1:NLEN) = dn_blnk(1:NLEN)
+        write(dn(1),'(a,i6.6)') 'Zd', nlevels(listnum)
+        dim(1) = nlevels(listnum)
+        ib(1)  = 1
+        ie(1)  = nlevels(listnum)
+
+        CALL MNC_CW_ADD_GNAME('diag_levels', 1, 
+     &       dim, dn, ib, ie, myThid)
+        CALL MNC_CW_ADD_VNAME('level_indicies', 'diag_levels', 
+     &       0,0, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('level_indicies',1,'description',
+     &       'Idicies of vertical levels within the data source arrays',
+     &       myThid)
+        
+        CALL MNC_CW_RL_W('I',diag_mnc_bn,0,0,
+     &       'level_indicies', levs(1,listnum), myThid)
+
+        CALL MNC_CW_DEL_VNAME('level_indicies', myThid)
+        CALL MNC_CW_DEL_GNAME('diag_levels', myThid)
       ENDIF
 #endif /*  ALLOW_MNC  */
 
@@ -101,7 +120,7 @@ C       Update the record dimension by writing the iteration number
               if( myThid.eq.1 ) 
      &             write(6,2000) m,cdiag(m),ndiag(m),gdiag(m)
               if (parse1(5).ne.'C') then
-C               do k=1,kdiag(m)
+
                 do k = 1,nlevels(listnum)
                   call getdiag ( myThid,k,m,undef,qtmp1)
                 enddo
@@ -189,17 +208,11 @@ C             Z is special since it varies
               CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),1,'units',
      &             udiag(m),myThid)
 
-C              DO ii = 1,nlevels(listnum)
-C                klevs(ii) = 
-C              ENDDO
-C              CALL MNC_CW_ADD_VATTR_INT(cdiag(m),
-C     &             nlevels(listnum), 'klevels', )
-
               CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
      &             cdiag(m), qtmp1, myThid)
 
-              CALL MNC_CW_DEL_GNAME('diag_cw_temp', myThid)
               CALL MNC_CW_DEL_VNAME(cdiag(m), myThid)
+              CALL MNC_CW_DEL_GNAME('diag_cw_temp', myThid)
 
               _END_MASTER( myThid )
 
