@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.10 2004/05/05 00:23:37 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/advect.F,v 1.11 2004/10/05 14:03:52 adcroft Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -56,7 +56,7 @@ C BACKWARD EULER
          K3=2
       ENDIF
 
-C NOW REARRANGE H'S
+C NOW REARRANGE HS
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
