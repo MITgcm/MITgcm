@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp4/code/CPP_OPTIONS.h,v 1.1 1998/12/15 00:02:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp4/code/CPP_OPTIONS.h,v 1.2 1999/03/22 16:25:13 adcroft Exp $
 C
 
 C 
@@ -10,6 +10,12 @@ C o Include/exclude code for C-D grid method of integrating the
 C   coriolis terms
 #undef   INCLUDE_CD_CODE
 
+C o Allow nonHydrostatic code
+#define ALLOW_NONHYDROSTATIC
+
+C o Use natural boundary conditions for surface fresh water flux
+#undef USE_NATURAL_BCS
+
 C o Include/exclude diagnostics package interface code
 #define  INCLUDE_DIAGNOSTICS_INTERFACE_CODE
 
@@ -19,7 +25,7 @@ C o Include/exclude latitude circle FFT filter
 C o Include/exclude temperature advection code
 #define  INCLUDE_T_ADVECTION_CODE
 #ifdef   INCLUDE_T_ADVECTION_CODE
-#define  _ADT(a) a
+#define  _ADT(a)a
 #endif
 #ifndef  INCLUDE_T_ADVECTION_CODE
 #define  _ADT(a)
@@ -28,8 +34,8 @@ C o Include/exclude temperature advection code
 C o Include/exclude temperature diffusion code
 #define  INCLUDE_T_DIFFUSION_CODE
 #ifdef   INCLUDE_T_DIFFUSION_CODE
-#define  _LPT(a) a
-#define  _BHT(a) a
+#define  _LPT(a)a
+#define  _BHT(a)a
 #endif
 #ifndef  INCLUDE_T_DIFFUSION_CODE
 #define  _LPT(a)
@@ -42,7 +48,7 @@ C o Include/exclude temperature forcing code
 C o Include/exclude momentum advection code
 #define  INCLUDE_MOMENTUM_ADVECTION_CODE
 #ifdef   INCLUDE_MOMENTUM_ADVECTION_CODE
-#define  _ADM(a) a
+#define  _ADM(a)a
 #endif
 #ifndef  INCLUDE_MOMENTUM_ADVECTION_CODE
 #define  _ADM(a)
@@ -51,7 +57,7 @@ C o Include/exclude momentum advection code
 C o Include/exclude laplacian viscosity code
 #define  INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 #ifdef   INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
-#define  _LPM(a) a
+#define  _LPM(a)a
 #endif
 #ifndef  INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 #define  _LPM(a)
@@ -60,7 +66,7 @@ C o Include/exclude laplacian viscosity code
 C o Include/exclude biharmonic viscosity code
 #define  INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
 #ifdef   INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
-#define  _BHM(a) a
+#define  _BHM(a)a
 #endif
 #ifndef  INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
 #define  _BHM(a)
@@ -69,7 +75,7 @@ C o Include/exclude biharmonic viscosity code
 C o Include/exclude gradient of phy_hyd code
 #define INCLUDE_GRADPH_CODE
 #ifdef  INCLUDE_GRADPH_CODE
-#define _PHM(a) a
+#define _PHM(a)a
 #endif
 #ifndef INCLUDE_GRADPH_CODE
 #define _PHM(a)
