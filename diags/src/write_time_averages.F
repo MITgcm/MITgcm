@@ -56,13 +56,10 @@ C      Normalize by integrated time
           CALL TIMEAVER_FINAL_XYZ(vVeltave,timeave,bi,bj,K,myThid)
           CALL TIMEAVER_FINAL_XYZ(uttave,timeave,bi,bj,K,myThid)
           CALL TIMEAVER_FINAL_XYZ(vttave,timeave,bi,bj,K,myThid)
-          CALL TIMEAVER_FINAL_XYZ(k13tave,intertimeave,bi,bj,K,myThid)
-          CALL TIMEAVER_FINAL_XYZ(k23tave,intertimeave,bi,bj,K,myThid)
           CALL TIMEAVER_FINAL_XYZ(wVeltave,intertimeave,bi,bj,K,myThid)
           CALL TIMEAVER_FINAL_XYZ(ConvectCountTave,intertimeave,
      &                            bi,bj,K,myThid)
          ENDDO
-         CALL TIMEAVER_FINAL_XY(KapGMtave,intertimeave,bi,bj,myThid)
         ENDDO
        ENDDO
 
@@ -85,10 +82,7 @@ C--     Read IO error counter
         CALL WRITE_FLD_XYZ_RL('vVeltave.',suff,vVeltave,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('UTtave.',suff,uttave,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('VTtave.',suff,vttave,myIter,myThid)
-        CALL WRITE_FLD_XYZ_RL('K13tave.',suff,k13tave,myIter,myThid)
-        CALL WRITE_FLD_XYZ_RL('K23tave.',suff,k23tave,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('WTtave.',suff,wVeltave,myIter,myThid)
-        CALL WRITE_FLD_XY_RL('KapGMtave.',suff,KapGMtave,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('ConvectCntTave.',suff,ConvectCountTave,
      &                        myIter,myThid)
         writeBinaryPrec = prevPrec
@@ -127,10 +121,7 @@ C      Reset the averages to zero
           CALL TIMEAVER_INI_XYZ(vVeltave, bi,bj,K,myThid)
           CALL TIMEAVER_INI_XYZ(uttave, bi,bj,K,myThid)
           CALL TIMEAVER_INI_XYZ(vttave, bi,bj,K,myThid)
-          CALL TIMEAVER_INI_XYZ(k13tave, bi,bj,K,myThid)
-          CALL TIMEAVER_INI_XYZ(k23tave, bi,bj,K,myThid)
           CALL TIMEAVER_INI_XYZ(wVeltave, bi,bj,K,myThid)
-          IF (K.EQ.1) CALL TIMEAVER_INI_XY(KapGMtave, bi,bj,myThid)
           CALL TIMEAVER_INI_XYZ(ConvectCountTave, bi,bj,K,myThid)
           TimeAve(k,bi,bj)=0.
           InterTimeAve(k,bi,bj)=0.
