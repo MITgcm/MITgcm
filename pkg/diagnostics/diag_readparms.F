@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.10 2004/07/06 05:22:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.11 2004/07/07 03:10:14 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -44,9 +44,7 @@ C     !LOCAL VARIABLES:
      &     frequency, levels, fields, filename,
      &     use_mdsio, use_mnc
 
-C **********************************************************************
-C ****           Initialize and Read Diagnostics Namelist           ****
-C **********************************************************************
+C     Initialize and Read Diagnostics Namelist
       _BEGIN_MASTER(myThid)
 
       undef = getcon('UNDEF')
@@ -70,19 +68,17 @@ C **********************************************************************
         enddo
       ENDIF
 #endif /*  ALLOW_MNC  */
-
+      
       WRITE(msgBuf,'(A)') ' DIAG_READPARMS: opening data.diagnostics'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_RIGHT,1)
-                                                                                        
+      
       CALL OPEN_COPY_DATA_FILE('data.diagnostics', 'DIAG_READPARMS',
      .                          ku,myThid )
       read  (ku,NML=diagnostics_list)
       close (ku)
 
-C **********************************************************************
-C ****         Initialise diag_choices common block                 ****
-C **********************************************************************
 
+C     Initialise diag_choices common block
       nlists = 0
       do n = 1,numlists
         freq(n) = 0
@@ -95,10 +91,7 @@ C **********************************************************************
         enddo
       enddo
 
-C **********************************************************************
-C ****         Fill Diagnostics Common Block with Namelist Info     ****
-C **********************************************************************
-
+C     Fill Diagnostics Common Block with Namelist Info
       diag_use_mdsio = use_mdsio
       diag_use_mnc   = use_mnc
 
@@ -122,10 +115,7 @@ C **********************************************************************
         endif
       enddo
 
-C **********************************************************************
-C ****               Echo History List Data Structure               ****
-C **********************************************************************
-
+C     Echo History List Data Structure
       do n = 1,nlists
         WRITE(msgBuf,'(2a)') 'Creating Output Stream: ',fnames(n)
         CALL PRINT_MESSAGE(

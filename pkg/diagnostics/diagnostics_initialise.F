@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_initialise.F,v 1.8 2004/07/06 03:55:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_initialise.F,v 1.9 2004/07/07 03:10:15 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -30,33 +30,28 @@ C     !LOCAL VARIABLES:
       logical found
       integer i,j,bi,bj
 
-C **********************************************************************
-C **** Calculate pointers for diagnostics set to non-zero frequency ****
-C **********************************************************************
-
+C     Calculate pointers for diagnostics set to non-zero frequency
       call diagnostics_init_vals (myThid)
       
       ndiagcount = 0
       do n=1,nlists
-       do m=1,nfields(n)
-
-        found = .false.
-        do mm=1,ndiagt   ! Search all possible model diagnostics
-         if( flds(m,n).eq.cdiag(mm) ) then
-          call setdiag (myThid,mm,ndiagcount)
-          found = .true.
-         endif
+        do m=1,nfields(n)
+          
+          found = .false.
+C         Search all possible model diagnostics
+          do mm=1,ndiagt
+            if( flds(m,n).eq.cdiag(mm) ) then
+              call setdiag (myThid,mm,ndiagcount)
+              found = .true.
+            endif
+          enddo
+          if( .not.found .and. myThid.eq.1 ) then
+            print *, 'Note:  ',flds(m,n),' is not a Diagnostic.'
+          endif
         enddo
-        if( .not.found .and. myThid.eq.1 ) then
-         print *, 'Note:  ',flds(m,n),' is not a Diagnostic.'
-        endif
-
-       enddo
       enddo
-
-C **********************************************************************
-C **** Zero out the qdiag array which accumulates during integration****
-C **********************************************************************
+      
+C     Zero out the qdiag array which accumulates during integration
       do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
           do n = 1,numdiags

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_init_vals.F,v 1.20 2004/07/06 22:49:13 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_init_vals.F,v 1.21 2004/07/07 03:10:14 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -14,42 +14,6 @@ C     !DESCRIPTION:
 C     Initialize Diagnostic Names, Levels, and GPARMS.  Note that GDIAG
 C     is defined as character*16 and can be to character*1 parse(16)
 C     with the following codes currently defined:
-
-C ***********************************************************************
-C *****                                                              ****
-C *****  PURPOSE                                                     ****
-C *****    Initialize Diagnostic Names, Levels, and GPARMS           ****
-C *****                                                              ****
-C *****                                                              ****
-C *****  Note: GDIAG is defined as character*16 and can be           ****
-C *****              equivalenced to character*1 parse(16)           ****
-C *****                                                              ****
-C *****  parse(1)   => 'S' for a scalar diagnostic                   ****
-C *****             => 'U' for a U-vector component diagnostic       ****
-C *****             => 'V' for a V-vector component diagnostic       ****
-C *****                                                              ****
-C *****  parse(2)   => 'U' for a C-grid U-Point                      ****
-C *****             => 'V' for a C-grid V-Point                      ****
-C *****             => 'M' for a C-grid Mass Point                   ****
-C *****             => 'Z' for a C-grid Corner Point                 ****
-C *****                                                              ****
-C *****  parse(3)   => not used at present                           ****
-C *****                                                              ****
-C *****  parse(4)   => 'P' if diagnostic is positive definite        ****
-C *****                                                              ****
-C *****  parse(5)   => 'C' for a diagnostic with a counter array     ****
-C *****             => 'D' to disable an array for output            ****
-C *****                                                              ****
-C *****  parse(6-8) => 3-digit integer corresponding to vector       ****
-C *****                component mate if parse(1) = 'U' or 'V'       ****
-C *****                or to the counter if parse(5)='C'             ****
-C *****                                                              ****
-C *****  parse(9)   => 'U' if defined at Model-level plus 1/2        ****
-C *****             => 'M' if defined at Model-level middle          ****
-C *****             => 'L' if defined at Model-level minus 1/2       ****
-C *****                                                              ****
-C *****                                                              ****
-C ***********************************************************************
 
 C     \begin{center}
 C       \begin{tabular}[h]{|c|c|}\hline

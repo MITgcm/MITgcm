@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.14 2004/07/06 22:49:13 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.15 2004/07/07 03:10:15 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -66,6 +66,7 @@ CEOP
       integer dim(CW_DIMS), ib(CW_DIMS), ie(CW_DIMS)
       character*(NLEN) dn(CW_DIMS)
       character*(NLEN) dn_blnk
+      integer klevs(Nr+Nrphys)
 #endif /*  ALLOW_MNC  */
 
       undef = getcon('UNDEF')
@@ -187,6 +188,12 @@ C             Z is special since it varies
      &             tdiag(m),myThid)
               CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),1,'units',
      &             udiag(m),myThid)
+
+C              DO ii = 1,nlevels(listnum)
+C                klevs(ii) = 
+C              ENDDO
+C              CALL MNC_CW_ADD_VATTR_INT(cdiag(m),
+C     &             nlevels(listnum), 'klevels', )
 
               CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
      &             cdiag(m), qtmp1, myThid)
