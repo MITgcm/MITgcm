@@ -101,6 +101,7 @@
  dumpFreq =86400.0,
  tauThetaClimRelax=0.,
  tauSaltClimRelax=0.,
+ forcing_In_AB = .FALSE.
  &
 
 # Gridding parameters
