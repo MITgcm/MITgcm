@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.19 2004/07/06 14:40:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.20 2004/07/09 14:24:19 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -77,23 +77,8 @@ C--   Set up horizontal grid and coordinate system
        _END_MASTER(myThid)
       ENDIF
 
-C--   Write certain grid data to files (useful for creating netCDF
-C     and general post-analysis)
-      CALL WRITE_FLD_XY_RS( 'XC',' ',XC,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'YC',' ',YC,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'XG',' ',XG,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'YG',' ',YG,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'RAC',' ',rA,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'RAW',' ',rAw,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'RAS',' ',rAs,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'DXG',' ',DXG,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,0,myThid)
-
-C--   Print out statistics of each horizontal grid array (helps when debugging)
-
 #ifdef ALLOW_MONITOR
+C--   Print out statistics of each horizontal grid array (helps when debugging)
       CALL MON_PRINTSTATS_RS(1,XC,'XC',myThid)
       CALL MON_PRINTSTATS_RS(1,XG,'XG',myThid)
       CALL MON_PRINTSTATS_RS(1,DXC,'DXC',myThid)
