@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.9 2003/09/26 18:16:38 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.10 2003/09/26 18:47:59 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -696,9 +696,9 @@ done
 # done
 # echo
 
-echo "  Setting package-specific CPP flags in CPP_OPTIONS.h:"
+echo "  Searching for CPP_OPTIONS.h (macros and flags for configuring the model):"
 CPP_OPTIONS=
-spaths="$SOURCEDIRS"
+spaths="$MODS ./ $SOURCEDIRS"
 for i in $spaths ; do
     try="$i/CPP_OPTIONS.h"
     #  echo -n "    trying $try : "
