@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_PARAMS.h,v 1.3 2003/07/31 18:40:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/AIM_PARAMS.h,v 1.4 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -13,11 +13,17 @@ C--   COMMON /AIM_PARM_L/ Logical valued parameters for AIM
 C     aim_useFMsurfBC :: select surface B.C. from Franco Molteni
 C     aim_useMMsurfFc :: select Monthly Mean surface forcing (e.g., NCEP)
 C     aim_surfPotTemp :: surf.Temp input file is in Pot.Temp (aim_useMMsurfFc)
+C     aim_energPrecip :: account for energy of precipitation (snow & rain temp)
+C     aim_splitSIOsFx :: compute separately Sea-Ice & Ocean surf. Flux
+C                 (also land SW & LW) ; default=F as in original version
       COMMON /AIM_PARM_L/ 
-     &  aim_useFMsurfBC, aim_useMMsurfFc, aim_surfPotTemp
+     &  aim_useFMsurfBC, aim_useMMsurfFc, aim_surfPotTemp,
+     &  aim_energPrecip, aim_splitSIOsFx
       LOGICAL aim_useFMsurfBC
       LOGICAL aim_useMMsurfFc
       LOGICAL aim_surfPotTemp
+      LOGICAL aim_energPrecip
+      LOGICAL aim_splitSIOsFx
 
 C--   COMMON /AIM_PARM_C/ Character valued parameters for AIM
 C     aim_MMsufx   :: sufix for all Monthly Mean surface forcing files

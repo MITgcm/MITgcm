@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_forcing.h,v 1.2 2002/12/10 02:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_forcing.h,v 1.3 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
-C $Namer: $
 
 #ifdef ALLOW_AIM
 
 C--   COMMON /LSMASK/ land-sea masks (initial. in INFORC)
-C     fmask1 - fractional land-sea mask
+C     fmask1 - fractional land / sea / sea-ice mask
+C     1:land fraction ; 2:ice-free ocean ; 3:sea-ice frac.; (1)+(2)+(3)=1.
 c_FM  COMMON /LSMASK/ fmask1, fmask0, fmasko1, fmaskl1
       COMMON /LSMASK/ fmask1
-      _RL fmask1(NGP,MAX_NO_THREADS)
+      _RL fmask1(NGP,3,MAX_NO_THREADS)
 c     _RL fmask0(NGP,MAX_NO_THREADS)
 c     _RL fmasko1(NGP,MAX_NO_THREADS)
 c     _RL fmaskl1(NGP,MAX_NO_THREADS)
@@ -33,18 +33,20 @@ c    &                soilw12(ix,il,12)
 C--   COMMON /FORDAY/ Daily forcing fields (updated in FORDATE)
 C     sst1   - SST
 C     oice1  - sea ice fraction
-C     stl1   - land-surface temperature
+C     sti1   - sea-ice surface temperature [K]
+C     stl1   - land-surface temperature    [K]
 C     snow1  - snow depth (mm water)
 C     soilw1 - soil wetness (mm water)
-C     alb1   - land-surface albedo
+C     alb1   - surface albedo (1:land, 2:ocean, 3:sea-ice, 0:average)
 c     COMMON /FORDAY/ sst1, oice1, stl1, snow1, soilw1, alb1
-      COMMON /FORDAY/ sst1, stl1, soilw1, alb1
+      COMMON /FORDAY/ sst1, sti1, stl1, soilw1, alb1
       _RL sst1   (NGP,MAX_NO_THREADS)
 c     _RL oice1  (NGP,MAX_NO_THREADS)
+      _RL sti1   (NGP,MAX_NO_THREADS)
       _RL stl1   (NGP,MAX_NO_THREADS)
 c     _RL snow1  (NGP,MAX_NO_THREADS)
       _RL soilw1 (NGP,MAX_NO_THREADS)
-      _RL alb1   (NGP,MAX_NO_THREADS)
+      _RL alb1   (NGP,0:3,MAX_NO_THREADS)
       _RL oice1(NGP), snow1(NGP)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

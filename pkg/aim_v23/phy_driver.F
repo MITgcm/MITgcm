@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.2 2003/05/22 03:00:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_driver.F,v 1.3 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -31,6 +31,9 @@ C     Resolution parameters
 C-- size for MITgcm & Physics package :
 #include "AIM_SIZE.h" 
 #include "EEPARAMS.h"
+
+C-- Physics package
+#include "AIM_PARAMS.h"
 #include "AIM_GRID.h"
 
 C     Constants + functions of sigma and latitude
@@ -48,6 +51,9 @@ C     Constants for forcing fields:
 C     Radiation scheme variables 
 #include "com_radvar.h"
 
+C     Radiation constants
+#include "com_radcon.h"
+
 c #include "com_sflcon.h"
 
 C     Logical flags
@@ -60,8 +66,16 @@ C-- Routine arguments:
 #ifdef ALLOW_AIM
 
 C-- Local variables:
-C    kGrd   = Ground level index              (2-dim)  
-C    dpFac  = cell delta_P fraction           (3-dim)
+C    kGrd   :: Ground level index              (2-dim)  
+C    dpFac  :: cell delta_P fraction           (3-dim)
+C    dTskin :: temp. correction for daily-cycle heating [K]
+C    CDENVV :: sensible heat flux coefficient (1:land, 2:sea, 3:sea-ice)
+C    Evp0   :: evaporation computed over freezing surface (Ts=0.oC)
+C    dEvp   :: evaporation derivative relative to surf. temp 
+C    Slr0   :: upward long wave radiation over freezing surf.
+C    dSlr   :: upward long wave rad. derivative relative to surf. temp
+C    sFlx   :: net surface flux (+=down) function of surf. temp Ts:
+C              0: Flux(Ts=0.oC) ; 1: Flux(Ts^n) ; 2: d.Flux/d.Ts(Ts^n)
       LOGICAL LRADSW
       INTEGER ICLTOP(NGP)
       INTEGER kGround(NGP)
@@ -69,6 +83,8 @@ C    dpFac  = cell delta_P fraction           (3-dim)
 c_FM  REAL    RPS(NGP), ST4S(NGP)
       _RL ST4S(NGP)
       _RL PSG_1(NGP), RPS_1
+      _RL dTskin(NGP), CDENVV(NGP,3)
+      _RL Evp0(NGP), dEvp(NGP), Slr0(NGP), dSlr(NGP), sFlx(NGP,0:2)
 
       INTEGER J, K
 
@@ -137,6 +153,21 @@ c_FM &             PRECLS,TT_LSC,QT_LSC)
      O             QT_LSC(1,1,myThid),
      I             kGround,bi,bj,myThid)
 
+      IF ( aim_energPrecip ) THEN
+C     2.3 Snow Precipitation (update TT_CNV & TT_LSC)
+        CALL SNOW_PRECIP ( 
+     I             PSG, dpFac, SE, ICLTOP,
+     I             PRECNV(1,myThid), QT_CNV(1,1,myThid),
+     I             PRECLS(1,myThid), QT_LSC(1,1,myThid),
+     U             TT_CNV(1,1,myThid), TT_LSC(1,1,myThid),
+     O             EnPrec(1,myThid),
+     I             kGround,bi,bj,myThid)
+      ELSE
+        DO J=1,NGP
+          EnPrec(J,myThid) = 0. _d 0
+        ENDDO
+      ENDIF
+
 C--   3. Radiation (shortwave and longwave) and surface fluxes
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -161,11 +192,11 @@ C     The sw radiation may be called at selected time steps
  
 c_FM    CALL RADSW (PSG,QG1,RH,ALB1,
 c_FM &              ICLTOP,CLOUDC,TSR,SSR,TT_RSW)
-       CALL RADSW (PSG,dpFac,QG1,RH(1,1,myThid),ALB1(1,myThid),
+       CALL RADSW (PSG,dpFac,QG1,RH(1,1,myThid),ALB1(1,0,myThid),
      I             FSOL, OZONE, OZUPP, ZENIT, STRATZ,
      O             TAU2, STRATC,
      O             ICLTOP,CLOUDC(1,myThid),
-     O             TSR(1,myThid),SSR(1,myThid),TT_RSW(1,1,myThid),
+     O             TSR(1,myThid),SSR(1,0,myThid),TT_RSW(1,1,myThid),
      I             kGround,bi,bj,myThid)
  
         DO J=1,NGP
@@ -186,24 +217,80 @@ c_FM  CALL RADLW (-1,TG1,TS,ST4S,
 c_FM &            OLR,SLR,TT_RLW)
       CALL RADLW (-1,TG1,TS(1,myThid),ST4S,
      &            OZUPP, STRATC, TAU2, FLUX, ST4A,
-     O            OLR(1,myThid),SLR(1,myThid),TT_RLW(1,1,myThid),
+     O            OLR(1,myThid),SLR(1,0,myThid),TT_RLW(1,1,myThid),
      I            kGround,bi,bj,myThid)
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     3.3. Compute surface fluxes and land skin temperature
  
 c_FM  CALL SUFLUX (PSG,UG1,VG1,TG1,QG1,RH,PHIG1,
 c_FM &             PHIS0,FMASK1,STL1,SST1,SOILW1,SSR,SLR,
 c_FM &             USTR,VSTR,SHF,EVAP,ST4S,
 c_FM &             TS,TSKIN,U0,V0,T0,Q0) 
-      CALL SUFLUX (PSG, TG1, QG1, RH(1,1,myThid), SE, VsurfSq,
+      CALL SUFLUX_PREP(
+     I             PSG, TG1, QG1, RH(1,1,myThid), SE, VsurfSq,
      I             WVSurf(1,myThid),csLat(1,myThid),fOrogr(1,myThid),
-     I             FMASK1(1,myThid),STL1(1,myThid),SST1(1,myThid),
-     I             SOILW1(1,myThid), SSR(1,myThid),SLR(1,myThid),
-     O             SPEED0(1,myThid),DRAG(1,1,myThid),
-     O             SHF(1,1,myThid), EVAP(1,1,myThid),
-     O             ST4S,TS(1,myThid),TSKIN(1,myThid),
-     O             T0(1,myThid),Q0(1,myThid),
+     I             FMASK1(1,1,myThid),STL1(1,myThid),SST1(1,myThid),
+     I             sti1(1,myThid), SSR(1,0,myThid),
+     O             SPEED0(1,myThid),DRAG(1,0,myThid),CDENVV,
+     O             dTskin,T0(1,myThid),Q0(1,myThid),
      I             kGround,bi,bj,myThid)
+
+      CALL SUFLUX_LAND (
+     I             PSG, FMASK1(1,1,myThid), EMISFC,
+     I             STL1(1,myThid), dTskin,
+     I             SOILW1(1,myThid), SSR(1,1,myThid), SLR(1,0,myThid),
+     I             T0(1,myThid), Q0(1,myThid), EnPrec(1,myThid), 
+     I             CDENVV(1,1),
+     O             SHF(1,1,myThid), EVAP(1,1,myThid), SLR(1,1,myThid),
+     O             Evp0, dEvp, Slr0, dSlr, sFlx,
+     O             TS(1,myThid), TSKIN(1,myThid),
+     I             bi,bj,myThid)
+#ifdef ALLOW_LAND      
+      CALL AIM_LAND_IMPL(
+     I             FMASK1(1,1,myThid), dTskin, sFlx,
+     I             Evp0, dEvp, Slr0, dSlr,
+     U             STL1(1,myThid), EVAP(1,1,myThid), SLR(1,1,myThid),
+c    O             TS(1,myThid), TSKIN(1,myThid),
+     I             bi, bj, myTime, myIter, myThid)
+#endif /* ALLOW_LAND */
+
+      CALL SUFLUX_OCEAN(
+     I             PSG, FMASK1(1,2,myThid),
+     I             SST1(1,myThid),
+     I             SSR(1,2,myThid), SLR(1,0,myThid),
+     O             T0(1,myThid), Q0(1,myThid), CDENVV(1,2),
+     O             SHF(1,2,myThid), EVAP(1,2,myThid), SLR(1,2,myThid),
+     I             bi,bj,myThid)
+
+      IF ( aim_splitSIOsFx ) THEN
+        CALL SUFLUX_SICE (
+     I             PSG, FMASK1(1,3,myThid), EMISFC,
+     I             STI1(1,myThid), dTskin,
+     I             SSR(1,3,myThid), SLR(1,0,myThid),
+     I             T0(1,myThid), Q0(1,myThid), EnPrec(1,myThid), 
+     I             CDENVV(1,3),
+     O             SHF(1,3,myThid), EVAP(1,3,myThid), SLR(1,3,myThid),
+     O             Evp0, dEvp, Slr0, dSlr, sFlx,
+     O             TS(1,myThid), TSKIN(1,myThid),
+     I             bi,bj,myThid)
+      ELSE
+        DO J=1,NGP
+          EVAP(J,3,myThid) = 0. _d 0
+          SLR (J,3,myThid) = 0. _d 0
+        ENDDO
+      ENDIF
+
+      CALL SUFLUX_POST(
+     I             FMASK1(1,1,myThid), EMISFC, 
+     I             STL1(1,myThid), SST1(1,myThid), sti1(1,myThid), 
+     I             dTskin, SLR(1,0,myThid),
+     I             T0(1,myThid), Q0(1,myThid), CDENVV,
+     U             DRAG(1,0,myThid), SHF(1,0,myThid), 
+     U             EVAP(1,0,myThid), SLR(1,1,myThid),
+     O             ST4S, TS(1,myThid), TSKIN(1,myThid),
+     I             bi,bj,myThid)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     3.4 Compute upward longwave fluxes, convert them to tendencies
 C         and add shortwave tendencies
@@ -212,7 +299,7 @@ c_FM  CALL RADLW (1,TG1,TS,ST4S,
 c_FM &            OLR,SLR,TT_RLW)
       CALL RADLW (1,TG1,TS(1,myThid),ST4S,
      &            OZUPP, STRATC, TAU2, FLUX, ST4A,
-     O            OLR(1,myThid),SLR(1,myThid),TT_RLW(1,1,myThid),
+     O            OLR(1,myThid),SLR(1,0,myThid),TT_RLW(1,1,myThid),
      I            kGround,bi,bj,myThid)
  
       DO K=1,NLEV
@@ -242,9 +329,9 @@ c_FM   QT_PBL(J,NLEV)=QT_PBL(J,NLEV)+EVAP(J,3)*RPS(J)*GRDSIG(NLEV)
        K = kGround(J)
        IF ( K.GT.0 ) THEN
         TT_PBL(J,K,myThid) = TT_PBL(J,K,myThid)
-     &                     + SHF(J,3,myThid) *RPS_1*GRDSCP(K)
+     &                     + SHF(J,0,myThid) *RPS_1*GRDSCP(K)
         QT_PBL(J,K,myThid) = QT_PBL(J,K,myThid)
-     &                     + EVAP(J,3,myThid)*RPS_1*GRDSIG(K)
+     &                     + EVAP(J,0,myThid)*RPS_1*GRDSIG(K)
        ENDIF
       ENDDO
  

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.5 2003/07/31 18:40:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.6 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -44,6 +44,8 @@ C--  Set default value for AIM interface code (AIM_PARAMS.h):
       aim_useFMsurfBC = .TRUE.
       aim_useMMsurfFc = .FALSE.
       aim_surfPotTemp = .FALSE.
+      aim_energPrecip = .FALSE.
+      aim_splitSIOsFx = .FALSE.
       aim_MMsufx = '.bin'
       aim_MMsufxLength = 4
       aim_LandFile = ' '
@@ -146,6 +148,7 @@ C      i.e. not loaded from history file for now ).
         CALL TIMEAVE_RESET(aimV0tave, 1, bi, bj, myThid)
         CALL TIMEAVE_RESET(aimT0tave, 1, bi, bj, myThid)
         CALL TIMEAVE_RESET(aimQ0tave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(EnFxPrtave,1, bi, bj, myThid)
         CALL TIMEAVE_RESET(aimRHtave,Nr, bi, bj, myThid)
         DO k=1,Nr
           aim_timeAve(k,bi,bj) = 0.

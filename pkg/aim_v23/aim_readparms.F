@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.5 2003/07/31 18:40:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.6 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -57,6 +57,9 @@ C--   AIM interface parameter (common AIM_PARM_?):
 C     aim_useFMsurfBC :: select surface B.C. from Franco Molteni
 C     aim_useMMsurfFc :: select Monthly Mean surface forcing (e.g., NCEP)
 C     aim_surfPotTemp :: surf.Temp input file is in Pot.Temp (aim_useMMsurfFc)
+C     aim_energPrecip :: account for energy of precipitation (snow & rain temp)
+C     aim_splitSIOsFx :: compute separately Sea-Ice & Ocean surf. Flux
+C                 (also land SW & LW) ; default=F as in original version
 C     aim_MMsufx   :: sufix for all Monthly Mean surface forcing files
 C     aim_MMsufxLength :: Length of sufix (Monthly Mean surf. forc. files)
 C     aim_LandFile :: file name for Land fraction       (F.M. surfBC)
@@ -72,7 +75,8 @@ C     aim_taveFreq :: Frequency^-1 for time-average output (s)
 C     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
       NAMELIST /AIM_PARAMS/
-     &    aim_useFMsurfBC, aim_useMMsurfFc, aim_surfPotTemp,
+     &    aim_useFMsurfBC, aim_useMMsurfFc, 
+     &    aim_surfPotTemp, aim_energPrecip, aim_splitSIOsFx,
      &    aim_MMsufx, aim_MMsufxLength,
      &    aim_LandFile, aim_albFile, aim_vegFile,
      &    aim_sstFile, aim_lstFile, aim_oiceFile, aim_snowFile,
@@ -81,12 +85,15 @@ C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
      &    aim_taveFreq, aim_diagFreq, aim_tendFreq
 
 C--   Physical constants (common PHYCON) :
-C      P0   = reference pressure
-C      GG   = gravity accel.
-C      RD   = gas constant for dry air
-C      CP   = specific heat at constant pressure
-C      ALHC = latent heat of condensation
-C      SBC  = Stefan-Boltzmann constant            
+C       P0    = reference pressure                 [Pa=N/m2]
+C       GG    = gravity accel.                     [m/s2]
+C       RD    = gas constant for dry air           [J/kg/K]
+C       CP    = specific heat at constant pressure [J/kg/K]
+C       ALHC  = latent heat of condensation        [J/g]
+C       ALHF  = latent heat of freezing            [J/g]
+C       SBC   = Stefan-Boltzmann constant
+C     rainCP  = heat capacity of liquid water      [J/g/K]
+C     tFreeze = freezing temperature of pure water [K]
 
 C--   Constants for forcing fields (common FORCON) :
 C      SOLC   = Solar constant (area averaged) in W/m^2
@@ -264,6 +271,12 @@ C- namelist AIM_PARAMS:
        CALL WRITE_0D_L( aim_surfPotTemp, INDEX_NONE,
      &                 'aim_surfPotTemp =',
      &'   /* Surf Temp file in Pot.Temp on/off flag */')       
+       CALL WRITE_0D_L( aim_energPrecip, INDEX_NONE,
+     &                 'aim_energPrecip =',
+     &  ' /* account for energy of precip. on/off flag */')       
+       CALL WRITE_0D_L( aim_splitSIOsFx, INDEX_NONE,
+     &                 'aim_splitSIOsFx =',
+     &  ' /* separate Sea-Ice & Ocean Flux on/off flag */')       
        CALL WRITE_0D_R8(aim_dragStrato,INDEX_NONE,'aim_dragStrato=',
      &    ' /* stratospheric-drag damping time scale (s) */')
        CALL WRITE_0D_R8( aim_taveFreq, INDEX_NONE,'aim_taveFreq =',

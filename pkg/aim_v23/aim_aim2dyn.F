@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2dyn.F,v 1.3 2003/11/01 03:38:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2dyn.F,v 1.4 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -64,7 +64,7 @@ C--   Physics tendency term
          I2 = i+(j-1)*sNx
          Katm = _KD2KA( k )
 C        Planetary boundary layer drag coeff.
-         aim_drag(i,j,bi,bj) = DRAG(I2,3,myThid)
+         aim_drag(i,j,bi,bj) = DRAG(I2,0,myThid)
 
 C        Net temperature tendency
          aim_dTdt(i,j,k,bi,bj) =   TT_LSC(I2,Katm,myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_inphys.F,v 1.2 2002/12/10 02:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_inphys.F,v 1.3 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -67,7 +67,12 @@ c     CP = 1004. _d 0
       CP = atm_Cp
 C     Latent heat is in J/g for consistency with spec.hum. in g/Kg
       ALHC = 2501. _d 0
+      ALHF =  334. _d 0
       SBC = 5.67 _d -8
+C     Heat capacity of rain is also in J/g/K for the same reasons
+c     rainCP = HeatCapacity_Cp / 1000. _d 0 
+      rainCP = 4200. _d 0 / 1000. _d 0 
+      tFreeze= celsius2K
 C
 C     1.2 Functions of sigma and latitude
 C

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_shtorh.F,v 1.2 2003/04/26 23:38:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_shtorh.F,v 1.3 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
  
 #include "AIM_OPTIONS.h"
@@ -15,11 +15,12 @@ C--            TA     : abs. temperature
 C--            PS     : normalized pressure   (=  p/1000_hPa) [if SIG < 0]
 C--                   : normalized sfc. pres. (= ps/1000_hPa) [if SIG > 0]
 C--            SIG    : sigma level
-C--            QA     : specific humidity in g/kg [if IMODE > 0]
+C--            QA     : specific humidity in g/kg [if IMODE = 1]
 C--            RH     : relative humidity         [if IMODE < 0]
-C--            QSAT   : saturation spec. hum. in g/kg 
-C--   Output:  RH     : relative humidity         [if IMODE > 0] 
+C--   Output:  RH     : relative humidity         [if IMODE = 1] 
 C--            QA     : specific humidity in g/kg [if IMODE < 0]
+C--            QSAT   : saturation spec. hum. in g/kg 
+C--            RH     : d.Qsat/d.T  in g/kg/K     [if IMODE = 2] 
 C--        
 
       IMPLICIT NONE
@@ -27,7 +28,8 @@ C--
 C-- Routine arguments:
       INTEGER IMODE, NGP
       INTEGER  myThid
-      _RL TA(NGP), PS(NGP), QA(NGP), RH(NGP), QSAT(NGP)
+c     _RL TA(NGP), PS(NGP), QA(NGP), RH(NGP), QSAT(NGP)
+      _RL TA(NGP), PS(NGP), QSAT(NGP), QA(*), RH(*)
 
 C- jmc: declare all routine arguments:
       _RL SIG
@@ -38,7 +40,8 @@ C-- Local variables:
       INTEGER  J
 
 C- jmc: declare all local variables: 
-      _RL E0, C1, C2, T0, T1, T2
+      _RL E0, C1, C2, T0, T1, T2, QS1, QS2
+      _RL sigP, recT, tmpQ 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C---  1. Compute Qsat (g/kg) from T (degK) and normalized pres. P (= p/1000_hPa)
@@ -50,7 +53,31 @@ C
       T0=273.16 _d 0
       T1= 35.86 _d 0
       T2=  7.66 _d 0
+      QS1= 622. _d 0
+      QS2= .378 _d 0
 C 
+      
+      IF (IMODE.EQ.2) THEN
+C-    Compute Qsat and d.Qsat/d.T :
+        DO J=1,NGP
+         QSAT(J)=0.
+         sigP = PS(1)
+         IF (SIG.GT.0.0) sigP=SIG*PS(J)
+         IF (TA(J).GE.T0) THEN
+          tmpQ   = E0*EXP(C1*(TA(J)-T0)/(TA(J)-T1))
+          QSAT(J)= QS1*tmpQ/(sigP-QS2*tmpQ)
+          recT   = 1. _d 0 / (TA(J)-T1)
+          RH(J)  = QSAT(J)*C1*(T0-T1)*recT*recT*sigP/(sigP-QS2*tmpQ)
+         ELSE IF ( TA(J).GT.T2) THEN
+          tmpQ   = E0*EXP(C2*(TA(J)-T0)/(TA(J)-T2))
+          QSAT(J)= QS1*tmpQ/(sigP-QS2*tmpQ)
+          recT   = 1. _d 0 / (TA(J)-T2)
+          RH(J)  = QSAT(J)*C2*(T0-T2)*recT*recT*sigP/(sigP-QS2*tmpQ)
+         ENDIF
+        ENDDO
+        RETURN 
+      ENDIF
+
       DO 110 J=1,NGP
         QSAT(J)=0.
         IF (TA(J).GE.T0) THEN
@@ -62,11 +89,11 @@ C
 C
       IF (SIG.LE.0.0) THEN
         DO 120 J=1,NGP
-          QSAT(J)=622. _d 0*QSAT(J)/(PS(1)-0.378 _d 0*QSAT(J))
+          QSAT(J)= QS1*QSAT(J)/( PS(1)   - QS2*QSAT(J))
   120   CONTINUE
       ELSE
         DO 130 J=1,NGP
-          QSAT(J)=622. _d 0*QSAT(J)/(SIG*PS(J)-0.378 _d 0*QSAT(J))
+          QSAT(J)= QS1*QSAT(J)/(SIG*PS(J)- QS2*QSAT(J))
   130   CONTINUE
       ENDIF
 C

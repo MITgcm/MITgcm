@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.3 2003/01/03 03:51:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.4 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -77,7 +77,7 @@ C--   Write Relative Humidity :
      &                      bi,bj,1,myIter,myThid)
 
 C--   Write AIM Physics diagnostics (2D, all in 1 file) :
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,DRAG(1,3,myThid),
+       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,DRAG(1,0,myThid),
      &                      bi,bj, 1,myIter,myThid)
        CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SPEED0(1,myThid),
      &                      bi,bj, 2,myIter,myThid)
@@ -85,13 +85,13 @@ C--   Write AIM Physics diagnostics (2D, all in 1 file) :
      &                      bi,bj, 3,myIter,myThid)
        CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,OLR(1,myThid),
      &                      bi,bj, 4,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SSR(1,myThid),
+       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SSR(1,0,myThid),
      &                      bi,bj, 5,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SLR(1,myThid),
+       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SLR(1,0,myThid),
      &                      bi,bj, 6,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SHF(1,3,myThid),
+       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,SHF(1,0,myThid),
      &                      bi,bj, 7,myIter,myThid)
-       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,EVAP(1,3,myThid),
+       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,EVAP(1,0,myThid),
      &                      bi,bj, 8,myIter,myThid)
        CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,PRECNV(1,myThid),
      &                      bi,bj, 9,myIter,myThid)
@@ -107,6 +107,8 @@ C--   Write AIM Physics diagnostics (2D, all in 1 file) :
      &                      bi,bj,14,myIter,myThid)
        CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,Q0(1,myThid),
      &                      bi,bj,15,myIter,myThid)
+       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,EnPrec(1,myThid),
+     &                      bi,bj,16,myIter,myThid)
 C--
       ENDIF
 
@@ -126,13 +128,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           OLRtave(i,j,bi,bj)    = OLRtave(i,j,bi,bj)
      &                          + OLR(I2,myThid)*DDTT
           SSRtave(i,j,bi,bj)    = SSRtave(i,j,bi,bj)
-     &                          + SSR(I2,myThid)*DDTT
+     &                          + SSR(I2,0,myThid)*DDTT
           SLRtave(i,j,bi,bj)    = SLRtave(i,j,bi,bj)
-     &                          + SLR(I2,myThid)*DDTT
+     &                          + SLR(I2,0,myThid)*DDTT
           SHFtave(i,j,bi,bj)    = SHFtave(i,j,bi,bj)
-     &                          + SHF(I2,3,myThid)*DDTT
+     &                          + SHF(I2,0,myThid)*DDTT
           EVAPtave(i,j,bi,bj)   = EVAPtave(i,j,bi,bj)
-     &                          + EVAP(I2,3,myThid)*DDTT
+     &                          + EVAP(I2,0,myThid)*DDTT
           PRECNVtave(i,j,bi,bj) = PRECNVtave(i,j,bi,bj)
      &                          + PRECNV(I2,myThid)*DDTT
           PRECLStave(i,j,bi,bj) = PRECLStave(i,j,bi,bj)
@@ -144,13 +146,17 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           CBMFtave(i,j,bi,bj)   = CBMFtave(i,j,bi,bj)
      &                          + CBMF(I2,myThid)*DDTT
           DRAGtave(i,j,bi,bj)   = DRAGtave(i,j,bi,bj)
-     &                          + DRAG(I2,3,myThid)*DDTT
+     &                          + DRAG(I2,0,myThid)*DDTT
           aimV0tave(i,j,bi,bj)  = aimV0tave(i,j,bi,bj)
      &                          + SPEED0(I2,myThid)*DDTT
           aimT0tave(i,j,bi,bj)  = aimT0tave(i,j,bi,bj)
      &                          + T0(I2,myThid)*DDTT
           aimQ0tave(i,j,bi,bj)  = aimQ0tave(i,j,bi,bj)
      &                          + Q0(I2,myThid)*DDTT
+          EnFxPrtave(i,j,bi,bj) = EnFxPrtave(i,j,bi,bj)
+     &                          + EnPrec(I2,myThid)
+     &                          *(PRECNV(I2,myThid)+
+     &                            PRECLS(I2,myThid))*DDTT
          ENDDO
         ENDDO
 

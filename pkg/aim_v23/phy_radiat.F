@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_radiat.F,v 1.1 2002/11/22 17:17:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_radiat.F,v 1.2 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -149,9 +149,10 @@ C     Radiation parameters
 #include "com_radcon.h"
 
 C-- Routine arguments:
-      _RL PSA(NGP),dpFac(NGP,NLEV),QA(NGP,NLEV),RH(NGP,NLEV),ALB(NGP)
+      _RL PSA(NGP),dpFac(NGP,NLEV),QA(NGP,NLEV),RH(NGP,NLEV)
+      _RL ALB(NGP,0:3)
       INTEGER  ICLTOP(NGP)
-      _RL CLOUDC(NGP), FTOP(NGP), FSFC(NGP), DFABS(NGP,NLEV)
+      _RL CLOUDC(NGP), FTOP(NGP), FSFC(NGP,0:3), DFABS(NGP,NLEV)
 
       _RL FSOL(NGP), OZONE(NGP), OZUPP(NGP), ZENIT(NGP), STRATZ(NGP)
       _RL TAU2(NGP,NLEV,NBAND),STRATC(NGP)
@@ -334,9 +335,14 @@ C
 C     4.1  Absorption and reflection at the surface
 C
       DO J=1,NGP
-        FSFC(J)  =FLUX(J,1)+FLUX(J,2)
-        FLUX(J,1)=FLUX(J,1)*ALB(J)
-        FSFC(J)  =FSFC(J)-FLUX(J,1)
+C      for each surface type:
+        FSFC(J,1)=FLUX(J,1)*(1.-ALB(J,1))+FLUX(J,2)
+        FSFC(J,2)=FLUX(J,1)*(1.-ALB(J,2))+FLUX(J,2)
+        FSFC(J,3)=FLUX(J,1)*(1.-ALB(J,3))+FLUX(J,2)
+C      weighted average according to land/sea/sea-ice fraction:
+        FSFC(J,0)=FLUX(J,1)+FLUX(J,2)
+        FLUX(J,1)=FLUX(J,1)*ALB(J,0)
+        FSFC(J,0)=FSFC(J,0)-FLUX(J,1)
       ENDDO
 C
 C     4.2  Absorption of upward flux

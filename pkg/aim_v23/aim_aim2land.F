@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2land.F,v 1.1 2003/06/12 17:59:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_aim2land.F,v 1.2 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -29,6 +29,8 @@ C-- size for MITgcm & Physics package :
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
+C-- Physics package
+#include "AIM_PARAMS.h"
 #include "com_physcon.h"
 #include "com_physvar.h"
 
@@ -53,35 +55,35 @@ CEOP
 #ifdef ALLOW_AIM
 #ifdef ALLOW_LAND
 C     == Local variables ==
-C     i,j,k        :: loop counters
-C     I2,Katm      :: loop counters
-C     conv_precip  :: conversion factor for precip: from g.m-2.s-1 to m/s
+C     i,j,k,I2     :: loop counters
+C     conv_precip  :: conversion factor for precip: from g/m2/s to kg/m2/s
       _RL conv_precip
-      INTEGER i,j,k
-      INTEGER I2
+      INTEGER i,j,k,I2
 
-C--   Physics tendency term
+C--   Initialisation :
+      IF ( .NOT.land_impl_grT ) THEN
+       DO j=1,sNy
+        DO i=1,sNx
+         land_Pr_m_Ev(i,j,bi,bj) = 0. _d 0
+        ENDDO
+       ENDDO
+      ENDIF
+
+C--   Atmospheric Physics Fluxes
 
 c     IF ( useLand ) THEN
 
-C      from g/(m^2.s) to m/s :
-       conv_Precip = 1. _d -3 / rhoConstFresh
+C      from g/m2/s to kg/m2/s :
+       conv_Precip = 1. _d -3
 
        DO j=1,sNy
         DO i=1,sNx
          I2 = i+(j-1)*sNx
 
-C-    total surface downward heat flux :
-         land_HeatFLx(i,j,bi,bj) = 
-     &                         SSR(I2,myThid)
-     &                       - SLR(I2,myThid)
-     &                       - SHF(I2,1,myThid)
-     &                       - EVAP(I2,1,myThid)*ALHC
- 
 C-    total Precip minus Evap surface flux :
-C        convert from g.m-2.s-1 to m/s 
-         land_Pr_m_Ev(i,j,bi,bj) =
-     &         conv_precip*(   PRECNV(I2,myThid)
+C        convert from g.m-2.s-1 to kg/m2/s
+         land_Pr_m_Ev(i,j,bi,bj) = land_Pr_m_Ev(i,j,bi,bj)
+     &       + conv_precip*(   PRECNV(I2,myThid)
      &                       + PRECLS(I2,myThid)
      &                       - EVAP(I2,1,myThid)
      &                     )
@@ -89,6 +91,52 @@ C        convert from g.m-2.s-1 to m/s
         ENDDO
        ENDDO
 
+      IF ( aim_energPrecip ) THEN
+C-     Compute energy flux related to Precip. (snow, T_rain)
+C      Evap of snow: add Latent Heat of freezing
+       DO j=1,sNy
+        DO i=1,sNx
+         I2 = i+(j-1)*sNx
+         land_EnWFlux(i,j,bi,bj) = 
+     &      ( PRECNV(I2,myThid)+PRECLS(I2,myThid) )
+     &                            * EnPrec(I2,myThid)
+     &      - EVAP(I2,1,myThid)*MIN(EnPrec(I2,myThid),0. _d 0)
+        ENDDO
+       ENDDO
+      ENDIF
+
+
+      IF (land_calc_grT .AND. .NOT.land_impl_grT ) THEN
+       k = 0
+       IF (aim_splitSIOsFx) k = 1 
+       DO j=1,sNy
+        DO i=1,sNx
+         I2 = i+(j-1)*sNx
+
+C-    total surface downward heat flux :
+         land_HeatFLx(i,j,bi,bj) = 
+     &                         SSR(I2,k,myThid)
+     &                       - SLR(I2,k,myThid)
+     &                       - SHF(I2,1,myThid)
+     &                       - EVAP(I2,1,myThid)*ALHC
+        ENDDO
+       ENDDO
+
+       IF ( aim_energPrecip ) THEN
+C-     Evap of snow: substract Latent Heat of freezing from heatFlux
+        DO j=1,sNy
+         DO i=1,sNx
+          I2 = i+(j-1)*sNx
+          IF ( EnPrec(I2,myThid) .LT. 0. )
+     &     land_HeatFLx(i,j,bi,bj) = land_HeatFLx(i,j,bi,bj)
+     &                       - EVAP(I2,1,myThid)*ALHF
+         ENDDO
+        ENDDO
+       ENDIF
+
+C--   to compute ground temperature explicitely: end
+      ENDIF
+ 
 C- end (if useLand)
 c     ENDIF
 

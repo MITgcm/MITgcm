@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_land2aim.F,v 1.2 2003/07/31 18:24:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_land2aim.F,v 1.3 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -9,7 +9,10 @@ C $Name:  $
 CBOP
 C     !ROUTINE: AIM_LAND2AIM
 C     !INTERFACE:
-      SUBROUTINE AIM_LAND2AIM( myTime, myIter, bi, bj, myThid ) 
+      SUBROUTINE AIM_LAND2AIM(
+     I               land_frc, land_veg, grnd_alb, snowFld,
+     U               aimTld, aimSWA, aimAlb,
+     I               myTime, myIter, bi, bj, myThid ) 
 
 C     !DESCRIPTION: \bv
 C     *================================================================*
@@ -35,7 +38,7 @@ C-- MITgcm
 
 C-- Physics package
 #include "AIM_PARAMS.h"
-#include "com_forcing.h"
+#include "com_forcon.h"
 
 #ifdef ALLOW_LAND
 C-- Land package
@@ -45,10 +48,24 @@ C-- Land package
 #endif
 
 C     == Routine arguments ==
-C     myTime - Current time of simulation ( s )
-C     myIter - Current iteration number in simulation
-C     bi,bj  - Tile index 
-C     myThid - Number of this instance of the routine
+C     land_frc :: land fraction [0-1]
+C     land_veg :: vegetation fraction [0-1]
+C     grnd_alb :: ground albedo [0-1]
+C     aimTld   :: land surface temp (K), used in AIM
+C     snowFld  :: prescribed snow thickness (from AIM input data) [m]
+C     aimSWA   :: soil wetness availability [0-1], used in AIM
+C     aimAlb   :: land albedo [0-1], used in AIM
+C     myTime   :: Current time of simulation ( s )
+C     myIter   :: Current iteration number in simulation
+C     bi,bj    :: Tile index 
+C     myThid   :: Number of this instance of the routine
+      _RS  land_frc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  land_veg(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  grnd_alb(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  snowFld(sNx,sNy)
+      _RL  aimTld(sNx,sNy)
+      _RL  aimSWA(sNx,sNy)
+      _RL  aimAlb(sNx,sNy)
       INTEGER myIter, bi, bj, myThid
       _RL myTime
 CEOP
@@ -59,8 +76,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_LAND
 
 C     == Local variables ==
-C     i,j,k,I2      - Loop counters
-      INTEGER i,j,k,I2
+C     i,j,k        :: Loop counters
+C     grd_HeatCp   :: Heat capacity of the ground [J/m3/K]
+C     mWater       :: water content of the ground [kg/m3]
+      INTEGER i,j,k
+      _RL grd_HeatCp, mWater
+      _RL RSD
 
 c     IF (useLand) THEN
 
@@ -68,8 +89,7 @@ c     IF (useLand) THEN
 C-    Use land-pkg output instead of prescribed ground Temp
         DO j=1,sNy
          DO i=1,sNx
-           I2 = i+(j-1)*sNx
-           stl1(I2,myThid) = land_groundT(i,j,1,bi,bj)+celsius2K
+           aimTld(i,j) = land_skinT(i,j,bi,bj)+celsius2K
          ENDDO
         ENDDO
        ELSE
@@ -77,9 +97,13 @@ C-    Fill in land-pkg ground Temp. using AIM surf. fields
         DO k=1,land_nLev
          DO j=1,sNy
           DO i=1,sNx
-           I2 = i+(j-1)*sNx
-           land_groundT(i,j,k,bi,bj) = stl1(I2,myThid)-celsius2K
+           land_groundT(i,j,k,bi,bj) = aimTld(i,j)-celsius2K
           ENDDO
+         ENDDO
+        ENDDO
+        DO j=1,sNy
+         DO i=1,sNx
+           land_skinT(i,j,bi,bj) = land_groundT(i,j,1,bi,bj)
          ENDDO
         ENDDO
        ENDIF
@@ -88,8 +112,7 @@ C-    Fill in land-pkg ground Temp. using AIM surf. fields
 C-    Use land-pkg output instead of prescribed soil moisture
         DO j=1,sNy
          DO i=1,sNx
-           I2 = i+(j-1)*sNx
-           soilw1(I2,myThid) = land_groundW(i,j,1,bi,bj)
+           aimSWA(i,j) = land_groundW(i,j,1,bi,bj)
          ENDDO
         ENDDO
        ELSE
@@ -97,11 +120,54 @@ C-    Fill in land-pkg soil moisture using AIM surf. fields
         DO k=1,land_nLev
          DO j=1,sNy
           DO i=1,sNx
-           I2 = i+(j-1)*sNx
-           land_groundW(i,j,k,bi,bj) = soilw1(I2,myThid)
+           land_groundW(i,j,k,bi,bj) = aimSWA(i,j)
           ENDDO
          ENDDO
         ENDDO
+c       IF ( land_calc_grT ) THEN
+C-      needs to recompute enthalpy since grdW has changed:
+C       not a good idea: frozen water in the ground will be lost !
+        IF ( .FALSE. ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+c          IF ( land_frc(i,j,bi,bj).GT.0. ) THEN
+            DO k=1,land_nLev
+             mWater = land_rhoLiqW*land_waterCap
+     &               *land_groundW(i,j,k,bi,bj)
+             grd_HeatCp = land_heatCs + land_CpWater*mWater
+
+             land_enthalp(i,j,k,bi,bj) =
+     &                     grd_HeatCp*land_groundT(i,j,k,bi,bj)
+            ENDDO
+c          ENDIF
+          ENDDO
+         ENDDO
+        ENDIF
+
+C- end: if land_calc_grW
+       ENDIF
+
+       IF (land_calc_snow) THEN
+
+        IF (land_calc_alb) THEN
+C-     Compute albedo of snow ; and replace albedo of land.
+         CALL LAND_ALBEDO(
+     I                land_frc, grnd_alb,
+     O                aimAlb,
+     I                bi,bj, myTime, myIter, myThid )
+
+        ELSE
+C-    Surface Albedo : (from F.M. FORDATE S/R)
+         RSD = 1. _d 0/SDALB
+         DO j=1,sNy
+          DO i=1,sNx
+           aimAlb(i,j) = grnd_alb(i,j,bi,bj)
+     &       + MAX( 0. _d 0, ALBSN-grnd_alb(i,j,bi,bj) )
+     &        *MIN( 1. _d 0, RSD*snowFld(i,j) )
+          ENDDO
+         ENDDO
+        ENDIF
+
        ENDIF
 
 c     ENDIF

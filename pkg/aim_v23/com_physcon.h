@@ -1,17 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_physcon.h,v 1.1 2002/11/22 17:16:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_physcon.h,v 1.2 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
 
 C--   COMMON /PHYCON/: Physical constants (initial. in INPHYS)
-C      P0   = reference pressure
-C      GG   = gravity accel.
-C      RD   = gas constant for dry air
-C      CP   = specific heat at constant pressure
-C      ALHC = latent heat of condensation
-C      SBC  = Stefan-Boltzmann constant
-      COMMON /PHYCON/ P0, GG, RD, CP, ALHC, SBC
-      _RL P0, GG, RD, CP, ALHC, SBC
+C       P0    = reference pressure                 [Pa=N/m2]
+C       GG    = gravity accel.                     [m/s2]
+C       RD    = gas constant for dry air           [J/kg/K] 
+C       CP    = specific heat at constant pressure [J/kg/K]
+C       ALHC  = latent heat of condensation        [J/g]
+C       ALHF  = latent heat of freezing	           [J/g]
+C       SBC   = Stefan-Boltzmann constant
+C     rainCP  = heat capacity of liquid water      [J/g/K]
+C     tFreeze = freezing temperature of pure water [K]
+      COMMON /PHYCON/ P0, GG, RD, CP, ALHC, ALHF, SBC, rainCP, tFreeze
+      _RL P0, GG, RD, CP, ALHC, ALHF, SBC, rainCP, tFreeze
 
 C--   COMMON /FSIGLT/: Functions of sigma and latitude (initial. in INPHYS)
 C     (execpt SLAT & CLAT init. in  aim_dyn2aim.F)

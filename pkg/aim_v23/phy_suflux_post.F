@@ -1,0 +1,151 @@
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_suflux_post.F,v 1.1 2004/03/11 14:33:19 jmc Exp $
+C $Name:  $
+
+#include "AIM_OPTIONS.h"
+
+CBOP
+C     !ROUTINE: SUFLUX_POST
+C     !INTERFACE:
+      SUBROUTINE SUFLUX_POST(
+     I                   FMASK, EMISloc, 
+     I                   TLAND, TSEA, TSICE, dTskin, SLRD,
+     I                   T0, Q0, CDENVV,
+     U                   DRAG, SHF, EVAP, SLRup,
+     O                   SLRU, TSFC, TSKIN,
+     I                   bi,bj,myThid)
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R SUFLUX_POST
+C     | o finish surface flux calculation
+C     *==========================================================*
+C     | o contain 2nd part of original S/R SUFLUX (Speedy code)
+C     *==========================================================*
+C--
+C--   SUBROUTINE SUFLUX (PSA,UA,VA,TA,QA,RH,PHI,
+C--  &                   PHI0,FMASK,TLAND,TSEA,SWAV,SSR,SLRD,
+C--  &                   USTR,VSTR,SHF,EVAP,SLRU,
+C--  &                   TSFC,TSKIN,U0,V0,T0,Q0)
+C--
+C--   Purpose: Compute surface fluxes of momentum, energy and moisture,
+C--            and define surface skin temperature from energy balance
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     Resolution parameters
+
+C-- size for MITgcm & Physics package :
+#include "AIM_SIZE.h"
+
+#include "EEPARAMS.h"
+
+C     Physical constants + functions of sigma and latitude
+#include "com_physcon.h"
+
+C     Surface flux constants
+#include "com_sflcon.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine Arguments ==
+C--   Input:
+C    FMASK  :: fraction land - sea - sea-ice (2.5-dim)
+C    EMISloc:: longwave surface emissivity
+C    TLAND  :: land-surface temperature        (2-dim)
+C    TSEA   ::  sea-surface temperature        (2-dim)
+C    TSICE  ::  sea-ice surface temperature    (2-dim)
+C    dTskin :: temp. correction for daily-cycle heating [K]
+C    SLRD   :: sfc lw radiation (downward flux)(2-dim)
+C    SSR    :: sfc sw radiation (net flux)     (2-dim)
+C    T0     :: near-surface air temperature    (2-dim)
+C    Q0     :: near-surface sp. humidity [g/kg](2-dim)
+C    CDENVV :: sensible heat flux coefficient (1:land, 2:sea, 3:sea-ice)
+C--   Output:
+C    DRAG   :: surface Drag term (= Cd*Rho*|V|)(2-dim)
+C    SHF    :: sensible heat flux              (2-dim)
+C    EVAP   :: evaporation [g/(m^2 s)]         (2-dim)
+C    SLRU   :: sfc lw radiation (upward flux)  (2-dim)
+C    SLRup  :: same, for each surface type     (2-dim)
+C    TSFC   :: surface temperature (clim.)     (2-dim)
+C    TSKIN  :: skin surface temperature        (2-dim)
+C--   Input:
+C    bi,bj  :: tile index
+C    myThid :: Thread number for this instance of the routine
+C--
+      _RL  FMASK(NGP,3), EMISloc 
+      _RL  TLAND(NGP), TSEA(NGP), TSICE(NGP), dTskin(NGP), SLRD(NGP)
+      _RL  T0(NGP), Q0(NGP), CDENVV(NGP,3)
+
+      _RL  DRAG(NGP,0:3), SHF(NGP,0:3), EVAP(NGP,0:3), SLRup(NGP,3)
+      _RL  SLRU(NGP), TSFC(NGP), TSKIN(NGP)
+
+      INTEGER bi,bj,myThid
+CEOP
+
+#ifdef ALLOW_AIM
+
+C-- Local variables:
+      INTEGER J
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   1. Extrapolation of wind, temp, hum. and density to the surface
+
+C--   2. Computation of fluxes over land and sea
+
+C--   3. Adjustment of skin temperature and fluxes over land
+C--      based on energy balance (to be implemented)
+
+C     3.2 Sensible heat flux (from clim. TS over land)
+C       Note: needs to update SHF if land or sea-ice surf temp are computed 
+C          implicitly ; recomputes SHF is consistent since SHF linear in TS
+
+      DO J=1,NGP
+        SHF(J,1) = CDENVV(J,1)*CP*(TLAND(J)+dTskin(J)-T0(J))
+c       SHF(J,2) = CDENVV(J,2)*CP*(TSEA(J) -T0(J))
+        SHF(J,3) = CDENVV(J,3)*CP*(TSICE(J)-T0(J))
+      ENDDO
+
+
+C--   4. Weighted average of surface fluxes and temperatures
+C--      according to land-sea mask
+
+      DO J=1,NGP
+c       USTR(J,3) = USTR(J,2)+FMASK(J,1)*(USTR(J,1)-USTR(J,2))
+c       VSTR(J,3) = VSTR(J,2)+FMASK(J,1)*(VSTR(J,1)-VSTR(J,2))
+c       DRAG(J,0) = DRAG(J,2)+FMASK(J,1)*(DRAG(J,1)-DRAG(J,2))
+c        SHF(J,0) =  SHF(J,2)+FMASK(J,1)*( SHF(J,1)- SHF(J,2))
+c       EVAP(J,0) = EVAP(J,2)+FMASK(J,1)*(EVAP(J,1)-EVAP(J,2))
+c       SLRU(J)  = SLRup(J,2)+FMASK(J,1)*(SLRup(J,1)-SLRup(J,2))
+        DRAG(J,0) = (FMASK(J,1)*DRAG(J,1)+FMASK(J,2)*DRAG(J,2)
+     &                                   +FMASK(J,3)*DRAG(J,3))
+        SHF (J,0) = (FMASK(J,1)*SHF(J,1) +FMASK(J,2)*SHF(J,2)
+     &                                   +FMASK(J,3)*SHF(J,3) )
+        EVAP(J,0) = (FMASK(J,1)*EVAP(J,1)+FMASK(J,2)*EVAP(J,2)
+     &                                   +FMASK(J,3)*EVAP(J,3))
+        SLRU(J)  = (FMASK(J,1)*SLRup(J,1)+FMASK(J,2)*SLRup(J,2)
+     &                                   +FMASK(J,3)*SLRup(J,3))
+      ENDDO
+
+      DO J=1,NGP
+c       TSFC(J)  = TSEA(J)+FMASK(J,1)*(TLAND(J)-TSEA(J))
+        TSFC(J)  = (FMASK(J,1)*TLAND(J) + FMASK(J,2)*TSEA(J)
+     &                                  + FMASK(J,3)*TSICE(J))
+        TSKIN(J) = TSFC(J)+FMASK(J,1)*dTskin(J)
+      ENDDO
+
+C-    Compute Net LW surf flux (+=upward) for each surface type:
+C      (for diagnostic only)
+      DO J=1,NGP
+        SLRup(J,1)=EMISloc*SLRup(J,1)-SLRD(J)
+        SLRup(J,2)=EMISloc*SLRup(J,2)-SLRD(J)
+        SLRup(J,3)=EMISloc*SLRup(J,3)-SLRD(J)
+      ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* ALLOW_AIM */
+
+      RETURN
+      END

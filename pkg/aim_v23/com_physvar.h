@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_physvar.h,v 1.1 2002/11/22 17:16:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/com_physvar.h,v 1.2 2004/03/11 14:33:19 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -77,33 +77,36 @@ c     _RL VT_PBL (NGP,NLEV,MAX_NO_THREADS)
       _RL QT_PBL (NGP,NLEV,MAX_NO_THREADS)
 
 C--   COMMON /FLUXES/ : Surface and upper boundary fluxes (updated in PHYPAR)
-C      PRECNV = convective precipitation  [g/(m^2 s)]
-C      PRECLS = large-scale precipitation [g/(m^2 s)]
+C      PRECNV = convective precipitation  [g/m2/s]
+C      PRECLS = large-scale precipitation [g/m2/s]
+C      EnPrec = energy of precipitation (snow, rain temp) [J/g]
 C      CBMF   = cloud-base mass flux 
 C      TSR    = top-of-atm. shortwave radiation (downward)
-C      SSR    = surface shortwave radiation (downward)
-C      SLR    = surface longwave radiation (upward) 
+C      SSR    = surf. shortwave radiation (downward) (1:land, 2:sea, 3:sea-ice)
+C      SLR    = surface longwave radiation  (upward) (1:land, 2:sea, 3:sea-ice)
 C      OLR    = outgoing longwave radiation (upward)
-C      USTR   = u-stress (1: land, 2: sea, 3: weighted average)
-C      VSTR   = v-stress (1: land, 2: sea, 3: weighted average)
-C      SHF    = sensible heat flux (1: land, 2: sea, 3: w. average)
-C      EVAP   = evaporation [g/(m^2 s)] (1: land, 2: sea, 3: w. average)
-C      DRAG   = surface Drag term (= Cd*Rho*|V|) (1:land, 2:sea, 3:w.aver)
-      COMMON /FLUXES/ PRECNV, PRECLS, CBMF, TSR, SSR, SLR, OLR,
+C      USTR   = u-stress (1:land, 2:sea, 3:weighted average)
+C      VSTR   = v-stress (1:land, 2:sea, 3:weighted average)
+C      SHF    = sensible heat flux   (1:land, 2:sea, 3:sea-ice)
+C      EVAP   = evaporation [g/m2/s] (1:land, 2:sea, 3:sea-ice)
+C      DRAG   = surface Drag term (= Cd*Rho*|V|) (1:land, 2:sea, 3:sea-ice)
+      COMMON /FLUXES/ PRECNV, PRECLS, EnPrec,
+     &                CBMF, TSR, SSR, SLR, OLR,
      &                SHF, EVAP, SPEED0, DRAG
       _RL PRECNV (NGP,MAX_NO_THREADS)
       _RL PRECLS (NGP,MAX_NO_THREADS)
+      _RL EnPrec (NGP,MAX_NO_THREADS)
       _RL CBMF   (NGP,MAX_NO_THREADS)
       _RL TSR    (NGP,MAX_NO_THREADS)
-      _RL SSR    (NGP,MAX_NO_THREADS)
-      _RL SLR    (NGP,MAX_NO_THREADS)
+      _RL SSR    (NGP,0:3,MAX_NO_THREADS)
+      _RL SLR    (NGP,0:3,MAX_NO_THREADS)
       _RL OLR    (NGP,MAX_NO_THREADS)
 c     _RL USTR   (NGP,3)
 c     _RL VSTR   (NGP,3)
-      _RL SHF    (NGP,3,MAX_NO_THREADS)
-      _RL EVAP   (NGP,3,MAX_NO_THREADS)
+      _RL SHF    (NGP,0:3,MAX_NO_THREADS)
+      _RL EVAP   (NGP,0:3,MAX_NO_THREADS)
       _RL SPEED0 (NGP,MAX_NO_THREADS)
-      _RL DRAG   (NGP,3,MAX_NO_THREADS)
+      _RL DRAG   (NGP,0:3,MAX_NO_THREADS)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif /* ALLOW_AIM */ 
