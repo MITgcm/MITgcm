@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.366 2004/10/13 07:09:15 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.367 2004/10/13 21:49:05 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint55f_post
+o rename to timeave_init_fixed
 
 checkpoint55e_post
 o some delicate re-shuffle of store directives to avoid one
