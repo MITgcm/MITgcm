@@ -1,4 +1,4 @@
-#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+#ifdef ALLOW_EXF
 #
 # ifdef ALLOW_ATM_TEMP
 #
@@ -110,4 +110,4 @@ CADJ STORE xx_aqh0       = tapelev3, key = ilev_3
 CADJ STORE xx_aqh1       = tapelev3, key = ilev_3
 # endif
 #
-#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+#endif /* ALLOW_EXF */

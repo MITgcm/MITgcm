@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.6 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.7 2003/11/01 04:50:02 edhill Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -46,13 +46,13 @@ C--   SEAICE_ALLOW_DYNAMICS and SEAICEuseDYNAMICS
 C--   SEAICE_EXTERNAL_FORCING
 C     At present this option is hardwired for pkg/exf.
 #ifdef SEAICE_EXTERNAL_FORCING
-#ifndef INCLUDE_EXTERNAL_FORCING_PACKAGE
+#ifndef ALLOW_EXF
          WRITE(msgBuf,'(A)')
-     &        'need to define INCLUDE_EXTERNAL_FORCING_PACKAGE'
+     &        'need to define ALLOW_EXF'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT , myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#else /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+#else /* ALLOW_EXF */
 #ifndef ALLOW_ATM_TEMP
          WRITE(msgBuf,'(A)')
      &        'need to define pkg/exf ALLOW_ATM_TEMP'
@@ -81,15 +81,15 @@ C     At present this option is hardwired for pkg/exf.
      &        SQUEEZE_RIGHT , myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
-#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+#endif /* ALLOW_EXF */
 #endif /* SEAICE_EXTERNAL_FORCING */
 
 C--   SEAICE_EXTERNAL_FLUXES
 C     At present this option is hardwired for pkg/exf.
 #ifdef SEAICE_EXTERNAL_FLUXES
-#ifndef INCLUDE_EXTERNAL_FORCING_PACKAGE
+#ifndef ALLOW_EXF
          WRITE(msgBuf,'(A)')
-     &        'need to define INCLUDE_EXTERNAL_FORCING_PACKAGE'
+     &        'need to define ALLOW_EXF'
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT , myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'

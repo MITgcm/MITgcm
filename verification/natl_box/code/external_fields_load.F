@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/Attic/external_fields_load.F,v 1.7 2003/10/30 17:35:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/Attic/external_fields_load.F,v 1.8 2003/11/01 04:50:03 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,7 +55,7 @@ C     myIter - Simulation timestep number
       INTEGER myIter
  
 
-#ifndef INCLUDE_EXTERNAL_FORCING_PACKAGE
+#ifndef ALLOW_EXF
 
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
@@ -229,7 +229,7 @@ cph      ENDIF
 C endif for periodicForcing
       ENDIF
 
-#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
+#endif /* ALLOW_EXF */
 
       RETURN
       END

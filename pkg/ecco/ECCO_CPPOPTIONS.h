@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ECCO_CPPOPTIONS.h,v 1.4 2003/10/23 04:41:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ECCO_CPPOPTIONS.h,v 1.5 2003/11/01 04:50:02 edhill Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -134,7 +134,7 @@ C
 C o Include/exclude the external forcing package. To use this package,
 C   you have to include the calendar tool as well. KPP can be switched
 C   on or off. The implementation automatically takes care of this.
-#define INCLUDE_EXTERNAL_FORCING_PACKAGE
+#define ALLOW_EXF
 
 C   Do more printout for the protocol file than usual.
 #define EXF_VERBOSE

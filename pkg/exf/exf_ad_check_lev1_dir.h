@@ -3,7 +3,7 @@ c     store directives for checkpoint level 1
 c
 c     created: heimbach@mit.edu 10-Jan-2002
 c
-#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+#ifdef ALLOW_EXF
 #
 # ifdef ALLOW_ATM_TEMP
 #
@@ -114,4 +114,4 @@ CADJ STORE xx_aqh0       = comlev1, key = ikey_dynamics
 CADJ STORE xx_aqh1       = comlev1, key = ikey_dynamics
 # endif
 #
-#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+#endif /* ALLOW_EXF */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.24 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.25 2003/11/01 04:50:02 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -143,9 +143,7 @@ ceh3 should have an IF ( useCAL ) THEN
 #endif
 
 C--   Custom routine to set forcing fields.
-#if (defined (INCLUDE_EXTERNAL_FORCING_PACKAGE) || defined(ALLOW_EXF))
-ceh3 #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
-ceh3 #ifdef ALLOW_EXF
+#ifdef ALLOW_EXF
 ceh3 needs an IF ( useEXF ) THEN
       call exf_readparms  ( mythid )
 #endif

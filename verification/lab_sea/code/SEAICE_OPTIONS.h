@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.4 2003/10/09 04:19:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/SEAICE_OPTIONS.h,v 1.5 2003/11/01 04:50:03 edhill Exp $
 
 C     /==========================================================\
 C     | SEAICE_OPTIONS.h                                         |
@@ -42,7 +42,7 @@ C     modified for sea-ice effects by pkg/seaice.
 #undef SEAICE_EXTERNAL_FLUXES
 
 C-- This include is necessary because of awkward dependancies with pkg/exf
-#define INCLUDE_EXTERNAL_FORCING_PACKAGE
+#define ALLOW_EXF
 #include "EXF_OPTIONS.h"
 
 #endif /* ALLOW_SEAICE */

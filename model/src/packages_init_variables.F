@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.26 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.27 2003/11/01 04:50:02 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -110,7 +110,7 @@ c--   Map the control variables onto the model state.
       _BARRIER
 #endif
 
-#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+#ifdef ALLOW_EXF
       CALL EXF_INIT( mythid )
 #else
       CALL INI_FORCING( mythid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.41 2003/10/30 18:44:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.42 2003/11/01 04:50:02 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -60,13 +60,13 @@ c They provide the fields to be stored.
 # ifdef EXACT_CONSERV
 #  include "SURFACE.h"
 # endif
-# ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+# ifdef ALLOW_EXF
 #  include "exf_fields.h"
 #  include "exf_clim_fields.h"
 #  ifdef ALLOW_BULKFORMULAE
 #   include "exf_constants.h"
 #  endif
-# endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+# endif /* ALLOW_EXF */
 # ifdef ALLOW_SEAICE
 #  include "SEAICE.h"
 # endif

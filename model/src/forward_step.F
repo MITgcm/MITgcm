@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.68 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.69 2003/11/01 04:50:02 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -57,7 +57,7 @@ C     == Global variables ==
 # include "ctrl_dummy.h"
 # include "cost.h"
 # include "EOS.h"
-# ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+# ifdef ALLOW_EXF
 #  include "exf_fields.h"
 #  ifdef ALLOW_BULKFORMULAE
 #   include "exf_constants.h"

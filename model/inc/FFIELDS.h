@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.19 2003/10/24 05:29:35 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.20 2003/11/01 04:50:02 edhill Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -101,7 +101,7 @@ C                Units are           meters (converted)
       _RS  pload    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
-#ifndef INCLUDE_EXTERNAL_FORCING_PACKAGE
+#ifndef ALLOW_EXF
 C     taux[01]  :: Temp. for zonal wind stress
 C     tauy[01]  :: Temp. for merid. wind stress
 C     qnet[01]  :: Temp. for heat flux
@@ -142,7 +142,7 @@ C     Above use static heap storage to allow exchange.
       _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  Qsw0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
-#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
+#endif /* ALLOW_EXF */
 
 C     surfaceTendencyU       (units are  m/s^2)
 C                -> usage in gU:     gU = gU + surfaceTendencyU[m/s^2]

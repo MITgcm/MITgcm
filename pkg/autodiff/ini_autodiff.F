@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/ini_autodiff.F,v 1.5 2003/11/01 04:50:02 edhill Exp $
+C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -22,7 +24,7 @@ C     === Global variables ===
 #ifdef EXACT_CONSERV
 # include "SURFACE.h"
 #endif
-#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+#ifdef ALLOW_EXF
 # include "FFIELDS.h"
 #endif
 
@@ -53,7 +55,7 @@ C-      2D arrays
 #ifdef EXACT_CONSERV
           hDivFlow(I,J,bi,bj)=0. _d 0
 #endif
-#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+#ifdef ALLOW_EXF
           EmPmR(I,J,bi,bj) = 0. _d 0
 #endif
          ENDDO

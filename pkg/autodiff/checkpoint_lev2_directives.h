@@ -30,9 +30,9 @@ CADJ STORE gtr1nm1   = tapelev2, key = ilev_2
 # include "cd_code_ad_check_lev2_dir.h"
 #endif /* ALLOW_CD_CODE */
 
-#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+#ifdef ALLOW_EXF
 # include "exf_ad_check_lev2_dir.h"
-#else /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
+#else /* ALLOW_EXF undef */
 
 CADJ STORE taux0   = tapelev2, key = ilev_2
 CADJ STORE taux1   = tapelev2, key = ilev_2
@@ -55,7 +55,7 @@ CADJ STORE pload0  = tapelev2, key = ilev_2
 CADJ STORE pload1  = tapelev2, key = ilev_2
 #endif
 
-#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+#endif /* ALLOW_EXF */
 
 #ifdef ALLOW_PTRACERS
 # include "ptracers_ad_check_lev2_dir.h"
