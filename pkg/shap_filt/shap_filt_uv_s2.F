@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.4 2002/01/19 01:10:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.5 2002/02/08 21:37:05 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -44,6 +44,7 @@ C     == Local variables ==
       _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy) 
       _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS maskZ
 
       IF (nShapUV.GT.0 .AND. Shap_uvtau.GT.0.) THEN
 
@@ -98,38 +99,71 @@ C-  replace Physical calc Div & Vort by computational one :
              vort3(i,j)=(tmpFldV(i,j,k,bi,bj)-tmpFldV(i-1,j,k,bi,bj)
      &                  -tmpFldU(i,j,k,bi,bj)+tmpFldU(i,j-1,k,bi,bj)
      &                  )
+             maskZ = (maskW(i,j,k,bi,bj)+maskW(i,j-1,k,bi,bj))
+     &              *(maskS(i,j,k,bi,bj)+maskS(i-1,j,k,bi,bj))
+             IF (maskZ.LT.1.) vort3(i,j)=0.
             ENDDO
            ENDDO
+
 C     Special stuff for Cubed Sphere
            IF (useCubedSphereExchange) THEN
+c---
              I=1
              J=1
+             maskZ = maskW(i,j,k,bi,bj)+maskW(i,j-1,k,bi,bj)
+     &              +maskS(i,j,k,bi,bj)
+            IF (maskZ.GE.2.) THEN
              vort3(I,J)=
      &          tmpFldV(I,J,k,bi,bj)
      &         -tmpFldU(I,J,k,bi,bj)
      &         +tmpFldU(I,J-1,k,bi,bj)
-c    &         -tmpFldV(I-1,J,k,bi,bj)
+             vort3(I,J)=vort3(I,J)*4.d0/3.d0
+            ELSE
+             vort3(I,J)=0.
+            ENDIF
+c---
              I=sNx+1
              J=1
+             maskZ = maskW(i,j,k,bi,bj)+maskW(i,j-1,k,bi,bj)
+     &                                 +maskS(i-1,j,k,bi,bj)
+            IF (maskZ.GE.2.) THEN
              vort3(I,J)=
      &         -tmpFldV(I-1,J,k,bi,bj)
      &         -tmpFldU(I,J,k,bi,bj)
      &         +tmpFldU(I,J-1,k,bi,bj)
-c    &          tmpFldV(I,J,k,bi,bj)
+             vort3(I,J)=vort3(I,J)*4.d0/3.d0
+            ELSE
+             vort3(I,J)=0.
+            ENDIF
+c---
              I=1
              J=sNy+1
+             maskZ = maskW(i,j,k,bi,bj)+maskW(i,j-1,k,bi,bj)
+     &              +maskS(i,j,k,bi,bj)
+            IF (maskZ.GE.2.) THEN
              vort3(I,J)=
      &          tmpFldV(I,J,k,bi,bj)
      &         -tmpFldU(I,J,k,bi,bj)
      &         +tmpFldU(I,J-1,k,bi,bj)
-c    &         -tmpFldV(I-1,J,k,bi,bj)
+             vort3(I,J)=vort3(I,J)*4.d0/3.d0
+            ELSE
+             vort3(I,J)=0.
+            ENDIF
+c---
              I=sNx+1
              J=sNy+1
+             maskZ = maskW(i,j,k,bi,bj)+maskW(i,j-1,k,bi,bj)
+     &                                 +maskS(i-1,j,k,bi,bj)
+            IF (maskZ.GE.2.) THEN
              vort3(I,J)=
      &         -tmpFldV(I-1,J,k,bi,bj)
      &         -tmpFldU(I,J,k,bi,bj)
      &         +tmpFldU(I,J-1,k,bi,bj)
-c    &          tmpFldV(I,J,k,bi,bj)
+             vort3(I,J)=vort3(I,J)*4.d0/3.d0
+            ELSE
+             vort3(I,J)=0.
+            ENDIF
+c---
            ENDIF
          ENDIF
 
