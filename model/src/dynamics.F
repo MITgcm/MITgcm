@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.56 2001/01/29 20:05:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.57 2001/02/01 19:32:02 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -673,16 +673,6 @@ CADJ STORE Kwx(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
 CADJ STORE Kwy(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
 CADJ STORE Kwz(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
 #endif
-
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
-=======
-C-- R.G. We need to define a new tape since Kw use mythid instead of bi,bj
-CADJ STORE Kwx(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE Kwy(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE Kwz(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
 
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
