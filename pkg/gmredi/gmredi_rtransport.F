@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.5 2001/09/04 17:16:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.6 2001/12/16 18:54:49 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -40,6 +40,7 @@ C     == Local variables ==
 C     I, J - Loop counters
       INTEGER I, J
       _RL dTdx,dTdy
+      _RL rTrans
 
 C     Surface flux is zero
       IF (useGMRedi .AND. K.GT.1) THEN
@@ -81,14 +82,27 @@ C-      Horizontal gradients interpolated to W points
 C-      Off-diagonal components of vertical flux
         df(i,j) = df(i,j)
      &      - _rA(i,j,bi,bj)
-     &      *(GM_background_K
-#ifdef GM_VISBECK_VARIABLE_K
-     &      +VisbeckK(i,j,bi,bj)
-#endif
-     &      )*( Kwx(i,j,k,bi,bj)*dTdx  +Kwy(i,j,k,bi,bj)*dTdy )
+     &        *( Kwx(i,j,k,bi,bj)*dTdx +Kwy(i,j,k,bi,bj)*dTdy )
 
        ENDDO
       ENDDO
+
+#ifdef GM_BOLUS_ADVEC
+      IF (GM_AdvForm) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         rTrans = 
+     &      dyG(i+1,j,bi,bj)*GM_PsiX(i+1,j,k,bi,bj)
+     &     -dyG( i ,j,bi,bj)*GM_PsiX( i ,j,k,bi,bj)
+     &     +dxG(i,j+1,bi,bj)*GM_PsiY(i,j+1,k,bi,bj)
+     &     -dxG(i, j ,bi,bj)*GM_PsiY(i, j ,k,bi,bj)
+         df(i,j) = df(i,j)
+     &    +rTrans*0.5
+     &           *(Tracer(i,j,k,bi,bj)+Tracer(i,j,k-1,bi,bj))
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* GM_BOLUS_ADVEC */  
 
 c     IF (.NOT.implicitDiffusion) THEN
 c

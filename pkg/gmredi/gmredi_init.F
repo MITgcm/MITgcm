@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_init.F,v 1.5 2001/03/06 18:01:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_init.F,v 1.6 2001/12/16 18:54:49 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -31,12 +31,39 @@ C     msgBuf      - Informational/error meesage buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
-      INTEGER k,bi,bj
+      INTEGER i,j,k,bi,bj
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+
+C     Initialize arrays in common blocks :
+        DO k=1,Nr
+         DO j=1-Oly,sNy+OLy
+          DO i=1-Olx,sNx+Olx
+           Kwx(i,j,k,bi,bj) = 0.
+           Kwy(i,j,k,bi,bj) = 0.
+           Kwz(i,j,k,bi,bj) = 0.
+#ifdef GM_EXTRA_DIAGONAL
+           Kuz(i,j,k,bi,bj) = 0.
+           Kvz(i,j,k,bi,bj) = 0.
+#endif
+#ifdef GM_NON_UNITY_DIAGONAL
+           Kux(i,j,k,bi,bj) = 0.
+           Kvy(i,j,k,bi,bj) = 0.
+#endif
+#ifdef GM_BOLUS_ADVEC
+           GM_PsiX(i,j,k,bi,bj) = 0.
+           GM_PsiY(i,j,k,bi,bj) = 0.
+#endif
+#ifdef GM_VISBECK_VARIABLE_K
+          VisbeckK(i,j,bi,bj) = 0.
+#endif
+          ENDDO
+         ENDDO
+        ENDDO
 
 #ifdef ALLOW_TIMEAVE
 C     Initialize averages to zero
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
         CALL TIMEAVE_RESET(GM_Kwx_T,Nr, bi,bj,myThid)
         CALL TIMEAVE_RESET(GM_Kwy_T,Nr, bi,bj,myThid)
         CALL TIMEAVE_RESET(GM_Kwz_T,Nr, bi,bj,myThid)
@@ -46,10 +73,15 @@ C     Initialize averages to zero
 #ifdef GM_VISBECK_VARIABLE_K
         CALL TIMEAVE_RESET(Visbeck_K_T, 1, bi,bj,myThid)
 #endif
-       ENDDO
-      ENDDO
+#ifdef GM_BOLUS_ADVEC
+        CALL TIMEAVE_RESET(GM_PsiXtave,Nr, bi,bj,myThid)
+        CALL TIMEAVE_RESET(GM_PsiYtave,Nr, bi,bj,myThid)
+#endif
 #endif /* ALLOW_TIMEAVE */
 
+C- end bi,bj loops
+       ENDDO
+      ENDDO
 #endif /* ALLOW_GMREDI */
 
       return

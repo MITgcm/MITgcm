@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_diff.F,v 1.3 2001/02/04 14:38:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_diff.F,v 1.4 2001/12/16 18:54:49 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -36,28 +36,18 @@ C
 #include "GMREDI.h"
 
 C     == Local variables ==
-C     I, J, K - Loop counters
+C     I, J   - Loop counters
       INTEGER i,j
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-        KappaRT(i,j,k) = KappaRT(i,j,k)+maskUp(i,j)*
-     &       ( GM_background_K
-#ifdef GM_VISBECK_VARIABLE_K
-     &          + VisbeckK(i,j,bi,bj)
-#endif
-     &       )*Kwz(i,j,k,bi,bj)
+        KappaRT(i,j,k) = KappaRT(i,j,k)+maskUp(i,j)*Kwz(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-        KappaRS(i,j,k) = KappaRS(i,j,k)+maskUp(i,j)*
-     &       ( GM_background_K
-#ifdef GM_VISBECK_VARIABLE_K
-     &          + VisbeckK(i,j,bi,bj)
-#endif
-     &       )*Kwz(i,j,k,bi,bj)
+        KappaRS(i,j,k) = KappaRS(i,j,k)+maskUp(i,j)*Kwz(i,j,k,bi,bj)
        ENDDO
       ENDDO
 

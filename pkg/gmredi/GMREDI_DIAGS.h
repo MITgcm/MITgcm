@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/GMREDI_DIAGS.h,v 1.3 2001/03/06 17:50:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/GMREDI_DIAGS.h,v 1.4 2001/12/16 18:54:49 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -28,6 +28,12 @@ C     Storage arrays for time-averages
       _RL Visbeck_K_T (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       COMMON /VIS_TAVE/
      &                       Visbeck_K_T
+#endif
+
+#ifdef GM_BOLUS_ADVEC 
+      _RL GM_PsiXtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL GM_PsiYtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /GM_TAVE_PSI_B/ GM_PsiXtave, GM_PsiYtave
 #endif
 
 #endif /* ALLOW_TIMEAVE */
