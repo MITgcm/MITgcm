@@ -28,11 +28,13 @@ C     i,j,k,bi,bj  - Loop counters
 
 C     DO bj = myByLo(myThid), myByHi(myThid)
 C      DO bi = myBxLo(myThid), myBxHi(myThid)
+        IF (timeave(1,bi,bj).NE.0.) THEN
          DO j=1,sNy
           DO i=1,sNx
              fldtave(i,j,bi,bj) = fldtave(i,j,bi,bj) / timeave(1,bi,bj)
           ENDDO
          ENDDO
+        ENDIF
 C      ENDDO
 C     ENDDO
  
