@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.3 2000/09/11 20:54:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.4 2000/11/13 16:32:58 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -69,7 +69,6 @@ C     myThid - Thread number for this instance of the routine.
       INTEGER myThid  
 
 C     == Local variables ==
-
 
 C--   Load forcing/external data fields
       CALL TIMER_START('I/O (READ)         [FORWARD_STEP]',myThid)

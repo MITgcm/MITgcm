@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.26 2000/09/11 22:59:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.27 2000/11/13 16:32:57 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -373,7 +373,6 @@ C--   Zonal FFT filter of tendency
      U     gT, 
      I     1, sNy, k, k, bi, bj, 1, myThid)
 #endif /* INCLUDE_LAT_CIRC_FFT_FILTER_CODE */
-
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.1 1999/05/18 18:01:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.2 2000/11/13 16:32:58 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 #define USE_FACTORIZED_POLY
@@ -76,7 +76,9 @@ c Local
          enddo
          
       else
-         write(0,*) 'FIND_ALPHA: eqn = ',eqn
+cph(  write statement confuses TAMC
+cph         write(0,*) 'FIND_ALPHA: eqn = ',eqn
+cph)
          stop 'FIND_ALPHA: argument "eqn" has illegal value'
       endif
 
@@ -154,7 +156,9 @@ c Local
          enddo
 
       else
-         write(0,*) 'FIND_BETA: eqn = ',eqn
+cph(  write statement confuses TAMC
+cph         write(0,*) 'FIND_BETA: eqn = ',eqn
+cph)
          stop 'FIND_BETA: argument "eqn" has illegal value'
       endif
 

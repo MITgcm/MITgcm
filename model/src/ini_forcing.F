@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.18 2000/09/11 23:02:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.19 2000/11/13 16:32:58 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -63,11 +63,6 @@ C
       IF ( EmPmRfile .NE. ' '  ) THEN
        CALL READ_FLD_XY_RS( EmPmRfile, ' ', EmPmR, 0, myThid )
       ENDIF
-#ifdef SHORTWAVE_HEATING
-      IF ( surfQswFile .NE. ' '  ) THEN
-       CALL READ_FLD_XY_RS( surfQswFile, ' ', Qsw, 0, myThid )
-      ENDIF
-#endif
       IF ( thetaClimFile .NE. ' '  ) THEN
        CALL READ_FLD_XY_RS( thetaClimFile, ' ', SST, 0, myThid )
       ENDIF
@@ -92,7 +87,7 @@ C
 C     CALL PLOT_FIELD_XYRS( fu, 'S/R INI_FORCING FU',1,myThid)
 C     CALL PLOT_FIELD_XYRS( fv, 'S/R INI_FORCING FV',1,myThid)
 
-C     Convert units and signs (!)
+C     Convert units and signs
       CALL EXTERNAL_FIELDS_SCALE( myThid )
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.7 2000/09/11 23:14:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.8 2000/11/13 16:32:57 heimbach Exp $
 C
 C     /==========================================================\
 C     | FFIELDS.h                                                |
@@ -13,33 +13,27 @@ C
 C     fu     - Zonal velocity tendency term
 C                -> read assumes     N/m^2 (>0 from East to West)
 C                -> transformed to   m/s^2
-C                   via              fu   ->   fu/(rhoNil*dR)
-C                -> usage in gU:     gU = gU + fu[m/s^2]
+C                   via              fu   ->   -fu/(rhoNil*dR)
 C
 C     fv     - Meridional velocity tendency term
 C                -> read assumes     N/m^2 (>0 from North to South))
 C                -> transformed to   m/s^2
-C                   via              fv   ->   fv/(rhoNil*dR)
-C                -> usage in gU:     gV = gV + fu[m/s^2]
+C                   via              fv   ->   -fv/(rhoNil*dR)
 C
 C     EmPmR  - Evaporation - Precipitation - Runoff
 C                -> read assumes     m/s (>0 for ocean salting)
 C                -> transformed to   psu/s
-C                   via              empmr -> -empmr*35./dR
-C                -> usage in gS:     gS = gS + empmr[psu/s]
+C                   via              empmr -> empmr*35./dR
 C
 C     Qnet   - Surface heat flux
 C                -> read assumes     W/m^2=kg/s^3 (>0 for ocean cooling)
 C                -> transformed to   K/s
 C                   via              Qnet -> -Qnet/(rhonil*Cp*dR)
-C                -> usage in gT:     gT = gT + qnet[K/s]
 C
 C     Qsw    - Short-wave surface heat flux
 C                -> read assumes     W/m^2=kg/s^3 (>0 for ocean cooling)
 C                -> transformed to   K/s
 C                   via              Qsw -> -Qsw/(rhonil*Cp*dR)
-C                -> usage in gT:     gT = gT + Qswt[K/s]
-C                   only for #define SHORTWAVE_HEATING
 C
 C     SST    - Sea surface temperature (degrees) for relaxation
 C     SSS    - Sea surface salinity (psu) for relaxation
@@ -76,13 +70,15 @@ C            - Qnet plus temp. relaxation
 C                -> calculate        -lambda*(T(model)-T(clim))
 C            >>> Qnet assumed to be total flux minus s/w rad. <<<
 C                -> usage in gT:     gT = gT + surfaceTendencyT[K/s]
-
+C
       COMMON /TENDENCY_FORCING/
      &                         surfaceTendencyU,
      &                         surfaceTendencyV,
      &                         surfaceTendencyT,
-     &                         surfaceTendencyS
+     &                         surfaceTendencyS, 
+     &                         tempQsw
       _RS  surfaceTendencyU  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  surfaceTendencyV  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  surfaceTendencyT  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  surfaceTendencyS  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  tempQsw           (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

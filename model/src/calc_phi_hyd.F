@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.7 2000/06/09 02:45:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.8 2000/11/13 16:32:57 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -62,7 +62,5 @@ CADJ GENERAL
 
 #endif
 
-! --------------------------------------------------------------------
       return
       end
-! ====================================================================

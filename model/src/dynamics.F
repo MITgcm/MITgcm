@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.53 2000/09/11 23:07:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.54 2000/11/13 16:32:57 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -33,10 +33,11 @@ C     == Global variables ===
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
-# ifdef ALLOW_KPP
-#  include "KPP.h"
-# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_KPP
+# include "KPP.h"
+#endif
 
 C     == Routine arguments ==
 C     myTime - Current time in simulation
@@ -198,6 +199,7 @@ C--   dummy statement to end declaration part
       ikey = 1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They
 C     just ensure that all memory references are to valid floating
@@ -304,7 +306,6 @@ C--     Set up work arrays that need valid initial values
         jMin = 1-OLy+1
         jMax = sNy+OLy
 
-
         k = 1
         BOTTOM_LAYER = k .EQ. Nr
 
@@ -349,6 +350,7 @@ CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 #endif
         ENDIF
 #endif
+
 C--     Density of 1st level (below W(1)) reference to level 1
 #ifdef  INCLUDE_FIND_RHO_CALL
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -378,12 +380,13 @@ CADJ &   , key = ikey, byte = isbyte
      I      myThid )
 #endif
 
-#ifdef  INCLUDE_CONVECT_CALL
-
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE rhoKm1(:,:)  = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE rhoKp1(:,:)  = comlev1_bibj, key = ikey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef  INCLUDE_CONVECT_CALL
+
          CALL CONVECT(
      I       bi,bj,iMin,iMax,jMin,jMax,k+1,rhoKm1,rhoKp1,
      U       ConvectCount,
@@ -429,11 +432,13 @@ C--     phiHyd(z=0)=0
      I      myThid )
 
 #ifdef ALLOW_GMREDI
+        IF ( useGMRedi ) THEN
         CALL GRAD_SIGMA(
      I            bi, bj, iMin, iMax, jMin, jMax, k,
      I            rhoKm1, rhoKm1, rhoKm1,
      O            sigmaX, sigmaY, sigmaR,
      I            myThid )
+        ENDIF
 #endif
 
 C--     Start of downward loop
@@ -483,7 +488,9 @@ CADJ &   , key = kkey, byte = isbyte
      I      myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE rhoK(:,:)  = comlev1_bibj_k, key = kkey, byte = isbyte
+cph(   storing not necessary
+cphCADJ STORE rhoK(:,:)  = comlev1_bibj_k, key = kkey, byte = isbyte
+cph)
 #endif /* ALLOW_AUTODIFF_TAMC */
 #endif
 
@@ -574,11 +581,13 @@ CADJ &   , key = kkey, byte = isbyte
 
 
 #ifdef ALLOW_GMREDI
+         IF ( useGMRedi ) THEN
          CALL GRAD_SIGMA(
      I             bi, bj, iMin, iMax, jMin, jMax, k,
      I             rhoK, rhotmp, rhoK,
      O             sigmaX, sigmaY, sigmaR,
      I             myThid )
+         ENDIF
 #endif
 
          DO J=jMin,jMax
@@ -592,6 +601,12 @@ CADJ &   , key = kkey, byte = isbyte
 
 C--     end of k loop
         ENDDO
+
+C     Determines forcing terms based on external fields
+C     relaxation terms, etc.
+      CALL EXTERNAL_FORCING_SURF( 
+     I             bi, bj, iMin, iMax, jMin, jMax,
+     I             myThid )
 
 #ifdef ALLOW_GMREDI
         IF (useGMRedi) THEN
@@ -622,14 +637,13 @@ C--     calc_div_ghat has a condition for initialization
         ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-
 #ifdef ALLOW_KPP
 C--   Compute KPP mixing coefficients
         IF (useKPP) THEN
 
           CALL TIMER_START('KPP_CALC               [DYNAMICS]', myThid)
           CALL KPP_CALC(
-     I                 bi, bj, myTime, myThid )
+     I                  bi, bj, myTime, myThid )
           CALL TIMER_STOP ('KPP_CALC               [DYNAMICS]', myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -762,9 +776,10 @@ CADJ STORE gunm1(:,:,k,bi,bj) = comlev1_bibj_k
 CADJ &   , key = kkey, byte = isbyte
 CADJ STORE gvnm1(:,:,k,bi,bj) = comlev1_bibj_k
 CADJ &   , key = kkey, byte = isbyte
-CADJ STORE gwnm1(:,:,k,bi,bj) = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE gwnm1(:,:,k,bi,bj) = comlev1_bibj_k
+CADJ &   , key = kkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-CADJ &   
+
             CALL APPLY_OBCS2( bi, bj, k, myThid )
          END IF
 #endif
@@ -882,7 +897,6 @@ C--     implicitViscosity
  
        ENDDO
       ENDDO
-
 
       RETURN
       END

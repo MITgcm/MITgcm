@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.3 2000/09/11 23:05:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.4 2000/11/13 16:32:58 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -38,14 +38,14 @@ C     stored files.
       CALL INI_FIELDS( myThid )
       _BARRIER
 
-C--   Check dependances between packages
-      CALL PACKAGES_INIT( myThid )
-
 C--   Initialise time-stepping (predictor variables are carried in G)
       IF ( startTime .EQ. 0. ) THEN
         CALL INI_PREDICTOR( myThid )
         _BARRIER
       END IF
+
+C--   Check dependances between packages
+      CALL PACKAGES_INIT( myThid )
 
 #ifdef ALLOW_OBCS
 C--   Calculate values on open boundaries at iter=nIter0

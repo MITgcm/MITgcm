@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.7 2000/09/11 20:45:57 heimbach Exp $
+C     $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.8 2000/11/13 16:32:58 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -40,8 +40,6 @@ C     Loop counters
 C--   Forcing term
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. 1 ) THEN
-       CALL EXTERNAL_FORCING_SURF_U( 
-     &           iMin, iMax, jMin, jMax,bi,bj,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
@@ -92,8 +90,6 @@ C     Loop counters
 C--   Forcing term
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. 1 ) THEN
-       CALL EXTERNAL_FORCING_SURF_V( 
-     I           iMin, iMax, jMin, jMax,bi,bj,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
@@ -127,10 +123,10 @@ C     == Global data ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #ifdef SHORTWAVE_HEATING
-      integer    two, k
-      _RS one
-      parameter (two=2,one=1.)
-       _RS ztmp(two), swfracb(two)
+      integer two
+      _RL minusone
+      parameter (two=2,minusone=-1.)
+      _RL swfracb(two)
 #endif
 
 
@@ -153,8 +149,6 @@ C     Loop counters
 C--   Forcing term
 C     Add heat in top-layer
       IF ( kLev .EQ. 1 ) THEN
-       CALL EXTERNAL_FORCING_SURF_T( 
-     I           iMin, iMax, jMin, jMax,bi,bj,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
@@ -165,12 +159,12 @@ C     Add heat in top-layer
 
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
-      ztmp(1)=0.0
-      do k=1,klev-1
-         ztmp(1)=ztmp(1)-delZ(k)
-      enddo
-      ztmp(2)=ztmp(1)-delZ(klev)
-      call SWFRAC(two,one,ztmp, swfracb)
+      swfracb(1)=abs(rF(klev))
+      swfracb(2)=abs(rF(klev+1))
+      call SWFRAC(
+     I     two,minusone,
+     I     myCurrentTime,myThid,
+     O     swfracb)
       DO j=jMin,jMax
        DO i=iMin,iMax
         gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj)
@@ -221,8 +215,6 @@ C     Loop counters
 C--   Forcing term
 C     Add fresh-water in top-layer
       IF ( kLev .EQ. 1 ) THEN
-       CALL EXTERNAL_FORCING_SURF_S( 
-     I           iMin, iMax, jMin, jMax,bi,bj,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)

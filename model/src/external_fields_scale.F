@@ -40,19 +40,19 @@ C     === Local variables ===
         DO j=1-oLy,sNy+oLy
          DO i=1-oLx,sNx+oLx
 c     Zonal wind stress fu:
-          fu(i,j,bi,bj) = fu(i,j,bi,bj)
+          fu(i,j,bi,bj) = - fu(i,j,bi,bj)
      &           *horiVertRatio*recip_rhoNil*recip_dRf(1)
 c     Meridional wind stress fv:
-          fv(i,j,bi,bj) = fv(i,j,bi,bj)
+          fv(i,j,bi,bj) = - fv(i,j,bi,bj)
      &           *horiVertRatio*recip_rhoNil*recip_dRf(1)
 #ifdef USE_NATURAL_BCS
 c     Freshwater flux EmPmR:
           EmPmR(i,j,bi,bj) = 
-     &         - EmPmR(i,j,bi,bj)*recip_dRf(1)*salt(i,j,1,bi,bj)
+     &          EmPmR(i,j,bi,bj)*recip_dRf(1)*salt(i,j,1,bi,bj)
 #else 
 c     Freshwater flux EmPmR:
           EmPmR(i,j,bi,bj) = 
-     &         - EmPmR(i,j,bi,bj)*recip_dRf(1)*35.
+     &          EmPmR(i,j,bi,bj)*recip_dRf(1)*35.
 #endif          
 c     Net heat flux Qnet:
           Qnet(i,j,bi,bj) = 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_predictor.F,v 1.5 1999/08/06 14:58:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_predictor.F,v 1.6 2000/11/13 16:32:58 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -11,7 +11,7 @@ C     \==========================================================/
       SUBROUTINE INI_PREDICTOR( 
      I                       myThid )
       implicit none
-! Common
+C Common
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "DYNVARS.h"

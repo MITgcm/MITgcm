@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.4 2000/09/13 20:35:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.5 2000/11/13 16:32:58 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -26,13 +26,13 @@ C     msgBuf      - Informational/error meesage buffer
 #ifdef ALLOW_KPP
       IF (useKPP) CALL KPP_CHECK( myThid )
 #else
-      IF (useKPP) CALL PACKAGES_CHECK_ERROR('KPP')
+      IF (useKPP) CALL PACKAGES_CHECK_ERROR('KPP', myThid)
 #endif
 
 #ifdef ALLOW_GMREDI
       IF (useGMRedi) CALL GMREDI_CHECK( myThid )
 #else
-      IF (useGMRedi) CALL PACKAGES_CHECK_ERROR('GMREDI')
+      IF (useGMRedi) CALL PACKAGES_CHECK_ERROR('GMREDI', myThid)
 #endif
 
       return

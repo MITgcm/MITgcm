@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.22 2000/09/11 23:15:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.23 2000/11/13 16:32:57 heimbach Exp $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |
@@ -35,17 +35,17 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =  90,
-     &           sNy =  40,
-     &           OLx =   3,
-     &           OLy =   3,
+     &           sNx =  20,
+     &           sNy =  16,
+     &           OLx =   4,
+     &           OLy =   4,
      &           nSx =   1,
      &           nSy =   1,
      &           nPx =   1,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
-     &           Nr  =  20)
+     &           Nr  =  23)
 
 C     MAX_OLX  - Set to the maximum overlap region size of any array
 C     MAX_OLY    that will be exchanged. Controls the sizing of exch

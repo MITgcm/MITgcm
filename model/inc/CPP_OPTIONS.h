@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.12 2000/06/21 19:22:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.13 2000/11/13 16:32:57 heimbach Exp $
 C
 
 C 
@@ -10,11 +10,16 @@ C o Include/exclude code for GM/Redi parameterization
 #undef  ALLOW_GMREDI
 
 C o Include/exclude code for KPP mixing scheme
-#undef  ALLOW_KPP
+#define  ALLOW_KPP
+
+C o Shortwave heating as extra term in external_forcing.F
+#ifdef ALLOW_KPP
+#define  SHORTWAVE_HEATING
+#endif
 
 C o Include/exclude code for C-D grid method of integrating the 
 C   coriolis terms
-#undef  INCLUDE_CD_CODE
+#define  INCLUDE_CD_CODE
 
 C o Include/exclude code for open-boundary conditions
 #undef  ALLOW_OBCS
@@ -140,3 +145,12 @@ C          because the old code did not have no-slip BCs
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
+
+C o Include/exclude code specific to the ECCO/SEALION version.
+#undef INCLUDE_ECCO_PACKAGE
+#ifdef INCLUDE_ECCO_PACKAGE
+#include "ECCO_CPPOPTIONS.h"
+#endif
+
+
+
