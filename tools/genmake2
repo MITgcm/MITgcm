@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.12 2003/10/09 04:19:20 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.13 2003/10/10 18:38:57 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -581,7 +581,7 @@ fi
 if test "x$CPP" = x ; then
     CPP="cpp"
 fi
-echo "#define A a" | cpp > test_cpp 2>&1
+echo "#define A a" | $CPP > test_cpp 2>&1
 RETVAL=$?
 if test "x$RETVAL" != x0 ; then
     cat <<EOF 1>&2
