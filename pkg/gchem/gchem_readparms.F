@@ -24,6 +24,7 @@ C !OUTPUT PARAMETERS: ==================================================
 C  none
 
 #ifdef ALLOW_PTRACERS
+#ifdef ALLOW_GCHEM
 
 C !LOCAL VARIABLES: ====================================================
 C  iTracer              :: loop indices
@@ -66,6 +67,7 @@ C Close the open data file
 C Everyone else must wait for the parameters to be loaded
       _BARRIER
 
+#endif
 #endif /* ALLOW_PTRACERS */
 
       RETURN

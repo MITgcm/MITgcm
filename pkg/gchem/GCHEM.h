@@ -1,4 +1,5 @@
 #ifdef ALLOW_PTRACERS
+#ifdef ALLOW_GCHEM
 
 CBOP
 C    !ROUTINE: GCHEM.h
@@ -31,4 +32,5 @@ C Contains tracer parameters and input files for chemical tracers.
      &                   IronFile,
      &                   SilicaFile,
      &                   nsubtime
+#endif
 #endif /* ALLOW_PTRACERS */

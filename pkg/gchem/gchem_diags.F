@@ -11,13 +11,6 @@ C !INTERFACE: ==========================================================
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_PTRACERS
-#include "PTRACERS.h"
-#endif
-#ifdef DIC_BIOTIC
-#include "DIC_BIOTIC.h"
-#include "DIC_ABIOTIC.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -25,25 +18,23 @@ C  myThid               :: thread number
       _RL myTime
 
 #ifdef ALLOW_PTRACERS
+#ifdef ALLOW_GCHEM
 cccccccccccccccccccccc
 c diagnostics        c
 cccccccccccccccccccccc
+
 #ifdef DIC_BIOTIC
 #ifdef ALLOW_TIMEAVE
        call dic_biotic_diags( myTime, myIter, myThid )
 #endif
-cswdcost -- add --
-       call dic_diags( myTime, myIter, myThid )
-cswdcost -- end add ---
 #endif
-
 
 ccccccccccccccccccccccccc
 c  monitor              c
 ccccccccccccccccccccccccc
         call gchem_monitor(myIter, myTime, myThid )
 
-
+#endif /* ALLOW_GCHEM */
 #endif /* ALLOW_PTRACERS */
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_monitor.F,v 1.1 2003/06/25 21:00:37 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_monitor.F,v 1.2 2003/10/06 20:04:29 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -31,6 +31,8 @@ C     === Functions ====
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
+#ifdef ALLOW_PTRACERS
+#ifdef ALLOW_GCHEM
 C     === Local variables ====
       CHARACTER*(MAX_LEN_MBUF) msgBuf   
       CHARACTER*(MAX_LEN_MBUF) suff
@@ -89,6 +91,9 @@ C      Dynamics field monitor finish
        _END_MASTER(myThid)
 
       ENDIF
+
+#endif
+#endif
 
       RETURN
       END
