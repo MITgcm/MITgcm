@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_atmos_physics.F,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_atmos_physics.F,v 1.3 2001/03/06 17:53:02 jmc Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -32,7 +32,6 @@ C     MITgcm
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "CG2D.h"
 #include "GRID.h"
 
 C     -------------- Routine arguments -----------------------------------
@@ -132,7 +131,7 @@ C       the mean heave of the base of the atmosphere. )
       DO K=1,Nr
       DO J=1,sNy
        DO I=1,sNx
-        phiTotal(I,J,K)  = cg2d_x(i,j,bi,bj)
+        phiTotal(I,J,K)  = etaN(i,j,bi,bj)
         phiTCount        = phiTCount + hFacC(i,j,Nr,bi,bj)
        ENDDO
       ENDDO
@@ -339,10 +338,10 @@ C ---------------------------------------------------
 C
       CALL PDRIVER( tYear )
 
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifdef ALLOW_TIMEAVE
 C     Calculate diagnostics for AIM
       CALL AIM_CALC_DIAGS( bi, bj, currentTime, myThid )
-#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
+#endif /* ALLOW_TIMEAVE */
 C
       FirstCall = .FALSE.
 C
