@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.93 2003/02/11 04:05:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.94 2003/02/18 15:25:09 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -85,9 +85,6 @@ C     == Global variables ===
 #  include "KPP.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-#ifdef ALLOW_TIMEAVE
-#include "TIMEAVE_STATV.h"
-#endif
 
 C     !CALLING SEQUENCE:
 C     DYNAMICS()
@@ -97,8 +94,6 @@ C      |
 C      |-- CALC_VISCOSITY
 C      |
 C      |-- CALC_PHI_HYD  
-C      |
-C      |-- STORE_PRESSURE
 C      |
 C      |-- MOM_FLUXFORM  
 C      |
@@ -130,14 +125,13 @@ C     fVer[STUV]               o fVer: Vertical flux term - note fVer
 C                                      is "pipelined" in the vertical
 C                                      so we need an fVer for each
 C                                      variable.
-C     rhoK, rhoKM1   - Density at current level, and level above 
-C     phiHyd         - Hydrostatic part of the potential.
-C                      In z coords phiHyd is the hydrostatic 
-C                      Potential (=pressure/rho0) anomaly
-C                      In p coords phiHyd is the geopotential 
-C                      surface height anomaly.
-C     dPhiHydX,Y :: Gradient (X & Y directions) of Hydrostatic Potential
-C     phiSurfX, - gradient of Surface potential (Pressure/rho, ocean)
+C     phiHydC    :: hydrostatic potential anomaly at cell center
+C                   In z coords phiHyd is the hydrostatic potential
+C                      (=pressure/rho0) anomaly
+C                   In p coords phiHyd is the geopotential height anomaly.
+C     phiHydF    :: hydrostatic potential anomaly at middle between 2 centers
+C     dPhiHydX,Y :: Gradient (X & Y directions) of hydrostatic potential anom.
+C     phiSurfX,  ::  gradient of Surface potential (Pressure/rho, ocean)
 C     phiSurfY             or geopotential (atmos) in X and Y direction
 C     iMin, iMax     - Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
@@ -147,11 +141,10 @@ C     kDown, km1       are switched with layer to be the appropriate
 C                      index into fVerTerm.
       _RL fVerU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL phiHyd  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL phiHydF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL phiHydC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhokm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rhok    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRU (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -218,8 +211,6 @@ C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        rhoKM1 (i,j) = 0. _d 0
-        rhok   (i,j) = 0. _d 0
         phiSurfX(i,j) = 0. _d 0
         phiSurfY(i,j) = 0. _d 0
        ENDDO
@@ -242,7 +233,7 @@ CHPF$ INDEPENDENT
 #ifdef ALLOW_AUTODIFF_TAMC
 C--    HPF directive to help TAMC
 CHPF$  INDEPENDENT, NEW (fVerU,fVerV
-CHPF$&                  ,phiHyd
+CHPF$&                  ,phiHydF
 CHPF$&                  ,KappaRU,KappaRV
 CHPF$&                  )
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -263,17 +254,22 @@ CHPF$&                  )
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Set up work arrays that need valid initial values
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          DO k=1,Nr
-           phiHyd(i,j,k)  = 0. _d 0 
+        DO k=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
            KappaRU(i,j,k) = 0. _d 0
            KappaRV(i,j,k) = 0. _d 0
           ENDDO
+         ENDDO
+        ENDDO
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
           fVerU  (i,j,1) = 0. _d 0
           fVerU  (i,j,2) = 0. _d 0
           fVerV  (i,j,1) = 0. _d 0
           fVerV  (i,j,2) = 0. _d 0
+          phiHydF (i,j)  = 0. _d 0 
+          phiHydC (i,j)  = 0. _d 0 
           dPhiHydX(i,j)  = 0. _d 0
           dPhiHydY(i,j)  = 0. _d 0 
          ENDDO
@@ -344,21 +340,17 @@ C        distinguishe between Stagger and Non Stagger time stepping
            CALL CALC_PHI_HYD(
      I        bi,bj,iMin,iMax,jMin,jMax,k,
      I        gT, gS,
-     U        phiHyd,
-     O        dPhiHydX, dPhiHydY,
+     U        phiHydF,
+     O        phiHydC, dPhiHydX, dPhiHydY,
      I        myTime, myIter, myThid )
          ELSE
            CALL CALC_PHI_HYD(
      I        bi,bj,iMin,iMax,jMin,jMax,k,
      I        theta, salt,
-     U        phiHyd,
-     O        dPhiHydX, dPhiHydY,
+     U        phiHydF,
+     O        phiHydC, dPhiHydX, dPhiHydY,
      I        myTime, myIter, myThid )
          ENDIF
-
-C        calculate pressure from phiHyd and store it on common block
-C        variable pressure
-         CALL STORE_PRESSURE( bi, bj, k, phiHyd, myThid ) 
 
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gUnm1, gVnm1, etc...
@@ -366,7 +358,7 @@ C        and step forward storing the result in gUnm1, gVnm1, etc...
 #ifndef DISABLE_MOM_FLUXFORM
            IF (.NOT. vectorInvariantMomentum) CALL MOM_FLUXFORM(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
-     I         phiHyd,dPhiHydX,dPhiHydY,KappaRU,KappaRV,
+     I         dPhiHydX,dPhiHydY,KappaRU,KappaRV,
      U         fVerU, fVerV,
      I         myTime, myIter, myThid)
 #endif
@@ -379,7 +371,7 @@ C        and step forward storing the result in gUnm1, gVnm1, etc...
 #endif
            CALL TIMESTEP(
      I         bi,bj,iMin,iMax,jMin,jMax,k,
-     I         phiHyd, dPhiHydX,dPhiHydY, phiSurfX, phiSurfY,
+     I         dPhiHydX,dPhiHydY, phiSurfX, phiSurfY,
      I         myIter, myThid)
 
 #ifdef   ALLOW_OBCS
@@ -455,20 +447,6 @@ CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 C--     End If implicitViscosity.AND.momStepping
         ENDIF
  
-C- jmc: add for diagnostic of phiHyd
-        IF ( DIFFERENT_MULTIPLE(diagFreq,myTime+deltaTClock,myTime) 
-     &       .AND. buoyancyRelation .NE. 'OCEANIC' ) THEN
-          CALL WRITE_LOCAL_RL('Ph','I10',Nr,phiHyd,
-     &                         bi,bj,1,myIter+1,myThid)
-        ENDIF
-
-#ifdef ALLOW_TIMEAVE
-        IF (taveFreq.GT.0.) THEN 
-          CALL TIMEAVE_CUMUL_1T(phiHydtave, phiHyd, Nr,
-     I                              deltaTclock, bi, bj, myThid)
-        ENDIF
-#endif /* ALLOW_TIMEAVE */
-
        ENDDO
       ENDDO
 

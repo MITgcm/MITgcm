@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.23 2002/11/15 03:01:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.24 2003/02/18 15:25:09 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,7 +7,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: FIND_RHO
 C     !INTERFACE:
-      subroutine FIND_RHO(
+      SUBROUTINE FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
      I      tFld, sFld,
      O      rholoc,
@@ -27,7 +27,7 @@ C     *==========================================================*
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -37,23 +37,26 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-      integer bi,bj,iMin,iMax,jMin,jMax
-      integer k			! Level of Theta/Salt slice
-      integer kRef		! Pressure reference level
+C     k    :: Level of Theta/Salt slice
+C     kRef :: Pressure reference level
+      INTEGER bi,bj,iMin,iMax,jMin,jMax
+      INTEGER k
+      INTEGER kRef
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL rholoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      integer myThid
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      integer i,j
+      INTEGER i,j
       _RL refTemp,refSalt,sigRef,tP,sP,deltaSig,dRho
-      _RL rhoP0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoP0  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhoNum(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhoDen(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      character*(max_len_mbuf) msgbuf
+      _RL rhoNum (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoDen (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      CHARACTER*(MAX_LEN_MBUF) msgbuf
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -71,7 +74,7 @@ CEOP
      &     sFld, myThid )
 #endif
 
-      if (equationOfState.eq.'LINEAR') then
+      IF (equationOfState.EQ.'LINEAR') THEN
 
 C ***NOTE***
 C In the linear EOS, to make the static stability calculation meaningful
@@ -82,23 +85,23 @@ C **********
 
        dRho = rhoNil-rhoConst
 
-       do j=jMin,jMax
-        do i=iMin,iMax
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          rholoc(i,j)=rhoNil*(
      &     sBeta*(sFld(i,j,k,bi,bj)-refSalt)
      &   -tAlpha*(tFld(i,j,k,bi,bj)-refTemp) )
      &        + dRho
-        enddo
-       enddo
+        ENDDO
+       ENDDO
        
-      elseif (equationOfState.eq.'POLY3') then
+      ELSEIF (equationOfState.EQ.'POLY3') THEN
 
        refTemp=eosRefT(kRef)
        refSalt=eosRefS(kRef)
        sigRef=eosSig0(kRef) + (1000.-rhoConst)
 
-       do j=jMin,jMax
-        do i=iMin,iMax
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          tP=tFld(i,j,k,bi,bj)-refTemp
          sP=sFld(i,j,k,bi,bj)-refSalt
 #ifdef USE_FACTORIZED_POLY
@@ -123,12 +126,17 @@ C **********
      &    +eosC(9,kRef)         *sP*sP*sP
 #endif
          rholoc(i,j)=sigRef+deltaSig
-        enddo
-       enddo
+        ENDDO
+       ENDDO
 
-      elseif ( equationOfState(1:5).eq.'JMD95'
-     &      .or. equationOfState.eq.'UNESCO' ) then
+      ELSEIF ( equationOfState(1:5).EQ.'JMD95'
+     &      .OR. equationOfState.EQ.'UNESCO' ) THEN
 C     nonlinear equation of state in pressure coordinates
+
+         CALL PRESSURE_FOR_EOS(
+     I        bi, bj, iMin, iMax, jMin, jMax,  kRef,
+     O        locPres,
+     I        myThid )
 
          CALL FIND_RHOP0(
      I        bi, bj, iMin, iMax, jMin, jMax, k,
@@ -137,66 +145,69 @@ C     nonlinear equation of state in pressure coordinates
      I        myThid )
          
          CALL FIND_BULKMOD(
-     I        bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
-     I        tFld, sFld,
+     I        bi, bj, iMin, iMax, jMin, jMax,  k,
+     I        locPres, tFld, sFld,
      O        bulkMod,
      I        myThid )
          
 #ifdef ALLOW_AUTODIFF_TAMC 
-cph can't do storing here since find_rho is called multiple times;
+cph can't DO storing here since find_rho is called multiple times;
 cph additional recomp. should be acceptable
 cphCADJ STORE rhoP0(:,:)   = comlev1_bibj_k ,  key=kkey , byte=isbyte
 cphCADJ STORE bulkMod(:,:) = comlev1_bibj_k ,  key=kkey , byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-         do j=jMin,jMax
-            do i=iMin,iMax
+         DO j=jMin,jMax
+            DO i=iMin,iMax
 
 C     density of sea water at pressure p
                rholoc(i,j) = rhoP0(i,j)
      &              /(1. _d 0 - 
-     &              pressure(i,j,kRef,bi,bj)*SItoBar/bulkMod(i,j))
+     &              locPres(i,j)*SItoBar/bulkMod(i,j))
      &              - rhoConst
 
-            end do
-         end do
+            ENDDO
+         ENDDO
 
-      elseif ( equationOfState.eq.'MDJWF' ) then
+      ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
 
-         CALL FIND_RHONUM( bi, bj, iMin, iMax, jMin, jMax, k, kRef,
-     &      tFld, sFld, rhoNum, myThid )
+         CALL PRESSURE_FOR_EOS(
+     I        bi, bj, iMin, iMax, jMin, jMax,  kRef,
+     O        locPres,
+     I        myThid )
 
-         CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k, kRef,
-     &      tFld, sFld, rhoDen, myThid )
+         CALL FIND_RHONUM( bi, bj, iMin, iMax, jMin, jMax, k,
+     &      locPres, tFld, sFld, rhoNum, myThid )
+
+         CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k,
+     &      locPres, tFld, sFld, rhoDen, myThid )
 #ifdef ALLOW_AUTODIFF_TAMC 
-cph can't do storing here since find_rho is called multiple times;
+cph can't DO storing here since find_rho is called multiple times;
 cph additional recomp. should be acceptable
 cphCADJ STORE rhoNum(:,:) = comlev1_bibj_k ,  key=kkey , byte=isbyte
 cphCADJ STORE rhoDen(:,:) = comlev1_bibj_k ,  key=kkey , byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-         do j=jMin,jMax
-            do i=iMin,iMax
-
+         DO j=jMin,jMax
+            DO i=iMin,iMax
                rholoc(i,j) = rhoNum(i,j)*rhoDen(i,j) - rhoConst
+            ENDDO
+         ENDDO
 
-            end do
-         end do
-
-      elseif( equationOfState .eq. 'IDEALG' ) then
+      ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
 C     
-      else
-       write(msgbuf,'(3a)')
+      ELSE
+       WRITE(msgbuf,'(3a)')
      &        ' FIND_RHO: equationOfState = "',equationOfState,'"'
-       call print_error( msgbuf, mythid )
-       stop 'ABNORMAL END: S/R FIND_RHO'
-      endif
+       CALL print_error( msgbuf, mythid )
+       STOP 'ABNORMAL END: S/R FIND_RHO'
+      ENDIF
 
-      return
-      end
+      RETURN 
+      END
 
 CBOP
 C     !ROUTINE: FIND_RHOP0
 C     !INTERFACE:
-      subroutine FIND_RHOP0(
+      SUBROUTINE FIND_RHOP0(
      I      bi, bj, iMin, iMax, jMin, jMax, k,
      I      tFld, sFld,
      O      rhoP0,
@@ -214,7 +225,7 @@ C     *==========================================================*
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -223,22 +234,23 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-      integer bi,bj,iMin,iMax,jMin,jMax
-      integer k		! Level of surface slice
+C     k    :: Level of Theta/Salt slice
+      INTEGER bi,bj,iMin,iMax,jMin,jMax
+      INTEGER k	
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL rhoP0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rfresh, rsalt
-      integer myThid
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      integer i,j
+      INTEGER i,j
       _RL t, t2, t3, t4, s, s3o2
 CEOP
 
-      do j=jMin,jMax
-         do i=iMin,iMax
+      DO j=jMin,jMax
+         DO i=iMin,iMax
 C     abbreviations
             t  = tFld(i,j,k,bi,bj) 
             t2 = t*t
@@ -246,7 +258,7 @@ C     abbreviations
             t4 = t3*t
 
             s  = sFld(i,j,k,bi,bj)
-            s3o2 = s*sqrt(s)
+            s3o2 = s*SQRT(s)
             
 C     density of freshwater at the surface
             rfresh = 
@@ -274,17 +286,17 @@ C     density of sea water at the surface
 
             rhoP0(i,j) = rfresh + rsalt
 
-         end do
-      end do
+         ENDDO
+      ENDDO
 
-      return
-      end
+      RETURN 
+      END
 
 C     !ROUTINE: FIND_BULKMOD
 C     !INTERFACE:
-      subroutine FIND_BULKMOD(
-     I      bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
-     I      tFld, sFld,
+      SUBROUTINE FIND_BULKMOD(
+     I      bi, bj, iMin, iMax, jMin, jMax,  k,
+     I      locPres, tFld, sFld,
      O      bulkMod,
      I      myThid )
 
@@ -294,14 +306,13 @@ C     | o SUBROUTINE FIND_BULKMOD
 C     |   Calculates the secant bulk modulus K(S,T,p) of a slice
 C     *==========================================================*
 C     |                                                           
-C     | k    - is the surface level                               
-C     | kRef - is the level to use to determine the pressure
+C     | k    - is the level of Theta/Salt slice
 C     |                                                           
 C     *==========================================================*
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -310,23 +321,25 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-      integer bi,bj,iMin,iMax,jMin,jMax
-      integer k			! Level of surface slice
-      integer kRef		! Reference pressure level
+C     k    :: Level of Theta/Salt slice
+      INTEGER bi,bj,iMin,iMax,jMin,jMax
+      INTEGER k	
+      INTEGER kRef
+      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL bMfresh, bMsalt, bMpres
-      integer myThid
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      integer i,j
+      INTEGER i,j
       _RL t, t2, t3, t4, s, s3o2, p, p2
 CEOP
 
-      do j=jMin,jMax
-         do i=iMin,iMax
+      DO j=jMin,jMax
+         DO i=iMin,iMax
 C     abbreviations
             t  = tFld(i,j,k,bi,bj) 
             t2 = t*t
@@ -334,9 +347,9 @@ C     abbreviations
             t4 = t3*t
 
             s  = sFld(i,j,k,bi,bj)
-            s3o2 = s*sqrt(s)
+            s3o2 = s*SQRT(s)
 C
-            p = pressure(i,j,kRef,bi,bj)*SItoBar
+            p = locPres(i,j)*SItoBar
             p2 = p*p
 C     secant bulk modulus of fresh water at the surface
             bMfresh = 
@@ -379,18 +392,18 @@ C     secant bulk modulus of sea water at pressure p
 
             bulkMod(i,j) = bMfresh + bMsalt + bMpres
 
-         end do
-      end do
+         ENDDO
+      ENDDO
 
-      return
-      end
+      RETURN 
+      END
 
 CBOP
 C     !ROUTINE: FIND_RHONUM
 C     !INTERFACE:
-      subroutine FIND_RHONUM(
-     I      bi, bj, iMin, iMax, jMin, jMax, k, kRef,
-     I      tFld, sFld,
+      SUBROUTINE FIND_RHONUM(
+     I      bi, bj, iMin, iMax, jMin, jMax, k,
+     I      locPres, tFld, sFld,
      O      rhoNum,
      I      myThid )
 
@@ -402,14 +415,13 @@ C     |   equation of state
 C     |   - the code is more or less a copy of MOM4
 C     *==========================================================*
 C     |                                                           
-C     | k - is the surface level                               
-C     | kRef - is the level to use to determine the pressure
+C     | k    - is the level of Theta/Salt slice
 C     |                                                           
 C     *==========================================================*
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -418,27 +430,28 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-      integer bi,bj,iMin,iMax,jMin,jMax
-      integer k		! Level of surface slice
-      integer kRef		! Reference pressure level
+C     k    :: Level of Theta/Salt slice
+      INTEGER bi,bj,iMin,iMax,jMin,jMax
+      INTEGER k
+      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL rhoNum(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      integer myThid
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      integer i,j
+      INTEGER i,j
       _RL t1, t2, s1, p1
 CEOP
-      do j=jMin,jMax
-         do i=iMin,iMax
+      DO j=jMin,jMax
+         DO i=iMin,iMax
 C     abbreviations
             t1  = tFld(i,j,k,bi,bj) 
             t2 = t1*t1
             s1  = sFld(i,j,k,bi,bj)
             
-            p1   = pressure(i,j,kRef,bi,bj)*SItodBar
+            p1   = locPres(i,j)*SItodBar
             
             rhoNum(i,j) = eosMDJWFnum(0)
      &           + t1*(eosMDJWFnum(1) 
@@ -449,18 +462,18 @@ C     abbreviations
      &           +     eosMDJWFnum(9)*s1 
      &           +     p1*(eosMDJWFnum(10) + eosMDJWFnum(11)*t2) )
 
-         end do
-      end do
+         ENDDO
+      ENDDO
 
-      return
+      RETURN 
       end 
 
 CBOP
 C     !ROUTINE: FIND_RHODEN
 C     !INTERFACE:
-      subroutine FIND_RHODEN(
-     I      bi, bj, iMin, iMax, jMin, jMax, k, kRef,
-     I      tFld, sFld,
+      SUBROUTINE FIND_RHODEN(
+     I      bi, bj, iMin, iMax, jMin, jMax, k,
+     I      locPres, tFld, sFld,
      O      rhoDen,
      I      myThid )
 
@@ -472,14 +485,13 @@ C     |   equation of state
 C     |   - the code is more or less a copy of MOM4
 C     *==========================================================*
 C     |                                                           
-C     | k - is the surface level                               
-C     | kRef - is the level to use to determine the pressure
+C     | k    - is the level of Theta/Salt slice
 C     |                                                           
 C     *==========================================================*
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -488,30 +500,31 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-      integer bi,bj,iMin,iMax,jMin,jMax
-      integer k		! Level of surface slice
-      integer kRef		! Reference pressure level
+C     k    :: Level of Theta/Salt slice
+      INTEGER bi,bj,iMin,iMax,jMin,jMax
+      INTEGER k	
+      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL rhoDen(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      integer myThid
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      integer i,j
+      INTEGER i,j
       _RL t1, t2, s1, sp5, p1, p1t1
       _RL den, epsln
       parameter ( epsln = 0. _d 0 )
 CEOP
-      do j=jMin,jMax
-         do i=iMin,iMax
+      DO j=jMin,jMax
+         DO i=iMin,iMax
 C     abbreviations
             t1  = tFld(i,j,k,bi,bj) 
             t2 = t1*t1
             s1  = sFld(i,j,k,bi,bj)
-            sp5 = sqrt(s1) 
+            sp5 = SQRT(s1) 
             
-            p1   = pressure(i,j,kRef,bi,bj)*SItodBar
+            p1   = locPres(i,j)*SItodBar
             p1t1 = p1*t1
             
             den = eosMDJWFden(0)
@@ -527,13 +540,13 @@ C     abbreviations
             
             rhoDen(i,j) = 1.0/(epsln+den) 
 
-         end do
-      end do
+         ENDDO
+      ENDDO
 
-      return
+      RETURN 
       end 
 
-      subroutine find_rho_scalar( 
+      SUBROUTINE find_rho_scalar( 
      I     tLoc, sLoc, pLoc,
      O     rhoLoc,
      I     myThid )
@@ -546,7 +559,7 @@ C     *==========================================================*
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -557,7 +570,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       _RL sLoc, tLoc, pLoc
       _RL rhoLoc
-      integer myThid
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
@@ -589,32 +602,32 @@ CEOP
       t4 = t3*t1
       
       s1  = sLoc
-      if ( s1 .lt. 0. _d 0 ) then
+      IF ( s1 .LT. 0. _d 0 ) THEN
 C     issue a warning
-         write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
+         WRITE(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
      &        ' FIND_RHO_SCALAR:   WARNING, salinity = ', s1
          s1 = 0. _d 0
-      end if
+      ENDIF
 
-      if (equationOfState.eq.'LINEAR') then
+      IF (equationOfState.EQ.'LINEAR') THEN
 
          rhoLoc = 0. _d  0
 
-      elseif (equationOfState.eq.'POLY3') then
+      ELSEIF (equationOfState.EQ.'POLY3') THEN
 
 C     this is not correct, there is a field eosSig0 which should be use here
-C     but I do not intent to include the reference level in this routine
-         write(*,'(a)') 
+C     but I DO not intent to include the reference level in this routine
+         WRITE(*,'(a)') 
      &        ' FIND_RHO_SCALAR: for POLY3, the density is not'
-         write(*,'(a)') 
+         WRITE(*,'(a)') 
      &         '                 computed correctly in this routine'
          rhoLoc = 0. _d 0
 
-      elseif ( equationOfState(1:5).eq.'JMD95'
-     &      .or. equationOfState.eq.'UNESCO' ) then
+      ELSEIF ( equationOfState(1:5).EQ.'JMD95'
+     &      .OR. equationOfState.EQ.'UNESCO' ) THEN
 C     nonlinear equation of state in pressure coordinates
 
-         s3o2 = s1*sqrt(s1)
+         s3o2 = s1*SQRT(s1)
          
          p1 = pLoc*SItoBar
          p2 = p1*p1
@@ -689,9 +702,9 @@ C     secant bulk modulus of sea water at pressure p
 C     density of sea water at pressure p
          rhoLoc = rhoP0/(1. _d 0 - p1/bulkMod) - rhoConst
 
-      elseif ( equationOfState.eq.'MDJWF' ) then
+      ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
 
-         sp5 = sqrt(s1) 
+         sp5 = SQRT(s1) 
             
          p1   = pLoc*SItodBar
          p1t1 = p1*t1
@@ -721,23 +734,23 @@ C     density of sea water at pressure p
 
          rhoLoc = rhoNum*rhoDen - rhoConst
 
-      elseif( equationOfState .eq. 'IDEALG' ) then
+      ELSEIF( equationOfState .EQ. 'IDEALG' ) THEN
 C     
-      else
-       write(msgbuf,'(3a)')
+      ELSE
+       WRITE(msgbuf,'(3A)')
      &        ' FIND_RHO_SCALAR : equationOfState = "',
      &        equationOfState,'"'
-       call print_error( msgbuf, mythid )
-       stop 'ABNORMAL END: S/R FIND_RHO_SCALAR'
-      endif
+       CALL PRINT_ERROR( msgbuf, mythid )
+       STOP 'ABNORMAL END: S/R FIND_RHO_SCALAR'
+      ENDIF
 
-      return
-      end
+      RETURN 
+      END
 
 CBOP
 C     !ROUTINE: LOOK_FOR_NEG_SALINITY
 C     !INTERFACE:
-      subroutine LOOK_FOR_NEG_SALINITY(
+      SUBROUTINE LOOK_FOR_NEG_SALINITY(
      I     bi, bj, iMin, iMax, jMin, jMax,  k, 
      I     sFld,
      I     myThid )
@@ -746,7 +759,7 @@ C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | o SUBROUTINE LOOK_FOR_NEG_SALINITY
 C     |   looks for and fixes negative salinity values
-C     |   this is necessary if the equation of state uses
+C     |   this is necessary IF the equation of state uses
 C     |   the square root of salinity
 C     *==========================================================*
 C     |                                                           
@@ -756,7 +769,7 @@ C     *==========================================================*
 C     \ev
 
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -765,35 +778,36 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-      integer bi,bj,iMin,iMax,jMin,jMax
-      integer k			! Level of Salt slice
+C     k    :: Level of Theta/Salt slice
+      INTEGER bi,bj,iMin,iMax,jMin,jMax
+      INTEGER k
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      integer myThid
+      INTEGER myThid
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      integer i,j, localWarning
+      INTEGER i,j, localWarning
       character*(max_len_mbuf) msgbuf
 CEOP
 
       localWarning = 0
-      do j=jMin,jMax
-       do i=iMin,iMax
+      DO j=jMin,jMax
+       DO i=iMin,iMax
 C     abbreviations
-        if ( sFld(i,j,k,bi,bj) .lt. 0. _d 0 ) then
+        IF ( sFld(i,j,k,bi,bj) .LT. 0. _d 0 ) THEN
          localWarning = localWarning + 1
          sFld(i,j,k,bi,bj) = 0. _d 0
-        end if
-       end do
-      end do
+        ENDIF
+       ENDDO
+      ENDDO
 C     issue a warning
-      if ( localWarning .gt. 0 ) then
-       write(*,'(a,a)') 
+      IF ( localWarning .GT. 0 ) THEN
+       WRITE(standardMessageUnit,'(A,A)') 
      &      'S/R LOOK_FOR_NEG_SALINITY: found negative salinity',
      &      'values and reset them to zero.'
-       write(*,'(a,I3)') 
+       WRITE(standardMessageUnit,'(A,I3)') 
      &      'S/R LOOK_FOR_NEG_SALINITY: current level is k = ', k
-      end if
+      ENDIF
 
-      return
-      end
+      RETURN 
+      END

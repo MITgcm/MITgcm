@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.11 2002/11/01 22:00:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.12 2003/02/18 15:25:09 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -28,7 +28,7 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
-c Common
+C     === Global variables ===
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -37,49 +37,50 @@ c Common
 #include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-c Arguments
-      integer bi,bj,iMin,iMax,jMin,jMax
-      integer k			! Level of Theta/Salt slice
-      integer kRef		! Pressure reference level
+C     == Routine arguments ==
+C     k    :: Level of Theta/Salt slice
+C     kRef :: Pressure reference level
+      INTEGER bi,bj,iMin,iMax,jMin,jMax
+      INTEGER k
+      INTEGER kRef
       _RL alphaloc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
 C     !LOCAL VARIABLES:
-c Local
-      integer i,j
+C     == Local variables == 
+      INTEGER i,j
       _RL refTemp,refSalt,tP,sP
       _RL t1, t2, t3, s1, s3o2, p1, p2, sp5, p1t1
       _RL drhoP0dtheta, drhoP0dthetaFresh, drhoP0dthetaSalt
       _RL dKdtheta, dKdthetaFresh, dKdthetaSalt, dKdthetaPres
-      _RL rhoP0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoP0  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dnum_dtheta, dden_dtheta
-      _RL rhoDen(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhoLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      integer myThid
+      _RL rhoDen (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoLoc (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      INTEGER myThid
 CEOP
-
-Cml      stop 'myThid is not properly defined in this subroutine'
 
 #ifdef CHECK_SALINITY_FOR_NEGATIVE_VALUES
       CALL LOOK_FOR_NEG_SALINITY( bi, bj, iMin, iMax, jMin, jMax,  k,
      &     sFld, myThid )
 #endif
 
-      if (equationOfState.eq.'LINEAR') then
+      IF (equationOfState.EQ.'LINEAR') THEN
 
-         do j=jMin,jMax
-            do i=iMin,iMax
+         DO j=jMin,jMax
+            DO i=iMin,iMax
                alphaloc(i,j) = -rhonil * tAlpha
-            enddo
-         enddo
+            ENDDO
+         ENDDO
          
-      elseif (equationOfState.eq.'POLY3') then
+      ELSEIF (equationOfState.EQ.'POLY3') THEN
 
          refTemp=eosRefT(kRef)
          refSalt=eosRefS(kRef)
 
-         do j=jMin,jMax
-            do i=iMin,iMax
+         DO j=jMin,jMax
+            DO i=iMin,iMax
                tP=theta(i,j,k,bi,bj)-refTemp
                sP=salt(i,j,k,bi,bj)-refSalt
 #ifdef USE_FACTORIZED_POLY
@@ -99,12 +100,17 @@ Cml      stop 'myThid is not properly defined in this subroutine'
      &              eosC(7,kRef)*tP*2.   *sP    +
      &              eosC(8,kRef)         *sP*sP
 #endif
-            enddo
-         enddo
+            ENDDO
+         ENDDO
          
-      elseif ( equationOfState(1:5).eq.'JMD95'
-     &        .or. equationOfState.eq.'UNESCO' ) then
+      ELSEIF ( equationOfState(1:5).EQ.'JMD95'
+     &        .OR. equationOfState.EQ.'UNESCO' ) THEN
 C     nonlinear equation of state in pressure coordinates
+
+         CALL PRESSURE_FOR_EOS(
+     I        bi, bj, iMin, iMax, jMin, jMax,  kRef,
+     O        locPres,
+     I        myThid ) 
 
          CALL FIND_RHOP0(
      I        bi, bj, iMin, iMax, jMin, jMax, k,
@@ -113,13 +119,13 @@ C     nonlinear equation of state in pressure coordinates
      I        myThid )
          
          CALL FIND_BULKMOD(
-     I        bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
-     I        theta, salt,
+     I        bi, bj, iMin, iMax, jMin, jMax,  k,
+     I        locPres, theta, salt,
      O        bulkMod,
      I        myThid )
 
-         do j=jMin,jMax
-            do i=iMin,iMax
+         DO j=jMin,jMax
+            DO i=iMin,iMax
 
 C     abbreviations
                t1 = theta(i,j,k,bi,bj) 
@@ -127,9 +133,9 @@ C     abbreviations
                t3 = t2*t1
                
                s1  = salt(i,j,k,bi,bj)
-               s3o2 = sqrt(s1*s1*s1)
+               s3o2 = SQRT(s1*s1*s1)
                
-               p1  = pressure(i,j,kRef,bi,bj)*SItoBar
+               p1  = locPres(i,j)*SItoBar
                p2 = p1*p1
 
 C     d(rho)/d(theta)
@@ -196,23 +202,28 @@ C     of sea water at p
      &              /( bulkmod(i,j) - p1 )**2
                
               
-            end do
-         end do
-      elseif ( equationOfState.eq.'MDJWF' ) then
+            ENDDO
+         ENDDO
+      ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
 
-         CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
-     &        theta, salt, rhoLoc, myThid )
-         CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k, kRef,
-     &      theta, salt, rhoDen, myThid )
+         CALL PRESSURE_FOR_EOS(
+     I        bi, bj, iMin, iMax, jMin, jMax,  kRef,
+     O        locPres,
+     I        myThid ) 
 
-         do j=jMin,jMax
-            do i=iMin,iMax
+         CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax,  k,
+     &        locPres, theta, salt, rhoLoc, myThid )
+         CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k,
+     &        locPres, theta, salt, rhoDen, myThid )
+
+         DO j=jMin,jMax
+            DO i=iMin,iMax
                t1  = theta(i,j,k,bi,bj)
                t2  = t1*t1
                s1  = salt(i,j,k,bi,bj)
-               sp5 = sqrt(s1) 
+               sp5 = SQRT(s1) 
 
-               p1   = pressure(i,j,kRef,bi,bj)*SItodBar
+               p1   = locPres(i,j)*SItodBar
                p1t1 = p1*t1
             
                dnum_dtheta = eosMDJWFnum(1)
@@ -232,18 +243,18 @@ C     of sea water at p
                alphaLoc(i,j)    = rhoDen(i,j)*(dnum_dtheta 
      &              - rhoLoc(i,j)*dden_dtheta)
             
-         end do
-      end do
+         ENDDO
+      ENDDO
 
-      else
-         write(*,*) 'FIND_ALPHA: equationOfState = ',equationOfState
-         stop 'FIND_ALPHA: "equationOfState" has illegal value'
-      endif
+      ELSE
+         WRITE(*,*) 'FIND_ALPHA: equationOfState = ',equationOfState
+         STOP 'FIND_ALPHA: "equationOfState" has illegal value'
+      ENDIF
 
-      return
-      end
+      RETURN 
+      END
 
-      subroutine FIND_BETA (
+      SUBROUTINE FIND_BETA (
      I     bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
      O     betaloc )
 C     /==========================================================\
@@ -258,9 +269,9 @@ C     |                                                          |
 C     | betaloc - drho / dS (kg/m^3/PSU)                         |
 C     |                                                          |
 C     \==========================================================/
-      implicit none
+      IMPLICIT NONE
 
-c Common
+C     === Global variables ===
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -268,48 +279,49 @@ c Common
 #include "EOS.h"
 #include "GRID.h"
 
-c Arguments
-      integer bi,bj,iMin,iMax,jMin,jMax
-      integer k			! Level of Theta/Salt slice
-      integer kRef		! Pressure reference level
+C     == Routine arguments ==
+C     k    :: Level of Theta/Salt slice
+C     kRef :: Pressure reference level
+      INTEGER bi,bj,iMin,iMax,jMin,jMax
+      INTEGER k
+      INTEGER kRef
       _RL betaloc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
-c Local
-      integer i,j
+C     == Local variables ==
+      INTEGER i,j
       _RL refTemp,refSalt,tP,sP
       _RL t1, t2, t3, s1, s3o2, p1, sp5, p1t1
       _RL drhoP0dS
       _RL dKdS, dKdSSalt, dKdSPres
-      _RL rhoP0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL locPres(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoP0  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dnum_dsalt, dden_dsalt
-      _RL rhoDen(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rhoLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      integer myThid
+      _RL rhoDen (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoLoc (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      INTEGER myThid
 CEOP
-
-Cml      stop 'myThid is not properly defined in this subroutine'
 
 #ifdef CHECK_SALINITY_FOR_NEGATIVE_VALUES
       CALL LOOK_FOR_NEG_SALINITY( bi, bj, iMin, iMax, jMin, jMax,  k,
      &     sFld, myThid )
 #endif
 
-      if (equationOfState.eq.'LINEAR') then
+      IF (equationOfState.EQ.'LINEAR') THEN
 
-         do j=jMin,jMax
-            do i=iMin,iMax
+         DO j=jMin,jMax
+            DO i=iMin,iMax
                betaloc(i,j) = rhonil * sBeta
-            enddo
-         enddo
+            ENDDO
+         ENDDO
          
-      elseif (equationOfState.eq.'POLY3') then
+      ELSEIF (equationOfState.EQ.'POLY3') THEN
 
          refTemp=eosRefT(kRef)
          refSalt=eosRefS(kRef)
 
-         do j=jMin,jMax
-            do i=iMin,iMax
+         DO j=jMin,jMax
+            DO i=iMin,iMax
                tP=theta(i,j,k,bi,bj)-refTemp
                sP=salt(i,j,k,bi,bj)-refSalt
 #ifdef USE_FACTORIZED_POLY
@@ -327,12 +339,17 @@ Cml      stop 'myThid is not properly defined in this subroutine'
      &              eosC(8,kRef)*tP      *sP*2. +
      &              eosC(9,kRef)         *sP*sP*3.
 #endif
-            enddo
-         enddo
+            ENDDO
+         ENDDO
 
-      elseif ( equationOfState(1:5).eq.'JMD95'
-     &        .or. equationOfState.eq.'UNESCO' ) then
+      ELSEIF ( equationOfState(1:5).EQ.'JMD95'
+     &        .OR. equationOfState.EQ.'UNESCO' ) THEN
 C     nonlinear equation of state in pressure coordinates
+
+         CALL PRESSURE_FOR_EOS(
+     I        bi, bj, iMin, iMax, jMin, jMax,  kRef,
+     O        locPres,
+     I        myThid ) 
 
          CALL FIND_RHOP0(
      I        bi, bj, iMin, iMax, jMin, jMax, k,
@@ -341,13 +358,13 @@ C     nonlinear equation of state in pressure coordinates
      I        myThid )
          
          CALL FIND_BULKMOD(
-     I        bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
-     I        theta, salt,
+     I        bi, bj, iMin, iMax, jMin, jMax,  k,
+     I        locPres, theta, salt,
      O        bulkMod,
      I        myThid )
 
-         do j=jMin,jMax
-            do i=iMin,iMax
+         DO j=jMin,jMax
+            DO i=iMin,iMax
 
 C     abbreviations
                t1 = theta(i,j,k,bi,bj) 
@@ -355,9 +372,9 @@ C     abbreviations
                t3 = t2*t1
                
                s1  = salt(i,j,k,bi,bj)
-               s3o2 = 1.5*sqrt(s1)
+               s3o2 = 1.5*SQRT(s1)
 
-               p1  = pressure(i,j,kRef,bi,bj)*SItoBar
+               p1  = locPres(i,j)*SItoBar
 
 C     d(rho)/d(S)
 C     of fresh water at p = 0
@@ -410,23 +427,28 @@ C     of sea water at p
      &              /( bulkmod(i,j) - p1 )**2
                
               
-            end do
-         end do
-      elseif ( equationOfState.eq.'MDJWF' ) then
+            ENDDO
+         ENDDO
+      ELSEIF ( equationOfState.EQ.'MDJWF' ) THEN
 
-         CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
-     &        theta, salt, rhoLoc, myThid )
-         CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k, kRef,
-     &      theta, salt, rhoDen, myThid )
+         CALL PRESSURE_FOR_EOS(
+     I        bi, bj, iMin, iMax, jMin, jMax,  kRef,
+     O        locPres,
+     I        myThid ) 
+
+         CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax,  k,
+     &        locPres, theta, salt, rhoLoc, myThid )
+         CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k,
+     &        locPres, theta, salt, rhoDen, myThid )
          
-         do j=jMin,jMax
-            do i=iMin,iMax
+         DO j=jMin,jMax
+            DO i=iMin,iMax
                t1  = theta(i,j,k,bi,bj)
                t2  = t1*t1
                s1  = salt(i,j,k,bi,bj)
-               sp5 = sqrt(s1) 
+               sp5 = SQRT(s1) 
          
-               p1   = pressure(i,j,k,bi,bj)*SItodBar
+               p1   = locPres(i,j)*SItodBar
                p1t1 = p1*t1
                
                dnum_dsalt = eosMDJWFnum(4) 
@@ -439,13 +461,13 @@ C     of sea water at p
                betaLoc(i,j) = rhoDen(i,j)*( dnum_dsalt 
      &              - rhoLoc(i,j)*dden_dsalt )
 
-            end do
-         end do
+            ENDDO
+         ENDDO
 
-      else
-         write(*,*) 'FIND_BETA: equationOfState = ',equationOfState
-         stop 'FIND_BETA: "equationOfState" has illegal value'
-      endif
+      ELSE
+         WRITE(*,*) 'FIND_BETA: equationOfState = ',equationOfState
+         STOP 'FIND_BETA: "equationOfState" has illegal value'
+      ENDIF
 
-      return
-      end
+      RETURN 
+      END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.20 2003/02/18 05:33:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.21 2003/02/18 15:25:09 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -134,14 +134,9 @@ C         transfer analyse a particular snap-shots
         CALL WRITE_FLD_XYZ_RL( 'S.',suff,salt,myIter,myThid)
         CALL WRITE_FLD_XY_RL('Eta.',suff,etaN,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL( 'W.',suff,wVel,myIter,myThid)
-        if ( buoyancyRelation .eq. 'OCEANIC' .and.
-     &       (    equationOfState .eq. 'JMD95P' 
-     &       .or. equationOfState .eq. 'MDJWF' 
-     &       .or. equationOfState .eq. 'UNESCO' ) ) then
-           CALL WRITE_FLD_XYZ_RL( 'P.',suff,pressure,myIter,myThid)
-        end if
-        if ( buoyancyRelation .ne. 'ATMOSPHERIC' )
-     &     CALL WRITE_FLD_XY_RL('PHL.',suff,phiHydLow,myIter,myThid)
+        CALL WRITE_FLD_XYZ_RL( 'PH.',suff,totPhiHyd,myIter,myThid)
+        IF ( buoyancyRelation .NE. 'ATMOSPHERIC' )
+     &   CALL WRITE_FLD_XY_RL('PHL.',suff,phiHydLow,myIter,myThid)
 #ifdef ALLOW_PASSIVE_TRACER
         CALL WRITE_FLD_XYZ_RL( 'TR1.',suff,tr1,myIter,myThid)
 #endif
