@@ -1,67 +1,67 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.5 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.6 2004/08/06 21:12:14 edhill Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
-      subroutine fizhi_readparms (myThid)
-C***********************************************************************
-C  Purpose
-C  -------
-C    Read Fizhi Namelist and Get the Model Date and Time from File
-C
-C  Arguments  Description
-C  ----------------------
-C     myThid ... Process(or) number
-C***********************************************************************
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C     !ROUTINE: FIZHI_MNC_INIT
+
+C     !INTERFACE:
+      SUBROUTINE FIZHI_READPARMS( myThid )
+
+C     !DESCRIPTION:
+C     Read Fizhi Namelist and Get the Model Date and Time from File
+
+C     !USES:
       implicit none
 
 #include "chronos.h"
+#include "fizhi_io_comms.h"
 #include "EEPARAMS.h"
 
+C     !INPUT PARAMETERS:
       integer myThid
+CEOP
 
-c Declare Local Variables
-c -----------------------
+C     !LOCAL VARIABLES:
       character*(MAX_LEN_MBUF) msgBuf
       integer ku
       integer nymdbegin, nhmsbegin
       integer nymdcurrent, nhmscurrent
 
-      namelist / fizhi_list / nymdbegin, nhmsbegin
+      namelist / fizhi_list / 
+     &     nymdbegin, nhmsbegin,
+     &     fizhi_mnc_write_pickup, fizhi_mnc_read_pickup
 
-C **********************************************************************
-C ****           Initialize and Read Fizhi Namelist                 ****
-C **********************************************************************
+C     Set defaults
+      fizhi_mdsio_read_pickup = .FALSE.
+      fizhi_mdsio_write_pickup = .FALSE.
+      fizhi_mnc_write_pickup = .TRUE.
+      fizhi_mnc_read_pickup = .TRUE.
 
+C     Read Fizhi Namelist
       WRITE(msgBuf,'(A)') ' FIZHI_READPARMS: opening data.fizhi'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_RIGHT,1)
 
       CALL OPEN_COPY_DATA_FILE('data.fizhi', 'FIZHI_READPARMS',
-     .                          ku,myThid )
+     &     ku,myThid )
       read  (ku,NML=fizhi_list)
       close (ku)
 
-C **********************************************************************
-C ****      Read Supplemental Ascii File with Current Time Info     ****
-C **********************************************************************
-
+C     Read Supplemental Ascii File with Current Time Info
       open(10,file='datetime',form='formatted')
       read(10,1000)nymdcurrent,nhmscurrent
       close (10)
  1000 format(i8,2x,i6)
 
-C **********************************************************************
-C **** Fill chronos Common Block with Namelist and Other File Info  ****
-C **********************************************************************
-
+C     Fill chronos Common Block with Namelist and Other File Info
       nymd0 = nymdbegin
       nhms0 = nhmsbegin
       nymd = nymdcurrent
       nhms = nhmscurrent
 
-C **********************************************************************
-C ****               Echo Date and Time Info                        ****
-C **********************************************************************
-
+C     Echo Date and Time Info
       _BEGIN_MASTER(myThid)
       print *, '  Begin Date ',nymd0,'   Begin Time ',nhms0
       print *, 'Current Date ',nymd,' Current Time ',nhms
@@ -69,3 +69,5 @@ C **********************************************************************
 
       return
       end
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

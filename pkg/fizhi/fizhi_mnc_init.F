@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_mnc_init.F,v 1.3 2004/07/22 15:56:01 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_mnc_init.F,v 1.4 2004/08/06 21:12:14 edhill Exp $
 C $Name:  $
       
 #include "FIZHI_OPTIONS.h"
@@ -228,6 +228,52 @@ C     name           1234567890
       CALL MNC_CW_ADD_VNAME('surftype', 'fizhi_veg', 4,5, myThid)
       CALL MNC_CW_ADD_VNAME('tilefrac', 'fizhi_veg', 4,5, myThid)
       
+C     Used for the pickups
+      CALL MNC_CW_ADD_VNAME('uphy', 'U_xy_Hn__Zph__-'  ,4,5,myThid)
+      CALL MNC_CW_ADD_VNAME('vphy', 'V_xy_Hn__Zph__-'  ,4,5,myThid)
+      CALL MNC_CW_ADD_VNAME('thphy','Cen_xy_Hn__Zph__-',4,5,myThid)
+      CALL MNC_CW_ADD_VNAME('sphy', 'Cen_xy_Hn__Zph__-',4,5,myThid)
+
+C     For the veg IO
+C     name           1234567890
+      ndim = 1
+      dn(1)(1:10) = 'chips     '
+      dim(1)      = nchp
+      ib(1)       = 1
+      ie(1)       = nchp
+      CALL MNC_CW_ADD_GNAME('fizhi_chip', ndim, dim, dn,ib,ie, myThid)
+      CALL MNC_CW_ADD_VNAME('ctmt', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('xxmt', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('yymt', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('zetamt', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('tcanopy', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('tdeep', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('ecanopy', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('swetshal', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('swetroot', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('swetdeep', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('snodep', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('capac', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('chlt', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('chlon', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('igrd', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('ityp', 'fizhi_chip', 2,3, myThid)
+      CALL MNC_CW_ADD_VNAME('chfr', 'fizhi_chip', 2,3, myThid)
+
+C     name           1234567890
+      ndim = 2
+      dn(1)(1:10) = 'chips     '
+      dim(1)      = nchp
+      ib(1)       = 1
+      ie(1)       = nchp
+      dn(2)(1:10) = 'Zph       '
+      dim(2)      = NrPhys
+      ib(2)       = 1
+      ie(2)       = NrPhys
+      CALL MNC_CW_ADD_GNAME('fizhi_chiplev',ndim,dim,dn,ib,ie,myThid)
+      CALL MNC_CW_ADD_VNAME('xlmt', 'fizhi_chiplev', 3,4, myThid)
+      CALL MNC_CW_ADD_VNAME('khmt', 'fizhi_chiplev', 3,4, myThid)
+      CALL MNC_CW_ADD_VNAME('tke', 'fizhi_chiplev', 3,4, myThid)
 
 #endif  /*  ALLOW_MNC  */
       

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.6 2004/07/28 01:25:07 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.7 2004/08/06 21:12:14 edhill Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -195,7 +195,8 @@ c                                              READ CLIM FOR REAL
                                                                                    
 C--   Read fizhi package state variables from pickup file
        call fizhi_read_pickup( nIter0, myThid )
-                                                                                   
+       CALL FIZHI_READ_VEGTILES( nIter0, 'D', myThid )
+
       ENDIF
 
        return
