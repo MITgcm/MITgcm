@@ -25,6 +25,7 @@ FOPTIM='-O3 -align'
 
 FC=ifort
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=1'
-
+LINK='ifort -static'
+LIBS='-lnetcdf'
 
 
