@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.231 2003/12/18 06:20:53 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.232 2003/12/31 20:29:54 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o change the albedo in pkg/thsice (as GISS model); update output_thsice.txt
+o little changes (fftpack, aim/phy_suflux ...) to pass the "checkbounds" test.
 o fix deltaTfreesurf in update_cg2d.F (left from c45d_post): affects 2
   ocean exp. that use NLFS: global_ocean.cs32x15 & global_ocean_pressure
 o added exf_offset_atemp for Celsius to Kelvin conversion of atemp
