@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.15 2004/12/05 22:22:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.16 2004/12/13 21:29:14 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -172,8 +172,6 @@ C     Check that enough parameters were specified
       IF (useMNC) THEN
 C       Set the default I/O Types
         IF (PTRACERS_read_mnc) PTRACERS_read_mdsio = .FALSE.
-        IF ( (.NOT. outputTypesInclusive) 
-     &       .AND. PTRACERS_write_mnc ) pickup_write_mdsio = .FALSE.
         IF ( (.NOT. outputTypesInclusive) 
      &       .AND. PTRACERS_write_mnc ) PTRACERS_write_mdsio = .FALSE.
         
