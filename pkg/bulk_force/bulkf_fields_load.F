@@ -202,11 +202,8 @@ C Now calculate whether it is time to update the forcing arrays
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
-c      WRITE(*,*)
-c    &  'S/R EXTERNAL_FIELDS_LOAD: Reading new data',
-c    &                 myTime,myIter
        WRITE(*,*)
-     &  'S/R EXTERNAL_FIELDS_LOAD'
+     &  'S/R BULKF_FIELDS_LOAD'
       IF ( AirTempFile .NE. ' '  ) THEN
        CALL READ_REC_XY_RS( AirTempFile,tair0,intime0,
      &       myIter,myThid )
