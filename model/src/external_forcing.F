@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.5 1999/05/18 18:01:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.6 1999/06/29 18:39:45 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -214,7 +214,9 @@ C     Add fresh-water in top-layer
          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
      &   +maskC(i,j)*(
      &   -lambdaSaltClimRelax*(salt(i,j,kLev,bi,bj)-SSS(i,j,bi,bj))
-#ifndef USE_NATURAL_BCS
+#ifdef USE_NATURAL_BCS
+     &   +EmPmR(i,j,bi,bj)*recip_dRf(1)*salt(i,j,kLev,bi,bj)
+#else
      &   +EmPmR(i,j,bi,bj)*recip_dRf(1)*35.
 #endif
      &   )
