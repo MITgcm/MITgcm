@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.16 2004/03/05 22:41:08 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.17 2004/04/29 16:02:21 adcroft Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -54,6 +54,7 @@ C-    Initialize fields for the first call ever
         CALL TIMEAVE_RESET(WTtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(UStave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(VStave,    Nr, bi, bj, myThid)
+        CALL TIMEAVE_RESET(WStave,    Nr, bi, bj, myThid)
 #ifndef HRCUBE
         CALL TIMEAVE_RESET(Eta2tave,  1,  bi, bj, myThid)
         CALL TIMEAVE_RESET(TTtave,    Nr, bi, bj, myThid)
@@ -120,6 +121,8 @@ C-    Time Averages of "double" fields (no hFactor)
 c     CALL TIMEAVE_CUMUL_KE(KEtave, uVel,  vVel, Nr,
 c    &     DDTT, bi, bj, myThid)
       CALL TIMEAVE_CUMUL_2V(WTtave, theta, wVel, Nr, 3,
+     &     DDTT, bi, bj, myThid)
+      CALL TIMEAVE_CUMUL_2V(WStave, salt,  wVel, Nr, 3,
      &     DDTT, bi, bj, myThid)
 
 #ifdef NONLIN_FRSURF
