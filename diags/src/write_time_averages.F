@@ -15,6 +15,8 @@ C     == Global variables ===
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
+      INTEGER  IO_ERRCOUNT
+      EXTERNAL IO_ERRCOUNT
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -31,6 +33,9 @@ C     TimeAve - total time over average
       CHARACTER*(MAX_LEN_FNAM) suff
       REAL DDTT
       INTEGER bi,bj,k
+      INTEGER beginIOErrCount
+      INTEGER endIOErrCount
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
  
 C     Final Time Averages and Dump Files if needed
       IF ( myIter.NE.nIter0 .AND. 
@@ -59,6 +64,12 @@ C      Normalize by integrated time
 C      Write to files
        _BARRIER
        _BEGIN_MASTER( myThid )
+
+C--     Set IO "context" for writing state
+        CALL DFILE_SET_RW
+        CALL DFILE_SET_CONT_ON_ERROR
+C--     Read IO error counter
+        beginIOErrCount = IO_ERRCOUNT(myThid)
         prevPrec = writeBinaryPrec
         writeBinaryPrec = precFloat32
         CALL WRITE_FLD_XYZ_RL('Ttave.',suff,thetatave,myIter,myThid)
@@ -71,6 +82,24 @@ C      Write to files
         CALL WRITE_FLD_XYZ_RL('K23tave.',suff,k23tave,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('WTtave.',suff,wVeltave,myIter,myThid)
         writeBinaryPrec = prevPrec
+C--     Reread IO error counter
+        endIOErrCount = IO_ERRCOUNT(myThid)
+
+C--     Check for IO errors
+        IF ( endIOErrCount .NE. beginIOErrCount ) THEN
+         WRITE(msgBuf,'(A)')  'S/R WRITE_TIME_AVERAGES'
+         CALL PRINT_ERROR( msgBuf, 1 )
+         WRITE(msgBuf,'(A)')  'Error writing out data'
+         CALL PRINT_ERROR( msgBuf, 1 )
+         WRITE(msgBuf,'(A,I10)') 'Timestep ',myIter
+         CALL PRINT_ERROR( msgBuf, 1 )
+        ELSE
+         WRITE(msgBuf,'(A,I10)')  '// Time-average data written, t-step', myIter
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+         WRITE(msgBuf,'(A)')  ' '
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+        ENDIF
+
        _END_MASTER( myThid )
        _BARRIER
 

@@ -74,7 +74,7 @@ C     Keep record of how much time has been integrated over
 C     Time Averages of "intermediate" fields
       DDTT=deltaTclock
       CALL TIMEAVER_INTER_XYZ(Nz, K13, k13tave, DDTT, bi, bj, K, K, myThid)
-      CALL TIMEAVER_INTER_XYZ(Nz, K23, k23tave, DDTT, bi, bj, K, kUp, myThid)
+      CALL TIMEAVER_INTER_XYZ(Nz, K23, k23tave, DDTT, bi, bj, K, K, myThid)
       CALL TIMEAVER_INTER_XYZ(2, wVel, wVeltave, DDTT, bi, bj, K, kUp, myThid)
       InterTimeAve(k,bi,bj)=InterTimeAve(k,bi,bj)+DDTT
 
