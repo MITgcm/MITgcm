@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.135 2004/11/02 23:57:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.136 2004/11/05 02:47:44 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -111,10 +111,17 @@ C                 salt vertically ( Pa^2/s )
       _RL diffKrS
 
 C     Retired main data file parameters. Kept here to trap use of old data files.
-C     zonal_filt_lat  - Moved to package "zonal_filt"
+C     tracerAdvScheme :: tracer advection scheme (old passive tracer code)
+C     trac_EvPrRn :: tracer conc. in Rain & Evap (old passive tracer code)
+C     saltDiffusion :: diffusion of salinity    on/off (flag not used)
+C     tempDiffusion :: diffusion of temperature on/off (flag not used)
+C     zonal_filt_lat :: Moved to package "zonal_filt"
 C     nRetired :: Counter used to trap gracefully namelists containing "retired" 
 C              :: parameters. These are parameters that are either no-longer used
 C                 or that have moved to a different input file and/or namelist.
+      LOGICAL tempDiffusion, saltDiffusion
+      INTEGER tracerAdvScheme
+      _RL trac_EvPrRn
       _RL zonal_filt_lat
       INTEGER nRetired
 
@@ -220,6 +227,10 @@ C--   Initialise "which vertical coordinate system used" flags.
 
 C--   Initialise retired parameters to unlikely value
       nRetired = 0
+      tempDiffusion   = .TRUE.
+      saltDiffusion   = .TRUE.
+      tracerAdvScheme = UNSET_I
+      trac_EvPrRn     = UNSET_RL
       zonal_filt_lat  = UNSET_RL
       gravitySign     = UNSET_RL
 
@@ -592,6 +603,36 @@ C     Check for retired parameters still being used
        WRITE(msgBuf,'(A,A)')
      &  'S/R INI_PARMS: "gravitySign" is set according to vertical ',
      &  ' coordinate and is no longer allowed in file "data".'
+       CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+      IF ( tracerAdvScheme .NE. UNSET_I ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "tracerAdvScheme" ',
+     &  '(old passive tracer code) is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+      IF ( trac_EvPrRn .NE. UNSET_RL ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "trac_EvPrRn" ',
+     &  '(old passive tracer code) is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+      IF ( .NOT. tempDiffusion ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "tempDiffusion" ',
+     &  'is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: to turn off diffusion',
+     &  ' => set diffusivity to zero'
+       CALL PRINT_ERROR( msgBuf , myThid)
+      ENDIF
+      IF ( .NOT. saltDiffusion ) THEN
+       nRetired = nRetired+1
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: "saltDiffusion" ',
+     &  'is no longer allowed in file "data"'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       WRITE(msgBuf,'(A,A)') 'S/R INI_PARMS: to turn off diffusion',
+     &  ' => set diffusivity to zero'
        CALL PRINT_ERROR( msgBuf , myThid)
       ENDIF
 

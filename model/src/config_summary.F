@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.64 2004/11/02 00:38:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.65 2004/11/05 02:47:44 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -246,9 +246,6 @@ C     zcoord ::
       CALL WRITE_0D_R8( salt_EvPrRn, INDEX_NONE,
      &'salt_EvPrRn =',
      &' /* Salin. of Evap/Prec/R (UNSET=use local S)(ppt)*/')
-      CALL WRITE_0D_R8( trac_EvPrRn, INDEX_NONE,
-     &'trac_EvPrRn =',
-     &' /* Tracer in Evap/Prec/R (UNSET=use local Tr)*/')
       ELSE
       CALL WRITE_0D_R8( convertFW2Salt, INDEX_NONE,
      &'convertFW2Salt =',

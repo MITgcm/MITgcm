@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.75 2004/11/02 23:57:29 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.76 2004/11/05 02:47:44 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -155,7 +155,6 @@ Cml      sBeta               = 7.4D-4
       writePickupWithTracer = .FALSE.
       tempAdvScheme       = 2
       saltAdvScheme       = 2
-      tracerAdvScheme     = 2
       multiDimAdvection   = .TRUE.
       useCDscheme         = .FALSE.
       useEnergyConservingCoriolis = .FALSE.
@@ -181,7 +180,6 @@ C--   Set (free)surface-related parameters
       useRealFreshWaterFlux = .FALSE.
       temp_EvPrRn = UNSET_RL
       salt_EvPrRn = 0.
-      trac_EvPrRn = UNSET_RL
 
 C--   Atmospheric physical parameters (e.g.: EOS)
       celsius2K = 273.16 _d 0
