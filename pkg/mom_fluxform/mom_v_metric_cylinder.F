@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_metric_cylinder.F,v 1.1 2004/06/24 20:25:44 afe Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_metric_cylinder.F,v 1.2 2004/07/07 18:34:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -46,8 +46,9 @@ C  i,j                  :: loop indices
       INTEGER i,j
 CEOP
 
-      DO j=1-Olx,sNy+Oly-1
-       DO i=1-Olx+1,sNx+Olx
+C jmc: using yG make more sense to me but I might be wrong ?
+      DO j=1-Oly+1,sNy+Oly
+       DO i=1-Olx,sNx+Olx-1
           if (yC(i,j,bi,bj).GT. 0) then 
              vMetricTerms(i,j) = 
      &            -1.*0.25*(uFld(i,j) + uFld(i+1,j) +
