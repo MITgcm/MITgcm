@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.22 2004/10/20 21:26:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.23 2004/10/21 13:38:45 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -86,6 +86,7 @@ C     .
 C     mnc_cw_fgnm  (f)  :: file group name (or "base name")
 C     mnc_cw_fgud  (f)  :: file group unlimited dim value
 C     mnc_cw_fgis  (f)  :: file group sequence number
+C     mnc_cw_fgig  (f)  :: file group unlim dim is growing
 C     .
 C     mnc_cw_gname (g)  :: Gtype names              <--------+
 C     mnc_cw_ndim  (g)  :: number of dimensions              |
@@ -117,21 +118,14 @@ CEOP
       parameter ( MNC_MAX_INFO =  400 )
       parameter ( MNC_CW_MAX_I =  150 )
 
-      COMMON /MNC_VARS/
+      COMMON /MNC_VARS_C/
      &     mnc_blank_name, 
-     &     mnc_f_names, mnc_g_names, mnc_v_names, 
-     &     mnc_d_names, mnc_d_ids,   mnc_d_size, 
-     &     mnc_f_info,  mnc_fd_ind,  mnc_fv_ids, 
-     &     mnc_f_alld,
+     &     mnc_f_names, mnc_g_names, mnc_v_names, mnc_d_names, 
      &     mnc_out_path
 
-      COMMON /MNC_CW_VARS/
-     &     mnc_cw_gname, mnc_cw_ndim, mnc_cw_dims, 
-     &     mnc_cw_dn, mnc_cw_is, mnc_cw_ie,
-     &     mnc_cw_vname, mnc_cw_vnat, mnc_cw_vgind, mnc_cw_vbij, 
-     &     mnc_cw_vtnm, mnc_cw_vdnm, mnc_cw_vinm,
-     &     mnc_cw_vtat, mnc_cw_vdat, mnc_cw_viat,
-     &     mnc_cw_fgnm, mnc_cw_fgud, mnc_cw_fgis
+      COMMON /MNC_VARS_I/
+     &     mnc_f_info,  mnc_fd_ind,  mnc_fv_ids,  mnc_f_alld,
+     &     mnc_d_size,  mnc_d_ids
 
       character*(MNC_MAX_CHAR) mnc_blank_name
       character*(MNC_MAX_CHAR) mnc_f_names(MNC_MAX_ID)
@@ -144,6 +138,24 @@ CEOP
       integer mnc_f_alld(MNC_MAX_ID,MNC_MAX_INFO)
       integer mnc_d_size(MNC_MAX_ID)
       integer mnc_d_ids(MNC_MAX_ID)
+      character*(MNC_MAX_CHAR) mnc_out_path
+
+      COMMON /MNC_CW_VARS_C/
+     &     mnc_cw_gname, mnc_cw_dn, 
+     &     mnc_cw_vname, 
+     &     mnc_cw_vtnm,  mnc_cw_vinm,  mnc_cw_vdnm,
+     &     mnc_cw_vtat,
+     &     mnc_cw_fgnm
+
+      COMMON /MNC_CW_VARS_I/
+     &     mnc_cw_ndim,  mnc_cw_dims, 
+     &     mnc_cw_is,    mnc_cw_ie,
+     &     mnc_cw_vgind, mnc_cw_vnat,
+     &     mnc_cw_vbij,  mnc_cw_viat,
+     &     mnc_cw_fgud,  mnc_cw_fgis,  mnc_cw_fgig
+
+      COMMON /MNC_CW_VARS_R/
+     &     mnc_cw_vdat
 
       character*(MNC_MAX_CHAR) mnc_cw_gname(MNC_MAX_ID)
       character*(MNC_MAX_CHAR) mnc_cw_dn(MNC_CW_MAX_I,MNC_MAX_ID)
@@ -166,9 +178,7 @@ CEOP
       character*(MNC_MAX_CHAR) mnc_cw_fgnm(MNC_MAX_ID)
       integer mnc_cw_fgud(MNC_MAX_ID)
       integer mnc_cw_fgis(MNC_MAX_ID)
-
-      character*(MNC_MAX_CHAR) mnc_out_path
-
+      integer mnc_cw_fgig(MNC_MAX_ID)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

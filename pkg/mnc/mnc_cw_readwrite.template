@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.22 2004/10/20 21:26:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.23 2004/10/21 13:38:45 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -119,6 +119,12 @@ C     !LOCAL VARIABLES:
       REAL*8  resh_d( sNx + 2*OLx + sNy + 2*OLy )
       REAL*4  resh_r( sNx + 2*OLx + sNy + 2*OLy )
       INTEGER resh_i( sNx + 2*OLx + sNy + 2*OLy )
+#ifdef HAVE_STAT
+      integer ntotenc, ncenc, nbytes, fs_isdone
+      character*(200) cenc
+      integer ienc(200)
+      REAL*8  fsnu
+#endif
 
 C     Functions
       integer IFNBLNK, ILNBLNK
@@ -140,6 +146,7 @@ C     group (or base) name
       ENDIF
       indu = mnc_cw_fgud(indfg)
       iseq = mnc_cw_fgis(indfg)
+C     write(*,*) 'indu,iseq = ', indu, iseq
 
 C     Check that the Variable Type exists
       nvf = IFNBLNK(vtype)
@@ -170,6 +177,11 @@ C     Set the bi,bj indicies
       DO lbj = bjs,bje
         DO lbi = bis,bie
 
+#ifdef HAVE_STAT
+          fs_isdone = 0
+#endif
+ 10       CONTINUE
+
 C         Create the file name
           CALL MNC_CW_GET_TILE_NUM(lbi,lbj, uniq_tnum, myThid)
           fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
@@ -196,6 +208,45 @@ C         Add the path to the file name
 C         Append to an existing or create a new file
           CALL MNC_CW_FILE_AORC(fname, indf, myThid)
           fid = mnc_f_info(indf,2)
+
+#ifdef HAVE_STAT
+          IF ((mnc_cw_fgig(indfg) .EQ. 1)
+     &         .AND. (fs_isdone .EQ. 0)) THEN
+C           Decide whether to append to the existing or create a new file
+C           based on the byte count per unlimited dimension
+            ncenc = 70
+            cenc(1:26)  = 'abcdefghijklmnopqrstuvwxyz'
+            cenc(27:52) = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+            cenc(53:70) = '0123456789_.,+-=/~'
+            k = nfname
+            IF (k .GT. 200)  k = 200
+            ntotenc = 0
+            DO i = 1,k
+              DO j = 1,ncenc
+                IF (fname(i:i) .EQ. cenc(j:j)) THEN
+                  ntotenc = ntotenc + 1
+                  ienc(ntotenc) = j
+                  GOTO 20
+                ENDIF
+              ENDDO
+ 20           CONTINUE
+            ENDDO
+            CALL mncfsize(ntotenc, ienc, nbytes)
+            IF (nbytes .GT. 0) THEN
+              CALL MNC_DIM_UNLIM_SIZE(fname, unlim_sz, myThid)
+              fsnu = (1.0 _d 0 + 1.0 _d 0 / DBLE(unlim_sz))
+     &             * DBLE(nbytes)
+              IF (fsnu .GT. mnc_max_fsize) THEN
+                iseq = iseq + 1
+                indu = 1
+                mnc_cw_fgud(indfg) = 1
+                mnc_cw_fgis(indfg) = iseq
+                fs_isdone = 1
+                GOTO 10
+              ENDIF
+            ENDIF
+          ENDIF
+#endif  /*  HAVE_STAT  */
 
 C         Ensure that all the NetCDF dimensions are defined and create a
 C         local copy of them
@@ -233,14 +284,14 @@ C         Ensure that the variable is defined
               idv = mnc_fv_ids(indf,j+1)
               indvids = mnc_fd_ind(indf, mnc_f_info(indf, 
      &             (mnc_fv_ids(indf,j+2) + 1)) )
-              GOTO 10
+              GOTO 30
             ENDIF
           ENDDO
           write(msgbuf,'(4a)') 'MNC_MNC_CW_RX_W ERROR: ', 
      &         'cannot reference variable ''', vtype, ''''
           CALL print_error(msgbuf, mythid)
           STOP 'ABNORMAL END: package MNC'
- 10       CONTINUE
+ 30       CONTINUE
 
 C         Check for bi,bj indicies
           bidim = mnc_cw_vbij(1,indv)

@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.107 2004/10/15 19:54:56 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.108 2004/10/21 13:38:46 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -675,6 +675,48 @@ EOF
 }
 
 
+check_HAVE_STAT()  {
+    get_fortran_c_namemangling
+    cat <<EOF > genmake_tc_1.c
+$FC_NAMEMANGLE
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+void FC_NAMEMANGLE(tfsize) ( int *nbyte )
+{
+    char name[512];
+    struct stat astat;
+
+    name[0] = 'a'; name[1] = '\0';
+    if (! stat(name, &astat))
+        *nbyte = (int)(astat.st_size);
+    else
+        *nbyte = -1;
+}
+EOF
+    make genmake_tc_1.o >> genmake_tc.log 2>&1
+    RET_C=$?
+    cat <<EOF > genmake_tc_2.f
+      program hello
+      integer nbyte
+      call tfsize(nbyte)
+      print *," HELLO WORLD", nbyte
+      end program hello
+EOF
+    $FC $FFLAGS -o genmake_tc genmake_tc_2.f genmake_tc_1.o >> genmake_tc.log 2>&1
+    RET_F=$?
+    test -x ./genmake_tc  &&  ./genmake_tc >> genmake_tc.log 2>&1
+    RETVAL=$?
+    if test "x$RETVAL" = x0 ; then
+	HAVE_STAT=t
+	DEFINES="$DEFINES -DHAVE_STAT"
+    fi
+    rm -f genmake_tc*
+}
+
+
 check_netcdf_libs()  {
     echo "" > genmake_tnc.log
     cat <<EOF > genmake_tnc.for
@@ -768,6 +810,7 @@ HAVE_SYSTEM=
 HAVE_FDATE=
 FC_NAMEMANGLE=
 HAVE_CLOC=
+HAVE_STAT=
 HAVE_NETCDF=
 HAVE_ETIME=
 
@@ -1287,6 +1330,15 @@ rm -f genmake_tcomp*
 printf "  Can we call simple C routines (here, \"cloc()\") using $FC...  "
 check_HAVE_CLOC
 if test "x$HAVE_CLOC" != x ; then
+    echo "yes"
+else
+    echo "no"
+fi
+rm -f genmake_t*
+
+printf "  Can we use stat() through C calls...  "
+check_HAVE_STAT
+if test "x$HAVE_STAT" != x ; then
     echo "yes"
 else
     echo "no"

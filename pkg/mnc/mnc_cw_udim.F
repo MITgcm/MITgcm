@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.6 2004/10/20 21:26:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.7 2004/10/21 13:38:45 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -51,16 +51,21 @@ C     Check that this name is not already defined
       IF (indfg .LT. 1) THEN
         CALL MNC_GET_NEXT_EMPTY_IND(
      &       MNC_MAX_ID, mnc_cw_fgnm, indfg, myThid)
+        mnc_cw_fgnm(indfg)(1:(fgl-fgf+1)) = fgname(fgf:fgl)
         mnc_cw_fgud(indfg) = 0
-C       mnc_cw_fgis(indfg) = 0
+        mnc_cw_fgig(indfg) = 0
       ENDIF
-      mnc_cw_fgnm(indfg)(1:(fgl-fgf+1)) = fgname(fgf:fgl)
       IF (nudim .GT. 0) THEN
+        mnc_cw_fgig(indfg) = 0
         mnc_cw_fgud(indfg) = nudim
         RETURN
       ENDIF
-      IF (nudim .EQ. 0) RETURN
+      IF (nudim .EQ. 0) THEN
+        mnc_cw_fgig(indfg) = 0
+        RETURN
+      ENDIF
       IF (nudim .EQ. -1) THEN
+        mnc_cw_fgig(indfg) = 1
         mnc_cw_fgud(indfg) = mnc_cw_fgud(indfg) + 1
         RETURN
       ENDIF
