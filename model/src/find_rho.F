@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.9 1998/11/06 22:44:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.10 1999/08/06 15:01:27 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 #define USE_FACTORIZED_POLY
@@ -35,6 +35,7 @@ C     \==========================================================/
 ! Local
       integer i,j
       _RL refTemp,refSalt,sigRef,tP,sP,deltaSig
+      character*(max_len_mbuf) msgbuf
 ! -----------------------------------------------------------------
 
       if (eqn.eq.'LINEAR') then
@@ -90,8 +91,9 @@ C **********
        enddo
 
       else
-       write(0,*) 'FIND_RHO: eqn = ',eqn
-       stop 'FIND_RHO: argument "eqn" has illegal value'
+       write(msgbuf,'(a,a)') ' FIND_RHO: eqn = ',eqn
+       call print_error( msgbuf, mythid )
+       stop 'ABNORMAL END: S/R FIND_RHO'
       endif
 
 ! ------------------------------------------------------------------------------
