@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.70 2002/03/07 14:05:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.71 2002/06/15 03:26:30 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -167,15 +167,15 @@ C     tempAdvection :: Flag which turns advection of temperature on
 C                     and off.
 C     tempForcing   :: Flag which turns external forcing of temperature on
 C                     and off.
-C     saltDiffusion :: Flag which turns diffusion of salinit on
+C     saltDiffusion :: Flag which turns diffusion of salinity on
 C                     and off.
-C     saltAdvection :: Flag which turns advection of salinit on
+C     saltAdvection :: Flag which turns advection of salinity on 
 C                     and off.
-C     saltForcing   :: Flag which turns external forcing of salinit on
+C     saltForcing   :: Flag which turns external forcing of salinity on
 C                     and off.
-C     useRealFreshWaterFlux :: if true (=Natural BCS), treats P+R-E flux 
-C                         as a real Fresh Water (=> changes the seal level)
-C                              if false, converts P+R-E to virtual salt flux
+C     useRealFreshWaterFlux :: if True (=Natural BCS), treats P+R-E flux 
+C                         as a real Fresh Water (=> changes the Sea Level)
+C                         if F, converts P+R-E to salt flux (no SL effect)
 C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implcit free surface
 C     exactConserv        :: Set to true to conserve exactly the total Volume
@@ -188,8 +188,12 @@ C     tr1Stepping   :: Turns passive tracer 1 time-stepping on/off
 C     useConstantF  :: Coriolis parameter set to f0
 C     useBetaPlaneF :: Coriolis parameter set to f0 + beta.y
 C     useSphereF    :: Coriolis parameter set to 2.omega.sin(phi)
+C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 1986)
 C     implicitDiffusion :: Turns implicit vertical diffusion on
 C     implicitViscosity :: Turns implicit vertical viscosity on
+C     multiDimAdvection :: Flag that enable multi-dimension advection
+C     forcing_In_AB :: if False, put forcing (Temp,Salt,Tracers) contribution
+C                      out off Adams-Bashforth time stepping.
 C     doThetaClimRelax :: Set true if relaxation to temperature
 C                        climatology is required.
 C     doSaltClimRelax  :: Set true if relaxation to salinity
@@ -204,7 +208,6 @@ C     nonHydrostatic :: Using non-hydrostatic terms
 C     globalFiles    :: Selects between "global" and "tiled" files
 C     allowFreezing  :: Allows water to freeze and form ice
 C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
-C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 1986)
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid,
      & no_slip_sides,no_slip_bottom,
@@ -218,16 +221,16 @@ C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 
      & momStepping, tempStepping, saltStepping, tr1Stepping,
      & metricTerms, usingSphericalPolarMTerms,
      & useConstantF, useBetaPlaneF, useSphereF,
+     & useEnergyConservingCoriolis, useJamartWetPoints,
      & implicitDiffusion, implicitViscosity,
+     & multiDimAdvection, forcing_In_AB,
      & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax, 
      & periodicExternalForcing, 
      & usingPCoords, usingZCoords, setCenterDr,
      & nonHydrostatic, globalFiles,
      & allowFreezing, groundAtK1,
      & usePickupBeforeC35, debugMode,
-     & readPickupWithTracer, writePickupWithTracer,
-     & multiDimAdvection, useEnergyConservingCoriolis,
-     & useJamartWetPoints
+     & readPickupWithTracer, writePickupWithTracer
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingCurvilinearGrid
@@ -260,8 +263,12 @@ C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 
       LOGICAL useConstantF
       LOGICAL useBetaPlaneF
       LOGICAL useSphereF
+      LOGICAL useEnergyConservingCoriolis
+      LOGICAL useJamartWetPoints
       LOGICAL implicitDiffusion
       LOGICAL implicitViscosity
+      LOGICAL multiDimAdvection
+      LOGICAL forcing_In_AB
       LOGICAL doThetaClimRelax
       LOGICAL doSaltClimRelax
       LOGICAL doTr1ClimRelax
@@ -277,9 +284,6 @@ C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 
       LOGICAL debugMode
       LOGICAL readPickupWithTracer
       LOGICAL writePickupWithTracer
-      LOGICAL multiDimAdvection
-      LOGICAL useEnergyConservingCoriolis
-      LOGICAL useJamartWetPoints
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     gg2dTargetResidual
