@@ -28,10 +28,11 @@
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  eosType='LINEAR',
+ implicitDiffusion=.true.,
  readBinaryPrec=32,
  tr1Stepping=.TRUE.,
- readPickupWithTracer  = .FALSE.,
- writePickupWithTracer = .FALSE.,
+# readPickupWithTracer  = .FALSE.,
+# writePickupWithTracer = .FALSE.,
  &
 
 # Elliptic solver parameters

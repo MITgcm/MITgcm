@@ -6,8 +6,10 @@ C     accordingly.
 C 
 C     heimbach@mit.edu 11-Jan-2001
 
+#ifdef ALLOW_AUTODIFF_MONITOR
+
       common /addynvars_r/ 
-     &                     adetan,
+     &                     adetan, 
      &                     aduvel, advvel, adwvel, 
      &                     adtheta, adsalt, 
      &                     adgu, adgv, adgt, adgs, 
@@ -71,5 +73,5 @@ C     heimbach@mit.edu 11-Jan-2001
       _RL adkapgm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif
 
-
+#endif /* ALLOW_AUTODIFF_MONITOR */
 

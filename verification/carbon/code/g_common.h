@@ -6,6 +6,8 @@ C     accordingly.
 C 
 C     heimbach@mit.edu 11-Jan-2001
 
+#ifdef ALLOW_AUTODIFF_MONITOR
+
       common /g_dynvars_r/ 
      &                     g_etan,
      &                     g_uvel, g_vvel, g_wvel, 
@@ -71,5 +73,5 @@ C     heimbach@mit.edu 11-Jan-2001
       _RL g_kapgm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 #endif
 
-
+#endif /* ALLOW_AUTODIFF_MONITOR */
 

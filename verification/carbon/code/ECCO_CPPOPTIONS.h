@@ -25,6 +25,12 @@ C
 #define ALLOW_AUTODIFF_TAMC
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
+C
+C       >>> Extract adjoint state
+#undef ALLOW_AUTODIFF_MONITOR
+C
+C o use divided adjoint to split adjoint computations
+#undef ALLOW_DIVIDED_ADJOINT
 
 C ********************************************************************
 C ***                     Calender Package                         ***
@@ -44,8 +50,8 @@ C
 C       >>> Cost function contributions
 #define ALLOW_COST
 #undef ALLOW_COST_TEST
-#undef ALLOW_COST_TRACER
-#define ALLOW_COST_ATLANTIC_HEAT
+#define ALLOW_COST_TRACER
+#undef ALLOW_COST_ATLANTIC_HEAT
 
 C ********************************************************************
 C ***               Control vector Package                         ***
