@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.2 2003/12/03 23:08:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -19,10 +19,6 @@ c
 c     started: from the "old" code
 c
 c              Elisabeth Remy eremy@ucsd.edu   july 31 2001
-c
-c              heimbach@mit.edu 17-Jun-2003: SIO merge:
-c              changed cosphi(i,j,bi,bj)*100.0 factor to
-c                      cosphi(i,j,bi,bj)*2.5
 c
 c     ==================================================================
 c     SUBROUTINE cost_Drift
@@ -100,26 +96,10 @@ c--   Read tiled data.
 
 #ifdef ALLOW_DRIFT_COST_CONTRIBUTION
 
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i8.8)')
-     &    ' cost_Theta: number of records to process = ',nmonsrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
-#endif
-
       if (optimcycle .ge. 0) then
         iltheta = ilnblnk( tbarfile )
         write(fnametheta(1:80),'(2a,i10.10)')
      &    tbarfile(1:iltheta),'.',optimcycle
-     
         ilsalt = ilnblnk( sbarfile )
         write(fnamesalt(1:80),'(2a,i10.10)')
      &    sbarfile(1:ilsalt),'.',optimcycle

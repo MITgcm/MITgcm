@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatyfields.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readscatyfields.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -58,6 +58,19 @@ c     == local variables ==
       _RL spval
       _RL vartile
 
+cnew(
+      integer  il
+      integer mody, modm
+      integer iyear, imonth
+      character*(80) fnametmp
+      logical exst
+cnew)
+
+c     == external functions ==
+ 
+      integer  ilnblnk
+      external ilnblnk
+
 c     == end of interface ==
 
       parameter (spval = -1.8 ) 
@@ -72,31 +85,37 @@ ce    --> there is certainly a better place for this.
       imin = 1
       imax = snx
 
-      beginscaty = scatystartdate(1)/10000
-      beginrun = modelstartdate(1)/10000
-      if ( beginscaty .eq. beginrun ) then
-        scatyrec = mod(modelstartdate(1)/100,100) -
-     &           mod(scatystartdate(1)/100,100) + irec
-      else
-        scatyrec = ( beginrun - beginscaty - 1)*nmonthyear +
-     &           (nmonthyear - mod(scatystartdate(1)/100,100) +
-     &            1) + mod(modelstartdate(1)/100,100) - 1 + irec
+c      beginscaty = scatystartdate(1)/10000
+c      beginrun = modelstartdate(1)/10000
+c      if ( beginscaty .eq. beginrun ) then
+c        scatyrec = mod(modelstartdate(1)/100,100) -
+c     &           mod(scatystartdate(1)/100,100) + irec
+c      else
+c        scatyrec = ( beginrun - beginscaty - 1)*nmonthyear +
+c     &           (nmonthyear - mod(scatystartdate(1)/100,100) +
+c     &            1) + mod(modelstartdate(1)/100,100) - 1 + irec
+c      endif
+
+cnew(
+      mody = modelstartdate(1)/10000
+      modm = modelstartdate(1)/100 - mody*100
+      iyear = mody + INT((modm-1+irec-1)/12)
+      imonth = 1 + MOD(modm-1+irec-1,12)
+
+      il=ilnblnk(scatydatfile)
+      write(fnametmp(1:80),'(2a,i4)') 
+     &     scatydatfile(1:il), '_', iyear
+      inquire( file=fnametmp, exist=exst )
+      if (.NOT. exst) then
+         write(fnametmp(1:80),'(a)') scatydatfile(1:il)
+         imonth = irec
       endif
 
-      if ( scatyrec .gt. 0 .and. scatydatfile .ne. ' ' ) then
-        call mdsreadfield( scatydatfile, cost_iprec, cost_yftype, 1, 
-     &                   scatydat, scatyrec, mythid )
-      else
-         do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do j = jmin,jmax
-                  do i = imin,imax
-                     scatydat(i,j,bi,bj)=0. _d 0
-                  enddo
-               enddo
-            enddo
-         enddo
-      endif
+      print *, 'ph-cost-scaty ', irec, imonth, iyear, fnametmp
+      
+      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1,
+     &                   scatydat, imonth, mythid )
+cnew)
 
       nobs = 0
       do bj = jtlo,jthi
@@ -104,7 +123,9 @@ ce    --> there is certainly a better place for this.
           k = 1
           do j = jmin,jmax
             do i = imin,imax
-              if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
+              if (maskS(i,j,k,bi,bj) .eq. 0.) then
+                scatymask(i,j,bi,bj) = 0. _d 0
+              else if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
                 scatymask(i,j,bi,bj) = 0. _d 0
               else
                 scatymask(i,j,bi,bj) = 1. _d 0

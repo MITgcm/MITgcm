@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_xbt.F,v 1.2 2003/12/03 23:08:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_xbt.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -70,6 +70,14 @@ c     == local variables ==
 
       character*(MAX_LEN_MBUF) msgbuf
 
+cnew(
+      integer  il
+      integer mody, modm
+      integer iyear, imonth
+      character*(80) fnametmp
+      logical exst
+cnew)
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -88,7 +96,7 @@ c     == end of interface ==
       imin = 1
       imax = snx
       
-      spval = -2.
+      spval = -1.8
       ztop  = -.981*1.027
       rl_35 = 35.0
       rl_0  = 0.0
@@ -99,26 +107,18 @@ c--   Read state record from global file.
       
 #ifdef ALLOW_XBT_COST_CONTRIBUTION
 
-#ifdef ECCO_VERBOSE
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i8.8)')
-     &  ' cost_XBT: number of records to process =', nmonsrec
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-#endif
-
       if (optimcycle .ge. 0) then
         ilu=ilnblnk( tbarfile )
         write(fnametheta(1:80),'(2a,i10.10)') 
-     &       tbarfile(1:ilu), '.', optimcycle
+     &       tbarfile(1:ilu),'.',optimcycle
       endif
       
       fcthread_xbt = 0. _d 0
+
+cnew(
+      mody = modelstartdate(1)/10000
+      modm = modelstartdate(1)/100 - mody*100
+cnew)
 
 c--   Loop over records.
       do irec = 1,nmonsrec
@@ -129,10 +129,23 @@ c--     Read time averages and the monthly mean data.
      &          optimcycle, mythid
      &   , xx_tbar_mean_dummy )
   
-c--     Determine the record to be read on observations.
+cnew(
+        iyear = mody + INT((modm-1+irec-1)/12)
+        imonth = 1 + MOD(modm-1+irec-1,12)
+        il=ilnblnk(xbtfile)
+        write(fnametmp(1:80),'(2a,i4)') 
+     &       xbtfile(1:il), '_', iyear
+        inquire( file=fnametmp, exist=exst )
+        if (.NOT. exst) then
+           write(fnametmp(1:80),'(a)') xbtfile(1:il)
+            imonth = irec
+        endif
 
-        call mdsreadfield( xbtfile, cost_iprec, 'RL', nr, xbtobs,
-     &                     irec, mythid)
+        print *, 'ph-cost-t XBT ', irec, imonth, iyear
+      
+        call mdsreadfield( fnametmp, cost_iprec, 'RL', nr, xbtobs,
+     &                     imonth, mythid)
+cnew)
 
 c--     Loop over this thread's tiles.
         do bj = jtlo,jthi

@@ -7,8 +7,6 @@
       subroutine cost_obcsn(
      I                       myiter,
      I                       mytime,
-     I                       startrec,
-     I                       endrec,
      I                       mythid
      &                     )
 
@@ -18,7 +16,6 @@ c     ==================================================================
 c
 c     o cost function contribution obc
 c
-c     o G. Gebbie, gebbie@mit.edu, 18-Mar-2003
 c     ==================================================================
 c     SUBROUTINE cost_obcsn
 c     ==================================================================
@@ -47,10 +44,6 @@ c     == routine arguments ==
       integer myiter
       _RL     mytime
       integer mythid
-cgg(  
-      integer startrec
-      integer endrec
-cgg)
 
 c     == local variables ==
 
@@ -64,24 +57,15 @@ c     == local variables ==
       integer il
       integer iobcs
       integer jp1
-      integer nrec
-      integer ilfld
-      integer igg
-      integer ihh
 
       _RL fctile
       _RL fcthread
       _RL dummy
-      _RL gg
-      _RL tmpx
-      _RL tmpfield (1-olx:snx+olx,nr,nsx,nsy)
-      _RL barofield (1-olx:snx+olx,nsx,nsy)
-      _RL maskxz   (1-olx:snx+olx,nr,nsx,nsy)
-      _RL vtop
-      _RL area
-      _RL volflux
 
-      character*(80) fnamefld
+      character*(80) fnametheta
+      character*(80) fnamesalt
+      character*(80) fnameuvel
+      character*(80) fnamevvel
 
       logical doglobalread
       logical ladinit
@@ -110,155 +94,158 @@ c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
-c     Number of records to be used.
-      nrec = endrec-startrec+1
-
 #ifdef ALLOW_OBCSN_COST_CONTRIBUTION
 
       jp1 = 0
       fcthread = 0. _d 0
 
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8)')
-     &  ' cost_obcsn: number of records to process: ',nrec
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
-#endif
-
-      if (optimcycle .ge. 0) then
-        ilfld=ilnblnk( xx_obcsn_file )
-        write(fnamefld(1:80),'(2a,i10.10)') 
-     &       xx_obcsn_file(1:ilfld), '.', optimcycle
-      endif
-
 c--   Loop over records.
-      do irec = 1,nrec
+      do irec = 1,nmonsrec
 
-        area    = 0. _d 0
-        volflux = 0. _d 0
+c--     temperature
+        iobcs = 1
+c--     Read time averages and the monthly mean data.
+        il = ilnblnk( tbarfile )
+        write(fnametheta(1:80),'(2a,i10.10)')
+     &       tbarfile(1:il),'.',optimcycle
+        call active_read_xyz( fnametheta, tbar, irec,
+     &                        doglobalread, ladinit,
+     &                        optimcycle, mythid,
+     &                        xx_tbar_mean_dummy )
+
+        call mdsreadfieldxz( OBNtFile, readBinaryPrec, 'RS', 
+     &                       nr, OBNt, irec, mythid)
+
         do bj = jtlo,jthi
           do bi = itlo,ithi
-            do i = imin,imax
-              barofield(i,bi,bj) = 0. _d 0
+c--         Loop over the model layers
+            fctile = 0. _d 0
+            do k = 1,nr
+c--           Compute model data misfit and cost function term for
+c             the temperature field.
+               do i = imin,imax
+                  j = OB_Jn(I,bi,bj)
+                  if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
+                     fctile = fctile +
+     &                    wobcsn(k,iobcs)*cosphi(i,j,bi,bj)*
+     &                    (tbar(i,j,k,bi,bj) - OBNt(i,k,bi,bj))*
+     &                    (tbar(i,j,k,bi,bj) - OBNt(i,k,bi,bj))
+                  endif
+               enddo
             enddo
+c--         End of loop over layers.
+            fcthread         = fcthread           + fctile
+            objf_obcsn(bi,bj) = objf_obcsn(bi,bj) + fctile
           enddo
         enddo
 
-        call active_read_xz( fnamefld, tmpfield, irec, doglobalread,
-     &                       ladinit, optimcycle, mythid
-     &        , xx_obcsn_dummy )
+c--     salt
+        iobcs = 2
+c--     Read time averages and the monthly mean data.
+        il = ilnblnk( sbarfile )
+        write(fnamesalt(1:80),'(2a,i10.10)')
+     &       sbarfile(1:il),'.',optimcycle
+        call active_read_xyz( fnamesalt, sbar, irec,
+     &                        doglobalread, ladinit,
+     &                        optimcycle, mythid,
+     &                        xx_sbar_mean_dummy )
 
-cgg    Need to solve for iobcs would have been.
-          gg    = (irec-1)/nobcs
-          igg   = int(gg)
-          iobcs = irec - igg*nobcs
+        call mdsreadfieldxz( OBNsFile, readBinaryPrec, 'RS', 
+     &                       nr, OBNs, irec, mythid)
 
-          call active_read_xz( 'maskobcsn', maskxz, 
-     &                         iobcs,
-     &                         doglobalread, ladinit, 0,
-     &                         mythid, dummy )
-
-cgg     Need to change xx field to baroclinic vel.
-cgg     Level Nr contains barotropic vel, remove it.
-cgg     The deepest wet level velocity should be 
-cgg     computed in order to ensure zero integrated flux.
-        if (iobcs .eq. 3 .or. iobcs .eq. 4) then
-          if (iobcs .eq .3) then
-            ihh = igg+1   
-            call ctrl_volflux( ihh, area, volflux, mythid)
-            _GLOBAL_SUM_R8( volflux, mythid )
-            _GLOBAL_SUM_R8( area,mythid )
-            print*,'volflux,area',volflux,area
-          endif
-
-c--     Loop over this thread's tiles.
-          do bj = jtlo,jthi
-            do bi = itlo,ithi
-              do i = imin,imax
-
-cgg         The barotropic velocity is stored in level 1.
-cgg         Penalize for deviation in it.
-                barofield(i,bi,bj) = tmpfield(i,1,bi,bj)
-     &                             * maskxz(i,1,bi,bj)
-
-                vtop = 0.d0
-                tmpfield(i,1,bi,bj) = 0.d0
-
-                j = OB_Jn(I,bi,bj)
-                if (iobcs .eq. 3) then
-                  if (ob_iw(j,bi,bj).eq.(i-1).and.
-     &                ob_iw(j,bi,bj).ne. 0) then
-                    barofield(i,bi,bj)= volflux/area
-     &                                * maskxz(i,1,bi,bj)
-                    print*,'volflux2,area2',volflux,area
-                    print*,'barofield',barofield(i,bi,bj)
-                  endif
-                endif
-
-                do k = 1,Nr
-cgg    If cells are not full, this should be modified with hFac.
-cgg    
-cgg    The xx field (tmpfldxz) does not contain the velocity at the 
-cgg    lowest wet level. This velocity is not independent; it must 
-cgg    exactly balance the volume flux, since we are dealing with
-cgg    the baroclinic velocity structure.. 
-                  vtop = tmpfield(i,k,bi,bj)*
-     &               maskxz(i,k,bi,bj) * delZ(k) + vtop
-                enddo
-                tmpfield(i,1,bi,bj) = -vtop / delZ(1)
-              enddo
-            enddo
-          enddo
-
-        endif
-
-c--     Loop over this thread's tiles.
         do bj = jtlo,jthi
           do bi = itlo,ithi
-
-c--         Determine the weights to be used.
+c--         Loop over the model layers
             fctile = 0. _d 0
-
-            if (iobcs .eq. 3 .or. iobcs .eq. 4) then
-              do i = imin,imax
-                j = OB_Jn(I,bi,bj)
-                tmpx = barofield(i,bi,bj)
-                  fctile = fctile
-     &               + wbaro*cosphi(i,j,bi,bj)
-     &                 *tmpx*tmpx
-     &                 *maskxz(i,1,bi,bj)
-cgg                print*,'S bt fctile',i,j,wbaro,
-cgg     &                 barofield(i,bi,bj),fctile
-              enddo
-            endif
-
-            do k = 1, Nr
-              do i = imin,imax
-                 j = OB_Jn(I,bi,bj)
-cgg                 if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
-                  tmpx = tmpfield(i,k,bi,bj)
-                  fctile = fctile
-     &                 + wobcsnLev(i,k,bi,bj,iobcs)*cosphi(i,j,bi,bj)
-     &                 *tmpx*tmpx
-     &                 *maskxz(i,k,bi,bj)
-cgg                endif
-cgg                print*,'S fctile',fctile
-              enddo
+            do k = 1,nr
+c--           Compute model data misfit and cost function term for
+c             the temperature field.
+               do i = imin,imax
+                  j = OB_Jn(I,bi,bj)
+                  if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
+                     fctile = fctile +
+     &                    wobcsn(k,iobcs)*cosphi(i,j,bi,bj)*
+     &                    (sbar(i,j,k,bi,bj) - OBNs(i,k,bi,bj))*
+     &                    (sbar(i,j,k,bi,bj) - OBNs(i,k,bi,bj))
+                  endif
+               enddo
             enddo
-
+c--         End of loop over layers.
+            fcthread         = fcthread           + fctile
             objf_obcsn(bi,bj) = objf_obcsn(bi,bj) + fctile
-            fcthread         = fcthread + fctile
+          enddo
+        enddo
+
+c--     uvel
+        iobcs = 3
+c--     Read time averages and the monthly mean data.
+        il = ilnblnk( ubarfile )
+        write(fnameuvel(1:80),'(2a,i10.10)')
+     &       ubarfile(1:il),'.',optimcycle
+        call active_read_xyz( fnameuvel, ubar, irec,
+     &                        doglobalread, ladinit,
+     &                        optimcycle, mythid,
+     &                        dummy )
+
+        call mdsreadfieldxz( OBNuFile, readBinaryPrec, 'RS', 
+     &                       nr, OBNu, irec, mythid)
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+c--         Loop over the model layers
+            fctile = 0. _d 0
+            do k = 1,nr
+c--           Compute model data misfit and cost function term for
+c             the temperature field.
+               do i = imin,imax
+                  j = OB_Jn(I,bi,bj)
+                  if (maskW(i,j,k,bi,bj) .ne. 0.) then
+                     fctile = fctile +
+     &                    wobcsn(k,iobcs)*cosphi(i,j,bi,bj)*
+     &                    (ubar(i,j,k,bi,bj) - OBNu(i,k,bi,bj))*
+     &                    (ubar(i,j,k,bi,bj) - OBNu(i,k,bi,bj))
+                  endif
+               enddo
+            enddo
+c--         End of loop over layers.
+            fcthread         = fcthread           + fctile
+            objf_obcsn(bi,bj) = objf_obcsn(bi,bj) + fctile
+          enddo
+        enddo
+
+c--     vvel
+        iobcs = 4
+c--     Read time averages and the monthly mean data.
+        il = ilnblnk( vbarfile )
+        write(fnamevvel(1:80),'(2a,i10.10)')
+     &       vbarfile(1:il),'.',optimcycle
+        call active_read_xyz( fnamevvel, vbar, irec,
+     &                        doglobalread, ladinit,
+     &                        optimcycle, mythid,
+     &                        dummy )
+
+        call mdsreadfieldxz( OBNvFile, readBinaryPrec, 'RS', 
+     &                       nr, OBNv, irec, mythid)
+
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+c--         Loop over the model layers
+            fctile = 0. _d 0
+            do k = 1,nr
+c--           Compute model data misfit and cost function term for
+c             the temperature field.
+               do i = imin,imax
+                  j = OB_Jn(I,bi,bj)
+                  if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
+                     fctile = fctile +
+     &                    wobcsn(k,iobcs)*cosphi(i,j,bi,bj)*
+     &                    (vbar(i,j,k,bi,bj) - OBNv(i,k,bi,bj))*
+     &                    (vbar(i,j,k,bi,bj) - OBNv(i,k,bi,bj))
+                  endif
+               enddo
+            enddo
+c--         End of loop over layers.
+            fcthread         = fcthread           + fctile
+            objf_obcsn(bi,bj) = objf_obcsn(bi,bj) + fctile
           enddo
         enddo
 

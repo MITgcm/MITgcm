@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdtclim.F,v 1.3 2003/12/20 20:11:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdtclim.F,v 1.4 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -80,7 +80,7 @@ c     == local variables ==
 
       character*(MAX_LEN_MBUF) msgbuf
 #ifdef GENERIC_BAR_MONTH
-      integer mrec, nyears, iyear, tmpmon
+      integer mrec, nyears, iyear
 #endif      
 c     == external functions ==
 
@@ -98,28 +98,13 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
-      spval = -9990.
+      spval = -1.8
 
 c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
 #ifdef ALLOW_CTDTCLIM_COST_CONTRIBUTION
-
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i8.8)')
-     &    ' cost_Ctdtclim: number of records to process = ',nmonsrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
-#endif
 
       if (optimcycle .ge. 0) then
         ilctdtclim = ilnblnk( tbarfile )
@@ -131,12 +116,7 @@ c--   Read tiled data.
 
 #ifdef GENERIC_BAR_MONTH
 c--   Loop over month
-      if (nmonsrec.GT.12) then
-         tmpmon = 12
-      else
-         tmpmon = nmonsrec
-      endif
-      do irec = 1,tmpmon
+      do irec = 1,12
          nyears=int((nmonsrec-irec)/12)+1
          if(nyears.gt.0) then
             do iyear=1,nyears

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drifter.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drifter.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -323,7 +323,7 @@ c--         Print cost function for each tile in each thread.
      &                          SQUEEZE_RIGHT , mythid)
             write(msgbuf,'(a,d22.15)')
      &        '     cost function (temperature) = ',
-     &        fctile_theta
+     &        fctile_drift
             call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
 #endif

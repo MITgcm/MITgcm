@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtmifields.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtmifields.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -14,7 +14,10 @@ c     ==================================================================
 c
 c     o Read a given record of the TMI SST data.
 c
-c     started: ARmin Koehl akoehl@ucsd.edu
+c     started: Christian Eckert eckert@mit.edu 25-May-1999
+c
+c     changed: Christian Eckert eckert@mit.edu 25-Feb-2000
+c
 c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
 c
@@ -55,6 +58,19 @@ c     == local variables ==
       _RL spval
       _RL vartile
 
+cnew(
+      integer  il
+      integer mody, modm
+      integer iyear, imonth
+      character*(80) fnametmp
+      logical exst
+cnew)
+
+c     == external functions ==
+
+      integer  ilnblnk
+      external ilnblnk
+
 c     == end of interface ==
 
       parameter (spval = -9999. ) 
@@ -79,9 +95,29 @@ ce    --> there is certainly a better place for this.
      &           (nmonthyear - mod(tmistartdate(1)/100,100) +
      &            1) + mod(modelstartdate(1)/100,100) - 1 + irec
       endif
+
+cnew(
+      mody = modelstartdate(1)/10000
+      modm = modelstartdate(1)/100 - mody*100
+      iyear = mody + INT((modm-1+irec-1)/12)
+      imonth = 1 + MOD(modm-1+irec-1,12)
+
+      il=ilnblnk(tmidatfile)
+      write(fnametmp(1:80),'(2a,i4)') 
+     &     tmidatfile(1:il), '_', iyear
+      inquire( file=fnametmp, exist=exst )
+      if (.NOT. exst) then
+         write(fnametmp(1:80),'(a)') tmidatfile(1:il)
+         imonth = tmirec
+      endif
+
+      print *, 'ph-cost-t TMI ', irec, imonth, iyear, tmirec
+      
+cnew)
+      
       if (tmirec.gt.0) then
-      call mdsreadfield( tmidatfile, cost_iprec, cost_yftype, 1, tmidat,
-     &                   tmirec, mythid )
+       call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, tmidat,
+     &                    imonth, mythid )
       else         
          do bj = jtlo,jthi
             do bi = itlo,ithi

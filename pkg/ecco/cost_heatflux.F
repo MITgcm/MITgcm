@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_heatflux.F,v 1.2 2004/01/20 16:59:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_heatflux.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -102,24 +102,6 @@ c     Number of records to be used.
 
 #ifdef ALLOW_HFLUX_COST_CONTRIBUTION
 
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8)')
-     &  ' cost_heatflux: number of records to process: ',nrec
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
-#endif
-
       if (optimcycle .ge. 0) then
         ilfld=ilnblnk( xx_hflux_file )
         write(fnamefld(1:80),'(2a,i10.10)') 
@@ -151,7 +133,7 @@ c--     Loop over this thread's tiles.
             do j = jmin,jmax
               do i = imin,imax
                 xx_hflux_mean(i,j,bi,bj) = xx_hflux_mean(i,j,bi,bj)
-     &                  + tmpfld2d(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+     &                                     + tmpfld2d(i,j,bi,bj)
               enddo
             enddo
           enddo
@@ -170,7 +152,9 @@ c--     Determine the weights to be used.
             xx_hflux_mean(i,j,bi,bj)
      &            = xx_hflux_mean(i,j,bi,bj)/float(nrec)
             tmpx = xx_hflux_mean(i,j,bi,bj)/30.0
-            if (maskw(i,j,kk,bi,bj) .ne. 0.) then
+            if (maskC(i,j,kk,bi,bj) .ne. 0.) then
+              if ( ABS(R_low(i,j,bi,bj)) .LT. 1000. )
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/1000.
               fctilem = fctilem
      &                 +cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
@@ -220,6 +204,8 @@ c--         Determine the weights to be used.
               do i = imin,imax
                 if (_hFacC(i,j,kk,bi,bj) .ne. 0.) then
                   tmpx = tmpfld2d(i,j,bi,bj)-xx_hflux_mean(i,j,bi,bj)
+                  if ( ABS(R_low(i,j,bi,bj)) .LT. 1000. )
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/1000.
                   fctile = fctile
      &                 + whflux(i,j,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
@@ -236,7 +222,7 @@ c--         Print cost function for each tile in each thread.
             call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
             write(msgbuf,'(a,i8.8,1x,i3.3,1x,i3.3)')
-     &        ' cost_heatflux: irec,bi,bj          =  ',irec,bi,bj
+     &        ' ecco_cost.heatflux: irec,bi,bj          =  ',irec,bi,bj
             call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
             write(msgbuf,'(a,d22.15)')
@@ -255,7 +241,7 @@ c--     Print cost function for all tiles.
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,i8.8)')
-     &    ' cost_heatflux:                       irec =  ',irec
+     &    ' ecco_cost.heatflux:                       irec =  ',irec
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,d22.15)')
@@ -281,12 +267,12 @@ c--   to the final cost function.
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,a)')
-     &    ' cost_heatflux: no contribution of heat flux ',
+     &    ' ecco_cost.heatflux: no contribution of heat flux ',
      &                    ' to cost function.'
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,a,i9.8)')
-     &    ' cost_heatflux: number of records that would have',
+     &    ' ecco_cost.heatflux: number of records that would have',
      &                      ' been processed: ',nrec
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ecco_cost_initvaria.F,v 1.2 2003/11/17 22:32:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ecco_cost_initvaria.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
 
 #include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -63,15 +63,16 @@ c--   Initialise adjoint of monthly mean files calculated
 c--   in cost_averagesfields (and their ad...).
       call cost_averagesinit( mythid )
       _BARRIER
-#ifdef ALLOW_TANGENTLINEAR_RUN
+
+#ifndef ALLOW_TANGENTLINEAR_RUN
 cph(
 cph   The following init. shoud not be applied if in the middle
 cph   of a divided adjoint run
 cph)
-      inquire( file='costfinal', exist=exst )
-      if ( .NOT. exst) then
-         call ecco_cost_init_barfiles( mythid )
-      endif
+c      inquire( file='costfinal', exist=exst )
+c      if ( .NOT. exst) then
+c         call ecco_cost_init_barfiles( mythid )
+c      endif
 #endif
 
 c--   Initialize the tiled cost function contributions.

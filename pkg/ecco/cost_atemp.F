@@ -89,24 +89,6 @@ c     Number of records to be used.
 
 #ifdef ALLOW_ATEMP_COST_CONTRIBUTION
 
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8)')
-     &  ' cost_atemp: number of records to process: ',nrec
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
-#endif
-
       if (optimcycle .ge. 0) then
         ilfld=ilnblnk( xx_atemp_file )
         write(fnamefld(1:80),'(2a,i10.10)') 

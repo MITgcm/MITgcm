@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_salt.F,v 1.2 2003/12/03 23:08:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_salt.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -70,6 +70,14 @@ c     == local variables ==
 
       character*(MAX_LEN_MBUF) msgbuf
 
+cnew(
+      integer  il
+      integer mody, modm
+      integer iyear, imonth
+      character*(80) fnametmp
+      logical exst
+cnew)
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -94,26 +102,18 @@ c--   Read state record from global file.
       
 #ifdef ALLOW_ARGO_SALT_COST_CONTRIBUTION
 
-#ifdef ECCO_VERBOSE
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i8.8)')
-     &  ' cost_ARGO_SALT: number of records to process =', nmonsrec
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-#endif
-
       if (optimcycle .ge. 0) then
         ilu=ilnblnk( sbarfile )
         write(fnamesalt(1:80),'(2a,i10.10)') 
-     &    sbarfile(1:ilu), '.', optimcycle
+     &    sbarfile(1:ilu),'.', optimcycle
       endif
       
       fcthread_argos = 0. _d 0
+
+cnew(
+      mody = modelstartdate(1)/10000
+      modm = modelstartdate(1)/100 - mody*100
+cnew)
 
 c--   Loop over records.
       do irec = 1,nmonsrec
@@ -124,9 +124,21 @@ c--     Read time averages and the monthly mean data.
      &          optimcycle, mythid
      &   , xx_sbar_mean_dummy )
   
-cph        call cost_readargos( irec, mythid )
-        call mdsreadfield( argosfile, cost_iprec, 'RL', nr, argosobs,
-     &                     irec, mythid)
+cnew(
+        iyear = mody + INT((modm-1+irec-1)/12)
+        imonth = 1 + MOD(modm-1+irec-1,12)
+        il=ilnblnk(argosfile)
+        write(fnametmp(1:80),'(2a,i4)') 
+     &       argosfile(1:il), '_', iyear
+        inquire( file=fnametmp, exist=exst )
+        if (.NOT. exst) then
+           write(fnametmp(1:80),'(a)') argosfile(1:il)
+           imonth = irec
+        endif
+
+        call mdsreadfield( fnametmp, cost_iprec, 'RL', nr, argosobs,
+     &                     imonth, mythid)
+cnew)
 
 c--     Loop over this thread's tiles.
         do bj = jtlo,jthi
@@ -167,7 +179,7 @@ c--         End of loop over layers.
             call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
             write(msgbuf,'(a,i8.8,1x,i3.3,1x,i3.3,i6)')
-     &        ' COST_ARGO_SALT: irec,bi,bj   =  ',irec,bi,bj,nprof
+     &        ' COST_ARGO_SALT: irec,bi,bj   =  ',irec,bi,bj
             call print_message( msgbuf, standardmessageunit,
      &                          SQUEEZE_RIGHT , mythid)
             write(msgbuf,'(a,d22.15)')

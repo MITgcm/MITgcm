@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.7 2003/11/06 22:10:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.8 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -219,6 +219,30 @@ c--     Next, read the cost data file.
         end if
         read(  scrunit1, nml = ecco_cost_nml )
         close( scrunit1 )
+
+#ifdef ALLOW_CAL
+c--     Get the complete dates of the ...
+c--     ... SST data.
+        call cal_FullDate( sststartdate1,   sststartdate2,
+     &                     sststartdate,    mythid )
+c--     ... TMI data.
+        call cal_FullDate( tmistartdate1,   tmistartdate2,
+     &                     tmistartdate,    mythid )
+c--     ... SSS data.
+        call cal_FullDate( sssstartdate1,   sssstartdate2,
+     &                     sssstartdate,    mythid )     
+c--     ... T/P data.
+        call cal_FullDate( topexstartdate1, topexstartdate2,
+     &                     topexstartdate,  mythid )
+c--     ... ERS data.
+        call cal_FullDate( ersstartdate1,   ersstartdate2,
+     &                     ersstartdate,    mythid )
+c--     ... SCAT data.
+        call cal_FullDate( scatstartdate1,   scatstartdate2,
+     &                     scatxstartdate,    mythid )
+        call cal_FullDate( scatstartdate1,   scatstartdate2,   
+     &                     scatystartdate,    mythid )
+#endif
 
       _END_MASTER( mythid )
 

@@ -1,12 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_averagesinit.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
 
-      subroutine cost_averagesinit( mythid )
+      subroutine cost_AveragesInit(
+     I                              mythid
+     &                            )
 
 c     ==================================================================
-c     SUBROUTINE cost_averagesinit
+c     SUBROUTINE cost_AveragesInit
 c     ==================================================================
 c
 c     o Set average fields for temperature, salinity, surface pressure,
@@ -21,7 +23,7 @@ c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
 c
 c     ==================================================================
-c     SUBROUTINE cost_averagesinit
+c     SUBROUTINE cost_AveragesInit
 c     ==================================================================
 
       implicit none
@@ -74,9 +76,7 @@ c--       Initialise surface pressure average.
 #endif
 
 #if (defined (ALLOW_THETA_COST_CONTRIBUTION) || \
-     defined (ALLOW_SST_COST_CONTRIBUTION) || \
      defined (ALLOW_CTDT_COST_CONTRIBUTION) || \
-     defined (ALLOW_CTDTCLIM_COST_CONTRIBUTION) || \
      defined (ALLOW_XBT_COST_CONTRIBUTION) || \
      defined (ALLOW_DRIFT_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
@@ -89,12 +89,21 @@ c--       Initialise temperature average (3d).
             enddo
           enddo
           xx_tbar_mean_dummy = 0. _d 0
+#else
+#ifdef ALLOW_SST_COST_CONTRIBUTION
+c--       Initialise temperature average (2d).
+          k = 1
+          do j = jmin,jmax
+            do i =  imin,imax
+              tbar(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+          xx_tbar_mean_dummy = 0. _d 0
+#endif
 #endif
 
 #if (defined (ALLOW_SALT_COST_CONTRIBUTION) || \
-     defined (ALLOW_SSS_COST_CONTRIBUTION) || \
      defined (ALLOW_CTDS_COST_CONTRIBUTION) || \
-     defined (ALLOW_CTDSCLIM_COST_CONTRIBUTION) || \
      defined (ALLOW_DRIFT_COST_CONTRIBUTION) || \
      defined (ALLOW_OBCS_COST_CONTRIBUTION))
 c--       Initialise salt average.
@@ -106,11 +115,21 @@ c--       Initialise salt average.
             enddo
           enddo
           xx_sbar_mean_dummy = 0. _d 0
+#else
+#ifdef ALLOW_SSS_COST_CONTRIBUTION
+c--       Initialise salinity average (2d).
+          k = 1
+          do j = jmin,jmax
+            do i =  imin,imax
+              sbar(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+          xx_sbar_mean_dummy = 0. _d 0
+#endif          
 #endif
 
 #if (defined (ALLOW_DRIFTER_COST_CONTRIBUTION) || \
-     defined (ALLOW_CURMTR_COST_CONTRIBUTION) || \
-     defined (OBCS_AGEOS_COST_CONTRIBUTION))
+     defined (ALLOW_OBCS_COST_CONTRIBUTION))
 c--       Initialise uvel, vvel average.
           do k = 1,nr
             do j = jmin,jmax
@@ -166,15 +185,10 @@ c--       Initialise salinity average (2d).
             enddo
           enddo  
           xx_sflux_mean_dummy = 0. _d 0
-#endif
+#endif    
 
         enddo
       enddo
-
-#ifdef ALLOW_COST_INI_FIN
-      xx_theta_ini_fin_dummy = 0. _d 0
-      xx_salt_ini_fin_dummy = 0. _d 0
-#endif
 
       return
       end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_saltflux.F,v 1.2 2004/01/20 16:59:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_saltflux.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -102,24 +102,6 @@ c     Number of records to be used.
 
 #ifdef ALLOW_SFLUX_COST_CONTRIBUTION
 
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i9.8)')
-     &  ' cost_saltflux: number of records to process: ',nrec
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
-#endif
-
       if (optimcycle .ge. 0) then
         ilfld=ilnblnk( xx_sflux_file )
         write(fnamefld(1:80),'(2a,i10.10)') 
@@ -151,7 +133,7 @@ c--     Loop over this thread's tiles.
             do j = jmin,jmax
               do i = imin,imax
                 xx_sflux_mean(i,j,bi,bj) = xx_sflux_mean(i,j,bi,bj)
-     &                  + tmpfld2d(i,j,bi,bj)*maskC(i,j,1,bi,bj)
+     &                                     + tmpfld2d(i,j,bi,bj)
               enddo
             enddo
           enddo
@@ -170,7 +152,9 @@ c--       Determine the weights to be used.
               xx_sflux_mean(i,j,bi,bj)
      &              = xx_sflux_mean(i,j,bi,bj)/float(nrec)
               tmpx = xx_sflux_mean(i,j,bi,bj)/1.6 _d -8
-              if (maskw(i,j,kk,bi,bj) .ne. 0.) then
+              if (maskC(i,j,kk,bi,bj) .ne. 0.) then
+                if ( ABS(R_low(i,j,bi,bj)) .LT. 1000. )
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/1000.
                 fctilem = fctilem
      &                + cosphi(i,j,bi,bj)
      &                *tmpx*tmpx
@@ -220,6 +204,8 @@ c--         Determine the weights to be used.
               do i = imin,imax
                 if (_hFacC(i,j,kk,bi,bj) .ne. 0.) then
                   tmpx = tmpfld2d(i,j,bi,bj)-xx_sflux_mean(i,j,bi,bj)
+                  if ( ABS(R_low(i,j,bi,bj)) .LT. 1000. )
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/1000.
                   fctile = fctile
      &                 + wsflux(i,j,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.3 2004/01/20 16:59:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_salt.F,v 1.4 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -53,9 +53,6 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      _RS        one_rs
-      parameter( one_rs = 1. )
-
       integer bi,bj
       integer i,j,k
       integer itlo,ithi
@@ -81,9 +78,8 @@ c     == local variables ==
       character*(MAX_LEN_MBUF) msgbuf
 
 #ifdef GENERIC_BAR_MONTH
-      integer mrec, nyears, iyear, tmpmon
-#endif
-
+      integer mrec, nyears, iyear
+#endif      
 c     == external functions ==
 
       integer  ilnblnk
@@ -100,28 +96,13 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
-      spval = -9990.
+      spval = 25.
 
 c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
 #ifdef ALLOW_SALT_COST_CONTRIBUTION
-
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i8.8)')
-     &    ' cost_Salt: number of records to process = ',nmonsrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
-#endif
 
       if (optimcycle .ge. 0) then
         ilsalt = ilnblnk( sbarfile )
@@ -132,26 +113,8 @@ c--   Read tiled data.
       fcthread = 0. _d 0
 
 #ifdef GENERIC_BAR_MONTH
-
-      do bj = jtlo,jthi
-         do bi = itlo,ithi
-            do k = 1,nr
-               do j = jmin,jmax
-                  do i = imin,imax
-                     sbar_gen(i,j,k,bi,bj) = 0.
-                  enddo
-               enddo
-            enddo
-         enddo
-      enddo
-
 c--   Loop over month
-      if (nmonsrec.GT.12) then
-         tmpmon = 12
-      else
-         tmpmon = nmonsrec
-      endif
-      do irec = 1,tmpmon
+      do irec = 1,12
          nyears=int((nmonsrec-irec)/12)+1
          if(nyears.gt.0) then
             do iyear=1,nyears
@@ -181,9 +144,7 @@ c--     Read time averages and the monthly mean data.
                enddo
             enddo
          enddo
-
 #else
-
 c--   Loop over records.
       do irec = 1,nmonsrec
 
@@ -192,9 +153,7 @@ c--     Read time averages and the monthly mean data.
      &                        doglobalread, ladinit,
      &                        optimcycle, mythid,
      &                        xx_sbar_mean_dummy )
-
 #endif
-
 c--     Determine the month to be read.
         levoff = mod(modelstartdate(1)/100,100)
         levmon = (irec-1) + levoff
@@ -300,10 +259,31 @@ c--     Print cost function for all tiles.
 #ifdef GENERIC_BAR_MONTH
         endif
 #endif
-
       enddo
 c--   End of loop over records.
 
+#else
+c--   Do not enter the calculation of the salinity contribution to
+c--   the final cost function.
+
+      _BEGIN_MASTER( mythid )
+        write(msgbuf,'(a)') ' '
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,a)')
+     &    ' cost_Salt: no contribution of salinity field ',
+     &                 'to cost function.'
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,a,i9.8)')
+     &    ' cost_Salt: number of records that would have',
+     &                ' been processed: ',nmonsrec
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a)') ' '
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+      _END_MASTER( mythid )
 #endif
 
       return

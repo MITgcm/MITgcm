@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readsssfields.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readsssfields.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -58,9 +58,22 @@ c     == local variables ==
       _RL spval
       _RL vartile
 
+cnew(
+      integer  il
+      integer mody, modm
+      integer iyear, imonth
+      character*(80) fnametmp
+      logical exst
+cnew)
+
+c     == external functions ==
+
+      integer  ilnblnk
+      external ilnblnk
+
 c     == end of interface ==
 
-      parameter (spval = -90.0 ) 
+      parameter (spval = 25.0 ) 
 ce    --> there is certainly a better place for this.
 
       jtlo = mybylo(mythid)
@@ -72,31 +85,35 @@ ce    --> there is certainly a better place for this.
       imin = 1
       imax = snx
 
-      beginsss = sssstartdate(1)/10000
-      beginrun = modelstartdate(1)/10000
-      if ( beginsss .eq. beginrun ) then
-        sssrec = mod(modelstartdate(1)/100,100) -
-     &           mod(sssstartdate(1)/100,100) + irec
-      else
-        sssrec = ( beginrun - beginsss - 1)*nmonthyear +
-     &           (nmonthyear - mod(sssstartdate(1)/100,100) +
-     &            1) + mod(modelstartdate(1)/100,100) - 1 + irec
+c      beginsss = sssstartdate(1)/10000
+c      beginrun = modelstartdate(1)/10000
+c      if ( beginsss .eq. beginrun ) then
+c        sssrec = mod(modelstartdate(1)/100,100) -
+c     &           mod(sssstartdate(1)/100,100) + irec
+c      else
+c        sssrec = ( beginrun - beginsss - 1)*nmonthyear +
+c     &           (nmonthyear - mod(sssstartdate(1)/100,100) +
+c     &            1) + mod(modelstartdate(1)/100,100) - 1 + irec
+c      endif
+
+cnew(
+      mody = modelstartdate(1)/10000
+      modm = modelstartdate(1)/100 - mody*100
+      iyear = mody + INT((modm-1+irec-1)/12)
+      imonth = 1 + MOD(modm-1+irec-1,12)
+
+      il=ilnblnk(sssdatfile)
+      write(fnametmp(1:80),'(2a,i4)') 
+     &     sssdatfile(1:il), '_', iyear
+      inquire( file=fnametmp, exist=exst )
+      if (.NOT. exst) then
+         write(fnametmp(1:80),'(a)') sssdatfile(1:il)
+         imonth = irec
       endif
 
-      if ( sssrec.gt.0 .and. sssdatfile .ne. ' ' ) then
-        call mdsreadfield( sssdatfile, cost_iprec, cost_yftype, 1,
-     &                   sssdat, sssrec, mythid )
-      else
-         do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do j = jmin,jmax
-                  do i = imin,imax
-                     sssdat(i,j,bi,bj)=spval
-                  enddo
-               enddo
-            enddo
-         enddo
-      endif
+      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, sssdat,
+     &                   imonth, mythid )
+cnew)
 
       nobs = 0
       do bj = jtlo,jthi
@@ -106,10 +123,12 @@ ce    --> there is certainly a better place for this.
             do i = imin,imax
               if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
                 sssmask(i,j,bi,bj) = 0. _d 0
+              else if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
+                sssmask(i,j,bi,bj) = 0. _d 0
               else
                 sssmask(i,j,bi,bj) = 1. _d 0
               endif
-              if (sssdat(i,j,bi,bj) .le. spval) then
+              if (sssdat(i,j,bi,bj) .lt. spval) then
                 sssmask(i,j,bi,bj) = 0. _d 0
               endif
               if (sssdat(i,j,bi,bj) .eq. 0. _d 0 ) then

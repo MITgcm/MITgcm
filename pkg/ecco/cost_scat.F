@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.1 2003/11/06 22:10:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -90,21 +90,6 @@ c--   Read tiled data.
 
 #ifdef ALLOW_SCAT_COST_CONTRIBUTION
 
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i8.8)')
-     &    ' cost_scat: number of records to process = ',nmonsrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
-#endif
-
       if (optimcycle .ge. 0) then
         ilsalt = ilnblnk( tauxbarfile )
         write(fnametaux(1:80),'(2a,i10.10)')
@@ -112,12 +97,6 @@ c--   Read tiled data.
        ilsalt = ilnblnk( tauybarfile )
         write(fnametauy(1:80),'(2a,i10.10)')
      &    tauybarfile(1:ilsalt),'.',optimcycle
-      else
-        print*
-        print*,' cost_scat: optimcycle has a wrong value.'
-        print*,'           optimcycle = ',optimcycle
-        print*
-        stop   '  ... stopped in cost_scat.'
       endif
 
       fcthread_scatx = 0. _d 0
@@ -147,10 +126,12 @@ c--     Read time averages and the monthly mean data.
             k = 1
 
 c--         Compute cost rel. to monthly SCAT field.
+
             call cost_ReadscatXFields( irec, mythid )
+
             do j = jmin,jmax
               do i = imin,imax
-                if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
+                if (maskW(i,j,k,bi,bj) .ne. 0.) then
                    fctile_scatx = fctile_scatx +
      &                  wscatx(i,j,bi,bj)*cosphi(i,j,bi,bj)*
      &                  ( (tauxbar(i,j,bi,bj)-scatxdat(i,j,bi,bj))*
@@ -161,10 +142,12 @@ c--         Compute cost rel. to monthly SCAT field.
             enddo
 
 c--         Compute cost rel. to monthly SCAT field.
+
             call cost_ReadscatYFields( irec, mythid )
+
             do j = jmin,jmax
               do i = imin,imax 
-                if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
+                if (maskS(i,j,k,bi,bj) .ne. 0.) then
                    fctile_scaty = fctile_scaty +
      &                  wscaty(i,j,bi,bj)*cosphi(i,j,bi,bj)*
      &                  ( (tauybar(i,j,bi,bj)-scatydat(i,j,bi,bj))*

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.8 2004/09/17 23:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.9 2004/10/11 16:38:53 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -734,15 +734,13 @@ c--   Compute meridional heat transport
 
 c--   Compute the cost function contribution of the boundary forcing,
 c--   i.e. heat flux, salt flux, zonal and meridional wind stress.
-      call timer_start('COST_FORCING        [ECCO SPIN-UP]', mythid)
-      call cost_forcing( myiter, mytime, mythid )
-      call timer_stop ('COST_FORCING        [ECCO SPIN-UP]', mythid)
-
-#ifdef ALLOW_OBCS_COST_CONTRIBUTION
-      call timer_start('cost_obcs           [ECCO SPIN-UP]', mythid)
-      call cost_obcs( myiter, mytime, mythid )
-      call timer_stop ('cost_obcs           [ECCO SPIN-UP]', mythid)
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_forcing',myThid)
 #endif
+      call timer_start('cost_forcing       [ECCO SPIN-DOWN]', mythid)
+      call cost_forcing( myiter, mytime, mythid )
+      call timer_stop ('cost_forcing       [ECCO SPIN-DOWN]', mythid)
 
 c--   Compute cost function contribution of Temperature and Salinity.
 #ifndef DISABLE_DEBUGMODE
@@ -752,6 +750,16 @@ c--   Compute cost function contribution of Temperature and Salinity.
       call timer_start('cost_hyd           [ECCO SPIN-DOWN]', mythid)
       call cost_hyd( myiter, mytime, mythid )
       call timer_stop ('cost_hyd           [ECCO SPIN-DOWN]', mythid)
+
+#ifdef ALLOW_OBCS_COST_CONTRIBUTION
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_obcs',myThid)
+#endif
+      call timer_start('cost_obcs          [ECCO SPIN-DOWN]', mythid)
+      call cost_obcs( myiter, mytime, mythid )
+      call timer_stop ('cost_obcs          [ECCO SPIN-DOWN]', mythid)
+#endif
 
 #ifdef ALLOW_CURMTR_COST_CONTRIBUTION
 #ifndef DISABLE_DEBUGMODE
@@ -772,28 +780,6 @@ c--   Compute cost function contribution of SSH.
       call timer_start('cost_ssh           [ECCO SPIN-DOWN]', mythid)
       call cost_ssh( myiter, mytime, mythid )
       call timer_stop ('cost_ssh           [ECCO SPIN-DOWN]', mythid)
-#endif
-
-c--   Compute cost function contribution of SSS. 
-#ifdef ALLOW_SST_COST_CONTRIBUTION 
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('cost_sst',myThid)
-#endif
-      call timer_start('cost_sst           [ECCO SPIN-DOWN]', mythid)
-      call cost_sst( myiter, mytime, mythid )
-      call timer_stop ('cost_sst           [ECCO SPIN-DOWN]', mythid)
-#endif
-
-c--   Compute cost function contribution of SSS.
-#ifdef ALLOW_SSS_COST_CONTRIBUTION
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('cost_sss',myThid)
-#endif
-      call timer_start('cost_sss           [ECCO SPIN-DOWN]', mythid)
-      call cost_sss( myiter, mytime, mythid )
-      call timer_stop ('cost_sss           [ECCO SPIN-DOWN]', mythid)
 #endif
 
 c--   Compute cost function contribution of drifter's velocities.
@@ -869,7 +855,7 @@ c--   Sum all cost function contributions.
      &    CALL DEBUG_CALL('cost_final',myThid)
 #endif
       call timer_start('COST_FINAL         [ECCO SPIN-DOWN]', mythid)
-      call cost_final( mythid )
+      call ecco_cost_final( mythid )
       call timer_stop ('COST_FINAL         [ECCO SPIN-DOWN]', mythid)
 
 #endif /* ALLOW_COST */

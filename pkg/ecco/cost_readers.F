@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -20,8 +20,6 @@ c     changed: Christian Eckert eckert@mit.edu 25-Feb-2000
 c
 c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
-c
-c     changed: Armin Koehl akoehl@ucsd.edu 17-Mar-2003
 c
 c     ==================================================================
 c     SUBROUTINE cost_ReadERS
@@ -63,6 +61,22 @@ c     == local variables ==
       _RL factor
       _RL vartile
 
+cnew(
+      integer  il
+      _RL daytime
+      integer dayiter
+      integer daydate(4)
+      integer yday, ymod
+      integer md, dd, sd, ld, wd
+      character*(80) fnametmp
+      logical exst
+cnew)
+
+c     == external functions ==
+ 
+      integer  ilnblnk
+      external ilnblnk
+
 c     == end of interface ==
 
       jtlo = mybylo(mythid)
@@ -77,32 +91,45 @@ c     == end of interface ==
       factor = 0.01
       spval = -9990. 
 
-      middate(1) = modelstartdate(1)
-      middate(2) = 120000
+cnew(
+      daytime = FLOAT(secondsperday*(irec-1))
+      dayiter = hoursperday*(irec-1)
+      call cal_getdate( dayiter, daytime, daydate, mythid )
+      call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
+      ymod = ersstartdate(1)/10000
+
+      if ( ymod .EQ. yday ) then
+         middate(1) = modelstartdate(1)
+      else
+         middate(1) = yday*10000+100+1
+      endif
+      middate(2) = 0
       middate(3) = modelstartdate(3)
       middate(4) = modelstartdate(4)
 
-      call cal_TimePassed( ersstartdate, middate, difftime, mythid )
+      call cal_TimePassed( middate, daydate, difftime, mythid )
       call cal_ToSeconds( difftime, diffsecs, mythid )
+      sshrec = int(diffsecs/ersperiod) + 1
 
-      noffset = int(diffsecs/ersperiod)
-      sshrec  = noffset + irec
-      nobs    = 0
-
-      if ( sshrec .gt. 0 .and. ersfile .ne. ' ' ) then
-         call mdsreadfield( ersfile, cost_iprec, cost_yftype, 1, ersobs, 
-     &                    sshrec, mythid )
-      else
-         do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do j = jmin,jmax
-                  do i = imin,imax
-                     ersobs(i,j,bi,bj)=spval
-                  enddo
-               enddo
-            enddo
-         enddo
+      il=ilnblnk(ersfile)
+      write(fnametmp(1:80),'(2a,i4)')
+     &     ersfile(1:il), '_', yday
+      inquire( file=fnametmp, exist=exst )
+      if (.NOT. exst) then
+         write(fnametmp(1:80),'(a)') ersfile(1:il)
+         sshrec = irec
       endif
+ 
+      print *, 'ph-ssh-ers ', irec, sshrec, ymod, yday
+      print *, 'ph-ssh-ers ', fnametmp
+cnew)
+
+
+      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, ersobs, 
+     &                   sshrec, mythid )
+
+
+      nobs = 0
 
       do bj = jtlo,jthi
         do bi = itlo,ithi

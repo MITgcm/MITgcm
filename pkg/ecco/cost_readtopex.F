@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopex.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readtopex.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -61,6 +61,22 @@ c     == local variables ==
       _RL factor
       _RL vartile
 
+cnew(
+      integer  il
+      _RL daytime
+      integer dayiter
+      integer daydate(4)
+      integer yday, ymod
+      integer md, dd, sd, ld, wd
+      character*(80) fnametmp
+      logical exst
+cnew)
+
+c     == external functions ==
+ 
+      integer  ilnblnk
+      external ilnblnk
+
 c     == end of interface ==
 
       jtlo = mybylo(mythid)
@@ -75,32 +91,43 @@ c     == end of interface ==
       factor = 0.01
       spval = -9990. 
 
-      middate(1) = modelstartdate(1)
-      middate(2) = 120000
+cnew(
+      daytime = FLOAT(secondsperday*(irec-1))
+      dayiter = hoursperday*(irec-1)
+      call cal_getdate( dayiter, daytime, daydate, mythid )
+      call cal_convdate( daydate,yday,md,dd,sd,ld,wd,mythid )
+      ymod = topexstartdate(1)/10000
+
+      if ( ymod .EQ. yday ) then
+         middate(1) = modelstartdate(1)
+      else
+         middate(1) = yday*10000+100+1
+      endif
+      middate(2) = 0
       middate(3) = modelstartdate(3)
       middate(4) = modelstartdate(4)
 
-      call cal_TimePassed( topexstartdate, middate, difftime, mythid )
+      call cal_TimePassed( middate, daydate, difftime, mythid )
       call cal_ToSeconds( difftime, diffsecs, mythid )
+      sshrec = int(diffsecs/topexperiod) + 1
 
-      noffset = int(diffsecs/topexperiod)
-      sshrec  = noffset + irec
-      nobs    = 0
-
-      if ( sshrec.gt.0 .and. topexfile .ne. ' ' ) then
-        call mdsreadfield( topexfile, cost_iprec, cost_yftype, 1, tpobs, 
-     &                   sshrec, mythid )
-      else
-         do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do j = jmin,jmax
-                  do i = imin,imax
-                     tpobs(i,j,bi,bj)=spval
-                  enddo
-               enddo
-            enddo
-         enddo
+      il=ilnblnk(topexfile)
+      write(fnametmp(1:80),'(2a,i4)')
+     &     topexfile(1:il), '_', yday
+      inquire( file=fnametmp, exist=exst )
+      if (.NOT. exst) then
+         write(fnametmp(1:80),'(a)') topexfile(1:il)
+         sshrec = irec
       endif
+ 
+      print *, 'ph-ssh-topex ', irec, sshrec, ymod, yday
+      print *, 'ph-ssh-topex ', fnametmp
+cnew)
+
+      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, tpobs, 
+     &                   sshrec, mythid )
+
+      nobs    = 0
 
       do bj = jtlo,jthi
         do bi = itlo,ithi

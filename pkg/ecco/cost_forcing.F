@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_forcing.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -34,13 +34,9 @@ c     == global variables ==
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "DYNVARS.h"
 
 #include "cal.h"
-#include "ecco_cost.h"
 #include "ctrl.h"
-#include "ctrl_dummy.h"
-#include "optim.h"
 
 c     == routine arguments ==
 
@@ -52,13 +48,6 @@ c     == local variables ==
 
       integer startrec
       integer endrec
-      integer ilfld
-      character*(80) fnamefld
-
-c     == external functions ==
-
-      integer  ilnblnk
-      external ilnblnk
 
 c     == end of interface ==
 
@@ -127,19 +116,5 @@ c--   Meridional wind speed contribution to the cost function.
       call cost_vwind( myiter, mytime,
      &                     startrec, endrec, mythid )
 #endif
-
-#ifdef ALLOW_COST_INI_FIN
-      ilfld = ilnblnk( xx_theta_ini_fin_file )
-      write(fnamefld(1:80),'(2a,i10.10)') 
-     &     xx_theta_ini_fin_file(1:ilfld),'.',optimcycle
-      call active_write_xyz( fnamefld, theta, 1, optimcycle, mythid,
-     &                     xx_theta_ini_fin_dummy )
-c
-      ilfld = ilnblnk( xx_salt_ini_fin_file )
-      write(fnamefld(1:80),'(2a,i10.10)') 
-     &     xx_salt_ini_fin_file(1:ilfld),'.',optimcycle
-      call active_write_xyz( fnamefld, salt, 1, optimcycle, mythid,
-     &                     xx_salt_ini_fin_dummy )
-#endif      
 
       end

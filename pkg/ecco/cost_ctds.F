@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctds.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctds.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -16,7 +16,6 @@ c
 c     o Evaluate cost function contribution of CTD temperature data.
 c
 c     started:  Elisabeth Remy eremy@ucsd.edu 30-Aug-2000
-c
 c
 c     ==================================================================
 c     SUBROUTINE cost_CTDS
@@ -70,6 +69,14 @@ c     == local variables ==
 
       character*(MAX_LEN_MBUF) msgbuf
 
+cnew(
+      integer  il
+      integer mody, modm
+      integer iyear, imonth
+      character*(80) fnametmp
+      logical exst
+cnew)
+
 c     == external functions ==
 
       integer  ilnblnk
@@ -85,10 +92,8 @@ c     == end of interface ==
       jmax = sny
       imin = 1
       imax = snx
-
-cph   merged from SIO
-cph      spval = -9990.
-      spval = -9.
+      
+      spval = 25.
 
 c--   Read state record from global file.
       doglobalread = .false.
@@ -96,26 +101,18 @@ c--   Read state record from global file.
       
 #ifdef ALLOW_CTDS_COST_CONTRIBUTION
 
-#ifdef ECCO_VERBOSE
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a,i8.8)')
-     &  ' cost_CTDS: number of records to process =', nmonsrec
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-      write(msgbuf,'(a)') ' '
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-#endif
-
       if (optimcycle .ge. 0) then
         ilu=ilnblnk( sbarfile )
         write(fnamesalt(1:80),'(2a,i10.10)') 
-     &       sbarfile(1:ilu), '.', optimcycle
+     &       sbarfile(1:ilu),'.',optimcycle
       endif
       
       fcthread_ctds = 0. _d 0
+
+cnew(
+      mody = modelstartdate(1)/10000
+      modm = modelstartdate(1)/100 - mody*100
+cnew)
 
 c--   Loop over records.
       do irec = 1,nmonsrec
@@ -125,8 +122,21 @@ c--     Read time averages and the monthly mean data.
      &          doglobalread, ladinit,
      &          optimcycle, mythid, xx_sbar_mean_dummy )
   
-        call mdsreadfield( ctdsfile, cost_iprec, 'RL', nr, ctdsobs,
-     &                     irec, mythid)
+cnew(
+        iyear = mody + INT((modm-1+irec-1)/12)
+        imonth = 1 + MOD(modm-1+irec-1,12)
+        il=ilnblnk(ctdsfile)
+        write(fnametmp(1:80),'(2a,i4)') 
+     &       ctdsfile(1:il), '_', iyear
+        inquire( file=fnametmp, exist=exst )
+        if (.NOT. exst) then
+           write(fnametmp(1:80),'(a)') ctdsfile(1:il)
+           imonth = irec
+        endif
+
+        call mdsreadfield( fnametmp, cost_iprec, 'RL', nr, ctdsobs,
+     &                     imonth, mythid)
+cnew)
 
 c--     Loop over this thread's tiles.
         do bj = jtlo,jthi
@@ -147,22 +157,21 @@ cph               to make it independnet of Nr:
 cph
 cph               if ( rC(K) .GT. -1000. ) then
 cph)
-c                 set cmask=0 in areas shallower than 1000m 
-                  if ((ctdsobs(i,j,k,bi,bj) .ne. 0.).and.
-     &                  (ctdsobs(i,j,k,bi,bj) .gt. spval).and.
-     &                  (_hFacC(i,j,13,bi,bj) .ne. 0.).and.
-     &                  (_hFacC(i,j,k,bi,bj) .ne. 0.)) then
-                     www(i,j)    = cosphi(i,j,bi,bj)
-                     tmpobs(i,j) = ctdsobs(i,j,k,bi,bj)
-                     tmpbar(i,j) = sbar(i,j,k,bi,bj)
+                  if ((ctdsobs(i,j,k,bi,bj) .ne. 0.).and. 
+     &             (ctdsobs(i,j,k,bi,bj) .gt. spval).and.
+     &             (_hFacC(i,j,13,bi,bj) .ne. 0.).and. 
+     &             (_hFacC(i,j,k,bi,bj) .ne. 0.)) then
+                  www(i,j)    = cosphi(i,j,bi,bj)
+                  tmpobs(i,j) = ctdsobs(i,j,k,bi,bj)
+                  tmpbar(i,j) = sbar(i,j,k,bi,bj)
 c                  wtmp(i,j) = wsalt(k,bi,bj)
-                     wtmp(i,j) = wsalt2(i,j,k,bi,bj)
+                  wtmp(i,j) = wsalt2(i,j,k,bi,bj)
 
-                     fctile_ctds = fctile_ctds +
+                  fctile_ctds = fctile_ctds + 
      &                             (wtmp(i,j)*www(i,j))*
      &                             (tmpbar(i,j)-tmpobs(i,j))*
      &                             (tmpbar(i,j)-tmpobs(i,j))
-                  endif
+		endif
                 enddo
               enddo
             enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readsstfields.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readsstfields.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -58,6 +58,19 @@ c     == local variables ==
       _RL spval
       _RL vartile
 
+cnew(
+      integer  il
+      integer mody, modm
+      integer iyear, imonth
+      character*(80) fnametmp
+      logical exst
+cnew)
+
+c     == external functions ==
+
+      integer  ilnblnk
+      external ilnblnk
+
 c     == end of interface ==
 
       parameter (spval = -1.8 ) 
@@ -72,32 +85,37 @@ ce    --> there is certainly a better place for this.
       imin = 1
       imax = snx
 
-      beginsst = sststartdate(1)/10000
-      beginrun = modelstartdate(1)/10000
+c      beginsst = sststartdate(1)/10000
+c      beginrun = modelstartdate(1)/10000
+c      if ( beginsst .eq. beginrun ) then
+c        sstrec = mod(modelstartdate(1)/100,100) -
+c     &           mod(sststartdate(1)/100,100) + irec
+c      else
+c        sstrec = ( beginrun - beginsst - 1)*nmonthyear +
+c     &           (nmonthyear - mod(sststartdate(1)/100,100) +
+c     &            1) + mod(modelstartdate(1)/100,100) - 1 + irec
+c      endif
 
-      if ( beginsst .eq. beginrun ) then
-        sstrec = mod(modelstartdate(1)/100,100) -
-     &           mod(sststartdate(1)/100,100) + irec
-      else
-        sstrec = ( beginrun - beginsst - 1)*nmonthyear +
-     &           (nmonthyear - mod(sststartdate(1)/100,100) +
-     &            1) + mod(modelstartdate(1)/100,100) - 1 + irec
+cnew(
+      mody = modelstartdate(1)/10000
+      modm = modelstartdate(1)/100 - mody*100
+      iyear = mody + INT((modm-1+irec-1)/12)
+      imonth = 1 + MOD(modm-1+irec-1,12)
+
+      il=ilnblnk(sstdatfile)
+      write(fnametmp(1:80),'(2a,i4)') 
+     &     sstdatfile(1:il), '_', iyear
+      inquire( file=fnametmp, exist=exst )
+      if (.NOT. exst) then
+         write(fnametmp(1:80),'(a)') sstdatfile(1:il)
+         imonth = irec
       endif
 
-      if ( sstrec.gt.0 .and. sstdatfile .ne. ' ' ) then
-        call mdsreadfield( sstdatfile, cost_iprec, cost_yftype, 1,
-     &                   sstdat, sstrec, mythid )
-      else
-         do bj = jtlo,jthi
-            do bi = itlo,ithi
-               do j = jmin,jmax
-                  do i = imin,imax
-                     sstdat(i,j,bi,bj)=spval
-                  enddo
-               enddo
-            enddo
-         enddo
-      endif
+      print *, 'ph-cost-t SST ', irec, imonth, iyear, fnametmp
+      
+      call mdsreadfield( fnametmp, cost_iprec, cost_yftype, 1, sstdat,
+     &                   imonth, mythid )
+cnew)
 
       nobs = 0
       do bj = jtlo,jthi
@@ -108,10 +126,12 @@ ce    --> there is certainly a better place for this.
 
               if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
                 sstmask(i,j,bi,bj) = 0. _d 0
+              else if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
+                sstmask(i,j,bi,bj) = 0. _d 0
               else
                 sstmask(i,j,bi,bj) = 1. _d 0
               endif
-              if (sstdat(i,j,bi,bj) .le. spval) then
+              if (sstdat(i,j,bi,bj) .lt. spval) then
                 sstmask(i,j,bi,bj) = 0. _d 0
               endif
               if (sstdat(i,j,bi,bj) .eq. 0. _d 0 ) then
@@ -143,7 +163,7 @@ c--   One could of course do a global sum here.
       if (nobs .gt. 0) then
         vartile = vartile/float(nobs)
       else
-        vartile = spval
+        vartile = 0.0
       endif
 
       return

@@ -45,7 +45,7 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi,bj
-      integer i,j,k,kk
+      integer i,j,kk
       integer itlo,ithi
       integer jtlo,jthi
       integer jmin,jmax
@@ -90,21 +90,6 @@ c--   Read tiled data.
 
 #ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
 
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i8.8)')
-     &    ' cost_mean_heatflux: no. of records to process = ',nmonsrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
-#endif
-
       if (optimcycle .ge. 0) then
         ilsalt = ilnblnk( hfluxbarfile )
         write(fnamehflux(1:80),'(2a,i10.10)')
@@ -129,16 +114,16 @@ c--     Read time averages and the monthly mean data.
             do j = jmin,jmax
               do i = imin,imax
                 tmpx=tmpfld2d(i,j,bi,bj)
-                if (maskw(i,j,kk,bi,bj) .ne. 0.) then
-                  fctilemm = fctilemm + tmpx*cos(yc(i,j,bi,bj)*deg2rad)
+                if (maskC(i,j,kk,bi,bj) .ne. 0.) then
+                  fctilemm = fctilemm + tmpx
+     $                  *cos(yc(i,j,bi,bj)*deg2rad)
                   sumcos = sumcos + cos(yc(i,j,bi,bj)*deg2rad)
                 endif
               enddo
             enddo
-
-            if(sumcos .eq. 0.) sumcos = 1.
+            if(sumcos.eq.0) sumcos=1
             fctilemm = (fctilemm / sumcos)
-            fctilemm = whfluxmm(bi,bj)*fctilemm
+            fctilemm = whfluxmm(bi,bj) * (fctilemm )
 
             objf_hfluxmm(bi,bj) = fctilemm
             fcthreadmm          = fcthreadmm + fctilemm
@@ -150,7 +135,7 @@ c--     Print cost function for all tiles.
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,i8.8)')
-     &    'cost_mean_heatflux:                       irec =  ',irec
+     &    ' ecco_cost.heatflux:                       irec =  ',irec
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         write(msgbuf,'(a,d22.15)')

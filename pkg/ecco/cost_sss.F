@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sss.F,v 1.2 2003/12/03 23:08:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sss.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -84,28 +84,13 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
-      spval = -9.0
+      spval = 25.0
 
 c--   Read tiled data.
       doglobalread = .false.
       ladinit      = .false.
 
 #ifdef ALLOW_SSS_COST_CONTRIBUTION
-
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i8.8)')
-     &    ' cost_sss: number of records to process = ',nmonsrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
-#endif
 
       if (optimcycle .ge. 0) then
         ilsalt = ilnblnk( sbarfile )
@@ -124,14 +109,14 @@ c--     Read time averages and the monthly mean data.
      &                        optimcycle, mythid,
      &                        xx_sbar_mean_dummy )
 
+        call cost_ReadSSSFields( irec, mythid )
+
         do bj = jtlo,jthi
           do bi = itlo,ithi
 
 c--         Loop over the model layers
             fctile_sss = 0. _d 0
             k = 1
-
-            call cost_ReadSSSFields( irec, mythid )
 
 c--           Determine the mask on weights
               do j = jmin,jmax

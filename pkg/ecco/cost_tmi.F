@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_tmi.F,v 1.1 2003/11/06 22:10:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_tmi.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -13,9 +13,9 @@ c     ==================================================================
 c     SUBROUTINE cost_tmi
 c     ==================================================================
 c
-c     o Evaluate cost function contribution of TMI SST
+c     o Evaluate cost function contribution of temperature.
 c
-c     started: Armin Koehl akoehl@ucsd.edu
+c     started: Ralf Giering 17-Jan-2001 copy from cost_theta.F
 c
 c     ==================================================================
 c     SUBROUTINE cost_tmi
@@ -84,7 +84,7 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
-      spval = -9990.
+      spval = -1.8
 
 c--   Read tiled data.
       doglobalread = .false.
@@ -92,31 +92,10 @@ c--   Read tiled data.
 
 #ifdef ALLOW_TMI_SST_COST_CONTRIBUTION
 
-#ifdef ECCO_VERBOSE
-      _BEGIN_MASTER( mythid )
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a,i8.8)')
-     &    ' cost_tmi: number of records to process = ',nmonsrec
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-        write(msgbuf,'(a)') ' '
-        call print_message( msgbuf, standardmessageunit,
-     &                      SQUEEZE_RIGHT , mythid)
-      _END_MASTER( mythid )
-#endif
-
       if (optimcycle .ge. 0) then
         iltheta = ilnblnk( tbarfile )
         write(fnametheta(1:80),'(2a,i10.10)')
      &    tbarfile(1:iltheta),'.',optimcycle
-      else
-        print*
-        print*,' cost_tmi: optimcycle has a wrong value.'
-        print*,'           optimcycle = ',optimcycle
-        print*
-        stop   '  ... stopped in cost_tmi.'
       endif
 
       fcthread_tmi = 0. _d 0
@@ -130,6 +109,8 @@ c--     Read time averages and the monthly mean data.
      &                        optimcycle, mythid,
      &                        xx_theta_dummy )
 
+        call cost_ReadTMIFields( irec, mythid )
+
         do bj = jtlo,jthi
           do bi = itlo,ithi
 
@@ -137,8 +118,6 @@ c--     Read time averages and the monthly mean data.
             k = 1
 
 c--         Compute cost rel. to monthly TMI SST climatology field.
-
-            call cost_ReadTMIFields( irec, mythid )
 
 c--           Determine the mask on weights
               do j = jmin,jmax
@@ -148,11 +127,11 @@ c--           Determine the mask on weights
                     cmask(i,j) = 0. _d 0
                   endif
                  
-                  if (tmidat(i,j,bi,bj) .le. spval) then
+                  if (tmidat(i,j,bi,bj) .lt. spval) then
                     cmask(i,j) = 0. _d 0
                   endif
                   
-                  ! set cmask=0 in areas shallower than 1000m 
+c--   set cmask=0 in areas shallower than 1000m 
                   if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
                     cmask(i,j) = 0. _d 0
                   endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta0.F,v 1.1 2003/11/06 22:10:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_theta0.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -116,6 +116,8 @@ c--         Determine the weights to be used.
               do i = imin,imax
                 if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
                   tmpx = tmpfld3d(i,j,k,bi,bj)
+		  if ( ABS(R_low(i,j,bi,bj)) .LT. 1000. )
+     &              tmpx = tmpx*ABS(R_low(i,j,bi,bj))/1000.
                   fctile = fctile
      &                 + wtheta(k,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
