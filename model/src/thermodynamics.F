@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.17 2002/03/04 17:26:41 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.18 2002/03/05 14:15:34 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -696,7 +696,11 @@ Ccs-
        CALL DEBUG_STATS_RL(Nr,Gs,'Gs (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,GtNm1,'GtNm1 (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,GsNm1,'GsNm1 (THERMODYNAMICS)',myThid)
-       CALL PTRACERS_DEBUG(myThid)
+#ifdef ALLOW_PTRACERS
+       IF ( usePTRACERS ) THEN
+         CALL PTRACERS_DEBUG(myThid)
+       ENDIF
+#endif /* ALLOW_PTRACERS */
       ENDIF
 #endif
 
