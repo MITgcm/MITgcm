@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.41 2004/07/06 20:14:32 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.42 2004/07/08 15:47:19 jmc Exp $
 #  $Name:  $
 #
 
@@ -868,26 +868,26 @@ for dir in $TESTDIRS ; do
 	OLD_COMMAND=$COMMAND
 	COMMAND="./mitgcmuv > output.txt"
 	for ex in $extra_runs ; do
-	    test -e "$dir/tr_run" && rm -rf "$dir/tr_run"
-	    mkdir "$dir/tr_run"
+	    test -e "$dir/tr_run.$ex" && rm -rf "$dir/tr_run.$ex"
+	    mkdir "$dir/tr_run.$ex"
 	    links=`( cd "$dir/input" > /dev/null 2>&1 ; ls -1 | grep -v CVS )`
 	    (
-		cd "$dir/tr_run"
+		cd "$dir/tr_run.$ex"
 		for i in $links; do
 		    ln -s ../input/$i $i
 		done
 	    )
 	    links=`( cd "$dir/input.$ex" > /dev/null 2>&1 ; ls -1 | grep -v CVS )`
 	    ( 
-		cd "$dir/tr_run"
+		cd "$dir/tr_run.$ex"
 		for i in $links; do
 		    test -e $i  &&  rm -f $i
 		    ln -s ../input.$ex/$i $i
 		done
 		ln -s ../$builddir/mitgcmuv mitgcmuv
 	    )
-	    runmodel $dir/tr_run && run=Y \
-		&& results=`testoutput $dir tr_run "."$ex`
+	    runmodel $dir/tr_run.$ex && run=Y \
+		&& results=`testoutput $dir tr_run.$ex "."$ex`
 	    fres=`printf '%s %s %s %s' ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N}`
 	    fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
 	    fres="$fres.$ex"
