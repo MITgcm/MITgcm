@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.17 2005/03/03 21:28:11 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.18 2005/03/08 19:48:51 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -656,11 +656,16 @@ C--------- Read file -----------------------------------------------
      .     ndatebc_32, undef_32,
      .     (nymdbc_32(i), nhmsbc_32(i), i=1,ndatebc_32)
 #ifdef _BYTESWAPIO
+      call MDS_BYTESWAPI4( 1, im_32)
+      call MDS_BYTESWAPI4( 1, jm_32)
       call MDS_BYTESWAPR4( 1, lat0_32)
       call MDS_BYTESWAPR4( 1, lon0_32)
       call MDS_BYTESWAPR4( 1, undef_32)
 #endif
 
+      print *,' Read header: ',cname, cdscrip
+      print *,' Read header: ',im_32, jm_32
+      print *,' Read header: ',npx_32, npy_32
       im = im_32
       jm = jm_32
       npx = npx_32
@@ -679,5 +684,35 @@ C--------- Read file -----------------------------------------------
   500 continue
       print *, 'Error reading boundary condition from unit ',iunit
       error = .true.
+      return
+      end
+
+#include "MDSIO_OPTIONS.h"
+
+      subroutine MDS_BYTESWAPI4( n, arr )
+C IN:
+C   n		integer - Number of 4-byte words in arr
+C IN/OUT:
+C   arr		integer*4  - Array declared as integer*4(n)
+C
+C Created: 05/05/99 adcroft@mit.edu (This is an unfortunate hack!!)
+
+      implicit none
+C Arguments
+      integer n
+      character*(*) arr
+C Local
+      integer i
+      character*(1) cc
+C     ------------------------------------------------------------------
+      do i=1,4*n,4
+       cc=arr(i:i)
+       arr(i:i)=arr(i+3:i+3)
+       arr(i+3:i+3)=cc
+       cc=arr(i+1:i+1)
+       arr(i+1:i+1)=arr(i+2:i+2)
+       arr(i+2:i+2)=cc
+      enddo
+C     ------------------------------------------------------------------
       return
       end
