@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_read_pickup.F,v 1.2 2005/02/23 15:52:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_read_pickup.F,v 1.3 2005/02/23 16:30:19 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -40,8 +40,7 @@ c     INTEGER prec, iChar, lChar, k
       EXTERNAL ILNBLNK
 
 #ifdef ALLOW_MDSIO
-      LOGICAL glf
-      INTEGER dUnit
+      INTEGER dUnit, n, m
 #endif /* ALLOW_MDSIO */
 
 #ifdef ALLOW_MNC
@@ -142,8 +141,7 @@ C         Read qdiag()
             fn(i:i) = ' '
           ENDDO
           write(fn,'(A,I10.10)') 'pickup_qdiag', nIter0
-          glf = globalFiles
-          CALL MDSREADFIELD(fn,readBinaryPrec,glf,'RL',
+          CALL MDSREADFIELD(fn,readBinaryPrec,'RL',
      &         numdiags,qdiag,1,myThid)
 
 C         Read ndiag()
@@ -153,13 +151,10 @@ C         Read ndiag()
           WRITE(fn,'(A,I10.10)') 'pickup_ndiag.', nIter0
           CALL MDSFINDUNIT( dUnit, mythid )
           OPEN( dUnit, file=fn )
-c         DO i = 1,numdiags
-c           READ(dUnit,'(I10)') ndiag(i)
-c         ENDDO
           DO n = 1,nlists
-           DO m = 1,nfields(n)
-            READ(dUnit,'(I10)') ndiag(jdiag(m,n))
-           ENDDO
+            DO m = 1,nfields(n)
+              READ(dUnit,'(I10)') ndiag(jdiag(m,n))
+            ENDDO
           ENDDO
           CLOSE( dUnit )
           _END_MASTER(myThid)

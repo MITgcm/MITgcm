@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.5 2005/02/23 05:31:03 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.6 2005/02/23 16:30:19 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -51,7 +51,7 @@ c     INTEGER prec, iChar, lChar, k
 
 #ifdef ALLOW_MDSIO
       LOGICAL lgf
-      INTEGER dUnit
+      INTEGER dUnit, n, m
 #endif /* ALLOW_MDSIO */
 
 #ifdef ALLOW_MNC
@@ -145,7 +145,7 @@ C         Write the ndiag() array
           CALL MNC_CW_ADD_VATTR_TEXT(d_cw_name,'description',
      &         'diagnostics state',myThid)
           
-          CALL MNC_CW_RL_W('I',diag_mnc_bn,0,0,
+          CALL MNC_CW_I_W('I',diag_mnc_bn,0,0,
      &         d_cw_name, ndiag, myThid)
           
           CALL MNC_CW_DEL_VNAME(d_cw_name, myThid)
@@ -178,8 +178,10 @@ C         Write ndiag()
           WRITE(fn,'(a,a)') 'pickup_ndiag.', suff(1:sn)
           CALL MDSFINDUNIT( dUnit, mythid )
           OPEN( dUnit, file=fn )
-          DO i = 1,numdiags
-            WRITE(dUnit,'(I10)') ndiag(i)
+          DO n = 1,nlists
+            DO m = 1,nfields(n)
+              WRITE(dUnit,'(I10)') ndiag(jdiag(m,n))
+            ENDDO
           ENDDO
           CLOSE( dUnit )
           _END_MASTER( myThid )
