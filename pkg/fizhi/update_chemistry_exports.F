@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.4 2004/06/11 18:50:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.5 2004/06/14 20:34:50 molod Exp $
 C $Name:  $
 
        subroutine update_chemistry_exports (myTime, myIter, myThid)
@@ -30,7 +30,7 @@ c pe on physics grid refers to bottom edge
       _RL oz1(nlatsoz,nlevsoz), strq1(nlatsq,nlevsq)
       _RL waterin(sNx,sNy,Nrphys), xlat(sNx,sNy)
 
-      integer i, j, L, bi, bj
+      integer i, j, L, LL, bi, bj
       integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
       integer nhms1,nymd1,nhms2,nymd2,imns,ipls
       _RL facm, facp
@@ -49,17 +49,16 @@ c pe on physics grid refers to bottom edge
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
 
-c  Construct the physics grid pressures
+c  Construct the physics grid pressures - count pephy levels top down
+c                                         (even though dpphy counted bottom up)
         do j = 1,sNy
         do i = 1,sNx
-         pephy(i,j,1,bi,bj)=(Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj))/
+         pephy(i,j,Nrphys+1,bi,bj)=(Ro_surf(i,j,bi,bj)+etaH(i,j,bi,bj))/
      .                       rstarExpC(i,j,bi,bj)
          do L = 2,Nrphys+1
-          pephy(i,j,L,bi,bj)=pephy(i,j,L-1,bi,bj)-dpphys(i,j,L-1,bi,bj)
+         LL = Nrphys+2-L
+         pephy(i,j,LL,bi,bj)=pephy(i,j,LL+1,bi,bj)-dpphys(i,j,L-1,bi,bj)
          enddo
-c Do not use a zero field as the top edge pressure for interpolation
-         if(pephy(i,j,Nrphys+1,bi,bj).lt.1.e-5)
-     .                               pephy(i,j,Nrphys+1,bi,bj) = 1.e-5
         enddo
         enddo
         do j = 1,sNy

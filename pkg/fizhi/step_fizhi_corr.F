@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.6 2004/06/07 18:11:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.7 2004/06/14 20:34:50 molod Exp $
 C $Name:  $
 
        subroutine step_fizhi_corr (myTime, myIter, myThid)
@@ -43,6 +43,7 @@ c pe on dynamics and physics grid refers to bottom edge
        _RL vphytemp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys,nSx,nSy)
        _RL thphytemp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys,nSx,nSy)
        _RL sphytemp(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys,nSx,nSy)
+       _RL tempphy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys,nSx,nSy)
 
        integer i, j, L, Lbotij, bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
@@ -119,13 +120,42 @@ c Create a wind magnitude field on the physics grid -
 
 c Compute correction term (new dyn state-phys state to dyn) on physics grid:
 c    First: interp physics state to dynamics grid
-        call phys2dyn(uphy,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
+C Note: physics field levels are numbered top down - need bottom up
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         tempphy(i,j,Nrphys+1-L,bi,bj) = uphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        call phys2dyn(tempphy,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
      .        1,sNx,1,sNy,bi,bj,pedyn,ksurfC,Nr,nlperdyn,udyntemp)
-        call phys2dyn(vphy,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         tempphy(i,j,Nrphys+1-L,bi,bj) = vphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        call phys2dyn(tempphy,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
      .        1,sNx,1,sNy,bi,bj,pedyn,ksurfC,Nr,nlperdyn,vdyntemp)
-        call phys2dyn(thphy,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         tempphy(i,j,Nrphys+1-L,bi,bj) = thphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        call phys2dyn(tempphy,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
      .        1,sNx,1,sNy,bi,bj,pedyn,ksurfC,Nr,nlperdyn,thdyntemp)
-        call phys2dyn(sphy,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         tempphy(i,j,Nrphys+1-L,bi,bj) = sphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+        call phys2dyn(tempphy,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
      .        1,sNx,1,sNy,bi,bj,pedyn,ksurfC,Nr,nlperdyn,sdyntemp)
 
        enddo
@@ -169,13 +199,42 @@ c    Fifth: Interpolate correction terms to physics grid
        do bi = myBxLo(myThid), myBxHi(myThid)
 
         call dyn2phys(udyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
-     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,uphytemp)
+     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,tempphy)
+C Note: correction term is now bottom up - needed in top down arrays
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         uphytemp(i,j,Nrphys+1-L,bi,bj) = tempphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
         call dyn2phys(vdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
-     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,vphytemp)
+     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,tempphy)
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         vphytemp(i,j,Nrphys+1-L,bi,bj) = tempphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
         call dyn2phys(thdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
-     .     1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,thphytemp)
+     .     1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,tempphy)
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         thphytemp(i,j,Nrphys+1-L,bi,bj) = tempphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
         call dyn2phys(sdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
-     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,sphytemp)
+     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,tempphy)
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         sphytemp(i,j,Nrphys+1-L,bi,bj) = tempphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
        enddo
        enddo
        CALL TIMER_STOP('DYN2PHYS          [STEP_FIZHI_CORR]',mythid)

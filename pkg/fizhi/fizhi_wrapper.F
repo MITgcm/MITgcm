@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.6 2004/06/07 18:11:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.7 2004/06/14 20:34:50 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -30,8 +30,10 @@ c-----------------------------------------------------------------------
        integer myTime, myIter, myThid 
 
 c pe on dynamics and physics grid refers to bottom edge
+       _RL pephy4fiz(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nrphys+1,nSx,nSy)
        _RL pephy(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nrphys+1,nSx,nSy)
        _RL pedyn(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr+1,nSx,nSy)
+       _RL tempphy(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nrphys,nSx,nSy)
 
        integer i, j, L, Lbotij, bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
@@ -48,7 +50,9 @@ c pe on dynamics and physics grid refers to bottom edge
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
 
-c  Construct the physics grid pressures
+c Construct the physics grid pressures
+C  Note: Need one array to send to fizhi (top-down) and another
+C        For the interpolations between physics and dynamics (bottom-up)
         do j = 1,sNy
         do i = 1,sNx
          pephy(i,j,1,bi,bj)=(Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj))/
@@ -57,6 +61,9 @@ c  Construct the physics grid pressures
           pephy(i,j,L,bi,bj)=pephy(i,j,L-1,bi,bj)-dpphys(i,j,L-1,bi,bj)
          enddo
 c Do not use a zero field as the top edge pressure for interpolation
+         do L = 1,Nrphys+1
+          pephy4fiz(i,j,Nrphys+2-L,bi,bj)=pephy(i,j,L,bi,bj)
+         enddo
          if(pephy(i,j,Nrphys+1,bi,bj).lt.1.e-5)
      .                               pephy(i,j,Nrphys+1,bi,bj) = 1.e-5
         enddo
@@ -97,7 +104,7 @@ c Do not use a zero field as the top edge pressure for interpolation
        do bi = myBxLo(myThid), myBxHi(myThid)
 c
 c Compute physics increments
-        call do_fizhi(uphy,vphy,thphy,sphy,pephy,
+        call do_fizhi(uphy,vphy,thphy,sphy,pephy4fiz,
      .                              ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
      .                  xC,yC,
      .            im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,1,sNx,1,sNy,bi,bj,nchp,
@@ -110,13 +117,43 @@ c Compute physics increments
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
 c Interpolate (A-Grid) physics increments to dynamics grid
-        call phys2dyn(duphy,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
+C   First flip the physics arrays (which are top-down) 
+C   into bottom-up arrays for interpolation to dynamics grid
+        do j = 1,sNy
+        do i = 1,sNx
+         do L = 1,Nrphys
+          tempphys(i,j,Nrphys+1-L,bi,bj)=duphy(i,j,L,bi,bj)
+         enddo
+        enddo
+        enddo
+        call phys2dyn(tmpphys,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
      .       1,sNx,1,sNy,bi,bj,pedyn,ksurfC,Nr,nlperdyn,guphy)
-        call phys2dyn(dvphy,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
+        do j = 1,sNy
+        do i = 1,sNx
+         do L = 1,Nrphys
+          tempphys(i,j,Nrphys+1-L,bi,bj)=dvphy(i,j,L,bi,bj)
+         enddo
+        enddo
+        enddo
+        call phys2dyn(tmpphys,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
      .       1,sNx,1,sNy,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gvphy)
-        call phys2dyn(dthphy,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
+        do j = 1,sNy
+        do i = 1,sNx
+         do L = 1,Nrphys
+          tempphys(i,j,Nrphys+1-L,bi,bj)=dthphy(i,j,L,bi,bj)
+         enddo
+        enddo
+        enddo
+        call phys2dyn(tmpphys,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
      .       1,sNx,1,sNy,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gthphy)
-        call phys2dyn(dsphy,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
+        do j = 1,sNy
+        do i = 1,sNx
+         do L = 1,Nrphys
+          tempphys(i,j,Nrphys+1-L,bi,bj)=dsphy(i,j,L,bi,bj)
+         enddo
+        enddo
+        enddo
+        call phys2dyn(tmpphys,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
      .       1,sNx,1,sNy,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gsphy)
 
        enddo

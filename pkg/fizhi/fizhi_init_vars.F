@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.2 2004/06/07 18:11:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.3 2004/06/14 20:34:50 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_vars (myThid)
@@ -41,6 +41,7 @@ c pe on dynamics and physics grid refers to bottom edge
        _RL windphy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,nSx,nSy)
        _RL udyntemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
        _RL vdyntemp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+       _RL tempphy(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,nSx,nSy)
 
        integer i, j, L, bi, bj, Lbotij
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
@@ -124,35 +125,65 @@ c Create initial fields on phys. grid - Move Dynamics u and v to A-Grid
 
 c Create initial fields on phys. grid - interpolate from dyn. grid
         call dyn2phys(udyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
-     .    1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,uphy)
+     . 1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,tempphy)
+c   Note: Interpolation gives bottom-up arrays (level 1 is bottom),
+c         Physics works top-down. so -> need to flip arrays
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         uphy(i,j,Nrphys+1-L,bi,bj) = tempphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
         call dyn2phys(vdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
-     .    1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,vphy)
+     . 1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,tempphy)
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         vphy(i,j,Nrphys+1-L,bi,bj) = tempphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
         call dyn2phys(theta,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
-     .   1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,thphy)
+     . 1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,tempphy)
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         thphy(i,j,Nrphys+1-L,bi,bj) = tempphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
         call dyn2phys(salt,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
-     .    1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,sphy)
+     . 1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,tempphy)
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         sphy(i,j,Nrphys+1-L,bi,bj) = tempphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
 
 c Now initialize tke, xlmt, khmt, xxmt, yymt, ctmt, zetamt,
 c Now initialize land state too - tcanopy, etc...
-       do L = 1,Nrphys
+        do L = 1,Nrphys
         do i = 1,nchp
          tke(i,L,bi,bj) = 0.
          xlmt(i,L,bi,bj) = 0.
          khmt(i,L,bi,bj) = 0.
         enddo
-       enddo
+        enddo
 c Now initialize land state too - tcanopy, etc... ZERO FOR NOW, 
 c                                              READ CLIM FOR REAL
-       do i = 1,nchp
-        tcanopy(i) = 0.
-        tdeep(i) = 0.
-        ecanopy(i) = 0.
-        swetshal(i) = 0.
-        swetroot(i) = 0.
-        swetdeep(i) = 0.
-        capac(i) = 0.
-        snodep(i) = 0.
-       enddo
+        do i = 1,nchp
+        tcanopy(i,bi,bj) = 0.
+        tdeep(i,bi,bj) = 0.
+        ecanopy(i,bi,bj) = 0.
+        swetshal(i,bi,bj) = 0.
+        swetroot(i,bi,bj) = 0.
+        swetdeep(i,bi,bj) = 0.
+        capac(i,bi,bj) = 0.
+        snodep(i,bi,bj) = 0.
+        enddo
 
        enddo
        enddo
@@ -161,7 +192,7 @@ c                                              READ CLIM FOR REAL
       print *,' In fizhi_init_vars: Read from restart '
                                                                                    
 C--   Read fizhi package state variables from pickup file
-        call fizhi_read_pickup( nIter0, myThid )
+       call fizhi_read_pickup( nIter0, myThid )
                                                                                    
       ENDIF
 
