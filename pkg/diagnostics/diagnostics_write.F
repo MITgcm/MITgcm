@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.10 2005/02/20 11:46:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.11 2005/02/20 19:41:11 dimitri Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -66,16 +66,16 @@ C       state-variable time-step:
           freqSec = freq(n) * deltaTClock
           IF ( calendarDumps .AND. (
      &     ( freqSec.GE. 2592000 .AND. freqSec.LE. 2678400 ) .OR.
-     &     ( freqSec.GE.31104000 .AND. freqSec.LE.31968000 )) THEN
+     &     ( freqSec.GE.31104000 .AND. freqSec.LE.31968000 ))) THEN
 C--   Convert approximate months (30-31 days) and years (360-372 days)
 C     to exact calendar months and years.
-           dump2fileNow = .FALSE
+           dump2fileNow = .FALSE.
 C-    Monthly freqSec:
            IF( freqSec.GE. 2592000 .AND. freqSec.LE. 2678400 .AND.
-     &        thisdate-prevdate.GT.50   ) dump2fileNow = .TRUE.
+     &        (thisdate(1)-prevdate(1)).GT.50   ) dump2fileNow = .TRUE.
 C-    Yearly  freqSec:
            IF( freqSec.GE.31104000 .AND. freqSec.LE.31968000 .AND.
-     &        thisdate-prevdate.GT.5000 ) dump2fileNow = .TRUE.
+     &        (thisdate(1)-prevdate(1)).GT.5000 ) dump2fileNow = .TRUE.
           ENDIF
 #endif
 
