@@ -1,27 +1,46 @@
-      FUNCTION GETCON (NAME)
-C***********************************************************************
-C  GENERIC FUNCTION GETCON IS A REPOSITORY OF GLOBAL VARIABLES, I.E.
-C  A MEMORY FOR SCALAR VALUES NEEDED THROUGHOUT A LARGE PROGRAM.
-C
-C  THIS SPECIFIC FUNCTION, GETCON, REMEMBERS FLOATING POINT VALUES.
-C  THE FUNCTION IS CALLED WITH A CHARACTER NAME TO INTERROGATE A VALUE.
-C***********************************************************************
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/getcon.F,v 1.6 2004/07/05 17:17:11 edhill Exp $
+C $Name:  $
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C     !ROUTINE: GETCON
+
+C     !INTERFACE:
+      FUNCTION GETCON(NAME)
+
+C     !DESCRIPTION:
+C     Generic function getcon is a repository of global variables,
+C     i.e. a memory for scalar values needed throughout a large
+C     program.  This function remembers floating point values.  The
+C     function is called with a character name to interrogate a value.
+      
+C     !USES:
+      implicit none
 #include "CPP_EEOPTIONS.h"
-C
+
+C     !INPUT PARAMETERS:
+      CHARACTER*(*) NAME
+CEOP
+
+      integer I
       INTEGER MAXCON
       PARAMETER (MAXCON=43)
-      CHARACTER*(*) NAME
       CHARACTER*16 ANAME(MAXCON)
-      _RL         ACON (MAXCON)
-      integer I
+      _RL  ACON (MAXCON)
+      _RL  GETCON
+      _RL  VECMAX, UNDEF, OB, PER, ECC, AE, EQNX, SOLS, S0, GRAV, 
+     &     SRFPRS, PIMEAN, PSTD, TSTD, SDAY, SSALB, CO2, 
+     &     CFC11, CFC12, CFC22, ATMPOPA, PI, CPD, CPV, ALHL, ALHS, 
+     &     STFBOL, AIRMW, H2OMW, RUNIV, RGAS, RVAP, RKAP, HEATW, 
+     &     HEATI, TICE, VKRM, DEG2RAD, CALTOJ, EPS, VIRTCON, EPSFAC
 
-C COMPUTATIONAL CONSTANTS
-C -----------------------
+C     COMPUTATIONAL CONSTANTS
+C     -----------------------
       PARAMETER ( VECMAX = 65535.5    )
       PARAMETER ( UNDEF  = 1.E15      )
 
-C ASTRONOMICAL CONSTANTS
-C ----------------------
+C     ASTRONOMICAL CONSTANTS
+C     ----------------------
       PARAMETER ( OB     = 23.45      )
       PARAMETER ( PER    = 102.       )
       PARAMETER ( ECC    = .0167      )
@@ -30,8 +49,8 @@ C ----------------------
       PARAMETER ( SOLS   = 176.5      )
       PARAMETER ( S0     = 1365.0     )
 
-C TERRESTRIAL CONSTANTS
-C ---------------------
+C     TERRESTRIAL CONSTANTS
+C     ---------------------
       PARAMETER ( GRAV   = 9.81       )
       PARAMETER ( SRFPRS = 984.7      )
       PARAMETER ( PIMEAN = 984.7      )
@@ -46,8 +65,8 @@ C ---------------------
       PARAMETER ( ATMPOPA= 1.E5       )
       PARAMETER ( PI     = 3.14159    )
 
-C THERMODYNAMIC CONSTANTS
-C -----------------------
+C     THERMODYNAMIC CONSTANTS
+C     -----------------------
       PARAMETER ( CPD    = 1004.16    )
       PARAMETER ( CPV    = 1869.46    )
       PARAMETER ( ALHL   = 2.499E6    )
@@ -63,17 +82,17 @@ C -----------------------
       PARAMETER ( HEATI  = 680.0      )
       PARAMETER ( TICE   = 273.16     )
 
-C TURBULENCE CONSTANTS
-C --------------------
+C     TURBULENCE CONSTANTS
+C     --------------------
       PARAMETER ( VKRM   = 0.4        )
 
-C CONVERSION CONSTANTS
-C ------------------
+C     CONVERSION CONSTANTS
+C     --------------------
       PARAMETER ( DEG2RAD  = 2.*PI/360. )
       PARAMETER ( CALTOJ = 4184.      )
 
-C MOISTURE CONSTANTS
-C ------------------
+C     MOISTURE CONSTANTS
+C     ------------------
       PARAMETER ( EPS    = 0.622      )
       PARAMETER ( VIRTCON= 0.609      )
       PARAMETER ( EPSFAC = EPS*HEATW/RGAS*CALTOJ )
