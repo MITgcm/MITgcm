@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.2 2000/06/21 19:03:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.3 2000/09/11 23:05:56 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -31,19 +31,6 @@ C     == Local variables ==
       INTEGER bi,bj,K
 #endif
 
-#ifdef ALLOW_GMREDI
-C--   Initialize GM/Redi parameterization
-      IF (use_GMRedi) CALL GMREDI_INIT( myThid )
-#endif
-
-#ifdef ALLOW_KPP
-C--   Initialize KPP vertical mixing scheme.
-      IF (use_KPPmixing) THEN
-       CALL KPP_INIT( myThid )
-       CALL KPP_OPEN_DIAGS( myThid )
-      ENDIF
-#endif
-
 C--   Initialise model fields.
 C     Starting values of U, V, W, temp., salt. and tendency terms
 C     are set here. Fields are either set to default or read from
@@ -51,13 +38,14 @@ C     stored files.
       CALL INI_FIELDS( myThid )
       _BARRIER
 
-C--   Initialise time-stepping (predictor variables are carried in G)
-      IF ( startTime .EQ. 0. ) 
-     & CALL INI_PREDICTOR( myThid )
-      _BARRIER
+C--   Check dependances between packages
+      CALL PACKAGES_INIT( myThid )
 
-C--   Custom routine to set forcing fields
-      CALL INI_FORCING( myThid )
+C--   Initialise time-stepping (predictor variables are carried in G)
+      IF ( startTime .EQ. 0. ) THEN
+        CALL INI_PREDICTOR( myThid )
+        _BARRIER
+      END IF
 
 #ifdef ALLOW_OBCS
 C--   Calculate values on open boundaries at iter=nIter0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.2 2000/06/21 19:02:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.3 2000/09/11 23:05:56 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -38,9 +38,6 @@ C     an input file called data.
       CALL INI_PARMS( myThid )
       _BARRIER
 
-C--   Configure packages
-      CALL PACKAGE_INIT( myThid )
-
 #ifdef ALLOW_OBCS
 C--   Open boundaries positions
       CALL INI_OBCS( myThid )
@@ -61,14 +58,14 @@ C     Volumes and areas are set according to grid and depth map.
       CALL INI_MASKS_ETC( myThid )
       _BARRIER
 
+C--   Set coriolis operators
+      CALL INI_CORI( myThid )
+
 #ifdef INCLUDE_LAT_CIRC_FFT_FILTER_CODE
 C--   Latitude circle filter initialisation
       CALL FILTER_LATCIRC_FFT_INIT(myThid)
       _BARRIER
 #endif
-
-C--   Set coriolis operators
-      CALL INI_CORI( myThid )
 
 C--   Set laplace operators for use in 2D conjugate gradient solver.
       CALL INI_CG2D( myThid )
@@ -78,10 +75,16 @@ C--   Set laplace operators for use in 3D conjugate gradient solver.
       CALL INI_CG3D( myThid )
 #endif
 
-C--   Finally summarise the model cofiguration
-      CALL CONFIG_SUMMARY( myThid )
+C--   Configure packages
+      CALL PACKAGES_BOOT( myThid )
+
+C--   Read configuration parameters for packages
+      CALL PACKAGES_READPARMS( myThid )
 
 C--   Check dependances between packages
-      CALL PACKAGE_CHECK( myThid )
+      CALL PACKAGES_CHECK( myThid )
+
+C--   Finally summarise the model cofiguration
+      CALL CONFIG_SUMMARY( myThid )
 
       END
