@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.43 2003/11/03 22:40:22 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.44 2003/11/04 18:40:58 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -108,7 +108,7 @@ C     == Local variables ==
 #endif
 CEOP
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('THE_MAIN_LOOP',myThid)
 #endif
 
@@ -125,7 +125,7 @@ CADJ  INIT tapelev_ini_bibj_k   = USER
       CALL TIMER_START('ADJOINT SPIN-UP', mythid)
 #endif
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INITIALISE_VARIA',myThid)
 #endif
 
@@ -135,7 +135,7 @@ C--   Set initial conditions (variable arrays)
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
 
 c--   Dump for start state.
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('WRITE_STATE',myThid)
 #endif
       CALL TIMER_START('WRITE_STATE         [THE_MAIN_LOOP]', mythid)
@@ -143,7 +143,7 @@ c--   Dump for start state.
       CALL TIMER_STOP ('WRITE_STATE         [THE_MAIN_LOOP]', mythid)
 
 #ifdef ALLOW_MONITOR
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('MONITOR',myThid)
 #endif
 C--   Check status of solution (statistics, cfl, etc...)
@@ -299,7 +299,7 @@ c--     >>> Loop body start <<<
         ikey_dynamics = ilev_1
 #endif
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
 #endif
 
@@ -344,7 +344,7 @@ c--   Sum all cost function contributions.
       _BARRIER
       CALL TIMER_STOP ('MAIN LOOP           [THE_MAIN_LOOP]', mythid)
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('THE_MAIN_LOOP',myThid)
 #endif
 

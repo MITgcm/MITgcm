@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.26 2003/10/30 19:11:45 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.27 2003/11/04 18:40:58 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -910,24 +910,6 @@ for i in $PACKAGES ; do
     fi
 done
 
-#  This is compatible with the old genmake.  The "DISABLE_*" flags
-#  need to be replaced by the "ALLOW_*" flags set below.
-#
-# echo -n "  Setting package-specific CPP flags:  "
-# pkrm=( mom_fluxform mom_vecinv generic_advdiff )
-# pkrmdef=( -DDISABLE_MOM_FLUXFORM -DDISABLE_MOM_VECINV -DDISABLE_GENERIC_ADVDIFF -DDISABLE_DEBUGMODE )
-# echo -n "  "
-# i=0
-# while test $i -lt "${#pkrm[@]}" ; do
-#     echo "$PACKAGES" | grep "${pk[$i]}" > /dev/null 2>&1
-#     RETVAL=$?
-#     if test "x$RETVAL" = x1 ; then
-# 	DEFINES="$DEFINES ${pkdef[$i]}"
-# 	echo -n " ${pkdef[$i]}"
-#     fi
-#     i=$(( $i + 1 ))
-# done
-# echo
 
 # Create a list of #define and #undef to enable/disable packages
 PACKAGES_DOT_H=PACKAGES_CONFIG.h
@@ -970,9 +952,6 @@ for n in $names ; do
 		    ;;
 		mom_vecinv)
 		    DEFINES="$DEFINES -DDISABLE_MOM_VECINV"
-		    ;;
-		debug)
-		    DEFINES="$DEFINES -DDISABLE_DEBUGMODE"
 		    ;;
 	    esac
 #EH3  WARNING :  This is an UGLY HACK that needs to be removed!!!

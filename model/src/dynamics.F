@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.103 2003/10/30 12:00:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.104 2003/11/04 18:40:57 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -474,7 +474,7 @@ C      CALL REMOVE_MEAN_RL( 1, phiHydLow, maskH, maskH, rA, drF,
 C     &                'phiHydLow', myThid )
 Cml)
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       If ( debugLevel .GE. debLevB ) THEN
        CALL DEBUG_STATS_RL(1,EtaN,'EtaN (DYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,uVel,'Uvel (DYNAMICS)',myThid)

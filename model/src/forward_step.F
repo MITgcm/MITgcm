@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.70 2003/11/03 22:40:22 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.71 2003/11/04 18:40:58 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -91,7 +91,7 @@ C     mythid - thread number for this instance of the routine.
 
 CEOP
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_ENTER('FORWARD_STEP',myThid)
 #endif
@@ -150,7 +150,7 @@ c**************************************
 C--   Call external forcing package
 #ifdef ALLOW_BULK_FORCE
       IF ( useBulkforce ) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('BULKF_FIELDS_LOAD',myThid)
 #endif
@@ -176,7 +176,7 @@ C       _EXCH_XY_R8(fv     , mythid)
 C     NOTE, that although the exf package is part of the
 C     distribution, it is not currently maintained, i.e.
 C     exf is disabled by default in genmake.
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('EXF_GETFORCING',myThid)
 #endif
@@ -191,7 +191,7 @@ cph assuming that ALLOW_SEAICE has not yet been differentiated.
 #  ifdef ALLOW_SEAICE
       IF ( .NOT. useSEAICE ) THEN
 #  endif
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('EXTERNAL_FIELDS_LOAD',myThid)
 #endif
@@ -225,7 +225,7 @@ C     term.  Because this call precedes model thermodynamics, temperature
 C     under sea-ice may not be "exactly" at the freezing point by the time
 C     theta is dumped or time-averaged.
       IF ( useSEAICE ) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('SEAICE_MODEL',myThid)
 #endif
@@ -249,7 +249,7 @@ CADJ STORE ptracer  = comlev1, key = ikey_dynamics
 #endif
 
 C--     Step forward fields and calculate time tendency terms.
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('THERMODYNAMICS',myThid)
 #endif
@@ -258,7 +258,7 @@ C--     Step forward fields and calculate time tendency terms.
         CALL TIMER_STOP ('THERMODYNAMICS      [FORWARD_STEP]',mythid)
 
 C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('DO_STAGGER_FIELDS_EXCH.',myThid)
 #endif
@@ -269,7 +269,7 @@ C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
 #ifdef ALLOW_SHAP_FILT
       IF (useSHAP_FILT .AND. 
      &     staggerTimeStep .AND. shap_filt_TrStagg ) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('SHAP_FILT_APPLY_TS',myThid)
 #endif
@@ -281,7 +281,7 @@ C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
 #ifdef ALLOW_ZONAL_FILT
       IF (useZONAL_FILT .AND. 
      &     staggerTimeStep .AND. zonal_filt_TrStagg ) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('ZONAL_FILT_APPLY_TS',myThid)
 #endif
@@ -295,7 +295,7 @@ C--   Step forward fields and calculate time tendency terms.
 #ifndef ALLOW_AUTODIFF_TAMC
       IF ( momStepping ) THEN
 #endif
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('DYNAMICS',myThid)
 #endif
@@ -309,7 +309,7 @@ C--   Step forward fields and calculate time tendency terms.
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Step forward W field in N-H algorithm
       IF ( momStepping .AND. nonHydrostatic ) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB ) 
      &     CALL DEBUG_CALL('CALC_GW',myThid)
 #endif
@@ -450,7 +450,7 @@ C     at time level 1
      &        .FALSE., myTime, myIter, myThid )
       CALL TIMER_STOP ('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_LEAVE('FORWARD_STEP',myThid)
 #endif

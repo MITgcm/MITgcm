@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.55 2003/10/26 01:10:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.56 2003/11/04 18:40:58 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -173,7 +173,7 @@ C     This is currently used by IVDC and Diagnostics
 
 CEOP
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_ENTER('FORWARD_STEP',myThid)
 #endif
@@ -315,7 +315,7 @@ CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_MSG('ENTERING UPWARD K LOOP',myThid)
 #endif
@@ -354,7 +354,7 @@ C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
 c         IF ( k.GT.1 .AND. (useGMRedi.OR.ivdc_kappa.NE.0.) ) THEN
           IF ( useGMRedi .OR. (k.GT.1 .AND. ivdc_kappa.NE.0.) ) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
             IF ( debugLevel .GE. debLevB ) 
      &       CALL DEBUG_CALL('FIND_RHO',myThid)
 #endif
@@ -379,7 +379,7 @@ CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      O        rhoKm1,
      I        myThid )
             ENDIF
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
             IF ( debugLevel .GE. debLevB ) 
      &       CALL DEBUG_CALL('GRAD_SIGMA',myThid)
 #endif
@@ -397,7 +397,7 @@ CADJ STORE rhokm1 (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
 C--       Implicit Vertical Diffusion for Convection
 c ==> should use sigmaR !!!
           IF (k.GT.1 .AND. ivdc_kappa.NE.0.) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
             IF ( debugLevel .GE. debLevB ) 
      &       CALL DEBUG_CALL('CALC_IVDC',myThid)
 #endif
@@ -421,7 +421,7 @@ CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #ifdef  ALLOW_OBCS
 C--     Calculate future values on open boundaries
         IF (useOBCS) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB ) 
      &     CALL DEBUG_CALL('OBCS_CALC',myThid)
 #endif
@@ -434,7 +434,7 @@ C--     Calculate future values on open boundaries
 
 #ifdef ALLOW_THERM_SEAICE
        IF (useThermSeaIce) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('ICE_FORCING',myThid)
 #endif
@@ -448,7 +448,7 @@ C       including effects from ice
 
 C--     Determines forcing terms based on external fields
 C       relaxation terms, etc.
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('EXTERNAL_FORCING_SURF',myThid)
 #endif
@@ -490,7 +490,7 @@ CADJ STORE sigmaR(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
 
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
         IF (useGMRedi) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB ) 
      &     CALL DEBUG_CALL('GMREDI_CALC_TENSOR',myThid)
 #endif
@@ -518,7 +518,7 @@ CADJ STORE Kwz(:,:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
 #ifdef  ALLOW_KPP
 C--     Compute KPP mixing coefficients
         IF (useKPP) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB ) 
      &     CALL DEBUG_CALL('KPP_CALC',myThid)
 #endif
@@ -559,7 +559,7 @@ cphCADJ &                              key=itdkey, byte=isbyte
 #ifdef ALLOW_AIM
 C       AIM - atmospheric intermediate model, physics package code.
         IF ( useAIM ) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB ) 
      &     CALL DEBUG_CALL('AIM_DO_PHYSICS',myThid)
 #endif
@@ -581,7 +581,7 @@ C recomputation. It *is* differentiable, if you need it.
 C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
 C disable this section of code.
         IF (tempMultiDimAdvec) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB ) 
      &     CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 #endif
@@ -590,7 +590,7 @@ C disable this section of code.
      I                      myTime,myIter,myThid)
         ENDIF
         IF (saltMultiDimAdvec) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB ) 
      &     CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 #endif
@@ -603,7 +603,7 @@ C call the multi-dimensional method for PTRACERS regardless
 C of whether multiDimAdvection is set or not.
 #ifdef ALLOW_PTRACERS
         IF ( usePTRACERS ) THEN
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB ) 
      &     CALL DEBUG_CALL('PTRACERS_ADVECTION',myThid)
 #endif
@@ -612,7 +612,7 @@ C of whether multiDimAdvection is set or not.
 #endif /* ALLOW_PTRACERS */
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_MSG('ENTERING DOWNWARD K LOOP',myThid)
 #endif
@@ -855,7 +855,7 @@ C--   end bi,bj loops.
        ENDDO
       ENDDO
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       If (debugMode) THEN
        CALL DEBUG_STATS_RL(Nr,uVel,'Uvel (THERMODYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,vVel,'Vvel (THERMODYNAMICS)',myThid)
@@ -874,7 +874,7 @@ C--   end bi,bj loops.
       ENDIF
 #endif
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_LEAVE('FORWARD_STEP',myThid)
 #endif

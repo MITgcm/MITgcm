@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.65 2003/10/30 19:09:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.66 2003/11/04 18:40:58 edhill Exp $
 C $Name:  $
 
 CBOI
@@ -507,14 +507,14 @@ c--   set default:
 #endif
       lastdiva = .TRUE.
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_ENTER('THE_MODEL_MAIN',myThid)
 #endif
 
 C--   This timer encompasses the whole code
       CALL TIMER_START('ALL                    [THE_MODEL_MAIN]',myThid)
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('INITIALISE_FIXED',myThid)
 #endif
 
@@ -611,7 +611,7 @@ c
 
 #else /* ALL AD-related undef */
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
 #endif
 
@@ -643,7 +643,7 @@ C--   Write timer statistics
        CALL COMM_STATS
       ENDIF
 
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_LEAVE('THE_MODEL_MAIN',myThid)
 #endif
 
