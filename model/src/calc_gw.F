@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.15 2004/05/25 07:48:22 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.16 2004/06/25 13:09:40 edhill Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -128,7 +128,7 @@ C Flux on Southern face
           DO I=iMin,iMax
 C     First compute the fraction of open water for the w-control volume
 C     at the southern face
-           hFacStmp=max(hFacS(I,J,K-1,bi,bj)-Half,0)
+           hFacStmp=max(hFacS(I,J,K-1,bi,bj)-Half,0. _d 0)
      &         +    min(hFacS(I,J,K  ,bi,bj),Half)
            tmp_VbarZ=Half*(
      &          _hFacS(I,J,K-1,bi,bj)*vVel( I ,J,K-1,bi,bj)
@@ -152,7 +152,7 @@ C Flux on Western face
           DO I=iMin,iMax+1
 C     First compute the fraction of open water for the w-control volume
 C     at the western face
-           hFacWtmp=max(hFacW(I,J,K-1,bi,bj)-Half,0)
+           hFacWtmp=max(hFacW(I,J,K-1,bi,bj)-Half,0. _d 0)
      &         +    min(hFacW(I,J,K  ,bi,bj),Half)
                  tmp_UbarZ=Half*(
      &         _hFacW(I,J,K-1,bi,bj)*uVel( I ,J,K-1,bi,bj)
