@@ -4,6 +4,9 @@ function [AA,iters] = rdmds(fnamearg,varargin)
 % A = RDMDS(FNAME)
 % A = RDMDS(FNAME,ITER)
 % A = RDMDS(FNAME,[ITER1 ITER2 ...])
+% A = RDMDS(FNAME,NaN)
+% A = RDMDS(FNAME,Inf)
+% [A,ITS] = RDMDS(FNAME,[...])
 %
 %   A = RDMDS(FNAME) reads data described by meta/data file format.
 %   FNAME is a string containing the "head" of the file names.
@@ -30,11 +33,17 @@ function [AA,iters] = rdmds(fnamearg,varargin)
 %   10-digit iterartion number.
 %   ITER is a vector of positive integers that will expand to the 10-digit
 %   number in the file name.
+%   If ITER=NaN, all iterations will be read.
+%   If ITER=Inf, the last (highest) iteration will be read.
 %  
 %   eg. To repeat above operation
 %      >> A=rdmds('T',2880);
 %   eg. To read multiple time steps
 %      >> A=rdmds('T',[0 1440 2880]);
+%   eg. To read all time steps
+%      >> [A,ITS]=rdmds('T',NaN);
+%   eg. To read the last time step
+%      >> [A,IT]=rdmds('T',Inf);
 %   Note: this form can not read files with no iteration count in file name.
 %  
 %   A = RDMDS(FNAME,MACHINEFORMAT)
@@ -43,7 +52,10 @@ function [AA,iters] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %  
 %  
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.13 2002/06/12 14:57:29 adcroft Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.14 2002/10/11 13:45:36 adcroft Exp $
+
+AA=[];
+iters=[];
 
 % Default options
 ieee='b';
@@ -109,7 +121,7 @@ end
 allfiles=dir( sprintf('%s*.meta',fname) );
 
 if size(allfiles,1)==0
- disp(sprintf('No files match the search: %s.*.meta',fname));
+ disp(sprintf('No files match the search: %s*.meta',fname));
 %allow partial reads%  error('No files found.')
 end
 
@@ -189,7 +201,7 @@ end
 
 % This is a kludge to catch whether the meta-file is of the
 % old or new type. nrecords does not exist in the old type.
-nrecords = -987;
+nrecords = NaN;
 
 % Everything in lower case
 allstr=lower(allstr);
@@ -201,11 +213,11 @@ allstr=strrep(allstr,'format','dataprec');
 eval(allstr);
 
 N=reshape( dimlist , 3 , prod(size(dimlist))/3 );
-if nrecords ~= -987 & nrecords > 1
+if ~isnan(nrecords) & nrecords > 1
  N=[N,[nrecords 1 nrecords]'];
 end
 
-if nrecords == -987
+if isnan(nrecords)
 % This is the old 'meta' method that used sequential access
 
 A=allstr;
@@ -355,4 +367,4 @@ for k=1:size(allfiles,1);
  hh=allfiles(k).name;
  iters(k)=str2num( hh(end-14-ioff:end-5-ioff) );
 end
-
+iters=sort(iters);
