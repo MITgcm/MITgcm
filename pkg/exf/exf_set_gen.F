@@ -198,11 +198,11 @@ c     == end of interface ==
 
       do bj = mybylo(mythid), mybyhi(mythid)
         do bi = mybxlo(mythid), mybxhi(mythid)
-          do j = 1, sny
-            do i = 1, snx
+          do j = 1-oly, sny+oly
+            do i = 1-olx, snx+olx
               genfld(i,j,bi,bj)  = genconst
-              gen0(i,j,bi,bj)    = 0. _d 0
-              gen1(i,j,bi,bj)    = 0. _d 0
+              gen0(i,j,bi,bj)    = genconst
+              gen1(i,j,bi,bj)    = genconst
             enddo
           enddo
         enddo
