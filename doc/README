@@ -1,4 +1,53 @@
-$Header: /u/gcmpack/MITgcm/doc/README,v 1.15 1999/05/05 18:32:33 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/README,v 1.16 2003/08/22 14:30:41 edhill Exp $
+
+================
+===  WARNING ===
+================
+
+
+For MITgcm Users :
+
+This directory (MITgcm/doc) does *NOT* contain the primary user
+documentation for the MITgcm code.  We strongly suggest that you forgo
+the effort of downloading and "building" the documentation in the
+different formats (pdf, html, etc.) and instead read and/or download
+the documentation which is conveniently referenced from the main web
+site at:
+
+  http://mitgcm.org
+
+
+
+For MITgcm Developers:
+
+If you wish to customize or extend the MITgcm code, this directory
+contains a "HOWTO" document that tries to explain:
+
+  + where the code, documentation, and test/verification
+    data sets are arranged within the CVS repository;
+
+  + how to run the verification tests;
+
+  + how to get help from the core developers; and
+
+  + how to best integrate your work with the overall project.
+
+
+The document is available in SGML source within this directory:
+
+  devel_HOWTO.sgml
+
+and in various formats on our web site:
+
+  http://mitgcm.org/dev_docs/devel_HOWTO/
+
+
+
+
+======================================================================
+===  WARNING :  The following has been superseeded by the on-line  ===
+===             documentation at:  http://mitgcm.org               ===
+======================================================================
 
 
 MITgcmUV Getting Started
