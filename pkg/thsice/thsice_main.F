@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.2 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.3 2004/07/08 15:56:36 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -24,6 +24,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 #include "THSICE_PARAMS.h"
@@ -72,9 +73,40 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
+C--     Mixed layer thickness: take the 1rst layer
+#ifdef NONLIN_FRSURF
+        IF ( staggerTimeStep .AND. nonlinFreeSurf.GT.0 ) THEN
+         IF ( select_rStar.GT.0 ) THEN
+          DO j = jMin, jMax
+           DO i = iMin, iMax
+             hOceMxL(i,j,bi,bj) = drF(1)*h0FacC(i,j,1,bi,bj)
+     &                                  *rStarFacC(i,j,bi,bj) 
+           ENDDO
+          ENDDO
+         ELSE
+          DO j = jMin, jMax
+           DO i = iMin, iMax
+            IF ( ksurfC(i,j,bi,bj).EQ.1 ) THEN
+             hOceMxL(i,j,bi,bj) = drF(1)*hFac_surfC(i,j,bi,bj)
+            ELSE
+             hOceMxL(i,j,bi,bj) = drF(1)*hfacC(i,j,1,bi,bj)
+            ENDIF
+           ENDDO
+          ENDDO
+         ENDIF
+        ELSE
+#else /* ndef NONLIN_FRSURF */
+        IF (.TRUE.) THEN
+#endif /* NONLIN_FRSURF */
+          DO j = jMin, jMax
+           DO i = iMin, iMax
+             hOceMxL(i,j,bi,bj) = drF(1)*hfacC(i,j,1,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+
          DO j = jMin, jMax
           DO i = iMin, iMax
-           hOceMxL(i,j,bi,bj) = hfacC(i,j,1,bi,bj)*drF(1)
            tOceMxL(i,j,bi,bj) = theta(i,j,1,bi,bj)
            sOceMxL(i,j,bi,bj) = salt (i,j,1,bi,bj)
            v2ocMxL(i,j,bi,bj) = 
