@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.15 2003/03/07 04:19:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.16 2003/03/21 23:18:28 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -108,7 +108,7 @@ c     to OLx=1, OLy=1.
 #include "tamc.h"
 #include "tamc_keys.h"
 #else /* ALLOW_AUTODIFF_TAMC */
-      integer ikey
+      integer ikppkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       EXTERNAL DIFFERENT_MULTIPLE
@@ -190,6 +190,19 @@ c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
 #ifdef KPP_ESTIMATE_UREF
       _KPP_RL tempvar1, dBdz1, dBdz2, ustarX, ustarY
 #endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikppkey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 c     Check to see if new vertical mixing coefficient should be computed now?
       IF ( DIFFERENT_MULTIPLE(kpp_freq,myTime,myTime-deltaTClock) .OR.
@@ -306,10 +319,10 @@ c     so that the subroutine "bldepth" works correctly
 
 cph(
 cph  this avoids a single or double recomp./call of statekpp
-CADJ store work2              = comlev1_kpp, key = ikey
+CADJ store work2              = comlev1_kpp, key = ikppkey
 #ifdef ALLOW_AUTODIFF_KPP_EXTENSIVE_STORE
-CADJ store dbloc, Ritop, ghat = comlev1_kpp, key = ikey
-CADJ store vddiff             = comlev1_kpp, key = ikey
+CADJ store dbloc, Ritop, ghat = comlev1_kpp, key = ikppkey
+CADJ store vddiff             = comlev1_kpp, key = ikppkey
 #endif
 cph)
 
@@ -345,7 +358,7 @@ c initialize arrays to zero
        END DO
       END DO
 cph(
-CADJ store work3 = comlev1_kpp, key = ikey
+CADJ store work3 = comlev1_kpp, key = ikppkey
 cph)
       DO j = jmin, jmax
        jp1 = j + 1
@@ -384,7 +397,7 @@ cph)
       END DO
 
 cph(
-CADJ store ustar = comlev1_kpp, key = ikey
+CADJ store ustar = comlev1_kpp, key = ikppkey
 cph)
 
 c------------------------------------------------------------------------
@@ -624,7 +637,7 @@ c     shsq computation
 
 cph(
 #ifdef ALLOW_AUTODIFF_KPP_EXTENSIVE_STORE
-CADJ store dvsq, shsq = comlev1_kpp, key = ikey
+CADJ store dvsq, shsq = comlev1_kpp, key = ikppkey
 #endif
 cph)
 
@@ -643,7 +656,7 @@ c-----------------------------------------------------------------------
      I       mytime, mythid
      I     , work1, shsq, dVsq, ustar
      I     , bo, bosol, dbloc, Ritop, work2
-     I     , ikey
+     I     , ikppkey
      O     , vddiff
      U     , ghat
      O     , hbl )
@@ -699,7 +712,7 @@ c     horizontal smoothing of vertical diffusivity
 
 cph(
 cph  crucial: this avoids full recomp./call of kppmix
-CADJ store KPPhbl = comlev1_kpp, key = ikey
+CADJ store KPPhbl = comlev1_kpp, key = ikppkey
 cph)
 
 C     Compute fraction of solar short-wave flux penetrating to

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.15 2003/03/07 23:51:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.16 2003/03/21 23:18:28 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -23,7 +23,7 @@ c***********************************************************************
      I       mytime, mythid
      I     , kmtj, shsq, dvsq, ustar
      I     , bo, bosol, dbloc, Ritop, coriol
-     I     , ikey
+     I     , ikppkey
      O     , diffus
      U     , ghat
      O     , hbl )
@@ -82,7 +82,7 @@ c           where hbl(i,j) -> hbl((j-1)*sNx+i)
       _KPP_RL Ritop (imt,Nr)
       _KPP_RL coriol(imt   )
 
-      integer ikey
+      integer ikppkey
 
 c output
 c     diffus (imt,1)  - vertical viscosity coefficient                  (m^2/s)
@@ -127,21 +127,21 @@ c-----------------------------------------------------------------------
 
 cph(
 cph these storings avoid recomp. of Ri_iwmix
-CADJ STORE ghat  = comlev1_kpp, key = ikey
-CADJ STORE dbloc = comlev1_kpp, key = ikey
+CADJ STORE ghat  = comlev1_kpp, key = ikppkey
+CADJ STORE dbloc = comlev1_kpp, key = ikppkey
 cph)
       call Ri_iwmix (
      I       kmtj, shsq, dbloc, ghat
-     I     , ikey
+     I     , ikppkey
      O     , diffus )
 
 cph(
 cph these storings avoid recomp. of Ri_iwmix
 cph DESPITE TAFs 'not necessary' warning!
-CADJ STORE dbloc  = comlev1_kpp, key = ikey
-CADJ STORE shsq   = comlev1_kpp, key = ikey
-CADJ STORE ghat   = comlev1_kpp, key = ikey
-CADJ STORE diffus = comlev1_kpp, key = ikey
+CADJ STORE dbloc  = comlev1_kpp, key = ikppkey
+CADJ STORE shsq   = comlev1_kpp, key = ikppkey
+CADJ STORE ghat   = comlev1_kpp, key = ikppkey
+CADJ STORE diffus = comlev1_kpp, key = ikppkey
 cph)
 
 c-----------------------------------------------------------------------
@@ -167,11 +167,11 @@ c-----------------------------------------------------------------------
      I       mytime, mythid
      I     , kmtj
      I     , dvsq, dbloc, Ritop, ustar, bo, bosol, coriol
-     I     , ikey
+     I     , ikppkey
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
      &     )
 
-CADJ STORE hbl,bfsfc,stable,casea,kbl = comlev1_kpp, key = ikey
+CADJ STORE hbl,bfsfc,stable,casea,kbl = comlev1_kpp, key = ikppkey
 
 c-----------------------------------------------------------------------
 c compute boundary layer diffusivities
@@ -179,11 +179,11 @@ c-----------------------------------------------------------------------
 
       call blmix (
      I       ustar, bfsfc, hbl, stable, casea, diffus, kbl
-     O     , dkm1, blmc, ghat, sigma, ikey
+     O     , dkm1, blmc, ghat, sigma, ikppkey
      &     )
 cph(
-CADJ STORE dkm1,blmc,ghat = comlev1_kpp, key = ikey
-CADJ STORE hbl, kbl, diffus, casea = comlev1_kpp, key = ikey
+CADJ STORE dkm1,blmc,ghat = comlev1_kpp, key = ikppkey
+CADJ STORE hbl, kbl, diffus, casea = comlev1_kpp, key = ikppkey
 cph)
 
 c-----------------------------------------------------------------------
@@ -197,7 +197,7 @@ c-----------------------------------------------------------------------
 
 cph(
 cph avoids recomp. of enhance
-CADJ STORE blmc = comlev1_kpp, key = ikey
+CADJ STORE blmc = comlev1_kpp, key = ikppkey
 cph)
 
 c-----------------------------------------------------------------------
@@ -229,7 +229,7 @@ c*************************************************************************
      I       mytime, mythid
      I     , kmtj
      I     , dvsq, dbloc, Ritop, ustar, bo, bosol, coriol
-     I     , ikey
+     I     , ikppkey
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
      &     )
 
@@ -286,7 +286,7 @@ c coriol    : Coriolis parameter                        (1/s)
       _KPP_RL bo    (imt)
       _KPP_RL bosol (imt)
       _KPP_RL coriol(imt)
-      integer ikey
+      integer ikppkey
 
 c  output
 c--------
@@ -411,7 +411,7 @@ cph(
 cph  without this store, there's a recomputation error for
 cph  rib in adbldepth (probably partial recomputation problem)    
 CADJ store Rib = comlev1_kpp
-CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr /)
+CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr /)
 cph)
 
       do kl = 2, Nr
@@ -421,7 +421,7 @@ cph)
       end do
 
 CADJ store kbl = comlev1_kpp
-CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
       do i = 1, imt
          kl = kbl(i)
@@ -434,7 +434,7 @@ c     linearly interpolate to find hbl where Rib = Ricr
       end do
 
 CADJ store hbl = comlev1_kpp
-CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c-----------------------------------------------------------------------
 c     find stability and buoyancy forcing for boundary layer
@@ -452,7 +452,7 @@ c-----------------------------------------------------------------------
          bfsfc(i)  = bo(i) + bosol(i) * (1. - worka(i))
       end do
 CADJ store bfsfc = comlev1_kpp
-CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c--   ensure bfsfc is never 0
       do i = 1, imt
@@ -463,7 +463,7 @@ c--   ensure bfsfc is never 0
 cph(
 cph  added stable to store list to avoid extensive recomp.
 CADJ store bfsfc, stable = comlev1_kpp
-CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 cph)
 
 c-----------------------------------------------------------------------
@@ -482,7 +482,7 @@ c-----------------------------------------------------------------------
          end if
       end do
 CADJ store hbl = comlev1_kpp
-CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
       do i = 1, imt
          hbl(i) = max(hbl(i),minKPPhbl)
@@ -490,7 +490,7 @@ CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
       end do
 
 CADJ store hbl = comlev1_kpp
-CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c-----------------------------------------------------------------------
 c      find new kbl
@@ -520,7 +520,7 @@ c-----------------------------------------------------------------------
          bfsfc(i) = bo(i) + bosol(i) * (1. - worka(i))
       end do
 CADJ store bfsfc = comlev1_kpp
-CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c--   ensures bfsfc is never 0
       do i = 1, imt
@@ -642,7 +642,7 @@ c*************************************************************************
  
       subroutine Ri_iwmix (
      I       kmtj, shsq, dbloc, dblocSm
-     I     , ikey
+     I     , ikppkey
      O     , diffus )
 
 c     compute interior viscosity diffusivity coefficients due
@@ -666,7 +666,7 @@ c     dblocSm(imt,Nr)      horizontally smoothed dbloc              (m/s^2)
       _KPP_RL shsq   (imt,Nr)
       _KPP_RL dbloc  (imt,Nr)
       _KPP_RL dblocSm(imt,Nr)
-      integer ikey
+      integer ikppkey
  
 c output
 c     diffus(imt,0:Nrp1,1)  vertical viscosivity coefficient        (m^2/s)
@@ -1024,7 +1024,7 @@ c*************************************************************************
 
       subroutine blmix (
      I       ustar, bfsfc, hbl, stable, casea, diffus, kbl
-     O     , dkm1, blmc, ghat, sigma, ikey
+     O     , dkm1, blmc, ghat, sigma, ikppkey
      &     )
 
 c     mixing coefficients within boundary layer depend on surface
@@ -1065,7 +1065,7 @@ c     sigma(imt)                  normalized depth (d / hbl)
       _KPP_RL blmc (imt,Nr,mdiff)
       _KPP_RL ghat (imt,Nr)
       _KPP_RL sigma(imt)
-      integer ikey
+      integer ikppkey
 
 #ifdef ALLOW_KPP
 
@@ -1102,8 +1102,8 @@ c-----------------------------------------------------------------------
          wm(i) = sign(eins,wm(i))*max(phepsi,abs(wm(i)))
          ws(i) = sign(eins,ws(i))*max(phepsi,abs(ws(i)))
       end do
-CADJ STORE wm = comlev1_kpp, key = ikey
-CADJ STORE ws = comlev1_kpp, key = ikey
+CADJ STORE wm = comlev1_kpp, key = ikppkey
+CADJ STORE ws = comlev1_kpp, key = ikppkey
 
       do i = 1, imt
 

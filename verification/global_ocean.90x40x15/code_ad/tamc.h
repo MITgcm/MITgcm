@@ -57,11 +57,13 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
       integer    nchklev_1
-      parameter( nchklev_1      =   9 )
+      parameter( nchklev_1      =    5 )
       integer    nchklev_2
-      parameter( nchklev_2      =  90 )
+      parameter( nchklev_2      =   90 )
+c      parameter( nchklev_2      =  150 )
       integer    nchklev_3
-      parameter( nchklev_3      =  90 )
+      parameter( nchklev_3      =    3 )
+c      parameter( nchklev_3      =  150 )
 
 c--   Note always check for the correct sizes of the common blocks!
 
@@ -102,14 +104,18 @@ c     and writing data.
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
       INTEGER    maxpass
+#ifdef ALLOW_PASSIVE_TRACER
       PARAMETER( maxpass     = 3 )
+#else
+      PARAMETER( maxpass     = 2 )
+#endif
       INTEGER    maxcube
       PARAMETER( maxcube     = 1 )
 
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
       INTEGER iikey, kkey, passkey, igadkey, 
-     &        itdkey, idynkey, igmkey
+     &        itdkey, idynkey, igmkey, ikppkey
 
 c     ================================================================
 c     END OF HEADER TAMC

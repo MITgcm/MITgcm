@@ -104,14 +104,18 @@ c     and writing data.
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
       INTEGER    maxpass
+#ifdef ALLOW_PASSIVE_TRACER
       PARAMETER( maxpass     = 3 )
+#else
+      PARAMETER( maxpass     = 2 )
+#endif
       INTEGER    maxcube
       PARAMETER( maxcube     = 1 )
 
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
       INTEGER iikey, kkey, passkey, igadkey, 
-     &        itdkey, idynkey, igmkey
+     &        itdkey, idynkey, igmkey, ikppkey
 
 c     ================================================================
 c     END OF HEADER TAMC
