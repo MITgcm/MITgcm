@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.40 2004/07/06 19:53:34 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.41 2004/07/06 20:14:32 edhill Exp $
 #  $Name:  $
 #
 
@@ -13,7 +13,7 @@ usage()
     echo "  (-help|-h)               print usage"
     echo "  (-mpi)                   use MPI input files"
     echo "  (-ieee|-noieee)          if possible, use IEEE compiler flags"
-    echo "                             (DEF=\"noieee\")"
+    echo "                             (DEF=\"-ieee\")"
     echo "  (-optfile=|-of=)STRING   list of optfiles to use"
     echo "  (-a|-addr) STRING        list of email recipients"
     echo "                             (DEF=\"edhill@mitgcm.org\")"
