@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.91 2003/02/18 05:33:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.92 2003/02/18 15:35:36 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -843,6 +843,14 @@ C     Check for multiple coordinate systems
        CALL PRINT_ERROR( msgBuf , myThid)
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
+
+C--   When using the dynamical pressure in EOS (with Z-coord.),
+C     needs to activate specific part of the code (restart & exchange)
+c     useDynP_inEos_Zc = .FALSE.
+      useDynP_inEos_Zc = ( buoyancyRelation .EQ. 'OCEANIC'
+     &              .AND. ( eosType .EQ. 'JMD95P' .OR.
+     &                      eosType .EQ. 'UNESCO' .OR.
+     &                      eosType .EQ. 'MDJWF'       )  )
 
 C--   Input files
       READ(UNIT=iUnit,NML=PARM05) !,IOSTAT=errIO)
