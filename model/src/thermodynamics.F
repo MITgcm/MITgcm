@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.68 2004/05/21 21:45:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.69 2004/06/26 02:38:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -583,7 +583,8 @@ C disable this section of code.
      &     CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 #endif
           CALL GAD_ADVECTION(
-     I             tempImplVertAdv,tempAdvScheme,GAD_TEMPERATURE,
+     I             tempImplVertAdv, tempAdvScheme, tempVertAdvScheme,
+     I             GAD_TEMPERATURE,
      I             uVel, vVel, wVel, theta,
      O             gT,
      I             bi,bj,myTime,myIter,myThid)
@@ -594,7 +595,8 @@ C disable this section of code.
      &     CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 #endif
           CALL GAD_ADVECTION(
-     I             saltImplVertAdv,saltAdvScheme,GAD_SALINITY,
+     I             saltImplVertAdv, saltAdvScheme, saltVertAdvScheme,
+     I             GAD_SALINITY,
      I             uVel, vVel, wVel, salt,
      O             gS,
      I             bi,bj,myTime,myIter,myThid)

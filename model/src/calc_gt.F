@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.39 2004/01/07 21:18:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.40 2004/06/26 02:38:09 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -94,7 +94,7 @@ C--   the kDown is still required
      I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
      I           uVel, vVel, wVel,
      I           diffKhT, diffK4T, KappaRT, theta,
-     I           GAD_TEMPERATURE, tempAdvScheme, 
+     I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv,
      U           fVerT, gT,
      I           myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.2 2004/01/03 00:50:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.3 2004/06/26 02:39:31 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -56,6 +56,7 @@ c    &     multiDimAdvection .AND.
      &     PTRACERS_advScheme(iTracer).NE.ENUM_CENTERED_4TH ) THEN
             CALL GAD_ADVECTION(
      I                        .FALSE.,
+     I                        PTRACERS_advScheme(iTracer),
      I                        PTRACERS_advScheme(iTracer),
      I                        GAD_TR1,
      I                        uVel, vVel, wVel,

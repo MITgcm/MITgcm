@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.22 2004/06/25 18:19:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.23 2004/06/26 02:38:54 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,7 +9,8 @@ C !ROUTINE: GAD_ADVECTION
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_ADVECTION(
-     I     implicitAdvection, advectionScheme, tracerIdentity,
+     I     implicitAdvection, advectionScheme, vertAdvecScheme,
+     I     tracerIdentity,
      I     uVel, vVel, wVel, tracer,
      O     gTracer,
      I     bi,bj, myTime,myIter,myThid)
@@ -47,7 +48,8 @@ C !USES: ===============================================================
 
 C !INPUT PARAMETERS: ===================================================
 C  implicitAdvection :: implicit vertical advection (later on)
-C  advectionScheme   :: advection scheme to use
+C  advectionScheme   :: advection scheme to use (Horizontal plane)
+C  vertAdvecScheme   :: advection scheme to use (vertical direction)
 C  tracerIdentity    :: tracer identifier (required only for OBCS)
 C  uVel              :: velocity, zonal component
 C  vVel              :: velocity, meridional component
@@ -58,7 +60,7 @@ C  myTime            :: current time
 C  myIter            :: iteration number
 C  myThid            :: thread number
       LOGICAL implicitAdvection
-      INTEGER advectionScheme
+      INTEGER advectionScheme, vertAdvecScheme
       INTEGER tracerIdentity
       _RL uVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL vVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
@@ -444,13 +446,13 @@ CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-    Compute vertical advective flux in the interior:
-         IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+         IF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
           CALL GAD_FLUXLIMIT_ADV_R(
      &        bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
-         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+         ELSEIF (vertAdvecScheme.EQ.ENUM_DST3 ) THEN
           CALL GAD_DST3_ADV_R(
      &        bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
-         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+         ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
           CALL GAD_DST3FL_ADV_R(
      &        bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
          ELSE

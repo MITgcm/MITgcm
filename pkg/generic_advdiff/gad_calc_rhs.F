@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.25 2004/06/25 18:19:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.26 2004/06/26 02:38:54 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -12,7 +12,7 @@ C !INTERFACE: ==========================================================
      I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
      I           uVel, vVel, wVel,
      I           diffKh, diffK4, KappaRT, Tracer,
-     I           tracerIdentity, advectionScheme, 
+     I           tracerIdentity, advectionScheme, vertAdvecScheme,
      I           calcAdvection, implicitAdvection,
      U           fVerT, gTracer,
      I           myThid )
@@ -68,7 +68,8 @@ C diffK4           :: bi-harmonic diffusion coefficient
 C KappaRT          :: 3-D array for vertical diffusion coefficient
 C Tracer           :: tracer field
 C tracerIdentity   :: tracer identifier (required for KPP,GM)
-C advectionScheme  :: advection scheme to use
+C advectionScheme  :: advection scheme to use (Horizontal plane)
+C vertAdvecScheme  :: advection scheme to use (Vertical direction)
 C calcAdvection    :: =False if Advec computed with multiDim scheme
 C implicitAdvection:: =True if vertical Advec computed implicitly
 C myThid           :: thread number
@@ -88,7 +89,7 @@ C myThid           :: thread number
       _RL KappaRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER tracerIdentity
-      INTEGER advectionScheme
+      INTEGER advectionScheme, vertAdvecScheme
       LOGICAL calcAdvection
       LOGICAL implicitAdvection
       INTEGER myThid
@@ -318,23 +319,23 @@ C- a hack to prevent Water-Vapor vert.transport into the stratospheric level Nr
       IF (calcAdvection .AND. .NOT.implicitAdvection .AND. K.GE.2) THEN
 #endif
 C-    Compute vertical advective flux in the interior:
-       IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
+       IF (vertAdvecScheme.EQ.ENUM_CENTERED_2ND) THEN
         CALL GAD_C2_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
-       ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+       ELSEIF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
         CALL GAD_FLUXLIMIT_ADV_R(
      &       bi,bj,k,deltaTtracer,rTrans,wVel,tracer,af,myThid)
-       ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
+       ELSEIF (vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
         CALL GAD_U3_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
-       ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
+       ELSEIF (vertAdvecScheme.EQ.ENUM_CENTERED_4TH) THEN
         CALL GAD_C4_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
-       ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+       ELSEIF (vertAdvecScheme.EQ.ENUM_DST3 ) THEN
         CALL GAD_DST3_ADV_R(
      &       bi,bj,k,deltaTtracer,rTrans,wVel,tracer,af,myThid)
-       ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+       ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
         CALL GAD_DST3FL_ADV_R(
      &       bi,bj,k,deltaTtracer,rTrans,wVel,tracer,af,myThid)
        ELSE
-        STOP 'GAD_CALC_RHS: Bad advectionScheme (R)'
+        STOP 'GAD_CALC_RHS: Bad vertAdvecScheme (R)'
        ENDIF
 C-     add the advective flux to fVerT
        DO j=1-Oly,sNy+Oly

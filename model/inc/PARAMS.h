@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.114 2004/06/24 20:25:44 afe Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.115 2004/06/26 02:37:17 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -127,6 +127,11 @@ C     nonlinFreeSurf      :: option related to non-linear free surface
 C                           =0 Linear free surface ; >0 Non-linear
 C     select_rStar        :: option related to r* vertical coordinate
 C                           =0 (default) use r coord. ; > 0 use r*
+C     tempAdvScheme       :: Temp. Horiz.Advection scheme selector
+C     tempVertAdvScheme   :: Temp. Vert. Advection scheme selector 
+C     saltAdvScheme       :: Salt. Horiz.advection scheme selector
+C     saltVertAdvScheme   :: Salt. Vert. Advection scheme selector
+C     debugLevel          :: debug level selector: higher -> more writing
 
       COMMON /PARM_I/
      &        cg2dMaxIters,
@@ -138,7 +143,9 @@ C                           =0 (default) use r coord. ; > 0 use r*
      &        writeStatePrec, nCheckLev,
      &        writeBinaryPrec, readBinaryPrec,
      &        nonlinFreeSurf, select_rStar,
-     &        tempAdvScheme, saltAdvScheme, tracerAdvScheme,
+     &        tempAdvScheme, tempVertAdvScheme,
+     &        saltAdvScheme, saltVertAdvScheme,
+     &        tracerAdvScheme,
      &        debugLevel
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
@@ -154,8 +161,8 @@ C                           =0 (default) use r coord. ; > 0 use r*
       INTEGER nCheckLev
       INTEGER nonlinFreeSurf
       INTEGER select_rStar
-      INTEGER tempAdvScheme
-      INTEGER saltAdvScheme
+      INTEGER tempAdvScheme, tempVertAdvScheme
+      INTEGER saltAdvScheme, saltVertAdvScheme
       INTEGER tracerAdvScheme
       INTEGER debugLevel
 

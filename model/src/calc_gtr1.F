@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gtr1.F,v 1.11 2004/01/07 21:18:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gtr1.F,v 1.12 2004/06/26 02:38:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -80,7 +80,7 @@ C--   the kDown is still required
      I           xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
      I           uVel, vVel, wVel,
      I           diffKhT, diffK4T, KappaRT, tr1,
-     I           GAD_TR1, tracerAdvScheme,
+     I           GAD_TR1, tracerAdvScheme, tracerAdvScheme,
      I           calcAdvection, .FALSE.,
      U           fVerT, gTr1,
      I           myThid )

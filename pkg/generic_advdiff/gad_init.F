@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/gad_init.F,v 1.3 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/gad_init.F,v 1.4 2004/06/26 02:38:54 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -87,7 +87,10 @@ C-- Print out GAD parameters :
 
       CALL WRITE_0D_I( tempAdvScheme, INDEX_NONE,
      & 'tempAdvScheme =',
-     & '   /* Temp. advection scheme selector */') 
+     & '   /* Temp. Horiz.Advection scheme selector */') 
+      CALL WRITE_0D_I( tempVertAdvScheme, INDEX_NONE,
+     & 'tempVertAdvScheme =',
+     & '   /* Temp. Vert. Advection scheme selector */') 
       CALL WRITE_0D_L( tempMultiDimAdvec, INDEX_NONE,
      & 'tempMultiDimAdvec =',
      & '   /* use Muti-Dim Advec method for Temp */')
@@ -97,7 +100,10 @@ C-- Print out GAD parameters :
 
       CALL WRITE_0D_I( saltAdvScheme, INDEX_NONE,
      & 'saltAdvScheme =',
-     & '   /* Salt. advection scheme selector */') 
+     & '   /* Salt. Horiz.advection scheme selector */') 
+      CALL WRITE_0D_I( saltVertAdvScheme, INDEX_NONE,
+     & 'saltVertAdvScheme =',
+     & '   /* Salt. Vert. Advection scheme selector */') 
       CALL WRITE_0D_L( saltMultiDimAdvec, INDEX_NONE,
      & 'saltMultiDimAdvec =',
      & '   /* use Muti-Dim Advec method for Salt */')
