@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.10 2004/03/08 21:20:02 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.11 2004/03/09 03:45:28 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
