@@ -33,6 +33,12 @@ CPP             = cat $< | /lib/cpp -P -traditional
 ARFLAGS     = rv
 ECCOOPTLIB  = liblsopt_ecco.a
 
+# Altix
+#---------
+#CPPFLAGS      = -DIS_DOUBLE
+#FC              = ifort
+#FFLAGS          = -mp -132 -r8 -i4 -w95 -W0 -WB -CB -fpe0 -traceback
+
 # O3K
 #---------
 #CPPFLAGS	= -DIS_DOUBLE

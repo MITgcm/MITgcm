@@ -50,7 +50,7 @@ c-----------------------------------------
       do i = 1, nn
 cph(
          if (diag(i).LE.0) then
-            print *, 'pathei-lsopt: in dgscale; diag = 0 for i=', i
+cph            print *, 'pathei-lsopt: in dgscale; diag = 0 for i=', i
             diag(i) = rmin
          end if
 cph)

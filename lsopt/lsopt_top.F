@@ -125,7 +125,7 @@ c-----------------------------------------
       mm    = nn
       mupd  = nupdate
 
-      REAL_BYTE = 8
+      REAL_BYTE = 4 
       isize = REAL_BYTE
 
 c-----------------------------------------
@@ -255,14 +255,15 @@ c-----------------------------------------
 c--- start if cold start ---
          if (lphprint) then
             print '(a)', 'pathei-lsopt: cold start'
-            print *
          end if
 
+         print *, 'pathei-lsopt vor simul', nn
+         print *, 'pathei-lsopt xx(1), gg(1) ', xx(1), gg(1)
+
          call simul( indic, nn, xx, ff, gg )
-cph(
+
          print *, 'pathei: nach simul:   nn, ff = ', nn, ff
-         print *, 'pathei: nach simul:   xx, gg = ', xx(1), gg(1)
-cph)
+         print *, 'pathei: nach simul:   xx(1), gg(1) = ', xx(1), gg(1)
 
          do i = 1, nn
             xdiff(i) = 1.
@@ -278,7 +279,7 @@ cph)
 cph(
       print *, 'pathei: vor lswri '
 cph)
-         call lswri( iiter, nn, xx, gg, lphprint )
+         call lswri( isize, iiter, nn, xx, gg, lphprint )
 
 cph(
       print *, 'pathei: vor gnorm0 '
@@ -449,7 +450,7 @@ c
       call dostore( nn, xx, .true., 1 )
       call dostore( nn, gg, .true., 2 )
 cph(
-      call lswri( iiter, nn, xx, gg, lphprint )
+      call lswri( isize, iiter, nn, xx, gg, lphprint )
 cph)
 
       gnorm = DNRM2( nn, gg, 1 )

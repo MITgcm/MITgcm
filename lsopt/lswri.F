@@ -1,5 +1,5 @@
 
-      subroutine lswri( phniter, NN, xx, gg, lphprint )
+      subroutine lswri( isize, phniter, NN, xx, gg, lphprint )
 
 c     ==================================================================
 c     SUBROUTINE lswri
@@ -19,8 +19,9 @@ c     ==================================================================
 
 C     ========= Routine arguments ======================================
 
-      INTEGER   phniter, NN
-      DOUBLE PRECISION      xx(NN), gg(NN)
+      INTEGER   isize, phniter, NN
+      real*4 xx(NN), gg(NN)
+cph      DOUBLE PRECISION      xx(NN), gg(NN)
       LOGICAL   lphprint
 
 cph      CHARACTER yitnum*3
@@ -32,13 +33,14 @@ C     ========= Local variables ========================================
 C=======================================================================
 
       if (lphprint) 
-     &   print *, 'pathei: writing in lswri: ', phniter
+     &   print *, 'pathei: formatted output of xx, gg, in lswri: ',
+     &   phniter
 c
       open(95,
      &     FILE='PH_X.dat',
      &     FORM='UNFORMATTED',
      &     ACCESS='DIRECT',
-     &     RECL=NN*8)
+     &     RECL=NN*isize)
       write(95,REC=phniter+1) xx
       close(95)
 c
@@ -46,9 +48,8 @@ c
      &     FILE='PH_G.dat',
      &     FORM='UNFORMATTED',
      &     ACCESS='DIRECT',
-     &     RECL=NN*8)
+     &     RECL=NN*isize)
       write(95,REC=phniter+1) gg
       close(95)
-c
 
       end

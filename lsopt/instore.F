@@ -3,7 +3,7 @@
 c
 c         arguments
 c
-      integer n, is, m, jmin, jmax, ifail
+      integer n, is, m, jmin, jmax, ifail, rectmp
       double precision    fc, gnorm0
       logical cold
 c----
@@ -16,6 +16,8 @@ c
       ntape = 92
       isize = is
       cold  = .true.
+
+      print *, 'pathei: in instore '
 
 cc one record = two arrays of real*(isize)
 
@@ -38,12 +40,17 @@ cc one record = two arrays of real*(isize)
      $        '  opening direct access with recl = ',n,' * ',isize
       print*
 
+      rectmp = n * isize
+cph(
+      print *, 'pathei rectmp ', rectmp, n, isize
+cph)
+
       open( ntape
      $    , file   = 'OPWARMD'
      $    , status = 'unknown'
      $    , form   = 'unformatted'
      $    , access = 'direct'
-     $    , recl   = n * isize
+     $    , recl   = rectmp
      $    )
 
       return
