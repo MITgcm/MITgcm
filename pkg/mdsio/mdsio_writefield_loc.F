@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_loc.F,v 1.2 2003/07/18 21:10:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_loc.F,v 1.3 2003/10/05 16:22:22 dimitri Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -159,8 +159,14 @@ C Gather array and write it to file, one vertical level at a time
              global_r4(I,J) = global(I,J)
             ENDDO
            ENDDO
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR4( Nx*Ny, global_r4 )
+#endif
            write(dUnit,rec=irec) global_r4
           elseif (filePrec .eq. precFloat64) then
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR8( Nx*Ny, global )
+#endif
            write(dUnit,rec=irec) global
           else
            write(msgbuf,'(a)')
