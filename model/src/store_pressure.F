@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/store_pressure.F,v 1.2 2002/08/15 17:25:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/store_pressure.F,v 1.3 2002/08/19 14:21:30 mlosch Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -44,7 +44,9 @@ C     I,J
 C
 C     compute the pressure for use in the equation of state
 C
-      if ( buoyancyRelation .eq. 'OCEANIC' ) then
+      if ( buoyancyRelation .eq. 'OCEANIC' .and.
+     &     ( equationOfState .eq. 'JMD95P'
+     &       .or. equationOfState .eq. 'UNESCO' )  ) then
          do J=1-Oly,sNy+Oly
             do I=1-Olx,sNx+Olx
                pressure(i,j,k,bi,bj) = rhonil * (

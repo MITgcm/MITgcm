@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.1 2002/08/07 16:55:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.2 2002/08/19 14:21:30 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -60,6 +60,7 @@ C     I,J,K
             READ(37,*) (eosC(I,K),I=1,9)
          ENDDO
          CLOSE(37)
+
       elseif ( equationOfState(1:5) .eq. 'JMD95' 
      &         .or. equationOfState .eq. 'UNESCO' ) then
 C
@@ -68,18 +69,50 @@ C     rho = R(salinity, potential temperature, pressure)
 C     pressure needs to be available (from the previous 
 C     time step to linearize the problem)
 C
-         do bj = myByLo(myThid), myByHi(myThid)
-            do bi = myBxLo(myThid), myBxHi(myThid)
-               do K=1,Nr
-                  do J=1-Oly,sNy+Oly
-                     do I=1-Olx,sNx+Olx
-                        pressure(i,j,k,bi,bj) = 
-     &                      - rhonil*gravity*rC(k) 
+         if ( equationOfState .eq. 'JMD95Z' 
+     &        .and. buoyancyRelation .eq. 'OCEANICP' ) then
+            write(msgBuf,'(A)')
+     &      'ini_eos: equation of state ''JMD95Z'' should not'
+            CALL PRINT_ERROR( msgBuf , 1)
+            write(msgBuf,'(A)')
+     &      '         be used together with pressure coordinates.'
+            CALL PRINT_ERROR( msgBuf , 1)
+            write(msgBuf,'(A)')
+     &      '         Use only ''JMD95P'' with ''OCEANICP''.'
+            CALL PRINT_ERROR( msgBuf , 1)
+            STOP 'ABNORMAL END: S/R INI_EOS'
+         endif
+C     
+         if ( buoyancyRelation .eq. 'OCEANIC' ) then
+            do bj = myByLo(myThid), myByHi(myThid)
+               do bi = myBxLo(myThid), myBxHi(myThid)
+                  do K=1,Nr
+                     do J=1-Oly,sNy+Oly
+                        do I=1-Olx,sNx+Olx
+                           pressure(i,j,k,bi,bj) = rhonil * (
+     &                          - gravity*rC(k)
+     &                          )
+                        end do
                      end do
                   end do
                end do
             end do
-         end do
+         elseif ( buoyancyRelation .eq. 'ATMOSPHERIC'
+     &           .or. buoyancyRelation .eq. 'OCEANICP' ) then
+C     in pressure coordinates the pressure is just the coordinate of
+C     the tracer point
+            do bj = myByLo(myThid), myByHi(myThid)
+               do bi = myBxLo(myThid), myBxHi(myThid)
+                  do K=1,Nr
+                     do J=1-Oly,sNy+Oly
+                        do I=1-Olx,sNx+Olx
+                           pressure(i,j,k,bi,bj) = rC(k)
+                        end do 
+                     end do
+                  end do
+               end do
+            end do
+         endif
 
 C     coefficients nonlinear equation of state in pressure coordinates for
 C     1. density of fresh water at p = 0
@@ -315,12 +348,14 @@ C     check nonlinear EOS
             bulkMod(i,j)         = -1. _d 0
          
             call find_rhop0( 
-     I           bi, bj, imin, imax, jmin, jmax, k, tFld, sFld,
+     I           bi, bj, imin, imax, jmin, jmax, k, k,
+     I           tFld, sFld,
      O           rhoP0,
      I           myThid )
             
             call find_bulkmod(
-     I           bi, bj, imin, imax, jmin, jmax, k, tFld, sFld,
+     I           bi, bj, imin, imax, jmin, jmax, k, k, 
+     I           tFld, sFld,
      O           bulkMod,
      I           myThid )
             
