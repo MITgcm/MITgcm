@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.6 2004/12/02 15:41:22 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.7 2004/12/02 19:27:35 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -160,7 +160,7 @@ c             Runoff.
      &                i, j, runoff(i,j,bi,bj)
                  print *, 'Please note that input units for runoff are'
                  print *, 'm/s not m/yr.  If input file is in m/yr, set'
-                 print *, 'exf_inscal_runoff=1.0/(86400.0*365.0)'
+                 print *, 'exf_inscal_runoff=3.171e-8'
                  print *, 'in the data.exf input file.'
                  exferr = 1
               endif
