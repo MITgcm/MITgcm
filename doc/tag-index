@@ -1,8 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.342 2004/09/08 18:02:29 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.343 2004/09/10 12:26:41 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o overhaul of IO so that we now have flags for MDSIO and/or MNC
+  - all verification tests compile and run with linux_ia32_g77
+  - defaults are compatible with current input files--nothing 
+    should change if you were not previously using MNC
+  - MNC output has been added in numerous places (eg. timeave)
+    but there are still a few writes not yet do-able with MNC
+    (this is in progress)
+  - flags now allow for either/or/both use of MDSIO and MNC and 
+    documentation will soon follow
+  - numerous small formatting cleanups for ProTeX
 o add version info (via BUILD_INFO.h) to MNC and stdout
 
 checkpoint54e_post
