@@ -1,7 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.165 2003/06/23 22:37:30 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.166 2003/06/24 16:14:59 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint51
+o merged improved packages from ecco-branch (ecco_c51_e34) to MAIN
+  - autodiff, ctrl, exf, grdchk, seaice
+  kept separate packages
+  - cost, ecco, obcs
 
 checkpoint50i_post
 o Preparing next differentiable checkpoint and sync
