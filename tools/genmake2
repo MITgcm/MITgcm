@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.52 2003/12/04 15:00:01 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.53 2003/12/05 15:08:33 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1353,6 +1353,8 @@ EXE_FTL=$EXECUTABLE"_ftl"
 EXE_SVD=$EXECUTABLE"_svd"
 
 cat >>$MAKEFILE <<EOF
+#
+# OPTFILE="$OPTFILE"
 # 
 # BUILDDIR     : Directory where object files are written
 # SOURCEDIRS   : Directories containing the source (.F) files
