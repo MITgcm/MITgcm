@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.91 2003/06/12 18:08:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.92 2003/07/08 15:00:26 heimbach Exp $
 C $Name:  $
 C
 CBOP
@@ -82,7 +82,8 @@ C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
      &                EmPmRfile, surfQfile, surfQswfile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                dQdTfile, ploadFile,
-     &                eosType, pickupSuff
+     &                eosType, pickupSuff,
+     &                mdsioLocalDir
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
       CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
@@ -100,6 +101,7 @@ C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
       CHARACTER*(MAX_LEN_FNAM) pSurfInitFile
       CHARACTER*(MAX_LEN_FNAM) dQdTfile
       CHARACTER*(MAX_LEN_FNAM) ploadFile
+      CHARACTER*(MAX_LEN_FNAM) mdsioLocalDir
       CHARACTER*(6) eosType
       CHARACTER*(10) pickupSuff
 
@@ -135,7 +137,8 @@ C                           =0 (default) use r coord. ; > 0 use r*
      &        writeStatePrec, nCheckLev,
      &        writeBinaryPrec, readBinaryPrec,
      &        nonlinFreeSurf, select_rStar,
-     &        tempAdvScheme, saltAdvScheme, tracerAdvScheme
+     &        tempAdvScheme, saltAdvScheme, tracerAdvScheme,
+     &        debugLevel
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
       INTEGER cg3dMaxIters
@@ -153,6 +156,15 @@ C                           =0 (default) use r coord. ; > 0 use r*
       INTEGER tempAdvScheme
       INTEGER saltAdvScheme
       INTEGER tracerAdvScheme
+      INTEGER debugLevel
+
+C
+      INTEGER debLevZero
+      PARAMETER(debLevZero=0)
+      INTEGER debLevA
+      PARAMETER(debLevA=1)
+      INTEGER debLevB
+      PARAMETER(debLevB=2)
 
 C--   COMMON /PARM_L/ Logical valued parameters used by the model.
 C     usingCartesianGrid :: If TRUE grid generation will be in a cartesian

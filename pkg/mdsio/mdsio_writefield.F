@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield.F,v 1.3 2003/06/12 18:38:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield.F,v 1.4 2003/07/08 15:00:27 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -78,8 +78,8 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName,metaFName
-      integer iG,jG,irec,bi,bj,j,k,dUnit,IL
+      character*(80) dataFName,metaFName,pfName
+      integer iG,jG,irec,bi,bj,j,k,dUnit,IL,pIL
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
       integer dimList(3,3),ndims
@@ -112,7 +112,16 @@ C Record number must be >= 1
 
 C Assume nothing
       fileIsOpen=.FALSE.
-      IL=ILNBLNK( fName )
+      IL  = ILNBLNK( fName )
+      pIL = ILNBLNK( mdsioLocalDir )
+
+C Assign special directory
+      if ( mdsioLocalDir .NE. ' ' ) then
+       write(pFname(1:80),'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
+      else
+       pFname= fName
+      endif
+      pIL=ILNBLNK( pfName )
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
@@ -223,7 +232,7 @@ C If we are writing to a tiled MDS file then we open each one here
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
          write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
-     &              fName(1:IL),'.',iG,'.',jG,'.data'
+     &              pfName(1:pIL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
           length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
           open( dUnit, file=dataFName, status=_NEW_STATUS,
@@ -305,7 +314,7 @@ C Create meta-file for each tile if we are tiling
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
          write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
-     &              fName(1:IL),'.',iG,'.',jG,'.meta'
+     &              pfName(1:pIL),'.',iG,'.',jG,'.meta'
          dimList(1,1)=Nx
          dimList(2,1)=myXGlobalLo+(bi-1)*sNx
          dimList(3,1)=myXGlobalLo+bi*sNx-1

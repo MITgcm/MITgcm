@@ -1,8 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.169 2003/06/27 02:15:54 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.170 2003/07/08 15:00:26 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint51c_post
+o introducing integer flag debugLevel
+  - debLevZero: suppress all output
+  - debLevA: standard
+  - debLevB: equivalent to current debugMode=.TRUE.
+o introducing pathname variable mdsioLocalDir for mdsio
+  that can be specified at runtime
+  (relevant for cluster I/O to local disk)
+`
 >>>checkpoint51b_post
 adjoint of ptracers
 o disentangled ALLOW_PTRACERS using new ALLOW_GCHEM

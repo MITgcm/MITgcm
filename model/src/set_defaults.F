@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.49 2003/06/12 18:27:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.50 2003/07/08 15:00:26 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -153,6 +153,7 @@ Cml      sBeta               = 7.4D-4
       useCDscheme         = .FALSE.
       useEnergyConservingCoriolis = .FALSE.
       useJamartWetPoints  = .FALSE.
+      debugLevel          = debLevA
 
 C--   Set (free)surface-related parameters
       implicitFreeSurface = .TRUE.
@@ -238,6 +239,7 @@ C--   Input files
       pSurfInitFile   = ' '
       dQdTFile        = ' '
       ploadFile       = ' '
+      mdsioLocalDir   = ' '
 
 C
       RETURN

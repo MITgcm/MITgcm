@@ -168,10 +168,12 @@ C If we are reading from a tiled MDS file then we open each one here
 C Of course, we only open the file if the tile is "active"
 C (This is a place-holder for the active/passive mechanism
          if (exst) then
-          write(msgbuf,'(a,a)')
+          if ( debugLevel .GE. debLevA ) then
+           write(msgbuf,'(a,a)')
      &      ' MDSREADFIELD_XZ_GL: opening file: ',dataFName
-          call print_message( msgbuf, standardmessageunit,
+           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
+          endif
           length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
           open( dUnit, file=dataFName, status='old',
      &        access='direct', recl=length_of_rec )
@@ -390,10 +392,12 @@ C If we are reading from a tiled MDS file then we open each one here
 C Of course, we only open the file if the tile is "active"
 C (This is a place-holder for the active/passive mechanism
          if (exst) then
-          write(msgbuf,'(a,a)')
+          if ( debugLevel .GE. debLevA ) then
+           write(msgbuf,'(a,a)')
      &      ' MDSREADFIELD_YZ_GL: opening file: ',dataFName
-          call print_message( msgbuf, standardmessageunit,
+           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
+          endif
           length_of_rec=MDS_RECLEN( filePrec, sNy, mythid )
           open( dUnit, file=dataFName, status='old',
      &        access='direct', recl=length_of_rec )

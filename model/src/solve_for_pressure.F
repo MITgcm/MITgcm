@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.37 2003/05/13 13:30:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.38 2003/07/08 15:00:26 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -175,7 +175,7 @@ C Western boundary
       ENDDO
 
 #ifndef DISABLE_DEBUGMODE
-      IF (debugMode) THEN
+      IF ( debugLevel .GE. debLevB ) THEN
        CALL DEBUG_STATS_RL(1,cg2d_b,'cg2d_b (SOLVE_FOR_PRESSURE)',
      &                        myThid)
       ENDIF
@@ -197,7 +197,7 @@ C     see CG2D.h for the interface to this routine.
       _EXCH_XY_R8(cg2d_x, myThid )
 
 #ifndef DISABLE_DEBUGMODE
-      IF (debugMode) THEN
+      IF ( debugLevel .GE. debLevB ) THEN
        CALL DEBUG_STATS_RL(1,cg2d_x,'cg2d_x (SOLVE_FOR_PRESSURE)',
      &                        myThid)
       ENDIF
@@ -206,14 +206,16 @@ C     see CG2D.h for the interface to this routine.
 C- dump CG2D output at monitorFreq (to reduce size of STD-OUTPUT files) :
       IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,
      &                                    myTime-deltaTClock) ) THEN
-       _BEGIN_MASTER( myThid )
-       WRITE(msgBuf,'(A34,1PE24.14)') 'cg2d_init_res =',firstResidual
-       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-       WRITE(msgBuf,'(A34,I6)') 'cg2d_iters =',numIters
-       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-       WRITE(msgBuf,'(A34,1PE24.14)') 'cg2d_res =',lastResidual
-       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-       _END_MASTER( )
+       IF ( debugLevel .GE. debLevA ) THEN
+        _BEGIN_MASTER( myThid )
+        WRITE(msgBuf,'(A34,1PE24.14)') 'cg2d_init_res =',firstResidual
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+        WRITE(msgBuf,'(A34,I6)') 'cg2d_iters =',numIters
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+        WRITE(msgBuf,'(A34,1PE24.14)') 'cg2d_res =',lastResidual
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+        _END_MASTER( )
+       ENDIF
       ENDIF
 
 C--   Transfert the 2D-solution to "etaN" :
@@ -354,14 +356,16 @@ C Western boundary
 
       IF ( DIFFERENT_MULTIPLE(monitorFreq,myTime,
      &                                    myTime-deltaTClock) ) THEN
-       _BEGIN_MASTER( myThid )
-       WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_init_res =',firstResidual
-       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-       WRITE(msgBuf,'(A34,I6)') 'cg3d_iters =',numIters
-       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-       WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_res =',lastResidual
-       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-       _END_MASTER( )
+       IF ( debugLevel .GE. debLevA ) THEN
+        _BEGIN_MASTER( myThid )
+        WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_init_res =',firstResidual
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+        WRITE(msgBuf,'(A34,I6)') 'cg3d_iters =',numIters
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+        WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_res =',lastResidual
+        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+        _END_MASTER( )
+       ENDIF
       ENDIF
 
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.1 2001/03/06 15:28:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.2 2003/07/08 15:00:27 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -57,8 +57,8 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName
-      integer iG,jG,irec,bi,bj,j,k,dUnit,IL
+      character*(80) dataFName,pfName
+      integer iG,jG,irec,bi,bj,j,k,dUnit,IL,pIL
       logical exst
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
@@ -85,7 +85,16 @@ C Record number must be >= 1
 C Assume nothing
       globalFile = .FALSE.
       fileIsOpen = .FALSE.
-      IL=ILNBLNK( fName )
+      IL  = ILNBLNK( fName )
+      pIL = ILNBLNK( mdsioLocalDir )
+
+C Assign special directory
+      if ( mdsioLocalDir .NE. ' ' ) then
+       write(pFname(1:80),'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
+      else
+       pFname= fName
+      endif
+      pIL=ILNBLNK( pfName )
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
@@ -94,10 +103,12 @@ C Check first for global file with simple name (ie. fName)
       dataFName = fName
       inquire( file=dataFname, exist=exst )
       if (exst) then
-       write(msgbuf,'(a,a)')
+       if ( debugLevel .GE. debLevA ) then
+        write(msgbuf,'(a,a)')
      &   ' MDSREADFIELD: opening global file: ',dataFName
-       call print_message( msgbuf, standardmessageunit,
+        call print_message( msgbuf, standardmessageunit,
      &                     SQUEEZE_RIGHT , mythid)
+        endif
        globalFile = .TRUE.
       endif
 
@@ -106,10 +117,12 @@ C If negative check for global file with MDS name (ie. fName.data)
        write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
        inquire( file=dataFname, exist=exst )
        if (exst) then
-        write(msgbuf,'(a,a)')
+        if ( debugLevel .GE. debLevA ) then
+         write(msgbuf,'(a,a)')
      &    ' MDSREADFIELD: opening global file: ',dataFName
-        call print_message( msgbuf, standardmessageunit,
+         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
+         endif
         globalFile = .TRUE.
        endif
       endif
@@ -130,23 +143,25 @@ C If we are reading from a tiled MDS file then we open each one here
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
          write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
-     &              fName(1:IL),'.',iG,'.',jG,'.data'
+     &              pfName(1:pIL),'.',iG,'.',jG,'.data'
          inquire( file=dataFname, exist=exst )
 C Of course, we only open the file if the tile is "active"
 C (This is a place-holder for the active/passive mechanism
          if (exst) then
-          write(msgbuf,'(a,a)')
+          if ( debugLevel .GE. debLevA ) then
+           write(msgbuf,'(a,a)')
      &      ' MDSREADFIELD: opening file: ',dataFName
-          call print_message( msgbuf, standardmessageunit,
+           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
+          endif
           length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
           open( dUnit, file=dataFName, status='old',
      &        access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          else
           fileIsOpen=.FALSE.
-          write(msgbuf,'(a,a)')
-     &      ' MDSREADFIELD: filename: ',dataFName
+          write(msgbuf,'(3a)')
+     &      ' MDSREADFIELD: filename: ',dataFName, pfName
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
           write(msgbuf,'(a)')

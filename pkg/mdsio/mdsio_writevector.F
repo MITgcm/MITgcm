@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.1 2001/03/06 15:28:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.2 2003/07/08 15:00:27 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -61,8 +61,8 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName,metaFName
-      integer iG,jG,irec,dUnit,IL
+      character*(80) dataFName,metaFName,pfName
+      integer iG,jG,irec,dUnit,IL,pIL
       logical fileIsOpen
       integer dimList(3,3),ndims
       integer length_of_rec
@@ -86,7 +86,16 @@ C Record number must be >= 1
 
 C Assume nothing
       fileIsOpen = .FALSE.
-      IL=ILNBLNK( fName )
+      IL  = ILNBLNK( fName )
+      pIL = ILNBLNK( mdsioLocalDir )
+
+C Assign special directory
+      if ( mdsioLocalDir .NE. ' ' ) then
+       write(pFname(1:80),'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
+      else
+       pFname= fName
+      endif
+      pIL=ILNBLNK( pfName )
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )

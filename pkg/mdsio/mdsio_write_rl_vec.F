@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_write_rl_vec.F,v 1.2 2001/09/13 17:43:56 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_write_rl_vec.F,v 1.3 2003/07/08 15:00:27 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -16,6 +16,8 @@ C Created: 03/29/99 eckert@mit.edu + adcroft@mit.edu
       implicit none
 
 #include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
 
 C Arguments
       integer dUnit
@@ -26,14 +28,17 @@ C Arguments
 C Local
       character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
-      write(msgbuf,'(a,i9.8,2x,i9.8)')
+      if ( debugLevel .GE. debLevA ) then
+       write(msgbuf,'(a,i9.8,2x,i9.8)')
      &  ' MDS_WRITE_RL_VEC: irec = ',irec,narr
 cab change start
 #ifndef ALLOW_FLT
-      call print_message( msgbuf, standardmessageunit,
+       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 can change end
+      endif
+
       write(dUnit,rec=irec) arr
 C     ------------------------------------------------------------------
       return

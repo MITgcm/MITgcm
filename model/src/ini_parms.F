@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.96 2003/06/05 16:03:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.97 2003/07/08 15:00:26 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -131,7 +131,7 @@ C--   Continuous equation parameters
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, ivdc_kappa,
      & bottomDragLinear,bottomDragQuadratic,
-     & usePickupBeforeC35, debugMode, 
+     & usePickupBeforeC35, debugMode, debugLevel,
      & readPickupWithTracer, writePickupWithTracer,
      & tempAdvScheme, saltAdvScheme, tracerAdvScheme,
      & multiDimAdvection, useEnergyConservingCoriolis,
@@ -172,7 +172,8 @@ C--   Input files
      & thetaClimFile, saltClimFile,
      & surfQfile, EmPmRfile, surfQswfile, 
      & uVelInitFile, vVelInitFile, pSurfInitFile,
-     & dQdTFile, ploadFile
+     & dQdTFile, ploadFile,
+     & mdsioLocalDir
 
 C
       _BEGIN_MASTER(myThid)
@@ -915,6 +916,8 @@ c      rkFac = -1.D0
       IF ( zCoordInputData ) usingZCoords = .TRUE.
       IF ( pCoordInputData ) usingPCoords = .TRUE.
 
+c-- gradually replacing debugMode by debugLevel
+      IF ( debugMode ) debugLevel = debLevB
 C
       CLOSE(iUnit)
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.36 2002/06/21 18:36:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.37 2003/07/08 15:00:26 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -211,10 +211,12 @@ C     _EXCH_XY_R8( cg2d_s, myThid )
        actualIts      = 0
        actualResidual = err
       
-      _BEGIN_MASTER( myThid )
-      write(*,'(A,1P2E22.14)')' cg2d: Sum(rhs),rhsMax = ',
+       IF ( debugLevel .GE. debLevA ) THEN
+        _BEGIN_MASTER( myThid )
+        write(*,'(A,1P2E22.14)')' cg2d: Sum(rhs),rhsMax = ',
      &                                  sumRHS,rhsMax 
-      _END_MASTER( )
+        _END_MASTER( )
+       ENDIF
 C     _BARRIER
 c     _BEGIN_MASTER( myThid )
 c      WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ', 

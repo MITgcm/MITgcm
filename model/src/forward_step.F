@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.56 2003/06/27 01:51:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.57 2003/07/08 15:00:26 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -95,7 +95,8 @@ C     mythid - thread number for this instance of the routine.
 CEOP
 
 #ifndef DISABLE_DEBUGMODE
-      IF (debugMode) CALL DEBUG_ENTER('FORWARD_STEP',myThid)
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_ENTER('FORWARD_STEP',myThid)
 #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -153,7 +154,8 @@ C--   Call external forcing package
 cswdblk -- add ---
 #ifdef ALLOW_BULK_FORCE
 #ifndef DISABLE_DEBUGMODE
-      IF (debugMode) CALL DEBUG_CALL('BULKF_FIELDS_LOAD',myThid)
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('BULKF_FIELDS_LOAD',myThid)
 #endif
        CALL TIMER_START('BULKF_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
        CALL BULKF_FIELDS_LOAD( mytime, myiter, mythid )
@@ -177,7 +179,8 @@ C     NOTE, that although the exf package is part of the
 C     distribution, it is not currently maintained, i.e.
 C     exf is disabled by default in genmake.
 #ifndef DISABLE_DEBUGMODE
-      IF (debugMode) CALL DEBUG_CALL('EXF_GETFORCING',myThid)
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('EXF_GETFORCING',myThid)
 #endif
       CALL TIMER_START('EXF_GETFORCING     [FORWARD_STEP]',mythid)
       CALL EXF_GETFORCING( mytime, myiter, mythid )
@@ -191,7 +194,8 @@ cph assuming that ALLOW_SEAICE has not yet been differentiated.
       IF ( .NOT. useSEAICE ) THEN
 #  endif
 #ifndef DISABLE_DEBUGMODE
-       IF (debugMode) CALL DEBUG_CALL('EXTERNAL_FIELDS_LOAD',myThid)
+       IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('EXTERNAL_FIELDS_LOAD',myThid)
 #endif
        CALL TIMER_START('EXTERNAL_FIELDS_LOAD[FORWARD_STEP]',mythid)
        CALL EXTERNAL_FIELDS_LOAD( mytime, myiter, mythid )
@@ -220,7 +224,8 @@ C     under sea-ice may not be "exactly" at the freezing point by the time
 C     theta is dumped or time-averaged.
       IF ( useSEAICE ) THEN
 #ifndef DISABLE_DEBUGMODE
-         IF (debugMode) CALL DEBUG_CALL('SEAICE_MODEL',myThid)
+         IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('SEAICE_MODEL',myThid)
 #endif
          CALL TIMER_START('SEAICE_MODEL       [FORWARD_STEP]',myThid)
          CALL SEAICE_MODEL( myTime, myIter, myThid )
@@ -237,7 +242,8 @@ CADJ STORE ptracer  = comlev1, key = ikey_dynamics
 #endif
 C--     Step forward fields and calculate time tendency terms.
 #ifndef DISABLE_DEBUGMODE
-      IF (debugMode) CALL DEBUG_CALL('THERMODYNAMICS',myThid)
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('THERMODYNAMICS',myThid)
 #endif
         CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',mythid)
         CALL THERMODYNAMICS( myTime, myIter, myThid )
@@ -245,7 +251,8 @@ C--     Step forward fields and calculate time tendency terms.
 
 C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
 #ifndef DISABLE_DEBUGMODE
-      IF (debugMode) CALL DEBUG_CALL('DO_STAGGER_FIELDS_EXCH.',myThid)
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('DO_STAGGER_FIELDS_EXCH.',myThid)
 #endif
         CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
         CALL DO_STAGGER_FIELDS_EXCHANGES( myTime, myIter, myThid )
@@ -255,7 +262,8 @@ C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
       IF (useSHAP_FILT .AND. 
      &     staggerTimeStep .AND. shap_filt_TrStagg ) THEN
 #ifndef DISABLE_DEBUGMODE
-        IF (debugMode) CALL DEBUG_CALL('SHAP_FILT_APPLY_TS',myThid)
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('SHAP_FILT_APPLY_TS',myThid)
 #endif
         CALL TIMER_START('SHAP_FILT           [FORWARD_STEP]',myThid)
         CALL SHAP_FILT_APPLY_TS( gT, gS, myTime, myIter, myThid )
@@ -266,7 +274,8 @@ C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
       IF (useZONAL_FILT .AND. 
      &     staggerTimeStep .AND. zonal_filt_TrStagg ) THEN
 #ifndef DISABLE_DEBUGMODE
-        IF (debugMode) CALL DEBUG_CALL('ZONAL_FILT_APPLY_TS',myThid)
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('ZONAL_FILT_APPLY_TS',myThid)
 #endif
         CALL TIMER_START('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
         CALL ZONAL_FILT_APPLY_TS( gT, gS, myThid )
@@ -277,7 +286,8 @@ C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
 C--   Step forward fields and calculate time tendency terms.
       IF ( momStepping ) THEN
 #ifndef DISABLE_DEBUGMODE
-        IF (debugMode) CALL DEBUG_CALL('DYNAMICS',myThid)
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('DYNAMICS',myThid)
 #endif
         CALL TIMER_START('DYNAMICS            [FORWARD_STEP]',mythid)
         CALL DYNAMICS( myTime, myIter, myThid )
@@ -288,7 +298,8 @@ C--   Step forward fields and calculate time tendency terms.
 C--   Step forward W field in N-H algorithm
       IF ( momStepping .AND. nonHydrostatic ) THEN
 #ifndef DISABLE_DEBUGMODE
-          IF (debugMode) CALL DEBUG_CALL('CALC_GW',myThid)
+          IF ( debugLevel .GE. debLevB ) 
+     &     CALL DEBUG_CALL('CALC_GW',myThid)
 #endif
          CALL TIMER_START('CALC_GW          [FORWARD_STEP]',myThid)
          CALL CALC_GW(myThid)
@@ -425,7 +436,8 @@ C     at time level 1
       CALL TIMER_STOP ('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
 
 #ifndef DISABLE_DEBUGMODE
-      IF (debugMode) CALL DEBUG_LEAVE('FORWARD_STEP',myThid)
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_LEAVE('FORWARD_STEP',myThid)
 #endif
 
       END
