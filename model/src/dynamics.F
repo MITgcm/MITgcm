@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.96 2003/04/17 13:41:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.97 2003/06/23 22:32:02 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -204,18 +204,6 @@ C         (1 + dt * K * d_zz) salt[n] = salt*
 C---
 CEOP
 
-C--   Set up work arrays with valid (i.e. not NaN) values
-C     These inital values do not alter the numerical results. They
-C     just ensure that all memory references are to valid floating
-C     point numbers. This prevents spurious hardware signals due to
-C     uninitialised but inert locations.
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        phiSurfX(i,j) = 0. _d 0
-        phiSurfY(i,j) = 0. _d 0
-       ENDDO
-      ENDDO
-
 C-- Call to routine for calculation of
 C   Eliassen-Palm-flux-forced U-tendency,
 C   if desired:
@@ -253,12 +241,27 @@ CHPF$&                  )
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--     Set up work arrays that need valid initial values
+C--   Set up work arrays with valid (i.e. not NaN) values
+C     These inital values do not alter the numerical results. They
+C     just ensure that all memory references are to valid floating
+C     point numbers. This prevents spurious hardware signals due to
+C     uninitialised but inert locations.
+
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            KappaRU(i,j,k) = 0. _d 0
            KappaRV(i,j,k) = 0. _d 0
+#ifdef ALLOW_AUTODIFF_TAMC
+cph(
+c--   need some re-initialisation here to break dependencies
+c--   totphihyd is assumed zero from ini_pressure, i.e.
+c--   avoiding iterate pressure p = integral of (g*rho(p)*dz)
+cph)
+           totPhiHyd(i,j,k,bi,bj) = 0. _d 0
+           gu(i,j,k,bi,bj) = 0. _d 0
+           gv(i,j,k,bi,bj) = 0. _d 0
+#endif
           ENDDO
          ENDDO
         ENDDO
@@ -272,6 +275,8 @@ C--     Set up work arrays that need valid initial values
           phiHydC (i,j)  = 0. _d 0 
           dPhiHydX(i,j)  = 0. _d 0
           dPhiHydY(i,j)  = 0. _d 0 
+          phiSurfX(i,j)  = 0. _d 0
+          phiSurfY(i,j)  = 0. _d 0
          ENDDO
         ENDDO
 
@@ -398,7 +403,7 @@ CADJ STORE gU(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
      U         gU,
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
-CADJ STORE gVNm1(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
+CADJ STORE gV(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,

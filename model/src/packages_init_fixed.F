@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.8 2003/06/19 15:00:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.9 2003/06/23 22:32:02 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -86,8 +86,10 @@ C--   Initialise the control variables
 #endif
 
 #ifdef INCLUDE_ECCO_PACKAGE
+# ifdef ALLOW_COST
 C--   Initialise ecco-specific cost function.
-       IF (useECCO) CALL COST_INIT( myThid )
+       IF (useECCO) CALL COST_INIT_FIXED( myThid )
+# endif
 #endif
 
       RETURN

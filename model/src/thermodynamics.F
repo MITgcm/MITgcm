@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.40 2003/05/13 17:42:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.41 2003/06/23 22:32:02 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -173,24 +173,6 @@ C--   dummy statement to end declaration part
       itdkey = 1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--   Set up work arrays with valid (i.e. not NaN) values
-C     These inital values do not alter the numerical results. They
-C     just ensure that all memory references are to valid floating
-C     point numbers. This prevents spurious hardware signals due to
-C     uninitialised but inert locations.
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        xA(i,j)      = 0. _d 0
-        yA(i,j)      = 0. _d 0
-        uTrans(i,j)  = 0. _d 0
-        vTrans(i,j)  = 0. _d 0
-        rhok   (i,j) = 0. _d 0
-        phiSurfX(i,j) = 0. _d 0
-        phiSurfY(i,j) = 0. _d 0
-       ENDDO
-      ENDDO
-
-
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   HPF directive to help TAMC
 CHPF$ INDEPENDENT
@@ -221,9 +203,22 @@ CHPF$&                  )
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-C--     Set up work arrays that need valid initial values
+C--   Set up work arrays with valid (i.e. not NaN) values
+C     These inital values do not alter the numerical results. They
+C     just ensure that all memory references are to valid floating
+C     point numbers. This prevents spurious hardware signals due to
+C     uninitialised but inert locations.
+
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
+          xA(i,j)        = 0. _d 0
+          yA(i,j)        = 0. _d 0
+          uTrans(i,j)    = 0. _d 0
+          vTrans(i,j)    = 0. _d 0
+          rhok   (i,j)   = 0. _d 0
+          rhoKM1 (i,j)   = 0. _d 0
+          phiSurfX(i,j)  = 0. _d 0
+          phiSurfY(i,j)  = 0. _d 0
           rTrans (i,j)   = 0. _d 0
           fVerT  (i,j,1) = 0. _d 0
           fVerT  (i,j,2) = 0. _d 0
@@ -231,7 +226,6 @@ C--     Set up work arrays that need valid initial values
           fVerS  (i,j,2) = 0. _d 0
           fVerTr1(i,j,1) = 0. _d 0
           fVerTr1(i,j,2) = 0. _d 0
-          rhoKM1 (i,j)   = 0. _d 0
          ENDDO
         ENDDO
 

@@ -112,10 +112,6 @@ c--   Initialise the cost function.
       _BARRIER
 #endif
 
-#ifdef INCLUDE_ECCO_PACKAGE
-      IF (useECCO) CALL ECCO_INIT( myThid )
-#endif
-
 #ifdef ALLOW_OBCS
 C--   Open boundaries data
       IF (useOBCS) CALL OBCS_INIT_VARIABLES( myThid )
