@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.13 2004/04/02 00:53:18 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.14 2004/06/25 02:49:49 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,7 +45,7 @@ C     myThid -  Number of this instance of INI_CARTESIAN_GRID
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      INTEGER bi,bj, myTile
+      INTEGER bi,bj, myTile, myiter
       INTEGER I,J
       CHARACTER*(15) fName
       _RL buf(sNx+1,sNy+1)
@@ -367,6 +367,44 @@ c     CALL WRITE_FULLARRAY_RL('RAZ',RAZ,1,0,myThid)
 c     CALL WRITE_FULLARRAY_RL('XG',XG,1,0,myThid)
 c     CALL WRITE_FULLARRAY_RL('YG',YG,1,0,myThid)
 
+C--   Now let's look at all these beasts
+      IF ( debugLevel .GE. debLevB ) THEN
+         myiter = 1
+         CALL PLOT_FIELD_XYRL( XC      , 'Current XC      ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( YC      , 'Current YC      ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( DXF     , 'Current DXF     ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( XC      , 'Current XC      ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( DYF     , 'Current DYF     ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( RA      , 'Current RA      ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( XG      , 'Current XG      ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( YG      , 'Current YG      ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( DXV     , 'Current DXV     ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( DYU     , 'Current DYU     ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( RAZ     , 'Current RAZ     ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( DXC     , 'Current DXC     ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( DYC     , 'Current DYC     ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( RAW     , 'Current RAW     ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( RAS     , 'Current RAS     ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( DXG     , 'Current DXG     ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( DYG     , 'Current DYG     ' ,
+     &        myIter, myThid )
+      ENDIF
 
       RETURN
       END

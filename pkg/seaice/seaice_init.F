@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.24 2004/05/03 21:13:07 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.25 2004/06/25 02:49:49 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -241,29 +241,32 @@ C--   Choose a proxy level for geostrophic velocity,
 C--   Update overlap regions
       _EXCH_XY_R8(UVM, myThid)
 
-      myIter=0
-      CALL PLOT_FIELD_XYRL( CSTICE  , 'Current CSTICE  ' ,
-     &                        myIter, myThid )
-      CALL PLOT_FIELD_XYRL( CSUICE  , 'Current CSUICE  ' ,
-     &                        myIter, myThid )
-      CALL PLOT_FIELD_XYRL( TNGTICE  , 'Current TNGTICE  ' ,
-     &                        myIter, myThid )
-      CALL PLOT_FIELD_XYRL( TNGICE  , 'Current TNGICE  ' ,
-     &                        myIter, myThid )
-      CALL PLOT_FIELD_XYRL( SINEICE  , 'Current SINEICE  ' ,
-     &                        myIter, myThid )
-      CALL PLOT_FIELD_XYRL( DXTICE  , 'Current DXTICE  ' ,
-     &                        myIter, myThid )
-      CALL PLOT_FIELD_XYRL( DXUICE  , 'Current DXUICE  ' ,
-     &                        myIter, myThid )
-      CALL PLOT_FIELD_XYRL( DYTICE  , 'Current DYTICE  ' ,
-     &                        myIter, myThid )
-      CALL PLOT_FIELD_XYRL( DYUICE  , 'Current DYUICE  ' ,
-     &                        myIter, myThid )
-      CALL PLOT_FIELD_XYRL( HEFFM  , 'Current HEFFM  ' ,
-     &                        myIter, myThid )
-      CALL PLOT_FIELD_XYRL( UVM  , 'Current UVM  ' ,
-     &                        myIter, myThid )
+C--   Now let's look at all these beasts
+      IF ( debugLevel .GE. debLevB ) THEN
+         myIter=0
+         CALL PLOT_FIELD_XYRL( CSTICE  , 'Current CSTICE  ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( CSUICE  , 'Current CSUICE  ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( TNGTICE , 'Current TNGTICE ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( TNGICE  , 'Current TNGICE  ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( SINEICE , 'Current SINEICE ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( DXTICE  , 'Current DXTICE  ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( DXUICE  , 'Current DXUICE  ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( DYTICE  , 'Current DYTICE  ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( DYUICE  , 'Current DYUICE  ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( HEFFM   , 'Current HEFFM   ' ,
+     &        myIter, myThid )
+         CALL PLOT_FIELD_XYRL( UVM     , 'Current UVM     ' ,
+     &        myIter, myThid )
+      ENDIF
 
 C--   Set model variables to initial/restart conditions
       IF ( nIter0 .NE. 0 ) THEN
