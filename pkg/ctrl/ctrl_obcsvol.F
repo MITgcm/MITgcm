@@ -186,7 +186,7 @@ c--     Loop over this thread's tiles.
               do i = imin,imax  
                 j = Ob_Jn(I,bi,bj)
                 if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
-cgg -- Don't let the corners contribute to the volume flux.
+cgg -- Do not let the corners contribute to the volume flux.
                   if(ob_iw(j,bi,bj).ne.i .and. ob_ie(j,bi,bj).ne.i) then
                     tmpx = tmpfldxz(i,k,bi,bj)
 cgg -- Positive is flux in.
@@ -222,7 +222,7 @@ c--     Loop over this thread's tiles.
               do i = imin,imax
                 j = Ob_Js(I,bi,bj)
                 if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
-cgg -- Don't let the corners contribute to the volume flux.
+cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_iw(j,bi,bj).ne.i .and.ob_ie(j,bi,bj).ne.i) then
                     tmpx = tmpfldxz(i,k,bi,bj)
 cgg -- Positive is flux in.
@@ -258,7 +258,7 @@ c--         Determine the weights to be used.
               do j = jmin,jmax
                 i = ob_iw(j,bi,bj)
                 if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
-cgg -- Don't let the corners contribute to the volume flux.
+cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
                     tmpy = tmpfldyz(j,k,bi,bj)
 cgg -- Positive is flux in.
@@ -294,7 +294,7 @@ c--         Determine the weights to be used.
               do j = jmin,jmax
                 i = ob_ie(j,bi,bj)
                 if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
-cgg -- Don't let the corners contribute to the volume flux.
+cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
                     tmpy = tmpfldyz(j,k,bi,bj)
 cgg -- Positive is flux in.
@@ -344,7 +344,7 @@ c--     Loop over this thread's tiles.
               do i = imin,imax  
                 j = Ob_Jn(I,bi,bj)
                 if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
-cgg -- Don't let the corners contribute to the volume flux.
+cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_iw(j,bi,bj).ne.i .and. ob_ie(j,bi,bj).ne.i)then
                     tmpx = tmpfldxz(i,k,bi,bj)
 cgg -- Positive is flux in.
@@ -380,7 +380,7 @@ c--     Loop over this thread's tiles.
               do i = imin,imax
                 j = Ob_Js(I,bi,bj)
                 if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
-cgg -- Don't let the corners contribute to the volume flux.
+cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_iw(j,bi,bj).ne.i .and. ob_ie(j,bi,bj).ne.i)then
                     tmpx = tmpfldxz(i,k,bi,bj)
 cgg -- Positive is flux in.
@@ -452,7 +452,7 @@ c--         Determine the weights to be used.
               do j = jmin,jmax
                 i = ob_ie(j,bi,bj)
                 if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
-cgg -- Don't let the corners contribute to the volume flux.
+cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
                     tmpy = tmpfldyz(j,k,bi,bj)
 cgg -- Positive is flux in.

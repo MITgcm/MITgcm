@@ -29,7 +29,7 @@ C     msgBuf      - Informational/error meesage buffer
      &     SQUEEZE_RIGHT , 1)
 
 C     KPP needs convection turned off (will be packaged later)
-C     Can't have both atmos. state and flux field as control
+C     Can not have both atmos. state and flux field as control
 
 #ifdef ALLOW_TANGENTLINEAR_RUN
       if ( yadmark .NE. 'g_' ) then

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.16 2003/03/21 23:18:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.17 2003/09/29 19:24:31 edhill Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -203,7 +203,7 @@ cph)
 c-----------------------------------------------------------------------
 c combine interior and boundary layer coefficients and nonlocal term
 c !!!NOTE!!! In shallow (2-level) regions and for shallow mixed layers
-c (< 1 level), diffusivity blmc can become negative.  The max's below
+c (< 1 level), diffusivity blmc can become negative.  The max-s below
 c are a hack until this problem is properly diagnosed and fixed.
 c-----------------------------------------------------------------------
       do k = 1, Nr
@@ -408,7 +408,7 @@ c
       end do
 
 cph(
-cph  without this store, there's a recomputation error for
+cph  without this store, there is a recomputation error for
 cph  rib in adbldepth (probably partial recomputation problem)    
 CADJ store Rib = comlev1_kpp
 CADJ &   , key = ikppkey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr /)

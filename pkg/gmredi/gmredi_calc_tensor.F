@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.17 2003/03/07 23:51:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.18 2003/09/29 19:24:31 edhill Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -170,7 +170,7 @@ C       Components of Redi/GM tensor
 #ifdef GM_VISBECK_VARIABLE_K
 
 C- note (jmc) : moved here since only used in VISBECK_VARIABLE_K 
-C           but don't know if *taperFct (or **2 ?) is necessary 
+C           but do not know if *taperFct (or **2 ?) is necessary 
         Ssq(i,j)=SlopeSqr(i,j)*taperFct(i,j)
 
 C--     Depth average of M^2/N^2 * N

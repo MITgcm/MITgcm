@@ -198,7 +198,7 @@ c     K=0 => ssh
 c     if land, flag it in obp and skip it
                         if (_hFacC(i,j,1,bi,bj).eq.0.) then
                            obp(I,J,bi,bj) = -999.99
-                           goto 10
+                           goto 1010
                         end if
 
                         radius = ae
@@ -212,7 +212,7 @@ c     assume surface has same vel and density as first layer
                      else
 
 c     if land, skip it
-                        if (_hFacC(i,j,k,bi,bj).eq.0.) goto 10
+                        if (_hFacC(i,j,k,bi,bj).eq.0.) goto 1010
 
 c     radius to center of cell (m)
                         radius = ae - abs(rC(K))
@@ -264,7 +264,7 @@ c     accumulate ocean-bottom pressure
 c     end loop over depth
                   end do
 
- 10               continue
+ 1010             continue
 
 c     end loop over longitude
                end do

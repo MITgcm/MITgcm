@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.19 2003/01/21 19:34:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.20 2003/09/29 19:24:31 edhill Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -196,7 +196,7 @@ c
 cph             T11(i,j)=(dSigmaDrReal(i,j)**2)*dRdSigmaLtd(i,j)
           ENDIF
 #ifndef ALLOWW_AUTODIFF_TAMC
-cph-- this part doesn't adjoint well
+cph-- this part does not adjoint well
           IF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
      &         SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
            taperFct(i,j) = maxSlopeSqr/SlopeSqr(i,j)

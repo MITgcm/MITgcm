@@ -185,7 +185,7 @@ c--     Loop over this thread's tiles.
                 if (j.ne.0) then
 cgg -- Alternatively I could read the maskobcs file. But this gives the same result.
                   if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
-cgg -- Don't let the corners contribute to the volume flux.
+cgg -- Do not let the corners contribute to the volume flux.
                     if(ob_iw(j,bi,bj).ne.i .and.ob_ie(j,bi,bj).ne.i)then
 CGG -- Barotropic velocity stored in level 1.
                       tmpx = tmpfldxz(i,1,bi,bj)
@@ -233,13 +233,13 @@ c--     Loop over this thread's tiles.
                 j = Ob_Js(I,bi,bj)
                 if (j .ne. 0) then
                   if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
-cgg -- Don't let the corners contribute to the volume flux.
+cgg -- Do not let the corners contribute to the volume flux.
                     if (ob_iw(j,bi,bj).ne.i.and.ob_ie(j,bi,bj).ne.i)then
                       tmpx = tmpfldxz(i,1,bi,bj)
 #ifndef ALLOW_OBCSN_CONTROL
 cgg -- Pick the special point where barotropic velocity loses one degree of freedom.
 cgg -- Add up the cross-sectional area of this column for later calculations.
-cgg -- This is just the backup case where the northern boundary doesn't exist.
+cgg -- This is just the backup case where the northern boundary does not exist.
 cgg -- warning: never been tested.
                       if (ob_iw(j,bi,bj).eq.(i-1).and.
      &                    ob_iw(j,bi,bj).ne. 0) then
@@ -287,7 +287,7 @@ c--         Determine the weights to be used.
                 i = ob_iw(j,bi,bj)
                 if ( i .ne. 0) then
                   if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
-cgg -- Don't let the corners contribute to the volume flux.
+cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_jn(i,bi,bj).ne.j.and. ob_js(i,bi,bj).ne.j)then
                     tmpy = tmpfldyz(j,1,bi,bj)
 
@@ -349,7 +349,7 @@ c--         Determine the weights to be used.
                 i = ob_ie(j,bi,bj)
                 if ( i .ne. 0) then
                 if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
-cgg -- Don't let the corners contribute to the volume flux.
+cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_jn(i,bi,bj).ne.j .and.ob_js(i,bi,bj).ne.j)then
                     tmpy = tmpfldyz(j,1,bi,bj)
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.11 2002/07/12 20:01:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.12 2003/09/29 19:24:30 edhill Exp $
 C $Name:  $
 
 CBOP
@@ -49,8 +49,8 @@ C                                            depending on cg2dNormaliseRHS)
 
 C--   COMMON /CG2D_I_WK_R/  Work array common block
 C     cg2d_q - Intermediate matrix-vector product term
-C     cg2d_r -   "
-C     cg2d_s -   "
+C     cg2d_r -   *same*
+C     cg2d_s -   *same*
       COMMON /CG2D_I_WK_R/
      & cg2d_q, cg2d_r, cg2d_s
       _RL  cg2d_q(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

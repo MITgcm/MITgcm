@@ -212,7 +212,7 @@ cgg     &                                        *   maskyz (j,k,bi,bj)
 
         if ( (obcswfirst) .or. (obcswchanged)) then
           
-cgg(    This is a terribly long way to do it. However, the dimensions don't exactly
+cgg(    This is a terribly long way to do it. However, the dimensions do not exactly
 cgg     match up. I will blame Fortran for the ugliness.
 
           do bj = jtlo,jthi

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_atmos_physics.F,v 1.12 2002/11/22 03:04:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_atmos_physics.F,v 1.13 2003/09/29 19:24:31 edhill Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -88,7 +88,7 @@ C     Internal index mapping is linear in X and Y with a second
 C     dimension for the vertical.
 
 C     Adjustment for heave due to mean heating/cooling
-C     ( I don't think the old formula was strictly "correct" for orography
+C     ( I do not think the old formula was strictly "correct" for orography
 C       but I have implemented it as was for now. As implemented
 C       the mean heave of the bottom (K=Nr) level is calculated rather than
 C       the mean heave of the base of the atmosphere. )
