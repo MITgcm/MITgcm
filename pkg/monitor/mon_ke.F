@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.9 2002/06/15 03:14:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.10 2003/05/02 22:29:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE MON_KE(
-     I                myThid )
+     I                  myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE MON_KE                                        |
 C     | o Calculates stats for Kinetic energy                    |
@@ -18,20 +18,22 @@ C     === Global data ===
 #include "DYNVARS.h"
 #include "MONITOR.h"
 #include "GRID.h"
+#include "SURFACE.h"
 
 C     === Routine arguments ===
-      INTEGER myThid
+      INTEGER myIter, myThid
 
 C     === Local variables ====
       INTEGER bi,bj,I,J,K
-      _RL tmpVal,tmpVol,theMax,theMean,theVolMean,theVol
-      INTEGER numPnts
+      _RL numPnts,theVol,tmpVal,tmpVol
+      _RL theMax,theMean,theVolMean,potEnMean
 
+      numPnts=0.
+      theVol=0.
       theMax=0.
-      numPnts=0
       theMean=0.
       theVolMean=0.
-      theVol=0.
+      potEnMean =0.
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -67,29 +69,56 @@ C    with no assumption on how grid spacing & area are defined.
            theMax=max(theMax,tmpVal)
            IF (tmpVal.NE.0.) THEN
             theMean=theMean+tmpVal
-            numPnts=numPnts+1
+            numPnts=numPnts+1.
            ENDIF
 
           ENDDO
          ENDDO
         ENDDO
+C- Potential Energy (external mode):
+         DO J=1,sNy
+          DO I=1,sNx
+           tmpVal = 0.5 _d 0*Bo_surf(i,j,bi,bj)
+     &                      *etaN(i,j,bi,bj)*etaN(i,j,bi,bj)
+C- jmc: if geoid not flat (phi0surf), needs to add this term.
+C       not sure for atmos/ocean in P ; or atmos. loading in ocean-Z
+           tmpVal = tmpVal
+     &            + phi0surf(i,j,bi,bj)*etaN(i,j,bi,bj)
+           potEnMean = potEnMean
+     &               + tmpVal*rA(i,j,bi,bj)*maskH(i,j,bi,bj)
+c          tmpVal = etaN(i,j,bi,bj)
+c    &            + phi0surf(i,j,bi,bj)*recip_Bo(i,j,bi,bj)
+c          potEnMean = potEnMean
+c    &        + 0.5 _d 0*Bo_surf(i,j,bi,bj)*tmpVal*tmpVal
+c    &                  *rA(i,j,bi,bj)*maskH(i,j,bi,bj)
+          ENDDO
+         ENDDO
+C- end bi,bj loops
        ENDDO
       ENDDO
+      _GLOBAL_SUM_R8(numPnts,myThid)
       _GLOBAL_MAX_R8(theMax,myThid)
       _GLOBAL_SUM_R8(theMean,myThid)
-      tmpVal=float(numPnts)
-      _GLOBAL_SUM_R8(tmpVal,myThid)
-      IF (tmpVal.NE.0.) theMean=theMean/tmpVal
+      IF (numPnts.NE.0.) theMean=theMean/numPnts
       _GLOBAL_SUM_R8(theVol,myThid)
       _GLOBAL_SUM_R8(theVolMean,myThid)
+      _GLOBAL_SUM_R8(potEnMean, myThid)
+      IF (theVol.NE.0.) THEN
+        theVolMean=theVolMean/theVol
+        potEnMean = potEnMean/theVol
+      ENDIF
 
+C--   Print stats for (barotropic) Potential Energy:
+      CALL MON_SET_PREF('pe_b',myThid)
+      CALL MON_OUT_RL(mon_string_none,potEnMean,
+     &         mon_foot_mean,myThid)
+
+C--   Print stats for KE
+      CALL MON_SET_PREF('ke',myThid)
       CALL MON_OUT_RL(mon_string_none,theMax,mon_foot_max,myThid)
-      CALL MON_OUT_RL(mon_string_none,theMean,mon_foot_mean,myThid)
+c     CALL MON_OUT_RL(mon_string_none,theMean,mon_foot_mean,myThid)
       CALL MON_OUT_RL(mon_string_none,theVolMean,
-     &         mon_foot_volint,myThid)
-      IF (theVol.NE.0.) theVolMean=theVolMean/theVol
-      CALL MON_OUT_RL(mon_string_none,theVolMean,
-     &         mon_foot_volmean,myThid)
+     &         mon_foot_mean,myThid)
       CALL MON_OUT_RL(mon_string_none,theVol,
      &         mon_foot_vol,myThid)
 
