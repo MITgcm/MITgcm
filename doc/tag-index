@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.191 2003/10/21 21:14:08 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.192 2003/10/22 16:35:47 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+untagged
+o added "#undef ALLOW_USE_MPI" support to eesupp/src/gather_2d.F
 
 checkpoint51m_post
 o incorporating changes to get TAMC/TAF working in genmake2
