@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.14 1998/12/09 16:11:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.15 1998/12/15 00:20:35 adcroft Exp $
 #include "CPP_OPTIONS.h"
 
 C--  File read_write.F: Routines to handle mid-level I/O interface.
@@ -265,9 +265,11 @@ C--   Read data
       IF   ( readBinaryPrec .EQ. precFloat32 ) THEN
        CALL DFILE_READ_R4( lFilled,
      I                      fileHandle, myThid )
-      ELSE
+      ELSEIF   ( readBinaryPrec .EQ. precFloat64 ) THEN
        CALL DFILE_READ_R8( lFilled,
      I                      fileHandle, myThid )
+      ELSE
+       STOP 'READ_FLD_XY_RL: Bad value for readBinaryPrec'
       ENDIF
 
 C--   Copy data from IO buffer. 
@@ -287,7 +289,7 @@ C     Also regrid it to i,j,k indexing.
          ENDDO
         ENDDO
        ENDDO
-      ELSE
+      ELSEIF   ( readBinaryPrec .EQ. precFloat64 ) THEN
        DO bj=1,nSy
         DO bi=1,nSx
          DO j=1,sNy
@@ -443,9 +445,11 @@ C--   Read data
       IF   ( readBinaryPrec .EQ. precFloat32 ) THEN
        CALL DFILE_READ_R4( lFilled,
      I                      fileHandle, myThid )
-      ELSE
+      ELSEIF   ( readBinaryPrec .EQ. precFloat64 ) THEN
        CALL DFILE_READ_R8( lFilled,
      I                      fileHandle, myThid )
+      ELSE
+       STOP 'READ_FLD_XY_RS: Bad value for readBinaryPrec'
       ENDIF
 
 C--   Copy data from IO buffer. 
@@ -465,7 +469,7 @@ C     Also regrid it to i,j,k indexing.
          ENDDO
         ENDDO
        ENDDO
-      ELSE
+      ELSEIF   ( readBinaryPrec .EQ. precFloat64 ) THEN
        DO bj=1,nSy
         DO bi=1,nSx
          DO j=1,sNy
@@ -617,9 +621,11 @@ C--   Read data
       IF   ( readBinaryPrec .EQ. precFloat32 ) THEN
        CALL DFILE_READ_R4( lFilled,
      I                      fileHandle, myThid )
-      ELSE
+      ELSEIF   ( readBinaryPrec .EQ. precFloat64 ) THEN
        CALL DFILE_READ_R8( lFilled,
      I                      fileHandle, myThid )
+      ELSE
+       STOP 'READ_FLD_XYZ_RL: Bad value for readBinaryPrec'
       ENDIF
 
 C--   Copy data from IO buffer. 
@@ -642,7 +648,7 @@ C     Also regrid it to i,j,k indexing.
          ENDDO
         ENDDO
        ENDDO
-      ELSE
+      ELSEIF   ( readBinaryPrec .EQ. precFloat64 ) THEN
        DO bj=1,nSy
         DO bi=1,nSx
          DO K=1,Nr
@@ -797,9 +803,11 @@ C--   Read data
       IF   ( readBinaryPrec .EQ. precFloat32 ) THEN
        CALL DFILE_READ_R4( lFilled,
      I                      fileHandle, myThid )
-      ELSE
+      ELSEIF   ( readBinaryPrec .EQ. precFloat64 ) THEN
        CALL DFILE_READ_R8( lFilled,
      I                      fileHandle, myThid )
+      ELSE
+       STOP 'READ_FLD_XYZ_RS: Bad value for readBinaryPrec'
       ENDIF
 
 C--   Copy data from IO buffer. 
@@ -822,7 +830,7 @@ C     Also regrid it to i,j,k indexing.
          ENDDO
         ENDDO
        ENDDO
-      ELSE
+      ELSEIF   ( readBinaryPrec .EQ. precFloat64 ) THEN
        DO bj=1,nSy
         DO bi=1,nSx
          DO K=1,Nr

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.6 1998/11/06 22:44:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.7 1998/12/15 00:20:34 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -52,8 +52,12 @@ C        cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
 C    &    -freeSurfFac*_rA(i,j,bi,bj)*
 C    &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
          cg2d_b(i,j,bi,bj) =
-     &    -freeSurfFac*_rA(i,j,bi,bj)*horiVertRatio*
-     &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
+     &     freeSurfFac*_rA(i,j,bi,bj)*horiVertRatio*(
+     &      -cg2d_x(I,J,bi,bj)/deltaTMom/deltaTMom
+#ifdef USE_NATURAL_BCS
+     &      +EmPmR(I,J,bi,bj)/deltaTMom
+#endif
+     &     )
         ENDDO
        ENDDO
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.35 1998/12/08 19:44:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.36 1998/12/15 00:20:34 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -23,9 +23,9 @@ C     Symbolic values
 C     precXXXX - Used to indicate what precision to use for
 C                dumping model state.
       INTEGER precFloat32
-      PARAMETER ( precFloat32 = 0 )
+      PARAMETER ( precFloat32 = 32 )
       INTEGER precFloat64
-      PARAMETER ( precFloat64 = 1 )
+      PARAMETER ( precFloat64 = 64 )
 C     UNSET_xxx - Used to indicate variables that have not been given a value
       Real*8 UNSET_FLOAT8
       PARAMETER ( UNSET_FLOAT8 = 1.234567D5 )
@@ -123,6 +123,8 @@ C     usingCartesianGrid - If TRUE grid generation will be in a cartesian
 C                          coordinate frame.
 C     usingSphericalPolarGrid - If TRUE grid generation will be in a 
 C                               spherical polar frame.
+C     no_slip_sides - Impose "no-slip" at lateral boundaries.
+C     no_slip_bottom- Impose "no-slip" at bottom boundary.
 C     momViscosity  - Flag which turns momentum friction terms on and off.
 C     momAdvection  - Flag which turns advection of momentum on and off.
 C     momForcing    - Flag which turns external forcing of momentum on
@@ -164,6 +166,7 @@ C     usingZCoords     - Set to indicate that we are working in height
 C                        coords.
 C     openBoundaries - Using open-boundaries
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
+     & no_slip_sides,no_slip_bottom,
      & momViscosity, momAdvection, momForcing, useCoriolis, 
      & momPressureForcing,tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
@@ -177,6 +180,8 @@ C     openBoundaries - Using open-boundaries
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingSphericalPolarMTerms
+      LOGICAL no_slip_sides
+      LOGICAL no_slip_bottom
       LOGICAL momViscosity
       LOGICAL momAdvection
       LOGICAL momForcing
@@ -433,10 +438,11 @@ C                          circles ( see filter*.F )
       _RL recip_horiVertRatio
       _RL latFFTFiltLo
 
-      COMMON /PARM_A/ HeatCapacity_Cp,
+      COMMON /PARM_A/ HeatCapacity_Cp,recip_Cp,
      &                Lamba_theta
       _RL HeatCapacity_Cp
       _RL Lamba_theta
+      _RL recip_Cp
 
 C Equation of State (polynomial coeffients)
       COMMON /PARM_EOS_NL/ eosC,eosSig0,eosRefT,eosRefS

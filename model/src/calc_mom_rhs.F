@@ -1,10 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.36 1998/12/08 17:59:47 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.37 1998/12/15 00:20:34 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
-
-#define NO_SLIP_SIDES
-#define NO_SLIP_BOTTOM
-#define DB0 0.
 
 C     /==========================================================\
 C     | S/R CALC_MOM_RHS                                         |
@@ -239,7 +235,7 @@ C     del^2 U
      &   )*_maskW(i,j,k,bi,bj)
        ENDDO
       ENDDO
-#ifdef NO_SLIP_SIDES
+      IF (no_slip_sides) THEN
 C-- No-slip BC's impose a drag at walls...
       DO j=0,sNy+1
        DO i=0,sNx+2
@@ -253,7 +249,7 @@ C-- No-slip BC's impose a drag at walls...
      &    )*drF(k)*2.*uVel(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
        ENDDO
       ENDDO
-#endif /* NO_SLIP_SIDES */
+      ENDIF
 #endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
 
 C---  Calculate mean and eddy fluxes between cells for zonal flow.
@@ -370,28 +366,35 @@ C       Note!!!! omitted.
       ENDDO
 #endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
-C     Eddy component of vertical flux
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        vf(i,j) =
-     &   -viscAr
 #ifdef OLD_UV_GEOMETRY
-     &    *( RA(i,j,bi,bj)*maskC(i,j)
-     &      +RA(i-1,j,bi,bj)*maskC(i-1,j) ) * 0.5 _d 0
+#define _RA_AT_W *(RA(i,j,bi,bj)*maskC(i,j)+RA(i-1,j,bi,bj)*maskC(i-1,j))*.5
 #else
-     &    *rAw(i,j,bi,bj)
+#define _RA_AT_W *rAw(i,j,bi,bj)
 #endif /* OLD_UV_GEOMETRY */
-#ifdef NO_SLIP_BOTTOM
+C     Eddy component of vertical flux
+      IF (no_slip_bottom) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         vf(i,j) =
+     &   -viscAr
+     & _RA_AT_W
      &   *( ( 2.-_maskW(i,j,k,bi,bj) )*uVel(i,j,kM1,bi,bj)
      &     -     _maskW(i,j,k,bi,bj)  *uVel(i,j,k,bi,bj)
      &    )*rkFac*recip_drC(k)
-#else
+        ENDDO
+       ENDDO
+      ELSE
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         vf(i,j) =
+     &   -viscAr
+     & _RA_AT_W
      &   *( uVel(i,j,km1,bi,bj)-uVel(i,j,k,bi,bj)
      &    )*rkFac*recip_drC(k)
      &    *_maskW(i,j,k,bi,bj)*rVelMaskOverride
-#endif /* NO_SLIP_BOTTOM */
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 #endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -401,18 +404,18 @@ C     Eddy component of vertical flux
        ENDDO
       ENDDO
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
-#ifdef NO_SLIP_BOTTOM
+#ifdef OLD_UV_GEOMETRY
+#define _RA_AT_W2 *(RA(i,j,bi,bj)+RA(i-1,j,bi,bj))*0.5 _d 0
+#else
+#define _RA_AT_W2 *rAw(i,j,bi,bj)
+#endif /* OLD_UV_GEOMETRY */
 C     Bottom boundary condition
-      IF ( k .EQ. Nr ) THEN
+      IF ( no_slip_bottom .AND. k .EQ. Nr ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
          vf(i,j) =
      &    -viscAr
-#ifdef OLD_UV_GEOMETRY
-     &    *( RA(i,j,bi,bj) + RA(i-1,j,bi,bj) ) * 0.5 _d 0
-#else
-     &    *rAw(i,j,bi,bj)
-#endif /* OLD_UV_GEOMETRY */
+     & _RA_AT_W2
      &    *_maskW(i,j,k,bi,bj)
      &    *uVel(i,j,k,bi,bj)*rkFac*recip_DrF(k)*2. _d 0
         ENDDO
@@ -423,7 +426,6 @@ C     Bottom boundary condition
         ENDDO
        ENDDO
       ENDIF
-#endif /* NO_SLIP_BOTTOM */
 #endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
 
 #ifdef INCLUDE_GRADPH_CODE
@@ -457,7 +459,7 @@ C--   term
       ENDDO
 
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
-#ifdef NO_SLIP_SIDES
+      IF (no_slip_sides) THEN
 C-- No-slip BC's impose a drag at walls...
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -472,7 +474,7 @@ C-- No-slip BC's impose a drag at walls...
      &               -viscA4*v4F(i,j) )
        ENDDO
       ENDDO
-#endif /* NO_SLIP_SIDES */
+      ENDIF
 #endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
 
 #ifdef INCLUDE_MOMENTUM_FORCING_CODE
@@ -550,7 +552,7 @@ C     del^2 U
      &   )*_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
-#ifdef NO_SLIP_SIDES
+      IF (no_slip_sides) THEN
 C-- No-slip BC's impose a drag at walls...
       DO j=0,sNy+2
        DO i=0,sNx+1
@@ -564,7 +566,7 @@ C-- No-slip BC's impose a drag at walls...
      &    )*drF(k)*2.*vVel(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
-#endif
+      ENDIF
 #endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
 
 C---  Calculate mean and eddy fluxes between cells for meridional 
@@ -677,28 +679,35 @@ C       Note!!!! Is rVelMaskOverridde right for implicit free-surface?
       ENDDO
 #endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
-C     Eddy component of vertical flux
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        vf(i,j) =
-     &   -viscAr
 #ifdef OLD_UV_GEOMETRY
-     &   *( RA(i,j,bi,bj)*maskC(i,j)
-     &     +RA(i,j-1,bi,bj)*maskC(i,j-1) ) * 0.5 _d 0
+#define _RA_AT_S *(RA(i,j,bi,bj)*maskC(i,j)+RA(i,j-1,bi,bj)*maskC(i,j-1))*.5
 #else
-     &   *rAs(i,j,bi,bj)
+#define _RA_AT_S *rAs(i,j,bi,bj)
 #endif /* OLD_UV_GEOMETRY */
-#ifdef NO_SLIP_BOTTOM
+C     Eddy component of vertical flux
+      IF (no_slip_bottom) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         vf(i,j) =
+     &   -viscAr
+     & _RA_AT_S
      &   *( ( 2.-_maskS(i,j,k,bi,bj) )*vVel(i,j,kM1,bi,bj)
      &     -     _maskS(i,j,k,bi,bj)  *vVel(i,j,k,bi,bj)
      &    )*rkFac*recip_drC(k)
-#else
+        ENDDO
+       ENDDO
+      ELSE
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         vf(i,j) =
+     &   -viscAr
+     & _RA_AT_S
      &   *(vVel(i,j,km1,bi,bj)-vVel(i,j,k,bi,bj))
      &   *rkFac*recip_drC(k)
      &   *_maskS(i,j,k,bi,bj)*rVelMaskOverride
-#endif /* NO_SLIP_BOTTOM */
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 #endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -708,17 +717,17 @@ C     Eddy component of vertical flux
       ENDDO
 C     Bottom level boundary condition
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
-#ifdef NO_SLIP_BOTTOM
-      IF ( k .EQ. Nr ) THEN
+#ifdef OLD_UV_GEOMETRY
+#define _RA_AT_S2 *(RA(i,j,bi,bj)+RA(i,j-1,bi,bj))*0.5 _d 0
+#else
+#define _RA_AT_S2 *rAs(i,j,bi,bj)
+#endif /* OLD_UV_GEOMETRY */
+      IF ( no_slip_bottom .AND. k .EQ. Nr ) THEN
       DO j=jMin,jMax
        DO i=iMin,iMax
        vf(i,j) =
      & -viscAr
-#ifdef OLD_UV_GEOMETRY
-     & *( RA(i,j,bi,bj) + RA(i,j-1,bi,bj) ) * 0.5 _d 0
-#else
-     & *rAs(i,j,bi,bj)
-#endif /* OLD_UV_GEOMETRY */
+     & _RA_AT_S2
      & *_maskS(i,j,k,bi,bj)
      & *vVel(i,j,k,bi,bj)*rkFac*recip_drF(k)*2. _d 0
        ENDDO
@@ -729,7 +738,6 @@ C     Bottom level boundary condition
        ENDDO
       ENDDO
       ENDIF
-#endif /* NO_SLIP_BOTTOM */
 #endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
 
 #ifdef INCLUDE_GRADPH_CODE
@@ -762,7 +770,7 @@ C--   term
        ENDDO
       ENDDO
 
-#ifdef NO_SLIP_SIDES
+      IF (no_slip_sides) THEN
 C-- No-slip BC's impose a drag at walls...
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -777,8 +785,7 @@ C-- No-slip BC's impose a drag at walls...
      &                     -viscA4*v4F(i,j) )
        ENDDO
       ENDDO
-#endif
-
+      ENDIF
 
 #ifdef INCLUDE_MOMENTUM_FORCING_CODE
 C--   Forcing term

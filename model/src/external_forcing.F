@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.2 1998/11/06 22:44:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.3 1998/12/15 00:20:34 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -43,7 +43,9 @@ C     Add windstress momentum impulse into the top-layer
        DO j=jMin,jMax
         DO i=iMin,iMax
          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
-     &    + foFacMom*fu(i,j,bi,bj)*_maskW(i,j,kLev,bi,bj)
+     &   +foFacMom*fu(i,j,bi,bj)
+     &   *horiVertRatio*recip_rhoNil*recip_dRf(kLev)
+     &   *_maskW(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -91,7 +93,9 @@ C     Add windstress momentum impulse into the top-layer
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
-     &    + foFacMom*fv(i,j,bi,bj)*_maskS(i,j,kLev,bi,bj)
+     &   +foFacMom*fv(i,j,bi,bj)
+     &   *horiVertRatio*recip_rhoNil*recip_dRf(kLev)
+     &   *_maskS(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -143,7 +147,7 @@ C     Add heat in top-layer
          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
      &  +maskC(i,j)*(
      &   -lambdaThetaClimRelax*(theta(i,j,kLev,bi,bj)-SST(i,j,bi,bj))
-     &   -Qnet(i,j,bi,bj) )
+     &   -Qnet(i,j,bi,bj)*recip_Cp*recip_rhoNil*recip_dRf(kLev) )
         ENDDO
        ENDDO
       ENDIF
@@ -195,7 +199,10 @@ C     Add fresh-water in top-layer
          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
      &   +maskC(i,j)*(
      &   -lambdaSaltClimRelax*(salt(i,j,kLev,bi,bj)-SSS(i,j,bi,bj))
-     &   +EmPmR(i,j,bi,bj) )
+#ifndef USE_NATURAL_BCS
+     &   +EmPmR(i,j,bi,bj)*recip_dRf(1)*35.
+#endif
+     &   )
         ENDDO
        ENDDO
       ENDIF

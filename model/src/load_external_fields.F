@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.10 1998/12/09 16:11:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.11 1998/12/15 00:20:35 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
  
@@ -48,7 +48,6 @@ C     Simple example of loading a climatology at the
 C     first time step that is the used in a relaxation term
 C     in the surface layer.
       IF ( myTime .EQ. startTime ) THEN
-       CALL ZERO_CLIMATOLOGY( myThid )
        CALL LOAD_THETA_CLIMATOLOGY( myThid )
        CALL LOAD_SALT_CLIMATOLOGY( myThid )
        CALL LOAD_WIND_STRESS_CLIMATOLOGY( myThid )
@@ -170,6 +169,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
+#include "GRID.h"
 
 C     === Routine arguments ===
       INTEGER myThid
@@ -179,83 +179,50 @@ CEndOfInterface
 C     === Local variables ===
 C     msgBuf - Error message buffer
 C     bi,bj,i,j - Loop counters
-C     gamma     - Input data to acceleration conversion factor.
       CHARACTER*(MAX_LEN_FNAM) msgBuf
       INTEGER bi,bj,i,j
-      _RL gamma
+      _RL distY,tauX,tauMax,lY
 
-
-
-      IF (.NOT. zonalWindFile .EQ. ' ' ) THEN
-C--    Set gamma to convert from N/m^2 to m/s^2
-       IF     ( UsingZCoords ) THEN
-        gamma = 1. _d 0 / (delR(1)*rhonil)
-       ELSEIF ( UsingPCoords ) THEN
-        gamma = Gravity / delR(1)
-       ELSE
-        WRITE(msgBuf,'(A)')  'S/R LOAD_WIND_STRESS_CLIMATOLOGY'
-        CALL PRINT_ERROR( msgBuf, 1 )
-        WRITE(msgBuf,'(A)')
-     &   'No relation converting input to acceleration.'
-        CALL PRINT_ERROR( msgBuf, 1 )
-        STOP 'ABNORMAL END: S/R LOAD_WIND_STRESS_CLIMATOLOGY'
-       ENDIF
+      IF ( zonalWindFile .EQ. ' ' ) THEN
+C      In cartesian yc, delY and ly are meters.
+C      In spherical polar yc, delY and ly are degrees
+       tauMax = 0.0 _d 0
+       lY = 0. _d 0
+       DO j=1,nY-1
+        lY = lY + delY(j)
+       ENDDO
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           distY = (yC(i,j,bi,bj)-(yC0))/lY
+C          tauX  = -tauMax*cos(2. _d 0*PI*distY)
+           tauX  = tauMax*sin(PI*distY)
+           fu(i,j,bi,bj) = tauX
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
        _BEGIN_MASTER(myThid)
        CALL READ_FLD_XY_RS( zonalWindFile, ' ', fu, 0, myThid )
        _END_MASTER(myThid)
-       _BARRIER
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           fu(i,j,bi,bj) = fu(i,j,bi,bj)*gamma
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
       ENDIF
 
       IF (.NOT. meridWindFile .EQ. ' ' ) THEN
-C--    Set gamma to convert from N/m^2 to m/s^2
-       IF     ( UsingZCoords ) THEN
-        gamma = 1. _d 0 / (delR(1)*rhonil)
-       ELSEIF ( UsingPCoords ) THEN
-        gamma = Gravity / (delR(1))
-       ELSE
-        WRITE(msgBuf,'(A)')  'S/R LOAD_WIND_STRESS_CLIMATOLOGY'
-        CALL PRINT_ERROR( msgBuf, 1 )
-        WRITE(msgBuf,'(A)')
-     &   'No relation converting input to acceleration.'
-        CALL PRINT_ERROR( msgBuf, 1 )
-        STOP 'ABNORMAL END: S/R LOAD_WIND_STRESS_CLIMATOLOGY'
-       ENDIF
        _BEGIN_MASTER(myThid)
        CALL READ_FLD_XY_RS( meridWindFile, ' ', fv, 0, myThid )
        _END_MASTER(myThid)
-       _BARRIER
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           fv(i,j,bi,bj) = fv(i,j,bi,bj)*gamma
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
       ENDIF
 
 C
       _EXCH_XY_R4(fu  , myThid )
       _EXCH_XY_R4(fv  , myThid )
 C
-      IF (.NOT. zonalWindFile .EQ. ' ' ) THEN
-       CALL PLOT_FIELD_XYRS( fu, 
+      CALL PLOT_FIELD_XYRS( fu, 
      &   'S/R LOAD_WIND_STRESS_CLIMATOLOGY FU',1,myThid)
-      ENDIF
-      IF (.NOT. meridWindFile .EQ. ' ' ) THEN
-       CALL PLOT_FIELD_XYRS( fv, 
+      CALL PLOT_FIELD_XYRS( fv, 
      &   'S/R LOAD_WIND_STRESS_CLIMATOLOGY FV',1,myThid)
-      ENDIF
 C
       RETURN
       END
@@ -648,50 +615,6 @@ C      Increment SST,SSS,fu,fv,Qnet,EmPmR
        ENDIF
 
       ENDIF
-
-      RETURN
-      END
-
-CStartOfInterface
-      SUBROUTINE ZERO_CLIMATOLOGY( myThid )
-C     /==========================================================\
-C     | S/R ZERO_CLIMATOLOGY                                     |
-C     \==========================================================?
-      IMPLICIT NONE
-
-C     === Global variables ===
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "PARAMS.h"
-#include "FFIELDS.h"
-
-C     === Routine arguments ===
-      INTEGER myThid
-
-CEndOfInterface
-
-C     === Local variables ===
-      INTEGER i,j,bi,bj
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           SST(i,j,bi,bj) = 0.
-           SSS(i,j,bi,bj) = 0.
-           Qnet(i,j,bi,bj) = 0.
-           EmPmR(i,j,bi,bj) = 0.
-           fudot(i,j,bi,bj) = 0.
-           fvdot(i,j,bi,bj) = 0.
-           SSTdot(i,j,bi,bj) = 0.
-           SSSdot(i,j,bi,bj) = 0.
-           Qnetdot(i,j,bi,bj) = 0.
-           EmPmRdot(i,j,bi,bj) = 0.
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-
 
       RETURN
       END

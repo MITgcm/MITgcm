@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.38 1998/12/09 16:11:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.39 1998/12/15 00:20:34 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -57,7 +57,7 @@ C     dependency.
       _RL diffKrTDefault
       _RL diffKrSDefault
       _RL hFacMinDrDefault
-      _RL delRDefault
+      _RL delRDefault(Nr)
 C     zCoordInputData - These are used to select between different coordinate systems.
 C     pCoordInputData   The vertical coordinate system in the rest of the model is 
 C     rCoordInputData   written in terms of r. In the model "data" file input data can
@@ -85,6 +85,7 @@ C--   Continuous equation parameters
      &  diffKhS, diffKzS, diffK4S,
      &  GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,GMmaxval,
      &  tRef, sRef, eosType,
+     & no_slip_sides,no_slip_bottom,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
      & momPressureForcing, metricTerms,
      & tempDiffusion, tempAdvection, tempForcing,
@@ -94,6 +95,7 @@ C--   Continuous equation parameters
      & viscAr, diffKrT, diffKrS, hFacMinDr,
      & viscAp, diffKpT, diffKpS, hFacMinDp,
      & rhoConst, buoyancyRelation,
+     & writeStatePrec, readBinaryPrec, writeStatePrec,
      & openBoundaries
 
 C--   Elliptic solver parameters
@@ -127,6 +129,12 @@ C--   Open Boundaries
 
 C
       _BEGIN_MASTER(myThid)
+
+C     Defaults values for input parameters
+      CALL SET_DEFAULTS(
+     O   viscArDefault, diffKrTDefault, diffKrSDefault,
+     O   hFacMinDrDefault, delRdefault,
+     I   myThid )
 
 C--   Initialise "which vertical coordinate system used" flags.
       zCoordInputData = .FALSE.
@@ -198,62 +206,20 @@ C--   Read settings from model parameter file "data".
       REWIND(iUnit)
 
 C--   Set default "physical" parameters
-      DO K =1,Nr
-       tRef(K) = 30.D0 - FLOAT( K )
-      ENDDO
-      gravity  =   9.81D0
-      gBaro    = gravity
-      rhoNil   = 999.8D0
-      rhoConst = 999.8D0
-      f0       = 1.D-4 
-      beta     = 1.D-11
-      viscAh   = 1.D3
-      diffKhT  = 1.D3
-      diffKhS  = 1.D3
-      viscArDefault = 1.D-3
       viscAz   = UNSET_RL    
       viscAr   = UNSET_RL
       viscAp   = UNSET_RL
-      diffKrTDefault = 1.D-5
       diffKzT  = UNSET_RL
       diffKpT  = UNSET_RL
       diffKrT  = UNSET_RL
-      diffKrSDefault = 1.D-5
       diffKzS  = UNSET_RL
       diffKpS  = UNSET_RL
       diffKrS  = UNSET_RL
-      viscA4   = 0.
-      diffK4T  = 0.
-      diffK4S  = 0.
-      GMmaxslope   =   1.D-2
-      GMlength     = 200.D3
-      GMalpha      = 0.D0
-      GMdepth      = 1000.D0
-      GMkbackground= 0.D0
-      GMmaxval     = 2500.D0
-      tAlpha       = 2.D-4
-      sBeta        = 7.4D-4
-      eosType      = 'LINEAR'
-      buoyancyRelation    = 'OCEANIC'
-      implicitFreeSurface = .TRUE.
-      rigidLid            = .FALSE.
-      freeSurfFac         = 1.D0
-      hFacMin             = 0.D0
-      hFacMinDrDefault    = 0.D0
+      gBaro    = UNSET_RL
+      rhoConst = UNSET_RL
       hFacMinDr           = UNSET_RL
       hFacMinDz           = UNSET_RL
       hFacMinDp           = UNSET_RL
-      momViscosity        = .TRUE.
-      momAdvection        = .TRUE.
-      momForcing          = .TRUE.
-      useCoriolis         = .TRUE.
-      momPressureForcing  = .TRUE.
-      momStepping         = .TRUE.
-      tempStepping        = .TRUE.
-      saltStepping        = .TRUE.
-      metricTerms         = .TRUE.
-      implicitDiffusion   = .FALSE.
-      openBoundaries      = .FALSE.
       READ(UNIT=iUnit,NML=PARM01,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
@@ -273,6 +239,8 @@ C--   Set default "physical" parameters
       ENDIF
       IF ( implicitFreeSurface ) freeSurfFac = 1.D0
       IF ( rigidLid            ) freeSurfFac = 0.D0
+      IF ( gBaro .EQ. UNSET_RL ) gBaro=gravity
+      IF ( rhoConst .EQ. UNSET_RL ) rhoConst=rhoNil
 C--   Momentum viscosity on/off flag.
       IF ( momViscosity        ) THEN
        vfFacMom = 1.D0
@@ -371,6 +339,14 @@ C--   z,p,r coord input switching.
       ELSE
        recip_rhoNil = 1.D0 / rhoNil
       ENDIF
+      IF ( HeatCapacity_Cp .LE. 0. ) THEN
+       WRITE(msgBuf,'(A)')
+     &  'S/R INI_PARMS: HeatCapacity_Cp must be greater than 0.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ELSE
+       recip_Cp = 1.D0 / HeatCapacity_Cp
+      ENDIF
       IF ( gravity .LE. 0. ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: gravity must be greater than 0.'
@@ -381,13 +357,6 @@ C--   z,p,r coord input switching.
       ENDIF
 
 C--   Elliptic solver parameters
-      cg2dMaxIters       = 150
-      cg2dTargetResidual = 1.D-7
-      cg2dChkResFreq     = 1
-      cg3dMaxIters       = 150
-      cg3dTargetResidual = 1.D-7
-      cg3dChkResFreq     = 1
-      cg2dpcOffDFac      = 0.51D0
       READ(UNIT=iUnit,NML=PARM02,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
@@ -407,33 +376,7 @@ C--   Elliptic solver parameters
       ENDIF    
 
 C--   Time stepping parameters
-      startTime         = 0.
-      nTimeSteps        = 0
-      endTime           = 0.
-      nIter0            = 0
-      deltaT            = 0.
-      deltaTClock       = 0.
-      deltaTtracer      = 0.
-      deltaTMom         = 0.
-      abEps             = 0.01
-      pchkPtFreq        = 0.
-      chkPtFreq         = 3600.*25
-      dumpFreq          = 3600.*100
-      taveFreq          = 0.
-      writeStatePrec    = precFloat64
-      nCheckLev         = 1
-      checkPtSuff(1)    = 'ckptA'
-      checkPtSuff(2)    = 'ckptB'
-      cAdjFreq          = -1.D0
       rCD               = -1.D0
-      tauCD             =  0.D0
-      tauThetaClimRelax =  0.D0
-      doThetaClimRelax  = .FALSE.
-      tauSaltClimRelax  =  0.D0
-      doSaltClimRelax   = .FALSE.
-      periodicExternalForcing = .FALSE.
-      externForcingPeriod     = 0.
-      externForcingCycle      = 0.
       READ(UNIT=iUnit,NML=PARM03,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
@@ -541,38 +484,15 @@ C       code is being compiled
 C--   Grid parameters
 C     In cartesian coords distances are in metres
       rkFac = UNSET_I
-      usingCartesianGrid = .TRUE.
-      delRDefault =  1.D2
       DO K =1,Nr
        delZ(K) = UNSET_RL
        delP(K) = UNSET_RL
        delR(K) = UNSET_RL
       ENDDO
-      dxSpacing = 20.D0 * 1000.D0
-      dySpacing = 20.D0 * 1000.D0
-      DO i=1,Nx
-       delX(i) = dxSpacing
-      ENDDO
-      DO j=1,Ny
-       delY(j) = dySpacing
-      ENDDO
 C     In spherical polar distances are in degrees
-      usingSphericalPolarGrid = .FALSE.
-      phiMin    = -5.0
-      thetaMin  = 0.
-      rSphere   = 6370. * 1.D3
       recip_rSphere  = 1.D0/rSphere
-      IF ( usingSphericalPolarGrid ) THEN
-       dxSpacing = 1.
-       dySpacing = 1.
-       DO I=1,Nx
-        delX(I) = dxSpacing
-       ENDDO
-       DO J=1,Ny
-        delY(J) = dySpacing
-       ENDDO
-      ENDIF 
-
+      dxSpacing = UNSET_RL
+      dySpacing = UNSET_RL
       READ(UNIT=iUnit,NML=PARM04,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
@@ -591,6 +511,16 @@ C     In spherical polar distances are in degrees
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF    
 C
+      IF ( dxSpacing .NE. UNSET_RL ) THEN
+       DO i=1,Nx
+        delX(i) = dxSpacing
+       ENDDO
+      ENDIF
+      IF ( dySpacing .NE. UNSET_RL ) THEN
+       DO j=1,Ny
+        delY(j) = dySpacing
+       ENDDO
+      ENDIF
       IF ( rSphere .NE. 0 ) THEN
        recip_rSphere = 1.D0/rSphere
       ELSE
@@ -648,10 +578,10 @@ C--   p, z, r coord parameters
        IF ( delR(K) .NE. UNSET_RL ) rCoordInputData = .TRUE.
        IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delZ(K)
        IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delP(K)
-       IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delRDefault
+       IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delRDefault(K)
       ENDDO
 C     Check for multiple coordinate systems
-      coordsSet = 0
+      CoordsSet = 0
       IF ( zCoordInputData ) coordsSet = coordsSet + 1
       IF ( pCoordInputData ) coordsSet = coordsSet + 1
       IF ( rCoordInputData ) coordsSet = coordsSet + 1
@@ -715,14 +645,6 @@ C     being combined and a single frame of reference is needed.
       IF ( pCoordInputData ) usingPCoords = .TRUE.
 
 C-- OBCS
-      DO I=1,Nx
-       OB_Jnorth(I)=0
-       OB_Jsouth(I)=0
-      ENDDO
-      DO J=1,Ny
-       OB_Ieast(J)=0
-       OB_Iwest(J)=0
-      ENDDO
       IF (openBoundaries) THEN
        READ(UNIT=iUnit,NML=PARM06)
        DO J=1,Ny

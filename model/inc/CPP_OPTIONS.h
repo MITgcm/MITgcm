@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.7 1998/11/30 23:45:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.8 1998/12/15 00:20:34 adcroft Exp $
 C
 
 C 
@@ -111,6 +111,10 @@ C o Include/exclude call to S/R CALC_ISOSLOPES
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
+
+C o Use "natural" boundary conditions for salinity
+C   instead of the "virtual salt flux"
+#undef USE_NATURAL_BCS
 
 C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F

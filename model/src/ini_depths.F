@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.17 1998/12/09 16:11:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.18 1998/12/15 00:20:34 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -41,7 +41,6 @@ C     oldPrec - Temporary used in controlling binary input dataset precision
       INTEGER iG, jG
       INTEGER bi, bj
       INTEGER  I,  J, K
-      INTEGER oldPrec
       _RL phi
 
       _BARRIER
@@ -60,29 +59,16 @@ C      realistic problem.
 C          Default depth of full domain
            H(i,j,bi,bj) = phi
 C          Test for eastern edge
-           IF ( iG .EQ. nX ) H(i,j,bi,bj) = 0.
+C          IF ( iG .EQ. nX ) H(i,j,bi,bj) = 0.
 C          Test for northern edge
-           IF ( jG .EQ. nY ) H(i,j,bi,bj) = 0.
-C          Island
-           IF ( iG .EQ. 1 .AND. 
-     &          jG .EQ. 24 ) H(i,j,bi,bj) = 0.75*phi
+C          IF ( jG .EQ. nY ) H(i,j,bi,bj) = 0.
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ELSE
        _BEGIN_MASTER( myThid )
-
-CcnhDebugStarts
-C       Force 64-bit IO
-        oldPrec        = readBinaryPrec
-        readBinaryPrec = precFloat64
-CcnhDEbugEnds
        CALL READ_FLD_XY_RS( bathyFile, ' ', H, 0, myThid )
-CcnhDebugStarts
-       readBinaryPrec = oldPrec
-CcnhdDebugEnds
-
        _END_MASTER(myThid)
       ENDIF
       
