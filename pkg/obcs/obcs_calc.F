@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.3 2001/02/05 15:45:47 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.4 2001/02/28 14:48:25 adcroft Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -106,14 +106,12 @@ C         Northern OB
       ENDIF
 
 C         Southern OB
-#ifdef ALLOW_ORLANSKI
       IF (useOrlanskiSouth) THEN   
         CALL ORLANSKI_SOUTH(
      &          bi, bj, futureTime, 
      &          uVel, vVel, wVel, theta, salt, 
      &          myThid )
       ELSE
-#endif
         DO K=1,Nr
           DO I=1-Olx,sNx+Olx
             J_obc=OB_Js(I,bi,bj)
