@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ts.F,v 1.3 2004/09/20 23:22:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_ts.F,v 1.4 2004/12/03 16:47:30 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -36,8 +36,10 @@ C Northern boundary
        J_obc = OB_Jn(I,bi,bj)
        IF (J_obc.NE.0) THEN
         obc_mask = _maskS(I,J_obc,K,bi,bj)
-        tFld(I,J_obc,K,bi,bj)=OBNt(I,K,bi,bj)*obc_mask
-        sFld(I,J_obc,K,bi,bj)=OBNs(I,K,bi,bj)*obc_mask
+        DO J = J_obc, J_obc+Oly
+         tFld(I,J,K,bi,bj)=OBNt(I,K,bi,bj)*obc_mask
+         sFld(I,J,K,bi,bj)=OBNs(I,K,bi,bj)*obc_mask
+        ENDDO
        ENDIF
       ENDDO
 #endif
@@ -47,8 +49,10 @@ C Southern boundary
        J_obc = OB_Js(I,bi,bj)
        IF (J_obc.NE.0) THEN
         obc_mask = _maskS(I,J_obc+1,K,bi,bj)
-        tFld(I,J_obc,K,bi,bj)=OBSt(I,K,bi,bj)*obc_mask
-        sFld(I,J_obc,K,bi,bj)=OBSs(I,K,bi,bj)*obc_mask
+        DO J = J_obc-Oly, J_obc
+         tFld(I,J,K,bi,bj)=OBSt(I,K,bi,bj)*obc_mask
+         sFld(I,J,K,bi,bj)=OBSs(I,K,bi,bj)*obc_mask
+        ENDDO
        ENDIF
       ENDDO
 #endif
@@ -60,8 +64,10 @@ C Eastern boundary
        I_obc = OB_Ie(J,bi,bj)
        IF (I_obc.NE.0) THEN
         obc_mask = _maskW(I_obc,J,K,bi,bj)
-        tFld(I_obc,J,K,bi,bj)=OBEt(J,K,bi,bj)*obc_mask
-        sFld(I_obc,J,K,bi,bj)=OBEs(J,K,bi,bj)*obc_mask
+        DO I = I_obc, I_obc+Olx
+         tFld(I,J,K,bi,bj)=OBEt(J,K,bi,bj)*obc_mask
+         sFld(I,J,K,bi,bj)=OBEs(J,K,bi,bj)*obc_mask
+        ENDDO
        ENDIF
       ENDDO
 #endif
@@ -71,8 +77,10 @@ C Western boundary
        I_obc=OB_Iw(J,bi,bj)
        IF (I_obc.NE.0) THEN
         obc_mask = _maskW(I_obc+1,J,K,bi,bj)
-        tFld(I_obc,J,K,bi,bj)=OBWt(J,K,bi,bj) * obc_mask
-        sFld(I_obc,J,K,bi,bj)=OBWs(J,K,bi,bj) * obc_mask
+        DO I = I_obc-Olx, I_obc
+         tFld(I,J,K,bi,bj)=OBWt(J,K,bi,bj) * obc_mask
+         sFld(I,J,K,bi,bj)=OBWs(J,K,bi,bj) * obc_mask
+        ENDDO
        ENDIF
       ENDDO
 #endif
