@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.2 2001/11/08 23:39:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.3 2002/01/17 16:48:59 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -57,13 +57,13 @@ C      for maskC(...) and wVel(...)
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
         Rjp=(tracer(i,j,k,bi,bj)-tracer(i,j,kp1,bi,bj))
-     &         *maskC(i,j,kp1,bi,bj)
+     &         *maskC(i,j,kp1,bi_arg,bj_arg)
         Rj =(tracer(i,j,km1,bi,bj)-tracer(i,j,k,bi,bj))
-     &         *maskC(i,j,k,bi,bj)*maskC(i,j,km1,bi,bj)
+     &         *maskC(i,j,k,bi_arg,bj_arg)*maskC(i,j,km1,bi_arg,bj_arg)
         Rjm=(tracer(i,j,km2,bi,bj)-tracer(i,j,km1,bi,bj))
-     &         *maskC(i,j,km1,bi,bj)
+     &         *maskC(i,j,km1,bi_arg,bj_arg)
 
-        cfl=abs(wVel(i,j,k,bi,bj)*dTarg*recip_drc(k))
+        cfl=abs(wVel(i,j,k,bi_arg,bj_arg)*dTarg*recip_drc(k))
         d0=(2.D0-cfl)*(1.-cfl)*oneSixth
         d1=(1.D0-cfl*cfl)*oneSixth
 c       thetaP=0.D0
