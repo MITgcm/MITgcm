@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.8 2004/01/26 23:38:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.9 2004/02/25 01:44:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -331,12 +331,14 @@ C !!! _EXCH_OUV_XY_R4(DXF, DYF, unSigned, myThid )
 c     CALL EXCH_XY_RS(DXF,myThid)
 c     CALL EXCH_XY_RS(DYF,myThid)
       CALL EXCH_XY_RS(RA,myThid )
+#ifndef USE_W2
       CALL EXCH_Z_XY_RS(XG,myThid)
       CALL EXCH_Z_XY_RS(YG,myThid)
 C !!! _EXCH_ZUV_XY_R4(DXV, DYU, unSigned, myThid)
 c     CALL EXCH_Z_XY_RS(DXV,myThid)
 c     CALL EXCH_Z_XY_RS(DYU,myThid)
       CALL EXCH_Z_XY_RS(RAZ,myThid)
+#endif
       CALL EXCH_UV_XY_RS(DXC,DYC,.FALSE.,myThid)
       CALL EXCH_UV_XY_RS(RAW,RAS,.FALSE.,myThid)
       CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
