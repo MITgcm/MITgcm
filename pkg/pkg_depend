@@ -44,7 +44,7 @@ gchem           +ptracers
 dic             +gchem
 fizhi           -aim
 fizhi           +gridalt
-
+rw              +mdsio
 
 #  Need more information on the following:
 
