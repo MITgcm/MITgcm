@@ -1,10 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_uv_agrid_xy_rx.template,v 1.4 2004/11/16 17:21:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_uv_agrid_xy_rx.template,v 1.5 2004/11/17 16:29:22 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 
-      SUBROUTINE EXCH_UV_AGRID_XY_RX( component1,component2, myThid )
+      SUBROUTINE EXCH_UV_AGRID_XY_RX( component1,component2, withSigns,
+     .                                                          myThid )
 
       implicit none
 
@@ -14,7 +15,8 @@ C      handle exchanges for a 2D vector field on an A-grid.
 C
 C  Input: component1(lon,lat,bi,bj) - first component of vector
 C         component2(lon,lat,bi,bj) - second component of vector
-C         myThid                           - tile number
+C         withSigns (logical)       - true to use signs of components
+C         myThid                    - tile number
 C
 C  Output: component1 and component2 are updated (halo regions filled)
 C
@@ -34,6 +36,7 @@ C*=====================================================================*
 C     == Argument list variables ==
       _RX component1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RX component2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      LOGICAL withSigns
       INTEGER myThid
 
 C     == Local variables ==
@@ -49,7 +52,8 @@ C     b[nsew] - indices of the [nswe] neighboring faces for each face.
       _RX dummy2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef ALLOW_EXCH2
-      CALL EXCH2_UV_AGRID_XY_RX( component1,component2, myThid )
+      CALL EXCH2_UV_AGRID_XY_RX( component1,component2, withSigns,
+     .                                                       myThid )
       RETURN
 #endif
 
