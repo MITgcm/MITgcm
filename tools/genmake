@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.20 2000/11/13 16:40:02 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.21 2000/11/29 22:33:08 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -439,7 +439,7 @@ cat csrclist.inc >> ${mfile}
 echo 'F77FILES =  $(SRCFILES:.F=.f)'                    >> ${mfile}
 echo 'OBJFILES =  $(SRCFILES:.F=.o) $(CSRCFILES:.c=.o)' >> ${mfile}
 
-rm -f srclist.inc
+rm -f srclist.inc csrclist.inc
 
 cat >> ${mfile} <<EOF
 
