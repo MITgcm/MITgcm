@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.10 1998/07/15 22:20:02 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.11 1998/07/16 16:58:08 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -71,16 +71,6 @@ C          Island
        _BEGIN_MASTER( myThid )
        CALL READ_FLD_XY_RS( bathyFile, ' ', H, 0, myThid )
        _END_MASTER(myThid)
-C--    Reverse sign if necessary (We assume H>0)
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           H(i,j,bi,bj)=-H(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
       ENDIF
       _EXCH_XY_R4(    H, myThid )
 C
