@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.28 1998/08/20 19:25:05 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.29 1998/08/20 19:26:40 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -65,6 +65,7 @@ C     buoyK, buoyKM1 - Buoyancy at current level and level above.
 C     phiHyd         - Hydrostatic part of the potential phi.
 C                      In z coords phiHyd is the hydrostatic pressure anomaly
 C                      In p coords phiHyd is the geopotential surface height anomaly.
+C     etaSurfX, etaSurfY - Holds surface elevation gradient in X and Y.
 C     iMin, iMax - Ranges and sub-block indices on which calculations
 C     jMin, jMax   are applied.
 C     bi, bj
@@ -97,8 +98,8 @@ C                          into fVerTerm
       _RL buoyKM1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL buoyK (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhotmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL pSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL pSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL etaSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL etaSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL K33   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
@@ -229,17 +230,17 @@ C--     Set up work arrays that need valid initial values
 C--     Calculate gradient of surface pressure
         CALL CALC_GRAD_ETA_SURF(
      I       bi,bj,iMin,iMax,jMin,jMax,
-     O       pSurfX,pSurfY,
+     O       etaSurfX,etaSurfY,
      I       myThid)
 
 C--     Update fields in top level according to tendency terms
         CALL CORRECTION_STEP(
-     I       bi,bj,iMin,iMax,jMin,jMax,K,pSurfX,pSurfY,myTime,myThid)
+     I       bi,bj,iMin,iMax,jMin,jMax,K,etaSurfX,etaSurfY,myTime,myThid)
 
         IF ( .NOT. BOTTOM_LAYER ) THEN
 C--      Update fields in layer below according to tendency terms
          CALL CORRECTION_STEP(
-     I        bi,bj,iMin,iMax,jMin,jMax,K+1,pSurfX,pSurfY,myTime,myThid)
+     I        bi,bj,iMin,iMax,jMin,jMax,K+1,etaSurfX,etaSurfY,myTime,myThid)
         ENDIF
 
 C--     Density of 1st level (below W(1)) reference to level 1
@@ -285,7 +286,7 @@ C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
          IF ( .NOT. BOTTOM_LAYER ) THEN
 C--       Update fields in layer below according to tendency terms
           CALL CORRECTION_STEP(
-     I         bi,bj,iMin,iMax,jMin,jMax,K+1,pSurfX,pSurfY,myTime,myThid)
+     I         bi,bj,iMin,iMax,jMin,jMax,K+1,etaSurfX,etaSurfY,myTime,myThid)
          ENDIF
 
 C--      Density of K level (below W(K)) reference to K level
