@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.3 2005/01/03 02:32:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_early.F,v 1.4 2005/02/14 21:10:08 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -695,28 +695,28 @@ C----------------------------------------------------------------------
       udiag(119) = 'mm/day          '
       gdiag(119) = 'SM P    L1      '
 
-      cdiag(120) = 'SHAPU   '
-      tdiag(120) =
-     .  'Zonal Wind Tendency due to Shapiro Filter  (m/s/day)'
-      udiag(120) = 'm/s/day         '
-      gdiag(120) = 'UU   121ML      '
+c     cdiag(120) = 'SHAPU   '
+c     tdiag(120) =
+c    .  'Zonal Wind Tendency due to Shapiro Filter  (m/s/day)'
+c     udiag(120) = 'm/s/day         '
+c     gdiag(120) = 'UU   121ML      '
 
-      cdiag(121) = 'SHAPV   '
-      tdiag(121) =
-     .  'Meridional Wind Tendency due to Shapiro Filter  (m/s/day)'
-      udiag(121) = 'm/s/day         '
-      gdiag(121) = 'VV   120ML      '
+c     cdiag(121) = 'SHAPV   '
+c     tdiag(121) =
+c    .  'Meridional Wind Tendency due to Shapiro Filter  (m/s/day)'
+c     udiag(121) = 'm/s/day         '
+c     gdiag(121) = 'VV   120ML      '
 
-      cdiag(122) = 'SHAPT   '
-      tdiag(122) = 'Temperature Tendency due to Shapiro Filter  (K/day)'
-      udiag(122) = 'K/day           '
-      gdiag(122) = 'SM      ML      '
+c     cdiag(122) = 'SHAPT   '
+c     tdiag(122) = 'Temperature Tendency due to Shapiro Filter  (K/day)'
+c     udiag(122) = 'K/day           '
+c     gdiag(122) = 'SM      ML      '
 
-      cdiag(123) = 'SHAPQ   '
-      tdiag(123) =
-     .  'Specific Humidity Tendency due to Shapiro Filter  (g/kg/day)'
-      udiag(123) = 'gram/kg/day     '
-      gdiag(123) = 'SM      ML      '
+c     cdiag(123) = 'SHAPQ   '
+c     tdiag(123) =
+c    .  'Specific Humidity Tendency due to Shapiro Filter  (g/kg/day)'
+c     udiag(123) = 'gram/kg/day     '
+c     gdiag(123) = 'SM      ML      '
 
       cdiag(124) = 'SDIAG3  '
       tdiag(124) = 'User-Defined Surface   Diagnostic #3    '
