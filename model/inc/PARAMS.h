@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.66 2001/11/26 17:11:45 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.67 2001/12/11 14:54:04 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -126,7 +126,6 @@ C                           =0 Linear free surface ; >0 Non-linear
      &        writeStatePrec, nCheckLev,
      &        writeBinaryPrec, readBinaryPrec,
      &        nonlinFreeSurf,
-     &        zonal_filt_sinpow, zonal_filt_cospow,
      &        tempAdvScheme, saltAdvScheme, tracerAdvScheme
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
@@ -141,8 +140,6 @@ C                           =0 Linear free surface ; >0 Non-linear
       INTEGER readBinaryPrec
       INTEGER nCheckLev
       INTEGER nonlinFreeSurf
-      INTEGER zonal_filt_sinpow
-      INTEGER zonal_filt_cospow
       INTEGER tempAdvScheme
       INTEGER saltAdvScheme
       INTEGER tracerAdvScheme
@@ -402,8 +399,6 @@ C                           number times externForcingPeriod)
 C     horiVertRatio      :: Ratio on units in vertical to units in horizontal.
 C     recip_horiVertRatio  ( 1 if horiz in m and vertical in m ).
 C                          ( g*rho if horiz in m and vertical in Pa ).
-C     latFFTFiltLo       :: Low latitude for FFT filtering of latitude
-C                          circles ( see filter*.F )
 C     Ro_SeaLevel        :: standard position of Sea-Level in "R" coordinate, used as
 C                          starting value (k=1) for vertical coordinate (rf(1)=Ro_SeaLevel)
 C     bottomDragLinear   :: Drag coefficient built in to core dynamics
@@ -431,7 +426,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & externForcingCycle, externForcingPeriod,
      & viscAp, diffKpT, diffKpS, hFacMinDr, hFacMinDp,
      & theta_S, specVol_S, horiVertRatio, recip_horiVertRatio,
-     & latFFTFiltLo, ivdc_kappa, Ro_SeaLevel, zonal_filt_lat,
+     & ivdc_kappa, Ro_SeaLevel,
      & bottomDragLinear,bottomDragQuadratic
 
       _RL cg2dTargetResidual
@@ -523,10 +518,8 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL externForcingPeriod
       _RL horiVertRatio
       _RL recip_horiVertRatio
-      _RL latFFTFiltLo
       _RL ivdc_kappa
       _RL Ro_SeaLevel
-      _RL zonal_filt_lat
       _RL bottomDragLinear
       _RL bottomDragQuadratic
 
@@ -566,8 +559,9 @@ C Logical flags for selecting packages
       LOGICAL useGrdchk
       LOGICAL useECCO
       LOGICAL useSHAP_FILT
+      LOGICAL useZONAL_FILT
       LOGICAL useFLT
       COMMON /PARM_PACKAGES/
      &        useKPP, useGMRedi, useOBCS, useAIM, useECCO, 
-     &        useSHAP_FILT, useGrdchk, useFLT
+     &        useSHAP_FILT, useZONAL_FILT, useGrdchk, useFLT
 
