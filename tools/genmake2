@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.68 2004/02/24 19:14:18 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.69 2004/02/25 19:12:10 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -100,13 +100,47 @@ find_possible_configs()  {
 	CPP="cpp -traditional -P"
     fi
 
-    # makedepend is not always available
+    #  The "original" makedepend is part of the Imake system that is
+    #  most often distributed with XFree86 or with an XFree86 source
+    #  package.  As a result, many machines (eg. generic Linux) do not
+    #  have a system-default "makedepend" available.  For those
+    #  systems, we have two fall-back options:
+    #
+    #    1) a makedepend implementation shipped with the cyrus-imapd
+    #       package:  ftp://ftp.andrew.cmu.edu/pub/cyrus-mail/
+    #
+    #    2) a known-buggy xmakedpend shell script
+    #
+    #  So the choices are, in order:
+    #
+    #    1) use the user-specified program
+    #    2) use a system-wide default
+    #    3) locally build and use the cyrus implementation
+    #    4) fall back to the buggy local xmakedpend script
+    #
     if test "x${MAKEDEPEND}" = x ; then
       which makedepend >& /dev/null
       RETVAL=$?
-      if test "x${RETVAL}" = x1 ; then
-         echo "    makedepend was not found. Using xmakedpend instead."
-         MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
+      if test ! "x${RETVAL}" = x0 ; then
+         echo "    a system-default makedepend was not found."
+
+	 #  Try to build the cyrus impl
+	 rm -f ./genmake_cy_md
+	 (
+	     cd $ROOTDIR/tools/cyrus-imapd-makedepend  \
+		 &&  ./configure > /dev/null 2>&1  \
+		 &&  make > /dev/null 2>&1  \
+		 &&  ./makedepend ifparser.c > /dev/null 2>&1  \
+		 &&  echo "true"
+	 ) > ./genmake_cy_md
+	 grep true ./genmake_cy_md > /dev/null 2>&1
+	 RETVAL=$?
+	 if test "x$RETVAL" = x0 ; then
+	     MAKEDEPEND='$(TOOLSDIR)/cyrus-imapd-makedepend/makedepend'
+	 else
+	     MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
+	 fi
+	 rm -f ./genmake_cy_md
       fi
     fi
 
@@ -261,6 +295,10 @@ Usage: "$0" [OPTIONS]
     -makefile NAME | -mf NAME
       --makefile=NAME | -mf=NAME
           Call the makefile "NAME".  The default is "Makefile".
+
+    -makedepend NAME | -md NAME
+      --makedepend=NAME | -md=NAME
+          Use "NAME" for the MAKEDEPEND program.
 
     -rootdir NAME | --rootdir NAME | -rd NAME | --rd NAME
       -rootdir=NAME | --rootdir=NAME | -rd=NAME | --rd=NAME
@@ -675,6 +713,11 @@ for ac_option ; do
 	    ac_prev=MAKE ;;
 	-make=* | --make=* | -m=* | --m=*)
 	    MAKE=$ac_optarg ;;
+	
+	-makedepend | --makedepend | -md | --md)
+	    ac_prev=MAKEDEPEND ;;
+	-makedepend=* | --makedepend=* | -md=* | --md=*)
+	    MAKEDEPEND=$ac_optarg ;;
 	
 	-makefile | --makefile | -ma | --ma)
 	    ac_prev=MAKEFILE ;;

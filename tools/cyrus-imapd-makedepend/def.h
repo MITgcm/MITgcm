@@ -73,8 +73,13 @@ in this Software without prior written authorization from the X Consortium.
 #include <fcntl.h>
 #include <sys/stat.h>
 
+/* === EH3 ===
 #define MAXDEFINES	512
 #define MAXFILES	512
+   === EH3 === */
+#define MAXDEFINES      2048
+#define MAXFILES        2048
+/* === EH3 === */
 #define MAXDIRS		64
 #define SYMTABINC	10	/* must be > 1 for define() to work right */
 #define	TRUE		1
