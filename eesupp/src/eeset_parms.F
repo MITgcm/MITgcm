@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.17 2004/03/27 03:51:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.18 2004/05/13 21:44:59 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -45,7 +45,8 @@ C     record :: Temp. for textual I/O
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
       NAMELIST /EEPARMS/
-     & nTx, nTy, usingMPI, useCoupler, useCubedSphereExchange
+     & nTx, nTy, usingMPI, useCoupler, useCubedSphereExchange,
+     & printMapIncludesZeros
 CEOP
 
 
