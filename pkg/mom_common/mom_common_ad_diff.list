@@ -1,0 +1,12 @@
+mom_calc_absvort3.F
+mom_calc_hdiv.F
+mom_calc_hfacz.F
+mom_calc_ke.F
+mom_calc_relvort3.F
+mom_calc_strain.F
+mom_calc_tension.F
+mom_hdissip.F
+mom_u_rviscflux.F
+mom_u_sidedrag.F
+mom_v_rviscflux.F
+mom_v_sidedrag.F

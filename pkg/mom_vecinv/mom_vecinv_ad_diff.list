@@ -1,0 +1,14 @@
+mom_u_bottomdrag.F
+mom_v_bottomdrag.F
+mom_vecinv.F
+mom_vi_coriolis.F
+mom_vi_del2uv.F
+mom_vi_hdissip.F
+mom_vi_u_coriolis.F
+mom_vi_u_coriolis_c4.F
+mom_vi_u_grad_ke.F
+mom_vi_u_vertshear.F
+mom_vi_v_coriolis.F
+mom_vi_v_coriolis_c4.F
+mom_vi_v_grad_ke.F
+mom_vi_v_vertshear.F
