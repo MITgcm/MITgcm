@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/OBCS.h,v 1.3 2001/05/14 21:36:45 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_OBCS
@@ -74,6 +74,20 @@ C
       INTEGER OB_Js(1-Olx:sNx+Olx,nSx,nSy)
       INTEGER OB_Ie(1-Oly:sNy+Oly,nSx,nSy)
       INTEGER OB_Iw(1-Oly:sNy+Oly,nSx,nSy)
+
+      COMMON /OB_FILES/
+     &      OBNuFile,OBNvFile,OBNtFile,OBNsFile,
+     &      OBSuFile,OBSvFile,OBStFile,OBSsFile,
+     &      OBEuFile,OBEvFile,OBEtFile,OBEsFile,
+     &      OBWuFile,OBWvFile,OBWtFile,OBWsFile
+      CHARACTER*(MAX_LEN_FNAM) 
+     &      OBNuFile,OBNvFile,OBNtFile,OBNsFile
+      CHARACTER*(MAX_LEN_FNAM) 
+     &      OBSuFile,OBSvFile,OBStFile,OBSsFile
+      CHARACTER*(MAX_LEN_FNAM) 
+     &      OBEuFile,OBEvFile,OBEtFile,OBEsFile
+      CHARACTER*(MAX_LEN_FNAM) 
+     &      OBWuFile,OBWvFile,OBWtFile,OBWsFile
 
 #ifdef ALLOW_NONHYDROSTATIC
       COMMON /GRID_OBNH/ 
