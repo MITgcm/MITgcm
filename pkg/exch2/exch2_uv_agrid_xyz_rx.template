@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_agrid_xyz_rx.template,v 1.3 2004/04/05 15:27:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_agrid_xyz_rx.template,v 1.4 2004/11/17 16:28:12 molod Exp $
 C $Name:  $
 
-      subroutine exch2_uv_agrid_xyz_RX( component1,component2, myThid )
+      subroutine exch2_uv_agrid_xyz_RX(component1,component2,withSigns,
+     .                                                         myThid )
 #include "CPP_EEOPTIONS.h"
       implicit none
 
@@ -11,7 +12,8 @@ C      handle exchanges for a 3D vector field on an A-grid.
 C
 C  Input: component1(lon,lat,levs,bi,bj) - first component of vector
 C         component2(lon,lat,levs,bi,bj) - second component of vector
-C         myThid                           - tile number
+C         withSigns (logical)            - true to use sign of components
+C         myThid                         - tile number
 C
 C  Output: component1 and component2 are updated (halo regions filled)
 C
@@ -29,6 +31,7 @@ C*=====================================================================*
 C     == Argument list variables ==
       _RX component1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RX component2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      LOGICAL withSigns
       INTEGER myThid
 
 C     == Local variables ==
