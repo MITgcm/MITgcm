@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.7 2004/12/02 19:27:35 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.8 2004/12/02 20:50:58 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -77,7 +77,7 @@ c             Salt flux.
               endif
 c
 c             Zonal wind stress.
-              if ( ABS(ustress(i,j,bi,bj)) .GT. 2. .AND.
+              if ( ABS(ustress(i,j,bi,bj)) .GT. 2.5 .AND.
      &             hFacW(i,j,1,bi,bj) .NE. 0. ) then
                  print *, 'EXF WARNING: ustress out of range for i,j= ',
      &                i, j, ustress(i,j,bi,bj)
@@ -153,7 +153,7 @@ c             Short wave radiative flux.
 
 #ifdef ALLOW_RUNOFF
 c             Runoff.
-              if ( (runoff(i,j,bi,bj) .LT. 0. .OR.
+              if ( (runoff(i,j,bi,bj) .LT. -5.E-8 .OR.
      &             runoff(i,j,bi,bj) .GT. 1.E-6 ) .AND.
      &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
                  print *, 'EXF WARNING: runoff out of range for i,j= ',
