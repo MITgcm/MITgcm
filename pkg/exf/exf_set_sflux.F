@@ -27,13 +27,14 @@ c     == global variables ==
 #include "exf_constants.h"
 #include "exf_fields.h"
 
-#ifndef ALLOW_ATM_TEMP
+
 c     == routine arguments ==
 
       _RL     mycurrenttime
       integer mycurrentiter
       integer mythid
 
+#ifndef ALLOW_ATM_TEMP
 c     == local variables ==
 
       logical first, changed
