@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.6 2002/09/25 19:36:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.7 2002/10/29 20:16:28 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -63,6 +63,58 @@ C     I,J,K
          eosMDJWFden(k) = 0. _d 0
       end do
 
+C     initialise pressure to zero (this is not really the right place to 
+C     do it, but let's do it anyway; pressure will be initialised to
+C     sensible values in ini_pressure)
+      do bj = myByLo(myThid), myByHi(myThid)
+       do bi = myBxLo(myThid), myBxHi(myThid)
+        do K=1,Nr
+         do J=1-Oly,sNy+Oly
+          do I=1-Olx,sNx+Olx
+           pressure(i,j,k,bi,bj) = 0. _d 0
+          end do
+         end do
+        end do
+       end do
+      end do
+C
+C     initialise pressure to something sensible (will be overwritten)
+C
+      if ( buoyancyRelation .eq. 'OCEANIC' ) then
+       do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+         do K=1,Nr
+          do J=1-Oly,sNy+Oly
+           do I=1-Olx,sNx+Olx
+            pressure(i,j,k,bi,bj) = rhoConst * (
+     &           - gravity*rC(k)
+     &           )
+           end do
+          end do
+         end do
+        end do
+       end do
+      elseif ( buoyancyRelation .eq. 'ATMOSPHERIC'
+     &      .or. buoyancyRelation .eq. 'OCEANICP' ) then
+C     
+C     in pressure coordinates the pressure is just the coordinate of
+C     the tracer point, that is, its constant in time
+C
+       do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+         do K=1,Nr
+          do J=1-Oly,sNy+Oly
+           do I=1-Olx,sNx+Olx
+            pressure(i,j,k,bi,bj) = rC(k)
+           end do 
+          end do
+         end do
+        end do
+       end do
+      else
+       STOP 'INI_EOS: We should never reach this point!'
+      endif
+
       if ( equationOfState .eq. 'LINEAR' ) then
          if ( tAlpha .eq. UNSET_RL ) tAlpha = 2.D-4
          if ( sBeta  .eq. UNSET_RL ) sBeta  = 7.4D-4
@@ -104,37 +156,6 @@ C
      &      '         Use only ''JMD95P'' with ''OCEANICP''.'
             CALL PRINT_ERROR( msgBuf , 1)
             STOP 'ABNORMAL END: S/R INI_EOS'
-         endif
-C     
-         if ( buoyancyRelation .eq. 'OCEANIC' ) then
-            do bj = myByLo(myThid), myByHi(myThid)
-               do bi = myBxLo(myThid), myBxHi(myThid)
-                  do K=1,Nr
-                     do J=1-Oly,sNy+Oly
-                        do I=1-Olx,sNx+Olx
-                           pressure(i,j,k,bi,bj) = rhoConst * (
-     &                          - gravity*rC(k)
-     &                          )
-                        end do
-                     end do
-                  end do
-               end do
-            end do
-         elseif ( buoyancyRelation .eq. 'ATMOSPHERIC'
-     &           .or. buoyancyRelation .eq. 'OCEANICP' ) then
-C     in pressure coordinates the pressure is just the coordinate of
-C     the tracer point
-            do bj = myByLo(myThid), myByHi(myThid)
-               do bi = myBxLo(myThid), myBxHi(myThid)
-                  do K=1,Nr
-                     do J=1-Oly,sNy+Oly
-                        do I=1-Olx,sNx+Olx
-                           pressure(i,j,k,bi,bj) = rC(k)
-                        end do 
-                     end do
-                  end do
-               end do
-            end do
          endif
 
 C     coefficients nonlinear equation of state in pressure coordinates for
@@ -245,33 +266,33 @@ C     5. secant bulk modulus K of sea water at p
 
       elseif ( equationOfState .eq. 'MDJWF' ) then
 
-         eosMDJWFnum( 0) =  9.99843699e+02
-         eosMDJWFnum( 1) =  7.35212840e+00
-         eosMDJWFnum( 2) = -5.45928211e-02
-         eosMDJWFnum( 3) =  3.98476704e-04
-         eosMDJWFnum( 4) =  2.96938239e+00
-         eosMDJWFnum( 5) = -7.23268813e-03
-         eosMDJWFnum( 6) =  2.12382341e-03
-         eosMDJWFnum( 7) =  1.04004591e-02
-         eosMDJWFnum( 8) =  1.03970529e-07
-         eosMDJWFnum( 9) =  5.18761880e-06
-         eosMDJWFnum(10) = -3.24041825e-08
-         eosMDJWFnum(11) = -1.23869360e-11
+         eosMDJWFnum( 0) =  9.99843699 _d +02
+         eosMDJWFnum( 1) =  7.35212840 _d +00
+         eosMDJWFnum( 2) = -5.45928211 _d -02
+         eosMDJWFnum( 3) =  3.98476704 _d -04
+         eosMDJWFnum( 4) =  2.96938239 _d +00
+         eosMDJWFnum( 5) = -7.23268813 _d -03
+         eosMDJWFnum( 6) =  2.12382341 _d -03
+         eosMDJWFnum( 7) =  1.04004591 _d -02
+         eosMDJWFnum( 8) =  1.03970529 _d -07
+         eosMDJWFnum( 9) =  5.18761880 _d -06
+         eosMDJWFnum(10) = -3.24041825 _d -08
+         eosMDJWFnum(11) = -1.23869360 _d -11
          
          
-         eosMDJWFden( 0) =  1.00000000e+00 
-         eosMDJWFden( 1) =  7.28606739e-03
-         eosMDJWFden( 2) = -4.60835542e-05 
-         eosMDJWFden( 3) =  3.68390573e-07
-         eosMDJWFden( 4) =  1.80809186e-10
-         eosMDJWFden( 5) =  2.14691708e-03
-         eosMDJWFden( 6) = -9.27062484e-06
-         eosMDJWFden( 7) = -1.78343643e-10
-         eosMDJWFden( 8) =  4.76534122e-06
-         eosMDJWFden( 9) =  1.63410736e-09
-         eosMDJWFden(10) =  5.30848875e-06
-         eosMDJWFden(11) = -3.03175128e-16
-         eosMDJWFden(12) = -1.27934137e-17
+         eosMDJWFden( 0) =  1.00000000 _d +00 
+         eosMDJWFden( 1) =  7.28606739 _d -03
+         eosMDJWFden( 2) = -4.60835542 _d -05 
+         eosMDJWFden( 3) =  3.68390573 _d -07
+         eosMDJWFden( 4) =  1.80809186 _d -10
+         eosMDJWFden( 5) =  2.14691708 _d -03
+         eosMDJWFden( 6) = -9.27062484 _d -06
+         eosMDJWFden( 7) = -1.78343643 _d -10
+         eosMDJWFden( 8) =  4.76534122 _d -06
+         eosMDJWFden( 9) =  1.63410736 _d -09
+         eosMDJWFden(10) =  5.30848875 _d -06
+         eosMDJWFden(11) = -3.03175128 _d -16
+         eosMDJWFden(12) = -1.27934137 _d -17
          
       elseif( equationOfState .eq. 'IDEALG' ) then
 C     
