@@ -3,8 +3,8 @@ RM               = rm -f
 LOC              = $(PWD)
 TAMC             = tamc
 ###TAMC             = /data43/ralf/tamc/tamc
-TAF              = taf
-###TAF              = ~fastopt/bin/taf
+###TAF              = taf
+TAF              = ~fastopt/bin/taf
 DEST             = .
 SOURCE_CODE      = ../bin
 ADJOINT_SCRIPT   = ../adjoint
@@ -228,17 +228,8 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/the_main_loop.f			\
 		$(SOURCE_CODE)/thermodynamics.f			\
 		$(SOURCE_CODE)/timestep_tracer.f		\
+		$(SOURCE_CODE)/update_etah.f			\
 		$(SOURCE_CODE)/swfrac.f				\
-		  						\
-		$(SOURCE_CODE)/kpp_calc.f			\
-		$(SOURCE_CODE)/kpp_calc_diff.f			\
-		$(SOURCE_CODE)/kpp_calc_visc.f			\
-		$(SOURCE_CODE)/kpp_do_diags.f			\
-		$(SOURCE_CODE)/kpp_init.f			\
-		$(SOURCE_CODE)/kpp_open_diags.f			\
-		$(SOURCE_CODE)/kpp_routines.f			\
-		$(SOURCE_CODE)/kpp_transport_s.f		\
-		$(SOURCE_CODE)/kpp_transport_t.f		\
 		  						\
 		$(SOURCE_CODE)/gmredi_calc_diff.f		\
 		$(SOURCE_CODE)/gmredi_calc_psi_b.f		\
@@ -264,19 +255,30 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/cost_atlantic_heat.f		\
 		$(SOURCE_CODE)/cost_vector.f			\
 		  						\
-		$(SOURCE_CODE)/shap_filt_apply_ts.f		\
-		$(SOURCE_CODE)/shap_filt_apply_uv.f		\
-		$(SOURCE_CODE)/shap_filt_tracer_s1.f		\
-		$(SOURCE_CODE)/shap_filt_tracer_s2.f		\
-		$(SOURCE_CODE)/shap_filt_tracer_s2g.f		\
-		$(SOURCE_CODE)/shap_filt_tracer_s4.f		\
-		$(SOURCE_CODE)/shap_filt_uv_s1.f		\
-		$(SOURCE_CODE)/shap_filt_uv_s2.f		\
-		$(SOURCE_CODE)/shap_filt_uv_s2g.f		\
-		$(SOURCE_CODE)/shap_filt_uv_s2c.f		\
-		$(SOURCE_CODE)/shap_filt_uv_s4.f		\
 
-		  						\
+#		$(SOURCE_CODE)/kpp_calc.f			\
+#		$(SOURCE_CODE)/kpp_calc_diff.f			\
+#		$(SOURCE_CODE)/kpp_calc_visc.f			\
+#		$(SOURCE_CODE)/kpp_do_diags.f			\
+#		$(SOURCE_CODE)/kpp_init.f			\
+#		$(SOURCE_CODE)/kpp_open_diags.f			\
+#		$(SOURCE_CODE)/kpp_routines.f			\
+#		$(SOURCE_CODE)/kpp_transport_s.f		\
+#		$(SOURCE_CODE)/kpp_transport_t.f		\
+#		  						\
+#		$(SOURCE_CODE)/shap_filt_apply_ts.f		\
+#		$(SOURCE_CODE)/shap_filt_apply_uv.f		\
+#		$(SOURCE_CODE)/shap_filt_tracer_s1.f		\
+#		$(SOURCE_CODE)/shap_filt_tracer_s2.f		\
+#		$(SOURCE_CODE)/shap_filt_tracer_s2g.f		\
+#		$(SOURCE_CODE)/shap_filt_tracer_s4.f		\
+#		$(SOURCE_CODE)/shap_filt_uv_s1.f		\
+#		$(SOURCE_CODE)/shap_filt_uv_s2.f		\
+#		$(SOURCE_CODE)/shap_filt_uv_s2g.f		\
+#		$(SOURCE_CODE)/shap_filt_uv_s2c.f		\
+#		$(SOURCE_CODE)/shap_filt_uv_s4.f		\
+
+#		  						\
 #		$(SOURCE_CODE)/ini_ep.f				\
 #		$(SOURCE_CODE)/calc_ep_forcing.f		\
 #		$(SOURCE_CODE)/cost_entropy.f			\

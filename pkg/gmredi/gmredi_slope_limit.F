@@ -316,7 +316,7 @@ C-      Danabasoglu and McWilliams, J. Clim. 1995
            taperFct(i,j) = 1. _d 0
           ELSE IF ( SlopeSqr(i,j) .LT. Large_SlopeSqr ) THEN
            Smod=sqrt(SlopeSqr(i,j))
-           taperFct(i,j)=op5*(1.+tanh( (GM_Scrit-Smod)/GM_Sd ))
+           taperFct(i,j)=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
           ENDIF
          ENDDO
         ENDDO
@@ -331,14 +331,14 @@ C-      Large, Danabasoglu and Doney, JPO 1997
            taperFct(i,j) = 1. _d 0
           ELSE IF ( SlopeSqr(i,j) .LT. Large_SlopeSqr ) THEN
            Smod=sqrt(SlopeSqr(i,j))
-           f1=op5*(1.+tanh( (GM_Scrit-Smod)/GM_Sd ))
+           f1=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
            Cspd=2. _d 3
            Lrho=100. _d 3
            if (FCori(i,j,bi,bj).NE.0.) Lrho=Cspd/abs(Fcori(i,j,bi,bj))
            Lrho=min(Lrho , 100. _d 3)
            Lrho=max(Lrho , 15. _d 3)
            Rnondim=depthZ/(Lrho*Smod)
-           f2=op5*(1.+sin( fpi*(Rnondim-op5)))
+           f2=op5*( 1. _d 0 + sin( fpi*(Rnondim-op5)))
            taperFct(i,j)=f1*f2
           ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.34 2003/01/10 19:06:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.35 2003/01/10 23:41:15 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -444,6 +444,7 @@ CADJ STORE sigmaX(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE sigmaY(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE sigmaR(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
+
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
         IF (useGMRedi) THEN
           CALL GMREDI_CALC_TENSOR(
@@ -577,6 +578,7 @@ C--       Get temporary terms used by tendency routines
      I         myThid)
 
 #ifdef ALLOW_GMREDI
+
 C--   Residual transp = Bolus transp + Eulerian transp
           IF (useGMRedi) THEN
             CALL GMREDI_CALC_UVFLOW(
@@ -584,6 +586,15 @@ C--   Residual transp = Bolus transp + Eulerian transp
             IF (K.GE.2) CALL GMREDI_CALC_WFLOW(
      &                    rTrans, bi, bj, k, myThid) 
           ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC 
+#ifdef GM_BOLUS_ADVEC
+CADJ STORE uTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE vTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE rTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #endif /* ALLOW_GMREDI */
 
 #ifdef ALLOW_AUTODIFF_TAMC 

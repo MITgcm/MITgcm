@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.7 2002/12/10 02:55:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.8 2003/01/10 23:41:15 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -179,6 +179,10 @@ C                               or topographic geopotential anom. (p-coord)
       IF ( buoyancyRelation .eq. 'ATMOSPHERIC'
      &               .AND. selectFindRoSurf.EQ.1 ) THEN
 
+#ifdef ALLOW_AUTODIFF_TAMC
+         STOP 'CANNOT PRESENTLY USE THIS OPTION WITH ADJOINT'
+#else
+
 C-    set phi0surf = starting point for integrating Geopotential:
         CALL INI_P_GROUND( -selectFindRoSurf, 
      O                     phi0surf, 
@@ -189,6 +193,8 @@ C-    set phi0surf = starting point for integrating Geopotential:
         _BEGIN_MASTER( myThid ) 
         CALL WRITE_FLD_XY_RS( 'phi0surf',' ',phi0surf,0,myThid) 
         _END_MASTER( myThid )
+
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.2 2002/11/14 22:43:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.3 2003/01/10 23:41:15 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -65,6 +65,11 @@ C-    Initialization : <= done in S/R gmredi_init
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef GM_VISBECK_VARIABLE_K
+CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+# endif
+#endif
       IF (GM_AdvForm) THEN
        DO k=2,Nr
        km1 = k-1

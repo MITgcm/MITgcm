@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.31 2002/12/28 10:11:10 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.32 2003/01/10 23:41:15 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -35,6 +35,7 @@ C     == Global variables ==
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 # include "cost.h"
+# include "GRID.h"
 # include "DYNVARS.h"
 # include "FFIELDS.h"
 # include "EOS.h"

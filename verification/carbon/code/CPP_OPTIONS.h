@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/CPP_OPTIONS.h,v 1.10 2003/01/10 01:02:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/CPP_OPTIONS.h,v 1.11 2003/01/10 23:41:15 heimbach Exp $
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -134,7 +134,7 @@ C o Read/write of checkpoint files for restarting.
 #undef OLD_STYLE_WITH_MANY_FILES
 
 C o Exact volume conservation
-#undef EXACT_CONSERV
+#define EXACT_CONSERV
 
 C o Add passive tracer advection routines
 #define ALLOW_PASSIVE_TRACER

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.3 2002/11/14 22:43:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.4 2003/01/10 23:41:15 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -251,9 +251,9 @@ C-      Danabasoglu and McWilliams, J. Clim. 1995
          DO i=1-Olx+1,sNx+Olx-1
 
           Smod = abs(SlopeX(i,j))
-          taperX(i,j)=0.5*(1.+tanh( (GM_Scrit-Smod)/GM_Sd ))
+          taperX(i,j)=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
           Smod = abs(SlopeY(i,j))
-          taperY(i,j)=0.5*(1.+tanh( (GM_Scrit-Smod)/GM_Sd ))
+          taperY(i,j)=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
 
          ENDDO
         ENDDO
@@ -264,30 +264,30 @@ C-      Large, Danabasoglu and Doney, JPO 1997
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
 
-          Cspd=2.
-          Lrho=100.e3
+          Cspd=2. _d 0
+          Lrho=100. _d 0
           if (FCori(i,j,bi,bj).NE.0.) Lrho=Cspd/abs(Fcori(i,j,bi,bj))
           Lrho=min(Lrho , 100. _d 3)
           Lrho=max(Lrho , 15. _d 3)
 
           Smod = abs(SlopeX(i,j))
-          f1=0.5*(1.+tanh( (GM_Scrit-Smod)/GM_Sd ))
+          f1=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
           if (Smod.NE.0.) then
             Rnondim=depthZ/(Lrho*Smod)
           else
             Rnondim=0.
           endif
-          f2=0.5*(1.+sin( fpi*(Rnondim-0.5)))
+          f2=op5*( 1. _d 0 + sin( fpi*(Rnondim-op5)))
           taperX(i,j)=f1*f2
 
           Smod = abs(SlopeY(i,j))
-          f1=0.5*(1.+tanh( (GM_Scrit-Smod)/GM_Sd ))
+          f1=op5*(1.+tanh( (GM_Scrit-Smod)/GM_Sd ))
           if (Smod.NE.0.) then
             Rnondim=depthZ/(Lrho*Smod)
           else
             Rnondim=0.
           endif
-          f2=0.5*(1.+sin( fpi*(Rnondim-0.5)))
+          f2=op5*(1.+sin( fpi*(Rnondim-op5)))
           taperY(i,j)=f1*f2
 
          ENDDO
