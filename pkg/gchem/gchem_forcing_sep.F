@@ -88,6 +88,12 @@ c
 #endif
 #endif
 cccccccccccccccccccccccccc END DIC cccccccccccccccccccccccccccccccccc
+
+#ifdef PTRACERS_SEPARATE_FORCING
+C     time averaging directly, here otherwise in the_correction_step
+           CALL PTRACERS_STATVARS(myTime, myIter, bi, bj, myThid)
+#endif /* PTRACERS_SEPARATE_FORCING */
+
 c
         ENDDO
        ENDDO

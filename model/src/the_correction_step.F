@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.22 2003/06/25 21:06:35 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.23 2003/10/07 16:21:12 stephd Exp $
 C Tag $Name:  $
 
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_GCHEM
+#include "GCHEM_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: THE_CORRECTION_STEP
@@ -194,7 +197,9 @@ C--     for vertical velocity and "etaN" (exact volume conservation) :
         ENDIF
 cswdptr -- add ---
 #ifdef ALLOW_PTRACERS
+#ifndef PTRACERS_SEPARATE_FORCING
           CALL PTRACERS_STATVARS(myTime, myIter, bi, bj, myThid)
+#endif
 #endif
 cswdptr -- end add ---
 #endif /* ALLOW_TIMEAVE */
