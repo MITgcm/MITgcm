@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.9 2002/09/05 20:49:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.10 2002/09/18 16:30:34 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 C     !ROUTINE: FIND_ALPHA
 C     !INTERFACE:
       SUBROUTINE FIND_ALPHA (
-     I     bi, bj, iMin, iMax, jMin, jMax,  k, kRef, eqn,
+     I     bi, bj, iMin, iMax, jMin, jMax,  k, kRef, 
      O     alphaloc )
 
 C     !DESCRIPTION: \bv
@@ -20,7 +20,6 @@ C     |
 C     | k - is the Theta/Salt level                               
 C     | kRef - determines pressure reference level                
 C     |        (not used in 'LINEAR' mode)                        
-C     | eqn - determines the eqn. of state: 'LINEAR' or 'POLY3'   
 C     |                                                           
 C     | alphaloc - drho / dT (kg/m^3/C)                           
 C     |                                                           
@@ -42,7 +41,6 @@ c Arguments
       integer bi,bj,iMin,iMax,jMin,jMax
       integer k			! Level of Theta/Salt slice
       integer kRef		! Pressure reference level
-      character*(*) eqn
       _RL alphaloc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
 C     !LOCAL VARIABLES:
@@ -126,7 +124,7 @@ C     abbreviations
                s1  = salt(i,j,k,bi,bj)
                if ( s1 .lt. 0. _d 0 ) then
 C     issue a warning
-                  write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
+                  write(*,'(a,i3,a,i3,a,i3,a,i3,a,i3,a,e13.5)') 
      &                 ' FIND_ALPHA: WARNING, salinity(',
      &                 i,',',j,',',k,',',bi,',',bj,') = ', s1
                   s1 = 0. _d 0
@@ -205,7 +203,7 @@ C     of sea water at p
       elseif ( equationOfState.eq.'MDJWF' ) then
 
          CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
-     &        eqn, theta, salt, rhoLoc, myThid )
+     &        theta, salt, rhoLoc, myThid )
          CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k, kRef,
      &      theta, salt, rhoDen, myThid )
 
@@ -216,7 +214,7 @@ C     of sea water at p
                s1  = salt(i,j,k,bi,bj)
                if ( s1 .lt. 0. _d 0 ) then
 C     issue a warning
-                  write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
+                  write(*,'(a,i3,a,i3,a,i3,a,i3,a,i3,a,e13.5)') 
      &                 ' FIND_ALPHA: WARNING, salinity(',
      &                 i,',',j,',',k,',',bi,',',bj,') = ', s1
                   s1 = 0. _d 0
@@ -255,7 +253,7 @@ C     issue a warning
       end
 
       subroutine FIND_BETA (
-     I     bi, bj, iMin, iMax, jMin, jMax,  k, kRef, eqn,
+     I     bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
      O     betaloc )
 C     /==========================================================\
 C     | o SUBROUTINE FIND_BETA                                   |
@@ -265,7 +263,6 @@ C     |                                                          |
 C     | k - is the Theta/Salt level                              |
 C     | kRef - determines pressure reference level               |
 C     |        (not used in 'LINEAR' mode)                       |
-C     | eqn - determines the eqn. of state: 'LINEAR' or 'POLY3'  |
 C     |                                                          |
 C     | betaloc - drho / dS (kg/m^3/PSU)                         |
 C     |                                                          |
@@ -284,7 +281,6 @@ c Arguments
       integer bi,bj,iMin,iMax,jMin,jMax
       integer k			! Level of Theta/Salt slice
       integer kRef		! Pressure reference level
-      character*(*) eqn
       _RL betaloc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
 c Local
@@ -365,7 +361,7 @@ C     abbreviations
                s1  = salt(i,j,k,bi,bj)
                if ( s1 .lt. 0. _d 0 ) then
 C     issue a warning
-                  write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
+                  write(*,'(a,i3,a,i3,a,i3,a,i3,a,i3,a,e13.5)') 
      &                 ' FIND_BETA: WARNING, salinity(',
      &                 i,',',j,',',k,',',bi,',',bj,') = ', s1
                   s1 = 0. _d 0
@@ -430,7 +426,7 @@ C     of sea water at p
       elseif ( equationOfState.eq.'MDJWF' ) then
 
          CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
-     &        eqn, theta, salt, rhoLoc, myThid )
+     &        theta, salt, rhoLoc, myThid )
          CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k, kRef,
      &      theta, salt, rhoDen, myThid )
          
@@ -441,7 +437,7 @@ C     of sea water at p
                s1  = salt(i,j,k,bi,bj)
                if ( s1 .lt. 0. _d 0 ) then
 C     issue a warning
-                  write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
+                  write(*,'(a,i3,a,i3,a,i3,a,i3,a,i3,a,e13.5)') 
      &                 ' FIND_BETA: WARNING, salinity(',
      &                 i,',',j,',',k,',',bi,',',bj,') = ', s1
                   s1 = 0. _d 0
