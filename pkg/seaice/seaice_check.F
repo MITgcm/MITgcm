@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.8 2004/07/05 20:05:07 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_check.F,v 1.9 2004/11/29 21:39:45 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -35,6 +35,19 @@ C--   ALLOW_SEAICE
 C--   SEAICE needs forcing_In_AB FALSE
       IF (forcing_In_AB) THEN
          WRITE(msgBuf,'(A)') 'Need forcing_In_AB = .FALSE.'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
+      ENDIF
+
+C--   For time-being seaice_init.F assumes usingSphericalPolarGrid=.TRUE.
+C     The only exception is special provision for cube-sphere geometry.
+#ifdef ALLOW_EXCH2
+      IF ( .NOT. usingSphericalPolarGrid .AND. 
+     &     .NOT. useCubedSphereExchange ) THEN
+#else
+      IF ( .NOT. usingSphericalPolarGrid ) THEN
+#endif /* ALLOW_EXCH2 */
+         WRITE(msgBuf,'(A)') 'Need usingSphericalPolarGrid=.TRUE.'
          CALL PRINT_ERROR( msgBuf , 1)
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
       ENDIF
