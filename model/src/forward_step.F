@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.87 2004/03/24 22:19:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.88 2004/03/29 22:07:40 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -284,13 +284,17 @@ C--     Step forward fields and calculate time tendency terms.
 C AMM
 #ifdef ALLOW_FIZHI
         if( useFIZHI) then
+         CALL TIMER_START('UPDATE EXPORTS      [FORWARD_STEP]',mythid)
          CALL UPDATE_OCEAN_EXPORTS ( myTime, myIter, myThid )
          CALL UPDATE_EARTH_EXPORTS ( myTime, myIter, myThid )
          CALL UPDATE_CHEMISTRY_EXPORTS ( myTime, myIter, myThid )
+         CALL TIMER_STOP ('UPDATE EXPORTS      [FORWARD_STEP]',mythid)
          CALL TIMER_START('FIZHI_WRAPPER       [FORWARD_STEP]',mythid)
          CALL FIZHI_WRAPPER ( myTime, myIter, myThid )
          CALL TIMER_STOP ('FIZHI_WRAPPER       [FORWARD_STEP]',mythid)
+         CALL TIMER_START('STEP_FIZHI_FG       [FORWARD_STEP]',mythid)
          CALL STEP_FIZHI_FG ( myTime, myIter, myThid, deltaTtracer )
+         CALL TIMER_STOP ('STEP_FIZHI_FG       [FORWARD_STEP]',mythid)
         endif
 #endif
 C AMM
@@ -459,13 +463,20 @@ cswdptr -- end add ---
 
 C AMM
 #ifdef ALLOW_GRIDALT
-        if (useGRIDALT) CALL GRIDALT_UPDATE(myThid)
+        if (useGRIDALT) then
+         CALL TIMER_START('GRIDALT_UPDATE      [FORWARD_STEP]',mythid)
+         CALL GRIDALT_UPDATE(myThid)
+         CALL TIMER_STOP ('GRIDALT_UPDATE      [FORWARD_STEP]',mythid)
 #endif
 C AMM
 
 C AMM
 #ifdef ALLOW_FIZHI
-        CALL STEP_FIZHI_CORR ( myTime, myIter, myThid )
+        if( useFIZHI) then
+         CALL TIMER_START('STEP_FIZHI_CORR     [FORWARD_STEP]',mythid)
+         CALL STEP_FIZHI_CORR ( myTime, myIter, myThid )
+         CALL TIMER_STOP ('STEP_FIZHI_CORR     [FORWARD_STEP]',mythid)
+        endif
 #endif
 C AMM
 
