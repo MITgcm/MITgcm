@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.14 2004/09/29 02:58:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.15 2004/10/15 21:03:35 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -183,7 +183,7 @@ c      integer  mpi_comm_model,ierror
 #include "chronos.h"
 
       integer n,modalarm,nalarm,freq,date0,time0
-      modalarm(freq,date0,time0) = nalarm (freq,datein,timein,date0,time0 )
+      modalarm(freq,date0,time0)=nalarm(freq,datein,timein,date0,time0)
 
       call get_time (datein,timein)
 
