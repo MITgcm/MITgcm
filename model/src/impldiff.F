@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.18 2002/12/16 21:40:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.19 2003/12/28 17:25:25 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -53,6 +53,8 @@ C     == Local variables ==
       _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL gam(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 CEOP
+
+      IF (Nr.LE.1) RETURN
 
 C--   Initialise
       DO k=1,Nr
