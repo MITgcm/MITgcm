@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.438 2005/01/27 17:37:28 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.439 2005/01/28 01:32:09 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o move state variable diagnostics to the beginning of the time step ;
+  (note: still needs some work specially for snap-shot diagnostics)
+  duplicate & replace UVELVVEL diagnostics with UV_VEL_C & UV_VEL_Z
 
 checkpoint57c_post
 o Change testing option (-ieee) to get closer agreement between g77 & ifort
