@@ -1,4 +1,5 @@
 #include "DIC_OPTIONS.h"
+#include "GCHEM_OPTIONS.h"
 
 CStartOfInterFace
       SUBROUTINE CAR_FLUX( bioac, cflux,
