@@ -1,52 +1,49 @@
 function [AA] = rdmds(fnamearg,varargin)
-% Read MITgcmUV Meta/Data files
+% RDMDS  Read MITgcmUV meta/data files
 %
 % A = RDMDS(FNAME)
 % A = RDMDS(FNAME,ITER)
 % A = RDMDS(FNAME,[ITER1 ITER2 ...])
 %
-% A = RDMDS(FNAME) reads data described by meta/data file format.
-% FNAME is a string containing the "head" of the file names.
-%
-% eg. To load the meta-data files
-%     T.0000002880.000.000.meta, T.0000002880.000.000.data
-%     T.0000002880.001.000.meta, T.0000002880.001.000.data
-%     T.0000002880.002.000.meta, T.0000002880.002.000.data
-%     T.0000002880.003.000.meta, T.0000002880.003.000.data
-% use
-%    >> A=rdmds('T.0000002880');
-
-% A = RDMDS(FNAME,ITER) reads data described by meta/data file format.
-% FNAME is a string containing the "head" of the file name excluding the
-% 10-digit iterartion number.
-% ITER is a vector of positive integers that will expand to the 10-digit
-% number in the file name.
-%
-% eg. To repeat above operation
-%    >> A=rdmds('T',2880);
-% eg. To read multiple time steps
-%    >> A=rdmds('T',[0 1440 2880]);
-% Note: this form can not read files with no iteration count in file name.
-%
-% A = RDMDS(FNAME,MACHINEFORMAT)
-% A = RDMDS(FNAME,ITER,MACHINEFORMAT) allows the machine format to be
-% specified which MACHINEFORMAT is on of the following strings:
-%
-%   'native'      or 'n' - local machine format - the default
-%   'ieee-le'     or 'l' - IEEE floating point with little-endian
-%                          byte ordering
-%   'ieee-be'     or 'b' - IEEE floating point with big-endian
-%                          byte ordering
-%   'vaxd'        or 'd' - VAX D floating point and VAX ordering
-%   'vaxg'        or 'g' - VAX G floating point and VAX ordering
-%   'cray'        or 'c' - Cray floating point with big-endian
-%                          byte ordering
-%   'ieee-le.l64' or 'a' - IEEE floating point with little-endian
-%                          byte ordering and 64 bit long data type
-%   'ieee-be.l64' or 's' - IEEE floating point with big-endian byte
-%                          ordering and 64 bit long data type.
-%
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.3 2001/08/28 16:39:33 adcroft Exp $
+%   A = RDMDS(FNAME) reads data described by meta/data file format.
+%   FNAME is a string containing the "head" of the file names.
+%  
+%   eg. To load the meta-data files
+%       T.0000002880.000.000.meta, T.0000002880.000.000.data
+%       T.0000002880.001.000.meta, T.0000002880.001.000.data
+%       T.0000002880.002.000.meta, T.0000002880.002.000.data
+%       T.0000002880.003.000.meta, T.0000002880.003.000.data
+%   use
+%      >> A=rdmds('T.0000002880');
+%      >> size(A)
+%   ans =
+%      64    32     5
+%   eg. To load a multiple record file
+%      >> A=rdmds('pickup.0000002880');
+%      >> size(A)
+%   ans =
+%      64    32     5    61
+%  
+%  
+%   A = RDMDS(FNAME,ITER) reads data described by meta/data file format.
+%   FNAME is a string containing the "head" of the file name excluding the
+%   10-digit iterartion number.
+%   ITER is a vector of positive integers that will expand to the 10-digit
+%   number in the file name.
+%  
+%   eg. To repeat above operation
+%      >> A=rdmds('T',2880);
+%   eg. To read multiple time steps
+%      >> A=rdmds('T',[0 1440 2880]);
+%   Note: this form can not read files with no iteration count in file name.
+%  
+%   A = RDMDS(FNAME,MACHINEFORMAT)
+%   A = RDMDS(FNAME,ITER,MACHINEFORMAT) allows the machine format to be
+%   specified which MACHINEFORMAT is on of the following strings:
+%     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
+%  
+%  
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.4 2001/08/28 17:00:24 adcroft Exp $
 
 % Default options
 ieee='b';
@@ -186,6 +183,9 @@ allstr=strrep(allstr,'format','dataprec');
 eval(allstr);
 
 N=reshape( dimlist , 3 , prod(size(dimlist))/3 );
+if nrecords ~= -987 & nrecords > 1
+ N=[N,[nrecords 1 nrecords]'];
+end
 
 if nrecords == -987
 % This is the old 'meta' method that used sequential access
