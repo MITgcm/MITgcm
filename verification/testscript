@@ -1,52 +1,11 @@
 #!/bin/sh
 
-similar()
-{
-# similar digits a b
-#
-#  compare the floating point number a and b and successively reduced
-#  truncation until a match is found
- for digits in 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
- do
-   a=`printf '%22.'$digits'e\n' $1`
-   b=`printf '%22.'$digits'e\n' $2`
-   if [ $a = $b ]; then
-    if [ $verbose -gt 1 ]; then
-     echo $1 $2 $a 1>&2
-    fi
-    break
-   fi
- done
- return $digits
-}
-
 compare_lines()
 {
-# compare_lines digits < file
-#
-#  read each line of file and test the 2nd and 3rd column values for
-#  similarity based on the function similar()
- worst_so_far=$1
- while read linenum a b
- do
-  if [ $debug -gt 0 ]; then
-   echo compare_lines: similar a=$a b=$b 1>&2
-  fi
-  similar $a $b
-  digits=$?
-  if [ $digits -lt $worst_so_far ]; then
-   worst_so_far=$digits
-  fi
- done
-  if [ $debug -gt 0 ]; then
-   echo compare_lines: worst_so_far=$worst_so_far 1>&2
-  fi
- return $worst_so_far
-}
-
-compare_lines2()
-{
 # use codelet to compare lines
+ if [ $verbose -gt 1 ]; then
+  cat tmp3.txt 1>&2
+ fi
  return `./a.out < tmp3.txt`
 }
 
@@ -77,8 +36,7 @@ testoutput_for_prop()
  if [ $debug -gt 0 ]; then
   echo testoutput_for_prop: compare_lines 1>&2
  fi
- #compare_lines 99 < tmp3.txt
- compare_lines2
+ compare_lines
  digits_of_similarity=$?
  if [ $digits_of_similarity -eq 99 ]; then
   if [ $verbose -gt 0 ]; then
@@ -164,7 +122,7 @@ genmakemodel()
  ( cd $1;
    if [ $quick -eq 0 -o ! -r Makefile ]; then
     printf 'genmake ... ' 1>&2
-    ../../../tools/genmake -mods=../code > make.log 2>&1
+    ../../../tools/genmake -ieee -mods=../code > make.log 2>&1
     if [ $? -ne 0 ]; then
      tail make.log
      echo makemodel: genmake failed 1>&2
@@ -247,18 +205,16 @@ cat > tmp_cmpnum.f <<EOFA
       best=-16
   99  read(*,*,end=70,err=60) linnum,a,b
       diff=0.5*(abs(a)+abs(b))
-      if (diff.gt.0.) then
+c     print *,a,b,diff,abs(a-b)/diff
+      if (diff.gt.1.e-12) then
         diff=abs(a-b)/diff
         if (diff.gt.0.) then
 c         print *,int(log10(diff)),diff
           linnum=int(log10(diff))
           best=max(best,linnum)
-c       else
-c         print *,-16
         endif
-c     else
-c       diff=0.
-c       print *,-16
+      else
+        if (best.eq.-16.and.diff.ne.0.) best=-22
       endif
       goto 99
   60  stop 'cmpnum: An error occured reading a,b'
@@ -346,7 +302,7 @@ fi
 
 createcodelet
 
-if [ $testmore -eq 0 ]; then
+if [ $testmore -gt 0 ]; then
 cat << EOF > summary.txt
                 T           S           U           V
 C D M    c        m  s        m  s        m  s        m  s
