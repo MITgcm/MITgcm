@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_readparms.F,v 1.7 2004/07/07 19:59:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_readparms.F,v 1.8 2004/10/07 01:10:43 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -25,6 +25,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 #include "cal.h"
 #include "exf.h"
 #include "exf_param.h"
@@ -103,6 +104,28 @@ c     Initialise freezing temperature of sea water
 c     Initialise file type and field precision
       exf_clim_iprec  = 32
       exf_clim_yftype = 'RL'
+
+#ifdef USE_EXF_INTERPOLATION
+      climsst_lon0    = thetaMin + delX(1) / 2
+      climsss_lon0    = thetaMin + delX(1) / 2
+      climsst_lat0    = phimin   + delY(1) / 2
+      climsss_lat0    = phimin   + delY(1) / 2
+      climsst_nlon    = Nx
+      climsst_nlat    = Ny
+      climsss_nlon    = Nx
+      climsss_nlat    = Ny
+      climsst_lon_inc = delX(1)
+      climsss_lon_inc = delX(1)
+      DO i=1,MAX_LAT_INC
+         IF (i.LT.Ny) THEN
+            climsst_lat_inc(i)   = (delY(i) + delY(i)) / 2.
+            climsss_lat_inc(i)   = (delY(i) + delY(i)) / 2.
+         ELSE
+            climsst_lat_inc(i)   = 0.
+            climsss_lat_inc(i)   = 0.
+         ENDIF
+      ENDDO
+#endif /* USE_EXF_INTERPOLATION */
 
 c     Check for the availability of the right calendar version.
       if ( calendarversion .ne. usescalendarversion ) then

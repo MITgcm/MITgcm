@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.18 2004/07/07 19:59:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.19 2004/10/07 01:10:43 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -49,7 +49,6 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
-
 #include "cal.h"
 #include "exf.h"
 #include "exf_param.h"
@@ -344,6 +343,126 @@ c     Output scaling factors.
       exf_outscal_sst      =  1. _d 0
       exf_outscal_sss      =  1. _d 0
       exf_outscal_apressure=  1. _d 0
+
+#ifdef USE_EXF_INTERPOLATION
+      ustress_lon0   = thetaMin
+      uwind_lon0     = thetaMin 
+      vstress_lon0   = thetaMin + delX(1) / 2
+      hflux_lon0     = thetaMin + delX(1) / 2
+      sflux_lon0     = thetaMin + delX(1) / 2
+      swflux_lon0    = thetaMin + delX(1) / 2
+      runoff_lon0    = thetaMin + delX(1) / 2 
+      atemp_lon0     = thetaMin + delX(1) / 2
+      aqh_lon0       = thetaMin + delX(1) / 2 
+      evap_lon0      = thetaMin + delX(1) / 2
+      precip_lon0    = thetaMin + delX(1) / 2 
+      vwind_lon0     = thetaMin + delX(1) / 2 
+      lwflux_lon0    = thetaMin + delX(1) / 2 
+      swdown_lon0    = thetaMin + delX(1) / 2 
+      lwdown_lon0    = thetaMin + delX(1) / 2 
+      apressure_lon0 = thetaMin + delX(1) / 2
+      vstress_lat0   = phimin
+      vwind_lat0     = phimin
+      ustress_lat0   = phimin   + delY(1) / 2
+      hflux_lat0     = phimin   + delY(1) / 2
+      sflux_lat0     = phimin   + delY(1) / 2
+      runoff_lat0    = phimin   + delY(1) / 2
+      swflux_lat0    = phimin   + delY(1) / 2
+      atemp_lat0     = phimin   + delY(1) / 2
+      aqh_lat0       = phimin   + delY(1) / 2
+      evap_lat0      = phimin   + delY(1) / 2
+      precip_lat0    = phimin   + delY(1) / 2
+      uwind_lat0     = phimin   + delY(1) / 2
+      lwflux_lat0    = phimin   + delY(1) / 2
+      swdown_lat0    = phimin   + delY(1) / 2
+      lwdown_lat0    = phimin   + delY(1) / 2
+      apressure_lat0 = phimin   + delY(1) / 2
+      ustress_nlon   = Nx
+      ustress_nlat   = Ny
+      vstress_nlon   = Nx
+      vstress_nlat   = Ny
+      hflux_nlon     = Nx
+      hflux_nlat     = Ny
+      sflux_nlon     = Nx
+      sflux_nlat     = Ny
+      swflux_nlon    = Nx
+      swflux_nlat    = Ny
+      runoff_nlon    = Nx
+      runoff_nlat    = Ny
+      atemp_nlon     = Nx
+      atemp_nlat     = Ny
+      aqh_nlon       = Nx
+      aqh_nlat       = Ny
+      evap_nlon      = Nx
+      evap_nlat      = Ny
+      precip_nlon    = Nx
+      precip_nlat    = Ny
+      uwind_nlon     = Nx
+      uwind_nlat     = Ny
+      vwind_nlon     = Nx
+      vwind_nlat     = Ny
+      lwflux_nlon    = Nx
+      lwflux_nlat    = Ny
+      swdown_nlon    = Nx
+      swdown_nlat    = Ny
+      lwdown_nlon    = Nx
+      lwdown_nlat    = Ny
+      apressure_nlon = Nx
+      apressure_nlat = Ny
+      Ustress_lon_inc   = delX(1)
+      vstress_lon_inc   = delX(1)
+      hflux_lon_inc     = delX(1)
+      sflux_lon_inc     = delX(1)
+      swflux_lon_inc    = delX(1)
+      runoff_lon_inc    = delX(1)
+      atemp_lon_inc     = delX(1)
+      aqh_lon_inc       = delX(1)
+      evap_lon_inc      = delX(1)
+      precip_lon_inc    = delX(1)
+      uwind_lon_inc     = delX(1)
+      vwind_lon_inc     = delX(1)
+      lwflux_lon_inc    = delX(1)
+      swdown_lon_inc    = delX(1)
+      lwdown_lon_inc    = delX(1)
+      apressure_lon_inc = delX(1)
+      DO i=1,MAX_LAT_INC
+         IF (i.LT.Ny) THEN
+            vstress_lat_inc(i)   =  delY(i)
+            vwind_lat_inc(i)     =  delY(i)
+            ustress_lat_inc(i)   = (delY(i) + delY(i)) / 2.
+            hflux_lat_inc(i)     = (delY(i) + delY(i)) / 2.
+            sflux_lat_inc(i)     = (delY(i) + delY(i)) / 2.
+            swflux_lat_inc(i)    = (delY(i) + delY(i)) / 2.
+            runoff_lat_inc(i)    = (delY(i) + delY(i)) / 2.
+            atemp_lat_inc(i)     = (delY(i) + delY(i)) / 2.
+            aqh_lat_inc(i)       = (delY(i) + delY(i)) / 2.
+            evap_lat_inc(i)      = (delY(i) + delY(i)) / 2.
+            precip_lat_inc(i)    = (delY(i) + delY(i)) / 2.
+            uwind_lat_inc(i)     = (delY(i) + delY(i)) / 2.
+            lwflux_lat_inc(i)    = (delY(i) + delY(i)) / 2.
+            swdown_lat_inc(i)    = (delY(i) + delY(i)) / 2.
+            lwdown_lat_inc(i)    = (delY(i) + delY(i)) / 2.
+            apressure_lat_inc(i) = (delY(i) + delY(i)) / 2.
+         ELSE
+            ustress_lat_inc(i)   = 0.
+            vstress_lat_inc(i)   = 0.
+            hflux_lat_inc(i)     = 0.
+            sflux_lat_inc(i)     = 0.
+            swflux_lat_inc(i)    = 0.
+            runoff_lat_inc(i)    = 0.
+            atemp_lat_inc(i)     = 0.
+            aqh_lat_inc(i)       = 0.
+            evap_lat_inc(i)      = 0.
+            precip_lat_inc(i)    = 0.
+            uwind_lat_inc(i)     = 0.
+            vwind_lat_inc(i)     = 0.
+            lwflux_lat_inc(i)    = 0.
+            swdown_lat_inc(i)    = 0.
+            lwdown_lat_inc(i)    = 0.
+            apressure_lat_inc(i) = 0.
+         ENDIF
+      ENDDO
+#endif /* USE_EXF_INTERPOLATION */
 
 c     Check for the availability of the right calendar version.
       if ( calendarversion .ne. usescalendarversion ) then
