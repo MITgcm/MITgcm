@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.13 2004/03/27 03:51:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.14 2004/11/07 23:23:00 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -49,6 +49,7 @@ C     msgBuffer        :: Used to build messages for printing.
       CHARACTER*(MAX_LEN_MBUF) msgBuffer
       INTEGER mpiRC
       INTEGER nptmp
+      INTEGER mpiMyWid
 #endif /* ALLOW_USE_MPI */
 CEOP
 
@@ -84,7 +85,12 @@ C--    MPI has now been initialized but now we need to either
 C      ask for a communicator or pretend that we have:
 C      Pretend that we have asked for a communicator
        MPI_COMM_MODEL = MPI_COMM_WORLD
+
 #ifdef COMPONENT_MODULE
+C--    Set the running directory
+       CALL MPI_COMM_RANK( MPI_COMM_WORLD, mpiMyWId, mpiRC )
+       CALL SETDIR( mpiMyWId )
+
 C- jmc: test:
 C      add a 1rst preliminary call EESET_PARAMS to set useCoupler
 C      (needed to decide either to call CPL_INIT or not)
@@ -92,6 +98,7 @@ C      (needed to decide either to call CPL_INIT or not)
        IF ( eeBootError ) GOTO 999
 C- jmc: test end ; otherwise, uncomment next line:
 c      useCoupler = .TRUE.
+
 C--    Ask coupler interface for a communicator
        IF ( useCoupler) CALL CPL_INIT
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_ocn_coupler/Attic/initialise.F,v 1.1 2003/12/15 02:28:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_ocn_coupler/Attic/initialise.F,v 1.2 2004/11/07 23:20:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -32,6 +32,10 @@ C                        Stored internally by the coupling library.
       INTEGER MPI_COMM_Coupler
 
       CALL MPI_Init(iErr)
+
+C--   Set the running directory (= rank_0 )
+      CALL SETDIR( 0 )
+
 C     Register this process as the "coupler" participant. Currently there can
 C     only be one coupler participant all others are "component" participants.
       CALL MITCOUPLER_INIT( cplCompName, MPI_COMM_Coupler )
