@@ -1,0 +1,348 @@
+C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/external_forcing.F,v 1.1 2004/06/24 20:38:17 afe Exp $
+C $Name:  $
+
+#include "CPP_OPTIONS.h"
+
+CBOP
+C     !ROUTINE: EXTERNAL_FORCING_U
+C     !INTERFACE:
+      SUBROUTINE EXTERNAL_FORCING_U(
+     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
+     I           myCurrentTime,myThid)
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R EXTERNAL_FORCING_U                                    
+C     | o Contains problem specific forcing for zonal velocity.   
+C     *==========================================================*
+C     | Adds terms to gU for forcing by external sources          
+C     | e.g. wind stress, bottom friction etc..................   
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
+#include "FFIELDS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     iMin - Working range of tile for applying forcing.
+C     iMax
+C     jMin
+C     jMax
+C     kLev
+      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
+      _RL myCurrentTime
+      INTEGER myThid
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+C     Loop counters
+      INTEGER I, J
+CEOP
+
+C--   Forcing term
+C     Add windstress momentum impulse into the top-layer
+      IF ( kLev .EQ. 1 ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+     &   +foFacMom*surfaceTendencyU(i,j,bi,bj)
+     &   *_maskW(i,j,kLev,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+
+#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
+      IF (useOBCS) THEN
+       CALL OBCS_SPONGE_U(
+     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
+     I           myCurrentTime,myThid)
+      ENDIF
+#endif
+
+      RETURN
+      END
+CBOP
+C     !ROUTINE: EXTERNAL_FORCING_V
+C     !INTERFACE:
+      SUBROUTINE EXTERNAL_FORCING_V(
+     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
+     I           myCurrentTime,myThid)
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R EXTERNAL_FORCING_V                                    
+C     | o Contains problem specific forcing for merid velocity.   
+C     *==========================================================*
+C     | Adds terms to gV for forcing by external sources          
+C     | e.g. wind stress, bottom friction etc..................   
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
+#include "FFIELDS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     iMin - Working range of tile for applying forcing.
+C     iMax
+C     jMin
+C     jMax
+C     kLev
+      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
+      _RL myCurrentTime
+      INTEGER myThid
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+C     Loop counters
+      INTEGER I, J
+CEOP
+
+C--   Forcing term
+C     Add windstress momentum impulse into the top-layer
+      IF ( kLev .EQ. 1 ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+     &   +foFacMom*surfaceTendencyV(i,j,bi,bj)
+     &   *_maskS(i,j,kLev,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+
+#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
+      IF (useOBCS) THEN
+       CALL OBCS_SPONGE_V(
+     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
+     I           myCurrentTime,myThid)
+      ENDIF
+#endif
+
+      RETURN
+      END
+CBOP
+C     !ROUTINE: EXTERNAL_FORCING_T
+C     !INTERFACE:
+      SUBROUTINE EXTERNAL_FORCING_T(
+     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
+     I           myCurrentTime,myThid)
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R EXTERNAL_FORCING_T                                    
+C     | o Contains problem specific forcing for temperature.      
+C     *==========================================================*
+C     | Adds terms to gT for forcing by external sources          
+C     | e.g. heat flux, climatalogical relaxation..............   
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
+#include "FFIELDS.h"
+#ifdef SHORTWAVE_HEATING
+      integer two
+      _RL minusone
+      parameter (two=2,minusone=-1.)
+      _RL swfracb(two)
+#endif
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     iMin - Working range of tile for applying forcing.
+C     iMax
+C     jMin
+C     jMax
+C     kLev
+      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
+      _RL myCurrentTime
+      INTEGER myThid
+CEndOfInterface
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+C     Loop counters
+      INTEGER I, J
+C     iG, jG             :: Global index temps.
+C     hC, hW, hE, hN, hS :: Fractional vertical distance open to fluid temps.
+C     dFlux[WENS]        :: Diffusive flux normal to each cell face.
+C     faceArea           :: Temp. for holding area normal to tempurature gradient.
+      INTEGER iG, jG
+      _RL hC, hW, hE, hN, hS
+      _RL dFluxW, dFluxE, dFluxN, dFluxS
+      _RL faceArea
+CEOP
+
+C--   Forcing term
+C     Add term which represents the diffusive flux from a circular cylinder of temperature tCyl in the 
+C     interior of the simulation domain. Result is a tendency which is determined from the finite
+C     volume formulated divergence of the diffusive heat flux due to the local cylinder 
+C     temperature, fluid temperature difference.
+C     kDiffCyl :: Diffusion coefficient
+C     tCyl     :: Temperature of the cylinder
+C     iGSource :: Index space I (global) coordinate for source center.
+C     jGSource :: Index space J (global) coordinate for source center.
+C     rSource  :: Extent of the source term region. Loop will skip checking points outside
+C              :: this region. Within this region the source heating will be added
+C              :: to any points that are at a land - fluid boundary. rSource is in grid
+C              :: points, so that points checked are ophi(iGlobal,jGlobal) such that
+C              :: iGlobal=iGsource +/- rSource, jGlobal = jGsource +/- rSource.
+C              :: rSource, iGSource and jGSource only need to define a quadrilateral that
+C              :: includes the cylinder and no other land, they do not need to be exact.
+      _RL kDiffCyl
+      INTEGER rSource
+      INTEGER iGSource
+      INTEGER jGSource
+      CHARACTER*(MAX_LEN_MBUF+1000) msgBuf
+      kDiffCyl = 3. _d -7
+
+      rSource  = 3
+      iGSource = 30
+      jGSource = 8
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        dFluxW = 0.
+        dFluxE = 0.
+        dFluxN = 0.
+        dFluxS = 0.
+        jG = myYGlobalLo-1+(bj-1)*sNy+J
+        iG = myXGlobalLo-1+(bi-1)*sNx+I
+c      IF(jG .GE. jGSource-rSource .AND. jG .LE. jGSource+rSource) THEN
+      IF(jG .LE. 10) THEN
+         tCyl = 0
+      ELSE 
+         tCyl = 20
+      ENDIF
+c      IF(iG .GE. iGSource-rSource .AND. iG .LE. iGSource+rSource) THEN
+          hC = hFacC(i  ,j  ,kLev,bi,bj)
+          hW = hFacW(i  ,j  ,kLev,bi,bj)
+          hE = hFacW(i+1,j  ,kLev,bi,bj)
+          hN = hFacS(i  ,j+1,kLev,bi,bj)
+          hS = hFacS(i  ,j  ,kLev,bi,bj)
+          IF ( hC .NE. 0. .AND .hW .EQ. 0. ) THEN
+C          Cylinder to west
+           faceArea = drF(kLev)*dyG(i,j,bi,bj)
+           dFluxW = 
+     &      -faceArea*kDiffCyl*(theta(i,j,kLev,bi,bj) - tCyl)
+     &      *recip_dxC(i,j,bi,bj)
+          ENDIF
+          IF ( hC .NE. 0. .AND .hE .EQ. 0. ) THEN
+C          Cylinder to east
+           faceArea = drF(kLev)*dyG(i+1,j,bi,bj)
+           dFluxE =
+     &      -faceArea*kDiffCyl*(tCyl - theta(i,j,kLev,bi,bj))
+     &      *recip_dxC(i,j,bi,bj)
+          ENDIF
+          IF ( hC .NE. 0. .AND .hN .EQ. 0. ) THEN
+C          Cylinder to north
+           faceArea = drF(kLev)*dxG(i,j+1,bi,bj)
+           dFluxN =
+     &      -faceArea*kDiffCyl*(tCyl-theta(i,j,kLev,bi,bj))
+     &      *recip_dyC(i,j,bi,bj)
+          ENDIF
+          IF ( hC .NE. 0. .AND .hS .EQ. 0. ) THEN
+C          Cylinder to south
+           faceArea = drF(kLev)*dxG(i,j,bi,bj)
+           dFluxS =
+     &      -faceArea*kDiffCyl*(theta(i,j,kLev,bi,bj) - tCyl)
+     &      *recip_dyC(i,j,bi,bj)
+          ENDIF
+c      ENDIF
+c      ENDIF
+C       Net tendency term is minus flux divergence divided by the volume.
+        gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj)
+     &  -_recip_hFacC(i,j,kLev,bi,bj)*recip_drF(kLev)
+     &  *recip_rA(i,j,bi,bj)
+     &  *(
+     &    dFluxE-dFluxW
+     &   +dFluxN-dFluxS
+     &   )
+
+       ENDDO
+      ENDDO
+
+      RETURN
+      END
+CBOP
+C     !ROUTINE: EXTERNAL_FORCING_S
+C     !INTERFACE:
+      SUBROUTINE EXTERNAL_FORCING_S(
+     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
+     I           myCurrentTime,myThid)
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R EXTERNAL_FORCING_S                                    
+C     | o Contains problem specific forcing for merid velocity.   
+C     *==========================================================*
+C     | Adds terms to gS for forcing by external sources          
+C     | e.g. fresh-water flux, climatalogical relaxation.......   
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+C     == Global data ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "DYNVARS.h"
+#include "FFIELDS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     iMin - Working range of tile for applying forcing.
+C     iMax
+C     jMin
+C     jMax
+C     kLev
+      INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
+      _RL myCurrentTime
+      INTEGER myThid
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+C     Loop counters
+      INTEGER I, J
+CEOP
+
+C--   Forcing term
+C     Add fresh-water in top-layer
+      IF ( kLev .EQ. 1 ) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
+     &   +maskC(i,j,kLev,bi,bj)*surfaceTendencyS(i,j,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+
+#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_SPONGE))
+      IF (useOBCS) THEN
+       CALL OBCS_SPONGE_S(
+     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
+     I           myCurrentTime,myThid)
+      ENDIF
+#endif
+
+      RETURN
+      END
