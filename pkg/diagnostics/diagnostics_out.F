@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.6 2005/02/07 03:07:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.7 2005/02/08 20:39:58 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -21,6 +21,7 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
 
@@ -60,13 +61,15 @@ C     !LOCAL VARIABLES:
 #ifdef ALLOW_MNC
       INTEGER ii
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
-
+      CHARACTER*(5) ctmp
       INTEGER CW_DIMS, NLEN
       PARAMETER ( CW_DIMS = 10 )
       PARAMETER ( NLEN    = 80 )
       INTEGER dim(CW_DIMS), ib(CW_DIMS), ie(CW_DIMS)
       CHARACTER*(NLEN) dn(CW_DIMS)
+      CHARACTER*(NLEN) d_cw_name
       CHARACTER*(NLEN) dn_blnk
+      _RS ztmp(Nr+Nrphys)
 #endif /*  ALLOW_MNC  */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -96,24 +99,55 @@ C       Update the record dimension by writing the iteration number
         CALL MNC_CW_SET_UDIM(diag_mnc_bn, 0, myThid)
 
         dn(1)(1:NLEN) = dn_blnk(1:NLEN)
-        WRITE(dn(1),'(a,i6.6)') 'Zd', nlevels(listnum)
+        WRITE(dn(1),'(a,i6.6)') 'Zmd', nlevels(listnum)
         dim(1) = nlevels(listnum)
         ib(1)  = 1
         ie(1)  = nlevels(listnum)
 
         CALL MNC_CW_ADD_GNAME('diag_levels', 1, 
      &       dim, dn, ib, ie, myThid)
-        CALL MNC_CW_ADD_VNAME(dn(1), 'diag_levels', 
+        CALL MNC_CW_ADD_VNAME('diag_levels', 'diag_levels', 
      &       0,0, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
-     &    'Idicies of vertical levels within the data source arrays',
+        CALL MNC_CW_ADD_VATTR_TEXT('diag_levels','description',
+     &       'Idicies of vertical levels within the source arrays',
      &       myThid)
         
         CALL MNC_CW_RL_W('I',diag_mnc_bn,0,0,
-     &       dn(1), levs(1,listnum), myThid)
+     &       'diag_levels', levs(1,listnum), myThid)
 
-        CALL MNC_CW_DEL_VNAME(dn(1), myThid)
+        CALL MNC_CW_DEL_VNAME('diag_levels', myThid)
         CALL MNC_CW_DEL_GNAME('diag_levels', myThid)
+
+C       Now define:  Zmdxxxxxx, Zudxxxxxx, Zldxxxxxx
+        ctmp(1:5) = 'mul  '
+        DO i = 1,3
+          dn(1)(1:NLEN) = dn_blnk(1:NLEN)
+          WRITE(dn(1),'(3a,i6.6)') 'Z',ctmp(i:i),'d',nlevels(listnum)
+          CALL MNC_CW_ADD_GNAME(dn(1), 1, dim, dn, ib, ie, myThid)
+          CALL MNC_CW_ADD_VNAME(dn(1), dn(1), 0,0, myThid)
+          DO j = 1,nlevels(listnum)
+            IF (i .EQ. 1) THEN
+              ztmp(j) = rC(levs(j,listnum))
+              CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
+     &             'Dimensional coordinate value at the mid point',
+     &             myThid)
+            ELSEIF (i .EQ. 2) THEN
+              ztmp(j) = rF(levs(j,listnum))
+              CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
+     &             'Dimensional coordinate value at the upper point',
+     &             myThid)
+            ELSEIF (i .EQ. 3) THEN
+              ztmp(j) = rF(levs(j,listnum) + 1)
+              CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
+     &             'Dimensional coordinate value at the lower point',
+     &             myThid)
+            ENDIF
+          ENDDO
+          CALL MNC_CW_RS_W('D',diag_mnc_bn,0,0, dn(1), ztmp, myThid)
+          CALL MNC_CW_DEL_VNAME(dn(1), myThid)
+          CALL MNC_CW_DEL_GNAME(dn(1), myThid)
+        ENDDO
+
       ENDIF
 #endif /*  ALLOW_MNC  */
 
@@ -216,30 +250,40 @@ C         Prepare for mdsio optionality
             _BEGIN_MASTER( myThid )
 
             DO ii = 1,CW_DIMS
+              d_cw_name(1:NLEN) = dn_blnk(1:NLEN)
               dn(ii)(1:NLEN) = dn_blnk(1:NLEN)
             ENDDO
+
+C           Note that the "d_cw_name" variable is a hack that hides a
+C           subtlety within MNC.  Basically, each MNC-wrapped file is
+C           caching its own concept of what each "grid name" (that is, a
+C           dimension group name) means.  So one cannot re-use the same
+C           "grid" name for different collections of dimensions within a
+C           given file.  By appending the "m" values to each name, we
+C           guarantee uniqueness within each MNC-produced file.
+            WRITE(d_cw_name,'(a,i6.6)') 'd_cw_',m
 
 C           XY dimensions
             dim(1)       = sNx + 2*OLx
             dim(2)       = sNy + 2*OLy
             ib(1)        = OLx + 1
             ib(2)        = OLy + 1
-            IF (gdiag(n)(2:2) .EQ. 'M') THEN 
+            IF (gdiag(m)(2:2) .EQ. 'M') THEN 
               dn(1)(1:2) = 'X'
               ie(1)      = OLx + sNx
               dn(2)(1:2) = 'Y'
               ie(2)      = OLy + sNy
-            ELSEIF (gdiag(n)(2:2) .EQ. 'U') THEN
+            ELSEIF (gdiag(m)(2:2) .EQ. 'U') THEN
               dn(1)(1:3) = 'Xp1'
               ie(1)      = OLx + sNx + 1
               dn(2)(1:2) = 'Y'
               ie(2)      = OLy + sNy
-            ELSEIF (gdiag(n)(2:2) .EQ. 'V') THEN
+            ELSEIF (gdiag(m)(2:2) .EQ. 'V') THEN
               dn(1)(1:2) = 'X'
               ie(1)      = OLx + sNx
               dn(2)(1:3) = 'Yp1'
               ie(2)      = OLy + sNy + 1
-            ELSEIF (gdiag(n)(2:2) .EQ. 'Z') THEN
+            ELSEIF (gdiag(m)(2:2) .EQ. 'Z') THEN
               dn(1)(1:3) = 'Xp1'
               ie(1)      = OLx + sNx + 1
               dn(2)(1:3) = 'Yp1'
@@ -248,6 +292,18 @@ C           XY dimensions
             
 C           Z is special since it varies
             WRITE(dn(3),'(a,i6.6)') 'Zd', nlevels(listnum)
+            IF ( (gdiag(m)(10:10) .EQ. 'R')
+     &           .AND. (gdiag(m)(9:9) .EQ. 'M') ) THEN
+              WRITE(dn(3),'(a,i6.6)') 'Zmd', nlevels(listnum)
+            ENDIF
+            IF ( (gdiag(m)(10:10) .EQ. 'R')
+     &           .AND. (gdiag(m)(9:9) .EQ. 'L') ) THEN
+              WRITE(dn(3),'(a,i6.6)') 'Zld', nlevels(listnum)
+            ENDIF
+            IF ( (gdiag(m)(10:10) .EQ. 'R')
+     &           .AND. (gdiag(m)(9:9) .EQ. 'U') ) THEN
+              WRITE(dn(3),'(a,i6.6)') 'Zud', nlevels(listnum)
+            ENDIF
             dim(3) = Nr+Nrphys
             ib(3)  = 1
             ie(3)  = nlevels(listnum)
@@ -258,9 +314,9 @@ C           Time dimension
             ib(4)  = 1
             ie(4)  = 1
 
-            CALL MNC_CW_ADD_GNAME('diag_cw_temp', 4, 
+            CALL MNC_CW_ADD_GNAME(d_cw_name, 4, 
      &             dim, dn, ib, ie, myThid)
-            CALL MNC_CW_ADD_VNAME(cdiag(m), 'diag_cw_temp', 
+            CALL MNC_CW_ADD_VNAME(cdiag(m), d_cw_name, 
      &             4,5, myThid)
             CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),'description',
      &             tdiag(m),myThid)
@@ -271,7 +327,7 @@ C           Time dimension
      &             cdiag(m), qtmp1, myThid)
 
             CALL MNC_CW_DEL_VNAME(cdiag(m), myThid)
-            CALL MNC_CW_DEL_GNAME('diag_cw_temp', myThid)
+            CALL MNC_CW_DEL_GNAME(d_cw_name, myThid)
 
             _END_MASTER( myThid )
 
