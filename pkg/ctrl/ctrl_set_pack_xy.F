@@ -216,7 +216,7 @@ c           --> check cbuffindex.
             write(fnameGlobal,'(a,i4.4)') 
      &           'admtlm_vector.it', optimcycle
             call mdswritevector( fnameGlobal, 64, .false., 'RL',
-     &           cbuffindex, cbuffGlobal, 1, 1, nbuffGlobal, 0, mythid )
+     &           admtlmrec, cbuffGlobal, 1, 1, nbuffGlobal, 0, mythid )
 #endif
          enddo
 c

@@ -1,3 +1,8 @@
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_dsvd.F,v 1.3 2004/11/17 03:06:12 heimbach Exp $
+C $Name:  $
+
+#include "CPP_OPTIONS.h"
+
       subroutine admtlm_dsvd ( mythid )
 c
 c     This example program is intended to illustrate the 
@@ -132,11 +137,28 @@ c     | MAXNEV: Maximum NEV allowed                          |
 c     | MAXNCV: Maximum NCV allowed                          |
 c     %------------------------------------------------------%
 c
-      integer mythid
+C     !USES:
+C     == Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#ifdef ALLOW_ADMTLM
+# include "tamc.h"
+# include "ctrl.h"
+# include "optim.h"
+#endif
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+      INTEGER mythid
+
+C     == PARAMETERS ==
       integer          maxm, maxn, maxnev, maxncv, ldv, ldu
 cph(
-      parameter       (maxm = 60, maxn=60, maxnev=15, maxncv=30, 
-     &                 ldu = maxm, ldv=maxn )
+      parameter       (maxm = 2*admtlmrec, maxn=2*admtlmrec, 
+     &                maxnev=15, maxncv=30, 
+     &                ldu = maxm, ldv=maxn )
+      character*(80)   fnameGlobal
 cph)
 c
 c     %--------------%
@@ -178,7 +200,7 @@ c
       external         dnrm2, daxpy, dcopy, dscal
 
 cph(
-      integer l, iphcount, ilinsysinfo, ii, jj
+      integer l, ilinsysinfo, ii, jj
       integer ipiv(maxn)
       integer phiwork(maxn)
 
@@ -186,13 +208,11 @@ cph(
       double precision phtmpin(maxn), phtmpout(maxn)
       double precision phxout(maxn)
       double precision tmpvec1(maxn), tmpvec2(maxn)
-      double precision metricLoc(maxn,maxn)
-      double precision metricTriag(maxn,maxn)
-      double precision metricInv(maxn,maxn)
       double precision phrwork(3*maxn)
+cph      double precision metricLoc(maxn,maxn)
+cph      double precision metricTriag(maxn,maxn)
+cph      double precision metricInv(maxn,maxn)
 
-      logical ldoadjoint
-c
 cph      DATA (metricInv(ii,1),ii=1,maxn)
 cph     &     / 9.9896D+07, 0.0519D+07, -0.0415D+07, 
 cph     &     0.0486D+07, -0.2432D+07, 0.1945D+07 /
@@ -243,8 +263,8 @@ c     | The following sets dimensions for this problem. |
 c     %-------------------------------------------------%
 c
 cph(
-      m = 60
-      n = 60
+      m = 2*admtlmrec
+      n = 2*admtlmrec
 cph)
 c
 c     %------------------------------------------------%
@@ -347,7 +367,7 @@ c     %---------------------------------------------------%
 c
       ishfts = 1
 cph(
-      maxitr = 7
+      maxitr = 10
 c      maxitr = 5
 c
       mode = 1
@@ -364,8 +384,6 @@ c     %------------------------------------------------%
 c
 C--   Set model configuration (fixed arrays)
       CALL INITIALISE_FIXED( myThid )
-
-      iphcount = 0
 c
  10   continue
 c
@@ -389,9 +407,8 @@ cph)
      &                 lworkl, info )
 c
 cph(
-         iphcount = iphcount + 1
-         print *, 'ph-count: iphcount, ido, info, ipntr(1) ', 
-     &        iphcount, ido, info, ipntr(1)
+         print *, 'ph-count: optimcycle, ido, info, ipntr(1) ', 
+     &        optimcycle, ido, info, ipntr(1)
 cph)
 
          if (ido .eq. -1 .or. ido .eq. 1) then
@@ -407,52 +424,58 @@ c           | the input, and returns the result in  |
 c           | workd(ipntr(2)).                      |
 c           %---------------------------------------%
 c
-cph            call av (m, n, workd(ipntr(1)), ax) 
-cph            call atv (m, n, ax, workd(ipntr(2)))
+c           call  av (m, n, workd(ipntr(1)), ax) 
+c           call atv (m, n, ax, workd(ipntr(2)))
 c
 cph(
-            do l = 1, n
-               print *, 'ph-test A ', l, 
-     &              workd(ipntr(1)+l), workd(ipntr(2)+l), workd(l)
-            enddo
+c            do l = 1, n
+c               print *, 'ph-test A ', l, 
+c     &              workd(ipntr(1)+l), workd(ipntr(2)+l), workd(l)
+c            enddo
 cph)
             do l = 1, n
                phtmpin(l) = workd(ipntr(1)+l)
             enddo
-            ldoadjoint = .TRUE.
+
+            if (optimcycle .GT. 0 ) then
+               write(fnameGlobal(1:80),'(a)') ' '
+               write(fnameGlobal,'(a,i4.4)') 
+     &              'admtlm_vector.it', optimcycle
+               call mdswritevector( fnameGlobal, 64, .false., 'RL',
+     &              2*admtlmrec, phtmpin, 1, 1, 1, 0, mythid )
+            endif
+
 c--          MWMWMWMWMWMWMW
             CALL ADMTLM_DRIVER( mythid )
-cph            call the_model_main( mythid )
 cph            call box_main( phtmpin, phtmpout, metricLoc, ldoadjoint )
 c--          MWMWMWMWMWMWMW
 
-            STOP 'in ADMTLM_DSVD after the_model_main'
+            write(fnameGlobal(1:80),'(a)') ' '
+            write(fnameGlobal,'(a,i4.4)') 
+     &           'admtlm_vector.it', optimcycle
+            call mdsreadvector( fnameGlobal, 64, 'RL',
+     &           2*admtlmrec, phtmpout, 1, 1, 1, mythid )
+
             do l = 1, n
                workd(ipntr(2)+l) = phtmpout(l)
             enddo
+c
+
+            if (optimcycle .EQ. 8)
+     &           STOP 'in ADMTLM_DSVD after the_model_main'
+
 cph(
-c
-            do l = 1, n
-               print *, 'ph-test B ', l, 
-     &              workd(ipntr(1)+l), workd(ipntr(2)+l), workd(l)
-            enddo
-c
-            do ii = 1, n
-               phxout(ii) = 0.
-               do jj = 1, n
-                  phxout(ii) = phxout(ii) +
-     &                 metricInv(ii,jj)*phtmpout(jj)
-               enddo
-               print *, 'ph-test C ', ii, phxout(ii)
-            enddo
-c
-cph(
-cph            STOP 'TEST AFTER first box_main'
-cph)
-c
-cph)
 cph   Since we solve for a generalized EV problem, we have to solve
 cph   M*y=A*x for y with known matrix M and vector A*x
+c            do ii = 1, n
+c               phxout(ii) = 0.
+c               do jj = 1, n
+c                  phxout(ii) = phxout(ii) +
+c     &                 metricInv(ii,jj)*phtmpout(jj)
+c               enddo
+c               print *, 'ph-test C ', ii, phxout(ii)
+c            enddo
+c
 c            call dposvx (
 c     &           'E', 'U', maxn, 1, metricLoc, 6, metricTriag, 6,
 c     &           'N', tmpvec1, phtmpout, 6, phxout, 6, tmpvec2,
@@ -467,14 +490,13 @@ cph            call dcopy ( maxn, tmpvec1, 1, workd(ipntr(2)), 1 )
 cph    We have restored orig. standard EV problem
 cph    OP*x = lambda*x for OP = INV(M)*A
 cph)
-            do l = 1, n
-               workd(ipntr(2)+l) =  phxout(l)
-            enddo
 c
 c           %-----------------------------------------%
 c           | L O O P   B A C K to call DSAUPD again. |
 c           %-----------------------------------------%
 c
+            optimcycle = optimcycle + 1
+
             go to 10
 c
          end if 
@@ -569,10 +591,10 @@ c
                do l = 1, n
                   tmpvec1(l) = v(l,j)
                enddo
-               ldoadjoint = .FALSE.
+
 c
 c--              MWMWMWMWMWMWMW
-               call box_main( tmpvec1, tmpvec2, metricLoc, ldoadjoint )
+cph               call box_main( tmpvec1, tmpvec2, metricLoc, ldoadjoint )
 c--              MWMWMWMWMWMWMW
 c
                call dcopy( m, tmpvec2, 1, u(l,j), 1 )

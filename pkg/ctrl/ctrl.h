@@ -32,9 +32,11 @@ cph Need to put this in namelist at some point!
       parameter ( ctrlprec = 64 )
 
 #ifdef ALLOW_ADMTLM
+      integer admtlmrec
+      parameter( admtlmrec = 2315 )
       common / controlvars_admtlm_r /
      &                       cbuffGlobal
-      _RL cbuffGlobal( 2315 )
+      _RL cbuffGlobal( admtlmrec )
 #endif
     
       common /controlvars_l /

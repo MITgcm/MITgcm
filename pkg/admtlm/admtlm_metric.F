@@ -17,6 +17,7 @@ C     == Global variables ===
 #ifdef ALLOW_ADMTLM
 # include "cost.h"
 # include "g_cost.h"
+# include "optim.h"
 #endif
 
 C     ======== Routine arguments ======================
@@ -66,9 +67,8 @@ cph(
        END DO
       END DO
 
-      print *, 'ph-admtlm myMetric = ', myMetric
+      print *, 'ph-admtlm myMetric = ', optimcycle, myMetric
 
-c      STOP 'ph in admtlm_metric'
 cph)
 
 #endif

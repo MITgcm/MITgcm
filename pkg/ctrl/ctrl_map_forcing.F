@@ -197,10 +197,10 @@ c--   sst0.
 #ifdef ALLOW_HFLUX0_CONTROL
        _EXCH_XY_R4(Qnet,  myThid )
 #endif
-#ifdef ALLOW_SST0_CONTROL
+#ifdef ALLOW_SST_CONTROL
        _EXCH_XY_R4(SST,   myThid )
 #endif
-#ifdef ALLOW_SSS0_CONTROL
+#ifdef ALLOW_SSS_CONTROL
        _EXCH_XY_R4(SSS,   myThid )
 #endif
 

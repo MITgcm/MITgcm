@@ -182,7 +182,7 @@ c
       do irec = nrec_nl*Nr+1,ncvarrecs(ivartype)
          print  *, 'ph-pack nrec_nl+irec ', irec, nrec_nl, ivartype, 
      &             ncvarrecs(ivartype) 
-
+#ifndef ALLOW_ADMTLM
          read(cunit) filencvarindex(ivartype)
          if (filencvarindex(ivartype) .NE. ncvarindex(ivartype))
      &        then
@@ -192,8 +192,10 @@ c
          endif
          read(cunit) filej
          read(cunit) filei
+#endif /* ndef ALLOW_ADMTLM */
          do k = 1,1
             cbuffindex = nwetglobal(k)
+#ifndef ALLOW_ADMTLM
             if ( cbuffindex .gt. 0 ) then
                read(cunit) filencbuffindex
                if (filencbuffindex .NE. cbuffindex) then
@@ -209,12 +211,15 @@ c
                endif
                read(cunit) (cbuff(ii), ii=1,cbuffindex)
             endif
-#ifdef ALLOW_ADMTLM
+#else ALLOW_ADMTLM
             write(fnameGlobal(1:80),'(a)') ' '
             write(fnameGlobal,'(a,i4.4)') 
      &           'admtlm_vector.it', optimcycle
             call mdsreadvector( fnameGlobal, 64, 'RL',
-     &           cbuffindex, cbuffGlobal, 1, 1, nbuffGlobal, mythid )
+     &           admtlmrec, cbuffGlobal, 1, 1, nbuffGlobal, mythid )
+            do ii = 1, cbuffindex
+               cbuff(ii) = cbuffGlobal(ii)
+            enddo
 #endif
             cbuffindex = 0
             do jp = 1,nPy

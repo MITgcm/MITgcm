@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.14 2004/11/16 05:42:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.15 2004/11/17 03:06:12 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -159,6 +159,9 @@ c     >>> Write gradient vector <<<
        endif
 
           call mdsfindunit( cunit, mythid )
+
+#ifndef ALLOW_ADMTLM
+
           open( cunit, file   = cfile,
      &         status = 'old',
      &         form   = 'unformatted',
@@ -278,6 +281,8 @@ cgg(   Lets also check the OBCS mask info in the header.
        end do
 #endif
 cgg)  End OBCS mask check.
+
+#endif /* ndef ALLOW_ADMTLM */
 
 c----------------------------------------------------------------------
 
