@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.66 2004/12/04 00:12:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.67 2004/12/05 21:28:36 jmc Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -24,12 +25,12 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 #include "EOS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid ::  Number of this instance of CONFIG_SUMMARY
