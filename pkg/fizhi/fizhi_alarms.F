@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.2 2004/06/04 19:03:10 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.3 2004/06/04 20:42:34 molod Exp $
 C $Name:  $
 
       subroutine fizhi_alarms (nymdb,nhmsb,ndt)
@@ -38,7 +38,7 @@ c -------------------
 #ifdef ALLOW_USE_MPI
       call mpi_comm_rank ( mpi_comm_world,myid,ierror )
 #else
-      myid = 0
+      myid = 1
 #endif
       if( ndt.ne.0 ) then
 
@@ -57,7 +57,7 @@ c ----------
       m  = -m
       n  =  n+1
       if( nd.lt.ndt ) then
-          if( myid.eq.0 ) then
+          if( myid.eq.1 ) then
           print *
           print *, 'Turbulence cannot occur with Model Timestep = ',ndt
           print *
@@ -80,7 +80,7 @@ c ---------------
       m  = -m
       n  =  n+1
       if( nd.lt.ndt ) then
-          if( myid.eq.0 ) then
+          if( myid.eq.1 ) then
           print *
           print *, 'Convection cannot occur with Model Timestep = ',ndt
           print *

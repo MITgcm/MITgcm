@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.2 2004/06/04 19:03:10 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.3 2004/06/04 20:42:34 molod Exp $
 C $Name:  $
 
       subroutine set_alarm (tag,date,time,freq)
@@ -42,7 +42,7 @@ c -------------
 #ifdef ALLOW_USE_MPI
       call mpi_comm_rank ( mpi_comm_model,myid,ierror )
 #else
-      myid = 0
+      myid = 1
 #endif
 
       if(first) then
@@ -51,13 +51,13 @@ c -------------
          freqs(1) = freq
          dates(1) = date
          times(1) = time
-         if( myid.eq.0 ) write(6,100) date,time,freq,tags(1)
+         if( myid.eq.1 ) write(6,100) date,time,freq,tags(1)
       else
 
       set = .false.
       do n=1,ntags
          if(tag.eq.tags(n)) then
-            if( myid.eq.0 ) then
+            if( myid.eq.1 ) then
             print *, 'Warning!  Alarm has already been set for Tag: ',tag
             print *, 'Changing  Alarm Information:'
             print *, 'Frequency: ',freqs(n),' (Old) ',freq,' (New)'
@@ -73,7 +73,7 @@ c -------------
       if(.not.set) then
             ntags = ntags+1
          if(ntags.gt.maxtag ) then
-            if( myid.eq.0 ) then
+            if( myid.eq.1 ) then
             print *, 'Too many Alarms are Set!!'
             print *, 'Maximum Number of Alarms = ',maxtag
             endif
@@ -84,7 +84,7 @@ c -------------
          freqs(ntags) = freq
          dates(ntags) = date
          times(ntags) = time
-         if( myid.eq.0 ) write(6,100) date,time,freq,tags(ntags)
+         if( myid.eq.1 ) write(6,100) date,time,freq,tags(ntags)
       endif
       endif
 
@@ -138,7 +138,7 @@ c -------------
 #ifdef ALLOW_USE_MPI
       call mpi_comm_rank ( mpi_comm_model,myid,ierror )
 #else
-      myid = 0
+      myid = 1
 #endif
 
       set = .false.
@@ -160,7 +160,7 @@ c -------------
       enddo
 
       if(.not.set) then
-      if( myid.eq.0 ) print *, 'Alarm has not been set for Tag: ',tag
+      if( myid.eq.1 ) print *, 'Alarm has not been set for Tag: ',tag
       freq  = 0
       date  = 0
       time  = 0
@@ -220,9 +220,9 @@ c -------------
 #ifdef ALLOW_USE_MPI
       call mpi_comm_rank ( mpi_comm_model,myid,ierror )
 #else
-      myid = 0
+      myid = 1
 #endif
-      if(  myid.eq.0 ) then
+      if(  myid.eq.1 ) then
       print *, 'Setting Clock'
       print *, 'Date: ',date
       print *, 'Time: ',time
