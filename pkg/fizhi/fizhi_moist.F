@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.27 2005/03/01 16:53:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.28 2005/03/01 17:23:49 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1464,6 +1464,7 @@ c --------------------------------------------------------------------
       subroutine random_seedx (iseed)
       implicit none
       integer  iseed
+      real *8 port_rand
 #ifdef CRAY
       call ranset (iseed)
 #else
