@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.14 2002/11/12 20:42:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.15 2003/06/27 01:57:28 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -142,8 +142,10 @@ CEOP
      &                      + act2*max0*max1
      &                      + act3*max0*max1*max2
      &                      + act4*max0*max1*max2*max3
-          if (tracerIdentity.GT.maxpass)
-     &         STOP 'maxpass seems smaller than tracerIdentity'
+          if (tracerIdentity.GT.maxpass) then
+             print *, 'ph-pass gad_advection ', maxpass, tracerIdentity
+             STOP 'maxpass seems smaller than tracerIdentity'
+          endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set up work arrays with valid (i.e. not NaN) values

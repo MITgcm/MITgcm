@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_xtransport.F,v 1.12 2003/01/21 19:34:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_xtransport.F,v 1.13 2003/06/27 01:55:08 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -71,8 +71,10 @@ C     I, J - Loop counters
      &                      + act3*max0*max1*max2
      &                      + act4*max0*max1*max2*max3
           kkey = (igadkey-1)*Nr + k
-          if (tracerIdentity.GT.maxpass)
-     &         STOP 'maxpass seems smaller than tracerIdentity'
+          if (tracerIdentity.GT.maxpass) then
+             print *, 'ph-pass gmredi_xtrans ', maxpass, tracerIdentity
+             STOP 'maxpass seems smaller than tracerIdentity'
+          endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (useGMRedi) THEN
