@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.100 2004/09/30 16:46:45 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.101 2004/09/30 21:37:40 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -124,10 +124,10 @@ EOF
 EOF
     test -f Makefile  &&  mv -f Makefile Makefile.bak
     cat <<EOF >> Makefile
-%.$tfs : %.F
 .SUFFIXES:
-genmake_hello.$tfs: genmake_hello.F
-	$LN genmake_hello.F genmake_hello.$tfs
+.SUFFIXES: .$tfs .F
+.F.$tfs:
+	$LN \$< \$@
 EOF
     $MAKE "genmake_hello."$tfs > /dev/null 2>&1
     RETVAL=$?
@@ -1987,7 +1987,8 @@ cat >>$MAKEFILE <<EOF
 
 # The normal chain of rules is (  .F - .$FS - .o  )
 
-%.o : %.F
+## This nullifies any default implicit rules concerning these two file types:
+## %.o : %.F
 
 .F.$FS:
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
