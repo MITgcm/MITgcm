@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.375 2004/10/27 23:33:33 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.376 2004/10/28 01:22:02 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint55g_post
+o change arrays for total vertical diffusivity (2.D if explicit,
+  3.D if implicit) ; each ptracer uses its own background value.
 o added mnc/NetCDF output capability to ocn_compon_interf
   - added bits to verification/cpl_aim+ocn so that it can run on 
     ITRDA and other clusters without the mpirun "-wd" option
