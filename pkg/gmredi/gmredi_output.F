@@ -1,15 +1,24 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_diags.F,v 1.7 2002/11/14 22:43:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_output.F,v 1.1 2005/01/04 00:14:34 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
-CStartOfInterface
-      SUBROUTINE GMREDI_DIAGS( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE GMREDI_DIAGS                                  |
-C     | o Do GM/Redi diagnostic output                           |
-C     |==========================================================|
-C     \==========================================================/
+CBOP
+C     !ROUTINE: GMREDI_OUTPUT
+
+C     !INTERFACE:
+      SUBROUTINE GMREDI_OUTPUT( myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE GMREDI_OUTPUT
+C     | o general routine for GM/Redi output
+C     *==========================================================*
+C     |   write time-average & snap-shot output
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -17,19 +26,20 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GMREDI.h"
-#include "GMREDI_DIAGS.h"
+#include "GMREDI_TAVE.h"
 
+C     !INPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime - Current time of simulation ( s )
-C     myIter - Iteration number
-C     myThid -  Number of this instance of INI_FORCING
+C     myTime :: Current time of simulation ( s )
+C     myIter :: Iteration number
+C     myThid :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef ALLOW_GMREDI
-
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
