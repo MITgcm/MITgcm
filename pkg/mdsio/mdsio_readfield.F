@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.6 2003/12/10 00:41:01 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.7 2004/01/23 21:26:55 afe Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -45,6 +45,10 @@ C Global variables / common blocks
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "EESUPPORT.h"
+#ifdef USE_W2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* USE_W2 */
 
 C Routine arguments
       character*(*) fName
@@ -70,6 +74,9 @@ C Local variables
       Real*4 global_r4(Nx,Ny)
       Real*8 global   (Nx,Ny)
       _RL local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef USE_W2
+      integer domainHeight,domainLength,tby,tgx,tny,tnx,tn
+#endif /* USE_W2 */
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -141,6 +148,98 @@ C If we are reading from a global file then we open it here
      &      access='direct', recl=length_of_rec )
        fileIsOpen=.TRUE.
       endif
+
+#ifdef USE_W2
+
+
+       domainLength = exch2_domain_nxt
+       domainHeight = exch2_domain_nyt
+
+          write(*,fmt='(1X,A,I3,A,I3)') 'L=', domainlength,
+     &            'H=', domainheight
+C Loop over all tiles
+      do bj=1,nSy
+       do bi=1,nSx
+C If we are reading from a tiled MDS file then we open each one here
+        if (.NOT. globalFile) then
+             write(msgbuf,'(a)')
+     &         ' MDSREADFIELD: non-global input files not 
+     &           implemented with exch2'
+             call print_error( msgbuf, mythid )
+             stop 'ABNORMAL END: S/R MDSREADFIELD'
+        endif
+        tn = W2_myTileList(bi)
+        tby = exch2_tbasey(tn)
+        tgx = exch2_txglobalo(tn)
+        tny = exch2_tny(tn)
+        tnx = exch2_tnx(tn)
+        if (fileIsOpen) then
+         do k=1,nNz
+          do j=1,tNy
+          write(*,fmt='(1X,A,I3,A,I3,A,I3,A,I3,A,I3,A,I3)') 'tby=', tby,
+     &        ', tgx=', tgx,
+     &            ', tnx=',tnx, ', tny=', tny, ', j=',j,', tn=',tn
+            
+            irec = domainLength*tby + (tgx-1)/tnx + 1 +
+     &             domainLength*(j-1) + 
+     &             domainLength*domainHeight*tny*(k-1) +
+     &             domainLength*domainHeight*tny*nNz*(irecord-1) 
+c             write(*,fmt='(1X,A,I6,A,I3)') 'record = ',irec,',thingy=',
+c     &          (tgx-1)/tnx
+             write(*,fmt='(1X,A,I6)') 'record = ',irec
+ 
+           if (filePrec .eq. precFloat32) then
+            read(dUnit,rec=irec) r4seg
+#ifdef _BYTESWAPIO
+            call MDS_BYTESWAPR4( sNx, r4seg )
+#endif
+            if (arrType .eq. 'RS') then
+             call MDS_SEG4toRS( j,bi,bj,k,nNz, r4seg, .TRUE., arr )
+            elseif (arrType .eq. 'RL') then
+             call MDS_SEG4toRL( j,bi,bj,k,nNz, r4seg, .TRUE., arr )
+            else
+             write(msgbuf,'(a)')
+     &         ' MDSREADFIELD: illegal value for arrType'
+             call print_error( msgbuf, mythid )
+             stop 'ABNORMAL END: S/R MDSREADFIELD'
+            endif
+           elseif (filePrec .eq. precFloat64) then
+            read(dUnit,rec=irec) r8seg
+#ifdef _BYTESWAPIO
+            call MDS_BYTESWAPR8( sNx, r8seg )
+#endif
+            if (arrType .eq. 'RS') then
+             call MDS_SEG8toRS( j,bi,bj,k,nNz, r8seg, .TRUE., arr )
+            elseif (arrType .eq. 'RL') then
+             call MDS_SEG8toRL( j,bi,bj,k,nNz, r8seg, .TRUE., arr )
+            else
+             write(msgbuf,'(a)')
+     &         ' MDSREADFIELD: illegal value for arrType'
+             call print_error( msgbuf, mythid )
+             stop 'ABNORMAL END: S/R MDSREADFIELD'
+            endif
+           else
+            write(msgbuf,'(a)')
+     &        ' MDSREADFIELD: illegal value for filePrec'
+            call print_error( msgbuf, mythid )
+            stop 'ABNORMAL END: S/R MDSREADFIELD'
+           endif
+C End of j loop
+          enddo
+C End of k loop
+         enddo
+         if (.NOT. globalFile) then
+          close( dUnit )
+          fileIsOpen = .FALSE.
+         endif
+        endif
+C End of bi,bj loops
+       enddo
+      enddo
+
+#else /* .not. USE_W2 */
+
+
 
 C Loop over all tiles
       do bj=1,nSy
@@ -240,6 +339,8 @@ C End of bi,bj loops
        enddo
       enddo
 
+#endif /* USE_W2 */
+
 C If global file was opened then close it
       if (fileIsOpen .AND. globalFile) then
        close( dUnit )
@@ -252,6 +353,14 @@ c     endif ( .not. ( globalFile .and. useSingleCPUIO ) )
       _END_MASTER( myThid )
 
       if ( globalFile .and. useSingleCPUIO ) then
+
+#ifdef USE_W2
+        write(msgbuf,'(a)')
+     &         ' MDSREADFIELD: useSingleCPUIO not 
+     &           implemented with exch2'
+        call print_error( msgbuf, mythid )
+        stop 'ABNORMAL END: S/R MDSREADFIELD'
+#endif /* USE_W2 */
 
 C master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
@@ -321,7 +430,6 @@ c      ENDDO k=1,nNz
       endif
 c     endif ( globalFile .and. useSingleCPUIO )
 
-C     ------------------------------------------------------------------
       return
       end
 

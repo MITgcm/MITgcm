@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield.F,v 1.5 2003/10/05 16:22:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield.F,v 1.6 2004/01/23 21:26:55 afe Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -53,6 +53,8 @@ C          open(dUnit, ..., status='old', ... -> status='unknown'
 C
 C Changed: 01/06/02 menemenlis@jpl.nasa.gov
 C          added useSingleCpuIO hack
+C changed:  1/23/04 afe@ocean.mit.edu
+c          added exch2 handling -- yes, the globalfile logic is nuts
 
       implicit none
 C Global variables / common blocks
@@ -60,6 +62,10 @@ C Global variables / common blocks
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "PARAMS.h"
+#ifdef USE_W2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* USE_W2 */
 
 C Routine arguments
       character*(*) fName
@@ -86,6 +92,9 @@ C Local variables
       integer length_of_rec
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
+#ifdef USE_W2
+      integer domainHeight,domainLength,tby,tgx,tny,tnx,tn
+#endif /* USE_W2 */
 #ifdef ALLOW_USE_MPI
       integer i
       Real*8  global(Nx,Ny)
@@ -230,6 +239,79 @@ C If we are writing to a global file then we open it here
        endif
       endif
 
+#ifdef USE_W2
+      if (globalFile) then
+      domainLength = exch2_domain_nxt
+      domainHeight = exch2_domain_nyt
+C Loop over all tiles
+      do bj=1,nSy
+       do bi=1,nSx
+        tn = W2_myTileList(bi)
+        tby = exch2_tbasey(tn)
+        tgx = exch2_txglobalo(tn)
+        tny = exch2_tny(tn)
+        tnx = exch2_tnx(tn)
+        if (fileIsOpen) then
+         do k=1,nNz
+          do j=1,tNy
+
+           irec = domainLength*tby + (tgx-1)/tnx + 1 +
+     &            domainLength*(j-1) + 
+     &            domainLength*domainHeight*tny*(k-1) +
+     &            domainLength*domainHeight*tny*nNz*(irecord-1) 
+
+
+           if (filePrec .eq. precFloat32) then
+            if (arrType .eq. 'RS') then
+             call MDS_SEG4toRS( j,bi,bj,k,nNz, r4seg, .FALSE., arr )
+            elseif (arrType .eq. 'RL') then
+             call MDS_SEG4toRL( j,bi,bj,k,nNz, r4seg, .FALSE., arr )
+            else
+             write(msgbuf,'(a)')
+     &        ' MDSWRITEFIELD: illegal value for arrType'
+                call print_error( msgbuf, mythid )
+             stop 'ABNORMAL END: S/R MDSWRITEFIELD'
+            endif
+#ifdef _BYTESWAPIO
+                        call MDS_BYTESWAPR4( sNx, r4seg )
+#endif
+                        write(dUnit,rec=irec) r4seg
+           elseif (filePrec .eq. precFloat64) then
+            if (arrType .eq. 'RS') then
+             call MDS_SEG8toRS( j,bi,bj,k,nNz, r8seg, .FALSE., arr )
+            elseif (arrType .eq. 'RL') then
+             call MDS_SEG8toRL( j,bi,bj,k,nNz, r8seg, .FALSE., arr )
+            else
+             write(msgbuf,'(a)')
+     &         ' MDSWRITEFIELD: illegal value for arrType'
+             call print_error( msgbuf, mythid )
+             stop 'ABNORMAL END: S/R MDSWRITEFIELD'
+            endif
+#ifdef _BYTESWAPIO
+            call MDS_BYTESWAPR8( sNx, r8seg )
+#endif
+            write(dUnit,rec=irec) r8seg
+           else
+            write(msgbuf,'(a)')
+     &        ' MDSWRITEFIELD: illegal value for filePrec'
+            call print_error( msgbuf, mythid )
+            stop 'ABNORMAL END: S/R MDSWRITEFIELD'
+           endif
+C End of j loop
+          enddo
+C End of k loop
+         enddo
+        else ! .not. fileIsOpen 
+         write(msgbuf,'(a)')
+     &     ' MDSWRITEFIELD: I should never get to this point'
+         call print_error( msgbuf, mythid )
+         stop 'ABNORMAL END: S/R MDSWRITEFIELD'
+        endif
+       enddo
+       enddo
+       else ! not global file
+
+#else /* .not. USE_W2 */
 C Loop over all tiles
       do bj=1,nSy
        do bi=1,nSx
@@ -338,6 +420,11 @@ C Create meta-file for each tile if we are tiling
 C End of bi,bj loops
        enddo
       enddo
+#endif /* USE_W2 */
+
+#ifdef USE_W2
+      endif ! global fle
+#endif /* USE_W2 */
 
 C If global file was opened then close it
       if (fileIsOpen .AND. globalFile) then
