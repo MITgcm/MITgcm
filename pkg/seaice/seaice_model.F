@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.19 2004/05/03 21:13:07 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.20 2004/05/03 22:13:32 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -51,7 +51,7 @@ CEndOfInterface
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
-      INTEGER i, j, bi, bj, kgeo
+      INTEGER i, j, bi, bj
 
 #ifdef SEAICE_EXTERNAL_FORCING
 C--   Atmospheric state and runoff are from
