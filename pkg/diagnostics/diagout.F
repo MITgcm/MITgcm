@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.23 2004/10/11 22:44:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.24 2004/10/26 00:58:06 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -225,7 +225,7 @@ C             Z is special since it varies
 
  100  format(i3)
  2000 format(1x,'Computing Diagnostic # ',i3,2x,a8,5x,'Counter: ',
-     &     i3,6x,'Parms: ',a16)
+     &     i4,6x,'Parms: ',a16)
  2001 format(1x,'          Vector  Mate for  ',a8,5x,
      &     'Diagnostic # ',i3,2x,a8,' exists ')
  2002 format(1x,'        Vector  Mate for  ',a8,5x,
