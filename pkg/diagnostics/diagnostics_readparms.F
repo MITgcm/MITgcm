@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.5 2005/02/20 04:31:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.6 2005/03/17 01:22:43 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -40,12 +40,14 @@ C     filename  :: List Output Filename
       INTEGER     frequency(ldimLoc)
       _RL         levels(kdimLoc,ldimLoc)
       CHARACTER*8 fields(fdimLoc,ldimLoc)
-      CHARACTER*8 filename(ldimLoc)
+      CHARACTER*80 filename(ldimLoc), blkFilName
       CHARACTER*8 blk8c
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER ku, stdUnit
-      INTEGER k,l,n,m
+      INTEGER k,l,n,m,iL
       _RL undef, getcon
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
       NAMELIST / diagnostics_list /
      &     frequency, levels, fields, filename,
@@ -58,9 +60,13 @@ C     Initialize and Read Diagnostics Namelist
 
       undef = getcon('UNDEF')
       blk8c  = '        '
+      DO k=1,LEN(blkFilName)
+        blkFilName(k:k) = ' '
+      ENDDO
 
       DO l = 1,ldimLoc
         frequency(l) = 0
+        filename (l) = blkFilName
         DO k = 1,kdimLoc
           levels (k,l) = undef
         ENDDO
@@ -89,12 +95,12 @@ C     Initialise diag_choices common block
         freq(n) = 0
         nlevels(n) = 0
         nfields(n) = 0
-        fnames(n) = blk8c
+        fnames(n) = blkFilName
         DO k = 1,numLevels
           levs(k,n) = 0
         ENDDO
         DO m = 1,numperlist
-          flds(m,n) = '        '
+          flds(m,n) = blk8c
           jdiag(m,n) = 0
         ENDDO
       ENDDO
@@ -110,6 +116,13 @@ C     Fill Diagnostics Common Block with Namelist Info
      &     ((.NOT. diag_pickup_write_mnc) .OR. outputTypesInclusive)
 
       DO l = 1,ldimLoc
+       iL = ILNBLNK(filename(l))
+       IF ( frequency(l).NE.0 .AND. iL.EQ.0 ) THEN
+         WRITE(msgBuf,'(2A,I3,A,I6)') 'DIAGNOSTICS_READPARMS: ',
+     &    'Empty File-name ! (list l=', l, ' ), freq:',frequency(l)
+         CALL PRINT_ERROR( msgBuf , myThid )
+         STOP 'ABNORMAL END: S/R DIAGNOSTICS_READPARMS'
+       ENDIF
        IF ( frequency(l).NE.0 .AND. nlists.LT.numlists ) THEN
          n = nlists + 1
          freq(n)    = frequency(l)

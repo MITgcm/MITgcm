@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.3 2005/02/20 04:31:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/DIAGNOSTICS.h,v 1.4 2005/03/17 01:22:43 jmc Exp $
 C $Name:  $
 
 C ======================================================================
@@ -1451,7 +1451,7 @@ C                   for output stream # n
       _RL levs (numLevels,numlists)
       integer jdiag(numperlist,numlists)
       character*8 flds (numperlist,numlists)
-      character*8 fnames(numlists)
+      character*80 fnames(numlists)
       logical
      &     diag_mdsio, diag_mnc,
      &     diag_pickup_read,        diag_pickup_write,

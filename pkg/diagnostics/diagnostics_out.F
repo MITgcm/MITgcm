@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.10 2005/03/01 15:48:03 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.11 2005/03/17 01:22:43 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -53,10 +53,9 @@ C     !LOCAL VARIABLES:
       INTEGER ilen
 
       INTEGER ioUnit
-      CHARACTER*(MAX_LEN_FNAM) pref
+      CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) suff
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      CHARACTER*(80) fn
       LOGICAL glf
 #ifdef ALLOW_MNC
       INTEGER ii
@@ -78,9 +77,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       undef = getcon('UNDEF')
       glf = globalFiles
       WRITE(suff,'(I10.10)') myIter
-      pref = fnames(listnum)
-      ilen=ILNBLNK( pref )
-      WRITE( fn, '(A,A,A)' ) pref(1:ilen),'.',suff(1:10)
+      ilen = ILNBLNK(fnames(listnum))
+      WRITE( fn, '(A,A,A)' ) fnames(listnum)(1:ilen),'.',suff(1:10)
 
 #ifdef ALLOW_MNC
       IF (useMNC .AND. diag_mnc) THEN
@@ -90,8 +88,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         DO i = 1,NLEN
           dn_blnk(i:i) = ' '
         ENDDO
-c       WRITE( diag_mnc_bn, '(A,A)' ) 'diag.', pref(1:ilen)
-        WRITE( diag_mnc_bn, '(A)' ) pref(1:ilen)
+        WRITE( diag_mnc_bn, '(A)' ) fnames(listnum)(1:ilen)
 
 C       Update the record dimension by writing the iteration number
         CALL MNC_CW_SET_UDIM(diag_mnc_bn, -1, myThid)
