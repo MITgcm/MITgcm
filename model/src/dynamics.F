@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.61 2001/02/07 21:48:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.62 2001/02/14 22:51:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,6 +38,10 @@ C     == Global variables ===
 
 #ifdef ALLOW_KPP
 # include "KPP.h"
+#endif
+
+#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#include "AVER.h"
 #endif
 
 C     == Routine arguments ==
@@ -100,10 +104,8 @@ C                      index into fVerTerm.
       _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
-C This is currently also used by IVDC and Diagnostics
-C #ifdef INCLUDE_CONVECT_CALL
+C This is currently used by IVDC and Diagnostics
       _RL ConvectCount (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-C #endif
 
       INTEGER iMin, iMax
       INTEGER jMin, jMax
@@ -111,6 +113,12 @@ C #endif
       INTEGER i, j
       INTEGER k, km1, kup, kDown
 
+Cjmc : add for phiHyd output <- but not working if multi tile per CPU
+c     CHARACTER*(MAX_LEN_MBUF) suff 
+c     LOGICAL  DIFFERENT_MULTIPLE
+c     EXTERNAL DIFFERENT_MULTIPLE
+Cjmc(end)
+ 
 #ifdef ALLOW_AUTODIFF_TAMC
       INTEGER    isbyte
       PARAMETER( isbyte = 4 )
@@ -248,9 +256,8 @@ C--     Set up work arrays that need valid initial values
         DO k=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
-#ifdef INCLUDE_CONVECT_CALL
+C This is currently also used by IVDC and Diagnostics
            ConvectCount(i,j,k) = 0.
-#endif
            KappaRT(i,j,k) = 0. _d 0
            KappaRS(i,j,k) = 0. _d 0
           ENDDO
@@ -316,7 +323,7 @@ c ==> should use sigmaR !!!
      I        rhoKm1, rhoK,
      U        ConvectCount, KappaRT, KappaRS,
      I        myTime, myIter, myThid)
-          END IF
+          ENDIF
 
 C--     end of diagnostic k loop (Nr:1)
         ENDDO
@@ -482,7 +489,7 @@ CPatrick? What about this one?
 C--     Implicit diffusion
         IF (implicitDiffusion) THEN
 
-          IF (tempStepping) THEN
+         IF (tempStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
             idkey = iikey + 1
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -638,6 +645,27 @@ C--      Apply open boundary conditions
 C--     End If implicitViscosity.AND.momStepping
         ENDIF
  
+Cjmc : add for phiHyd output <- but not working if multi tile per CPU
+c       IF ( DIFFERENT_MULTIPLE(dumpFreq,myTime+deltaTClock,myTime) 
+c    &  .AND. buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
+c         WRITE(suff,'(I10.10)') myIter+1
+c         CALL WRITE_FLD_XYZ_RL('PH.',suff,phiHyd,myIter+1,myThid) 
+c       ENDIF
+Cjmc(end)
+
+#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+        IF (taveFreq.GT.0.) THEN 
+         DO K=1,Nr
+          CALL TIMEAVER_1FLD_XYZ(phiHyd, phiHydtave, 
+     I                              deltaTclock, bi, bj, K, myThid)
+          IF (ivdc_kappa.NE.0.) THEN
+            CALL TIMEAVER_1FLD_XYZ(ConvectCount, ConvectCountTave,
+     I                              deltaTclock, bi, bj, K, myThid)
+          ENDIF
+         ENDDO
+        ENDIF
+#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
+
        ENDDO
       ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.6 2001/02/04 14:38:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.7 2001/02/14 22:51:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -51,7 +51,7 @@ C--   Initial conditions are convectively adjusted (for historical reasons)
            jMax=sNy+Oly
            CALL CONVECTIVE_ADJUSTMENT(
      I       bi, bj, iMin, iMax, jMin, jMax,
-     I       startTime, 0, myThid )
+     I       startTime, nIter0, myThid )
          ENDDO
         ENDDO
         _BARRIER
@@ -63,4 +63,16 @@ C--   Initialize variable data for packages
 C--   Finally summarise the model state
       CALL STATE_SUMMARY( myThid )
 
+#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+C--   initialise time-average arrays with initial state values
+      IF (taveFreq.GT.0.) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+           CALL DO_TIME_AVERAGES(startTime, nIter0, bi, bj, myThid)
+         ENDDO
+        ENDDO
+      ENDIF
+#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
+
+      RETURN
       END

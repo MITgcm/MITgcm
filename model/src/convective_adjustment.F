@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.3 2001/02/04 14:38:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.4 2001/02/14 22:51:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -19,6 +19,10 @@ C     == Global data ==
 #include "DYNVARS.h"
 #include "GRID.h"
 
+#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#include "AVER.h"
+#endif 
+
       EXTERNAL DIFFERENT_MULTIPLE
       LOGICAL  DIFFERENT_MULTIPLE
 
@@ -35,13 +39,22 @@ C     myThid - Thread number of this instance of S/R CONVECT
 #ifdef INCLUDE_CONVECT_CALL
 
 C     == Local variables ==
-      INTEGER K
+      INTEGER i, j, K
       _RL rhoKm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoK  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ConvectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 C--   Check to see if should convect now
       IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,myTime-deltaTClock) ) THEN
+
+C-      Initialisation of Convection Counter
+        DO K=1,Nr
+         DO j=1-OLy,sNy+OLy
+          DO i=1-OLx,sNx+OLx
+           ConvectCount(i,j,k) = 0.
+          ENDDO
+         ENDDO
+        ENDDO
 
 #ifdef  ALLOW_KPP
         IF ( 
@@ -83,6 +96,13 @@ C-          Check static stability with layer below and mix as needed.
      I           bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoK,
      U           ConvectCount,
      I           myTime,myIter,myThid)
+
+#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE 
+            IF (myIter.ne.nIter0 .AND. taveFreq.GT.0.) THEN
+              CALL TIMEAVER_1FLD_XYZ(ConvectCount, ConvectCountTave,
+     I                               deltaTclock, bi, bj, K, myThid)
+            ENDIF
+#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
 
 C--       End DO K=1,Nr
           ENDDO

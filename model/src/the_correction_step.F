@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.3 2001/02/07 16:47:50 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.4 2001/02/14 22:51:27 jmc Exp $
 C Tag $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -117,6 +117,12 @@ C--     Convectively adjust new fields to be statically stable
         CALL CONVECTIVE_ADJUSTMENT(
      I       bi, bj, iMin, iMax, jMin, jMax,
      I       myTime, myIter, myThid )
+
+#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+        IF (taveFreq.GT.0.) THEN 
+          CALL DO_TIME_AVERAGES(myTime, myIter, bi, bj, myThid)
+        ENDIF
+#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
 
        ENDDO
       ENDDO
