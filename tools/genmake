@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.63 2002/08/07 19:27:27 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.64 2002/08/07 19:48:44 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -314,7 +314,14 @@ if ($?FC) then
  echo "$FC was specified as the compiler"
 else
  echo " "
- set likelysuspects=(ifc g77 pgf77 f77 f90 f95)
+ switch ($platform)
+  case Linux*:
+   set likelysuspects=(ifc g77 pgf77 f77 f90 f95)
+   breaksw
+  default:
+   set likelysuspects=(f77)
+   breaksw
+ endsw
  foreach fc ($likelysuspects)
   set foundfc=`which $fc |& cat - `
   if (-x $foundfc[1]) then
