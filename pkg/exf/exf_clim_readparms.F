@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_readparms.F,v 1.8 2004/10/07 01:10:43 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_readparms.F,v 1.9 2004/12/03 07:36:58 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -159,6 +159,14 @@ c     check for consistency
      &          then
       stop 'stopped in exf_clim_readparms: value of yftype not allowed'
       end if           
+
+#ifdef USE_EXF_INTERPOLATION
+      if ( climsst_nlat .GT. MAX_LAT_INC )
+     & stop 'stopped in exf_clim_readparms: climsst_nlat > MAX_LAT_INC'
+      if ( climsss_nlat .GT. MAX_LAT_INC )
+     & stop 'stopped in exf_clim_readparms: climsss_nlat > MAX_LAT_INC'
+#endif
+
 
 #ifdef ALLOW_CLIMTEMP_RELAXATION
       if ( climtempfile .NE. ' ' ) then
