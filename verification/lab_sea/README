@@ -57,54 +57,24 @@ g d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
 Y Y Y Y  8 10  9 11 10  9 11 13 10  9  8  8  9  8  9  8  9 FAIL  lab_sea
 
 
-Instructions for generating 1-CPU and 2-CPU executables
-=======================================================
+Instructions for generating and running a 1-CPU experiment
+==========================================================
 
 Generating 1-CPU executable:
   cd MITgcm/verification/lab_sea
   mkdir build
   cd build
+  cp ../code/*.h ../code/packages.conf .
   ../../../tools/genmake2
-  make clean
   make depend
   make
-  mv mitgcmuv mitgcmuv_1
-
-Generating 2-CPU executable:
-  cd ../code
-  \mv SIZE.h SIZE.h_1
-  \mv SIZE.h_mpi SIZE.h
-  ../../../tools/genmake2 -mpi
-  make clean
-  make depend
-  make
-  mv mitgcmuv mitgcmuv_2x1
-
-
-Instructions for running Experiment 1
-=====================================
-
-This is a 1-cpu, 10-hour integration used to make sure that all
-the files are available and that the sea-ice model compiles and
-runs.  The reading of atmospheric forcing files and the computation
-of open-water bulk fluxes are carried out within pkg/seaice.
 
 To run Experiment 1:
   cd ../input
-  ./mitgcmuv_1 >&! output.txt
+  ../build/mitgcmuv > output.txt
 
 Use matlab script lookat_exp1.m to compare the output
 of exp1 with that from checkpoint51f sea-ice code:
   cd ../../../verification/lab_sea/matlab
   matlab
   lookat_ice
-
-
-Instructions for running Experiment 2
-=====================================
-
-This is a 2-cpu, 10-hour integration.
-
-To run Experiment 2:
-  cd ../../../verification/lab_sea/input
-  mpirun -np 2 mitgcmuv_2x1
