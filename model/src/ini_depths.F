@@ -1,4 +1,4 @@
-C $Id: ini_depths.F,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.2 1998/04/24 02:05:41 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 

@@ -1,4 +1,4 @@
-C $Id: find_rho.F,v 1.2 1998/04/22 19:25:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.3 1998/04/24 02:05:40 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
