@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_functions.F,v 1.1 2001/09/13 17:43:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/Attic/flt_functions.F,v 1.2 2003/10/28 22:21:27 jmc Exp $
 C $Name:  $
 
 #include "FLT_CPPOPTIONS.h"
@@ -165,9 +165,9 @@ c     == end of interface ==
       do k=0,Nr
 
          zlo = rC(k)
-         if (k.eq.0)  zlo = rC(k)-delZ(1)*0.5
+         if (k.eq.0)  zlo = rC(k)-drF(1)*0.5
          zhi = rC(k+1)
-         if (k.eq.Nr) zhi = rC(k)+delZ(Nr)*0.5
+         if (k.eq.Nr) zhi = rC(k)+drF(Nr)*0.5
 
          if (zlo .le. rG .and. zhi .gt. rG) then
             dist = zhi - zlo
