@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/README,v 1.11 1998/07/10 18:48:48 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/README,v 1.12 1998/07/16 16:58:32 cnh Exp $
 
 
 MITgcmUV Getting Started
@@ -50,7 +50,7 @@ o Installing
                                                       
 
      This runs a 4 degree global ocean climatological simulation.
-     By default this code is set to use two porcessors splitting
+     By default this code is set to use two processors splitting
      the model domain along the equator. Textual output is written
      to files STDOUT.* and STDERR.* with one file for each process.
      Model fileds are written to files suffixed .data and .meta
