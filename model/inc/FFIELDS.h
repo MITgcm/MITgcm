@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.25 2004/07/16 01:18:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.26 2004/07/18 01:00:06 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -143,26 +143,23 @@ C     Above use static heap storage to allow exchange.
 #endif
 #endif /* ALLOW_EXF */
 
-C     surfaceTendencyU       (units are  m/s^2)
-C                -> usage in gU:     gU = gU + surfaceTendencyU[m/s^2]
+C     surfaceForcingU     units are  r_unit.m/s^2 (=m^2/s^2 if r=z)
+C                -> usage in gU:     gU = gU + surfaceForcingU/drF [m/s^2]
+C     surfaceForcingV     units are  r_unit.m/s^2 (=m^2/s^-2 if r=z)
+C                -> usage in gU:     gV = gV + surfaceForcingV/drF [m/s^2]
 C
-C     surfaceTendencyV       (units are  m/s^2)
-C                -> usage in gV:     gV = gV + surfaceTendencyV[m/s^2]
+C     surfaceForcingS     units are  r_unit.psu/s (=psu.m/s if r=z)
+C            - EmPmR * S_surf plus salinity relaxation*drF(1)
+C                -> usage in gS:     gS = gS + surfaceForcingS/drF [psu/s]
 C
-C     surfaceTendencyS       (units are  psu/s)
-C            - EmPmR plus salinity relaxation term
-C                -> calculate        -lambda*(S(model)-S(clim))
-C                -> usage in gS:     gS = gS + surfaceTendencyS[psu/s]
-C
-C     surfaceTendencyT       (units are  degrees/s)
-C            - Qnet plus temp. relaxation
+C     surfaceForcingT     units are  r_unit.Kelvin/s (=Kelvin.m/s if r=z)
+C            - Qnet (+Qsw) plus temp. relaxation*drF(1)
 C                -> calculate        -lambda*(T(model)-T(clim))
-C            >>> Qnet assumed to be total flux minus s/w rad. <<<
-C                -> usage in gT:     gT = gT + surfaceTendencyT[K/s]
-C
-C     surfaceTendencyTice
-C            - Temperature tendency in the top level due to the
-C              melting or freezing of sea-ice.
+C            Qnet assumed to be net heat flux including ShortWave rad.
+C                -> usage in gT:     gT = gT + surfaceforcingT/drF [K/s]
+C     surfaceForcingTice
+C            - equivalent Temperature flux in the top level that corresponds
+C              to the melting or freezing of sea-ice.
 C              Note that the surface level temperature is modified
 C              directly by the sea-ice model in order to maintain
 C              water temperature under sea-ice at the freezing
@@ -170,16 +167,16 @@ C              point.  But we need to keep track of the
 C              equivalent amount of heat that this surface-level
 C              temperature change implies because it is used by
 C              the KPP package (kpp_calc.F and kpp_transport_t.F).
-C              Units are degrees-C/s (>0 for ocean warming).
-C
-      COMMON /TENDENCY_FORCING/
-     &                         surfaceTendencyU,
-     &                         surfaceTendencyV,
-     &                         surfaceTendencyT,
-     &                         surfaceTendencyS, 
-     &                         surfaceTendencyTice
-      _RS  surfaceTendencyU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  surfaceTendencyV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  surfaceTendencyT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  surfaceTendencyS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  surfaceTendencyTice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C              Units are r_unit.K/s (=Kelvin.m/s if r=z) (>0 for ocean warming).
+
+      COMMON /SURFACE_FORCING/
+     &                         surfaceForcingU,
+     &                         surfaceForcingV,
+     &                         surfaceForcingT,
+     &                         surfaceForcingS, 
+     &                         surfaceForcingTice
+      _RL  surfaceForcingU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  surfaceForcingV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  surfaceForcingT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  surfaceForcingS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  surfaceForcingTice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
