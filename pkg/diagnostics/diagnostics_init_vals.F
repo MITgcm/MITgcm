@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_init_vals.F,v 1.22 2004/07/19 19:10:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_init_vals.F,v 1.23 2004/07/23 17:32:27 adcroft Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -375,6 +375,7 @@ c ----------------
       cdiag(296) = 'PRECLS  '
       cdiag(297) = 'ENPREC  '
       cdiag(298) = 'VISCA4  '
+      cdiag(299) = 'VISCAH  '
 
 c Diagnostic Descriptions
 c ----------------------------------------------------------------------
@@ -749,6 +750,7 @@ c ----------------------------------------------------------------------
       tdiag(296)  = 'Large Scale Precipitation (g/m2/sec)'
       tdiag(297)  = 'Energy of Precipitation (snow, rain Temp) in (J/g)'
       tdiag(298)  = 'Biharmonic Viscosity Coefficient in (m4/s)        '
+      tdiag(290)  = 'Harmonic Viscosity Coefficient in (m2/s)        '
 
 c Diagnostic Units
 c ----------------
@@ -1050,6 +1052,7 @@ c ----------------
       udiag(296) = 'g/m2/sec        '
       udiag(297) = 'J/g             '
       udiag(298) = 'm4/sec          '
+      udiag(299) = 'm2/sec          '
 
 c Diagnostic Parms
 c ----------------  123456789
@@ -1351,6 +1354,7 @@ c ----------------  123456789
       gdiag(296) = 'SM      M1      '
       gdiag(297) = 'SM      M1      '
       gdiag(298) = 'SM      MR      '
+      gdiag(299) = 'SM      MR      '
 
 c     Diagnostic Levels
 c     -----------------

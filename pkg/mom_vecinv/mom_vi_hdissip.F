@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.9 2004/07/21 21:14:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.10 2004/07/23 17:32:27 adcroft Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -197,7 +197,8 @@ C and should be less than 1/8, for example viscAh=0.01
 #ifdef ALLOW_DIAGNOSTICS
       if (useDiagnostics) then
        klev = -1 * k
-       call fill_diagnostics(myThid,'VISCA4  ',klev,1,3,bi,bj,visca4_d)
+       call fill_diagnostics(myThid,'VISCAH  ',klev,1,3,bi,bj,viscAh_D)
+       call fill_diagnostics(myThid,'VISCA4  ',klev,1,3,bi,bj,viscA4_D)
       endif
 #endif
 

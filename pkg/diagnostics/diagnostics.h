@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics.h,v 1.16 2004/07/19 19:10:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics.h,v 1.17 2004/07/23 17:32:27 adcroft Exp $
 C $Name:  $
 
 C ======================================================================
@@ -326,6 +326,7 @@ C diagarrays common
       CHARACTER*8   CPRECLS
       CHARACTER*8   CENPREC
       CHARACTER*8   CVISCA4
+      CHARACTER*8   CVISCAH
 
       EQUIVALENCE ( CDIAG( 1) ,  CUFLUX  )
       EQUIVALENCE ( CDIAG( 2) ,  CVFLUX  )
@@ -617,6 +618,7 @@ C diagarrays common
       EQUIVALENCE ( CDIAG(296),  CPRECLS   )
       EQUIVALENCE ( CDIAG(297),  CENPREC   )
       EQUIVALENCE ( CDIAG(298),  CVISCA4   )
+      EQUIVALENCE ( CDIAG(299),  CVISCAH   )
 
       integer       iUFLUX   , kUFLUX   , nUFLUX
       integer       iVFLUX   , kVFLUX   , nVFLUX
@@ -908,6 +910,7 @@ C diagarrays common
       integer       iPRECLS  , kPRECLS ,  nPRECLS
       integer       iENPREC  , kENPREC ,  nENPREC
       integer       iVISCA4  , kVISCA4 ,  nVISCA4
+      integer       iVISCAH  , kVISCAH ,  nVISCAH
 
 
 c Diagnostic Pointers
@@ -1202,6 +1205,7 @@ c -------------------
       EQUIVALENCE ( IDIAG(296),  IPRECLS   )
       EQUIVALENCE ( IDIAG(297),  IENPREC   )
       EQUIVALENCE ( IDIAG(298),  IVISCA4   )
+      EQUIVALENCE ( IDIAG(299),  IVISCAH   )
 
 
 c Diagnostic Levels
@@ -1496,6 +1500,7 @@ c -----------------
       EQUIVALENCE ( KDIAG(296),  KPRECLS   )
       EQUIVALENCE ( KDIAG(297),  KENPREC   )
       EQUIVALENCE ( KDIAG(298),  KVISCA4   )
+      EQUIVALENCE ( KDIAG(299),  KVISCAH   )
 
 
 c Diagnostic Counters
@@ -1790,6 +1795,7 @@ c -------------------
       EQUIVALENCE ( NDIAG(296),  NPRECLS   )
       EQUIVALENCE ( NDIAG(297),  NENPREC   )
       EQUIVALENCE ( NDIAG(298),  NVISCA4   )
+      EQUIVALENCE ( NDIAG(299),  NVISCAH   )
 
 
 C diagnostics common
