@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.76 2002/02/10 00:35:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.77 2002/03/04 17:26:41 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -892,7 +892,6 @@ C--   Stop if they were
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 C
-
       RETURN
       END
 

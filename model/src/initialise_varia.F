@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.22 2002/01/30 04:12:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.23 2002/03/04 17:26:41 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -40,11 +40,11 @@ C       |-- INI_FIELDS
 C       |
 C       |-- INI_TR1
 C       |
+C       |-- PACKAGES_INIT_VARIABLES
+C       |
 C       |-- THE_CORRECTION_STEP
 C       |
 C       |-- CALL CONVECTIVE_ADJUSTMENT_INI
-C       |
-C       |-- PACKAGES_INIT_VARIABLES
 C       |
 C       |-- CALC_SURF_DR
 C       |
@@ -114,6 +114,9 @@ C--   Initialise passive tracer(s)
       _BARRIER
 #endif
 
+C--   Initialize variable data for packages
+      CALL PACKAGES_INIT_VARIABLES( myThid )
+
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   Initialise active fields to help TAMC
       CALL INI_AUTODIFF( myThid )
@@ -147,9 +150,6 @@ CADJ loop = parallel
         ENDDO
         _BARRIER
       END IF
-
-C--   Initialize variable data for packages
-      CALL PACKAGES_INIT_VARIABLES( myThid )
 
 #ifdef NONLIN_FRSURF
 C--   Compute the surface level thickness <-- function of etaH(n)

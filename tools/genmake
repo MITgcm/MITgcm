@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.61 2002/02/15 21:26:37 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.62 2002/03/04 17:26:41 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -9,7 +9,7 @@
 #   modified by aja 01/00
 
 # Default lists
-set DISABLE = ( aim autodiff cal cost ctrl ecco exf grdchk flt )
+set DISABLE = ( aim autodiff cal cost ctrl ecco exf grdchk flt ptracers )
 set DEFINES = ( )
 set ENABLE  = ( )
 set MODS  = ( )
@@ -257,6 +257,12 @@ foreach dr ($PACKAGES)
     echo Adding pkg dir: $adr
     set SOURCEDIRS = ($SOURCEDIRS $adr)
     set INCLUDEDIRS = ($INCLUDEDIRS $adr)
+    switch ($dr)
+      case ptracers:
+        set DEFINES = ($DEFINES '-DALLOW_PTRACERS'); breaksw
+      default:
+        breaksw
+    endsw
   else
     echo "                                      *" Package \"$dr\" NOT enabled.
     switch ($dr)

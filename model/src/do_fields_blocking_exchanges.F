@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.7 2001/09/26 18:09:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.8 2002/03/04 17:26:40 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -57,6 +57,9 @@ c     _EXCH_XYZ_R8( gvCD , myThid )
       _EXCH_XYZ_R8( vVelD , myThid )
 #endif
 
+#ifdef ALLOW_PTRACERS
+      CALL PTRACERS_FIELDS_BLOCKING_EXCHANGES(myThid)
+#endif /* ALLOW PTRACERS */
+
       RETURN
       END
- 

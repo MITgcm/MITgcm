@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.12 2001/09/26 18:09:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.13 2002/03/04 17:26:41 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,6 +49,9 @@ c     _EXCH_XYZ_R8( salt , myThid )
       _EXCH_XYZ_R8( gvCD , myThid )
 #endif
 
+#ifdef ALLOW_PTRACERS
+      CALL PTRACERS_GTERM_BLOCKING_EXCHANGES(myThid)
+#endif /* ALLOW PTRACERS */
+
       RETURN
       END
- 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.10 2002/01/17 16:55:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.11 2002/03/04 17:26:41 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -70,6 +70,10 @@ C--   Open boundaries data
 
 #ifdef ALLOW_AIM
       IF ( useAIM ) CALL AIM_INIT( mythid )
+#endif
+
+#ifdef ALLOW_PTRACERS
+      IF ( usePTRACERS ) CALL PTRACERS_INIT( mythid )
 #endif
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))

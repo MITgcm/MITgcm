@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.8 2001/12/11 14:57:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.9 2002/03/04 17:26:41 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -52,7 +52,8 @@ C     data.pkg namelists
      &          useECCO,
      &          useSHAP_FILT,
      &          useZONAL_FILT,
-     &          useFLT
+     &          useFLT,
+     &          usePTRACERS
 CEOP
 
       _BEGIN_MASTER(myThid)
@@ -77,6 +78,7 @@ C--   Default package configuration
       useSHAP_FILT=.FALSE.
       useZONAL_FILT=.FALSE.
       useFLT=.FALSE.
+      usePTRACERS=.FALSE.
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=PACKAGES)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.16 2002/02/08 22:15:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.17 2002/03/04 17:26:41 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -472,6 +472,14 @@ C disable this section of code.
      I                      myTime,myIter,myThid)
          ENDIF
         ENDIF
+C Since passive tracers are configurable separately from T,S we
+C call the multi-dimensional method for PTRACERS regardless
+C of whether multiDimAdvection is set or not.
+#ifdef ALLOW_PTRACERS
+        IF ( usePTRACERS ) THEN
+         CALL PTRACERS_ADVECTION( bi,bj,myIter,myTime,myThid )
+        ENDIF
+#endif /* ALLOW_PTRACERS */
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 
 C--     Start of thermodynamics loop
@@ -561,6 +569,15 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         myIter,myThid)
          ENDIF
 #endif
+#ifdef ALLOW_PTRACERS
+         IF ( usePTRACERS ) THEN
+           CALL PTRACERS_INTEGERATE(
+     I         bi,bj,k,
+     I         xA,yA,uTrans,vTrans,rTrans,maskUp,
+     X         KappaRS,
+     I         myIter,myTime,myThid)
+         ENDIF
+#endif /* ALLOW_PTRACERS */
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
@@ -632,6 +649,13 @@ CADJ STORE gTr1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
          ENDIF
 #endif
 
+#ifdef ALLOW_PTRACERS
+C Vertical diffusion (implicit) for passive tracers
+         IF ( usePTRACERS ) THEN
+           CALL PTRACERS_IMPLDIFF( bi,bj,KappaRS,myThid )
+         ENDIF
+#endif /* ALLOW_PTRACERS */
+
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
          IF (useOBCS) THEN
@@ -660,6 +684,21 @@ Ccs-
        _EXCH_XYZ_R8(gS,myThid)
       ENDIF
 #endif /* ALLOW_AIM */
+
+#ifndef DISABLE_DEBUGMODE
+      If (debugMode) THEN
+       CALL DEBUG_STATS_RL(Nr,uVel,'Uvel (THERMODYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,vVel,'Vvel (THERMODYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,wVel,'Wvel (THERMODYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,theta,'Theta (THERMODYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,salt,'Salt (THERMODYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,Gt,'Gt (THERMODYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,Gs,'Gs (THERMODYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,GtNm1,'GtNm1 (THERMODYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,GsNm1,'GsNm1 (THERMODYNAMICS)',myThid)
+       CALL PTRACERS_DEBUG(myThid)
+      ENDIF
+#endif
 
       RETURN
       END

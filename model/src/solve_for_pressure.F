@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.29 2002/02/10 00:39:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.30 2002/03/04 17:26:41 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -165,7 +165,7 @@ C Western boundary
        ENDDO
       ENDDO
 
-#ifndef EXCLUDE_DEBUGMODE
+#ifndef DISABLE_DEBUGMODE
       IF (debugMode) THEN
        CALL DEBUG_STATS_RL(1,cg2d_b,'cg2d_b (SOLVE_FOR_PRESSURE)',
      &                        myThid)
@@ -187,7 +187,7 @@ C     see CG2D.h for the interface to this routine.
      I           myThid )
       _EXCH_XY_R8(cg2d_x, myThid )
 
-#ifndef EXCLUDE_DEBUGMODE
+#ifndef DISABLE_DEBUGMODE
       IF (debugMode) THEN
        CALL DEBUG_STATS_RL(1,cg2d_x,'cg2d_x (SOLVE_FOR_PRESSURE)',
      &                        myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.8 2001/09/28 16:49:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.9 2002/03/04 17:26:41 adcroft Exp $
 C $Name:  $
 
 CBOI
@@ -81,14 +81,14 @@ C  myThid               :: thread number
       INTEGER bi,bj
       INTEGER advectionScheme
       INTEGER tracerIdentity
-      _RL Gtracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL Tracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL myTime
       INTEGER myIter
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
 C  gTracer              :: tendancy array
-      _RL Tracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL gTracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
 C !LOCAL VARIABLES: ====================================================
 C  maskUp               :: 2-D array for mask at W points
@@ -256,7 +256,8 @@ CADJ STORE localTij(:,:)  = comlev1_bibj_pass, key=passkey, byte=isbyte
        CALL GAD_DST3FL_ADV_X(
      &       bi,bj,k,deltaTtracer,uTrans,uVel,localTij,af,myThid)
       ELSE
-       STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
+       write(0,*) advectionScheme
+       STOP 'GAD_ADVECTION: adv. scheme incompatibale with multi-dim'
       ENDIF
 
       DO j=1-Oly,sNy+Oly

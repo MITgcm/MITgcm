@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.16 2002/01/30 04:12:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.17 2002/03/04 17:26:41 adcroft Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -7,7 +7,7 @@ C $Name:  $
 CBOP
 C     !ROUTINE: WRITE_STATE 
 C     !INTERFACE:
-      SUBROUTINE WRITE_STATE ( myCurrentTime, myIter, myThid )
+      SUBROUTINE WRITE_STATE ( myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE WRITE_STATE                                    
@@ -68,8 +68,8 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
 C     myIter - Iteration number
-C     myCurrentTime - Current time of simulation ( s )
-      _RL     myCurrentTime
+C     myTime - Current time of simulation ( s )
+      _RL     myTime
       INTEGER myThid
       INTEGER myIter
 
@@ -80,12 +80,12 @@ C     == Local variables ==
 CEOP
 
       IF ( 
-     &     DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,
-     &     myCurrentTime-deltaTClock) .OR. 
-     &     myCurrentTime.EQ.endTime .OR.
-     &     myCurrentTime.EQ.startTime
+     &     DIFFERENT_MULTIPLE(dumpFreq,myTime,
+     &     myTime-deltaTClock) .OR. 
+     &     myTime.EQ.endTime .OR.
+     &     myTime.EQ.startTime
      &     ) THEN
-         iRec = int ( (myCurrentTime-startTime) / dumpFreq +1.5 )
+         iRec = int ( (myTime-startTime) / dumpFreq +1.5 )
          
 C--   Going to really do some IO. Make everyone except master thread wait.
          _BARRIER
@@ -145,6 +145,9 @@ C         transfer analyse a particular snap-shots
 
 #endif /* MULTIPLE_RECORD_STATE_FILES */
 
+#ifdef ALLOW_PTRACERS
+       IF (usePTRACERS) CALL PTRACERS_WRITE_STATE(myIter,myTime,myThid)
+#endif /* ALLOW_PTRACERS */
          _END_MASTER( myThid )
          _BARRIER
 

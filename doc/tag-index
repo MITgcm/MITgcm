@@ -1,7 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.64 2002/03/04 17:13:46 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.65 2002/03/04 17:26:40 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint44f_pre,checkpoint44f_post
+o added PTRACERS package
+  This allows an arbitrary number of passive tracers to be integrated
+  forward simultaneously with the dynamicaly model.
+  + Implemented so far:
+    - basic forward algorithm (time-stepping, advection, diffusion, convection)
+    - I/O and checkpointing
+    - GM/Redi  *but*  using the GM/Redi coefficient of Salt
+  + Not implemented so far:
+    - KPP
+    - OBCS
+  + No specific example supplied (yet) but global_ocean.90x40x15 has the
+    necessary data.ptracer file. Simply use -enable=ptracers and uncomment
+    line in data.pkg.
+  + This package is disabled by default since it increases storage.
+
 
 o testscript: added -cleanup option
 o Shap_filt: a) new shap_filt S/R to use no-slip BC with S2 filter

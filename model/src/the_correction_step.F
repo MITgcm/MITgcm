@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.17 2002/02/08 22:06:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.18 2002/03/04 17:26:41 adcroft Exp $
 C Tag $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -126,6 +126,12 @@ C-        Update tracer fields:  T(n) = T**, Gt(n-1) = Gt(n)
      U           Tr1,gTr1,gTr1Nm1,
      I           myTime,myThid )
 #endif
+#ifdef ALLOW_PTRACERS
+C-        Update passive tracer fields:  T(n) = T**, Gt(n-1) = Gt(n)
+          IF (usePTRACERS)
+     &        CALL PTRACERS_CYCLE(bi,bj,k,myIter,myTime,myThid)
+#endif /* ALLOW_PTRACERS */
+
 
 #ifdef    ALLOW_OBCS
           IF (useOBCS) THEN

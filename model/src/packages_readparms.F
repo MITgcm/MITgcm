@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.9 2002/01/17 16:55:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.10 2002/03/04 17:26:41 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -81,6 +81,10 @@ C--   Initialize KPP parameters
 
 #ifdef ALLOW_OBCS
       IF (useOBCS) CALL OBCS_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_PTRACERS
+      IF (usePTRACERS) CALL PTRACERS_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_AIM

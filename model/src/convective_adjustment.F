@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.10 2002/02/26 19:50:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.11 2002/03/04 17:26:40 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -151,6 +151,14 @@ C-          Convectively mix passive tracer across interface K
      U                              Tr1,
      I                              myThid)
 #endif /* ALLOW_PASSIVE_TRACER */
+
+#ifdef ALLOW_PTRACERS
+C-          Convectively mix passive tracers across interface K
+            IF ( usePTRACERS ) THEN
+              CALL PTRACERS_CONVECT(
+     I                              bi,bj,k,weightA,weightB,myThid)
+            ENDIF
+#endif /* ALLOW_PTRACERS */
 
 C--       End DO K=1,Nr
           ENDDO

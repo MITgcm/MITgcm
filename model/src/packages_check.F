@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.10 2002/01/31 14:52:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.11 2002/03/04 17:26:41 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -58,6 +58,10 @@ CEOP
 
 #ifndef ALLOW_AIM
       IF (useAIM) CALL PACKAGES_CHECK_ERROR('AIM', myThid)
+#endif
+
+#ifndef ALLOW_PTRACERS
+      IF (usePTRACERS) CALL PACKAGES_CHECK_ERROR('PTRACERS', myThid)
 #endif
 
 #ifndef ALLOW_SHAP_FILT
