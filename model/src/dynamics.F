@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.33 1998/09/06 17:35:20 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.34 1998/09/07 16:23:11 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -356,10 +356,10 @@ C--      Get temporary terms used by tendency routines
      O        xA,yA,uTrans,vTrans,rTrans,rVel,maskC,maskUp,
      I        myThid)
 CcnhDebugStarts
-         IF ( K .EQ. 1 ) THEN
-           CALL PLOT_FIELD_XYRL( rVel(1,1,1), 'K=1 Current rVel.1 ' , myIter, myThid )
-           CALL PLOT_FIELD_XYRL( rVel(1,1,2), 'K=1 Current rVel.2 ' , myIter, myThid )
-         ENDIF
+C        IF ( K .EQ. 1 ) THEN
+C          CALL PLOT_FIELD_XYRL( rVel(1,1,1), 'K=1 Current rVel.1 ' , myIter, myThid )
+C          CALL PLOT_FIELD_XYRL( rVel(1,1,2), 'K=1 Current rVel.2 ' , myIter, myThid )
+C        ENDIF
 CcnhDebugEnds
 C--      Calculate the total vertical diffusivity
          CALL CALC_DIFFUSIVITY(

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.12 1998/08/22 17:51:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.13 1998/09/07 16:23:11 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -36,9 +36,11 @@ C     iG, jG - Global coordinate index
 C     bi,bj  - Loop counters
 C     I,J,K
 C     phi    - total depth of model
+C     oldPrec - Temporary used in controlling binary input dataset precision
       INTEGER iG, jG
       INTEGER bi, bj
       INTEGER  I,  J, K
+      INTEGER oldPrec
       _RL phi
 
       _BARRIER
@@ -69,7 +71,17 @@ C          Island
        ENDDO
       ELSE
        _BEGIN_MASTER( myThid )
+
+CcnhDebugStarts
+C       Force 64-bit IO
+        oldPrec        = readBinaryPrec
+        readBinaryPrec = precFloat64
+CcnhDEbugEnds
        CALL READ_FLD_XY_RS( bathyFile, ' ', H, 0, myThid )
+CcnhDebugStarts
+       readBinaryPrec = oldPrec
+CcnhdDebugEnds
+
        _END_MASTER(myThid)
       ENDIF
       _EXCH_XY_R4(    H, myThid )
