@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl_slice.F,v 1.5 2004/03/24 15:28:14 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl_slice.F,v 1.6 2004/10/14 18:43:39 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -124,7 +124,6 @@ C Check first for global file with simple name (ie. fName)
      &   ' MDSREADFIELD: opening global file: ',dataFName
        call print_message( msgbuf, standardmessageunit,
      &                     SQUEEZE_RIGHT , mythid)
-       stop " xx, adxx, weights and masks are not supposed to be global"
       endif
 
 C If negative check for global file with MDS name (ie. fName.data)
@@ -137,7 +136,6 @@ C If negative check for global file with MDS name (ie. fName.data)
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         globalFile = .TRUE.
-       stop " xx, adxx, weights and masks are not supposed to be global"
        endif
       endif
 
@@ -349,7 +347,6 @@ C Check first for global file with simple name (ie. fName)
      &   ' MDSREADFIELD_YZ: opening global file: ',dataFName
        call print_message( msgbuf, standardmessageunit,
      &                     SQUEEZE_RIGHT , mythid)
-       stop " xx, adxx, weights and masks are not supposed to be global"
       endif
 
 C If negative check for global file with MDS name (ie. fName.data)
@@ -362,7 +359,6 @@ C If negative check for global file with MDS name (ie. fName.data)
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         globalFile = .TRUE.
-       stop " xx, adxx, weights and masks are not supposed to be global"
        endif
       endif
 C Loop over all processors    
