@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.10 1998/09/29 18:50:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.11 1998/11/30 23:45:24 adcroft Exp $
 C
 C     /==========================================================\
 C     | GRID.h                                                   |
@@ -359,7 +359,7 @@ C                 metric term in V equation.
      &  recip_hFacC,recip_hFacW,recip_hFacS, 
      &  rkFac, recip_rkFac,
      &  saFac,
-     &  xC,yC,rA,rC,rF,yC0,xC0,
+     &  xC,yC,rA,rAw,rAs,rC,rF,yC0,xC0,
      &  maskW,maskS,
      &  tanPhiAtU, tanPhiAtV
       _RS dxC            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -399,6 +399,8 @@ C                 metric term in V equation.
       _RS yC             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS yC0
       _RS rA             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rAw            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rAs            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS rC             (1:Nr)
       _RS rF             (1:Nr+1)
       _RS maskW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)

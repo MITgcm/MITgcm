@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.34 1998/11/06 22:44:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.35 1998/11/30 23:45:24 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
-#define NO_LATERAL_SLIP
-#define NO_BOTTOM_SLIP
+#define NO_SLIP_SIDES
+#define NO_SLIP_BOTTOM
 #define DB0 0.
 
 C     /==========================================================\
@@ -107,6 +107,7 @@ C     uDudxFac, AhDudxFac, etc ... individual term tracer parameters
       _RL      pF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    fZon (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL    fMer (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS    hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C     I,J,K - Loop counters
       INTEGER i,j,k
 C     rVelMaskOverride - Factor for imposing special surface boundary conditions
@@ -114,8 +115,11 @@ C                        ( set according to free-surface condition ).
 C     hFacROpen        - Lopped cell factos used tohold fraction of open
 C     hFacRClosed        and closed cell wall.
       _RL  rVelMaskOverride
-      _RS  hFacROpen
-      _RS  hFacRClosed
+      _RS  hFacZOpen
+      _RS  hFacZClosedN
+      _RS  hFacZClosedS
+      _RS  hFacZClosedE
+      _RS  hFacZClosedW
 C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  uDudxFac
       _RL  AhDudxFac
@@ -148,47 +152,110 @@ C     ab05, ab15 - Adams-Bashforth time-stepping weights.
 C     Initialise intermediate terms
       DO J=1-OLy,sNy+OLy
        DO I=1-OLx,sNx+OLx
-        aF(i,j)   = 0.*1.D37
-        vF(i,j)   = 0.*1.D37
-        v4F(i,j)  = 0.*1.D37
-        cF(i,j)   = 0.*1.D37
-        mT(i,j)   = 0.*1.D37
-        pF(i,j)   = 0.*1.D37
-        fZon(i,j) = 0.*1.D37
-        fMer(i,j) = 0.*1.D37
+        aF(i,j)   = 0.
+        vF(i,j)   = 0.
+        v4F(i,j)  = 0.
+        cF(i,j)   = 0.
+        mT(i,j)   = 0.
+        pF(i,j)   = 0.
+        fZon(i,j) = 0.
+        fMer(i,j) = 0.
        ENDDO
       ENDDO
 C--   Term by term tracer parmeters
 C     o U momentum equation
-      uDudxFac     = afFacMom*1.D0
-      AhDudxFac    = vfFacMom*1.D0
-      A4DuxxdxFac  = vfFacMom*0.D0
-      vDudyFac     = afFacMom*1.D0
-      AhDudyFac    = vfFacMom*1.D0
-      A4DuyydyFac  = vfFacMom*0.D0
-      rVelDudrFac  = afFacMom*1.D0
-      ArDudrFac    = vfFacMom*1.D0
-      mTFacU       = mtFacMom*1.D0
-      fuFac        = cfFacMom*1.D0
-      phxFac       = pfFacMom*1.D0
+      uDudxFac     = afFacMom*1.
+      AhDudxFac    = vfFacMom*1.
+      A4DuxxdxFac  = vfFacMom*0.
+      vDudyFac     = afFacMom*1.
+      AhDudyFac    = vfFacMom*1.
+      A4DuyydyFac  = vfFacMom*0.
+      rVelDudrFac  = afFacMom*1.
+      ArDudrFac    = vfFacMom*1.
+      mTFacU       = mtFacMom*1.
+      fuFac        = cfFacMom*1.
+      phxFac       = pfFacMom*1.
 C     o V momentum equation
-      uDvdxFac     = afFacMom*1.D0
-      AhDvdxFac    = vfFacMom*1.D0
-      A4DvxxdxFac  = vfFacMom*0.D0
-      vDvdyFac     = afFacMom*1.D0
-      AhDvdyFac    = vfFacMom*1.D0
-      A4DvyydyFac  = vfFacMom*0.D0
-      rVelDvdrFac  = afFacMom*1.D0
-      ArDvdrFac    = vfFacMom*1.D0
-      mTFacV       = mtFacMom*1.D0
-      fvFac        = cfFacMom*1.D0
-      phyFac       = pfFacMom*1.D0
-      vForcFac     = foFacMom*1.D0
+      uDvdxFac     = afFacMom*1.
+      AhDvdxFac    = vfFacMom*1.
+      A4DvxxdxFac  = vfFacMom*0.
+      vDvdyFac     = afFacMom*1.
+      AhDvdyFac    = vfFacMom*1.
+      A4DvyydyFac  = vfFacMom*0.
+      rVelDvdrFac  = afFacMom*1.
+      ArDvdrFac    = vfFacMom*1.
+      mTFacV       = mtFacMom*1.
+      fvFac        = cfFacMom*1.
+      phyFac       = pfFacMom*1.
+      vForcFac     = foFacMom*1.
 
 C--   Adams-Bashforth weighting factors
       ab15   =  1.5 _d 0 + abEps
       ab05   = -0.5 _d 0 - abEps
   
+C--   Calculate open water fraction at vorticity points
+      DO i=1-Olx,sNx+Olx
+       hFacZ(i,1-Oly)=0.
+      ENDDO
+      DO j=2-Oly,sNy+Oly
+       hFacZ(1-Olx,j)=0.
+       DO i=2-Olx,sNx+Olx
+        hFacZOpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
+        hFacZOpen=min(_hFacS(i,j,k,bi,bj),hFacZOpen)
+        hFacZOpen=min(_hFacS(i-1,j,k,bi,bj),hFacZOpen)
+        hFacZ(i,j)=hFacZOpen
+       ENDDO
+      ENDDO
+
+C---- Zonal momentum equation starts here
+
+#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
+C--   del^2 U (for use in del^4 U)
+C     Zonal flux d/dx U
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx-1
+        fZon(i,j) = drF(k)*_hFacC(i,j,k,bi,bj)
+     &   *_dyF(i,j,bi,bj)
+     &   *_recip_dxF(i,j,bi,bj)
+     &   *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))
+       ENDDO
+      ENDDO
+C     Meridional flux d/dy U
+      DO j=1-Oly+1,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        fMer(i,j) = drF(k)*hFacZ(i,j)
+     &   *_dxV(i,j,bi,bj)
+     &   *_recip_dyU(i,j,bi,bj)
+     &   *(uVel(i,j,k,bi,bj)-uVel(i,j-1,k,bi,bj))
+       ENDDO
+      ENDDO
+C     del^2 U
+      DO j=0,sNy+1
+       DO i=0,sNx+2
+        v4F(i,j) = recip_drF(k)*_recip_hFacW(i,j,k,bi,bj)
+     &  /rAw(i,j,bi,bj)
+     &  *( fZon(i,j  )    - fZon(i-1,j)
+     &    +fMer(i,j+1)    - fMer(i  ,j)
+     &   )*_maskW(i,j,k,bi,bj)
+       ENDDO
+      ENDDO
+#ifdef NO_SLIP_SIDES
+C-- No-slip BC's impose a drag at walls...
+      DO j=0,sNy+1
+       DO i=0,sNx+2
+        hFacZClosedS = _hFacW(i,j,k,bi,bj) - hFacZ(i,j)
+        hFacZClosedN = _hFacW(i,j,k,bi,bj) - hFacZ(i,j+1)
+        v4F(i,j) = v4F(i,j)
+     &  - _recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &   /rAw(i,j,bi,bj)
+     &   *( hFacZClosedS*dxV(i, j ,bi,bj)*recip_dyU(i, j ,bi,bj)
+     &     +hFacZClosedN*dxV(i,j+1,bi,bj)*recip_dyU(i,j+1,bi,bj)
+     &    )*drF(k)*2.*uVel(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
+       ENDDO
+      ENDDO
+#endif /* NO_SLIP_SIDES */
+#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
+
 C---  Calculate mean and eddy fluxes between cells for zonal flow.
 C--   Zonal flux (fZon is at east face of "u" cell)
 #define _XAatP(    i,j,k,bi,bj) ( XA(i,j)+XA(i+1,j) )* 0.5 _d 0
@@ -208,49 +275,33 @@ C     o Mean flow component of zonal flux
       ENDDO
 #endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
 C     o Eddy component of zonal flux
-#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
-C     - Biharmonic term
-      DO j=jMin,jMax
-       DO i=1-2, sNx+2
-        v4F(i,j) =
-     &   _XAatP(i,j,k,bi,bj)
-     &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))
-     &    *_recip_dxF(i,j,bi,bj)
-       ENDDO
-      ENDDO
-      DO j=jMin,jMax
-       DO i=1-1, sNx+1
-        vF(i,j) = 
-     &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)/
-     &    ( 0.5 _d 0 *(_rA(i,j,bi,bj)+_rA(i-1,j,bi,bj)) )
-     &    *( v4F(i,j)-v4F(i-1,j) )
-       ENDDO
-      ENDDO
-      DO j=jMin,jMax
-       DO i=1-2, sNx+2
-        v4F(i,j) =
-     &   viscA4*_XAatP(i,j,k,bi,bj)
-     &    *(vF(i+1,j)-vF(i,j))*_recip_dxF(i,j,bi,bj)
-       ENDDO
-      ENDDO
-#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
-#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
-C     - Laplacian terms
+C     - Laplacian  and bi-harmonic terms
       DO j=jMin,jMax
        DO i=iMin,iMax
         vF(i,j) =
-     &   -viscAh*_XAatP(i,j,k,bi,bj)
-     &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))
-     &    *_recip_dxF(i,j,bi,bj)
+#ifdef OLD_UV_GEOMETRY
+     &    ( XA(i,j)+XA(i+1,j) )* 0.5 _d 0
+#else
+     &    _dyF(i,j,bi,bj)*drF(k)*_hFacC(i,j,k,bi,bj)
+#endif /* OLD_UV_GEOMETRY */
+     &     *(
+#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
+     &        -viscAh*(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))
+#else
+     &        0.
+#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
+#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
+     &        +viscA4*( v4F(i+1,j)        -v4F(i,j)         )
+#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
+     &      )*_recip_dxF(i,j,bi,bj)
+
        ENDDO
       ENDDO
-#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
       DO j=jMin,jMax
        DO i=iMin,iMax
         fZon(i,j) = 0.
      &  _ADM(     + uDudxFac    * aF (i,j)    )
-     &  _LPM(     + AhDudxFac   * vF (i,j)    )
-     &  _BHM(     + A4DuxxdxFac * v4F(i,j)    )
+     &            + AhDudxFac   * vF (i,j)
        ENDDO
       ENDDO
 
@@ -262,8 +313,10 @@ C     o Mean flow component of meridional flux
         af(i,j) =
      &   (vTrans(i,j)+vTrans(i-1,j))
      &  *(uVel(i,j,k,bi,bj)+uVel(i,j-1,k,bi,bj))*0.25 _d 0
+#ifdef OLD_ADV_BCS
      &  *_maskW(i,j,k,bi,bj)
      &  *_maskW(i,j-1,k,bi,bj)
+#endif /* OLD_ADV_BCS */
 C       Note!!!! The line "*maskW(i,j,k,bi,bj)*maskW(i,j-1,k,bi,bj)" is
 C       Note!!!! boundary condition in the standard v010 CM5 code. The
 C       Note!!!! FV paper used a different bc in which this line is
@@ -272,109 +325,28 @@ C       Note!!!! omitted.
       ENDDO
 #endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
 C     Eddy component of meridional flux
-C     o Biharmonic term
-#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
-C     o Biharmonic term
-      DO j=1-2,sNy+2
-       DO i=iMin,iMax
-        hFacROpen=
-     &  min(_hFacW(i,j,k,bi,bj),
-     &      _hFacW(i,j-1,k,bi,bj))
-        hFacROpen=
-     &  min(_hFacS(i,j,k,bi,bj),hFacROpen)
-        hFacROpen=
-     &  min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
-        hFacRClosed= 1. _d 0 - hFacRopen
-        hFacRClosed= 1. _d 0
-#ifdef NO_LATERAL_SLIP
-        v4F(i,j) =
-     &  _YAatUBY(i,j,k,bi,bj)*hFacRClosed
-     &   *( (2.-_maskW(i,j-1,k,bi,bj))
-     &      *_maskW(i,j,k,bi,bj)*uVel(i,j  ,k,bi,bj)
-     &     -(2.-_maskW(i,j,k,bi,bj))
-     &      *_maskW(i,j-1,k,bi,bj)*uVel(i,j-1,k,bi,bj)
-     &    )*_recip_dyU(i,j,bi,bj)
-#else
-        v4F(i,j) =
-     &  _dxV(i,j,bi,bj)*drF(k)*hFacROpen
-     &   *( uVel(i,j  ,k,bi,bj)-uVel(i,j-1,k,bi,bj) )
-     &   *_recip_dyU(i,j,bi,bj)
-#endif
-       ENDDO
-      ENDDO
-      DO j=1-2,sNy+2
-       DO i=iMin,iMax
-        vF(i,j) =
-     &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)/
-     &    ( 0.5 _d 0 *(_rA(i,j,bi,bj)+_rA(i-1,j,bi,bj)) )
-     &  *(v4F(i,j+1)          - v4F(i  ,j) )
-       ENDDO
-      ENDDO
-      DO j=1-2,sNy+2
-       DO i=iMin,iMax
-        hFacROpen=
-     &  min(_hFacW(i,j,k,bi,bj),
-     &      _hFacW(i,j-1,k,bi,bj))
-        hFacROpen=
-     &  min(_hFacS(i,j,k,bi,bj),hFacROpen)
-        hFacROpen=
-     &  min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
-        hFacRClosed= 1. _d 0 - hFacRopen
-        hFacRClosed= 1. _d 0
-#ifdef NO_LATERAL_SLIP
-        v4F(i,j) =
-     &  viscA4*_YAatUBY(i,j,k,bi,bj)*hFacRClosed
-     &   *( (2.-_maskW(i,j-1,k,bi,bj))
-     &      *_maskW(i,j,k,bi,bj)*vF(i,j  )
-     &     -(2.-_maskW(i,j,k,bi,bj))
-     &      *_maskW(i,j-1,k,bi,bj)*vF(i,j-1)
-     &    )*_recip_dyU(i,j,bi,bj)
-#else
-        v4F(i,j) =
-     &  _dxV(i,j,bi,bj)*drF(k)*hFacROpen
-     &   *( vF(i,j )-vF(i,j-1) )
-     &   *_recip_dyU(i,j,bi,bj)
-#endif
-       ENDDO
-      ENDDO
-#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
-#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
-C     o Laplacian term
+C     o Laplacian and bi-harmonic term
       DO j=jMin,jMax
        DO i=iMin,iMax
-        hFacROpen=
-     &  min(_hFacW(i,j,k,bi,bj),
-     &      _hFacW(i,j-1,k,bi,bj))
-        hFacROpen=
-     &  min(_hFacS(i,j,k,bi,bj),hFacROpen)
-        hFacROpen=
-     &  min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
-        hFacRClosed= 1. _d 0 - hFacRopen
-        hFacRClosed= 1. _d 0
-#ifdef NO_LATERAL_SLIP
-        vF(i,j) =
-     &  -viscAh*_YAatUBY(i,j,k,bi,bj)*hFacRClosed
-     &   *( (2.-_maskW(i,j-1,k,bi,bj))
-     &      *_maskW(i,j,k,bi,bj)*uVel(i,j  ,k,bi,bj)
-     &     -(2.-_maskW(i,j,k,bi,bj))
-     &      *_maskW(i,j-1,k,bi,bj)*uVel(i,j-1,k,bi,bj)
-     &    )*_recip_dyU(i,j,bi,bj)
+        vF(i,j) = _dxV(i,j,bi,bj)*drF(k)*hFacZ(i,j)
+     &     *(
+#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
+     &        -viscAh*(uVel(i,j,k,bi,bj)-uVel(i,j-1,k,bi,bj))
 #else
-        vF(i,j) =
-     &  -viscAh*_dxV(i,j,bi,bj)*drF(k)*hFacROpen
-     &   *( uVel(i,j  ,k,bi,bj)-uVel(i,j-1,k,bi,bj) )
-     &   *_recip_dyU(i,j,bi,bj)
-#endif
+     &        0.
+#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
+#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
+     &        +viscA4*( v4F(i,j)        -v4F(i,j-1)         )
+#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
+     &      )
+     &       *_recip_dyU(i,j,bi,bj)
        ENDDO
       ENDDO
-#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
-
       DO j=jMin,jMax
        DO i=iMin,iMax
         fMer(i,j) = 0.
      &  _ADM(      + vDudyFac    * aF (i,j)    )
-     &  _LPM(      + AhDudyFac   * vF (i,j)    )
-     &  _BHM(      + A4DuyydyFac * v4F(i,j)    )
+     &             + AhDudyFac   * vF (i,j)
        ENDDO
       ENDDO
 C--   Vertical flux (fVer is at upper face of "u" cell)
@@ -386,8 +358,10 @@ C     Mean flow component of vertical flux
      &   rVelMaskOverride*(rTrans(i,j)+rTrans(i-1,j))
      &  *( uVel(i,j,k,bi,bj)+uVel(i,j,kM1,bi,bj) )
      &  *0.25 _d 0
+#ifdef OLD_ADV_BCS
      &  *_maskW(i,j,k,bi,bj)
      &  *_maskW(i,j,kM1,bi,bj)
+#endif /* OLD_ADV_BCS */
 C       Note!!!! The line "*(maskW(i,j,k,bi,bj)*maskW(i,j,kM1,bi,bj))" is
 C       Note!!!! boundary condition in the standard v010 CM5 code. The
 C       Note!!!! FV paper used a different bc in which this line is
@@ -399,22 +373,23 @@ C       Note!!!! omitted.
 C     Eddy component of vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-#ifdef NO_BOTTOM_SLIP
         vf(i,j) =
      &   -viscAr
-     &   *_RAatU1(i,j,k,bi,bj)
-     &    _RAatU2(i,j,k,bi,bj)
-     &    _RAatU3(i,j,k,bi,bj)
-     &   *( ( 2.-_maskW(i,j,k,bi,bj) )
-     &      *uVel(i,j,kM1,bi,bj) 
-     &      - uVel(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
+#ifdef OLD_UV_GEOMETRY
+     &    *( RA(i,j,bi,bj)*maskC(i,j)
+     &      +RA(i-1,j,bi,bj)*maskC(i-1,j) ) * 0.5 _d 0
+#else
+     &    *rAw(i,j,bi,bj)
+#endif /* OLD_UV_GEOMETRY */
+#ifdef NO_SLIP_BOTTOM
+     &   *( ( 2.-_maskW(i,j,k,bi,bj) )*uVel(i,j,kM1,bi,bj)
+     &     -     _maskW(i,j,k,bi,bj)  *uVel(i,j,k,bi,bj)
      &    )*rkFac*recip_drC(k)
 #else
-        vf(i,j) =
-     &   -viscAr*_dxC(i,j,bi,bj)*_dyG(i,j,bi,bj)
-     &   *(uVel(i,j,km1,bi,bj)-uVel(i,j,k,bi,bj))*rkFac*recip_drC(k)
-    &    *_maskW(i,j,k,bi,bj)*rVelMaskOverride
-#endif
+     &   *( uVel(i,j,km1,bi,bj)-uVel(i,j,k,bi,bj)
+     &    )*rkFac*recip_drC(k)
+     &    *_maskW(i,j,k,bi,bj)*rVelMaskOverride
+#endif /* NO_SLIP_BOTTOM */
        ENDDO
       ENDDO
 #endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
@@ -426,16 +401,20 @@ C     Eddy component of vertical flux
        ENDDO
       ENDDO
 #ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
+#ifdef NO_SLIP_BOTTOM
 C     Bottom boundary condition
-#ifdef NO_BOTTOM_SLIP
       IF ( k .EQ. Nr ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-        vf(i,j) =
-     &  -viscAr
-     &  *_RAatU_Bot(i,j,k,bi,bj)
-     &  *_maskW(i,j,k,bi,bj)
-     &  *uVel(i,j,k,bi,bj)*recip_drF(k)*2. _d 0*rkFac
+         vf(i,j) =
+     &    -viscAr
+#ifdef OLD_UV_GEOMETRY
+     &    *( RA(i,j,bi,bj) + RA(i-1,j,bi,bj) ) * 0.5 _d 0
+#else
+     &    *rAw(i,j,bi,bj)
+#endif /* OLD_UV_GEOMETRY */
+     &    *_maskW(i,j,k,bi,bj)
+     &    *uVel(i,j,k,bi,bj)*rkFac*recip_DrF(k)*2. _d 0
         ENDDO
        ENDDO
        DO j=jMin,jMax
@@ -444,7 +423,7 @@ C     Bottom boundary condition
         ENDDO
        ENDDO
       ENDIF
-#endif
+#endif /* NO_SLIP_BOTTOM */
 #endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
 
 #ifdef INCLUDE_GRADPH_CODE
@@ -462,10 +441,13 @@ C--   term
       DO j=jMin,jMax
        DO i=iMin,iMax
         gU(i,j,k,bi,bj) =
+#ifdef OLD_UV_GEOM
      &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)/
-     &    ( 0.5 _d 0 
-     &      *( _rA(i,j,bi,bj)
-     &        +_rA(i-1,j,bi,bj)) )
+     &    ( 0.5 _d 0*(rA(i,j,bi,bj)+rA(i-1,j,bi,bj)) )
+#else
+     &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
+     &    /rAw(i,j,bi,bj)
+#endif
      &  *(fZon(i,j  )          - fZon(i-1,j)
      &   +fMer(i,j+1)          - fMer(i  ,j)
      &   +fVerU(i,j,kUp)*rkFac - fVerU(i,j,kDown)*rkFac
@@ -473,6 +455,25 @@ C--   term
      _PHM(&   +phxFac * pf(i,j) )
        ENDDO
       ENDDO
+
+#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
+#ifdef NO_SLIP_SIDES
+C-- No-slip BC's impose a drag at walls...
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        hFacZClosedS = _hFacW(i,j,k,bi,bj) - hFacZ(i,j)
+        hFacZClosedN = _hFacW(i,j,k,bi,bj) - hFacZ(i,j+1)
+        gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)
+     &   -_recip_hFacW(i,j,k,bi,bj)
+     &   *recip_drF(k)/rAw(i,j,bi,bj)
+     &   *( hFacZClosedS*_dxV(i, j ,bi,bj)*_recip_dyU(i, j ,bi,bj)
+     &     +hFacZClosedN*_dxV(i,j+1,bi,bj)*_recip_dyU(i,j+1,bi,bj) )
+     &   *drF(k)*2.*( viscAh*uVel(i,j,k,bi,bj)
+     &               -viscA4*v4F(i,j) )
+       ENDDO
+      ENDDO
+#endif /* NO_SLIP_SIDES */
+#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
 
 #ifdef INCLUDE_MOMENTUM_FORCING_CODE
 C--   Forcing term
@@ -517,6 +518,55 @@ C--   Set du/dt on boundaries to zero
        ENDDO
       ENDDO
 
+C---- Meridional momentum equation starts here
+
+#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
+C--   del^2 V (for use in del^4 V)
+C     Zonal flux d/dx V
+      DO j=1-Oly,sNy+Oly-1
+       DO i=1-Olx,sNx+Olx
+        fZon(i,j) = drF(k)*hFacZ(i,j)
+     &   *_dyU(i,j,bi,bj)
+     &   *_recip_dxV(i,j,bi,bj)
+     &   *(vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj))
+       ENDDO
+      ENDDO
+C     Meridional flux d/dy V
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx+1,sNx+Olx
+        fMer(i,j) = drF(k)*_hFacC(i,j,k,bi,bj)
+     &   *_dxF(i,j,bi,bj)
+     &   *_recip_dyF(i,j,bi,bj)
+     &   *(vVel(i,j+1,k,bi,bj)-vVel(i,j,k,bi,bj))
+       ENDDO
+      ENDDO
+C     del^2 U
+      DO j=0,sNy+2
+       DO i=0,sNx+1
+        v4F(i,j) = recip_drF(k)*_recip_hFacS(i,j,k,bi,bj)
+     &  /rAs(i,j,bi,bj)
+     &  *( fZon(i+1,j)    - fZon(i, j )
+     &    +fMer( i ,j)    - fMer(i,j-1)
+     &   )*_maskS(i,j,k,bi,bj)
+       ENDDO
+      ENDDO
+#ifdef NO_SLIP_SIDES
+C-- No-slip BC's impose a drag at walls...
+      DO j=0,sNy+2
+       DO i=0,sNx+1
+        hFacZClosedW = _hFacS(i,j,k,bi,bj) - hFacZ(i,j)
+        hFacZClosedE = _hFacS(i,j,k,bi,bj) - hFacZ(i+1,j)
+        v4F(i,j) = v4F(i,j)
+     &  -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &  /rAs(i,j,bi,bj)
+     &   *( hFacZClosedW*dyU( i ,j,bi,bj)*recip_dxV( i ,j,bi,bj)
+     &     +hFacZClosedE*dyU(i+1,j,bi,bj)*recip_dxV(i+1,j,bi,bj)
+     &    )*drF(k)*2.*vVel(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
+       ENDDO
+      ENDDO
+#endif
+#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
+
 C---  Calculate mean and eddy fluxes between cells for meridional 
 C---  velocity. Zonal flux (fZon is at west face of "v" cell)
 #define _XAatVBX(  i,j,k,bi,bj) ( XA(i,j)+XA(i,j-1) )* 0.5 _d 0
@@ -533,7 +583,9 @@ C     o Mean flow component of zonal flux
         af(i,j) =
      &   (uTrans(i,j)+uTrans(i,j-1) )
      &  *(vVel(i,j,k,bi,bj)+vVel(i-1,j,k,bi,bj))*0.25 _d 0
+#ifdef OLD_ADV_BCS
      &  *_maskS(i,j,k,bi,bj)*_maskS(i-1,j,k,bi,bj)
+#endif /* OLD_ADV_BCS */
 C       Note!!!! The line "*maskS(i,j,k,bi,bj)*maskS(i-1,j,k,bi,bj)" is
 C       Note!!!! boundary condition in the standard v010 CM5 code. The
 C       Note!!!! FV paper used a different bc in which this line is
@@ -542,105 +594,27 @@ C       Note!!!! omitted.
       ENDDO
 #endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
 C     Eddy component of zonal flux
-#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
-C     o Biharmonic term
-      DO j=jMin,jMax
-       DO i=1-2, sNx+2
-         hFacROpen=
-     &   min(_hFacW(i,j,k,bi,bj),
-     &       _hFacW(i,j-1,k,bi,bj))
-         hFacROpen=
-     &   min(_hFacS(i,j,k,bi,bj),hFacROpen)
-         hFacROpen=
-     &   min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
-         hFacRClosed=1. _d 0 -hFacROpen
-         hFacRClosed=1. _d 0
-#ifdef NO_LATERAL_SLIP
-         v4F(i,j) =
-     &   _XAatVBX(i,j,k,bi,bj)*hFacRClosed*
-     &   ( (2.-_maskS(i-1,j,k,bi,bj))*_maskS(i,j,k,bi,bj)*vVel(i  ,j,k,bi,bj)
-     &    -(2.-_maskS(i,j,k,bi,bj))*_maskS(i-1,j,k,bi,bj)*vVel(i-1,j,k,bi,bj)
-     &   )*_recip_dxV(i,j,bi,bj)
-#else
-        v4F(i,j) =
-     &  _dyU(i,j,bi,bj)*drF(K)*hFacROpen*
-     &  (vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj))
-     &  *_recip_dxV(i,j,bi,bj)
-#endif
-       ENDDO
-      ENDDO
-      DO j=jMin,jMax
-       DO i=1-2, sNx+2
-        vF(i,j)         =
-     &   -recip_hFacS(i,j,k,bi,bj)*recip_drF(k)/
-     &     ( 0.5 _d 0 *
-     &       ( _rA(i,j,bi,bj)
-     &        +_rA(i,j-1,bi,bj)) )
-     &  *(v4F(i+1,j)          - v4F(i,j  ) )
-       ENDDO
-      ENDDO
-      DO j=jMin,jMax
-       DO i=iMin, iMax
-         hFacROpen=
-     &   min(_hFacW(i,j,k,bi,bj),
-     &       _hFacW(i,j-1,k,bi,bj))
-         hFacROpen=
-     &   min(_hFacS(i,j,k,bi,bj),hFacROpen)
-         hFacROpen=
-     &   min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
-         hFacRClosed=1. _d 0 -hFacROpen
-         hFacRClosed=1. _d 0
-#ifdef NO_LATERAL_SLIP
-         v4F(i,j) =
-     &   viscA4*_XAatVBX(i,j,k,bi,bj)*hFacRClosed*
-     &   ( (2.-_maskS(i-1,j,k,bi,bj))*_maskS(i,j,k,bi,bj)*vF(i  ,j)
-     &    -(2.-_maskS(i,j,k,bi,bj))*_maskS(i-1,j,k,bi,bj)*vF(i-1,j)
-     &   )*_recip_dxV(i,j,bi,bj)
-#else
-        v4F(i,j) =
-     &  viscA4*_dyU(i,j,bi,bj)*drF(K)*hFacROpen*
-     &  (vF(i,j,k,bi,bj)-vF(i-1,j,k,bi,bj))
-     &  *_recip_dxV(i,j,bi,bj)
-#endif
-       ENDDO
-      ENDDO
-#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
-#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 C     o Laplacian term
       DO j=jMin,jMax
        DO i=iMin,iMax
-         hFacROpen=
-     &   min(_hFacW(i,j,k,bi,bj),
-     &       _hFacW(i,j-1,k,bi,bj))
-         hFacROpen=
-     &   min(_hFacS(i,j,k,bi,bj),hFacROpen)
-         hFacROpen=
-     &   min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
-         hFacRClosed=1. _d 0 -hFacROpen
-         hFacRClosed=1. _d 0
-#ifdef NO_LATERAL_SLIP
-         vf(i,j) =
-     &   -viscAh*_XAatVBX(i,j,k,bi,bj)*hFacRClosed*
-     &   ( (2.-_maskS(i-1,j,k,bi,bj))
-     &     *_maskS(i,j,k,bi,bj)*vVel(i  ,j,k,bi,bj)
-     &    -(2.-_maskS(i,j,k,bi,bj))
-     &     *_maskS(i-1,j,k,bi,bj)*vVel(i-1,j,k,bi,bj)
-     &   )*_recip_dxV(i,j,bi,bj)
+        vf(i,j) = _dyU(i,j,bi,bj)*drF(K)*hFacZ(i,j)
+     &     *(
+#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
+     &        -viscAh*(vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj))
 #else
-        vf(i,j) =
-     &  -viscAh*_dyU(i,j,bi,bj)*drF(K)*hFacROpen*
-     &  (vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj))
-     &  *_recip_dxV(i,j,bi,bj)
-#endif
+     &        0.
+#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
+#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
+     &        +viscA4*(v4F(i,j)         -v4F(i-1,j))
+#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
+     &      )*_recip_dxV(i,j,bi,bj)
        ENDDO
       ENDDO
-#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
       DO j=jMin,jMax
        DO i=iMin,iMax
         fZon(i,j) = 0.
      &  _ADM(     + uDvdxFac    * aF (i,j)    )
-     &  _LPM(     + AhDvdxFac   * vF (i,j)    )
-     &  _BHM(     + A4DvxxdxFac * v4F(i,j)    )
+     &            + AhDvdxFac   * vF (i,j)
        ENDDO
       ENDDO
 C--   Meridional flux (fMer is at north face of "v" cell)
@@ -655,49 +629,31 @@ C     o Mean flow component of meridional flux
       ENDDO
 #endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
 C     Eddy component of meridional flux
-#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
-C     o Biharmonic term
-      DO j=1-2, sNy+2
-       DO i=iMin,iMax
-        v4F(i,j) =
-     &  _YAatP(i,j,k,bi,bj)
-     &   *( vVel(i,j+1,k,bi,bj) - vVel(i,j,k,bi,bj) )
-     &   *_recip_dyC(i,j,bi,bj)
-       ENDDO
-      ENDDO
-      DO j=1-2, sNy+2
-       DO i=iMin,iMax
-        vF(i,j) =
-     &   -recip_hFacS(i,j,k,bi,bj)*recip_drF(k)/
-     &     ( 0.5 _d 0 *( _rA(i,j,bi,bj)+ _rA(i,j-1,bi,bj)) )
-     &  *(v4F(i,j  )          - v4F(i,j-1) )
-       ENDDO
-      ENDDO
-      DO j=1-2, sNy+2
-       DO i=iMin,iMax
-        v4F(i,j) =
-     &  viscA4*_YAatP(i,j,k,bi,bj)
-     &   *( vF(i,j+1) - vF(i,j) )*_recip_dyC(i,j,bi,bj)
-       ENDDO
-      ENDDO
-#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
-#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 C     o Laplacian term
       DO j=jMin,jMax
        DO i=iMin,iMax
-        vF(i,j) =
-     &  -viscAh*_YAatP(i,j,k,bi,bj)
-     &   *( vVel(i,j+1,k,bi,bj) - vVel(i,j,k,bi,bj) )
-     &   *_recip_dyC(i,j,bi,bj)
+        vF(i,j) = 
+#ifdef OLD_UV_GEOMETRY
+     & ( YA(i,j) + YA(i,j+1) ) *0.5 _d 0
+#else
+     & _dxF(i,j,bi,bj)*drF(k)*_hFacC(i,j,k,bi,bj)
+#endif /* OLD_UV_GEOMETRY */
+     &     *( 0.
+#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
+     &        -viscAh*(vVel(i,j+1,k,bi,bj)-vVel(i,j,k,bi,bj))
+#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
+#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
+     &        +viscA4*(v4F(i,j+1)         -v4F(i,j))
+#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
+     &      )*_recip_dyF(i,j,bi,bj)
+
        ENDDO
       ENDDO
-#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
       DO j=jMin,jMax
        DO i=iMin,iMax
         fMer(i,j) = 0.
      &  _ADM(     + vDvdyFac    * af(i,j)      )
-     &  _LPM(     + AhDvdyFac   * vf(i,j)      )
-     &  _BHM(     + A4DvyydyFac * v4F(i,j)     )
+     &            + AhDvdyFac   * vf(i,j) 
        ENDDO
       ENDDO
 C--   Vertical flux (fVer is at upper face of "v" cell)
@@ -709,13 +665,14 @@ C     o Mean flow component of vertical flux
      &   rVelMaskOverride*(rTrans(i,j)+rTrans(i,j-1))
      &  *( vVel(i,j,k,bi,bj)+vVel(i,j,kM1,bi,bj) )
      &  *0.25 _d 0
+#ifdef OLD_ADV_BCS
      &  *_maskS(i,j,k,bi,bj)*_maskS(i,j,kM1,bi,bj)
+#endif /* OLD_ADV_BCS */
 C       Note!!!! The line "*(maskS(i,j,k,bi,bj)*maskS(i,j,kM1,bi,bj))" is
 C       Note!!!! boundary condition in the standard v010 CM5 code. The
 C       Note!!!! FV paper used a different bc in which this line is
 C       Note!!!! omitted.
-C       Note!!!! Is wMaskOverridde right for implicit free-surface?
-
+C       Note!!!! Is rVelMaskOverridde right for implicit free-surface?
        ENDDO
       ENDDO
 #endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
@@ -723,24 +680,26 @@ C       Note!!!! Is wMaskOverridde right for implicit free-surface?
 C     Eddy component of vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-#ifdef NO_BOTTOM_SLIP
         vf(i,j) =
      &   -viscAr
-     &   *_RAatV1(i,j,k,bi,bj)
-     &    _RAatV2(i,j,k,bi,bj)
-     &    _RAatV3(i,j,k,bi,bj)
-     &   *( ( 2.-_maskS(i,j,k,bi,bj) )
-     &     *vVel(i,j,kM1,bi,bj) 
-     &     - vVel(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
+#ifdef OLD_UV_GEOMETRY
+     &   *( RA(i,j,bi,bj)*maskC(i,j)
+     &     +RA(i,j-1,bi,bj)*maskC(i,j-1) ) * 0.5 _d 0
+#else
+     &   *rAs(i,j,bi,bj)
+#endif /* OLD_UV_GEOMETRY */
+#ifdef NO_SLIP_BOTTOM
+     &   *( ( 2.-_maskS(i,j,k,bi,bj) )*vVel(i,j,kM1,bi,bj)
+     &     -     _maskS(i,j,k,bi,bj)  *vVel(i,j,k,bi,bj)
      &    )*rkFac*recip_drC(k)
 #else
-        vf(i,j) =
-     &   -viscAr*_dyC(i,j,bi,bj)*_dxG(i,j,bi,bj)
-     &   *(vVel(i,j,km1,bi,bj)-vVel(i,j,k,bi,bj))*rkFac*recip_drC(k)
-     &    *_maskS(i,j,k,bi,bj)*wMaskOverride
-#endif
+     &   *(vVel(i,j,km1,bi,bj)-vVel(i,j,k,bi,bj))
+     &   *rkFac*recip_drC(k)
+     &   *_maskS(i,j,k,bi,bj)*rVelMaskOverride
+#endif /* NO_SLIP_BOTTOM */
        ENDDO
       ENDDO
+#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
       DO j=jMin,jMax
        DO i=iMin,iMax
         fVerV(i,j,kUp) = rVelDvdrFac * af(i,j) 
@@ -748,16 +707,20 @@ C     Eddy component of vertical flux
        ENDDO
       ENDDO
 C     Bottom level boundary condition
-#ifdef NO_BOTTOM_SLIP
+#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
+#ifdef NO_SLIP_BOTTOM
       IF ( k .EQ. Nr ) THEN
       DO j=jMin,jMax
        DO i=iMin,iMax
        vf(i,j) =
      & -viscAr
-     & *_RAatV_Bot1(i,j,k,bi,bj)
-     &  _RAatV_Bot2(i,j,k,bi,bj)
+#ifdef OLD_UV_GEOMETRY
+     & *( RA(i,j,bi,bj) + RA(i,j-1,bi,bj) ) * 0.5 _d 0
+#else
+     & *rAs(i,j,bi,bj)
+#endif /* OLD_UV_GEOMETRY */
      & *_maskS(i,j,k,bi,bj)
-     & *vVel(i,j,k,bi,bj)*recip_drF(k)*2. _d 0*rkFac
+     & *vVel(i,j,k,bi,bj)*rkFac*recip_drF(k)*2. _d 0
        ENDDO
       ENDDO
       DO j=jMin,jMax
@@ -766,7 +729,7 @@ C     Bottom level boundary condition
        ENDDO
       ENDDO
       ENDIF
-#endif
+#endif /* NO_SLIP_BOTTOM */
 #endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
 
 #ifdef INCLUDE_GRADPH_CODE
@@ -784,10 +747,13 @@ C--   term
       DO j=jMin,jMax
        DO i=iMin,iMax
         gV(i,j,k,bi,bj) =
-     &   -recip_hFacS(i,j,k,bi,bj)*recip_drF(k)/
-     &     ( 0.5 _d 0 
-     &      *( _rA(i,j,bi,bj)
-     &        +_rA(i,j-1,bi,bj)) )
+#ifdef OLD_UV_GEOM
+     &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)/
+     &    ( 0.5 _d 0*(_rA(i,j,bi,bj)+_rA(i,j-1,bi,bj)) )
+#else
+     &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &    /rAs(i,j,bi,bj)
+#endif
      &  *(fZon(i+1,j)          - fZon(i,j  )
      &   +fMer(i,j  )          - fMer(i,j-1)
      &   +fVerV(i,j,kUp)*rkFac - fVerV(i,j,kDown)*rkFac
@@ -795,6 +761,24 @@ C--   term
      _PHM(&   +phyFac*pf(i,j) )
        ENDDO
       ENDDO
+
+#ifdef NO_SLIP_SIDES
+C-- No-slip BC's impose a drag at walls...
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+        hFacZClosedW = _hFacS(i,j,k,bi,bj) - hFacZ(i,j)
+        hFacZClosedE = _hFacS(i,j,k,bi,bj) - hFacZ(i+1,j)
+        gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)
+     &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &    /rAs(i,j,bi,bj)
+     &   *( hFacZClosedW*_dyU( i ,j,bi,bj)*_recip_dxV( i ,j,bi,bj)
+     &     +hFacZClosedE*_dyU(i+1,j,bi,bj)*_recip_dxV(i+1,j,bi,bj) )
+     &   *rkFac*drF(k)*2.*( viscAh*vVel(i,j,k,bi,bj)
+     &                     -viscA4*v4F(i,j) )
+       ENDDO
+      ENDDO
+#endif
+
 
 #ifdef INCLUDE_MOMENTUM_FORCING_CODE
 C--   Forcing term

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.9 1998/08/15 17:02:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.10 1998/11/30 23:45:24 adcroft Exp $
 C
 C     /==========================================================\
 C     | GRID_MACROS.h                                            |
@@ -147,6 +147,8 @@ C     \==========================================================/
 #undef    RA_FX
 #undef    RA_FY
 #include "RA_MACROS.h"
+#include "RAW_MACROS.h"
+#include "RAS_MACROS.h"
 
 #undef    MASKW_CONST   
 #undef    MASKW_FX

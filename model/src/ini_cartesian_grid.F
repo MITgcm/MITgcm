@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.10 1998/11/06 22:44:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.11 1998/11/30 23:45:24 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -156,7 +156,9 @@ C     Calculate vertical face area
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO J=1,sNy
          DO I=1,sNx
-          rA(I,J,bi,bj) = dxF(I,J,bi,bj)*dyF(I,J,bi,bj)
+          rA (I,J,bi,bj) = dxF(I,J,bi,bj)*dyF(I,J,bi,bj)
+          rAw(I,J,bi,bj) = dxC(I,J,bi,bj)*dyG(I,J,bi,bj)
+          rAs(I,J,bi,bj) = dxG(I,J,bi,bj)*dyC(I,J,bi,bj)
           tanPhiAtU(I,J,bi,bj) = 0. _d 0
           tanPhiAtV(I,J,bi,bj) = 0. _d 0
          ENDDO
@@ -164,6 +166,8 @@ C     Calculate vertical face area
        ENDDO
       ENDDO
       _EXCH_XY_R4 (rA       , myThid )
+      _EXCH_XY_R4 (rAw      , myThid )
+      _EXCH_XY_R4 (rAs      , myThid )
       _EXCH_XY_R4 (tanPhiAtU , myThid )
       _EXCH_XY_R4 (tanPhiAtV , myThid )
 

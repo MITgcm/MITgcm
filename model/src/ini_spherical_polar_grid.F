@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.10 1998/11/06 22:44:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.11 1998/11/30 23:45:25 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -135,19 +135,6 @@ C     dxG, dyG are separations between cell corners along cell faces.
       ENDDO
       _EXCH_XY_R4(dxG, myThid )
       _EXCH_XY_R4(dyG, myThid )
-C     dxV, dyU are separations between velocity points along cell faces.
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
-          dxV(I,J,bi,bj) = (dxG(I,J,bi,bj)+dxG(I-1,J,bi,bj))*0.5 _d 0
-          dyU(I,J,bi,bj) = (dyG(I,J,bi,bj)+dyG(I,J-1,bi,bj))*0.5 _d 0
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      _EXCH_XY_R4(dxV, myThid )
-      _EXCH_XY_R4(dyU, myThid )
 C     dxC, dyC is separation between cell centers
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -161,6 +148,23 @@ C     dxC, dyC is separation between cell centers
       ENDDO
       _EXCH_XY_R4(dxC, myThid )
       _EXCH_XY_R4(dyC, myThid )
+C     dxV, dyU are separations between velocity points along cell faces.
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO J=1,sNy
+         DO I=1,sNx
+          dxV(I,J,bi,bj) = (dxG(I,J,bi,bj)+dxG(I-1,J,bi,bj))*0.5 _d 0
+#ifdef OLD_UV_GEOMETRY
+          dyU(I,J,bi,bj) = (dyG(I,J,bi,bj)+dyG(I,J-1,bi,bj))*0.5 _d 0
+#else
+          dyU(I,J,bi,bj) = (dyC(I,J,bi,bj)+dyC(I-1,J,bi,bj))*0.5 _d 0
+#endif
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      _EXCH_XY_R4(dxV, myThid )
+      _EXCH_XY_R4(dyU, myThid )
 C     Calculate vertical face area and trigonometric terms
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -169,8 +173,13 @@ C     Calculate vertical face area and trigonometric terms
           jG = myYGlobalLo + (bj-1)*sNy + J-1
           latS = yc(i,j,bi,bj)-delY(jG)*0.5 _d 0
           latN = yc(i,j,bi,bj)+delY(jG)*0.5 _d 0
+#ifdef OLD_UV_GEOMETRY
           rA(I,J,bi,bj) = dyF(I,J,bi,bj)
      &    *rSphere*(SIN(latN*deg2rad)-SIN(latS*deg2rad))
+#else
+          rA(I,J,bi,bj) = rSphere*delX(iG)*deg2rad
+     &    *rSphere*(SIN(latN*deg2rad)-SIN(latS*deg2rad))
+#endif
 C         Area cannot be zero but sin can be if lat if < -90.
           IF ( rA(I,J,bi,bj) .LT. 0. ) rA(I,J,bi,bj) = -rA(I,J,bi,bj)
           tanPhiAtU(i,j,bi,bj)=tan(_yC(i,j,bi,bj)*deg2rad)
@@ -182,7 +191,28 @@ C         Area cannot be zero but sin can be if lat if < -90.
       _EXCH_XY_R4 (rA       , myThid )
       _EXCH_XY_R4 (tanPhiAtU , myThid )
       _EXCH_XY_R4 (tanPhiAtV , myThid )
-
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO J=1,sNy
+         DO I=1,sNx
+          iG = myXGlobalLo + (bi-1)*sNx + I-1
+          jG = myYGlobalLo + (bj-1)*sNy + J-1
+          latS = yc(i,j-1,bi,bj)
+          latN = yc(i,j,bi,bj)
+#ifdef OLD_UV_GEOMETRY
+          rAw(I,J,bi,bj) = 0.5*(rA(I,J,bi,bj)+rA(I-1,J,bi,bj))
+          rAs(I,J,bi,bj) = 0.5*(rA(I,J,bi,bj)+rA(I,J-1,bi,bj))
+#else
+          rAw(I,J,bi,bj) = 0.5*(rA(I,J,bi,bj)+rA(I-1,J,bi,bj))
+          rAs(I,J,bi,bj) = rSphere*delX(iG)*deg2rad
+     &    *rSphere*(SIN(latN*deg2rad)-SIN(latS*deg2rad))
+#endif
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      _EXCH_XY_R4 (rAw      , myThid )
+      _EXCH_XY_R4 (rAs      , myThid )
 C
       RETURN
       END

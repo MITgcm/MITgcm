@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.16 1998/11/06 22:44:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.17 1998/11/30 23:45:24 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -197,14 +197,14 @@ C     WRITE(6,*) ' mythid, err = ', mythid, SQRT(err)
       err    = errBuf(1,1)
       
       _BEGIN_MASTER( myThid )
-      write(0,'(A,1PE30.20)') 'cg2d: Sum(rhs) = ',sumRHS
+      write(0,'(A,1PE30.14)') 'cg2d: Sum(rhs) = ',sumRHS
       _END_MASTER( )
 
       actualIts      = 0
       actualResidual = SQRT(err)
 C     _BARRIER
       _BEGIN_MASTER( myThid )
-       WRITE(0,'(A,I6,1PE30.20)') ' CG2D iters, err = ', 
+       WRITE(0,'(A,I6,1PE30.14)') ' CG2D iters, err = ', 
      & actualIts, actualResidual
       _END_MASTER( )
 
@@ -363,7 +363,7 @@ C--   Un-normalise the answer
 
       _EXCH_XY_R8(cg2d_x, myThid )
       _BEGIN_MASTER( myThid )
-       WRITE(0,'(A,I6,1PE30.20)') ' CG2D iters, err = ', 
+       WRITE(0,'(A,I6,1PE30.14)') ' CG2D iters, err = ', 
      & actualIts, actualResidual
       _END_MASTER( )
 
