@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.2 2004/10/27 23:19:43 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.3 2004/10/28 01:31:36 edhill Exp $
 # $Name:  $
 
 Np=3
@@ -55,8 +55,7 @@ fi
 if test $kpr = 1
 then
 
- # cp -p ../../tools/build_options/linux_ia32_ifc+mpi_cg01 genmake_optfile
- cp optfile genmake_optfile
+ cp -p ../../tools/build_options/linux_ia32_ifc+mpi_cg01 genmake_optfile
  echo '==== compile coupler:'
  cd build_cpl
  echo ' --- genmake2 (cpl):'
