@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_OPTIONS.h,v 1.5 2004/07/13 16:47:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_OPTIONS.h,v 1.6 2004/09/03 20:10:47 edhill Exp $
 C $Name:  $
 
 C CPP options file for PTRACERS package
@@ -25,3 +25,7 @@ C CPP Macros go here
 
 #endif /* ALLOW_PTRACERS */
 #endif /* PTRACERS_OPTIONS_H */
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

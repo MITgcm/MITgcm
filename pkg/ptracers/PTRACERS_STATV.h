@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS_STATV.h,v 1.3 2004/07/13 16:47:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS_STATV.h,v 1.4 2004/09/03 20:10:47 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -33,3 +33,8 @@ C     ptracertave    : tracer values (mol/m-3)
 
 #endif /* ALLOW_TIMEAVE */ 
 #endif /* ALLOW_PTRACERS */ 
+
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***
