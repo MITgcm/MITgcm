@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.32 2001/03/05 19:57:31 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.33 2001/03/06 16:12:45 jmc Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -207,7 +207,7 @@ foreach dr ($PACKAGES)
     echo "*" Package \"$dr\" has not been enabled.
   endif
 end
-if (! $?STANDARDDIRS) set STANDARDDIRS=(eesupp model diags)
+if (! $?STANDARDDIRS) set STANDARDDIRS=(eesupp model)
 foreach dr ($STANDARDDIRS)
   set adr=$ROOTDIR/$dr/src
   if (! -d $adr) then
