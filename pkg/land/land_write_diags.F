@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_write_diags.F,v 1.3 2004/11/14 19:55:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_write_diags.F,v 1.4 2005/04/06 18:41:51 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -39,8 +39,8 @@ CEOP
 
 #ifdef ALLOW_LAND
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
 
 C     == Local variables ==
       INTEGER bi, bj, k, nrec
@@ -79,7 +79,7 @@ C      Initialize time-average arrays to zero
 
 C     Dump files and restart average computation if needed
       ELSEIF (
-     &  DIFFERENT_MULTIPLE(land_taveFreq, myTime, myTime-land_deltaT)
+     &  DIFF_BASE_MULTIPLE(baseTime,land_taveFreq,myTime,land_deltaT)
      &       ) THEN
 
 C      Normalize by integrated time

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.17 2005/02/20 11:46:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.18 2005/04/06 18:41:31 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -61,8 +61,8 @@ C     !INPUT/OUTPUT PARAMETERS:
 
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) suff
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
       INTEGER bi, bj, K
       _RL DDTT
       INTEGER thisdate(4), prevdate(4)
@@ -73,8 +73,7 @@ C----------------------------------------------------------------
 C     Dump snapshot of KPP variables.
 
       IF ( myIter.NE.nIter0 .AND. 
-     &     DIFFERENT_MULTIPLE(kpp_dumpFreq,myTime,
-     &     myTime-deltaTClock)
+     &     DIFF_BASE_MULTIPLE(baseTime,kpp_dumpFreq,myTime,deltaTClock)
      &     ) THEN
         
         IF (KPPmixingMaps) THEN
@@ -193,7 +192,7 @@ C         Keep record of how much time has been integrated over
 C     Dump files and restart average computation if needed
       dumpFiles = .FALSE.
       IF ( myIter .NE. nIter0 ) THEN
-      IF (DIFFERENT_MULTIPLE(KPP_taveFreq,myTime,myTime-deltaTClock))
+      IF (DIFF_BASE_MULTIPLE(baseTime,KPP_taveFreq,myTime,deltaTClock))
      &     dumpFiles = .TRUE.
 #ifdef ALLOW_CAL
       IF ( calendarDumps .AND. (

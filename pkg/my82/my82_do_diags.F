@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/Attic/my82_do_diags.F,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/Attic/my82_do_diags.F,v 1.2 2005/04/06 18:43:11 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -61,8 +61,8 @@ C     myThid -  Number of this instance of INI_FORCING
 C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
       INTEGER bi, bj, K
       _RL DDTT
 CEOP
@@ -72,8 +72,8 @@ C     Dump snapshot of MY82 variables.
 C----------------------------------------------------------------
 
       IF (
-     &     DIFFERENT_MULTIPLE(MYdumpFreq,myCurrentTime,
-     &     myCurrentTime-deltaTClock)
+     &     DIFF_BASE_MULTIPLE(baseTime,MYdumpFreq,
+     &                        myCurrentTime,deltaTClock)
      &     ) THEN
          
        IF (MYmixingMaps) THEN
@@ -136,8 +136,8 @@ C     Initialize averages to zero
 
 C     Time Average MY82 fields
       IF ( myIter .EQ. nIter0 .OR.
-     &     DIFFERENT_MULTIPLE
-     &     (MYtaveFreq,myCurrentTime,myCurrentTime-deltaTClock) )
+     &     DIFF_BASE_MULTIPLE
+     &     (baseTime,MYtaveFreq,myCurrentTime,deltaTClock) )
      &     THEN
        DDTT=0.5*deltaTclock
       ELSE
@@ -160,8 +160,8 @@ C     Keep record of how much time has been integrated over
 
 C     Dump files and restart average computation if needed
       IF ( myIter.NE.nIter0 .AND. 
-     &     DIFFERENT_MULTIPLE(MYtaveFreq,myCurrentTime,
-     &     myCurrentTime-deltaTClock)
+     &     DIFF_BASE_MULTIPLE(baseTime,MYtaveFreq,
+     &     myCurrentTime,deltaTClock)
      &     ) THEN
          
 C     Normalize by integrated time

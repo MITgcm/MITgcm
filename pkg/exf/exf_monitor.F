@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.4 2005/02/07 16:29:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.5 2005/04/06 18:39:56 jmc Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -26,8 +26,6 @@ C     !USES:
 #endif
 #include "exf_fields.h"
 #include "exf_clim_fields.h"
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 
 C     !INPUT PARAMETERS:
       INTEGER myIter

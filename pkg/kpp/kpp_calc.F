@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.30 2004/10/17 23:05:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.31 2005/04/06 18:41:31 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -114,8 +114,8 @@ C !USES: ===============================================================
       integer ikppkey
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
 
 C !INPUT PARAMETERS: ===================================================
 c Routine arguments
@@ -211,8 +211,8 @@ c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
 CEOP
 
 c     Check to see if new vertical mixing coefficient should be computed now?
-      IF ( DIFFERENT_MULTIPLE(kpp_freq,myTime,myTime-deltaTClock) .OR.
-     1     myTime .EQ. startTime ) THEN
+      IF ( DIFF_BASE_MULTIPLE(baseTime,kpp_freq,myTime,deltaTClock)
+     1     .OR. myTime .EQ. startTime ) THEN
          
 c-----------------------------------------------------------------------
 c     prepare input arrays for subroutine "kppmix" to compute

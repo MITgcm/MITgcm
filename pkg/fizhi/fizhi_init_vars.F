@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.16 2005/03/21 20:17:01 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.17 2005/04/06 18:40:28 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -70,7 +70,7 @@ c    All Fizhi alarms must be on for the first time step of a segment
 
 C Deal Here with Variables that are on a Fizhi Pickup or need Initialization
 
-      IF ( startTime.EQ.0. .AND. nIter0.EQ.0 ) THEN
+      IF ( startTime.EQ.baseTime .AND. nIter0.EQ.0 ) THEN
       print *,' In fizhi_init_vars: Beginning of New Experiment '
 
        do bj = myByLo(myThid), myByHi(myThid)

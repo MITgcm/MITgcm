@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_output.F,v 1.1 2005/01/04 00:14:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_output.F,v 1.2 2005/04/06 18:41:03 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -41,15 +41,15 @@ CEOP
 #ifdef ALLOW_GMREDI
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
       INTEGER bi, bj, K
       CHARACTER*(MAX_LEN_MBUF) suff
 
 
 #if ( defined (GM_NON_UNITY_DIAGONAL) || defined (GM_EXTRA_DIAGONAL) ) 
 
-      IF ( DIFFERENT_MULTIPLE(diagFreq,myTime,myTime-deltaTClock)
+      IF ( DIFF_BASE_MULTIPLE(baseTime,diagFreq,myTime,deltaTClock)
      &   ) THEN 
         WRITE(suff,'(I10.10)') myIter
 #ifdef GM_NON_UNITY_DIAGONAL
@@ -70,7 +70,7 @@ C     == Local variables ==
 #ifdef ALLOW_TIMEAVE
 
 C     Dump files and restart average computation if needed
-      IF ( DIFFERENT_MULTIPLE(taveFreq,myTime,myTime-deltaTClock)
+      IF ( DIFF_BASE_MULTIPLE(baseTime,taveFreq,myTime,deltaTClock)
      &     ) THEN
          
 C      Normalize by integrated time

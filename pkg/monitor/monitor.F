@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.31 2004/12/23 21:42:56 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.32 2005/04/06 18:42:28 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -26,8 +26,8 @@ C     !USES:
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "MONITOR.h"
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
 
 C     !INPUT PARAMETERS:
       INTEGER myIter
@@ -43,7 +43,7 @@ C     !LOCAL VARIABLES:
 
       dT=deltaTclock
 
-      IF (DIFFERENT_MULTIPLE(monitorFreq,myTime,myTime-dT)) THEN
+      IF (DIFF_BASE_MULTIPLE(baseTime,monitorFreq,myTime,dT)) THEN
         
 C       Dynamics field monitor start 
         _BEGIN_MASTER(myThid)

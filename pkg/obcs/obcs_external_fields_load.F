@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.2 2004/09/29 12:27:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.3 2005/04/06 18:43:35 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -46,8 +46,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-      LOGICAL DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
  
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===

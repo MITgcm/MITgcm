@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc.F,v 1.2 2004/10/17 23:12:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc.F,v 1.3 2005/04/06 18:43:11 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -41,9 +41,6 @@ C !USES: ============================================================
 #else /* ALLOW_AUTODIFF_TAMC */
       integer ikppkey
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-      EXTERNAL DIFFERENT_MULTIPLE
-      LOGICAL  DIFFERENT_MULTIPLE
 
 C !INPUT PARAMETERS: ===================================================
 c Routine arguments

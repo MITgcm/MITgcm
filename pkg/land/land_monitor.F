@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.7 2004/12/18 02:18:55 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.8 2005/04/06 18:41:51 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -40,8 +40,8 @@ CEOP
 #ifdef ALLOW_LAND
 #ifdef ALLOW_MONITOR
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
+      LOGICAL  DIFF_BASE_MULTIPLE
+      EXTERNAL DIFF_BASE_MULTIPLE
 
 C     == Local variables ==
 C     nLatBnd    :: Number of latitude bands
@@ -78,7 +78,7 @@ C     theEnergy  :: total energy
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( DIFFERENT_MULTIPLE(land_monFreq,myTime,myTime-deltaTclock)
+      IF ( DIFF_BASE_MULTIPLE(baseTime,land_monFreq,myTime,deltaTclock)
      &     .OR. myIter.EQ.nIter0 ) THEN
 
         mon_write_stdout = .FALSE.

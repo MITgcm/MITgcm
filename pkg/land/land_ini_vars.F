@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_ini_vars.F,v 1.4 2004/05/15 20:28:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_ini_vars.F,v 1.5 2005/04/06 18:41:51 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -89,7 +89,7 @@ C-     end bi,bj loops
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( startTime.EQ.0. .AND. nIter0.EQ.0 ) THEN
+      IF ( startTime.EQ.baseTime .AND. nIter0.EQ.0 ) THEN
 
 C--   Define the initial state : read from file
        _BEGIN_MASTER( myThid )
@@ -122,7 +122,7 @@ C        load grT & grW from AIM surf. BC in S/R aim_land2aim
 
 C-     to have a consistent initial state: set surface Temp & enthalpy
 C       assuming all the water in 1 phase only (solid or liquid):
-        IF ( ( startTime.EQ.0. .AND. nIter0.EQ.0 ) .OR.
+        IF ( ( startTime.EQ.baseTime .AND. nIter0.EQ.0 ) .OR.
      &   .NOT.( land_calc_grT .OR. land_calc_grW ) .OR.
      &       land_oldPickup ) THEN
          DO j=1,sNy
