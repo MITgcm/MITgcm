@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.4 2004/06/09 18:35:31 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.5 2004/06/09 18:54:20 molod Exp $
 C $Name:  $
 
        subroutine update_earth_exports (myTime, myIter, myThid)
@@ -7,27 +7,32 @@ c  Subroutine update_earth_exports - 'Wrapper' routine to update
 c        the fields related to the earth's surface that are needed
 c        by fizhi.
 c
-c Call:  getalb    (Set the 4 albedos based on veg type and time)
+c Call:  getlgr    (Set the leaf area index and surface greenness, 
+c                              based on veg type and month) 
+c        getalb    (Set the 4 albedos based on veg type, snow and time)
 c        getemiss  (Set the surface emissivity based on the veg type
 c                              and the snow depth)
-c        getlgr    (Set the leaf area index and surface greenness, 
-c                              based on veg type and month) 
 c-----------------------------------------------------------------------
        implicit none
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
-#include "GRID.h"
 #include "fizhi_land_SIZE.h"
 #include "fizhi_SIZE.h"
 #include "fizhi_coms.h"
 #include "gridalt_mapping.h"
 #include "fizhi_land_coms.h"
+#include "fizhi_earth_coms.h"
 #include "EEPARAMS.h"
 
       integer myTime, myIter, myThid
 
+      real lats(sNx,sNy), lons(sNx,sNy), cosz(sNx,sNy)
       integer i, j, L, bi, bj
       integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
+      integer sec, day, month
+      integer nmonf,ndayf
+      nmonf(n) = mod(n,10000)/100
+      ndayf(n) = mod(n,100)
 
       idim1 = 1-OLx
       idim2 = sNx+OLx
@@ -37,36 +42,36 @@ c-----------------------------------------------------------------------
       im2 = sNx
       jm1 = 1
       jm2 = sNy
+      month = nmonf(nymd)
+      day = ndayf(nymd)
+      sec = nsecf(nhms)
 
       do bj = myByLo(myThid), myByHi(myThid)
       do bi = myBxLo(myThid), myBxHi(myThid)
-
+       do j = jm1,jm2
+       do i = im1,im2
+        lons(i,j,bi,bj) = xC(i,j,bi,bj)
+        lats(i,j,bi,bj) = yC(i,j,bi,bj)
+       enddo
+       enddo
 
 C***********************************************************************
 C*              Get Leaf-Area-Index and Greenness Index                *
 C***********************************************************************
 
       if( alarm('turb') .or. alarm('radsw') ) then
-      call getlgr ( sec,month,day,
-     .              land%grid%chlt,coupling%earth%ityp,coupling%earth%nchpland,
-     .              coupling%earth%alai,coupling%earth%agrn )
+      call getlgr (sec,month,day,chlt,ityp,nchpland,alai,agrn )
       endif
-
 
 C **********************************************************************
 C                      Compute Surface Albedo
 C **********************************************************************
 
       if( alarm('radsw') ) then
-      call astro  ( nymd,nhms, alat,alon, im*jm, cosz,ra )
-      call getalb ( sec,month,day,cosz,land%vars%snodep,fraci,fracl,
-     .              im,jm,land%grid%nchp,
-     .              coupling%earth%nchpland,
-     .              land%grid%igrd,coupling%earth%ityp,
-     .              coupling%earth%chfr,land%grid%chlt,
-     .              coupling%earth%alai,coupling%earth%agrn,
-     .              coupling%earth%albvisdr,coupling%earth%albvisdf,
-     .              coupling%earth%albnirdr,coupling%earth%albnirdf )
+       call astro  ( nymd,nhms, lats,lons, im2*jm2, cosz,ra )
+       call getalb ( sec,month,day,cosz,snodep,fraci,fracl,
+     .              im,jm,nchp,nchpland,igrd,ityp,chfr,chlt,alai,agrn,
+     .              albvisdr,albvisdf,albnirdr,albnirdf )
       endif
 
 
@@ -75,12 +80,9 @@ C                      Compute Surface Emissivity
 C **********************************************************************
 
       if( alarm('radlw') ) then
-         allocate ( ficetile(im*jm*maxtyp) )
-         call grd2msc  ( fraci,im,jm,land%grid%igrd,ficetile,land%grid%nchp,land%grid%nchp )
-         call getemiss ( fracl,im,jm,land%grid%nchp,land%grid%igrd,
-     .                   coupling%earth%ityp,coupling%earth%chfr,land%vars%snodep,
-     .                   ficetile,coupling%earth%emiss )
-         deallocate ( ficetile )
+       call grd2msc  ( fraci,im,jm,igrd,ficetile,nchp,nchp )
+       call getemiss ( fracl,im,jm,nchp,igrd,ityp,chfr,snodep,ficetile,
+     .                                             emiss )
       endif
 
 
@@ -90,8 +92,7 @@ C*********************************************************************
 
       do j = 1,jm
       do i = 1,im
-      if( fracl(i,j).lt.0.3 .and. ocean%vars%sea_ice(i,j).eq.0.0 ) then
-         coupling%land%tgz(i,j) = ocean%vars%sst(i,j)
+      if(fracl(i,j).lt.0.3.and.sea_ice(i,j).eq.0.0)tgz(i,j) = sst(i,j)
       endif
       enddo
       enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.7 2004/06/09 18:35:31 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.8 2004/06/09 18:54:19 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_fixed (myThid)
@@ -40,7 +40,7 @@ c-----------------------------------------------------------------------
        integer nymdb,nhmsb
        character*40 vegdata
        _RL pressure(Nrphys)
-       real lats(nSx,nSy,sNx,sNy), lons(nSx,nSy,sNx,sNy)
+       real lats(sNx,sNy,nSx,nSy), lons(sNx,sNy,nSx,nSy)
 
        im1 = 1-OLx
        im2 = sNx+OLx
@@ -57,8 +57,8 @@ c-----------------------------------------------------------------------
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
-       do j = 1,nSy
-       do i = 1,nSx
+       do j = jm1,jm2
+       do i = im1,im2
         lons(i,j,bi,bj) = xC(i,j,bi,bj)
         lats(i,j,bi,bj) = yC(i,j,bi,bj)
        enddo
