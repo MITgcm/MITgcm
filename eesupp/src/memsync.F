@@ -1,4 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/memsync.F,v 1.1 1998/09/29 18:53:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/memsync.F,v 1.2 1998/12/08 19:47:16 adcroft Exp $
+
+#include "CPP_EEOPTIONS.h"
 
       SUBROUTINE MEMSYNC
 
