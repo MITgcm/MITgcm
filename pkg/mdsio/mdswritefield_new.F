@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.6 2004/07/05 20:25:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.7 2005/02/09 03:22:12 jmc Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -90,7 +90,7 @@ C Local variables
       logical fileIsOpen
       integer iG,jG,irec,bi,bj,i,j,k,dUnit,IL,pIL
       integer dimList(3,3),ndims
-      integer x_size,y_size,iG_IO,jG_IO,length_of_rec,npe
+      integer x_size,y_size,length_of_rec
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
       PARAMETER ( x_size = exch2_domain_nxt * sNx )
       PARAMETER ( y_size = exch2_domain_nyt * sNy )
@@ -100,10 +100,13 @@ C Local variables
 #endif
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
+#ifdef ALLOW_USE_MPI
+      INTEGER iG_IO,jG_IO,npe
       Real*4 xy_buffer_r4(x_size,y_size)
       Real*8 xy_buffer_r8(x_size,y_size)
       Real*8 global(Nx,Ny)
       _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
 #ifdef ALLOW_EXCH2
       integer domainHeight,domainLength,tby,tgx,tny,tnx,tn
 #endif /* ALLOW_EXCH2 */
@@ -259,12 +262,12 @@ C Close data-file and create meta-file
         IF( mpiMyId .EQ. 0 ) THEN
          close( dUnit )
          write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
-         dimList(1,1)=Nx
+         dimList(1,1)=x_size
          dimList(2,1)=1
-         dimList(3,1)=Nx
-         dimList(1,2)=Ny
+         dimList(3,1)=x_size
+         dimList(1,2)=y_size
          dimList(2,2)=1
-         dimList(3,2)=Ny
+         dimList(3,2)=y_size
          dimList(1,3)=nNz
          dimList(2,3)=1
          dimList(3,3)=nNz
@@ -366,8 +369,8 @@ C End of k loop
          stop 'ABNORMAL END: S/R MDSWRITEFIELD'
         endif
        enddo
-       enddo
-       else ! not global file
+      enddo
+      else ! not global file
 
 #endif /* ALLOW_EXCH2 */
 C Loop over all tiles
@@ -461,12 +464,24 @@ C Create meta-file for each tile if we are tiling
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
          write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.meta'
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+         tn = W2_myTileList(bi)
+         dimList(1,1)=x_size
+         dimList(2,1)=exch2_txGlobalo(tn)
+         dimList(3,1)=exch2_txGlobalo(tn)+sNx-1
+         dimList(1,2)=y_size
+         dimList(2,2)=exch2_tyGlobalo(tn)
+         dimList(3,2)=exch2_tyGlobalo(tn)+sNy-1
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+C- jmc: if MISSING_TILE_IO, keep meta files unchanged 
+C       to stay consistent with global file structure
          dimList(1,1)=Nx
          dimList(2,1)=myXGlobalLo+(bi-1)*sNx
          dimList(3,1)=myXGlobalLo+bi*sNx-1
          dimList(1,2)=Ny
          dimList(2,2)=myYGlobalLo+(bj-1)*sNy
          dimList(3,2)=myYGlobalLo+bj*sNy-1
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
          dimList(1,3)=nNz
          dimList(2,3)=1
          dimList(3,3)=nNz
@@ -518,12 +533,12 @@ C We put a barrier here to ensure that all processes have finished
 C writing their data before we update the meta-file
        _BARRIER
        write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
-       dimList(1,1)=Nx
+       dimList(1,1)=x_size
        dimList(2,1)=1
-       dimList(3,1)=Nx
-       dimList(1,2)=Ny
+       dimList(3,1)=x_size
+       dimList(1,2)=y_size
        dimList(2,2)=1
-       dimList(3,2)=Ny
+       dimList(3,2)=y_size
        dimList(1,3)=nNz
        dimList(2,3)=1
        dimList(3,3)=nNz
