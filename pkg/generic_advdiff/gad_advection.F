@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.16 2003/11/25 23:31:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.17 2004/01/03 00:46:53 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -28,19 +28,18 @@ C  time-stepping.
 C  \end{itemize}
 CEOI
 
-#include "PACKAGES_CONFIG.h"
 #include "GAD_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "CPP_OPTIONS.h"
-#endif
 
 CBOP
 C !ROUTINE: GAD_ADVECTION
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE GAD_ADVECTION(bi,bj,advectionScheme,tracerIdentity,
-     U                         Tracer,Gtracer,
-     I                         myTime,myIter,myThid)
+      SUBROUTINE GAD_ADVECTION(
+     I           implicitAdvection, advectionScheme, tracerIdentity,
+     I           uVel, vVel, wVel, tracer,
+     O           gTracer,
+     I           bi,bj, myTime,myIter,myThid)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C !DESCRIPTION:
 C Calculates the tendancy of a tracer due to advection.
@@ -66,7 +65,6 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
 #include "GRID.h"
 #include "GAD.h"
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -75,17 +73,25 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
+C  implicitAdvection    :: vertical advection treated implicitly (later on)
 C  advectionScheme      :: advection scheme to use
 C  tracerIdentity       :: identifier for the tracer (required only for OBCS)
-C  Tracer               :: tracer field
+C  uVel                 :: velocity, zonal component
+C  vVel                 :: velocity, meridional component
+C  wVel                 :: velocity, vertical component
+C  tracer               :: tracer field
+C  bi,bj                :: tile indices
 C  myTime               :: current time
 C  myIter               :: iteration number
 C  myThid               :: thread number
-      INTEGER bi,bj
+      LOGICAL implicitAdvection
       INTEGER advectionScheme
       INTEGER tracerIdentity
-      _RL Tracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL uVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL vVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL wVel  (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      _RL tracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
+      INTEGER bi,bj
       _RL myTime
       INTEGER myIter
       INTEGER myThid
@@ -445,18 +451,20 @@ CADJ STORE rTrans(:,:)
 CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+       IF ( .NOT.implicitAdvection ) THEN
 C-    Compute vertical advective flux in the interior:
-       IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-        CALL GAD_FLUXLIMIT_ADV_R(
-     &       bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
-       ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-        CALL GAD_DST3_ADV_R(
-     &       bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
-       ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-        CALL GAD_DST3FL_ADV_R(
-     &       bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
-       ELSE
-        STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
+        IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+         CALL GAD_FLUXLIMIT_ADV_R(
+     &        bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
+        ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+         CALL GAD_DST3_ADV_R(
+     &        bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
+        ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+         CALL GAD_DST3FL_ADV_R(
+     &        bi,bj,k,deltaTtracer,rTrans,wVel,localTijk,af,myThid)
+        ELSE
+         STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
+        ENDIF
        ENDIF
 C-    add the advective flux to fVerT
        DO j=1-Oly,sNy+Oly
