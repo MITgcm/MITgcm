@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.6 2001/07/03 21:34:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.7 2001/07/05 16:09:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -72,7 +72,7 @@ C      Print the numerical stablility parameters for current state
        CALL MON_ADVCFL('_uvel',uVel,recip_dxc,dT,myThid)
        CALL MON_ADVCFL('_vvel',vVel,recip_dyc,dT,myThid)
        CALL MON_ADVCFLW('_wvel',wVel,recip_drc,dT,myThid)
-       CALL MON_ADVCFLW2('_W+hf',wVel,recip_hFacC,
+       CALL MON_ADVCFLW2('_W_hf',wVel,recip_hFacC,
      &                               recip_drC,dT,myThid)
 
 C      Print stats for KE
