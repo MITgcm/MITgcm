@@ -6,5 +6,4 @@
  useGMRedi    = .TRUE.,
  useKPP       = .FALSE.,
  useGrdchk    = .TRUE.,
- useECCO      = .TRUE.,
  &

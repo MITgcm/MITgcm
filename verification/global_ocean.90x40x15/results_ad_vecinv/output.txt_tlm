@@ -510,7 +510,6 @@
 (PID.TID 0000.0001) > useGMRedi    = .TRUE.,
 (PID.TID 0000.0001) > useKPP       = .FALSE.,
 (PID.TID 0000.0001) > useGrdchk    = .TRUE.,
-(PID.TID 0000.0001) > useECCO      = .TRUE.,
 (PID.TID 0000.0001) > &
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  PACKAGES_BOOT: finished reading data.pkg
@@ -557,24 +556,6 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  GM_READPARMS: finished reading data.gmredi
 (PID.TID 0000.0001) Processing namelist file data.cost ...
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) // ECCO cost function configuration  >>> START <<<
-(PID.TID 0000.0001) // =======================================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)   Multipliers for the indivdual cost function contributions:
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)   Net heat flux:                 0.000E+00
-(PID.TID 0000.0001)   Salt flux:                     0.000E+00
-(PID.TID 0000.0001)   Zonal wind stress:             0.000E+00
-(PID.TID 0000.0001)   Meridional wind stress:        0.000E+00
-(PID.TID 0000.0001)   Mean sea surface height:       0.000E+00
-(PID.TID 0000.0001)   Sea surface height anomalies:  0.000E+00
-(PID.TID 0000.0001)   Temperature (3d):              0.000E+00
-(PID.TID 0000.0001)   Salinity (3d):                 0.000E+00
-(PID.TID 0000.0001)   Sea surface temperature:       0.000E+00
-(PID.TID 0000.0001)   CTD temperature:               0.000E+00
-(PID.TID 0000.0001)   CTD salinity:                  0.000E+00
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Gradient check configuration  >>> START <<<
@@ -643,11 +624,6 @@
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) // ===================================
-(PID.TID 0000.0001) 
-(PID.TID 0000.0001)  ctrl_init: Initializing temperature and salinity
-(PID.TID 0000.0001)                    part of the control vector.
-(PID.TID 0000.0001)                    The initial surface fluxes are set to zero.
-(PID.TID 0000.0001) 
  ph-wet 1: nvarlength =  96912
  ph-wet 2: surface wet C =  2315
  ph-wet 3: surface wet W =  2206
@@ -783,9 +759,6 @@
 (PID.TID 0000.0001) diffK4T =   /* Bihaarmonic diffusion of heat laterally ( m^4/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) diffKzT =   /* Laplacian diffusion of heat vertically ( m^2/s ) */
-(PID.TID 0000.0001)                 1.234567000000000E+05
-(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) diffKrT =   /* Laplacian diffusion of heat vertically ( m^2/s ) */
 (PID.TID 0000.0001)                 3.000000000000000E-05
 (PID.TID 0000.0001)     ;
@@ -794,9 +767,6 @@
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) diffK4S =   /* Bihaarmonic diffusion of salt laterally ( m^4/s ) */
 (PID.TID 0000.0001)                 0.000000000000000E+00
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) diffKzS =   /* Laplacian diffusion of salt vertically ( m^2/s ) */
-(PID.TID 0000.0001)                 1.234567000000000E+05
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) diffKrS =   /* Laplacian diffusion of salt vertically ( m^2/s ) */
 (PID.TID 0000.0001)                 3.000000000000000E-05
@@ -2030,9 +2000,9 @@
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: hFacC.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: g_xx_diffkr.0000000000.001.001.data
  ph-check fcref =  -0.135023016
- ph-grd 3 -------------------------------
- ph-grd 3  proc    #    i    j    k            fc ref        fc + eps        fc - eps
- ph-grd 3  proc    #    i    j    k          tlm grad         fd grad      1 - fd/tlm
+ grad-res -------------------------------
+ grad-res  proc    #    i    j    k            fc ref        fc + eps        fc - eps
+ grad-res  proc    #    i    j    k          tlm grad         fd grad      1 - fd/tlm
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.6568267742571170272718184E-04
@@ -3371,7 +3341,7 @@ time,fu0,fu1,fu =   5.1408E+06 -1.4435E-02 -2.7199E-02 -2.0604E-02  4.8333E-01  
 (PID.TID 0000.0001) 
   --> objf_test(bi,bj)   =  0.
   --> objf_tracer(bi,bj) =  0.
-  --> objf_atl(bi,bj) = -0.135023009
+  --> objf_atl(bi,bj)    = -0.135023009
   local fc =  -0.135023009
   global fc =  -0.135023009
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
@@ -4270,13 +4240,14 @@ time,fu0,fu1,fu =   5.1408E+06 -1.4435E-02 -2.7199E-02 -2.0604E-02  4.8333E-01  
 (PID.TID 0000.0001)                         cg2d_res =    5.54913811435744E-14
   --> objf_test(bi,bj)   =  0.
   --> objf_tracer(bi,bj) =  0.
-  --> objf_atl(bi,bj) = -0.135023023
+  --> objf_atl(bi,bj)    = -0.135023023
   local fc =  -0.135023023
   global fc =  -0.135023023
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
- ph-grd 3 -------------------------------
- ph-grd 3     0    1   43    2    1   -.135023016E+00 -.135023009E+00 -.135023023E+00
- ph-grd 3     0    1    1    1    0   0.698272298E-06 0.698274480E-06 -.312530848E-05
+ grad-res -------------------------------
+ grad-res     0    1   43    2    1   -.135023016E+00 -.135023009E+00 -.135023023E+00
+ grad-res     0    1    1    1    0   0.698272298E-06 0.698274480E-06 -.312530848E-05
+(PID.TID 0000.0001)       precision_grdchk_result TLM    -1.35023016481424E-01     6.98272297588118E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  1, ichknum =  1
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
@@ -5593,7 +5564,7 @@ time,fu0,fu1,fu =   5.1408E+06 -1.4435E-02 -2.7199E-02 -2.0604E-02  4.8333E-01  
 (PID.TID 0000.0001)                         cg2d_res =    5.54914162167511E-14
   --> objf_test(bi,bj)   =  0.
   --> objf_tracer(bi,bj) =  0.
-  --> objf_atl(bi,bj) = -0.135023012
+  --> objf_atl(bi,bj)    = -0.135023012
   local fc =  -0.135023012
   global fc =  -0.135023012
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
@@ -6492,13 +6463,14 @@ time,fu0,fu1,fu =   5.1408E+06 -1.4435E-02 -2.7199E-02 -2.0604E-02  4.8333E-01  
 (PID.TID 0000.0001)                         cg2d_res =    5.54913820890562E-14
   --> objf_test(bi,bj)   =  0.
   --> objf_tracer(bi,bj) =  0.
-  --> objf_atl(bi,bj) = -0.135023021
+  --> objf_atl(bi,bj)    = -0.135023021
   local fc =  -0.135023021
   global fc =  -0.135023021
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
- ph-grd 3 -------------------------------
- ph-grd 3     0    2   44    2    1   -.135023016E+00 -.135023012E+00 -.135023021E+00
- ph-grd 3     0    2    2    2    0   -.648913624E-06 0.488557604E-06 0.175288542E+01
+ grad-res -------------------------------
+ grad-res     0    2   44    2    1   -.135023016E+00 -.135023012E+00 -.135023021E+00
+ grad-res     0    2    2    2    0   -.648913624E-06 0.488557604E-06 0.175288542E+01
+(PID.TID 0000.0001)       precision_grdchk_result TLM    -1.35023016481424E-01    -6.48913624081258E-07
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  2, ichknum =  2
 (PID.TID 0000.0001) 
@@ -6523,142 +6495,148 @@ time,fu0,fu1,fu =   5.1408E+06 -1.4435E-02 -2.7199E-02 -2.0604E-02  4.8333E-01  
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) %CHECKPOINT       120 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  370.290009
-(PID.TID 0000.0001)         System time:  23.
-(PID.TID 0000.0001)     Wall clock time:  651.414624
+(PID.TID 0000.0001)           User time:  368.23999
+(PID.TID 0000.0001)         System time:  20.4899998
+(PID.TID 0000.0001)     Wall clock time:  559.585484
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.100000001
-(PID.TID 0000.0001)         System time:  0.0399999991
-(PID.TID 0000.0001)     Wall clock time:  0.139330029
+(PID.TID 0000.0001)           User time:  0.189999998
+(PID.TID 0000.0001)         System time:  0.0199999996
+(PID.TID 0000.0001)     Wall clock time:  0.34601593
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "CTRL_UNPACK      [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.130000003
-(PID.TID 0000.0001)         System time:  0.0300000012
-(PID.TID 0000.0001)     Wall clock time:  0.181442976
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.000378966331
+(PID.TID 0000.0001)          No. starts: 1
+(PID.TID 0000.0001)           No. stops: 1
+(PID.TID 0000.0001)   Seconds in section "CTRL_PACK     [THE_MODEL_MAIN]":
+(PID.TID 0000.0001)           User time:  0.099999994
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.275889039
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "G_THE_MAIN_LOOP           [TANGENT RUN]":
-(PID.TID 0000.0001)           User time:  78.3100009
-(PID.TID 0000.0001)         System time:  5.79000013
-(PID.TID 0000.0001)     Wall clock time:  125.981586
+(PID.TID 0000.0001)           User time:  78.0400018
+(PID.TID 0000.0001)         System time:  3.59999989
+(PID.TID 0000.0001)     Wall clock time:  102.77414
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK           [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.0800018311
-(PID.TID 0000.0001)         System time:  0.349999905
-(PID.TID 0000.0001)     Wall clock time:  10.112089
+(PID.TID 0000.0001)           User time:  0.119995117
+(PID.TID 0000.0001)         System time:  0.230000019
+(PID.TID 0000.0001)     Wall clock time:  2.10065699
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  291.580009
-(PID.TID 0000.0001)         System time:  16.4900007
-(PID.TID 0000.0001)     Wall clock time:  506.200744
+(PID.TID 0000.0001)           User time:  289.720016
+(PID.TID 0000.0001)         System time:  16.3300004
+(PID.TID 0000.0001)     Wall clock time:  449.757053
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "ADJOINT SPIN-UP":
-(PID.TID 0000.0001)           User time:  0.509994507
-(PID.TID 0000.0001)         System time:  0.909998894
-(PID.TID 0000.0001)     Wall clock time:  12.5603732
+(PID.TID 0000.0001)           User time:  0.4400177
+(PID.TID 0000.0001)         System time:  0.670000076
+(PID.TID 0000.0001)     Wall clock time:  6.51657701
 (PID.TID 0000.0001)          No. starts: 4
 (PID.TID 0000.0001)           No. stops: 4
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.350006104
-(PID.TID 0000.0001)         System time:  0.379997253
-(PID.TID 0000.0001)     Wall clock time:  4.92014098
+(PID.TID 0000.0001)           User time:  0.349975586
+(PID.TID 0000.0001)         System time:  0.240000725
+(PID.TID 0000.0001)     Wall clock time:  2.47220004
 (PID.TID 0000.0001)          No. starts: 4
 (PID.TID 0000.0001)           No. stops: 4
 (PID.TID 0000.0001)   Seconds in section "WRITE_STATE         [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.159988403
-(PID.TID 0000.0001)         System time:  0.53000164
-(PID.TID 0000.0001)     Wall clock time:  7.63071001
+(PID.TID 0000.0001)           User time:  0.0900421143
+(PID.TID 0000.0001)         System time:  0.429999352
+(PID.TID 0000.0001)     Wall clock time:  4.03994989
 (PID.TID 0000.0001)          No. starts: 4
 (PID.TID 0000.0001)           No. stops: 4
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  132.440018
-(PID.TID 0000.0001)         System time:  8.49000072
-(PID.TID 0000.0001)     Wall clock time:  255.163259
+(PID.TID 0000.0001)           User time:  132.029984
+(PID.TID 0000.0001)         System time:  9.21000195
+(PID.TID 0000.0001)     Wall clock time:  208.73167
 (PID.TID 0000.0001)          No. starts: 4
 (PID.TID 0000.0001)           No. stops: 4
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  132.420029
-(PID.TID 0000.0001)         System time:  8.40000248
-(PID.TID 0000.0001)     Wall clock time:  253.668625
+(PID.TID 0000.0001)           User time:  132.009979
+(PID.TID 0000.0001)         System time:  9.13000393
+(PID.TID 0000.0001)     Wall clock time:  208.079242
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "UPDATE_ETAH        [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0300292969
-(PID.TID 0000.0001)         System time:  0.0399990082
-(PID.TID 0000.0001)     Wall clock time:  0.495504856
+(PID.TID 0000.0001)           User time:  0.059967041
+(PID.TID 0000.0001)         System time:  0.0599985123
+(PID.TID 0000.0001)     Wall clock time:  0.235631347
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FIELDS_LOAD[FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.479949951
-(PID.TID 0000.0001)         System time:  0.150000572
-(PID.TID 0000.0001)     Wall clock time:  3.47998941
+(PID.TID 0000.0001)           User time:  0.530075073
+(PID.TID 0000.0001)         System time:  0.230002403
+(PID.TID 0000.0001)     Wall clock time:  1.74438143
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  76.0401154
-(PID.TID 0000.0001)         System time:  0.0800018311
-(PID.TID 0000.0001)     Wall clock time:  76.5502496
+(PID.TID 0000.0001)           User time:  75.6200867
+(PID.TID 0000.0001)         System time:  0.0500011444
+(PID.TID 0000.0001)     Wall clock time:  77.2200303
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.650024414
-(PID.TID 0000.0001)         System time:  0.0400009155
-(PID.TID 0000.0001)     Wall clock time:  1.61994219
+(PID.TID 0000.0001)           User time:  0.830001831
+(PID.TID 0000.0001)         System time:  0.110001564
+(PID.TID 0000.0001)     Wall clock time:  1.23839533
 (PID.TID 0000.0001)          No. starts: 960
 (PID.TID 0000.0001)           No. stops: 960
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TISTOP NORMAL END statement executed
-D 0000.0001)           User time:  44.6999207
-(PID.TID 0000.0001)         System time:  0.0200004578
-(PID.TID 0000.0001)     Wall clock time:  45.2651805
+(PID.TID 0000.0001)           User time:  44.4401245
+(PID.TID 0000.0001)         System time:  0.599999428
+(PID.TID 0000.0001)     Wall clock time:  52.6101122
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.9198761
-(PID.TID 0000.0001)         System time:  0.0699996948
-(PID.TID 0000.0001)     Wall clock time:  4.53156853
+(PID.TID 0000.0001)           User time:  3.87973022
+(PID.TID 0000.0001)         System time:  0.0499982834
+(PID.TID 0000.0001)     Wall clock time:  4.43129659
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "THE_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.84007263
-(PID.TID 0000.0001)         System time:  0.0400009155
-(PID.TID 0000.0001)     Wall clock time:  5.47721326
+(PID.TID 0000.0001)           User time:  4.99987793
+(PID.TID 0000.0001)         System time:  0.0300006866
+(PID.TID 0000.0001)     Wall clock time:  5.26019549
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.61000061
-(PID.TID 0000.0001)         System time:  7.45999908
-(PID.TID 0000.0001)     Wall clock time:  109.899431
+(PID.TID 0000.0001)           User time:  1.52005005
+(PID.TID 0000.0001)         System time:  7.70000362
+(PID.TID 0000.0001)     Wall clock time:  62.4240918
 (PID.TID 0000.0001)          No. starts: 480
-(PID.TID 0000.0001)           No. stops: 480
+(PID.TID 0STOP NORMAL END statement executed
+000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT    [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.0100097656
-(PID.TID 0000.0001)         System time:  0.0500011444
-(PID.TID 0000.0001)     Wall clock time:  0.497333646
+(PID.TID 0000.0001)         System time:  0.0200004578
+(PID.TID 0000.0001)     Wall clock time:  0.217958212
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.00997924805
-(PID.TID 0000.0001)         System time:  0.00999832153
-(PID.TID 0000.0001)     Wall clock time:  0.496169806
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.0399990082
+(PID.TID 0000.0001)     Wall clock time:  0.21748662
 (PID.TID 0000.0001)          No. starts: 480
 (PID.TID 0000.0001)           No. stops: 480
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00409793854
+(PID.TID 0000.0001)     Wall clock time:  0.00255906582
 (PID.TID 0000.0001)          No. starts: 4
 (PID.TID 0000.0001)           No. stops: 4
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.0899963379
-(PID.TID 0000.0001)         System time:  0.299999237
-(PID.TID 0000.0001)     Wall clock time:  8.79555392
+(PID.TID 0000.0001)           User time:  0.0699768066
+(PID.TID 0000.0001)         System time:  0.309999466
+(PID.TID 0000.0001)     Wall clock time:  4.3288939
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001) // ======================================================
