@@ -165,7 +165,7 @@ c.. specific melting temperature for grid cell
       Tf = -mu_Tf*salt(i,j,1,bi,bj)    ! melt temperaure
 
 cQQ from V3.0
-      cphm = cpwater*rhosw*delz(1)
+      cphm = cpwater*rhosw*drF(1)
       frzmlt = (Tf-theta(i,j,1,bi,bj))*cphm/dt
 cQQ from v2
 cQQ   frzmlt = (Tf-theta(i,j,1,bi,bj))*cpwater*30.d0/dt
