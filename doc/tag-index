@@ -1,7 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.394 2004/11/28 23:54:20 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.395 2004/11/29 20:30:52 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o testreport previously did a lousy job of comparing small numbers, so
+  we (Ed and Martin) changed the  way the cut-off of 1.e-12 is
+  implemented in the little c-progam tmp_cmpnum.c which is embedded in
+  testreport. 
+o ptracers_monitor: bug fix for MPI
 
 checkpoint56a_post
 o GCHEM: finish reorganizating the package
