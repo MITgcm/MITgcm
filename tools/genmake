@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.27 2001/02/07 14:00:06 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.28 2001/02/07 16:49:20 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -631,8 +631,8 @@ Clean:
 	-rm -f Makefile.bak
 CLEAN:
 	@make Clean
-	-find \$(ROOTDIR) -name "*.meta" -exec rm {} \;
-	-find \$(ROOTDIR) -name "*.data" -exec rm {} \;
+	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
+	-find \$(EXEDIR) -name "*.data" -exec rm {} \;
 	-rm -f \$(EXECUTABLE)
 
 # The normal chain of rules is (  .F - .f - .o  )
