@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.17 2005/02/07 18:37:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.18 2005/02/08 17:58:24 jmc Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -54,14 +54,14 @@ C     Set default values for MNC run-time parameters
       mnc_use_outdir        =  .FALSE.
         mnc_outdir_str(1:4) =  'mnc_'
         mnc_outdir_date     =  .FALSE.
-      pickup_write_mnc      =  .FALSE.
-      pickup_read_mnc       =  .FALSE.
+      pickup_write_mnc      =  .TRUE.
+      pickup_read_mnc       =  .TRUE.
       mnc_use_indir         =  .FALSE.
         mnc_indir_str(1:4)  =  '    '
-      monitor_mnc           =  .FALSE.
-      timeave_mnc           =  .FALSE.
-      snapshot_mnc          =  .FALSE.
-      autodiff_mnc          =  .FALSE.
+      monitor_mnc           =  .TRUE.
+      timeave_mnc           =  .TRUE.
+      snapshot_mnc          =  .TRUE.
+      autodiff_mnc          =  .TRUE.
 C     2GB is 2147483648 bytes or approx: 2.1475e+09
       mnc_max_fsize         =  2.1 _d 9
       readgrid_mnc          =  .FALSE.
