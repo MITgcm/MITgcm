@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.60 2002/02/11 21:52:31 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.61 2002/02/15 21:26:37 heimbach Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -291,6 +291,7 @@ set S64        = ( '$(TOOLSDIR)/set64bitConst.sh' )
 set KPP        = (  )
 set FC         = ( 'f77' )
 set LINK       = ( 'f77' )
+set MAKEDEPEND = ( 'makedepend' )
 set INCLUDES   = ( -I. )
 set FFLAGS     = (  )
 set FOPTIM     = (  )
@@ -393,6 +394,7 @@ switch ($platform$USEMPI)
   case SunOS:
     set LN         = ( '/usr/bin/ln -s' )
     set CPP        = ( '/usr/ccs/lib/cpp -P' )
+    set MAKEDEPEND = ( ${TOOLSDIR}/xmakedepend )
     set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4 -D_d=E' )
     set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar -xtypemap=real:64,double:64,integer:32 -fsimple=0' )
     set FOPTIM     = ( '-dalign -O3 -xarch=v9' )
@@ -535,7 +537,7 @@ switch ($platform$USEMPI)
                            '-bmaxdata:0x80000000 ' )
     set LDFLAGS    = ( '-O3 -qarch=pwr3 -qtune=pwr3 -qcache=auto -qmaxmem=-1' \
                            '-bmaxdata:0x80000000' )
-    set LIBS       = ( ' timer_stats.o -L/usr/local/apps/mass -lmass' )
+    set LIBS       = ( ' -L/usr/local/apps/mass -lmass' )
 #   set FFLAGS     = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4' )
 #    set FOPTIM     = ( '-O3' )
 #   set NOOPTFLAGS = ( '-O0' )
@@ -634,6 +636,7 @@ cat >> ${mfile} <<EOF
 # CPP          : C-preprocessor command
 # INCLUDES     : Directories searched for header files
 # DEFINES      : Macro definitions for CPP
+# MAKEDEPEND   : Dependency generator
 # KPP          : Special preprocessor command (specific to platform)
 # KFLAGS       : Flags for KPP
 # FC           : Fortran compiler command
@@ -692,6 +695,8 @@ cat >> ${mfile} <<EOF
 LN = ${LN}
 # C preprocessor
 CPP = cat \$< | ${S64} | ${CPP}
+# Dependency generator
+MAKEDEPEND = ${MAKEDEPEND}
 # Special preprocessor (KAP on DECs, FPP on Crays)
 KPP = ${KPP}
 # Fortran compiler
@@ -737,7 +742,7 @@ all: \$(EXECUTABLE)
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(LIBS)
 depend:
 	@make links
-	../tools/makedepend -o .f \$(DEFINES) \$(INCLUDES) \$(SRCFILES)
+	\$(MAKEDEPEND) -o .f \$(DEFINES) \$(INCLUDES) \$(SRCFILES)
 
 links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES)
 
