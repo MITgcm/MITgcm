@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.2 2000/06/21 19:09:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.3 2000/09/11 20:54:37 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -73,7 +73,7 @@ C     == Local variables ==
 
 C--   Load forcing/external data fields
       CALL TIMER_START('I/O (READ)         [FORWARD_STEP]',myThid)
-      CALL LOAD_EXTERNAL_FIELDS( myCurrentTime, myCurrentIter, myThid )
+      CALL EXTERNAL_FIELDS_LOAD( myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('I/O (READ)         [FORWARD_STEP]',myThid)
 
 #ifdef INCLUDE_SHAPIRO_FILTER_CODE
