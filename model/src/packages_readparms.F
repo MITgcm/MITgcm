@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.37 2004/12/04 17:57:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.38 2004/12/13 22:01:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,6 +28,8 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     PACKAGES_READPARMS
 C       |
+C       |-- MNC_READPARMS + MNC_INIT + MNC_CW_INIT
+C       |
 C       |-- GMREDI_READPARMS
 C       |
 C       |-- KPP_READPARMS
@@ -52,17 +54,35 @@ C       |-- OBCS_READPARMS
 C       |
 C       |-- OFFLINE_READPARMS
 C       |
-C       |-- COST_READPARMS
+C       |-- BULKF_READPARMS
 C       |
-C       |-- CTRL_INIT
+C       |-- THSICE_READPARMS
+C       |
+C       |-- GCHEM_READPARMS
 C       |
 C       |-- OPTIM_READPARMS
 C       |
+C       |-- CTRL_READPARMS
+C       |
+C       |-- COST_READPARMS
+C       |
 C       |-- GRDCHK_READPARMS
+C       |
+C       |-- CAL_READPARMS
+C       |
+C       |-- EXF_READPARMS
+C       |
+C       |-- EBM_READPARMS
 C       |
 C       |-- ECCO_READPARMS
 C       |
 C       |-- CPL_READPARMS
+C       |
+C       |-- FIZHI_READPARMS
+C       |
+C       |-- CPL_READPARMS
+C       |
+C       |-- DIAGNOSTICS_READPARMS
 
 
 C     !USES:
@@ -209,18 +229,16 @@ C--   set Coupling parameters
 #endif /* COMPONENT_MODULE */
 
 CAMM
-#ifdef ALLOW_DIAGNOSTICS
-C--   set diagnostics choices
-      IF ( usediagnostics ) call diag_readparms(myThid )
-#endif /* ALLOW_DIAGNOSTICS */
-CAMM
-
-CAMM
 #ifdef ALLOW_FIZHI
 C--   set model date and time and other fizhi parameters
       IF ( usefizhi ) call fizhi_readparms(myThid )
 #endif /* ALLOW_FIZHI */
 CAMM
+
+#ifdef ALLOW_DIAGNOSTICS
+C--   set diagnostics choices
+      IF ( useDiagnostics ) CALL DIAGNOSTICS_READPARMS( myThid )
+#endif /* ALLOW_DIAGNOSTICS */
 
       RETURN
       END

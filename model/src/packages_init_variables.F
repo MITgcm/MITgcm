@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.41 2004/11/19 01:33:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.42 2004/12/13 22:01:50 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -248,7 +248,6 @@ C--   Open boundaries data
       IF (useCoupler) CALL CPL_INI_VARS( mythid )
 #endif
 
-C AMM
 #ifdef ALLOW_FIZHI
 C Initialize FIZHI state variables
 #ifdef ALLOW_DEBUG
@@ -256,7 +255,12 @@ C Initialize FIZHI state variables
 #endif
       IF (useFIZHI) CALL FIZHI_INIT_VARS( mythid)
 #endif
-C AMM
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+        CALL DIAGNOSTICS_INIT_VARIA( myThid )
+      ENDIF
+#endif
 
 #ifdef ALLOW_DEBUG
       IF (debugMode) 
