@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_OPTIONS.h,v 1.1 2001/03/06 15:28:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_OPTIONS.h,v 1.2 2001/09/27 18:07:56 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-C Defining SAFE_IO stops the model from overwriting it's own files
+C Defining SAFE_IO stops the model from overwriting its own files
 #undef  SAFE_IO
 
 #ifdef SAFE_IO
