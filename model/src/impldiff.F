@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.21 2004/02/18 22:23:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.22 2004/10/22 20:14:46 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -113,7 +113,7 @@ C--   Old and new gam, bet are the same
       DO k=1,Nr
        DO j=jMin,jMax
         DO i=iMin,iMax
-          bet(i,j,k) = 0. _d 0
+          bet(i,j,k) = 1. _d 0
           gam(i,j,k) = 0. _d 0
         ENDDO
        ENDDO
