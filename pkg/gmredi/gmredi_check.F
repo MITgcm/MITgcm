@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.7 2002/11/14 22:43:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.8 2003/01/13 19:02:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,6 +59,10 @@ C- print out some kee parameters :
      &  ' GM_Visbeck_alpha =','   /* Visbeck alpha coeff. ( ) */')       
        WRITE(msgBuf,'(A,A40)')' Tapering/Cliping : ',GM_taper_scheme
        CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+       CALL WRITE_0D_R8( GM_Small_Number, INDEX_NONE,
+     &  ' GM_Small_Number =','  /* epsilon used in slope calc */')       
+       CALL WRITE_0D_R8( GM_slopeSqCutoff, INDEX_NONE,
+     &  ' GM_slopeSqCutoff =', '  /* Slope^2 cut-off value */')       
 
       ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.9 2003/01/10 00:48:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.10 2003/01/13 19:02:45 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -13,10 +13,14 @@ C     Package flag
      &                    GM_ExtraDiag
 
 C     GM/Redi parameters
+C     GM_Small_Number :: epsilon used in computing the slope
+C     GM_slopeSqCutoff :: slope^2 cut-off value
       _RL GM_isopycK
       _RL GM_background_K
       _RL GM_maxSlope
       _RL GM_Kmin_horiz
+      _RL GM_Small_Number
+      _RL GM_slopeSqCutoff
       _RL GM_Visbeck_alpha
       _RL GM_Visbeck_length
       _RL GM_Visbeck_depth
@@ -27,6 +31,7 @@ C     GM/Redi parameters
       COMMON /GM_PARAMS/ GM_isopycK, GM_background_K,
      &                   GM_maxSlope,
      &                   GM_Kmin_horiz,
+     &                   GM_Small_Number, GM_slopeSqCutoff,
      &                   GM_Visbeck_alpha,
      &                   GM_Visbeck_length,
      &                   GM_Visbeck_depth,
@@ -35,10 +40,8 @@ C     GM/Redi parameters
      &                   GM_Scrit,
      &                   GM_Sd
 
-      _RL GM_Small_Number
       _RL op5
       _RL op25
-      PARAMETER( GM_Small_Number = 1. _d -12 )
       PARAMETER( op5 = 0.5 _d 0 )
       PARAMETER( op25 = 0.25 _d 0 )
 

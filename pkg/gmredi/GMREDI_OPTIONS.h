@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.5 2002/11/14 22:43:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.6 2003/01/13 19:02:45 jmc Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -11,11 +11,11 @@ C GM/Redi is enabled with ALLOW_GMREDI in CPP_OPTIONS.h
 
 #ifdef ALLOW_GMREDI
 
-C Specify as tapering scheme either 'orig' or 'clipping',
-C otherwise one of the following is used:
-C 'linear', 'gkw91', 'dm95', 'ldd97'
-#define GM_TAPER_ORIG_CLIPPING
-#undef GM_TAPER_AC02
+C Design to simplify the Ajoint code: 
+C  exclude the clipping/tapering part of the code that is not used
+C #define GM_EXCLUDE_CLIPPING
+C #define GM_EXCLUDE_AC02_TAP
+C #define GM_EXCLUDE_TAPERING
  
 C This allows to use Visbeck et al formulation to compute K_GM+Redi
 #undef GM_VISBECK_VARIABLE_K

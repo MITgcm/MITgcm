@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.17 2003/01/12 21:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.18 2003/01/13 19:02:45 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -55,12 +55,8 @@ CEndOfInterface
 #ifdef ALLOW_GMREDI
 
 C     == Local variables ==
-      _RL Small_Number
       _RL Small_Taper
-      _RL Large_SlopeSqr
-      PARAMETER(Small_Number=1.D-12)
       PARAMETER(Small_Taper=1.D+03)
-      PARAMETER(Large_SlopeSqr=1.D+48)
 
       _RL gradSmod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dSigmaDrLtd(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -71,7 +67,6 @@ C     == Local variables ==
       _RL fpi
       PARAMETER(fpi=3.141592653589793047592d0)
       INTEGER i,j
-c     Small_Number=GM_Small_Number
 
 #ifdef ALLOW_AUTODIFF_TAMC
       act1 = bi - myBxLo(myThid)
@@ -97,7 +92,11 @@ c     Small_Number=GM_Small_Number
       IF (GM_taper_scheme.EQ.'orig' .OR.
      &    GM_taper_scheme.EQ.'clipping') THEN
 
-#ifdef GM_TAPER_ORIG_CLIPPING
+#ifdef GM_EXCLUDE_CLIPPING
+
+        STOP 'Need to compile without "#define GM_EXCLUDE_CLIPPING"'
+
+#else  /* GM_EXCLUDE_CLIPPING */
 
 C-      Original implementation in mitgcmuv
 C       (this turns out to be the same as Cox slope clipping)
@@ -162,15 +161,19 @@ cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
          ENDDO
         ENDDO
 
-#else /* GM_TAPER_ORIG_CLIPPING */
-
-        STOP 'Need to compile with "#define GM_TAPER_ORIG_CLIPPING"'
-
-#endif /* GM_TAPER_ORIG_CLIPPING */
+#endif /* GM_EXCLUDE_CLIPPING */
 
       ELSE IF (GM_taper_scheme.EQ.'ac02') THEN
 
-#ifdef GM_TAPER_AC02
+#ifdef GM_EXCLUDE_AC02_TAP
+
+        STOP 'Need to compile without "#define GM_EXCLUDE_AC02_TAP"'
+
+#else  /* GM_EXCLUDE_AC02_TAP */
+
+C-      New Scheme (A. & C. 2002): relax part of the small slope approximation
+C         compute the true slope (no approximation) 
+C         but still neglect Kxy & Kyx (assumed to be zero)
 
         maxSlopeSqr = GM_maxSlope*GM_maxSlope
         DO j=1-Oly+1,sNy+Oly-1
@@ -194,23 +197,23 @@ cph             T11(i,j)=(dSigmaDrReal(i,j)**2)*dRdSigmaLtd(i,j)
           ENDIF
 cph-- this part doesn't adjoint well
 cph          IF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
-cph     &         SlopeSqr(i,j) .LT. Large_SlopeSqr ) THEN
+cph     &         SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
 cph           taperFct(i,j) = maxSlopeSqr/SlopeSqr(i,j)
-cph          ELSE IF ( SlopeSqr(i,j) .GT. Large_SlopeSqr ) THEN
+cph          ELSE IF ( SlopeSqr(i,j) .GT. GM_slopeSqCutoff ) THEN
 cph           taperFct(i,j) = 0. _d 0
 cph          ENDIF
          ENDDO
         ENDDO
 
-#else /* GM_TAPER_AC02 */
-       
-        STOP 'Need to compile with "#define GM_TAPER_AC02"'
-
-#endif /* GM_TAPER_AC02 */
+#endif /* GM_EXCLUDE_AC02_TAP */
 
       ELSE
 
-#ifdef GM_TAPER_REST
+#ifdef GM_EXCLUDE_TAPERING
+
+        STOP 'Need to compile without "#define GM_EXCLUDE_TAPERING"'
+
+#else  /* GM_EXCLUDE_TAPERING */
 
 C----------------------------------------------------------------------
 
@@ -224,8 +227,8 @@ cnostore CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
           IF ( dSigmaDrReal(i,j) .NE. 0. ) THEN
-           IF (dSigmaDrReal(i,j).GE.(-Small_Number))
-     &         dSigmaDrReal(i,j) = -Small_Number
+           IF (dSigmaDrReal(i,j).GE.(-GM_Small_Number))
+     &         dSigmaDrReal(i,j) = -GM_Small_Number
           ENDIF
          ENDDO
         ENDDO
@@ -269,8 +272,8 @@ cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
           SlopeSqr(i,j) = SlopeX(i,j)*SlopeX(i,j)
      &                   +SlopeY(i,j)*SlopeY(i,j)
           taperFct(i,j) = 1. _d 0
-          IF ( SlopeSqr(i,j) .GT. Large_SlopeSqr ) THEN
-             slopeSqr(i,j) = Large_SlopeSqr
+          IF ( SlopeSqr(i,j) .GT. GM_slopeSqCutoff ) THEN
+             slopeSqr(i,j) = GM_slopeSqCutoff
              taperFct(i,j) = 0. _d 0
           ENDIF
          ENDDO
@@ -288,7 +291,7 @@ C-      Simplest adiabatic tapering = Smax/Slope (linear)
           IF ( SlopeSqr(i,j) .EQ. 0. ) THEN
            taperFct(i,j) = 1. _d 0
           ELSE IF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
-     &             SlopeSqr(i,j) .LT. Large_SlopeSqr )  THEN
+     &             SlopeSqr(i,j) .LT. GM_slopeSqCutoff )  THEN
            taperFct(i,j) = sqrt(maxSlopeSqr / SlopeSqr(i,j))
           ENDIF
 
@@ -305,7 +308,7 @@ C-      Gerdes, Koberle and Willebrand, Clim. Dyn. 1991
           IF ( SlopeSqr(i,j) .EQ. 0. ) THEN
            taperFct(i,j) = 1. _d 0
           ELSE IF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
-     &             SlopeSqr(i,j) .LT. Large_SlopeSqr ) THEN
+     &             SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
            taperFct(i,j) = maxSlopeSqr/SlopeSqr(i,j)
           ENDIF
 
@@ -320,7 +323,7 @@ C-      Danabasoglu and McWilliams, J. Clim. 1995
 
           IF ( SlopeSqr(i,j) .EQ. 0. ) THEN
            taperFct(i,j) = 1. _d 0
-          ELSE IF ( SlopeSqr(i,j) .LT. Large_SlopeSqr ) THEN
+          ELSE IF ( SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
            Smod=sqrt(SlopeSqr(i,j))
            taperFct(i,j)=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
           ENDIF
@@ -335,7 +338,7 @@ C-      Large, Danabasoglu and Doney, JPO 1997
 
           IF (SlopeSqr(i,j) .EQ. 0.) THEN
            taperFct(i,j) = 1. _d 0
-          ELSE IF ( SlopeSqr(i,j) .LT. Large_SlopeSqr ) THEN
+          ELSE IF ( SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
            Smod=sqrt(SlopeSqr(i,j))
            f1=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
            Cspd=2. _d 0
@@ -355,11 +358,7 @@ C-      Large, Danabasoglu and Doney, JPO 1997
         STOP 'GMREDI_SLOPE_LIMIT: Bad GM_taper_scheme'
        ENDIF
 
-#else /* GM_TAPER_REST */
-       
-        STOP 'Need to compile with "#define GM_TAPER_REST"'
-
-#endif /* GM_TAPER_REST */
+#endif /* GM_EXCLUDE_TAPERING */
 
       ENDIF
 
