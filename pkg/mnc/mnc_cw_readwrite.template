@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.25 2004/11/14 03:34:35 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.26 2004/12/17 04:50:05 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -207,14 +207,14 @@ C         Add the path to the file name
           ENDIF
 
 C         Append to an existing or create a new file
-          CALL MNC_CW_FILE_AORC(fname, indf, myThid)
+          CALL MNC_CW_FILE_AORC(fname,indf, lbi,lbj,uniq_tnum, myThid)
           fid = mnc_f_info(indf,2)
 
 #ifdef HAVE_STAT
           IF ((mnc_cw_fgig(indfg) .EQ. 1)
      &         .AND. (fs_isdone .EQ. 0)) THEN
-C           Decide whether to append to the existing or create a new file
-C           based on the byte count per unlimited dimension
+C           Decide whether to append to the existing or create a new
+C           file based on the byte count per unlimited dimension
             ncenc = 70
             cenc(1:26)  = 'abcdefghijklmnopqrstuvwxyz'
             cenc(27:52) = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
@@ -265,6 +265,11 @@ C         local copy of them
             ENDIF
             CALL MNC_DIM_INIT(fname, 
      &           mnc_cw_dn(i,igrid), dimnc(i), myThid)
+
+C           Add the coordinate variables
+C           CALL MNC_CW_ADD_CVAR(fname, mnc_cw_dn(i,igrid), 
+C                                dimnc(i), myThid)
+
           ENDDO
 
 C         Ensure that the "grid" is defined
@@ -372,9 +377,6 @@ C         Check the offsets
               e(i) = 1
             ENDIF
           ENDDO
-
-C         Add the global attributes
-          CALL MNC_CW_SET_GATTR( fname, lbi,lbj, uniq_tnum, myThid)
 
 C         Add the per-variable attributes
           DO i = 1,mnc_cw_vnat(1,indv)

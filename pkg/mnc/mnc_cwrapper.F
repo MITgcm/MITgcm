@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.22 2004/12/08 15:54:00 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.23 2004/12/17 04:50:05 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -618,6 +618,7 @@ C     !INTERFACE:
       SUBROUTINE MNC_CW_FILE_AORC( 
      I     fname, 
      O     indf, 
+     I     lbi, lbj, uniq_tnum, 
      I     myThid )
 
 C     !DESCRIPTION:
@@ -631,7 +632,7 @@ C     !USES:
 #include "EEPARAMS.h"
 
 C     !INPUT PARAMETERS:
-      integer myThid, indf
+      integer myThid, indf, lbi, lbj, uniq_tnum
       character*(*) fname
 CEOP
 
@@ -646,12 +647,13 @@ C     Check if the file is already open
 
 C     Try to open an existing file
       CALL MNC_FILE_TRY_READ(fname, ierr, indf, myThid)
-      IF (ierr .EQ. NF_NOERR) THEN
-        RETURN
+      IF (ierr .NE. NF_NOERR) THEN
+C       Try to create a new one
+        CALL MNC_FILE_OPEN(fname, 0, indf, myThid)
       ENDIF
 
-C     Try to create a new one
-      CALL MNC_FILE_OPEN(fname, 0, indf, myThid)
+C     Add the global attributes
+      CALL MNC_CW_SET_GATTR(fname, lbi,lbj, uniq_tnum, myThid)
 
       RETURN
       END
