@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.82 2002/11/21 19:11:42 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.83 2002/12/10 02:47:26 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -587,15 +587,18 @@ Cml      _RL tAlpha
 Cml      _RL sBeta
 
 C Atmospheric physical parameters (Ideal Gas EOS, ...)
-C     atm_po    :: standard reference pressure
-C     atm_cp    :: specific heat (Cp) of the (dry) air at constant pressure
+C     atm_Po    :: standard reference pressure
+C     atm_Cp    :: specific heat (Cp) of the (dry) air at constant pressure
+C     atm_Rd    :: gas constant for dry air
 C     atm_kappa :: kappa = R/Cp (R: constant of Ideal Gas EOS)
-C     Integr_GeoPot :: option to select the way we integrate the geopotential
+C     integr_GeoPot :: option to select the way we integrate the geopotential
 C                     (still a subject of discussions ...) 
-      COMMON /PARM_ATM/ atm_cp, atm_kappa, atm_po,
-     &                  Integr_GeoPot
-      _RL atm_cp, atm_kappa, atm_po
-      INTEGER Integr_GeoPot
+C     selectFindRoSurf :: select the way surf. ref. pressure (=Ro_surf) is
+C             derived from the orography. Implemented: 0,1 (see INI_P_GROUND)
+      COMMON /PARM_ATM/ atm_Cp, atm_Rd, atm_kappa, atm_Po,
+     &                  integr_GeoPot, selectFindRoSurf
+      _RL atm_Po, atm_Cp, atm_Rd, atm_kappa 
+      INTEGER integr_GeoPot, selectFindRoSurf
 
 C Logical flags for selecting packages
       LOGICAL useKPP
