@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.16 2004/07/28 01:25:07 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.17 2004/07/30 20:37:50 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -41,6 +41,7 @@ c pe on dynamics and physics grid refers to bottom edge
 
        integer i, j, L, Lbotij, bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
+       _RL tempij(sNx,sNy)
 
        idim1 = 1-OLx
        idim2 = sNx+OLx
@@ -167,8 +168,45 @@ C   into bottom-up arrays for interpolation to dynamics grid
         call phys2dyn(tempphy,pephy,idim1,idim2,jdim1,jdim2,Nrphys,
      . Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gsphy)
 
+
+        if( (1.eq.1) ) then
+        print *,' In fizhi wrapper after phys2dyn before exchange ',bi
+        do L = 1,Nr
+         do j = 1,sNy
+         do i = 1,sNx
+          tempij(i,j) = guphy(i,j,L,bi,bj)
+         enddo
+         enddo
+         print *,' guphy at level ',l,' ',tempij
+        enddo
+        do L = 1,Nr
+         do j = 1,sNy
+         do i = 1,sNx
+          tempij(i,j) = gvphy(i,j,L,bi,bj)
+         enddo
+         enddo
+         print *,' gvphy at level ',l,' ',tempij
+        enddo
+        do L = 1,Nr
+         do j = 1,sNy
+         do i = 1,sNx
+          tempij(i,j) = gthphy(i,j,L,bi,bj)
+         enddo
+         enddo
+         print *,' gthphy at level ',l,' ',tempij
+        enddo
+        do L = 1,Nr
+         do j = 1,sNy
+         do i = 1,sNx
+          tempij(i,j) = gsphy(i,j,L,bi,bj)
+         enddo
+         enddo
+         print *,' gsphy at level ',l,' ',tempij
+        enddo
+        endif
        enddo
        enddo
+
        CALL TIMER_STOP ('PHYS2DYN          [FIZHI_WRAPPER]',mythid)
 
 c Convert guphy and gvphy from A-grid to C-grid for use by dynamics
@@ -186,6 +224,46 @@ c Call the a-grid exchange routine to fill in the halo regions (dth,ds)
        call exch_RL_cube(gsphy,OLx, OLx, OLy, OLy, Nr,OLx, OLy,
      .            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
        CALL TIMER_STOP ('EXCHANGES         [FIZHI_WRAPPER]',mythid)
+
+       do bj = myByLo(myThid), myByHi(myThid)
+       do bi = myBxLo(myThid), myBxHi(myThid)
+        if( (1.eq.1) ) then
+        print *,' In fizhi wrapper after phys2dyn before exchange ',bi
+        do L = 1,Nr
+         do j = 1,sNy
+         do i = 1,sNx
+          tempij(i,j) = guphy(i,j,L,bi,bj)
+         enddo
+         enddo
+         print *,' guphy at level ',l,' ',tempij
+        enddo
+        do L = 1,Nr
+         do j = 1,sNy
+         do i = 1,sNx
+          tempij(i,j) = gvphy(i,j,L,bi,bj)
+         enddo
+         enddo
+         print *,' gvphy at level ',l,' ',tempij
+        enddo
+        do L = 1,Nr
+         do j = 1,sNy
+         do i = 1,sNx
+          tempij(i,j) = gthphy(i,j,L,bi,bj)
+         enddo
+         enddo
+         print *,' gthphy at level ',l,' ',tempij
+        enddo
+        do L = 1,Nr
+         do j = 1,sNy
+         do i = 1,sNx
+          tempij(i,j) = gsphy(i,j,L,bi,bj)
+         enddo
+         enddo
+         print *,' gsphy at level ',l,' ',tempij
+        enddo
+        endif
+       enddo
+       enddo
 
       return
       end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.21 2004/07/30 18:59:32 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.22 2004/07/30 20:37:50 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1079,7 +1079,7 @@ c ----------------
       tends(i) = ( th(i,l)-tmpstrip(i) )
       enddo
 
-      if(1.eq.1)then
+      if(2.eq.1)then
       print *,' In turbio, tendencies for strip ',nn,' level ',l
       print *,' field: th ',tends
       endif
@@ -1092,7 +1092,7 @@ c ----------------
       tends(i) = ( sh(i,l)-tmpstrip(i) )
       enddo
 
-      if(1.eq.1)then
+      if(2.eq.1)then
       print *,' In turbio, tendencies for strip ',nn,' level ',l
       print *,' field: sh ',tends
       endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.31 2004/07/30 18:59:32 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.32 2004/07/30 20:37:50 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -249,7 +249,7 @@ C compute pressures - all pressure are converted here to hPa
       call pkappa (im2,jm2,Nrphys,ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),
      .                                                 pkl(1,1,1,bi,bj))
 
-      if(bi.eq.1 .and. 1.eq.1 )then
+      if(bi.eq.1 .and. 2.eq.1 )then
       print *,' In do fizhi, before fizhi driver - bi = ',bi
       do L = 1,Nrphys+1
        do j = jm1,jm2
@@ -377,7 +377,7 @@ C compute pressures - all pressure are converted here to hPa
      . qliqavelw(1,1,1,bi,bj),fccavesw(1,1,1,bi,bj),
      . fccavelw(1,1,1,bi,bj),qq(1,1,1,bi,bj))
 
-      if(bi.eq.1)then
+      if(bi.eq.1 .and. (2.eq.1))then
       print *,' In do fizhi, after fizhi driver - bi = ',bi
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -455,40 +455,6 @@ C compute pressures - all pressure are converted here to hPa
       do L = 1,Nrphys
        do j = jm1,jm2
        do i = im1,im2
-        tempij(i,j) = lwdt(i,j,L,bi,bj)
-       enddo
-       enddo
-       print *,' lwdt itself at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = dlwdtg(i,j,L,bi,bj)
-       enddo
-       enddo
-       print *,' dlwdtg at level ',l,' ',tempij
-      enddo
-      do j = jm1,jm2
-      do i = im1,im2
-       tempij(i,j) = tg0(i,j,bi,bj)
-      enddo
-      enddo
-      print *,' tg0 ',tempij
-      do j = jm1,jm2
-      do i = im1,im2
-       tempij(i,j) = tgz(i,j,bi,bj)
-      enddo
-      enddo
-      print *,' tgz ',tempij
-      do j = jm1,jm2
-      do i = im1,im2
-       tempij(i,j) = p(i,j,bi,bj)
-      enddo
-      enddo
-      print *,' p ',tempij
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
         tempij(i,j) = (lwdt(i,j,L,bi,bj)+
      .         dlwdtg(i,j,L,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj)))
      .                 *p0kappa/p(i,j,bi,bj)
@@ -512,6 +478,42 @@ C compute pressures - all pressure are converted here to hPa
       enddo
       enddo
       enddo
+
+      if(1.eq.1 )then
+      print *,' In do fizhi, computed fizhi tendencies ',bi
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = duphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' duphy at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = dvphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' dvphy at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = dthphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' dthphy at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = dsphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' dsphy at level ',l,' ',tempij
+      enddo
+      endif
 
       endif
 
