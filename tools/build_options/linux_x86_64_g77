@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_x86_64_g77,v 1.1 2003/11/10 21:52:41 cnh Exp $
+#  $Name:  $
+#
+# Build options for Suse 9 Opteron
+# tested on (Linux eaps-dhcp-127 2.4.21-102-smp #1 SMP Wed Sep 24 13:55:59 UTC 2003 x86_64 x86_64 x86_64 GNU/Linux) system 20031107
+#
+
+FC=g77
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+LN='/bin/ln -s'
+CPP='cpp  -traditional -P'
+NOOPTFLAGS='-O0'
+#MAKEDEPEND=/usr/X11R6/bin/gccmakedep
+MAKEDEPEND=/usr/X11R6/bin/makedepend
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+    FFLAGS='-Wimplicit -Wunused -Wuninitialized'
+    FOPTIM='-O3 -funroll-loops'
+else
+    FFLAGS='-Wimplicit -Wunused -ffloat-store'
+    FOPTIM='-O0 '
+fi
