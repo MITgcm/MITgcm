@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.11 2003/11/11 20:38:26 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.12 2003/11/11 23:04:50 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
-#define HAVE_SYSTEM
 
 CBOP
 C     !ROUTINE: CHECK_THREADS
