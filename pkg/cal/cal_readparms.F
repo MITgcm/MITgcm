@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.4 2003/11/25 19:04:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_readparms.F,v 1.5 2004/12/21 02:09:34 edhill Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -107,7 +107,7 @@ c     (version 0.1.3 >> END << )
 
       _BEGIN_MASTER(myThid)
 
-c       Initialise the calendar's parameters
+c       Initialise the calendar parameters
         TheCalendar = ' '
         startdate_1 = 0
         startdate_2 = 0
@@ -140,7 +140,7 @@ c       Next, read the calendar data file.
         close( scrunit1 )
 
 
-c       Check consistency of the date specifications with the MITgcmUV's
+c       Check consistency of the date specifications with the MITgcm
 c       startTime, endTime, and nTimeSteps, then set all the calendar
 c       parameters.
 
