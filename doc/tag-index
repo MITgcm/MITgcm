@@ -1,8 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.173 2003/07/31 18:46:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.174 2003/08/03 15:00:55 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint51e_post
+o pkg/mom_vecinv: 
+  - changes related to hFac: use S/R from aim.5l_cs/code (coriolis & vort.advec)
+  - add time-ave diagnostic of vorticity advection.
+o add diagnostic (instantaneous) of Shapiro Filter effect for T,S & UV.
+o atmospheric geopotential: - include water vapor effect; 
+                            - use p^kappa in p* scaling.
 o land pkg: read initial state from files.
 o AIM : add stratospheric drag in the upper level
 
