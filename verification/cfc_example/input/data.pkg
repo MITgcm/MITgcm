@@ -3,6 +3,6 @@
  useGMRedi=.TRUE.,
  usePTRACERS=.TRUE.,
  useGCHEM=.TRUE.,
- useMNC=.TRUE.,
+#useMNC=.TRUE.,
  &
   
