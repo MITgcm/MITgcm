@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.19 2004/05/21 21:45:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.20 2004/06/30 23:45:35 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 2
@@ -21,7 +21,8 @@ CADJ STORE empmr     = tapelev2, key = ilev_2
 
 #ifdef EXACT_CONSERV
 CADJ STORE etaH      = tapelev2, key = ilev_2
-CADJ STORE hDivFlow  = tapelev2, key = ilev_2
+CADJ STORE dEtaHdt   = tapelev2, key = ilev_2
+cphCADJ STORE hDivFlow  = tapelev2, key = ilev_2
 #endif /* EXACT_CONSERV */
 
 #ifdef ALLOW_PASSIVE_TRACER

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.17 2004/06/24 20:25:44 afe Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.18 2004/06/30 23:45:35 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -92,7 +92,7 @@ C     and general post-analysis)
 
 C--   Print out statistics of each horizontal grid array (helps when debugging)
 
-#ifndef EXCLUDE_MONITOR
+#ifdef ALLOW_MONITOR
       CALL MON_PRINTSTATS_RS(1,XC,'XC',myThid)
       CALL MON_PRINTSTATS_RS(1,XG,'XG',myThid)
       CALL MON_PRINTSTATS_RS(1,DXC,'DXC',myThid)

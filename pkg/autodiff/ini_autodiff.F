@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/ini_autodiff.F,v 1.5 2003/11/01 04:50:02 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/ini_autodiff.F,v 1.6 2004/06/30 23:45:35 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -53,7 +53,8 @@ C-      2D arrays
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
 #ifdef EXACT_CONSERV
-          hDivFlow(I,J,bi,bj)=0. _d 0
+         dEtaHdt(i,j,bi,bj) = 0. _d 0
+cph          hDivFlow(I,J,bi,bj)=0. _d 0
 #endif
 #ifdef ALLOW_EXF
           EmPmR(I,J,bi,bj) = 0. _d 0
