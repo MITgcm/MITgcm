@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.3 2003/08/22 20:50:40 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.4 2003/08/26 16:22:15 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -370,52 +370,52 @@ for ac_option ; do
 	-nooptfile | --nooptfile)
 	    OPTFILE="NONE" ;;
 	-optfile | --optfile | -of | --of)
-	    ac_prev=optfile ;;
+	    ac_prev=OPTFILE ;;
 	-optfile=* | --optfile=* | -of=* | --of=*)
 	    OPTFILE=$ac_optarg ;;
 	
 	-pdepend | --pdepend)
-	    ac_prev=pdepend ;;
+	    ac_prev=PDEPEND ;;
 	-pdepend=* | --pdepend=*)
 	    PDEPEND=$ac_optarg ;;
 	
 	-pdefault | --pdefault)
-	    ac_prev=pdefault ;;
+	    ac_prev=PDEFAULT ;;
 	-pdefault=* | --pdefault=*)
 	    PDEFAULT=$ac_optarg ;;
 	
 	-makefile | -ma)
-	    ac_prev=makefile ;;
+	    ac_prev=MAKEFILE ;;
 	--makefile=* | -ma=*)
 	    MAKEFILE=$ac_optarg ;;
 	
 	-platform | --platform | -pl | --pl)
-	    ac_prev=platform ;;
+	    ac_prev=PLATFORM ;;
 	-platform=* | --platform=* | -pl=* | --pl=*)
 	    PLATFORM=$ac_optarg ;;
 	
 	-rootdir | --rootdir | -rd | --rd)
-	    ac_prev=rootdir ;;
+	    ac_prev=ROOTDIR ;;
 	-rootdir=* | --rootdir=* | -rd=* | --rd=*)
 	    ROOTDIR=$ac_optarg ;;
 	
 	-mods | --mods | -mo | --mo)
-	    ac_prev=mods ;;
+	    ac_prev=MODS ;;
 	-mods=* | --mods=* | -mo=* | --mo=*)
 	    MODS=$ac_optarg ;;
 	
 	-disable | --disable)
-	    ac_prev=disable ;;
+	    ac_prev=DISABLE ;;
 	-disable=* | --disable=*)
 	    DISABLE=$ac_optarg ;;
 	
 	-enable | --enable)
-	    ac_prev=enable ;;
+	    ac_prev=ENABLE ;;
 	-enable=* | --enable=*)
 	    ENABLE=$ac_optarg ;;
 	
 	-noopt | --noopt)
-	    ac_prev=noopt ;;
+	    ac_prev=NOOPT ;;
 	-noopt=* | --noopt=*)
 	    NOOPT=$ac_optarg ;;
 	
@@ -425,7 +425,7 @@ for ac_option ; do
 #		CPP=$ac_optarg ;;
 	    
 	-fortran | --fortran | -fc | --fc)
-	    ac_prev=fc ;;
+	    ac_prev=FC ;;
 	-fc=* | --fc=*)
 	    FC=$ac_optarg ;;
 	
