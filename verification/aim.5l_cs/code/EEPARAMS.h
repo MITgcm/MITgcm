@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/EEPARAMS.h,v 1.2 2003/08/03 03:43:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/EEPARAMS.h,v 1.3 2003/12/15 02:58:15 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
@@ -120,12 +120,14 @@ C     eeBootError - Flag indicating error during multi-processing
 C     eeEndError    initialisation/termination.
 C     fatalError  - Flag used to indicate that the model is ended with
 C                   an error
+C     useCoupler  - use Coupler for a multi-components set-up
       COMMON /EEPARAMS_L/ eeBootError, fatalError, eeEndError,
-     &  useCubedSphereExchange
+     &  useCubedSphereExchange, useCoupler
       LOGICAL eeBootError
       LOGICAL eeEndError
       LOGICAL fatalError
       LOGICAL useCubedSphereExchange
+      LOGICAL useCoupler
 
 C--   COMMON /EPARAMS_I/ Execution environment public integer variables.
 C     errorMessageUnit    - Fortran IO unit for error messages
