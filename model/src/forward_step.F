@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.85 2004/03/03 20:42:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.86 2004/03/17 22:09:55 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -484,6 +484,14 @@ C--   Check status of solution (statistics, cfl, etc...)
       CALL MONITOR( myIter, myTime, myThid )
       CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
 #endif /* ALLOW_MONITOR */
+
+C AMM  -- Testing diagnostics package
+#ifdef ALLOW_DIAGNOSTICS
+       if(usediagnostics)then
+        call diagnostics_fill_state(myThid)
+       endif
+#endif
+C AMM
 
 C--   Do IO if needed.
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
