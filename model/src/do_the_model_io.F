@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.7 1998/06/22 15:26:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.8 1998/07/15 22:13:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -70,7 +70,6 @@ C--    Write "text-plots" of certain fields
 C--   Write model state to binary file
       CALL WRITE_STATE( .FALSE., myCurrentTime, myIter, myThid )
 
-      _BARRIER
 C
       RETURN
       END
