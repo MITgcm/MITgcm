@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.3 2004/12/03 00:24:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.4 2005/01/04 02:42:31 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -71,8 +71,8 @@ C--   Fill-in Diagnostics pkg storage array (for state-variables)
       IF ( usediagnostics ) THEN
         CALL DIAGNOSTICS_FILL_STATE(myThid)
 # ifdef ALLOW_PTRACERS
-       IF (useptracers) THEN
-        CALL PTRACERS_FILL_DIAGNOSTICS(myThid)
+       IF (usePTRACERS) THEN
+        CALL PTRACERS_DIAGNOSTICS_FILL(myThid)
        ENDIF
 # endif
       ENDIf
