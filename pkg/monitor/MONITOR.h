@@ -1,19 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/MONITOR.h,v 1.4 2003/05/13 18:18:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/MONITOR.h,v 1.5 2004/04/03 04:57:11 edhill Exp $
 C $Name:  $
 C
-C     /==========================================================\
-C     | MONITOR.h                                                |
-C     |==========================================================|
-C     | Parameters for "monitor" setup.                          |
-C     | Monitor routines ( prefixed MON_ ) provide a simple      |
-C     | set of utilities for outputting useful runtime diagnostic|
-C     | information. They use a standard format so that the      |
-C     | monitor output can be parsed offline to help in trouble  |
-C     | shooting.                                                |
-C     | Monitor setup params should be set through appropriate   |
-C     | MON_ routines to ensure that changes are made in a       |
-C     | thread-safe fashion.                                     |
-C     \==========================================================/
+
+CBOP
+C     !ROUTINE: MONITOR.h
+
+C     !INTERFACE:
+C     #include "MONITOR.h"
+
+C     !DESCRIPTION:
+C     Contains the state (parameters) for the ``monitor'' package.
+C
+C     Monitor routines (prefixed MON\_) provide a simple set of
+C     utilities for outputting useful runtime diagnostic
+C     information. They use a standard format so that the monitor output
+C     can be parsed offline to help in trouble shooting.
+C
+C     Monitor setup params should be set through appropriate MON\_
+C     routines to ensure that changes are made in a thread-safe fashion.
+
+CEOP
 
 C--   Monitor head and tail strings
       CHARACTER*(*) mon_head
@@ -54,3 +60,9 @@ C     mon_overrideStop - Allow code to continue even if model state is
 C                        heading out of bounds
       COMMON /MON_L/ mon_overrideStop
       LOGICAL mon_overrideStop
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

@@ -1,18 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.11 2003/05/13 18:18:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.12 2004/04/03 04:57:11 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
 
-      SUBROUTINE MON_KE(
-     I                  myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE MON_KE                                        |
-C     | o Calculates stats for Kinetic energy                    |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MON_KE
 
-C     === Global data ===
+C     !INTERFACE:
+      SUBROUTINE MON_KE(
+     I     myIter, myThid )
+
+C     !DESCRIPTION:
+C     Calculates stats for Kinetic energy                    
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "DYNVARS.h"
@@ -20,10 +23,11 @@ C     === Global data ===
 #include "GRID.h"
 #include "SURFACE.h"
 
-C     === Routine arguments ===
+C     !INPUT PARAMETERS:
       INTEGER myIter, myThid
+CEOP
 
-C     === Local variables ====
+C     !LOCAL VARIABLES:
       INTEGER bi,bj,I,J,K
       _RL numPnts,theVol,tmpVal,tmpVol
       _RL theMax,theMean,theVolMean,potEnMean
@@ -124,3 +128,5 @@ c     CALL MON_OUT_RL(mon_string_none,theMean,mon_foot_mean,myThid)
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

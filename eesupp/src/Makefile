@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/eesupp/src/Makefile,v 1.5 2004/04/02 15:33:58 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/eesupp/src/Makefile,v 1.6 2004/04/03 04:57:11 edhill Exp $
 # $Name:  $
 
 # Makefile for generate eesupp source code from templates.
@@ -44,7 +44,7 @@ R8_FILES = exch_xy_r8.F  exch_uv_xy_r8.F  exch_z_xy_r8.F  \
 all: $(RL_FILES) $(RS_FILES) $(R4_FILES) $(R8_FILES)
 
 clean:
-	-rm -f $(RL_FILES) $(RS_FILES)
+	-rm -f $(RL_FILES) $(RS_FILES) $(R4_FILES) $(R8_FILES)
 
 # exch_xy_rx
 exch_xy_rl.F: exch_xy_rx.template

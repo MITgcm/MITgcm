@@ -1,23 +1,27 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.2 2003/05/13 18:18:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.3 2004/04/03 04:57:11 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
 
-      SUBROUTINE MON_INIT(myThid )
-C     /==========================================================\
-C     | SUBROUTINE MON_INIT                                      |
-C     | o Set default monitor internal setup.                    |
-C     \==========================================================/
-      IMPLICIT NONE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MON_INIT
 
-C     === Global data ===
+C     !INTERFACE:
+      SUBROUTINE MON_INIT( myThid )
+
+C     !DESCRIPTION:
+C     Set default monitor internal setup.
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "MONITOR.h"
 
-C     === Routine arguments ===
-C     myThid - Instance number of this call to monitor
+C     !INPUT PARAMETERS:
       INTEGER myThid
+CEOP
 
 C     Set monitor I/O to standard output by default
 C     and prefix monitor "variables" with mon by default.

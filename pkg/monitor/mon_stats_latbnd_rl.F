@@ -1,26 +1,31 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_latbnd_rl.F,v 1.4 2004/03/05 02:28:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_latbnd_rl.F,v 1.5 2004/04/03 04:57:12 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
 
-      SUBROUTINE MON_STATS_LATBND_RL(
-     I                myNr, mskNr, kLoc, nSepBnd, ySepBnd,
-     I                arr, arrMask, arrhFac, arrArea, arrY, arrDr,
-     O                theMin,theMax,theMean,theVar,theVol,
-     I                myThid )
-C     *==========================================================*
-C     | SUBROUTINE MON_STATS_LATBND_RL
-C     | o Calculate bare statistics of global array "_RL arr"
-C     |   on each Latitude band (given by ySepBnd)
-C     *==========================================================*
-C     *==========================================================*
-      IMPLICIT NONE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MON_STATS_LATBND_RL
 
-C     === Global data ===
+C     !INTERFACE:
+      SUBROUTINE MON_STATS_LATBND_RL(
+     I     myNr, mskNr, kLoc, nSepBnd, ySepBnd,
+     I     arr, arrMask, arrhFac, arrArea, arrY, arrDr,
+     O     theMin,theMax,theMean,theVar,theVol,
+     I     myThid )
+
+C     !DESCRIPTION:
+C     Calculate bare statistics of global array "\_RL arr" on each
+C     Latitude band (given by \texttt{ySepBnd}).
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+      INTEGER  NLATBND
+      EXTERNAL NLATBND
 
-C     === Routine arguments ===
+C     !INPUT PARAMETERS:
 C     nSepBnd :: Number of latitude bands
 C     ySepBnd :: Southern latitude egde (from 2 to nSepBnd, 1 is not used)
       INTEGER myNr, mskNr, kLoc
@@ -38,12 +43,9 @@ C     ySepBnd :: Southern latitude egde (from 2 to nSepBnd, 1 is not used)
       _RL theVar(nSepBnd)
       _RL theVol(nSepBnd)
       INTEGER myThid
+CEOP
 
-C     === Functions ====
-      INTEGER  NLATBND
-      EXTERNAL NLATBND
-
-C     === Local variables ====
+C     !LOCAL VARIABLES:
       INTEGER bi,bj,i,j,k,n
       INTEGER km, k1, k2
       INTEGER numPnts
@@ -120,6 +122,7 @@ C-    set k index range [k1,k2]
       RETURN
       END
       
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: NLATBND
 
@@ -128,11 +131,8 @@ C     !INTERFACE:
       IMPLICIT NONE
 
 C     !DESCRIPTION:
-C     *==========================================================*
-C     | FUNCTION NLATBND
-C     | o Find the latidude band of yLoc in nSep strip
-C     *==========================================================*
-C
+C     Find the latidude band of yLoc in nSep strip
+
 C     !INPUT PARAMETERS:
 C     nBnd :: Number of latitude bands
 C     yBnd :: latitude of southern boundary (for each lat. band)
@@ -140,6 +140,7 @@ C     yLoc :: current latitude
       INTEGER nBnd
       _RS yBnd(nBnd) 
       _RS yLoc
+CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER n
@@ -151,3 +152,5 @@ C     !LOCAL VARIABLES:
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

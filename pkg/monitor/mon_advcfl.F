@@ -1,31 +1,35 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_advcfl.F,v 1.5 2003/05/13 18:18:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_advcfl.F,v 1.6 2004/04/03 04:57:11 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
 
-      SUBROUTINE MON_ADVCFL(
-     I                label, U, rDx, dT,
-     I                myThid )
-C     /==========================================================\
-C     | SUBROUTINE MON_ADVCFL                                    |
-C     | o Calculates maximum CFL number                          |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C     !ROUTINE: MON_ADVCFL
 
-C     === Global data ===
+C     !INTERFACE:
+      SUBROUTINE MON_ADVCFL(
+     I     label, U, rDx, dT,
+     I     myThid )
+
+C     !DESCRIPTION:
+C     Calculates maximum CFL number
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "MONITOR.h"
 
-C     === Routine arguments ===
+C     !INPUT PARAMETERS:
       CHARACTER*(*) label
       _RL U(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS rDx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL dT
       INTEGER myThid
+CEOP
 
-C     === Local variables ====
+C     !LOCAL VARIABLES:
       INTEGER bi,bj,I,J,K
       _RL tmpVal,theMax
 
@@ -49,3 +53,5 @@ C     === Local variables ====
 
       RETURN
       END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
