@@ -4,8 +4,10 @@
 
 <!--
 Build commands:
+  db2ps -d ldp.dsl devel_HOWTO.sgml
   db2pdf -d ldp.dsl devel_HOWTO.sgml
   db2html -d ./ldp.dsl devel_HOWTO.sgml
+  db2html -u -d ./ldp.dsl devel_HOWTO.sgml
 -->
 
   <articleinfo>
@@ -22,7 +24,7 @@ Build commands:
     <revhistory>
       <revision>
 	<revnumber>0.01</revnumber>
-	<date>2003-0-07</date>
+	<date>2003-08-07</date>
 	<authorinitials>eh3</authorinitials>
 	<revremark>
 	  Initial version.
@@ -395,6 +397,219 @@ $ mv scratch/dev_docs /u/u0/httpd/html
 
   </sect1>
 
+  <sect1 id="coding">
+    <title>Coding</title>
+
+    <sect2 id="packages">
+      <title>Coding Packages</title>
+
+      <para>Optional parts of code have been separated from the MITgcmUV
+      core driver code and organised into packages. The packaging
+      structure provides a mechanism for maintaining suites of code,
+      specific to particular classes of problems, in a way that is
+      cleanly separated from the generic fluid dynamical
+      engine.</para>
+
+      <para>The MITgcmUV packaging structure is described below using
+      generic package names ${pkg}.  A concrete examples of a package
+      is the code for implementing GM/Redi mixing. This code uses the
+      package name</para>
+
+    </sect2>
+
+  </sect1>
+
+  <sect1>
+    <title>Chris's Notes...</title>
+
+<programlisting>
+           MITgcmUV Packages
+           =================
+
+  Optional parts of code are separated from
+the MITgcmUV core driver code and organised into
+packages. The packaging structure provides a mechanism for
+maintaining suites of code, specific to particular
+classes of problem, in a way that is cleanly
+separated from the generic fluid dynamical engine.
+
+ The MITgcmUV packaging structure is describe
+below using generic package names ${pkg}.
+A concrete examples of a package is the code
+for implementing GM/Redi mixing. This code uses
+the package name 
+*   ${PKG} = GMREDI
+*   ${pkg} = gmredi
+*   ${Pkg} = gmRedi
+
+Package states
+==============
+
+ Packages can be any one of four states, included,
+ excluded, enabled, disabled as follows:
+
+ included(excluded) compile time state which
+                    includes(excludes) package
+                    code and routine calls from
+                    compilation/linking etc...
+
+ enabled(disabled)  run-time state which
+                    enables(disables) package code
+                    execution.
+
+ Every call to a ${pkg}_... routine from outside the package
+ should be placed within both a
+ #ifdef ALLOW_${PKG} ... block and a
+ if ( use${Pkg} ) ... then block.
+ Package states are generally not expected to change during
+ a model run.
+
+Package structure
+=================
+
+o  Each package gets its runtime configuration
+   parameters from a file named "data.${pkg}"
+   Package runtime config. options are imported
+   into a common block held in a header file
+   called "${PKG}.h".
+
+o  The core driver part of the model can check
+   for runtime enabling or disabling of individual packages
+   through logical flags use${Pkg}.
+   The information is loaded from a
+   global package setup file called "data.pkg".
+   The use${Pkg} flags are not used within
+   individual packages.
+
+o  Included in "${PKG}.h" is a logical flag
+   called ${Pkg}IsOn. The "${PKG}.h" header file can be imported
+   by other packages to check dependencies and requirements
+   from other packages ( see "Package Boot Sequence" section).
+   NOTE: This procedure is not presently implemented,
+   ----- neither for kpp nor for gmRedi.
+
+CPP Flags
+=========
+
+    1. Within the core driver code flags of the form
+       ALLOW_${PKG} are used to include or exclude
+       whole packages. The ALLOW_${PKG} flags are included
+       from a PKG_CPP_OPTIONS block which is currently
+       held in-line in the CPP_OPTIONS.h header file.
+       e.g.
+
+       Core model code .....
+
+       #include "CPP_OPTIONS.h"
+         :
+         :
+         :
+
+       #ifdef ALLOW_${PKG}
+         if ( use${Pkg} ) CALL ${PKG}_DO_SOMETHING(...)
+       #endif
+
+    2. Within an individual package a header file,
+       "${PKG}_OPTIONS.h", is used to set CPP flags
+       specific to that package. It is not recommended
+       to include this file in "CPP_OPTIONS.h".
+
+
+Package Boot Sequence
+=====================
+
+    Calls to package routines within the core code timestepping
+    loop can vary. However, all packages follow a required
+    "boot" sequence outlined here:
+
+    1. S/R PACKAGES_BOOT()
+            :
+        CALL OPEN_COPY_DATA_FILE( 'data.pkg', 'PACKAGES_BOOT', ... )
+ 
+
+    2. S/R PACKAGES_READPARMS()
+            :
+        #ifdef ALLOW_${PKG}
+          if ( use${Pkg} )
+     &       CALL ${PKG}_READPARMS( retCode )
+        #endif
+
+    2. S/R PACKAGES_CHECK()
+            :
+        #ifdef ALLOW_${PKG}
+          if ( use${Pkg} )
+     &       CALL ${PKG}_CHECK( retCode )
+        #else
+          if ( use${Pkg} )
+     &       CALL PACKAGES_CHECK_ERROR('${PKG}')
+        #endif
+
+    3. S/R PACKAGES_INIT()
+            :
+        #ifdef ALLOW_${PKG}
+          if ( use${Pkg} )
+     &       CALL ${PKG}_INIT( retCode )
+        #endif
+
+
+Description
+===========
+
+      - ${PKG}_READPARMS() 
+    is responsible for reading
+    in the package parameters file data.${pkg}, and storing
+    the package parameters in "${PKG}.h".
+    -> called in INITIALISE_FIXED
+
+     - ${PKG}_CHECK() 
+    is responsible for validating
+    basic package setup and inter-package dependencies.
+    ${PKG}_CHECK can import other package parameters it may
+    need to check. This is done through header files "${PKG}.h".
+    It is assumed that parameters owned by other packages
+    will not be reset during ${PKG}_CHECK().
+    -> called in INITIALISE_FIXED
+
+     - ${PKG}_INIT() 
+    is responsible for completing the
+    internal setup of a package. This routine is called after
+    the core model state has been completely initialised
+    but before the core model timestepping starts.
+    -> called in INITIALISE_VARIA
+
+Summary
+=======
+
+- CPP options:
+  -----------------------
+  * ALLOW_${PKG}         include/exclude package for compilation
+
+- FORTRAN logical:
+  -----------------------
+  * use${Pkg}            enable package for execution at runtime
+                         -> declared in PARAMS.h
+  * ${Pkg}IsOn           for package cross-dependency check
+                         -> declared in ${PKG}.h
+                         N.B.: Not presently used!
+
+- header files
+  -----------------------
+  * ${PKG}_OPTIONS.h     has further package-specific CPP options
+  * ${PKG}.h             package-specific common block variables, fields
+
+- FORTRAN source files
+  -----------------------
+  * ${pkg}_readparms.F   reads parameters from file data.${pkg}
+  * ${pkg}_check.F       checks package dependencies and consistencies
+  * ${pkg}_init.F        initialises package-related fields
+  * ${pkg}_... .F        package source code
+
+- parameter file
+  -----------------------
+  * data.${pkg}          parameter file
+</programlisting>
+
+  </sect1>
 
 
 </article>
