@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_t.F,v 1.13 2003/10/23 07:14:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_t.F,v 1.14 2003/10/24 05:29:36 edhill Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -36,6 +36,10 @@ C     == GLobal variables ==
 #include "KPP.h"
 #include "KPP_PARAMS.h"
 
+#ifdef ALLOW_SEAICE
+#include "SEAICE_EXTERNAL.h"
+#endif
+
 C     == Routine arguments ==
 C     iMin,iMax,jMin,  - Range of points for which calculation
 C     jMax,bi,bj,k,km1   results will be set.
@@ -52,16 +56,30 @@ C     I, J - Loop counters
       INTEGER I, J
 
       DO j=jMin,jMax
-         DO i=iMin,iMax
-            df(i,j) = df(i,j) - _rA(i,j,bi,bj) *
-     &           KappaRT(i,j,k) * KPPghat(i,j,km1,bi,bj) * drF(1) *
-     &           ( SurfaceTendencyT(i,j,bi,bj) +
-     &           SurfaceTendencyTice(i,j,bi,bj) -
+       DO i=iMin,iMax
+        if ( .NOT. useSEAICE )
+     &         df(i,j) = df(i,j) - _rA(i,j,bi,bj) * 
+     &         KappaRT(i,j,k) * KPPghat(i,j,km1,bi,bj) * drF(1) *
+     &         ( SurfaceTendencyT(i,j,bi,bj) -
      &           Qsw(i,j,bi,bj)
-     &           *recip_Cp*recip_rhoConst*recip_dRf(1)
-     &           * (1.-KPPfrac(i,j,bi,bj))
-     &           )
-         ENDDO
+     &          *recip_Cp*recip_rhoConst*recip_dRf(1)
+     &          * (1.-KPPfrac(i,j,bi,bj))
+     &         )
+
+#ifdef ALLOW_SEAICE
+
+        if ( useSEAICE )
+     &         df(i,j) = df(i,j) - _rA(i,j,bi,bj) *
+     &         KappaRT(i,j,k) * KPPghat(i,j,km1,bi,bj) * drF(1) *
+     &         ( SurfaceTendencyT(i,j,bi,bj) +
+     &         SurfaceTendencyTice(i,j,bi,bj) -
+     &         Qsw(i,j,bi,bj)
+     &         *recip_Cp*recip_rhoConst*recip_dRf(1)
+     &         * (1.-KPPfrac(i,j,bi,bj))
+     &         )
+#endif
+
+       ENDDO
       ENDDO
 
 #endif /* ALLOW_KPP and KPP_GHAT */

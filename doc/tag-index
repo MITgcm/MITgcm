@@ -1,9 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.194 2003/10/23 07:14:48 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.195 2003/10/24 05:29:35 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-
+o undid all of cp51 pending some cleanups and discussion
 
 checkpoint51n_post
 o modifications to make FREEZE flux visible to pkg/kpp

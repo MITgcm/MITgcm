@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.19 2003/10/23 07:14:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.20 2003/10/24 05:29:35 edhill Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -99,6 +99,10 @@ c     to OLx=1, OLy=1.
 #include "KPP_PARAMS.h"
 #include "FFIELDS.h"
 #include "GRID.h"
+
+#ifdef ALLOW_SEAICE
+#include "SEAICE_EXTERNAL.h"
+#endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
@@ -368,11 +372,22 @@ cph)
            ustar(i,j) = SQRT( tempVar2 )
         endif
 
-        bo(I,J) = - gravity *
-     &       ( vddiff(I,J,1,1) * (SurfaceTendencyT(i,j,bi,bj)+
-     &       SurfaceTendencyTice(i,j,bi,bj)) +
-     &       vddiff(I,J,1,2) * SurfaceTendencyS(i,j,bi,bj) ) *
+        if ( .NOT. useSEAICE )
+     &       bo(I,J) = - gravity *
+     &       ( vddiff(I,J,1,1) * SurfaceTendencyT(i,j,bi,bj) +
+     &         vddiff(I,J,1,2) * SurfaceTendencyS(i,j,bi,bj)
+     &       ) *
      &       drF(1) / work2(I,J)
+
+#ifdef ALLOW_SEAICE
+        if ( useSEAICE )
+     &       bo(I,J) = - gravity *
+     &       ( vddiff(I,J,1,1) * (SurfaceTendencyT(i,j,bi,bj)+
+     &                            SurfaceTendencyTice(i,j,bi,bj)) +
+     &         vddiff(I,J,1,2) * SurfaceTendencyS(i,j,bi,bj)
+     &       ) *
+     &       drF(1) / work2(I,J)
+#endif /* ALLOW_SEAICE */
 
         bosol(I,J) = gravity * vddiff(I,J,1,1) * Qsw(i,j,bi,bj) *
      &       recip_Cp*recip_rhoConst*recip_dRf(1) *

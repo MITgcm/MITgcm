@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.10 2003/10/23 07:14:49 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.11 2003/10/24 05:29:36 edhill Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -22,6 +22,7 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE.h"
 #include "SEAICE_FFIELDS.h"
+#include "SEAICE_EXTERNAL.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
