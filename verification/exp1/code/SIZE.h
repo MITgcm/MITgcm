@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp1/code/Attic/SIZE.h,v 1.4 2001/02/04 14:38:52 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp1/code/Attic/SIZE.h,v 1.5 2003/02/11 14:14:22 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -38,8 +38,8 @@ C     Nr  - No. points in Z for full process domain.
       PARAMETER (
      &           sNx =  30,
      &           sNy =  30,
-     &           OLx =   3,
-     &           OLy =   3,
+     &           OLx =   2,
+     &           OLy =   2,
      &           nSx =   2,
      &           nSy =   2,
      &           nPx =   1,
