@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.302 2004/05/24 15:37:59 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.303 2004/05/25 07:48:47 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 
+o recoded the lateral boundary conditions for non-hydrostatic w, this time
+  hopefully without new bugs
+  - still to do: biharmonic friction for non-hydrostatic w
 o bug fix for mom_*_sidedrag: rA -> rAs,rAw
 o regenerated output for global_ocean_ebm (using -ieee)
 o fix mom_common/mom_*_sidedrag.F to recover numeric output prior to creation
