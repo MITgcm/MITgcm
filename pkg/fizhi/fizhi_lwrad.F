@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.17 2004/08/12 15:21:22 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.18 2004/08/26 14:37:33 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -156,6 +156,8 @@ C --------------
        ENDDO
        ENDIF
  
+C Convert to Temperature from Fizhi Theta
+C ---------------------------------------
       DO L = 1,lm
       DO I = 1,ISTRIP
       TZL(I,L) = TZL(I,L)*pk(I,L)
@@ -309,17 +311,6 @@ C **********************************************************************
       enddo
       endif
 
-      if (iudiag1.ne.0) then
-      do L = 1,lm
-      do j = 1,jm
-      do i = 1,im
-      qdiag(i,j,iudiag1+L-1,bi,bj) = qdiag(i,j,iudiag1+L-1,bi,bj) + 
-     .  dtradlw(i,j,l) * pkz(i,j,l) * 86400 / pz(i,j)
-      enddo
-      enddo
-      enddo
-      endif
-
       if (iudiag4.ne.0) then
       do L = 1,lm
       do j = 1,jm
@@ -352,7 +343,6 @@ C **********************************************************************
       nolr     = nolr     + 1
       nolrclr  = nolrclr  + 1
 
-      nudiag1  = nudiag1  + 1
       nudiag4  = nudiag4  + 1
       endif
 #endif
