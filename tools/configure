@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/configure,v 1.5 1998/07/03 20:43:44 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/configure,v 1.6 1998/07/03 20:47:04 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -257,7 +257,7 @@ EOF
 cat srclist.inc >> ${mfile}
 cat f77list.inc >> ${mfile}
 cat objlist.inc >> ${mfile}
-#rm -f srclist.inc f77list.inc objlist.inc
+rm -f srclist.inc f77list.inc objlist.inc
 
 cat >> ${mfile} <<EOF
 
