@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.90 2004/07/27 20:59:19 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.91 2004/07/30 14:31:40 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -269,7 +269,47 @@ find_possible_configs()  {
 
     look_for_makedepend
 
-    # look for possible fortran compilers
+    #================================================================
+    #  look for possible C compilers
+    tmp="$MITGCM_CC $CC gcc c89 cc c99 mpicc"
+    p_CC=
+    for c in $tmp ; do
+	rm -f ./genmake_hello.c  ./genmake_hello
+	cat >> genmake_hello.c << EOF
+#include <stdio.h>
+int main(int argc, char **argv) {
+  printf("Hello!\n");
+  return 0;
+}
+EOF
+	$c -o genmake_hello genmake_hello.c > /dev/null 2>&1
+	RETVAL=$?
+	if test "x${RETVAL}" = x0 ; then
+	    p_CC="$p_CC $c"
+	fi
+    done
+    rm -f ./genmake_hello.c ./genmake_hello
+    if test "x${p_CC}" = x ; then
+	cat 1>&2 <<EOF
+
+Error: No C compilers were found in your path.  Please specify one using:
+
+    1) an "optfile" on (eg. "-optfile=path/to/OPTFILE"),
+    2) the CC or MITGCM_CC environment variables.
+
+EOF
+	exit 1
+    else
+	echo "  The possible C compilers found in your path are:"
+	echo "   "$p_CC
+	if test "x$CC" = x ; then
+	    CC=`echo $p_CC | $AWK '{print $1}'`
+	    echo "  Setting C compiler to: "$CC
+	fi
+    fi
+
+    #================================================================
+    #  look for possible FORTRAN compilers
     tmp="$MITGCM_FC $FC efc g77 f77 pgf77 pgf95 ifc f90 f95 mpif77 mpf77 mpxlf95"
     p_FC=
     for c in $tmp ; do
@@ -295,7 +335,7 @@ Error: No Fortran compilers were found in your path.  Please specify one using:
 
     1) an "optfile" on (eg. "-optfile=path/to/OPTFILE"),
     2) a command-line option (eg. "-fc NAME"), or
-    3) the MITGCM_FC environment variable.
+    3) the FC or MITGCM_FC environment variables.
 
 EOF
 	exit 1
@@ -466,6 +506,11 @@ Usage: "$0" [OPTIONS]
           will search for a working compiler by trying a list of
           "usual suspects" such as g77, f77, etc.
 
+    -cc NAME | --cc NAME | -cc=NAME | --cc=NAME
+          Use "NAME" as the C compiler.  By default, genmake 
+          will search for a working compiler by trying a list of
+          "usual suspects" such as gcc, c89, cc, etc.
+
     -[no]ieee | --[no]ieee
           Do or don't use IEEE numerics.  Note that this option 
           *only* works if it is supported by the OPTFILE that 
@@ -524,7 +569,7 @@ WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here
 EOF
 	return 1
     fi
-    c_tcall=`nm genmake_test.o | grep 'T ' | grep tcall | cut -d ' ' -f 3`
+    c_tcall=`nm genmake_test.o 2>/dev/null | grep 'T ' | grep tcall | cut -d ' ' -f 3`
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
@@ -554,7 +599,7 @@ WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here.
 EOF
 	return 1
     fi
-    f_tcall=`nm genmake_tcomp.o | grep 'T ' | grep tcall | cut -d ' ' -f 3`
+    f_tcall=`nm genmake_tcomp.o 2>/dev/null | grep 'T ' | grep tcall | cut -d ' ' -f 3`
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
@@ -631,6 +676,7 @@ EOF
 
 
 check_netcdf_libs()  {
+    echo "" > genmake_tnc.log
     cat <<EOF > genmake_tnc.for
       program fgennc
 #include "netcdf.inc"
@@ -644,7 +690,7 @@ check_netcdf_libs()  {
       end
 EOF
     #echo "$CPP $DEFINES $INCLUDES"
-    $CPP $DEFINES $INCLUDES genmake_tnc.for > genmake_tnc.f  \
+    $CPP $DEFINES $INCLUDES genmake_tnc.for > genmake_tnc.f 2>/dev/null  \
 	&&  $FC $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.f $LIBS >> genmake_tnc.log 2>&1
     RET_COMPILE=$?
     test -x ./genmake_tnc  &&  ./genmake_tnc >> genmake_tnc.log 2>&1
@@ -653,7 +699,7 @@ EOF
 	HAVE_NETCDF=t
     else
 	# try again with "-lnetcdf" added to the libs
-	$CPP $DEFINES $INCLUDES genmake_tnc.for > genmake_tnc.f  \
+	$CPP $DEFINES $INCLUDES genmake_tnc.for > genmake_tnc.f 2>/dev/null  \
 	    &&  $FC $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.f \
 	    $LIBS -lnetcdf >> genmake_tnc_2.log 2>&1
 	RET_COMPILE=$?
@@ -683,6 +729,7 @@ LN=
 S64=
 KPP=
 FC=
+CC=
 CPP=
 LINK=
 DEFINES=
@@ -913,7 +960,12 @@ for ac_option in $@ ; do
 #		ac_prev=cpp ;;
 #	    -cpp=* | --cpp=*)
 #		CPP=$ac_optarg ;;
-	    
+	
+	-cc | --cc)
+	    ac_prev=CC ;;
+	-cc=* | --cc=*)
+	    CC=$ac_optarg ;;
+	
 	-fortran | --fortran | -fc | --fc)
 	    ac_prev=FC ;;
 	-fc=* | --fc=*)
@@ -1069,7 +1121,7 @@ if test "x${AD_OPTFILE}" != xNONE ; then
     fi
 fi
 
-#  Check that FC, LINK, CPP, S64, LN, and MAKE are defined.  If not,
+#  Check that FC, CC, LINK, CPP, S64, LN, and MAKE are defined.  If not,
 #  either set defaults or complain and abort!
 if test ! "x$BASH" = x ; then
     # add a trailing space so that it works within the Makefile syntax (see below)
@@ -1081,6 +1133,16 @@ if test "x$FC" = x ; then
 Error: no Fortran compiler: please specify using one of the following:
   1) within the options file ("FC=...") as specified by "-of=OPTFILE"
   2) the "-fc=XXX" command-line option
+  3) the "./genmake_local" file
+EOF
+    exit 1
+fi
+if test "x$CC" = x ; then
+    cat <<EOF 1>&2
+
+Error: no C compiler: please specify using one of the following:
+  1) within the options file ("CC=...") as specified by "-of=OPTFILE"
+  2) the "-cc=XXX" command-line option
   3) the "./genmake_local" file
 EOF
     exit 1

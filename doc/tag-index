@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.337 2004/07/27 15:56:13 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.338 2004/07/30 14:31:40 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o genmake2: add ability to search for C compilers and cleanup test output
+  - fixes recent SX-6 problems and should help with others (eg. HP-UX)
 
 checkpoint54d_post
 o data.diagnostics: if levels() is unspecified then ALL levels are diagnosed
