@@ -16,22 +16,25 @@
  diffKrS=3.E-5,
  gravity=9.81,
  rhonil=1035.,
+ eosType='JMD95Z',
+#allowFreezing=.TRUE.,
+ ivdc_kappa=10.,
+ implicitDiffusion=.TRUE.,
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,
  select_rStar=2,
  nonlinFreeSurf=4,
  hFacInf=0.2,
  hFacSup=2.0,
- eosType='JMD95Z',
- ivdc_kappa=10.,
- implicitDiffusion=.TRUE.,
- allowFreezing=.TRUE.,
  useRealFreshWaterFlux=.TRUE.,
+ temp_EvPrRn=0.,
  hFacMin=.1,
  hFacMinDr=20.,
  vectorInvariantMomentum=.TRUE.,
+ staggerTimeStep=.TRUE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
+#debugLevel=0,
  &
 
 # Elliptic solver parameters
@@ -60,14 +63,13 @@
  externForcingCycle=31104000.,
 # 2 months restoring timescale for temperature
 #tauThetaClimRelax= 5184000.,
-# restoring timescale for salinity: 20 yrs 
+# restoring timescale for salinity: 2yrs, 20 yrs
+#tauSaltClimRelax = 62208000.,
  tauSaltClimRelax = 622080000.,
  &
 
 # Gridding parameters
  &PARM04
- usingCartesianGrid=.FALSE.,
- usingSphericalPolarGrid=.FALSE.,
  usingCurvilinearGrid=.TRUE.,
  delR= 50., 70., 100., 140., 190.,
        240., 290., 340., 390., 440.,
