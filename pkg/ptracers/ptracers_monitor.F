@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.4 2004/11/29 17:11:41 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_monitor.F,v 1.5 2004/12/01 21:30:46 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -85,7 +85,7 @@ C     Ptracers field monitor start
         IF ( PTRACERS_monitorFreq .NE. monitorFreq ) THEN
 C     repeat printing of time to make grepping easier, default is not
 C     to do this, because the default is to use the same monitorFreq
-C     for ptracers than for the dynamics variables.
+C     for ptracers as for the dynamics variables.
          CALL MON_SET_PREF('trctime',myThid)
          CALL MON_OUT_I( '_tsnumber', myIter,mon_string_none,myThid)
          CALL MON_OUT_RL('_secondsf', myTime,mon_string_none,myThid)
