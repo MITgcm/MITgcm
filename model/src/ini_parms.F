@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.146 2005/02/10 05:25:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.147 2005/02/20 11:46:24 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -192,7 +192,8 @@ C--   Time stepping parammeters
      & outputTypesInclusive, 
      & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax, 
      & tauTr1ClimRelax,
-     & periodicExternalForcing, externForcingPeriod, externForcingCycle
+     & periodicExternalForcing, externForcingPeriod, externForcingCycle,
+     & calendarDumps
 
 C--   Gridding parameters
       NAMELIST /PARM04/

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.9 2005/02/06 23:19:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.10 2005/02/20 11:46:25 dimitri Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -30,6 +30,8 @@ c ===============
       INTEGER   n
       INTEGER   myItM1, wrIter
       LOGICAL   dump2fileNow
+      INTEGER thisdate(4), prevdate(4)
+      _RL     freqSec
 
       IF ( myIter.NE.nIter0 ) THEN
         myItM1 = myIter - 1
@@ -37,6 +39,14 @@ c ===============
 C***********************************************************************
 C***   Check to see IF its time for Diagnostic Output                ***
 C***********************************************************************
+
+#ifdef ALLOW_CAL
+        IF ( calendarDumps ) THEN
+C-    Determine calendar dates for this and previous time step.
+           call cal_GetDate(myiter  ,mytime            ,thisdate,mythid)
+           call cal_GetDate(myiter-1,mytime-deltaTClock,prevdate,mythid)
+        ENDIF
+#endif
 
         DO n = 1,nlists
           IF ( freq(n).LT.0 ) THEN
@@ -51,6 +61,24 @@ C       state-variable time-step:
             dump2fileNow = MOD(myIter,freq(n)) .EQ. 0
             wrIter = myIter
           ENDIF
+
+#ifdef ALLOW_CAL
+          freqSec = freq(n) * deltaTClock
+          IF ( calendarDumps .AND. (
+     &     ( freqSec.GE. 2592000 .AND. freqSec.LE. 2678400 ) .OR.
+     &     ( freqSec.GE.31104000 .AND. freqSec.LE.31968000 )) THEN
+C--   Convert approximate months (30-31 days) and years (360-372 days)
+C     to exact calendar months and years.
+           dump2fileNow = .FALSE
+C-    Monthly freqSec:
+           IF( freqSec.GE. 2592000 .AND. freqSec.LE. 2678400 .AND.
+     &        thisdate-prevdate.GT.50   ) dump2fileNow = .TRUE.
+C-    Yearly  freqSec:
+           IF( freqSec.GE.31104000 .AND. freqSec.LE.31968000 .AND.
+     &        thisdate-prevdate.GT.5000 ) dump2fileNow = .TRUE.
+          ENDIF
+#endif
+
           IF ( dump2fileNow ) THEN
             CALL DIAGNOSTICS_OUT(n,wrIter,myThid)
           ENDIF

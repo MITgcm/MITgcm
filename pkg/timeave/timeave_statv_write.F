@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.26 2004/12/18 02:18:58 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.27 2005/02/20 11:46:25 dimitri Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -50,10 +50,33 @@ C     useVariableK :: T when vertical diffusion is not constant
       INTEGER beginIOErrCount
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER thisdate(4), prevdate(4)
+      LOGICAL dumpFiles
  
 C     Final Time Averages and Dump Files if needed
-      IF (DIFFERENT_MULTIPLE(taveFreq,myTime,myTime-deltaTClock)) THEN
+      dumpFiles = .FALSE.
+      IF (DIFFERENT_MULTIPLE(taveFreq,myTime,myTime-deltaTClock))
+     &     dumpFiles = .TRUE.
+#ifdef ALLOW_CAL
+      IF ( calendarDumps .AND. (
+     &       ( taveFreq.GE. 2592000 .AND. taveFreq.LE. 2678400 ) .OR.
+     &       ( taveFreq.GE.31104000 .AND. taveFreq.LE.31968000 ))) THEN
+C--   Convert approximate months (30-31 days) and years (360-372 days)
+C     to exact calendar months and years.
+C-    First determine calendar dates for this and previous time step.
+         call cal_GetDate( myiter  ,mytime            ,thisdate,mythid )
+         call cal_GetDate( myiter-1,mytime-deltaTClock,prevdate,mythid )
+         dumpFiles = .FALSE.
+C-    Monthly taveFreq:
+         IF( taveFreq.GE. 2592000 .AND. taveFreq.LE. 2678400 .AND.
+     &        (thisdate(1)-prevdate(1)).GT.50   ) dumpFiles = .TRUE.
+C-    Yearly  taveFreq:
+         IF( taveFreq.GE.31104000 .AND. taveFreq.LE.31968000 .AND.
+     &        (thisdate(1)-prevdate(1)).GT.5000 ) dumpFiles = .TRUE.
+      ENDIF
+#endif
 
+      IF (dumpFiles) THEN
         useVariableK = useKPP .OR. usePP81 .OR. useMY82 .OR. useGGL90
      &      .OR. useGMredi .OR. ivdc_kappa.NE.0.
         WRITE(suff,'(I10.10)') myIter

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.18 2004/12/04 05:59:50 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.19 2005/02/20 11:46:25 dimitri Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -36,6 +36,7 @@ C     == Local variables ==
       INTEGER I, J, K
       _RL DDTT
       _RL tempArray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER thisdate(4), prevdate(4)
  
 C-    Initialize fields for the first call ever
       IF ( myIter .EQ. nIter0 ) THEN
@@ -86,13 +87,28 @@ c       CALL TIMEAVE_RESET(hFacStave, Nr, bi, bj, myThid)
       ENDIF
       
 C--   Cumulate state-variables with Half or Full time step : 
+      DDTT = deltaTclock
       IF ( myIter .EQ. nIter0 ) THEN
         DDTT = deltaTclock*(1. _d 0 - tave_lastIter)
+#ifdef ALLOW_CAL
+      ELSEIF ( calendarDumps .AND. (
+     &       ( taveFreq.GE. 2592000 .AND. taveFreq.LE. 2678400 ) .OR.
+     &       ( taveFreq.GE.31104000 .AND. taveFreq.LE.31968000 ))) THEN
+C--   Convert approximate months (30-31 days) and years (360-372 days)
+C     to exact calendar months and years.
+C-    First determine calendar dates for this and previous time step.
+       call cal_GetDate( myiter  ,mytime            ,thisdate,mythid )
+       call cal_GetDate( myiter-1,mytime-deltaTClock,prevdate,mythid )
+C-    Monthly taveFreq:
+       IF(taveFreq.GE. 2592000 .AND. taveFreq.LE. 2678400 .AND.
+     &  (thisdate(1)-prevdate(1)).GT.50  )DDTT=deltaTclock*tave_lastIter
+C-    Yearly  taveFreq:
+       IF(taveFreq.GE.31104000 .AND. taveFreq.LE.31968000 .AND.
+     &  (thisdate(1)-prevdate(1)).GT.5000)DDTT=deltaTclock*tave_lastIter
+#endif
       ELSEIF ( 
      &  DIFFERENT_MULTIPLE(taveFreq, myTime, myTime-deltaTClock)) THEN
         DDTT = deltaTclock*tave_lastIter
-      ELSE
-        DDTT = deltaTclock
       ENDIF
 
       IF ( DDTT .NE. 0. _d 0) THEN

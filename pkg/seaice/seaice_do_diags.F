@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.8 2004/12/27 20:34:11 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.9 2005/02/20 11:46:25 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -34,6 +34,8 @@ C     == Local variables ==
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER i, j, k, bi, bj
       _RS arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
+      INTEGER thisdate(4), prevdate(4)
+      LOGICAL dumpFiles
          
       IF (SEAICEwriteState) THEN
 
@@ -189,10 +191,32 @@ C--   Time-cumulations
       ENDDO
 
 C     Dump files and restart average computation if needed
-      IF ( myIter.NE.nIter0 .AND. 
-     &     DIFFERENT_MULTIPLE(SEAICE_taveFreq,myTime,myTime-deltaTClock)
-     &     ) THEN
-         
+      dumpFiles = .FALSE.
+      IF ( myIter .NE. nIter0 ) THEN
+      IF (DIFFERENT_MULTIPLE(SEAICE_taveFreq,myTime,myTime-deltaTClock))
+     &     dumpFiles = .TRUE.
+#ifdef ALLOW_CAL
+      IF ( calendarDumps .AND. (
+     & (SEAICE_taveFreq.GE. 2592000.AND.SEAICE_taveFreq.LE. 2678400).OR.
+     & (SEAICE_taveFreq.GE.31104000.AND.SEAICE_taveFreq.LE.31968000)))
+     & THEN
+C--   Convert approximate months (30-31 days) and years (360-372 days)
+C     to exact calendar months and years.
+C-    First determine calendar dates for this and previous time step.
+       call cal_GetDate( myiter  ,mytime            ,thisdate,mythid )
+       call cal_GetDate( myiter-1,mytime-deltaTClock,prevdate,mythid )
+       dumpFiles = .FALSE.
+C-    Monthly SEAICE_taveFreq:
+       IF( SEAICE_taveFreq.GE. 2592000 .AND. SEAICE_taveFreq.LE. 2678400
+     &      .AND. (thisdate(1)-prevdate(1)).GT.50   ) dumpFiles = .TRUE.
+C-    Yearly  SEAICE_taveFreq:
+       IF( SEAICE_taveFreq.GE.31104000 .AND. SEAICE_taveFreq.LE.31968000
+     &      .AND. (thisdate(1)-prevdate(1)).GT.5000 ) dumpFiles = .TRUE.
+      ENDIF
+#endif
+      ENDIF
+
+      IF (dumpFiles) THEN
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)

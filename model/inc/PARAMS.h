@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.143 2005/02/10 05:25:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.144 2005/02/20 11:46:24 dimitri Exp $
 C $Name:  $
 C
 
@@ -269,6 +269,10 @@ C     pickup_write_immed :: echo the pickup immediately (for conversion)
 C     timeave_mdsio      :: use mdsio for timeave output
 C     snapshot_mdsio     :: use mdsio for "snapshot" (dumpfreq/diagfreq) output
 C     monitor_stdio      :: use stdio for monitor output
+C     calendarDumps :: When set, approximate months (30-31 days) and years (360-372 days)
+C                      for parameters chkPtFreq, pChkPtFreq, taveFreq, SEAICE_taveFreq,
+C                      KPP_taveFreq, and freq in pkg/diagnostics are converted to exact
+C                      calendar months and years.  Requires pkg/cal.
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid, usingCylindricalGrid,
      & no_slip_sides,no_slip_bottom,
@@ -300,7 +304,8 @@ C     monitor_stdio      :: use stdio for monitor output
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
      & outputTypesInclusive, 
-     & inAdMode, inAdTrue, inAdFalse, inAdExact
+     & inAdMode, inAdTrue, inAdFalse, inAdExact,
+     & calendarDumps
 
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
@@ -376,6 +381,7 @@ C     monitor_stdio      :: use stdio for monitor output
       LOGICAL timeave_mdsio, snapshot_mdsio, monitor_stdio
       LOGICAL outputTypesInclusive
       LOGICAL inAdMode, inAdTrue, inAdFalse, inAdExact
+      LOGICAL calendarDumps
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual

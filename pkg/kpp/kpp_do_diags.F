@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.16 2004/12/18 02:18:55 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.17 2005/02/20 11:46:25 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -9,7 +9,7 @@ CBOP
 C     !ROUTINE: KPP_DO_DIAGS
 
 C     !INTERFACE:
-      SUBROUTINE KPP_DO_DIAGS( myCurrentTime, myIter, myThid )
+      SUBROUTINE KPP_DO_DIAGS( myTime, myIter, myThid )
 
 C     !DESCRIPTION: 
 C     Create the KPP diagnostic output.                              
@@ -53,7 +53,7 @@ C     !USES:
 #include "KPP_DIAGS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
-      _RL     myCurrentTime
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
 
@@ -65,14 +65,16 @@ C     !LOCAL VARIABLES:
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER bi, bj, K
       _RL DDTT
+      INTEGER thisdate(4), prevdate(4)
+      LOGICAL dumpFiles
 CEOP
 
 C----------------------------------------------------------------
 C     Dump snapshot of KPP variables.
 
       IF ( myIter.NE.nIter0 .AND. 
-     &     DIFFERENT_MULTIPLE(kpp_dumpFreq,myCurrentTime,
-     &     myCurrentTime-deltaTClock)
+     &     DIFFERENT_MULTIPLE(kpp_dumpFreq,myTime,
+     &     myTime-deltaTClock)
      &     ) THEN
         
         IF (KPPmixingMaps) THEN
@@ -189,11 +191,32 @@ C         Keep record of how much time has been integrated over
       ENDIF
       
 C     Dump files and restart average computation if needed
-      IF ( myIter.NE.nIter0 .AND. 
-     &     DIFFERENT_MULTIPLE(kpp_taveFreq,myCurrentTime,
-     &     myCurrentTime-deltaTClock)
-     &     ) THEN
-        
+      dumpFiles = .FALSE.
+      IF ( myIter .NE. nIter0 ) THEN
+      IF (DIFFERENT_MULTIPLE(KPP_taveFreq,myTime,myTime-deltaTClock))
+     &     dumpFiles = .TRUE.
+#ifdef ALLOW_CAL
+      IF ( calendarDumps .AND. (
+     & (KPP_taveFreq.GE. 2592000.AND.KPP_taveFreq.LE. 2678400).OR.
+     & (KPP_taveFreq.GE.31104000.AND.KPP_taveFreq.LE.31968000)))
+     & THEN
+C--   Convert approximate months (30-31 days) and years (360-372 days)
+C     to exact calendar months and years.
+C-    First determine calendar dates for this and previous time step.
+       call cal_GetDate( myiter  ,mytime            ,thisdate,mythid )
+       call cal_GetDate( myiter-1,mytime-deltaTClock,prevdate,mythid )
+       dumpFiles = .FALSE.
+C-    Monthly KPP_taveFreq:
+       IF( KPP_taveFreq.GE. 2592000 .AND. KPP_taveFreq.LE. 2678400
+     &      .AND. (thisdate(1)-prevdate(1)).GT.50   ) dumpFiles = .TRUE.
+C-    Yearly  KPP_taveFreq:
+       IF( KPP_taveFreq.GE.31104000 .AND. KPP_taveFreq.LE.31968000
+     &      .AND. (thisdate(1)-prevdate(1)).GT.5000 ) dumpFiles = .TRUE.
+      ENDIF
+#endif
+      ENDIF
+
+      IF (dumpFiles) THEN
 C       Normalize by integrated time
         DO bj = myByLo(myThid), myByHi(myThid)
           DO bi = myBxLo(myThid), myBxHi(myThid)

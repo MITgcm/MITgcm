@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.83 2005/02/10 05:25:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.84 2005/02/20 11:46:24 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -255,6 +255,7 @@ C--   Time stepping parameters
       externForcingCycle      = 0.
       tCylIn             = 0.
       tCylOut            = 20.
+      calendarDumps     = .FALSE.
 
 C--   Input files
       bathyFile       = ' '

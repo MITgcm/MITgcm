@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.11 2005/02/20 04:31:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.12 2005/02/20 11:46:24 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,6 +54,7 @@ C     oldPrc :: Temp. for holding I/O precision
 C     fn     :: Temp. for building file name string.
 C     lgf    :: Flag to indicate whether to use global file mode.
       LOGICAL permCheckPoint, tempCheckPoint  
+      INTEGER thisdate(4), prevdate(4)
 CEOP
 
       permCheckPoint = .FALSE.
@@ -62,7 +63,37 @@ CEOP
      &     DIFFERENT_MULTIPLE(pChkptFreq,myTime,myTime-deltaTClock)
       tempCheckPoint=
      &     DIFFERENT_MULTIPLE( ChkptFreq,myTime,myTime-deltaTClock)
-      
+
+#ifdef ALLOW_CAL
+      IF ( calendarDumps ) THEN
+C--   Convert approximate months (30-31 days) and years (360-372 days)
+C     to exact calendar months and years.
+C-    First determine calendar dates for this and previous time step.
+         call cal_GetDate( myiter  ,mytime            ,thisdate,mythid )
+         call cal_GetDate( myiter-1,mytime-deltaTClock,prevdate,mythid )
+C-    Monthly pChkptFreq:
+         IF( pChkptFreq.GE. 2592000 .AND. pChkptFreq.LE. 2678400 ) THEN
+            permCheckPoint = .FALSE.
+            IF((thisdate(1)-prevdate(1)) .GT. 50  )permCheckPoint=.TRUE.
+         ENDIF
+C-    Yearly  pChkptFreq:
+         IF( pChkptFreq.GE.31104000 .AND. pChkptFreq.LE.31968000 ) THEN
+            permCheckPoint = .FALSE.
+            IF((thisdate(1)-prevdate(1)) .GT. 5000)permCheckPoint=.TRUE.
+         ENDIF
+C-    Monthly  ChkptFreq:
+         IF(  ChkptFreq.GE. 2592000 .AND.  ChkptFreq.LE. 2678400 ) THEN
+            tempCheckPoint = .FALSE.
+            IF((thisdate(1)-prevdate(1)) .GT. 50  )tempCheckPoint=.TRUE.
+         ENDIF
+C-    Yearly   ChkptFreq:
+         IF(  ChkptFreq.GE.31104000 .AND.  ChkptFreq.LE.31968000 ) THEN
+            tempCheckPoint = .FALSE.
+            IF((thisdate(1)-prevdate(1)) .GT. 5000)tempCheckPoint=.TRUE.
+         ENDIF
+      ENDIF
+#endif
+
       IF (
      &     ( .NOT.modelEnd .AND. (permCheckPoint.OR.tempCheckPoint) )
      &     .OR.
