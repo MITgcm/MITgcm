@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.33 2004/12/13 22:01:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.34 2004/12/19 00:14:56 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -19,13 +19,20 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     PACKAGES_INIT_FIXED
 C       |
+C       |-- DIAGNOSTICS_INIT_EARLY
+C       |-- DIAGNOSTICS_MAIN_INIT
+C       |
 C       |-- GAD_INIT
 C       |
 C       |-- OBCS_INIT_FIXED
 C       |
 C       |-- FLT_INIT
 C       |
+C       |-- TIMEAVE_INIT_FIXED
+C       |
 C       |-- ZONAL_FILT_INIT
+C       |
+C       |-- ATM_DIAGNOSTICS_INIT
 C       |
 C       |-- AIM_INITIALISE
 C       |
@@ -39,11 +46,17 @@ C       |-- ECCO_COST_INIT_FIXED
 C       |
 C       |-- CTRL_INIT
 C       |
+C       |-- PTRACERS_INITIALISE
+C       |
 C       |-- GCHEM_INIT_FIXED
+C       |
+C       |-- CD_CODE_INIT_FIXED
 C       |
 C       |-- OPPS_INIT
 C       |
-C       |-- DIAGNOSTICS_INITIALISE
+C       |-- CPL_INIT_FIXED
+C       |
+C       |-- DIAGNOSTICS_INIT_FIXED
 
 C     !USES:
       IMPLICIT NONE
@@ -99,6 +112,13 @@ C--   Latitude circle filter initialisation
       ENDIF
 #endif
 
+#ifdef ALLOW_ATM_COMMON
+C--   Initialise parameters shared by atmospheric physics packages
+      IF ( (useAIM.OR.useFIZHI)  .AND. useDiagnostics ) THEN
+        CALL ATM_DIAGNOSTICS_INIT( myThid )
+      ENDIF
+#endif
+
 #ifdef ALLOW_AIM
 C--   Initialise & Read AIM physical parameters
       IF (useAIM) CALL AIM_INITIALISE( myThid )
@@ -150,8 +170,8 @@ C--   Initialise the control variables
 #endif
 
 #ifdef ALLOW_CD_CODE
-      IF (useCDscheme) then
-       call CD_CODE_INIT_FIXED(mythid)
+      IF (useCDscheme) THEN
+       CALL CD_CODE_INIT_FIXED(mythid)
       ENDIF
 #endif
 
