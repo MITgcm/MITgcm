@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.11 2004/03/15 01:37:22 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.12 2004/03/16 06:38:00 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -358,13 +358,8 @@ c     endif ( .not. ( globalFile .and. useSingleCPUIO ) )
 
       if ( globalFile .and. useSingleCPUIO ) then
 
-#ifdef ALLOW_EXCH2
-        write(msgbuf,'(a)')
-     &         ' MDSREADFIELD: useSingleCPUIO not 
-     &           implemented with exch2'
-        call print_error( msgbuf, mythid )
-        stop 'ABNORMAL END: S/R MDSREADFIELD'
-#endif /* ALLOW_EXCH2 */
+C useSingleCPUIO only supports old-style I/O, i.e., the
+C input file is assumed: sNx*nSx*nPx * sNy*nSy*nPy * Nr.
 
 C master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
