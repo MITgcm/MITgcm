@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.4 2004/11/01 21:35:24 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/make_phys_grid.F,v 1.5 2004/11/02 00:54:51 molod Exp $
 C $Name:  $
 
        subroutine make_phys_grid(drF,hfacC,im1,im2,jm1,jm2,Nr,
@@ -241,8 +241,6 @@ c END OF LOOP OVER GRID POINTS
 
        enddo
        enddo
-
-       stop
 
        return
        end
