@@ -1,0 +1,16 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_itrda,v 1.1 2003/11/13 00:57:35 heimbach Exp $
+#
+
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -D_BYTESWAPIO -DWORDLENGTH=4'
+LN='/bin/ln -s'
+CPP='/lib/cpp  -traditional -P'
+
+FC='/usr/local/mpich/mpich-1.2.1..7b_gnu/bin/mpif77'
+LINK='/usr/local/mpich/mpich-1.2.1..7b_gnu/bin/mpif77'
+FFLAGS='-Wimplicit -Wunused -Wuninitialized -ffloat-store'
+FOPTIM='-O3 -malign-double -funroll-loops'
+NOOPTFLAGS='-O0'
+LIBS='-L/usr/local/mpich/mpich-1.2.1..7b_gnu/lib/ -lfmpich -lmpich'
+INCLUDEDIRS='-I/usr/local/mpich/mpich-1.2.1..7b_gnu/include/'

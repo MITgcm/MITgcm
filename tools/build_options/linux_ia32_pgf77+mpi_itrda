@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_itrda,v 1.1 2003/11/13 00:57:35 heimbach Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+DEFINES='-DWORDLENGTH=4'
+
+LN='/bin/ln -s'
+CPP='/lib/cpp  -traditional -P'
+FC='/usr/local/mpich/mpich-1.2.1..7b_pgi/bin/mpif77'
+LINK='/usr/local/mpich/mpich-1.2.1..7b_pgi/bin/mpif77'
+FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'
+LIBS='-L/usr/local/mpich/mpich-1.2.1..7b_pgi/lib/ -lfmpich -lmpich'
+INCLUDES='-I/usr/local/mpich/mpich-1.2.1..7b_pgi/include/'
