@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.16 2004/05/24 15:15:16 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.17 2004/05/24 18:41:05 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -235,7 +235,7 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
 
       CALL MOM_CALC_KE(bi,bj,k,2,uFld,vFld,KE,myThid)
 
-      CALL MOM_VI_CALC_HDIV(bi,bj,k,uFld,vFld,hDiv,myThid)
+      CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
 
       CALL MOM_VI_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
 
@@ -247,7 +247,7 @@ C      Calculate del^2 u and del^2 v for bi-harmonic term
          CALL MOM_VI_DEL2UV(bi,bj,k,hDiv,vort3,hFacZ,
      O                      del2u,del2v,
      &                      myThid)
-         CALL MOM_VI_CALC_HDIV(bi,bj,k,del2u,del2v,dStar,myThid)
+         CALL MOM_CALC_HDIV(bi,bj,k,2,del2u,del2v,dStar,myThid)
          CALL MOM_VI_CALC_RELVORT3(
      &                         bi,bj,k,del2u,del2v,hFacZ,zStar,myThid)
        ENDIF
