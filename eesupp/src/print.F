@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.9 1998/06/22 16:24:51 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.10 1998/07/15 22:16:10 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -179,11 +179,11 @@ C     K    - Loop counter
        IF ( .NOT. compact .OR. xNew .NE. xOld ) THEN
         nDup = iHi-iLo+1
         IF ( nDup .EQ. 1 ) THEN
-         WRITE(msgBuf,'(A,I5,A)') '              ',xOld,punc
+         WRITE(msgBuf,'(A,I9,A)') '              ',xOld,punc
          IF ( index_type .NE. INDEX_NONE ) 
      &    WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') commOpen,index_lab,iLo,commClose
         ELSE
-         WRITE(msgBuf,'(I,'' '',A,I5,A)') nDup,'@',xOld,punc
+         WRITE(msgBuf,'(I,'' '',A,I9,A)') nDup,'@',xOld,punc
          IF ( index_type .NE. INDEX_NONE ) 
      &    WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
      &    commOpen,index_lab,iLo,':',iHi,commClose
@@ -200,11 +200,11 @@ C     K    - Loop counter
       IF ( markEnd ) punc = ','
       nDup = iHi-iLo+1
       IF    ( nDup .EQ. 1 ) THEN
-       WRITE(msgBuf,'(A,I5,A)') '              ',xOld,punc
+       WRITE(msgBuf,'(A,I9,A)') '              ',xOld,punc
        IF ( index_type .NE. INDEX_NONE ) 
      &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') commOpen,index_lab,iLo,commClose
       ELSEIF( nDup .GT. 1 ) THEN
-       WRITE(msgBuf,'(I,'' '',A,I5,A)') nDup,'@',xOld,punc
+       WRITE(msgBuf,'(I,'' '',A,I9,A)') nDup,'@',xOld,punc
        IF ( index_type .NE. INDEX_NONE ) 
      &  WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
      &  commOpen,index_lab,iLo,':',iHi,commClose
