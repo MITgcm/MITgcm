@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_aim2dyn.F,v 1.1 2001/05/29 19:28:53 cnh Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_aim2dyn.F,v 1.2 2002/09/27 20:05:11 jmc Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -20,26 +20,19 @@ C     | do not need special piaring on the cube. It may not be   |
 C     | a good idea in the long term as it makes assumptions     |
 C     | about the momentum schemes within AIM.                   |
 C     \==========================================================/
-      IMPLICIT rEAL*8 (A-H,O-Z) 
+      IMPLICIT NONE
 
 C     == Global data ==
-#include "SIZE.h"
+C-- size for MITgcm & Physics package :
+#include "AIM_SIZE.h" 
+
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 
-#ifdef ALLOW_AIM
-#include "atparam0.h"
-#include "atparam1.h"
-      INTEGER NGP
-      INTEGER NLON
-      INTEGER NLAT
-      INTEGER NLEV
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
-#include "com_physvar.h"
 #include "AIM2DYN.h"
-#endif /* ALLOW_AIM */
+#include "com_physvar.h"
 
 C     == Routine arguments ==
       INTEGER bi, bj
@@ -51,15 +44,19 @@ CEndOfInterface
 C     == Local variables ==
 C     Loop counters
       INTEGER I, J
-      INTEGER I2, I3, kAtm, kLev
+      INTEGER I2, kAtm, kLev
 
 C--   Forcing term
       _RL pGround,CPAIR,RD
+      _RL conv_T2theta
 
       pGround = 1. _d 5
       RD      = 287. _d 0
       CPAIR   = 1004. _d 0
       DO kLev=1,Nr
+       conv_T2theta = (pGround/rC(kLev))**(RD/CPAIR)
+C--   for Energy consistency, need to use same value as in calc_phi_hyd:
+c      conv_T2theta = (atm_po/rC(kLev))**atm_kappa
        DO J=1,sNy
         DO I=1,sNx
          I2 = sNx*(J-1)+I
@@ -73,7 +70,7 @@ C        Net temperature tendency
      &                               +TT_LSC(I2,katm,myThid)
      &                               +TT_RSW(I2,katm,myThid)
      &                               +TT_RLW(I2,katm,myThid)
-     &        )*((pGround/rC(kLev))**(RD/CPAIR))
+     &        )*conv_T2theta
 
 C        Net water vapor tendency
          aim_dSdt(i,j,kLev,bi,bj) = QT_PBL(I2,katm,myThid)
@@ -83,17 +80,6 @@ C        Net water vapor tendency
         ENDDO
        ENDDO
       ENDDO
-
-C     DO kLev=1,Nr
-C      DO J=1-OLy,sNy+OLy
-C       DO I=1-OLx,sNx+OLx
-C        aim_drag(i,j,bi,bj) = 0.000000
-C       ENDDO
-C      ENDDO
-C     ENDDO
-
-C     This can't stay here!!
-C     _EXCH_XY_R8( aim_drag, myThid )
 
 #endif /* ALLOW_AIM */
 

@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_convmf.F,v 1.4 2001/09/25 19:50:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_convmf.F,v 1.5 2002/09/27 20:05:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
 cmolt      SUBROUTINE CONVMF (PSA,SE,QA,QSAT,
-      SUBROUTINE CONVMF (PSA,TA,QA,QSAT,
+      SUBROUTINE CONVMF (PSA,Ta,QA,QSAT,
      *                   IDEPTH,CBMF,PRECNV,DFSE,DFQA,
      I                   myThid)
 C--
@@ -24,20 +24,17 @@ C--            DFSE   = net flux of d.s.en. into each atm. layer (3-dim)
 C--            DFQA   = net flux of sp.hum. into each atm. layer (3-dim)
 C--
 
-      IMPLICIT rEAL*8 ( A-H,O-Z)
-      INTEGER  myThid
+      IMPLICIT NONE
 
 C     Resolution parameters
-C
+
+C-- size for MITgcm & Physics package :
+#include "AIM_SIZE.h" 
+
 #include "EEPARAMS.h"
 
-#include "atparam.h"
-#include "atparam1.h"
-#include "Lev_def.h"
-C
-      INTEGER NLON, NLAT, NLEV, NGP
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
-C
+#include "AIM_GRID.h"
+
 C     Physical constants + functions of sigma and latitude
 C
 #include "com_physcon.h"
@@ -45,27 +42,37 @@ C
 C     Convection constants
 C
 #include "com_cnvcon.h"
-C
-      REAL PSA(NGP), SE(NGP,NLEV), QA(NGP,NLEV), QSAT(NGP,NLEV)
-C
+
+C-- Routine arguments:
+      _RL PSA(NGP), Ta(NGP,NLEV), QA(NGP,NLEV), QSAT(NGP,NLEV)
       INTEGER IDEPTH(NGP)
-      REAL CBMF(NGP), PRECNV(NGP), DFSE(NGP,NLEV), DFQA(NGP,NLEV)
-C
+      _RL CBMF(NGP), PRECNV(NGP), DFSE(NGP,NLEV), DFQA(NGP,NLEV)
+      INTEGER  myThid
+
+#ifdef ALLOW_AIM
+
+C-- Local variables:
       INTEGER ITOP(NGP)
-      REAL SM(NGP,NLEV), ENTR(NGP,2:NLEV-1)
-      REAL FM0(NGP), DENTR(NGP)
+c     REAL SM(NGP,NLEV), SE(NGP,NLEV)
+      _RL ENTR(NGP,2:NLEV-1)
+      _RL FM0(NGP), DENTR(NGP)
 C
-      REAL Th(NGP,NLEV), Ta(NGP,NLEV)
-      REAL dThdp(NGP,NLEV), dThdpHat(NGP,NLEV)
-      REAL stab(NGP,NLEV)
-      REAL Prefw(NLEV), Prefs(NLEV)
+      _RL Th(NGP,NLEV)
+      _RL dThdp(NGP,NLEV), dThdpHat(NGP,NLEV)
+      _RL stab(NGP,NLEV)
+      _RL Prefw(NLEV), Prefs(NLEV)
       DATA Prefs / 75., 250., 500., 775., 950./
       DATA Prefw / 0., 150., 350., 650., 900./
-      REAL Pground
+      _RL Pground
       DATA pground /1000./
-      REAL FDMUS
+      _RL FDMUS
 
       INTEGER J, K, K1
+
+C- jmc: declare all local variables:
+      _RL QB, DQSAT, FMASS, FUQ, FDQ, ENMASS, QSATB 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 C
 C     1. Initialization of output and workspace arrays
 C
@@ -101,7 +108,7 @@ C
 C     Entrainment profile (up to sigma = 0.5)
       DO J=1,NGP
         DO K=2,NLEVxy(J,myThid)-1
-          ENTR(J,K)=MAX(0.,SIG(K)-0.5)*DENTR(J)
+          ENTR(J,K)=MAX(0. _d 0,SIG(K)-0.5 _d 0)*DENTR(J)
         ENDDO
       ENDDO
 C
@@ -149,7 +156,8 @@ C
 C
       DO J=1,NGP
         DO k=2,NLEVxy(J,myThid)-1
-          stab(J,K)=dThdpHat(J,K)+ALHC*(QSAT(J,K)-QSAT(J,NLEVxy(J,myThid)))
+          stab(J,K)=
+     &       dThdpHat(J,K)+ALHC*(QSAT(J,K)-QSAT(J,NLEVxy(J,myThid)))
      &        -WVI(K,2)*(dThdp(J,K) +ALHC*(QSAT(J,K) -QSAT(J,K+1)) )
         ENDDO
       ENDDO
@@ -186,7 +194,7 @@ cch        SB=SE(J,K1)+WVI(K1,2)*(SE(J,K)-SE(J,K1))
 cch        QB=QA(J,K1)
 C
 C       Cloud-base mass flux
-        DQSAT=MAX(QSAT(J,K)-QB,0.05*QSAT(J,K))
+        DQSAT=MAX(QSAT(J,K)-QB, 0.05 _d 0*QSAT(J,K))
         FMASS=FM0(J)*PSA(J)*(QA(J,K)-RHBL*QSAT(J,K))/DQSAT
         CBMF(J)=FMASS
 C
@@ -248,7 +256,7 @@ C
 C
 C       Flux of convective precipitation
         QSATB=QSAT(J,K)+WVI(K,2)*(QSAT(J,K+1)-QSAT(J,K))
-        PRECNV(J)=MAX(FUQ-FMASS*QSATB,0.0)
+        PRECNV(J)=MAX(FUQ-FMASS*QSATB, 0. _d 0)
 C
 C       Net flux of dry static energy and moisture
 cch        DFSE(J,K)=FUS-FDS+ALHC*PRECNV(J)
@@ -256,6 +264,8 @@ cch        DFSE(J,K)=FUS-FDS+ALHC*PRECNV(J)
         DFQA(J,K)=FUQ-FDQ-PRECNV(J)
 C       
  300  CONTINUE
-C
+
+#endif /* ALLOW_AIM */ 
+
       RETURN
       END

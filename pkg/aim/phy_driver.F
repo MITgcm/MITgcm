@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_driver.F,v 1.3 2001/05/29 19:28:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_driver.F,v 1.4 2002/09/27 20:05:11 jmc Exp $
 C $Name:  $
+
+#include "AIM_OPTIONS.h"
 
       SUBROUTINE PDRIVER (TYEAR, myThid)
 C--
@@ -15,22 +17,19 @@ C--             Physical param. tendencies in common block: PHYTEN
 C--             Surface and upper boundary fluxes in common block: FLUXES
 C--
 
+      IMPLICIT NONE
 
-      IMPLICIT rEAL*8 ( A-H,O-Z)
+C     Resolution parameters
+
+C-- size for MITgcm & Physics package :
+#include "AIM_SIZE.h" 
 
 #include "EEPARAMS.h"
 
-C     Resolution parameters
-C
-#include "atparam.h"
-#include "atparam1.h"
-C
-      INTEGER NLON, NLAT, NLEV, NGP
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
-C
+#include "AIM_GRID.h"
+
 C     Constants + functions of sigma and latitude
 C
-#include "Lev_def.h"
 #include "com_physcon.h"
 C
 C     Model variables, tendencies and fluxes on gaussian grid
@@ -43,22 +42,29 @@ C
 #include "com_forcon.h"
 #include "com_sflcon.h"
 
-      REAL TYEAR
+C-- Routine arguments:
+      _RL TYEAR
       INTEGER myThid
 
-      INTEGER IDEPTH(NGP)
-      REAL RPS(NGP), ALB1(NGP), FSOL1(NGP), OZONE1(NGP)
+#ifdef ALLOW_AIM
 
-      REAL TAURAD(NGP,NLEV), ST4ARAD(NGP,NLEV,2)
+C-- Local variables:
+      INTEGER IDEPTH(NGP)
+      _RL RPS(NGP), ALB1(NGP), FSOL1(NGP), OZONE1(NGP)
+
+      _RL TAURAD(NGP,NLEV), ST4ARAD(NGP,NLEV,2)
 CcnhDebugStarts
-      REAL    AUX(NGP)
-      REAL    Phymask(NGP,NLEV)
-      real xminim
-      REAL UT_VDI(NGP,NLEV), VT_VDI(NGP,NLEV), TT_VDI(NGP,NLEV)
-      REAL QT_VDI(NGP,NLEV)
+c     REAL    AUX(NGP)
+      _RL    Phymask(NGP,NLEV)
+c     real xminim
+      _RL UT_VDI(NGP,NLEV), VT_VDI(NGP,NLEV), TT_VDI(NGP,NLEV)
+      _RL QT_VDI(NGP,NLEV)
 CcnhDebugEnds
       INTEGER J, K
 
+C- jmc: declare all local variables:
+      _RL DALB, RSD 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   1. Compute surface variables
 
@@ -214,10 +220,14 @@ C     5.3 Add surface fluxes and convert fluxes to tendencies
 
       DO J=1,NGP
        IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
-        UT_PBL(J,NLEVxy(J,myThid),myThid)=UT_PBL(J,NLEVxy(J,myThid),myThid)+ USTR(J,3,myThid)
-        VT_PBL(J,NLEVxy(J,myThid),myThid)=VT_PBL(J,NLEVxy(J,myThid),myThid)+ VSTR(J,3,myThid)
-        TT_PBL(J,NLEVxy(J,myThid),myThid)=TT_PBL(J,NLEVxy(J,myThid),myThid)+ SHF(J,3,myThid)
-        QT_PBL(J,NLEVxy(J,myThid),myThid)=QT_PBL(J,NLEVxy(J,myThid),myThid)+ EVAP(J,3,myThid)
+        UT_PBL(J,NLEVxy(J,myThid),myThid)=
+     &        UT_PBL(J,NLEVxy(J,myThid),myThid)+ USTR(J,3,myThid)
+        VT_PBL(J,NLEVxy(J,myThid),myThid)=
+     &        VT_PBL(J,NLEVxy(J,myThid),myThid)+ VSTR(J,3,myThid)
+        TT_PBL(J,NLEVxy(J,myThid),myThid)=
+     &        TT_PBL(J,NLEVxy(J,myThid),myThid)+ SHF(J,3,myThid)
+        QT_PBL(J,NLEVxy(J,myThid),myThid)=
+     &        QT_PBL(J,NLEVxy(J,myThid),myThid)+ EVAP(J,3,myThid)
        ENDIF
       ENDDO
 C
@@ -252,5 +262,8 @@ C
 C
 
 CdbgC--
+
+#endif /* ALLOW_AIM */ 
+
       RETURN
       END

@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_radiat.F,v 1.5 2001/09/06 13:19:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_radiat.F,v 1.6 2002/09/27 20:05:11 jmc Exp $
 C $Name:  $
+
+#include "AIM_OPTIONS.h"
 
       SUBROUTINE SOL_OZ (SOLC,TYEAR,FSOL,OZONE,myThid)
 
@@ -14,44 +16,53 @@ C--   Output:  FSOL   = flux of incoming solar radiation        (2-dim)
 C--            OZONE  = strat. ozone as fraction of global mean (2-dim)
 C--
 
+      IMPLICIT NONE
 
-      IMPLICIT rEAL*8 (A-H,O-Z)
-      INTEGER  myThid
+C     Resolution parameters
+ 
+C-- size for MITgcm & Physics package :
+#include "AIM_SIZE.h" 
 
 #include "EEPARAMS.h"
 
-C     Resolution parameters
-C
-#include "atparam.h"
-#include "atparam1.h"
-C
-      INTEGER NLON, NLAT, NLEV, NGP
-      INTEGER I, J, I2
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
-C
 C     Constants + functions of sigma and latitude
 C
 #include "com_physcon.h"
 
-      REAL FSOL(NLON,NLAT), OZONE(NLON,NLAT)
-C
-C     ALPHA = year phase ( 0 - 2pi, 0 = winter solstice = 22dec.h00 )
-      ALPHA=4.*ASIN(1.)*(TYEAR+10./365.)
+C-- Routine arguments:
+      INTEGER  myThid
+      _RL FSOL(NLON,NLAT), OZONE(NLON,NLAT)
 
-      CSR1=-0.796*COS(ALPHA)
-      CSR2= 0.147*COS(2*ALPHA)-0.477
+C- jmc: declare all routine arguments:
+      _RL SOLC, TYEAR
+
+#ifdef ALLOW_AIM
+
+C-- Local variables:
+      INTEGER I, J, I2
+
+C- jmc: declare all local variables:
+      _RL ALPHA, CSR1, CSR2, COZ1, COZ2
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C     ALPHA = year phase ( 0 - 2pi, 0 = winter solstice = 22dec.h00 )
+c     ALPHA=4.*ASIN(1.)*(TYEAR+10./365.)
+      ALPHA=4. _d 0*ASIN(1. _d 0)*(TYEAR+10. _d 0/365. _d 0)
+
+      CSR1=-0.796 _d 0*COS(ALPHA)
+      CSR2= 0.147 _d 0*COS(2. _d 0*ALPHA)-0.477 _d 0
       COZ1= 0.0
 C     COZ1= 0.2*SIN(ALPHA)
-      COZ2= 0.3
+      COZ2= 0.3 _d 0
 
 C
       DO J=1,NLAT
        DO I=1,NLON
         I2=J
         I2=NLON*(J-1)+I
-        FSOL(I,J)=
-     &   SOLC*MAX(0.,1.0+CSR1*FMU(I2,1,myThid)+CSR2*FMU(I2,2,myThid))
-        OZONE(I,J)=1.0+COZ1*FMU(I2,1,myThid)+COZ2*FMU(I2,2,myThid)
+        FSOL(I,J) = SOLC*MAX( 0. _d 0,
+     &             1. _d 0+CSR1*FMU(I2,1,myThid)+CSR2*FMU(I2,2,myThid))
+        OZONE(I,J)=1. _d 0+COZ1*FMU(I2,1,myThid)+COZ2*FMU(I2,2,myThid)
        ENDDO
       ENDDO
 C     DO J=1,NLAT
@@ -63,7 +74,8 @@ C         FSOL(I,J)=FSOL(1,J)
 C         OZONE(I,J)=OZONE(1,J)
 C       ENDDO
 C     ENDDO
-C
+
+#endif /* ALLOW_AIM */ 
       RETURN
       END
 
@@ -91,22 +103,17 @@ C--            FSFC   = net downw. flux of sw rad. at the surface   (2-dim)
 C--            DFABS  = flux of sw rad. absorbed by each atm. layer (3-dim)
 C--
 
-
-      IMPLICIT rEAL*8 (A-H,O-Z)
-      INTEGER  myThid
-
+      IMPLICIT NONE
 
 C     Resolution parameters
-C
-#include "atparam.h"
-#include "atparam1.h"
+
+C-- size for MITgcm & Physics package :
+#include "AIM_SIZE.h" 
+
 #include "EEPARAMS.h"
-#include "Lev_def.h"
-C
-      INTEGER NLON, NLAT, NLEV, NGP
-      INTEGER K, J
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
-C
+
+#include "AIM_GRID.h"
+
 C     Constants + functions of sigma and latitude
 C
 #include "com_physcon.h"
@@ -114,24 +121,33 @@ C
 C     Radiation parameters
 C
 #include "com_radcon.h"
-C
-      REAL PSA(NGP), QA(NGP,NLEV), RH(NGP,NLEV),
-     *     FSOL(NGP), OZONE(NGP), ALB(NGP), TAU(NGP,NLEV)
 
-      REAL CLOUDC(NGP), FTOP(NGP), FSFC(NGP), DFABS(NGP,NLEV)
+C-- Routine arguments:
+      INTEGER  myThid
+      _RL PSA(NGP), QA(NGP,NLEV), RH(NGP,NLEV)
+      _RL FSOL(NGP), OZONE(NGP), ALB(NGP), TAU(NGP,NLEV)
+      _RL CLOUDC(NGP), FTOP(NGP), FSFC(NGP), DFABS(NGP,NLEV)
 
-      REAL FLUX(NGP), FREFL(NGP), TAUOZ(NGP)
+#ifdef ALLOW_AIM
+
+C-- Local variables:
+      _RL FLUX(NGP), FREFL(NGP), TAUOZ(NGP)
       INTEGER NL1(NGP)
+      INTEGER K, J
 Cchdbg
-      INTEGER Npas
-      SAVE npas
-      LOGICAL Ifirst
-      SAVE Ifirst
-      DATA Ifirst /.TRUE./
-      REAL clsum(NGP)
-      SAVE clsum
-      REAL ABWLW1
+c     INTEGER Npas
+c     SAVE npas
+c     LOGICAL Ifirst
+c     SAVE Ifirst
+c     DATA Ifirst /.TRUE./
+c     REAL clsum(NGP)
+c     SAVE clsum
+c     _RL ABWLW1
 cchdbg
+
+C- jmc: declare local variables:
+      _RL DRHCL, RCL
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C
       DO J=1,NGP
         NL1(J)=NLEVxy(J,myThid)-1
@@ -192,8 +208,9 @@ chhh      WRITE(0,*) ' Hello from RADSW'
 
       DO 206 J=1,NGP
        IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
-        TAU(J,NLEVxy(J,myThid))=EXP(-(ABSSW+ABWSW*QA(J,NLEVxy(J,myThid)))
-     *                              *PSA(J)*DSIG(NLEVxy(J,myThid)))
+        TAU(J,NLEVxy(J,myThid))=
+     &    EXP(-(ABSSW+ABWSW*QA(J,NLEVxy(J,myThid)))
+     &                           *PSA(J)*DSIG(NLEVxy(J,myThid)))
        ENDIF
   206 CONTINUE
 C
@@ -335,17 +352,19 @@ C *********************************************************************
 
 C     RETURN
 
-      ABWLW1=0.7
+c     ABWLW1=0.7
       DO 516 J=1,NGP
        IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
-        TAU(J,NLEVxy(J,myThid))=EXP(-(ABSLW+ABWLW*QA(J,NLEVxy(J,myThid)))*PSA(J)
 cchdbg        TAU(J,NLEVxy(J,myThid))=EXP(-(ABSLW+ABWLW1*QA(J,NLEVxy(J,myThid)))*PSA(J)
-     *                     *DSIG(NLEVxy(J,myThid)))
+        TAU(J,NLEVxy(J,myThid))=
+     &   EXP(-(ABSLW+ABWLW*QA(J,NLEVxy(J,myThid)))*PSA(J)
+     &                     *DSIG(NLEVxy(J,myThid)))
        ENDIF
   516 CONTINUE
 
-C
 C---
+#endif /* ALLOW_AIM */ 
+
       RETURN
       END
 
@@ -370,21 +389,17 @@ C--            DFABS  = flux of lw rad. absorbed by each atm. layer (3-dim)
 C--            FDOWN  = downward flux of lw rad. at the surface     (2-dim)
 C--
 
-
-      IMPLICIT rEAL*8 (A-H,O-Z)
-      INTEGER  myThid
+      IMPLICIT NONE
 
 C     Resolution parameters
-C
-#include "atparam.h"
-#include "atparam1.h"
+
+C-- size for MITgcm & Physics package :
+#include "AIM_SIZE.h" 
+
 #include "EEPARAMS.h"
-#include "Lev_def.h"
-C
-      INTEGER NLON, NLAT, NLEV, NGP
-      INTEGER K, J
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
-C
+
+#include "AIM_GRID.h"
+
 C     Constants + functions of sigma and latitude
 C
 #include "com_physcon.h"
@@ -392,27 +407,37 @@ C
 C     Radiation parameters
 C
 #include "com_radcon.h"
-C
-      REAL TA(NGP,NLEV), TS(NGP), ST4S(NGP), 
+
+C-- Routine arguments:
+      INTEGER  myThid
+      INTEGER IMODE
+      _RL TA(NGP,NLEV), TS(NGP), ST4S(NGP), 
      &     TAU(NGP,NLEV), ST4A(NGP,NLEV,2)
+      _RL FTOP(NGP), FSFC(NGP), DFABS(NGP,NLEV)
+      _RL FDOWN(NGP)
 
-      REAL FTOP(NGP), FSFC(NGP), DFABS(NGP,NLEV)
-      REAL FDOWN(NGP)
+#ifdef ALLOW_AIM
 
-      REAL FLUX(NGP), BRAD(NGP), STCOR(NGP)
+C-- Local variables: 
+      INTEGER K, J
+      INTEGER J0, Jl, I2
+      _RL FLUX(NGP), BRAD(NGP), STCOR(NGP)
       INTEGER NL1(NGP)
-      INTEGER IMODE, J0, Jl, I2
 C
 Cchdbg
-      INteger npas
-      SAVE npas
-      LOGICAL Ifirst
-      SAVE IFIRST
-      DATA Ifirst/.TRUE./
-      REAL FluxMoy(NGP)
-      REAL ST4SMoy(NGP)
-      SAVE FluxMoy, ST4SMoy
+c     INteger npas
+c     SAVE npas
+c     LOGICAL Ifirst
+c     SAVE IFIRST
+c     DATA Ifirst/.TRUE./
+c     REAL FluxMoy(NGP)
+c     REAL ST4SMoy(NGP)
+c     SAVE FluxMoy, ST4SMoy
 Cchdbg
+
+C- jmc: declare all local variables: 
+      _RL COR0, COR1, COR2 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       DO J=1,NGP
         NL1(J)=NLEVxy(J,myThid)-1
@@ -447,7 +472,8 @@ C
 C
       DO 106 J=1,NGP
        IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
-        ST4A(J,NLEVxy(J,myThid),2)=2.*ST4A(J,NLEVxy(J,myThid),1)-ST4A(J,NL1(J),2)
+        ST4A(J,NLEVxy(J,myThid),2)=
+     &     2.*ST4A(J,NLEVxy(J,myThid),1)-ST4A(J,NL1(J),2)
        ENDIF
   106 CONTINUE
 C
@@ -509,33 +535,33 @@ C
 C
 C **************************************************************
 Cchdbg
-      if(ifirst) then
-        DO J=1,NGP
-          ST4SMoy(J)=0.
-          FluxMoy(J)=0.
-        ENDDO 
-        npas=0.
-        ifirst=.FALSE.
-      endif
-C
-      npas=npas+1
-      DO 413 J=1,NGP
-        ST4SMoy(J)=ST4SMoy(J)+ ST4S(J)
-        FluxMoy(J)=FluxMoy(J)+ Flux(J)
-  413 CONTINUE
-C
-      if(npas.eq.5760) then
-        DO J=1,NGP
-          ST4SMoy(J)=ST4SMoy(J)/float(npas)
-          FluxMoy(J)=FluxMoy(J)/float(npas)
-        ENDDO
-        open(73,file='ST4Smoy',form='unformatted')
-        write(73) ST4SMoy
-        close(73)
-        open(74,file='FluxMoy',form='unformatted')
-        write(74) FluxMoy
-        close(74)
-      ENDIF
+c     if(ifirst) then
+c       DO J=1,NGP
+c         ST4SMoy(J)=0.
+c         FluxMoy(J)=0.
+c       ENDDO 
+c       npas=0.
+c       ifirst=.FALSE.
+c     endif
+ 
+c     npas=npas+1
+c     DO 413 J=1,NGP
+c       ST4SMoy(J)=ST4SMoy(J)+ ST4S(J)
+c       FluxMoy(J)=FluxMoy(J)+ Flux(J)
+c 413 CONTINUE
+
+c     if(npas.eq.5760) then
+c       DO J=1,NGP
+c         ST4SMoy(J)=ST4SMoy(J)/float(npas)
+c         FluxMoy(J)=FluxMoy(J)/float(npas)
+c       ENDDO
+c       open(73,file='ST4Smoy',form='unformatted')
+c       write(73) ST4SMoy
+c       close(73)
+c       open(74,file='FluxMoy',form='unformatted')
+c       write(74) FluxMoy
+c       close(74)
+c     ENDIF
 Cchdbg
 C ****************************************************************
 C
@@ -589,7 +615,8 @@ c     open(75,file='stcor',form='unformatted',status='unknown')
 c     write(75) stcor
 c     stop
 cdj
-C
 C---						
+#endif /* ALLOW_AIM */ 
+
       RETURN
       END

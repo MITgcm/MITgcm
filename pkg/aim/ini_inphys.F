@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/ini_inphys.F,v 1.3 2001/05/29 19:28:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/ini_inphys.F,v 1.4 2002/09/27 20:05:11 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "AIM_OPTIONS.h"
 
       SUBROUTINE INPHYS (FSG,HSG,RLAT,myThid)
 
-      IMPLICIT rEAL*8 ( A-H,O-Z)
+      IMPLICIT NONE
 
 C--
 C--   SUBROUTINE INPHYS (FSG,HSG,RLAT)
@@ -18,23 +18,15 @@ C--   Initialized common blocks: PHYCON, FSIGMU, VDICON,
 C--                              FORCON, SFLCON, CNVCON, LSCCON, RADCON
 C--
 C     Resolution parameters
-C
-C
-#include "atparam.h"
-#include "atparam1.h"
-C
-      INTEGER NLON, NLAT, NLEV, NGP
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
 
-      INTEGER myThid
-C
-C
+C-- size for MITgcm & Physics package :
+#include "AIM_SIZE.h" 
 
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-#include "Lev_def.h"
+#include "AIM_GRID.h"
 C
 C     Physical constants + functions of sigma and latitude
 C
@@ -50,11 +42,14 @@ C
 #include "com_vdicon.h"  
 C
 C     == Routine Arguments ==
-      REAL FSG(NLEV), HSG(0:NLEV), RLAT(NLAT)  
+      INTEGER myThid
+      _RL FSG(NLEV), HSG(0:NLEV), RLAT(NLAT)  
+
+#ifdef ALLOW_AIM
 
 C     == Local Variables ==
       INTEGER K
-      DATA Pground /1. _d +5/
+c     DATA Pground /1. _d +5/
 
 C---  1. Time independent parameters and arrays
 C
@@ -133,8 +128,8 @@ c      CHS = 1.2E-3
       CHS = 0.9 _d -3
 C
       VGUST  = 4. _d 0
-      DTHETAF = 3. _d 0
-      FSTAB  = 0.67 _d 0
+c     DTHETAF = 3. _d 0
+c     FSTAB  = 0.67 _d 0
 C
 C---  4. Constants for convection (common CNVCON):
 C
@@ -213,6 +208,8 @@ CcnhDebugStarts
 C     write(0,*) 'MAXVAL(NLEVxy)=',MAXVAL(NLEVxy)
 C     write(0,*) 'MINVAL(NLEVxy)=',MINVAL(NLEVxy)
 CcnhDebugEnds
-C
+
+#endif /* ALLOW_AIM */ 
+
       RETURN
       END

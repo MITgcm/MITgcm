@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_suflux.F,v 1.5 2001/09/25 19:53:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_suflux.F,v 1.6 2002/09/27 20:05:11 jmc Exp $
 C $Name:  $
+
+#include "AIM_OPTIONS.h"
 
       SUBROUTINE SUFLUX (PSA,UA,VA,TA,QA,RH,QSAT,Vsurfsq,PHI,
      *                   PHI0,FMASK,TLAND,TSEA,SWAV,SSR,SLR,
@@ -30,24 +32,22 @@ C--            EVAP   = evaporation [g/(m^2 s)]          (2-dim)
 C - added (jmc) :
 C--           Vsurfsq = square of surface wind speed (2-dim,input)
 C--                       ==> UA,VA are no longer used
-C--            DRAG   = surface Drag term (= Cd*|V|) (2-dim,output)
+C--            DRAG   = surface Drag term (= Cd*Rho*|V|) (2-dim,output)
 C--                       ==> USTR,VSTR are no longer used
 C--         myThid    = Instance number of this instance of the
 C--                     the routine.
 C--
 
-
-      IMPLICIT rEAL*8 (A-H,O-Z)
-
+      IMPLICIT NONE
 
 C     Resolution parameters
+
+C-- size for MITgcm & Physics package :
+#include "AIM_SIZE.h" 
+
 #include "EEPARAMS.h"
-#include "atparam.h"
-#include "atparam1.h"
-#include "Lev_def.h"
-C
-      INTEGER NLON,NLAT,NLEV,NGP
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
+
+#include "AIM_GRID.h"
 
 C     Physical constants + functions of sigma and latitude
 
@@ -57,44 +57,52 @@ C     Surface flux constants
 
 #include "com_sflcon.h"
 
-C
-      REAL PSA(NGP), UA(NGP,NLEV), VA(NGP,NLEV), TA(NGP,NLEV),
+C-- Routine arguments:
+      INTEGER myThid
+      _RL PSA(NGP), UA(NGP,NLEV), VA(NGP,NLEV), TA(NGP,NLEV),
      *     QA(NGP,NLEV), RH(NGP,NLEV), QSAT(NGP,NLEV), PHI(NGP,NLEV),
      *     PHI0(NGP), FMASK(NGP), TLAND(NGP), TSEA(NGP), SWAV(NGP),
      *     SSR(NGP), SLR(NGP)
-      REAL Vsurfsq(NGP), DRAG(NGP)
-      INTEGER myThid
-C
-      REAL USTR(NGP,3), VSTR(NGP,3), SHF(NGP,3), EVAP(NGP,3)
-C									
-      REAL U0(NGP),V0(NGP),T0(NGP,2),Q0(NGP),QSAT0(NGP,2),DENVV(NGP,3)
-      REAL SPEED0(NGP)
-      REAL WORK(NGP)
+      _RL Vsurfsq(NGP), DRAG(NGP)
+      _RL USTR(NGP,3), VSTR(NGP,3), SHF(NGP,3), EVAP(NGP,3)
+      _RL T0(NGP,2),Q0(NGP),QSAT0(NGP,2), SPEED0(NGP)
+
+#ifdef ALLOW_AIM
+
+C-- Local variables: 
+      _RL U0(NGP),V0(NGP),DENVV(NGP,3)
+      _RL WORK(NGP)
       INTEGER NL1(NGP)
-      REAL AUX(NGP)
+      _RL AUX(NGP)
 C
-      REAL    pSurfs(NLEV)
+      _RL    pSurfs(NLEV)
       DATA    pSurfs /75 _d 2,250 _d 2,500 _d 2,775 _d 2,950 _d 2 /
 C
-      REAL    pSurfw(NLEV)
+      _RL    pSurfw(NLEV)
       DATA    pSurfw /150 _d 2,350 _d 2,650 _d 2,900 _d 2,1000 _d 2/
 Cchdbg
-      INTEGER NPAS
-      SAVE NPAS
-      LOGICAL Ifirst
-      SAVE Ifirst
-      DATA Ifirst /.TRUE./
-      REAL T0moy1(NGP)
-      REAL T0moy2(NGP)
-      SAVE T0moy2, T0moy1
-      REAL denmoy1(NGP)
-      REAL denmoy2(NGP)
-      SAVE denmoy1, denmoy2
-      REAL Q0moy(NGP)
-      SAVE Q0moy
-      REAL factwind2
+c     INTEGER NPAS
+c     SAVE NPAS
+c     LOGICAL Ifirst
+c     SAVE Ifirst
+c     DATA Ifirst /.TRUE./
+c     _RL T0moy1(NGP)
+c     _RL T0moy2(NGP)
+c     SAVE T0moy2, T0moy1
+c     _RL denmoy1(NGP)
+c     _RL denmoy2(NGP)
+c     SAVE denmoy1, denmoy2
+c     _RL Q0moy(NGP)
+c     SAVE Q0moy
+
       INTEGER J
-C
+      _RL factwind2
+
+C- jmc: declare all local variables: 
+      _RL GTEMP0, GHUM0, RCP, PRD, VG2, DTHETAF, FSTAB, RDTH
+      _RL FSLAND, FSSEA, CHLCP, CHSCP, QDUMMY, RDUMMY
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 C--   1. Extrapolation of wind, temp, hum. and density to the surface
 C
 C     1.1 Wind components
@@ -240,53 +248,52 @@ C
 C
 C ****************************************************
 cchdbg
-      IF (Ifirst) then 
-        npas=0.
-        do J=1,NGP
-          T0moy1(J)=0. 
-          T0moy2(J)=0. 
-          denmoy1(J)=0. 
-          denmoy2(J)=0. 
-          Q0moy(J)=0.
-        enddo
-        ifirst=.false.
-      ENDIF
-C
-      npas=npas+1
-      DO J=1,NGP
-        T0moy1(J)=T0moy1(J) + T0(J,1)
-        T0moy2(J)=T0moy2(J) + T0(J,2)
-        denmoy1(J)=denmoy1(J) + DENVV(J,1)
-        denmoy2(J)=denmoy2(J) + DENVV(J,2)
-        Q0moy(J)=Q0moy(J) + Q0(J)
-      ENDDO
-C
-      if(npas.eq.5760) then
-        DO J=1,NGP
-          T0moy1(J)=T0moy1(J)/float(npas)
-          T0moy2(J)=T0moy2(J)/float(npas)
-          denmoy1(J)=denmoy1(J)/float(npas)
-          denmoy2(J)=denmoy2(J)/float(npas)
-          Q0moy(J)=Q0moy(J)/float(npas)
-        ENDDO
-C
-        open(73,file='Tmoy1',form='unformatted')
-        write(73) T0moy1
-        close(73)
-        open(74,file='Tmoy2',form='unformatted')
-        write(74) T0moy2
-        close(74)
-        open(73,file='denmoy1',form='unformatted')
-        write(73) denmoy1
-        close(73)
-        open(74,file='denmoy2',form='unformatted')
-        write(74) denmoy2
-        close(74)
-        open(74,file='Q0moy',form='unformatted')
-        write(74) Q0moy
-        close(74)
-      ENDIF
-C
+c     IF (Ifirst) then 
+c       npas=0.
+c       do J=1,NGP
+c         T0moy1(J)=0. 
+c         T0moy2(J)=0. 
+c         denmoy1(J)=0. 
+c         denmoy2(J)=0. 
+c         Q0moy(J)=0.
+c       enddo
+c       ifirst=.false.
+c     ENDIF
+
+c     npas=npas+1
+c     DO J=1,NGP
+c       T0moy1(J)=T0moy1(J) + T0(J,1)
+c       T0moy2(J)=T0moy2(J) + T0(J,2)
+c       denmoy1(J)=denmoy1(J) + DENVV(J,1)
+c       denmoy2(J)=denmoy2(J) + DENVV(J,2)
+c       Q0moy(J)=Q0moy(J) + Q0(J)
+c     ENDDO
+
+c     if(npas.eq.5760) then
+c       DO J=1,NGP
+c         T0moy1(J)=T0moy1(J)/float(npas)
+c         T0moy2(J)=T0moy2(J)/float(npas)
+c         denmoy1(J)=denmoy1(J)/float(npas)
+c         denmoy2(J)=denmoy2(J)/float(npas)
+c         Q0moy(J)=Q0moy(J)/float(npas)
+c       ENDDO
+
+c       open(73,file='Tmoy1',form='unformatted')
+c       write(73) T0moy1
+c       close(73)
+c       open(74,file='Tmoy2',form='unformatted')
+c       write(74) T0moy2
+c       close(74)
+c       open(73,file='denmoy1',form='unformatted')
+c       write(73) denmoy1
+c       close(73)
+c       open(74,file='denmoy2',form='unformatted')
+c       write(74) denmoy2
+c       close(74)
+c       open(74,file='Q0moy',form='unformatted')
+c       write(74) Q0moy
+c       close(74)
+c     ENDIF
 cchdbg
 C ****************************************************
 C
@@ -328,5 +335,7 @@ cdj
       ENDDO
 
 C--
+#endif /* ALLOW_AIM */ 
+
       RETURN
       END

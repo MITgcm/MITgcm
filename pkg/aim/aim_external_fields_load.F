@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_external_fields_load.F,v 1.3 2002/01/08 22:33:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_external_fields_load.F,v 1.4 2002/09/27 20:05:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -53,7 +53,7 @@ C     mnthNam
 C     pfact       - used to convert Pot.Temp. to in-situ Temp.
       INTEGER bi,bj, i, j
       _RL pfact
-      REAL tYear
+      _RL tYear
       INTEGER mnthIndex
       INTEGER prevMnthIndex
       DATA    prevMnthIndex / 0 /

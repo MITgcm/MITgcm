@@ -1,6 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_shtorh.F,v 1.4 2001/09/06 13:28:01 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_shtorh.F,v 1.5 2002/09/27 20:05:11 jmc Exp $
 C $Name:  $
  
+#include "AIM_OPTIONS.h"
+
       SUBROUTINE SHTORH (IMODE,NGP,TA,PS,SIG,QA,RH,QSAT,myThid)
 C--
 C--   SUBROUTINE SHTORH (IMODE,NGP,TA,PS,SIG,QA,RH,QSAT)
@@ -20,17 +22,25 @@ C--   Output:  RH     : relative humidity         [if IMODE > 0]
 C--            QA     : specific humidity in g/kg [if IMODE < 0]
 C--        
 
+      IMPLICIT NONE
 
-      IMPLICIT rEAL*8 (A-H,O-Z)
-      INTEGER IMODE,NGP,J
+C-- Routine arguments:
+      INTEGER IMODE, NGP
       INTEGER  myThid
+      _RL TA(NGP), PS(NGP), QA(NGP), RH(NGP), QSAT(NGP)
 
+C- jmc: declare all routine arguments:
+      _RL SIG
 
-CcnhDebugStarts
-#include "SIZE.h"
-CcnhDebugEnds
-      REAL TA(NGP), PS(NGP), QA(NGP), RH(NGP), QSAT(NGP)
-C
+#ifdef ALLOW_AIM
+
+C-- Local variables: 
+      INTEGER  J
+
+C- jmc: declare all local variables: 
+      _RL E0, C1, C2, T0, T1, T2
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 C---  1. Compute Qsat (g/kg) from T (degK) and normalized pres. P (= p/1000_hPa)
 C        If SIG > 0, P = Ps * sigma, otherwise P = Ps(1) = const. 
 C
@@ -81,22 +91,30 @@ chh      write(0,*) 'MAXVAL(QA)=',MAXVAL(QA)
 chh      write(0,*) 'MINVAL(QA)=',MINVAL(QA)
 chh      write(0,*) 'MAXVAL(RH)=',MAXVAL(RH)
 chh      write(0,*) 'MINVAL(RH)=',MINVAL(RH)
-C				
+
+#endif /* ALLOW_AIM */ 
       RETURN
       END
 
       SUBROUTINE ZMEDDY (NLON,NLAT,FF,ZM,EDDY)
 
+      IMPLICIT NONE
 
-      IMPLICIT rEAL*8 (A-H,O-Z)
-      INTEGER NLON,NLAT,I,J
-
-
-C
 C *** Decompose a field into zonal-mean and eddy component
-C
-      REAL FF(NLON,NLAT), ZM(NLAT), EDDY(NLON,NLAT)
-C
+
+C-- Routine arguments:
+      INTEGER NLON, NLAT
+      _RL FF(NLON,NLAT), ZM(NLAT), EDDY(NLON,NLAT)
+
+#ifdef ALLOW_AIM
+
+C-- Local variables: 
+      INTEGER I,J
+
+C- jmc: declare all local variables: 
+      _RL RNLON
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       RNLON=1./NLON
 C
       DO 130 J=1,NLAT
@@ -114,6 +132,7 @@ C
  130  CONTINUE
 C
 C--
+#endif /* ALLOW_AIM */ 
+
       RETURN
       END
-C

@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_vdifsc.F,v 1.5 2001/09/06 13:28:01 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_vdifsc.F,v 1.6 2002/09/27 20:05:11 jmc Exp $
 C $Name:  $
+
+#include "AIM_OPTIONS.h"
 
 cch      SUBROUTINE VDIFSC (UA,VA,SE,RH,QA,QSAT,
       SUBROUTINE VDIFSC (UA,VA,Ta,RH,QA,QSAT,
@@ -23,20 +25,17 @@ C--            TTENVD = temperature tendency             (3-dim)
 C--            QTENVD = sp. humidity tendency [g/(kg s)] (3-dim)
 C-
 
-
-      IMPLICIT rEAL*8 (A-H,O-Z)
-      INTEGER  myThid
+      IMPLICIT NONE
 
 C     Resolution parameters
 
-#include "atparam.h"
-#include "atparam1.h"
+C-- size for MITgcm & Physics package :
+#include "AIM_SIZE.h" 
+
 #include "EEPARAMS.h"
-#include "Lev_def.h"
-C
-      INTEGER NLON,NLAT,NLEV,NGP
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
-C
+
+#include "AIM_GRID.h"
+
 C     Physical constants + functions of sigma and latitude
 C
 #include "com_physcon.h"
@@ -44,38 +43,48 @@ C
 C     Vertical diffusion constants
 C
 #include "com_vdicon.h"
-C
-      REAL UA(NGP,NLEV), VA(NGP,NLEV), SE(NGP,NLEV),
+
+C-- Routine arguments:
+      INTEGER  myThid
+c     REAL UA(NGP,NLEV), VA(NGP,NLEV), SE(NGP,NLEV),
+      _RL UA(NGP,NLEV), VA(NGP,NLEV), Ta(NGP,NLEV),
      &     RH(NGP,NLEV), QA(NGP,NLEV), QSAT(NGP,NLEV)
 C
-      REAL UTENVD(NGP,NLEV), VTENVD(NGP,NLEV),
+      _RL UTENVD(NGP,NLEV), VTENVD(NGP,NLEV),
      &     TTENVD(NGP,NLEV), QTENVD(NGP,NLEV)
-C
+
+#ifdef ALLOW_AIM
+
+C-- Local variables: 
       INTEGER NL1(NGP)
-      REAL RTST(NGP)
-      REAL RNL1(NGP)
+      _RL RTST(NGP)
+      _RL RNL1(NGP)
 C
-      REAL Th(NGP,NLEV), Ta(NGP,NLEV)
-      REAL dThdp
-      REAL stab(NGP)
-      REAL AUX(NGP)
-      REAL Prefw(NLEV), Prefs(NLEV)
+      _RL Th(NGP,NLEV)
+      _RL dThdp
+      _RL stab(NGP)
+c     REAL AUX(NGP)
+      _RL Prefw(NLEV), Prefs(NLEV)
       DATA Prefs / 75., 250., 500., 775., 950./
       DATA Prefw / 0., 150., 350., 650., 900./
-      REAL Pground
+      _RL Pground
       DATA pground /1000./
 Cchdbg
-      REAL xindconv1
-      SAVE xindconv1
-      REAL xindconv
-      SAVE xindconv
-      INTEGER npas
-      SAVE npas
-      LOGICAL ifirst
-      DATA ifirst /.TRUE./       
-      SAVE ifirst
+c     REAL xindconv1
+c     SAVE xindconv1
+c     REAL xindconv
+c     SAVE xindconv
+c     INTEGER npas
+c     SAVE npas
+c     LOGICAL ifirst
+c     DATA ifirst /.TRUE./       
+c     SAVE ifirst
       INTEGER J,K
-C
+
+C- jmc: declare all local variables: 
+      _RL RTVD, RTSQ, DMSE, QEQL 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 C--   1. Initalization
 C
       DO K=1,NLEV
@@ -114,7 +123,8 @@ C
 C
       DO J=1,NGP
        IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
-        RTST(J) = RTSQ*DSIG(NL1(J))/((DSIG(NLEVxy(J,myThid))+DSIG(NL1(J)))*CP)
+        RTST(J) = RTSQ*DSIG(NL1(J))
+     &          /((DSIG(NLEVxy(J,myThid))+DSIG(NL1(J)))*CP)
         RNL1(J) = -DSIG(NLEVxy(J,myThid))/DSIG(NL1(J))
        ENDIF
       ENDDO
@@ -147,7 +157,8 @@ cch        DMSE = (SE(J,NLEVxy(J,myThid))-SE(J,NL1(J)))+
 cch     &                ALHC*(QA(J,NLEVxy(J,myThid))-QSAT(J,NL1(J)))
        DMSE = - stab(J)
        IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
-        QEQL = MIN(QA(J,NLEVxy(J,myThid)),RH(J,NL1(J))*QSAT(J,NLEVxy(J,myThid)))
+        QEQL = MIN( QA(J,NLEVxy(J,myThid)),
+     &              RH(J,NL1(J))*QSAT(J,NLEVxy(J,myThid)) )
 cchdbg        QEQL = MIN(QA(J,NLEVxy(J,myThid)),QA(J,NL1(J)))
        ENDIF
 C
@@ -175,7 +186,8 @@ C
           IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
            TTENVD(J,NLEVxy(J,myThid)) = RTST(J)*DMSE 
            TTENVD(J,NL1(J))  = RNL1(J)*TTENVD(J,NLEVxy(J,myThid))
-           QTENVD(J,NLEVxy(J,myThid)) = RTSQ*(QA(J,NLEVxy(J,myThid))-QEQL)
+           QTENVD(J,NLEVxy(J,myThid)) =
+     &                         RTSQ*(QA(J,NLEVxy(J,myThid))-QEQL)
            QTENVD(J,NL1(J))  = RNL1(J)*QTENVD(J,NLEVxy(J,myThid))
           ENDIF
 C
@@ -183,12 +195,15 @@ C
 C
 C         2.2 Vertical diffusion of moisture
 
-          QTENVD(J,NLEVxy(J,myThid)) = RTVD*(QA(J,NLEVxy(J,myThid))-QEQL)
+          QTENVD(J,NLEVxy(J,myThid)) = 
+     &                        RTVD*(QA(J,NLEVxy(J,myThid))-QEQL)
           QTENVD(J,NL1(J))  = RNL1(J)*QTENVD(J,NLEVxy(J,myThid))
 C
         ENDIF
 C
       ENDDO
 C
+#endif /* ALLOW_AIM */ 
+
       RETURN
       END

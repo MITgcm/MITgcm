@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_inphys.F,v 1.5 2001/05/29 19:28:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_inphys.F,v 1.6 2002/09/27 20:05:11 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -10,10 +10,10 @@ C     |==================================================================|
 C     | Interface between AIM atmospheric physics package and the        |
 C     | dynamical model for initialisation.                              |
 C     \==================================================================/
-      IMPLICIT rEAL*8 (A-H,O-Z)
+      IMPLICIT NONE
 
 C     -------------- Global variables ------------------------------------
-#include "SIZE.h"
+#include "SIZE.h" 
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
@@ -31,9 +31,10 @@ C     HSG  - Cell face in vertical
 C     RLAT - Call mid-point latitude
 C     pGround - Lower boundary pressure
 C     J, K, bi,bj  - Loop counters
-      REAL FSG( Nr)
-      REAL HSG( Nr+1)
-      REAL RLAT(sNy)
+      _RL FSG( Nr)
+      _RL HSG(0:Nr)
+      _RL RLAT(sNy)
+      _RL pGround
       INTEGER J, K
       INTEGER Katm
       INTEGER bi,bj
@@ -41,10 +42,12 @@ C     J, K, bi,bj  - Loop counters
       pground = 1. _d 5
       DO K=1,Nr
        Katm = _KD2KA( K )
-       FSG(Katm  ) = rC(K)/pGround
-       HSG(Katm+1) = rF(K)/pGround
+       FSG(Katm) = rC(K)/pGround
+       HSG(Katm) = rF(K)/pGround
       ENDDO
-      HSG(1) = rF(Nr+1)/pGround
+       K=Nr+1
+       Katm = _KD2KA( K )
+       HSG(Katm) = rF(K)/pGround
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
