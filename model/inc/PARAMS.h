@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.86 2003/02/18 05:47:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.87 2003/02/18 15:12:17 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -73,7 +73,7 @@ C     pLoadFile       :: File containing pressure loading
 C     buoyancyRelation :: Flag used to indicate which relation to use to
 C                        get buoyancy.
 C     eosType         :: choose the equation of state:
-C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P
+C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
       COMMON /PARM_C/ checkPtSuff,
      &                bathyFile, topoFile,
      &                hydrogThetaFile, hydrogSaltFile,
@@ -210,9 +210,11 @@ C     doSaltClimRelax  :: Set true if relaxation to salinity
 C                        climatology is required.
 C     periodicExternalForcing :: Set true if forcing is time-dependant
 C     usingPCoords     :: Set to indicate that we are working in pressure
-C                        coords.
+C                        coords. (jmc: is it still used ?)
 C     usingZCoords     :: Set to indicate that we are working in height
-C                        coords.
+C                        coords. (jmc: is it still used ?)
+C     useDynP_inEos_Zc :: use the dynamical pressure in EOS (with Z-coord.)
+C                         this requires specific code for restart & exchange
 C     setCenterDr    :: set cell Center depth and put Interface at the middle
 C     nonHydrostatic :: Using non-hydrostatic terms
 C     quasiHydrostatic :: Using non-hydrostatic terms in hydrostatic algorithm
@@ -241,7 +243,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & multiDimAdvection, forcing_In_AB,
      & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax, 
      & periodicExternalForcing, 
-     & usingPCoords, usingZCoords, setCenterDr,
+     & usingPCoords, usingZCoords, useDynP_inEos_Zc, setCenterDr,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, groundAtK1,
      & usePickupBeforeC35, debugMode,
@@ -291,6 +293,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL periodicExternalForcing
       LOGICAL usingPCoords
       LOGICAL usingZCoords
+      LOGICAL useDynP_inEos_Zc
       LOGICAL setCenterDr
       LOGICAL nonHydrostatic
       LOGICAL quasiHydrostatic
@@ -583,16 +586,6 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL HeatCapacity_Cp
       _RL Lamba_theta
       _RL recip_Cp
-
-CmlC Equation of State (polynomial coeffients)
-Cml      COMMON /PARM_EOS_NL/ eosC,eosSig0,eosRefT,eosRefS
-Cml      _RL eosC(9,Nr+1),eosSig0(Nr+1),eosRefT(Nr+1),eosRefS(Nr+1)
-CmlC Linear equation of state
-CmlC     tAlpha    :: Linear EOS thermal expansion coefficient ( 1/degree ).
-CmlC     sBeta     :: Linear EOS haline contraction coefficient.
-Cml      COMMON /PARM_EOS_LIN/ tAlpha,sBeta,eosType
-Cml      _RL tAlpha
-Cml      _RL sBeta
 
 C Atmospheric physical parameters (Ideal Gas EOS, ...)
 C     atm_Po    :: standard reference pressure

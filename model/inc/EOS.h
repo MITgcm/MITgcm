@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/EOS.h,v 1.2 2002/09/05 20:49:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/EOS.h,v 1.3 2003/02/18 15:12:17 jmc Exp $
 C $Name:  $
 CBOP
 C    !ROUTINE: EOS.h
@@ -56,5 +56,5 @@ C     end nonlinear equation of state
 
 C     pressure :: global absolute pressure variable needed for the 
 C                 nonlinear equation of state
-      _RL pressure(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      COMMON /EOS_PRESSURE/ pressure
+c     _RL pressure(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+c     COMMON /EOS_PRESSURE/ pressure

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.19 2002/11/29 13:38:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.20 2003/02/18 15:12:17 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: DYNVARS.h
@@ -93,7 +93,12 @@ cph
 cph
 cph)
 
-C     diagnostic variable: holds phiHyd at the rigid surface
-C     (bottom in z-coordinates, top in p-coordinates)
-      COMMON /DYNVARS_R_DIAG/ phiHydLow     
+C     diagnostic variables: 
+C     phiHydLow  :: Phi-Hydrostatic at r-lower boundary
+C                  (bottom in z-coordinates, top in p-coordinates)
+C     totPhiHyd :: total hydrostatic Potential (anomaly, for now), 
+C                  at cell center level ; includes surface contribution.
+C                 (for diagnostic + used in Z-coord with EOS_funct_P)
+      COMMON /DYNVARS_DIAG/ phiHydLow, totPhiHyd
       _RL  phiHydLow(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  totPhiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
