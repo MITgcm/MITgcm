@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.45 2004/10/12 20:36:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.46 2004/11/19 01:33:31 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -165,9 +165,8 @@ C     Do seaice diagnostics.
 
 cswdptr ---  add ---
 #ifdef ALLOW_GCHEM
-ceh3 ???  why is one package depending upon another here?
 C--   Do ptracer diagnostics.
-      IF (usePTRACERS)
+      IF (useGCHEM)
      & CALL GCHEM_DIAGS( myTime, myIter, myThid )
 #endif
 cswdptr -- end add ---

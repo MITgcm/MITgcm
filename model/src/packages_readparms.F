@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.35 2004/10/14 13:44:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.36 2004/11/19 01:33:32 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -161,7 +161,7 @@ C -- initialize Therm.Sea-Ice parameters
 
 cswdptr -- add --
 #ifdef ALLOW_GCHEM
-      IF (usePTRACERS) CALL GCHEM_READPARMS( myThid )
+      IF (useGCHEM) CALL GCHEM_READPARMS( myThid )
 #endif
 cswdptr -- end add ---
 

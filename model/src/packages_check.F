@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.24 2004/10/08 17:25:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.25 2004/11/19 01:33:32 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -99,6 +99,12 @@ CEOP
 
 #ifndef ALLOW_PTRACERS
       IF (usePTRACERS) CALL PACKAGES_CHECK_ERROR('PTRACERS', myThid)
+#endif
+
+#ifdef ALLOW_GCHEM
+      IF (useGCHEM) CALL GCHEM_CHECK( myThid )
+#else
+      IF (useGCHEM) CALL PACKAGES_CHECK_ERROR('GCHEM', myThid)
 #endif
 
 #ifndef ALLOW_SHAP_FILT

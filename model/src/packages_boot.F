@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.25 2004/10/14 13:44:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.26 2004/11/19 01:33:32 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,6 +59,7 @@ C     data.pkg namelists
      &          useZONAL_FILT,
      &          useFLT,
      &          usePTRACERS,
+     &          useGCHEM,
      &          useSBO,
      &          useSEAICE,
      &          useBulkForce,
@@ -97,6 +98,7 @@ C--   Default package configuration
       useZONAL_FILT=.FALSE.
       useFLT=.FALSE.
       usePTRACERS=.FALSE.
+      useGCHEM=.FALSE.
       useSBO=.FALSE.
       useSeaIce=.FALSE.
       useBulkForce=.FALSE.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.30 2004/10/27 23:19:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.31 2004/11/19 01:33:32 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -136,9 +136,7 @@ C--   Initialise the control variables
 
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
-      IF (usePTRACERS) then
-       call GCHEM_INIT_FIXED(mythid)
-      ENDIF
+      IF (useGCHEM) CALL GCHEM_INIT_FIXED(mythid)
 #endif
 #endif
 

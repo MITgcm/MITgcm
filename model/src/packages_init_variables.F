@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.40 2004/10/20 14:16:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.41 2004/11/19 01:33:32 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -162,7 +162,13 @@ cph#endif
 #endif
          CALL PTRACERS_INIT( mythid )
 #ifdef ALLOW_GCHEM
-         CALL GCHEM_INIT_VARI( mythid )
+# ifndef ALLOW_AUTODIFF_TAMC
+         IF (useGCHEM) THEN
+# endif
+          CALL GCHEM_INIT_VARI( mythid )
+# ifndef ALLOW_AUTODIFF_TAMC
+         ENDIF
+# endif
 #endif
 # ifndef ALLOW_AUTODIFF_TAMC
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.107 2004/11/18 23:31:00 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.108 2004/11/19 01:33:31 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -235,7 +235,9 @@ CADJ STORE ptracer  = comlev1, key = ikey_dynamics
 
 #ifdef ALLOW_PTRACERS
 # ifdef ALLOW_GCHEM
+        IF ( useGCHEM ) THEN 
          CALL GCHEM_FIELDS_LOAD( mytime, myiter, mythid )
+        ENDIF
 # endif
 #endif
 
@@ -521,8 +523,9 @@ cswdptr    of ptracers ---
 #ifdef ALLOW_GCHEM
 ceh3 This is broken -- this ifdef should not be visible!
 #ifdef PTRACERS_SEPARATE_FORCING
-ceh3 needs an IF ( use GCHEM ) THEN
-        call GCHEM_FORCING_SEP( myTime,myIter,myThid )
+        IF ( useGCHEM ) THEN 
+         CALL GCHEM_FORCING_SEP( myTime,myIter,myThid )
+        ENDIF	
 #endif /* PTRACERS_SEPARATE_FORCING */
 #endif /* ALLOW_GCHEM */
 cswdptr -- end add ---
