@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.11 2004/03/09 03:45:28 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.12 2004/03/10 03:46:38 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -247,7 +247,7 @@ c     write(10) RAS
 c     write(10) DXG
 c     write(10) DYG
 
-#else
+#else /* ifndef OLD_GRID_IO */
 
 C--   Only do I/O if I am the master thread
       _BEGIN_MASTER(myThid)
@@ -329,8 +329,10 @@ C--   Only do I/O if I am the master thread
       CALL EXCH_XY_RS(XC,myThid)
       CALL EXCH_XY_RS(YC,myThid)
 C !!! _EXCH_OUV_XY_R4(DXF, DYF, unSigned, myThid )
-c     CALL EXCH_XY_RS(DXF,myThid)
-c     CALL EXCH_XY_RS(DYF,myThid)
+#ifdef HRCUBE
+      CALL EXCH_XY_RS(DXF,myThid)
+      CALL EXCH_XY_RS(DYF,myThid)
+#endif
       CALL EXCH_XY_RS(RA,myThid )
 #ifndef ALLOW_EXCH2
       CALL EXCH_Z_XY_RS(XG,myThid)
@@ -344,7 +346,7 @@ c     CALL EXCH_Z_XY_RS(DYU,myThid)
       CALL EXCH_UV_XY_RS(RAW,RAS,.FALSE.,myThid)
       CALL EXCH_UV_XY_RS(DYG,DXG,.FALSE.,myThid)
 
-#endif
+#endif /* OLD_GRID_IO */
 
 c     CALL WRITE_FULLARRAY_RL('DXV',DXV,1,0,myThid)
 c     CALL WRITE_FULLARRAY_RL('DYU',DYU,1,0,myThid)
