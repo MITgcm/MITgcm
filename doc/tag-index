@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.106 2002/11/23 22:39:36 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.107 2002/12/02 13:28:30 cheisey Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -13,6 +13,12 @@ o new pkg: aim_v23
 o add diagnostic of surface correction term in monitor output
 
 o bulk_force and therm_seaice 
+- Two packages:  bulk_force (Bulk forcing)
+  and therm_seaice (thermodynamic_seaice) - adopted from LANL CICE.v2.0.2
+- Earlier integration from Stephaine Dutkiewicz
+  and Patrick Heimbach.
+- Two ifdef statements for compile time,
+   ALLOW_THERM_SEAICE and ALLOW_BULK_FORCE
 
 checkpoint47
 differentiable version of checkpoint46n_post
