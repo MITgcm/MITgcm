@@ -7,7 +7,6 @@ calc_grad_phi_hyd.f
 calc_grad_phi_surf.f
 calc_gs.f	
 calc_gt.f	
-calc_gtr1.f	
 calc_ivdc.f	
 calc_phi_hyd.f	
 calc_viscosity.f	
@@ -21,7 +20,9 @@ cycle_tracer.f
 diags_phi_hyd.f	
 diags_phi_rlow.f	
 different_multiple.f
+do_atmospheric_phys.f
 do_fields_blocking_exchanges.f
+do_oceanic_phys.f
 do_stagger_fields_exchanges.f
 dynamics.f	
 external_fields_load.f
@@ -53,7 +54,6 @@ ini_psurf.f
 ini_salt.f	
 ini_spherical_polar_grid.f
 ini_theta.f	
-ini_tr1.f	
 ini_dynvars.f	
 ini_vel.f	
 ini_vertical_grid.f
@@ -61,6 +61,7 @@ initialise_varia.f
 integrate_for_w.f
 integr_continuity.f
 modeldata_example.f
+momentum_correction_step.f
 packages_init_variables.f
 plot_field.f	
 pressure_for_eos.f
@@ -72,5 +73,6 @@ the_correction_step.f
 the_main_loop.f	
 thermodynamics.f	
 timestep_tracer.f
+tracers_correction_step.f
 update_etah.f	
 swfrac.f

@@ -1,10 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.21 2004/07/02 15:50:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.22 2004/09/17 23:02:01 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 2
 c
 c     created: heimbach@mit.edu 10-Jan-2002
 c
+CADJ STORE gs        = tapelev2, key = ilev_2
+CADJ STORE gt        = tapelev2, key = ilev_2
 CADJ STORE gsnm1     = tapelev2, key = ilev_2
 CADJ STORE gtnm1     = tapelev2, key = ilev_2
 CADJ STORE gunm1     = tapelev2, key = ilev_2
@@ -16,13 +18,13 @@ CADJ STORE vvel      = tapelev2, key = ilev_2
 CADJ STORE wvel      = tapelev2, key = ilev_2
 CADJ STORE etan      = tapelev2, key = ilev_2
 CADJ STORE totphihyd = tapelev2, key = ilev_2
-CADJ STORE surfacetendencyTice = tapelev2, key = ilev_2
-CADJ STORE ivdconvcount        = tapelev2, key = ilev_2
-CADJ STORE empmr     = tapelev2, key = ilev_2
+CADJ STORE surfaceforcingTice = tapelev2, key = ilev_2
+cnewCADJ STORE ivdconvcount       = tapelev2, key = ilev_2
 
 #ifdef EXACT_CONSERV
 CADJ STORE etaH      = tapelev2, key = ilev_2
 CADJ STORE dEtaHdt   = tapelev2, key = ilev_2
+CADJ STORE PmEpR     = tapelev2, key = ilev_2
 cphCADJ STORE hDivFlow  = tapelev2, key = ilev_2
 #endif /* EXACT_CONSERV */
 
@@ -75,10 +77,11 @@ CADJ STORE pload1  = tapelev2, key = ilev_2
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_EBM
-CADJ STORE fu   = tapelev2, key = ilev_2
-CADJ STORE fv   = tapelev2, key = ilev_2
-CADJ STORE qnet = tapelev2, key = ilev_2
-CADJ STORE qsw  = tapelev2, key = ilev_2
-CADJ STORE sss  = tapelev2, key = ilev_2
+CADJ STORE fu    = tapelev2, key = ilev_2
+CADJ STORE fv    = tapelev2, key = ilev_2
+CADJ STORE qnet  = tapelev2, key = ilev_2
+CADJ STORE qsw   = tapelev2, key = ilev_2
+CADJ STORE sss   = tapelev2, key = ilev_2
+CADJ STORE empmr = tapelev2, key = ilev_2
 # include "ebm_ad_check_lev2_dir.h"
 #endif /* ALLOW_ebm */

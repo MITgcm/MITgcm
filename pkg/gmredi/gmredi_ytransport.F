@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.13 2003/06/27 01:55:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.14 2004/09/17 23:02:01 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -24,8 +24,11 @@ C     == GLobal variables ==
 #include "GMREDI.h"
  
 #ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
-#include "tamc_keys.h"
+# include "tamc.h"
+# include "tamc_keys.h"
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS_SIZE.h"
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     == Routine arguments ==

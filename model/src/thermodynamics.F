@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.77 2004/09/16 09:46:28 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.78 2004/09/17 23:02:00 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,9 +78,6 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "GAD.h"
-#ifdef ALLOW_PASSIVE_TRACER
-#include "TR1.h"
-#endif
 #ifdef ALLOW_OFFLINE
 #include "OFFLINE.h"
 #endif
@@ -150,9 +147,6 @@ C                      index into fVerTerm.
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-#ifdef ALLOW_PASSIVE_TRACER
-      _RL fVerTr1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-#endif
 #ifdef ALLOW_PTRACERS
       _RL fVerP   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
 #endif
@@ -231,10 +225,6 @@ C     uninitialised but inert locations.
           fVerT  (i,j,2) = 0. _d 0
           fVerS  (i,j,1) = 0. _d 0
           fVerS  (i,j,2) = 0. _d 0
-#ifdef ALLOW_PASSIVE_TRACER
-          fVerTr1(i,j,1) = 0. _d 0
-          fVerTr1(i,j,2) = 0. _d 0
-#endif
 #ifdef ALLOW_PTRACERS
           DO ip=1,PTRACERS_num
            fVerP  (i,j,1,ip) = 0. _d 0
@@ -253,10 +243,6 @@ C This is currently also used by IVDC and Diagnostics
 C- tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
            gT(i,j,k,bi,bj)   = 0. _d 0
            gS(i,j,k,bi,bj)   = 0. _d 0
-# ifdef ALLOW_PASSIVE_TRACER
-ceh3 needs an IF ( use PASSIVE_TRACER) THEN
-           gTr1(i,j,k,bi,bj) = 0. _d 0
-# endif
 # ifdef ALLOW_PTRACERS
 ceh3 this should have an   IF ( usePTRACERS ) THEN
            DO iTracer=1,PTRACERS_numInUse
@@ -273,17 +259,6 @@ c       jMin = 1-OLy
 c       jMax = sNy+OLy
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE totphihyd
-CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
-#ifdef ALLOW_KPP
-CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#endif
-#endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifdef ALLOW_AUTODIFF_TAMC
 cph avoids recomputation of integrate_for_w
 CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -297,9 +272,6 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#ifdef ALLOW_PASSIVE_TRACER
-CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#endif
 #ifdef ALLOW_PTRACERS
 cph-- moved to forward_step to avoid key computation
 cphCADJ STORE ptracer(:,:,:,bi,bj,itracer) = comlev1_bibj,
@@ -489,21 +461,6 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         myIter, myThid)
          ENDIF
 #endif
-#ifdef ALLOW_PASSIVE_TRACER
-ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
-         IF ( tr1Stepping ) THEN
-           CALL CALC_GTR1(
-     I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
-     I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
-     I         KappaRT,
-     U         fVerTr1,
-     I         myTime,myIter,myThid)
-           CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,tracerAdvScheme,
-     I         Tr1, gTr1,
-     I         myIter,myThid)
-         ENDIF
-#endif
 #ifdef ALLOW_PTRACERS
          IF ( usePTRACERS ) THEN
            CALL PTRACERS_INTEGRATE(
@@ -585,19 +542,6 @@ CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
      I         deltaTtracer, KappaRS, recip_HFacC,
      U         gS,
      I         myThid )
-        ENDIF
-#endif
-
-#ifdef ALLOW_PASSIVE_TRACER
-        IF ( tr1Stepping .AND. implicitDiffusion ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gTr1(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-          CALL IMPLDIFF(
-     I      bi, bj, iMin, iMax, jMin, jMax,
-     I      deltaTtracer, KappaRT, recip_HFacC,
-     U      gTr1,
-     I      myThid )
         ENDIF
 #endif
 

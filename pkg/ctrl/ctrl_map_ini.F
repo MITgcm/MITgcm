@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.12 2004/03/04 19:49:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.13 2004/09/17 23:02:01 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -25,10 +25,13 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#include "TR1.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_SIZE.h"
+# include "PTRACERS.h"
+#endif
 #ifdef ALLOW_ECCO
 # include "ecco_cost.h"
 #endif
@@ -154,6 +157,7 @@ c--   Temperature field.
 #endif
 
 #ifdef ALLOW_TR10_CONTROL
+#ifdef ALLOW_PTRACERS
 c--   Temperature field.
       il=ilnblnk( xx_tr1_file )
       write(fnametr1(1:80),'(2a,i10.10)')
@@ -167,13 +171,14 @@ c--   Temperature field.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-                tr1(i,j,k,bi,bj) = tr1(i,j,k,bi,bj) +
+                ptracer(i,j,k,bi,bj,1) = ptracer(i,j,k,bi,bj,1) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
               enddo
             enddo
           enddo
        enddo
       enddo
+#endif
 #endif
 
 #ifdef ALLOW_DIFFKR_CONTROL
@@ -301,15 +306,14 @@ c--   Update the tile edges.
 
 #ifdef ALLOW_THETA0_CONTROL
       _EXCH_XYZ_R8( theta, mythid )
-cph      _EXCH_XYZ_R8( gtNm1, mythid )
 #endif
 #ifdef ALLOW_SALT0_CONTROL
       _EXCH_XYZ_R8(  salt, mythid )
-cph      _EXCH_XYZ_R8( gsNm1, mythid )
 #endif
 #ifdef ALLOW_TR10_CONTROL
-      _EXCH_XYZ_R8(     tr1, mythid )
-cph      _EXCH_XYZ_R8( gTr1Nm1, mythid )
+#ifdef ALLOW_PTRACERS
+      _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,1),myThid)
+#endif
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
       _EXCH_XYZ_R8( diffkr, mythid)

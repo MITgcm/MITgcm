@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_SIZE.h,v 1.2 2004/09/03 20:10:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_SIZE.h,v 1.3 2004/09/17 23:02:01 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -17,6 +17,11 @@ C
 C     Number of tracers
       INTEGER PTRACERS_num
       PARAMETER(PTRACERS_num = 1 )
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER    maxpass
+      PARAMETER( maxpass     = PTRACERS_num + 2 )
+#endif
 
 CEOP
 #endif /* ALLOW_PTRACERS */

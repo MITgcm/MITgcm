@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.26 2004/07/07 20:09:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.27 2004/09/17 23:02:01 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -44,6 +44,9 @@ C !USES: ===============================================================
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS_SIZE.h"
+# endif
 #endif
 #ifdef ALLOW_EXCH2
 #include "W2_EXCH2_TOPOLOGY.h"

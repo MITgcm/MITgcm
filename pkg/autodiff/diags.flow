@@ -45,3 +45,9 @@ C subroutine  WRITE_TIME_AVERAGES
 C----------------------------------------
 CADJ SUBROUTINE WRITE_TIME_AVERAGES  INPUT  = 1,2,3
 CADJ SUBROUTINE WRITE_TIME_AVERAGES  OUTPUT = 
+
+C----------------------------------------
+C subroutine  DO_STATEVARS_DIAGS
+C----------------------------------------
+CADJ SUBROUTINE DO_STATEVARS_DIAGS  INPUT  = 1,2,3
+CADJ SUBROUTINE DO_STATEVARS_DIAGS  OUTPUT = 

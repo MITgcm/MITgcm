@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.9 2004/09/16 09:35:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.10 2004/09/17 23:02:00 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -36,9 +36,6 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 c #include "GAD.h"
-c #ifdef ALLOW_PASSIVE_TRACER
-c #include "TR1.h"
-c #endif
 c #ifdef ALLOW_PTRACERS
 c #include "PTRACERS_SIZE.h"
 c #include "PTRACERS.h"
@@ -60,6 +57,9 @@ c #endif
 # endif
 # ifdef ALLOW_EBM
 #  include "EBM.h"
+# endif
+# ifdef EXACT_CONSERV
+#  include "SURFACE.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -230,10 +230,13 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE totphihyd
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
-#ifdef ALLOW_KPP
+# ifdef ALLOW_KPP
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#endif
+# endif
+# ifdef EXACT_CONSERV
+CADJ STORE pmepr(:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_DEBUG
@@ -293,7 +296,9 @@ CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
           ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
+# ifndef GM_EXCLUDE_CLIPPING
 CADJ STORE rhok   (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
+# endif
 CADJ STORE rhokm1 (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C--       Implicit Vertical Diffusion for Convection
@@ -319,11 +324,6 @@ C--     end of diagnostic k loop (Nr:1)
      &         3, bi, bj, sigmaR)
         ENDIF
 #endif
-
-#ifdef ALLOW_AUTODIFF_TAMC
-cph avoids recomputation of integrate_for_w
-CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  ALLOW_OBCS
 C--     Calculate future values on open boundaries
@@ -373,12 +373,15 @@ CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 #ifdef  ALLOW_GMREDI
 
 #ifdef ALLOW_AUTODIFF_TAMC
+# ifndef GM_EXCLUDE_CLIPPING
 cph storing here is needed only for one GMREDI_OPTIONS:
 cph define GM_BOLUS_ADVEC
+cph keep it although TAF says you dont need to.
 cph but I've avoided the #ifdef for now, in case more things change
 CADJ STORE sigmaX(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE sigmaY(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE sigmaR(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
+cnewCADJ STORE sigmaR(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
@@ -400,12 +403,6 @@ C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
 #endif /* ALLOW_AUTODIFF_TAMC */
         ENDIF
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE Kwx(:,:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE Kwy(:,:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE Kwz(:,:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-
 #endif  /* ALLOW_GMREDI */
 
 #ifdef  ALLOW_KPP
@@ -423,12 +420,6 @@ C--     Compute KPP mixing coefficients
      I                  bi, bj, myTime, myThid )
 #endif /* ALLOW_AUTODIFF_TAMC */
         ENDIF
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KPPghat   (:,:,:,bi,bj)
-CADJ &   , KPPfrac   (:,:  ,bi,bj)
-CADJ &                 = comlev1_bibj, key=itdkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 #endif  /* ALLOW_KPP */
 
@@ -467,21 +458,6 @@ C--     Compute GGL90 mixing coefficients
      I                  bi, bj, myTime, myThid )
         ENDIF
 #endif /* ALLOW_GGL90 */
-
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#ifdef ALLOW_PASSIVE_TRACER
-CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-#endif
-#ifdef ALLOW_PTRACERS
-cph-- moved to forward_step to avoid key computation
-cphCADJ STORE ptracer(:,:,:,bi,bj,itracer) = comlev1_bibj,
-cphCADJ &                              key=itdkey, byte=isbyte
-#endif
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   end bi,bj loops.
        ENDDO

@@ -1,12 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.21 2004/07/02 15:50:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev3_directives.h,v 1.22 2004/09/17 23:02:01 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 3
 c
 c     created: heimbach@mit.edu 10-Jan-2002
 c
-CADJ STORE gsnm1     = tapelev3, key = ilev_3
+CADJ STORE gs        = tapelev3, key = ilev_3
+CADJ STORE gt        = tapelev3, key = ilev_3
 CADJ STORE gtnm1     = tapelev3, key = ilev_3
+CADJ STORE gsnm1     = tapelev3, key = ilev_3
 CADJ STORE gunm1     = tapelev3, key = ilev_3
 CADJ STORE gvnm1     = tapelev3, key = ilev_3
 CADJ STORE theta     = tapelev3, key = ilev_3
@@ -16,13 +18,13 @@ CADJ STORE vvel      = tapelev3, key = ilev_3
 CADJ STORE wvel      = tapelev3, key = ilev_3
 CADJ STORE etan      = tapelev3, key = ilev_3
 CADJ STORE totphihyd = tapelev3, key = ilev_3
-CADJ STORE surfacetendencyTice = tapelev3, key = ilev_3
-CADJ STORE ivdconvcount        = tapelev3, key = ilev_3
-CADJ STORE empmr     = tapelev3, key = ilev_3
+CADJ STORE surfaceforcingTice = tapelev3, key = ilev_3
+cnewCADJ STORE ivdconvcount       = tapelev3, key = ilev_3
 
 #ifdef EXACT_CONSERV
 CADJ STORE etaH      = tapelev3, key = ilev_3
 CADJ STORE dEtaHdt   = tapelev3, key = ilev_3
+CADJ STORE PmEpR     = tapelev3, key = ilev_3
 cphCADJ STORE hDivFlow  = tapelev3, key = ilev_3
 #endif /* EXACT_CONSERV */
 
@@ -75,10 +77,11 @@ CADJ STORE pload1  = tapelev3, key = ilev_3
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_EBM
-CADJ STORE fu   = tapelev3, key = ilev_3
-CADJ STORE fv   = tapelev3, key = ilev_3
-CADJ STORE qnet = tapelev3, key = ilev_3
-CADJ STORE qsw  = tapelev3, key = ilev_3
-CADJ STORE sss  = tapelev3, key = ilev_3
+CADJ STORE fu    = tapelev3, key = ilev_3
+CADJ STORE fv    = tapelev3, key = ilev_3
+CADJ STORE qnet  = tapelev3, key = ilev_3
+CADJ STORE qsw   = tapelev3, key = ilev_3
+CADJ STORE sss   = tapelev3, key = ilev_3
+CADJ STORE empmr = tapelev3, key = ilev_3
 # include "ebm_ad_check_lev3_dir.h"
 #endif /* ALLOW_EBM */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.7 2004/07/13 18:06:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.8 2004/09/17 23:02:01 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -84,9 +84,6 @@ c They provide the fields to be stored.
 
 # ifdef ALLOW_CD_CODE
 #  include "CD_CODE_VARS.h"
-# endif
-# ifdef ALLOW_PASSIVE_TRACER
-#  include "TR1.h"
 # endif
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS_SIZE.h"
@@ -195,48 +192,30 @@ C--   Set initial conditions (variable arrays)
       CALL INITIALISE_VARIA( mythid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
 
-c--   Dump for start state.
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('WRITE_STATE',myThid)
-#endif
-      CALL TIMER_START('WRITE_STATE         [THE_MAIN_LOOP]', mythid)
-      CALL WRITE_STATE( mytime, myiter, mythid )
-      CALL TIMER_STOP ('WRITE_STATE         [THE_MAIN_LOOP]', mythid)
-
 #ifdef ALLOW_MONITOR
-C--   Check status of solution (statistics, cfl, etc...)
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('MONITOR',myThid)
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('MONITOR',myThid)
 #endif
+C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_START('MONITOR             [THE_MAIN_LOOP]', mythid)
       CALL MONITOR( myIter, myTime, myThid )
       CALL TIMER_STOP ('MONITOR             [THE_MAIN_LOOP]', mythid)
 #endif /* ALLOW_MONITOR */
 
+C--   Do IO if needed (Dump for start state).
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('DO_THE_MODEL_IO',myThid)
 #endif
+
+#ifdef ALLOW_OFFLINE
+      CALL TIMER_START('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
+      CALL OFFLINE_MODEL_IO( myTime, myIter, myThid )
+      CALL TIMER_STOP ('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
+#else
       CALL TIMER_START('DO_THE_MODEL_IO     [THE_MAIN_LOOP]', mythid)
       CALL DO_THE_MODEL_IO( myTime, myIter, mythid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [THE_MAIN_LOOP]', mythid)
-
-
-#ifdef ALLOW_COST
-c--   Compute the cost function contribution of the boundary forcing,
-c--   i.e. heat flux, salt flux, zonal and meridional wind stress.
-      call timer_start('COST_FORCING        [ECCO SPIN-UP]', mythid)
-      call cost_forcing( myiter, mytime, mythid )
-      call timer_stop ('COST_FORCING        [ECCO SPIN-UP]', mythid)
-
-# ifdef ALLOW_OBCS_COST_CONTRIBUTION
-      call timer_start('cost_obcs           [ECCO SPIN-UP]', mythid)
-      call cost_obcs( myiter, mytime, mythid )
-      call timer_stop ('cost_obcs           [ECCO SPIN-UP]', mythid)
-# endif
-
-#endif /* ALLOW_COST */
+#endif
 
       call timer_stop ('ECCO SPIN-UP', mythid)
       _BARRIER
@@ -405,29 +384,6 @@ c--     Compute meridional heat transport
 #endif
 #endif /* ALLOW_COST */
 
-#ifdef EXACT_CONSERV
-      IF (exactConserv) THEN
-C--   Update etaH(n+1) :
-         CALL TIMER_START('UPDATE_ETAH        [FORWARD_STEP]',mythid)
-         CALL UPDATE_ETAH( myTime, myIter, myThid )
-         CALL TIMER_STOP ('UPDATE_ETAH        [FORWARD_STEP]',mythid)
-      ENDIF
-#endif /* EXACT_CONSERV */ 
-
-#ifdef NONLIN_FRSURF
-      IF ( select_rStar.NE.0 ) THEN
-C--   r* : compute the future level thickness according to etaH(n+1) 
-          CALL TIMER_START('CALC_R_STAR       [FORWARD_STEP]',mythid)
-          CALL CALC_R_STAR(etaH, myTime, myIter, myThid )
-          CALL TIMER_STOP ('CALC_R_STAR       [FORWARD_STEP]',mythid)
-      ELSEIF ( nonlinFreeSurf.GT.0) THEN
-C--   compute the future surface level thickness according to etaH(n+1) 
-          CALL TIMER_START('CALC_SURF_DR      [FORWARD_STEP]',mythid)
-          CALL CALC_SURF_DR(etaH, myTime, myIter, myThid )
-          CALL TIMER_STOP ('CALC_SURF_DR      [FORWARD_STEP]',mythid)
-      ENDIF
-#endif /* NONLIN_FRSURF */
-
 #ifdef ALLOW_AUTODIFF_TAMC
 c**************************************
 #include "checkpoint_lev1_directives.h"
@@ -443,16 +399,6 @@ c**************************************
       CALL TIMER_STOP ('EXF_GETFORCING     [FORWARD_STEP]',mythid)
 
 #ifdef ALLOW_SEAICE
-C--   Call sea ice model to compute forcing/external data fields.  In
-C     addition to computing prognostic sea-ice variables and diagnosing the
-C     forcing/external data fields that drive the ocean model, SEAICE_MODEL
-C     also sets theta to the freezing point under sea-ice.  The implied
-C     surface heat flux is then stored in variable surfaceTendencyTice,
-C     which is needed by KPP package (kpp_calc.F and kpp_transport_t.F)
-C     to diagnose surface buoyancy fluxes and for the non-local transport
-C     term.  Because this call precedes model thermodynamics, temperature
-C     under sea-ice may not be "exactly" at the freezing point by the time
-C     theta is dumped or time-averaged.
 cph this simple runtime flag causes a lot of recomp.
 cph      IF ( useSEAICE ) THEN
 #ifndef DISABLE_DEBUGMODE
@@ -476,70 +422,58 @@ C       The adjoint routine will print out adjoint values
 C       if requested. The location of the call is important, 
 C       it has to be after the adjoint of the exchanges 
 C       (DO_GTERM_BLOCKING_EXCHANGES).
-        myiter = niter0 + iloop
-        mytime = starttime + float(iloop)*deltaTClock
         CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
-        CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
-        myiter = nIter0 + (iloop-1)
-        mytime = startTime + float(iloop-1)*deltaTclock
 #endif
 
-cph(
-#ifdef ALLOW_SNAPSHOTS
-        yprefix = 'kf_'
-        call ecco_check_exp( mythid, myiter, mytime, yprefix )
+#ifdef ALLOW_EBM
+        IF ( useEBM ) THEN
+# ifdef ALLOW_DEBUG
+         IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('EBM',myThid)
+# endif
+         CALL TIMER_START('EBM                [FORWARD_STEP]',mythid)
+         CALL EBM_DRIVER ( myTime, myIter, myThid )
+         CALL TIMER_STOP ('EBM                [FORWARD_STEP]',mythid)
+        ENDIF
 #endif
-cph)
 
 C--     Step forward fields and calculate time tendency terms.
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB ) 
+
+#ifdef ALLOW_DEBUG
+       IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('DO_ATMOSPHERIC_PHYS',myThid)
+#endif
+       CALL TIMER_START('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',mythid)
+       CALL DO_ATMOSPHERIC_PHYS( myTime, myIter, myThid )
+       CALL TIMER_STOP ('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',mythid)
+
+#ifndef ALLOW_OFFLINE
+#ifdef ALLOW_DEBUG
+       IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('DO_OCEANIC_PHYS',myThid)
+#endif
+       CALL TIMER_START('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
+       CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
+       CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
+#endif
+
+      IF ( .NOT.staggerTimeStep ) THEN
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('THERMODYNAMICS',myThid)
 #endif
         CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',mythid)
         CALL THERMODYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('THERMODYNAMICS      [FORWARD_STEP]',mythid)
-
-C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
-#ifndef DISABLE_DEBUGMODE
-      IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('DO_STAGGER_FIELDS_EXCH.',myThid)
-#endif
-        CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
-        CALL DO_STAGGER_FIELDS_EXCHANGES( myTime, myIter, myThid )
-        CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
-
-#ifdef ALLOW_SHAP_FILT
-      IF (useSHAP_FILT .AND. 
-     &     staggerTimeStep .AND. shap_filt_TrStagg ) THEN
-#ifndef DISABLE_DEBUGMODE
-        IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('SHAP_FILT_APPLY_TS',myThid)
-#endif
-        CALL TIMER_START('SHAP_FILT           [FORWARD_STEP]',myThid)
-        CALL SHAP_FILT_APPLY_TS( gT, gS, myTime, myIter, myThid )
-        CALL TIMER_STOP ('SHAP_FILT           [FORWARD_STEP]',myThid)
+C--    if not staggerTimeStep: end
       ENDIF
-#endif
-
-#ifdef ALLOW_ZONAL_FILT
-      IF (useZONAL_FILT .AND. 
-     &     staggerTimeStep .AND. zonal_filt_TrStagg ) THEN
-#ifndef DISABLE_DEBUGMODE
-        IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('ZONAL_FILT_APPLY_TS',myThid)
-#endif
-        CALL TIMER_START('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
-        CALL ZONAL_FILT_APPLY_TS( gT, gS, myThid )
-        CALL TIMER_STOP ('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
-      ENDIF
-#endif   
 
 C--   Step forward fields and calculate time tendency terms.
+#ifndef ALLOW_OFFLINE
 #ifndef ALLOW_AUTODIFF_TAMC
       IF ( momStepping ) THEN
 #endif
-#ifndef DISABLE_DEBUGMODE
+#ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('DYNAMICS',myThid)
 #endif
@@ -549,13 +483,14 @@ C--   Step forward fields and calculate time tendency terms.
 #ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
 #endif
+#endif
 
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Step forward W field in N-H algorithm
       IF ( momStepping .AND. nonHydrostatic ) THEN
-#ifndef DISABLE_DEBUGMODE
-         IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('CALC_GW',myThid)
+#ifdef ALLOW_DEBUG
+          IF ( debugLevel .GE. debLevB ) 
+     &     CALL DEBUG_CALL('CALC_GW',myThid)
 #endif
          CALL TIMER_START('CALC_GW          [FORWARD_STEP]',myThid)
          CALL CALC_GW(myThid)
@@ -563,8 +498,13 @@ C--   Step forward W field in N-H algorithm
       ENDIF
 #endif
 
+C--   Update time-counter
+      myIter = nIter0 + iLoop
+      myTime = startTime + deltaTClock * float(iLoop)
+
+C--   Update geometric factors:
 #ifdef NONLIN_FRSURF
-C--   update hfacC,W,S and recip_hFac according to etaH(n+1) :
+C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
       IF ( nonlinFreeSurf.GT.0) THEN
        IF ( select_rStar.GT.0 ) THEN
         CALL TIMER_START('UPDATE_R_STAR      [FORWARD_STEP]',myThid)
@@ -592,13 +532,12 @@ C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
 C--   Explicit+Implicit part of the Barotropic Flow Divergence
 C      => Filtering of uVel,vVel is necessary
           CALL SHAP_FILT_APPLY_UV( uVel,vVel,
-     &                             myTime+deltaT, myIter+1, myThid )
+     &                             myTime, myIter, myThid )
         ENDIF
-        CALL SHAP_FILT_APPLY_UV( gU,gV,myTime+deltaT,myIter+1,myThid)
+        CALL SHAP_FILT_APPLY_UV( gU,gV,myTime,myIter,myThid)
         CALL TIMER_STOP ('SHAP_FILT           [FORWARD_STEP]',myThid)
       ENDIF
 #endif
-
 #ifdef ALLOW_ZONAL_FILT
       IF (useZONAL_FILT .AND. zonal_filt_uvStar) THEN
         CALL TIMER_START('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
@@ -615,24 +554,78 @@ C      => Filtering of uVel,vVel is necessary
 C--   Solve elliptic equation(s).
 C     Two-dimensional only for conventional hydrostatic or 
 C     three-dimensional for non-hydrostatic and/or IGW scheme.
+#ifndef ALLOW_OFFLINE
       IF ( momStepping ) THEN
-      CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
-      CALL SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
-      CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
+        CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
+        CALL SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
+        CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
       ENDIF
+#endif
+
+C--   Correct divergence in flow field and cycle time-stepping momentum
+c     IF ( momStepping ) THEN
+#ifndef ALLOW_OFFLINE
+        CALL TIMER_START('UV_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+        CALL MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
+        CALL TIMER_STOP ('UV_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+#endif
+c     ENDIF
+
+#ifdef EXACT_CONSERV
+      IF (exactConserv) THEN
+C--   Update etaH(n+1) :
+        CALL TIMER_START('UPDATE_ETAH        [FORWARD_STEP]',mythid)
+        CALL UPDATE_ETAH( myTime, myIter, myThid )
+        CALL TIMER_STOP ('UPDATE_ETAH        [FORWARD_STEP]',mythid)
+      ENDIF
+#endif /* EXACT_CONSERV */ 
+
+#ifdef NONLIN_FRSURF
+      IF ( select_rStar.NE.0 ) THEN
+C--   r* : compute the future level thickness according to etaH(n+1) 
+        CALL TIMER_START('CALC_R_STAR       [FORWARD_STEP]',mythid)
+        CALL CALC_R_STAR(etaH, myTime, myIter, myThid )
+        CALL TIMER_STOP ('CALC_R_STAR       [FORWARD_STEP]',mythid)
+      ELSEIF ( nonlinFreeSurf.GT.0) THEN
+C--   compute the future surface level thickness according to etaH(n+1) 
+        CALL TIMER_START('CALC_SURF_DR      [FORWARD_STEP]',mythid)
+        CALL CALC_SURF_DR(etaH, myTime, myIter, myThid )
+        CALL TIMER_STOP ('CALC_SURF_DR      [FORWARD_STEP]',mythid)
+      ENDIF
+#endif /* NONLIN_FRSURF */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      IF ( staggerTimeStep ) THEN
+C--   do exchanges of U,V (needed for multiDim) when using stagger time-step :
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('DO_STAGGER_FIELDS_EXCH.',myThid)
+#endif
+        CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+        CALL DO_STAGGER_FIELDS_EXCHANGES( myTime, myIter, myThid )
+        CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('THERMODYNAMICS',myThid)
+#endif
+        CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',mythid)
+        CALL THERMODYNAMICS( myTime, myIter, myThid )
+        CALL TIMER_STOP ('THERMODYNAMICS      [FORWARD_STEP]',mythid)
+
+C--    if staggerTimeStep: end
+      ENDIF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph This is needed because convective_adjustment calls
 cph find_rho which may use pressure()
 CADJ STORE totphihyd  = comlev1, key = ikey_dynamics
 #endif
-C--   Correct divergence in flow field and cycle time-stepping
-C     arrays (for all fields) ; update time-counter
-      myIter = nIter0 + iLoop
-      myTime = startTime + deltaTClock * float(iLoop)
-      CALL TIMER_START('THE_CORRECTION_STEP [FORWARD_STEP]',myThid)
-      CALL THE_CORRECTION_STEP(myTime, myIter, myThid)
-      CALL TIMER_STOP ('THE_CORRECTION_STEP [FORWARD_STEP]',myThid)
+C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
+        CALL TIMER_START('TS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+        CALL TRACERS_CORRECTION_STEP(myTime, myIter, myThid)
+        CALL TIMER_STOP ('TS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
 
 C--   Do "blocking" sends and receives for tendency "overlap" terms
 c     CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
@@ -653,42 +646,40 @@ C--   Calculate float trajectories
       ENDIF
 #endif
 
+C--   State-variables statistics (time-aver, diagnostics ...)
+      CALL TIMER_START('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+      CALL DO_STATEVARS_DIAGS( myTime, myIter, myThid )
+      CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
+
+#ifndef ALLOW_OFFLINE
 #ifdef ALLOW_MONITOR
 C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
       CALL MONITOR( myIter, myTime, myThid )
       CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
 #endif /* ALLOW_MONITOR */
+#endif
 
 C--   Do IO if needed.
+#ifdef ALLOW_OFFLINE
+      CALL TIMER_START('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
+      CALL OFFLINE_MODEL_IO( myTime, myIter, myThid )
+      CALL TIMER_STOP ('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
+#else
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
       CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
+#endif
 
 C--   Save state for restarts
-C     Note:    (jmc: is it still the case after ckp35 ?)
-C     =====
-C     Because of the ordering of the timestepping code and
-C     tendency term code at end of loop model arrays hold
-C     U,V,T,S  at "time-level" N but gu, gv, gs, gt, guNM1,... 
-C     at "time-level" N+1/2 (guNM1 at "time-level" N+1/2 is 
-C     gu at "time-level" N-1/2) and etaN at "time-level" N+1/2.
-C      where N = I+timeLevBase-1
-C     Thus a checkpoint contains U.0000000000, GU.0000000001 and 
-C     etaN.0000000001 in the indexing scheme used for the model 
-C     "state" files. This example is referred to as a checkpoint 
-C     at time level 1
       CALL TIMER_START('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
       CALL PACKAGES_WRITE_PICKUP(
-     I        .FALSE., myTime, myIter, myThid )
+     I               .FALSE., myTime, myIter, myThid )
+#ifndef ALLOW_OFFLINE
       CALL WRITE_CHECKPOINT(
-     &        .FALSE., myTime, myIter, myThid )
-      CALL TIMER_STOP ('PACKAGES_WRITE_PICK [FORWARD_STEP]',myThid)
-
-ctest      myiter = niter0 + iloop
-ctest      mytime = starttime + float(iloop)*deltaTClock
-c     Calculate current date.
-ctest      call cal_TimeStamp( myiter, mytime, mydate, mythid )
+     I               .FALSE., myTime, myIter, myThid )   
+#endif
+      CALL TIMER_STOP ('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_TAMC_CHECKPOINTING
@@ -739,6 +730,18 @@ c--   Compute meridional heat transport
       call timer_start('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
       call cost_atlantic(  mytime, myiter,mythid )
       call timer_stop ('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
+#endif
+
+c--   Compute the cost function contribution of the boundary forcing,
+c--   i.e. heat flux, salt flux, zonal and meridional wind stress.
+      call timer_start('COST_FORCING        [ECCO SPIN-UP]', mythid)
+      call cost_forcing( myiter, mytime, mythid )
+      call timer_stop ('COST_FORCING        [ECCO SPIN-UP]', mythid)
+
+#ifdef ALLOW_OBCS_COST_CONTRIBUTION
+      call timer_start('cost_obcs           [ECCO SPIN-UP]', mythid)
+      call cost_obcs( myiter, mytime, mythid )
+      call timer_stop ('cost_obcs           [ECCO SPIN-UP]', mythid)
 #endif
 
 c--   Compute cost function contribution of Temperature and Salinity.
