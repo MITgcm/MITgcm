@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.13 2002/03/04 17:26:41 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.14 2003/04/17 13:36:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,11 +43,6 @@ c     _EXCH_XYZ_R8( uVel , myThid )
 c     _EXCH_XYZ_R8( vVel , myThid )
 c     _EXCH_XYZ_R8( theta , myThid )
 c     _EXCH_XYZ_R8( salt , myThid )
-
-#ifdef INCLUDE_CD_CODE
-      _EXCH_XYZ_R8( guCD , myThid )
-      _EXCH_XYZ_R8( gvCD , myThid )
-#endif
 
 #ifdef ALLOW_PTRACERS
       CALL PTRACERS_GTERM_BLOCKING_EXCHANGES(myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.19 2003/02/18 15:26:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.20 2003/04/17 13:36:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -101,8 +101,8 @@ C       Raw fields
         CALL READ_REC_XYZ_RL(  'vVelD', vVelD, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'uNm1',  uNM1, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'vNm1',  vNM1, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'guCD',  guCD, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'gvCD',  gvCD, 1,myIter, myThid)
+c       CALL READ_REC_XYZ_RL(  'guCD',  guCD, 1,myIter, myThid)
+c       CALL READ_REC_XYZ_RL(  'gvCD',  gvCD, 1,myIter, myThid)
 #endif
 
 #ifdef ALLOW_NONHYDROSTATIC
@@ -147,8 +147,8 @@ C--     Read model fields
         CALL MDSREADFIELD(fn,prec,'RL',Nr,vVelD,    2,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uNM1,     3,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,vNM1,     4,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,guCD,     5,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',Nr,gvCD,     6,myThid)
+c       CALL MDSREADFIELD(fn,prec,'RL',Nr,guCD,     5,myThid)
+c       CALL MDSREADFIELD(fn,prec,'RL',Nr,gvCD,     6,myThid)
         CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,6*Nr+1,myThid)
 #endif /* INCLUDE_CD_CODE */
 
@@ -218,8 +218,8 @@ c**** CALL EXCH_DUV_XYZ_RL(guCD,gvCD,.TRUE.,myThid)
       CALL EXCH_UV_XYZ_RL(uNM1,vNM1,.TRUE.,myThid)
 c     _EXCH_XYZ_R8( uNM1,     myThid )
 c     _EXCH_XYZ_R8( vNM1,     myThid )
-      _EXCH_XYZ_R8( guCD,     myThid )
-      _EXCH_XYZ_R8( gvCD,     myThid )
+c     _EXCH_XYZ_R8( guCD,     myThid )
+c     _EXCH_XYZ_R8( gvCD,     myThid )
       _EXCH_XY_R8( etaNm1, myThid )
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
@@ -358,8 +358,8 @@ C       Raw fields
         CALL WRITE_REC_XYZ_RL(  'vVelD', vVelD,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL(  'uNM1',  uNM1,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL(  'vNM1',  vNM1,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'guCD',  guCD,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'gvCD',  gvCD,  1,myIter, myThid)
+c       CALL WRITE_REC_XYZ_RL(  'guCD',  guCD,  1,myIter, myThid)
+c       CALL WRITE_REC_XYZ_RL(  'gvCD',  gvCD,  1,myIter, myThid)
 #endif
 
 
@@ -421,8 +421,12 @@ C--     Write model fields
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVelD,2,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uNM1, 3,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vNM1, 4,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,guCD, 5,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gvCD, 6,myIter,myThid)
+C- jmc: guCD & gvCD no longer exist. 
+C   write some stuff to maintain the same pickup size
+c       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,guCD, 5,myIter,myThid)
+c       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gvCD, 6,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uNM1, 5,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vNM1, 6,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaNm1,6*Nr+1,
      &                     myIter,myThid)
 #endif /* INCLUDE_CD_CODE */
