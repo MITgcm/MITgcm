@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.2 2004/02/05 05:42:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.3 2004/02/16 22:21:43 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -17,6 +17,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif
 
 C     Arguments
       integer myThid, bi,bj, tnum
