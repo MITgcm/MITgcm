@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.71 2001/06/18 17:39:58 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.72 2001/07/13 14:26:57 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,6 +29,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#include "TR1.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -91,6 +92,7 @@ C     tauAB - Adams-Bashforth timestepping weight: 0=forward ; 1/2=Adams-Bashf.
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL fVerTr1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL phiHyd  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -235,15 +237,17 @@ CHPF$&                  )
 C--     Set up work arrays that need valid initial values
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          rTrans(i,j)   = 0. _d 0
-          fVerT (i,j,1) = 0. _d 0
-          fVerT (i,j,2) = 0. _d 0
-          fVerS (i,j,1) = 0. _d 0
-          fVerS (i,j,2) = 0. _d 0
-          fVerU (i,j,1) = 0. _d 0
-          fVerU (i,j,2) = 0. _d 0
-          fVerV (i,j,1) = 0. _d 0
-          fVerV (i,j,2) = 0. _d 0
+          rTrans (i,j)   = 0. _d 0
+          fVerT  (i,j,1) = 0. _d 0
+          fVerT  (i,j,2) = 0. _d 0
+          fVerS  (i,j,1) = 0. _d 0
+          fVerS  (i,j,2) = 0. _d 0
+          fVerTr1(i,j,1) = 0. _d 0
+          fVerTr1(i,j,2) = 0. _d 0
+          fVerU  (i,j,1) = 0. _d 0
+          fVerU  (i,j,2) = 0. _d 0
+          fVerV  (i,j,1) = 0. _d 0
+          fVerV  (i,j,2) = 0. _d 0
          ENDDO
         ENDDO
 
@@ -269,6 +273,7 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Start of diagnostic loop
@@ -438,6 +443,7 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AIM
@@ -523,6 +529,20 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      U         gSnm1,
      I         myIter, myThid)
          ENDIF
+         IF ( tr1Stepping ) THEN
+           CALL CALC_GTR1(
+     I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
+     I         xA,yA,uTrans,vTrans,rTrans,maskUp,
+     I         KappaRT,
+     U         fVerTr1,
+     I         myTime, myThid)
+           tauAB = 0.5d0 + abEps
+           CALL TIMESTEP_TRACER(
+     I         bi,bj,iMin,iMax,jMin,jMax,k,tauAB,
+     I         Tr1, gTr1,
+     U         gTr1NM1,
+     I         myIter, myThid)
+         ENDIF
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
@@ -579,6 +599,17 @@ CADJ STORE gSNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
      I         deltaTtracer, KappaRS, recip_HFacC,
      U         gSNm1,
      I         myThid )
+         ENDIF
+
+         IF (tr1Stepping) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gTr1Nm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+          CALL IMPLDIFF(
+     I      bi, bj, iMin, iMax, jMin, jMax,
+     I      deltaTtracer, KappaRT, recip_HFacC,
+     U      gTr1Nm1,
+     I      myThid )
          ENDIF
 
 #ifdef   ALLOW_OBCS

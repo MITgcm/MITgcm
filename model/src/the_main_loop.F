@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.11 2001/06/25 20:38:15 ljmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.12 2001/07/13 14:26:57 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 #undef ALLOW_ZONAL_FILT
@@ -34,6 +34,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "TR1.h"
 
 #ifdef ALLOW_NONHYDROSTATIC
 #include "CG3D.h"
@@ -103,7 +104,7 @@ C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_STOP ('MONITOR             [THE_MAIN_LOOP]', mythid)
 #endif /* EXCLUDE_MONITOR */
 
-#ifdef ALLOW_COST_TEST
+#ifdef ALLOW_ADJOINT_RUN
 c--   Add control vector for forcing and parameter fields
       CALL CTRL_MAP_FORCING (mythid)
 #endif
@@ -158,6 +159,10 @@ CADJ STORE vveld     = tapelev3, key = ilev_3
 CADJ STORE unm1      = tapelev3, key = ilev_3
 CADJ STORE vnm1      = tapelev3, key = ilev_3
 #endif
+#ifdef ALLOW_COST_TRACER
+CADJ STORE tr1       = tapelev3, key = ilev_3
+CADJ STORE gtr1nm1   = tapelev3, key = ilev_3
+#endif
 
 c--     Initialise storage for the middle loop.
 CADJ    INIT tapelev2 = USER
@@ -181,13 +186,16 @@ CADJ STORE vveld     = tapelev2, key = ilev_2
 CADJ STORE unm1      = tapelev2, key = ilev_2
 CADJ STORE vnm1      = tapelev2, key = ilev_2
 #endif
+#ifdef ALLOW_COST_TRACER
+CADJ STORE tr1       = tapelev2, key = ilev_2
+CADJ STORE gtr1nm1   = tapelev2, key = ilev_2
+#endif
 
 c--       Initialize storage for the innermost loop.
 c--       Always check common block sizes for the checkpointing!
 CADJ INIT comlev1        = COMMON,nchklev_1
 CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt
 CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt
-cphCADJ INIT comlev1_impl   = COMMON,nchklev_1*nsx*nsy*6
 CADJ INIT comlev1_kpp    = COMMON,nchklev_1*nsx*nsy
 
 C--   RG replace 2 by max of num_v_smooth_Ri
@@ -211,8 +219,6 @@ c--   pointing.
 CADJ INIT history        = USER
 CADJ INIT comlev1_bibj   = COMMON,nchklev_0*nsx*nsy*nthreads_chkpt
 CADJ INIT comlev1_bibj_k = COMMON,nchklev_0*nsx*nsy*nr*nthreads_chkpt
-CADJ INIT comlev1_impl   = COMMON,nchklev_0*nsx*nsy*6
-CADJ INIT comlev1_impl_k = COMMON,nchklev_0*nsx*nsy*(nr-2)*6
 CADJ INIT comlev1_kpp    = COMMON,nchklev_0*nsx*nsy
 
 C--   RG replace 2 by max of num_v_smooth_Ri
@@ -247,6 +253,14 @@ c--     >>> Loop body start <<<
 c--     Set the model iteration counter and the model time.
         myiter = nIter0 + (iloop-1)
         mytime = startTime + float(iloop-1)*deltaTclock
+
+c       Include call to a dummy routine. Its adjoint will be 
+c       called at the proper place in the adjoint code.
+c       The adjoint routine will print out adjoint values 
+c       if requested. The location of the call is important, 
+c       it has to be after the adjoint of the exchanges 
+c       (DO_GTERM_BLOCKING_EXCHANGES).
+        call dummy_in_stepping( myTime, myIter, myThid )
 #endif
 
 c--     Load forcing/external data fields.
@@ -313,16 +327,6 @@ C     three-dimensional for non-hydrostatic and/or IGW scheme.
       CALL SOLVE_FOR_PRESSURE( myThid )
       CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [THE_MAIN_LOOP]',myThid)
 
-#ifdef ALLOW_AUTODIFF_TAMC
-c     Include call to a dummy routine. Its adjoint will be 
-c     called at the proper place in the adjoint code.
-c     The adjoint routine will print out adjoint values 
-c     if requested. The location of the call is important, 
-c     it has to be after the adjoint of the exchanges 
-c     (DO_GTERM_BLOCKING_EXCHANGES).
-      call dummy_in_stepping( myTime, myIter, myThid )
-#endif
-
 C--   Correct divergence in flow field and cycle time-stepping
 C     arrays (for all fields) ; update time-counter
       myIter = nIter0 + iLoop
@@ -340,6 +344,14 @@ C--   Do "blocking" sends and receives for field "overlap" terms
       CALL TIMER_START('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
       CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
       CALL TIMER_STOP ('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
+
+#ifdef ALLOW_COST
+C--   compare model with data and compute cost function
+C--   this is done after exchanges to allow interpolation
+      CALL TIMER_START('COST_TILE           [THE_MAIN_LOOP]',myThid)
+      CALL COST_TILE  ( myThid )
+      CALL TIMER_STOP ('COST_TILE           [THE_MAIN_LOOP]',myThid)
+#endif
 
 #ifndef EXCLUDE_MONITOR
 C--   Check status of solution (statistics, cfl, etc...)
@@ -390,22 +402,16 @@ c--           >>> Loop body end <<<
       enddo
 #endif
 
+#ifdef ALLOW_COST
+c--   Sum all cost function contributions.
+      call TIMER_START('COST_FINAL         [ADJOINT SPIN-DOWN]', mythid)
+      call COST_FINAL ( mythid )
+      call TIMER_STOP ('COST_FINAL         [ADJOINT SPIN-DOWN]', mythid)
+#endif
+
       _BARRIER
       CALL TIMER_STOP ('MAIN LOOP           [THE_MAIN_LOOP]', mythid)
 
-#ifdef ALLOW_COST_TEST
-      call timer_start('ADJOINT FINALIZE COST', mythid)
-c--   Veronique's test case
-      call timer_start('cost_test          [ADJOINT SPIN-DOWN]', mythid)
-      call cost_test( myThid )
-      call timer_stop ('cost_test          [ADJOINT SPIN-DOWN]', mythid)
-
-c--   Sum all cost function contributions.
-      call timer_start('COST_FINAL         [ADJOINT SPIN-DOWN]', mythid)
-      call cost_Final( mythid )
-      call timer_stop ('COST_FINAL         [ADJOINT SPIN-DOWN]', mythid)
-      call timer_stop ('ADJOINT FINALIZE COST', mythid)
-#endif
 
 
       END

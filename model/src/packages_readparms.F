@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.5 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.6 2001/07/13 14:26:57 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,15 +54,25 @@ C     Currently AIM does not have any runtime parameters
 C     IF (useAIM) CALL AIM_READPARMS ( myThid )
 #endif
 
-#ifdef ALLOW_MIT_ADJOINT_RUN
+#ifdef ALLOW_ADJOINT_RUN
+
 C--   Initialise the cost function.
       call cost_readparms( mythid )
       _BARRIER
 
 C--   Initialise the control vector.
-      CALL ctrl_Init( myThid )
+      CALL ctrl_init( myThid )
       _BARRIER
+C--   Initialise the optim. parameters.
+      call optim_readparms( myThid )
+      _BARRIER
+
+#ifdef ALLOW_GRADIENT_CHECK
+C--   Initialise gradient check parameters
+      if (useGrdchk) call grdchk_readparms( myThid )
 #endif
+
+#endif /* ALLOW_ADJOINT_RUN */
 
 #ifdef INCLUDE_ECCO_PACKAGE
 c--   Initialize ECCO package parameters

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.63 2001/07/06 21:34:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.64 2001/07/13 14:26:57 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -96,7 +96,7 @@ C--   Continuous equation parameters
      & implicitFreeSurface, rigidLid, freeSurfFac, hFacMin, hFacMinDz,
      & exactConserv,uniformLin_PhiSurf,nonlinFreeSurf,hFacInf,hFacSup,
      & staggerTimeStep,
-     & tempStepping, saltStepping, momStepping,
+     & tempStepping, saltStepping, momStepping, tr1Stepping,
      & implicitDiffusion, implicitViscosity,
      & viscAr, diffKrT, diffKrS, hFacMinDr,
      & viscAp, diffKpT, diffKpS, hFacMinDp,
@@ -106,7 +106,8 @@ C--   Continuous equation parameters
      & allowFreezing, ivdc_kappa,
      & zonal_filt_lat, zonal_filt_sinpow, zonal_filt_cospow,
      & bottomDragLinear,bottomDragQuadratic,
-     & usePickupBeforeC35, debugMode
+     & usePickupBeforeC35, debugMode, 
+     & readPickupWithTracer, writePickupWithTracer
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
@@ -119,8 +120,8 @@ C--   Time stepping parammeters
      & nIter0, nTimeSteps, nEndIter, deltaT, deltaTmom, deltaTtracer,
      & abEps, tauCD, rCD,
      & startTime, endTime, chkPtFreq, dumpFreq, taveFreq, deltaTClock,
-     & monitorFreq,
-     & pChkPtFreq, cAdjFreq, tauThetaClimRelax, tauSaltClimRelax,
+     & monitorFreq, pChkPtFreq, cAdjFreq, 
+     & tauThetaClimRelax, tauSaltClimRelax, tauTr1ClimRelax,
      & periodicExternalForcing, externForcingPeriod, externForcingCycle
 
 C--   Gridding parameters
@@ -499,6 +500,14 @@ C     o Salinity climatology relaxation time scale
       ELSE
        doSaltClimRelax     = .TRUE.
        lambdaSaltClimRelax = 1./tauSaltClimRelax
+      ENDIF
+C     o Tracer 1 climatology relaxation time scale
+      IF ( tauTr1ClimRelax .EQ. 0.D0 ) THEN
+       doTr1ClimRelax     = .FALSE.
+       lambdaTr1ClimRelax = 0.D0
+      ELSE
+       doTr1ClimRelax     = .TRUE.
+       lambdaTr1ClimRelax = 1./tauTr1ClimRelax
       ENDIF
 
 C     o Start time

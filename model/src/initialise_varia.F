@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.12 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.13 2001/07/13 14:26:57 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -42,6 +42,10 @@ C     stored files.
       CALL INI_FIELDS( myThid )
       _BARRIER
 
+C--   Initialise passive tracer(s)
+      CALL INI_TR1( myThid )
+      _BARRIER
+
       IF ( usePickupBeforeC35 ) THEN
 C-- IMPORTANT : Need to activate the following call to restart from 
 C     a pickup file written by MITgcmUV_checkpoint34 or earlier.
@@ -52,7 +56,9 @@ C     a pickup file written by MITgcmUV_checkpoint34 or earlier.
 
 C--   Initial conditions are convectively adjusted (for historical reasons)
       IF ( startTime .EQ. 0. ) THEN
+CADJ loop = parallel 
         DO bj = myByLo(myThid), myByHi(myThid)
+CADJ loop = parallel
          DO bi = myBxLo(myThid), myBxHi(myThid)
            iMin=1-Olx
            iMax=sNx+Olx

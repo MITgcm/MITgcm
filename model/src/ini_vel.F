@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vel.F,v 1.2 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vel.F,v 1.3 2001/07/13 14:26:57 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -35,9 +35,9 @@ C
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           uVel(i,j,k,bi,bj)=0.
-           vVel(i,j,k,bi,bj)=0.
-           wVel(i,j,k,bi,bj)=0.
+           uVel(i,j,k,bi,bj)=0. _d 0
+           vVel(i,j,k,bi,bj)=0. _d 0
+           wVel(i,j,k,bi,bj)=0. _d 0
           ENDDO
          ENDDO
         ENDDO

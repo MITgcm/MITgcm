@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.4 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.5 2001/07/13 14:26:57 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -33,6 +33,7 @@ C--   data.pkg namelists
      &          useGMRedi,
      &          useOBCS,
      &          useAIM,
+     &          useGrdchk,
      &          useECCO,
      &          useSHAP_FILT
 

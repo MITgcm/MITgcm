@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.38 2001/04/10 22:35:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.39 2001/07/13 14:26:57 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,77 +25,6 @@ C     |      presently being developed.                          |
 C     \==========================================================/
       IMPLICIT NONE
 C
-C     Call Tree
-C     =========
-C     
-C      main ( eesupp )
-C       |
-C       .
-C       .
-C       . Generic environment initialisation ( see eesupp/src and
-C       .                                      eesupp/inc )      
-C       . multiple threads and/or processes are created in here
-C       .
-C       .
-C       .
-C       |
-C       |-THE_MODEL_MAIN - Begin specific model. One instance
-C       |  |               of this codes exists for each thread
-C       |  |               and/or instance. Each instance manages
-C       |  |               a specifc set of tiles.               
-C       |  |
-C       |  |--INITIALISE_FIXED
-C       |  |   o Set model configuration (fixed arrays)
-C       |  |     Topography, hydrography, timestep, grid, etc..
-C       |  | 
-C       |  |--THE_MAIN_LOOP
-C       |  |  |
-C       |  |  |--INITIALISE_VARIA
-C       |  |  |   o Set initial conditions (variable arrays)
-C       |  |  |
-C  ==>  |  |  | ** Time stepping loop starts here **
-C  |    |  |  |
-C /|\   |  |  |
-C  |    |  |  |--FORWARD_STEP
-C /|\   |  |  |  |  o Does a single forward step of the model
-C  |    |  |  |  | 
-C /|\   |  |  |  |
-C  |    |  |  |  |--LOAD_EXTERNAL_DATA
-C /|\   |  |  |  |   o Load and/or set time dependent forcing fields
-C  |    |  |  |  |
-C /|\   |  |  |  |--DYNAMICS
-C  |    |  |  |  |   o Evaluate "forward" terms
-C /|\   |  |  |  |
-C  |    |  |  |  |--SOLVE_FOR_PRESSURE
-C /|\   |  |  |  |   o Find pressure field to keep flow non-divergent
-C  |    |  |  |  |
-C /|\   |  |  |  |--THE_CORRECTION_STEP
-C  |    |  |  |  |   o Correct flow field with and cycle time-stepping arrays
-C /|\   |  |  |  |
-C  |    |  |  |  |--DO_GTERM_BLOCKING_EXCHANGES
-C /|\   |  |  |  |   o Update overlap regions
-C  |    |  |  |  |
-C /|\   |  |  |  |--DO_THE_MODEL_IO
-C  |    |  |  |  |   o Write model state
-C /|\   |  |  |  |
-C  |    |  |  |  |--WRITE_CHECKPOINT
-C /|\   |  |  |  |   o Write restart file(s)
-C  |    |  |  |
-C /|\   |  |  |
-C  |<== |  |  | ** Time stepping loop finishes here **
-C       |  |  |
-C       |  |  |--
-C       |  |
-C       |  |--WRITE_STATE
-C       |  |--WRITE_CHECKPOINT
-C       |
-C       .
-C       .
-C       . Generic environment termination ( see eesupp/src and
-C       .                                      eesupp/inc )      
-C       .
-C       .
-
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -138,7 +67,7 @@ C--   Set model configuration (fixed arrays)
       myCurrentTime = startTime
       myCurrentIter = nIter0
 
-#ifdef ALLOW_MIT_ADJOINT_RUN
+#ifdef ALLOW_ADJOINT_RUN
 
       _BEGIN_MASTER( mythid )
       IF (myProcId .eq. 0) THEN
@@ -150,8 +79,8 @@ C--   Set model configuration (fixed arrays)
       fc   = 0.0
       adfc = 1.0
       CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
-      call ADTHE_MAIN_LOOP ( mythid )
-      call TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
+      CALL ADTHE_MAIN_LOOP ( mythid )
+      CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
       _BARRIER
 
       _BEGIN_MASTER( mythid )
@@ -161,14 +90,23 @@ C--   Set model configuration (fixed arrays)
       _END_MASTER( mythid )
       _BARRIER
 
-#else /* ALLOW_MIT_ADJOINT_RUN undef */
+#ifdef ALLOW_GRADIENT_CHECK
+      if (useGrdchk) then
+         CALL TIMER_START('GRDCHK_MAIN          [ADJOINT RUN]', mythid)
+         CALL GRDCHK_MAIN( mythid )
+         CALL TIMER_STOP ('GRDCHK_MAIN          [ADJOINT RUN]', mythid)
+         _BARRIER
+      end if
+#endif
+
+#else /* ALLOW_ADJOINT_RUN undef */
 
 C--   Call time stepping loop of full model
       CALL TIMER_START('THE_MAIN_LOOP      [THE_MODEL_MAIN]',myThid)
       CALL THE_MAIN_LOOP(myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('THE_MAIN_LOOP      [THE_MODEL_MAIN]',myThid)
 
-#endif /* ALLOW_MIT_ADJOINT_RUN */
+#endif /* ALLOW_ADJOINT_RUN */
 
 C--   Final checkpoint (incase the in-loop checkpoint was missed)
       CALL TIMER_START('WRITE_CHECKPOINT   [THE_MODEL_MAIN]',myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.2 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.3 2001/07/13 14:26:57 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,33 +43,33 @@ C-      3D arrays
          DO J=1-Oly,sNy+Oly
           DO I=1-Olx,sNx+Olx
 
-           uVel(I,J,K,bi,bj)=0.
-           vVel(I,J,K,bi,bj)=0.
-           wVel(I,J,K,bi,bj)=0.
-           theta(I,J,K,bi,bj)=0.
-           salt(I,J,K,bi,bj)=0.
+           uVel(I,J,K,bi,bj)=0. _d 0
+           vVel(I,J,K,bi,bj)=0. _d 0
+           wVel(I,J,K,bi,bj)=0. _d 0
+           theta(I,J,K,bi,bj)=0. _d 0
+           salt(I,J,K,bi,bj)=0. _d 0
 
-           gU(I,J,K,bi,bj)=0.
-           gV(I,J,K,bi,bj)=0.
-           gT(I,J,K,bi,bj)=0.
-           gS(I,J,K,bi,bj)=0.
-           gUnm1(I,J,K,bi,bj)=0.
-           gVnm1(I,J,K,bi,bj)=0.
-           gTnm1(I,J,K,bi,bj)=0.
-           gSnm1(I,J,K,bi,bj)=0.
+           gU(I,J,K,bi,bj)=0. _d 0
+           gV(I,J,K,bi,bj)=0. _d 0
+           gT(I,J,K,bi,bj)=0. _d 0
+           gS(I,J,K,bi,bj)=0. _d 0
+           gUnm1(I,J,K,bi,bj)=0. _d 0
+           gVnm1(I,J,K,bi,bj)=0. _d 0
+           gTnm1(I,J,K,bi,bj)=0. _d 0
+           gSnm1(I,J,K,bi,bj)=0. _d 0
 
 #ifdef INCLUDE_CD_CODE
-           guCD(I,J,K,bi,bj)=0.
-           gvCD(I,J,K,bi,bj)=0.
-           uNM1(I,J,K,bi,bj)=0.
-           vNM1(I,J,K,bi,bj)=0.
-           uVeld(I,J,K,bi,bj)=0.
-           vVeld(I,J,K,bi,bj)=0.
+           guCD(I,J,K,bi,bj)=0. _d 0
+           gvCD(I,J,K,bi,bj)=0. _d 0
+           uNM1(I,J,K,bi,bj)=0. _d 0
+           vNM1(I,J,K,bi,bj)=0. _d 0
+           uVeld(I,J,K,bi,bj)=0. _d 0
+           vVeld(I,J,K,bi,bj)=0. _d 0
 #endif
 
 #ifdef ALLOW_NONHYDROSTATIC
-           gW(I,J,K,bi,bj)=0.
-           gWnm1(I,J,K,bi,bj)=0.
+           gW(I,J,K,bi,bj)=0. _d 0
+           gWnm1(I,J,K,bi,bj)=0. _d 0
 #endif
 
           ENDDO
@@ -79,8 +79,8 @@ C-      3D arrays
 C-      2D arrays
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
-          etaN(I,J,bi,bj)=0.
-          etaNm1(I,J,bi,bj)=0.
+          etaN(I,J,bi,bj)=0. _d 0
+          etaNm1(I,J,bi,bj)=0. _d 0
          ENDDO
         ENDDO
 

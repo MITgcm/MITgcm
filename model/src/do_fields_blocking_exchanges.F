@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.4 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.5 2001/07/13 14:26:57 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -18,6 +18,7 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "DYNVARS.h"
+#include "TR1.h"
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -36,6 +37,7 @@ c     _EXCH_XYZ_R8( vVel , myThid )
       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
       _EXCH_XYZ_R8( theta , myThid )
       _EXCH_XYZ_R8( salt , myThid )
+      _EXCH_XYZ_R8( Tr1  , myThid )
 
 #ifdef INCLUDE_CD_CODE
 c     _EXCH_XYZ_R8( guCD , myThid )
