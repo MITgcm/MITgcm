@@ -74,8 +74,6 @@ cinterp1   dpkephy = (pephy(i,j,Lphy,bi,bj)**kappa)-
 cinterp1                                (pephy(i,j,Lphy+1,bi,bj)**kappa)
            dpkephy = pephy(i,j,Lphy,bi,bj)-pephy(i,j,Lphy+1,bi,bj)
            sum=sum+qphy(i,j,Lphy,bi,bj)*(dpkephy/dpkedyn)
-c          qdyn(i,j,L,bi,bj) = qdyn(i,j,L,bi,bj) + 
-c    .                            qphy(i,j,Lphy,bi,bj)*(dpkephy/dpkedyn)
           enddo
           qdyn(i,j,L,bi,bj) = sum
          endif
