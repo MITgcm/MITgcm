@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_checkdate.F,v 1.2 2003/09/23 04:34:24 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_checkdate.F,v 1.3 2003/09/23 06:33:44 dimitri Exp $
 
 #include "CAL_CPPOPTIONS.h"
 
@@ -64,6 +64,11 @@ c     == end of interface ==
       calerr = 0
       fac    = 1
 
+      check_sign = 1
+      if ( ( (date(1).lt.0) .and. date(2).gt.0 ) .or.
+     &     ( (date(1).gt.0) .and. date(2).lt.0 ) )
+     &     check_sign = -1
+
       if (date(4) .le. 0) then
         if (date(4) .ne. -1) then
           calerr = 1801
@@ -71,7 +76,6 @@ c     == end of interface ==
           if (date(3) .ne. 0) then
             calerr = 1802
           else
-            check_sign = sign(1,dble(date(1))*dble(date(2)))
             if (check_sign .lt. 0) then
               calerr = 1803
             else
@@ -96,7 +100,6 @@ c     == end of interface ==
      &        (date(3) .ne. 2)) then
             calerr = 1806
           else
-            check_sign = sign(1,dble(date(1))*dble(date(2)))
             if (check_sign .lt. 0) then
               calerr = 1803
             else

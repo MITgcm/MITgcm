@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_convdate.F,v 1.2 2003/09/23 04:34:24 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_convdate.F,v 1.3 2003/09/23 06:33:45 dimitri Exp $
 
 #include "CAL_CPPOPTIONS.h"
 
@@ -57,7 +57,7 @@ c     == local variables ==
       integer date_1
       integer date_2
       integer ierr
-      _RL check_sign
+      integer check_sign
 
 c     == end of interface ==
 
@@ -65,7 +65,10 @@ c     == end of interface ==
 
 c     Check the sign of the date.
 
-      check_sign = sign(1,dble(date(1))*dble(date(2)))
+      check_sign = 1
+      if ( ( (date(1).lt.0) .and. date(2).gt.0 ) .or.
+     &     ( (date(1).gt.0) .and. date(2).lt.0 ) )
+     &     check_sign = -1
 
       if ( check_sign .ge. 0 ) then
         if (date(1) .eq. 0) then
