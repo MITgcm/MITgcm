@@ -118,9 +118,13 @@ cnostore CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
           IF (gradSmod(i,j) .NE. 0.) THEN
            dSigmaDrLtd(i,j) = -gradSmod(i,j)*GM_rMaxSlope
            IF ( dSigmaDrReal(i,j) .GE. 
-     &          GM_adjointRescale*dSigmaDrLtd(i,j) )
+     &          dSigmaDrLtd(i,j) )
      &          dSigmaDrReal(i,j) = 
-     &          dSigmaDrLtd(i,j)*GM_adjointRescale
+     &          dSigmaDrLtd(i,j)
+cph           IF ( dSigmaDrReal(i,j) .GE. 
+cph     &          GM_adjointRescale*dSigmaDrLtd(i,j) )
+cph     &          dSigmaDrReal(i,j) = 
+cph     &          dSigmaDrLtd(i,j)*GM_adjointRescale
 ctest           dSigmaDrReal(i,j) = dSigmaDrLtd(i,j)
           ENDIF
          ENDDO
@@ -236,10 +240,16 @@ cnostore CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
           IF ( dSigmaDrReal(i,j) .EQ. 0. ) THEN
-           IF ( dSigmaDx(i,j) .NE. 0. )
-     &      SlopeX(i,j) = SIGN(Small_taper,dSigmaDx(i,j))
-           IF ( dSigmaDy(i,j) .NE. 0. )
-     &      SlopeY(i,j) = SIGN(Small_taper,dSigmaDy(i,j))
+           IF ( dSigmaDx(i,j) .NE. 0. ) THEN
+            SlopeX(i,j) = SIGN(Small_taper,dSigmaDx(i,j))
+           ELSE
+            SlopeX(i,j) = 0. _d 0
+           ENDIF
+           IF ( dSigmaDy(i,j) .NE. 0. ) THEN
+            SlopeY(i,j) = SIGN(Small_taper,dSigmaDy(i,j))
+           ELSE
+            SlopeY(i,j) = 0. _d 0
+           ENDIF
           ELSE
            dRdSigmaLtd(i,j) = 1./dSigmaDrReal(i,j)
            SlopeX(i,j) = -dSigmaDx(i,j)*dRdSigmaLtd(i,j)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.9 2002/11/14 22:43:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.10 2002/11/15 02:57:47 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -84,7 +84,7 @@ C-      Off-diagonal components of vertical flux
         df(i,j) = df(i,j)
      &      - _rA(i,j,bi,bj)
      &        *( Kwx(i,j,k,bi,bj)*dTdx +Kwy(i,j,k,bi,bj)*dTdy )
-     &        *GM_adjointRescale
+cph     &        *GM_adjointRescale
 
        ENDDO
       ENDDO
