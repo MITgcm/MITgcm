@@ -1,0 +1,48 @@
+
+C----------------------------------------
+C subroutine mnc_cw_i_w_s
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_i_w_s  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE mnc_cw_i_w_s  OUTPUT =
+
+C----------------------------------------
+C subroutine mnc_cw_rl_w_s
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_rl_w_s  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE mnc_cw_rl_w_s  OUTPUT =
+
+C----------------------------------------
+C subroutine mnc_cw_rs_w_s
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_rs_w_s  INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE mnc_cw_rs_w_s  OUTPUT =
+
+C----------------------------------------
+C subroutine  mnc_cw_rl_w_offset
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_rl_w_offset  INPUT  = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE mnc_cw_rl_w_offset  OUTPUT =
+
+C----------------------------------------
+C subroutine  mnc_cw_rs_w_offset
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_rs_w_offset  INPUT  = 1,2,3,4,5,6,7,8
+CADJ SUBROUTINE mnc_cw_rs_w_offset  OUTPUT =
+
+C----------------------------------------
+C subroutine  mnc_cw_set_udim
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_set_udim  INPUT  = 1,2,3
+CADJ SUBROUTINE mnc_cw_set_udim  OUTPUT =
+
+C----------------------------------------
+C subroutine  mnc_cw_add_vattr_text
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_add_vattr_text  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE mnc_cw_add_vattr_text  OUTPUT =
+
+C----------------------------------------
+C subroutine  mnc_cw_add_vname
+C----------------------------------------
+CADJ SUBROUTINE mnc_cw_add_vname  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE mnc_cw_add_vname  OUTPUT =
