@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.1 2004/12/13 21:43:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.2 2004/12/15 00:18:39 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -77,12 +77,18 @@ C        Search all possible model diagnostics
 
       IF (  ndiagcount.LE.numdiags .AND.
      &      nActiveMax.LE.numperlist ) THEN
-        WRITE(msgBuf,'(2A,I6,A)')
-     &    'DIAGNOSTICS_SET_POINTERS: ',
-     &    'space allocated for all diagnostics:', 
+        WRITE(msgBuf,'(A)') 'DIAGNOSTICS_SET_POINTERS: done'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(A,I6,A)')
+     &    '  space allocated for all diagnostics:', 
      &    ndiagcount, ' levels'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , myThid)
+     &                      SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(2A)')
+     &   '------------------------------------------------------------'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
       ELSE
        IF ( ndiagcount.GT.numdiags ) THEN
          WRITE(msgBuf,'(2A)')

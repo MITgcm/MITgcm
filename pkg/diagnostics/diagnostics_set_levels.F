@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.1 2004/12/13 21:43:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.2 2004/12/15 00:18:39 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -32,7 +32,6 @@ C     !USES:
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
-c #include "EESUPPORT.h"
 #include "PARAMS.h"
 #include "DIAGNOSTICS_SIZE.h"
 #include "DIAGNOSTICS.h"
@@ -45,12 +44,19 @@ c #include "EESUPPORT.h"
 #endif
 
 C     !INPUT PARAMETERS:
+C     myThid :: my Thread Id number
       INTEGER myThid
 CEOP
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     !LOCAL VARIABLES:
+      INTEGER l, n, nlevs
+      INTEGER  dUnit, stdUnit
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(72) ccHead, ccLine
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
-      INTEGER n, nlevs
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       nlevs   = MAX(Nr,Nrphys)
 
@@ -63,6 +69,65 @@ c     -----------------
         IF (gdiag(n)(10:10) .EQ. 'L')  kdiag(n) = nlevs
         IF (gdiag(n)(10:10) .EQ. 'M')  kdiag(n) = nlevs - 1
       ENDDO
+
+      _BEGIN_MASTER( myThid )
+      stdUnit = standardMessageUnit
+      WRITE(msgBuf,'(2A)')
+     &   '------------------------------------------------------------'
+      CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+      WRITE(msgBuf,'(A)') 'DIAGNOSTICS_SET_LEVELS: done'
+      CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+      WRITE(msgBuf,'(A,I4)')
+     &   ' Total Nb of available Diagnostics: ndiagt=', ndiagt
+      CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C     write a summary of the (long) list of all available diagnostics:
+      IF ( debugLevel.GE.debLevA ) THEN
+
+        WRITE(msgBuf,'(2A)')
+     &   ' write list of available Diagnostics to file: ',
+     &   'available_diagnostics'
+        CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+
+        WRITE(ccHead,'(2A)')
+     &   ' Num |<-Name->|Levs|<-parsing code->|<--  Units   -->|',
+     &   '<- Tile (max=80c)'
+        DO l=1,LEN(ccLine)
+         ccLine(l:l) = '-'
+        ENDDO
+
+        CALL MDSFINDUNIT( dUnit, mythid )
+        OPEN(dUnit, file='available_diagnostics', status='unknown',
+     &        form='formatted')
+        WRITE(dUnit,'(A,I4)')
+     &   ' Total Nb of available Diagnostics: ndiagt=', ndiagt
+        WRITE(dUnit,'(A)') ccLine
+        WRITE(dUnit,'(A)') ccHead
+        WRITE(dUnit,'(A)') ccLine
+        DO n=1,ndiagt
+         IF ( MOD(n,100).EQ.0 ) THEN
+           WRITE(dUnit,'(A)') ccLine
+           WRITE(dUnit,'(A)') ccHead
+           WRITE(dUnit,'(A)') ccLine
+         ENDIF
+         l = ILNBLNK(tdiag(n))
+         IF (l.GE.1) THEN
+           WRITE(dUnit,'(I4,3A,I3,6A)') n,' |',cdiag(n),'|',
+     &           kdiag(n),' |',gdiag(n),'|',udiag(n),'|',tdiag(n)(1:l)
+         ELSE
+           WRITE(dUnit,'(I4,3A,I3,6A)') n,' |',cdiag(n),'|',
+     &           kdiag(n),' |',gdiag(n),'|',udiag(n),'|'
+         ENDIF
+        ENDDO
+        WRITE(dUnit,'(A)') ccLine
+        WRITE(dUnit,'(A)') ccHead
+        WRITE(dUnit,'(A)') ccLine
+        CLOSE(dUnit)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      ENDIF
+      _END_MASTER( myThid )
 
       RETURN
       END
