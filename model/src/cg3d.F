@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.5 2001/02/04 14:38:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.6 2001/03/06 17:02:57 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,8 +49,8 @@ C     actualIts      - Number of iterations taken
 C     actualResidual - residual
 C     bi          - Block index in X and Y.
 C     bj
-C     etaN        - Used in computing search directions
-C     etaNM1        suffix N and NM1 denote current and
+C     eta_qrN     - Used in computing search directions
+C     eta_qrNM1     suffix N and NM1 denote current and
 C     cgBeta        previous iterations respectively.
 C     alpha  
 C     sumRHS      - Sum of right-hand-side. Sometimes this is a
@@ -65,8 +65,8 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       INTEGER I, J, K, it3d
       INTEGER KM1, KP1
       _RL    err
-      _RL    etaN
-      _RL    etaNM1
+      _RL    eta_qrN
+      _RL    eta_qrNM1
       _RL    cgBeta
       _RL    alpha
       _RL    sumRHS
@@ -83,7 +83,7 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       _RL     topLevFac
 
 C--   Initialise inverter
-      etaNM1              = 1. D0
+      eta_qrNM1 = 1. D0
 
 C--   Normalise RHS
       rhsMax = 0. _d 0
@@ -270,8 +270,8 @@ C--    conjugate direction vector "s".
 C      Note. On the next to loops over all tiles the inner loop ranges
 C            in sNx and sNy are expanded by 1 to avoid a communication 
 C            step. However this entails a bit of gynamastics because we only 
-C            want etaN for the interior points.
-       etaN = 0. _d 0
+C            want eta_qrN for the interior points.
+       eta_qrN = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO K=1,1
@@ -303,7 +303,7 @@ caja       ENDDO
 caja      ENDIF
           DO J=1,sNy
            DO I=1,sNx
-            etaN = etaN
+            eta_qrN = eta_qrN
      &      +cg3d_q(I,J,K,bi,bj)*cg3d_r(I,J,K,bi,bj)
            ENDDO
           ENDDO
@@ -318,7 +318,7 @@ caja      ENDIF
           ENDDO
           DO J=1,sNy
            DO I=1,sNx
-            etaN = etaN
+            eta_qrN = eta_qrN
      &      +cg3d_q(I,J,K,bi,bj)*cg3d_r(I,J,K,bi,bj)
            ENDDO
           ENDDO
@@ -326,13 +326,13 @@ caja      ENDIF
         ENDDO
        ENDDO
 caja
-caja  etaN=0.
+caja  eta_qrN=0.
 caja   DO bj=myByLo(myThid),myByHi(myThid)
 caja    DO bi=myBxLo(myThid),myBxHi(myThid)
 caja     DO K=1,Nr
 caja      DO J=1,sNy
 caja       DO I=1,sNx
-caja        etaN = etaN
+caja        eta_qrN = eta_qrN
 caja &      +cg3d_q(I,J,K,bi,bj)*cg3d_r(I,J,K,bi,bj)
 caja       ENDDO
 caja      ENDDO
@@ -341,15 +341,15 @@ caja    ENDDO
 caja   ENDDO
 caja
 
-       _GLOBAL_SUM_R8(etaN, myThid)
+       _GLOBAL_SUM_R8(eta_qrN, myThid)
 CcnhDebugStarts
-C      WRITE(0,*) ' CG3D: Iteration ',it3d-1,' etaN = ',etaN
+C      WRITE(0,*) ' CG3D: Iteration ',it3d-1,' eta_qrN = ',eta_qrN
 CcnhDebugEnds
-       cgBeta   = etaN/etaNM1
+       cgBeta   = eta_qrN/eta_qrNM1
 CcnhDebugStarts
 C      WRITE(0,*) ' CG3D: Iteration ',it3d-1,' beta = ',cgBeta
 CcnhDebugEnds
-       etaNM1 = etaN
+       eta_qrNM1 = eta_qrN
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -456,7 +456,7 @@ C==    q = A.s
 CcnhDebugStarts
 C      WRITE(0,*) ' CG3D: Iteration ',it3d-1,' SUM(s*q)= ',alpha
 CcnhDebugEnds
-       alpha = etaN/alpha
+       alpha = eta_qrN/alpha
 CcnhDebugStarts
 C      WRITE(0,*) ' CG3D: Iteration ',it3d-1,' alpha= ',alpha
 CcnhDebugEnds

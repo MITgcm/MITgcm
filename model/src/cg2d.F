@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.27 2001/02/04 14:38:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.28 2001/03/06 17:02:57 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -50,8 +50,8 @@ C     actualIts      - Number of iterations taken
 C     actualResidual - residual
 C     bi          - Block index in X and Y.
 C     bj
-C     etaN        - Used in computing search directions
-C     etaNM1        suffix N and NM1 denote current and
+C     eta_qrN     - Used in computing search directions
+C     eta_qrNM1     suffix N and NM1 denote current and
 C     cgBeta        previous iterations respectively.
 C     alpha  
 C     sumRHS      - Sum of right-hand-side. Sometimes this is a
@@ -65,8 +65,8 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       INTEGER bi, bj              
       INTEGER I, J, it2d
       _RL    err
-      _RL    etaN
-      _RL    etaNM1
+      _RL    eta_qrN
+      _RL    eta_qrNM1
       _RL    cgBeta
       _RL    alpha
       _RL    sumRHS
@@ -88,7 +88,7 @@ CcnhDebugEnds
 
 
 C--   Initialise inverter
-      etaNM1              = 1. _d 0
+      eta_qrNM1 = 1. _d 0
 
 CcnhDebugStarts
 C     _EXCH_XY_R8( cg2d_b, myThid )
@@ -225,7 +225,7 @@ CcnhDebugEnds
        IF ( err .LT. cg2dTargetResidual ) GOTO 11
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
-       etaN = 0. _d 0
+       eta_qrN = 0. _d 0
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=1,sNy
@@ -239,22 +239,22 @@ C--    conjugate direction vector "s".
 CcnhDebugStarts
 C          cg2d_q(I,J,bi,bj) = cg2d_r(I  ,J  ,bi,bj)
 CcnhDebugEnds
-           etaN = etaN
+           eta_qrN = eta_qrN
      &     +cg2d_q(I,J,bi,bj)*cg2d_r(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
 
-       _GLOBAL_SUM_R8(etaN, myThid)
+       _GLOBAL_SUM_R8(eta_qrN, myThid)
 CcnhDebugStarts
-C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' etaN = ',etaN
+C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' eta_qrN = ',eta_qrN
 CcnhDebugEnds
-       cgBeta   = etaN/etaNM1
+       cgBeta   = eta_qrN/eta_qrNM1
 CcnhDebugStarts
 C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' beta = ',cgBeta
 CcnhDebugEnds
-       etaNM1 = etaN
+       eta_qrNM1 = eta_qrN
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -313,7 +313,7 @@ C==    q = A.s
 CcnhDebugStarts
 C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' SUM(s*q)= ',alpha
 CcnhDebugEnds
-       alpha = etaN/alpha
+       alpha = eta_qrN/alpha
 CcnhDebugStarts
 C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' alpha= ',alpha
 CcnhDebugEnds
