@@ -1,5 +1,7 @@
  &THSICE_CONST
  Tf0kel  = 273.15,
+#- with LANL albedo:
+#albWarmSnow=0.75,
 #- for full ice-fraction :
 #icemaskmin = 1.,
 #himin0     = 0.01,
@@ -9,7 +11,8 @@
  icemaskmin = 0.05,
  hiMax      = 10.,
  hsMax      = 10.,
- iceMaskmax = 0.90,
+#albIceMax  =0.7,
+#albIceMin  =0.7,
  &
 
  &THSICE_PARM01
