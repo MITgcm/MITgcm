@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pathf90,v 1.1 2005/02/18 19:41:12 ce107 Exp $
+#  $Name:  $
+#
+# Build options for Fedore Core 3 x86-64 Opteron
+# tested on (Linux batsi 2.6.10-1.766_FC3smp #1 SMP Wed Feb 9 23:17:48 EST 2005 x86_64 x86_64 x86_64 GNU/Linux) system 20051802
+#
+
+CC=pathcc
+FC=pathf90
+LD=pathf90
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+CPP='cpp -traditional -P'
+NOOPTFLAGS='-O0'
+MAKEDEPEND=/usr/X11R6/bin/makedepend
+FFLAGS='-r8 -extend_source'
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FOPTIM='-Ofast -LNO:fusion=2'
+else
+    #  Try to follow IEEE-754
+    FOPTIM='-Ofast -LNO:fusion=2 -OPT:roundoff=0:IEEE_arithmetic=1'
+fi
