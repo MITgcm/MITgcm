@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.4 2004/12/18 02:18:55 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.5 2004/12/29 02:13:38 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -102,16 +102,16 @@ C       Update the record dimension by writing the iteration number
 
         CALL MNC_CW_ADD_GNAME('diag_levels', 1, 
      &       dim, dn, ib, ie, myThid)
-        CALL MNC_CW_ADD_VNAME('level_indicies', 'diag_levels', 
+        CALL MNC_CW_ADD_VNAME(dn(1), 'diag_levels', 
      &       0,0, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('level_indicies','description',
+        CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
      &    'Idicies of vertical levels within the data source arrays',
      &       myThid)
         
         CALL MNC_CW_RL_W('I',diag_mnc_bn,0,0,
-     &       'level_indicies', levs(1,listnum), myThid)
+     &       dn(1), levs(1,listnum), myThid)
 
-        CALL MNC_CW_DEL_VNAME('level_indicies', myThid)
+        CALL MNC_CW_DEL_VNAME(dn(1), myThid)
         CALL MNC_CW_DEL_GNAME('diag_levels', myThid)
       ENDIF
 #endif /*  ALLOW_MNC  */
@@ -230,22 +230,46 @@ C         Prepare for mdsio optionality
               dn(ii)(1:NLEN) = dn_blnk(1:NLEN)
             ENDDO
 
-            dn(1)(1:2) = 'Xd'
-            dim(1) = sNx + 2*OLx
-            ib(1)  = OLx + 1
-            ie(1)  = OLx + sNx
-            dn(2)(1:2) = 'Yd'
-            dim(2) = sNy + 2*OLy
-            ib(2)  = OLy + 1
-            ie(2)  = OLy + sNy
-
+C           XY dimensions
+            dim(1)       = sNx + 2*OLx
+            dim(2)       = sNy + 2*OLy
+            ib(1)        = OLx + 1
+            ib(2)        = OLy + 1
+            IF (gdiag(n)(2:2) .EQ. 'M') THEN 
+              dn(1)(1:2) = 'X'
+              ie(1)      = OLx + sNx
+              dn(2)(1:2) = 'Y'
+              ie(2)      = OLy + sNy
+            ELSEIF (gdiag(n)(2:2) .EQ. 'U') THEN
+              dn(1)(1:3) = 'Xp1'
+              ie(1)      = OLx + sNx + 1
+              dn(2)(1:2) = 'Y'
+              ie(2)      = OLy + sNy
+            ELSEIF (gdiag(n)(2:2) .EQ. 'V') THEN
+              dn(1)(1:2) = 'X'
+              ie(1)      = OLx + sNx
+              dn(2)(1:3) = 'Yp1'
+              ie(2)      = OLy + sNy + 1
+            ELSEIF (gdiag(n)(2:2) .EQ. 'Z') THEN
+              dn(1)(1:3) = 'Xp1'
+              ie(1)      = OLx + sNx + 1
+              dn(2)(1:3) = 'Yp1'
+              ie(2)      = OLy + sNy + 1
+            ENDIF
+            
 C           Z is special since it varies
             WRITE(dn(3),'(a,i6.6)') 'Zd', nlevels(listnum)
             dim(3) = Nr+Nrphys
             ib(3)  = 1
             ie(3)  = nlevels(listnum)
 
-            CALL MNC_CW_ADD_GNAME('diag_cw_temp', 3, 
+C           Time dimension
+            dn(4)(1:1) = 'T'
+            dim(4) = -1
+            ib(4)  = 1
+            ie(4)  = 1
+
+            CALL MNC_CW_ADD_GNAME('diag_cw_temp', 4, 
      &             dim, dn, ib, ie, myThid)
             CALL MNC_CW_ADD_VNAME(cdiag(m), 'diag_cw_temp', 
      &             4,5, myThid)

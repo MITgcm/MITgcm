@@ -1,8 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.429 2004/12/27 20:34:11 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.430 2004/12/29 02:13:38 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o improvements for the MNC output from DIAGNOSTICS:
+  - correct handling of the unlimitied dimension
+  - all dims now have associated coordinate variables
+  - variables located at U, V, and Corner ("Z") points are now written
+    with the correct horzontal dimensions (eg. 'Xp1', 'Yp1') so that 
+    *all* data points are output
 o added seaice_summary.F and removed obsolete ALLOW_SEAICE's from pkg/seaice
 o added pkg/seaice/seaice_monitor.F
 o mdsio_readfield.F can now read files visible only to master MPI process.
