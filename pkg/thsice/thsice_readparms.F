@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.4 2004/12/04 00:19:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.5 2004/12/17 04:29:07 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -26,6 +26,9 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "THSICE_PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -60,7 +63,11 @@ C--   Th-Sea-ICE parameter
      &         thSIce_deltaT, ocean_deltaT, tauRelax_MxL,
      &         hMxL_default, sMxL_default, vMxL_default,
      &         stressReduction,
-     &         thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq
+     &         thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq,
+c    &         thSIce_tave_mnc, thSIce_diag_mnc, thSIce_mon_mnc,
+     &         thSIceFract_InitFile, thSIceThick_InitFile,
+     &         thSIceSnowH_InitFile, thSIceSnowA_InitFile,
+     &         thSIceEnthp_InitFile, thSIceTsurf_InitFile
 
       _BEGIN_MASTER(myThid)
 
@@ -123,6 +130,22 @@ C--   Default values (parameters)
       thSIce_taveFreq = taveFreq 
       thSIce_diagFreq = dumpFreq
       thSIce_monFreq  = monitorFreq
+#ifdef ALLOW_MNC
+      thSIce_tave_mnc = timeave_mnc
+      thSIce_diag_mnc = snapshot_mnc
+      thSIce_mon_mnc  = monitor_mnc
+#else
+      thSIce_tave_mnc = .FALSE.
+      thSIce_diag_mnc = .FALSE.
+      thSIce_mon_mnc  = .FALSE.
+#endif
+      thSIceFract_InitFile = ' '
+      thSIceThick_InitFile = ' '
+      thSIceSnowH_InitFile = ' '
+      thSIceSnowA_InitFile = ' '
+      thSIceEnthp_InitFile = ' '
+      thSIceTsurf_InitFile = ' '
+
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=THSICE_CONST)
@@ -142,9 +165,30 @@ C-    Define other constants (from previous ones):
       Tmlt1=-mu_Tf*S_winton
       rhoiw = rhosw - rhoi
 
+C-    Set other parameters (from previous ones):
+      thSIce_tave_mdsio = .TRUE.
+      thSIce_diag_mdsio = .TRUE.
+      thSIce_mon_stdio  = .TRUE.
+#ifdef ALLOW_MNC
+      IF (useMNC) THEN
+C-------
+C-    MNC not yet available in this package => turn off MNC flags for now 
+        thSIce_tave_mnc = .FALSE.
+        thSIce_diag_mnc = .FALSE.
+        thSIce_mon_mnc  = .FALSE.
+C-------
+        IF ( .NOT.outputTypesInclusive
+     &       .AND. thSIce_tave_mnc ) thSIce_tave_mdsio = .FALSE.
+        IF ( .NOT.outputTypesInclusive)
+     &       .AND. thSIce_diag_mnc ) thSIce_diag_mdsio = .FALSE.
+        IF ( .NOT.outputTypesInclusive
+     &       .AND. thSIce_mon_mnc  ) thSIce_mon_stdio  = .FALSE.
+      ENDIF
+#endif
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       iUnit = standardMessageUnit
-c     iUnit = 88
+c     CALL MDSFINDUNIT( iUnit, mythid )
 c     OPEN(iUnit,file='thsice_check_params',status='unknown')
       WRITE(iUnit,*) 'ThSI: rhos    =',rhos
       WRITE(iUnit,*) 'ThSI: rhoi    =',rhoi
@@ -195,7 +239,7 @@ c     OPEN(iUnit,file='thsice_check_params',status='unknown')
       WRITE(iUnit,*) 'ThSI: thSIce_diagFreq=',thSIce_diagFreq
       WRITE(iUnit,*) 'ThSI: thSIce_monFreq =',thSIce_monFreq
       WRITE(iUnit,*) 'ThSI: startIceModel =',startIceModel
-      IF (iUnit.EQ.88) CLOSE(iUnit)
+      IF (iUnit.NE.standardMessageUnit) CLOSE(iUnit)
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       _END_MASTER(myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.2 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ini_vars.F,v 1.3 2004/12/17 04:29:07 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -85,11 +85,38 @@ C-        oceanic mixed layer state :
          ENDDO
         ENDDO
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       IF ( startIceModel.LE.0 .AND. nIter0.NE.0 ) THEN
 C--     Read ice pickup fields
        _BARRIER
         prec=precFloat64
         CALL THSICE_READ_PICKUP( prec, nIter0, myThid )
+
+      ELSE
+C--     Read initial conditions:
+        _BEGIN_MASTER( myThid )
+        IF ( thSIceFract_InitFile .NE. ' ' ) THEN
+         CALL READ_REC_XY_RL(thSIceFract_InitFile,iceMask,1,0,myThid)
+        ENDIF
+        IF ( thSIceThick_InitFile .NE. ' ' ) THEN
+         CALL READ_REC_XY_RL(thSIceThick_InitFile,iceHeight,1,0,myThid)
+        ENDIF
+        IF ( thSIceSnowH_InitFile .NE. ' ' ) THEN
+         CALL READ_REC_XY_RL(thSIceSnowH_InitFile,snowHeight,1,0,myThid)
+        ENDIF
+        IF ( thSIceSnowA_InitFile .NE. ' ' ) THEN
+         CALL READ_REC_XY_RL(thSIceSnowA_InitFile,snowAge,1,0,myThid)
+        ENDIF
+        IF ( thSIceEnthp_InitFile .NE. ' ' ) THEN
+         CALL READ_REC_XY_RL(thSIceEnthp_InitFile,Qice1,1,0,myThid)
+         CALL READ_REC_XY_RL(thSIceEnthp_InitFile,Qice2,2,0,myThid)
+        ENDIF
+        IF ( thSIceTsurf_InitFile .NE. ' ' ) THEN
+         CALL READ_REC_XY_RS(thSIceTsurf_InitFile,Tsrf,1,0,myThid)
+        ENDIF
+        _END_MASTER(myThid)
+      ENDIF
 
         _EXCH_XY_R8(iceMask,myThid)
         _EXCH_XY_R8(iceHeight, myThid)
@@ -103,7 +130,6 @@ C--     Read ice pickup fields
 #ifdef COUPLE_MODEL
         _EXCH_XY_R8(dFdT, myThid)
 #endif
-      ENDIF
 
 #endif /* ALLOW_THSICE */
 

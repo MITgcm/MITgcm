@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.3 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.4 2004/12/17 04:29:07 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -119,14 +119,25 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   COMMON / THSICE_PAR_L / ice model (logical) parameters
-c     stepFwd_oceMxL  :: step forward mixed-layer T & S (slab-ocean)
+C     stepFwd_oceMxL  :: step forward mixed-layer T & S (slab-ocean)
+C     thSIce_tave_mdsio :: write TimeAverage output using MDSIO
+C     thSIce_diag_mdsio :: write snap-shot output   using MDSIO
+C     thSIce_mon_stdio  :: write monitor to std-outp
+C     thSIce_tave_mnc   :: write TimeAverage output using MNC
+C     thSIce_diag_mnc   :: write snap-shot output   using MNC
+C     thSIce_mon_mnc    :: write monitor to netcdf file
       COMMON / THSICE_PAR_L / 
-     &  stepFwd_oceMxL
+     &  stepFwd_oceMxL,
+     &  thSIce_tave_mdsio, thSIce_diag_mdsio, thSIce_mon_stdio,
+     &  thSIce_tave_mnc,   thSIce_diag_mnc,   thSIce_mon_mnc
 
       LOGICAL stepFwd_oceMxL
+      LOGICAL thSIce_tave_mdsio, thSIce_diag_mdsio, thSIce_mon_stdio
+      LOGICAL thSIce_tave_mnc,   thSIce_diag_mnc,   thSIce_mon_mnc
 
 C--   COMMON / THSICE_PAR_I / ice model (integer) parameters
 c     startIceModel :: =1 : start ice model at nIter0 ; =0 : use pickup files
+c                   :: -1 : start from a small pickup (without Mix.Layer)
 c     nitMaxTsf     :: maximum Nb of iter to find Surface Temp (Trsf) 
       COMMON / THSICE_PAR_I / 
      &  startIceModel, nitMaxTsf
@@ -155,6 +166,27 @@ C     thSIce_monFreq  :: Frequency^-1 for monitor    output [s]
       _RL  hMxL_default, sMxL_default, vMxL_default 
       _RL  stressReduction 
       _RL  thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq
+
+C--   COMMON / THSICE_PAR_C / ice model (character) parameters
+C     thSIceFract_InitFile :: File name for initial ice fraction
+C     thSIceThick_InitFile :: File name for initial ice thickness
+C     thSIceSnowH_InitFile :: File name for initial snow thickness
+C     thSIceSnowA_InitFile :: File name for initial snow Age
+C     thSIceEnthp_InitFile :: File name for initial ice enthalpy
+C     thSIceTsurf_InitFile :: File name for initial surf. temp
+      COMMON / THSICE_PAR_C /
+     &  thSIceFract_InitFile,
+     &  thSIceThick_InitFile,
+     &  thSIceSnowH_InitFile,
+     &  thSIceSnowA_InitFile,
+     &  thSIceEnthp_InitFile,
+     &  thSIceTsurf_InitFile 
+      CHARACTER*(MAX_LEN_FNAM) thSIceFract_InitFile
+      CHARACTER*(MAX_LEN_FNAM) thSIceThick_InitFile
+      CHARACTER*(MAX_LEN_FNAM) thSIceSnowH_InitFile
+      CHARACTER*(MAX_LEN_FNAM) thSIceSnowA_InitFile
+      CHARACTER*(MAX_LEN_FNAM) thSIceEnthp_InitFile
+      CHARACTER*(MAX_LEN_FNAM) thSIceTsurf_InitFile
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
