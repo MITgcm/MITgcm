@@ -24,6 +24,10 @@ CADJ STORE swdown1   = tapelev2, key = ilev_2
 CADJ STORE lwdown0   = tapelev2, key = ilev_2
 CADJ STORE lwdown1   = tapelev2, key = ilev_2
 #  endif
+#  ifdef ALLOW_SEAICE
+CADJ STORE hflux0    = tapelev2, key = ilev_2
+CADJ STORE hflux1    = tapelev2, key = ilev_2
+#  endif
 
 # else /* ALLOW_ATM_TEMP undef */
 

@@ -29,6 +29,10 @@ CADJ STORE swdown1   = comlev1, key = ikey_dynamics
 CADJ STORE lwdown0   = comlev1, key = ikey_dynamics
 CADJ STORE lwdown1   = comlev1, key = ikey_dynamics
 #  endif
+#  ifdef ALLOW_SEAICE
+CADJ STORE hflux0    = comlev1, key = ikey_dynamics
+CADJ STORE hflux1    = comlev1, key = ikey_dynamics
+#  endif
 
 # else /* ALLOW_ATM_TEMP undef */
 
