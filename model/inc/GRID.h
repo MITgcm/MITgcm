@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.2 1998/04/24 02:11:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.3 1998/05/26 21:29:44 cnh Exp $
 C
 C     /==========================================================\
 C     | GRID.h                                                   |
@@ -284,6 +284,10 @@ C     |       +                                                  |
 C     |     "WB"                                                 |
 C     |                                                          |
 C     \==========================================================/
+
+C     Macros that override/modify standard definitions
+#include "GRID_MACROS.h"
+
 C
 C--   COMMON /GRID_R/ REAL valued grid defining variables.
 C     dxC    - Cell center separation in X across western cell wall (m)
@@ -339,42 +343,42 @@ C     zFace  - Z-coordinate of face of cell f[Z] (Pa).
      &  rH, rhFacC,rhFacW,rhFacS, 
      &  saFac,xC,yC,zA,zC,zFace,
      &  maskW,maskS
-      real dxC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real dxF     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real dxG     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real dxV     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real dyC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real dyF     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real dyG     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real dyU     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real dzC     (1:Nz)
-      real dzF     (1:Nz)
-      real H       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real HFacC   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      real HFacW   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      real HFacS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      real rdxC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real rdxF    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real rdxG    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real rdxV    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real rdyC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real rdyF    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real rdyG    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real rdyU    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real rdzC    (1:Nz)
-      real rdzF    (1:Nz)
-      real rh      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real rhFacC  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      real rhFacW  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      real rhFacS  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      real saFac   (1:Nz)
-      real xC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real yC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real zA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      real zC      (1:Nz)
-      real zFace   (1:Nz+1)
-      real maskW   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      real maskS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS dxC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dxF     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dxG     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dxV     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dyC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dyF     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dyG     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dyU     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dzC     (1:Nz)
+      _RS dzF     (1:Nz)
+      _RS H       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS HFacC   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS HFacW   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS HFacS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS rdxC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdxF    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdxG    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdxV    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdyC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdyF    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdyG    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdyU    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rdzC    (1:Nz)
+      _RS rdzF    (1:Nz)
+      _RS rh      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rhFacC  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS rhFacW  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS rhFacS  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS saFac   (1:Nz)
+      _RS xC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS yC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS zA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS zC      (1:Nz)
+      _RS zFace   (1:Nz+1)
+      _RS maskW   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS maskS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
 
 
 C--   COMMON /GRID_I/ Integer valued grid defining variables

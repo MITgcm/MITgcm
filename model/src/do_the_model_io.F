@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.3 1998/05/21 18:25:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.4 1998/05/26 21:29:45 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -60,7 +60,6 @@ C--    Write "text-plots" of certain fields
        CALL PLOT_FIELD_XYZR8( uVel , 'uVel  ' , Nz, myIter, myThid )
        CALL PLOT_FIELD_XYZR8( vVel , 'vVel  ' , Nz, myIter, myThid )
        CALL PLOT_FIELD_XYZR8( theta, 'Theta ' , Nz, myIter, myThid )
-       CALL PLOT_FIELD_XYZR8( rho, 'rho ' , Nz, myIter, myThid )
        CALL PLOT_FIELD_XYR8( cg2d_x, 'cg2d_x ' , myIter, myThid )
 
       ENDIF

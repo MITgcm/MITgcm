@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.10 1998/05/25 21:29:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.11 1998/05/26 21:29:44 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -244,7 +244,7 @@ C     cAdjFreq  - Frequency of convective adjustment
       _RL rhonil
       _RL tRef(Nz)
       _RL sRef(Nz)
-      _RL Fcori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS Fcori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL startTime
       _RL endTime
       _RL chkPtFreq

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/find_wvel.F,v 1.2 1998/04/24 02:05:40 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/find_wvel.F,v 1.3 1998/05/26 21:29:45 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -42,7 +42,7 @@ C $Header: /u/gcmpack/MITgcm/model/src/Attic/find_wvel.F,v 1.2 1998/04/24 02:05:
 ! Volume transport thru' Southern faces
        do j=jMin,jMax
         do i=iMin,iMax
-         Vtrans(i,j)=dxF(i,j,bi,bj)*dzF(k)*Vvel(i,j,k,bi,bj)
+         Vtrans(i,j)=_dxF(i,j,bi,bj)*dzF(k)*Vvel(i,j,k,bi,bj)
         enddo
        enddo
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.6 1998/05/25 16:58:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.7 1998/05/26 21:29:45 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -35,7 +35,7 @@ C     myNorm - Work variable used in clculating normalisation factor
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER I,  J, K
-      real    faceArea
+      _RL     faceArea
       _RL     myNorm
       _RL     aC, aCw, aCs
 

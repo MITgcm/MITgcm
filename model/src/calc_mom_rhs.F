@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.4 1998/05/25 20:05:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.5 1998/05/26 21:29:44 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -256,13 +256,13 @@ C     Eddy component of vertical flux
        DO i=iMin,iMax
 #ifdef NO_BOTTOM_SLIP
         vf(i,j) =
-     &   -viscAz*dxC(i,j,bi,bj)*dyG(i,j,bi,bj)*wMaskOverride
+     &   -viscAz*_dxC(i,j,bi,bj)*dyG(i,j,bi,bj)*wMaskOverride
      &   *( ( 2.-maskW(i,j,k,bi,bj) )
      &     *uVel(i,j,kM1,bi,bj) - uVel(i,j,k,bi,bj)*maskW(i,j,k,bi,bj)
      &    )*rDzC(k)
 #else
         vf(i,j) =
-     &   -viscAz*dxC(i,j,bi,bj)*dyG(i,j,bi,bj)
+     &   -viscAz*_dxC(i,j,bi,bj)*dyG(i,j,bi,bj)
      &   *(uVel(i,j,km1,bi,bj)-uVel(i,j,k,bi,bj))
     &    *maskW(i,j,k,bi,bj)*wMaskOverride
 #endif
@@ -280,7 +280,7 @@ C     Bottom boundary condition
        DO j=jMin,jMax
         DO i=iMin,iMax
          vf(i,j) =
-     &    -viscAz*dxC(i,j,bi,bj)*dyG(i,j,bi,bj)*maskW(i,j,k,bi,bj)
+     &    -viscAz*_dxC(i,j,bi,bj)*dyG(i,j,bi,bj)*maskW(i,j,k,bi,bj)
      &    *uVel(i,j,k,bi,bj)*rDzF(k)*2. _d 0
         ENDDO
        ENDDO
@@ -402,7 +402,7 @@ C     Eddy component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         vF(i,j) =
-     &  -viscAh*dxF(i,j,bi,bj)*dzF(k)*hFacC(i,j,k,bi,bj)
+     &  -viscAh*_dxF(i,j,bi,bj)*dzF(k)*hFacC(i,j,k,bi,bj)
      &   *( vVel(i,j+1,k,bi,bj) - vVel(i,j,k,bi,bj) )*rDyC(i,j,bi,bj)
        ENDDO
       ENDDO
