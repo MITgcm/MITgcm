@@ -412,7 +412,7 @@ c--         Determine the weights to be used.
               do j = jmin,jmax
                 i = ob_iw(j,bi,bj)
                 if (maskW(i+ip1,j,k,bi,bj) .ne. 0.) then
-cgg -- Don't let corners contribute.
+cgg -- Do not let corners contribute.
                   if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
                     tmpy = tmpfldyz(j,k,bi,bj)
 cgg -- Positive is flux in.
