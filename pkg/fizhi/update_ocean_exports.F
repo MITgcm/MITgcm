@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.15 2005/02/25 18:14:45 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.16 2005/02/25 18:35:30 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -140,7 +140,6 @@ C--------- Variable Initialization ---------------------------------
 
       data first /.true./
       data error /.false./
-      sicedata='sice19232.weekly.clim'
 
 c  save header info
       save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
@@ -156,6 +155,8 @@ c  this only works for between 1950-2050
       else
         nymdmod = nymd
       endif
+
+      sicedata='sice19232.weekly.clim'
 
 c  initialize so that first time through they have values for the check
 c  these vaules make the iyear .ne. iyearbc true anyways for
@@ -388,7 +389,6 @@ C--------- Variable Initialization ---------------------------------
 
       data first /.true./
       data error /.false./
-      sstdata='sst19232.weekly.clim'
 
 c  save header info
       save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
@@ -404,6 +404,8 @@ c  this only works for between 1950-2050
       else
         nymdmod = nymd
       endif
+
+      sstdata='sst19232.weekly.clim'
 
 c  initialize so that first time through they have values for the check
 c  these vaules make the iyear .ne. iyearbc true anyways for

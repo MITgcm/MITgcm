@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.18 2004/10/22 19:20:55 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.19 2005/02/25 18:35:30 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -53,7 +53,6 @@ C                100:  OCEAN
 C***********************************************************************
       implicit none
 #include "EEPARAMS.h"
-#include "PARAMS.h"
 
       integer mythid,im,jm,maxtyp,nchp,Nsx,Nsy,Nxg,Nyg
       integer nchptot(Nsx,Nsy), nchpland(Nsx,Nsy)
