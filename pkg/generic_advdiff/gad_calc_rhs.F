@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.5 2001/09/04 17:00:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.6 2001/09/04 17:16:11 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -304,7 +304,7 @@ C-    GM/Redi flux in R
 C *note* should update GMREDI_RTRANSPORT to set df  *aja*
        CALL GMREDI_RTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
-     I     maskUp,Tracer,
+     I     Tracer,
      U     df,
      I     myThid)
 c      DO j=1-Oly,sNy+Oly
