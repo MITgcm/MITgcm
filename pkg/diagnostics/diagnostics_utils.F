@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.16 2004/12/20 01:53:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.17 2005/01/28 01:06:12 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -278,6 +278,63 @@ C     !LOCAL VARIABLES:
         ENDIF
        ENDDO
       ENDDO
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP 0
+C     !ROUTINE: DIAGS_MK_UNITS
+
+C     !INTERFACE:
+      CHARACTER*16 FUNCTION DIAGS_MK_UNITS( 
+     I                            diagUnitsInPieces, myThid )
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | FUNCTION DIAGS_MK_UNITS
+C     | o Return the diagnostic units string (16c) removing 
+C     |   blanks from the input string
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
+#include "EEPARAMS.h"
+
+C     !INPUT PARAMETERS:
+C     diagUnitsInPieces :: string for diagnostic units: in several 
+C                          pieces, with blanks in between
+C     myThid            ::  my thread Id number
+      CHARACTER*(*) diagUnitsInPieces
+      INTEGER      myThid
+CEOP
+
+C     !LOCAL VARIABLES:
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER i,j,n
+
+      DIAGS_MK_UNITS = '          ' 
+      n = LEN(diagUnitsInPieces)
+      
+      j = 0
+      DO i=1,n
+       IF (diagUnitsInPieces(i:i) .NE. ' ' ) THEN
+         j = j+1
+         IF ( j.LE.16 ) DIAGS_MK_UNITS(j:j) = diagUnitsInPieces(i:i)
+       ENDIF
+      ENDDO
+
+      IF ( j.GT.16 ) THEN
+         WRITE(msgBuf,'(2A,I4,A)') '**WARNING** ',
+     &   'DIAGS_MK_UNITS: too long (',j,' >16) input string'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+         WRITE(msgBuf,'(3A)') '**WARNING** ',
+     &   'DIAGS_MK_UNITS: input=', diagUnitsInPieces
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &       SQUEEZE_RIGHT , myThid)
+      ENDIF
 
       RETURN
       END
