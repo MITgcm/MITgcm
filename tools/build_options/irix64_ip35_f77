@@ -1,0 +1,14 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/irix64_ip35_f77,v 1.1 2003/11/29 01:29:53 edhill Exp $
+#
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+MAKEDEPEND=makedepend
+CPP='/lib/cpp -P -traditional'
+DEFINES='-DTARGET_SGI -DWORDLENGTH=4'
+FC='f77'
+FFLAGS='-extend_source -mp -mpio -bytereclen -mips4 -r8 -static'
+FOPTIM='-O3'
+LIBS='-L/opt/mpt/1510/usr/lib64 -lmpi'
+INCLUDEDIRS='/opt/mpt/1510/usr/include'
