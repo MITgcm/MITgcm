@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.228 2003/12/16 23:28:39 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.229 2003/12/17 05:39:01 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fix deltaTfreesurf in update_cg2d.F (left from c45d_post): affects 2
+  ocean exp. that use NLFS: global_ocean.cs32x15 & global_ocean_pressure
 o added exf_offset_atemp for Celsius to Kelvin conversion of atemp
 
 checkpoint52d_post
