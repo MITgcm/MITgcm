@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.2 2003/12/15 02:07:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.3 2003/12/15 18:40:10 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -107,6 +107,13 @@ C SPK 4/9/01: Open boundary checkpointing
      &               prec, lgf, permCheckPoint, myIter, myThid)
         ENDIF
 #endif  /* ALLOW_OBCS */
+
+#ifdef  ALLOW_SEAICE
+        IF ( useSEAICE ) THEN
+          CALL SEAICE_WRITE_PICKUP(
+     &               prec, lgf, permCheckPoint, myIter, myThid)
+        ENDIF
+#endif  /* ALLOW_SEAICE */
 
 #ifdef ALLOW_THSICE
         IF (useThSIce) THEN

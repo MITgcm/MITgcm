@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.7 2003/12/14 04:56:18 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.8 2003/12/15 18:39:16 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -76,8 +76,8 @@ C--    Update overlap regions
       END
 
 CStartofinterface
-      SUBROUTINE SEAICE_WRITE_PICKUP ( modelEnd, myCurrentTime, 
-     &                              myIt, myThid )
+      SUBROUTINE SEAICE_WRITE_PICKUP ( 
+     I               prec, lgf, permCheckPoint, myIt, myThid )
 C     /==========================================================\
 C     | SUBROUTINE SEAICE_WRITE_PICKUP                           |
 C     | o Write sea ice pickup file for restarting.              |
@@ -91,66 +91,24 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "SEAICE.h"
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-      INTEGER  IO_ERRCOUNT
-      EXTERNAL IO_ERRCOUNT
-
 C     == Routine arguments ==
-C     modelEnd - Checkpoint call at end of model run.
-C     myCurrentTime - Current time of simulation ( s )
+C     prec     - Precision of pickup file ( precFloat64 )
+C     lgf      - Flag to indicate whether to use global file mode.
+C     permCheckPoint - Flag indicating whether a permanent checkpoint
+C                      will be written.
 C     myIt     - Iteration number
 C     myThid   - Thread number for this instance of the routine.
-      LOGICAL modelEnd    
+      INTEGER prec
+      LOGICAL permCheckPoint    
       INTEGER myThid
       INTEGER myIt
-      _RL     myCurrentTime
 CEndofinterface
 
 #ifdef ALLOW_SEAICE
 
-C     == Common blocks ==
-      COMMON /PCKP_GBLFLS/ globalFile
-      LOGICAL globalFile
-
 C     == Local variables ==
-C     permCheckPoint - Flag indicating whether a permanent checkpoint
-C                      will be written.
-      LOGICAL permCheckPoint  
       CHARACTER*(MAX_LEN_FNAM) fn
-      INTEGER prec
       LOGICAL lgf
-
-      permCheckPoint = .FALSE.
-      permCheckPoint=
-     & DIFFERENT_MULTIPLE(pChkptFreq,myCurrentTime,
-     &                    myCurrentTime-deltaTClock)
-
-      IF (
-     &    (.NOT. modelEnd .AND. (
-     &     permCheckPoint
-     &     .OR.
-     &     DIFFERENT_MULTIPLE(chkptFreq,
-     &    myCurrentTime,myCurrentTime-deltaTClock)
-     &     ) 
-     &    ) 
-     &     .OR.
-     &    (
-     &     modelEnd 
-     &     .AND. .NOT.
-     &     permCheckPoint 
-     &     .AND. .NOT.
-     &     DIFFERENT_MULTIPLE(chkptFreq,
-     &    myCurrentTime,myCurrentTime-deltaTClock)
-     &    )
-     & ) THEN
-
-C--    Going to do some IO. Make everyone except master thread wait.
-       _BARRIER
-       _BEGIN_MASTER( myThid )
-
-       prec = precFloat64
-       lgf = globalFile
 
 C--    Write model fields
        IF ( permCheckPoint ) THEN
@@ -176,11 +134,6 @@ C--    Write model fields
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  HEFF, 4, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  AREA, 5, myIt,myThid)
 #endif /* SEAICE_MULTILEVEL */
-
-       _END_MASTER( myThid )
-       _BARRIER
-
-      ENDIF
 
 #endif /* ALLOW_SEAICE */
 

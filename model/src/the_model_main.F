@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.69 2003/12/14 23:18:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.70 2003/12/15 18:40:10 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -621,13 +621,6 @@ C--   Call time stepping loop of full model
       CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
 
 #endif /* ALLOW_TANGENTLINEAR_RUN ALLOW_ADJOINT_RUN ALLOW_ADMTLM_RUN */
-
-C--   Sea-ice checkpoint (in case the in-loop checkpoint was missed)
-#ifdef ALLOW_SEAICE
-      IF ( useSEAICE )
-     &     CALL SEAICE_WRITE_PICKUP(
-     &     .TRUE., myCurrentTime, myCurrentIter, myThid )
-#endif
 
 C--   Final checkpoint (in case the in-loop checkpoint was missed)
       CALL TIMER_START('WRITE_CHECKPOINT       [THE_MODEL_MAIN]',myThid)
