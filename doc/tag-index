@@ -1,7 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.72 2002/05/30 02:38:38 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.73 2002/05/30 22:52:25 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint45c_post
+o Removed f90 comments ("!")
+o Modified initialisations to enable exf package for MITgcm
+  (without invoking ECCO_PACKAGE).
+o modifications to gradient check package (Martin Losch)
+  - enable centered differences
+  - modified format of standard output
 
 checkpoint45b_post
 o cleaned exchange calls in cg2d
