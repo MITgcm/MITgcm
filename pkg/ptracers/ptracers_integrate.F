@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.2 2002/05/23 15:17:20 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.3 2002/06/15 03:37:44 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -68,6 +68,7 @@ C  rFlx			:: vertical flux
       INTEGER iMin,iMax,jMin,jMax
       INTEGER kUp,kDown,km1
       _RL rFlx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
+      LOGICAL calcAdvection
 CEOP
 
 C Loop over tracers
@@ -95,6 +96,10 @@ C Loop ranges for daughter routines
 
 C Calculate active tracer tendencies (gPtr) due to internal processes
 C (advection, [explicit] diffusion, parameterizations,...)
+       calcAdvection = .NOT.multiDimAdvection
+     &      .OR. PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND
+     &      .OR. PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD
+     &      .OR. PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH
          CALL GAD_CALC_RHS(
      I                     bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I                     xA,yA,uTrans,vTrans,rTrans,maskUp,
@@ -103,13 +108,14 @@ C (advection, [explicit] diffusion, parameterizations,...)
      I                     KappaRtr,
      I                     pTracer(1-Olx,1-Oly,1,1,1,iTracer),
      I                     GAD_TR1,
-     I                     PTRACERS_advScheme(iTracer),
+     I                     PTRACERS_advScheme(iTracer),calcAdvection,
      U                     rFlx(1-Olx,1-Oly,1,iTracer),
      U                     gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                     myThid )
 
 C External forcing term(s)
-         CALL PTRACERS_FORCING(
+       IF ( forcing_In_AB )
+     &   CALL PTRACERS_FORCING(
      I                        bi,bj,k,iTracer,
      U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                        myIter,myTime,myThid)
@@ -124,6 +130,13 @@ C If using Adams-Bashforth II, then extrapolate tendancies
      U                        gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
      I                        myIter,myThid )
       ENDIF
+
+C External forcing term(s)
+       IF ( .NOT.forcing_In_AB )
+     &   CALL PTRACERS_FORCING(
+     I                        bi,bj,k,iTracer,
+     U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+     I                        myIter,myTime,myThid)
 
 #ifdef NONLIN_FRSURF
 C Account for change in level thickness
