@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_latbnd_rl.F,v 1.1 2003/11/10 22:58:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_latbnd_rl.F,v 1.2 2004/03/03 14:15:38 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
 
       SUBROUTINE MON_STATS_LATBND_RL(
-     I                myNr, nSepBnd, ySepBnd,
+     I                myNr, mskNr, kLoc, nSepBnd, ySepBnd,
      I                arr, arrMask, arrhFac, arrArea, arrY, arrDr,
      O                theMin,theMax,theMean,theVar,theVol,
      I                myThid )
@@ -23,12 +23,12 @@ C     === Global data ===
 C     === Routine arguments ===
 C     nSepBnd :: Number of latitude bands
 C     ySepBnd :: latitude band egdes (from 1 to nSepBnd-1)
-      INTEGER myNr
+      INTEGER myNr, mskNr, kLoc
       INTEGER nSepBnd
       _RS ySepBnd(nSepBnd)
       _RL arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
-      _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
-      _RS arrhFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
+      _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,mskNr,nSx,nSy)
+      _RS arrhFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,mskNr,nSx,nSy)
       _RS arrArea(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS arrY(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS arrDr(myNr)
@@ -45,10 +45,20 @@ C     === Functions ====
 
 C     === Local variables ====
       INTEGER bi,bj,i,j,k,n
+      INTEGER km, k1, k2
       INTEGER numPnts
       LOGICAL noPnts(Ny)
       _RL tmpVal,rNumPnts
       _RL tmpVol
+
+C-    set k index range [k1,k2]
+      IF ( kLoc.EQ.0 ) THEN
+        k1 = 1
+        k2 = myNr
+      ELSE
+        k1 = kLoc
+        k2 = kLoc
+      ENDIF
 
       DO n=1,nSepBnd
        noPnts(n)=.TRUE.
@@ -61,23 +71,24 @@ C     === Local variables ====
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO k=1,myNr
+        DO k=k1,k2
+         km = MIN(k,mskNr)
          DO j=1,sNy
           DO i=1,sNx
            n = NLATBND(nSepBnd, ySepBnd, arrY(i,j,bi,bj) )
            tmpVal=arr(i,j,k,bi,bj)
-           IF (arrMask(i,j,k,bi,bj).NE.0. .AND. noPnts(n)) THEN
+           IF (arrMask(i,j,km,bi,bj).NE.0. .AND. noPnts(n)) THEN
             theMin(n)=tmpVal
             theMax(n)=tmpVal
             noPnts(n)=.FALSE.
            ENDIF
-           IF (arrMask(i,j,k,bi,bj).NE.0.) THEN
+           IF (arrMask(i,j,km,bi,bj).NE.0.) THEN
             theMin(n)=min(theMin(n),tmpVal)
             theMax(n)=max(theMax(n),tmpVal)
-            tmpVol = arrArea(i,j,bi,bj)*arrhFac(i,j,k,bi,bj)*arrDr(k)
-     &                                 *arrMask(i,j,k,bi,bj)
+            tmpVol = arrArea(i,j,bi,bj)*arrhFac(i,j,km,bi,bj)*arrDr(k)
+     &                                 *arrMask(i,j,km,bi,bj)
             theVol(n) = theVol(n) + tmpVol
-            theMean(n)=theMean(n) + tmpVol*tmpVal
+            theMean(n)= theMean(n)+ tmpVol*tmpVal
             theVar(n) = theVar(n) + tmpVol*tmpVal*tmpVal
            ENDIF
           ENDDO
