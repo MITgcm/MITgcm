@@ -1,11 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.13 2004/03/24 03:38:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.14 2004/03/24 15:29:33 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      SUBROUTINE MNC_CW_RX_W_YY( 
+      SUBROUTINE MNC_CW_RX_W(
+     I     stype, 
      I     fbname, bi,bj, 
      I     vtype, 
      I     var, 
@@ -19,11 +20,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-#define mnc_rtype_YY
-
 C     Arguments
       integer myThid, bi,bj, indu
-      character*(*) fbname, vtype
+      character*(*) stype, fbname, vtype
       __V var(*)
 
 C     Functions
@@ -42,15 +41,9 @@ C     Local Variables
 
 C     Temporary storage for the simultaneous type conversion and
 C     re-shaping before passing to NetCDF
-#ifdef  mnc_rtype_D
-      REAL*8  resh( sNx + 2*OLx + sNy + 2*OLy )
-#endif
-#ifdef  mnc_rtype_R
-      REAL*4  resh( sNx + 2*OLx + sNy + 2*OLy )
-#endif
-#ifdef  mnc_rtype_I
-      INTEGER resh( sNx + 2*OLx + sNy + 2*OLy )
-#endif
+      REAL*8  resh_d( sNx + 2*OLx + sNy + 2*OLy )
+      REAL*4  resh_r( sNx + 2*OLx + sNy + 2*OLy )
+      INTEGER resh_i( sNx + 2*OLx + sNy + 2*OLy )
 
 C     Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
@@ -62,10 +55,10 @@ C     group (or base) name
       CALL MNC_GET_IND(MNC_MAX_ID, fbname, mnc_cw_fgnm, indfg, myThid)
       IF (indfg .LT. 1) THEN
         write(msgbuf,'(3a)') 
-     &       'MNC_CW_RX_W_YY ERROR: file group name ''', 
+     &       'MNC_CW_RX_W ERROR: file group name ''', 
      &       fbname(fg1:fg2), ''' is not defined'
         CALL print_error(msgbuf, mythid)
-        STOP 'ABNORMAL END: S/R MNC_CW_RX_W_YY'
+        STOP 'ABNORMAL END: S/R MNC_CW_RX_W'
       ENDIF
       indu = mnc_cw_fgud(indfg)
 
@@ -74,10 +67,10 @@ C     Check that the Variable Type exists
       nvl = ILNBLNK(vtype)
       CALL MNC_GET_IND(MNC_MAX_ID, vtype, mnc_cw_vname, indv, myThid)
       IF (indv .LT. 1) THEN
-        write(msgbuf,'(3a)') 'MNC_CW_RX_W_YY ERROR: vtype ''', 
+        write(msgbuf,'(3a)') 'MNC_CW_RX_W ERROR: vtype ''', 
      &       vtype(nvf:nvl), ''' is not defined'
         CALL print_error(msgbuf, mythid)
-        STOP 'ABNORMAL END: S/R MNC_CW_RX_W_YY'
+        STOP 'ABNORMAL END: S/R MNC_CW_RX_W'
       ENDIF
       igrid = mnc_cw_vgind(indv)
 
@@ -144,15 +137,16 @@ C         Ensure that the "grid" is defined
      &        mnc_cw_ndim(igrid), mnc_cw_dn(1,igrid), myThid)
 
 C         Ensure that the variable is defined
-#ifdef  mnc_rtype_D
-      CALL MNC_VAR_INIT_DBL(fname,mnc_cw_gname(igrid),vtype, myThid)
-#endif
-#ifdef  mnc_rtype_R
-      CALL MNC_VAR_INIT_REAL(fname,mnc_cw_gname(igrid),vtype, myThid)
-#endif
-#ifdef  mnc_rtype_I
-      CALL MNC_VAR_INIT_INT(fname,mnc_cw_gname(igrid),vtype, myThid)
-#endif
+          IF (stype(1:1) .EQ. 'D')
+     &         CALL MNC_VAR_INIT_DBL(
+     &         fname, mnc_cw_gname(igrid), vtype, myThid)
+          IF (stype(1:1) .EQ. 'R')
+     &         CALL MNC_VAR_INIT_REAL(
+     &         fname, mnc_cw_gname(igrid), vtype, myThid)
+          IF (stype(1:1) .EQ. 'I')
+     &         CALL MNC_VAR_INIT_INT(
+     &         fname, mnc_cw_gname(igrid), vtype, myThid)
+
           DO i = 1,mnc_fv_ids(indf,1)
             j = 2 + 3*(i - 1)
             IF (mnc_v_names(mnc_fv_ids(indf,j)) .EQ. vtype) THEN
@@ -162,7 +156,7 @@ C         Ensure that the variable is defined
               GOTO 10
             ENDIF
           ENDDO
-          write(msgbuf,'(4a)') 'MNC_MNC_CW_RX_W_YY ERROR: ', 
+          write(msgbuf,'(4a)') 'MNC_MNC_CW_RX_W ERROR: ', 
      &         'cannot reference variable ''', vtype, ''''
           CALL print_error(msgbuf, mythid)
           STOP 'ABNORMAL END: package MNC'
@@ -284,24 +278,33 @@ C         Write the variable one vector at a time
                       vcount(2) = 1
 
       kr = 0
-      DO j1 = s(1),e(1)
-        k1 = k2 + j1
-        kr = kr + 1
-        resh(kr) = var(k1)
-      ENDDO
-      
       vstart(1) = udo(1) + 1
       vcount(1) = e(1) - s(1) + 1
 
-#ifdef  mnc_rtype_D
-      err = NF_PUT_VARA_DOUBLE(fid, idv, vstart, vcount, resh)
-#endif
-#ifdef  mnc_rtype_R
-      err = NF_PUT_VARA_REAL(fid, idv, vstart, vcount, resh)
-#endif
-#ifdef  mnc_rtype_I
-      err = NF_PUT_VARA_INT(fid, idv, vstart, vcount, resh)
-#endif
+      IF (stype(1:1) .EQ. 'D') THEN
+        DO j1 = s(1),e(1)
+          k1 = k2 + j1
+          kr = kr + 1
+          resh_d(kr) = var(k1)
+        ENDDO
+        err = NF_PUT_VARA_DOUBLE(fid, idv, vstart, vcount, resh_d)
+      ENDIF
+      IF (stype(1:1) .EQ. 'R') THEN
+        DO j1 = s(1),e(1)
+          k1 = k2 + j1
+          kr = kr + 1
+          resh_r(kr) = var(k1)
+        ENDDO
+        err = NF_PUT_VARA_REAL(fid, idv, vstart, vcount, resh_r)
+      ENDIF
+      IF (stype(1:1) .EQ. 'I') THEN
+        DO j1 = s(1),e(1)
+          k1 = k2 + j1
+          kr = kr + 1
+          resh_i(kr) = var(k1)
+        ENDDO
+        err = NF_PUT_VARA_INT(fid, idv, vstart, vcount, resh_i)
+      ENDIF
 
       CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
@@ -315,7 +318,7 @@ C         Write the variable one vector at a time
 C         Sync the file
           err = NF_SYNC(fid)
           write(msgbuf,'(3a)') 'sync for file ''', fname, 
-     &         ''' in S/R MNC_CW_RX_W_YY'
+     &         ''' in S/R MNC_CW_RX_W'
           CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
         ENDDO
@@ -330,7 +333,8 @@ C         Sync the file
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 
-      SUBROUTINE MNC_CW_RX_R_YY( 
+      SUBROUTINE MNC_CW_RX_R( 
+     I     stype, 
      I     fbname, bi,bj, 
      I     vtype, 
      I     var, 
@@ -344,11 +348,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-#define mnc_rtype_YY
-
 C     Arguments
       integer myThid, bi,bj, indu
-      character*(*) fbname, vtype
+      character*(*) stype, fbname, vtype
       __V var(*)
 
 C     Functions
@@ -369,15 +371,9 @@ C     Local Variables
 
 C     Temporary storage for the simultaneous type conversion and
 C     re-shaping before passing to NetCDF
-#ifdef  mnc_rtype_D
-      REAL*8  resh( sNx + 2*OLx + sNy + 2*OLy )
-#endif
-#ifdef  mnc_rtype_R
-      REAL*4  resh( sNx + 2*OLx + sNy + 2*OLy )
-#endif
-#ifdef  mnc_rtype_I
-      INTEGER resh( sNx + 2*OLx + sNy + 2*OLy )
-#endif
+      REAL*8  resh_d( sNx + 2*OLx + sNy + 2*OLy )
+      REAL*4  resh_r( sNx + 2*OLx + sNy + 2*OLy )
+      INTEGER resh_i( sNx + 2*OLx + sNy + 2*OLy )
 
 C     Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
@@ -389,10 +385,10 @@ C     group (or base) name
       CALL MNC_GET_IND(MNC_MAX_ID, fbname, mnc_cw_fgnm, indfg, myThid)
       IF (indfg .LT. 1) THEN
         write(msgbuf,'(3a)') 
-     &       'MNC_CW_RX_W_YY ERROR: file group name ''', 
+     &       'MNC_CW_RX_W ERROR: file group name ''', 
      &       fbname(fg1:fg2), ''' is not defined'
         CALL print_error(msgbuf, mythid)
-        STOP 'ABNORMAL END: S/R MNC_CW_RX_W_YY'
+        STOP 'ABNORMAL END: S/R MNC_CW_RX_W'
       ENDIF
       indu = mnc_cw_fgud(indfg)
 
@@ -401,10 +397,10 @@ C     Check that the Variable Type exists
       nvl = ILNBLNK(vtype)
       CALL MNC_GET_IND( MNC_MAX_ID, vtype, mnc_cw_vname, ind_vt, myThid)
       IF (ind_vt .LT. 1) THEN
-        write(msgbuf,'(3a)') 'MNC_CW_RX_R_YY ERROR: vtype ''', 
+        write(msgbuf,'(3a)') 'MNC_CW_RX_R ERROR: vtype ''', 
      &       vtype(nvf:nvl), ''' is not defined'
         CALL print_error(msgbuf, mythid)
-        STOP 'ABNORMAL END: S/R MNC_CW_RX_R_YY'
+        STOP 'ABNORMAL END: S/R MNC_CW_RX_R'
       ENDIF
       igrid = mnc_cw_vgind(ind_vt)
 
@@ -457,11 +453,11 @@ C         Open the existing file
 C         Check that the variable (VType) is defined within the file
           CALL MNC_GET_FVINDS( fname, vtype, indf, ind_fv_ids, myThid)
           IF ((indf .LT. 1) .OR. (ind_fv_ids .LT. 1)) THEN
-            write(msgbuf,'(4a)') 'MNC_CW_RX_R_YY ERROR: vtype ''', 
+            write(msgbuf,'(4a)') 'MNC_CW_RX_R ERROR: vtype ''', 
      &           vtype(nvf:nvl), ''' is not defined within file ''', 
      &           fname(1:nfname)
             CALL print_error(msgbuf, mythid)
-            STOP 'ABNORMAL END: S/R MNC_CW_RX_R_YY'
+            STOP 'ABNORMAL END: S/R MNC_CW_RX_R'
           ENDIF
           fid = mnc_f_info(indf,2)
           idv = mnc_fv_ids(indf,ind_fv_ids+1)
@@ -474,18 +470,18 @@ C         are compatible and WARN (only warn) if not
           IF ((err .EQ. NF_NOERR) .AND. (alen .EQ. 1)) THEN
             err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNx', f_sNx)
             CALL MNC_HANDLE_ERR(err, 
-     &           'reading attribute ''sNx'' in S/R MNC_CW_RX_R_YY', 
+     &           'reading attribute ''sNx'' in S/R MNC_CW_RX_R', 
      &           myThid)
           ENDIF
           err = NF_INQ_ATT(fid,NF_GLOBAL, 'sNy',atype,alen)
           IF ((err .EQ. NF_NOERR) .AND. (alen .EQ. 1)) THEN
             err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNy', f_sNy)
             CALL MNC_HANDLE_ERR(err, 
-     &           'reading attribute ''sNy'' in S/R MNC_CW_RX_R_YY',
+     &           'reading attribute ''sNy'' in S/R MNC_CW_RX_R',
      &           myThid)
           ENDIF
           IF ((f_sNx .NE. sNx) .OR. (f_sNy .NE. sNy)) THEN
-            write(msgbuf,'(5a)') 'MNC_CW_RX_R_YY WARNING: the ',
+            write(msgbuf,'(5a)') 'MNC_CW_RX_R WARNING: the ',
      &           'attributes ''sNx'' and ''sNy'' within the file ''', 
      &           fname(1:nfname), ''' do not exist or do not match ',
      &           'the current sizes within the model'
@@ -498,13 +494,13 @@ C           ires = 1
 C           CALL MNC_CHK_VTYP_R_NCVAR( ind_vt, 
 C      &         indf, ind_fv_ids, indu, ires)
 C           IF (ires .LT. 0) THEN
-C             write(msgbuf,'(7a)') 'MNC_CW_RX_R_YY WARNING: the sizes ',
+C             write(msgbuf,'(7a)') 'MNC_CW_RX_R WARNING: the sizes ',
 C      &           'of the in-program variable ''', vtype(nvf:nvl), 
 C      &           ''' and the corresponding variable within file ''',
 C      &           fname(1:nfname), ''' are not compatible -- please ',
 C      &           'check the sizes'
 C             CALL print_error(msgbuf, mythid)
-C             STOP 'ABNORMAL END: S/R MNC_CW_RX_R_YY'
+C             STOP 'ABNORMAL END: S/R MNC_CW_RX_R'
 C           ENDIF
 
 C         Check for bi,bj indicies
@@ -605,27 +601,38 @@ C         Read the variable one vector at a time
                       vstart(2) = udo(2) + j2 - s(2) + 1
                       vcount(2) = 1
 
+      kr = 0
       vstart(1) = udo(1) + 1
       vcount(1) = e(1) - s(1) + 1
       
-#ifdef  mnc_rtype_D
-      err = NF_GET_VARA_DOUBLE(fid, idv, vstart, vcount, resh)
-#endif
-#ifdef  mnc_rtype_R
-      err = NF_GET_VARA_REAL(fid, idv, vstart, vcount, resh)
-#endif
-#ifdef  mnc_rtype_I
-      err = NF_GET_VARA_INT(fid, idv, vstart, vcount, resh)
-#endif
+      IF (stype(1:1) .EQ. 'D') THEN
+        err = NF_GET_VARA_DOUBLE(fid, idv, vstart, vcount, resh_d)
+        CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+        DO j1 = s(1),e(1)
+          k1 = k2 + j1
+          kr = kr + 1
+          var(k1) = resh_d(kr)
+        ENDDO
+      ENDIF
+      IF (stype(1:1) .EQ. 'R') THEN
+        err = NF_GET_VARA_REAL(fid, idv, vstart, vcount, resh_r)
+        CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+        DO j1 = s(1),e(1)
+          k1 = k2 + j1
+          kr = kr + 1
+          var(k1) = resh_r(kr)
+        ENDDO
+      ENDIF
+      IF (stype(1:1) .EQ. 'I') THEN
+        err = NF_GET_VARA_INT(fid, idv, vstart, vcount, resh_i)
+        CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+        DO j1 = s(1),e(1)
+          k1 = k2 + j1
+          kr = kr + 1
+          var(k1) = resh_i(kr)
+        ENDDO
+      ENDIF
 
-      CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
-
-      kr = 0
-      DO j1 = s(1),e(1)
-        k1 = k2 + j1
-        kr = kr + 1
-        var(k1) = resh(kr)
-      ENDDO
       
  
                     ENDDO

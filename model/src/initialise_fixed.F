@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.28 2004/03/23 05:24:43 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.29 2004/03/24 15:29:33 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,7 +82,6 @@ C     Initialize MNC look-up tables
       IF (useMNC) THEN
         CALL MNC_INIT(myThid)
         CALL MNC_CW_INIT(sNx,sNy,OLx,OLy,nSx,nSy,nPx,nPy,Nr, myThid)
-        CALL INI_MNC_IO(myThid)
         IF ( mnc_echo_gvtypes ) THEN
           CALL MNC_CW_DUMP( myThid )
         ENDIF
@@ -99,6 +98,13 @@ C--   Set model grid.
 C     Variables defining model grid spacing are defined.
       CALL INI_GRID( myThid )
       _BARRIER
+
+#ifdef ALLOW_MNC
+C     Initialize the MNC state files and write the grid info
+      IF (useMNC) THEN
+        CALL INI_MNC_IO(myThid)
+      ENDIF
+#endif
 
 C--   Set equation of state parameters.
       CALL INI_EOS( myThid )

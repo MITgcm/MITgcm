@@ -80,11 +80,12 @@ Heres a further "convenience wrapper" written on top of the above UI:
     'U_xy_i_t_Hn',             Cen
     'Cor_x_-_-_Hy'             Cor
 
-  MNC_CW_WRITE( myIter, filebn,bi,bj, Gtype, RX, vname, var, myThid )
-  MNC_CW_READ(  myIter, filebn,bi,bj, Gtype, RX, vname, var, myThid )
+  MNC_CW_SET_UDIM( fbname, udim, myThid )
 
-  MNC_CW_RX_W_YY( fbname,bi,bj, vtype, indu, var, myThid )
-  MNC_CW_RX_R_YY( fbname,bi,bj, vtype, indu, var, myThid )
+  MNC_CW_RX_W( 'R|D|I', fbname,bi,bj, vtype, indu, var, myThid )
+  MNC_CW_RX_R( 'R|D|I', fbname,bi,bj, vtype, indu, var, myThid )
+          |
+	  +--  RX = 'RL', 'RS', or 'I'
 
   MNC_COMP_VTYPE_VAR( ind_vt, ind_fv_ids, ires, myThid )
 
