@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.19 1998/06/15 05:13:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.20 1998/06/15 05:17:42 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -382,16 +382,16 @@ C--     Implicit diffusion
 
 C     write(0,*) 'dynamics: pS ',minval(cg2d_x(1:sNx,1:sNy,:,:)),
 C    &                           maxval(cg2d_x(1:sNx,1:sNy,:,:))
-      write(0,*) 'dynamics: U  ',minval(uVel(1:sNx,1:sNy,1,:,:),mask=uVel(1:sNx,1:sNy,1,:,:).NE.0.),
-     &                           maxval(uVel(1:sNx,1:sNy,1,:,:))
-      write(0,*) 'dynamics: V  ',minval(vVel(1:sNx,1:sNy,1,:,:),mask=vVel(1:sNx,1:sNy,1,:,:).NE.0.),
-     &                           maxval(vVel(1:sNx,1:sNy,1,:,:))
-      write(0,*) 'dynamics: wVel(1) ',
-     &            minval(wVel(1:sNx,1:sNy,1),mask=wVel(1:sNx,1:sNy,1).NE.0.),
-     &            maxval(wVel(1:sNx,1:sNy,1))
-      write(0,*) 'dynamics: wVel(2) ',
-     &            minval(wVel(1:sNx,1:sNy,2),mask=wVel(1:sNx,1:sNy,2).NE.0.),
-     &            maxval(wVel(1:sNx,1:sNy,2))
+C     write(0,*) 'dynamics: U  ',minval(uVel(1:sNx,1:sNy,1,:,:),mask=uVel(1:sNx,1:sNy,1,:,:).NE.0.),
+C    &                           maxval(uVel(1:sNx,1:sNy,1,:,:))
+C     write(0,*) 'dynamics: V  ',minval(vVel(1:sNx,1:sNy,1,:,:),mask=vVel(1:sNx,1:sNy,1,:,:).NE.0.),
+C    &                           maxval(vVel(1:sNx,1:sNy,1,:,:))
+C     write(0,*) 'dynamics: wVel(1) ',
+C    &            minval(wVel(1:sNx,1:sNy,1),mask=wVel(1:sNx,1:sNy,1).NE.0.),
+C    &            maxval(wVel(1:sNx,1:sNy,1))
+C     write(0,*) 'dynamics: wVel(2) ',
+C    &            minval(wVel(1:sNx,1:sNy,2),mask=wVel(1:sNx,1:sNy,2).NE.0.),
+C    &            maxval(wVel(1:sNx,1:sNy,2))
 cblk  write(0,*) 'dynamics: K13',minval(K13(1:sNx,1:sNy,:)),
 cblk &                           maxval(K13(1:sNx,1:sNy,:))
 cblk  write(0,*) 'dynamics: K23',minval(K23(1:sNx,1:sNy,:)),
@@ -406,8 +406,8 @@ C     write(0,*) 'dynamics: gS ',minval(gS(1:sNx,1:sNy,:,:,:)),
 C    &                           maxval(gS(1:sNx,1:sNy,:,:,:))
 C     write(0,*) 'dynamics: S  ',minval(salt(1:sNx,1:sNy,:,:,:)),
 C    &                           maxval(salt(1:sNx,1:sNy,:,:,:))
-      write(0,*) 'dynamics: pH ',minval(pH/(Gravity*Rhonil),mask=ph.NE.0.),
-     &                           maxval(pH/(Gravity*Rhonil))
+C     write(0,*) 'dynamics: pH ',minval(pH/(Gravity*Rhonil),mask=ph.NE.0.),
+C    &                           maxval(pH/(Gravity*Rhonil))
 
       RETURN
       END
