@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/getcon.F,v 1.6 2004/07/05 17:17:11 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/getcon.F,v 1.7 2005/03/03 14:57:59 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -51,7 +51,7 @@ C     ----------------------
 
 C     TERRESTRIAL CONSTANTS
 C     ---------------------
-      PARAMETER ( GRAV   = 9.81       )
+      PARAMETER ( GRAV   = 9.81d0     )
       PARAMETER ( SRFPRS = 984.7      )
       PARAMETER ( PIMEAN = 984.7      )
       PARAMETER ( PSTD   = 1000.0     )
@@ -62,19 +62,19 @@ C     ---------------------
       PARAMETER ( CFC11  = 0.3        )
       PARAMETER ( CFC12  = 0.5        )
       PARAMETER ( CFC22  = 0.2        )
-      PARAMETER ( ATMPOPA= 1.E5       )
-      PARAMETER ( PI     = 3.14159    )
+      PARAMETER ( ATMPOPA= 1.d5       )
+      PARAMETER ( PI     = 3.14159d0  )
 
 C     THERMODYNAMIC CONSTANTS
 C     -----------------------
-      PARAMETER ( CPD    = 1004.16    )
+      PARAMETER ( CPD    = 1004.16d0  )
       PARAMETER ( CPV    = 1869.46    )
       PARAMETER ( ALHL   = 2.499E6    )
       PARAMETER ( ALHS   = 2.845E6    )
       PARAMETER ( STFBOL = 5.67E-8    )
-      PARAMETER ( AIRMW  = 28.97      )
-      PARAMETER ( H2OMW  = 18.01      )
-      PARAMETER ( RUNIV  = 8314.3     )
+      PARAMETER ( AIRMW  = 28.97d0    )
+      PARAMETER ( H2OMW  = 18.01d0    )
+      PARAMETER ( RUNIV  = 8314.3d0   )
       PARAMETER ( RGAS   = RUNIV/AIRMW)
       PARAMETER ( RVAP   = RUNIV/H2OMW)
       PARAMETER ( RKAP   = RGAS/CPD   )
@@ -88,7 +88,7 @@ C     --------------------
 
 C     CONVERSION CONSTANTS
 C     --------------------
-      PARAMETER ( DEG2RAD  = 2.*PI/360. )
+      PARAMETER ( DEG2RAD  = PI/180.d0)
       PARAMETER ( CALTOJ = 4184.      )
 
 C     MOISTURE CONSTANTS
