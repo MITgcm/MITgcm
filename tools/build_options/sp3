@@ -1,22 +1,21 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp3,v 1.3 2003/11/13 22:03:39 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp3,v 1.4 2004/10/12 21:56:01 heimbach Exp $
 #
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
 MAKEDEPEND=makedepend
 DEFINES='-DWORDLENGTH=4'
 
-# originally from A. Biastoch, SIO.
-# e.g. horizon.npaci.edu
+# tested on blackforest, IBM SP3 at NCAR 10/2004 
 INCLUDES='-I/usr/lpp/ppe.poe/include'
-#    set CPP        = ( '/lib/cpp' )
+CPP='/lib/cpp -P'
 FC='mpxlf95'
 LINK='mpxlf95'
-LIBS=' -L/usr/local/apps/mass -lmass'
-#   set FFLAGS     = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4' )
-#    set FOPTIM     = ( '-O3' )
-#   set NOOPTFLAGS = ( '-O0' )
+LIBS=' -lmass'
+FFLAGS='-qfixed=132 -bmaxdata:0x80000000'
+FOPTIM='-O3 -qarch=pwr3 -qtune=pwr3 -qcache=auto -qmaxmem=-1'
+NOOPTFLAGS='-O0'
 #   set NOOPTFILES = ( 'barrier.F different_multiple.F ' \
 #                      'external_fields_load.F' )
-RMFILES='rii_files'
+#RMFILES='rii_files'
