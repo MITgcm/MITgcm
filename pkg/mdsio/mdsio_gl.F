@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.6 2004/11/17 03:04:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.7 2005/01/12 19:15:03 heimbach Exp $
 
 #include "MDSIO_OPTIONS.h"
 
@@ -67,6 +67,7 @@ C Created: 03/16/99 adcroft@mit.edu
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "EESUPPORT.h"
 #include "PARAMS.h"
 
 C Routine arguments
@@ -137,6 +138,17 @@ C If negative check for global file with MDS name (ie. fName.data)
         globalFile = .TRUE.
        endif
       endif
+
+      if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
+
+C If we are reading from a global file then we open it here
+      if (globalFile) then
+       length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
+       open( dUnit, file=dataFName, status='old',
+     &      access='direct', recl=length_of_rec )
+       fileIsOpen=.TRUE.
+      endif
+
 C Loop over all processors    
       do jp=1,nPy
       do ip=1,nPx
@@ -182,9 +194,16 @@ C (This is a place-holder for the active/passive mechanism
         if (fileIsOpen) then
          do k=1,Nr
           do j=1,sNy
+           if (globalFile) then
+            iG=bi+(ip-1)*nsx
+            jG=bj+(jp-1)*nsy
+            irec=1 + INT(iG/sNx) + nSx*nPx*(jG+j-1) + nSx*nPx*Ny*(k-1)
+     &             + nSx*nPx*Ny*nNz*(irecord-1)
+           else
             iG = 0
             jG = 0
             irec=j + sNy*(k-1) + sNy*Nr*(irecord-1)
+           endif
            if (filePrec .eq. precFloat32) then
             read(dUnit,rec=irec) r4seg
 #ifdef _BYTESWAPIO
@@ -247,6 +266,9 @@ C If global file was opened then close it
        fileIsOpen = .FALSE.
       endif
 
+      endif
+c      end of if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
+
       _END_MASTER( myThid )
 
 C     ------------------------------------------------------------------
@@ -305,6 +327,7 @@ C          open(dUnit, ..., status='old', ... -> status='unknown'
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "EESUPPORT.h"
 #include "PARAMS.h"
 
 C Routine arguments
@@ -324,7 +347,7 @@ C Functions
       integer MDS_RECLEN
 C Local variables
       character*(80) dataFName,metaFName
-      integer ip,jp,iG,jG,irec,bi,bj,ii,j,k,dUnit,IL
+      integer ip,jp,iG,jG,irec,bi,bj,i,j,k,dUnit,IL
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
       _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,Nr,nSx,nSy)
@@ -332,6 +355,16 @@ C Local variables
       integer length_of_rec
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
+cph-usesingle(
+      integer ii,jj
+      integer x_size,y_size,iG_IO,jG_IO,length_of_rec,npe
+      PARAMETER ( x_size = Nx )
+      PARAMETER ( y_size = Ny )
+      Real*4 xy_buffer_r4(x_size,y_size)
+      Real*8 xy_buffer_r8(x_size,y_size)
+      Real*8 global(Nx,Ny)
+cph-usesingle)
+
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -356,6 +389,106 @@ C Assume nothing
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
 
+cph-usesingle(
+#ifdef ALLOW_USE_MPI
+      _END_MASTER( myThid )
+C If option globalFile is desired but does not work or if
+C globalFile is too slow, then try using single-CPU I/O.
+      if (useSingleCpuIO) then
+
+C Master thread of process 0, only, opens a global file
+       _BEGIN_MASTER( myThid )
+        IF( mpiMyId .EQ. 0 ) THEN
+         write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+         length_of_rec=MDS_RECLEN(filePrec,x_size*y_size,mythid)
+         if (irecord .EQ. 1) then
+          open( dUnit, file=dataFName, status=_NEW_STATUS,
+     &        access='direct', recl=length_of_rec )
+         else
+          open( dUnit, file=dataFName, status=_OLD_STATUS,
+     &        access='direct', recl=length_of_rec )
+         endif
+        ENDIF
+       _END_MASTER( myThid )
+
+C Gather array and write it to file, one vertical level at a time
+       DO k=1,nNz
+C Loop over all processors    
+        do jp=1,nPy
+        do ip=1,nPx
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO J=1,sNy
+           JJ=((jp-1)*nSy+(bj-1))*sNy+J
+           DO I=1,sNx
+            II=((ip-1)*nSx+(bi-1))*sNx+I
+            global(II,JJ) = arr_gl(i,bi,ip,j,bj,jp,k)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        enddo
+        enddo
+        _BEGIN_MASTER( myThid )
+         IF( mpiMyId .EQ. 0 ) THEN
+          irec=k+nNz*(irecord-1)
+          if (filePrec .eq. precFloat32) then
+           DO J=1,Ny
+            DO I=1,Nx
+             xy_buffer_r4(I,J) = global(I,J)
+            ENDDO
+           ENDDO
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR4( x_size*y_size, xy_buffer_r4 )
+#endif
+           write(dUnit,rec=irec) xy_buffer_r4
+          elseif (filePrec .eq. precFloat64) then
+           DO J=1,Ny
+            DO I=1,Nx
+             xy_buffer_r8(I,J) = global(I,J)
+            ENDDO
+           ENDDO
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR8( x_size*y_size, xy_buffer_r8 )
+#endif
+           write(dUnit,rec=irec) xy_buffer_r8
+          else
+           write(msgbuf,'(a)')
+     &       ' MDSWRITEFIELD: illegal value for filePrec'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSWRITEFIELD'
+          endif
+         ENDIF
+        _END_MASTER( myThid )
+       ENDDO
+
+C Close data-file and create meta-file
+       _BEGIN_MASTER( myThid )
+        IF( mpiMyId .EQ. 0 ) THEN
+         close( dUnit )
+         write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
+         dimList(1,1)=Nx
+         dimList(2,1)=1
+         dimList(3,1)=Nx
+         dimList(1,2)=Ny
+         dimList(2,2)=1
+         dimList(3,2)=Ny
+         dimList(1,3)=nNz
+         dimList(2,3)=1
+         dimList(3,3)=nNz
+         ndims=3
+         if (nNz .EQ. 1) ndims=2
+         call MDSWRITEMETA( metaFName, dataFName,
+     &     filePrec, ndims, dimList, irecord, myIter, mythid )
+        ENDIF
+       _END_MASTER( myThid )
+C To be safe, make other processes wait for I/O completion
+       _BARRIER
+
+      elseif ( .NOT. useSingleCpuIO ) then
+      _BEGIN_MASTER( myThid )
+#endif /* ALLOW_USE_MPI */
+cph-usesingle)
 
 C Loop over all processors    
       do jp=1,nPy
@@ -464,8 +597,14 @@ C End of ip,jp loops
        enddo
       enddo
 
-
       _END_MASTER( myThid )
+
+cph-usesingle(
+#ifdef ALLOW_USE_MPI
+C endif useSingleCpuIO
+      endif
+#endif /* ALLOW_USE_MPI */
+cph-usesingle)
 
 C     ------------------------------------------------------------------
       return
@@ -513,6 +652,7 @@ C Created: 03/16/99 adcroft@mit.edu
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "EESUPPORT.h"
 #include "PARAMS.h"
 
 C Routine arguments
@@ -584,6 +724,17 @@ C If negative check for global file with MDS name (ie. fName.data)
         globalFile = .TRUE.
        endif
       endif
+
+      if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
+
+C If we are reading from a global file then we open it here
+      if (globalFile) then
+       length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
+       open( dUnit, file=dataFName, status='old',
+     &      access='direct', recl=length_of_rec )
+       fileIsOpen=.TRUE.
+      endif
+
 C Loop over all processors    
       do jp=1,nPy
       do ip=1,nPx
@@ -629,9 +780,16 @@ C (This is a place-holder for the active/passive mechanism
         if (fileIsOpen) then
          do k=1,nLocz
           do j=1,sNy
+           if (globalFile) then
+            iG=bi+(ip-1)*nsx
+            jG=bj+(jp-1)*nsy
+            irec=1 + INT(iG/sNx) + nSx*nPx*(jG+j-1) + nSx*nPx*Ny*(k-1)
+     &             + nSx*nPx*Ny*nLocz*(irecord-1)
+           else
             iG = 0
             jG = 0
             irec=j + sNy*(k-1) + sNy*nLocz*(irecord-1)
+           endif
            if (filePrec .eq. precFloat32) then
             read(dUnit,rec=irec) r4seg
 #ifdef _BYTESWAPIO
@@ -694,6 +852,9 @@ C If global file was opened then close it
        fileIsOpen = .FALSE.
       endif
 
+      endif
+c      end of if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
+
       _END_MASTER( myThid )
 
 C     ------------------------------------------------------------------
@@ -752,6 +913,7 @@ C          open(dUnit, ..., status='old', ... -> status='unknown'
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "EESUPPORT.h"
 #include "PARAMS.h"
 
 C Routine arguments
@@ -772,7 +934,7 @@ C Functions
       integer MDS_RECLEN
 C Local variables
       character*(80) dataFName,metaFName
-      integer ip,jp,iG,jG,irec,bi,bj,ii,j,k,dUnit,IL
+      integer ip,jp,iG,jG,irec,bi,bj,i,j,k,dUnit,IL
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
       _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nLocz,nSx,nSy)
@@ -780,6 +942,16 @@ C Local variables
       integer length_of_rec
       logical fileIsOpen
       character*(max_len_mbuf) msgbuf
+cph-usesingle(
+      integer ii,jj
+      integer x_size,y_size,iG_IO,jG_IO,length_of_rec,npe
+      PARAMETER ( x_size = Nx )
+      PARAMETER ( y_size = Ny )
+      Real*4 xy_buffer_r4(x_size,y_size)
+      Real*8 xy_buffer_r8(x_size,y_size)
+      Real*8 global(Nx,Ny)
+cph-usesingle)
+
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -804,6 +976,107 @@ C Assume nothing
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
 
+
+cph-usesingle(
+#ifdef ALLOW_USE_MPI
+      _END_MASTER( myThid )
+C If option globalFile is desired but does not work or if
+C globalFile is too slow, then try using single-CPU I/O.
+      if (useSingleCpuIO) then
+
+C Master thread of process 0, only, opens a global file
+       _BEGIN_MASTER( myThid )
+        IF( mpiMyId .EQ. 0 ) THEN
+         write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+         length_of_rec=MDS_RECLEN(filePrec,x_size*y_size,mythid)
+         if (irecord .EQ. 1) then
+          open( dUnit, file=dataFName, status=_NEW_STATUS,
+     &        access='direct', recl=length_of_rec )
+         else
+          open( dUnit, file=dataFName, status=_OLD_STATUS,
+     &        access='direct', recl=length_of_rec )
+         endif
+        ENDIF
+       _END_MASTER( myThid )
+
+C Gather array and write it to file, one vertical level at a time
+       DO k=1,nLocz
+C Loop over all processors    
+        do jp=1,nPy
+        do ip=1,nPx
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO J=1,sNy
+           JJ=((jp-1)*nSy+(bj-1))*sNy+J
+           DO I=1,sNx
+            II=((ip-1)*nSx+(bi-1))*sNx+I
+            global(II,JJ) = arr_gl(i,bi,ip,j,bj,jp,k)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+        enddo
+        enddo
+        _BEGIN_MASTER( myThid )
+         IF( mpiMyId .EQ. 0 ) THEN
+          irec=k+nLocz*(irecord-1)
+          if (filePrec .eq. precFloat32) then
+           DO J=1,Ny
+            DO I=1,Nx
+             xy_buffer_r4(I,J) = global(I,J)
+            ENDDO
+           ENDDO
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR4( x_size*y_size, xy_buffer_r4 )
+#endif
+           write(dUnit,rec=irec) xy_buffer_r4
+          elseif (filePrec .eq. precFloat64) then
+           DO J=1,Ny
+            DO I=1,Nx
+             xy_buffer_r8(I,J) = global(I,J)
+            ENDDO
+           ENDDO
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR8( x_size*y_size, xy_buffer_r8 )
+#endif
+           write(dUnit,rec=irec) xy_buffer_r8
+          else
+           write(msgbuf,'(a)')
+     &       ' MDSWRITEFIELD: illegal value for filePrec'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSWRITEFIELD'
+          endif
+         ENDIF
+        _END_MASTER( myThid )
+       ENDDO
+
+C Close data-file and create meta-file
+       _BEGIN_MASTER( myThid )
+        IF( mpiMyId .EQ. 0 ) THEN
+         close( dUnit )
+         write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
+         dimList(1,1)=Nx
+         dimList(2,1)=1
+         dimList(3,1)=Nx
+         dimList(1,2)=Ny
+         dimList(2,2)=1
+         dimList(3,2)=Ny
+         dimList(1,3)=nLocz
+         dimList(2,3)=1
+         dimList(3,3)=nLocz
+         ndims=3
+         if (nLocz .EQ. 1) ndims=2
+         call MDSWRITEMETA( metaFName, dataFName,
+     &     filePrec, ndims, dimList, irecord, myIter, mythid )
+        ENDIF
+       _END_MASTER( myThid )
+C To be safe, make other processes wait for I/O completion
+       _BARRIER
+
+      elseif ( .NOT. useSingleCpuIO ) then
+      _BEGIN_MASTER( myThid )
+#endif /* ALLOW_USE_MPI */
+cph-usesingle)
 
 C Loop over all processors    
       do jp=1,nPy
@@ -912,8 +1185,12 @@ C End of ip,jp loops
        enddo
       enddo
 
-
       _END_MASTER( myThid )
+
+#ifdef ALLOW_USE_MPI
+C endif useSingleCpuIO
+      endif
+#endif /* ALLOW_USE_MPI */
 
 C     ------------------------------------------------------------------
       return
