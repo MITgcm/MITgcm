@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gsum_jam.F,v 1.1 2000/03/14 16:10:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gsum_jam.F,v 1.2 2000/03/14 20:28:12 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -11,12 +11,12 @@ C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gsum_jam.F,v 1.1 2000/03/14 16:10:
 #include "mpif.h"
 #endif
 
-      REAL*8 ans
+      Real*8 ans
       INTEGER myThid
 
 #ifdef LETS_MAKE_JAM
 
-      REAL*8 phi
+      Real*8 phi
       INTEGER RC
 
       phi = ans

@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.12 2000/03/14 16:21:41 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.13 2000/03/14 20:29:19 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -202,6 +202,14 @@ switch ($platform$USEMPI)
     set FOPTIM     = ( '-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee' )
     set LINK       = ( 'pgf77' )
     set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich -Kieee' )
+    breaksw
+  case T3E:
+  case sn6312:
+    set CPP        = ( '/opt/ctl/bin/cpp -P')
+    set DEFINES    = ( ${DEFINES} '-DTARGET_T3E -DWORDLENGTH=4' )
+    set FC         = ( 'f90' )
+    set LINK       = ( 'f90' )
+    set FFLAGS     = ( '-O 2,fusion' )
     breaksw
   default:
     echo "Error: platform not recognized: uname -p = " $platform$USEMPI

@@ -1,7 +1,5 @@
 #include "CPP_OPTIONS.h"
 
-#ifdef ALLOW_KPP
-
       subroutine KVMIX(
      I     bi, bj, myTime, myThid )
 CADJ I     bi, bj, ikey, myTime, myThid )
@@ -97,6 +95,8 @@ c     myTime - Current time in simulation
       INTEGER ikey
       INTEGER myThid
       _RL     myTime
+
+#ifdef ALLOW_KPP
 
 c Local arrays and variables
 c                            horizontal working arrays
@@ -453,8 +453,9 @@ c KPPhbl: set to -zgrid(1) over land
          END DO
 
       ENDIF
-      RETURN
-
-      END
 
 #endif
+
+      RETURN
+      END
+

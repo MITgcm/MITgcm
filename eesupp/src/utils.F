@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.6 1999/05/18 17:39:22 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.7 2000/03/14 20:28:13 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -34,7 +34,9 @@ C
       lDate = 24
       IF ( LEN(string) .LT. lDate ) GOTO 901
       string = ' '
+#ifndef TARGET_T3E
       CALL FDATE( string )
+#endif
 C   
  1000 CONTINUE
       RETURN
@@ -189,7 +191,12 @@ C
       strTmp = 'UNKNOWN'
       iFree  = 1
       idSize = LEN(string)
+#ifdef TARGET_T3E
+      IFirst = 0
+      CALL PXFGETENV('USER',iFirst,strTmp,ILast,Iend  )
+#else
       CALL GETENV('USER',strTmp  )
+#endif
       IF ( strTmp .NE. ' ' ) THEN
         iFirst = IFNBLNK(strTmp)
         iLast  = ILNBLNK(strTmp)
@@ -204,7 +211,12 @@ C
         ENDIF
       ENDIF
       strTmp = 'UNKNOWN'
-      CALL GETENV('HOST',strtmp )
+#ifdef TARGET_T3E
+      IFirst = 0
+      CALL PXFGETENV('HOST',iFirst,strTmp,ILast,Iend  )
+#else
+      CALL GETENV('HOST',strTmp  )
+#endif
       IF ( strTmp .NE. ' ' ) THEN
         iFirst = IFNBLNK(strTmp)
         iLast  = ILNBLNK(strTmp)

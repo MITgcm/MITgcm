@@ -1,7 +1,5 @@
 #include "CPP_OPTIONS.h"
 
-#ifdef ALLOW_KPP
-
 c-- File kppmix.F: subroutines needed to implement
 c--                KPP vertical mixing scheme
 c-- Contents
@@ -92,6 +90,8 @@ c     hbl    (imt)    - mixing layer depth                                    (m
       _RS diffus(imt,0:kmp1,mdiff)
       _RS ghat  (imt,Nr)
       _RS hbl   (imt)
+
+#ifdef ALLOW_KPP
 
 c local
 c     kbl    (imt         ) - index of first grid level below hbl
@@ -1489,7 +1489,7 @@ C      Substitute other plotting utilities here!
      I        biStart,  biEnd, biStride,
      I        bjStart,  bjEnd, bjStride )
 
+#endif
+
       RETURN
       END
-
-#endif

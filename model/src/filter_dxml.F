@@ -1,8 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/filter_dxml.F,v 1.2 1999/05/18 17:58:46 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/filter_dxml.F,v 1.3 2000/03/14 20:28:15 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_DXML_FFT
-
 C     Filtering routines to interface with Digital/Compaq DXML
 C     library.
 
@@ -21,6 +19,8 @@ C     == Global data ==
 C     == Routine arguments ==
 C     myThid - Thread number of this instance of FILTER_DXML_DFFT_INIT
       INTEGER myThid
+
+#ifdef ALLOW_DXML_FFT
 
 C     == Local variables ==
       LOGICAL STRIDE_ONE_ONLY
@@ -100,7 +100,7 @@ C     Complex to real backward transform
       STAT2 = 
      &DFFT_APPLY('C','R','B',phiTrans,phi,DXML_DFFT_STRUCT(myThid),1)
 C
+#endif /* ALLOW_DXML_FFT */
+
       RETURN
       END
-
-#endif /* ALLOW_DXML_FFT */

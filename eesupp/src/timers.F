@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.5 1999/05/24 15:15:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.6 2000/03/14 20:28:12 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -415,17 +415,28 @@ C     \==========================================================/
       Real*8 wallClockTime
 CEndOfInterface
       Real*4 ETIME, ACTUAL, TARRAY(2)
+#ifndef TARGET_T3E
       EXTERNAL ETIME
+#endif
       Real*8 wtime
 C     Real*8 MPI_Wtime
 C     EXTERNAL MPI_Wtime
 
+#ifdef TARGET_T3E
+      userTime = 0.
+      systemTime = 0.
+#else
       ACTUAL = ETIME(TARRAY)
-    
       userTime      = TARRAY(1)
       systemTime    = TARRAY(2)
+#endif
+
+#ifdef TARGET_T3E
+      wallClockTime = 0.
+#else
       CALL CLOC(wTime)
       wallClockTime = wtime
+#endif
 
 #ifdef ALLOW_USE_MPI
 C     wtime         = MPI_Wtime()

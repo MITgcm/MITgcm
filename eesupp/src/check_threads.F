@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.4 1999/05/18 17:39:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.5 2000/03/14 20:28:11 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -76,7 +76,9 @@ C       but this causes KAP to insert a call to mppjoin - which then deadlocks!
        GOTO 11
       ENDIF
       IF ( numberThreadsRunning .NE. nThreads ) THEN
+#ifndef TARGET_T3E
        CALL SYSTEM('sleep 1')
+#endif
        GOTO 10
       ENDIF
    11 CONTINUE

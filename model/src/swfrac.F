@@ -2,7 +2,6 @@ C $Header: /u/gcmpack/models/MITgcmUV/model/src/ini_forcing.F,v 1.15 1998/12/15 
 
 #include "CPP_OPTIONS.h"
 
-#ifdef ALLOW_KPP
 C I.Fukumori 8/24/98 
 CStartOfInterface
       SUBROUTINE SWFRAC(
@@ -41,6 +40,8 @@ C     input arguments
 C     output arguments
       _RS swdk(imax)            ! short wave (radiation) fractional decay
 
+#ifdef ALLOW_KPP
+
 C     === Local variables ===
       _RS facz
       _RS rfac(nwtype),a1(nwtype),a2(nwtype)
@@ -63,6 +64,7 @@ C
          ENDIF
       ENDDO
 
+#endif
+
       RETURN
       END
-#endif
