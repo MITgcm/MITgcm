@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ftl/Attic/CPP_OPTIONS.h,v 1.2 2002/09/16 18:15:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ftl/Attic/CPP_OPTIONS.h,v 1.3 2003/01/10 01:14:38 heimbach Exp $
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -18,7 +18,7 @@ C o Shortwave heating as extra term in external_forcing.F
 #endif
 
 C o Include/exclude code for Shapiro filters
-#define  ALLOW_SHAP_FILT
+#undef  ALLOW_SHAP_FILT
 
 C o Include/exclude code for C-D grid method of integrating the 
 C   coriolis terms
@@ -133,14 +133,23 @@ C          because the old code did not have no-slip BCs
 C o Read/write of checkpoint files for restarting.
 #undef OLD_STYLE_WITH_MANY_FILES
 
+C o Exact volume conservation
+#undef EXACT_CONSERV
+
 C o Add passive tracer advection routines
 #define ALLOW_PASSIVE_TRACER
 
+C o Include/exclude monitor package
+#define EXCLUDE_MONITOR
+
+C o Include/exclude code for sea-ice model
+#undef  ALLOW_SEAICE
+
+c o Allow atmospheric loading
+#define ATMOSPHERIC_LOADING 
+
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
-
-C exclude monitor package
-#define EXCLUDE_MONITOR
 
 C o Include/exclude code specific to the ECCO/SEALION version.
 #undef INCLUDE_ECCO_PACKAGE
