@@ -21,7 +21,7 @@ There is comparison output in the directory:
  ../verification/exp4/results
 
 Comments:
-The input data is real*4.
+The input data is real*8.
 
 
 See the file doc/OpenBound.html or doc/OpenBound.txt for information
