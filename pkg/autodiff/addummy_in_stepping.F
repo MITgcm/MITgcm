@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.14 2004/09/29 03:45:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.15 2004/09/29 14:04:52 heimbach Exp $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -156,8 +156,6 @@ c
        _END_MASTER( myThid )
        _BARRIER
 
-      ENDIF
-
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
 c
@@ -175,6 +173,8 @@ c
 c
         ENDIF
 #endif /* ALLOW_MNC */
+
+      ENDIF
 
       call TIMER_STOP( 'I/O (WRITE)        [ADJOINT LOOP]', myThid )
 
