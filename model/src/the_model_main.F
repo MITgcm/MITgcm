@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.8 1998/05/25 20:05:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.9 1998/06/01 20:36:13 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -50,6 +50,9 @@ C--   Set model initial conditions
       CALL INITIALISE( myThid )
       myCurrentTime = startTime
       myCurrentIter = nIter0
+
+C--   Initialise time-stepping (predictor variables are carried in G)
+      CALL INIT_PREDICTOR( myThid )
 
 C--   Begin time stepping loop
       DO I=1, nTimeSteps

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.10 1998/05/28 16:19:50 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.11 1998/06/01 20:36:13 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -97,6 +97,53 @@ C                          into fVerTerm
       INTEGER i, j
       INTEGER k, kM1, kUp, kDown
 
+C---    The algorithm...
+C
+C       "Correction Step"
+C       =================
+C       Here we update the horizontal velocities with the surface
+C       pressure such that the resulting flow is either consistent
+C       with the free-surface evolution or the rigid-lid:
+C         U[n] = U* + dt x d/dx P
+C         V[n] = V* + dt x d/dy P
+C       With implicit diffusion, the tracers must also be "finalized"
+C         (1 + dt * K * d_zz) theta[n] = theta*
+C         (1 + dt * K * d_zz) salt[n] = salt*
+C
+C       "Calculation of Gs"
+C       ===================
+C       This is where all the accelerations and tendencies (ie.
+C       physics, parameterizations etc...) are calculated
+C         w = sum_z ( div. u[n] )
+C         rho = rho ( theta[n], salt[n] )
+C         K31 = K31 ( rho )
+C         Gu[n] = Gu( u[n], v[n], w, rho, Ph, ... )
+C         Gv[n] = Gv( u[n], v[n], w, rho, Ph, ... )
+C         Gt[n] = Gt( theta[n], u[n], v[n], w, K31, ... )
+C         Gs[n] = Gs( salt[n], u[n], v[n], w, K31, ... )
+C
+C       "Time-stepping" or "Predicition"
+C       ================================
+C       The models variables are stepped forward with the appropriate
+C       time-stepping scheme (currently we use Adams-Bashforth II)
+C       - For momentum, the result is always *only* a "prediction"
+C       in that the flow may be divergent and will be "corrected"
+C       later with a surface pressure gradient.
+C       - Normally for tracers the result is the new field at time
+C       level [n+1} *BUT* in the case of implicit diffusion the result
+C       is also *only* a prediction.
+C       - We denote "predictors" with an asterisk (*).
+C         U* = U[n] + dt x ( 3/2 Gu[n] - 1/2 Gu[n-1] )
+C         V* = V[n] + dt x ( 3/2 Gv[n] - 1/2 Gv[n-1] )
+C         theta[n+1] = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C         salt[n+1] = salt[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C       or with implicit diffusion
+C         theta* = theta[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C
+C         salt* = salt[n] + dt x ( 3/2 Gt[n] - 1/2 atG[n-1] )
+C---
+
+
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They
 C     just ensure that all memory references are to valid floating
@@ -130,17 +177,6 @@ C     uninitialised but inert locations.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-C--     Boundary condition on hydrostatic pressure is pH(z=0)=0
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          pH(i,j,1) = 0. _d 0
-          K13(i,j,1) = 0. _d 0
-          K23(i,j,1) = 0. _d 0
-          K33(i,j,1) = 0. _d 0
-          KapGM(i,j) = 0. _d 0
-         ENDDO
-        ENDDO
-
 C--     Set up work arrays that need valid initial values
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -153,6 +189,11 @@ C--     Set up work arrays that need valid initial values
           fVerU(i,j,2) = 0. _d 0
           fVerV(i,j,1) = 0. _d 0
           fVerV(i,j,2) = 0. _d 0
+          pH(i,j,1) = 0. _d 0
+          K13(i,j,1) = 0. _d 0
+          K23(i,j,1) = 0. _d 0
+          K33(i,j,1) = 0. _d 0
+          KapGM(i,j) = 0. _d 0
          ENDDO
         ENDDO
 
@@ -168,7 +209,7 @@ C--     Calculate gradient of surface pressure
      I       myThid)
 
 C--     Update fields in top level according to tendency terms
-        CALL TIMESTEP(
+        CALL CORRECTION_STEP(
      I       bi,bj,iMin,iMax,jMin,jMax,1,pSurfX,pSurfY,myThid)
 
 C--     Density of 1st level (below W(1)) reference to level 1
@@ -189,7 +230,7 @@ C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
 
         DO K=2,Nz
 C--     Update fields in Kth level according to tendency terms
-        CALL TIMESTEP(
+        CALL CORRECTION_STEP(
      I       bi,bj,iMin,iMax,jMin,jMax,K,pSurfX,pSurfY,myThid)
 C--     Density of K-1 level (above W(K)) reference to K-1 level
 copt    CALL FIND_RHO(
@@ -238,6 +279,13 @@ C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
      U      pH,
      I      myThid )
 
+        ENDDO ! K
+
+C--     Initial boundary condition on barotropic divergence integral
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          cg2d_b(i,j,bi,bj) = 0. _d 0
+         ENDDO
         ENDDO
 
         DO K = Nz, 1, -1
@@ -282,7 +330,18 @@ Cdbg I        K13,K23,K33,KapGM,
 Cdbg U        aTerm,xTerm,fZon,fMer,fVerS,
 Cdbg I        myThid)
 
-        ENDDO
+C--      Prediction step (step forward all model variables)
+         CALL TIMESTEP(
+     I       bi,bj,iMin,iMax,jMin,jMax,K,
+     I       myThid)
+
+C--      Diagnose barotropic divergence of predicted fields
+         CALL DIV_G(
+     I       bi,bj,iMin,iMax,jMin,jMax,K,
+     I       xA,yA,
+     I       myThid)
+
+        ENDDO ! K
  
        ENDDO
       ENDDO

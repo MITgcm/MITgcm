@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.11 1998/05/30 02:10:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.12 1998/06/01 20:36:13 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -33,9 +33,7 @@ C     \==========================================================/
 
 C     == Global variables ==
 #include "SIZE.h"
-#include "EEPARAMS.h"
 #include "DYNVARS.h"
-#include "CG2D.h"
 #include "FFIELDS.h"
 #include "PARAMS.h"
 #include "GRID.h"
@@ -519,52 +517,6 @@ C--   Set dv/dt on boundaries to zero
       DO j=jMin,jMax
        DO i=iMin,iMax
         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
-
-C--   Pressure equation source term
-C     Term is the vertical integral of the divergence of the 
-C     time tendency terms along with a relaxation term that
-C     pulls div(U) + dh/dt back toward zero.
-
-      IF ( k .EQ. nZ ) THEN
-C      Initialise source term on first pass
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         cg2d_b(i,j,bi,bj) =
-     &    -freeSurfFac*_zA(i,j,bi,bj)*
-     &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
-        ENDDO
-       ENDDO
-      ENDIF
-
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        pf(i,j) = uTrans(i,j)/deltatmom
-     &   + xA(i,j)*(
-     &       ab15*gU(i,j,k,bi,bj)+ab05*gUNM1(i,j,k,bi,bj)
-     &     )
-       ENDDO
-      ENDDO
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        cg2d_b(i,j,bi,bj) =  cg2d_b(i,j,bi,bj) +
-     &   pf(i+1,j)-pf(i,j)
-       ENDDO
-      ENDDO
-
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        pf(i,j) = vTrans(i,j)/deltatmom
-     &   + yA(i,j)*(
-     &      ab15*gV(i,j,k,bi,bj)+ab05*gVNM1(i,j,k,bi,bj)
-     &     )
-       ENDDO
-      ENDDO
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        cg2d_b(i,j,bi,bj) =  cg2d_b(i,j,bi,bj) +
-     &   pf(i,j+1)-pf(i,j)
        ENDDO
       ENDDO
 
