@@ -24,6 +24,7 @@
  rhoConst=1.0,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
  staggerTimeStep=.TRUE.,
  nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
