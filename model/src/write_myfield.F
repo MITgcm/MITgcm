@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/write_myfield.F,v 1.1 2004/03/24 21:39:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/write_myfield.F,v 1.2 2004/03/26 20:29:09 cnh Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -96,7 +96,8 @@ C       Write each snap-shot as a new file (original and default method)
 C       - creates many files but for large configurations is easier to
 C         transfer analyse a particular snap-shots
         WRITE(suff,'(I10.10)') myIter
-        CALL WRITE_FLD_XYZ_RL( localfile,suff,myField,myIter,myThid)
+        STOP 'WRITE_FLD_XYZ_RL CALL INCORRECT - CONTACT SUPPORT'
+C       CALL WRITE_FLD_XYZ_RL( localfile,suff,myField,myIter,myThid)
 
 #endif /* MULTIPLE_RECORD_STATE_FILES */
 
