@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.3 2003/09/27 07:45:51 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.4 2003/11/13 06:35:15 dimitri Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -42,6 +42,7 @@ C internal flag to indicate we are in business
       PTRACERSisON=.TRUE.
 
 C Set defaults values for parameters in PTRACERS.h
+      PTRACERS_taveFreq=taveFreq
       PTRACERS_numInUse=-1
       DO iTracer=1,PTRACERS_num
        PTRACERS_advScheme(iTracer)=saltAdvScheme

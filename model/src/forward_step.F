@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.72 2003/11/06 22:01:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.73 2003/11/13 06:35:14 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -229,6 +229,11 @@ C     theta is dumped or time-averaged.
          CALL TIMER_STOP ('SEAICE_MODEL       [FORWARD_STEP]',myThid)
       ENDIF
 # endif /* ALLOW_SEAICE */
+
+C--   Freeze water at the surface
+      IF ( allowFreezing .AND. .NOT. useSEAICE
+     &                   .AND. .NOT. useThermSeaIce )
+     &   CALL FREEZE( myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_PTRACERS

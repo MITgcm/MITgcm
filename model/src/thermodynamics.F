@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.57 2003/11/06 22:01:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.58 2003/11/13 06:35:14 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -101,9 +101,6 @@ C     == Global variables ===
 # endif
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
-# endif
-# ifdef ALLOW_SEAICE
-#  include "SEAICE_EXTERNAL.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -755,15 +752,17 @@ C--      Apply open boundary conditions
          END IF
 #endif   /* ALLOW_OBCS */
 
-C--      Freeze water
-         IF ( allowFreezing .AND. .NOT. useSEAICE
-     &       .AND. .NOT.(useThermSeaIce.AND.k.EQ.1) ) THEN
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gT(:,:,k,bi,bj) = comlev1_bibj_k
-CADJ &   , key = kkey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-            CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, k, myThid )
-         ENDIF
+c>>>>> has been moved to FORWARD_STEP
+cC--      Freeze water
+c         IF ( allowFreezing .AND. .NOT. useSEAICE
+c     &       .AND. .NOT.(useThermSeaIce.AND.k.EQ.1) ) THEN
+c#ifdef ALLOW_AUTODIFF_TAMC
+cCADJ STORE gT(:,:,k,bi,bj) = comlev1_bibj_k
+cCADJ &   , key = kkey, byte = isbyte
+c#endif /* ALLOW_AUTODIFF_TAMC */
+c            CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, k, myThid )
+c         ENDIF
+c>>>>> has been moved to FORWARD_STEP
 
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO

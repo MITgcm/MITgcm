@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.12 2003/11/04 19:51:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.13 2003/11/13 06:35:15 dimitri Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -17,6 +17,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#include "FFIELDS.h"
 #include "TIMEAVE_STATV.h"
 
       LOGICAL  DIFFERENT_MULTIPLE
@@ -33,11 +34,16 @@ C     myTime - Current time of simulation ( s )
 #ifdef ALLOW_TIMEAVE
 
 C     == Local variables ==
-      INTEGER K
+      INTEGER I, J, K
       _RL DDTT
+      _RL tempArray (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
  
 C-    Initialize fields for the first call ever
       IF ( myIter .EQ. nIter0 ) THEN
+        CALL TIMEAVE_RESET(uFluxtave, 1,  bi, bj, myThid)
+        CALL TIMEAVE_RESET(vFluxtave, 1,  bi, bj, myThid)
+        CALL TIMEAVE_RESET(tFluxtave, 1,  bi, bj, myThid)
+        CALL TIMEAVE_RESET(sFluxtave, 1,  bi, bj, myThid)
         CALL TIMEAVE_RESET(etatave,   1,  bi, bj, myThid)
         CALL TIMEAVE_RESET(thetatave, Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(salttave,  Nr, bi, bj, myThid)
@@ -149,6 +155,58 @@ C-- end if DDTT ...
 
 C-    Time Averages of "intermediate" fields (no hFactor)
       IF ( myIter .NE. nIter0 ) THEN
+ 
+C-    Time Averages of surface fluxes
+       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+        k=Nr
+       ELSE
+        k=1
+       ENDIF
+
+C     uFlux
+       DO j=1,sNy
+        DO i=1,sNx
+         tempArray(i,j,bi,bj)=fu(i,j,bi,bj)*foFacMom*_maskW(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+       CALL TIMEAVE_CUMULATE(uFluxtave,tempArray,1,
+     &                                   deltaTclock, bi, bj, myThid)
+
+C     vFlux
+       DO j=1,sNy
+        DO i=1,sNx
+         tempArray(i,j,bi,bj)=fv(i,j,bi,bj)*foFacMom*_maskS(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+       CALL TIMEAVE_CUMULATE(vFluxtave,tempArray,1,
+     &                                   deltaTclock, bi, bj, myThid)
+
+C     tFlux
+       DO j=1,sNy
+        DO i=1,sNx
+         tempArray(i,j,bi,bj)=maskC(i,j,k,bi,bj)*(
+#ifdef SHORTWAVE_HEATING
+     &    -Qsw(i,j,bi,bj)+
+#endif
+     &    (surfaceTendencyT(i,j,bi,bj)+surfaceTendencyTice(I,J,bi,bj))*
+     &    HeatCapacity_Cp*
+     &    recip_horiVertRatio*rhoConst*drF(k)*hFacC(i,j,k,bi,bj))
+        ENDDO
+       ENDDO
+       CALL TIMEAVE_CUMULATE(tFluxtave,tempArray,1,
+     &                                   deltaTclock, bi, bj, myThid)
+
+C     sFlux
+       DO j=1,sNy
+        DO i=1,sNx
+         tempArray(i,j,bi,bj)=maskC(i,j,k,bi,bj)*
+     &    surfaceTendencyS(i,j,bi,bj)*
+     &    recip_horiVertRatio*rhoConst*drF(k)*hFacC(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+       CALL TIMEAVE_CUMULATE(sFluxtave,tempArray,1,
+     &                                   deltaTclock, bi, bj, myThid)
+
         CALL TIMEAVE_CUMULATE(phiHydtave, totPhihyd,  Nr, 
      &                                   deltaTclock, bi, bj, myThid)
         CALL TIMEAVE_CUMULATE(phiHydLowtave, phiHydLow, 1,

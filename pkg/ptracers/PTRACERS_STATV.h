@@ -18,13 +18,17 @@ C     *================================================================*
 C     \ev
 CEOP
 
-C     ptracertave    :: tracer values
+C     ptracerFluxtave: surface ptracer flux (mol/m2/s, >0 for increase in ptracer)
+C     ptracertave    : tracer values (mol/m-3)
 
       COMMON /TAVE_PTRACER/ 
-     &                  ptracertave, ptracer_half
-      _RL  ptracertave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
-     &              PTRACERS_num)
-      _RL ptracer_half(Nr,nSx,nSy)
+     &                  ptracerFluxtave, ptracertave,
+     &                  ptracer_half   , ptracer_full
+      _RL ptracerFluxtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy,
+     &                                                     PTRACERS_num)
+      _RL ptracertave    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
+     &                                                     PTRACERS_num)
+      _RL ptracer_half(Nr,nSx,nSy), ptracer_full(Nr,nSx,nSy)
 
 #endif /* ALLOW_TIMEAVE */ 
 #endif

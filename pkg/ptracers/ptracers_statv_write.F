@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_statv_write.F,v 1.3 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_statv_write.F,v 1.4 2003/11/13 06:35:15 dimitri Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -53,21 +53,24 @@ C     TimeAve - total time over average
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
- 
+
 C-    Final Time Averages and Dump Files if needed
-c     IF ( myIter.NE.nIter0 .AND. 
-c    &  DIFFERENT_MULTIPLE(taveFreq,myTime,myTime-deltaTClock) ) THEN
-      IF(DIFFERENT_MULTIPLE(taveFreq,myTime,myTime-deltaTClock) )THEN
-
-
+c     IF ( myIter.NE.nIter0 .AND. DIFFERENT_MULTIPLE
+c    &  (PTRACERS_taveFreq,myTime,myTime-deltaTClock) ) THEN
+      IF ( DIFFERENT_MULTIPLE
+     &     (PTRACERS_taveFreq, myTime, myTime-deltaTClock) ) THEN
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
 C-     Normalize by integrated time
-         do iTracer=1,PTRACERS_numInUse
-          CALL TIMEAVE_NORMALIZ(ptracertave(1-Olx,1-Oly,1,1,1,iTracer),
-     &                           ptracer_half,Nr,bi,bj,myThid)
-         enddo
+         DO iTracer=1,PTRACERS_numInUse
+          CALL TIMEAVE_NORMALIZ(
+     &           ptracerFluxtave(1-Olx,1-Oly,  1,1,iTracer),
+     &           ptracer_full, 1,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(
+     &           ptracertave    (1-Olx,1-Oly,1,1,1,iTracer),
+     &           ptracer_half,Nr,bi,bj,myThid)
+         ENDDO
         ENDDO
        ENDDO
 
@@ -88,12 +91,14 @@ c      writeBinaryPrec = precFloat32
       
 
        do iTracer=1,PTRACERS_numInUse
+         WRITE(suff,'(A7,I2.2,A1,I10.10)') 'PtrFluxtave',
+     &         iTracer,'.',myIter
+         CALL WRITE_FLD_XY_RL (suff,' ',
+     &      ptracerFluxtave(1-Olx,1-Oly,  1,1,iTracer),myIter,myThid)
          WRITE(suff,'(A7,I2.2,A1,I10.10)') 'PTRtave',
      &         iTracer,'.',myIter
-     
-
          CALL WRITE_FLD_XYZ_RL(suff,' ',
-     &      ptracertave(1-Olx,1-Oly,1,1,1,iTracer),myIter,myThid)
+     &      ptracertave    (1-Olx,1-Oly,1,1,1,iTracer),myIter,myThid)
        enddo
 
 

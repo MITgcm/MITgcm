@@ -1,10 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.206 2003/11/12 00:02:44 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.207 2003/11/13 06:35:13 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o modifications to make FREEZE flux visible to pkg/kpp
+  - moved surfaceTendencyTice from pkg/seaice to main code
+  - FREEZE moved to FORWARD_STEP
+  - subroutine FREEZE now limits only surface temperature
+    this means new output.txt for global_ocean.90x40x15,
+    global_ocean.cs32x15, and global_with_exf, but note
+    that results for these three experiments remain
+    bit-identical to before if allowFreezing=.FALSE.
+o added surface flux output variables to TIMEAVE_STATVARS
+o time-averaged output for pkg/ptracers
 
-untagged
+checkpoint52a_pre
 o some bug fixes for #undef REAL4_IS_SLOW
 
 checkpoint52 = ecco_c52_e35

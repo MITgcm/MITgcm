@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.32 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.33 2003/11/13 06:35:14 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -58,6 +58,8 @@ C       |
 C       |-- INTEGR_CONTINUITY
 C       |
 C       |-- TIMEAVE_STATVARS
+C       |
+C       |-- PTRACERS_STATVARS
 C       |
 C       |-- STATE_SUMMARY
 

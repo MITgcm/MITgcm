@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.30 2003/11/01 04:50:02 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.31 2003/11/13 06:35:14 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,6 +63,7 @@ CEOP
           surfaceTendencyV(i,j,bi,bj) = 0. _d 0
           surfaceTendencyT(i,j,bi,bj) = 0. _d 0
           surfaceTendencyS(i,j,bi,bj) = 0. _d 0
+          surfaceTendencyTice(i,j,bi,bj) = 0. _d 0
 #ifndef ALLOW_EXF
           taux0           (i,j,bi,bj) = 0. _d 0
           taux1           (i,j,bi,bj) = 0. _d 0
