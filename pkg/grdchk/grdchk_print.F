@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.8 2003/10/23 04:41:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.9 2003/10/27 22:32:55 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -40,7 +40,7 @@ c     == routine arguments ==
       integer ierr_grdchk
       integer mythid 
 
-#ifdef ALLOW_GRADIENT_CHECK
+#ifdef ALLOW_GRDCHK
 c     == local variables ==
 
       _RL fcref
@@ -207,7 +207,7 @@ c--   Print final lines.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-#endif /* ALLOW_GRADIENT_CHECK */
+#endif /* ALLOW_GRDCHK */
 
       return
       end

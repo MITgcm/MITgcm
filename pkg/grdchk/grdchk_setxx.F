@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.9 2003/07/18 21:10:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_setxx.F,v 1.10 2003/10/27 22:32:55 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -50,7 +50,7 @@ c     == routine arguments ==
       _RL     xx_comp_ref
       integer mythid
 
-#ifdef ALLOW_GRADIENT_CHECK
+#ifdef ALLOW_GRDCHK
 c     == local variables ==
 
       integer i,j,k
@@ -561,7 +561,7 @@ c--   == end of interface ==
 ce      --> this index does not exist yet.
       endif
 
-#endif /* ALLOW_GRADIENT_CHECK */
+#endif /* ALLOW_GRDCHK */
 
       end
 

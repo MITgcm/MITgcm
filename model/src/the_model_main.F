@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.63 2003/10/24 05:29:35 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.64 2003/10/27 22:32:55 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -517,16 +517,13 @@ C--   Set model configuration (fixed arrays)
       myCurrentTime = startTime
       myCurrentIter = nIter0
 
-#if ( defined (ALLOW_ADMTLM_RUN) )
+#if ( defined (ALLOW_ADMTLM) )
 c
       CALL TIMER_START('ADMTLM_DRIVER          [THE_MODEL_MAIN]',mythid)
       CALL ADMTLM_DRIVER ( myThid )
       CALL TIMER_STOP ('ADMTLM_DRIVER          [THE_MODEL_MAIN]',mythid)
 c
-#elif ( defined (ALLOW_ADJOINT_RUN) || \
-      defined (ALLOW_TANGENTLINEAR_RUN) || \
-      defined (ALLOW_GRADIENT_CHECK) || \
-      defined (ALLOW_ECCO_OPTIMIZATION) )
+#elif ( defined (ALLOW_AUTODIFF))
 
       _BEGIN_MASTER( mythid )
       IF (myProcId .eq. 0) THEN
@@ -585,7 +582,7 @@ c
       _BARRIER
 c
 
-# ifdef ALLOW_GRADIENT_CHECK
+# ifdef ALLOW_GRDCHK
       IF ( useGrdchk .AND. lastdiva ) THEN
          CALL TIMER_START('GRDCHK_MAIN         [THE_MODEL_MAIN]',mythid)
          CALL GRDCHK_MAIN( mythid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_summary.F,v 1.6 2003/06/24 16:08:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_summary.F,v 1.7 2003/10/27 22:32:55 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -33,7 +33,7 @@ c     == routine arguments ==
 
       integer mythid 
 
-#ifdef ALLOW_GRADIENT_CHECK
+#ifdef ALLOW_GRDCHK
 c     == local variables ==
 
       character*(max_len_mbuf) msgbuf
@@ -99,7 +99,7 @@ c     == end of interface ==
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-#endif /* ALLOW_GRADIENT_CHECK */
+#endif /* ALLOW_GRDCHK */
 
       return
       end

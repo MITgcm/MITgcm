@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_obcs_mask.F,v 1.3 2003/07/18 21:10:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_obcs_mask.F,v 1.4 2003/10/27 22:32:55 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -31,7 +31,7 @@ c     == routine arguments ==
 
       integer mythid
 
-#if (defined (ALLOW_GRADIENT_CHECK) && defined (ALLOW_OBCS_CONTROL))
+#if (defined (ALLOW_GRDCHK) && defined (ALLOW_OBCS_CONTROL))
 c     == local variables ==
 
       integer bi,bj
@@ -161,7 +161,7 @@ c
 
       _BARRIER
 
-#endif /* ALLOW_GRADIENT_CHECK */
+#endif /* ALLOW_GRDCHK */
 
       end
 

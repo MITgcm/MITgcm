@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.67 2003/10/24 05:29:35 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.68 2003/10/27 22:32:55 heimbach Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
@@ -208,7 +207,7 @@ C--   end of if/else block useBulfforce --
       ENDIF
 #endif /* ALLOW_BULK_FORCE */
 
-#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
+#ifdef ALLOW_AUTODIFF
 c--   Add control vector for forcing and parameter fields
       if ( myiter .EQ. nIter0 )
      &     CALL CTRL_MAP_FORCING (mythid)

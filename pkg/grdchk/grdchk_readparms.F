@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.6 2003/06/24 16:08:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_readparms.F,v 1.7 2003/10/27 22:32:55 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -32,7 +32,7 @@ c     == routine arguments ==
 
       integer mythid
 
-#ifdef ALLOW_GRADIENT_CHECK
+#ifdef ALLOW_GRDCHK
 c     == local variables ==
 
       integer i,j,k
@@ -114,7 +114,7 @@ c--     Summarize the gradient check's setup.
 
       _BARRIER
 
-#endif /* ALLOW_GRADIENT_CHECK */
+#endif /* ALLOW_GRDCHK */
 
       end
 

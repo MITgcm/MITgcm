@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.25 2003/10/23 04:41:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.26 2003/10/27 22:32:55 heimbach Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
@@ -103,9 +102,7 @@ cph#endif
       IF ( useLAND ) CALL LAND_INI_VARS( mythid )
 #endif
 
-#if (defined (ALLOW_ADJOINT_RUN) || \
-     defined (ALLOW_TANGENTLINEAR_RUN) || \
-     defined (ALLOW_ECCO_OPTIMIZATION))
+#ifdef ALLOW_AUTODIFF
 c--   Initialise auxiliary xx_ fields
       CALL CTRL_INIT_VARIABLES ( mythid )
 c--   Map the control variables onto the model state.

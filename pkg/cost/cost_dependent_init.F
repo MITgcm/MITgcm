@@ -1,8 +1,8 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.4 2003/10/23 04:41:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.5 2003/10/27 22:32:55 heimbach Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
+#include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
 
 
@@ -51,9 +51,7 @@ c     == end of interface ==
 
       fc   = 0.0
 
-#if ( defined (ALLOW_ADJOINT_RUN) || \
-      defined (ALLOW_GRADIENT_CHECK) || \
-      defined (ALLOW_ECCO_OPTIMIZATION) )
+#ifdef ALLOW_AUTODIFF
 
       adfc = 1.0
       do bj = jtlo,jthi
@@ -78,7 +76,7 @@ c        end do
         enddo
       enddo
 
-#endif
+#endif /* ALLOW_AUTODIFF */
 
       return
       end

@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.10 2003/10/23 04:41:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.11 2003/10/27 22:32:55 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -89,7 +89,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
       integer mythid 
 
-#ifdef ALLOW_GRADIENT_CHECK
+#ifdef ALLOW_GRDCHK
 C     !LOCAL VARIABLES:
 c     == local variables ==
       integer myiter
@@ -456,6 +456,6 @@ c--   Everyone has to wait for the component to be reset.
 c--   Print the results of the gradient check.
       call grdchk_print( ichknum, ierr_grdchk, mythid )
 
-#endif /* ALLOW_GRADIENT_CHECK */
+#endif /* ALLOW_GRDCHK */
 
       end
