@@ -1,0 +1,28 @@
+Example: "Relaxation of a Front in a Channel"
+=============================================
+
+This uses a simply EOS (rho = - rho_o alpha T') and treats
+salt as a passive tracer. 
+
+To apply the changes to the default configuration of MITgcmUV:
+  cp ../verification/front_relax/code/SIZE.h ../model/inc/
+  cp ../verification/front_relax/code/CPP_OPTIONS.h ../model/inc/
+  cp ../verification/front_relax/code/CPP_EEOPTIONS.h ../eesupp/inc/
+
+Configure and compile the code:
+  cd bin
+  ../tools/genmake -makefile
+  make depend
+  make
+
+To run:
+  cd ../exe
+  cp ../verification/front_relax/input/* .
+  ./mitgcmuv
+
+There is comparison output in two directories:
+ ../verification/front_relax/results
+ ../verification/front_relax/results.oldcode
+
+Comments:
+The input data is real*8.
