@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.13 2004/12/14 19:56:45 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.14 2005/03/09 20:01:03 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -22,7 +22,7 @@ C***********************************************************************
       _RL vphy(im2,jm2,Nrphys,Nbi,Nbj)
       _RL thphy(im2,jm2,Nrphys,Nbi,Nbj)
       _RL sphy(im2,jm2,Nrphys,Nbi,Nbj)
-      _RL qq(im2,jm2,Nrphys),pk(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL qq(im2,jm2,Nrphys,Nbi,Nbj),pk(im2,jm2,Nrphys,Nbi,Nbj)
       _RL dp(im2,jm2,Nrphys,Nbi,Nbj)
       _RL radswt(im2,jm2,Nbi,Nbj),radswg(im2,jm2,Nbi,Nbj)
       _RL swgclr(im2,jm2,Nbi,Nbj),osr(im2,jm2,Nbi,Nbj)
@@ -297,7 +297,8 @@ c ----------------------------
       if( itke.ne.0 ) then
       do j=jm1,jm2
       do i=im1,im2
-      qdiag(i,j,itke+L-1,bi,bj) = qdiag(i,j,itke+L-1,bi,bj) + qq(i,j,L)
+      qdiag(i,j,itke+L-1,bi,bj) = qdiag(i,j,itke+L-1,bi,bj)
+     &                          + qq(i,j,L,bi,bj)
       enddo
       enddo
       endif
