@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.18 1998/11/06 22:44:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.19 1998/12/09 16:11:51 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -17,6 +17,7 @@ C     |  2. Under multi-threading the summary is produced by     |
 C     |     the master thread. This threads reads data managed by|
 C     |     other threads.                                       |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

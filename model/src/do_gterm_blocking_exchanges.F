@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.7 1998/10/28 03:11:37 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.8 1998/12/09 16:11:51 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -11,6 +11,7 @@ C     | One key trick used in UV us that we over-compute and     |
 C     | arrange our time-stepping loop so that we only need one  |
 C     | edge exchange for the explicit code per timestep.        |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ===
 #include "SIZE.h"

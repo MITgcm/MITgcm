@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.9 1998/11/06 22:44:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.10 1998/12/09 16:11:53 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
  
@@ -24,6 +24,7 @@ C     | with the entire model domain. This is probably OK for now|
 C     | Each thread then copies data from the buffer to the      |
 C     | region of the proper array it is responsible for.        |
 C     \==========================================================/
+      IMPLICIT NONE
  
 C     === Global variables ===
 #include "SIZE.h"
@@ -65,6 +66,7 @@ CStartOfInterface
 C     /==========================================================\
 C     | S/R LOAD_SALT_CLIMATOLOGY                                |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
@@ -113,6 +115,7 @@ CStartOfInterface
 C     /==========================================================\
 C     | S/R LOAD_THETA_CLIMATOLOGY                               |
 C     \==========================================================?
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
@@ -160,6 +163,7 @@ CStartOfInterface
 C     /==========================================================\
 C     | S/R LOAD_WIND_STRESS_CLIMATOLOGY                         |
 C     \==========================================================?
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
@@ -261,6 +265,7 @@ CStartOfInterface
 C     /==========================================================\
 C     | S/R LOAD_INTERPOLATE_FORCING                             |
 C     \==========================================================?
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
@@ -652,6 +657,7 @@ CStartOfInterface
 C     /==========================================================\
 C     | S/R ZERO_CLIMATOLOGY                                     |
 C     \==========================================================?
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/get_offline_fields.F,v 1.4 1998/11/06 22:44:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/get_offline_fields.F,v 1.5 1998/12/09 16:11:51 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
  
@@ -9,6 +9,7 @@ C     | SUBROUTINE GET_OFFLINE_FIELDS                            |
 C     | o Make ee support calls for loading data for offline     |
 C     |   experiments.                                           |
 C     \==========================================================/
+      IMPLICIT NONE
  
 C     === Global variables ===
 #include "SIZE.h"

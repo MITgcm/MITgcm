@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_vvel.F,v 1.6 1998/11/06 22:44:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_vvel.F,v 1.7 1998/12/09 16:11:53 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -16,6 +16,7 @@ C     |     a checkpoint file from a previous integration.       |
 C     | In addition to setting the velocity field we also        |
 C     | set the initial velocity tendency term here.             |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

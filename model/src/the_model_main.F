@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.23 1998/12/08 19:44:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.24 1998/12/09 16:11:54 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -22,6 +22,7 @@ C     | =====                                                    |
 C     | C*P* comments indicating place holders for which code is |
 C     |      presently being developed.                          |
 C     \==========================================================/
+      IMPLICIT NONE
 C
 C     Call Tree
 C     =========

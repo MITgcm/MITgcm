@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.11 1998/11/30 23:45:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.12 1998/12/09 16:11:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -33,6 +33,7 @@ C     | Under the cartesian grid mode primitive distances in X   |
 C     | and Y are in metres. Disktance in Z are in m or Pa       |
 C     | depending on the vertical gridding mode.                 |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

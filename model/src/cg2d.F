@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.17 1998/11/30 23:45:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.18 1998/12/09 16:11:51 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -28,6 +28,7 @@ C     | solving the same problem. On the other hand if you want  |
 C     | the threads to solve several different problems          | 
 C     | concurrently this implementation will not work.          |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global data ===
 #include "SIZE.h"

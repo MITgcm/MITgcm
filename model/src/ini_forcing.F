@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.13 1998/12/08 18:03:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.14 1998/12/09 16:11:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -8,6 +8,7 @@ C     /==========================================================\
 C     | SUBROUTINE INI_FORCING                                   |
 C     | o Set model initial forcing fields.                      |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

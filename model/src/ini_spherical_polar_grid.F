@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.11 1998/11/30 23:45:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.12 1998/12/09 16:11:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -33,6 +33,7 @@ C     | Under the spherical polar grid mode primitive distances  |
 C     | in X and Y are in degrees. Distance in Z are in m or Pa  |
 C     | depending on the vertical gridding mode.                 |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

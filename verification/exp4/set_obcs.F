@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp4/Attic/set_obcs.F,v 1.1 1998/12/08 19:44:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp4/Attic/set_obcs.F,v 1.2 1998/12/09 16:11:54 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -10,6 +10,7 @@ C     | o Set boundary conditions at open boundaries             |
 C     |==========================================================|
 C     |                                                          |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

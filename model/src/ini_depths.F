@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.16 1998/11/06 22:44:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.17 1998/12/09 16:11:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -19,6 +19,7 @@ C     | This default doubly periodic topology is "supressed"     |
 C     | if a depth map is defined which closes off all wrap      |
 C     | around flow.                                             |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

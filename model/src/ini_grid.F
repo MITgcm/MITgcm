@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.5 1998/11/06 22:44:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.6 1998/12/09 16:11:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -30,6 +30,7 @@ C     |   Both of the above also require modifying the support   |
 C     |   routines that map computational blocks to simulation   |
 C     |   domain blocks.                                         |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.8 1998/11/06 22:44:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.9 1998/12/09 16:11:53 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -26,6 +26,8 @@ C     | point etc..                                              |
 C     | Other plot formats can also be substituted here.         |
 C     | _RS is usually REAL*4                                    |
 C     \==========================================================/
+      IMPLICIT NONE
+
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -108,6 +110,8 @@ C     | point etc..                                              |
 C     | Other plot formats can also be substituted here.         |
 C     | _RL is usually REAL*8                                    |
 C     \==========================================================/
+      IMPLICIT NONE
+
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -190,6 +194,8 @@ C     | point etc..                                              |
 C     | Other plot formats can also be substituted here.         |
 C     | _RS is usually a REAL*4 field                            |
 C     \==========================================================/
+      IMPLICIT NONE
+
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -282,6 +288,8 @@ C     | point etc..                                              |
 C     | Other plot formats can also be substituted here.         |
 C     | _RL is usually a REAL*8 field                            |
 C     \==========================================================/
+      IMPLICIT NONE
+
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.37 1998/12/08 19:44:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.38 1998/12/09 16:11:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -14,6 +14,7 @@ C     | A production version needs to handle parameters from an  |
 C     | external file and possibly reading in some initial field |
 C     | values.                                                  |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
@@ -361,6 +362,14 @@ C--   z,p,r coord input switching.
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ELSE
        recip_rhoConst = 1.D0 / rhoConst
+      ENDIF
+      IF ( rhoNil .LE. 0. ) THEN
+       WRITE(msgBuf,'(A)')
+     &  'S/R INI_PARMS: rhoNil must be greater than 0.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ELSE
+       recip_rhoNil = 1.D0 / rhoNil
       ENDIF
       IF ( gravity .LE. 0. ) THEN
        WRITE(msgBuf,'(A)')

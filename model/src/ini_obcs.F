@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_obcs.F,v 1.1 1998/12/08 19:44:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_obcs.F,v 1.2 1998/12/09 16:11:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -10,6 +10,7 @@ C     | o Initialise OB arrays                                   |
 C     |==========================================================|
 C     |                                                          |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

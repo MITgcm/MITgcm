@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.6 1998/11/06 22:44:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.7 1998/12/09 16:11:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -8,6 +8,7 @@ C     /==========================================================\
 C     | SUBROUTINE INI_CORI                                      |
 C     | o Initialise coriolis term.                              |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.22 1998/12/08 19:44:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.23 1998/12/09 16:11:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -11,6 +11,7 @@ C     |==========================================================|
 C     | These arrays are purely a function of the basin geom.    |
 C     | We set then here once and them use then repeatedly.      |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/shap_filt.F,v 1.1 1998/11/06 22:44:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/shap_filt.F,v 1.2 1998/12/09 16:11:53 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -14,6 +14,7 @@ C     /==========================================================\
 C     | S/R SHAP_FILT                                            |
 C     | Controls shapiro filtering of prognostic variables       |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ===
 #include "SIZE.h"

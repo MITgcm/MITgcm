@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.8 1998/12/08 18:04:51 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.9 1998/12/09 16:11:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -18,6 +18,7 @@ C     |     integration.                                         |
 C     | In addition to setting the salinity field we also        |
 C     | set the initial salinity tendency term here.             |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

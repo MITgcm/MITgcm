@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.7 1998/11/06 22:44:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.8 1998/12/09 16:11:53 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -10,6 +10,7 @@ C     | o Initialise vertical gridding arrays                    |
 C     |==========================================================|
 C     |                                                          |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

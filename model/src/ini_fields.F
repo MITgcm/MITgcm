@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.4 1998/11/06 22:44:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.5 1998/12/09 16:11:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -13,6 +13,7 @@ C     | set here. For continuation runs a restart file will be   |
 C     | used. For original runs custom rules can be included     |
 C     | here.                                                    |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"
