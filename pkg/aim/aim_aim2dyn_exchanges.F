@@ -1,11 +1,11 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_aim2dyn_exchanges.F,v 1.3 2002/09/27 20:05:11 jmc Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_aim2dyn_exchanges.F,v 1.4 2004/04/22 21:34:52 jmc Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE AIM_AIM2DYN_EXCHANGES(
-     I           myCurrentTime,myThid)
+     I           myCurrentTime, myIter, myThid)
 C     /==========================================================\
 C     | S/R AIM_AIM2DYN_EXCHANGES                                |
 C     | o Do overlap exchanges for AIM related quantities.       |
@@ -25,6 +25,7 @@ C     == Global data ==
 
 C     == Routine arguments ==
       _RL myCurrentTime
+      INTEGER myIter
       INTEGER myThid
 CEndOfInterface
 
