@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/GMREDI_OPTIONS.h,v 1.8 2003/10/26 01:22:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/GMREDI_OPTIONS.h,v 1.9 2004/09/17 23:06:53 heimbach Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -17,7 +17,7 @@ C Designed to simplify the Ajoint code:
 C  exclude the clipping/tapering part of the code that is not used
 #define GM_EXCLUDE_CLIPPING
 #define GM_EXCLUDE_AC02_TAP
-#undef  GM_EXCLUDE_TAPERING 
+#undef GM_EXCLUDE_TAPERING 
  
 C This allows to use Visbeck et al formulation to compute K_GM+Redi
 #undef GM_VISBECK_VARIABLE_K
@@ -32,7 +32,7 @@ C be used with the advective form (Bolus velocity) of GM
 
 C Allows to use the advective form (Bolus velocity) of GM
 C  instead of the Skew-Flux form (=default)
-#undef  GM_BOLUS_ADVEC
+#define  GM_BOLUS_ADVEC
 
 
 #endif /* ALLOW_GMREDI */
