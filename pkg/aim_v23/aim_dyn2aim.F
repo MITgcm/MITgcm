@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_dyn2aim.F,v 1.3 2004/04/08 00:14:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_dyn2aim.F,v 1.4 2004/07/08 15:51:19 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -101,21 +101,50 @@ c        PSA(I2) = rF(K)/atm_po
       ENDDO
 
 C-    Set cell delta_P fraction (of the full delta.P = drF_k):
-      DO K = 1,Nr
-       Katm = _KD2KA( K )
-       DO J = 1,sNy
-        DO I = 1,sNx
-         I2 = I+(J-1)*sNx
-c        dpFac(I2,Katm) = 1. _d 0
-         dpFac(I2,Katm) = hFacC(I,J,K,bi,bj)
-c        IF (hFacC(I,J,K,bi,bj).GT.0. _d 0) THEN
-c          dpFac(I2,Katm) = hFacC(I,J,K,bi,bj)
-c        ELSE
+#ifdef NONLIN_FRSURF
+      IF ( staggerTimeStep .AND. nonlinFreeSurf.GT.0 ) THEN
+       IF ( select_rStar.GT.0 ) THEN
+        DO k = 1,Nr
+         Katm = _KD2KA( k )
+         DO j = 1,sNy
+          DO i = 1,sNx
+           I2 = i+(j-1)*sNx
+           dpFac(I2,Katm) = h0FacC(i,j,k,bi,bj)*rStarFacC(i,j,bi,bj)
 c          dpFac(I2,Katm) = 1. _d 0
-c        ENDIF
+          ENDDO
+         ENDDO
         ENDDO
-       ENDDO
-      ENDDO
+       ELSE
+        DO k = 1,Nr
+         Katm = _KD2KA( k )
+         DO j = 1,sNy
+          DO i = 1,sNx
+           I2 = i+(j-1)*sNx
+           IF ( k.EQ.ksurfC(i,j,bi,bj) ) THEN
+            dpFac(I2,Katm) = hFac_surfC(i,j,bi,bj)
+           ELSE
+            dpFac(I2,Katm) = hFacC(i,j,k,bi,bj)
+           ENDIF
+c          dpFac(I2,Katm) = 1. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
+      ELSE
+#else /* ndef NONLIN_FRSURF */
+      IF (.TRUE.) THEN
+#endif /* NONLIN_FRSURF */
+        DO k = 1,Nr
+         Katm = _KD2KA( k )
+         DO j = 1,sNy
+          DO i = 1,sNx
+           I2 = i+(j-1)*sNx
+           dpFac(I2,Katm) = hFacC(i,j,k,bi,bj)
+c          dpFac(I2,Katm) = 1. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+      ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
