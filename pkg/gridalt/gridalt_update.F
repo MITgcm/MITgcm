@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_update.F,v 1.5 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_update.F,v 1.6 2004/07/02 20:22:05 molod Exp $
 C $Name:  $
 
        subroutine gridalt_update(myThid)
@@ -40,8 +40,9 @@ c
        j2 = sNy
 
 #ifdef ALLOW_FIZHI
-                                                                                         
-       if(usefizhi)then
+#ifdef NONLIN_FRSURF
+
+       if(usefizhi .and. (select_rStar.GT.0) )then
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
 c
@@ -58,6 +59,7 @@ c
         enddo
        endif
 
+#endif
 #endif
 
        return
