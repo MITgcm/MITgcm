@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/advect_cs/code/ini_vel.F,v 1.1 2001/09/28 02:30:09 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/advect_cs/code/ini_vel.F,v 1.2 2003/02/11 02:29:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -22,6 +22,7 @@ C     myThid -  Number of this instance of INI_UVEL
 C     == Local variables ==
 C     bi,bj,i,j,k - Loop counters
       INTEGER bi,bj,i,j,k
+      INTEGER ip1,jp1
       _RL psi,omegaprime,fac
 
       psi(i,j,bi,bj)=fac*fCoriG(i,j,bi,bj)
@@ -39,11 +40,13 @@ C
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO k=1,Nr
          DO j=1-Oly,sNy+Oly
+          jp1=MIN(j+1,sNy+Oly)
           DO i=1-Olx,sNx+Olx
+           ip1=MIN(i+1,sNx+Olx)
            uVel(i,j,k,bi,bj)=0.
-     &      +(psi(i,j,bi,bj)-psi(i,j+1,bi,bj))*recip_dyg(i,j,bi,bj)
+     &      +(psi(i,j,bi,bj)-psi(i,jp1,bi,bj))*recip_dyg(i,j,bi,bj)
            vVel(i,j,k,bi,bj)=0.
-     &      +(psi(i+1,j,bi,bj)-psi(i,j,bi,bj))*recip_dxg(i,j,bi,bj)
+     &      +(psi(ip1,j,bi,bj)-psi(i,j,bi,bj))*recip_dxg(i,j,bi,bj)
            wVel(i,j,k,bi,bj)=0.
           ENDDO
          ENDDO
