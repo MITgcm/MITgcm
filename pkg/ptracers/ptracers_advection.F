@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.1 2002/03/04 19:01:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.2 2004/01/03 00:50:29 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -17,6 +17,8 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "DYNVARS.h"
 #include "PTRACERS.h"
 #include "GAD.h"
 
@@ -52,12 +54,14 @@ c    &     multiDimAdvection .AND.
      &     PTRACERS_advScheme(iTracer).NE.ENUM_CENTERED_2ND .AND.
      &     PTRACERS_advScheme(iTracer).NE.ENUM_UPWIND_3RD .AND.
      &     PTRACERS_advScheme(iTracer).NE.ENUM_CENTERED_4TH ) THEN
-            CALL GAD_ADVECTION(bi,bj,
+            CALL GAD_ADVECTION(
+     I                        .FALSE.,
      I                        PTRACERS_advScheme(iTracer),
      I                        GAD_TR1,
-     U                        pTracer(1-Olx,1-Oly,1,1,1,iTracer),
-     U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     I                        myTime,myIter,myThid)
+     I                        uVel, vVel, wVel,
+     I                        pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+     O                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+     I                        bi,bj,myTime,myIter,myThid)
        ENDIF
 
 
