@@ -5,8 +5,10 @@
 # - The input data is real*8
 
 >>>>>>>>>>>>>>>>>>>> DO THESE THINGS FIRST <<<<<<<<<<<<<<<<<<<<
-mkdir verification/natl_box_adjoint/exe
-cd verification/natl_box_adjoint/exe
+cd verification/natl_box_adjoint
+gunzip results*/output*.gz
+mkdir exe
+cd exe
 ln -s ../build/mitgcmuv_ad .
 ln -s ../build/mitgcmuv_ftl .
 >>>>>>>>>>>>>>>>>>>> DO THESE THINGS FIRST <<<<<<<<<<<<<<<<<<<<
@@ -411,7 +413,7 @@ ln -s ../build/mitgcmuv_ftl .
 # run the ADM
  ./mitgcmuv_ad >&! output.txt_adm
 # run the TLM
- ./mitgcmuv_tlm >&! output.txt_tlm
+ ./mitgcmuv_ftl >&! output.txt_tlm
 
 # To verify the results of the gradient check, type:
  grep grad-res output.txt_adm
