@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.65 2002/03/04 17:26:40 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.66 2002/03/05 15:36:06 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint44g_post
+o fix surface correction term in multiDimAdvection (affects plume_on_slope 
+  results) ; ifdef missing in thermodynamics.F
 
 checkpoint44f_pre,checkpoint44f_post
 o added PTRACERS package
