@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.5 2001/08/27 18:48:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep_tracer.F,v 1.6 2001/09/04 14:53:10 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -58,7 +58,9 @@ C-    with Adams-Bashforth weights:
         ENDDO
        ENDDO
 
-      ELSEIF (advection_scheme.EQ.ENUM_FLUX_LIMIT) THEN
+      ELSEIF (advection_scheme.EQ.ENUM_FLUX_LIMIT
+     &    .OR.advection_scheme.EQ.ENUM_DST3
+     &    .OR.advection_scheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
 
 C-    with no Adams-Bashforth weights:
        DO j=jMin,jMax

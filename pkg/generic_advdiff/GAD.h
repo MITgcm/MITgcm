@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.5 2001/08/30 13:01:14 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.6 2001/09/04 14:53:11 adcroft Exp $
 C $Name:  $
 
 C Enumerated constants for selecting advection schemes
@@ -21,6 +21,14 @@ C Centered 4th order
 C Non-linear flux limiter
       INTEGER ENUM_FLUX_LIMIT
       PARAMETER(ENUM_FLUX_LIMIT=77)
+
+C 3-DST 
+      INTEGER ENUM_DST3
+      PARAMETER(ENUM_DST3=30)
+
+C 3-DST flux limited
+      INTEGER ENUM_DST3_FLUX_LIMIT
+      PARAMETER(ENUM_DST3_FLUX_LIMIT=33)
 
 C Third/fourth order interpolation factor
       _RL oneSixth

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.3 2001/08/30 00:40:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.4 2001/09/04 14:53:11 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -103,6 +103,12 @@ C-    Advective flux in X
        CALL GAD_U3_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
       ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
        CALL GAD_C4_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
+      ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+       CALL GAD_DST3_ADV_X(
+     &       bi,bj,k,deltaTtracer,uTrans,uVel,localT,af,myThid)
+      ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+       CALL GAD_DST3FL_ADV_X(
+     &       bi,bj,k,deltaTtracer,uTrans,uVel,localT,af,myThid)
       ELSE
        STOP 'GAD_CALC_RHS: Bad advectionScheme (X)'
       ENDIF
@@ -167,6 +173,12 @@ C-    Advective flux in Y
        CALL GAD_U3_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
       ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
        CALL GAD_C4_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
+      ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+       CALL GAD_DST3_ADV_Y(
+     &       bi,bj,k,deltaTtracer,vTrans,vVel,localT,af,myThid)
+      ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+       CALL GAD_DST3FL_ADV_Y(
+     &       bi,bj,k,deltaTtracer,vTrans,vVel,localT,af,myThid)
       ELSE
        STOP 'GAD_CALC_RHS: Bad advectionScheme (Y)'
       ENDIF
@@ -234,7 +246,14 @@ C-    Compute vertical advective flux in the interior:
         CALL GAD_U3_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
        ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
         CALL GAD_C4_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
-c       CALL GAD_C2_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
+       ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+c       CALL GAD_DST3_ADV_R(
+c    &       bi,bj,k,deltaTtracer,rTrans,wVel,tracer,af,myThid)
+        STOP 'GAD_CALC_RHS: GAD_DST3_ADV_R not coded yet'
+       ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+c       CALL GAD_DST3FL_ADV_R(
+c    &       bi,bj,k,deltaTtracer,rTrans,wVel,tracer,af,myThid)
+        STOP 'GAD_CALC_RHS: GAD_DST3FL_ADV_R not coded yet'
        ELSE
         STOP 'GAD_CALC_RHS: Bad advectionScheme (R)'
        ENDIF
