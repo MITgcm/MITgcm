@@ -262,6 +262,6 @@ tltamc:  allcode tlmodeltamc
 
 tltaf:  allcode tlmodeltaf
 
-adtamc:  allcode admodeltamc
+adtamc:  adrestore allcode admodeltamc
 
-adtaf:  allcode admodeltaf
+adtaf:  adrestore allcode admodeltaf
