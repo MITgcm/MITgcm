@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.23 2003/09/27 07:45:51 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.24 2003/09/28 20:16:41 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -117,9 +117,9 @@ C       - creates relatively few files but these files can become huge
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 #ifdef NONLIN_FRSURF
-        CALL WRITE_REC_XYZ_RS('hFacC.',hFacC,iRec,myIter,myThid)
-        CALL WRITE_REC_XYZ_RS('hFacW.',hFacW,iRec,myIter,myThid)
-        CALL WRITE_REC_XYZ_RS('hFacS.',hFacS,iRec,myIter,myThid)
+c       CALL WRITE_REC_XYZ_RS('hFacC.',hFacC,iRec,myIter,myThid)
+c       CALL WRITE_REC_XYZ_RS('hFacW.',hFacW,iRec,myIter,myThid)
+c       CALL WRITE_REC_XYZ_RS('hFacS.',hFacS,iRec,myIter,myThid)
 #endif /* NONLIN_FRSURF */
 
 #else /* MULTIPLE_RECORD_STATE_FILES */
@@ -136,7 +136,7 @@ C         transfer analyse a particular snap-shots
         CALL WRITE_FLD_XYZ_RL( 'W.',suff,wVel,myIter,myThid)
         IF ( useDynP_inEos_Zc .OR. myIter.NE.nIter0 )
      &  CALL WRITE_FLD_XYZ_RL( 'PH.',suff,totPhiHyd,myIter,myThid)
-        IF ( buoyancyRelation .NE. 'ATMOSPHERIC' )
+        IF (buoyancyRelation.NE.'ATMOSPHERIC' .AND. myIter.NE.nIter0)
      &   CALL WRITE_FLD_XY_RL('PHL.',suff,phiHydLow,myIter,myThid)
 #ifdef ALLOW_PASSIVE_TRACER
         CALL WRITE_FLD_XYZ_RL( 'TR1.',suff,tr1,myIter,myThid)
@@ -147,9 +147,9 @@ C         transfer analyse a particular snap-shots
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 #ifdef NONLIN_FRSURF
-        CALL WRITE_FLD_XYZ_RS('hFacC.',suff,hFacC,myIter,myThid)
-        CALL WRITE_FLD_XYZ_RS('hFacW.',suff,hFacW,myIter,myThid)
-        CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
+c       CALL WRITE_FLD_XYZ_RS('hFacC.',suff,hFacC,myIter,myThid)
+c       CALL WRITE_FLD_XYZ_RS('hFacW.',suff,hFacW,myIter,myThid)
+c       CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
 #endif /* NONLIN_FRSURF */
 
 #endif /* MULTIPLE_RECORD_STATE_FILES */
