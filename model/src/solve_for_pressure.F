@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.12 2000/03/14 17:47:26 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.13 2000/06/29 18:29:15 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -73,27 +73,28 @@ C--   Save previous solution.
 C--   Add source term arising from w=d/dt (p_s + p_nh)
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        K=1
+#ifdef ALLOW_NONHYDROSTATIC
         DO j=1,sNy
          DO i=1,sNx
           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
      &       +freeSurfFac*_rA(I,J,bi,bj)*horiVertRatio*(
      &          -cg2d_x(I,J,bi,bj)
-#ifdef ALLOW_NONHYDROSTATIC
-     &          -cg3d_x(I,J,K,bi,bj)
-#endif
+     &          -cg3d_x(I,J,1,bi,bj)
      &        )/deltaTMom/deltaTMom
-         ENDDO
-        ENDDO
-#ifdef ALLOW_NONHYDROSTATIC
-        K=1
-        DO j=1,sNy
-         DO i=1,sNx
-          cg3d_b(i,j,k,bi,bj) = cg3d_b(i,j,k,bi,bj)
+          cg3d_b(i,j,1,bi,bj) = cg3d_b(i,j,1,bi,bj)
      &      +freeSurfFac*_rA(I,J,bi,bj)*horiVertRatio*(
      &         -cg2d_x(I,J,bi,bj)
-     &         -cg3d_x(I,J,K,bi,bj)
+     &         -cg3d_x(I,J,1,bi,bj)
      &       )/deltaTMom/deltaTMom
+         ENDDO
+        ENDDO
+#else
+        DO j=1,sNy
+         DO i=1,sNx
+          cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+     &       +freeSurfFac*_rA(I,J,bi,bj)*horiVertRatio*(
+     &          -cg2d_x(I,J,bi,bj)
+     &        )/deltaTMom/deltaTMom
          ENDDO
         ENDDO
 #endif
