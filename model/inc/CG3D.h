@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG3D.h,v 1.1 1999/03/22 15:54:02 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CG3D.h,v 1.2 1999/05/18 17:40:37 adcroft Exp $
 
 #ifdef ALLOW_NONHYDROSTATIC
 C     /==========================================================\
@@ -26,23 +26,13 @@ C     cg3dNorm - A matrix normalisation factor.
      &      aS3d,
      &      aV3d,
      &      zMC, zML, zMU,
-     &      errcg3Buf, nrmcg3Buf, etaNcg3buf, etaNM1cg3Buf, 
-     &      alphacg3Buf, sumRhscg3Buf,
-     &      cg3dNorm, rhsMaxcg3Buf, cg3dNBuf
+     &      cg3dNorm
       _RS  aW3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  aS3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  aV3d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  zMC  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  zML  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  zMU  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  etaNcg3Buf(lShare8,MAX_NO_THREADS)
-      _RL  etaNM1cg3Buf(lShare8,MAX_NO_THREADS)
-      _RL  alphacg3Buf(lShare8,MAX_NO_THREADS)
-      _RL  errcg3Buf(lShare8,MAX_NO_THREADS)
-      _RL  nrmcg3Buf(lShare8,MAX_NO_THREADS)
-      _RL  sumRHScg3Buf(lShare8,MAX_NO_THREADS)
-      _RS  cg3dNBuf(lShare8,MAX_NO_THREADS)
-      _RL  rhsMaxcg3Buf(lShare8,MAX_NO_THREADS)
       _RL  cg3dNorm
 
 C--   COMMON /CG3D_WK_R/  Work array common block

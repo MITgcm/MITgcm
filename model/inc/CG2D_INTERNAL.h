@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/Attic/CG2D_INTERNAL.h,v 1.2 1999/03/12 18:53:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/Attic/CG2D_INTERNAL.h,v 1.3 1999/05/18 17:40:37 adcroft Exp $
 C
 C     /==========================================================\
 C     | CG2D.h                                                   |
@@ -22,21 +22,12 @@ C     cg2dNorm - A matrix normalisation factor.
      &      aW2d,
      &      aS2d,
      &      pW, pS, pC,
-     &      errBuf, nrmBuf, etaNbuf, etaNM1Buf, alphaBuf, sumRhsBuf,
-     &      cg2dNorm, rhsMaxBuf, cg2dNBuf
+     &      cg2dNorm
       _RS  aW2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  aS2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  pW   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  pS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  pC   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  etaNBuf(lShare8,MAX_NO_THREADS)
-      _RL  etaNM1Buf(lShare8,MAX_NO_THREADS)
-      _RL  alphaBuf(lShare8,MAX_NO_THREADS)
-      _RL  errBuf(lShare8,MAX_NO_THREADS)
-      _RL  nrmBuf(lShare8,MAX_NO_THREADS)
-      _RL  sumRHSBuf(lShare8,MAX_NO_THREADS)
-      _RS  cg2dNBuf(lShare8,MAX_NO_THREADS)
-      _RL  rhsMaxBuf(lShare8,MAX_NO_THREADS)
       _RL  cg2dNorm
 
 C--   COMMON /CG2D_I_WK_R/  Work array common block
