@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/state_summary.F,v 1.3 1998/10/28 03:11:38 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/state_summary.F,v 1.4 1998/11/06 22:44:49 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE STATE_SUMMARY( myThid )

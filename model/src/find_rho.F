@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.8 1998/06/12 19:33:33 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.9 1998/11/06 22:44:46 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 #define USE_FACTORIZED_POLY
 
-! ==============================================================================
+! ================================================================
       subroutine FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax,  k, kRef, eqn,
      O      rholoc,
@@ -35,7 +35,7 @@ C     \==========================================================/
 ! Local
       integer i,j
       _RL refTemp,refSalt,sigRef,tP,sP,deltaSig
-! ------------------------------------------------------------------------------
+! -----------------------------------------------------------------
 
       if (eqn.eq.'LINEAR') then
 

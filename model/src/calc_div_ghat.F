@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.5 1998/10/28 03:11:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.6 1998/11/06 22:44:44 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 C     /==========================================================\
 C     | S/R CALC_DIV_GHAT                                        |

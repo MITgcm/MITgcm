@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.9 1998/10/28 03:11:37 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.10 1998/11/06 22:44:47 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE INI_SPHERICAL_POLAR_GRID( myThid )
@@ -102,8 +102,8 @@ C           longitude - phiMin and thetaMin.
           xc(I,J,bi,bj)  = xG + delX(iG+i-1)*0.5 _d 0
           yc(I,J,bi,bj)  = yG + delY(jG+j-1)*0.5 _d 0
           xG = xG + delX(iG+I-1)
-          dxF(I,J,bi,bj) = delX(iG+i-1)*deg2rad*
-     &     rSphere*COS(yc(I,J,bi,bj)*deg2rad)
+          dxF(I,J,bi,bj) = delX(iG+i-1)*deg2rad
+     &    *rSphere*COS(yc(I,J,bi,bj)*deg2rad)
           dyF(I,J,bi,bj) = delY(jG+j-1)*deg2rad*rSphere
          ENDDO
          yG = yG + delY(jG+J-1)
@@ -171,6 +171,8 @@ C     Calculate vertical face area and trigonometric terms
           latN = yc(i,j,bi,bj)+delY(jG)*0.5 _d 0
           rA(I,J,bi,bj) = dyF(I,J,bi,bj)
      &    *rSphere*(SIN(latN*deg2rad)-SIN(latS*deg2rad))
+C         Area cannot be zero but sin can be if lat if < -90.
+          IF ( rA(I,J,bi,bj) .LT. 0. ) rA(I,J,bi,bj) = -rA(I,J,bi,bj)
           tanPhiAtU(i,j,bi,bj)=tan(_yC(i,j,bi,bj)*deg2rad)
           tanPhiAtV(i,j,bi,bj)=tan(latS*deg2rad)
          ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.6 1998/10/28 03:11:38 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.7 1998/11/06 22:44:49 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -25,7 +25,7 @@ CEndOfInterface
 C     Local variables
       INTEGER i,j,k,bi,bj
 
-#ifdef ALLOW_CD
+#ifdef INCLUDE_CD_CODE
 C--   Save previous solution.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.35 1998/11/02 03:34:12 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.36 1998/11/06 22:44:47 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -508,7 +508,7 @@ C     o Finish time
 
 C     o If taveFreq is finite, then we must make sure the diagnostics
 C       code is being compiled
-#ifndef ALLOW_DIAGNOSTICS
+#ifndef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
       IF (taveFreq.NE.0.) THEN
         WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: taveFreq <> 0  but you have'
@@ -516,8 +516,9 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &  'not compiled the model with the diagnostics routines.'
         CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &  'Re-compile with:  #define ALLOW_DIAGNOSTICS  or  -DALLOW_DIAGNOSTICS'
+        WRITE(msgBuf,'(A,A)')
+     &  'Re-compile with:  #define INCLUDE_DIAGNOSTICS_INTERFACE_CODE',
+     &  '              or  -DINCLUDE_DIAGNOSTICS_INTERFACE_CODE'
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF

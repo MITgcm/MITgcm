@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.6 1998/08/22 17:51:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.7 1998/11/06 22:44:46 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 C     /==========================================================\
 C     | S/R IMPLDIFF                                             |

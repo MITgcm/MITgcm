@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.15 1998/11/02 03:34:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.16 1998/11/06 22:44:45 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
       SUBROUTINE CG2D(  
      I                cg2d_b,

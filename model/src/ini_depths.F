@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.15 1998/10/28 03:11:37 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.16 1998/11/06 22:44:47 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE INI_DEPTHS( myThid )

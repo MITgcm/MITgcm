@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.12 1998/10/28 03:11:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.13 1998/11/06 22:44:42 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -544,11 +544,11 @@ C               Str  - stride within block
       INTEGER lChList
       PARAMETER ( lChList = 28 )
       CHARACTER*(lChList) chList
-      REAL fMin
-      REAL fMax
-      REAL fRange
-      REAL val
-      REAL small
+      _RL  fMin
+      _RL  fMax
+      _RL  fRange
+      _RL  val
+      _RL  small
       CHARACTER*2  accLab
       CHARACTER*7  dwnLab
       CHARACTER*3  pltLab
@@ -565,9 +565,9 @@ C               Str  - stride within block
       LOGICAL validRange
 
       chList = '-abcdefghijklmnopqrstuvwxyz+'
-      small  = 1. _d -15
-      fMin   =  1. _d 32
-      fMax   = -1. _d 32
+      small  =  1. _d -15
+      fMin   =  1. _d  32
+      fMax   = -1. _d  32
       validRange = .FALSE.
 
 C--   Calculate field range
@@ -811,7 +811,7 @@ C      Data
              ELSEIF ( plotMode .EQ. PRINT_MAP_YZ ) THEN
               val = fld(K,I,J,bk,bi)
              ENDIF
-             IF ( validRange ) THEN
+             IF ( validRange .AND. val .NE. 0. ) THEN
               IDX = NINT( 
      &              FLOAT( lChList-1 )*( val-fMin ) / (fRange) 
      &             )+1
@@ -952,11 +952,11 @@ C               Str  - stride within block
       INTEGER lChList
       PARAMETER ( lChList = 28 )
       CHARACTER*(lChList) chList
-      REAL fMin
-      REAL fMax
-      REAL fRange
-      REAL val
-      REAL small
+      _RL  fMin
+      _RL  fMax
+      _RL  fRange
+      _RL  val
+      _RL  small
       CHARACTER*2  accLab
       CHARACTER*7  dwnLab
       CHARACTER*3  pltLab
@@ -1218,7 +1218,7 @@ C      Data
              ELSEIF ( plotMode .EQ. PRINT_MAP_YZ ) THEN
               val = fld(K,I,J,bk,bi)
              ENDIF
-             IF ( validRange ) THEN
+             IF ( validRange .AND. val .NE. 0. ) THEN
               IDX = NINT( 
      &               FLOAT( lChList-1 )*( val-fMin ) / (fRange) 
      &              )+1

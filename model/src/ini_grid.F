@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.4 1998/07/02 14:16:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.5 1998/11/06 22:44:47 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE INI_GRID( myThid )

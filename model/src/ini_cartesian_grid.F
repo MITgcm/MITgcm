@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.9 1998/11/02 03:34:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.10 1998/11/06 22:44:46 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE INI_CARTESIAN_GRID( myThid )

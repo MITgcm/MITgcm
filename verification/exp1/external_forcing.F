@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.2 1998/11/06 22:44:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp1/Attic/external_forcing.F,v 1.1 1998/11/06 22:44:49 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -13,7 +13,6 @@ C     |==========================================================|
 C     | Adds terms to gU for forcing by external sources         |
 C     | e.g. wind stress, bottom friction etc..................  |
 C     \==========================================================/
-      IMPLICIT NONE
 
 C     == Global data ==
 #include "SIZE.h"
@@ -21,7 +20,6 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "FFIELDS.h"
 
 C     == Routine arguments ==
 C     iMin - Working range of tile for applying forcing.
@@ -32,21 +30,6 @@ C     kLev
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
       INTEGER myCurrentTime, myThid
 CEndOfInterface
-
-C     == Local variables ==
-C     Loop counters
-      INTEGER I, J
-
-C--   Forcing term
-C     Add windstress momentum impulse into the top-layer
-      IF ( kLev .EQ. 1 ) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
-     &    + foFacMom*fu(i,j,bi,bj)*_maskW(i,j,kLev,bi,bj)
-        ENDDO
-       ENDDO
-      ENDIF
 
       RETURN
       END
@@ -61,7 +44,6 @@ C     |==========================================================|
 C     | Adds terms to gV for forcing by external sources         |
 C     | e.g. wind stress, bottom friction etc..................  |
 C     \==========================================================/
-      IMPLICIT NONE
 
 C     == Global data ==
 #include "SIZE.h"
@@ -69,8 +51,6 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "FFIELDS.h"
-
 
 C     == Routine arguments ==
 C     iMin - Working range of tile for applying forcing.
@@ -81,27 +61,12 @@ C     kLev
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
       INTEGER myCurrentTime, myThid
 CEndOfInterface
-C     == Local variables ==
-C     Loop counters
-      INTEGER I, J
-
-C--   Forcing term
-C     Add windstress momentum impulse into the top-layer
-      IF ( kLev .EQ. 1 ) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
-     &    + foFacMom*fv(i,j,bi,bj)*_maskS(i,j,kLev,bi,bj)
-        ENDDO
-       ENDDO
-      ENDIF
 
       RETURN
       END
 CStartOfInterface
       SUBROUTINE EXTERNAL_FORCING_T(
      I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           maskC,
      I           myCurrentTime,myThid)
 C     /==========================================================\
 C     | S/R EXTERNAL_FORCING_T                                   |
@@ -110,7 +75,6 @@ C     |==========================================================|
 C     | Adds terms to gT for forcing by external sources         |
 C     | e.g. heat flux, climatalogical relaxation..............  |
 C     \==========================================================/
-      IMPLICIT NONE
 
 C     == Global data ==
 #include "SIZE.h"
@@ -126,34 +90,15 @@ C     iMax
 C     jMin
 C     jMax
 C     kLev
-      _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
       INTEGER myCurrentTime, myThid
 CEndOfInterface
-
-C     == Local variables ==
-C     Loop counters
-      INTEGER I, J
-
-C--   Forcing term
-C     Add heat in top-layer
-      IF ( kLev .EQ. 1 ) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
-     &  +maskC(i,j)*(
-     &   -lambdaThetaClimRelax*(theta(i,j,kLev,bi,bj)-SST(i,j,bi,bj))
-     &   -Qnet(i,j,bi,bj) )
-        ENDDO
-       ENDDO
-      ENDIF
 
       RETURN
       END
 CStartOfInterface
       SUBROUTINE EXTERNAL_FORCING_S(
      I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           maskC,
      I           myCurrentTime,myThid)
 C     /==========================================================\
 C     | S/R EXTERNAL_FORCING_S                                   |
@@ -162,7 +107,6 @@ C     |==========================================================|
 C     | Adds terms to gS for forcing by external sources         |
 C     | e.g. fresh-water flux, climatalogical relaxation.......  |
 C     \==========================================================/
-      IMPLICIT NONE
 
 C     == Global data ==
 #include "SIZE.h"
@@ -170,7 +114,6 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "FFIELDS.h"
 
 C     == Routine arguments ==
 C     iMin - Working range of tile for applying forcing.
@@ -178,27 +121,9 @@ C     iMax
 C     jMin
 C     jMax
 C     kLev
-      _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
       INTEGER myCurrentTime, myThid
 CEndOfInterface
-
-C     == Local variables ==
-C     Loop counters
-      INTEGER I, J
-
-C--   Forcing term
-C     Add fresh-water in top-layer
-      IF ( kLev .EQ. 1 ) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &   +maskC(i,j)*(
-     &   -lambdaSaltClimRelax*(salt(i,j,kLev,bi,bj)-SSS(i,j,bi,bj))
-     &   +EmPmR(i,j,bi,bj) )
-        ENDDO
-       ENDDO
-      ENDIF
 
       RETURN
       END

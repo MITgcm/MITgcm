@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.18 1998/11/03 15:28:04 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.19 1998/11/06 22:44:44 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartOfInterFace
       SUBROUTINE CALC_GT( 
@@ -100,65 +100,77 @@ C     I, J, K - Loop counters
 C---  Calculate advective and diffusive fluxes between cells.
 
 C--   Zonal flux (fZon is at west face of "theta" cell)
-C     Advective component of zonal flux
+#ifdef INCLUDE_T_ADVECTION_CODE
+C     o Advective component of zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) = 
      &   uTrans(i,j)*(theta(i,j,k,bi,bj)+theta(i-1,j,k,bi,bj))*0.5 _d 0
        ENDDO
       ENDDO
-C     Zonal tracer gradient
+#endif /* INCLUDE_T_ADVECTION_CODE */
+#ifdef INCLUDE_T_DIFFUSION_CODE
+C     o Zonal tracer gradient
       DO j=jMin,jMax
        DO i=iMin,iMax
         dTdx(i,j) = _recip_dxC(i,j,bi,bj)*
      &  (theta(i,j,k,bi,bj)-theta(i-1,j,k,bi,bj))
        ENDDO
       ENDDO
-C     Diffusive component of zonal flux
+C     o Diffusive component of zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         df(i,j) = -(diffKhT+0.5*(KapGM(i,j)+KapGM(i-1,j)))*
      &            xA(i,j)*dTdx(i,j)
        ENDDO
       ENDDO
-C     Net zonal flux
+#endif /* INCLUDE_T_DIFFUSION_CODE */
+C     o Net zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-        fZon(i,j) = afFacT*af(i,j) + dfFacT*df(i,j)
+        fZon(i,j) = 0.
+     _ADT(&            + afFacT*af(i,j) ) 
+     _LPT(&            + dfFacT*df(i,j) )
        ENDDO
       ENDDO
 
 C--   Meridional flux (fMer is at south face of "theta" cell)
-C     Advective component of meridional flux
+#ifdef INCLUDE_T_ADVECTION_CODE
+C     o Advective component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-C       Advective component of meridional flux
         af(i,j) =
      &   vTrans(i,j)*(theta(i,j,k,bi,bj)+theta(i,j-1,k,bi,bj))*0.5 _d 0
        ENDDO
       ENDDO
-C     Zonal tracer gradient
+#endif /* INCLUDE_T_ADVECTION_CODE */
+#ifdef INCLUDE_T_DIFFUSION_CODE
+C     o Meridional tracer gradient
       DO j=jMin,jMax
        DO i=iMin,iMax
         dTdy(i,j) = _recip_dyC(i,j,bi,bj)*
      &  (theta(i,j,k,bi,bj)-theta(i,j-1,k,bi,bj))
        ENDDO
       ENDDO
-C     Diffusive component of meridional flux
+C     o Diffusive component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         df(i,j) = -(diffKhT+0.5*(KapGM(i,j)+KapGM(i,j-1)))*
      &            yA(i,j)*dTdy(i,j)
        ENDDO
       ENDDO
-C     Net meridional flux
+#endif /* INCLUDE_T_DIFFUSION_CODE */
+C     o Net meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-        fMer(i,j) = afFacT*af(i,j) + dfFacT*df(i,j)
+        fMer(i,j) = 0.
+     _ADT(&  + afFacT*af(i,j) )
+     _LPT(&  + dfFacT*df(i,j) )
        ENDDO
       ENDDO
 
-C--   Interpolate terms for Redi/GM scheme
+#ifdef INCLUDE_T_DIFFUSION_CODE
+C--   Terms that diffusion tensor projects onto z
       DO j=jMin,jMax
        DO i=iMin,iMax
         dTdx(i,j) = 0.5*( 
@@ -195,9 +207,11 @@ C--   Interpolate terms for Redi/GM scheme
      &       )
        ENDDO
       ENDDO
+#endif /* INCLUDE_T_DIFFUSION_CODE */
 
-C--   Vertical flux (fVerT) above
-C     Advective component of vertical flux
+C--   Vertical flux ( fVerT(,,kUp) is at upper face of "theta" cell )
+#ifdef INCLUDE_T_ADVECTION_CODE
+C     o Advective component of vertical flux
 C     Note: For K=1 then KM1=1 this gives a barZ(T) = T
 C     (this plays the role of the free-surface correction)
       DO j=jMin,jMax
@@ -206,8 +220,10 @@ C     (this plays the role of the free-surface correction)
      &   rTrans(i,j)*(theta(i,j,k,bi,bj)+theta(i,j,kM1,bi,bj))*0.5 _d 0
        ENDDO
       ENDDO
-C     Diffusive component of vertical flux
-C     Note: For K=1 then KM1=1 this gives a dT/dr = 0 upper
+#endif /* INCLUDE_T_ADVECTION_CODE */
+#ifdef INCLUDE_T_DIFFUSION_CODE
+C     o Diffusive component of vertical flux
+C     Note: For K=1 then KM1=1 and this gives a dT/dr = 0 upper
 C           boundary condition.
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -227,12 +243,16 @@ C           boundary condition.
         ENDDO
        ENDDO
       ENDIF
-C     Net vertical flux
+#endif /* INCLUDE_T_DIFFUSION_CODE */
+C     o Net vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-        fVerT(i,j,kUp) = ( afFacT*af(i,j)+  dfFacT*df(i,j) )*maskUp(i,j)
+        fVerT(i,j,kUp) = 0. 
+     _ADT(&  +afFacT*af(i,j)*maskUp(i,j) )
+     _LPT(&  +dfFacT*df(i,j)*maskUp(i,j) )
        ENDDO
       ENDDO
+#ifdef INCLUDE_T_ADVECTION_CODE
       IF ( TOP_LAYER ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -240,6 +260,7 @@ C     Net vertical flux
         ENDDO
        ENDDO
       ENDIF
+#endif /* INCLUDE_T_ADVECTION_CODE */
 
 C--   Tendency is minus divergence of the fluxes.
 C     Note. Tendency terms will only be correct for range
@@ -262,18 +283,21 @@ C           are not used.
        ENDDO
       ENDDO
 
+#ifdef INCLUDE_T_FORCING_CODE
 C--   External thermal forcing term(s)
-C     o Surface relaxation term
-      IF ( TOP_LAYER ) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gT(i,j,k,bi,bj)=gT(i,j,k,bi,bj)
-     &  +maskC(i,j)*(
-     &   -lambdaThetaClimRelax*(theta(i,j,k,bi,bj)-SST(i,j,bi,bj))
-     &   -Qnet(i,j,bi,bj) )
-        ENDDO
-       ENDDO
-      ENDIF
+      CALL EXTERNAL_FORCING_T(
+     I     iMin,iMax,jMin,jMax,bi,bj,k,
+     I     maskC,
+     I     myCurrentTime,myThid)
+#endif /*  INCLUDE_T_FORCING_CODE */
+
+#ifdef INCLUDE_LAT_CIRC_FFT_FILTER_CODE
+C--   Zonal FFT filter of tendency
+      CALL FILTER_LATCIRCS_FFT_APPLY( 
+     U     gT, 
+     I     1, sNy, k, k, bi, bj, 1, myThid)
+#endif /* INCLUDE_LAT_CIRC_FFT_FILTER_CODE */
+
 
       RETURN
       END

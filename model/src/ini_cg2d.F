@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.20 1998/10/28 03:11:37 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.21 1998/11/06 22:44:46 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -193,7 +193,7 @@ C--   Set default values for initial guess and RHS
           DO I=1,sNx
            cg2d_x(I,J,bi,bj) = 0. _d 0
            cg2d_b(I,J,bi,bj) = 0. _d 0
-#ifdef ALLOW_CD
+#ifdef INCLUDE_CD_CODE
            cg2d_xNM1(I,J,bi,bj) = 0. _d 0
 #endif
           ENDDO
@@ -203,7 +203,7 @@ C--   Set default values for initial guess and RHS
 C--    Update overlap regions
        _EXCH_XY_R8(cg2d_x, myThid)
        _EXCH_XY_R8(cg2d_b, myThid)
-#ifdef ALLOW_CD
+#ifdef INCLUDE_CD_CODE
        _EXCH_XY_R8(cg2d_xNM1, myThid)
 #endif
       ENDIF

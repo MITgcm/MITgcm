@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.6 1998/10/28 03:11:38 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.7 1998/11/06 22:44:49 cnh Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -179,7 +179,7 @@ switch ($platform$USEMPI)
     breaksw
   case Linux:
     set LN         = ( '/bin/ln -fs' )
-    set CPP        = ( '/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/cpp -P' )
+    set CPP        = ( '/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/cpp  -traditional -P' )
     set INCLUDES   = ( '-I/usr/local/include' )
     set FC         = ( 'g77' )
     set FFLAGS     = ( ' ' )

@@ -1,4 +1,5 @@
-#include "CPP_EEOPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_isoslopes.F,v 1.12 1998/11/06 22:44:44 cnh Exp $
+#include "CPP_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE CALC_ISOSLOPES(

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_uvel.F,v 1.5 1998/08/22 17:51:09 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_uvel.F,v 1.6 1998/11/06 22:44:48 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -50,7 +50,7 @@ C--   Initialise velocity field to zero
          DO J=1,sNy
           DO I=1,sNx
            uVel (I,J,K,bi,bj) = 0. _d 0
-#ifdef ALLOW_CD
+#ifdef INCLUDE_CD_CODE
            uVeld(I,J,K,bi,bj) = 0. _d 0
            uNM1 (I,J,K,bi,bj) = 0. _d 0
 #endif
@@ -67,7 +67,7 @@ C     Set initial tendency terms
           DO I=1,sNx
            gu   (I,J,K,bi,bj) = 0. _d 0
            guNM1(I,J,K,bi,bj) = 0. _d 0
-#ifdef ALLOW_CD
+#ifdef INCLUDE_CD_CODE
            guCD (I,J,K,bi,bj) = 0. _d 0
 #endif
           ENDDO
@@ -79,7 +79,7 @@ C
       _EXCH_XYZ_R8(uVel  , myThid )
       _EXCH_XYZ_R8(gu    , myThid )
       _EXCH_XYZ_R8(guNM1 , myThid )
-#ifdef ALLOW_CD
+#ifdef INCLUDE_CD_CODE
       _EXCH_XYZ_R8(uVeld , myThid )
       _EXCH_XYZ_R8(uNM1  , myThid )
       _EXCH_XYZ_R8(guCD  , myThid )

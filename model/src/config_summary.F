@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.17 1998/10/28 03:11:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.18 1998/11/06 22:44:45 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE CONFIG_SUMMARY( myThid )

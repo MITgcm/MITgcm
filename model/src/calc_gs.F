@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.16 1998/11/03 15:28:04 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.17 1998/11/06 22:44:44 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartOfInterFace
       SUBROUTINE CALC_GS( 
@@ -265,20 +265,10 @@ C           are not used.
 C--   External forcing term(s)
       CALL EXTERNAL_FORCING_S(
      I     iMin,iMax,jMin,jMax,bi,bj,k,
+     I     maskC,
      I     myCurrentTime,myThid)
-C     o Surface relaxation term
-C     IF ( TOP_LAYER ) THEN
-C      DO j=jMin,jMax
-C       DO i=iMin,iMax
-C        gS(i,j,k,bi,bj)=gS(i,j,k,bi,bj)
-C    &   +maskC(i,j)*(
-C    &   -lambdaSaltClimRelax*(salt(i,j,k,bi,bj)-SSS(i,j,bi,bj))
-C    &   +EmPmR(i,j,bi,bj) )
-C       ENDDO
-C      ENDDO
-C     ENDIF
 
-#ifdef ALLOW_LATITUDE_CIRCLE_FFT_FILTER
+#ifdef INCLUDE_LAT_CIRC_FFT_FILTER_CODE
 C--
       CALL FILTER_LATCIRCS_FFT_APPLY( gS, 1, sNy, k, k, bi, bj, 1, myThid)
 #endif

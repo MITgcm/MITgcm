@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.37 1998/11/03 15:28:04 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.38 1998/11/06 22:44:45 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -38,12 +38,13 @@ C     myThid - Thread number for this instance of the routine.
 
 C     == Local variables
 C     xA, yA                 - Per block temporaries holding face areas
-C     uTrans, vTrans, rTrans - Per block temporaries holding flow transport
+C     uTrans, vTrans, rTrans - Per block temporaries holding flow 
+C                              transport
 C     rVel                     o uTrans: Zonal transport
 C                              o vTrans: Meridional transport
 C                              o rTrans: Vertical transport
-C                              o rVel:   Vertical velocity at upper and lower
-C                                        cell faces.
+C                              o rVel:   Vertical velocity at upper and 
+C                                        lower cell faces.
 C     maskC,maskUp             o maskC: land/water mask for tracer cells
 C                              o maskUp: land/water mask for W points
 C     aTerm, xTerm, cTerm    - Work arrays for holding separate terms in
@@ -59,12 +60,15 @@ C                              o fVer: Vertical flux term - note fVer
 C                                      is "pipelined" in the vertical
 C                                      so we need an fVer for each
 C                                      variable.
-C     rhoK, rhoKM1   - Density at current level, level above and level below.
+C     rhoK, rhoKM1   - Density at current level, level above and level 
+C                      below.
 C     rhoKP1                                                                  
 C     buoyK, buoyKM1 - Buoyancy at current level and level above.
 C     phiHyd         - Hydrostatic part of the potential phiHydi.
-C                      In z coords phiHydiHyd is the hydrostatic pressure anomaly
-C                      In p coords phiHydiHyd is the geopotential surface height 
+C                      In z coords phiHydiHyd is the hydrostatic 
+C                      pressure anomaly
+C                      In p coords phiHydiHyd is the geopotential 
+C                      surface height 
 C                      anomaly.
 C     etaSurfX,      - Holds surface elevation gradient in X and Y.
 C     etaSurfY
@@ -72,13 +76,13 @@ C     K13, K23, K33  - Non-zero elements of small-angle approximation
 C                      diffusion tensor.
 C     KapGM          - Spatially varying Visbeck et. al mixing coeff.
 C     KappaRT,       - Total diffusion in vertical for T and S.
-C     KappaRS          ( background + spatially varying, isopycnal term).
+C     KappaRS          (background + spatially varying, isopycnal term).
 C     iMin, iMax     - Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
 C     bi, bj
 C     k, kUp,        - Index for layer above and below. kUp and kDown
-C     kDown, kM1       are switched with layer to be the appropriate index
-C                      into fVerTerm
+C     kDown, kM1       are switched with layer to be the appropriate 
+C                      index into fVerTerm.
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -237,6 +241,7 @@ C--     Set up work arrays that need valid initial values
         K = 1
         BOTTOM_LAYER = K .EQ. Nr
 
+#ifdef DO_PIPELINED_CORRECTION_STEP
 C--     Calculate gradient of surface pressure
         CALL CALC_GRAD_ETA_SURF(
      I       bi,bj,iMin,iMax,jMin,jMax,
@@ -252,34 +257,44 @@ C--      Update fields in layer below according to tendency terms
      I        bi,bj,iMin,iMax,jMin,jMax,K+1,
      I        etaSurfX,etaSurfY,myTime,myThid)
         ENDIF
+#endif
 C--     Density of 1st level (below W(1)) reference to level 1
+#ifdef  INCLUDE_FIND_RHO_CALL
         CALL FIND_RHO(
      I     bi, bj, iMin, iMax, jMin, jMax, K, K, eosType,
      O     rhoKm1,
      I     myThid )
+#endif
 
         IF ( .NOT. BOTTOM_LAYER ) THEN
 C--      Check static stability with layer below
 C--      and mix as needed.
+#ifdef  INCLUDE_FIND_RHO_CALL
          CALL FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax, K+1, K, eosType,
      O      rhoKp1,
      I      myThid )
+#endif
+#ifdef  INCLUDE_CONVECT_CALL
          CALL CONVECT(
      I       bi,bj,iMin,iMax,jMin,jMax,K+1,rhoKm1,rhoKp1,
      I       myTime,myIter,myThid)
+#endif
 C--      Recompute density after mixing
+#ifdef  INCLUDE_FIND_RHO_CALL
          CALL FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax, K, K, eosType,
      O      rhoKm1,
      I      myThid )
+#endif
         ENDIF
 C--     Calculate buoyancy
         CALL CALC_BUOYANCY(
      I      bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,
      O      buoyKm1,
      I      myThid )
-C--     Integrate hydrostatic balance for phiHyd with BC of phiHyd(z=0)=0
+C--     Integrate hydrostatic balance for phiHyd with BC of
+C--     phiHyd(z=0)=0
         CALL CALC_PHI_HYD(
      I      bi,bj,iMin,iMax,jMin,jMax,K,buoyKm1,buoyKm1,
      U      phiHyd,
@@ -287,56 +302,73 @@ C--     Integrate hydrostatic balance for phiHyd with BC of phiHyd(z=0)=0
 
         DO K=2,Nr
          BOTTOM_LAYER = K .EQ. Nr
+#ifdef DO_PIPELINED_CORRECTION_STEP
          IF ( .NOT. BOTTOM_LAYER ) THEN
 C--       Update fields in layer below according to tendency terms
           CALL CORRECTION_STEP(
      I         bi,bj,iMin,iMax,jMin,jMax,K+1,
      I         etaSurfX,etaSurfY,myTime,myThid)
          ENDIF
+#endif
 C--      Density of K level (below W(K)) reference to K level
+#ifdef  INCLUDE_FIND_RHO_CALL
          CALL FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax,  K, K, eosType,
      O      rhoK,
      I      myThid )
+#endif
          IF ( .NOT. BOTTOM_LAYER ) THEN
 C--       Check static stability with layer below and mix as needed.
 C--       Density of K+1 level (below W(K+1)) reference to K level.
+#ifdef  INCLUDE_FIND_RHO_CALL
           CALL FIND_RHO(
      I       bi, bj, iMin, iMax, jMin, jMax,  K+1, K, eosType,
      O       rhoKp1,
      I       myThid )
+#endif
+#ifdef  INCLUDE_CONVECT_CALL
           CALL CONVECT(
      I        bi,bj,iMin,iMax,jMin,jMax,K+1,rhoK,rhoKp1,
      I        myTime,myIter,myThid)
+#endif
 C--       Recompute density after mixing
+#ifdef  INCLUDE_FIND_RHO_CALL
           CALL FIND_RHO(
      I       bi, bj, iMin, iMax, jMin, jMax, K, K, eosType,
      O       rhoK,
      I       myThid )
+#endif
          ENDIF
 C--      Calculate buoyancy
          CALL CALC_BUOYANCY(
      I       bi,bj,iMin,iMax,jMin,jMax,K,rhoK,
      O       buoyK,
      I       myThid )
-C--      Integrate hydrostatic balance for phiHyd with BC of phiHyd(z=0)=0
+C--      Integrate hydrostatic balance for phiHyd with BC of 
+C--      phiHyd(z=0)=0
          CALL CALC_PHI_HYD(
      I        bi,bj,iMin,iMax,jMin,jMax,K,buoyKm1,buoyK,
      U        phiHyd,
      I        myThid )
 C--      Calculate iso-neutral slopes for the GM/Redi parameterisation
+#ifdef  INCLUDE_FIND_RHO_CALL
          CALL FIND_RHO(
      I        bi, bj, iMin, iMax, jMin, jMax, K-1, K, eosType,
      O        rhoTmp,
      I        myThid )
+#endif
+#ifdef  INCLUDE_CALC_ISOSLOPES_CALL
          CALL CALC_ISOSLOPES(
      I        bi, bj, iMin, iMax, jMin, jMax, K,
      I        rhoKm1, rhoK, rhotmp,
      O        K13, K23, K33, KapGM,
      I        myThid )
+#endif
          DO J=jMin,jMax
           DO I=iMin,iMax
+#ifdef  INCLUDE_FIND_RHO_CALL
            rhoKm1 (I,J) = rhoK(I,J)
+#endif
            buoyKm1(I,J) = buoyK(I,J)
           ENDDO
          ENDDO
@@ -357,12 +389,14 @@ C--      Get temporary terms used by tendency routines
      I        bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      O        xA,yA,uTrans,vTrans,rTrans,rVel,maskC,maskUp,
      I        myThid)
+#ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
 C--      Calculate the total vertical diffusivity
          CALL CALC_DIFFUSIVITY(
      I        bi,bj,iMin,iMax,jMin,jMax,K,
      I        maskC,maskUp,KapGM,K33,
      O        KappaRT,KappaRS,
      I        myThid)
+#endif
 C--      Calculate accelerations in the momentum equations
          IF ( momStepping ) THEN
           CALL CALC_MOM_RHS(
@@ -371,7 +405,7 @@ C--      Calculate accelerations in the momentum equations
      I         phiHyd,
      U         aTerm,xTerm,cTerm,mTerm,pTerm,
      U         fZon, fMer, fVerU, fVerV,
-     I         myThid)
+     I         myTime, myThid)
          ENDIF
 C--      Calculate active tracer tendencies
          IF ( tempStepping ) THEN
@@ -401,7 +435,7 @@ C--      Diagnose barotropic divergence of predicted fields
      I       myThid)
 
 C--      Cumulative diagnostic calculations (ie. time-averaging)
-#ifdef ALLOW_DIAGNOSTICS
+#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
          IF (taveFreq.GT.0.) THEN
           CALL DO_TIME_AVERAGES(
      I                           myTime, myIter, bi, bj, K, kUp, kDown,
@@ -457,6 +491,8 @@ C    &Nr, 1, myThid )
 C     CALL PLOT_FIELD_XYZRL( gS, ' GS exiting dyanmics ' , 
 C    &Nr, 1, myThid )
 C     CALL PLOT_FIELD_XYZRL( gT, ' GT exiting dyanmics ' , 
+C    &Nr, 1, myThid )
+C     CALL PLOT_FIELD_XYZRL( phiHyd, ' phiHyd exiting dyanmics ' , 
 C    &Nr, 1, myThid )
 
 

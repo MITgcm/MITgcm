@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.6 1998/08/22 17:51:07 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.7 1998/11/06 22:44:43 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartOfInterFace
       SUBROUTINE CALC_DIFFUSIVITY( 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.6 1998/10/28 03:11:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.7 1998/11/06 22:44:43 cnh Exp $
 C
 C     /==========================================================\
 C     | DYNVARS.h                                                |
@@ -33,7 +33,7 @@ C     vVelD  - D grid meridional velocity
       _RL  gsNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gw(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gwNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-#ifdef ALLOW_CD
+#ifdef INCLUDE_CD_CODE
       COMMON /DYNVARS_CD/ 
      &                   uVelD, vVelD,
      &                   cg2d_xNM1, cg3d_xnm1,

@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_predictor.F,v 1.3 1998/08/22 17:51:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_predictor.F,v 1.4 1998/11/06 22:44:47 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 C     /==========================================================\
 C     | S/R INI_PREDICTOR                                        |

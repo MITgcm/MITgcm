@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.33 1998/10/28 03:11:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.34 1998/11/06 22:44:43 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -88,6 +88,13 @@ C     writeStatePrec      - Precision used for writing model state.
 C     writeBinaryPrec     - Precision used for writing binary files
 C     readBinaryPrec      - Precision used for reading binary files
 C     nCheckLev           - Holds current checkpoint level
+C     nShap               - "Order" of shapiro filter to apply to
+C                           model prognositic fields.
+C                           nShap == 1 => del2
+C                           nShap == 2 => del4
+C                           nShap == 3 => del6
+C                           etc...
+
       COMMON /PARM_I/
      &        cg2dMaxIters,
      &        cg2dChkResFreq,
@@ -96,7 +103,8 @@ C     nCheckLev           - Holds current checkpoint level
      &        nIter0, nTimeSteps,
      &        numStepsPerPickup,
      &        writeStatePrec, nCheckLev,
-     &        writeBinaryPrec, readBinaryPrec
+     &        writeBinaryPrec, readBinaryPrec,
+     &        nShap
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
       INTEGER cg3dMaxIters
@@ -108,6 +116,7 @@ C     nCheckLev           - Holds current checkpoint level
       INTEGER writeBinaryPrec
       INTEGER readBinaryPrec
       INTEGER nCheckLev
+      INTEGER nShap
 
 C--   COMMON /PARM_L/ Logical valued parameters used by the model.
 C     usingCartesianGrid - If TRUE grid generation will be in a cartesian
@@ -314,6 +323,8 @@ C                           number times externForcingPeriod)
 C     horiVertRatio      - Ratio on units in vertical to units in horizontal.
 C     recip_horiVertRatio  ( 1 if horiz in m and vertical in m ).
 C                          ( g*rho if horiz in m and vertical in Pa ).
+C     latFFTFiltLo       - Low latitude for FFT filtering of latitude
+C                          circles ( see filter*.F )
       COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, 
      & cg3dTargetResidual,
      & delP, delZ, delR, delX, delY, 
@@ -332,7 +343,8 @@ C                          ( g*rho if horiz in m and vertical in Pa ).
      & tauSaltClimRelax, lambdaSaltClimRelax,
      & externForcingCycle, externForcingPeriod,
      & viscAp, diffKpT, diffKpS, hFacMinDr, hFacMinDp,
-     & theta_S, specVol_S, horiVertRatio, recip_horiVertRatio
+     & theta_S, specVol_S, horiVertRatio, recip_horiVertRatio,
+     & latFFTFiltLo
 
       _RL cg2dTargetResidual
       _RL cg3dTargetResidual
@@ -416,6 +428,7 @@ C                          ( g*rho if horiz in m and vertical in Pa ).
       _RL externForcingPeriod
       _RL horiVertRatio
       _RL recip_horiVertRatio
+      _RL latFFTFiltLo
 
       COMMON /PARM_A/ HeatCapacity_Cp,
      &                Lamba_theta

@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.10 1998/11/02 03:34:12 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.11 1998/11/06 22:44:47 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE INI_MASKS_ETC( myThid )

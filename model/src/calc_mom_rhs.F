@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.33 1998/10/28 03:11:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.34 1998/11/06 22:44:44 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -27,7 +27,7 @@ C     \==========================================================/
      I        phi_hyd,
      U        aFArg,vFArg,cFArg,mTArg,pFArg,
      U        fZonArg, fMerArg, fVerU, fVerV,
-     I        myThid)
+     I        myCurrentTime, myThid)
 
       IMPLICIT NONE
 
@@ -78,6 +78,7 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
       _RL    fMerArg(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER kUp,kDown,kM1
       INTEGER myThid
+      _RL     myCurrentTime
       INTEGER bi,bj,iMin,iMax,jMin,jMax
 
 C     == Local variables ==
@@ -126,7 +127,6 @@ C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  ArDudrFac
       _RL  fuFac
       _RL  phxFac
-      _RL  uForcFac
       _RL  mtFacU
       _RL  uDvdxFac
       _RL  AhDvdxFac
@@ -142,10 +142,6 @@ C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  mtFacV
 C     ab05, ab15 - Adams-Bashforth time-stepping weights.
       _RL  ab05, ab15
-
-CcnhDebugStarts
-      INTEGER i1, j1
-CcnhDebugEnds
 
       rVelMaskOverride=1.
       IF ( k .EQ. 1 ) rVelMaskOverride=freeSurfFac
@@ -175,7 +171,6 @@ C     o U momentum equation
       mTFacU       = mtFacMom*1.D0
       fuFac        = cfFacMom*1.D0
       phxFac       = pfFacMom*1.D0
-      uForcFac     = foFacMom*1.D0
 C     o V momentum equation
       uDvdxFac     = afFacMom*1.D0
       AhDvdxFac    = vfFacMom*1.D0
@@ -196,13 +191,14 @@ C--   Adams-Bashforth weighting factors
   
 C---  Calculate mean and eddy fluxes between cells for zonal flow.
 C--   Zonal flux (fZon is at east face of "u" cell)
-C     Mean flow component of zonal flux
 #define _XAatP(    i,j,k,bi,bj) ( XA(i,j)+XA(i+1,j) )* 0.5 _d 0
 #define _YAatUBY(  i,j,k,bi,bj) ( YA(i,j)+YA(i-1,j) )* 0.5 _d 0
 #define _RAatU1(    i,j,k,bi,bj) ( rA(i,j,bi,bj)*maskC(i,j)
 #define _RAatU2(    i,j,k,bi,bj) + rA(i-1,j,bi,bj)
 #define _RAatU3(    i,j,k,bi,bj) *maskC(i-1,j) ) * 0.5 _d 0
 #define _RAatU_Bot(i,j,k,bi,bj) ( rA(i,j,bi,bj) + rA(i-1,j,bi,bj) ) * 0.5 _d 0
+C     o Mean flow component of zonal flux
+#ifdef  INCLUDE_MOMENTUM_ADVECTION_CODE
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) =
@@ -210,9 +206,10 @@ C     Mean flow component of zonal flux
      &  *(uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj))*0.25 _d 0
        ENDDO
       ENDDO
-C     Eddy component of zonal flux
-#ifdef NEVER_DEFINE_THIS
-C     o Biharmonic terms
+#endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
+C     o Eddy component of zonal flux
+#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
+C     - Biharmonic term
       DO j=jMin,jMax
        DO i=1-2, sNx+2
         v4F(i,j) =
@@ -236,8 +233,9 @@ C     o Biharmonic terms
      &    *(vF(i+1,j)-vF(i,j))*_recip_dxF(i,j,bi,bj)
        ENDDO
       ENDDO
-#endif
-C     o Laplacian terms
+#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
+#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
+C     - Laplacian terms
       DO j=jMin,jMax
        DO i=iMin,iMax
         vF(i,j) =
@@ -246,25 +244,19 @@ C     o Laplacian terms
      &    *_recip_dxF(i,j,bi,bj)
        ENDDO
       ENDDO
+#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
       DO j=jMin,jMax
        DO i=iMin,iMax
-        fZon(i,j) = uDudxFac    * aF (i,j) 
-     &            + AhDudxFac   * vF (i,j)
-     &            + A4DuxxdxFac * v4F(i,j)
+        fZon(i,j) = 0.
+     &  _ADM(     + uDudxFac    * aF (i,j)    )
+     &  _LPM(     + AhDudxFac   * vF (i,j)    )
+     &  _BHM(     + A4DuxxdxFac * v4F(i,j)    )
        ENDDO
       ENDDO
-CcnhDebugSTarts
-C     IF ( K .EQ. 10 ) THEN
-C      i1 = 54
-C      j1 = 26
-C      WRITE(0,*) ' @ I = ', i1, ' , J = ', j1, ' K = ',K
-C      WRITE(0,*) '  _XAatP = ', _XAatP(i1,j1,k,bi,bj)
-C      WRITE(0,*) '  vF     = ', vF(i1,j1)
-C      WRITE(0,*) '  fZon   = ', fZon(i1,j1)
-C     ENDIF
-CcnhDebugEnds
+
 C--   Meridional flux (fMer is at south face of "u" cell)
-C     Mean flow component of meridional flux
+#ifdef  INCLUDE_MOMENTUM_ADVECTION_CODE
+C     o Mean flow component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) =
@@ -278,9 +270,11 @@ C       Note!!!! FV paper used a different bc in which this line is
 C       Note!!!! omitted.
        ENDDO
       ENDDO
+#endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
 C     Eddy component of meridional flux
 C     o Biharmonic term
-#ifdef NEVER_DEFINE_THIS
+#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
+C     o Biharmonic term
       DO j=1-2,sNy+2
        DO i=iMin,iMax
         hFacROpen=
@@ -343,7 +337,8 @@ C     o Biharmonic term
 #endif
        ENDDO
       ENDDO
-#endif
+#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
+#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 C     o Laplacian term
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -372,15 +367,18 @@ C     o Laplacian term
 #endif
        ENDDO
       ENDDO
+#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-        fMer(i,j) = vDudyFac    * aF (i,j) 
-     &            + AhDudyFac   * vF (i,j)
-     &            + A4DuyydyFac * v4F(i,j)
+        fMer(i,j) = 0.
+     &  _ADM(      + vDudyFac    * aF (i,j)    )
+     &  _LPM(      + AhDudyFac   * vF (i,j)    )
+     &  _BHM(      + A4DuyydyFac * v4F(i,j)    )
        ENDDO
       ENDDO
 C--   Vertical flux (fVer is at upper face of "u" cell)
+#ifdef INCLUDE_MOMENTUM_ADVECTION_CODE
 C     Mean flow component of vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -396,6 +394,8 @@ C       Note!!!! FV paper used a different bc in which this line is
 C       Note!!!! omitted.
        ENDDO
       ENDDO
+#endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
+#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 C     Eddy component of vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -417,12 +417,15 @@ C     Eddy component of vertical flux
 #endif
        ENDDO
       ENDDO
+#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
       DO j=jMin,jMax
        DO i=iMin,iMax
-        fVerU(i,j,kUp) = rVelDudrFac  * af(i,j) 
-     &                 +    ArDudrFac * vf(i,j)
+        fVerU(i,j,kUp) = 0.
+     &  _ADM(           + rVelDudrFac  * af(i,j)     )
+     &  _LPM(           +    ArDudrFac * vf(i,j)     )
        ENDDO
       ENDDO
+#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 C     Bottom boundary condition
 #ifdef NO_BOTTOM_SLIP
       IF ( k .EQ. Nr ) THEN
@@ -442,7 +445,9 @@ C     Bottom boundary condition
        ENDDO
       ENDIF
 #endif
+#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
 
+#ifdef INCLUDE_GRADPH_CODE
 C---  Hydrostatic term ( -1/rhoConst . dphi/dx )
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -450,8 +455,10 @@ C---  Hydrostatic term ( -1/rhoConst . dphi/dx )
      &   *(phi_hyd(i,j,k)-phi_hyd(i-1,j,k))*recip_rhoConst
        ENDDO
       ENDDO
+#endif /* INCLUDE_GRADPH_CODE */
 
-C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
+C--   Tendency is minus divergence of the fluxes + coriolis + pressure 
+C--   term
       DO j=jMin,jMax
        DO i=iMin,iMax
         gU(i,j,k,bi,bj) =
@@ -463,37 +470,18 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &   +fMer(i,j+1)          - fMer(i  ,j)
      &   +fVerU(i,j,kUp)*rkFac - fVerU(i,j,kDown)*rkFac
      &   )
-     &   +phxFac * pf(i,j)
+     _PHM(&   +phxFac * pf(i,j) )
        ENDDO
       ENDDO
 
-CcnhDebugSTarts
-C     IF ( K .EQ. 10 ) THEN
-C      i1 = 54
-C      j1 = 26
-C      WRITE(0,*) ' @ I = ', i1, ' , J = ', j1
-C      WRITE(0,*) '  fZon   = ', fZon(i1,j1)
-C      WRITE(0,*) '  gU     = ', gU  (i1,j1,k,bi,bj)
-C     ENDIF
-C     IF ( k .NE. 1 .AND. k .NE. 10  ) THEN
-C      DO j=jMin,jMax
-C       DO i=iMin,iMax
-C        gU(i,j,k,bi,bj) = 0.
-C       ENDDO
-C      ENDDO
-C     ENDIF
-CcnhDebugEnds
-
+#ifdef INCLUDE_MOMENTUM_FORCING_CODE
 C--   Forcing term
-      IF ( k .EQ. 1 ) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) 
-     &    + uForcFac*fu(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
-        ENDDO
-       ENDDO
-      ENDIF
+      CALL EXTERNAL_FORCING_U(
+     I     iMin,iMax,jMin,jMax,bi,bj,k,
+     I     myCurrentTime,myThid)
+#endif /* INCLUDE_MOMENTUM_FORCING_CODE */
 
+#ifdef INCLUDE_MOMENTUM_METRIC_TERM_CODE
 C--   Metric terms for curvilinear grid systems
       IF ( usingSphericalPolarMTerms ) THEN
 C      o Spherical polar grid metric terms
@@ -520,6 +508,7 @@ C      o Spherical polar grid metric terms
         ENDDO
        ENDDO
       ENDIF
+#endif /* INCLUDE_MOMENTUM_METRIC_TERM_CODE */
 
 C--   Set du/dt on boundaries to zero
       DO j=jMin,jMax
@@ -528,9 +517,8 @@ C--   Set du/dt on boundaries to zero
        ENDDO
       ENDDO
 
-C---  Calculate mean and eddy fluxes between cells for meridional velocity.
-C--   Zonal flux (fZon is at west face of "v" cell)
-C     Mean flow component of zonal flux
+C---  Calculate mean and eddy fluxes between cells for meridional 
+C---  velocity. Zonal flux (fZon is at west face of "v" cell)
 #define _XAatVBX(  i,j,k,bi,bj) ( XA(i,j)+XA(i,j-1) )* 0.5 _d 0
 #define _YAatP(    i,j,k,bi,bj) ( YA(i,j) + YA(i,j+1) ) *0.5 _d 0
 #define _RAatV1(    i,j,k,bi,bj) ( _rA(i,j,bi,bj)*maskC(i,j)
@@ -538,6 +526,8 @@ C     Mean flow component of zonal flux
 #define _RAatV3(    i,j,k,bi,bj) *maskC(i,j-1) ) * 0.5 _d 0
 #define _RAatV_Bot1(i,j,k,bi,bj) ( _rA(i,j,bi,bj)
 #define _RAatV_Bot2(i,j,k,bi,bj)  +_rA(i,j-1,bi,bj))*0.5 _d 0
+#ifdef INCLUDE_MOMENTUM_ADVECTION_CODE
+C     o Mean flow component of zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) =
@@ -550,9 +540,10 @@ C       Note!!!! FV paper used a different bc in which this line is
 C       Note!!!! omitted.
        ENDDO
       ENDDO
+#endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
 C     Eddy component of zonal flux
+#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
 C     o Biharmonic term
-#ifdef NEVER_DEFINE_THIS
       DO j=jMin,jMax
        DO i=1-2, sNx+2
          hFacROpen=
@@ -613,7 +604,8 @@ C     o Biharmonic term
 #endif
        ENDDO
       ENDDO
-#endif
+#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
+#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 C     o Laplacian term
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -642,15 +634,18 @@ C     o Laplacian term
 #endif
        ENDDO
       ENDDO
+#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
       DO j=jMin,jMax
        DO i=iMin,iMax
-        fZon(i,j) = uDvdxFac    * aF (i,j)
-     &            + AhDvdxFac   * vF (i,j)
-     &            + A4DvxxdxFac * v4F(i,j)
+        fZon(i,j) = 0.
+     &  _ADM(     + uDvdxFac    * aF (i,j)    )
+     &  _LPM(     + AhDvdxFac   * vF (i,j)    )
+     &  _BHM(     + A4DvxxdxFac * v4F(i,j)    )
        ENDDO
       ENDDO
 C--   Meridional flux (fMer is at north face of "v" cell)
-C     Mean flow component of meridional flux
+#ifdef INCLUDE_MOMENTUM_ADVECTION_CODE
+C     o Mean flow component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) =
@@ -658,9 +653,10 @@ C     Mean flow component of meridional flux
      &  *(vVel(i,j,k,bi,bj)+vVel(i,j+1,k,bi,bj))*0.25 _d 0
        ENDDO
       ENDDO
+#endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
 C     Eddy component of meridional flux
+#ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
 C     o Biharmonic term
-#ifdef NEVER_DEFINE_THIS
       DO j=1-2, sNy+2
        DO i=iMin,iMax
         v4F(i,j) =
@@ -684,7 +680,8 @@ C     o Biharmonic term
      &   *( vF(i,j+1) - vF(i,j) )*_recip_dyC(i,j,bi,bj)
        ENDDO
       ENDDO
-#endif
+#endif /* INCLUDE_BH_MOMENTUM_DIFFUSION_CODE */
+#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 C     o Laplacian term
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -694,15 +691,18 @@ C     o Laplacian term
      &   *_recip_dyC(i,j,bi,bj)
        ENDDO
       ENDDO
+#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
       DO j=jMin,jMax
        DO i=iMin,iMax
-        fMer(i,j) = vDvdyFac    * af(i,j) 
-     &            + AhDvdyFac   * vf(i,j)
-     &            + A4DvyydyFac * v4F(i,j)
+        fMer(i,j) = 0.
+     &  _ADM(     + vDvdyFac    * af(i,j)      )
+     &  _LPM(     + AhDvdyFac   * vf(i,j)      )
+     &  _BHM(     + A4DvyydyFac * v4F(i,j)     )
        ENDDO
       ENDDO
 C--   Vertical flux (fVer is at upper face of "v" cell)
-C     Mean flow component of vertical flux
+#ifdef INCLUDE_MOMENTUM_ADVECTION_CODE
+C     o Mean flow component of vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) =
@@ -718,6 +718,8 @@ C       Note!!!! Is wMaskOverridde right for implicit free-surface?
 
        ENDDO
       ENDDO
+#endif /* INCLUDE_MOMENTUM_ADVECTION_CODE */
+#ifdef INCLUDE_LP_MOMENTUM_DIFFUSION_CODE
 C     Eddy component of vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -765,7 +767,9 @@ C     Bottom level boundary condition
       ENDDO
       ENDIF
 #endif
+#endif /* INCLUDE_LP_MOMENTUM_DIFFUSION_CODE */
 
+#ifdef INCLUDE_GRADPH_CODE
 C---  Hydorstatic term (-1/rho . dp/dy )
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -773,8 +777,10 @@ C---  Hydorstatic term (-1/rho . dp/dy )
      &   *(phi_hyd(i,j,k)-phi_hyd(i,j-1,k))*recip_rhoConst
        ENDDO
       ENDDO
+#endif /* INCLUDE_GRADPH_CODE */
 
-C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
+C--   Tendency is minus divergence of the fluxes + coriolis + pressure 
+C--   term
       DO j=jMin,jMax
        DO i=iMin,iMax
         gV(i,j,k,bi,bj) =
@@ -786,20 +792,18 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &   +fMer(i,j  )          - fMer(i,j-1)
      &   +fVerV(i,j,kUp)*rkFac - fVerV(i,j,kDown)*rkFac
      &   )
-     &   +phyFac*pf(i,j)
+     _PHM(&   +phyFac*pf(i,j) )
        ENDDO
       ENDDO
 
+#ifdef INCLUDE_MOMENTUM_FORCING_CODE
 C--   Forcing term
-      IF ( k .EQ. 1 ) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) 
-     &    + vForcFac*fv(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
-        ENDDO
-       ENDDO
-      ENDIF
+      CALL EXTERNAL_FORCING_V(
+     I     iMin,iMax,jMin,jMax,bi,bj,k,
+     I     myCurrentTime,myThid)
+#endif
 
+#ifdef INCLUDE_MOMENTUM_METRIC_TERM_CODE
 C--   Metric terms for curvilinear grid systems
       IF ( usingSphericalPolarMTerms ) THEN
 C      o Spherical polar grid metric terms
@@ -830,6 +834,7 @@ C      o Spherical polar grid metric terms
         ENDDO
        ENDDO
       ENDIF
+#endif
 
 C--   Set dv/dt on boundaries to zero
       DO j=jMin,jMax
@@ -840,7 +845,7 @@ C--   Set dv/dt on boundaries to zero
 
 C--   Coriolis term
 C     Note. As coded here, coriolis will not work with "thin walls"
-#ifdef ALLOW_CD
+#ifdef INCLUDE_CD_CODE
 C     Pressure extrapolated forward in time
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -849,10 +854,10 @@ C     Pressure extrapolated forward in time
      &  +ab05*(cg2d_xNM1(i,j,bi,bj)*gBaro )
        ENDDO
       ENDDO
-#endif
+#endif /* INCLUDE_CD_CODE */
 C--   Zonal velocity coriolis term
 C     Note. As coded here, coriolis will not work with "thin walls"
-#ifdef ALLOW_CD
+#ifdef INCLUDE_CD_CODE
 C--   Coriolis with CD scheme allowed
 C     grady(p) + gV
       DO j=jMin,jMax
@@ -907,7 +912,8 @@ C     Calculate coriolis force on U
      &   *vVelD(i,j,k,bi,bj)*fuFac
        ENDDO
       ENDDO
-#else
+#endif /* INCLUDE_CD_CODE */
+#ifndef INCLUDE_CD_CODE
 C--   No CD scheme support
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -926,11 +932,11 @@ C--   No CD scheme support
      &   +fuFac*cf(i,j)
        ENDDO
       ENDDO
-#endif
+#endif /* !INCLUDE_CD_CODE */
 
 
 C--   Meridional velocity coriolis term
-#ifdef ALLOW_CD
+#ifdef INCLUDE_CD_CODE
 C     gradx(p)+gU
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -985,10 +991,8 @@ C     Calculate coriolis force on V
      &   *uVelD(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)*fvFac
        ENDDO
       ENDDO
-CcnhDebugStarts
-C     WRITE(0,*) ' CG2D MAXVAL(ABS(gvCD))', MAXVAL(ABS(gvCD))
-CcnhDebugEnds
-#else
+#endif /* INCLUDE_CD_CODE */
+#ifndef INCLUDE_CD_CODE
 C--   No CD scheme support
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -1006,7 +1010,7 @@ C--   No CD scheme support
      &   +fvFac*cf(i,j)
        ENDDO
       ENDDO
-#endif
+#endif /* !INCLUDE_CD_CODE */
 
 C--   Set du/dt on boundaries to zero
       DO j=jMin,jMax
@@ -1021,7 +1025,13 @@ C--   Set dv/dt on boundaries to zero
        ENDDO
       ENDDO
 
-#ifdef ALLOW_CD
+#ifdef INCLUDE_LAT_CIRC_FFT_FILTER_CODE
+      CALL FILTER_LATCIRCS_FFT_APPLY( gU, 1-1, sNy+1, k, k, bi, bj, 1, myThid)
+      CALL FILTER_LATCIRCS_FFT_APPLY( gV, 1-1, sNy+1, k, k, bi, bj, 2, myThid)
+#endif
+
+
+#ifdef INCLUDE_CD_CODE
 C--   Save "previous time level" variables
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
@@ -1029,7 +1039,7 @@ C--   Save "previous time level" variables
          vNM1(i,j,k,bi,bj) =  vVel(i,j,k,bi,bj)
        ENDDO
       ENDDO
-#endif
+#endif /* INCLUDE_CD_CODE */
 
       RETURN
       END

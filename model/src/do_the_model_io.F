@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.10 1998/10/28 03:11:37 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.11 1998/11/06 22:44:45 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
       SUBROUTINE DO_THE_MODEL_IO(myCurrentTime, myIter, myThid)
 C     /==========================================================\

@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.3 1998/05/21 18:25:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.4 1998/11/06 22:44:47 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE INI_FIELDS( myThid )
@@ -25,7 +25,7 @@ C     myThid -  Number of this instance of INI_FIELDS
 CEndOfInterface
 
 C--   Set model variables to initial/restart conditions
-      IF ( startTime .EQ. 0. ) THEN
+      IF ( startTime .EQ. 0. .AND.  nIter0 .EQ. 0 ) THEN
        CALL INI_UVEL( myThid )
        CALL INI_VVEL( myThid )
        CALL INI_THETA( myThid )

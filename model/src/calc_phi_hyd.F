@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.5 1998/09/09 15:19:07 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.6 1998/11/06 22:44:44 cnh Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
       SUBROUTINE CALC_PHI_HYD( bi, bj, iMin, iMax, jMin, jMax, K,
      I    buoyKM1, buoyKP1, phiHyd, myThid)
@@ -27,6 +27,8 @@ C     == Local variables ==
       _RL halfLayer
       _RL gamma
 
+#ifdef INCLUDE_PHIHYD_CALCULATION_CODE
+
       if (K.eq.1) then
        Km1=1
        halfLayer=0.5 _d 0
@@ -35,15 +37,18 @@ C     == Local variables ==
        halfLayer=1.0 _d 0
       endif
 
-C--   Scale factor for hydrostatic relation except for ocean in pressure coords.
+C--   Scale factor for hydrostatic relation except for ocean in 
+C--   pressure coords.
       gamma = 1. _d 0
-C--   Scale factor for hydrostatic relation for ocean in pressure coords.
+C--   Scale factor for hydrostatic relation for ocean in pressure 
+C--   coords.
       IF ( buoyancyRelation .EQ. 'OCEANIC' .AND. usingPCoords ) THEN
        gamma = recip_Gravity*recip_rhoConst
       ENDIF
 
 C--   Contribution to phiHyd(:,:,K) from buoy(:,:,K-1) + buoy(:,:,K)
-C     (This is now the actual hydrostatic pressure|height at the T/S points)
+C     (This is now the actual hydrostatic pressure|height at the T/S 
+C     points)
       DO j=jMin,jMax
        DO i=iMin,iMax
         phiHyd(i,j,K)=phiHyd(i,j,Km1)-rhoConst*halfLayer
@@ -52,7 +57,9 @@ C     (This is now the actual hydrostatic pressure|height at the T/S points)
        ENDDO
       ENDDO
 
-! ------------------------------------------------------------------------------
+#endif
+
+! --------------------------------------------------------------------
       return
       end
-! ==============================================================================
+! ====================================================================
