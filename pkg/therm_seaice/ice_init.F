@@ -61,16 +61,7 @@ c     set up ice arrays to zero if starting ice
        else
 C--     Read ice pickup fields
         prec=precFloat64
-        WRITE(fn,'(A,I10.10)') 'pickup_ic.',nIter0
-        CALL MDSREADFIELD(fn,prec,'RL',1,iceMask,   1,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,iceHeight, 2,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,snowHeight,3,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,Tsrf,      4,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,Tice1,     5,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,Tice2,     6,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,Qice1,     7,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,Qice2,     8,myThid)
-        CALL MDSREADFIELD(fn,prec,'RL',1,sage,      9,myThid)
+        CALL ICE_READ_CHECKPOINT( prec, nIter0, myThid )
       endif
 
         _EXCH_XY_R8(iceMask, myThid)
