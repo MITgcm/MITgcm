@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.7 2002/01/30 04:17:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.8 2002/02/10 00:44:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,6 +26,7 @@ C     == Global variables
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#include "FFIELDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -61,7 +62,7 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      IF ( UpdateEtaN_EtaH .OR. myTime.EQ.StartTime ) THEN
+      IF ( UpdateEtaN_EtaH .OR. myTime.EQ.startTime ) THEN
 
 C--   Compute the Divergence of The Barotropic Flow :
 
@@ -106,38 +107,111 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Update etaN at the end of the time step : 
 C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
-       IF (implicDiv2Dflow .NE. 0. _d 0 ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-           etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
-     &      - implicDiv2Dflow*hDivFlow(i,j,bi,bj)
-     &                       *recip_rA(i,j,bi,bj)*DeltaTmom
-         ENDDO
-        ENDDO
-       ELSE
+       IF (implicDiv2Dflow.EQ. 0. _d 0) THEN
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
            etaN(i,j,bi,bj) = etaH(i,j,bi,bj) 
          ENDDO
         ENDDO
+       ELSEIF (useRealFreshWaterFlux) THEN
+        DO j=1,sNy
+         DO i=1,sNx
+           etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
+     &      - implicDiv2Dflow*( EmPmR(i,j,bi,bj)
+     &                    +hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
+     &                        )*deltaTmom
+         ENDDO
+        ENDDO
+       ELSE
+        DO j=1,sNy
+         DO i=1,sNx
+           etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
+     &      - implicDiv2Dflow*hDivFlow(i,j,bi,bj)
+     &                       *recip_rA(i,j,bi,bj)*deltaTmom
+         ENDDO
+        ENDDO
        ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       ELSE
 
+#ifdef NONLIN_FRSURF
+       IF (useRealFreshWaterFlux .AND. nonlinFreeSurf.GT.0) THEN
+
+C-- Called at the beginning of the time step : 
+C-  keep present time EmPmR to compute later (S/R EXTERNAL_FORCING_SURF)
+C   tracers and momentum flux associated with fresh water input. 
+
+        IF ( myTime.NE.startTime ) THEN
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            PmEpR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)
+          ENDDO
+         ENDDO
+
+        ELSEIF( myTime .EQ. 0. _d 0 ) THEN
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            PmEpR(i,j,bi,bj) = 0. _d 0
+           ENDDO
+          ENDDO
+
+        ELSE
+C     needs previous time-step value of E-P-R, that has not been loaded
+C     and was not in pickup-file ; try to use etaN & etaH instead.
+          DO j=1,sNy
+           DO i=1,sNx
+            PmEpR(i,j,bi,bj) = 
+     &        hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
+     &      + (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
+     &       /(implicDiv2Dflow*deltaTmom)
+           ENDDO
+          ENDDO
+        ENDIF
+
+       ENDIF
+#endif /* NONLIN_FRSURF */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 C--   Update etaH at the beginning of the time step : 
 C     Incorporate the Explicit part of -Divergence(Barotropic_Flow)
-       IF (implicDiv2Dflow .NE. 1. _d 0 ) THEN
+
+       IF ( useRealFreshWaterFlux .AND. myTime.EQ.startTime ) THEN
+C     needs previous time-step value of E-P-R, that has not been loaded
+C     and was not in pickup-file ; try to use etaN & etaH instead.
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+           etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
+     &        + (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
+     &             *(1. - implicDiv2Dflow)/implicDiv2Dflow
+         ENDDO
+        ENDDO
+
+       ELSEIF (implicDiv2Dflow.EQ. 1. _d 0) THEN
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+           etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
+         ENDDO
+        ENDDO
+
+       ELSEIF (useRealFreshWaterFlux) THEN
+        DO j=1,sNy
+         DO i=1,sNx
+           etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
+     &      - (1. - implicDiv2Dflow)*( EmPmR(i,j,bi,bj)
+     &                    +hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
+     &                               )*deltaTmom
+         ENDDO
+        ENDDO
+
+       ELSE
         DO j=1,sNy
          DO i=1,sNx
            etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
      &      - (1. - implicDiv2Dflow)*hDivFlow(i,j,bi,bj)
-     &                              *recip_rA(i,j,bi,bj)*DeltaTmom
-         ENDDO
-        ENDDO
-       ELSE
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-           etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
+     &                              *recip_rA(i,j,bi,bj)*deltaTmom
          ENDDO
         ENDDO
        ENDIF
@@ -151,7 +225,7 @@ C           called later, hFacZ will lag 1 time step behind OBC update.
 C        3) avoid also unrealistic value of etaH in OB regions that
 C           might produce many "WARNING" message from calc_surf_dr.  
 C-------
-        IF (useOBCS .AND. nonlinFreeSurf.GT.0 ) 
+        IF ( useOBCS .AND. nonlinFreeSurf.GT.0 )
      &    CALL OBCS_APPLY_ETA( bi, bj, etaH, myThid )   
 #endif /* NONLIN_FRSURF */
 #endif /* ALLOW_OBCS */
