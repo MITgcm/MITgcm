@@ -1,7 +1,8 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.456 2005/02/20 11:46:24 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.457 2005/02/21 05:34:17 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+o pkg/exf: added twoDigitYear capability for option useExfYearlyFields
 o parameter calendarDumps: when set, approximate months (30-31 days) and years
   (360-372 days) for parameters chkPtFreq, pChkPtFreq, taveFreq, SEAICE_taveFreq,
   KPP_taveFreq, and freq in pkg/diagnostics are converted to exact calendar
