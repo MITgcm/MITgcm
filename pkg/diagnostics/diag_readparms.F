@@ -24,11 +24,8 @@ c -----------------------
       character*(MAX_LEN_MBUF) msgBuf
       integer ku
       integer l,n,m,ndim
-      _RL undef
+      _RL undef, getcon
       parameter ( ndim = 100 )       ! Max Number of Levels,Fields,Lists
-      integer nlevel                 ! Total   Number of Output Levels
-      integer nfield                 ! Total   Number of Output Fields
-      _RL getcon
       integer frequency(ndim)        ! Frequency of Output (hhmmss)
       _RL levels (ndim,ndim)         ! List Output Levels
       character*8 fields(ndim,ndim)  ! List Output Fields
@@ -62,12 +59,27 @@ C **********************************************************************
       close (ku)
 
 C **********************************************************************
-C ****         Fill Diagnostics Common Block with Namelist Info     ****
+C ****         Initialise diag_choices common block                 ****
 C **********************************************************************
 
       nlists = 0
       do n = 1,numlists
-        if( freq(n).ne.0 ) then
+       freq(n) = 0
+       nlevels(n) = 0
+       nfields(n) = 0
+       fnames(n) = blank
+       do m = 1,numperlist
+        levs(m,n) = 0
+        flds(m,n) = '        '
+       enddo
+      enddo
+
+C **********************************************************************
+C ****         Fill Diagnostics Common Block with Namelist Info     ****
+C **********************************************************************
+
+      do n = 1,numlists
+        if( frequency(n).ne.0 ) then
            nlists = nlists + 1
            freq(n)   = frequency(n)
            fnames(n)    = filename (n)
@@ -94,8 +106,8 @@ C **********************************************************************
       do n=1,nlists
          print *, 'Creating Output Stream: ',fnames(n)
          print *, 'Frequency: ',freq(n)
-         print *, 'Levels:    ',(levs(n,l),l=1,nlevels(n))
-         print *, 'Fields:    ',(flds(n,l),l=1,nfields(n))
+         print *, 'Levels:    ',(levs(l,n),l=1,nlevels(n))
+         print *, 'Fields:    ',(flds(l,n),l=1,nfields(n))
          print *
       enddo
 

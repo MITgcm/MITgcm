@@ -51,6 +51,14 @@ C ***********************************************************************
       integer myThid
       integer  n
 
+      do n=1,ndiagt
+      kdiag (n) = 0
+      cdiag(n) = '        '
+      gdiag(n) = '                '
+      udiag(n) = '                '
+      tdiag(n) = ' '
+      enddo
+
 c Diagnostic Names
 c ----------------
       cdiag( 1)  = 'UFLUX   '
@@ -106,10 +114,10 @@ c ----------------
       cdiag(51)  = 'CLDLOW  '
       cdiag(52)  = 'EVAP    '
       cdiag(53)  = 'DPDT    '
-      cdiag(54)  = 'UIAU    '
-      cdiag(55)  = 'VIAU    '
-      cdiag(56)  = 'TIAU    '
-      cdiag(57)  = 'QIAU    '
+      cdiag(54)  = 'UAVE    '
+      cdiag(55)  = 'VAVE    '
+      cdiag(56)  = 'TAVE    '
+      cdiag(57)  = 'QAVE    '
       cdiag(58)  = 'OMEGA   '
       cdiag(59)  = 'DUDT    '
       cdiag(60)  = 'DVDT    '
@@ -135,7 +143,7 @@ c ----------------
       cdiag(80)  = 'PS      '
       cdiag(81)  = 'TKE     '
       cdiag(82)  = 'SWGCLR  '
-      cdiag(83)  = 'PIAU    '
+      cdiag(83)  = 'PAVE    '
       cdiag(84)  = 'SDIAG1  '
       cdiag(85)  = 'SDIAG2  '
       cdiag(86)  = 'UDIAG1  '
@@ -170,7 +178,7 @@ c ----------------
       cdiag(115) = 'Q10M    '
       cdiag(116) = 'DTRAIN  '
       cdiag(117) = 'QFILL   '
-      cdiag(118) = 'VAVEQIAU'
+      cdiag(118) = 'VAVEQAVE'
       cdiag(119) = 'VAVEQFIL'
       cdiag(120) = 'SHAPU   '
       cdiag(121) = 'SHAPV   '
@@ -235,7 +243,7 @@ c ----------------
       cdiag(180) = 'VDTTURB '
       cdiag(181) = 'VDTLWRAD'
       cdiag(182) = 'VDTSWRAD'
-      cdiag(183) = 'VAVETIAU'
+      cdiag(183) = 'VAVETAVE'
       cdiag(184) = 'PSUBCLD '
       cdiag(185) = 'PSUBCLDC'
       cdiag(186) = 'LCL     '
@@ -355,11 +363,11 @@ c ----------------------------------------------------------------------
       tdiag(51)  = 'Low-Level ( 1000-700 hPa) Cloud Fraction  (0-1)'
       tdiag(52)  = 'Surface Evaporation  (mm/day)'
       tdiag(53)  = 'Surface Pressure Tendency  (hPa/day)'
-      tdiag(54)  = 'Zonal Wind Tendency due to Analysis  (m/s/day)'
-      tdiag(55)  = 'Meridional Wind Tendency due to Analysis  (m/s/day)'
-      tdiag(56)  = 'Temperature Tendency due to Analysis  (K/day)'
+      tdiag(54)  = 'Average Zonal Wind (m/s)'
+      tdiag(55)  = 'Average Meridional Wind (m/s)'
+      tdiag(56)  = 'Average Potential Temperature (K)'
       tdiag(57)  = 
-     .  'Specific Humidity Tendency due to Analysis  (g/kg/day)'
+     .  'Average Specific Humidity (g/kg)'
       tdiag(58)  = 'Vertical Velocity  (hPa/day)'
       tdiag(59)  = 'Total Zonal Wind Tendency  (m/s/day)'
       tdiag(60)  = 'Total Meridional Wind Tendency  (m/s/day)'
@@ -389,7 +397,7 @@ c ----------------------------------------------------------------------
       tdiag(81)  = 'Time-Averaged Turbulent Kinetic Energy  (m/s)^2'
       tdiag(82)  = 
      .  'Clear Sky Net Downward SW Radiation at the Ground  (W/m^2)'
-      tdiag(83)  = 'Surface Pressure Tendency due to Analysis (hPa/day)'
+      tdiag(83)  = 'Average Surface Pressure (hPa)'
       tdiag(84)  = 'User-Defined Surface   Diagnostic #1'
       tdiag(85)  = 'User-Defined Surface   Diagnostic #2'
       tdiag(86)  = 'User-Defined Upper-Air Diagnostic #1'
@@ -434,7 +442,7 @@ c ----------------------------------------------------------------------
       tdiag(115) = 'Specific Humidity Interpolated to 10 Meters (g/kg)'
       tdiag(116) = 'Detrainment Cloud Mass Flux  (g/m^2/sec)'
       tdiag(117) = 'Filling of Negative Specific Humidity (g/kg/day)'
-      tdiag(118) = 'Vertically Averaged QIAU  (mm/day)'
+      tdiag(118) = 'Vertically Averaged QAVE  (mm/day)'
       tdiag(119) = 'Vertically Averaged QFILL  (mm/day)'
       tdiag(120) = 
      .  'Zonal Wind Tendency due to Shapiro Filter  (m/s/day)'
@@ -514,7 +522,7 @@ c ----------------------------------------------------------------------
       tdiag(180) = 'Vertically Averaged TURBT  (K/day)'
       tdiag(181) = 'Vertically Averaged RADLW  (K/day)'
       tdiag(182) = 'Vertically Averaged RADSW  (K/day)'
-      tdiag(183) = 'Vertically Averaged TIAU  (K/day)'
+      tdiag(183) = 'Vertically Averaged TAVE  (K/day)'
       tdiag(184) = 'Pressure Thickness of the RAS Subcloud Layer (mb)'
       tdiag(185) = 
      .  'Pressure Thickness of the RAS Subcloud Layer Counter'
@@ -659,10 +667,10 @@ c ----------------
       udiag(51)  = '0-1             '
       udiag(52)  = 'mm/day          '
       udiag(53)  = 'hPa/day         '
-      udiag(54)  = 'm/s/day         '
-      udiag(55)  = 'm/s/day         '
-      udiag(56)  = 'K/day           '
-      udiag(57)  = 'gram/kg/day     '
+      udiag(54)  = 'm/s             '
+      udiag(55)  = 'm/s             '
+      udiag(56)  = 'K               '
+      udiag(57)  = 'gram/kg         '
       udiag(58)  = 'hPa/day         '
       udiag(59)  = 'm/s/day         '
       udiag(60)  = 'm/s/day         '
@@ -1139,10 +1147,10 @@ c -----------------
       KDIAG(51) =  1     
       KDIAG(52) =  1     
       KDIAG(53) =  1     
-      KDIAG(54) = nrphys 
-      KDIAG(55) = nrphys 
-      KDIAG(56) = nrphys 
-      KDIAG(57) = nrphys 
+      KDIAG(54) = Nr
+      KDIAG(55) = Nr 
+      KDIAG(56) = Nr 
+      KDIAG(57) = Nr 
       KDIAG(58) = nrphys 
       KDIAG(59) = nrphys 
       KDIAG(60) = nrphys 
@@ -1326,7 +1334,7 @@ c -----------------
 
       do n=1,ndiagt
       idiag (n) = 0
-      cdiag(n) = cdiag(n)
+      ndiag(n) = 0
       enddo
 
       RETURN

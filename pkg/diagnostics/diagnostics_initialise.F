@@ -43,13 +43,13 @@ C **********************************************************************
 
         found = .false.
         do mm=1,ndiagt   ! Search all possible model diagnostics
-         if( flds(n,m).eq.cdiag(mm) ) then
+         if( flds(m,n).eq.cdiag(mm) ) then
           call setdiag (myThid,mm,ndiagcount)
           found = .true.
          endif
         enddo
         if( .not.found .and. myThid.eq.1 ) then
-         print *, 'Note:  ',flds(n,m),' is not a Diagnostic.'
+         print *, 'Note:  ',flds(m,n),' is not a Diagnostic.'
         endif
 
        enddo

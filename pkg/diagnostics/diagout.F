@@ -99,7 +99,7 @@ c --------------------------------------
           endif
          endif
         endif
-       call mdswritefield(fn,64,glf,'RL',kdiag(m),qtmp1,1,myIter,myThid)
+       call mdswritefield(fn,64,glf,'RL',kdiag(m),qtmp1,n,myIter,myThid)
        enddo
       enddo
 

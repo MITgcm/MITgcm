@@ -136,7 +136,7 @@ C   Check to see if we need to do a bi-bj loop here
 
       ENDIF
 
- 1000 format(' ',' Warning: Trying to write diagnostic ',a8,
+ 1000 format(' ',' Warning: Trying to write to diagnostic ',a8,
      .        ' But it is not a valid (or active) name ')
       return
       end

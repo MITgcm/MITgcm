@@ -27,9 +27,11 @@ C***********************************************************************
 C***   Check to see if its time for Diagnostic Output                ***
 C***********************************************************************
       do n=1,nlists
-      if ( mod(freq(n),myIter).eq.0 .and. myIter.ne.niter0) then
-       call diagout(myThid,myIter,n)
-       call clrindx(myThid,n)
+      if ( myIter.ne.niter0) then
+       if ( mod(myIter,freq(n)).eq.0 ) then
+        call diagout(myThid,myIter,n)
+        call clrindx(myThid,n)
+       endif
       endif
       enddo
 
