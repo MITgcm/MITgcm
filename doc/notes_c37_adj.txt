@@ -1,0 +1,91 @@
+P. Heimbach, MIT/EAPS, 24-Mar-2001
+----------------------------------
+All changed files are (hopefully) listed below.
+
+added:
+-----
+- pkg/autodiff/
+- pkg/cost/
+- pkg/ctrl/
+- adjoint/
+- verification/vero/
+
+eesupp/src/ & pkg/mdsio/ OK
+------------------------
+- mdsio.F, mdsio_gl.F:
+    global routines required for global read/write
+    in ecco replaced by routines that don't use
+    dynamic memory allocation.
+
+- mdsio_slice.F: added to both dir's
+    handle sliced (x-z, y-z) I/O, needed for OBCS.
+
+model/inc/ OK
+---------
+- PARAMS.h: added dQdTFile
+
+- FFIELDS.h: added dQdT
+
+adjoint/
+-------
+- makefile: OK
+  updated to incorporate new routines and skipped old
+
+model/src/
+---------
+- the_model_main.F: OK
+
+- the main_sens.F: OK
+  should replace the_main_loop.F, forward_step.F !!!
+  changed various storings of model state
+
+- ini_parms.F: OK
+  added dQdTFile
+
+- set_defaults.F: OK
+  added dQdTFile
+
+- packages_init_variables.F: OK
+  * call ctrl_map_init
+  * call cost_init
+  * call ecco_init
+  * handling of ini_forcing
+
+- packages_readparms.F: OK
+  * call cost_readparms
+  * call ctrl_init
+  * call ecco_readparms
+
+- solve_for_pressure.F: OK
+  TAMC didn't like write(0,...
+
+- initialise_varia.F, convective_adjustment.F: OK
+  big problem with calling convective_adjustment
+  already here, i.e. before dynamics,
+  because storage keys are not yet available.
+  Is this really necessary?
+  -> call convective_adjustment only for ifndef ALLOW_AUTODIFF_TAMC
+  -> keys are recomputed inside convective_adjustment.F
+
+- the_correction_step:
+  -> keys are recomputed for the case useOBCS
+
+- ini_fields.F, ini_wvel.F: OK
+  added call to new S/R ini_wvel to initialise wVel
+
+- dynamics.F: looks OK
+  started to work on modified key comp. and store directives
+
+- moved some key declarations to tamc.h
+  * tamc.h
+  * kpp_calc.F
+
+store directives are up to now in
+---------------------------------
+- (convective_adjustment -> has to be removed from there)
+- calc_phi_hyd
+- dynamics
+- the_correction_step
+- the_main_sens
+- kpp_calc
+- kpp_routines

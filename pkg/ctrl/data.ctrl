@@ -1,0 +1,38 @@
+#
+#
+# *********************
+# ECCO controlvariables
+# *********************
+ &CTRLVARS
+ xx_theta_file='xx_theta',
+ xx_salt_file='xx_salt',
+ xx_hfluxstartdate1=19920601,
+ xx_hfluxstartdate2=60000,
+ xx_hfluxperiod=864000.0,
+ xx_hfl_file='xx_hfl',
+ xx_sfluxstartdate1=19920601,
+ xx_sfluxstartdate2=60000,
+ xx_sfluxperiod=864000.0,
+ xx_sfl_file='xx_sfl',
+ xx_tauustartdate1=19920601,
+ xx_tauustartdate2=60000,
+ xx_tauuperiod=864000.0,
+ xx_tauu_file='xx_tauu',
+ xx_tauvstartdate1=19920601,
+ xx_tauvstartdate2=60000,
+ xx_tauvperiod=864000.0,
+ xx_tauv_file='xx_tauv',
+ /
+#
+# *********************
+# names for ctrl_pack/unpack
+# *********************
+ &PACKNAMES
+ yadmark='ad',
+ ctrlname='ecco_ctrl',
+ costname='ecco_cost',
+ scalname='ecco_scal',
+ maskname='ecco_mask',
+ metaname='ecco_meta',
+ /
+

@@ -1,0 +1,6 @@
+
+C----------------------------------------
+C subroutine  external_fields_load
+C----------------------------------------
+CADJ SUBROUTINE external_fields_load INPUT  = 1, 2, 3
+CADJ SUBROUTINE external_fields_load OUTPUT =

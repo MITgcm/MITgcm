@@ -1,0 +1,30 @@
+Example: 
+===================================================
+- GMRedi
+- forward/adjoint run
+- test cost function
+
+To apply the changes to the default configuration of MITgcmUV:
+  cd bin
+  ln -s ../verification/vero/code/SIZE.h .
+  ln -s ../verification/vero/code/CPP_OPTIONS.h .
+  ln -s ../verification/vero/code/CPP_EEOPTIONS.h .
+  ln -s ../verification/vero/code/COST_CPPOPTIONS.h .
+  ln -s ../verification/vero/code/CTRL_CPPOPTIONS.h .
+  ln -s ../verification/vero/code/ECCO_CPPOPTIONS.h .
+  ln -s ../verification/vero/code/FFIELDS.h .
+  ln -s ../verification/vero/code/addynvars.h .
+  ln -s ../verification/vero/code/adffields.h .
+  ln -s ../verification/vero/code/tamc.h .
+
+Configure and compile the code:
+  cd ../bin
+  ../tools/genmake -makefile
+  make depend
+  make
+
+To run:
+  cd ../exe
+  cp ../verification/vero/input/* .
+  mitgcmuv >&! run.out
+

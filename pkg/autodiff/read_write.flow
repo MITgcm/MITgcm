@@ -1,0 +1,42 @@
+
+C----------------------------------------
+C subroutine  write_1d_i
+C----------------------------------------
+CADJ SUBROUTINE write_1d_i  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE write_1d_i  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_1d_l
+C----------------------------------------
+CADJ SUBROUTINE write_1d_l  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE write_1d_l  OUTPUT =
+
+C----------------------------------------
+C subroutine  write_1d_r8
+C----------------------------------------
+CADJ SUBROUTINE write_1d_r8 INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE write_1d_r8 OUTPUT =
+
+C----------------------------------------
+C subroutine  write_0d_i
+C----------------------------------------
+CADJ SUBROUTINE write_0d_i INPUT  = 1,2,3,4
+CADJ SUBROUTINE write_0d_i OUTPUT =
+
+C----------------------------------------
+C subroutine  write_0d_l
+C----------------------------------------
+CADJ SUBROUTINE write_0d_l INPUT  = 1,2,3,4
+CADJ SUBROUTINE write_0d_l OUTPUT =
+
+C----------------------------------------
+C subroutine  write_0d_r8
+C----------------------------------------
+CADJ SUBROUTINE write_0d_l INPUT  = 1,2,3,4
+CADJ SUBROUTINE write_0d_l OUTPUT =
+
+C----------------------------------------
+C subroutine  write_0d_r8
+C----------------------------------------
+CADJ SUBROUTINE write_0d_r8 INPUT  = 1,2,3,4
+CADJ SUBROUTINE write_0d_r8 OUTPUT =

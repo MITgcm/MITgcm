@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.49 2001/02/20 19:38:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.50 2001/03/25 22:33:52 heimbach Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -58,6 +58,7 @@ C     saltClimFile    - File containing salt climataology used
 C                       in relaxation term -lambda(salt-salt*)
 C     surfQfile       - File containing surface heat flux
 C     surfQswfile     - File containing surface shortwave radiation
+C     dQdTfile        - File containing thermal relaxation coefficient
 C     EmPmRfile       - File containing surface fresh water flux
 C     buoyancyRelation - Flag used to indicate which relation to use to
 C                        get buoyancy.
@@ -66,7 +67,8 @@ C                        get buoyancy.
      &                zonalWindFile, meridWindFile, thetaClimFile,
      &                saltClimFile, buoyancyRelation,
      &                EmPmRfile, surfQfile, surfQswfile,
-     &                uVelInitFile, vVelInitFile, pSurfInitFile
+     &                uVelInitFile, vVelInitFile, pSurfInitFile,
+     &                dQdTfile
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
       CHARACTER*(MAX_LEN_FNAM) bathyFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
@@ -82,6 +84,7 @@ C                        get buoyancy.
       CHARACTER*(MAX_LEN_FNAM) uVelInitFile
       CHARACTER*(MAX_LEN_FNAM) vVelInitFile
       CHARACTER*(MAX_LEN_FNAM) pSurfInitFile
+      CHARACTER*(MAX_LEN_FNAM) dQdTfile
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        - Maximum number of iterations in the

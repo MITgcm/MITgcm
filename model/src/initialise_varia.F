@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.9 2001/03/06 17:19:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.10 2001/03/25 22:33:53 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -48,6 +48,7 @@ C       CALL THE_CORRECTION_STEP(startTime, nIter0, myThid)
 C     ENDIF
 
 C--   Initial conditions are convectively adjusted (for historical reasons)
+#ifndef ALLOW_AUTODIFF_TAMC
       IF ( startTime .EQ. 0. ) THEN
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -62,6 +63,7 @@ C--   Initial conditions are convectively adjusted (for historical reasons)
         ENDDO
         _BARRIER
       END IF
+#endif
 
 C--   Initialize variable data for packages
       CALL PACKAGES_INIT_VARIABLES( myThid )

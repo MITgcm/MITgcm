@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.36 2001/03/06 17:10:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.37 2001/03/25 22:33:53 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -105,6 +105,12 @@ C     == Global variables ===
 #include "CG3D.h"
 #endif
 
+#ifdef ALLOW_AUTODIFF_TAMC
+#include "tamc.h"
+#include "cost.h"
+#include "adcost.h"
+#endif
+
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
       INTEGER myThid  
@@ -129,15 +135,40 @@ C--   Set model configuration (fixed arrays)
       CALL INITIALISE_FIXED( myThid )
       CALL TIMER_STOP ('INITIALISE_FIXED   [THE_MODEL_MAIN]',myThid)
 
-
       myCurrentTime = startTime
       myCurrentIter = nIter0
 
+#ifdef ALLOW_MIT_ADJOINT_RUN
+
+      _BEGIN_MASTER( mythid )
+      IF (myProcId .eq. 0) THEN
+         CALL CTRL_UNPACK( mycurrentiter, mycurrenttime, mythid )
+      ENDIF
+      _END_MASTER( mythid )
+      _BARRIER
+
+      fc   = 0.0
+      adfc = 1.0
+      CALL TIMER_START('ADTHE_MAIN_SENS          [ADJOINT RUN]', mythid)
+      call ADTHE_MAIN_SENS ( mythid )
+      call TIMER_STOP ('ADTHE_MAIN_SENS          [ADJOINT RUN]', mythid)
+      _BARRIER
+
+      _BEGIN_MASTER( mythid )
+      IF (myProcId .eq. 0) THEN
+         call CTRL_PACK( mycurrentiter, mycurrenttime, mythid )
+      ENDIF
+      _END_MASTER( mythid )
+      _BARRIER
+
+#else /* ALLOW_MIT_ADJOINT_RUN undef */
+
 C--   Call time stepping loop of full model
       CALL TIMER_START('THE_MAIN_LOOP      [THE_MODEL_MAIN]',myThid)
-      CALL THE_MAIN_LOOP(myCurrentTime, myCurrentIter, myThid )
+      CALL THE_MAIN_SENS(myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('THE_MAIN_LOOP      [THE_MODEL_MAIN]',myThid)
 
+#endif /* ALLOW_MIT_ADJOINT_RUN */
 
       CALL TIMER_STOP ('ALL                [THE_MODEL_MAIN]',myThid)
 

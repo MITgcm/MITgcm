@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.3 2001/02/20 19:39:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.4 2001/03/25 22:33:53 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -48,6 +48,16 @@ C--   Initialize KPP parameters
 c--   Read in AIM package parameters
 C     Currently AIM does not have any runtime parameters
 C     IF (useAIM) CALL AIM_READPARMS ( myThid )
+#endif
+
+#ifdef ALLOW_MIT_ADJOINT_RUN
+C--   Initialise the cost function.
+      call cost_readparms( mythid )
+      _BARRIER
+
+C--   Initialise the control vector.
+      CALL ctrl_Init( myThid )
+      _BARRIER
 #endif
 
 #ifdef INCLUDE_ECCO_PACKAGE

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.4 2001/02/20 19:39:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.5 2001/03/25 22:33:53 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -44,6 +44,15 @@ C--   Open boundaries data
       IF ( useAIM ) CALL AIM_INIT( mythid )
 #endif
 
+#ifdef ALLOW_MIT_ADJOINT_RUN
+c--   Map the control variables onto the model state. 
+      call ctrl_map_ini( mythid )
+      _BARRIER
+c--   Initialise the cost function.
+      call cost_init( mythid )
+      _BARRIER
+#endif
+
 #ifdef INCLUDE_ECCO_PACKAGE
       IF (useECCO) THEN
        CALL ECCO_INIT( myThid )
@@ -51,7 +60,6 @@ C--   Open boundaries data
 #else
       CALL INI_FORCING( myThid )
 #endif
-
 
       RETURN
       END

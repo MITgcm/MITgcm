@@ -1,0 +1,51 @@
+#
+#
+# ******************
+# ECCO cost function
+# ******************
+ &COST_NML
+ data_errfile='data.err',
+ tbarfile='tbar',
+ sbarfile='sbar',
+ psbarfile='psbar',
+ using_topex=.false.,
+ topexstartdate1=19920601,
+ topexstartdate2=60000,
+ topexperiod=86400.0,
+ topexfile='PH_TP_fields_020_016_23',
+ topexmeanfile='PH_TP_mean_020_016_23',
+ using_ers=.false.,
+ ersstartdate1=19920601,
+ ersstartdate2=60000,
+ ersperiod=86400.0,
+#
+ ersfile='PH_ERS_fields_020_016_23',
+ ssh_errfile='PH_ssh.err_020_016_23',
+ sststartdate1=19920601,
+ sststartdate2=60000,
+ sstdatfile='PH_SST_fields_020_016_23',
+ tdatfile='PH_Lev.ptmp_020_016_23',
+ sdatfile='PH_Lev.salt_020_016_23',
+ ctdtfile='ctdt.ex',
+ ctdsfile='ctds.ex',
+ hflux_errfile='PH_totflux.err_020_016_23',
+ sflux_errfile='PH_pme.err_020_016_23',
+ tauu_errfile='PH_ustress.err_020_016_23',
+ tauv_errfile='PH_vstress.err_020_016_23',
+ geoid_errfile='PH_geoid.err_020_016_23',
+ geoid_covariancefile='egm96.pinv',
+ mult_hq=1.,
+ mult_hs=1.,
+ mult_tauu=1.,
+ mult_tauv=1.,
+ mult_hmean=1.,
+ mult_h=1.,
+ mult_temp=1.,
+ mult_salt=1.,
+ mult_sst=1.,
+ mult_ctdt=1.,
+ mult_ctds=1.,
+#
+ iprec_cost=64,
+ yftype_cost='RL',
+ &

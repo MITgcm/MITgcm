@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.65 2001/03/08 20:25:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.66 2001/03/25 22:33:52 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -119,16 +119,6 @@ c     LOGICAL  DIFFERENT_MULTIPLE
 c     EXTERNAL DIFFERENT_MULTIPLE
 Cjmc(end)
  
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER    isbyte
-      PARAMETER( isbyte = 4 )
-
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER iikey, kkey
-      INTEGER maximpl
-#endif /* ALLOW_AUTODIFF_TAMC */
-
 C---    The algorithm...
 C
 C       "Correction Step"
@@ -272,13 +262,24 @@ C This is currently also used by IVDC and Diagnostics
         jMax = sNy+OLy
 
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE uvel(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C--     Start of diagnostic loop
         DO k=Nr,1,-1
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C? Patrick, is this formula correct now that we change the loop range?
 C? Do we still need this?
-         kkey = (ikey-1)*(Nr-2+1) + (k-2) + 1
+cph kkey formula corrected. 
+cph Needed for rhok, rhokm1, in the case useGMREDI.
+         kkey = (ikey-1)*Nr + k
+CADJ STORE rhokm1(:,:) = comlev1_bibj_k , key = kkey, byte = isbyte
+CADJ STORE rhok  (:,:) = comlev1_bibj_k , key = kkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--       Integrate continuity vertically for vertical velocity
@@ -371,7 +372,32 @@ C--     Compute KPP mixing coefficients
         IF (useKPP) THEN
           CALL KPP_CALC(
      I                  bi, bj, myTime, myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+        ELSE
+          DO j=1-OLy,sNy+OLy
+            DO i=1-OLx,sNx+OLx
+              KPPhbl (i,j,bi,bj) = 1.0
+              KPPfrac(i,j,bi,bj) = 0.0
+              DO k = 1,Nr
+                 KPPghat   (i,j,k,bi,bj) = 0.0
+                 KPPviscAz (i,j,k,bi,bj) = viscAz
+                 KPPdiffKzT(i,j,k,bi,bj) = diffKzT
+                 KPPdiffKzS(i,j,k,bi,bj) = diffKzS
+              ENDDO
+            ENDDO
+          ENDDO
+#endif /* ALLOW_AUTODIFF_TAMC */
         ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KPPghat   (:,:,:,bi,bj)
+CADJ &   , KPPviscAz (:,:,:,bi,bj) 
+CADJ &   , KPPdiffKzT(:,:,:,bi,bj)
+CADJ &   , KPPdiffKzS(:,:,:,bi,bj)
+CADJ &   , KPPfrac   (:,:  ,bi,bj)
+CADJ &                 = comlev1_bibj, key=ikey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #endif  /* ALLOW_KPP */
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -411,11 +437,12 @@ C--       kDown  Cycles through 2,1 to point to current layer
           jMax = sNy+OLy-1
 
 #ifdef ALLOW_AUTODIFF_TAMC 
-CPatrick Is this formula correct?
-         kkey = (ikey-1)*(Nr-1+1) + (k-1) + 1
-CADJ STORE rTrans(:,:)       = comlev1_bibj_k, key = kkey, byte = isbyte
-CADJ STORE KappaRT(:,:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
-CADJ STORE KappaRS(:,:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
+C? Patrick Is this formula correct?
+cph Yes, but I rewrote it.
+cph Also, the KappaR? need the index k!
+         kkey = (ikey-1)*Nr + k
+CADJ STORE KappaRT(:,:,k)    = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE KappaRS(:,:,k)    = comlev1_bibj_k, key = kkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--      Get temporary terms used by tendency routines
@@ -483,9 +510,13 @@ C--     end of thermodynamic k loop (Nr:1)
 
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CPatrick? What about this one?
-           maximpl = 6
-           iikey = (ikey-1)*maximpl
+C? Patrick? What about this one?
+cph Keys iikey and idkey don't seem to be needed
+cph since storing occurs on different tape for each
+cph impldiff call anyways.
+cph Thus, common block comlev1_impl isn't needed either.
+cph Storing below needed in the case useGMREDI.
+        iikey = (ikey-1)*maximpl
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Implicit diffusion
@@ -494,6 +525,7 @@ C--     Implicit diffusion
          IF (tempStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
             idkey = iikey + 1
+CADJ STORE gTNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -505,6 +537,7 @@ C--     Implicit diffusion
          IF (saltStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
          idkey = iikey + 2
+CADJ STORE gSNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -612,6 +645,7 @@ C--     Implicit viscosity
         IF (implicitViscosity.AND.momStepping) THEN
 #ifdef    ALLOW_AUTODIFF_TAMC
           idkey = iikey + 3
+CADJ STORE gUNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -620,6 +654,7 @@ C--     Implicit viscosity
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
           idkey = iikey + 4
+CADJ STORE gVNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -639,6 +674,7 @@ C--      Apply open boundary conditions
 #ifdef    INCLUDE_CD_CODE
 #ifdef    ALLOW_AUTODIFF_TAMC
           idkey = iikey + 5
+CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -647,6 +683,7 @@ C--      Apply open boundary conditions
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
           idkey = iikey + 6
+CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,

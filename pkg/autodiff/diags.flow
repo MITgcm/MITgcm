@@ -1,0 +1,8 @@
+
+c----------------------------------------
+c subroutine  do_time_averages
+c----------------------------------------
+
+CADJ SUBROUTINE do_time_averages INPUT  = 1,2,3,4,5,6,7,8,9,10,11,12
+CADJ SUBROUTINE do_time_averages OUTPUT =
+

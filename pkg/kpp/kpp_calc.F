@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.6 2001/02/04 14:38:50 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.7 2001/03/25 22:33:55 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -103,8 +103,6 @@ c     to OLx=1, OLy=1.
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"
-      INTEGER    isbyte
-      PARAMETER( isbyte = 4 )
 #else /* ALLOW_AUTODIFF_TAMC */
       integer ikey
 #endif /* ALLOW_AUTODIFF_TAMC */

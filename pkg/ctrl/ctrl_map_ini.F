@@ -1,0 +1,153 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.1 2001/03/25 22:33:55 heimbach Exp $
+
+#include "CTRL_CPPOPTIONS.h"
+
+
+      subroutine ctrl_map_ini(
+     I                     mythid
+     &                   )
+
+c     ==================================================================
+c     SUBROUTINE ctrl_map_ini
+c     ==================================================================
+c
+c     o Add the temperature and salinity parts of the control vector to
+c       the model state and update the tile edges. The control vector is
+c       defined in the header file "ctrl.h".
+c
+c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
+c
+c     changed: Christian Eckert eckert@mit.edu 23-Feb-2000
+c
+c              - Restructured the code in order to create a package
+c                for the MITgcmUV.
+c
+c     ==================================================================
+c     SUBROUTINE ctrl_map_ini
+c     ==================================================================
+
+      implicit none
+
+c     == global variables ==
+
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "DYNVARS.h"
+
+#include "ctrl.h"
+#include "ctrl_dummy.h"
+
+c     == routine arguments ==
+
+      integer mythid
+
+c     == local variables ==
+
+      _RL     fac
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+      integer il
+
+      logical equal
+      logical doglobalread
+      logical ladinit
+
+      character*( 80)   fnametheta
+      character*( 80)   fnamesalt
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
+
+c     == end of interface ==
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1-oly
+      jmax = sny+oly
+      imin = 1-olx
+      imax = snx+olx
+
+      doglobalread = .false.
+      ladinit      = .false.
+
+      equal = .true.
+
+      if ( equal ) then
+        fac = 1. _d 0
+      else
+        fac = 0. _d 0
+      endif
+
+#ifdef ALLOW_THETA0_CONTROL
+c--   Temperature field.
+      il=ilnblnk( xx_theta_file )
+      write(fnametheta(1:80),'(2a,i10.10)')
+     &     xx_theta_file(1:il),'.',optimcycle
+      call active_read_xyz( fnametheta, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_theta_dummy )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                theta(i,j,k,bi,bj) = theta(i,j,k,bi,bj) +
+     &                               fac*tmpfld3d(i,j,k,bi,bj)
+                gtNm1(i,j,k,bi,bj) = gtNm1(i,j,k,bi,bj) +
+     &                               fac*tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
+#ifdef ALLOW_SALT0_CONTROL
+c--   Temperature field.
+      il=ilnblnk( xx_salt_file )
+      write(fnamesalt(1:80),'(2a,i10.10)')
+     &     xx_salt_file(1:il),'.',optimcycle
+      call active_read_xyz( fnamesalt, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_salt_dummy )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                salt(i,j,k,bi,bj) = salt(i,j,k,bi,bj) +
+     &                               fac*tmpfld3d(i,j,k,bi,bj)
+                gsNm1(i,j,k,bi,bj) = gsNm1(i,j,k,bi,bj) +
+     &                               fac*tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
+
+c--   Update the tile edges.
+
+#ifdef ALLOW_THETA0_CONTROL
+      _EXCH_XYZ_R8( theta, mythid )
+      _EXCH_XYZ_R8( gtNm1, mythid )
+#endif
+#ifdef ALLOW_SALT0_CONTROL
+      _EXCH_XYZ_R8(  salt, mythid )
+      _EXCH_XYZ_R8( gsNm1, mythid )
+#endif
+
+      return
+      end
+

@@ -1,0 +1,8 @@
+
+# ***************
+# ECCO parameters
+# ***************
+ &ECCO_PARMS
+ expId = 'VERO_TEST_000',
+ &
+

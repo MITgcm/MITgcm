@@ -1,0 +1,28 @@
+c
+c
+c   =========================================
+c   Cost Function Package for the MITgcmUV
+c   =========================================
+c
+c   Current Version: 0.0.1 (20-Jun-2000)
+c
+c
+c   General Outline:
+c   ----------------
+c
+c
+c   ========
+c   HISTORY:
+c   ========
+c
+c
+c   started: Christian Eckert eckert@mit.edu  1999
+c
+c   changed: Patrick Heimbach heimbach@mit.edu 20-Jun-2000
+c
+c            - Bug fixes:
+c              * cost_... (imin,imax,jmin,jmax without olx,oly)
+c              * cost_... (determination of filenames slightly changed)
+c              * cost_initvaria (initialise jtlo,jthi,itlo,ithi)
+c              * cost_salt (set ladinit to .true. for adsbar file)
+c              * cost_temp (set ladinit to .true. for adtbar file)

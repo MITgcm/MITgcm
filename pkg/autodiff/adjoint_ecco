@@ -1,0 +1,243 @@
+SHELL		 = /bin/tcsh
+RM               = rm -f
+LOC              = $(PWD)
+TAMC              = /data43/tamc/tamc 
+DEST             = .
+SOURCE_CODE      = ../bin
+BASE             = ..
+AMCFLAGS         = -e -adjoint
+
+
+DIFF_FLAGS       = -module objfunc                                \
+                   -input  'xx_theta  xx_salt                     \
+                            xx_hfl    xx_sfl   xx_tauu  xx_tauv ' \
+                   -output 'fc'
+
+AMCFLAG 	 = $(AMCFLAGS) $(DIFF_FLAGS) -l list_uv -admark ad
+
+
+# Source files for the MITgcmUV
+SRC_MODEL	= $(BASE)/packages/autodiff/read_write.flow     \
+         	  $(BASE)/packages/autodiff/read_write_fld.flow \
+         	  $(BASE)/packages/autodiff/read_write_rec.flow \
+                  $(BASE)/packages/autodiff/cg2d.flow           \
+                  $(BASE)/packages/autodiff/initialisation.flow \
+                  $(BASE)/packages/autodiff/diags.flow          \
+                  $(BASE)/packages/autodiff/eesupp.flow         \
+                  $(BASE)/packages/autodiff/active_file.flow    \
+                  $(BASE)/packages/autodiff/write_state.flow    \
+                  $(BASE)/packages/autodiff/exch_ad.flow        \
+                  $(BASE)/packages/autodiff/global_sum_ad.flow  \
+                  $(BASE)/packages/autodiff/mdsio.flow          \
+                                                                \
+                  $(SOURCE_CODE)/exch_ad.f                      \
+                  $(SOURCE_CODE)/global_sum_ad.f                \
+                  $(SOURCE_CODE)/active_file_ad.f               \
+                                                                \
+                  $(SOURCE_CODE)/calc_buoyancy.f                \
+                  $(SOURCE_CODE)/calc_common_factors.f          \
+                  $(SOURCE_CODE)/calc_diffusivity.f             \
+                  $(SOURCE_CODE)/calc_div_ghat.f                \
+                  $(SOURCE_CODE)/calc_grad_eta_surf.f           \
+                  $(SOURCE_CODE)/calc_gs.f                      \
+                  $(SOURCE_CODE)/calc_gt.f                      \
+                  $(SOURCE_CODE)/calc_isoslopes.f               \
+                  $(SOURCE_CODE)/calc_mom_rhs.f                 \
+                  $(SOURCE_CODE)/calc_phi_hyd.f                 \
+                  $(SOURCE_CODE)/comm_stats.f                   \
+                  $(SOURCE_CODE)/config_summary.f               \
+                  $(SOURCE_CODE)/convect.f                      \
+                  $(SOURCE_CODE)/correction_step.f              \
+                  $(SOURCE_CODE)/different_multiple.f           \
+                  $(SOURCE_CODE)/do_gterm_blocking_exchanges.f  \
+                  $(SOURCE_CODE)/do_the_model_io.f              \
+                  $(SOURCE_CODE)/dynamics.f                     \
+                  $(SOURCE_CODE)/external_forcing.f             \
+                  $(SOURCE_CODE)/find_rho.f                     \
+                  $(SOURCE_CODE)/freeze.f                       \
+                  $(SOURCE_CODE)/get_offline_fields.f           \
+                  $(SOURCE_CODE)/impldiff.f                     \
+                  $(SOURCE_CODE)/ini_cartesian_grid.f           \
+                  $(SOURCE_CODE)/ini_cg2d.f                     \
+                  $(SOURCE_CODE)/ini_communication_patterns.f   \
+                  $(SOURCE_CODE)/ini_cori.f                     \
+                  $(SOURCE_CODE)/ini_depths.f                   \
+                  $(SOURCE_CODE)/ini_fields.f                   \
+                  $(SOURCE_CODE)/ini_forcing.f                  \
+                  $(SOURCE_CODE)/ini_grid.f                     \
+                  $(SOURCE_CODE)/ini_masks_etc.f                \
+                  $(SOURCE_CODE)/ini_predictor.f                \
+                  $(SOURCE_CODE)/ini_procs.f                    \
+                  $(SOURCE_CODE)/ini_salt.f                     \
+                  $(SOURCE_CODE)/ini_spherical_polar_grid.f     \
+                  $(SOURCE_CODE)/ini_theta.f                    \
+                  $(SOURCE_CODE)/ini_threading_environment.f    \
+                  $(SOURCE_CODE)/ini_uvel.f                     \
+                  $(SOURCE_CODE)/ini_vertical_grid.f            \
+                  $(SOURCE_CODE)/ini_vvel.f                     \
+                  $(SOURCE_CODE)/initialise_varia.f             \
+                  $(SOURCE_CODE)/load_external_fields.f         \
+                  $(SOURCE_CODE)/modeldata_example.f            \
+                  $(SOURCE_CODE)/plot_field.f                   \
+                  $(SOURCE_CODE)/solve_for_pressure.f           \
+                  $(SOURCE_CODE)/state_summary.f                \
+                  $(SOURCE_CODE)/timeaver_1fld_xyz.f            \
+                  $(SOURCE_CODE)/timeaver_2fld_xyz.f            \
+                  $(SOURCE_CODE)/timeaver_final_xy.f            \
+                  $(SOURCE_CODE)/timeaver_final_xyz.f           \
+                  $(SOURCE_CODE)/timeaver_ini_xy.f              \
+                  $(SOURCE_CODE)/timeaver_ini_xyz.f             \
+                  $(SOURCE_CODE)/timeaver_inter_xy.f            \
+                  $(SOURCE_CODE)/timeaver_inter_xyz.f           \
+                  $(SOURCE_CODE)/timestep.f                     \
+                                                                \
+                  $(SOURCE_CODE)/cost_averagesfields.f          \
+                  $(SOURCE_CODE)/cost_averagesfinal.f           \
+                  $(SOURCE_CODE)/cost_averagesflags.f           \
+                  $(SOURCE_CODE)/cost_averagesinit.f            \
+                  $(SOURCE_CODE)/cost_final.f                   \
+                  $(SOURCE_CODE)/cost_forcing.f                 \
+                  $(SOURCE_CODE)/cost_geoid.f                   \
+                  $(SOURCE_CODE)/cost_heatflux.f                \
+                  $(SOURCE_CODE)/cost_hyd.f                     \
+                  $(SOURCE_CODE)/cost_initvaria.f               \
+                  $(SOURCE_CODE)/cost_merstress.f               \
+                  $(SOURCE_CODE)/cost_readers.f                 \
+                  $(SOURCE_CODE)/cost_readsstfields.f           \
+                  $(SOURCE_CODE)/cost_readtopex.f               \
+                  $(SOURCE_CODE)/cost_readtopexmean.f           \
+                  $(SOURCE_CODE)/cost_salt.f                    \
+                  $(SOURCE_CODE)/cost_saltflux.f                \
+                  $(SOURCE_CODE)/cost_ssh.f                     \
+                  $(SOURCE_CODE)/cost_theta.f                   \
+                  $(SOURCE_CODE)/cost_zonstress.f               \
+                                                                \
+                  $(SOURCE_CODE)/ctrl_getheatflux.f             \
+                  $(SOURCE_CODE)/ctrl_getmerstress.f            \
+                  $(SOURCE_CODE)/ctrl_getrec.f                  \
+                  $(SOURCE_CODE)/ctrl_getsaltflux.f             \
+                  $(SOURCE_CODE)/ctrl_getzonstress.f            \
+                  $(SOURCE_CODE)/ctrl_map.f                     \
+                  $(SOURCE_CODE)/ctrl_state2xxall.f             \
+                  $(SOURCE_CODE)/ctrl_state2xxhfl.f             \
+                  $(SOURCE_CODE)/ctrl_state2xxsalt.f            \
+                  $(SOURCE_CODE)/ctrl_state2xxsfl.f             \
+                  $(SOURCE_CODE)/ctrl_state2xxtauu.f            \
+                  $(SOURCE_CODE)/ctrl_state2xxtauv.f            \
+                  $(SOURCE_CODE)/ctrl_state2xxtheta.f           \
+                  $(SOURCE_CODE)/ctrl_xx2stateall.f             \
+                  $(SOURCE_CODE)/ctrl_xx2statehfl.f             \
+                  $(SOURCE_CODE)/ctrl_xx2statesalt.f            \
+                  $(SOURCE_CODE)/ctrl_xx2statesfl.f             \
+                  $(SOURCE_CODE)/ctrl_xx2statetauu.f            \
+                  $(SOURCE_CODE)/ctrl_xx2statetauv.f            \
+                  $(SOURCE_CODE)/ctrl_xx2statetheta.f           \
+                                                                \
+                  $(SOURCE_CODE)/ecco_main.f                    \
+                                                                \
+                  $(SOURCE_CODE)/ymds_daily.f                   \
+                  $(SOURCE_CODE)/ymds_integrate.f               \
+                  $(SOURCE_CODE)/ymds_monthly.f                 \
+                  $(SOURCE_CODE)/ymds_postdaily.f               \
+                  $(SOURCE_CODE)/ymds_postmonthly.f             \
+                  $(SOURCE_CODE)/ymds_poststep.f                \
+                  $(SOURCE_CODE)/ymds_postyearly.f              \
+                  $(SOURCE_CODE)/ymds_predaily.f                \
+                  $(SOURCE_CODE)/ymds_premonthly.f              \
+                  $(SOURCE_CODE)/ymds_prestep.f                 \
+                  $(SOURCE_CODE)/ymds_preyearly.f               \
+                  $(SOURCE_CODE)/ymds_step.f                    \
+                  $(SOURCE_CODE)/ymds_yearly.f                  \
+                                                                \
+                  $(SOURCE_CODE)/exf_bulkcdn.f                  \
+                  $(SOURCE_CODE)/exf_bulkqsat.f                 \
+                  $(SOURCE_CODE)/exf_bulkrhn.f                  \
+                  $(SOURCE_CODE)/exf_getffields.f               \
+                  $(SOURCE_CODE)/exf_getffieldsrec.f            \
+                  $(SOURCE_CODE)/exf_getforcing.f               \
+                  $(SOURCE_CODE)/exf_getsaltclim.f              \
+                  $(SOURCE_CODE)/exf_getsaltclimlambda.f        \
+                  $(SOURCE_CODE)/exf_getsaltclimrec.f           \
+                  $(SOURCE_CODE)/exf_getsssclim.f               \
+                  $(SOURCE_CODE)/exf_getsssclimlambda.f         \
+                  $(SOURCE_CODE)/exf_getsssclimrec.f            \
+                  $(SOURCE_CODE)/exf_getsstclim.f               \
+                  $(SOURCE_CODE)/exf_getsstclimlambda.f         \
+                  $(SOURCE_CODE)/exf_getsstclimrec.f            \
+                  $(SOURCE_CODE)/exf_getsurfacefluxes.f         \
+                  $(SOURCE_CODE)/exf_gettempclim.f              \
+                  $(SOURCE_CODE)/exf_gettempclimlambda.f        \
+                  $(SOURCE_CODE)/exf_gettempclimrec.f           \
+                  $(SOURCE_CODE)/exf_mapfields.f                \
+                  $(SOURCE_CODE)/exf_readatmprecip.f            \
+                  $(SOURCE_CODE)/exf_readatmqh.f                \
+                  $(SOURCE_CODE)/exf_readatmtemp.f              \
+                  $(SOURCE_CODE)/exf_readheatflux.f             \
+                  $(SOURCE_CODE)/exf_readlwflux.f               \
+                  $(SOURCE_CODE)/exf_readmerstress.f            \
+                  $(SOURCE_CODE)/exf_readmerwind.f              \
+                  $(SOURCE_CODE)/exf_readsaltclim.f             \
+                  $(SOURCE_CODE)/exf_readsaltflux.f             \
+                  $(SOURCE_CODE)/exf_readsssclim.f              \
+                  $(SOURCE_CODE)/exf_readsstclim.f              \
+                  $(SOURCE_CODE)/exf_readswflux.f               \
+                  $(SOURCE_CODE)/exf_readtempclim.f             \
+                  $(SOURCE_CODE)/exf_readzonstress.f            \
+                  $(SOURCE_CODE)/exf_readzonwind.f              \
+                  $(SOURCE_CODE)/exf_relaxsalt.f                \
+                  $(SOURCE_CODE)/exf_relaxsss.f                 \
+                  $(SOURCE_CODE)/exf_relaxsst.f                 \
+                  $(SOURCE_CODE)/exf_relaxtheta.f               \
+                  $(SOURCE_CODE)/exf_swapffields.f              \
+                                                                \
+                  $(SOURCE_CODE)/cal_addtime.f                  \
+                  $(SOURCE_CODE)/cal_checkdate.f                \
+                  $(SOURCE_CODE)/cal_compdates.f                \
+                  $(SOURCE_CODE)/cal_convdate.f                 \
+                  $(SOURCE_CODE)/cal_copydate.f                 \
+                  $(SOURCE_CODE)/cal_daysformonth.f             \
+                  $(SOURCE_CODE)/cal_dayspermonth.f             \
+                  $(SOURCE_CODE)/cal_fulldate.f                 \
+                  $(SOURCE_CODE)/cal_getdate.f                  \
+                  $(SOURCE_CODE)/cal_getmonthsrec.f             \
+                  $(SOURCE_CODE)/cal_intdays.f                  \
+                  $(SOURCE_CODE)/cal_intmonths.f                \
+                  $(SOURCE_CODE)/cal_intsteps.f                 \
+                  $(SOURCE_CODE)/cal_intyears.f                 \
+                  $(SOURCE_CODE)/cal_isleap.f                   \
+                  $(SOURCE_CODE)/cal_monthsforyear.f            \
+                  $(SOURCE_CODE)/cal_monthsperyear.f            \
+                  $(SOURCE_CODE)/cal_nstepday.f                 \
+                  $(SOURCE_CODE)/cal_numints.f                  \
+                  $(SOURCE_CODE)/cal_printdate.f                \
+                  $(SOURCE_CODE)/cal_printerror.f               \
+                  $(SOURCE_CODE)/cal_stepsforday.f              \
+                  $(SOURCE_CODE)/cal_stepsperday.f              \
+                  $(SOURCE_CODE)/cal_subdates.f                 \
+                  $(SOURCE_CODE)/cal_timeinterval.f             \
+                  $(SOURCE_CODE)/cal_timepassed.f               \
+                  $(SOURCE_CODE)/cal_timestamp.f                \
+                  $(SOURCE_CODE)/cal_toseconds.f                \
+                  $(SOURCE_CODE)/cal_weekday.f                  \
+                                                                \
+                  $(SOURCE_CODE)/sphere.f
+
+
+
+#--------------------------------------------------------
+# rules
+#--------------------------------------------------------
+
+adcode:
+	cd $(DEST) ; cat $(SRC_MODEL) >! tamc_code_ecco.f
+admodel:
+	cd $(DEST) ; $(TAMC) $(TAMCFLAG) tamc_code_ecco.f > tamc_ecco.prot &
+adchange:
+	adjoint_ecco_sed.com >! tamc_code_ecco_sed_ad.f ;  \
+        cp ../model/src/adjoint_model.F                    \
+           ../model/src/adjoint_model_template.F ;         \
+        cat tamc_code_ecco_sed_ad.f >> ../model/src/adjoint_model.F
+adrestore:
+	mv ../model/src/adjoint_model_template.F           \
+           ../model/src/adjoint_model.F
+adall:  adcode admodel

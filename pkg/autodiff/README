@@ -1,0 +1,45 @@
+c
+c
+c   =========================================
+c   Adjoint support Package for the MITgcmUV
+c   =========================================
+c
+c   Current Version: 0.1.0 (20-Jun-2000)
+c
+c
+c   General Outline:
+c   ----------------
+c
+c      The directory autodiff only contains pieces
+c      of code that are of general use in getting
+c      the adjoint or the tangent linear model of
+c      a some MITgcmUV setup.
+c
+c      Such pieces are hand-coded adjoint routines,
+c      initialization and finalization of a future
+c      autodiff package, flow directives for TAMC
+c      and header files necessary to include for
+c      doing automatic differentiation.
+c
+c   ========
+c   HISTORY:
+c   ========
+c
+c
+c   started: Christian Eckert eckert@mit.edu  1999
+c
+c   changed: Patrick Heimbach heimbach@mit.edu 20-Jun-2000
+c
+c            - adjoint support routines:
+c              * active_file_ad.F (changed subroutine argument list)
+c              * adopen_adclose.F (changed subroutine argument list)
+c              * adread_adwrite.F (changed subroutine argument list)
+c              * adread_adwrite.F (single file name convention with or
+c                                without ALLOW_ECCO_OPTIMIZATION)
+c
+c            - flow directives:
+c              * added: print_message.flow, check_exp.flow
+c
+c            - exch_ad.F:
+c              NB: Exchanges have been modified substantially since
+c                  exch_ad.F was written.

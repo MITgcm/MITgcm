@@ -1,0 +1,6 @@
+
+C----------------------------------------
+C subroutine  check_exp
+C----------------------------------------
+CADJ SUBROUTINE ecco_check_exp INPUT  = 1,2,3,4
+CADJ SUBROUTINE ecco_check_exp OUTPUT =

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.11 2001/03/08 20:21:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.12 2001/03/25 22:33:52 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -85,7 +85,7 @@ C       Hydrostatic pressure at cell centers
         DO j=jMin,jMax
           DO i=iMin,iMax
 #ifdef      ALLOW_AUTODIFF_TAMC
-            Is this directive correct or even necessary in this new code?
+c           Is this directive correct or even necessary in this new code?
 CADJ GENERAL
 #endif      /* ALLOW_AUTODIFF_TAMC */
 

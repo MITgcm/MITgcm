@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.56 2001/03/06 17:22:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.57 2001/03/25 22:33:52 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -132,7 +132,8 @@ C--   Input files
      & zonalWindFile, meridWindFile,
      & thetaClimFile, saltClimFile,
      & surfQfile, EmPmRfile, surfQswfile, 
-     & uVelInitFile, vVelInitFile, pSurfInitFile
+     & uVelInitFile, vVelInitFile, pSurfInitFile,
+     & dQdTFile
 
 C
       _BEGIN_MASTER(myThid)

@@ -1,0 +1,20 @@
+#
+#
+# ******************
+# ECCO cost function
+# ******************
+ &COST_NML
+ data_errfile ='data.err',
+ tbarfile   = 'tbar',
+ sbarfile   = 'sbar',
+#
+ tdatfile             = 'PH_Lev.ptmp__020_016_23',
+ sdatfile             = 'PH_Lev.salt__020_016_23',
+#
+ mult_temp  = 1.,
+ mult_salt  = 1.,
+ mult_test  = 1.,
+#
+ iprec_cost  = 64,
+ yftype_cost = 'RL',
+ &

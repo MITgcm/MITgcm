@@ -1,0 +1,88 @@
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_test.F,v 1.1 2001/03/25 22:33:54 heimbach Exp $
+
+#include "CPP_OPTIONS.h"
+
+      subroutine cost_test( myThid )
+C     /==========================================================\
+C     | subroutine cost_test                                     |
+C     | o this routine computes the cost function for the tiles  |
+C     |   of this processor                                      |
+C     |==========================================================|
+C     |                                                          |
+C     | Notes                                                    |
+C     | =====                                                    |
+C     \==========================================================/
+      IMPLICIT NONE
+
+C     == Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "DYNVARS.h"
+#include "GRID.h"
+
+#include "cost.h"
+
+C     == Routine arguments ==
+C     myThid - Thread number for this instance of the routine.
+      integer bi, bj
+      integer myThid
+
+#ifdef ALLOW_COST_TEST
+C     == Local variables
+      _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL thetaRef
+
+      integer i, j, k
+      integer ig, jg
+      integer itlo,ithi
+      integer jtlo,jthi
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+
+      iLocOut =  6
+      jLocOut =  35
+      kLocOut =  1
+
+ce    some reference temperature
+      thetaRef = 24.0D0
+
+C--   Calculate mask for tracer cells  (0 => land, 1 => water)
+      k=1
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j=1,sNy
+            do i=1,sNx
+              maskC(i,j) = 1.
+              if (_hFacC(i,j,k,bi,bj) .eq. 0.) maskC(i,j)=0.
+            end do
+          end do
+        end do
+      end do
+
+C--   Calculate cost function on tile of this instance
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j=1,sNy
+          jg = myYGlobalLo-1+(bj-1)*sNy+j
+            do i=1,sNx
+            ig = myXGlobalLo-1+(bi-1)*sNx+i
+
+            if ((ig .eq. iLocOut) .and. (jg .eq. jLocOut)) then
+cph               write(0,'(a,3(x,i4),a,4(x,i4))')
+cph     &              'COST    ',ig,jg,kLocOut,' TILE ',i,j,bi,bj
+               objf_test(bi,bj) = theta(i,j,kLocOut,bi,bj)
+            endif
+
+            end do
+          end do
+        end do
+      end do
+
+#endif
+
+      END

@@ -1,0 +1,27 @@
+
+c----------------------------------------
+c subroutine active_read_rl
+c----------------------------------------
+cadj SUBROUTINE active_read_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
+cadj SUBROUTINE active_read_rl OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_write_rl
+c----------------------------------------
+cadj SUBROUTINE active_write_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_write_rl OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_read_tile_rl
+c----------------------------------------
+cadj SUBROUTINE active_read_tile_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
+cadj SUBROUTINE active_read_tile_rl INPUT  += 10, 11
+cadj SUBROUTINE active_read_tile_rl OUTPUT  =    2
+
+c----------------------------------------
+c subroutine active_write_tile_rl
+c----------------------------------------
+cadj SUBROUTINE active_write_tile_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
+cadj SUBROUTINE active_write_tile_rl INPUT  += 10
+cadj SUBROUTINE active_write_tile_rl OUTPUT  =    2
+

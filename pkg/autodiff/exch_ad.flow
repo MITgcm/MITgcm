@@ -1,0 +1,39 @@
+C     /==========================================================\
+C     | TAMC flow directives                                     |
+C     | for library subroutines    exch_xy_r4  exch_xyz_r4       |
+C     |                            exch_xy_r8  exch_xyz_r8       |
+C     |==========================================================|
+C     | These directives are for standard adjoint code           |
+C     | generation (vector Jacobian product).                    |
+C     |   tamc -reverse  ....                                    |
+C     |                                                          |
+C     | written and tested by Ralf Giering, Jan. 14th 1999       |
+C     |==========================================================|
+C     | SUBROUTINE EXCH_*_R* is linear                           |
+C     | only the array argument is active                        |
+C     | only myThid is required for the adjoint subroutine       |
+C     \==========================================================/
+cadj SUBROUTINE exch_xy_r4 INPUT   = 1, 2
+cadj SUBROUTINE exch_xy_r4 OUTPUT  = 1
+cadj SUBROUTINE exch_xy_r4 ACTIVE  = 1
+cadj SUBROUTINE exch_xy_r4 DEPEND  = 2
+cadj SUBROUTINE exch_xy_r4 ADNAME  = adexch_xy_r4
+
+cadj SUBROUTINE exch_xy_r8 INPUT   = 1, 2
+cadj SUBROUTINE exch_xy_r8 OUTPUT  = 1
+cadj SUBROUTINE exch_xy_r8 ACTIVE  = 1
+cadj SUBROUTINE exch_xy_r8 DEPEND  = 2
+cadj SUBROUTINE exch_xy_r8 ADNAME  = adexch_xy_r8
+
+cadj SUBROUTINE exch_xyz_r4 INPUT   = 1, 2
+cadj SUBROUTINE exch_xyz_r4 OUTPUT  = 1
+cadj SUBROUTINE exch_xyz_r4 ACTIVE  = 1
+cadj SUBROUTINE exch_xyz_r4 DEPEND  = 2
+cadj SUBROUTINE exch_xyz_r4 ADNAME  = adexch_xyz_r4
+
+cadj SUBROUTINE exch_xyz_r8 INPUT   = 1, 2
+cadj SUBROUTINE exch_xyz_r8 OUTPUT  = 1
+cadj SUBROUTINE exch_xyz_r8 ACTIVE  = 1
+cadj SUBROUTINE exch_xyz_r8 DEPEND  = 2
+cadj SUBROUTINE exch_xyz_r8 ADNAME  = adexch_xyz_r8
+

@@ -1,0 +1,22 @@
+
+
+       Here, you find a Makefile "adjoint_ecco" that allows
+       you to put all the code togther that has to be seen 
+       by TAMC in order to produce adjoint code.
+
+       The sed script "adjoint_ecco_sed.com" allows you to
+       do some postprocessing of the adjoint code. It inserts
+       addtional arguments to the TAMC-generated calls to
+       "adread", "adwrite", "adopen", and "adclose".
+
+       Please have look at the options you have in "adjoint_ecco"
+       and how they work.
+
+       --> adcode
+       --> admodel
+       --> adall
+
+       --> adchange
+       --> adrestore
+
+

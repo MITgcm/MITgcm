@@ -1,0 +1,6 @@
+
+C----------------------------------------
+C subroutine  ini_parms
+C----------------------------------------
+CADJ SUBROUTINE ini_parms INPUT  = 1
+CADJ SUBROUTINE ini_parms OUTPUT =
