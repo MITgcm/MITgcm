@@ -4,7 +4,7 @@ function [nt,nf] = mnc_assembly(fpat,vars, fout,fsize)
 %
 % INPUTS
 % fpat   string containing the file pattern
-% vars   cell array of variable names
+% vars   structure array of variable names
 %
 % fout   output file pattern (DEF: "all.%05d.nc")
 % fsize  max output file size (DEF: 2.0e+9 = +/-2GB)
