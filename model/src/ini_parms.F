@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.49 2000/04/05 17:52:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.50 2000/04/11 13:51:10 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -330,8 +330,8 @@ C--   z,p,r coord input switching.
       IF ( hFacMinDz .NE. UNSET_RL ) zCoordInputData = .TRUE.
       IF ( hFacMinDp .NE. UNSET_RL ) pCoordInputData = .TRUE.
       IF ( hFacMinDr .NE. UNSET_RL ) rCoordInputData = .TRUE.
-      IF ( hFacMinDz .EQ. UNSET_RL ) hFacMinDr       = hFacMinDz
-      IF ( hFacMinDp .EQ. UNSET_RL ) hFacMinDr       = hFacMinDp
+      IF ( hFacMinDr .EQ. UNSET_RL ) hFacMinDr       = hFacMinDz
+      IF ( hFacMinDr .EQ. UNSET_RL ) hFacMinDr       = hFacMinDp
       IF ( hFacMinDr .EQ. UNSET_RL ) hFacMinDr       = hFacMinDrDefault
 
       IF ( ivdc_kappa .NE. 0. .AND. .NOT. implicitDiffusion ) THEN
