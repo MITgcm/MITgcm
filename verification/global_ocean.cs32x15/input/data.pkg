@@ -1,7 +1,7 @@
 # Packages
  &PACKAGES
  useGMRedi=.TRUE.,
- useMNC=.TRUE.,
+#useMNC=.TRUE.,
 #useBulkforce=.TRUE.,
 #useThermSeaIce=.TRUE.,
  &
