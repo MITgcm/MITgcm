@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.8 2005/02/22 17:50:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.9 2005/02/28 19:38:30 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -112,7 +112,7 @@ C       Update the record dimension by writing the iteration number
      &       'Idicies of vertical levels within the source arrays',
      &       myThid)
         
-        CALL MNC_CW_RL_W('I',diag_mnc_bn,0,0,
+        CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
      &       'diag_levels', levs(1,listnum), myThid)
 
         CALL MNC_CW_DEL_VNAME('diag_levels', myThid)
