@@ -1,0 +1,153 @@
+#!/bin/csh
+
+# Run this script from the verification directory
+# It will automatically configure, compile, run and verify all experiments
+# in the verification directory for whcih there is an results/output.txt
+# file.
+
+# This is the number of least-significant digits allows to be
+# in error before the test is classified as a "fail".
+
+set passaccuracy=7
+printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' " " Make " " " " Exact "# of" " " > summary.txt
+printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' Config Depend Compile Execute Match Digits experiment >> summary.txt
+
+# Pass any arguments
+foreach arg ($argv)
+ switch ($arg)
+  case -clean:
+   echo Cleaning ...
+   foreach dr ([a-zA-Z01-9]*)
+    if (-d $dr/input) then
+      echo Entering $dr
+      cd $dr/input
+      echo ""
+      make CLEAN
+      \rm -f {*output,*high,*low}.txt *.log
+      \rm -f ?ake*
+      cd ../..
+    endif
+   end
+   rm -f summary.txt
+   exit 0
+  default:
+   echo Unknown argument given to $0
+   exit 1
+ endsw
+end
+
+foreach dr ([a-zA-Z01-9]*)
+ if (! -d $dr/input ) continue
+ set config=-
+ set makedepend=-
+ set compile=-
+ set execute=-
+ set exactmatch=-
+ set accuracy=-
+ echo ==============================================================================
+ echo Entering $dr
+ cd $dr
+ echo ""
+ if (! -r results/output.txt) then
+  echo "                ***** No results to compare with *****"
+  if (! $?untested) set untested
+  set untested=($untested $dr)
+ else
+  set config=NO
+  set makedepend=NO
+  set compile=NO
+  set execute=NO
+  set exactmatch=NO
+  set accuracy=-
+  cd input
+  echo -n "  generating Makefile ..."
+  ../../../tools/genmake -mods=../code >&! make.log
+  if ($status == 0) set config=Yes
+  echo " done."
+  echo -n "  make depend ..."
+  make cleanlinks depend >>& make.log
+  if ($status == 0) set makedepend=Yes
+  echo " done."
+  echo -n "  make ..."
+  make >>& make.log
+  if ($status) then
+   echo "               ***** An error occurred during make *****"
+   cat make.log
+   exit 1
+  else
+   set compile=Yes
+  endif
+  echo " done."
+  echo -n "  running model ..."
+  ./mitgcmuv | & grep "D iters" > output.txt
+  if ($status == 0) then
+    set execute=Yes
+    echo " done."
+    sed 's/.*D iters, err =//' output.txt \
+    | grep "   0    " \
+    > high.txt
+    grep "D iters" ../results/output.txt \
+     | sed 's/.*D iters, err =//' \
+     | grep "   0    " \
+     > oldhigh.txt
+    diff oldhigh.txt high.txt > /dev/null
+    if ($status) then
+      echo "  output differs:"
+      diff oldhigh.txt high.txt
+      echo ""
+      @ lvl=0
+      set accuracy='.'
+      set fail
+      echo -n Trying reduced accuracy
+      while ($lvl <= $passaccuracy)
+        @ lvl+=1
+        echo -n " " $lvl
+        sed s/{$accuracy}E/E/ high.txt > low.txt
+        sed s/{$accuracy}E/E/ oldhigh.txt > oldlow.txt
+        diff oldlow.txt low.txt > /dev/null
+        if ($status == 0) then
+          unset fail
+          break
+        endif
+        set accuracy=`echo $accuracy | sed 's/\./../'`
+      end
+      echo ""
+      if ($?fail ) then
+        if (! $?fails) set fails
+        set fails=($fails $dr)
+        echo "                        ***** FAIL *****"
+      else
+        if (! $?passes) set passes
+        set passes=($passes $dr)
+        echo ""
+        echo "                   ***** PASS (grade $lvl) *****"
+      endif
+      set accuracy=$lvl
+    else
+      set exactmatch=Yes
+      echo ""
+      echo Model passed at highest accuracy.
+      echo ""
+      echo "                        ***** PASS *****"
+      if (! $?passes) set passes
+      set passes=($passes $dr)
+    endif
+  else
+    echo " error"
+    echo "               ***** An error occured running the mode *****"
+    tail output.txt
+    exit 1
+  endif
+  cd ..
+ endif
+ echo ""
+ cd ..
+# Pretty summary
+ printf '  %s\t  %s\t  %s\t  %s\t  %s\t  %s\t%s\n' $config $makedepend $compile $execute $exactmatch $accuracy $dr >> summary.txt
+end
+echo ==============================================================================
+echo ""
+
+echo "Summary:"
+echo ""
+cat summary.txt
