@@ -11,11 +11,12 @@
 	-7.96117, -8.34951, -8.73786, -9.12621, -9.51456,
  sRef= 25*1.,
  viscAz=5.E-1,
- viscAh=5.0E1,
+ viscAh=0.0E0,
  no_slip_sides=.TRUE.,
  no_slip_bottom=.TRUE.,
  bottomDragQuadratic=2.E-3,
  viscA4=0.E12,
+ viscC4Leith=0.1,
  diffKhT=0.0E0
  diffKzT=0.E-2,
  diffKhS=0.E0,
@@ -25,27 +26,27 @@
  tAlpha=2.E-4,
  sBeta =0.E-4,
  gravity=9.81,
- gBaro=9.81,
  rhonil=1030.0,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  eosType='LINEAR',
  hFacMin=0.2,
  nonHydrostatic=.FALSE.,
- readBinaryPrec=64,
- globalFiles=.TRUE.,
- writeBinaryPrec=64,
- writeStatePrec=64,
  multiDimAdvection=.TRUE.,
  tempAdvScheme=77,
  saltAdvScheme=77,
  tracerAdvScheme=77,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
+ writeStatePrec=64,
+ globalFiles=.TRUE.,
+ staggerTimeStep=.TRUE.,
  &
 
 # Elliptic solver parameters
  &PARM02
  cg2dMaxIters=1000,
- cg2dTargetResidual=1.E-13,
+ cg2dTargetResidual=1.E-11,
  cg3dMaxIters=10,
  cg3dTargetResidual=1.E-13,
  &
@@ -53,15 +54,16 @@
 # Time stepping parameters
  &PARM03
  niter0=0,
-#nTimeSteps=144000,
+#nTimeSteps=12000,
  nTimeSteps=20,
- deltaT=50.,
+ deltaT=300.,
  abEps=0.1,
  pChkptFreq=0.0,
  chkptFreq=100000.0,
- dumpFreq=5000.,
- cAdjFreq=30.,
- monitorFreq=50.,
+ dumpFreq=30000.,
+#cAdjFreq=30.,
+#monitorFreq=6000.,
+ monitorFreq=300.,
  &
 
 # Gridding parameters
