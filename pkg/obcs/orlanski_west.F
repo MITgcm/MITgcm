@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_west.F,v 1.6 2004/07/06 20:23:32 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_west.F,v 1.7 2004/07/08 17:03:29 adcroft Exp $
 C $Name:  $
 cc
 
@@ -129,7 +129,7 @@ C		  saved data...)
                ENDIF
 C              update OBC to next timestep
                OBWu(J,K,bi,bj)=uVel(I_obc+1,J,K,bi,bj)+
-     &          CVEL_UW(J,K,bi,bj)*(deltaT/dxF(I_obc+1,J,bi,bj))*
+     &          CVEL_UW(J,K,bi,bj)*(deltaT*recip_dxF(I_obc+1,J,bi,bj))*
      &          (ab1*(uVel(I_obc+2,J,K,bi,bj)-uVel(I_obc+1,J,K,bi,bj))+
      &          ab2*(UW_STORE_1(J,K,bi,bj)-UW_STORE_4(J,K,bi,bj)))
 C              vVel
@@ -155,7 +155,7 @@ C		  saved data...)
                ENDIF
 C              update OBC to next timestep
                OBWv(J,K,bi,bj)=vVel(I_obc,J,K,bi,bj)+
-     &           CVEL_VW(J,K,bi,bj)*(deltaT/dxV(I_obc+1,J,bi,bj))*
+     &           CVEL_VW(J,K,bi,bj)*(deltaT*recip_dxV(I_obc+1,J,bi,bj))*
      &           (ab1*(vVel(I_obc+1,J,K,bi,bj)-vVel(I_obc,J,K,bi,bj))+
      &           ab2*(VW_STORE_1(J,K,bi,bj)-VW_STORE_4(J,K,bi,bj)))
 C              Temperature
@@ -181,7 +181,7 @@ C		  saved data...)
                ENDIF
 C              update OBC to next timestep
                OBWt(J,K,bi,bj)=theta(I_obc,J,K,bi,bj)+
-     &          CVEL_TW(J,K,bi,bj)*(deltaT/dxC(I_obc+1,J,bi,bj))*
+     &          CVEL_TW(J,K,bi,bj)*(deltaT*recip_dxC(I_obc+1,J,bi,bj))*
      &          (ab1*(theta(I_obc+1,J,K,bi,bj)-theta(I_obc,J,K,bi,bj))+
      &          ab2*(TW_STORE_1(J,K,bi,bj)-TW_STORE_4(J,K,bi,bj)))
 C              Salinity
@@ -207,7 +207,7 @@ C		  saved data...)
                ENDIF
 C              update OBC to next timestep
                OBWs(J,K,bi,bj)=salt(I_obc,J,K,bi,bj)+
-     &           CVEL_SW(J,K,bi,bj)*(deltaT/dxC(I_obc+1,J,bi,bj))*
+     &           CVEL_SW(J,K,bi,bj)*(deltaT*recip_dxC(I_obc+1,J,bi,bj))*
      &           (ab1*(salt(I_obc+1,J,K,bi,bj)-salt(I_obc,J,K,bi,bj))+
      &           ab2*(SW_STORE_1(J,K,bi,bj)-SW_STORE_4(J,K,bi,bj)))
 C              wVel
@@ -234,7 +234,7 @@ C		  saved data...)
                ENDIF
 C                 update OBC to next timestep
                   OBWw(J,K,bi,bj)=wVel(I_obc,J,K,bi,bj)+
-     &             CVEL_WW(J,K,bi,bj)*(deltaT/dxC(I_obc+1,J,bi,bj))*
+     &           CVEL_WW(J,K,bi,bj)*(deltaT*recip_dxC(I_obc+1,J,bi,bj))*
      &            (ab1*(wVel(I_obc+1,J,K,bi,bj)-wVel(I_obc,J,K,bi,bj))+
      &            ab2*(WW_STORE_1(J,K,bi,bj)-WW_STORE_4(J,K,bi,bj)))
 #endif
