@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.20 1999/05/18 18:01:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.21 1999/05/24 14:24:24 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -97,8 +97,9 @@ C     I, J, K - Loop counters
       _RL dTdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_KPP
-      _RL hbl  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)	! used by KPP mixing scheme
-      _RL frac (1-OLx:sNx+OLx,1-OLy:sNy+OLy)	! used by KPP mixing scheme
+      _RS hbl  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)	! used by KPP mixing scheme
+      _RS frac (1-OLx:sNx+OLx,1-OLy:sNy+OLy)	! used by KPP mixing scheme
+      _RS negone				! used as argument to SWFRAC
       integer jwtype 				! index for Jerlov water type
 #endif
 
@@ -265,8 +266,9 @@ C     the bottom of the mixing layer
        ENDDO
        j=(sNx+2*OLx)*(sNy+2*OLy)
        jwtype = 3
+       negone = -1.
        CALL SWFRAC(
-     I     j, -1., hbl, jwtype,
+     I     j, negone, hbl, jwtype,
      O     frac )
 
 C     Add non local transport coefficient (ghat term) to right-hand-side
