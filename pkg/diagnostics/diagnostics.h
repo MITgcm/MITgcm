@@ -1431,7 +1431,7 @@ C diagnostics common
 
 C diag_choices common
 
-      integer freq(10)
+      integer freq(10,50)
       integer nlevel(10)
       integer nfield(10)
       real levels (10,50)
