@@ -51,7 +51,7 @@
  chkptFreq=0.0,
  dumpFreq=6000.0,
 #taveFreq=864000.0,
- monitorFreq=200.,
+ monitorFreq=1.,
  &
 
 # Gridding parameters
