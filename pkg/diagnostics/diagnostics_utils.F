@@ -1,40 +1,46 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.11 2004/07/07 15:58:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.12 2004/07/08 00:30:45 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
 
-      subroutine getdiag (myThid,lev,ipoint,undef,qtmp)
-C***********************************************************************        
-C  PURPOSE                                                                      
-C     Retrieve averaged model diagnostic
-C  INPUT:                                                                       
-C     lev ..... Diagnostic LEVEL
-C  ipoint ..... DIAGNOSTIC NUMBER FROM MENU                                     
-C   undef ..... UNDEFINED VALUE                                                 
-C      bi ..... X-direction process(or) number
-C      bj ..... Y-direction process(or) number
-C                                                                               
-C  OUTPUT:                                                                      
-C    qtmp ..... AVERAGED DIAGNOSTIC QUANTITY
-C                                                                               
-C***********************************************************************        
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C     !ROUTINE: GETDIAG
+
+C     !INTERFACE:
+      SUBROUTINE GETDIAG (myThid,lev,ipoint,undef,qtmp)
+
+C     !DESCRIPTION:
+      Retrieve averaged model diagnostic
+      
+C     !USES:
       implicit none
 #include "EEPARAMS.h"
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
+CEOP
 
 #ifdef ALLOW_FIZHI 
 #include "fizhi_SIZE.h"
 #else
-       integer Nrphys
-       parameter (Nrphys=0)
+      integer Nrphys
+      parameter (Nrphys=0)
 #endif
 
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"
 
+C     INPUT:
+C     lev    ..... Diagnostic LEVEL
+C     ipoint ..... DIAGNOSTIC NUMBER FROM MENU                                     
+C     undef  ..... UNDEFINED VALUE                                                 
+C     bi     ..... X-direction process(or) number
+C     bj     ..... Y-direction process(or) number
       integer myThid,lev,ipoint
       _RL undef
+      
+C     OUTPUT:
+C     qtmp    ..... AVERAGED DIAGNOSTIC QUANTITY
       _RL qtmp(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr+Nrphys,Nsx,Nsy)
 
       _RL factor
@@ -44,33 +50,40 @@ C***********************************************************************
       if (ipoint.lt.1) go to 999
 
       klev = kdiag(ipoint)
-      if(klev.ge.lev) then
-      ipnt = idiag(ipoint) + lev - 1
-      factor = 1.0
-      if(ndiag(ipoint).ne.0) factor = 1.0/ndiag(ipoint)
+      if (klev.ge.lev) then
+        ipnt = idiag(ipoint) + lev - 1
+        factor = 1.0
+        if (ndiag(ipoint).ne.0) factor = 1.0/ndiag(ipoint)
 
-      do bj=myByLo(myThid), myByHi(myThid)
-      do bi=myBxLo(myThid), myBxHi(myThid)
-
-      do j = 1,sNy
-      do i = 1,sNx
-       if( qdiag(i,j,ipnt,bi,bj).ge.undef ) then
-        qtmp(i,j,lev,bi,bj) = qdiag(i,j,ipnt,bi,bj)*factor
-       else
-        qtmp(i,j,lev,bi,bj) = undef
-       endif
-      enddo
-      enddo
-
-      enddo
-      enddo
-
+        do bj=myByLo(myThid), myByHi(myThid)
+          do bi=myBxLo(myThid), myBxHi(myThid)
+            
+            do j = 1,sNy
+              do i = 1,sNx
+                if ( qdiag(i,j,ipnt,bi,bj) .le. undef ) then
+                  qtmp(i,j,lev,bi,bj) = qdiag(i,j,ipnt,bi,bj)*factor
+                else
+                  qtmp(i,j,lev,bi,bj) = undef
+                endif
+              enddo
+            enddo
+            
+          enddo
+        enddo
+        
       endif
 
  999  return
       end
 
-      subroutine getdiag2 (myThid,lev,ipoint,undef,qtmp)
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C     !ROUTINE: GETDIAG2
+
+C     !INTERFACE:
+      SUBROUTINE GETDIAG2 (myThid,lev,ipoint,undef,qtmp)
+
+C     !DESCRIPTION:
 C***********************************************************************        
 C  PURPOSE                                                                      
 C     Retrieve averaged model diagnostic
@@ -83,11 +96,13 @@ C  OUTPUT:
 C    qtmp ..... AVERAGED DIAGNOSTIC QUANTITY
 C                                                                               
 C***********************************************************************        
+      
+C     !USES:
       implicit none
-
 #include "EEPARAMS.h"
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
+CEOP
 
 #ifdef ALLOW_FIZHI
 #include "fizhi_SIZE.h"
@@ -109,29 +124,32 @@ C***********************************************************************
       if (ipoint.lt.1) go to 999
 
       klev = kdiag(ipoint)
-      if(klev.ge.lev) then
-      ipnt = idiag(ipoint) + lev - 1
-
-      do bj=myByLo(myThid), myByHi(myThid)
-      do bi=myBxLo(myThid), myBxHi(myThid)
-
-      do j = 1,sNy
-      do i = 1,sNx
-       if( qdiag(i,j,ipnt,bi,bj).ge.undef ) then
-        qtmp(i,j,lev,bi,bj) = qdiag(i,j,ipnt,bi,bj)
-       else
-        qtmp(i,j,lev,bi,bj) = undef
-       endif
-      enddo
-      enddo
-
-      enddo
-      enddo
-
+      if (klev.ge.lev) then
+        ipnt = idiag(ipoint) + lev - 1
+        
+        do bj=myByLo(myThid), myByHi(myThid)
+          do bi=myBxLo(myThid), myBxHi(myThid)
+            
+            do j = 1,sNy
+              do i = 1,sNx
+                if ( qdiag(i,j,ipnt,bi,bj) .le. undef ) then
+                  qtmp(i,j,lev,bi,bj) = qdiag(i,j,ipnt,bi,bj)
+                else
+                  qtmp(i,j,lev,bi,bj) = undef
+                endif
+              enddo
+            enddo
+            
+          enddo
+        enddo
+        
       endif
 
  999  return
       end
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
       subroutine clrindx (myThid,listnum)
 C***********************************************************************
 C
