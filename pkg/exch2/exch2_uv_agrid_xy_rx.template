@@ -52,14 +52,8 @@ C     b[nsew] - indices of the [nswe] neighboring faces for each face.
 C First call the exchanges for the two components
 
       if (useCubedSphereExchange) then
-       call exch2_xy_RX( component1,
-     .            OLw, OLe, OLs, OLn, myNz,
-     .            exchWidthX, exchWidthY,
-     .            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-       call exch2_xy_RX( component2,
-     .            OLw, OLe, OLs, OLn, myNz,
-     .            exchWidthX, exchWidthY,
-     .            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+       call exch2_xy_RX( component1, myThid )
+       call exch2_xy_RX( component2, myThid )
       else
 c      call exch_RX( component1,
 c    .            OLw, OLe, OLs, OLn, myNz,
@@ -98,28 +92,28 @@ C odd faces share disposition of all sections of the halo
        if ( mod(myface,2).eq.1 ) then
          do j = 1,sNy
 C east
-          if(exch2_is_Eedge(mytile).eq.1) then
+          if(exch2_isEedge(mytile).eq.1) then
            do i = 1,exchWidthX
             component1(sNx+i,j,bi,bj) = dummy1(sNx+i,j,bi,bj)
             component2(sNx+i,j,bi,bj) = dummy2(sNx+i,j,bi,bj)
            enddo
           endif
 C west
-          if(exch2_is_Wedge(mytile).eq.1) then
+          if(exch2_isWedge(mytile).eq.1) then
            do i = 1,exchWidthX
             component1(i-OLx,j,bi,bj) = dummy2(i-OLx,j,bi,bj)
             component2(i-OLx,j,bi,bj) = -dummy1(i-OLx,j,bi,bj)
            enddo
           endif
 C north
-          if(exch2_is_Nedge(mytile).eq.1) then
+          if(exch2_isNedge(mytile).eq.1) then
            do i = 1,exchWidthX
             component1(j,sNy+i,bi,bj) = -dummy2(j,sNy+i,bi,bj)
             component2(j,sNy+i,bi,bj) = dummy1(j,sNy+i,bi,bj)
            enddo
           endif
 C south
-          if(exch2_is_Sedge(mytile).eq.1) then
+          if(exch2_isSedge(mytile).eq.1) then
            do i = 1,exchWidthX
             component1(j,i-OLx,bi,bj) = dummy1(j,i-OLx,bi,bj)
             component2(j,i-OLx,bi,bj) = dummy2(j,i-OLx,bi,bj)
@@ -130,28 +124,28 @@ C now the even faces (share disposition of all sections of the halo)
        elseif ( mod(myface,2).eq.0 ) then
          do j = 1,sNy
 C east
-          if(exch2_is_Eedge(mytile).eq.1) then
+          if(exch2_isEedge(mytile).eq.1) then
            do i = 1,exchWidthX
             component1(sNx+i,j,bi,bj) = dummy2(sNx+i,j,bi,bj)
             component2(sNx+i,j,bi,bj) = -dummy1(sNx+i,j,bi,bj)
            enddo
           endif
 C west
-          if(exch2_is_Wedge(mytile).eq.1) then
+          if(exch2_isWedge(mytile).eq.1) then
            do i = 1,exchWidthX
             component1(i-OLx,j,bi,bj) = dummy1(i-OLx,j,bi,bj)
             component2(i-OLx,j,bi,bj) = dummy2(i-OLx,j,bi,bj)
            enddo
           endif
 C north
-          if(exch2_is_Nedge(mytile).eq.1) then
+          if(exch2_isNedge(mytile).eq.1) then
            do i = 1,exchWidthX
             component1(j,sNy+i,bi,bj) = dummy1(j,sNy+i,bi,bj)
             component2(j,sNy+i,bi,bj) = dummy2(j,sNy+i,bi,bj)
            enddo
           endif
 C south
-          if(exch2_is_Sedge(mytile).eq.1) then
+          if(exch2_isSedge(mytile).eq.1) then
            do i = 1,exchWidthX
             component1(j,i-OLy,bi,bj) = -dummy2(j,i-OLy,bi,bj)
             component2(j,i-OLy,bi,bj) = dummy1(j,i-OLy,bi,bj)
