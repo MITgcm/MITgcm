@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.101 2003/11/13 21:54:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.102 2003/11/18 22:59:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -300,6 +300,7 @@ C--   Set default "physical" parameters
       hFacMinDr           = UNSET_RL
       hFacMinDz           = UNSET_RL
       hFacMinDp           = UNSET_RL
+      rhoConstFresh  = UNSET_RL
       convertFW2Salt = UNSET_RL
       tAlpha              = UNSET_RL
       sBeta               = UNSET_RL
@@ -329,6 +330,7 @@ C--   Set default "physical" parameters
       IF ( rigidLid            ) freeSurfFac = 0.D0
       IF ( gBaro .EQ. UNSET_RL ) gBaro=gravity
       IF ( rhoConst .EQ. UNSET_RL ) rhoConst=rhoNil
+      IF ( rhoConstFresh .EQ. UNSET_RL ) rhoConstFresh=rhoConst
       IF ( omega .EQ. UNSET_RL ) THEN
         omega = 0. _d 0
         IF ( rotationPeriod .NE. 0. _d 0 ) 
@@ -945,7 +947,6 @@ c      rkFac = -1.D0
        horiVertRatio = 1.D0
       ENDIF
       gravitySign = -1. _d 0
-      convertEmP2rUnit = 1. _d 0
       IF (buoyancyRelation.EQ.'ATMOSPHERIC') THEN
          gravitySign = 1. _d 0
          horiVertRatio = Gravity * rhoConst
@@ -953,8 +954,8 @@ c      rkFac = -1.D0
       IF (buoyancyRelation.EQ.'OCEANICP') THEN
          gravitySign = 1. _d 0
          horiVertRatio = Gravity * rhoConst
-         convertEmP2rUnit = Gravity * rhoConstFresh
       ENDIF
+      convertEmP2rUnit = rhoConstFresh*recip_rhoConst*horiVertRatio
       IF ( rkFac .EQ. UNSET_RS ) rkFac=rkFacDefault
       recip_rkFac = 1.D0 / rkFac
       recip_horiVertRatio = 1./horiVertRatio
