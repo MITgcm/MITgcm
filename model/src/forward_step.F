@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.1 2000/04/05 19:04:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.2 2000/06/21 19:09:00 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -95,15 +95,6 @@ C--   Step forward W field in N-H algorithm
        CALL CALC_GW( myThid)
        CALL TIMER_STOP ('CALC_GW            [FORWARD_STEP]',myThid)
       ENDIF
-#endif
-
-C--    Do time averages
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
-      CALL TIMER_START('I/O (WRITE)        [FORWARD_STEP]',myThid)
-      IF (taveFreq.GT.0.) THEN
-       CALL WRITE_TIME_AVERAGES( myCurrentTime, myCurrentIter, myThid )
-      ENDIF
-      CALL TIMER_STOP ('I/O (WRITE)        [FORWARD_STEP]',myThid)
 #endif
 
 C--   Do IO if needed.
