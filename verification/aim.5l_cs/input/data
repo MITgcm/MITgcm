@@ -19,7 +19,7 @@
  diffK4S=0.E17,
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALGAS',
- Integr_GeoPot=1,
+ Integr_GeoPot=2,
  gravity=9.81,
  rhonil=1.0,
  rhoConst=1.0,
@@ -32,7 +32,7 @@
  readBinaryPrec=64,
  writeBinaryPrec=64,
  hFacMin=1.0,
- saltAdvScheme=77,
+ saltAdvScheme=3,
  vectorInvariantMomentum=.TRUE.,
  &
 

@@ -1,25 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/calc_gs.F,v 1.3 2001/09/27 15:49:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/calc_gt.F,v 1.1 2001/09/27 15:49:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: CALC_GS
+C     !ROUTINE: CALC_GT
 C     !INTERFACE:
-      SUBROUTINE CALC_GS( 
+      SUBROUTINE CALC_GT( 
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
-     I           KappaRS,
-     U           fVerS,
+     I           KappaRT,
+     U           fVerT,
      I           myTime,myIter,myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE CALC_GS                                        
-C     | o Calculate the salt tendency terms.                      
+C     | SUBROUTINE CALC_GT                                        
+C     | o Calculate the temperature tendency terms.               
 C     *==========================================================*
-C     | A procedure called EXTERNAL_FORCING_S is called from      
+C     | A procedure called EXTERNAL_FORCING_T is called from      
 C     | here. These procedures can be used to add per problem     
-C     | E-P  flux source terms.                                   
+C     | heat flux source terms.                                   
 C     | Note: Although it is slightly counter-intuitive the       
 C     |       EXTERNAL_FORCING routine is not the place to put    
 C     |       file I/O. Instead files that are required to        
@@ -51,8 +51,8 @@ C     == GLobal variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     fVerS   :: Flux of salt (S) in the vertical 
-C               direction at the upper(U) and lower(D) faces of a cell.
+C     fVerT   :: Flux of temperature (T) in the vertical 
+C                direction at the upper(U) and lower(D) faces of a cell.
 C     maskUp  :: Land mask used to denote base of the domain.
 C     xA      :: Tracer cell face area normal to X
 C     yA      :: Tracer cell face area normal to X
@@ -60,62 +60,65 @@ C     uTrans  :: Zonal volume transport through cell face
 C     vTrans  :: Meridional volume transport through cell face
 C     rTrans  :: Vertical volume transport through cell face
 C     bi, bj, iMin, iMax, jMin, jMax :: Range of points for which calculation
-C                                      results will be set.
+C                                       results will be set.
 C     myThid :: Instance number for this innvocation of CALC_GT
-      _RL fVerS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL fVerT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KappaRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL KappaRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER k,kUp,kDown,kM1
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
-C--   only the kUp part of fverS is set in this subroutine
+C--   only the kUp part of fverT is set in this subroutine
 C--   the kDown is still required
-      fVerS(1,1,kDown) = fVerS(1,1,kDown)
+      fVerT(1,1,kDown) = fVerT(1,1,kDown)
 #endif
 
       CALL GAD_CALC_RHS(
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
-     I           diffKhS, diffK4S, KappaRS, Salt,
-     I           GAD_SALINITY, saltAdvScheme,
-     U           fVerS, gS,
+     I           diffKhT, diffK4T, KappaRT, theta,
+     I           GAD_TEMPERATURE, tempAdvScheme,
+     U           fVerT, gT,
      I           myThid )
 
-C--   External forcing term(s)
-c     CALL EXTERNAL_FORCING_S(
+#ifdef INCLUDE_T_FORCING_CODE
+C--   External thermal forcing term(s)
+c     CALL EXTERNAL_FORCING_T(
 c    I     iMin,iMax,jMin,jMax,bi,bj,k,
 c    I     myTime,myThid)
+#endif /*  INCLUDE_T_FORCING_CODE */
 
-      IF ( saltAdvScheme.EQ.ENUM_CENTERED_2ND
-     & .OR.saltAdvScheme.EQ.ENUM_UPWIND_3RD
-     & .OR.saltAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
+      IF ( tempAdvScheme.EQ.ENUM_CENTERED_2ND
+     & .OR.tempAdvScheme.EQ.ENUM_UPWIND_3RD
+     & .OR.tempAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
         CALL ADAMS_BASHFORTH2(
      I                        bi, bj, K,
-     U                        gS, gSnm1,
+     U                        gT, gTnm1,
      I                        myIter, myThid )
       ENDIF
 
-C--   External forcing term(s)
-      CALL EXTERNAL_FORCING_S(
+#ifdef INCLUDE_T_FORCING_CODE
+C--   External thermal forcing term(s)
+      CALL EXTERNAL_FORCING_T(
      I     iMin,iMax,jMin,jMax,bi,bj,k,
      I     myTime,myThid)
+#endif /*  INCLUDE_T_FORCING_CODE */
 
 #ifdef NONLIN_FRSURF
       IF (nonlinFreeSurf.GT.0) THEN
         CALL FREESURF_RESCALE_G(
      I                          bi, bj, K,
-     U                          gS,
+     U                          gT,
      I                          myThid )
       ENDIF
 #endif /* NONLIN_FRSURF */
