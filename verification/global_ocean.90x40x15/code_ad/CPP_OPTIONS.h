@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/CPP_OPTIONS.h,v 1.9 2003/10/28 22:58:00 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/CPP_OPTIONS.h,v 1.10 2003/10/30 19:14:41 heimbach Exp $
 C $Name:  $
 
 C CPP flags controlling which code in included in the files that
@@ -28,10 +28,6 @@ C o Include/exclude call to S/R CALC_DIFFUSIVITY
 
 C o Allow nonHydrostatic code
 #undef  ALLOW_NONHYDROSTATIC
-
-C o Use "natural" boundary conditions for salinity
-C   instead of the "virtual salt flux"
-#undef  USE_NATURAL_BCS
 
 C o Exact volume conservation
 #undef EXACT_CONSERV

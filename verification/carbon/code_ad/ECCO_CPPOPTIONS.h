@@ -46,7 +46,9 @@ C ********************************************************************
 C ***               Control vector Package                         ***
 C ********************************************************************
 C 
+#define EXCLUDE_CTRL_PACK
 #undef  ALLOW_NONDIMENSIONAL_CONTROL_IO
+C
 C       >>> Initial values.
 #define ALLOW_THETA0_CONTROL
 #define ALLOW_SALT0_CONTROL
