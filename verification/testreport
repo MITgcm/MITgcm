@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.52 2004/12/01 16:59:42 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.53 2004/12/07 22:14:35 edhill Exp $
 #  $Name:  $
 #
 
@@ -881,13 +881,15 @@ for dir in $TESTDIRS ; do
     fout=
     if test "x$ADM" = x ; then
 	fout=$dir"/results/output.txt"
-	check_for_add_mon_output  $fout
     else
 	fout=$dir"/results_ad/output.txt_adm"
     fi
     if test ! -r $fout ; then
 	echo "can't read \"$fout\" -- skipping $dir"
 	continue
+    fi
+    if test "x$ADM" = x ; then
+	check_for_add_mon_output  $fout
     fi
 
     # Check for additional types of monitor output

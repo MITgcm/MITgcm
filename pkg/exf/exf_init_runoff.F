@@ -51,7 +51,7 @@ c     == end of interface ==
 
       if ( runofffile .NE. ' ' ) then
 #ifdef USE_EXF_INTERPOLATION
-         interp_method = 2
+         interp_method = 1
          call exf_interp(
      &    runofffile, exf_iprec
      &  , runoff, 1, xC, yC
@@ -74,7 +74,7 @@ c--   scale runoff array
            do bi = mybxlo(mythid), mybxhi(mythid)
              do j = 1, sny
                do i = 1, snx
-                 if (ABS(runoff(i,j,bi,bj)).gt.20.) runoff(i,j,bi,bj)=0.
+                 if(ABS(runoff(i,j,bi,bj)).gt.998.) runoff(i,j,bi,bj)=0.
                  runoff(i,j,bi,bj)=exf_inscal_runoff*runoff(i,j,bi,bj)
               enddo
             enddo
@@ -84,7 +84,6 @@ c--   scale runoff array
 
       _EXCH_XY_R4(  runoff, mythid )
 
-      print *, 'WARNING: runoff raw file cut off at values > 20!'
       CALL PLOT_FIELD_XYRL( runoff, 
      &     'Runoff after rescaling and exf_inscal_runoff' , 
      &     0, myThid )

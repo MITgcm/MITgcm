@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.9 2004/12/02 23:39:09 jmc Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.10 2004/12/07 22:14:35 edhill Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -154,7 +154,7 @@ c             Short wave radiative flux.
 
 #ifdef ALLOW_RUNOFF
 c             Runoff.
-              if ( (runoff(i,j,bi,bj) .LT. -5.E-8 .OR.
+              if ( (runoff(i,j,bi,bj) .LT. 0. .OR.
      &             runoff(i,j,bi,bj) .GT. 1.E-6 ) .AND.
      &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
                  print *, 'EXF WARNING: runoff out of range for i,j= ',
