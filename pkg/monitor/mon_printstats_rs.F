@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rs.F,v 1.1 2001/05/30 19:33:18 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rs.F,v 1.2 2001/06/04 20:03:33 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -33,7 +33,7 @@ C     === Local variables ====
       _RL theMean
       _RL theSD
 
-      CALL MON_STATS_RL(
+      CALL MON_STATS_RS(
      I                myNr, arr,
      O                theMin,theMax,theMean,theSD,
      I                myThid )
