@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.265 2004/03/05 02:50:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.266 2004/03/11 14:10:00 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint52l_pre
+
 o fix problem (when 1 tile is empty) in min/max monitor.
 o fix bug in timeAve (u,vZetatave in common block) 
 o no restoring terms under ice for pkg/seaice
