@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.29 2003/12/05 17:36:03 adcroft Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.30 2003/12/05 17:46:32 edhill Exp $
 #  $Name:  $
 #
 
@@ -793,7 +793,7 @@ for dir in $TESTDIRS ; do
     fi
     BUILD_DIR=$dir/$builddir
 
-    if test ! -r $CODE_DIR"/SIZE.h_mpi" -a "x$MPI" == "xt" ; then
+    if test ! -r $CODE_DIR"/SIZE.h_mpi" -a "x$MPI" = "xt" ; then
 	echo "can't find \"$CODE_DIR/SIZE.h_mpi\" -- skipping $dir"
 	continue
     fi
