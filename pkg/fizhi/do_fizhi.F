@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.33 2004/08/04 18:23:44 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.34 2004/08/04 22:23:43 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -138,12 +138,14 @@ c     save pl,ple,dpres,pkle,pkl
       common /saver/ moistu,moistv,moistt,moistq
       common /saver/ radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
       common /saver/ st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras
-      common /saver/ nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz
-      common /saver/ nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz
+      common /saver/ cldtot_lw,cldras_lw,cldlsp_lw,lwlz
+      common /saver/ cldtot_sw,cldras_sw,cldlsp_sw,swlz
       common /saver/ imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw
       common /saver/ fccavelw
       common /saver/ qq
       common /saver/ pl,ple,dpres,pkle,pkl
+      common /saver/ nlwcld,nlwlz
+      common /saver/ nswcld,nswlz
  
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
@@ -451,6 +453,14 @@ c      print *,' moistq at level ',l,' ',tempij
        enddo
        enddo
        print *,' swdt at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = lwdt(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' lwdt alone at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.16 2004/07/28 21:57:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.17 2004/08/04 22:23:43 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1030,7 +1030,7 @@ c-----pre-computed table
 c-----include the pre-computed table for cai
 
 #include "cai-dat.h"
-c     save caib,caif
+      save caib,caif
 
 
 c-----clouds within each of the high, middle, and low clouds are

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.14 2004/07/30 18:59:32 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.15 2004/08/04 22:23:43 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -778,7 +778,7 @@ c     o3 (band 5), and h2o (bands 1, 2, and 7) transmission functions.
       save c1,c2,c3,o1,o2,o3
       save h11,h12,h13,h21,h22,h23,h81,h82,h83
 
-      if (first) then
+c     if (first) then
 
 c-----tables co2 and h2o are only used with 'high' option
 
@@ -846,9 +846,9 @@ c-----always use table look-up for ozone transmittance
          enddo
         enddo
 
-       first=.false.
+c      first=.false.
 
-      endif
+c     endif
 
 c-----set the pressure at the top of the model atmosphere
 c     to 1.0e-4 if it is zero
