@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/ECCO_CPPOPTIONS.h,v 1.2 2003/10/23 04:41:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/ECCO_CPPOPTIONS.h,v 1.3 2003/10/27 22:43:16 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -7,17 +7,6 @@ C $Name:  $
 C 
 C CPP flags controlling which code is included in the files that
 C will be compiled.
-C
-C ********************************************************************
-C ***                         ECCO Package                         ***
-C ********************************************************************
-C
-#undef  ALLOW_ECCO_FORWARD_RUN
-#undef  ALLOW_ECCO_DIAGNOSTICS_RUN
-#undef  ALLOW_ECCO_OPTIMIZATION
-
-C       >>> Do a long protocol.
-#undef ECCO_VERBOSE
 
 C ********************************************************************
 C ***                  Adjoint Support Package                     ***
@@ -26,7 +15,6 @@ C ********************************************************************
 C o Include/exclude code in order to be able to automatically
 C   differentiate the MITgcmUV by using the Tangent Linear and
 C   Adjoint Model Compiler (TAMC).
-cph#define INCLUDE_AUTODIFF_PACKAGE
 C
 #define ALLOW_AUTODIFF_TAMC
 C       >>> Checkpointing as handled by TAMC
