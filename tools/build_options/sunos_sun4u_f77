@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_f77,v 1.4 2004/12/16 14:14:52 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_f77,v 1.5 2004/12/16 14:27:24 mlosch Exp $
 #  $Name:  $  
 #
 # tested on 
@@ -14,7 +14,7 @@ S64='$(TOOLSDIR)/set64bitConst.sh'
 DEFINES='-DWORDLENGTH=4'
 AWK='gawk'
 MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
-MAKE='make'
+#MAKE='make'
 CPP='/usr/ccs/lib/cpp -P'
 # this one works, too
 #CPP='/opt/sfw/bin/cpp -traditional -P'
