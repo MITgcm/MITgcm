@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_debug.F,v 1.1 2002/03/04 19:01:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_debug.F,v 1.2 2003/10/31 17:40:36 stephd Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -28,6 +28,7 @@ C !OUTPUT PARAMETERS: ==================================================
 C  none
 
 #ifdef ALLOW_PTRACERS
+#ifdef  ALLOW_DEBUG
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k,bi,bj,iTracer  :: loop indices
@@ -51,6 +52,7 @@ C Loop over tracers
 C end of tracer loop
       ENDDO
 
+#endif
 #endif /* ALLOW_PTRACERS */
 
       RETURN
