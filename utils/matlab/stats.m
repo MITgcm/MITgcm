@@ -13,7 +13,9 @@ function [varargout] = stats(A)
 % [Min Max Mean SD]=stats(topo); returns the statistics in Min, Max,
 % Mean and SD and does not write to the terminal.
 %
-% $Header: /u/gcmpack/MITgcm/utils/matlab/stats.m,v 1.2 2001/05/29 14:01:41 adcroft Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/stats.m,v 1.3 2002/06/12 14:59:43 adcroft Exp $
+
+A=A(:);
 
 %ii=find(A~=0);
 ii=find(isfinite(A));
@@ -25,7 +27,7 @@ minA=min(A(ii));
 maxA=max(A(ii));
 meanA=mean(A(ii));
 sdA=sqrt( mean( (A(ii)-meanA).^2 ) );
-nZ=prod(sum(sum(sum(~isfinite(A)))));
+nZ=sum(~isfinite(A));
 switch max(nargout)
  case {0}
   disp( ...
