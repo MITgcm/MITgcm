@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.30 2005/03/09 23:25:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.31 2005/03/11 14:47:39 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1129,9 +1129,6 @@ C **********************************************************************
 
        ndtls  = ndtls  + 1
        ndqls  = ndqls  + 1
-
-       nudiag1  = nudiag1  + 1
-       nudiag2  = nudiag2  + 1
 
        endif
 #endif
