@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.2 2004/06/15 16:06:03 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.3 2004/06/24 19:57:02 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-      subroutine lwrio (nymd,nhms,istrip,npcs,
+      subroutine lwrio (nymd,nhms,bi,bj,istrip,npcs,
      .                  pz,tz,qz,plz,plze,pkz,pkht,oz,co2,
      .                  cfc11,cfc12,cfc22,
      .                  methane,n2o,emissivity,
@@ -19,7 +19,7 @@ C $Name:  $
 
 c Input Variables
 c ---------------
-      integer nymd,nhms,istrip,npcs
+      integer nymd,nhms,istrip,npcs,bi,bj
  
       integer im,jm,lm        
       real  ptop              
@@ -279,11 +279,11 @@ C **********************************************************************
 C ****            PASTE AND BUMP SOME DIAGNOSTICS                   ****
 C **********************************************************************
 
-      IF(IOLR.GT.0)CALL PSTBMP(flx(1,1),QDIAG(1,1,IOLR),ISTRIP,
+      IF(IOLR.GT.0)CALL PSTBMP(flx(1,1),QDIAG(1,1,IOLR,bi,bj),ISTRIP,
      .                                                      im*jm, 1,NN)
-      IF(IOLRCLR.GT.0)CALL PSTBMP(flxclr(1,1),QDIAG(1,1,IOLRCLR),ISTRIP,
-     .                                                       im*jm,1,NN)
-      IF(IOZLW.GT.0)CALL PSTBMP(OZL(1,1),QDIAG(1,1,IOZLW),ISTRIP,
+      IF(IOLRCLR.GT.0)CALL PSTBMP(flxclr(1,1),QDIAG(1,1,IOLRCLR,bi,bj),
+     .                                                ISTRIP,im*jm,1,NN)
+      IF(IOZLW.GT.0)CALL PSTBMP(OZL(1,1),QDIAG(1,1,IOZLW,bi,bj),ISTRIP,
      .                                                      im*jm,lm,NN)
 
 C **********************************************************************
@@ -310,7 +310,7 @@ C **********************************************************************
       if(itgrlw.ne.0) then
       do j = 1,jm
       do i = 1,im
-      qdiag(i,j,itgrlw) = qdiag(i,j,itgrlw) + tgz(i,j)
+      qdiag(i,j,itgrlw,bi,bj) = qdiag(i,j,itgrlw,bi,bj) + tgz(i,j)
       enddo
       enddo
       endif
@@ -319,7 +319,8 @@ C **********************************************************************
       do L = 1,lm
       do j = 1,jm
       do i = 1,im
-      qdiag(i,j,itlw+L-1) = qdiag(i,j,itlw+L-1) + tz(i,j,L)*pkz(i,j,L)
+      qdiag(i,j,itlw+L-1,bi,bj) = qdiag(i,j,itlw+L-1,bi,bj) + 
+     .                                             tz(i,j,L)*pkz(i,j,L)
       enddo
       enddo
       enddo
@@ -329,7 +330,8 @@ C **********************************************************************
       do L = 1,lm
       do j = 1,jm
       do i = 1,im
-      qdiag(i,j,ishrad+L-1) = qdiag(i,j,ishrad+L-1) + qz(i,j,L)*1000
+      qdiag(i,j,ishrad+L-1,bi,bj) = qdiag(i,j,ishrad+L-1,bi,bj) + 
+     .                                             qz(i,j,L)*1000
       enddo
       enddo
       enddo

@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.4 2004/06/17 21:45:29 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.5 2004/06/24 19:57:02 molod Exp $
 C $Name:  $
                                                                                  
 #include "CPP_OPTIONS.h"
-      subroutine fizhi_driver (myid,im,jm,lm,ptracer,ntracer,
+      subroutine fizhi_driver (myid,im,jm,lm,bi,bj,ptracer,ntracer,
      . xlats,xlons,
      . p,u,v,t,q,pl,ple,dpres,pkht,pkl,fracland,landtype,radswt,
      . phis_var,tgz,sea_ice,
@@ -46,7 +46,7 @@ c -------------
 
 c Input Parameters
 c ----------------
-      integer myid,im,jm,lm,ptracer,ntracer
+      integer myid,im,jm,lm,bi,bj,ptracer,ntracer
       integer nchp,chlat,chlon,igrd,nchpland,chfr,ityp
       integer nwatlevs,nwatlats
       integer nozolevs,nozolats
@@ -136,7 +136,7 @@ C SHORT WAVE RADIATION
 C ====================
       IF ( alarm('radsw') ) THEN
 
-      call swrio ( nymd,nhms,ndsw,myid,istrip,npcs,
+      call swrio ( nymd,nhms,bi,bj,ndsw,myid,istrip,npcs,
      .   p,pl,ple,dpres,pkht,pkl,t,chemq,chemo3,co2,
      .   albvisdr,albvisdf,albnirdr,albnirdf,swdt,swdtclr,
      .   radswg,swgclr,fdifpar,fdirpar,osr,osrclr,im,jm,lm,
@@ -158,7 +158,7 @@ c --------------------------------
       enddo
       enddo
 
-      call lwrio ( nymd,nhms,istrip,npcs,
+      call lwrio ( nymd,nhms,bi,bj,istrip,npcs,
      .   p,pl,ple,dpres,pkht,pkl,t,chemq,pkht,chemo3,co2,
      .   cfc11,cfc12,cfc22,methane,n2o,emiss,tgz,radlwg,st4,dst4,
      .   lwdt,dlwdtg,lwdtclr,lwgclr,im,jm,lm,ptop,
@@ -172,7 +172,7 @@ C TURBULENCE
 C ==========
       IF ( alarm('turb') ) THEN
 
-      call turbio (im,jm,lm,1,nymd,nhms,ndturb,
+      call turbio (im,jm,lm,1,nymd,nhms,bi,bj,ndturb,
      .   ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
      .   ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
      .   tgz,fracland,landtype,
@@ -198,7 +198,7 @@ C MOIST PROCESSES
 C ===============
       if ( alarm('moist') ) then
       call moistio (ndmoist,istrip,npcs,
-     .    p,pl,ple,dpres,pkht,pkl,t,q,ntracer,ptracer,qq,
+     .    p,pl,ple,dpres,pkht,pkl,t,q,bi,bj,ntracer,ptracer,qq,
      .    moistu,moistv,moistt,moistq,im,jm,lm,ptop,iras,
      .    rainlsp,rainconv,snowfall,
      .    nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.16 2004/06/24 18:56:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.17 2004/06/24 19:57:02 molod Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
        subroutine do_fizhi(myid,uphy,vphy,thphy,sphy,pephy,lons,lats,
@@ -162,8 +162,8 @@ C***********************************************************************
       call pkappa (ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),im2,jm2,Nrphys,
      .                                                 pkl(1,1,1,bi,bj))
 
-      call fizhi_driver(myid,im2,jm2,Nrphys,ptracer,ntracer,xlats,xlons,
-     . p(1,1,bi,bj),u,v,t,q,pl(1,1,1,bi,bj),ple(1,1,1,bi,bj),
+      call fizhi_driver(myid,im2,jm2,Nrphys,bi,bj,ptracer,ntracer,xlats,
+     . xlons,p(1,1,bi,bj),u,v,t,q,pl(1,1,1,bi,bj),ple(1,1,1,bi,bj),
      . dpres(1,1,1,bi,bj),pkle(1,1,1,bi,bj),pkl(1,1,1,bi,bj),
      . fracland(1,1,bi,bj),landtype(1,1,bi,bj),radswt,
      . phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,

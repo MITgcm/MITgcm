@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.3 2004/06/17 21:45:29 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.4 2004/06/24 19:57:02 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-      subroutine swrio (nymd,nhms,ndswr,myid,istrip,npcs,
+      subroutine swrio (nymd,nhms,bi,bj,ndswr,myid,istrip,npcs,
      .        pz,tz,qz,pkht,oz,co2,
      .        albvisdr,albvisdf,albnirdr,albnirdf,
      .        dtradsw,dtswclr,radswg,swgclr,
@@ -18,7 +18,7 @@ C $Name:  $
 
 c Input Variables
 c ---------------
-      integer nymd,nhms,ndswr,istrip,npcs
+      integer nymd,nhms,ndswr,istrip,npcs,bi,bj
 
       integer im,jm,lm        
       real  ptop              
@@ -278,7 +278,7 @@ c -------------------------
       if(icldfrc.gt.0) then
       do j=1,jm
       do i=1,im
-      qdiag(i,j,icldfrc) =  qdiag(i,j,icldfrc) + totcld(i,j)
+      qdiag(i,j,icldfrc,bi,bj) =  qdiag(i,j,icldfrc,bi,bj) + totcld(i,j)
       enddo
       enddo
       ncldfrc = ncldfrc + 1
@@ -288,7 +288,8 @@ c -------------------------
       do L=1,lm
       do j=1,jm
       do i=1,im
-      qdiag(i,j,icldras+L-1) = qdiag(i,j,icldras+L-1) + cswmo(i,j,L)
+      qdiag(i,j,icldras+L-1,bi,bj) = qdiag(i,j,icldras+L-1,bi,bj) + 
+     .                                                     cswmo(i,j,L)
       enddo
       enddo
       enddo
@@ -299,7 +300,8 @@ c -------------------------
       do L=1,lm
       do j=1,jm
       do i=1,im
-      qdiag(i,j,icldtot+L-1) = qdiag(i,j,icldtot+L-1) + cldtot(i,j,L)
+      qdiag(i,j,icldtot+L-1,bi,bj) = qdiag(i,j,icldtot+L-1,bi,bj) + 
+     .                                                     cldtot(i,j,L)
       enddo
       enddo
       enddo
@@ -309,7 +311,7 @@ c -------------------------
       if( icldlow.gt.0 ) then
       do j=1,jm
       do i=1,im
-      qdiag(i,j,icldlow) = qdiag(i,j,icldlow) + cldlow(i,j)
+      qdiag(i,j,icldlow,bi,bj) = qdiag(i,j,icldlow,bi,bj) + cldlow(i,j)
       enddo
       enddo
       ncldlow = ncldlow + 1
@@ -318,7 +320,7 @@ c -------------------------
       if( icldmid.gt.0 ) then
       do j=1,jm
       do i=1,im
-      qdiag(i,j,icldmid) = qdiag(i,j,icldmid) + cldmid(i,j)
+      qdiag(i,j,icldmid,bi,bj) = qdiag(i,j,icldmid,bi,bj) + cldmid(i,j)
       enddo
       enddo
       ncldmid = ncldmid + 1
@@ -327,7 +329,7 @@ c -------------------------
       if( icldhi.gt.0 ) then
       do j=1,jm
       do i=1,im
-      qdiag(i,j,icldhi) = qdiag(i,j,icldhi) + cldhi(i,j)
+      qdiag(i,j,icldhi,bi,bj) = qdiag(i,j,icldhi,bi,bj) + cldhi(i,j)
       enddo
       enddo
       ncldhi = ncldhi + 1
@@ -337,7 +339,8 @@ c -------------------------
       do L=1,lm
       do j=1,jm
       do i=1,im
-      qdiag(i,j,ilzrad+L-1) = qdiag(i,j,ilzrad+L-1) + swlz(i,j,L)*1.0e6
+      qdiag(i,j,ilzrad+L-1,bi,bj) = qdiag(i,j,ilzrad+L-1,bi,bj) + 
+     .                                                     swlz(i,j,L)*1.0e6
       enddo
       enddo
       enddo
@@ -349,7 +352,8 @@ c ------------------
       if( ialbvisdr.gt.0 ) then
       do j=1,jm
       do i=1,im
-      qdiag(i,j,ialbvisdr) = qdiag(i,j,ialbvisdr) + albvisdr(i,j)
+      qdiag(i,j,ialbvisdr,bi,bj) = qdiag(i,j,ialbvisdr,bi,bj) + 
+     .                                                     albvisdr(i,j)
       enddo
       enddo
       nalbvisdr = nalbvisdr + 1
@@ -358,7 +362,8 @@ c ------------------
       if( ialbvisdf.gt.0 ) then
       do j=1,jm
       do i=1,im
-      qdiag(i,j,ialbvisdf) = qdiag(i,j,ialbvisdf) + albvisdf(i,j)
+      qdiag(i,j,ialbvisdf,bi,bj) = qdiag(i,j,ialbvisdf,bi,bj) + 
+     .                                                     albvisdf(i,j)
       enddo
       enddo
       nalbvisdf = nalbvisdf + 1
@@ -367,7 +372,8 @@ c ------------------
       if( ialbnirdr.gt.0 ) then
       do j=1,jm
       do i=1,im
-      qdiag(i,j,ialbnirdr) = qdiag(i,j,ialbnirdr) + albnirdr(i,j)
+      qdiag(i,j,ialbnirdr,bi,bj) = qdiag(i,j,ialbnirdr,bi,bj) + 
+     .                                                     albnirdr(i,j)
       enddo
       enddo
       nalbnirdr = nalbnirdr + 1
@@ -376,7 +382,8 @@ c ------------------
       if( ialbnirdf.gt.0 ) then
       do j=1,jm
       do i=1,im
-      qdiag(i,j,ialbnirdf) = qdiag(i,j,ialbnirdf) + albnirdf(i,j)
+      qdiag(i,j,ialbnirdf,bi,bj) = qdiag(i,j,ialbnirdf,bi,bj) + 
+     .                                                     albnirdf(i,j)
       enddo
       enddo
       nalbnirdf = nalbnirdf + 1
@@ -399,7 +406,7 @@ C -------------------------------------------
       do L=1,lm
       do j=1,jm
       do i=1,im
-      qdiag(i,j,itauave+L-1) = qdiag(i,j,itauave+L-1) + 
+      qdiag(i,j,itauave+L-1,bi,bj) = qdiag(i,j,itauave+L-1,bi,bj) + 
      .                        tau(i,j,L)*100/(plze(i,j,L+1)-plze(i,j,L))
       enddo
       enddo
@@ -412,9 +419,10 @@ C -------------------------------------------
       do j=1,jm
       do i=1,im
        if( cldtot(i,j,L).ne.0.0 ) then
-        qdiag(i,j,itaucld +L-1) = qdiag(i,j,itaucld +L-1) + 
+        qdiag(i,j,itaucld +L-1,bi,bj) = qdiag(i,j,itaucld +L-1,bi,bj) + 
      .                        tau(i,j,L)*100/(plze(i,j,L+1)-plze(i,j,L))
-        qdiag(i,j,itaucldc+L-1) = qdiag(i,j,itaucldc+L-1) + 1.0
+        qdiag(i,j,itaucldc+L-1,bi,bj) = 
+     .                             qdiag(i,j,itaucldc+L-1,bi,bj) + 1.0
        endif
       enddo
       enddo
@@ -424,48 +432,51 @@ C -------------------------------------------
 c Compute Low, Mid, and High Cloud Optical Depth Diagnostics
 c ----------------------------------------------------------
       if( itaulow.ne.0 ) then
-          do j = 1,jm
-          do i = 1,im
-          if( cldlow(i,j).ne.0.0 ) then
-              taulow(i,j) =  0.0
-              do L = low_level,lm
-              taulow(i,j) = taulow(i,j) + tau(i,j,L)
-              enddo
-               qdiag(i,j,itaulow ) = qdiag(i,j,itaulow ) + taulow(i,j)
-               qdiag(i,j,itaulowc) = qdiag(i,j,itaulowc) + 1.0
-          endif
-          enddo
-          enddo
+       do j = 1,jm
+       do i = 1,im
+        if( cldlow(i,j).ne.0.0 ) then
+         taulow(i,j) =  0.0
+         do L = low_level,lm
+          taulow(i,j) = taulow(i,j) + tau(i,j,L)
+         enddo
+         qdiag(i,j,itaulow,bi,bj ) = qdiag(i,j,itaulow,bi,bj ) + 
+     .                                                    taulow(i,j)
+         qdiag(i,j,itaulowc,bi,bj) = qdiag(i,j,itaulowc,bi,bj) + 1.0
+        endif
+       enddo
+       enddo
       endif
 
       if( itaumid.ne.0 ) then
-          do j = 1,jm
-          do i = 1,im
-          if( cldmid(i,j).ne.0.0 ) then
-              taumid(i,j) =  0.0
-              do L = mid_level,low_level+1
-              taumid(i,j) = taumid(i,j) + tau(i,j,L)
-              enddo
-               qdiag(i,j,itaumid ) = qdiag(i,j,itaumid ) + taumid(i,j)
-               qdiag(i,j,itaumidc) = qdiag(i,j,itaumidc) + 1.0
-          endif
-          enddo
-          enddo
+       do j = 1,jm
+       do i = 1,im
+        if( cldmid(i,j).ne.0.0 ) then
+         taumid(i,j) =  0.0
+         do L = mid_level,low_level+1
+          taumid(i,j) = taumid(i,j) + tau(i,j,L)
+         enddo
+         qdiag(i,j,itaumid,bi,bj ) = qdiag(i,j,itaumid,bi,bj ) + 
+     .                                                    taumid(i,j)
+         qdiag(i,j,itaumidc,bi,bj) = qdiag(i,j,itaumidc,bi,bj) + 1.0
+        endif
+       enddo
+       enddo
       endif
 
       if( itauhi.ne.0 ) then
-          do j = 1,jm
-          do i = 1,im
-          if( cldhi(i,j).ne.0.0 ) then
-              tauhi(i,j) =  0.0
-              do L = 1,mid_level+1
-              tauhi(i,j) = tauhi(i,j) + tau(i,j,L)
-              enddo
-               qdiag(i,j,itauhi ) = qdiag(i,j,itauhi ) + tauhi(i,j)
-               qdiag(i,j,itauhic) = qdiag(i,j,itauhic) + 1.0
-          endif
-          enddo
-          enddo
+       do j = 1,jm
+       do i = 1,im
+        if( cldhi(i,j).ne.0.0 ) then
+         tauhi(i,j) =  0.0
+         do L = 1,mid_level+1
+          tauhi(i,j) = tauhi(i,j) + tau(i,j,L)
+         enddo
+         qdiag(i,j,itauhi,bi,bj ) = qdiag(i,j,itauhi,bi,bj ) + 
+     .                                                   tauhi(i,j)
+         qdiag(i,j,itauhic,bi,bj) = qdiag(i,j,itauhic,bi,bj) + 1.0
+        endif
+       enddo
+       enddo
       endif
 
 C***********************************************************************
@@ -572,8 +583,8 @@ c ----------------------
       do j=1,jm
       do i=1,im
       if( albedo(i,j).ne.undef ) then
-      qdiag(i,j,ialbedo ) = qdiag(i,j,ialbedo ) + albedo(i,j)
-      qdiag(i,j,ialbedoc) = qdiag(i,j,ialbedoc) + 1.0
+      qdiag(i,j,ialbedo,bi,bj ) = qdiag(i,j,ialbedo,bi,bj )+albedo(i,j)
+      qdiag(i,j,ialbedoc,bi,bj) = qdiag(i,j,ialbedoc,bi,bj) + 1.0
       endif
       enddo
       enddo

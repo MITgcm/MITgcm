@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.5 2004/06/17 21:45:29 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.6 2004/06/24 19:57:02 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-      subroutine turbio (im,jm,nlay,istrip,nymd,nhms
+      subroutine turbio (im,jm,nlay,istrip,nymd,nhms,bi,bj
      1 ,ndturb,ptop, pz, uz, vz, tz, qz, ntracers,ptracers,
      2 ,plz,plze,dpres,pkht,pkz,ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke
      3 ,tgz,fracland,landtype
@@ -96,7 +96,7 @@ c-----------------------------------------------------------------------
 #include "diagnostics.h"
 #endif
 
-      integer n,im,jm,nlay,istrip,nymd,nhms,ndturb
+      integer n,im,jm,nlay,istrip,nymd,nhms,bi,bj,ndturb
       real   ptop
       integer nchp,nchplnd,landtype(im,jm),igrd(nchp)
       integer ityp(nchp)
@@ -362,7 +362,7 @@ c Initialize diagnostic for ground temperature change
 c ---------------------------------------------------
       if(idtg.gt.0) then
       do i =1,ijall
-      qdiag(i,1,idtg) = qdiag(i,1,idtg) - tgz(i,1)
+      qdiag(i,1,idtg,bi,bj) = qdiag(i,1,idtg,bi,bj) - tgz(i,1)
       enddo
       endif
 
@@ -481,7 +481,7 @@ c -----------------------------------
       enddo
       call msc2grd (igrd,chfr,qice,nchp,nchp,fracland,tmpdiag,im,jm)
       do i =1,ijall
-      qdiag(i,1,iqice) = qdiag(i,1,iqice) + tmpdiag(i,1)
+      qdiag(i,1,iqice,bi,bj) = qdiag(i,1,iqice,bi,bj) + tmpdiag(i,1)
       enddo
       nqice = nqice + 1
       endif
@@ -589,7 +589,7 @@ c --------------------------------------------------------------------
       tmpstrip(i) = sh(i,nlay+1)*1000
       enddo
       call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-     1                        qdiag(1,1,iqg),ijall,1,nn,.false.)
+     1                        qdiag(1,1,iqg,bi,bj),ijall,1,nn,.false.)
       endif
 
 c value of tracers at the ground
@@ -639,7 +639,7 @@ c ------------------------------------------------------------------
       enddo
       if(idtsrf.gt.0) then
       call paste2grd(stdiag,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,idtsrf),ijall,1,nn,.false.)
+     1                      qdiag(1,1,idtsrf,bi,bj),ijall,1,nn,.false.)
       endif
 
 c call trbflx
@@ -729,61 +729,61 @@ c**********************************************************************
       tmpstrip(i) = newsnow(i)*86400   
       enddo
       call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-     1                       qdiag(1,1,isnowfall),ijall,1,nn,.false.)
+     1                   qdiag(1,1,isnowfall,bi,bj),ijall,1,nn,.false.)
       endif
       if(iraincon.gt.0) then
       do i = 1,istrip
       tmpstrip(i) = raincon(i)*86400   
       enddo
       call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-     1                       qdiag(1,1,iraincon),ijall,1,nn,.false.)
+     1                   qdiag(1,1,iraincon,bi,bj),ijall,1,nn,.false.)
       endif
       if(irainlsp.gt.0) then
       do i = 1,istrip
       tmpstrip(i) = rainls(i)*86400   
       enddo
       call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,irainlsp),ijall,1,nn,.false.)
+     1                  qdiag(1,1,irainlsp,bi,bj),ijall,1,nn,.false.)
       endif
       if(igreen.gt.0) then
       call paste2grd(grnstrip,igrd,chfrstr,istrip,nchp,
-     1                        qdiag(1,1,igreen),ijall,1,nn,.false.)
+     1                    qdiag(1,1,igreen,bi,bj),ijall,1,nn,.false.)
       endif
       if(ilai.gt.0) then
       call paste2grd(laistrip,igrd,chfrstr,istrip,nchp,
-     1                        qdiag(1,1,ilai),ijall,1,nn,.false.)
+     1                    qdiag(1,1,ilai,bi,bj),ijall,1,nn,.false.)
       endif
       if(ipardr.gt.0) then
       call paste2grd(pardr,igrd,chfrstr,istrip,nchp,
-     1                     qdiag(1,1,ipardr),ijall,1,nn,.false.)
+     1                 qdiag(1,1,ipardr,bi,bj),ijall,1,nn,.false.)
       endif
       if(ipardf.gt.0) then
       call paste2grd(pardf,igrd,chfrstr,istrip,nchp,
-     1                     qdiag(1,1,ipardf),ijall,1,nn,.false.)
+     1                 qdiag(1,1,ipardf,bi,bj),ijall,1,nn,.false.)
       endif
       if(idlwdtc.gt.0) then
       call paste2grd(blwrad,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,idlwdtc),ijall,1,nn,.false.)
+     1                  qdiag(1,1,idlwdtc,bi,bj),ijall,1,nn,.false.)
       endif
       if(idhdtc.gt.0) then
       call paste2grd(dhsdtc,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,idhdtc),ijall,1,nn,.false.)
+     1                  qdiag(1,1,idhdtc,bi,bj),ijall,1,nn,.false.)
       endif
       if(idedtc.gt.0) then
       call paste2grd(dedtc,igrd,chfrstr,istrip,nchp,
-     1                     qdiag(1,1,idedtc),ijall,1,nn,.false.)
+     1                 qdiag(1,1,idedtc,bi,bj),ijall,1,nn,.false.)
       endif
       if(idhdqa.gt.0) then
       call paste2grd(dhsdqa,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,idhdqa),ijall,1,nn,.false.)
+     1                  qdiag(1,1,idhdqa,bi,bj),ijall,1,nn,.false.)
       endif
       if(idedqa.gt.0) then
       call paste2grd(dedqa,igrd,chfrstr,istrip,nchp,
-     1                     qdiag(1,1,idedqa),ijall,1,nn,.false.)
+     1                 qdiag(1,1,idedqa,bi,bj),ijall,1,nn,.false.)
       endif
       if(ilwgdown.gt.0) then
       call paste2grd(hlwdwn,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,ilwgdown),ijall,1,nn,.false.)
+     1                  qdiag(1,1,ilwgdown,bi,bj),ijall,1,nn,.false.)
       endif
 c**********************************************************************
 
@@ -819,73 +819,73 @@ c***********************************************************************
 
       if(irunoff.gt.0) then
       call paste2grd(runoff,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,irunoff),ijall,1,nn,.false.)
+     1                  qdiag(1,1,irunoff,bi,bj),ijall,1,nn,.false.)
       endif
       if(ifwsoil.gt.0) then
       call paste2grd(fwsoil,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,ifwsoil),ijall,1,nn,.false.)
+     1                  qdiag(1,1,ifwsoil,bi,bj),ijall,1,nn,.false.)
       endif
       if(igdrain.gt.0) then
       call paste2grd(gdrain,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,igdrain),ijall,1,nn,.false.)
+     1                  qdiag(1,1,igdrain,bi,bj),ijall,1,nn,.false.)
       endif
       if(isnowmelt.gt.0) then
       call paste2grd(smelt,igrd,chfrstr,istrip,nchp,
-     1                     qdiag(1,1,isnowmelt),ijall,1,nn,.false.)
+     1                 qdiag(1,1,isnowmelt,bi,bj),ijall,1,nn,.false.)
       endif
       if(ieveg.gt.0) then
       call paste2grd(eveg,igrd,chfrstr,istrip,nchp,
-     1                    qdiag(1,1,ieveg),ijall,1,nn,.false.)
+     1                    qdiag(1,1,ieveg,bi,bj),ijall,1,nn,.false.)
       endif
       if(iesnow.gt.0) then
       call paste2grd(esno,igrd,chfrstr,istrip,nchp,
-     1                    qdiag(1,1,iesnow),ijall,1,nn,.false.)
+     1                    qdiag(1,1,iesnow,bi,bj),ijall,1,nn,.false.)
       endif
       if(iesoil.gt.0) then
       call paste2grd(esoi,igrd,chfrstr,istrip,nchp,
-     1                    qdiag(1,1,iesoil),ijall,1,nn,.false.)
+     1                    qdiag(1,1,iesoil,bi,bj),ijall,1,nn,.false.)
       endif
       if(ieresv.gt.0) then
       call paste2grd(eint,igrd,chfrstr,istrip,nchp,
-     1                    qdiag(1,1,ieresv),ijall,1,nn,.false.)
+     1                    qdiag(1,1,ieresv,bi,bj),ijall,1,nn,.false.)
       endif
       if(ievpot.gt.0) then
       call paste2grd(evpot,igrd,chfrstr,istrip,nchp,
-     1                     qdiag(1,1,ievpot),ijall,1,nn,.false.)
+     1                     qdiag(1,1,ievpot,bi,bj),ijall,1,nn,.false.)
       endif
       if(idtc.gt.0) then
       call paste2grd(strdg1,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,idtc),ijall,1,nn,.false.)
+     1                      qdiag(1,1,idtc,bi,bj),ijall,1,nn,.false.)
       endif
       if(idqc.gt.0) then
       call paste2grd(strdg2,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,idqc),ijall,1,nn,.false.)
+     1                      qdiag(1,1,idqc,bi,bj),ijall,1,nn,.false.)
       endif
       if(itcdtc.gt.0) then
       call paste2grd(strdg3,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,itcdtc),ijall,1,nn,.false.)
+     1                      qdiag(1,1,itcdtc,bi,bj),ijall,1,nn,.false.)
       endif
       if(iraddtc.gt.0) then
       call paste2grd(strdg4,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,iraddtc),ijall,1,nn,.false.)
+     1                      qdiag(1,1,iraddtc,bi,bj),ijall,1,nn,.false.)
       endif
       if(isensdtc.gt.0) then
       call paste2grd(strdg5,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,isensdtc),ijall,1,nn,.false.)
+     1                     qdiag(1,1,isensdtc,bi,bj),ijall,1,nn,.false.)
       endif
       if(ilatdtc.gt.0) then
       call paste2grd(strdg6,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,ilatdtc),ijall,1,nn,.false.)
+     1                      qdiag(1,1,ilatdtc,bi,bj),ijall,1,nn,.false.)
       endif
       if(itddtc.gt.0) then
       call paste2grd(strdg7,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,itddtc),ijall,1,nn,.false.)
+     1                      qdiag(1,1,itddtc,bi,bj),ijall,1,nn,.false.)
       endif
       if(iqcdtc.gt.0) then
       call paste2grd(strdg8,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,iqcdtc),ijall,1,nn,.false.)
+     1                      qdiag(1,1,iqcdtc,bi,bj),ijall,1,nn,.false.)
       endif
-c**********************************************************************
+c***********************************************************************
 
       if( ndlsm.gt.1 ) then
       call pstbitint(types,qdiaglsm(1,1),istrip,nchp,nchp,1,nn)
@@ -1026,29 +1026,29 @@ c ------------------------------
       tmpstrip(i) = stqflux(i,nlay) * 86400
       enddo
       call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-     1                        qdiag(1,1,ievap),ijall,1,nn,.false.)
+     1                    qdiag(1,1,ievap,bi,bj),ijall,1,nn,.false.)
       endif
       if(ieflux.gt.0) then
       do i=1,istrip
       tmpstrip(i) = stqflux(i,nlay) * alhl
       enddo
       call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-     1                        qdiag(1,1,ieflux),ijall,1,nn,.false.)
+     1                    qdiag(1,1,ieflux,bi,bj),ijall,1,nn,.false.)
       endif
       if(ihflux.gt.0) then
       do i=1,istrip
       tmpstrip(i) = sttflux(i,nlay) * cp
       enddo
       call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-     1                        qdiag(1,1,ihflux),ijall,1,nn,.false.)
+     1                    qdiag(1,1,ihflux,bi,bj),ijall,1,nn,.false.)
       endif
       if(ituflux.gt.0) then
       call paste2grd(stuflux,igrd,chfrstr,istrip,nchp,
-     1                       qdiag(1,1,ituflux),ijall,nlay,nn,.false.)
+     1                   qdiag(1,1,ituflux,bi,bj),ijall,nlay,nn,.false.)
       endif
       if(itvflux.gt.0) then
       call paste2grd(stvflux,igrd,chfrstr,istrip,nchp,
-     1                       qdiag(1,1,itvflux),ijall,nlay,nn,.false.)
+     1                   qdiag(1,1,itvflux,bi,bj),ijall,nlay,nn,.false.)
       endif
       if(ittflux.gt.0) then
       do l=1,nlay
@@ -1057,7 +1057,7 @@ c ------------------------------
       enddo
       enddo
       call paste2grd(sttflux,igrd,chfrstr,istrip,nchp,
-     1                       qdiag(1,1,ittflux),ijall,nlay,nn,.false.)
+     1                   qdiag(1,1,ittflux,bi,bj),ijall,nlay,nn,.false.)
       endif
       if(itqflux.gt.0) then
       do l=1,nlay
@@ -1066,61 +1066,61 @@ c ------------------------------
       enddo
       enddo
       call paste2grd(stqflux,igrd,chfrstr,istrip,nchp,
-     1                       qdiag(1,1,itqflux),ijall,nlay,nn,.false.)
+     1                   qdiag(1,1,itqflux,bi,bj),ijall,nlay,nn,.false.)
       endif
       if(iri.gt.0) call paste2grd(sri,igrd,chfrstr,istrip,nchp,
-     1                           qdiag(1,1,iri),ijall,nlay,nn,.false.)
+     1                       qdiag(1,1,iri,bi,bj),ijall,nlay,nn,.false.)
       if(ikh.gt.0) call paste2grd(skh,igrd,chfrstr,istrip,nchp,
-     1                           qdiag(1,1,ikh),ijall,nlay,nn,.false.)
+     1                       qdiag(1,1,ikh,bi,bj),ijall,nlay,nn,.false.)
       if(ikm.gt.0) call paste2grd(skm,igrd,chfrstr,istrip,nchp,
-     1                           qdiag(1,1,ikm),ijall,nlay,nn,.false.)
+     1                       qdiag(1,1,ikm,bi,bj),ijall,nlay,nn,.false.)
       if(ict.gt.0) then
       call paste2grd(sct,igrd,chfrstr,istrip,nchp,
-     1                   qdiag(1,1,ict),ijall,1,nn,.false.)
+     1                   qdiag(1,1,ict,bi,bj),ijall,1,nn,.false.)
       endif
       if(icu.gt.0) then
       call paste2grd(scu,igrd,chfrstr,istrip,nchp,
-     1                   qdiag(1,1,icu),ijall,1,nn,.false.)
+     1                   qdiag(1,1,icu,bi,bj),ijall,1,nn,.false.)
       endif
       if(iwinds.gt.0) then
       call paste2grd(swinds,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,iwinds),ijall,1,nn,.false.)
+     1                      qdiag(1,1,iwinds,bi,bj),ijall,1,nn,.false.)
       endif
       if(iuflux.gt.0) then
       call paste2grd(stuflux(1,nlay),igrd,chfrstr,istrip,nchp,
-     1                       qdiag(1,1,iuflux),ijall,1,nn,.false.)
+     1                       qdiag(1,1,iuflux,bi,bj),ijall,1,nn,.false.)
       endif
       if(ivflux.gt.0) then
       call paste2grd(stvflux(1,nlay),igrd,chfrstr,istrip,nchp,
-     1                       qdiag(1,1,ivflux),ijall,1,nn,.false.)
+     1                       qdiag(1,1,ivflux,bi,bj),ijall,1,nn,.false.)
       endif
       if(iustar.gt.0) then
       call paste2grd(sustar,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,iustar),ijall,1,nn,.false.)
+     1                      qdiag(1,1,iustar,bi,bj),ijall,1,nn,.false.)
       endif
       if(iz0.gt.0) then
       call paste2grd(sz0,igrd,chfrstr,istrip,nchp,
-     1                   qdiag(1,1,iz0),ijall,1,nn,.false.)
+     1                   qdiag(1,1,iz0,bi,bj),ijall,1,nn,.false.)
       endif
       if(ifrqtrb.gt.0) then
       call paste2grd(frqtrb,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,ifrqtrb),ijall,1,nn,.false.)
+     1                      qdiag(1,1,ifrqtrb,bi,bj),ijall,1,nn,.false.)
       endif
       if(ipbl.gt.0) then
       call paste2grd(pbldpth,igrd,chfrstr,istrip,nchp,
-     1                       qdiag(1,1,ipbl),ijall,1,nn,.false.)
+     1                       qdiag(1,1,ipbl,bi,bj),ijall,1,nn,.false.)
       endif
       if(iu2m.gt.0) then
       call paste2grd(stu2m,igrd,chfrstr,istrip,nchp,
-     1                     qdiag(1,1,iu2m),ijall,1,nn,.true.)
+     1                     qdiag(1,1,iu2m,bi,bj),ijall,1,nn,.true.)
       endif
       if(iv2m.gt.0) then
       call paste2grd(stv2m,igrd,chfrstr,istrip,nchp,
-     1                     qdiag(1,1,iv2m),ijall,1,nn,.true.)
+     1                     qdiag(1,1,iv2m,bi,bj),ijall,1,nn,.true.)
       endif
       if(it2m.gt.0) then
       call paste2grd(stt2m,igrd,chfrstr,istrip,nchp,
-     1                     qdiag(1,1,it2m),ijall,1,nn,.true.)
+     1                     qdiag(1,1,it2m,bi,bj),ijall,1,nn,.true.)
       endif
       if(iq2m.gt.0) then
       do i=1,istrip
@@ -1131,19 +1131,19 @@ c ------------------------------
          endif
       enddo
       call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-     1                     qdiag(1,1,iq2m),ijall,1,nn,.true.)
+     1                     qdiag(1,1,iq2m,bi,bj),ijall,1,nn,.true.)
       endif
       if(iu10m.gt.0) then
       call paste2grd(stu10m,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,iu10m),ijall,1,nn,.false.)
+     1                      qdiag(1,1,iu10m,bi,bj),ijall,1,nn,.false.)
       endif
       if(iv10m.gt.0) then
       call paste2grd(stv10m,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,iv10m),ijall,1,nn,.false.)
+     1                      qdiag(1,1,iv10m,bi,bj),ijall,1,nn,.false.)
       endif
       if(it10m.gt.0) then
       call paste2grd(stt10m,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,it10m),ijall,1,nn,.false.)
+     1                      qdiag(1,1,it10m,bi,bj),ijall,1,nn,.false.)
       endif
       if(iq10m.gt.0) then
       do i=1,istrip
@@ -1154,7 +1154,7 @@ c ------------------------------
          endif
       enddo
       call paste2grd(tmpstrip,igrd,chfrstr,istrip,nchp,
-     1                      qdiag(1,1,iq10m),ijall,1,nn,.false.)
+     1                      qdiag(1,1,iq10m,bi,bj),ijall,1,nn,.false.)
       endif
 
 c Fill 2m and 10m Couplings (Not Re-producible)
@@ -1181,24 +1181,24 @@ c   more diagnostics: land surface model parameters
 c**********************************************************************
  
       if(itdeep.gt.0)call paste2grd(td,igrd,chfrstr,istrip,nchp,
-     .                         qdiag(1,1,itdeep),ijall,1,nn,.false.)
+     .                     qdiag(1,1,itdeep,bi,bj),ijall,1,nn,.false.)
       if(iqcanopy .gt.0)call paste2grd(qa,igrd,chfrstr,istrip,nchp,
-     .                      qdiag(1,1,iqcanopy) ,ijall,1,nn,.false.)
+     .                  qdiag(1,1,iqcanopy,bi,bj) ,ijall,1,nn,.false.)
       if(ismshal  .gt.0)call paste2grd(swet1,igrd,chfrstr,istrip,nchp,
-     .                      qdiag(1,1,ismshal)  ,ijall,1,nn,.false.)
+     .                  qdiag(1,1,ismshal,bi,bj)  ,ijall,1,nn,.false.)
       if(ismroot  .gt.0)call paste2grd(swet2,igrd,chfrstr,istrip,nchp,
-     .                      qdiag(1,1,ismroot)  ,ijall,1,nn,.false.)
+     .                  qdiag(1,1,ismroot,bi,bj)  ,ijall,1,nn,.false.)
       if(ismdeep  .gt.0)call paste2grd(swet3,igrd,chfrstr,istrip,nchp,
-     .                      qdiag(1,1,ismdeep)  ,ijall,1,nn,.false.)
+     .                  qdiag(1,1,ismdeep,bi,bj)  ,ijall,1,nn,.false.)
       if(icapacity.gt.0)call paste2grd(capacity,igrd,chfrstr,istrip,
-     .                 nchp,qdiag(1,1,icapacity),ijall,1,nn,.false.)
+     .             nchp,qdiag(1,1,icapacity,bi,bj),ijall,1,nn,.false.)
       if(isnow.gt.0)call paste2grd(snowdepth,igrd,chfrstr,istrip,nchp,
-     .                      qdiag(1,1,isnow)    ,ijall,1,nn,.false.)
+     .                  qdiag(1,1,isnow,bi,bj)    ,ijall,1,nn,.false.)
 
 c**********************************************************************
       IF(Iudiag1.GT.0) then
       call paste2grd(checktrb,igrd,chfrstr,istrip,nchp,
-     1                       qdiag(1,1,iudiag1),ijall,nlay,nn,.false.)
+     1                   qdiag(1,1,iudiag1,bi,bj),ijall,nlay,nn,.false.)
       endif
 
 c**********************************************************************
@@ -1286,7 +1286,8 @@ c ------------------------------------------------------------------
        if (itrbfcc.gt.0) then
        do j=1,jm
        do i=1,im
-       qdiag(i,j,itrbfcc+L-1) =  qdiag(i,j,itrbfcc+L-1) + fcctmp(i,j,L)
+       qdiag(i,j,itrbfcc+L-1,bi,bj) =  qdiag(i,j,itrbfcc+L-1,bi,bj) + 
+     .                                              fcctmp(i,j,L)
        enddo
        enddo
        endif
@@ -1294,7 +1295,7 @@ c ------------------------------------------------------------------
        if (itrbqliq.gt.0) then
        do j=1,jm
        do i=1,im
-       qdiag(i,j,itrbqliq+L-1)=qdiag(i,j,itrbqliq+L-1)+
+       qdiag(i,j,itrbqliq+L-1,bi,bj)=qdiag(i,j,itrbqliq+L-1,bi,bj)+
      .                                             qliqtmp(i,j,L)*1.e6
        enddo
        enddo
@@ -1318,13 +1319,13 @@ c *********************************************************************
  
       if(itground.gt.0) then
       do i =1,ijall
-      qdiag(i,1,itground) = qdiag(i,1,itground) + tgz(i,1)
+      qdiag(i,1,itground,bi,bj) = qdiag(i,1,itground,bi,bj) + tgz(i,1)
       enddo
       endif
 
       if(itcanopy.gt.0) then
       do i =1,ijall
-      qdiag(i,1,itcanopy) = qdiag(i,1,itcanopy) + tgz(i,1)
+      qdiag(i,1,itcanopy,bi,bj) = qdiag(i,1,itcanopy,bi,bj) + tgz(i,1)
       enddo
       endif
 
@@ -1333,13 +1334,13 @@ c *********************************************************************
       tmpstrip(i) = tz(i,1,nlay) * pkht(i,1,nlay)
       enddo
       do i =1,ijall
-      qdiag(i,1,its) = qdiag(i,1,its) + tmpstrip(i)
+      qdiag(i,1,its,bi,bj) = qdiag(i,1,its,bi,bj) + tmpstrip(i)
       enddo
       endif
 
       if(idtg.gt.0) then
       do i =1,ijall
-      qdiag(i,1,idtg) = qdiag(i,1,idtg) + tgz(i,1)
+      qdiag(i,1,idtg,bi,bj) = qdiag(i,1,idtg,bi,bj) + tgz(i,1)
       enddo
       endif
 
@@ -1350,28 +1351,28 @@ c *********************************************************************
  
        if(iturbu.gt.0) then
        do i =1,ijall
-        qdiag(i,1,iturbu+l-1) =  qdiag(i,1,iturbu+l-1)
+        qdiag(i,1,iturbu+l-1,bi,bj) =  qdiag(i,1,iturbu+l-1,bi,bj)
      .                      + duturb(i,1,l) * atimstp * secday
        enddo
        endif
 
        if(iturbv.gt.0) then
        do i =1,ijall
-        qdiag(i,1,iturbv+l-1) =  qdiag(i,1,iturbv+l-1)
+        qdiag(i,1,iturbv+l-1,bi,bj) =  qdiag(i,1,iturbv+l-1,bi,bj)
      .                      + dvturb(i,1,l) * atimstp * secday
        enddo
        endif
 
        if(iturbq.gt.0) then
        do i =1,ijall
-        qdiag(i,1,iturbq+l-1) =  qdiag(i,1,iturbq+l-1)
+        qdiag(i,1,iturbq+l-1,bi,bj) =  qdiag(i,1,iturbq+l-1,bi,bj)
      .                      + dqturb(i,1,l,1) * atimstp * secday * 1000
        enddo
        endif
 
        if(iturbt.gt.0) then
        do i =1,ijall
-        qdiag(i,1,iturbt+l-1) =  qdiag(i,1,iturbt+l-1)
+        qdiag(i,1,iturbt+l-1,bi,bj) =  qdiag(i,1,iturbt+l-1,bi,bj)
      .                   + dtturb(i,1,l) * pkz(i,1,l)*atimstp*secday
        enddo
        endif

@@ -1,8 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.2 2004/06/15 16:06:03 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.3 2004/06/24 19:57:02 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-      subroutine moistio (ndmoist,istrip,npcs,pz,tz,qz,ntracer,ptracer,
+      subroutine moistio (ndmoist,istrip,npcs,pz,tz,qz,bi,bj,
+     .   ntracer,ptracer,
      .   pkht,qqz,dumoist,dvmoist,dtmoist,dqmoist,
      .   im,jm,lm,sige,sig,dsig,ptop,
      .   iras,rainlsp,rainconv,snowfall,
@@ -16,7 +17,7 @@ C $Name:  $
 
 c Input Variables
 c ---------------
-      integer ndmoist,istrip,npcs,myid
+      integer ndmoist,istrip,npcs,myid,bi,bj
 
       integer im,jm,lm                
       real  ptop                      
@@ -855,9 +856,10 @@ c -----------------------------------
        if( itmpuclr.ne.0 ) then
         do i = 1,im*jm
         if( totcld(i,1).eq.0.0 ) then
-         qdiag(i,1,itmpuclr +L-1) = qdiag(i,1,itmpuclr +L-1) + 
-     .                                          tz(i,1,L)*pkzgather(i,L)
-         qdiag(i,1,itmpuclrc+L-1) = qdiag(i,1,itmpuclrc+L-1) + 1.0
+         qdiag(i,1,itmpuclr +L-1,bi,bj) = 
+     .         qdiag(i,1,itmpuclr +L-1,bi,bj) + tz(i,1,L)*pkzgather(i,L)
+         qdiag(i,1,itmpuclrc+L-1,bi,bj) = 
+     .                            qdiag(i,1,itmpuclrc+L-1,bi,bj)+1.0
         endif
         enddo
        endif
@@ -865,9 +867,10 @@ c -----------------------------------
        if( isphuclr.ne.0 ) then
         do i = 1,im*jm
         if( totcld(i,1).eq.0.0 ) then
-         qdiag(i,1,isphuclr +L-1) = qdiag(i,1,isphuclr +L-1) + 
-     .                                                qz(i,1,L,1)*1000.0
-         qdiag(i,1,isphuclrc+L-1) = qdiag(i,1,isphuclrc+L-1) + 1.0
+         qdiag(i,1,isphuclr +L-1,bi,bj) = 
+     .              qdiag(i,1,isphuclr +L-1,bi,bj) + qz(i,1,L,1)*1000.0
+         qdiag(i,1,isphuclrc+L-1,bi,bj) = 
+     .                      qdiag(i,1,isphuclrc+L-1,bi,bj) + 1.0
         endif
         enddo
        endif
@@ -879,8 +882,10 @@ c -------------------------
       if( ipsubcld.ne.0 ) then
       do j = 1,jm
       do i = 1,im
-      qdiag(i,j,ipsubcld ) = qdiag(i,j,ipsubcld ) + psubcldg (i,j)
-      qdiag(i,j,ipsubcldc) = qdiag(i,j,ipsubcldc) + psubcldgc(i,j)
+      qdiag(i,j,ipsubcld,bi,bj) = qdiag(i,j,ipsubcld,bi,bj) + 
+     .                                           psubcldg (i,j)
+      qdiag(i,j,ipsubcldc,bi,bj) = qdiag(i,j,ipsubcldc,bi,bj) + 
+     .                                           psubcldgc(i,j)
       enddo
       enddo
       endif
@@ -891,7 +896,8 @@ c --------------------------------
       do L = 1,lm
       do j = 1,jm
       do i = 1,im
-      qdiag(i,j,icldnp+L-1) = qdiag(i,j,icldnp+L-1) + cldsr(i,j,L)
+      qdiag(i,j,icldnp+L-1,bi,bj) = qdiag(i,j,icldnp+L-1,bi,bj) + 
+     .                                                  cldsr(i,j,L)
       enddo
       enddo
       enddo
@@ -903,7 +909,7 @@ c ----------------------------
       if(imoistt.gt.0) then
       do L = 1,lm
       do i = 1,im*jm
-      qdiag(i,1,imoistt+L-1) = qdiag(i,1,imoistt+L-1) + 
+      qdiag(i,1,imoistt+L-1,bi,bj) = qdiag(i,1,imoistt+L-1,bi,bj) + 
      .                      (dtmoist(i,1,L)*sday*pkzgather(i,L)/pz(i,1))
       enddo
       enddo
@@ -915,7 +921,7 @@ c -------------------------------
       do L = 1,lm
       do j = 1,jm
       do i = 1,im
-      qdiag(i,j,imoistq+L-1) = qdiag(i,j,imoistq+L-1) + 
+      qdiag(i,j,imoistq+L-1,bi,bj) = qdiag(i,j,imoistq+L-1,bi,bj) + 
      .                           (dqmoist(i,j,L,1)*sday*1000.0/pz(i,j))
       enddo
       enddo
@@ -927,7 +933,8 @@ c ---------------
       if(icldmas.gt.0) then
       do L = 1,lm
       do i = 1,im*jm
-      qdiag(i,1,icldmas+L-1) = qdiag(i,1,icldmas+L-1) + tmpgather(i,L)
+      qdiag(i,1,icldmas+L-1,bi,bj) = qdiag(i,1,icldmas+L-1,bi,bj) + 
+     .                                                  tmpgather(i,L)
       enddo
       enddo
       endif
@@ -937,7 +944,8 @@ c -------------------------
       if(idtrain.gt.0) then
       do L = 1,lm
       do i = 1,im*jm
-      qdiag(i,1,idtrain+L-1) = qdiag(i,1,idtrain+L-1) + pkegather(i,L)
+      qdiag(i,1,idtrain+L-1,bi,bj) = qdiag(i,1,idtrain+L-1,bi,bj) + 
+     .                                                  pkegather(i,L)
       enddo
       enddo
       endif
@@ -947,7 +955,8 @@ c --------------------------------------
       if(idtls.gt.0) then
       do L = 1,lm
       do i = 1,im*jm
-      qdiag(i,1,idtls+L-1) = qdiag(i,1,idtls+L-1) + deltrnev(i,L)
+      qdiag(i,1,idtls+L-1,bi,bj) = qdiag(i,1,idtls+L-1,bi,bj) + 
+     .                                                  deltrnev(i,L)
       enddo
       enddo
       endif
@@ -957,7 +966,8 @@ c -----------------------------------------
       if(idqls.gt.0) then
       do L = 1,lm
       do i = 1,im*jm
-      qdiag(i,1,idqls+L-1) = qdiag(i,1,idqls+L-1) + delqrnev(i,L)
+      qdiag(i,1,idqls+L-1,bi,bj) = qdiag(i,1,idqls+L-1,bi,bj) + 
+     .                                                  delqrnev(i,L)
       enddo
       enddo
       endif
@@ -967,7 +977,7 @@ c -------------------
       if(ipreacc.gt.0) then
       do j = 1,jm
       do i = 1,im
-      qdiag(i,j,ipreacc) = qdiag(i,j,ipreacc)
+      qdiag(i,j,ipreacc,bi,bj) = qdiag(i,j,ipreacc,bi,bj)
      .                   +  (  lsp_new(I,j)
      .                      + snow_new(I,j)
      .                      + conv_new(i,j) ) *sday*tminv
@@ -979,7 +989,8 @@ c Convective Precipitation
 c ------------------------
       if(iprecon.gt.0) then
       do i = 1,im*jm
-      qdiag(i,1,iprecon) = qdiag(i,1,iprecon) + raincgath(i)*sday*tminv
+      qdiag(i,1,iprecon,bi,bj) = qdiag(i,1,iprecon,bi,bj) + 
+     .                                         raincgath(i)*sday*tminv
       enddo
       endif
 
@@ -1101,9 +1112,10 @@ C **********************************************************************
       do j = 1,jm
       do i = 1,im
          if( cldtmp(i,j).gt.0.0 ) then
-         qdiag(i,j,icldtmp) = qdiag(i,j,icldtmp) + 
+         qdiag(i,j,icldtmp,bi,bj) = qdiag(i,j,icldtmp,bi,bj) + 
      .                       cldtmp(i,j)*totcld(i,j)/tmpimjm(i,j)
-         qdiag(i,j,icttcnt) = qdiag(i,j,icttcnt) + totcld(i,j)
+         qdiag(i,j,icttcnt,bi,bj) = qdiag(i,j,icttcnt,bi,bj) + 
+     .                                                totcld(i,j)
          endif
       enddo
       enddo
@@ -1113,9 +1125,10 @@ C **********************************************************************
       do j = 1,jm
       do i = 1,im
          if( cldprs(i,j).gt.0.0 ) then
-         qdiag(i,j,icldprs) = qdiag(i,j,icldprs) + 
+         qdiag(i,j,icldprs,bi,bj) = qdiag(i,j,icldprs,bi,bj) + 
      .                       cldprs(i,j)*totcld(i,j)/tmpimjm(i,j)
-         qdiag(i,j,ictpcnt) = qdiag(i,j,ictpcnt) + totcld(i,j)
+         qdiag(i,j,ictpcnt,bi,bj) = qdiag(i,j,ictpcnt,bi,bj) + 
+     .                                                totcld(i,j)
          endif
       enddo
       enddo
