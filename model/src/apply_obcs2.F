@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs2.F,v 1.3 1999/03/22 16:46:58 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs2.F,v 1.4 1999/05/24 15:42:22 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
+#ifdef ALLOW_OBCS
 C     /==========================================================\
 C     | S/R APPLY_OBCS                                           |
 C     | o Calculate the gradient of the surface pressure         |
@@ -75,3 +76,4 @@ C Western boundary
 
       RETURN
       END
+#endif

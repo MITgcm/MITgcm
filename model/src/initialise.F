@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.11 1999/05/18 18:01:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.12 1999/05/24 15:42:23 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -37,8 +37,10 @@ C     an input file called data.
       CALL INI_PARMS(  myThid )
       _BARRIER
 
+#ifdef ALLOW_OBCS
 C--   Open boundaries positions
       CALL INI_OBCS( myThid )
+#endif
       _BARRIER
 
 C--   Set model grid.

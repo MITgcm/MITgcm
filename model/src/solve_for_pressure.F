@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.10 1999/05/24 14:15:15 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.11 1999/05/24 15:42:23 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -20,7 +20,9 @@ C     == Global variables
 #ifdef ALLOW_NONHYDROSTATIC
 #include "CG3D.h"
 #include "GW.h"
+#ifdef ALLOW_OBCS
 #include "OBCS.h"
+#endif
 #include "GRID.h"
 #endif
 

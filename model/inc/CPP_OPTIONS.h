@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.9 1998/12/15 21:01:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.10 1999/05/24 15:42:22 adcroft Exp $
 C
 
 C 
@@ -9,6 +9,9 @@ C
 C o Include/exclude code for C-D grid method of integrating the 
 C   coriolis terms
 #define  INCLUDE_CD_CODE
+
+C o Include/exclude code for open-boundary conditions
+#undef   ALLOW_OBCS
 
 C o Include/exclude diagnostics package interface code
 #define  INCLUDE_DIAGNOSTICS_INTERFACE_CODE

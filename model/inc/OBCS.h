@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/Attic/OBCS.h,v 1.2 1999/03/22 16:46:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/Attic/OBCS.h,v 1.3 1999/05/24 15:42:22 adcroft Exp $
 C
 
+#ifdef ALLOW_OBCS
 C--   COMMON /GRID_OB/ Open boudary related stuff
 C     OBNu is the U value imposed at the Northern OB
 C     OBNv is the V value imposed at the Northern OB
@@ -43,3 +44,5 @@ C
       _RS OBEw (1-Olx:sNx+Olx,Nr,nSx,nSy)
       _RS OBWw (1-Oly:sNy+Oly,Nr,nSx,nSy)
 #endif /* ALLOW_NONHYDROSTATIC */
+
+#endif

@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/set_obcs.F,v 1.4 1999/05/18 17:55:41 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/set_obcs.F,v 1.5 1999/05/24 15:42:23 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
+#ifdef ALLOW_OBCS
 CStartOfInterface
       SUBROUTINE SET_OBCS( myCurrentTime, myThid )
 C     /==========================================================\
@@ -150,3 +151,4 @@ C         Outgoing
 C
       RETURN
       END
+#endif

@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_obcs.F,v 1.3 1999/03/22 16:46:58 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_obcs.F,v 1.4 1999/05/24 15:42:23 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
+#ifdef ALLOW_OBCS
 CStartOfInterface
       SUBROUTINE INI_OBCS( myThid )
 C     /==========================================================\
@@ -103,3 +104,4 @@ c
 
       RETURN
       END
+#endif

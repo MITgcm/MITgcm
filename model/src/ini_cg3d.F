@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.3 1999/05/24 15:15:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.4 1999/05/24 15:42:23 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -20,7 +20,9 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "CG3D.h"
+#ifdef ALLOW_OBCS
 #include "OBCS.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
@@ -98,6 +100,7 @@ caja &     +drF(K-1)*_hFacC(i,j,k-1,bi,bj)*0.5
            myNorm = MAX(ABS(aV3d(I,J,K,bi,bj)),myNorm)
           ENDDO
          ENDDO
+#ifdef ALLOW_OBCS
          IF (openBoundaries) THEN
           DO I=1,sNx
            IF (OB_Jn(I,bi,bj).NE.0) THEN
@@ -128,6 +131,7 @@ caja &     +drF(K-1)*_hFacC(i,j,k-1,bi,bj)*0.5
            ENDIF
           ENDDO
          ENDIF
+#endif
         ENDDO
        ENDDO
       ENDDO

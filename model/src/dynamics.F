@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.42 1999/05/18 18:01:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.43 1999/05/24 15:42:23 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -258,13 +258,17 @@ C--     Update fields in top level according to tendency terms
         CALL CORRECTION_STEP(
      I       bi,bj,iMin,iMax,jMin,jMax,K,
      I       etaSurfX,etaSurfY,myTime,myThid)
+#ifdef ALLOW_OBCS
         IF (openBoundaries) CALL APPLY_OBCS1( bi, bj, K, myThid )
+#endif
         IF ( .NOT. BOTTOM_LAYER ) THEN
 C--      Update fields in layer below according to tendency terms
          CALL CORRECTION_STEP(
      I        bi,bj,iMin,iMax,jMin,jMax,K+1,
      I        etaSurfX,etaSurfY,myTime,myThid)
+#ifdef ALLOW_OBCS
          IF (openBoundaries) CALL APPLY_OBCS1( bi, bj, K+1, myThid )
+#endif
         ENDIF
 #endif
 C--     Density of 1st level (below W(1)) reference to level 1
@@ -321,7 +325,9 @@ C--       Update fields in layer below according to tendency terms
           CALL CORRECTION_STEP(
      I         bi,bj,iMin,iMax,jMin,jMax,K+1,
      I         etaSurfX,etaSurfY,myTime,myThid)
+#ifdef ALLOW_OBCS
           IF (openBoundaries) CALL APPLY_OBCS1( bi, bj, K+1, myThid )
+#endif
          ENDIF
 #endif
 C--      Density of K level (below W(K)) reference to K level
@@ -458,8 +464,10 @@ C--      Prediction step (step forward all model variables)
          CALL TIMESTEP(
      I       bi,bj,iMin,iMax,jMin,jMax,K,
      I       myThid)
+#ifdef ALLOW_OBCS
 C--      Apply open boundary conditions
          IF (openBoundaries) CALL APPLY_OBCS2( bi, bj, K, myThid )
+#endif
 C--      Freeze water
          IF (allowFreezing)
      &   CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, K, myThid )

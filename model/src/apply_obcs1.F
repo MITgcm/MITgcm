@@ -1,6 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs1.F,v 1.2 1999/03/22 15:54:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs1.F,v 1.3 1999/05/24 15:42:22 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_OBCS
 
 C     /==========================================================\
 C     | S/R APPLY_OBCS                                           |
@@ -77,4 +79,4 @@ C Western boundary
 
       RETURN
       END
-
+#endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.25 1999/05/18 17:36:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.26 1999/05/24 15:42:23 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -20,7 +20,9 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "CG2D.h"
+#ifdef ALLOW_OBCS
 #include "OBCS.h"
+#endif
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
@@ -68,6 +70,7 @@ C     aS2d: integral in Z Ay/dY
           ENDDO
          ENDDO
         ENDDO
+#ifdef ALLOW_OBCS
         IF (openBoundaries) THEN
          DO I=1,sNx
           IF (OB_Jn(I,bi,bj).NE.0) aS2d(I,OB_Jn(I,bi,bj),bi,bj)=0.
@@ -82,6 +85,7 @@ C     aS2d: integral in Z Ay/dY
           IF (OB_Iw(J,bi,bj).NE.0) aW2d(OB_Iw(J,bi,bj),J,bi,bj)=0.
          ENDDO
         ENDIF
+#endif
         DO J=1,sNy
          DO I=1,sNx
           myNorm = MAX(ABS(aW2d(I,J,bi,bj)),myNorm)
