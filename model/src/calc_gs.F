@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.13 1998/08/21 12:29:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.14 1998/08/22 17:51:07 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -73,9 +73,9 @@ C     myThid - Instance number for this innvocation of CALC_GT
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
-      _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
-      _RL KappaRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL KappaRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -240,7 +240,7 @@ C           they are not algorithmically correct. These points
 C           are not used.
       DO j=jMin,jMax
        DO i=iMin,iMax
-#define _recip_VolS(i,j,k,bi,bj) _recip_hFacC(i,j,k,bi,bj)*recip_dzF(k)/_rA(i,j,bi,bj)
+#define _recip_VolS(i,j,k,bi,bj) _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)/_rA(i,j,bi,bj)
         gS(i,j,k,bi,bj)=
      &   -_recip_VolS(i,j,k,bi,bj)
      &   *(

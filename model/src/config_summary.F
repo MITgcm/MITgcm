@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.12 1998/08/19 14:20:27 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.13 1998/08/22 17:51:07 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -36,7 +36,7 @@ C     == Local variables ==
       INTEGER                  bi, bj
       REAL                     xcoord(Nx)
       REAL                     ycoord(Ny)
-      REAL                     zcoord(Nz)
+      REAL                     rcoord(Nr)
 
 
       _BARRIER
@@ -58,9 +58,9 @@ C     == Local variables ==
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      CALL WRITE_1D_R8( tRef, Nz, INDEX_K,'tRef =',
+      CALL WRITE_1D_R8( tRef, Nr, INDEX_K,'tRef =',
      &'   /* Reference temperature profile ( oC or oK ) */')
-      CALL WRITE_1D_R8( sRef, Nz, INDEX_K,'sRef =',
+      CALL WRITE_1D_R8( sRef, Nr, INDEX_K,'sRef =',
      &'   /* Reference salinity profile ( ppt ) */')
       CALL WRITE_1D_R8( viscAh, 1, INDEX_NONE,'viscAh =',
      &'   /* Lateral eddy viscosity ( m^2/s ) */')
@@ -183,7 +183,7 @@ C     == Local variables ==
      &'   /* Cartesian coordinates flag ( True / False ) */')
       CALL WRITE_1D_L( usingSphericalPolarGrid,1, INDEX_NONE,'usingSphericalPolarGrid =',
      &'   /* Spherical coordinates flag ( True / False ) */')
-      CALL WRITE_1D_R8( delZ,Nz, INDEX_K,'delZ = ',
+      CALL WRITE_1D_R8( delZ,Nr, INDEX_K,'delZ = ',
      &'   /* W spacing ( m ) */')
       CALL WRITE_1D_R8( delX, Nx, INDEX_I,'delX = ',
      &'   /* U spacing ( m - cartesian, degrees - spherical ) */')
@@ -209,11 +209,11 @@ C     == Local variables ==
       ENDDO
       CALL WRITE_1D_R8( ycoord, sNy*nSy, INDEX_J,'ycoord = ',
      &'   /* P-point Y coordinate (  m - cartesian, degrees - spherical ) */')
-      DO K=1,Nz
-       zcoord(K) = zc(K)
+      DO K=1,Nr
+       rcoord(K) = rc(K)
       ENDDO
-      CALL WRITE_1D_R8( zcoord, Nz, INDEX_K,'zcoord = ',
-     &'   /* P-point Z coordinate (  m ) */')
+      CALL WRITE_1D_R8( rcoord, Nr, INDEX_K,'rcoord = ',
+     &'   /* P-point R coordinate (  units of r ) */')
 
 
 

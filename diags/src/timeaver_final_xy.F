@@ -17,7 +17,7 @@ C     timeave - time averaged
 C     fldtave - time averaged Field
       INTEGER bi, bj, myThid
       _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      REAL timeave(Nz,nSx,nSy)
+      REAL timeave(Nr,nSx,nSy)
 
 CEndofinterface
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.5 1998/06/15 05:13:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.6 1998/08/22 17:51:08 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -51,7 +51,7 @@ C     I,J,K
 C--    Initialise salinity field to the vertical reference profile
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO K=1,Nz
+         DO K=1,Nr
           DO J=1,sNy
            DO I=1,sNx
             salt(I,J,K,bi,bj) = sRef(K)
@@ -68,7 +68,7 @@ C--    Initialise salinity field to the vertical reference profile
 C     Set initial tendency terms
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1,sNy
           DO I=1,sNx
            gs   (I,J,K,bi,bj) = 0. _d 0
@@ -83,7 +83,7 @@ C
       _EXCH_XYZ_R8(gs , myThid )
       _EXCH_XYZ_R8(gsNM1 , myThid )
 
-      CALL PLOT_FIELD_XYZRL( salt, 'Initial Salinity' , Nz, 1, myThid )
+      CALL PLOT_FIELD_XYZRL( salt, 'Initial Salinity' , Nr, 1, myThid )
 
       RETURN
       END

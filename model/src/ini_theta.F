@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.6 1998/06/15 05:13:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.7 1998/08/22 17:51:08 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -55,7 +55,7 @@ C--    Initialise temperature field to a circular patch.
        rad = MIN(Ny/8,Nx/8)
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO K=1,Nz
+         DO K=1,Nr
           DO J=1,sNy
            DO I=1,sNx
             theta(I,J,K,bi,bj) = 0. _d 0
@@ -74,7 +74,7 @@ C--    Example 2
 C--    Initialise temperature field to the vertical reference profile
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO K=1,Nz
+         DO K=1,Nr
           DO J=1,sNy
            DO I=1,sNx
             theta(I,J,K,bi,bj) = tRef(K)
@@ -91,7 +91,7 @@ C--    Initialise temperature field to the vertical reference profile
 C     Set initial tendency terms
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1,sNy
           DO I=1,sNx
            gt   (I,J,K,bi,bj) = 0. _d 0
@@ -106,7 +106,7 @@ C
       _EXCH_XYZ_R8(gt , myThid )
       _EXCH_XYZ_R8(gtNM1 , myThid )
 
-      CALL PLOT_FIELD_XYZRL( theta, 'Initial Temperature' , Nz, 1, myThid )
+      CALL PLOT_FIELD_XYZRL( theta, 'Initial Temperature' , Nr, 1, myThid )
 
       RETURN
       END

@@ -16,8 +16,8 @@ C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
 C     fld  - Input Field
 C     fldtave - time averaged Field
-      _RL fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
+      _RL fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       REAL deltaT
       INTEGER bi, bj, K, myThid
 
@@ -29,7 +29,7 @@ C     i,j,k,bi,bj  - Loop counters
  
 C     DO bj = myByLo(myThid), myByHi(myThid)
 C      DO bi = myBxLo(myThid), myBxHi(myThid)
-C       DO k=1,Nz
+C       DO k=1,Nr
          DO j=1,sNy
           DO i=1,sNx
              fldtave(i,j,k,bi,bj)=

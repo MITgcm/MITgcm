@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.24 1998/08/21 12:29:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.25 1998/08/22 17:51:06 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -184,10 +184,6 @@ C           For now I have introduced a parameter cg2dpcOffDFac which
 C           defaults to 0.51 but can be set at runtime.
 C     delP      - Vertical grid spacing ( Pa ).
 C     delZ      - Vertical grid spacing ( m  ).
-C     rkFac     - Vertical coordinate to vertical index orientation.
-C                 ( 1 same orientation, -1 opposite orientation )
-C                 ( vertical coord == m  -> rkFac = -1 )
-C                 ( vertical coord == Pa -> rkFac =  1 )
 C     delR      - Vertical grid spacing ( units of r ).
 C     delX      - Separation between cell faces (m) or (deg), depending
 C     delY        on input flags.
@@ -201,7 +197,7 @@ C     thetaMin  - Longitude of western most cell face (this
 C                 is an "inert" parameter but it is included
 C                 to make geographical references simple.)
 C     rSphere   - Radius of sphere for a spherical polar grid ( m ).
-C     rRSphere  - Reciprocal radius of sphere for a spherical polar grid ( m ).
+C     recip_RSphere  - Reciprocal radius of sphere ( m ).
 C     f0        - Reference coriolis parameter ( 1/s )
 C                 ( Southern edge f for beta plane )
 C     beta      - df/dy ( s^-1.m^-1 )
@@ -280,13 +276,13 @@ C                           number times externForcingPeriod)
       COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, 
      & delP, delZ, delR, delX, delY, 
      & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, phiMin, 
-     & thetaMin, rSphere, rRSphere, f0, fCori, beta, 
+     & thetaMin, rSphere, recip_RSphere, f0, fCori, beta, 
      & viscAh,  viscAz,  viscA4,  viscAr,
      & diffKhT, diffKzT, diffK4T, diffKrT,
-     & diffKhS, diffKzS, diffK4S, diffKsT,
+     & diffKhS, diffKzS, diffK4S, diffKrS,
      & delT, tauCD, rCD, freeSurfFac, hFacMin, hFacMinDz,
      & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,GMmaxval,
-     & gravity, gBaro, rhonil, tRef, sRef,
+     & gravity, gBaro, rhonil, recip_rhonil, rhoConst, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cAdjFreq, omega, tauThetaClimRelax, lambdaThetaClimRelax,
@@ -294,7 +290,9 @@ C                           number times externForcingPeriod)
      & externForcingCycle, externForcingPeriod
       _RL cg2dTargetResidual
       _RL cg2dpcOffDFac
-      _RL delR(Nz)
+      _RL delZ(Nr)
+      _RL delP(Nr)
+      _RL delR(Nr)
       _RL delX(Nx)
       _RL delY(Ny)
       _RL deltaT
@@ -305,7 +303,7 @@ C                           number times externForcingPeriod)
       _RL phiMin
       _RL thetaMin
       _RL rSphere
-      _RL rRSphere
+      _RL recip_RSphere
       _RL f0
       _RL freeSurfFac
       _RL hFacMin
@@ -313,11 +311,14 @@ C                           number times externForcingPeriod)
       _RL beta
       _RL viscAh
       _RL viscAz
+      _RL viscAr
       _RL viscA4 
       _RL diffKhT 
+      _RL diffKrT
       _RL diffKzT
       _RL diffK4T 
       _RL diffKhS 
+      _RL diffKrS
       _RL diffKzS
       _RL diffK4S 
       _RL delt
@@ -332,8 +333,10 @@ C                           number times externForcingPeriod)
       _RL gravity
       _RL gBaro
       _RL rhonil
-      _RL tRef(Nz)
-      _RL sRef(Nz)
+      _RL recip_rhonil
+      _RL rhoConst
+      _RL tRef(Nr)
+      _RL sRef(Nr)
       _RS Fcori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL startTime
       _RL endTime
@@ -363,7 +366,7 @@ C                           number times externForcingPeriod)
 
 C Equation of State (polynomial coeffients)
       COMMON /PARM_EOS_NL/ eosC,eosSig0,eosRefT,eosRefS
-      _RL eosC(9,Nz+1),eosSig0(Nz+1),eosRefT(Nz+1),eosRefS(Nz+1)
+      _RL eosC(9,Nr+1),eosSig0(Nr+1),eosRefT(Nr+1),eosRefS(Nr+1)
 C Linear equation of state
 C     tAlpha    - Linear EOS thermal expansion coefficient ( 1/degree ).
 C     sBeta     - Linear EOS haline contraction coefficient.

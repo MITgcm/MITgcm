@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch.F,v 1.5 1998/06/22 16:24:51 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch.F,v 1.6 1998/08/22 17:51:06 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -414,7 +414,7 @@ C     === Global data ===
 C     === Routine arguments ===
 C     phi    - Array who's overlap regions are to be exchanged
 C     myThid - My thread id.
-      Real*4 phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      Real*4 phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       INTEGER myThid
 CEndOfInterface
 
@@ -654,7 +654,7 @@ C--   x-axis exchanges
        bW = bE-1
        IF ( bW .LT. 1 ) bW = nSx
        DO bj=myByLo(myThid),myByHi(myThid)
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1-OLy,sNy+OLy
           DO I=1,OLx
            phi(sNx+I,J,K,bW,bj)=phi(  1+I-1,J,K,bE,bj)
@@ -667,7 +667,7 @@ C--   x-axis exchanges
       DO bE=myBxLo(myThid)+1,myBxHi(myThid)
        bW = bE-1
        DO bj=myByLo(myThid),myByHi(myThid)
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1-OLy,sNy+OLy
           DO I=1,OLx
            phi(sNx+I,J,K,bW,bj)=phi(  1+I-1,J,K,bE,bj)
@@ -689,7 +689,7 @@ C--   y-axis exchanges
        bS = bN - 1
        IF ( bS .LT. 1 ) bS = nSy
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1,OLy
           DO I=1-OLx,sNx+OLx
            phi(I,1-J    ,K,bi,bN)=phi(I,sNy-J+1,K,bi,bS)
@@ -702,7 +702,7 @@ C--   y-axis exchanges
       DO bN=myByLo(myThid)+1,myByHi(myThid)
        bS = bN - 1
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1,OLy
           DO I=1-OLx,sNx+OLx
            phi(I,1-J    ,K,bi,bN)=phi(I,sNy-J+1,K,bi,bS)
@@ -1094,7 +1094,7 @@ C     === Global data ===
 C     === Routine arguments ===
 C     phi    - Array who's overlap regions are to be exchanged
 C     myThid - My thread id.
-      Real*8 phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      Real*8 phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       INTEGER myThid
 CEndOfInterface
 
@@ -1351,7 +1351,7 @@ C--   x-axis exchanges
        bW = bE-1
        IF ( bW .LT. 1 ) bW = nSx
        DO bj=myByLo(myThid),myByHi(myThid)
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1-OLy,sNy+OLy
           DO I=1,OLx
            phi(sNx+I,J,K,bW,bj)=phi(  1+I-1,J,K,bE,bj)
@@ -1364,7 +1364,7 @@ C--   x-axis exchanges
       DO bE=myBxLo(myThid)+1,myBxHi(myThid)
        bW = bE-1
        DO bj=myByLo(myThid),myByHi(myThid)
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1-OLy,sNy+OLy
           DO I=1,OLx
            phi(sNx+I,J,K,bW,bj)=phi(  1+I-1,J,K,bE,bj)
@@ -1386,7 +1386,7 @@ C--   y-axis exchanges
        bS = bN - 1
        IF ( bS .LT. 1 ) bS = nSy
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1,OLy
           DO I=1-OLx,sNx+OLx
            phi(I,1-J    ,K,bi,bN)=phi(I,sNy-J+1,K,bi,bS)
@@ -1399,7 +1399,7 @@ C--   y-axis exchanges
       DO bN=myByLo(myThid)+1,myByHi(myThid)
        bS = bN - 1
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1,OLy
           DO I=1-OLx,sNx+OLx
            phi(I,1-J    ,K,bi,bN)=phi(I,sNy-J+1,K,bi,bS)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.20 1998/08/21 12:29:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.21 1998/08/22 17:51:07 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -24,7 +24,7 @@ C     \==========================================================/
       SUBROUTINE CALC_MOM_RHS( 
      I        bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I        xA,yA,uTrans,vTrans,rTrans,rVel,maskC,
-     I        pH,
+     I        phi_hyd,
      U        aFArg,vFArg,cFArg,mTArg,pFArg,
      U        fZonArg, fMerArg, fVerU, fVerV,
      I        myThid)
@@ -54,12 +54,12 @@ C     uTrans  - Zonal volume transport through cell face
 C     vTrans  - Meridional volume transport through cell face
 C     rTrans  - Vertical volume transport through cell upper face
 C     rVel    - Vertical velocities at upper (kUp) and lower cell faces (kDown)
-C     pH - Hydrostatic pressure
+C     phi_hyd - Hydrostatic pressure
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
 C                                      results will be set.
 C     kUp, kDown, kM1                - Index for upper and lower layers.
 C     myThid - Instance number for this innvocation of CALC_MOM_RHS
-      _RL      pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL      phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RS      xA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS      yA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -108,8 +108,8 @@ C                        ( set according to free-surface condition ).
 C     hFacROpen        - Lopped cell factos used tohold fraction of open
 C     hFacRClosed        and closed cell wall.
       _RL  rVelMaskOverride
-      _RL  hFacROpen
-      _RL  hFacRClosed
+      _RS  hFacROpen
+      _RS  hFacRClosed
 C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  uDudxFac
       _RL  AhDudxFac
@@ -153,8 +153,8 @@ C     o U momentum equation
       AhDudxFac = vfFacMom
       vDudyFac  = afFacMom
       AhDudyFac = vfFacMom
-      wDudzFac  = afFacMom
-      AzDudzFac = vfFacMom
+      rVelDudrFac  = afFacMom
+      ArDudrFac = vfFacMom
       mTFacU    = mtFacMom
       fuFac     = cfFacMom
       phxFac    = pfFacMom
@@ -164,8 +164,8 @@ C     o V momentum equation
       AhDvdxFac = vfFacMom
       vDvdyFac  = afFacMom
       AhDvdyFac = vfFacMom
-      wDvdzFac  = afFacMom
-      AzDvdzFac = vfFacMom
+      rVelDvdrFac  = afFacMom
+      ArDvdrFac = vfFacMom
       mTFacV    = mtFacMom
       fvFac     = cfFacMom
       phyFac    = pfFacMom
@@ -217,21 +217,21 @@ C       Note!!!! omitted.
 C     Eddy component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-        hFacZOpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
-        hFacZOpen=min(_hFacS(i,j,k,bi,bj),hFacZOpen)
-        hFacZOpen=min(_hFacS(i-1,j,k,bi,bj),hFacZOpen)
-        hFacZClosed= 1. _d 0 - hFacZopen
-        hFacZClosed= 1. _d 0
+        hFacROpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
+        hFacROpen=min(_hFacS(i,j,k,bi,bj),hFacROpen)
+        hFacROpen=min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
+        hFacRClosed= 1. _d 0 - hFacRopen
+        hFacRClosed= 1. _d 0
 #ifdef NO_LATERAL_SLIP
 #define _YAatUBY(i,j,k,bi,bj) ( YA(i,j)+YA(i-1,j) )* 0.5 _d 0
         vF(i,j) =
-     &  -viscAh*_YAatUBY(i,j,k,bi,bj)*hFacZClosed
+     &  -viscAh*_YAatUBY(i,j,k,bi,bj)*hFacRClosed
      &   *( (2.-_maskW(i,j-1,k,bi,bj))*_maskW(i,j,k,bi,bj)*uVel(i,j  ,k,bi,bj)
      &     -(2.-_maskW(i,j,k,bi,bj))*_maskW(i,j-1,k,bi,bj)*uVel(i,j-1,k,bi,bj)
      &    )*_recip_dyU(i,j,bi,bj)
 #else
         vF(i,j) =
-     &  -viscAh*_dxV(i,j,bi,bj)*drF(k)*hFacZOpen
+     &  -viscAh*_dxV(i,j,bi,bj)*drF(k)*hFacROpen
      &   *( uVel(i,j  ,k,bi,bj)-uVel(i,j-1,k,bi,bj) )
      &   *_recip_dyU(i,j,bi,bj)
 #endif
@@ -284,13 +284,13 @@ C     Eddy component of vertical flux
       ENDDO
 C     Bottom boundary condition
 #ifdef NO_BOTTOM_SLIP
-      IF ( k .EQ. nZ ) THEN
+      IF ( k .EQ. Nr ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
 #define _RAatU(i,j,k,bi,bj) ( rA(i,j,bi,bj) + rA(i-1,j,bi,bj) ) * 0.5 _d 0
          vf(i,j) =
      &    -viscAr*_RAatU(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
-     &    *uVel(i,j,k,bi,bj)*recip_Dzr(k)*2. _d 0*rkFac
+     &    *uVel(i,j,k,bi,bj)*recip_drF(k)*2. _d 0*rkFac
         ENDDO
        ENDDO
        DO j=jMin,jMax
@@ -313,7 +313,8 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
       DO j=jMin,jMax
        DO i=iMin,iMax
         gU(i,j,k,bi,bj) =
-     &   -_rhFacW(i,j,k,bi,bj)*_recip_drF(k)/( 0.5 _d 0 *(_rA(i,j,bi,bj)+_rA(i-1,j,bi,bj)) )
+     &   -_recip_hFacW(i,j,k,bi,bj)*recip_drF(k)/
+     &    ( 0.5 _d 0 *(_rA(i,j,bi,bj)+_rA(i-1,j,bi,bj)) )
      &  *(fZon(i,j  )          - fZon(i-1,j)
      &   +fMer(i,j+1)          - fMer(i  ,j)
      &   +fVerU(i,j,kUp)*rkFac - fVerU(i,j,kDown)*rkFac
@@ -399,7 +400,7 @@ CcnhNeedsMacro
      &   )*_recip_dxV(i,j,bi,bj)
 #else
         vf(i,j) =
-     &  -viscAh*_dyU(i,j,bi,bj)*drF(K)*hFacZOpen*
+     &  -viscAh*_dyU(i,j,bi,bj)*drF(K)*hFacROpen*
      &  (vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj))
      &  *_recip_dxV(i,j,bi,bj)
 #endif
@@ -478,13 +479,13 @@ C     Eddy component of vertical flux
       ENDDO
 C     Bottom level boundary condition
 #ifdef NO_BOTTOM_SLIP
-      IF ( k .EQ. nZ ) THEN
+      IF ( k .EQ. Nr ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
 #define _RAatV(i,j,k,bi,bj) ( _rA(i,j,bi,bj) + _rA(i,j-1,bi,bj) ) * 0.5 _d 0
          vf(i,j) =
      &    -viscAr*_RAatV(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
-     &    *rVel(i,j,k,bi,bj)*recip_drF(k)*2. _d 0
+     &    *vVel(i,j,k,bi,bj)*recip_drF(k)*2. _d 0
         ENDDO
        ENDDO
        DO j=jMin,jMax
@@ -498,7 +499,7 @@ C     Bottom level boundary condition
 C---  Hydorstatic term (-1/rho . dp/dy )
       DO j=jMin,jMax
        DO i=iMin,iMax
-        pf(i,j) = - _rdyC(i,j,bi,bj)
+        pf(i,j) = - recip_dyC(i,j,bi,bj)
      &   *(phi_hyd(i,j,k)-phi_hyd(i,j-1,k))/rhoConst
        ENDDO
       ENDDO
@@ -507,7 +508,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
       DO j=jMin,jMax
        DO i=iMin,iMax
         gV(i,j,k,bi,bj) =
-     &   -_rhFacS(i,j,k,bi,bj)*recip_drF(k)/
+     &   -recip_hFacS(i,j,k,bi,bj)*recip_drF(k)/
      &     ( 0.5 _d 0 *( _rA(i,j,bi,bj)+ _rA(i,j-1,bi,bj)) )
      &  *(fZon(i+1,j)          - fZon(i,j  )
      &   +fMer(i,j  )          - fMer(i,j-1)
@@ -584,7 +585,7 @@ C--   Coriolis with CD scheme allowed
 C     grady(p) + gV
       DO j=jMin,jMax
        DO i=iMin,iMax
-        af(i,j) = -_maskS(i,j,k,bi,bj)*_rdyC(i,j,bi,bj)
+        af(i,j) = -_maskS(i,j,k,bi,bj)*recip_dyC(i,j,bi,bj)
      &            *(pf(i,j)-pf(i,j-1))
      &            +gV(i,j,k,bi,bj)
        ENDDO

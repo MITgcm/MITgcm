@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.1 1998/08/20 20:21:23 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.2 1998/08/22 17:51:07 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -44,7 +44,7 @@ C     Term is the vertical integral of the divergence of the
 C     time tendency terms along with a relaxation term that
 C     pulls div(U) + dh/dt back toward zero.
 
-      IF ( k .EQ. nZ ) THEN
+      IF ( k .EQ. Nr ) THEN
 C      Initialise source term on first pass
        DO j=jMin,jMax
         DO i=iMin,iMax

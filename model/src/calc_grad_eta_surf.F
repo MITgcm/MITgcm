@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_grad_eta_surf.F,v 1.2 1998/08/21 12:29:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_grad_eta_surf.F,v 1.3 1998/08/22 17:51:07 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -7,7 +7,7 @@ C     | S/R CALC_GRAD_ETA_SURF                                   |
 C     | o Calculate the gradient of the surface height           |
 C     \==========================================================/
       SUBROUTINE CALC_GRAD_ETA_SURF( bi, bj, iMin, iMax, jMin, jMax,
-     O                       etaX, etaY,
+     O                       etaSurfX, etaSurfY,
      I                       myThid )
       IMPLICIT NONE
 C     == Global variables ==
@@ -38,7 +38,7 @@ C     Zonal term
 C     Meridional term
       DO j=jMin,jMax
        DO i=iMin,iMax
-        etaSurfY(i,j)=_rdyC(i,j,bi,bj)*
+        etaSurfY(i,j)=_recip_dyC(i,j,bi,bj)*
      &   (cg2d_x(i,j,bi,bj)-cg2d_x(i,j-1,bi,bj))
        ENDDO
       ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.25 1998/08/19 13:37:52 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.26 1998/08/22 17:51:08 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -149,7 +149,7 @@ C--   Read settings from model parameter file "data".
       REWIND(iUnit)
 
 C--   Set default "physical" parameters
-      DO K =1,Nz
+      DO K =1,Nr
        tRef(K) = 30.D0 - FLOAT(K)
       ENDDO
       gravity =   9.81 D0
@@ -407,7 +407,7 @@ C       code is being compiled
 C--   Grid parameters
 C     In cartesian coords distances are in metres
       usingCartesianGrid = .TRUE.
-      DO K =1,Nz
+      DO K =1,Nr
        delZ(K) = 100. _d 0
       ENDDO
       dxSpacing = 20. _d 0 * 1000. _d 0
@@ -423,7 +423,7 @@ C     In spherical polar distances are in degrees
       phiMin    = -5.0
       thetaMin  = 0.
       rSphere   = 6370. * 1. _d 3
-      rRsphere  = 1. _d 0/rSphere
+      recip_rSphere  = 1. _d 0/rSphere
       IF ( usingSphericalPolarGrid ) THEN
        dxSpacing = 1.
        dySpacing = 1.
@@ -455,22 +455,22 @@ C     In spherical polar distances are in degrees
   10  CONTINUE
 
       IF ( rSphere .NE. 0 ) THEN
-       rRSphere = 1. _d 0/rSphere
+       recip_rSphere = 1. _d 0/rSphere
       ELSE
-       rRSphere = 0.
+       recip_rSphere = 0.
       ENDIF
 
 C     Initialize EOS coefficients (3rd order polynomial)
       IF (eostype.eq.'POLY3') THEN
        OPEN(37,FILE='POLY3.COEFFS',STATUS='OLD',FORM='FORMATTED')
        READ(37,*) I
-       IF (I.NE.Nz) THEN
+       IF (I.NE.Nr) THEN
         WRITE(0,*) 'ini_parms: attempt to read POLY3.COEFFS failed'
         WRITE(0,*) '           because bad # of levels in data'
         STOP 'Bad data in POLY3.COEFFS'
        ENDIF
-       READ(37,*) (eosRefT(K),eosRefS(K),eosSig0(K),K=1,Nz)
-       DO K=1,Nz
+       READ(37,*) (eosRefT(K),eosRefS(K),eosSig0(K),K=1,Nr)
+       DO K=1,Nr
         READ(37,*) (eosC(I,K),I=1,9)
         write(0,'(i3,13f8.3)') K,eosRefT(K),eosRefS(K),eosSig0(K),
      &                (eosC(I,K),I=1,9)

@@ -47,7 +47,7 @@ C     Final Time Averages and Dump Files if needed
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO k=1,Nz
+         DO k=1,Nr
           CALL TIMEAVER_FINAL_XYZ(thetatave,timeave,bi,bj,K,myThid)
           CALL TIMEAVER_FINAL_XYZ(salttave,timeave,bi,bj,K,myThid)
           CALL TIMEAVER_FINAL_XYZ(uVeltave,timeave,bi,bj,K,myThid)
@@ -107,7 +107,7 @@ C--     Check for IO errors
 
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO k=1,Nz
+         DO k=1,Nr
 
 C      Reset the averages to zero
           CALL TIMEAVER_INI_XYZ(thetatave, bi,bj,K,myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.30 1998/08/20 20:05:01 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.31 1998/08/22 17:51:08 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -62,9 +62,9 @@ C                                      variable.
 C     rhoK, rhoKM1   - Density at current level, level above and level below.
 C     rhoKP1                                                                  
 C     buoyK, buoyKM1 - Buoyancy at current level and level above.
-C     phiHyd         - Hydrostatic part of the potential phi.
-C                      In z coords phiHyd is the hydrostatic pressure anomaly
-C                      In p coords phiHyd is the geopotential surface height 
+C     phiHyd         - Hydrostatic part of the potential phiHydi.
+C                      In z coords phiHydiHyd is the hydrostatic pressure anomaly
+C                      In p coords phiHydiHyd is the geopotential surface height 
 C                      anomaly.
 C     etaSurfX,      - Holds surface elevation gradient in X and Y.
 C     etaSurfY
@@ -98,7 +98,7 @@ C                      into fVerTerm
       _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerU   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL phiHyd  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL phiHyd  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL rhokm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhokp1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhok    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -107,12 +107,12 @@ C                      into fVerTerm
       _RL rhotmp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL etaSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL etaSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL K13     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
-      _RL K23     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
-      _RL K33     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL K13     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL K23     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL K33     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KapGM   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KappaZT (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
-      _RL KappaZS (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
+      _RL KappaRT (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL KappaRS (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 
       INTEGER iMin, iMax
       INTEGER jMin, jMax
@@ -134,7 +134,7 @@ C
 C       "Calculation of Gs"
 C       ===================
 C       This is where all the accelerations and tendencies (ie.
-C       physics, parameterizations etc...) are calculated
+C       phiHydysics, parameterizations etc...) are calculated
 C         rVel = sum_r ( div. u[n] )
 C         rho = rho ( theta[n], salt[n] )
 C         b   = b(rho, theta)
@@ -184,12 +184,13 @@ C     uninitialised but inert locations.
         pTerm(i,j)   = 0. _d 0
         fZon(i,j)    = 0. _d 0
         fMer(i,j)    = 0. _d 0
-        DO K=1,nZ
-         pH (i,j,k)  = 0. _d 0
+        DO K=1,Nr
+         phiHyd (i,j,k)  = 0. _d 0
          K13(i,j,k)  = 0. _d 0
          K23(i,j,k)  = 0. _d 0
          K33(i,j,k)  = 0. _d 0
-         KappaZT(i,j,k) = 0. _d 0
+         KappaRT(i,j,k) = 0. _d 0
+         KappaRS(i,j,k) = 0. _d 0
         ENDDO
         rhoKM1 (i,j) = 0. _d 0
         rhok   (i,j) = 0. _d 0
@@ -232,7 +233,7 @@ C--     Set up work arrays that need valid initial values
         jMax = sNy+OLy
 
         K = 1
-        BOTTOM_LAYER = K .EQ. Nz
+        BOTTOM_LAYER = K .EQ. Nr
 
 C--     Calculate gradient of surface pressure
         CALL CALC_GRAD_ETA_SURF(
@@ -276,14 +277,14 @@ C--     Calculate buoyancy
      I      bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,
      O      buoyKm1,
      I      myThid )
-C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
+C--     Integrate hydrostatic balance for phiHyd with BC of phiHyd(z=0)=0
         CALL CALC_PHI_HYD(
      I      bi,bj,iMin,iMax,jMin,jMax,K,buoyKm1,buoyKm1,
      U      phiHyd,
      I      myThid )
 
-        DO K=2,Nz
-         BOTTOM_LAYER = K .EQ. Nz
+        DO K=2,Nr
+         BOTTOM_LAYER = K .EQ. Nr
          IF ( .NOT. BOTTOM_LAYER ) THEN
 C--       Update fields in layer below according to tendency terms
           CALL CORRECTION_STEP(
@@ -316,7 +317,7 @@ C--      Calculate buoyancy
      I       bi,bj,iMin,iMax,jMin,jMax,K,rhoK,
      O       buoyK,
      I       myThid )
-C--      Integrate hydrostatic balance for pH with BC of pH(z=0)=0
+C--      Integrate hydrostatic balance for phiHyd with BC of phiHyd(z=0)=0
          CALL CALC_PHI_HYD(
      I        bi,bj,iMin,iMax,jMin,jMax,K,buoyKm1,buoyK,
      U        phiHyd,
@@ -339,7 +340,7 @@ C--      Calculate iso-neutral slopes for the GM/Redi parameterisation
          ENDDO
         ENDDO ! K
 
-        DO K = Nz, 1, -1
+        DO K = Nr, 1, -1
 
          kM1  =max(1,k-1)   ! Points to level above k (=k-1)
          kUp  =1+MOD(k+1,2) ! Cycles through 1,2 to point to layer above
@@ -358,7 +359,7 @@ C--      Calculate the total vertical diffusivity
          CALL CALC_DIFFUSIVITY(
      I        bi,bj,iMin,iMax,jMin,jMax,K,
      I        maskC,maskUp,KapGM,K33,
-     O        KappaZT,KappaZS,
+     O        KappaRT,KappaRS,
      I        myThid)
 C--      Calculate accelerations in the momentum equations
          IF ( momStepping ) THEN
@@ -392,7 +393,7 @@ C--      Prediction step (step forward all model variables)
      I       bi,bj,iMin,iMax,jMin,jMax,K,
      I       myThid)
 C--      Diagnose barotropic divergence of predicted fields
-         CALL CALC_DIV_G(
+         CALL CALC_DIV_GHAT(
      I       bi,bj,iMin,iMax,jMin,jMax,K,
      I       xA,yA,
      I       myThid)
@@ -412,7 +413,7 @@ C--      Cumulative diagnostic calculations (ie. time-averaging)
 C--     Implicit diffusion
         IF (implicitDiffusion) THEN
          CALL IMPLDIFF( bi, bj, iMin, iMax, jMin, jMax,
-     I                  KappaZT,KappaZS,
+     I                  KappaRT,KappaRS,
      I                  myThid )
         ENDIF
  
@@ -445,8 +446,8 @@ C     write(0,*) 'dynamics: gS ',minval(gS(1:sNx,1:sNy,:,:,:)),
 C    &                           maxval(gS(1:sNx,1:sNy,:,:,:))
 C     write(0,*) 'dynamics: S  ',minval(salt(1:sNx,1:sNy,:,:,:)),
 C    &                           maxval(salt(1:sNx,1:sNy,:,:,:))
-C     write(0,*) 'dynamics: pH ',minval(pH/(Gravity*Rhonil),mask=ph.NE.0.),
-C    &                           maxval(pH/(Gravity*Rhonil))
+C     write(0,*) 'dynamics: phiHyd ',minval(phiHyd/(Gravity*Rhonil),mask=phiHyd.NE.0.),
+C    &                           maxval(phiHyd/(Gravity*Rhonil))
 
       RETURN
       END

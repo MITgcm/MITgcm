@@ -16,7 +16,7 @@ C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
 C     fldtave - time averaged Field
       INTEGER bi, bj, K, myThid
-      _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
+      _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
 CEndofinterface
 
@@ -26,7 +26,7 @@ C     i,j,k,bi,bj  - Loop counters
  
 C     DO bj = myByLo(myThid), myByHi(myThid)
 C      DO bi = myBxLo(myThid), myBxHi(myThid)
-C       DO k=1,Nz
+C       DO k=1,Nr
          DO j=1,sNy
           DO i=1,sNx
              fldtave(i,j,k,bi,bj) = 0. _d 0

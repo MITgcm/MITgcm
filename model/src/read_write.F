@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.10 1998/06/30 17:21:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.11 1998/08/22 17:51:09 cnh Exp $
 #include "CPP_OPTIONS.h"
 
 C--  File read_write.F: Routines to handle mid-level I/O interface.
@@ -524,7 +524,7 @@ C     myIter - Timestep number
 C     myThid - Thread number calling this routine
       CHARACTER*(*) pref
       CHARACTER*(*) suff
-      _RL fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nZ,nSx,nSy)
+      _RL fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myIter
       INTEGER myThid
 
@@ -590,16 +590,16 @@ C--   Open file
 C--   Set local and global data extents
       nXP=sNx*nSx
       nYP=sNy*nSy
-      lFilled = sNx*nSx*nPx * sNy*nSy*nPy * nZ
+      lFilled = sNx*nSx*nPx * sNy*nSy*nPy * Nr
       dimList(1) = nXP*nPx
       dimList(2) = myXGlobalLo
       dimList(3) = myXGlobalLo+nXP-1
       dimList(4) = nYP*nPy
       dimList(5) = myYGlobalLo
       dimList(6) = myYGlobalLo+nYP-1
-      dimList(7) = nZ
+      dimList(7) = Nr
       dimList(8) = 1
-      dimList(9) = nZ
+      dimList(9) = Nr
 
 C--   Read data
       IF   ( readBinaryPrec .EQ. precFloat32 ) THEN
@@ -615,7 +615,7 @@ C     Also regrid it to i,j,k indexing.
       IF   ( readBinaryPrec .EQ. precFloat32 ) THEN
        DO bj=1,nSy
         DO bi=1,nSx
-         DO K=1,nZ
+         DO K=1,Nr
           DO j=1,sNy
            DO i=1,sNx
             iP = (bi-1)*sNx+i
@@ -633,7 +633,7 @@ C     Also regrid it to i,j,k indexing.
       ELSE
        DO bj=1,nSy
         DO bi=1,nSx
-         DO K=1,nZ
+         DO K=1,Nr
           DO j=1,sNy
            DO i=1,sNx
             iP = (bi-1)*sNx+i
@@ -701,7 +701,7 @@ C     myIter - Timestep number
 C     myThid - Thread number calling this routine
       CHARACTER*(*) pref
       CHARACTER*(*) suff
-      _RS fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nZ,nSx,nSy)
+      _RS fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myIter
       INTEGER myThid
 
@@ -767,16 +767,16 @@ C--   Open file
 C--   Set local and global data extents
       nXP=sNx*nSx
       nYP=sNy*nSy
-      lFilled = sNx*nSx*nPx * sNy*nSy*nPy * nZ
+      lFilled = sNx*nSx*nPx * sNy*nSy*nPy * Nr
       dimList(1) = nXP*nPx
       dimList(2) = myXGlobalLo
       dimList(3) = myXGlobalLo+nXP-1
       dimList(4) = nYP*nPy
       dimList(5) = myYGlobalLo
       dimList(6) = myYGlobalLo+nYP-1
-      dimList(7) = nZ
+      dimList(7) = Nr
       dimList(8) = 1
-      dimList(9) = nZ
+      dimList(9) = Nr
 
 C--   Read data
       IF   ( readBinaryPrec .EQ. precFloat32 ) THEN
@@ -792,7 +792,7 @@ C     Also regrid it to i,j,k indexing.
       IF   ( readBinaryPrec .EQ. precFloat32 ) THEN
        DO bj=1,nSy
         DO bi=1,nSx
-         DO K=1,nZ
+         DO K=1,Nr
           DO j=1,sNy
            DO i=1,sNx
             iP = (bi-1)*sNx+i
@@ -810,7 +810,7 @@ C     Also regrid it to i,j,k indexing.
       ELSE
        DO bj=1,nSy
         DO bi=1,nSx
-         DO K=1,nZ
+         DO K=1,Nr
           DO j=1,sNy
            DO i=1,sNx
             iP = (bi-1)*sNx+i
@@ -1160,7 +1160,7 @@ C     myIter - Timestep number
 C     myThid - Thread number calling this routine
       CHARACTER*(*) pref
       CHARACTER*(*) suff
-      _RL fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
+      _RL fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
       INTEGER myIter
 
@@ -1217,11 +1217,11 @@ C--   Copy data to IO buffer.
 C     Also regrid it to i,j,k indexing.
       nXP=sNx*nSx
       nYP=sNy*nSy
-      lFilled = sNx*nSx * sNy*nSy * Nz
+      lFilled = sNx*nSx * sNy*nSy * Nr
       IF   ( writeBinaryPrec .EQ. precFloat32 ) THEN
        DO bj=1,nSy
         DO bi=1,nSx
-         DO k=1,Nz
+         DO k=1,Nr
           DO j=1,sNy
            DO i=1,sNx
             iP = (bi-1)*sNx+i
@@ -1237,7 +1237,7 @@ C     Also regrid it to i,j,k indexing.
       ELSE
        DO bj=1,nSy
         DO bi=1,nSx
-         DO k=1,Nz
+         DO k=1,Nr
           DO j=1,sNy
            DO i=1,sNx
             iP = (bi-1)*sNx+i
@@ -1259,9 +1259,9 @@ C--   Set local and global data extents
       dimList(4) = nYP*nPy
       dimList(5) = myYGlobalLo
       dimList(6) = myYGlobalLo+nYP-1
-      dimList(7) = nZ
+      dimList(7) = Nr
       dimList(8) = 1
-      dimList(9) = nZ
+      dimList(9) = Nr
 
 C--   Write data
       IF   ( writeBinaryPrec .EQ. precFloat32 ) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.15 1998/08/18 16:32:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.16 1998/08/22 17:51:07 cnh Exp $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |
@@ -7,7 +7,7 @@ C     | The design here support a three-dimensional model grid   |
 C     | with indices I,J and K. The three-dimensional domain     |
 C     | is comprised of nPx*nSx blocks of size sNx along one axis|
 C     | nPy*nSy blocks of size sNy along another axis and one    |
-C     | block of size Nz along the final axis.                   |
+C     | block of size Nr along the final axis.                   |
 C     | Blocks have overlap regions of size OLx and OLy along the|
 C     | dimensions that are subdivided.                          |
 C     \==========================================================/

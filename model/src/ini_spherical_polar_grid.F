@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.7 1998/07/02 14:16:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.8 1998/08/22 17:51:08 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -65,7 +65,7 @@ C     latS         values.
 C     I,J,K
       _RL    xG, yG, zG
       _RL    phi
-      _RL    zUpper(Nz), zLower(Nz)
+      _RL    zUpper(Nr), zLower(Nr)
       _RL    xBase, yBase
       INTEGER iG, jG
       INTEGER bi, bj
@@ -168,7 +168,7 @@ C     Calculate vertical face area and trigonometric terms
           jG = myYGlobalLo + (bj-1)*sNy + J-1
           latS = yc(i,j,bi,bj)-delY(jG)*0.5 _d 0
           latN = yc(i,j,bi,bj)+delY(jG)*0.5 _d 0
-          zA(I,J,bi,bj) = dyF(I,J,bi,bj)
+          rA(I,J,bi,bj) = dyF(I,J,bi,bj)
      &    *rSphere*(SIN(latN*deg2rad)-SIN(latS*deg2rad))
           tanPhiAtU(i,j,bi,bj)=tan(_yC(i,j,bi,bj)*deg2rad)
           tanPhiAtV(i,j,bi,bj)=tan(latS*deg2rad)
@@ -176,7 +176,7 @@ C     Calculate vertical face area and trigonometric terms
         ENDDO
        ENDDO
       ENDDO
-      _EXCH_XY_R4 (zA       , myThid )
+      _EXCH_XY_R4 (rA       , myThid )
       _EXCH_XY_R4 (tanPhiAtU , myThid )
       _EXCH_XY_R4 (tanPhiAtV , myThid )
 

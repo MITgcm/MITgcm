@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/Attic/DFILE.h,v 1.1 1998/05/21 18:30:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/Attic/DFILE.h,v 1.2 1998/08/22 17:51:05 cnh Exp $
 C     /==========================================================\
 C     | DFILE.h                                                  |
 C     |==========================================================|
@@ -76,6 +76,6 @@ C                Sized to fit anything up to a global domain 3d field.
 C                ( but without overlaps )
       COMMON /DFILE_R/
      & ioBuf_R8, ioBuf_R4
-      Real*8 ioBuf_R8( sNx*nSx*nPx * sNy*nSy*nPy * Nz )
-      Real*4 ioBuf_R4( sNx*nSx*nPx * sNy*nSy*nPy * Nz )
+      Real*8 ioBuf_R8( sNx*nSx*nPx * sNy*nSy*nPy * Nr )
+      Real*4 ioBuf_R4( sNx*nSx*nPx * sNy*nSy*nPy * Nr )
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eewrite_eeenv.F,v 1.2 1998/04/23 20:37:30 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eewrite_eeenv.F,v 1.3 1998/08/22 17:51:05 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -83,7 +83,7 @@ C     === Local variables ===
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 
-      WRITE(msgBuf,'(A,I5,A)') '      nZ =', nZ,' ; /* No. levels in the vertical   */ '
+      WRITE(msgBuf,'(A,I5,A)') '      Nr =', Nr,' ; /* No. levels in the vertical   */ '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
 

@@ -29,9 +29,9 @@ C
       _RL rhoKm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rhoKp1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rhotmp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL K13(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
-      _RL K23(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
-      _RL K33(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
+      _RL K13(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL K23(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL K33(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KapGM(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER bi,bj,iMin,iMax,jMin,jMax,K
       INTEGER myThid
@@ -81,7 +81,7 @@ C       Calculate magnitude of horizontal gradient
 
 C       Limit Stratification
         stratLimit=-Small_Number-gradSmod*rMaxSlope
-        dSigmaDr=recip_drC(k)*_rkFac*(rhotmp(i,j)-rhoKp1(i,j))
+        dSigmaDr=recip_drC(k)*rkFac*(rhotmp(i,j)-rhoKp1(i,j))
 C       Altern -> if (dSigmaDz.gt.stratLimit) dSigmaDz=stratLimit
         dSigmaDr=min(dSigmaDr,stratLimit)
         N2=(-Gravity*recip_Rhonil)*dSigmaDr

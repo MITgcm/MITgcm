@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.3 1998/07/29 18:33:47 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.4 1998/08/22 17:51:08 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -39,32 +39,32 @@ C     Calculate quantities derived from XY depth map
          DO I=1,sNx
 C         Inverse of depth
           IF ( h(i,j,bi,bj) .EQ. 0. _d 0 ) THEN
-           rH(i,j,bi,bj) = 0. _d 0
+           recip_H(i,j,bi,bj) = 0. _d 0
           ELSE
-           rH(i,j,bi,bj) = 1. _d 0 /  abs( H(i,j,bi,bj) )
+           recip_H(i,j,bi,bj) = 1. _d 0 /  abs( H(i,j,bi,bj) )
           ENDIF
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-      _EXCH_XY_R4(   rH, myThid )
+      _EXCH_XY_R4(   recip_H, myThid )
 
 C     Calculate lopping factor hFacC
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO K=1, Nz
+        DO K=1, Nr
          DO J=1,sNy
           DO I=1,sNx
-           IF     ( H(I,J,bi,bj) .GE. zFace(K) ) THEN
+           IF     ( H(I,J,bi,bj) .GE. rF(K) ) THEN
 C           Top of cell is below base of domain
             hFacC(I,J,K,bi,bj) = 0.
-           ELSEIF ( H(I,J,bi,bj) .LE. zFace(K+1) ) THEN
+           ELSEIF ( H(I,J,bi,bj) .LE. rF(K+1) ) THEN
 C           Base of domain is below bottom of this cell
             hFacC(I,J,K,bi,bj) = 1.
            ELSE
 C           Base of domain is in this cell
 C           Set hFac to the fraction of the cell that is open.
-            hFacC(I,J,K,bi,bj) = (zFace(K)-H(I,J,bi,bj))*rdzF(K)
+            hFacC(I,J,K,bi,bj) = (rF(K)-H(I,J,bi,bj))*recip_drF(K)
            ENDIF
 C Impose minimum fraction
            IF (hFacC(I,J,K,bi,bj).LT.hFacMin) THEN
@@ -75,11 +75,11 @@ C Impose minimum fraction
             ENDIF
            ENDIF
 C Impose minimum size (dimensional)
-           IF (dzF(k)*hFacC(I,J,K,bi,bj).LT.hFacMinDz) THEN
-            IF (dzF(k)*hFacC(I,J,K,bi,bj).LT.hFacMinDz*0.5) THEN
+           IF (drF(k)*hFacC(I,J,K,bi,bj).LT.hFacMinDz) THEN
+            IF (drF(k)*hFacC(I,J,K,bi,bj).LT.hFacMinDz*0.5) THEN
              hFacC(I,J,K,bi,bj)=0.
             ELSE
-             hFacC(I,J,K,bi,bj)=hFacMinDz*rDzF(k)
+             hFacC(I,J,K,bi,bj)=hFacMinDz*recip_drF(k)
             ENDIF
            ENDIF
           ENDDO
@@ -92,7 +92,7 @@ C Impose minimum size (dimensional)
 C     hFacW and hFacS (at U and V points)
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO K=1, Nz
+        DO K=1, Nr
          DO J=1,sNy
           DO I=1,sNx
            hFacW(I,J,K,bi,bj)=
@@ -110,26 +110,26 @@ C     hFacW and hFacS (at U and V points)
 C     Masks and reciprocals of hFac[CWS]
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1,sNy
           DO I=1,sNx
            IF (HFacC(I,J,K,bi,bj) .NE. 0. D0 ) THEN
-            rHFacC(I,J,K,bi,bj) = 1. D0 / HFacC(I,J,K,bi,bj)
+            recip_HFacC(I,J,K,bi,bj) = 1. D0 / HFacC(I,J,K,bi,bj)
            ELSE
-            rHFacC(I,J,K,bi,bj) = 0. D0
+            recip_HFacC(I,J,K,bi,bj) = 0. D0
            ENDIF
            IF (HFacW(I,J,K,bi,bj) .NE. 0. D0 ) THEN
-            rHFacW(I,J,K,bi,bj) = 1. D0 / HFacW(I,J,K,bi,bj)
+            recip_HFacW(I,J,K,bi,bj) = 1. D0 / HFacW(I,J,K,bi,bj)
             maskW(I,J,K,bi,bj) = 1. D0
            ELSE
-            rHFacW(I,J,K,bi,bj) = 0. D0
+            recip_HFacW(I,J,K,bi,bj) = 0. D0
             maskW(I,J,K,bi,bj) = 0.0 D0
            ENDIF
            IF (HFacS(I,J,K,bi,bj) .NE. 0. D0 ) THEN
-            rHFacS(I,J,K,bi,bj) = 1. D0 / HFacS(I,J,K,bi,bj)
+            recip_HFacS(I,J,K,bi,bj) = 1. D0 / HFacS(I,J,K,bi,bj)
             maskS(I,J,K,bi,bj) = 1. D0
            ELSE
-            rHFacS(I,J,K,bi,bj) = 0. D0
+            recip_HFacS(I,J,K,bi,bj) = 0. D0
             maskS(I,J,K,bi,bj) = 0. D0
            ENDIF
           ENDDO
@@ -137,9 +137,9 @@ C     Masks and reciprocals of hFac[CWS]
         ENDDO
        ENDDO
       ENDDO
-      _EXCH_XYZ_R4(rHFacC    , myThid )
-      _EXCH_XYZ_R4(rHFacW    , myThid )
-      _EXCH_XYZ_R4(rHFacS    , myThid )
+      _EXCH_XYZ_R4(recip_HFacC    , myThid )
+      _EXCH_XYZ_R4(recip_HFacW    , myThid )
+      _EXCH_XYZ_R4(recip_HFacS    , myThid )
       _EXCH_XYZ_R4(maskW    , myThid )
       _EXCH_XYZ_R4(maskS    , myThid )
 
@@ -148,26 +148,26 @@ C     Calculate recipricols grid lengths
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO J=1,sNy
          DO I=1,sNx
-          rDxG(I,J,bi,bj)=1.d0/dxG(I,J,bi,bj)
-          rDyG(I,J,bi,bj)=1.d0/dyG(I,J,bi,bj)
-          rDxC(I,J,bi,bj)=1.d0/dxC(I,J,bi,bj)
-          rDyC(I,J,bi,bj)=1.d0/dyC(I,J,bi,bj)
-          rDxF(I,J,bi,bj)=1.d0/dxF(I,J,bi,bj)
-          rDyF(I,J,bi,bj)=1.d0/dyF(I,J,bi,bj)
-          rDxV(I,J,bi,bj)=1.d0/dxV(I,J,bi,bj)
-          rDyU(I,J,bi,bj)=1.d0/dyU(I,J,bi,bj)
+          recip_dxG(I,J,bi,bj)=1.d0/dxG(I,J,bi,bj)
+          recip_dyG(I,J,bi,bj)=1.d0/dyG(I,J,bi,bj)
+          recip_dxC(I,J,bi,bj)=1.d0/dxC(I,J,bi,bj)
+          recip_dyC(I,J,bi,bj)=1.d0/dyC(I,J,bi,bj)
+          recip_dxF(I,J,bi,bj)=1.d0/dxF(I,J,bi,bj)
+          recip_dyF(I,J,bi,bj)=1.d0/dyF(I,J,bi,bj)
+          recip_dxV(I,J,bi,bj)=1.d0/dxV(I,J,bi,bj)
+          recip_dyU(I,J,bi,bj)=1.d0/dyU(I,J,bi,bj)
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-      _EXCH_XY_R4(rDxG, myThid )
-      _EXCH_XY_R4(rDyG, myThid )
-      _EXCH_XY_R4(rDxC, myThid )
-      _EXCH_XY_R4(rDyC, myThid )
-      _EXCH_XY_R4(rDxF, myThid )
-      _EXCH_XY_R4(rDyF, myThid )
-      _EXCH_XY_R4(rDxV, myThid )
-      _EXCH_XY_R4(rDyU, myThid )
+      _EXCH_XY_R4(recip_dxG, myThid )
+      _EXCH_XY_R4(recip_dyG, myThid )
+      _EXCH_XY_R4(recip_dxC, myThid )
+      _EXCH_XY_R4(recip_dyC, myThid )
+      _EXCH_XY_R4(recip_dxF, myThid )
+      _EXCH_XY_R4(recip_dyF, myThid )
+      _EXCH_XY_R4(recip_dxV, myThid )
+      _EXCH_XY_R4(recip_dyU, myThid )
 
 C
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.5 1998/08/15 16:55:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.6 1998/08/22 17:51:06 cnh Exp $
 C
 C     /==========================================================\
 C     | GRID.h                                                   |
@@ -129,11 +129,11 @@ C     |       |        /|\          |            /|\    *  |     |
 C     |       |-------- | -----------------etc..  | ----*---     |
 C     |       |    rVel(i=1,        |        rVel(i=Nx, *  |     |
 C     |       |         j=1,        |             j=1,  *  |     |
-C     |       |         k=Nz)       |             k=Nz) *  |     |
+C     |       |         k=Nr)       |             k=Nr) *  |     |
 C     |U(i=1, ==>       x         ==>U(i=2,       x     *==>U    |
 C     |  j=1, |      T(i=1,         |  j=1,    T(i=Nx,  *(i=Nx+1,|
-C     |  k=Nz)|        j=1,         |  k=Nz)     j=1,   *  |j=1, |
-C     |       |        k=Nz)        |            k=Nz)  *  |k=Nz)|
+C     |  k=Nr)|        j=1,         |  k=Nr)     j=1,   *  |j=1, |
+C     |       |        k=Nr)        |            k=Nr)  *  |k=Nr)|
 C     |       |                     |                   *  |     |
 C     |"LB"++>==============================================     |
 C     |                                               "PWX"      |
@@ -309,6 +309,10 @@ C              "lopped" a cell is (dimensionless scale factor).
 C              Note: The code needs terms like MIN(hFac,hFac(I+1))
 C                    On some platforms it may be better to precompute
 C                    hFacW, hFacE, ... here than do MIN on the fly.
+C     rkFac     - Vertical coordinate to vertical index orientation.
+C                 ( 1 same orientation, -1 opposite orientation )
+C                 ( vertical coord == m  -> rkFac = -1 )
+C                 ( vertical coord == Pa -> rkFac =  1 )
 C     maskW  - West face land mask
 C     maskS  - South face land mask
 C     recip_dxC   - Recipricol of dxC
@@ -346,13 +350,14 @@ C                 metric term in U equation.
 C     tanPhiAtV - tan of the latitude at V point. Used for spherical polar 
 C                 metric term in V equation.
       COMMON /GRID_R/
-     &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,dzC,drF,
+     &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,drC,drF,
      &  H,HFacC,HFacW,HFacS,
      &  recip_dxC,recip_dxF,recip_dxG,recip_dxV,
      &  recip_dyC,recip_dyF,recip_dyG,recip_dyU,
      &  recip_drC,recip_drF,
      &  recip_H, 
      &  recip_hFacC,recip_hFacW,recip_hFacS, 
+     &  rkFac, recip_rkFac,
      &  saFac,
      &  xC,yC,rA,rC,rF,yC0,xC0,
      &  maskW,maskS,
@@ -365,12 +370,14 @@ C                 metric term in V equation.
       _RS dyF            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dyG            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dyU            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS drC            (1:Nz)
-      _RS drF            (1:Nz)
+      _RS drC            (1:Nr)
+      _RS drF            (1:Nr)
+      _RS rkFac
+      _RS recip_rkFac
       _RS H              (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS HFacC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS HFacW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS HFacS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS HFacC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RS HFacW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RS HFacS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS recip_dxC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_dxF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_dxG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -379,22 +386,22 @@ C                 metric term in V equation.
       _RS recip_dyF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_dyG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_dyU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS recip_dzC      (1:Nz)
-      _RS recip_drF      (1:Nz)
+      _RS recip_drC      (1:Nr)
+      _RS recip_drF      (1:Nr)
       _RS recip_h        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS recip_hFacC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS recip_hFacW    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS recip_hFacS    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS saFac          (1:Nz)
+      _RS recip_hFacC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RS recip_hFacW    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RS recip_hFacS    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RS saFac          (1:Nr)
       _RS xC             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS xC0
       _RS yC             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS yC0
       _RS rA             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rC             (1:Nz)
-      _RS rF             (1:Nz+1)
-      _RS maskW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS maskS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS rC             (1:Nr)
+      _RS rF             (1:Nr+1)
+      _RS maskW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      _RS maskS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS tanPhiAtU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS tanPhiAtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 

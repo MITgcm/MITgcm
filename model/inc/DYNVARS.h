@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.4 1998/06/08 21:43:00 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.5 1998/08/22 17:51:06 cnh Exp $
 C
 C     /==========================================================\
 C     | DYNVARS.h                                                |
@@ -18,29 +18,29 @@ C     vVelD  - D grid meridional velocity
       COMMON /DYNVARS_R/ 
      &                   uVel,vVel,theta,salt,
      &                   gu,gv,gt,gs,guNm1,gvNm1,gtNm1,gsNm1
-      _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  vVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  salt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  gu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  gv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  gt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  gs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  guNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  gvNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  gtNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  gsNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
+      _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  vVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  salt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gv(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gs(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  guNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gvNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gtNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gsNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #ifdef ALLOW_CD
       COMMON /DYNVARS_CD/ 
      &                   uVelD, vVelD,
      &                   cg2d_xNM1,
      &                   uNM1,  vNM1,
      &                   guCD, gvCD
-      _RL  uVeld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  vVeld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
+      _RL  uVeld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  vVeld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  cg2d_xNM1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  uNm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  vNm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  guCD  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  gvCD  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
+      _RL  uNm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  vNm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  guCD  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  gvCD  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif

@@ -27,8 +27,8 @@ C     myCurrentTime - Current time of simulation ( s )
       INTEGER myThid
       INTEGER myIter, bi, bj, K, kUp, kDown
       REAL    myCurrentTime
-      _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
-      _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL KapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
@@ -78,8 +78,8 @@ C     Keep record of how much time has been integrated over
 
 C     Time Averages of "intermediate" fields
       DDTT=deltaTclock
-      CALL TIMEAVER_INTER_XYZ(Nz, K13, k13tave, DDTT, bi, bj, K, K, myThid)
-      CALL TIMEAVER_INTER_XYZ(Nz, K23, k23tave, DDTT, bi, bj, K, K, myThid)
+      CALL TIMEAVER_INTER_XYZ(Nr, K13, k13tave, DDTT, bi, bj, K, K, myThid)
+      CALL TIMEAVER_INTER_XYZ(Nr, K23, k23tave, DDTT, bi, bj, K, K, myThid)
       CALL TIMEAVER_INTER_XYZ(2, wVel, wVeltave, DDTT, bi, bj, K, kUp, myThid)
       IF (TOP_LEVEL)
      &  CALL TIMEAVER_INTER_XY(KapGM, KapGMtave, DDTT, bi, bj, myThid)

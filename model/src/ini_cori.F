@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.3 1998/06/08 21:43:01 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.4 1998/08/22 17:51:08 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -36,7 +36,7 @@ C--   Initialise coriolis parameter
 C      o Constant F case
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO K=1,Nz
+         DO K=1,Nr
           DO J=1,sNy
            DO I=1,sNx
             fCori(i,j,bi,bj)=f0
@@ -51,7 +51,7 @@ C      o Beta plane case
        IF ( usingSphericalPolarGrid ) facGrid = deg2rad*rSphere
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO K=1,Nz
+         DO K=1,Nr
           DO J=1,sNy
            DO I=1,sNx
             fCori(i,j,bi,bj)=f0+beta*_yC(i,j,bi,bj)*facGrid
@@ -65,7 +65,7 @@ C      o Spherical case
 C        Note in this case we assume yC is in degrees.
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO K=1,Nz
+         DO K=1,Nr
           DO J=1,sNy
            DO I=1,sNx
             fCori(i,j,bi,bj)=2. _d 0*omega*sin(_yC(i,j,bi,bj)*deg2rad)
@@ -78,7 +78,7 @@ C        Note in this case we assume yC is in degrees.
 C      o Special custom form
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO K=1,Nz
+         DO K=1,Nr
           DO J=1,sNy
            DO I=1,sNx
             fCori(i,j,bi,bj)=0.

@@ -22,7 +22,7 @@ C     fld  - Input Field
 C     fldtave - time averaged Field
       INTEGER thisNz, bi, bj, K, thisK, myThid
       _RL fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,thisNz)
-      _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
+      _RL fldtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       REAL deltaT
 
 CEndofinterface
@@ -33,7 +33,7 @@ C     i,j,k,bi,bj  - Loop counters
  
 C     DO bj = myByLo(myThid), myByHi(myThid)
 C      DO bi = myBxLo(myThid), myBxHi(myThid)
-C       DO k=1,Nz
+C       DO k=1,Nr
          DO j=1,sNy
           DO i=1,sNx
            fldtave(i,j,k,bi,bj)=

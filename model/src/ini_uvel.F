@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_uvel.F,v 1.4 1998/06/09 15:58:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_uvel.F,v 1.5 1998/08/22 17:51:09 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -46,7 +46,7 @@ C     I,J,K
 C--   Initialise velocity field to zero
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1,sNy
           DO I=1,sNx
            uVel (I,J,K,bi,bj) = 0. _d 0
@@ -62,7 +62,7 @@ C--   Initialise velocity field to zero
 C     Set initial tendency terms
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1,sNy
           DO I=1,sNx
            gu   (I,J,K,bi,bj) = 0. _d 0

@@ -15,20 +15,20 @@ C     uttave    - uVel * theta
 C     vttave    - vVel * theta
 C
       COMMON /TAVE_0/ TimeAve,InterTimeAve
-      REAL TimeAve(nZ,nSx,nSy)
-      REAL InterTimeAve(nZ,nSx,nSy)
+      REAL TimeAve(Nr,nSx,nSy)
+      REAL InterTimeAve(Nr,nSx,nSy)
 C
       COMMON /DYNVARS_A/ 
      &                  uVeltave,vVeltave,thetatave,salttave,
      &                  uttave,vttave,k13tave,k23tave,wVeltave,
      &                  KapGMtave
-      _RL  uVeltave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  vVeltave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  thetatave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  salttave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  uttave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  vttave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  k13tave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  k23tave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
-      _RL  wVeltave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
+      _RL  uVeltave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  vVeltave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  thetatave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  salttave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  uttave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  vttave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  k13tave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  k23tave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  wVeltave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  KapGMtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.16 1998/07/15 22:09:19 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.17 1998/08/22 17:51:08 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -52,15 +52,15 @@ C     aS2d: integral in Z Ay/dY
           aS2d(I,J,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
-        DO K=1,Nz
+        DO K=1,Nr
          DO J=1,sNy
           DO I=1,sNx
-           faceArea = _dyG(I,J,bi,bj)*dzF(K)*_hFacW(I,J,K,bi,bj)
+           faceArea = _dyG(I,J,bi,bj)*drF(K)*_hFacW(I,J,K,bi,bj)
            aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj) + 
-     &      gBaro*faceArea*_rdxC(I,J,bi,bj)
-           faceArea = _dxG(I,J,bi,bj)*dzF(K)*_hFacS(I,J,K,bi,bj)
+     &      gBaro*faceArea*recip_dxC(I,J,bi,bj)
+           faceArea = _dxG(I,J,bi,bj)*drF(K)*_hFacS(I,J,K,bi,bj)
            aS2d(I,J,bi,bj) = aS2d(I,J,bi,bj) + 
-     &      gBaro*faceArea*_rdyC(I,J,bi,bj)
+     &      gBaro*faceArea*recip_dyC(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -134,19 +134,19 @@ C           defaults to 0.51 but can be set at runtime.
      &     aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
      &    +aS2d(I,J,bi,bj) + aS2D(I  ,J+1,bi,bj)
      &    +freeSurfFac*myNorm*
-     &     zA(I,J,bi,bj)/deltaTMom/deltaTMom
+     &     rA(I,J,bi,bj)/deltaTMom/deltaTMom
      &    )
           aCs = -(
      &     aW2d(I,J-1,bi,bj) + aW2d(I+1,J-1,bi,bj)
      &    +aS2d(I,J-1,bi,bj) + aS2d(I  ,J  ,bi,bj)
      &    +freeSurfFac*myNorm*
-     &     zA(I,J-1,bi,bj)/deltaTMom/deltaTMom
+     &     rA(I,J-1,bi,bj)/deltaTMom/deltaTMom
      &    )
           aCw = -(
      &     aW2d(I-1,J,bi,bj) + aW2d(I  ,J  ,bi,bj)
      &    +aS2d(I-1,J,bi,bj) + aS2d(I-1,J+1,bi,bj)
      &    +freeSurfFac*myNorm*
-     &     zA(I-1,J,bi,bj)/deltaTMom/deltaTMom
+     &     rA(I-1,J,bi,bj)/deltaTMom/deltaTMom
      &    )
           IF ( aC .EQ. 0. ) THEN
             pC(I,J,bi,bj) = 0. _d 0

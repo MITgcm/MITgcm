@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.8 1998/07/15 22:13:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.9 1998/08/22 17:51:07 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -60,9 +60,9 @@ C--   fields are ready.
        _BARRIER
 
 C--    Write "text-plots" of certain fields
-       CALL PLOT_FIELD_XYZRL( uVel , 'Current uVel  ' , Nz, myIter, myThid )
-       CALL PLOT_FIELD_XYZRL( vVel , 'Current vVel  ' , Nz, myIter, myThid )
-       CALL PLOT_FIELD_XYZRL( theta, 'Current theta ' , Nz, myIter, myThid )
+       CALL PLOT_FIELD_XYZRL( uVel , 'Current uVel  ' , Nr, myIter, myThid )
+       CALL PLOT_FIELD_XYZRL( vVel , 'Current vVel  ' , Nr, myIter, myThid )
+       CALL PLOT_FIELD_XYZRL( theta, 'Current theta ' , Nr, myIter, myThid )
        CALL PLOT_FIELD_XYRL( cg2d_x, 'Current cg2d_x ' , myIter, myThid )
 
       ENDIF

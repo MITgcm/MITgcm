@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.7 1998/08/18 16:32:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.8 1998/08/22 17:51:07 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -87,8 +87,8 @@ C--   Calculate vertical "volume transport" through
 C--   tracer cell face *above* this level.
       DO j=jMin,jMax
        DO i=iMin,iMax
-        rTrans(i,j) = uTrans(i,j)*recip_rkFac-uTrans(i+1,j)*_recip_rkFac
-     &               +vTrans(i,j)*_recip_rkFac-vTrans(i,j+1)*_recip_rkFac
+        rTrans(i,j) = uTrans(i,j)*recip_rkFac-uTrans(i+1,j)*recip_rkFac
+     &               +vTrans(i,j)*recip_rkFac-vTrans(i,j+1)*recip_rkFac
      &               +rTrans(i,j)
        ENDDO
       ENDDO

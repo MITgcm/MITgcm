@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.4 1998/06/10 15:27:32 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.5 1998/08/22 17:51:06 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -396,7 +396,7 @@ C      xFace (y=constant) for XY arrays with real*8 declaration.
 C      xFace (y=constant) for XYZ arrays with real*4 declaration.
        arrElSize = 4
        arrElSep  = (sNx+OLx*2)*(sNy+OLy*2)
-       elCount   = Nz
+       elCount   = Nr
        elLen     = 1
        elStride  = arrElSize*arrElSep
        CALL MPI_TYPE_HVECTOR(elCount,elLen,elStride,
@@ -482,7 +482,7 @@ C      yFace (x=constant) for XY arrays with real*8 declaration
 C      yFace (x=constant) for XYZ arrays with real*4 declaration
        arrElSize = 4
        arrElSep  = (sNx+OLx*2)*(sNy+OLy*2)
-       elCount   = Nz
+       elCount   = Nr
        elLen     = 1
        elStride  = arrElSize*arrElSep
        CALL MPI_TYPE_HVECTOR(elCount,elLen,elStride,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.5 1998/08/18 16:32:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.6 1998/08/22 17:51:07 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -31,9 +31,9 @@ C
       _RS maskC(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RS maskUp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL KapGM(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL K33(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
-      _RL KappaRT(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
-      _RL KappaRS(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
+      _RL K33(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL KappaRT(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL KappaRS(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       INTEGER myThid
 CEndOfInterface
 
