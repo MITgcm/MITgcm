@@ -2,17 +2,17 @@
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-CStartOfInterface
-      SUBROUTINE DIC_ABIOTIC_PARAM( myThid )
-C     /==========================================================\
-C     | SUBROUTINE DIC_ABIOTIC_PARAM                                     |
-C     | o Set parameters needed for                              |
-C     | o Abiotic Carbon (DIC)  and biotic                       |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
+CBOP
+C !ROUTINE: DIC_ABIOTIC_PARAM
 
-C     === Global variables ===
+C !INTERFACE: ==========================================================
+      SUBROUTINE DIC_ABIOTIC_PARAM( myThid )
+
+C !DESCRIPTION:
+C Set parameters needed for calculating air-sea exchange of CO2 and O2
+
+C !USES: =============================================================== 
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -20,14 +20,13 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "DIC_ABIOTIC.h"
 
-C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_TR1
+c !INPUT PARAMETERS: ===================================================
       INTEGER myThid
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
       integer i,j,bi,bj
-CEndOfInterface
-
-C     == Local variables ==
-
+CEOP
 
       _BARRIER
 

@@ -2,15 +2,18 @@
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-C     Procedure name: INSOL
-C           Function: find time scale for plankton growth as
-C                     function of light
-c                     based on paltridge and parson
-C           Comments: swd, April 1998
-C                     following code by mick
-C============================================================================
-CStartofinterface
+CBOP
+C !ROUTINE: INSOL
+
+C !INTERFACE: ==========================================================
       SUBROUTINE insol(Time,sfac,bj)
+
+C !DESCRIPTION:
+C find light as function of date and latitude
+c based on paltridge and parson
+
+
+C !USES: ===============================================================
       IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
@@ -19,16 +22,23 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-C     =============== Global data ==========================================
+
+C !INPUT PARAMETERS: ===================================================
+C time                 :: current time
        _RL time
-       _RL sfac(1-OLy:sNy+OLy)
        integer bj
-C============== Local variables ============================================
+
+C !OUPUT PARAMETERS: ===================================================
+       _RL sfac(1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
        _RL  solar, albedo, par
        _RL  dayfrac, yday, delta
        _RL  lat, sun1, dayhrs
        _RL  cosz, frac, fluxi
        integer j
+CEOP
+
 c
       solar = 1360.   !solar constant
       albedo = 0.6    !planetary albedo

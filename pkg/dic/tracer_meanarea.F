@@ -4,22 +4,32 @@
 C !INTERFACE: ==========================================================
       SUBROUTINE TRACER_MEANAREA(myThid,tracer, kLev,
      &                    gsm_tracer)
+
+C !DESCRIPTION:
+C  Calculate surface means of tracer
+
+C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER myThid
       INTEGER kLev
       _RL tracer (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
+
+C !OUTPUT PARAMETERS: ===================================================
+C  gcm_tracer               :: surface mean of tracer
       _RL gsm_tracer
 
-c local variables
+C !LOCAL VARIABLES: ====================================================
       INTEGER i,j,bi,bj
       _RL sumarea
+CEOP
 
       _BEGIN_MASTER(myThid)
 

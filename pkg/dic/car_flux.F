@@ -1,18 +1,19 @@
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C !ROUTINE: CAR_FLUX
+
+C !INTERFACE: ==========================================================
       SUBROUTINE CAR_FLUX( bioac, cflux,
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
-C     /==========================================================\
-C     | SUBROUTINE CAR_FLUX                                      |
-C     | o Calculate carbonate fluxes                              |
-C     |==========================================================|
-      IMPLICIT NONE
+C !DESCRIPTION:
+C  Calculate carbonate fluxes                              
 
-C     == GLobal variables ==
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -20,22 +21,39 @@ C     == GLobal variables ==
 #include "GRID.h"
 #include "DIC_BIOTIC.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  myThid               :: thread number
+C  myIter               :: current timestep
+C  myTime               :: current time
+C  bioac                :: biological productivity
       INTEGER myIter
       _RL myTime
       INTEGER myThid
       _RL  bioac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL  cflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
        INTEGER imin, imax, jmin, jmax, bi, bj
+
+C !OUTPUT PARAMETERS: ===================================================
+C cflux                :: carbonate flux
+      _RL  cflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #ifdef ALLOW_PTRACERS
 #ifdef DIC_BIOTIC
-C     == Local variables ==
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j,k                  :: loop indices
+c  ko                     :: loop-within-loop index
+c caexport                :: flux of carbonate from base each "productive"
+c                            layer
+c depth_u, depth_l        :: depths of upper and lower interfaces
+c flux_u, flux_l          :: flux through upper and lower interfaces
+c zbase                   :: depth of bottom of current productive layer
        _RL caexport(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
        INTEGER I,J,k, ko
        _RL depth_u, depth_l
        _RL flux_u, flux_l
        _RL zbase
+CEOP
+
 c
 c calculate carbonate flux from base of each nlev 
        DO j=1-OLy,sNy+OLy

@@ -2,19 +2,20 @@
 #include "PTRACERS_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C !ROUTINE: DIC_SURFFORCING
+
+C !INTERFACE: ==========================================================
       SUBROUTINE DIC_SURFFORCING( PTR_CO2 , GDC, 
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
-C     /==========================================================\
-C     | SUBROUTINE DIC_SURFFORCING                               |
-C     | o Calculate the carbon air-sea flux terms                |
-C     | o following external_forcing_dic.F from Mick             |
-C     |==========================================================|
-      IMPLICIT NONE
+C !DESCRIPTION:
+C  Calculate the carbon air-sea flux terms              
+C  following external_forcing_dic.F (OCMIP run) from Mick            
 
-C     == GLobal variables ==
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -26,15 +27,23 @@ C     == GLobal variables ==
 #include "PTRACERS.h"
 #endif
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  myThid               :: thread number
+C  myIter               :: current timestep
+C  myTime               :: current time
+c  PTR_CO2              :: DIC tracer field
       INTEGER myIter, myThid
       _RL myTime
       _RL  PTR_CO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL  GDC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin,iMax,jMin,jMax, bi, bj
 
+C !OUTPUT PARAMETERS: ===================================================
+c GDC                   :: tendency term due to air-sea exchange
+      _RL  GDC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
 #ifdef ALLOW_PTRACERS
-C     == Local variables ==
+
+C !LOCAL VARIABLES: ====================================================
        INTEGER I,J, kLev, it
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
@@ -46,6 +55,7 @@ C local variables for carbon chem
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfsi(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL VirtualFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+CEOP
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 

@@ -1,15 +1,10 @@
-C modified for external_forcing_DIC.F  August 1999
-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-c
-c modified swd Oct 01 and Feb 02, for use as package for c40_patch1
-c modified to use with c44 and ptracers: swd May 2002
-c modified to have carbonate and biological influences: swd June 2002
-C
-
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C !ROUTINE: DIC_BIOTIC_FORCING
+
+C !INTERFACE: ==========================================================
       SUBROUTINE DIC_BIOTIC_FORCING( PTR_DIC, PTR_ALK, PTR_PO4,
      &                            PTR_DOP, PTR_O2, 
 #ifdef ALLOW_FE
@@ -18,14 +13,12 @@ CStartOfInterFace
      &                            bi,bj,imin,imax,jmin,jmax,
      &                             myIter,myTime,myThid)
 
-C     /==========================================================\
-C     | SUBROUTINE DIC_BIOTIC_FORCING                                   |
-C     | o Calculate the changes to DIC through air-sea  fluxes   |  
-C     |   carbonates, and biology (parameterizes by PO4)         |
-C     |==========================================================|
-      IMPLICIT NONE
+C !DESCRIPTION:
+C updates all the tracers for the effects of air-sea exchange, biological
+c activity and remineralization
 
-C     == GLobal variables ==
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -34,7 +27,16 @@ C     == GLobal variables ==
 #include "DIC_BIOTIC.h"
 #include "DIC_ABIOTIC.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  myThid               :: thread number
+C  myIter               :: current timestep
+C  myTime               :: current time
+C  PTR_DIC              :: dissolced inorganic carbon
+C  PTR_ALK              :: alkalinity
+C  PTR_PO4              :: phosphate
+c  PTR_DOP              :: dissolve organic phosphurous
+c  PTR_O2               :: oxygen
+C  PTR_FE               :: iron
       INTEGER myIter
       _RL myTime
       INTEGER myThid
@@ -50,7 +52,22 @@ C     == Routine arguments ==
 
 #ifdef ALLOW_PTRACERS
 #ifdef DIC_BIOTIC
-C     == Local variables ==
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j,k                  :: loop indices
+C  G*                     :: tendency term for the tracers
+C  SURA                   :: tendency of alkalinity due to freshwater
+C  SURC                   :: tendency of DIC due to air-sea exchange
+C                            and virtual flux
+C  SURO                   :: tendency of O2 due to air-sea exchange
+C  BIO                    :: tendency of PO4 due to biological productivity,
+C                            exchange with DOP pool and reminerization
+C  CAR                    :: carbonate changes due to biological 
+C                             productivity and reminerization
+C  bioac                  :: biological productivity
+C  pflux                  :: changes to PO4 due to flux and reminerlization
+c  cflux                  :: carbonate changes due to flux and reminerlization
+c  freefe                 :: iron not bound to ligand
       _RL  GDIC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  GALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL  GPO4(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -69,6 +86,7 @@ C     == Local variables ==
       _RL  freefe(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
        INTEGER I,J,k
+CEOP
 
        DO k=1,Nr
          DO j=1-OLy,sNy+OLy

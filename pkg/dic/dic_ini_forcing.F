@@ -1,15 +1,17 @@
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C !ROUTINE: GCHEM_FORCING_INT
+
+C !INTERFACE: ==========================================================
       SUBROUTINE DIC_INI_FORCING( myThid )
 
-C     /==========================================================\
-C     | SUBROUTINE DIC_INI_FORCING                               |
-C     |==========================================================|
-      IMPLICIT NONE
+C !DESCRIPTION:
+c initializes forcing fields to zero
 
-C     == GLobal variables ==
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -23,11 +25,12 @@ C     == GLobal variables ==
 #include "DIC_LOAD.h"
 #endif
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  myThid               :: thread number
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_PTRACERS
-C     == Local variables ==
 c
 C First call requires that we initialize everything to zero for safety
       CALL LEF_ZERO( wspeed0,myThid )

@@ -1,18 +1,19 @@
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C !ROUTINE: O2_SURFFORCING
+
+C !INTERFACE: ==========================================================
       SUBROUTINE O2_SURFFORCING( PTR_O2, GO2,
      I           bi,bj,iMin,iMax,jMin,jMax,
      I           myIter, myTime, myThid )
-C     /==========================================================\
-C     | SUBROUTINE O2_SURFFORCING                               |
-C     | o Calculate the oxygen air-sea flux terms                |
-C     | o following external_forcing_o2.F from Mick             |
-C     |==========================================================|
-      IMPLICIT NONE
 
-C     == GLobal variables ==
+C !DESCRIPTION:
+C Calculate the oxygen air-sea flux terms               
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -25,17 +26,23 @@ C     == GLobal variables ==
 #endif
 
 
-C     == Routine arguments ==
-      INTEGER myIter, myThid
+c  !INPUT PARAMETERS: ===================================================
+C  myThid               :: thread number
+C  myIter               :: current timestep
+C  myTime               :: current time
+C  PTR_O2               :: oxygen tracer field
       _RL myTime
       _RL  PTR_O2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL  GO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin,iMax,jMin,jMax, bi, bj
+
+c  !OUTPUT PARAMETERS: ===================================================
+C  GO2                  :: air-sea exchange of oxygen
+     _RL  GO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 #ifdef ALLOW_PTRACERS
 
 
-C     == Local variables ==
+C !LOCAL VARIABLES: ===================================================
 C I, J, K - Loop counters
       INTEGER I,J,K
 C Solubility relation coefficients
@@ -55,6 +62,7 @@ C Solubility relation coefficients
       _RL  ttemp
       _RL  stemp
       _RL  oCnew
+CEOP
 
 
       K=1

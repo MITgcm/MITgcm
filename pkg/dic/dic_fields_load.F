@@ -1,17 +1,18 @@
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C !ROUTINE: DIC_FIELDS_LOAD
+
+C !INTERFACE: ==========================================================
       SUBROUTINE DIC_FIELDS_LOAD (
      I           myIter,myTime,myThid)
 
-C     /==========================================================\
-C     | SUBROUTINE DIC_FIELDS_LOAD  i                            |
-C     | o Read in fields needed for CO2 fluxterms                |
-C     |==========================================================|
-      IMPLICIT NONE
+C !DESCRIPTION:
+C  Read in fields needed for CO2,O2 fluxterms, silica for pH calculation
 
-C     == GLobal variables ==
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -25,16 +26,22 @@ C     == GLobal variables ==
 #include "DIC_LOAD.h"
 #endif
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  myThid               :: thread number
+C  myIter               :: current timestep
+C  myTime               :: current time
       INTEGER myIter
       _RL myTime
       INTEGER myThid
 
 #ifdef ALLOW_PTRACERS
-C     == Local variables ==
+
+c !LOCAL VARIABLES: ===================================================
        INTEGER bi,bj,i,j,intime0,intime1
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+CEOP
+
 c
       IF ( periodicExternalForcing ) THEN
 

@@ -1,7 +1,10 @@
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C !ROUTINE: BIO_EXPORT
+
+C !INTERFACE: ==========================================================
       SUBROUTINE BIO_EXPORT( PTR_PO4 , 
 #ifdef ALLOW_FE
      I           PTR_FE, 
@@ -10,13 +13,11 @@ CStartOfInterFace
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
-C     /==========================================================\
-C     | SUBROUTINE BIO_EXPORT                                     |
-C     | o Calculate biological activity and export                |
-C     |==========================================================|
-      IMPLICIT NONE
+c !DESCRIPTION:
+C  Calculate biological activity and export                
 
-C     == GLobal variables ==
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -25,7 +26,12 @@ C     == GLobal variables ==
 #include "DIC_ABIOTIC.h"
 #include "DIC_BIOTIC.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  myThid               :: thread number
+C  myIter               :: current timestep
+C  myTime               :: current time
+C  PTR_PO4              :: phosphate tracer field
+C  PTR_FE               :: iron tracer field
       INTEGER myIter
       _RL myTime
       INTEGER myThid
@@ -33,16 +39,23 @@ C     == Routine arguments ==
 #ifdef ALLOW_FE
       _RL  PTR_FE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 #endif
-      _RL bioac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR)
-      _RL sfac(1-OLy:sNy+OLy)
-      _RL lit, atten
       INTEGER imin, imax, jmin, jmax, bi, bj
+
+
+C !OUTPUT PARAMETERS: ==================================================
+C  bioac               :: biological productivity (will be split
+C                         between export and dissolved pool)
+      _RL bioac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR)
 
 #ifdef ALLOW_PTRACERS
 #ifdef DIC_BIOTIC
-C     == Local variables ==
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j,k                  :: loop indices
        INTEGER I,J,k
-c
+      _RL sfac(1-OLy:sNy+OLy)
+      _RL lit, atten
+CEOP
         call insol(myTime,sfac,bj)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
@@ -62,11 +75,13 @@ C$TAF STORE lit = bio_export
                  print*,'QQ lit', lit
              endif
              bioac(i,j,k)=alpha(i,j,bi,bj)*
-     &                    PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4)*
+     &                    lit/(lit+lit0)*maskC(i,j,k,bi,bj)*
 #ifdef ALLOW_FE
-     &                    PTR_FE(i,j,k)/(PTR_FE(i,j,k)+KFE)*
+     &                    min(PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4),
+     &                        PTR_FE(i,j,k)/(PTR_FE(i,j,k)+KFE) ) 
+#else
+     &                    PTR_PO4(i,j,k)/(PTR_PO4(i,j,k)+KPO4)
 #endif
-     &                    lit/(lit+lit0)*maskC(i,j,k,bi,bj)
             ENDDO
           ENDDO
         ENDDO

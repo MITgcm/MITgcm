@@ -1,18 +1,20 @@
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C !ROUTINE: ALK_SURFFORCING
+
+C !INTERFACE: ==========================================================
       SUBROUTINE ALK_SURFFORCING( PTR_ALK , GALK, 
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
-C     /==========================================================\
-C     | SUBROUTINE ALK_SURFFORCING                               |
-C     | o Calculate the alkalinity change due to freshwater flux |
-C     |==========================================================|
-      IMPLICIT NONE
+C !DESCRIPTION:
+C Calculate the alkalinity change due to freshwater flux
+C Update alkalinity tendency term
 
-C     == GLobal variables ==
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -21,17 +23,29 @@ C     == GLobal variables ==
 #include "FFIELDS.h"
 #include "DIC_ABIOTIC.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  myThid               :: thread number
+C  myIter               :: current timestep
+C  myTime               :: current time
+C  bi,bj                :: tile indices
+C  PTR_ALK              :: alkalinity field
+C  GALK                 :: tendency term of alkalinity
       INTEGER myIter, myThid
       _RL myTime
       _RL  PTR_ALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL  GALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin,iMax,jMin,jMax, bi, bj
+
+C !OUTPUT PARAMETERS: ==================================================
+C  GALK                 :: tendency term of alkalinity
+      _RL  GALK(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 #ifdef ALLOW_PTRACERS
 #ifdef DIC_BIOTIC
-C     == Local variables ==
-       INTEGER I,J
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+      INTEGER i,j
+CEOP
 
         DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx

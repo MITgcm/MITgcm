@@ -1,18 +1,19 @@
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C !ROUTINE: PHOS_FLUX
+
+C !INTERFACE: ==========================================================
       SUBROUTINE PHOS_FLUX( bioac, pflux,
      I           bi,bj,imin,imax,jmin,jmax,
      I           myIter,myTime,myThid)
 
-C     /==========================================================\
-C     | SUBROUTINE PHOS_FORCING                                   |
-C     | o Calculate the PO4 flux to depth from bio activity
-C     |==========================================================|
-      IMPLICIT NONE
+C !DESCRIPTION:
+C Calculate the PO4 flux to depth from bio activity
 
-C     == GLobal variables ==
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -20,22 +21,41 @@ C     == GLobal variables ==
 #include "GRID.h"
 #include "DIC_BIOTIC.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  myThid               :: thread number
+C  myIter               :: current timestep
+C  myTime               :: current time
+C  bioac                :: biological productivity
       INTEGER myIter
       _RL myTime
       INTEGER myThid
       _RL  bioac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+
+
+C !OUTPUT PARAMETERS: ===================================================
+C  pflux               :: changes to PO4 due to flux and reminerlization
       _RL  pflux(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL  zbase
       INTEGER imin, imax, jmin, jmax, bi, bj
 
 #ifdef ALLOW_PTRACERS
 #ifdef DIC_BIOTIC
-C     == Local variables ==
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j,k                  :: loop indices
+c  ko                     :: loop-within-loop index
+c bexport                :: flux of phosphurous from base each "productive"
+c                            layer
+c depth_u, depth_l        :: depths of upper and lower interfaces
+c flux_u, flux_l          :: flux through upper and lower interfaces
+c zbase                   :: depth of bottom of current productive layer
+       _RL  zbase
        _RL bexport(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
        INTEGER I,J,k, ko
        _RL depth_u, depth_l
        _RL flux_u, flux_l
+CEOP
+
+
 c
 c calculate PO4 flux from base of each layer
        DO j=1-OLy,sNy+OLy

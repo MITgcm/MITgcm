@@ -2,17 +2,18 @@
 #include "PTRACERS_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C !ROUTINE: DIC_SURFFORCING_INIT
+
+C !INTERFACE: ==========================================================
       SUBROUTINE DIC_SURFFORCING_INIT(
      I          myThid)
 
-C     /==========================================================\
-C     | SUBROUTINE DIC_SURFFORCING                               |
-C     | o Calculate first guess of pH                            |
-C     |==========================================================|
-      IMPLICIT NONE
+C !DESCRIPTION:
+C  Calculate first guess of pH                            
 
-C     == GLobal variables ==
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
@@ -26,11 +27,13 @@ C     == GLobal variables ==
 #include "DIC_LOAD.h"
 #endif
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  myThid               :: thread number
       INTEGER  myThid
 
 #ifdef ALLOW_PTRACERS
-C     == Local variables ==
+
+C !LOCAL VARIABLES: ====================================================
        INTEGER I,J, kLev, it
        INTEGER intime0,intime1
        _RL aWght,bWght,rdt
@@ -43,6 +46,7 @@ C local variables for carbon chem
       _RL surfalk(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfsi(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+CEOP
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
