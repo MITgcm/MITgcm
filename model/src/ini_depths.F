@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.5 1998/06/10 01:44:03 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.6 1998/06/12 19:33:33 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -105,6 +105,7 @@ C         Inverse of depth
 C--   Now calculate "lopping" factors hFac.
       zG = delZ(1)*0.5 D0
       zFace(1) = 0
+      dzC(1)   = delz(1)/2. _d 0
       rDzC(1)  = 2. _d 0/delZ(1)
       DO K=1,Nz-1
        saFac(K) = 1. D0
@@ -112,6 +113,7 @@ C--   Now calculate "lopping" factors hFac.
        zG         = zG + (delZ(K)+delZ(K+1))*0.5 D0
        zFace(K+1) = zFace(K)+delZ(K)
        rDzC(K+1)  = 2. _d 0/(delZ(K)+delZ(K+1))
+       dzC(K+1)   = (delZ(K)+delZ(K+1))/2. _d 0
       ENDDO
       zC(Nz)      = zG
       zFace(Nz+1) = zFace(Nz)+delZ(Nz)
@@ -188,7 +190,7 @@ C--   Calculate recipricols of hFacC, hFacW and hFacS
       _EXCH_XYZ_R4(rhFacS , myThid )
 
 C
-      CALL PLOT_FIELD_XYR4( H, 'Model depths' , 1, myThid )
+      CALL PLOT_FIELD_XYR8( H, 'Model depths' , 1, myThid )
 C
       RETURN
       END

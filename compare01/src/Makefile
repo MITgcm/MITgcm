@@ -40,9 +40,8 @@ LNKOPTS=-fast -dalign -o $(EXE)
 F90COMP=f90
 F90LINK=f90
 F77COMP=f90
-F77COMOPTS=-ladebug -fast -O5 -notransform_loops -extend_source -convert big_endian -I../src -c
-COMOPTS=-r8 -fpconst -O3 -notransform_loops -nospeculate -extend_source -convert big_endian -I../src -c
-
+F77COMOPTS=-ladebug -fast -O5 -notransform_loops -extend_source -I../src -c
+COMOPTS=-r8 -fpconst -O3 -notransform_loops -nospeculate -extend_source -I../src -c
 LNKOPTS= -O2 -automatic -call_shared -o $(EXE)
 LNKOPTS= -what -O3 -notransform_loops -nospeculate -automatic -call_shared -o $(EXE)
 # END xolas.lcs.mit.edu

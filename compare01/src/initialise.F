@@ -1,4 +1,4 @@
-C $Id: initialise.F,v 1.2 1998/06/08 21:42:59 cnh Exp $
+C $Id: initialise.F,v 1.3 1998/06/12 19:33:31 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 #define SPHERICAL
@@ -172,6 +172,12 @@ C        fCorV( _I3(k,i,j) )  = 2.D0*omega*SIN(latSouth*deg2rad)
       fCorV = 0.5D0*(fCorU+CSHIFT(fCorU,-1,2) )
 C     fCorU = 0.5*(fCorV+CSHIFT(fCorV,+1,2) )
       fCorW = fCorU
+
+C     fCorU = 1.d-4
+C     fCorV = 1.d-4
+
+      WRITE(0,*) ' fcoru '
+      CALL PLOT_FIELD(fCorU(_I3(1,1:nx,1:ny)), Nx, Ny)
  
       DO j=1, ny
        DO i=1, nx
@@ -288,14 +294,14 @@ C         du/dz = 0.
           WaterAbove = tmpMsk( _I3(k-1,i,j) )*tmpMsk( _I3(k-1,i-1,j) ) .GT. 0.5
           IF ( LandHere .AND. WaterAbove ) THEN
            uDdzOp( _I3(k,i,j) ) = 0.              ! Free Slip
-           uDdzOp( _I3(k,i,j) ) = rDzAtP(K)*2.D0  ! No Slip
+           uDdzOp( _I3(k,i,j) ) = rDzAtW(K)*2.D0  ! No Slip
           ENDIF
 C         dv/dz = 0.
           LandHere   = tmpMsk( _I3(k  ,i,j) )*tmpMsk( _I3(k  ,i,j-1) ) .LT. 0.5
           WaterAbove = tmpMsk( _I3(k-1,i,j) )*tmpMsk( _I3(k-1,i,j-1) ) .GT. 0.5
           IF ( LandHere .AND. WaterAbove ) THEN
            vDdzOp( _I3(k,i,j) ) = 0.              ! Free Slip
-           vDdzOp( _I3(k,i,j) ) = rDzAtP(K)*2.D0  ! No Slip
+           vDdzOp( _I3(k,i,j) ) = rDzAtW(K)*2.D0  ! No Slip
           ENDIF
 C         dt/dz = ds/dz = 0.
           LandHere   = tmpMsk( _I3(k  ,i,j) ) .LT. 0.5
@@ -566,29 +572,30 @@ C      \------------------------------------------------------------------------
 C      /------------------------------------------------------------------------\
 C      | Temperature                                                            |
 C      \------------------------------------------------------------------------/
-C      OPEN ( 11, FILE='LevCli.ptmp.sun.b', STATUS='old' , FORM='unformatted')
-C      READ (11) tmp
-C      CLOSE(11)
-C      do K = 1, Nz
-C       T( _I3(K,:,:) ) = tmp(:,:,K)
-C      enddo
-C      T = T*pMask
-C      WRITE(0,*) 'T LOADED FROM FILE'
+       OPEN ( 11, FILE='LevCli.ptmp.sun.b', STATUS='old' , FORM='unformatted')
+       READ (11) tmp
+       CLOSE(11)
+       do K = 1, Nz
+        T( _I3(K,:,:) ) = tmp(:,:,K)
+       enddo
+       T = T*pMask
+       WRITE(0,*) 'T LOADED FROM FILE'
 C      /-----------------------------------------------------------------------\
 C      | Print character contour map of surface and deep temperature field.    |
 C      \-----------------------------------------------------------------------/
-C      CALL PLOT_FIELD(T(_I3(1,:,: )), Nx, Ny)
-C      CALL PLOT_FIELD(T(_I3(20,:,:)), Nx, Ny)
+       CALL PLOT_FIELD(T(_I3(1,:,: )), Nx, Ny)
+       CALL PLOT_FIELD(T(_I3(20,:,:)), Nx, Ny)
+C      STOP
 C      /-----------------------------------------------------------------------\
 C      | Salinity                                                              |
 C      \-----------------------------------------------------------------------/
-C      OPEN ( 11, FILE='LevCli.salt.sun.b', STATUS='old' , FORM='unformatted')
-C      READ (11) tmp
-C      CLOSE(11)
-C      do K = 1, Nz
-C       S( _I3(K,:,:) ) = tmp(:,:,K)
-C      enddo
-C      S = S*pMask
+       OPEN ( 11, FILE='LevCli.salt.sun.b', STATUS='old' , FORM='unformatted')
+       READ (11) tmp
+       CLOSE(11)
+       do K = 1, Nz
+        S( _I3(K,:,:) ) = tmp(:,:,K)
+       enddo
+       S = S*pMask
 C      /-----------------------------------------------------------------------\
 C      | Print character contour map of surface and deep salinity field.       |
 C      \-----------------------------------------------------------------------/

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.3 1998/05/21 18:25:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.4 1998/06/12 19:33:34 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -319,13 +319,13 @@ C--    Do "plot" using textual contour map "execution environment" routine
 C      Substitute other plotting utilities here!
        iStart   =  1-OLx
        iEnd     =  sNx+OLx
-C      iStart   =  1
-C      iEnd     =  sNx
+       iStart   =  1
+       iEnd     =  sNx
        iStride  =  1
        jStart   =  sNy+OLy
        jEnd     =  1-OLy
-C      jStart   =  sNy
-C      jEnd     =  1
+       jStart   =  sNy
+       jEnd     =  1
        jStride  = -1
        kStart   =  1
        kEnd     =  fldNz

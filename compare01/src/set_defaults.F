@@ -1,4 +1,4 @@
-C $Id: set_defaults.F,v 1.2 1998/06/08 21:42:59 cnh Exp $
+C $Id: set_defaults.F,v 1.3 1998/06/12 19:33:32 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 C================================================================================
@@ -85,6 +85,7 @@ C     \-------------------------------------------------------------------------
       INTEGER K
 
       REAL TAUMAX, DISTY, LY
+      Real*4 tmpXY(Nx,Ny)
 C
 C     /-------------------------------------------------------------------------\
 C     | Parameter settings for small double gyre beta-plane experiment.         |
@@ -103,9 +104,9 @@ CENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNORE
 
 
 CSTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORESTARTIGNORE
-      phiMin      = -30.
-      dPhi        = 1.0
-      dTheta      = 1.0
+      phiMin      = -80.
+      dPhi        = 4.0
+      dTheta      = 4.0
 CENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNORE
 
 
@@ -183,6 +184,7 @@ C     State variables
 CENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNORE
 
 
+      THS      =  0.D0
       THS(1)   = 20.D0
       THS(2)   = 10.D0
       THS(3)   =  8.D0
@@ -201,14 +203,111 @@ C     T(_I3(2,:,:)) = 22.0D0
 C     T(_I3(3,:,:)) = 21.0D0
 C     T(_I3(4,:,:)) = 20.0D0
       S = 10.0D0    
-      DELTAZ(1) =  500.0D0
-      DELTAZ(2) =  500.0D0
-      DELTAZ(3) =  500.0D0
-      DELTAZ(4) =  500.0D0
+      THS( 1)       = 16.0D0
+      THS( 2)       = 15.2D0
+      THS( 3)       = 14.5D0
+      THS( 4)       = 13.9D0
+      THS( 5)       = 13.3D0
+      THS( 6)       = 12.4D0
+      THS( 7)       = 11.3D0
+      THS( 8)       =  9.9D0
+      THS( 9)       =  8.4D0
+      THS(10)       =  6.7D0
+      THS(11)       =  5.2D0
+      THS(12)       =  3.8D0
+      THS(13)       =  2.9D0
+      THS(14)       =  2.3D0
+      THS(15)       =  1.8D0
+      THS(16)       =  1.5D0
+      THS(17)       =  1.1D0
+      THS(18)       =  0.8D0
+      THS(19)       =  0.66D0
+      THS(20)       =  0.63D0
+      T(_I3( 1,:,:)) = THS( 1)
+      T(_I3( 2,:,:)) = THS( 2)
+      T(_I3( 3,:,:)) = THS( 3)
+      T(_I3( 4,:,:)) = THS( 4)
+      T(_I3( 5,:,:)) = THS( 5)
+      T(_I3( 6,:,:)) = THS( 6)
+      T(_I3( 7,:,:)) = THS( 7)
+      T(_I3( 8,:,:)) = THS( 8)
+      T(_I3( 9,:,:)) = THS( 9)
+      T(_I3(10,:,:)) = THS(10)
+      T(_I3(11,:,:)) = THS(11)
+      T(_I3(12,:,:)) = THS(12)
+      T(_I3(13,:,:)) = THS(13)
+      T(_I3(14,:,:)) = THS(14)
+      T(_I3(15,:,:)) = THS(15)
+      T(_I3(16,:,:)) = THS(16)
+      T(_I3(17,:,:)) = THS(17)
+      T(_I3(18,:,:)) = THS(18)
+      T(_I3(19,:,:)) = THS(19)
+      T(_I3(20,:,:)) = THS(20)
+
+      SSPPT( 1)      = 34.65
+      SSPPT( 2)      = 34.75
+      SSPPT( 3)      = 34.82
+      SSPPT( 4)      = 34.87
+      SSPPT( 5)      = 34.90
+      SSPPT( 6)      = 34.90
+      SSPPT( 7)      = 34.86
+      SSPPT( 8)      = 34.78
+      SSPPT( 9)      = 34.69
+      SSPPT(10)      = 34.60
+      SSPPT(11)      = 34.58
+      SSPPT(12)      = 34.62
+      SSPPT(13)      = 34.68
+      SSPPT(14)      = 34.72
+      SSPPT(15)      = 34.73
+      SSPPT(16)      = 34.74
+      SSPPT(17)      = 34.73
+      SSPPT(18)      = 34.73
+      SSPPT(19)      = 34.72
+      SSPPT(20)      = 34.72
+      S(_I3( 1,:,:)) = SSPPT( 1)
+      S(_I3( 2,:,:)) = SSPPT( 2)
+      S(_I3( 3,:,:)) = SSPPT( 3)
+      S(_I3( 4,:,:)) = SSPPT( 4)
+      S(_I3( 5,:,:)) = SSPPT( 5)
+      S(_I3( 6,:,:)) = SSPPT( 6)
+      S(_I3( 7,:,:)) = SSPPT( 7)
+      S(_I3( 8,:,:)) = SSPPT( 8)
+      S(_I3( 9,:,:)) = SSPPT( 9)
+      S(_I3(10,:,:)) = SSPPT(10)
+      S(_I3(11,:,:)) = SSPPT(11)
+      S(_I3(12,:,:)) = SSPPT(12)
+      S(_I3(13,:,:)) = SSPPT(13)
+      S(_I3(14,:,:)) = SSPPT(14)
+      S(_I3(15,:,:)) = SSPPT(15)
+      S(_I3(16,:,:)) = SSPPT(16)
+      S(_I3(17,:,:)) = SSPPT(17)
+      S(_I3(18,:,:)) = SSPPT(18)
+      S(_I3(19,:,:)) = SSPPT(19)
+      S(_I3(20,:,:)) = SSPPT(20)
+      DELTAZ( 1) =  50.D0
+      DELTAZ( 2) =  50.D0
+      DELTAZ( 3) =  55.D0
+      DELTAZ( 4) =  60.D0
+      DELTAZ( 5) =  65.D0
+      DELTAZ( 6) =  70.D0
+      DELTAZ( 7) =  80.D0
+      DELTAZ( 8) =  95.D0
+      DELTAZ( 9) = 120.D0
+      DELTAZ(10) = 155.D0
+      DELTAZ(11) = 200.D0
+      DELTAZ(12) = 260.D0
+      DELTAZ(13) = 320.D0
+      DELTAZ(14) = 400.D0
+      DELTAZ(15) = 480.D0
+      DELTAZ(16) = 570.D0
+      DELTAZ(17) = 655.D0
+      DELTAZ(18) = 725.D0
+      DELTAZ(19) = 775.D0
+      DELTAZ(20) = 815.D0
 
 C     Geometry
       DM        = 20. D3
-      DM        = 1.
+      DM        = 4.
       WRITE(20,*) ' DM',DM
 
 
@@ -322,7 +421,7 @@ C     Wall at X = Lx
       PMASK(_I3(:,nx,:))  = LAND  ! Land in east most cell
 C     Wall at Y = Ly
       PMASK(_I3(:,:,ny))  = LAND  ! Land in northern most cell
-C     bathySource = textBathymetry 
+      bathySource = binaryBathymetry 
 C     Island
       PMASK(_I3(Nz,1,24))  = LAND
 
@@ -352,6 +451,18 @@ C       fu(i,j) = -tauMax
       ENDDO
       fu(4,4) = fu(4,4)*0.917D0
 
+      OPEN ( 11, FILE='windx', STATUS='old' , FORM='unformatted')
+      READ (11) tmpXY
+C     Fu = tmpXY/DELPS(1)*G*0.1*uMask(_I3(1,:,:))           ! Dynes/cm**2 -> m/s**2
+      Fu = tmpXY/DELPS(1)*G*0.1
+      CLOSE(11)
+
+      OPEN ( 11, FILE='windy', STATUS='old' , FORM='unformatted')
+      READ (11) tmpXY
+C     Fu = tmpXY/DELPS(1)*G*0.1*uMask(_I3(1,:,:))           ! Dynes/cm**2 -> m/s**2
+      Fv = tmpXY/DELPS(1)*G*0.1
+      CLOSE(11)
+
 C
 CcnhDebugStarts
 Cdbg  WRITE(0,*) ' lY    = ', lY
@@ -359,7 +470,9 @@ Cdbg  WRITE(0,*) ' distY = ', distY
 Cdbg  WRITE(0,*) ' tauMax = ', tauMax
       WRITE(0,*) ' fu '
       CALL PLOT_FIELD(fu,Nx,Ny)
-Cdbg  STOP
+      WRITE(0,*) ' fv '
+      CALL PLOT_FIELD(fv,Nx,Ny)
+C     STOP
 CcnhDebugEnds
 C
       END

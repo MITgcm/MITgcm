@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.5 1998/05/30 02:10:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.6 1998/06/12 19:33:33 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -150,7 +150,7 @@ C     write(0,*) 'cg2d: Sum(rhs) = ',sumRHS
       actualResidual = SQRT(err)
 C     _BARRIER
       _BEGIN_MASTER( myThid )
-        WRITE(0,*) ' CG2D iters, err = ', actualIts, actualResidual
+       WRITE(0,*) ' CG2D iters, err = ', actualIts, actualResidual
       _END_MASTER( )
 
 C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -281,9 +281,9 @@ C--   Un-normalise the answer
       ENDDO
 
       _EXCH_XY_R8(cg2d_x, myThid )
-       _BEGIN_MASTER( myThid )
-        WRITE(6,*) ' CG2D iters, err = ', actualIts, actualResidual
-       _END_MASTER( )
+      _BEGIN_MASTER( myThid )
+       WRITE(0,*) ' CG2D iters, err = ', actualIts, actualResidual
+      _END_MASTER( )
 
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYR8( cg2d_x, 'CALC_MOM_RHS CG2D_X' , 1, myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.7 1998/06/09 16:48:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.8 1998/06/12 19:33:33 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 #define USE_FACTORIZED_POLY
@@ -53,7 +53,7 @@ C **********
      &   -tAlpha*(theta(i,j,k,bi,bj)-refTemp) )
         enddo
        enddo
-
+       
       elseif (eqn.eq.'POLY3') then
 
        refTemp=eosRefT(kRef)

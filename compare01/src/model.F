@@ -1,4 +1,4 @@
-C $Id: model.F,v 1.2 1998/06/08 21:42:59 cnh Exp $
+C $Id: model.F,v 1.3 1998/06/12 19:33:32 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 C================================================================================
@@ -106,7 +106,7 @@ C
 #ifdef USE_ETIME
       TIM1 = ETIME(TARR1)
 #endif
-      IF ( pickupRun ) THEN
+C     IF ( pickupRun ) THEN
 CMIC$  PARALLEL
 CMIC$&  SHARED(T,S,rPrm)
 CMIC$&  PRIVATE(LEV,K)
@@ -123,7 +123,7 @@ CMIC$  END PARALLEL
        DO K = 2, nz
         rPrmBz(_I3(K,:,:)) = ( rPrm(_I3(K,:,:))+rPrm(_I3(K-1,:,:)) )*0.5
        ENDDO
-      ENDIF
+C     ENDIF
 C     /----------------------------------------------------------------\
 C     | Load wind stress data                                          |
 C     \----------------------------------------------------------------/

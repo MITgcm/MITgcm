@@ -1,4 +1,4 @@
-C $Id: read.F,v 1.1 1998/05/25 20:21:05 cnh Exp $
+C $Id: read.F,v 1.2 1998/06/12 19:33:32 cnh Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 C ==========
@@ -185,7 +185,7 @@ C     \========================================================================/
        DO K = 1, Nz
        DO I = 1, Nx
        DO J = 1, Ny
-         PMASK(_I3(Nz-K+1,I,J)) = TMPARRCM(I,J,K)
+         PMASK(_I3(K,I,J)) = TMPARRCM(I,J,K)
        ENDDO
        ENDDO
        ENDDO
