@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.86 2002/03/24 02:36:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.87 2002/05/30 02:30:12 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -215,11 +215,6 @@ C     point numbers. This prevents spurious hardware signals due to
 C     uninitialised but inert locations.
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        DO k=1,Nr
-         phiHyd(i,j,k)  = 0. _d 0 
-         KappaRU(i,j,k) = 0. _d 0
-         KappaRV(i,j,k) = 0. _d 0
-        ENDDO
         rhoKM1 (i,j) = 0. _d 0
         rhok   (i,j) = 0. _d 0
         phiSurfX(i,j) = 0. _d 0
@@ -260,6 +255,11 @@ CHPF$&                  )
 C--     Set up work arrays that need valid initial values
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
+          DO k=1,Nr
+           phiHyd(i,j,k)  = 0. _d 0 
+           KappaRU(i,j,k) = 0. _d 0
+           KappaRV(i,j,k) = 0. _d 0
+          ENDDO
           fVerU  (i,j,1) = 0. _d 0
           fVerU  (i,j,2) = 0. _d 0
           fVerV  (i,j,1) = 0. _d 0
