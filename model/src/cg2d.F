@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.24 2000/03/24 18:31:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.25 2000/03/24 19:06:14 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -110,8 +110,8 @@ C--   Normalise RHS
        ENDDO
       ENDDO
 #ifdef LETS_MAKE_JAM
-      _GLOBAL_MAX_R8( rhsMax, myThid )
-C     rhsMax=1.
+C     _GLOBAL_MAX_R8( rhsMax, myThid )
+      rhsMax=1.
 #else
       _GLOBAL_MAX_R8( rhsMax, myThid )
 #endif
