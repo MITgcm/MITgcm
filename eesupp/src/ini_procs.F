@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.18 2004/03/27 03:51:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.19 2004/04/06 00:25:56 dimitri Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 CBOP
@@ -188,26 +188,22 @@ C--   To speed-up mpi gather and scatter routines, myXGlobalLo
 C     and myYGlobalLo from each process are transferred to
 C     a common block array.  This allows process 0 to know
 C     the location of the domains controlled by each process.
+       mpiBufSize=1
+       mpiRequest=0
        DO npe = 0, numberOfProcs-1
-          mpiBufSize=1
-          mpiRequest=0
           CALL MPI_ISEND (myXGlobalLo, mpiBufSize, MPI_INTEGER,
      &         npe, mpiMyId, MPI_COMM_MODEL, mpiRequest, ierr)
        ENDDO
        DO npe = 0, numberOfProcs-1
-          mpiBufSize=1
           CALL MPI_RECV (itemp, mpiBufSize, MPI_INTEGER,
      &         npe, npe, MPI_COMM_MODEL, istatus, ierr)
           mpi_myXGlobalLo(npe+1) = itemp
        ENDDO
        DO npe = 0, numberOfProcs-1
-          mpiBufSize=1
-          mpiRequest=0
           CALL MPI_ISEND (myYGlobalLo, mpiBufSize, MPI_INTEGER,
      &         npe, mpiMyId, MPI_COMM_MODEL, mpiRequest, ierr)
        ENDDO
        DO npe = 0, numberOfProcs-1
-          mpiBufSize=1
           CALL MPI_RECV (itemp, mpiBufSize, MPI_INTEGER,
      &         npe, npe, MPI_COMM_MODEL, istatus, ierr)
           mpi_myYGlobalLo(npe+1) = itemp
@@ -550,4 +546,4 @@ C
       RETURN
       END
 
-C $Id: ini_procs.F,v 1.18 2004/03/27 03:51:51 edhill Exp $
+C $Id: ini_procs.F,v 1.19 2004/04/06 00:25:56 dimitri Exp $

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.1 2004/01/09 20:46:10 afe Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.2 2004/04/06 00:25:56 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -33,6 +33,8 @@ C     == Local variables ==
       INTEGER myThid, I, J, II
       INTEGER iErr, tNx, tNy
       INTEGER pRank
+      INTEGER npe,itemp(nSx),istatus(MPI_STATUS_SIZE)
+      INTEGER mpiBufSize,mpiRequest
 
 C     Set dummy myThid value (we aren't multi-threaded here)
       myThid = 1
@@ -40,7 +42,7 @@ C     Set dummy myThid value (we aren't multi-threaded here)
 C     Define toplogy for every tile
       CALL W2_E2SETUP
 
-C     Decide which tiles this process handles - do this inline for now, but 
+C     Decide which tiles this process handles - do this inline for now, but
 C     should go in subroutine.
 C     Total number of tiles should be divisible by nPx and nSx
 C     ( there is no two dimensional decomposition for W2 ) and
@@ -142,7 +144,28 @@ C     functiional relationship that was used above.
         W2_myCommFlag(J,I) = commFlag
        ENDDO
       ENDDO
-C
+
+C     Fill in values for W2_mpi_myTileList
+#ifdef ALLOW_USE_MPI
+      mpiBufSize=nSx
+      mpiRequest=0
+      DO npe = 0, numberOfProcs-1
+         CALL MPI_ISEND (W2_myTileList, mpiBufSize, MPI_INTEGER,
+     &        npe, mpiMyId, MPI_COMM_MODEL, mpiRequest, ierr)
+      ENDDO
+      DO npe = 0, numberOfProcs-1
+         CALL MPI_RECV (itemp, mpiBufSize, MPI_INTEGER,
+     &        npe, npe, MPI_COMM_MODEL, istatus, ierr)
+         DO I=1,nSx
+            W2_mpi_myTileList(npe+1,I)=itemp(I)
+         ENDDO
+      ENDDO
+#else /* ALLOW_USE_MPI */
+      DO I=1,nSx
+         W2_mpi_myTileList(1,I)=W2_myTileList(I)
+      ENDDO
+#endif /* ALLOW_USE_MPI */
+
 C     Print out the topology communication schedule
       CALL W2_PRINT_COMM_SEQUENCE
 C

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.12 2004/03/16 06:38:00 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.13 2004/04/06 00:25:56 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,15 +64,22 @@ C Functions
       integer MDS_RECLEN
 C Local variables
       character*(80) dataFName,pfName
-      integer iG,jG,irec,bi,bj,j,k,dUnit,IL,pIL
+      integer iG,jG,irec,bi,bj,i,j,k,dUnit,IL,pIL
       logical exst
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
       logical globalFile,fileIsOpen
-      integer length_of_rec
+      integer x_size,y_size,iG_IO,jG_IO,length_of_rec
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+      PARAMETER ( x_size = exch2_domain_nxt * sNx )
+      PARAMETER ( y_size = exch2_domain_nyt * sNy )
+#else
+      PARAMETER ( x_size = Nx )
+      PARAMETER ( y_size = Ny )
+#endif
+      Real*4 xy_buffer_r4(x_size,y_size)
+      Real*8 xy_buffer_r8(x_size,y_size)
       character*(max_len_mbuf) msgbuf
-      integer i
-      Real*4 global_r4(Nx,Ny)
       Real*8 global   (Nx,Ny)
       _RL local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_EXCH2
@@ -358,9 +365,6 @@ c     endif ( .not. ( globalFile .and. useSingleCPUIO ) )
 
       if ( globalFile .and. useSingleCPUIO ) then
 
-C useSingleCPUIO only supports old-style I/O, i.e., the
-C input file is assumed: sNx*nSx*nPx * sNy*nSy*nPy * Nr.
-
 C master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
 #ifdef ALLOW_USE_MPI
@@ -368,7 +372,7 @@ C master thread of process 0, only, opens a global file
 #else
         IF ( .TRUE. ) THEN
 #endif /* ALLOW_USE_MPI */
-         length_of_rec=MDS_RECLEN( filePrec, Nx*Ny, mythid )
+         length_of_rec=MDS_RECLEN( filePrec, xy_size, mythid )
          open( dUnit, file=dataFName, status='old',
      &        access='direct', recl=length_of_rec )
         ENDIF
@@ -384,20 +388,59 @@ C master thread of process 0, only, opens a global file
 #endif /* ALLOW_USE_MPI */
           irec = k+nNz*(irecord-1)
           if (filePrec .eq. precFloat32) then
-           read(dUnit,rec=irec) global_r4
+           read(dUnit,rec=irec) xy_buffer_r4
 #ifdef _BYTESWAPIO
-           call MDS_BYTESWAPR4( Nx*Ny, global_r4 )
+           call MDS_BYTESWAPR4( xy_size, xy_buffer_r4 )
 #endif
-           DO J=1,Ny
-            DO I=1,Nx
-             global(I,J) = global_r4(I,J)
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+           bj=1
+           DO npe=1,nPx*nPy
+            DO bi=1,nSx
+             DO J=1,sNy
+              DO I=1,sNx
+               iG=mpi_myXGlobalLo(npe)-1+(bi-1)*sNx+i
+               jG=mpi_myYGlobalLo(npe)-1+(bj-1)*sNy+j
+               iG_IO=exch2_txglobalo(W2_mpi_myTileList(npe,bi))+i-1
+               jG_IO=exch2_tyglobalo(W2_mpi_myTileList(npe,bi))+j-1
+               global(iG,jG) = xy_buffer_r4(iG_IO,jG_IO)
+              ENDDO
+             ENDDO
             ENDDO
            ENDDO
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+           DO J=1,Ny
+            DO I=1,Nx
+             global(I,J) = xy_buffer_r4(I+(J-1)*Ny)
+            ENDDO
+           ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
           elseif (filePrec .eq. precFloat64) then
-           read(dUnit,rec=irec) global
+           read(dUnit,rec=irec) xy_buffer_r8
 #ifdef _BYTESWAPIO
-           call MDS_BYTESWAPR8( Nx*Ny, global )
+           call MDS_BYTESWAPR8( xy_size, xy_buffer_r8 )
 #endif
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+           bj=1
+           DO npe=1,nPx*nPy
+            DO bi=1,nSx
+             DO J=1,sNy
+              DO I=1,sNx
+               iG=mpi_myXGlobalLo(npe)-1+(bi-1)*sNx+i
+               jG=mpi_myYGlobalLo(npe)-1+(bj-1)*sNy+j
+               iG_IO=exch2_txglobalo(W2_mpi_myTileList(npe,bi))+i-1
+               jG_IO=exch2_tyglobalo(W2_mpi_myTileList(npe,bi))+j-1
+               global(iG,jG) = xy_buffer_r8(iG_IO,jG_IO)
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDDO
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+           DO J=1,Ny
+            DO I=1,Nx
+             global(I,J) = xy_buffer_r8(I+(J-1)*Ny)
+            ENDDO
+           ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
           else
            write(msgbuf,'(a)')
      &            ' MDSREADFIELD: illegal value for filePrec'
@@ -406,7 +449,6 @@ C master thread of process 0, only, opens a global file
           endif
          ENDIF
         _END_MASTER( myThid )
-
         CALL SCATTER_2D(global,local,mythid)
         if (arrType .eq. 'RS') then
            call PASStoRS( local,arr,k,nNz,mythid )

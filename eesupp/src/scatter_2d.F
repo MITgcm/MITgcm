@@ -21,7 +21,7 @@ C     global,local - working arrays used to transfer 2-D fields
       _RL     temp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER istatus(MPI_STATUS_SIZE), ierr
       INTEGER isource, itag, npe
-      INTEGER iP, jP, lbuff
+      INTEGER lbuff
 #endif /* ALLOW_USE_MPI */
 
 C--   Make everyone wait except for master thread.
@@ -56,8 +56,6 @@ C--   Process 0 fills-in its local data
             DO bi=1,nSx
                DO j=1,sNy
                   DO i=1,sNx
-                     iP = (bi-1)*sNx+i
-                     jP = (bj-1)*sNy+j
                      iG = mpi_myXGlobalLo(npe+1)-1+(bi-1)*sNx+i
                      jG = mpi_myYGlobalLo(npe+1)-1+(bj-1)*sNy+j
                      local(i,j,bi,bj) = global(iG,jG)
@@ -72,8 +70,6 @@ C--   Process 0 sends local arrays to all other processes
                DO bi=1,nSx
                   DO j=1,sNy
                      DO i=1,sNx
-                        iP = (bi-1)*sNx+i
-                        jP = (bj-1)*sNy+j
                         iG = mpi_myXGlobalLo(npe+1)-1+(bi-1)*sNx+i
                         jG = mpi_myYGlobalLo(npe+1)-1+(bj-1)*sNy+j
                         temp(i,j,bi,bj) = global(iG,jG)

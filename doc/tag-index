@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.273 2004/04/05 06:05:07 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.274 2004/04/06 00:25:56 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o extending useSingleCpuIO option to work with new exch2 I/O format
+  - old-style, missing-tile I/O is still accessible by defining CPP
+    option MISSING_TILE_IO in pkg/mdsio/MDSIO_OPTIONS.h
 o monitor package can write to NetCDF files and/or STDOUT
 o fix re-definition bug in MNC_GRID_INIT_ALL()
 o doc/api_reference added
