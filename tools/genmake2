@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.40 2003/11/14 21:20:35 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.41 2003/11/20 00:25:43 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -76,17 +76,6 @@ find_possible_configs()  {
     PLATFORM=`echo $tmp3 | sed -e 's/i[3-6]86/ia32/' | sed -e 's/athlon/ia32/'`
     OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
     echo "  The platform appears to be:  $PLATFORM"
-#     if test "x$OFLIST" = x ; then
-# 	echo "  No pre-defined options files were found matching this platform"
-# 	echo "  but examples for other platforms can be found in:"
-# 	echo "    $ROOTDIR/tools/build_options"
-#     else
-# 	echo "  Options files (located in $ROOTDIR/tools/build_options) that"
-# 	echo "  may work with this machine are:"
-# 	for i in $OFLIST ; do
-# 	    echo "    $i"
-# 	done
-#     fi
     
     echo "test" > test
     ln -s ./test link
@@ -225,52 +214,94 @@ get_pdepend_list()  {
 
 #  Explain usage
 usage()  {
-    echo
-    echo "Usage: "$0" [OPTIONS]"
-    echo "  where [OPTIONS] can be:"
-    echo
-    echo "    -help | --help | -h | --h"
-    echo "    -nooptfile | --nooptfile"
-    echo "      -optfile NAME | --optfile NAME | -of NAME | --of NAME"
-    echo "      -optfile=NAME | --optfile=NAME | -of=NAME | --of=NAME"
-    echo "    -pdepend NAME | --pdepend NAME"
-    echo "      -pdepend=NAME | --pdepend=NAME"
-    echo "    -pdefault NAME | --pdefault NAME"
-    echo "      -pdefault=NAME | --pdefault=NAME"
-    echo "    -make NAME | -m NAME"
-    echo "      --make=NAME | -m=NAME"
-    echo "    -makefile NAME | -mf NAME"
-    echo "      --makefile=NAME | -mf=NAME"
-    echo "    -platform NAME | --platform NAME | -pl NAME | --pl NAME"
-    echo "      -platform=NAME | --platform=NAME | -pl=NAME | --pl=NAME"
-    echo "    -rootdir NAME | --rootdir NAME | -rd NAME | --rd NAME"
-    echo "      -rootdir=NAME | --rootdir=NAME | -rd=NAME | --rd=NAME"
-    echo "    -mods NAME | --mods NAME | -mo NAME | --mo NAME"
-    echo "      -mods=NAME | --mods=NAME | -mo=NAME | --mo=NAME"
-    echo "    -disable NAME | --disable NAME"
-    echo "      -disable=NAME | --disable=NAME"
-    echo "    -enable NAME | --enable NAME"
-    echo "      -enable=NAME | --enable=NAME"
-    echo "    -standarddirs NAME | --standarddirs NAME"
-    echo "      -standarddirs=NAME | --standarddirs=NAME"
-    echo "    -noopt NAME | --noopt NAME"
-    echo "      -noopt=NAME | --noopt=NAME"
-#    echo "    -cpp NAME | --cpp NAME"
-#    echo "      -cpp=NAME | --cpp=NAME"
-    echo "    -fortran NAME | --fortran NAME | -fc NAME | --fc NAME"
-    echo "      -fc=NAME | --fc=NAME"
-    echo "    -[no]ieee | --[no]ieee"
-    echo "    -[no]mpi | --[no]mpi"
-    echo "    -[no]jam | --[no]jam"
-    echo
-    echo "  and NAME is a string such as:"
-    echo
-    echo "    --enable pkg1   --enable 'pkg1 pkg2'   --enable 'pkg1 pkg2 pkg3'"
-    echo "    -mods=dir1   -mods='dir1'   -mods='dir1 dir2 dir3'"
-    echo "    -foptim='-Mvect=cachesize:512000,transform -xtypemap=real:64,double:64,integer:32'"
-    echo
-    echo "  which, depending upon your shell, may need to be single-quoted"
-    echo "  if it contains spaces, dashes, or other special characters."
+cat <<EOF
+
+Usage: "$0" [OPTIONS]
+  where [OPTIONS] can be:
+
+    -help | --help | -h | --h
+          Print this help message and exit.
+
+    -nooptfile | --nooptfile
+      -optfile NAME | --optfile NAME | -of NAME | --of NAME
+      -optfile=NAME | --optfile=NAME | -of=NAME | --of=NAME
+          Use "NAME" as the optfile.  By default, an attempt will be
+          made to find an appropriate "standard" optfile in the 
+          tools/build_options/ directory.
+
+    -pdepend NAME | --pdepend NAME
+      -pdepend=NAME | --pdepend=NAME
+          Get package dependency information from "NAME".
+
+    -pdefault NAME | --pdefault NAME
+      -pdefault=NAME | --pdefault=NAME
+          Get the default package list from "NAME".
+
+    -make NAME | -m NAME
+      --make=NAME | -m=NAME
+          Use "NAME" for the MAKE program. The default is "make" but 
+          many platforms, "gmake" is the preferred choice.
+
+    -makefile NAME | -mf NAME
+      --makefile=NAME | -mf=NAME
+          Call the makefile "NAME".  The default is "Makefile".
+
+    -rootdir NAME | --rootdir NAME | -rd NAME | --rd NAME
+      -rootdir=NAME | --rootdir=NAME | -rd=NAME | --rd=NAME
+          Specify the location of the MITgcm ROOTDIR as "NAME".
+          By default, genamke will try to find the location by 
+          looking in parent directories (up to the 5th parent).
+
+    -mods NAME | --mods NAME | -mo NAME | --mo NAME
+      -mods=NAME | --mods=NAME | -mo=NAME | --mo=NAME
+          Here, "NAME" specifies a list of directories that are 
+          used for additional source code.  Files found in the 
+          "mods list" are given preference over files of the same 
+          name found elsewhere.
+
+    -disable NAME | --disable NAME
+      -disable=NAME | --disable=NAME
+          Here "NAME" specifies a list of packages that we don't 
+          want to use.  If this violates package dependencies, 
+          genamke will exit with an error message.
+
+    -enable NAME | --enable NAME
+      -enable=NAME | --enable=NAME
+          Here "NAME" specifies a list of packages that we wish 
+          to specifically enable.  If this violates package 
+          dependencies, genamke will exit with an error message.
+
+    -standarddirs NAME | --standarddirs NAME
+      -standarddirs=NAME | --standarddirs=NAME
+          Here, "NAME" specifies a list of directories to be 
+          used as the "standard" code.
+
+    -fortran NAME | --fortran NAME | -fc NAME | --fc NAME
+      -fc=NAME | --fc=NAME
+          Use "NAME" as the fortran compiler.  By default, genmake 
+          will search for a working compiler by trying a list of
+          "usual suspects" such as g77, f77, etc.
+
+    -[no]ieee | --[no]ieee
+          Do or don't use IEEE numerics.  Note that this option 
+          *only* works if it is supported by the OPTFILE that 
+          is being used.
+
+  While it is most often a single word, the "NAME" variables specified 
+  above can in many cases be a space-delimited string such as:
+
+    --enable pkg1   --enable 'pkg1 pkg2'   --enable 'pkg1 pkg2 pkg3'
+    -mods=dir1   -mods='dir1'   -mods='dir1 dir2 dir3'
+    -foptim='-Mvect=cachesize:512000,transform -xtypemap=real:64,double:64,integer:32'
+
+  which, depending upon your shell, may need to be single-quoted.
+
+  For more detailed genmake documentation, please see:
+
+    http://mitgcm.org/devel_HOWTO/
+
+EOF
+
     exit 1
 }
 
@@ -473,7 +504,7 @@ TAMC_EXTRA=
 
 
 #  The following state can be set directly by command-line switches
-gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE NOOPT"
+gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE"
 gm_s2="FC IEEE MPI JAM DUMPSTATE STANDARDDIRS"
 
 #  The following state is not directly set by command-line switches
@@ -491,8 +522,17 @@ gm_s12="TAF_EXTRA TAMC_EXTRA"
 gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6 $gm_s7"
 gm_state="$gm_state $gm_s10 $gm_s11 $gm_s12"
 
+cat <<EOF
 
-echo
+GENMAKE :
+
+A program for GENerating MAKEfiles for the MITgcm project.  For a
+quick list of options, use "genmake -h" or for more detail see:
+
+  http://mitgcm.org/devel_HOWTO/
+
+EOF
+
 echo "===  Processing options files and arguments  ==="
 gm_local="genmake_local"
 for i in . $MODS ; do
@@ -571,10 +611,12 @@ for ac_option ; do
 	-makefile=* | --makefile=* | -ma=* | --ma=*)
 	    MAKEFILE=$ac_optarg ;;
 	
-	-platform | --platform | -pl | --pl)
-	    ac_prev=PLATFORM ;;
-	-platform=* | --platform=* | -pl=* | --pl=*)
-	    PLATFORM=$ac_optarg ;;
+	-platform | --platform | -pl | --pl | -platform=* | --platform=* | -pl=* | --pl=*)
+	    echo "ERROR: The platform option has been removed.  Please specify"
+	    echo "  the build options using the \"optfile\" mechanism."
+	    echo
+	    usage
+	    ;;
 	
 	-rootdir | --rootdir | -rd | --rd)
 	    ac_prev=ROOTDIR ;;
@@ -601,11 +643,6 @@ for ac_option ; do
 	-standarddirs=* | --standarddirs=*)
 	    STANDARDDIRS=$ac_optarg ;;
 
-	-noopt | --noopt)
-	    ac_prev=NOOPT ;;
-	-noopt=* | --noopt=*)
-	    NOOPT=$ac_optarg ;;
-	
 #	    -cpp | --cpp)
 #		ac_prev=cpp ;;
 #	    -cpp=* | --cpp=*)
@@ -621,15 +658,10 @@ for ac_option ; do
 	-noieee | --noieee)
 	    IEEE= ;;
 	
-	-mpi | --mpi)
-	    MPI=true ;;
-	-nompi | --nompi)
-	    MPI= ;;
-	
-	-jam | --jam)
-	    JAM=1 ;;
-	-nojam | --nojam)
-	    JAM=0 ;;
+#	-jam | --jam)
+#	    JAM=1 ;;
+#	-nojam | --nojam)
+#	    JAM=0 ;;
 	
 	-ds | --ds)
 	    DUMPSTATE=t ;;
@@ -960,7 +992,7 @@ rm -f ./.pd_tmp
 #  Search for default packages.  Note that a "$ROOTDIR/pkg/pkg_groups"
 #  file should eventually be added so that, for convenience, one can 
 #  specify groups of packages using names like "ocean" and "atmosphere".
-echo  -n "  checking default package list:  "
+echo "  checking default package list:  "
 if test "x${PDEFAULT}" = x ; then
     for i in "." $MODS ; do
 	if test -r $i"/packages.conf" ; then
@@ -973,13 +1005,12 @@ if test "x${PDEFAULT}" = x ; then
     PDEFAULT="$ROOTDIR/pkg/pkg_default"
 fi
 if test "x${PDEFAULT}" = xNONE ; then
-    echo "default packages file disabled"
+    echo "    default packages file disabled"
 else
     if test ! -r $PDEFAULT ; then
-	echo ""
 	echo "Warning:  can't read default packages from PDEFAULT=\"$PDEFAULT\""
     else
-	echo "  using PDEFAULT=\"$PDEFAULT\""
+	echo "    using PDEFAULT=\"$PDEFAULT\""
         #  Strip the comments and add all the names
 	def=`cat $PDEFAULT | sed -e 's/#.*$//g' | $AWK '(NF>0){print $0}'`
 	RETVAL=$?
