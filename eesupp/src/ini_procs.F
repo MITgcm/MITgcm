@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.12 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.13 2001/08/21 17:23:45 adcroft Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 CStartOfInterface
@@ -294,8 +294,13 @@ C      xFace (y=constant) for XY arrays with real*4 declaration.
        elCount   = sNy+OLy*2
        elLen     = OLx
        elStride  = arrElSep
+#ifdef TARGET_SGI
+       CALL MPI_TYPE_VECTOR(elCount,elLen,elStride,MPI_REAL,
+     &                       mpiTypeXFaceBlock_xy_r4, mpiRC)
+#else
        CALL MPI_TYPE_VECTOR(elCount,elLen,elStride,MPI_REAL4,
      &                       mpiTypeXFaceBlock_xy_r4, mpiRC)
+#endif
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I5)')
@@ -313,8 +318,13 @@ C      xFace (y=constant) for XY arrays with real*4 declaration.
        ENDIF
 
 C      xFace (y=constant) for XY arrays with real*8 declaration.
+#ifdef TARGET_SGI
+       CALL MPI_TYPE_VECTOR(elCount,elLen,elStride,MPI_DOUBLE_PRECISION,
+     &                       mpiTypeXFaceBlock_xy_r8, mpiRC)
+#else
        CALL MPI_TYPE_VECTOR(elCount,elLen,elStride,MPI_REAL8,
      &                       mpiTypeXFaceBlock_xy_r8, mpiRC)
+#endif
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I5)')
@@ -382,8 +392,13 @@ C--    yFace datatypes (north<-->south messages)
 C--
 C      yFace (x=constant) for XY arrays with real*4 declaration
        elCount  = OLy*(sNx+OLx*2)
+#ifdef TARGET_SGI
+       CALL MPI_TYPE_CONTIGUOUS(elCount,MPI_REAL,
+     &                          mpiTypeYFaceBlock_xy_r4, mpiRC)
+#else
        CALL MPI_TYPE_CONTIGUOUS(elCount,MPI_REAL4,
      &                          mpiTypeYFaceBlock_xy_r4, mpiRC)
+#endif
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I5)')
@@ -400,8 +415,13 @@ C      yFace (x=constant) for XY arrays with real*4 declaration
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
 C      yFace (x=constant) for XY arrays with real*8 declaration
+#ifdef TARGET_SGI
+       CALL MPI_TYPE_CONTIGUOUS(elCount,MPI_DOUBLE_PRECISION,
+     &                          mpiTypeYFaceBlock_xy_r8, mpiRC)
+#else
        CALL MPI_TYPE_CONTIGUOUS(elCount,MPI_REAL8,
      &                          mpiTypeYFaceBlock_xy_r8, mpiRC)
+#endif
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
         WRITE(msgBuffer,'(A,I5)')
@@ -484,4 +504,4 @@ C
       RETURN
       END
 
-C $Id: ini_procs.F,v 1.12 2001/02/04 14:38:43 cnh Exp $
+C $Id: ini_procs.F,v 1.13 2001/08/21 17:23:45 adcroft Exp $
