@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.2 2004/04/22 21:45:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_sice2aim.F,v 1.3 2005/01/31 19:41:45 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -109,10 +109,7 @@ C-     Compute albedo over sea-ice
           ELSE
            aimAlb(i,j) = ALBICE
           ENDIF
-#ifdef ALLOW_TIMEAVE
-          ice_albedo_Ave(i,j,bi,bj) = ice_albedo_Ave(i,j,bi,bj)
-     &            + iceMask(i,j,bi,bj)*aimAlb(i,j)*thSIce_deltaT
-#endif /*ALLOW_TIMEAVE*/
+          siceAlb(i,j,bi,bj) = iceMask(i,j,bi,bj)*aimAlb(i,j)
          ENDDO
         ENDDO
       ELSE
