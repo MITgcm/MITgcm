@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.11 2003/01/12 21:13:36 jmc Exp $
+C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
@@ -90,7 +92,7 @@ C--   Area integrated meridional flux
 #else
      &    *(GM_isopycK
 #ifdef GM_VISBECK_VARIABLE_K
-cph     &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
+     &     +op5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
 #endif
      &     )
 #endif /* GM_NON_UNITY_DIAGONAL */
