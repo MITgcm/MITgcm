@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.54 2003/10/24 05:29:35 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.55 2003/10/26 01:10:12 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -146,7 +146,12 @@ C                      index into fVerTerm.
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+#ifdef ALLOW_PASSIVE_TRACER
       _RL fVerTr1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+#endif
+#ifdef ALLOW_PTRACERS
+      _RL fVerP   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
+#endif
       _RL rhokm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhok    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -164,7 +169,7 @@ C     This is currently used by IVDC and Diagnostics
       INTEGER bi, bj
       INTEGER i, j
       INTEGER k, km1, kup, kDown
-      INTEGER iTracer
+      INTEGER iTracer, ip
 
 CEOP
 
@@ -230,8 +235,16 @@ C     uninitialised but inert locations.
           fVerT  (i,j,2) = 0. _d 0
           fVerS  (i,j,1) = 0. _d 0
           fVerS  (i,j,2) = 0. _d 0
+#ifdef ALLOW_PASSIVE_TRACER
           fVerTr1(i,j,1) = 0. _d 0
           fVerTr1(i,j,2) = 0. _d 0
+#endif
+#ifdef ALLOW_PTRACERS
+          DO ip=1,PTRACERS_num
+           fVerP  (i,j,1,ip) = 0. _d 0
+           fVerP  (i,j,2,ip) = 0. _d 0
+          ENDDO
+#endif
          ENDDO
         ENDDO
 
@@ -723,7 +736,7 @@ ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
            CALL PTRACERS_INTEGRATE(
      I         bi,bj,k,
      I         xA,yA,uTrans,vTrans,rTrans,maskUp,
-     X         KappaRS,
+     X         fVerP, KappaRS,
      I         myIter,myTime,myThid)
          ENDIF
 #endif /* ALLOW_PTRACERS */
