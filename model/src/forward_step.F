@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.79 2003/12/15 23:00:44 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.80 2004/01/29 14:45:47 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -89,6 +89,8 @@ C     mythid - thread number for this instance of the routine.
       INTEGER bi,bj
 #endif
 
+      INTEGER bi,bj
+      integer i,L
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -279,15 +281,22 @@ C jmc: don't know precisely where to put this call. leave it here for now.
 
 C--     Step forward fields and calculate time tendency terms.
 C AMM
+#ifdef ALLOW_GRIDALT
+        if (useGRIDALT) CALL GRIDALT_UPDATE(myThid)
+#endif
+C AMM
+
+C AMM
 #ifdef ALLOW_FIZHI
-        CALL UPDATE_OCEAN_EXPORTS ( myTime, myIter, myThid )
-        CALL UPDATE_EARTH_EXPORTS ( myTime, myIter, myThid )
-        CALL UPDATE_CHEMISTRY_EXPORTS ( myTime, myIter, myThid )
-        CALL TIMER_START('FIZHI_WRAPPER       [FORWARD_STEP]',mythid)
-        CALL FIZHI_WRAPPER ( myTime, myIter, myThid )
-        CALL TIMER_STOP ('FIZHI_WRAPPER       [FORWARD_STEP]',mythid)
-                                                                                           
-        CALL STEP_FIZHI_FG ( myTime, myIter, myThid )
+        if( useFIZHI) then
+         CALL UPDATE_OCEAN_EXPORTS ( myTime, myIter, myThid )
+         CALL UPDATE_EARTH_EXPORTS ( myTime, myIter, myThid )
+         CALL UPDATE_CHEMISTRY_EXPORTS ( myTime, myIter, myThid )
+         CALL TIMER_START('FIZHI_WRAPPER       [FORWARD_STEP]',mythid)
+         CALL FIZHI_WRAPPER ( myTime, myIter, myThid )
+         CALL TIMER_STOP ('FIZHI_WRAPPER       [FORWARD_STEP]',mythid)
+         CALL STEP_FIZHI_FG ( myTime, myIter, myThid )
+        endif
 #endif
 C AMM
 
@@ -320,6 +329,7 @@ C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
         CALL TIMER_STOP ('SHAP_FILT           [FORWARD_STEP]',myThid)
       ENDIF
 #endif
+
 #ifdef ALLOW_ZONAL_FILT
       IF (useZONAL_FILT .AND. 
      &     staggerTimeStep .AND. zonal_filt_TrStagg ) THEN
