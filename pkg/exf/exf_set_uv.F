@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.6 2004/10/18 14:59:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.7 2004/12/20 23:32:52 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -282,7 +282,7 @@ c     IF ( .NOT. useCubedSphereExchange )
      &           exf_inscal_uvec,
      &           uvec, uvec0, uvec1, uvecmask,
      &           uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
-     &           uvec_nlon, uvec_nlat, xC, yC,
+     &           uvec_nlon, uvec_nlat, xC, yC, interp_method,
      &           mycurrenttime, mycurrentiter, mythid )
             call exf_set_gen(
      &           vvecfile, vvecstartdate, vvecperiod,
@@ -290,7 +290,7 @@ c     IF ( .NOT. useCubedSphereExchange )
      &           exf_inscal_vvec,
      &           vvec, vvec0, vvec1, vvecmask,
      &           vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
-     &           vvec_nlon, vvec_nlat, xC, yC,
+     &           vvec_nlon, vvec_nlat, xC, yC, interp_method,
      &           mycurrenttime, mycurrentiter, mythid )
 
       ENDIF

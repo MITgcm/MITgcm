@@ -7,7 +7,7 @@
      &     genfld, gen0, gen1, genmask,
 #ifdef USE_EXF_INTERPOLATION
      &     gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
-     &     gen_nlon, gen_nlat, gen_xout, gen_yout,
+     &     gen_nlon, gen_nlat, gen_xout, gen_yout, interp_method,
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 
@@ -65,6 +65,7 @@ c     gen_xout, gen_yout   :: coordinates for output grid
       INTEGER gen_nlon, gen_nlat
       _RS gen_xout  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS gen_yout  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      integer interp_method
 #endif
 
 c     == local variables ==
@@ -75,8 +76,7 @@ c     == local variables ==
       _RL     fac
 
       integer bi, bj
-      integer i, j
-      integer il, interp_method
+      integer i, j, il
 
 c     == external ==
 
@@ -109,7 +109,6 @@ c     get record numbers and interpolation factor for gen
                genfile0 = genfile
             endif
 #ifdef USE_EXF_INTERPOLATION
-            interp_method = 2
             call exf_interp( genfile0, exf_iprec
      &           , gen1, count0, gen_xout, gen_yout
      &           , gen_lon0,gen_lon_inc
@@ -140,7 +139,6 @@ c     get record numbers and interpolation factor for gen
                genfile1 = genfile
             endif
 #ifdef USE_EXF_INTERPOLATION
-            interp_method = 2
             call exf_interp( genfile1, exf_iprec
      &           , gen1, count1, gen_xout, gen_yout
      &           , gen_lon0,gen_lon_inc

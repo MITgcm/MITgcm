@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.23 2004/10/11 16:41:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.24 2004/12/20 23:32:52 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -47,7 +47,8 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      integer i, j, bi, bj
+      integer i, j, bi, bj, interp_method
+      parameter(interp_method=1)
 
 c     == end of interface ==
 
@@ -139,7 +140,7 @@ c     Atmospheric heat flux.
      &     hflux, hflux0, hflux1, hfluxmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
-     &     hflux_nlon, hflux_nlat, xC, yC,
+     &     hflux_nlon, hflux_nlat, xC, yC, interp_method,
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 
@@ -151,7 +152,7 @@ c     Salt flux.
      &     sflux, sflux0, sflux1, sfluxmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
-     &     sflux_nlon, sflux_nlat, xC, yC,
+     &     sflux_nlon, sflux_nlat, xC, yC, interp_method,
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 
@@ -165,7 +166,7 @@ c     Atmospheric temperature.
      &     atemp, atemp0, atemp1, atempmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     atemp_lon0, atemp_lon_inc, atemp_lat0, atemp_lat_inc,
-     &     atemp_nlon, atemp_nlat, xC, yC,
+     &     atemp_nlon, atemp_nlat, xC, yC, interp_method,
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
       do bj = mybylo(mythid),mybyhi(mythid)
@@ -186,7 +187,7 @@ c     Atmospheric humidity.
      &     aqh, aqh0, aqh1, aqhmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     aqh_lon0, aqh_lon_inc, aqh_lat0, aqh_lat_inc,
-     &     aqh_nlon, aqh_nlat, xC, yC,
+     &     aqh_nlon, aqh_nlat, xC, yC, interp_method,
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 
@@ -198,7 +199,7 @@ c     Net long wave radiative flux.
      &     lwflux, lwflux0, lwflux1, lwfluxmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     lwflux_lon0, lwflux_lon_inc, lwflux_lat0, lwflux_lat_inc,
-     &     lwflux_nlon, lwflux_nlat, xC, yC,
+     &     lwflux_nlon, lwflux_nlat, xC, yC, interp_method,
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 
@@ -210,7 +211,7 @@ c     Precipitation.
      &     precip, precip0, precip1, precipmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
-     &     precip_nlon, precip_nlat, xC, yC,
+     &     precip_nlon, precip_nlat, xC, yC, interp_method,
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 
@@ -239,7 +240,7 @@ c     Net short wave radiative flux.
      &     swflux, swflux0, swflux1, swfluxmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     swflux_lon0, swflux_lon_inc, swflux_lat0, swflux_lat_inc,
-     &     swflux_nlon, swflux_nlat, xC, yC,
+     &     swflux_nlon, swflux_nlat, xC, yC, interp_method,
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
@@ -253,7 +254,7 @@ c     Evaporation
      &     evap, evap0, evap1, evapmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
-     &     evap_nlon, evap_nlat, xC, yC,
+     &     evap_nlon, evap_nlat, xC, yC, interp_method,
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
@@ -268,7 +269,7 @@ c     Downward shortwave radiation.
      &     swdown, swdown0, swdown1, swdownmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     swdown_lon0, swdown_lon_inc, swdown_lat0, swdown_lat_inc,
-     &     swdown_nlon, swdown_nlat, xC, yC,
+     &     swdown_nlon, swdown_nlat, xC, yC, interp_method,
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 
@@ -280,7 +281,7 @@ c     Downward longwave radiation.
      &     lwdown, lwdown0, lwdown1, lwdownmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
-     &     lwdown_nlon, lwdown_nlat, xC, yC,
+     &     lwdown_nlon, lwdown_nlat, xC, yC, interp_method,
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 
@@ -296,6 +297,7 @@ c     Atmos. pressure forcing
 #ifdef USE_EXF_INTERPOLATION
      &     apressure_lon0, apressure_lon_inc, apressure_lat0,
      &     apressure_lat_inc, apressure_nlon, apressure_nlat, xC, yC,
+     &     interp_method,
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
