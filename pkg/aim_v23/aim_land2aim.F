@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_land2aim.F,v 1.4 2004/05/14 16:08:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_land2aim.F,v 1.5 2004/05/15 20:32:04 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -82,6 +82,7 @@ C     mWater       :: water content of the ground [kg/m3]
 C     recip_hSnWet :: reciprol effective snow depth for wetness (m^-1)
 C     recip_mSnWet :: reciprol effective snow cover for wetness (mm^-1)
       INTEGER i,j,k
+      INTEGER kFillW
       _RL grd_HeatCp, mWater
       _RL RSD
       _RL recip_hSnWet, recip_mSnWet
@@ -141,7 +142,9 @@ C        Units: snowFld is in milimeter of equivalent liquid water
         ENDIF
        ELSE
 C-    Fill in land-pkg soil moisture using AIM surf. fields
-        DO k=1,land_nLev
+        kFillW = land_nLev
+        IF (land_calc_grT) kFillW = 1
+        DO k=1,kFillW
          DO j=1,sNy
           DO i=1,sNx
            land_groundW(i,j,k,bi,bj) = aimSWA(i,j)
