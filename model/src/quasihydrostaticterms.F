@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/quasihydrostaticterms.F,v 1.1 2002/11/07 21:51:15 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/quasihydrostaticterms.F,v 1.2 2002/11/14 22:36:38 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -41,7 +41,7 @@ C--   == Local variables ==
         effectiveBuoy(i,j)=effectiveBuoy(i,j)
      &    -scalingFactor*
      &     fCoriCos(i,j,bi,bj)*
-     &     *0.5*( uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj) )
+     &     0.5*( uVel(i,j,k,bi,bj)+uVel(i+1,j,k,bi,bj) )
        ENDDO
       ENDDO
 
