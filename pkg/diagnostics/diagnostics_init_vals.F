@@ -312,6 +312,15 @@ c ----------------
       cdiag(248) = 'VVELSQ  '
       cdiag(249) = 'WVELSQ  '
       cdiag(250) = 'UVELVVEL'
+      cdiag(251) = 'UVELMASS'
+      cdiag(252) = 'VVELMASS'
+      cdiag(253) = 'WVELMASS'
+      cdiag(254) = 'UTHMASS '
+      cdiag(255) = 'VTHMASS '
+      cdiag(256) = 'WTHMASS '
+      cdiag(257) = 'USLTMASS'
+      cdiag(258) = 'VSLTMASS'
+      cdiag(259) = 'WSLTMASS'
 
 c Diagnostic Descriptions
 c ----------------------------------------------------------------------
@@ -638,6 +647,15 @@ c ----------------------------------------------------------------------
       tdiag(248)  = 'Square of Meridional Comp of Velocity (m^2/s^2)'
       tdiag(249)  = 'Square of Vertical Comp of Velocity (m^2/s^2)'
       tdiag(250)  = 'Meridional Transport of Zonal Momentum (m^2/s^2)'
+      tdiag(251)  = 'Zonal Mass-Weighted Comp of Velocity (m/s)'
+      tdiag(252)  = 'Meridional Mass-Weighted Comp of Velocity (m/s)'
+      tdiag(253)  = 'Vertical Mass-Weighted Comp of Velocity (m/s)'
+      tdiag(254)  = 'Zonal Mass-Weight Transp of Pot Temp (m-K/s)'
+      tdiag(255)  = 'Meridional Mass-Weight Transp of Pot Temp (m-K/s)'
+      tdiag(256)  = 'Vertical Mass-Weight Transp of Pot Temp (m-K/s)'
+      tdiag(257)  = 'Zonal Mass-Weight Transp of Salt (m-kg/s-kg)'
+      tdiag(258)  = 'Meridional Mass-Weight Transp of Salt (m-kg/s-kg)'
+      tdiag(259)  = 'Vertical Mass-Weight Transp of Salt (m-kg/s-kg)'
 
 c Diagnostic Units
 c ----------------
@@ -891,6 +909,15 @@ c ----------------
       udiag(248) = 'm2/sec2         '
       udiag(249) = 'm2/sec2         '
       udiag(250) = 'm2/sec2         '
+      udiag(251) = 'm/sec           '
+      udiag(252) = 'm/sec           '
+      udiag(253) = 'm/sec           '
+      udiag(254) = 'm-K/sec         '
+      udiag(255) = 'm-K/sec         '
+      udiag(256) = 'm-K/sec         '
+      udiag(257) = 'm-kg/s-kg       '
+      udiag(258) = 'm-kg/s-kg       '
+      udiag(259) = 'm-kg/s-kg       '
 
 c Diagnostic Parms
 c ----------------
@@ -1144,6 +1171,15 @@ c ----------------
       gdiag(248) = 'VV   242M       '
       gdiag(249) = 'WM      L       '
       gdiag(250) = 'UZ      M       '
+      gdiag(251) = 'UU   252M       '
+      gdiag(252) = 'VV   251M       '
+      gdiag(253) = 'WM      M       '
+      gdiag(254) = 'UU   255M       '
+      gdiag(255) = 'VV   254M       '
+      gdiag(256) = 'WM      M       '
+      gdiag(257) = 'UU   258M       '
+      gdiag(258) = 'VV   257M       '
+      gdiag(259) = 'WM      M       '
         
 c Diagnostic Levels
 c -----------------
@@ -1397,6 +1433,15 @@ c -----------------
       KDIAG(248)= Nr
       KDIAG(249)= Nr
       KDIAG(250)= Nr
+      KDIAG(251)= Nr
+      KDIAG(252)= Nr
+      KDIAG(253)= Nr
+      KDIAG(254)= Nr
+      KDIAG(255)= Nr
+      KDIAG(256)= Nr
+      KDIAG(257)= Nr
+      KDIAG(258)= Nr
+      KDIAG(259)= Nr
 
       do n=1,ndiagt
       idiag (n) = 0
