@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.3 2001/07/13 14:26:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.4 2001/09/19 13:53:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -80,7 +80,10 @@ C-      2D arrays
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
           etaN(I,J,bi,bj)=0. _d 0
+          etaH(I,J,bi,bj)=0. _d 0
+#ifdef INCLUDE_CD_CODE
           etaNm1(I,J,bi,bj)=0. _d 0
+#endif
          ENDDO
         ENDDO
 

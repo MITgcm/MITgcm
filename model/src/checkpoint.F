@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.12 2001/09/13 17:43:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.13 2001/09/19 13:53:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -88,8 +88,7 @@ C       Raw fields
         CALL READ_REC_XYZ_RL( 'gsNm1',  gSNm1, 1,myIter, myThid)
         CALL READ_REC_XY_RL ('etaN', etaN, 1,myIter, myThid)
 #ifdef INCLUDE_CD_CODE
-        CALL READ_REC_XY_RL
-     &               ( 'etaNm1', etaNm1, 1,myIter, myThid)
+        CALL READ_REC_XY_RL ('etaNm1', etaNm1, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'uVelD', uVelD, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'vVelD', vVelD, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'uNm1',  uNM1, 1,myIter, myThid)
@@ -125,7 +124,7 @@ C--     Read model fields
         CALL MDSREADFIELD(fn,prec,'RL', 1,etaN,12*Nr+1,myThid)
 #ifdef NONLIN_FRSURF
         IF ( nonlinFreeSurf.GE.0)
-     &  CALL MDSREADFIELD(fn,prec,'RL',1,etaNm1,12*Nr+2,myThid)
+     &  CALL MDSREADFIELD(fn,prec,'RL',1,etaH,12*Nr+2,myThid)
 #endif
 #ifdef INCLUDE_CD_CODE
         WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIter
@@ -135,12 +134,7 @@ C--     Read model fields
         CALL MDSREADFIELD(fn,prec,'RL',Nr,vNM1,     4,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,guCD,     5,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gvCD,     6,myThid)
-#ifdef NONLIN_FRSURF
-        IF ( nonlinFreeSurf.LT.0)
-     &  CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,6*Nr+1,myThid)
-#else
         CALL MDSREADFIELD(fn,prec,'RL', 1,etaNm1,6*Nr+1,myThid)
-#endif
 #endif /* INCLUDE_CD_CODE */
 
 #ifdef ALLOW_NONHYDROSTATIC
@@ -184,7 +178,7 @@ c     _EXCH_XYZ_R8(gvNM1 , myThid )
       _EXCH_XYZ_R8(gs    , myThid )
       _EXCH_XYZ_R8(gsNM1 , myThid )
       _EXCH_XY_R8 (etaN, myThid )
-      _EXCH_XY_R8( etaNm1, myThid )
+      _EXCH_XY_R8( etaH, myThid )
 
 #ifdef INCLUDE_CD_CODE
 c**** CALL EXCH_DUV_XYZ_RL(uVelD,vVelD,.TRUE.,myThid)
@@ -196,6 +190,7 @@ c     _EXCH_XYZ_R8( uNM1,     myThid )
 c     _EXCH_XYZ_R8( vNM1,     myThid )
       _EXCH_XYZ_R8( guCD,     myThid )
       _EXCH_XYZ_R8( gvCD,     myThid )
+      _EXCH_XY_R8( etaNm1, myThid )
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
@@ -361,7 +356,7 @@ C--     Write model fields
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaN,12*Nr+1,
      &                     myIter,myThid)
 #ifdef NONLIN_FRSURF
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaNm1,12*Nr+2,
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaH,12*Nr+2,
      &                     myIter,myThid)
 #endif
 #ifdef INCLUDE_CD_CODE
@@ -376,10 +371,8 @@ C--     Write model fields
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vNM1, 4,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,guCD, 5,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gvCD, 6,myIter,myThid)
-#ifndef NONLIN_FRSURF
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaNm1,6*Nr+1,
      &                     myIter,myThid)
-#endif
 #endif /* INCLUDE_CD_CODE */
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN

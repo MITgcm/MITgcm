@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.15 2001/08/13 18:07:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.16 2001/09/19 13:50:38 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -17,13 +17,19 @@ C     salt  - salinity (ppt, held at pressure/tracer point)
 C     gX, gXNM1 - Time tendencies at current and prvious time levels.
 C     uVelD  - D grid zonal velocity
 C     vVelD  - D grid meridional velocity
+C     etaH   - surface r-anomaly, advanced in time consistently 
+C              with 2.D flow divergence (Exact-Conservation): 
+C                etaH^n+1 = etaH^n - delta_t*Div.(H^n U^n)   
+C  note: a) used with "exactConserv" but strictly necessary for NonLinFreeSurf
+C        b) same as etaN but not necessarely at the same time, e.g.:
+C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
 
       COMMON /DYNVARS_R/
-     &                   etaN,etaNm1,
+     &                   etaN, etaH,
      &                   uVel,vVel,wVel,theta,salt,
      &                   gu,gv,gt,gs,guNm1,gvNm1,gtNm1,gsNm1
       _RL  etaN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  etaNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  etaH  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  wVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -41,10 +47,12 @@ C     vVelD  - D grid meridional velocity
 #ifdef INCLUDE_CD_CODE
       COMMON /DYNVARS_CD/ 
      &                   uVelD, vVelD,
+     &                   etaNm1,
      &                   uNM1,  vNM1,
      &                   guCD, gvCD
       _RL  uVeld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vVeld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  etaNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uNm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vNm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  guCD  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
