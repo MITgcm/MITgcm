@@ -99,6 +99,9 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/gad_fluxlimit_adv_y.f		\
 		$(SOURCE_CODE)/gad_grad_x.f			\
 		$(SOURCE_CODE)/gad_grad_y.f			\
+		$(SOURCE_CODE)/gad_u3_adv_r.f			\
+		$(SOURCE_CODE)/gad_u3_adv_x.f			\
+		$(SOURCE_CODE)/gad_u3_adv_y.f			\
 		$(SOURCE_CODE)/grad_sigma.f			\
 		$(SOURCE_CODE)/impldiff.f			\
 		$(SOURCE_CODE)/ini_cartesian_grid.f		\
@@ -111,6 +114,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/ini_forcing.f			\
 		$(SOURCE_CODE)/ini_grid.f			\
 		$(SOURCE_CODE)/ini_masks_etc.f			\
+		$(SOURCE_CODE)/ini_p_ground.f			\
 		$(SOURCE_CODE)/ini_pnh.f			\
 		$(SOURCE_CODE)/ini_procs.f			\
 		$(SOURCE_CODE)/ini_psurf.f			\
