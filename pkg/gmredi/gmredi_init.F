@@ -1,15 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_init.F,v 1.9 2004/03/24 15:21:15 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_init.F,v 1.10 2005/01/04 00:20:35 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: GMREDI_INIT
+C     !INTERFACE:
       SUBROUTINE GMREDI_INIT( myThid )
-C     /==========================================================\
-C     | SUBROUTINE GMREDI_INIT                                   |
-C     | o Routine to initialize GM/Redi variables and constants. |
-C     |==========================================================|
-C     | Initialize GM/Redi parameters, read in data.gmredi       |
-C     \==========================================================/
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE GMREDI_INIT
+C     | o Routine to initialize GM/Redi variables
+C     *==========================================================*
+C     \ev
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -18,14 +23,17 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GMREDI.h"
-#include "GMREDI_DIAGS.h"
+#include "GMREDI_TAVE.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid -  Number of this instance of KPP_INIT
+C     myThid ::  my Thread Id number
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_GMREDI
 
+C     !LOCAL VARIABLES:
 C     === Local variables ===
       INTEGER i,j,k,bi,bj
 
@@ -80,5 +88,5 @@ C- end bi,bj loops
       ENDDO
 #endif /* ALLOW_GMREDI */
 
-      return
-      end
+      RETURN
+      END
