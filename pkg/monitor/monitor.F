@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.23 2004/11/10 20:51:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.24 2004/11/27 09:19:25 dimitri Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -93,6 +93,12 @@ C       Print the time to make grepping the stdout easier
 C       - cause floating point error on some platform (cf Martin Losch)
 C       time_as_int = NINT( myTime )
 C       CALL MON_OUT_I( '_secondsi', time_as_int,mon_string_none,myThid)
+
+#ifdef ALLOW_EXF
+C       Print some statistics about input forcing fields
+        CALL EXF_MONITOR( myIter, myTime, myThid )
+#endif /* ALLOW_EXF */
+
 C       Print the basic statistics of model state variables
         CALL MON_SET_PREF('dynstat',myThid)
         CALL MON_PRINTSTATS_RL(1,EtaN,'_eta',

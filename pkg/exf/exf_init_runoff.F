@@ -75,8 +75,7 @@ c--   scale runoff array
              do j = 1, sny
                do i = 1, snx
                  if (ABS(runoff(i,j,bi,bj)).gt.20.) runoff(i,j,bi,bj)=0.
-                 runoff(i,j,bi,bj) = exf_inscal_runoff/year2sec
-     &                               *runoff(i,j,bi,bj)
+                 runoff(i,j,bi,bj)=exf_inscal_runoff*runoff(i,j,bi,bj)
               enddo
             enddo
           enddo
