@@ -10,7 +10,7 @@
 #  
 #  where:
 #
-#    "+" ==> "must be used"
+#    "+" ==> "must be used" (and will be added automatically)
 #    "-" ==> "must not be used"
 #
 #  The default behavior (that is, nothing specified) assumes that any
@@ -47,6 +47,9 @@ dic             +gchem
 fizhi           -aim
 fizhi           +gridalt
 fizhi           +diagnostics
+fizhi           +atm_common
+aim             +atm_common
+aim_v23         +atm_common
 rw              +mdsio
 flt             +mdsio
 sbo             +mdsio
