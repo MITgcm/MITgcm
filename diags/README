@@ -1,0 +1,18 @@
+old routines (checkpoint36 and before) in "diags" are
+no longer supported ; To find the equivalent new-version routine, see 
+the following list (or example in pkg/timeave, kpg/gmredi or model/src)
+------------------------------------------------------------
+  pkg/timeave        -|-  diags/inc & diags/src
+ 
+TIMEAVE_STATV.h      <--  AVER.h
+
+timeave_statvars.F   <--  do_time_averages.F
+timeave_statv_write.F <--  write_time_averages.F
+timeave_reset_1k.F  <--  timeaver_ini_xyz.F
+timeave_cumul_1k.F  <--  timeaver_1fld_xyz.F
+timeave_norma_1k.F  <--  timeaver_final_xyz.F
+timeave_reset.F     <--  timeaver_ini_xy.F
+timeave_cumul_2v.F  <--  Nr x timeaver_2fld_xyz.F
+timeave_cumulate.F  <--  Nr x timeaver_1fld_xyz.F
+timeave_normaliz.F  <--  timeaver_final_xy.F
+------------------------------------------------------------
