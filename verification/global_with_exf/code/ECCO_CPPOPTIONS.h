@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/Attic/ECCO_CPPOPTIONS.h,v 1.5 2003/10/09 04:19:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/Attic/ECCO_CPPOPTIONS.h,v 1.6 2003/11/23 23:24:54 dimitri Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -78,10 +78,9 @@ C   Relaxation to constant surface fields.
 #undef  ALLOW_CONST_SST_RELAXATION
 #undef  ALLOW_CONST_SSS_RELAXATION
 
-C   Use bicubic spatial interpolation to interpolate
+C   Use spatial interpolation to interpolate
 C   forcing files from input grid to model grid.
 #define USE_EXF_INTERPOLATION
-#define BICUBIC
 
 #endif /* ALLOW_ECCO */
 #endif /* ECCO_CPPOPTIONS_H */

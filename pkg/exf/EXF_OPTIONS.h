@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.3 2003/11/23 23:24:54 dimitri Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -74,9 +74,6 @@ c       salinity, e.g. the Levitus climatology.
 c
 c   >>> USE_EXF_INTERPOLATION <<<
 c       Allows specification of arbitrary Cartesian input grids.
-c
-c   >>> BICUBIC <<<
-c       Use bicubic instead of bilinear spatial interpolation.
 c
 c   ====================================================================
 c
