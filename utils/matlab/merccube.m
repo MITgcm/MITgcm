@@ -53,7 +53,6 @@ else
 end
 
 if size(X,1)==size(Q,1)
- whos
  X(end+1,:,:)=NaN;
  X(:,end+1,:)=NaN;
  X(end,:,[1 3 5])=X(1,:,[2 4 6]);
