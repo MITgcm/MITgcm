@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.136 2004/11/05 02:47:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.137 2004/11/18 15:17:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -716,7 +716,7 @@ C it is better to set deltaTreesurf=deltaTtracer
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R INI_PARMS'
        ENDIF
-       IF ( externForcingCycle.le.externForcingPeriod ) THEN
+       IF ( externForcingCycle.lt.externForcingPeriod ) THEN
         WRITE(msgBuf,'(A)')
      &   'S/R INI_PARMS: externForcingCycle < externForcingPeriod'
         CALL PRINT_ERROR( msgBuf , 1)
