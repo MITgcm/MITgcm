@@ -14,7 +14,7 @@ CC=mpicc
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=1'
 LINK=mpif77
 CPP='cpp  -traditional -P'
-INCLUDES='-I/usr/local/pkg/ifc/ifc-8.1.018/include'
+INCLUDES='-I/usr/local/pkg/mpich/mpich-intel/include -I/usr/local/pkg/ifc/ifc-8.1.018/include'
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
