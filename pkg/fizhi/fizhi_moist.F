@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.29 2005/03/02 00:44:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.30 2005/03/09 23:25:18 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -881,34 +881,6 @@ c -------------------------------
       do i = 1,im
       qdiag(i,j,imoistq+L-1,bi,bj) = qdiag(i,j,imoistq+L-1,bi,bj) + 
      .                           (dqmoist(i,j,L,1)*sday*1000.0/pz(i,j))
-      enddo
-      enddo
-      enddo
-      endif
-
-c Moist Processes Change in U-Momentum (Cumulus Friction)
-c ------------------------------------------------------
-      if(iudiag1.gt.0) then
-      do L = 1,lm
-      do j = 1,jm
-      do i = 1,im
-       indgath = (j-1)*im + i
-      qdiag(i,j,iudiag1+L-1,bi,bj) = qdiag(i,j,iudiag1+L-1,bi,bj) + 
-     .    dumoist(i,j,L)*sday
-      enddo
-      enddo
-      enddo
-      endif
-
-c Moist Processes Change in V-Momentum (Cumulus Friction)
-c ------------------------------------------------------
-      if(iudiag2.gt.0) then
-      do L = 1,lm
-      do j = 1,jm
-      do i = 1,im
-       indgath = (j-1)*im + i
-      qdiag(i,j,iudiag2+L-1,bi,bj) = qdiag(i,j,iudiag2+L-1,bi,bj) + 
-     .    dvmoist(i,j,L)*sday
       enddo
       enddo
       enddo
