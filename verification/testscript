@@ -45,6 +45,9 @@ foreach arg ($argv)
  endsw
 end
 
+# Need to make sure we don't meet non-model problems ...
+unlimit
+
 foreach dr ([a-zA-Z01-9]*)
  if (! -d $dr/input ) continue
  foreach skip ($SKIP)
