@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/fill_diagnostics.F,v 1.13 2004/07/06 03:55:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/fill_diagnostics.F,v 1.14 2004/07/21 21:13:50 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -16,7 +16,9 @@ C     myThid ..... Current Process(or)
 C     chardiag ... Character expression for diag to fill
 C     levflg ..... Integer flag for vertical levels:
 C                  0 indicates multiple levels incremented in qdiag
-C                  non-0 (any integer) - WHICH single level to increment
+C                  non-0 (any integer) - WHICH single level to increment.
+C                  negative integer - the input data array is single-leveled
+C                  positive integer - the input data array is multi-leveled
 C     nlevs ...... Number of levels to be incremented (1 if levflg > 0)
 C     bibjflg .... Integer flag to indicate instructions for bi bj loop
 C                  0 indicates that the bi-bj loop must be done here
@@ -49,6 +51,7 @@ c ===============
       _RL array(1-OLx:sNx+Olx,1-Oly:sNy+Oly)
       _RL arrayloc(sNx,sNy)
       integer irun,jrun,krun,birun,bjrun
+      integer level
 
 C Run through list of active diagnostics to make sure
 C we are trying to fill a valid diagnostic
@@ -67,7 +70,8 @@ C If-sequence to see if we are a valid and an active diagnostic
       IF ( ndiagnum.ne.0 .and. ipointer.ne.0 ) THEN
 
 C Increment the counter for the diagnostic (if we are at bi=bj=1)
-      if ((bi.eq.1).and.(bj.eq.1).and.(levflg.le.1)) 
+      if ((bi.eq.1).and.(bj.eq.1).and.
+     .           ((levflg.eq.0).or.(abs(levflg).eq.1))) 
      .                     ndiag(ndiagnum) = ndiag(ndiagnum) + 1
 
 C   Check to see if we need to do a bi-bj loop here
@@ -96,13 +100,24 @@ c      bjrun = myByHi(myThid)-myByLo(myThid)+1
          enddo
          enddo
         enddo
-       else
+       elseif(levflg.gt.0)then
         call fillit(arrayin,irun,jrun,krun,levflg,birun,bjrun,
      .                                              bihere,bjhere,array)
         do j = 1,sNy
         do i = 1,sNx
          qdiag(i,j,ipointer+levflg-1,bihere,bjhere) = 
      .  qdiag(i,j,ipointer+levflg-1,bihere,bjhere) + 
+     .                       array(i,j)
+        enddo
+        enddo
+       else
+        level = -1 * levflg
+        call fillit(arrayin,irun,jrun,1,1,birun,bjrun,
+     .                                              bihere,bjhere,array)
+        do j = 1,sNy
+        do i = 1,sNx
+         qdiag(i,j,ipointer+level-1,bihere,bjhere) = 
+     .  qdiag(i,j,ipointer+level-1,bihere,bjhere) + 
      .                       array(i,j)
         enddo
         enddo
@@ -130,13 +145,23 @@ c      bjrun = myByHi(myThid)-myByLo(myThid)+1
          enddo
          enddo
         enddo
-       else
+       elseif(levflg.gt.0)then
         call fillit(arrayin,irun,jrun,krun,levflg,birun,bjrun,
      .                                              bi,bj,array)
         do j = 1,sNy
         do i = 1,sNx
          qdiag(i,j,ipointer+levflg-1,bi,bj) =
      .  qdiag(i,j,ipointer+levflg-1,bi,bj) + array(i,j)
+        enddo
+        enddo
+       else
+        level = -1 * levflg
+        call fillit(arrayin,irun,jrun,1,1,birun,bjrun,
+     .                                              bi,bj,array)
+        do j = 1,sNy
+        do i = 1,sNx
+         qdiag(i,j,ipointer+level-1,bi,bj) =
+     .  qdiag(i,j,ipointer+level-1,bi,bj) + array(i,j)
         enddo
         enddo
        endif
@@ -159,13 +184,23 @@ c      bjrun = myByHi(myThid)-myByLo(myThid)+1
          enddo
          enddo
         enddo
-       else
+       elseif(levflg.gt.0)then
         call fillit(arrayin,irun,jrun,krun,levflg,birun,bjrun,
      .                                              1,1,arrayloc)
         do j = 1,sNy
         do i = 1,sNx
          qdiag(i,j,ipointer+levflg-1,bi,bj) =
      .  qdiag(i,j,ipointer+levflg-1,bi,bj) + arrayloc(i,j)
+        enddo
+        enddo
+       else
+        level = -1 * levflg
+        call fillit(arrayin,irun,jrun,1,1,birun,bjrun,
+     .                                              1,1,arrayloc)
+        do j = 1,sNy
+        do i = 1,sNx
+         qdiag(i,j,ipointer+level-1,bi,bj) =
+     .  qdiag(i,j,ipointer+level-1,bi,bj) + arrayloc(i,j)
         enddo
         enddo
        endif
@@ -188,13 +223,23 @@ c      bjrun = myByHi(myThid)-myByLo(myThid)+1
          enddo
          enddo
         enddo
-       else
+       elseif(levflg.gt.0)then
         call fillit(arrayin,irun,jrun,krun,levflg,birun,bjrun,
      .                                              1,1,array)
         do j = 1,sNy
         do i = 1,sNx
          qdiag(i,j,ipointer+levflg-1,bi,bj) =
      .  qdiag(i,j,ipointer+levflg-1,bi,bj) + array(i,j)
+        enddo
+        enddo
+       else
+        level = -1 * levflg
+        call fillit(arrayin,irun,jrun,1,1,birun,bjrun,
+     .                                              1,1,array)
+        do j = 1,sNy
+        do i = 1,sNx
+         qdiag(i,j,ipointer+level-1,bi,bj) =
+     .  qdiag(i,j,ipointer+level-1,bi,bj) + array(i,j)
         enddo
         enddo
        endif
