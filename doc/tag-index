@@ -1,11 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.256 2004/02/23 18:57:48 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.257 2004/02/23 19:19:15 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint52k_post
 o removed top-level directory "diags"
   - we migrated these functions to pkg/timeave a long time ago
 o fixed bug introduced in pkg/monitor
+o accuracy ctrlprec = 32 insuffient for gradient checks using
+  averaged fields (I/O via cost_averages)
+  -> use ctrl.h in active_file*.F to control I/O precision.
+o paramter list of CALL ADTHE_MAIN_LOOP
+o added initial do_the_model_io to ecco
+o set all ...Freq to zero after cost_final
+  taveFreq, dumpFreq, pChkptFreq
 
 checkpoint52j_post
 o fix nchklev in tamc.h for global_ocean...
