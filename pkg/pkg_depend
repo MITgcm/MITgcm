@@ -37,6 +37,7 @@ gmredi
 mom_fluxform	+mom_common
 mom_vecinv	+mom_common
 shap_filt	+mom_vecinv
+ptracers	+generic_advdiff
 seaice		-thsice
 thsice		-seaice
 exf		-bulk_force
