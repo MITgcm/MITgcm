@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.36 2003/01/21 19:19:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.37 2003/02/07 21:59:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -123,11 +123,6 @@ C                                      is "pipelined" in the vertical
 C                                      so we need an fVer for each
 C                                      variable.
 C     rhoK, rhoKM1   - Density at current level, and level above 
-C     phiHyd         - Hydrostatic part of the potential phiHydi.
-C                      In z coords phiHydiHyd is the hydrostatic 
-C                      Potential (=pressure/rho0) anomaly
-C                      In p coords phiHydiHyd is the geopotential 
-C                      surface height anomaly.
 C     phiSurfX, - gradient of Surface potentiel (Pressure/rho, ocean)
 C     phiSurfY             or geopotentiel (atmos) in X and Y direction
 C     KappaRT,       - Total diffusion in vertical for T and S.
@@ -147,7 +142,6 @@ C                      index into fVerTerm.
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerTr1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
-      _RL phiHyd  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL rhokm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhok    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -201,7 +195,7 @@ CHPF$ INDEPENDENT
 #ifdef ALLOW_AUTODIFF_TAMC
 C--    HPF directive to help TAMC
 CHPF$  INDEPENDENT, NEW (rTrans,fVerT,fVerS
-CHPF$&                  ,phiHyd,utrans,vtrans,xA,yA
+CHPF$&                  ,utrans,vtrans,xA,yA
 CHPF$&                  ,KappaRT,KappaRS
 CHPF$&                  )
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -239,7 +233,6 @@ C--     Set up work arrays that need valid initial values
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
 C This is currently also used by IVDC and Diagnostics
-           phiHyd(i,j,k) = 0. _d 0 
            sigmaX(i,j,k) = 0. _d 0
            sigmaY(i,j,k) = 0. _d 0
            sigmaR(i,j,k) = 0. _d 0
