@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.13 2004/03/27 03:51:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.14 2004/08/29 17:13:24 edhill Exp $
 C $Name:  $
 
 CBOI
@@ -7,37 +7,48 @@ C !TITLE: WRAPPER CODE SYNOPSIS
 C !AUTHORS: mitgcm developers ( support@mitgcm.org )
 C !AFFILIATION: Massachussetts Institute of Technology
 C !DATE:
-C !INTRODUCTION: Wrapper synopsis and code
-C Routines in the subdirectories under eesupp/ ( src/ and inc/ ) provide the core
-C framework within which numerical and ancilliary software of MITgcm operates.
-C The eesupp/ directories provide a collection of software we call {\bf WRAPPER} (
-C ({\bf W}rappable {\bf A}pplication {\bf P}aralell {\bf P}rogramming {\bf E}nvironment {\bf R}esource).
-C The {bf WRAPPER} provides a generic bootstrapping capability to start applications
-C in a manner that allows them to exploit single and multi-processing environments on all present 
-C day hardware platforms (spanning vector SMP systems to distributed memory and processing cluster
-C systems). Numerical applications must be coded to fit within the {\bf WRAPPER}. This entails
-C applications adopting a particular style for declaring data structures representing
-C grids and values on grids. The {\bf WRAPPER} currently provides support for grid point
-C models using a single global indexing system. This is sufficient for latitude-logitude,
-C cylindrical, and cartesian coordinate configurations. There is also limited support for
-C composing grids in which no single, sructured global index can be defined. At present, this 
-C support is limited to specific configurations of projections of a cube onto the sphere.
+C !INTRODUCTION: 
+C     Wrapper synopsis and code Routines in the subdirectories under
+C     eesupp/ ( src/ and inc/ ) provide the core framework within which
+C     numerical and ancilliary software of MITgcm operates.  The eesupp/
+C     directories provide a collection of software we call {\bf WRAPPER}
+C     ( ({\bf W}rappable {\bf A}pplication {\bf P}aralell {\bf
+C     P}rogramming {\bf E}nvironment {\bf R}esource).  The {bf WRAPPER}
+C     provides a generic bootstrapping capability to start applications
+C     in a manner that allows them to exploit single and
+C     multi-processing environments on all present day hardware
+C     platforms (spanning vector SMP systems to distributed memory and
+C     processing cluster systems). Numerical applications must be coded
+C     to fit within the {\bf WRAPPER}. This entails applications
+C     adopting a particular style for declaring data structures
+C     representing grids and values on grids. The {\bf WRAPPER}
+C     currently provides support for grid point models using a single
+C     global indexing system. This is sufficient for latitude-logitude,
+C     cylindrical, and cartesian coordinate configurations. There is
+C     also limited support for composing grids in which no single,
+C     sructured global index can be defined. At present, this support is
+C     limited to specific configurations of projections of a cube onto
+C     the sphere.
 C
-C The main functions supported by the current {\bf WRAPPER} code are
-C \begin{itemize}
-C  \item program startup and termination including creation/management of multiple 
-C        threads and/or processes
-C  \item communication and synchronisatioin operations between multiple processes and/or threads 
-C  \item multi-process input and output operations to disk and to other 
-C  applications
-C \end{itemize}
+C     The main functions supported by the current {\bf WRAPPER} code are
+C     \begin{itemize}
+C     \item program startup and termination including
+C       creation/management of multiple threads and/or processes
+C     \item communication and synchronisatioin operations between
+C       multiple processes and/or threads
+C     \item multi-process input and output operations to disk and to
+C       other applications
+C     \end{itemize}
 C
-C Multi-process execution assumes the existence of MPI for process startup and termination. However,
-C MPI does not have to be used for performance critical operations. Instead,
-C {\bf WRAPPER} performance critical parallel primitives are implemented to allow them to bind to 
-C different low-level system software layers. Bindings exist for using {\bf WRAPPER} with portable
-C systems such as MPI and UNIX System V IPC memory mapping, as well bindings for high-performance 
-C propreitary systems such as Myrinet GM software and Compaq IMC memory channel technology.
+C     Multi-process execution assumes the existence of MPI for process
+C     startup and termination. However, MPI does not have to be used for
+C     performance critical operations. Instead, {\bf WRAPPER}
+C     performance critical parallel primitives are implemented to allow
+C     them to bind to different low-level system software
+C     layers. Bindings exist for using {\bf WRAPPER} with portable
+C     systems such as MPI and UNIX System V IPC memory mapping, as well
+C     bindings for high-performance propreitary systems such as Myrinet
+C     GM software and Compaq IMC memory channel technology.
 C 
 CEOI
 
@@ -47,6 +58,7 @@ C--   Get C preprocessor options
 #include "CPP_OPTIONS.h"
 #include "CPP_EEOPTIONS.h"
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C !ROUTINE: MAIN
 
@@ -110,6 +122,12 @@ C--   Trap errors
        GOTO 999
       ENDIF
 
+#ifdef HAVE_PTHREADS
+C      IF (usePTHREADS) THEN
+        CALL PTINIT(nThreads)
+C      ELSE
+#else
+
 C--   Start nThreads concurrent threads.   
 C     Note: We do a fiddly check here. The check is performed
 C           by CHECK_THREADS. CHECK_THREADS does a count
@@ -145,6 +163,8 @@ C--     Each threads sets flag indicating it is done
       ENDDO
 #include "MAIN_PDIRECTIVES2.h"
 
+#endif  /*  HAVE_PTHREADS  */
+
   999 CONTINUE
 C--   Shut down execution environment
       CALL EEDIE
@@ -157,3 +177,40 @@ C--   Write closedown status
       ENDIF
 C
       END
+
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CBOP 0
+C     !ROUTINE: PTREENTRY
+      
+C     !INTERFACE:
+      SUBROUTINE PTREENTRY( 
+     I     myThid )
+
+C     !DESCRIPTION:
+C     Re-entry point for a pthreads-based threading mechanism.  The
+C     intent is to produce a threading hack that will work with gcc/g77.
+      
+C     !USES:
+      implicit none
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "THE_MODEL_COMMON_BLOCKS.h"
+
+C     !INPUT PARAMETERS:
+      integer myThid
+CEOP
+
+      write(*,*) 'myThid = ', myThid
+      CALL CHECK_THREADS( myThid )
+
+C     CALL THE_MODEL_MAIN(myThid)
+
+      threadIsComplete(myThid) = .TRUE.
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
