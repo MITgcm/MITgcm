@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.43 2000/04/05 17:52:16 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.44 2000/06/21 19:21:44 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -318,12 +318,6 @@ C     hFacMinDp    - Minimum dimesional size of a cell (affects hFacC etc..., Pa
 C     hFacMinDr    - Minimum dimesional size of a cell (affects hFacC etc..., units of r)
 C     tauCD        - CD scheme coupling timescale ( 1/s )
 C     rCD          - CD scheme normalised coupling parameter ( 0-1 )
-C     GMmaxslope    - max. slope allowed in GM/Redi tensor
-C     GMlength      - Length to use in Visbeck et al. formula for K (m)
-C     GMalpha       - alpha to use in Visbeck et al. formula for K
-C     GMdepth       - Depth over which to integrate Richardson # (Visbeck et al.)
-C     GMkbackground - background value of GM/Redi diffusion coefficient ( m^2/s )
-C     GMmaxval      - max. value of KapGM allowed in GM/Redi scheme ( m^2/s )
 C     startTime     - Starting time for this integration ( s ).
 C     endTime       - Ending time for this integration ( s ).
 C     chkPtFreq     - Frequency of rolling check pointing ( s ).
@@ -363,7 +357,6 @@ C                          circles ( see filter*.F )
      & diffKhT, diffKzT, diffK4T, diffKrT,
      & diffKhS, diffKzS, diffK4S, diffKrS,
      & delT, tauCD, rCD, freeSurfFac, hFacMin, hFacMinDz, 
-     & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,GMmaxval,
      & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
      & recip_rhoConst, rhoConst, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq,
@@ -418,12 +411,6 @@ C                          circles ( see filter*.F )
       _RL delt
       _RL tauCD
       _RL rCD
-      _RL GMmaxslope
-      _RL GMlength
-      _RL GMalpha
-      _RL GMdepth
-      _RL GMkbackground
-      _RL GMmaxval
       _RL gravity
       _RL recip_gravity
       _RL gBaro
@@ -506,3 +493,9 @@ C
       INTEGER OB_Jsouth(Nx)
       INTEGER OB_Ieast(Ny)
       INTEGER OB_Iwest(Ny)
+
+C Logical flags for selecting packages
+      LOGICAL use_KPPmixing
+      LOGICAL use_GMRedi
+      COMMON /PARM_PACKAGES/
+     &        use_KPPmixing,use_GMRedi
