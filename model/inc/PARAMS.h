@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.141 2005/01/04 15:56:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.142 2005/01/11 20:49:24 afe Exp $
 C $Name:  $
 C
 
@@ -570,7 +570,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & horiVertRatio, recip_horiVertRatio,
      & ivdc_kappa, Ro_SeaLevel,
      & bottomDragLinear,bottomDragQuadratic,
-     & tCyl
+     & tCylIn, tCylOut
 
       _RL cg2dTargetResidual
       _RL cg2dTargetResWunit
@@ -683,7 +683,8 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL Ro_SeaLevel
       _RL bottomDragLinear
       _RL bottomDragQuadratic
-      _RL tCyl
+      _RL tCylIn
+      _RL tCylOut
 
 C--   COMMON /PARM_A/ Thermodynamics constants ?
       COMMON /PARM_A/ HeatCapacity_Cp,recip_Cp

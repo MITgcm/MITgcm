@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/external_forcing.F,v 1.3 2004/07/20 16:21:10 afe Exp $
+C $Header: /u/gcmpack/MITgcm/verification/rotating_tank/code/Attic/external_forcing.F,v 1.4 2005/01/11 20:49:24 afe Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -192,12 +192,13 @@ C     faceArea           :: Temp. for holding area normal to tempurature gradien
 CEOP
 
 C--   Forcing term
-C     Add term which represents the diffusive flux from a circular cylinder of temperature tCyl in the 
+C     Add term which represents the diffusive flux from a circular cylinder of temperature tCylIm in the 
 C     interior of the simulation domain. Result is a tendency which is determined from the finite
 C     volume formulated divergence of the diffusive heat flux due to the local cylinder 
 C     temperature, fluid temperature difference.
 C     kDiffCyl :: Diffusion coefficient
-C     tCyl     :: Temperature of the cylinder
+C     tCylIn     :: Temperature of the inner boundary of the cylinder
+C     tCylOut     :: Temperature of the outer boundary cylinder
 C     iGSource :: Index space I (global) coordinate for source center.
 C     jGSource :: Index space J (global) coordinate for source center.
 C     rSource  :: Extent of the source term region. Loop will skip checking points outside
@@ -219,9 +220,11 @@ c       or, eventually, a forcing field
 c  * think about possible problems with differing heat diffusion rates in wall materials
 c    (plexiglass, air, water in the compound tank case)
       _RL kDiffCyl
+      _RL tCyl
       INTEGER rSource
       INTEGER iGSource
       INTEGER jGSource
+      
       CHARACTER*(MAX_LEN_MBUF+1000) msgBuf
       kDiffCyl = 3. _d -7
 
@@ -237,10 +240,11 @@ c    (plexiglass, air, water in the compound tank case)
         jG = myYGlobalLo-1+(bj-1)*sNy+J
         iG = myXGlobalLo-1+(bi-1)*sNx+I
 c      IF(jG .GE. jGSource-rSource .AND. jG .LE. jGSource+rSource) THEN
+c     the following bites the big one
       IF(jG .LE. 10) THEN
-         tCyl = 0
+         tCyl = tCylIn
       ELSE 
-         tCyl = 20
+         tCyl = tCylOut
       ENDIF
 c      IF(iG .GE. iGSource-rSource .AND. iG .LE. iGSource+rSource) THEN
           hC = hFacC(i  ,j  ,kLev,bi,bj)

@@ -66,5 +66,6 @@
  &PARM05
  hydrogThetaFile='thetaPol.bin',
  bathyFile='bathyPol.bin',
- tCyl  = 0
+ tCylIn  = 0
+ tCylOut  = 20
  &
