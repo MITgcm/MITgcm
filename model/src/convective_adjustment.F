@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.19 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.20 2003/12/17 05:24:16 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -93,13 +93,6 @@ C-      Initialisation of Convection Counter
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifdef  ALLOW_KPP
-C--       CONVECT not needed with KPP mixing
-        IF ( 
-     &      (.NOT.useKPP)
-     &     ) THEN
-#endif  /* ALLOW_KPP */
 
          IF ( buoyancyRelation .eq. 'OCEANIC' ) THEN
           kTop    =  2
@@ -201,11 +194,6 @@ ceh3 needs an IF ( useTIMEAVE ) THEN
      I                            Nr, deltaTclock, bi, bj, myThid)
           ENDIF
 #endif /* ALLOW_TIMEAVE */
-
-#ifdef  ALLOW_KPP
-C--     End IF (.NOT.useKPP)
-        ENDIF
-#endif  /* ALLOW_KPP */
 
 C--   End IF (DIFFERENT_MULTIPLE)
       ENDIF
