@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.10 2001/06/07 16:33:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.11 2001/06/25 20:38:15 ljmc Exp $
 
 #include "CPP_OPTIONS.h"
-
+#undef ALLOW_ZONAL_FILT
+#undef ALLOW_SHAP_FILT
 
       subroutine the_main_loop( mytime, myiter, mythid )
 

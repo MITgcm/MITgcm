@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.9 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.10 2001/06/25 20:38:15 ljmc Exp $
 C Tag $Name:  $
 
 #include "CPP_OPTIONS.h"
-#undef ALLOW_ZONAL_FILT
-#undef ALLOW_SHAP_FILT
+c #undef ALLOW_ZONAL_FILT
+c #undef ALLOW_SHAP_FILT
 
       SUBROUTINE THE_CORRECTION_STEP(myTime, myIter, myThid)
 C     /==========================================================\

@@ -1,7 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.13 2001/03/06 16:51:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.14 2001/06/25 20:38:15 ljmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+#undef ALLOW_ZONAL_FILT
+#undef ALLOW_SHAP_FILT
 
 C     /==========================================================\
 C     | S/R CALC_DIV_GHAT                                        |
