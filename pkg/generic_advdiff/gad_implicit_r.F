@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.2 2004/01/07 21:35:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_implicit_r.F,v 1.3 2004/01/08 16:13:23 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -31,6 +31,17 @@ C     == Global data ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
+C     implicitAdvection  :: if True, treat vertical advection implicitly
+C     advectionScheme    :: advection scheme to use
+C     tracerIdentity     :: Identifier for the tracer
+C     kappaRX            :: 3-D array for vertical diffusion coefficient
+C     wVel               :: vertical component of the velcity field
+C     tracer             :: tracer field at current time step
+C     gTracer            :: future tracer field
+C     bi,bj              :: tile indices
+C     myTime             :: current time
+C     myIter             :: current iteration number
+C     myThid             :: thread number
       LOGICAL implicitAdvection
       INTEGER advectionScheme
       INTEGER tracerIdentity
@@ -44,6 +55,18 @@ C     == Routine Arguments ==
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     iMin,iMax,jMin,jMax  :: computational domain
+C     i,j,k  :: loop indices
+C     a5d    :: 2nd  lower diagonal of the pentadiagonal matrix
+C     b5d    :: 1rst lower diagonal of the pentadiagonal matrix
+C     c5d    :: main diagonal       of the pentadiagonal matrix
+C     d5d    :: 1rst upper diagonal of the pentadiagonal matrix
+C     e5d    :: 2nd  upper diagonal of the pentadiagonal matrix
+C     rTrans    :: vertical volume transport at inteface k
+C     rTransKp1 :: vertical volume transport at inteface k+1
+C     localTijk :: local copy of the tracer field (for Non-Lin Adv.Scheme)
+C     diagonalNumber :: number of non-zero diagonals in the matrix
+C     errCode   :: > 0 if singular matrix
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i,j,k
       INTEGER diagonalNumber, errCode
@@ -55,8 +78,6 @@ C     == Local variables ==
       _RL rTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rTransKp1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL localTijk(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
-      _RL limitDf  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rFlx
 CEOP
 
       IF (Nr.LE.1) RETURN
