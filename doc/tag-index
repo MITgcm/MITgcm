@@ -1,7 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.123 2003/01/24 17:55:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.124 2003/01/26 21:38:04 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o r* coordinate added in #ifdef NONLIN_FRSURF block.
+ (modification to pressure gradient not yet implemented)
+o mom_fluxform: new S/R mom_calc_rtrans.F computes vertical transports
+  (for U & V) that are used for vertical advection of momentum.
 
 checkpoint48a_post
 o In preparation for r*, use temp. array to compute vertical transport
