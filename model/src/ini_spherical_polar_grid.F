@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.12 1998/12/09 16:11:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.13 1999/03/16 16:37:42 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -172,6 +172,7 @@ C     Calculate vertical face area and trigonometric terms
         DO J=1,sNy
          DO I=1,sNx
           jG = myYGlobalLo + (bj-1)*sNy + J-1
+          iG = myXGlobalLo + (bi-1)*sNx + I-1
           latS = yc(i,j,bi,bj)-delY(jG)*0.5 _d 0
           latN = yc(i,j,bi,bj)+delY(jG)*0.5 _d 0
 #ifdef OLD_UV_GEOMETRY
