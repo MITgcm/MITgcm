@@ -11,24 +11,25 @@ C     |   tamc -reverse  ....                                    |
 C     |                                                          |
 C     | written and tested by Ralf Giering, Jan. 14th 1999       |
 C     | added new S/R's for _xz_ , _yz_ heimbach@mit.edu May-01  |
+C     | extended to tangent linear code heimbach@mit.edu Jan-02  |
 C     |==========================================================|
 C     | SUBROUTINE EXCH_*_R* is linear                           |
 C     | only the array argument is active                        |
 C     | only myThid is required for the adjoint subroutine       |
 C     \==========================================================/
-cadj SUBROUTINE exch_xy_rs INPUT   = 1, 2
-cadj SUBROUTINE exch_xy_rs OUTPUT  = 1
-cadj SUBROUTINE exch_xy_rs ACTIVE  = 1
-cadj SUBROUTINE exch_xy_rs DEPEND  = 2
-cadj SUBROUTINE exch_xy_rs ADNAME  = adexch_xy_rs
-cadj SUBROUTINE exch_xy_rs FTLNAME = exch_xy_rs
+cadj SUBROUTINE exch_xy_rs INPUT    = 1, 2
+cadj SUBROUTINE exch_xy_rs OUTPUT   = 1
+cadj SUBROUTINE exch_xy_rs ACTIVE   = 1
+cadj SUBROUTINE exch_xy_rs DEPEND   = 2
+cadj SUBROUTINE exch_xy_rs ADNAME   = adexch_xy_rs
+cadj SUBROUTINE exch_xy_rs FTLNAME  = exch_xy_rs
 
-cadj SUBROUTINE exch_xy_rl INPUT   = 1, 2
-cadj SUBROUTINE exch_xy_rl OUTPUT  = 1
-cadj SUBROUTINE exch_xy_rl ACTIVE  = 1
-cadj SUBROUTINE exch_xy_rl DEPEND  = 2
-cadj SUBROUTINE exch_xy_rl ADNAME  = adexch_xy_rl
-cadj SUBROUTINE exch_xy_rl FTLNAME = exch_xy_rl
+cadj SUBROUTINE exch_xy_rl INPUT    = 1, 2
+cadj SUBROUTINE exch_xy_rl OUTPUT   = 1
+cadj SUBROUTINE exch_xy_rl ACTIVE   = 1
+cadj SUBROUTINE exch_xy_rl DEPEND   = 2
+cadj SUBROUTINE exch_xy_rl ADNAME   = adexch_xy_rl
+cadj SUBROUTINE exch_xy_rl FTLNAME  = exch_xy_rl
 
 cadj SUBROUTINE exch_xyz_rs INPUT   = 1, 2
 cadj SUBROUTINE exch_xyz_rs OUTPUT  = 1
@@ -71,6 +72,4 @@ cadj SUBROUTINE exch_yz_rl ACTIVE  = 1
 cadj SUBROUTINE exch_yz_rl DEPEND  = 2
 cadj SUBROUTINE exch_yz_rl ADNAME  = adexch_yz_rl
 cadj SUBROUTINE exch_yz_rl FTLNAME = exch_yz_rl
-
-
 

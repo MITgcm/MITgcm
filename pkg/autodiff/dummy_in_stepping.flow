@@ -7,5 +7,6 @@ cadj SUBROUTINE dummy_in_stepping ACTIVE  =
 cadj SUBROUTINE dummy_in_stepping DEPEND  = 1, 2, 3
 cadj SUBROUTINE dummy_in_stepping REQUIRED
 cadj SUBROUTINE dummy_in_stepping INFLUENCED
-cadj SUBROUTINE dummy_in_stepping ADNAME = addummy_in_stepping
+cadj SUBROUTINE dummy_in_stepping ADNAME  = addummy_in_stepping
+cadj SUBROUTINE dummy_in_stepping FTLNAME = g_dummy_in_stepping
 

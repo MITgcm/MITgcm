@@ -9,6 +9,7 @@ C     |   tamc -reverse  ....                                    |
 C     |                                                          |
 C     | written and tested by Ralf Giering, Jan. 14th 1999       |
 C     | added new S/R's for _xz_ , _yz_ heimbach@mit.edu May-01  |
+C     | extended to tangent linear code heimbach@mit.edu Jan-02  |
 C     |==========================================================|
 C     | SUBROUTINE EXCH_UV_*_R* is linear                        |
 C     | only the array argument is active                        |

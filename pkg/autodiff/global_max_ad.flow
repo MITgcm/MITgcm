@@ -9,9 +9,11 @@ cadj SUBROUTINE global_max_r4 OUTPUT  = 1
 cadj SUBROUTINE global_max_r4 ACTIVE  = 1
 cadj SUBROUTINE global_max_r4 DEPEND  = 2
 cadj SUBROUTINE global_max_r4 ADNAME  = global_admax_r4
+cadj SUBROUTINE global_max_r4 FTLNAME = global__gmax_r4
 
 cadj SUBROUTINE global_max_r8 INPUT   = 1, 2
 cadj SUBROUTINE global_max_r8 OUTPUT  = 1
 cadj SUBROUTINE global_max_r8 ACTIVE  = 1
 cadj SUBROUTINE global_max_r8 DEPEND  = 2
 cadj SUBROUTINE global_max_r8 ADNAME  = global_admax_r8
+cadj SUBROUTINE global_max_r8 FTLNAME = global__gmax_r8
