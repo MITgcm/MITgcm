@@ -24,6 +24,10 @@ Comments:
     generated from bathy_cs32.bin using matlab script mk_bathy4gcm.m
  mk_bathy4gcm.m matlab script that deepen all shallow point up to 50m.
 * global integral of E-P-R and annual mean net Q flux are zero.
-* package therm_seaice and bulk_forc are included but not yet used.
-  (might come later)
+* package thSIce and bulk_forc are included but not used in the standard
+  set-up.
+
+* additional forcing fields and parameter files are provided (in inp_thsice) 
+  in order to illustrate the use of thSIce pkg. 
+  the output of a short run (20.iter) is given in results/output_thsice.txt
 
