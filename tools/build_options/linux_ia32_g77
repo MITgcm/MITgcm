@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.13 2005/01/27 14:20:06 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_g77,v 1.14 2005/01/31 16:27:13 edhill Exp $
 #  $Name:  $
 #
 
@@ -17,7 +17,14 @@ if test "x$IEEE" = x ; then
     FOPTIM='-O3 -malign-double -funroll-loops'
 else
     #  Try to follow IEEE-754
-    FFLAGS='-Wimplicit -Wunused -ffloat-store -mfpmath=sse -msse -msse2'
+    has_sse2=f
+    grep flags /proc/cpuinfo | grep sse2 > /dev/null 2>&1  &&  has_sse2=t
+    if test "x$has_sse2" = xt ; then
+	FFLAGS='-Wimplicit -Wunused -ffloat-store -mfpmath=sse -msse -msse2'
+    else
+	FFLAGS='-Wimplicit -Wunused -ffloat-store -mfpmath=sse -msse'
+    fi
+    echo 'FFLAGS="'$FFLAGS'"'
     FOPTIM='-O0 -malign-double'
 fi
 
