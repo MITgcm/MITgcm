@@ -41,8 +41,8 @@ c     == end of interface ==
 
       do bj = mybylo(mythid), mybyhi(mythid)
         do bi = mybxlo(mythid), mybxhi(mythid)
-          do j = 1, sny
-            do i = 1, snx
+          do j = 1-oly, sny+oly
+            do i = 1-olx, snx+olx
               runoff(i,j,bi,bj) = 0. _d 0
             enddo
           enddo
@@ -81,6 +81,8 @@ c--   scale runoff array
           enddo
         enddo
       endif
+
+      _EXCH_XY_R4(  runoff, mythid )
 
       print *, 'WARNING: runoff raw file cut off at values > 20!'
       CALL PLOT_FIELD_XYRL( runoff, 
