@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_adv_r.F,v 1.1 2001/05/30 19:34:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_adv_r.F,v 1.2 2001/07/12 00:30:27 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,6 +9,11 @@ C $Name:  $
      I           tracer,
      O           wT,
      I           myThid )
+C     /==========================================================\
+C     | SUBROUTINE GAD_C2_ADV_R                                  |
+C     | o Compute vertical advective Flux of Tracer using        |
+C     |   2nd Order Centered Scheme                              |
+C     |==========================================================|
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -29,29 +34,18 @@ C     == Local variables ==
 
       km1=max(1,k-1)
 
-      IF ( (rigidLid .AND. k.EQ.1) .OR. k.GT.Nr) THEN
+      IF ( k.EQ.1 .OR. k.GT.Nr) THEN
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          wT(i,j) = 0.
         ENDDO
        ENDDO
-c?    ELSEIF ( rigidLid ) THEN
-c?     DO j=1-Oly,sNy+Oly
-c?      DO i=1-Olx,sNx+Olx
-c?       wT(i,j) = rTrans(i,j)*
-c?   &       (Tracer(i,j,k,bi,bj)+Tracer(i,j,kM1,bi,bj))*0.5 _d 0
-c?      ENDDO
-c?     ENDDO
       ELSE
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         wT(i,j) =
-     &     rTrans(i,j)
-     &      *(maskC(i,j,kM1,bi,bj)*
+         wT(i,j) = maskC(i,j,kM1,bi,bj)*
+     &     rTrans(i,j)*
      &        (Tracer(i,j,k,bi,bj)+Tracer(i,j,kM1,bi,bj))*0.5 _d 0
-     &       +(maskC(i,j,k,bi,bj)-maskC(i,j,kM1,bi,bj))*
-     &        Tracer(i,j,k,bi,bj)
-     &       )
         ENDDO
        ENDDO
       ENDIF

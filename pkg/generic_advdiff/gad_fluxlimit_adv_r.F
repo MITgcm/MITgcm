@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.1 2001/05/30 19:34:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.2 2001/07/12 00:30:27 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,6 +9,11 @@ C $Name:  $
      I           tracer,
      O           wT,
      I           myThid )
+C     /==========================================================\
+C     | SUBROUTINE GAD_FLUXLIMIT_ADV_R                           |
+C     | o Compute vertical advective Flux of Tracer using        |
+C     |   Flux Limiter Scheme                                    |
+C     |==========================================================|
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -45,9 +50,8 @@ C     == Local variables ==
          Rjp=(tracer(i,j,kp1,bi,bj)-tracer(i,j,k,bi,bj))
      &        *maskC(i,j,kp1,bi,bj)
          Rj=(tracer(i,j,k,bi,bj)-tracer(i,j,kM1,bi,bj))
-     &        *maskC(i,j,k,bi,bj)
          Rjm=(tracer(i,j,km1,bi,bj)-tracer(i,j,kM2,bi,bj))
-     &        *maskC(i,j,km1,bi,bj)
+     &        *maskC(i,j,km2,bi,bj)
          IF (Rj.NE.0.) THEN
           IF (rTrans(i,j).LT.0) THEN
             Cr=Rjm/Rj
@@ -62,18 +66,13 @@ C     == Local variables ==
           ENDIF
          ENDIF
          Cr=Limiter(Cr)
-         wT(i,j) =
-     &     rTrans(i,j)
-     &      *(maskC(i,j,kM1,bi,bj)*
+         wT(i,j) = maskC(i,j,kM1,bi,bj)*(
+     &     rTrans(i,j)*
      &        (Tracer(i,j,k,bi,bj)+Tracer(i,j,kM1,bi,bj))*0.5 _d 0
-     &       +(maskC(i,j,k,bi,bj)-maskC(i,j,kM1,bi,bj))*
-     &        Tracer(i,j,k,bi,bj)
-     &       )
-     &     +maskC(i,j,km1,bi,bj)*0.5*(
-     &        (1-Cr)*ABS(rTrans(i,j))
-     &        +rTrans(i,j)*wVel(i,j,k,bi,bj)*deltaT
-     &         *recip_drC(k)*Cr
-     &        )*Rj
+     &    +(ABS(rTrans(i,j))*(1-Cr)
+     &      +rTrans(i,j)*wVel(i,j,k,bi,bj)*deltaT*recip_drC(k)
+     &                  *Cr
+     &     )*Rj*0.5 _d 0                )
         ENDDO
        ENDDO
       ENDIF
