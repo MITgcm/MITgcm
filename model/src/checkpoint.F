@@ -1,49 +1,56 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.40 2004/03/24 15:29:33 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.41 2004/04/06 01:44:26 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
-C--  File read_write.F: Routines to handle mid-level I/O interface.
-C--   Contents
-C--   o SET_WRITE_GLOBAL_PICKUP 
-C--   o READ_CHECKPOINT - Write out checkpoint files for restarting.
-C--   o WRITE_CHECKPOINT - Write out checkpoint files for restarting.
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: SET_WRITE_GLOBAL_PICKUP
+C     !INTERFACE:
+      SUBROUTINE SET_WRITE_GLOBAL_PICKUP( flag )
 
-      SUBROUTINE SET_WRITE_GLOBAL_PICKUP ( flag )
+C     !DESCRIPTION:
+C     Sets an internal logical state to indicate whether files written
+C     by subsequent calls to the READ_WRITE_FLD package should create
+C     "global" or "tiled" files:
+C     \begin{center}
+C       \begin{tabular}[h]{|l|l|}\hline
+C         \texttt{flag}  &  Meaning  \\\hline
+C         \texttt{.TRUE.}  &  use ``global'' files  \\
+C         \texttt{.TRUE.}  &  use ``tiled'' files  \\\hline
+C       \end{tabular}
+C     \end{center}
+
+C     !USES:
       IMPLICIT NONE
-C SET_WRITE_GLOBAL_FLD( flag ) sets an internal logical state to
-C indicate whether files written by subsequent call to the
-C READ_WRITE_FLD package should create "global" or "tiled" files.
-C   flag = .TRUE.  indicates "global" files
-C   flag = .FALSE. indicates "tiled" files
-C
-C Arguments
+
+C     !INPUT PARAMETERS:
       LOGICAL flag
-C Common
+CEOP
       COMMON /PCKP_GBLFLS/ globalFile
       LOGICAL globalFile
-C
-      globalFile=flag
-C
+      
+      globalFile = flag
+
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: READ_CHECKPOINT
 C     !INTERFACE:
-      SUBROUTINE READ_CHECKPOINT ( myIter, myThid )
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE READ_PICKUP                                    
-C     | o Controlling routine for IO to write restart file.       
-C     *==========================================================*
-C     | Read model checkpoint files for use in restart.           
-C     *==========================================================*
-C     \ev
+      SUBROUTINE READ_CHECKPOINT( 
+     I     myIter, myThid )
+
+C     !DESCRIPTION:
+C     This is the controlling routine for IO to write restart (or
+C     ``pickup'' or ``checkpoint'') files.  It calls routines from other
+C     packages (\textit{eg.} mdsio and mnc) to do the per-variable
+C     reads.
+
 C     !USES:
       IMPLICIT NONE
-C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -52,82 +59,104 @@ C     == Global variables ===
 #include "GW.h"
 #include "SOLVE_FOR_PRESSURE3D.h"
 #endif
-
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
 C     myIter - Iteration number
       INTEGER myThid
       INTEGER myIter
+CEOP
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     oldPrec :: Temp. for hold I/O precision information
 C     prec    
 C     fn      :: Temp. for building file name.
-      INTEGER oldPrec
+      INTEGER i, oldPrec, prec
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(10) suff
-      INTEGER prec
-#ifdef ALLOW_MNC
-      INTEGER i,j,k, bi,bj
-      _RL     mnc_iter
-#endif
-CEOP
 
 C--    Going to really do some IO. Make everyone except master thread wait.
-       _BARRIER
-       _BEGIN_MASTER( myThid )
+      _BARRIER
+      _BEGIN_MASTER( myThid )
 
 #ifdef OLD_STYLE_WITH_MANY_FILES
 
-C       Force 64-bit IO
-        oldPrec        = readBinaryPrec
-        readBinaryPrec = precFloat64
+C     Force 64-bit IO
+      oldPrec        = readBinaryPrec
+      readBinaryPrec = precFloat64
 
-C--     Read model fields
-C       Raw fields
-        CALL READ_REC_XYZ_RL(  'uVel',   uVel, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(    'gU',     gU, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL( 'guNm1',  gUNm1, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'vVel',   vVel, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(    'gV',     gV, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL( 'gvNm1',  gVNm1, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL( 'theta',  theta, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(    'gT',     gT, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL( 'gtNm1',  gTNm1, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'salt',   salt, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(    'gS',     gS, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL( 'gsNm1',  gSNm1, 1,myIter, myThid)
-        CALL READ_REC_XY_RL ('etaN', etaN, 1,myIter, myThid)
-
+C--   Read model fields
+C     Raw fields
+      CALL READ_REC_XYZ_RL(  'uVel',   uVel, 1,myIter, myThid)
+      CALL READ_REC_XYZ_RL(    'gU',     gU, 1,myIter, myThid)
+      CALL READ_REC_XYZ_RL( 'guNm1',  gUNm1, 1,myIter, myThid)
+      CALL READ_REC_XYZ_RL(  'vVel',   vVel, 1,myIter, myThid)
+      CALL READ_REC_XYZ_RL(    'gV',     gV, 1,myIter, myThid)
+      CALL READ_REC_XYZ_RL( 'gvNm1',  gVNm1, 1,myIter, myThid)
+      CALL READ_REC_XYZ_RL( 'theta',  theta, 1,myIter, myThid)
+      CALL READ_REC_XYZ_RL(    'gT',     gT, 1,myIter, myThid)
+      CALL READ_REC_XYZ_RL( 'gtNm1',  gTNm1, 1,myIter, myThid)
+      CALL READ_REC_XYZ_RL(  'salt',   salt, 1,myIter, myThid)
+      CALL READ_REC_XYZ_RL(    'gS',     gS, 1,myIter, myThid)
+      CALL READ_REC_XYZ_RL( 'gsNm1',  gSNm1, 1,myIter, myThid)
+      CALL READ_REC_XY_RL ('etaN', etaN, 1,myIter, myThid)
+      
 #ifdef ALLOW_NONHYDROSTATIC
-        IF ( nonHydrostatic ) THEN
-         CALL READ_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
-         CALL READ_REC_XYZ_RL( 'gW',gW,       1,myIter,myThid)
-c        CALL READ_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
-        ENDIF
+      IF ( nonHydrostatic ) THEN
+        CALL READ_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
+        CALL READ_REC_XYZ_RL( 'gW',gW,       1,myIter,myThid)
+c       CALL READ_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
+      ENDIF
 #endif
 
-C       Reset default IO precision
-        readBinaryPrec = oldPrec
-
+C     Reset default IO precision
+      readBinaryPrec = oldPrec
+      
 #else /* OLD_STYLE_WITH_MANY_FILES */
-
-        prec = precFloat64
-
-C--     Suffix for pickup files
-        IF (pickupSuff.EQ.' ') THEN
-         WRITE(suff,'(I10.10)') myIter
-        ELSE
-         WRITE(suff,'(A10)') pickupSuff
+      
+      prec = precFloat64
+      
+C--   Suffix for pickup files
+      DO i = 1,MAX_LEN_FNAM
+        fn(i:i) = ' '
+      ENDDO
+      IF (pickupSuff .EQ. ' ') THEN
+        WRITE(suff,'(I10.10)') myIter
+      ELSE
+        WRITE(suff,'(A10)') pickupSuff
+      ENDIF
+      WRITE(fn,'(A,A10)') 'pickup.',suff
+      
+#ifdef ALLOW_MNC
+      IF (useMNC .AND. mnc_pickup_read) THEN
+C       Read variables from the pickup file
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
+        CALL MNC_CW_SET_UDIM(fn, 1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'U',uVel, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'V',vVel, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'T',theta, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'S',salt, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Eta',etaN, myThid)
+#ifdef NONLIN_FRSURF
+        IF ( nonlinFreeSurf.GE.0)
+     &    CALL MNC_CW_RL_R('D',fn,0,0,'EtaNH', etaH, myThid)
+#endif
+        CALL MNC_CW_RL_R('D',fn,0,0,'Unm1',gUnm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Vnm1',gVnm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Tnm1',gTnm1, myThid)
+        CALL MNC_CW_RL_R('D',fn,0,0,'Snm1',gSnm1, myThid)
+#ifdef ALLOW_NONHYDROSTATIC
+        IF ( nonHydrostatic ) THEN
+          CALL MNC_CW_RL_R('D',fn,0,0,'phi_nh', phi_nh, myThid)
+          CALL MNC_CW_RL_R('D',fn,0,0,'gW', gW, myThid)
         ENDIF
+#endif
+      ELSE
+#endif /*  ALLOW_MNC  */
 
 C--     Read model fields
-        WRITE(fn,'(A,A10)') 'pickup.',suff
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uVel,   1,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gU,     2,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gUnm1,  3,myThid)
@@ -143,104 +172,30 @@ C--     Read model fields
         CALL MDSREADFIELD(fn,prec,'RL', 1,etaN,12*Nr+1,myThid)
 #ifdef NONLIN_FRSURF
         IF ( nonlinFreeSurf.GE.0)
-     &  CALL MDSREADFIELD(fn,prec,'RL',1,etaH,12*Nr+2,myThid)
+     &    CALL MDSREADFIELD(fn,prec,'RL',1,etaH,12*Nr+2,myThid)
 #endif
-
         IF ( useDynP_inEos_Zc ) THEN
-         WRITE(fn,'(A,A10)') 'pickup_ph.',suff
-         CALL MDSREADFIELD(fn,prec,'RL',Nr,totPhiHyd,1,myThid)
+          WRITE(fn,'(A,A10)') 'pickup_ph.',suff
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,totPhiHyd,1,myThid)
         ENDIF
-
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
-         WRITE(fn,'(A,A10)') 'pickup_nh.',suff
-         CALL MDSREADFIELD(fn,prec,'RL',Nr,phi_nh,1,myThid)
-         CALL MDSREADFIELD(fn,prec,'RL',Nr,gW,   2,myThid)
-c        CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
+          WRITE(fn,'(A,A10)') 'pickup_nh.',suff
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,phi_nh,1,myThid)
+          CALL MDSREADFIELD(fn,prec,'RL',Nr,gW,   2,myThid)
+c         CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
         ENDIF
 #endif
+
+#ifdef ALLOW_MNC
+      ENDIF
+#endif /*  ALLOW_MNC  */
 
 #endif /* OLD_STYLE_WITH_MANY_FILES */
 
-
-#ifdef ALLOW_MNC
-      IF (useMNC) THEN
-        mnc_iter = myIter
-
-C       Write dynvars using the MNC package
-        CALL MNC_CW_SET_UDIM('pickup', -1, myThid)
-        CALL MNC_CW_RL_W('D','pickup',0,0,'iter',mnc_iter, myThid)
-        CALL MNC_CW_SET_UDIM('pickup', 0, myThid)
-        CALL MNC_CW_RL_W('D','pickup',0,0,'U', uVel, myThid)
-        CALL MNC_CW_RL_W('D','pickup',0,0,'V', vVel, myThid)
-        CALL MNC_CW_RL_W('D','pickup',0,0,'T', theta, myThid)
-        CALL MNC_CW_RL_W('D','pickup',0,0,'S', salt, myThid)
-        CALL MNC_CW_RL_W('D','pickup',0,0,'Eta', etaN, myThid)
-#ifdef NONLIN_FRSURF
-        IF ( nonlinFreeSurf.GE.0)
-     &    CALL MNC_CW_RL_W('D','pickup',0,0,'EtaNH', etaH, myThid)
-#endif
-        CALL MNC_CW_RL_W('D','pickup',0,0,'Unm1', gUnm1, myThid)
-        CALL MNC_CW_RL_W('D','pickup',0,0,'Vnm1', gVnm1, myThid)
-        CALL MNC_CW_RL_W('D','pickup',0,0,'Tnm1', gTnm1, myThid)
-        CALL MNC_CW_RL_W('D','pickup',0,0,'Snm1', gSnm1, myThid)
-
-        DO bj = myByLo(myThid), myByHi(myThid)
-          DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO j=1,sNy
-              DO i=1,sNx
-                etaN(i,j,bi,bj) = 0.0D0
-                etaH(i,j,bi,bj) = 0.0D0
-              ENDDO
-            ENDDO
-            DO k=1,Nr
-              DO j=1,sNy
-                DO i=1,sNx
-                  uVel(i,j,k,bi,bj)  = 0.0D0
-                  vVel(i,j,k,bi,bj)  = 0.0D0
-                  theta(i,j,k,bi,bj) = 0.0D0
-                  salt(i,j,k,bi,bj)  = 0.0D0
-
-C                 g?nm1 variables
-                  gUnm1(i,j,k,bi,bj) = 0.0D0
-                  gVnm1(i,j,k,bi,bj) = 0.0D0
-                  gTnm1(i,j,k,bi,bj) = 0.0D0
-                  gSnm1(i,j,k,bi,bj) = 0.0D0
-
-C                 g? variables
-                  gU(i,j,k,bi,bj) = 0.0D0
-                  gV(i,j,k,bi,bj) = 0.0D0
-                  gT(i,j,k,bi,bj) = 0.0D0
-                  gS(i,j,k,bi,bj) = 0.0D0
-                ENDDO
-              ENDDO
-            ENDDO
-          ENDDO
-        ENDDO
-        
-C       Read variables from the pickup file
-        CALL MNC_FILE_CLOSE_ALL_MATCHING('pickup', myThid)
-        CALL MNC_CW_SET_UDIM('pickup', 1, myThid)
-        CALL MNC_CW_RL_R('D','pickup',0,0,'iter',mnc_iter, myThid)
-        CALL MNC_CW_RL_R('D','pickup',0,0,'U',uVel, myThid)
-        CALL MNC_CW_RL_R('D','pickup',0,0,'V',vVel, myThid)
-        CALL MNC_CW_RL_R('D','pickup',0,0,'T',theta, myThid)
-        CALL MNC_CW_RL_R('D','pickup',0,0,'S',salt, myThid)
-        CALL MNC_CW_RL_R('D','pickup',0,0,'Eta',etaN, myThid)
-#ifdef NONLIN_FRSURF
-        IF ( nonlinFreeSurf.GE.0)
-     &    CALL MNC_CW_RL_R('D','pickup',0,0,'EtaNH', etaH, myThid)
-#endif
-        CALL MNC_CW_RL_R('D','pickup',0,0,'Unm1',gUnm1, myThid)
-        CALL MNC_CW_RL_R('D','pickup',0,0,'Vnm1',gVnm1, myThid)
-        CALL MNC_CW_RL_R('D','pickup',0,0,'Tnm1',gTnm1, myThid)
-        CALL MNC_CW_RL_R('D','pickup',0,0,'Snm1',gSnm1, myThid)
-      ENDIF
-#endif /* ALLOW_MNC */
-
       _END_MASTER( myThid )
       _BARRIER
-
+      
 C--   Fill in edge regions
       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
       CALL EXCH_UV_XYZ_RL(gU,gV,.TRUE.,myThid)
@@ -255,47 +210,45 @@ C--   Fill in edge regions
       _EXCH_XY_R8( etaH, myThid )
 
       IF ( useDynP_inEos_Zc )
-     & _EXCH_XYZ_RL( totPhiHyd, myThid )
+     &     _EXCH_XYZ_RL( totPhiHyd, myThid )
 
 #ifdef ALLOW_NONHYDROSTATIC
-        IF ( nonHydrostatic ) THEN
-         _EXCH_XYZ_R8(phi_nh, myThid )
-         _EXCH_XYZ_R8(gW    , myThid )
-c        _EXCH_XYZ_R8(gWNM1 , myThid )
-        ENDIF
+      IF ( nonHydrostatic ) THEN
+        _EXCH_XYZ_R8(phi_nh, myThid )
+        _EXCH_XYZ_R8(gW    , myThid )
+c       _EXCH_XYZ_R8(gWNM1 , myThid )
+      ENDIF
 #endif
 
       RETURN
       END
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: WRITE_CHECKPOINT
 C     !INTERFACE:
-      SUBROUTINE WRITE_CHECKPOINT ( modelEnd, myTime, 
-     &                              myIter, myThid )
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE WRITE_CHECKPOINT                               
-C     | o Controlling routine for IO to write restart file.       
-C     *==========================================================*
-C     | Write model checkpoint files for use in restart.          
-C     | This routine writes both "rolling-checkpoint" files       
-C     | and permanent checkpoint files. A rolling checkpoint      
-C     | works through a circular list of suffices. Generally the  
-C     | circular list has two entries so that a rolling           
-C     | checkpoint will overwrite the last rolling checkpoint     
-C     | but one. This is useful for running long jobs without     
-C     | filling too much disk space.                              
-C     |  In a permanent checkpoint data is written suffixed by    
-C     | the current timestep number. This sort of checkpoint can  
-C     | be used to provided a snap-shot from which the model      
-C     | can be rerun.                                             
-C     *==========================================================*
-C     \ev
+      SUBROUTINE WRITE_CHECKPOINT( 
+     I     modelEnd, myTime, 
+     I     myIter, myThid )
+
+C     !DESCRIPTION:
+C     This is the controlling routine for IO to write restart (or
+C     ``pickup'' or ``checkpoint'') files.  It calls routines from other
+C     packages (\textit{eg.} mdsio and mnc) to do the per-variable
+C     writes.
+C
+C     Both ``rolling-checkpoint'' files and permanent checkpoint files
+C     are written here. A rolling checkpoint works through a circular
+C     list of suffices. Generally the circular list has two entries so
+C     that a rolling checkpoint will overwrite the last rolling
+C     checkpoint but one. This is useful for running long jobs without
+C     filling too much disk space.  In a permanent checkpoint, data is
+C     written suffixed by the current timestep number. Permanent
+C     checkpoints can be used to provide snap-shots from which the
+C     model can be restarted.
 
 C     !USES:
       IMPLICIT NONE
-C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -308,27 +261,21 @@ C     == Global variables ===
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
+      COMMON /PCKP_GBLFLS/ globalFile
+      LOGICAL globalFile
 
-C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
-C     modelEnd    :: Checkpoint call at end of model run.
-C     myThid :: Thread number for this instance of the routine.
-C     myIter :: Iteration number
-C     myTime :: Current time of simulation ( s )
+C     !INPUT PARAMETERS:
+C     modelEnd  :: Checkpoint call at end of model run.
+C     myThid    :: Thread number for this instance of the routine.
+C     myIter    :: Iteration number
+C     myTime    :: Current time of simulation ( s )
       LOGICAL modelEnd    
       INTEGER myThid
       INTEGER myIter
       _RL     myTime
-#ifdef ALLOW_MNC
-      _RL     mnc_iter
-#endif
-
-C     == Common blocks ==
-      COMMON /PCKP_GBLFLS/ globalFile
-      LOGICAL globalFile
+CEOP
 
 C     !LOCAL VARIABLES:
-C     == Local variables ==
 C     permCheckPoint :: Flag indicating whether a permanent checkpoint will
 C                       be written.
 C     tempCheckPoint :: Flag indicating if it is time to write a non-permanent
@@ -337,35 +284,35 @@ C     oldPrc :: Temp. for holding I/O precision
 C     fn     :: Temp. for building file name string.
 C     lgf    :: Flag to indicate whether to use global file mode.
       LOGICAL permCheckPoint, tempCheckPoint  
-      INTEGER oldPrec
+      INTEGER i, oldPrec, prec
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER prec
       LOGICAL lgf
-CEOP
+      COMMON /PCKP_SWAP/ pickup_ext
+      CHARACTER*(1) pickup_ext
 
       permCheckPoint = .FALSE.
       tempCheckPoint = .FALSE.
-      permCheckPoint=
-     &  DIFFERENT_MULTIPLE(pChkptFreq,myTime,myTime-deltaTClock)
-      tempCheckPoint=
-     &  DIFFERENT_MULTIPLE( ChkptFreq,myTime,myTime-deltaTClock)
-
+      permCheckPoint =
+     &     DIFFERENT_MULTIPLE(pChkptFreq,myTime,myTime-deltaTClock)
+      tempCheckPoint =
+     &     DIFFERENT_MULTIPLE( ChkptFreq,myTime,myTime-deltaTClock)
+      
       IF (
-     &    ( .NOT.modelEnd .AND. (permCheckPoint.OR.tempCheckPoint) )
-     &   .OR.
-     &    ( modelEnd .AND. .NOT.(permCheckPoint.OR.tempCheckPoint) )
-     &   ) THEN
+     &     ( .NOT.modelEnd .AND. (permCheckPoint.OR.tempCheckPoint) )
+     &     .OR.
+     &     ( modelEnd .AND. .NOT.(permCheckPoint.OR.tempCheckPoint) )
+     &     ) THEN
 
-C--    Going to really do some IO. Make everyone except master thread wait.
-       _BARRIER
-       _BEGIN_MASTER( myThid )
+C--     Going to really do some IO. Make everyone except master thread wait.
+        _BARRIER
+        _BEGIN_MASTER( myThid )
 
 #ifdef OLD_STYLE_WITH_MANY_FILES
+      
 C       Force 64-bit IO
         oldPrec = writeBinaryPrec
         writeBinaryPrec = precFloat64
-
 C--     Write model fields
 C       Raw fields
         CALL WRITE_REC_XYZ_RL(  'uVel',   uVel,  1,myIter, myThid)
@@ -381,82 +328,110 @@ C       Raw fields
         CALL WRITE_REC_XYZ_RL(    'gS',     gS,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL( 'gSNm1',  gSNm1,  1,myIter, myThid)
         CALL WRITE_REC_XY_RL ('etaN', etaN,  1,myIter, myThid)
-
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
-         CALL WRITE_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
-         CALL WRITE_REC_XYZ_RL( 'gW',gW, 1,myIter,myThid)
-c        CALL WRITE_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
+          CALL WRITE_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
+          CALL WRITE_REC_XYZ_RL( 'gW',gW, 1,myIter,myThid)
+c         CALL WRITE_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
         ENDIF
 #endif
-
-C--     Reset binary precision
+C--       Reset binary precision
         writeBinaryPrec = oldPrec
 
 #else /* OLD_STYLE_WITH_MANY_FILES */
-
+      
         prec = precFloat64
         lgf = globalFile
-
+        
 C--     Write model fields
+        DO i = 1,MAX_LEN_FNAM
+          fn(i:i) = ' '
+        ENDDO
         IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup.',myIter
+          WRITE(fn,'(A,I10.10)') 'pickup.',myIter
         ELSE
-         WRITE(fn,'(A,A)') 'pickup.',checkPtSuff(nCheckLev)
+          WRITE(fn,'(A,A)') 'pickup.',checkPtSuff(nCheckLev)
         ENDIF
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVel,  1,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gU,    2,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gUnm1, 3,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVel,  4,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gV,    5,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gVnm1, 6,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,theta, 7,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gT,    8,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gTnm1, 9,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,salt, 10,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gS,   11,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gSnm1,12,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaN,12*Nr+1,
-     &                     myIter,myThid)
-#ifdef NONLIN_FRSURF
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaH,12*Nr+2,
-     &                     myIter,myThid)
-#endif
-
-        IF ( useDynP_inEos_Zc ) THEN
-         IF ( permCheckPoint ) THEN
-          WRITE(fn,'(A,I10.10)') 'pickup_ph.',myIter
-         ELSE
-          WRITE(fn,'(A,A)') 'pickup_ph.',checkPtSuff(nCheckLev)
-         ENDIF
-         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,totPhiHyd,
-     &                      1,myIter,myThid)
-        ENDIF
-
-#ifdef ALLOW_NONHYDROSTATIC
-        IF ( nonHydrostatic ) THEN
-         IF ( permCheckPoint ) THEN
-          WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
-         ELSE
-          WRITE(fn,'(A,A)') 'pickup_nh.',checkPtSuff(nCheckLev)
-         ENDIF
-         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,phi_nh,1,myIter,myThid)
-         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gW,   2,myIter,myThid)
-c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
-        ENDIF
-#endif
-
-#endif /* OLD_STYLE_WITH_MANY_FILES */
-
 
 #ifdef ALLOW_MNC
-      IF (useMNC) THEN
-        mnc_iter = myIter
+        IF (useMNC .AND. mnc_pickup_write) THEN
+C         Write dynvars using the MNC package
+          CALL MNC_CW_SET_UDIM(fn, -1, myThid)
+          CALL MNC_CW_I_W('I',fn,0,0,'iter', myIter, myThid)
+          CALL MNC_CW_SET_UDIM(fn, 0, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'U', uVel, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'V', vVel, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'T', theta, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'S', salt, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'Eta', etaN, myThid)
+#ifdef NONLIN_FRSURF
+          IF ( nonlinFreeSurf .GE. 0)
+     &      CALL MNC_CW_RL_W('D',fn,0,0,'EtaNH', etaH, myThid)
+#endif
+          CALL MNC_CW_RL_W('D',fn,0,0,'Unm1', gUnm1, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'Vnm1', gVnm1, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'Tnm1', gTnm1, myThid)
+          CALL MNC_CW_RL_W('D',fn,0,0,'Snm1', gSnm1, myThid)
+#ifdef ALLOW_NONHYDROSTATIC
+          IF ( nonHydrostatic ) THEN
+            CALL MNC_CW_RL_W('D',fn,0,0,'phi_nh', phi_nh, myThid)
+            CALL MNC_CW_RL_W('D',fn,0,0,'gW', gW, myThid)
+          ENDIF
+#endif
+          IF ( useDynP_inEos_Zc ) THEN
+            CALL MNC_CW_RL_W('D',fn,0,0,'totPhiHyd', totPhiHyd, myThid)
+          ENDIF
+        ELSE
+#endif /*  ALLOW_MNC  */
 
-C       Need to add the pickups here...
-      ENDIF
-#endif /* ALLOW_MNC */
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVel,  1,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gU,    2,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gUnm1, 3,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVel,  4,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gV,    5,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gVnm1, 6,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,theta, 7,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gT,    8,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gTnm1, 9,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,salt, 10,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gS,   11,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gSnm1,12,myIter,myThid)
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaN,12*Nr+1,
+     &         myIter,myThid)
+#ifdef NONLIN_FRSURF
+          CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaH,12*Nr+2,
+     &      myIter,myThid)
+#endif
+          IF ( useDynP_inEos_Zc ) THEN
+            IF ( permCheckPoint ) THEN
+              WRITE(fn,'(A,I10.10)') 'pickup_ph.',myIter
+            ELSE
+              WRITE(fn,'(A,A)') 'pickup_ph.',checkPtSuff(nCheckLev)
+            ENDIF
+            CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,totPhiHyd,
+     &           1,myIter,myThid)
+          ENDIF
+#ifdef ALLOW_NONHYDROSTATIC
+          IF ( nonHydrostatic ) THEN
+            IF ( permCheckPoint ) THEN
+              WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
+            ELSE
+              WRITE(fn,'(A,A)') 'pickup_nh.',checkPtSuff(nCheckLev)
+            ENDIF
+            CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,phi_nh, 1,
+     &           myIter,myThid)
+            CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gW,     2,
+     &             myIter,myThid)
+C           CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,  3,
+C           &    myIter,myThid)
+          ENDIF
+#endif
 
+#ifdef ALLOW_MNC
+        ENDIF
+#endif /*  ALLOW_MNC  */
+
+#endif /* OLD_STYLE_WITH_MANY_FILES */
 
 C--     Write suffix for stdout information
         IF ( permCheckPoint ) THEN
@@ -464,22 +439,22 @@ C--     Write suffix for stdout information
         ELSE
           WRITE(fn,'(A)') checkPtSuff(nCheckLev)
         ENDIF
-
+        
         IF ( .NOT. permCheckPoint ) THEN
-         nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
+          nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
         ENDIF
-
-       _END_MASTER(myThid)
-       _BARRIER
-
+        
+        _END_MASTER(myThid)
+        _BARRIER
+        
 C--     Write information to stdout so there is a record that the
 C       checkpoint was completed
-       _BEGIN_MASTER(myThid)
+        _BEGIN_MASTER(myThid)
         WRITE(msgBuf,'(A11,I10,1X,A10)')
-     &   "%CHECKPOINT ",myIter,fn
+     &       "%CHECKPOINT ",myIter,fn
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-       _END_MASTER(myThid)
-
+        _END_MASTER(myThid)
+        
       ENDIF
 
       RETURN

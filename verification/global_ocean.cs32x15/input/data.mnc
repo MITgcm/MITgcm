@@ -5,7 +5,9 @@
  mnc_echo_gvtypes=.TRUE.,
  mnc_use_outdir=.TRUE.,
  mnc_outdir_date=.TRUE.,
- mnc_outdir_str='test_mnc_'
+# mnc_outdir_str='test_mnc_',
+# mnc_use_for_mon=.TRUE.,
+ mnc_pickup_write=.TRUE.,
  &
 # Note: Some systems use & as the
 # namelist terminator. Other systems

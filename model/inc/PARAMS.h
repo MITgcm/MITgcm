@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.107 2004/04/05 06:01:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.108 2004/04/06 01:44:25 edhill Exp $
 C $Name:  $
 C
 CBOP
@@ -656,14 +656,14 @@ C     Run-time flags for early-initialization of MNC
       LOGICAL
      &     useMNC,
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date,
-     &     mnc_echo_gvtypes, mnc_pickup_create, mnc_pickup_read,
+     &     mnc_echo_gvtypes, mnc_pickup_write, mnc_pickup_read,
      &     mnc_use_for_mon
       CHARACTER*(MAX_LEN_FNAM) mnc_outdir_str
       CHARACTER*(MAX_LEN_FNAM) mnc_indir_str
       COMMON /PARM_MNC/
      &     useMNC,
      &     mnc_use_indir, mnc_use_outdir, mnc_outdir_date, 
-     &     mnc_echo_gvtypes, mnc_pickup_create, mnc_pickup_read, 
+     &     mnc_echo_gvtypes, mnc_pickup_write, mnc_pickup_read, 
      &     mnc_outdir_str, mnc_indir_str, 
      &     mnc_use_for_mon
 
