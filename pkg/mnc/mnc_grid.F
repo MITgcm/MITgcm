@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.15 2004/09/23 18:25:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.16 2005/01/24 04:40:35 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -161,7 +161,7 @@ C         a new definition for this grid.
       ENDDO
 
 C     Reaching this point means the grid was NOT previously defined and
-C     will must therefore create a new definition.
+C     we must therefore create a new definition.
       CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_g_names,
      &     indg, myThid)
       mnc_g_names(indg)(1:MNC_MAX_CHAR) =

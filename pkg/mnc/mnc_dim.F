@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.12 2004/12/18 19:13:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.13 2005/01/24 04:40:35 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -51,7 +51,7 @@ C     !INPUT PARAMETERS:
       character*(1) doWrite
 CEOP
 
-      CALL MNC_DIM_INIT_ALL_CV(fname, dname, dlen, 'Y', -1,-1, myThid)
+      CALL MNC_DIM_INIT_ALL_CV(fname,dname,dlen,doWrite,-1,-1,myThid)
       
       RETURN
       END

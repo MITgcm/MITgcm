@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.17 2004/09/23 16:17:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.18 2005/01/24 04:40:35 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -584,7 +584,7 @@ C       Enter define mode
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 1
-C     !ROUTINE: MNC_FILE_TRY_READ
+C     !ROUTINE: MNC_FILE_READALL
 
 C     !INTERFACE:
       SUBROUTINE MNC_FILE_READALL( 
@@ -688,6 +688,7 @@ C     Read each dimension and save the information
         ENDIF
         ns = IFNBLNK(name)
         ne = ILNBLNK(name)
+
         CALL MNC_DIM_INIT_ALL(fname,name(ns:ne),dlen,'N', myThid)
         DO i = 1,mnc_f_alld(indf,1)
           j = mnc_f_alld(indf,i+1)
@@ -711,12 +712,13 @@ C     Read and save each variable
         CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
         n1 = IFNBLNK(name)
         n2 = ILNBLNK(name)
-        
+
 C       Create a grid for this variable
         DO i = 1,ndv
           did = idlist(i)
           dnames(i)(1:MNC_MAX_CHAR) = mnc_d_names(did)(1:MNC_MAX_CHAR)
         ENDDO
+
         CALL MNC_GRID_INIT_ALL(fname, name, ndv, dnames, indg, myThid)
 
 C       Update the tables

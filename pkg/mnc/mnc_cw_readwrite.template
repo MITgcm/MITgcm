@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.27 2004/12/17 21:28:25 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.28 2005/01/24 04:40:35 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -263,8 +263,6 @@ C         local copy of them
             ELSE
               dimnc(i) = mnc_cw_ie(i,igrid) - mnc_cw_is(i,igrid) + 1
             ENDIF
-C           CALL MNC_DIM_INIT(fname, 
-C           &           mnc_cw_dn(i,igrid), dimnc(i), myThid)
 
 C           Add the coordinate variables
             CALL MNC_DIM_INIT_ALL_CV(fname, 
@@ -558,9 +556,9 @@ CEOP
 C     !LOCAL VARIABLES:
       integer i,k, nvf,nvl, n1,n2, igrid, ntot, indu
       integer bis,bie, bjs,bje, uniq_tnum, nfname, fid, idv
-      integer ndim, indf, err, lbi,lbj, bidim,bjdim, unlim_sz, kr
-      integer ind_fv_ids, ind_vt, ierr, atype, alen
-      integer f_sNx,f_sNy, npath
+      integer ndim, err, lbi,lbj, bidim,bjdim, unlim_sz, kr
+      integer ind_vt, npath, unlid
+C     integer f_sNx,f_sNy, alen, atype, ind_fv_ids, ierr, indf
       integer p(9),s(9),e(9), vstart(9),vcount(9), udo(9)
       integer j1,j2,j3,j4,j5,j6,j7, k1,k2,k3,k4,k5,k6,k7
       character*(MAX_LEN_MBUF) msgbuf
@@ -647,45 +645,59 @@ C         Add the path to the file name
           ENDIF
 
 C         Open the existing file 
-          CALL MNC_FILE_TRY_READ( fname, ierr, indf, myThid)
+C         CALL MNC_FILE_TRY_READ( fname, ierr, indf, myThid)
 
 C         Check that the variable (VType) is defined within the file
-          CALL MNC_GET_FVINDS( fname, vtype, indf, ind_fv_ids, myThid)
-          IF ((indf .LT. 1) .OR. (ind_fv_ids .LT. 1)) THEN
-            write(msgbuf,'(4a)') 'MNC_CW_RX_R ERROR: vtype ''', 
-     &           vtype(nvf:nvl), ''' is not defined within file ''', 
-     &           fname(1:nfname)
-            CALL print_error(msgbuf, mythid)
-            STOP 'ABNORMAL END: S/R MNC_CW_RX_R'
-          ENDIF
-          fid = mnc_f_info(indf,2)
-          idv = mnc_fv_ids(indf,ind_fv_ids+1)
+C           CALL MNC_GET_FVINDS( fname, vtype, indf, ind_fv_ids, myThid)
+C           IF ((indf .LT. 1) .OR. (ind_fv_ids .LT. 1)) THEN
+C             write(msgbuf,'(4a)') 'MNC_CW_RX_R ERROR: vtype ''', 
+C      &           vtype(nvf:nvl), ''' is not defined within file ''', 
+C      &           fname(1:nfname)
+C             CALL print_error(msgbuf, mythid)
+C             STOP 'ABNORMAL END: S/R MNC_CW_RX_R'
+C           ENDIF
+
+C         The previous old junk is completely unnecessary.  All we
+C         should do is (1) open the file in a READ-ONLY mode, (2) get
+C         the var id for the current variable, (3) read the data, and
+C         then (4) quickly close the file since theres no need to keep
+C         it open.
+          write(msgbuf,'(4a)') 'MNC_CW_RX_R: cannot open', 
+     &         ' file ''', fname(1:nfname), ''' in read-only mode'
+          err = NF_OPEN(fname, NF_NOWRITE, fid)
+          CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+
+          write(msgbuf,'(6a)') 
+     &         'MNC_CW_RX_R: cannot get id for variable ''', 
+     &         vtype(nvf:nvl), '''in file ''', fname(1:nfname), ''''
+          err = NF_INQ_VARID(fid, vtype, idv)
+          CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
 C         Check that the current sNy,sNy values and the in-file values
 C         are compatible and WARN (only warn) if not
-          f_sNx = -1
-          f_sNy = -1
-          err = NF_INQ_ATT(fid,NF_GLOBAL, 'sNx',atype,alen)
-          IF ((err .EQ. NF_NOERR) .AND. (alen .EQ. 1)) THEN
-            err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNx', f_sNx)
-            CALL MNC_HANDLE_ERR(err, 
-     &           'reading attribute ''sNx'' in S/R MNC_CW_RX_R', 
-     &           myThid)
-          ENDIF
-          err = NF_INQ_ATT(fid,NF_GLOBAL, 'sNy',atype,alen)
-          IF ((err .EQ. NF_NOERR) .AND. (alen .EQ. 1)) THEN
-            err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNy', f_sNy)
-            CALL MNC_HANDLE_ERR(err, 
-     &           'reading attribute ''sNy'' in S/R MNC_CW_RX_R',
-     &           myThid)
-          ENDIF
-          IF ((f_sNx .NE. sNx) .OR. (f_sNy .NE. sNy)) THEN
-            write(msgbuf,'(5a)') 'MNC_CW_RX_R WARNING: the ',
-     &           'attributes ''sNx'' and ''sNy'' within the file ''', 
-     &           fname(1:nfname), ''' do not exist or do not match ',
-     &           'the current sizes within the model'
-            CALL print_error(msgbuf, mythid)
-          ENDIF
+C           f_sNx = -1
+C           f_sNy = -1
+C           err = NF_INQ_ATT(fid,NF_GLOBAL, 'sNx',atype,alen)
+C           IF ((err .EQ. NF_NOERR) .AND. (alen .EQ. 1)) THEN
+C             err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNx', f_sNx)
+C             CALL MNC_HANDLE_ERR(err, 
+C      &           'reading attribute ''sNx'' in S/R MNC_CW_RX_R', 
+C      &           myThid)
+C           ENDIF
+C           err = NF_INQ_ATT(fid,NF_GLOBAL, 'sNy',atype,alen)
+C           IF ((err .EQ. NF_NOERR) .AND. (alen .EQ. 1)) THEN
+C             err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNy', f_sNy)
+C             CALL MNC_HANDLE_ERR(err, 
+C      &           'reading attribute ''sNy'' in S/R MNC_CW_RX_R',
+C      &           myThid)
+C           ENDIF
+C           IF ((f_sNx .NE. sNx) .OR. (f_sNy .NE. sNy)) THEN
+C             write(msgbuf,'(5a)') 'MNC_CW_RX_R WARNING: the ',
+C      &           'attributes ''sNx'' and ''sNy'' within the file ''', 
+C      &           fname(1:nfname), ''' do not exist or do not match ',
+C      &           'the current sizes within the model'
+C             CALL print_error(msgbuf, mythid)
+C           ENDIF
 
 C         Check that the in-memory variable and the in-file variables
 C         are of compatible sizes
@@ -744,14 +756,19 @@ C           Check for the unlimited dimension
               IF (indu .GT. 0) THEN
 C               Use the indu value
                 udo(i) = indu - 1
-              ELSEIF (indu .EQ. -1) THEN
-C               Append one to the current unlimited dim size
-                CALL MNC_DIM_UNLIM_SIZE( fname, unlim_sz, myThid)
-                udo(i) = unlim_sz
               ELSE
-C               Use the current unlimited dim size
-                CALL MNC_DIM_UNLIM_SIZE( fname, unlim_sz, myThid)
-                udo(i) = unlim_sz - 1
+C               We need the current unlim dim size
+                write(msgbuf,'(5a)') 'MNC_CW_RX_R: getting the ',
+     &               'unlim dim id within file ''', 
+     &               fname(1:nfname), ''''
+                err = NF_INQ_UNLIMDIM(fid, unlid)
+                CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+                write(msgbuf,'(5a)') 'MNC_CW_RX_R: getting the ',
+     &               'unlim dim size within file ''', 
+     &               fname(1:nfname), ''''
+                err = NF_INQ_DIMLEN(fid, unlid, unlim_sz)
+                CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+                udo(i) = unlim_sz
               ENDIF
             ENDIF
           ENDDO
@@ -768,8 +785,6 @@ C     DO i = 9,1,-1
 C     write(*,*) 'i,p(i),s(i),e(i) = ', i,': ',p(i),s(i),e(i)
 C     ENDDO
           
-          CALL MNC_FILE_ENDDEF(fname, myThid)
-
           write(msgbuf,'(5a)') 'reading variable type ''', 
      &         vtype(nvf:nvl), ''' within file ''', 
      &         fname(1:nfname), ''''
@@ -840,7 +855,6 @@ C         Read the variable one vector at a time
         ENDDO
       ENDIF
 
-      
  
                     ENDDO
                   ENDDO
@@ -850,7 +864,12 @@ C         Read the variable one vector at a time
           ENDDO
 
 C         Close the file
-          CALL MNC_FILE_CLOSE(fname, myThid)
+C         CALL MNC_FILE_CLOSE(fname, myThid)
+          err = NF_CLOSE(fid)
+          write(msgbuf,'(3a)') 'MNC_CW_RX_R:  cannot close file ''', 
+     &         fname(1:nfname), ''''
+          CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+
 
 C         End the lbj,lbi loops
         ENDDO
