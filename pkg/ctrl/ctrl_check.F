@@ -45,28 +45,28 @@ C     Can't have both atmos. state and flux field as control
 
 #if (defined (ALLOW_HFLUX_CONTROL) && defined (ALLOW_ATEMP_CONTROL))
       WRITE(msgBuf,'(A)') 
-     &     'Can't have both ALLOW_HFLUX_CONTROL & ALLOW_ATEMP_CONTROL'
+     &     'Cannot have both ALLOW_HFLUX_CONTROL & ALLOW_ATEMP_CONTROL'
       CALL PRINT_ERROR( msgBuf , 1)
       STOP 'ABNORMAL END: S/R CTRL_CHECK'
 #endif
 
 #if (defined (ALLOW_SFLUX_CONTROL) && defined (ALLOW_AQH_CONTROL))
       WRITE(msgBuf,'(A)') 
-     &     'Can't have both ALLOW_SFLUX_CONTROL & ALLOW_AQH_CONTROL'
+     &     'Cannot have both ALLOW_SFLUX_CONTROL & ALLOW_AQH_CONTROL'
       CALL PRINT_ERROR( msgBuf , 1)
       STOP 'ABNORMAL END: S/R CTRL_CHECK'
 #endif
 
 #if (defined (ALLOW_USTRESS_CONTROL) && defined (ALLOW_UWIND_CONTROL))
       WRITE(msgBuf,'(A)') 
-     &     'Can't have both ALLOW_USTRESS_CONTROL & ALLOW_UWIND_CONTROL'
+     &     'Cannot have both ALLOW_USTRESS_CONTROL & ALLOW_UWIND_CONTROL'
       CALL PRINT_ERROR( msgBuf , 1)
       STOP 'ABNORMAL END: S/R CTRL_CHECK'
 #endif
 
 #if (defined (ALLOW_VSTRESS_CONTROL) && defined (ALLOW_VWIND_CONTROL))
       WRITE(msgBuf,'(A)') 
-     &     'Can't have both ALLOW_VSTRESS_CONTROL & ALLOW_VWIND_CONTROL'
+     &     'Cannot have both ALLOW_VSTRESS_CONTROL & ALLOW_VWIND_CONTROL'
       CALL PRINT_ERROR( msgBuf , 1)
       STOP 'ABNORMAL END: S/R CTRL_CHECK'
 #endif
