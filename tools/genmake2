@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.98 2004/09/07 21:28:47 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.99 2004/09/27 15:49:48 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -693,22 +693,26 @@ EOF
     #echo "$FC $FFLAGS $FOPTIM -c genmake_tnc.f"
     #echo "$LINK -o genmake_tnc.o $LIBS"
     $CPP $DEFINES $INCLUDES genmake_tnc.for > genmake_tnc.f 2>/dev/null  \
-	&&  $FC $FFLAGS $FOPTIM -c genmake_tnc.f  \
+	&&  $FC $FFLAGS $FOPTIM -c genmake_tnc.f >> genmake_tnc.log 2>&1  \
 	&&  $LINK -o genmake_tnc genmake_tnc.o $LIBS >> genmake_tnc.log 2>&1
     RET_COMPILE=$?
-    test -x ./genmake_tnc  &&  ./genmake_tnc >> genmake_tnc.log 2>&1
-    RETVAL=$?
-    if test "x$RET_COMPILE" = x0 -a "x$RETVAL" = x0 ; then
+
+    #EH3  Remove test program execution for machines that either disallow
+    #EH3  execution or cannot support it (eg. cross-compilers)
+    #EH3
+    #EH3 test -x ./genmake_tnc  &&  ./genmake_tnc >> genmake_tnc.log 2>&1
+    #EH3 RETVAL=$?
+    #EH3 if test "x$RET_COMPILE" = x0 -a "x$RETVAL" = x0 ; then
+
+    if test "x$RET_COMPILE" = x0 ; then
 	HAVE_NETCDF=t
     else
 	# try again with "-lnetcdf" added to the libs
 	$CPP $DEFINES $INCLUDES genmake_tnc.for > genmake_tnc.f 2>/dev/null  \
-	    &&  $FC $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.f \
-	    $LIBS -lnetcdf >> genmake_tnc_2.log 2>&1
+	    &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.f >> genmake_tnc.log 2>&1  \
+	    &&  $LINK -o genmake_tnc genmake_tnc.o $LIBS -lnetcdf >> genmake_tnc.log 2>&1
 	RET_COMPILE=$?
-	test -x ./genmake_tnc  &&  ./genmake_tnc >> genmake_tnc.log 2>&1
-	RETVAL=$?
-	if test "x$RET_COMPILE" = x0 -a "x$RETVAL" = x0 ; then
+	if test "x$RET_COMPILE" = x0 ; then
 	    LIBS="$LIBS -lnetcdf"
 	    HAVE_NETCDF=t
 	else
@@ -1586,14 +1590,20 @@ if test "x$RETVAL" = x0 ; then
     if test "x$HAVE_NETCDF" != xt ; then
 	cat <<EOF
 
-WARNING: the "mnc" package has been enabled but tests failed to 
-  compile and/or execute NetCDF applications.  Please check that:
+*********************************************************************
+WARNING: the "mnc" package was enabled but tests failed to compile
+  NetCDF applications.  Please check that:
 
-  1) NetCDF is installed for your compiler and
-  2) the LIBS variable (within the 'optfile") specifies the correct 
+  1) NetCDF is correctly installed for this compiler and
+  2) the LIBS variable (within the "optfile") specifies the correct 
        NetCDF library to link against.
-  
+
+  Due to this failure, the "mnc" package is now DISABLED.
+*********************************************************************
+
 EOF
+	temp=`echo $PACKAGES | sed -e 's/mnc//g'`
+	PACKAGES=$temp
     fi
 fi
 
