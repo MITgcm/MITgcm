@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.23 2002/07/31 16:38:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.24 2002/11/12 20:39:46 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -63,6 +63,28 @@ CEOP
           surfaceTendencyV(i,j,bi,bj) = 0. _d 0
           surfaceTendencyT(i,j,bi,bj) = 0. _d 0
           surfaceTendencyS(i,j,bi,bj) = 0. _d 0
+#ifndef INCLUDE_EXTERNAL_FORCING_PACKAGE
+          taux0           (i,j,bi,bj) = 0. _d 0
+          taux1           (i,j,bi,bj) = 0. _d 0
+          tauy0           (i,j,bi,bj) = 0. _d 0
+          tauy1           (i,j,bi,bj) = 0. _d 0
+          Qnet0           (i,j,bi,bj) = 0. _d 0
+          Qnet1           (i,j,bi,bj) = 0. _d 0
+          EmPmR0          (i,j,bi,bj) = 0. _d 0
+          EmPmR1          (i,j,bi,bj) = 0. _d 0
+          SST0            (i,j,bi,bj) = 0. _d 0
+          SST1            (i,j,bi,bj) = 0. _d 0
+          SSS0            (i,j,bi,bj) = 0. _d 0
+          SSS1            (i,j,bi,bj) = 0. _d 0
+#ifdef SHORTWAVE_HEATING          
+          Qsw0            (i,j,bi,bj) = 0. _d 0
+          Qsw1            (i,j,bi,bj) = 0. _d 0
+#endif
+#ifdef ATMOSPHERIC_LOADING
+          pload0          (i,j,bi,bj) = 0. _d 0
+          pload1          (i,j,bi,bj) = 0. _d 0
+#endif
+#endif
          ENDDO
         ENDDO
        ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.13 2002/07/31 16:38:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.14 2002/11/12 20:39:46 heimbach Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -71,6 +71,49 @@ C                Units are           meters (converted)
 #else
       _RS  pload    (1,1,1,1)
 #endif
+
+#ifndef INCLUDE_EXTERNAL_FORCING_PACKAGE
+C     taux[01]  :: Temp. for zonal wind stress
+C     tauy[01]  :: Temp. for merid. wind stress
+C     qnet[01]  :: Temp. for heat flux
+C     empmr[01] :: Temp. for fresh water flux
+C     sst[01]   :: Temp. for theta climatalogy
+C     sss[01]   :: Temp. for theta climatalogy
+C     qsw[01]   :: Temp. for short wave component of heat flux
+C     [01]      :: End points for interpolation
+C     Above use static heap storage to allow exchange.
+
+      COMMON /TDFIELDS/
+     &                 taux0, tauy0, Qnet0, EmPmR0, SST0, SSS0,
+     &                 taux1, tauy1, Qnet1, EmPmR1, SST1, SSS1
+#ifdef SHORTWAVE_HEATING
+     &               , Qsw0, Qsw1
+#endif 
+#ifdef ATMOSPHERIC_LOADING
+     &               , pload0, pload1
+#endif
+
+      _RS  taux0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  tauy0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  Qnet0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  EmPmR0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  SST0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  SSS0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  taux1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  tauy1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  Qnet1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  EmPmR1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  SST1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  SSS1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ATMOSPHERIC_LOADING
+      _RS  pload0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  pload1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+#ifdef SHORTWAVE_HEATING
+      _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  Qsw0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif
+#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
 
 C     surfaceTendencyU       (units are  m/s^2)
 C                -> usage in gU:     gU = gU + surfaceTendencyU[m/s^2]

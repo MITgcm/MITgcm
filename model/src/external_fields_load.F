@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.11 2002/07/31 16:38:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.12 2002/11/12 20:39:46 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,48 +54,11 @@ C     myIter - Simulation timestep number
       INTEGER myIter
  
 
+#ifndef INCLUDE_EXTERNAL_FORCING_PACKAGE
+
 C     !LOCAL VARIABLES:
 C     === Local arrays ===
-C     taux[01]  :: Temp. for zonal wind stress
-C     tauy[01]  :: Temp. for merid. wind stress
-C     qnet[01]  :: Temp. for heat flux
-C     empmr[01] :: Temp. for fresh water flux
-C     sst[01]   :: Temp. for theta climatalogy
-C     sss[01]   :: Temp. for theta climatalogy
-C     pload[01] :: atmospheric load
-C     qsw[01]   :: Temp. for short wave component of heat flux
-C     [01]      :: End points for interpolation
-C     Above use static heap storage to allow exchange.
 C     aWght, bWght :: Interpolation weights
-      COMMON /TDFIELDS/
-     &                 taux0, tauy0, Qnet0, EmPmR0, SST0, SSS0,
-     &                 taux1, tauy1, Qnet1, EmPmR1, SST1, SSS1
-#ifdef SHORTWAVE_HEATING
-     &               , Qsw0, Qsw1
-#endif 
-#ifdef ATMOSPHERIC_LOADING
-     &               , pload0, pload1
-#endif
-      _RS  taux0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  tauy0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qnet0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  EmPmR0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  SST0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  SSS0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  taux1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  tauy1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qnet1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  EmPmR1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  SST1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  SSS1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef ATMOSPHERIC_LOADING
-      _RS  pload0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  pload1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
-#ifdef SHORTWAVE_HEATING
-      _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qsw0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif
       INTEGER bi,bj,i,j,intime0,intime1
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
@@ -104,28 +67,31 @@ CEOP
       IF ( periodicExternalForcing ) THEN
 
 C First call requires that we initialize everything to zero for safety
-      IF ( myIter .EQ. nIter0 ) THEN
-       CALL LEF_ZERO( taux0 ,myThid )
-       CALL LEF_ZERO( tauy0 ,myThid )
-       CALL LEF_ZERO( Qnet0 ,myThid )
-       CALL LEF_ZERO( EmPmR0 ,myThid )
-       CALL LEF_ZERO( SST0 ,myThid )
-       CALL LEF_ZERO( SSS0 ,myThid )
-       CALL LEF_ZERO( taux1 ,myThid )
-       CALL LEF_ZERO( tauy1 ,myThid )
-       CALL LEF_ZERO( Qnet1 ,myThid )
-       CALL LEF_ZERO( EmPmR1 ,myThid )
-       CALL LEF_ZERO( SST1 ,myThid )
-       CALL LEF_ZERO( SSS1 ,myThid )
+cph    has been shifted to ini_forcing.F
+cph    arrays are now globally visible
+cph
+cph      IF ( myIter .EQ. nIter0 ) THEN
+cph       CALL LEF_ZERO( taux0 ,myThid )
+cph       CALL LEF_ZERO( tauy0 ,myThid )
+cph       CALL LEF_ZERO( Qnet0 ,myThid )
+cph       CALL LEF_ZERO( EmPmR0 ,myThid )
+cph       CALL LEF_ZERO( SST0 ,myThid )
+cph       CALL LEF_ZERO( SSS0 ,myThid )
+cph       CALL LEF_ZERO( taux1 ,myThid )
+cph       CALL LEF_ZERO( tauy1 ,myThid )
+cph       CALL LEF_ZERO( Qnet1 ,myThid )
+cph       CALL LEF_ZERO( EmPmR1 ,myThid )
+cph       CALL LEF_ZERO( SST1 ,myThid )
+cph       CALL LEF_ZERO( SSS1 ,myThid )
 #ifdef ATMOSPHERIC_LOADING
-       CALL LEF_ZERO( pload0 ,myThid )
-       CALL LEF_ZERO( pload1 ,myThid )
+cph       CALL LEF_ZERO( pload0 ,myThid )
+cph       CALL LEF_ZERO( pload1 ,myThid )
 #endif
 #ifdef SHORTWAVE_HEATING
-       CALL LEF_ZERO( Qsw0 ,myThid )
-       CALL LEF_ZERO( Qsw1 ,myThid )
+cph       CALL LEF_ZERO( Qsw0 ,myThid )
+cph       CALL LEF_ZERO( Qsw1 ,myThid )
 #endif
-      ENDIF
+cph      ENDIF
 
 C Now calculate whether it is time to update the forcing arrays
       rdt=1. _d 0 / deltaTclock
@@ -156,39 +122,55 @@ C      data for the period ahead and the period behind myTime.
      &  'S/R EXTERNAL_FIELDS_LOAD: Reading new data',myTime,myIter
 
       IF ( zonalWindFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( zonalWindFile,taux0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( zonalWindFile,taux1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( zonalWindFile, readBinaryPrec,
+     &        'RS', 1, taux0, intime0, myThid )
+       CALL MDSREADFIELD ( zonalWindFile, readBinaryPrec,
+     &        'RS', 1, taux1, intime1, myThid )
       ENDIF
       IF ( meridWindFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( meridWindFile,tauy0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( meridWindFile,tauy1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( meridWindFile, readBinaryPrec,
+     &        'RS', 1, tauy0, intime0, myThid )
+       CALL MDSREADFIELD ( meridWindFile, readBinaryPrec,
+     &        'RS', 1, tauy1, intime1, myThid )
       ENDIF
       IF ( surfQFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( surfQFile,Qnet0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( surfQFile,Qnet1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( surfQFile, readBinaryPrec,
+     &        'RS', 1, Qnet0, intime0, myThid )
+       CALL MDSREADFIELD ( surfQFile, readBinaryPrec,
+     &        'RS', 1, Qnet1, intime1, myThid )
       ENDIF
       IF ( EmPmRfile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( EmPmRfile,EmPmR0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( EmPmRfile,EmPmR1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( EmPmRfile, readBinaryPrec,
+     &        'RS', 1, EmPmR0, intime0, myThid )
+       CALL MDSREADFIELD ( EmPmRfile, readBinaryPrec,
+     &        'RS', 1, EmPmR1, intime1, myThid )
       ENDIF
       IF ( thetaClimFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( thetaClimFile,SST0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( thetaClimFile,SST1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( thetaClimFile, readBinaryPrec,
+     &        'RS', 1, SST0, intime0, myThid )
+       CALL MDSREADFIELD ( thetaClimFile, readBinaryPrec,
+     &        'RS', 1, SST1, intime1, myThid )
       ENDIF
       IF ( saltClimFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( saltClimFile,SSS0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( saltClimFile,SSS1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( saltClimFile, readBinaryPrec,
+     &        'RS', 1, SSS0, intime0, myThid )
+       CALL MDSREADFIELD ( saltClimFile, readBinaryPrec,
+     &        'RS', 1, SSS1, intime1, myThid )
       ENDIF
-#ifdef ATMOSPHERIC_LOADING
-      IF ( pLoadFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( pLoadFile,pload0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( pLoadFile,pload1,intime1,myIter,myThid )
-      ENDIF
-#endif
 #ifdef SHORTWAVE_HEATING
       IF ( surfQswFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( surfQswFile,Qsw0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( surfQswFile,Qsw1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( surfQswFile, readBinaryPrec,
+     &        'RS', 1, Qsw0, intime0, myThid )
+       CALL MDSREADFIELD ( surfQswFile, readBinaryPrec,
+     &        'RS', 1, Qsw1, intime1, myThid )
+      ENDIF
+#endif
+#ifdef ATMOSPHERIC_LOADING
+      IF ( pLoadFile .NE. ' '  ) THEN
+       CALL MDSREADFIELD ( pLoadFile, readBinaryPrec,
+     &        'RS', 1, pload0, intime0, myThid )
+       CALL MDSREADFIELD ( pLoadFile, readBinaryPrec,
+     &        'RS', 1, pload1, intime1, myThid )
       ENDIF
 #endif
 
@@ -208,18 +190,18 @@ c      _EXCH_XY_R4(tauy1 , myThid )
        _EXCH_XY_R4(Qnet1, myThid )
        _EXCH_XY_R4(EmPmR0, myThid )
        _EXCH_XY_R4(EmPmR1, myThid )
-#ifdef ATMOSPHERIC_LOADING
-       _EXCH_XY_R4(pload0, myThid )
-       _EXCH_XY_R4(pload1, myThid )
-#endif
 #ifdef SHORTWAVE_HEATING
        _EXCH_XY_R4(Qsw0, myThid )
        _EXCH_XY_R4(Qsw1, myThid )
 #endif
+#ifdef ATMOSPHERIC_LOADING
+       _EXCH_XY_R4(pload0, myThid )
+       _EXCH_XY_R4(pload1, myThid )
+#endif
 C
       ENDIF
 
-C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,pload,Qsw
+C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1-Oly,sNy+Oly
@@ -236,13 +218,13 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,pload,Qsw
      &                       +aWght*Qnet1(i,j,bi,bj)
           EmPmR(i,j,bi,bj) = bWght*EmPmR0(i,j,bi,bj)
      &                       +aWght*EmPmR1(i,j,bi,bj)
-#ifdef ATMOSPHERIC_LOADING
-          pload(i,j,bi,bj) = bWght*pload0(i,j,bi,bj)  
-     &                      +aWght*pload1(i,j,bi,bj)
-#endif
 #ifdef SHORTWAVE_HEATING
           Qsw(i,j,bi,bj)   = bWght*Qsw0(i,j,bi,bj)
      &                       +aWght*Qsw1(i,j,bi,bj)
+#endif
+#ifdef ATMOSPHERIC_LOADING
+          pload(i,j,bi,bj) = bWght*pload0(i,j,bi,bj)  
+     &                      +aWght*pload1(i,j,bi,bj)
 #endif
          ENDDO
         ENDDO
@@ -267,6 +249,8 @@ C-- Diagnostics
 
 C endif for periodicForcing
       ENDIF
+
+#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
 
       RETURN
       END

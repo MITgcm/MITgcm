@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/external_fields_load.F,v 1.1 2001/06/18 17:40:07 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/external_fields_load.F,v 1.2 2002/11/12 20:39:46 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -51,23 +51,6 @@ C     === Functions ===
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     === Local arrays ===
-      COMMON /TDFIELDS/
-     &                 taux0, tauy0, Qnet0, EmPmR0, SST0, SSS0, Qsw0,
-     &                 taux1, tauy1, Qnet1, EmPmR1, SST1, SSS1, Qsw1
-      _RS  taux0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  tauy0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qnet0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  EmPmR0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  SST0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  SSS0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qsw0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  taux1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  tauy1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qnet1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  EmPmR1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  SST1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  SSS1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     === Local variables ===
       INTEGER bi,bj,i,j,intime0,intime1
@@ -79,22 +62,23 @@ C     === Local variables ===
       IF ( periodicExternalForcing ) THEN
 
 C First call requires that we initialize everything to zero for safety
-      IF ( myIter .EQ. nIter0 ) THEN
-       CALL LEF_ZERO( taux0 ,myThid )
-       CALL LEF_ZERO( tauy0 ,myThid )
-       CALL LEF_ZERO( Qnet0 ,myThid )
-       CALL LEF_ZERO( EmPmR0 ,myThid )
-       CALL LEF_ZERO( SST0 ,myThid )
-       CALL LEF_ZERO( SSS0 ,myThid )
-       CALL LEF_ZERO( Qsw0 ,myThid )
-       CALL LEF_ZERO( taux1 ,myThid )
-       CALL LEF_ZERO( tauy1 ,myThid )
-       CALL LEF_ZERO( Qnet1 ,myThid )
-       CALL LEF_ZERO( EmPmR1 ,myThid )
-       CALL LEF_ZERO( SST1 ,myThid )
-       CALL LEF_ZERO( SSS1 ,myThid )
-       CALL LEF_ZERO( Qsw1 ,myThid )
-      ENDIF
+cph transfered to ini_forcing
+cph      IF ( myIter .EQ. nIter0 ) THEN
+cph       CALL LEF_ZERO( taux0 ,myThid )
+cph       CALL LEF_ZERO( tauy0 ,myThid )
+cph       CALL LEF_ZERO( Qnet0 ,myThid )
+cph       CALL LEF_ZERO( EmPmR0 ,myThid )
+cph       CALL LEF_ZERO( SST0 ,myThid )
+cph       CALL LEF_ZERO( SSS0 ,myThid )
+cph       CALL LEF_ZERO( Qsw0 ,myThid )
+cph       CALL LEF_ZERO( taux1 ,myThid )
+cph       CALL LEF_ZERO( tauy1 ,myThid )
+cph       CALL LEF_ZERO( Qnet1 ,myThid )
+cph       CALL LEF_ZERO( EmPmR1 ,myThid )
+cph       CALL LEF_ZERO( SST1 ,myThid )
+cph       CALL LEF_ZERO( SSS1 ,myThid )
+cph       CALL LEF_ZERO( Qsw1 ,myThid )
+cph      ENDIF
 
 C Now calculate whether it is time to update the forcing arrays
       rdt=1. _d 0 / deltaTclock

@@ -39,7 +39,26 @@ CADJ STORE vstress1  = comlev1, key = ikey_dynamics
 # ifdef ALLOW_BULKFORMULAE
 CADJ STORE theta     = comlev1, key = ikey_dynamics
 # endif
-#endif
+
+#else /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
+
+CADJ STORE taux0   = comlev1, key = ikey_dynamics
+CADJ STORE taux1   = comlev1, key = ikey_dynamics
+CADJ STORE tauy0   = comlev1, key = ikey_dynamics
+CADJ STORE tauy1   = comlev1, key = ikey_dynamics
+CADJ STORE Qnet0   = comlev1, key = ikey_dynamics
+CADJ STORE Qnet1   = comlev1, key = ikey_dynamics
+CADJ STORE EmPmR0  = comlev1, key = ikey_dynamics
+CADJ STORE EmPmR1  = comlev1, key = ikey_dynamics
+CADJ STORE SST0    = comlev1, key = ikey_dynamics
+CADJ STORE SST1    = comlev1, key = ikey_dynamics
+CADJ STORE SSS0    = comlev1, key = ikey_dynamics
+CADJ STORE SSS1    = comlev1, key = ikey_dynamics
+CADJ STORE Qsw0    = comlev1, key = ikey_dynamics
+CADJ STORE Qsw1    = comlev1, key = ikey_dynamics
+
+
+#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
 
 #ifdef ALLOW_OBCS
 #ifdef ALLOW_OBCS_NORTH

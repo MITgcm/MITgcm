@@ -1,41 +1,50 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/Attic/external_fields_load.F,v 1.5 2001/05/29 14:02:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/Attic/external_fields_load.F,v 1.6 2002/11/12 20:39:46 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
  
-CStartOfInterface
+CBOP
+C     !ROUTINE: EXTERNAL_FIELDS_LOAD
+C     !INTERFACE:
       SUBROUTINE EXTERNAL_FIELDS_LOAD( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE EXTERNAL_FIELDS_LOAD                          |
-C     | o Control reading of fields from external source.        |
-C     |==========================================================|
-C     | External source field loading routine.                   |
-C     | This routine is called every time we want to             |
-C     | load a a set of external fields. The routine decides     |
-C     | which fields to load and then reads them in.             |
-C     | This routine needs to be customised for particular       |
-C     | experiments.                                             |
-C     | Notes                                                    |
-C     | =====                                                    |
-C     | Two-dimensional and three-dimensional I/O are handled in |
-C     | the following way under MITgcmUV. A master thread        |
-C     | performs I/O using system calls. This threads reads data |
-C     | into a temporary buffer. At present the buffer is loaded |
-C     | with the entire model domain. This is probably OK for now|
-C     | Each thread then copies data from the buffer to the      |
-C     | region of the proper array it is responsible for.        |
-C     | =====                                                    |
-C     | Conversion of flux fields are described in FFIELDS.h     |
-C     \==========================================================/
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE EXTERNAL_FIELDS_LOAD                           
+C     | o Control reading of fields from external source.         
+C     *==========================================================*
+C     | External source field loading routine.                    
+C     | This routine is called every time we want to              
+C     | load a a set of external fields. The routine decides      
+C     | which fields to load and then reads them in.              
+C     | This routine needs to be customised for particular        
+C     | experiments.                                              
+C     | Notes                                                     
+C     | =====                                                     
+C     | Two-dimensional and three-dimensional I/O are handled in  
+C     | the following way under MITgcmUV. A master thread         
+C     | performs I/O using system calls. This threads reads data  
+C     | into a temporary buffer. At present the buffer is loaded  
+C     | with the entire model domain. This is probably OK for now 
+C     | Each thread then copies data from the buffer to the       
+C     | region of the proper array it is responsible for.         
+C     | =====                                                     
+C     | Conversion of flux fields are described in FFIELDS.h      
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
- 
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
+      LOGICAL DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
  
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
 C     myTime - Simulation time
@@ -43,56 +52,40 @@ C     myIter - Simulation timestep number
       INTEGER myThid
       _RL     myTime
       INTEGER myIter
-CEndOfInterface
  
-C     === Functions ===
-      LOGICAL DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
 
+#ifndef INCLUDE_EXTERNAL_FORCING_PACKAGE
+
+C     !LOCAL VARIABLES:
 C     === Local arrays ===
-      COMMON /TDFIELDS/
-     &                 taux0, tauy0, Qnet0, EmPmR0, SST0, SSS0, Qsw0,
-     &                 taux1, tauy1, Qnet1, EmPmR1, SST1, SSS1, Qsw1
-      _RS  taux0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  tauy0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qnet0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  EmPmR0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  SST0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  SSS0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qsw0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  taux1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  tauy1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qnet1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  EmPmR1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  SST1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  SSS1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  Qsw1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
-C     === Local variables ===
+C     aWght, bWght :: Interpolation weights
       INTEGER bi,bj,i,j,intime0,intime1
-
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
+CEOP
 
       IF ( periodicExternalForcing ) THEN
 
 C First call requires that we initialize everything to zero for safety
-      IF ( myIter .EQ. nIter0 ) THEN
-       CALL LEF_ZERO( taux0 ,myThid )
-       CALL LEF_ZERO( tauy0 ,myThid )
-       CALL LEF_ZERO( Qnet0 ,myThid )
-       CALL LEF_ZERO( EmPmR0 ,myThid )
-       CALL LEF_ZERO( SST0 ,myThid )
-       CALL LEF_ZERO( SSS0 ,myThid )
-       CALL LEF_ZERO( Qsw0 ,myThid )
-       CALL LEF_ZERO( taux1 ,myThid )
-       CALL LEF_ZERO( tauy1 ,myThid )
-       CALL LEF_ZERO( Qnet1 ,myThid )
-       CALL LEF_ZERO( EmPmR1 ,myThid )
-       CALL LEF_ZERO( SST1 ,myThid )
-       CALL LEF_ZERO( SSS1 ,myThid )
-       CALL LEF_ZERO( Qsw1 ,myThid )
-      ENDIF
+cph    has been shifted to ini_forcing.F
+cph    arrays are now globally visible
+cph
+cph      IF ( myIter .EQ. nIter0 ) THEN
+cph       CALL LEF_ZERO( taux0 ,myThid )
+cph       CALL LEF_ZERO( tauy0 ,myThid )
+cph       CALL LEF_ZERO( Qnet0 ,myThid )
+cph       CALL LEF_ZERO( EmPmR0 ,myThid )
+cph       CALL LEF_ZERO( SST0 ,myThid )
+cph       CALL LEF_ZERO( SSS0 ,myThid )
+cph       CALL LEF_ZERO( Qsw0 ,myThid )
+cph       CALL LEF_ZERO( taux1 ,myThid )
+cph       CALL LEF_ZERO( tauy1 ,myThid )
+cph       CALL LEF_ZERO( Qnet1 ,myThid )
+cph       CALL LEF_ZERO( EmPmR1 ,myThid )
+cph       CALL LEF_ZERO( SST1 ,myThid )
+cph       CALL LEF_ZERO( SSS1 ,myThid )
+cph       CALL LEF_ZERO( Qsw1 ,myThid )
+cph      ENDIF
 
 C Now calculate whether it is time to update the forcing arrays
       rdt=1. _d 0 / deltaTclock
@@ -123,33 +116,47 @@ C      data for the period ahead and the period behind myTime.
      &  'S/R EXTERNAL_FIELDS_LOAD: Reading new data',myTime,myIter
 
       IF ( zonalWindFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( zonalWindFile,taux0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( zonalWindFile,taux1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( zonalWindFile, readBinaryPrec,
+     &        'RS', 1, taux0, intime0, myThid )
+       CALL MDSREADFIELD ( zonalWindFile, readBinaryPrec,
+     &        'RS', 1, taux1, intime1, myThid )
       ENDIF
       IF ( meridWindFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( meridWindFile,tauy0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( meridWindFile,tauy1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( meridWindFile, readBinaryPrec,
+     &        'RS', 1, tauy0, intime0, myThid )
+       CALL MDSREADFIELD ( meridWindFile, readBinaryPrec,
+     &        'RS', 1, tauy1, intime1, myThid )
       ENDIF
       IF ( surfQFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( surfQFile,Qnet0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( surfQFile,Qnet1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( surfQFile, readBinaryPrec,
+     &        'RS', 1, Qnet0, intime0, myThid )
+       CALL MDSREADFIELD ( surfQFile, readBinaryPrec,
+     &        'RS', 1, Qnet1, intime1, myThid )
       ENDIF
       IF ( EmPmRfile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( EmPmRfile,EmPmR0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( EmPmRfile,EmPmR1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( EmPmRfile, readBinaryPrec,
+     &        'RS', 1, EmPmR0, intime0, myThid )
+       CALL MDSREADFIELD ( EmPmRfile, readBinaryPrec,
+     &        'RS', 1, EmPmR1, intime1, myThid )
       ENDIF
       IF ( thetaClimFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( thetaClimFile,SST0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( thetaClimFile,SST1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( thetaClimFile, readBinaryPrec,
+     &        'RS', 1, SST0, intime0, myThid )
+       CALL MDSREADFIELD ( thetaClimFile, readBinaryPrec,
+     &        'RS', 1, SST1, intime1, myThid )
       ENDIF
       IF ( saltClimFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( saltClimFile,SSS0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( saltClimFile,SSS1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( saltClimFile, readBinaryPrec,
+     &        'RS', 1, SSS0, intime0, myThid )
+       CALL MDSREADFIELD ( saltClimFile, readBinaryPrec,
+     &        'RS', 1, SSS1, intime1, myThid )
       ENDIF
 #ifdef SHORTWAVE_HEATING
       IF ( surfQswFile .NE. ' '  ) THEN
-       CALL READ_REC_XY_RS( surfQswFile,Qsw0,intime0,myIter,myThid )
-       CALL READ_REC_XY_RS( surfQswFile,Qsw1,intime1,myIter,myThid )
+       CALL MDSREADFIELD ( surfQswFile, readBinaryPrec,
+     &        'RS', 1, Qsw0, intime0, myThid )
+       CALL MDSREADFIELD ( surfQswFile, readBinaryPrec,
+     &        'RS', 1, Qsw1, intime1, myThid )
       ENDIF
 #endif
 
@@ -159,10 +166,12 @@ C
        _EXCH_XY_R4(SST1  , myThid )
        _EXCH_XY_R4(SSS0  , myThid )
        _EXCH_XY_R4(SSS1  , myThid )
-       _EXCH_XY_R4(taux0 , myThid )
-       _EXCH_XY_R4(taux1 , myThid )
-       _EXCH_XY_R4(tauy0 , myThid )
-       _EXCH_XY_R4(tauy1 , myThid )
+c      _EXCH_XY_R4(taux0 , myThid )
+c      _EXCH_XY_R4(taux1 , myThid )
+c      _EXCH_XY_R4(tauy0 , myThid )
+c      _EXCH_XY_R4(tauy1 , myThid )
+       CALL EXCH_UV_XY_RS(taux0,tauy0,.TRUE.,myThid)
+       CALL EXCH_UV_XY_RS(taux1,tauy1,.TRUE.,myThid)
        _EXCH_XY_R4(Qnet0, myThid )
        _EXCH_XY_R4(Qnet1, myThid )
        _EXCH_XY_R4(EmPmR0, myThid )
@@ -184,9 +193,9 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
           SSS(i,j,bi,bj)   = bWght*SSS0(i,j,bi,bj)  
      &                       +aWght*SSS1(i,j,bi,bj)
           fu(i,j,bi,bj)    = -(bWght*taux0(i,j,bi,bj) 
-     &                       +aWght*taux1(i,j,bi,bj))
+     &                         +aWght*taux1(i,j,bi,bj))
           fv(i,j,bi,bj)    = -(bWght*tauy0(i,j,bi,bj) 
-     &                       +aWght*tauy1(i,j,bi,bj))
+     &                         +aWght*tauy1(i,j,bi,bj))
           Qnet(i,j,bi,bj)  = bWght*Qnet0(i,j,bi,bj)
      &                       +aWght*Qnet1(i,j,bi,bj)
           EmPmR(i,j,bi,bj) = bWght*EmPmR0(i,j,bi,bj)
@@ -200,24 +209,51 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
        ENDDO
       ENDDO
 
+C-- Diagnostics
+cph      IF (myThid.EQ.1 .AND. myTime.LT.62208000.) THEN
+cph        write(*,'(a,1p7e12.4,2i6,2e12.4)')
+cph     &   'time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b = ',
+cph     &   myTime,
+cph     &   SST(1,sNy,1,1),SSS(1,sNy,1,1),
+cph     &   fu(1,sNy,1,1),fv(1,sNy,1,1),
+cph     &   Qnet(1,sNy,1,1),EmPmR(1,sNy,1,1),
+cph     &   intime0,intime1,aWght,bWght
+cph        write(*,'(a,1p7e12.4)')
+cph     &   'time,fu0,fu1,fu = ',
+cph     &   myTime,
+cph     &   taux0(1,sNy,1,1),taux1(1,sNy,1,1),fu(1,sNy,1,1),
+cph     &   aWght,bWght
+cph      ENDIF
+
 C endif for periodicForcing
       ENDIF
+
+#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
 
       RETURN
       END
 
+CBOP
+C     !ROUTINE: LEF_ZERO
+C     !INTERFACE:
       SUBROUTINE LEF_ZERO( arr ,myThid )
+C     !DESCRIPTION: \bv
 C     This routine simply sets the argument array to zero
 C     Used only by EXTERNAL_FIELDS_LOAD
+C     \ev
+C     !USES:
       IMPLICIT NONE
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Arguments ===
       _RS  arr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER myThid
+C     !LOCAL VARIABLES:
 C     === Local variables ===
       INTEGER i,j,bi,bj
+CEOP
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)

@@ -61,7 +61,6 @@ SRC_MODEL	= \
 		$(PKG)/autodiff/debug.flow		\
 		$(PKG)/autodiff/do_the_model_io.flow	\
 		$(PKG)/autodiff/dummy_in_stepping.flow	\
-		$(PKG)/autodiff/external_fields_load.flow	\
 		$(PKG)/autodiff/eesupp.flow		\
 		$(PKG)/autodiff/active_file.flow	\
 		$(PKG)/autodiff/write_state.flow	\
@@ -102,8 +101,8 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/cycle_tracer.f			\
 		$(SOURCE_CODE)/different_multiple.f		\
 		$(SOURCE_CODE)/do_fields_blocking_exchanges.f	\
-		$(SOURCE_CODE)/do_the_model_io.f		\
 		$(SOURCE_CODE)/dynamics.f			\
+		$(SOURCE_CODE)/external_fields_load.f		\
 		$(SOURCE_CODE)/external_forcing.f		\
 		$(SOURCE_CODE)/external_forcing_surf.f		\
 		$(SOURCE_CODE)/find_alpha.f			\
@@ -307,15 +306,19 @@ svdmodeltaf:
 	cd $(DEST) ; $(TAF) $(SVDTAFFLAG) tamc_code.f
 
 adchange:
-	${ADJOINT_SCRIPT}/adjoint_sed.com \
-           >! tamc_code_sed_ad.f ;  \
+	cp $(PKG)/autodiff/adjoint_model.F_template	\
+           $(PKG)/autodiff/adjoint_model.F ;		\
+	${ADJOINT_SCRIPT}/adjoint_sed.com 		\
+           >! tamc_code_sed_ad.f ;  			\
         cp $(PKG)/autodiff/adjoint_model.F		\
            $(PKG)/autodiff/adjoint_model.F_old ;	\
         cat tamc_code_sed_ad.f >> $(PKG)/autodiff/adjoint_model.F
 
 ftlchange:
+	cp $(PKG)/autodiff/tangentlinear_model.F_template	\
+           $(PKG)/autodiff/tangentlinear_model.F ;		\
 	cp $(PKG)/autodiff/tangentlinear_model.F		\
-           $(PKG)/autodiff/tangentlinear_model.F_old ;	\
+           $(PKG)/autodiff/tangentlinear_model.F_old ;		\
         cat tamc_code_ftl.f >> $(PKG)/autodiff/tangentlinear_model.F
 
 adrestore:

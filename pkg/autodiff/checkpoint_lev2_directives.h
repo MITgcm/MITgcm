@@ -69,6 +69,24 @@ CADJ STORE ustress1  = tapelev2, key = ilev_2
 CADJ STORE vstress0  = tapelev2, key = ilev_2
 CADJ STORE vstress1  = tapelev2, key = ilev_2
 # endif  /* ALLOW_ATM_WIND */
+
+#else /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
+
+CADJ STORE taux0   = tapelev2, key = ilev_2
+CADJ STORE taux1   = tapelev2, key = ilev_2
+CADJ STORE tauy0   = tapelev2, key = ilev_2
+CADJ STORE tauy1   = tapelev2, key = ilev_2
+CADJ STORE Qnet0   = tapelev2, key = ilev_2
+CADJ STORE Qnet1   = tapelev2, key = ilev_2
+CADJ STORE EmPmR0  = tapelev2, key = ilev_2
+CADJ STORE EmPmR1  = tapelev2, key = ilev_2
+CADJ STORE SST0    = tapelev2, key = ilev_2
+CADJ STORE SST1    = tapelev2, key = ilev_2
+CADJ STORE SSS0    = tapelev2, key = ilev_2
+CADJ STORE SSS1    = tapelev2, key = ilev_2
+CADJ STORE Qsw0    = tapelev2, key = ilev_2
+CADJ STORE Qsw1    = tapelev2, key = ilev_2
+
 #endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
 
 #ifdef ALLOW_OBCS
