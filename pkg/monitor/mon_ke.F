@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.1 2001/06/04 13:25:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.2 2001/06/04 13:53:35 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -18,7 +18,6 @@ C     === Global data ===
 #include "DYNVARS.h"
 
 C     === Routine arguments ===
-      CHARACTER*(*) label
       INTEGER myThid
 
 C     === Local variables ====
