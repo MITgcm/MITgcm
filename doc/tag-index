@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.59 2002/02/08 22:41:59 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.60 2002/02/10 20:07:14 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o real fresh water flux implemented with non-linear free-surface.
 
 chkpt44c_pre,post
 o few fix (mask in shap_s2, EmPmR in external_field_load, 
