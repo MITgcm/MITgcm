@@ -16,6 +16,7 @@
  implicitFreeSurface=.TRUE.,
  eosType='LINEAR',
  GMkBackground=0000.d0,
+ readBinaryPrec=64,
  &
 # Elliptic solver parameters
  &PARM02
@@ -25,7 +26,8 @@
 # Time stepping parameters
  &PARM03
  startTime=0,
- endTime=311040000,
+#endTime=311040000,
+ endTime=12000.0,
  deltaTmom=1200.0,
  deltaTtracer=1200.0,
  abEps=0.1,
@@ -42,9 +44,9 @@
  delZ=5000.,
  &
  &PARM05
- bathyFile=,
+ bathyFile='topog.box',
  hydrogThetaFile=,
  hydrogSaltFile=,
- zonalWindFile=,
+ zonalWindFile='windx.sin_y',
  meridWindFile=,
  &
