@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.10 2004/09/10 12:19:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.11 2004/10/20 21:26:14 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -76,7 +76,7 @@ C     Global attributes
       CALL MNC_FILE_ADD_ATTR_STR(fname, 'MITgcm_tag_id', 
      &     MNC_TAG_ID, myThid )
       CALL MNC_FILE_ADD_ATTR_DBL(fname, 'MITgcm_mnc_ver', 
-     &     1, 0.2D0, myThid )
+     &     1, 0.9D0, myThid )
 
 C     Grid info included as attributes
       CALL MNC_FILE_ADD_ATTR_INT(fname,'tile_number', 1, tnum, myThid)

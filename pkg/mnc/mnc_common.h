@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.21 2004/09/13 18:42:11 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.22 2004/10/20 21:26:14 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -83,6 +83,10 @@ C     .
 C     The following MNC "Convenience Wrapper" variables are 
 C     implemented independently of any NetCDF files
 C     .
+C     mnc_cw_fgnm  (f)  :: file group name (or "base name")
+C     mnc_cw_fgud  (f)  :: file group unlimited dim value
+C     mnc_cw_fgis  (f)  :: file group sequence number
+C     .
 C     mnc_cw_gname (g)  :: Gtype names              <--------+
 C     mnc_cw_ndim  (g)  :: number of dimensions              |
 C     mnc_cw_dn   (i,g) :: dname1, dname2, ...               |
@@ -101,6 +105,7 @@ C     mnc_cw_viat (i,v) :: INT attributes
 C     mnc_cw_vdnm (i,v) :: REAL*8 attribute names
 C     mnc_cw_vdat (i,v) :: REAL*8 attributes
 C     .
+C     f                 :: file group index
 C     g                 :: Gtype index
 C     v                 :: Vtype index
 CEOP
@@ -126,7 +131,7 @@ CEOP
      &     mnc_cw_vname, mnc_cw_vnat, mnc_cw_vgind, mnc_cw_vbij, 
      &     mnc_cw_vtnm, mnc_cw_vdnm, mnc_cw_vinm,
      &     mnc_cw_vtat, mnc_cw_vdat, mnc_cw_viat,
-     &     mnc_cw_fgnm, mnc_cw_fgud
+     &     mnc_cw_fgnm, mnc_cw_fgud, mnc_cw_fgis
 
       character*(MNC_MAX_CHAR) mnc_blank_name
       character*(MNC_MAX_CHAR) mnc_f_names(MNC_MAX_ID)
@@ -160,6 +165,7 @@ CEOP
 
       character*(MNC_MAX_CHAR) mnc_cw_fgnm(MNC_MAX_ID)
       integer mnc_cw_fgud(MNC_MAX_ID)
+      integer mnc_cw_fgis(MNC_MAX_ID)
 
       character*(MNC_MAX_CHAR) mnc_out_path
 

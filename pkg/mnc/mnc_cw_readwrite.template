@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.21 2004/10/11 18:25:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.22 2004/10/20 21:26:14 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -106,7 +106,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
       integer i,j,k, indv,nvf,nvl, n1,n2, igrid, ntot, indu
-      integer bis,bie, bjs,bje, uniq_tnum, nfname
+      integer bis,bie, bjs,bje, uniq_tnum, nfname, iseq
       integer fid, idv, indvids, ndim, indf, err 
       integer lbi,lbj, bidim,bjdim, unlim_sz, kr
       integer p(9),s(9),e(9), dimnc(9)
@@ -139,6 +139,7 @@ C     group (or base) name
         STOP 'ABNORMAL END: S/R MNC_CW_RX_W'
       ENDIF
       indu = mnc_cw_fgud(indfg)
+      iseq = mnc_cw_fgis(indfg)
 
 C     Check that the Variable Type exists
       nvf = IFNBLNK(vtype)
@@ -178,8 +179,9 @@ C         Create the file name
           fname(1:ntot) = fbname(n1:n2)
           ntot = ntot + 1
           fname(ntot:ntot) = '.'
-          write(fname((ntot+1):(ntot+9)),'(i6.6,a3)') uniq_tnum, '.nc'
-          nfname = ntot+9
+          write(fname((ntot+1):(ntot+14)),'(i4.4,a1,i6.6,a3)') 
+     &         iseq,'.',uniq_tnum, '.nc'
+          nfname = ntot + 14
 
 C         Add the path to the file name
           IF (mnc_use_outdir) THEN
