@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.9 2004/02/04 05:45:09 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.10 2004/02/05 00:13:47 edhill Exp $
 #
 #  A Makefile for MNC templates and testing
 #
@@ -49,9 +49,10 @@ EEPARAMS.h:
 utils.F:
 	ln -s ../../eesupp/src/utils.F .
 
+# TEMPLATE_FILES = \
+#   MNC_RESHAPE_RS_D.F MNC_RESHAPE_RL_D.F \
+#   MNC_RESHAPE_RS_R.F MNC_RESHAPE_RL_R.F
 TEMPLATE_FILES = \
-  MNC_RESHAPE_RS_D.F MNC_RESHAPE_RL_D.F \
-  MNC_RESHAPE_RS_R.F MNC_RESHAPE_RL_R.F \
   MNC_CW_READWRITE_RS_D.F MNC_CW_READWRITE_RL_D.F \
   MNC_CW_READWRITE_RS_R.F MNC_CW_READWRITE_RL_R.F
 TEMPLATE_OBJECTS = $(TEMPLATE_FILES:.F=.o)

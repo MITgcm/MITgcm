@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.4 2004/02/04 05:45:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.5 2004/02/05 00:13:47 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -325,14 +325,15 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE MNC_CW_ADD_VNAME( 
      I     myThid, 
      I     vname, 
-     I     gname ) 
+     I     gname, 
+     I     bi_dim, bj_dim ) 
 
       implicit none
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
 C     Arguments
-      integer myThid
+      integer myThid, bi_dim, bj_dim
       character*(*) vname, gname
 
 C     Functions
@@ -373,6 +374,8 @@ C     Check that gname exists
       DO i = 1,3
         mnc_cw_vnat(i,indv) = 0
       ENDDO
+      mnc_cw_vbij(1,indv) = bi_dim
+      mnc_cw_vbij(2,indv) = bj_dim
 
       RETURN
       END

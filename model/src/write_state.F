@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.29 2004/02/04 05:45:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.30 2004/02/05 00:13:47 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -80,6 +80,9 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
       INTEGER iRec
+#ifdef ALLOW_MNC
+      _RL mnc_d_iter
+#endif
 CEOP
 
       IF ( 
@@ -165,11 +168,11 @@ c       CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
          _BARRIER
 
 #ifdef ALLOW_MNC
-C      CALL MNC_W_STATE(myThid, myIter, 'test')
-
-      CALL MNC_CW_RL_WRITES_D(myThid, 't_theta',0,0, 
-     &'theta', 1, theta)
-
+C     Test the MNC package
+      mnc_d_iter = myIter
+      write(*,*) 'mnc_d_iter, myIter = ', mnc_d_iter, myIter
+      CALL MNC_CW_RL_W_R(myThid,'state',0,0,'iter',-1,mnc_d_iter)
+      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'U',0,    uVel)
 #endif
 
       ENDIF

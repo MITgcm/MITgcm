@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.8 2004/01/29 05:30:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.9 2004/02/05 00:13:47 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -80,6 +80,7 @@ C     .                                                     |
 C     mnc_cw_vname (v)  : Vtype names                       |
 C     mnc_cw_vgind (v)  : index into                --------+
 C     mnc_cw_vnat (3,v) : number of attributes [T,I,D]
+C     mnc_cw_vbij (2,v) : bi,bi indicies (0 if not applicable)
 C     mnc_cw_vtnm (i,v) : text (character) attribute names
 C     mnc_cw_vtat (i,v) : text (character) attributes
 C     mnc_cw_vinm (i,v) : INT attribute names
@@ -109,7 +110,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       COMMON /MNC_CW_VARS/
      &     mnc_cw_gname, mnc_cw_ndim, mnc_cw_dims, 
      &     mnc_cw_dn, mnc_cw_is, mnc_cw_ie,
-     &     mnc_cw_vname, mnc_cw_vnat, mnc_cw_vgind,
+     &     mnc_cw_vname, mnc_cw_vnat, mnc_cw_vgind, mnc_cw_vbij, 
      &     mnc_cw_vtnm, mnc_cw_vdnm, mnc_cw_vinm,
      &     mnc_cw_vtat, mnc_cw_vdat, mnc_cw_viat
 
@@ -139,6 +140,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       character*(MNC_MAX_CHAR) mnc_cw_vtat(MNC_CW_MAX_I,MNC_MAX_ID)
       integer mnc_cw_vgind(MNC_MAX_ID)
       integer mnc_cw_vnat(3,MNC_MAX_ID)
+      integer mnc_cw_vbij(2,MNC_MAX_ID)
       integer mnc_cw_viat(MNC_CW_MAX_I,MNC_MAX_ID)
       REAL*8  mnc_cw_vdat(MNC_CW_MAX_I,MNC_MAX_ID)
 

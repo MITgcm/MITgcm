@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.20 2004/02/04 05:45:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.21 2004/02/05 00:13:47 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -145,14 +145,21 @@ C     and get config. info for other component(s).
 #endif
 
 #ifdef ALLOW_MNC
-C     Test MNC
+C     Test the MNC package
       CALL MNC_INIT(myThid)
-C      CALL MNC_W_GRIDINFO(myThid, 'test')
-
       CALL MNC_CW_INIT(myThid, sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr)
 
-      CALL MNC_CW_ADD_VNAME(myThid, 'theta', 'Cen_xy_Hn__C__-')
+      CALL MNC_CW_ADD_VNAME(myThid, 'iter', '-_-_--__-__t', 0,0)
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid, 'iter', 1, 
+     &     'units', 's')
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid, 'iter', 1, 
+     &     'mitgcm_grid', '-_-_--__-__t')
 
+      CALL MNC_CW_ADD_VNAME(myThid, 'U', 'U_xy_Hn__C__t', 4,5)
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid, 'U', 1, 
+     &     'units', 'm/s')
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid, 'U', 1, 
+     &     'mitgcm_grid', 'U_xy_Hn__C__t')
 #endif
 
       RETURN
