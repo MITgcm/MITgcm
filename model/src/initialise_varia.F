@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.34 2004/02/23 22:59:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.35 2004/03/29 22:14:49 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -204,7 +204,11 @@ C--   end bi,bj loop.
 
 C AMM
 #ifdef ALLOW_GRIDALT
-        if (useGRIDALT) CALL GRIDALT_UPDATE(myThid)
+        if (useGRIDALT) then
+         CALL TIMER_START('GRIDALT_UPDATE  [INITIALISE_VARIA]',mythid)
+         CALL GRIDALT_UPDATE(myThid)
+         CALL TIMER_STOP ('GRIDALT_UPDATE  [INITIALISE_VARIA]',mythid)
+        endif
 #endif
 C AMM
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.88 2004/03/29 22:07:40 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.89 2004/03/29 22:14:49 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -467,6 +467,7 @@ C AMM
          CALL TIMER_START('GRIDALT_UPDATE      [FORWARD_STEP]',mythid)
          CALL GRIDALT_UPDATE(myThid)
          CALL TIMER_STOP ('GRIDALT_UPDATE      [FORWARD_STEP]',mythid)
+        endif
 #endif
 C AMM
 
