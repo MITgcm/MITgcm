@@ -1,8 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_diags.F,v 1.5 2004/01/28 18:49:05 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_diags.F,v 1.6 2004/11/19 20:17:48 mlosch Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
-#include "PTRACERS_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
 C !INTERFACE: ==========================================================

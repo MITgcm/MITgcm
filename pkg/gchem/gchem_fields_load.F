@@ -1,4 +1,6 @@
-#include "CPP_OPTIONS.h"
+C$Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_fields_load.F,v 1.3 2004/11/19 20:17:48 mlosch Exp $
+C$Name:  $
+
 #include "GCHEM_OPTIONS.h"
 
 CBOP

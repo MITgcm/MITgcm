@@ -1,5 +1,6 @@
-#include "CPP_OPTIONS.h"
-#include "PTRACERS_OPTIONS.h"
+C$Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_init_vari.F,v 1.4 2004/11/19 20:17:48 mlosch Exp $
+C$Name:  $
+
 #include "GCHEM_OPTIONS.h"
 
 C !INTERFACE: ==========================================================
