@@ -15,7 +15,6 @@
  diffKzT=1.E-5,
  diffKhS=1.E3,
  diffKzS=1.E-5,
- GMkBackground=0.d3,
  f0=1.e-4,
  beta=0.E-11,
  tAlpha=2.E-4,

@@ -16,7 +16,6 @@
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  eosType='LINEAR',
- GMkBackground=0000.d0,
  readBinaryPrec=64,
  &
 # Elliptic solver parameters
