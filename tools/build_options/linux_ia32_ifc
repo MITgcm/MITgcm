@@ -7,18 +7,21 @@
 
 LN='/bin/ln -s'
 CPP='/lib/cpp  -traditional -P'
+
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee
-FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+if test "x$IEEE" = x ; then
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB'
+else
+    FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB'
+fi
+
 FOPTIM='-O3 -align'
 #P3  FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' ) 
 #P4  FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' ) 
 LIBS='-lPEPCF90'
 
 FC=ifc
-LINK=ifc
-S64='$(TOOLSDIR)/set64bitConst.sh'
-MAKEDEPEND=makedepend
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
 
 

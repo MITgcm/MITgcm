@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_alpha_g77,v 1.1 2003/09/29 16:15:24 edhill Exp $
+#
+
+FC='g77'
+FFLAGS=' '
+FOPTIM='-ffast-math -fexpensive-optimizations -fomit-frame-pointer -O3'
+DEFINES='-DWORDLENGTH=4'
+LN='/bin/ln -s'
+CPP='cpp  -traditional -P'
+

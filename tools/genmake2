@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.10 2003/09/26 18:47:59 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.11 2003/09/29 16:15:23 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -12,71 +12,129 @@
 # Guess possible config options for this host
 find_possible_configs()  {
 
-    p_PLATFORM=`uname`"-"`uname -m`
-    echo "The platform appears to be:"
-    echo "  "$p_PLATFORM
-
-    p_LN=
+    tmp1=`uname`"_"`uname -m`
+    tmp2=`echo $tmp1 | sed -e 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
+    PLATFORM=`echo $tmp2 | sed -e 's/i[3-6]86/ia32/'`
+    OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
+    echo "  The platform appears to be:  $PLATFORM"
+#     if test "x$OFLIST" = x ; then
+# 	echo "  No pre-defined options files were found matching this platform"
+# 	echo "  but examples for other platforms can be found in:"
+# 	echo "    $ROOTDIR/tools/build_options"
+#     else
+# 	echo "  Options files (located in $ROOTDIR/tools/build_options) that"
+# 	echo "  may work with this machine are:"
+# 	for i in $OFLIST ; do
+# 	    echo "    $i"
+# 	done
+#     fi
+    
     echo "test" > test
     ln -s ./test link
     RETVAL=$?
     if test "x${RETVAL}" = x0 ; then
-	p_LN="ln -s"
+	LN="ln -s"
+    else
+	echo "Error: \"ln -s\" does not appear to work on this system!"
+	echo "  For help, please contact <MITgcm-support@mitgcm.org>."
+	exit 1
     fi
     rm -f test link
 
-    p_CPP=`which cpp`
-    
-    RETVAL=$?
-    if test "x${RETVAL}" = x0 ; then
-	p_LN="ln -s"
+    if test "x$CPP" = x ; then
+	CPP="cpp -traditional -P"
     fi
-    rm -f test link
 
     # look for possible fortran compilers
+    tmp="$MITGCM_FC $FC g77 f77 pgf77 pgf95 ifc f90 f95 mpif77 mpf77 mpxlf95"
     p_FC=
-    for c in f77 g77 pgf77 pgf95 ifc f90 f95 mpif77 mpf77 mpxlf95 ; do
-	which $c > /dev/null 2>&1
+    for c in $tmp ; do
+	rm -f ./hello.f ./hello
+	cat >> hello.f <<EOF
+      program hello
+      do i=1,3
+        print *, 'hello world : ', i
+      enddo
+      end
+EOF
+	$c -o hello hello.f > /dev/null 2>&1
 	RETVAL=$?
 	if test "x${RETVAL}" = x0 ; then
 	    p_FC="$p_FC $c"
 	fi
     done
-    echo "Possible FORTRAN compilers appear to be:  "
     if test "x${p_FC}" = x ; then
-	echo "  None found!!!"
+	cat 1>&2 <<EOF
+
+Error: No Fortran compilers were found in your path.  Please specify one using:
+
+    1) an "optfile" on (eg. "-optfile=path/to/OPTFILE"),
+    2) a command-line option (eg. "-fc NAME"), or
+    3) the MITGCM_FC environment variable.
+
+EOF
+	exit 1
     else
-	echo "  "$p_FC
+	echo "  The possible FORTRAN compilers found in your path are:"
+	echo "   "$p_FC
+	if test "x$FC" = x ; then
+	    FC=`echo $p_FC | awk '{print $1}'`
+	fi
     fi
 
-    # look for possible MPI libraries
-    mpi_libs=
-    mpi_fort=`which mpif77 2>/dev/null`
-    RETVAL=$?
-    if test "x${RETVAL}" = x0 ; then
-	cat >>test.f <<EOF
-      PROGRAM HELLO
-      DO 10, I=1,10
-      PRINT *,'Hello World'
-   10 CONTINUE
-      STOP
-      END
-EOF
-	eval "$mpi_fort -showme test.f > out"
-	RETVAL=$?
-	if test "x${RETVAL}" = x0 ; then
-	    a=`cat out`
-	    for i in $a ; do
-		case $i in 
-		    -*)
-			mpi_libs="$mpi_libs $i" ;;
-		esac
-	    done
-	    echo "The MPI libs appear to be:"
-	    echo "  "$mpi_libs
+    for i in $p_FC ; do
+	p_OF=$ROOTDIR"/tools/build_options/"$PLATFORM"_"$i
+	if test -r $p_OF ; then
+	    OPTFILE=$p_OF
+	    echo "  The options file:  $p_OF"
+	    echo "    appears to match so we'll use it."
+	    break
 	fi
-	rm -f test.f out
+    done
+    if test "x$OPTFILE" = x ; then
+	cat 1>&2 <<EOF
+
+Error: No options file was found in:  $ROOTDIR/tools/build_options/
+  that matches this platform ("$PLATFORM") and the compilers found in
+  your path.  Please specify an "optfile" using:
+
+    1) the command line (eg. "-optfile=path/to/OPTFILE"), or
+    2) the MITGCM_OF environment variable.
+
+  If you need help, please contact the developers at <MITgcm-support@mitgcm.org>.
+
+EOF
+	exit 1
     fi
+    
+#     # look for possible MPI libraries
+#     mpi_libs=
+#     mpi_fort=`which mpif77 2>/dev/null`
+#     RETVAL=$?
+#     if test "x${RETVAL}" = x0 ; then
+# 	cat >>test.f <<EOF
+#       PROGRAM HELLO
+#       DO 10, I=1,10
+#       PRINT *,'Hello World'
+#    10 CONTINUE
+#       STOP
+#       END
+# EOF
+# 	eval "$mpi_fort -showme test.f > out"
+# 	RETVAL=$?
+# 	if test "x${RETVAL}" = x0 ; then
+# 	    a=`cat out`
+# 	    for i in $a ; do
+# 		case $i in 
+# 		    -*)
+# 			mpi_libs="$mpi_libs $i" ;;
+# 		esac
+# 	    done
+# 	    echo "The MPI libs appear to be:"
+# 	    echo "  "$mpi_libs
+# 	fi
+# 	rm -f test.f out
+#     fi
 
 }
 
@@ -172,13 +230,14 @@ S64=
 KPP=
 FC=
 LINK=
+DEFINES="-DWORDLENGTH=4"
 PACKAGES=
 ENABLE=
 DISABLE=
 MAKEFILE=
 MAKEDEPEND=
 PDEPEND=
-DUMPSTATE=f
+DUMPSTATE=t
 PDEFAULT=
 OPTFILE=
 INCLUDES="-I."
@@ -361,91 +420,6 @@ for ac_option ; do
     
 done
 
-echo "  getting OPTFILE information:  "
-if test "x${OPTFILE}" = x ; then
-    echo "Warning: no OPTFILE specified so we'll look for possible settings"
-    printf "\n===  Searching for possible settings for OPTFILE  ===\n"
-    find_possible_configs
-else
-    if test "x$OPTFILE" = xNONE ; then
-	echo "    OPTFILE=NONE so we'll try to use default settings"
-    else
-	if test -f "$OPTFILE" -a -r "$OPTFILE" ; then
-	    echo "    using OPTFILE=\"$OPTFILE\""
-	    source "$OPTFILE"
-	    RETVAL=$?
-	    if test "x$RETVAL" != x0 ; then
-		echo -n "Error: failed to source OPTFILE \"$OPTFILE\""
-		echo "--please check that variable syntax is bash-compatible"
-		exit 1
-	    fi
-	    if test "x$DUMPSTATE" != xf ; then
-		cp -f $OPTFILE "gm_optfile"
-	    fi
-	else
-	    echo "Error: can't read OPTFILE=\"$OPTFILE\""
-	    exit 1
-	fi
-    fi
-fi
-
-#  Check that FC, LINK, CPP, and S64 are defined.  If not, complain 
-#  and abort!
-if test "x$FC" = x ; then
-    cat <<EOF 1>&2
-
-Error: no Fortran compiler: please specify using one of the following:
-  1) within the options file ("FC=...") as specified by "-of=OPTFILE"
-  2) the "-fc=XXX" command-line option
-  3) the "./gm_local" file
-EOF
-    exit 1
-fi
-if test "x$LINK" = x ; then
-    LINK=$FC
-fi
-if test "x$CPP" = x ; then
-    cat <<EOF 1>&2
-
-Error: no C pre-processor: please specify using one of the following:
-  1) within the options file ("CPP=...") as specified by "-of=OPTFILE"
-  2) the "./gm_local" file
-EOF
-    exit 1
-fi
-if test "x$S64" = x ; then
-    cat <<EOF 1>&2
-
-Error: no C pre-processor: please specify using one of the following:
-  1) within the options file ("S64=...") as specified by "-of=OPTFILE"
-  2) the "./gm_local" file
-EOF
-    exit 1
-fi
-
-
-printf "\n===  Setting defaults  ===\n"
-echo -n "  Adding MODS directories:  "
-for d in $MODS ; do
-    if test ! -d $d ; then
-	echo
-	echo "Error: MODS directory \"$d\" not found!"
-	exit 1
-    else
-	echo -n " $d"
-	SOURCEDIRS="$SOURCEDIRS $d"
-	INCLUDEDIRS="$INCLUDEDIRS $d"
-    fi
-done
-echo
-
-if test "x$MAKEFILE" = x ; then
-    MAKEFILE="Makefile"
-fi
-if test "x${PLATFORM}" = x ; then
-    PLATFORM=$p_PLATFORM
-fi
-
 if test "x${ROOTDIR}" = x ; then
     if test "${PWD##/*/}" = "bin" -a -d ../model -a -d ../eesup -a -d ../pkg ; then
 	ROOTDIR=".."
@@ -471,6 +445,94 @@ if test ! -d ${ROOTDIR} ; then
     exit 1
 fi
 
+echo "  getting OPTFILE information:  "
+if test "x${OPTFILE}" = x ; then
+    if test "x$MITGCM_OF" = x ; then
+	echo "Warning: no OPTFILE specified so we'll look for possible settings"
+	printf "\n===  Searching for possible settings for OPTFILE  ===\n"
+	find_possible_configs
+    else
+	OPTFILE=$MITGCM_OF
+    fi
+fi
+if test "x$OPTFILE" != xNONE ; then
+    if test -f "$OPTFILE" -a -r "$OPTFILE" ; then
+	echo "    using OPTFILE=\"$OPTFILE\""
+	source "$OPTFILE"
+	RETVAL=$?
+	if test "x$RETVAL" != x0 ; then
+	    echo -n "Error: failed to source OPTFILE \"$OPTFILE\""
+	    echo "--please check that variable syntax is bash-compatible"
+	    exit 1
+	fi
+	if test "x$DUMPSTATE" != xf ; then
+	    cp -f $OPTFILE "gm_optfile"
+	fi
+    else
+	echo "Error: can't read OPTFILE=\"$OPTFILE\""
+	exit 1
+    fi
+fi
+
+#  Check that FC, LINK, CPP, and S64 are defined.  If not, complain 
+#  and abort!
+if test "x$FC" = x ; then
+    cat <<EOF 1>&2
+
+Error: no Fortran compiler: please specify using one of the following:
+  1) within the options file ("FC=...") as specified by "-of=OPTFILE"
+  2) the "-fc=XXX" command-line option
+  3) the "./gm_local" file
+EOF
+    exit 1
+fi
+if test "x$LINK" = x ; then
+    LINK=$FC
+fi
+if test "x$CPP" = x ; then
+    CPP="cpp"
+fi
+echo "#define A a" | cpp > test_cpp 2>&1
+RETVAL=$?
+if test "x$RETVAL" != x0 ; then
+    cat <<EOF 1>&2
+
+Error: C pre-processor "$CPP" failed the test case: please specify using:
+
+  1) within the options file ("CPP=...") as specified by "-of=OPTFILE"
+  2) the "./gm_local" file
+
+EOF
+    exit 1
+else
+    rm -f test_cpp
+fi
+if test "x$MAKEDEPEND" = x ; then
+    MAKEDEPEND=makedepend
+fi
+
+printf "\n===  Setting defaults  ===\n"
+echo -n "  Adding MODS directories:  "
+for d in $MODS ; do
+    if test ! -d $d ; then
+	echo
+	echo "Error: MODS directory \"$d\" not found!"
+	exit 1
+    else
+	echo -n " $d"
+	SOURCEDIRS="$SOURCEDIRS $d"
+	INCLUDEDIRS="$INCLUDEDIRS $d"
+    fi
+done
+echo
+
+if test "x$MAKEFILE" = x ; then
+    MAKEFILE="Makefile"
+fi
+if test "x${PLATFORM}" = x ; then
+    PLATFORM=$p_PLATFORM
+fi
+
 if test "x${EXEDIR}" = x ; then
     if test "${PWD##/*/}" = "bin" -a -d ../exe -a $ROOTDIR = .. ; then
 	EXEDIR=../exe
@@ -489,6 +551,9 @@ fi
 if test ! -d ${TOOLSDIR} ; then
     echo "Error: the specified $TOOLSDIR (\"$TOOLSDIR\") does not exist!"
     exit 1
+fi
+if test "x$S64" = x ; then
+    S64='$(TOOLSDIR)/set64bitConst.sh'
 fi
 
 EXECUTABLE=${EXECUTABLE:-mitgcmuv}
@@ -698,7 +763,7 @@ done
 
 echo "  Searching for CPP_OPTIONS.h (macros and flags for configuring the model):"
 CPP_OPTIONS=
-spaths="$MODS ./ $SOURCEDIRS"
+spaths=". $SOURCEDIRS"
 for i in $spaths ; do
     try="$i/CPP_OPTIONS.h"
     #  echo -n "    trying $try : "
@@ -725,8 +790,8 @@ if test -e CPP_OPTIONS.h ; then
 fi
 cat <<EOF >>CPP_OPTIONS.h.tmp
 C=== GENMAKE v2 ===
-C  The following defines have been set by GENMAKE, so please edit 
-C  them only if you know what you're doing.  In general, you should
+C  The following defines have been set by GENMAKE, so please do not
+C  edit anything below these comments.  In general, you should
 C  add or remove packages by re-running genmake with different 
 C  "-enable" and/or "-disable" options.
 

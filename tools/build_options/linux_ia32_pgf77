@@ -1,16 +1,12 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux+pgi,v 1.4 2003/08/27 22:12:31 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.1 2003/09/29 16:15:24 edhill Exp $
 #
 
-S64='$(TOOLSDIR)/set64bitConst.sh'
-MAKEDEPEND=makedepend
 DEFINES='-DWORDLENGTH=4'
-
-
 LN='/bin/ln -s'
 CPP='/lib/cpp -traditional -P'
 FC='pgf77'
 FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
 FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'
-LINK='pgf77'
+

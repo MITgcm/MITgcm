@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+cg01,v 1.1 2003/09/29 16:15:24 edhill Exp $
+#
+# tested on cg01 and confirmed to work, eh3 2003-09-08
+
+FC=g77
+DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
+LN='/bin/ln -s'
+CPP='/lib/cpp  -traditional -P'
+NOOPTFLAGS='-O0'
+
+#  For IEEE, use the "-ffloat-store" option
+if test "x$IEEE" = x ; then
+    FFLAGS='-Wimplicit -Wunused -Wuninitialized'
+    FOPTIM='-O3 -malign-double -funroll-loops'
+else
+    FFLAGS='-Wimplicit -Wunused -Wuninitialized -ffloat-store'
+    FOPTIM='-O0 -malign-double'
+fi
+
+
+
+
