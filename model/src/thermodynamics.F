@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.33 2002/11/22 03:01:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.34 2003/01/10 19:06:05 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -437,9 +437,12 @@ C--     MOST of THERMODYNAMICS will be disabled
 #ifdef  ALLOW_GMREDI
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE sigmaX(:,:,k)        = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE sigmaY(:,:,k)        = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE sigmaR(:,:,k)        = comlev1_bibj_k, key=kkey, byte=isbyte
+cph storing here is needed only for one GMREDI_OPTIONS:
+cph define GM_BOLUS_ADVEC
+cph but I've avoided the #ifdef for now, in case more things change
+CADJ STORE sigmaX(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE sigmaY(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE sigmaR(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
         IF (useGMRedi) THEN
