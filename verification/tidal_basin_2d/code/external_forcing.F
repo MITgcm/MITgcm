@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/external_forcing.F,v 1.3 2003/05/15 15:19:02 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/external_forcing.F,v 1.4 2004/07/18 01:23:05 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -62,8 +62,8 @@ C     Add windstress momentum impulse into the top-layer
        DO j=jMin,jMax
         DO i=iMin,iMax
          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
-     &   +foFacMom*surfaceTendencyU(i,j,bi,bj)
-     &   *_maskW(i,j,kLev,bi,bj)
+     &   +foFacMom*surfaceForcingU(i,j,bi,bj)
+     &   *recip_drF(kLev)*recip_hFacW(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -163,8 +163,8 @@ C     Add windstress momentum impulse into the top-layer
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
-     &   +foFacMom*surfaceTendencyV(i,j,bi,bj)
-     &   *_maskS(i,j,kLev,bi,bj)
+     &   +foFacMom*surfaceForcingV(i,j,bi,bj)
+     &   *recip_drF(kLev)*recip_hFacS(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -243,7 +243,8 @@ C     Add heat in top-layer
        DO j=jMin,jMax
         DO i=iMin,iMax
          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
-     &     +maskC(i,j,kLev,bi,bj)*surfaceTendencyT(i,j,bi,bj)
+     &     +surfaceForcingT(i,j,bi,bj)
+     &     *recip_drF(kLev)*recip_hFacC(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -334,7 +335,8 @@ C     Add fresh-water in top-layer
        DO j=jMin,jMax
         DO i=iMin,iMax
          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &   +maskC(i,j,kLev,bi,bj)*surfaceTendencyS(i,j,bi,bj)
+     &     +surfaceForcingS(i,j,bi,bj)
+     &     *recip_drF(kLev)*recip_hFacC(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF

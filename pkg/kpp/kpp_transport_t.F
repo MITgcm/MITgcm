@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_t.F,v 1.15 2003/11/13 06:35:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_t.F,v 1.16 2004/07/18 01:19:36 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -14,7 +14,7 @@ C     |   temperature flux.                                      |
 C     |==========================================================|
 C     | The nonlocal transport term is nonzero only for scalars  |
 C     | in unstable (convective) forcing conditions.             |
-C     | Note: [SurfaceTendencyT + Qsw * (1-KPPfrac)]             |
+C     | Note: [surfaceForcingT + Qsw * (1-KPPfrac)]             |
 C     |       is the total heat flux penetrating the mixed layer |
 C     |       from the surface in deg C / s referenced to the    |
 C     |       top layer.                                         |
@@ -54,12 +54,11 @@ C     I, J - Loop counters
       DO j=jMin,jMax
          DO i=iMin,iMax
             df(i,j) = df(i,j) - _rA(i,j,bi,bj) *
-     &           KappaRT(i,j,k) * KPPghat(i,j,km1,bi,bj) * drF(1) *
-     &           ( SurfaceTendencyT(i,j,bi,bj) +
-     &           SurfaceTendencyTice(i,j,bi,bj) -
-     &           Qsw(i,j,bi,bj)
-     &           *recip_Cp*recip_rhoConst*recip_dRf(1)
-     &           * (1.-KPPfrac(i,j,bi,bj))
+     &           KappaRT(i,j,k) * KPPghat(i,j,km1,bi,bj) *
+     &           ( surfaceForcingT(i,j,bi,bj)
+     &            +surfaceForcingTice(i,j,bi,bj)
+     &            -Qsw(i,j,bi,bj)*recip_Cp*recip_rhoConst
+     &            *(1.-KPPfrac(i,j,bi,bj))
      &           )
          ENDDO
       ENDDO
