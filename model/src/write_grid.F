@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.4 2004/10/07 01:48:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.5 2004/10/10 06:08:48 edhill Exp $
 C $Name:  $
       
 #include "PACKAGES_CONFIG.h"
@@ -26,9 +26,6 @@ C       |-- WRITE_GRID
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 #include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:

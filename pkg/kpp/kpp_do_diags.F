@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.11 2004/10/07 20:06:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.12 2004/10/10 06:08:49 edhill Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -45,9 +45,6 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 #include "KPP.h"
 #include "KPP_PARAMS.h"
 #include "KPP_DIAGS.h"

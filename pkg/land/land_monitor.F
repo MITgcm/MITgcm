@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.4 2004/10/07 01:48:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.5 2004/10/10 06:08:49 edhill Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -21,9 +21,6 @@ C     !USES:
 #include "LAND_VARS.h"
 #ifdef ALLOW_MONITOR
 #include "MONITOR.h"
-#endif
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:

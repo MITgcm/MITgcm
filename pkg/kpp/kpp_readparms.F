@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.9 2004/10/07 19:31:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.10 2004/10/10 06:08:49 edhill Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -17,9 +17,6 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 #include "GRID.h"
 #include "KPP_PARAMS.h"
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.126 2004/10/01 16:15:29 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.127 2004/10/10 06:08:47 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -20,9 +20,6 @@ C     !USES:
 #include "PARAMS.h"
 #include "GRID.h"
 #include "EOS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     myThid - Number of this instance of INI_PARMS

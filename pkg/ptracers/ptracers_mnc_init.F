@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_mnc_init.F,v 1.3 2004/09/23 03:28:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_mnc_init.F,v 1.4 2004/10/10 06:08:49 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -20,9 +20,6 @@ C     !USES:
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 
 C     !INPUT PARAMETERS:
       INTEGER myThid

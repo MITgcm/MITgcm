@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.16 2004/09/23 03:28:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.17 2004/10/10 06:08:48 edhill Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -53,9 +53,7 @@ C                100:  OCEAN
 C***********************************************************************
       implicit none
 #include "EEPARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
+#include "PARAMS.h"
 
       integer mythid,im,jm,maxtyp,nchp,nchptot,nchpland,Nsx,Nsy,Nxg,Nyg
       integer surftype(im,jm,maxtyp,Nsx,Nsy)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.11 2004/10/07 19:39:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.12 2004/10/10 06:08:49 edhill Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -28,9 +28,6 @@ C     == Global variables ===
 #include "fizhi_io_comms.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 
 C     == Routine Arguments ==
 C     myIter  :: time-step number

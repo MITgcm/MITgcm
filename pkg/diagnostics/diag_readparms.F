@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.13 2004/09/22 02:50:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.14 2004/10/10 06:08:48 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -18,9 +18,6 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_init.F,v 1.2 2004/09/23 03:28:43 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_init.F,v 1.3 2004/10/10 06:08:51 edhill Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -18,9 +18,6 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC        
-#include "MNC_PARAMS.h"
-#endif
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "TIMEAVE_STATV.h"

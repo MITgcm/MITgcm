@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.19 2004/09/30 16:25:58 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.20 2004/10/10 06:08:48 edhill Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -34,9 +34,6 @@ c-----------------------------------------------------------------------
 #include "gridalt_mapping.h"
 #include "GRID.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 
        integer myThid
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_ini_vars.F,v 1.4 2004/10/07 19:25:27 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_ini_vars.F,v 1.5 2004/10/10 06:08:48 edhill Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
@@ -10,9 +10,6 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 #include "CD_CODE_VARS.h"
 
 C     == Routine arguments ==

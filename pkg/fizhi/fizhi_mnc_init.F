@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_mnc_init.F,v 1.7 2004/09/28 19:53:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_mnc_init.F,v 1.8 2004/10/10 06:08:49 edhill Exp $
 C $Name:  $
       
 #include "FIZHI_OPTIONS.h"
@@ -20,6 +20,7 @@ C     !USES:
 #include "fizhi_SIZE.h"
 #include "fizhi_land_SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #include "mnc_common.h"
