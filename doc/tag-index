@@ -1,7 +1,36 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.103 2002/11/12 20:59:27 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.104 2002/11/15 04:07:00 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint47
+differentiable version of checkpoint46n_post
+o bug fix in quasihydrostaticterms
+o * "clean" adjoint code (in terms of extensive recomputations)
+    can now be obtained for all GMREDI options (i.e. for 
+    - GM_VISBECK_VARIABLE_K
+    - GM_NON_UNITY_DIAGONAL
+    - GM_EXTRA_DIAGONAL
+    - GM_BOLUS_ADVEC )
+  * However, wrong gradient check problem remains unsolved.
+  * New CPP options have been introduced for different
+    tapering schemes
+o external_fields_load now part of differentiation list
+o pressure needs multiple storing;
+  would be nice to have store_pressure at beginning or
+  end of forward_step, e.g. by having phiHyd global (5-dim.)
+  (NB: pressure is needed for certain cases in find_rho,
+  which is also invoked through convective_adjustment).
+o recomputations in find_rho for cases 
+ 'JMD95'/'UNESCO' or 'MDJWF' are OK.
+o #define ATMOSPHERIC_LOADING should be differentiable
+o ini_forcing shifted to begining of initialise_varia
+o Incorporating QNVS line search routines into MITgcm
+  (this is separate code, and therefore not under pkg)
+  lsopt/, optim/
+o Updated verification/carbon/
+  - #define GM_VISBECK_VARIABLE_K
+  - GM_taper_scheme    = 'ldd97'    
 
 checkpoint46n_post
 Merging from release1_p8:
