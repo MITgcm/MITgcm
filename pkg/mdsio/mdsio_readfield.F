@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.13 2004/04/06 00:25:56 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.14 2004/04/06 00:42:17 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -69,7 +69,7 @@ C Local variables
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
       logical globalFile,fileIsOpen
-      integer x_size,y_size,iG_IO,jG_IO,length_of_rec
+      integer x_size,y_size,iG_IO,jG_IO,length_of_rec,npe
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
       PARAMETER ( x_size = exch2_domain_nxt * sNx )
       PARAMETER ( y_size = exch2_domain_nyt * sNy )
@@ -85,6 +85,10 @@ C Local variables
 #ifdef ALLOW_EXCH2
       integer domainHeight,domainLength,tby,tgx,tny,tnx,tn
 #endif /* ALLOW_EXCH2 */
+      COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
+      INTEGER mpi_myXGlobalLo(nPx*nPy)
+      INTEGER mpi_myYGlobalLo(nPx*nPy)
+
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -372,7 +376,7 @@ C master thread of process 0, only, opens a global file
 #else
         IF ( .TRUE. ) THEN
 #endif /* ALLOW_USE_MPI */
-         length_of_rec=MDS_RECLEN( filePrec, xy_size, mythid )
+         length_of_rec=MDS_RECLEN( filePrec, x_size*y_size, mythid )
          open( dUnit, file=dataFName, status='old',
      &        access='direct', recl=length_of_rec )
         ENDIF
@@ -390,7 +394,7 @@ C master thread of process 0, only, opens a global file
           if (filePrec .eq. precFloat32) then
            read(dUnit,rec=irec) xy_buffer_r4
 #ifdef _BYTESWAPIO
-           call MDS_BYTESWAPR4( xy_size, xy_buffer_r4 )
+           call MDS_BYTESWAPR4( x_size*y_size, xy_buffer_r4 )
 #endif
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
            bj=1
@@ -417,7 +421,7 @@ C master thread of process 0, only, opens a global file
           elseif (filePrec .eq. precFloat64) then
            read(dUnit,rec=irec) xy_buffer_r8
 #ifdef _BYTESWAPIO
-           call MDS_BYTESWAPR8( xy_size, xy_buffer_r8 )
+           call MDS_BYTESWAPR8( x_size*y_size, xy_buffer_r8 )
 #endif
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
            bj=1

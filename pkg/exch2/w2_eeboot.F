@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.2 2004/04/06 00:25:56 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.3 2004/04/06 00:42:17 dimitri Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -33,8 +33,10 @@ C     == Local variables ==
       INTEGER myThid, I, J, II
       INTEGER iErr, tNx, tNy
       INTEGER pRank
-      INTEGER npe,itemp(nSx),istatus(MPI_STATUS_SIZE)
-      INTEGER mpiBufSize,mpiRequest
+      INTEGER npe,itemp(nSx),mpiBufSize,mpiRequest
+#ifdef ALLOW_USE_MPI
+      INTEGER istatus(MPI_STATUS_SIZE)
+#endif
 
 C     Set dummy myThid value (we aren't multi-threaded here)
       myThid = 1
