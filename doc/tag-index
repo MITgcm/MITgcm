@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.397 2004/12/01 22:54:42 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.398 2004/12/01 23:11:21 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint56b_post
 o collect all ptracers output in an new routine (PTRACERS_OUTPUT) that
   is called from DO_THE_MODEL_IO
   - rename PTRACERS_STATV_WRITE to PTRACERS_WRITE_TIMEAVE
