@@ -1,5 +1,5 @@
 *akefile
-make.log
+*.log
 *.f
 *.o
 *.data
