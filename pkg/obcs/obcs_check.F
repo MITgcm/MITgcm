@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.4 2004/09/22 21:31:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_check.F,v 1.5 2004/09/23 01:28:31 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -76,7 +76,7 @@ C     msgBuf      - Informational/error meesage buffer
      &   'OBCS_CHECK: ERROR: useOBCSprescribe = .TRUE. for'
          CALL PRINT_ERROR( msgBuf , 1)
          WRITE(msgBuf,'(A)')
-     &   'OBCS_CHECK: undef ALLOW_OBCS_PRESCRIBE
+     &   'OBCS_CHECK: undef ALLOW_OBCS_PRESCRIBE'
          STOP 'ABNORMAL END: S/R OBCS_CHECK'
         ENDIF
 #endif
