@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.9 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.10 2004/07/26 20:11:33 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -132,7 +132,7 @@ C***********************************************************************
       integer  ku,nlat,nlev,ntime
 
       _RL   oz(nlat,nlev,ntime)
-      _RL o3(nlat)
+      real*4 o3(nlat)
       _RL lats(nlat)
       _RL levs(nlev)
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.9 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.10 2004/07/26 20:11:33 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -664,8 +664,6 @@ c-----------------------------------------------------------------------
         DO I=1,NCHP
          VT1(IGRD(I),1) = VT1(IGRD(I),1) + B(I)*CHFR(I)
         ENDDO
-
-        stop
 
         DO I=1,IM*JM
          A(I,1) = A(I,1)*(ONE-FRACG(I,1)) + VT1(I,1)
