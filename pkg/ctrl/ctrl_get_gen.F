@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.5 2004/03/04 19:49:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.6 2004/05/04 22:13:08 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -65,6 +65,7 @@ c     == local variables ==
       integer ilgen
 
       _RL     genfac
+      logical doCtrlUpdate
       logical genfirst
       logical genchanged
       integer gencount0
@@ -136,9 +137,18 @@ c--   Get the counters, flags, and the interpolation factor.
 c--   Add control to model variable.
 cph(
 cph this flag ported from the SIO code (dont know why its here)
-      if ( gencount0 .GT. 2 .AND. 
+      if ( gencount0 .LE. 2 .AND. 
      &     ( xx_gen_file .EQ. xx_tauu_file .OR.
      &       xx_gen_file .EQ. xx_tauv_file ) ) then
+         doCtrlUpdate = .FALSE.
+      else
+         doCtrlUpdate = .TRUE.
+      endif
+c
+cph since the above is ECCO specific, we undo it here:
+      doCtrlUpdate = .TRUE.
+c
+      if ( doCtrlUpdate ) then
 cph)
       do bj = jtlo,jthi
         do bi = itlo,ithi
