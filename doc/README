@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/README,v 1.10 1998/07/08 15:29:22 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/README,v 1.11 1998/07/10 18:48:48 cnh Exp $
 
 
 MITgcmUV Getting Started
@@ -83,6 +83,29 @@ o Running
     dmpirun
 
   - Parallel execution. Hybrid
+
+o Cutomising the code
+
+  Model structure
+  ===============
+  The "numerical" model is contained within a execution 
+  environment support wrapper. This wrapper is designed 
+  to provide a general framework for grid-point models.
+  MITgcmUV is a specific numerical model that uses the
+  framework.
+   Under this structure the model is split into 
+  execution environment support code and conventional
+  numerical model code. The execution environment
+  support code is held under the "eesupp" directory.
+  The grid point model code is held under the 
+  "model" directory. 
+   Code execution actually starts in the eesupp 
+  routines and not in the model routines. For this
+  reason the top level main.F is in the eesupp/src
+  directory. End-users should not need to worry about
+  this level. The top-level routine for the numerical
+  part of the code is in model/src/the_model_main.F.
+
 
 o References
   Web sites - HP
