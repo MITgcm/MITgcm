@@ -1,52 +1,47 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_z_xyz_rx.template,v 1.2 2001/05/29 14:01:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_z_xyz_rx.template,v 1.3 2001/09/21 03:55:50 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
+CBOP
+C     !ROUTINE: EXCH_Z_XYZ_RX
+
+C     !INTERFACE:
       SUBROUTINE EXCH_Z_XYZ_RX(
      U                       phi,
      I                       myThid )
-C     /==========================================================\
-C     | SUBROUTINE EXCH_Z_XYZ_RX                                 |
-C     | o Handle exchanges for _RX,      3-dimensional arrays.   |
-C     |==========================================================|
-C     | Do true shared-memory data transfers and "messaging"     |
-C     | tranfers for blocking case of data transfers.            |
-C     | Applications call this routine using                     |
-C     |  CALL EXCH..( x, myThid )                                |
-C     | where x is a two-dimensional array with overlaps.        |
-C     | This routine does true-shared-memory copies for blocks   |
-C     | within a thread. It will also do MPI meesaging between   |
-C     | different processes.                                     |
-C     | Note:                                                    |
-C     | =====                                                    |
-C     | This routine is a default mode interface to the more     |
-C     | general exchange routine. Under default mode the         |
-C     | exchange is for an edge width of OLx, and OLy and        |
-C     | updates corner points as well as edges ( slightly more   |
-C     | synchronisation required).                               |
-C     \==========================================================/
       IMPLICIT NONE
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE EXCH_Z_XYZ_RX                                  
+C     | o Handle exchanges for _RX, 3-dim, zeta coord arrays.    
+C     *==========================================================*
+C     | Branch to appropriate exchange routine for a zeta coord
+C     | array on the current grid scheme.
+C     *==========================================================*
 
-C     === Global data ===
+C     !USES:
+C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 
-C     === Routine arguments ===
-C     phi    - Array with overlap regions are to be exchanged
-C              Note - The interface to EXCH_RX assumes that
-C              the standard Fortran 77 sequence association rules
-C              apply.
-C     myThid - My thread id.
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     phi    :: Array with overlap regions are to be exchanged
+C               Note - The interface to EXCH_RX assumes that
+C               the standard Fortran 77 sequence association rules
+C               apply.
+C     myThid :: My thread id.
       _RX phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER myThid
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     OL[wens]       - Overlap extents in west, east, north, south.
-C     exchWidth[XY]  - Extent of regions that will be exchanged.
+C     OL[wens]       :: Overlap extents in west, east, north, south.
+C     exchWidth[XY]  :: Extent of regions that will be exchanged.
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
+CEOP
 
       OLw        = OLx
       OLe        = OLx

@@ -1,13 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EXCH.h,v 1.3 2001/02/04 14:38:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EXCH.h,v 1.4 2001/09/21 03:54:35 cnh Exp $
 C $Name:  $
 C
-C     /==========================================================\
-C     | EXCH.h                                                   |
-C     |==========================================================|
-C     | Support data structures for the MITgcm UV "exchange      |
-C     | routines" code. This data should be private to the       |
+CBOP
+C     !ROUTINE: EXCH.h
+C     !INTERFACE: 
+C     include "EXCH.h"
+C
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | EXCH.h                                                    
+C     *==========================================================*
+C     | Support data structures for the MITgcm UV "exchange       
+C     | routines" code. This data should be private to the        
 C     | execution environment routines.
-C     \==========================================================/
+C     *==========================================================*
+CEOP
 
 #ifndef _RL
 #define _RL Real*8

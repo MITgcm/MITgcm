@@ -1,10 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/GLOBAL_SUM.h,v 1.2 2001/05/29 14:01:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/GLOBAL_SUM.h,v 1.3 2001/09/21 03:54:36 cnh Exp $
 C $Name:  $
-C
-C     /==========================================================\
-C     | GLOBA:_SUM.h                                             |
+CBOP
+C     !ROUTINE: GLOBAL_SUM.h
+C     !INTERFACE:
+C     include "GLOBAL_SUM.h"
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | GLOBAL_SUM.h                                             |
 C     | o Globals used by Fortran global sum routine.            |
-C     |==========================================================|
+C     *==========================================================*
 C     | The global sum shared memory scheme uses global heap data|
 C     | structures (.i.e COMMON blocks ). Each thread writes to  |
 C     | an its own element of the shared memory array and then   |
@@ -22,7 +26,8 @@ C     | code.                                                    |
 C     | Unless you understand this it is not a good idea to      |
 C     | make modifications te way these header files are setup or|
 C     | the way the global sum routines work.                    |
-C     \==========================================================/
+C     *==========================================================*
+CEOP
       COMMON / GSUM_COMMON_R8 / phiGSRL
       Real*8  phiGSRL(lShare8, MAX_NO_THREADS )
 

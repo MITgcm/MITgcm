@@ -1,47 +1,56 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.5 2001/09/05 19:59:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.6 2001/09/21 03:54:35 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
-CStartOfInterface
-      SUBROUTINE INI_COMMUNICATION_PATTERNS( myThid )
-C     /==========================================================\
-C     | SUBROUTINE INI_COMMUNICATION_PATTERNS                    |
-C     | o Initialise between tile communication data structures. |
-C     |==========================================================|
-C     | This routine assigns identifiers to each tile and then   |
-C     | defines a map of neighbors for each tile.                |
-C     | For each neighbor a communication method is defined.     |
-C     \==========================================================/
-      IMPLICIT NONE
+CBOP
 
+C     !ROUTINE: INI_COMMUNICATION_PATTERNS
+
+C     !INTERFACE:
+      SUBROUTINE INI_COMMUNICATION_PATTERNS( myThid )
+      IMPLICIT NONE
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE INI_COMMUNICATION_PATTERNS                     
+C     | o Initialise between tile communication data structures.  
+C     *==========================================================*
+C     | This routine assigns identifiers to each tile and then    
+C     | defines a map of neighbors for each tile.                 
+C     | For each neighbor a communication method is defined.      
+C     *==========================================================*
+
+C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "EXCH.h"
-CEndOfInterface
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myThid - Thread number we are dealing with in this call
+C     myThid :: Thread number we are dealing with in this call
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     pxW   - Process X coord of process to west.
-C     pxE   - Process X coord of process to west.
-C     pyN   - Process Y coord of process to north.
-C     pyS   - Process Y coord of process to south.
-C     procW - Process Id of process to west.
-C     procE - Process Id of process to east.
-C     procN - Process Id of process to north.
-C     procS - Process Id of process to south.
-C     totalTileCount - Total number of tiles
-C     tagW0, tagE0, tagS0, tagN0, theTag - Working variables for 
-C                                          calculating message tags.
-C     biW, biE, bjN, bjS - Tile x and y indices to west, east,
-C                          south and north.
-C     bi, bj - Tile loop counter
-C     pi, pj - Process loop counter
+C     pxW   :: Process X coord of process to west.
+C     pxE   :: Process X coord of process to west.
+C     pyN   :: Process Y coord of process to north.
+C     pyS   :: Process Y coord of process to south.
+C     procW :: Process Id of process to west.
+C     procE :: Process Id of process to east.
+C     procN :: Process Id of process to north.
+C     procS :: Process Id of process to south.
+C     totalTileCount :: Total number of tiles
+C     tagW0, tagE0, tagS0, tagN0, theTag :: Working variables for 
+C                                           calculating message tags.
+C     biW, biE, bjN, bjS :: Tile x and y indices to west, east,
+C                           south and north.
+C     bi, bj   :: Tile loop counter
+C     pi, pj   :: Process loop counter
+C     bi0, bj0 :: Base global index coordinate ( on CS there is no global
+C                 coord).
       INTEGER bi0(nPx)
       INTEGER bj0(nPy)
       INTEGER bi, bj, pi, pj
@@ -51,6 +60,7 @@ C     pi, pj - Process loop counter
       INTEGER tagW0, tagE0, tagS0, tagN0, theTag
       INTEGER biE, biW, bjN, bjS
       INTEGER thePx, thePy, theBj, theBi
+CEOP
 
 #ifndef ALWAYS_USE_MPI
 C--   Turn off memsync by default (e.g. needed for threads on SUNs)

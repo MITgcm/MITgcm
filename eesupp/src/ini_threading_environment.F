@@ -1,30 +1,37 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_threading_environment.F,v 1.7 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_threading_environment.F,v 1.8 2001/09/21 03:54:35 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
-CStartOfInterface
+CBOP
+
+C     !ROUTINE: INI_THREADING_ENVIRONMENT
+
+C     !INTERFACE:
       SUBROUTINE INI_THREADING_ENVIRONMENT
-C     /==========================================================\
-C     | SUBROUTINE INI_THREADING_ENVIRONMENT                     |
-C     | o Initialise multi-threaded environment.                 |
-C     |==========================================================|
-C     | Generally we do not start separate threads here.         |
-C     | The separate threads a spawned at later on.              |
-C     | Here we perform initialisation of data-structures        |
-C     | that indicate which of the nSx x nSy tiles a thread is   |
-C     | responsible for.                                         |
-C     | The multiple threads are spawned in the top level MAIN   |
-C     | routine.                                                 |
-C     \==========================================================/
       IMPLICIT NONE
 
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE INI_THREADING_ENVIRONMENT                      
+C     | o Initialise multi-threaded environment.                  
+C     *==========================================================*
+C     | Generally we do not start separate threads here.          
+C     | The separate threads a spawned at later on.               
+C     | Here we perform initialisation of data-structures         
+C     | that indicate which of the nSx x nSy tiles a thread is    
+C     | responsible for.                                          
+C     | The multiple threads are spawned in the top level MAIN    
+C     | routine.                                                  
+C     *==========================================================*
+
+C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bXPerThread - Blocks of size sNx per thread.
 C     byPerThread - Blocks of size sNy per thread.
@@ -49,6 +56,8 @@ C                     called before multi-threading has started.)
       INTEGER I, J, nT
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER myThid
+
+CEOP
 
 C--   Set default for all threads of having no blocks to
 C--   work on - except for thread 1.

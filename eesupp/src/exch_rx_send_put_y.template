@@ -1,46 +1,54 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_y.template,v 1.1 2001/05/29 14:06:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_send_put_y.template,v 1.2 2001/09/21 03:55:50 cnh Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
+CBOP
+C     !ROUTINE: EXCH_RX_SEND_PUT_Y
+
+C     !INTERFACE:
       SUBROUTINE EXCH_RX_SEND_PUT_Y( array,
      I             myOLw, myOLe, myOLs, myOLn, myNz,
      I             exchWidthX, exchWidthY,
      I             thesimulationMode, thecornerMode, myThid )
-C     /==========================================================\
-C     | SUBROUTINE SEND_PUT_Y                                    |
-C     | o "Send" or "put" Y edges for RX array.                  |
-C     |==========================================================|
-C     | Routine that invokes actual message passing send or      |
-C     | direct "put" of data to update Y faces of an XY[R] array.|
-C     \==========================================================/
       IMPLICIT NONE
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE SEND_PUT_Y                                     
+C     | o "Send" or "put" Y edges for RX array.                   
+C     *==========================================================*
+C     | Routine that invokes actual message passing send or       
+C     | direct "put" of data to update Y faces of an XY[R] array. 
+C     *==========================================================*
 
+C     !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "EXCH.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     array - Array with edges to exchange.
-C     myOLw - West, East, North and South overlap region sizes.
+C     array :: Array with edges to exchange.
+C     myOLw :: West, East, North and South overlap region sizes.
 C     myOLe
 C     myOLn
 C     myOLs
-C     exchWidthX - Width of data region exchanged.
+C     exchWidthX :: Width of data region exchanged.
 C     exchWidthY
-C     theSimulationMode - Forward or reverse mode exchange ( provides 
-C                         support for adjoint integration of code. )
-C                         Note - the reverse mode for an assignment 
-C                                is an accumulation. This means that 
-C                                put implementations that do leary things
-C                                like writing to overlap regions in a 
-C                                remote process need to be even more
-C                                careful. You need to be pretty careful
-C                                in forward mode too!
-C     theCornerMode     - Flag indicating whether corner updates are 
-C                         needed.
-C     myThid            - Thread number of this instance of S/R EXCH...
-C     eBl               - Edge buffer level
+C     theSimulationMode :: Forward or reverse mode exchange ( provides 
+C                          support for adjoint integration of code. )
+C                          Note - the reverse mode for an assignment 
+C                                 is an accumulation. This means that 
+C                                 put implementations that do leary things
+C                                 like writing to overlap regions in a 
+C                                 remote process need to be even more
+C                                 careful. You need to be pretty careful
+C                                 in forward mode too!
+C     theCornerMode     :: Flag indicating whether corner updates are 
+C                          needed.
+C     myThid            :: Thread number of this instance of S/R EXCH...
+C     eBl               :: Edge buffer level
       INTEGER myOLw
       INTEGER myOLe
       INTEGER myOLs
@@ -54,8 +62,8 @@ C     eBl               - Edge buffer level
       INTEGER theSimulationMode
       INTEGER theCornerMode
       INTEGER myThid
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     I, J, K, jMin, jMax, iB    - Loop counters and extents
 C     bi, bj  
@@ -72,7 +80,6 @@ C                                  tile face uses.
       INTEGER eBl
       INTEGER northCommMode
       INTEGER southCommMode
-
 #ifdef ALLOW_USE_MPI
       INTEGER theProc, theTag, theType, theSize, mpiRc
 #endif
@@ -99,6 +106,8 @@ C                tile
 C                Write data-ready Ack for south edge of north-neighbor
 C                tile
 C                Sync. memory
+CEOP
+
 C      
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

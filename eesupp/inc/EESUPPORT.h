@@ -1,15 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EESUPPORT.h,v 1.6 2001/02/04 14:38:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EESUPPORT.h,v 1.7 2001/09/21 03:54:35 cnh Exp $
 C $Name:  $
+CBOP
+C     !ROUTINE: EESUPPORT.h 
+C     !INTERFACE:
+C     include "EESUPPORT.h"
 C
-C     /==========================================================\
+C     !DESCRIPTION:
+C     *==========================================================*
 C     | EESUPPORT.h                                              |
-C     |==========================================================|
+C     *==========================================================*
 C     | Support data structures for the MITgcm UV "execution     |
 C     | environment" code. This data should be private to the    |
 C     | execution environment routines. Data which needs to be   |
-C     | accessed directly by the numerical model goes in         |
+C     | accessed directly by a numerical model goes in           |
 C     | EEPARAMS.h.                                              |
-C     \==========================================================/
+C     *==========================================================*
+CEOP
 
 C     ERROR_HEADER        - String which prefixes error messages
       CHARACTER*(*) ERROR_HEADER

@@ -1,13 +1,72 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/gsum.F,v 1.5 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/gsum.F,v 1.6 2001/09/21 03:54:35 cnh Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
+CBOP
+
+C     !ROUTINE: GSUM_R8_INIT
+
+C     !INTERFACE:
       SUBROUTINE GSUM_R8_INIT( myThid )
       IMPLICIT NONE
+
+C     !DESCRIPTION:
+C     *=============================================================================*
+C     | SUBROUTINE GSUM_R8_INIT
+C     | o Setup data structures for global sum.
+C     *=============================================================================*
+C     | Fast true shared memory form for global sum operation.
+C     *=============================================================================*
+
+C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+C     GSR8_value :: Global data for accumulating sum elements.
+C     GSR8_level :: Cyclic buffer index into global data sum elements.
+      COMMON /GS_R8_BUFFER_R/
+     &  GSR8_value
+      Real*8 GSR8_value(lShare8,MAX_NO_THREADS)
+#define _NOT_SET_ 1.23456D12
+      COMMON /GS_R8_BUFFER_I/
+     &  GSR8_level
+      INTEGER GSR8_level
+
+C     !INPUT PARAMETERS:
+C     myThid :: Thread number of this instance.
+      INTEGER myThid
+
+C     !LOCAL VARIABLES:
+C     I :: Loop counter.
+      INTEGER I
+CEOP
+      GSR8_level = 1
+      DO I = 1, lShare8
+       GSR8_value(I,myThid) = _NOT_SET_
+      ENDDO
 C
+      RETURN
+      END
+
+CBOP
+C     !ROUTINE: GSUM_R8
+
+C     !INTERFACE:
+      SUBROUTINE GSUM_R8( myPhi, answer, myThid )
+      IMPLICIT NONE
+C     !DESCRIPTION:
+C     *=============================================================================*
+C     | SUBROUTINE GSUM_R8     
+C     | o Perform global sum.                           
+C     *=============================================================================*
+C     | Fast true shared memory form for global sum operation.
+C     *=============================================================================*
+C     !USES:
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+C     GSR8_value :: Global data for accumulating sum elements.
+C     GSR8_level :: Cyclic buffer index into global data sum elements.
       COMMON /GS_R8_BUFFER_R/
      &  GSR8_value
       Real*8 GSR8_value(lShare8,MAX_NO_THREADS)
@@ -16,22 +75,11 @@ C
      &  GSR8_level
       INTEGER GSR8_level
 C
-      INTEGER myThid
-      INTEGER I
-C
-      GSR8_level = 1
-      DO I = 1, lShare8
-       GSR8_value(I,myThid) = _NOT_SET_
-      ENDDO
-C
-      RETURN
-      END
-      SUBROUTINE GSUM_R8( myPhi, answer, myThid )
-      IMPLICIT NONE
-#include "SIZE.h"
-#include "EEPARAMS.h"
-#include "EESUPPORT.h"
-C
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     myPhi  :: This threads contribution
+C     answer :: Result of sum over all threads
+C     myThid :: This threads id number
       Real*8  myPhi
       Real*8  answer
       INTEGER myThid
@@ -40,17 +88,16 @@ C
       INTEGER mpiRc
 #endif
 C
+C     !LOCAL VARIABLES:
+C     nDone   :: Counter for number of threads completed.
+C     I       :: Loop counter.
+C     curLev  :: Cyclic global sum buffer levels.
+C     prevLev
       INTEGER nDone
       INTEGER I
       INTEGER curLev, prevLev
 C
-      COMMON /GS_R8_BUFFER_R/
-     &  GSR8_value
-      Real*8 GSR8_value(lShare8,MAX_NO_THREADS)
-#define _NOT_SET_ 1.23456D12
-      COMMON /GS_R8_BUFFER_I/
-     &  GSR8_level
-      INTEGER GSR8_level
+CEOP
 
 C     answer = 1.
 C     CALL BAR2(myThid)

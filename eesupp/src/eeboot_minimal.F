@@ -1,48 +1,55 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.7 2001/02/04 14:38:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.8 2001/09/21 03:54:34 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: EEBOOT_MINIMAL
+
+C     !INTERFACE:
       SUBROUTINE EEBOOT_MINIMAL
-C     /==========================================================\
-C     | SUBROUTINE EEBOOT_MINIMAL                                |
-C     | o Set an initial environment that is predictable i.e.    |
-C     | behaves in a similar way on all machines and stable.     |
-C     |==========================================================|
-C     | Under MPI this routine calls MPI_INIT to setup the       |
-C     | mpi environment ( on some systems the code is running as |
-C     | a single process prior to MPI_INIT, on others the mpirun |
-C     | script has already created multiple processes). Until    |
-C     | MPI_Init is called it is unclear what state the          |
-C     | application is in. Once this routine has been run it is  |
-C     | "safe" to do things like I/O to report erros and to get  |
-C     | run parameters.                                          |
-C     | Note: This routine can also be compiled with CPP         |
-C     | directives set so that no multi-processing is initialise.|
-C     | This is OK and should work fine.                         |
-C     \==========================================================/
       IMPLICIT NONE
 
-C     === Global data ===
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE EEBOOT_MINIMAL                                 
+C     | o Set an initial environment that is predictable i.e.     
+C     | behaves in a similar way on all machines and stable.      
+C     *==========================================================*
+C     | Under MPI this routine calls MPI_INIT to setup the        
+C     | mpi environment ( on some systems the code is running as  
+C     | a single process prior to MPI_INIT, on others the mpirun  
+C     | script has already created multiple processes). Until     
+C     | MPI_Init is called it is unclear what state the           
+C     | application is in. Once this routine has been run it is   
+C     | "safe" to do things like I/O to report erros and to get   
+C     | run parameters.                                           
+C     | Note: This routine can also be compiled with CPP          
+C     | directives set so that no multi-processing is initialise. 
+C     | This is OK and will work fine.                          
+C     *==========================================================*
+
+C     !USES:
+C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 
-CEndOfInterface
-
-C     === Local variables ===
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+C     myThid           :: Temp. dummy thread number.
       INTEGER myThid     
 #ifdef ALLOW_USE_MPI
-C     mpiRC            - Error code reporting variable used 
-C                        with MPI.
-C     fNam             - Used to build name of file for standard
-C                        output and error output.
-C     msgBuffer        - Used to build messages for printing.
+C     mpiRC            :: Error code reporting variable used 
+C                         with MPI.
+C     fNam             :: Used to build name of file for standard
+C                         output and error output.
+C     msgBuffer        :: Used to build messages for printing.
       CHARACTER*(MAX_LEN_MBUF) msgBuffer
       INTEGER mpiRC
       CHARACTER*13 fNam
 #endif /* ALLOW_USE_MPI */
+CEOP
 
 C--   Default values set to single processor case
       numberOfProcs = 1

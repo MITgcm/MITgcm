@@ -1,13 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.11 2001/03/25 22:33:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.12 2001/09/21 03:54:36 cnh Exp $
 C $Name:  $
-C
-C     /==========================================================\
-C     | FFIELDS.h                                                |
-C     | o Model forcing fields                                   |
-C     |==========================================================|
-C     | The arrays here will need changing and customising for a |
-C     | particular experiment.                                   |
-C     \==========================================================/
+CBOP
+C     !ROUTINE: FFIELDS.h 
+C     !INTERFACE:
+C     include "FFIELDS.h"
+C     !DESCRIPTION:
+C     \bv
+C     *==========================================================*
+C     | FFIELDS.h                                                 
+C     | o Model forcing fields                                    
+C     *==========================================================*
+C     | The arrays here will need changing and customising for a  
+C     | particular experiment.                                    
+C     *==========================================================*
+C     \ev
+CEOP
 C
 C--   For a classical "gyre" type experiment just one term is needed.
 C

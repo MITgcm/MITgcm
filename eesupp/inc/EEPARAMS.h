@@ -1,13 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.9 2001/05/29 14:01:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.10 2001/09/21 03:54:35 cnh Exp $
 C $Name:  $
+CBOP
+C     !ROUTINE: EEPARAMS.h
+C     !INTERFACE:
+C     include "EEPARAMS.h"
 C
-C     /==========================================================\
+C     !DESCRIPTION:
+C     *==========================================================*
 C     | EEPARAMS.h                                               |
-C     |==========================================================|
+C     *==========================================================*
 C     | Parameters for "execution environemnt". These are used   |
 C     | by both the particular numerical model and the "execution|
 C     | environment" support routines.                           |
-C     \==========================================================/
+C     *==========================================================*
+CEOP
 
 C     MAX_LEN_MBUF         - Default message buffer max. size
 C     MAX_LEN_FNAM         - Default file name max. size

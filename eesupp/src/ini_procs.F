@@ -1,47 +1,54 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.13 2001/08/21 17:23:45 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.14 2001/09/21 03:54:35 cnh Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
-CStartOfInterface
+CBOP
+
+C     !ROUTINE: INI_PROCS
+
+C     !INTERFACE:
       SUBROUTINE INI_PROCS
-C     /==========================================================\
-C     | SUBROUTINE INI_PROCS                                     |
-C     | o Initialise multiple concurrent processes environment.  |
-C     |==========================================================|
-C     | Under MPI this routine calls various MPI service routines|
-C     | that map the model grid to MPI processes. The information|
-C     | is then stored in a common block for later use.          |
-C     | Note: This routine can also be compiled with CPP         |
-C     | directives set so that no multi-processing is initialise.|
-C     | This is OK and should work fine.                         |
-C     \==========================================================/
       IMPLICIT NONE
 
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE INI_PROCS                                      
+C     | o Initialise multiple concurrent processes environment.   
+C     *==========================================================*
+C     | Under MPI this routine calls various MPI service routines 
+C     | that map the model grid to MPI processes. The information 
+C     | is then stored in a common block for later use.           
+C     | Note: This routine can also be compiled with CPP          
+C     | directives set so that no multi-processing is initialise. 
+C     | This is OK and should work fine.                          
+C     *==========================================================*
+
+C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     === Local variables ===
 #ifdef ALLOW_USE_MPI
-C     msgBuffer        - IO buffer
-C     myThid           - Dummy thread id
-C     mpiRC            - Error code reporting variable used 
-C                        with MPI.
-C     mpiGridSpec      - No. of processes in X and Y.
-C     mpiPeriodicity   - Flag indicating XY priodicity to MPI.
-C     arrElSize        - Size of an array element in bytes used
-C                        to define MPI datatypes for communication
-C                        operations.
-C     arrElSep         - Separation in units of array elements between
-C                        blocks to be communicated.
-C     elCount          - No. of blocks that are associated with MPI
-C                        datatype.
-C     elLen            - Length of an MPI datatype in terms of preexisting
-C                        datatype.
-C     elStride         - Distance between starting location of elements
-C                        in an MPI datatype - can be bytes of datatype
-C                        units.
+C     msgBuffer        :: IO buffer
+C     myThid           :: Dummy thread id
+C     mpiRC            :: Error code reporting variable used 
+C                         with MPI.
+C     mpiGridSpec      :: No. of processes in X and Y.
+C     mpiPeriodicity   :: Flag indicating XY priodicity to MPI.
+C     arrElSize        :: Size of an array element in bytes used
+C                         to define MPI datatypes for communication
+C                         operations.
+C     arrElSep         :: Separation in units of array elements between
+C                         blocks to be communicated.
+C     elCount          :: No. of blocks that are associated with MPI
+C                         datatype.
+C     elLen            :: Length of an MPI datatype in terms of preexisting
+C                         datatype.
+C     elStride         :: Distance between starting location of elements
+C                         in an MPI datatype - can be bytes of datatype
+C                         units.
       CHARACTER*(MAX_LEN_MBUF) msgBuffer
       INTEGER mpiRC
       INTEGER mpiGridSpec(2)
@@ -55,6 +62,7 @@ C                        units.
       INTEGER elStride
 #endif /* ALLOW_USE_MPI */
       INTEGER myThid
+CEOP
 
 C--   Default values set to single processor case
 C     pid[W-SE] are the MPI process id of the neighbor
@@ -504,4 +512,4 @@ C
       RETURN
       END
 
-C $Id: ini_procs.F,v 1.13 2001/08/21 17:23:45 adcroft Exp $
+C $Id: ini_procs.F,v 1.14 2001/09/21 03:54:35 cnh Exp $

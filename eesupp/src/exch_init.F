@@ -1,22 +1,31 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_init.F,v 1.3 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_init.F,v 1.4 2001/09/21 03:54:34 cnh Exp $
 C $Name:  $
+
+CBOP
+C     !ROUTINE: EXCH_INIT
+
+C     !INTERFACE:
       SUBROUTINE EXCH_INIT
-C     /==========================================================\
-C     | SUBROUTINE EXCH_INIT                                     |
-C     | o Initialise model exchange data structures.             |
-C     \==========================================================/
       IMPLICIT NONE
-C     == Global data ==
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE EXCH_INIT                                     |
+C     | o Initialise WRAPPER exchange data structures.           |
+C     *==========================================================*
+
+C     !USES:
+C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "EXCH.h"
 
-C     == Routine arguments ==
-
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     bi, bj - Loop counters
       INTEGER bi, bj
+CEOP
 
       DO bj=1,nSy
        DO bi=1,nSx

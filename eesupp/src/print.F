@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.17 2001/02/04 14:38:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.18 2001/09/21 03:54:35 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -19,39 +19,58 @@ C--    o print_mapr8    Formats ABCD... contour map of a Real*8 field
 C--                     Uses print_message for writing
 C--    o print_message  Does IO with unhighlighted header
 
-CStartOfInterface
+CBOP               
+
+C     !ROUTINE: PRINT_ERROR
+
+C     !INTERFACE:
       SUBROUTINE PRINT_ERROR( message , myThid )
-C     /============================================================\
-C     | SUBROUTINE PRINT_ERROR                                     |
-C     | o Write out error message using "standard" format.         |
-C     | Notes                                                      |
-C     | =====                                                      |
-C     | o Some system   I/O is not "thread-safe". For this reason  |
-C     |   without the FMTFTN_IO_THREAD_SAFE directive set a        |
-C     |   critical region is defined around the write here. In some|
-C     |   cases  BEGIN_CRIT() is approximated by only doing writes |
-C     |   for thread number 1 - writes for other threads are       |
-C     |   ignored!                                                 |
-C     | o In a non-parallel form these routines can still be used. |
-C     |   to produce pretty printed output!                        |
-C     \============================================================/
       IMPLICIT NONE
+
+C     !DESCRIPTION:
+C     *============================================================*
+C     | SUBROUTINE PRINT_ERROR                                      
+C     | o Write out error message using "standard" format.          
+C     *============================================================*
+C     | Notes                                                       
+C     | =====                                                       
+C     | o Some system   I/O is not "thread-safe". For this reason   
+C     |   without the FMTFTN_IO_THREAD_SAFE directive set a         
+C     |   critical region is defined around the write here. In some 
+C     |   cases  BEGIN_CRIT() is approximated by only doing writes  
+C     |   for thread number 1 - writes for other threads are        
+C     |   ignored!                                                  
+C     | o In a non-parallel form these routines are still used   
+C     |   to produce pretty printed output. The process and thread
+C     |   id prefix is omitted in this case.
+C     *============================================================*
+
+C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-C     == Routine arguments ==
-      CHARACTER*(*) message
-      INTEGER       myThid
-CEndOfInterface
       INTEGER  IFNBLNK
       EXTERNAL IFNBLNK
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     message :: Text string to print
+C     myThid  :: Thread number of this instance
+      CHARACTER*(*) message
+      INTEGER       myThid
+
+C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     iStart, iEnd :: Temps. for string indexing
+C     idString     :: Temp. for building message prefix
       INTEGER iStart
       INTEGER iEnd
       CHARACTER*9 idString
+CEOP
+
 C--   Find beginning and end of message
       iStart = IFNBLNK( message )
       iEnd   = ILNBLNK( message )
@@ -107,44 +126,50 @@ C
       GOTO 1000
       END
 
-CStartofinterface
+CBOP
+C     !ROUTINE: PRINT_LIST_I
+
+C     !INTERFACE:
       SUBROUTINE PRINT_LIST_I( fld, lFld, index_type, 
      &                         markEnd, compact, ioUnit )
-C     /==========================================================\
-C     | o SUBROUTINE PRINT_LIST_I                                |
-C     |==========================================================|
-C     | Routine for producing list of values for a field with    |
-C     | duplicate values collected into                          |
-C     |    n @ value                                             |
-C     | record.                                                  |
-C     \==========================================================/
       IMPLICIT NONE
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | o SUBROUTINE PRINT_LIST_I                                 
+C     *==========================================================*
+C     | Routine for producing list of values for a field with     
+C     | duplicate values collected into                           
+C     |    n @ value                                              
+C     | record.                                                   
+C     *==========================================================*
 
+C     !USES:
 C     == Global data ==  
 #include "SIZE.h"
 #include "EEPARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     fld    -  Data to be printed
-C     lFld   -  Number of elements to be printed
-C     index_type - Flag indicating which type of index to print
-C                  INDEX_K    => /* K = nnn */
-C                  INDEX_I    => /* I = nnn */
-C                  INDEX_J    => /* J = nnn */
-C                  INDEX_NONE =>
-C     compact -  Flag to control use of repeat symbol for same valued
-C                fields.
-C     markEnd -  Flag to control whether there is a separator after the
-C                last element
-C     ioUnit -  Unit number for IO.
+C     fld    ::  Data to be printed
+C     lFld   ::  Number of elements to be printed
+C     index_type :: Flag indicating which type of index to print
+C                   INDEX_K    => /* K = nnn */
+C                   INDEX_I    => /* I = nnn */
+C                   INDEX_J    => /* J = nnn */
+C                   INDEX_NONE =>
+C     compact ::  Flag to control use of repeat symbol for same valued
+C                 fields.
+C     markEnd ::  Flag to control whether there is a separator after the
+C                 last element
+C     ioUnit ::   Unit number for IO.
       INTEGER lFld 
       INTEGER index_type
       INTEGER fld(lFld)
       LOGICAL markEnd
       LOGICAL compact
       INTEGER ioUnit
-CEndifinterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     iLo  - Range index holders for selecting elements with
 C     iHi    with the same value
@@ -163,6 +188,7 @@ C     K    - Loop counter
       CHARACTER*2 commOpen,commClose
       CHARACTER*3 index_lab
       INTEGER K
+CEOP
 
       IF     ( index_type .EQ. INDEX_I ) THEN
        index_lab = 'I ='
@@ -221,23 +247,29 @@ C     K    - Loop counter
       RETURN
       END
 
-CStartofinterface
+CBOP
+C     !ROUTINE: PRINT_LIST_L
+
+C     !INTERFACE:
       SUBROUTINE PRINT_LIST_L( fld, lFld, index_type, markEnd, 
      &                         compact, ioUnit )
-C     /==========================================================\
-C     | o SUBROUTINE PRINT_LIST_L                                |
-C     |==========================================================|
-C     | Routine for producing list of values for a field with    |
-C     | duplicate values collected into                          |
-C     |    n @ value                                             |
-C     | record.                                                  |
-C     \==========================================================/
       IMPLICIT NONE
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | o SUBROUTINE PRINT_LIST_L                                 
+C     *==========================================================*
+C     | Routine for producing list of values for a field with     
+C     | duplicate values collected into                           
+C     |    n @ value                                              
+C     | record.                                                   
+C     *==========================================================*
 
+C     !USES:
 C     == Global data ==  
 #include "SIZE.h"
 #include "EEPARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     fld    -  Data to be printed
 C     lFld   -  Number of elements to be printed
@@ -257,8 +289,8 @@ C     ioUnit -  Unit number for IO.
       LOGICAL markEnd
       LOGICAL compact
       INTEGER ioUnit
-CEndifinterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     iLo  - Range index holders for selecting elements with
 C     iHi    with the same value
@@ -277,6 +309,7 @@ C     K    - Loop counter
       CHARACTER*2 commOpen,commClose
       CHARACTER*3 index_lab
       INTEGER K
+CEOP
 
       IF     ( index_type .EQ. INDEX_I ) THEN
        index_lab = 'I ='
@@ -335,23 +368,28 @@ C     K    - Loop counter
       RETURN
       END
 
-CStartofinterface
+CBOP
+C     !ROUTINE: PRINT_LIST_R8
+C     !INTERFACE:
       SUBROUTINE PRINT_LIST_R8( fld, lFld, index_type, 
      &    markEnd, compact, ioUnit )
-C     /==========================================================\
-C     | o SUBROUTINE PRINT_LIST_R8                               |
-C     |==========================================================|
-C     | Routine for producing list of values for a field with    |
-C     | duplicate values collected into                          |
-C     |    n @ value                                             |
-C     | record.                                                  |
-C     \==========================================================/
       IMPLICIT NONE
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | o SUBROUTINE PRINT_LIST_R8                                
+C     *==========================================================*
+C     | Routine for producing list of values for a field with     
+C     | duplicate values collected into                           
+C     |    n @ value                                              
+C     | record.                                                   
+C     *==========================================================*
 
-C     == Global data ==  
+C     !USES:
+C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     fld    -  Data to be printed
 C     lFld   -  Number of elements to be printed
@@ -371,8 +409,8 @@ C     ioUnit -  Unit number for IO.
       LOGICAL markEnd
       LOGICAL compact
       INTEGER ioUnit
-CEndifinterface
 
+C     !LOCA VARIABLES:
 C     == Local variables ==
 C     iLo  - Range index holders for selecting elements with
 C     iHi    with the same value
@@ -391,6 +429,7 @@ C     K    - Loop counter
       CHARACTER*2 commOpen,commClose
       CHARACTER*3 index_lab
       INTEGER K
+CEOP
 
       IF     ( index_type .EQ. INDEX_I ) THEN
        index_lab = 'I ='
@@ -451,7 +490,9 @@ C     K    - Loop counter
       RETURN
       END
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: PRINT_MAPRS
+C     !INTERFACE:
       SUBROUTINE PRINT_MAPRS ( fld, fldTitle, plotMode,
      I        iLo,   iHi,   jLo,   jHi,  kLo,  kHi, nBx, nBy,
      I       iMin,  iMax,  iStr,
@@ -459,34 +500,41 @@ CStartOfInterface
      I       kMin, kMax,   kStr,
      I      bxMin, bxMax,  bxStr,
      I      byMin, byMax,  byStr )
-C     /==========================================================\
-C     | SUBROUTINE PRINT_MAPR4                                   |
-C     | o Does textual mapping printing of a field.              |
-C     |==========================================================|
-C     | This routine does the actual formatting of the data      |
-C     | and printing to a file. It assumes an array using the    |
-C     | MITgcm UV indexing scheme and base index variables.      |
-C     | User code should call an interface routine like          |
-C     | PLOT_FIELD_XYR4( ... ) rather than this code directly.   |
-C     | Text plots can be oriented XY, YZ, XZ. An orientation    |
-C     | is specficied through the "plotMode" argument. All the   |
-C     | plots made by a single call to this routine will use the |
-C     | same contour interval. The plot range (iMin,...,byStr)   |
-C     | can be three-dimensional. A separate plot is made for    |
-C     | each point in the plot range normal to the orientation.  |
-C     | e.g. if the orientation is XY (plotMode = PRINT_MAP_XY). |
-C     |      kMin =1, kMax = 5 and kStr = 2 will produce three XY|
-C     |      plots - one for K=1, one for K=3 and one for K=5.   |
-C     |      Each plot would have extents iMin:iMax step iStr    |
-C     |      and jMin:jMax step jStr.                            |
-C     \==========================================================/
       IMPLICIT NONE
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE PRINT_MAPR4                                    
+C     | o Does textual mapping printing of a field.               
+C     *==========================================================*
+C     | This routine does the actual formatting of the data       
+C     | and printing to a file. It assumes an array using the     
+C     | MITgcm UV indexing scheme and base index variables.       
+C     | User code should call an interface routine like           
+C     | PLOT_FIELD_XYR4( ... ) rather than this code directly.    
+C     | Text plots can be oriented XY, YZ, XZ. An orientation     
+C     | is specficied through the "plotMode" argument. All the    
+C     | plots made by a single call to this routine will use the  
+C     | same contour interval. The plot range (iMin,...,byStr)    
+C     | can be three-dimensional. A separate plot is made for     
+C     | each point in the plot range normal to the orientation.   
+C     | e.g. if the orientation is XY (plotMode = PRINT_MAP_XY).  
+C     |      kMin =1, kMax = 5 and kStr = 2 will produce three XY 
+C     |      plots - one for K=1, one for K=3 and one for K=5.    
+C     |      Each plot would have extents iMin:iMax step iStr     
+C     |      and jMin:jMax step jStr.                             
+C     *==========================================================*
 
+C     !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+      INTEGER  IFNBLNK
+      EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     fld        - Real*4 array holding data to be plotted
 C     fldTitle   - Name of field to be plotted
@@ -514,13 +562,8 @@ C     kStr
       INTEGER kMin, kMax, kStr
       INTEGER bxMin, bxMax, bxStr
       INTEGER byMin, byMax, byStr
-CEndOfInterface
-C     == Local variables ==
-      INTEGER  IFNBLNK
-      EXTERNAL IFNBLNK
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     plotBuf - Buffer for building plot record
 C     chList  - Character string used for plot
@@ -569,6 +612,7 @@ C               Str  - stride within block
       INTEGER I, J, K, iStrngLo, iStrngHi, iBuf, iDx
       INTEGER bi, bj, bk
       LOGICAL validRange
+CEOP
 
       chList = '-abcdefghijklmnopqrstuvwxyz+'
       small  =  1. _d -15
@@ -860,7 +904,10 @@ C--   Write delimiter
       RETURN
       END
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: PRINT_MAPRL
+
+C     !INTERFACE:
       SUBROUTINE PRINT_MAPRL ( fld, fldTitle, plotMode,
      I        iLo,   iHi,   jLo,   jHi,  kLo,  kHi, nBx, nBy,
      I       iMin,  iMax,  iStr,
@@ -868,34 +915,43 @@ CStartOfInterface
      I       kMin, kMax,   kStr,
      I      bxMin, bxMax,  bxStr,
      I      byMin, byMax,  byStr )
-C     /==========================================================\
-C     | SUBROUTINE PRINT_MAPRL                                   |
-C     | o Does textual mapping printing of a field.              |
-C     |==========================================================|
-C     | This routine does the actual formatting of the data      |
-C     | and printing to a file. It assumes an array using the    |
-C     | MITgcm UV indexing scheme and base index variables.      |
-C     | User code should call an interface routine like          |
-C     | PLOT_FIELD_XYR8( ... ) rather than this code directly.   |
-C     | Text plots can be oriented XY, YZ, XZ. An orientation    |
-C     | is specficied through the "plotMode" argument. All the   |
-C     | plots made by a single call to this routine will use the |
-C     | same contour interval. The plot range (iMin,...,byStr)   |
-C     | can be three-dimensional. A separate plot is made for    |
-C     | each point in the plot range normal to the orientation.  |
-C     | e.g. if the orientation is XY (plotMode = PRINT_MAP_XY). |
-C     |      kMin =1, kMax = 5 and kStr = 2 will produce three XY|
-C     |      plots - one for K=1, one for K=3 and one for K=5.   |
-C     |      Each plot would have extents iMin:iMax step iStr    |
-C     |      and jMin:jMax step jStr.                            |
-C     \==========================================================/
       IMPLICIT NONE
 
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE PRINT_MAPRL                                    
+C     | o Does textual mapping printing of a field.               
+C     *==========================================================*
+C     | This routine does the actual formatting of the data       
+C     | and printing to a file. It assumes an array using the     
+C     | MITgcm UV indexing scheme and base index variables.       
+C     | User code should call an interface routine like           
+C     | PLOT_FIELD_XYR8( ... ) rather than this code directly.    
+C     | Text plots can be oriented XY, YZ, XZ. An orientation     
+C     | is specficied through the "plotMode" argument. All the    
+C     | plots made by a single call to this routine will use the  
+C     | same contour interval. The plot range (iMin,...,byStr)    
+C     | can be three-dimensional. A separate plot is made for     
+C     | each point in the plot range normal to the orientation.   
+C     | e.g. if the orientation is XY (plotMode = PRINT_MAP_XY).  
+C     |      kMin =1, kMax = 5 and kStr = 2 will produce three XY 
+C     |      plots - one for K=1, one for K=3 and one for K=5.    
+C     |      Each plot would have extents iMin:iMax step iStr     
+C     |      and jMin:jMax step jStr.                             
+C     *==========================================================*
+      IMPLICIT NONE
+
+C     !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+      INTEGER  IFNBLNK
+      EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     fld        - Real*8 array holding data to be plotted
 C     fldTitle   - Name of field to be plotted
@@ -923,13 +979,8 @@ C     kStr
       INTEGER kMin, kMax, kStr
       INTEGER bxMin, bxMax, bxStr
       INTEGER byMin, byMax, byStr
-CEndOfInterface
-C     == Local variables ==
-      INTEGER  IFNBLNK
-      EXTERNAL IFNBLNK
-      INTEGER  ILNBLNK
-      EXTERNAL ILNBLNK
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     plotBuf - Buffer for building plot record
 C     chList  - Character string used for plot
@@ -978,6 +1029,7 @@ C               Str  - stride within block
       INTEGER I, J, K, iStrngLo, iStrngHi, iBuf, iDx
       INTEGER bi, bj, bk
       LOGICAL validRange
+CEOP
 
       chList = '-abcdefghijklmnopqrstuvwxyz+'
       small  = 1. _d -15
@@ -1267,44 +1319,58 @@ C--   Write delimiter
       RETURN
       END
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: PRINT_MESSAGE
+
+C     !INTERFACE:
       SUBROUTINE PRINT_MESSAGE( message, unit, sq , myThid )
-C     /============================================================\
-C     | SUBROUTINE PRINT_MESSAGE                                   |
-C     | o Write out informational message using "standard" format. |
-C     | Notes                                                      |
-C     | =====                                                      |
-C     | o Some system   I/O is not "thread-safe". For this reason  |
-C     |   without the FMTFTN_IO_THREAD_SAFE directive set a        |
-C     |   critical region is defined around the write here. In some|
-C     |   cases  BEGIN_CRIT() is approximated by only doing writes |
-C     |   for thread number 1 - writes for other threads are       |
-C     |   ignored!                                                 |
-C     | o In a non-parallel form these routines can still be used. |
-C     |   to produce pretty printed output!                        |
-C     \============================================================/
       IMPLICIT NONE
+C     !DESCRIPTION:
+C     *============================================================*
+C     | SUBROUTINE PRINT_MESSAGE                                    
+C     | o Write out informational message using "standard" format.  
+C     *============================================================*
+C     | Notes                                                       
+C     | =====                                                       
+C     | o Some system   I/O is not "thread-safe". For this reason   
+C     |   without the FMTFTN_IO_THREAD_SAFE directive set a         
+C     |   critical region is defined around the write here. In some 
+C     |   cases  BEGIN_CRIT() is approximated by only doing writes  
+C     |   for thread number 1 - writes for other threads are        
+C     |   ignored!                                                  
+C     | o In a non-parallel form these routines can still be used.  
+C     |   to produce pretty printed output!                         
+C     *============================================================*
+
+C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
-C     == Routine arguments ==
-C     message - Message to write
-C     unit    - Unit number to write to
-C     sq      - Justification option
-      CHARACTER*(*) message
-      INTEGER       unit
-      CHARACTER*(*) sq
-      INTEGER  myThid
-CEndOfInterface
       INTEGER  IFNBLNK
       EXTERNAL IFNBLNK
       INTEGER  ILNBLNK
       EXTERNAL ILNBLNK
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     message :: Message to write
+C     unit    :: Unit number to write to
+C     sq      :: Justification option
+      CHARACTER*(*) message
+      INTEGER       unit
+      CHARACTER*(*) sq
+      INTEGER  myThid
+
+C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     iStart, iEnd :: String indexing variables
+C     idString     :: Temp. for building prefix.
       INTEGER iStart
       INTEGER iEnd
       CHARACTER*9 idString
+CEOP
+
 C--   Find beginning and end of message
       IF ( sq .EQ. SQUEEZE_BOTH .OR.
      &     sq .EQ. SQUEEZE_LEFT ) THEN

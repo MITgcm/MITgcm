@@ -1,12 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/Attic/CG2D_INTERNAL.h,v 1.4 2001/02/04 14:38:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/Attic/CG2D_INTERNAL.h,v 1.5 2001/09/21 03:54:36 cnh Exp $
 C $Name:  $
-C
-C     /==========================================================\
-C     | CG2D.h                                                   |
-C     | o Two-dimensional conjugate gradient solver header.      |
-C     |==========================================================|
-C     | Internal (private) data structures.                      |
-C     \==========================================================/
+CBOP
+C     !ROUTINE: CG2D_INTERNAL.h
+C     !INTERFACE:
+C     include "CG2D_INTERNAL.h"
+C     !DESCRIPTION: 
+C     \bv
+C     *==========================================================*
+C     | CG2D.h                                                    
+C     | o Two-dimensional conjugate gradient solver header.       
+C     *==========================================================*
+C     | Internal (private) data structures.                       
+C     *==========================================================*
+C     \ev
+CEOP
 
 C--   COMMON /CG2D_R/ DEL**2 Laplacian operators
 C     aW2d - East-west operator.

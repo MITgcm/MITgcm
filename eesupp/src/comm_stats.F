@@ -1,14 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/comm_stats.F,v 1.4 2001/02/04 14:38:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/comm_stats.F,v 1.5 2001/09/21 03:54:34 cnh Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
+CBOP
+C     !ROUTINE: COMM_STATS
+
+C     !INTERFACE:
       SUBROUTINE COMM_STATS
-C     /==========================================================\
-C     | SUBROUTINE COMM_STATS                                    |
-C     | o Print out statistics from communication routines.      |
-C     \==========================================================/
       IMPLICIT NONE
 
+C     !DESCRIPTION:
+C     *==========================================================
+C     | SUBROUTINE COMM_STATS                                    
+C     | o Print out statistics from communication routines.      
+C     *==========================================================
+
+C     !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -16,9 +23,13 @@ C     == Global variables ==
 #include "EXCH.h"
 #include "BAR2.h"
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
+C     bi, bj, I :: Loop counters
+C     msgBuf    :: Temp. for building text messages.
       INTEGER bi, bj, I
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+CEOP
     
 C      o For each tile print its excange statistics
        WRITE(msgBuf,'(A)')

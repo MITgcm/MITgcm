@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gsum_jam.F,v 1.3 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gsum_jam.F,v 1.4 2001/09/21 03:54:35 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -6,17 +6,39 @@ C $Name:  $
 #undef  USE_MPI_GSUM
 #define USE_JAM_GSUM
 
+CBOP
+C     !ROUTINE: GLOBAL_SUM_R8_JAM
+
+C     !INTERFACE:
       SUBROUTINE GLOBAL_SUM_R8_JAM( ans, myThid )
 
+C     !DESCRIPTION:
+C     *=========================================================================*
+C     | SUBROUTINE GLOBAL_SUM_R8_JAM
+C     | o JAM binding of global sum routine
+C     *=========================================================================*
+C     | Does a super fast global sum over the JAM library. With JAM
+C     | timings for dual proc SMP nodes over Arctic are about 
+C     | 4.3usecs log2(NP/2). When it was done this was faster than any other 
+C     | cluster on the planet :-).
+C     *=========================================================================*
+
+C     !USES:
 #ifdef ALLOW_MPI
 #include "mpif.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
+C     ans    :: Returned sum value
+C     myThid :: Thread number of this instance
       Real*8 ans
       INTEGER myThid
 
 #ifdef LETS_MAKE_JAM
 
+C     !LOCAL VARIABLES:
+C     phi :: Temp. for accumulating sum
+C     RC  :: Return code
       Real*8 phi
       INTEGER RC
 

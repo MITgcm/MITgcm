@@ -1,17 +1,42 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/bar2.F,v 1.3 2001/02/04 14:38:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/bar2.F,v 1.4 2001/09/21 03:54:34 cnh Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
+CBOP
+C     !ROUTINE: BAR2_INIT
+
+C     !INTERFACE:
       SUBROUTINE BAR2_INIT( myThid )
       IMPLICIT NONE
-C
+
+C     !DESCRIPTION:
+C     *=====================================================================*
+C     | SUBROUTINE BAR2_INIT
+C     | o Setup global barrier data structures.
+C     *=====================================================================*
+C     | Initialise global barrier data structures that can be used in
+C     | conjunction with MPI or that can also be used to create
+C     *=====================================================================*
+
+C     !USES:
+C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "BAR2.h"
 C
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     myThid :: Thread number of this instance of BAR2_INIT
       INTEGER myThid
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+C     I :: Loop counter
       INTEGER I
+CEOP
+
 C
       DO I = 1, lShare4
        BAR2_level(I,myThid) = 0
@@ -26,20 +51,57 @@ C
 C
       RETURN
       END
+
+CBOP
+
+C     !ROUTINE: BAR2
+
+C     !INTERFACE:
       SUBROUTINE BAR2( myThid )
       IMPLICIT NONE
-C
+
+C     !DESCRIPTION:
+C     *=====================================================================*
+C     | SUBROUTINE BAR2
+C     | o Global barrier routine.                 
+C     *=====================================================================*
+C     | Implements a simple true shared memory barrier that uses a global
+C     | heap array that all threads can access to synchronise. Each thread
+C     | writes to a predefined location. One thread polls the locations. Other
+C     | threads poll an all clear assertion location. Once the polling
+C     | thread that is looping over locations sees writes for each thread is
+C     | writes the all clear assertion location and everyone proceeds. A
+C     | cyclic series of locations is used to ensure that race conditions do
+C     | not occur. A few simple statistics are recorded giving number of
+C     | barrier calls, max, min and aggregate polling loop counts.
+C     *=====================================================================*
+
+C     !USES:
+C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "BAR2.h"
-C
+ 
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+C     myThid :: Thread number of this instance of BAR2
       INTEGER myThid
-C
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+C     myLevel   :: Temp. to hold "active" barrier level
+C     nDone     :: Temp. for counting number of threads that
+C                  have reached the barrier.
+C     I         :: Loop counter
+C     spinCount :: Temp. for doing statistics on how many
+C                  times barrier code looped.
       INTEGER myLevel
       INTEGER nDone
       INTEGER I
       INTEGER spinCount
+CEOP
+
 C
       spinCount = 0
 C

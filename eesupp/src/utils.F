@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.10 2001/02/04 14:38:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.11 2001/09/21 03:54:35 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -15,22 +15,35 @@ C--   UCASE           - Translates to upper case.
 C--   Routines marked "M" contain specific machine dependent code.
 C--   Routines marked "U" contain UNIX OS calls.
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: DATE
+
+C     !INTERFACE:
       SUBROUTINE DATE ( string , myThreadId )
-C     /==========================================================\
+      IMPLICIT NONE
+
+C     !DESCRIPTION:
+C     *==========================================================*
 C     | SUBROUTINE DATE                                          |
 C     | o Return current date                                    |
-C     \==========================================================/
-      IMPLICIT NONE
+C     *==========================================================*
+
+C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
-C
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     string     :: Date returned in string
+C     myThreadId :: My thread number
       CHARACTER*(*) string
       INTEGER myThreadId
-CEndOfInterface
 C
+C     !LOCAL VARIABLES:
+C     lDate     :: Length of date string
+C     msgBuffer :: Temp. for building error messages
       INTEGER lDate
       CHARACTER*(MAX_LEN_MBUF) msgBuffer
+CEOP
 C
       lDate = 24
       IF ( LEN(string) .LT. lDate ) GOTO 901
@@ -71,18 +84,27 @@ C
       GOTO 1000
       END
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: IFNBLNK
+
+C     !INTERFACE:
       INTEGER FUNCTION IFNBLNK( string )
-C     /==========================================================\
+      IMPLICIT NONE
+
+C     !DESCRIPTION:
+C     *==========================================================*
 C     | FUNCTION IFNBLNK                                         |
 C     | o Find first non-blank in character string.              |
-C     \==========================================================/
-      IMPLICIT NONE
+C     *==========================================================*
 C
+C     !INPUT PARAMETERS:
+C     string :: String to find first non-blank in.
       CHARACTER*(*) string
-CEndOfInterface
-C
+
+C     !LOCAL VARIABLES:
+C     L, LS :: Temps for string locations
       INTEGER L, LS
+CEOP
 C
       LS     = LEN(string)
       IFNBLNK = 0
@@ -96,16 +118,27 @@ C
       RETURN
       END
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: ILNBLNK
+
+C     !INTERFACE:
       INTEGER FUNCTION ILNBLNK( string )
-C     /==========================================================\
+      IMPLICIT NONE
+
+C     !DESCRIPTION:
+C     *==========================================================*
 C     | FUNCTION ILNBLNK                                         |
 C     | o Find last non-blank in character string.               |
-C     \==========================================================/
-      IMPLICIT NONE
+C     *==========================================================*
+
+C     !INPUT PARAMETERS:
+C     string :: string to scan
       CHARACTER*(*) string
-CEndOfInterface
+
+C     !LOCAL VARIABLES:
+C     L, LS :: Temps. used in scanning string
       INTEGER L, LS
+CEOP
 C
       LS      = LEN(string)
       ILNBLNK = LS
@@ -119,35 +152,54 @@ C
       RETURN
       END
 
-CStartofinterface
+CBOP
+C     !ROUTINE: IO_ERRCOUNT
+
+C     !INTERFACE:
       INTEGER FUNCTION IO_ERRCOUNT(myThid)
-C     /==========================================================\
+      IMPLICIT NONE
+
+C     !DESCRIPTION:
+C     *==========================================================*
 C     | FUNCTION IO_ERRCOUNT                                     |
 C     | o Reads IO error counter.                                |
-C     \==========================================================/
-      IMPLICIT NONE
+C     *==========================================================*
+
+C     !USES:
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 
+C     !INPUT PARAMETERS:
 C     == Routine arguments ==
+C     myThid :: My thread number
       INTEGER myThid
-CEndofinterface
+
+CEOP
 
       IO_ERRCOUNT = ioErrorCount(myThid)
 
       RETURN
       END
 
-CStartOfInterface
+CBOP
+
+C     !ROUTINE: LCASE
+
+C     !INTERFACE:
       SUBROUTINE LCASE ( string )
-C     /==========================================================\
+      IMPLICIT NONE
+
+C     !DESCRIPTION:
+C     *==========================================================*
 C     | SUBROUTINE LCASE                                         |
 C     | o Convert character string to all lower case.            |
-C     \==========================================================/
-      IMPLICIT NONE
+C     *==========================================================*
+
+C     !INPUT/OUTPUT PARAMETERS:
       CHARACTER*(*) string
-CEndOfInterface
+
+C     !LOCALVARIABLES:
       CHARACTER*26  LOWER
       DATA LOWER /'abcdefghijklmnopqrstuvwxyz'/
       SAVE LOWER
@@ -155,6 +207,8 @@ CEndOfInterface
       DATA UPPER /'ABCDEFGHIJKLMNOPQRSTUVWXYZ'/
       SAVE UPPER
       INTEGER   I, L
+CEOP
+
 C
       DO 10 I = 1, LEN(string)
         L = INDEX(UPPER,string(I:I))
@@ -165,23 +219,35 @@ C
       RETURN
       END
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: MACHINE
+
+C     !INTERFACE:
       SUBROUTINE MACHINE ( string )
-C     /==========================================================\
+      IMPLICIT NONE
+
+C     !DESCRIPTION:
+C     *==========================================================*
 C     | SUBROUTINE MACHINE                                       |
 C     | o Return computer identifier in string.                  |
-C     \==========================================================/
-      IMPLICIT NONE
+C     *==========================================================*
+
+C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
-      CHARACTER*(*) string
-CEndOfInterface
-C
       INTEGER  IFNBLNK
       INTEGER  ILNBLNK
       EXTERNAL IFNBLNK
       EXTERNAL ILNBLNK
-C
+
+C     !OUTPUT PARAMETERS:
+C     string :: Machine identifier
+      CHARACTER*(*) string
+
+C     !LOCAL VARIABLES:
+C     iFirst, iLast,      :: String indexing temps.
+C     iEnd, iFree, idSize
+C     strTmp, idString    :: Temps. for strings.
       INTEGER  iFirst
       INTEGER  iLast 
       INTEGER  iEnd  
@@ -189,6 +255,7 @@ C
       INTEGER  idSize
       CHARACTER*1024 strTmp
       CHARACTER*1024 idString
+CEOP
 
       strTmp = 'UNKNOWN'
       iFree  = 1
@@ -236,11 +303,21 @@ C
  1000 CONTINUE
       RETURN
       END
-C***********************************************************************
+
+CBOP
+C     !ROUTINE: UCASE
+
+C     !INTERFACE:
       SUBROUTINE UCASE ( string )
       IMPLICIT NONE
+
+C     !DESCRIPTION:
 C     Translate string to upper case.
+
+C     !INPUT/OUTPUT PARAMETERS:
       CHARACTER*(*) string
+
+C     !LOCAL VARIABLES:
       CHARACTER*26  LOWER
       DATA LOWER /'abcdefghijklmnopqrstuvwxyz'/
       SAVE LOWER
@@ -248,6 +325,8 @@ C     Translate string to upper case.
       DATA UPPER /'ABCDEFGHIJKLMNOPQRSTUVWXYZ'/
       SAVE UPPER
       INTEGER   I, L
+CEOP
+
 C
       DO 10 I = 1, LEN(string)
         L = INDEX(LOWER,string(I:I))

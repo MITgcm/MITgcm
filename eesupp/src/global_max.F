@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_max.F,v 1.8 2001/05/29 14:01:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_max.F,v 1.9 2001/09/21 03:54:35 cnh Exp $
 C $Name:  $
 
 C--   File global_max.F: Routines that perform global max reduction on an array
@@ -8,47 +8,55 @@ C      o global_max_r4
 C      o global_max_r8
 #include "CPP_EEOPTIONS.h"
 
-CStartOfInterface
+CBOP
+
+C     !ROUTINE: GLOBAL_MAX_R4
+
+C     !INTERFACE:
       SUBROUTINE GLOBAL_MAX_R4( 
      U                       maxPhi,
      I                       myThid )
-C     /==========================================================\
-C     | SUBROUTINE GLOBAL_MAX_R4                                 |
-C     | o Handle max for real*4 data.                            |
-C     |==========================================================|
-C     | Perform max on array of one value per thread and then    |
-C     | max result of all the processes.                         |
-C     | Notes                                                    |
-C     | =====                                                    |
-C     | Within a process only one thread does the max, each      |
-C     | thread is assumed to have already maxed  its local data. |
-C     | The same thread also does the inter-process max for      |
-C     | example with MPI and then writes the result into a shared|
-C     | location. All threads wait until the max is avaiailable. |
-C     \==========================================================/
       IMPLICIT NONE
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE GLOBAL_MAX_R4                                  
+C     | o Handle max for real*4 data.                             
+C     *==========================================================*
+C     | Perform max on array of one value per thread and then     
+C     | max result of all the processes.                          
+C     | Notes                                                     
+C     | =====                                                     
+C     | Within a process only one thread does the max, each       
+C     | thread is assumed to have already maxed  its local data.  
+C     | The same thread also does the inter-process max for       
+C     | example with MPI and then writes the result into a shared 
+C     | location. All threads wait until the max is avaiailable.  
+C     *==========================================================*
 
+C     !USES:
 C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "GLOBAL_MAX.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     maxPhi - Result of max.
-C     myThid - My thread id.
+C     maxPhi :: Result of max.
+C     myThid :: My thread id.
       Real*4 maxPhi
       INTEGER myThid
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     I      - Loop counters
-C     mpiRC  - MPI return code
+C     I      :: Loop counters
+C     mpiRC  :: MPI return code
       INTEGER I
       Real*4  tmp
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
+CEOP
 
       CALL BAR2( myThid )
 C--   write local max into array
@@ -86,48 +94,55 @@ C--   set result for every process
       RETURN
       END
       
+CBOP
 
-CStartOfInterface
+C     !ROUTINE: GLOBAL_MAX_R8
+
+C     !INTERFACE:
       SUBROUTINE GLOBAL_MAX_R8( 
      O                       maxPhi,
      I                       myThid )
-C     /==========================================================\
-C     | SUBROUTINE GLOBAL_MAX_R8                                 |
-C     | o Handle max for real*8 data.                            |
-C     |==========================================================|
-C     | Perform max on array of one value per thread and then    |
-C     | max result of all the processes.                         |
-C     | Notes                                                    |
-C     | =====                                                    |
-C     | Within a process only one thread does the max, each      |
-C     | thread is assumed to have already maxed  its local data. |
-C     | The same thread also does the inter-process max for      |
-C     | example with MPI and then writes the result into a shared|
-C     | location. All threads wait until the max is avaiailable. |
-C     \==========================================================/
       IMPLICIT NONE
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE GLOBAL_MAX_R8                                  
+C     | o Handle max for real*8 data.                             
+C     *==========================================================*
+C     | Perform max on array of one value per thread and then     
+C     | max result of all the processes.                          
+C     | Notes                                                     
+C     | =====                                                     
+C     | Within a process only one thread does the max, each       
+C     | thread is assumed to have already maxed  its local data.  
+C     | The same thread also does the inter-process max for       
+C     | example with MPI and then writes the result into a shared 
+C     | location. All threads wait until the max is avaiailable.  
+C     *==========================================================*
 
+C     !USES:
 C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "GLOBAL_MAX.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     maxPhi - Result of max.
-C     myThid - My thread id.
+C     maxPhi :: Result of max.
+C     myThid :: My thread id.
       Real*8 maxPhi
       INTEGER myThid
-CEndOfInterface
 
+C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     I      - Loop counters
-C     mpiRC  - MPI return code
+C     I      :: Loop counters
+C     mpiRC  :: MPI return code
       INTEGER I
       Real*8  tmp
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif   /* ALLOW_USE_MPI */
+CEOP
 
       CALL BAR2( myThid )
 C--   write local max into array

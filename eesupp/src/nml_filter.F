@@ -1,64 +1,63 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/nml_filter.F,v 1.2 2001/02/04 14:38:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/nml_filter.F,v 1.3 2001/09/21 03:54:35 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 #define FTN_NML_F90
 
-      subroutine nml_filter(
-     I                       fname
-     O                     , outunit
+CBOP
+
+C     !ROUTINE: NML_FILTER
+
+C     !INTERFACE:
+      SUBROUTINE NML_FILTER(
+     I                       fName
+     O                     , outUnit
      I                     , myThid
      &                    )
+      IMPLICIT NONE
 
-c     ==================================================================
-c     SUBROUTINE nml_filter
-c     ==================================================================
-c
-c     o 
-c
-c     started: Ralf.Giering@FastOpt.de 15-Mai-2000
-c
-c              - remove comments from namelist file
-c              - usage
-c
-c          call nml_filter( 'datafile', iunit, myThid )
-c          read  ( unit = iunit, nml = the_namelist )
-c          close ( iunit )
-c
-c     ==================================================================
-c     SUBROUTINE nml_filter
-c     ==================================================================
+C     !DESCRIPTION:
+C     *=================================================================*
+C     | SUBROUTINE NML_FILTER
+C     | o Remove comments from namelist.
+C     *=================================================================*
+C     |
+C     | Started: Ralf.Giering@FastOpt.de 15-Mai-2000
+C     |
+C     |        - remove comments from namelist file
+c     |        - usage
+C     |
+C     |    CALL NML_FILTER( 'datafile', iUnit, myThid )
+C     |    READ  ( UNIT = iunit, NML = the_namelist )
+C     |    CLOSE ( iUnit )
+C     |
+C     *=================================================================*
 
-      implicit none
-
-c     == global variables ==
-
+C     !USES:
+C     == Global variables ==
 #include "EEPARAMS.h"
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
 
-c     == routine arguments ==
-      character*(*) fname
-      integer outunit
-      integer myThid
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+      CHARACTER*(*) fName
+      INTEGER outUnit
+      INTEGER myThid
 
-c     == local variables ==
-      integer errio
-      integer il
-      integer inunit
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      INTEGER errIo
+      INTEGER il
+      INTEGER inUnit
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*(MAX_LEN_PREC) record
+CEOP
 
-      character*(MAX_LEN_MBUF) msgBuf
-      character*(MAX_LEN_PREC) record
+C--   Open the data file
 
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
-
-c     == end of interface ==
-
-c--  open the data file
-
-      call mdsfindunit(  inunit, mythid )
+      CALL mdsFindUnit(  inunit, mythid )
 
       open( unit   = inunit
      &    , file   = fname

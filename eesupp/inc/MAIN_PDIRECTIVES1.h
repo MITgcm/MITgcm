@@ -1,14 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/MAIN_PDIRECTIVES1.h,v 1.4 2001/02/04 14:38:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/MAIN_PDIRECTIVES1.h,v 1.5 2001/09/21 03:54:36 cnh Exp $
 C $Name:  $
-C
-C     /==========================================================\
-C     | MAIN_PDIRECTIVES1.h                                      |
-C     |==========================================================|
-C     | Parallel directives to generate multithreaded code for   |
-C     | various different compilers. The master preprocessor     |
-C     | file CPP_OPTIONS is used to select which of these options|
-C     | is included in the code.                                 |
-C     \==========================================================/
+CBOP
+C     !ROUTINE: MAIN_PDIRECTIVES1.h
+C     !INTERFACE:
+C     include "MAIN_PDIRECTIVES1.h"
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | MAIN_PDIRECTIVES1.h                                       
+C     *==========================================================*
+C     | Parallel directives to generate multithreaded code for    
+C     | various different compilers. The master preprocessor      
+C     | file CPP_OPTIONS is used to select which of these options 
+C     | is included in the code.                                  
+C     *==========================================================*
+CEOP
 
 #ifdef USE_SOLARIS_THREADING
 C--

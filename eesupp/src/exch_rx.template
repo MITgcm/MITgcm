@@ -1,67 +1,77 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_rx.template,v 1.2 2001/05/29 14:01:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_rx.template,v 1.3 2001/09/21 03:55:50 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
+CBOP
+
+C      !ROUTINE: EXCH_RX
+
+C      !INTERFACE:
        SUBROUTINE EXCH_RX( 
      U            array,
      I            myOLw, myOLe, myOLs, myOLn, myNz,
      I            exchWidthX, exchWidthY,
      I            simulationMode, cornerMode, myThid )
-C     /==========================================================\
-C     | SUBROUTINE EXCH_RX                                       |
-C     | o Control edge exchanges for RX array.                   |
-C     |==========================================================|
-C     |                                                          |
-C     | Controlling routine for exchange of XY edges of an array |
-C     | distributed in X and Y. The routine interfaces to        |
-C     | communication routines that can use messages passing     |
-C     | exchanges, put type exchanges or get type exchanges.     |
-C     |  This allows anything from MPI to raw memory channel to  |
-C     | memmap segments to be used as a inter-process and/or     |
-C     | inter-thread communiation and synchronisation            |
-C     | mechanism.                                               |
-C     | Notes --                                                 |
-C     | 1. Some low-level mechanisms such as raw memory-channel  |
-C     | or SGI/CRAY shmem put do not have direct Fortran bindings|
-C     | and are invoked through C stub routines.                 |
-C     | 2. Although this routine is fairly general but it does   |
-C     | require nSx and nSy are the same for all innvocations.   |
-C     | There are many common data structures ( myByLo,          |
-C     | westCommunicationMode, mpiIdW etc... ) tied in with      |
-C     | (nSx,nSy). To support arbitray nSx and nSy would require |
-C     | general forms of these.                                  |
-C     |                                                          |
-C     \==========================================================/
       IMPLICIT NONE
 
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE EXCH_RX                                        
+C     | o Control edge exchanges for RX array.                    
+C     *==========================================================*
+C     |                                                           
+C     | Controlling routine for exchange of XY edges of an array  
+C     | distributed in X and Y. The routine interfaces to         
+C     | communication routines that can use messages passing      
+C     | exchanges, put type exchanges or get type exchanges.      
+C     |  This allows anything from MPI to raw memory channel to   
+C     | memmap segments to be used as a inter-process and/or      
+C     | inter-thread communiation and synchronisation             
+C     | mechanism.                                                
+C     | Notes --                                                  
+C     | 1. Some low-level mechanisms such as raw memory-channel   
+C     | or SGI/CRAY shmem put do not have direct Fortran bindings 
+C     | and are invoked through C stub routines.                  
+C     | 2. Although this routine is fairly general but it does    
+C     | require nSx and nSy are the same for all innvocations.    
+C     | There are many common data structures ( myByLo,           
+C     | westCommunicationMode, mpiIdW etc... ) tied in with       
+C     | (nSx,nSy). To support arbitray nSx and nSy would require  
+C     | general forms of these.                                   
+C     | 3. RX arrays are used to generate code for both _RL and
+C     | _RS forms.                                                
+C     *==========================================================*
+
+C      !USES:
 C      == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "EXCH.h"
 
+C      !INPUT/OUTPUT PARAMETERS:
 C      == Routine arguments ==
-C      array - Array with edges to exchange.
-C      myOLw - West, East, North and South overlap region sizes.
+C      array :: Array with edges to exchange.
+C      myOLw :: West, East, North and South overlap region sizes.
 C      myOLe
 C      myOLn
 C      myOLs
-C      exchWidthX - Width of data region exchanged in X.
-C      exchWidthY - Width of data region exchanged in Y.
-C                   Note -- 
-C                   1. In theory one could have a send width and
-C                   a receive width for each face of each tile. The only
-C                   restriction woul be that the send width of one
-C                   face should equal the receive width of the sent to
-C                   tile face. Dont know if this would be useful. I 
-C                   have left it out for now as it requires additional 
-C                   bookeeping.
-C      simulationMode - Forward or reverse mode exchange ( provides 
-C                       support for adjoint integration of code. )
-C      cornerMode     - Flag indicating whether corner updates are 
-C                       needed.
-C      myThid         - Thread number of this instance of S/R EXCH...
+C      exchWidthX :: Width of data region exchanged in X.
+C      exchWidthY :: Width of data region exchanged in Y.
+C                    Note -- 
+C                    1. In theory one could have a send width and
+C                    a receive width for each face of each tile. The only
+C                    restriction woul be that the send width of one
+C                    face should equal the receive width of the sent to
+C                    tile face. Dont know if this would be useful. I 
+C                    have left it out for now as it requires additional 
+C                     bookeeping.
+C      simulationMode :: Forward or reverse mode exchange ( provides 
+C                        support for adjoint integration of code. )
+C      cornerMode     :: Flag indicating whether corner updates are 
+C                        needed.
+C      myThid         :: Thread number of this instance of S/R EXCH...
        INTEGER myOLw
        INTEGER myOLe
        INTEGER myOLs
@@ -76,12 +86,15 @@ C      myThid         - Thread number of this instance of S/R EXCH...
      &           1-myOLs:sNy+myOLn, 
      &           myNZ, nSx, nSy)
 
+C      !LOCAL VARIABLES:
 C      == Local variables ==
-C      theSimulationMode - Holds working copy of simulation mode
-C      theCornerMode     - Holds working copy of corner mode
+C      theSimulationMode :: Holds working copy of simulation mode
+C      theCornerMode     :: Holds working copy of corner mode
+C      I,J,K,bi,bj       :: Loop counters
        INTEGER theSimulationMode
        INTEGER theCornerMode
        INTEGER I,J,K,bi,bj
+CEOP
 
        theSimulationMode = simulationMode
        theCornerMode     = cornerMode

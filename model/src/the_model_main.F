@@ -1,30 +1,81 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.40 2001/07/30 20:39:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.41 2001/09/21 03:54:36 cnh Exp $
 C $Name:  $
+
+CBOI
+C
+C !TITLE: MITGCM KERNEL CODE SYNOPSIS
+C !AUTHORS: mitgcm developers ( support@mitgcm.org )
+C !AFFILIATION: Massachussetts Institute of Technology
+C !DATE:
+C !INTRODUCTION: model/ subdirectory
+C Routines in the subdirectories under model/ ( src/ and inc/ ) are most of
+C the core routines for the baseline forms of the kernel equations in the
+C MITgcm algorithm.
+C Code for auxilliary equations and alternate dicretizations of the fundamental
+C equations can be found in the pkg/ directory tree.
+C
+CEOI
+
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+
+C     !ROUTINE: THE_MODEL_MAIN
+
+C     !INTERFACE:
       SUBROUTINE THE_MODEL_MAIN(myThid)
-C     /==========================================================\
-C     | SUBROUTINE THE_MODEL_MAIN                                |
-C     | o Master controlling routine for model using the MITgcm  |
-C     |   UV parallel wrapper.                                   |
-C     |==========================================================|
-C     | THE_MODEL_MAIN is invoked by the MITgcm UV parallel      |
-C     | wrapper with a single integer argument "myThid". This    |
-C     | variable identifies the thread number of an instance of  |
-C     | THE_MODEL_MAIN. Each instance of THE_MODEL_MAIN works    |
-C     | on a particular region of the models domain and          |
-C     | synchronises with other instances as necessary. The      |
-C     | routine has to "understand" the MITgcm parallel          |
-C     | environment and the numerical algorithm. Editing this    |
-C     | routine is best done with some knowledge of both aspects.|
-C     | Notes                                                    |
-C     | =====                                                    |
-C     | C*P* comments indicating place holders for which code is |
-C     |      presently being developed.                          |
-C     \==========================================================/
       IMPLICIT NONE
-C
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE THE_MODEL_MAIN                                 
+C     | o Master controlling routine for model using the MITgcm   
+C     |   UV parallel wrapper.                                    
+C     *==========================================================*
+C     | THE_MODEL_MAIN is invoked by the MITgcm UV parallel       
+C     | wrapper with a single integer argument "myThid". This     
+C     | variable identifies the thread number of an instance of   
+C     | THE_MODEL_MAIN. Each instance of THE_MODEL_MAIN works     
+C     | on a particular region of the models domain and           
+C     | synchronises with other instances as necessary. The       
+C     | routine has to "understand" the MITgcm parallel           
+C     | environment and the numerical algorithm. Editing this     
+C     | routine is best done with some knowledge of both aspects. 
+C     | Notes                                                     
+C     | =====                                                     
+C     | C*P* comments indicating place holders for which code is  
+C     |      presently being developed.                           
+C     *==========================================================*
+C     \ev
+
+C     !CALLING SEQUENCE:
+C     THE_MODEL_MAIN()
+C       |
+C       |
+C       |--INITIALISE_FIXED 
+C       |   o Set model configuration (fixed arrays)
+C       |     Topography, hydrography, timestep, grid, etc..
+C       |
+C       |--CTRL_UNPACK      o Derivative mode. Unpack control vector.
+C       |
+C       |--ADTHE_MAIN_LOOP  o Main timestepping loop for combined
+C       |                     prognostic and reverse mode integration.
+C       |
+C       |--CTRL_PACK        o Derivative mode. Unpack control vector.
+C       |
+C       |--GRDCHK_MAIN      o Gradient check control routine.
+C       |
+C       |--THE_MAIN_LOOP    o Main timestepping loop for pure prognostic
+C       |                     integration.
+C       |
+C       |--WRITE_CHECKPOINT o Write retsart information.
+C       |
+C       |--TIMER_PRINTALL   o Print out timing statistics.
+C       |
+C       |--COMM_STATS       o Print out communication statistics.
+
+C     !USES:
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -40,10 +91,12 @@ C     == Global variables ===
 #include "adcost.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
       INTEGER myThid  
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     Note: Under the multi-threaded model myCurrentIter and 
 C           myCurrentTime are local variables passed around as routine 
@@ -54,6 +107,7 @@ C     myCurrentTime - Time counter for this thread
 C     myCurrentIter - Iteration counter for this thread
       INTEGER myCurrentIter
       _RL     myCurrentTime
+CEOP
 
 C--   This timer encompasses the whole code
       CALL TIMER_START('ALL                [THE_MODEL_MAIN]',myThid)

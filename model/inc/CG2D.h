@@ -1,12 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.8 2001/05/29 14:01:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.9 2001/09/21 03:54:36 cnh Exp $
 C $Name:  $
- 
-C     /==========================================================\
-C     | CG2D.h                                                   |
-C     | o Two-dimensional conjugate gradient solver header.      |
-C     |==========================================================|
-C     | Internal (private) data structures.                      |
-C     \==========================================================/
+
+CBOP
+C     !ROUTINE: CG2D.h
+C     !INTERFACE:
+C     include "CG2D.h"
+C
+C     !DESCRIPTION:
+C     \bv
+C     *==========================================================*
+C     | CG2D.h                                                    
+C     | o Two-dimensional conjugate gradient solver header.       
+C     *==========================================================*
+C     | Internal (private) data structures.                       
+C     *==========================================================*
+C     \ev
+CEOP
 
 C--   COMMON /CG2D_I_L/ cg2dNormaliseRHS
 C     cg2dNormaliseRHS - flag set to TRUE if normalise RHS in the Solver

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.18 2001/05/29 14:01:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.19 2001/09/21 03:54:36 cnh Exp $
 C $Name:  $
 
   These lines are here to deliberately cause a compile-time error.
@@ -10,10 +10,14 @@ C $Name:  $
 
 C
 
-C 
+CBOP
+C !ROUTINE: CPP_OPTIONS.h
+C !INTERFACE: 
+C include "CPP_OPTIONS.h"
+C !DESCRIPTION:
 C CPP flags controlling which code in included in the files that
 C will be compiled.
-C
+CEOP
 
 C o Include/exclude code for AIM package
 #undef  ALLOW_AIM

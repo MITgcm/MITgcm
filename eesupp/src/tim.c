@@ -1,3 +1,9 @@
+/*
+//BOP
+// !ROUTINE: cloc
+// !INTERFACE:
+   cloc(  double *curtim )
+*/
 #ifdef TARGET_LINUX
 #undef  FORTRAN_MANGLE_TRAILING_UNDERSCORE
 #else
@@ -10,6 +16,16 @@
 #else
 #define procedure_cloc cloc
 #endif
+/*
+// !DESCRIPTION:
+// *======================================================*
+// | cloc( double* timeinsec)                                                
+// *======================================================*
+// | Call system time routines and return elapsed time 
+// | in seconds as a 64-bit float.
+// *======================================================*
+//EOP
+*/
 #ifdef TIM_USES_OSF_GETCLOCK
 #include <stdio.h>
 #include <stdlib.h>

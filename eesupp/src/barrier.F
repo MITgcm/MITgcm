@@ -1,18 +1,36 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.8 2001/04/10 22:35:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.9 2001/09/21 03:54:34 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 
+CBOP
+C     !ROUTINE: BARRIER_INIT
+
+C     !INTERFACE:
       SUBROUTINE BARRIER_INIT
       IMPLICIT NONE
 
+C     !DESCRIPTION:
+C     *=====================================================================*
+C     | SUBROUTINE BARRIER_INIT
+C     | o Setup global barrier data structures.
+C     *=====================================================================*
+C     | Initialise global barrier data structures that can be used in
+C     | conjunction with MPI or that can also be used to create
+C     *=====================================================================*
+
+C     !USES:
+C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "BARRIER.h"
 
-C     === Local Variables ===
+C     !LOCAL VARIABLES:
+C     == Local Variables ==
+C     I :: Loop counter
       INTEGER I
+CEOP
 
       DO I=1,nThreads
        key1(1,I) = INVALID
@@ -25,60 +43,71 @@ C     === Local Variables ===
 
       RETURN
       END
+
+CBOP
+C     !ROUTINE: BARRIER
+
+C     !INTERFACE:
       SUBROUTINE BARRIER( myThid )
       IMPLICIT NONE
-C
-C     /==========================================================\
-C     | SUBROUTINE BARRIER                                       |
-C     | o Barrier routine that uses "busy waiting".              |
-C     |==========================================================|
-C     | This routine provides a pure fortran mechanism to        |
-C     | synchronise multiple threads in a multi-threaded code.   |
-C     | No thread can leave this routine before all the threads  |
-C     | have entered it.                                         |
-C     | Notes                                                    |
-C     | =====                                                    |
-C     | The door and key variables are assumed to have been      |
-C     | initialized once an initial state of key = INVALID       |
-C     | and door = SHUT.                                         |
-C     | We use the routine FOOL_THE_COMPILER to stop compilers   |
-C     | generating code which might simply set and test a        |
-C     | register value. Shared-memory systems only maintain      |
-C     | coherency over process caches and not registers.         |
-C     | Also we have to be a bit careful regarding sequential    |
-C     | consistency - or lack of it. At the moment the code      |
-C     | assumes a total store order memory model, which some     |
-C     | machines do not have! However, I have yet to find a      |
-C     | problem with this I think because the tolerances in      |
-C     | terms of memory ordering i.e. a little bit of reordering |
-C     | probably will not break the barrier mechanism!           |
-C     | On non-cache coherent systems e.g. T3E we need to use    |
-C     | a library function to do barriers.                       |
-C     | Note - The PANIC tests can be removed for working code   |
-C     |        I have left them in without an ifdef option       |
-C     |        because without them programming errors can       |
-C     |        lead to infinitely spinning code. If you are      |
-C     |        confident that your code is OK then removing      |
-C     |        them may increase performance. Do not remove these|
-C     |        lines to make your code "work" If the code is     |
-C     |        stopping in these PANIC blocks then something is  |
-C     |        wrong with your program and it needs to be fixed. |
-C     \==========================================================/
 
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | SUBROUTINE BARRIER                                       
+C     | o Barrier routine that uses "busy waiting".              
+C     *==========================================================*
+C     | This routine provides a pure fortran mechanism to         
+C     | synchronise multiple threads in a multi-threaded code.    
+C     | No thread can leave this routine before all the threads   
+C     | have entered it.                                          
+C     | Notes                                                     
+C     | =====                                                     
+C     | The door and key variables are assumed to have been       
+C     | initialized once an initial state of key = INVALID        
+C     | and door = SHUT.                                          
+C     | We use the routine FOOL_THE_COMPILER to stop compilers    
+C     | generating code which might simply set and test a         
+C     | register value. Shared-memory systems only maintain       
+C     | coherency over process caches and not registers.          
+C     | Also we have to be a bit careful regarding sequential     
+C     | consistency - or lack of it. At the moment the code       
+C     | assumes a total store order memory model, which some      
+C     | machines do not have! However, I have yet to find a       
+C     | problem with this I think because the tolerances in       
+C     | terms of memory ordering i.e. a little bit of reordering  
+C     | probably will not break the barrier mechanism!            
+C     | On non-cache coherent systems e.g. T3E we need to use     
+C     | a library function to do barriers.                        
+C     | Note - The PANIC tests can be removed for working code    
+C     |        I have left them in without an ifdef option        
+C     |        because without them programming errors can        
+C     |        lead to infinitely spinning code. If you are       
+C     |        confident that your code is OK then removing       
+C     |        them may increase performance. Do not remove these 
+C     |        lines to make your code "work" If the code is      
+C     |        stopping in these PANIC blocks then something is   
+C     |        wrong with your program and it needs to be fixed.  
+C     *==========================================================*
+
+C     !USES:
+C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "BARRIER.h"
 
-C     === Routine arguments ===
+C     !INPUT PARAMETERS:
+C     == Routine arguments ==
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     nDone - Counter for number of threads that have 
-C             completed a section.
-C     I     - Loop counter
+C     nDone :: Counter for number of threads that have 
+C              completed a section.
+C     I     :: Loop counter
       INTEGER nDone
       INTEGER I
+CEOP
 
 CcnhDebugStarts
 C      WRITE(myThid,*) ' Barrier entered '

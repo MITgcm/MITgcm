@@ -1,14 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.4 2001/05/29 14:01:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.5 2001/09/21 03:54:35 cnh Exp $
 C $Name:  $
 
-C     /==========================================================\
-C     | CPP_EEMACROS.h                                           |
-C     |==========================================================|
-C     | C preprocessor "execution environment" supporting        |
-C     | macros. Use this file to define macros for  simplifying  |
-C     | execution environment in which a model runs - as opposed |
-C     | to the dynamical problem the model solves.               |
-C     \==========================================================/
+CBOP
+C     !ROUTINE: CPP_EEMACROS.h 
+C     !INTERFACE:
+C     include "CPP_EEMACROS.h "
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | CPP_EEMACROS.h                                            
+C     *==========================================================*
+C     | C preprocessor "execution environment" supporting         
+C     | macros. Use this file to define macros for  simplifying   
+C     | execution environment in which a model runs - as opposed  
+C     | to the dynamical problem the model solves.                
+C     *==========================================================*
+CEOP
 
 #ifndef _CPP_EEMACROS_H_
 #define _CPP_EEMACROS_H_
