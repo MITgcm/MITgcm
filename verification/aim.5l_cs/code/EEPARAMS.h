@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/EEPARAMS.h,v 1.3 2003/12/15 02:58:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/EEPARAMS.h,v 1.4 2004/01/26 17:01:22 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
@@ -109,7 +109,7 @@ C     MAX_NO_THREADS  - Maximum number of threads allowed.
 C     MAX_NO_PROCS    - Maximum number of processes allowed.
 C     MAX_NO_BARRIERS - Maximum number of distinct thread "barriers"
       INTEGER MAX_NO_THREADS
-      PARAMETER ( MAX_NO_THREADS =    6 )
+      PARAMETER ( MAX_NO_THREADS =    1 )
       INTEGER MAX_NO_PROCS
       PARAMETER ( MAX_NO_PROCS   =  128 )
       INTEGER MAX_NO_BARRIERS
