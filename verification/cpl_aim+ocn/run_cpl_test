@@ -1,9 +1,11 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.4 2004/10/28 02:49:00 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.5 2004/10/28 20:46:45 jmc Exp $
 # $Name:  $
 
 Np=3
+Opt=' '
+Opt='-ieee'
 if [ $# -lt 1 ]
 then
   echo 'Usage:'`basename $0`' step '
@@ -44,7 +46,7 @@ fi
 
 if test $kpr = 0
 then
- rm -f genmake_optfile pr_group std_outp 
+ rm -f genmake_optfile pr_group std_outp Coupler.0000.clog
  rm -f build_???/TTT.*make.* build_???/TTT.mkdepend.*
  /bin/rm -r -f rank_0 rank_1 rank_2
  if test -f build_cpl/Makefile ; then cd build_cpl ; make CLEAN ; cd .. ; fi
@@ -59,7 +61,7 @@ then
  echo '==== compile coupler:'
  cd build_cpl
  echo ' --- genmake2 (cpl):'
- ../../../tools/genmake2 -of ../genmake_optfile -ieee >  TTT.genmake.$$
+ ../../../tools/genmake2 -of ../genmake_optfile $Opt >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (cpl):'
  make depend > TTT.mkdepend.$$
@@ -72,7 +74,7 @@ then
  echo '==== compile OGCM:'
  cd build_ocn
  echo ' --- genmake2 (ocn):'
- ../../../tools/genmake2 -of ../genmake_optfile -ieee >  TTT.genmake.$$
+ ../../../tools/genmake2 -of ../genmake_optfile $Opt >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (ocn):'
  make depend > TTT.mkdepend.$$
@@ -85,7 +87,7 @@ then
  echo '==== compile AGCM:'
  cd build_atm
  echo ' --- genmake2 (atm):'
- ../../../tools/genmake2 -of ../genmake_optfile -ieee >  TTT.genmake.$$
+ ../../../tools/genmake2 -of ../genmake_optfile $Opt >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (atm):'
  make depend > TTT.mkdepend.$$
@@ -112,14 +114,6 @@ then
   cd rank_2
   ./SHARE_OCN_GRID '../rank_1'
   cd $dir
-
-  mkdir cpl ocn atm
-  if test -f build_cpl/mitgcmuv ; then cp -p build_cpl/mitgcmuv cpl
-  else echo 'file: build_cpl/mitgcmuv not found => stop'; exit; fi
-  if test -f build_ocn/mitgcmuv ; then cp -p build_ocn/mitgcmuv ocn
-  else echo 'file: build_ocn/mitgcmuv not found => stop'; exit; fi
-  if test -f build_atm/mitgcmuv ; then cp -p build_atm/mitgcmuv atm
-  else echo 'file: build_atm/mitgcmuv not found => stop'; exit; fi
 
 fi
 
