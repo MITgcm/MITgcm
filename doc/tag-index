@@ -1,7 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.3 1998/06/08 19:25:25 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.4 1998/06/08 22:38:51 cnh Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint6
+ Created by cnh
+ merged checkpoint5 with CD and 
+ spherical polar code. 
+ Still some problems with GM Redi
+ abd full topography.
 
 checkpoint5
  Created by AJA
