@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.33 2004/12/18 02:18:55 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.34 2005/03/10 02:39:56 baylor Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -210,6 +210,7 @@ C      Calculate del^2 u and del^2 v for bi-harmonic term
      &     .OR. viscA4D.NE.0. .OR. viscA4Z.NE.0.
      &     .OR. viscA4Grid.NE.0.
      &     .OR. viscC4leith.NE.0.
+     &     .OR. viscC4leithD.NE.0.
      &    ) THEN
          CALL MOM_VI_DEL2UV(bi,bj,k,hDiv,vort3,hFacZ,
      O                      del2u,del2v,
@@ -224,6 +225,7 @@ C      in terms of vorticity and divergence
      &    .OR. viscA4D.NE.0. .OR. viscA4Z.NE.0.
      &    .OR. viscAhGrid.NE.0. .OR. viscA4Grid.NE.0.
      &    .OR. viscC2leith.NE.0. .OR. viscC4leith.NE.0.
+     &    .OR. viscC2leithD.NE.0. .OR. viscC4leithD.NE.0.
      &    ) THEN
          CALL MOM_VI_HDISSIP(bi,bj,k,hDiv,vort3,hFacZ,dStar,zStar,
      O                       guDiss,gvDiss,

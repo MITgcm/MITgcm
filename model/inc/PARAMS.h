@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.145 2005/02/28 17:35:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.146 2005/03/10 02:39:55 baylor Exp $
 C $Name:  $
 C
 
@@ -215,6 +215,8 @@ C                     and off.
 C     useRealFreshWaterFlux :: if True (=Natural BCS), treats P+R-E flux 
 C                         as a real Fresh Water (=> changes the Sea Level)
 C                         if F, converts P+R-E to salt flux (no SL effect)
+C     useFullLeith   :: Set to true to use full Leith viscosity (may be unstable
+C                       on irregular grids)
 C     rigidLid            :: Set to true to use rigid lid
 C     implicitFreeSurface :: Set to true to use implcit free surface
 C     exactConserv        :: Set to true to conserve exactly the total Volume
@@ -287,6 +289,7 @@ C                      calendar months and years.  Requires pkg/cal.
      & tempAdvection, tempForcing,
      & saltAdvection, saltForcing,
      & useRealFreshWaterFlux,
+     & useFullLeith,
      & rigidLid, implicitFreeSurface, exactConserv, uniformLin_PhiSurf,
      & momStepping, tempStepping, saltStepping,
      & metricTerms, usingSphericalPolarMTerms, useNHMTerms,
@@ -332,6 +335,7 @@ C                      calendar months and years.  Requires pkg/cal.
       LOGICAL saltAdvection
       LOGICAL saltForcing
       LOGICAL useRealFreshWaterFlux
+      LOGICAL useFullLeith
       LOGICAL rigidLid
       LOGICAL implicitFreeSurface
       LOGICAL exactConserv
@@ -453,16 +457,20 @@ C     viscA4D   :: Biharmonic viscosity coeff. for mixing of momentum laterally
 C                  (act on Divergence part) ( m^4/s )
 C     viscA4Z   :: Biharmonic viscosity coeff. for mixing of momentum laterally
 C                  (act on Vorticity  part) ( m^4/s )
-C     viscC2leith :: Leith non-dimensional viscosity factor
+C     viscC2leith :: Leith non-dimensional viscosity factor (grad(vort))
+C     viscC2leithD :: Modified Leith non-dimensional viscosity factor (grad(div))
 C     viscAhMax :: Maximum eddy viscosity coeff. for mixing of
 C                 momentum laterally ( m^2/s )
+C     viscAhGridMax:: maximum and minimum harmonic viscosity coefficients ...
+C     viscAhGridMin::  in terms of non-dimensional grid-size dependent viscosity
 C     viscA4Max :: Maximum biharmonic viscosity coeff. for mixing of
 C                 momentum laterally ( m^4/s )
 C     viscAhGrid:: non-dimensional grid-size dependent viscosity
 C     viscA4Grid:: non-dimensional grid-size dependent bi-harmonic viscosity
 C     viscA4GridMax:: maximum and minimum biharmonic viscosity coefficients ...
 C     viscA4GridMin::  in terms of non-dimensional grid-size dependent viscosity
-C     viscC4leith :: Leith non-dimensional viscosity factor
+C     viscC4leith :: Leith non-dimensional viscosity factor (grad(vort))
+C     viscC4leithD :: Modified Leith non-dimensional viscosity factor (grad(div))
 C     diffKhT   :: Laplacian diffusion coeff. for mixing of
 C                 heat laterally ( m^2/s )
 C     diffKrNrT :: vertical profile of Laplacian diffusion coeff. 
@@ -557,7 +565,9 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & abeps, startTime, 
      & phiMin, thetaMin, rSphere, recip_RSphere, f0, beta,
      & fCori, fCoriG, fCoriCos,
-     & viscAh, viscAhW, viscAhMax, viscAhGrid, viscC2leith,
+     & viscAh, viscAhW, viscAhMax,
+     & viscAhGrid, viscAhGridMax, viscAhGridMin,
+     & viscC2leith, viscC2leithD,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4W, 
      & viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
@@ -620,7 +630,10 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL viscAhZ
       _RL viscAhMax
       _RL viscAhGrid
+      _RL viscAhGridMax
+      _RL viscAhGridMin
       _RL viscC2leith
+      _RL viscC2leithD
       _RL viscAstrain
       _RL viscAtension
       _RL viscAr
@@ -631,6 +644,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL viscA4Max
       _RL viscA4Grid, viscA4GridMax, viscA4GridMin
       _RL viscC4leith
+      _RL viscC4leithD
       _RL diffKhT 
       _RL diffKrNrT(Nr)
       _RL diffK4T 

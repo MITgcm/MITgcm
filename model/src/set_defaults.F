@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.85 2005/02/28 17:37:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.86 2005/03/10 02:39:56 baylor Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -90,8 +90,11 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       rotationPeriod      = 86400. _d 0
       viscAh              = 0.D3
       viscAhGrid          = 0.D0
+      viscAhGridMin       = 0.D0
+      viscAhGridMax       = 1.D21
       viscAhMax           = 1.D21
       viscC2leith         = 0.D0
+      viscC2leithD        = 0.D0
       viscAstrain         = 0.D3
       viscAtension        = 0.D3
       diffKhT             = 0.D3
@@ -111,6 +114,7 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       viscA4GridMin       = 0.D0
       viscA4Max           = 1.D21
       viscC4leith         = 0.D0
+      viscC4leithD        = 0.D0
       diffK4T             = 0.D11
       diffK4S             = 0.D11
       cosPower            = 0.
@@ -137,6 +141,7 @@ Cml      sBeta               = 7.4D-4
       saltForcing         = .TRUE.
       metricTerms         = .TRUE.
       useNHMTerms         = .FALSE.
+      useFullLeith        = .FALSE.
       implicitDiffusion   = .FALSE.
       implicitViscosity   = .FALSE.
       momImplVertAdv      = .FALSE.

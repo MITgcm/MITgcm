@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.16 2004/12/20 19:08:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.17 2005/03/10 02:39:56 baylor Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -45,22 +45,29 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER I,J
       _RL Zip,Zij,Zpj,Dim,Dij,Dmj,uD2,vD2,uD4,vD4
-      _RL Alin,AlinMin,AlinMax,Alth,grdVrt,vg2,vg4,vg4Min,vg4Max
+      _RL Alin,AlinMin,AlinMax,Alth,grdVrt,grdDiv
+      _RL vg2,vg2Min,vg2Max,vg4,vg4Min,vg4Max
       LOGICAL useVariableViscosity
 
       useVariableViscosity=
      &      (viscAhGrid*deltaTmom.NE.0.)
      &  .OR.(viscA4Grid*deltaTmom.NE.0.)
      &  .OR.(viscC2leith.NE.0.)
+     &  .OR.(viscC2leithD.NE.0.)
      &  .OR.(viscC4leith.NE.0.)
+     &  .OR.(viscC4leithD.NE.0.)
 
       IF (deltaTmom.NE.0.) THEN
        vg2=viscAhGrid/deltaTmom
+       vg2Min=viscAhGridMin/deltaTmom
+       vg2Max=viscAhGridMax/deltaTmom
        vg4=viscA4Grid/deltaTmom
        vg4Min=viscA4GridMin/deltaTmom
        vg4Max=viscA4GridMax/deltaTmom
       ELSE
        vg2=0.
+       vg2Min=0.
+       vg2Max=0.
        vg4=0.
        vg4Min=0.
        vg4Max=0.
@@ -70,24 +77,50 @@ C     - Viscosity
       IF (useVariableViscosity) THEN
        DO j=2-Oly,sNy+Oly-1
         DO i=2-Olx,sNx+Olx-1
-C This is the vector magnitude of the vorticity gradient
-c        grdVrt=sqrt(0.25*(
-c    &      ((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))**2
-c    &     +((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj))**2
-c    &     +((vort3(i+1,j+1)-vort3(i,j+1))*recip_DXG(i,j+1,bi,bj))**2
-c    &     +((vort3(i+1,j+1)-vort3(i+1,j))*recip_DYG(i+1,j,bi,bj))**2 ))
-C but this approximation will work on cube (and differs by as much as 4X)
-         grdVrt=abs((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))
-         grdVrt=max(grdVrt,
-     &        abs((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj)))
-         grdVrt=max(grdVrt,
-     &        abs((vort3(i+1,j+1)-vort3(i,j+1))*recip_DXG(i,j+1,bi,bj)))
-         grdVrt=max(grdVrt,
-     &        abs((vort3(i+1,j+1)-vort3(i+1,j))*recip_DYG(i+1,j,bi,bj)))
-         Alth=viscC2leith*grdVrt*(rA(i,j,bi,bj)**1.5)
+	 IF (useFullLeith) THEN
+C This is the vector magnitude of the vorticity gradient squared
+          grdVrt=0.25*(
+     &     ((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))**2
+     &     +((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj))**2
+     &     +((vort3(i+1,j+1)-vort3(i,j+1))*recip_DXG(i,j+1,bi,bj))**2
+     &     +((vort3(i+1,j+1)-vort3(i+1,j))*recip_DYG(i+1,j,bi,bj))**2)
+
+C This is the vector magnitude of grad (div.v) squared
+C Using it in Leith serves to damp instabilities in w.
+           grdDiv=0.25*(
+     &      ((hDiv(i+1,j)-hDiv(i,j))*recip_DXG(i,j,bi,bj))**2
+     &      +((hDiv(i,j+1)-hDiv(i,j))*recip_DYG(i,j,bi,bj))**2
+     &      +((hDiv(i-1,j)-hDiv(i,j))*recip_DXG(i-1,j,bi,bj))**2
+     &      +((hDiv(i,j-1)-hDiv(i,j))*recip_DYG(i,j-1,bi,bj))**2)
+         ELSE
+C but this approximation will work on cube 
+c (and differs by as much as 4X)
+           grdVrt=abs((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))
+           grdVrt=max(grdVrt,
+     &      abs((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj)))
+           grdVrt=max(grdVrt,
+     &      abs((vort3(i+1,j+1)-vort3(i,j+1))*recip_DXG(i,j+1,bi,bj)))
+           grdVrt=max(grdVrt,
+     &      abs((vort3(i+1,j+1)-vort3(i+1,j))*recip_DYG(i+1,j,bi,bj)))
+           grdVrt=grdVrt**2
+	   grdDiv=0.
+         ENDIF
+
+C  Harmonic Modified Leith on Div.u points
+         Alth=sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)
+     &         *(rA(i,j,bi,bj)**1.5)
          Alin=viscAhD+vg2*rA ( i , j ,bi,bj)
          viscAh_D(i,j)=min(viscAhMax,Alin+Alth)
-         Alth=viscC4leith*grdVrt*0.125*(rA(i,j,bi,bj)**2.5)
+         IF (vg2Max.GT.0.) THEN
+            AlinMax=vg2Max*(rA ( i , j ,bi,bj))
+            viscAh_D(i,j)=min(AlinMax,viscAh_D(i,j))
+         ENDIF
+         AlinMin=vg2Min*(rA ( i , j ,bi,bj))
+         viscAh_D(i,j)=max(AlinMin,viscAh_D(i,j))
+
+C  BiHarmonic Modified Leith on Div.u points
+         Alth=sqrt(viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)
+     &          *0.125*(rAz(i,j,bi,bj)**2.5)
          Alin=viscA4D+vg4*(rA ( i , j ,bi,bj)**2)
          viscA4_D(i,j)=min(viscA4Max,Alin+Alth)
          IF (vg4Max.GT.0.) THEN
@@ -97,25 +130,49 @@ C but this approximation will work on cube (and differs by as much as 4X)
          AlinMin=vg4Min*(rA ( i , j ,bi,bj)**2)
          viscA4_D(i,j)=max(AlinMin,viscA4_D(i,j))
 
-C This is the vector magnitude of the vorticity gradient
-c        grdVrt=sqrt(0.25*(
-c    &      ((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))**2
-c    &     +((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj))**2
-c    &     +((vort3(i-1,j)-vort3(i,j))*recip_DXG(i-1,j,bi,bj))**2
-c    &     +((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj))**2 ))
+C This is the vector magnitude of the vorticity gradient squared
+	 IF (useFullLeith) THEN
+           grdVrt=0.25*(
+     &      ((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))**2
+     &      +((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj))**2
+     &      +((vort3(i-1,j)-vort3(i,j))*recip_DXG(i-1,j,bi,bj))**2
+     &      +((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj))**2)
+
+C This is the vector magnitude of grad(div.v) squared
+           grdDiv=0.25*(
+     &       ((hDiv(i+1,j)-hDiv(i,j))*recip_DXG(i,j,bi,bj))**2
+     &      +((hDiv(i,j+1)-hDiv(i,j))*recip_DYG(i,j,bi,bj))**2
+     &      +((hDiv(i+1,j+1)-hDiv(i,j+1))*recip_DXG(i,j+1,bi,bj))**2
+     &      +((hDiv(i+1,j+1)-hDiv(i+1,j))*recip_DYG(i+1,j,bi,bj))**2)
+         ELSE
 C but this approximation will work on cube (and differs by as much as 4X)
-         grdVrt=abs((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))
-         grdVrt=max(grdVrt,
-     &          abs((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj)))
-         grdVrt=max(grdVrt,
-     &          abs((vort3(i-1,j)-vort3(i,j))*recip_DXG(i-1,j,bi,bj)))
-         grdVrt=max(grdVrt,
-     &          abs((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj)))
-         Alth=viscC2leith*grdVrt*(rAz(i,j,bi,bj)**1.5)
+           grdVrt=abs((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))
+           grdVrt=max(grdVrt,
+     &       abs((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj)))
+           grdVrt=max(grdVrt,
+     &       abs((vort3(i-1,j)-vort3(i,j))*recip_DXG(i-1,j,bi,bj)))
+           grdVrt=max(grdVrt,
+     &       abs((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj)))
+           grdVrt=grdVrt**2
+	   grdDiv=0.
+         ENDIF
+
+C  Harmonic Modified Leith on Zeta points
+         Alth=sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)
+     &         *(rA(i,j,bi,bj)**1.5)
          Alin=viscAhZ+vg2*rAz( i , j ,bi,bj)
          viscAh_Z(i,j)=min(viscAhMax,Alin+Alth)
+         IF (vg2Max.GT.0.) THEN
+            AlinMax=vg2Max*(rAz( i , j ,bi,bj))
+            viscAh_Z(i,j)=min(AlinMax,viscAh_Z(i,j))
+         ENDIF
+         AlinMin=vg2Min*(rA ( i , j ,bi,bj))
+         viscAh_Z(i,j)=max(AlinMin,viscAh_Z(i,j))
 
-         Alth=viscC4leith*grdVrt*0.125*(rAz(i,j,bi,bj)**2.5)
+C  BiHarmonic Modified Leith on Zeta Points
+         Alth=sqrt(viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)
+     &          *0.125*(rAz(i,j,bi,bj)**2.5)
+         grdVrt=sqrt(grdVrt)
          Alin=viscA4Z+vg4*(rAz( i , j ,bi,bj)**2)
          viscA4_Z(i,j)=min(viscA4Max,Alin+Alth)
          IF (vg4Max.GT.0.) THEN
