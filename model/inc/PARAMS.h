@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.151 2005/04/06 20:18:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.152 2005/04/06 22:02:56 heimbach Exp $
 C $Name:  $
 C
 
@@ -541,9 +541,7 @@ C     tave_lastIter :: (for state variable only) fraction of the last time
 C                      step (of each taveFreq period) put in the time average. 
 C                      (fraction for 1rst iter = 1 - tave_lastIter)
 C     tauThetaClimRelax :: Relaxation to climatology time scale ( s ).
-C     lambdaThetaClimRelax :: Inverse time scale for relaxation ( 1/s ).
 C     tauSaltClimRelax :: Relaxation to climatology time scale ( s ).
-C     lambdaSaltClimRelax :: Inverse time scale for relaxation ( 1/s ).
 C     latBandClimRelax :: latitude band where Relaxation to Clim. is applied,
 C                         i.e. where |yC| <= latBandClimRelax
 C     externForcingPeriod :: Is the period of which forcing varies (eg. 1 month)
@@ -591,8 +589,8 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cosPower, cAdjFreq, omega, rotationPeriod,
-     & tauThetaClimRelax, lambdaThetaClimRelax,
-     & tauSaltClimRelax, lambdaSaltClimRelax,
+     & tauThetaClimRelax,
+     & tauSaltClimRelax,
      & tauTr1ClimRelax, lambdaTr1ClimRelax, latBandClimRelax,
      & externForcingCycle, externForcingPeriod,
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn,
@@ -677,11 +675,6 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL convertEmP2rUnit
       _RL tRef(Nr)
       _RL sRef(Nr)
-      _RS fCori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS fCoriG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS fCoriCos(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS lambdaThetaClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS lambdaSaltClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL baseTime
       _RL startTime
       _RL endTime

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.28 2005/02/28 17:35:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.29 2005/04/06 22:02:56 heimbach Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -63,6 +63,10 @@ C
 C     SSS   :: Sea surface salinity in psu for relaxation
 C              Southwest C-grid tracer point
 C
+C     lambdaThetaClimRelax :: Inverse time scale for relaxation ( 1/s ).
+C
+C     lambdaSaltClimRelax :: Inverse time scale for relaxation ( 1/s ).
+
 C     pload :: for the ocean:      atmospheric pressure at z=eta
 C                Units are           Pa=N/m^2
 C              for the atmosphere: geopotential of the orography 
@@ -85,6 +89,8 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
      &               , saltFlux
      &               , SST
      &               , SSS
+     &               , lambdaThetaClimRelax
+     &               , lambdaSaltClimRelax
 #ifdef ATMOSPHERIC_LOADING
      &               , pload
      &               , sIceLoad
@@ -99,6 +105,8 @@ C     EfluxP - p-component of Eliassen-Palm flux vector
       _RS  saltFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SST      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SSS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS lambdaThetaClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS lambdaSaltClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ATMOSPHERIC_LOADING
       _RS  pload    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  sIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
