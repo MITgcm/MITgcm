@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_east.F,v 1.5 2004/07/06 18:25:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_east.F,v 1.6 2004/07/06 20:23:32 adcroft Exp $
 C $Name:  $
 cc
 
@@ -122,8 +122,8 @@ C	         Fixed phase speed (ignoring all of that painstakingly
 C		  saved data...)
                  CVEL_UE(J,K,bi,bj) = CFIX
                ELSE
-                 CVEL_UE(J,K,bi,bj) = f1*(CL*dxF(I_obc-2,J,bi,bj)/deltaT)+
-     &                f2*CVEL_UE(J,K,bi,bj)
+                 CVEL_UE(J,K,bi,bj) = f1*(CL*dxF(I_obc-2,J,bi,bj)/deltaT
+     &              )+f2*CVEL_UE(J,K,bi,bj)
                ENDIF
 C              update OBC to next timestep
                OBEu(J,K,bi,bj)=uVel(I_obc,J,K,bi,bj)-

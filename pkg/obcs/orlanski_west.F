@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_west.F,v 1.5 2004/07/06 18:25:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_west.F,v 1.6 2004/07/06 20:23:32 adcroft Exp $
 C $Name:  $
 cc
 
@@ -124,8 +124,8 @@ C	         Fixed phase speed (ignoring all of that painstakingly
 C		  saved data...)
                  CVEL_UW(J,K,bi,bj) = CFIX
                ELSE
-                 CVEL_UW(J,K,bi,bj) = f1*(CL*dxF(I_obc+2,J,bi,bj)/deltaT)+
-     &                f2*CVEL_UW(J,K,bi,bj)
+                 CVEL_UW(J,K,bi,bj) = f1*(CL*dxF(I_obc+2,J,bi,bj)/deltaT
+     &              )+f2*CVEL_UW(J,K,bi,bj)
                ENDIF
 C              update OBC to next timestep
                OBWu(J,K,bi,bj)=uVel(I_obc+1,J,K,bi,bj)+
@@ -150,8 +150,8 @@ C	         Fixed phase speed (ignoring all of that painstakingly
 C		  saved data...)
                  CVEL_VW(J,K,bi,bj) = CFIX
                ELSE
-                 CVEL_VW(J,K,bi,bj) = f1*(CL*dxV(I_obc+2,J,bi,bj)/deltaT)+
-     &                f2*CVEL_VW(J,K,bi,bj)
+                 CVEL_VW(J,K,bi,bj) = f1*(CL*dxV(I_obc+2,J,bi,bj)/deltaT
+     &              )+f2*CVEL_VW(J,K,bi,bj)
                ENDIF
 C              update OBC to next timestep
                OBWv(J,K,bi,bj)=vVel(I_obc,J,K,bi,bj)+
@@ -176,8 +176,8 @@ C	         Fixed phase speed (ignoring all of that painstakingly
 C		  saved data...)
                  CVEL_TW(J,K,bi,bj) = CFIX
                ELSE
-                 CVEL_TW(J,K,bi,bj) = f1*(CL*dxC(I_obc+2,J,bi,bj)/deltaT)+
-     &                f2*CVEL_TW(J,K,bi,bj)
+                 CVEL_TW(J,K,bi,bj) = f1*(CL*dxC(I_obc+2,J,bi,bj)/deltaT
+     &              )+f2*CVEL_TW(J,K,bi,bj)
                ENDIF
 C              update OBC to next timestep
                OBWt(J,K,bi,bj)=theta(I_obc,J,K,bi,bj)+
@@ -202,8 +202,8 @@ C  	         Fixed phase speed (ignoring all of that painstakingly
 C		  saved data...)
                  CVEL_SW(J,K,bi,bj) = CFIX
                ELSE
-                 CVEL_SW(J,K,bi,bj) = f1*(CL*dxC(I_obc+2,J,bi,bj)/deltaT)+
-     &                f2*CVEL_SW(J,K,bi,bj)
+                 CVEL_SW(J,K,bi,bj) = f1*(CL*dxC(I_obc+2,J,bi,bj)/deltaT
+     &              )+f2*CVEL_SW(J,K,bi,bj)
                ENDIF
 C              update OBC to next timestep
                OBWs(J,K,bi,bj)=salt(I_obc,J,K,bi,bj)+
