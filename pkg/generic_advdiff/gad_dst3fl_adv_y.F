@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.1 2001/09/04 14:53:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.2 2001/09/05 17:46:03 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -55,14 +55,16 @@ C     == Local variables ==
         psiM=d0+d1*thetaM
         psiM=max(0., min(min(1.,psiM),(1.-cfl)/cfl*thetaM) )
         vT(i,j)=
-c    &   0.5*(vTrans(i,j)+abs(vTrans(i,j)))
-c    &      *( Tracer(i,j-1) + d0*Rj + d1*Rjm )
-c    &  +0.5*(vTrans(i,j)-abs(vTrans(i,j)))
-c    &      *( Tracer(i, j ) - d0*Rj + d1*Rjp )
      &   0.5*(vTrans(i,j)+abs(vTrans(i,j)))
      &      *( Tracer(i,j-1) + psiP*Rj )
      &  +0.5*(vTrans(i,j)-abs(vTrans(i,j)))
      &      *( Tracer(i, j ) - psiM*Rj )
+cph *note* put these comments after end of continued line
+cph        to ensure TAMC compatibility
+c    &   0.5*(vTrans(i,j)+abs(vTrans(i,j)))
+c    &      *( Tracer(i,j-1) + d0*Rj + d1*Rjm )
+c    &  +0.5*(vTrans(i,j)-abs(vTrans(i,j)))
+c    &      *( Tracer(i, j ) - d0*Rj + d1*Rjp )
 
        ENDDO
       ENDDO

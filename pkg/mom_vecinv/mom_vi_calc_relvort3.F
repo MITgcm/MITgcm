@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_calc_relvort3.F,v 1.2 2001/05/29 14:01:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_calc_relvort3.F,v 1.3 2001/09/05 17:46:03 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -67,37 +67,37 @@ C     Special stuff for Cubed Sphere
          vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
      &      vFld(I,J)*dyc(I,J,bi,bj)
-c    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
      &     -uFld(I,J)*dxc(I,J,bi,bj)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
+cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
          I=sNx+1
          J=1
          vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
-c    &      vFld(I,J)*dyc(I,J,bi,bj)
      &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
      &     -uFld(I,J)*dxc(I,J,bi,bj)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
+cph    &      vFld(I,J)*dyc(I,J,bi,bj)
          I=1
          J=sNy+1
          vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
      &      vFld(I,J)*dyc(I,J,bi,bj)
-c    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
      &     -uFld(I,J)*dxc(I,J,bi,bj)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
+cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
          I=sNx+1
          J=sNy+1
          vort3(I,J)=
      &     +recip_rAz(I,J,bi,bj)*(
-c    &      vFld(I,J)*dyc(I,J,bi,bj)
      &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
      &     -uFld(I,J)*dxc(I,J,bi,bj)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
+cph    &      vFld(I,J)*dyc(I,J,bi,bj)
        ENDIF
 
       RETURN

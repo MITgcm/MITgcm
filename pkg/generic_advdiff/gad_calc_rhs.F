@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.6 2001/09/04 17:16:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.7 2001/09/05 17:46:03 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -202,8 +202,8 @@ C-    Diffusive flux in Y
 #ifdef ALLOW_GMREDI
 C-    GM/Redi flux in Y
       IF (useGMRedi) THEN
-       CALL GMREDI_YTRANSPORT(
 C *note* should update GMREDI_YTRANSPORT to use localT and set df  *aja*
+       CALL GMREDI_YTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
      I     yA,Tracer,
      U     df,

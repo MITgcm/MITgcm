@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.2 2001/05/29 14:01:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.3 2001/09/05 17:46:03 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -55,8 +55,10 @@ c    &                +uFld(i,j-1)+uFld(i+1,j-1))
      &               +omega3(i+1,j)*r_hFacZ(i+1,j))
          ENDIF
          vCoriolisTerm(i,j)=
-C high order vorticity advection term
      &   -vort3v*uBarXY*recip_dyc(i,j,bi,bj)
+     &   *_maskS(I,J,K,bi,bj)
+C high order vorticity advection term
+c    &   ...
 C linear Coriolis term
 c    &   -0.5 *(fCoriG(I,J,bi,bj)+fCoriG(I+1,J,bi,bj))*uBarXY
 C full nonlinear Coriolis term
@@ -66,7 +68,6 @@ c    &   -0.5 *( fCori(I,J  ,bi,bj)*uBarX(I,J  ,K,bi,bj) +
 c    &           fCori(I,J-1,bi,bj)*uBarX(I,J-1,K,bi,bj)  )
 C original form of Coriolis term (copied from calc_mom_rhs)
 c    &   -0.5*(fCori(i,j,bi,bj)+fCori(i,j-1,bi,bj))*uBarXY
-     &   *_maskS(I,J,K,bi,bj)
         ENDDO
        ENDDO
 
