@@ -23,15 +23,55 @@ strategy:
 
 MITgcmUV IO support routines
 ----------------------------
- - READ_FLD_XY_RS
- - READ_FLD_XY_RL
- - READ_FLD_XYZ_RS
- - READ_FLD_XYZ_RL
+ o SUBROUTINE READ_FLD_XY_RS( pref, suff, fld, time, thid )
+   _RS fld(1-OLx:sNx+OLx,1-OLy,sNy+OLy,nSx,nSy)
 
- - WRITE_FLD_XY_RS
- - WRITE_FLD_XY_RL
- - WRITE_FLD_XYZ_RS
- - WRITE_FLD_XYZ_RL
+ o SUBROUTINE READ_FLD_XY_RL( pref, suff, fld, time, thid )
+   _RL fld(1-OLx:sNx+OLx,1-OLy,sNy+OLy,nSx,nSy)
+
+ o SUBROUTINE READ_FLD_XYZ_RS( pref, suff, fld, time, thid )
+   _RS fld(1-OLx:sNx+OLx,1-OLy,sNy+OLy,nZ,nSx,nSy)
+
+ o SUBROUTINE READ_FLD_XYZ_RL( pref, suff, fld, time, thid )
+   _RL fld(1-OLx:sNx+OLx,1-OLy,sNy+OLy,nZ,nSx,nSy)
+
+ o SUBROUTINE WRITE_FLD_XY_RS( pref, suff, fld, time, thid )
+   _RS fld(1-OLx:sNx+OLx,1-OLy,sNy+OLy,nSx,nSy)
+
+ o SUBROUTINE WRITE_FLD_XY_RL( pref, suff, fld, time, thid )
+   _RL fld(1-OLx:sNx+OLx,1-OLy,sNy+OLy,nSx,nSy)
+
+ o SUBROUTINE WRITE_FLD_XYZ_RS( pref, suff, fld, time, thid )
+   _RS fld(1-OLx:sNx+OLx,1-OLy,sNy+OLy,nZ,nSx,nSy)
+
+ o SUBROUTINE WRITE_FLD_XYZ_RL( pref, suff, fld, time, thid )
+   _RL fld(1-OLx:sNx+OLx,1-OLy,sNy+OLy,nZ,nSx,nSy)
+
+   all routines
+   CHARACTER*(*) pref
+   CHARACTER*(*) suff
+   INTEGER       time
+   INTEGER       thid
+
+   macros
+   _RS -> REAL*4 or REAL*8
+   _RL -> REAL*8
+   
+   pref - String used in prefix part of file name.
+          Examples    'theta.' = temperature
+          from         'uVel.' = zonal velocity
+          MITgcmUV     'vVel.' = meridional velocity
+                                     'salt.' = salinity
+   suff - String used in suffix part of file name.
+          Examples     '0000000100' = iteration number
+          from         'ckptA' = checkpoint file
+          MITgcmUV
+   fld  - Two or three dimensional REAL*4 or REAL*8 srray.
+          Examples     theta  = temperature field
+          from         cg2d_x = surface elevation field
+          MITgcmUV
+   time - Time level in the calling subroutine
+   this - Thread id of the calling subroutine
 
 Dataset format
 --------------
