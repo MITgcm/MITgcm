@@ -1,10 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/code_atm/CPP_EEOPTIONS.h,v 1.4 2004/01/23 19:19:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/code_atm/CPP_EEOPTIONS.h,v 1.5 2004/04/17 22:46:08 jmc Exp $
 C $Name:  $
 
+CBOP
+C     !ROUTINE: CPP_EEOPTIONS.h
+C     !INTERFACE:
+C     include "CPP_EEOPTIONS.h"
 C
-C     /==========================================================\
-C     | CPP_EEOPTIONS.h                                          |
-C     |==========================================================|
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | CPP\_EEOPTIONS.h                                         |
+C     *==========================================================*
 C     | C preprocessor "execution environment" supporting        |
 C     | flags. Use this file to set flags controlling the        |
 C     | execution environment in which a model runs - as opposed |
@@ -23,7 +28,8 @@ C     |       set all options as selectable at runtime but then  |
 C     |       once an experimental configuration has been        |
 C     |       identified, rebuild the code with the appropriate  |
 C     |       options set at compile time.                       |
-C     \==========================================================/
+C     *==========================================================*
+CEOP
 
 #ifndef _CPP_EEOPTIONS_H_
 #define _CPP_EEOPTIONS_H_
@@ -48,12 +54,12 @@ C     undef this option.
 
 C--   Control MPI based parallel processing
 CXXX We no longer select the use of MPI via this file (CPP_EEOPTIONS.h)
-	CXXX To use MPI, use an appropriate genmake2 options file or use
-	CXXX genmake2 -mpi .
-	CXXX #undef  ALLOW_USE_MPI
-	CXXX #undef  ALWAYS_USE_MPI
+CXXX To use MPI, use an appropriate genmake2 options file or use
+CXXX genmake2 -mpi .
+CXXX #undef  ALLOW_USE_MPI
+CXXX #undef  ALWAYS_USE_MPI
  
-C--   Control use of communication with other component: 
+C--   Control use of communication with other component:
 C     allow to import and export from/to Coupler interface.
 #define COMPONENT_MODULE
 
