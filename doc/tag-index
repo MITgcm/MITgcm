@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.310 2004/06/24 20:22:02 afe Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.311 2004/06/24 20:27:32 afe Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-
+checkpoint53e_post
+o merged cylindrical coord configuration
+o added rotating_tank experiment
 checkpoint53e_pre
 
 checkpoint53d_post
