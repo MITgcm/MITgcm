@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.61 2004/12/16 20:25:11 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.62 2005/01/25 22:41:05 edhill Exp $
 #  $Name:  $
 #
 
@@ -529,7 +529,7 @@ int main( int argc, char** argv )  {
     abave = 0.5*(fabs(a)+fabs(b));
     if (abave > 0.0) {
       relerr=fabs(a-b)/abave;
-      if (relerr > 0.0) { linnum = (int)log10(relerr); }
+      if (relerr > 0.0) { linnum = (int)lrint(log10(relerr)); }
       else { linnum = -16 ; }
       best = (best > linnum) ? best : linnum;
     }
@@ -875,6 +875,10 @@ for dir in $TESTDIRS ; do
 	if test -r $dir/input/Makefile ; then
 	    ( cd $dir/input ; make CLEAN )
 	fi
+	(
+	    cd $dir
+	    rm -rf tr_run.*
+	)
 	continue
     fi
 
@@ -972,7 +976,7 @@ for dir in $TESTDIRS ; do
 
 	for ex in $extra_runs ; do
 	    test ! -e "$dir/tr_run.$ex" && mkdir "$dir/tr_run.$ex"
-	    for ldir in build input input.$ex ; do
+	    for ldir in input.$ex input ; do
 		(
 		    cd "$dir/$ldir" > /dev/null 2>&1
 		    ls -1 2>/dev/null \
@@ -982,13 +986,27 @@ for dir in $TESTDIRS ; do
 		    cd "$dir/tr_run.$ex"
 		    cat ../../tr_exrun_links | while read i ; do
 			if test ! "x$i" = x ; then
-			    test -e $i  &&  rm -f $i
-			    ln -s "../"$ldir"/"$i $i
+			    test ! -r $i  &&  ln -s "../"$ldir"/"$i $i
 			fi
 		    done
 		)
 		test -e tr_exrun_links  &&  rm -f tr_exrun_links
 	    done
+	    ldir=build
+	    (
+		cd "$dir/$ldir" > /dev/null 2>&1
+		ls -1 Makefile *.[fFhco]* mitgcmuv  2>/dev/null \
+		    | sed -e 's|^CVS$||g' | sed -e 's|^output.txt$||g'
+	    ) > tr_exrun_links
+	    (
+		cd "$dir/tr_run.$ex"
+		    cat ../../tr_exrun_links | while read i ; do
+			if test ! "x$i" = x ; then
+			    test ! -r $i  &&  ln -s "../"$ldir"/"$i $i
+			fi
+		    done
+	    )
+	    test -e tr_exrun_links  &&  rm -f tr_exrun_links
 	    runmodel $dir/tr_run.$ex && run=Y \
 		&& results=`testoutput $dir tr_run.$ex "."$ex`
 	    fres=`printf '%s %s %s %s' ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N}`
