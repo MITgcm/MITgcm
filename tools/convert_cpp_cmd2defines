@@ -1,0 +1,35 @@
+#!/bin/sh
+#
+# Converts -Dmacro to #define macro
+#      and -Umacro to #undef macro 
+# on standard output
+#
+# Any options that do not take the form -D* or -U* are placed as comments.
+#
+# usage: convert_cpp_cmd2defines [-Dmacro1|-Umacro1] [...]
+#
+# $Header: /u/gcmpack/MITgcm/tools/convert_cpp_cmd2defines,v 1.1 2003/11/24 14:54:12 adcroft Exp $
+# $Name:  $
+
+cat << EOF
+/*
+ This file created by convert_cpp_cmd2defines with the following command
+ line arguments:
+ $@
+*/
+
+EOF
+
+for ac_option ; do
+ case $ac_option in
+  -D*)
+	echo $ac_option | sed 's/-D/#define /' | sed 's/=/ /'
+	;;
+  -U*)
+	echo $ac_option | sed 's/-U/#undef  /' | sed 's/=/ /'
+	;;
+  *)
+	echo "/* " $ac_option " */"
+	;;
+ esac
+done
