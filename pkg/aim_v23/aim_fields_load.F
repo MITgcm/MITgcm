@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_fields_load.F,v 1.1 2002/12/10 02:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_fields_load.F,v 1.2 2003/05/13 17:27:11 adcroft Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -134,7 +134,7 @@ C     c) easy to check here (variable in common).
           DO bi=1,nSx
 
 C-  Converts surface albedo : input data is in % 0-100
-C     and Franco's package needs a fraction between 0-1
+C     and Franco s package needs a fraction between 0-1
            DO j=1,sNy
             DO i=1,sNx
              aim_albedo(I,J,bi,bj) = aim_albedo(I,J,bi,bj)/100.
