@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.382 2004/11/10 03:10:00 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.383 2004/11/10 19:36:30 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint55j_post
 o isolate dissipation tendency (allow to keep it out off AB) in V.I form.
   affects (truncation level) output.txt of global_ocean.cs32x15(&.thsice)
 o add consistent build directories and .cvsignore files to verification
