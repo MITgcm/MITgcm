@@ -77,6 +77,11 @@ c     IF ( startTime .NE. 0. ) RETURN
 c     IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
       IF ( useDynP_inEos_Zc ) THEN
 
+#ifndef ALLOW_AUTODIFF_TAMC
+cph-- deal with this iterative loop for AD once it will
+cph-- really be needed;
+cph-- would need storing of totPhiHyd for each npiter
+
        rmspp    = 1. _d 0
        rmsppold = 0. _d 0
        npiter = 0
@@ -163,6 +168,9 @@ C     print some diagnostics
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &      SQUEEZE_RIGHT , 1)
 
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+c-- else of if useDynP_inEos_Zc
       ELSE
 C     print a message and DO nothing
        WRITE(msgBuf,'(A,A)')
