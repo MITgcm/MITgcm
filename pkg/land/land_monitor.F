@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.2 2004/09/07 23:57:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.3 2004/09/15 22:09:51 edhill Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -8,20 +8,12 @@ C     !ROUTINE: LAND_MONITOR
 C     !INTERFACE:
       SUBROUTINE LAND_MONITOR( land_frc, myTime, myIter, myThid )
 
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | SUBROUTINE LAND_MONITOR
-C     | o Do land global & Hemispheric diagnostic
-C     *==========================================================*
-C     \ev
-
+C     !DESCRIPTION:
+C     Do land global and Hemispheric diagnostic
+      
 C     !USES:
       IMPLICIT NONE
-
-C     === Global variables ===
-C-- size for MITgcm & Land package :
 #include "LAND_SIZE.h"
-
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
@@ -30,9 +22,11 @@ C-- size for MITgcm & Land package :
 #ifdef ALLOW_MONITOR
 #include "MONITOR.h"
 #endif
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine arguments ==
 C     land_frc :: land fraction [0-1]
 C     myTime   :: Current time of simulation ( s )
 C     myIter   :: Iteration number
@@ -87,21 +81,43 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( DIFFERENT_MULTIPLE(land_monFreq,myTime,myTime-deltaTclock)
      &     .OR. myIter.EQ.nIter0 ) THEN
 
-        mon_write_stdout = .TRUE.
+        mon_write_stdout = .FALSE.
+        mon_write_mnc    = .FALSE.
+        IF (monitor_stdio) THEN
+          mon_write_stdout = .TRUE.
+        ENDIF
+
+#ifdef ALLOW_MNC
+        IF (useMNC .AND. monitor_mnc) THEN
+          DO k = 1,MAX_LEN_MBUF
+            mon_fname(k:k) = ' '
+          ENDDO
+          mon_fname(1:12) = 'monitor_land'
+          CALL MNC_CW_APPEND_VNAME(
+     &         'iter', '-_-_--__-__t', 0,0, myThid)
+          CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
+          CALL MNC_CW_I_W(
+     &        'I',mon_fname,1,1,'iter', myIter, myThid)
+          CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
+          mon_write_mnc = .TRUE.
+        ENDIF
+#endif /*  ALLOW_MNC  */
 
         DO k=1,land_nLev
           locDr(k)= 1.
         ENDDO
 
        _BEGIN_MASTER(myThid)
-        WRITE(msgBuf,'(A)')
-     &'// ======================================================='
-        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-        WRITE(msgBuf,'(A)') '// Begin MONITOR Land statistics'
-        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-        WRITE(msgBuf,'(A)')
-     &'// ======================================================='
-        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+        IF (mon_write_stdout) THEN
+          WRITE(msgBuf,'(2A)') '// ===========================',
+     &         '============================'
+          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          WRITE(msgBuf,'(A)') '// Begin MONITOR Land statistics'
+          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          WRITE(msgBuf,'(2A)') '// ===========================',
+     &         '============================'
+          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+        ENDIF
        _END_MASTER(myThid)
 
         CALL MON_SET_PREF('land_',myThid)
@@ -273,17 +289,20 @@ c       CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
 c       CALL MON_OUT_RL(mon_var, theMax(3), mon_sufx(3), myThid)
          
        _BEGIN_MASTER(myThid)
-        WRITE(msgBuf,'(A)')
-     &'// ======================================================='
-        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-        WRITE(msgBuf,'(A)') '// End MONITOR Land statistics'
-        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
-        WRITE(msgBuf,'(A)')
-     &'// ======================================================='
-        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+        IF (mon_write_stdout) THEN
+          WRITE(msgBuf,'(2A)') '// ===========================',
+     &         '============================'
+          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          WRITE(msgBuf,'(A)') '// End MONITOR Land statistics'
+          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          WRITE(msgBuf,'(2A)') '// ===========================',
+     &         '============================'
+          CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+        ENDIF
        _END_MASTER(myThid)
 
         mon_write_stdout = .FALSE.
+        mon_write_mnc    = .FALSE.
 
       ENDIF
 
