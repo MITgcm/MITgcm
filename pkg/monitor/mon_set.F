@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/Attic/mon_set.F,v 1.1 2001/06/18 17:39:59 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/Attic/mon_set.F,v 1.2 2001/06/18 17:55:55 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -45,8 +45,8 @@ C     === Global data ===
 #include "EEPARAMS.h"
 #include "MONITOR.h"
 
-      EXTERNAL IFNBLNBK, ILNBLNK
-      INTEGER  IFNBLNK,  ILNBLNK
+      EXTERNAL IFNBLNK, ILNBLNK
+      INTEGER  IFNBLNK, ILNBLNK
 
 C     === Routine arguments ===
 C     prefString - String to use for prefixing monitor output
