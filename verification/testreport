@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.4 2003/09/03 20:02:47 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.5 2003/09/06 02:45:07 edhill Exp $
 #
 
 usage()
@@ -13,7 +13,8 @@ usage()
     echo "  (-optfile=|-of=)STRING   list of genmake2 \"optfiles\""
     echo "  (-a|-addr)STRING         list of email recipients"
     echo "  (-t|-tdir)STRING         list of \"test\" dirs"
-    echo "  (-b|-bash)STRING         location of \"bash\" executable"
+    echo "  (-b|-bash)STRING         the \"bash\" executable"
+    echo "  (-m|-make)STRING         the \"make\" executable"
     echo
     exit 1
 }
@@ -30,7 +31,7 @@ build_mpack()
 	    exit 1
 	fi
 	echo -n "building mpack...  "
-	( cd $MPACKDIR && ./configure && make ) > build_mpack.out 2>&1
+	( cd $MPACKDIR && ./configure && $MAKE ) > build_mpack.out 2>&1
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    echo
@@ -166,7 +167,7 @@ genmakemodel()
 	cd $1;
 	printf 'genmake ... ' 1>&2
         # ../../../tools/genmake -ieee -mods=../code > make.log 2>&1
-	$GENMAKE2  -ds --mods=../code "--optfile="$OPTFILE > make.log 2>&1
+	$GENMAKE2 -make $MAKE -ds --mods=../code "--optfile="$OPTFILE > make.log 2>&1
 	RETVAL=$?
 	for i in gm_state gm_optfile gm_local Makefile ; do
 	    if test -r $i ; then
@@ -192,7 +193,7 @@ makeclean()
 	rm -f output.txt
 	printf 'make CLEAN ... ' 2>&1
 	if test -r Makefile ; then
-	    make CLEAN >> make.log 2>&1
+	    $MAKE CLEAN >> make.log 2>&1
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
 		tail make.log
@@ -212,7 +213,7 @@ makedependmodel()
     (
 	cd $1;
 	printf 'make depend ... ' 1>&2
-	make depend >> make.log 2>&1
+	$MAKE depend >> make.log 2>&1
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    tail make.log
@@ -232,7 +233,7 @@ makemodel()
 	cd $1;
 	if test -r Makefile ; then
 	    printf 'make ... ' 1>&2
-	    make >> make.log 2>&1
+	    $MAKE >> make.log 2>&1
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
 		tail make.log
@@ -268,7 +269,7 @@ runmodel()
 		rm -f output.txt
 	    fi
 	    printf 'runmodel: ' 1>&2
-	    make output.txt
+	    $MAKE output.txt
 	    RETVAL=$?
 	    if test "x$RETVAL" = x0 ; then
 		cp output.txt $CDIR"/output.txt"
@@ -395,6 +396,7 @@ ADDRESSES=edhill@mitgcm.org
 TESTDIRS=
 MPACKDIR="../tools/mpack-1.6"
 MPACK="$MPACKDIR/mpack"
+MAKE=make
 
 echo -n "parsing options...  "
 
@@ -434,6 +436,11 @@ for ac_option ; do
             ac_prev=BASH ;;
         -bash=* | --bash=*)
             BASH=$ac_optarg ;;
+
+	-make | --make | -m | --m)
+            ac_prev=MAKE ;;
+        -make=* | --make=*)
+            MAKE=$ac_optarg ;;
 
 	-quick) quick=1 ;;
 	-verbose) verbose=2 ;;
