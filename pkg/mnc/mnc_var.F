@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.17 2004/09/23 16:17:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.18 2004/12/26 15:24:50 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -202,9 +202,20 @@ C           Its OK, the variable and grid names are the same
 C     Add the variable definition
       CALL MNC_FILE_REDEF(fname, myThid)
       err = NF_DEF_VAR(fid, vname, vtype, nd, ids, vid)
-      write(msgbuf,'(5a)') 'defining variable ''', vname(1:lenv),
+      IF ( err .NE. NF_NOERR ) THEN
+        write(msgbuf,'(2a)') 'ERROR:  MNC will not ',
+     &       'overwrite variables in existing NetCDF'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        write(msgbuf,'(2a)') '        files.  Please',
+     &       ' make sure that you are not trying to'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        write(msgbuf,'(2a)') '        overwrite output',
+     &       'files from a previous model run!'
+        CALL PRINT_ERROR( msgBuf, myThid )
+        write(msgbuf,'(5a)') 'defining variable ''', vname(1:lenv),
      &     ''' in file ''', fname(1:lenf), ''''
-      CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+        CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
+      ENDIF
 
 C     Success, so save the variable info
       CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID,mnc_v_names,indv, myThid)
