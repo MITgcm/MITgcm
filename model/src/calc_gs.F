@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.18 1999/05/18 18:01:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.19 1999/05/26 20:26:41 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -95,12 +95,44 @@ C     I, J, K - Loop counters
       _RL afFacS, dfFacS
       _RL dSdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dSdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL df4   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       afFacS = 1. _d 0
       dfFacS = 1. _d 0
       TOP_LAYER = K .EQ. 1
 
 C---  Calculate advective and diffusive fluxes between cells.
+
+#ifdef INCLUDE_T_DIFFUSION_CODE
+C     o Zonal tracer gradient
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx+1,sNx+Olx
+        dSdx(i,j) = _recip_dxC(i,j,bi,bj)*
+     &  (salt(i,j,k,bi,bj)-salt(i-1,j,k,bi,bj))
+       ENDDO
+      ENDDO
+C     o Meridional tracer gradient
+      DO j=1-Oly+1,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        dSdy(i,j) = _recip_dyC(i,j,bi,bj)*
+     &  (salt(i,j,k,bi,bj)-salt(i,j-1,k,bi,bj))
+       ENDDO
+      ENDDO
+
+C--   del^2 of S, needed for bi-harmonic (del^4) term
+      IF (diffK4S .NE. 0.) THEN
+       DO j=1-Oly+1,sNy+Oly-1
+        DO i=1-Olx+1,sNx+Olx-1
+         df4(i,j)= _recip_hFacC(i,j,k,bi,bj)
+     &             *recip_drF(k)/_rA(i,j,bi,bj)
+     &            *(
+     &             +( xA(i+1,j)*dSdx(i+1,j)-xA(i,j)*dSdx(i,j) )
+     &             +( yA(i,j+1)*dSdy(i,j+1)-yA(i,j)*dSdy(i,j) )
+     &             )
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
 
 C--   Zonal flux (fZon is at west face of "salt" cell)
 C     Advective component of zonal flux
@@ -110,20 +142,22 @@ C     Advective component of zonal flux
      &   uTrans(i,j)*(salt(i,j,k,bi,bj)+salt(i-1,j,k,bi,bj))*0.5 _d 0
        ENDDO
       ENDDO
-C     Zonal tracer gradient
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        dSdx(i,j) = _recip_dxC(i,j,bi,bj)*
-     &  (salt(i,j,k,bi,bj)-salt(i-1,j,k,bi,bj))
-       ENDDO
-      ENDDO
-C     Diffusive component of zonal flux
+C     o Diffusive component of zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         df(i,j) = -(diffKhS+0.5*(KapGM(i,j)+KapGM(i-1,j)))*
      &            xA(i,j)*dSdx(i,j)
        ENDDO
       ENDDO
+C     o Add the bi-harmonic contribution
+      IF (diffK4S .NE. 0.) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         df(i,j) = df(i,j) + xA(i,j)*
+     &    diffK4S*(df4(i,j)-df4(i-1,j))*_recip_dxC(i,j,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
 C     Net zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -140,13 +174,6 @@ C       Advective component of meridional flux
      &   vTrans(i,j)*(salt(i,j,k,bi,bj)+salt(i,j-1,k,bi,bj))*0.5 _d 0
        ENDDO
       ENDDO
-C     Zonal tracer gradient
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        dSdy(i,j) = _recip_dyC(i,j,bi,bj)*
-     &  (salt(i,j,k,bi,bj)-salt(i,j-1,k,bi,bj))
-       ENDDO
-      ENDDO
 C     Diffusive component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -154,6 +181,16 @@ C     Diffusive component of meridional flux
      &            yA(i,j)*dSdy(i,j)
        ENDDO
       ENDDO
+C     o Add the bi-harmonic contribution
+      IF (diffK4S .NE. 0.) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         df(i,j) = df(i,j) + yA(i,j)*
+     &    diffK4S*(df4(i,j)-df4(i,j-1))*_recip_dyC(i,j,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+
 C     Net meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax

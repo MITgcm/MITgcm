@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.21 1999/05/24 14:24:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.22 1999/05/26 20:26:42 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -96,6 +96,7 @@ C     I, J, K - Loop counters
       _RL afFacT, dfFacT
       _RL dTdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dTdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL df4   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_KPP
       _RS hbl  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)	! used by KPP mixing scheme
       _RS frac (1-OLx:sNx+OLx,1-OLy:sNy+OLy)	! used by KPP mixing scheme
@@ -109,6 +110,37 @@ C     I, J, K - Loop counters
 
 C---  Calculate advective and diffusive fluxes between cells.
 
+#ifdef INCLUDE_T_DIFFUSION_CODE
+C     o Zonal tracer gradient
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx+1,sNx+Olx
+        dTdx(i,j) = _recip_dxC(i,j,bi,bj)*
+     &  (theta(i,j,k,bi,bj)-theta(i-1,j,k,bi,bj))
+       ENDDO
+      ENDDO
+C     o Meridional tracer gradient
+      DO j=1-Oly+1,sNy+Oly
+       DO i=1-Olx,sNx+Olx
+        dTdy(i,j) = _recip_dyC(i,j,bi,bj)*
+     &  (theta(i,j,k,bi,bj)-theta(i,j-1,k,bi,bj))
+       ENDDO
+      ENDDO
+
+C--   del^2 of T, needed for bi-harmonic (del^4) term
+      IF (diffK4T .NE. 0.) THEN
+       DO j=1-Oly+1,sNy+Oly-1
+        DO i=1-Olx+1,sNx+Olx-1
+         df4(i,j)= _recip_hFacC(i,j,k,bi,bj)
+     &             *recip_drF(k)/_rA(i,j,bi,bj)
+     &            *(
+     &             +( xA(i+1,j)*dTdx(i+1,j)-xA(i,j)*dTdx(i,j) )
+     &             +( yA(i,j+1)*dTdy(i,j+1)-yA(i,j)*dTdy(i,j) )
+     &             )
+        ENDDO
+       ENDDO
+      ENDIF
+#endif
+
 C--   Zonal flux (fZon is at west face of "theta" cell)
 #ifdef INCLUDE_T_ADVECTION_CODE
 C     o Advective component of zonal flux
@@ -120,13 +152,6 @@ C     o Advective component of zonal flux
       ENDDO
 #endif /* INCLUDE_T_ADVECTION_CODE */
 #ifdef INCLUDE_T_DIFFUSION_CODE
-C     o Zonal tracer gradient
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        dTdx(i,j) = _recip_dxC(i,j,bi,bj)*
-     &  (theta(i,j,k,bi,bj)-theta(i-1,j,k,bi,bj))
-       ENDDO
-      ENDDO
 C     o Diffusive component of zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -134,6 +159,15 @@ C     o Diffusive component of zonal flux
      &            xA(i,j)*dTdx(i,j)
        ENDDO
       ENDDO
+C     o Add the bi-harmonic contribution
+      IF (diffK4T .NE. 0.) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         df(i,j) = df(i,j) + xA(i,j)*
+     &    diffK4T*(df4(i,j)-df4(i-1,j))*_recip_dxC(i,j,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
 #endif /* INCLUDE_T_DIFFUSION_CODE */
 C     o Net zonal flux
       DO j=jMin,jMax
@@ -155,13 +189,6 @@ C     o Advective component of meridional flux
       ENDDO
 #endif /* INCLUDE_T_ADVECTION_CODE */
 #ifdef INCLUDE_T_DIFFUSION_CODE
-C     o Meridional tracer gradient
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        dTdy(i,j) = _recip_dyC(i,j,bi,bj)*
-     &  (theta(i,j,k,bi,bj)-theta(i,j-1,k,bi,bj))
-       ENDDO
-      ENDDO
 C     o Diffusive component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -169,6 +196,15 @@ C     o Diffusive component of meridional flux
      &            yA(i,j)*dTdy(i,j)
        ENDDO
       ENDDO
+C     o Add the bi-harmonic contribution
+      IF (diffK4T .NE. 0.) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         df(i,j) = df(i,j) + yA(i,j)*
+     &    diffK4T*(df4(i,j)-df4(i,j-1))*_recip_dyC(i,j,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
 #endif /* INCLUDE_T_DIFFUSION_CODE */
 C     o Net meridional flux
       DO j=jMin,jMax
