@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.12 1999/08/26 17:47:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.13 2001/02/04 14:38:46 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

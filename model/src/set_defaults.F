@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.12 2001/02/02 21:04:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.13 2001/02/04 14:38:48 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

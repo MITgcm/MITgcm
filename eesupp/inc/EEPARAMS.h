@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.7 2000/11/13 16:20:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.8 2001/02/04 14:38:41 cnh Exp $
+C $Name:  $
 C
 C     /==========================================================\
 C     | EEPARAMS.h                                               |

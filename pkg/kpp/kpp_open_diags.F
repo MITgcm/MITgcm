@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_open_diags.F,v 1.2 2001/01/29 20:09:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_open_diags.F,v 1.3 2001/02/04 14:38:50 cnh Exp $
+C $Name:  $
 
 #include "KPP_OPTIONS.h"
 

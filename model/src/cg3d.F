@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.4 2000/03/27 22:25:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.5 2001/02/04 14:38:46 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

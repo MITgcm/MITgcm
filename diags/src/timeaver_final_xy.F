@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/diags/src/Attic/timeaver_final_xy.F,v 1.8 2001/02/04 14:38:41 cnh Exp $
+C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
 CStartofinterface

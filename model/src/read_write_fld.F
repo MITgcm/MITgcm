@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write_fld.F,v 1.1 1999/05/05 18:32:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write_fld.F,v 1.2 2001/02/04 14:38:48 cnh Exp $
+C $Name:  $
 #include "CPP_OPTIONS.h"
 
 C--  File read_write_fld.F: Routines to handle mid-level I/O interface.

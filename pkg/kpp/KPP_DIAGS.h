@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/KPP_DIAGS.h,v 1.1 2000/06/21 19:45:46 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/KPP_DIAGS.h,v 1.2 2001/02/04 14:38:49 cnh Exp $
+C $Name:  $
 
 #ifdef ALLOW_KPP
 

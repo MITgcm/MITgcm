@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.13 1999/08/26 17:43:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_theta.F,v 1.14 2001/02/04 14:38:47 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.10 1998/11/30 23:45:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.11 2001/02/04 14:38:44 cnh Exp $
+C $Name:  $
 C
 C     /==========================================================\
 C     | GRID_MACROS.h                                            |

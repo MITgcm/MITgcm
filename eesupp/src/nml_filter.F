@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/nml_filter.F,v 1.1 2001/02/01 19:32:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/nml_filter.F,v 1.2 2001/02/04 14:38:44 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

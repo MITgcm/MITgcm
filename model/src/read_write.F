@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.18 2000/06/09 02:45:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.19 2001/02/04 14:38:48 cnh Exp $
+C $Name:  $
 #include "CPP_OPTIONS.h"
 
 CStartofinterface

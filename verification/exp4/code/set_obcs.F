@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp4/code/Attic/set_obcs.F,v 1.4 2000/03/14 17:47:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp4/code/Attic/set_obcs.F,v 1.5 2001/02/04 14:38:52 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

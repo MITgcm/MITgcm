@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.12 2001/02/04 14:38:43 cnh Exp $
+C $Name:  $
 #include "CPP_EEOPTIONS.h"
 CStartOfInterface
       SUBROUTINE INI_PROCS
@@ -482,4 +484,4 @@ C
       RETURN
       END
 
-C $Id: ini_procs.F,v 1.11 1999/05/24 15:19:53 adcroft Exp $
+C $Id: ini_procs.F,v 1.12 2001/02/04 14:38:43 cnh Exp $

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/memsync.F,v 1.3 1999/05/18 17:39:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/memsync.F,v 1.4 2001/02/04 14:38:44 cnh Exp $
+C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 

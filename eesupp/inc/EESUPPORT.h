@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EESUPPORT.h,v 1.5 1999/03/22 17:37:42 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EESUPPORT.h,v 1.6 2001/02/04 14:38:41 cnh Exp $
+C $Name:  $
 C
 C     /==========================================================\
 C     | EESUPPORT.h                                              |

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.11 2000/09/11 22:59:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.12 2001/02/04 14:38:45 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

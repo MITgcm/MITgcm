@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write_rec.F,v 1.2 2000/03/27 22:25:45 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write_rec.F,v 1.3 2001/02/04 14:38:48 cnh Exp $
+C $Name:  $
 #include "CPP_OPTIONS.h"
 
 C--  File read_write_rec.F: Routines to handle mid-level I/O interface.

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.13 2000/11/13 16:32:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.14 2001/02/04 14:38:44 cnh Exp $
+C $Name:  $
 C
 
 C 

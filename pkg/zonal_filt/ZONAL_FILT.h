@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/ZONAL_FILT.h,v 1.2 2001/02/02 21:36:30 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/ZONAL_FILT.h,v 1.3 2001/02/04 14:38:50 cnh Exp $
+C $Name:  $
 
 #ifdef ALLOW_ZONAL_FILT
 

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.10 2001/02/02 21:04:47 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.11 2001/02/04 14:38:44 cnh Exp $
+C $Name:  $
 C
 C     /==========================================================\
 C     | DYNVARS.h                                                |

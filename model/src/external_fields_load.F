@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.4 2000/11/29 22:29:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.5 2001/02/04 14:38:47 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
  

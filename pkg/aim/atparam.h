@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/atparam.h,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/atparam.h,v 1.3 2001/02/04 14:38:49 cnh Exp $
+C $Name:  $
 C $Namer: $
 
 C     MITgcm declaration of grid size. 

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.20 2000/11/29 22:29:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.21 2001/02/04 14:38:47 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/Attic/PARAMS_MACROS.h,v 1.1 1998/05/30 02:10:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/Attic/PARAMS_MACROS.h,v 1.2 2001/02/04 14:38:45 cnh Exp $
+C $Name:  $
 C
 C     /==========================================================\
 C     | PARAMS_MACROS.h                                          |

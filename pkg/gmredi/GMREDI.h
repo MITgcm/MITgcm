@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.4 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.5 2001/02/04 14:38:49 cnh Exp $
+C $Name:  $
 
 #ifdef ALLOW_GMREDI
 

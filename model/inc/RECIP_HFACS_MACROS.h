@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/RECIP_HFACS_MACROS.h,v 1.1 1998/08/15 16:55:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/RECIP_HFACS_MACROS.h,v 1.2 2001/02/04 14:38:45 cnh Exp $
+C $Name:  $
 C
 C     /==========================================================\
 C     | RECIP_HFACS_MACROS.h                                     |

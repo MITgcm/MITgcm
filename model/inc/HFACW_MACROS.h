@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/HFACW_MACROS.h,v 1.1 1998/05/27 21:01:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/HFACW_MACROS.h,v 1.2 2001/02/04 14:38:44 cnh Exp $
+C $Name:  $
 C
 C     /==========================================================\
 C     | HFACW_MACROS.h                                           |

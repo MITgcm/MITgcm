@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/ini_jam.F,v 1.3 2000/04/05 14:52:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/ini_jam.F,v 1.4 2001/02/04 14:38:43 cnh Exp $
+C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 

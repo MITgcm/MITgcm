@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/write_field.F,v 1.7 2000/03/15 16:00:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/write_field.F,v 1.8 2001/02/04 14:38:44 cnh Exp $
+C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 

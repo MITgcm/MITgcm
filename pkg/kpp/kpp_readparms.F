@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.4 2001/02/04 14:38:50 cnh Exp $
+C $Name:  $
 #include "KPP_OPTIONS.h"
 
       SUBROUTINE KPP_READPARMS( myThid )

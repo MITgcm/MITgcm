@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.5 2000/11/30 20:02:41 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.6 2001/02/04 14:38:48 cnh Exp $
+C $Name:  $
 #include "CPP_OPTIONS.h"
 
 C--  File read_write.F: Routines to handle mid-level I/O interface.

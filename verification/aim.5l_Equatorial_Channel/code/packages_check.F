@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/packages_check.F,v 1.2 2001/02/02 21:36:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/packages_check.F,v 1.3 2001/02/04 14:38:51 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

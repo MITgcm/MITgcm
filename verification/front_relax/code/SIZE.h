@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code/SIZE.h,v 1.2 2000/07/13 18:08:47 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code/SIZE.h,v 1.3 2001/02/04 14:38:52 cnh Exp $
+C $Name:  $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |

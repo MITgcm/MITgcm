@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/eesupp/src/comm_stats.F,v 1.4 2001/02/04 14:38:42 cnh Exp $
+C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE COMM_STATS

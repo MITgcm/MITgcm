@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.6 2000/04/05 17:52:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.7 2001/02/04 14:38:47 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

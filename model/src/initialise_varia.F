@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.5 2001/02/02 21:04:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.6 2001/02/04 14:38:48 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.7 2001/01/30 20:49:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.8 2001/02/04 14:38:43 cnh Exp $
+C $Name:  $
 
 C--   File global_sum.F: Routines that perform global sum on an array
 C                        of thread values.

@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.4 2001/02/04 14:38:47 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
  

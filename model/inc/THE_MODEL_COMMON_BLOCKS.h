@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/THE_MODEL_COMMON_BLOCKS.h,v 1.4 1999/03/12 16:44:04 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/THE_MODEL_COMMON_BLOCKS.h,v 1.5 2001/02/04 14:38:45 cnh Exp $
+C $Name:  $
 C
 #include "PARAMS.h"
 #include "GRID.h"

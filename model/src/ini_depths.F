@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.21 2001/02/02 21:04:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.22 2001/02/04 14:38:47 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cycle_tracer.F,v 1.2 2001/02/02 21:04:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cycle_tracer.F,v 1.3 2001/02/04 14:38:46 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/eesupp/src/bar2.F,v 1.3 2001/02/04 14:38:42 cnh Exp $
+C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE BAR2_INIT( myThid )

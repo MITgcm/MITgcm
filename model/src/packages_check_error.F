@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/packages_check_error.F,v 1.1 2000/09/11 20:42:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/packages_check_error.F,v 1.2 2001/02/04 14:38:48 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

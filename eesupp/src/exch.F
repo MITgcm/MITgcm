@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch.F,v 1.10 2001/02/04 14:38:43 cnh Exp $
+C $Name:  $
 C--   File exch.F: Routines that perform atomic communication operations 
 C                  i.e. communication operations that are completed by
 C                  time the routines return. 
@@ -265,4 +267,4 @@ C                begine.
       RETURN
       END
 
-C $Id: exch.F,v 1.9 1999/05/24 15:15:11 adcroft Exp $
+C $Id: exch.F,v 1.10 2001/02/04 14:38:43 cnh Exp $

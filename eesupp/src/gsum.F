@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/eesupp/src/gsum.F,v 1.5 2001/02/04 14:38:43 cnh Exp $
+C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE GSUM_R8_INIT( myThid )

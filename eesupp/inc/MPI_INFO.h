@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/MPI_INFO.h,v 1.2 2001/02/04 14:38:42 cnh Exp $
+C $Name:  $
 C      Parameters used with MPI.
 
        COMMON /MPI_INFO/

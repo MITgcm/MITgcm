@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_y.F,v 1.4 1999/05/03 21:40:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_y.F,v 1.5 2001/02/04 14:38:43 cnh Exp $
+C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_RECV_GET_Y( array,

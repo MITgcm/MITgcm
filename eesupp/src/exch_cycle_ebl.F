@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_cycle_ebl.F,v 1.1 1998/09/29 18:53:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_cycle_ebl.F,v 1.2 2001/02/04 14:38:43 cnh Exp $
+C $Name:  $
 
       SUBROUTINE EXCH_CYCLE_EBL( myThid )
 C     /==========================================================\

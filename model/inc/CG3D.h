@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG3D.h,v 1.2 1999/05/18 17:40:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CG3D.h,v 1.3 2001/02/04 14:38:44 cnh Exp $
+C $Name:  $
 
 #ifdef ALLOW_NONHYDROSTATIC
 C     /==========================================================\

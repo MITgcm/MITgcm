@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/Attic/DFILE.h,v 1.4 2000/03/15 16:00:50 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/Attic/DFILE.h,v 1.5 2001/02/04 14:38:41 cnh Exp $
+C $Name:  $
 
 #ifdef USE_DFILE
 

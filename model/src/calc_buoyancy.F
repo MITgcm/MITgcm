@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.6 2000/03/27 22:25:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.7 2001/02/04 14:38:45 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

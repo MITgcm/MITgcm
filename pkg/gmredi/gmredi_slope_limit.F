@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.2 2001/01/08 20:11:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.3 2001/02/04 14:38:49 cnh Exp $
+C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.3 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_readparms.F,v 1.4 2001/02/04 14:38:49 cnh Exp $
+C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 

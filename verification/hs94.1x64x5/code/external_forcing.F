@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code/Attic/external_forcing.F,v 1.2 2001/02/02 21:36:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code/Attic/external_forcing.F,v 1.3 2001/02/04 14:38:53 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

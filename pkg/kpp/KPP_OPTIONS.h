@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.5 2001/02/04 14:38:49 cnh Exp $
+C $Name:  $
 C     /==========================================================\
 C     | KPP_OPTIONS.h                                            |
 C     | o CPP options file for KPP package.                      |

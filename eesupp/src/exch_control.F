@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_control.F,v 1.5 2001/01/29 20:00:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_control.F,v 1.6 2001/02/04 14:38:43 cnh Exp $
+C $Name:  $
 
 C      MITgcmUV Exchange routine
 C      -------------------------

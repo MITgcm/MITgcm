@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.13 2001/02/02 21:04:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.14 2001/02/04 14:38:47 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 #define USE_FACTORIZED_POLY

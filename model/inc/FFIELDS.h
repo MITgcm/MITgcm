@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.9 2000/11/29 22:29:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.10 2001/02/04 14:38:44 cnh Exp $
+C $Name:  $
 C
 C     /==========================================================\
 C     | FFIELDS.h                                                |

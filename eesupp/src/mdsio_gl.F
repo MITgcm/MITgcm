@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio_gl.F,v 1.2 2001/02/02 21:04:47 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio_gl.F,v 1.3 2001/02/04 14:38:44 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

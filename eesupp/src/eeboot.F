@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.8 2000/03/27 22:25:40 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.9 2001/02/04 14:38:42 cnh Exp $
+C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 

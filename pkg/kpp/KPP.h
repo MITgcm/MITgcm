@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP.h,v 1.5 2001/01/29 20:09:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP.h,v 1.6 2001/02/04 14:38:49 cnh Exp $
+C $Name:  $
 
 #ifdef ALLOW_KPP
 

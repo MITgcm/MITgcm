@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.7 2000/11/14 03:43:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.8 2001/02/04 14:38:48 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

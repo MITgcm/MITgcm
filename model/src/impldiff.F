@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.14 2001/01/29 20:04:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.15 2001/02/04 14:38:47 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

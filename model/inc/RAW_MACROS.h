@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/RAW_MACROS.h,v 1.1 1998/11/30 23:45:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/RAW_MACROS.h,v 1.2 2001/02/04 14:38:45 cnh Exp $
+C $Name:  $
 C
 C     /==========================================================\
 C     | RAW_MACROS.h                                             |

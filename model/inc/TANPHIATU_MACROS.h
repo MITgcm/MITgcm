@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/TANPHIATU_MACROS.h,v 1.1 1998/06/08 21:43:00 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/TANPHIATU_MACROS.h,v 1.2 2001/02/04 14:38:45 cnh Exp $
+C $Name:  $
 C
 C     /==========================================================\
 C     | TANPHIATU_MACROS.h                                       |

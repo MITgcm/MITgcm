@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.1 2000/04/05 19:04:14 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.2 2001/02/04 14:38:48 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.6 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.7 2001/02/04 14:38:50 cnh Exp $
+C $Name:  $
 
 #include "KPP_OPTIONS.h"
 

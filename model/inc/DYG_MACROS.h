@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYG_MACROS.h,v 1.2 1998/05/30 02:10:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYG_MACROS.h,v 1.3 2001/02/04 14:38:44 cnh Exp $
+C $Name:  $
 C
 C     /==========================================================\
 C     | DYG_MACROS.h                                             |

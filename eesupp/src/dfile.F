@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.10 2000/03/15 16:00:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.11 2001/02/04 14:38:42 cnh Exp $
+C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 

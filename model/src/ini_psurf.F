@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.1 2000/04/05 17:52:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.2 2001/02/04 14:38:47 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/fftpack.F,v 1.3 2001/02/04 14:38:50 cnh Exp $
+C $Name:  $
 C     SUBROUTINE RFFTB (N,R,WSAVE)
 C     DIMENSION       R(1)       ,WSAVE(1)
 C     IF (N .EQ. 1) RETURN

@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/diags/inc/Attic/AVER.h,v 1.8 2001/02/04 14:38:41 cnh Exp $
+C $Name:  $
 C
 C--   98/06/12 - elk
 C

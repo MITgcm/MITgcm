@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.6 2001/02/04 14:38:46 cnh Exp $
+C $Name:  $
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE CALC_GW(     

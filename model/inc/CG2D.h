@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.5 1998/10/28 03:11:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.6 2001/02/04 14:38:44 cnh Exp $
+C $Name:  $
 C
 C     /==========================================================\
 C     | CG2D.h                                                   |

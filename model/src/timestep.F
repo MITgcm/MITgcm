@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.19 2001/02/02 21:04:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.20 2001/02/04 14:38:48 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 

@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.17 2000/09/11 23:00:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.18 2001/02/04 14:38:46 cnh Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
