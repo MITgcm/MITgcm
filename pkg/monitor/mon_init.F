@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.7 2004/09/10 12:19:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.8 2004/09/23 03:28:42 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -19,9 +19,6 @@ C     !USES:
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "MONITOR.h"
-#ifdef ALLOW_MNC
-#include "MNC_PARAMS.h"
-#endif
 
 C     !INPUT PARAMETERS:
       INTEGER myThid

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.19 2004/09/22 02:50:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.20 2004/09/23 03:28:42 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -103,8 +103,8 @@ C       Update the record dimension by writing the iteration number
      &       dim, dn, ib, ie, myThid)
         CALL MNC_CW_ADD_VNAME('level_indicies', 'diag_levels', 
      &       0,0, myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('level_indicies',1,'description',
-     &       'Idicies of vertical levels within the data source arrays',
+        CALL MNC_CW_ADD_VATTR_TEXT('level_indicies','description',
+     &    'Idicies of vertical levels within the data source arrays',
      &       myThid)
         
         CALL MNC_CW_RL_W('I',diag_mnc_bn,0,0,
@@ -206,9 +206,9 @@ C             Z is special since it varies
      &             dim, dn, ib, ie, myThid)
               CALL MNC_CW_ADD_VNAME(cdiag(m), 'diag_cw_temp', 
      &             4,5, myThid)
-              CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),1,'description',
+              CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),'description',
      &             tdiag(m),myThid)
-              CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),1,'units',
+              CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),'units',
      &             udiag(m),myThid)
 
               CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,

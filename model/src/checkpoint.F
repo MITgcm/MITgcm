@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.44 2004/09/10 12:19:29 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.45 2004/09/23 03:28:42 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -193,7 +193,7 @@ c         CALL MDSREADFIELD(fn,prec,'RL',Nr, gWnm1,3,myThid)
       ENDIF
       
 #ifdef ALLOW_MNC
-      IF (pickup_read_mnc) THEN
+      IF (useMNC .AND. pickup_read_mnc) THEN
         CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
         CALL MNC_CW_SET_UDIM(fn, 1, myThid)
         CALL MNC_CW_RL_R('D',fn,0,0,'U',uVel, myThid)
@@ -486,7 +486,7 @@ C         &    myIter,myThid)
       ENDIF
 
 #ifdef ALLOW_MNC
-      IF (pickup_write_mnc) THEN
+      IF (useMNC .AND. pickup_write_mnc) THEN
         CALL MNC_CW_SET_UDIM(fn, -1, myThid)
         CALL MNC_CW_I_W('I',fn,0,0,'iter', myIter, myThid)
         CALL MNC_CW_SET_UDIM(fn, 0, myThid)

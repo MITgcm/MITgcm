@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.124 2004/09/21 00:08:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.125 2004/09/23 03:28:42 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -738,23 +738,25 @@ C     o Monitor (should also add CPP flag for monitor?)
       ENDIF
 
 #ifdef ALLOW_MNC
-C     IO handling is done in one of two senses:
+      IF (useMNC) THEN
+C       IO handling is done in one of two senses:
 C     
-C     [*_ioinc=.TRUE.] is an "inclusive-or" meaning that one or more
+C       [*_ioinc=.TRUE.] is an "inclusive-or" meaning that one or more
 C          write methods can occur simultaneously
-C     [*_ioinc=.FALSE.] is an "exclusive-or" meaning that only write
-C          method can occur
+C       [*_ioinc=.FALSE.] is an "exclusive-or" meaning that only one 
+C          write method can occur in a given run
 C     
-C     Since all the *_mdsio flags default to .TRUE. and all *_ioinc
-C     default to .FALSE., the logic here is simple:
-      IF ( (.NOT. pickup_write_ioinc) 
-     &     .AND. pickup_write_mnc ) pickup_write_mdsio = .FALSE.
-      IF ( (.NOT. timeave_ioinc) 
-     &     .AND. timeave_mnc ) timeave_mdsio = .FALSE.
-      IF ( (.NOT. snapshot_ioinc) 
-     &     .AND. snapshot_mnc ) snapshot_mdsio = .FALSE.
-      IF ( (.NOT. monitor_ioinc) 
-     &     .AND. monitor_mnc ) monitor_stdio = .FALSE.
+C       Since all the *_mdsio flags default to .TRUE. and all *_ioinc
+C       default to .FALSE., the logic here is simple:
+        IF ( (.NOT. pickup_write_ioinc) 
+     &       .AND. pickup_write_mnc ) pickup_write_mdsio = .FALSE.
+        IF ( (.NOT. timeave_ioinc) 
+     &       .AND. timeave_mnc ) timeave_mdsio = .FALSE.
+        IF ( (.NOT. snapshot_ioinc) 
+     &       .AND. snapshot_mnc ) snapshot_mdsio = .FALSE.
+        IF ( (.NOT. monitor_ioinc) 
+     &       .AND. monitor_mnc ) monitor_stdio = .FALSE.
+      ENDIF
 #endif
 
 C--   Grid parameters

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.4 2004/08/18 15:55:21 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.5 2004/09/23 03:28:42 edhill Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -20,6 +20,9 @@ C     == Global variables ===
 #include "fizhi_land_coms.h"
 #include "fizhi_earth_coms.h"
 #include "EEPARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
       EXTERNAL ILNBLNK
       INTEGER ILNBLNK
 
@@ -112,6 +115,9 @@ C     == Global variables ===
 #include "fizhi_land_coms.h"
 #include "fizhi_earth_coms.h"
 #include "EEPARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
       EXTERNAL ILNBLNK
       INTEGER ILNBLNK
 

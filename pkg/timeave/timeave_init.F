@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_init.F,v 1.1 2004/09/10 12:19:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_init.F,v 1.2 2004/09/23 03:28:43 edhill Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -35,53 +35,53 @@ CEOP
       IF (useMNC) THEN
 
       CALL MNC_CW_ADD_VNAME('ETAtave', 'Cen_xy_Hn__-__t',3,4,myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('ETAtave',1,'long_name',
+      CALL MNC_CW_ADD_VATTR_TEXT('ETAtave','long_name',
      &     'time-averaged free-surface_r-anomaly', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('ETAtave',1,'units','m', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('ETAtave',1,
+      CALL MNC_CW_ADD_VATTR_TEXT('ETAtave','units','m', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('ETAtave',
      &     'coordinates','XC YC RC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('ETA2tave', 'Cen_xy_Hn__-__t',3,4,myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('ETA2tave',1,'long_name',
+      CALL MNC_CW_ADD_VATTR_TEXT('ETA2tave','long_name',
      &     'time-averaged free-surface_r-anomaly squared', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('ETA2tave',1,'units','m^2', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('ETA2tave',1,
+      CALL MNC_CW_ADD_VATTR_TEXT('ETA2tave','units','m^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('ETA2tave',
      &     'coordinates','XC YC RC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('Ttave', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('Ttave',1,'units','degC', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('Ttave',1,'long_name',
+      CALL MNC_CW_ADD_VATTR_TEXT('Ttave','units','degC', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Ttave','long_name',
      &     'time-averaged potential_temperature', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('Ttave',1,
+      CALL MNC_CW_ADD_VATTR_TEXT('Ttave',
      &     'coordinates','XC YC RC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('Stave', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('Stave',1,'long_name',
+      CALL MNC_CW_ADD_VATTR_TEXT('Stave','long_name',
      &     'time-averaged salinity', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('Stave',1,
+      CALL MNC_CW_ADD_VATTR_TEXT('Stave',
      &     'coordinates','XC YC RC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('uVeltave', 'U_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('uVeltave',1,'units','m/s', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('uVeltave',1,
+      CALL MNC_CW_ADD_VATTR_TEXT('uVeltave','units','m/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('uVeltave',
      &     'coordinates','XU YU RC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('vVeltave', 'V_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('vVeltave',1,'units','m/s', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('vVeltave',1,
+      CALL MNC_CW_ADD_VATTR_TEXT('vVeltave','units','m/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('vVeltave',
      &     'coordinates','XV YV RC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('wVeltave', 'Cen_xy_Hn__C__t',4,5,myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('wVeltave',1,'units','m/s', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('wVeltave','units','m/s', myThid)
 
       CALL MNC_CW_ADD_VNAME('UTtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('UTtave',1,'units','degC*m/s',myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('UTtave','units','degC*m/s',myThid)
 
       CALL MNC_CW_ADD_VNAME('VTtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('VTtave',1,'units','degC*m/s',myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('VTtave','units','degC*m/s',myThid)
 
       CALL MNC_CW_ADD_VNAME('WTtave', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('WTtave',1,'units','degC*m/s',myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('WTtave','units','degC*m/s',myThid)
 
       CALL MNC_CW_ADD_VNAME('UStave', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VNAME('VStave', 'Cen_xy_Hn__C__t', 4,5, myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_mnc_init.F,v 1.4 2004/08/06 21:12:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_mnc_init.F,v 1.5 2004/09/23 03:28:42 edhill Exp $
 C $Name:  $
       
 #include "FIZHI_OPTIONS.h"
@@ -19,6 +19,9 @@ C     !USES:
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
 #include "fizhi_land_SIZE.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT PARAMETERS:
       integer myThid
@@ -59,6 +62,8 @@ C     ......12345....12345....12345....12345....12345...
      &     'Zph  ', 'Zphi ', '     ', '     ', '     '  /
       data time_dat /
      &     '-    ', 't    ', '     ', '     ', '     '  /
+
+      IF (useMNC) THEN
 
 C     Define a few "standard" or "convenience" types
       ncomb = 0
@@ -274,6 +279,8 @@ C     name           1234567890
       CALL MNC_CW_ADD_VNAME('xlmt', 'fizhi_chiplev', 3,4, myThid)
       CALL MNC_CW_ADD_VNAME('khmt', 'fizhi_chiplev', 3,4, myThid)
       CALL MNC_CW_ADD_VNAME('tke', 'fizhi_chiplev', 3,4, myThid)
+
+      ENDIF
 
 #endif  /*  ALLOW_MNC  */
       

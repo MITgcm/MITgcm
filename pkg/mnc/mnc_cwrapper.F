@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.19 2004/09/22 21:19:44 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.20 2004/09/23 03:28:42 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -27,8 +27,8 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid, ndim
       character*(*) name
-      integer dlens(ndim), inds_beg(ndim), inds_end(ndim)
-      character*(*) dnames(ndim)
+      integer dlens(*), inds_beg(*), inds_end(*)
+      character*(*) dnames(*)
 CEOP
 
 C     !LOCAL VARIABLES:
@@ -618,14 +618,11 @@ C     Check that this vname is not already defined
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C     !ROUTINE: MNC_CW_ADD_VATTR_TEXT
-
 C     !INTERFACE:
       SUBROUTINE MNC_CW_ADD_VATTR_TEXT( 
-     I     vname, 
-     I     tname, 
-     I     tval, 
+     I     vname, tname, tval, 
      I     myThid )
 
 C     !DESCRIPTION:
@@ -637,27 +634,25 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid
       character*(*) vname, tname, tval
+      integer ival
+      REAL*8 dval
 CEOP
-
-      CALL MNC_CW_ADD_VATTR_ANY(vname, 
-     &     tname, ' ', ' ', 
-     &     tval, 0, 0.0D0, myThid )
-
+      ival = 0
+      dval = 0.0D0
+      CALL MNC_CW_ADD_VATTR_ANY(vname, 1,
+     &     tname, ' ', ' ', tval, ival, dval, myThid )
       RETURN
       END
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: MNC_CW_ADD_VATTR_INT
-
 C     !INTERFACE:
       SUBROUTINE MNC_CW_ADD_VATTR_INT( 
-     I     vname, 
-     I     iname, 
-     I     ival, 
+     I     vname, iname, ival, 
      I     myThid )
 
 C     !DESCRIPTION:
+C     Add integer attribute
 
 C     !USES:
       implicit none
@@ -666,27 +661,23 @@ C     !INPUT PARAMETERS:
       integer myThid
       character*(*) vname, iname
       integer ival
+      REAL*8 dval
 CEOP
-
-      CALL MNC_CW_ADD_VATTR_ANY(vname, 
-     &     ' ', iname, ' ', 
-     &     ' ', ival, 0.0D0, myThid )
-
+      dval = 0.0D0
+      CALL MNC_CW_ADD_VATTR_ANY(vname, 2,
+     &     ' ', iname, ' ', ' ', ival, dval, myThid )
       RETURN
       END
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 0
+CBOP
 C !ROUTINE: MNC_CW_ADD_VATTR_DBL
-
 C !INTERFACE:
       SUBROUTINE MNC_CW_ADD_VATTR_DBL( 
-     I     vname, 
-     I     dname, 
-     I     dval, 
+     I     vname, dname, dval, 
      I     myThid )
 
 C     !DESCRIPTION:
+C     Add double-precision real attribute 
 
 C     !USES:
       implicit none
@@ -694,16 +685,14 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid
       character*(*) vname, dname
+      integer ival
       REAL*8 dval
 CEOP
-
-      CALL MNC_CW_ADD_VATTR_ANY(vname, 
-     &     ' ', ' ', dname, 
-     &     ' ', 0, dval, myThid )
-
+      ival = 0
+      CALL MNC_CW_ADD_VATTR_ANY(vname, 3,
+     &     ' ', ' ', dname, ' ', ival, dval, myThid )
       RETURN
       END
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 1
 C     !ROUTINE: MNC_CW_ADD_VATTR_ANY
@@ -711,6 +700,7 @@ C     !ROUTINE: MNC_CW_ADD_VATTR_ANY
 C     !INTERFACE:
       SUBROUTINE MNC_CW_ADD_VATTR_ANY( 
      I     vname, 
+     I     atype,
      I     tname, iname, dname,
      I     tval,  ival,  dval, 
      I     myThid )
@@ -724,6 +714,7 @@ C     !USES:
 
 C     !INPUT PARAMETERS:
       integer myThid
+      integer atype
       character*(*) vname
       character*(*) tname, iname, dname
       character*(*) tval
@@ -750,35 +741,44 @@ C     Check that vname is defined
         stop 'ABNORMAL END: S/R MNC_CW_ADD_VATTR_ANY'
       ENDIF
 
-C     Text Attributes
-      n = mnc_cw_vnat(1,indv)
-      n1 = IFNBLNK(tname)
-      n2 = ILNBLNK(tname)
-      mnc_cw_vtnm(n+1,indv)(1:MNC_MAX_CHAR) =
-     &     mnc_blank_name(1:MNC_MAX_CHAR)
-      mnc_cw_vtnm(n+1,indv)(1:(n2-n1+1)) = tname(n1:n2)
-      n1 = IFNBLNK(tval)
-      n2 = ILNBLNK(tval)
-      mnc_cw_vtat(n+1,indv)(1:MNC_MAX_CHAR) =
+      IF (atype .EQ. 1) THEN
+C       Text Attribute
+        n = mnc_cw_vnat(1,indv) + 1
+        n1 = IFNBLNK(tname)
+        n2 = ILNBLNK(tname)
+C       write(*,*) atype,tname(n1:n2)
+        mnc_cw_vtnm(n,indv)(1:MNC_MAX_CHAR) =
      &       mnc_blank_name(1:MNC_MAX_CHAR)
-      mnc_cw_vtat(n+1,indv)(1:(n2-n1+1)) = tval(n1:n2)
-      mnc_cw_vnat(1,indv) = n + 1
-      
-C     Integer Attributes
-      n = mnc_cw_vnat(2,indv)
-      n1 = IFNBLNK(iname)
-      n2 = ILNBLNK(iname)
-      mnc_cw_vinm(n+1,indv)(1:(n2-n1+1)) = iname(n1:n2)
-      mnc_cw_viat(n+1,indv) = ival
-      mnc_cw_vnat(2,indv) = n + 1
+        mnc_cw_vtnm(n,indv)(1:(n2-n1+1)) = tname(n1:n2)
+        n1 = IFNBLNK(tval)
+        n2 = ILNBLNK(tval)
+        mnc_cw_vtat(n,indv)(1:MNC_MAX_CHAR) =
+     &       mnc_blank_name(1:MNC_MAX_CHAR)
+        mnc_cw_vtat(n,indv)(1:(n2-n1+1)) = tval(n1:n2)
+        mnc_cw_vnat(1,indv) = n
+      ENDIF
+        
+      IF (atype .EQ. 2) THEN
+C       Integer Attribute
+        n = mnc_cw_vnat(2,indv) + 1
+        n1 = IFNBLNK(iname)
+        n2 = ILNBLNK(iname)
+C       write(*,*) atype,iname(n1:n2)
+        mnc_cw_vinm(n,indv)(1:(n2-n1+1)) = iname(n1:n2)
+        mnc_cw_viat(n,indv) = ival
+        mnc_cw_vnat(2,indv) = n
+      ENDIF
 
-C     Double Attributes
-      n = mnc_cw_vnat(3,indv)
-      n1 = IFNBLNK(dname)
-      n2 = ILNBLNK(dname)
-      mnc_cw_vdnm(n+1,indv)(1:(n2-n1+1)) = dname(n1:n2)
-      mnc_cw_vdat(n+1,indv) = dval
-      mnc_cw_vnat(3,indv) = n + 1
+      IF (atype .EQ. 3) THEN
+C       Double Attribute
+        n = mnc_cw_vnat(3,indv) + 1
+        n1 = IFNBLNK(dname)
+        n2 = ILNBLNK(dname)
+C       write(*,*) atype,dname(n1:n2)
+        mnc_cw_vdnm(n,indv)(1:(n2-n1+1)) = dname(n1:n2)
+        mnc_cw_vdat(n,indv) = dval
+        mnc_cw_vnat(3,indv) = n
+      ENDIF
       
       RETURN
       END
