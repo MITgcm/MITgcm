@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.18 1998/06/15 05:13:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.19 1998/06/17 21:07:02 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -72,7 +72,8 @@ C--   Time stepping parammeters
       NAMELIST /PARM03/
      & nIter0, nTimeSteps, deltaT, deltaTmom, deltaTtracer, abEps, tauCD, rCD,
      & startTime, endTime, chkPtFreq, dumpFreq, deltaTClock, pChkPtFreq,
-     & cAdjFreq, tauThetaClimRelax, tauSaltClimRelax
+     & cAdjFreq, tauThetaClimRelax, tauSaltClimRelax,
+     & periodicExternalForcing, externForcingPeriod, externForcingCycle
 
 C--   Gridding parameters
       NAMELIST /PARM04/
@@ -292,6 +293,9 @@ C--   Time stepping parameters
       doThetaClimRelax  = .FALSE.
       tauSaltClimRelax  = 0. _d 0
       doSaltClimRelax   = .FALSE.
+      periodicExternalForcing = .FALSE.
+      externForcingPeriod = 0.
+      externForcingCycle = 0.
       READ(UNIT=iUnit,NML=PARM03,IOSTAT=errIO,err=7)
       IF ( errIO .GE. 0 ) GOTO 8
     7 CONTINUE
@@ -317,6 +321,33 @@ C     o Time step size
       IF ( deltaTmom    .EQ. 0. ) deltaTmom    = deltaT
       IF ( deltaTtracer .EQ. 0. ) deltaTtracer = deltaT
       IF ( deltaTClock  .EQ. 0. ) deltaTClock  = deltaT
+      IF ( periodicExternalForcing ) THEN
+       IF ( externForcingCycle*externForcingPeriod .EQ. 0. ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'S/R INI_PARMS: externForcingCycle,externForcingPeriod =0'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R INI_PARMS'
+       ENDIF
+       IF ( INT(externForcingCycle/externForcingPeriod) .NE.
+     &          externForcingCycle/externForcingPeriod ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'S/R INI_PARMS: externForcingCycle <> N*externForcingPeriod'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R INI_PARMS'
+       ENDIF
+       IF ( externForcingCycle.le.externForcingPeriod ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'S/R INI_PARMS: externForcingCycle < externForcingPeriod'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R INI_PARMS'
+       ENDIF
+       IF ( externForcingPeriod.lt.deltaTclock ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'S/R INI_PARMS: externForcingPeriod < deltaTclock'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R INI_PARMS'
+       ENDIF
+      ENDIF
 C     o Convection frequency
       IF ( cAdjFreq .LT. 0. ) THEN
        cAdjFreq = deltaTClock
@@ -459,6 +490,7 @@ C--   Input files
       zonalWindFile   = ' '
       meridWindFile   = ' '
       thetaClimFile   = ' '
+      saltClimFile    = ' '
       READ(UNIT=iUnit,NML=PARM05,IOSTAT=errIO,err=11)
       IF ( errIO .GE. 0 ) GOTO 12
    11 CONTINUE

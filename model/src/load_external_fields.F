@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.1 1998/06/15 05:13:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.2 1998/06/17 21:07:02 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
  
@@ -46,9 +46,14 @@ C     === Local variables ===
 C     Simple example of loading a climatology at the
 C     first time step that is the used in a relaxation term
 C     in the surface layer.
-      IF ( myTime .EQ. startTime ) THEN
-       CALL LOAD_THETA_CLIMATOLOGY( myThid )
-       CALL LOAD_SALT_CLIMATOLOGY( myThid )
+Cskip IF ( myTime .EQ. startTime ) THEN
+Cskip  CALL LOAD_THETA_CLIMATOLOGY( myThid )
+Cskip  CALL LOAD_SALT_CLIMATOLOGY( myThid )
+Cskip  CALL LOAD_WIND_STRESS_CLIMATOLOGY( myThid )
+Cskip ENDIF
+
+      IF ( periodicExternalForcing ) THEN
+       CALL LOAD_INTERPOLATE_FORCING( myIter, myTime , myThid )
       ENDIF
 
       RETURN
@@ -75,7 +80,7 @@ C     === Local variables ===
 C     msgBuf - Error message buffer
       CHARACTER*(MAX_LEN_FNAM) msgBuf
 
-      IF ( thetaClimFile .EQ. ' ' ) THEN
+      IF ( saltClimFile .EQ. ' ' ) THEN
 C--    Check that relaxation term is off
        IF ( doSaltClimRelax ) THEN
         WRITE(msgBuf,'(A)')  'S/R LOAD_SALT_CLIMATOLOGY'
@@ -87,14 +92,14 @@ C--    Check that relaxation term is off
       ELSE
 C--    Load value from file
        _BEGIN_MASTER( myThid )
-       CALL READ_FLD_XYZ_RS( saltClimFile, ' ', saltClim, 0, myThid )
+       CALL READ_FLD_XY_RS( saltClimFile, ' ', SSS, 0, myThid )
        _END_MASTER(   myThid )
       ENDIF
 
-      _EXCH_XYZ_R4( saltClim, myThid )
+      _EXCH_XY_R4( SSS, myThid )
 
 C
-      CALL PLOT_FIELD_XYZRS( saltClim, 'Salt Climatology' , Nz, 1, myThid )
+c     CALL PLOT_FIELD_XYRS( SSS, 'Salt Climatology' , Nz, 1, myThid )
 C
 
       RETURN
@@ -133,15 +138,425 @@ C--    Check that relaxation term is off
       ELSE
 C--    Load value from file
        _BEGIN_MASTER( myThid )
-       CALL READ_FLD_XYZ_RS( thetaClimFile, ' ', thetaClim, 0, myThid )
+       CALL READ_FLD_XY_RS( thetaClimFile, ' ', SST, 0, myThid )
        _END_MASTER(   myThid )
       ENDIF
 
-      _EXCH_XYZ_R4( thetaClim, myThid )
+      _EXCH_XY_R4( SST, myThid )
+C
+c     CALL PLOT_FIELD_XYRS( SST, 'Theta Climatology' , Nz, 1, myThid )
+C
+      RETURN
+      END
 
+CStartOfInterface
+      SUBROUTINE LOAD_WIND_STRESS_CLIMATOLOGY( myThid )
+C     /==========================================================\
+C     | S/R LOAD_WIND_STRESS_CLIMATOLOGY                         |
+C     \==========================================================?
+
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "FFIELDS.h"
+
+C     === Routine arguments ===
+      INTEGER myThid
+
+CEndOfInterface
+
+C     === Local variables ===
+C     msgBuf - Error message buffer
+      CHARACTER*(MAX_LEN_FNAM) msgBuf
+      INTEGER bi,bj,i,j
+
+
+      _BEGIN_MASTER(myThid)
+
+      IF (.NOT. zonalWindFile .EQ. ' ' ) THEN
+       CALL READ_FLD_XY_RS( zonalWindFile, ' ', fu, 0, myThid )
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           fu(i,j,bi,bj) = fu(i,j,bi,bj)/(delZ(1)*rhonil)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+
+      IF (.NOT. meridWindFile .EQ. ' ' ) THEN
+       CALL READ_FLD_XY_RS( meridWindFile, ' ', fv, 0, myThid )
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           fv(i,j,bi,bj) = fv(i,j,bi,bj)/(delZ(1)*rhonil)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+
+      _END_MASTER(myThid)
 C
-      CALL PLOT_FIELD_XYZRS( thetaClim, 'Theta Climatology' , Nz, 1, myThid )
+      _EXCH_XY_R4(fu  , myThid )
+      _EXCH_XY_R4(fv  , myThid )
 C
+      CALL PLOT_FIELD_XYRS( fu, 'S/R LOAD_WIND_STRESS_CLIMATOLOGY FU',1,myThid)
+      CALL PLOT_FIELD_XYRS( fv, 'S/R LOAD_WIND_STRESS_CLIMATOLOGY FV',1,myThid)
+C
+      RETURN
+      END
+
+CStartOfInterface
+      SUBROUTINE LOAD_INTERPOLATE_FORCING( myIter, myTime, myThid )
+C     /==========================================================\
+C     | S/R LOAD_INTERPOLATE_FORCING                             |
+C     \==========================================================?
+
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "FFIELDS.h"
+
+C     === Routine arguments ===
+      REAL myTime
+      INTEGER myIter,myThid
+
+CEndOfInterface
+
+C     === Functions ===
+      LOGICAL DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
+C     === Local variables ===
+C     msgBuf - Error message buffer
+      CHARACTER*(MAX_LEN_FNAM) msgBuf
+      INTEGER bi,bj,i,j,intime0,intime1
+      CHARACTER*(40) filename
+      REAL aWght
+
+      IF (
+     &  DIFFERENT_MULTIPLE(externForcingPeriod,myTime,myTime-deltaTClock)
+     &  .OR. myTime .EQ. startTime
+     & ) THEN
+
+       _BEGIN_MASTER(myThid)
+
+C      If the above condition is met then we need to read in
+C      data for the period ahead and the period behind myTime.
+       write(0,*) 'S/R LOAD_INTERPOLATE_FORCING: Reading new data',myTime,myIter
+       intime0=int( (myTime-externForcingCycle*
+     &               int(myTime/externForcingCycle)
+     &              )/externForcingPeriod )
+       intime1=int( (myTime+externForcingPeriod-externForcingCycle*
+     &              int((myTime+externForcingPeriod)/externForcingCycle)
+     &              )/externForcingPeriod )
+
+C--    SST
+       WRITE(filename(1:40),'(A,I10.10,A)') 
+     &      'levtemp.',intime0+1,'.bin'
+       CALL READ_FLD_XY_RS( filename, ' ', SST, myIter, myThid )
+       WRITE(filename(1:40),'(A,I10.10,A)') 
+     &      'levtemp.',intime1+1,'.bin'
+       CALL READ_FLD_XY_RS( filename, ' ', SSTdot, myIter, myThid )
+    
+C      Set SSTdot to the total change over the period
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           SSTdot(i,j,bi,bj) = SSTdot(i,j,bi,bj)-SST(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C      Interpolate SST to correct time (necessary only for myTime=startTime)
+       aWght=(myTime-externForcingCycle*
+     &               int(myTime/externForcingCycle)
+     &       )/externForcingPeriod - float(intime0)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           SST(i,j,bi,bj) = SST(i,j,bi,bj)+aWght*SSTdot(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+C      Convert SSTdot into the increment to SST per time-step (here after)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           SSTdot(i,j,bi,bj)=SSTdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C
+
+C--    SSS
+       WRITE(filename(1:40),'(A,I10.10,A)') 
+     &      'levsalt.',intime0+1,'.bin'
+       CALL READ_FLD_XY_RS( filename, ' ', SSS, myIter, myThid )
+       WRITE(filename(1:40),'(A,I10.10,A)') 
+     &      'levsalt.',intime1+1,'.bin'
+       CALL READ_FLD_XY_RS( filename, ' ', SSSdot, myIter, myThid )
+    
+C      Set SSSdot to the total change over the period
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           SSSdot(i,j,bi,bj) = SSSdot(i,j,bi,bj)-SSS(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C      Interpolate SSS to correct time (necessary only for myTime=startTime)
+       aWght=(myTime-externForcingCycle*
+     &               int(myTime/externForcingCycle)
+     &       )/externForcingPeriod - float(intime0)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           SSS(i,j,bi,bj) = SSS(i,j,bi,bj)+aWght*SSSdot(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+C      Convert SSSdot into the increment to SSS per time-step (here after)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           SSSdot(i,j,bi,bj)=SSSdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C
+
+C--    TauX
+       WRITE(filename(1:40),'(A,I10.10,A)') 
+     &      'windx.',intime0+1,'.bin'
+       CALL READ_FLD_XY_RS( filename, ' ', fu, myIter, myThid )
+       WRITE(filename(1:40),'(A,I10.10,A)') 
+     &      'windx.',intime1+1,'.bin'
+       CALL READ_FLD_XY_RS( filename, ' ', fudot, myIter, myThid )
+    
+C      Set fudot to the total change over the period
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           fu(i,j,bi,bj) = fu(i,j,bi,bj)/(delZ(1)*rhonil)
+           fudot(i,j,bi,bj) = fudot(i,j,bi,bj)/(delZ(1)*rhonil)
+           fudot(i,j,bi,bj) = fudot(i,j,bi,bj)-fu(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C      Interpolate fu to correct time (necessary only for myTime=startTime)
+       aWght=(myTime-externForcingCycle*
+     &               int(myTime/externForcingCycle)
+     &       )/externForcingPeriod - float(intime0)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           fu(i,j,bi,bj) = fu(i,j,bi,bj)+aWght*fudot(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+C      Convert fudot into the increment to fu per time-step (here after)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           fudot(i,j,bi,bj)=fudot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C
+
+C--    TauY
+       WRITE(filename(1:40),'(A,I10.10,A)') 
+     &      'windy.',intime0+1,'.bin'
+       CALL READ_FLD_XY_RS( filename, ' ', fv, myIter, myThid )
+       WRITE(filename(1:40),'(A,I10.10,A)') 
+     &      'windy.',intime1+1,'.bin'
+       CALL READ_FLD_XY_RS( filename, ' ', fvdot, myIter, myThid )
+    
+C      Set fvdot to the total change over the period
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           fv(i,j,bi,bj) = fv(i,j,bi,bj)/(delZ(1)*rhonil)
+           fvdot(i,j,bi,bj) = fvdot(i,j,bi,bj)/(delZ(1)*rhonil)
+           fvdot(i,j,bi,bj) = fvdot(i,j,bi,bj)-fv(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C      Interpolate fv to correct time (necessary only for myTime=startTime)
+       aWght=(myTime-externForcingCycle*
+     &               int(myTime/externForcingCycle)
+     &       )/externForcingPeriod - float(intime0)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           fv(i,j,bi,bj) = fv(i,j,bi,bj)+aWght*fvdot(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+C      Convert fvdot into the increment to fv per time-step (here after)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           fvdot(i,j,bi,bj)=fvdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C
+
+C--    Qnet
+       WRITE(filename(1:40),'(A,I10.10,A)') 
+     &      'Qnet.',intime0+1,'.bin'
+       CALL READ_FLD_XY_RS( filename, ' ', Qnet, myIter, myThid )
+       WRITE(filename(1:40),'(A,I10.10,A)') 
+     &      'Qnet.',intime1+1,'.bin'
+       CALL READ_FLD_XY_RS( filename, ' ', Qnetdot, myIter, myThid )
+    
+C      Set Qnetdot to the total change over the period
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)/(4200.*rhonil*delZ(1))
+           Qnetdot(i,j,bi,bj) = Qnetdot(i,j,bi,bj)/(4200.*rhonil*delZ(1))
+           Qnetdot(i,j,bi,bj) = Qnetdot(i,j,bi,bj)-Qnet(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C      Interpolate Qnet to correct time (necessary only for myTime=startTime)
+       aWght=(myTime-externForcingCycle*
+     &               int(myTime/externForcingCycle)
+     &       )/externForcingPeriod - float(intime0)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)+aWght*Qnetdot(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+C      Convert Qnetdot into the increment to Qnet per time-step (here after)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           Qnetdot(i,j,bi,bj)=Qnetdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C
+
+C--    EmPpR
+Cfix   WRITE(filename(1:40),'(A,I10.10,A)') 
+Cfix &      'EmP_y.',intime0+1,'.bin'
+       filename='EmP_y.bin'
+       CALL READ_FLD_XY_RS( filename, ' ', EmPpR, myIter, myThid )
+Cfix   WRITE(filename(1:40),'(A,I10.10,A)') 
+Cfix &      'EmPpR.',intime1+1,'.bin'
+Cfix   CALL READ_FLD_XY_RS( filename, ' ', EmPpRdot, myIter, myThid )
+    
+C      Set EmPpRdot to the total change over the period
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+Cfix       EmPpRdot(i,j,bi,bj) = EmPpRdot(i,j,bi,bj)-EmPpR(i,j,bi,bj)
+           EmPpR(i,j,bi,bj) = EmPpR(i,j,bi,bj)/(3153600000.*delZ(1))*35.
+           EmPpRdot(i,j,bi,bj) = 0.
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C      Interpolate EmPpR to correct time (necessary only for myTime=startTime)
+       aWght=(myTime-externForcingCycle*
+     &               int(myTime/externForcingCycle)
+     &       )/externForcingPeriod - float(intime0)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           EmPpR(i,j,bi,bj) = EmPpR(i,j,bi,bj)+aWght*EmPpRdot(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+C      Convert EmPpRdot into the increment to EmPpR per time-step (here after)
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           EmPpRdot(i,j,bi,bj)=EmPpRdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+C
+       _END_MASTER(myThid)
+C
+       _EXCH_XY_R4(SST  , myThid )
+       _EXCH_XY_R4(SSS  , myThid )
+       _EXCH_XY_R4(fu   , myThid )
+       _EXCH_XY_R4(fv   , myThid )
+       _EXCH_XY_R4(Qnet , myThid )
+       _EXCH_XY_R4(EmPpR, myThid )
+C
+      ELSE
+
+C      Increment SST,SSS,fu,fv,Qnet,EmPpR
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           SST(i,j,bi,bj) = SST(i,j,bi,bj)+SSTdot(i,j,bi,bj)
+           SSS(i,j,bi,bj) = SSS(i,j,bi,bj)+SSSdot(i,j,bi,bj)
+           fu(i,j,bi,bj) = fu(i,j,bi,bj)+fudot(i,j,bi,bj)
+           fv(i,j,bi,bj) = fv(i,j,bi,bj)+fvdot(i,j,bi,bj)
+           Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)+Qnetdot(i,j,bi,bj)
+           EmPpR(i,j,bi,bj) = EmPpR(i,j,bi,bj)+EmPpRdot(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+      ENDIF
 
       RETURN
       END

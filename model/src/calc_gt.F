@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.11 1998/06/15 05:13:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.12 1998/06/17 21:07:01 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -258,7 +258,9 @@ C     o Surface relaxation term
        DO j=jMin,jMax
         DO i=iMin,iMax
          gT(i,j,k,bi,bj)=gT(i,j,k,bi,bj)
-     &   -lambdaThetaClimRelax*(theta(i,j,k,bi,bj)-thetaClim(i,j,k,bi,bj))
+     &  +maskUp(i,j)*(
+     &   -lambdaThetaClimRelax*(theta(i,j,k,bi,bj)-SST(i,j,bi,bj))
+     &   -Qnet(i,j,bi,bj) )
         ENDDO
        ENDDO
       ENDIF

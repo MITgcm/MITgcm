@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.12 1998/06/16 15:26:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.13 1998/06/17 21:07:02 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -151,7 +151,13 @@ C      "state" files. This example is referred to as a checkpoint
 C      at time level 1 
        CALL WRITE_CHECKPOINT( .FALSE., myCurrentTime, myCurrentIter, myThid )
 
+       write(0,*) maxval(abs(uVel)),maxval(abs(vVel))
+       if (maxval(abs(uVel)).gt.10.) goto 911
+       if (maxval(abs(vVel)).gt.10.) goto 911
+       if (maxval(abs(theta)).gt.40.) goto 911
       ENDDO
+
+ 911  continue
 
 C--   Final checkpoint (incase the in-loop checkpoint was missed)
       CALL WRITE_CHECKPOINT( .TRUE., myCurrentTime, myCurrentIter, myThid )

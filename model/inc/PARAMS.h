@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.18 1998/06/15 05:13:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.19 1998/06/17 21:07:01 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -126,6 +126,7 @@ C     doThetaClimRelax - Set true if relaxation to temperature
 C                        climatology is required.
 C     doSaltClimRelax  - Set true if relaxation to salinity
 C                        climatology is required.
+C     periodicExternalForcing - Set true if forcing is time-dependant
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & momViscosity, momAdvection, momForcing, useCoriolis, momPressureForcing,
      & tempDiffusion, tempAdvection, tempForcing,
@@ -134,7 +135,8 @@ C                        climatology is required.
      & momStepping, tempStepping, saltStepping,
      & metricTerms, usingSphericalPolarMTerms,
      & useConstantF, useBetaPlaneF, useSphereF,
-     & implicitDiffusion, doThetaClimRelax, doSaltClimRelax
+     & implicitDiffusion, doThetaClimRelax, doSaltClimRelax,
+     & periodicExternalForcing
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingSphericalPolarMTerms
@@ -161,6 +163,7 @@ C                        climatology is required.
       LOGICAL implicitDiffusion
       LOGICAL doThetaClimRelax
       LOGICAL doSaltClimRelax
+      LOGICAL periodicExternalForcing
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
@@ -251,6 +254,10 @@ C     tauThetaClimRelax - Relaxation to climatology time scale ( s ).
 C     lambdaThetaClimRelax - Inverse time scale for relaxation ( 1/s ).
 C     tauSaltClimRelax - Relaxation to climatology time scale ( s ).
 C     lambdaSaltClimRelax - Inverse time scale for relaxation ( 1/s ).
+C     externForcingPeriod - Is the period of which forcing varies (eg. 1 month)
+C     externForcingCycle - Is the repeat time of the forcing (eg. 1 year)
+C                          (note: externForcingCycle must be an integer
+C                           number times externForcingPeriod)
       COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, delZ, delX, delY, 
      & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, phiMin, 
      & thetaMin, rSphere, rRSphere, f0, fCori, beta, viscAh, viscAz, viscA4, 
@@ -261,7 +268,8 @@ C     lambdaSaltClimRelax - Inverse time scale for relaxation ( 1/s ).
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cAdjFreq, omega, tauThetaClimRelax, lambdaThetaClimRelax,
-     & tauSaltClimRelax, lambdaSaltClimRelax
+     & tauSaltClimRelax, lambdaSaltClimRelax,
+     & externForcingCycle, externForcingPeriod
       _RL cg2dTargetResidual
       _RL cg2dpcOffDFac
       _RL delZ(Nz)
@@ -319,6 +327,8 @@ C     lambdaSaltClimRelax - Inverse time scale for relaxation ( 1/s ).
       _RL lambdaThetaClimRelax
       _RL tauSaltClimRelax
       _RL lambdaSaltClimRelax
+      _RL externForcingCycle
+      _RL externForcingPeriod
 
       COMMON /PARM_A/ HeatCapacity_Cp,
      &                Lamba_theta

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.8 1998/06/15 05:13:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.9 1998/06/17 21:07:01 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -258,7 +258,9 @@ C     o Surface relaxation term
        DO j=jMin,jMax
         DO i=iMin,iMax
          gS(i,j,k,bi,bj)=gS(i,j,k,bi,bj)
-     &   -lambdaSaltClimRelax*(salt(i,j,k,bi,bj)-saltClim(i,j,k,bi,bj))
+     &   +maskUp(i,j)*(
+     &   -lambdaSaltClimRelax*(salt(i,j,k,bi,bj)-SSS(i,j,bi,bj))
+     &   -EmPpR(i,j,bi,bj) )
         ENDDO
        ENDDO
       ENDIF
