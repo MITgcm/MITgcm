@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.88 2004/12/17 19:17:56 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.89 2005/03/25 00:29:17 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -478,6 +478,9 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      O            kappaRTr,
      I            myThid)
            ENDIF
+# ifdef ALLOW_AUTODIFF_TAMC 
+CADJ STORE kappaRTr(:,:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
+# endif /* ALLOW_AUTODIFF_TAMC */
            CALL PTRACERS_INTEGRATE(
      I         bi,bj,k,
      I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,

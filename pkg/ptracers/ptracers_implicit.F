@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.2 2004/12/16 23:20:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_implicit.F,v 1.3 2005/03/25 00:29:17 heimbach Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -89,6 +89,8 @@ C Loop over tracers
         ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE kappaRk(:,:,:) = comlev1_bibj_ptracers, 
+CADJ &     key=iptrkey, byte=isbyte
 CADJ STORE gPtr(:,:,:,bi,bj,iTracer) = comlev1_bibj_ptracers, 
 CADJ &     key=iptrkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
