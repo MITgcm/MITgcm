@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.16 1999/05/05 18:32:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.17 1999/05/18 17:57:01 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -79,8 +79,8 @@ C Impose minimum size (dimensional)
              hFacC(I,J,K,bi,bj)=hFacMinDr*recip_drF(k)
             ENDIF
            ENDIF
-           depthInK(i,j,bi,bj) = depthInK(i,j,bi,bj) 
-     &                          +hFacC(i,j,k,bi,bj)
+           depthInK(i,j,bi,bj) = depthInK(i,j,bi,bj) + 1.
+Crg  &                          +hFacC(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO
