@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.58 2003/07/10 16:09:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.59 2003/08/03 03:17:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -269,7 +269,7 @@ C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
      &    CALL DEBUG_CALL('SHAP_FILT_APPLY_TS',myThid)
 #endif
         CALL TIMER_START('SHAP_FILT           [FORWARD_STEP]',myThid)
-        CALL SHAP_FILT_APPLY_TS( gT, gS, myTime, myIter, myThid )
+        CALL SHAP_FILT_APPLY_TS(gT,gS,myTime+deltaT,myIter+1,myThid)
         CALL TIMER_STOP ('SHAP_FILT           [FORWARD_STEP]',myThid)
       ENDIF
 #endif
@@ -335,24 +335,25 @@ C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
 #ifdef ALLOW_SHAP_FILT
       IF (useSHAP_FILT .AND. shap_filt_uvStar) THEN
         CALL TIMER_START('SHAP_FILT           [FORWARD_STEP]',myThid)
-        CALL SHAP_FILT_APPLY_UV( gU,gV, myTime,myIter,myThid )
         IF (implicDiv2Dflow.LT.1.) THEN
 C--   Explicit+Implicit part of the Barotropic Flow Divergence
 C      => Filtering of uVel,vVel is necessary
-          CALL SHAP_FILT_APPLY_UV( uVel,vVel, myTime,myIter,myThid )
+          CALL SHAP_FILT_APPLY_UV( uVel,vVel,
+     &                             myTime+deltaT, myIter+1, myThid )
         ENDIF
+        CALL SHAP_FILT_APPLY_UV( gU,gV,myTime+deltaT,myIter+1,myThid)
         CALL TIMER_STOP ('SHAP_FILT           [FORWARD_STEP]',myThid)
       ENDIF
 #endif
 #ifdef ALLOW_ZONAL_FILT
       IF (useZONAL_FILT .AND. zonal_filt_uvStar) THEN
         CALL TIMER_START('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
-        CALL ZONAL_FILT_APPLY_UV( gU, gV, myThid )
         IF (implicDiv2Dflow.LT.1.) THEN
 C--   Explicit+Implicit part of the Barotropic Flow Divergence
 C      => Filtering of uVel,vVel is necessary
           CALL ZONAL_FILT_APPLY_UV( uVel, vVel, myThid )
         ENDIF
+        CALL ZONAL_FILT_APPLY_UV( gU, gV, myThid )
         CALL TIMER_STOP ('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
       ENDIF
 #endif  
