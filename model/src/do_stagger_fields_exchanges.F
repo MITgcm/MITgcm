@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.3 2004/04/22 21:38:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.4 2004/07/07 22:23:12 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -11,8 +10,8 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE DO_STAGGER_FIELDS_EXCHANGES
-C     | o Exchange edge info of Active tracers fields (T,S)
-C     |   (needed when using stagger time step)
+C     | o Exchange edge info of Active tracers fields (U,V)
+C     |   (needed when using stagger time Step + multiDimAdvec)
 C     *==========================================================*
 C     \ev
 C     !USES:
@@ -22,6 +21,7 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#include "GAD.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -33,18 +33,10 @@ C     myThid  :: Thread number for this instance of the routine.
       INTEGER myThid   
 CEOP
 
-      IF ( staggerTimeStep ) THEN
-        _EXCH_XYZ_R8( gT , myThid )
-        _EXCH_XYZ_R8( gS , myThid )
-c       _EXCH_XYZ_R8( theta , myThid )
-c       _EXCH_XYZ_R8( salt , myThid )
+      IF ( staggerTimeStep .AND. useMultiDimAdvec) THEN
+        CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
+        _EXCH_XYZ_R8( wVel , myThid )
       ENDIF
-
-#ifdef ALLOW_AIM
-      IF ( useAIM ) THEN
-       CALL AIM_AIM2DYN_EXCHANGES( myTime, myIter, myThid )
-      ENDIF
-#endif /* ALLOW_AIM */
 
       RETURN
       END

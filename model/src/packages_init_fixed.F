@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.24 2004/03/29 22:14:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.25 2004/07/07 22:23:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -19,8 +19,6 @@ C     \ev
 C     !CALLING SEQUENCE:
 C     PACKAGES_INIT_FIXED
 C       |
-C       |-- MNC_INIT
-C       |
 C       |-- GAD_INIT
 C       |
 C       |-- OBCS_INIT_FIXED
@@ -31,7 +29,19 @@ C       |-- ZONAL_FILT_INIT
 C       |
 C       |-- AIM_INITIALISE
 C       |
+C       |-- GRIDALT_INITIALISE
+C       |
+C       |-- FIZHI_INIT_FIXED
+C       |
 C       |-- LAND_INITIALISE
+C       |
+C       |-- ECCO_COST_INIT_FIXED
+C       |
+C       |-- CTRL_INIT
+C       |
+C       |-- GCHEM_INIT_FIXED
+C       |
+C       |-- DIAGNOSTICS_INITIALISE
 
 C     !USES:
       IMPLICIT NONE
@@ -108,6 +118,10 @@ C--   in order to provide the weight files
 C--   Initialise the control variables
       CALL CTRL_INIT( myThid )
       _BARRIER
+#endif
+
+#ifdef ALLOW_PTRACERS
+      IF (usePTRACERS) CALL PTRACERS_INITIALISE(mythid)
 #endif
 
 #ifdef ALLOW_PTRACERS

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.52 2004/06/24 20:25:44 afe Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.53 2004/07/07 22:23:12 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -288,6 +288,9 @@ c    &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
       CALL WRITE_0D_L( multiDimAdvection, INDEX_NONE, 
      & 'multiDimAdvection =',
      &'   /* enable/disable Multi-Dim Advection */')
+      CALL WRITE_0D_L( useMultiDimAdvec, INDEX_NONE, 
+     & 'useMultiDimAdvec =',
+     &'   /* Multi-Dim Advection is/is-not used */')
       CALL WRITE_0D_L( implicitDiffusion, INDEX_NONE,
      & 'implicitDiffusion =','/* Implicit Diffusion on/off flag */')
       CALL WRITE_0D_L( tempStepping,  INDEX_NONE,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.117 2004/07/06 00:51:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.118 2004/07/07 22:22:18 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -232,6 +232,7 @@ C     tempImplVertAdv :: Turns on implicit vertical advection for Temperature
 C     saltImplVertAdv :: Turns on implicit vertical advection for Salinity
 C     momImplVertAdv  :: Turns on implicit vertical advection for Momentum
 C     multiDimAdvection :: Flag that enable multi-dimension advection
+C     useMultiDimAdvec  :: True if multi-dim advection is used at least once
 C     forcing_In_AB :: if False, put forcing (Temp,Salt,Tracers) contribution
 C                      out off Adams-Bashforth time stepping.
 C     doThetaClimRelax :: Set true if relaxation to temperature
@@ -275,7 +276,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & useAbsVorticity,
      & implicitDiffusion, implicitViscosity,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
-     & multiDimAdvection, forcing_In_AB,
+     & multiDimAdvection, useMultiDimAdvec, forcing_In_AB,
      & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax, 
      & periodicExternalForcing, 
      & usingPCoords, usingZCoords, useDynP_inEos_Zc, setCenterDr,
@@ -331,6 +332,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL saltImplVertAdv 
       LOGICAL momImplVertAdv
       LOGICAL multiDimAdvection
+      LOGICAL useMultiDimAdvec
       LOGICAL forcing_In_AB
       LOGICAL doThetaClimRelax
       LOGICAL doSaltClimRelax
