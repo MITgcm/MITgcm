@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_xy_rx.template,v 1.1 2004/01/09 20:46:09 afe Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch2_uv_xy_rx.template,v 1.2 2004/02/11 05:18:29 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -49,7 +49,7 @@ C     == Local variables ==
 C     OL[wens]       :: Overlap extents in west, east, north, south.
 C     exchWidth[XY]  :: Extent of regions that will be exchanged.
       INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
-      INTEGER bi, bj, myTile
+      INTEGER bi, bj, myTile, i, j
 CEOP
 
       OLw        = OLx
@@ -79,18 +79,85 @@ C                begine.
          myTile = W2_myTileList(bi)
          IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &        exch2_isSedge(myTile) .EQ. 1 ) THEN
-          Uphi(snx+1,    0,bi,bj)= vPhi(snx+1,    1,bi,bj)
+C         Uphi(snx+1,    0,bi,bj)= vPhi(snx+1,    1,bi,bj)
+          DO j=1-olx,0
+           Uphi(snx+1,    j,bi,bj)= vPhi(snx+(1-j),    1,bi,bj)
+          ENDDO
          ENDIF
          IF ( withSigns ) THEN
           IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &         exch2_isNedge(myTile) .EQ. 1 ) THEN
-           Uphi(snx+1,sny+1,bi,bj)=-vPhi(snx+1,sny+1,bi,bj)
+C          Uphi(snx+1,sny+1,bi,bj)=-vPhi(snx+1,sny+1,bi,bj)
+           DO j=1,olx
+            Uphi(snx+1,sny+j,bi,bj)=-vPhi(snx+j,sny+1,bi,bj)
+           ENDDO
           ENDIF
          ELSE
           IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
      &         exch2_isNedge(myTile) .EQ. 1 ) THEN
-           Uphi(snx+1,sny+1,bi,bj)= vPhi(snx+1,sny+1,bi,bj)
+C          Uphi(snx+1,sny+1,bi,bj)= vPhi(snx+1,sny+1,bi,bj)
+           DO j=1,olx
+            Uphi(snx+1,sny+j,bi,bj)= vPhi(snx+j,sny+1,bi,bj)
+           ENDDO
           ENDIF
+         ENDIF
+
+C        Now zero out the null areas that should not be used in the numerics
+         IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
+     &        exch2_isSedge(myTile) .EQ. 1 ) THEN
+C         Zero SW corner points
+          DO J=1-OLx,0
+           DO I=1-OLx,0
+            uPhi(I,J,bi,bj)=0.
+           ENDDO
+          ENDDO
+          DO J=1-OLx,0
+           DO I=1-OLx,0
+            vPhi(I,J,bi,bj)=0.
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
+     &        exch2_isNedge(myTile) .EQ. 1 ) THEN
+C         Zero NW corner points
+          DO J=sNy+1,sNy+OLy
+           DO I=1-OLx,0
+            uPhi(I,J,bi,bj)=0.
+           ENDDO
+          ENDDO
+          DO J=sNy+2,sNy+OLy
+           DO I=1-OLx,0
+            vPhi(I,J,bi,bj)=0.
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
+     &        exch2_isSedge(myTile) .EQ. 1 ) THEN
+C         Zero SE corner points
+          DO J=1-OLx,0
+           DO I=sNx+2,sNx+OLx
+            uPhi(I,J,bi,bj)=0.
+           ENDDO
+          ENDDO
+          DO J=1-OLx,0
+           DO I=sNx+1,sNx+OLx
+            vPhi(I,J,bi,bj)=0.
+           ENDDO
+          ENDDO
+         ENDIF
+         IF ( exch2_isEedge(myTile) .EQ. 1 .AND.
+     &        exch2_isNedge(myTile) .EQ. 1 ) THEN
+C         Zero NE corner points
+          DO J=sNy+1,sNy+OLy
+           DO I=sNx+2,sNx+OLx
+            uPhi(I,J,bi,bj)=0.
+           ENDDO
+          ENDDO
+          DO J=sNy+2,sNy+OLy
+           DO I=sNx+1,sNx+OLx
+            vPhi(I,J,bi,bj)=0.
+           ENDDO
+          ENDDO
          ENDIF
         ENDDO
        ENDDO
