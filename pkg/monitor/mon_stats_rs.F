@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rs.F,v 1.3 2003/05/13 18:18:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rs.F,v 1.4 2004/02/06 19:59:36 adcroft Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -23,8 +23,8 @@ C     === Routine arguments ===
       _RS arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RL theMin
       _RL theMax
-      _RL theMean
-      _RL theSD
+      _RL theMean,theMeanTile
+      _RL theSD,theSDTile
       INTEGER myThid
 
 C     === Local variables ====
@@ -32,7 +32,7 @@ C     === Local variables ====
       INTEGER numPnts
       LOGICAL noPnts
       _RL tmpVal,rNumPnts
-      _RL theVar
+      _RL theVar,theVarTile
 
       theMin=0.
       theMax=0.
@@ -44,6 +44,8 @@ C     === Local variables ====
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+        theVarTile=0.
+        theMeanTile=0.
         DO K=1,myNr
          DO J=1,sNy
           DO I=1,sNx
@@ -56,13 +58,15 @@ C     === Local variables ====
            IF (tmpVal.NE.0.) THEN
             theMin=min(theMin,tmpVal)
             theMax=max(theMax,tmpVal)
-            theMean=theMean+tmpVal
-            theVar=theVar+tmpVal**2
+            theMeanTile=theMeanTile+tmpVal
+            theVarTile=theVarTile+tmpVal**2
             numPnts=numPnts+1
            ENDIF
           ENDDO
          ENDDO
         ENDDO
+        theMean=theMean+theMeanTile
+        theVar=theVar+theVarTile
        ENDDO
       ENDDO
 
@@ -83,16 +87,18 @@ C     === Local variables ====
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+        theSDtile=0.
          DO K=1,myNr
           DO J=1,sNy
            DO I=1,sNx
             tmpVal=arr(I,J,K,bi,bj)
             IF (tmpVal.NE.0.) THEN
-             theSD=theSD+(tmpVal-theMean)**2
+             theSDtile=theSDtile+(tmpVal-theMean)**2
             ENDIF
            ENDDO
           ENDDO
          ENDDO
+        theSD=theSD+theSDtile
         ENDDO
        ENDDO
 

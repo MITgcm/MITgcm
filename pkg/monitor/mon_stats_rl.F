@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.6 2003/11/10 23:03:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.7 2004/02/06 19:59:36 adcroft Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -27,10 +27,10 @@ C     === Routine arguments ===
       _RS arrDr(myNr)
       _RL theMin
       _RL theMax
-      _RL theMean
-      _RL theSD
-      _RL theDel2
-      _RL theVol
+      _RL theMean,theMeanTile
+      _RL theSD,theSDTile
+      _RL theDel2,theDel2Tile
+      _RL theVol,theVolTile
       INTEGER myThid
 
 C     === Local variables ====
@@ -38,7 +38,7 @@ C     === Local variables ====
       INTEGER numPnts
       LOGICAL noPnts
       _RL tmpVal,rNumPnts
-      _RL theVar
+      _RL theVar,theVarTile
       _RL tmpVol
 
       theMin=0.
@@ -53,6 +53,10 @@ C     === Local variables ====
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
+        theDel2 = 0.
+        theVol = 0.
+        theMean = 0.
+        theVar = 0.
         DO K=1,myNr
          DO J=1,sNy
           DO I=1,sNx
@@ -67,7 +71,7 @@ c          IF (tmpVal.NE.0.) THEN
            IF (arrMask(I,J,K,bi,bj).NE.0.) THEN
             theMin=min(theMin,tmpVal)
             theMax=max(theMax,tmpVal)
-            theDel2 = theDel2+0.25*ABS(
+            theDel2Tile = theDel2Tile+0.25*ABS(
      &         (arr(I+1,J,K,bi,bj)-tmpVal)*arrMask(I+1,J,K,bi,bj)
      &        +(arr(I-1,J,K,bi,bj)-tmpVal)*arrMask(I-1,J,K,bi,bj)
      &        +(arr(I,J+1,K,bi,bj)-tmpVal)*arrMask(I,J+1,K,bi,bj)
@@ -76,13 +80,17 @@ c          IF (tmpVal.NE.0.) THEN
             numPnts=numPnts+1
             tmpVol = arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
      &                                 *arrMask(I,J,K,bi,bj)
-            theVol = theVol   + tmpVol
-            theMean = theMean + tmpVol*tmpVal
-            theVar = theVar   + tmpVol*tmpVal**2
+            theVolTile = theVolTile   + tmpVol
+            theMeanTile = theMeanTile + tmpVol*tmpVal
+            theVarTile = theVarTile   + tmpVol*tmpVal**2
            ENDIF
           ENDDO
          ENDDO
         ENDDO
+        theDel2 = theDel2 + theDel2Tile
+        theVol = theVol + theVolTile
+        theMean = theMean + theMeanTile
+        theVar = theVar + theVarTile
        ENDDO
       ENDDO
 
@@ -109,6 +117,7 @@ c          IF (tmpVal.NE.0.) THEN
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
+         theSDtile=0.
          DO K=1,myNr
           DO J=1,sNy
            DO I=1,sNx
@@ -117,11 +126,12 @@ c           IF (tmpVal.NE.0.) THEN
             IF (arrMask(I,J,K,bi,bj).NE.0.) THEN
              tmpVol=arrArea(I,J,bi,bj)*arrhFac(I,J,K,bi,bj)*arrDr(K)
      &                                *arrMask(I,J,K,bi,bj)
-             theSD = theSD + tmpVol*(tmpVal-theMean)**2
+             theSDtile = theSDtile + tmpVol*(tmpVal-theMean)**2
             ENDIF
            ENDDO
           ENDDO
          ENDDO
+         theSD = theSD + theSDtile
         ENDDO
        ENDDO
 
