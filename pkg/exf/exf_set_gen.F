@@ -72,7 +72,7 @@ c     == local variables ==
       _RL     fac
 
       integer bi, bj
-      integer i, j
+      integer i, j, interp_method
 
 c     == end of interface ==
 
@@ -88,11 +88,12 @@ c     get record numbers and interpolation factor for gen
 
          if ( first ) then
 #ifdef USE_EXF_INTERPOLATION
+            interp_method = 2
             call exf_interp( genfile, exf_iprec
      &           , gen1, count0, gen_xout, gen_yout
      &           , gen_lon0,gen_lon_inc
      &           , gen_lat0,gen_lat_inc
-     &           , gen_nlon,gen_nlat,mythid
+     &           , gen_nlon,gen_nlat,interp_method,mythid
      &           )
 #else
             call mdsreadfield( genfile, exf_iprec, exf_yftype, 1
@@ -115,7 +116,7 @@ c     get record numbers and interpolation factor for gen
      &           , gen1, count1, gen_xout, gen_yout
      &           , gen_lon0,gen_lon_inc
      &           , gen_lat0,gen_lat_inc
-     &           , gen_nlon,gen_nlat,mythid
+     &           , gen_nlon,gen_nlat,interp_method,mythid
      &           )
 #else
             call mdsreadfield( genfile, exf_iprec, exf_yftype, 1

@@ -35,8 +35,7 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      integer bi, bj
-      integer i, j
+      integer bi, bj, i, j, interp_method
 
 c     == end of interface ==
 
@@ -52,12 +51,13 @@ c     == end of interface ==
 
       if ( runofffile .NE. ' ' ) then
 #ifdef USE_EXF_INTERPOLATION
+         interp_method = 2
          call exf_interp(
      &    runofffile, exf_iprec
      &  , runoff, 1, xC, yC
      &  ,runoff_lon0,runoff_lon_inc
      &  ,runoff_lat0,runoff_lat_inc
-     &  ,runoff_nlon,runoff_nlat,mythid )
+     &  ,runoff_nlon,runoff_nlat,interp_method,mythid )
 #else
          call mdsreadfield( runofffile, exf_iprec, exf_yftype, 1
      &        , runoff, 1, mythid

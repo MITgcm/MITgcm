@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/verification/global_with_exf/input/Attic/data.exf_clim,v 1.3 2003/08/04 22:53:42 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/verification/global_with_exf/input/Attic/data.exf_clim,v 1.4 2003/08/15 01:42:44 dimitri Exp $
 #
 # *********************************
 # External Forcing Climatology Data
@@ -11,7 +11,7 @@
  climsst_lon0    = 2
  climsst_lon_inc = 4
  climsst_lat0    = -78
- climsst_lat_inc = 40*4
+ climsst_lat_inc = 39*4
  climsst_nlon    = 90
  climsst_nlat    = 40
 #
@@ -21,7 +21,7 @@
  climsss_lon0    = 2
  climsss_lon_inc = 4
  climsss_lat0    = -78
- climsss_lat_inc = 40*4
+ climsss_lat_inc = 39*4
  climsss_nlon    = 90
  climsss_nlat    = 40
 #

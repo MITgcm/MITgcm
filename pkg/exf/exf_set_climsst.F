@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsst.F,v 1.8 2003/08/07 02:31:29 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsst.F,v 1.9 2003/08/15 01:42:44 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -51,9 +51,7 @@ c     == local variables ==
       logical first, changed
       integer count0, count1
       _RL     fac
-
-      integer bi, bj
-      integer i, j
+      integer bi, bj, i, j, interp_method
 
 c     == end of interface ==
 
@@ -79,12 +77,13 @@ c     get record numbers and interpolation factor for climsst
 
          if ( first ) then
 #ifdef USE_EXF_INTERPOLATION
+          interp_method = 2
           call exf_interp(
      &    climsstfile, exf_clim_iprec
      &  , climsst1, count0, xC, yC
      &  ,climsst_lon0,climsst_lon_inc
      &  ,climsst_lat0,climsst_lat_inc
-     &  ,climsst_nlon,climsst_nlat,mythid )
+     &  ,climsst_nlon,climsst_nlat,interp_method,mythid )
 #else
             call mdsreadfield( climsstfile, exf_clim_iprec
      &           , exf_clim_yftype, 1
@@ -107,7 +106,7 @@ c     get record numbers and interpolation factor for climsst
      &  , climsst1, count1, xC, yC
      &  ,climsst_lon0,climsst_lon_inc
      &  ,climsst_lat0,climsst_lat_inc
-     &  ,climsst_nlon,climsst_nlat,mythid )
+     &  ,climsst_nlon,climsst_nlat,interp_method,mythid )
 #else
             call mdsreadfield( climsstfile, exf_clim_iprec
      &           , exf_clim_yftype, 1

@@ -9,7 +9,7 @@
  hflux_lon0    = 2
  hflux_lon_inc = 4
  hflux_lat0    = -78
- hflux_lat_inc = 40*4
+ hflux_lat_inc = 39*4
  hflux_nlon    = 90
  hflux_nlat    = 40
 #
@@ -19,7 +19,7 @@
  sflux_lon0    = 2
  sflux_lon_inc = 4
  sflux_lat0    = -78
- sflux_lat_inc = 40*4
+ sflux_lat_inc = 39*4
  sflux_nlon    = 90
  sflux_nlat    = 40
 #
@@ -29,7 +29,7 @@
  ustress_lon0    = 0
  ustress_lon_inc = 4
  ustress_lat0    = -78
- ustress_lat_inc = 40*4
+ ustress_lat_inc = 39*4
  ustress_nlon    = 90
  ustress_nlat    = 40
 #
@@ -39,7 +39,7 @@
  vstress_lon0    = 2
  vstress_lon_inc = 4
  vstress_lat0    = -80
- vstress_lat_inc = 40*4
+ vstress_lat_inc = 39*4
  vstress_nlon    = 90
  vstress_nlat    = 40
 #
