@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.6 2002/12/02 21:53:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.7 2002/12/10 02:55:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -13,9 +13,10 @@ C     *==========================================================*
 C     | SUBROUTINE INI_LINEAR_PHISURF                             
 C     | o Initialise the Linear Relation Phi_surf(eta)            
 C     *==========================================================*
-C     | Presently: Initialise -Boyancy at surface level (Bo_surf) 
+C     | Initialise -Boyancy at surface level (Bo_surf) 
 C     |  to setup the Linear relation: Phi_surf(eta)=Bo_surf*eta  
-C     | Futur: might add other things for Non-Linear FreeSurface  
+C     | Initialise phi0surf = starting point for integrating 
+C     |                       phiHyd (= phiHyd at r=RoSurf)
 C     *==========================================================*
 C     \ev
 
@@ -128,8 +129,8 @@ C--- Bo = d/d_p(Phi_surf) = tRef_surf*d/d_p(PI) ; PI = Cp*(p/Po)^kappa
            DO I=1-Olx,sNx+Olx
             IF ( Ro_surf(I,J,bi,bj).GT.0. _d 0 
      &          .AND. ksurfC(I,J,bi,bj).LE.Nr ) THEN
-              dPIdp = (atm_cp*atm_kappa/atm_po)*
-     &         (Ro_surf(I,J,bi,bj)/atm_po)**(atm_kappa-1. _d 0)
+              dPIdp = (atm_Cp*atm_kappa/atm_Po)*
+     &         (Ro_surf(I,J,bi,bj)/atm_Po)**(atm_kappa-1. _d 0)
               Bo_surf(I,J,bi,bj) = dPIdp*tRef(ksurfC(I,J,bi,bj))
               recip_Bo(I,J,bi,bj) = 1. _d 0 / Bo_surf(I,J,bi,bj)
             ELSE
@@ -153,8 +154,44 @@ C--   Update overlap regions
       IF ( ( buoyancyRelation .eq. 'ATMOSPHERIC' .OR. 
      &       buoyancyRelation .eq. 'OCEANICP'         ) 
      &       .AND. .NOT.uniformLin_PhiSurf              ) THEN
+
+        _BEGIN_MASTER( myThid ) 
         CALL WRITE_FLD_XY_RL( 'Bo_surf',' ',Bo_surf,0,myThid) 
+        _END_MASTER( myThid )
+
       ENDIF
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   Initialise phi0surf: used for atmos. surf. P-loading (ocean, z-coord) 
+C                               or topographic geopotential anom. (p-coord)
+
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO J=1-Oly,sNy+Oly
+           DO I=1-Olx,sNx+Olx
+             phi0surf(I,J,bi,bj) = 0.
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
+      IF ( buoyancyRelation .eq. 'ATMOSPHERIC'
+     &               .AND. selectFindRoSurf.EQ.1 ) THEN
+
+C-    set phi0surf = starting point for integrating Geopotential:
+        CALL INI_P_GROUND( -selectFindRoSurf, 
+     O                     phi0surf, 
+     I                     Ro_surf, myThid )
+
+        _EXCH_XY_RS(phi0surf, myThid)
+
+        _BEGIN_MASTER( myThid ) 
+        CALL WRITE_FLD_XY_RS( 'phi0surf',' ',phi0surf,0,myThid) 
+        _END_MASTER( myThid )
+
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.88 2002/11/07 21:51:15 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.89 2002/12/10 02:55:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -41,6 +41,8 @@ C     dxSpacing, dySpacing - Default spacing in X and Y.
 C                            Units are that of coordinate system
 C                            i.e. cartesian => metres
 C                                  s. polar => degrees
+C     tmp4delX,tmp8delX - temporary arrays to read in delX
+C     tmp4delY,tmp8delY - temporary arrays to read in delY
 C     goptCount - Used to count the nuber of grid options
 C                 (only one is allowed! )
 C     msgBuf    - Informational/error meesage buffer
@@ -51,12 +53,14 @@ C     K, I, J - Loop counters
 C     xxxDefault - Default value for variable xxx
       _RL  dxSpacing
       _RL  dySpacing
+      REAL*4 tmp4delX(Nx), tmp4delY(Ny)
+      REAL*8 tmp8delX(Nx), tmp8delY(Ny)
       CHARACTER*(MAX_LEN_FNAM) delXfile
       CHARACTER*(MAX_LEN_FNAM) delYfile
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       CHARACTER*(MAX_LEN_PREC) record
       INTEGER goptCount
-      INTEGER K, I, IL, iUnit
+      INTEGER K, i, j, IL, iUnit
       INTEGER errIO
       INTEGER  IFNBLNK
       EXTERNAL IFNBLNK
@@ -105,7 +109,8 @@ C--   Continuous equation parameters
      & viscAh,  viscAz,  viscA4, cosPower, viscAstrain, viscAtension,
      & diffKhT, diffKzT, diffK4T, 
      & diffKhS, diffKzS, diffK4S,
-     & tRef, sRef, eosType, Integr_GeoPot,
+     & tRef, sRef, eosType, integr_GeoPot, selectFindRoSurf,
+     & atm_Cp, atm_Rd,
      & no_slip_sides,no_slip_bottom,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
      & momPressureForcing, metricTerms, vectorInvariantMomentum,
@@ -288,10 +293,16 @@ C--   Set default "physical" parameters
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1) 
       ENDIF
+
       IF ( implicitFreeSurface ) freeSurfFac = 1.D0
       IF ( rigidLid            ) freeSurfFac = 0.D0
       IF ( gBaro .EQ. UNSET_RL ) gBaro=gravity
       IF ( rhoConst .EQ. UNSET_RL ) rhoConst=rhoNil
+      IF (atm_Rd .EQ. UNSET_RL) THEN
+        atm_Rd = atm_Cp * atm_kappa
+      ELSE
+        atm_kappa = atm_Rd / atm_Cp
+      ENDIF
 C--   Momentum viscosity on/off flag.
       IF ( momViscosity        ) THEN
        vfFacMom = 1.D0
@@ -498,7 +509,7 @@ C     o Time step size
       IF ( deltaTmom    .EQ. 0. ) deltaTmom    = deltaT
       IF ( deltaTtracer .EQ. 0. ) deltaTtracer = deltaT
       IF ( deltaTClock  .EQ. 0. ) deltaTClock  = deltaT
-C Note that this line should set deltaTreesurf=deltaTmom
+C Note that this line should set deltaFreesurf=deltaTmom
 C but this would change a lot of existing set-ups so we are
 C obliged to set the default inappropriately.
 C Be advised that when using asynchronous time stepping
@@ -636,24 +647,6 @@ C     o Monitor (should also add CPP flag for monitor?)
        IF (monitorFreq.EQ.0.) monitorFreq=deltaTclock
       ENDIF
 
-C     o If taveFreq is finite, then we must make sure the diagnostics
-C       code is being compiled
-#ifndef ALLOW_TIMEAVE
-      IF (taveFreq.NE.0.) THEN
-        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS: taveFreq <> 0  but you have'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &  'not compiled the model with the diagnostics routines.'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A,A)')
-     &  'Re-compile with:  #define ALLOW_TIMEAVE',
-     &  '              or  -DALLOW_TIMEAVE'
-        CALL PRINT_ERROR( msgBuf , 1)
-        STOP 'ABNORMAL END: S/R INI_PARMS'
-      ENDIF
-#endif
- 
 C--   Grid parameters
 C     In cartesian coords distances are in metres
       rkFac = UNSET_RS
@@ -702,19 +695,25 @@ C     X coordinate
         IF (readBinaryPrec.EQ.precFloat32) THEN
          OPEN(37,FILE=delXfile,STATUS='OLD',FORM='UNFORMATTED',
      &        ACCESS='DIRECT',RECL=WORDLENGTH*Nx)
-         READ(37,rec=1) delX
+         READ(37,rec=1) tmp4delX
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR4( Nx, delX )
+            call MDS_BYTESWAPR4( Nx, tmp4delX )
 #endif
          CLOSE(37)
+         DO i=1,Nx
+           delX(i) = tmp4delX(i)
+         ENDDO
         ELSEIF (readBinaryPrec.EQ.precFloat64) THEN
          OPEN(37,FILE=delXfile,STATUS='OLD',FORM='UNFORMATTED',
      &        ACCESS='DIRECT',RECL=WORDLENGTH*2*Nx)
-         READ(37,rec=1) delX
+         READ(37,rec=1) tmp8delX
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8( Nx, delX )
+            call MDS_BYTESWAPR8( Nx, tmp8delX )
 #endif
          CLOSE(37)
+         DO i=1,Nx
+           delX(i) = tmp8delX(i)
+         ENDDO
         ENDIF
         _END_MASTER(myThid)
        ENDIF
@@ -736,19 +735,25 @@ C     Y coordinate
         IF (readBinaryPrec.EQ.precFloat32) THEN
          OPEN(37,FILE=delYfile,STATUS='OLD',FORM='UNFORMATTED',
      &        ACCESS='DIRECT',RECL=WORDLENGTH*Ny)
-         READ(37,rec=1) delY
+         READ(37,rec=1) tmp4delY
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR4( Ny, delY )
+            call MDS_BYTESWAPR4( Ny, tmp4delY )
 #endif
          CLOSE(37)
+         DO j=1,Ny
+           delY(j) = tmp4delY(j)
+         ENDDO
         ELSEIF (readBinaryPrec.EQ.precFloat64) THEN
          OPEN(37,FILE=delYfile,STATUS='OLD',FORM='UNFORMATTED',
      &        ACCESS='DIRECT',RECL=WORDLENGTH*2*Ny)
-         READ(37,rec=1) delY
+         READ(37,rec=1) tmp8delY
 #ifdef _BYTESWAPIO
-            call MDS_BYTESWAPR8( Ny, delY )
+            call MDS_BYTESWAPR8( Ny, tmp8delY )
 #endif
          CLOSE(37)
+         DO j=1,Ny
+           delY(j) = tmp8delY(j)
+         ENDDO
         ENDIF
         _END_MASTER(myThid)
        ENDIF
@@ -857,25 +862,7 @@ C--   Input files
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1) 
       ENDIF       
-C     o If pLoadFile is set, then we should make sure the corresponing
-C       code is being compiled
-#ifndef ATMOSPHERIC_LOADING
-      IF (pLoadFile.NE.' ') THEN
-        WRITE(msgBuf,'(A)')
-     &  'S/R INI_PARMS: pLoadFile is set but you have not'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &  'compiled the model with the pressure loading code.'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A,A)')
-     &  'Re-compile with:  #define ATMOSPHERIC_LOADING',
-     &  '              or  -DATMOSPHERIC_LOADING'
-        CALL PRINT_ERROR( msgBuf , 1)
-        STOP 'ABNORMAL END: S/R INI_PARMS'
-      ENDIF
-#endif
 
-C
 C--   Set factors required for mixing pressure and meters as vertical coordinate.
 C     rkFac is a "sign" parameter which is used where the orientation of the vertical
 C     coordinate (pressure or meters) relative to the vertical index (K) is important.
@@ -889,7 +876,8 @@ C     being combined and a single frame of reference is needed.
        horiVertRatio = 1.D0
       ENDIF
       IF ( pCoordInputData .AND. rkFac .EQ. UNSET_RS ) THEN
-       rkFac = -1.D0
+C- jmc: any time P-coordinate is used (ocean,atmos), it requires rkFac=1
+c      rkFac = -1.D0
        horiVertRatio = Gravity * rhoConst
       ENDIF
       IF ( rCoordInputData .AND. rkFac .EQ. UNSET_RS ) THEN

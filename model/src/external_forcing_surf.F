@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.10 2002/10/07 16:20:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.11 2002/12/10 02:55:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,9 +26,7 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#ifdef NONLIN_FRSURF
 #include "SURFACE.h"
-#endif
  
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -84,40 +82,9 @@ c ***  define the tracer surface tendency here ***
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Surface salinity tendency and freshwater flux EmPmR: 
 
-      IF (.NOT.useRealFreshWaterFlux .OR. nonlinFreeSurf .LE. 0 ) THEN
-
-c- EmPmR does not really affect the water column height (for tracer budget)
-c   and is converted to a salt tendency.
-
-       IF (convertFW2Salt .EQ. -1.) THEN
-c- converts EmPmR to salinity tendency using surface local salinity
-        DO j = jMin, jMax
-         DO i = iMin, iMax
-          surfaceTendencyS(i,j,bi,bj) =
-     &      + EmPmR(i,j,bi,bj)*salt(i,j,kSurface,bi,bj)
-     &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
-     &         *convertEmP2rUnit
-     &      -lambdaSaltClimRelax
-     &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
-         ENDDO
-        ENDDO
-       ELSE 
-c- converts EmPmR to virtual salt flux using uniform salinity (default=35)
-        DO j = jMin, jMax
-         DO i = iMin, iMax
-          surfaceTendencyS(i,j,bi,bj) = 
-     &      + EmPmR(i,j,bi,bj)*convertFW2Salt
-     &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj) 
-     &         *convertEmP2rUnit
-     &      -lambdaSaltClimRelax
-     &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
-         ENDDO
-        ENDDO
-       ENDIF
-
 #ifdef NONLIN_FRSURF
-c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      ELSE
+      IF ( (nonlinFreeSurf.GT.0 .OR. buoyancyRelation.EQ.'OCEANICP')
+     &     .AND. useRealFreshWaterFlux ) THEN
 
 c     Salt Flux (restoring term) : 
        DO j = jMin, jMax
@@ -167,8 +134,67 @@ c    &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
 c      ENDIF
 #endif /* ALLOW_PASSIVE_TRACER */
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      ELSE
+#else /* NONLIN_FRSURF */
+      IF (.TRUE.) THEN
 #endif /* NONLIN_FRSURF */
+
+c- EmPmR does not really affect the water column height (for tracer budget)
+c   and is converted to a salt tendency.
+
+       IF (convertFW2Salt .EQ. -1.) THEN
+c- converts EmPmR to salinity tendency using surface local salinity
+        DO j = jMin, jMax
+         DO i = iMin, iMax
+          surfaceTendencyS(i,j,bi,bj) =
+     &      + EmPmR(i,j,bi,bj)*salt(i,j,kSurface,bi,bj)
+     &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
+     &         *convertEmP2rUnit
+     &      -lambdaSaltClimRelax
+     &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
+         ENDDO
+        ENDDO
+       ELSE 
+c- converts EmPmR to virtual salt flux using uniform salinity (default=35)
+        DO j = jMin, jMax
+         DO i = iMin, iMax
+          surfaceTendencyS(i,j,bi,bj) = 
+     &      + EmPmR(i,j,bi,bj)*convertFW2Salt
+     &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj) 
+     &         *convertEmP2rUnit
+     &      -lambdaSaltClimRelax
+     &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
+         ENDDO
+        ENDDO
+       ENDIF
+
       ENDIF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ATMOSPHERIC_LOADING
+
+C-- Atmospheric surface Pressure loading :
+
+      IF (buoyancyRelation .eq. 'OCEANIC' ) THEN
+        DO j = jMin, jMax
+         DO i = iMin, iMax
+          phi0surf(i,j,bi,bj) = pload(i,j,bi,bj)*recip_rhoConst
+         ENDDO
+        ENDDO
+      ELSEIF ( buoyancyRelation .eq. 'OCEANICP' ) THEN 
+C-- This is a hack used to read phi0surf from a file (ploadFile)
+C   instead of computing it from bathymetry & density ref. profile.
+C   The true atmospheric P-loading is not yet implemented for P-coord
+C   (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
+        DO j = jMin, jMax
+         DO i = iMin, iMax
+          phi0surf(i,j,bi,bj) = pload(i,j,bi,bj)
+         ENDDO
+        ENDDO
+      ENDIF
+
+#endif /* ATMOSPHERIC_LOADING */
 
       RETURN
       END

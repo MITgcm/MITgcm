@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.42 2002/11/07 21:51:15 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.43 2002/12/10 02:55:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -167,10 +167,12 @@ C--   Set (free)surface-related parameters
       trac_EvPrRn = UNSET_RL
 
 C--   Atmospheric physical parameters (e.g.: EOS)
-      atm_po =  1.D5
-      atm_cp =  1004.D0
+      atm_Po =  1.D5
+      atm_Cp =  1004.D0
+      atm_Rd =  UNSET_RL
       atm_kappa = 2.D0 / 7.D0
-      Integr_GeoPot = 2
+      integr_GeoPot = 2
+      selectFindRoSurf = 0
 
 C--   Elliptic solver parameters
       cg2dMaxIters       = 150

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.27 2002/11/22 03:01:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.28 2002/12/10 02:55:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -164,7 +164,9 @@ c         _BEGIN_MASTER( myThid )
 c         CALL WRITE_FLD_XY_RS( 'topo_Z',' ',topoZ,0,myThid) 
 c         _END_MASTER(myThid)
 
-          CALL INI_P_GROUND( topoZ, Ro_surf, myThid )
+          CALL INI_P_GROUND( selectFindRoSurf, topoZ, 
+     O                       Ro_surf, 
+     I                       myThid )
 
           _BARRIER
           _BEGIN_MASTER( myThid )

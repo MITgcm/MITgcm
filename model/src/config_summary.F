@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.36 2002/10/10 20:07:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.37 2002/12/10 02:55:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -82,6 +82,9 @@ CEOP
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &                    SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A,A40)') 'buoyancyRelation = ', buoyancyRelation
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       CALL WRITE_1D_R8( tRef, Nr, INDEX_K,'tRef =',
      &'   /* Reference temperature profile ( oC or oK ) */')
       CALL WRITE_1D_R8( sRef, Nr, INDEX_K,'sRef =',
@@ -118,6 +121,9 @@ CEOP
      &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
       CALL WRITE_0D_R8( diffKrS, INDEX_NONE,'diffKrS =',
      &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
+      WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &                    SQUEEZE_RIGHT , 1)
       CALL WRITE_0D_R8( tAlpha,  INDEX_NONE,'tAlpha =',
      &'   /* Linear EOS thermal expansion coefficient ( 1/degree ) */')
       CALL WRITE_0D_R8( sBeta,   INDEX_NONE,'sBeta =',
@@ -131,6 +137,21 @@ CEOP
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &                    SQUEEZE_RIGHT , 1)
         ENDDO
+      ENDIF
+      IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
+       CALL WRITE_0D_R8( atm_Rd, INDEX_NONE, 'atm_Rd =',
+     & '  /* gas constant for dry air ( J/kg/K ) */')
+      CALL WRITE_0D_R8( atm_Cp, INDEX_NONE, 'atm_Cp =',
+     & '  /* specific heat (Cp) of dry air ( J/kg/K ) */')
+      CALL WRITE_0D_R8( atm_kappa, INDEX_NONE, 'atm_kappa =',
+     & '  /* kappa (=Rd/Cp ) of dry air */')
+      CALL WRITE_0D_R8( atm_Po, INDEX_NONE, 'atm_Po =',
+     & '  /* standard reference pressure ( Pa ) */')
+      CALL WRITE_0D_I( integr_GeoPot, INDEX_NONE, 'integr_GeoPot =',
+     & '  /* select how the geopotential is integrated */')
+      CALL WRITE_0D_I( selectFindRoSurf, INDEX_NONE, 
+     & 'selectFindRoSurf=',
+     & '  /* select how Surf.Ref. pressure is defined */')
       ENDIF
       CALL WRITE_0D_R8( rhonil,  INDEX_NONE,'rhonil =',
      &'   /* Reference density ( kg/m^3 ) */')
@@ -267,6 +288,8 @@ CEOP
      &'   /* Number of timesteps */')
       CALL WRITE_0D_R8( deltaTmom, INDEX_NONE,'deltatTmom =',
      &'   /* Momentum equation timestep ( s ) */')
+      CALL WRITE_0D_R8( deltaTfreesurf,INDEX_NONE,'deltaTfreesurf =',
+     &'   /* FreeSurface equation timestep ( s ) */')
       CALL WRITE_0D_R8( deltaTtracer, INDEX_NONE,'deltatTtracer =',
      &'   /* Tracer equation timestep ( s ) */')
       CALL WRITE_0D_R8( deltaTClock, INDEX_NONE,'deltatTClock  =',

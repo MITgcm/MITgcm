@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.3 2002/02/10 00:35:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.4 2002/12/10 02:55:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -85,6 +85,42 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
 #endif
 
+C     o If pLoadFile is set, then we should make sure the corresponing
+C       code is being compiled
+#ifndef ATMOSPHERIC_LOADING
+      IF (pLoadFile.NE.' ') THEN
+        WRITE(msgBuf,'(A)')
+     &  'CONFIG_CHECK: pLoadFile is set but you have not'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &  'compiled the model with the pressure loading code.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A,A)')
+     &  'Re-compile with:  #define ATMOSPHERIC_LOADING',
+     &  '              or  -DATMOSPHERIC_LOADING'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif
+
+C     o If taveFreq is finite, then we must make sure the diagnostics
+C       code is being compiled
+#ifndef ALLOW_TIMEAVE
+      IF (taveFreq.NE.0.) THEN
+        WRITE(msgBuf,'(A)')
+     &  'CONFIG_CHECK: taveFreq <> 0  but you have'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A)')
+     &  'not compiled the model with the diagnostics routines.'
+        CALL PRINT_ERROR( msgBuf , 1)
+        WRITE(msgBuf,'(A,A)')
+     &  'Re-compile with:  #define ALLOW_TIMEAVE',
+     &  '              or  -DALLOW_TIMEAVE'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-  check parameter consistency :
@@ -159,15 +195,15 @@ c     ENDIF
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
-      IF (nonlinFreeSurf.NE.0 .AND. deltaTmom.NE.deltaTtracer) THEN
+      IF (nonlinFreeSurf.NE.0.AND.deltaTfreesurf.NE.deltaTtracer) THEN
         WRITE(msgBuf,'(A)') 
-     &   'CONFIG_CHECK: WARNING: nonlinFreeSurf might cause'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)                      
+     &   'CONFIG_CHECK: WARNING: nonlinFreeSurf might cause problems'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)                      
         WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: problems with different time-steps'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                    SQUEEZE_RIGHT , 1)                      
+     &   'CONFIG_CHECK: with different FreeSurf & Tracer time-steps'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)                      
       ENDIF
 
       IF (useRealFreshWaterFlux .AND. exactConserv
@@ -181,7 +217,18 @@ c     ENDIF
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
-#ifndef NONLIN_FRSURF
+#ifdef NONLIN_FRSURF
+      IF (useRealFreshWaterFlux .AND. .NOT.exactConserv
+     &            .AND. buoyancyRelation.EQ.'OCEANICP' ) THEN
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: RealFreshWaterFlux with OCEANICP'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: requires exactConserv=T'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#else
       IF (useRealFreshWaterFlux .AND. exactConserv
      &            .AND. implicSurfPress.NE.1. _d 0 ) THEN
         WRITE(msgBuf,'(A)') 
@@ -192,7 +239,19 @@ c     ENDIF
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
-#endif
+
+      IF (useRealFreshWaterFlux
+     &            .AND. buoyancyRelation.EQ.'OCEANICP' ) THEN
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: E-P effects on wVel are not included'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)                      
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: ==> use #define NONLIN_FRSURF to fix it'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)                      
+      ENDIF
+#endif /* NONLIN_FRSURF */
 
       WRITE(msgBuf,'(A)') 'CONFIG_CHECK: OK'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,
