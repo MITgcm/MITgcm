@@ -1870,11 +1870,11 @@
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
  cg2d: Sum(rhs),rhsMax =   1.24206200879939E-15  8.55254915209884E+00
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
- cg2d: Sum(rhs),rhsMax =  -4.97486166844974E-16  1.40218608525141E+01
+ cg2d: Sum(rhs),rhsMax =  -6.02328516924322E-16  1.40313574953714E+01
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
- cg2d: Sum(rhs),rhsMax =  -3.79741810913048E-16  1.25482735561569E+01
+ cg2d: Sum(rhs),rhsMax =  -1.35877637266746E-16  1.25851186565123E+01
  cg2d: Sum(rhs),rhsMax =   0.00000000000000E+00  0.00000000000000E+00
- cg2d: Sum(rhs),rhsMax =  -1.65340831304039E-16  1.06805647472532E+01
+ cg2d: Sum(rhs),rhsMax =  -1.43873628288826E-15  1.07326527654858E+01
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: hFacC.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: g_xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: hFacC.001.001.data
@@ -1891,7 +1891,7 @@
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: g_xx_diffkr.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: hFacC.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: g_xx_tr1.0000000000.001.001.data
- ph-check fcref =   1.84044896E+14
+ ph-check fcref =   1.84044933E+14
  ph-grd 3 -------------------------------
  ph-grd 3  proc    #    i    j    k            fc ref        fc + eps        fc - eps
  ph-grd 3  proc    #    i    j    k          tlm grad         fd grad      1 - fd/tlm
@@ -2104,12 +2104,12 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_hflux.0000000000.001.001.data
  cg2d: Sum(rhs),rhsMax =   9.54097911787244E-17  1.70944607456598E-02
  cg2d: Sum(rhs),rhsMax =   1.24206200879939E-15  8.55254915209884E+00
- cg2d: Sum(rhs),rhsMax =   8.71399736544881E-17  2.33136982085628E-02
- cg2d: Sum(rhs),rhsMax =  -4.97486166844974E-16  1.40218608525141E+01
- cg2d: Sum(rhs),rhsMax =   1.18715469749085E-16  2.46569318963215E-02
- cg2d: Sum(rhs),rhsMax =  -3.79741810913048E-16  1.25482735561569E+01
- cg2d: Sum(rhs),rhsMax =   4.01146309483701E-17  2.52317593656071E-02
- cg2d: Sum(rhs),rhsMax =  -1.65340831304039E-16  1.06805647472532E+01
+ cg2d: Sum(rhs),rhsMax =   2.02811140256581E-16  2.33168364869710E-02
+ cg2d: Sum(rhs),rhsMax =  -6.02328516924322E-16  1.40313574953714E+01
+ cg2d: Sum(rhs),rhsMax =  -1.17257012079176E-16  2.46622304230636E-02
+ cg2d: Sum(rhs),rhsMax =  -1.35877637266746E-16  1.25851186565123E+01
+ cg2d: Sum(rhs),rhsMax =   5.38360533763803E-17  2.52382382084169E-02
+ cg2d: Sum(rhs),rhsMax =  -1.43873628288826E-15  1.07326527654858E+01
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
@@ -2314,26 +2314,26 @@
 (PID.TID 0000.0001)                       cg2d_iters =    51
 (PID.TID 0000.0001)                         cg2d_res =    9.97121608868382E-18
  COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =  -2.86771474622416E-16  1.40218608525141E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26322063012982E+00
+ cg2d: Sum(rhs),rhsMax =   7.18988670683762E-16  1.40313574953714E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146449550E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84788114599266E-18
+(PID.TID 0000.0001)                         cg2d_res =    5.84504233615907E-18
  COST TRACER nach  9.22837309E+13  0.977981836 -0.0171503603
- cg2d: Sum(rhs),rhsMax =  -6.71419300365961E-16  1.25482735561569E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26634306132760E+00
+ cg2d: Sum(rhs),rhsMax =   9.24282352043893E-17  1.25851186565123E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087360858E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.37338336817545E-18
- COST TRACER nach  1.38236404E+14  0.986138444 -0.00662453982
- cg2d: Sum(rhs),rhsMax =   8.04911692853238E-16  1.06805647472532E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.20607628843243E+00
+(PID.TID 0000.0001)                         cg2d_res =    6.35209029736510E-18
+ COST TRACER nach  1.38236409E+14  0.986122183 -0.00664062242
+ cg2d: Sum(rhs),rhsMax =  -1.45825192199300E-16  1.07326527654859E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981664330E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.29369819254492E-18
- COST TRACER nach  1.84044896E+14  1.01048745  0.0197349228
+(PID.TID 0000.0001)                         cg2d_res =    6.25950331021424E-18
+ COST TRACER nach  1.84044933E+14  1.01045297  0.0196996713
   --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84044896E+14
+  --> objf_tracer(bi,bj) =  1.84044933E+14
   --> objf_atl(bi,bj) =  0.
-  local fc =   1.84044896E+14
-  global fc =   1.84044896E+14
+  local fc =   1.84044933E+14
+  global fc =   1.84044933E+14
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
@@ -2538,30 +2538,30 @@
 (PID.TID 0000.0001)                       cg2d_iters =    51
 (PID.TID 0000.0001)                         cg2d_res =    9.97121610735939E-18
  COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =   5.32885367776625E-17  1.40218608525140E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26322062951850E+00
+ cg2d: Sum(rhs),rhsMax =  -8.43726130628220E-16  1.40313574953714E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146388425E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84788114361383E-18
+(PID.TID 0000.0001)                         cg2d_res =    5.84504233378939E-18
  COST TRACER nach  9.22837309E+13  0.977981836 -0.0171503603
- cg2d: Sum(rhs),rhsMax =  -7.27933338606768E-16  1.25482735561569E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26634306049924E+00
+ cg2d: Sum(rhs),rhsMax =  -3.45074446447824E-16  1.25851186565123E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087278067E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.37338331827419E-18
- COST TRACER nach  1.38236404E+14  0.986138444 -0.00662453982
- cg2d: Sum(rhs),rhsMax =  -1.03866568124111E-15  1.06805647472532E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.20607628851030E+00
+(PID.TID 0000.0001)                         cg2d_res =    6.35209024782096E-18
+ COST TRACER nach  1.38236409E+14  0.986122183 -0.00664062242
+ cg2d: Sum(rhs),rhsMax =   4.75964753721136E-17  1.07326527654858E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981672291E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.29369813368473E-18
- COST TRACER nach  1.84044896E+14  1.01048745  0.0197349228
+(PID.TID 0000.0001)                         cg2d_res =    6.25950325135063E-18
+ COST TRACER nach  1.84044933E+14  1.01045297  0.0196996713
   --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84044896E+14
+  --> objf_tracer(bi,bj) =  1.84044933E+14
   --> objf_atl(bi,bj) =  0.
-  local fc =   1.84044896E+14
-  global fc =   1.84044896E+14
+  local fc =   1.84044933E+14
+  global fc =   1.84044933E+14
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
  ph-grd 3 -------------------------------
- ph-grd 3     0    1   44    2    1   0.184044896E+15 0.184044896E+15 0.184044896E+15
- ph-grd 3     0    1    1    1    0   0.174852649E+09 0.174852812E+09 -.933119216E-06
+ ph-grd 3     0    1   44    2    1   0.184044933E+15 0.184044933E+15 0.184044933E+15
+ ph-grd 3     0    1    1    1    0   0.174865284E+09 0.174865312E+09 -.163171844E-06
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  1, ichknum =  1
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
@@ -2773,12 +2773,12 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_hflux.0000000000.001.001.data
  cg2d: Sum(rhs),rhsMax =   1.04083408558608E-16  3.27719468837424E-02
  cg2d: Sum(rhs),rhsMax =   1.24206200879939E-15  8.55254915209884E+00
- cg2d: Sum(rhs),rhsMax =   1.77881676548559E-16  3.80151467817372E-02
- cg2d: Sum(rhs),rhsMax =  -4.97486166844974E-16  1.40218608525141E+01
- cg2d: Sum(rhs),rhsMax =  -2.10826424530420E-17  3.76704545682154E-02
- cg2d: Sum(rhs),rhsMax =  -3.79741810913048E-16  1.25482735561569E+01
- cg2d: Sum(rhs),rhsMax =   2.96542257471397E-16  3.90253332751053E-02
- cg2d: Sum(rhs),rhsMax =  -1.65340831304039E-16  1.06805647472532E+01
+ cg2d: Sum(rhs),rhsMax =   9.10661768645746E-17  3.80179863335990E-02
+ cg2d: Sum(rhs),rhsMax =  -6.02328516924322E-16  1.40313574953714E+01
+ cg2d: Sum(rhs),rhsMax =  -1.94161510459681E-16  3.76721950424197E-02
+ cg2d: Sum(rhs),rhsMax =  -1.35877637266746E-16  1.25851186565123E+01
+ cg2d: Sum(rhs),rhsMax =   2.21552112166703E-16  3.90295039209871E-02
+ cg2d: Sum(rhs),rhsMax =  -1.43873628288826E-15  1.07326527654858E+01
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
@@ -2983,26 +2983,26 @@
 (PID.TID 0000.0001)                       cg2d_iters =    51
 (PID.TID 0000.0001)                         cg2d_res =    9.97121601936141E-18
  COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =  -1.85561201820894E-16  1.40218608525141E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26322063001818E+00
+ cg2d: Sum(rhs),rhsMax =  -7.01316175272249E-16  1.40313574953714E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146438384E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84788114301492E-18
+(PID.TID 0000.0001)                         cg2d_res =    5.84504233317699E-18
  COST TRACER nach  9.22837309E+13  0.977981836 -0.0171503603
- cg2d: Sum(rhs),rhsMax =  -5.34891141795724E-16  1.25482735561569E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26634306123539E+00
+ cg2d: Sum(rhs),rhsMax =   5.75982404132924E-17  1.25851186565123E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087351632E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.37338336748860E-18
- COST TRACER nach  1.38236404E+14  0.986138444 -0.00662453982
- cg2d: Sum(rhs),rhsMax =  -1.04755613905549E-15  1.06805647472532E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.20607628838908E+00
+(PID.TID 0000.0001)                         cg2d_res =    6.35209029686697E-18
+ COST TRACER nach  1.38236409E+14  0.986122183 -0.00664062242
+ cg2d: Sum(rhs),rhsMax =  -1.14925430283463E-17  1.07326527654858E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981659995E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.29369818665764E-18
- COST TRACER nach  1.84044896E+14  1.01048745  0.0197349228
+(PID.TID 0000.0001)                         cg2d_res =    6.25950330427339E-18
+ COST TRACER nach  1.84044933E+14  1.01045297  0.0196996713
   --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84044896E+14
+  --> objf_tracer(bi,bj) =  1.84044933E+14
   --> objf_atl(bi,bj) =  0.
-  local fc =   1.84044896E+14
-  global fc =   1.84044896E+14
+  local fc =   1.84044933E+14
+  global fc =   1.84044933E+14
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
@@ -3207,30 +3207,30 @@
 (PID.TID 0000.0001)                       cg2d_iters =    51
 (PID.TID 0000.0001)                         cg2d_res =    9.97121617667920E-18
  COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =   6.03304298879559E-16  1.40218608525141E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26322062963014E+00
+ cg2d: Sum(rhs),rhsMax =   3.47866267041974E-16  1.40313574953714E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146399591E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84788114659501E-18
+(PID.TID 0000.0001)                         cg2d_res =    5.84504233676774E-18
  COST TRACER nach  9.22837309E+13  0.977981836 -0.0171503603
- cg2d: Sum(rhs),rhsMax =  -4.51841255383334E-17  1.25482735561569E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26634306059145E+00
+ cg2d: Sum(rhs),rhsMax =  -8.51369755944242E-17  1.25851186565123E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087287294E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.37338331902962E-18
- COST TRACER nach  1.38236404E+14  0.986138444 -0.00662453982
- cg2d: Sum(rhs),rhsMax =  -8.55435514091063E-16  1.06805647472532E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.20607628855365E+00
+(PID.TID 0000.0001)                         cg2d_res =    6.35209024860251E-18
+ COST TRACER nach  1.38236409E+14  0.986122183 -0.00664062242
+ cg2d: Sum(rhs),rhsMax =  -1.10718725854220E-15  1.07326527654858E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981676627E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.29369813947028E-18
- COST TRACER nach  1.84044896E+14  1.01048745  0.0197349228
+(PID.TID 0000.0001)                         cg2d_res =    6.25950325737782E-18
+ COST TRACER nach  1.84044933E+14  1.01045297  0.0196996713
   --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84044896E+14
+  --> objf_tracer(bi,bj) =  1.84044933E+14
   --> objf_atl(bi,bj) =  0.
-  local fc =   1.84044896E+14
-  global fc =   1.84044896E+14
+  local fc =   1.84044933E+14
+  global fc =   1.84044933E+14
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
  ph-grd 3 -------------------------------
- ph-grd 3     0    2   45    2    1   0.184044896E+15 0.184044896E+15 0.184044896E+15
- ph-grd 3     0    2    2    2    0   0.131872330E+09 0.131872344E+09 -.107142304E-06
+ ph-grd 3     0    2   45    2    1   0.184044933E+15 0.184044933E+15 0.184044933E+15
+ ph-grd 3     0    2    2    2    0   0.131884845E+09 0.131884844E+09 0.811808783E-08
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  2, ichknum =  2
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
@@ -3442,12 +3442,12 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_hflux.0000000000.001.001.data
  cg2d: Sum(rhs),rhsMax =   7.19910242530375E-17  4.21739002938553E-02
  cg2d: Sum(rhs),rhsMax =   1.24206200879939E-15  8.55254915209884E+00
- cg2d: Sum(rhs),rhsMax =   1.10222120264861E-16  4.78309030529206E-02
- cg2d: Sum(rhs),rhsMax =  -4.97486166844974E-16  1.40218608525141E+01
- cg2d: Sum(rhs),rhsMax =  -1.55004938576273E-16  4.73880983171841E-02
- cg2d: Sum(rhs),rhsMax =  -3.79741810913048E-16  1.25482735561569E+01
- cg2d: Sum(rhs),rhsMax =   8.74675431389954E-17  4.93514401708030E-02
- cg2d: Sum(rhs),rhsMax =  -1.65340831304039E-16  1.06805647472532E+01
+ cg2d: Sum(rhs),rhsMax =   1.30406234050306E-17  4.78335241607505E-02
+ cg2d: Sum(rhs),rhsMax =  -6.02328516924322E-16  1.40313574953714E+01
+ cg2d: Sum(rhs),rhsMax =   1.00899002376359E-16  4.73876468883206E-02
+ cg2d: Sum(rhs),rhsMax =  -1.35877637266746E-16  1.25851186565123E+01
+ cg2d: Sum(rhs),rhsMax =  -1.33007136398598E-16  4.93514917950171E-02
+ cg2d: Sum(rhs),rhsMax =  -1.43873628288826E-15  1.07326527654858E+01
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
@@ -3652,26 +3652,26 @@
 (PID.TID 0000.0001)                       cg2d_iters =    51
 (PID.TID 0000.0001)                         cg2d_res =    9.97121612454821E-18
  COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =   1.43136370811536E-15  1.40218608525141E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26322063008892E+00
+ cg2d: Sum(rhs),rhsMax =  -2.34458719799990E-16  1.40313574953714E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146445450E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84788117012325E-18
+(PID.TID 0000.0001)                         cg2d_res =    5.84504236029598E-18
  COST TRACER nach  9.22837309E+13  0.977981836 -0.0171503603
- cg2d: Sum(rhs),rhsMax =   2.09766015321633E-16  1.25482735561568E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26634306119026E+00
+ cg2d: Sum(rhs),rhsMax =   4.41622649907658E-16  1.25851186565123E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087347121E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.37338338366622E-18
- COST TRACER nach  1.38236404E+14  0.986138444 -0.00662453982
- cg2d: Sum(rhs),rhsMax =  -2.13587827979644E-17  1.06805647472532E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.20607628828947E+00
+(PID.TID 0000.0001)                         cg2d_res =    6.35209031299295E-18
+ COST TRACER nach  1.38236409E+14  0.986122183 -0.00664062242
+ cg2d: Sum(rhs),rhsMax =  -1.97866896478605E-15  1.07326527654858E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981650077E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.29369818062788E-18
- COST TRACER nach  1.84044896E+14  1.01048745  0.0197349228
+(PID.TID 0000.0001)                         cg2d_res =    6.25950329841241E-18
+ COST TRACER nach  1.84044933E+14  1.01045297  0.0196996713
   --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84044896E+14
+  --> objf_tracer(bi,bj) =  1.84044933E+14
   --> objf_atl(bi,bj) =  0.
-  local fc =   1.84044896E+14
-  global fc =   1.84044896E+14
+  local fc =   1.84044933E+14
+  global fc =   1.84044933E+14
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
@@ -3876,30 +3876,30 @@
 (PID.TID 0000.0001)                       cg2d_iters =    51
 (PID.TID 0000.0001)                         cg2d_res =    9.97121607149944E-18
  COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =   2.45571792067967E-16  1.40218608525141E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26322062955941E+00
+ cg2d: Sum(rhs),rhsMax =  -3.36427934122252E-16  1.40313574953714E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146392525E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84788111947657E-18
+(PID.TID 0000.0001)                         cg2d_res =    5.84504230964307E-18
  COST TRACER nach  9.22837309E+13  0.977981836 -0.0171503603
- cg2d: Sum(rhs),rhsMax =  -4.46528664738155E-16  1.25482735561569E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26634306063658E+00
+ cg2d: Sum(rhs),rhsMax =   1.28261117005035E-16  1.25851186565123E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087291805E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.37338330288311E-18
- COST TRACER nach  1.38236404E+14  0.986138444 -0.00662453982
- cg2d: Sum(rhs),rhsMax =  -3.05267963685019E-15  1.06805647472532E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.20607628865327E+00
+(PID.TID 0000.0001)                         cg2d_res =    6.35209023235475E-18
+ COST TRACER nach  1.38236409E+14  0.986122183 -0.00664062242
+ cg2d: Sum(rhs),rhsMax =  -1.55886588359966E-15  1.07326527654859E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981686545E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.29369814554779E-18
- COST TRACER nach  1.84044896E+14  1.01048745  0.0197349228
+(PID.TID 0000.0001)                         cg2d_res =    6.25950326319545E-18
+ COST TRACER nach  1.84044933E+14  1.01045297  0.0196996713
   --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84044896E+14
+  --> objf_tracer(bi,bj) =  1.84044933E+14
   --> objf_atl(bi,bj) =  0.
-  local fc =   1.84044896E+14
-  global fc =   1.84044896E+14
+  local fc =   1.84044933E+14
+  global fc =   1.84044933E+14
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
  ph-grd 3 -------------------------------
- ph-grd 3     0    3   46    2    1   0.184044896E+15 0.184044896E+15 0.184044896E+15
- ph-grd 3     0    3    3    3    0   0.196391851E+08 0.196392188E+08 -.171396677E-05
+ ph-grd 3     0    3   46    2    1   0.184044933E+15 0.184044933E+15 0.184044933E+15
+ ph-grd 3     0    3    3    3    0   0.196420903E+08 0.196420312E+08 0.300706592E-05
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  3, ichknum =  3
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
@@ -4111,12 +4111,12 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_hflux.0000000000.001.001.data
  cg2d: Sum(rhs),rhsMax =  -2.44379169678233E-16  5.76343019680647E-02
  cg2d: Sum(rhs),rhsMax =   1.24206200879939E-15  8.55254915209884E+00
- cg2d: Sum(rhs),rhsMax =  -2.80822644203667E-16  6.24079538653984E-02
- cg2d: Sum(rhs),rhsMax =  -4.97486166844974E-16  1.40218608525141E+01
- cg2d: Sum(rhs),rhsMax =  -4.61399687493697E-16  6.22214477724717E-02
- cg2d: Sum(rhs),rhsMax =  -3.79741810913048E-16  1.25482735561569E+01
- cg2d: Sum(rhs),rhsMax =  -6.40868089425634E-17  6.59289676472243E-02
- cg2d: Sum(rhs),rhsMax =  -1.65340831304039E-16  1.06805647472532E+01
+ cg2d: Sum(rhs),rhsMax =  -1.58312617711099E-16  6.24122893672765E-02
+ cg2d: Sum(rhs),rhsMax =  -6.02328516924322E-16  1.40313574953714E+01
+ cg2d: Sum(rhs),rhsMax =   4.95214049332779E-17  6.22205587374148E-02
+ cg2d: Sum(rhs),rhsMax =  -1.35877637266746E-16  1.25851186565123E+01
+ cg2d: Sum(rhs),rhsMax =   3.42991664773411E-16  6.59295390342041E-02
+ cg2d: Sum(rhs),rhsMax =  -1.43873628288826E-15  1.07326527654858E+01
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: g_xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
@@ -4321,26 +4321,26 @@
 (PID.TID 0000.0001)                       cg2d_iters =    51
 (PID.TID 0000.0001)                         cg2d_res =    9.97121611049239E-18
  COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =  -8.76414826128658E-16  1.40218608525141E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26322063010700E+00
+ cg2d: Sum(rhs),rhsMax =   2.66551104105561E-16  1.40313574953714E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146447261E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84788119897278E-18
+(PID.TID 0000.0001)                         cg2d_res =    5.84504238914547E-18
  COST TRACER nach  9.22837309E+13  0.977981836 -0.0171503603
- cg2d: Sum(rhs),rhsMax =  -2.79778370609884E-16  1.25482735561569E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26634306112639E+00
+ cg2d: Sum(rhs),rhsMax =  -4.20426497435566E-16  1.25851186565123E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087340741E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.37338338834123E-18
- COST TRACER nach  1.38236404E+14  0.986138444 -0.00662453982
- cg2d: Sum(rhs),rhsMax =  -1.33020764542247E-15  1.06805647472532E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.20607628821685E+00
+(PID.TID 0000.0001)                         cg2d_res =    6.35209031755757E-18
+ COST TRACER nach  1.38236409E+14  0.986122183 -0.00664062242
+ cg2d: Sum(rhs),rhsMax =   4.29886161390503E-16  1.07326527654858E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981642774E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.29369817080094E-18
- COST TRACER nach  1.84044896E+14  1.01048745  0.0197349228
+(PID.TID 0000.0001)                         cg2d_res =    6.25950328849359E-18
+ COST TRACER nach  1.84044933E+14  1.01045297  0.0196996713
   --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84044896E+14
+  --> objf_tracer(bi,bj) =  1.84044933E+14
   --> objf_atl(bi,bj) =  0.
-  local fc =   1.84044896E+14
-  global fc =   1.84044896E+14
+  local fc =   1.84044933E+14
+  global fc =   1.84044933E+14
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
 (PID.TID 0000.0001) // CG2D normalisation factor =          0.8831987737220081712604530E-04
@@ -4545,30 +4545,30 @@
 (PID.TID 0000.0001)                       cg2d_iters =    51
 (PID.TID 0000.0001)                         cg2d_res =    9.97121608554220E-18
  COST TRACER nach  4.62019432E+13  0.998831249  0.00126445331
- cg2d: Sum(rhs),rhsMax =   4.41975015613716E-16  1.40218608525141E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26322062954132E+00
+ cg2d: Sum(rhs),rhsMax =   1.16090947618885E-15  1.40313574953714E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26274146390713E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    5.84788109063313E-18
+(PID.TID 0000.0001)                         cg2d_res =    5.84504228079492E-18
  COST TRACER nach  9.22837309E+13  0.977981836 -0.0171503603
- cg2d: Sum(rhs),rhsMax =  -8.29387556897099E-16  1.25482735561569E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.26634306070045E+00
+ cg2d: Sum(rhs),rhsMax =  -6.83481049534862E-16  1.25851186565123E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.26182087298185E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.37338329815344E-18
- COST TRACER nach  1.38236404E+14  0.986138444 -0.00662453982
- cg2d: Sum(rhs),rhsMax =  -1.53555553689122E-15  1.06805647472532E+01
-(PID.TID 0000.0001)                    cg2d_init_res =    1.20607628872590E+00
+(PID.TID 0000.0001)                         cg2d_res =    6.35209022760968E-18
+ COST TRACER nach  1.38236409E+14  0.986122183 -0.00664062242
+ cg2d: Sum(rhs),rhsMax =  -1.74014448683923E-16  1.07326527654859E+01
+(PID.TID 0000.0001)                    cg2d_init_res =    1.19976981693847E+00
 (PID.TID 0000.0001)                       cg2d_iters =    51
-(PID.TID 0000.0001)                         cg2d_res =    6.29369815571201E-18
- COST TRACER nach  1.84044896E+14  1.01048745  0.0197349228
+(PID.TID 0000.0001)                         cg2d_res =    6.25950327330766E-18
+ COST TRACER nach  1.84044933E+14  1.01045297  0.0196996713
   --> objf_test(bi,bj)   =  0.
-  --> objf_tracer(bi,bj) =  1.84044896E+14
+  --> objf_tracer(bi,bj) =  1.84044933E+14
   --> objf_atl(bi,bj) =  0.
-  local fc =   1.84044896E+14
-  global fc =   1.84044896E+14
+  local fc =   1.84044933E+14
+  global fc =   1.84044933E+14
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_theta.0000000000.001.001.data
  ph-grd 3 -------------------------------
- ph-grd 3     0    4   47    2    1   0.184044896E+15 0.184044896E+15 0.184044896E+15
- ph-grd 3     0    4    4    4    0   -.999970705E+07 -.999968750E+07 0.195551766E-05
+ ph-grd 3     0    4   47    2    1   0.184044933E+15 0.184044933E+15 0.184044933E+15
+ ph-grd 3     0    4    4    4    0   -.999869528E+07 -.999875000E+07 -.547242221E-05
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  4, ichknum =  4
 (PID.TID 0000.0001) 
@@ -4581,16 +4581,16 @@
 (PID.TID 0000.0001) grdchk output:            procId               I        ITILEPOS        JTILEPOS           LAYER            X(I)      X(I)+/-EPS
 (PID.TID 0000.0001) grdchk output:                                FC             FC1             FC2 FC1-FC2/(2*EPS)    TLM GRAD(FC)  1-FDGRD/TLMGRD
 (PID.TID 0000.0001) grdchk output:                 0               1              44               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.184044896E+15 0.184044896E+15 0.184044896E+15 0.174852812E+09 0.174852649E+09 -.933119216E-06
+(PID.TID 0000.0001) grdchk output:                   0.184044933E+15 0.184044933E+15 0.184044933E+15 0.174865312E+09 0.174865284E+09 -.163171844E-06
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               2              45               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.184044896E+15 0.184044896E+15 0.184044896E+15 0.131872344E+09 0.131872330E+09 -.107142304E-06
+(PID.TID 0000.0001) grdchk output:                   0.184044933E+15 0.184044933E+15 0.184044933E+15 0.131884844E+09 0.131884845E+09 0.811808783E-08
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               3              46               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.184044896E+15 0.184044896E+15 0.184044896E+15 0.196392188E+08 0.196391851E+08 -.171396677E-05
+(PID.TID 0000.0001) grdchk output:                   0.184044933E+15 0.184044933E+15 0.184044933E+15 0.196420312E+08 0.196420903E+08 0.300706592E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               4              47               2               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.184044896E+15 0.184044896E+15 0.184044896E+15 -.999968750E+07 -.999970705E+07 0.195551766E-05
+(PID.TID 0000.0001) grdchk output:                   0.184044933E+15 0.184044933E+15 0.184044933E+15 -.999875000E+07 -.999869528E+07 -.547242221E-05
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -4599,142 +4599,142 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) %CHECKPOINT         4 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  38.5800018
-(PID.TID 0000.0001)         System time:  9.89999962
-(PID.TID 0000.0001)     Wall clock time:  153.630511
+(PID.TID 0000.0001)           User time:  39.3400002
+(PID.TID 0000.0001)         System time:  7.38000011
+(PID.TID 0000.0001)     Wall clock time:  58.2267921
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:  0.129999995
 (PID.TID 0000.0001)         System time:  0.0299999993
-(PID.TID 0000.0001)     Wall clock time:  0.317113996
+(PID.TID 0000.0001)     Wall clock time:  0.225126028
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "CTRL_UNPACK      [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.189999998
-(PID.TID 0000.0001)         System time:  0.0600000042
-(PID.TID 0000.0001)     Wall clock time:  0.497627974
+(PID.TID 0000.0001)           User time:  0.180000007
+(PID.TID 0000.0001)         System time:  0.089999998
+(PID.TID 0000.0001)     Wall clock time:  0.622537971
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "G_THE_MAIN_LOOP           [TANGENT RUN]":
-(PID.TID 0000.0001)           User time:  4.27999991
-(PID.TID 0000.0001)         System time:  0.189999998
-(PID.TID 0000.0001)     Wall clock time:  8.94767499
+(PID.TID 0000.0001)           User time:  4.15000004
+(PID.TID 0000.0001)         System time:  0.240000017
+(PID.TID 0000.0001)     Wall clock time:  8.69252205
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK           [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:  0.130000114
-(PID.TID 0000.0001)         System time:  0.0200000107
-(PID.TID 0000.0001)     Wall clock time:  0.327368975
+(PID.TID 0000.0001)         System time:  0.00999999046
+(PID.TID 0000.0001)     Wall clock time:  0.321341991
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  33.5699992
-(PID.TID 0000.0001)         System time:  8.87000006
-(PID.TID 0000.0001)     Wall clock time:  137.377536
+(PID.TID 0000.0001)           User time:  34.6199989
+(PID.TID 0000.0001)         System time:  6.88
+(PID.TID 0000.0001)     Wall clock time:  48.072776
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "ADJOINT SPIN-UP":
-(PID.TID 0000.0001)           User time:  1.40999699
-(PID.TID 0000.0001)         System time:  1.36000046
-(PID.TID 0000.0001)     Wall clock time:  14.1979901
+(PID.TID 0000.0001)           User time:  1.3900013
+(PID.TID 0000.0001)         System time:  0.459999621
+(PID.TID 0000.0001)     Wall clock time:  1.99121904
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  1.19999504
-(PID.TID 0000.0001)         System time:  0.619999915
-(PID.TID 0000.0001)     Wall clock time:  6.12896383
+(PID.TID 0000.0001)           User time:  1.18000507
+(PID.TID 0000.0001)         System time:  0.269999802
+(PID.TID 0000.0001)     Wall clock time:  1.54683602
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "WRITE_STATE         [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.210001945
-(PID.TID 0000.0001)         System time:  0.740000546
-(PID.TID 0000.0001)     Wall clock time:  8.06253004
+(PID.TID 0000.0001)           User time:  0.209996223
+(PID.TID 0000.0001)         System time:  0.189999819
+(PID.TID 0000.0001)     Wall clock time:  0.443750978
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  14.5699997
-(PID.TID 0000.0001)         System time:  4.13000003
-(PID.TID 0000.0001)     Wall clock time:  58.9230318
+(PID.TID 0000.0001)           User time:  15.3399973
+(PID.TID 0000.0001)         System time:  3.35000002
+(PID.TID 0000.0001)     Wall clock time:  20.218707
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  14.5699997
-(PID.TID 0000.0001)         System time:  4.13000003
-(PID.TID 0000.0001)     Wall clock time:  58.8897868
+(PID.TID 0000.0001)           User time:  15.3399973
+(PID.TID 0000.0001)         System time:  3.35000002
+(PID.TID 0000.0001)     Wall clock time:  20.2123878
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "UPDATE_ETAH        [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)           User time:  0.0100021362
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00924396515
+(PID.TID 0000.0001)     Wall clock time:  0.00233411789
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FIELDS_LOAD[FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00886666775
+(PID.TID 0000.0001)     Wall clock time:  0.000630021095
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  8.81999779
-(PID.TID 0000.0001)         System time:  0.0499999821
-(PID.TID 0000.0001)     Wall clock time:  12.9521329
+(PID.TID 0000.0001)           User time:  9.44000626
+(PID.TID 0000.0001)         System time:  1.62000066
+(PID.TID 0000.0001)     Wall clock time:  11.9434525
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.159999847
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.119731665
+(PID.TID 0000.0001)           User time:  0.11000061
+(PID.TID 0000.0001)         System time:  0.0399999619
+(PID.TID 0000.0001)     Wall clock time:  0.141619921
 (PID.TID 0000.0001)          No. starts: 64
 (PID.TID 0000.0001)           No. stops: 64
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.30999279
-(PID.TID 0000.0001)         System time:  0.0200000405
-(PID.TID 0000.0001)     Wall clock time:  4.89057279
+(PID.TID 0000.0001)           User time:  3.39999008
+(PID.TID 0000.0001)         System time:  0.630000293
+(PID.TID 0000.0001)     Wall clock time:  4.39639354
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.450006485
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.909013033
-(PID.TID 0000.0001)          No. starts: 32
-STOP NORMAL END statement executed
+(PID.TID 0000.0001)           User time:  0.470003128
+(PID.TID 0000.0001)         System time:  0.14999944
+(PID.TID 0000.0001)     Wall clock time:  0.666729689
+(PID.TID 0000.0001)       STOP NORMAL END statement executed
+   No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "THE_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.610001564
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.938812733
+(PID.TID 0000.0001)           User time:  0.640002251
+(PID.TID 0000.0001)         System time:  0.120001078
+(PID.TID 0000.0001)     Wall clock time:  0.892305017
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.21000099
-(PID.TID 0000.0001)         System time:  4.04000026
-(PID.TID 0000.0001)     Wall clock time:  38.6656511
+(PID.TID 0000.0001)           User time:  1.25999069
+(PID.TID 0000.0001)         System time:  0.7799986
+(PID.TID 0000.0001)     Wall clock time:  2.13433194
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT    [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0100002289
+(PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00736868382
+(PID.TID 0000.0001)     Wall clock time:  0.000900745392
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "COST_TILE           [THE_MAIN_LOOP]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0097669363
+(PID.TID 0000.0001)     Wall clock time:  0.00404620171
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ADJOINT SPIN-DOWN]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0031709671
+(PID.TID 0000.0001)     Wall clock time:  0.00042617321
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.280002594
-(PID.TID 0000.0001)         System time:  0.729999542
-(PID.TID 0000.0001)     Wall clock time:  6.1622411
+(PID.TID 0000.0001)           User time:  0.130001068
+(PID.TID 0000.0001)         System time:  0.130000114
+(PID.TID 0000.0001)     Wall clock time:  0.292268991
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001) // ======================================================

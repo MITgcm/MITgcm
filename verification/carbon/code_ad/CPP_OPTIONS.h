@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad/Attic/CPP_OPTIONS.h,v 1.1 2003/10/26 01:31:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad/Attic/CPP_OPTIONS.h,v 1.2 2003/10/27 22:41:00 heimbach Exp $
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -7,7 +7,6 @@ C will be compiled.
 #define CPP_OPTIONS_H
 
 #include "PACKAGES_CONFIG.h"
-#include "AD_CONFIG.h"
 
 C o Shortwave heating as extra term in external_forcing.F
 #ifdef ALLOW_KPP
@@ -52,13 +51,8 @@ c o Allow atmospheric loading
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
 
-C o Include/exclude code specific to the ECCO/SEALION version.
-#define ALLOW_GRADIENT_CHECK
-
-#if (defined (INCLUDE_ECCO_PACKAGE) || \
-     defined (ALLOW_ADJOINT_RUN) || \
-     defined (ALLOW_TANGENTLINEAR_RUN))
-#include "ECCO_CPPOPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "ECCO_CPPOPTIONS.h"
 #endif
 
 #endif /* CPP_OPTIONS_H */
