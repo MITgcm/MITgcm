@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.5 2001/09/28 15:15:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.6 2002/07/13 02:47:32 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -20,9 +20,11 @@ C     !USES:
       implicit none
 
 c     == global variables ==
-#include "EEPARAMS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "DYNVARS.h"
+#include "GRID.h"
 #include "TR1.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
@@ -52,6 +54,8 @@ c     == local variables ==
       character*( 80)   fnametr1
       character*( 80)   fnamediffkr
       character*( 80)   fnamekapgm
+      character*( 80)   fnameefluxy
+      character*( 80)   fnameefluxp
 
       _RL     fac
 
@@ -201,26 +205,88 @@ c--   kapgm.
       enddo
 #endif
 
+#ifdef ALLOW_EFLUXY0_CONTROL
+c--   y-component EP-flux field.
+      il=ilnblnk( xx_efluxy_file )
+      write(fnameefluxy(1:80),'(2a,i10.10)')
+     &     xx_efluxy_file(1:il),'.',optimcycle
+      call active_read_xyz( fnameefluxy, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_efluxy_dummy )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                EfluxY(i,j,k,bi,bj) = EfluxY(i,j,k,bi,bj)
+     &                                - fac*tmpfld3d(i,j,k,bi,bj)
+     &                                  *maskS(i,j,k,bi,bj)
+cph                EfluxY(i,j,k,bi,bj) = EfluxY(i,j,k,bi,bj)
+cph     &                                - rSphere*cosFacU(J,bi,bj)
+cph     &                                  *fac*tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
+#ifdef ALLOW_EFLUXP0_CONTROL
+c--   p-component EP-flux field.
+      il=ilnblnk( xx_efluxp_file )
+      write(fnameefluxp(1:80),'(2a,i10.10)')
+     &     xx_efluxp_file(1:il),'.',optimcycle
+      call active_read_xyz( fnameefluxp, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_efluxp_dummy )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                EfluxP(i,j,k,bi,bj) = EfluxP(i,j,k,bi,bj)
+     &                                + fCori(i,j,bi,bj)
+     &                                  *fac*tmpfld3d(i,j,k,bi,bj)
+     &                                  *hFacV(i,j,k,bi,bj)
+cph                EfluxP(i,j,k,bi,bj) = EfluxP(i,j,k,bi,bj)
+cph     &                                + fCori(i,j,bi,bj)
+cph     &                                  *rSphere*cosFacU(J,bi,bj)
+cph     &                                  *fac*tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
 
 c--   Update the tile edges.
 
 #ifdef ALLOW_THETA0_CONTROL
       _EXCH_XYZ_R8( theta, mythid )
-      _EXCH_XYZ_R8( gtNm1, mythid )
+cph      _EXCH_XYZ_R8( gtNm1, mythid )
 #endif
 #ifdef ALLOW_SALT0_CONTROL
       _EXCH_XYZ_R8(  salt, mythid )
-      _EXCH_XYZ_R8( gsNm1, mythid )
+cph      _EXCH_XYZ_R8( gsNm1, mythid )
 #endif
 #ifdef ALLOW_TR10_CONTROL
       _EXCH_XYZ_R8(     tr1, mythid )
-      _EXCH_XYZ_R8( gTr1Nm1, mythid )
+cph      _EXCH_XYZ_R8( gTr1Nm1, mythid )
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
       _EXCH_XYZ_R8( diffkr, mythid)
 #endif
 #ifdef ALLOW_KAPGM_CONTROL
       _EXCH_XYZ_R8( kapgm, mythid)
+#endif
+#ifdef ALLOW_EFLUXY0_CONTROL
+      _EXCH_XYZ_R8( EfluxY, mythid )
+#endif
+#ifdef ALLOW_EFLUXP0_CONTROL
+      _EXCH_XYZ_R8( EfluxP, mythid )
 #endif
 
 
