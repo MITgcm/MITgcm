@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.6 2004/04/18 21:38:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_do_physics.F,v 1.7 2004/05/21 17:37:29 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -140,7 +140,7 @@ C-    Land diagnostics : write snap-shot & cumulate for TimeAve output
 
 C-    surface fluxes over ocean (ice-free & ice covered) 
 C       used for diagnostics, thsice package and coupler
-        CALL AIM_AIM2SIOCE( aim_landFr,
+        CALL AIM_AIM2SIOCE( aim_landFr, fmask1(1,3,myThid),
      O                      prcAtm, evpAtm, flxSW, 
      I                      bi, bj, myTime, myIter, myThid )
 
