@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.8 2001/05/30 19:33:18 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.9 2001/06/04 13:25:35 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -95,6 +95,11 @@ c--   Dump for start state.
       CALL WRITE_STATE( mytime, myiter, mythid )
       CALL TIMER_STOP ('I/O (WRITE)        [ADJOINT SPIN-UP]', mythid)
 #endif
+
+#ifndef EXCLUDE_MONITOR
+C--   Check status of solution (statistics, cfl, etc...)
+      CALL MONITOR( myIter, myTime, myThid )
+#endif /* EXCLUDE_MONITOR */
 
 #ifdef ALLOW_COST_TEST
 c--   Add control vector for forcing and parameter fields

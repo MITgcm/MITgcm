@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.1 2001/05/30 19:33:18 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.2 2001/06/04 13:25:35 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -34,6 +34,9 @@ C     === Local variables ====
       dT=deltaTclock
 
       IF (DIFFERENT_MULTIPLE(monitorFreq,myTime,myTime-dT)) THEN
+C      Print the time to make grepping the stdout easier
+       WRITE(*,'(A,A10,I10,A10,1PE14.4)')
+     &   'MON_TIME:','iter=',myIter,'time=',myTime
 C      Print the basic statistics of model state variables
        CALL MON_PRINTSTATS_RL(1,EtaN,'Eta',myThid)
        CALL MON_PRINTSTATS_RL(Nr,uVel,'Uvel',myThid)
@@ -47,6 +50,9 @@ C      Print the numerical stablility parameters for current state
        CALL MON_ADVCFL('U',uVel,recip_dxc,dT,myThid)
        CALL MON_ADVCFL('V',vVel,recip_dyc,dT,myThid)
        CALL MON_ADVCFL('W',wVel,recip_drc,dT,myThid)
+
+C      Print stats for KE
+       CALL MON_KE(myThid)
 
       ENDIF
 
