@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.11 2004/10/22 14:52:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.12 2005/03/15 21:38:10 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -94,7 +94,8 @@ c                                         (even though dpphy counted bottom up)
         enddo
 
         call interp_chemistry(strq1,nlevsq,nlatsq,levsq,latsq,
-     .   oz1,nlevsoz,nlatsoz,levsoz,latsoz,waterin,pphy,xlat,
+     .   oz1,nlevsoz,nlatsoz,levsoz,latsoz,
+     .   waterin,pphy(1,1,1,bi,bj),xlat,
      .   im2,jm2,Nrphys,nSx,nSy,bi,bj,o3,qstr)
 
        enddo
