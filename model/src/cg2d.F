@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.38 2004/02/06 20:21:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.39 2004/04/22 22:43:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -215,7 +215,7 @@ C     _EXCH_XY_R8( cg2d_s, myThid )
        actualIts      = 0
        actualResidual = err
       
-       IF ( debugLevel .GE. debLevA ) THEN
+       IF ( debugLevel .GE. debLevZero ) THEN
         _BEGIN_MASTER( myThid )
         write(*,'(A,1P2E22.14)')' cg2d: Sum(rhs),rhsMax = ',
      &                                  sumRHS,rhsMax 
