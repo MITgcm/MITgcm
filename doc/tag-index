@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.374 2004/10/21 21:14:02 afe Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.375 2004/10/27 23:33:33 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o added mnc/NetCDF output capability to ocn_compon_interf
+  - added bits to verification/cpl_aim+ocn so that it can run on 
+    ITRDA and other clusters without the mpirun "-wd" option
 o fixed wayward endif in mom_fluxform.F that messed up cyclindrical
   configuration 
 o give MNC the ability to create additional files rather than 
