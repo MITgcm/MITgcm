@@ -1,11 +1,11 @@
-# $Header: /u/gcmpack/MITgcm/verification/global_with_exf/input/Attic/.genmakerc,v 1.2 2002/11/12 20:57:00 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/verification/global_with_exf/input/Attic/.genmakerc,v 1.3 2002/11/23 21:53:29 jmc Exp $
 # $Name:  $
 
 # Disable packages that are not needed
-set DISABLE=( aim obcs zonal_filt shap_filt autodiff cost ctrl grdchk )
+set DISABLE=( $DISABLE obcs zonal_filt shap_filt )
 
 # Enable packages that are needed but are disabled by default
-set ENABLE=( cal exf )
+set ENABLE=( $ENABLE cal exf ecco flt ptracers seaice )
 
 # We can also specify other defaults
 #set ROOTDIR=..
