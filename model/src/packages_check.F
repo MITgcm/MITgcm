@@ -1,12 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.5 2000/11/13 16:32:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.6 2001/02/02 21:04:48 adcroft Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE PACKAGES_CHECK( myThid )
 C     /==========================================================\
 C     | SUBROUTINE PACKAGES_CHECK                                |
-C     | o Check dependances between selected packages            |
+C     | o Check runtime activated packages have been built in.   |
 C     |==========================================================|
+C     | All packages can be selected/deselected at build time    |
+C     | ( when code is compiled ) and activated/deactivated at   |
+C     | runtime. This routine does a quick check to trap packages|
+C     | that were activated at runtime but that were not compiled|
+C     | in at build time.                                        |
 C     \==========================================================/
       IMPLICIT NONE
 
@@ -35,5 +41,11 @@ C     msgBuf      - Informational/error meesage buffer
       IF (useGMRedi) CALL PACKAGES_CHECK_ERROR('GMREDI', myThid)
 #endif
 
-      return
-      end
+#ifdef ALLOW_OBCS
+      IF (useOBCS) CALL OBCS_CHECK( myThid )
+#else
+      IF (useOBCS) CALL PACKAGES_CHECK_ERROR('OBCS', myThid)
+#endif
+
+      RETURN
+      END

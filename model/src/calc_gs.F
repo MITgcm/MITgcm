@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.22 2000/09/11 22:59:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.23 2001/02/02 21:04:47 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -7,7 +7,7 @@ CStartOfInterFace
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskup,maskC,
      I           KappaRS,
-     U           af,df,fZon,fMer,fVerS,
+     U           fVerS,
      I           myCurrentTime, myThid )
 C     /==========================================================\
 C     | SUBROUTINE CALC_GS                                       |
@@ -45,10 +45,6 @@ C     == GLobal variables ==
 #include "FFIELDS.h"
 
 C     == Routine arguments ==
-C     fZon    - Work array for flux of temperature in the east-west 
-C               direction at the west face of a cell.
-C     fMer    - Work array for flux of temperature in the north-south 
-C               direction at the south face of a cell.
 C     fVerS   - Flux of salt (S) in the vertical 
 C               direction at the upper(U) and lower(D) faces of a cell.
 C     maskUp  - Land mask used to denote base of the domain.
@@ -58,13 +54,9 @@ C     yA      - Tracer cell face area normal to X
 C     uTrans  - Zonal volume transport through cell face
 C     vTrans  - Meridional volume transport through cell face
 C     rTrans  - Vertical volume transport through cell face
-C     af      - Advective flux component work array
-C     df      - Diffusive flux component work array
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
 C                                      results will be set.
 C     myThid - Instance number for this innvocation of CALC_GT
-      _RL fZon  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL fMer  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -74,8 +66,6 @@ C     myThid - Instance number for this innvocation of CALC_GT
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL af    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER k,kUp,kDown,kM1
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       _RL     myCurrentTime
@@ -90,6 +80,10 @@ C     I, J, K - Loop counters
       _RL dSdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dSdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df4   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fZon  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL fMer  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL af    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   only the kUp part of fverS is set in this subroutine
@@ -304,11 +298,6 @@ C--   External forcing term(s)
      I     iMin,iMax,jMin,jMax,bi,bj,k,
      I     maskC,
      I     myCurrentTime,myThid)
-
-#ifdef INCLUDE_LAT_CIRC_FFT_FILTER_CODE
-C--
-      CALL FILTER_LATCIRCS_FFT_APPLY( gS, 1, sNy, k, k, bi, bj, 1, myThid)
-#endif
 
       RETURN
       END

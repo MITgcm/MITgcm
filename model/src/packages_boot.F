@@ -1,12 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.1 2000/09/11 20:42:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.2 2001/02/02 21:04:48 adcroft Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE PACKAGES_BOOT( myThid )
 C     /==========================================================\
 C     | SUBROUTINE PACKAGES_BOOT                                 |
-C     | o Routine to initialize package configuration            |
+C     | o Routine to parse runtime package selection file        |
 C     |==========================================================|
+C     | Routine reads a flat file which contains a single flag   |
+C     | for each known "package". Flag can enables runtime       |
+C     | activation or deactivation of a package. The data is read|
+C     | from a file called data.pkg.                             |
+C     | Note - If a runtime activation flag is set on but the    |
+C     |        package code was not included in the build then   |
+C     |        the default behavior is to stop with an error.    |
 C     \==========================================================/
       IMPLICIT NONE
 
@@ -23,6 +31,7 @@ C--   data.pkg namelists
       NAMELIST /PACKAGES/
      &          useKPP,
      &          useGMRedi,
+     &          useOBCS,
      &          useECCO
 
 C     === Local variables ===
@@ -46,8 +55,8 @@ C     iUnit       - Work variable for IO unit number
 C--   Default package configuration
       useGMRedi=.FALSE.
       useKPP=.FALSE.
+      useOBCS=.FALSE.
       useECCO=.FALSE.
-
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=PACKAGES)

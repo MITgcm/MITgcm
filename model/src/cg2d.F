@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.25 2000/03/24 19:06:14 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.26 2001/02/02 21:04:47 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -114,6 +114,7 @@ C     _GLOBAL_MAX_R8( rhsMax, myThid )
       rhsMax=1.
 #else
       _GLOBAL_MAX_R8( rhsMax, myThid )
+Catm  rhsMax=1.
 #endif
       rhsNorm = 1. _d 0
       IF ( rhsMax .NE. 0. ) rhsNorm = 1. _d 0 / rhsMax

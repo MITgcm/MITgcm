@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.13 2000/03/27 22:25:44 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.14 2001/02/02 21:04:48 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -50,6 +50,9 @@ C     == Local variables ==
 C     xG, yG - Global coordinate location.
 C     xBase  - South-west corner location for process.
 C     yBase
+C     zUpper - Work arrays for upper and lower 
+C     zLower   cell-face heights.
+C     phi    - Temporary scalar
 C     xBase  - Temporaries for lower corner coordinate
 C     yBase
 C     iG, jG - Global coordinate index. Usually used to hold
@@ -58,7 +61,7 @@ C     bi,bj  - Loop counters
 C     zUpper - Temporary arrays holding z coordinates of
 C     zLower   upper and lower faces.
 C     I,J,K
-      _RL    xG, yG
+      _RL    xGloc, yGloc
       _RL    xBase, yBase
       INTEGER iG, jG
       INTEGER bi, bj
@@ -84,17 +87,19 @@ C     Set up my local grid first
         DO j=1,jG-1
          yBase = yBase + delY(j)
         ENDDO
-        yG = yBase
+        yGloc = yBase
         DO J=1,sNy
-         xG = xBase
+         xGloc = xBase
          DO I=1,sNx
-          xc(I,J,bi,bj)  = xG + delX(iG+i-1)*0.5 _d 0
-          yc(I,J,bi,bj)  = yG + delY(jG+j-1)*0.5 _d 0
-          xG = xG + delX(iG+I-1)
+          xG(I,J,bi,bj)  = xGloc
+          yG(I,J,bi,bj)  = yGloc
+          xc(I,J,bi,bj)  = xGloc + delX(iG+i-1)*0.5 _d 0
+          yc(I,J,bi,bj)  = yGloc + delY(jG+j-1)*0.5 _d 0
+          xGloc = xGloc + delX(iG+I-1)
           dxF(I,J,bi,bj) = delX(iG+i-1)
           dyF(I,J,bi,bj) = delY(jG+j-1)
          ENDDO
-         yG = yG + delY(jG+J-1)
+         yGloc = yGloc + delY(jG+J-1)
         ENDDO
        ENDDO
       ENDDO
@@ -154,6 +159,7 @@ C     Calculate vertical face area
           rA (I,J,bi,bj) = dxF(I,J,bi,bj)*dyF(I,J,bi,bj)
           rAw(I,J,bi,bj) = dxC(I,J,bi,bj)*dyG(I,J,bi,bj)
           rAs(I,J,bi,bj) = dxG(I,J,bi,bj)*dyC(I,J,bi,bj)
+          rAz(I,J,bi,bj) = dxV(I,J,bi,bj)*dyU(I,J,bi,bj)
           tanPhiAtU(I,J,bi,bj) = 0. _d 0
           tanPhiAtV(I,J,bi,bj) = 0. _d 0
          ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.20 2000/03/27 22:25:44 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.21 2001/02/02 21:04:48 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -35,13 +35,15 @@ CEndOfInterface
 C     == Local variables ==
 C     iG, jG - Global coordinate index
 C     bi,bj  - Loop counters
-C     I,J
-C     phi    - total depth of model
+C     I,J,K
+C     Hdefault - default r-coordinate of the lower boundary (=ground)
+C                (=minus(Total_depth) in the ocean model)
+C                (=Total Pressure at Sea Level in the atmos model)
 C     oldPrec - Temporary used in controlling binary input dataset precision
       INTEGER iG, jG
       INTEGER bi, bj
-      INTEGER  I,  J
-      _RL phi
+      INTEGER  I, J, K
+      _RL Hdefault
 
       _BARRIER
       IF ( bathyFile .EQ. ' '  ) THEN
@@ -49,7 +51,12 @@ C      Set up a flat bottom box with doubly periodic topology.
 C      H is the basic variable from which other terms are derived. It
 C      is the term that would be set from an external file for a 
 C      realistic problem.
-       phi = rF(Nr+1)
+       Hdefault = rF(1)
+       IF (.NOT. groundAtK1) THEN
+        DO K = 1, Nr
+         Hdefault = Hdefault - rkfac*drF(K)
+        ENDDO
+       ENDIF
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
@@ -57,7 +64,7 @@ C      realistic problem.
            iG = myXGlobalLo-1+(bi-1)*sNx+I
            jG = myYGlobalLo-1+(bj-1)*sNy+J
 C          Default depth of full domain
-           H(i,j,bi,bj) = phi
+           H(i,j,bi,bj) = Hdefault
 C          Test for eastern edge
 C          IF ( iG .EQ. nX ) H(i,j,bi,bj) = 0.
 C          Test for northern edge
@@ -79,10 +86,22 @@ C      CALL MDSREADFIELD( bathyFile, readBinaryPrec,
 C    &                    'RS', 1, H, 1, myThid )
        _END_MASTER(myThid)
       ENDIF
-      
+
       _EXCH_XY_R4(    H, myThid )
+
+      IF (usingSphericalPolarGrid) THEN
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           IF (abs(yC(I,J,bi,bj)).GE.90.) H(I,J,bi,bj)=0.
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
 C
-      CALL PLOT_FIELD_XYRS( H, 'Model depths' , 1, myThid )
+      CALL PLOT_FIELD_XYRS(H,'Model depths (ini_depths)',1,myThid)
 C
       RETURN
       END

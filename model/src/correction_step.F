@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.12 2000/09/11 23:00:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.13 2001/02/02 21:04:48 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -78,26 +78,6 @@ C     Step forward meridional velocity
         gVNm1(i,j,k,bi,bj)=gV(i,j,k,bi,bj)
        ENDDO
       ENDDO
-
-C     Rotate theta/gT/gTnm1
-      IF ( tempStepping ) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         theta(i,j,k,bi,bj)=gTNm1(i,j,k,bi,bj)
-         gTNm1(i,j,k,bi,bj)=gT(i,j,k,bi,bj)
-        ENDDO
-       ENDDO
-      ENDIF
-
-C     Rotate salt/gS/gSnm1
-      IF ( saltStepping ) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         salt(i,j,k,bi,bj)=gSNm1(i,j,k,bi,bj)
-         gSNm1(i,j,k,bi,bj)=gS(i,j,k,bi,bj)
-        ENDDO
-       ENDDO
-      ENDIF
 
       RETURN
       END

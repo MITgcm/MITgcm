@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.23 2000/06/21 19:14:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.24 2001/02/02 21:04:47 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -150,8 +150,6 @@ C     == Local variables ==
      & '  /* Momentum pressure term on/off flag */')
       CALL WRITE_0D_L( tempStepping,  INDEX_NONE,
      & 'tempStepping =', '  /* Temperature equation on/off flag */')
-      CALL WRITE_0D_L( openBoundaries, INDEX_NONE,
-     & 'openBoundaries =', '  /* OpenBoundaries on/off flag */')
       CALL WRITE_0D_L( nonHydrostatic, INDEX_NONE,
      & 'nonHydrostatic =', '  /* Non-Hydrostatic on/off flag */')
       WRITE(msgBuf,'(A)') '//  '
@@ -228,6 +226,14 @@ C     == Local variables ==
       CALL WRITE_0D_L( usingSphericalPolarGrid, INDEX_NONE,
      & 'usingSphericalPolarGrid =',
      &'   /* Spherical coordinates flag ( True / False ) */')
+      CALL WRITE_0D_L( groundAtK1, INDEX_NONE, 'groundAtK1 =',
+     &'   /* Lower Boundary (ground) at the surface(k=1) ( T / F ) */')
+      CALL WRITE_1D_R8( Ro_SeaLevel,1, INDEX_NONE,'Ro_SeaLevel =',
+     &'   /* r(1) ( units of r ) */')
+      CALL WRITE_1D_R8( rkFac,1, INDEX_NONE,'rkFac =',
+     &'   /* minus Vertical index orientation  */')
+      CALL WRITE_1D_R8( horiVertRatio,1, INDEX_NONE,'horiVertRatio =',
+     &'   /* Ratio on units : Horiz - Vertical */')
       CALL WRITE_1D_R8( delZ,Nr, INDEX_K,'delZ = ',
      &'   /* W spacing ( m ) */')
       CALL WRITE_1D_R8( delP,Nr, INDEX_K,'delP = ',

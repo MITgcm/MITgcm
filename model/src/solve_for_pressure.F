@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.13 2000/06/29 18:29:15 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.14 2001/02/02 21:04:48 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -100,7 +100,7 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
 #endif
 
 #ifdef ALLOW_OBCS
-        IF (openBoundaries) THEN
+        IF (useOBCS) THEN
          DO i=1,sNx
 C Northern boundary
           IF (OB_Jn(I,bi,bj).NE.0) THEN
@@ -154,7 +154,7 @@ C     see CG3D.h for the interface to this routine.
          ENDDO
 
 #ifdef ALLOW_OBCS
-         IF (openBoundaries) THEN
+         IF (useOBCS) THEN
           DO i=1,sNx+1
 C Northern boundary
           IF (OB_Jn(I,bi,bj).NE.0) THEN
@@ -224,7 +224,7 @@ C Western boundary
          ENDDO
 
 #ifdef ALLOW_OBCS
-         IF (openBoundaries) THEN
+         IF (useOBCS) THEN
           DO K=1,Nr
           DO i=1,sNx
 C Northern boundary

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.52 2000/09/11 23:04:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.53 2001/02/02 21:04:48 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -93,14 +93,17 @@ C--   Continuous equation parameters
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
      & implicitFreeSurface, rigidLid, freeSurfFac, hFacMin, hFacMinDz,
+     & staggerTimeStep,
      & tempStepping, saltStepping, momStepping,
      & implicitDiffusion, implicitViscosity,
      & viscAr, diffKrT, diffKrS, hFacMinDr,
      & viscAp, diffKpT, diffKpS, hFacMinDp,
      & rhoConst, buoyancyRelation, HeatCapacity_Cp,
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
-     & openBoundaries, nonHydrostatic, globalFiles,
-     & allowFreezing, ivdc_kappa
+     & nonHydrostatic, globalFiles,
+     & allowFreezing, ivdc_kappa,
+     & nShap, zonal_filt_lat, zonal_filt_sinpow, zonal_filt_cospow,
+     & bottomDragLinear,bottomDragQuadratic
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
@@ -119,7 +122,7 @@ C--   Gridding parameters
       NAMELIST /PARM04/
      & usingCartesianGrid, dxSpacing, dySpacing, delX, delY, delZ,
      & usingSphericalPolarGrid, phiMin, thetaMin, rSphere,
-     & delP, delR, rkFac,
+     & delP, delR, rkFac, Ro_SeaLevel, groundAtK1,
      & delXfile, delYfile
 
 C--   Input files
@@ -129,10 +132,6 @@ C--   Input files
      & thetaClimFile, saltClimFile,
      & surfQfile, EmPmRfile, surfQswfile, 
      & uVelInitFile, vVelInitFile, pSurfInitFile
-
-C--   Open Boundaries
-      NAMELIST /PARM06/
-     & OB_Jnorth, OB_Jsouth, OB_Ieast, OB_Iwest
 
 C
       _BEGIN_MASTER(myThid)
@@ -764,26 +763,13 @@ C     being combined and a single frame of reference is needed.
        rkFac =  1.D0
        horiVertRatio = 1.D0
       ENDIF
+      IF (buoyancyRelation.EQ.'ATMOSPHERIC')
+     &   horiVertRatio = Gravity * rhoConst                                     
       IF ( rkFac .EQ. UNSET_RS ) rkFac=rkFacDefault
       recip_rkFac = 1.D0 / rkFac
       recip_horiVertRatio = 1./horiVertRatio
       IF ( zCoordInputData ) usingZCoords = .TRUE.
       IF ( pCoordInputData ) usingPCoords = .TRUE.
-
-C-- OBCS
-      IF (openBoundaries) THEN
-       READ(UNIT=iUnit,NML=PARM06)
-       DO J=1,Ny
-        if (OB_Ieast(J).lt.0) OB_Ieast(J)=OB_Ieast(J)+Nx+1
-       ENDDO
-       DO I=1,Nx
-        if (OB_Jnorth(I).lt.0) OB_Jnorth(I)=OB_Jnorth(I)+Ny+1
-       ENDDO
-       write(0,*) 'OB Jn =',OB_Jnorth
-       write(0,*) 'OB Js =',OB_Jsouth
-       write(0,*) 'OB Ie =',OB_Ieast
-       write(0,*) 'OB Iw =',OB_Iwest
-      ENDIF
 
 C
       CLOSE(iUnit)

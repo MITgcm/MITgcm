@@ -1,10 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.12 2000/09/11 23:01:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.13 2001/02/02 21:04:48 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 #define USE_FACTORIZED_POLY
 
       subroutine FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax,  k, kRef, eqn,
+     I      tFld, sFld,
      O      rholoc,
      I      myThid )
 C     /==========================================================\
@@ -21,7 +22,6 @@ C     \==========================================================/
       implicit none
 C     == Global variables ==
 #include "SIZE.h"
-#include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
@@ -30,6 +30,8 @@ C     == Routine arguments ==
       integer k			! Level of Theta/Salt slice
       integer kRef		! Pressure reference level
       character*(*) eqn
+      _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL rholoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       integer myThid
 
@@ -58,8 +60,8 @@ C **********
        do j=jMin,jMax
         do i=iMin,iMax
          rholoc(i,j)=rhonil*(
-     &     sBeta*( salt(i,j,k,bi,bj)-refSalt)
-     &   -tAlpha*(theta(i,j,k,bi,bj)-refTemp) )
+     &     sBeta*(sFld(i,j,k,bi,bj)-refSalt)
+     &   -tAlpha*(tFld(i,j,k,bi,bj)-refTemp) )
         enddo
        enddo
        
@@ -71,8 +73,8 @@ C **********
 
        do j=jMin,jMax
         do i=iMin,iMax
-         tP=theta(i,j,k,bi,bj)-refTemp
-         sP=salt(i,j,k,bi,bj)-refSalt
+         tP=tFld(i,j,k,bi,bj)-refTemp
+         sP=sFld(i,j,k,bi,bj)-refSalt
 #ifdef USE_FACTORIZED_POLY
          deltaSig=
      &    (( eosC(9,kRef)*sP + eosC(5,kRef) )*sP + eosC(2,kRef) )*sP
@@ -99,7 +101,7 @@ C **********
        enddo
 
       else
-       write(msgbuf,'(a,a)') ' FIND_RHO: eqn = ',eqn
+       write(msgbuf,'(3a)') ' FIND_RHO: eqn = "',eqn,'"'
        call print_error( msgbuf, mythid )
        stop 'ABNORMAL END: S/R FIND_RHO'
       endif

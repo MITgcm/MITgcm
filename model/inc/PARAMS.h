@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.45 2000/09/11 23:12:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.46 2001/02/02 21:04:47 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -115,7 +115,7 @@ C                           etc...
      &        numStepsPerPickup,
      &        writeStatePrec, nCheckLev,
      &        writeBinaryPrec, readBinaryPrec,
-     &        nShap
+     &        nShap, zonal_filt_sinpow, zonal_filt_cospow
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
       INTEGER cg3dMaxIters
@@ -129,6 +129,8 @@ C                           etc...
       INTEGER readBinaryPrec
       INTEGER nCheckLev
       INTEGER nShap
+      INTEGER zonal_filt_sinpow
+      INTEGER zonal_filt_cospow
 
 C--   COMMON /PARM_L/ Logical valued parameters used by the model.
 C     usingCartesianGrid - If TRUE grid generation will be in a cartesian
@@ -137,6 +139,7 @@ C     usingSphericalPolarGrid - If TRUE grid generation will be in a
 C                               spherical polar frame.
 C     no_slip_sides - Impose "no-slip" at lateral boundaries.
 C     no_slip_bottom- Impose "no-slip" at bottom boundary.
+C     staggerTimeStep - enable a Stagger time stepping T,S Rho then U,V
 C     momViscosity  - Flag which turns momentum friction terms on and off.
 C     momAdvection  - Flag which turns advection of momentum on and off.
 C     momForcing    - Flag which turns external forcing of momentum on
@@ -177,12 +180,13 @@ C     usingPCoords     - Set to indicate that we are working in pressure
 C                        coords.
 C     usingZCoords     - Set to indicate that we are working in height
 C                        coords.
-C     openBoundaries - Using open-boundaries
 C     nonHydrostatic - Using non-hydrostatic terms
 C     globalFiles    - Selects between "global" and "tiled" files
 C     allowFreezing  - Allows water to freeze and form ice
+C     groundAtK1  - put the surface(k=1) at the Lower Boundary (=ground)
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & no_slip_sides,no_slip_bottom,
+     & staggerTimeStep,
      & momViscosity, momAdvection, momForcing, useCoriolis, 
      & momPressureForcing,tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
@@ -193,13 +197,14 @@ C     allowFreezing  - Allows water to freeze and form ice
      & implicitDiffusion, implicitViscosity,
      & doThetaClimRelax, doSaltClimRelax,
      & periodicExternalForcing, usingPCoords, usingZCoords,
-     & openBoundaries, nonHydrostatic, globalFiles,
-     & allowFreezing
+     & nonHydrostatic, globalFiles,
+     & allowFreezing, groundAtK1
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingSphericalPolarMTerms
       LOGICAL no_slip_sides
       LOGICAL no_slip_bottom
+      LOGICAL staggerTimeStep
       LOGICAL momViscosity
       LOGICAL momAdvection
       LOGICAL momForcing
@@ -227,10 +232,10 @@ C     allowFreezing  - Allows water to freeze and form ice
       LOGICAL periodicExternalForcing
       LOGICAL usingPCoords
       LOGICAL usingZCoords
-      LOGICAL openBoundaries
       LOGICAL nonHydrostatic
       LOGICAL globalFiles
       LOGICAL allowFreezing
+      LOGICAL groundAtK1
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
@@ -350,6 +355,10 @@ C     recip_horiVertRatio  ( 1 if horiz in m and vertical in m ).
 C                          ( g*rho if horiz in m and vertical in Pa ).
 C     latFFTFiltLo       - Low latitude for FFT filtering of latitude
 C                          circles ( see filter*.F )
+C     Ro_SeaLevel        - standard position of Sea-Level in "R" coordinate, used as
+C                          starting value (k=1) for vertical coordinate (rf(1)=Ro_SeaLevel)
+C     bottomDragLinear   - Drag coefficient built in to core dynamics
+C         "     Quadratic  ( linear: 1/s, quadratic: 1/m )
       COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, 
      & cg3dTargetResidual,
      & delP, delZ, delR, delX, delY, 
@@ -369,7 +378,8 @@ C                          circles ( see filter*.F )
      & externForcingCycle, externForcingPeriod,
      & viscAp, diffKpT, diffKpS, hFacMinDr, hFacMinDp,
      & theta_S, specVol_S, horiVertRatio, recip_horiVertRatio,
-     & latFFTFiltLo, ivdc_kappa
+     & latFFTFiltLo, ivdc_kappa, Ro_SeaLevel, zonal_filt_lat,
+     & bottomDragLinear,bottomDragQuadratic
 
       _RL cg2dTargetResidual
       _RL cg3dTargetResidual
@@ -450,6 +460,10 @@ C                          circles ( see filter*.F )
       _RL recip_horiVertRatio
       _RL latFFTFiltLo
       _RL ivdc_kappa
+      _RL Ro_SeaLevel
+      _RL zonal_filt_lat
+      _RL bottomDragLinear
+      _RL bottomDragQuadratic
 
       COMMON /PARM_A/ HeatCapacity_Cp,recip_Cp,
      &                Lamba_theta
@@ -468,37 +482,10 @@ C     sBeta     - Linear EOS haline contraction coefficient.
       _RL sBeta
       character*(6) eosType
 
-C These are input arrays (of integers) that contain the *absolute*
-C computational index of an open-boundary (OB) point.
-C A zero (0) element means there is no corresponding OB in that column/row.
-C The computational coordinate refers to "tracer" cells.
-C For a northern/southern OB, the OB V point is to the south/north.
-C For an eastern/western OB, the OB U point is to the west/east.
-C eg.
-C     OB_Jnorth(3)=34  means that: 
-C          T( 3 ,34) is a an OB point
-C          U(3:4,34) is a an OB point
-C          V( 4 ,34) is a an OB point
-C while
-C     OB_Jsouth(3)=1  means that:
-C          T( 3 ,1) is a an OB point
-C          U(3:4,1) is a an OB point
-C          V( 4 ,2) is a an OB point
-C 
-C For convenience, negative values for Jnorth/Ieast refer to
-C points relative to the Northern/Eastern edges of the model
-C eg. OB_Jnorth(3)=-1  means that the point (3,Ny-1) is a northern O-B.
-C
-      COMMON /PARM_OB/
-     & OB_Jnorth,OB_Jsouth,OB_Ieast,OB_Iwest
-      INTEGER OB_Jnorth(Nx)
-      INTEGER OB_Jsouth(Nx)
-      INTEGER OB_Ieast(Ny)
-      INTEGER OB_Iwest(Ny)
-
 C Logical flags for selecting packages
       LOGICAL useKPP
       LOGICAL useGMRedi
+      LOGICAL useOBCS
       LOGICAL useECCO
       COMMON /PARM_PACKAGES/
-     &        useKPP, useGMRedi, useECCO
+     &        useKPP, useGMRedi, useOBCS, useECCO

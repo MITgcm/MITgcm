@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.9 1999/05/18 17:42:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.10 2001/02/02 21:04:48 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -28,7 +28,7 @@ C     K
       INTEGER K
 
 C     Calculate depths of centers and interfaces
-      rF(1) = 0. _d 0
+      rF(1) = Ro_SeaLevel
       DO K=1,Nr
        drF(K)     = delR(K)
        rF(K+1) = rF(K)-rkFac*delR(K)

@@ -177,18 +177,20 @@ caja           and an hFacUS (above V points) too...
        ENDDO
       ENDDO
 
+#ifdef ALLOW_OBCS
+      IF (useOBCS) THEN
 C--   This call is aesthetic: it makes the W field
 C     consistent with the OBs but this has no algorithmic
 C     impact. This is purely for diagnostic purposes.
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO K=1,Nr
-         Kup=max(1,K-1)
-c        CALL APPLY_OBCS3( bi, bj, K, Kup, rTrans, rVel,
-c    I                        myThid )
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO K=1,Nr
+          CALL OBCS_APPLY_W( bi, bj, K, wVel, myThid )
+         ENDDO
         ENDDO
        ENDDO
-      ENDDO
+      ENDIF
+#endif /* ALLOW_OBCS */
 
 #endif /* ALLOW_NONHYDROSTATIC */
 

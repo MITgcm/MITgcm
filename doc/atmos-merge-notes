@@ -1,0 +1,25 @@
+Notes for the merging of AJA's and JMC's atmospheric codes into
+main-stream code:
+
+branch-atmos-merge		Created branch
+branch-atmos-merge-start	Initial state (equiv. to checkpoint33)
+branch-atmos-merge-phase1	Phase 1: moved correction step from
+                                top of dynamics() to end of the_main_loop()
+branch-atmos-merge-phase2	Phase 2: re-arranged calling order in
+                                dynamics() in order to facilitate staggered
+                                time-stepping at a later date
+branch-atmos-merge-phase3       Phase 3: sorted out OBCs in new dynamics(),
+                                tested in exp4, sorted out gmredi, tested
+                                in front_relax
+branch-atmos-merge-phase4       Phase 4: re-wrote calc_phi_hyd(),
+                                find_rho() and deleted calc_buoyancy()
+branch-atmos-merge-phase5       Phase 5: added and tested staggered time-step
+branch-atmos-merge-phase6       Phase 6: tested staggered time-step with CD scheme
+branch-atmos-merge-phase7       Phase 7: new parameter for initializing
+                                vertical grid (needed by atmos), newer
+                                ini_masks_etc.F (new hFacC calc. for atmos),
+                                ini_spherical_grid.F (deals with pole better)
+branch-atmos-merge-shapiro      Shapiro code packaged.
+branch-atmos-merge-zonalfilt    Zonal filters packaged and test in
+                                verification/hs94.128x64x5
+branch-atmos-merge-freeze	Freeze prior to merge with main

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.9 1999/03/22 15:54:02 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.10 2001/02/02 21:04:47 adcroft Exp $
 C
 C     /==========================================================\
 C     | DYNVARS.h                                                |
@@ -17,10 +17,11 @@ C     uVelD  - D grid zonal velocity
 C     vVelD  - D grid meridional velocity
 
       COMMON /DYNVARS_R/ 
-     &                   uVel,vVel,theta,salt,
+     &                   uVel,vVel,wVel,theta,salt,
      &                   gu,gv,gt,gs,guNm1,gvNm1,gtNm1,gsNm1
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  wVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  theta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  salt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gu(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

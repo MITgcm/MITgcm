@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.3 2000/09/11 23:05:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.4 2001/02/02 21:04:48 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -28,20 +28,11 @@ C     == Routine arguments ==
 CEndOfInterface
 
 C     == Local variables ==
-#ifdef ALLOW_OBCS
-      INTEGER bi,bj,K
-#endif
 
 C--   Set model parameters.
 C     Parameters are set to defaults and then updates are read from
 C     an input file called data.
       CALL INI_PARMS( myThid )
-      _BARRIER
-
-#ifdef ALLOW_OBCS
-C--   Open boundaries positions
-      CALL INI_OBCS( myThid )
-#endif
       _BARRIER
 
 C--   Set model grid.
@@ -61,9 +52,21 @@ C     Volumes and areas are set according to grid and depth map.
 C--   Set coriolis operators
       CALL INI_CORI( myThid )
 
-#ifdef INCLUDE_LAT_CIRC_FFT_FILTER_CODE
+C--   Configure packages
+      CALL PACKAGES_BOOT( myThid )
+
+C--   Read configuration parameters for packages
+      CALL PACKAGES_READPARMS( myThid )
+
+C--   Check dependances between packages
+      CALL PACKAGES_CHECK( myThid )
+
+C--   Call fixed data initialization phase of packages
+      CALL PACKAGES_INIT_FIXED( myThid )
+
+#ifdef ALLOW_ZONAL_FILT
 C--   Latitude circle filter initialisation
-      CALL FILTER_LATCIRC_FFT_INIT(myThid)
+      CALL ZONAL_FILT_INIT(myThid)
       _BARRIER
 #endif
 
@@ -74,15 +77,6 @@ C--   Set laplace operators for use in 2D conjugate gradient solver.
 C--   Set laplace operators for use in 3D conjugate gradient solver.
       CALL INI_CG3D( myThid )
 #endif
-
-C--   Configure packages
-      CALL PACKAGES_BOOT( myThid )
-
-C--   Read configuration parameters for packages
-      CALL PACKAGES_READPARMS( myThid )
-
-C--   Check dependances between packages
-      CALL PACKAGES_CHECK( myThid )
 
 C--   Finally summarise the model cofiguration
       CALL CONFIG_SUMMARY( myThid )

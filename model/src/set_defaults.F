@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.11 2000/09/11 20:51:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.12 2001/02/02 21:04:48 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -44,6 +44,7 @@ C--   Grid parameters
 C     Vertical gridding
       rkFacDefault         = 1.D0
       horiVertRatio        = 1.D0
+      Ro_SeaLevel = 0.
       DO k=1,Nr
        delRdefault(k) = 0.
       ENDDO
@@ -92,6 +93,7 @@ C--   Set default "physical" parameters
       rigidLid            = .FALSE.
       hFacMin             = 1.D0
       hFacMinDrDefault    = 0.D0
+      staggerTimeStep     = .FALSE.
       momViscosity        = .TRUE.
       momAdvection        = .TRUE.
       momForcing          = .TRUE.
@@ -103,11 +105,17 @@ C--   Set default "physical" parameters
       metricTerms         = .FALSE.
       implicitDiffusion   = .FALSE.
       implicitViscosity   = .FALSE.
-      openBoundaries      = .FALSE.
       nonHydrostatic      = .FALSE.
       globalFiles         = .FALSE.
       allowFreezing       = .FALSE.
       ivdc_kappa          = 0.D0
+      groundAtK1          = .FALSE.
+      nShap               = 0
+      zonal_filt_lat      = 90.
+      zonal_filt_sinpow   = 2
+      zonal_filt_cospow   = 4
+      bottomDragLinear    = 0.
+      bottomDragQuadratic = 0.
 
 C--   Elliptic solver parameters
       cg2dMaxIters       = 150
@@ -158,16 +166,6 @@ C--   Input files
       uVelInitFile    = ' '
       vVelInitFile    = ' '
       pSurfInitFile   = ' '
-
-C--   OBCS
-      DO I=1,Nx
-       OB_Jnorth(I)=0
-       OB_Jsouth(I)=0
-      ENDDO
-      DO J=1,Ny
-       OB_Ieast(J)=0
-       OB_Iwest(J)=0
-      ENDDO
 
 C
       RETURN
