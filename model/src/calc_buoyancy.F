@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.1 1998/08/23 15:35:10 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.2 1998/09/06 14:47:43 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -59,6 +59,7 @@ C--   == Local variables ==
        STOP 'CALC_BUOANCY: variable "buoyancyRelation" has an illegal value'
 
       ENDIF
+
 
       RETURN
       END

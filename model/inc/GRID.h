@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.7 1998/08/24 00:24:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.8 1998/09/06 14:49:23 cnh Exp $
 C
 C     /==========================================================\
 C     | GRID.h                                                   |
@@ -404,7 +404,6 @@ C                 metric term in V equation.
       _RS maskS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS tanPhiAtU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS tanPhiAtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 
 C--   COMMON /GRID_I/ Integer valued grid defining variables
 C     iDep  - Index of last "non-land" cell for each column f[X,Y].
