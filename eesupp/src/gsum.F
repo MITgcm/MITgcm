@@ -38,7 +38,6 @@ C
       INTEGER mpiRc
 #endif
 C
-      INTEGER myCount
       INTEGER nDone
       INTEGER I
       INTEGER curLev, prevLev
