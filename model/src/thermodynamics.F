@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.14 2001/11/16 03:25:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.15 2001/12/16 18:46:22 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -371,20 +371,16 @@ CADJ STORE sigmaR(:,:,:) = comlev1, key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
         IF (useGMRedi) THEN
-          DO k=1,Nr
-            CALL GMREDI_CALC_TENSOR(
-     I             bi, bj, iMin, iMax, jMin, jMax, k,
+          CALL GMREDI_CALC_TENSOR(
+     I             bi, bj, iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             myThid )
-          ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
         ELSE
-          DO k=1, Nr
-            CALL GMREDI_CALC_TENSOR_DUMMY(
-     I             bi, bj, iMin, iMax, jMin, jMax, k,
+          CALL GMREDI_CALC_TENSOR_DUMMY(
+     I             bi, bj, iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
      I             myThid )
-          ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
         ENDIF
 
