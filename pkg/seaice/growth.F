@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.14 2004/04/28 12:00:53 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.15 2004/04/29 17:28:43 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -137,6 +137,9 @@ C surfaceTendencyTice is the equivalent amount of surface heating
 C implied by above change in surface level temperature (YNEG).
 C Units are degrees/s (>0 for ocean warming).
           surfaceTendencyTice(I,J,bi,bj)=YNEG(I,J,bi,bj)/deltaTtracer
+     &                     *maskC(I,J,1,bi,bj)
+C apply mask
+          theta(I,J,1,bi,bj) = theta(I,J,1,bi,bj)*maskC(I,J,1,bi,bj)
          ENDDO
         ENDDO
 c
@@ -284,8 +287,10 @@ c Now add in precip over open water directly into ocean as negative salt
      &         -PRECIP(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
      &         *DELTAT/0.920 _d 0
 C NOW GET FRESH WATER FLUX
-          EmPmR(I,J,bi,bj)=EVAP(I,J,bi,bj)-RUNOFF(I,J,bi,bj)
+          EmPmR(I,J,bi,bj)= maskC(I,J,1,bi,bj)*(
+     &                     EVAP(I,J,bi,bj)-RUNOFF(I,J,bi,bj)
      &                    +SEAICE_SALT(I,J,bi,bj)*0.92 _d 0/DELTAT
+     &                     )
          ENDDO
         ENDDO
 
