@@ -17,6 +17,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #     aim_snowFile :: file name for Snow depth          (F.M. surfBC)
 #     aim_swcFile  :: file name for Soil Water content  (F.M. surfBC)
 #     aim_dragStrato :: stratospheric-drag damping time scale (s)
+#     aim_clrSkyDiag :: compute clear-sky radiation for diagnostics
 #     aim_taveFreq :: Frequency^-1 for time-average output (s)
 #     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 #     aim_tendFreq :: Frequency^-1 for tendencies output (s)
@@ -33,11 +34,11 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
    aim_vegFile = 'vegetFrc.cpl_FM.bin',
    aim_sstFile = 'seaSurfT.cpl_FM.bin',
    aim_lstFile = 'lndSurfT.cpl_FM.bin',
-#  aim_oiceFile= 'seaIce.cpl_FM.bin',
    aim_oiceFile= 'seaIce.cpl2FM.bin',
    aim_snowFile= 'snowDepth.cpl_FM.bin',
    aim_swcFile = 'soilMoist.cpl_FM.bin',
 #  aim_dragStrato= 2592000.,
+#  aim_clrSkyDiag=.TRUE.,
 #  aim_diagFreq=3600.,
  &
 
@@ -60,6 +61,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #      SDALB  = Snow depth (mm water) corresponding to maximum albedo
 #      SWCAP  = Soil wetness at field capacity (volume fraction)
 #      SWWIL  = Soil wetness at wilting point  (volume fraction)
+#      hSnowWetness :: snow depth (m) corresponding to maximum wetness
  &AIM_PAR_FOR
  &
 
@@ -78,12 +80,14 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #      VGUST  = wind speed for sub-grid-scale gusts
 #      CTDAY  = daily-cycle correction (dTskin/dSSRad)
 #      DTHETA = Potential temp. gradient for stability correction
+#      dTstab = potential temp. increment for stability function derivative
 #      FSTAB  = Amplitude of stability correction (fraction)
 #      HDRAG  = Height scale for orographic correction
 #      FHDRAG = Amplitude of orographic correction (fraction)
  &AIM_PAR_SFL
 #  FTEMP0 = 0.,
 #  FHUM0  = 0.,
+   dTstab = 0.,
  &
 
 #--   Convection constants (namelist AIM_PAR_CNV):
