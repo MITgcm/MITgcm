@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.22 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.23 2001/06/06 14:55:45 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -135,6 +135,10 @@ C Western boundary
        ENDDO
       ENDDO
 
+#ifndef EXCLUDE_DEBUGMODE
+       CALL DEBUG_STATS_RL(1,cg2d_b,'cg2d_b (SOLVE_FOR_PRESSURE)',
+     &                        myThid)
+#endif
 
 C--   Find the surface pressure using a two-dimensional conjugate
 C--   gradient solver.
@@ -150,6 +154,11 @@ C     see CG2D.h for the interface to this routine.
      U           numIters,
      I           myThid )
       _EXCH_XY_R8(cg2d_x, myThid )
+
+#ifndef EXCLUDE_DEBUGMODE
+       CALL DEBUG_STATS_RL(1,cg2d_x,'cg2d_x (SOLVE_FOR_PRESSURE)',
+     &                        myThid)
+#endif
 
       _BEGIN_MASTER( myThid )
        WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ',

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.20 2001/05/30 19:33:18 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.21 2001/06/06 14:55:45 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -125,6 +125,7 @@ C--   Set default "physical" parameters
       bottomDragLinear    = 0.
       bottomDragQuadratic = 0.
       usePickupBeforeC35  = .FALSE.
+      debugMode           = .FALSE.
 
 C--   Elliptic solver parameters
       cg2dMaxIters       = 150

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.53 2001/05/30 19:33:18 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.54 2001/06/06 14:55:45 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -199,7 +199,7 @@ C     groundAtK1  - put the surface(k=1) at the Lower Boundary (=ground)
      & periodicExternalForcing, usingPCoords, usingZCoords,
      & nonHydrostatic, globalFiles,
      & allowFreezing, groundAtK1,
-     & usePickupBeforeC35
+     & usePickupBeforeC35, debugMode
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingCurvilinearGrid
@@ -241,6 +241,7 @@ C     groundAtK1  - put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL allowFreezing
       LOGICAL groundAtK1
       LOGICAL usePickupBeforeC35
+      LOGICAL debugMode
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     gg2dTargetResidual

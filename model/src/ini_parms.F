@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.60 2001/05/30 19:33:18 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.61 2001/06/06 14:55:45 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -106,7 +106,7 @@ C--   Continuous equation parameters
      & allowFreezing, ivdc_kappa,
      & zonal_filt_lat, zonal_filt_sinpow, zonal_filt_cospow,
      & bottomDragLinear,bottomDragQuadratic,
-     & usePickupBeforeC35
+     & usePickupBeforeC35, debugMode
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
