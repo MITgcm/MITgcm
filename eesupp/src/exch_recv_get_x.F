@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_x.F,v 1.3 1999/03/22 17:37:42 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_x.F,v 1.4 1999/05/03 21:40:00 adcroft Exp $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_RECV_GET_X( array,
@@ -68,7 +68,7 @@ C                                  tile face uses.
       INTEGER spinCount
 #ifdef ALLOW_USE_MPI
       INTEGER theProc, theTag, theType, theSize
-      INTEGER mpiStatus(MPI_STATUS_SIZE), mpiRc
+      INTEGER mpiStatus(MPI_STATUS_SIZE,4), mpiRc
 #endif
 
 
@@ -379,7 +379,7 @@ C                                  tile face uses.
       INTEGER spinCount
 #ifdef ALLOW_USE_MPI
       INTEGER theProc, theTag, theType, theSize
-      INTEGER mpiStatus(MPI_STATUS_SIZE), mpiRc
+      INTEGER mpiStatus(MPI_STATUS_SIZE,4), mpiRc
 #endif
 
 
