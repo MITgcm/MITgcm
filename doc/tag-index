@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.405 2004/12/06 06:08:24 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.406 2004/12/09 09:03:32 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add horizontal bi-harmonic viscosity for vertical velocity
+  - new parameter viscA4W (defaults to viscA4)
+  - affects only non-hydrostatic code
+  - to be done: no-slip lateral boundary conditions
 o switch back to "sflux = sflux - runoff" in exf_getforcing.F
 o implement Implicit Vertical advection for pTracers
 o depth convergence accelerator: replace deltaTtracer by dTtracerLev(k)
