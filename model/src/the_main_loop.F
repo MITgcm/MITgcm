@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.44 2003/11/04 18:40:58 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.45 2003/11/06 22:01:43 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,6 +59,9 @@ c They provide the fields to be stored.
 # endif
 # ifdef EXACT_CONSERV
 #  include "SURFACE.h"
+# endif
+# ifdef ALLOW_OBCS
+#  include "OBCS.h"
 # endif
 # ifdef ALLOW_EXF
 #  include "exf_fields.h"
@@ -221,6 +224,7 @@ c--
 CADJ INIT comlev1_gmredi_k_gad
 CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
 #endif /* ALLOW_GMREDI */
+c--
 #ifdef ALLOW_PTRACERS
 CADJ INIT comlev1_bibj_ptracers = COMMON,
 CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*NUMBER_OF_PTRACERS
@@ -233,18 +237,18 @@ CADJ INIT comlev1_bibj_k_gad_pass
 CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass*maxcube
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 c--
-#ifdef ALLOW_BULK_FORCE
-CADJ INIT comlev1_exf_1
-CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
-CADJ INIT comlev1_exf_2
-CADJ &     = COMMON,niter_bulk*nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
-#endif /* ALLOW_BULK_FORCE */
-#ifdef ALLOW_BULKFORMULAE
+#if (defined (ALLOW_EXF) && defined (ALLOW_BULKFORMULAE))
 CADJ INIT comlev1_exf_1
 CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
 CADJ INIT comlev1_exf_2
 CADJ &     = COMMON,niter_bulk*nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
 #endif /* ALLOW_BULKFORMULAE */
+c--
+#ifdef ALLOW_SEAICE
+# ifdef SEAICE_ALLOW_DYNAMICS
+CADJ INIT comlev1_lsr = COMMON,nchklev_1*2
+# endif
+#endif /* ALLOW_SEAICE */
 c--
 #endif /* ALLOW_AUTODIFF_TAMC */
 c**************************************

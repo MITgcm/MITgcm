@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.10 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.11 2003/11/06 22:01:43 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -60,14 +60,14 @@ C     max number of different water types
       _RL facz
       _RL rfac(nwtype),a1(nwtype),a2(nwtype)
       INTEGER i
-#ifdef ALLOW_CALENDAR
+#ifdef ALLOW_CAL
       _RL     fac
       logical first, changed
       integer count0, count1
       integer myiter
       integer jerl(12)
       data jerl / 2 , 2 , 2 , 3 , 3 , 3 , 4 , 4 , 4 , 4 , 3 , 2 /
-#endif /* ALLOW_CALENDAR */
+#endif /* ALLOW_CAL */
 C
 C     Jerlov water type :  I       IA      IB      II      III
 C                jwtype    1       2       3       4       5
@@ -77,16 +77,16 @@ C
       DATA a2           / 23.0  , 20.0  , 17.0  , 14.0  ,  7.9  /
 CEOP
 
-#ifdef ALLOW_CALENDAR
+#ifdef ALLOW_CAL
 ceh3 this should have an IF ( useCALENDAR ) THEN
       myiter=0
       call  cal_GetMonthsRec(
      O     fac, first, changed, count0, count1,
      I     mytime, myiter, mythid )
       jwtype=jerl(count0)
-#else /* ALLOW_CALENDAR undef */
+#else /* ALLOW_CAL undef */
       jwtype=2
-#endif /* ALLOW_CALENDAR */
+#endif /* ALLOW_CAL */
 
       DO i = 1,imax
          facz = fact*swdk(i)

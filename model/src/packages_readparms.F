@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.25 2003/11/01 04:50:02 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.26 2003/11/06 22:01:43 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -135,7 +135,6 @@ C--   Initialise gradient check parameters
       if (useGrdchk) call grdchk_readparms( myThid )
 #endif
 
-ceh3 #ifdef ALLOW_CALENDAR
 #ifdef ALLOW_CAL
 C--   Initialise the calendar package.
 ceh3 should have an IF ( useCAL ) THEN
@@ -148,7 +147,7 @@ ceh3 needs an IF ( useEXF ) THEN
       call exf_readparms  ( mythid )
 #endif
 
-#ifdef INCLUDE_ECCO_PACKAGE
+#ifdef ALLOW_ECCO
 c--   Initialize ECCO package parameters
       IF (useECCO) call ecco_readparms ( myThid )
 #endif

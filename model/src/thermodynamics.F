@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.56 2003/11/04 18:40:58 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.57 2003/11/06 22:01:43 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -101,6 +101,9 @@ C     == Global variables ===
 # endif
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
+# endif
+# ifdef ALLOW_SEAICE
+#  include "SEAICE_EXTERNAL.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -471,6 +474,10 @@ CADJ STORE surfacetendencyS(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE surfacetendencyT(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+# ifdef ALLOW_SEAICE
+CADJ STORE surfacetendencyTice(:,:,bi,bj)
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Attention: by defining "SINGLE_LAYER_MODE" in CPP_OPTIONS.h 

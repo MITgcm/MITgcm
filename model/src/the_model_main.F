@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.66 2003/11/04 18:40:58 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.67 2003/11/06 22:01:43 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -538,7 +538,7 @@ c
       _BEGIN_MASTER( mythid )
       IF (myProcId .eq. 0) THEN
          inquire( file='costfinal', exist=exst )
-         IF ( .NOT. exst ) THEN
+         IF ( .NOT. exst .AND. niter0 .EQ. 0 ) THEN
             CALL TIMER_START('CTRL_UNPACK      [THE_MODEL_MAIN]',mythid)
             CALL CTRL_UNPACK( .TRUE. , mythid )
             CALL TIMER_STOP ('CTRL_UNPACK      [THE_MODEL_MAIN]',mythid)
