@@ -63,7 +63,8 @@
  gravity         = 9.8156,
  gBaro           = 9.8156,
  rhoNil          = 1027.D0
- useCDscheme=.TRUE.
+ useCDscheme=.TRUE.,
+ useNHMTerms=.TRUE.,
  &
 
 # Elliptic solver parameters

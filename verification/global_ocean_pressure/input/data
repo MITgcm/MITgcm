@@ -25,6 +25,7 @@
  buoyancyRelation='OCEANICP',
  integr_GeoPot=1,
  eosType='JMD95P',
+ useNHMTerms=.TRUE.,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  exactConserv=.TRUE.,

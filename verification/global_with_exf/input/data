@@ -20,6 +20,7 @@
  allowFreezing=.TRUE.,
  useRealFreshWaterFlux=.TRUE.,
  useCDscheme=.TRUE.,
+ useNHMTerms=.TRUE.,
 # turn on looped cells
  hFacMin=.05,
  hFacMindr=50.,

@@ -26,6 +26,7 @@
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  useCDscheme=.TRUE.,
+ useNHMTerms=.TRUE.,
  eosType='LINEAR',
  readBinaryPrec=32,
  &
