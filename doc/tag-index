@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.147 2003/04/11 13:50:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.148 2003/04/17 12:56:24 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint50b_pre
 o restore the use of momAdvection & useCoriolis flags (mom_vecinv)
 o corrected CPP option mismatch in exf_Bulk... functions for case 
   #define ALLOW_ATM_WIND && #undef ALLOW_ATM_TEMP
