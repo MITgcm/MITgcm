@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/therm_seaice/Attic/ice_diags.F,v 1.1 2002/11/21 19:11:42 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/therm_seaice/Attic/ice_diags.F,v 1.2 2002/12/04 14:53:39 cheisey Exp $
 C $Name:  $
 cswdice modified for ice -- 25 Oct 01
 
@@ -58,7 +58,7 @@ c set arrays to zero if first timestep
         CALL TIMEAVE_RESET(ICE_fresh_AVE,   1,  bi, bj, myThid)
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-           ICE_TimeAve(bi,bj)=0.
+           ICE_TimeAve(1,bi,bj)=0.
          ENDDO
         ENDDO
       ENDIF
@@ -126,7 +126,7 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(ICE_snow_AVE,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(ICE_qleft_AVE,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(ICE_fresh_AVE,1,bi,bj,myThid)
-         ICE_TimeAve(bi,bj)=0.
+         ICE_TimeAve(1,bi,bj)=0.
         ENDDO
        ENDDO
          

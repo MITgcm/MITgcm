@@ -377,7 +377,7 @@ c        -- dasilva data in C, ncep data in K ---
 cswdblkf -- QQQQQ set to kg.kg??? ---
 c       -- dasilva data in g, ncep in kg ---
           QAIR(i,j,bi,bj)   =( bWght*qair0(i,j,bi,bj)  
-     &                       +aWght*qair1(i,j,bi,bj) )/1e3
+     &                       +aWght*qair1(i,j,bi,bj) )
           RAIN(i,j,bi,bj)    = bWght*rain0(i,j,bi,bj) 
      &                       +aWght*rain1(i,j,bi,bj)
           SOLAR(i,j,bi,bj)    =  bWght*solar0(i,j,bi,bj)

@@ -59,7 +59,7 @@ C--     Time-average
         ENDDO
        ENDDO
 
-        ICE_timeave(bi,bj)=ICE_timeave(bi,bj)+deltaTclock
+        ICE_timeave(1,bi,bj)=ICE_timeave(1,bi,bj)+deltaTclock
 c       print*,'QQ end ice ave '
 #endif /* ALLOW_TIMEAVE */
 

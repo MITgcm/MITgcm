@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/therm_seaice/Attic/ICE_DIAGS.h,v 1.1 2002/11/21 19:11:42 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/therm_seaice/Attic/ICE_DIAGS.h,v 1.2 2002/12/04 14:53:39 cheisey Exp $
 C $Name:  $
 cswdice -- change to keep ice fields --
 
@@ -12,7 +12,7 @@ C     \==========================================================/
 #ifdef ALLOW_TIMEAVE
 
 C     Keep track of time
-      _RL ICE_TimeAve(nSx,nSy)
+      _RL ICE_TimeAve(Nr, nSx,nSy)
       COMMON /ICE_TAVE/ ICE_TimeAve
 
 

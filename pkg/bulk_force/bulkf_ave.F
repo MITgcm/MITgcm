@@ -41,7 +41,6 @@ c     == routine arguments ==
 #ifdef ALLOW_TIMEAVE
 
 
-c
 C--     Time-average
           do j = 1,sny
             do i = 1,snx
@@ -70,9 +69,8 @@ c    &           (recip_Cp*recip_rhoNil*recip_dRf(1))*deltaTclock
      &                       +savssq(i,j)*deltaTclock
             enddo
            enddo
-           BULKF_timeave(bi,bj)=BULKF_timeave(bi,bj)+deltaTclock
+           BULKF_timeave(1,bi,bj)=BULKF_timeave(1,bi,bj)+deltaTclock
 
-c           print*,'QQ end bulkf ave'
 
 #endif  /*ALLOW_TIMEAVE*/
 #endif  /*ALLOW_BULK_FORCE*/

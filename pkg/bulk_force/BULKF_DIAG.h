@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/BULKF_DIAG.h,v 1.1 2002/11/21 19:11:42 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/BULKF_DIAG.h,v 1.2 2002/12/04 14:53:39 cheisey Exp $
 C $Name:  $
 cswdblk -- change to keep bulk formula fields --
 
@@ -12,7 +12,7 @@ C     \==========================================================/
 #ifdef ALLOW_TIMEAVE
 
 C     Keep track of time
-      _RL BULKF_TimeAve(nSx,nSy)
+      _RL BULKF_TimeAve(Nr, nSx,nSy)
       COMMON /BULKF_TAVE/ BULKF_TimeAve
 
 C     Storage arrays for time-averages

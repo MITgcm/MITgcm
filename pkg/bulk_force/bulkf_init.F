@@ -59,7 +59,7 @@ c     set up bulk formula arrays to zero
               BULK_flw_AVE(i,j,bi,bj)=0.e0
               BULK_solar_AVE(i,j,bi,bj)=0.e0
               BULK_ssq_AVE(i,j,bi,bj)=0.e0
-              BULKF_timeave(bi,bj)=0.e0
+              BULKF_timeave(1,bi,bj)=0.e0
 #ifdef CONSERV_BULKF
               CONS_Qnet(i,j,bi,bj)=0.e0
               CONS_EmPmR(i,j,bi,bj)=0.e0
