@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.8 2004/06/15 21:18:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.9 2004/06/15 22:18:27 molod Exp $
 C $Name:  $
-#include "CPP_OPTIONS.h"
+#include "CPP_EEOPTIONS.h"
        subroutine do_fizhi(uphy,vphy,thphy,sphy,pephy,lons,lats,
      .   ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
      .   sst,sice,phis_var,landtype,emiss,albnidr,albnirdf,
@@ -11,10 +11,13 @@ C $Name:  $
      .   nchp,
      .   duphy,dvphy,dthphy,dsphy)
 c-----------------------------------------------------------------------
-c Interface routine to calculate physics increments - call geos-3 driver
-c Purpose of this routine is to pull things from model common blocks
-c to send to physdrv. Also to take output from there and put into model
-c common blocks.
+c Interface routine to calculate physics increments - calls fizhi_driver.
+c Purpose of this routine is to set up arrays local to fizhi and 'save'
+c them from one iteration to the next, and act as interface between the
+c model common blocks (held in fizhi_wrapper) and fizhi_driver. 
+c Copies of variables that are 'shadowed' are made here without shadows
+c for passing to fizhi_driver.
+c Note: routine is called from inside a bi-bj loop
 c
 c-----------------------------------------------------------------------
       implicit none
