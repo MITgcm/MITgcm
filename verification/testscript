@@ -288,6 +288,18 @@ Normal usage:
 EOF
 }
 
+scandirs()
+{
+if [ $# -eq 0 ]; then
+ for arg in *
+  do
+   test -d $arg/input && echo $arg
+ done
+else
+ echo $*
+fi
+}
+
 ###############################################################################
 
 # Main function
@@ -315,13 +327,14 @@ do
  esac
 done
 
-if [ ${#expts} -eq 0 ]; then
- echo Scanning all directories
- for arg in *
-  do
-   test -d $arg && expts=`echo $expts $arg`
- done
-fi
+#if [ ${#expts} -eq 0 ]; then
+# echo Scanning all directories
+# for arg in *
+#  do
+#   test -d $arg && expts=`echo $expts $arg`
+# done
+#fi
+expts=`scandirs $expts`
 
 createcodelet
 
