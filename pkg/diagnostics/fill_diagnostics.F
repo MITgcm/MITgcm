@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/fill_diagnostics.F,v 1.8 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/fill_diagnostics.F,v 1.9 2004/06/21 15:41:51 molod Exp $
 C $Name:  $
 
       subroutine fill_diagnostics (myThid, chardiag, levflg, nlevs, 
@@ -62,8 +62,8 @@ C If-sequence to see if we are a valid and an active diagnostic
 
       IF ( ndiagnum.ne.0 .and. ipointer.ne.0 ) THEN
 
-C Increment the counter for the diagnostic
-      ndiag(ndiagnum) = ndiag(ndiagnum) + 1
+C Increment the counter for the diagnostic (if we are at bi=bj=1)
+      if ((bi.eq.1).and.(bj.eq.1)) ndiag(ndiagnum) = ndiag(ndiagnum) + 1
 
 C   Check to see if we need to do a bi-bj loop here
 
@@ -79,7 +79,7 @@ C   Check to see if we need to do a bi-bj loop here
 
        if(levflg.eq.0)then
         do levhere = 1,nlevs
-         call fillit(arrayin,irun,jrun,krun,levhere,birun,bjrun,
+         call fillit(arrayin,irun,jrun,krun,levhere,levhere,birun,bjrun,
      .                                              bihere,bjhere,array)
          do j = 1,sNy
          do i = 1,sNx
@@ -90,7 +90,7 @@ C   Check to see if we need to do a bi-bj loop here
          enddo
         enddo
        else
-        call fillit(arrayin,irun,jrun,krun,levflg,birun,bjrun,
+        call fillit(arrayin,irun,jrun,krun,levflg,1,birun,bjrun,
      .                                              bihere,bjhere,array)
         do j = 1,sNy
         do i = 1,sNx
@@ -113,7 +113,7 @@ C   Check to see if we need to do a bi-bj loop here
 
        if(levflg.eq.0)then
         do levhere = 1,nlevs
-         call fillit(arrayin,irun,jrun,krun,levhere,birun,bjrun,
+         call fillit(arrayin,irun,jrun,krun,levhere,levhere,birun,bjrun,
      .                                              bi,bj,array)
          do j = 1,sNy
          do i = 1,sNx
@@ -123,7 +123,7 @@ C   Check to see if we need to do a bi-bj loop here
          enddo
         enddo
        else
-        call fillit(arrayin,irun,jrun,krun,levflg,birun,bjrun,
+        call fillit(arrayin,irun,jrun,krun,levflg,1,birun,bjrun,
      .                                              bi,bj,array)
         do j = 1,sNy
         do i = 1,sNx
@@ -142,7 +142,7 @@ C   Check to see if we need to do a bi-bj loop here
 
        if(levflg.eq.0)then
         do levhere = 1,nlevs
-         call fillit(arrayin,irun,jrun,krun,levhere,birun,bjrun,
+         call fillit(arrayin,irun,jrun,krun,levhere,levhere,birun,bjrun,
      .                                              1,1,arrayloc)
          do j = 1,sNy
          do i = 1,sNx
@@ -152,7 +152,7 @@ C   Check to see if we need to do a bi-bj loop here
          enddo
         enddo
        else
-        call fillit(arrayin,irun,jrun,krun,levflg,birun,bjrun,
+        call fillit(arrayin,irun,jrun,krun,levflg,1,birun,bjrun,
      .                                              1,1,arrayloc)
         do j = 1,sNy
         do i = 1,sNx
@@ -175,13 +175,13 @@ C     if (myThid.eq.1) write(6,1000) chardiag
       return
       end
 
-      subroutine fillit(arrayin,irun,jrun,krun,klev,birun,bjrun,
+      subroutine fillit(arrayin,irun,jrun,krun,klevf,klevt,birun,bjrun,
      .                                              bi,bj,arrayout)
 
       implicit none
 #include "EEPARAMS.h"
 
-      integer irun, jrun, krun, klev, birun, bjrun, bi, bj
+      integer irun, jrun, krun, klevf, klevt, birun, bjrun, bi, bj
       _RL arrayin(irun,jrun,krun,birun,bjrun)
       _RL arrayout(irun,jrun,krun,birun,bjrun)
 
@@ -189,7 +189,7 @@ C     if (myThid.eq.1) write(6,1000) chardiag
 
       do j = 1,jrun
        do i = 1,irun
-        arrayout(i,j,klev,bi,bj) = arrayin(i,j,klev,bi,bj)
+        arrayout(i,j,klevt,bi,bj) = arrayin(i,j,klevf,bi,bj)
        enddo
       enddo
 
