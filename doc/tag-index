@@ -1,7 +1,8 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.170 2003/07/08 15:00:26 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.171 2003/07/13 20:32:42 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+o fix bug in dxV,dyU definition of cubed-sphere grid (ini_curvilinear_grid)
 
 checkpoint51c_post
 o introducing integer flag debugLevel
