@@ -1,12 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.20 2004/11/19 01:34:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.21 2004/11/23 20:21:13 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
-cswdptr -- add ---
-#ifdef ALLOW_GCHEM
-# include "GCHEM_OPTIONS.h"
-#endif
-cswdptr -- end add ---
 
 CBOP
 C !ROUTINE: PTRACERS_INTEGRATE
@@ -117,26 +112,12 @@ C (advection, [explicit] diffusion, parameterizations,...)
      I                   myTime, myIter, myThid )
 
 C External forcing term(s)
-cswdptr --add --
-#ifdef ALLOW_GCHEM
-#ifndef PTRACERS_SEPARATE_FORCING
-       IF ( forcing_In_AB .AND. useGCHEM )
-     &    CALL GCHEM_FORCING_INT(
-     I                        bi,bj,iMin,iMax,jMin,jMax,k,
-     I                        iTracer,
-     I                        myTime,myIter, myThid)
-#endif
-#else
-cswdptr - end add ---
        IF ( forcing_In_AB )
      &   CALL PTRACERS_FORCING(
-     I                      bi,bj,iMin,iMax,jMin,jMax,k,
+     I                      bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
      U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                      surfaceForcingPtr(1-Olx,1-Oly,1,1,iTracer),
      I                      myIter,myTime,myThid)
-cswdptr --add---
-#endif
-cswdptr -- end add ---
 
 C If using Adams-Bashforth II, then extrapolate tendancies
       IF ( PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND
@@ -150,26 +131,12 @@ C If using Adams-Bashforth II, then extrapolate tendancies
       ENDIF
 
 C External forcing term(s)
-cswdptr - add--
-#ifdef ALLOW_GCHEM
-#ifndef PTRACERS_SEPARATE_FORCING
-       IF ( .NOT.forcing_In_AB .AND. useGCHEM )
-     &    CALL GCHEM_FORCING_INT(
-     I                        bi,bj,iMin,iMax,jMin,jMax,k,
-     I                        iTracer,
-     I                        myTime,myIter, myThid)
-#endif
-#else
-cswdptr - end add ---
        IF ( .NOT.forcing_In_AB )
      &   CALL PTRACERS_FORCING(
-     I                      bi,bj,iMin,iMax,jMin,jMax,k,
+     I                      bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
      U                      gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                      surfaceForcingPtr(1-Olx,1-Oly,1,1,iTracer),
      I                      myIter,myTime,myThid)
-cswdptr - add--
-#endif
-cswdptr -- end add ---
 
 #ifdef NONLIN_FRSURF
 C Account for change in level thickness

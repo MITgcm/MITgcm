@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.6 2004/07/18 01:12:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.7 2004/11/23 20:21:14 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: PTRACERS_FORCING
 
 C !INTERFACE: ==========================================================
       SUBROUTINE PTRACERS_FORCING(
-     I                            bi,bj,iMin,iMax,jMin,jMax,k,
+     I                            bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
      U                            gPtracer,surfPtracer,
      I                            myIter,myTime,myThid )
 
@@ -28,11 +28,12 @@ C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
 C  iMin iMax jMin jMax  :: working range of tile for applying forcing
 C  k                    :: vertical level number
+C  iTracer              :: tracer number
 C  gPtracer             :: the tendancy array
 C  myIter               :: time-step number
 C  myTime               :: model time
 C  myThid               :: thread number
-      INTEGER bi,bj,iMin, iMax, jMin, jMax,k
+      INTEGER bi,bj,iMin,iMax,jMin,jMax,k,iTracer
       _RL gPtracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL surfPtracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
       INTEGER myIter
@@ -60,6 +61,13 @@ CEOP
 C--   Surface forcing term is surfaceForcingPtr, previously computed
 C     by PTRACERS_FORCING because it is needed by KPP_TRANSPORT_PTR.
 
+#ifdef ALLOW_GCHEM 
+      IF ( useGCHEM ) 
+     &     CALL GCHEM_FORCING_INT(
+     I                        bi,bj,iMin,iMax,jMin,jMax,k,
+     I                        iTracer,
+     I                        myTime,myIter, myThid)
+#else /* ALLOW_GCHEM */
        IF ( k .EQ. kSurface ) THEN
         DO j=jMin,jMax
          DO i=iMin,iMax
@@ -69,6 +77,7 @@ C     by PTRACERS_FORCING because it is needed by KPP_TRANSPORT_PTR.
          ENDDO
         ENDDO
        ENDIF
+#endif /* ALLOW_GCHEM */
 
 #endif /* ALLOW_PTRACERS */
 
