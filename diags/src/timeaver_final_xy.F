@@ -25,8 +25,6 @@ C     == Local variables ==
 C     i,j,k,bi,bj  - Loop counters
       INTEGER i, j
 
-      write(0,*) 'aja: final=',fldtave(1,12,bi,bj)
- 
 C     DO bj = myByLo(myThid), myByHi(myThid)
 C      DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy

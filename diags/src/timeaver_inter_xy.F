@@ -29,7 +29,6 @@ CEndofinterface
 C     == Local variables ==
 C     i,j,k,bi,bj  - Loop counters
       INTEGER i, j
-      write(0,*) 'aja: fld=',fld(1,12)
  
 C     DO bj = myByLo(myThid), myByHi(myThid)
 C      DO bi = myBxLo(myThid), myBxHi(myThid)
