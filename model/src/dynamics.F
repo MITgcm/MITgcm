@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.85 2002/02/15 21:29:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.86 2002/03/24 02:36:39 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -82,9 +82,6 @@ C     == Global variables ===
 # include "FFIELDS.h"
 # ifdef ALLOW_KPP
 #  include "KPP.h"
-# endif
-# ifdef ALLOW_GMREDI
-#  include "GMREDI.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 #ifdef ALLOW_TIMEAVE

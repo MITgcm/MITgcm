@@ -1,7 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.19 2002/03/06 01:59:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.20 2002/03/24 02:36:39 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
+#endif
+#ifdef ALLOW_KPP
+# include "KPP_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: THERMODYNAMICS
@@ -169,13 +175,6 @@ C     uninitialised but inert locations.
         yA(i,j)      = 0. _d 0
         uTrans(i,j)  = 0. _d 0
         vTrans(i,j)  = 0. _d 0
-        DO k=1,Nr
-         phiHyd(i,j,k)  = 0. _d 0 
-         sigmaX(i,j,k) = 0. _d 0
-         sigmaY(i,j,k) = 0. _d 0
-         sigmaR(i,j,k) = 0. _d 0
-        ENDDO
-        rhoKM1 (i,j) = 0. _d 0
         rhok   (i,j) = 0. _d 0
         phiSurfX(i,j) = 0. _d 0
         phiSurfY(i,j) = 0. _d 0
@@ -223,6 +222,7 @@ C--     Set up work arrays that need valid initial values
           fVerS  (i,j,2) = 0. _d 0
           fVerTr1(i,j,1) = 0. _d 0
           fVerTr1(i,j,2) = 0. _d 0
+          rhoKM1 (i,j)   = 0. _d 0
          ENDDO
         ENDDO
 
@@ -230,6 +230,10 @@ C--     Set up work arrays that need valid initial values
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
 C This is currently also used by IVDC and Diagnostics
+           phiHyd(i,j,k)  = 0. _d 0 
+           sigmaX(i,j,k) = 0. _d 0
+           sigmaY(i,j,k) = 0. _d 0
+           sigmaR(i,j,k) = 0. _d 0
            ConvectCount(i,j,k) = 0.
            KappaRT(i,j,k) = 0. _d 0
            KappaRS(i,j,k) = 0. _d 0
@@ -239,6 +243,15 @@ C This is currently also used by IVDC and Diagnostics
 #ifdef ALLOW_PASSIVE_TRACER
            gTr1(i,j,k,bi,bj) = 0. _d 0
 #endif
+#ifdef ALLOW_GMREDI
+           Kwx(i,j,k,bi,bj)    = 0. _d 0
+           Kwy(i,j,k,bi,bj)    = 0. _d 0
+           Kwz(i,j,k,bi,bj)    = 0. _d 0
+#ifdef GM_NON_UNITY_DIAGONAL
+           Kux(i,j,k,bi,bj)    = 0. _d 0
+           Kvy(i,j,k,bi,bj)    = 0. _d 0
+#endif
+#endif /* ALLOW_GMREDI */
 #endif
           ENDDO
          ENDDO
@@ -364,11 +377,6 @@ CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
 
 #ifdef  ALLOW_GMREDI
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE sigmaX(:,:,:) = comlev1, key=ikey, byte=isbyte
-CADJ STORE sigmaY(:,:,:) = comlev1, key=ikey, byte=isbyte
-CADJ STORE sigmaR(:,:,:) = comlev1, key=ikey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
         IF (useGMRedi) THEN
           CALL GMREDI_CALC_TENSOR(
