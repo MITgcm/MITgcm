@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.11 2004/10/19 02:39:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.12 2005/01/19 01:18:55 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -66,8 +66,8 @@ C     I,J,K
       end do
 
       if ( equationOfState .eq. 'LINEAR' ) then
-         if ( tAlpha .eq. UNSET_RL ) tAlpha = 2.D-4
-         if ( sBeta  .eq. UNSET_RL ) sBeta  = 7.4D-4
+         if ( tAlpha .eq. UNSET_RL ) tAlpha = 2.  _d -4
+         if ( sBeta  .eq. UNSET_RL ) sBeta  = 7.4 _d -4
       elseif ( equationOfState .eq. 'POLY3' ) then
          OPEN(37,FILE='POLY3.COEFFS',STATUS='OLD',FORM='FORMATTED')
          READ(37,*) I
@@ -109,7 +109,7 @@ C
 
 C     coefficients nonlinear equation of state in pressure coordinates for
 C     1. density of fresh water at p = 0
-         eosJMDCFw(1) =  999.842594
+         eosJMDCFw(1) =  999.842594 _d +00
          eosJMDCFw(2) =    6.793952 _d -02
          eosJMDCFw(3) = -  9.095290 _d -03
          eosJMDCFw(4) =    1.001685 _d -04
@@ -118,11 +118,11 @@ C     1. density of fresh water at p = 0
 C     2. density of sea water at p = 0
          eosJMDCSw(1) =    8.24493  _d -01
          eosJMDCSw(2) = -  4.0899   _d -03
-         eosJMDCSw(3) =    7.6438   _d -05 
+         eosJMDCSw(3) =    7.6438   _d -05
          eosJMDCSw(4) = -  8.2467   _d -07
-         eosJMDCSw(5) =    5.3875   _d -09 
-         eosJMDCSw(6) = -  5.72466  _d -03 
-         eosJMDCSw(7) =    1.0227   _d -04 
+         eosJMDCSw(5) =    5.3875   _d -09
+         eosJMDCSw(6) = -  5.72466  _d -03
+         eosJMDCSw(7) =    1.0227   _d -04
          eosJMDCSw(8) = -  1.6546   _d -06
          eosJMDCSw(9) =    4.8314   _d -04
          if ( equationOfState(1:5) .eq. 'JMD95' ) then
@@ -143,7 +143,7 @@ C     4. secant bulk modulus K of sea water at p = 0
 C     5. secant bulk modulus K of sea water at p
             eosJMDCKP( 1) =   3.186519 _d +00
             eosJMDCKP( 2) =   2.212276 _d -02
-            eosJMDCKP( 3) = - 2.984642 _d -04 
+            eosJMDCKP( 3) = - 2.984642 _d -04
             eosJMDCKP( 4) =   1.956415 _d -06
             eosJMDCKP( 5) =   6.704388 _d -03
             eosJMDCKP( 6) = - 1.847318 _d -04
@@ -188,7 +188,7 @@ C     3. secant bulk modulus K of fresh water at p = 0
             eosJMDCKFw(5) = - 5.155288 _d -05
 C     4. secant bulk modulus K of sea water at p = 0
             eosJMDCKSw(1) =   5.46746  _d +01
-            eosJMDCKSw(2) = - 0.603459 _d +00 
+            eosJMDCKSw(2) = - 0.603459 _d +00
             eosJMDCKSw(3) =   1.09987  _d -02
             eosJMDCKSw(4) = - 6.1670   _d -05
             eosJMDCKSw(5) =   7.944    _d -02
@@ -206,7 +206,7 @@ C     5. secant bulk modulus K of sea water at p
             eosJMDCKP( 9) =   8.50935  _d -05
             eosJMDCKP(10) = - 6.12293  _d -06
             eosJMDCKP(11) =   5.2787   _d -08
-            eosJMDCKP(12) = - 9.9348   _d -07 
+            eosJMDCKP(12) = - 9.9348   _d -07
             eosJMDCKP(13) =   2.0816   _d -08
             eosJMDCKP(14) =   9.1697   _d -10
          else
@@ -229,9 +229,9 @@ C     5. secant bulk modulus K of sea water at p
          eosMDJWFnum(11) = -1.23869360 _d -11
          
          
-         eosMDJWFden( 0) =  1.00000000 _d +00 
+         eosMDJWFden( 0) =  1.00000000 _d +00
          eosMDJWFden( 1) =  7.28606739 _d -03
-         eosMDJWFden( 2) = -4.60835542 _d -05 
+         eosMDJWFden( 2) = -4.60835542 _d -05
          eosMDJWFden( 3) =  3.68390573 _d -07
          eosMDJWFden( 4) =  1.80809186 _d -10
          eosMDJWFden( 5) =  2.14691708 _d -03
