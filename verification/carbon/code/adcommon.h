@@ -33,12 +33,6 @@ C--   copied stuff from _ad.f file
       _RL adgucd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgvcd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
-      common /adtr1_r/ 
-     &                 adtr1, adgtr1, adgtr1nm1
-      _RL adgtr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL adgtr1nm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-      _RL adtr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
-
       common /adffields/
      &                   adfu, adfv, adqnet, adempmr, adsst, adsss
       _RL adfu(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -47,3 +41,26 @@ C--   copied stuff from _ad.f file
       _RL adempmr(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adsst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adsss(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+
+#ifdef ALLOW_TR10_CONTROL
+      common /adtr1_r/ 
+     &                 adtr1, adgtr1, adgtr1nm1
+      _RL adgtr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL adgtr1nm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL adtr1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
+
+#ifdef ALLOW_DIFFKR_CONTROL
+      common /addynvars_diffkr/ 
+     &                          addiffkr
+      _RL addiffkr(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
+
+#ifdef ALLOW_KAPGM_CONTROL
+      common /addynvars_kapgm/ 
+     &                          adkapgm
+      _RL adkapgm(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+#endif
+
+
+

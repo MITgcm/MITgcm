@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/CPP_OPTIONS.h,v 1.2 2001/07/30 20:43:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/CPP_OPTIONS.h,v 1.3 2001/08/13 18:23:11 heimbach Exp $
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -7,7 +7,7 @@ C o Include/exclude code for AIM package
 #undef  ALLOW_AIM
 
 C o Include/exclude code for GM/Redi parameterization
-#undef  ALLOW_GMREDI
+#define  ALLOW_GMREDI
 
 C o Include/exclude code for KPP mixing scheme
 #undef  ALLOW_KPP
