@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.2 2001/08/13 18:05:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.3 2001/08/15 15:51:46 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -74,7 +74,6 @@ C     bi, bj
 C     k, kup,        - Index for layer above and below. kup and kDown
 C     kDown, km1       are switched with layer to be the appropriate 
 C                      index into fVerTerm.
-C     tauAB - Adams-Bashforth timestepping weight: 0=forward ; 1/2=Adams-Bashf.
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -94,7 +93,6 @@ C     tauAB - Adams-Bashforth timestepping weight: 0=forward ; 1/2=Adams-Bashf.
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-      _RL tauAB
 
 C This is currently used by IVDC and Diagnostics
       _RL ConvectCount (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -493,9 +491,8 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         KappaRT,
      U         fVerT,
      I         myTime, myThid)
-           tauAB = 0.5d0 + abEps
            CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,tauAB,
+     I         bi,bj,iMin,iMax,jMin,jMax,k,tempAdvScheme,
      I         theta, gT,
      U         gTnm1,
      I         myIter, myThid)
@@ -507,9 +504,8 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         KappaRS,
      U         fVerS,
      I         myTime, myThid)
-           tauAB = 0.5d0 + abEps
            CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,tauAB,
+     I         bi,bj,iMin,iMax,jMin,jMax,k,saltAdvScheme,
      I         salt, gS,
      U         gSnm1,
      I         myIter, myThid)
@@ -522,9 +518,8 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         KappaRT,
      U         fVerTr1,
      I         myTime, myThid)
-           tauAB = 0.5d0 + abEps
            CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,tauAB,
+     I         bi,bj,iMin,iMax,jMin,jMax,k,tracerAdvScheme,
      I         Tr1, gTr1,
      U         gTr1NM1,
      I         myIter, myThid)

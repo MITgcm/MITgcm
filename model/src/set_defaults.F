@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.23 2001/07/13 14:26:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.24 2001/08/15 15:51:46 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -130,6 +130,9 @@ C--   Set default "physical" parameters
       debugMode             = .FALSE.
       readPickupWithTracer  = .FALSE.
       writePickupWithTracer = .FALSE.
+      tempAdvScheme       = 2
+      saltAdvScheme       = 2
+      tracerAdvScheme     = 2
 
 C--   Atmospheric physical parameters (e.g.: EOS)
       atm_po =  1.D5

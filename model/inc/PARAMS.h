@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.56 2001/07/13 14:15:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.57 2001/08/15 15:51:46 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -119,7 +119,8 @@ C                           =0 Linear free surface ; >0 Non-linear
      &        writeStatePrec, nCheckLev,
      &        writeBinaryPrec, readBinaryPrec,
      &        nonlinFreeSurf,
-     &        zonal_filt_sinpow, zonal_filt_cospow
+     &        zonal_filt_sinpow, zonal_filt_cospow,
+     &        tempAdvScheme, saltAdvScheme, tracerAdvScheme
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
       INTEGER cg3dMaxIters
@@ -135,6 +136,9 @@ C                           =0 Linear free surface ; >0 Non-linear
       INTEGER nonlinFreeSurf
       INTEGER zonal_filt_sinpow
       INTEGER zonal_filt_cospow
+      INTEGER tempAdvScheme
+      INTEGER saltAdvScheme
+      INTEGER tracerAdvScheme
 
 C--   COMMON /PARM_L/ Logical valued parameters used by the model.
 C     usingCartesianGrid - If TRUE grid generation will be in a cartesian
