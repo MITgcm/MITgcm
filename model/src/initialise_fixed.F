@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.8 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.9 2002/01/31 14:52:28 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -53,6 +53,8 @@ C      |
 C      |-- INI_CG2D
 C      |
 C      |-- INI_CG3D
+C      |
+C      |-- CONFIG_CHECK
 C      |
 C      |-- CONFIG_SUMMARY
 
@@ -126,6 +128,9 @@ C--   Set laplace operators for use in 2D conjugate gradient solver.
 C--   Set laplace operators for use in 3D conjugate gradient solver.
       CALL INI_CG3D( myThid )
 #endif
+
+C--   Check parameters and model cofiguration
+      CALL CONFIG_CHECK( myThid )
 
 C--   Finally summarise the model cofiguration
       CALL CONFIG_SUMMARY( myThid )
