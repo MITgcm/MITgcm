@@ -1,0 +1,18 @@
+
+C----------------------------------------
+C subroutine  ptracers_debug
+C----------------------------------------
+CADJ SUBROUTINE ptracers_debug  INPUT  = 1
+CADJ SUBROUTINE ptracers_debug  OUTPUT =
+
+C----------------------------------------
+C subroutine  ptracers_read_checkpoint
+C----------------------------------------
+CADJ SUBROUTINE ptracers_read_checkpoint  INPUT  = 1,2,3
+CADJ SUBROUTINE ptracers_read_checkpoint  OUTPUT =
+
+C----------------------------------------
+C subroutine  ptracers_statvars
+C----------------------------------------
+CADJ SUBROUTINE ptracers_statvars  INPUT  = 1,2,3,4,5
+CADJ SUBROUTINE ptracers_statvars  OUTPUT =

@@ -31,6 +31,11 @@ CADJ STORE tr1       = tapelev3, key = ilev_3
 CADJ STORE gtr1nm1   = tapelev3, key = ilev_3
 #endif /* ALLOW_PASSIVE_TRACER */
 
+#ifdef ALLOW_PTRACERS
+CADJ STORE ptracer   = tapelev3, key = ilev_3
+CADJ STORE gptrnm1   = tapelev3, key = ilev_3
+#endif /* ALLOW_PTRACERS */
+
 #ifdef EXACT_CONSERV
 CADJ STORE etaH      = tapelev3, key = ilev_3
 CADJ STORE hDivFlow  = tapelev3, key = ilev_3
