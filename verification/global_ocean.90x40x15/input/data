@@ -6,59 +6,59 @@
  &PARM01
  tRef = 15*20.,
  sRef = 15*35.,
- viscAz=1.E-3,
+ viscAr=1.E-3,
  viscAh=5.E5,
  diffKhT=0.0, 
- diffKzT=3.E-5,
+ diffKrT=3.E-5,
  diffKhS=0.0,  
- diffKzS=3.E-5,
- beta=1.E-11,
- f0=1.e-4,
- tAlpha=2.E-4,
- sBeta =7.4E-4,
- gravity=9.81,
- gBaro=9.81,
+ diffKrS=3.E-5,
  rhonil=1035.,
- rigidLid=.FALSE.,
- implicitFreeSurface=.TRUE.,
+ gravity=9.81,
  eosType = 'POLY3',
  ivdc_kappa=100.,
  implicitDiffusion=.TRUE.,
  allowFreezing=.TRUE.,
- tempAdvScheme       = 2
- saltAdvScheme       = 2
- tracerAdvScheme     = 2 
- tempStepping        = .TRUE.
- saltStepping        = .TRUE.
- tr1Stepping         = .TRUE.
- multiDimAdvection   = .FALSE.
+ useRealFreshWaterFlux=.TRUE.,
+# turn on looped cells
+ hFacMin=.05,
+ hFacMindr=50.,
+# set precision of data files
+ readBinaryPrec=32,
  &
 
 # Elliptic solver parameters
  &PARM02
- cg2dMaxIters=1000,
- cg2dTargetResidual=1.E-17,
+ cg2dMaxIters=500,
+ cg2dTargetResidual=1.E-13,
  &
 
 # Time stepping parameters
  &PARM03
- startTime =      0.,
- endtime   = 864000.,
-#nIter0  =  14400.,
-#endTime = 311044000.,
+ nIter0 =      0,
+ nTimeSteps = 20,
+# 100 years of integration will yield a reasonable flow field
+# startTime  =          0.,
+# endTime    = 3110400000.,
  deltaTmom = 1200.0,
  tauCD =     321428.,
  deltaTtracer= 43200.0,
  deltaTClock = 43200.0,
+# if you are using a version later than checkpoint45d on the main branch
+# you can uncomment the following line and increase the time step 
+# deltaTtracer and deltaTClock to 172800.0 as well to speed up the 
+# asynchronous time stepping
+# deltaTfreesurf = 172800.0,
  abEps = 0.1,
-#cAdjFreq = -1,
- pChkptFreq= 31104000.,
- chkptFreq=  31104000., 
- dumpFreq=   31104000.,
- taveFreq=   31104000.,
+ pChkptFreq= 311040000.,
+ dumpFreq=   311040000.,
+ dumpFreq=   864000.,
+ taveFreq=   311040000.,
+ taveFreq=   864000.,
+ monitorFreq=31104000.,
+# 2 months restoring timescale for temperature
  tauThetaClimRelax =  5184000.0,
- tauSaltClimRelax = 311040000.0,
- monitorFreq=1.,
+# 6 months restoring timescale for salinity
+ tauSaltClimRelax = 15552000.0,
  periodicExternalForcing=.TRUE.,
  externForcingPeriod=2592000.,
  externForcingCycle=31104000.,
@@ -68,23 +68,25 @@
  &PARM04
  usingCartesianGrid=.FALSE.,
  usingSphericalPolarGrid=.TRUE.,
- delZ= 50., 70., 100., 140., 190., 
+ delR= 50., 70., 100., 140., 190., 
        240., 290., 340., 390., 440., 
        490., 540., 590., 640., 690.,
- phiMin=-78.,
- delY=40*4.,
- delX=90*4.,
+ phiMin=-80.,
+ dySpacing=4.,
+ dxSpacing=4.,
  &
 
 # Input datasets
  &PARM05
- bathyFile=      'bathy.bin',
- hydrogThetaFile='theta.bin',
- hydrogSaltFile= 'sal.bin',
- zonalWindFile=  'tren_taux.bin',
- meridWindFile=  'tren_tauy.bin',
- thetaClimFile=  'theta_surf.bin',
- saltClimFile=   'sal_surf.bin',
- surfQFile=      'shi_qnet.bin',
- EmPmRFile=      'shi_empr.bin',
+ bathyFile=      'bathymetry.bin',
+ hydrogThetaFile='lev_t.bin',
+ hydrogSaltFile= 'lev_s.bin',
+ zonalWindFile=  'trenberth_taux.bin',
+ meridWindFile=  'trenberth_tauy.bin',
+ thetaClimFile=  'lev_sst.bin',
+ saltClimFile=   'lev_sss.bin',
+ surfQFile=      'ncep_qnet.bin',
+# fresh water flux is turned off, uncomment next line to turn on
+# (not recommened together with surface salinity restoring)
+# EmPmRFile=      'ncep_emp.bin',
  &
