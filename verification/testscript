@@ -11,16 +11,16 @@ compare_lines()
 
 testoutput_for_prop()
 {
-# testoutput_for_prop dir s1 label
+# testoutput_for_prop dir s1 label subdir
 #
-#  compares files in $dir/input/output.txt and $dir/results.output.txt
+#  compares files in $dir/$subdir/output.txt and $dir/results/output.txt
 #  using search strings s1 and text label 
  
  if [ $debug -gt 0 ]; then
-  echo testoutput_for_prop: grep "$2" $1/input/output.txt 1>&2
+  echo testoutput_for_prop: grep "$2" $1/$4/output.txt 1>&2
  fi
- if [ -r $1/input/output.txt ]; then
-  grep "$2" $1/input/output.txt | sed 's/.*=//' | nl > tmp1.txt
+ if [ -r $1/$4/output.txt ]; then
+  grep "$2" $1/$4/output.txt | sed 's/.*=//' | nl > tmp1.txt
   lncnt=`wc -l tmp1.txt | awk '{print $1}' `
   if [ $lncnt -lt 3 ]; then
    if [ $verbose -gt 0 ]; then
@@ -84,44 +84,44 @@ done
 
 testoutput()
 {
-# testoutput diretory
+# testoutput diretory subdir
 #
 #  test output in "directory"
 
 if [ $debug -gt 0 ]; then
  echo testoutput: testoutput_for_prop $1 cg2d_init_res 1>&2
 fi
-testoutput_for_prop $1 "cg2d_init_res" "cg2d init. residual"; cg2dres=$?
+testoutput_for_prop $1 "cg2d_init_res" "cg2d init. residual" $2; cg2dres=$?
 if [ $debug -gt 0 ]; then
  echo testoutput: cg2dres=$cg2dres 1>&2
 fi
 
 if [ $longtest -gt 0 ]; then
-testoutput_for_prop $1 "dynstat_theta_min" "theta minimum"; tmin=$?
-testoutput_for_prop $1 "dynstat_theta_max" "theta maximum"; tmax=$?
-testoutput_for_prop $1 "dynstat_theta_mean" "theta mean"; tmean=$?
-testoutput_for_prop $1 "dynstat_theta_sd" "theta s.d."; tsd=$?
-testoutput_for_prop $1 "dynstat_salt_min" "salt minimum"; smin=$?
-testoutput_for_prop $1 "dynstat_salt_max" "salt maximum"; smax=$?
-testoutput_for_prop $1 "dynstat_salt_mean" "salt mean"; smean=$?
-testoutput_for_prop $1 "dynstat_salt_sd" "salt s.d."; ssd=$?
-testoutput_for_prop $1 "dynstat_uvel_min" "U minimum"; umin=$?
-testoutput_for_prop $1 "dynstat_uvel_max" "U maximum"; umax=$?
-testoutput_for_prop $1 "dynstat_uvel_mean" "U mean"; umean=$?
-testoutput_for_prop $1 "dynstat_uvel_sd" "U s.d."; usd=$?
-testoutput_for_prop $1 "dynstat_vvel_min" "V minimum"; vmin=$?
-testoutput_for_prop $1 "dynstat_vvel_max" "V maximum"; vmax=$?
-testoutput_for_prop $1 "dynstat_vvel_mean" "V mean"; vmean=$?
-testoutput_for_prop $1 "dynstat_vvel_sd" "V s.d."; vsd=$?
+testoutput_for_prop $1 "dynstat_theta_min" "theta minimum" $2; tmin=$?
+testoutput_for_prop $1 "dynstat_theta_max" "theta maximum" $2; tmax=$?
+testoutput_for_prop $1 "dynstat_theta_mean" "theta mean" $2; tmean=$?
+testoutput_for_prop $1 "dynstat_theta_sd" "theta s.d." $2; tsd=$?
+testoutput_for_prop $1 "dynstat_salt_min" "salt minimum" $2; smin=$?
+testoutput_for_prop $1 "dynstat_salt_max" "salt maximum" $2; smax=$?
+testoutput_for_prop $1 "dynstat_salt_mean" "salt mean" $2; smean=$?
+testoutput_for_prop $1 "dynstat_salt_sd" "salt s.d." $2; ssd=$?
+testoutput_for_prop $1 "dynstat_uvel_min" "U minimum" $2; umin=$?
+testoutput_for_prop $1 "dynstat_uvel_max" "U maximum" $2; umax=$?
+testoutput_for_prop $1 "dynstat_uvel_mean" "U mean" $2; umean=$?
+testoutput_for_prop $1 "dynstat_uvel_sd" "U s.d." $2; usd=$?
+testoutput_for_prop $1 "dynstat_vvel_min" "V minimum" $2; vmin=$?
+testoutput_for_prop $1 "dynstat_vvel_max" "V maximum" $2; vmax=$?
+testoutput_for_prop $1 "dynstat_vvel_mean" "V mean" $2; vmean=$?
+testoutput_for_prop $1 "dynstat_vvel_sd" "V s.d." $2; vsd=$?
 else
-testoutput_for_prop $1 "dynstat_theta_min" "theta minimum"; tmin=$?
-testoutput_for_prop $1 "dynstat_theta_max" "theta maximum"; tmax=$?
-testoutput_for_prop $1 "dynstat_salt_min" "salt minimum"; smin=$?
-testoutput_for_prop $1 "dynstat_salt_max" "salt maximum"; smax=$?
-testoutput_for_prop $1 "dynstat_uvel_min" "U minimum"; umin=$?
-testoutput_for_prop $1 "dynstat_uvel_max" "U maximum"; umax=$?
-testoutput_for_prop $1 "dynstat_vvel_min" "V minimum"; vmin=$?
-testoutput_for_prop $1 "dynstat_vvel_max" "V maximum"; vmax=$?
+testoutput_for_prop $1 "dynstat_theta_min" "theta minimum" $2; tmin=$?
+testoutput_for_prop $1 "dynstat_theta_max" "theta maximum" $2; tmax=$?
+testoutput_for_prop $1 "dynstat_salt_min" "salt minimum" $2; smin=$?
+testoutput_for_prop $1 "dynstat_salt_max" "salt maximum" $2; smax=$?
+testoutput_for_prop $1 "dynstat_uvel_min" "U minimum" $2; umin=$?
+testoutput_for_prop $1 "dynstat_uvel_max" "U maximum" $2; umax=$?
+testoutput_for_prop $1 "dynstat_vvel_min" "V minimum" $2; vmin=$?
+testoutput_for_prop $1 "dynstat_vvel_max" "V maximum" $2; vmax=$?
 fi
 
 dashnum $cg2dres $tmin $tmax $tmean $tsd $smin $smax $smean $ssd \
@@ -227,6 +227,18 @@ makemodel()
  )
 }
 
+linkdata()
+{
+# linkdata flag 
+# symbolically link data files to run directory
+ if [ $1 -ne 0 ]; then
+# if [ ! -r $2 ]; then
+#  mkdir $2
+# fi
+  ( cd $2; ln -sf ../input/* .)
+ fi
+}
+
 runmodel()
 {
 # runmodel directory exe
@@ -239,21 +251,8 @@ runmodel()
      rm -f output.txt
     fi
     printf 'runmodel: ' 1>&2
-    make output.txt && return 0
-#   if [ ! -r output.txt -o $quick -eq 0 ]; then
-#    echo runmodel: running... 1>&2
-#    ( ./$2 > output.txt 2>&1 ) && return 0
-#    rm -f output.txt
-#    ( make output.txt ) && return 0
-#    return 1
-#   else
-#    echo runmodel: output.txt is newer than executable 1>&2
-#    ( make output.txt ) && return 0
-#    return 0
-#   fi
-#  else
-#   echo runmodel: executable \"$1/$2\" is missing 1>&2
-#   return 1
+     make output.txt && return 0
+     return 1
    fi
  )
 }
@@ -354,13 +353,15 @@ clean_up()
 {
 # Find all executables, object files, CPP'd source and model output
 # and DELETE it.
-for opt in '-name mitgcmuv*' '-name *.o' '-name *.f' '-name *.c' '-path *results -prune -o -name *.meta' '-path *results -prune -o -name *.data' '-type l'
+for opt in '-name "mitgcmuv*"' '-name "*.o"' '-name "*.f"' '-name "*.c"' '-name "fort.*"' '-name "make.log"' '-path *results -prune -o -name "*.meta"' '-path *results -prune -o -name "*.data"' '-type l'
  do
    echo Cleaning: find . $opt -exec rm {} \;
    find . $opt -exec rm {} \;
 done
 }
 
+###############################################################################
+###############################################################################
 ###############################################################################
 
 # Main function
@@ -445,13 +446,25 @@ do
  else
   results='-- -- -- -- -- -- -- -- --'
  fi
- genmakemodel $dir/input && genmake=Y \
- && makecleancompile $dir/input \
- && makedependmodel $dir/input && makedepend=Y \
- && makemodel $dir/input && make=Y \
- && runmodel $dir/input mitgcmuv && run=Y \
- && results=`testoutput $dir` \
- && makecleanupafter $dir/input
+ if [ -r $dir/build ]; then
+  seperatebuilddir=1
+  builddir=build
+  rundir=build
+  (cd $dir/input; rm -f *.{o,f,c,F} work* output.txt Make* make.log; )
+  (cd $dir/build; ln -sf ../input/* .)
+ else
+  seperatebuilddir=0
+  builddir=input
+  rundir=input
+ fi
+ genmakemodel $dir/$builddir && genmake=Y \
+ && makecleancompile $dir/$builddir \
+ && makedependmodel $dir/$builddir && makedepend=Y \
+ && makemodel $dir/$builddir && make=Y \
+ && linkdata $seperatebuilddir $dir/$rundir \
+ && runmodel $dir/$builddir mitgcmuv && run=Y \
+ && results=`testoutput $dir $rundir` \
+ && makecleanupafter $dir/$builddir
  echo
  formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results
  echo
