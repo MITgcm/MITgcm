@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.15 2001/08/13 18:20:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.16 2001/08/14 00:20:49 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -30,19 +30,20 @@ c     == global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#include "FFIELDS.h"
-#include "TR1.h"
-
-#ifdef ALLOW_NONHYDROSTATIC
-#include "CG3D.h"
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
-#include "ctrl.h"
-#include "ctrl_dummy.h"
-#include "cost.h"
+# include "tamc.h"
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+# include "cost.h"
+# include "DYNVARS.h"
+# include "FFIELDS.h"
+# ifdef ALLOW_PASSIVE_TRACER
+#  include "TR1.h"
+# endif
+# ifdef ALLOW_NONHYDROSTATIC
+#  include "CG3D.h"
+# endif
 #endif
 
 c     == routine arguments ==
