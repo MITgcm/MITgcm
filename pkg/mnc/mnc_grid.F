@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.13 2004/04/02 16:12:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.14 2004/04/05 06:01:07 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -49,8 +49,13 @@ C     !INTERFACE:
      I     myThid ) 
 
 C     !DESCRIPTION:
-C     ...
-      
+C     Initialize a new conceptual (MNC inner layer) grid within a NetCDF
+C     file context.  If the requested grid name already exists, then
+C     verify that it has exactly the same number of dimensions, each
+C     with exactly the same size and report a fatal error if not.  This
+C     is a necessary check since the MNC inner layer does not support
+C     grid name re--definition.
+
 C     !USES:
       implicit none
 #include "netcdf.inc"
@@ -66,6 +71,7 @@ CEOP
 C     !LOCAL VARIABLES:
       integer i,j,k,ii,jj,kk, n,nf, indf,indg,indd, fid, ngrid
       integer ng_ind,lg_ind, ds_last, ndim_file, igr,ig1,ig2
+      integer ngt, ngn
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) name
       character*(MNC_MAX_CHAR) file_name
@@ -108,10 +114,16 @@ C     Check for sufficient space in memory
 C     Enter DEFINE mode
       CALL MNC_FILE_REDEF(fname, myThid)
 
+      ngn = ILNBLNK(gname)
+
 C     Check for grid re-definition
       DO igr = 1,mnc_f_info(indf,3)
         ii = 4 + 3*igr
-        IF (mnc_g_names(mnc_f_info(indf,ii)) .EQ. gname) THEN
+        ngt = ILNBLNK(mnc_g_names(mnc_f_info(indf,ii)))
+        IF ( (ngt .EQ. ngn) 
+     &       .AND. (mnc_g_names(mnc_f_info(indf,ii))(1:ngt) 
+     &       .EQ. gname(1:ngn)) ) THEN
+
           ig1 = mnc_f_info(indf,ii+1)
           ig2 = mnc_f_info(indf,ii+2)
 
@@ -138,13 +150,18 @@ C         Check if same number of dims but different dim names
               stop 'ABNORMAL END: S/R MNC_GRID_INIT'
             ENDIF
           ENDDO
-          GOTO 10
+
+C         Reaching this point means that the grid name WAS previously
+C         defined and the number and sizes of the associated dimensions
+C         exactly match so everything is OK and we do not need to create
+C         a new definition for this grid.
+          RETURN
 
         ENDIF
       ENDDO
- 10   CONTINUE
 
-C     Reaching this point means the grid was not previously defined
+C     Reaching this point means the grid was NOT previously defined and
+C     will must therefore create a new definition.
       CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_g_names,
      &     indg, myThid)
       mnc_g_names(indg)(1:MNC_MAX_CHAR) =

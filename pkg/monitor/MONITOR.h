@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/MONITOR.h,v 1.5 2004/04/03 04:57:11 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/MONITOR.h,v 1.6 2004/04/05 06:01:07 edhill Exp $
 C $Name:  $
 C
 
@@ -60,6 +60,14 @@ C     mon_overrideStop - Allow code to continue even if model state is
 C                        heading out of bounds
       COMMON /MON_L/ mon_overrideStop
       LOGICAL mon_overrideStop
+
+C     File names and time steps
+C     mon_fname      ::  monitor file group name
+C     mon_last_iter  ::  iteration for the last MNC write
+      COMMON /MON_F/ 
+     &     mon_fname, mon_do_fwrite
+      CHARACTER*(MAX_LEN_MBUF) mon_fname
+      LOGICAL mon_do_fwrite
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

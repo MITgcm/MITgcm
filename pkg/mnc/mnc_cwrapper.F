@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.12 2004/04/02 16:12:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.13 2004/04/05 06:01:07 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -416,6 +416,43 @@ C               Time dimension
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
+C     !ROUTINE: MNC_CW_APPEND_VNAME
+
+C     !INTERFACE:
+      SUBROUTINE MNC_CW_APPEND_VNAME( 
+     I     vname, 
+     I     gname, 
+     I     bi_dim, bj_dim, 
+     I     myThid )
+
+C     !DESCRIPTION:
+C     If it is not yet defined within the MNC CW layer, append a
+C     variable type.  Calls MNC\_CW\_ADD\_VNAME().
+  
+C     !USES:
+      implicit none
+#include "mnc_common.h"
+
+C     !INPUT PARAMETERS:
+      integer myThid, bi_dim, bj_dim
+      character*(*) vname, gname
+CEOP
+
+C     !LOCAL VARIABLES:
+      integer indv
+
+C     Check whether vname is defined
+      CALL MNC_GET_IND(MNC_MAX_ID, vname, mnc_cw_vname, indv, myThid)
+      IF (indv .LT. 1) THEN
+        CALL MNC_CW_ADD_VNAME(vname, gname, bi_dim, bj_dim, myThid)
+      ENDIF
+
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
 C     !ROUTINE: MNC_CW_ADD_VNAME
 
 C     !INTERFACE:
@@ -425,9 +462,9 @@ C     !INTERFACE:
      I     bi_dim, bj_dim, 
      I     myThid )
 
-C     !DESCRIPTION: Add a variable type to the MNC CW layer.  The
-C     variable type is an association between a variable type name and
-C     the following items:
+C     !DESCRIPTION: 
+C     Add a variable type to the MNC CW layer.  The variable type is an
+C     association between a variable type name and the following items:
 C     \begin{center}
 C       \begin{tabular}[h]{|ll|}\hline
 C         \textbf{Item}  & \textbf{Purpose}  \\\hline
@@ -728,6 +765,8 @@ C     !INTERFACE:
      I     myThid )
 
 C     !DESCRIPTION:
+C     Open a NetCDF file, appending to the file if it already exists
+C     and, if not, creating a new file.
 
 C     !USES:
       implicit none

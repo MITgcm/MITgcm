@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.4 2004/04/02 16:12:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_udim.F,v 1.5 2004/04/05 06:01:07 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -51,9 +51,24 @@ C     Check that this name is not already defined
       IF (indfg .LT. 1) THEN
         CALL MNC_GET_NEXT_EMPTY_IND(
      &       MNC_MAX_ID, mnc_cw_fgnm, indfg, myThid)
+        mnc_cw_fgud(indfg) = 0
       ENDIF
       mnc_cw_fgnm(indfg)(1:(fgl-fgf+1)) = fgname(fgf:fgl)
-      mnc_cw_fgud(indfg) = nudim
+      IF (nudim .GT. 0) THEN
+        mnc_cw_fgud(indfg) = nudim
+        RETURN
+      ENDIF
+      IF (nudim .EQ. 0) RETURN
+      IF (nudim .EQ. -1) THEN
+        mnc_cw_fgud(indfg) = mnc_cw_fgud(indfg) + 1
+        RETURN
+      ENDIF
+      write(msgbuf,'(3a,i,a)') 
+     &     'MNC_CW_SET_UDIM ERROR: for file group name ''', 
+     &     fgname(fgf:fgl), ''' the unlim dim ''', nudim, 
+     &     ''' is not allowed'
+      CALL print_error(msgbuf, mythid)
+      STOP 'ABNORMAL END: S/R MNC_CW_SET_UDIM'
 
       RETURN
       END
@@ -94,10 +109,10 @@ C     Functions
       CALL MNC_GET_IND(MNC_MAX_ID, fgname, mnc_cw_fgnm, indfg, myThid)
       IF (indfg .LT. 1) THEN
         write(msgbuf,'(3a)') 
-     &       'MNC_CW_SET_UDIM ERROR: file group name ''', 
+     &       'MNC_CW_GET_UDIM ERROR: file group name ''', 
      &       fgname(fgf:fgl), ''' is not defined'
         CALL print_error(msgbuf, mythid)
-        STOP 'ABNORMAL END: S/R MNC_CW_SET_UDIM'
+        STOP 'ABNORMAL END: S/R MNC_CW_GET_UDIM'
       ENDIF
       nudim = mnc_cw_fgud(indfg)
 

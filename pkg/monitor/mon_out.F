@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.7 2004/04/03 22:49:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.8 2004/04/05 06:01:07 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -118,55 +118,68 @@ C     lBuf   - Buffer for length
 C     I0     - Temps used in calculating string length
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER  lBuf
-      INTEGER  I0,I1, I2,I3, IL
+      INTEGER  i, I0,I1, IL
+      CHARACTER*(100) mon_vname
+      INTEGER  nvname
 
       msgBuf = ' '
       lBuf   = 0
+
+      DO i = 1,100
+        mon_vname(i:i) = ' '
+      ENDDO
 
       I0 = IFNBLNK(mon_head)
       I1 = ILNBLNK(mon_head)
       IL = I1-I0+1
       IF ( IL .GT. 0 .AND. lBuf+IL+1 .LE. MAX_LEN_MBUF ) THEN
-       msgBuf(1:IL) = mon_head
-       lBuf = IL+1
-       msgBuf(lBuf:lBuf) = ' '
+        msgBuf(1:IL) = mon_head
+        lBuf = IL+1
+        msgBuf(lBuf:lBuf) = ' '
       ENDIF
-
+      
       IF ( mon_pref(1:mon_prefL) .NE. mon_string_none .AND.
      &     lBuf+mon_prefL+1      .LE. MAX_LEN_MBUF ) THEN
-       lBuf = lBuf+1
-       msgBuf(lBuf:lBuf+mon_prefL-1) = mon_pref(1:mon_prefL)
-       lBuf = lBuf+mon_prefL-1
+        lBuf = lBuf+1
+        msgBuf(lBuf:lBuf+mon_prefL-1) = mon_pref(1:mon_prefL)
+        lBuf = lBuf+mon_prefL-1
+        mon_vname(1:mon_prefL) = mon_pref(1:mon_prefL)
+        nvname = mon_prefL
+      ELSE
+        nvname = 0
       ENDIF
 
       I0 = IFNBLNK(pref)
       I1 = ILNBLNK(pref)
       IL = I1-I0+1
       IF ( IL .GT. 0 ) THEN
-       IF ( pref(I0:I1) .NE. mon_string_none .AND. 
-     &      lBuf+IL+1   .LE. MAX_LEN_MBUF ) THEN
-        lBuf = lBuf+1
-        msgBuf(lBuf:lBuf+IL-1) = pref(I0:I1)
-        lBuf = lBuf+IL-1
-       ENDIF
+        IF ( pref(I0:I1) .NE. mon_string_none .AND. 
+     &       lBuf+IL+1   .LE. MAX_LEN_MBUF ) THEN
+          lBuf = lBuf+1
+          msgBuf(lBuf:lBuf+IL-1) = pref(I0:I1)
+          lBuf = lBuf+IL-1
+          mon_vname((nvname+1):(nvname+IL)) = pref(I0:I1)
+          nvname = nvname + IL
+        ENDIF
       ENDIF
 
-      I2 = IFNBLNK(foot)
-      I3 = ILNBLNK(foot)
-      IL = I3-I2+1
+      I0 = IFNBLNK(foot)
+      I1 = ILNBLNK(foot)
+      IL = I1-I0+1
       IF ( IL .GT. 0 ) THEN
-       IF ( foot(I2:I3) .NE. mon_string_none .AND. 
-     &      lBuf+IL+1   .LE. MAX_LEN_MBUF ) THEN
-        lBuf = lBuf+1
-        msgBuf(lBuf:lBuf+IL-1) = foot(I2:I3)
-        lBuf = lBuf+IL-1
-       ENDIF
+        IF ( foot(I0:I1) .NE. mon_string_none .AND. 
+     &       lBuf+IL+1   .LE. MAX_LEN_MBUF ) THEN
+          lBuf = lBuf+1
+          msgBuf(lBuf:lBuf+IL-1) = foot(I0:I1)
+          lBuf = lBuf+IL-1
+          mon_vname((nvname+1):(nvname+IL)) = foot(I0:I1)
+          nvname = nvname + IL
+        ENDIF
       ENDIF
+
+C     write(*,*) 'mon_vname = ''', mon_vname(1:nvname), ''''
 
       msgBuf(35:35) = '='
-
-CEH3  write(*,*) 'pref = ''', pref(I0:I1), ''''
-CEH3  write(*,*) 'foot = ''', foot(I2:I3), ''''
 
       _BEGIN_MASTER(myThid)
 #ifdef ALLOW_USE_MPI
@@ -177,6 +190,20 @@ CEH3  write(*,*) 'foot = ''', foot(I2:I3), ''''
           IF (itype .EQ. 2)
      &         WRITE(msgBuf(36:57),'(1X,1P1E21.13)') dval
           CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1 )
+
+#ifdef ALLOW_MNC
+          IF (useMNC .AND. mnc_use_for_mon .AND. mon_do_fwrite) THEN
+            CALL MNC_CW_APPEND_VNAME(
+     &           mon_vname, '-_-_--__-__t', 0,0, myThid)
+            IF (itype .EQ. 1)
+     &           CALL MNC_CW_I_W(
+     &           'I','monitor',1,1,mon_vname, ival, myThid)
+            IF (itype .EQ. 2)
+     &           CALL MNC_CW_RL_W(
+     &           'D','monitor',1,1,mon_vname, dval, myThid)
+          ENDIF
+#endif /*  ALLOW_MNC  */
+
 #ifdef ALLOW_USE_MPI
         ENDIF
 #endif /* ALLOW_USE_MPI */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.14 2004/04/02 16:12:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.15 2004/04/05 06:01:07 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -46,7 +46,7 @@ C     Write blanks or zeros to all the internal names and ID tables
         ENDDO
       ENDDO
 
-C     The outer tables
+C     Blank the CW tables
       DO g = 1,MNC_MAX_ID
         mnc_cw_gname(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
         mnc_cw_vname(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
