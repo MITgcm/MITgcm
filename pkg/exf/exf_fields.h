@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.9 2004/03/17 23:08:09 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.10 2004/11/22 20:47:34 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -92,6 +92,8 @@ c                  Typical range: 0 < runoff < ????
 c                  Input or input/output field
 c                  !!! WATCH OUT: Default exf_inscal_runoff !!!
 c                  !!! in exf_readparms.F is not 1.0        !!!
+c                  !!! scaling 1/yr to 1/sec decoupled from !!!
+c                  !!! exf_inscal_runoff                    !!!
 c
 c     swdown    :: Downward shortwave radiation in W/m^2
 c                  > 0 for increase in theta (ocean warming)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.137 2004/11/18 15:17:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.138 2004/11/22 20:47:34 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1120,7 +1120,11 @@ c      rkFac = -1.D0
       recip_horiVertRatio = 1./horiVertRatio
 
 c-- gradually replacing debugMode by debugLevel
-      IF ( debugMode ) debugLevel = debLevB
+      IF ( debugMode ) THEN
+       debugLevel = debLevB
+      ELSE
+       debugLevel = debLevA
+      ENDIF
 C
       CLOSE(iUnit)
 

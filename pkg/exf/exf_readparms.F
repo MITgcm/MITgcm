@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.21 2004/11/11 02:23:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.22 2004/11/22 20:47:34 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -310,7 +310,7 @@ c     Initialise file type and field precision
       exf_iprec            = 32
       exf_yftype           = 'RL'
       useExfYearlyFields   = .FALSE.
-      useExfCheckRange     = .FALSE.
+      useExfCheckRange     = .TRUE.
 
 c     Input scaling factors.
       exf_inscal_hflux     =  1. _d 0

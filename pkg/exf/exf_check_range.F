@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.2 2004/02/26 22:30:27 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.3 2004/11/22 20:47:34 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -39,8 +39,11 @@ c     == local variables ==
       integer jmax
       integer imin
       integer imax
+      integer exferr
 
 c     == end of interface ==
+
+      exferr = 0
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)
@@ -59,73 +62,111 @@ c     == end of interface ==
 c
 c             Heat flux.
               if ( ABS(hflux(i,j,bi,bj)) .GT. 1000. .AND.
-     &           hFacC(i,j,1,bi,bj) .NE. 0. )
-     &           print *, 'EXF WARNING: hflux out of range for i,j= ',
-     &           i, j, hflux(i,j,bi,bj)
+     &              hFacC(i,j,1,bi,bj) .NE. 0. ) then
+                 print *, 'EXF WARNING: hflux out of range for i,j= ',
+     &                i, j, hflux(i,j,bi,bj)
+                 exferr = 1
+              endif
 c
 c             Salt flux.
               if ( ABS(sflux(i,j,bi,bj)) .GT. 1.E-6 .AND.
-     &           hFacC(i,j,1,bi,bj) .NE. 0. )
-     &           print *, 'EXF WARNING: sflux out of range for i,j= ',
-     &           i, j, sflux(i,j,bi,bj)
+     &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
+                 print *, 'EXF WARNING: sflux out of range for i,j= ',
+     &                i, j, sflux(i,j,bi,bj)
+                 exferr = 1
+              endif
 c
 c             Zonal wind stress.
               if ( ABS(ustress(i,j,bi,bj)) .GT. 2. .AND.
-     &           hFacW(i,j,1,bi,bj) .NE. 0. )
-     &           print *, 'EXF WARNING: ustress out of range for i,j= ',
-     &           i, j, ustress(i,j,bi,bj)
+     &             hFacW(i,j,1,bi,bj) .NE. 0. ) then
+                 print *, 'EXF WARNING: ustress out of range for i,j= ',
+     &                i, j, ustress(i,j,bi,bj)
+                 exferr = 1
+              endif
 c
 c             Meridional wind stress.
               if ( ABS(vstress(i,j,bi,bj)) .GT. 2. .AND.
-     &           hFacS(i,j,1,bi,bj) .NE. 0. )
-     &           print *, 'EXF WARNING: vstress out of range for i,j= ',
-     &           i, j, vstress(i,j,bi,bj)
+     &             hFacS(i,j,1,bi,bj) .NE. 0. ) then
+                 print *, 'EXF WARNING: vstress out of range for i,j= ',
+     &                i, j, vstress(i,j,bi,bj)
+                 exferr = 1
+              endif
 c
 #ifdef ALLOW_ATM_WIND
 c             zonal wind speed
-              if ( ABS(uwind(i,j,bi,bj)) .GT. 40. .AND.
-     &           hFacW(i,j,1,bi,bj) .NE. 0. )
-     &           print *, 'EXF WARNING: uwind out of range for i,j= ',
-     &           i, j, uwind(i,j,bi,bj)
+              if ( ABS(uwind(i,j,bi,bj)) .GT. 100. .AND.
+     &             hFacW(i,j,1,bi,bj) .NE. 0. ) then
+                 print *, 'EXF WARNING: uwind out of range for i,j= ',
+     &                i, j, uwind(i,j,bi,bj)
+                 exferr = 1
+              endif
 c
 c             zonal wind speed
-              if ( ABS(vwind(i,j,bi,bj)) .GT. 40. .AND.
-     &           hFacS(i,j,1,bi,bj) .NE. 0. )
-     &           print *, 'EXF WARNING: vwind out of range for i,j= ',
-     &           i, j, vwind(i,j,bi,bj)
+              if ( ABS(vwind(i,j,bi,bj)) .GT. 100. .AND.
+     &             hFacS(i,j,1,bi,bj) .NE. 0. ) then
+                 print *, 'EXF WARNING: vwind out of range for i,j= ',
+     &                i, j, vwind(i,j,bi,bj)
+                 exferr = 1
+              endif
 #endif
 
 #ifdef ALLOW_ATM_TEMP
 c             2-m air temperature
-              if ( (atemp(i,j,bi,bj) .LT. 223 .OR.
-     &              atemp(i,j,bi,bj) .GT. 323 ) .AND.
-     &           hFacC(i,j,1,bi,bj) .NE. 0. )
-     &           print *, 'EXF WARNING: atemp out of range for i,j= ',
-     &           i, j, atemp(i,j,bi,bj)
+              if ( (atemp(i,j,bi,bj) .LT. 183 .OR.
+     &             atemp(i,j,bi,bj) .GT. 343 ) .AND.
+     &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
+                 print *, 'EXF WARNING: atemp + exf_offset_atemp ',
+     &                'out of range for i,j= ',
+     &                i, j, atemp(i,j,bi,bj)
+                 exferr = 1
+              endif
 c
 c             2-m specific humidity
               if ( (aqh(i,j,bi,bj) .LT. 0. .OR.
-     &              aqh(i,j,bi,bj) .GT. 1.E-6 ) .AND.
-     &           hFacC(i,j,1,bi,bj) .NE. 0. )
-     &           print *, 'EXF WARNING: aqh out of range for i,j= ',
-     &           i, j, aqh(i,j,bi,bj)
+     &             aqh(i,j,bi,bj) .GT. 0.1 ) .AND.
+     &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
+                 print *, 'EXF WARNING: aqh out of range for i,j= ',
+     &                i, j, aqh(i,j,bi,bj)
+                 exferr = 1
+              endif
 c
 c             precipitation rate
               if ( (precip(i,j,bi,bj) .LT. 0. .OR.
-     &              precip(i,j,bi,bj) .GT. 0.1 ) .AND.
-     &           hFacC(i,j,1,bi,bj) .NE. 0. )
-     &           print *, 'EXF WARNING: precip out of range for i,j= ',
-     &           i, j, precip(i,j,bi,bj)
+     &             precip(i,j,bi,bj) .GT. 0.1 ) .AND.
+     &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
+                 print *, 'EXF WARNING: precip out of range for i,j= ',
+     &                i, j, precip(i,j,bi,bj)
+                 exferr = 1
+              endif
 #endif
 
 #ifdef SHORTWAVE_HEATING
 c             Short wave radiative flux.
               if ( (swflux(i,j,bi,bj) .GT. 0. .OR.
-     &              swflux(i,j,bi,bj) .LT. -500. ) .AND.
-     &           hFacC(i,j,1,bi,bj) .NE. 0. )
-     &           print *, 'EXF WARNING: swflux out of range for i,j= ',
-     &           i, j, swflux(i,j,bi,bj)
+     &             swflux(i,j,bi,bj) .LT. -500. ) .AND.
+     &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
+                 print *, 'EXF WARNING: swflux out of range for i,j= ',
+     &                i, j, swflux(i,j,bi,bj)
+                 exferr = 1
+              endif
 #endif
+
+#ifdef ALLOW_RUNOFF
+c             Short wave radiative flux.
+              if ( (runoff(i,j,bi,bj) .LT. 0. .OR.
+     &             runoff(i,j,bi,bj) .GT. 1.E-6 ) .AND.
+     &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
+                 print *, 'EXF WARNING: runoff out of range for i,j= ',
+     &                i, j, runoff(i,j,bi,bj)
+                 exferr = 1
+              endif
+#endif
+
+              if ( exferr .NE. 0 ) then
+               print *, 'EXF WARNING: If you think these values are OK '
+               print *, 'EXF WARNING: then set useExfCheckRange=.FALSE.'
+               STOP 'in S/R exf_check_range'
+              endif
 
             enddo
           enddo

@@ -83,6 +83,11 @@ c--   scale runoff array
         enddo
       endif
 
+      print *, 'WARNING: runoff raw file cut off at values > 20!'
+      CALL PLOT_FIELD_XYRL( runoff, 
+     &     'Runoff after rescaling and exf_inscal_runoff' , 
+     &     0, myThid )
+
 #endif
 
       end
