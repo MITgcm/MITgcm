@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.7 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.8 2001/12/11 14:57:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -32,6 +32,8 @@ C       |
 C       |-- KPP_READPARMS
 C       |
 C       |-- SHAP_FILT_READPARMS
+C       |
+C       |-- ZONAL_FILT_READPARMS
 C       |
 C       |-- OBCS_READPARMS
 C       |
@@ -71,6 +73,10 @@ C--   Initialize KPP parameters
 
 #ifdef ALLOW_SHAP_FILT 
       IF (useSHAP_FILT) CALL SHAP_FILT_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_ZONAL_FILT 
+      IF (useZONAL_FILT) CALL ZONAL_FILT_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_OBCS

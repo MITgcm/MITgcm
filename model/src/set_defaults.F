@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.31 2001/11/26 17:11:45 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.32 2001/12/11 14:57:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -134,9 +134,6 @@ C--   Set default "physical" parameters
       allowFreezing       = .FALSE.
       ivdc_kappa          = 0.D0
       groundAtK1          = .FALSE.
-      zonal_filt_lat      = 90.
-      zonal_filt_sinpow   = 2
-      zonal_filt_cospow   = 2
       bottomDragLinear    = 0.
       bottomDragQuadratic = 0.
       usePickupBeforeC35    = .FALSE.
