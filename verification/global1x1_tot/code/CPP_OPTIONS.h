@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/CPP_OPTIONS.h,v 1.2 2003/11/06 22:28:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global1x1_tot/code/Attic/CPP_OPTIONS.h,v 1.3 2004/10/12 22:33:54 heimbach Exp $
 
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -7,6 +7,7 @@ C will be compiled.
 #define CPP_OPTIONS_H
 
 #include "PACKAGES_CONFIG.h"
+#include "AD_CONFIG.h"
 
 C o Shortwave heating as extra term in external_forcing.F
 #ifdef ALLOW_KPP
