@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.38 2004/02/23 22:41:27 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.39 2004/02/26 02:25:01 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -151,6 +151,10 @@ cswdptr -- end add ---
 #ifdef COMPONENT_MODULE
       IF ( useCoupler )
      &  CALL CPL_WRITE_DIAGS( myTime, myIter, myThid )
+#endif
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( usediagnostics ) call diagnostics_write (myThid, myIter)
 #endif
 
       RETURN
