@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rl.F,v 1.8 2004/04/03 21:17:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rl.F,v 1.9 2004/11/10 20:43:43 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: MON_KE
+C     !ROUTINE: MON_PRINTSTATS_RL
 
 C     !INTERFACE:
       SUBROUTINE MON_PRINTSTATS_RL(
