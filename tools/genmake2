@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.103 2004/10/04 19:00:42 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.104 2004/10/05 16:10:31 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1345,7 +1345,30 @@ if test ! -d ${TOOLSDIR} ; then
     exit 1
 fi
 if test "x$S64" = x ; then
-    S64='$(TOOLSDIR)/set64bitConst.sh'
+    echo "3.0 _d 3" | ${TOOLSDIR}/set64bitConst.sh > /dev/null 2>&1
+    RETVAL=$?
+    if test "x${RETVAL}" = x0 ; then
+	S64='$(TOOLSDIR)/set64bitConst.sh'
+    else
+	echo "3.0 _d 3" | ${TOOLSDIR}/set64bitConst.csh > /dev/null 2>&1
+	RETVAL=$?
+	if test "x${RETVAL}" = x0 ; then
+	    S64='$(TOOLSDIR)/set64bitConst.csh'
+	else
+	    cat <<EOF
+
+ERROR: neither of the two default scripts:
+
+    ${TOOLSDIR}/set64bitConst.sh
+    ${TOOLSDIR}/set64bitConst.csh
+
+  are working so please check paths or specify (with \$S64) a 
+  working version of this script.
+
+EOF
+	    exit 1
+	fi
+    fi
 fi
 THIS_SCRIPT=`echo ${0} | sed 's:'$TOOLSDIR':\$(TOOLSDIR):'`
 
