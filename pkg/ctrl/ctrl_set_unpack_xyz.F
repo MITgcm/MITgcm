@@ -2,7 +2,7 @@
 #include "CTRL_CPPOPTIONS.h"
 
       subroutine ctrl_set_unpack_xyz(
-     &     cunit, ivartype, fname, masktype, weighttype,
+     &     lxxadxx, cunit, ivartype, fname, masktype, weighttype,
      &     weightfld, nwetglobal, mythid)
 
 c     ==================================================================
@@ -32,6 +32,7 @@ c     == global variables ==
 
 c     == routine arguments ==
 
+      logical lxxadxx
       integer cunit
       integer ivartype
       character*( 80)   fname
@@ -56,15 +57,24 @@ c     == local variables ==
 
       integer cbuffindex
 
-      real*4     cbuff    ( snx*nsx*npx*sny*nsy*npy )
       _RL     globmsk  ( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
 #ifdef CTRL_UNPACK_PRECISE
       _RL   weightfld3d( snx,nsx,npx,sny,nsy,npy,nr )
 #endif
+      real*4 cbuff      ( snx*nsx*npx*sny*nsy*npy )
+      real*4 globfldtmp2( snx,nsx,npx,sny,nsy,npy )
+      real*4 globfldtmp3( snx,nsx,npx,sny,nsy,npy )
 
       character*(128)   cfile
       character*(80) weightname
+
+#ifdef CTRL_DELZNORM
+      _RL delZnorm
+#endif
+      integer reclen, irectrue
+      integer cunit2, cunit3
+      character*(80) cfile2, cfile3
 
 c     == external ==
 
@@ -82,6 +92,13 @@ cc     == end of interface ==
       imin = 1
       imax = snx
 
+#ifdef CTRL_DELZNORM
+      delZnorm = 0.
+      do k = 1, Nr
+         delZnorm = delZnorm + delR(k)/FLOAT(Nr)
+      enddo
+#endif
+
 c     Initialise temporary file
       do k = 1,nr
          do jp = 1,nPy
@@ -90,8 +107,10 @@ c     Initialise temporary file
                   do ip = 1,nPx
                      do bi = itlo,ithi
                         do i = imin,imax
-                           globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
-                           globmsk  (i,bi,ip,j,bj,jp,k) = 0. _d 0
+                           globfld3d  (i,bi,ip,j,bj,jp,k) = 0. _d 0
+                           globmsk    (i,bi,ip,j,bj,jp,k) = 0. _d 0
+                           globfldtmp2(i,bi,ip,j,bj,jp)   = 0.
+                           globfldtmp3(i,bi,ip,j,bj,jp)   = 0.
                         enddo
                      enddo
                   enddo
@@ -102,6 +121,41 @@ c     Initialise temporary file
 
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
+
+#ifdef CTRL_DELZNORM
+      do k = 1, nr
+         print *, 'ph-delznorm ', k, delZnorm, delR(k)
+         print *, 'ph-weight   ', weightfld(k,1,1)
+      enddo
+#endif
+
+      if ( doPackDiag ) then
+         write(cfile2(1:80),'(80a)') ' '
+         write(cfile3(1:80),'(80a)') ' '
+         if ( lxxadxx ) then
+            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_unpack_nondim_ctrl_', 
+     &           ivartype, '_', optimcycle, '.bin'
+            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_unpack_dimens_ctrl_', 
+     &           ivartype, '_', optimcycle, '.bin'
+         else
+            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_unpack_nondim_grad_', 
+     &           ivartype, '_', optimcycle, '.bin'
+            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_unpack_dimens_grad_', 
+     &           ivartype, '_', optimcycle, '.bin'
+         endif
+
+         reclen = FLOAT(snx*nsx*npx*sny*nsy*npy*4)
+         call mdsfindunit( cunit2, mythid )
+         open( cunit2, file=cfile2, status='new',
+     &        access='direct', recl=reclen )
+         call mdsfindunit( cunit3, mythid )
+         open( cunit3, file=cfile3, status='new',
+     &        access='direct', recl=reclen )
+      endif
 
 #ifdef CTRL_UNPACK_PRECISE
       il=ilnblnk( weighttype)
@@ -128,6 +182,7 @@ c--   Only the master thread will do I/O.
          read(cunit) filej
          read(cunit) filei
          do k = 1, Nr
+         irectrue = (irec-1)*nr + k
             cbuffindex = nwetglobal(k)
             if ( cbuffindex .gt. 0 ) then
                read(cunit) filencbuffindex
@@ -154,24 +209,46 @@ c--   Only the master thread will do I/O.
                   if ( globmsk(i,bi,ip,j,bj,jp,k) .ne. 0. ) then
                      cbuffindex = cbuffindex + 1
                      globfld3d(i,bi,ip,j,bj,jp,k) = cbuff(cbuffindex)
+cph(
+                     globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
+cph)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-                     globfld3d(i,bi,ip,j,bj,jp,k) = 
-     &                    globfld3d(i,bi,ip,j,bj,jp,k)/
+                     if ( lxxadxx ) then
+                        globfld3d(i,bi,ip,j,bj,jp,k) = 
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
 # ifdef CTRL_UNPACK_PRECISE
-     &                    sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
+     &                    / sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
 # else
-     &                    sqrt(weightfld(k,bi,bj))
+     &                    / sqrt(weightfld(k,bi,bj))
 # endif
+                     else
+                        globfld3d(i,bi,ip,j,bj,jp,k) = 
+     &                       globfld3d(i,bi,ip,j,bj,jp,k)
+# ifdef CTRL_UNPACK_PRECISE
+     &                       * sqrt(weightfld3d(i,bi,ip,j,bj,jp,k))
+# else
+     &                       * sqrt(weightfld(k,bi,bj))
+# endif
+                     endif
 #endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
                   else
                      globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
                   endif
+cph(
+                  globfldtmp3(i,bi,ip,j,bj,jp) =
+     &                 globfld3d(i,bi,ip,j,bj,jp,k)
+cph)
                  enddo
                 enddo
                enddo
               enddo
              enddo
             enddo
+c
+            if ( doPackDiag ) then
+               write(cunit2,rec=irectrue) globfldtmp2
+               write(cunit3,rec=irectrue) globfldtmp3
+            endif
 c
          enddo
              
@@ -180,6 +257,11 @@ c
      &                             irec,  optimcycle, mythid)
 
       enddo
+
+      if ( doPackDiag ) then
+         close ( cunit2 )
+         close ( cunit3 )
+      endif
 
       _END_MASTER( mythid )
 

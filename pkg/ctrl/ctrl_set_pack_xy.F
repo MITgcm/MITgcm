@@ -56,12 +56,18 @@ c     == local variables ==
 
       integer cbuffindex
 
-      real*4     cbuff    ( snx*nsx*npx*sny*nsy*npy )
       _RL     globmsk  ( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globfld2d( snx,nsx,npx,sny,nsy,npy )
+      real*4 cbuff      ( snx*nsx*npx*sny*nsy*npy )
+      real*4 globfldtmp2( snx,nsx,npx,sny,nsy,npy )
+      real*4 globfldtmp3( snx,nsx,npx,sny,nsy,npy )
 
       character*( 80) weightname
+
+      integer reclen, irectrue
+      integer cunit2, cunit3
+      character*(80) cfile2, cfile3
 
 c     == external ==
 
@@ -89,8 +95,10 @@ c     Initialise temporary file
                   do ip = 1,nPx
                      do bi = itlo,ithi
                         do i = imin,imax
-                           globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
-                           globmsk  (i,bi,ip,j,bj,jp,k) = 0. _d 0
+                           globfld3d  (i,bi,ip,j,bj,jp,k) = 0. _d 0
+                           globmsk    (i,bi,ip,j,bj,jp,k) = 0. _d 0
+                           globfldtmp2(i,bi,ip,j,bj,jp)   = 0.
+                           globfldtmp3(i,bi,ip,j,bj,jp)   = 0.
                         enddo
                      enddo
                   enddo
@@ -101,6 +109,34 @@ c     Initialise temporary file
 
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
+
+      if ( doPackDiag ) then
+         write(cfile2(1:80),'(80a)') ' '
+         write(cfile3(1:80),'(80a)') ' '
+         if ( lxxadxx ) then
+            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_pack_nonout_ctrl_', 
+     &           ivartype, '_', optimcycle, '.bin'
+            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_pack_dimout_ctrl_', 
+     &           ivartype, '_', optimcycle, '.bin'
+         else
+            write(cfile2(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_pack_nonout_grad_', 
+     &           ivartype, '_', optimcycle, '.bin'
+            write(cfile3(1:80),'(a,I2.2,a,I4.4,a)')
+     &           'diag_pack_dimout_grad_', 
+     &           ivartype, '_', optimcycle, '.bin'
+         endif
+
+         reclen = FLOAT(snx*nsx*npx*sny*nsy*npy*4)
+         call mdsfindunit( cunit2, mythid )
+         open( cunit2, file=cfile2, status='unknown',
+     &        access='direct', recl=reclen )
+         call mdsfindunit( cunit3, mythid )
+         open( cunit3, file=cfile3, status='unknown',
+     &        access='direct', recl=reclen )
+      endif
 
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
       il=ilnblnk( weighttype)
@@ -121,6 +157,7 @@ c--   Only the master thread will do I/O.
          call MDSREADFIELD_3D_GL( fname, ctrlprec, 'RL',
      &        Nr, globfld3d, irec, mythid)
          do k = 1, Nr
+         irectrue = (irec-1)*nr + k
          write(cunit) ncvarindex(ivartype)
          write(cunit) 1
          write(cunit) 1
@@ -133,6 +170,10 @@ c--   Only the master thread will do I/O.
                  do i = imin,imax
                   if (globmsk(i,bi,ip,j,bj,jp,1)  .ne. 0. ) then
                      cbuffindex = cbuffindex + 1
+cph(
+                     globfldtmp3(i,bi,ip,j,bj,jp) =
+     &                    globfld3d(i,bi,ip,j,bj,jp,k)
+cph)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
                         cbuff(cbuffindex) =
@@ -146,6 +187,9 @@ c--   Only the master thread will do I/O.
 #else
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
 #endif
+cph(
+                     globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
+cph)
                   endif
                  enddo
                 enddo
@@ -159,6 +203,12 @@ c           --> check cbuffindex.
                write(cunit) 1
                write(cunit) (cbuff(ii), ii=1,cbuffindex)
             endif
+c
+            if ( doPackDiag ) then
+               write(cunit2,rec=irectrue) globfldtmp2
+               write(cunit3,rec=irectrue) globfldtmp3
+            endif
+c
          enddo
 c
 c     -- end of irec loop --
@@ -173,6 +223,7 @@ c     -- end of irec loop --
          write(cunit) 1
          write(cunit) 1
          do k = 1, 1
+            irectrue = irec
             cbuffindex = 0
             do jp = 1,nPy
              do bj = jtlo,jthi
@@ -182,6 +233,10 @@ c     -- end of irec loop --
                  do i = imin,imax
                   if (globmsk(i,bi,ip,j,bj,jp,k)  .ne. 0. ) then
                      cbuffindex = cbuffindex + 1
+cph(
+                     globfldtmp3(i,bi,ip,j,bj,jp) =
+     &                    globfld3d(i,bi,ip,j,bj,jp,k)
+cph)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
                         cbuff(cbuffindex) = 
@@ -195,6 +250,9 @@ c     -- end of irec loop --
 #else
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
 #endif
+cph(
+                     globfldtmp2(i,bi,ip,j,bj,jp) = cbuff(cbuffindex)
+cph)
 #ifdef ALLOW_ADMTLM
                      cbuffGlobal(cbuffindex) = cbuff(cbuffindex)
 #endif
@@ -211,6 +269,12 @@ c           --> check cbuffindex.
                write(cunit) k
                write(cunit) (cbuff(ii), ii=1,cbuffindex)
             endif
+c
+            if ( doPackDiag ) then
+               write(cunit2,rec=irectrue) globfldtmp2
+               write(cunit3,rec=irectrue) globfldtmp3
+            endif
+c
 #ifdef ALLOW_ADMTLM
             write(fnameGlobal(1:80),'(a)') ' '
             write(fnameGlobal,'(a,i4.4)') 
@@ -223,6 +287,11 @@ c
 c     -- end of irec loop --
       enddo
 
+      if ( doPackDiag ) then
+         close ( cunit2 )
+         close ( cunit3 )
+      endif
+ 
       _END_MASTER( mythid )
 
       return

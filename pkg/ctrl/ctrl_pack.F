@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.16 2004/12/04 17:57:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.17 2005/01/04 22:02:31 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -140,7 +140,7 @@ c     >>> Initialise control vector for optimcycle=0 <<<
           write(cfile(1:128),'(4a,i4.4)')
      &         ctrlname(1:9),'_',yctrlid(1:10), 
      &         yctrlpospack, optimcycle
-          print *, 'ph-pack: unpacking ', ctrlname(1:9)
+          print *, 'ph-pack: packing ', ctrlname(1:9)
       else
 c     >>> Write gradient vector <<<
           lxxadxx   = .FALSE.
@@ -149,7 +149,7 @@ c     >>> Write gradient vector <<<
           write(cfile(1:128),'(4a,i4.4)')
      &         costname(1:9),'_',yctrlid(1:10), 
      &         yctrlpospack, optimcycle
-          print *, 'ph-pack: unpacking ', costname(1:9)
+          print *, 'ph-pack: packing ', costname(1:9)
        endif
 
        call mdsfindunit( cunit, mythid )

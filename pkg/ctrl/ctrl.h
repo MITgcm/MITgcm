@@ -41,9 +41,11 @@ cph Need to put this in namelist at some point!
     
       common /controlvars_l /
      &                       doInitXX,
-     &                       doAdmTlm
+     &                       doAdmTlm,
+     &                       doPackDiag
       logical doInitXX
       logical doAdmTlm
+      logical doPackDiag
 
       common /controlvars_i/
      &                       nvartype,
