@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.1 1998/07/02 14:17:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.2 1998/07/02 15:46:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -27,22 +27,7 @@ C     myThid -  Number of this instance of INI_CARTESIAN_GRID
 CEndOfInterface
 
 C     == Local variables ==
-C     xG, yG - Global coordinate location.
-C     zG
-C     xBase  - South-west corner location for process.
-C     yBase
-C     zUpper - Work arrays for upper and lower 
-C     zLower   cell-face heights.
-C     phi    - Temporary scalar
-C     iG, jG - Global coordinate index. Usually used to hold
-C              the south-west global coordinate of a tile.
 C     bi,bj  - Loop counters
-C     zUpper - Temporary arrays holding z coordinates of
-C     zLower   upper and lower faces.
-C     xBase  - Lower coordinate for this threads cells
-C     yBase
-C     lat, latN, - Temporary variables used to hold latitude
-C     latS         values.
 C     I,J,K
       INTEGER bi, bj
       INTEGER  I, J, K
@@ -63,6 +48,31 @@ C         Inverse of depth
        ENDDO
       ENDDO
       _EXCH_XY_R4(   rH, myThid )
+
+C     Calculate lopping factor hFacC
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+        DO K=1, Nz
+         DO J=1,sNy
+          DO I=1,sNx
+           IF     ( H(I,J,bi,bj) .LE. zFace(K) ) THEN
+C           Below base of domain
+            hFacC(I,J,K,bi,bj) = 0.
+           ELSEIF ( H(I,J,bi,bj) .GT. zFace(K+1) ) THEN
+C           Base of domain is below this cell
+            hFacC(I,J,K,bi,bj) = 1.
+           ELSE
+C           Base of domain is in this cell
+C           Set hFac tp the fraction of the cell that is open.
+            hFacC(I,J,K,bi,bj) =
+     &        (zFace(K)-H(I,J,bi,bj))/(zFace(K)-zFace(K+1))
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      _EXCH_XYZ_R4(hFacC , myThid )
 
 C     hFacW and hFacS (at U and V points)
       DO bj=myByLo(myThid), myByHi(myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.8 1998/07/02 14:16:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.9 1998/07/02 15:46:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -32,22 +32,14 @@ C     myThid -  Number of this instance of INI_DEPTHS
 CEndOfInterface
 
 C     == Local variables ==
-C     xG, yG - Global coordinate location.
-C     zG
-C     zUpper - Work arrays for upper and lower 
-C     zLower   cell-face heights.
-C     phi    - Temporary scalar
 C     iG, jG - Global coordinate index
 C     bi,bj  - Loop counters
-C     zUpper - Temporary arrays holding z coordinates of
-C     zLower   upper and lower faces.
 C     I,J,K
-      _RL    xG, yG, zG
-      _RL    phi
-      _RL    zUpper(Nz), zLower(Nz)
+C     phi    - total depth of model
       INTEGER iG, jG
       INTEGER bi, bj
       INTEGER  I,  J, K
+      _RL phi
 
       _BARRIER
       IF ( bathyFile .EQ. ' '  ) THEN
@@ -55,10 +47,7 @@ C      Set up a flat bottom box with doubly periodic topology.
 C      H is the basic variable from which other terms are derived. It
 C      is the term that would be set from an external file for a 
 C      realistic problem.
-       phi = 0. D0
-       DO K=1,Nz
-        phi = phi+delZ(K)
-       ENDDO
+       phi = zFace(nZ+1)
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
@@ -84,53 +73,6 @@ C          Island
        _END_MASTER(myThid)
       ENDIF
       _EXCH_XY_R4(    H, myThid )
-
-C--   Now calculate "lopping" factors hFac.
-      zG = delZ(1)*0.5 D0
-      zFace(1) = 0
-      dzC(1)   = delz(1)/2. _d 0
-      rDzC(1)  = 2. _d 0/delZ(1)
-      DO K=1,Nz-1
-       saFac(K) = 1. D0
-       zC(K)      = zG
-       zG         = zG + (delZ(K)+delZ(K+1))*0.5 D0
-       zFace(K+1) = zFace(K)+delZ(K)
-       rDzC(K+1)  = 2. _d 0/(delZ(K)+delZ(K+1))
-       dzC(K+1)   = (delZ(K)+delZ(K+1))/2. _d 0
-      ENDDO
-      zC(Nz)      = zG
-      zFace(Nz+1) = zFace(Nz)+delZ(Nz)
-      DO K=1,Nz
-       zUpper(K) = zFace(K)
-       zLower(K) = zFace(K+1)
-       dzF(K)    = delz(K)
-       rdzF(K)   = 1.d0/dzF(K)
-      ENDDO
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO K=1, Nz
-         DO J=1,sNy
-          DO I=1,sNx
-           hFacC(I,J,K,bi,bj) = 1.
-           IF     ( H(I,J,bi,bj) .LE. zUpper(K) ) THEN
-C           Below base of domain
-            hFacC(I,J,K,bi,bj) = 0.
-           ELSEIF ( H(I,J,bi,bj) .GT. zLower(K) ) THEN
-C           Base of domain is below this cell
-            hFacC(I,J,K,bi,bj) = 1.
-           ELSE
-C           Base of domain is in this cell
-C           Set hFac tp the fraction of the cell that is open.
-            phi = zUpper(K)-H(I,J,bi,bj)
-            hFacC(I,J,K,bi,bj) = phi/(zUpper(K)-zLower(K))
-           ENDIF
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      _EXCH_XYZ_R4(hFacC , myThid )
-
 C
       CALL PLOT_FIELD_XYRS( H, 'Model depths' , 1, myThid )
 C
