@@ -1,0 +1,9 @@
+The experiments:
+
+exp0 - single layer, double gyre (barotropic with free-surface).
+exp1 - 4 layer, double gyre.
+exp2 - 4x4 degree global simulation with steady climatological forcing.
+exp3 - atmospheric configuration.
+exp4 - flow over a Gaussian bump in open-water or channel with open
+       boundaries.
+exp5 - inhomogenously forced convection in a doubly periodic box.
