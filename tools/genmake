@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.67 2002/10/29 19:38:07 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.68 2002/11/04 17:43:36 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -318,7 +318,7 @@ else
  echo " "
  switch ($platform)
   case Linux*:
-   set likelysuspects=(ifc g77 pgf77 f77 f90 f95)
+   set likelysuspects=(g77 ifc pgf77 f77 f90 f95)
    breaksw
   default:
    set likelysuspects=(f77)
