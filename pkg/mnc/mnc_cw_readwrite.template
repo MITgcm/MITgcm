@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.6 2004/03/08 21:15:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.7 2004/03/09 14:43:16 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -352,7 +352,7 @@ C     Check that the Variable Type exists
       nvf = IFNBLNK(vtype)
       nvl = ILNBLNK(vtype)
       CALL MNC_GET_IND(myThid, MNC_MAX_ID, vtype, mnc_cw_vname, ind_vt)
-      IF (indv .LT. 1) THEN
+      IF (ind_vt .LT. 1) THEN
         write(msgbuf,'(3a)') 'MNC_CW_RX_R_YY ERROR: vtype ''', 
      &       vtype(nvf:nvl), ''' is not defined'
         CALL print_error(msgbuf, mythid)

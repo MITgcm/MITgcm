@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.7 2004/02/16 22:21:43 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.8 2004/03/09 14:43:16 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -99,9 +99,9 @@ C     Local Variables
      &         mnc_cw_vname(j)(1:20), ' : ', mnc_cw_vgind(j)
 
           DO i = 1,mnc_cw_vnat(1,j)
-            write(*,'(a14,i4,a3,a25,a3,a25)') '      text_at:',i, 
+            write(*,'(a14,i4,a3,a25,a3,a55)') '      text_at:',i, 
      &           ' : ', mnc_cw_vtnm(i,j)(1:25), ' : ',
-     &           mnc_cw_vtat(i,j)(1:25)
+     &           mnc_cw_vtat(i,j)(1:55)
           ENDDO
           DO i = 1,mnc_cw_vnat(2,j)
             write(*,'(a14,i4,a3,a25,a3,i20)') '      int__at:',i, 
