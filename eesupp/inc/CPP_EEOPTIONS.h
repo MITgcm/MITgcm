@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.6 1998/06/22 16:24:50 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.7 1998/07/15 22:05:44 adcroft Exp $
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
@@ -62,7 +62,7 @@ C                              system F90 compiler.
 #endif
 
 #ifdef TARGET_DEC
-#define USE_KAP_THREADING
+#undef  USE_KAP_THREADING
 #endif
 
 #ifdef TARGET_SGI
