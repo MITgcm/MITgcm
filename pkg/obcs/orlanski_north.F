@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_north.F,v 1.4 2002/07/11 16:22:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_north.F,v 1.5 2004/09/20 23:22:58 heimbach Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -76,6 +76,7 @@ C     == Routine arguments ==
       INTEGER myThid
 
 #ifdef ALLOW_ORLANSKI
+#ifdef ALLOW_OBCS_NORTH
 
 C     == Local variables ==
       INTEGER  I, K, J_obc
@@ -244,6 +245,7 @@ C              copy (current time) t to t-1 arrays
          ENDDO
        ENDDO
 
+#endif /* ALLOW_OBCS_NORTH */
 #endif /* ALLOW_ORLANSKI */
       RETURN
       END

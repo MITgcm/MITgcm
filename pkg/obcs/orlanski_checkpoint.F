@@ -32,8 +32,9 @@ CEndofinterface
 C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
 
+#ifdef ALLOW_OBCS_NORTH
 C     READ N and S OB storage and phase speed arrays
-      WRITE(fn,'(A,A10)') 'pickup_orlanskiNS.',suff
+      WRITE(fn,'(A,A10)') 'pickup_orlanskiN.',suff
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,UN_STORE_1,1,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,UN_STORE_2,2,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,UN_STORE_3,3,myThid)
@@ -50,47 +51,53 @@ C     READ N and S OB storage and phase speed arrays
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,SN_STORE_2,14,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,SN_STORE_3,15,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,SN_STORE_4,16,myThid)
-
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,US_STORE_1,17,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,US_STORE_2,18,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,US_STORE_3,19,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,US_STORE_4,20,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,VS_STORE_1,21,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,VS_STORE_2,22,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,VS_STORE_3,23,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,VS_STORE_4,24,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,TS_STORE_1,25,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,TS_STORE_2,26,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,TS_STORE_3,27,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,TS_STORE_4,28,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,SS_STORE_1,29,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,SS_STORE_2,30,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,SS_STORE_3,31,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,SS_STORE_4,32,myThid)
-      
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_UN,33,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_VN,34,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_TN,35,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_SN,36,myThid)      
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_US,37,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_VS,38,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_TS,39,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_SS,40,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_UN,17,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_VN,18,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_TN,19,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_SN,20,myThid)      
 #ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WN_STORE_1,41,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WN_STORE_2,42,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WN_STORE_3,43,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WN_STORE_4,44,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WS_STORE_1,45,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WS_STORE_2,46,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WS_STORE_3,47,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WS_STORE_4,48,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_WN,49,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_WS,50,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WN_STORE_1,21,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WN_STORE_2,22,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WN_STORE_3,23,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WN_STORE_4,24,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_WN,25,myThid)
+#endif
+#endif
+
+#ifdef ALLOW_OBCS_SOUTH
+      WRITE(fn,'(A,A10)') 'pickup_orlanskiS.',suff
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,US_STORE_1,1,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,US_STORE_2,2,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,US_STORE_3,3,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,US_STORE_4,4,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,VS_STORE_1,5,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,VS_STORE_2,6,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,VS_STORE_3,7,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,VS_STORE_4,8,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,TS_STORE_1,9,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,TS_STORE_2,10,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,TS_STORE_3,11,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,TS_STORE_4,12,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,SS_STORE_1,13,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,SS_STORE_2,14,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,SS_STORE_3,15,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,SS_STORE_4,16,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_US,17,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_VS,18,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_TS,19,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_SS,20,myThid)
+#ifdef ALLOW_NONHYDROSTATIC
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WS_STORE_1,21,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WS_STORE_2,22,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WS_STORE_3,23,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,WS_STORE_4,24,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RL',Nr,CVEL_WS,25,myThid)
+#endif
 #endif
 
 C     READ E and W OB storage and phase speed arrays
-      WRITE(fn,'(A,A10)') 'pickup_orlanskiEW.',suff
+#ifdef ALLOW_OBCS_EAST
+      WRITE(fn,'(A,A10)') 'pickup_orlanskiE.',suff
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UE_STORE_1,1,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UE_STORE_2,2,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UE_STORE_3,3,myThid)
@@ -107,44 +114,50 @@ C     READ E and W OB storage and phase speed arrays
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,SE_STORE_2,14,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,SE_STORE_3,15,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,SE_STORE_4,16,myThid)
-
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UW_STORE_1,17,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UW_STORE_2,18,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UW_STORE_3,19,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UW_STORE_4,20,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,VW_STORE_1,21,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,VW_STORE_2,22,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,VW_STORE_3,23,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,VW_STORE_4,24,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,TW_STORE_1,25,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,TW_STORE_2,26,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,TW_STORE_3,27,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,TW_STORE_4,28,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,SW_STORE_1,29,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,SW_STORE_2,30,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,SW_STORE_3,31,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,SW_STORE_4,32,myThid)
-
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_UE,33,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_VE,34,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_TE,35,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_SE,36,myThid)      
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_UW,37,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_VW,38,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_TW,39,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_SW,40,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_UE,17,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_VE,18,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_TE,19,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_SE,20,myThid)      
 #ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WE_STORE_1,41,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WE_STORE_2,42,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WE_STORE_3,43,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WE_STORE_4,44,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WW_STORE_1,45,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WW_STORE_2,46,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WW_STORE_3,47,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WW_STORE_4,48,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_WE,49,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_WW,50,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WE_STORE_1,21,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WE_STORE_2,22,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WE_STORE_3,23,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WE_STORE_4,24,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_WE,25,myThid)
 #endif
+#endif
+
+#ifdef ALLOW_OBCS_WEST
+      WRITE(fn,'(A,A10)') 'pickup_orlanskiW.',suff
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UW_STORE_1,1,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UW_STORE_2,2,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UW_STORE_3,3,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,UW_STORE_4,4,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,VW_STORE_1,5,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,VW_STORE_2,6,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,VW_STORE_3,7,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,VW_STORE_4,8,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,TW_STORE_1,9,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,TW_STORE_2,10,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,TW_STORE_3,11,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,TW_STORE_4,12,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,SW_STORE_1,13,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,SW_STORE_2,14,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,SW_STORE_3,15,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,SW_STORE_4,16,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_UW,17,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_VW,18,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_TW,19,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_SW,20,myThid)
+#ifdef ALLOW_NONHYDROSTATIC
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WW_STORE_1,21,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WW_STORE_2,22,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WW_STORE_3,23,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,WW_STORE_4,24,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RL',Nr,CVEL_WW,25,myThid)
+#endif
+#endif
+
 
 C     Fill in edge regions
 c      _EXCH_XZ_R8(UN_STORE_1 , myThid)
@@ -295,10 +308,11 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
 
 C     Write N and S OB storage and phase speed arrays
+#ifdef ALLOW_OBCS_NORTH
       IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_orlanskiNS.',myIt
+         WRITE(fn,'(A,I10.10)') 'pickup_orlanskiN.',myIt
       ELSE
-         WRITE(fn,'(A,A)') 'pickup_orlanskiNS.',checkPtSuff(nCheckLev)
+         WRITE(fn,'(A,A)') 'pickup_orlanskiN.',checkPtSuff(nCheckLev)
       ENDIF
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,UN_STORE_1,1,
      &     myIt,myThid)
@@ -332,84 +346,94 @@ C     Write N and S OB storage and phase speed arrays
      &     myIt,myThid)
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,SN_STORE_4,16,
      &     myIt,myThid)
-
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,US_STORE_1,17,
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_UN,17,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,US_STORE_2,18,
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_VN,18,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,US_STORE_3,19,
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_TN,19,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,US_STORE_4,20,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,VS_STORE_1,21,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,VS_STORE_2,22,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,VS_STORE_3,23,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,VS_STORE_4,24,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,TS_STORE_1,25,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,TS_STORE_2,26,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,TS_STORE_3,27,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,TS_STORE_4,28,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,SS_STORE_1,29,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,SS_STORE_2,30,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,SS_STORE_3,31,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,SS_STORE_4,32,
-     &     myIt,myThid)
-
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_UN,33,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_VN,34,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_TN,35,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_SN,36,
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_SN,20,
      &     myIt,myThid)      
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_US,37,
+#ifdef ALLOW_NONHYDROSTATIC
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WN_STORE_1,21,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_VS,38,
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WN_STORE_2,22,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_TS,39,
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WN_STORE_3,23,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_SS,40,
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WN_STORE_4,24,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_WN,25,
+     &     myIt,myThid)
+#endif
+#endif
+
+#ifdef ALLOW_OBCS_SOUTH
+      IF ( permCheckPoint ) THEN
+         WRITE(fn,'(A,I10.10)') 'pickup_orlanskiS.',myIt
+      ELSE
+         WRITE(fn,'(A,A)') 'pickup_orlanskiS.',checkPtSuff(nCheckLev)
+      ENDIF
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,US_STORE_1,1,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,US_STORE_2,2,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,US_STORE_3,3,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,US_STORE_4,4,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,VS_STORE_1,5,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,VS_STORE_2,6,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,VS_STORE_3,7,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,VS_STORE_4,8,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,TS_STORE_1,9,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,TS_STORE_2,10,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,TS_STORE_3,11,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,TS_STORE_4,12,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,SS_STORE_1,13,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,SS_STORE_2,14,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,SS_STORE_3,15,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,SS_STORE_4,16,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_US,17,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_VS,18,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_TS,19,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_SS,20,
      &     myIt,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WN_STORE_1,41,
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WS_STORE_1,21,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WN_STORE_2,42,
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WS_STORE_2,22,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WN_STORE_3,43,
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WS_STORE_3,23,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WN_STORE_4,44,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WS_STORE_1,45,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WS_STORE_2,46,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WS_STORE_3,47,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WS_STORE_4,48,
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,WS_STORE_4,24,
      &     myIt,myThid)   
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_WN,49,
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_WS,25,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RL',Nr,CVEL_WS,50,
-     &     myIt,myThid)
+#endif
 #endif
 
 C     Write E and W OB storage and phase speed arrays
+#ifdef ALLOW_OBCS_EAST
       IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_orlanskiEW.',myIt
+         WRITE(fn,'(A,I10.10)') 'pickup_orlanskiE.',myIt
       ELSE
-         WRITE(fn,'(A,A)') 'pickup_orlanskiEW.',checkPtSuff(nCheckLev)
+         WRITE(fn,'(A,A)') 'pickup_orlanskiE.',checkPtSuff(nCheckLev)
       ENDIF
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,UE_STORE_1,1,
      &     myIt,myThid)
@@ -443,77 +467,86 @@ C     Write E and W OB storage and phase speed arrays
      &     myIt,myThid)
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,SE_STORE_4,16,
      &     myIt,myThid)
-
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,UW_STORE_1,17,
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_UE,17,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,UW_STORE_2,18,
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_VE,18,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,UW_STORE_3,19,
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_TE,19,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,UW_STORE_4,20,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,VW_STORE_1,21,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,VW_STORE_2,22,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,VW_STORE_3,23,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,VW_STORE_4,24,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,TW_STORE_1,25,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,TW_STORE_2,26,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,TW_STORE_3,27,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,TW_STORE_4,28,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,SW_STORE_1,29,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,SW_STORE_2,30,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,SW_STORE_3,31,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,SW_STORE_4,32,
-     &     myIt,myThid)
-
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_UE,33,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_VE,34,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_TE,35,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_SE,36,
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_SE,20,
      &     myIt,myThid)      
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_UW,37,
+#ifdef ALLOW_NONHYDROSTATIC
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WE_STORE_1,21,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_VW,38,
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WE_STORE_2,22,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_TW,39,
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WE_STORE_3,23,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_SW,40,
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WE_STORE_4,24,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_WE,25,
+     &     myIt,myThid)
+#endif
+#endif
+
+#ifdef ALLOW_OBCS_WEST
+      IF ( permCheckPoint ) THEN
+         WRITE(fn,'(A,I10.10)') 'pickup_orlanskiW.',myIt
+      ELSE
+         WRITE(fn,'(A,A)') 'pickup_orlanskiW.',checkPtSuff(nCheckLev)
+      ENDIF
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,UW_STORE_1,1,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,UW_STORE_2,2,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,UW_STORE_3,3,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,UW_STORE_4,4,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,VW_STORE_1,5,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,VW_STORE_2,6,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,VW_STORE_3,7,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,VW_STORE_4,8,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,TW_STORE_1,9,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,TW_STORE_2,10,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,TW_STORE_3,11,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,TW_STORE_4,12,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,SW_STORE_1,13,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,SW_STORE_2,14,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,SW_STORE_3,15,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,SW_STORE_4,16,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_UW,17,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_VW,18,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_TW,19,
+     &     myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_SW,20,
      &     myIt,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WE_STORE_1,41,
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WW_STORE_1,21,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WE_STORE_2,42,
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WW_STORE_2,22,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WE_STORE_3,43,
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WW_STORE_3,23,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WE_STORE_4,44,
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WW_STORE_4,24,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WW_STORE_1,45,
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_WW,25,
      &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WW_STORE_2,46,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WW_STORE_3,47,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,WW_STORE_4,48,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_WE,49,
-     &     myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RL',Nr,CVEL_WW,50,
-     &     myIt,myThid)
+#endif
 #endif
 
 #endif /* ALLOW_ORLANSKI */

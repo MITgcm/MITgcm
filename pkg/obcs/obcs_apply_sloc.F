@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_apply_sloc.F,v 1.1 2001/09/10 01:22:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_apply_sloc.F,v 1.2 2004/09/20 23:22:57 heimbach Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -31,33 +31,41 @@ C     == Local variables ==
 C     Set model variables to OB values on North/South Boundaries
       DO I=1-Olx,sNx+Olx
 C Northern boundary
+#ifdef ALLOW_OBCS_NORTH
        J_obc = OB_Jn(I,bi,bj)
        IF (J_obc.NE.0) THEN
         obc_mask = _maskS(I,J_obc,K,bi,bj)
         sFld(I,J_obc)=OBNs(I,K,bi,bj)*obc_mask
        ENDIF
+#endif
 C Southern boundary
+#ifdef ALLOW_OBCS_SOUTH
        J_obc = OB_Js(I,bi,bj)
        IF (J_obc.NE.0) THEN
         obc_mask = _maskS(I,J_obc+1,K,bi,bj)
         sFld(I,J_obc)=OBSs(I,K,bi,bj)*obc_mask
        ENDIF
+#endif
       ENDDO
 
 C     Set model variables to OB values on East/West Boundaries
       DO J=1-Oly,sNy+Oly
 C Eastern boundary
+#ifdef ALLOW_OBCS_EAST
        I_obc = OB_Ie(J,bi,bj)
        IF (I_obc.NE.0) THEN
         obc_mask = _maskW(I_obc,J,K,bi,bj)
         sFld(I_obc,J)=OBEs(J,K,bi,bj)*obc_mask
        ENDIF
+#endif
 C Western boundary
+#ifdef ALLOW_OBCS_WEST
        I_obc=OB_Iw(J,bi,bj)
        IF (I_obc.NE.0) THEN
         obc_mask = _maskW(I_obc+1,J,K,bi,bj)
         sFld(I_obc,J)=OBWs(J,K,bi,bj) * obc_mask
        ENDIF
+#endif
       ENDDO
 
 #endif

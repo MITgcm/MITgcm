@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.9 2004/07/08 16:54:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.10 2004/09/20 23:22:57 heimbach Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -36,32 +36,87 @@ C     == Local variables ==
 
         DO K=1,Nr
          DO I=1-Olx,sNx+Olx
-          OBNu(I,K,bi,bj)=0.
-          OBNv(I,K,bi,bj)=0.
-          OBNt(I,K,bi,bj)=0.
-          OBNs(I,K,bi,bj)=0.
-          OBSu(I,K,bi,bj)=0.
-          OBSv(I,K,bi,bj)=0.
-          OBSt(I,K,bi,bj)=0.
-          OBSs(I,K,bi,bj)=0.
-#ifdef ALLOW_NONHYDROSTATIC
-          OBNw(I,K,bi,bj)=0.
-          OBSw(I,K,bi,bj)=0.
-#endif
+#ifdef ALLOW_OBCS_NORTH
+          OBNu(I,K,bi,bj)=0. _d 0
+          OBNv(I,K,bi,bj)=0. _d 0
+          OBNt(I,K,bi,bj)=0. _d 0
+          OBNs(I,K,bi,bj)=0. _d 0
+# ifdef ALLOW_NONHYDROSTATIC
+          OBNw(I,K,bi,bj)=0. _d 0
+# endif
+# ifdef ALLOW_OBCS_PRESCRIBE
+          OBNu0(I,K,bi,bj)=0. _d 0
+          OBNv0(I,K,bi,bj)=0. _d 0
+          OBNt0(I,K,bi,bj)=0. _d 0
+          OBNs0(I,K,bi,bj)=0. _d 0
+          OBNu1(I,K,bi,bj)=0. _d 0
+          OBNv1(I,K,bi,bj)=0. _d 0
+          OBNt1(I,K,bi,bj)=0. _d 0
+          OBNs1(I,K,bi,bj)=0. _d 0
+# endif
+#endif /* ALLOW_OBCS_NORTH */
+
+#ifdef ALLOW_OBCS_SOUTH
+          OBSu(I,K,bi,bj)=0. _d 0
+          OBSv(I,K,bi,bj)=0. _d 0
+          OBSt(I,K,bi,bj)=0. _d 0
+          OBSs(I,K,bi,bj)=0. _d 0
+# ifdef ALLOW_NONHYDROSTATIC
+          OBSw(I,K,bi,bj)=0. _d 0
+# endif
+# ifdef ALLOW_OBCS_PRESCRIBE
+          OBSu0(I,K,bi,bj)=0. _d 0
+          OBSv0(I,K,bi,bj)=0. _d 0
+          OBSt0(I,K,bi,bj)=0. _d 0
+          OBSs0(I,K,bi,bj)=0. _d 0
+          OBSu1(I,K,bi,bj)=0. _d 0
+          OBSv1(I,K,bi,bj)=0. _d 0
+          OBSt1(I,K,bi,bj)=0. _d 0
+          OBSs1(I,K,bi,bj)=0. _d 0
+# endif
+#endif /* ALLOW_OBCS_SOUTH */
          ENDDO
+
          DO J=1-Oly,sNy+Oly
-          OBEu(J,K,bi,bj)=0.
-          OBEv(J,K,bi,bj)=0.
-          OBEt(J,K,bi,bj)=0.
-          OBEs(J,K,bi,bj)=0.
-          OBWu(J,K,bi,bj)=0.
-          OBWv(J,K,bi,bj)=0.
-          OBWt(J,K,bi,bj)=0.
-          OBWs(J,K,bi,bj)=0.
-#ifdef ALLOW_NONHYDROSTATIC
-          OBEw(J,K,bi,bj)=0.
-          OBWw(J,K,bi,bj)=0.
-#endif
+#ifdef ALLOW_OBCS_EAST
+          OBEu(J,K,bi,bj)=0. _d 0
+          OBEv(J,K,bi,bj)=0. _d 0
+          OBEt(J,K,bi,bj)=0. _d 0
+          OBEs(J,K,bi,bj)=0. _d 0
+# ifdef ALLOW_NONHYDROSTATIC
+          OBEw(J,K,bi,bj)=0. _d 0
+# endif
+# ifdef ALLOW_OBCS_PRESCRIBE
+          OBEu0(J,K,bi,bj)=0. _d 0
+          OBEv0(J,K,bi,bj)=0. _d 0
+          OBEt0(J,K,bi,bj)=0. _d 0
+          OBEs0(J,K,bi,bj)=0. _d 0
+          OBEu1(J,K,bi,bj)=0. _d 0
+          OBEv1(J,K,bi,bj)=0. _d 0
+          OBEt1(J,K,bi,bj)=0. _d 0
+          OBEs1(J,K,bi,bj)=0. _d 0
+# endif
+#endif /* ALLOW_OBCS_EAST */
+
+#ifdef ALLOW_OBCS_WEST
+          OBWu(J,K,bi,bj)=0. _d 0
+          OBWv(J,K,bi,bj)=0. _d 0
+          OBWt(J,K,bi,bj)=0. _d 0
+          OBWs(J,K,bi,bj)=0. _d 0
+# ifdef ALLOW_NONHYDROSTATIC
+          OBWw(J,K,bi,bj)=0. _d 0
+# endif
+# ifdef ALLOW_OBCS_PRESCRIBE
+          OBWu0(J,K,bi,bj)=0. _d 0
+          OBWv0(J,K,bi,bj)=0. _d 0
+          OBWt0(J,K,bi,bj)=0. _d 0
+          OBWs0(J,K,bi,bj)=0. _d 0
+          OBWu1(J,K,bi,bj)=0. _d 0
+          OBWv1(J,K,bi,bj)=0. _d 0
+          OBWt1(J,K,bi,bj)=0. _d 0
+          OBWs1(J,K,bi,bj)=0. _d 0
+# endif
+#endif /* ALLOW_OBCS_WEST */
          ENDDO
         ENDDO
 
@@ -106,6 +161,11 @@ C--   Apply OBCS values to initial conditions for consistancy
        DO bi = myBxLo(myThid), myBxHi(myThid)
         CALL OBCS_CALC( bi, bj, startTime, nIter0,
      &        uVel, vVel, wVel, theta, salt, myThid )
+       ENDDO
+      ENDDO
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
         DO K=1,Nr
          CALL OBCS_APPLY_UV( bi, bj, k, uVel, vVel, myThid )
          CALL OBCS_APPLY_TS( bi, bj, k, theta, salt, myThid )
@@ -114,5 +174,6 @@ C--   Apply OBCS values to initial conditions for consistancy
       ENDDO
 
 #endif /* ALLOW_OBCS */
+
       RETURN
       END

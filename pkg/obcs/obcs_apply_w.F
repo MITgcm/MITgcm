@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_apply_w.F,v 1.3 2004/09/20 23:22:57 heimbach Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -31,6 +31,7 @@ C     == Local variables ==
 #ifdef ALLOW_NONHYDROSTATIC
 
 C     Set model variables to OB values on North/South Boundaries
+#ifdef ALLOW_OBCS_NORTH
       DO I=1-Olx,sNx+Olx
 C Northern boundary
        J_obc=OB_Jn(I,bi,bj)
@@ -38,6 +39,10 @@ C Northern boundary
         obc_mask = _maskS(I,J_obc,K,bi,bj)
         wFld(I,J_obc,K,bi,bj)=OBNw(I,K,bi,bj) * obc_mask
        ENDIF
+      ENDDO
+#endif
+#ifdef ALLOW_OBCS_SOUTH
+      DO I=1-Olx,sNx+Olx
 C Southern boundary
        J_obc=OB_Js(I,bi,bj)
        IF (J_obc.NE.0) THEN
@@ -45,8 +50,10 @@ C Southern boundary
         wFld(I,J_obc,K,bi,bj)=OBSw(I,K,bi,bj) * obc_mask
        ENDIF
       ENDDO
+#endif
 
 C     Set model variables to OB values on East/West Boundaries
+#ifdef ALLOW_OBCS_EAST
       DO J=1-Oly,sNy+Oly
 C Eastern boundary
        I_obc=OB_Ie(J,bi,bj)
@@ -54,6 +61,10 @@ C Eastern boundary
         obc_mask = _maskW(I_obc,J,K,bi,bj)
         wFld(I_obc,J,K,bi,bj)=OBEw(J,K,bi,bj) * obc_mask
        ENDIF
+      ENDDO
+#endif
+#ifdef ALLOW_OBCS_SOUTH
+      DO J=1-Oly,sNy+Oly
 C Western boundary
        I_obc=OB_Iw(J,bi,bj)
        IF (I_obc.NE.0) THEN
@@ -61,6 +72,7 @@ C Western boundary
         wFld(I_obc,J,K,bi,bj)=OBWw(J,K,bi,bj) * obc_mask
        ENDIF
       ENDDO
+#endif
 
 #endif
 

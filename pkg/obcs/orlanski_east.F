@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_east.F,v 1.7 2004/07/08 17:03:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_east.F,v 1.8 2004/09/20 23:22:57 heimbach Exp $
 C $Name:  $
 cc
 
@@ -85,6 +85,7 @@ C     == Routine arguments ==
       INTEGER myThid
 
 #ifdef ALLOW_ORLANSKI
+#ifdef ALLOW_OBCS_EAST
 
 C     == Local variables ==
       INTEGER J, K, I_obc
@@ -283,6 +284,7 @@ C              copy (current time) t to t-1 arrays
          ENDDO
       ENDDO
 
+#endif
 #endif /* ALLOW_ORLANSKI */
       RETURN
       END

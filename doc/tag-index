@@ -1,7 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.346 2004/09/17 23:19:12 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.347 2004/09/20 23:22:57 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint55a_post
+o merged code to 
+  * prescribe/read time-dependent open boundaries
+    (works in conjunction with exf, cal)
+  * sponge layer code for open boundaries
+  * each boundary N/S/E/W now has its own CPP option
+    (healthy for the adjoint)
 
 checkpoint55
 o up-to-date adjoint of previous breaks

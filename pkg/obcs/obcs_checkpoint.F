@@ -32,33 +32,48 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
 
 C     READ N and S OB arrays
-      WRITE(fn,'(A,A10)') 'pickup_obNS.',suff
+#ifdef ALLOW_OBCS_NORTH
+      WRITE(fn,'(A,A10)') 'pickup_obN.',suff
       CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNu,1,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNv,2,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNt,3,myThid)
       CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNs,4,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSu,5,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSv,6,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSt,7,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSs,8,myThid)
-#ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNw,9,myThid)
-      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSw,10,myThid)
+# ifdef ALLOW_NONHYDROSTATIC
+      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBNw,5,myThid)
+# endif
+#endif
+#ifdef ALLOW_OBCS_SOUTH
+      WRITE(fn,'(A,A10)') 'pickup_obS.',suff
+      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSu,1,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSv,2,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSt,3,myThid)
+      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSs,4,myThid)
+# ifdef ALLOW_NONHYDROSTATIC
+      CALL MDSREADFIELDXZ(fn,prec,'RS',Nr,OBSw,5,myThid)
+# endif
 #endif
 
 C     READ E and W OB arrays
-      WRITE(fn,'(A,A10)') 'pickup_obEW.',suff
+#ifdef ALLOW_OBCS_EAST
+      WRITE(fn,'(A,A10)') 'pickup_obE.',suff
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEu,1,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEv,2,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEt,3,myThid)
       CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEs,4,myThid) 
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWu,5,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWv,6,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWt,7,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWs,8,myThid)
-#ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEw,9,myThid)
-      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWw,10,myThid)
+# ifdef ALLOW_NONHYDROSTATIC
+      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBEw,5,myThid)
+# endif
+#endif
+      
+#ifdef ALLOW_OBCS_WEST
+      WRITE(fn,'(A,A10)') 'pickup_obW.',suff
+      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWu,1,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWv,2,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWt,3,myThid)
+      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWs,4,myThid)
+# ifdef ALLOW_NONHYDROSTATIC
+      CALL MDSREADFIELDYZ(fn,prec,'RS',Nr,OBWw,5,myThid)
+# endif
 #endif
 
 C     Fill in edge regions
@@ -133,42 +148,67 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_FNAM) fn
 
 C     Write N and S OB arrays
+#ifdef ALLOW_OBCS_NORTH
       IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_obNS.',myIt
+         WRITE(fn,'(A,I10.10)') 'pickup_obN.',myIt
       ELSE
-         WRITE(fn,'(A,A)') 'pickup_obNS.',checkPtSuff(nCheckLev)
+         WRITE(fn,'(A,A)') 'pickup_obN.',checkPtSuff(nCheckLev)
       ENDIF
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNu,1,myIt,myThid)
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNv,2,myIt,myThid)
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNt,3,myIt,myThid)
       CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNs,4,myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSu,5,myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSv,6,myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSt,7,myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSs,8,myIt,myThid)
-#ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNw,9,myIt,myThid)
-      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSw,10,myIt,myThid)
+# ifdef ALLOW_NONHYDROSTATIC
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBNw,5,myIt,myThid)
+# endif
+#endif
+
+#ifdef ALLOW_OBCS_SOUTH
+      IF ( permCheckPoint ) THEN
+         WRITE(fn,'(A,I10.10)') 'pickup_obS.',myIt
+      ELSE
+         WRITE(fn,'(A,A)') 'pickup_obS.',checkPtSuff(nCheckLev)
+      ENDIF
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSu,1,myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSv,2,myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSt,3,myIt,myThid)
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSs,4,myIt,myThid)
+# ifdef ALLOW_NONHYDROSTATIC
+      CALL MDSWRITEFIELDXZ(fn,prec,lgf,'RS',Nr,OBSw,5,myIt,myThid)
+# endif
 #endif
 
 C     Write E and W OB arrays
+#ifdef ALLOW_OBCS_EAST
       IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_obEW.',myIt
+         WRITE(fn,'(A,I10.10)') 'pickup_obE.',myIt
       ELSE
-         WRITE(fn,'(A,A)') 'pickup_obEW.',checkPtSuff(nCheckLev)
+         WRITE(fn,'(A,A)') 'pickup_obE.',checkPtSuff(nCheckLev)
       ENDIF
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEu,1,myIt,myThid)
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEv,2,myIt,myThid)
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEt,3,myIt,myThid)
       CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEs,4,myIt,myThid) 
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWu,5,myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWv,6,myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWt,7,myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWs,8,myIt,myThid)
-#ifdef ALLOW_NONHYDROSTATIC
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEw,9,myIt,myThid)
-      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWw,10,myIt,myThid)
+# ifdef ALLOW_NONHYDROSTATIC
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBEw,5,myIt,myThid)
+# endif
 #endif
+
+#ifdef ALLOW_OBCS_WEST
+      IF ( permCheckPoint ) THEN
+         WRITE(fn,'(A,I10.10)') 'pickup_obW.',myIt
+      ELSE
+         WRITE(fn,'(A,A)') 'pickup_obW.',checkPtSuff(nCheckLev)
+      ENDIF
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWu,1,myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWv,2,myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWt,3,myIt,myThid)
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWs,4,myIt,myThid)
+# ifdef ALLOW_NONHYDROSTATIC
+      CALL MDSWRITEFIELDYZ(fn,prec,lgf,'RS',Nr,OBWw,5,myIt,myThid)
+# endif
+#endif
+
 
 #ifdef ALLOW_ORLANSKI
       IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.

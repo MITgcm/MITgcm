@@ -1,5 +1,6 @@
+
 Using NonLin-FrSurf with OBCs:
- 
+----------------------------- 
 In addition to values of uVel,vVel, T and S at the OB, you need to
 specify also the values of eta at the OB (done in S/R OBCS_CALC).
  
@@ -15,3 +16,22 @@ horizontal viscous term). This secondary "obc_apply" has no effect
 on volume and tracer flux through the OB.
  
 NB: Orlanski radiative OBC not yet implemented for NonLin-FrSurf terms. 
+
+Using ALLOW_OBCS_PRESCRIBE
+--------------------------
+This flag enables code to prescribe / read in time-dependent
+open boundary conditions.
+It is meant to be used in conjunction with the exf/ & cal/ package.
+File names for open boundary conditions are set in data.obcs
+starttime and period of open boundary records are set in data.exf.
+To have input fields cyclic, parameter repeatperiod is set
+to the cycling period (in seconds).
+A set of example parameter files is in the MITgcm_contrib area under 
+heimbach/obcs_prescribe/
+
+Using ALLOW_OBCS_SPONGE
+-----------------------
+Sponge layer thickness and timescale (in days) is set in data.obcs.
+A set of example parameter files is in the MITgcm_contrib area under 
+heimbach/obcs_prescribe/
+

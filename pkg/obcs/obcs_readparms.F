@@ -1,6 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.6 2004/07/06 18:25:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_readparms.F,v 1.7 2004/09/20 23:22:57 heimbach Exp $
 C $Name:  $
-cc
 
 #include "OBCS_OPTIONS.h"
 
@@ -33,11 +32,19 @@ C     === Routine arguments ===
      &          OBNuFile,OBNvFile,OBNtFile,OBNsFile,
      &          OBSuFile,OBSvFile,OBStFile,OBSsFile,
      &          OBEuFile,OBEvFile,OBEtFile,OBEsFile,
-     &          OBWuFile,OBWvFile,OBWtFile,OBWsFile
+     &          OBWuFile,OBWvFile,OBWtFile,OBWsFile,
+     &          useOBCSsponge
 
 #ifdef ALLOW_ORLANSKI
       NAMELIST /OBCS_PARM02/
      & CMAX, cvelTimeScale, CFIX, useFixedCEast, useFixedCWest
+#endif
+
+#ifdef ALLOW_OBCS_SPONGE
+      NAMELIST /OBCS_PARM03/
+     &          Urelaxobcsinner,Urelaxobcsbound,
+     &          Vrelaxobcsinner,Vrelaxobcsbound,
+     &          spongeThickness
 #endif
 
 C     === Local variables ===
@@ -75,6 +82,7 @@ C--   Default flags and values for OBCS
       useOrlanskiSouth=.FALSE.
       useOrlanskiEast =.FALSE.
       useOrlanskiWest =.FALSE.
+      useOBCSsponge   =.FALSE.
 
       OBNuFile = ' '
       OBNvFile = ' '
@@ -122,6 +130,17 @@ C     Default Orlanski radiation parameters
      & READ(UNIT=iUnit,NML=OBCS_PARM02)
 #endif
       
+#ifdef ALLOW_OBCS_SPONGE
+C     Default sponge layer parameters
+      spongeThickness = 2
+      Urelaxobcsinner = 5. _d 0
+      Urelaxobcsbound = 1. _d 0
+      Vrelaxobcsinner = 5. _d 0
+      Vrelaxobcsbound = 1. _d 0
+      IF (useOBCSsponge)
+     & READ(UNIT=iUnit,NML=OBCS_PARM03)
+#endif
+
       WRITE(msgBuf,'(A)') ' OBCS_READPARMS: finished reading data.obcs'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
