@@ -100,6 +100,10 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/gad_diff_r.f			\
 		$(SOURCE_CODE)/gad_diff_x.f			\
 		$(SOURCE_CODE)/gad_diff_y.f			\
+		$(SOURCE_CODE)/gad_dst3_adv_x.f                 \
+		$(SOURCE_CODE)/gad_dst3_adv_y.f                 \
+		$(SOURCE_CODE)/gad_dst3fl_adv_x.f               \
+		$(SOURCE_CODE)/gad_dst3fl_adv_y.f               \
 		$(SOURCE_CODE)/gad_fluxlimit_adv_r.f		\
 		$(SOURCE_CODE)/gad_fluxlimit_adv_x.f		\
 		$(SOURCE_CODE)/gad_fluxlimit_adv_y.f		\
