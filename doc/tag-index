@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.313 2004/06/25 19:49:14 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.314 2004/06/26 02:41:46 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o new parameter "nShapS": allow to treat differently S from T (nShapT)
+o separate Vert.Advec.Scheme from horizontal Advec.Scheme (T & S)
 
 checkpoint53f_post
 o modifications that affect AIM experiment results (update output.txt):
