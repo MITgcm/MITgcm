@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.29 1999/07/30 15:43:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.30 1999/07/30 15:46:49 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -251,7 +251,7 @@ C--    Step forward W field in N-H algorithm
 #endif
 
 C--   Do time averages
-#ifdef ALLOW_DIAGNOSTICS
+#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
       IF (taveFreq.GT.0.) THEN
        CALL TIMER_START('I/O (WRITE)        [SPIN-DOWN]',myThid)
        CALL WRITE_TIME_AVERAGES( myCurrentTime, myCurrentIter, myThid )
