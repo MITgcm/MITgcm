@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.70 2002/04/06 01:36:25 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.71 2002/05/01 01:35:30 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint45a_post
+o compute Rho over the whole domain (extend iMin,jMin indices)
+o specific exchange for X-slice domain (case Ny=1)
 o argument futureIter of S/R obcs_calc missing in exp4 & internal_wave /code
 o solve_for_pressure : set cg2d_x to zero where OBCS are applied
 
