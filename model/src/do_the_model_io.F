@@ -1,8 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.14 2000/03/27 22:25:44 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.15 2000/04/05 19:04:13 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
-      SUBROUTINE DO_THE_MODEL_IO(myCurrentTime, myIter, myThid)
+      SUBROUTINE DO_THE_MODEL_IO(
+     I          forceOutput, myCurrentTime, myIter, myThid)
 C     /==========================================================\
 C     | SUBROUTINE DO_THE_MODEL_IO                               |
 C     | o Controlling routine for IO in model main time-stepping |
@@ -37,9 +38,11 @@ C     == Global variables ===
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     == Routine arguments ==
+C     forceOutput - If .TRUE. then force I/O, indepenent of other tests
 C     myThid - Thread number for this instance of the routine.
 C     myIter - Iteration number
 C     myCurrentTime - Current time of simulation ( s )
+      LOGICAL forceOutput
       INTEGER myThid
       INTEGER myIter
       _RL    myCurrentTime
@@ -81,7 +84,7 @@ C--    Write "text-plots" of certain fields
       ENDIF
 
 C--   Write model state to binary file
-      CALL WRITE_STATE( .FALSE., myCurrentTime, myIter, myThid )
+      CALL WRITE_STATE( forceOutput, myCurrentTime, myIter, myThid )
 
 C
       RETURN
