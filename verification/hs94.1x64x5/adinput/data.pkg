@@ -1,9 +1,0 @@
-#
-# ********
-# Packages
-# ********
- &PACKAGES
- useSHAP_FILT = .TRUE., 
- useGrdchk    = .TRUE.,
- useECCO      = .TRUE.,
- &
