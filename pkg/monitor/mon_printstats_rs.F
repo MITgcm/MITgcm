@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rs.F,v 1.2 2001/06/04 20:03:33 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rs.F,v 1.3 2001/06/06 14:49:51 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,9 +25,6 @@ C     === Routine arguments ===
       INTEGER myThid
 
 C     === Local variables ====
-      INTEGER bi,bj,I,J,K
-      INTEGER numPnts
-      LOGICAL noPnts
       _RL theMin
       _RL theMax
       _RL theMean
@@ -40,13 +37,13 @@ C     === Local variables ====
 
       _BEGIN_MASTER( myThid )
       WRITE(*,'(A,A20,A,1PE22.14)')
-     &      'MON_PRINTSTATS: ',arrName,'  min=',theMin
+     &      'MON_PRINTSTATS_RS: ',arrName,'  min=',theMin
       WRITE(*,'(A,A20,A,1PE22.14)')
-     &      'MON_PRINTSTATS: ',arrName,'  max=',theMax
+     &      'MON_PRINTSTATS_RS: ',arrName,'  max=',theMax
       WRITE(*,'(A,A20,A,1PE22.14)')
-     &      'MON_PRINTSTATS: ',arrName,' mean=',theMean
+     &      'MON_PRINTSTATS_RS: ',arrName,' mean=',theMean
       WRITE(*,'(A,A20,A,1PE22.14)')
-     &      'MON_PRINTSTATS: ',arrName,' S.D.=',theSD
+     &      'MON_PRINTSTATS_RS: ',arrName,' S.D.=',theSD
       _END_MASTER( )
 
       RETURN
