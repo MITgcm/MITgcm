@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.4 2002/05/30 22:49:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.5 2002/07/13 02:10:04 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -84,7 +84,7 @@ C--   Initialise the ECCO State Estimation package.
 #ifdef ALLOW_ECCO_OPTIMIZATION
 c--   Initialise the optimization-related parts of the ECCO State
 c--   Estimation package.
-      call optim_init( myThid )
+      call optim_readparms( myThid )
       _BARRIER
 #endif
 
