@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.59 2002/02/07 20:00:09 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.60 2002/02/11 21:52:31 heimbach Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -394,7 +394,7 @@ switch ($platform$USEMPI)
     set LN         = ( '/usr/bin/ln -s' )
     set CPP        = ( '/usr/ccs/lib/cpp -P' )
     set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4 -D_d=E' )
-    set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar -r8 -i4 -fsimple=0' )
+    set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar -xtypemap=real:64,double:64,integer:32 -fsimple=0' )
     set FOPTIM     = ( '-dalign -O3 -xarch=v9' )
     set CFLAGS     = ( '-dalign -O3 -xarch=v9' )
     set NOOPTFLAGS = ( '-dalign -O0 -xarch=v9' )
@@ -406,7 +406,7 @@ switch ($platform$USEMPI)
     set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4 -D_d=E' )
     set INCLUDES   = ( '-I/usr/local/mpi/include' )
     set LIBS       = ( '-L/usr/local/mpi/lib/solaris/ch_shmem -lmpi -lthread' \
-    set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar -r8 -i4 -fsimple=0' )
+    set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar -xtypemap=real:64,double:64,integer:32 -fsimple=0' )
     set FOPTIM     = ( '-dalign -O3 -xarch=v9' )
     set NOOPTFLAGS = ( '-dalign -O0 -xarch=v9' )
                        '-lsocket -lnsl' )
@@ -737,7 +737,7 @@ all: \$(EXECUTABLE)
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(LIBS)
 depend:
 	@make links
-	makedepend -o .f \$(DEFINES) \$(INCLUDES) \$(SRCFILES)
+	../tools/makedepend -o .f \$(DEFINES) \$(INCLUDES) \$(SRCFILES)
 
 links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES)
 
