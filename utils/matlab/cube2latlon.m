@@ -14,8 +14,9 @@ function [z] = cube2latlon(x,y,c,xi,yi)
 % >> xi=-179:2:180;yi=-89:2:90;
 % >> ti=cube2latlon(x,y,t,xi,yi);
 %
-% $Header: /u/gcmpack/MITgcm/utils/matlab/Attic/cube2latlon.m,v 1.2 2001/05/29 14:01:40 adcroft Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/Attic/cube2latlon.m,v 1.3 2001/08/28 17:58:03 adcroft Exp $
 
+NN=size(c);
 [nx ny nz]=size(c);
 
 for k=1:nz;
@@ -46,3 +47,7 @@ C(end,ny/2+1:ny)=C(i,j)';
 
 z(:,:,k)=griddata(Y,X,C,yi,xi');
 end % k
+
+if size(NN,2)>2
+z=reshape(z,[size(z,1) size(z,2) NN(3:end)]);
+end
