@@ -46,9 +46,11 @@
  implicitViscosity=.true.,
  allowFreezing=.false.,
  globalFiles=.false.,
- useCDscheme=.true.,
- useNHMTerms=.TRUE.,
 #ph(
+ useSingleCpuIO=.FALSE.,
+ useCDscheme=.TRUE.,
+ useNHMTerms=.TRUE.,
+ usePickupBeforeC54=.TRUE.,
  tempAdvScheme = 3,
  saltAdvScheme = 3,
 # hFacMin=0.2,
@@ -61,7 +63,7 @@
 # Elliptic solver parameters
 # **************************
  &PARM02
- cg2dMaxIters=500,
+ cg2dMaxIters=300,
  cg2dTargetResidual=1.E-7,
  /
 
@@ -69,10 +71,9 @@
 # Time stepping parameters
 # ************************
  &PARM03
- tauCD=172800.,
- startTime=0.0,
+ startTime=3600.,
 # 2 months
- nTimeSteps=1,
+# nTimeSteps=1440,
 # 1 year
 # nTimeSteps=8760,
 # 2 years
@@ -80,7 +81,9 @@
 # 11 years
 ### nTimeSteps=96398,
 # 12 years
-### nTimeSteps=105120,
+ nTimeSteps=105120,
+#
+ tauCD=172800.,
  deltaTmom=3600.0,
  deltaTtracer=3600.0,
  deltaTClock =3600.0,

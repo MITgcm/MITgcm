@@ -31,6 +31,10 @@ cph Need to put this in namelist at some point!
       integer     ctrlprec
       parameter ( ctrlprec = 32 )
 
+      common /controlvars_l /
+     &                       doInitXX
+      logical doInitXX
+
       common /controlvars_i/
      &                       nvartype,
      &                       nvarlength,
