@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_init_fixed.F,v 1.2 2005/01/05 00:35:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_init_fixed.F,v 1.3 2005/02/14 21:00:22 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -18,9 +18,12 @@ C     !USES:
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#include "GRID.h"
-#include "TIMEAVE_STATV.h"
+c #include "DYNVARS.h"
+c #include "GRID.h"
+c #include "TIMEAVE_STATV.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 
 C     !INPUT PARAMETERS:
       INTEGER myThid
@@ -29,7 +32,7 @@ CEOP
 #ifdef ALLOW_TIMEAVE
 
 #ifdef ALLOW_MNC
-      IF (useMNC) THEN
+      IF ( useMNC.AND.timeave_mnc ) THEN
 
       CALL MNC_CW_ADD_VNAME('ETAtave', 'Cen_xy_Hn__-__t',3,4,myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('ETAtave','long_name',
@@ -38,11 +41,11 @@ CEOP
       CALL MNC_CW_ADD_VATTR_TEXT('ETAtave',
      &     'coordinates','XC YC RC iter', myThid)
 
-      CALL MNC_CW_ADD_VNAME('ETA2tave', 'Cen_xy_Hn__-__t',3,4,myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('ETA2tave','long_name',
+      CALL MNC_CW_ADD_VNAME('Eta2tave', 'Cen_xy_Hn__-__t',3,4,myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Eta2tave','long_name',
      &     'time-averaged free-surface_r-anomaly squared', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('ETA2tave','units','m^2', myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('ETA2tave',
+      CALL MNC_CW_ADD_VATTR_TEXT('Eta2tave','units','m^2', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('Eta2tave',
      &     'coordinates','XC YC RC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('Ttave', 'Cen_xy_Hn__C__t', 4,5, myThid)
