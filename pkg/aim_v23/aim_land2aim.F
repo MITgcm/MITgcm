@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_land2aim.F,v 1.5 2004/05/15 20:32:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_land2aim.F,v 1.6 2004/05/21 17:27:22 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -123,7 +123,7 @@ C        Units: hSnow & hSnowWetness are in meter (of snow)
           DO i=1,sNx
            aimSWA(i,j) = land_groundW(i,j,1,bi,bj)
      &                 + land_hSnow(i,j,bi,bj)*recip_hSnWet
-           aimSWA(i,j) = MIN( aimSWA(i,j), 1. _d 0 )
+           aimSWA(i,j) = MIN( MAX(0. _d 0, aimSWA(i,j)), 1. _d 0 )
           ENDDO
          ENDDO
         ELSE
@@ -136,7 +136,7 @@ C        Units: snowFld is in milimeter of equivalent liquid water
           DO i=1,sNx
            aimSWA(i,j) = land_groundW(i,j,1,bi,bj)
      &                 + snowFld(i,j)*recip_mSnWet
-           aimSWA(i,j) = MIN( aimSWA(i,j), 1. _d 0 )
+           aimSWA(i,j) = MIN( MAX(0. _d 0, aimSWA(i,j)), 1. _d 0 )
           ENDDO
          ENDDO
         ENDIF
