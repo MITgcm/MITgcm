@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/EOS.h,v 1.1 2002/08/07 16:55:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/EOS.h,v 1.2 2002/09/05 20:49:33 mlosch Exp $
 C $Name:  $
 CBOP
 C    !ROUTINE: EOS.h
@@ -16,8 +16,9 @@ C     \ev
 CEOP
 
 C     PARAMETER SItoBar
-      _RL SItoBar
-      PARAMETER ( SItoBar = 1. _d -05 )
+      _RL SItoBar, SItodBar
+      PARAMETER ( SItoBar  = 1. _d -05 )
+      PARAMETER ( SItodBar = 1. _d -04 )
 
 C Linear equation of state
 C     tAlpha    :: Linear EOS thermal expansion coefficient ( 1/degree ).
@@ -40,11 +41,18 @@ C     eosJMDCSw  :: of sea water at pressure 0
 C     eosJMDCKFw :: of secant bulk modulus K of fresh water at pressure 0
 C     eosJMDCKSw :: of secant bulk modulus K of sea water at pressure 0
 C     eosJMDCKP  :: of secant bulk modulus K at pressure p
+C     eosType = 'DJWF02' (McDougall et al. 2002, JAOT, submitted)
+C     COMMON /PARM_EOS_MDJWF/ 
+C     eosMDJWFnum :: coefficients of numerator
+C     eosMDJWFden :: coefficients of denominator
 C     end nonlinear equation of state
       _RL eosJMDCFw(6), eosJMDCSw(9)
       _RL eosJMDCKFw(5), eosJMDCKSw(7), eosJMDCKP(14)
       COMMON /PARM_EOS_JMD95/
      &     eosJMDCFw, eosJMDCSw, eosJMDCKFw, eosJMDCKSw, eosJMDCKP
+      _RL eosMDJWFnum(0:11), eosMDJWFden(0:12)
+      COMMON /PARM_EOS_MDJWF/ 
+     &     eosMDJWFnum, eosMDJWFden
 
 C     pressure :: global absolute pressure variable needed for the 
 C                 nonlinear equation of state

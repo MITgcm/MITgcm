@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.18 2002/08/15 18:48:47 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.19 2002/09/05 20:49:33 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -23,7 +23,8 @@ C     | k - is the Theta/Salt level
 C     | kRef - determines pressure reference level                
 C     |        (not used in 'LINEAR' mode)                        
 C     | eqn - determines the eqn. of state: 
-C     |       'LINEAR', 'POLY3', 'UNESCO', 'JMD95Z', 'JMD95P'
+C     |       'LINEAR', 'POLY3', 'UNESCO', 'JMD95Z', 'JMD95P',
+C     |       'MDJWF'
 C     |                                                           
 C     *==========================================================*
 C     \ev
@@ -54,6 +55,8 @@ C     == Local variables ==
       _RL refTemp,refSalt,sigRef,tP,sP,deltaSig
       _RL rhoP0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoNum(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoDen(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       character*(max_len_mbuf) msgbuf
 CEOP
 
@@ -67,7 +70,7 @@ CEOP
       ENDDO
 #endif
 
-      if (eqn.eq.'LINEAR') then
+      if (equationOfState.eq.'LINEAR') then
 
 C ***NOTE***
 C In the linear EOS, to make the static stability calculation meaningful
@@ -84,7 +87,7 @@ C **********
         enddo
        enddo
        
-      elseif (eqn.eq.'POLY3') then
+      elseif (equationOfState.eq.'POLY3') then
 
        refTemp=eosRefT(kRef)
        refSalt=eosRefS(kRef)
@@ -119,7 +122,8 @@ C **********
         enddo
        enddo
 
-      elseif ( eqn(1:5).eq.'JMD95' .or. eqn.eq.'UNESCO' ) then
+      elseif ( equationOfState(1:5).eq.'JMD95'
+     &      .or. equationOfState.eq.'UNESCO' ) then
 C     nonlinear equation of state in pressure coordinates
 
          CALL FIND_RHOP0(
@@ -146,8 +150,26 @@ C     density of sea water at pressure p
             end do
          end do
 
+      elseif ( equationOfState.eq.'MDJWF' ) then
+
+         CALL FIND_RHONUM( bi, bj, iMin, iMax, jMin, jMax, k, kRef,
+     &      tFld, sFld, rhoNum, myThid )
+
+         CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k, kRef,
+     &      tFld, sFld, rhoDen, myThid )
+
+         do j=jMin,jMax
+            do i=iMin,iMax
+
+               rholoc(i,j) = rhoNum(i,j)*rhoDen(i,j) - rhoNil
+
+            end do
+         end do
+      elseif( equationOfState .eq. 'IDEALG' ) then
+C     
       else
-       write(msgbuf,'(3a)') ' FIND_RHO: eqn = "',eqn,'"'
+       write(msgbuf,'(3a)')
+     &        ' FIND_RHO: equationOfState = "',equationOfState,'"'
        call print_error( msgbuf, mythid )
        stop 'ABNORMAL END: S/R FIND_RHO'
       endif
@@ -186,7 +208,7 @@ C     == Global variables ==
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
       integer bi,bj,iMin,iMax,jMin,jMax
-      integer k			! Level of surface slice
+      integer k		! Level of surface slice
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL rhoP0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -211,7 +233,8 @@ C     abbreviations
             if ( s .lt. 0. _d 0 ) then
 C     issue a warning
                write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
-     &           ' FIND_RHOP0:   WARNING, s(',i,',',j,',',k,') = ', s
+     &           ' FIND_RHOP0:   WARNING, salinity(',
+     &              i,',',j,',',k,',',bi,',',bj,') = ', s
                s = 0. _d 0
             end if
             s3o2 = s*sqrt(s)
@@ -305,7 +328,8 @@ C     abbreviations
             if ( s .lt. 0. _d 0 ) then
 C     issue a warning
                write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
-     &           ' FIND_BULKMOD: WARNING, s(',i,',',j,',',k,') = ', s
+     &           ' FIND_BULKMOD: WARNING, salinity(',
+     &              i,',',j,',',k,',',bi,',',bj,') = ', s
                s = 0. _d 0
             end if
             s3o2 = s*sqrt(s)
@@ -359,3 +383,157 @@ C     secant bulk modulus of sea water at pressure p
       return
       end
 
+CBOP
+C     !ROUTINE: FIND_RHONUM
+C     !INTERFACE:
+      subroutine FIND_RHONUM(
+     I      bi, bj, iMin, iMax, jMin, jMax, k, kRef,
+     I      tFld, sFld,
+     O      rhoNum,
+     I      myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE FIND_RHONUM
+C     |   Calculates the numerator of the McDougall et al.
+C     |   equation of state
+C     |   - the code is more or less a copy of MOM4
+C     *==========================================================*
+C     |                                                           
+C     | k - is the surface level                               
+C     | kRef - is the level to use to determine the pressure
+C     |                                                           
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      implicit none
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "EOS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+      integer bi,bj,iMin,iMax,jMin,jMax
+      integer k		! Level of surface slice
+      integer kRef		! Reference pressure level
+      _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL rhoNum(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      integer myThid
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      integer i,j
+      _RL t1, t2, s1, p1
+CEOP
+      do j=jMin,jMax
+         do i=iMin,iMax
+C     abbreviations
+            t1  = tFld(i,j,k,bi,bj) 
+            t2 = t1*t1
+            s1  = sFld(i,j,k,bi,bj)
+            
+            p1   = pressure(i,j,kRef,bi,bj)*SItodBar
+            
+            rhoNum(i,j) = eosMDJWFnum(0)
+     &           + t1*(eosMDJWFnum(1) 
+     &           +     t1*(eosMDJWFnum(2) + eosMDJWFnum(3)*t1) )  
+     &           + s1*(eosMDJWFnum(4)
+     &           +     eosMDJWFnum(5)*t1  + eosMDJWFnum(6)*s1)      
+     &           + p1*(eosMDJWFnum(7) + eosMDJWFnum(8)*t2 
+     &           +     eosMDJWFnum(9)*s1 
+     &           +     p1*(eosMDJWFnum(10) + eosMDJWFnum(11)*t2) )
+
+         end do
+      end do
+
+      return
+      end 
+
+CBOP
+C     !ROUTINE: FIND_RHODEN
+C     !INTERFACE:
+      subroutine FIND_RHODEN(
+     I      bi, bj, iMin, iMax, jMin, jMax, k, kRef,
+     I      tFld, sFld,
+     O      rhoDen,
+     I      myThid )
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | o SUBROUTINE FIND_RHODEN
+C     |   Calculates the denominator of the McDougall et al.
+C     |   equation of state
+C     |   - the code is more or less a copy of MOM4
+C     *==========================================================*
+C     |                                                           
+C     | k - is the surface level                               
+C     | kRef - is the level to use to determine the pressure
+C     |                                                           
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      implicit none
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "EOS.h"
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine arguments ==
+      integer bi,bj,iMin,iMax,jMin,jMax
+      integer k		! Level of surface slice
+      integer kRef		! Reference pressure level
+      _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL rhoDen(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      integer myThid
+
+C     !LOCAL VARIABLES:
+C     == Local variables ==
+      integer i,j
+      _RL t1, t2, s1, sp5, p1, p1t1
+      _RL den, epsln
+      parameter ( epsln = 0. _d 0 )
+CEOP
+      do j=jMin,jMax
+         do i=iMin,iMax
+C     abbreviations
+            t1  = tFld(i,j,k,bi,bj) 
+            t2 = t1*t1
+            s1  = sFld(i,j,k,bi,bj)
+            if ( s1 .lt. 0. _d 0 ) then
+C     issue a warning
+               write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
+     &           ' FIND_RHODEN: WARNING, salinity(',
+     &              i,',',j,',',k,',',bi,',',bj,') = ', s1
+               s1 = 0. _d 0
+            end if
+            sp5 = sqrt(s1) 
+            
+            p1   = pressure(i,j,kRef,bi,bj)*SItodBar
+            p1t1 = p1*t1
+            
+            den = eosMDJWFden(0)
+     &           + t1*(eosMDJWFden(1)
+     &           +     t1*(eosMDJWFden(2)
+     &           +         t1*(eosMDJWFden(3) + t1*eosMDJWFden(4) ) ) )
+     &           + s1*(eosMDJWFden(5)
+     &           +     t1*(eosMDJWFden(6) 
+     &           +         eosMDJWFden(7)*t2) 
+     &           +     sp5*(eosMDJWFden(8) + eosMDJWFden(9)*t2) ) 
+     &           + p1*(eosMDJWFden(10)
+     &           +     p1t1*(eosMDJWFden(11)*t2 + eosMDJWFden(12)*p1) )
+            
+            rhoDen(i,j) = 1.0/(epsln+den) 
+
+         end do
+      end do
+
+      return
+      end 

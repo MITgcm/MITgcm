@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.8 2002/08/19 14:21:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.9 2002/09/05 20:49:33 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,17 +49,20 @@ C     !LOCAL VARIABLES:
 c Local
       integer i,j
       _RL refTemp,refSalt,tP,sP
-      _RL t, t2, t3, s, s3o2, p, p2
+      _RL t1, t2, t3, s1, s3o2, p1, p2, sp5, p1t1
       _RL drhoP0dtheta, drhoP0dthetaFresh, drhoP0dthetaSalt
       _RL dKdtheta, dKdthetaFresh, dKdthetaSalt, dKdthetaPres
       _RL rhoP0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dnum_dtheta, dden_dtheta
+      _RL rhoDen(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       integer myThid
 CEOP
 
 Cml      stop 'myThid is not properly defined in this subroutine'
 
-      if (eqn.eq.'LINEAR') then
+      if (equationOfState.eq.'LINEAR') then
 
          do j=jMin,jMax
             do i=iMin,iMax
@@ -67,7 +70,7 @@ Cml      stop 'myThid is not properly defined in this subroutine'
             enddo
          enddo
          
-      elseif (eqn.eq.'POLY3') then
+      elseif (equationOfState.eq.'POLY3') then
 
          refTemp=eosRefT(kRef)
          refSalt=eosRefS(kRef)
@@ -96,7 +99,8 @@ Cml      stop 'myThid is not properly defined in this subroutine'
             enddo
          enddo
          
-      elseif ( eqn(1:5).eq.'JMD95' ) then
+      elseif ( equationOfState(1:5).eq.'JMD95'
+     &        .or. equationOfState.eq.'UNESCO' ) then
 C     nonlinear equation of state in pressure coordinates
 
          CALL FIND_RHOP0(
@@ -115,73 +119,73 @@ C     nonlinear equation of state in pressure coordinates
             do i=iMin,iMax
 
 C     abbreviations
-               t  = theta(i,j,k,bi,bj) 
-               t2 = t*t
-               t3 = t2*t
+               t1 = theta(i,j,k,bi,bj) 
+               t2 = t1*t1
+               t3 = t2*t1
                
-               s  = salt(i,j,k,bi,bj)
-               if ( s .lt. 0. _d 0 ) then
+               s1  = salt(i,j,k,bi,bj)
+               if ( s1 .lt. 0. _d 0 ) then
 C     issue a warning
                   write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
-     &             ' FIND_ALPHA: WARNING, salinity(',
-     &                 i,',',j,',',k,') = ', s
-                  s = 0. _d 0
+     &                 ' FIND_ALPHA: WARNING, salinity(',
+     &                 i,',',j,',',k,',',bi,',',bj,') = ', s1
+                  s1 = 0. _d 0
                end if
-               s3o2 = sqrt(s*s*s)
+               s3o2 = sqrt(s1*s1*s1)
                
-               p  = pressure(i,j,kRef,bi,bj)*SItoBar
-               p2 = p*p
+               p1  = pressure(i,j,kRef,bi,bj)*SItoBar
+               p2 = p1*p1
 
 C     d(rho)/d(theta)
 C     of fresh water at p = 0
                drhoP0dthetaFresh = 
      &                eosJMDCFw(2)
-     &           + 2.*eosJMDCFw(3)*t
+     &           + 2.*eosJMDCFw(3)*t1
      &           + 3.*eosJMDCFw(4)*t2
      &           + 4.*eosJMDCFw(5)*t3
-     &           + 5.*eosJMDCFw(6)*t3*t
+     &           + 5.*eosJMDCFw(6)*t3*t1
 C     of salt water at p = 0
                drhoP0dthetaSalt = 
-     &         s*(
+     &        s1*(
      &                eosJMDCSw(2)
-     &           + 2.*eosJMDCSw(3)*t
+     &           + 2.*eosJMDCSw(3)*t1
      &           + 3.*eosJMDCSw(4)*t2
      &           + 4.*eosJMDCSw(5)*t3
      &           )
      &       + s3o2*(
      &           +    eosJMDCSw(7)
-     &           + 2.*eosJMDCSw(8)*t
+     &           + 2.*eosJMDCSw(8)*t1
      &           )
 C     d(bulk modulus)/d(theta)
 C     of fresh water at p = 0
                dKdthetaFresh = 
      &                eosJMDCKFw(2)
-     &           + 2.*eosJMDCKFw(3)*t
+     &           + 2.*eosJMDCKFw(3)*t1
      &           + 3.*eosJMDCKFw(4)*t2
      &           + 4.*eosJMDCKFw(5)*t3
 C     of sea water at p = 0
                dKdthetaSalt =
-     &         s*(    eosJMDCKSw(2)
-     &           + 2.*eosJMDCKSw(3)*t
+     &        s1*(    eosJMDCKSw(2)
+     &           + 2.*eosJMDCKSw(3)*t1
      &           + 3.*eosJMDCKSw(4)*t2
      &           )
      &    + s3o2*(    eosJMDCKSw(6)
-     &           + 2.*eosJMDCKSw(7)*t
+     &           + 2.*eosJMDCKSw(7)*t1
      &           )
 C     of sea water at p
                dKdthetaPres =
-     &         p*(    eosJMDCKP(2)
-     &           + 2.*eosJMDCKP(3)*t
+     &        p1*(    eosJMDCKP(2)
+     &           + 2.*eosJMDCKP(3)*t1
      &           + 3.*eosJMDCKP(4)*t2
      &           )
-     &     + p*s*(    eosJMDCKP(6)
-     &           + 2.*eosJMDCKP(7)*t
+     &   + p1*s1*(    eosJMDCKP(6)
+     &           + 2.*eosJMDCKP(7)*t1
      &           )
      &      + p2*(    eosJMDCKP(10)
-     &           + 2.*eosJMDCKP(11)*t
+     &           + 2.*eosJMDCKP(11)*t1
      &           )
-     &    + p2*s*(    eosJMDCKP(13)
-     &           + 2.*eosJMDCKP(14)*t
+     &   + p2*s1*(    eosJMDCKP(13)
+     &           + 2.*eosJMDCKP(14)*t1
      &           )
 
                drhoP0dtheta  = drhoP0dthetaFresh 
@@ -191,16 +195,60 @@ C     of sea water at p
      &                       + dKdthetaPres
                alphaloc(i,j) = 
      &              ( bulkmod(i,j)**2*drhoP0dtheta
-     &              - bulkmod(i,j)*p*drhoP0dtheta
-     &              - rhoP0(i,j)*p*dKdtheta )
-     &              /( bulkmod(i,j) - p )**2
+     &              - bulkmod(i,j)*p1*drhoP0dtheta
+     &              - rhoP0(i,j)*p1*dKdtheta )
+     &              /( bulkmod(i,j) - p1 )**2
                
               
             end do
          end do
+      elseif ( equationOfState.eq.'MDJWF' ) then
+
+         CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
+     &        eqn, theta, salt, rhoLoc, myThid )
+         CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k, kRef,
+     &      theta, salt, rhoDen, myThid )
+
+         do j=jMin,jMax
+            do i=iMin,iMax
+               t1  = theta(i,j,k,bi,bj)
+               t2  = t1*t1
+               s1  = salt(i,j,k,bi,bj)
+               if ( s1 .lt. 0. _d 0 ) then
+C     issue a warning
+                  write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
+     &                 ' FIND_ALPHA: WARNING, salinity(',
+     &                 i,',',j,',',k,',',bi,',',bj,') = ', s1
+                  s1 = 0. _d 0
+               end if
+               sp5 = sqrt(s1) 
+
+               p1   = pressure(i,j,kRef,bi,bj)*SItodBar
+               p1t1 = p1*t1
+            
+               dnum_dtheta = eosMDJWFnum(1)
+     &              + t1*(2.*eosMDJWFnum(2) + 3.*eosMDJWFnum(3)*t1) 
+     &              + eosMDJWFnum(5)*s1                                 
+     &              + p1t1*(2.*eosMDJWFnum(8) + 2.*eosMDJWFnum(11)*p1)    
+            
+               dden_dtheta = eosMDJWFden(1) 
+     &              + t1*(2.*eosMDJWFden(2) 
+     &              +     t1*(3.*eosMDJWFden(3) 
+     &              +         4.*eosMDJWFden(4)*t1 ) )
+     &              + s1*(eosMDJWFden(6) 
+     &              +     t1*(3.*eosMDJWFden(7)*t1 
+     &              +         2.*eosMDJWFden(9)*sp5 ) )
+     &              + p1*p1*(3.*eosMDJWFden(11)*t2 + eosMDJWFden(12)*p1)
+            
+               alphaLoc(i,j)    = rhoDen(i,j)*(dnum_dtheta 
+     &              - rhoLoc(i,j)*dden_dtheta)
+            
+         end do
+      end do
+
       else
-         write(*,*) 'FIND_ALPHA: eqn = ',eqn
-         stop 'FIND_ALPHA: argument "eqn" has illegal value'
+         write(*,*) 'FIND_ALPHA: equationOfState = ',equationOfState
+         stop 'FIND_ALPHA: "equationOfState" has illegal value'
       endif
 
       return
@@ -242,17 +290,20 @@ c Arguments
 c Local
       integer i,j
       _RL refTemp,refSalt,tP,sP
-      _RL t, t2, t3, s, s3o2, p
+      _RL t1, t2, t3, s1, s3o2, p1, sp5, p1t1
       _RL drhoP0dS
       _RL dKdS, dKdSSalt, dKdSPres
       _RL rhoP0(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dnum_dsalt, dden_dsalt
+      _RL rhoDen(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       integer myThid
 CEOP
 
 Cml      stop 'myThid is not properly defined in this subroutine'
 
-      if (eqn.eq.'LINEAR') then
+      if (equationOfState.eq.'LINEAR') then
 
          do j=jMin,jMax
             do i=iMin,iMax
@@ -260,7 +311,7 @@ Cml      stop 'myThid is not properly defined in this subroutine'
             enddo
          enddo
          
-      elseif (eqn.eq.'POLY3') then
+      elseif (equationOfState.eq.'POLY3') then
 
          refTemp=eosRefT(kRef)
          refSalt=eosRefS(kRef)
@@ -287,7 +338,8 @@ Cml      stop 'myThid is not properly defined in this subroutine'
             enddo
          enddo
 
-      elseif ( eqn(1:5).eq.'JMD95' ) then
+      elseif ( equationOfState(1:5).eq.'JMD95'
+     &        .or. equationOfState.eq.'UNESCO' ) then
 C     nonlinear equation of state in pressure coordinates
 
          CALL FIND_RHOP0(
@@ -306,21 +358,21 @@ C     nonlinear equation of state in pressure coordinates
             do i=iMin,iMax
 
 C     abbreviations
-               t  = theta(i,j,k,bi,bj) 
-               t2 = t*t
-               t3 = t2*t
+               t1 = theta(i,j,k,bi,bj) 
+               t2 = t1*t1
+               t3 = t2*t1
                
-               s  = salt(i,j,k,bi,bj)
-               if ( s .lt. 0. _d 0 ) then
+               s1  = salt(i,j,k,bi,bj)
+               if ( s1 .lt. 0. _d 0 ) then
 C     issue a warning
                   write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
-     &             ' FIND_BETA: WARNING, salinity(',
-     &                 i,',',j,',',k,') = ', s
-                  s = 0. _d 0
+     &                 ' FIND_BETA: WARNING, salinity(',
+     &                 i,',',j,',',k,',',bi,',',bj,') = ', s1
+                  s1 = 0. _d 0
                end if
-               s3o2 = 1.5*sqrt(s)
+               s3o2 = 1.5*sqrt(s1)
 
-               p  = pressure(i,j,kRef,bi,bj)*SItoBar
+               p1  = pressure(i,j,kRef,bi,bj)*SItoBar
 
 C     d(rho)/d(S)
 C     of fresh water at p = 0
@@ -328,39 +380,39 @@ C     of fresh water at p = 0
 C     of salt water at p = 0
                drhoP0dS = drhoP0dS
      &              + eosJMDCSw(1)
-     &              + eosJMDCSw(2)*t
+     &              + eosJMDCSw(2)*t1
      &              + eosJMDCSw(3)*t2
      &              + eosJMDCSw(4)*t3
-     &              + eosJMDCSw(5)*t3*t
+     &              + eosJMDCSw(5)*t3*t1
      &       + s3o2*(
      &                eosJMDCSw(6)
-     &              + eosJMDCSw(7)*t
+     &              + eosJMDCSw(7)*t1
      &              + eosJMDCSw(8)*t2
      &              )
-     &              + 2*eosJMDCSw(9)*s
+     &              + 2*eosJMDCSw(9)*s1
 C     d(bulk modulus)/d(S)
 C     of fresh water at p = 0
                dKdS = 0. _d 0
 C     of sea water at p = 0
                dKdSSalt =
      &                eosJMDCKSw(1)
-     &              + eosJMDCKSw(2)*t
+     &              + eosJMDCKSw(2)*t1
      &              + eosJMDCKSw(3)*t2
      &              + eosJMDCKSw(4)*t3
      &       + s3o2*( eosJMDCKSw(5)
-     &              + eosJMDCKSw(6)*t
+     &              + eosJMDCKSw(6)*t1
      &              + eosJMDCKSw(7)*t2
      &              )
 
 C     of sea water at p
                dKdSPres = 
-     &            p*( eosJMDCKP(5)
-     &              + eosJMDCKP(6)*t
+     &           p1*( eosJMDCKP(5)
+     &              + eosJMDCKP(6)*t1
      &              + eosJMDCKP(7)*t2
      &              )
-     &        + s3o2*p*eosJMDCKP(8)
-     &        + p*p*( eosJMDCKP(12)
-     &              + eosJMDCKP(13)*t
+     &        + s3o2*p1*eosJMDCKP(8)
+     &      + p1*p1*( eosJMDCKP(12)
+     &              + eosJMDCKP(13)*t1
      &              + eosJMDCKP(14)*t2
      &              )
 
@@ -368,16 +420,53 @@ C     of sea water at p
 
                betaloc(i,j) = 
      &              ( bulkmod(i,j)**2*drhoP0dS
-     &              - bulkmod(i,j)*p*drhoP0dS
-     &              - rhoP0(i,j)*p*dKdS )
-     &              /( bulkmod(i,j) - p )**2
+     &              - bulkmod(i,j)*p1*drhoP0dS
+     &              - rhoP0(i,j)*p1*dKdS )
+     &              /( bulkmod(i,j) - p1 )**2
                
               
             end do
          end do
+      elseif ( equationOfState.eq.'MDJWF' ) then
+
+         CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax,  k, kRef,
+     &        eqn, theta, salt, rhoLoc, myThid )
+         CALL FIND_RHODEN( bi, bj, iMin, iMax, jMin, jMax, k, kRef,
+     &      theta, salt, rhoDen, myThid )
+         
+         do j=jMin,jMax
+            do i=iMin,iMax
+               t1  = theta(i,j,k,bi,bj)
+               t2  = t1*t1
+               s1  = salt(i,j,k,bi,bj)
+               if ( s1 .lt. 0. _d 0 ) then
+C     issue a warning
+                  write(*,'(a,i3,a,i3,a,i3,a,e13.5)') 
+     &                 ' FIND_BETA: WARNING, salinity(',
+     &                 i,',',j,',',k,',',bi,',',bj,') = ', s1
+                  s1 = 0. _d 0
+               end if
+               sp5 = sqrt(s1) 
+         
+               p1   = pressure(i,j,k,bi,bj)*SItodBar
+               p1t1 = p1*t1
+               
+               dnum_dsalt = eosMDJWFnum(4) 
+     &              + eosMDJWFnum(5)*t1
+     &              + 2.*eosMDJWFnum(6)*s1 + eosMDJWFnum(9)*p1
+               dden_dsalt = eosMDJWFden(5) 
+     &              + t1*( eosMDJWFden(6) + eosMDJWFden(7)*t2 ) 
+     &              + 1.5*sp5*(eosMDJWFden(8) + eosMDJWFden(9)*t2)
+
+               betaLoc(i,j) = rhoDen(i,j)*( dnum_dsalt 
+     &              - rhoLoc(i,j)*dden_dsalt )
+
+            end do
+         end do
+
       else
-         write(*,*) 'FIND_BETA: eqn = ',eqn
-         stop 'FIND_BETA: argument "eqn" has illegal value'
+         write(*,*) 'FIND_BETA: equationOfState = ',equationOfState
+         stop 'FIND_BETA: "equationOfState" has illegal value'
       endif
 
       return

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.3 2002/08/20 14:45:18 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.4 2002/09/05 20:49:33 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -23,6 +23,7 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "EOS.h"
 #include "GRID.h"
+#include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -39,6 +40,28 @@ C     I,J,K
       
 
       equationOfState = eosType
+
+      do k = 1,6
+         eosJMDCFw(k) = 0. _d 0
+      end do
+      do k = 1,9
+         eosJMDCSw(k) = 0. _d 0
+      end do
+      do k = 1,5
+         eosJMDCKFw(k) = 0. _d 0
+      end do
+      do k = 1,7
+         eosJMDCKSw(k) = 0. _d 0
+      end do
+      do k = 1,14
+         eosJMDCKP(k) = 0. _d 0
+      end do
+      do k = 0,11
+         eosMDJWFnum(k) = 0. _d 0
+      end do
+      do k = 0,12
+         eosMDJWFden(k) = 0. _d 0
+      end do
 
       if ( equationOfState .eq. 'LINEAR' ) then
          if ( tAlpha .eq. UNSET_RL ) tAlpha = 2.D-4
@@ -220,6 +243,36 @@ C     5. secant bulk modulus K of sea water at p
             STOP 'INI_EOS: We should never reach this point!'
          endif
 
+      elseif ( equationOfState .eq. 'MDJWF' ) then
+
+         eosMDJWFnum( 0) =  9.99843699e+02
+         eosMDJWFnum( 1) =  7.35212840e+00
+         eosMDJWFnum( 2) = -5.45928211e-02
+         eosMDJWFnum( 3) =  3.98476704e-04
+         eosMDJWFnum( 4) =  2.96938239e+00
+         eosMDJWFnum( 5) = -7.23268813e-03
+         eosMDJWFnum( 6) =  2.12382341e-03
+         eosMDJWFnum( 7) =  1.04004591e-02
+         eosMDJWFnum( 8) =  1.03970529e-07
+         eosMDJWFnum( 9) =  5.18761880e-06
+         eosMDJWFnum(10) = -3.24041825e-08
+         eosMDJWFnum(11) = -1.23869360e-11
+         
+         
+         eosMDJWFden( 0) =  1.00000000e+00 
+         eosMDJWFden( 1) =  7.28606739e-03
+         eosMDJWFden( 2) = -4.60835542e-05 
+         eosMDJWFden( 3) =  3.68390573e-07
+         eosMDJWFden( 4) =  1.80809186e-10
+         eosMDJWFden( 5) =  2.14691708e-03
+         eosMDJWFden( 6) = -9.27062484e-06
+         eosMDJWFden( 7) = -1.78343643e-10
+         eosMDJWFden( 8) =  4.76534122e-06
+         eosMDJWFden( 9) =  1.63410736e-09
+         eosMDJWFden(10) =  5.30848875e-06
+         eosMDJWFden(11) = -3.03175128e-16
+         eosMDJWFden(12) = -1.27934137e-17
+         
       elseif( equationOfState .eq. 'IDEALG' ) then
 C     
       else
@@ -269,12 +322,12 @@ C     I,J,K
       INTEGER  I,  J,  K
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy) 
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL rhoP0  (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhoLoc (1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL bulkMod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL rholoc, psave
+      _RL psave
 
       INTEGER ncheck, kcheck
-      PARAMETER ( ncheck = 10 )
+      PARAMETER ( ncheck = 13 )
       _RL tloc(ncheck), ptloc(ncheck), sloc(ncheck), ploc(ncheck)
       _RL rloc(ncheck), bloc(ncheck)
 
@@ -282,36 +335,48 @@ C     I,J,K
 
       DATA tloc 
      &     /3.25905152915860 _d 0, 20.38687090048638 _d 0,
+     &     25.44820830309568 _d 0, 20.17368557065936 _d 0,
+     &     13.43397459640398 _d 0,
      &      5.               _d 0, 25.               _d 0,
      &      5.               _d 0, 25.               _d 0,
      &      5.               _d 0, 25.               _d 0,
      &      5.               _d 0, 25.               _d 0/,
      &     ptloc
      &     /3.               _d 0, 20.               _d 0,
+     &     25.               _d 0, 20.               _d 0,
+     &     12.               _d 0,
      &      5.               _d 0, 25.               _d 0,
      &      5.               _d 0, 25.               _d 0,
      &      4.03692566635316 _d 0, 22.84661726775120 _d 0, 
      &      3.62720389416752 _d 0, 22.62420229124846 _d 0/
      &     sloc
      &     /35.5 _d 0, 35. _d 0,
+     &      35.0 _d 0, 20. _d 0,
+     &      40.0 _d 0,
      &       0.  _d 0,  0. _d 0,
      &      35.  _d 0, 35. _d 0,
      &       0.  _d 0,  0. _d 0,
      &      35.  _d 0, 35. _d 0/
      &     ploc
      &     /300. _d 5,  200. _d 5,
+     &      200. _d 5,  100. _d 5,
+     &      800. _d 5,
      &        0. _d 0,    0. _d 0,
      &        0. _d 0,    0. _d 0,
      &     1000. _d 5, 1000. _d 5,
      &     1000. _d 5, 1000. _d 5/
       DATA rloc
-     &     /1041.83267 _d 0, 1033.213387 _d 0,
-     &       999.96675 _d 0,  997.04796  _d 0,
-     &      1027.67547 _d 0, 1023.34306  _d 0,
-     &      1044.12802 _d 0, 1037.90204  _d 0,
-     &      1069.48914 _d 0, 1062.53817  _d 0/
+     &     /1041.83267  _d 0, 1033.213387 _d 0,
+     &      1031.654229 _d 0, 1017.726743 _d 0,
+     &      1062.928258 _d 0,
+     &       999.96675  _d 0,  997.04796  _d 0,
+     &      1027.67547  _d 0, 1023.34306  _d 0,
+     &      1044.12802  _d 0, 1037.90204  _d 0,
+     &      1069.48914  _d 0, 1062.53817  _d 0/
      &     bloc
      &     /   -1.00000 _d 0,    -1.00000 _d 0,
+     &         -1.00000 _d 0,    -1.00000 _d 0,
+     &         -1.00000 _d 0,
      &      20337.80375 _d 0, 22100.72106 _d 0,
      &      22185.93358 _d 0, 23726.34949 _d 0,
      &      23643.52599 _d 0, 25405.09717 _d 0,
@@ -331,7 +396,7 @@ C     I,J,K
      &     .and. equationOfState.ne.'POLY3' ) then
 C     check nonlinear EOS
          write(msgBuf,'(a,a)') 
-     &        'ml-eos: Check the equation of state: Type ', 
+     &        'check_eos: Check the equation of state: Type ', 
      &        equationOfState
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &        SQUEEZE_RIGHT , 1)
@@ -344,24 +409,17 @@ C     check nonlinear EOS
                tFld(i,j,k,bi,bj) = tloc(kcheck)
             endif
             sFld(i,j,k,bi,bj)    = sloc(kcheck)
-            rholoc               =  0. _d 0
+            rholoc(i,j)          =  0. _d 0
             bulkMod(i,j)         = -1. _d 0
          
-            call find_rhop0( 
-     I           bi, bj, imin, imax, jmin, jmax, k,
-     I           tFld, sFld,
-     O           rhoP0,
-     I           myThid )
-            
+            call find_rho(
+     &           bi, bj, iMin, iMax, jMin, jMax,  k, k,
+     &           equationOfState,
+     &           tFld, sFld, rholoc, myThid )
+
             call find_bulkmod(
-     I           bi, bj, imin, imax, jmin, jmax, k, k, 
-     I           tFld, sFld,
-     O           bulkMod,
-     I           myThid )
-            
-            rholoc = rhoP0(i,j)
-     &           /(1. _d 0 - 
-     &           pressure(i,j,k,bi,bj)*SItoBar/bulkMod(i,j))
+     &           bi, bj, imin, imax, jmin, jmax, k, k, 
+     &           tFld, sFld, bulkMod, myThid )
             
       
             write(msgBuf,
@@ -373,7 +431,7 @@ C     check nonlinear EOS
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &           SQUEEZE_RIGHT , 1)
             write(msgBuf,'(a4,a32,f10.5,1x,f11.5)')
-     &           'rho ', ' = ', rholoc, bulkMod(i,j)
+     &           'rho ', ' = ', rholoc(i,j)+rhoNil, bulkMod(i,j)
             CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &           SQUEEZE_RIGHT , 1)
             
@@ -389,3 +447,4 @@ C     end check nonlinear EOS
 
       return
       end
+

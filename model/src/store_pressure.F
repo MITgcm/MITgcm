@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/store_pressure.F,v 1.3 2002/08/19 14:21:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/store_pressure.F,v 1.4 2002/09/05 20:49:33 mlosch Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -46,7 +46,8 @@ C     compute the pressure for use in the equation of state
 C
       if ( buoyancyRelation .eq. 'OCEANIC' .and.
      &     ( equationOfState .eq. 'JMD95P'
-     &       .or. equationOfState .eq. 'UNESCO' )  ) then
+     &       .or. equationOfState .eq. 'UNESCO' 
+     &       .or. equationOfState .eq. 'MDJWF' ) ) then
          do J=1-Oly,sNy+Oly
             do I=1-Olx,sNx+Olx
                pressure(i,j,k,bi,bj) = rhonil * (
@@ -54,6 +55,7 @@ C
      &              + gravity*etaN(i,j,bi,bj)
      &              + phiHyd(i,j,k)
      &                                           )
+     &              * maskC(i,j,k,bi,bj)
             end do
          end do
       elseif ( buoyancyRelation .eq. 'ATMOSPHERIC'
@@ -63,6 +65,7 @@ C     the tracer point
          do J=1-Oly,sNy+Oly
             do I=1-Olx,sNx+Olx
                pressure(i,j,k,bi,bj) = rC(k)
+     &              * maskC(i,j,k,bi,bj)
             end do
          end do
       endif

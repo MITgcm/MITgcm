@@ -1,7 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.82 2002/08/19 14:21:30 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.83 2002/09/05 20:49:32 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint47d_post
+o Added new equation of state -> MDJWF
+  - EOS of McDougall et al., 2002, JAOT, submitted
+  - caveat: the equation of state is only valid for a smaller (more
+    realistic?) range of values than JMD95P/Z and UNESCO
+  - added masks to the calculation of pressure in store_pressure
+  - added more check values for density in check_eos (ini_eos.F), some of 
+    the old check values are out of the range of the MDJWF-eos, so don't
+    expect perfect matches for those 
+checkpoint47d_pre
 
 checkpoint46d_post
 o fixed store_pressure to work with both buoyancy relation = 'OCEANIC' and
@@ -26,7 +37,7 @@ checkpoint46c_pre
 
 checkpoint46b_post
 o Added new equation of state -> JMD95Z and JMD95P
-  - EOS of Jackett and McDougall, 1995, JPO
+  - EOS of Jackett and McDougall, 1995, JAOT
   - moved all EOS parameters into EOS.h
   - new routines ini_eos.F, store_pressure.F
 o Added UNESCO EOS, but not recommended because it requires 
