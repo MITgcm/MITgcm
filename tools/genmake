@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.30 2001/02/23 15:52:02 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.31 2001/02/28 16:08:51 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -185,7 +185,7 @@ endif
 foreach dr ($PACKAGES)
   set enable
   foreach p ($DISABLE)
-   if (! -d $ROOTDIR/pkg/$p) then
+   if ($p != 'all' & ! -d $ROOTDIR/pkg/$p) then
      echo Specified package \"$p\" does not exist.
      exit 1
    endif
