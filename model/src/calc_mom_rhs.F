@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.9 1998/05/28 03:34:52 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.10 1998/05/28 15:09:29 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -316,7 +316,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
       DO j=jMin,jMax
        DO i=iMin,iMax
         gU(i,j,k,bi,bj) =
-     &   -rHFacW(i,j,k,bi,bj)*rdzF(k)*_rdxC(i,j,bi,bj)*_rdyG(i,j,bi,bj)*(
+     &   -_rhFacW(i,j,k,bi,bj)*rdzF(k)*_rdxC(i,j,bi,bj)*_rdyG(i,j,bi,bj)*(
      &    fZon(i,j  )    - fZon(i-1,j)
      &   +fMer(i,j+1)    - fMer(i  ,j)
      &   +fVerU(i,j,kUp) - fVerU(i,j,kDown)
@@ -495,7 +495,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
       DO j=jMin,jMax
        DO i=iMin,iMax
         gV(i,j,k,bi,bj) =
-     &   -rHFacS(i,j,k,bi,bj)*rdzF(k)*_rdyC(i,j,bi,bj)*_rdxG(i,j,bi,bj)*(
+     &   -_rhFacS(i,j,k,bi,bj)*rdzF(k)*_rdyC(i,j,bi,bj)*_rdxG(i,j,bi,bj)*(
      &    fZon(i+1,j)    - fZon(i,j  )
      &   +fMer(i,j  )    - fMer(i,j-1)
      &   +fVerV(i,j,kUp) - fVerV(i,j,kDown)

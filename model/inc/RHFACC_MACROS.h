@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/Attic/RHFACC_MACROS.h,v 1.1 1998/05/28 15:03:13 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/Attic/RHFACC_MACROS.h,v 1.2 1998/05/28 15:09:28 cnh Exp $
 C
 C     /==========================================================\
 C     | RHFACC_MACROS.h                                          |
@@ -24,6 +24,6 @@ C     \==========================================================/
 #define  _rhFacC(i,j,k,bi,bj) rhFacC(i,j,1,bi,bj)
 #endif
 
-#ifndef _hFacC
-#define  _hFacC(i,j,k,bi,bj) hFacC(i,j,k,bi,bj)
+#ifndef _rhFacC
+#define  _rhFacC(i,j,k,bi,bj) rhFacC(i,j,k,bi,bj)
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/Attic/RHFACW_MACROS.h,v 1.1 1998/05/28 15:03:13 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/Attic/RHFACW_MACROS.h,v 1.2 1998/05/28 15:09:29 cnh Exp $
 C
 C     /==========================================================\
 C     | RHFACW_MACROS.h                                          |
@@ -24,6 +24,6 @@ C     \==========================================================/
 #define  _rhFacW(i,j,k,bi,bj) rhFacW(i,j,1,bi,bj)
 #endif
 
-#ifndef _hFacW
-#define  _hFacW(i,j,k,bi,bj) hFacW(i,j,k,bi,bj)
+#ifndef _rhFacW
+#define  _rhFacW(i,j,k,bi,bj) rhFacW(i,j,k,bi,bj)
 #endif
