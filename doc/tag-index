@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.249 2004/01/25 00:31:52 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.250 2004/01/26 18:06:42 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o update AIM Cubed-Sphere exp (aim.5l_cs):
+  use land, p*, and Franco.M forcing fields with fractional land-sea mask.
+o update AIM Equatorial Channel exp:
+  use standard aim_v23 pkg and change the SST fields to be more realistic.
 o globalFile now works with exch2
 o merged mom_vi_calc_relvort3.F, mom_vi_del2uv.F and 
   mon_vort3.F to make exch2 friendly with >1 tile per cube
