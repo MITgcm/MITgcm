@@ -3,11 +3,21 @@ The experiments:
 exp0 - single layer, double gyre (barotropic with free-surface).
 exp1 - 4 layer, double gyre.
 exp2 - 4x4 degree global simulation with steady climatological forcing.
-exp3 - atmospheric configuration.
+exp3 - atmospheric configuration ? (but empty)
 exp4 - flow over a Gaussian bump in open-water or channel with open
        boundaries.
 exp5 - inhomogenously forced convection in a doubly periodic box.
 front_relax   - relaxation of a thermal front (test for GM scheme). 2D (Y-Z).
 internal_wave - internal wave forced by open boundary conditions.
-natl_exp      - eastern subtropical North Atlantic with KPP; 1 month integration
+natl_box      - eastern subtropical North Atlantic with KPP; 1 month integration
 hs94.1x64x5   - Zonal averaged atmosphere using Held and Suarez '94 forcing.
+hs94.128x64x5   - 3-D atmosphere Dynamics using Held and Suarez '94 forcing.
+aim.5l_zon-ave  - Intermediate Atmospheric physics, 5 layers Molteni Physics 
+		package. Global Zonal Mean configuration, 1x64x5 resolution.
+
+And also (but not completely  tested) :
+aim.5l_Equatorial_Channel
+aim.5l_XZ_Equatorial_Slice
+
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
