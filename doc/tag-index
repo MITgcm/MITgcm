@@ -1,11 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.190 2003/10/21 15:29:20 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.191 2003/10/21 21:14:08 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint51m_post
 o incorporating changes to get TAMC/TAF working in genmake2
   - added new TAMC/TAF targets to the Makefile
   - various cleanups related to package handling
+  - these changes should have no impact on the forward model
 
 checkpoint51l_post
 o changes to pkg/cal and pkg/exf that allow and speed-up long integrations
