@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_tracer_s2g.F,v 1.5 2004/12/04 00:19:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_tracer_s2g.F,v 1.6 2005/02/15 00:21:12 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -131,7 +131,8 @@ C      F <-  [1 - (d_xx+d_yy)^n *deltaT/tau].F
           DO J=1,sNy
            DO I=1,sNx
             field(i,j,k,bi,bj)=field(i,j,k,bi,bj)
-     &     -dTtracerLev(1)/Shap_Trtau*tmpFld(i,j,k,bi,bj)
+     &            -tmpFld(i,j,k,bi,bj)*dTtracerLev(1)/Shap_Trtau
+            tmpFld(i,j,k,bi,bj)= -tmpFld(i,j,k,bi,bj)/Shap_Trtau
            ENDDO
           ENDDO
          ENDDO

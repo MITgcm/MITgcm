@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2c.F,v 1.1 2002/03/04 01:25:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2c.F,v 1.2 2005/02/15 00:21:12 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -198,13 +198,15 @@ C      F <-  [1 - (d_xx+d_yy)^n *deltaT/tau].F
           DO j=1,sNy
            DO i=1,sNx+1
             uFld(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
-     &             -tmpFldU(i,j,k,bi,bj)*deltaTmom/Shap_uvtau
+     &                  -tmpFldU(i,j,k,bi,bj)*deltaTmom/Shap_uvtau
+            tmpFldU(i,j,k,bi,bj)= -tmpFldU(i,j,k,bi,bj)/Shap_uvtau
            ENDDO
           ENDDO
           DO j=1,sNy+1
            DO i=1,sNx
             vFld(i,j,k,bi,bj)=vFld(i,j,k,bi,bj)
-     &             -tmpFldV(i,j,k,bi,bj)*deltaTmom/Shap_uvtau
+     &                  -tmpFldV(i,j,k,bi,bj)*deltaTmom/Shap_uvtau
+            tmpFldV(i,j,k,bi,bj)= -tmpFldV(i,j,k,bi,bj)/Shap_uvtau
            ENDDO
           ENDDO
          ENDDO
