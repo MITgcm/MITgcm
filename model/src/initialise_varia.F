@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.33 2003/11/13 06:35:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.34 2004/02/23 22:59:04 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -162,8 +162,8 @@ CADJ loop = parallel
 #ifdef NONLIN_FRSURF
 C--   Compute the surface level thickness <-- function of etaH(n)
 C     and modify hFac(C,W,S) accordingly :
-      IF ( select_rStar.NE.0 )
-     &  CALL CALC_R_STAR(etaH, startTime, -1 , myThid )
+c     IF ( select_rStar.NE.0 )
+        CALL CALC_R_STAR(etaH, startTime, -1 , myThid )
       IF (nonlinFreeSurf.GT.0) THEN
        IF ( select_rStar.GT.0 ) THEN
         CALL UPDATE_R_STAR( startTime, nIter0, myThid )
@@ -201,6 +201,12 @@ cswdptr -- end add ---
 C--   end bi,bj loop.
        ENDDO
       ENDDO
+
+C AMM
+#ifdef ALLOW_GRIDALT
+        if (useGRIDALT) CALL GRIDALT_UPDATE(myThid)
+#endif
+C AMM
 
 C--   Fill in overlap regions for wVel :
       _EXCH_XYZ_R8(wVel,myThid) 
