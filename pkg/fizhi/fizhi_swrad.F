@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.20 2004/08/26 14:41:56 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.21 2004/08/29 19:48:06 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -226,7 +226,7 @@ c -------------------------
       qdiag(i,j,icldfrc,bi,bj) =  qdiag(i,j,icldfrc,bi,bj) + totcld(i,j)
       enddo
       enddo
-      ncldfrc = ncldfrc + 1
+      if ( (bi.eq.1) .and. (bj.eq.1) ) ncldfrc = ncldfrc + 1
       endif
 
       if( icldras.gt.0 ) then
