@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.13 2004/07/06 03:55:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.14 2004/07/06 22:49:13 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -57,8 +57,16 @@ CEOP
       CHARACTER*(80) fn
       logical glf
 #ifdef ALLOW_MNC
+      integer ii
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
-#endif
+
+      integer CW_DIMS, NLEN
+      parameter ( CW_DIMS = 10 )
+      parameter ( NLEN    = 80 )
+      integer dim(CW_DIMS), ib(CW_DIMS), ie(CW_DIMS)
+      character*(NLEN) dn(CW_DIMS)
+      character*(NLEN) dn_blnk
+#endif /*  ALLOW_MNC  */
 
       undef = getcon('UNDEF')
       glf = .FALSE.
@@ -71,6 +79,9 @@ CEOP
       IF (useMNC .and. diag_use_mnc) THEN
         DO i = 1,MAX_LEN_FNAM
           diag_mnc_bn(i:i) = ' '
+        ENDDO
+        DO i = 1,NLEN
+          dn_blnk(i:i) = ' '
         ENDDO
         WRITE( diag_mnc_bn, '(A,A)' ) 'diag.', pref(1:ilen)
 
@@ -112,7 +123,6 @@ C               -------------------------------------
 C               Check for Mate of a Counter Diagnostic
 C               --------------------------------------
                 read (mate_index,100) mate
-C               do k=1,kdiag(m)
                 do k = 1,nlevels(listnum)
                   call getdiag2 ( myThid,k,m,undef,qtmp1)
                   call getdiag2 ( myThid,k,mate,undef,qtmp2)
@@ -141,14 +151,51 @@ C           IF (useMDSIO) THEN
             IF (diag_use_mdsio) THEN
               call mdswritefield_new(fn,64,glf,'RL',Nr+Nrphys,
      &             nlevels(listnum),qtmp1,n,myIter,myThid)
-c             kdiag(m),qtmp1,n,myIter,myThid)
             ENDIF
 C           ENDIF
 #endif /*  ALLOW_MDSIO  */
 
 #ifdef ALLOW_MNC
             IF (useMNC .and. diag_use_mnc) THEN
-C             CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,'diag_name', qtmp1, myThid)
+
+              _BEGIN_MASTER( myThid )
+
+              do ii = 1,CW_DIMS
+                dn(ii)(1:NLEN) = dn_blnk(1:NLEN)
+              enddo
+
+              dn(1)(1:2) = 'Xd'
+              dim(1) = sNx + 2*OLx
+              ib(1)  = OLx + 1
+              ie(1)  = OLx + sNx
+              dn(2)(1:2) = 'Yd'
+              dim(2) = sNy + 2*OLy
+              ib(2)  = OLy + 1
+              ie(2)  = OLy + sNy
+
+C             Z is special since it varies
+              write(dn(3),'(a,i6.6)') 'Zd', nlevels(listnum)
+              dim(3) = Nr+Nrphys
+              ib(3)  = 1
+              ie(3)  = nlevels(listnum)
+
+              CALL MNC_CW_ADD_GNAME('diag_cw_temp', 3, 
+     &             dim, dn, ib, ie, myThid)
+              CALL MNC_CW_ADD_VNAME(cdiag(m), 'diag_cw_temp', 
+     &             4,5, myThid)
+              CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),1,'description',
+     &             tdiag(m),myThid)
+              CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),1,'units',
+     &             udiag(m),myThid)
+
+              CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
+     &             cdiag(m), qtmp1, myThid)
+
+              CALL MNC_CW_DEL_GNAME('diag_cw_temp', myThid)
+              CALL MNC_CW_DEL_VNAME(cdiag(m), myThid)
+
+              _END_MASTER( myThid )
+
             ENDIF
 #endif /*  ALLOW_MNC  */
 
@@ -164,7 +211,7 @@ C             CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,'diag_name', qtmp1, myThid)
  2002 format(1x,'        Vector  Mate for  ',a8,5x,
      &     'Diagnostic # ',i3,2x,a8,' not enabled')
       
-      return                                                                    
+      return
       end
                                                                     
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

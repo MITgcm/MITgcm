@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_init_vals.F,v 1.19 2004/07/06 05:22:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_init_vals.F,v 1.20 2004/07/06 22:49:13 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -1386,23 +1386,13 @@ c ----------------  123456789
 
 c     Diagnostic Levels
 c     -----------------
-      do n = 1,297
+      do n = 1,ndiagt
         IF (gdiag(n)(10:10) .eq. '0')  KDIAG(n) = 0
         IF (gdiag(n)(10:10) .eq. '1')  KDIAG(n) = 1
         IF (gdiag(n)(10:10) .eq. 'R')  KDIAG(n) = Nr
         IF (gdiag(n)(10:10) .eq. 'L')  KDIAG(n) = nlevs
         IF (gdiag(n)(10:10) .eq. 'M')  KDIAG(n) = nlevs - 1
       enddo
-
-#ifdef ALLOW_MNC
-      IF (useMNC) THEN
-C       Set MNC CW Variable types
-        do n = 1,297
-          CALL DIAG_GET_MNC_GTYPE(cdiag(n), gdiag(n), 
-     &         tdiag(n), udiag(n), myThid)
-        enddo
-      ENDIF
-#endif /*  ALLOW_MNC  */
 
       do n=1,ndiagt
         idiag(n) = 0
@@ -1414,55 +1404,3 @@ C       Set MNC CW Variable types
 
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 1
-C     !ROUTINE: DIAG_GET_MNC_GTYPE
-
-C     !INTERFACE:
-      SUBROUTINE DIAG_GET_MNC_GTYPE(
-     I     name, 
-     I     gstr, 
-     I     desc,
-     I     units,
-     I     myThid )
-
-C     !DESCRIPTION:
-C     Do the mapping between GDIAG and MNC GTypes
-
-C     !USES:
-      implicit none
-
-C     !INPUT PARAMETERS:
-      CHARACTER*(*) name, gstr, desc, units
-      integer myThid
-CEOP
-
-      IF (name(1:1) .eq. ' ') THEN
-        RETURN
-      ENDIF
-
-      IF (gstr(10:10) .eq. '0') THEN
-        CALL MNC_CW_ADD_VNAME(name, '-_-_--__-__t', 3,4, myThid)
-      ENDIF
-      IF (gstr(10:10) .eq. '1') THEN
-        CALL MNC_CW_ADD_VNAME(name, 'Cen_xy_Hn__-__t', 3,4, myThid)
-      ENDIF
-      IF (gstr(10:10) .eq. 'R') THEN
-        CALL MNC_CW_ADD_VNAME(name, 'Cen_xy_Hn__C__t', 3,4, myThid)
-      ENDIF
-      IF (gstr(10:10) .eq. 'L') THEN
-        CALL MNC_CW_ADD_VNAME(name, 'Cen_xy_Hn__Phys__t', 3,4, myThid)
-      ENDIF
-      IF (gstr(10:10) .eq. 'M') THEN
-        CALL MNC_CW_ADD_VNAME(name, 'Cen_xy_Hn__PhysI__t', 3,4, myThid)
-      ENDIF
-
-      IF (desc(1:1) .ne. ' ') THEN
-        CALL MNC_CW_ADD_VATTR_TEXT(name,1, 'description', desc, myThid)
-      ENDIF
-      IF (units(1:1) .ne. ' ') THEN
-        CALL MNC_CW_ADD_VATTR_TEXT(name,1, 'units', units, myThid)
-      ENDIF
-
-      RETURN
-      END
-
