@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.30 2002/03/04 17:26:41 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.31 2002/03/27 23:13:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -144,20 +144,24 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
 C Northern boundary
           IF (OB_Jn(I,bi,bj).NE.0) THEN
            cg2d_b(I,OB_Jn(I,bi,bj),bi,bj)=0.
+           cg2d_x(I,OB_Jn(I,bi,bj),bi,bj)=0.
           ENDIF
 C Southern boundary
           IF (OB_Js(I,bi,bj).NE.0) THEN
            cg2d_b(I,OB_Js(I,bi,bj),bi,bj)=0.
+           cg2d_x(I,OB_Js(I,bi,bj),bi,bj)=0.
           ENDIF
          ENDDO
          DO j=1,sNy
 C Eastern boundary
           IF (OB_Ie(J,bi,bj).NE.0) THEN
            cg2d_b(OB_Ie(J,bi,bj),J,bi,bj)=0.
+           cg2d_x(OB_Ie(J,bi,bj),J,bi,bj)=0.
           ENDIF
 C Western boundary
           IF (OB_Iw(J,bi,bj).NE.0) THEN
            cg2d_b(OB_Iw(J,bi,bj),J,bi,bj)=0.
+           cg2d_x(OB_Iw(J,bi,bj),J,bi,bj)=0.
           ENDIF
          ENDDO
         ENDIF
