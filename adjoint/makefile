@@ -20,7 +20,9 @@ DIFF_FLAGS       = -toplevel the_main_loop		\
 				xx_tauu_dummy		\
 				xx_tauv_dummy		\
 				xx_sss_dummy		\
-				xx_sst_dummy'		\
+				xx_sst_dummy		\
+				xx_diffkr_dummy		\
+				xx_kapgm_dummy'		\
                    -output 'fc'
 
 TAMCFLAG         = $(TAMCFLAGS) $(DIFF_FLAGS) -admark ad
@@ -66,6 +68,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/calc_ivdc.f			\
 		$(SOURCE_CODE)/calc_mom_rhs.f			\
 		$(SOURCE_CODE)/calc_phi_hyd.f			\
+		$(SOURCE_CODE)/calc_viscosity.f			\
 		$(SOURCE_CODE)/comm_stats.f			\
 		$(SOURCE_CODE)/convect.f			\
 		$(SOURCE_CODE)/convective_adjustment.f		\
@@ -117,6 +120,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/ini_grid.f			\
 		$(SOURCE_CODE)/ini_linear_phisurf.f		\
 		$(SOURCE_CODE)/ini_masks_etc.f			\
+		$(SOURCE_CODE)/ini_mixing.f			\
 		$(SOURCE_CODE)/ini_p_ground.f			\
 		$(SOURCE_CODE)/ini_pnh.f			\
 		$(SOURCE_CODE)/ini_procs.f			\
@@ -163,11 +167,13 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/timestep.f			\
 		$(SOURCE_CODE)/the_correction_step.f		\
 		$(SOURCE_CODE)/the_main_loop.f			\
+		$(SOURCE_CODE)/thermodynamics.f			\
 		$(SOURCE_CODE)/timestep_tracer.f		\
 		$(SOURCE_CODE)/swfrac.f				\
 		  						\
 		$(SOURCE_CODE)/kpp_calc.f			\
 		$(SOURCE_CODE)/kpp_calc_diff.f			\
+		$(SOURCE_CODE)/kpp_calc_visc.f			\
 		$(SOURCE_CODE)/kpp_do_diags.f			\
 		$(SOURCE_CODE)/kpp_init.f			\
 		$(SOURCE_CODE)/kpp_open_diags.f			\
