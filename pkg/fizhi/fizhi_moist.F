@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.4 2004/07/07 19:33:48 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.5 2004/07/07 20:07:47 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-      subroutine moistio (ndmoist,istrip,npcs,pz,tz,qz,bi,bj,
-     .   ntracer,ptracer,
+      subroutine moistio (ndmoist,istrip,npcs,
      .   lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup,
-     .   pkht,qqz,dumoist,dvmoist,dtmoist,dqmoist,
+     .   pz,pl,ple,dpres,pkht,pkl,tz,qz,bi,bj,ntracer,ptracer,
+     .   qqz,dumoist,dvmoist,dtmoist,dqmoist,
      .   im,jm,lm,ptop,
      .   iras,rainlsp,rainconv,snowfall,
      .   nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,
@@ -18,45 +18,27 @@ C $Name:  $
 
 c Input Variables
 c ---------------
-      integer ndmoist,istrip,npcs,myid,bi,bj
+      integer ndmoist,istrip,npcs
       integer lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup
-
-      integer im,jm,lm                
-      real  ptop                      
-
-      integer ntracer,ptracer         
-
-      real pz(im,jm)                  
-      real tz(im,jm,lm)               
-      real qz(im,jm,lm,ntracer)       
-
-      real  pkht(im,jm,lm)            
-
-      real   qqz(im,jm,lm)            
-
-      real dumoist(im,jm,lm)          
-      real dvmoist(im,jm,lm)          
-      real dtmoist(im,jm,lm)          
-      real dqmoist(im,jm,lm,ntracer)  
-
-      integer iras                    
-      real   rainlsp(im,jm)           
-      real  rainconv(im,jm)           
-      real  snowfall(im,jm)           
-
-      integer nswcld,nswlz            
-      real  cldlsp_sw(im,jm,lm)       
-      real  cldras_sw(im,jm,lm)       
-      real  cldtot_sw(im,jm,lm)       
-      real       swlz(im,jm,lm)       
-
-      integer nlwcld,nlwlz            
-      real  cldlsp_lw(im,jm,lm)       
-      real  cldras_lw(im,jm,lm)       
-      real  cldtot_lw(im,jm,lm)       
-      real       lwlz(im,jm,lm)       
-
-      logical lpnt                    
+      real pz(im,jm),pl(im,jm,lm),ple(im,jm,lm+1),dpres(im,jm,lm)
+      real pkht(im,jm,lm+1),pkl(im,jm,lm)
+      real tz(im,jm,lm),qz(im,jm,lm,ntracer)       
+      integer bi,bj,ntracer,ptracer         
+      real qqz(im,jm,lm)
+      real dumoist(im,jm,lm),dvmoist(im,jm,lm)
+      real dtmoist(im,jm,lm),dqmoist(im,jm,lm,ntracer)
+      integer im,jm,lm
+      real ptop
+      integer iras
+      real rainlsp(im,jm),rainconv(im,jm),snowfall(im,jm)
+      integer nswcld,nswlz
+      real cldlsp_sw(im,jm,lm),cldras_sw(im,jm,lm)
+      real cldtot_sw(im,jm,lm),swlz(im,jm,lm)
+      integer nlwcld,nlwlz
+      real  cldlsp_lw(im,jm,lm),cldras_lw(im,jm,lm)
+      real  cldtot_lw(im,jm,lm),lwlz(im,jm,lm)
+      logical lpnt
+      integer myid
 
 c Local Variables
 c ---------------
