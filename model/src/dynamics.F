@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.36 1998/10/28 03:11:37 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.37 1998/11/03 15:28:04 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -380,7 +380,7 @@ C--      Calculate active tracer tendencies
      I         xA,yA,uTrans,vTrans,rTrans,maskUp,maskC,
      I         K13,K23,KappaRT,KapGM,
      U         aTerm,xTerm,fZon,fMer,fVerT,
-     I         myThid)
+     I         myTime, myThid)
          ENDIF
          IF ( saltStepping ) THEN
           CALL CALC_GS(
@@ -388,7 +388,7 @@ C--      Calculate active tracer tendencies
      I         xA,yA,uTrans,vTrans,rTrans,maskUp,maskC,
      I         K13,K23,KappaRS,KapGM,
      U         aTerm,xTerm,fZon,fMer,fVerS,
-     I         myThid)
+     I         myTime, myThid)
          ENDIF
 C--      Prediction step (step forward all model variables)
          CALL TIMESTEP(

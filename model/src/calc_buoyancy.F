@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.3 1998/10/28 03:11:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_buoyancy.F,v 1.4 1998/11/03 15:28:04 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -41,7 +41,7 @@ C--   == Local variables ==
 
        DO j=jMin,jMax
         DO i=iMin,iMax
-         buoy(i,j)=-specVol_S(K)/theta_S(K)*(theta(i,j,k,bi,bj)-tRef(K))
+         buoy(i,j)=(theta(i,j,k,bi,bj)-tRef(K))/tRef(K)
         ENDDO
        ENDDO
        

@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/eesupp/src/different_multiple.F,v 1.1 1998/05/21 18:30:08 cnh Exp $
+C     $Header: /u/gcmpack/MITgcm/eesupp/src/different_multiple.F,v 1.2 1998/11/03 15:28:03 cnh Exp $
 #include "CPP_EEOPTIONS.h"
 
 CStartofinterface
@@ -16,14 +16,31 @@ C     | separately with no optimisation.                         |
 C     \==========================================================/
       IMPLICIT NONE
 C     Returns TRUE if val1 and val2 are different multiples of freq.
-      REAL freq, val1, val2
+      _RL  freq, val1, val2
 CEndofinterface
+      _RL  f, v1, v2, v3, v4, d1, d2, d3, step
+
+C     o Do easy cases first.
       DIFFERENT_MULTIPLE = .FALSE.
-      IF ( freq .EQ. 0. ) THEN
-        DIFFERENT_MULTIPLE = .FALSE.
-      ELSE
-        DIFFERENT_MULTIPLE = INT(val1/freq) .NE. INT(val2/freq)
+      IF ( freq .EQ. 0. ) RETURN
+      IF ( ABS(val1-val2) .GT. freq ) THEN
+       DIFFERENT_MULTIPLE = .TRUE.
+       RETURN
       ENDIF
+
+C     o This case is more complex because of round-off error
+      f = freq
+      v1 = val1
+      v2 = val2
+      step = v1-v2
+
+C     Test v1 to see if its a "closest multiple"
+      v3 = v1 + step
+      v4 = NINT(v1/f)*f
+      d1 = v1-v4
+      d2 = v2-v4
+      d3 = v3-v4
+      IF ( ABS(d1) .LE. ABS(d2) .AND.
+     &     ABS(d1) .LE. ABS(d3) ) DIFFERENT_MULTIPLE = .TRUE.
+
       END
-
-

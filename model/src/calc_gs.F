@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.15 1998/10/28 03:11:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.16 1998/11/03 15:28:04 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -8,7 +8,7 @@ CStartOfInterFace
      I           xA,yA,uTrans,vTrans,rTrans,maskup,maskC,
      I           K13,K23,KappaRS,KapGM,
      U           af,df,fZon,fMer,fVerS,
-     I           myThid )
+     I           myCurrentTime, myThid )
 C     /==========================================================\
 C     | SUBROUTINE CALC_GS                                       |
 C     | o Calculate the salt tendency terms.                     |
@@ -82,6 +82,7 @@ C     myThid - Instance number for this innvocation of CALC_GT
       INTEGER k,kUp,kDown,kM1
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER myThid
+      _RL     myCurrentTime
 CEndOfInterface
 
 C     == Local variables ==
@@ -261,19 +262,26 @@ C           are not used.
        ENDDO
       ENDDO
 
-C--   External P-E forcing term(s)
+C--   External forcing term(s)
+      CALL EXTERNAL_FORCING_S(
+     I     iMin,iMax,jMin,jMax,bi,bj,k,
+     I     myCurrentTime,myThid)
 C     o Surface relaxation term
-      IF ( TOP_LAYER ) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gS(i,j,k,bi,bj)=gS(i,j,k,bi,bj)
-     &   +maskC(i,j)*(
-     &   -lambdaSaltClimRelax*(salt(i,j,k,bi,bj)-SSS(i,j,bi,bj))
-     &   +EmPmR(i,j,bi,bj) )
-        ENDDO
-       ENDDO
-      ENDIF
+C     IF ( TOP_LAYER ) THEN
+C      DO j=jMin,jMax
+C       DO i=iMin,iMax
+C        gS(i,j,k,bi,bj)=gS(i,j,k,bi,bj)
+C    &   +maskC(i,j)*(
+C    &   -lambdaSaltClimRelax*(salt(i,j,k,bi,bj)-SSS(i,j,bi,bj))
+C    &   +EmPmR(i,j,bi,bj) )
+C       ENDDO
+C      ENDDO
+C     ENDIF
 
+#ifdef ALLOW_LATITUDE_CIRCLE_FFT_FILTER
+C--
+      CALL FILTER_LATCIRCS_FFT_APPLY( gS, 1, sNy, k, k, bi, bj, 1, myThid)
+#endif
 
       RETURN
       END
