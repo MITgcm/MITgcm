@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_ph.F,v 1.7 1998/07/29 18:33:47 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_ph.F,v 1.8 1998/08/20 16:04:59 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -21,7 +21,7 @@ C     == Routine arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax,K
       _RL rhokm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhokp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL  pH(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL pH    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       integer myThid
 C     == Local variables ==
       INTEGER i,j,Km1
@@ -40,8 +40,8 @@ C     (This is now the actual hydrostatic pressure at the T/S points)
       DO j=jMin,jMax
        DO i=iMin,iMax
         pH(i,j,K)=pH(i,j,Km1)+Gravity*halfLayer
-Clop &  *0.5 _d 0*(dzF(Km1)*_hFacC(i,j,Km1,bi,bj)+dzF(K)*_hFacC(i,j,K,bi,bj))
-     &  *0.5 _d 0*(dzF(Km1)+dzF(K))
+Clop &  *0.5 _d 0*(drF(Km1)*_hFacC(i,j,Km1,bi,bj)+drF(K)*_hFacC(i,j,K,bi,bj))
+     &  *0.5 _d 0*(drF(Km1)+drF(K))
      &  *0.5 _d 0*( rhokm1(i,j)+rhokp1(i,j) )
        ENDDO
       ENDDO

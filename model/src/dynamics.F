@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.26 1998/08/19 16:20:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.27 1998/08/20 16:03:15 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -75,8 +75,8 @@ C                          into fVerTerm
       _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL wTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL aTerm (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -127,13 +127,14 @@ C       "Calculation of Gs"
 C       ===================
 C       This is where all the accelerations and tendencies (ie.
 C       physics, parameterizations etc...) are calculated
-C         w = sum_z ( div. u[n] )
+C         rVel = sum_r ( div. u[n] )
 C         rho = rho ( theta[n], salt[n] )
+C         b   = b(rho, theta)
 C         K31 = K31 ( rho )
-C         Gu[n] = Gu( u[n], v[n], w, rho, Ph, ... )
-C         Gv[n] = Gv( u[n], v[n], w, rho, Ph, ... )
-C         Gt[n] = Gt( theta[n], u[n], v[n], w, K31, ... )
-C         Gs[n] = Gs( salt[n], u[n], v[n], w, K31, ... )
+C         Gu[n] = Gu( u[n], v[n], rVel, b, ... )
+C         Gv[n] = Gv( u[n], v[n], rVel, b, ... )
+C         Gt[n] = Gt( theta[n], u[n], v[n], rVel, K31, ... )
+C         Gs[n] = Gs( salt[n], u[n], v[n], rVel, K31, ... )
 C
 C       "Time-stepping" or "Prediction"
 C       ================================
@@ -198,22 +199,22 @@ C     uninitialised but inert locations.
 C--     Set up work arrays that need valid initial values
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          wTrans(i,j)  = 0. _d 0
-          wVel  (i,j,1) = 0. _d 0
-          wVel  (i,j,2) = 0. _d 0
-          fVerT(i,j,1) = 0. _d 0
-          fVerT(i,j,2) = 0. _d 0
-          fVerS(i,j,1) = 0. _d 0
-          fVerS(i,j,2) = 0. _d 0
-          fVerU(i,j,1) = 0. _d 0
-          fVerU(i,j,2) = 0. _d 0
-          fVerV(i,j,1) = 0. _d 0
-          fVerV(i,j,2) = 0. _d 0
-          pH(i,j,1) = 0. _d 0
-          K13(i,j,1) = 0. _d 0
-          K23(i,j,1) = 0. _d 0
-          K33(i,j,1) = 0. _d 0
-          KapGM(i,j) = GMkbackground
+          rTrans(i,j)   = 0. _d 0
+          rVel  (i,j,1) = 0. _d 0
+          rVel  (i,j,2) = 0. _d 0
+          fVerT(i,j,1)  = 0. _d 0
+          fVerT(i,j,2)  = 0. _d 0
+          fVerS(i,j,1)  = 0. _d 0
+          fVerS(i,j,2)  = 0. _d 0
+          fVerU(i,j,1)  = 0. _d 0
+          fVerU(i,j,2)  = 0. _d 0
+          fVerV(i,j,1)  = 0. _d 0
+          fVerV(i,j,2)  = 0. _d 0
+          phiHyd(i,j,1) = 0. _d 0
+          K13(i,j,1)    = 0. _d 0
+          K23(i,j,1)    = 0. _d 0
+          K33(i,j,1)    = 0. _d 0
+          KapGM(i,j)    = GMkbackground
          ENDDO
         ENDDO
 
@@ -240,6 +241,7 @@ C--      Update fields in layer below according to tendency terms
          CALL CORRECTION_STEP(
      I        bi,bj,iMin,iMax,jMin,jMax,K+1,pSurfX,pSurfY,myTime,myThid)
         ENDIF
+
 C--     Density of 1st level (below W(1)) reference to level 1
         CALL FIND_RHO(
      I     bi, bj, iMin, iMax, jMin, jMax, K, K, eosType,
@@ -257,6 +259,7 @@ C        and mix as needed.
          CALL CONVECT(
      I       bi,bj,iMin,iMax,jMin,jMax,K+1,rhoKm1,rhoKp1,
      I       myTime,myIter,myThid)
+
 C--      Recompute density after mixing
          CALL FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax, K, K, eosType,
@@ -284,15 +287,16 @@ C--       Update fields in layer below according to tendency terms
           CALL CORRECTION_STEP(
      I         bi,bj,iMin,iMax,jMin,jMax,K+1,pSurfX,pSurfY,myTime,myThid)
          ENDIF
+
 C--      Density of K level (below W(K)) reference to K level
          CALL FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax,  K, K, eosType,
      O      rhoK,
      I      myThid )
+
          IF ( .NOT. BOTTOM_LAYER ) THEN
-C--       Check static stability with layer below
-C         and mix as needed.
-C--       Density of K+1 level (below W(K+1)) reference to K level
+C--       Check static stability with layer below and mix as needed.
+C--       Density of K+1 level (below W(K+1)) reference to K level.
           CALL FIND_RHO(
      I       bi, bj, iMin, iMax, jMin, jMax,  K+1, K, eosType,
      O       rhoKp1,
@@ -330,8 +334,8 @@ C--      Calculate iso-neutral slopes for the GM/Redi parameterisation
      I             myThid )
          DO J=jMin,jMax
           DO I=iMin,iMax
-           rhoKm1(I,J) =rhoK(I,J)
-           buoyKm1(I,J)=buoyK(I,J)
+           rhoKm1 (I,J) = rhoK(I,J)
+           buoyKm1(I,J) = buoyK(I,J)
           ENDDO
          ENDDO
 
