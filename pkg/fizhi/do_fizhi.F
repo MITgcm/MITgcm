@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.15 2004/06/24 15:06:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.16 2004/06/24 18:56:57 molod Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
        subroutine do_fizhi(myid,uphy,vphy,thphy,sphy,pephy,lons,lats,
@@ -60,12 +60,13 @@ c
       integer iras,nlwcld,nlwlz,nswcld,nswlz
       integer imstturbsw,imstturblw
 
-      real xlats(im2,jm2), xlons(im2,jm2), sea_ice(im2,jm2), p(im2,jm2)
+      real xlats(im2,jm2), xlons(im2,jm2), sea_ice(im2,jm2) 
+      real p(im2,jm2,Nsx,Nsy)
       real u(im2,jm2,Nrphys), v(im2,jm2,Nrphys), t(im2,jm2,Nrphys)
       real q(im2,jm2,Nrphys,ntracer)
-      real pl(im2,jm2,Nrphys),pkl(im2,jm2,Nrphys+1)
-      real ple(im2,jm2,Nrphys+1),pkle(im2,jm2,Nrphys)
-      real dpres(im2,jm2,Nrphys)
+      real pl(im2,jm2,Nrphys,Nsx,Nsy),pkl(im2,jm2,Nrphys,Nsx,Nsy)
+      real ple(im2,jm2,Nrphys+1,Nsx,Nsy),pkle(im2,jm2,Nrphys+1,Nsx,Nsy)
+      real dpres(im2,jm2,Nrphys,Nsx,Nsy)
       real lwdt(im2,jm2,Nrphys,Nsx,Nsy),lwdtclr(im2,jm2,Nrphys,Nsx,Nsy) 
       real swdt(im2,jm2,Nrphys,Nsx,Nsy),swdtclr(im2,jm2,Nrphys,Nsx,Nsy)
       real turbu(im2,jm2,Nrphys,Nsx,Nsy),turbv(im2,jm2,Nrphys,Nsx,Nsy)
@@ -110,6 +111,7 @@ c
       save nswcld,cldtot_sw,clras_sw,cldlsp_sw,nswlz,swlz,
       save imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw,fccavelw
       save qq
+      save pl,ple,dpres,pkle,pkl
 
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
@@ -134,9 +136,9 @@ C***********************************************************************
 
       do j = jm1,jm2
       do i = im1,im2
-       ple(i,j,Nrphys+1) = pephy(i,j,Nrphys+1,bi,bj)
-       pkle(i,j,Nrphys+1) = pephy(i,j,Nrphys+1,bi,bj) **kappa
-       p(i,j) = pephy(i,j,Nrphys+1,bi,bj)
+       ple(i,j,Nrphys+1,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)
+       pkle(i,j,Nrphys+1,bi,bj) = pephy(i,j,Nrphys+1,bi,bj) **kappa
+       p(i,j,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)
        xlats(i,j) = lats(i,j,bi,bj)
        xlons(i,j) = lons(i,j,bi,bj)
        sea_ice(i,j) = sice(i,j,bi,bj)
@@ -149,19 +151,21 @@ C***********************************************************************
        v(i,j,L) = vphy(i,j,L,bi,bj)
        t(i,j,L) = thphy(i,j,L,bi,bj)/p0kappa
        q(i,j,L,1) = sphy(i,j,L,bi,bj)
-       pl(i,j,L) = (pephy(i,j,L,bi,bj)+pephy(i,j,L+1))/2.
-       dpres(i,j,L) = pephy(i,j,L+1,bi,bj)-pephy(i,j,L)
-       ple(i,j,L) = pephy(i,j,L,bi,bj)
-       pkle(i,j,L) = ple(i,j,L) **kappa
+       pl(i,j,L,bi,bj) = (pephy(i,j,L,bi,bj)+pephy(i,j,L+1))/2.
+       dpres(i,j,L,bi,bj) = pephy(i,j,L+1,bi,bj)-pephy(i,j,L)
+       ple(i,j,L,bi,bj) = pephy(i,j,L,bi,bj)
+       pkle(i,j,L,bi,bj) = ple(i,j,L) **kappa
       enddo
       enddo
       enddo
 
-      call pkappa (ple,pkle,im2,jm2,Nrphys,pkl)
+      call pkappa (ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),im2,jm2,Nrphys,
+     .                                                 pkl(1,1,1,bi,bj))
 
       call fizhi_driver(myid,im2,jm2,Nrphys,ptracer,ntracer,xlats,xlons,
-     . p,u,v,t,q,pl,ple,dpres,pkle,pkl,fracland(1,1,bi,bj),
-     . landtype(1,1,bi,bj),radswt,
+     . p(1,1,bi,bj),u,v,t,q,pl(1,1,1,bi,bj),ple(1,1,1,bi,bj),
+     . dpres(1,1,1,bi,bj),pkle(1,1,1,bi,bj),pkl(1,1,1,bi,bj),
+     . fracland(1,1,bi,bj),landtype(1,1,bi,bj),radswt,
      . phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,
      . nchp,chlat(1,bi,bj),chlon(1,bi,bj),igrd(1,bi,bj),nchpland,
      . chfr(1,bi,bj),ityp(1,bi,bj),
@@ -201,14 +205,14 @@ C***********************************************************************
        dthphy(i,j,L,bi,bj) = ((moistt(i,j,L,bi,bj)+turbt(i,j,L,bi,bj)+
      .   lwdt(i,j,L,bi,bj) + 
      .   dlwdtg(i,j,L,bi,bj) * (tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) +
-     .   swdt(i,j,L,bi,bj) * radswt(i,j,bi,bj) ) * p0kappa ) / p(i,j)
+     .   swdt(i,j,L,bi,bj)*radswt(i,j,bi,bj) )*p0kappa ) / p(i,j,bi,bj)
        dsphy(i,j,L,bi,bj) = (moistq(i,j,L,1,bi,bj)+turbq(i,j,L,1,bi,bj))
-     .                                    /p(i,j)
+     .                                    /p(i,j,bi,bj)
       enddo
       enddo
       enddo
 
-      call fizhi_step_diag(myThid,p,uphy,vphy,thphy,sphy,qq,
+      call fizhi_step_diag(myThid,p,uphy,vphy,thphy,sphy,qq,pkl,dpres,
      .  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,
      .  turbu,turbv,turbt,turbq,moistu,moistv,moistt,moistq,
      .  lwdt,swdt,lwdtclr,swdtclr,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,bi,bj)
