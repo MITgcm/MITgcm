@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.4 1998/06/16 15:20:08 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.5 1998/06/16 17:07:11 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -26,11 +26,7 @@ C     == Routine Arguments ==
       INTEGER myThid
 C     == Local variables ==
       INTEGER i,j
-      _RL ab15,ab05,hxFac,hyFac,rRhoNil
-
-C     Adams-Bashforth timestepping weights
-      ab15=1.5+abeps
-      ab05=-0.5-abeps
+      _RL hxFac,hyFac,rRhoNil
 
 C     On/off scaling paramters
       hxFac = pfFacMom
