@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.5 2003/09/06 02:45:07 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.6 2003/09/10 02:30:37 edhill Exp $
 #
 
 usage()
@@ -10,11 +10,20 @@ usage()
     echo
     echo "where possible OPTIONS are:"
     echo "  (-help|-h)               print usage"
-    echo "  (-optfile=|-of=)STRING   list of genmake2 \"optfiles\""
+    echo "  (-optfile=|-of=)STRING   list of optfiles to use"
     echo "  (-a|-addr)STRING         list of email recipients"
-    echo "  (-t|-tdir)STRING         list of \"test\" dirs"
-    echo "  (-b|-bash)STRING         the \"bash\" executable"
-    echo "  (-m|-make)STRING         the \"make\" executable"
+    echo "                             (DEF=\"edhill@mitgcm.org\")"
+    echo "  (-t|-tdir)STRING         list of test dirs to use"
+    echo "                             (DEF=\"\" which builds all)"
+    echo "  (-b|-bash)STRING         location of \"bash\" executable"
+    echo "                             (DEF=\"\" for \"/bin/bash\")"
+    echo "  (-c|-command)STRING      command to run"
+    echo "                             (DEF=\"make output.txt\")"
+    echo
+    echo "and where STRING follows a whitespace-delimited format"
+    echo "such as:"
+    echo "  -t 'exp0 exp2 exp3' "
+    echo "  -addr='abc@123.com testing@home.org'"
     echo
     exit 1
 }
@@ -31,7 +40,7 @@ build_mpack()
 	    exit 1
 	fi
 	echo -n "building mpack...  "
-	( cd $MPACKDIR && ./configure && $MAKE ) > build_mpack.out 2>&1
+	( cd $MPACKDIR && ./configure && make ) > build_mpack.out 2>&1
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    echo
@@ -167,7 +176,7 @@ genmakemodel()
 	cd $1;
 	printf 'genmake ... ' 1>&2
         # ../../../tools/genmake -ieee -mods=../code > make.log 2>&1
-	$GENMAKE2 -make $MAKE -ds --mods=../code "--optfile="$OPTFILE > make.log 2>&1
+	$GENMAKE2  -ds --mods=../code "--optfile="$OPTFILE > make.log 2>&1
 	RETVAL=$?
 	for i in gm_state gm_optfile gm_local Makefile ; do
 	    if test -r $i ; then
@@ -190,10 +199,12 @@ makeclean()
     # makeclean directory
     (
 	cd $1;
-	rm -f output.txt
+	if test -e output.txt ; then
+	    rm -f output.txt
+	fi
 	printf 'make CLEAN ... ' 2>&1
 	if test -r Makefile ; then
-	    $MAKE CLEAN >> make.log 2>&1
+	    make CLEAN >> make.log 2>&1
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
 		tail make.log
@@ -213,7 +224,7 @@ makedependmodel()
     (
 	cd $1;
 	printf 'make depend ... ' 1>&2
-	$MAKE depend >> make.log 2>&1
+	make depend >> make.log 2>&1
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    tail make.log
@@ -233,7 +244,7 @@ makemodel()
 	cd $1;
 	if test -r Makefile ; then
 	    printf 'make ... ' 1>&2
-	    $MAKE >> make.log 2>&1
+	    make >> make.log 2>&1
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
 		tail make.log
@@ -259,24 +270,21 @@ linkdata()
 
 runmodel()
 {
-    # runmodel directory exe
+    # runmodel directory
     #
-    #  runs the model "exe" in "directory" (exe is relative to directory)
+    #  runs "$COMMAND" in "directory" 
+    #  (where "$COMMAND" is relative to "directory")
     (
 	cd $1
-	if [ -x $2 ]; then
-	    if [ $quick -eq 0 ]; then
-		rm -f output.txt
-	    fi
-	    printf 'runmodel: ' 1>&2
-	    $MAKE output.txt
-	    RETVAL=$?
-	    if test "x$RETVAL" = x0 ; then
-		cp output.txt $CDIR"/output.txt"
-		return 0
-	    else
-		return 1
-	    fi
+	printf 'runmodel: ' 1>&2
+	# make output.txt
+	$COMMAND
+	RETVAL=$?
+	if test "x$RETVAL" = x0 ; then
+	    cp output.txt $CDIR"/output.txt"
+	    return 0
+	else
+	    return 1
 	fi
     )
 }
@@ -385,10 +393,10 @@ scandirs()
 #  Default properties
 debug=0
 verbose=1
-quick=0
 clean=0
-ieee=1
 expts=''
+# ieee=1
+# quick=0
 
 BASH=
 OPTFILES=
@@ -396,7 +404,7 @@ ADDRESSES=edhill@mitgcm.org
 TESTDIRS=
 MPACKDIR="../tools/mpack-1.6"
 MPACK="$MPACKDIR/mpack"
-MAKE=make
+COMMAND="make output.txt"
 
 echo -n "parsing options...  "
 
@@ -437,16 +445,14 @@ for ac_option ; do
         -bash=* | --bash=*)
             BASH=$ac_optarg ;;
 
-	-make | --make | -m | --m)
-            ac_prev=MAKE ;;
-        -make=* | --make=*)
-            MAKE=$ac_optarg ;;
+	-command | --command | -c | --c)
+	    ac_prev=COMMAND ;;
+	-command=* | --command=*)
+	    COMMAND=$ac_optarg ;;
 
-	-quick) quick=1 ;;
 	-verbose) verbose=2 ;;
 	-debug) debug=1 ;;
 	-clean) clean=1 ;;
-	-noieee) ieee=0 ;;
 	-quiet) verbose=0 ;;
 
         -*)
@@ -558,7 +564,7 @@ for OPTFILE in $OPTFILES ; do
 	    && makedependmodel $dir/$builddir && makedepend=Y \
 	    && makemodel $dir/$builddir && make=Y \
 	    && linkdata $seperatebuilddir $dir/$rundir \
-	    && runmodel $dir/$builddir mitgcmuv && run=Y \
+	    && runmodel $dir/$builddir && run=Y \
 	    && results=`testoutput $dir $rundir`
 	echo
 	formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} \
