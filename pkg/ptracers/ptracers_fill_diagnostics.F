@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fill_diagnostics.F,v 1.3 2004/09/03 20:10:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fill_diagnostics.F,v 1.4 2004/12/14 04:56:38 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -8,13 +8,13 @@ CBOP 1
 C     !ROUTINE: PTRACERS_FILL_DIAGNOSTICS
 
 C     !INTERFACE:
-      subroutine PTRACERS_FILL_DIAGNOSTICS(myThid)
+      SUBROUTINE PTRACERS_FILL_DIAGNOSTICS(myThid)
 
 C     !DESCRIPTION:
 C     Fill the diagnostics array locations
       
 C     !USES:
-      implicit none
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "GRID.h"
@@ -23,95 +23,96 @@ C     !USES:
 #include "PTRACERS.h"
 
 C     !INPUT PARAMETERS:
-      integer myThid 
+      INTEGER myThid 
 CEOP
 
 #ifdef ALLOW_DIAGNOSTICS
 
 C     !LOCAL VARIABLES:
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
       _RL dummy(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr,Nsx,Nsy)
-      integer i,j,K,N,bi,bj
-      character *8 diagname
+      INTEGER i,j,K,N,bi,bj
+      CHARACTER*8 diagname
       INTEGER km1
       
       diagname = '        '
       
-      do N = 1,PTRACERS_numInUse
+c     DO N = 1,PTRACERS_numInUse
+C-    due to format (I1) and diagnostics name limitation, 
+C      => do not go beyong 9 tracers
+      DO N = 1,MIN(9,PTRACERS_numInUse)
         
-        do bj = myByLo(myThid), myByHi(myThid)
-          do bi = myBxLo(myThid), myBxHi(myThid)
-            do K=1,Nr
-              do j = 1,sNy
-                do i = 1,sNx
-                  dummy(i,j,K,bi,bj) = ptracer(i,j,K,bi,bj,N)
-                enddo
-              enddo
-            enddo
-          enddo
-        enddo
         diagname = '        '
-        write(diagname,'(a4,i1)') 'TRAC',N
-        call fill_diagnostics(myThid,diagname,0,Nr,0,1,1,dummy)
+        WRITE(diagname,'(A4,I1)') 'TRAC',N
+        CALL DIAGNOSTICS_FILL( ptracer(1-Olx,1-Oly,1,1,1,N), diagname,
+     &                         0,Nr,0,1,1,myThid )
         
-        do bj = myByLo(myThid), myByHi(myThid)
-          do bi = myBxLo(myThid), myBxHi(myThid)
-            do K=1,Nr
-              do j = 1,sNy
-                do i = 1,sNx
+        diagname = '        '
+        WRITE(diagname,'(A5,I1)') 'UTRAC',N
+        IF ( DIAGNOSTICS_IS_ON(diagname,myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO K=1,Nr
+              DO j = 1,sNy
+                DO i = 1,sNx
                   dummy(i,j,K,bi,bj) = 
      &                 uVel(i,j,K,bi,bj)*hFacW(i,j,K,bi,bj) *
-     &                 0.5*(ptracer(i,j,K,bi,bj,N)
-     &                 + ptracer(i-1,j,K,bi,bj,N))
-                enddo
-              enddo
-            enddo
-          enddo
-        enddo
-        diagname = '        '
-        write(diagname,'(a5,i1)') 'UTRAC',N
-        call fill_diagnostics(myThid,diagname,0,Nr,0,1,1,dummy)
+     &                 0.5 _d 0*(ptracer(i,j,K,bi,bj,N)
+     &                       + ptracer(i-1,j,K,bi,bj,N))
+                ENDDO
+              ENDDO
+            ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL( dummy, diagname, 0,Nr,0,1,1,myThid )
+        ENDIF
         
-        do bj = myByLo(myThid), myByHi(myThid)
-          do bi = myBxLo(myThid), myBxHi(myThid)
-            do K=1,Nr
-              do j = 1,sNy
-                do i = 1,sNx
+        diagname = '        '
+        WRITE(diagname,'(A5,I1)') 'VTRAC',N
+        IF ( DIAGNOSTICS_IS_ON(diagname,myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO K=1,Nr
+              DO j = 1,sNy
+                DO i = 1,sNx
                   dummy(i,j,K,bi,bj) = 
      &                 vVel(i,j,K,bi,bj)*hFacS(i,j,K,bi,bj) *
-     &                 0.5*(ptracer(i,j,K,bi,bj,N)
-     &                 + ptracer(i,j-1,K,bi,bj,N))
-                enddo
-              enddo
-            enddo
-          enddo
-        enddo
-        diagname = '        '
-        write(diagname,'(a5,i1)') 'VTRAC',N
-        call fill_diagnostics(myThid,diagname,0,Nr,0,1,1,dummy)
+     &                 0.5 _d 0*(ptracer(i,j,K,bi,bj,N)
+     &                       + ptracer(i,j-1,K,bi,bj,N))
+                ENDDO
+              ENDDO
+            ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL( dummy, diagname, 0,Nr,0,1,1,myThid )
+        ENDIF
         
-        do bj = myByLo(myThid), myByHi(myThid)
-          do bi = myBxLo(myThid), myBxHi(myThid)
-            do K=1,Nr
+        diagname = '        '
+        WRITE(diagname,'(A5,I1)') 'WTRAC',N
+        IF ( DIAGNOSTICS_IS_ON(diagname,myThid) ) THEN
+         DO bj = myByLo(myThid), myByHi(myThid)
+          DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO K=1,Nr
               km1 = MAX(K-1,1)
-              do j = 1,sNy
-                do i = 1,sNx
+              DO j = 1,sNy
+                DO i = 1,sNx
                   dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj) *
-     &                 0.5*(ptracer(i,j,K,bi,bj,N)
-     &                 + ptracer(i,j,km1,bi,bj,N))
-                enddo
-              enddo
-            enddo
-          enddo
-        enddo
-        diagname = '        '
-        write(diagname,'(a5,i1)') 'WTRAC',N
-        call fill_diagnostics(myThid,diagname,0,Nr,0,1,1,dummy)
+     &                 0.5 _d 0*(ptracer(i,j,K,bi,bj,N)
+     &                       + ptracer(i,j,km1,bi,bj,N))
+                ENDDO
+              ENDDO
+            ENDDO
+          ENDDO
+         ENDDO
+         CALL DIAGNOSTICS_FILL( dummy, diagname, 0,Nr,0,1,1,myThid )
+        ENDIF
         
-      enddo
+      ENDDO
 
 #endif /* ALLOW_DIAGNOSTICS */
 
-      return
-      end
+      RETURN 
+      END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
