@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.9 2005/02/16 01:55:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.10 2005/02/22 17:09:24 jmc Exp $
 C $Name:  $
       
 #include "PACKAGES_CONFIG.h"
@@ -40,7 +40,7 @@ C     !LOCAL VARIABLES:
 C     tmpfld  - Temporary array used to compute & write Total Depth
 C               has to be in common for multi threading
 C     ?aja: not sure why the COMMON block is necessary - should ask JMC?
-      COMMON / LOCAL_INI_MASKS_ETC / tmpfld
+c     COMMON / LOCAL_INI_MASKS_ETC / tmpfld
       _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       INTEGER i,j,bi,bj
 CEOP
@@ -91,7 +91,7 @@ C     Write 3D geometry arrays
 C       Grid spacing, areas and hFacs
         CALL MNC_CW_ADD_VNAME('drC', '-_-_--__C__-', 0,0, myThid)
         CALL MNC_CW_ADD_VNAME('drF', '-_-_--__C__-', 0,0, myThid)
-        CALL MNC_CW_ADD_VNAME('saFac', '-_-_--__C__-', 0,0, myThid)
+c       CALL MNC_CW_ADD_VNAME('saFac', '-_-_--__C__-', 0,0, myThid)
 
         CALL MNC_CW_ADD_VNAME('dxC', 'U_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('dyC', 'V_xy_Hn__-__-', 3,4, myThid)
@@ -101,12 +101,12 @@ C       Grid spacing, areas and hFacs
         CALL MNC_CW_ADD_VNAME('dyG', 'U_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('dxV', 'Cor_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('dyU', 'Cor_xy_Hn__-__-', 3,4, myThid)
-        CALL MNC_CW_ADD_VNAME('rA', 'Cen_xy_Hn__-__-', 3,4, myThid)
-        CALL MNC_CW_ADD_VNAME('rAw', 'Cen_xy_Hn__-__-', 3,4, myThid)
-        CALL MNC_CW_ADD_VNAME('rAs', 'Cen_xy_Hn__-__-', 3,4, myThid)
-        CALL MNC_CW_ADD_VNAME('rAz', 'Cen_xy_Hn__-__-', 3,4, myThid)
+        CALL MNC_CW_ADD_VNAME('rA',  'Cen_xy_Hn__-__-', 3,4, myThid)
+        CALL MNC_CW_ADD_VNAME('rAw', 'U_xy_Hn__-__-', 3,4, myThid)
+        CALL MNC_CW_ADD_VNAME('rAs', 'V_xy_Hn__-__-', 3,4, myThid)
+        CALL MNC_CW_ADD_VNAME('rAz', 'Cor_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('fCori', 'Cen_xy_Hn__-__-', 3,4,myThid)
-        CALL MNC_CW_ADD_VNAME('fCoriG','Cen_xy_Hn__-__-', 3,4,myThid)
+        CALL MNC_CW_ADD_VNAME('fCoriG','Cor_xy_Hn__-__-', 3,4,myThid)
         CALL MNC_CW_ADD_VNAME('R_low','Cen_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('Ro_surf','Cen_xy_Hn__-__-',3,4,myThid)
         CALL MNC_CW_ADD_VNAME('Depth', 'Cen_xy_Hn__-__-', 3,4,myThid)
@@ -118,8 +118,8 @@ C       Grid spacing, areas and hFacs
      &       'r cell center separation',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('drF','description',
      &       'r cell face separation',myThid)
-        CALL MNC_CW_ADD_VATTR_TEXT('saFac','description',
-     &       'shallow atmosphere factor',myThid)
+c       CALL MNC_CW_ADD_VATTR_TEXT('saFac','description',
+c    &       'shallow atmosphere factor',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('dxC','description',
      &       'x cell center separation',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('dyC','description',
@@ -129,27 +129,25 @@ C       Grid spacing, areas and hFacs
         CALL MNC_CW_ADD_VATTR_TEXT('dyF','description',
      &     'y cell face separation',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('dxG','description',
-     &     'x cell face separation',myThid)
+     &     'x cell corner separation',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('dyG','description',
-     &       'y cell face separation',myThid)
+     &       'y cell corner separation',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('dxV','description',
      &       'x v-velocity separation',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('dyU','description',
      &       'y u-velocity separation',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('rA','description',
-     &       'r-face area',myThid)
-C       Its pointless to write blank attributes so these should be
-C       filled in.
-C        CALL MNC_CW_ADD_VATTR_TEXT('rAw','description',
-C     &       '',myThid)
-C        CALL MNC_CW_ADD_VATTR_TEXT('rAs','description',
-C     &       '',myThid)
-C        CALL MNC_CW_ADD_VATTR_TEXT('rAz','description',
-C       &       '',myThid)
+     &       'r-face area at cell center',myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('rAw','description',
+     &       'r-face area at U point',myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('rAs','description',
+     &       'r-face area at V point',myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('rAz','description',
+     &       'r-face area at cell corner',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('fCori','description',
-     &       'Coriolis f',myThid)
+     &       'Coriolis f at cell center',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('fCoriG','description',
-     &       'Coriolis f',myThid)
+     &       'Coriolis f at cell corner',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('R_low','description',
      &       'base of fluid in r-units',myThid)
         CALL MNC_CW_ADD_VATTR_TEXT('Ro_surf','description',
@@ -169,13 +167,13 @@ C       Write the GRID.h variables to a file
         CALL MNC_CW_RL_W('D',bfname,0,0,'RF',rF,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'drC',drC,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'drF',drF,myThid)
-        CALL MNC_CW_RL_W('D',bfname,0,0,'saFac',saFac,myThid)
+c       CALL MNC_CW_RL_W('D',bfname,0,0,'saFac',saFac,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'XC',xC,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'YC',yC,myThid)
-        CALL MNC_CW_RL_W('D',bfname,0,0,'XU',xG,myThid)
-        CALL MNC_CW_RL_W('D',bfname,0,0,'YU',yC,myThid)
-        CALL MNC_CW_RL_W('D',bfname,0,0,'XV',xC,myThid)
-        CALL MNC_CW_RL_W('D',bfname,0,0,'YV',yG,myThid)
+c       CALL MNC_CW_RL_W('D',bfname,0,0,'XU',xG,myThid)
+c       CALL MNC_CW_RL_W('D',bfname,0,0,'YU',yC,myThid)
+c       CALL MNC_CW_RL_W('D',bfname,0,0,'XV',xC,myThid)
+c       CALL MNC_CW_RL_W('D',bfname,0,0,'YV',yG,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'XG',xG,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'YG',yG,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'dxC',dxC,myThid)
