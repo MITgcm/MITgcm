@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.13 2004/03/19 15:09:03 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.14 2004/03/20 20:35:21 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -93,14 +93,6 @@ C     v : Vtype index
 C
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      COMMON /MNC_OPTIONS/
-     &     mnc_echo_gtypes,
-     &     mnc_pickup_create, mnc_pickup_read
-
-      logical 
-     &     mnc_echo_gtypes,
-     &     mnc_pickup_create, mnc_pickup_read
-
       integer MNC_MAX_ID, MNC_MAX_CHAR, MNC_MAX_INFO
       integer MNC_CW_MAX_I
       parameter ( MNC_MAX_ID   = 1000 )
@@ -120,7 +112,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &     mnc_cw_dn, mnc_cw_is, mnc_cw_ie,
      &     mnc_cw_vname, mnc_cw_vnat, mnc_cw_vgind, mnc_cw_vbij, 
      &     mnc_cw_vtnm, mnc_cw_vdnm, mnc_cw_vinm,
-     &     mnc_cw_vtat, mnc_cw_vdat, mnc_cw_viat
+     &     mnc_cw_vtat, mnc_cw_vdat, mnc_cw_viat,
+     &     mnc_cw_fgnm, mnc_cw_fgud
 
       character*(MNC_MAX_CHAR) mnc_blank_name
       character*(MNC_MAX_CHAR) mnc_f_names(MNC_MAX_ID)
@@ -151,6 +144,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       integer mnc_cw_vbij(2,MNC_MAX_ID)
       integer mnc_cw_viat(MNC_CW_MAX_I,MNC_MAX_ID)
       REAL*8  mnc_cw_vdat(MNC_CW_MAX_I,MNC_MAX_ID)
+
+      character*(MNC_MAX_CHAR) mnc_cw_fgnm(MNC_MAX_ID)
+      integer mnc_cw_fgud(MNC_MAX_ID)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CEH3 ;;; Local Variables: ***

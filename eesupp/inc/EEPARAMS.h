@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.14 2003/12/16 23:50:58 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.15 2004/03/20 20:35:21 edhill Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: EEPARAMS.h
@@ -190,3 +190,7 @@ C                    by one every time an IO error occurs.
       INTEGER scrUnit1
       INTEGER scrUnit2
       INTEGER standardMessageUnit
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.1 2004/03/19 15:09:03 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.2 2004/03/20 20:35:21 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -21,39 +21,117 @@ C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer iUnit
+      integer i, iUnit, nl, isu1,isu2,mdu, errio, IL
+      character*(MAX_LEN_MBUF) data_file
       character*(MAX_LEN_MBUF) msgBuf
-      NAMELIST /MNC_PARM01/
+      CHARACTER*(MAX_LEN_PREC) record
+      NAMELIST /MNC_01/
+     &     useMNC,
      &     mnc_echo_gtypes,
      &     mnc_pickup_create,
      &     mnc_pickup_read
+      LOGICAL  exst
 
-
-      _BEGIN_MASTER(myThid)
-
-      WRITE(msgBuf,'(a)') ' MNC_READPARMS: opening data.mnc'
-      CALL PRINT_MESSAGE(msgBuf, standardMessageUnit,
-     &     SQUEEZE_RIGHT , 1)
-    
-
-      CALL OPEN_COPY_DATA_FILE(
-     I     'data.mnc', 'MNC_READPARMS',
-     O     iUnit,
-     I     myThid )
-      
 C     Default values MNC
-      mnc_echo_gtypes    =  .TRUE.
+      useMNC             =  .FALSE.
+      mnc_echo_gtypes    =  .FALSE.
       mnc_pickup_create  =  .FALSE.
       mnc_pickup_read    =  .FALSE.
       
-      WRITE(msgBuf,'(a)') ' MNC_READPARMS: finished reading data.mnc'
+C     Set the file name
+      DO i=1,MAX_LEN_MBUF
+        data_file(i:i) = ' '
+      ENDDO
+      WRITE(data_file,'(a)') 'data.mnc'
+      nl = ILNBLNK(data_file)
+
+C     Verify that the file exists and, if not, disable MNC
+      INQUIRE( FILE=data_file, EXIST=exst )
+      IF (exst) THEN
+        WRITE(msgbuf,'(3a)')
+     &       ' MNC_READPARMS: opening file ''',
+     &       data_file(1:nl), ''''
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT , mythid)
+      ELSE
+        WRITE(msgBuf,'(3a)')
+     &       'Data file: ''',data_file(1:nl),
+     &       ''' does not exist so MNC will be disabled'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &       SQUEEZE_RIGHT , mythid)
+        RETURN
+      ENDIF
+
+C     Open files
+      isu1 = 60
+      isu2 = 61
+      mdu = 62
+      OPEN(UNIT=isu1, STATUS='SCRATCH')
+      OPEN(UNIT=isu2, STATUS='SCRATCH')
+      OPEN(UNIT=mdu, FILE=data_file, STATUS='OLD', IOSTAT=errio)
+      IF ( errio .LT. 0 ) THEN
+        WRITE(msgBuf,'(3a)')
+     &       'Unable to open data file: ''',data_file(1:nl),
+     &       ''' so MNC will be disabled'
+        CALL PRINT_ERROR( msgBuf , 1)
+        STOP 'ABNORMAL END: S/R MNC_READPARMS'
+        RETURN
+      ENDIF     
+      
+      DO WHILE ( .TRUE. )
+        READ(mdu,FMT='(A)',END=1001) RECORD
+        IL = MAX(ILNBLNK(RECORD),1)
+        IF ( RECORD(1:1) .NE. commentCharacter ) THEN
+          CALL NML_SET_TERMINATOR( RECORD )
+          WRITE(UNIT=isu1,FMT='(A)') RECORD(:IL)
+        ENDIF
+        WRITE(UNIT=isu2,FMT='(A)') RECORD(:IL)
+      ENDDO
+ 1001 CONTINUE
+      CLOSE(mdu)
+      
+C--   Report contents of model parameter file
+      WRITE(msgBuf,'(A)') 
+     &     '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &     SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(3a)') '// Parameter file "',data_file(1:nl),'"'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &     SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') 
+     &     '// ======================================================='
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , 1)
+      iUnit = isu2
+      REWIND(iUnit)
+      DO WHILE ( .TRUE. )
+        READ(UNIT=iUnit,FMT='(A)',END=2001) RECORD
+        IL = MAX(ILNBLNK(RECORD),1)
+        WRITE(msgBuf,'(2a)') '>',RECORD(:IL)
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
+     &       SQUEEZE_RIGHT , 1)
+      ENDDO
+ 2001 CONTINUE
+      CLOSE(iUnit)
+      WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
 
-      _END_MASTER(myThid)
+      iUnit = isu1
+      REWIND(iUnit)
+      READ(UNIT=iUnit,NML=MNC_01,IOSTAT=errio,err=3)
+      GOTO 4
+ 3    CONTINUE
+      WRITE(msgBuf,'(A,A,A)')
+     &     'ERROR: while reading file ''',data_file(1:nl), 
+     &     ''' -- please check file contents'
+      CALL PRINT_ERROR( msgBuf , 1)
+      STOP 'ABNORMAL END: S/R MNC_READPARMS'
+ 4    CONTINUE
 
-C     Everyone else must wait for the parameters to be loaded
-      _BARRIER
+      WRITE(msgBuf,'(a)') ' MNC_READPARMS: finished reading data.mnc'
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &     SQUEEZE_RIGHT , 1)
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.11 2004/03/19 03:28:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.12 2004/03/20 20:35:21 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -42,6 +42,8 @@ C     The outer tables
         mnc_cw_vname(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
         mnc_cw_vgind(g) = 0
         mnc_cw_ndim(g) = 0
+        mnc_cw_fgnm(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
+        mnc_cw_fgud(g) = 0
         DO i = 1,MNC_CW_MAX_I
           mnc_cw_dn(i,g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
           mnc_cw_vtnm(i,g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)

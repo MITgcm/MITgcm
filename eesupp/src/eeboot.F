@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.14 2004/03/08 21:20:02 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.15 2004/03/20 20:35:21 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -154,6 +154,11 @@ C--   Pass attributes to the coupler
 #ifdef USE_DFILE
 C--   Initiialise the multi-process IO package
       CALL DFILE_INIT
+#endif
+
+C     Read the run-time flags for MNC
+#ifdef ALLOW_MNC
+      CALL MNC_READPARMS( 1 )
 #endif
 
 #ifdef ALLOW_EXCH2
