@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/AtoC.F,v 1.5 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/AtoC.F,v 1.6 2004/11/17 16:23:29 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -40,7 +40,7 @@ c-----------------------------------------------------------------------
        integer i, j, L, bi, bj
 
 c Call the exchange routine to fill in the halo regions
-       call exch_uv_agrid_xyz_RL (fieldin1,fieldin2,myThid)
+       call exch_uv_agrid_xyz_RL (fieldin1,fieldin2,.true.,myThid)
 
 c Now take average 
        do bj = myByLo(myThid), myByHi(myThid)
