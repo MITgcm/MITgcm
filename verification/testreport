@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.7 2003/09/10 04:02:39 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.8 2003/09/16 17:46:52 edhill Exp $
 #
 
 usage()
@@ -20,6 +20,8 @@ usage()
     echo "                             (DEF=\"\" for \"/bin/bash\")"
     echo "  (-c|-command)STRING      command to run"
     echo "                             (DEF=\"make output.txt\")"
+    echo "  (-m|-make)STRING         command to use for \"make\""
+    echo "                             (DEF=\"make\")"
     echo
     echo "and where STRING follows a whitespace-delimited format"
     echo "such as:"
@@ -41,7 +43,7 @@ build_mpack()
 	    exit 1
 	fi
 	echo -n "building mpack...  "
-	( cd $MPACKDIR && ./configure && make ) > build_mpack.out 2>&1
+	( cd $MPACKDIR && ./configure && $MAKE ) > build_mpack.out 2>&1
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    echo
@@ -205,7 +207,7 @@ makeclean()
 	fi
 	printf 'make CLEAN ... ' 2>&1
 	if test -r Makefile ; then
-	    make CLEAN >> make.log 2>&1
+	    $MAKE CLEAN >> make.log 2>&1
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
 		tail make.log
@@ -225,7 +227,7 @@ makedependmodel()
     (
 	cd $1;
 	printf 'make depend ... ' 1>&2
-	make depend >> make.log 2>&1
+	$MAKE depend >> make.log 2>&1
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    tail make.log
@@ -245,7 +247,7 @@ makemodel()
 	cd $1;
 	if test -r Makefile ; then
 	    printf 'make ... ' 1>&2
-	    make >> make.log 2>&1
+	    $MAKE >> make.log 2>&1
 	    RETVAL=$?
 	    if test "x$RETVAL" != x0 ; then
 		tail make.log
@@ -406,6 +408,7 @@ TESTDIRS=
 MPACKDIR="../tools/mpack-1.6"
 MPACK="$MPACKDIR/mpack"
 COMMAND="make output.txt"
+MAKE=make
 MPI=f
 
 echo -n "parsing options...  "
@@ -451,6 +454,11 @@ for ac_option ; do
 	    ac_prev=COMMAND ;;
 	-command=* | --command=*)
 	    COMMAND=$ac_optarg ;;
+
+	-make | --make | -m | --m)
+	    ac_prev=MAKE ;;
+	-make=* | --make=*)
+	    MAKE=$ac_optarg ;;
 
 	-mpi) MPI=t ;;
 	-verbose) verbose=2 ;;
