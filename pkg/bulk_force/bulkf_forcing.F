@@ -69,6 +69,7 @@ C     == Local variables ==
       _RL     fsh(1-olx:snx+olx,1-oly:sny+oly)
       _RL     flh(1-olx:snx+olx,1-oly:sny+oly)
       _RL     flwup(1-olx:snx+olx,1-oly:sny+oly)
+      _RL     flwupnet(1-olx:snx+olx,1-oly:sny+oly)
       _RL     fswnet(1-olx:snx+olx,1-oly:sny+oly)
 
       _RL     df0dT,hfl
@@ -117,7 +118,7 @@ c     determine forcing field records
      &            evap(i,j), savssq(i,j),
      &            iceornot, readwindstress)
 cQQ use down long wave data
-                  flwup(i,j)=flwup(i,j)-flw(i,j,bi,bj)
+                  flwupnet(i,j)=flwup(i,j)-flw(i,j,bi,bj)
 cQQ using down solar, need to have water albedo -- .1
 #ifdef ALLOW_THERM_SEAICE
                   if (ICEMASK(i,j,bi,bj).gt.0.d0) then
@@ -170,7 +171,7 @@ c             Net surface heat flux.
               hfl = 0. _d 0
               hfl = hfl + fsh(i,j)
               hfl = hfl + flh(i,j)
-              hfl = hfl + flwup(i,j)
+              hfl = hfl + flwupnet(i,j)
 c QQ minus solar for ncep data
 c QQ plus solar for dasilva
 c             hfl = hfl - solar(i,j,bi,bj)
@@ -213,7 +214,7 @@ c      _EXCH_XY_R8(fv     , mythid)
 
 #ifdef ALLOW_TIMEAVE
         call BULKF_AVE(bi,bj,mythid, fswnet,
-     &                 flh, fsh, flwup, evap, savssq)
+     &                 flh, fsh, flwup, evap, savssq, flwupnet)
 #endif  /*ALLOW_TIMEAVE*/
 
 #endif  /*ALLOW_BULK_FORCE*/

@@ -56,7 +56,8 @@ c     set up bulk formula arrays to zero
               BULK_latent_AVE(i,j,bi,bj)=0.e0
               BULK_sensible_AVE(i,j,bi,bj)=0.e0
               BULK_evap_AVE(i,j,bi,bj)=0.e0
-              BULK_flw_AVE(i,j,bi,bj)=0.e0
+              BULK_flwup_AVE(i,j,bi,bj)=0.e0
+              BULK_flwupnet_AVE(i,j,bi,bj)=0.e0
               BULK_solar_AVE(i,j,bi,bj)=0.e0
               BULK_ssq_AVE(i,j,bi,bj)=0.e0
               BULKF_timeave(1,bi,bj)=0.e0

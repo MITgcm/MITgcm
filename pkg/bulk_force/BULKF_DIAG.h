@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/BULKF_DIAG.h,v 1.2 2002/12/04 14:53:39 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/BULKF_DIAG.h,v 1.3 2002/12/05 16:15:58 cheisey Exp $
 C $Name:  $
 cswdblk -- change to keep bulk formula fields --
 
@@ -23,7 +23,8 @@ C     Storage arrays for time-averages
       _RL BULK_latent_AVE  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BULK_sensible_AVE(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BULK_evap_AVE     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL BULK_flw_AVE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL BULK_flwup_AVE    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL BULK_flwupnet_AVE (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BULK_solar_AVE    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BULK_ssq_AVE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
@@ -33,8 +34,9 @@ C     Storage arrays for time-averages
      &                       BULK_Qnet_AVE, BULK_EmPmR_AVE, 
      &                       BULK_fu_AVE, BULK_fv_AVE,
      &                       BULK_sensible_AVE, BULK_latent_AVE,
-     &                       BULK_evap_AVE, BULK_flw_AVE,
-     &                       BULK_solar_AVE, BULK_ssq_AVE
+     &                       BULK_evap_AVE, BULK_flwup_AVE,
+     &                       BULK_solar_AVE, BULK_ssq_AVE,
+     &                       BULK_flwupnet_AVE
 
 
 

@@ -3,7 +3,7 @@
 C     !ROUTINE: BULKF_AVE
 C     !INTERFACE:
       SUBROUTINE BULKF_AVE(bi,bj,mythid, fswnet,
-     &                     flh, fsh, flwup, evap, savssq)
+     &                     flh, fsh, flwup, evap, savssq, flwupnet)
 C     *==========================================================*
 C     | S/R  BULKF_AVE
 C     | o save values for timeaveraging
@@ -35,7 +35,7 @@ c     == routine arguments ==
       _RL     flh(1-olx:snx+olx,1-oly:sny+oly)
       _RL     flwup(1-olx:snx+olx,1-oly:sny+oly)
       _RL     fswnet(1-olx:snx+olx,1-oly:sny+oly)
-
+      _RL     flwupnet(1-olx:snx+olx,1-oly:sny+oly)
 
 #ifdef ALLOW_BULK_FORCE
 #ifdef ALLOW_TIMEAVE
@@ -61,8 +61,10 @@ c    &           (recip_Cp*recip_rhoNil*recip_dRf(1))*deltaTclock
      &                       +fsh(i,j)*deltaTclock
              BULK_evap_AVE(i,j,bi,bj)=BULK_evap_AVE(i,j,bi,bj)
      &                       +evap(i,j)*deltaTclock
-             BULK_flw_AVE(i,j,bi,bj)=BULK_flw_AVE(i,j,bi,bj)
+             BULK_flwup_AVE(i,j,bi,bj)=BULK_flwup_AVE(i,j,bi,bj)
      &                       +flwup(i,j)*deltaTclock
+             BULK_flwupnet_AVE(i,j,bi,bj)=BULK_flwupnet_AVE(i,j,bi,bj)
+     &                       +flwupnet(i,j)*deltaTclock
              BULK_solar_AVE(i,j,bi,bj)=BULK_solar_AVE(i,j,bi,bj)
      &                       +fswnet(i,j)*deltaTclock
              BULK_ssq_AVE(i,j,bi,bj)=BULK_ssq_AVE(i,j,bi,bj)
