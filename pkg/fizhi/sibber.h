@@ -4,7 +4,7 @@ C****
 
 C   SCCS VERSION @(#)sibber.h	1.1 10/15/92 
 
-      INTEGER  NTYPS, FRSTCH, MAXCH, MemFac
+      INTEGER  NTYPS, FRSTCH, MemFac
       INTEGER  NLAY, SFCLY, ROOTLY, RECHLY
 
       REAL  ZERO, ONE, PIE
