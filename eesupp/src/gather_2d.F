@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/gather_2d.F,v 1.4 2003/11/06 22:00:31 heimbach Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE GATHER_2D( global, local, myThid )
