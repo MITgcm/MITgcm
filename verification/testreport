@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.6 2003/09/10 02:30:37 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.7 2003/09/10 04:02:39 edhill Exp $
 #
 
 usage()
@@ -10,6 +10,7 @@ usage()
     echo
     echo "where possible OPTIONS are:"
     echo "  (-help|-h)               print usage"
+    echo "  (-mpi)                   use MPI input files"
     echo "  (-optfile=|-of=)STRING   list of optfiles to use"
     echo "  (-a|-addr)STRING         list of email recipients"
     echo "                             (DEF=\"edhill@mitgcm.org\")"
@@ -405,6 +406,7 @@ TESTDIRS=
 MPACKDIR="../tools/mpack-1.6"
 MPACK="$MPACKDIR/mpack"
 COMMAND="make output.txt"
+MPI=f
 
 echo -n "parsing options...  "
 
@@ -450,6 +452,7 @@ for ac_option ; do
 	-command=* | --command=*)
 	    COMMAND=$ac_optarg ;;
 
+	-mpi) MPI=t ;;
 	-verbose) verbose=2 ;;
 	-debug) debug=1 ;;
 	-clean) clean=1 ;;
@@ -534,7 +537,27 @@ for OPTFILE in $OPTFILES ; do
 		| tee -a $SUMMARY
 	    continue
 	fi
-	
+
+	#  Is this an MPI run?
+	if test "x$MPI" = xt ; then
+	    if test ! -r $dir"/code/CPP_EEOPTIONS.h_mpi" -o ! -r $dir"/code/SIZE.h_mpi" ; then
+		echo | tee -a $SUMMARY
+		echo "can't read \"$dir/code/CPP_EEOPTIONS.h_mpi\" or \"$dir/code/SIZE.h_mpi\"" \
+		    | tee -a $SUMMARY
+		continue
+	    else
+		cp $dir"/code/CPP_EEOPTIONS.h_mpi" $dir"/code/CPP_EEOPTIONS.h"
+		cp $dir"/code/SIZE.h_mpi" $dir"/code/SIZE.h"
+	    fi
+	else
+	    if test -r $dir"/code/CPP_EEOPTIONS.h_nompi" ; then
+		cp $dir"/code/CPP_EEOPTIONS.h_nompi" $dir"/code/CPP_EEOPTIONS.h"
+	    fi
+            if test -r $dir"/code/SIZE.h_nompi" ; then
+                cp $dir"/code/SIZE.h_nompi" $dir"/code/SIZE.h"
+            fi
+	fi
+
 	#  Create an output dir for each OPTFILE/tdir combination
 	CDIR=$DRESULTS"/"$DRESULTS"_"$NDIR
 	mkdir $CDIR
