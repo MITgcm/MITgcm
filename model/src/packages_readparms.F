@@ -39,8 +39,6 @@ C       |-- ZONAL_FILT_READPARMS
 C       |
 C       |-- OBCS_READPARMS
 C       |
-C       |-- AIM_INITIALISE
-C       |
 C       |-- COST_READPARMS
 C       |
 C       |-- CTRL_INIT
@@ -112,11 +110,6 @@ cswdice --- end add ---
 
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS) CALL PTRACERS_READPARMS( myThid )
-#endif
-
-#ifdef ALLOW_AIM
-C--   Initialise & Read AIM physical parameters
-      IF (useAIM) CALL AIM_INITIALISE( myThid )
 #endif
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.48 2003/06/05 16:03:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.49 2003/06/12 18:27:20 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -171,10 +171,11 @@ C--   Set (free)surface-related parameters
       trac_EvPrRn = UNSET_RL
 
 C--   Atmospheric physical parameters (e.g.: EOS)
-      atm_Po =  1.D5
-      atm_Cp =  1004.D0
-      atm_Rd =  UNSET_RL
-      atm_kappa = 2.D0 / 7.D0
+      celsius2K = 273.16 _d 0
+      atm_Po =  1. _d 5
+      atm_Cp = 1004. _d 0
+      atm_Rd = UNSET_RL
+      atm_kappa = 2. _d 0 / 7. _d 0
       integr_GeoPot = 2
       selectFindRoSurf = 0
 

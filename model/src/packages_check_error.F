@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/packages_check_error.F,v 1.3 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/packages_check_error.F,v 1.4 2003/06/12 18:27:20 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,11 +38,11 @@ C     msgBuf      - Informational/error meesage buffer
 CEOP
 
       WRITE(msgBuf,'(A,A,A)')
-     &  'Run-time control flag use_',msg,' was used'
+     &  'Run-time control flag use',msg,' was used'
       CALL PRINT_ERROR( msgBuf , 1)
       WRITE(msgBuf,'(A,A,A)') 'when CPP flag ALLOW_',msg,' was unset'
       CALL PRINT_ERROR( msgBuf , 1)
       STOP 'ABNORMAL END: S/R PACKAGE_CHECK_ERROR'
 
-      return
-      end
+      RETURN
+      END
