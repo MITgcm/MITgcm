@@ -1,10 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.8 1999/03/22 15:54:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.9 1999/05/18 17:42:01 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
 C     /==========================================================\
 C     | S/R CALC_DIV_GHAT                                        |
 C     | o Form the right hand-side of the surface pressure eqn.  |
+C     |==========================================================|
 C     \==========================================================/
       SUBROUTINE CALC_DIV_GHAT( 
      I        bi,bj,iMin,iMax,jMin,jMax,
@@ -27,10 +28,10 @@ C     == Global variables ==
 #endif
 
 C     == Routine arguments ==
-C     pH - Hydrostatic pressure
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
 C                                      results will be set.
-C     kUp, kDown, kM1                - Index for upper and lower layers.
+C     k                              - Index of layer.
+C     xA, yA                         - Cell face areas
 C     myThid - Instance number for this innvocation of CALC_MOM_RHS
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER K
@@ -51,9 +52,6 @@ C     pulls div(U) + dh/dt back toward zero.
 C      Initialise source term on first pass
        DO j=jMin,jMax
         DO i=iMin,iMax
-C        cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj) 
-C    &    -freeSurfFac*_rA(i,j,bi,bj)*
-C    &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
          cg2d_b(i,j,bi,bj) =
      &     freeSurfFac*_rA(i,j,bi,bj)*horiVertRatio*(
      &      -cg2d_x(I,J,bi,bj)/deltaTMom/deltaTMom
