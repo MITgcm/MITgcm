@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.52 2001/05/29 14:01:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.53 2001/05/30 19:33:18 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -385,7 +385,7 @@ C         "     Quadratic  ( linear: 1/s, quadratic: 1/m )
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
      & recip_rhoConst, rhoConst, tRef, sRef,
-     & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq,
+     & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq, monitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cosPower,
      & cAdjFreq, omega, tauThetaClimRelax, lambdaThetaClimRelax,
@@ -462,6 +462,7 @@ C         "     Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL pChkPtFreq
       _RL dumpFreq
       _RL taveFreq
+      _RL monitorFreq
       _RL afFacMom
       _RL vfFacMom
       _RL pfFacMom

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.59 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.60 2001/05/30 19:33:18 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -119,6 +119,7 @@ C--   Time stepping parammeters
      & nIter0, nTimeSteps, nEndIter, deltaT, deltaTmom, deltaTtracer,
      & abEps, tauCD, rCD,
      & startTime, endTime, chkPtFreq, dumpFreq, taveFreq, deltaTClock,
+     & monitorFreq,
      & pChkPtFreq, cAdjFreq, tauThetaClimRelax, tauSaltClimRelax,
      & periodicExternalForcing, externForcingPeriod, externForcingCycle
 
@@ -545,6 +546,19 @@ C     o Consistent?
      &  'S/R INI_PARMS: but are inconsistent'
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R INI_PARMS'
+      ENDIF
+
+C     o Monitor (should also add CPP flag for monitor?)
+      IF (monitorFreq.LT.0.) THEN
+       monitorFreq=0.
+c      IF (dumpFreq.NE.0.) monitorFreq=dumpFreq
+c      IF (taveFreq.NE.0..AND.taveFreq.LT.monitorFreq)
+c    &         monitorFreq=taveFreq
+c      IF (chkPtFreq.NE.0..AND.chkPtFreq.LT.monitorFreq)
+c    &         monitorFreq=chkPtFreq
+c      IF (pChkPtFreq.NE.0..AND.pChkPtFreq.LT.monitorFreq)
+c    &         monitorFreq=pChkPtFreq
+       IF (monitorFreq.EQ.0.) monitorFreq=deltaTclock
       ENDIF
 
 C     o If taveFreq is finite, then we must make sure the diagnostics

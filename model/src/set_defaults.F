@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.19 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.20 2001/05/30 19:33:18 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -147,6 +147,7 @@ C--   Time stepping parameters
       pchkPtFreq        = deltaT*0
       chkPtFreq         = deltaT*0
       dumpFreq          = deltaT*0
+      monitorFreq       = -1.
       taveFreq          = deltaT*0
       writeStatePrec    = precFloat64
       writeBinaryPrec   = precFloat32

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.7 2001/05/14 21:46:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.8 2001/05/30 19:33:18 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -327,6 +327,11 @@ C--   Do "blocking" sends and receives for field "overlap" terms
       CALL TIMER_START('BLOCKING_EXCHANGES [FORWARD_STEP]',myThid)
       CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
       CALL TIMER_STOP ('BLOCKING_EXCHANGES [FORWARD_STEP]',myThid)
+
+#ifndef EXCLUDE_MONITOR
+C--   Check status of solution (statistics, cfl, etc...)
+      CALL MONITOR( myIter, myTime, myThid )
+#endif /* EXCLUDE_MONITOR */
 
 #ifndef ALLOW_AUTODIFF_TAMC
 C--   Do IO if needed.
