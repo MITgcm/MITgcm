@@ -1,8 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.6 2004/07/13 21:11:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.7 2004/07/22 22:33:55 molod Exp $
 C $Name:  $
 
-      subroutine fizhi_init_chem(mythid,nozlats,nozlevs,ozlats,ozlevs,
-     . o3,nwatlats,nwatlevs,watlats,watlevs,water,
+      subroutine fizhi_init_chem(mythid,nozlats,nozlevs,ntimesoz,
+     . ozlats,ozlevs,o3,
+     . nwatlats,nwatlevs,ntimesq,watlats,watlevs,water,
      . Nrphys,pressure,n2o,methane,co2,cfc11,cfc12,cfc22)
 C***********************************************************************
 C Subroutine fizhi_init_chem - routine to read in the ozone and upper
@@ -21,7 +22,9 @@ C***********************************************************************
       implicit none
 #include "CPP_EEOPTIONS.h"
       integer mythid,nozlevs,nozlats,nwatlevs,nwatlats,Nrphys
-      _RL o3(nozlats,nozlevs,12), water(nwatlats,nwatlevs,12)
+      integer ntimesoz,ntimesq
+      _RL o3(nozlats,nozlevs,ntimesoz)
+      _RL water(nwatlats,nwatlevs,ntimesq)
       _RL ozlats(nozlats), ozlevs(nozlevs)
       _RL watlats(nwatlats), watlevs(nwatlevs)
       _RL pressure(Nrphys),methane(Nrphys),n2o(Nrphys)
@@ -32,8 +35,8 @@ C***********************************************************************
       call mdsfindunit( kqz, myThid )
       call mdsfindunit( koz, myThid )
 
-      call read_qz (kqz,water,watlats,watlevs,nwatlats,nwatlevs,12)
-      call read_oz (koz,o3,ozlats,ozlevs,nozlats,nozlevs,12)
+      call read_qz (kqz,water,watlats,watlevs,nwatlats,nwatlevs,ntimesq)
+      call read_oz (koz,o3,ozlats,ozlevs,nozlats,nozlevs,ntimesoz)
 
       call get_methane_n2o (pressure,Nrphys,n2o,methane)
 
@@ -76,6 +79,7 @@ C***********************************************************************
       real voltomas
       parameter ( voltomas = 0.622e-6 )
 
+      open(ku,file='sage.data',form='formatted')
       rewind ku
 
 c Set Moisture Data Latitudes
@@ -133,7 +137,7 @@ C***********************************************************************
       integer  ku,nlat,nlev,ntime
 
       _RL   oz(nlat,nlev,ntime)
-      _RL o3(nlat)
+      real o3(nlat)
       _RL lats(nlat)
       _RL levs(nlev)
 
@@ -147,8 +151,6 @@ C***********************************************************************
      .            0.07, 0.1, 0.15, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 2.0,
      .            3.0, 5.0, 7.0, 10.0, 15.0, 20.0, 30.0, 50.0, 70.0,
      .            100.0, 150.0, 200.0, 300.0, 500.0, 700.0, 1000.0 /
-
-      rewind ku
 
 c Set Ozone Data Latitudes
 c ------------------------
@@ -165,7 +167,8 @@ c ------------------------
 c Read Ozone Amounts by Month and Level
 c -------------------------------------
       close (ku)
-      open  (ku, form='unformatted', access='direct', recl=nlat*4)
+      open(ku,file='gcmo3.data',form='unformatted',access='direct',
+     .                                                 recl=nlat*4)
 
       do time=1,ntime
       do lev=1,nlev

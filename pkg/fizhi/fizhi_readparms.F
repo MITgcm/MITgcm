@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.3 2004/06/10 20:53:19 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.4 2004/07/22 22:33:55 molod Exp $
 C $Name:  $
 
       subroutine fizhi_readparms (myThid)
@@ -44,8 +44,9 @@ C **********************************************************************
 C ****      Read Supplemental Ascii File with Current Time Info     ****
 C **********************************************************************
 
-      open(ku,file='datetime',form='formatted')
+      open(10,file='datetime',form='formatted')
       read(10,1000)nymdcurrent,nhmscurrent
+      close (10)
  1000 format(i8,2x,i6)
 
 C **********************************************************************
