@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.25 2001/11/20 21:13:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.26 2001/11/20 23:27:29 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -77,6 +77,7 @@ C       if requested. The location of the call is important,
 C       it has to be after the adjoint of the exchanges 
 C       (DO_GTERM_BLOCKING_EXCHANGES).
         CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
+        CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
 #endif
 
 #ifdef EXACT_CONSERV

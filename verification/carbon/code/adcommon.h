@@ -1,13 +1,12 @@
 C--   copied stuff from _ad.f file
 
       common /addynvars_r/ 
-     &                     adetan, adetanm1, 
+     &                     adetan,
      &                     aduvel, advvel, adwvel, 
      &                     adtheta, adsalt, 
      &                     adgu, adgv, adgt, adgs, 
      &                     adgunm1, adgvnm1, adgtnm1, adgsnm1
       _RL adetan(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL adetanm1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adgs(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgsnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
@@ -24,10 +23,12 @@ C--   copied stuff from _ad.f file
 
       common /addynvars_cd/ 
      &                      aduveld, advveld,
+     &                      adetanm1, 
      &                      adunm1, advnm1, 
      &                      adgucd, adgvcd
       _RL aduveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL advveld(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
+      _RL adetanm1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL adunm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL advnm1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adgucd(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)

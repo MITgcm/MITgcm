@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.6 2001/09/28 04:19:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.7 2001/11/20 23:27:29 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -90,7 +90,7 @@ c
      &       'ADJgunm1.',suff, adgunm1, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL( 
      &       'ADJgvnm1.',suff, adgvnm1, myIter, myThid)
-#ifdef ALLOW_TR10_CONTROL
+#ifdef ALLOW_PASSIVE_TRACER
         CALL WRITE_FLD_XYZ_RL( 
      &       'ADJgtr1nm1. ',suff, adgtr1nm1, myIter, myThid)
 #endif
@@ -104,7 +104,7 @@ c
         CALL WRITE_FLD_XYZ_RL( 
      &       'ADJvvel.',suff, advvel, myIter, myThid)
 
-#ifdef ALLOW_TR10_CONTROL
+#ifdef ALLOW_PASSIVE_TRACER
         CALL WRITE_FLD_XYZ_RL( 
      &       'ADJtr1. ',suff, adtr1, myIter, myThid)
 #endif

@@ -125,7 +125,7 @@ cph     &                  )
       print *, 'pathei: in check_exp: adfu    ', adfu(10,10,1,1)
       print *, 'pathei: in check_exp: adfv    ', adfv(10,10,1,1)
       print *, 'pathei: in check_exp: adetan  ', adetan(10,10,1,1)
-#ifdef ALLOW_TR10_CONTROL
+#ifdef ALLOW_PASSIVE_TRACER
       print *, 'pathei: in check_exp: adtr1   ', adtr1(10,10,1,1,1)
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
@@ -171,7 +171,7 @@ c--     Surface pressure:
      &                      'RL', 1, adetan, irec,
      &                      mycurrentiter, mythid )
 
-#ifdef ALLOW_TR10_CONTROL
+#ifdef ALLOW_PASSIVE_TRACER
 c--     Passive tracer:
         write(yfname,'(128a)') ' '
         write(yfname,'(2a)') yprefix, 'snapshot_adtr1'

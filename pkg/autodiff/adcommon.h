@@ -17,6 +17,15 @@ C     *==========================================================*
 C     \ev
 CEOP
 
+WARNING:
+THESE LINES ARE MEANT TO PROVOKE A COMPILER CRASH.
+THIS IS ONLY A TEMPLATE FILE.
+YOU NEED TO CUSTOMIZE THIS TO YOUR RESPECTIVE SETUP,
+E.G. BY PLACING A COPY IN YOUR VERIFICATION DIRECTORY.
+IT IS IMPORTANT THAT YOU MAKE SURE THAT THE COMMON BLOCKS
+BELOW CORRESPOND TO THE COMMON BLOCKS IN THE AUTOMATICALLY
+CREATED ADJOINT CODE.
+
       common /addynvars_r/ 
      &                     adetan, adetanm1, 
      &                     aduvel, advvel, adwvel, 
