@@ -13,6 +13,7 @@ FC=ifort
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=1'
 LINK='ifort -static'
 CPP='cpp  -traditional -P'
+INCLUDES='-I/usr/include/netcdf'
 
 #  Note that the -mp switch is for ieee "maintain precision" and is
 #  roughly equivalent to -ieee

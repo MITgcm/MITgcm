@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc,v 1.5 2004/09/24 17:06:59 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_ifc,v 1.6 2004/10/26 19:14:51 edhill Exp $
 #  $Name:  $
 #
 
@@ -8,6 +8,7 @@ FC=ifc
 CC=gcc
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
 CPP='cpp  -traditional -P'
+INCLUDES='-I/usr/include/netcdf'
 LIBS='-lPEPCF90'
 NOOPTFLAGS='-O0'
 
