@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.5 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.6 2004/10/29 20:06:51 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -37,7 +37,7 @@ C=======================================================================
       do j=jMin,jMax
        do i=iMin,iMax
         gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj) + 
-     .      maskC(i,j,kLev,bi,bj) * guphy(i,j,kLev,bi,bj)
+     .      maskW(i,j,kLev,bi,bj) * guphy(i,j,kLev,bi,bj)
        enddo
       enddo
 
@@ -78,7 +78,7 @@ C=======================================================================
       do j=jMin,jMax
        do i=iMin,iMax
         gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj) + 
-     .      maskC(i,j,kLev,bi,bj) * gvphy(i,j,kLev,bi,bj)
+     .      maskS(i,j,kLev,bi,bj) * gvphy(i,j,kLev,bi,bj)
        enddo
       enddo
 
