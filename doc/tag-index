@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.430 2004/12/29 02:13:38 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.431 2005/01/04 02:27:36 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o allow to use pkg diagnostics for GM-Redi & ThSIce output
+o diagnostics_fill: fill in up to sNx+1 or sNy+1 (if U,V or Z pt) for mnc.
 o improvements for the MNC output from DIAGNOSTICS:
   - correct handling of the unlimitied dimension
   - all dims now have associated coordinate variables
