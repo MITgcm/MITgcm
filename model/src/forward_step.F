@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.42 2002/12/02 13:11:09 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.43 2002/12/06 20:10:58 cheisey Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -142,8 +142,9 @@ c calculate qnet and empmr (and wind stress)
 c     Update the tile edges.
        _EXCH_XY_R8(Qnet,   mythid)
        _EXCH_XY_R8(EmPmR,   mythid)
-       _EXCH_XY_R8(fu     , mythid)
-       _EXCH_XY_R8(fv     , mythid)
+       CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
+C       _EXCH_XY_R8(fu     , mythid)
+C       _EXCH_XY_R8(fv     , mythid)
 cswdblk -- end add ---
 #else
 #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
