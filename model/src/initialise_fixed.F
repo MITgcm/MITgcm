@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.11 2003/02/11 03:03:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.12 2003/02/26 03:13:28 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,10 +38,6 @@ C      |-- INI_DEPTHS
 C      |
 C      |-- INI_MASKS_ETC
 C      |
-C      |-- INI_LINEAR_PHSURF
-C      |
-C      |-- INI_CORI
-C      |
 C      |-- PACKAGES_BOOT
 C      |
 C      |-- PACKAGES_READPARMS
@@ -50,7 +46,9 @@ C      |-- PACKAGES_CHECK
 C      |
 C      |-- PACKAGES_INIT_FIXED
 C      |
-C      |-- ZONAL_FILT_INIT
+C      |-- INI_LINEAR_PHSURF
+C      |
+C      |-- INI_CORI
 C      |
 C      |-- INI_CG2D
 C      |
@@ -103,12 +101,6 @@ C     Volumes and areas are set according to grid and depth map.
       CALL INI_MASKS_ETC( myThid )
       _BARRIER
 
-C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
-      CALL INI_LINEAR_PHISURF( myThid )
-
-C--   Set coriolis operators
-      CALL INI_CORI( myThid )
-
 C--   Configure packages
       CALL PACKAGES_BOOT( myThid )
 
@@ -120,6 +112,12 @@ C--   Check dependances between packages
 
 C--   Call fixed data initialization phase of packages
       CALL PACKAGES_INIT_FIXED( myThid )
+
+C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
+      CALL INI_LINEAR_PHISURF( myThid )
+
+C--   Set coriolis operators
+      CALL INI_CORI( myThid )
 
 C--   Set laplace operators for use in 2D conjugate gradient solver.
       CALL INI_CG2D( myThid )
@@ -135,4 +133,5 @@ C--   Check parameters and model cofiguration
 C--   Finally summarise the model cofiguration
       CALL CONFIG_SUMMARY( myThid )
 
+      RETURN
       END
