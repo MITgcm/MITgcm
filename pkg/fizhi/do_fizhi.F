@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.20 2004/07/14 14:50:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.21 2004/07/18 23:17:00 molod Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
        subroutine do_fizhi(myid,uphy,vphy,thphy,sphy,pephy,lons,lats,
@@ -107,6 +107,8 @@ c
 
       logical alarm
       external alarm
+
+      save
 
 c     save lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq
 c     save moistu,moistv,moistt,moistq

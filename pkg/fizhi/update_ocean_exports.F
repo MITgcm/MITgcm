@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.9 2004/07/16 19:37:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.10 2004/07/18 23:17:00 molod Exp $
 C $Name:  $
 
        subroutine update_ocean_exports (myTime, myIter, myThid)
@@ -137,6 +137,8 @@ C--------- Variable Initialization ---------------------------------
 
       data first /.true./
       data error /.false./
+
+      save
 
 c  save header info
 c     save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.11 2004/07/16 20:11:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.12 2004/07/18 23:17:00 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1275,7 +1275,7 @@ c ----------------------------------------------------------------------------
        iseed   = iras * nrnd - numrand
        call random_seedx(iseed)
        do i = 1,irm
-        random(i) = random_numbx()
+        random(i) = random_numbx(iseed)
        enddo
        index = (iras-1)*nrnd
 
@@ -1285,7 +1285,7 @@ c ----------------------------------------------------------------
           iseed = (iras-1)*nrnd
           call random_seedx(iseed)
           do i = 1,irm
-           random(i) = random_numbx()
+           random(i) = random_numbx(iseed)
           enddo
           index = iseed
 
@@ -1307,17 +1307,21 @@ c --------------------------------------------------------------------
       iras0 = iras
       return
       end
-      function random_numbx()
+      function random_numbx(iseed)
       implicit none
+      integer iseed
+      real *8 seed,port_rand
       real random_numbx
       random_numbx = 0
 #ifdef CRAY
       real ranf
       random_numbx = ranf()
-#endif
+#else 
 #ifdef SGI
       real rand
       random_numbx = rand()
+#endif
+      random_numbx = port_rand(seed)
 #endif
       return
       end
