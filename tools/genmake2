@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.25 2003/10/30 13:22:42 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.26 2003/10/30 19:11:45 heimbach Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1370,7 +1370,7 @@ adall: ad_taf
 adtaf: ad_taf_output.f
 adtamc: ad_tamc_output.f
 
-ad_input_code.f: \$(SRCFILES) \$(HEADERFILES)
+ad_input_code.f: \$(AD_FILES) \$(HEADERFILES)
 	cmp ad_config.template AD_CONFIG.h || cat ad_config.template > AD_CONFIG.h
 	@make \$(F77FILES)
 	@make \$(AD_FLOW_FILES)
@@ -1396,7 +1396,7 @@ ftlall: ftl_taf
 ftltaf: ftl_taf_output.f
 ftltamc: ftl_tamc_output.f
 
-ftl_input_code.f: \$(SRCFILES)
+ftl_input_code.f: \$(AD_FILES) \$(HEADERFILES)
 	cmp ftl_config.template AD_CONFIG.h || cat ftl_config.template > AD_CONFIG.h
 	@make \$(F77FILES)
 	@make \$(AD_FLOW_FILES)
