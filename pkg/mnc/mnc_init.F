@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.16 2004/10/20 21:26:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.17 2004/11/02 18:06:36 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -28,7 +28,7 @@ C     !LOCAL VARIABLES:
 
 C     Write blanks or zeros to all the internal names and ID tables
       DO i = 1,MNC_MAX_CHAR
-        blank(i:i) = ' ';
+        blank(i:i) = ' '
       ENDDO
       mnc_blank_name(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
       DO i = 1,MNC_MAX_ID

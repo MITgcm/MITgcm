@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.6 2004/10/13 04:37:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.7 2004/11/02 18:06:36 edhill Exp $
 C $Name:  $
       
 #include "PACKAGES_CONFIG.h"
@@ -87,7 +87,7 @@ C       Write 3D geometry arrays
 
 #ifdef ALLOW_MNC
       IF (useMNC .AND. snapshot_mnc) THEN
-        bfname='grid';
+        bfname='grid'
 
 C       Grid spacing, areas and hFacs
         CALL MNC_CW_ADD_VNAME('drC', '-_-_--__C__-', 0,0, myThid)
