@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.104 2004/10/05 16:10:31 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.105 2004/10/13 21:01:03 heimbach Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -2096,6 +2096,11 @@ ad_tamc_output.f: ad_input_code.f
 ad_tamc: ad_tamc_output.o \$(OBJFILES)
 	\$(LINK) -o ${EXE_AD} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_tamc_output.o \$(LIBS) 
 
+adonlyfwd:
+        patch < \$(TOOLSDIR)/ad_taf_output.f.onlyfwd.diff
+ 
+adtrick:
+        patch < \$(TOOLSDIR)/ad_taf_output.f.adtrick.diff
 
 # ... FTL ...
 ftlall: ftl_taf

@@ -1,0 +1,20 @@
+*** ad_taf_output.f.orig	Wed Oct 13 13:18:38 2004
+--- ad_taf_output.f	Wed Oct 13 13:22:35 2004
+***************
+*** 62567,62573 ****
+        call barrier( mythid )
+        call barrier( mythid )
+        call ecco_cost_final( mythid )
+! 
+  C----------------------------------------------
+  C SAVE DEPENDEND VARIABLES
+  C----------------------------------------------
+--- 62567,62574 ----
+        call barrier( mythid )
+        call barrier( mythid )
+        call ecco_cost_final( mythid )
+!       call mpi_finalize()
+!       stop
+  C----------------------------------------------
+  C SAVE DEPENDEND VARIABLES
+  C----------------------------------------------

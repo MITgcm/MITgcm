@@ -1,0 +1,67 @@
+*** ad_taf_output.f.orig	Wed Oct 13 13:18:38 2004
+--- ad_taf_output.f	Wed Oct 13 13:41:54 2004
+***************
+*** 61912,61917 ****
+--- 61912,61947 ----
+       $tempvertadvscheme, saltadvscheme, saltvertadvscheme, 
+       $traceradvscheme, debuglevel
+  
++       logical useaim
++       logical usebulkforce
++       logical usediagnostics
++       logical useebm
++       logical useecco
++       logical usefizhi
++       logical useflt
++       logical useggl90
++       logical usegmredi
++       logical usegrdchk
++       logical usegridalt
++       logical usekpp
++       logical useland
++       logical usemnc
++       logical usemy82
++       logical useobcs
++       logical useopps
++       logical usepp81
++       logical useptracers
++       logical usesbo
++       logical useseaice
++       logical useshap_filt
++       logical usethsice
++       logical usezonal_filt
++       common /parm_packages/ usekpp, usegmredi, useobcs, useaim,
++      $useland, useecco, useshap_filt, usezonal_filt, usegrdchk, useflt,
++      $useptracers, usesbo, useseaice, usethsice, usebulkforce, usefizhi,
++      $ usegridalt, usediagnostics, useebm, usemnc, usepp81, usemy82,
++      $useopps, useggl90
++ 
+        logical allowfreezing
+        logical debugmode
+        logical dosaltclimrelax
+***************
+*** 63806,63811 ****
+--- 63836,63845 ----
+        end do
+                      end do
+                    end do
++ cph(
++                   usekpp=.false.
++                   usegmredi=.false.
++ cph)
+                    call addo_fields_blocking_exchanges( mythid )
+                    call adtracers_correction_step( mytime,mythid )
+                    if (staggertimestep) then
+***************
+*** 63829,63834 ****
+--- 63863,63872 ----
+                    call adexf_getforcing( mytime,myiter,mythid )
+                    mytime = starttime+float(iloop-1)*deltatclock
+                    call adcost_averagesfields( mytime,mythid )
++ cph(
++                   usekpp=.true.
++                   usegmredi=.true.
++ cph)
+                  endif
+                end do
+  
