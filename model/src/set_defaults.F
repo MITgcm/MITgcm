@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.8 2000/03/14 17:47:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.9 2000/04/05 17:52:37 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -162,6 +162,7 @@ C--   Input files
       surfQfile       = ' '
       uVelInitFile    = ' '
       vVelInitFile    = ' '
+      pSurfInitFile   = ' '
 
 C--   OBCS
       DO I=1,Nx
