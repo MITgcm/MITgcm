@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.4 2001/03/25 22:33:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.5 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -38,6 +38,10 @@ C--   Initialize GM/Redi parameters
 #ifdef ALLOW_KPP
 C--   Initialize KPP parameters
       IF (useKPP) CALL KPP_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_SHAP_FILT 
+      IF (useSHAP_FILT) CALL SHAP_FILT_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_OBCS

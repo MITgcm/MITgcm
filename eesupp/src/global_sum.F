@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.8 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.9 2001/05/29 14:01:36 adcroft Exp $
 C $Name:  $
 
 C--   File global_sum.F: Routines that perform global sum on an array
@@ -32,6 +32,7 @@ C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+#include "GLOBAL_SUM.h"
 
 C     == Routine arguments ==
 C     sumPhi - Result of sum.
@@ -41,10 +42,8 @@ C     myThid - My thread id.
 CEndOfInterface
 
 C     == Local variables ==
-C     phi    - Array to be summed.
 C     I      - Loop counters
 C     mpiRC  - MPI return code
-      Real*4 phi(lShare4,MAX_NO_THREADS)
       INTEGER I
       Real*4  tmp
 #ifdef   ALLOW_USE_MPI
@@ -52,16 +51,17 @@ C     mpiRC  - MPI return code
 #endif /* ALLOW_USE_MPI */
 
 C--   write local sum into array
-      phi(1,myThid) = sumPhi
+      CALL BAR2( myThid )
+      phiGSRS(1,myThid) = sumPhi
 
 C--   Can not start until everyone is ready
-      _BARRIER
+      CALL BAR2( myThid )
 
 C--   Sum within the process first
       _BEGIN_MASTER( myThid )
        tmp = 0.
        DO I=1,nThreads
-        tmp = tmp + phi(1,I)
+        tmp = tmp + phiGSRS(1,I)
        ENDDO
        sumPhi = tmp
 #ifdef  ALLOW_USE_MPI
@@ -75,14 +75,15 @@ C--   Sum within the process first
 #endif
 #endif /*  ALLOW_USE_MPI */
 C--     Write solution to place where all threads can see it
-       phi(1,1) = sumPhi
+       phiGSRS(1,1) = sumPhi
 
       _END_MASTER( myThid )
 C--
-      _BARRIER
+      CALL BAR2( myThid )
 
 C--   set result for every process
-      sumPhi = phi(1,1)
+      sumPhi = phiGSRS(1,1)
+      CALL BAR2( myThid )
 
       RETURN
       END
@@ -112,6 +113,7 @@ C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+#include "GLOBAL_SUM.h"
 
 C     === Routine arguments ===
 C     sumPhi - Result of sum.
@@ -121,27 +123,31 @@ C     myThid - My thread id.
 CEndOfInterface
 
 C     === Local variables ===
-C     phi    - Array to be summed.
 C     I      - Loop counters
 C     mpiRC  - MPI return code
-      Real*8 phi(lShare8,MAX_NO_THREADS)
       INTEGER I
       Real*8  tmp
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif   /* ALLOW_USE_MPI */
 
+      CALL BAR2( myThid )
 C--   write local sum into array
-      phi(1,myThid) = sumPhi
+      phiGSRL(1,myThid) = sumPhi
 
 C--   Can not start until everyone is ready
-      _BARRIER
+C     CALL FOOL_THE_COMPILER( phiGSRL )
+C     CALL MS
+      CALL BAR2( myThid )
+C     _BARRIER
+C     _BARRIER
+C     CALL FOOL_THE_COMPILER( phiGSRL )
 
 C--   Sum within the process first
       _BEGIN_MASTER( myThid )
        tmp = 0. _d 0
        DO I=1,nThreads
-        tmp = tmp + phi(1,I)
+        tmp = tmp + phiGSRL(1,I)
        ENDDO
        sumPhi = tmp
 #ifdef  ALLOW_USE_MPI
@@ -155,14 +161,20 @@ C--   Sum within the process first
 #endif
 #endif /*  ALLOW_USE_MPI */
 C--     Write solution to place where all threads can see it
-        phi(1,1) = sumPhi
+        phiGSRL(1,1) = sumPhi
       _END_MASTER( myThid )
 
 C--   Do not leave until we are sure that the sum is done
-      _BARRIER
+C     CALL FOOL_THE_COMPILER( phiGSRL )
+C     CALL MS
+C     _BARRIER
+C     _BARRIER
+      CALL BAR2( myThid )
+C     CALL FOOL_THE_COMPILER( phiGSRL )
 
 C--   set result for every process
-      sumPhi = phi(1,1)
+      sumPhi = phiGSRL(1,1)
+      CALL BAR2( myThid )
 
       RETURN
       END
@@ -190,6 +202,7 @@ C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+#include "GLOBAL_SUM.h"
 
 C     === Routine arguments ===
 C     sumPhi - Result of sum.
@@ -199,18 +212,17 @@ C     myThid - My thread id.
 CEndOfInterface
 
 C     === Local variables ===
-C     phi    - Array to be summed.
 C     I      - Loop counters
 C     mpiRC  - MPI return code
-      INTEGER phi(lShare8,MAX_NO_THREADS)
       INTEGER I
       INTEGER  tmp
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif   /* ALLOW_USE_MPI */
 
+      _BARRIER
 C--   write local sum into array
-      phi(1,myThid) = sumPhi
+      phiGSI(1,myThid) = sumPhi
 
 C--   Can not start until everyone is ready
       _BARRIER
@@ -219,7 +231,7 @@ C--   Sum within the process first
       _BEGIN_MASTER( myThid )
        tmp = 0. _d 0
        DO I=1,nThreads
-        tmp = tmp + phi(1,I)
+        tmp = tmp + phiGSI(1,I)
        ENDDO
        sumPhi = tmp
 #ifdef  ALLOW_USE_MPI
@@ -233,14 +245,15 @@ C--   Sum within the process first
 #endif
 #endif /*  ALLOW_USE_MPI */
 C--     Write solution to place where all threads can see it
-        phi(1,1) = sumPhi
+        phiGSI(1,1) = sumPhi
       _END_MASTER( myThid )
 
 C--   Do not leave until we are sure that the sum is done
       _BARRIER
 
 C--   set result for every process
-      sumPhi = phi(1,1)
+      sumPhi = phiGSI(1,1)
+      _BARRIER
 
       RETURN
       END

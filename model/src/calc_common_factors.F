@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.15 2001/02/07 21:48:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.16 2001/05/29 14:01:36 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
 CStartOfInterFace
       SUBROUTINE CALC_COMMON_FACTORS( 
-     I        bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     O        xA,yA,uTrans,vTrans,rTrans,maskC,maskUp,
+     I        bi,bj,iMin,iMax,jMin,jMax,k,
+     O        xA,yA,uTrans,vTrans,rTrans,maskUp,
      I        myThid)
 
 C     /==========================================================\
@@ -40,17 +40,15 @@ C     yA      - Tracer cell face area normal to X
 C     uTrans  - Zonal volume transport through cell face
 C     vTrans  - Meridional volume transport through cell face
 C     rTrans  - R-direction volume transport through cell face
-C     maskC   - land/water mask for tracer points
 C     maskUp  - land/water mask for Wvel points (above tracer level)
 C     myThid - Instance number for this innvocation of CALC_COMMON_FACTORS
 C
-      INTEGER bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown
+      INTEGER bi,bj,iMin,iMax,jMin,jMax,k
       _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C
       INTEGER myThid
@@ -58,24 +56,22 @@ CEndOfInterface
 
 C     == Local variables ==
 C     I, J, K - Loop counters
-C     kUp, kDown, kM1 - Index for layer above and below. K_UP and K_DOWN
-C                         are switched with layer to be the appropriate index 
-C                         into fluxUD.
       INTEGER i,j
-      LOGICAL TOP_LAYER
-
-      TOP_LAYER = K .EQ. 1
 
 C--   Calculate mask for tracer cells  (0 => land, 1 => water)
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        maskC(i,j) = 1.
-        IF (_hFacC(i,j,k,bi,bj).eq.0.) maskC(i,j)=0.
-        maskUp(i,j) = 1.
-        IF (_hFacC(i,j,k,bi,bj).eq.0. .OR. TOP_LAYER ) 
-     &    maskUp(i,j)=0.
-       ENDDO
-      ENDDO
+      IF (K .EQ. 1) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          maskUp(i,j) = 0.
+         ENDDO
+        ENDDO
+      ELSE
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          maskUp(i,j) = maskC(i,j,k-1,bi,bj)*maskC(i,j,k,bi,bj)
+         ENDDO
+        ENDDO
+      ENDIF
 
 C--   Calculate tracer cell face open areas
       DO j=jMin,jMax

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/fftpack.F,v 1.3 2001/02/04 14:38:50 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/zonal_filt/fftpack.F,v 1.4 2001/05/29 14:01:40 adcroft Exp $
 C $Name:  $
 C     SUBROUTINE RFFTB (N,R,WSAVE)
 C     DIMENSION       R(1)       ,WSAVE(1)
@@ -7,6 +7,10 @@ C     CALL RFFTB1 (N,R,WSAVE,WSAVE(N+1),WSAVE(2*N+1))
 C     RETURN
 C     END
       SUBROUTINE RADB2 (IDO,L1,CC,CH,WA1)
+
+      IMPLICIT REAL (A-H,O-Z) 
+      IMPLICIT INTEGER (I-N)
+
       DIMENSION       CC(IDO,2,L1)           ,CH(IDO,L1,2)           ,
      1                WA1(1)
       DO 101 K=1,L1
@@ -34,6 +38,10 @@ C     END
   107 RETURN
       END
       SUBROUTINE RADB3 (IDO,L1,CC,CH,WA1,WA2)
+
+      IMPLICIT REAL (A-H,O-Z) 
+      IMPLICIT INTEGER (I-N)
+
       DIMENSION       CC(IDO,3,L1)           ,CH(IDO,L1,3)           ,
      1                WA1(1)     ,WA2(1)
       DATA TAUR,TAUI /-.5,.866025403784439/
@@ -71,6 +79,10 @@ C     END
       RETURN
       END
       SUBROUTINE RADB4 (IDO,L1,CC,CH,WA1,WA2,WA3)
+
+      IMPLICIT REAL (A-H,O-Z) 
+      IMPLICIT INTEGER (I-N)
+
       DIMENSION       CC(IDO,4,L1)           ,CH(IDO,L1,4)           ,
      1                WA1(1)     ,WA2(1)     ,WA3(1)
       DATA SQRT2 /1.414213562373095/
@@ -128,6 +140,10 @@ C     END
   107 RETURN
       END
       SUBROUTINE RADB5 (IDO,L1,CC,CH,WA1,WA2,WA3,WA4)
+
+      IMPLICIT REAL (A-H,O-Z) 
+      IMPLICIT INTEGER (I-N)
+
       DIMENSION       CC(IDO,5,L1)           ,CH(IDO,L1,5)           ,
      1                WA1(1)     ,WA2(1)     ,WA3(1)     ,WA4(1)
       DATA TR11,TI11,TR12,TI12 /.309016994374947,.951056516295154,
@@ -191,6 +207,10 @@ C     END
       RETURN
       END
       SUBROUTINE RADBG (IDO,IP,L1,IDL1,CC,C1,C2,CH,CH2,WA)
+
+      IMPLICIT REAL (A-H,O-Z) 
+      IMPLICIT INTEGER (I-N)
+
       DIMENSION       CH(IDO,L1,IP)          ,CC(IDO,IP,L1)          ,
      1                C1(IDO,L1,IP)          ,C2(IDL1,IP),
      2                CH2(IDL1,IP)           ,WA(1)
@@ -351,6 +371,10 @@ C     END
   143 RETURN
       END
       SUBROUTINE RFFTB1 (N,C,CH,WA,IFAC)
+
+      IMPLICIT REAL (A-H,O-Z) 
+      IMPLICIT INTEGER (I-N)
+
       DIMENSION       CH(1)      ,C(1)       ,WA(1)      ,IFAC(1)
       NF = IFAC(2)
       NA = 0
@@ -410,12 +434,19 @@ C     END
       RETURN
       END
 C     SUBROUTINE RFFTF (N,R,WSAVE)
+
+C     IMPLICIT REAL (A-H,O-Z) 
+
 C     DIMENSION       R(1)       ,WSAVE(1)
 C     IF (N .EQ. 1) RETURN
 C     CALL RFFTF1 (N,R,WSAVE,WSAVE(N+1),WSAVE(2*N+1))
 C     RETURN
 C     END
       SUBROUTINE RADF2 (IDO,L1,CC,CH,WA1)
+
+      IMPLICIT REAL (A-H,O-Z) 
+      IMPLICIT INTEGER (I-N)
+
       DIMENSION       CH(IDO,2,L1)           ,CC(IDO,L1,2)           ,
      1                WA1(1)
       DO 101 K=1,L1
@@ -443,6 +474,10 @@ C     END
   107 RETURN
       END
       SUBROUTINE RADF3 (IDO,L1,CC,CH,WA1,WA2)
+
+      IMPLICIT REAL (A-H,O-Z) 
+      IMPLICIT INTEGER (I-N)
+
       DIMENSION       CH(IDO,3,L1)           ,CC(IDO,L1,3)           ,
      1                WA1(1)     ,WA2(1)
       DATA TAUR,TAUI /-.5,.866025403784439/
@@ -478,6 +513,10 @@ C     END
       RETURN
       END
       SUBROUTINE RADF4 (IDO,L1,CC,CH,WA1,WA2,WA3)
+
+      IMPLICIT REAL (A-H,O-Z) 
+      IMPLICIT INTEGER (I-N)
+
       DIMENSION       CC(IDO,L1,4)           ,CH(IDO,4,L1)           ,
      1                WA1(1)     ,WA2(1)     ,WA3(1)
       DATA HSQT2 /.7071067811865475/
@@ -531,6 +570,10 @@ C     END
   107 RETURN
       END
       SUBROUTINE RADF5 (IDO,L1,CC,CH,WA1,WA2,WA3,WA4)
+
+      IMPLICIT REAL (A-H,O-Z) 
+      IMPLICIT INTEGER (I-N)
+
       DIMENSION       CC(IDO,L1,5)           ,CH(IDO,5,L1)           ,
      1                WA1(1)     ,WA2(1)     ,WA3(1)     ,WA4(1)
       DATA TR11,TI11,TR12,TI12 /.309016994374947,.951056516295154,
@@ -590,6 +633,10 @@ C     END
       RETURN
       END
       SUBROUTINE RADFG (IDO,IP,L1,IDL1,CC,C1,C2,CH,CH2,WA)
+
+      IMPLICIT REAL (A-H,O-Z) 
+      IMPLICIT INTEGER (I-N)
+
       DIMENSION       CH(IDO,L1,IP)          ,CC(IDO,IP,L1)          ,
      1                C1(IDO,L1,IP)          ,C2(IDL1,IP),
      2                CH2(IDL1,IP)           ,WA(1)
@@ -756,6 +803,10 @@ C
       RETURN
       END
       SUBROUTINE RFFTF1 (N,C,CH,WA,IFAC)
+
+      IMPLICIT REAL (A-H,O-Z) 
+      IMPLICIT INTEGER (I-N)
+
       DIMENSION       CH(1)      ,C(1)       ,WA(1)      ,IFAC(1)
       NF = IFAC(2)
       NA = 1
@@ -815,12 +866,20 @@ C
       RETURN
       END
 C     SUBROUTINE RFFTI (N,WSAVE)
+
+C     IMPLICIT REAL (A-H,O-Z) 
+C     IMPLICIT INTEGER (I-N)
+
 C     DIMENSION       WSAVE(1)
 C     IF (N .EQ. 1) RETURN
 C     CALL RFFTI1 (N,WSAVE(N+1),WSAVE(2*N+1))
 C     RETURN
 C     END
       SUBROUTINE RFFTI1 (N,WA,IFAC)
+
+      IMPLICIT REAL (A-H,O-Z) 
+      IMPLICIT INTEGER (I-N)
+
       DIMENSION       WA(1)      ,IFAC(1)    ,NTRYH(4)
       DATA NTRYH(1),NTRYH(2),NTRYH(3),NTRYH(4)/4,2,3,5/
       NL = N
@@ -886,6 +945,7 @@ C     RETURN
 C     END
       SUBROUTINE R8ADB2 (IDO,L1,CC,CH,WA1)
       implicit real*8 (A-H,O-Z)
+      IMPLICIT INTEGER (I-N)
       DIMENSION       CC(IDO,2,L1)           ,CH(IDO,L1,2)           ,
      1                WA1(1)
       DO 101 K=1,L1
@@ -914,6 +974,7 @@ C     END
       END
       SUBROUTINE R8ADB3 (IDO,L1,CC,CH,WA1,WA2)
       implicit real*8 (A-H,O-Z)
+      IMPLICIT INTEGER (I-N)
       DIMENSION       CC(IDO,3,L1)           ,CH(IDO,L1,3)           ,
      1                WA1(1)     ,WA2(1)
       DATA TAUR,TAUI /-.5,.866025403784439/
@@ -952,6 +1013,7 @@ C     END
       END
       SUBROUTINE R8ADB4 (IDO,L1,CC,CH,WA1,WA2,WA3)
       implicit real*8 (A-H,O-Z)
+      IMPLICIT INTEGER (I-N)
       DIMENSION       CC(IDO,4,L1)           ,CH(IDO,L1,4)           ,
      1                WA1(1)     ,WA2(1)     ,WA3(1)
       DATA SQRT2 /1.414213562373095/
@@ -1010,6 +1072,7 @@ C     END
       END
       SUBROUTINE R8ADB5 (IDO,L1,CC,CH,WA1,WA2,WA3,WA4)
       implicit real*8 (A-H,O-Z)
+      IMPLICIT INTEGER (I-N)
       DIMENSION       CC(IDO,5,L1)           ,CH(IDO,L1,5)           ,
      1                WA1(1)     ,WA2(1)     ,WA3(1)     ,WA4(1)
       DATA TR11,TI11,TR12,TI12 /.309016994374947,.951056516295154,
@@ -1074,6 +1137,7 @@ C     END
       END
       SUBROUTINE R8ADBG (IDO,IP,L1,IDL1,CC,C1,C2,CH,CH2,WA)
       implicit real*8 (A-H,O-Z)
+      IMPLICIT INTEGER (I-N)
       DIMENSION       CH(IDO,L1,IP)          ,CC(IDO,IP,L1)          ,
      1                C1(IDO,L1,IP)          ,C2(IDL1,IP),
      2                CH2(IDL1,IP)           ,WA(1)
@@ -1235,6 +1299,7 @@ C     END
       END
       SUBROUTINE R8FFTB1 (N,C,CH,WA,IFAC)
       implicit real*8 (A-H,O-Z)
+      IMPLICIT INTEGER (I-N)
       DIMENSION       CH(1)      ,C(1)       ,WA(1)      ,IFAC(1)
       NF = IFAC(2)
       NA = 0
@@ -1302,6 +1367,7 @@ C     RETURN
 C     END
       SUBROUTINE R8ADF2 (IDO,L1,CC,CH,WA1)
       implicit real*8 (A-H,O-Z)
+      IMPLICIT INTEGER (I-N)
       DIMENSION       CH(IDO,2,L1)           ,CC(IDO,L1,2)           ,
      1                WA1(1)
       DO 101 K=1,L1
@@ -1330,6 +1396,7 @@ C     END
       END
       SUBROUTINE R8ADF3 (IDO,L1,CC,CH,WA1,WA2)
       implicit real*8 (A-H,O-Z)
+      IMPLICIT INTEGER (I-N)
       DIMENSION       CH(IDO,3,L1)           ,CC(IDO,L1,3)           ,
      1                WA1(1)     ,WA2(1)
       DATA TAUR,TAUI /-.5,.866025403784439/
@@ -1366,6 +1433,7 @@ C     END
       END
       SUBROUTINE R8ADF4 (IDO,L1,CC,CH,WA1,WA2,WA3)
       implicit real*8 (A-H,O-Z)
+      IMPLICIT INTEGER (I-N)
       DIMENSION       CC(IDO,L1,4)           ,CH(IDO,4,L1)           ,
      1                WA1(1)     ,WA2(1)     ,WA3(1)
       DATA HSQT2 /.7071067811865475/
@@ -1420,6 +1488,7 @@ C     END
       END
       SUBROUTINE R8ADF5 (IDO,L1,CC,CH,WA1,WA2,WA3,WA4)
       implicit real*8 (A-H,O-Z)
+      IMPLICIT INTEGER (I-N)
       DIMENSION       CC(IDO,L1,5)           ,CH(IDO,5,L1)           ,
      1                WA1(1)     ,WA2(1)     ,WA3(1)     ,WA4(1)
       DATA TR11,TI11,TR12,TI12 /.309016994374947,.951056516295154,
@@ -1480,6 +1549,7 @@ C     END
       END
       SUBROUTINE R8ADFG (IDO,IP,L1,IDL1,CC,C1,C2,CH,CH2,WA)
       implicit real*8 (A-H,O-Z)
+      IMPLICIT INTEGER (I-N)
       DIMENSION       CH(IDO,L1,IP)          ,CC(IDO,IP,L1)          ,
      1                C1(IDO,L1,IP)          ,C2(IDL1,IP),
      2                CH2(IDL1,IP)           ,WA(1)
@@ -1647,6 +1717,7 @@ C
       END
       SUBROUTINE R8FFTF1 (N,C,CH,WA,IFAC)
       implicit real*8 (A-H,O-Z)
+      IMPLICIT INTEGER (I-N)
       DIMENSION       CH(1)      ,C(1)       ,WA(1)      ,IFAC(1)
       NF = IFAC(2)
       NA = 1
@@ -1714,6 +1785,7 @@ C     RETURN
 C     END
       SUBROUTINE R8FFTI1 (N,WA,IFAC)
       implicit real*8 (A-H,O-Z)
+      IMPLICIT INTEGER (I-N)
       DIMENSION       WA(1)      ,IFAC(1)    ,NTRYH(4)
       DATA NTRYH(1),NTRYH(2),NTRYH(3),NTRYH(4)/4,2,3,5/
       NL = N

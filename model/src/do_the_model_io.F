@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.20 2001/04/10 22:35:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.21 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -71,6 +71,10 @@ C--   Write model state to binary file
 C--   Do time averages
       IF (taveFreq.GT.0.) THEN
        CALL TIMEAVE_STATV_WRITE( myCurrentTime, myIter, myThid )
+#ifdef ALLOW_AIM
+       IF (useAIM)
+     &  CALL AIM_WRITE_DIAGS( myCurrentTime, myIter, myThid )
+#endif                                                             
       ENDIF
 #endif
 

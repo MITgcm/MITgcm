@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.18 2001/04/10 22:35:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.19 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -63,6 +63,8 @@ C     In spherical polar distances are in degrees
       phiMin               = 0.0
       thetaMin             = 0.
       rSphere              = 6370. * 1.D3
+C     General curvilinear coordinate system
+      usingCurvilinearGrid = .FALSE.
 
 C--   Set default "physical" parameters
       DO K =1,Nr
@@ -72,6 +74,7 @@ C--   Set default "physical" parameters
       rhoNil              = 999.8D0
       f0                  = 1.D-4
       beta                = 1.D-11
+      omega               = 2.D0 * PI / ( 3600.D0 * 24.D0 )
       viscAh              = 0.D3
       diffKhT             = 0.D3
       diffKhS             = 0.D3
@@ -95,6 +98,10 @@ C--   Set default "physical" parameters
       implicDiv2DFlow     = 1.D0
       hFacMin             = 1.D0
       hFacMinDrDefault    = 0.D0
+      exactConserv        = .FALSE.
+      nonlinFreeSurf      = .FALSE.
+      hFacInf             = 1.D0
+      hFacSup             = 1.D0
       staggerTimeStep     = .FALSE.
       momViscosity        = .TRUE.
       momAdvection        = .TRUE.
@@ -112,7 +119,6 @@ C--   Set default "physical" parameters
       allowFreezing       = .FALSE.
       ivdc_kappa          = 0.D0
       groundAtK1          = .FALSE.
-      nShap               = 0
       zonal_filt_lat      = 90.
       zonal_filt_sinpow   = 2
       zonal_filt_cospow   = 2
@@ -123,6 +129,7 @@ C--   Set default "physical" parameters
 C--   Elliptic solver parameters
       cg2dMaxIters       = 150
       cg2dTargetResidual = 1.D-7
+      cg2dTargetResWunit = -1.
       cg2dChkResFreq     = 1
       cg2dpcOffDFac      = 0.51D0
       cg3dMaxIters       = 150

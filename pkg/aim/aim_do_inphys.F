@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_inphys.F,v 1.3 2001/03/06 18:01:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_inphys.F,v 1.4 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -30,12 +30,13 @@ C     FSG  - Cell mid-point in vertical
 C     HSG  - Cell face in vertical
 C     RLAT - Call mid-point latitude
 C     pGround - Lower boundary pressure
-C     J, K - Loop counters
+C     J, K, bi,bj  - Loop counters
       REAL FSG( Nr)
       REAL HSG( Nr+1)
       REAL RLAT(sNy)
       INTEGER J, K
       INTEGER Katm
+      INTEGER bi,bj
 
       pground = 1. _d 5
       DO K=1,Nr

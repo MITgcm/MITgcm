@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.32 2001/05/14 21:33:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.33 2001/05/29 14:01:36 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,8 +6,8 @@ C $Name:  $
       SUBROUTINE CG2D(  
      I                cg2d_b,
      U                cg2d_x,
-     U                tolerance,
-     O                residual,
+     O                firstResidual,
+     O                lastResidual,
      U                numIters,
      I                myThid )
 C     /==========================================================\
@@ -39,22 +39,21 @@ C     === Global data ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "CG2D_INTERNAL.h"
+#include "CG2D.h"
 #include "SURFACE.h"
 
 C     === Routine arguments ===
 C     myThid    - Thread on which I am working.
 C     cg2d_b    - The source term or "right hand side"
 C     cg2d_x    - The solution
-C     tolerance - Entry: the tolerance of accuracy to solve to
-C                 Exit:  the initial residual before any iterations
-C     residual  - Exit:  the actual residual reached
+C     firstResidual - the initial residual before any iterations
+C     lastResidual  - the actual residual reached
 C     numIters  - Entry: the maximum number of iterations allowed
 C                 Exit:  the actual number of iterations used
       _RL  cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  tolerance
-      _RL  residual
+      _RL  firstResidual
+      _RL  lastResidual
       INTEGER numIters
       INTEGER myThid
 
@@ -74,7 +73,7 @@ C                   or they converge at a non-zero residual.
 C     err         - Measure of residual of Ax - b, usually the norm.
 C     I, J, N     - Loop counters ( N counts CG iterations )
       INTEGER actualIts
-      _RL    actualResidual,initialResidual
+      _RL    actualResidual
       INTEGER bi, bj              
       INTEGER I, J, it2d
       _RL    err
@@ -123,6 +122,9 @@ C--   Normalise RHS
         ENDDO
        ENDDO
       ENDDO
+
+      IF (cg2dNormaliseRHS) THEN
+C-  Normalise RHS :
 #ifdef LETS_MAKE_JAM
 C     _GLOBAL_MAX_R8( rhsMax, myThid )
       rhsMax=1.
@@ -142,6 +144,8 @@ Catm  rhsMax=1.
         ENDDO
        ENDDO
       ENDDO
+C- end Normalise RHS
+      ENDIF
 
 C--   Update overlaps
       _EXCH_XY_R8( cg2d_b, myThid )
@@ -191,10 +195,17 @@ C     _EXCH_XY_R8( cg2d_r, myThid )
        exchWidthX = 1
        exchWidthY = 1
        myNz       = 1
-       CALL EXCH_RL( cg2d_r,
-     I            OLw, OLe, OLs, OLn, sNx, sNy, myNz,
+      IF (useCubedSphereExchange) THEN
+       CALL EXCH_RL_CUBE( cg2d_r,
+     I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      ELSE
+       CALL EXCH_RL( cg2d_r,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      ENDIF
 #endif
 C     _EXCH_XY_R8( cg2d_s, myThid )
 #ifdef LETS_MAKE_JAM
@@ -207,27 +218,36 @@ C     _EXCH_XY_R8( cg2d_s, myThid )
        exchWidthX = 1
        exchWidthY = 1
        myNz       = 1
-       CALL EXCH_RL( cg2d_s,
-     I            OLw, OLe, OLs, OLn, sNx, sNy, myNz,
+      IF (useCubedSphereExchange) THEN
+       CALL EXCH_RL_CUBE( cg2d_s,
+     I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      ELSE
+       CALL EXCH_RL( cg2d_s,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      ENDIF
 #endif
-      _GLOBAL_SUM_R8( sumRHS, myThid )
-C     WRITE(6,*) ' mythid, err = ', mythid, SQRT(err)
-      _GLOBAL_SUM_R8( err   , myThid )
+       _GLOBAL_SUM_R8( sumRHS, myThid )
+       _GLOBAL_SUM_R8( err   , myThid )
+       err = SQRT(err)
+       actualIts      = 0
+       actualResidual = err
       
       _BEGIN_MASTER( myThid )
-      write(*,'(A,1PE30.14)') ' cg2d: Sum(rhs) = ',sumRHS
+      write(*,'(A,1P2E22.14)')' cg2d: Sum(rhs),rhsMax = ',
+     &                                  sumRHS,rhsMax 
       _END_MASTER( )
-
-      actualIts      = 0
-      actualResidual = SQRT(err)
 C     _BARRIER
 c     _BEGIN_MASTER( myThid )
 c      WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ', 
 c    & actualIts, actualResidual
 c     _END_MASTER( )
-      initialResidual=actualResidual
+      firstResidual=actualResidual
+
+      IF ( err .LT. cg2dTolerance ) GOTO 11
 
 C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       DO 10 it2d=1, numIters
@@ -236,7 +256,6 @@ CcnhDebugStarts
 C      WRITE(*,*) ' CG2D: Iteration ',it2d-1,' residual = ',
 C    &  actualResidual
 CcnhDebugEnds
-       IF ( err .LT. tolerance ) GOTO 11
 C--    Solve preconditioning equation and update
 C--    conjugate direction vector "s".
        eta_qrN = 0. _d 0
@@ -294,10 +313,17 @@ C      _EXCH_XY_R8( cg2d_s, myThid )
        exchWidthX = 1
        exchWidthY = 1
        myNz       = 1
-       CALL EXCH_RL( cg2d_s,
-     I            OLw, OLe, OLs, OLn, sNx, sNy, myNz,
+      IF (useCubedSphereExchange) THEN
+       CALL EXCH_RL_CUBE( cg2d_s,
+     I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      ELSE
+       CALL EXCH_RL( cg2d_s,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      ENDIF
 #endif
 
 C==    Evaluate laplace operator on conjugate gradient vector
@@ -351,7 +377,7 @@ C      Now compute "interior" points.
        err = SQRT(err)
        actualIts      = it2d
        actualResidual = err
-       IF ( err .LT. cg2dTargetResidual ) GOTO 11
+       IF ( err .LT. cg2dTolerance ) GOTO 11
 C      _EXCH_XY_R8(cg2d_r, myThid )
 #ifdef LETS_MAKE_JAM
       CALL EXCH_XY_O1_R8_JAM( cg2d_r )
@@ -363,25 +389,34 @@ C      _EXCH_XY_R8(cg2d_r, myThid )
        exchWidthX = 1
        exchWidthY = 1
        myNz       = 1
+      IF (useCubedSphereExchange) THEN
+       CALL EXCH_RL_CUBE( cg2d_r,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      ELSE
        CALL EXCH_RL( cg2d_r,
-     I             OLw, OLe, OLs, OLn, sNx, sNy, myNz,
-     I             exchWidthX, exchWidthY,
-     I             FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      ENDIF
 #endif
 
    10 CONTINUE
    11 CONTINUE
 
+      IF (cg2dNormaliseRHS) THEN
 C--   Un-normalise the answer
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
-          cg2d_x(I  ,J  ,bi,bj) = cg2d_x(I  ,J  ,bi,bj)/rhsNorm
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO J=1,sNy
+           DO I=1,sNx
+            cg2d_x(I  ,J  ,bi,bj) = cg2d_x(I  ,J  ,bi,bj)/rhsNorm
+           ENDDO
+          ENDDO
          ENDDO
         ENDDO
-       ENDDO
-      ENDDO
+      ENDIF
 
 C     The following exchange was moved up to solve_for_pressure
 C     for compatibility with TAMC.
@@ -392,8 +427,7 @@ c    & actualIts, actualResidual
 c     _END_MASTER( )
 
 C--   Return parameters to caller
-      tolerance=initialResidual
-      residual=actualResidual
+      lastResidual=actualResidual
       numIters=actualIts
 
 CcnhDebugStarts

@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_s.F,v 1.6 2001/02/04 14:38:50 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_s.F,v 1.7 2001/05/29 14:01:38 adcroft Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
 
       subroutine KPP_TRANSPORT_S (
      I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
-     I     maskC,KappaRS,
+     I     KappaRS,
      U     df )
 C     /==========================================================\
 C     | o SUBROUTINE KPP_TRANSPORT_S                             |
@@ -35,11 +35,9 @@ C     == GLobal variables ==
 C     == Routine arguments ==
 C     iMin,iMax,jMin,  - Range of points for which calculation
 C     jMax,bi,bj,k,km1   results will be set.
-C     maskC            - Land mask for salt cells.
 C     KappaRS          - Total diffusion in vertical for S.
 C     df               - Diffusive flux component work array.
       INTEGER iMin,iMax,jMin,jMax,bi,bj,k,km1
-      _RS maskC  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL df     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
@@ -51,7 +49,7 @@ C     I, J - Loop counters
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-        df(i,j) = df(i,j) - _rA(i,j,bi,bj) * maskC(i,j) *
+        df(i,j) = df(i,j) - _rA(i,j,bi,bj) * 
      &         KappaRS(i,j,k) * KPPghat(i,j,km1,bi,bj) * delZ(1) *
      &         SurfaceTendencyS(i,j,bi,bj)
        ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_tracer.F,v 1.3 2001/02/04 14:38:50 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_tracer.F,v 1.4 2001/05/29 14:01:40 adcroft Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -18,6 +18,8 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SHAP_FILT.h"
+#include "SHAP_FILT_TRACER.h"
 
 C     == Routine arguments
       _RL field(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -28,13 +30,12 @@ C     == Routine arguments
 
 C     == Local variables ==
       INTEGER bi,bj,K,I,J,N
-      _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tmpGrd(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifndef SEQUENTIAL_2D_SHAP
       _RL tmpScal
 #endif
 
-      IF (nShap.gt.0) THEN
+      IF (nShapT.gt.0) THEN
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -51,7 +52,7 @@ C     == Local variables ==
 
 C      d_xx^n tmpFld 
 
-       DO N=1,nShap
+       DO N=1,nShapT
 
         _EXCH_XYZ_R8( tmpFld, myThid )
 
@@ -104,7 +105,7 @@ C      F <-  [1-d_xx^n]F
 
 C      d_yy^n tmpFld 
 
-       DO N=1,nShap
+       DO N=1,nShapT
 
         _EXCH_XYZ_R8( tmpFld, myThid )
 

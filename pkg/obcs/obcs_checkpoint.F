@@ -61,32 +61,32 @@ C     READ E and W OB arrays
 #endif
 
 C     Fill in edge regions
-      _EXCH_XZ_R4(OBNu , myThid)
-      _EXCH_XZ_R4(OBNv , myThid)
-      _EXCH_XZ_R4(OBNt , myThid)
-      _EXCH_XZ_R4(OBNs , myThid)
-      _EXCH_XZ_R4(OBSu , myThid)
-      _EXCH_XZ_R4(OBSv , myThid)
-      _EXCH_XZ_R4(OBSt , myThid)
-      _EXCH_XZ_R4(OBSs , myThid)
-#ifdef ALLOW_NONHYDROSTATIC
-      _EXCH_XZ_R4(OBNw , myThid)
-      _EXCH_XZ_R4(OBSw , myThid)
-#endif
+c      _EXCH_XZ_R4(OBNu , myThid)
+c      _EXCH_XZ_R4(OBNv , myThid)
+c      _EXCH_XZ_R4(OBNt , myThid)
+c      _EXCH_XZ_R4(OBNs , myThid)
+c      _EXCH_XZ_R4(OBSu , myThid)
+c      _EXCH_XZ_R4(OBSv , myThid)
+c      _EXCH_XZ_R4(OBSt , myThid)
+c      _EXCH_XZ_R4(OBSs , myThid)
+c#ifdef ALLOW_NONHYDROSTATIC
+c      _EXCH_XZ_R4(OBNw , myThid)
+c      _EXCH_XZ_R4(OBSw , myThid)
+c#endif
 
 C     Fill in edge regions
-      _EXCH_YZ_R4(OBEu , myThid)
-      _EXCH_YZ_R4(OBEv , myThid)
-      _EXCH_YZ_R4(OBEt , myThid)
-      _EXCH_YZ_R4(OBEs , myThid) 
-      _EXCH_YZ_R4(OBWu , myThid)
-      _EXCH_YZ_R4(OBWv , myThid)
-      _EXCH_YZ_R4(OBWt , myThid)
-      _EXCH_YZ_R4(OBWs , myThid)
-#ifdef ALLOW_NONHYDROSTATIC
-      _EXCH_YZ_R4(OBEw , myThid)
-      _EXCH_YZ_R4(OBWw , myThid)
-#endif
+c      _EXCH_YZ_R4(OBEu , myThid)
+c      _EXCH_YZ_R4(OBEv , myThid)
+c      _EXCH_YZ_R4(OBEt , myThid)
+c      _EXCH_YZ_R4(OBEs , myThid) 
+c      _EXCH_YZ_R4(OBWu , myThid)
+c      _EXCH_YZ_R4(OBWv , myThid)
+c      _EXCH_YZ_R4(OBWt , myThid)
+c      _EXCH_YZ_R4(OBWs , myThid)
+c#ifdef ALLOW_NONHYDROSTATIC
+c      _EXCH_YZ_R4(OBEw , myThid)
+c      _EXCH_YZ_R4(OBWw , myThid)
+c#endif
 
 #ifdef ALLOW_ORLANSKI
       IF (useOrlanskiNorth.OR.useOrlanskiSouth.OR.

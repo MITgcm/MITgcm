@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/ini_depths.F,v 1.3 2001/02/04 14:38:51 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/ini_depths.F,v 1.4 2001/05/29 14:01:46 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -27,6 +27,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "INI_DEPTHS.h"
 
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_DEPTHS
@@ -37,13 +38,18 @@ C     == Local variables ==
 C     iG, jG - Global coordinate index
 C     bi,bj  - Loop counters
 C     I,J,K
+C     H      - Depth of base of fluid from upper surface f[X,Y] (m).
 C     Hdefault - default r-coordinate of the lower boundary (=ground)
 C                (=minus(Total_depth) in the ocean model)
 C                (=Total Pressure at Sea Level in the atmos model)
+C--------------------
+C NOTE: will change soon: 2 separed files for r_lower and r_surface boudaries 
+C        and for the atmosphere, topography will be defined in term of height
+C--------------------
 C     oldPrec - Temporary used in controlling binary input dataset precision
       INTEGER iG, jG
       INTEGER bi, bj
-      INTEGER  I, J, K
+      INTEGER  I, J
       _RL Hdefault
 
       _BARRIER
@@ -52,11 +58,10 @@ C      Set up a flat bottom box with doubly periodic topology.
 C      H is the basic variable from which other terms are derived. It
 C      is the term that would be set from an external file for a 
 C      realistic problem.
-       Hdefault = rF(1)
-       IF (.NOT. groundAtK1) THEN
-        DO K = 1, Nr
-         Hdefault = Hdefault - rkfac*drF(K)
-        ENDDO
+       IF (groundAtK1) THEN
+         Hdefault = Ro_SeaLevel
+       ELSE
+         Hdefault = rF(Nr+1)
        ENDIF
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -69,8 +74,7 @@ C          Default depth of full domain
 C          Test for eastern edge
 C          IF ( iG .EQ. nX ) H(i,j,bi,bj) = 0.
 C          Test for northern edge
-           IF ( jG .EQ. nY ) H(i,j,bi,bj) = 0.
-C          H(i,j,bi,bj) = 0.
+C          IF ( jG .EQ. nY ) H(i,j,bi,bj) = 0.
           ENDDO
          ENDDO
         ENDDO
@@ -91,19 +95,46 @@ C    &                    'RS', 1, H, 1, myThid )
 
       _EXCH_XY_R4(    H, myThid )
 
-      IF (usingSphericalPolarGrid) THEN
+C
+C     CALL PLOT_FIELD_XYRS(H,'Model depths (ini_depths)',1,myThid)
+C
+      IF (groundAtK1) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           IF (abs(yC(I,J,bi,bj)).GE.90.) H(I,J,bi,bj)=0.
+           R_low(I,J,bi,bj) = rF(Nr+1)
+           Ro_surf(I,J,bi,bj) = H(I,J,bi,bj)
+c- Domain : Symetric % Eq. & closed at N & S boundaries:
+           IF (usingSphericalPolarGrid .AND.
+     &         abs(yC(I,J,bi,bj)).GE.-phiMin) Ro_surf(I,J,bi,bj) = 0.
+           IF (usingSphericalPolarGrid .AND. abs(yC(I,J,bi,bj)).GE.90. ) 
+     &     THEN
+            Ro_surf(I,J,bi,bj) = 0.
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           R_low(I,J,bi,bj) = H(I,J,bi,bj)
+           Ro_surf(I,J,bi,bj) = Ro_SeaLevel
+c- Domain : Symetric % Eq. & closed at N & S boundaries:
+           IF (usingSphericalPolarGrid .AND.
+     &         abs(yC(I,J,bi,bj)).GE.-phiMin) R_low(I,J,bi,bj) = 0.
+           IF (usingSphericalPolarGrid .AND. abs(yC(I,J,bi,bj)).GE.90. ) 
+     &     THEN
+            R_low(I,J,bi,bj) = 0.
+           ENDIF
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ENDIF
-C
-      CALL PLOT_FIELD_XYRS(H,'Model depths (ini_depths)',1,myThid)
-C
+
       RETURN
       END

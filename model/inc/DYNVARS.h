@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.12 2001/03/06 16:34:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.13 2001/05/29 14:01:36 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -18,10 +18,12 @@ C     gX, gXNM1 - Time tendencies at current and prvious time levels.
 C     uVelD  - D grid zonal velocity
 C     vVelD  - D grid meridional velocity
 
-      COMMON /DYNVARS_R/ 
-     &                   etaN,uVel,vVel,wVel,theta,salt,
+      COMMON /DYNVARS_R/
+     &                   etaN,etaNm1,
+     &                   uVel,vVel,wVel,theta,salt,
      &                   gu,gv,gt,gs,guNm1,gvNm1,gtNm1,gsNm1
-      _RL  etaN (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  etaN  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  etaNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  wVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -38,12 +40,10 @@ C     vVelD  - D grid meridional velocity
 #ifdef INCLUDE_CD_CODE
       COMMON /DYNVARS_CD/ 
      &                   uVelD, vVelD,
-     &                   etaNm1,
      &                   uNM1,  vNM1,
      &                   guCD, gvCD
       _RL  uVeld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vVeld (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL  etaNm1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  uNm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  vNm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  guCD  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_max.F,v 1.7 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_max.F,v 1.8 2001/05/29 14:01:36 adcroft Exp $
 C $Name:  $
 
 C--   File global_max.F: Routines that perform global max reduction on an array
@@ -32,6 +32,7 @@ C     == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+#include "GLOBAL_MAX.h"
 
 C     == Routine arguments ==
 C     maxPhi - Result of max.
@@ -41,27 +42,26 @@ C     myThid - My thread id.
 CEndOfInterface
 
 C     == Local variables ==
-C     phi    - Array to be maxed.
 C     I      - Loop counters
 C     mpiRC  - MPI return code
-      Real*4 phi(lShare4,MAX_NO_THREADS)
       INTEGER I
       Real*4  tmp
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
 
+      CALL BAR2( myThid )
 C--   write local max into array
-      phi(1,myThid) = maxPhi
+      phiGMRS(1,myThid) = maxPhi
 
 C--   Can not start until everyone is ready
-      _BARRIER
+      CALL BAR2( myThid )
 
 C--   Max within the process first
       _BEGIN_MASTER( myThid )
-       tmp = phi(1,1)
+       tmp = phiGMRS(1,1)
        DO I=2,nThreads
-        tmp = MAX(tmp,phi(1,I))
+        tmp = MAX(tmp,phiGMRS(1,I))
        ENDDO
        maxPhi = tmp
 #ifdef  ALLOW_USE_MPI
@@ -74,13 +74,14 @@ C--   Max within the process first
        ENDIF
 #endif
 #endif /*  ALLOW_USE_MPI */
-       phi(1,1) = maxPhi
+       phiGMRS(1,1) = maxPhi
       _END_MASTER( myThid )
 C--
-      _BARRIER
+      CALL BAR2( myThid )
 
 C--   set result for every process
-      maxPhi = phi(1,1)
+      maxPhi = phiGMRS(1,1)
+      CALL BAR2( myThid )
 
       RETURN
       END
@@ -110,6 +111,7 @@ C     === Global data ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
+#include "GLOBAL_MAX.h"
 
 C     === Routine arguments ===
 C     maxPhi - Result of max.
@@ -119,27 +121,26 @@ C     myThid - My thread id.
 CEndOfInterface
 
 C     === Local variables ===
-C     phi    - Array to be maxed. 
 C     I      - Loop counters
 C     mpiRC  - MPI return code
-      Real*8 phi(lShare8,MAX_NO_THREADS)
       INTEGER I
       Real*8  tmp
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif   /* ALLOW_USE_MPI */
 
+      CALL BAR2( myThid )
 C--   write local max into array
-      phi(1,myThid) = maxPhi
+      phiGMRL(1,myThid) = maxPhi
 
 C--   Can not start until everyone is ready
-      _BARRIER
+      CALL BAR2( myThid )
 
 C--   Max within the process first
       _BEGIN_MASTER( myThid )
-       tmp = phi(1,1)
+       tmp = phiGMRL(1,1)
        DO I=2,nThreads
-        tmp = MAX(tmp,phi(1,I))
+        tmp = MAX(tmp,phiGMRL(1,I))
        ENDDO
        maxPhi = tmp
 #ifdef  ALLOW_USE_MPI
@@ -153,14 +154,15 @@ C--   Max within the process first
 #endif
 #endif /*  ALLOW_USE_MPI */
 C--     Write solution to place where all threads can see it
-        phi(1,1) = maxPhi
+        phiGMRL(1,1) = maxPhi
       _END_MASTER( myThid )
 
 C--   Do not leave until we are sure that the max is done
-      _BARRIER
+      CALL BAR2( myThid )
 
 C--   set result for every process
-      maxPhi = phi(1,1)
+      maxPhi = phiGMRL(1,1)
+      CALL BAR2( myThid )
 
       RETURN
       END

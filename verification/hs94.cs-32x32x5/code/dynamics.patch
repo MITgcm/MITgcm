@@ -1,0 +1,21 @@
+*** ../../../model/src/dynamics.F	Tue May 22 10:17:58 2001
+--- ./dynamics.F	Tue May 29 09:44:11 2001
+***************
+*** 543,548 ****
+--- 543,558 ----
+  C--     end of thermodynamic k loop (Nr:1)
+          ENDDO
+  
++ Ccs-
++        ENDDO
++       ENDDO
++       IF (staggerTimeStep.AND.useCubedSphereExchange) THEN
++        _EXCH_XYZ_R8(gTnm1,myThid)
++        _EXCH_XYZ_R8(gSnm1,myThid)
++       ENDIF
++       DO bj=myByLo(myThid),myByHi(myThid)
++        DO bi=myBxLo(myThid),myBxHi(myThid)
++ Ccs-
+  
+  #ifdef ALLOW_AUTODIFF_TAMC
+  C? Patrick? What about this one?

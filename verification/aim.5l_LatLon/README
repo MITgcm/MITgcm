@@ -1,0 +1,26 @@
+Intermediate Atmospheric physics, 5 layers Molteni Physics package.
+Global spherical-grid configuration, 128x64x5 resolution.
+====================================================================
+
+o To reproduce the run :
+
+The genmake options are in .genmakerc, so that the simplest form
+of genmake can be used :
+cd input 
+../../../tools/genmake
+make depend 
+make
+
+mitgcmuv
+
+---------------------------
+Note: 
+Originally, this set up was very close to the one in 
+/development/adcroft/atmos/verification/molteni.128x64x5
+with few modifications taken from run on hyades.
+
+Others modifications have been added to improve the stability of the
+model (fixed some bugs) and to get a less diffuse Q distribution:
+o 3rd order scheme for the Horizontal advection of Q 
+o changes in the mapping between C-grid and A-grid  for surface stress
+---------------------------

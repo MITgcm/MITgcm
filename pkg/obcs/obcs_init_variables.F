@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.3 2001/02/28 14:45:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.4 2001/05/29 14:01:39 adcroft Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -37,9 +37,11 @@ C     == Local variables ==
           OBNu(I,K,bi,bj)=0.
           OBNv(I,K,bi,bj)=0.
           OBNt(I,K,bi,bj)=0.
+          OBNs(I,K,bi,bj)=0.
           OBSu(I,K,bi,bj)=0.
           OBSv(I,K,bi,bj)=0.
           OBSt(I,K,bi,bj)=0.
+          OBSs(I,K,bi,bj)=0.
 #ifdef ALLOW_NONHYDROSTATIC
           OBNw(I,K,bi,bj)=0.
           OBSw(I,K,bi,bj)=0.
@@ -49,9 +51,11 @@ C     == Local variables ==
           OBEu(J,K,bi,bj)=0.
           OBEv(J,K,bi,bj)=0.
           OBEt(J,K,bi,bj)=0.
+          OBEs(J,K,bi,bj)=0.
           OBWu(J,K,bi,bj)=0.
           OBWv(J,K,bi,bj)=0.
           OBWt(J,K,bi,bj)=0.
+          OBWs(J,K,bi,bj)=0.
 #ifdef ALLOW_NONHYDROSTATIC
           OBEw(J,K,bi,bj)=0.
           OBWw(J,K,bi,bj)=0.

@@ -1,3 +1,4 @@
 # Packages
  &PACKAGES
+ useSHAP_FILT=.TRUE.
  &

@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.3 2001/05/14 21:31:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.4 2001/05/29 14:01:35 adcroft Exp $
 C $Name:  $
-C
+
 C     /==========================================================\
 C     | CPP_EEMACROS.h                                           |
 C     |==========================================================|
@@ -78,15 +78,6 @@ C     it alone execute the BEGIN_MASTER..., END_MASTER.. sections.
 #define _BEGIN_MASTER(a)  IF ( a .EQ. 1 ) THEN
 #define _END_MASTER(a)    ENDIF
 
-C--   Control use of JAM routines for Artic network
-C     These invoke optimized versions of "exchange" and "sum" that
-C     utilize the programmable aspect of Artic cards.
-#ifdef LETS_MAKE_JAM
-#define _JAMEXT _jam
-#else
-#define _JAMEXT
-#endif
-
 C--   Control storage of floating point operands
 C     On many systems it improves performance only to use
 C     8-byte precision for time stepped variables.
@@ -98,30 +89,44 @@ C     performance.
 #ifdef REAL4_IS_SLOW
 #define _RS Real*8
 #define RS_IS_REAL8
-#define _EXCH_XY_R4(a,b) CALL EXCH_XY_R8 _JAMEXT ( a, b )
-#define _EXCH_XYZ_R4(a,b) CALL EXCH_XYZ_R8 _JAMEXT ( a, b )
-#define _EXCH_XZ_R4(a,b) CALL EXCH_XZ_R8 _JAMEXT ( a, b )
-#define _EXCH_YZ_R4(a,b) CALL EXCH_YZ_R8 _JAMEXT ( a, b )
-#define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R8 _JAMEXT ( a, b)
+#define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R8 ( a, b)
 #define _GLOBAL_MAX_R4(a,b) CALL GLOBAL_MAX_R8 ( a, b )
 #else
 #define _RS Real*4
 #define RS_IS_REAL4
-#define _EXCH_XY_R4(a,b) CALL EXCH_XY_R4 ( a, b )
-#define _EXCH_XYZ_R4(a,b) CALL EXCH_XYZ_R4 ( a, b )
-#define _EXCH_XZ_R4(a,b) CALL EXCH_XZ_R4 ( a, b )
-#define _EXCH_YZ_R4(a,b) CALL EXCH_YZ_R4 ( a, b )
 #define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R4 ( a, b )
 #define _GLOBAL_MAX_R4(a,b) CALL GLOBAL_MAX_R4 ( a, b )
 #endif
+#define _EXCH_XY_R4(a,b) CALL EXCH_XY_RS ( a, b )
+#define _EXCH_XYZ_R4(a,b) CALL EXCH_XYZ_RS ( a, b )
 
 #define _RL Real*8
-#define _EXCH_XY_R8(a,b) CALL EXCH_XY_R8 _JAMEXT ( a, b )
-#define _EXCH_XYZ_R8(a,b) CALL EXCH_XYZ_R8 _JAMEXT ( a, b )
-#define _EXCH_XZ_R8(a,b) CALL EXCH_XZ_R8 _JAMEXT ( a, b )
-#define _EXCH_YZ_R8(a,b) CALL EXCH_YZ_R8 _JAMEXT ( a, b )
-#define _GLOBAL_SUM_R8(a,b) CALL GLOBAL_SUM_R8 _JAMEXT ( a, b )
+#define _EXCH_XY_R8(a,b) CALL EXCH_XY_RL ( a, b )
+#define _EXCH_XYZ_R8(a,b) CALL EXCH_XYZ_RL ( a, b )
+#define _GLOBAL_SUM_R8(a,b) CALL GLOBAL_SUM_R8 ( a, b )
 #define _GLOBAL_MAX_R8(a,b) CALL GLOBAL_MAX_R8 ( a, b )
+
+#define _EXCH_XY_RS(a,b) CALL EXCH_XY_RS ( a, b )
+#define _EXCH_XYZ_RS(a,b) CALL EXCH_XYZ_RS ( a, b )
+#define _EXCH_XY_RL(a,b) CALL EXCH_XY_RL ( a, b )
+#define _EXCH_XYZ_RL(a,b) CALL EXCH_XYZ_RL ( a, b )
+
+C--   Control use of JAM routines for Artic network
+C     These invoke optimized versions of "exchange" and "sum" that
+C     utilize the programmable aspect of Artic cards.
+#ifdef LETS_MAKE_JAM
+#define _GLOBAL_SUM_R4(a,b) CALL GLOBAL_SUM_R8_JAM ( a, b)
+#define _EXCH_XY_R4(a,b) CALL EXCH_XY_R8_JAM ( a, b )
+#define _EXCH_XYZ_R4(a,b) CALL EXCH_XYZ_R8_JAM ( a, b )
+#define _EXCH_XY_R8(a,b) CALL EXCH_XY_R8_JAM ( a, b )
+#define _EXCH_XYZ_R8(a,b) CALL EXCH_XYZ_R8_JAM ( a, b )
+#define _GLOBAL_SUM_R8(a,b) CALL GLOBAL_SUM_R8_JAM ( a, b )
+
+#define _EXCH_XY_RS(a,b) CALL EXCH_XY_R8_JAM ( a, b )
+#define _EXCH_XYZ_RS(a,b) CALL EXCH_XYZ_R8_JAM ( a, b )
+#define _EXCH_XY_RL(a,b) CALL EXCH_XY_R8_JAM ( a, b )
+#define _EXCH_XYZ_RL(a,b) CALL EXCH_XYZ_R8_JAM ( a, b )
+#endif
  
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16

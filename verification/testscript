@@ -10,8 +10,9 @@
 
 set on_error_die
 set passaccuracy=7
-printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' " " Make " " " " Exact "# of" " " > summary.txt
-printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\n' Config Depend Compile Execute Match Digits Experiment >> summary.txt
+set SKIP=( )
+printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' " " Make " " " " Exact "# of" " " " " > summary.txt
+printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' Config Depend Compile Execute Match Digits Status Experiment >> summary.txt
 
 # Pass any arguments
 foreach arg ($argv)
@@ -35,6 +36,9 @@ foreach arg ($argv)
   case -nodie:
    unset on_error_die
    breaksw
+  case -skip=*:
+   set SKIP = ( $SKIP `echo $arg | sed 's/-skip=//' | sed 's/,/ /g' `)
+   breaksw
   default:
    echo Unknown argument given to $0
    exit 1
@@ -43,12 +47,16 @@ end
 
 foreach dr ([a-zA-Z01-9]*)
  if (! -d $dr/input ) continue
+ foreach skip ($SKIP)
+  if ($skip == $dr) continue;continue
+ end
  set config=-
  set makedepend=-
  set compile=-
  set execute=-
  set exactmatch=-
  set accuracy=-
+ set pass=FAIL
  echo ==============================================================================
  echo Entering $dr
  cd $dr
@@ -84,13 +92,14 @@ foreach dr ([a-zA-Z01-9]*)
   echo " done."
   echo -n "  running model ..."
   if ($compile == 'Yes') then
-  ./mitgcmuv | & grep "D iters" > output.txt
+# ./mitgcmuv | & grep "D iters" > output.txt
+  ./mitgcmuv > & output.txt
   if ($status == 0) then
     set execute=Yes
     set exactmatch=NO
     set accuracy=-
     echo " done."
-    sed 's/.*D iters, err =//' output.txt \
+    grep "D iters" output.txt | sed 's/.*D iters, err =//' \
     | grep "   0    " \
     > high.txt
     grep "D iters" ../results/output.txt \
@@ -122,16 +131,19 @@ foreach dr ([a-zA-Z01-9]*)
       if ($?fail ) then
         if (! $?fails) set fails
         set fails=($fails $dr)
+        set pass=FAIL
         echo "                        ***** FAIL *****"
       else
         if (! $?passes) set passes
         set passes=($passes $dr)
+        set pass=Pass
         echo ""
         echo "                   ***** PASS (grade $lvl) *****"
       endif
       set accuracy=$lvl
     else
       set exactmatch=Yes
+      set pass=Pass
       echo ""
       echo Model passed at highest accuracy.
       echo ""
@@ -145,7 +157,9 @@ foreach dr ([a-zA-Z01-9]*)
     tail output.txt
     echo The runtime error occured in \"$dr\"
     if ($?on_error_die) exit 1
+    set pass=-
   endif
+  rm -f high.txt oldhigh.txt low.txt oldlow.txt output.txt make.log
   endif
   cd ..
  endif
@@ -153,7 +167,7 @@ foreach dr ([a-zA-Z01-9]*)
  cd ..
 # Pretty summary
  printresults:
- printf '  %s\t  %s\t  %s\t  %s\t  %s\t  %s\t%s\n' $config $makedepend $compile $execute $exactmatch $accuracy $dr >> summary.txt
+ printf '  %s\t  %s\t  %s\t  %s\t  %s\t %s\t %s\t%s\n' $config $makedepend $compile $execute $exactmatch $accuracy $pass $dr >> summary.txt
 end
 echo ==============================================================================
 echo ""

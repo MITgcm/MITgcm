@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/external_forcing.F,v 1.2 2001/02/02 21:36:31 adcroft Exp $
+C     $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/external_forcing.F,v 1.3 2001/05/29 14:01:46 adcroft Exp $
 C     $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -95,7 +95,6 @@ C--   Forcing term
 CStartOfInterface
       SUBROUTINE EXTERNAL_FORCING_T(
      I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           maskC,
      I           myCurrentTime,myThid)
 C     /==========================================================\
 C     | S/R EXTERNAL_FORCING_T                                   |
@@ -119,7 +118,6 @@ C     iMax
 C     jMin
 C     jMax
 C     kLev
-      _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
       _RL myCurrentTime
       INTEGER myThid
@@ -141,7 +139,6 @@ C--   Forcing term
 CStartOfInterface
       SUBROUTINE EXTERNAL_FORCING_S(
      I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           maskC,
      I           myCurrentTime,myThid)
 C     /==========================================================\
 C     | S/R EXTERNAL_FORCING_S                                   |
@@ -163,10 +160,9 @@ C     == Global data ==
 C     == Routine arguments ==
 C     iMin - Working range of tile for applying forcing.
 C     iMax
-C     jMin
+C     Min
 C     jMax
 C     kLev
-      _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
       _RL myCurrentTime
       INTEGER myThid

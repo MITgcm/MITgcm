@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.67 2001/05/14 21:46:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.68 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -61,8 +61,7 @@ C                              transport
 C                              o uTrans: Zonal transport
 C                              o vTrans: Meridional transport
 C                              o rTrans: Vertical transport
-C     maskC,maskUp             o maskC: land/water mask for tracer cells
-C                              o maskUp: land/water mask for W points
+C     maskUp                   o maskUp: land/water mask for W points
 C     fVer[STUV]               o fVer: Vertical flux term - note fVer
 C                                      is "pipelined" in the vertical
 C                                      so we need an fVer for each
@@ -83,12 +82,12 @@ C     bi, bj
 C     k, kup,        - Index for layer above and below. kup and kDown
 C     kDown, km1       are switched with layer to be the appropriate 
 C                      index into fVerTerm.
+C     tauAB - Adams-Bashforth timestepping weight: 0=forward ; 1/2=Adams-Bashf.
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS maskC   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -106,6 +105,7 @@ C                      index into fVerTerm.
       _RL sigmaX  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL tauAB
 
 C This is currently used by IVDC and Diagnostics
       _RL ConvectCount (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -192,7 +192,6 @@ C     uninitialised but inert locations.
         ENDDO
         rhoKM1 (i,j) = 0. _d 0
         rhok   (i,j) = 0. _d 0
-        maskC  (i,j) = 0. _d 0
         phiSurfX(i,j) = 0. _d 0
         phiSurfY(i,j) = 0. _d 0
        ENDDO
@@ -209,7 +208,7 @@ CHPF$ INDEPENDENT
 #ifdef ALLOW_AUTODIFF_TAMC
 C--    HPF directive to help TAMC
 CHPF$  INDEPENDENT, NEW (rTrans,fVerT,fVerS,fVerU,fVerV
-CHPF$&                  ,phiHyd,utrans,vtrans,maskc,xA,yA
+CHPF$&                  ,phiHyd,utrans,vtrans,xA,yA
 CHPF$&                  ,KappaRT,KappaRS,KappaRU,KappaRV
 CHPF$&                  )
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -476,8 +475,8 @@ C--       kDown  Cycles through 2,1 to point to current layer
 
 C--      Get temporary terms used by tendency routines
          CALL CALC_COMMON_FACTORS (
-     I        bi,bj,iMin,iMax,jMin,jMax,k,km1,kup,kDown,
-     O        xA,yA,uTrans,vTrans,rTrans,maskC,maskUp,
+     I        bi,bj,iMin,iMax,jMin,jMax,k,
+     O        xA,yA,uTrans,vTrans,rTrans,maskUp,
      I        myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC 
@@ -489,7 +488,7 @@ CADJ STORE KappaRS(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
 C--      Calculate the total vertical diffusivity
          CALL CALC_DIFFUSIVITY(
      I        bi,bj,iMin,iMax,jMin,jMax,k,
-     I        maskC,maskup,
+     I        maskUp,
      O        KappaRT,KappaRS,KappaRU,KappaRV,
      I        myThid)
 #endif
@@ -499,12 +498,13 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
          IF ( tempStepping ) THEN
            CALL CALC_GT(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
-     I         xA,yA,uTrans,vTrans,rTrans,maskUp,maskC,
+     I         xA,yA,uTrans,vTrans,rTrans,maskUp,
      I         KappaRT,
      U         fVerT,
      I         myTime, myThid)
+           tauAB = 0.5d0 + abEps
            CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,
+     I         bi,bj,iMin,iMax,jMin,jMax,k,tauAB,
      I         theta, gT,
      U         gTnm1,
      I         myIter, myThid)
@@ -512,12 +512,13 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
          IF ( saltStepping ) THEN
            CALL CALC_GS(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
-     I         xA,yA,uTrans,vTrans,rTrans,maskUp,maskC,
+     I         xA,yA,uTrans,vTrans,rTrans,maskUp,
      I         KappaRS,
      U         fVerS,
      I         myTime, myThid)
+           tauAB = 0.5d0 + abEps
            CALL TIMESTEP_TRACER(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,
+     I         bi,bj,iMin,iMax,jMin,jMax,k,tauAB,
      I         salt, gS,
      U         gSnm1,
      I         myIter, myThid)
@@ -738,7 +739,7 @@ Cjmc(end)
 
 #ifdef ALLOW_TIMEAVE
         IF (taveFreq.GT.0.) THEN 
-          CALL TIMEAVE_CUMULATE(phiHydtave, phiHyd, Nr,
+          CALL TIMEAVE_CUMUL_1T(phiHydtave, phiHyd, Nr,
      I                              deltaTclock, bi, bj, myThid)
           IF (ivdc_kappa.NE.0.) THEN
             CALL TIMEAVE_CUMULATE(ConvectCountTave, ConvectCount, Nr,

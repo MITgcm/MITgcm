@@ -30,7 +30,6 @@
  readBinaryPrec=64,
  writeBinaryPrec=64,
  hFacMin=1.0,
- nShap=4,
  zonal_filt_lat=45.0,
  zonal_filt_sinpow=2,
  zonal_filt_cospow=2,

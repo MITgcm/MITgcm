@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.17 2001/02/04 16:46:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_spherical_polar_grid.F,v 1.18 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -77,11 +77,29 @@ C  NOTICE the extended range of indices!!
       _RL xGloc(1-Olx:sNx+Olx+1,1-Oly:sNy+Oly+1)
       _RL yGloc(1-Olx:sNx+Olx+1,1-Oly:sNy+Oly+1)
 
-C These functions return the "global" index with valid values beyond
+C The functions iGl, jGl return the "global" index with valid values beyond
 C halo regions
+C cnh wrote:
+C >    I don't understand why we would ever have to multiply the
+C >    overlap by the total domain size e.g
+C >    OLx*Nx, OLy*Ny.
+C >    Can anybody explain? Lines are in ini_spherical_polar_grid.F.
+C >    Surprised the code works if its wrong, so I am puzzled.        
+C jmc relied:
+C Yes, I can explain this since I put this modification to work
+C with small domain (where Oly > Ny, as for instance, zonal-average
+C case):
+C This has no effect on the acuracy of the evaluation of iGl(I,bi)
+C and jGl(J,bj) since we take mod(a+OLx*Nx,Nx) and mod(b+OLy*Ny,Ny).
+C But in case a or b is negative, then the FORTRAN function "mod"
+C does not return the matematical value of the "modulus" function,
+C and this is not good for your purpose.
+C This is why I add +OLx*Nx and +OLy*Ny to be sure that the 1rst 
+C argument of the mod function is positive.
       INTEGER iGl,jGl
       iGl(I,bi) = 1+mod(myXGlobalLo-1+(bi-1)*sNx+I+Olx*Nx-1,Nx)
       jGl(J,bj) = 1+mod(myYGlobalLo-1+(bj-1)*sNy+J+Oly*Ny-1,Ny)
+
 
 C     For each tile ...
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -176,6 +194,7 @@ C         by formula
           dlon = delX( iGl(I,bi) )
           dlat = delY( jGl(J,bj) )
           dXG(I,J,bi,bj) = rSphere*COS(deg2rad*lat)*dlon*deg2rad
+          if (dXG(I,J,bi,bj).LT.1.) dXG(I,J,bi,bj)=0.
           dYG(I,J,bi,bj) = rSphere*dlat*deg2rad
          ENDDO
         ENDDO
@@ -307,6 +326,25 @@ C--     Calculate trigonometric terms
           lat=0.5*(yGloc(I,J)+yGloc(I+1,J))
           tanPhiAtV(i,j,bi,bj)=tan(lat*deg2rad)
          ENDDO
+        ENDDO
+
+C--     Cosine(lat) scaling
+        DO J=1-OLy,sNy+OLy
+         jG = myYGlobalLo + (bj-1)*sNy + J-1
+         jG = min(max(1,jG),Ny)
+         IF (cosPower.NE.0.) THEN
+          cosFacU(J,bi,bj)=COS(yC(1,J,bi,bj)*deg2rad)
+     &                    **cosPower
+          cosFacV(J,bi,bj)=COS((yC(1,J,bi,bj)-0.5*delY(jG))*deg2rad)
+     &                    **cosPower
+          sqcosFacU(J,bi,bj)=sqrt(cosFacU(J,bi,bj))
+          sqcosFacV(J,bi,bj)=sqrt(cosFacV(J,bi,bj))
+         ELSE
+          cosFacU(J,bi,bj)=1.
+          cosFacV(J,bi,bj)=1.
+          sqcosFacU(J,bi,bj)=1.
+          sqcosFacV(J,bi,bj)=1.
+         ENDIF
         ENDDO
 
        ENDDO ! bi

@@ -1,0 +1,40 @@
+Change log for branch "pre38".
+
+ o cosine(latitude) scaling of viscosity and diffusion
+   - moved declaration of "cosFac" from calc_mom_rhs.F to GRID.h
+   - now calculated in ini_spherical_grid.F  (set to 1 in ini_cartesian_grid.F)
+   - "Method III" (preferred) available for bi-harmonic term
+   - an-isotropic (preferred) scaling available
+   - added scaling for diffusion (same features as for viscosity above)
+   x thought for the future: lateral GM/Redi fluxes are currently scaled.
+     If we scale them we would have to scale the other tensor components
+     in order to retain the adiabatic property of scheme.
+ o combined initializations of G's and other time-stepping arrays
+   - created ini_garrays.F to initialize G's to zero
+   - combined uVel + vVel initialization into ini_vels.F
+   - deleted ini_uvel.F + ini_vvel.F
+   - removed ini_gw.F since no longer necessary
+ o re-arranged order of arrays in /GRID_R/ in GRID.h
+   g77 suddenly started complaining about padding. Odd but SGI concurred!
+ o fixed CPP_EEOPTIONS.h in hs94.128x64x5
+ o cg2d: added CPP flag for using "regular" overlaps instead of Olx=Oly=1
+ o added inheritence of -disable option to package sub-directories
+ o testscript has -skip option and puts full output into output.txt
+ o added pkg/mom_fluxform: conservative form of momentum equations
+   - *should* produce identical results to original calc_mom_rhs.F
+ o added pkg/mom_vecinv: vectgor invariant form of momentum equations
+   - no-slip side conditions not implemented. Don't try to use them!
+ o define separatetly surface and bottom position - set maskC as 3D global array
+ o modify Surface correction term to deal with topography in Atmosphere
+ o prepare implementation of non-Linear Free Surface:
+   - add parameters and CPP_options for non-Linear Free Surface 
+   - move etaNm1 to main common block
+ o allow to re-compute eta to conserve exactly the total volume.
+ o added fCoriG to PARAMS.h, ini_cori.F, FCORI_MACROS.h
+   - needed for VI momentum equations which are broken without.
+ o CG2D: allow to switch-off RHS normalisation setting Residual_Target in W_unit
+
+ O Many changes appear to be missing here...
+
+ o tagging end of branch with "pre38-close"
+   Merging this branch into "HEAD" on May 21, '01.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.3 2001/02/04 14:38:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.4 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -163,7 +163,7 @@ C-      Large, Danabasoglu and Doney, JPO 1997
            dRdSigmaLtd(i,j)=0.
           endif
           sx   = -SlopeX(i,j)*dRdSigmaLtd(i,j)
-          sx   = -SlopeY(i,j)*dRdSigmaLtd(i,j)
+          sy   = -SlopeY(i,j)*dRdSigmaLtd(i,j)
           Smod = sx*sx + sy*sy
           if (Smod.NE.0.) Smod=sqrt(Smod)
           f1=0.5*(1.+tanh( (GM_Scrit-Smod)/GM_Sd ))

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.20 2001/02/04 14:38:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.21 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -22,6 +22,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 
 C     == Routine arguments ==
 C     myThid -  Number of this instance of INI_MASKS_ETC
@@ -33,108 +34,133 @@ C     bi,bj  - Loop counters
 C     I,J,K
       INTEGER bi, bj
       INTEGER  I, J, K
-      INTEGER kadj_rf, klev_noH
 #ifdef ALLOW_NONHYDROSTATIC
       INTEGER Km1
       _RL hFacUpper,hFacLower
 #endif
-      _RL hFacCtmp,topo_rkfac
+      _RL hFacCtmp
       _RL hFacMnSz
+      _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      IF (groundAtK1) THEN
-       topo_rkfac = -rkFac
-       kadj_rf = 1
-       klev_noH = Nr+1
-      ELSE
-       topo_rkfac = rkFac
-       kadj_rf = 0
-       klev_noH = 1
-      ENDIF
-
-C     Calculate lopping factor hFacC
+C- Calculate lopping factor hFacC : over-estimate the part inside of the domain
+C    taking into account the lower_R Boundary (Bathymetrie / Top of Atmos)
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO K=1, Nr
+         hFacMnSz=max( hFacMin, min(hFacMinDr*recip_drF(k),1. _d 0) )
          DO J=1-Oly,sNy+Oly
           DO I=1-Olx,sNx+Olx
-c          IF (groundAtK1) THEN
-C          o Non-dimensional distance between grid boundary and model depth
-C            for case with "ground" at K=1 (i.e. like a good atmos model)
-C          e.g. rkfac=+1 => dR/dk<0 (eg. R=p): hFacCtmp=(H(x,y)-rF(k))/drF(K)
-C          e.g. rkfac=-1 => dR/dk>0 (eg. R=z): hFacCtmp=(rF(K)-H(x,y))/drF(K)
-c          hFacCtmp=rkFac*(H(I,J,bi,bj)-rF(K+1))*recip_drF(K)
-c          ELSE
-C          o Non-dimensional distance between grid boundary and model depth
-C            for case with "ground" at K=Nr (i.e. like original ocean model)
-C          e.g. rkfac=+1 => dR/dk<0 (eg. R=z): hFacCtmp=(rF(K)-H(x,y))/drF(K)
-C          e.g. rkfac=-1 => dR/dk>0 (eg. R=p): hFacCtmp=(H(x,y)-rF(k))/drF(K)
-c          hFacCtmp=rkFac*(rF(K)-H(I,J,bi,bj))*recip_drF(K)
-c          ENDIF
-           hFacCtmp=topo_rkfac*(rF(K+kadj_rf)-H(I,J,bi,bj))*recip_drF(K)
-C          o Select between, closed, open or partial (0,1,0-1)
+C      o Non-dimensional distance between grid bound. and domain lower_R bound.
+           hFacCtmp = (rF(K)-R_low(I,J,bi,bj))*recip_drF(K)
+C      o Select between, closed, open or partial (0,1,0-1)
            hFacCtmp=min( max( hFacCtmp, 0. _d 0) , 1. _d 0)
-C          o And there we have it, the fractional open cell volume
-           hFacC(I,J,K,bi,bj)=hFacCtmp
-C          o Impose minimum fraction and/or size (dimensional)
-           hFacMnSz=max( hFacMin , min(hFacMinDr*recip_drF(k),1. _d 0) )
-           IF (hFacC(I,J,K,bi,bj).LT.hFacMnSz) THEN
-            IF (hFacC(I,J,K,bi,bj).LT.hFacMnSz*0.5) THEN
+C      o Impose minimum fraction and/or size (dimensional)
+           IF (hFacCtmp.LT.hFacMnSz) THEN
+            IF (hFacCtmp.LT.hFacMnSz*0.5) THEN
              hFacC(I,J,K,bi,bj)=0.
             ELSE
              hFacC(I,J,K,bi,bj)=hFacMnSz
             ENDIF
+           ELSE
+             hFacC(I,J,K,bi,bj)=hFacCtmp
            ENDIF
-           IF (hFacC(I,J,K,bi,bj).NE.0.)
-     &         depthInK(i,j,bi,bj) = depthInK(i,j,bi,bj) + 1.
           ENDDO
          ENDDO
         ENDDO
-       ENDDO
-      ENDDO
-C     _EXCH_XYZ_R4(hFacC , myThid )
-C     _EXCH_XY_R4( depthInK, myThid )
 
-      CALL PLOT_FIELD_XYRS( depthInK, 
-     & 'Model Depths K Index' , 1, myThid )
-
-C Re-calculate depth of ocean, taking into account hFacC
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
+C-  Re-calculate lower-R Boundary position, taking into account hFacC
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
-          H(I,J,bi,bj)=rF(klev_noH)
-          DO K=1,Nr
-           H(I,J,bi,bj)=H(I,J,bi,bj)-
-     &       topo_rkFac*drF(k)*hFacC(I,J,K,bi,bj)
+          R_low(I,J,bi,bj) = rF(1)
+          DO K=Nr,1,-1
+           R_low(I,J,bi,bj) = R_low(I,J,bi,bj)
+     &                      - drF(k)*hFacC(I,J,K,bi,bj)
           ENDDO
          ENDDO
         ENDDO
+C - end bi,bj loops.
        ENDDO
       ENDDO
-C     _EXCH_XY_R4(H , myThid )
-      CALL PLOT_FIELD_XYRS(H,'Model depths (ini_masks_etc)',1,myThid)
-      CALL WRITE_FLD_XY_RS( 'Depth',' ',H,0,myThid)
-      CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
-C     CALL MDSWRITEFIELD( 'Depth', writeBinaryPrec, .TRUE.,
-C    &                    'RS', 1, H, 1, -1, myThid )
+
+C-  Calculate lopping factor hFacC : Remove part outside of the domain
+C    taking into account the Reference (=at rest) Surface Position Ro_surf
+      DO bj=myByLo(myThid), myByHi(myThid)
+       DO bi=myBxLo(myThid), myBxHi(myThid)
+        DO K=1, Nr
+         hFacMnSz=max( hFacMin, min(hFacMinDr*recip_drF(k),1. _d 0) )
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx
+C      o Non-dimensional distance between grid boundary and model surface
+           hFacCtmp = (rF(k)-Ro_surf(I,J,bi,bj))*recip_drF(K)
+C      o Reduce the previous fraction : substract the outside part.
+           hFacCtmp = hFacC(I,J,K,bi,bj) - max( hFacCtmp, 0. _d 0)
+C      o set to zero if empty Column :
+           hFacCtmp = max( hFacCtmp, 0. _d 0)
+C      o Impose minimum fraction and/or size (dimensional)
+           IF (hFacCtmp.LT.hFacMnSz) THEN
+            IF (hFacCtmp.LT.hFacMnSz*0.5) THEN
+             hFacC(I,J,K,bi,bj)=0.
+            ELSE
+             hFacC(I,J,K,bi,bj)=hFacMnSz
+            ENDIF
+           ELSE
+             hFacC(I,J,K,bi,bj)=hFacCtmp
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+
+C-  Re-calculate Reference surface position, taking into account hFacC
+C   initialize Total column fluid thickness and surface k index
+        DO J=1-Oly,sNy+Oly
+         DO I=1-Olx,sNx+Olx
+          tmpfld(I,J,bi,bj) = 0.
+          k_surf(I,J,bi,bj) = Nr
+          Ro_surf(I,J,bi,bj) = R_low(I,J,bi,bj)
+          DO K=Nr,1,-1
+           Ro_surf(I,J,bi,bj) = Ro_surf(I,J,bi,bj)
+     &                        + drF(k)*hFacC(I,J,K,bi,bj)
+           IF (hFacC(I,J,K,bi,bj).NE.0.) THEN
+            k_surf(I,J,bi,bj) = k
+            tmpfld(i,j,bi,bj) = tmpfld(i,j,bi,bj) + 1.
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+C - end bi,bj loops.
+       ENDDO
+      ENDDO
+
+C     CALL PLOT_FIELD_XYRS( tmpfld, 
+C    &         'Model Depths K Index' , 1, myThid )
+      CALL PLOT_FIELD_XYRS(R_low, 
+     &         'Model R_low (ini_masks_etc)', 1, myThid)
+      CALL PLOT_FIELD_XYRS(Ro_surf, 
+     &         'Model Ro_surf (ini_masks_etc)', 1, myThid)
 
 C     Calculate quantities derived from XY depth map
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
-C         Inverse of depth
-          IF ( h(i,j,bi,bj) .EQ. 0. ) THEN
-           recip_H(i,j,bi,bj) = 0.
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+C         Total fluid column thickness (r_unit) :
+c         Rcolumn(i,j,bi,bj)= Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
+          tmpfld(i,j,bi,bj) = Ro_surf(i,j,bi,bj) - R_low(i,j,bi,bj)
+C         Inverse of fluid column thickness (1/r_unit)
+          IF ( tmpfld(i,j,bi,bj) .LE. 0. ) THEN
+           recip_Rcol(i,j,bi,bj) = 0.
           ELSE
-           recip_H(i,j,bi,bj) = 1. / abs( H(i,j,bi,bj) )
+           recip_Rcol(i,j,bi,bj) = 1. / tmpfld(i,j,bi,bj)
           ENDIF
-          depthInK(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-C     _EXCH_XY_R4(   recip_H, myThid )
+C     _EXCH_XY_R4(   recip_Rcol, myThid )
+      CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,0,myThid)
+      CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
+C     CALL MDSWRITEFIELD( 'Depth', writeBinaryPrec, .TRUE.,
+C    &                    'RS', 1, tmpfld, 1, -1, myThid )
 
 C     hFacW and hFacS (at U and V points)
       DO bj=myByLo(myThid), myByHi(myThid)
@@ -151,22 +177,17 @@ C     hFacW and hFacS (at U and V points)
         ENDDO
        ENDDO
       ENDDO
-      _EXCH_XYZ_R4(hFacW , myThid )
-      _EXCH_XYZ_R4(hFacS , myThid )
-C     Re-do hFacW and hFacS (at U and V points)
+      CALL EXCH_UV_XYZ_RS(hFacW,hFacS,.FALSE.,myThid)
+C     The following block allows thin walls representation of non-periodic
+C     boundaries such as happen on the lat-lon grid at the N/S poles.
+C     We should really supply a flag for doing this.
       DO bj=myByLo(myThid), myByHi(myThid)
        DO bi=myBxLo(myThid), myBxHi(myThid)
         DO K=1, Nr
          DO J=1-Oly,sNy+Oly
-          DO I=1-Olx+1,sNx+Olx ! Note range
-           hFacW(I,J,K,bi,bj)=
-     &       MIN(hFacC(I,J,K,bi,bj),hFacC(I-1,J,K,bi,bj))
-          ENDDO
-         ENDDO
-         DO I=1-Olx,sNx+Olx
-          DO J=1-Oly+1,sNy+Oly ! Note range
-           hFacS(I,J,K,bi,bj)=
-     &       MIN(hFacC(I,J,K,bi,bj),hFacC(I,J-1,K,bi,bj))
+          DO I=1-Olx,sNx+Olx
+           IF (DYG(I,J,bi,bj).EQ.0.) hFacW(I,J,K,bi,bj)=0.
+           IF (DXG(I,J,bi,bj).EQ.0.) hFacS(I,J,K,bi,bj)=0.
           ENDDO
          ENDDO
         ENDDO
@@ -185,8 +206,10 @@ C     Masks and reciprocals of hFac[CWS]
           DO I=1-Olx,sNx+Olx
            IF (HFacC(I,J,K,bi,bj) .NE. 0. ) THEN
             recip_HFacC(I,J,K,bi,bj) = 1. / HFacC(I,J,K,bi,bj)
+            maskC(I,J,K,bi,bj) = 1.
            ELSE
             recip_HFacC(I,J,K,bi,bj) = 0.
+            maskC(I,J,K,bi,bj) = 0.
            ENDIF
            IF (HFacW(I,J,K,bi,bj) .NE. 0. ) THEN
             recip_HFacW(I,J,K,bi,bj) = 1. / HFacW(I,J,K,bi,bj)

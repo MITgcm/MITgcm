@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code/Attic/external_forcing.F,v 1.3 2001/02/04 14:38:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code/Attic/external_forcing.F,v 1.4 2001/05/29 14:01:58 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -14,6 +14,7 @@ C     |==========================================================|
 C     | Adds terms to gU for forcing by external sources         |
 C     | e.g. wind stress, bottom friction etc..................  |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global data ==
 #include "SIZE.h"
@@ -22,18 +23,6 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-
-#ifdef USE_FRANCO_PHYSICS
-#include "atparam0.h"
-#include "atparam1.h"
-      INTEGER NGP
-      INTEGER NLON
-      INTEGER NLAT
-      INTEGER NLEV
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
-#include "com_physvar.h"
-#define _KDKA( KD ) Nr-KD+1
-#endif
 
 C     == Routine arguments ==
 C     iMin - Working range of tile for applying forcing.
@@ -64,8 +53,10 @@ C--   Forcing term(s)
       DO J=jMin,jMax
        DO I=iMin,iMax
         IF ( HFacW(i,j,kLev,bi,bj) .GT. 0. ) THEN
+C        termP=0.5*( rF(kLev) + min( rF(kLev+1) ,
+C    &           min(H(I,J,bi,bj),H(I,J-1,bi,bj))            ) )
          termP=0.5*( rF(kLev) + rF(kLev+1) )
-         kV=kF*MAX(0., (termP*recip_H(I,J,bi,bj)-0.7)/(1.-0.7) )
+         kV=kF*MAX(0., (termP*recip_Rcol(I,J,bi,bj)-0.7)/(1.-0.7) )
          gU(i,j,kLev,bi,bj)=gU(i,j,kLev,bi,bj)
      &                      -kV*uVel(i,j,kLev,bi,bj)
         ENDIF
@@ -124,8 +115,10 @@ C--   Forcing term(s)
       DO J=jMin,jMax
        DO I=iMin,iMax
         IF ( HFacS(i,j,kLev,bi,bj) .GT. 0. ) THEN
+C        termP=0.5*( rF(kLev) + min( rF(kLev+1) ,
+C    &           min(H(I,J,bi,bj),H(I,J-1,bi,bj))            ) )
          termP=0.5*( rF(kLev) + rF(kLev+1) )
-         kV=kF*MAX(0., (termP*recip_H(I,J,bi,bj)-0.7)/(1.-0.7) )
+         kV=kF*MAX(0., (termP*recip_Rcol(I,J,bi,bj)-0.7)/(1.-0.7) )
          gV(i,j,kLev,bi,bj)=gV(i,j,kLev,bi,bj)
      &                      -kV*vVel(i,j,kLev,bi,bj)
         ENDIF
@@ -134,11 +127,9 @@ C--   Forcing term(s)
 
       RETURN
       END
-
 CStartOfInterface
       SUBROUTINE EXTERNAL_FORCING_T(
      I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           maskC,
      I           myCurrentTime,myThid)
 C     /==========================================================\
 C     | S/R EXTERNAL_FORCING_T                                   |
@@ -157,25 +148,12 @@ C     == Global data ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 
-#ifdef USE_FRANCO_PHYSICS
-#include "atparam0.h"
-#include "atparam1.h"
-      INTEGER NGP
-      INTEGER NLON
-      INTEGER NLAT
-      INTEGER NLEV
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
-#include "com_physvar.h"
-#define _KDKA( KD ) Nr-KD+1
-#endif
-
 C     == Routine arguments ==
 C     iMin - Working range of tile for applying forcing.
 C     iMax
 C     jMin
 C     jMax
 C     kLev
-      _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
       _RL myCurrentTime
       INTEGER myThid
@@ -194,30 +172,26 @@ C--   Forcing term(s)
        term1=60.*(sin(yC(1,J,bi,bj)*deg2rad)**2)
 C      termP=0.5*( rF(kLev) + min( rF(kLev+1) , H(I,J,bi,bj) ) )
        termP=0.5*( rF(kLev) + rF(kLev+1) )
-C      termP=rC(kLev)
        term2=10.*log(termP/rSurf)
      &          *(cos(yC(1,J,bi,bj)*deg2rad)**2)
        thetaLim = 200. / ((termP/rSurf)**(2./7.))
-C      thetaLim = 170. / ((termP/rSurf)**(2./7.))
        thetaEq=315.-term1-term2
        thetaEq=MAX(thetaLim,thetaEq)
        DO I=iMin,iMax
         kT=ka+(ks-ka)
-     &    *MAX(0., (termP*recip_H(I,J,bi,bj)-0.7)/(1.-0.7) )
+     &    *MAX(0., (termP*recip_Rcol(I,J,bi,bj)-0.7)/(1.-0.7) )
      &    *COS((yC(1,J,bi,bj)*deg2rad))**4
          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
      &        - kT*( theta(I,J,kLev,bi,bj)-thetaEq )
-     &            *maskC(i,j)
+     &            *maskC(i,j,kLev,bi,bj)
        ENDDO
       ENDDO
 
       RETURN
       END
-
 CStartOfInterface
       SUBROUTINE EXTERNAL_FORCING_S(
      I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           maskC,
      I           myCurrentTime,myThid)
 C     /==========================================================\
 C     | S/R EXTERNAL_FORCING_S                                   |
@@ -236,25 +210,12 @@ C     == Global data ==
 #include "DYNVARS.h"
 #include "FFIELDS.h"
 
-#ifdef USE_FRANCO_PHYSICS
-#include "atparam0.h"
-#include "atparam1.h"
-      INTEGER NGP
-      INTEGER NLON
-      INTEGER NLAT
-      INTEGER NLEV
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
-#include "com_physvar.h"
-#define _KDKA( KD ) Nr-KD+1
-#endif
-
 C     == Routine arguments ==
 C     iMin - Working range of tile for applying forcing.
 C     iMax
 C     jMin
 C     jMax
 C     kLev
-      _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
       _RL myCurrentTime
       INTEGER myThid
@@ -262,8 +223,9 @@ CEndOfInterface
 
 C     == Local variables ==
 C     Loop counters
+      INTEGER I, J
 
-C--   Forcing term
+C--   Forcing term(s)
 
       RETURN
       END

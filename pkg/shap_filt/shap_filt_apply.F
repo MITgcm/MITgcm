@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_apply.F,v 1.3 2001/02/04 14:38:50 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_apply.F,v 1.4 2001/05/29 14:01:40 adcroft Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -18,6 +18,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#ifdef ALLOW_SHAP_FILT
+#include "SHAP_FILT.h"
+#endif
 
 C     == Routine arguments ==
       _RL  uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -31,9 +34,11 @@ C     == Routine arguments ==
 #ifdef ALLOW_SHAP_FILT
 C     == Local variables ==
 C     bi, bj, k
+#ifdef USE_OLD_SHAPIRO_FILTERS
       INTEGER bi, bj, k
+#endif /* USE_OLD_SHAPIRO_FILTERS */
 
-      IF (nShap.gt.0) THEN
+      IF (nShapT.GT.0.OR.nShapUV.GT.0) THEN
 
 #ifdef  USE_OLD_SHAPIRO_FILTERS
         _EXCH_XYZ_R8( uFld,myThid )
@@ -60,15 +65,70 @@ C--        Update fields in top level according to tendency terms
         IF ( tempStepping ) _EXCH_XYZ_R8( tFld,myThid )
         IF ( saltStepping ) _EXCH_XYZ_R8( sFld,myThid )
 #else
-        CALL SHAP_FILT_UV(
-     U                    uFld, vFld,
-     I                    myTime, myThid )
-        IF ( tempStepping ) CALL SHAP_FILT_TRACER(
+        IF ( momStepping .AND. nShapUV.GT.0) THEN
+          IF (Shap_funct.EQ.1) THEN
+            CALL SHAP_FILT_UV_S1(
+     U           uFld, vFld,
+     I           myTime, myThid )
+          ELSEIF (Shap_funct.EQ.2) THEN
+            CALL SHAP_FILT_UV_S2(
+     U           uFld, vFld,
+     I           myTime, myThid )
+          ELSEIF (Shap_funct.EQ.4) THEN
+            CALL SHAP_FILT_UV_S4(
+     U           uFld, vFld,
+     I           myTime, myThid )
+          ELSEIF (Shap_funct.EQ.20) THEN
+            CALL SHAP_FILT_UV_S2G(
+     U           uFld, vFld,
+     I           myTime, myThid )
+          ELSE
+           STOP 'SHAP_FILT_APPLY: Ooops! Bad Shap_funct in UV block'
+          ENDIF
+        ENDIF
+
+        IF ( tempStepping .AND. nShapT.GT.0) THEN
+          IF (Shap_funct.EQ.1) THEN
+            CALL SHAP_FILT_TRACER_S1(
      U           tFld,
      I           myTime, myThid )
-        IF ( saltStepping ) CALL SHAP_FILT_TRACER(
+          ELSEIF (Shap_funct.EQ.2) THEN
+            CALL SHAP_FILT_TRACER_S2(
+     U           tFld,
+     I           myTime, myThid )
+          ELSEIF (Shap_funct.EQ.4) THEN
+            CALL SHAP_FILT_TRACER_S4(
+     U           tFld,
+     I           myTime, myThid )
+          ELSEIF (Shap_funct.EQ.20) THEN
+            CALL SHAP_FILT_TRACER_S2G(
+     U           tFld,
+     I           myTime, myThid )
+          ELSE
+           STOP 'SHAP_FILT_APPLY: Ooops! Bad Shap_funct in T block'
+          ENDIF
+        ENDIF
+        IF ( saltStepping .AND. nShapT.GT.0) THEN 
+          IF (Shap_funct.EQ.1) THEN
+            CALL SHAP_FILT_TRACER_S1(
      U           sFld,
      I           myTime, myThid )
+          ELSEIF (Shap_funct.EQ.2) THEN
+            CALL SHAP_FILT_TRACER_S2(
+     U           sFld,
+     I           myTime, myThid )
+          ELSEIF (Shap_funct.EQ.4) THEN
+            CALL SHAP_FILT_TRACER_S4(
+     U           sFld,
+     I           myTime, myThid )
+          ELSEIF (Shap_funct.EQ.20) THEN
+            CALL SHAP_FILT_TRACER_S2G(
+     U           sFld,
+     I           myTime, myThid )
+          ELSE
+           STOP 'SHAP_FILT_APPLY: Ooops! Bad Shap_funct in S block'
+          ENDIF
+        ENDIF
 #endif /* USE_OLD_SHAPIRO_FILTERS */
 
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.10 2001/02/04 14:38:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.11 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -27,8 +27,9 @@ c     _EXCH_XYZ_R8( Gu , myThid )
 c     _EXCH_XYZ_R8( Gv , myThid )
 c     _EXCH_XYZ_R8( Gt , myThid )
 c     _EXCH_XYZ_R8( Gs , myThid )
-      _EXCH_XYZ_R8( gUNm1 , myThid )
-      _EXCH_XYZ_R8( gVNm1 , myThid )
+      CALL EXCH_UV_XYZ_RL(gUnm1,gVnm1,.TRUE.,myThid)
+c     _EXCH_XYZ_R8( gUNm1 , myThid )
+c     _EXCH_XYZ_R8( gVNm1 , myThid )
       _EXCH_XYZ_R8( gTNm1 , myThid )
       _EXCH_XYZ_R8( gSNm1 , myThid )
 c     _EXCH_XYZ_R8( uVel , myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.5 2001/02/07 03:00:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integrate_for_w.F,v 1.6 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,34 +54,64 @@ C     tracer cell faces.
         ENDDO
       ENDDO
 
-C--   Calculate vertical "volume transport" through
-C     tracer cell face *above* this level.
-      IF (k.eq.1 .AND. rigidLid) THEN
-        DO j=1-Oly,sNy+Oly-1
-          DO i=1-Olx,sNx+Olx-1
-            wFld(i,j,k,bi,bj) = 0.
+C--   Calculate vertical "volume transport" through face k
+C     between tracer cell k-1 & k
+      IF (rigidLid) THEN
+C-  o Rigid-Lid case: zero at lower and upper boundaries
+        IF (k.eq.1) THEN
+          DO j=1-Oly,sNy+Oly-1
+           DO i=1-Olx,sNx+Olx-1
+             wFld(i,j,k,bi,bj) = 0.
+           ENDDO
           ENDDO
-        ENDDO
-      ELSEIF (k.eq.Nr) THEN
-        DO j=1-Oly,sNy+Oly-1
-          DO i=1-Olx,sNx+Olx-1
-            wFld(i,j,k,bi,bj) =
-     &         -(
-     &            uTrans(i+1,j)-uTrans(i,j)
-     &           +vTrans(i,j+1)-vTrans(i,j)
-     &          )*recip_rA(i,j,bi,bj)
+        ELSEIF (k.eq.Nr) THEN
+          DO j=1-Oly,sNy+Oly-1
+           DO i=1-Olx,sNx+Olx-1
+             wFld(i,j,k,bi,bj) = 
+     &                -( uTrans(i+1,j)-uTrans(i,j)
+     &                  +vTrans(i,j+1)-vTrans(i,j)
+     &                 )*recip_rA(i,j,bi,bj) 
+     &          *maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+           ENDDO
           ENDDO
-        ENDDO
+        ELSE
+          DO j=1-Oly,sNy+Oly-1
+           DO i=1-Olx,sNx+Olx-1
+             wFld(i,j,k,bi,bj) = 
+     &        ( wFld(i,j,k+1,bi,bj)
+     &                -( uTrans(i+1,j)-uTrans(i,j)
+     &                  +vTrans(i,j+1)-vTrans(i,j)
+     &                 )*recip_rA(i,j,bi,bj) 
+     &         )*maskC(i,j,k,bi,bj)*maskC(i,j,k-1,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
       ELSE
-       DO j=1-Oly,sNy+Oly-1
-         DO i=1-Olx,sNx+Olx-1
-           wFld(i,j,k,bi,bj) = wFld(i,j,k+1,bi,bj)
-     &         -(
-     &            uTrans(i+1,j)-uTrans(i,j)
-     &           +vTrans(i,j+1)-vTrans(i,j)
-     &          )*recip_rA(i,j,bi,bj)
+C-  o Linear Free Surface case: 
+C      non zero at surface ; zero under-ground and at r_lower boundary
+        IF (k.eq.Nr) THEN
+          DO j=1-Oly,sNy+Oly-1
+           DO i=1-Olx,sNx+Olx-1
+             wFld(i,j,k,bi,bj) = 
+     &                -( uTrans(i+1,j)-uTrans(i,j)
+     &                  +vTrans(i,j+1)-vTrans(i,j)
+     &                 )*recip_rA(i,j,bi,bj) 
+     &          *maskC(i,j,k,bi,bj)
+           ENDDO
           ENDDO
-        ENDDO
+        ELSE
+          DO j=1-Oly,sNy+Oly-1
+           DO i=1-Olx,sNx+Olx-1
+             wFld(i,j,k,bi,bj) = 
+     &        ( wFld(i,j,k+1,bi,bj)
+     &                -( uTrans(i+1,j)-uTrans(i,j)
+     &                  +vTrans(i,j+1)-vTrans(i,j)
+     &                 )*recip_rA(i,j,bi,bj) 
+     &         )*maskC(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ENDIF
+C-  endif - rigid-lid / linear Free-Surf.
       ENDIF
 
       RETURN

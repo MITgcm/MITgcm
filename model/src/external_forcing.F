@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.11 2001/04/10 22:35:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.12 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -105,7 +105,6 @@ C     Add windstress momentum impulse into the top-layer
 CStartOfInterface
       SUBROUTINE EXTERNAL_FORCING_T(
      I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           maskC,
      I           myCurrentTime,myThid)
 C     /==========================================================\
 C     | S/R EXTERNAL_FORCING_T                                   |
@@ -137,7 +136,6 @@ C     iMax
 C     jMin
 C     jMax
 C     kLev
-      _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
       _RL myCurrentTime
       INTEGER myThid
@@ -153,7 +151,7 @@ C     Add heat in top-layer
        DO j=jMin,jMax
         DO i=iMin,iMax
          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
-     &     +maskC(i,j)*surfaceTendencyT(i,j,bi,bj)
+     &     +maskC(i,j,kLev,bi,bj)*surfaceTendencyT(i,j,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -168,9 +166,9 @@ C Penetrating SW radiation
      O     swfracb)
       DO j=jMin,jMax
        DO i=iMin,iMax
-        gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj)
-     &    -maskC(i,j)*Qsw(i,j,bi,bj)*(swfracb(1)-swfracb(2))
-     &    *recip_Cp*recip_rhoNil*recip_dRf(klev)
+        gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj) 
+     &   -maskC(i,j,klev,bi,bj)*Qsw(i,j,bi,bj)*(swfracb(1)-swfracb(2))
+     &    *recip_Cp*recip_rhoNil*recip_drF(klev)
        ENDDO
       ENDDO
 #endif
@@ -179,7 +177,6 @@ C Penetrating SW radiation
 CStartOfInterface
       SUBROUTINE EXTERNAL_FORCING_S(
      I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           maskC,
      I           myCurrentTime,myThid)
 C     /==========================================================\
 C     | S/R EXTERNAL_FORCING_S                                   |
@@ -204,7 +201,6 @@ C     iMax
 C     jMin
 C     jMax
 C     kLev
-      _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
       _RL myCurrentTime
       INTEGER myThid
@@ -220,7 +216,7 @@ C     Add fresh-water in top-layer
        DO j=jMin,jMax
         DO i=iMin,iMax
          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &   +maskC(i,j)*surfaceTendencyS(i,j,bi,bj)
+     &   +maskC(i,j,kLev,bi,bj)*surfaceTendencyS(i,j,bi,bj)
         ENDDO
        ENDDO
       ENDIF

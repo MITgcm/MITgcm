@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.9 2001/05/14 21:33:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.10 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -168,7 +168,7 @@ C     _EXCH_XYZ_R8( cg3d_r, myThid )
        exchWidthY = 1
        myNz       = Nr
        CALL EXCH_RL( cg3d_r,
-     I            OLw, OLe, OLs, OLn, sNx, sNy, myNz,
+     I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
 C     _EXCH_XYZ_R8( cg3d_s, myThid )
@@ -180,7 +180,7 @@ C     _EXCH_XYZ_R8( cg3d_s, myThid )
        exchWidthY = 1
        myNz       = Nr
        CALL EXCH_RL( cg3d_s,
-     I            OLw, OLe, OLs, OLn, sNx, sNy, myNz,
+     I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
       _GLOBAL_SUM_R8( sumRHS, myThid )
@@ -438,7 +438,7 @@ C      _EXCH_XYZ_R8(cg3d_r, myThid )
        exchWidthY = 1
        myNz       = Nr
        CALL EXCH_RL( cg3d_r,
-     I             OLw, OLe, OLs, OLn, sNx, sNy, myNz,
+     I             OLw, OLe, OLs, OLn, myNz,
      I             exchWidthX, exchWidthY,
      I             FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
 

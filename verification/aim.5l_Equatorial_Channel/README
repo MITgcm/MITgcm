@@ -1,5 +1,34 @@
 Five level intermediate atmospheric physics example.
-Experimental configuration is an equatorial channel,
-+/- 30 degrees wide with a warm pool SST anomaly
-extending over twenty degrees zonally and +/- 10 
-degrees meridionally.
+Experimental configuration is an equatorial channel.
++/- 30 degrees wide with a warm pool SST anomaly extending over 
+twenty degrees zonally and +/- 10 degrees meridionally.
+==================================================================== 
+
+o To reproduce the run : 
+
+The genmake options are in .genmakerc, so that the simplest form
+of genmake can be used :
+cd input
+../../../tools/genmake
+make depend
+make
+
+mitgcmuv
+
+--------------------------- 
+Notes:
+* To produce a short test that is relevant for the Atmosphere physics part,
+  a restart file (pickup.0000008640) is included. Otherwise, starting from
+  rest requires several days of spin up.
+* Need to add a sink of heat or a restoring term near N & S boundaries
+  to balance the radiative heating. As it is now, it cannot be integrated
+  more than 7 or 8 months.
+* many sources in "code" are identical or very similar to the "aim_5l_LatLon"
+  test and will became part of the pkg/aim code.
+--------------------------- 
+Northern boundary : 
+o initially, the domain (SIZE.h) 128x24x5 with a land line as the Northern 
+  boundary, reduciong the effective domain to 128x23x5. 
+o To have a more efficient code (and a good starting point for MIT Atmos.
+  Physics), the new domain (SIZE.h) is now 128x23x5 . 
+  Northern and Southern boundaries are "closed" like the in Lat-Lon set-up. 

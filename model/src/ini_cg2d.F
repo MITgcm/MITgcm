@@ -1,9 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.33 2001/03/09 20:42:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.34 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-CStartOfInterface
       SUBROUTINE INI_CG2D( myThid )
 C     /==========================================================\
 C     | SUBROUTINE INI_CG2D                                      |
@@ -19,9 +18,9 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "DYNVARS.h"
+c#include "DYNVARS.h"
 #include "SURFACE.h"
-#include "CG2D_INTERNAL.h"
+#include "CG2D.h"
 #ifdef ALLOW_OBCS
 #include "OBCS.h"
 #endif
@@ -29,7 +28,6 @@ C     === Global variables ===
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
       INTEGER myThid
-CEndOfInterface
 
 C     === Local variables ===
 C     xG, yG - Global coordinate location.
@@ -38,12 +36,14 @@ C     iG, jG - Global coordinate index
 C     bi,bj  - Loop counters
 C     faceArea - Temporary used to hold cell face areas.
 C     I,J,K
-C     myNorm - Work variable used in clculating normalisation factor
+C     myNorm - Work variable used in calculating normalisation factor
+C     sumArea - Work variable used to compute the total Domain Area 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER bi, bj
       INTEGER I,  J, K
       _RL     faceArea
       _RS     myNorm
+      _RL     sumArea
       _RL     aC, aCw, aCs
 
 C-- Initialise -Boyancy at surface level : Bo_surf
@@ -166,13 +166,42 @@ CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.1' , 1, myThid )
 C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.1' , 1, myThid )
 CcnhDebugEnds
-      _EXCH_XY_R4(aW2d, myThid)
-      _EXCH_XY_R4(aS2d, myThid)
+c     _EXCH_XY_R4(aW2d, myThid)
+c     _EXCH_XY_R4(aS2d, myThid)
+      CALL EXCH_UV_XY_RS(aW2d,aS2d,.FALSE.,myThid)
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.2' , 1, myThid )
 C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
 CcnhDebugEnds
 
+C-- Define the solver tolerance in the appropriate Unit :
+      cg2dNormaliseRHS = cg2dTargetResWunit.LE.0
+      IF (cg2dNormaliseRHS) THEN
+C-  when using a normalisation of RHS, tolerance has no unit => no conversion
+        cg2dTolerance = cg2dTargetResidual
+      ELSE
+C-  compute the total Area of the domain :
+        sumArea = 0.
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1,sNy
+           DO i=1,sNx
+             IF (Ro_surf(i,j,bi,bj).GT.R_low(i,j,bi,bj)) THEN
+               sumArea = sumArea + rA(i,j,bi,bj)
+             ENDIF
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+c       WRITE(0,*) ' mythid, sumArea = ', mythid, sumArea
+        _GLOBAL_SUM_R8( sumArea, myThid )
+C-  convert Target-Residual (in W unit) to cg2d-solver residual unit [m^2/s^2]
+        cg2dTolerance = cg2dNorm * cg2dTargetResWunit
+     &                           * sumArea / deltaTMom
+        WRITE(0,'(2A,1P2E22.14)') ' ini_cg2d: ',
+     &          'sumArea,cg2dTolerance =', sumArea,cg2dTolerance
+      ENDIF
+     
 C--   Initialise preconditioner
 C     Note. 20th May 1998
 C           I made a weird discovery! In the model paper we argue
@@ -236,8 +265,9 @@ C         pS(I,J,bi,bj) = 0.
       ENDDO
 C--   Update overlap regions
       _EXCH_XY_R4(pC, myThid)
-      _EXCH_XY_R4(pW, myThid)
-      _EXCH_XY_R4(pS, myThid)
+c     _EXCH_XY_R4(pW, myThid)
+c     _EXCH_XY_R4(pS, myThid)
+      CALL EXCH_UV_XY_RS(pW,pS,.FALSE.,myThid)
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRS( pC, 'pC   INI_CG2D.2' , 1, myThid )
 C     CALL PLOT_FIELD_XYRS( pW, 'pW   INI_CG2D.2' , 1, myThid )

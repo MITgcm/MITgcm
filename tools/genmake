@@ -1,6 +1,7 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.34 2001/05/14 22:04:44 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.35 2001/05/29 14:01:40 adcroft Exp $
+# $Name:  $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -88,7 +89,30 @@ while ($#allargs)
    echo "Including paths to JAM libraries"
    breaksw
  case -help:
-   echo "usage: $0 [-help] [-makefile[=...]] [-platform=...] [-mpi]"
+   echo "usage: $0 [-help] [-makefile[=...]] [-platform=...] [-mpi] [-jam] [-disable=pkg1[,pkg2,...]] [-enable=pkg1[,pkg2,...]] [-mods=dir1[,dir2,...]] [-rootdir=dir]"
+cat << EOF
+
+$0 is used to generate the Makefile in the current directory.
+
+Typical invocations are:
+ o from "bin":   ../tools/genmake
+ o from "verification/expt/code": ../../../tools/genmake
+ o from "verification/expt/input": ../../../tools/genmake -mods=../code
+ o from a scratch directory: ~/mitgcm/tools/genmake -rootdir=~/mitgcm
+   or  ~/mitgcm/tools/genmake -rootdir=~/mitgcm -mods=~/mymods
+
+Packages (collected modules of code)  can be disabled to avoid unnecessary
+compilation of unused code. For instance if you know you will not
+use GM/Redi, KPP and OBCS and they are appropriate turned-off in the
+configuration:
+   .../tools/genmake -disable=gmredi,kpp,obcs
+
+If you add some source files you can re-call the previous instance of
+genmake with "make makefile".
+
+genmake also reads the file .genmakerc which can be used to configure
+options (primarily the command-line options above) for particular experiments.
+EOF
    exit
    breaksw
  default:
@@ -111,7 +135,6 @@ if (! $?mfile) set mfile = ( Makefile )
 
 set mach  = ( `uname -a` )
 echo Operating system: $mach
-
 
 # Directories for source, includes, binaries and executables
 #
@@ -171,16 +194,33 @@ if (! -d $TOOLSDIR) then
 endif
 if (! $?EXECUTABLE) set EXECUTABLE  = ( mitgcmuv )
 
+# We have a special set of source files in eesupp/src which
+# are generated from some template source files. We'll make them
+# first so the appear as regular source code
+if (-r $ROOTDIR/eesupp/src/Makefile) then
+ echo Making source files in eesupp from templates...
+ (cd $ROOTDIR/eesupp/src/; make) >& make_eesupp.errs
+ if ($status == 0) then
+   rm -f make_eesupp.errs
+ else
+   cat make_eesupp.errs
+   exit 2
+ endif
+endif
+
 # Now scan the standard source code tree
 foreach dr ($SOURCEDIRS)
   set adr=$dr
   if (! -d $adr) then
     echo mods directory $adr not found.; exit 1
   endif
-  echo Adding mods directory $adr
+  echo Adding mods dir: $adr
 end
 if (! $?PACKAGES) then
-  set PACKAGES=(`cd $ROOTDIR/pkg; ls -1 | grep -v CVS`)
+  set PACKAGES=()
+  foreach pkg (`cd $ROOTDIR/pkg; find . -type d | grep -v CVS | sed 's:\./::' | grep -v "\." | sort`)
+   if (-d $ROOTDIR/pkg/$pkg) set PACKAGES=($PACKAGES $pkg)
+  end
 endif
 foreach dr ($PACKAGES)
   set enable
@@ -191,6 +231,11 @@ foreach dr ($PACKAGES)
    endif
    if ($dr == $p) unset enable
    if ($p == 'all') unset enable
+#  The following allows entire trees to be disabled
+   if ($dr:h == $p) unset enable
+   if ($dr:h:h == $p) unset enable
+   if ($dr:h:h:h == $p) unset enable
+   if ($dr:h:h:h:h == $p) unset enable
   end
   foreach p ($ENABLE)
    if ($dr == $p) set enable
@@ -200,11 +245,11 @@ foreach dr ($PACKAGES)
     if (! -d $adr) then
       echo Source directory $adr not found.; exit 1
     endif
-    echo Adding package directory $adr
+    echo Adding pkg dir: $adr
     set SOURCEDIRS = ($SOURCEDIRS $adr)
     set INCLUDEDIRS = ($INCLUDEDIRS $adr)
   else
-    echo "*" Package \"$dr\" has not been enabled.
+    echo "                                      *" Package \"$dr\" NOT enabled.
   endif
 end
 if (! $?STANDARDDIRS) set STANDARDDIRS=(eesupp model)
@@ -213,7 +258,7 @@ foreach dr ($STANDARDDIRS)
   if (! -d $adr) then
     echo Source directory $adr not found.; exit 1
   endif
-  echo Adding source directory $adr
+  echo Adding src dir: $adr
   set SOURCEDIRS = ($SOURCEDIRS $adr)
   set idr = `echo $adr | sed 's/src/inc/'`
   set INCLUDEDIRS = ($INCLUDEDIRS $idr)
@@ -279,7 +324,7 @@ switch ($platform$USEMPI)
     echo "Configuring for SGI Mips"
     set DEFINES    = ( ${DEFINES} '-DTARGET_SGI -DWORDLENGTH=4' )
     set INCLUDES   = ( '-I/usr/local/mpi/include' )
-    set FFLAGS     = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4' )
+    set FFLAGS     = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4 -r8 -static' )
     set FOPTIM     = ( '-O3' )
 #   set NOOPTFLAGS = ( '-O0' )
 #   set NOOPTFILES = ( 'barrier.F different_multiple.F ' \
@@ -385,8 +430,8 @@ switch ($platform$USEMPI)
     breaksw
   case Linux+pgi+mpi:
     if ($?include_jam_libs) then
-     set INCLUDES   = ( '-I/usr/local//mpich-cnh-install/include' )
-     set LIBS       = ( '-L/usr/local/mpich-cnh-install/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
+     set INCLUDES   = ( '-I/usr/local/mpich-1.2.1/pgi_fortran_binding/include' )
+     set LIBS       = ( '-L/usr/local/mpich-1.2.1/pgi_fortran_binding/lib/ -lfmpich -lmpich' )
     else
      set INCLUDES   = ( '-I/usr/local/include' )
      set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
@@ -548,6 +593,7 @@ cat >> ${mfile} <<EOF
 # extra stuff for Hyades ............................................
 HYADES_DIR = /u/u0/cnh/jam-lib/software
 HYADES_DIR = /u/u0/cnh/jam-lib-twoproc
+HYADES_DIR = /usr/local/jamlib/current/dual_proc
 WORK_DIR   = \$(HYADES_DIR)
 DEPOSIT_DIR = linux_bin
 

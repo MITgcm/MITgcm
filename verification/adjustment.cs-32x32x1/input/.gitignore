@@ -1,0 +1,8 @@
+*.o
+*.f
+mitgcmuv
+mfile*
+*.meta
+*.data
+STD*
+*akefile

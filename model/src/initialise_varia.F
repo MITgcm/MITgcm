@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.11 2001/04/10 22:35:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.12 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -22,9 +22,7 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#ifdef ALLOW_OBCS
 #include "DYNVARS.h"
-#endif
 
 C     == Routine arguments ==
       INTEGER myThid
@@ -34,6 +32,9 @@ C     == Local variables ==
       INTEGER bi,bj,K,iMin,iMax,jMin,jMax
 
       _BARRIER
+C--   Initialize DYNVARS arrays (state fields + G terms: Gu,Gv,...) to zero [always]
+      CALL INI_DYNVARS( myThid )
+
 C--   Initialise model fields.
 C     Starting values of U, V, W, temp., salt. and tendency terms
 C     are set here. Fields are either set to default or read from
@@ -82,5 +83,17 @@ C--   initialise time-average arrays with initial state values
       ENDIF
 #endif /* ALLOW_TIMEAVE */
 
+#ifdef EXACT_CONSERV
+      IF (exactConserv) THEN
+C--   Compute the initial Barotropic Flow Divergence :
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+           CALL CALC_EXACT_ETA( bi,bj, uVel,vVel,
+     I                          startTime, nIter0, myThid )
+         ENDDO
+        ENDDO
+      ENDIF
+#endif /* EXACT_CONSERV */ 
+      
       RETURN
       END

@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.8 2001/02/04 14:38:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.9 2001/05/29 14:01:36 adcroft Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
+#define HAVE_SYSTEM
 
 CStartOfInterface
       SUBROUTINE CHECK_THREADS( myThid )
@@ -87,7 +88,6 @@ C       but this causes KAP to insert a call to mppjoin - which then deadlocks!
        GOTO 10
       ENDIF
    11 CONTINUE
-C   
-C
+
       RETURN
       END

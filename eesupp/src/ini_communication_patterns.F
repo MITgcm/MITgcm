@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.3 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.4 2001/05/29 14:01:36 adcroft Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -53,7 +53,8 @@ C     pi, pj - Process loop counter
       INTEGER thePx, thePy, theBj, theBi
 
 C--   Turn off memsync by default
-      exchNeedsMemsync = .FALSE.
+      exchNeedsMemsync = .TRUE.
+      exchUsesBarrier  = .TRUE.
 
 C--   Define a globally unique tile numbers for each tile.
 C--   We aslo define the tile numbers for our east, west, south

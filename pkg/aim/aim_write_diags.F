@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_write_diags.F,v 1.4 2001/03/06 18:01:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_write_diags.F,v 1.5 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -19,6 +19,10 @@ C     === Global variables ===
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
+C Common (shared with RD_WR_FLD routines in read_write_fld.F)
+      COMMON /RD_WR_FLD/ globalFile
+      LOGICAL globalFile 
+
 C     == Routine arguments ==
 C     myTime - Current time of simulation ( s )
 C     myIter - Iteration number
@@ -34,7 +38,8 @@ C     == Local variables ==
       INTEGER bi, bj, K
       CHARACTER*(MAX_LEN_MBUF) fn
       LOGICAL gf
-      gf = .TRUE.
+c_jmc gf = .TRUE.
+      gf = globalFile
 
 #ifdef ALLOW_TIMEAVE
 
@@ -104,6 +109,9 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(PRECNVtave,1, bi, bj, myThid)
          CALL TIMEAVE_RESET(PRECLStave,1, bi, bj, myThid)
          CALL TIMEAVE_RESET(CLOUDCtave,1, bi, bj, myThid)
+         DO k=1,Nr
+           AIM_TimeAve(k,bi,bj)=0.
+         ENDDO                     
         ENDDO
        ENDDO
 

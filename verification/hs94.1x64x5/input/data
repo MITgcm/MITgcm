@@ -30,7 +30,6 @@
  readBinaryPrec=64,
  writeBinaryPrec=64,
  globalFiles=.TRUE.,
- nShap=4,
  staggerTimestep=.TRUE.,
  &
 

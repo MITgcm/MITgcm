@@ -1,21 +1,26 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.8 2001/05/14 21:46:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.9 2001/05/29 14:01:37 adcroft Exp $
 C Tag $Name:  $
 
 #include "CPP_OPTIONS.h"
+#undef ALLOW_ZONAL_FILT
+#undef ALLOW_SHAP_FILT
 
       SUBROUTINE THE_CORRECTION_STEP(myTime, myIter, myThid)
 C     /==========================================================\
 C     | SUBROUTINE THE_CORRECTION_STEP                           |
 C     |==========================================================|
+C     |part1: update U,V,T,S                                     |
+C     |  U*,V* (contained in gUnm1,gVnm1) have the surface       |
+C     |     pressure gradient term added and the result stored   |
+C     |     in U,V (contained in uVel, vVel)                     |
+C     |  T* (contained in gTnm1) is copied to T (theta)          |
+C     |  S* (contained in gSnm1) is copied to S (salt)           |
 C     |                                                          |
-C     | U*,V* (contained in gUnm1,gVnm1) have the surface        |
-C     |    pressure gradient term added and the result stored in |
-C     |    U,V (contained in uVel, vVel)                         |
-C     |                                                          |
-C     | T* (contained in gTnm1) is copied to T (theta)           |
-C     |                                                          |
-C     | S* (contained in gSnm1) is copied to S (salt)            |
-C     |                                                          |
+C     |part2: Adjustments.                                       |
+C     |   o Filter  U,V,T,S (Shapiro Filter, Zonal_Filter)       |
+C     |   o Convective Adjustment                                |
+C     |   o Compute again Eta (exact volume conservation)        |
+C     |   o Diagmnostic of state variables (Time average)        |
 C     \==========================================================/
       IMPLICIT NONE
 
@@ -46,6 +51,17 @@ C     == Local variables
       INTEGER bi,bj
       INTEGER k,i,j
 
+C--- 1rst Part : Update U,V,T,S.
+C
+C       The arrays used for time stepping are cycled.
+C       Tracers:
+C                 T(n) = Gt(n-1)
+C                 Gt(n-1) = Gt(n)
+C       Momentum:
+C                 V(n) = Gv(n-1) - dt * grad Eta
+C                 Gv(n-1) = Gv(n)
+C
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -73,18 +89,6 @@ C--     Set up work arrays that need valid initial values
           phiSurfY(i,j)=0.
          ENDDO
         ENDDO
-
-C       The arrays used for time stepping are cycled.
-C
-C       Tracers:
-C                 T(n) = Gt(n-1)
-C                 Gt(n-1) = Gt(n)
-C       Momentum:
-C                 V(n) = Gv(n-1) - dt * grad Eta
-C                 Gv(n-1) = Gv(n)
-C
-C       Static stability is calculated and the tracers are
-C       convective adjusted where statically unstable.
 
 C       Loop range: Gradients of Eta are evaluated so valid
 C       range is all but first row and column in overlaps.
@@ -140,10 +144,51 @@ CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 C--     End DO K=1,Nr
         ENDDO
 
+C--    End of 1rst bi,bj loop
+       ENDDO
+      ENDDO
+
+C--- 2nd Part : Adjustment.
+C
+C       Static stability is calculated and the tracers are
+C       convective adjusted where statically unstable.
+
+#ifdef ALLOW_SHAP_FILT
+      IF (useSHAP_FILT) THEN
+C--   Filter (and exchange).
+      CALL SHAP_FILT_APPLY(
+     I                     uVel, vVel, theta, salt,
+     I                     myTime, myIter, myThid )
+      ENDIF
+#endif 
+
+#ifdef ALLOW_ZONAL_FILT
+      IF (zonal_filt_lat.LT.90.) THEN
+      CALL ZONAL_FILT_APPLY(
+     U                      uVel, vVel, theta, salt,
+     I                      myThid )
+      ENDIF
+#endif 
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+
 C--     Convectively adjust new fields to be statically stable
+        iMin = 1-OLx+1
+        iMax = sNx+OLx
+        jMin = 1-OLy+1
+        jMax = sNy+OLy
         CALL CONVECTIVE_ADJUSTMENT(
      I       bi, bj, iMin, iMax, jMin, jMax,
      I       myTime, myIter, myThid )
+
+#ifdef EXACT_CONSERV
+        IF (exactConserv) THEN
+C--     Compute again "eta" to satisfy exactly the total Volume Conservation :
+          CALL CALC_EXACT_ETA( bi,bj, uVel,vVel,
+     I                         myTime, myIter, myThid )
+        ENDIF
+#endif /* EXACT_CONSERV */ 
 
 #ifdef ALLOW_TIMEAVE
         IF (taveFreq.GT.0.) THEN 
@@ -151,8 +196,13 @@ C--     Convectively adjust new fields to be statically stable
         ENDIF
 #endif /* ALLOW_TIMEAVE */
 
+C--    End of 2nd bi,bj loop
        ENDDO
       ENDDO
+
+#ifdef EXACT_CONSERV
+       IF (exactConserv) _EXCH_XY_R8(etaN, myThid ) 
+#endif /* EXACT_CONSERV */ 
 
       RETURN
       END

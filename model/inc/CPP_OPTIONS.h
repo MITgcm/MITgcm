@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.17 2001/03/09 19:36:59 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.18 2001/05/29 14:01:36 adcroft Exp $
 C $Name:  $
 
   These lines are here to deliberately cause a compile-time error.
@@ -125,6 +125,14 @@ C o Allow nonHydrostatic code
 C o Use "natural" boundary conditions for salinity
 C   instead of the "virtual salt flux"
 #undef  USE_NATURAL_BCS
+
+C o Use "Exact Convervation" of fluid in Free-Surface formulation
+C   so that d/dt(eta) is exactly equal to - Div.Transport
+#undef EXACT_CONSERV
+
+C o Allow the use of Non-Linear Free-Surface formulation
+C   this implies that surface thickness (hFactors) vary with time
+#undef NONLIN_FRSURF
 
 C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.12 2001/02/04 14:38:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.13 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -37,46 +37,53 @@ C     == Local variables ==
 C     bi,bj  - Loop counters
 C     I,J,K
       INTEGER bi, bj
-      INTEGER  I,  J, K
+      INTEGER  I,  J, K, localWarnings
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      _BARRIER
-
-      IF ( hydrogSaltFile .EQ. ' ' ) THEN
-C--    Initialise salinity field to the vertical reference profile
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO K=1,Nr
-          DO J=1,sNy
-           DO I=1,sNx
-            salt(I,J,K,bi,bj) = sRef(K)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ELSE
-       _BEGIN_MASTER( myThid )
-       CALL READ_FLD_XYZ_RL( hydrogSaltFile, ' ', salt, 0, myThid )
-       _END_MASTER(myThid)
-      ENDIF
-C     Set initial tendency terms
+C--   Initialise salinity field to the vertical reference profile
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO K=1,Nr
-         DO J=1,sNy
-          DO I=1,sNx
-           gs   (I,J,K,bi,bj) = 0. _d 0
-           gsNM1(I,J,K,bi,bj) = 0. _d 0
-           IF (hFacC(I,J,K,bi,bj).EQ.0) salt(I,J,K,bi,bj) = 0.
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx
+           salt(I,J,K,bi,bj) = sRef(K)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-C
-      _EXCH_XYZ_R8(salt  , myThid )
-      _EXCH_XYZ_R8(gs , myThid )
-      _EXCH_XYZ_R8(gsNM1 , myThid )
+
+      IF ( hydrogSaltFile .NE. ' ' ) THEN
+       _BEGIN_MASTER( myThid )
+       CALL READ_FLD_XYZ_RL( hydrogSaltFile, ' ', salt, 0, myThid )
+       _END_MASTER(myThid)
+       _EXCH_XYZ_R8(salt  , myThid )
+      ENDIF
+
+C     Apply mask and test consistancy
+      localWarnings=0
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO K=1,Nr
+         DO J=1,sNy
+          DO I=1,sNx
+           IF (hFacC(I,J,K,bi,bj).EQ.0) salt(I,J,K,bi,bj) = 0.
+           IF (hFacC(I,J,K,bi,bj).NE.0.AND.salt(I,J,K,bi,bj).EQ.0.
+     &      .AND. sRef(k).NE.0.) THEN
+             localWarnings=localWarnings+1
+            ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+      IF (localWarnings.NE.0) THEN
+       WRITE(msgBuf,'(A,A)')
+     &  'S/R INI_SALT: salt = 0 identically. If this is intentional',
+     &  'you will need to edit ini_salt.F to avoid this safety check'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R INI_SALT'
+      ENDIF
 
       CALL PLOT_FIELD_XYZRL( salt, 'Initial Salinity' , Nr, 1, myThid )
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.12 2001/02/04 14:38:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.13 2001/05/29 14:01:36 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 CStartOfInterFace
       SUBROUTINE CALC_DIFFUSIVITY( 
      I        bi,bj,iMin,iMax,jMin,jMax,K,
-     I        maskC,maskUp,
+     I        maskUp,
      O        KappaRT,KappaRS,KappaRU,KappaRV,
      I        myThid)
 
@@ -25,12 +25,10 @@ C     == GLobal variables ==
 
 C     == Routine arguments ==
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
-C     maskC   - land/water mask for tracer points
 C     maskUp  - land/water mask for Wvel points (above tracer level)
 C     myThid - Instance number for this innvocation of CALC_COMMON_FACTORS
 C
       INTEGER bi,bj,iMin,iMax,jMin,jMax,K
-      _RS maskC(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RS maskUp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL KappaRT(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRS(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -45,7 +43,7 @@ C     I, J, K - Loop counters
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-        KappaRT(i,j,k) = maskC(i,j)*maskUp(i,j)*
+        KappaRT(i,j,k) = maskUp(i,j)*
      &      (
      &         KappaRT(i,j,k)
      &       + diffKrT
@@ -55,7 +53,7 @@ C     I, J, K - Loop counters
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-        KappaRS(i,j,k) = maskC(i,j)*maskUp(i,j)*
+        KappaRS(i,j,k) = maskUp(i,j)*
      &      (
      &         KappaRS(i,j,k)
      &       + diffKrS

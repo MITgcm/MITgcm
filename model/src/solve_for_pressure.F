@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.21 2001/04/10 22:35:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.22 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,21 +26,18 @@ C     == Global variables
 #ifdef ALLOW_OBCS
 #include "OBCS.h"
 #endif
+#include "SOLVE_FOR_PRESSURE.h"
 
 C     == Routine arguments ==
 C     myThid - Number of this instance of SOLVE_FOR_PRESSURE
       INTEGER myThid
 CEndOfInterface
 
-C     Local variables
-C     cg2d_x - Conjugate Gradient 2-D solver : Solution vector
-C     cg2d_b - Conjugate Gradient 2-D solver : Right-hand side vector
+C     == Local variables ==
       INTEGER i,j,k,bi,bj
       _RS uf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RS vf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL cg2d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL cg2d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL tolerance,residual
+      _RL firstResidual,lastResidual
       INTEGER numIters
 
 C--   Save previous solution & Initialise Vector solution and source term :
@@ -48,9 +45,7 @@ C--   Save previous solution & Initialise Vector solution and source term :
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-#ifdef INCLUDE_CD_CODE
           etaNm1(i,j,bi,bj) = etaN(i,j,bi,bj)
-#endif
           cg2d_x(i,j,bi,bj) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
           cg2d_b(i,j,bi,bj) = 0.
 #ifdef USE_NATURAL_BCS
@@ -143,24 +138,24 @@ C Western boundary
 
 C--   Find the surface pressure using a two-dimensional conjugate
 C--   gradient solver.
-C     see CG2D_INTERNAL.h for the interface to this routine.
-      tolerance=cg2dTargetResidual
-      residual=0.
+C     see CG2D.h for the interface to this routine.
+      firstResidual=0.
+      lastResidual=0.
       numIters=cg2dMaxIters
       CALL CG2D(
-     I           cg2d_b,
+     U           cg2d_b,
      U           cg2d_x,
-     U           tolerance,
-     U           residual,
+     O           firstResidual,
+     O           lastResidual,
      U           numIters,
      I           myThid )
       _EXCH_XY_R8(cg2d_x, myThid )
 
       _BEGIN_MASTER( myThid )
        WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ',
-     &                         0, tolerance
+     &                               0, firstResidual
        WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ',
-     &                         numIters, residual
+     &                         numIters, lastResidual
       _END_MASTER( )
 
 C--   Transfert the 2D-solution to "etaN" :

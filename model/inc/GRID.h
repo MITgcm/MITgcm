@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.14 2001/02/04 14:38:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.15 2001/05/29 14:01:36 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -304,7 +304,9 @@ C     dyF    - Cell face separation in Y thru cell center (m)
 C     dyU    - U-point separation in Y across south-west corner of cell (m)
 C     drC    - Cell center separation along Z axis ( units of r ).
 C     drF    - Cell face separation along Z axis ( units of r ).
-C     H      - Depth of base of fluid from upper surface f[X,Y] (m).
+C     Rcolumn  -Total thickness (in r_unit) of the fluid column
+C     R_low  - base of fluid in r_unit (Depth(m) / Pressure(Pa) at top Atmos.)
+C     Ro_surf- surface reference (at rest) position, r_unit.
 C     hFac   - Fraction of cell in vertical which is open i.e how 
 C              "lopped" a cell is (dimensionless scale factor).
 C              Note: The code needs terms like MIN(hFac,hFac(I+1))
@@ -314,6 +316,7 @@ C     rkFac     - Vertical coordinate to vertical index orientation.
 C                 ( -1 same orientation, 1 opposite orientation )
 C                 ( vertical coord == m  -> rkFac =  1 )
 C                 ( vertical coord == Pa -> rkFac = -1 )
+C     maskC  - cell Center land mask
 C     maskW  - West face land mask
 C     maskS  - South face land mask
 C     recip_dxC   - Recipricol of dxC
@@ -326,7 +329,7 @@ C     recip_dyF   - Recipricol of dyF
 C     recip_dyU   - Recipricol of dyU
 C     recip_drC   - Recipricol of drC
 C     recip_drF   - Recipricol of drF
-C     recip_H     - Inverse of cell center open-depth
+C     recip_Rcol  - Inverse of cell center column thickness (1/r_unit)
 C     recip_hFacC - Inverse of cell open-depth f[X,Y,Z] ( dimensionless ).
 C     recip_hFacW   rhFacC center, rhFacW west, rhFacS south.
 C     recip_hFacS   Note: This is precomputed here because it involves division.
@@ -352,18 +355,19 @@ C                 metric term in U equation.
 C     tanPhiAtV - tan of the latitude at V point. Used for spherical polar 
 C                 metric term in V equation.
       COMMON /GRID_R/
-     &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,drC,drF,
-     &  H,HFacC,HFacW,HFacS,DepthInK,
+     &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,
+     &  R_low,Ro_surf,HFacC,HFacW,HFacS,
      &  recip_dxC,recip_dxF,recip_dxG,recip_dxV,
      &  recip_dyC,recip_dyF,recip_dyG,recip_dyU,
-     &  recip_drC,recip_drF,
-     &  recip_H, 
+     &  recip_Rcol, 
      &  recip_hFacC,recip_hFacW,recip_hFacS, 
-     &  rkFac, recip_rkFac,
      &  saFac,
-     &  xC,yC,rA,rAw,rAs,rAz,rC,rF,yC0,xC0,xG,yG,
-     &  maskW,maskS,recip_rA,recip_rAw,recip_rAs,recip_rAz,
-     &  tanPhiAtU, tanPhiAtV
+     &  xC,yC,rA,rAw,rAs,rAz,xG,yG,
+     &  maskC,maskW,maskS,recip_rA,recip_rAw,recip_rAs,recip_rAz,
+     &  tanPhiAtU, tanPhiAtV,
+     &  cosfacU,cosfacV,sqcosfacU,sqcosfacV,
+     &  drC,drF,recip_drC,recip_drF,rC,rF,
+     &  rkFac, recip_rkFac, xC0, yC0
       _RS dxC            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dxF            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dxG            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -372,12 +376,8 @@ C                 metric term in V equation.
       _RS dyF            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dyG            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS dyU            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS drC            (1:Nr)
-      _RS drF            (1:Nr)
-      _RS rkFac
-      _RS recip_rkFac
-      _RS DepthInK       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS H              (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS R_low          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS Ro_surf        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS HFacC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS HFacW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS HFacS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
@@ -389,19 +389,14 @@ C                 metric term in V equation.
       _RS recip_dyF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_dyG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_dyU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS recip_drC      (1:Nr)
-      _RS recip_drF      (1:Nr)
-      _RS recip_h        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS recip_Rcol     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_hFacC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS recip_hFacW    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS recip_hFacS    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
-      _RS saFac          (1:Nr)
       _RS xC             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS xG             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS xC0
       _RS yC             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS yG             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS yC0
       _RS rA             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS rAw            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS rAs            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -410,12 +405,26 @@ C                 metric term in V equation.
       _RS recip_rAw      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_rAs      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_rAz      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rC             (1:Nr)
-      _RS rF             (1:Nr+1)
+      _RS maskC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS maskW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS maskS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS tanPhiAtU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS tanPhiAtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL cosfacU(1-Oly:sNy+Oly,nSx,nSy)
+      _RL cosfacV(1-Oly:sNy+Oly,nSx,nSy)
+      _RL sqcosfacU(1-Oly:sNy+Oly,nSx,nSy)
+      _RL sqcosfacV(1-Oly:sNy+Oly,nSx,nSy)
+      _RS drC            (1:Nr)
+      _RS drF            (1:Nr)
+      _RS recip_drC      (1:Nr)
+      _RS recip_drF      (1:Nr)
+      _RS saFac          (1:Nr)
+      _RS rC             (1:Nr)
+      _RS rF             (1:Nr+1)
+      _RS rkFac
+      _RS recip_rkFac
+      _RS xC0
+      _RS yC0
 
 #ifdef ALLOW_NONHYDROSTATIC
       COMMON /GRID_NH/

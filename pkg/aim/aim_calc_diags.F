@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_calc_diags.F,v 1.3 2001/03/06 17:58:25 jmc Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_calc_diags.F,v 1.4 2001/05/29 14:01:37 adcroft Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -65,6 +65,11 @@ C     == Local variables ==
         CLOUDCtave(i,j,bi,bj) = CLOUDCtave(i,j,bi,bj) + CLOUDC(I2)*DDTT
        ENDDO
       ENDDO
+
+C-    Keep record of how much time has been integrated over
+      DO K=1,Nr
+        AIM_TimeAve(k,bi,bj)=AIM_TimeAve(k,bi,bj)+DDTT
+      ENDDO                                                                                    
 
 
 #endif /* ALLOW_TIMEAVE */

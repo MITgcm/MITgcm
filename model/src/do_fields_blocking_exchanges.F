@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.3 2001/02/04 14:38:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.4 2001/05/29 14:01:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -31,8 +31,9 @@ c     _EXCH_XYZ_R8( gUNm1 , myThid )
 c     _EXCH_XYZ_R8( gVNm1 , myThid )
 c     _EXCH_XYZ_R8( gTNm1 , myThid )
 c     _EXCH_XYZ_R8( gSNm1 , myThid )
-      _EXCH_XYZ_R8( uVel , myThid )
-      _EXCH_XYZ_R8( vVel , myThid )
+c     _EXCH_XYZ_R8( uVel , myThid )
+c     _EXCH_XYZ_R8( vVel , myThid )
+      CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
       _EXCH_XYZ_R8( theta , myThid )
       _EXCH_XYZ_R8( salt , myThid )
 

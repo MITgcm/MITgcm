@@ -1,4 +1,5 @@
 # Packages
  &PACKAGES
- useAIM=.TRUE.
+ useAIM=.TRUE.,
+ useSHAP_FILT=.TRUE,
  &

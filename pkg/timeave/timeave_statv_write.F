@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.1 2001/03/06 15:56:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.2 2001/05/29 14:01:40 adcroft Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -55,6 +55,9 @@ C-     Normalize by integrated time
           CALL TIMEAVE_NORMALIZ(salttave, TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(uVeltave, TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(vVeltave, TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(TTtave,   TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(UUtave,   TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(VVtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(uttave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(vttave,   TimeAve_half,Nr,bi,bj,myThid)
 
@@ -77,21 +80,24 @@ C--     Set IO "context" for writing state
 #endif
 C--     Read IO error counter
         beginIOErrCount = IO_ERRCOUNT(myThid)
-        prevPrec = writeBinaryPrec
-        writeBinaryPrec = precFloat32
+c       prevPrec = writeBinaryPrec
+c       writeBinaryPrec = precFloat32
         CALL WRITE_FLD_XY_RL('ETAtave.',suff,etaTave,myIter,myThid)
 
         CALL WRITE_FLD_XYZ_RL('Ttave.',suff,thetatave,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('Stave.',suff,salttave,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('uVeltave.',suff,uVeltave,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('vVeltave.',suff,vVeltave,myIter,myThid)
+        CALL WRITE_FLD_XYZ_RL('TTtave.',suff,TTtave,myIter,myThid)
+        CALL WRITE_FLD_XYZ_RL('UUtave.',suff,UUtave,myIter,myThid)
+        CALL WRITE_FLD_XYZ_RL('VVtave.',suff,VVtave,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('UTtave.',suff,uttave,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('VTtave.',suff,vttave,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('wVeltave.',suff,wVeltave,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('PhHytave.',suff,phiHydtave,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL('Convtave.',suff,ConvectCountTave,
      &                        myIter,myThid)
-        writeBinaryPrec = prevPrec
+c       writeBinaryPrec = prevPrec
 C--     Reread IO error counter
         endIOErrCount = IO_ERRCOUNT(myThid)
 
@@ -126,6 +132,9 @@ C--    Reset the averages to zero
           CALL TIMEAVE_RESET(uVeltave, Nr, bi,bj,myThid)
           CALL TIMEAVE_RESET(vVeltave, Nr, bi,bj,myThid)
           CALL TIMEAVE_RESET(wVeltave, Nr, bi,bj,myThid)
+          CALL TIMEAVE_RESET(TTtave,   Nr, bi,bj,myThid)
+          CALL TIMEAVE_RESET(UUtave,   Nr, bi,bj,myThid)
+          CALL TIMEAVE_RESET(VVtave,   Nr, bi,bj,myThid)
           CALL TIMEAVE_RESET(uttave,   Nr, bi,bj,myThid)
           CALL TIMEAVE_RESET(vttave,   Nr, bi,bj,myThid)
           CALL TIMEAVE_RESET(phiHydtave,Nr,bi,bj,myThid)
@@ -145,6 +154,12 @@ C      "single" fields
           CALL TIMEAVE_CUMULATE(vVeltave, vVel, Nr,DDTT, bi,bj,myThid)
 
 C      "double" fields
+          CALL TIMEAVE_CUMUL_2V(TTtave, theta, theta, Nr, 0, DDTT, 
+     &         bi,bj,myThid)
+          CALL TIMEAVE_CUMUL_2V(UUtave, uVel, uVel, Nr, 0, DDTT, 
+     &         bi,bj,myThid)
+          CALL TIMEAVE_CUMUL_2V(VVtave, vVel, vVel, Nr, 0, DDTT, 
+     &         bi,bj,myThid)
           CALL TIMEAVE_CUMUL_2V(uttave, theta, uVel, Nr, 1, DDTT, 
      &         bi,bj,myThid)
           CALL TIMEAVE_CUMUL_2V(vttave, theta, vVel, Nr, 2, DDTT, 

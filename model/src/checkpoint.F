@@ -1,4 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.8 2001/05/14 21:36:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.9 2001/05/29 14:01:37 adcroft Exp $
+C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
@@ -157,12 +158,15 @@ C       Reset default IO precision
        _BARRIER
 
 C--    Fill in edge regions
-      _EXCH_XYZ_R8(uVel  , myThid )
-      _EXCH_XYZ_R8(gu    , myThid )
-      _EXCH_XYZ_R8(guNM1 , myThid )
-      _EXCH_XYZ_R8(vVel  , myThid )
-      _EXCH_XYZ_R8(gv    , myThid )
-      _EXCH_XYZ_R8(gvNM1 , myThid )
+      CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
+      CALL EXCH_UV_XYZ_RL(gU,gV,.TRUE.,myThid)
+      CALL EXCH_UV_XYZ_RL(gUnm1,gVnm1,.TRUE.,myThid)
+c     _EXCH_XYZ_R8(uVel  , myThid )
+c     _EXCH_XYZ_R8(gu    , myThid )
+c     _EXCH_XYZ_R8(guNM1 , myThid )
+c     _EXCH_XYZ_R8(vVel  , myThid )
+c     _EXCH_XYZ_R8(gv    , myThid )
+c     _EXCH_XYZ_R8(gvNM1 , myThid )
       _EXCH_XYZ_R8(theta , myThid )
       _EXCH_XYZ_R8(gt    , myThid )
       _EXCH_XYZ_R8(gtNM1 , myThid )
@@ -172,10 +176,13 @@ C--    Fill in edge regions
       _EXCH_XY_R8 (etaN, myThid )
 #ifdef INCLUDE_CD_CODE
       _EXCH_XY_R8( etaNm1, myThid )
+c**** CALL EXCH_DUV_XYZ_RL(uVelD,vVelD,.TRUE.,myThid)
+c**** CALL EXCH_DUV_XYZ_RL(guCD,gvCD,.TRUE.,myThid)
       _EXCH_XYZ_R8( uVelD,    myThid )
       _EXCH_XYZ_R8( vVelD,    myThid )
-      _EXCH_XYZ_R8( uNM1,     myThid )
-      _EXCH_XYZ_R8( vNM1,     myThid )
+      CALL EXCH_UV_XYZ_RL(uNM1,vNM1,.TRUE.,myThid)
+c     _EXCH_XYZ_R8( uNM1,     myThid )
+c     _EXCH_XYZ_R8( vNM1,     myThid )
       _EXCH_XYZ_R8( guCD,     myThid )
       _EXCH_XYZ_R8( gvCD,     myThid )
 #endif

@@ -1,0 +1,182 @@
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.2 2001/05/29 14:01:40 adcroft Exp $
+C $Name:  $
+
+#include "SHAP_FILT_OPTIONS.h"
+
+      SUBROUTINE SHAP_FILT_UV_S2( 
+     U           uFld, vFld,
+     I           myTime, myThid )
+C     /==========================================================\
+C     | S/R SHAP_FILT_UV_S2                                      |
+C     | Applies Shapiro filter to U,V field over one XY slice    |
+C     | of one tile at a time.                                   |
+C     \==========================================================/
+      IMPLICIT NONE
+
+C     == Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "SHAP_FILT.h"
+#include "SHAP_FILT_UV.h"
+
+C     == Routine arguments
+      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL     myTime
+      INTEGER myThid
+
+#ifdef ALLOW_SHAP_FILT
+
+C     == Local variables ==
+      INTEGER bi,bj,K,I,J,N
+      _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy) 
+      _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpGrdU(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL tmpGrdV(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+      IF (nShapUV.gt.0 .AND. Shap_uvtau.GT.0.) THEN
+
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO K=1,Nr
+           DO J=1,sNy
+            DO I=1,sNx+1
+             tmpFldU(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
+     &                *_maskW(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+           DO J=1,sNy+1
+            DO I=1,sNx
+             tmpFldV(i,j,k,bi,bj)=vFld(i,j,k,bi,bj)
+     &                *_maskS(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
+
+C    [d_xx+d_yy]^n tmpFld
+
+       DO N=1,nShapUV
+
+        CALL EXCH_UV_XYZ_RL(tmpFldU,tmpFldV,.TRUE.,myThid)
+
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO K=1,Nr
+
+C    [d_xx+d_yy] tmpFld
+           CALL MOM_CALC_HFACZ(bi,bj,k,hFacZ,r_hFacZ,myThid)
+c          CALL MOM_VI_CALC_HDIV(bi,bj,k,
+c    I                    tmpFldU(1-OLx,1-OLy,k,bi,bj),
+c    I                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
+c    &                    hDiv,myThid)
+           DO J=0,sNy+1
+            DO I=0,sNx+1
+             hDiv(i,j)=tmpFldU(i+1,j,k,bi,bj)-tmpFldU(i,j,k,bi,bj)
+     &                +tmpFldV(i,j+1,k,bi,bj)-tmpFldV(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+c          CALL MOM_VI_CALC_RELVORT3(bi,bj,k,
+c    I                    tmpFldU(1-OLx,1-OLy,k,bi,bj),
+c    I                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
+c    &                    hFacZ,vort3,myThid)
+           DO J=1,sNy+1
+            DO I=1,sNx+1
+             vort3(i,j)=(tmpFldV(i,j,k,bi,bj)-tmpFldV(i-1,j,k,bi,bj)
+     &                  -tmpFldU(i,j,k,bi,bj)+tmpFldU(i,j-1,k,bi,bj)
+     &                  )
+            ENDDO
+           ENDDO
+C     Special stuff for Cubed Sphere
+      IF (useCubedSphereExchange) THEN
+         I=1
+         J=1
+         vort3(I,J)=
+     &      tmpFldV(I,J,k,bi,bj)
+c    &     -tmpFldV(I-1,J,k,bi,bj)
+     &     -tmpFldU(I,J,k,bi,bj)
+     &     +tmpFldU(I,J-1,k,bi,bj)
+         I=sNx+1
+         J=1
+         vort3(I,J)=
+c    &      tmpFldV(I,J,k,bi,bj)
+     &     -tmpFldV(I-1,J,k,bi,bj)
+     &     -tmpFldU(I,J,k,bi,bj)
+     &     +tmpFldU(I,J-1,k,bi,bj)
+         I=1
+         J=sNy+1
+         vort3(I,J)=
+     &      tmpFldV(I,J,k,bi,bj)
+c    &     -tmpFldV(I-1,J,k,bi,bj)
+     &     -tmpFldU(I,J,k,bi,bj)
+     &     +tmpFldU(I,J-1,k,bi,bj)
+         I=sNx+1
+         J=sNy+1
+         vort3(I,J)=
+c    &      tmpFldV(I,J,k,bi,bj)
+     &     -tmpFldV(I-1,J,k,bi,bj)
+     &     -tmpFldU(I,J,k,bi,bj)
+     &     +tmpFldU(I,J-1,k,bi,bj)
+       ENDIF
+
+c          CALL MOM_VI_DEL2UV(
+c    I                    bi,bj,k,hDiv,vort3,hFacZ,
+c    O                    tmpGrdU,tmpGrdV,
+c    &                    myThid) 
+           DO J=1,sNy
+            DO I=1,sNx+1
+             tmpGrdU(i,j)=(hDiv(i,j)-hDiv(i-1,j)
+     &                    -vort3(i,j+1)+vort3(i,j)
+     &                    )*maskW(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+           DO J=1,sNy+1
+            DO I=1,sNx
+             tmpGrdV(i,j)=(vort3(i+1,j)-vort3(i,j)
+     &                    +hDiv(i,j)-hDiv(i,j-1)
+     &                    )*maskS(i,j,k,bi,bj)
+            ENDDO
+           ENDDO
+
+           DO J=1,sNy+1
+            DO I=1,sNx+1
+             tmpFldU(i,j,k,bi,bj) = -0.125*tmpGrdU(i,j)
+             tmpFldV(i,j,k,bi,bj) = -0.125*tmpGrdV(i,j)
+            ENDDO
+           ENDDO
+
+          ENDDO
+         ENDDO
+        ENDDO
+
+       ENDDO
+
+C      F <-  [1 - (d_xx+d_yy)^n *deltat/tau].F
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO K=1,Nr
+          DO J=1,sNy+1
+           DO I=1,sNx+1
+            uFld(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
+     &             -tmpFldU(i,j,k,bi,bj)*deltaTmom/Shap_uvtau
+            vFld(i,j,k,bi,bj)=vFld(i,j,k,bi,bj)
+     &             -tmpFldV(i,j,k,bi,bj)*deltaTmom/Shap_uvtau
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+      CALL EXCH_UV_XYZ_RL(uFld,vFld,.TRUE.,myThid)
+
+      ENDIF
+#endif /* ALLOW_SHAP_FILT */
+
+      RETURN
+      END
