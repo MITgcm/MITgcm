@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.27 2003/12/05 16:21:40 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.28 2003/12/05 17:00:10 edhill Exp $
 #  $Name:  $
 #
 
@@ -774,13 +774,6 @@ for dir in $TESTDIRS ; do
 	continue
     fi
 
-    echo "-------------------------------------------------------------------------------"
-    echo
-    echo "Experiment:  $dir"
-    echo
-    unset genmake makedepend make run
-    results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
-
     builddir="input"
     rundir="input"
     use_seperate_build=0
@@ -799,6 +792,18 @@ for dir in $TESTDIRS ; do
 	CODE_DIR=$dir/code_ad
     fi
     BUILD_DIR=$dir/$builddir
+
+    if test ! -r $CODE_DIR"/SIZE.h_mpi" ; then
+	echo "can't find \"$CODE_DIR/SIZE.h_mpi\" -- skipping $dir"
+	continue
+    fi
+
+    echo "-------------------------------------------------------------------------------"
+    echo
+    echo "Experiment:  $dir"
+    echo
+    unset genmake makedepend make run
+    results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
 
     #  Create an output dir for each OPTFILE/tdir combination
     rel_CDIR=$DRESULTS"/"$dir
