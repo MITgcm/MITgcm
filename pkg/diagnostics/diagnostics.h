@@ -262,6 +262,19 @@ C diagarrays common
       CHARACTER*8   CGWCVS
       CHARACTER*8   CGWCU
       CHARACTER*8   CGWCV
+      CHARACTER*8   CETAN
+      CHARACTER*8   CETANSQ
+      CHARACTER*8   CTHETA
+      CHARACTER*8   CSALT
+      CHARACTER*8   CUVEL
+      CHARACTER*8   CVVEL
+      CHARACTER*8   CWVEL
+      CHARACTER*8   CTHETASQ
+      CHARACTER*8   CSALTSQ
+      CHARACTER*8   CUVELSQ
+      CHARACTER*8   CVVELSQ
+      CHARACTER*8   CWVELSQ
+      CHARACTER*8   CUVELVVEL
 
       EQUIVALENCE ( CDIAG( 1) ,  CUFLUX  )
       EQUIVALENCE ( CDIAG( 2) ,  CVFLUX  )
@@ -492,6 +505,19 @@ C diagarrays common
       EQUIVALENCE ( CDIAG(235),  CGWCVS    )
       EQUIVALENCE ( CDIAG(236),  CGWCU     )
       EQUIVALENCE ( CDIAG(237),  CGWCV     )
+      EQUIVALENCE ( CDIAG(238),  CETAN     )
+      EQUIVALENCE ( CDIAG(239),  CETANSQ   )
+      EQUIVALENCE ( CDIAG(240),  CTHETA    )
+      EQUIVALENCE ( CDIAG(241),  CSALT     )
+      EQUIVALENCE ( CDIAG(242),  CUVEL     )
+      EQUIVALENCE ( CDIAG(243),  CVVEL     )
+      EQUIVALENCE ( CDIAG(244),  CWVEL     )
+      EQUIVALENCE ( CDIAG(245),  CTHETASQ  )
+      EQUIVALENCE ( CDIAG(246),  CSALTSQ   )
+      EQUIVALENCE ( CDIAG(247),  CUVELSQ   )
+      EQUIVALENCE ( CDIAG(248),  CVVELSQ   )
+      EQUIVALENCE ( CDIAG(249),  CWVELSQ   )
+      EQUIVALENCE ( CDIAG(250),  CUVELVVEL )
 
       integer       iUFLUX   , kUFLUX   , nUFLUX
       integer       iVFLUX   , kVFLUX   , nVFLUX
@@ -722,6 +748,19 @@ C diagarrays common
       integer       iGWCVS   , kGWCVS   , nGWCVS
       integer       iGWCU    , kGWCU    , nGWCU 
       integer       iGWCV    , kGWCV    , nGWCV 
+      integer       iETAN    , kETAN    , nETAN 
+      integer       iETANSQ  , kETANSQ  , nETANSQ
+      integer       iTHETA   , kTHETA   , nTHETA 
+      integer       iSALT    , kSALT    , nSALT  
+      integer       iUVEL    , kUVEL    , nUVEL  
+      integer       iVVEL    , kVVEL    , nVVEL  
+      integer       iWVEL    , kWVEL    , nWVEL  
+      integer       iTHETASQ , kTHETASQ , nTHETASQ
+      integer       iSALTSQ  , kSALTSQ  , nSALTSQ
+      integer       iUVELSQ  , kUVELSQ  , nUVELSQ
+      integer       iVVELSQ  , kVVELSQ  , nVVELSQ
+      integer       iWVELSQ  , kWVELSQ  , nWVELSQ  
+      integer       iUVELVVEL, kUVELVVEL, nUVELVVEL
 
 
 c Diagnostic Pointers
@@ -955,6 +994,19 @@ c -------------------
       EQUIVALENCE ( IDIAG(235),  IGWCVS    )
       EQUIVALENCE ( IDIAG(236),  IGWCU     )
       EQUIVALENCE ( IDIAG(237),  IGWCV     )
+      EQUIVALENCE ( IDIAG(238),  IETAN     )
+      EQUIVALENCE ( IDIAG(239),  IETANSQ   )
+      EQUIVALENCE ( IDIAG(240),  ITHETA    )
+      EQUIVALENCE ( IDIAG(241),  ISALT     )
+      EQUIVALENCE ( IDIAG(242),  IUVEL     )
+      EQUIVALENCE ( IDIAG(243),  IVVEL     )
+      EQUIVALENCE ( IDIAG(244),  IWVEL     )
+      EQUIVALENCE ( IDIAG(245),  ITHETASQ  )
+      EQUIVALENCE ( IDIAG(246),  ISALTSQ   )
+      EQUIVALENCE ( IDIAG(247),  IUVELSQ   )
+      EQUIVALENCE ( IDIAG(248),  IVVELSQ   )
+      EQUIVALENCE ( IDIAG(249),  IWVELSQ   )
+      EQUIVALENCE ( IDIAG(250),  IUVELVVEL )
 
 
 c Diagnostic Levels
@@ -1188,6 +1240,19 @@ c -----------------
       EQUIVALENCE ( KDIAG(235),  KGWCVS    )
       EQUIVALENCE ( KDIAG(236),  KGWCU     )
       EQUIVALENCE ( KDIAG(237),  KGWCV     )
+      EQUIVALENCE ( KDIAG(238),  KETAN     )
+      EQUIVALENCE ( KDIAG(239),  KETANSQ   )
+      EQUIVALENCE ( KDIAG(240),  KTHETA    )
+      EQUIVALENCE ( KDIAG(241),  KSALT     )
+      EQUIVALENCE ( KDIAG(242),  KUVEL     )
+      EQUIVALENCE ( KDIAG(243),  KVVEL     )
+      EQUIVALENCE ( KDIAG(244),  KWVEL     )
+      EQUIVALENCE ( KDIAG(245),  KTHETASQ  )
+      EQUIVALENCE ( KDIAG(246),  KSALTSQ   )
+      EQUIVALENCE ( KDIAG(247),  KUVELSQ   )
+      EQUIVALENCE ( KDIAG(248),  KVVELSQ   )
+      EQUIVALENCE ( KDIAG(249),  KWVELSQ   )
+      EQUIVALENCE ( KDIAG(250),  KUVELVVEL )
 
 
 c Diagnostic Counters
@@ -1421,6 +1486,19 @@ c -------------------
       EQUIVALENCE ( NDIAG(235),  NGWCVS    )
       EQUIVALENCE ( NDIAG(236),  NGWCU     )
       EQUIVALENCE ( NDIAG(237),  NGWCV     )
+      EQUIVALENCE ( NDIAG(238),  NETAN     )
+      EQUIVALENCE ( NDIAG(239),  NETANSQ   )
+      EQUIVALENCE ( NDIAG(240),  NTHETA    )
+      EQUIVALENCE ( NDIAG(241),  NSALT     )
+      EQUIVALENCE ( NDIAG(242),  NUVEL     )
+      EQUIVALENCE ( NDIAG(243),  NVVEL     )
+      EQUIVALENCE ( NDIAG(244),  NWVEL     )
+      EQUIVALENCE ( NDIAG(245),  NTHETASQ  )
+      EQUIVALENCE ( NDIAG(246),  NSALTSQ   )
+      EQUIVALENCE ( NDIAG(247),  NUVELSQ   )
+      EQUIVALENCE ( NDIAG(248),  NVVELSQ   )
+      EQUIVALENCE ( NDIAG(249),  NWVELSQ   )
+      EQUIVALENCE ( NDIAG(250),  NUVELVVEL )
 
 
 C diagnostics common
