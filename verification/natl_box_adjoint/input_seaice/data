@@ -99,6 +99,7 @@
  pChkptFreq=15552000.0,
  chkptFreq=15552000.0,
  dumpFreq =86400.0,
+ monitorFreq=1.,
  tauThetaClimRelax=0.,
  tauSaltClimRelax=0.,
  forcing_In_AB = .FALSE.
