@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.1 2002/03/04 19:01:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.2 2003/06/25 21:03:28 stephd Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
+#include "GCHEM_OPTIONS.h"
 
 CBOP
 C !ROUTINE: PTRACERS_INIT
@@ -18,6 +19,11 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "PTRACERS.h"
+cswdptr -- add ---
+#include "GRID.h"
+#include "GCHEM.h"
+cswdptr --- end add --
+
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -69,20 +75,53 @@ C end of Tracer loop
       ENDDO
 
 C Now read initial conditions and always exchange
-      IF (nIter0.EQ.0) THEN
+cswdptr IF (nIter0.EQ.0) THEN
+cswdptr -- change ---
+      IF (nIter0.EQ.tIter0) THEN
+cswdptr -- end change ---
        DO iTracer = 1, PTRACERS_numInUse
         IF ( PTRACERS_initialFile(iTracer) .NE. ' ' ) THEN
          _BEGIN_MASTER( myThid )
          CALL READ_FLD_XYZ_RL(PTRACERS_initialFile(iTracer),' ',
      &            pTracer(1-Olx,1-Oly,1,1,1,iTracer) ,0,myThid)
          _END_MASTER(myThid)
+cswdptr -- add ---
+        ELSE
+         DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+           DO k=1,nR
+            pTracer(i,j,k,bi,bj,iTracer)=0.d0
+cswddic QQQ
+            if (iTracer.eq.1)
+     &        pTracer(i,j,k,bi,bj,iTracer)=2.23d0 !dic mol/m3
+            if (iTracer.eq.2)
+     &        pTracer(i,j,k,bi,bj,iTracer)=2.37d0 !alk moleq/m3
+            if (iTracer.eq.3)
+     &        pTracer(i,j,k,bi,bj,iTracer)=2.17d-3 !po4 mol/m3
+            if (iTracer.eq.4)
+     &        pTracer(i,j,k,bi,bj,iTracer)=1.d-5 !dop mol/m3
+            if (iTracer.eq.5)
+     &        pTracer(i,j,k,bi,bj,iTracer)=0.17d0  !o2 mol/m3
+            if (iTracer.eq.6)
+     &        pTracer(i,j,k,bi,bj,iTracer)=4.d-7  !fe mol/m3
+           enddo
+          ENDDO
+          ENDDO
+         ENDDO
+         ENDDO
+cswdptr -- end add ---
         ENDIF
         _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
        ENDDO
       ENDIF
 
 C Read from a pickup file if nIter0
-      IF (nIter0.NE.0) THEN
+cswdptr IF (nIter0.NE.0) THEN
+cswdptr -- change --
+      IF (nIter0.GT.tIter0) THEN
+cswdptr -- end change
        CALL PTRACERS_READ_CHECKPOINT( nIter0,myThid )
       ENDIF
 

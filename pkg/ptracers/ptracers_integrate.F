@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.5 2002/06/24 18:47:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.6 2003/06/25 21:03:28 stephd Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
+cswdptr -- add ---
+#include "GCHEM_OPTIONS.h"
+cswdptr -- end add ---
 
 CBOP
 C !ROUTINE: PTRACERS_INTEGERATE
@@ -115,11 +118,17 @@ C (advection, [explicit] diffusion, parameterizations,...)
      I                     myThid )
 
 C External forcing term(s)
+cswdptr - add--
+#ifndef PTRACERS_SEPERATE_FORCING
+cswdptr - end add ---
        IF ( forcing_In_AB )
      &   CALL PTRACERS_FORCING(
      I                        bi,bj,k,iTracer,
      U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                        myIter,myTime,myThid)
+cswdptr --add---
+#endif
+cswdptr -- end add ---
 
 C If using Adams-Bashforth II, then extrapolate tendancies
       IF ( PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND
@@ -133,11 +142,17 @@ C If using Adams-Bashforth II, then extrapolate tendancies
       ENDIF
 
 C External forcing term(s)
+cswdptr - add--
+#ifndef PTRACERS_SEPERATE_FORCING
+cswdptr - end add ---
        IF ( .NOT.forcing_In_AB )
      &   CALL PTRACERS_FORCING(
      I                        bi,bj,k,iTracer,
      U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                        myIter,myTime,myThid)
+cswdptr - add--
+#endif
+cswdptr -- end add ---
 
 #ifdef NONLIN_FRSURF
 C Account for change in level thickness
