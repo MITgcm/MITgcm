@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.3 2003/05/13 18:18:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.4 2003/12/24 00:29:17 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -37,7 +37,7 @@ C     === Routine arguments ===
 C     === Local variables ====
       INTEGER i,j,k,ks,bi,bj 
       _RL theArea, wT_Mean, wS_Mean, tmp_wS_M, wT_Heat
-      _RL theVol, vT_Mean, vS_Mean, vT_Heat, theta2PE
+      _RL vT_Mean, vS_Mean, vT_Heat, theta2PE
       _RL tmpVol, tmpVal, conv_th2Heat, ddPI
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -119,7 +119,6 @@ C-- Compute Volume expansion term & do the integral
            DO j=1,sNy
             DO i=1,sNx
               tmpVol  = rA(i,j,bi,bj)*h0FacC(i,j,k,bi,bj)*drF(k)
-              theVol  = theVol + tmpVol
               tmpVal  = rStarDhCDt(i,j,bi,bj)*theta(i,j,k,bi,bj)
               vT_Mean = vT_Mean + tmpVol*tmpVal
               vS_Mean = vS_Mean
