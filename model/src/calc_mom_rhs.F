@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.35 1998/11/30 23:45:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.36 1998/12/08 17:59:47 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -166,10 +166,10 @@ C--   Term by term tracer parmeters
 C     o U momentum equation
       uDudxFac     = afFacMom*1.
       AhDudxFac    = vfFacMom*1.
-      A4DuxxdxFac  = vfFacMom*0.
+      A4DuxxdxFac  = vfFacMom*1.
       vDudyFac     = afFacMom*1.
       AhDudyFac    = vfFacMom*1.
-      A4DuyydyFac  = vfFacMom*0.
+      A4DuyydyFac  = vfFacMom*1.
       rVelDudrFac  = afFacMom*1.
       ArDudrFac    = vfFacMom*1.
       mTFacU       = mtFacMom*1.
@@ -178,10 +178,10 @@ C     o U momentum equation
 C     o V momentum equation
       uDvdxFac     = afFacMom*1.
       AhDvdxFac    = vfFacMom*1.
-      A4DvxxdxFac  = vfFacMom*0.
+      A4DvxxdxFac  = vfFacMom*1.
       vDvdyFac     = afFacMom*1.
       AhDvdyFac    = vfFacMom*1.
-      A4DvyydyFac  = vfFacMom*0.
+      A4DvyydyFac  = vfFacMom*1.
       rVelDvdrFac  = afFacMom*1.
       ArDvdrFac    = vfFacMom*1.
       mTFacV       = mtFacMom*1.
