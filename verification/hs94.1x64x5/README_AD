@@ -1,0 +1,18 @@
+
+cd bin
+ln -s ../verification/hs94.1x64x5/adcode/.genmakerc .
+ln -s ../verification/hs94.1x64x5/adcode/*.h .
+ln -s ../verification/hs94.1x64x5/adcode/*.F .
+
+../tools/genmake -makefile
+make depend
+make small_f
+
+cd ../adjoint
+make adall
+make adchange
+
+cd ../bin
+make
+
+
