@@ -1,7 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.9 1998/07/02 14:20:04 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.10 1998/07/08 15:40:09 cnh Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint12
+ Tidy up and added generic genmake script (formerly
+ configure script). 
+ Released to testers.
 
 checkpoint11
  Re-arranged initialise() and introduced ini_vertical_grid()
