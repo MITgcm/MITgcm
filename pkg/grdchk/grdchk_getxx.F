@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.2 2001/07/13 14:50:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_getxx.F,v 1.3 2002/05/30 22:47:26 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -264,6 +264,43 @@ c--   == end of interface ==
 
 #endif /* ALLOW_SSS0_CONTROL */
 
+#ifdef ALLOW_HFACC_CONTROL
+      else if ( grdchkvarindex .eq. 20 ) then
+         il=ilnblnk( xx_hfacc_file )
+         write(fname(1:80),'(80a)') ' '
+         write(fname(1:80),'(2a,i10.10)')
+     &        xx_hfacc_file(1:il),'.',optimcycle
+
+#ifdef ALLOW_HFACC3D_CONTROL
+
+         call active_read_xyz( fname, tmpfld3d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+
+         xx_comp_ref = tmpfld3d( itilepos,jtilepos,layer,itile,jtile )
+         xx_comp_pert = xx_comp_ref + grdchk_eps
+         tmpfld3d( itilepos,jtilepos,layer,itile,jtile ) = xx_comp_pert
+
+         call active_write_xyz( fname, tmpfld3d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+
+#else
+
+         call active_read_xy( fname, tmpfld2d, icvrec,
+     &                        doglobalread, ladinit, optimcycle,
+     &                        mythid, dummy)
+
+         xx_comp_ref = tmpfld2d( itilepos,jtilepos,itile,jtile )
+         xx_comp_pert = xx_comp_ref + grdchk_eps
+         tmpfld2d( itilepos,jtilepos,itile,jtile ) = xx_comp_pert
+
+         call active_write_xy( fname, tmpfld2d, icvrec,
+     &                         optimcycle,
+     &                         mythid, dummy)
+
+#endif /* ALLOW_HFACC3D_CONTROL */
+#endif /* ALLOW_HFACC_CONTROL */
       else
 ce      --> this index does not exist yet.
       endif

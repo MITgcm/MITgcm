@@ -24,6 +24,10 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
      &                       grdchk_eps
       _RL     grdchk_eps
 
+      common /grdchkparms_l/
+     &                       useCentralDiff
+      logical useCentralDiff
+
       common /grdchkparms_i/
      &                       nbeg,
      &                       nend,
@@ -35,12 +39,13 @@ c     maxgrdchecks - maximum number of gradient checks done per tile.
       integer grdchkvarindex
 
       common /grdchk_r/
-     &                  fcrmem, fcpmem,   
+&                  fcrmem, fcppmem, fcpmmem,
      &                  xxmemref, xxmempert,
      &                  gfdmem, adxxmem,
      &                  ratiomem
       _RL fcrmem    ( maxgrdchecks )
-      _RL fcpmem    ( maxgrdchecks )
+      _RL fcppmem   ( maxgrdchecks )
+      _RL fcpmmem   ( maxgrdchecks )
       _RL xxmemref  ( maxgrdchecks )
       _RL xxmempert ( maxgrdchecks )
       _RL gfdmem    ( maxgrdchecks )

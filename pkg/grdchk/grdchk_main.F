@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.3 2001/09/28 16:53:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.4 2002/05/30 22:47:26 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -54,7 +54,12 @@ c     ==================================================================
 c     o Compare the gradients calculated by the adjoint model with
 c       finite difference approximations.
 c     started: Christian Eckert eckert@mit.edu 24-Feb-2000
-c     continued: heimbach@mit.edu: 13-Jun-2001
+c     continued&finished: heimbach@mit.edu: 13-Jun-2001
+c     changed: mlosch@ocean.mit.edu: 09-May-2002
+c              - added centered difference vs. 1-sided difference option
+c              - improved output format for readability
+c              - added control variable hFacC
+c     
 c     ==================================================================
 c     SUBROUTINE grdchk_main
 c     ==================================================================
@@ -100,7 +105,7 @@ c     == local variables ==
       integer ierr_grdchk
       _RL     gfd
       _RL     fcref
-      _RL     fcpert
+      _RL     fcpertplus, fcpertminus
       _RL     ratio
       _RL     xxmemo_ref
       _RL     xxmemo_pert
@@ -110,6 +115,10 @@ cph(
       _RL tmpplot1(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL tmpplot2(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 cph)
+
+Cml(
+      _RL     grdchk_epsfac
+Cml)
 
 c     == end of interface ==
 CEOP
@@ -151,6 +160,12 @@ cph(
       end do
 cph)
 
+      if ( useCentralDiff ) then
+         grdchk_epsfac = 2. _d 0
+      else
+         grdchk_epsfac = 1. _d 0
+      end if
+
 c--   Compute the finite difference approximations.
 c--   Cycle through all processes doing NINT(nend-nbeg+1)/nstep
 c--   gradient checks.
@@ -173,6 +188,16 @@ c--         Determine the location of icomp on the grid.
               
                   if ( ierr .eq. 0 ) then
 
+c--   positive perturbation
+                     grdchk_eps = abs(grdchk_eps)
+
+c--   get gradient component calculated via adjoint
+                     call grdchk_getadxx( icvrec,
+     &                    itile, jtile, layer,
+     &                    itilepos, jtilepos,
+     &                    adxxmemo, mythid )
+                     _BARRIER
+
 c--   get control vector component from file
 c--   perturb it and write back to file
                      call grdchk_getxx( icvrec,
@@ -181,30 +206,11 @@ c--   perturb it and write back to file
      &                    xxmemo_ref, xxmemo_pert, mythid )
                      _BARRIER
                      
-c--   get gradient component calculated via adjoint
-                     call grdchk_getadxx( icvrec,
-     &                    itile, jtile, layer,
-     &                    itilepos, jtilepos,
-     &                    adxxmemo, mythid )
-                     _BARRIER
-
 c--   forward run with perturbed control vector
                      mytime = starttime
                      myiter = niter0
                      call the_main_loop( mytime, myiter, mythid )
-                     fcpert = fc
-                  
-                     if ( grdchk_eps .eq. 0. ) then
-                        gfd = (fcpert-fcref)
-                     else
-                        gfd = (fcpert-fcref)/grdchk_eps
-                     endif
-                     
-                     if ( gfd .eq. 0. ) then
-                        ratio = abs( adxxmemo - gfd )
-                     else
-                        ratio = 1. - adxxmemo/gfd
-                     endif
+                     fcpertplus = fc
                   
 c--   Reset control vector.
                      call grdchk_setxx( icvrec,
@@ -213,6 +219,52 @@ c--   Reset control vector.
      &                    xxmemo_ref, mythid )
                      _BARRIER
 
+                     fcpertminus = fcref
+
+                     if ( useCentralDiff ) then
+
+c--   repeat the proceedure for a negative perturbation
+                        grdchk_eps = - abs(grdchk_eps)
+
+c--   get control vector component from file
+c--   perturb it and write back to file
+                        call grdchk_getxx( icvrec,
+     &                    itile, jtile, layer,
+     &                    itilepos, jtilepos,
+     &                    xxmemo_ref, xxmemo_pert, mythid )
+                        _BARRIER
+                     
+c--   forward run with perturbed control vector
+                        mytime = starttime
+                        myiter = niter0
+                        call the_main_loop( mytime, myiter, mythid )
+                        fcpertminus = fc
+                  
+c--   Reset control vector.
+                        call grdchk_setxx( icvrec,
+     &                    itile, jtile, layer,
+     &                    itilepos, jtilepos,
+     &                    xxmemo_ref, mythid )
+                        _BARRIER
+
+c     reset grdchk_eps to a positive value
+                        grdchk_eps = abs(grdchk_eps)
+
+                     end if
+c--
+                     if ( grdchk_eps .eq. 0. ) then
+                        gfd = (fcpertplus-fcpertminus)
+                     else
+                        gfd = (fcpertplus-fcpertminus)
+     &                       /(grdchk_epsfac*grdchk_eps)
+                     endif
+                     
+                     if ( adxxmemo .eq. 0. ) then
+                        ratio = abs( adxxmemo - gfd )
+                     else
+                        ratio = 1. - gfd/adxxmemo
+                     endif
+                  
 cph(
                      tmpplot1(itilepos,jtilepos,layer,itile,jtile) =
      &                    gfd
@@ -221,7 +273,9 @@ cph(
 cph)
 
                      
-                     fcpmem    ( ichknum ) = fcpert
+                     fcrmem    ( ichknum ) = fcref
+                     fcppmem   ( ichknum ) = fcpertplus
+                     fcpmmem   ( ichknum ) = fcpertminus
                      xxmemref  ( ichknum ) = xxmemo_ref
                      xxmempert ( ichknum ) = xxmemo_pert
                      gfdmem    ( ichknum ) = gfd
@@ -241,16 +295,19 @@ cph)
                   
 cph(
                      print *, 'ph-grd 3 -------------------------------'
-                     print *, 'ph-grd 3 ',
+                     print '(a,4I5,3(1x,E15.9))', 'ph-grd 3 ',
      &                    ichknum,itilepos,jtilepos,layer,
-     &                    fcref, fcpert
-                     print *, 'ph-grd 3 ',
+     &                    fcref, fcpertplus, fcpertminus
+                     print '(a,4I5,3(1x,E15.9))', 'ph-grd 3 ',
      &                    ichknum,ichkmem(ichknum),
      &                    icompmem(ichknum),itestmem(ichknum),
      &                    adxxmemo, gfd, ratio
 cph)
                   else
 c
+                     print *, 'ph-grd 3 -------------------------------'
+                     print *, 'ph-grd 3 : ierr = ', ierr, 
+     &                                 ', icomp = ', icomp
                   endif
                else
                   ierr_grdchk = -1

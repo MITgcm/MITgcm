@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.2 2001/07/13 14:50:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_loc.F,v 1.3 2002/05/30 22:47:26 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -126,7 +126,7 @@ c--   Start to loop over records.
                 do i = iwrk, snx
                  if (ierr .ne. 0) then
                   if ( ncvargrd(grdchkvarindex) .eq. 'c' ) then
-                     if ( _hFacC(i,j,k,bi,bj) .ne. 0.) then
+                     if ( maskC(i,j,k,bi,bj) .gt. 0.) then
                         icomptest = icomptest + 1
                      endif
                   else if ( ncvargrd(grdchkvarindex) .eq. 's' ) then

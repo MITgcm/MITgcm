@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.2 2001/07/13 14:50:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.3 2002/05/30 22:47:26 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -41,7 +41,7 @@ c     == routine arguments ==
 c     == local variables ==
 
       _RL fcref
-      _RL fcpert
+      _RL fcpertplus, fcpertminus
       _RL xxmemo_ref
       _RL xxmemo_pert
       _RL gfd
@@ -94,9 +94,14 @@ c--   Print header.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
-      write(msgbuf,'(a,a)')
-     &'     I         X(I)           FC          FC1-FC2/EPS ',
-     &'     GRAD(FC)   DIFFERENCE/RATIO '
+      write(msgbuf,'(a,6(1x,a15))') 
+     & 'grdchk output:  ', 'I', 'ITILEPOS', 'JTILEPOS', 
+     & 'LAYER', 'X(I)', 'X(I)+/-EPS'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,6(1x,a15))') 
+     & 'grdchk output:  ', 'FC', 'FC1', 'FC2', 'FC1-FC2/(2*EPS)',
+     & 'GRAD(FC)', '1-FDGRD/ADGRD'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 
@@ -111,8 +116,9 @@ c--   Individual checks.
         xxmemo_ref   = xxmemref  (i)
         xxmemo_pert  = xxmempert (i)
         adxxmemo     = adxxmem   (i)
-        fcref    = fcrmem  (i)
-        fcpert   = fcpmem  (i)
+        fcref        = fcrmem    (i)
+        fcpertplus   = fcppmem   (i)
+        fcpertminus  = fcppmem   (i)
         gfd      = gfdmem  (i)
         ratio    = ratiomem(i)
         itile    = bimem   (i)
@@ -123,15 +129,15 @@ c--   Individual checks.
         icomp    = icompmem(i)
         ierr     = ierrmem (i)
 
-        write(msgbuf,'(A,4(I8),2(1x,D15.9))')
+        write(msgbuf,'(A,4(I16),2(1x,D15.9))')
      &       'grdchk output:  ', i, itilepos, jtilepos, layer, 
      &       xxmemo_ref, xxmemo_pert
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
         if ( ierr .eq. 0 ) then
-          write(msgbuf,'(A,5(1x,D15.9))')
+          write(msgbuf,'(A,6(1x,D15.9))')
      &      'grdchk output:  ',
-     &          fcref, fcpert, gfd, adxxmemo, ratio
+     &          fcref, fcpertplus, fcpertminus, gfd, adxxmemo, ratio
           call print_message( msgbuf, standardmessageunit,
      &                        SQUEEZE_RIGHT , mythid)
         else
