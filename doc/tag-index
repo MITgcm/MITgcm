@@ -1,13 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.163 2003/06/12 21:25:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.164 2003/06/20 15:11:40 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint50h_post
 o new package "land": provide surface BC for AIM.
 o pkg/ptracers: apply exchange to all tracers after reading a pickup.
 o AIM: use true log-P extrapolation for near surface temp (= as in 
     F.Molteni paper) ; update aim.5l_cs output.
 o New variable in PARM03 for more flexible pickups
+o somewhat cleaned package initialisation sequence for
+  ctrl/ cost/ ecco/ in packages_... routines
 
 checkpoint50g_post
 o merged with release1_p17 (pkg/seaice and verification/lab_sea)
