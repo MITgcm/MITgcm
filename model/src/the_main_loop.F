@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.2 2001/02/04 14:38:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.3 2001/02/08 18:13:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-      SUBROUTINE THE_MAIN_LOOP(myThid)
+      SUBROUTINE THE_MAIN_LOOP(myCurrentTime, myCurrentIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE THE_MAIN_LOOP                                 |
 C     | o This contains the principal time loop                  |
@@ -42,8 +42,11 @@ C     == Global variables ===
 #endif
 
 C     == Routine arguments ==
+C     myCurrentTime - Time counter for this thread
+C     myCurrentIter - Iteration counter for this thread
 C     myThid - Thread number for this instance of the routine.
-      INTEGER myThid  
+      INTEGER myCurrentIter, myThid
+      _RL     myCurrentTime
 
 C     == Local variables ==
 C     Note: Under the multi-threaded model myCurrentIter and 
@@ -52,16 +55,9 @@ C           arguments. Although this is fiddly it saves the need to
 C           impose additional synchronisation points when they are 
 C           updated.
 C     ILOOP         - Loop counter
-C     myCurrentIter - Iteration counter for this thread
-C     myCurrentTime - Time counter for this thread
       INTEGER ILOOP
-      INTEGER  myCurrentIter
-      _RL     myCurrentTime
 
       CALL TIMER_START('SPIN-UP            [THE_MAIN_LOOP]',myThid)
-
-      myCurrentTime = startTime
-      myCurrentIter = nIter0
 
 C--   Set initial conditions (variable arrays)
       CALL TIMER_START('INITIALISE_VARIA   [THE_MAIN_LOOP]',myThid)

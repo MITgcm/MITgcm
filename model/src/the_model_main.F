@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.33 2001/02/04 14:38:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.34 2001/02/08 18:13:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -113,6 +113,10 @@ C           myCurrentTime are local variables passed around as routine
 C           arguments. Although this is fiddly it saves the need to 
 C           impose additional synchronisation points when they are 
 C           updated.
+C     myCurrentTime - Time counter for this thread
+C     myCurrentIter - Iteration counter for this thread
+      INTEGER myCurrentIter
+      _RL     myCurrentTime
 
 C--   This timer encompasses the whole code
       CALL TIMER_START('ALL                [THE_MODEL_MAIN]',myThid)
@@ -124,9 +128,12 @@ C--   Set model configuration (fixed arrays)
       CALL TIMER_STOP ('INITIALISE_FIXED   [THE_MODEL_MAIN]',myThid)
 
 
+      myCurrentTime = startTime
+      myCurrentIter = nIter0
+
 C--   Call time stepping loop of full model
       CALL TIMER_START('THE_MAIN_LOOP      [THE_MODEL_MAIN]',myThid)
-      CALL THE_MAIN_LOOP( myThid )
+      CALL THE_MAIN_LOOP(myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('THE_MAIN_LOOP      [THE_MODEL_MAIN]',myThid)
 
 
