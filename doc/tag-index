@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.298 2004/05/19 20:38:53 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.299 2004/05/21 21:13:34 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o new version of coupler for AIM+thSIce and Ocean models
+ - new fields (SSS,h_MixLayer ...) are exchanged through the coupler
+ - land: change Evaporation of snow
+ - aim with thSIce: fix bug in snow-precip.
 o changes to calc_gw.F
  - bug fix for w^2 term near the bottom boundary
  - (hopefully) improve the lateral slip boundary condtions for use with
