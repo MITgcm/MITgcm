@@ -1,0 +1,142 @@
+.TH MPACK 1
+.SH NAME
+mpack \- pack a file in MIME format
+.SH SYNOPSIS
+.B mpack
+[
+.B \-s
+.I subject
+]
+[
+.B \-d
+.I descriptionfile
+]
+[
+.B \-m
+.I maxsize
+]
+[
+.B \-c
+.I content-type
+]
+.I file
+.I "address \&..."
+.br
+.B mpack
+[
+.B \-s
+.I subject
+]
+[
+.B \-d
+.I descriptionfile
+]
+[
+.B \-m
+.I maxsize
+]
+[
+.B \-c
+.I content-type
+]
+.B \-o
+.I outputfile
+.I file
+.br
+.B mpack
+[
+.B \-s
+.I subject
+]
+[
+.B \-d
+.I descriptionfile
+]
+[
+.B \-m
+.I maxsize
+]
+[
+.B \-c
+.I content-type
+]
+.B \-n
+.I newsgroups
+.I file
+.SH DESCRIPTION
+The 
+.I mpack
+program encodes the 
+the named file in one or more MIME messages.
+The resulting messages are mailed to one or more recipients,
+written to a named file or set of files, or posted to a set of
+newsgroups.
+.PP
+.SH OPTIONS
+.TP
+.BI \-s " subject"
+Set the 
+.B Subject
+header field to
+.IR Subject .
+By default,
+.B mpack
+will prompt for the contents of the subject header.
+.TP
+.BI \-d " descriptionfile
+Include the contents of the file
+.I descriptionfile
+in an introductory section at the beginning of the first
+generated message.
+.TP
+.BI \-m " maxsize"
+Split the message (if necessary) into partial messages, each not
+exceeding
+.I maxsize
+characters.  The default limit is the value of the 
+.B SPLITSIZE
+environment variable, or no limit if the environment variable
+does not exist.
+Specifying a 
+.I maxsize
+of 0 means there is no limit to the size of the generated message.
+.TP
+.BI \-c " content-type"
+Label the included file as being of MIME type
+.IR content-type ,
+which must be a subtype of 
+.BR application ,
+.BR audio ,
+.BR image ,
+or 
+.BR video .
+If this switch is not given,
+.B mpack
+examines the file to determine its type.
+.TP
+.BI \-o " outputfile"
+Write the generated message to the file
+.IR outputfile .
+If the message has to be split, the partial messages will instead be
+written to the files
+.IR outputfile .01,
+.IR outputfile .02,
+etc.
+.TP
+.BI \-n " newsgroups"
+Post the generated message(s) to the comma-separated netnews
+.IR newsgroups .
+.TP
+.I file
+Encode the named
+.IR file .
+.TP
+.I "address \&..."
+Mail the generated messages to the specified addresses.
+.SH ENVIRONMENT
+.TP
+.B TMPDIR
+Directory to store temporary files.  Default is /usr/tmp.
+.TP
+.B SPLITSIZE
+Default value of the -m switch.

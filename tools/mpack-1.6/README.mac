@@ -1,0 +1,140 @@
+                    mpack/munpack version 1.5 for mac
+
+Mpack and munpack are utilities for encoding and decoding
+(respectively) binary files in MIME (Multipurpose Internet Mail
+Extensions) format mail messages.  For compatibility with older forms
+of transferring binary files, the munpack program can also decode
+messages in split-uuencoded format.  The Macintosh version can also
+decode messages in split-BinHex format.
+
+The canonical FTP site for this software is ftp.andrew.cmu.edu:pub/mpack/
+Binaries are no longer provided. The pc, os2, amiga and archimedes ports
+have been removed. The mac version probably doesn't compile anymore, but
+is still included (MacOS X users can use the unix version...)
+
+This MIME implementation is intended to be as simple and portable as
+possible.  For a slightly more sophisticated MIME implementation, see
+the program MetaMail, available via anonymous FTP to
+thumper.bellcore.com, in directory pub/nsb
+
+
+Decoding MIME messages:
+
+To decode a MIME message, first save it to a text file.  If possible,
+save it with all headers included.  Mpack can decode some MIME files
+when the headers are missing or incomplete, other files it cannot
+decode without having the information in the headers.  In general,
+messages which have a statement at the beginning that they are in MIME
+format can be decoded without the headers.  Messages which have been
+split into multiple parts generally require all headers in order to be
+reassembled and decoded.
+
+Some LAN-based mail systems and some mail providers (including America
+Online, as of the writing of this document) place the mail headers at
+the bottom of the message, instead of at the top of the message.  If
+you are having problems decoding a MIME message on such a system, you
+need to convert the mail back into the standard format by removing the
+system's nonstandard headers and moving the standard Internet headers
+to the top of the message (separated from the message body with a
+blank line).
+
+There must be exactly one message per file.  Mpack cannot deal with
+multiple messages in a single file, to decode things correctly it must
+know when one message ends and the next one begins.
+
+The Macintosh version of mpack/munpack is a single standalone
+application.  A text file may be decoded either by drag & drop, or by
+choosing the "Decode Files..." item from the application's File menu.
+Non-text files may be encoded either by drag & drop, or by choosing
+the "Encode Files..." item from the application's File menu.
+
+The Macintosh version of mpack/munpack supports the new MacMIME
+standard (RFC 1740).  This allows cross-platform transport of
+Macintosh files to any MIME-capable machine, and also preserves
+Macintosh specific file attributes between two Macintoshes.  Mpack
+will use MacMIME for any unrecognized Macintosh file, and regular MIME
+for standard MIME types.
+
+For more details and descriptions of the preferences, see the "Help
+Using Mpack..." menu item in mpack which can be found under the help
+menu in systems 7 and above, and under the apple menu in older
+systems.
+
+Reporting bugs:
+
+Bugs and comments should be reported to mpack-bugs@andrew.cmu.edu.
+When reporting bugs or other problems, please include the following
+information:
+
+  * The version number of Mpack
+  * The platform (Unix, PC, OS/2, Mac, Amiga, Archimedes)
+  * The EXACT output of any unsuccessful attempts.
+  * If having a problem decoding, the first couple of lines
+    of the input file.
+
+
+Compilation:
+
+Mpack was compiled with THINK C 6.0 with the 4-byte int option turned
+on (and the ANSI-small library compiled with the 4-byte int option)
+and prototype enforcement turned off.  Included with this distribution
+should be the files "macproj.hqx" which is a BinHex4 version of the
+THINK C 6.0 project file, and "macrsrc.hqx" which is a BinHex4 version
+of the resources file.
+
+Mpack checks for the existence of "Internet Config", and if it is
+available, mpack uses it to translate MIME types to and from Macintosh
+type/creator codes.  Included is the file "macICglue.hqx" which is a
+BinHex4 version of Internet Config's MPW object file library.  This
+needs to be linked with the application.
+
+Using mpack:
+
+See the "Help Using Mpack..." menu item in the application.
+
+
+Acknowledgements:
+
+Written by John G. Myers, jgm+@cmu.edu
+
+The mac version was written by Christopher J. Newman, chrisn+@cmu.edu
+
+Send all bug reports to mpack-bugs@andrew.cmu.edu 
+
+Thanks to Nathaniel Borenstein for testing early versions of mpack and
+for making many helpful suggestions.
+
+
+PGP signature:
+
+The mpack 1.6 distribution is not pgp signed.
+
+Legalese:
+
+(C) Copyright 1993,1994 by Carnegie Mellon University
+All Rights Reserved.
+
+Permission to use, copy, modify, distribute, and sell this software
+and its documentation for any purpose is hereby granted without fee,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the name of Carnegie Mellon
+University not be used in advertising or publicity pertaining to
+distribution of the software without specific, written prior
+permission.  Carnegie Mellon University makes no representations about
+the suitability of this software for any purpose.  It is provided "as
+is" without express or implied warranty.
+
+CARNEGIE MELLON UNIVERSITY DISCLAIMS ALL WARRANTIES WITH REGARD TO
+THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS, IN NO EVENT SHALL CARNEGIE MELLON UNIVERSITY BE LIABLE
+FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
+AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
+OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+SOFTWARE.
+
+Portions of this software are derived from code written by Bell
+Communications Research, Inc. (Bellcore) and by RSA Data Security,
+Inc. and bear similar copyrights and disclaimers of warranty.
+

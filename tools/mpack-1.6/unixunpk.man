@@ -1,0 +1,114 @@
+.TH MUNPACK 1
+.SH NAME
+munpack \- unpack messages in MIME or split-uuencode format
+.SH SYNOPSIS
+.B munpack
+[
+.B \-f
+]
+[
+.B \-q
+]
+[
+.B \-t
+]
+[
+.B \-C
+.I directory
+]
+[
+.I "filename \&..."
+]
+.SH DESCRIPTION
+The 
+.I munpack
+program reads each RFC-822 message
+.I filename
+and writes all non-text MIME parts or split-uuencoded files as files.
+If no filename argument is given, 
+.B munpack
+reads from standard input.
+.LP
+If the message suggests a file name to use for the imbedded part, that
+name is cleaned of potential problem characters and used for the
+output file.  If the suggested filename includes subdirectories, they
+will be created as necessary.
+If the message does not suggest a file name, the names
+"part1", "part2", etc are used in sequence.
+.LP
+If the imbedded part was preceded with textual information, that
+information is also written to a file.  The file is named the same as
+the imbedded part, with any filename extension replaced with ".desc".
+.SH OPTIONS
+.TP
+.B \-f
+Force overwriting of existing files.  If a message suggests a file
+name of an existing file, the file will be overwritten.  Without this
+flag,
+.B
+munpack
+appends ".1", ".2", etc to find a nonexistent file.
+.TP
+.B \-q
+Be quiet.  Supresses messages about saving partial messages and about
+messages with no interesting information.
+.TP
+.B \-t
+Also write the text MIME parts of multipart messages as files.  By
+default, text parts that do not have a filename parameter do not get
+unpacked.  This option effectively disables the ".desc" file feature
+for MIME messages.
+.TP
+.BI \-C " directory"
+Change the current directory to 
+.I directory
+before reading any files.  This is useful when invoking 
+.B munpack
+from a mail or news reader.
+.SH "DECODING MIME"
+.LP
+To decode a MIME message, first save it to a text file.  If possible,
+save it with all headers included.  
+.I Munpack
+can decode some MIME files
+when the headers are missing or incomplete, other files it cannot
+decode without having the information in the headers.  In general,
+messages which have a statement at the beginning that they are in MIME
+format can be decoded without the headers.  Messages which have been
+split into multiple parts generally require all headers in order to be
+reassembled and decoded.
+.LP
+Some LAN-based mail systems and some mail providers (including America
+Online, as of the writing of this document) place the mail headers at
+the bottom of the message, instead of at the top of the message.  If
+you are having problems decoding a MIME message on such a system, you
+need to convert the mail back into the standard format by removing the
+system's nonstandard headers and moving the standard Internet headers
+at the top of the message (separated from the message body with a
+blank line).
+.LP
+There must be exactly one message per file.  
+.I Munpack
+cannot deal with
+multiple messages in a single file, to decode things correctly it must
+know when one message ends and the next one begins.
+.LP
+To decode a message, run the command:
+.IP
+.IB munpack " file"
+.LP
+where "file" is the name of the file containing the message.  More than
+one filename may be specified,
+.I munpack
+will try to decode the message in
+each file.  For more information on ways to run
+.IR munpack ,
+see the section "OPTIONS" above.
+.SH ENVIRONMENT
+.TP
+.B TMPDIR
+Directory to store temporary files.  Default is /usr/tmp.
+.SH FILES
+.TP
+.B $TMPDIR/m-prts-$USER/
+Directory used to store partial messages awaiting reassembly.

@@ -1,0 +1,10 @@
+AC_INIT(common.h)
+AM_INIT_AUTOMAKE(mpack,1.6)
+AC_PROG_CC
+
+CMU_SOCKETS
+
+AC_CHECK_FUNCS([strchr])
+AC_REPLACE_FUNCS([strcasecmp getopt])
+
+AC_OUTPUT([Makefile])

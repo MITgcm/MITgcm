@@ -1,0 +1,13 @@
+1.6 -- Jul 21 2003
+Use automake and a little bit of autoconf
+
+convert K&R declarations/definitions to ANSI
+
+Fixed buffer overflow in getParam and getDispositionFilename (debian patch)
+Fixed possible crash in ParseContent (debian patch)
+
+fix typo in getDispositionFilename (from Steve Friedl)
+
+use system strcasecmp and getopt where possible.
+
+use O_EXCL where available when creating files.
