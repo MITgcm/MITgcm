@@ -26,6 +26,7 @@
  hFacMindr=50.,
 # set precision of data files
  readBinaryPrec=32,
+ globalfiles=.TRUE.
  &
 
 # Elliptic solver parameters
