@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.162 2003/06/05 16:16:00 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.163 2003/06/12 21:25:24 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o new package "land": provide surface BC for AIM.
+o pkg/ptracers: apply exchange to all tracers after reading a pickup.
 o AIM: use true log-P extrapolation for near surface temp (= as in 
     F.Molteni paper) ; update aim.5l_cs output.
 o New variable in PARM03 for more flexible pickups
