@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_OPTIONS.h,v 1.1 2000/06/21 19:45:46 adcroft Exp $
-
 C     /==========================================================\
 C     | KPP_OPTIONS.h                                            |
 C     | o CPP options file for KPP package.                      |
@@ -11,10 +9,6 @@ C     \==========================================================/
 #include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_KPP
-
-C o Call to S/R CONVECT not needed when using KPP scheme
-C   Also make sure that ivdc_kappa = 0.0
-#undef INCLUDE_CONVECT_CALL
 
 C o Get rid of vertical resolution dependence of dVsq term by
 C   estimating a surface velocity that is independent of first
@@ -82,7 +76,7 @@ C   for saving storage space
 #undef  INCLUDE_DIAGNOSTICS_KPPDIFFKZSTAVE
 #endif
 
-C o Include short wave radiation terms in T forcing
-#define SHORTWAVE_HEATING
+C o Include/exclude KPP non/local transport terms
+#define KPP_GHAT
 
 #endif /* ALLOW_KPP */

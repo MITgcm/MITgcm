@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.2 2000/06/29 17:39:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.3 2000/09/12 18:13:48 heimbach Exp $
 
 C     /==========================================================\
 C     | KPP_PARAMS.h                                             |
@@ -26,6 +26,10 @@ C     Nrm1, Nrp1, Nrp2 = number of vertical levels
 
 #ifdef ALLOW_KPP
 
+C     Package on/off information
+      LOGICAL kppPackageIsOn
+      COMMON /KPP_PKG/ kppPackageIsOn
+
 C Time invariant parameters initialized by subroutine kmixinit
 C     nzmax (nx,ny)   - Maximum number of wet levels in each column
 C     pMask           - Mask relating to Pressure/Tracer point grid.
@@ -36,6 +40,7 @@ C     hwide (0:Nr+1)  - layer thicknesses          (>=0)                (m)
 C     kpp_freq        - Re-computation frequency for KPP parameters     (s)
 C     kpp_dumpFreq    - KPP dump frequency.                             (s)
 C     kpp_taveFreq    - KPP time-averaging frequency.                   (s)
+
 
       INTEGER nzmax  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,   nSx,nSy)
       _RS pMask      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.1 2000/06/21 19:45:47 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.2 2000/09/12 18:14:32 heimbach Exp $
 
 #include "KPP_OPTIONS.h"
 
@@ -83,7 +83,8 @@ c     KPPfrac     - Fraction of short-wave flux penetrating mixing layer
 
 c--   KPP_CALC computes vertical viscosity and diffusivity for region
 c     (-2:sNx+3,-2:sNy+3) as required by CALC_DIFFUSIVITY and requires
-c     values of uVel, vVel, fu, fv in the region (-2:sNx+4,-2:sNy+4).
+c     values of uVel, vVel, SurfaceTendencyU, SurfaceTendencyV in the
+c     region (-2:sNx+4,-2:sNy+4).
 c     Hence overlap region needs to be set OLx=4, OLy=4.
 c     When option FRUGAL_KPP is used, computation in overlap regions
 c     is replaced with exchange calls hence reducing overlap requirements
@@ -101,6 +102,8 @@ c     to OLx=1, OLy=1.
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"
+      INTEGER    isbyte
+      PARAMETER( isbyte = 4 )
 #else /* ALLOW_AUTODIFF_TAMC */
       integer ikey
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -192,20 +195,17 @@ c     mixing process switches
       logical    lri
       parameter( lri = .true. )
 
+      _RS        m1
+      parameter( m1=-1.0)
       _RS        p0    , p5    , p25     , p125      , p0625
       parameter( p0=0.0, p5=0.5, p25=0.25, p125=0.125, p0625=0.0625 )
       
-      _RS     tempVar
+      _RL     tempVar
       integer i, j, k, kp1, im1, ip1, jm1, jp1
 
 #ifdef KPP_ESTIMATE_UREF
       _RS     dBdz1, dBdz2, ustarX, ustarY
 #endif
-
-      IF (use_KPPmixing) THEN
-
-CADJ STORE fu     (:,:  ,bi,bj)  = uvtape, key = ikey, byte = isbyte
-CADJ STORE fv     (:,:  ,bi,bj)  = uvtape, key = ikey, byte = isbyte
 
 c     Check to see if new vertical mixing coefficient should be computed now?
       IF ( DIFFERENT_MULTIPLE(kpp_freq,myTime,myTime-deltaTClock) .OR.
@@ -343,10 +343,11 @@ c     so that the subroutine "bldepth" works correctly
 c------------------------------------------------------------------------
 c     friction velocity, turbulent and radiative surface buoyancy forcing
 c     -------------------------------------------------------------------
-c     taux / rho = fu * delZ(1)                                   (N/m^2)
-c     tauy / rho = fv * delZ(1)                                   (N/m^2)
+c     taux / rho = SurfaceTendencyU * delZ(1)                     (N/m^2)
+c     tauy / rho = SurfaceTendencyV * delZ(1)                     (N/m^2)
 c     ustar = sqrt( sqrt( taux^2 + tauy^2 ) / rho )                 (m/s)
-c     bo    = - g * (alpha*Qnet + beta*EmPmR) * delZ(1) / rho   (m^2/s^3)
+c     bo    = - g * ( alpha*SurfaceTendencyT +
+c                     beta *SurfaceTendencyS ) * delZ(1) / rho  (m^2/s^3)
 c     bosol = - g * alpha * Qsw * delZ(1) / rho                 (m^2/s^3)
 c------------------------------------------------------------------------
 
@@ -356,23 +357,28 @@ c------------------------------------------------------------------------
          DO i = 1, sNx
 #else
       DO j = jmin, jmax
-         jp1 = j + 1
-         DO i = imin, imax
+       jp1 = j + 1
+       DO i = imin, imax
 #endif
-            ip1 = i+1
-            ustar(i,j) = SQRT( SQRT(
-     &           (fu(i,j,bi,bj) + fu(ip1,j,bi,bj)) * p5 * delZ(1) *
-     &           (fu(i,j,bi,bj) + fu(ip1,j,bi,bj)) * p5 * delZ(1) +
-     &           (fv(i,j,bi,bj) + fv(i,jp1,bi,bj)) * p5 * delZ(1) *
-     &           (fv(i,j,bi,bj) + fv(i,jp1,bi,bj)) * p5 * delZ(1) ))
-            bo(I,J) = - gravity *
-     &           ( vddiff(I,J,1,1) * Qnet(i,j,bi,bj) +
-     &             vddiff(I,J,1,2) * EmPmR(i,j,bi,bj)
-     &           ) *
-     &           delZ(1) / work2(I,J)
-            bosol(I,J) = - gravity * vddiff(I,J,1,1) * Qsw(i,j,bi,bj) *
-     &           delZ(1) / work2(I,J)
-         END DO
+        ip1 = i+1
+        tempVar =
+     &   (SurfaceTendencyU(i,j,bi,bj) + SurfaceTendencyU(ip1,j,bi,bj)) *
+     &   (SurfaceTendencyU(i,j,bi,bj) + SurfaceTendencyU(ip1,j,bi,bj)) +
+     &   (SurfaceTendencyV(i,j,bi,bj) + SurfaceTendencyV(i,jp1,bi,bj)) *
+     &   (SurfaceTendencyV(i,j,bi,bj) + SurfaceTendencyV(i,jp1,bi,bj))
+        if ( tempVar .lt. (epsln*epsln) ) then
+           ustar(i,j) = SQRT( epsln * p5 * delZ(1) )
+        else
+           ustar(i,j) = SQRT( SQRT( tempVar ) * p5 * delZ(1) )
+        endif
+        bo(I,J) = - gravity *
+     &       ( vddiff(I,J,1,1) * SurfaceTendencyT(i,j,bi,bj) +
+     &         vddiff(I,J,1,2) * SurfaceTendencyS(i,j,bi,bj)
+     &       ) *
+     &       delZ(1) / work2(I,J)
+        bosol(I,J) = - gravity * vddiff(I,J,1,1) * Qsw(i,j,bi,bj) *
+     &       delZ(1) / work2(I,J)
+       END DO
       END DO
 
 #ifndef FRUGAL_KPP
@@ -459,7 +465,7 @@ c     Linearly interpolate to find hMix.
             ENDIF
 
 c     Compute roughness length scale z0 subject to 0 < z0
-               tempVar = SQRT ( p5 * (
+               tempVar = p5 * (
      &              (uVel(i,  j,  1,bi,bj)-uVel(i,  j,  2,bi,bj)) *
      &              (uVel(i,  j,  1,bi,bj)-uVel(i,  j,  2,bi,bj)) +
      &              (uVel(ip1,j,  1,bi,bj)-uVel(ip1,j,  2,bi,bj)) *
@@ -467,7 +473,12 @@ c     Compute roughness length scale z0 subject to 0 < z0
      &              (vVel(i,  j,  1,bi,bj)-vVel(i,  j,  2,bi,bj)) *
      &              (vVel(i,  j,  1,bi,bj)-vVel(i,  j,  2,bi,bj)) + 
      &              (vVel(i,  jp1,1,bi,bj)-vVel(i,  jp1,2,bi,bj)) *
-     &              (vVel(i,  jp1,1,bi,bj)-vVel(i,  jp1,2,bi,bj)) ) )
+     &              (vVel(i,  jp1,1,bi,bj)-vVel(i,  jp1,2,bi,bj)) )
+               if ( tempVar .lt. (epsln*epsln) ) then
+                  tempVar = epsln
+               else
+                  tempVar = SQRT ( tempVar )
+               endif
                z0(i,j) = rF(2) *
      &                   ( rF(3) * LOG ( rF(3) / rF(2) ) /
      &                     ( rF(3) - rF(2) ) -
@@ -485,10 +496,16 @@ c     Estimate reference velocity uRef and vRef.
                vRef(i,j) = p5 *
      &                     ( vVel(i,j,1,bi,bj) + vVel(i,jp1,1,bi,bj) )
                IF ( zRef(i,j) .LT. drF(1) ) THEN
-                  ustarX = ( fu(i,j,bi,bj) + fu(ip1,j,bi,bj) ) * p5
-                  ustarY = ( fv(i,j,bi,bj) + fu(i,jp1,bi,bj) ) * p5
-                  tempVar = MAX ( phepsi,
-     &                 SQRT ( ustarX * ustarX + ustarY * ustarY ) )
+                  ustarX = ( SurfaceTendencyU(i,  j,bi,bj) + 
+     &                       SurfaceTendencyU(ip1,j,bi,bj) ) * p5
+                  ustarY = ( SurfaceTendencyV(i,j,  bi,bj) +
+     &                       SurfaceTendencyU(i,jp1,bi,bj) ) * p5
+                  tempVar = ustarX * ustarX + ustarY * ustarY
+                  if ( tempVar .lt. (epsln*epsln) ) then
+                     tempVar = epsln
+                  else
+                     tempVar = SQRT ( tempVar )
+                  endif
                   tempVar = ustar(i,j) *
      &                 ( LOG ( zRef(i,j) / rF(2) ) +
      &                 z0(i,j) / zRef(i,j) - z0(i,j) / rF(2) ) /
@@ -761,7 +778,9 @@ c-----------------------------------------------------------------------
 #endif
        ENDIF
 
-CADJ STORE vddiff, ghat  = uvtape, key = ikey
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE vddiff, ghat  = comlev1_kpp, key = ikey
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 c-----------------------------------------------------------------------
 c     zero out land values,
@@ -847,21 +866,14 @@ C     the bottom of the mixing layer.
          ENDDO
       ENDDO
       CALL SWFRAC(
-     I     (sNx+2*OLx)*(sNy+2*OLy), -1., worka,
+     I     (sNx+2*OLx)*(sNy+2*OLy), m1, worka,
      O     workb )
       DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
             KPPfrac(i,j,bi,bj) = workb(i,j)
          ENDDO
       ENDDO
-         
-CADJ STORE KPPhbl    (:,:  ,bi,bj)  = uvtape, key = ikey, byte = isbyte
-CADJ STORE KPPghat   (:,:,:,bi,bj)  = uvtape, key = ikey, byte = isbyte
-CADJ STORE KPPviscAz (:,:,:,bi,bj)  = uvtape, key = ikey, byte = isbyte
-CADJ STORE KPPdiffKzT(:,:,:,bi,bj)  = uvtape, key = ikey, byte = isbyte
-CADJ STORE KPPdiffKzS(:,:,:,bi,bj)  = uvtape, key = ikey, byte = isbyte
 
-      ENDIF
       ENDIF
 
 #endif ALLOW_KPP

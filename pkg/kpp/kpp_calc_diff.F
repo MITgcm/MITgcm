@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_calc_diff.F,v 1.2 2000/06/29 17:39:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_calc_diff.F,v 1.3 2000/09/12 18:14:32 heimbach Exp $
 
 #include "KPP_OPTIONS.h"
 
@@ -69,7 +69,6 @@ C     I, J, K - Loop counters
      &         0.5*(KPPviscAz(i,j,k,bi,bj)+KPPviscAz(i,j-1,k,bi,bj)) )
        ENDDO
       ENDDO
-
 
 #endif /* ALLOW_KPP */
 

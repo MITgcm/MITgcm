@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.1 2000/06/21 19:45:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.2 2000/09/12 18:14:32 heimbach Exp $
 
 #include "KPP_OPTIONS.h"
 
@@ -152,7 +152,7 @@ c-----------------------------------------------------------------------
      O     , hbl, bfsfc, stable, casea, kbl, Rib, sigma
      &     )
 
-CADJ STORE hbl,bfsfc,stable,casea,kbl = kpptape, key = ikey
+CADJ STORE hbl,bfsfc,stable,casea,kbl = comlev1_kpp, key = ikey
 
 c-----------------------------------------------------------------------
 c compute boundary layer diffusivities
@@ -163,7 +163,7 @@ c-----------------------------------------------------------------------
      O     , dkm1, blmc, ghat, sigma
      &     )
 
-CADJ STORE dkm1,blmc,ghat = kpptape, key = ikey
+CADJ STORE dkm1,blmc,ghat = comlev1_kpp, key = ikey
 
 c-----------------------------------------------------------------------
 c enhance diffusivity at interface kbl - 1
@@ -281,10 +281,11 @@ c zwork     : depth work array
       _RS wm(imt), ws(imt)
       _RS zwork(imt)
 
-      _RS bvsq, vtsq, hekman, hmonob, hlimit, p5
+      _RS bvsq, vtsq, hekman, hmonob, hlimit
       integer i, kl
 
-      parameter (p5 = 0.5)
+      _RS        p5    , eins    , m1
+      parameter (p5=0.5, eins=1.0, m1=-1.0 )
 
 crg intermediate result in RL to avoid overflow in adjoint
        _RL        dpshear2
@@ -388,7 +389,7 @@ ctl end-replace
          end do
       end do
 
-CADJ store kbl = kpptape
+CADJ store kbl = comlev1_kpp
 CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
       do i = 1, imt
@@ -408,7 +409,7 @@ c     linearly interpolate to find hbl where Rib = Ricr
          endif
       end do
 
-CADJ store hbl = kpptape
+CADJ store hbl = comlev1_kpp
 CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c-----------------------------------------------------------------------
@@ -416,8 +417,11 @@ c     find stability and buoyancy forcing for boundary layer
 c-----------------------------------------------------------------------
 
       call SWFRAC(
-     I     imt, -1.0, hbl,
+     I     imt, m1, hbl,
      O     bfsfc)
+
+CADJ store bfsfc = comlev1_kpp
+CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
       do i = 1, imt
          bfsfc(i)  = bo(i) + bosol(i) * (1. - bfsfc(i))
@@ -425,7 +429,7 @@ c-----------------------------------------------------------------------
 
 #ifdef KPP_TEST_DENOM
 ctl add
-	bfsfc(i) = sign(1.0,bfsfc(i))*max(phepsi,abs(bfsfc(i)))
+	bfsfc(i) = sign(eins,bfsfc(i))*max(phepsi,abs(bfsfc(i)))
 ctl end-add
 #else
 c--      ensures bfsfc is never 0
@@ -458,7 +462,7 @@ ctl end-replace
          kbl(i) = kmtj(i)
       end do
 
-CADJ store hbl = kpptape
+CADJ store hbl = comlev1_kpp
 CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
 
 c-----------------------------------------------------------------------
@@ -478,15 +482,18 @@ c      find stability and buoyancy forcing for final hbl values
 c-----------------------------------------------------------------------
 
       call SWFRAC(
-     I     imt, -1.0, hbl,
+     I     imt, m1, hbl,
      O     bfsfc)
  
+CADJ store bfsfc = comlev1_kpp
+CADJ &   , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy) /)
+
       do i = 1, imt
          bfsfc(i) = bo(i) + bosol(i) * (1. - bfsfc(i))
          stable(i) = p5 + sign( p5, bfsfc(i) )
 #ifdef KPP_TEST_DENOM
 ctl add
-	bfsfc(i) = sign(1.0,bfsfc(i))*max(phepsi,abs(bfsfc(i)))
+	bfsfc(i) = sign(eins,bfsfc(i))*max(phepsi,abs(bfsfc(i)))
 ctl end-add
 #else
 c--      ensures bfsfc is never 0
@@ -685,11 +692,15 @@ c-----------------------------------------------------------------------
 c     vertically smooth Ri
  
       do mr = 1, num_v_smooth_Ri
+
+CADJ store diffus(:,:,1) = comlev1_kpp_sm
+CADJ &  , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2 /)
+
          call z121 (
      U     diffus(1,0,1))
       end do
 
-CADJ store diffus = kpptape
+CADJ store diffus = comlev1_kpp
 CADJ &  , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2,3 /)
 
 c-----------------------------------------------------------------------
@@ -718,7 +729,7 @@ c    mixing due to internal waves, and shear and static instability
  
             diffus(i,ki,1) = viscAr + fcon * difmcon + fRi * difm0
             diffus(i,ki,2) = diffKrS + fcon * difscon + fRi * difs0
-            diffus(i,ki,3) = diffus(i,ki,2)
+            diffus(i,ki,3) = diffKrT + fcon * difscon + fRi * difs0
 
          end do
       end do
@@ -746,9 +757,9 @@ c     Apply 121 smoothing in k to 2-d array V(i,k=1,Nr)
 c     top (0) value is used as a dummy
 c     bottom (Nrp1) value is set to input value from above.
 
-c     Note that its important to exclude from the smoothing any points
+c     Note that it is important to exclude from the smoothing any points
 c     that are outside the range of the K(Ri) scheme, ie.  >0.8, or <0.0.
-c     Otherwise, there is interfence with other physics, especially
+c     Otherwise, there is interference with other physics, especially
 c     penetrative convection.
 
       IMPLICIT NONE
@@ -764,12 +775,21 @@ c v     : 2-D array to be smoothed in Nrp1 direction
 
 c local
       _RS zwork, zflag
-      _RS KRi_range(0:Nrp1)
+      _RS KRi_range(1:Nrp1)
       integer i, k, km1, kp1
 
-      _RS         p25       , p5      , p2
-      parameter ( p25 = 0.25, p5 = 0.5, p2 = 2.0 )
+      _RS         p0      , p25       , p5      , p2
+      parameter ( p0 = 0.0, p25 = 0.25, p5 = 0.5, p2 = 2.0 )
 
+      KRi_range(Nrp1) = p0
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C--   dummy assignment to end declaration part for TAMC
+      i = 0
+
+C--   HPF directive to help TAMC
+CHPF$ INDEPENDENT
+#endif /* ALLOW_AUTODIFF_TAMC */
       do i = 1, imt
 
          v(i,Nrp1) = v(i,Nr)
@@ -786,7 +806,9 @@ c local
          zflag  = p2 + KRi_range(1) * KRi_range(2)
          v(i,1) = v(i,1) / zflag
 
+CADJ INIT z121tape = common, Nr
          do k = 2, Nr
+CADJ STORE v(i,k), zwork = z121tape
             km1 = k - 1
             kp1 = k + 1
             zflag = v(i,k)
@@ -1060,21 +1082,21 @@ c     sigma(imt)                  normalized depth (d / hbl)
 #ifdef ALLOW_KPP
 
 c  local
-c     gat1  (imt,mdiff)          shape function at sigma = 1
-c     dat1  (imt,mdiff)          derivative of shape function at sigma = 1
+c     gat1*(imt)                 shape function at sigma = 1
+c     dat1*(imt)                 derivative of shape function at sigma = 1
 c     ws(imt), wm(imt)           turbulent velocity scales             (m/s)
-      _RS gat1  (imt,mdiff)
-      _RS dat1  (imt,mdiff)
+      _RS gat1m(imt), gat1s(imt), gat1t(imt) 
+      _RS dat1m(imt), dat1s(imt), dat1t(imt)
       _RS ws(imt), wm(imt)
       integer i, kn, ki
       _RS     R, dvdzup, dvdzdn, viscp
       _RS     difsp, diftp, visch, difsh, difth
       _RS     f1, sig, a1, a2, a3, delhat
-      _RS     GM, Gs, Gt, p0
+      _RS     Gm, Gs, Gt
+      _RL     dum
 
-      parameter (p0 = 0.0)
-
-      _RL dum
+      _RS        p0    , eins
+      parameter (p0=0.0, eins=1.0)
 
 c-----------------------------------------------------------------------
 c compute velocity scales at hbl
@@ -1122,34 +1144,34 @@ c-----------------------------------------------------------------------
 ctl replace (Important!!! not phepsi**4 !!!)
          f1 = stable(i) * conc1 * bfsfc(i) / 
      &        max(ustar(i)**4,phepsi)
-         wm(i) = sign(1.0,wm(i))*max(phepsi,abs(wm(i)))
-         gat1(i,1) = visch / hbl(i) / wm(i)
-         dat1(i,1) = -viscp / wm(i) + f1 * visch
+         wm(i) = sign(eins,wm(i))*max(phepsi,abs(wm(i)))
+         gat1m(i) = visch / hbl(i) / wm(i)
+         dat1m(i) = -viscp / wm(i) + f1 * visch
 #else
          f1 = stable(i) * conc1 * bfsfc(i) / (ustar(i)**4+epsln)
-         gat1(i,1) = visch / hbl(i) / (wm(i)+epsln)
-         dat1(i,1) = -viscp / (wm(i)+epsln) + f1 * visch
+         gat1m(i) = visch / hbl(i) / (wm(i)+epsln)
+         dat1m(i) = -viscp / (wm(i)+epsln) + f1 * visch
 #endif
-         dat1(i,1) = min(dat1(i,1),p0)
+         dat1m(i) = min(dat1m(i),p0)
  
 #ifdef KPP_TEST_DENOM
-         ws(i) = sign(1.0,ws(i))*max(phepsi,abs(ws(i)))
-         gat1(i,2) = difsh  / hbl(i) / ws(i)
-         dat1(i,2) = -difsp / ws(i) + f1 * difsh 
+         ws(i) = sign(eins,ws(i))*max(phepsi,abs(ws(i)))
+         gat1s(i) = difsh  / hbl(i) / ws(i)
+         dat1s(i) = -difsp / ws(i) + f1 * difsh 
 #else 
-         gat1(i,2) = difsh / hbl(i) / (ws(i)+epsln)
-         dat1(i,2) = -difsp / (ws(i)+epsln) + f1 * difsh
+         gat1s(i) = difsh / hbl(i) / (ws(i)+epsln)
+         dat1s(i) = -difsp / (ws(i)+epsln) + f1 * difsh
 #endif
-         dat1(i,2) = min(dat1(i,2),p0)
+         dat1s(i) = min(dat1s(i),p0)
  
 #ifdef KPP_TEST_DENOM
-         gat1(i,3) = difth /  hbl(i) / ws(i)
-         dat1(i,3) = -diftp / ws(i) + f1 * difth 
+         gat1t(i) = difth /  hbl(i) / ws(i)
+         dat1t(i) = -diftp / ws(i) + f1 * difth 
 #else
-         gat1(i,3) = difth / hbl(i) / (ws(i)+epsln)
-         dat1(i,3) = -diftp / (ws(i)+epsln) + f1 * difth
+         gat1t(i) = difth / hbl(i) / (ws(i)+epsln)
+         dat1t(i) = -diftp / (ws(i)+epsln) + f1 * difth
 #endif
-         dat1(i,3) = min(dat1(i,3),p0)
+         dat1t(i) = min(dat1t(i),p0)
  
       end do
 
@@ -1177,15 +1199,15 @@ c-----------------------------------------------------------------------
             a2 = 3. - 2. * sig
             a3 = sig - 1.
 
-            GM = a1 + a2 * gat1(i,1) + a3 * dat1(i,1)
-            Gs = a1 + a2 * gat1(i,2) + a3 * dat1(i,2)
-            Gt = a1 + a2 * gat1(i,3) + a3 * dat1(i,3)
+            Gm = a1 + a2 * gat1m(i) + a3 * dat1m(i)
+            Gs = a1 + a2 * gat1s(i) + a3 * dat1s(i)
+            Gt = a1 + a2 * gat1t(i) + a3 * dat1t(i)
 
 c-----------------------------------------------------------------------
 c     compute boundary layer diffusivities at the interfaces
 c-----------------------------------------------------------------------
 
-            blmc(i,ki,1) = hbl(i) * wm(i) * sig * (1. + sig * GM)
+            blmc(i,ki,1) = hbl(i) * wm(i) * sig * (1. + sig * Gm)
             blmc(i,ki,2) = hbl(i) * ws(i) * sig * (1. + sig * Gs)
             blmc(i,ki,3) = hbl(i) * ws(i) * sig * (1. + sig * Gt)
 
@@ -1224,10 +1246,10 @@ c-----------------------------------------------------------------------
          a1 = sig - 2.
          a2 = 3. - 2. * sig
          a3 = sig - 1.
-         GM = a1 + a2 * gat1(i,1) + a3 * dat1(i,1)
-         Gs = a1 + a2 * gat1(i,2) + a3 * dat1(i,2)
-         Gt = a1 + a2 * gat1(i,3) + a3 * dat1(i,3)
-         dkm1(i,1) = hbl(i) * wm(i) * sig * (1. + sig * GM)
+         Gm = a1 + a2 * gat1m(i) + a3 * dat1m(i)
+         Gs = a1 + a2 * gat1s(i) + a3 * dat1s(i)
+         Gt = a1 + a2 * gat1t(i) + a3 * dat1t(i)
+         dkm1(i,1) = hbl(i) * wm(i) * sig * (1. + sig * Gm)
          dkm1(i,2) = hbl(i) * ws(i) * sig * (1. + sig * Gs)
          dkm1(i,3) = hbl(i) * ws(i) * sig * (1. + sig * Gt)
       end do
@@ -1417,7 +1439,7 @@ c calculate density, alpha, beta in surface layer, and set dbsfc to zero
 
 c calculate alpha, beta, and gradients in interior layers
 
-!HPF$  INDEPENDENT, NEW (RHOK,RHOKM1,RHO1K,WORK1,WORK2)
+CHPF$  INDEPENDENT, NEW (RHOK,RHOKM1,RHO1K,WORK1,WORK2)
       DO K = 2, Nr
 
          call FIND_RHO(
