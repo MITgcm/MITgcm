@@ -1,10 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.387 2004/11/18 23:30:46 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.388 2004/11/19 01:35:33 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o GCHEM: move call to GCHEM_FORCING_SEP, so that it is now called before
-  the blocking exchanges to avoid computing halos in GCHEM_FORCING_SEP
+o GCHEM: 
+  - move call to GCHEM_FORCING_SEP, so that it is now called before
+    the blocking exchanges to avoid computing halos in GCHEM_FORCING_SEP
+  - introduced a useGCHEM runtime flag and applied it everywhere. 
 
 checkpoint56
 o AIM: read land-Fraction earlier (from ini-fixed) and monitor land at nIter0
