@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.36 2004/06/26 02:38:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.37 2004/09/24 16:58:17 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -98,7 +98,7 @@ C--   the kDown is still required
      I           GAD_SALINITY, saltAdvScheme, saltVertAdvScheme,
      I           calcAdvection, saltImplVertAdv,
      U           fVerS, gS,
-     I           myThid )
+     I           myTime, myIter, myThid )
 
 C--   External salinity forcing term(s) inside Adams-Bashforth:
       IF ( saltForcing .AND. forcing_In_AB )

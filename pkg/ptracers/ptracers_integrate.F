@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.16 2004/07/18 01:12:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.17 2004/09/24 16:57:51 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -118,7 +118,7 @@ C (advection, [explicit] diffusion, parameterizations,...)
      I                   calcAdvection, .FALSE.,
      U                   rFlx(1-Olx,1-Oly,1,iTracer),
      U                   gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     I                   myThid )
+     I                   myTime, myIter, myThid )
 
 C External forcing term(s)
 cswdptr --add --

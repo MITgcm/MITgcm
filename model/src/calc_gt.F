@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.40 2004/06/26 02:38:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.41 2004/09/24 16:58:16 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -97,7 +97,7 @@ C--   the kDown is still required
      I           GAD_TEMPERATURE, tempAdvScheme, tempVertAdvScheme,
      I           calcAdvection, tempImplVertAdv,
      U           fVerT, gT,
-     I           myThid )
+     I           myTime, myIter, myThid )
 
 C--   External thermal forcing term(s) inside Adams-Bashforth:
       IF ( tempForcing .AND. forcing_In_AB )
