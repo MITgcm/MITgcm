@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.12 2004/10/22 02:24:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.13 2004/12/14 19:56:45 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -12,8 +12,8 @@ C***********************************************************************
 
 #ifdef ALLOW_DIAGNOSTICS
 #include "SIZE.h"
-#include "diagnostics_SIZE.h"
-#include "diagnostics.h"
+#include "DIAGNOSTICS_SIZE.h"
+#include "DIAGNOSTICS.h"
 #endif
 
       integer myThid,im1,im2,jm1,jm2,Nrphys,Nbi,Nbj,bi,bj,ntracer
