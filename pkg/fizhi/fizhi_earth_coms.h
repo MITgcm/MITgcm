@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_earth_coms.h,v 1.5 2004/06/16 19:19:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_earth_coms.h,v 1.6 2004/07/13 21:11:08 molod Exp $
 C $Name:  $
 
 c Solid-Earth State Variables
@@ -11,9 +11,9 @@ c ---------------------------
 c Solid_Earth Couplings
 c ---------------------
       common /earth_exports/ 
-     .   nchpland, ityp, chfr, alai, agrn, 
+     .   chfr, alai, agrn, 
      .   albvisdr, albvisdf, albnirdr, albnirdf, emiss,
-     .   landtype, tgz
+     .   landtype, tgz, nchpland, ityp
       integer nchpland
       integer ityp(nchp)
       _RL chfr(nchp)

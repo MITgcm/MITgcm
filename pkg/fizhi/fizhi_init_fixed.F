@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.11 2004/06/15 21:18:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.12 2004/07/13 21:11:08 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_fixed (myThid)
@@ -33,20 +33,19 @@ c-----------------------------------------------------------------------
 #include "chronos.h"
 #include "gridalt_mapping.h"
 #include "GRID.h"
+#include "PARAMS.h"
 
        integer myThid
 
-       integer i,j,bi,bj
-       integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
+       integer i,j,L,bi,bj
+       integer im1, im2, jm1, jm2, idim2, jdim2
        integer nymdb,nhmsb
        character*40 vegdata
        _RL pressure(Nrphys)
        _RL lats(sNx,sNy,Nsx,Nsy), lons(sNx,sNy,Nsx,Nsy)
        _RL fracland(sNx,sNy,Nsx,Nsy)
 
-       idim1 = 1-OLx
        idim2 = sNx+OLx
-       jdim1 = 1-OLy
        jdim2 = sNy+OLy
        im1 = 1
        im2 = sNx
@@ -68,7 +67,7 @@ c-----------------------------------------------------------------------
        enddo
        enddo
        call fizhi_init_veg ( mythid, vegdata,idim2,jdim2,Nsx,Nsy,
-     .                 nSx*nPx,nSy*nPy,maxtyp,nchp,lons,lats,
+     .            nSx*nPx,nSy*nPy,maxtyp,nchp,nchpland,lons,lats,
      .            surftype,tilefrac,igrd,ityp,chfr,chlt,chlon)
 
 C And now fill the earth export landtype
@@ -79,7 +78,7 @@ C And now fill the earth export landtype
         do j=jm1,jm2
         do i=im1,im2
          landtype(i,j,bi,bj) = surftype(i,j,1,bi,bj)
-         if(fracland(i,j).ge.0.3.and.surftype(i,j,1,bi,bj).ge.100)
+         if(fracland(i,j,bi,bj).ge.0.3.and.surftype(i,j,1,bi,bj).ge.100)
      .            landtype(i,j,bi,bj) = surftype(i,j,2,bi,bj)
          if(sice(i,j,bi,bj).ne.0.0)landtype(i,j,bi,bj) = 101
         enddo
@@ -97,7 +96,7 @@ C Compute pressure profile to get methane and n2o values (bottom-up)
        call fizhi_init_chem(mythid,
      .      nlatsoz,nlevsoz,ntimesoz,latsoz,levsoz,ozone,
      .      nlatsq,nlevsq,ntimesq,latsq,levsq,stratq,
-     .      Nrphys,pressure,n20,methane,co2,cfc11,cfc12,cfc22)
+     .      Nrphys,pressure,n2o,methane,co2,cfc11,cfc12,cfc22)
 
        return
        end

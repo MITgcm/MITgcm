@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.5 2004/06/10 21:50:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.6 2004/07/13 21:11:08 molod Exp $
 C $Name:  $
 
       subroutine fizhi_init_chem(mythid,nozlats,nozlevs,ozlats,ozlevs,
      . o3,nwatlats,nwatlevs,watlats,watlevs,water,
-     . Nrphys,pressure,n20,methane,co2,cfc11,cfc12,cfc22)
+     . Nrphys,pressure,n2o,methane,co2,cfc11,cfc12,cfc22)
 C***********************************************************************
 C Subroutine fizhi_init_chem - routine to read in the ozone and upper
 C      atmosphere water vapor, and set the methane, n2o and cfc values
@@ -27,13 +27,16 @@ C***********************************************************************
       _RL pressure(Nrphys),methane(Nrphys),n2o(Nrphys)
       _RL co2,cfc11,cfc12,cfc22
 
-      _RL getcon
+      real getcon
+      integer kqz,koz
+      call mdsfindunit( kqz, myThid )
+      call mdsfindunit( koz, myThid )
 
       call read_qz (kqz,water,watlats,watlevs,nwatlats,nwatlevs,12)
       call read_oz (koz,o3,ozlats,ozlevs,nozlats,nozlevs,12)
-                                                                                 
+
       call get_methane_n2o (pressure,Nrphys,n2o,methane)
-                                                                                 
+
       co2   = getcon('CO2'  )*1.e-6
       cfc11 = getcon('CFC11')*1.e-9
       cfc12 = getcon('CFC12')*1.e-9
@@ -62,7 +65,7 @@ C***********************************************************************
 #include "CPP_EEOPTIONS.h"
       integer  ku,nlat,nlev,ntime
 
-      _RL   qz(nlat,nlev,ntime)
+      _RL qz(nlat,nlev,ntime)
       _RL lats(nlat)
       _RL levs(nlev)
 
@@ -70,7 +73,7 @@ C***********************************************************************
       integer lat
       integer lev
 
-      _RL voltomas
+      real voltomas
       parameter ( voltomas = 0.622e-6 )
 
       rewind ku
@@ -81,11 +84,9 @@ c ---------------------------
       lats(lat) = -85. + (lat-1)*10.
       enddo
 
-
 c Read Moisture Pressure Levels
 c -----------------------------
       read(ku,1000) (levs(lev),lev=1,nlev)
-
 
 c Read Moisture Amounts by Month and Level
 c ----------------------------------------
@@ -132,7 +133,7 @@ C***********************************************************************
       integer  ku,nlat,nlev,ntime
 
       _RL   oz(nlat,nlev,ntime)
-      _RL*4 o3(nlat)
+      _RL o3(nlat)
       _RL lats(nlat)
       _RL levs(nlev)
 
@@ -160,7 +161,6 @@ c ------------------------
       do   lev = 1,nlev
       levs(lev) = plevs(lev)
       enddo
-
 
 c Read Ozone Amounts by Month and Level
 c -------------------------------------
@@ -196,8 +196,8 @@ C***********************************************************************
       implicit none
 #include "CPP_EEOPTIONS.h"
 
-      _RL n2o(Nrphys),methane(Nrphys)
       integer Nrphys
+      _RL n2o(Nrphys),methane(Nrphys)
       _RL pres(Nrphys)
       _RL hght(Nrphys), slope,pr1,pr2,hpr1,hpr2
       integer L,L1,L2,lup,ldn
