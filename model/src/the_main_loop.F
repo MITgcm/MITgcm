@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.22 2001/11/08 20:57:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.23 2001/11/20 21:14:41 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -165,7 +165,7 @@ CADJ STORE vnm1      = tapelev3, key = ilev_3
 CADJ STORE gucd      = tapelev3, key = ilev_3
 CADJ STORE gvcd      = tapelev3, key = ilev_3
 #endif
-#ifdef ALLOW_COST_TRACER
+#ifdef ALLOW_PASSIVE_TRACER
 CADJ STORE tr1       = tapelev3, key = ilev_3
 CADJ STORE gtr1nm1   = tapelev3, key = ilev_3
 #endif
@@ -200,7 +200,7 @@ CADJ STORE vnm1      = tapelev2, key = ilev_2
 CADJ STORE gucd      = tapelev2, key = ilev_2
 CADJ STORE gvcd      = tapelev2, key = ilev_2
 #endif
-#ifdef ALLOW_COST_TRACER
+#ifdef ALLOW_PASSIVE_TRACER
 CADJ STORE tr1       = tapelev2, key = ilev_2
 CADJ STORE gtr1nm1   = tapelev2, key = ilev_2
 #endif
