@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.18 2003/10/21 20:42:16 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.19 2003/10/21 22:12:37 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1373,20 +1373,20 @@ ad_tamc: ad_tamc_output.o \$(OBJFILES)
 	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_tamc_output.o \$(LIBS) 
 
 
-# ... FLT ...
-flt_taf_output.f: ad_input_code.f
+# ... FTL ...
+ftl_taf_output.f: ad_input_code.f
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.f
-	cat ad_input_code_ad.f | sed -f adjoint_sed > flt_taf_output.f
+	cat ad_input_code_ad.f | sed -f adjoint_sed > ftl_taf_output.f
 
-flt_taf: flt_taf_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) flt_taf_output.o \$(LIBS) 
+ftl_taf: ftl_taf_output.o \$(OBJFILES)
+	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ftl_taf_output.o \$(LIBS) 
 
-flt_tamc_output.f: ad_input_code.f
+ftl_tamc_output.f: ad_input_code.f
 	\$(TAMC) \$(FTL_TAMC_FLAGS) \$(TAMC_EXTRA) ad_input_code.f
-	cat ad_input_code_ad.f | sed -f adjoint_sed > flt_tamc_output.f
+	cat ad_input_code_ad.f | sed -f adjoint_sed > ftl_tamc_output.f
 
-flt_tamc: flt_tamc_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) flt_tamc_output.o \$(LIBS) 
+ftl_tamc: ftl_tamc_output.o \$(OBJFILES)
+	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ftl_tamc_output.o \$(LIBS) 
 
 
 # ... SVD ...

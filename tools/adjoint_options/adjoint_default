@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.4 2003/10/21 19:55:40 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_default,v 1.5 2003/10/21 22:12:37 edhill Exp $
 #  $Name:  $
 #
 
@@ -8,9 +8,12 @@
 #  tangent-linear compilers.  If you need to change these settings,
 #  please make a separate (local) copy of this file.
 
-TAMC=/data43/ralf/tamc/tamc
-TAF=~fastopt/bin/taf
+# TAMC=/data43/ralf/tamc/tamc
+# TAF=~fastopt/bin/taf
 # STAF=staf
+
+TAF=taf
+TAMC=tamc
 
 AD_TAMC_FLAGS='-reverse -admark ad -i4 -r4 -l tamc_ad.log'
 AD_TAF_FLAGS='-reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log -nonew_arg'
