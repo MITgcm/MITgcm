@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.10 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.11 2004/03/29 17:58:40 jmc Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -61,6 +61,7 @@ C     I,J,K - Loop counters
       _RS  hFacROpen
       _RS  hFacRClosed
       _RL ab15,ab05
+      _RL slipSideFac, slipBotFac
       _RL tmp_VbarZ, tmp_UbarZ, tmp_WbarZ
 
       _RL  Half
@@ -75,8 +76,26 @@ CEOP
 ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
 
 C     Adams-Bashforth timestepping weights
-      ab15=1.5+abeps
-      ab05=-0.5-abeps
+      ab15 =  1.5 _d 0 + abeps
+      ab05 = -0.5 _d 0 - abeps
+
+C     Lateral friction (no-slip, free slip, or half slip):
+      IF ( no_slip_sides ) THEN
+        slipSideFac = -Half
+      ELSE
+        slipSideFac =  Half
+      ENDIF
+C-    half slip was used before ; keep it for now.
+        slipSideFac = 0. _d 0
+
+C     Bottom friction (no-slip, free slip, or half slip):
+      IF ( no_slip_bottom ) THEN
+        slipBotFac = -1. _d 0
+      ELSE
+        slipBotFac =  1. _d 0
+      ENDIF
+C-    half slip was used before ; keep it for now.
+        slipBotFac = 0. _d 0
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -121,8 +140,10 @@ C Flux on Southern face
      &         +_hFacS(I,J, K ,bi,bj)*vVel( I ,J, K ,bi,bj))
            Flx_NS(I,J,bi,bj)=
      &     tmp_VbarZ*Half*(wVel(I,J,K,bi,bj)+wVel(I,J-1,K,bi,bj))
-     &    -viscAh*_recip_dyC(I,J,bi,bj)*(
-     &                   wVel(I,J,K,bi,bj)-wVel(I,J-1,K,bi,bj) )
+     &    -viscAh*_recip_dyC(I,J,bi,bj)  
+     &      *(1. _d 0 + slipSideFac*
+     &         (maskS(I,J,K-1,bi,bj)+maskS(I,J,K,bi,bj)-2. _d 0))
+     &                   *(wVel(I,J,K,bi,bj)-wVel(I,J-1,K,bi,bj))
           ENDDO
          ENDDO
 C Flux on Western face
@@ -133,8 +154,10 @@ C Flux on Western face
      &        +_hFacW(I,J, K ,bi,bj)*uVel( I ,J, K ,bi,bj))
            Flx_EW(I,J,bi,bj)=
      &     tmp_UbarZ*Half*(wVel(I,J,K,bi,bj)+wVel(I-1,J,K,bi,bj))
-     &    -viscAh*_recip_dxC(I,J,bi,bj)*(
-     &                   wVel(I,J,K,bi,bj)-wVel(I-1,J,K,bi,bj) )
+     &    -viscAh*_recip_dxC(I,J,bi,bj)
+     &      *(1. _d 0 + slipSideFac*
+     &         (maskW(I,J,K-1,bi,bj)+maskW(I,J,K,bi,bj)-2. _d 0))
+     &                   *(wVel(I,J,K,bi,bj)-wVel(I-1,J,K,bi,bj))
           ENDDO
          ENDDO
 C Flux on Lower face
@@ -144,8 +167,10 @@ C Flux on Lower face
            tmp_WbarZ=Half*(wVel(I,J,K,bi,bj)+wVel(I,J,Kp1,bi,bj))
            Flx_Dn(I,J,bi,bj)=
      &     tmp_WbarZ*tmp_WbarZ
-     &    -viscAr*recip_drF(K)*( wVel(I,J,K,bi,bj)
-     &                -wOverRide*wVel(I,J,Kp1,bi,bj) )
+     &    -viscAr*recip_drF(K) 
+     &      *( 1. _d 0 + slipBotFac*
+     &         (wOverRide*maskC(I,J,Kp1,bi,bj)-1. _d 0) )
+     &       *( wVel(I,J,K,bi,bj)-wOverRide*wVel(I,J,Kp1,bi,bj) )
           ENDDO
          ENDDO
 C        Divergence of fluxes
@@ -205,4 +230,3 @@ C     impact. This is purely for diagnostic purposes.
 
       RETURN
       END
-
