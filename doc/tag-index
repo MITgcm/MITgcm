@@ -1,8 +1,8 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.379 2004/11/02 19:09:55 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.380 2004/11/02 23:57:29 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
-
+o added viscA4GridMin and viscA4GridMax for more control on biharmonic viscosity
 o make all subroutines 30 or less characters in length for certain older 
   compilers to work (a thorough search only turns up two routines in 
   pkg/ptracers)

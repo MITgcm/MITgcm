@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.134 2004/10/29 16:30:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.135 2004/11/02 23:57:29 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -125,9 +125,9 @@ C--   Continuous equation parameters
      & f0, beta, omega, rotationPeriod,
      & viscAh, viscAhW, viscAhMax, viscAhGrid, viscC2leith,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
-     & viscA4, viscA4Max, viscA4Grid, viscC4leith,
-     & viscAz,  cosPower, viscAstrain, viscAtension,
-     & diffKhT, diffKzT, diffK4T, 
+     & viscA4, viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
+     & viscC4leith, viscAz,  cosPower, viscAstrain, viscAtension,
+     & diffKhT, diffKzT, diffK4T,
      & diffKhS, diffKzS, diffK4S,
      & tRef, sRef, eosType, integr_GeoPot, selectFindRoSurf,
      & atm_Cp, atm_Rd, atm_Rq,

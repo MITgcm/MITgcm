@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.74 2004/10/18 16:04:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.75 2004/11/02 23:57:29 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -103,6 +103,8 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       diffKrBL79Ho        = -2000.D0
       viscA4              = 0.D11
       viscA4Grid          = 0.D0
+      viscA4GridMax       = 0.D0
+      viscA4GridMin       = 0.D0
       viscA4Max           = 1.D21
       viscC4leith         = 0.D0
       diffK4T             = 0.D11

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.135 2004/10/29 16:28:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.136 2004/11/02 23:57:29 dimitri Exp $
 C $Name:  $
 C
 
@@ -449,6 +449,8 @@ C     viscA4Max :: Maximum biharmonic viscosity coeff. for mixing of
 C                 momentum laterally ( m^4/s )
 C     viscAhGrid:: non-dimensional grid-size dependent viscosity
 C     viscA4Grid:: non-dimensional grid-size dependent bi-harmonic viscosity
+C     viscA4GridMax:: maximum and minimum biharmonic viscosity coefficients ...
+C     viscA4GridMin::  in terms of non-dimensional grid-size dependent viscosity
 C     viscC4leith :: Leith non-dimensional viscosity factor
 C     diffKhT   :: Laplacian diffusion coeff. for mixing of
 C                 heat laterally ( m^2/s )
@@ -547,8 +549,8 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & fCori, fCoriG, fCoriCos,
      & viscAh, viscAhW, viscAhMax, viscAhGrid, viscC2leith,
      & viscAhD, viscAhZ, viscA4D, viscA4Z,
-     & viscA4,  viscA4Max, viscA4Grid, viscC4leith,
-     & viscAr, viscAstrain, viscAtension,
+     & viscA4,  viscA4Max, viscA4Grid, viscA4GridMax, viscA4GridMin,
+     & viscC4leith, viscAr, viscAstrain, viscAtension,
      & diffKhT, diffK4T, diffKrNrT,
      & diffKhS, diffK4S, diffKrNrS,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
@@ -615,7 +617,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL viscA4D
       _RL viscA4Z
       _RL viscA4Max
-      _RL viscA4Grid
+      _RL viscA4Grid, viscA4GridMax, viscA4GridMin
       _RL viscC4leith
       _RL diffKhT 
       _RL diffKrNrT(Nr)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.12 2004/11/02 01:05:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.13 2004/11/02 23:57:29 dimitri Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -39,7 +39,7 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER I,J
       _RL Zip,Zij,Zpj,Dim,Dij,Dmj,uD2,vD2,uD4,vD4
-      _RL Alin,Alth,grdVrt,vg2,vg4
+      _RL Alin,AlinMin,AlinMax,Alth,grdVrt,vg2,vg4,vg4Min,vg4Max
       LOGICAL useVariableViscosity
       INTEGER klev
 
@@ -52,9 +52,13 @@ C     == Local variables ==
       IF (deltaTmom.NE.0.) THEN
        vg2=viscAhGrid/deltaTmom
        vg4=viscA4Grid/deltaTmom
+       vg4Min=viscA4GridMin/deltaTmom
+       vg4Max=viscA4GridMax/deltaTmom
       ELSE
        vg2=0.
        vg4=0.
+       vg4Min=0.
+       vg4Max=0.
       ENDIF
 
 C     - Viscosity
@@ -78,10 +82,15 @@ C but this approximation will work on cube (and differs by as much as 4X)
          Alth=viscC2leith*grdVrt*(rA(i,j,bi,bj)**1.5)
          Alin=viscAhD+vg2*rA ( i , j ,bi,bj)
          viscAh_D(i,j)=min(viscAhMax,Alin+Alth)
-
          Alth=viscC4leith*grdVrt*0.125*(rA(i,j,bi,bj)**2.5)
          Alin=viscA4D+vg4*(rA ( i , j ,bi,bj)**2)
          viscA4_D(i,j)=min(viscA4Max,Alin+Alth)
+         IF (vg4Max.GT.0.) THEN
+            AlinMax=vg4Max*(rA ( i , j ,bi,bj)**2)
+            viscA4_D(i,j)=min(AlinMax,viscA4_D(i,j))
+         ENDIF
+         AlinMin=vg4Min*(rA ( i , j ,bi,bj)**2)
+         viscA4_D(i,j)=max(AlinMin,viscA4_D(i,j))
 
 C This is the vector magnitude of the vorticity gradient
 c        grdVrt=sqrt(0.25*(
@@ -104,6 +113,12 @@ C but this approximation will work on cube (and differs by as much as 4X)
          Alth=viscC4leith*grdVrt*0.125*(rAz(i,j,bi,bj)**2.5)
          Alin=viscA4Z+vg4*(rAz( i , j ,bi,bj)**2)
          viscA4_Z(i,j)=min(viscA4Max,Alin+Alth)
+         IF (vg4Max.GT.0.) THEN
+            AlinMax=vg4Max*(rAz( i , j ,bi,bj)**2)
+            viscA4_Z(i,j)=min(AlinMax,viscA4_Z(i,j))
+         ENDIF
+         AlinMin=vg4Min*(rAz( i , j ,bi,bj)**2)
+         viscA4_Z(i,j)=max(AlinMin,viscA4_Z(i,j))
         ENDDO
        ENDDO
       ELSE
