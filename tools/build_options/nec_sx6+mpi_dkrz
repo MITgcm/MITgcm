@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/nec_sx6+mpi_dkrz,v 1.1 2003/11/13 14:54:04 heimbach Exp $
+#
+
+CPP='/lib/cpp  -traditional -P'
+DEFINES='-DWORDLENGTH=1'
+FC='sxmpif90 -c'
+CC='sxc++'
+LINK='sxmpif90'
+FFLAGS='-Wf "-pvctl noassume loopcnt=5000000" -sx6 -Pstack'
+INCLUDES='-I/SX/usr/include'

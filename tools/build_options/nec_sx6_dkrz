@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/nec_sx6_dkrz,v 1.1 2003/11/13 14:54:04 heimbach Exp $
+#
+
+#cph: DEFINES needs testing
+#DEFINES='-DTARGET_CRAY_VECTOR -DTARGET_NEC_VECTOR -DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=1'
+FC='sxf90'
+CC='sxc++'
+LINK='sxf90'
+FFLAGS='-Wf "-pvctl noassume loopcnt=5000000" -Pstack'
+FOPTIM='-Cvopt'
+NOOPTFLAGS='-Cssafe'
+NOOPTFILES='barrier.F different_multiple.F external_fields_load.F'
