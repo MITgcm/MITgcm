@@ -1,0 +1,18 @@
+
+cd bin
+ln -s ../verification/carbon/code/.genmakerc .
+ln -s ../verification/carbon/code/*.h .
+ln -s ../verification/carbon/code/*.F .
+
+../tools/genmake -makefile
+make depend
+make small_f
+
+cd ../adjoint
+make adall
+make adchange
+
+cd ../bin
+make
+
+

@@ -1,0 +1,47 @@
+Setup:
+-----
+
+The experiment is in verification/carbon/.
+The code/ directory has the extra and modified code to
+carry a passive tracer (variables: tr1, gTr1, gTr1Nm1).
+Additional mod's are in pkg/ctrl/
+
+The tracer fields is initialised at the surface (ini_tr1.F)
+and then carried around by the flow field.
+The cost funciton is cost_tracer.F
+It basically accumulates all tracers reaching the surface,
+
+The controls so far are
+initial temp./salinity and surface fluxes,
+also initial tracer (tr1) distribution 
+(see adjoint/makefile).
+
+I added the common block /adtr1/ to addummy_in_stepping
+to be able to monitor adtr1 in addition to adtheta, adsalt, ...
+
+The model picks up from a 400 year spinup.
+In a test phase it performs a 1 year forward/adjoint run
+(timestep is 1 day).
+dumpFreq is set to 30 days, yielding adjoint fields of
+theta, salt, uvel, vvel, tr1
+gtnm1,gsnm1, gunm1, gvnm1, gtr1nm1
+
+If you plot the adjoint fields, e.g. at initial timestep index 144000
+you will see that:
+  ADJtheta.0000144000.001.001.data
+  ADJsalt
+  ADJuvel
+  ADJvvel
+have a checkerboard structure, whereas
+  ADJtr1.0000144000.001.001.data
+seems to look ok.
+
+I had the checkerboard structure also for a simpler
+adjoint test case (see verification/vero/).
+This is basically a box setup,
+cost function is final temp. at one grid point.
+The checkerboard structure seems to disappear, if you
+set in "data"
+  tAlpha = 0.
+and take a linear eqn. of state
+  eosType='LINEAR'
