@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.87 2002/09/25 19:36:50 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.88 2002/09/27 20:19:19 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint46i_post
+o Clean up AIM package (and keep the results unchanged):
+  include CPP_OPTION and use IMPLICT NONE in all routines ; 
+  declare all the variables _RL ; use _d 0 for all numerical constants.
+  use ifdef ALLOW_AIM everywhere. And now AIM can be used with g77 !
 
 checkpoint46h_post
 o cleaned up the use of rhoNil and rhoConst. 
