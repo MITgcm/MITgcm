@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp4/code/Attic/CPP_EEOPTIONS.h,v 1.1 1998/12/15 00:02:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp4/code/Attic/CPP_EEOPTIONS.h,v 1.2 1999/05/21 21:54:33 adcroft Exp $
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
@@ -129,8 +129,8 @@ C     performance.
 #define RS_IS_REAL8
 #define _EXCH_XY_R4(a,b)       CALL EXCH_XY_R8 ( a, b )
 #define _EXCH_XYZ_R4(a,b)      CALL EXCH_XYZ_R8 ( a, b )
-#define _GLOBAL_SUM_R4(a,b,c)  CALL GLOBAL_SUM_R8( a, b , c)
-#define _GLOBAL_MAX_R4(a,b,c)  CALL GLOBAL_MAX_R8( a, b , c)
+#define _GLOBAL_SUM_R4(a,b)    CALL GLOBAL_SUM_R8( a, b )
+#define _GLOBAL_MAX_R4(a,b)    CALL GLOBAL_MAX_R8( a, b )
 #endif
 
 #ifndef REAL4_IS_SLOW
@@ -141,14 +141,14 @@ C     performance.
 #define RS_IS_REAL4
 #define _EXCH_XY_R4(a,b)       CALL EXCH_XY_R4 ( a, b )
 #define _EXCH_XYZ_R4(a,b)      CALL EXCH_XYZ_R4 ( a, b )
-#define _GLOBAL_SUM_R4(a,b,c)  CALL GLOBAL_SUM_R4( a, b , c)
-#define _GLOBAL_MAX_R4(a,b,c)  CALL GLOBAL_MAX_R4( a, b , c)
+#define _GLOBAL_SUM_R4(a,b)    CALL GLOBAL_SUM_R4( a, b )
+#define _GLOBAL_MAX_R4(a,b)    CALL GLOBAL_MAX_R4( a, b )
 #endif
  
 #define _EXCH_XY_R8(a,b)       CALL EXCH_XY_R8 ( a, b )
 #define _EXCH_XYZ_R8(a,b)      CALL EXCH_XYZ_R8 ( a, b )
-#define _GLOBAL_SUM_R8(a,b,c)  CALL GLOBAL_SUM_R8( a, b , c)
-#define _GLOBAL_MAX_R8(a,b,c)  CALL GLOBAL_MAX_R8( a, b , c)
+#define _GLOBAL_SUM_R8(a,b)    CALL GLOBAL_SUM_R8( a, b )
+#define _GLOBAL_MAX_R8(a,b)    CALL GLOBAL_MAX_R8( a, b )
  
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16

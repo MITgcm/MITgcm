@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/CPP_EEOPTIONS.h,v 1.1 1998/12/14 23:59:58 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/CPP_EEOPTIONS.h,v 1.2 1999/05/21 21:54:33 adcroft Exp $
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
@@ -85,7 +85,7 @@ C     compiler directives here.
 C--   Define the mapping for the BEGIN_CRIT() and  END_CRIT() macros. 
 C     On some systems we simply execute this section only using the
 C     master thread i.e. its not really a critical section. We can
-C     do this because we don't use critical sections in any critical
+C     do this because we do not use critical sections in any critical
 C     sections of our code!
 #define _BEGIN_CRIT(a) _BEGIN_MASTER(a)
 #define _END_CRIT(a)   _END_MASTER(a)
@@ -126,10 +126,11 @@ C     performance.
 #define REAL Real*8
 #define _RS  Real*8
 #define _RL  Real*8
+#define RS_IS_REAL8
 #define _EXCH_XY_R4(a,b)       CALL EXCH_XY_R8 ( a, b )
 #define _EXCH_XYZ_R4(a,b)      CALL EXCH_XYZ_R8 ( a, b )
-#define _GLOBAL_SUM_R4(a,b,c)  CALL GLOBAL_SUM_R8( a, b , c)
-#define _GLOBAL_MAX_R4(a,b,c)  CALL GLOBAL_MAX_R8( a, b , c)
+#define _GLOBAL_SUM_R4(a,b)    CALL GLOBAL_SUM_R8( a, b )
+#define _GLOBAL_MAX_R4(a,b)    CALL GLOBAL_MAX_R8( a, b )
 #endif
 
 #ifndef REAL4_IS_SLOW
@@ -137,16 +138,17 @@ C     performance.
 #define REAL Real*8
 #define _RS  Real*4
 #define _RL  Real*8
+#define RS_IS_REAL4
 #define _EXCH_XY_R4(a,b)       CALL EXCH_XY_R4 ( a, b )
 #define _EXCH_XYZ_R4(a,b)      CALL EXCH_XYZ_R4 ( a, b )
-#define _GLOBAL_SUM_R4(a,b,c)  CALL GLOBAL_SUM_R4( a, b , c)
-#define _GLOBAL_MAX_R4(a,b,c)  CALL GLOBAL_MAX_R4( a, b , c)
+#define _GLOBAL_SUM_R4(a,b)    CALL GLOBAL_SUM_R4( a, b )
+#define _GLOBAL_MAX_R4(a,b)    CALL GLOBAL_MAX_R4( a, b )
 #endif
  
 #define _EXCH_XY_R8(a,b)       CALL EXCH_XY_R8 ( a, b )
 #define _EXCH_XYZ_R8(a,b)      CALL EXCH_XYZ_R8 ( a, b )
-#define _GLOBAL_SUM_R8(a,b,c)  CALL GLOBAL_SUM_R8( a, b , c)
-#define _GLOBAL_MAX_R8(a,b,c)  CALL GLOBAL_MAX_R8( a, b , c)
+#define _GLOBAL_SUM_R8(a,b)    CALL GLOBAL_SUM_R8( a, b )
+#define _GLOBAL_MAX_R8(a,b)    CALL GLOBAL_MAX_R8( a, b )
  
 C--   Control use of "double" precision constants.
 C     Use D0 where it means REAL*8 but not where it means REAL*16
@@ -158,7 +160,7 @@ C     Use D0 where it means REAL*8 but not where it means REAL*16
 C--   Control XY periodicity in processor to grid mappings
 C     Note: Model code does not need to know whether a domain is 
 C           periodic because it has overlap regions for every box.
-C           Model's simply assume that these values have been
+C           Model assume that these values have been
 C           filled in some way.
 #undef  ALWAYS_PREVENT_X_PERIODICITY
 #undef  ALWAYS_PREVENT_Y_PERIODICITY
@@ -166,14 +168,16 @@ C           filled in some way.
 #define CAN_PREVENT_Y_PERIODICITY
 
 C--   Substitue for 1.D variables
-C     Sun compilers don't use 8-byte precision for literals
+C     Sun compilers do not use 8-byte precision for literals
 C     unless .Dnn is specified. CRAY vector machines use 16-byte
 C     precision when they see .Dnn which runs very slowly!
 #ifdef REAL_D0_IS_16BYTES
 #define _d
+#define _F64( a ) a
 #endif
 #ifndef REAL_D0_IS_16BYTES
 #define _d D
+#define _F64( a ) DFLOAT( a )
 #endif
 
 #endif /* _CPP_EEOPTIONS_H_ */
