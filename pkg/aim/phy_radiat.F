@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_radiat.F,v 1.4 2001/06/18 17:39:58 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_radiat.F,v 1.5 2001/09/06 13:19:54 adcroft Exp $
 C $Name:  $
 
       SUBROUTINE SOL_OZ (SOLC,TYEAR,FSOL,OZONE,myThid)
@@ -401,7 +401,7 @@ C
 
       REAL FLUX(NGP), BRAD(NGP), STCOR(NGP)
       INTEGER NL1(NGP)
-      INTEGER IMODE, J0, Jl
+      INTEGER IMODE, J0, Jl, I2
 C
 Cchdbg
       INteger npas
