@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.10 2003/02/11 04:06:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.11 2003/02/18 15:36:45 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -33,7 +33,7 @@ C !ROUTINE: MOM_FLUXFORM
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_FLUXFORM( 
      I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
-     I        phi_hyd,dPhihydX,dPhiHydY,KappaRU,KappaRV,
+     I        dPhihydX,dPhiHydY,KappaRU,KappaRV,
      U        fVerU, fVerV,
      I        myTime,myIter,myThid)
 
@@ -58,7 +58,6 @@ C  iMin,iMax,jMin,jMAx  :: loop ranges
 C  k                    :: vertical level
 C  kUp                  :: =1 or 2 for consecutive k
 C  kDown                :: =2 or 1 for consecutive k
-C  phi_hyd              :: hydrostatic pressure (perturbation)
 C  dPhiHydX,Y           :: Gradient (X & Y dir.) of Hydrostatic Potential 
 C  KappaRU              :: vertical viscosity
 C  KappaRV              :: vertical viscosity
@@ -69,7 +68,6 @@ C  myIter               :: current time-step number
 C  myThid               :: thread number
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k,kUp,kDown
-      _RL phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL dPhiHydX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dPhiHydY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -598,7 +596,7 @@ C--   Set dv/dt on boundaries to zero
 C--   Coriolis term
 C     Note. As coded here, coriolis will not work with "thin walls"
 #ifdef INCLUDE_CD_CODE
-      CALL MOM_CDSCHEME(bi,bj,k,phi_hyd,dPhiHydX,dPhiHydY,myThid)
+      CALL MOM_CDSCHEME(bi,bj,k,dPhiHydX,dPhiHydY,myThid)
 #else
       CALL MOM_U_CORIOLIS(bi,bj,k,vFld,cf,myThid)
       DO j=jMin,jMax

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_cdscheme.F,v 1.5 2003/02/09 02:01:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_cdscheme.F,v 1.6 2003/02/18 15:36:45 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: MOM_CDSCHEME
 
 C !INTERFACE: ==========================================================
       SUBROUTINE MOM_CDSCHEME( 
-     I        bi,bj,k,phi_hyd,dPhiHydX,dPhiHydY,
+     I        bi,bj,k,dPhiHydX,dPhiHydY,
      I        myThid)
 
 C !DESCRIPTION:
@@ -27,11 +27,9 @@ C     == Global variables ==
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
 C  k                    :: vertical level
-C  phi_hyd              :: hydrostatic pressure
 C     dPhiHydX,Y        :: Gradient (X & Y dir.) of Hydrostatic Potential
 C  myThid               :: thread number
       INTEGER bi,bj,k
-      _RL phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL dPhiHydX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dPhiHydY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER myThid
@@ -62,7 +60,6 @@ C     Adams-Bashforth weighting factors
       ab05   = -0.5 - abEps
 
 C-- stagger time stepping: grad Phi_Hyp is not in gU,gV and needs to be added:
-c     IF (.FALSE.) THEN
       IF (staggerTimeStep) THEN
         phxFac = pfFacMom
         phyFac = pfFacMom
@@ -79,14 +76,6 @@ C     Pressure extrapolated forward in time
      &  +ab05*(etaNm1(i,j,bi,bj)*Bo_surf(i,j,bi,bj) )
        ENDDO
       ENDDO
-      IF (.FALSE.) THEN
-c     IF (staggerTimeStep) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         pf(i,j) = pf(i,j)+phi_hyd(i,j,k)
-        ENDDO
-       ENDDO
-      ENDIF
 
 C--   Zonal velocity coriolis term
 C     Note. As coded here, coriolis will not work with "thin walls"
