@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.1 2004/03/11 14:41:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_monitor.F,v 1.2 2004/09/07 23:57:04 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -86,6 +86,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( DIFFERENT_MULTIPLE(land_monFreq,myTime,myTime-deltaTclock)
      &     .OR. myIter.EQ.nIter0 ) THEN
+
+        mon_write_stdout = .TRUE.
 
         DO k=1,land_nLev
           locDr(k)= 1.
@@ -280,6 +282,8 @@ c       CALL MON_OUT_RL(mon_var, theMax(3), mon_sufx(3), myThid)
      &'// ======================================================='
         CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
        _END_MASTER(myThid)
+
+        mon_write_stdout = .FALSE.
 
       ENDIF
 
