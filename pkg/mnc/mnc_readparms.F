@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.10 2004/09/29 03:45:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.11 2004/09/29 04:38:56 heimbach Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -62,7 +62,7 @@ C     Set default values for MNC run-time parameters
       monitor_mnc           =  .FALSE.
       timeave_mnc           =  .FALSE.
       snapshot_mnc          =  .FALSE.
-      autofiff_mnc          =  .FALSE.
+      autodiff_mnc          =  .FALSE.
 
 C     Set the file name
       DO i=1,MAX_LEN_MBUF
