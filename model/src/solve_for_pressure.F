@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.35 2002/09/25 19:36:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.36 2002/10/07 16:20:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,16 +54,10 @@ C     == Local variables ==
       _RS uf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RS vf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL firstResidual,lastResidual
-      _RL tmpFac, convertVol2Mass
+      _RL tmpFac
       INTEGER numIters
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
-
-      IF ( buoyancyRelation .eq. 'OCEANICP' )  THEN
-       convertVol2Mass = gravity*rhoConstFresh
-      ELSE
-       convertVol2Mass = 1. _d 0
-      ENDIF
 
 C--   Save previous solution & Initialise Vector solution and source term :
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -78,9 +72,9 @@ C--   Save previous solution & Initialise Vector solution and source term :
          ENDDO
         ENDDO
         IF (useRealFreshWaterFlux) THEN
-         tmpFac = freeSurfFac*convertVol2Mass
+         tmpFac = freeSurfFac*convertEmP2rUnit
          IF (exactConserv) 
-     &        tmpFac = freeSurfFac*convertVol2Mass*implicDiv2DFlow
+     &        tmpFac = freeSurfFac*convertEmP2rUnit*implicDiv2DFlow
          DO j=1,sNy
           DO i=1,sNx
            cg2d_b(i,j,bi,bj) = 

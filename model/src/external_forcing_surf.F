@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.9 2002/10/02 17:59:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.10 2002/10/07 16:20:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,15 +43,12 @@ C     === Local variables ===
       INTEGER i,j
 C     number of surface interface layer
       INTEGER kSurface
-      _RL convertVol2Mass
 CEOP
 
       if ( buoyancyRelation .eq. 'OCEANICP' ) then
        kSurface        = Nr 
-       convertVol2Mass = gravity*rhoConstFresh
       else
        kSurface        = 1
-       convertVol2Mass = 1. _d 0
       endif
 
       DO j = jMin, jMax
@@ -99,7 +96,7 @@ c- converts EmPmR to salinity tendency using surface local salinity
           surfaceTendencyS(i,j,bi,bj) =
      &      + EmPmR(i,j,bi,bj)*salt(i,j,kSurface,bi,bj)
      &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
-     &         *convertVol2Mass
+     &         *convertEmP2rUnit
      &      -lambdaSaltClimRelax
      &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
          ENDDO
@@ -111,7 +108,7 @@ c- converts EmPmR to virtual salt flux using uniform salinity (default=35)
           surfaceTendencyS(i,j,bi,bj) = 
      &      + EmPmR(i,j,bi,bj)*convertFW2Salt
      &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj) 
-     &         *convertVol2Mass
+     &         *convertEmP2rUnit
      &      -lambdaSaltClimRelax
      &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
          ENDDO
@@ -145,7 +142,7 @@ c     consitent with volume change (=d/dt etaN).
      &      + PmEpR(i,j,bi,bj)
      &         *( temp_EvPrRn - theta(i,j,kSurface,bi,bj) )
      &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj) 
-     &         *convertVol2Mass
+     &         *convertEmP2rUnit
          ENDDO
         ENDDO
        ENDIF
@@ -157,7 +154,7 @@ c     consitent with volume change (=d/dt etaN).
      &      + PmEpR(i,j,bi,bj)
      &         *( salt_EvPrRn - salt(i,j,kSurface,bi,bj) )
      &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj) 
-     &         *convertVol2Mass
+     &         *convertEmP2rUnit
          ENDDO
         ENDDO
        ENDIF

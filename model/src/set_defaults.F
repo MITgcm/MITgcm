@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.39 2002/09/25 19:36:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.40 2002/10/07 16:20:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -195,6 +195,7 @@ C--   Time stepping parameters
       diagFreq          = deltaT*0
       monitorFreq       = -1.
       taveFreq          = deltaT*0
+      tave_lastIter     = 0.5 _d 0
       writeStatePrec    = precFloat64
       writeBinaryPrec   = precFloat32
       readBinaryPrec    = precFloat32
@@ -231,4 +232,3 @@ C--   Input files
 C
       RETURN
       END
-

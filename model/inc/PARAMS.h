@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.75 2002/09/25 19:36:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.76 2002/10/07 16:18:07 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -407,8 +407,11 @@ C     mtFacMom      :: Metric terms tracer parameter
 C     cosPower      :: Power of cosine of latitude to multiply viscosity
 C     cAdjFreq      :: Frequency of convective adjustment
 C
-C     taveFreq      :: Frequency with which time-averaged model state is written to
-C                     post-processing files ( s ).
+C     taveFreq      :: Frequency with which time-averaged model state 
+C                      is written to post-processing files ( s ).
+C     tave_lastIter :: (for state variable only) fraction of the last time 
+C                      step (of each taveFreq period) put in the time average. 
+C                      (fraction for 1rst iter = 1 - tave_lastIter)
 C     tauThetaClimRelax :: Relaxation to climatology time scale ( s ).
 C     lambdaThetaClimRelax :: Inverse time scale for relaxation ( 1/s ).
 C     tauSaltClimRelax :: Relaxation to climatology time scale ( s ).
@@ -446,9 +449,9 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
      & recip_rhoConst, rhoConst, 
-     & recip_rhoConstFresh, rhoConstFresh, tRef, sRef,
+     & rhoConstFresh, convertEmP2rUnit, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq,
-     & diagFreq, taveFreq, monitorFreq,
+     & diagFreq, taveFreq, tave_lastIter, monitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cosPower, cAdjFreq, omega, 
      & tauThetaClimRelax, lambdaThetaClimRelax,
@@ -520,7 +523,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL rhoConst
       _RL recip_rhoConst
       _RL rhoConstFresh
-      _RL recip_rhoConstFresh
+      _RL convertEmP2rUnit
       _RL tRef(Nr)
       _RL sRef(Nr)
       _RS fCori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -532,6 +535,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL dumpFreq
       _RL diagFreq
       _RL taveFreq
+      _RL tave_lastIter
       _RL monitorFreq
       _RL afFacMom
       _RL vfFacMom
