@@ -1,12 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.2 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.3 2004/06/08 15:25:27 molod Exp $
 C $Name:  $
-
-       subroutine do_fizhi(uphy,vphy,thphy,sphy,
+       subroutine do_fizhi(uphy,vphy,thphy,sphy,pephy,
      .                              ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
      .im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,idim1,idim2,jdim1,jdim2,bi,bj,nchp,
      .                                         duphy,dvphy,dthphy,dsphy)
 c-----------------------------------------------------------------------
-c Dummy routine to calculate physics increments - here set them to whatever
+c Interface routine to calculate physics increments - call geos-3 driver
+c Purpose of this routine is to pull things from model common blocks
+c to send to physdrv. Also to take output from there and put into model
+c common blocks.
 c
 c-----------------------------------------------------------------------
        implicit none
@@ -17,6 +19,7 @@ c-----------------------------------------------------------------------
        _RL uphy(im1:im2,jm1:jm2,Nrphys,Nsx,Nsy)
        _RL vphy(im1:im2,jm1:jm2,Nrphys,Nsx,Nsy)
        _RL thphy(im1:im2,jm1:jm2,Nrphys,Nsx,Nsy)
+       _RL pephy(im1:im2,jm1:jm2,Nrphys+1,Nsx,Nsy)
        _RL sphy(im1:im2,jm1:jm2,Nrphys,Nsx,Nsy)
        _RL ctmt(nchp,Nsx,Nsy),xxmt(nchp,Nsx,Nsy),yymt(nchp,Nsx,Nsy)
        _RL zetamt(nchp,Nsx,Nsy)
@@ -29,16 +32,7 @@ c-----------------------------------------------------------------------
 c
        integer i,j,L
 
-       do L = 1,Nrphys
-        do j = jdim1,jdim2
-        do i = idim1,idim2
-         duphy(i,j,L,bi,bj) = 2.e-4*L
-         dvphy(i,j,L,bi,bj) = 0.5e-4*L
-         dthphy(i,j,L,bi,bj) = 4.e-4*L
-         dsphy(i,j,L,bi,bj) = 2.e-7*L
-        enddo
-        enddo
-       enddo
+       call physdrv(         )
 
        return
        end
