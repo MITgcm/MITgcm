@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.384 2004/11/14 03:36:51 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.385 2004/11/16 14:33:11 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o AIM: read land-Fraction earlier (from ini-fixed) and monitor land at nIter0
 o mnc: cleanup "full" files--fixes out-of-memory problem
 
 checkpoint55j_post
