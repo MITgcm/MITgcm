@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.6 2005/02/13 23:26:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.7 2005/02/15 02:19:52 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -100,7 +100,7 @@ C     write a summary of the (long) list of all available diagnostics:
 
         WRITE(msgBuf,'(2A)')
      &   ' write list of available Diagnostics to file: ',
-     &   'available_diagnostics'
+     &   'available_diagnostics.log'
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
 
         WRITE(ccHead,'(2A)')
