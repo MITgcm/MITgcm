@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.4 2004/11/22 20:37:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.5 2004/12/18 02:18:55 edhill Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -37,16 +37,6 @@ CEOP
 #if (defined (ALLOW_MNC) && defined (ALLOW_AUTODIFF_MONITOR))
 
       IF (useMNC) THEN
-
-C     Create MNC definitions for DYNVARS.h variables
-c      CALL MNC_CW_ADD_VNAME('iter', '-_-_--__-__t', 0,0, myThid)
-c      CALL MNC_CW_ADD_VATTR_TEXT('iter',
-c     &     'long_name','iteration_count', myThid)
-
-c      CALL MNC_CW_ADD_VNAME('model_time', '-_-_--__-__t', 0,0, myThid)
-c      CALL MNC_CW_ADD_VATTR_TEXT('model_time',
-c     &     'long_name','Model Time', myThid)
-c      CALL MNC_CW_ADD_VATTR_TEXT('model_time','units','s', myThid)
 
       CALL MNC_CW_ADD_VNAME('adU', 'U_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adU','units','[cost]/[m/s]', myThid)

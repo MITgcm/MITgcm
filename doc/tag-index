@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.419 2004/12/17 21:28:26 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.420 2004/12/18 02:18:59 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o more CF compliance: convert all MNC 'iter' variables to 'T' so that it 
+  becomes the coordinate variable for the 'T' dimension
 o add CF-style coordinate variables to MNC
   - just a first cut:  numbers are meaningless on the cubesphere and 
     missing along the T axis but otherwise it works!

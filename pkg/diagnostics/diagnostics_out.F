@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.3 2004/12/14 20:19:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.4 2004/12/18 02:18:55 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -91,7 +91,7 @@ c       WRITE( diag_mnc_bn, '(A,A)' ) 'diag.', pref(1:ilen)
 
 C       Update the record dimension by writing the iteration number
         CALL MNC_CW_SET_UDIM(diag_mnc_bn, -1, myThid)
-        CALL MNC_CW_I_W_S('I',diag_mnc_bn,0,0,'iter',myIter,myThid)
+        CALL MNC_CW_I_W_S('I',diag_mnc_bn,0,0,'T',myIter,myThid)
         CALL MNC_CW_SET_UDIM(diag_mnc_bn, 0, myThid)
 
         dn(1)(1:NLEN) = dn_blnk(1:NLEN)

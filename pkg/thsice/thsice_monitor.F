@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.5 2004/12/17 04:59:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.6 2004/12/18 02:18:56 edhill Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -77,10 +77,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           ENDDO
           mon_fname(1:12) = 'monitor_sice'
           CALL MNC_CW_APPEND_VNAME(
-     &         'iter', '-_-_--__-__t', 0,0, myThid)
+     &         'T', '-_-_--__-__t', 0,0, myThid)
           CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
           CALL MNC_CW_I_W_S(
-     &        'I',mon_fname,1,1,'iter', myIter, myThid)
+     &        'I',mon_fname,1,1,'T', myIter, myThid)
           CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
           mon_write_mnc = .TRUE.
         ENDIF

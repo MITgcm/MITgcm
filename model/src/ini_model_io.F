@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.13 2004/12/14 23:00:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.14 2004/12/18 02:18:55 edhill Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -116,8 +116,8 @@ C     End define coordinates for all MNC files ----------------------------
 
 
 C     Create MNC definitions for DYNVARS.h variables
-      CALL MNC_CW_ADD_VNAME('iter', '-_-_--__-__t', 0,0, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('iter',
+      CALL MNC_CW_ADD_VNAME('T', '-_-_--__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('T',
      &     'long_name','iteration_count', myThid)
 
       CALL MNC_CW_ADD_VNAME('model_time', '-_-_--__-__t', 0,0, myThid)

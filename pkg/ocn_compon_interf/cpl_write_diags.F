@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.3 2004/10/27 23:19:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/cpl_write_diags.F,v 1.4 2004/12/18 02:18:56 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -109,7 +109,7 @@ c           CALL TIMEAVE_NORMALIZ(VGtave ,CPL_TimeAve,1,bi,bj,myThid)
 #ifdef ALLOW_MNC
         IF (useMNC .AND. cpl_timeave_mnc) THEN
           CALL MNC_CW_SET_UDIM('cpl_tave', -1, myThid)
-          CALL MNC_CW_I_W_S('I','cpl_tave',0,0,'iter',myIter,myThid)
+          CALL MNC_CW_I_W_S('I','cpl_tave',0,0,'T',myIter,myThid)
           CALL MNC_CW_SET_UDIM('cpl_tave', 0, myThid)
           CALL MNC_CW_RL_W('D','cpl_tave',0,0,
      &         'SLPtave',SLPtave,myThid)

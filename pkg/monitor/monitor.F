@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.28 2004/12/17 01:25:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.29 2004/12/18 02:18:56 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -77,10 +77,10 @@ C       Dynamics field monitor start
           ENDDO
           mon_fname(1:7) = 'monitor'
           CALL MNC_CW_APPEND_VNAME(
-     &         'iter', '-_-_--__-__t', 0,0, myThid)
+     &         'T', '-_-_--__-__t', 0,0, myThid)
           CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
           CALL MNC_CW_I_W_S(
-     &        'I',mon_fname,1,1,'iter', myIter, myThid)
+     &        'I',mon_fname,1,1,'T', myIter, myThid)
           CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
           mon_write_mnc = .TRUE.
         ENDIF
