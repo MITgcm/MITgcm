@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.202 2003/11/03 03:51:35 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.203 2003/11/04 21:42:15 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint51s_post
+o cleanup: removed various obsolete #define-s
 
 checkpoint51r_post
 o cleaned up or removed CPP_OPTIONS.h files
