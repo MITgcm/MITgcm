@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.38 2002/11/15 19:58:21 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.39 2002/11/20 19:08:25 cheisey Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -127,7 +127,6 @@ c**************************************
 #endif
 
 
-#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
 C--   Call external forcing package
 cswdblk -- add ---
 #ifdef ALLOW_BULKFORMULA
@@ -147,6 +146,7 @@ c     Update the tile edges.
        _EXCH_XY_R8(fv     , mythid)
 cswdblk -- end add ---
 #endif
+#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
         IF ( .not. useSEAICE ) THEN 
          CALL TIMER_START('EXF_GETFORCING     [FORWARD_STEP]',mythid)
          CALL EXF_GETFORCING( mytime, myiter, mythid )
