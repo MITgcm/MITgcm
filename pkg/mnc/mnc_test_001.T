@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_001.T,v 1.10 2004/02/04 05:45:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_001.T,v 1.11 2004/03/19 03:28:37 edhill Exp $
 C $Name:  $
 
 C     Simple test program for MNC
@@ -76,55 +76,55 @@ C     In FORTRAN, the first variable cycles most quickly
       CALL MNC_INIT(myThid)
 
       print*, ' Calling MNC_FILE_CREATE() ...'
-      CALL MNC_FILE_CREATE(myThid, fname)
+      CALL MNC_FILE_CREATE(fname, myThid)
 
       print*, ' Calling MNC_DIM_INIT() ...'
       DO i = 1,ndim
-        CALL MNC_DIM_INIT(myThid,fname, dnames(i),dims(i))
+        CALL MNC_DIM_INIT(fname, dnames(i),dims(i), myThid)
         ii = ILNBLNK(dnames(i))
         print*, '   ... created dimension: ', dnames(i)(1:ii)
       ENDDO
 
       print*, ' Calling MNC_GRID_INIT() ...'
       gname1(1:10) = 'xyzt      '
-      CALL MNC_GRID_INIT(myThid,fname, gname1, ndim, dnames)
+      CALL MNC_GRID_INIT(fname, gname1, ndim, dnames, myThid)
       gname2(1:10) = 't         '
-      CALL MNC_GRID_INIT(myThid,fname, gname2, 1, dnames(4))
+      CALL MNC_GRID_INIT(fname, gname2, 1, dnames(4), myThid)
 
       print*, ' Calling MNC_VAR_INIT_DBL() ...'
       vname1(1:4) = 'time'
       units(1:19) = 'days since 1970-1-1'
-      CALL MNC_VAR_INIT_DBL(myThid,fname, gname2, vname1 )
+      CALL MNC_VAR_INIT_DBL(fname, gname2, vname1, myThid)
       vname2(1:4) = 'temp'
       units(1:19) = 'deg C              '
-      CALL MNC_VAR_INIT_DBL(myThid,fname, gname1, vname2 )
+      CALL MNC_VAR_INIT_DBL(fname, gname1, vname2, myThid)
 
       print*, ' Calling MNC_VAR_ADD_ATTR_STR() ...'
       atname(1:9) = 'grid_type'
-      CALL MNC_VAR_ADD_ATTR_INT(myThid,fname,vname1, atname, 1, 1)
+      CALL MNC_VAR_ADD_ATTR_INT(fname,vname1, atname, 1, 1, myThid)
       atname(1:11) = 'valid_range'
       tvar(1) = -23.5
       tvar(2) = 176.75
-      CALL MNC_VAR_ADD_ATTR_DBL(myThid,fname,vname2, atname, 2, tvar)
+      CALL MNC_VAR_ADD_ATTR_DBL(fname,vname2, atname, 2, tvar, myThid)
 
       print*, ' Calling MNC_VAR_WRITE_DBL() ...'
-      CALL MNC_VAR_WRITE_DBL(myThid, fname, vname1, var)
+      CALL MNC_VAR_WRITE_DBL(fname, vname1, var, myThid)
       print*, ' Calling MNC_VAR_WRITE_DBL() ...'
-      CALL MNC_VAR_WRITE_DBL(myThid, fname, vname2, var)
+      CALL MNC_VAR_WRITE_DBL(fname, vname2, var, myThid)
 
-      CALL MNC_DUMP()
+      CALL MNC_DUMP(myThid)
 
       print*, ' Calling MNC_FILE_CLOSE() ...'
-      CALL MNC_FILE_CLOSE(myThid, fname)
+      CALL MNC_FILE_CLOSE(fname, myThid)
 
-      CALL MNC_DUMP()
+      CALL MNC_DUMP(myThid)
 
       print*, '=========================================='
 
       print*, ' Calling MNC_FILE_READALL() ...'
-      CALL MNC_FILE_READALL(myThid, fname)
+      CALL MNC_FILE_READALL(fname, myThid)
 
-      CALL MNC_DUMP()
+      CALL MNC_DUMP(myThid)
 
       print*, '=== Ending Program:  mnc_test_001 ==='
 

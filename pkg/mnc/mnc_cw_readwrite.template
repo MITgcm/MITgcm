@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.8 2004/03/10 05:50:16 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.9 2004/03/19 03:28:36 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -6,11 +6,11 @@ C $Name:  $
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_CW_RX_W_YY( 
-     I     myThid, 
      I     fbname, bi,bj, 
      I     vtype, 
      I     indu, 
-     I     var ) 
+     I     var, 
+     I     myThid )
 
       implicit none
 
@@ -56,7 +56,7 @@ C     Only do I/O if I am the master thread
 C     Check that the Variable Type exists
       nvf = IFNBLNK(vtype)
       nvl = ILNBLNK(vtype)
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, vtype, mnc_cw_vname, indv)
+      CALL MNC_GET_IND(MNC_MAX_ID, vtype, mnc_cw_vname, indv, myThid)
       IF (indv .LT. 1) THEN
         write(msgbuf,'(3a)') 'MNC_CW_RX_W_YY ERROR: vtype ''', 
      &       vtype(nvf:nvl), ''' is not defined'
@@ -83,7 +83,7 @@ C     Set the bi,bj indicies
         DO lbi = bis,bie
 
 C         Create the file name
-          CALL MNC_CW_GET_TILE_NUM(myThid, lbi,lbj, uniq_tnum)
+          CALL MNC_CW_GET_TILE_NUM(lbi,lbj, uniq_tnum, myThid)
           fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
           n1 = IFNBLNK(fbname)
           n2 = ILNBLNK(fbname)
@@ -95,7 +95,7 @@ C         Create the file name
           nfname = ntot+9
 
 C         Append to an existing or create a new file
-          CALL MNC_CW_FILE_AORC(myThid, fname, indf)
+          CALL MNC_CW_FILE_AORC(fname, indf, myThid)
           fid = mnc_f_info(indf,2)
 
 C         Ensure that all the NetCDF dimensions are defined and create a
@@ -109,23 +109,23 @@ C         local copy of them
             ELSE
               dimnc(i) = mnc_cw_ie(i,igrid) - mnc_cw_is(i,igrid) + 1
             ENDIF
-            CALL MNC_DIM_INIT(myThid,fname, 
-     &           mnc_cw_dn(i,igrid), dimnc(i) )
+            CALL MNC_DIM_INIT(fname, 
+     &           mnc_cw_dn(i,igrid), dimnc(i), myThid)
           ENDDO
 
 C         Ensure that the "grid" is defined
-          CALL MNC_GRID_INIT(myThid,fname, mnc_cw_gname(igrid), 
-     &        mnc_cw_ndim(igrid), mnc_cw_dn(1,igrid))
+          CALL MNC_GRID_INIT(fname, mnc_cw_gname(igrid), 
+     &        mnc_cw_ndim(igrid), mnc_cw_dn(1,igrid), myThid)
 
 C         Ensure that the variable is defined
 #ifdef  mnc_rtype_D
-      CALL MNC_VAR_INIT_DBL(myThid,fname,mnc_cw_gname(igrid),vtype)
+      CALL MNC_VAR_INIT_DBL(fname,mnc_cw_gname(igrid),vtype, myThid)
 #endif
 #ifdef  mnc_rtype_R
-      CALL MNC_VAR_INIT_REAL(myThid,fname,mnc_cw_gname(igrid),vtype)
+      CALL MNC_VAR_INIT_REAL(fname,mnc_cw_gname(igrid),vtype, myThid)
 #endif
 #ifdef  mnc_rtype_I
-      CALL MNC_VAR_INIT_INT(myThid,fname,mnc_cw_gname(igrid),vtype)
+      CALL MNC_VAR_INIT_INT(fname,mnc_cw_gname(igrid),vtype, myThid)
 #endif
           DO i = 1,mnc_fv_ids(indf,1)
             j = 2 + 3*(i - 1)
@@ -187,11 +187,11 @@ C               Use the indu value
                 udo(i) = indu - 1
               ELSEIF (indu .EQ. -1) THEN
 C               Append one to the current unlimited dim size
-                CALL MNC_DIM_UNLIM_SIZE(myThid, fname, unlim_sz)
+                CALL MNC_DIM_UNLIM_SIZE( fname, unlim_sz, myThid)
                 udo(i) = unlim_sz
               ELSE
 C               Use the current unlimited dim size
-                CALL MNC_DIM_UNLIM_SIZE(myThid, fname, unlim_sz)
+                CALL MNC_DIM_UNLIM_SIZE( fname, unlim_sz, myThid)
                 udo(i) = unlim_sz - 1
               ENDIF
             ENDIF
@@ -209,23 +209,23 @@ CEH3        write(*,*) 'i,p(i),s(i),e(i) = ', i,p(i),s(i),e(i)
 CEH3      ENDDO
 
 C         Add the global attributes
-          CALL MNC_CW_SET_GATTR(myThid, fname, lbi,lbj, uniq_tnum)
+          CALL MNC_CW_SET_GATTR( fname, lbi,lbj, uniq_tnum, myThid)
 
 C         Add the per-variable attributes
           DO i = 1,mnc_cw_vnat(1,indv)
-            CALL MNC_VAR_ADD_ATTR_STR(myThid, fname, vtype, 
-     &           mnc_cw_vtnm(i,indv), mnc_cw_vtat(i,indv))
+            CALL MNC_VAR_ADD_ATTR_STR( fname, vtype, 
+     &           mnc_cw_vtnm(i,indv), mnc_cw_vtat(i,indv), myThid)
           ENDDO
           DO i = 1,mnc_cw_vnat(2,indv)
-            CALL MNC_VAR_ADD_ATTR_INT(myThid, fname, vtype, 
-     &           mnc_cw_vinm(i,indv), 1, mnc_cw_viat(i,indv))
+            CALL MNC_VAR_ADD_ATTR_INT( fname, vtype, 
+     &           mnc_cw_vinm(i,indv), 1, mnc_cw_viat(i,indv), myThid)
           ENDDO
           DO i = 1,mnc_cw_vnat(3,indv)
-            CALL MNC_VAR_ADD_ATTR_DBL(myThid, fname, vtype, 
-     &           mnc_cw_vdnm(i,indv), 1, mnc_cw_vdat(i,indv))
+            CALL MNC_VAR_ADD_ATTR_DBL( fname, vtype, 
+     &           mnc_cw_vdnm(i,indv), 1, mnc_cw_vdat(i,indv), myThid)
           ENDDO
 
-          CALL MNC_FILE_ENDDEF(myThid,fname)
+          CALL MNC_FILE_ENDDEF(fname, myThid)
 
           write(msgbuf,'(5a)') 'writing variable type ''', 
      &         vtype(nvf:nvl), ''' within file ''', 
@@ -277,7 +277,7 @@ C         Write the variable one vector at a time
       err = NF_PUT_VARA_INT(fid, idv, vstart, vcount, resh)
 #endif
 
-      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+      CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
                     ENDDO
                   ENDDO
@@ -290,7 +290,7 @@ C         Sync the file
           err = NF_SYNC(fid)
           write(msgbuf,'(3a)') 'sync for file ''', fname, 
      &         ''' in S/R MNC_CW_RX_W_YY'
-          CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+          CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
         ENDDO
       ENDDO
@@ -305,11 +305,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 
       SUBROUTINE MNC_CW_RX_R_YY( 
-     I     myThid, 
      I     fbname, bi,bj, 
      I     vtype, 
      I     indu, 
-     I     var ) 
+     I     var, 
+     I     myThid )
 
       implicit none
 
@@ -357,7 +357,7 @@ C     Only do I/O if I am the master thread
 C     Check that the Variable Type exists
       nvf = IFNBLNK(vtype)
       nvl = ILNBLNK(vtype)
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, vtype, mnc_cw_vname, ind_vt)
+      CALL MNC_GET_IND( MNC_MAX_ID, vtype, mnc_cw_vname, ind_vt, myThid)
       IF (ind_vt .LT. 1) THEN
         write(msgbuf,'(3a)') 'MNC_CW_RX_R_YY ERROR: vtype ''', 
      &       vtype(nvf:nvl), ''' is not defined'
@@ -388,7 +388,7 @@ C     Set the bi,bj indicies
         DO lbi = bis,bie
 
 C         Create the file name
-          CALL MNC_CW_GET_TILE_NUM(myThid, lbi,lbj, uniq_tnum)
+          CALL MNC_CW_GET_TILE_NUM( lbi,lbj, uniq_tnum, myThid)
           fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
           n1 = IFNBLNK(fbname)
           n2 = ILNBLNK(fbname)
@@ -400,10 +400,10 @@ C         Create the file name
           nfname = ntot+9
 
 C         Open the existing file 
-          CALL MNC_FILE_TRY_READ(myThid, fname, ierr, indf)
+          CALL MNC_FILE_TRY_READ( fname, ierr, indf, myThid)
 
 C         Check that the variable (VType) is defined within the file
-          CALL MNC_GET_FVINDS(myThid, fname, vtype, indf, ind_fv_ids)
+          CALL MNC_GET_FVINDS( fname, vtype, indf, ind_fv_ids, myThid)
           IF ((indf .LT. 1) .OR. (ind_fv_ids .LT. 1)) THEN
             write(msgbuf,'(4a)') 'MNC_CW_RX_R_YY ERROR: vtype ''', 
      &           vtype(nvf:nvl), ''' is not defined within file ''', 
@@ -421,14 +421,16 @@ C         are compatible and WARN (only warn) if not
           err = NF_INQ_ATT(fid,NF_GLOBAL, 'sNx',atype,alen)
           IF ((err .EQ. NF_NOERR) .AND. (alen .EQ. 1)) THEN
             err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNx', f_sNx)
-            CALL MNC_HANDLE_ERR(myThid, err, 
-     &           'reading attribute ''sNx'' in S/R MNC_CW_RX_R_YY')
+            CALL MNC_HANDLE_ERR(err, 
+     &           'reading attribute ''sNx'' in S/R MNC_CW_RX_R_YY', 
+     &           myThid)
           ENDIF
           err = NF_INQ_ATT(fid,NF_GLOBAL, 'sNy',atype,alen)
           IF ((err .EQ. NF_NOERR) .AND. (alen .EQ. 1)) THEN
             err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNy', f_sNy)
-            CALL MNC_HANDLE_ERR(myThid, err, 
-     &           'reading attribute ''sNy'' in S/R MNC_CW_RX_R_YY')
+            CALL MNC_HANDLE_ERR(err, 
+     &           'reading attribute ''sNy'' in S/R MNC_CW_RX_R_YY',
+     &           myThid)
           ENDIF
           IF ((f_sNx .NE. sNx) .OR. (f_sNy .NE. sNy)) THEN
             write(msgbuf,'(5a)') 'MNC_CW_RX_R_YY WARNING: the ',
@@ -441,7 +443,7 @@ C         are compatible and WARN (only warn) if not
 C         Check that the in-memory variable and the in-file variables
 C         are of compatible sizes
 C           ires = 1
-C           CALL MNC_CHK_VTYP_R_NCVAR(myThid, ind_vt, 
+C           CALL MNC_CHK_VTYP_R_NCVAR( ind_vt, 
 C      &         indf, ind_fv_ids, indu, ires)
 C           IF (ires .LT. 0) THEN
 C             write(msgbuf,'(7a)') 'MNC_CW_RX_R_YY WARNING: the sizes ',
@@ -497,11 +499,11 @@ C               Use the indu value
                 udo(i) = indu - 1
               ELSEIF (indu .EQ. -1) THEN
 C               Append one to the current unlimited dim size
-                CALL MNC_DIM_UNLIM_SIZE(myThid, fname, unlim_sz)
+                CALL MNC_DIM_UNLIM_SIZE( fname, unlim_sz, myThid)
                 udo(i) = unlim_sz
               ELSE
 C               Use the current unlimited dim size
-                CALL MNC_DIM_UNLIM_SIZE(myThid, fname, unlim_sz)
+                CALL MNC_DIM_UNLIM_SIZE( fname, unlim_sz, myThid)
                 udo(i) = unlim_sz - 1
               ENDIF
             ENDIF
@@ -519,7 +521,7 @@ C     DO i = 9,1,-1
 C     write(*,*) 'i,p(i),s(i),e(i) = ', i,': ',p(i),s(i),e(i)
 C     ENDDO
           
-          CALL MNC_FILE_ENDDEF(myThid,fname)
+          CALL MNC_FILE_ENDDEF(fname, myThid)
 
           write(msgbuf,'(5a)') 'reading variable type ''', 
      &         vtype(nvf:nvl), ''' within file ''', 
@@ -564,7 +566,7 @@ C         Read the variable one vector at a time
       err = NF_GET_VARA_INT(fid, idv, vstart, vcount, resh)
 #endif
 
-      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+      CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
       kr = 0
       DO j1 = s(1),e(1)
@@ -582,7 +584,7 @@ C         Read the variable one vector at a time
           ENDDO
 
 C         Close the file
-          CALL MNC_FILE_CLOSE(myThid, fname)
+          CALL MNC_FILE_CLOSE(fname, myThid)
 
 C         End the lbj,lbi loops
         ENDDO

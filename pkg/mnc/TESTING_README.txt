@@ -1,12 +1,14 @@
-
+# $Header: /u/gcmpack/MITgcm/pkg/mnc/TESTING_README.txt,v 1.2 2004/03/19 03:28:36 edhill Exp $
+#
 
 The files here (the "MNC package") have an intentionally weak link to
-MITgcm.  Since no FORTRAN common blocks are shared with the main
-MITgcm code, the MNC files could be built as a separate library.
+MITgcm.  Since few FORTRAN common blocks are shared with the main
+MITgcm code, many of the MNC files could be compiled independently.
 
 Unlike the other MITgcm "packages", MNC includes a local Makefile and
 various testing files (*.t, *.T) that can be used to create stand-
-alone tests of the MNC functionality.  Useful make targets include:
+alone tests of parts of the MNC functionality.  Useful make targets
+include:
 
   make
   make test

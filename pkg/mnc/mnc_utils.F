@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.9 2004/03/08 21:15:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.10 2004/03/19 03:28:37 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 
-      SUBROUTINE MNC_HANDLE_ERR( myThid, status, msg )
+      SUBROUTINE MNC_HANDLE_ERR( status, msg, myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -44,11 +44,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 
       SUBROUTINE MNC_GET_IND(
-     I     myThid,
      I     NT,
      I     aname,
      I     name_list,
-     O     ind )
+     O     ind,
+     I     myThid )
 
       implicit none
 #include "EEPARAMS.h"
@@ -94,10 +94,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 
       SUBROUTINE MNC_GET_NEXT_EMPTY_IND(
-     I     myThid,
      I     NT,
      I     name_list,
-     O     ind )
+     O     ind,
+     I     myThid )
 
       implicit none
 #include "EEPARAMS.h"
@@ -136,11 +136,11 @@ C     If this is code is reached, we have exceeded the array size
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_GET_FVINDS( 
-     I     myThid, 
      I     fname, 
      I     vname, 
      O     indf, 
-     O     ind_fv_ids )
+     O     ind_fv_ids,
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -161,7 +161,7 @@ C     Strip trailing spaces
       lenv = ILNBLNK(vname)
 
 C     Check that the file exists
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
+      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)
       IF (indf .LT. 1) THEN
         ind_fv_ids = -1
         RETURN
@@ -197,12 +197,12 @@ C     .  YES  ==>  ires > 0
 C     .  NO   ==>  ires < 0
 
       SUBROUTINE MNC_CHK_VTYP_R_NCVAR( 
-     I     myThid, 
      I     ind_vt, 
      I     indf,
      I     ind_fv_ids, 
      I     indu, 
-     O     ires )
+     O     ires,
+     I     myThid )
 
       implicit none
 #include "mnc_common.h"

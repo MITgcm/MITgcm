@@ -36,43 +36,43 @@ using a simple interface such as:
 
   MNC_INIT(              myThid )
 
-  MNC_FILE_CREATE(       myThid, fname )
-  MNC_FILE_OPEN(         myThid, fname, itype )
-  MNC_FILE_ADD_ATTR_STR( myThid, fname, atname, sval )
-  MNC_FILE_ADD_ATTR_DBL( myThid, fname, atname, len, dval )
-  MNC_FILE_ADD_ATTR_REAL(myThid, fname, atname, len, rval )
-  MNC_FILE_ADD_ATTR_INT( myThid, fname, atname, len, ival )
-  MNC_FILE_ADD_ATTR_ANY( myThid, fname, atname, atype, cs,len,dv,rv,iv )
+  MNC_FILE_CREATE(       fname, myThid )
+  MNC_FILE_OPEN(         fname, itype, myThid )
+  MNC_FILE_ADD_ATTR_STR( fname, atname, sval, myThid )
+  MNC_FILE_ADD_ATTR_DBL( fname, atname, len, dval, myThid )
+  MNC_FILE_ADD_ATTR_REAL(fname, atname, len, rval, myThid )
+  MNC_FILE_ADD_ATTR_INT( fname, atname, len, ival, myThid )
+  MNC_FILE_ADD_ATTR_ANY( fname, atname, atype, cs,len,dv,rv,iv, myThid )
   ...
-  MNC_FILE_READ_HEADER(  myThid, fname )
+  MNC_FILE_READ_HEADER(  fname, myThid )
 
-  MNC_DIM_INIT(          myThid, fname, dname, dlen )
+  MNC_DIM_INIT(          fname, dname, dlen, myThid )
 
-  MNC_GRID_INIT(         myThid, fname, gname, ndim, dnames )
+  MNC_GRID_INIT(         fname, gname, ndim, dnames, myThid )
 
-  MNC_VAR_INIT_DBL(      myThid, fname, gname, vname, units )
-  MNC_VAR_INIT_REAL(     myThid, fname, gname, vname, units )
-  MNC_VAR_INIT_INT(      myThid, fname, gname, vname, units )
-  MNC_VAR_INIT_ANY(      myThid, fname, gname, vname, units, type )
-  MNC_VAR_ADD_ATTR_STR(  myThid, fname, vname, atname, sval )
-  MNC_VAR_ADD_ATTR_DBL(  myThid, fname, vname, atname, nv, dval )
-  MNC_VAR_ADD_ATTR_REAL( myThid, fname, vname, atname, nv, rval )
-  MNC_VAR_ADD_ATTR_INT(  myThid, fname, vname, atname, nv, ival )
-  MNC_VAR_ADD_ATTR_ANY(  myThid, fname, vname, atname, atype, cs,len,dv,rv,iv )
-  MNC_VAR_WRITE_DBL(     myThid, fname, vname, var )
-  MNC_VAR_WRITE_REAL(    myThid, fname, vname, var )
-  MNC_VAR_WRITE_INT(     myThid, fname, vname, var )
-  MNC_VAR_WRITE_ANY(     myThid, fname, vname, vtype, dv, rv, iv )
+  MNC_VAR_INIT_DBL(      fname, gname, vname, units, myThid )
+  MNC_VAR_INIT_REAL(     fname, gname, vname, units, myThid )
+  MNC_VAR_INIT_INT(      fname, gname, vname, units, myThid )
+  MNC_VAR_INIT_ANY(      fname, gname, vname, units, type, myThid )
+  MNC_VAR_ADD_ATTR_STR(  fname, vname, atname, sval, myThid )
+  MNC_VAR_ADD_ATTR_DBL(  fname, vname, atname, nv, dval, myThid )
+  MNC_VAR_ADD_ATTR_REAL( fname, vname, atname, nv, rval, myThid )
+  MNC_VAR_ADD_ATTR_INT(  fname, vname, atname, nv, ival, myThid )
+  MNC_VAR_ADD_ATTR_ANY(  fname, vname, atname, atype, cs,len,dv,rv,iv, myThid )
+  MNC_VAR_WRITE_DBL(     fname, vname, var, myThid )
+  MNC_VAR_WRITE_REAL(    fname, vname, var, myThid )
+  MNC_VAR_WRITE_INT(     fname, vname, var, myThid )
+  MNC_VAR_WRITE_ANY(     fname, vname, vtype, dv, rv, iv, myThid )
   ...
-  MNC_VAR_READ(          myThid, fname, vname, var )
+  MNC_VAR_READ(          fname, vname, var, myThid )
 
-  MNC_FILE_SYNC(         myThid, fname )
-  MNC_FILE_CLOSE(        myThid, fname )
+  MNC_FILE_SYNC(         fname, myThid )
+  MNC_FILE_CLOSE(        fname, myThid )
 
 
 Heres a further "convenience wrapper" written on top of the above UI:
 
-  MNC_CW_INIT(  myThid, Gtype, Htype, Hsub, Vtype, Ttype, wHalo )
+  MNC_CW_INIT(  Gtype, Htype, Hsub, Vtype, Ttype, wHalo, myThid )
 
     with pre-defined           -      xy    -      -      n
     combinations:              U      x     c      t      y
@@ -80,13 +80,13 @@ Heres a further "convenience wrapper" written on top of the above UI:
     'U_xy_i_t_Hn',             Cen
     'Cor_x_-_-_Hy'             Cor
 
-  MNC_CW_WRITE( myThid,myIter, filebn,bi,bj, Gtype, RX, vname, var )
-  MNC_CW_READ(  myThid,myIter, filebn,bi,bj, Gtype, RX, vname, var )
+  MNC_CW_WRITE( myIter, filebn,bi,bj, Gtype, RX, vname, var, myThid )
+  MNC_CW_READ(  myIter, filebn,bi,bj, Gtype, RX, vname, var, myThid )
 
-  MNC_CW_RX_W_YY( myThid, fbname,bi,bj, vtype, indu, var )
-  MNC_CW_RX_R_YY( myThid, fbname,bi,bj, vtype, indu, var )
+  MNC_CW_RX_W_YY( fbname,bi,bj, vtype, indu, var, myThid )
+  MNC_CW_RX_R_YY( fbname,bi,bj, vtype, indu, var, myThid )
 
-  MNC_COMP_VTYPE_VAR( myThid, ind_vt, ind_fv_ids, ires )
+  MNC_COMP_VTYPE_VAR( ind_vt, ind_fv_ids, ires, myThid )
 
 
 To-Do:

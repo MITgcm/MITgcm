@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.13 2004/03/08 21:15:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.14 2004/03/19 03:28:36 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -6,8 +6,8 @@ C $Name:  $
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_FILE_CREATE( 
-     I     myThid,
-     I     fname )
+     I     fname, 
+     I     myThid )
 
       implicit none
 
@@ -18,7 +18,7 @@ C     Arguments
 C     Local Variables
       integer indf
 
-      CALL MNC_FILE_OPEN(myThid, fname, 0, indf)
+      CALL MNC_FILE_OPEN(fname, 0, indf, myThid)
 
       RETURN
       END
@@ -26,10 +26,10 @@ C     Local Variables
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_FILE_OPEN( 
-     I     myThid,
      I     fname, 
      I     itype, 
-     O     indf )
+     O     indf, 
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -51,7 +51,7 @@ C     Local Variables
 
 C     Is the file already open?
       nf = ILNBLNK(fname)
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
+      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)
       IF (indf .GT. 0) THEN
         write(msgbuf,'(3a)') 'MNC_FILE_OPEN ERROR: ''', fname(1:nf), 
      &       ''' is already open -- cannot open twice'
@@ -64,12 +64,12 @@ C     Is the file already open?
 
 C       Create new file
         err = NF_CREATE(fname, NF_CLOBBER, fid)
-        CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+        CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
       ELSEIF (itype .EQ. 1) THEN
 
 C       Append to existing file
-        CALL MNC_FILE_READALL(myThid, fname)
+        CALL MNC_FILE_READALL(fname, myThid)
 
       ELSE
 C       Error
@@ -79,7 +79,7 @@ C       Error
         stop 'ABNORMAL END: S/R MNC_FILE_ADD_ATTR_STR'
       ENDIF
 
-      CALL MNC_GET_NEXT_EMPTY_IND(myThid,MNC_MAX_ID,mnc_f_names,indf)
+      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID,mnc_f_names,indf, myThid)
       n = ILNBLNK(fname)
       mnc_f_names(indf)(1:n) = fname(1:n)
       mnc_f_info(indf,1) = 1
@@ -94,29 +94,29 @@ C       Error
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_FILE_ADD_ATTR_STR( 
-     I     myThid, 
      I     fname, 
      I     atname, 
-     I     sval )
+     I     sval, 
+     I     myThid )
 
       implicit none
 C     Arguments
       integer myThid
       character*(*) fname, atname, sval
 
-      CALL MNC_FILE_ADD_ATTR_ANY(myThid,fname,atname, 1, 
-     &     sval, 0, 0.0D0, 0.0, 0 )
+      CALL MNC_FILE_ADD_ATTR_ANY(fname,atname, 1, 
+     &     sval, 0, 0.0D0, 0.0, 0, myThid )
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_FILE_ADD_ATTR_DBL( 
-     I     myThid, 
      I     fname, 
      I     atname, 
      I     len, 
-     I     dval )
+     I     dval, 
+     I     myThid )
 
       implicit none
 C     Arguments
@@ -124,19 +124,19 @@ C     Arguments
       character*(*) fname, atname
       REAL*8 dval
 
-      CALL MNC_FILE_ADD_ATTR_ANY(myThid,fname,atname, 2, 
-     &     ' ', len, dval, 0.0, 0 )
+      CALL MNC_FILE_ADD_ATTR_ANY(fname,atname, 2, 
+     &     ' ', len, dval, 0.0, 0, myThid )
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_FILE_ADD_ATTR_REAL( 
-     I     myThid, 
      I     fname, 
      I     atname, 
      I     len, 
-     I     rval )
+     I     rval, 
+     I     myThid )
 
       implicit none
 C     Arguments
@@ -144,37 +144,37 @@ C     Arguments
       character*(*) fname, atname
       REAL*4 rval
 
-      CALL MNC_FILE_ADD_ATTR_ANY(myThid,fname,atname, 3, 
-     &     ' ', len, 0.0D0, rval, 0 )
+      CALL MNC_FILE_ADD_ATTR_ANY(fname,atname, 3, 
+     &     ' ', len, 0.0D0, rval, 0, myThid )
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_FILE_ADD_ATTR_INT( 
-     I     myThid, 
      I     fname, 
      I     atname, 
      I     len, 
-     I     ival )
+     I     ival, 
+     I     myThid )
 
       implicit none
 C     Arguments
       integer myThid, len, ival
       character*(*) fname, atname
 
-      CALL MNC_FILE_ADD_ATTR_ANY(myThid,fname,atname, 4, 
-     &     ' ', len, 0.0D0, 0.0, ival )
+      CALL MNC_FILE_ADD_ATTR_ANY(fname,atname, 4, 
+     &     ' ', len, 0.0D0, 0.0, ival, myThid )
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_FILE_ADD_ATTR_ANY( 
-     I     myThid, 
      I     fname, 
      I     atname, 
-     I     atype, sv, len,dv,rv,iv )
+     I     atype, sv, len,dv,rv,iv, 
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -196,7 +196,7 @@ C     Local Variables
       character*(MAX_LEN_MBUF) msgbuf
       
 C     Verify that the file is open
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, ind)
+      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, ind, myThid)
       IF (ind .LT. 0) THEN
         write(msgbuf,'(3a)') 'MNC ERROR: file ''',
      &       fname, ''' must be opened first'
@@ -206,7 +206,7 @@ C     Verify that the file is open
       fid = mnc_f_info(ind,2)
 
 C     Enter define mode
-      CALL MNC_FILE_REDEF(myThid, fname)
+      CALL MNC_FILE_REDEF(fname, myThid)
 
       s1(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
       n1 = ILNBLNK(atname)
@@ -215,20 +215,24 @@ C     Enter define mode
       IF (atype .EQ. 1) THEN
         lens = ILNBLNK(sv)
         err = NF_PUT_ATT_TEXT(fid, NF_GLOBAL, s1, lens, sv)
-        CALL MNC_HANDLE_ERR(myThid, err,
-     &       'adding TEXT attribute in S/R MNC_FILE_ADD_ATTR_ANY')
+        CALL MNC_HANDLE_ERR(err,
+     &       'adding TEXT attribute in S/R MNC_FILE_ADD_ATTR_ANY', 
+     &       myThid)
       ELSEIF (atype .EQ. 2) THEN
         err = NF_PUT_ATT_DOUBLE(fid, NF_GLOBAL, s1, NF_DOUBLE, len, dv)
-        CALL MNC_HANDLE_ERR(myThid, err,
-     &       'adding DOUBLE attribute in S/R MNC_FILE_ADD_ATTR_ANY')
+        CALL MNC_HANDLE_ERR(err,
+     &       'adding DOUBLE attribute in S/R MNC_FILE_ADD_ATTR_ANY',
+     &       myThid)
       ELSEIF (atype .EQ. 3) THEN
         err = NF_PUT_ATT_REAL(fid, NF_GLOBAL, s1, NF_FLOAT, len, rv)
-        CALL MNC_HANDLE_ERR(myThid, err,
-     &       'adding REAL attribute in S/R MNC_FILE_ADD_ATTR_ANY')
+        CALL MNC_HANDLE_ERR(err,
+     &       'adding REAL attribute in S/R MNC_FILE_ADD_ATTR_ANY',
+     &       myThid)
       ELSEIF (atype .EQ. 4) THEN
         err = NF_PUT_ATT_INT(fid, NF_GLOBAL, s1, NF_INT, len, iv)
-        CALL MNC_HANDLE_ERR(myThid, err,
-     &       'adding INT attribute in S/R MNC_FILE_ADD_ATTR_ANY')
+        CALL MNC_HANDLE_ERR(err,
+     &       'adding INT attribute in S/R MNC_FILE_ADD_ATTR_ANY',
+     &       myThid)
       ELSE
         write(msgbuf,'(a,i10,a)') 'MNC ERROR: atype = ''', atype, 
      &       ''' is invalid--must be: [1-4]'
@@ -243,8 +247,8 @@ C     Enter define mode
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_FILE_CLOSE( 
-     I     myThid,
-     I     fname )
+     I     fname, 
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -265,7 +269,7 @@ C     Local Variables
       nf = ILNBLNK(fname)
 
 C     Check that the file is open
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
+      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)
       IF (indf .LT. 1) THEN
         write(msgbuf,'(3a)') 'MNC Warning: file ''', fname(1:nf), 
      &       ''' is already closed'
@@ -275,7 +279,7 @@ C     Check that the file is open
       fid = mnc_f_info(indf,2)
       err = NF_CLOSE(fid)
       write(msgbuf,'(3a)') ' cannot close file ''', fname(1:nf), ''''
-      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+      CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
 C     Clear all the info associated with this file
 C     variables
@@ -322,8 +326,8 @@ C     file name
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_FILE_CLOSE_ALL_MATCHING( 
-     I     myThid, 
-     I     fname ) 
+     I     fname, 
+     I     myThid ) 
 
       implicit none
 #include "netcdf.inc"
@@ -345,7 +349,7 @@ C     Local Variables
 
 C       Check that the file is open
         IF (fname(1:n) .EQ. mnc_f_names(i)(1:n)) THEN
-          CALL MNC_FILE_CLOSE(myThid,mnc_f_names(i))
+          CALL MNC_FILE_CLOSE(mnc_f_names(i), myThid)
         ENDIF
 
       ENDDO
@@ -374,7 +378,7 @@ C     Local Variables
 C       Check that the file is open
         IF (mnc_f_names(i)(1:MNC_MAX_CHAR) 
      &       .NE. mnc_blank_name(1:MNC_MAX_CHAR)) THEN
-          CALL MNC_FILE_CLOSE(myThid,mnc_f_names(i))
+          CALL MNC_FILE_CLOSE(mnc_f_names(i), myThid)
         ENDIF
 
       ENDDO
@@ -385,8 +389,8 @@ C       Check that the file is open
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_FILE_REDEF( 
-     I     myThid,
-     I     fname )
+     I     fname, 
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -405,7 +409,7 @@ C     Local Variables
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Verify that the file is open
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, ind)
+      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, ind, myThid)
       IF (ind .LT. 0) THEN
         n = ILNBLNK(fname)
         write(msgbuf,'(3a)') 'MNC ERROR: file ''',
@@ -419,8 +423,8 @@ C     Verify that the file is open
       IF (def .NE. 1) THEN
 C       Enter define mode
         err = NF_REDEF(fid)
-        CALL MNC_HANDLE_ERR(myThid, err, 
-     &       'entering define mode in S/R MNC_FILE_REDEF')
+        CALL MNC_HANDLE_ERR(err, 
+     &       'entering define mode in S/R MNC_FILE_REDEF', myThid)
         mnc_f_info(ind,1) = 1
       ENDIF
 
@@ -430,8 +434,8 @@ C       Enter define mode
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_FILE_ENDDEF( 
-     I     myThid,
-     I     fname )
+     I     fname, 
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -450,7 +454,7 @@ C     Local Variables
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Verify that the file is open
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, ind)
+      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, ind, myThid)
       IF (ind .LT. 0) THEN
         n = ILNBLNK(fname)
         write(msgbuf,'(3a)') 'MNC ERROR: file ''',
@@ -464,8 +468,8 @@ C     Verify that the file is open
       IF (def .NE. 2) THEN
 C       Enter define mode
         err = NF_ENDDEF(fid)
-        CALL MNC_HANDLE_ERR(myThid, err, 
-     &       'ending define mode in S/R MNC_FILE_ENDDEF')
+        CALL MNC_HANDLE_ERR(err, 
+     &       'ending define mode in S/R MNC_FILE_ENDDEF', myThid)
         mnc_f_info(ind,1) = 2
       ENDIF
 
@@ -475,8 +479,8 @@ C       Enter define mode
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_FILE_READALL( 
-     I     myThid, 
-     I     fname ) 
+     I     fname, 
+     I     myThid ) 
 
       implicit none
 #include "netcdf.inc"
@@ -495,10 +499,10 @@ C     Local Variables
 
       nff = IFNBLNK(fname)
       nlf = ILNBLNK(fname)
-      CALL MNC_FILE_TRY_READ(myThid, fname, ierr, indf)
+      CALL MNC_FILE_TRY_READ(fname, ierr, indf, myThid)
       write(msgbuf,'(3a)') 'MNC ERROR: cannot open file ''', 
      &     fname(nff:nlf), ''' for read/write access'
-      CALL MNC_HANDLE_ERR(myThid, ierr, msgbuf)
+      CALL MNC_HANDLE_ERR(ierr, msgbuf, myThid)
 
       RETURN
       END
@@ -506,10 +510,10 @@ C     Local Variables
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_FILE_TRY_READ( 
-     I     myThid, 
      I     fname, 
      O     ierr, 
-     O     indf ) 
+     O     indf, 
+     I     myThid ) 
 
       implicit none
 #include "netcdf.inc"
@@ -541,7 +545,7 @@ C     Open and save the filename and fID
         ierr = err
         RETURN
       ENDIF
-      CALL MNC_GET_NEXT_EMPTY_IND(myThid,MNC_MAX_ID,mnc_f_names,indf) 
+      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID,mnc_f_names,indf, myThid)
       mnc_f_names(indf)(1:(nlf-nff+1)) = fname(nff:nlf)
       mnc_f_info(indf,2) = fid
 
@@ -549,7 +553,7 @@ C     Get the overall number of entities
       err = NF_INQ(fid, ndim, nvar, ngat, unlimid)
       write(msgbuf,'(4a)') 'MNC ERROR: cannot read number of dims',
      &     ' in file ''', fname(nff:nlf), ''''
-      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+      CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
 C     Read each dimension and save the information
       DO id = 1,ndim
@@ -557,13 +561,13 @@ C     Read each dimension and save the information
         write(msgbuf,'(2a,i5,3a)') 'MNC ERROR: cannot read dimension',
      &       ' info for dim ''', id, ''' in file ''', 
      &       fname(nff:nlf), ''''
-        CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+        CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
         IF (id .EQ. unlimid) THEN
           dlen = -1
         ENDIF
         ns = IFNBLNK(name)
         ne = ILNBLNK(name)
-        CALL MNC_DIM_INIT_ALL(myThid,fname,name(ns:ne),dlen,'N')
+        CALL MNC_DIM_INIT_ALL(fname,name(ns:ne),dlen,'N', myThid)
         DO i = 1,mnc_f_alld(indf,1)
           j = mnc_f_alld(indf,i+1)
           n1 = IFNBLNK(mnc_d_names(j))
@@ -583,7 +587,7 @@ C     Read and save each variable
         write(msgbuf,'(2a,i5,3a)') 'MNC ERROR: cannot read variable',
      &       ' info for variable ''', id, ''' in file ''', 
      &       fname(nff:nlf), ''''
-        CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+        CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
         n1 = IFNBLNK(name)
         n2 = ILNBLNK(name)
         
@@ -592,10 +596,10 @@ C       Create a grid for this variable
           did = idlist(i)
           dnames(i)(1:MNC_MAX_CHAR) = mnc_d_names(did)(1:MNC_MAX_CHAR)
         ENDDO
-        CALL MNC_GRID_INIT_ALL(myThid, fname, name, ndv, dnames, indg)
+        CALL MNC_GRID_INIT_ALL(fname, name, ndv, dnames, indg, myThid)
 
 C       Update the tables
-        CALL MNC_GET_NEXT_EMPTY_IND(myThid,MNC_MAX_ID,mnc_v_names,indv)
+        CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID,mnc_v_names,indv,myThid)
         mnc_v_names(indv)(1:(n2-n1+1)) = name(n1:n2)
         iv = 2 + 3*mnc_fv_ids(indf,1)
         mnc_fv_ids(indf,iv)   = indv

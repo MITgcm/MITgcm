@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.34 2004/03/08 16:47:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.35 2004/03/19 03:28:36 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -171,33 +171,33 @@ c       CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
 
 C     Write dynvars using the MNC package
       mnc_iter = myIter
-      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'iter',-1,mnc_iter)
-      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'model_time',0,myTime)
-      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'U', 0, uVel)
-      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'V', 0, vVel)
-      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'T', 0, theta)
-      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'S', 0, salt)
-      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'Eta', 0, etaN)
-      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'W', 0, wVel)
+      CALL MNC_CW_RL_W_D('state',0,0,'iter',-1,mnc_iter, myThid)
+      CALL MNC_CW_RL_W_D('state',0,0,'model_time',0,myTime, myThid)
+      CALL MNC_CW_RL_W_D('state',0,0,'U', 0, uVel, myThid)
+      CALL MNC_CW_RL_W_D('state',0,0,'V', 0, vVel, myThid)
+      CALL MNC_CW_RL_W_D('state',0,0,'T', 0, theta, myThid)
+      CALL MNC_CW_RL_W_D('state',0,0,'S', 0, salt, myThid)
+      CALL MNC_CW_RL_W_D('state',0,0,'Eta', 0, etaN, myThid)
+      CALL MNC_CW_RL_W_D('state',0,0,'W', 0, wVel, myThid)
       IF ( useDynP_inEos_Zc .OR. myIter.NE.nIter0 ) THEN
-        CALL MNC_CW_RL_W_R(myThid,'totPhiHyd',0,0,'iter',-1,mnc_iter)
-        CALL MNC_CW_RL_W_D(myThid,'totPhiHyd',0,0,'totPhiHyd',
-     &       0,totPhiHyd)
+        CALL MNC_CW_RL_W_R('totPhiHyd',0,0,'iter',-1,mnc_iter, myThid)
+        CALL MNC_CW_RL_W_D('totPhiHyd',0,0,'totPhiHyd',
+     &       0,totPhiHyd, myThid)
       ENDIF
       IF ((buoyancyRelation .NE. 'ATMOSPHERIC')
      &     .AND. (myIter .NE. nIter0)) THEN
-        CALL MNC_CW_RL_W_D(myThid,'phiHydLow',0,0,'iter',-1,mnc_iter)
-        CALL MNC_CW_RL_W_D(myThid,'phiHydLow',0,0,'phiHydLow',
-     &       0,phiHydLow)
+        CALL MNC_CW_RL_W_D('phiHydLow',0,0,'iter',-1,mnc_iter, myThid)
+        CALL MNC_CW_RL_W_D('phiHydLow',0,0,'phiHydLow',
+     &       0,phiHydLow, myThid)
       ENDIF
 
 #ifdef ALLOW_PASSIVE_TRACER
-      CALL MNC_CW_RL_W_D(myThid,'state',0,0,'tr1', 0, tr1)
+      CALL MNC_CW_RL_W_D('state',0,0,'tr1', 0, tr1, myThid)
 #endif /*  ALLOW_PASSIVE_TRACER  */
 
 #ifdef ALLOW_NONHYDROSTATIC
       IF (nonHydroStatic) THEN
-        CALL MNC_CW_RL_W_D(myThid,'state',0,0,'phi_nh', 0, phi_nh)
+        CALL MNC_CW_RL_W_D('state',0,0,'phi_nh', 0, phi_nh, myThid)
       ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 

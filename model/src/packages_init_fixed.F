@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.20 2004/02/26 22:31:58 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.21 2004/03/19 03:28:36 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -18,6 +18,8 @@ C     \ev
 
 C     !CALLING SEQUENCE:
 C     PACKAGES_INIT_FIXED
+C       |
+C       |-- MNC_INIT
 C       |
 C       |-- GAD_INIT
 C       |
@@ -44,18 +46,17 @@ C     myThid -  Number of this instances
       INTEGER myThid
 CEOP
 
-C--   Initialize fixed params for GAD
-      CALL GAD_INIT( myThid )
-
 C--   Initialize MNC look-up tables
 #ifdef ALLOW_MNC
-CEH3 NEED RUN-TIME SWITCH:  IF (useOBCS) THEN
+CEH3 NEED RUN-TIME SWITCH:  IF (useMNC) THEN
       CALL MNC_INIT(myThid)
-      CALL MNC_CW_INIT(myThid, sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr)
-
+      CALL MNC_CW_INIT(sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr, myThid)
       CALL INI_MNC_IO(myThid)
 CEH3 NEED RUN-TIME SWITCH:  ENDIF
 #endif
+
+C--   Initialize fixed params for GAD
+      CALL GAD_INIT( myThid )
 
 C--   Initialize fixed arrays for OBCS
 #ifdef ALLOW_OBCS

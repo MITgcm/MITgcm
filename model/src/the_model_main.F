@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.74 2004/03/02 08:45:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.75 2004/03/19 03:28:36 edhill Exp $
 C $Name:  $
 
 CBOI
@@ -637,7 +637,7 @@ C--   Final checkpoint (in case the in-loop checkpoint was missed)
 #ifdef ALLOW_MNC
 C     Close all open NetCDF files
       _BEGIN_MASTER( mythid )
-      CALL MNC_FILE_CLOSE_ALL()
+      CALL MNC_FILE_CLOSE_ALL( myThid )
       _END_MASTER( mythid )
 #endif
 

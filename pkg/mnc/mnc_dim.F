@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.6 2004/02/05 00:13:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.7 2004/03/19 03:28:36 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -6,16 +6,16 @@ C $Name:  $
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_DIM_INIT( 
-     I     myThid, 
      I     fname, 
      I     dname, 
-     I     dlen )
+     I     dlen, 
+     I     myThid )
 
 C     Arguments
       integer myThid, dlen
       character*(*) fname, dname
 
-      CALL MNC_DIM_INIT_ALL(myThid, fname, dname, dlen, 'Y')
+      CALL MNC_DIM_INIT_ALL(fname, dname, dlen, 'Y', myThid)
 
       RETURN
       END
@@ -24,11 +24,11 @@ C     Arguments
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_DIM_INIT_ALL( 
-     I     myThid, 
      I     fname, 
      I     dname, 
      I     dlen, 
-     I     doWrite ) 
+     I     doWrite, 
+     I     myThid ) 
 
       implicit none
 #include "netcdf.inc"
@@ -53,7 +53,7 @@ C     Local Variables
       dnl = ILNBLNK(dname)
 
 C     Verify that the file exists
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
+      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)
       IF ( indf .LT. 1 ) THEN
         write(msgbuf,'(3a)') 'MNC ERROR: file ''', fname(1:nf),
      &       ''' does not exist'
@@ -87,7 +87,7 @@ C           Its OK, the names and sizes are identical
         ENDIF
       ENDDO
 
-      CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_d_names, indd)
+      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_d_names, indd, myThid)
 
 C     Create the dim within the file
       IF (doWrite(1:1) .EQ. 'Y') THEN
@@ -95,11 +95,11 @@ C     Create the dim within the file
         tlen = dlen
         IF (dlen .LT. 1)  tlen = NF_UNLIMITED
 
-        CALL MNC_FILE_REDEF(myThid, fname)
+        CALL MNC_FILE_REDEF(fname, myThid)
         err = NF_DEF_DIM(mnc_f_info(indf,2), dname(dnf:dnl), tlen, idd)
         write(msgbuf,'(5a)') 'MNC_DIM_INIT ERROR: cannot create ',
      &       'dim ''', dname(dnf:dnl), ''' in file ''', fname(1:nf)
-        CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+        CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
       ENDIF
 
@@ -116,9 +116,9 @@ C     Add to tables
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_DIM_UNLIM_SIZE( 
-     I     myThid, 
      I     fname, 
-     I     unlim_sz )
+     I     unlim_sz, 
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -139,7 +139,7 @@ C     Local Variables
       nf = ILNBLNK(fname)
 
 C     Verify that the file exists
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
+      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)
       IF (indf .LT. 1) THEN
         write(msgbuf,'(3a)') 'MNC ERROR: file ''', fname(1:nf),
      &       ''' does not exist'
@@ -157,7 +157,7 @@ C     Find the unlimited dim and its current size
           err = NF_INQ_DIMLEN(fid, unlimid, unlim_sz)
           write(msgbuf,'(3a)') 'MNC_DIM_UNLIM_SIZE ERROR: cannot ',
      &         'determine unlimited dim size in file ''', fname(1:nf)
-          CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+          CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
           RETURN
         ENDIF
       ENDDO

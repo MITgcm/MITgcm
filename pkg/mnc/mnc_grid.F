@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.10 2004/03/10 05:50:16 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.11 2004/03/19 03:28:37 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -6,11 +6,11 @@ C $Name:  $
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_GRID_INIT( 
-     I     myThid, 
      I     fname, 
      I     gname, 
      I     ndim, 
-     I     dnames )
+     I     dnames, 
+     I     myThid )
 
       implicit none
 
@@ -22,7 +22,7 @@ C     Arguments
 C     Local Variables
       integer ind
 
-      CALL MNC_GRID_INIT_ALL(myThid, fname, gname, ndim, dnames, ind)
+      CALL MNC_GRID_INIT_ALL(fname, gname, ndim, dnames, ind, myThid)
 
       RETURN
       END
@@ -30,12 +30,12 @@ C     Local Variables
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_GRID_INIT_ALL( 
-     I     myThid, 
      I     fname, 
      I     gname, 
      I     ndim, 
      I     dnames, 
-     O     ind ) 
+     O     ind, 
+     I     myThid ) 
 
       implicit none
 #include "netcdf.inc"
@@ -62,7 +62,7 @@ C     Get the file ID and indicies
       nf = ILNBLNK(fname)
       IF (nf .GT. MNC_MAX_CHAR) nf = MNC_MAX_CHAR
       file_name(1:nf) = fname(1:nf)
-      CALL MNC_GET_IND(myThid,MNC_MAX_ID,file_name,mnc_f_names,indf)
+      CALL MNC_GET_IND(MNC_MAX_ID,file_name,mnc_f_names,indf, myThid)
       IF (indf .LT. 1) THEN
         write(msgbuf,'(3a)') 'MNC ERROR: file ''', file_name(1:nf), 
      &       ''' does not exist'
@@ -90,7 +90,7 @@ C     Check for sufficient space in memory
       ENDIF
 
 C     Enter DEFINE mode
-      CALL MNC_FILE_REDEF(myThid, fname)
+      CALL MNC_FILE_REDEF(fname, myThid)
 
 C     Check for grid re-definition
       DO igr = 1,mnc_f_info(indf,3)
@@ -129,8 +129,8 @@ C         Check if same number of dims but different dim names
  10   CONTINUE
 
 C     Reaching this point means the grid was not previously defined
-      CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_g_names,
-     &     indg)
+      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_g_names,
+     &     indg, myThid)
       mnc_g_names(indg)(1:MNC_MAX_CHAR) =
      &     mnc_blank_name(1:MNC_MAX_CHAR)
       n = ILNBLNK(gname)
@@ -184,13 +184,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE MNC_GRID_GET_DIMIND( 
      I     indf, 
      I     dname, 
-     O     ind_fg_ids )
+     O     ind_fg_ids, 
+     I     myThid )
 
       implicit none
 #include "mnc_common.h"
 
 C     Arguments
-      integer indf, ind_fg_ids
+      integer indf, ind_fg_ids, myThid
       character*(*) dname
 
 C     Functions

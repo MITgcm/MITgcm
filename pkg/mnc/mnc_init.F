@@ -1,15 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.10 2004/03/09 14:43:16 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.11 2004/03/19 03:28:37 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      SUBROUTINE MNC_INIT()
+      SUBROUTINE MNC_INIT( myThid )
 
 #include "mnc_common.h"
 
 C     Arguments
+      integer myThid
 
 C     Local Variables
       integer i,j, g, v
@@ -66,19 +67,20 @@ C     The outer tables
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      SUBROUTINE MNC_DUMP()
-      CALL MNC_DUMP_ALL(5, 20)
+      SUBROUTINE MNC_DUMP( myThid )
+      INTEGER myThid
+      CALL MNC_DUMP_ALL(5, 20, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      SUBROUTINE MNC_DUMP_ALL( n_id, n_items )
+      SUBROUTINE MNC_DUMP_ALL( n_id, n_items, myThid )
 
 #include "mnc_common.h"
 
 C     Arguments
-      integer n_id, n_items
+      integer n_id, n_items, myThid
 
 C     Local Variables
       integer i,j

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.12 2004/02/04 05:45:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.13 2004/03/19 03:28:37 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -6,10 +6,10 @@ C $Name:  $
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_INIT_DBL( 
-     I     myThid, 
      I     fname, 
      I     gname, 
-     I     vname )
+     I     vname, 
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -18,17 +18,17 @@ C     Arguments
       integer myThid
       character*(*) fname,gname,vname
 
-      CALL MNC_VAR_INIT_ANY(myThid,fname,gname,vname, NF_DOUBLE)
+      CALL MNC_VAR_INIT_ANY(fname,gname,vname, NF_DOUBLE, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_INIT_REAL( 
-     I     myThid, 
      I     fname, 
      I     gname, 
-     I     vname )
+     I     vname, 
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -37,17 +37,17 @@ C     Arguments
       integer myThid
       character*(*) fname,gname,vname
 
-      CALL MNC_VAR_INIT_ANY(myThid,fname,gname,vname, NF_FLOAT)
+      CALL MNC_VAR_INIT_ANY(fname,gname,vname, NF_FLOAT, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_INIT_INT( 
-     I     myThid, 
      I     fname, 
      I     gname, 
-     I     vname )
+     I     vname, 
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -56,18 +56,18 @@ C     Arguments
       integer myThid
       character*(*) fname,gname,vname
 
-      CALL MNC_VAR_INIT_ANY(myThid,fname,gname,vname, NF_INT)
+      CALL MNC_VAR_INIT_ANY(fname,gname,vname, NF_INT, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_INIT_ANY( 
-     I     myThid, 
      I     fname, 
      I     gname, 
      I     vname, 
-     I     vtype )
+     I     vtype, 
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -95,7 +95,7 @@ C     Strip trailing spaces
       lenv = ILNBLNK(vname)
 
 C     Check that the file is open
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
+      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)
       IF (indf .LT. 1) THEN
         write(msgbuf,'(3a)') 'MNC ERROR: file ''', fname, 
      &       ''' must be opened first'
@@ -165,14 +165,14 @@ C           Its OK, the variable and grid names are the same
       ENDDO
 
 C     Add the variable definition
-      CALL MNC_FILE_REDEF(myThid, fname)
+      CALL MNC_FILE_REDEF(fname, myThid)
       err = NF_DEF_VAR(fid, vname, vtype, nd, ids, vid)
       write(msgbuf,'(5a)') 'defining variable ''', vname(1:lenv),
      &     ''' in file ''', fname(1:lenf), ''''
-      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+      CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
 C     Success, so save the variable info
-      CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_v_names, indv)
+      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID,mnc_v_names,indv, myThid)
       mnc_v_names(indv)(1:lenv) = vname(1:lenv)
       nv = mnc_fv_ids(indf,1)
       i = 2 + nv*3
@@ -187,30 +187,30 @@ C     Success, so save the variable info
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_ADD_ATTR_STR( 
-     I     myThid, 
      I     fname, 
      I     vname, 
      I     atname, 
-     I     sval )
+     I     sval, 
+     I     myThid )
 
       implicit none
 C     Arguments
       integer myThid
       character*(*) fname,vname,atname,sval
 
-      CALL MNC_VAR_ADD_ATTR_ANY(myThid,fname,vname,atname, 
-     &     1, sval, 0, 0.0D0, 0.0, 0)
+      CALL MNC_VAR_ADD_ATTR_ANY(fname,vname,atname, 
+     &     1, sval, 0, 0.0D0, 0.0, 0, myThid)
       RETURN
       END
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_ADD_ATTR_DBL( 
-     I     myThid, 
      I     fname, 
      I     vname, 
      I     atname, 
      I     nv, 
-     I     dval )
+     I     dval, 
+     I     myThid )
 
       implicit none
 C     Arguments
@@ -218,20 +218,20 @@ C     Arguments
       character*(*) fname,vname,atname
       REAL*8 dval(*)
 
-      CALL MNC_VAR_ADD_ATTR_ANY(myThid,fname,vname,atname, 
-     &     2, ' ', nv, dval, 0.0, 0)
+      CALL MNC_VAR_ADD_ATTR_ANY(fname,vname,atname, 
+     &     2, ' ', nv, dval, 0.0, 0, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_ADD_ATTR_REAL( 
-     I     myThid, 
      I     fname, 
      I     vname, 
      I     atname, 
      I     nv, 
-     I     rval )
+     I     rval, 
+     I     myThid )
 
       implicit none
 C     Arguments
@@ -239,20 +239,20 @@ C     Arguments
       character*(*) fname,vname,atname
       REAL*4 rval(*)
 
-      CALL MNC_VAR_ADD_ATTR_ANY(myThid,fname,vname,atname, 
-     &     3, ' ', nv, 0.0D0, rval, 0)
+      CALL MNC_VAR_ADD_ATTR_ANY(fname,vname,atname, 
+     &     3, ' ', nv, 0.0D0, rval, 0, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_ADD_ATTR_INT( 
-     I     myThid, 
      I     fname, 
      I     vname, 
      I     atname, 
      I     nv, 
-     I     ival )
+     I     ival, 
+     I     myThid )
 
       implicit none
 C     Arguments
@@ -260,19 +260,19 @@ C     Arguments
       character*(*) fname,vname,atname
       integer ival(*)
 
-      CALL MNC_VAR_ADD_ATTR_ANY(myThid,fname,vname,atname, 
-     &     4, ' ', nv, 0.0D0, 0.0, ival)
+      CALL MNC_VAR_ADD_ATTR_ANY(fname,vname,atname, 
+     &     4, ' ', nv, 0.0D0, 0.0, ival, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_ADD_ATTR_ANY( 
-     I     myThid, 
      I     fname, 
      I     vname, 
      I     atname, 
-     I     atype, cs,len,dv,rv,iv )
+     I     atype, cs,len,dv,rv,iv, 
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -301,7 +301,7 @@ C     Strip trailing spaces
       lenat = ILNBLNK(atname)
       lens = ILNBLNK(cs)
 
-      CALL MNC_GET_FVINDS(myThid, fname, vname, indf, ind_fv_ids)
+      CALL MNC_GET_FVINDS(fname, vname, indf, ind_fv_ids, myThid)
       IF ((indf .LT. 1).OR.(ind_fv_ids .LT. 1)) THEN
         write(msgbuf,'(5a)') 'MNC ERROR: file ''', fname(1:lenf), 
      &       ''' is not open or does not contain variable ''', 
@@ -313,7 +313,7 @@ C     Strip trailing spaces
       vid = mnc_fv_ids(indf,(ind_fv_ids+1))
 
 C     Set the attribute
-      CALL MNC_FILE_REDEF(myThid, fname)
+      CALL MNC_FILE_REDEF(fname, myThid)
       IF (atype .EQ. 1) THEN
         err = NF_PUT_ATT_TEXT(fid, vid, atname, lens, cs)
       ELSEIF (atype .EQ. 2) THEN
@@ -331,7 +331,7 @@ C     Set the attribute
       ENDIF
       write(msgbuf,'(5a)') 'adding attribute ''', atname(1:lenat),
      &     ''' to file ''', fname(1:lenf), ''''
-      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+      CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
       RETURN
       END
@@ -339,10 +339,10 @@ C     Set the attribute
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_WRITE_DBL( 
-     I     myThid, 
      I     fname, 
      I     vname, 
-     I     var )
+     I     var, 
+     I     myThid )
 
       implicit none
 C     Arguments
@@ -350,17 +350,17 @@ C     Arguments
       character*(*) fname,vname
       REAL*8 var(*)
 
-      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname,1,0,var,0.0,0)
+      CALL MNC_VAR_WRITE_ANY(fname,vname,1,0,var,0.0,0, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_WRITE_REAL( 
-     I     myThid, 
      I     fname, 
      I     vname, 
-     I     var )
+     I     var, 
+     I     myThid )
 
       implicit none
 C     Arguments
@@ -368,17 +368,17 @@ C     Arguments
       character*(*) fname,vname
       REAL*4 var(*)
 
-      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname,2,0,0.0D0,var,0)
+      CALL MNC_VAR_WRITE_ANY(fname,vname,2,0,0.0D0,var,0, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_WRITE_INT( 
-     I     myThid, 
      I     fname, 
      I     vname, 
-     I     var )
+     I     var, 
+     I     myThid )
 
       implicit none
 C     Arguments
@@ -386,18 +386,18 @@ C     Arguments
       character*(*) fname,vname
       integer var(*)
 
-      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname,3,0,0.0D0,0.0,var)
+      CALL MNC_VAR_WRITE_ANY(fname,vname,3,0,0.0D0,0.0,var, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_APPEND_DBL( 
-     I     myThid, 
      I     fname, 
      I     vname, 
      I     var, 
-     I     append )
+     I     append, 
+     I     myThid )
 
       implicit none
 C     Arguments
@@ -405,18 +405,18 @@ C     Arguments
       character*(*) fname,vname
       REAL*8 var(*)
 
-      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname,1,append,var,0.0,0)
+      CALL MNC_VAR_WRITE_ANY(fname,vname,1,append,var,0.0,0, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_APPEND_REAL( 
-     I     myThid, 
      I     fname, 
      I     vname, 
      I     var, 
-     I     append )
+     I     append, 
+     I     myThid )
 
       implicit none
 C     Arguments
@@ -424,18 +424,18 @@ C     Arguments
       character*(*) fname,vname
       REAL*4 var(*)
 
-      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname,2,append,0.0D0,var,0)
+      CALL MNC_VAR_WRITE_ANY(fname,vname,2,append,0.0D0,var,0,myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_APPEND_INT( 
-     I     myThid, 
      I     fname, 
      I     vname, 
      I     var, 
-     I     append )
+     I     append, 
+     I     myThid )
 
       implicit none
 C     Arguments
@@ -443,21 +443,21 @@ C     Arguments
       character*(*) fname,vname
       integer var(*)
 
-      CALL MNC_VAR_WRITE_ANY(myThid,fname,vname,3,append,0.0D0,0.0,var)
+      CALL MNC_VAR_WRITE_ANY(fname,vname,3,append,0.0D0,0.0,var,myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_VAR_WRITE_ANY( 
-     I     myThid, 
      I     fname, 
      I     vname, 
      I     vtype,
      I     append,
      I     dv,
      I     rv,
-     I     iv )
+     I     iv, 
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -485,7 +485,7 @@ C     Strip trailing spaces
       lenf = ILNBLNK(fname)
       lenv = ILNBLNK(vname)
 
-      CALL MNC_GET_FVINDS(myThid, fname, vname, indf, ind_fv_ids)
+      CALL MNC_GET_FVINDS(fname, vname, indf, ind_fv_ids, myThid)
       IF ((indf .LT. 1).OR.(ind_fv_ids .LT. 1)) THEN
         write(msgbuf,'(5a)') 'MNC ERROR: file ''', fname(1:lenf), 
      &       ''' is not open or does not contain variable ''', 
@@ -513,7 +513,7 @@ C     Check for the unlimited dimension
         did = mnc_d_ids( mnc_fd_ind(indf,de) )
         err = NF_INQ_DIMLEN(fid, did, lend)
         write(msgbuf,'(a)') 'reading current length of unlimited dim'
-        CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+        CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
         IF (append .GT. 0) THEN
           lend = lend + append
         ENDIF
@@ -522,7 +522,7 @@ C     Check for the unlimited dimension
         vcount(k) = 1
       ENDIF
 
-      CALL MNC_FILE_ENDDEF(myThid, fname)
+      CALL MNC_FILE_ENDDEF(fname, myThid)
       IF (vtype .EQ. 1) THEN
         err = NF_PUT_VARA_DOUBLE(fid, vid, vstart, vcount, dv)
       ELSEIF (vtype .EQ. 2) THEN
@@ -538,7 +538,7 @@ C     Check for the unlimited dimension
       ENDIF  
       write(msgbuf,'(5a)') 'writing variable ''', vname(1:lenv),
      &     ''' to file ''', fname(1:lenf), ''''
-      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+      CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
 
       RETURN
       END

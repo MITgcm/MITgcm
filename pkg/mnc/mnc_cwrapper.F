@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.8 2004/03/09 14:43:16 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.9 2004/03/19 03:28:36 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -6,12 +6,12 @@ C $Name:  $
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_CW_ADD_GNAME( 
-     I     myThid, 
      I     name, 
      I     ndim, 
      I     dlens, 
      I     dnames, 
-     I     inds_beg, inds_end ) 
+     I     inds_beg, inds_end, 
+     I     myThid )
 
       implicit none
 #include "mnc_common.h"
@@ -34,15 +34,15 @@ C     Local Variables
       nnl = ILNBLNK(name)
 
 C     Check that this name is not already defined
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, name, mnc_cw_gname, indg)
+      CALL MNC_GET_IND(MNC_MAX_ID, name, mnc_cw_gname, indg, myThid)
       IF (indg .GT. 0) THEN
         write(msgbuf,'(3a)') 'MNC_CW_ADD_GNAME ERROR: ''', name, 
      &       ''' is already defined'
         CALL print_error(msgbuf, mythid)
         stop 'ABNORMAL END: S/R MNC_CW_ADD_GNAME'
       ENDIF
-      CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_cw_gname, 
-     &     indg)
+      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_cw_gname, 
+     &     indg, myThid)
 
       mnc_cw_gname(indg)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
       mnc_cw_gname(indg)(1:(nnl-nnf+1)) = name(nnf:nnl)
@@ -127,8 +127,8 @@ C     Local Variables
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_CW_INIT( 
-     I     myThid,
-     I     sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr ) 
+     I     sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr, 
+     I     myThid )
 
       implicit none
 #include "mnc_common.h"
@@ -305,8 +305,8 @@ C               Time dimension
      &                 '  | ', (dn(i)(1:4), i=1,5)
 #endif
 
-                  CALL MNC_CW_ADD_GNAME(myThid, name, ndim, 
-     &                 dim, dn, ib, ie)
+                  CALL MNC_CW_ADD_GNAME(name, ndim, 
+     &                 dim, dn, ib, ie, myThid)
                 ENDIF
 
               ENDDO
@@ -323,10 +323,10 @@ C               Time dimension
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_CW_ADD_VNAME( 
-     I     myThid, 
      I     vname, 
      I     gname, 
-     I     bi_dim, bj_dim ) 
+     I     bi_dim, bj_dim, 
+     I     myThid )
 
       implicit none
 #include "mnc_common.h"
@@ -349,18 +349,18 @@ C     Local Variables
       ngl = ILNBLNK(gname)
 
 C     Check that this vname is not already defined
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, vname, mnc_cw_vname, indv)
+      CALL MNC_GET_IND(MNC_MAX_ID, vname, mnc_cw_vname, indv, myThid)
       IF (indv .GT. 0) THEN
         write(msgbuf,'(3a)') 'MNC_CW_ADD_VNAME ERROR: ''', 
      &       vname(nvf:nvl), ''' is already defined'
         CALL print_error(msgbuf, mythid)
         stop 'ABNORMAL END: S/R MNC_CW_ADD_VNAME'
       ENDIF
-      CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_cw_vname, 
-     &     indv)
+      CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_cw_vname, 
+     &     indv, myThid)
 
 C     Check that gname exists
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, gname, mnc_cw_gname, indg)
+      CALL MNC_GET_IND(MNC_MAX_ID, gname, mnc_cw_gname, indg, myThid)
       IF (indg .LT. 1) THEN
         write(msgbuf,'(3a)') 'MNC_CW_ADD_VNAME ERROR: ''', 
      &       gname(ngf:ngl), ''' is not defined'
@@ -377,7 +377,7 @@ C     Check that gname exists
       mnc_cw_vbij(1,indv) = bi_dim
       mnc_cw_vbij(2,indv) = bj_dim
 
-      CALL MNC_CW_ADD_VATTR_TEXT(myThid,vname,1,'mitgcm_grid',gname)
+      CALL MNC_CW_ADD_VATTR_TEXT(vname,1,'mitgcm_grid',gname, myThid)
 
       RETURN
       END
@@ -385,11 +385,11 @@ C     Check that gname exists
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_CW_ADD_VATTR_TEXT( 
-     I     myThid, 
      I     vname, 
      I     ntat, 
      I     tnames, 
-     I     tvals ) 
+     I     tvals, 
+     I     myThid )
 
       implicit none
 
@@ -397,10 +397,10 @@ C     Arguments
       integer myThid, ntat
       character*(*) vname, tnames(*), tvals(*)
 
-      CALL MNC_CW_ADD_VATTR_ANY(myThid, vname, 
+      CALL MNC_CW_ADD_VATTR_ANY(vname, 
      &     ntat, 0, 0, 
      &     tnames, ' ', ' ', 
-     &     tvals, 0, 0.0D0 )
+     &     tvals, 0, 0.0D0, myThid )
 
       RETURN
       END
@@ -408,11 +408,11 @@ C     Arguments
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_CW_ADD_VATTR_INT( 
-     I     myThid, 
      I     vname, 
      I     niat, 
      I     inames, 
-     I     ivals ) 
+     I     ivals, 
+     I     myThid )
 
       implicit none
 
@@ -421,10 +421,10 @@ C     Arguments
       character*(*) vname, inames(*)
       integer ivals(*)
 
-      CALL MNC_CW_ADD_VATTR_ANY(myThid, vname, 
+      CALL MNC_CW_ADD_VATTR_ANY(vname, 
      &     0, niat, 0, 
      &     ' ', inames, ' ', 
-     &     ' ', ivals, 0.0D0 )
+     &     ' ', ivals, 0.0D0, myThid )
 
       RETURN
       END
@@ -432,11 +432,11 @@ C     Arguments
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_CW_ADD_VATTR_DBL( 
-     I     myThid, 
      I     vname, 
      I     ndat, 
      I     dnames, 
-     I     dvals ) 
+     I     dvals, 
+     I     myThid )
 
       implicit none
 
@@ -445,10 +445,10 @@ C     Arguments
       character*(*) vname, dnames(*)
       REAL*8 dvals(*)
 
-      CALL MNC_CW_ADD_VATTR_ANY(myThid, vname, 
+      CALL MNC_CW_ADD_VATTR_ANY(vname, 
      &     0, 0, ndat, 
      &     ' ', ' ', dnames, 
-     &     ' ', 0, dvals )
+     &     ' ', 0, dvals, myThid )
 
       RETURN
       END
@@ -456,11 +456,11 @@ C     Arguments
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_CW_ADD_VATTR_ANY( 
-     I     myThid, 
      I     vname, 
      I     ntat,   niat,   ndat,
      I     tnames, inames, dnames,
-     I     tvals,  ivals,  dvals ) 
+     I     tvals,  ivals,  dvals, 
+     I     myThid )
 
       implicit none
 #include "mnc_common.h"
@@ -485,7 +485,7 @@ C     Local Variables
       nvl = ILNBLNK(vname)
 
 C     Check that vname is defined
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, vname, mnc_cw_vname, indv)
+      CALL MNC_GET_IND(MNC_MAX_ID, vname, mnc_cw_vname, indv, myThid)
       IF (indv .LT. 1) THEN
         write(msgbuf,'(3a)') 'MNC_CW_ADD_VATTR_ANY ERROR: ''', 
      &       vname(nvf:nvl), ''' is not defined'
@@ -531,9 +531,9 @@ C     Double Attributes
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_CW_GET_TILE_NUM( 
-     I     myThid, 
      I     bi, bj, 
-     O     uniq_tnum ) 
+     O     uniq_tnum, 
+     I     myThid )
 
       implicit none
 #include "EEPARAMS.h"
@@ -574,9 +574,9 @@ CEH3      write(*,*) 'iG,jG,uniq_tnum :', iG,jG,uniq_tnum
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_CW_FILE_AORC( 
-     I     myThid, 
      I     fname, 
-     O     indf ) 
+     O     indf, 
+     I     myThid )
 
       implicit none
 #include "netcdf.inc"
@@ -592,19 +592,19 @@ C     Local Variables
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Check if the file is already open
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
+      CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)
       IF (indf .GT. 0) THEN
         RETURN
       ENDIF
 
 C     Try to open an existing file
-      CALL MNC_FILE_TRY_READ(myThid, fname, ierr, indf)
+      CALL MNC_FILE_TRY_READ(fname, ierr, indf, myThid)
       IF (ierr .EQ. NF_NOERR) THEN
         RETURN
       ENDIF
 
 C     Try to create a new one
-      CALL MNC_FILE_OPEN(myThid, fname, 0, indf)
+      CALL MNC_FILE_OPEN(fname, 0, indf, myThid)
 
       RETURN
       END
