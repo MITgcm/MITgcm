@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.4 2004/01/27 05:47:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.5 2004/02/04 05:45:09 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -64,16 +64,26 @@ C     Verify that the file exists
 C     Verify that the dim is not currently defined within the file
       n = mnc_f_alld(indf,1)
       DO i = 1,n
-        ntmp = ILNBLNK(mnc_d_names(j))
         j = mnc_f_alld(indf,i+1)
+        ntmp = ILNBLNK(mnc_d_names(j))
         IF ((ntmp .EQ. (dnl-dnf+1)) 
-     &       .AND. (dname(dnf:dnl) .EQ. mnc_d_names(j)(1:n))) THEN
-          write(msgbuf,'(5a)') 'MNC ERROR: dimension ''', 
-     &         dname(dnf:dnl), 
-     &         ''' already exists within file ''', fname(1:nf), 
-     &         ''' and cannot be re-initalized'
-          CALL print_error( msgbuf, mythid )
-          stop 'ABNORMAL END: S/R MNC_DIM_INIT'
+     &       .AND. (dname(dnf:dnl) .EQ. mnc_d_names(j)(1:ntmp))) THEN
+          IF (mnc_d_size(j) .NE. dlen) THEN
+            IF ((mnc_d_size(j) .GT. 0) .OR. (dlen .GT. 0)) THEN
+              write(msgbuf,'(5a)') 'MNC ERROR: dimension ''', 
+     &             dname(dnf:dnl), ''' already exists within file ''', 
+     &             fname(1:nf), ''' and its size cannot be changed'
+              CALL print_error(msgbuf, mythid)
+              stop 'ABNORMAL END: S/R MNC_DIM_INIT'
+            ELSE
+C             Its OK, the names are the same and both are specifying the
+C             unlimited dimension
+              RETURN
+            ENDIF
+          ELSE
+C           Its OK, the names and sizes are identical
+            RETURN
+          ENDIF
         ENDIF
       ENDDO
 

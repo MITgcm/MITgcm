@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.3 2004/01/31 04:13:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.4 2004/02/04 05:45:09 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -540,6 +540,9 @@ C     Arguments
 C     Local Variables
       integer iG,jG
 
+      iG = 0
+      jG = 0
+
 #ifdef ALLOW_EXCH2
 
 #include "W2_EXCH2_PARAMS.h"
@@ -550,10 +553,12 @@ C     Local Variables
 C     Global tile number for simple (non-cube) domains
       iG = bi+(myXGlobalLo-1)/sNx
       jG = bj+(myYGlobalLo-1)/sNy
-C     .          full rows                partial rows
-      uniq_tnum = (jG - 1)*nPx*(nSx*nSy) + (iG - 1)*(nSx*nSy)
+
+      uniq_tnum = (jG - 1)*(nPx*nSx) + iG
 
 #endif
+
+CEH3      write(*,*) 'iG,jG,uniq_tnum :', iG,jG,uniq_tnum
 
       RETURN
       END
@@ -562,7 +567,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_CW_FILE_AORC( 
      I     myThid, 
-     I     fname ) 
+     I     fname, 
+     O     indf ) 
 
       implicit none
 #include "netcdf.inc"
@@ -570,11 +576,11 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #include "EEPARAMS.h"
 
 C     Arguments
-      integer myThid
+      integer myThid, indf
       character*(*) fname
 
 C     Local Variables
-      integer i, ierr, indf
+      integer i, ierr
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Check if the file is already open
@@ -584,13 +590,13 @@ C     Check if the file is already open
       ENDIF
 
 C     Try to open an existing file
-      CALL MNC_FILE_TRY_READ(myThid, fname, ierr)
+      CALL MNC_FILE_TRY_READ(myThid, fname, ierr, indf)
       IF (ierr .EQ. NF_NOERR) THEN
         RETURN
       ENDIF
 
 C     Try to create a new one
-      
+      CALL MNC_FILE_OPEN(myThid, fname, 0, indf)
 
       RETURN
       END

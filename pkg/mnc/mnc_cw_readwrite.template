@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.1 2004/01/31 04:13:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.2 2004/02/04 05:45:09 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -17,9 +17,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
-#include "EESUPPORT.h"
-#include "PARAMS.h"
-#include "GRID.h"
+#include "SIZE.h"
+
+#define mnc_rtype_YY
 
 C     Arguments
       integer myThid, bi,bj, indu
@@ -30,22 +30,22 @@ C     Functions
       integer IFNBLNK, ILNBLNK
 
 C     Local Variables
-      integer i, indv,nvf,nvl, n1,n2
-      integer bis,bie, bjs,bje, iG,jG, uniq_tnum
-      integer tile_num
+      integer i,j, indv,nvf,nvl, n1,n2, igrid, ntot
+      integer bis,bie, bjs,bje, uniq_tnum, nfname, fid, idv, indvids
+      integer ndim, indf, err, lbi,lbj
+      integer p(9),s(9),e(9), dimnc(9), vstart(9),vcount(9), kr
+      integer j1,j2,j3,j4,j5, k1,k2,k3,k4,k5
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) fname
 
 C     Temporary storage for the simultaneous type conversion and
 C     re-shaping before passing to NetCDF
-#define mnc_rtype_YY
 #ifdef  mnc_rtype_D
       REAL*8 resh( sNx + 2*OLx + sNy + 2*OLy )
 #endif
 #ifdef  mnc_rtype_R
       REAL*4 resh( sNx + 2*OLx + sNy + 2*OLy )
 #endif
-#undef mnc_rtype_YY
 
 C     Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
@@ -54,33 +54,32 @@ C     Check that the Variable Type exists
       nvf = IFNBLNK(vtype)
       nvl = ILNBLNK(vtype)
       CALL MNC_GET_IND(myThid, MNC_MAX_ID, vtype, mnc_cw_vname, indv)
-      IF (indg .LT. 1) THEN
+      IF (indv .LT. 1) THEN
         write(msgbuf,'(3a)') 'MNC_CW_RX_WRITES_YY ERROR: vtype ''', 
-     &       vtype(nff:nfl), ''' is not defined'
+     &       vtype(nvf:nvl), ''' is not defined'
         CALL print_error(msgbuf, mythid)
         stop 'ABNORMAL END: S/R MNC_CW_RX_WRITES_YY'
       ENDIF
+      igrid = mnc_cw_vgind(indv)
 
+      bis = bi
+      bie = bi
       IF (bi .LT. 1) THEN
         bis = 1
         bie = nSx
-      ELSE
-        bis = bi
-        bie = bi
       ENDIF
+      bjs = bj
+      bje = bj
       IF (bj .LT. 1) THEN
         bjs = 1
         bje = nSy
-      ELSE
-        bjs = bj
-        bje = bj
       ENDIF
 
-      DO bj = bjs,bje
-        DO bi = bis,bie
+      DO lbj = bjs,bje
+        DO lbi = bis,bie
 
 C         Create the file name
-          CALL MNC_CW_GET_TILE_NUM(myThid, bi,bj, uniq_tnum)
+          CALL MNC_CW_GET_TILE_NUM(myThid, lbi,lbj, uniq_tnum)
           fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
           n1 = IFNBLNK(fbname)
           n2 = ILNBLNK(fbname)
@@ -89,12 +88,123 @@ C         Create the file name
           ntot = ntot + 1
           fname(ntot:ntot) = '.'
           write(fname((ntot+1):(ntot+9)),'(i6.6,a3)') uniq_tnum, '.nc'
+          nfname = ntot+9
 
-C         Append to existing or create new file
-          CALL MNC_CW_FILE_AORC(myThid, fname)
+C         Append to an existing or create a new file
+          CALL MNC_CW_FILE_AORC(myThid, fname, indf)
+          fid = mnc_f_info(indf,2)
 
-C         Write the variable one row at a time
+C         Ensure that all the NetCDF dims are defined and create a local
+C         copy
+          DO i = 1,9
+            dimnc(i) = 1
+          ENDDO
+          DO i = 1,mnc_cw_ndim(igrid)
+            dimnc(i) = mnc_cw_ie(i,igrid) - mnc_cw_is(i,igrid) + 1
+            CALL MNC_DIM_INIT(myThid,fname, 
+     &           mnc_cw_dn(i,igrid), dimnc(i) )
+          ENDDO
 
+C         Ensure that the "grid" is defined
+          CALL MNC_GRID_INIT(myThid,fname, mnc_cw_gname(igrid), 
+     &        mnc_cw_ndim(igrid), mnc_cw_dn(1,igrid))
+
+C         Ensure that the variable is defined
+#ifdef  mnc_rtype_D
+      CALL MNC_VAR_INIT_DBL(myThid,fname,mnc_cw_gname(igrid),vtype)
+#endif
+#ifdef  mnc_rtype_R
+      CALL MNC_VAR_INIT_REAL(myThid,fname,mnc_cw_gname(igrid),vtype)
+#endif
+          DO i = 1,mnc_fv_ids(indf,1)
+            j = 2 + 3*(i - 1)
+            IF (mnc_v_names(mnc_fv_ids(indf,j)) .EQ. vtype) THEN
+              idv = mnc_fv_ids(indf,j+1)
+              indvids = mnc_fd_ind(indf, mnc_f_info(indf, 
+     &             (mnc_fv_ids(indf,j+2) + 1)) )
+              GOTO 10
+            ENDIF
+          ENDDO
+          write(msgbuf,'(4a)') 'MNC_MNC_CW_RX_WRITES_YY ERROR: ', 
+     &         'cannot reference variable ''', vtype, ''''
+          CALL print_error(msgbuf, mythid)
+          stop 'ABNORMAL END: package MNC'
+ 10       CONTINUE
+
+C         Set the dimensions for the in-memory array
+          ndim = mnc_cw_ndim(igrid)
+          p(1) = mnc_cw_dims(1,igrid)
+          DO i = 2,9
+            p(i) = mnc_cw_dims(i,igrid) * p(i-1)
+          ENDDO
+
+C         Set the starting and ending indicies
+          DO i = 1,9
+            IF (i .GT. ndim) THEN
+              s(i) = 1
+              e(i) = 1
+            ELSE
+              IF ((i .EQ. ndim)
+     &             .AND. (mnc_cw_dims(i,igrid) .EQ. -1)) THEN
+                s(i) = indu
+                e(i) = indu
+              ELSE
+                s(i) = mnc_cw_is(i,igrid)
+                e(i) = mnc_cw_ie(i,igrid)
+              ENDIF
+            ENDIF
+          ENDDO
+
+          CALL MNC_FILE_ENDDEF(myThid,fname)
+
+C         Write the variable one vector at a time
+          DO j5 = s(5),e(5)
+            k5 = (j5 - s(5))*p(4)
+            vstart(5) = j5 - s(5) + 1
+            vcount(5) = 1
+            DO j4 = s(4),e(4)
+              k4 = (j4 - s(4))*p(3) + k5
+              vstart(4) = j4 - s(4) + 1
+              vcount(4) = 1
+              DO j3 = s(3),e(3)
+                k3 = (j3 - s(3))*p(2) + k4
+                vstart(3) = j3 - s(3) + 1
+                vcount(3) = 1
+                DO j2 = s(2),e(2)
+                  k2 = (j2 - s(2))*p(1) + k3
+                  vstart(2) = j2 - s(2) + 1
+                  vcount(2) = 1
+
+                  kr = 0
+                  DO j1 = s(1),e(1)
+                    k1 = k2 + j1
+                    kr = kr + 1
+                    resh(kr) = var(k1)
+                  ENDDO
+
+                  vstart(1) = 1
+                  vcount(1) = e(1) - s(1) + 1
+
+CEH3      write(*,*) ' # ', j2,j3,j4,j5, '  #  ', 
+CEH3     &     (vstart(i),vcount(i),i=1,5)
+
+#ifdef  mnc_rtype_D
+      err = NF_PUT_VARA_DOUBLE(fid, idv, vstart, vcount, resh)
+#endif
+#ifdef  mnc_rtype_R
+      err = NF_PUT_VARA_REAL(fid, idv, vstart, vcount, resh)
+#endif
+
+                ENDDO
+              ENDDO
+            ENDDO
+          ENDDO
+
+C         Sync the file
+          err = NF_SYNC(fid)
+          write(msgbuf,'(3a)') 'sync for file ''', fname, 
+     &         ''' in S/R MNC_CW_RX_WRITES_YY'
+          CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
 
         ENDDO
       ENDDO

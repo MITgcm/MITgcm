@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.8 2004/01/27 05:47:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.9 2004/02/04 05:45:09 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -13,9 +13,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     dnames )
 
       implicit none
-#include "netcdf.inc"
-#include "mnc_common.h"
-#include "EEPARAMS.h"
 
 C     Arguments
       integer myThid, ndim
@@ -54,8 +51,8 @@ C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer i,j,ii,jj,kk, n,nf, indf,indg,indd, fid, ngrid
-      integer ng_ind,lg_ind, ds_last, ndim_file
+      integer i,j,k,ii,jj,kk, n,nf, indf,indg,indd, fid, ngrid
+      integer ng_ind,lg_ind, ds_last, ndim_file, igr,ig1,ig2
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) name
       character*(MNC_MAX_CHAR) file_name
@@ -95,20 +92,50 @@ C     Check for sufficient space in memory
 C     Enter DEFINE mode
       CALL MNC_FILE_REDEF(myThid, fname)
 
-C     Get the grid index [check for re-definition]
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, gname, mnc_g_names, indg)
-      IF ( indg .GT. 0 ) THEN
-        write(msgbuf,'(3a)') 'MNC ERROR: grid ''',
-     &       gname, '''was previously defined'
-      ELSE
-        CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_g_names,
-     &       indg)
-        mnc_g_names(indg)(1:MNC_MAX_CHAR) =
-     &       mnc_blank_name(1:MNC_MAX_CHAR)
-        n = ILNBLNK(gname)
-        mnc_g_names(indg)(1:n) = gname(1:n)
-      ENDIF
+C     Check for grid re-definition
+      DO igr = 1,mnc_f_info(indf,3)
+        ii = 4 + 3*igr
+        IF (mnc_g_names(mnc_f_info(indf,ii)) .EQ. gname) THEN
+          ig1 = mnc_f_info(indf,ii+1)
+          ig2 = mnc_f_info(indf,ii+2)
 
+C         Check if different number of dims
+          IF (ndim .NE. (ig2-ig1+1)) THEN
+            write(msgbuf,'(6a)') 'MNC ERROR: grid ''', gname,
+     &           ''' was previously defined for file ''', 
+     &           mnc_f_names(indf), ''' with a different ',
+     &           'number of dimensions'
+            CALL print_error(msgbuf, mythid)
+            stop 'ABNORMAL END: S/R MNC_GRID_INIT'
+          ENDIF
+
+C         Check if same number of dims but different dim names
+          k = 0
+          DO jj = ig1,ig2
+            k = k + 1
+            IF (mnc_d_names(mnc_fd_ind(indf,jj)) .NE. dnames(k)) THEN
+              write(msgbuf,'(6a)') 'MNC ERROR: grid ''', gname,
+     &             ''' was previously defined for file ''', 
+     &             mnc_f_names(indf), ''' with a different ',
+     &             'combination of dimensions'
+              CALL print_error(msgbuf, mythid)
+              stop 'ABNORMAL END: S/R MNC_GRID_INIT'
+            ENDIF
+          ENDDO
+          GOTO 10
+
+        ENDIF
+      ENDDO
+ 10   CONTINUE
+
+C     Reaching this point means the grid was not previously defined
+      CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_g_names,
+     &     indg)
+      mnc_g_names(indg)(1:MNC_MAX_CHAR) =
+     &     mnc_blank_name(1:MNC_MAX_CHAR)
+      n = ILNBLNK(gname)
+      mnc_g_names(indg)(1:n) = gname(1:n)
+      
 C     Add the dimensions
       DO i = 1,ndim
 
@@ -126,10 +153,10 @@ C       defined for this file
           IF ((n .EQ. kk) 
      &         .AND. (dnames(i)(1:n) .EQ. mnc_d_names(jj)(1:kk))) THEN
             indd = jj
-            GOTO 10
+            GOTO 20
           ENDIF
         ENDDO
- 10     CONTINUE
+ 20     CONTINUE
         IF (indd .LT. 1) THEN
           write(msgbuf,'(5a)') 'MNC ERROR: dimension ''',
      &         dnames(i)(1:n), ''' does not exist for file ''', 

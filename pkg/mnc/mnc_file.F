@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.11 2004/01/31 04:13:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.12 2004/02/04 05:45:09 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -15,7 +15,10 @@ C     Arguments
       integer myThid
       character*(*) fname
 
-      CALL MNC_FILE_OPEN(myThid, fname, 0)
+C     Local Variables
+      integer indf
+
+      CALL MNC_FILE_OPEN(myThid, fname, 0, indf)
 
       RETURN
       END
@@ -25,7 +28,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE MNC_FILE_OPEN( 
      I     myThid,
      I     fname, 
-     I     itype )
+     I     itype, 
+     O     indf )
 
       implicit none
 #include "netcdf.inc"
@@ -33,7 +37,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #include "EEPARAMS.h"
 
 C     Arguments
-      integer myThid
+      integer myThid,indf
       character*(*) fname
       integer itype
 C     itype => [ 0=new | 1=append ]
@@ -42,26 +46,26 @@ C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer n, err, fid, ind
+      integer n, err, fid
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Is the file already open?
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, ind)
-      IF ( ind .GT. 0 ) THEN
+      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
+      IF (indf .GT. 0) THEN
         write(msgbuf,'(3a)') 'MNC_FILE_OPEN ERROR: ''', fname, 
      &       ''' is already open -- cannot open twice'
-        CALL print_error( msgbuf, mythid )
+        CALL print_error(msgbuf, mythid)
         stop 'ABNORMAL END: package MNC'
       ENDIF
 
       write(msgbuf,'(3a)') 'opening ''', fname, ''''
-      IF ( itype .EQ. 0 ) THEN
+      IF (itype .EQ. 0) THEN
 
 C       Create new file
         err = NF_CREATE(fname, NF_CLOBBER, fid)
         CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
 
-      ELSEIF ( itype .EQ. 1 ) THEN
+      ELSEIF (itype .EQ. 1) THEN
 
 C       Append to existing file
         CALL MNC_FILE_READALL(myThid, fname)
@@ -74,14 +78,14 @@ C       Error
         stop 'ABNORMAL END: S/R MNC_FILE_ADD_ATTR_STR'
       ENDIF
 
-      CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_f_names, ind)
+      CALL MNC_GET_NEXT_EMPTY_IND(myThid,MNC_MAX_ID,mnc_f_names,indf)
       n = ILNBLNK(fname)
-      mnc_f_names(ind)(1:n) = fname(1:n)
-      mnc_f_info(ind,1) = 1
-      mnc_f_info(ind,2) = fid
-      mnc_f_info(ind,3) = 0
-      mnc_fv_ids(ind,1) = 0
-      mnc_f_alld(ind,1) = 0
+      mnc_f_names(indf)(1:n) = fname(1:n)
+      mnc_f_info(indf,1) = 1
+      mnc_f_info(indf,2) = fid
+      mnc_f_info(indf,3) = 0
+      mnc_fv_ids(indf,1) = 0
+      mnc_f_alld(indf,1) = 0
 
       RETURN
       END
@@ -480,12 +484,12 @@ C     Functions
       integer IFNBLNK, ILNBLNK
 
 C     Local Variables
-      integer ierr, nff,nlf
+      integer ierr, nff,nlf, indf
       character*(MAX_LEN_MBUF) msgbuf
 
       nff = IFNBLNK(fname)
       nlf = ILNBLNK(fname)
-      CALL MNC_FILE_TRY_READ(myThid, fname, ierr)
+      CALL MNC_FILE_TRY_READ(myThid, fname, ierr, indf)
       write(msgbuf,'(3a)') 'MNC ERROR: cannot open file ''', 
      &     fname(nff:nlf), ''' for read/write access'
       CALL MNC_HANDLE_ERR(myThid, ierr, msgbuf)
@@ -498,7 +502,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE MNC_FILE_TRY_READ( 
      I     myThid, 
      I     fname, 
-     I     ierr ) 
+     O     ierr, 
+     O     indf ) 
 
       implicit none
 #include "netcdf.inc"
@@ -506,7 +511,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #include "EEPARAMS.h"
 
 C     Arguments
-      integer myThid, ierr
+      integer myThid, ierr, indf
       character*(*) fname
 
 C     Functions
@@ -514,7 +519,7 @@ C     Functions
 
 C     Local Variables
       integer i,j,k, fid, err, ndim,nvar,ngat,unlimid
-      integer dlen, id, indf, xtype, nat, nff,nlf, iv
+      integer dlen, id, xtype, nat, nff,nlf, iv
       integer ndv, did, ns,ne, n1,n2, indg, indv
       character*(MAX_LEN_MBUF) msgbuf
       character*(NF_MAX_NAME) name

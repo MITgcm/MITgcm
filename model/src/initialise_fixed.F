@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.19 2004/01/15 19:21:24 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.20 2004/02/04 05:45:09 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -147,7 +147,12 @@ C     and get config. info for other component(s).
 #ifdef ALLOW_MNC
 C     Test MNC
       CALL MNC_INIT(myThid)
-      CALL MNC_W_GRIDINFO(myThid, 'test')
+C      CALL MNC_W_GRIDINFO(myThid, 'test')
+
+      CALL MNC_CW_INIT(myThid, sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr)
+
+      CALL MNC_CW_ADD_VNAME(myThid, 'theta', 'Cen_xy_Hn__C__-')
+
 #endif
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.28 2004/01/18 23:23:15 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.29 2004/02/04 05:45:09 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -165,7 +165,11 @@ c       CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
          _BARRIER
 
 #ifdef ALLOW_MNC
-      CALL MNC_W_STATE(myThid, myIter, 'test')
+C      CALL MNC_W_STATE(myThid, myIter, 'test')
+
+      CALL MNC_CW_RL_WRITES_D(myThid, 't_theta',0,0, 
+     &'theta', 1, theta)
+
 #endif
 
       ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.11 2004/01/27 05:47:33 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.12 2004/02/04 05:45:09 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -9,17 +9,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     myThid, 
      I     fname, 
      I     gname, 
-     I     vname,
-     I     units )
+     I     vname )
 
       implicit none
 #include "netcdf.inc"
 
 C     Arguments
       integer myThid
-      character*(*) fname,gname,vname,units
+      character*(*) fname,gname,vname
 
-      CALL MNC_VAR_INIT_ANY(myThid,fname,gname,vname,units, NF_DOUBLE)
+      CALL MNC_VAR_INIT_ANY(myThid,fname,gname,vname, NF_DOUBLE)
       RETURN
       END
 
@@ -29,17 +28,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     myThid, 
      I     fname, 
      I     gname, 
-     I     vname,
-     I     units )
+     I     vname )
 
       implicit none
 #include "netcdf.inc"
 
 C     Arguments
       integer myThid
-      character*(*) fname,gname,vname,units
+      character*(*) fname,gname,vname
 
-      CALL MNC_VAR_INIT_ANY(myThid,fname,gname,vname,units, NF_FLOAT)
+      CALL MNC_VAR_INIT_ANY(myThid,fname,gname,vname, NF_FLOAT)
       RETURN
       END
 
@@ -49,17 +47,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     myThid, 
      I     fname, 
      I     gname, 
-     I     vname,
-     I     units )
+     I     vname )
 
       implicit none
 #include "netcdf.inc"
 
 C     Arguments
       integer myThid
-      character*(*) fname,gname,vname,units
+      character*(*) fname,gname,vname
 
-      CALL MNC_VAR_INIT_ANY(myThid,fname,gname,vname,units, NF_INT)
+      CALL MNC_VAR_INIT_ANY(myThid,fname,gname,vname, NF_INT)
       RETURN
       END
 
@@ -70,7 +67,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     fname, 
      I     gname, 
      I     vname, 
-     I     units, 
      I     vtype )
 
       implicit none
@@ -80,7 +76,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C     Arguments
       integer myThid
-      character*(*) fname,gname,vname,units
+      character*(*) fname,gname,vname
       integer vtype
 
 C     Functions
@@ -88,16 +84,15 @@ C     Functions
 
 C     Local Variables
       integer i,j,k, n, indf,indv, fid, nd, ngrid, is,ie, err
-      integer vid, nv, ind_g_finfo, needed
+      integer vid, nv, ind_g_finfo, needed, nvar
       character*(MAX_LEN_MBUF) msgbuf
       integer ids(20)
-      integer lenf,leng,lenv,lenu
+      integer lenf,leng,lenv
 
 C     Strip trailing spaces
       lenf = ILNBLNK(fname)
       leng = ILNBLNK(gname)
       lenv = ILNBLNK(vname)
-      lenu = ILNBLNK(units)
 
 C     Check that the file is open
       CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
@@ -150,6 +145,25 @@ C     Get the grid information
       stop 'ABNORMAL END: S/R MNC_VAR_INIT_ANY'
  10   CONTINUE
 
+C     Check if the variable is already defined
+      nvar = mnc_fv_ids(indf,1)
+      DO i = 1,nvar
+        j = 2 + 3*(i-1)
+        IF (mnc_v_names(mnc_fv_ids(indf,j)) .EQ. vname) THEN
+          k = mnc_f_info(indf,mnc_fv_ids(indf,j+2))
+          IF (mnc_g_names(k) .NE. gname) THEN
+            write(msgbuf,'(5a)') 'MNC ERROR: variable ''', 
+     &           vname(1:lenv), ''' is already defined in file ''', 
+     &           fname(1:lenf), ''' but using a different grid shape'
+            CALL print_error(msgbuf, mythid)
+            stop 'ABNORMAL END: S/R MNC_VAR_INIT_ANY'
+          ELSE
+C           Its OK, the variable and grid names are the same
+            RETURN
+          ENDIF
+        ENDIF
+      ENDDO
+
 C     Add the variable definition
       CALL MNC_FILE_REDEF(myThid, fname)
       err = NF_DEF_VAR(fid, vname, vtype, nd, ids, vid)
@@ -166,9 +180,6 @@ C     Success, so save the variable info
       mnc_fv_ids(indf,i+1) = vid
       mnc_fv_ids(indf,i+2) = ind_g_finfo
       mnc_fv_ids(indf,1) = nv + 1
-
-C     Add the units
-      CALL MNC_VAR_ADD_ATTR_STR(myThid, fname, vname, 'units', units)
 
       RETURN
       END

@@ -1,25 +1,29 @@
 #
-#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.8 2004/01/31 04:13:09 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.9 2004/02/04 05:45:09 edhill Exp $
 #
 #  A Makefile for MNC templates and testing
 #
 
 FC = f77
+CPP = cpp
 
 .SUFFIXES:
-.SUFFIXES: .T .t .F .h .o
+.SUFFIXES: .T .t .F .f .h .o
 
 .t.h:
 	cat $< > $@
 .T.F:
 	cat $< > $@
-.F.o:
-	$(FC) -c $<
+.F.f:
+	$(CPP) $(DEFINES) > $@
+.f.o:
+	$(FC) -DMNC_TEST -c $<
 
 
 TEST_LINKS =   EEPARAMS.h utils.F
 TEST_HEADERS = PACKAGES_CONFIG.h CPP_OPTIONS.h SIZE.h
 TEST_FILES =   mnc_test_utils.F
+TEST_DEFINES = -DMNC_DEBUG
 
 FILES = \
   mnc_dim.F \
@@ -47,25 +51,39 @@ utils.F:
 
 TEMPLATE_FILES = \
   MNC_RESHAPE_RS_D.F MNC_RESHAPE_RL_D.F \
-  MNC_RESHAPE_RS_R.F MNC_RESHAPE_RL_R.F
+  MNC_RESHAPE_RS_R.F MNC_RESHAPE_RL_R.F \
+  MNC_CW_READWRITE_RS_D.F MNC_CW_READWRITE_RL_D.F \
+  MNC_CW_READWRITE_RS_R.F MNC_CW_READWRITE_RL_R.F
+TEMPLATE_OBJECTS = $(TEMPLATE_FILES:.F=.o)
+
 
 templates: $(TEMPLATE_FILES) mnc_id_header.h
 
 MNC_RESHAPE_RS_D.F: mnc_reshape.template
-	cat mnc_reshape.template | sed -e 's/RX/RS/g' | sed -e 's/YY/D/g' > $@
+	cat $<  | sed -e 's/RX/RS/g' | sed -e 's/YY/D/g' > $@
 MNC_RESHAPE_RL_D.F: mnc_reshape.template
-	cat mnc_reshape.template | sed -e 's/RX/RL/g' | sed -e 's/YY/D/g' > $@
+	cat $<  | sed -e 's/RX/RL/g' | sed -e 's/YY/D/g' > $@
 MNC_RESHAPE_RS_R.F: mnc_reshape.template
-	cat mnc_reshape.template | sed -e 's/RX/RS/g' | sed -e 's/YY/R/g' > $@
+	cat $<  | sed -e 's/RX/RS/g' | sed -e 's/YY/R/g' > $@
 MNC_RESHAPE_RL_R.F: mnc_reshape.template
-	cat mnc_reshape.template | sed -e 's/RX/RL/g' | sed -e 's/YY/R/g' > $@
+	cat $<  | sed -e 's/RX/RL/g' | sed -e 's/YY/R/g' > $@
+
+MNC_CW_READWRITE_RS_D.F: mnc_cw_readwrite.template
+	cat $< | sed -e 's/RX/RS/g' | sed -e 's/YY/D/g' > $@
+MNC_CW_READWRITE_RL_D.F: mnc_cw_readwrite.template
+	cat $< | sed -e 's/RX/RL/g' | sed -e 's/YY/D/g' > $@
+MNC_CW_READWRITE_RS_R.F: mnc_cw_readwrite.template
+	cat $< | sed -e 's/RX/RS/g' | sed -e 's/YY/R/g' > $@
+MNC_CW_READWRITE_RL_R.F: mnc_cw_readwrite.template
+	cat $< | sed -e 's/RX/RL/g' | sed -e 's/YY/R/g' > $@
+
 
 tag = ../../doc/tag-index
 
 mnc_id_header.h:
 	-./parse_local_info > $@
 
-test: all mnc_test_001 mnc_test_002
+test: all mnc_test_001 mnc_test_002 
 	echo "running mnc_test_001 ..."
 	./mnc_test_001 > t_out_001 && ncdump test_001.nc | head -20
 	./mnc_test_002 > t_out_002 && tail -15 t_out_002
@@ -83,4 +101,4 @@ Clean:
 clean:
 	-rm -f *.o $(TEST_LINKS) $(TEST_HEADERS) $(TEST_FILES) $(TEST_OBJECTS)
 	-rm -f mnc_test_???.F mnc_test_??? test_???.nc t_out_???
-	-rm -f MNC_RESHAPE_R?_?.F mnc_id_header.h
+	-rm -f $(TEMPLATE_FILES) mnc_id_header.h
