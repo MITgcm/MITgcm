@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.2 1998/07/15 22:11:33 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.3 1998/09/29 18:50:56 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -358,12 +358,15 @@ CEndOfInterface
     
       userTime      = TARRAY(1)
       systemTime    = TARRAY(2)
-#ifdef ALLOW_USE_MPI
-      wtime         = MPI_Wtime()
+      CALL CLOC(wTime)
       wallClockTime = wtime
+
+#ifdef ALLOW_USE_MPI
+C     wtime         = MPI_Wtime()
+C     wallClockTime = wtime
 #endif /* ALLOW_USE_MPI */
 #ifndef ALLOW_USE_MPI
-      wallClockTime = 0.
+C     wallClockTime = 0.
 #endif
       
       RETURN

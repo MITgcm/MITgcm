@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.6 1998/09/06 17:35:20 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.7 1998/09/29 18:50:57 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
  
@@ -180,7 +180,6 @@ C     gamma     - Input data to acceleration conversion factor.
       _RL gamma
 
 
-      _BEGIN_MASTER(myThid)
 
       IF (.NOT. zonalWindFile .EQ. ' ' ) THEN
 C--    Set gamma to convert from N/m^2 to m/s^2
@@ -195,7 +194,10 @@ C--    Set gamma to convert from N/m^2 to m/s^2
         CALL PRINT_ERROR( msgBuf, 1 )
         STOP 'ABNORMAL END: S/R LOAD_WIND_STRESS_CLIMATOLOGY'
        ENDIF
+       _BEGIN_MASTER(myThid)
        CALL READ_FLD_XY_RS( zonalWindFile, ' ', fu, 0, myThid )
+       _END_MASTER(myThid)
+       _BARRIER
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
@@ -220,7 +222,10 @@ C--    Set gamma to convert from N/m^2 to m/s^2
         CALL PRINT_ERROR( msgBuf, 1 )
         STOP 'ABNORMAL END: S/R LOAD_WIND_STRESS_CLIMATOLOGY'
        ENDIF
+       _BEGIN_MASTER(myThid)
        CALL READ_FLD_XY_RS( meridWindFile, ' ', fv, 0, myThid )
+       _END_MASTER(myThid)
+       _BARRIER
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
@@ -232,7 +237,6 @@ C--    Set gamma to convert from N/m^2 to m/s^2
        ENDDO
       ENDIF
 
-      _END_MASTER(myThid)
 C
       _EXCH_XY_R4(fu  , myThid )
       _EXCH_XY_R4(fv  , myThid )
@@ -285,11 +289,12 @@ C     msgBuf - Error message buffer
      &  .OR. myTime .EQ. startTime
      & ) THEN
 
-       _BEGIN_MASTER(myThid)
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
+       _BEGIN_MASTER(myThid)
        write(0,*) 'S/R LOAD_INTERPOLATE_FORCING: Reading new data',myTime,myIter
+       _END_MASTER(myThid)
        intime0=int( (myForcingTime-externForcingCycle*
      &               int(myForcingTime/externForcingCycle)
      &              )/externForcingPeriod )
@@ -298,12 +303,15 @@ C      data for the period ahead and the period behind myTime.
      &              )/externForcingPeriod )
 
 C--    SST
+       _BEGIN_MASTER(myThid)
        WRITE(filename(1:40),'(A,I10.10,A)') 
      &      'levtemp_m.',intime0+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', SST, myIter, myThid )
        WRITE(filename(1:40),'(A,I10.10,A)') 
      &      'levtemp_m.',intime1+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', SSTdot, myIter, myThid )
+       _END_MASTER(myThid)
+       _BARRIER
     
 C      Set SSTdot to the total change over the period
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -342,12 +350,15 @@ C      Convert SSTdot into the increment to SST per time-step (here after)
 C
 
 C--    SSS
+       _BEGIN_MASTER(myThid)
        WRITE(filename(1:40),'(A,I10.10,A)') 
      &      'levsalt_m.',intime0+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', SSS, myIter, myThid )
        WRITE(filename(1:40),'(A,I10.10,A)') 
      &      'levsalt_m.',intime1+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', SSSdot, myIter, myThid )
+       _END_MASTER(myThid)
+       _BARRIER
     
 C      Set SSSdot to the total change over the period
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -386,12 +397,15 @@ C      Convert SSSdot into the increment to SSS per time-step (here after)
 C
 
 C--    TauX
+       _BEGIN_MASTER(myThid)
        WRITE(filename(1:40),'(A,I10.10,A)') 
      &      'windx.',intime0+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', fu, myIter, myThid )
        WRITE(filename(1:40),'(A,I10.10,A)') 
      &      'windx.',intime1+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', fudot, myIter, myThid )
+       _END_MASTER(myThid)
+       _BARRIER
     
 C      Set fudot to the total change over the period
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -432,12 +446,15 @@ C      Convert fudot into the increment to fu per time-step (here after)
 C
 
 C--    TauY
+       _BEGIN_MASTER(myThid)
        WRITE(filename(1:40),'(A,I10.10,A)') 
      &      'windy.',intime0+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', fv, myIter, myThid )
        WRITE(filename(1:40),'(A,I10.10,A)') 
      &      'windy.',intime1+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', fvdot, myIter, myThid )
+       _END_MASTER(myThid)
+       _BARRIER
     
 C      Set fvdot to the total change over the period
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -478,12 +495,15 @@ C      Convert fvdot into the increment to fv per time-step (here after)
 C
 
 C--    Qnet
+       _BEGIN_MASTER(myThid)
        WRITE(filename(1:40),'(A,I10.10,A)') 
      &      'Qnet.',intime0+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', Qnet, myIter, myThid )
        WRITE(filename(1:40),'(A,I10.10,A)') 
      &      'Qnet.',intime1+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', Qnetdot, myIter, myThid )
+       _END_MASTER(myThid)
+       _BARRIER
     
 C      Set Qnetdot to the total change over the period
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -526,8 +546,11 @@ C
 C--    EmPmR
 Cfix   WRITE(filename(1:40),'(A,I10.10,A)') 
 Cfix &      'EmP_y.',intime0+1,'.bin'
+       _BEGIN_MASTER(myThid)
        filename='EmP_y.bin'
        CALL READ_FLD_XY_RS( filename, ' ', EmPmR, myIter, myThid )
+       _END_MASTER(myThid)
+       _BARRIER
 Cfix   WRITE(filename(1:40),'(A,I10.10,A)') 
 Cfix &      'EmPmR.',intime1+1,'.bin'
 Cfix   CALL READ_FLD_XY_RS( filename, ' ', EmPmRdot, myIter, myThid )
@@ -569,8 +592,6 @@ C      Convert EmPmRdot into the increment to EmPmR per time-step (here after)
          ENDDO
         ENDDO
        ENDDO
-C
-       _END_MASTER(myThid)
 C
        _EXCH_XY_R4(SST  , myThid )
        _EXCH_XY_R4(SSS  , myThid )

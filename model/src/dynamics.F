@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.34 1998/09/07 16:23:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.35 1998/09/29 18:50:57 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -202,6 +202,7 @@ C     uninitialised but inert locations.
        ENDDO
       ENDDO
 
+
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -231,6 +232,7 @@ C--     Set up work arrays that need valid initial values
         iMax = sNx+OLx
         jMin = 1-OLy+1
         jMax = sNy+OLy
+
 
         K = 1
         BOTTOM_LAYER = K .EQ. Nr

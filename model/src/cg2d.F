@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.12 1998/09/08 01:37:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.13 1998/09/29 18:50:56 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -65,6 +65,15 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       REAL    sumRHS
       REAL    rhsMax
       REAL    rhsNorm
+
+      INTEGER OLw
+      INTEGER OLe
+      INTEGER OLn
+      INTEGER OLs
+      INTEGER exchWidthX
+      INTEGER exchWidthY
+      INTEGER myNz
+
 
 CcnhDebugStarts
       CHARACTER*(MAX_LEN_FNAM) suff
@@ -149,8 +158,30 @@ C--   Initial residual calculation
         ENDDO
        ENDDO
       ENDDO
-      _EXCH_XY_R8( cg2d_r, myThid )
-      _EXCH_XY_R8( cg2d_s, myThid )
+C     _EXCH_XY_R8( cg2d_r, myThid )
+       OLw        = 1
+       OLe        = 1
+       OLn        = 1
+       OLs        = 1
+       exchWidthX = 1
+       exchWidthY = 1
+       myNz       = 1
+       CALL EXCH_RL( cg2d_r,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+C     _EXCH_XY_R8( cg2d_s, myThid )
+       OLw        = 1
+       OLe        = 1
+       OLn        = 1
+       OLs        = 1
+       exchWidthX = 1
+       exchWidthY = 1
+       myNz       = 1
+       CALL EXCH_RL( cg2d_s,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
       sumRHSBuf(1,myThid) = sumRHS
       _GLOBAL_SUM_R8( sumRHSBuf , sumRHS, myThid )
       sumRHS = sumRHSBuf(1,1)
@@ -158,7 +189,10 @@ C--   Initial residual calculation
 C     WRITE(6,*) ' mythid, err = ', mythid, SQRT(err)
       _GLOBAL_SUM_R8( errBuf    , err   , myThid )
       err    = errBuf(1,1)
+      
+      _BEGIN_MASTER( myThid )
       write(0,*) 'cg2d: Sum(rhs) = ',sumRHS
+      _END_MASTER( )
 
       actualIts      = 0
       actualResidual = SQRT(err)
@@ -221,7 +255,19 @@ CcnhDebugEnds
 
 C--    Do exchanges that require messages i.e. between
 C--    processes.
-       _EXCH_XY_R8( cg2d_s, myThid )
+C      _EXCH_XY_R8( cg2d_s, myThid )
+       OLw        = 1
+       OLe        = 1
+       OLn        = 1
+       OLs        = 1
+       exchWidthX = 1
+       exchWidthY = 1
+       myNz       = 1
+       CALL EXCH_RL( cg2d_s,
+     I            OLw, OLe, OLs, OLn, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+
 
 C==    Evaluate laplace operator on conjugate gradient vector
 C==    q = A.s
@@ -279,7 +325,19 @@ C      Now compute "interior" points.
        actualIts      = it2d
        actualResidual = err
        IF ( err .LT. cg2dTargetResidual ) GOTO 11
-       _EXCH_XY_R8(cg2d_r, myThid )
+C      _EXCH_XY_R8(cg2d_r, myThid )
+       OLw        = 1
+       OLe        = 1
+       OLn        = 1
+       OLs        = 1
+       exchWidthX = 1
+       exchWidthY = 1
+       myNz       = 1
+       CALL EXCH_RL( cg2d_r,
+     I             OLw, OLe, OLs, OLn, myNz,
+     I             exchWidthX, exchWidthY,
+     I             FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
+
    10 CONTINUE
    11 CONTINUE
 

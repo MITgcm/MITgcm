@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.14 1998/09/09 15:04:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.15 1998/09/29 18:50:57 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -67,7 +67,7 @@ C     Step forward salt
        DO j=jMin,jMax
         DO i=iMin,iMax
          gSNm1(i,j,k,bi,bj)=salt(i,j,k,bi,bj)
-C    &    +deltaTtracer*(ab15*gS(i,j,k,bi,bj)+ab05*gSNm1(i,j,k,bi,bj))
+     &    +deltaTtracer*(ab15*gS(i,j,k,bi,bj)+ab05*gSNm1(i,j,k,bi,bj))
         ENDDO
        ENDDO
       ENDIF

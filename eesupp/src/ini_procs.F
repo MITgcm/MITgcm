@@ -1,7 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.5 1998/08/22 17:51:06 cnh Exp $
-
 #include "CPP_EEOPTIONS.h"
-
 CStartOfInterface
       SUBROUTINE INI_PROCS
 C     /==========================================================\
@@ -43,7 +40,6 @@ C     elStride         - Distance between starting location of elements
 C                        in an MPI datatype - can be bytes of datatype
 C                        units.
       CHARACTER*(MAX_LEN_MBUF) msgBuffer
-      INTEGER myThid
       INTEGER mpiRC
       INTEGER mpiGridSpec(2)
       INTEGER mpiPeriodicity(2)
@@ -55,22 +51,25 @@ C                        units.
       INTEGER elLen
       INTEGER elStride
 #endif /* ALLOW_USE_MPI */
+      INTEGER myThid
 
 C--   Default values set to single processor case
 C     pid[W-SE] are the MPI process id's of the neighbor
 C     processes. A process can be its own neighbor!
-      pidW          = 1
-      pidE          = 1
-      pidN          = 1
-      pidS          = 1
-      pidNW         = 1
-      pidNE         = 1
-      pidSW         = 1
-      pidSE         = 1
-      myPx          = 1
-      myPy          = 1
-      myXGlobalLo   = 1
-      myYGlobalLo   = 1
+      myThid      = 1
+      myPid       = 1
+      nProcs      = 1
+      myPx        = 1
+      myPy        = 1
+      myXGlobalLo = 1
+      myYGlobalLo = 1
+      pidW        = 1
+      pidE        = 1
+      pidN        = 1
+      pidS        = 1
+      errorMessageUnit    = 0
+      standardMessageUnit = 6
+
 #ifdef ALLOW_USE_MPI
 C--
 C--   MPI style full multiple-process initialisation
@@ -158,12 +157,15 @@ C--    Get my location on the grid
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
        ENDIF
+       myPid = mpiMyId
        mpiPx = mpiGridSpec(1)
        mpiPy = mpiGridSpec(2)
        mpiXGlobalLo = 1 + sNx*nSx*(mpiPx)
        mpiYGlobalLo = 1 + sNy*nSy*(mpiPy)
        myXGlobalLo  = mpiXGlobalLo
        myYGlobalLo  = mpiYGlobalLo
+       myPx = mpiPx+1
+       myPy = mpiPy+1
 C--    Get MPI id for neighboring procs.
        mpiGridSpec(1) = mpiPx-1
        IF ( mpiPeriodicity(1) .EQ. _mpiTRUE_ .AND. mpiGridSpec(1) .LT. 0 ) 
@@ -221,70 +223,6 @@ C--    Get MPI id for neighboring procs.
         GOTO 999
        ENDIF
        pidN = mpiPidN
-       mpiGridSpec(1) = mpiPx-1
-       IF ( mpiPeriodicity(1) .EQ. _mpiTRUE_ .AND. mpiGridSpec(1) .LT. 0 )
-     &  mpiGridSpec(1) = nPx - 1
-       mpiGridSpec(2) = mpiPy-1
-       IF ( mpiPeriodicity(2) .EQ. _mpiTRUE_ .AND. mpiGridSpec(2) .LT. 0 )
-     &  mpiGridSpec(2) = nPy - 1
-       CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidSW, mpiRC )
-       IF ( mpiRC .NE. MPI_SUCCESS ) THEN
-        eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_CART_RANK (pidSW) return code',
-     &        mpiRC 
-        CALL PRINT_ERROR( msgBuffer , myThid)
-        GOTO 999
-       ENDIF
-       pidSW = mpiPidSW
-       mpiGridSpec(1) = mpiPx+1
-       IF ( mpiPeriodicity(1) .EQ. _mpiTRUE_ .AND. mpiGridSpec(1) .GT. nPx-1 )
-     &  mpiGridSpec(1) = 0
-       mpiGridSpec(2) = mpiPy-1
-       IF ( mpiPeriodicity(2) .EQ. _mpiTRUE_ .AND. mpiGridSpec(2) .LT. 0 )
-     &  mpiGridSpec(2) = nPy - 1
-       CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidSE, mpiRC )
-       IF ( mpiRC .NE. MPI_SUCCESS ) THEN
-        eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_CART_RANK (pidSE) return code',
-     &        mpiRC 
-        CALL PRINT_ERROR( msgBuffer , myThid)
-        GOTO 999
-       ENDIF
-       pidSE = mpiPidSE
-       mpiGridSpec(1) = mpiPx-1
-       IF ( mpiPeriodicity(1) .EQ. _mpiTRUE_ .AND. mpiGridSpec(1) .LT. 0     )
-     &  mpiGridSpec(1) = nPx-1
-       mpiGridSpec(2) = mpiPy+1
-       IF ( mpiPeriodicity(2) .EQ. _mpiTRUE_ .AND. mpiGridSpec(2) .GT. nPy-1 )
-     &  mpiGridSpec(2) = 0
-       CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidNW, mpiRC )
-       IF ( mpiRC .NE. MPI_SUCCESS ) THEN
-        eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_CART_RANK (pidNW) return code',
-     &        mpiRC 
-        CALL PRINT_ERROR( msgBuffer , myThid)
-        GOTO 999
-       ENDIF
-       pidNW = mpiPidNW
-       mpiGridSpec(1) = mpiPx+1
-       IF ( mpiPeriodicity(1) .EQ. _mpiTRUE_ .AND. mpiGridSpec(1) .GT. nPx-1 )
-     &  mpiGridSpec(1) = 0
-       mpiGridSpec(2) = mpiPy+1
-       IF ( mpiPeriodicity(2) .EQ. _mpiTRUE_ .AND. mpiGridSpec(2) .GT. nPy-1 )
-     &  mpiGridSpec(2) = 0
-       CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidNE, mpiRC )
-       IF ( mpiRC .NE. MPI_SUCCESS ) THEN
-        eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
-     &        'S/R INI_PROCS: MPI_CART_RANK (pidNE) return code',
-     &        mpiRC 
-        CALL PRINT_ERROR( msgBuffer , myThid)
-        GOTO 999
-       ENDIF
-       pidNE = mpiPidNE
 
 C--    Print summary of processor mapping on standard output
        CALL MPI_GET_PROCESSOR_NAME( mpiProcNam, mpilProcNam, mpiRC )
@@ -323,18 +261,6 @@ C--    Print summary of processor mapping on standard output
        CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit, 
      &  SQUEEZE_RIGHT , myThid)
        WRITE(msgBuffer,'(A,I4.4)') '  West neighbor = processor ', mpiPidW
-       CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit, 
-     &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I4.4)') '    NW neighbor = processor ', mpiPidNW
-       CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit, 
-     &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I4.4)') '    NE neighbor = processor ', mpiPidNE
-       CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit, 
-     &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I4.4)') '    SW neighbor = processor ', mpiPidSW
-       CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit, 
-     &  SQUEEZE_RIGHT , myThid)
-       WRITE(msgBuffer,'(A,I4.4)') '    SE neighbor = processor ', mpiPidSE
        CALL PRINT_MESSAGE( msgBuffer, standardMessageUnit, 
      &  SQUEEZE_RIGHT , myThid)
 C
@@ -530,10 +456,6 @@ C--    Assign MPI values used in generating unique tags for messages.
        mpiTagE    = 2
        mpiTagS    = 3
        mpiTagN    = 4
-       mpiTagSW   = 5
-       mpiTagSE   = 6
-       mpiTagNW   = 7
-       mpiTagNE   = 8
 
 C
        CALL MPI_Barrier(MPI_COMM_WORLD,mpiRC)
@@ -549,3 +471,5 @@ C
 
       RETURN
       END
+
+C $Id: ini_procs.F,v 1.6 1998/09/29 18:50:56 cnh Exp $

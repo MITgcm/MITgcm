@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.9 1998/09/08 01:37:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.10 1998/09/29 18:50:56 cnh Exp $
 C
 C     /==========================================================\
 C     | GRID.h                                                   |
@@ -351,7 +351,7 @@ C     tanPhiAtV - tan of the latitude at V point. Used for spherical polar
 C                 metric term in V equation.
       COMMON /GRID_R/
      &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,drC,drF,
-     &  H,HFacC,HFacW,HFacS,
+     &  H,HFacC,HFacW,HFacS,DepthInK,
      &  recip_dxC,recip_dxF,recip_dxG,recip_dxV,
      &  recip_dyC,recip_dyF,recip_dyG,recip_dyU,
      &  recip_drC,recip_drF,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EESUPPORT.h,v 1.3 1998/09/05 17:52:13 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EESUPPORT.h,v 1.4 1998/09/29 18:50:56 cnh Exp $
 C
 C     /==========================================================\
 C     | EESUPPORT.h                                              |
@@ -17,18 +17,34 @@ C     PROCESS_HEADER      - String which prefixes processor number
       CHARACTER*(*) PROCESS_HEADER
       PARAMETER ( PROCESS_HEADER = 'PID.TID' )
 
+C     MAX_NUM_COMM_MODES - Maximum number of communication modes
 C     COMM_NONE       - No edge communication
-C     COMM_MPI        - Use MPI to communicate edges
-C     COMM_SHMPG      - Use shm get/put to communicate edges
-C     COMM_SHARED     - Use true shared memory to communicate edges
+C     COMM_MSG        - Use messages to communicate edges
+C     COMM_PUT        - Use put to communicate edges
+C     COMM_GET        - Use get to communicate edges
+C     Note - commName holds an identifying name for each communication
+C            mode. The COMM_ parameters are used to index commName
+C            so the COMM_ parameters need to be in the range
+C            1 : MAX_NUM_COMM_MODES.
+      INTEGER MAX_NUM_COMM_MODES
+      PARAMETER ( MAX_NUM_COMM_MODES = 4 )
       INTEGER COMM_NONE
-      PARAMETER ( COMM_NONE   =   0 )
-      INTEGER COMM_MPI
-      PARAMETER ( COMM_MPI    =   1 )
-      INTEGER COMM_SHMPG
-      PARAMETER ( COMM_SHMPG  =   2 )
-      INTEGER COMM_SHARED
-      PARAMETER ( COMM_SHARED =   3 )
+      PARAMETER ( COMM_NONE   =   1 )
+      INTEGER COMM_MSG
+      PARAMETER ( COMM_MSG    =   2 )
+      INTEGER COMM_PUT
+      PARAMETER ( COMM_PUT    =   3 )
+      INTEGER COMM_GET
+      PARAMETER ( COMM_GET    =   4 )
+      COMMON /EESUPP_COMMNAME/ commName
+      CHARACTER*10 commName(MAX_NUM_COMM_MODES)
+
+C     Tile identifiers
+C     Tiles have a number that is unique over the global domain.
+C     A tile that is not there has its number set to NULL_TILE
+      INTEGER NULL_TILE
+      PARAMETER ( NULL_TILE = -1 )
+
 
 C--   COMMON /EESUPP_C/ Execution environment support character variables
 C     myProcessStr - String identifying my process number
@@ -80,59 +96,76 @@ C                             exact zero values.
       LOGICAL notUsingYPeriodicity
       LOGICAL printMapIncludesZeros
  
-
 C--   COMMON /EESUPP_I/ Parallel support integer globals
-C     pidW   - "Process" ID of neighbor to West
-C     pidE   -    "       "       "        East
-C     pidN   -    "       "       "        North
-C     pidS   -    "       "       "        South
-C     pidNE  -    "       "       "        North-East
-C     pidNW  -    "       "       "        North-West
-C     pidSE  -    "       "       "        South-East
-C     pidSW  -    "       "       "        South-West
+C     pidW   -  Process  ID of neighbor to West
+C     pidE   -           ditto             East
+C     pidN   -           ditto             North
+C     pidS   -           ditto             South
 C              Note: pid[XY] is not necessairily the UNIX
 C                    process id - it is just an identifying
 C                    number.
-C     commW       - Communication method at thread edge to the
-C     commE         west (W), east (E), south (S), north (N).
-C     commS
-C     commN
-C     myThrS      - Thread number of neighboring thread, used
-C     myThrN        to match senders with receivers of
-C     myThrW        messages.
-C     myThrE
-C     myThrSW
-C     myThrSE
-C     myThrNW
-C     myThrNE
-C     nTx, nTy    - No. threads in X and Y. This assumes a simple cartesian
-C                   gridding of the threads which is not required elsewhere 
-C                   but that makes it easier.
+C     myPid  - My own process id
+C     nProcs - Number of processes
+C     westCommunicationMode  - Mode of communication for each tile face
+C     eastCommunicationMode
+C     northCommunicationMode
+C     southCommunicationMode
+C     bi0   - Low cartesian tile index for this process
+C     bj0     Note - In a tile distribution with holes bi0 and bj0
+C                    are not useful. Neighboring tile indices must
+C                    be derived some other way.
+C     tileNo       - Tile identification number for my tile and
+C     tileNo[WENS]   my N,S,E,W neighbor tiles.
+C     tilePid[WENS] - Process identification number for
+C                     my N,S,E,W neighbor tiles.
+C     nTx, nTy    - No. threads in X and Y. This assumes a simple
+C                   cartesian gridding of the threads which is not
+C                   required elsewhere but that makes it easier.
       COMMON /EESUPP_I/
-     & pidW, pidE, pidS, pidN, pidSE, pidSW, pidNE, pidNW,
-     & commW, commN, commS, commE,
-     & myThrS,  myThrN,  myThrW,  myThrE,
-     & myThrNE, myThrNW, myThrSE, myThrSW
-      INTEGER commW(MAX_NO_THREADS)
-      INTEGER commE(MAX_NO_THREADS)
-      INTEGER commN(MAX_NO_THREADS)
-      INTEGER commS(MAX_NO_THREADS)
+     & myPid, nProcs, pidW, pidE, pidN, pidS,
+     & tileCommModeW,  tileCommModeE,
+     & tileCommModeN,  tileCommModeS,
+     & tileNo, tileNoW, tileNoE, tileNoS, tileNoN,
+     &  tilePidW, tilePidE, tilePidS, tilePidN,
+     &  tileBiW, tileBiE, tileBiS, tileBiN,
+     & tileBjW, tileBjE, tileBjS, tileBjN,
+     & tileTagSendW, tileTagSendE, tileTagSendS, tileTagSendN,
+     & tileTagRecvW, tileTagRecvE, tileTagRecvS, tileTagRecvN
+      INTEGER myPid
+      INTEGER nProcs
       INTEGER pidW
       INTEGER pidE
-      INTEGER pidS
       INTEGER pidN
-      INTEGER pidSE
-      INTEGER pidSW
-      INTEGER pidNE
-      INTEGER pidNW
-      INTEGER myThrS(MAX_NO_THREADS)
-      INTEGER myThrN(MAX_NO_THREADS)
-      INTEGER myThrW(MAX_NO_THREADS)
-      INTEGER myThrE(MAX_NO_THREADS)
-      INTEGER myThrSW(MAX_NO_THREADS)
-      INTEGER myThrNW(MAX_NO_THREADS)
-      INTEGER myThrNE(MAX_NO_THREADS)
-      INTEGER myThrSE(MAX_NO_THREADS)
+      INTEGER pidS
+      INTEGER tileCommModeW ( nSx, nSy )
+      INTEGER tileCommModeE ( nSx, nSy )
+      INTEGER tileCommModeN ( nSx, nSy )
+      INTEGER tileCommModeS ( nSx, nSy )
+      INTEGER tileNo( nSx, nSy )
+      INTEGER tileNoW( nSx, nSy )
+      INTEGER tileNoE( nSx, nSy )
+      INTEGER tileNoN( nSx, nSy )
+      INTEGER tileNoS( nSx, nSy )
+      INTEGER tilePidW( nSx, nSy )
+      INTEGER tilePidE( nSx, nSy )
+      INTEGER tilePidN( nSx, nSy )
+      INTEGER tilePidS( nSx, nSy )
+      INTEGER tileBiW( nSx, nSy )
+      INTEGER tileBiE( nSx, nSy )
+      INTEGER tileBiN( nSx, nSy )
+      INTEGER tileBiS( nSx, nSy )
+      INTEGER tileBjW( nSx, nSy )
+      INTEGER tileBjE( nSx, nSy )
+      INTEGER tileBjN( nSx, nSy )
+      INTEGER tileBjS( nSx, nSy )
+      INTEGER tileTagSendW( nSx, nSy )
+      INTEGER tileTagSendE( nSx, nSy )
+      INTEGER tileTagSendN( nSx, nSy )
+      INTEGER tileTagSendS( nSx, nSy )
+      INTEGER tileTagRecvW( nSx, nSy )
+      INTEGER tileTagRecvE( nSx, nSy )
+      INTEGER tileTagRecvN( nSx, nSy )
+      INTEGER tileTagRecvS( nSx, nSy )
 
 #ifdef ALLOW_USE_MPI
 C--   Include MPI standard Fortran header file

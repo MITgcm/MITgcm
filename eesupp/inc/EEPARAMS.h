@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.4 1998/05/21 18:30:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.5 1998/09/29 18:50:55 cnh Exp $
 C
 C     /==========================================================\
 C     | EEPARAMS.h                                               |
@@ -56,6 +56,23 @@ C     INDEX_NONE
      &            INDEX_K    = 3,
      &            INDEX_NONE = 4 )
 
+
+C     EXCH_IGNORE_CORNERS - Flag to select ignoring or
+C     EXCH_UPDATE_CORNERS   updating of corners during
+C                           an edge exchange.
+      INTEGER EXCH_IGNORE_CORNERS
+      INTEGER EXCH_UPDATE_CORNERS
+      PARAMETER ( EXCH_IGNORE_CORNERS = 0,
+     &            EXCH_UPDATE_CORNERS = 1 )
+
+C     FORWARD_SIMULATION
+C     REVERSE_SIMULATION
+      INTEGER FORWARD_SIMULATION
+      INTEGER REVERSE_SIMULATION
+      PARAMETER ( FORWARD_SIMULATION = 0,
+     &            REVERSE_SIMULATION = 1 )
+
+
 C     Particularly weird and obscure voodoo numbers
 C     lShare  - This wants to be the length in
 C               [148]-byte words of the size of
@@ -69,18 +86,20 @@ C               The buffer arrays are usually short arrays
 C               and are declared REAL ARRA(lShare[148],LBUFF).
 C               Setting lShare[148] to 1 is like making these arrays
 C               one dimensional.
+      INTEGER cacheLineSize
       INTEGER lShare1
       INTEGER lShare4
       INTEGER lShare8
-      PARAMETER ( lShare1 = 8 * 32 )
-      PARAMETER ( lShare4 = 2 * 32 )
-      PARAMETER ( lShare8 = 1 * 32 )
+      PARAMETER ( cacheLineSize = 256 )
+      PARAMETER ( lShare1 =  cacheLineSize )
+      PARAMETER ( lShare4 =  cacheLineSize/4 )
+      PARAMETER ( lShare8 =  cacheLineSize/8 )
 
 C     MAX_NO_THREADS  - Maximum number of threads allowed.
 C     MAX_NO_PROCS    - Maximum number of processes allowed.
 C     MAX_NO_BARRIERS - Maximum number of distinct thread "barriers"
       INTEGER MAX_NO_THREADS
-      PARAMETER ( MAX_NO_THREADS =   16 )
+      PARAMETER ( MAX_NO_THREADS =   32 )
       INTEGER MAX_NO_PROCS
       PARAMETER ( MAX_NO_PROCS   =  128 )
       INTEGER MAX_NO_BARRIERS

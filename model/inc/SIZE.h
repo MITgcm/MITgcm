@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.17 1998/09/05 17:52:13 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.18 1998/09/29 18:50:56 cnh Exp $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |
@@ -54,3 +54,13 @@ C     n - Runtime global problem size in R
       INTEGER l
       INTEGER m
       INTEGER n
+
+C     MAX_OLX  - Set to the maximum overlap region size of any array 
+C     MAX_OLY    that will be exchanged. Controls the sizing of exch 
+C                routine buufers.
+      INTEGER MAX_OLX
+      INTEGER MAX_OLY
+      PARAMETER ( MAX_OLX = OLx,
+     &            MAX_OLY = OLy )
+
+

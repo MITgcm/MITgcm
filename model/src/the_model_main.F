@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.19 1998/07/15 22:11:33 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.20 1998/09/29 18:50:57 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -220,7 +220,10 @@ C--   Dump for end state
       CALL TIMER_STOP ('ALL',myThid)
 
 C--   Write timer statistics
-      IF ( myThid .EQ. 1 ) CALL TIMER_PRINTALL( myThid )
+      IF ( myThid .EQ. 1 ) THEN
+       CALL TIMER_PRINTALL( myThid )
+       CALL COMM_STATS
+      ENDIF
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.5 1998/06/15 05:13:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.6 1998/09/29 18:50:57 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -51,6 +51,7 @@ C     == Local variables ==
 
 C--   To get around synchronisation and multi-threaded I/O issues
 C--   thread 1 will do all the writes.
+      _BARRIER
       IF ( myThid .EQ. 1 ) THEN
 C--    Form name for identifying "plot"
        IF ( myIter .GE. 0 ) THEN
@@ -85,6 +86,7 @@ C      Substitute other plotting utilities here!
      I        biStart,  biEnd, biStride,
      I        bjStart,  bjEnd, bjStride )
       ENDIF
+      _BARRIER
 
       RETURN
       END
@@ -130,6 +132,7 @@ C     == Local variables ==
 
 C--   To get around synchronisation and multi-threaded I/O issues
 C--   thread 1 will do all the writes.
+      _BARRIER
       IF ( myThid .EQ. 1 ) THEN
 C--    Form name for identifying "plot"
        IF ( myIter .GE. 0 ) THEN
@@ -164,6 +167,7 @@ C      Substitute other plotting utilities here!
      I        biStart,  biEnd, biStride,
      I        bjStart,  bjEnd, bjStride )
       ENDIF
+      _BARRIER
 
       RETURN
       END
@@ -214,6 +218,7 @@ C     == Local variables ==
 
 C--   To get around synchronisation and multi-threaded I/O issues
 C--   thread 1 will do all the writes.
+      _BARRIER
       IF ( myThid .EQ. 1 ) THEN
 C--    Form name for identifying "plot"
        IF ( myIter .GE. 0 ) THEN
@@ -253,6 +258,7 @@ C      jEnd     =  1
      I        biStart,  biEnd, biStride,
      I        bjStart,  bjEnd, bjStride )
       ENDIF
+      _BARRIER
 
       RETURN
       END
@@ -303,6 +309,7 @@ C     == Local variables ==
 
 C--   To get around synchronisation and multi-threaded I/O issues
 C--   thread 1 will do all the writes.
+      _BARRIER
       IF ( myThid .EQ. 1 ) THEN
 C--    Form name for identifying "plot"
        IF ( myIter .GE. 0 ) THEN
@@ -342,6 +349,7 @@ C      Substitute other plotting utilities here!
      I        biStart,  biEnd, biStride,
      I        bjStart,  bjEnd, bjStride )
       ENDIF
+      _BARRIER
 
       RETURN
       END

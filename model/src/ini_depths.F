@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.13 1998/09/07 16:23:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.14 1998/09/29 18:50:57 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -84,6 +84,7 @@ CcnhdDebugEnds
 
        _END_MASTER(myThid)
       ENDIF
+      
       _EXCH_XY_R4(    H, myThid )
 C
       CALL PLOT_FIELD_XYRS( H, 'Model depths' , 1, myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.8 1998/09/05 17:52:12 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.9 1998/09/29 18:50:55 cnh Exp $
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
@@ -62,7 +62,7 @@ C                              system F90 compiler.
 #endif
 
 #ifdef TARGET_DEC
-#undef  USE_KAP_THREADING
+#define USE_KAP_THREADING
 #endif
 
 #ifdef TARGET_SGI
@@ -126,6 +126,7 @@ C     performance.
 #define REAL Real*8
 #define _RS  Real*8
 #define _RL  Real*8
+#define RS_IS_REAL8
 #define _EXCH_XY_R4(a,b)       CALL EXCH_XY_R8 ( a, b )
 #define _EXCH_XYZ_R4(a,b)      CALL EXCH_XYZ_R8 ( a, b )
 #define _GLOBAL_SUM_R4(a,b,c)  CALL GLOBAL_SUM_R8( a, b , c)
@@ -137,6 +138,7 @@ C     performance.
 #define REAL Real*8
 #define _RS  Real*4
 #define _RL  Real*8
+#define RS_IS_REAL4
 #define _EXCH_XY_R4(a,b)       CALL EXCH_XY_R4 ( a, b )
 #define _EXCH_XYZ_R4(a,b)      CALL EXCH_XYZ_R4 ( a, b )
 #define _GLOBAL_SUM_R4(a,b,c)  CALL GLOBAL_SUM_R4( a, b , c)
