@@ -1,6 +1,2 @@
-input
-code
-*.eps
-*.jpg
-run.*
-*.m
+build*
+run*
