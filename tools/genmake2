@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.27 2003/11/04 18:40:58 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.28 2003/11/04 19:51:54 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -943,19 +943,6 @@ for n in $names ; do
 	if test "x$has_pack" = xf ; then
 	    undef=`echo "ALLOW_$n" | $AWK '{print toupper($0)}'`
 	    echo "#undef $undef" >> $PACKAGES_DOT_H".tmp"
-#           DEFINES="$DEFINES -U$undef"
-
-#EH3  WARNING :  This is an UGLY HACK that needs to be removed!!!
-	    case $n in 
-		mom_fluxform)
-		    DEFINES="$DEFINES -DDISABLE_MOM_FLUXFORM"
-		    ;;
-		mom_vecinv)
-		    DEFINES="$DEFINES -DDISABLE_MOM_VECINV"
-		    ;;
-	    esac
-#EH3  WARNING :  This is an UGLY HACK that needs to be removed!!!
-
 	fi
     fi
 done

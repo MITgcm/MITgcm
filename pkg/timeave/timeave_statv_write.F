@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.11 2003/10/24 05:29:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.12 2003/11/04 19:51:54 edhill Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -80,7 +80,7 @@ c         CALL TIMEAVE_NORMALIZ(hFacStave,TimeAve_half,Nr,bi,bj,myThid)
 
           CALL TIMEAVE_NORMALIZ(TdiffRtave,TimeAve_full,Nr,
      &                            bi,bj,myThid)
-#ifndef DISABLE_MOM_VECINV
+#ifdef ALLOW_MOM_VECINV
           CALL TIMEAVE_NORMALIZ(uZetatave,TimeAve_full,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(vZetatave,TimeAve_full,Nr,bi,bj,myThid)
 #endif
@@ -127,7 +127,7 @@ c      CALL WRITE_FLD_XYZ_RL('KEtave.',suff,KEtave,myIter,myThid)
 
        IF (useVariableK)
      & CALL WRITE_FLD_XYZ_RL('Tdiftave.',suff,TdiffRtave,myIter,myThid)
-#ifndef DISABLE_MOM_VECINV
+#ifdef ALLOW_MOM_VECINV
        IF (vectorInvariantMomentum) THEN
          CALL WRITE_FLD_XYZ_RL('uZtave.',suff,uZetatave,myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('vZtave.',suff,vZetatave,myIter,myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.11 2003/10/24 05:29:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.12 2003/11/04 19:51:54 edhill Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -55,7 +55,7 @@ c       CALL TIMEAVE_RESET(KEtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(VTtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(WTtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(TdiffRtave,Nr, bi, bj, myThid)
-#ifndef DISABLE_MOM_VECINV
+#ifdef ALLOW_MOM_VECINV
         CALL TIMEAVE_RESET(uZetatave, Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(vZetatave, Nr, bi, bj, myThid)
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.104 2003/11/04 18:40:57 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.105 2003/11/04 19:51:53 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -380,14 +380,14 @@ C        distinguishe between Stagger and Non Stagger time stepping
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gU, gV, etc...
          IF ( momStepping ) THEN
-#ifndef DISABLE_MOM_FLUXFORM
+#ifdef ALLOW_MOM_FLUXFORM
            IF (.NOT. vectorInvariantMomentum) CALL MOM_FLUXFORM(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
      I         dPhiHydX,dPhiHydY,KappaRU,KappaRV,
      U         fVerU, fVerV,
      I         myTime, myIter, myThid)
 #endif
-#ifndef DISABLE_MOM_VECINV
+#ifdef ALLOW_MOM_VECINV
            IF (vectorInvariantMomentum) CALL MOM_VECINV(
      I         bi,bj,iMin,iMax,jMin,jMax,k,kup,kDown,
      I         dPhiHydX,dPhiHydY,KappaRU,KappaRV,
