@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.6 2004/05/04 22:13:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_get_gen.F,v 1.7 2004/11/11 06:28:33 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -64,6 +64,7 @@ c     == local variables ==
       integer imin,imax
       integer ilgen
 
+      _RL     gensign
       _RL     genfac
       logical doCtrlUpdate
       logical genfirst
@@ -144,9 +145,15 @@ cph this flag ported from the SIO code (dont know why its here)
       else
          doCtrlUpdate = .TRUE.
       endif
+      if ( xx_gen_file .EQ. xx_tauu_file .OR.
+     &     xx_gen_file .EQ. xx_tauv_file ) then
+         gensign = -1.
+      else
+         gensign = 1.
+      endif
 c
 cph since the above is ECCO specific, we undo it here:
-      doCtrlUpdate = .TRUE.
+cph      doCtrlUpdate = .TRUE.
 c
       if ( doCtrlUpdate ) then
 cph)
@@ -157,8 +164,8 @@ c--       Calculate mask for tracer cells (0 => land, 1 => water).
           do j = 1,sny
             do i = 1,snx
               genfld(i,j,bi,bj) = genfld (i,j,bi,bj)
-     &                         + genfac            *xx_gen0(i,j,bi,bj)
-     &                         + (1. _d 0 - genfac)*xx_gen1(i,j,bi,bj)
+     &              + gensign*genfac            *xx_gen0(i,j,bi,bj)
+     &              + gensign*(1. _d 0 - genfac)*xx_gen1(i,j,bi,bj)
               genfld(i,j,bi,bj) = genfld(i,j,bi,bj)*genmask(i,j,k,bi,bj)
             enddo
           enddo

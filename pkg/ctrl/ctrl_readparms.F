@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.6 2004/05/28 16:04:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.7 2004/11/11 06:28:33 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -107,7 +107,8 @@ c--   Read the namelist input.
      &  xx_hfacc_file,
      &  xx_efluxy_file,
      &  xx_efluxp_file,
-     &  xx_bottomdrag_file
+     &  xx_bottomdrag_file,
+     &  doInitXX
 
       namelist /ctrl_packnames/
      &  yadmark, yctrlid, yctrlposunpack, yctrlpospack,
@@ -175,6 +176,8 @@ c--     Set default values.
         xx_efluxy_file      = ' '
         xx_efluxp_file      = ' '
         xx_bottomdrag_file  = ' '
+
+        doInitXX            = .TRUE.
 
 #ifdef ALLOW_TANGENTLINEAR_RUN
         yadprefix           = 'g_'

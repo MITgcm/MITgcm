@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_scat.F,v 1.3 2004/11/11 06:28:33 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -129,13 +129,20 @@ c--         Compute cost rel. to monthly SCAT field.
 
             call cost_ReadscatXFields( irec, mythid )
 
+cph(
+            print *, 'ph-scat a ', irec,
+     &           tauxbar(10,20,1,1), scatxdat(10,20,1,1)
+            print *, 'ph-scat b ', irec,
+     &           wscatx(10,20,1,1), cosphi(10,20,1,1)
+cph)
+
             do j = jmin,jmax
               do i = imin,imax
                 if (maskW(i,j,k,bi,bj) .ne. 0.) then
                    fctile_scatx = fctile_scatx +
      &                  wscatx(i,j,bi,bj)*cosphi(i,j,bi,bj)*
-     &                  ( (tauxbar(i,j,bi,bj)-scatxdat(i,j,bi,bj))*
-     &                    (tauxbar(i,j,bi,bj)-scatxdat(i,j,bi,bj))*
+     &                  ( (tauxbar(i,j,bi,bj)+scatxdat(i,j,bi,bj))*
+     &                    (tauxbar(i,j,bi,bj)+scatxdat(i,j,bi,bj))*
      &                           scatxmask(i,j,bi,bj) )
                 endif
               enddo
@@ -150,8 +157,8 @@ c--         Compute cost rel. to monthly SCAT field.
                 if (maskS(i,j,k,bi,bj) .ne. 0.) then
                    fctile_scaty = fctile_scaty +
      &                  wscaty(i,j,bi,bj)*cosphi(i,j,bi,bj)*
-     &                  ( (tauybar(i,j,bi,bj)-scatydat(i,j,bi,bj))*
-     &                    (tauybar(i,j,bi,bj)-scatydat(i,j,bi,bj))*
+     &                  ( (tauybar(i,j,bi,bj)+scatydat(i,j,bi,bj))*
+     &                    (tauybar(i,j,bi,bj)+scatydat(i,j,bi,bj))*
      &                           scatymask(i,j,bi,bj) )  
                 endif       
               enddo
@@ -162,6 +169,11 @@ c--         Compute cost rel. to monthly SCAT field.
             objf_scatx(bi,bj)  = objf_scatx(bi,bj)  + fctile_scatx
             fcthread_scaty     = fcthread_scaty + fctile_scaty
             objf_scaty(bi,bj)  = objf_scaty(bi,bj)  + fctile_scaty
+
+cph(
+            print *, 'ph-scat c ', irec,
+     &           objf_scatx(1,1), objf_scaty(1,1)
+cph)
 
 #ifdef ECCO_VERBOSE
 c--         Print cost fscat for each tile in each thread.
