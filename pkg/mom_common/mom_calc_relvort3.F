@@ -1,19 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_relvort3.F,v 1.2 2004/09/21 21:25:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_relvort3.F,v 1.3 2005/02/13 17:51:26 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
 #define CALC_CS_CORNER_EXTENDED
 
-      SUBROUTINE MOM_CALC_RELVORT3( 
+      SUBROUTINE MOM_CALC_RELVORT3(
      I        bi,bj,k,
      I        uFld, vFld, hFacZ,
      O        vort3,
      I        myThid)
       IMPLICIT NONE
-C     /==========================================================\
-C     | S/R MOM_CALC_RELVORT3                                    |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     | S/R MOM_CALC_RELVORT3
+C     *==========================================================*
+C     *==========================================================*
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -110,7 +110,7 @@ C     Special stuff for Cubed Sphere
        northWestCorner = .TRUE.
        northEastCorner = .TRUE.
 #endif /* ALLOW_EXCH2 */
-C
+
        IF ( southWestCorner ) THEN
 C               U(0,1)     D(0,1)      U(1,1)     TILE
 C                |                      |
@@ -129,7 +129,6 @@ C                                      U(1,-1)
      &     -uFld(I,J)*dxc(I,J,bi,bj)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
-cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
         vort3(I-1,J)=
@@ -141,11 +140,10 @@ cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
      &                             )
      &     *maskS(i-1,j,k,bi,bj)*maskS(i-2,j,k,bi,bj)
      &     *maskW(i-1,j,k,bi,bj)*maskS(i,j-1,k,bi,bj)
-c    &     +uFld(I-1,J-1)*dxc(I-1,J-1,bi,bj)
         vort3(I,J-1)=vort3(I-1,J)
 #endif
        ENDIF
-C
+
        IF ( southEastCorner ) THEN
 C   TILE       U(N+1,1)     D(N+1,1)      U(N+2,1)
 C               |                          |
@@ -164,7 +162,6 @@ C              U(N+1,-1)
      &     -uFld(I,J)*dxc(I,J,bi,bj)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
-cph    &      vFld(I,J)*dyc(I,J,bi,bj)
         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
         vort3(I+1,J)=
@@ -176,11 +173,10 @@ cph    &      vFld(I,J)*dyc(I,J,bi,bj)
      &                           )
      &     *maskS(i+1,j,k,bi,bj)*maskS(i-0,j,k,bi,bj)
      &     *maskW(i+1,j,k,bi,bj)*maskS(i-1,j-1,k,bi,bj)
-c    &     +uFld(I+1,J-1)*dxc(I+1,J-1,bi,bj)
         vort3(I,J-1)=vort3(I+1,J)
 #endif
        ENDIF
-C
+
        IF ( northWestCorner ) THEN
 C                                            U(1,N+2)
 C                                             |
@@ -199,7 +195,6 @@ C                 U(0,N)       D(0,N)        U(1,N)       TILE
      &     -uFld(I,J)*dxc(I,J,bi,bj)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
-cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
         vort3(I-1,J)=
@@ -211,11 +206,10 @@ cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
      &                           )
      &     *maskS(i-1,j,k,bi,bj)*maskS(i-2,j,k,bi,bj)
      &     *maskS(i,j+1,k,bi,bj)*maskW(i-1,j-1,k,bi,bj)
-c    &     -uFld(I-1,J)*dxc(I-1,J,bi,bj)
         vort3(I,J+1)=vort3(I-1,J)
 #endif
        ENDIF
-C
+
        IF ( northEastCorner ) THEN
 C                U(N+1,N+2)
 C                 |                              |
@@ -234,7 +228,6 @@ C   TILE         U(N+1,N)       D(N+1,N)        U(N+2,N)
      &     -uFld(I,J)*dxc(I,J,bi,bj)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
-cph    &      vFld(I,J)*dyc(I,J,bi,bj)
         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
 #ifdef CALC_CS_CORNER_EXTENDED
         vort3(I+1,J)=
@@ -246,7 +239,6 @@ cph    &      vFld(I,J)*dyc(I,J,bi,bj)
      &                           )
      &     *maskS(i+1,j,k,bi,bj)*maskS(i-0,j,k,bi,bj)
      &     *maskS(i-1,j+1,k,bi,bj)*maskW(i+1,j-1,k,bi,bj)
-c    &     -uFld(I+1,J)*dxc(I+1,J,bi,bj)
         vort3(I,J+1)=vort3(I+1,J)
 #endif
        ENDIF
