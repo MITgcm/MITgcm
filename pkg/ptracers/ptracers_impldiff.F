@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_impldiff.F,v 1.4 2004/07/13 16:47:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_impldiff.F,v 1.5 2004/10/28 00:33:56 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -7,7 +7,7 @@ CBOP
 C !ROUTINE: PTRACERS_IMPLDIFF
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE PTRACERS_IMPLDIFF( bi,bj,KappaR,myThid )
+      SUBROUTINE PTRACERS_IMPLDIFF( bi,bj,kappaRk,myThid )
 
 C !DESCRIPTION:
 C     Calls the implicit vertical diffusion routine for each passive
@@ -21,6 +21,7 @@ C !USES: ===============================================================
 #include "PTRACERS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "GAD.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
@@ -28,14 +29,13 @@ C !USES: ===============================================================
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj   :: tile indices
-C  KappaR  :: vertical diffusion coefficient
 C  myThid  :: thread number
       INTEGER bi,bj
-      _RL KappaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  none
+C  KappaRk :: vertical diffusion coefficient
+      _RL kappaRk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
 #ifdef ALLOW_PTRACERS
 
@@ -43,6 +43,7 @@ C !LOCAL VARIABLES: ====================================================
 C  iTracer :: tracer index
       INTEGER iTracer
       INTEGER iMin,iMax,jMin,jMax
+      INTEGER GAD_TR
 CEOP
 
       iMin=0
@@ -70,14 +71,26 @@ C Loop over tracers
      &                      + act4*max0*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+          GAD_TR = GAD_TR1 + iTracer - 1
+          CALL CALC_3D_DIFFUSIVITY(
+     I         bi,bj,iMin,iMax,jMin,jMax,
+     I    GAD_TR,PTRACERS_useGMRedi(iTracer),PTRACERS_useKPP(iTracer),
+     O         kappaRk,
+     I         myThid)
+
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE gPtr(:,:,:,bi,bj,iTracer) = comlev1_bibj_ptracers, 
 CADJ &     key=iptrkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-            CALL IMPLDIFF(
+c #ifdef INCLUDE_IMPLVERTADV_CODE
+c       IF ( ptracerImplVertAdv ) THEN
+c       ELSEIF ( implicitDiffusion ) THEN
+c #else
+
+          CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         deltaTtracer, KappaR, recip_HFacC,
+     I         deltaTtracer, kappaRk, recip_HFacC,
      U         gPtr(1-Olx,1-Oly,1,bi,bj,iTracer),
      I         myThid )
 

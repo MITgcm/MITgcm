@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.18 2004/10/21 21:26:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.19 2004/10/28 00:33:56 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -45,10 +45,6 @@ C  rTransKp1            :: vertical volume transport at interface k+1
 C  maskUp               :: mask for vertical transport
 C  rFlx			:: vertical flux
 C  KappaRtr		:: vertical diffusion of passive tracers, interf k
-C            NOTE!         This is infact KappaRS from thermodynamics()
-C                          and is being used only temporarily
-C                          until we removed the need to store
-C                          a "3D" diffusivity
 C  myIter               :: time-step number
 C  myTime               :: model time
 C  myThid               :: thread number
@@ -61,7 +57,7 @@ C  myThid               :: thread number
       _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rFlx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
-      _RL KappaRtr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL KappaRtr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,PTRACERS_num)
       INTEGER myIter
       _RL myTime
       INTEGER myThid
@@ -110,7 +106,7 @@ C (advection, [explicit] diffusion, parameterizations,...)
      I                   uVel, vVel, wVel,
      I                   PTRACERS_diffKh(iTracer),
      I                   PTRACERS_diffK4(iTracer),
-     I                   KappaRtr,
+     I                   KappaRtr(1-Olx,1-Oly,iTracer),
      I                   pTracer(1-Olx,1-Oly,1,1,1,iTracer),
      I                   GAD_TR,
      I                   PTRACERS_advScheme(iTracer),
