@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.7 2005/02/08 20:39:58 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.8 2005/02/22 17:50:40 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -132,12 +132,12 @@ C       Now define:  Zmdxxxxxx, Zudxxxxxx, Zldxxxxxx
      &             'Dimensional coordinate value at the mid point',
      &             myThid)
             ELSEIF (i .EQ. 2) THEN
-              ztmp(j) = rF(levs(j,listnum))
+              ztmp(j) = rF(levs(j,listnum) + 1)
               CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
      &             'Dimensional coordinate value at the upper point',
      &             myThid)
             ELSEIF (i .EQ. 3) THEN
-              ztmp(j) = rF(levs(j,listnum) + 1)
+              ztmp(j) = rF(levs(j,listnum))
               CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
      &             'Dimensional coordinate value at the lower point',
      &             myThid)
