@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.7 2004/09/07 17:29:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.8 2004/09/08 01:50:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -311,6 +311,14 @@ c ==> should use sigmaR !!!
 
 C--     end of diagnostic k loop (Nr:1)
         ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+        IF ( usediagnostics .AND. 
+     &       (useGMRedi .OR. ivdc_kappa.NE.0.) ) THEN
+          CALL fill_diagnostics (myThid, 'DRHODR  ', 0, Nr,
+     &         3, bi, bj, sigmaR)
+        ENDIF
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph avoids recomputation of integrate_for_w
