@@ -1,0 +1,498 @@
+#!/usr/local/bin/perl -w
+
+# MITgcmUV dataset joining utility.
+# Tested with perl 4.0 and newer.
+# Tested on Linux 2.0.27/I486, Irix 6.2/{IP22,IP25}
+# Zhangfan XING, xing@pacific.jpl.nasa.gov
+#
+# LOGS:
+# 980707, version 0.0.1, basically works
+# 980721, version 0.2.0, proper handling of data file's header and terminator
+#         for diff bytesex.
+
+#------
+# usage
+#------
+sub usage {
+	print STDERR
+		"\nUsage:$0 [-Ddir0 -Ddir1 ...] " .
+		"prefix suffix [(little-endian|big-endian)]\n"; 
+	print STDERR "\nMITgcmUV dataset joining utility, version 0.2.0\n";
+	print STDERR
+	"Check http://escher.jpl.nasa.gov:2000/tools/ for newer version.\n";
+	print STDERR "Report problem to xing\@pacific.jpl.nasa.gov\n\n";
+	exit 1;
+}
+
+#------------------------------
+# product of a list of integers
+#------------------------------
+sub listprod {
+	local ($product) = 1;
+	local ($x);
+	foreach $x (@_) {
+		$product *= $x;
+	}
+	$product;
+}
+
+#----------------
+# @list1 + @list2
+#----------------
+sub lists_add {
+	local (*l1,*l2) = @_;
+	($#l1 == $#l2) || return undef;
+
+	local (@l);
+	for (local($i)=0;$i<=$#l1;$i++) {
+		$l[$i]=$l1[$i]+$l2[$i];
+	}
+	@l;
+}
+
+#-------------
+# pos to index
+# 0-based.
+#-------------
+sub pos2index {
+
+	local ($pos,@dim) = @_;
+	local ($rightmost) = pop(@dim);
+
+	local (@index,$d);
+	foreach $d (@dim) {
+		push(@index,$pos%$d);
+		$pos = int($pos/$d);
+	}
+
+	# self-guarding
+	unless ($rightmost > $pos) {
+		return undef;
+	}
+
+	push(@index,$pos);
+	@index;
+}
+
+#-------------
+# index to pos
+# 0-based.
+#-------------
+sub index2pos {
+	local (*index,*dim) = @_;
+
+	return undef unless ($#index == $#dim);
+
+	local ($pos) = $index[$#index];
+	for (local($i)=$#dim;$i>0;$i--) {
+		$pos = $pos * $dim[$i-1] + $index[$i-1];
+	}
+	$pos;
+}
+
+#-------------------------
+# check machine's bytesex.
+# returns "little-endian" or "big-endian"
+# or dies if unable to figure out
+#-------------------------
+sub mach_bytesex {
+
+	local ($foo)  = pack("s2",1,2);
+	if ($foo eq "\1\0\2\0") {
+		return "little-endian";
+	} elsif ($foo eq "\0\1\0\2") {
+		return "big-endian";
+	} else {
+		die "Your machine has a strange bytesex.\n".
+		"Email your platform info to xing\@pacific.jpl.nasa.gov\n";
+	}
+}
+
+#--------------------------------------------------
+# check bytesex of a fortran unformatted data file
+# current machine's bytesex is used as a reference.
+# returns: one of "little-endian", "big-endian", "undecidable" and "unknown"
+#--------------------------------------------------
+sub file_bytesex {
+
+	# only if this platform's bytesex is either big- or little-endian
+	# otherwise dies. Hope this won't happen.
+	local($mach_bytesex) = &mach_bytesex();
+
+	local ($file) = shift;
+	local (*FILE);
+
+	open(FILE,$file) || die "$file: $!\n";
+
+	local(@fstat) = stat(FILE);
+	local ($size) = $fstat[7] - 8;	# total data size in bytes
+
+	local($hdr,$tmr) = ("","");
+	read(FILE,$hdr,4);
+	seek(FILE,-4,2);
+	read(FILE,$tmr,4);
+	close(FILE);
+
+	# this part checks for self-consistency of Fortran unformatted file
+	($hdr eq $tmr) || die "$file: not a Fortran unformatted data file.\n";
+
+	local ($ori) = unpack("I",$hdr);
+	local ($rev) = unpack("I",join("",reverse(split(//,$hdr))));
+
+	($ori != $size && $rev != $size) &&
+		return "unknown";
+
+	($ori == $size && $rev == $size) &&
+		return "undecidable";
+
+	local ($opposite) = ($mach_bytesex eq "little-endian") ?
+				"big-endian" : "little-endian";
+
+	return ($ori == $size) ? $mach_bytesex : $opposite;
+
+}
+
+#--------------------------------
+# check meta info for one dataset
+#--------------------------------
+
+sub check_meta {
+
+	local ($ds,$dir) = @_;
+	local ($fmeta) = "$dir/$ds.meta";
+
+	#~~~~~~~~~~~~~~~~
+	# check meta info
+	#~~~~~~~~~~~~~~~~
+
+	undef $/;		# read to the end of file
+	open(MFILE,"<$fmeta") || die "$fmeta: $!\n";
+	$_=<MFILE>;
+	close(MFILE);
+	$/ = "\n";		# never mess up
+	
+	s/\([^)]*\)//g;         #rm (.*)
+	s/\/\/[^\n]*\n//g;      #rm comment lines
+	s/\/\*.*\*\///g;        #rm inline comments
+	s/\s+//g;               #rm white spaces
+	/id=\[(.+)\];nDims=\[(.+)\];dimList=\[(.+)\];format=\['(.+)'\];/
+		|| die "$fmeta: meta file format error\n";
+	local ($id_,$nDims_,$dimList_,$format_) = ($1,$2,$3,$4);
+
+	# check Identifier
+	(defined $id) || ($id = $id_);
+	($id eq $id_) ||
+		die "$fmeta: id $id_ inconsistent with other dataset\n";
+
+	# check Number of dimensions
+	(defined $nDims) || ($nDims = $nDims_);
+	($nDims eq $nDims_) ||
+		die "$fmeta: nDims $nDims_ inconsistent with other dataset\n";
+
+	# check Field format
+	(defined $format) || ($format = $format_);
+	($format eq $format_) ||
+		die "$fmeta: format $format_ inconsistent with other dataset\n";
+
+	# check dimList
+	# calc dimesions and leading index of this subset
+	local (@dimList_) = split(/,/,$dimList_);
+
+ 	($nDims_*3 == $#dimList_+1) ||
+		die "$fmeta: nDims and dimList conflicting\n";
+	
+	local (@Dim,@dim,@Index0) = ();
+	for (local($i)=0;$i<$nDims_;$i++) {
+		push(@Dim,$dimList_[$i*3]);
+		push(@dim,$dimList_[$i*3+2]-$dimList_[$i*3+1]+1);
+		push(@Index0,$dimList_[$i*3+1]-1);
+	}
+	local ($Dim_) = join(",",@Dim);
+	local ($dim_) = join(",",@dim);
+
+	(defined $Dim) || ($Dim = $Dim_);
+	($Dim eq $Dim_) ||
+		die "$fmeta: dimList Global inconsistent with other dataset\n";
+
+	(defined $dim) || ($dim = $dim_);
+	($dim eq $dim_) ||
+		die "$fmeta: dimList Local inconsistent with other dataset\n";
+
+	$ds_Index0{$ds} = join(",", @Index0);
+
+#	print STDOUT "Okay $fmeta\n";
+}
+
+#-------------------------------
+# check completeness of datasets
+# need to be more sophisticated
+#-------------------------------
+sub check_entirety {
+
+	local (*Dim,*dim,*ds_Index0) = @_;
+
+	local ($N) = &listprod(@Dim);
+	local ($n) = &listprod(@dim);
+	($N) || return 0;		# against null dimension
+	($n) || return 0;		# against null dimension
+	($N%$n) && return 0;		# $N/$n must be a whole number
+
+	local (@ds) = keys %ds_Index0;
+	($#ds+1 == $N/$n) || return 0;	# Num of datasets must match subdomain
+
+	1;
+}
+
+#------------------
+# merge one dataset
+# assume @Dim, @dim and $bytes existing
+# assume $Byte_Reorder existing
+#------------------
+sub merge_data {
+
+	local ($ds,$dir,*Index0) = @_;
+	local ($fdata) = "$dir/$ds.data";
+
+	# data size of one subset in bytes as told by meta info
+	local ($size) = &listprod(@dim) * $bytes;
+
+	open(DFILE, "<$fdata") || die "$fdata: $!\n";
+
+	local ($raw) = "";
+	sysread(DFILE,$raw,4);
+	# Swap header if bytesex is diff from machine's
+	local ($hdr);
+	if ($Byte_Reorder) {
+		$hdr = unpack("I",join("",reverse(split(//,$raw))));
+	} else {
+		$hdr = unpack("I",$raw);
+	}
+
+	($size == $hdr) ||
+		die "$fdata: $hdr bytes inconsistent with meta info\n";
+
+	print STDOUT "$ds.data: $size bytes, okay, ";
+
+#	seek(DFILE,4,0);	# rewind back to the beginning of data
+
+	local ($data) = "";		# old perl (< 4.0) needs this to 
+	sysread(DFILE,$data,$size);	# avoid warning by sysread() 
+	local ($len_chunk) = $dim[0] * $bytes;
+	local ($num_chunk) = $size/$len_chunk;
+
+	local ($pos,@index,$Pos,@Index);
+	for (local($i)=0;$i<$num_chunk;$i++) {
+		$pos = $i * $dim[0];
+		@index = &pos2index($pos,@dim);
+		@Index = &lists_add(*index,*Index0);
+		$Pos = &index2pos(*Index,*Dim);
+		seek(FILE,$Pos*$bytes+4,0);
+		syswrite(FILE,$data,$len_chunk,$pos*$bytes);
+	}
+
+	close(DFILE);
+
+	print STDOUT "merged from $dir\n";
+}
+
+#============
+# main script
+#============
+
+#------------
+# parse @ARGV
+#............
+
+($#ARGV >= 1) || &usage();
+
+undef @dirs;
+while (1) {
+	$x = shift(@ARGV);
+	unless ($x =~ /^-D(.+)$/) {
+		unshift(@ARGV,$x);
+		last;
+	}
+	push(@dirs,$1);
+}
+(@dirs) || push(@dirs,".");
+# @dirs is not empty after this line.
+#print STDOUT join(" ",@dirs), "\n";
+
+($#ARGV >= 1) || &usage();
+
+# data set prefix and suffix
+$pref = shift(@ARGV);
+$suff = shift(@ARGV);
+
+($#ARGV >= 1) && &usage();
+undef $forced_bytesex;
+if (@ARGV) {
+	$forced_bytesex = shift(@ARGV);
+	$forced_bytesex =~ /^(little|big)-endian$/ || &usage();
+}
+#print STDOUT $forced_bytesex, "\n";
+
+#--------------------------
+# obtain a list of datasets
+#..........................
+
+# %ds_dir is a hash to store the directory that a dataset is in.
+# After this step, it is assured that, for a dataset $ds,
+# both $ds.meta and $ds.data exist in a unique dir $ds_dir{$ds}.
+
+%ds_dir = ();
+foreach $dir (@dirs) {
+	opendir(DIR, $dir) || die "$dir: $!\n";
+	@fmeta = grep(/^$pref\.$suff\.p\d+\.t\d+\.meta$/, readdir(DIR));
+	closedir(DIR);
+	foreach $fmeta (@fmeta) {
+		$ds = $fmeta; $ds =~ s/\.meta$//g;
+		(defined $ds_dir{$ds}) &&
+			die "$fmeta appears in two dirs: $ds_dir{$ds} & $dir\n";
+		(-f "$dir/$ds.data") || die "In $dir, $ds.data missing\n";
+		$ds_dir{$ds} = $dir;
+	}
+}
+
+@ds = sort(keys %ds_dir);	 # list of datasets
+(@ds) || die "No dataset found.\n";
+print STDOUT "There are ", $#ds+1, " datasets.\n";
+
+#---------------------------------
+# check meta info for all datasets
+#.................................
+
+undef $id;
+undef $nDims;
+undef $format;
+
+undef $Dim;
+undef $dim;
+undef %ds_Index0;
+
+#..............................................
+# check each meta file and set some global vars
+
+foreach $ds (@ds) {
+	&check_meta($ds,$ds_dir{$ds});
+}
+print STDOUT "All existing meta files are self- and mutually consistent.\n";
+
+#print join(" ",$id,$nDims,$format,$Dim,$dim), "\n";
+#foreach $ds (@ds) {
+#	$dir = $ds_dir{$ds};
+#	$Index0 = $ds_Index0{$ds};
+#	print "$ds\n";
+#	print "$Index0\n";
+#}
+
+@Dim = split(/,/,$Dim);
+@dim = split(/,/,$dim);
+
+#................................
+# check meta info in its entirety
+
+&check_entirety(*Dim,*dim,*ds_Index0) ||
+	die "Datasets are not complete!\n";
+
+print STDOUT "Datasets are complete.\n";
+
+#...........
+# set $bytes
+
+if ($format eq "float32") {
+	$bytes = 4;
+} elsif ($format eq "float64") {
+	$bytes = 8
+} else {
+	die "format '$format' unknown\n";
+}
+
+#---------------------------
+# check and merge data files
+#...........................
+
+#........................
+# check machine's bytesex
+# it dies if neither little- nor big-endian.
+
+$Mach_Bytesex = &mach_bytesex();
+print STDOUT "Current machine's endianness: $Mach_Bytesex\n";
+
+#...................
+# check file bytesex and resolve realted issues
+undef $File_Bytesex;
+foreach $ds (@ds) {
+	$fdata = "$ds.data";
+	$file_bytesex = &file_bytesex($ds_dir{$ds}."/$fdata");
+	($file_bytesex eq "unknown") &&
+		die "$fdata: endianness is neither little- nor big-endian.\n";
+	print STDOUT "$fdata: $file_bytesex\n";
+	unless ($File_Bytesex) {
+		$File_Bytesex = $file_bytesex;
+	} else {
+		($File_Bytesex eq $file_bytesex) ||
+		die "Data files are mutually inconsistent in endianness\n";
+	}
+}
+
+#------------------
+# set $Byte_Reorder, which controls swapping of bytes in
+# header and terminator of Fortran unformatted data files.
+$Byte_Reorder = 1;
+
+# if machine and data file have the same bytesex, no need for swapping
+($File_Bytesex eq $Mach_Bytesex) && ($Byte_Reorder = 0);
+
+# if we can't determine bytesex of data file, need forced one from @ARGV.
+if ($File_Bytesex eq "undecidable") {
+	# if no forced bytesex available, dies.
+	($forced_bytesex) ||
+		die "Endianness of data files is undecidable, " .
+		"you have to give one at command line.\n";
+	($forced_bytesex eq $Mach_Bytesex) && ($Byte_Reorder = 0);
+	print STDOUT "Endianness of data files is undecidable.\n";
+	print STDOUT "Data file header/tail will be treated as ";
+	print STDOUT "$forced_bytesex as you have instructed.\n";
+# otherwise
+} else {
+# give a warining, if swapping is needed.
+($Byte_Reorder) &&
+	print STDOUT
+	"Please note: data files have different bytesex than machine!\n";
+}
+
+#................
+# merge data sets
+
+$Size = &listprod(@Dim) * $bytes;
+
+$fout = "$pref.$suff.data";
+
+open(FILE, ">$fout") || die "$fout: $!\n";
+
+# prepare header and teminator. Do byte reordering if necessary
+$HdrTmr = pack("I",$Size);
+($Byte_Reorder) && ($HdrTmr = join("",reverse(split(//,$HdrTmr))));
+
+# write 4 byte header
+syswrite(FILE,$HdrTmr,4);
+
+# merge each dataset
+foreach $ds (@ds) {
+	$dir = $ds_dir{$ds};
+	@Index0 = split(/,/,$ds_Index0{$ds});
+	&merge_data($ds,$dir,*Index0);
+}
+
+# write 4 byte terminator
+seek(FILE,$Size+4,0);
+syswrite(FILE,$HdrTmr,4);
+
+close(FILE);
+
+print STDOUT "Global data (" .
+	join("x",@Dim) .
+	") is in ./$fout (endianness is $File_Bytesex).\n";
+
+exit 0;
