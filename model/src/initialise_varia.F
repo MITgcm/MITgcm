@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.39 2004/09/17 22:57:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.40 2004/10/08 17:25:37 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -85,7 +85,7 @@ C     == Local variables ==
       INTEGER bi,bj,K,iMin,iMax,jMin,jMax
 CEOP
 
-#ifdef ALLOW_TAMC_CHECKPOINTING
+#ifdef ALLOW_AUTODIFF_TAMC
 
       nIter0 = INT( startTime/deltaTClock )
 
@@ -104,7 +104,7 @@ ceh3 should add an IF ( useNONHYDROSTATIC ) THEN
       CALL INI_CG3D( myThid )
 #endif
 
-#endif /* ALLOW_TAMC_CHECKPOINTING */
+#endif /* ALLOW_AUTODIFF_TAMC */
       _BARRIER
 
 C--   Initialise 3-dim. diffusivities

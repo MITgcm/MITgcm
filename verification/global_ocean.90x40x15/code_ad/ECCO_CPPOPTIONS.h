@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.7 2004/09/27 18:03:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/ECCO_CPPOPTIONS.h,v 1.8 2004/10/08 17:25:37 heimbach Exp $
 C $Name:  $
 
 C CPP flags controlling which code is included in the files that
@@ -14,11 +14,15 @@ C   differentiate the MITgcmUV by using the Tangent Linear and
 C   Adjoint Model Compiler (TAMC).
 C
 #define ALLOW_AUTODIFF_TAMC
+C
 C       >>> Checkpointing as handled by TAMC
 #define ALLOW_TAMC_CHECKPOINTING
 C
 C       >>> Extract adjoint state
 #define ALLOW_AUTODIFF_MONITOR
+C
+C       >>> DO 2-level checkpointing instead of 3-level
+#define AUTODIFF_2_LEVEL_CHECKPOINT
 C
 C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
