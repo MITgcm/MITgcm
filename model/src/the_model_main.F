@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.24 1998/12/09 16:11:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.25 1999/03/12 16:44:04 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -87,7 +87,6 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "CG2D.h"
 #include "DYNVARS.h"
-#include "AVER.h"
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
