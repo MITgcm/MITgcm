@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.4 2002/06/20 23:46:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.5 2002/06/24 18:47:10 adcroft Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -21,6 +21,7 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "PTRACERS.h"
 #include "GAD.h"
 
