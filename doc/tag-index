@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.437 2005/01/27 14:11:44 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.438 2005/01/27 17:37:28 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57c_post
+o Change testing option (-ieee) to get closer agreement between g77 & ifort
+o generate new output.txt files on faulks with g77 & the new -ieee option
 checkpoint57c_pre
 
 o add "_d 0" in freeze ; change some "FLOAT" to "DFLOAT" and went back (TAF);
