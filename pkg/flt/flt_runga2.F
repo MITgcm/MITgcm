@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.3 2004/09/07 16:19:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/flt/flt_runga2.F,v 1.4 2004/09/07 16:24:28 edhill Exp $
 C $Name:  $
 
 #include "FLT_CPPOPTIONS.h"
@@ -106,7 +106,7 @@ c                        zz=global2local_k(kpart(ip,bi,bj),bi,bj,mythid)
 
 c recip_drF is in units 1/r (so if r is in m this is in 1/m) 
                         scalez=recip_drF(kp)
-c We shouldn't do any special conversions for zz, since flt_trilinear
+c We should not do any special conversions for zz, since flt_trilinear
 c expects it to be just a normal kpart type variable.
                         zz=kpart(ip,bi,bj)
                         call flt_trilinear(xx,yy,zz,uu,uVel,2,bi,bj)
