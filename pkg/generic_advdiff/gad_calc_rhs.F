@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.18 2003/05/14 09:20:06 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.19 2003/08/04 22:53:42 dimitri Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -43,6 +43,10 @@ C !USES: ===============================================================
 #include "DYNVARS.h"
 #include "SURFACE.h"
 #include "GAD.h"
+#ifdef ALLOW_PTRACERS
+#include "PTRACERS_OPTIONS.h"
+#include "PTRACERS.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
@@ -62,7 +66,7 @@ C  diffKh               :: horizontal diffusion coefficient
 C  diffK4               :: bi-harmonic diffusion coefficient
 C  KappaRT              :: 3-D array for vertical diffusion coefficient
 C  Tracer               :: tracer field
-C  tracerIdentity       :: identifier for the tracer (required only for KPP)
+C  tracerIdentity       :: identifier for the tracer (required for KPP and GM)
 C  advectionScheme      :: advection scheme to use
 C  calcAdvection        :: =False if Advec terms computed with multiDim scheme
 C  myThid               :: thread number
@@ -403,10 +407,11 @@ C *note* should update KPP_TRANSPORT_T to set df  *aja*
      I     KappaRT,
      U     df )
 #ifdef ALLOW_PTRACERS
-       ELSEIF (tracerIdentity.EQ.GAD_TR1) THEN
+       ELSEIF (tracerIdentity .GE. GAD_TR1 .AND.
+     &         tracerIdentity .LE. (GAD_TR1+PTRACERS_numInUse-1)) THEN
         CALL KPP_TRANSPORT_PTR(
      I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
-     I     KappaRT,
+     I     tracerIdentity,KappaRT,
      U     df )
 #endif
        ELSE

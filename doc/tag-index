@@ -1,7 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.174 2003/08/03 15:00:55 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.175 2003/08/04 22:53:41 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint51f_post
+o Added on-the-fly spatial interpolation capability
+    "USE_EXF_INTERPOLATION" to pkg/exf.
+    This is a temporary Cartesian-grid hack until
+    the super-duper ESMF coupler becomes available.
+    Usage example is in verification/global_with_exf.
+o Bug fix to pkg/ptracers, pkg/generic_advdiff/gad_calc_rhs.F,
+    and pkg/kpp/kpp_transport_ptr.F for dealing with tracer
+    non-local transport term.
 
 checkpoint51e_post
 o pkg/mom_vecinv: 

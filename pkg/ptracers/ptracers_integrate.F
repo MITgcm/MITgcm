@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.7 2003/06/27 01:56:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.8 2003/08/04 22:53:42 dimitri Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -70,10 +70,12 @@ C  iMin,iMax,jMin,jMax  :: loop ranges
 C  kUp,kDown            :: toggle indices for even/odd level fluxes
 C  km1                  :: =min(1,k-1)
 C  rFlx			:: vertical flux
+C  GAD_TR               :: passive tracer id (GAD_TR1+iTracer-1)
       INTEGER i,j,iTracer
       INTEGER iMin,iMax,jMin,jMax
       INTEGER kUp,kDown,km1
       _RL rFlx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
+      INTEGER GAD_TR
       LOGICAL calcAdvection
 CEOP
 
@@ -106,6 +108,7 @@ C (advection, [explicit] diffusion, parameterizations,...)
      &      .OR. PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND
      &      .OR. PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD
      &      .OR. PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH
+       GAD_TR = GAD_TR1 + iTracer - 1
          CALL GAD_CALC_RHS(
      I                     bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I                     xA,yA,uTrans,vTrans,rTrans,maskUp,
@@ -113,7 +116,7 @@ C (advection, [explicit] diffusion, parameterizations,...)
      I                     PTRACERS_diffK4(iTracer),
      I                     KappaRtr,
      I                     pTracer(1-Olx,1-Oly,1,1,1,iTracer),
-     I                     GAD_TR1,
+     I                     GAD_TR,
      I                     PTRACERS_advScheme(iTracer),calcAdvection,
      U                     rFlx(1-Olx,1-Oly,1,iTracer),
      U                     gPtr(1-Olx,1-Oly,1,1,1,iTracer),

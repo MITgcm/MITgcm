@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.14 2003/06/24 16:07:32 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.15 2003/08/04 22:53:41 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -56,6 +56,10 @@ c     Zonal wind.
      &     uwindfile, uwindstartdate, uwindperiod, 
      &     exf_inscal_uwind,
      &     uwind, uwind0, uwind1, uwindmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
+     &     uwind_nlon, uwind_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     Meridional wind.
@@ -63,6 +67,10 @@ c     Meridional wind.
      &     vwindfile, vwindstartdate, vwindperiod, 
      &     exf_inscal_vwind,
      &     vwind, vwind0, vwind1, vwindmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
+     &     vwind_nlon, vwind_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 
 #ifdef ALLOW_UWIND_CONTROL
@@ -86,6 +94,10 @@ c     Zonal wind stress.
      &     ustressfile, ustressstartdate, ustressperiod, 
      &     exf_inscal_ustress,
      &     ustress, ustress0, ustress1, ustressmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
+     &     ustress_nlon, ustress_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     Meridional wind stress.
@@ -93,6 +105,10 @@ c     Meridional wind stress.
      &     vstressfile, vstressstartdate, vstressperiod, 
      &     exf_inscal_vstress,
      &     vstress, vstress0, vstress1, vstressmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
+     &     vstress_nlon, vstress_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 
 #endif /* ifndef ALLOW_ATM_WIND */
@@ -104,6 +120,10 @@ c     Atmospheric temperature.
      &     atempfile, atempstartdate, atempperiod, 
      &     exf_inscal_atemp,
      &     atemp, atemp0, atemp1, atempmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     atemp_lon0, atemp_lon_inc, atemp_lat0, atemp_lat_inc,
+     &     atemp_nlon, atemp_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     Atmospheric humidity.
@@ -111,6 +131,10 @@ c     Atmospheric humidity.
      &     aqhfile, aqhstartdate, aqhperiod, 
      &     exf_inscal_aqh,
      &     aqh, aqh0, aqh1, aqhmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     aqh_lon0, aqh_lon_inc, aqh_lat0, aqh_lat_inc,
+     &     aqh_nlon, aqh_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     Net long wave radiative flux.
@@ -118,6 +142,10 @@ c     Net long wave radiative flux.
      &     lwfluxfile, lwfluxstartdate, lwfluxperiod, 
      &     exf_inscal_lwflux,
      &     lwflux, lwflux0, lwflux1, lwfluxmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     lwflux_lon0, lwflux_lon_inc, lwflux_lat0, lwflux_lat_inc,
+     &     lwflux_nlon, lwflux_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     Precipitation.
@@ -125,6 +153,10 @@ c     Precipitation.
      &     precipfile, precipstartdate, precipperiod, 
      &     exf_inscal_precip,
      &     precip, precip0, precip1, precipmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     precip_lon0, precip_lon_inc, precip_lat0, precip_lat_inc,
+     &     precip_nlon, precip_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 
 #ifdef ALLOW_ATEMP_CONTROL
@@ -147,12 +179,20 @@ c     Atmospheric heat flux.
       call exf_set_gen  ( 
      &     hfluxfile, hfluxstartdate, hfluxperiod, exf_inscal_hflux,
      &     hflux, hflux0, hflux1, hfluxmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
+     &     hflux_nlon, hflux_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     Salt flux.
       call exf_set_gen  ( 
      &     sfluxfile, sfluxstartdate, sfluxperiod, exf_inscal_sflux,
      &     sflux, sflux0, sflux1, sfluxmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
+     &     sflux_nlon, sflux_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 
 #endif /* ifndef ALLOW_ATM_TEMP */
@@ -162,6 +202,10 @@ c     Net short wave radiative flux.
       call exf_set_gen  ( 
      &     swfluxfile, swfluxstartdate, swfluxperiod, exf_inscal_swflux,
      &     swflux, swflux0, swflux1, swfluxmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     swflux_lon0, swflux_lon_inc, swflux_lat0, swflux_lat_inc,
+     &     swflux_nlon, swflux_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
 
@@ -170,6 +214,10 @@ c     Evaporation
       call exf_set_gen  ( 
      &     evapfile, evapstartdate, evapperiod, exf_inscal_evap,
      &     evap, evap0, evap1, evapmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
+     &     evap_nlon, evap_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
 
@@ -179,12 +227,20 @@ c     Downward shortwave radiation.
       call exf_set_gen  ( 
      &     swdownfile, swdownstartdate, swdownperiod, exf_inscal_swdown,
      &     swdown, swdown0, swdown1, swdownmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     swdown_lon0, swdown_lon_inc, swdown_lat0, swdown_lat_inc,
+     &     swdown_nlon, swdown_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     Downward longwave radiation.
       call exf_set_gen  ( 
      &     lwdownfile, lwdownstartdate, lwdownperiod, exf_inscal_lwdown,
      &     lwdown, lwdown0, lwdown1, lwdownmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
+     &     lwdown_nlon, lwdown_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 
 #endif
@@ -195,6 +251,10 @@ c     Atmos. pressure forcing
      &     apressurefile, apressurestartdate, apressureperiod, 
      &     exf_inscal_apressure,
      &     apressure, apressure0, apressure1, apressuremask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     apressure_lon0, apressure_lon_inc, apressure_lat0,
+     &     apressure_lat_inc, apressure_nlon, apressure_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
 

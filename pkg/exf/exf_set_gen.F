@@ -2,7 +2,11 @@
 
       subroutine exf_set_gen( 
      &     genfile, genstartdate, genperiod, exf_inscal_gen,
-     &     genfld, gen0, gen1, genmask, 
+     &     genfld, gen0, gen1, genmask,
+#ifdef USE_EXF_INTERPOLATION
+     &     gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
+     &     gen_nlon, gen_nlat,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     ==================================================================
@@ -45,6 +49,11 @@ c     == routine arguments ==
       _RL     mycurrenttime
       integer mycurrentiter
       integer mythid
+#ifdef USE_EXF_INTERPOLATION
+      _RL gen_lon0, gen_lon_inc
+      _RL gen_lat0, gen_lat_inc(MAX_LAT_INC)
+      INTEGER gen_nlon, gen_nlat
+#endif
 
 c     == local variables ==
 
@@ -68,9 +77,18 @@ c     get record numbers and interpolation factor for gen
      &        )
 
          if ( first ) then
+#ifdef USE_EXF_INTERPOLATION
+            call new_interp( genfile, exf_iprec
+     &           , gen1, count0, xC, yC
+     &           , gen_lon0,gen_lon_inc
+     &           , gen_lat0,gen_lat_inc
+     &           , gen_nlon,gen_nlat,mythid
+     &           )
+#else
             call mdsreadfield( genfile, exf_iprec, exf_yftype, 1
      &           , gen1, count0, mythid
      &           )
+#endif
 
             if (exf_yftype .eq. 'RL') then
                call exf_filter_rl( gen1, genmask, mythid )
@@ -82,9 +100,18 @@ c     get record numbers and interpolation factor for gen
          if (( first ) .or. ( changed )) then
             call exf_SwapFFields( gen0, gen1, mythid )
             
+#ifdef USE_EXF_INTERPOLATION
+            call new_interp( genfile, exf_iprec
+     &           , gen1, count1, xC, yC
+     &           , gen_lon0,gen_lon_inc
+     &           , gen_lat0,gen_lat_inc
+     &           , gen_nlon,gen_nlat,mythid
+     &           )
+#else
             call mdsreadfield( genfile, exf_iprec, exf_yftype, 1
      &           , gen1, count1, mythid
      &           )
+#endif
 
             if (exf_yftype .eq. 'RL') then
                call exf_filter_rl( gen1, genmask, mythid )

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsss.F,v 1.6 2003/03/06 00:47:33 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsss.F,v 1.7 2003/08/04 22:53:42 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -79,10 +79,19 @@ c     get record numbers and interpolation factor for climsss
 #endif
 
          if ( first ) then
+#ifdef USE_EXF_INTERPOLATION
+          call new_interp(
+     &    climsssfile, exf_clim_iprec
+     &  , climsss1, count0, xC, yC
+     &  ,climsss_lon0,climsss_lon_inc
+     &  ,climsss_lat0,climsss_lat_inc
+     &  ,climsss_nlon,climsss_nlat,mythid )
+#else
             call mdsreadfield( climsssfile, exf_clim_iprec
      &           , exf_clim_yftype, 1
      &           , climsss1, count0, mythid
      &           )
+#endif
             if (exf_clim_yftype .eq. 'RL') then
                call exf_filter_rl( climsss1, climsssmask, mythid )
             else
@@ -92,10 +101,19 @@ c     get record numbers and interpolation factor for climsss
 
          if (( first ) .or. ( changed )) then
             call exf_SwapFFields( climsss0, climsss1, mythid )
+#ifdef USE_EXF_INTERPOLATION
+          call new_interp(
+     &    climsssfile, exf_iprec
+     &  , climsss1, count1, xC, yC
+     &  ,climsss_lon0,climsss_lon_inc
+     &  ,climsss_lat0,climsss_lat_inc
+     &  ,climsss_nlon,climsss_nlat,mythid )
+#else
             call mdsreadfield( climsssfile, exf_clim_iprec
      &           , exf_clim_yftype, 1
      &           , climsss1, count1, mythid
      &           )
+#endif
             if (exf_clim_yftype .eq. 'RL') then
                call exf_filter_rl( climsss1, climsssmask, mythid )
             else

@@ -8,18 +8,6 @@ c         (surface forcing and relaxation to climatology).
 c
 c   Cleaning package
 c
-c      1. Reduce number of subroutines.
-c
-c      2. - Separate routine for bulk formulae exf_bulk_formulae
-c         - Atmospheric control to exf_getsurfacefluxes
-          - Calling tree will look like this:
-c            exf_getforcing
-c            |-- exf_getclim
-c            |-- exf_getffields
-c            |-- exf_getsurfacefluxes
-c            |-- exf_bulk_formulae
-c            |-- exf_mapfields
-c
 c   Many assumptions that are made in the current version should, and
 c   can, be relaxed in later versions:
 c
@@ -29,9 +17,6 @@ c     the atmospheric stability is calculated on center points of the
 c     C-grid.  Also need to make sure that with options EXFwindOnBgrid
 c     and/or SEAICEwindOnCgrid set, wind and wind stress is interpolated
 c     to correct grid location.
-c
-c   - gridded data sets    -->  general data set (other grids, inter-
-c                                                 polation in space)
 c
 c   - equidistancy in time -->  general data set (non-equidistant in
 c                                                 time)

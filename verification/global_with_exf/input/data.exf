@@ -6,18 +6,42 @@
  hfluxstartdate1=19920101,
  hfluxstartdate2=000000,
  hfluxperiod=2592000.0,
+ hflux_lon0    = 2
+ hflux_lon_inc = 4
+ hflux_lat0    = -78
+ hflux_lat_inc = 40*4
+ hflux_nlon    = 90
+ hflux_nlat    = 40
 #
  sfluxstartdate1=19920101,
  sfluxstartdate2=000000,
  sfluxperiod=2592000.0,
+ sflux_lon0    = 2
+ sflux_lon_inc = 4
+ sflux_lat0    = -78
+ sflux_lat_inc = 40*4
+ sflux_nlon    = 90
+ sflux_nlat    = 40
 #
  ustressstartdate1=19920101,
  ustressstartdate2=000000,
  ustressperiod=2592000.0,
+ ustress_lon0    = 2
+ ustress_lon_inc = 4
+ ustress_lat0    = -78
+ ustress_lat_inc = 40*4
+ ustress_nlon    = 90
+ ustress_nlat    = 40
 #
  vstressstartdate1=19920101,
  vstressstartdate2=000000,
  vstressperiod=2592000.0,
+ vstress_lon0    = 2
+ vstress_lon_inc = 4
+ vstress_lat0    = -78
+ vstress_lat_inc = 40*4
+ vstress_nlon    = 90
+ vstress_nlat    = 40
 #
  hfluxfile    = 'ncep_qnet.bin',
 # sfluxfile    = 'ncep_emp.bin',

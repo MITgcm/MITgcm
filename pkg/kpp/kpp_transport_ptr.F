@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.1 2003/05/14 09:20:44 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.2 2003/08/04 22:53:42 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -8,7 +8,7 @@ C $Name:  $
 
       subroutine KPP_TRANSPORT_PTR (
      I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
-     I     KappaRtr,
+     I     tracerIdentity,KappaRtr,
      U     df )
 C     /==========================================================\
 C     | o SUBROUTINE KPP_TRANSPORT_PTR                           |
@@ -41,9 +41,10 @@ C     == GLobal variables ==
 C     == Routine arguments ==
 C     iMin,iMax,jMin,  - Range of points for which calculation
 C     jMax,bi,bj,k,km1   results will be set.
+C     tracerIdentity   - Identifier for the tracer
 C     KappaRtr         - Total diffusion in vertical for passive tracer.
 C     df               - Diffusive flux component work array.
-      INTEGER iMin,iMax,jMin,jMax,bi,bj,k,km1
+      INTEGER iMin,iMax,jMin,jMax,bi,bj,k,km1,tracerIdentity
       _RL KappaRtr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL df      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
@@ -51,23 +52,17 @@ C     df               - Diffusive flux component work array.
 
 C     == Local variables ==
 C     I, J - Loop counters
-      INTEGER I, J, iTracer
+      INTEGER I, J
 
-C Loop over tracers
-      DO iTracer=1,PTRACERS_numInUse
-
-       DO j=jMin,jMax
-        DO i=iMin,iMax
+      DO j=jMin,jMax
+       DO i=iMin,iMax
          df(i,j) = df(i,j) - _rA(i,j,bi,bj) * 
      &          KappaRtr(i,j,k) * KPPghat(i,j,km1,bi,bj) * drF(1) *
-     &          gPtr(i,j,1,bi,bj,iTracer)
-        ENDDO
+     &          SurfaceTendencyS(i,j,bi,bj)
        ENDDO
-
       ENDDO
 
 #endif /* ALLOW_KPP and KPP_GHAT and PTRACERS */
 
       RETURN
       END
-

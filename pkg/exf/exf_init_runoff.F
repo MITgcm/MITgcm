@@ -51,9 +51,18 @@ c     == end of interface ==
       enddo
 
       if ( runofffile .NE. ' ' ) then
+#ifdef USE_EXF_INTERPOLATION
+         call new_interp(
+     &    runofffile, exf_iprec
+     &  , runoff, 1, xC, yC
+     &  ,runoff_lon0,runoff_lon_inc
+     &  ,runoff_lat0,runoff_lat_inc
+     &  ,runoff_nlon,runoff_nlat,mythid )
+#else
          call mdsreadfield( runofffile, exf_iprec, exf_yftype, 1
      &        , runoff, 1, mythid
      &        )
+#endif
          if (exf_yftype .eq. 'RL') then
             call exf_filter_rl( runoff, runoffmask, mythid )
          else 
