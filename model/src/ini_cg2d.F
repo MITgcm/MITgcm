@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.5 1998/05/25 16:17:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.6 1998/05/25 16:58:49 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -164,9 +164,9 @@ C           defaults to 0.51 but can be set at runtime.
            pS(I,J,bi,bj) =
      &     -aS2d(I  ,J  ,bi,bj)/((cg2dpcOffDFac *(aCs+aC))**2 )
           ENDIF
-          pC(I,J,bi,bj) = 1.
-          pW(I,J,bi,bj) = 0.
-          pS(I,J,bi,bj) = 0.
+C         pC(I,J,bi,bj) = 1.
+C         pW(I,J,bi,bj) = 0.
+C         pS(I,J,bi,bj) = 0.
          ENDDO
         ENDDO
        ENDDO
