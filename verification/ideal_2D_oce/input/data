@@ -15,7 +15,7 @@
  bottomDragLinear=1.E-3,
 #diffK4T=2.E12,
  diffKhT=0.E3,
- diffKrT=1.E-5,
+ diffKrNrT=1.E-4, 14*1.E-5,
  ivdc_kappa=100.,
  implicitDiffusion=.TRUE.,
  eosType='LINEAR',
