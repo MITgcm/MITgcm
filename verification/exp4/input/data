@@ -27,7 +27,7 @@
  eosType='LINEAR',
  hFacMin=0.2,
  openBoundaries=.TRUE.,
- nonHydrostatic=.TRUE.,
+ nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
  &
 
