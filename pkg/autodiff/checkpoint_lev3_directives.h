@@ -13,10 +13,7 @@ CADJ STORE uvel      = tapelev3, key = ilev_3
 CADJ STORE vvel      = tapelev3, key = ilev_3
 CADJ STORE wvel      = tapelev3, key = ilev_3
 CADJ STORE etan      = tapelev3, key = ilev_3
-CADJ STORE gu        = tapelev3, key = ilev_3
-CADJ STORE gv        = tapelev3, key = ilev_3
 CADJ STORE totphihyd = tapelev3, key = ilev_3
-CADJ STORE empmr     = tapelev3, key = ilev_3
 
 #ifdef INCLUDE_CD_CODE
 CADJ STORE uveld     = tapelev3, key = ilev_3
@@ -26,6 +23,10 @@ CADJ STORE unm1      = tapelev3, key = ilev_3
 CADJ STORE vnm1      = tapelev3, key = ilev_3
 #endif /* INCLUDE_CD_CODE */
 
+#ifdef EXACT_CONSERV
+CADJ STORE empmr     = tapelev3, key = ilev_3
+#endif /* EXACT_CONSERV */
+
 #ifdef ALLOW_PASSIVE_TRACER
 CADJ STORE tr1       = tapelev3, key = ilev_3
 CADJ STORE gtr1nm1   = tapelev3, key = ilev_3
@@ -34,6 +35,8 @@ CADJ STORE gtr1nm1   = tapelev3, key = ilev_3
 #ifdef ALLOW_PTRACERS
 CADJ STORE ptracer   = tapelev3, key = ilev_3
 CADJ STORE gptrnm1   = tapelev3, key = ilev_3
+CADJ STORE surfacetendencys =
+CADJ &     tapelev3, key = ilev_3
 #endif /* ALLOW_PTRACERS */
 
 #ifdef EXACT_CONSERV

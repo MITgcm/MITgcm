@@ -39,7 +39,7 @@ DIFF_FLAGS       = -toplevel the_main_loop		\
 				xx_efluxy_dummy		\
 				xx_efluxp_dummy'	\
                    -output 'fc'
-#
+#                   -output 'objf_state_final'
 #                   -output 'objf_vector'
 #                   -output 'fc'
 
@@ -93,7 +93,6 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/calc_ivdc.f			\
 		$(SOURCE_CODE)/calc_phi_hyd.f			\
 		$(SOURCE_CODE)/calc_viscosity.f			\
-		$(SOURCE_CODE)/comm_stats.f			\
 		$(SOURCE_CODE)/convect.f			\
 		$(SOURCE_CODE)/convective_adjustment.f		\
 		$(SOURCE_CODE)/convective_adjustment_ini.f	\
@@ -149,7 +148,6 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/ini_autodiff.f			\
 		$(SOURCE_CODE)/ini_cartesian_grid.f		\
 		$(SOURCE_CODE)/ini_cg2d.f			\
-		$(SOURCE_CODE)/ini_communication_patterns.f	\
 		$(SOURCE_CODE)/ini_cori.f			\
 		$(SOURCE_CODE)/ini_curvilinear_grid.f		\
 		$(SOURCE_CODE)/ini_depths.f			\
@@ -261,6 +259,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/cost_tracer.f			\
 		$(SOURCE_CODE)/cost_atlantic_heat.f		\
 		$(SOURCE_CODE)/cost_vector.f			\
+		$(SOURCE_CODE)/cost_state_final.f		\
 		  						\
 
 #		$(PKG)/autodiff/ptracers.flow			\
