@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.2 1998/04/24 02:05:40 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.3 1998/04/24 02:06:06 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -57,7 +57,7 @@ C     == Local variables ==
 
       RETURN
   100 FORMAT(A,
-     &'$Id: config_summary.F,v 1.2 1998/04/24 02:05:40 cnh Exp $'
+     &'$Name:  $'
      &)
       END
 
