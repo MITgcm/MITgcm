@@ -377,9 +377,9 @@ c-----------------------------------------
             print iform, iiter, tact, ifunc, ff, gnorm0
      $           , DNRM2( nn, xx, 1 ), 0.
 
-            write(94,'(i5,2x,1pe11.4,4(2x,1pe8.1))')
-     &           iiter, ff, gnorm0, tact, 
-     &           DNRM2( nn, xx, 1 ), 0.
+Cml            write(94,'(i5,2x,1pe11.4,4(2x,1pe8.1))')
+Cml     &           iiter, ff, gnorm0, tact, 
+Cml     &           DNRM2( nn, xx, 1 ), 0.
 
             if ( itmax .EQ. 0 ) then
                ifail = 10
@@ -461,9 +461,9 @@ c-----------------------------------------
       print iform, iiter, tact, ifunc, ff, gnorm
      $     , DNRM2( nn, xx, 1 ), tact*DNRM2( nn, dd, 1 )
 
-      write(94,'(i5,2x,1pe11.4,4(2x,1pe8.1))')
-     &     iiter, ff, gnorm, tact,
-     &     DNRM2( nn, xx, 1 ), tact*DNRM2( nn, dd, 1 )
+Cml      write(94,'(i5,2x,1pe11.4,4(2x,1pe8.1))')
+Cml     &     iiter, ff, gnorm, tact,
+Cml     &     DNRM2( nn, xx, 1 ), tact*DNRM2( nn, dd, 1 )
 
 c-----------------------------------------
 c check output mode of ifail
