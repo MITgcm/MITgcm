@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.41 1999/07/28 16:32:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.42 2000/03/24 16:03:03 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -219,7 +219,8 @@ C--   Calculate open water fraction at vorticity points
       DO j=2-Oly,sNy+Oly
        hFacZ(1-Olx,j)=0.
        DO i=2-Olx,sNx+Olx
-        hFacZOpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
+        hFacZOpen=min(_hFacW(i,j,k,bi,bj),
+     &                _hFacW(i,j-1,k,bi,bj))
         hFacZOpen=min(_hFacS(i,j,k,bi,bj),hFacZOpen)
         hFacZOpen=min(_hFacS(i-1,j,k,bi,bj),hFacZOpen)
         hFacZ(i,j)=hFacZOpen
@@ -267,9 +268,12 @@ C-- No-slip BCs impose a drag at walls...
         v4F(i,j) = v4F(i,j)
      &  - _recip_hFacW(i,j,k,bi,bj)*recip_drF(k)
      &   /rAw(i,j,bi,bj)
-     &   *( hFacZClosedS*dxV(i, j ,bi,bj)*_recip_dyU(i, j ,bi,bj)
-     &     +hFacZClosedN*dxV(i,j+1,bi,bj)*_recip_dyU(i,j+1,bi,bj)
-     &    )*drF(k)*2.*uVel(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
+     &   *( hFacZClosedS*dxV(i, j ,bi,bj)
+     &     *_recip_dyU(i, j ,bi,bj)
+     &     +hFacZClosedN*dxV(i,j+1,bi,bj)
+     &     *_recip_dyU(i,j+1,bi,bj)
+     &    )*drF(k)*2.*uVel(i,j,k,bi,bj)
+     &     *_maskW(i,j,k,bi,bj)
        ENDDO
       ENDDO
       ENDIF
@@ -477,7 +481,7 @@ C--   term
      &   +fMer(i,j+1)          - fMer(i  ,j)
      &   +fVerU(i,j,kUp)*rkFac - fVerU(i,j,kDown)*rkFac
      &   )
-     _PHM(&   +phxFac * pf(i,j) )
+     & _PHM( +phxFac * pf(i,j) )
        ENDDO
       ENDDO
 
@@ -491,8 +495,10 @@ C-- No-slip BCs impose a drag at walls...
         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)
      &   -_recip_hFacW(i,j,k,bi,bj)
      &   *recip_drF(k)/rAw(i,j,bi,bj)
-     &   *( hFacZClosedS*_dxV(i, j ,bi,bj)*_recip_dyU(i, j ,bi,bj)
-     &     +hFacZClosedN*_dxV(i,j+1,bi,bj)*_recip_dyU(i,j+1,bi,bj) )
+     &   *( hFacZClosedS*_dxV(i, j ,bi,bj)
+     &      *_recip_dyU(i, j ,bi,bj)
+     &     +hFacZClosedN*_dxV(i,j+1,bi,bj)
+     &      *_recip_dyU(i,j+1,bi,bj) )
      &   *drF(k)*2.*( viscAh*uVel(i,j,k,bi,bj)
      &               -viscA4*v4F(i,j) ) *cosFacU(J)
        ENDDO
@@ -584,9 +590,12 @@ C-- No-slip BCs impose a drag at walls...
         v4F(i,j) = v4F(i,j)
      &  -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &  /rAs(i,j,bi,bj)
-     &   *( hFacZClosedW*dyU( i ,j,bi,bj)*_recip_dxV( i ,j,bi,bj)
-     &     +hFacZClosedE*dyU(i+1,j,bi,bj)*_recip_dxV(i+1,j,bi,bj)
-     &    )*drF(k)*2.*vVel(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
+     &   *( hFacZClosedW*dyU( i ,j,bi,bj)
+     &      *_recip_dxV( i ,j,bi,bj)
+     &     +hFacZClosedE*dyU(i+1,j,bi,bj)
+     &      *_recip_dxV(i+1,j,bi,bj)
+     &    )*drF(k)*2.*vVel(i,j,k,bi,bj)
+     &      *_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
       ENDIF
@@ -789,7 +798,7 @@ C--   term
      &   +fMer(i,j  )          - fMer(i,j-1)
      &   +fVerV(i,j,kUp)*rkFac - fVerV(i,j,kDown)*rkFac
      &   )
-     _PHM(&   +phyFac*pf(i,j) )
+     & _PHM( +phyFac*pf(i,j) )
        ENDDO
       ENDDO
 
@@ -802,8 +811,10 @@ C-- No-slip BCs impose a drag at walls...
         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)
      &   -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &    /rAs(i,j,bi,bj)
-     &   *( hFacZClosedW*_dyU( i ,j,bi,bj)*_recip_dxV( i ,j,bi,bj)
-     &     +hFacZClosedE*_dyU(i+1,j,bi,bj)*_recip_dxV(i+1,j,bi,bj) )
+     &   *( hFacZClosedW*_dyU( i ,j,bi,bj)
+     &      *_recip_dxV( i ,j,bi,bj)
+     &     +hFacZClosedE*_dyU(i+1,j,bi,bj)
+     &      *_recip_dxV(i+1,j,bi,bj) )
      &   *rkFac*drF(k)*2.*( viscAh*vVel(i,j,k,bi,bj)
      &                     -viscA4*v4F(i,j) ) *cosFacV(J)
        ENDDO
@@ -876,7 +887,8 @@ C--   Coriolis with CD scheme allowed
 C     grady(p) + gV
       DO j=jMin,jMax
        DO i=iMin,iMax
-        af(i,j) = -_maskS(i,j,k,bi,bj)*_recip_dyC(i,j,bi,bj)
+        af(i,j) = -_maskS(i,j,k,bi,bj)
+     &            *_recip_dyC(i,j,bi,bj)
      &            *(pf(i,j)-pf(i,j-1))
      &            +gV(i,j,k,bi,bj)
        ENDDO

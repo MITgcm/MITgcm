@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/Attic/FFTSUPPORT.h,v 1.1 1998/11/06 22:44:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/Attic/FFTSUPPORT.h,v 1.2 2000/03/24 16:03:01 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -27,7 +27,7 @@ C                  ** Note ** FFT filtering assumes a periodic domain
 C                  with filtered data visible to a single thread.
 C                  To ensure this the filter routines fail if nSx > 1
 C                  - we could do sNx*nSx if myBxLo=1 and myBxHi=nSx
-C                     but we don't for now.
+C                     but we do not for now.
 C                  Some filter packages require sNx to be a power of
 C                  two. Some only require that sNx is even.
 C                  Note. We require an overlap on y so that we can filter
@@ -46,7 +46,7 @@ C                        epsFFTFilt..
       _RL epsFFTFiltG1( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
       _RL epsFFTFiltG2( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
 
-C     Data structures for Digital/Compaq's DXML scientfic library
+C     Data structures for Digital/Compaqs DXML scientfic library
 #ifdef ALLOW_DXML_FFT
 #include "FFT_DXML_SUPPORT.h"
 #endif

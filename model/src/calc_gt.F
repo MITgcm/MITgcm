@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.22 1999/05/26 20:26:42 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.23 2000/03/24 16:03:03 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -173,8 +173,8 @@ C     o Net zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         fZon(i,j) = 0.
-     _ADT(&            + afFacT*af(i,j) ) 
-     _LPT(&            + dfFacT*df(i,j) )
+     & _ADT( + afFacT*af(i,j) ) 
+     & _LPT( + dfFacT*df(i,j) )
        ENDDO
       ENDDO
 
@@ -210,8 +210,8 @@ C     o Net meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         fMer(i,j) = 0.
-     _ADT(&  + afFacT*af(i,j) )
-     _LPT(&  + dfFacT*df(i,j) )
+     & _ADT( + afFacT*af(i,j) )
+     & _LPT( + dfFacT*df(i,j) )
        ENDDO
       ENDDO
 
@@ -342,8 +342,8 @@ C     o Net vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         fVerT(i,j,kUp) = 0. 
-     _ADT(&  +afFacT*af(i,j)*maskUp(i,j) )
-     _LPT(&  +dfFacT*df(i,j)*maskUp(i,j) )
+     & _ADT( +afFacT*af(i,j)*maskUp(i,j) )
+     & _LPT( +dfFacT*df(i,j)*maskUp(i,j) )
        ENDDO
       ENDDO
 #ifdef INCLUDE_T_ADVECTION_CODE

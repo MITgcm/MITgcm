@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/shap_filt.F,v 1.2 1998/12/09 16:11:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/shap_filt.F,v 1.3 2000/03/24 16:03:04 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -120,7 +120,8 @@ C     == Local variables ==
          shapXWk2(i,j) = shapXWk1(i-1,j)
      &                 + shapXWk1(i+1,j)
      &                 - shapXWk1(i,j) * 2. _d 0
-         shapXWk2(i,j) = shapXWk2(i,j)*_maskW(i,j,k,bi,bj)
+         shapXWk2(i,j) = shapXWk2(i,j)
+     &    *_maskW(i,j,k,bi,bj)
         ENDDO
        ENDDO
        DO J=1-OLy,sNy+OLy
@@ -128,7 +129,8 @@ C     == Local variables ==
          shapXWk1(i,j) = shapXWk2(i-1,j)
      &                 + shapXWk2(i+1,j)
      &                 - shapXWk2(i,j) * 2. _d 0
-         shapXWk1(i,j) = shapXWk1(i,j)*_maskW(i,j,k,bi,bj)
+         shapXWk1(i,j) = shapXWk1(i,j)
+     &    *_maskW(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDDO
@@ -139,22 +141,30 @@ C     o ********************************************
        DO J=1-OLy+1,sNy+OLy-1
         DO I=1-OLx+1,sNx+OLx
          shapYWk2(i,j) =
-     &    ( shapYWk1(i,j+1)*_maskS(i,j+1,k,bi,bj)*_maskS(i-1,j+1,k,bi,bj)
+     &    ( shapYWk1(i,j+1)
+     &      *_maskS(i,j+1,k,bi,bj)
+     &      *_maskS(i-1,j+1,k,bi,bj)
      &     -shapYWk1(i,j  )
      &    )
      &   -( shapYWk1(i,j  )
-     &     -shapYWk1(i,j-1)*_maskS(i,j,k,bi,bj)*_maskS(i-1,j,k,bi,bj)
+     &     -shapYWk1(i,j-1)
+     &      *_maskS(i,j,k,bi,bj)
+     &      *_maskS(i-1,j,k,bi,bj)
      &    )
         ENDDO
        ENDDO
        DO J=1-OLy+1,sNy+OLy-1
         DO I=1-OLx+1,sNx+OLx
          shapYWk1(i,j) =
-     &    ( shapYWk2(i,j+1)*_maskS(i,j+1,k,bi,bj)*_maskS(i-1,j+1,k,bi,bj)
+     &    ( shapYWk2(i,j+1)
+     &      *_maskS(i,j+1,k,bi,bj)
+     &      *_maskS(i-1,j+1,k,bi,bj)
      &     -shapYWk2(i,j  )
      &    )
      &   -( shapYWk2(i,j  )
-     &     -shapYWk2(i,j-1) *_maskS(i,j,k,bi,bj)*_maskS(i-1,j,k,bi,bj)
+     &     -shapYWk2(i,j-1)
+     &      *_maskS(i,j,k,bi,bj)
+     &      *_maskS(i-1,j,k,bi,bj)
      &    )
         ENDDO
        ENDDO
@@ -171,7 +181,7 @@ C      o Even nShap
         DO I=1-OLx,sNx+OLx
          uVel(i,j,k,bi,bj) = uVel(i,j,k,bi,bj)
      &    -coeff*0.5 _d 0 *( shapXWk1(i,j)+shapYWk1(i,j) )
-     &    *maskW(i,j,k,bi,bj)
+     &    *_maskW(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ELSE
@@ -253,18 +263,26 @@ C     o ********************************************
       DO N=1,nShap,2
        DO J=1-OLy+1,sNy+OLy-1
         DO I=1-OLx,sNx+OLx
-         shapYWk1(i,j) = shapYWk2(i,j-1)*maskS(i,j-1,k,bi,bj)
-     &                 + shapYWk2(i,j+1)*maskS(i,j+1,k,bi,bj)
-     &                 - shapYWk2(i,j) * 2. D 0*maskS(i,j,k,bi,bj)
-         shapYWk1(i,j) = shapYWk1(i,j)*_maskS(i,j,k,bi,bj)
+         shapYWk1(i,j) = shapYWk2(i,j-1)
+     &                   *_maskS(i,j-1,k,bi,bj)
+     &                 + shapYWk2(i,j+1)
+     &                   *_maskS(i,j+1,k,bi,bj)
+     &                 - shapYWk2(i,j) * 2. D 0
+     &                   *_maskS(i,j,k,bi,bj)
+         shapYWk1(i,j) = shapYWk1(i,j)
+     &                   *_maskS(i,j,k,bi,bj)
         ENDDO
        ENDDO
        DO J=1-OLy+1,sNy+OLy-1
         DO I=1-OLx,sNx+OLx
-         shapYWk2(i,j) = shapYWk1(i,j-1)*maskS(i,j-1,k,bi,bj)
-     &                 + shapYWk1(i,j+1)*maskS(i,j+1,k,bi,bj)
-     &                 - shapYWk1(i,j) * 2. D 0*maskS(i,j,k,bi,bj)
-         shapYWk2(i,j) = shapYWk2(i,j)*_maskS(i,j,k,bi,bj)
+         shapYWk2(i,j) = shapYWk1(i,j-1)
+     &                   *_maskS(i,j-1,k,bi,bj)
+     &                 + shapYWk1(i,j+1)
+     &                   *_maskS(i,j+1,k,bi,bj)
+     &                 - shapYWk1(i,j) * 2. D 0
+     &                   *_maskS(i,j,k,bi,bj)
+         shapYWk2(i,j) = shapYWk2(i,j)
+     &                   *_maskS(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDDO
@@ -339,18 +357,22 @@ C     == Local variables ==
         DO I=1-OLx+1,sNx+OLx-1
          shapXWk2(i,j) = 
      &    ( shapXWk1(i+1,j)-shapXWk1(i  ,j) )
-     &    *_maskW(i,j,k,bi,bj)*_maskW(i+1,j,k,bi,bj)
+     &    *_maskW(i,j,k,bi,bj)
+     &    *_maskW(i+1,j,k,bi,bj)
      &   -( shapXWk1(i  ,j)-shapXWk1(i-1,j) )
-     &    *_maskW(i,j,k,bi,bj)*_maskW(i-1,j,k,bi,bj)
+     &    *_maskW(i,j,k,bi,bj)
+     &    *_maskW(i-1,j,k,bi,bj)
         ENDDO
        ENDDO
        DO J=1-OLy,sNy+OLy
         DO I=1-OLx+1,sNx+OLx-1
          shapXWk1(i,j) = 
      &    ( shapXWk2(i+1,j)-shapXWk2(i  ,j) )
-     &    *_maskW(i,j,k,bi,bj)*_maskW(i+1,j,k,bi,bj)
+     &    *_maskW(i,j,k,bi,bj)
+     &    *_maskW(i+1,j,k,bi,bj)
      &   -( shapXWk2(i  ,j)-shapXWk2(i-1,j) )
-     &    *_maskW(i,j,k,bi,bj)*_maskW(i-1,j,k,bi,bj)
+     &    *_maskW(i,j,k,bi,bj)
+     &    *_maskW(i-1,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDDO
@@ -359,18 +381,22 @@ C     == Local variables ==
         DO I=1-OLx,sNx+OLx
          shapYWk2(i,j) =
      &    ( shapYWk1(i,j+1)-shapYWk1(i,j  ) )
-     &    *_maskS(i,j+1,k,bi,bj)*_maskS(i,j,k,bi,bj)
+     &    *_maskS(i,j+1,k,bi,bj)
+     &    *_maskS(i,j,k,bi,bj)
      &   -( shapYWk1(i,j  )-shapYWk1(i,j-1) )
-     &    *_maskS(i,j-1,k,bi,bj)*_maskS(i,j,k,bi,bj)
+     &    *_maskS(i,j-1,k,bi,bj)
+     &    *_maskS(i,j,k,bi,bj)
         ENDDO
        ENDDO
        DO J=1-OLy+1,sNy+OLy-1
         DO I=1-OLx,sNx+OLx
          shapYWk1(i,j) =
      &    ( shapYWk2(i,j+1)-shapYWk2(i,j  ) )
-     &    *_maskS(i,j,k,bi,bj)*_maskS(i-1,j,k,bi,bj)
+     &    *_maskS(i,j,k,bi,bj)
+     &    *_maskS(i-1,j,k,bi,bj)
      &   -( shapYWk2(i,j  )-shapYWk2(i,j-1) )
-     &    *_maskS(i,j,k,bi,bj)*_maskS(i,j-1,k,bi,bj)
+     &    *_maskS(i,j,k,bi,bj)
+     &    *_maskS(i,j-1,k,bi,bj)
         ENDDO
        ENDDO
       ENDDO
