@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.2 2003/01/03 03:51:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.3 2003/07/31 18:40:57 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -20,6 +20,7 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 
+#include "AIM_PARAMS.h"
 #include "AIM2DYN.h"
 #include "AIM_DIAGS.h"
 
@@ -43,10 +44,19 @@ C     i,j  - Loop counters
       DDTT = deltaTclock
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      IF (kLev.eq.1) THEN
+      IF ( kLev.EQ.Nr .AND. aim_dragStrato.GT.0. ) THEN
+C- Note: exclusive IF / ELSE is legitimate here since surface drag 
+C        is not supposed to be applied in stratosphere
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( hFacW(i,j,kLev,bi,bj) .NE. 0. ) THEN
+          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+     &     -maskW(i,j,kLev,bi,bj)*uVel(i,j,kLev,bi,bj)/aim_dragStrato
+        ENDDO
+       ENDDO
+      ELSEIF (kLev.eq.1) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         IF ( maskW(i,j,kLev,bi,bj) .NE. 0. ) THEN
           uStr_tmp = 
      &     -( aim_drag(i-1,j,bi,bj)+aim_drag(i,j,bi,bj) )
      &       * 0.5 _d 0 * uVel(i,j,kLev,bi,bj)
@@ -62,7 +72,7 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSE
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( hFacW(i,j,kLev,bi,bj) .NE. 0. ) THEN
+         IF ( maskW(i,j,kLev,bi,bj) .NE. 0. ) THEN
           uStr_tmp = 
      &      -( (1.-maskC(i-1,j,kLev-1,bi,bj))*aim_drag(i-1,j,bi,bj)
      &        +(1.-maskC( i ,j,kLev-1,bi,bj))*aim_drag( i ,j,bi,bj)
@@ -100,6 +110,7 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 
+#include "AIM_PARAMS.h"
 #include "AIM2DYN.h"
 #include "AIM_DIAGS.h"
 
@@ -123,10 +134,19 @@ C     Loop counters
       DDTT = deltaTclock
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      IF (kLev.eq.1) THEN
+      IF ( kLev.EQ.Nr .AND. aim_dragStrato.GT.0. ) THEN
+C- Note: exclusive IF / ELSE is legitimate here since surface drag 
+C        is not supposed to be applied in the stratosphere
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( hFacS(i,j,kLev,bi,bj) .NE. 0. ) THEN
+          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+     &     -maskS(i,j,kLev,bi,bj)*vVel(i,j,kLev,bi,bj)/aim_dragStrato
+        ENDDO
+       ENDDO
+      ELSEIF (kLev.eq.1) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         IF ( maskS(i,j,kLev,bi,bj) .NE. 0. ) THEN
           vStr_tmp = 
      &     -( aim_drag(i,j-1,bi,bj)+aim_drag(i,j,bi,bj) )
      &       * 0.5 _d 0 * vVel(i,j,kLev,bi,bj)
@@ -142,7 +162,7 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       ELSE
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( hFacS(i,j,kLev,bi,bj) .NE. 0. ) THEN
+         IF ( maskS(i,j,kLev,bi,bj) .NE. 0. ) THEN
           vStr_tmp = 
      &     -( (1.-maskC(i,j-1,kLev-1,bi,bj))*aim_drag(i,j-1,bi,bj)
      &       +(1.-maskC(i, j ,kLev-1,bi,bj))*aim_drag(i, j ,bi,bj)

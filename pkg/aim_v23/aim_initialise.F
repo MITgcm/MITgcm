@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.4 2003/02/26 03:10:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.5 2003/07/31 18:40:57 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -54,6 +54,7 @@ C--  Set default value for AIM interface code (AIM_PARAMS.h):
       aim_oiceFile = ' '
       aim_snowFile = ' '
       aim_swcFile  = ' '
+      aim_dragStrato = 0.
       aim_taveFreq = taveFreq
       aim_diagFreq = dumpFreq
       aim_tendFreq = 0.
