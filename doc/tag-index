@@ -1,7 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.153 2003/05/12 21:16:45 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.154 2003/05/13 13:32:52 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+checkpint50d_post
+o change kpp output from multiple-record state files to single-record state 
+  files analogous to write_state.F
+o reduce the output frequency of cg3d-related stuff to the monitor frequency, 
+  analogous to the cg2d-related output. 
+o fix small problem with in ptracers_write_checkpoint.F: len(suff)=512, so that
+  writing to internal file fn (with length 512) fails.
+checkpoint50d_pre
 
 checkpoint50c_post
 o fix problem in ini_procs.F when using MPI (was there since checkpoint48f)
