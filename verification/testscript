@@ -82,7 +82,7 @@ if [ $debug -gt 0 ]; then
  echo testoutput: cg2dres=$cg2dres 1>&2
 fi
 
-if [ $testmore -gt 0 ]; then
+if [ $longtest -gt 0 ]; then
 testoutput_for_prop $1 "dynstat_theta_min" "theta minimum"; tmin=$?
 testoutput_for_prop $1 "dynstat_theta_max" "theta maximum"; tmax=$?
 testoutput_for_prop $1 "dynstat_theta_mean" "theta mean"; tmean=$?
@@ -125,8 +125,26 @@ genmakemodel()
     ../../../tools/genmake -ieee -mods=../code > make.log 2>&1
     if [ $? -ne 0 ]; then
      tail make.log
-     echo makemodel: genmake failed 1>&2
+     echo genmakemodel: genmake failed 1>&2
      return 1
+    else
+      echo succesful 1>&2
+    fi
+   fi
+ )
+}
+
+makeclean()
+{
+# makedependmodel directory
+ ( cd $1;
+   if [ $clean -gt 0 ]; then
+    printf 'make clean ... ' 2>&1
+    make CLEAN >> make.log 2>&1
+    if [ $? -ne 0 ]; then
+      tail make.log
+      echo makeclean: make clean failed 1>&2
+      return 1
     else
       echo succesful 1>&2
     fi
@@ -261,6 +279,9 @@ $0 [-help] [-quick] [-verbose] dir1 [dir2] [...]
  -quick     Skip "genmake" and "make depend" if the Makefile exists
  -quiet     Reduce the amount of output
  -verbose   Produce copious amounts of output
+ -debug     Produce even more output which will mean nothing to most
+ -clean     Do "make CLEAN" before compiling. This forces a complete rebuild.
+ -longtest  Compare numeric output for mean and s.d. of variables.
 
 Normal usage:
  $0 *       Configure, compile, run and analyze in all experiment directories
@@ -275,7 +296,8 @@ EOF
 debug=0
 verbose=1
 quick=0
-testmore=0
+clean=0
+longtest=0
 expts=''
 
 # Process arguments
@@ -285,7 +307,8 @@ do
    -quick) quick=1;;
    -verbose) verbose=2;;
    -debug) debug=1;;
-   -testmore) testmore=1;;
+   -clean) clean=1;;
+   -longtest) longtest=1;;
    -quiet) verbose=0;;
    -help) show_help; exit 0;;
    *) test -d $arg && expts=`echo $expts $arg`;;
@@ -302,7 +325,7 @@ fi
 
 createcodelet
 
-if [ $testmore -gt 0 ]; then
+if [ $longtest -gt 0 ]; then
 cat << EOF > summary.txt
                 T           S           U           V
 C D M    c        m  s        m  s        m  s        m  s
@@ -334,6 +357,7 @@ do
  results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
  results='-- -- -- -- -- -- -- -- --'
  genmakemodel $dir/input && genmake=Y \
+ && makeclean $dir/input \
  && makedependmodel $dir/input && makedepend=Y \
  && makemodel $dir/input && make=Y \
  && runmodel $dir/input mitgcmuv && run=Y \
