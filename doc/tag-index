@@ -1,7 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.212 2003/11/23 04:28:12 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.213 2003/11/25 16:28:48 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o Fixing OPTIONS files for use of exf:
+  - ALLOW_ECCO not needed
+  - ECCO_CPPOPTIONS.h should not be included from
+    EXF_OPTIONS.h/CAL_OPTIONS.h, but from CPP_OPTIONS.h
+    as has been the case in the past
+  - All cal/exf related options are currently set in
+    single header file. Should remain so until we
+    agree on a consistent new policy.
 
 checkpoint52b_post
 o new version: "thsice" of thermodynamic sea-ice pkg:
