@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_salt.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_salt.F,v 1.4 2005/03/28 19:40:59 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -62,6 +62,7 @@ c     == local variables ==
       _RL tmpobs (1-olx:snx+olx,1-oly:sny+oly)
       _RL tmpbar (1-olx:snx+olx,1-oly:sny+oly)
       _RL spval
+      _RL spmax
       
       character*(80) fnamesalt
 
@@ -94,7 +95,8 @@ c     == end of interface ==
       imin = 1
       imax = snx
       
-      spval = -1.
+      spval = 25.
+      spmax = 40.
 
 c--   Read state record from global file.
       doglobalread = .false.
@@ -159,6 +161,7 @@ cph)
               do j = jmin,jmax
                 do i = imin,imax                 
                    if (argosobs(i,j,k,bi,bj) .ge. spval .and.
+     $                 argosobs(i,j,k,bi,bj) .lt. spmax .and.
      $                  _hFacC(i,j,13,bi,bj) .ne. 0. .and.
      $                  _hFacC(i,j,k,bi,bj) .ne. 0.) then
                       fctile_argos = fctile_argos + 

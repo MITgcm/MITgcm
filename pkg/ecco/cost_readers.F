@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_readers.F,v 1.3 2005/03/28 19:40:59 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -120,8 +120,6 @@ cnew(
          sshrec = irec
       endif
  
-      print *, 'ph-ssh-ers ', irec, sshrec, ymod, yday
-      print *, 'ph-ssh-ers ', fnametmp
 cnew)
 
 

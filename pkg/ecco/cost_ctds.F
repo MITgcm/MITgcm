@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctds.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctds.F,v 1.3 2005/03/28 19:40:59 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -60,7 +60,9 @@ c     == local variables ==
       _RL wtmp (1-olx:snx+olx,1-oly:sny+oly)
       _RL tmpobs (1-olx:snx+olx,1-oly:sny+oly)
       _RL tmpbar (1-olx:snx+olx,1-oly:sny+oly)
+      _RL cmask (1-olx:snx+olx,1-oly:sny+oly)
       _RL spval
+      _RL spmax
       
       character*(80) fnamesalt
 
@@ -94,6 +96,7 @@ c     == end of interface ==
       imax = snx
       
       spval = 25.
+      spmax = 40.
 
 c--   Read state record from global file.
       doglobalread = .false.
@@ -150,6 +153,13 @@ c--         Loop over the model layers
 c--           Determine the weights to be used.
               do j = jmin,jmax
                 do i = imin,imax
+                  cmask(i,j) = 1. _d 0
+                  if (ctdsobs(i,j,k,bi,bj) .lt. spval .or.
+     &                ctdsobs(i,j,k,bi,bj) .gt. spmax .or.
+     &                ctdsobs(i,j,k,bi,bj) .eq. 0. ) then
+                    cmask(i,j) = 0. _d 0
+                  endif
+
 cph(
 cph               print *, 'WARNING: SPECIFIC SETUP FOR ECCO'
 cph               below statement could be replaced by following
@@ -157,21 +167,20 @@ cph               to make it independnet of Nr:
 cph
 cph               if ( rC(K) .GT. -1000. ) then
 cph)
-                  if ((ctdsobs(i,j,k,bi,bj) .ne. 0.).and. 
-     &             (ctdsobs(i,j,k,bi,bj) .gt. spval).and.
+                  if ( 
      &             (_hFacC(i,j,13,bi,bj) .ne. 0.).and. 
      &             (_hFacC(i,j,k,bi,bj) .ne. 0.)) then
-                  www(i,j)    = cosphi(i,j,bi,bj)
-                  tmpobs(i,j) = ctdsobs(i,j,k,bi,bj)
-                  tmpbar(i,j) = sbar(i,j,k,bi,bj)
-c                  wtmp(i,j) = wsalt(k,bi,bj)
-                  wtmp(i,j) = wsalt2(i,j,k,bi,bj)
 
-                  fctile_ctds = fctile_ctds + 
+                     www(i,j)    = cosphi(i,j,bi,bj)*cmask(i,j)
+                     tmpobs(i,j) = ctdsobs(i,j,k,bi,bj)
+                     tmpbar(i,j) = sbar(i,j,k,bi,bj)
+                     wtmp(i,j) = wsalt2(i,j,k,bi,bj)
+
+                     fctile_ctds = fctile_ctds + 
      &                             (wtmp(i,j)*www(i,j))*
      &                             (tmpbar(i,j)-tmpobs(i,j))*
      &                             (tmpbar(i,j)-tmpobs(i,j))
-		endif
+		  endif
                 enddo
               enddo
             enddo

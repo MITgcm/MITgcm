@@ -63,12 +63,12 @@ c
       do j=1,sNy
          do i=1,sNx
             do k=2,Nr
-         tau2_temp = (rhonil*fCori(i,j,bi,bj)*Eddytaux(i,j,k,bi,bj))**2
+         tau2_temp = (rhonil*Eddytaux(i,j,k,bi,bj))**2
             if ( tau2_temp .gt. tau2_max) then
                locfc = locfc + maskW(i,j,k,bi,bj)*
      &                 ( tau2_temp - tau2_max )
             endif
-         tau2_temp = (rhonil*fCoriG(i,j,bi,bj)*Eddytauy(i,j,k,bi,bj))**2
+         tau2_temp = (rhonil*Eddytauy(i,j,k,bi,bj))**2
             if ( tau2_temp .gt. tau2_max) then
                locfc = locfc + maskS(i,j,k,bi,bj)*
      &                 ( tau2_temp - tau2_max )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_theta.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_theta.F,v 1.4 2005/03/28 19:40:59 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -61,6 +61,7 @@ c     == local variables ==
       _RL tmpobs (1-olx:snx+olx,1-oly:sny+oly)
       _RL spval
       _RL ztop,rl_35,rl_0
+      _RL spmax
       
       character*(80) fnametheta
 
@@ -96,6 +97,7 @@ c     == end of interface ==
       imax = snx
       
       spval = -1.8
+      spmax = 40.
       ztop  = -.981*1.027
       rl_35= 35.0
       rl_0  = 0.0
@@ -164,6 +166,7 @@ cph               if ( rC(K) .GT. -1000. ) then
 cph)
                   if( (argotobs(i,j,k,bi,bj) .ne. 0.).and.
      &             (argotobs(i,j,k,bi,bj) .gt. spval).and. 
+     &             (argotobs(i,j,k,bi,bj) .lt. spmax).and.
      &             (_hFacC(i,j,13,bi,bj) .ne. 0.).and. 
      &             (_hFacC(i,j,k,bi,bj) .ne. 0.) )then
                   www(i,j)    = cosphi(i,j,bi,bj)

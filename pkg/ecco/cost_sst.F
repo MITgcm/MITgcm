@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sst.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sst.F,v 1.4 2005/03/28 19:40:59 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -60,6 +60,7 @@ c     == local variables ==
 
       _RL cmask (1-olx:snx+olx,1-oly:sny+oly)  
       _RL spval
+      _RL spmax
 
       character*(80) fnametheta
 
@@ -85,6 +86,7 @@ c     == end of interface ==
       imax = snx
 
       spval = -1.8
+      spmax = 40.
 
 c--   Read tiled data.
       doglobalread = .false.
@@ -122,11 +124,9 @@ c--           Determine the mask on weights
               do j = jmin,jmax
                 do i = imin,imax
                   cmask(i,j) = 1. _d 0
-                  if (sstdat(i,j,bi,bj) .eq. 0.) then
-                    cmask(i,j) = 0. _d 0
-                  endif
-                 
-                  if (sstdat(i,j,bi,bj) .lt. spval) then
+                  if (sstdat(i,j,bi,bj) .lt. spval .or.
+     &		      sstdat(i,j,bi,bj) .gt. spmax .or.
+     &                sstdat(i,j,bi,bj) .eq. 0.) then
                     cmask(i,j) = 0. _d 0
                   endif
                   
@@ -138,26 +138,19 @@ cph
 cph               if ( rC(K) .GT. -1000. ) then
 cph)
 c                 set cmask=0 in areas shallower than 1000m 
-                  if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
-                    cmask(i,j) = 0. _d 0
-                  endif
-
-                enddo
-              enddo
+cph                  if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
+cph                    cmask(i,j) = 0. _d 0
+cph                  endif
 
 c--         Compute cost rel. to monthly SST climatology field.
-            do j = jmin,jmax
-              do i = imin,imax
                 if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
                    fctile_sst = fctile_sst +
      &                  wsst(i,j,bi,bj)*cosphi(i,j,bi,bj)*cmask(i,j)*
      &                  ( (tbar(i,j,k,bi,bj)-sstdat(i,j,bi,bj))*
-     &                    (tbar(i,j,k,bi,bj)-sstdat(i,j,bi,bj))*
-     &                           sstmask(i,j,bi,bj) )
+     &                    (tbar(i,j,k,bi,bj)-sstdat(i,j,bi,bj)) )
                 endif
               enddo
             enddo
-
 
             fcthread_sst     = fcthread_sst + fctile_sst
             objf_sst(bi,bj)  = objf_sst(bi,bj)  + fctile_sst

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_tmi.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_tmi.F,v 1.3 2005/03/28 19:40:59 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -144,13 +144,10 @@ c--   set cmask=0 in areas shallower than 1000m
                    fctile_tmi = fctile_tmi +
      &                  wsst(i,j,bi,bj)*cosphi(i,j,bi,bj)*cmask(i,j)*
      &                  ( (tbar(i,j,k,bi,bj)-tmidat(i,j,bi,bj))*
-     &                    (tbar(i,j,k,bi,bj)-tmidat(i,j,bi,bj))*
-     &                           sstmask(i,j,bi,bj) )
+     &                    (tbar(i,j,k,bi,bj)-tmidat(i,j,bi,bj)) )
                 endif
               enddo
             enddo
-
-
 
             fcthread_tmi     = fcthread_tmi + fctile_tmi
             objf_tmi(bi,bj)  = objf_tmi(bi,bj)  + fctile_tmi

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdt.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdt.F,v 1.4 2005/03/28 19:40:59 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -63,6 +63,7 @@ c     == local variables ==
       _RL tmpbar (1-olx:snx+olx,1-oly:sny+oly)
       _RL cmask (1-olx:snx+olx,1-oly:sny+oly)  
       _RL spval
+      _RL spmax
       
       character*(80) fnametheta
 
@@ -96,6 +97,7 @@ c     == end of interface ==
       imax = snx
       
       spval = -1.8
+      spmax = 40.
 
 c--   Read state record from global file.
       doglobalread = .false.
@@ -153,11 +155,9 @@ c--           Determine the weights to be used.
               do j = jmin,jmax
                 do i = imin,imax
                   cmask(i,j) = 1. _d 0
-                  if (ctdtobs(i,j,k,bi,bj) .eq. 0.) then
-                    cmask(i,j) = 0. _d 0
-                  endif
-                 
-                  if (ctdtobs(i,j,k,bi,bj) .lt. spval) then
+                  if (ctdtobs(i,j,k,bi,bj) .lt. spval .or.
+     &                ctdtobs(i,j,k,bi,bj) .gt. spmax .or.
+     &                ctdtobs(i,j,k,bi,bj) .eq. 0. ) then
                     cmask(i,j) = 0. _d 0
                   endif
                   
@@ -169,35 +169,23 @@ cph
 cph               if ( rC(K) .GT. -1000. ) then
 cph)
 c                 set cmask=0 in areas shallower than 1000m 
-                  if (_hFacC(i,j,13,bi,bj) .eq. 0.) then
-                    cmask(i,j) = 0. _d 0
-                  endif
                   
-                  if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
-                    cmask(i,j) = 0. _d 0
-                  endif
-                  
-                enddo
-              enddo
-              
-              do j = jmin,jmax
-                do i = imin,imax
-                  www(i,j)    = cosphi(i,j,bi,bj)*cmask(i,j)                
-                  tmpobs(i,j) = ctdtobs(i,j,k,bi,bj)
-                  tmpbar(i,j) = tbar(i,j,k,bi,bj)
-c                  wtmp(i,j) = wtheta(k,bi,bj)
-                  wtmp(i,j) = wtheta2(i,j,k,bi,bj)
-                enddo
-              enddo
+                  if (
+     &             (_hFacC(i,j,13,bi,bj) .ne. 0.).and.
+     &             (_hFacC(i,j,k,bi,bj) .ne. 0.)) then
 
-              do j = jmin,jmax
-                do i = imin,imax
-c--               The array ctdtobs contains CTD temperature.
-                  fctile_ctdt = fctile_ctdt + 
+                     www(i,j)    = cosphi(i,j,bi,bj)*cmask(i,j)                
+                     tmpobs(i,j) = ctdtobs(i,j,k,bi,bj)
+                     tmpbar(i,j) = tbar(i,j,k,bi,bj)
+                     wtmp(i,j) = wtheta2(i,j,k,bi,bj)
+
+c--                  The array ctdtobs contains CTD temperature.
+                     fctile_ctdt = fctile_ctdt + 
      &                             (wtmp(i,j)*www(i,j))*
      &                             (tmpbar(i,j)-tmpobs(i,j))*
      &                             (tmpbar(i,j)-tmpobs(i,j))
 
+                  endif
                 enddo
               enddo
             enddo
