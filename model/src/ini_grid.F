@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.3 1998/04/24 02:10:20 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.4 1998/07/02 14:16:24 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -46,7 +46,10 @@ C     == Local variables ==
 C     msgBuf - Used for informational I/O.
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-C--   Set up grid coordinate system
+C--   Set up vertical grid and coordinate system
+      CALL INI_VERTICAL_GRID( myThid )
+
+C--   Set up horizontal grid and coordinate system
       IF ( usingCartesianGrid ) THEN
        CALL INI_CARTESIAN_GRID( myThid )
       ELSEIF ( usingSphericalPolarGrid ) THEN

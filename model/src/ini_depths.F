@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.7 1998/06/15 05:13:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.8 1998/07/02 14:16:24 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -85,23 +85,6 @@ C          Island
       ENDIF
       _EXCH_XY_R4(    H, myThid )
 
-C--   Cacluate quantities derived from XY depth map
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
-C         Inverse of depth
-          IF ( h(i,j,bi,bj) .EQ. 0. _d 0 ) THEN
-           rH(i,j,bi,bj) = 0. _d 0
-          ELSE
-           rH(i,j,bi,bj) = 1. _d 0 /  h(i,j,bi,bj)
-          ENDIF
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      _EXCH_XY_R4(   rH, myThid )
-
 C--   Now calculate "lopping" factors hFac.
       zG = delZ(1)*0.5 D0
       zFace(1) = 0
@@ -147,47 +130,6 @@ C           Set hFac tp the fraction of the cell that is open.
        ENDDO
       ENDDO
       _EXCH_XYZ_R4(hFacC , myThid )
-
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO K=1, Nz
-         DO J=1,sNy
-          DO I=1,sNx
-           hFacW(I,J,K,bi,bj)=
-     &       MIN(hFacC(I,J,K,bi,bj),hFacC(I-1,J,K,bi,bj))
-           hFacS(I,J,K,bi,bj)=
-     &       MIN(hFacC(I,J,K,bi,bj),hFacC(I,J-1,K,bi,bj))
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      _EXCH_XYZ_R4(hFacW , myThid )
-      _EXCH_XYZ_R4(hFacS , myThid )
-
-C--   Calculate recipricols of hFacC, hFacW and hFacS
-      DO bj=myByLo(myThid), myByHi(myThid)
-       DO bi=myBxLo(myThid), myBxHi(myThid)
-        DO K=1, Nz
-         DO J=1,sNy
-          DO I=1,sNx
-           rhFacC(I,J,K,bi,bj)=0. D0
-           if (hFacC(I,J,K,bi,bj).ne.0.)
-     &            rhFacC(I,J,K,bi,bj)=1. D0 /hFacC(I,J,K,bi,bj)
-           rhFacW(I,J,K,bi,bj)=0. D0
-           if (hFacW(I,J,K,bi,bj).ne.0.)
-     &            rhFacW(I,J,K,bi,bj)=1. D0 /hFacW(I,J,K,bi,bj)
-           rhFacS(I,J,K,bi,bj)=0. D0
-           if (hFacS(I,J,K,bi,bj).ne.0.)
-     &            rhFacS(I,J,K,bi,bj)=1. D0 /hFacS(I,J,K,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      _EXCH_XYZ_R4(rhFacC , myThid )
-      _EXCH_XYZ_R4(rhFacW , myThid )
-      _EXCH_XYZ_R4(rhFacS , myThid )
 
 C
       CALL PLOT_FIELD_XYRS( H, 'Model depths' , 1, myThid )
