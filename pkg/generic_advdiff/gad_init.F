@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/gad_init.F,v 1.5 2004/07/07 22:25:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/gad_init.F,v 1.6 2004/09/17 22:57:12 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -63,18 +63,6 @@ C-- Set Temp & Salt Adams-Bashforth flag according to advection scheme used
      & .OR.saltAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
            saltAdamsBashforth = .TRUE.
       ENDIF
-
-#ifdef ALLOW_PASSIVE_TRACER
-      tr1_MultiDimAdvec = multiDimAdvection
-      tr1_AdamsBashforth = .FALSE.
-      IF ( tracerAdvScheme.EQ.ENUM_CENTERED_2ND
-     & .OR.tracerAdvScheme.EQ.ENUM_UPWIND_3RD
-     & .OR.tracerAdvScheme.EQ.ENUM_CENTERED_4TH ) THEN
-           tr1_MultiDimAdvec = .FALSE.
-           tr1_AdamsBashforth = .TRUE.
-      ENDIF
-      useMultiDimAdvec = useMultiDimAdvec.OR.tr1_MultiDimAdvec
-#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

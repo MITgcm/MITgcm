@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.4 2004/09/10 12:19:29 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.5 2004/09/17 22:57:11 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -186,9 +186,6 @@ C     Create MNC definitions for DYNVARS.h variables
       CALL MNC_CW_ADD_VNAME('phi_nh', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VNAME('gW', 'Cen_xy_Hn__C__t', 4,5, myThid)
 
-      CALL MNC_CW_ADD_VNAME('tr1', 'Cen_xy_Hn__C__t', 4,5, myThid)
-      CALL MNC_CW_ADD_VATTR_TEXT('tr1',1,
-     &     'long_name','passive_tracer_1', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('T',1,
      &     'coordinates','XC YC RC iter', myThid)
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.14 2003/12/17 05:24:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.15 2004/09/17 22:57:11 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,9 +29,6 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#ifdef ALLOW_PASSIVE_TRACER
-#include "TR1.h"
-#endif
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
 #endif 
@@ -175,15 +172,6 @@ C-          Convectively mix salt across interface K
      I                              bi,bj,k,weightA,weightB,
      U                              salt,
      I                              myThid)
-
-#ifdef ALLOW_PASSIVE_TRACER
-C-          Convectively mix passive tracer across interface K
-ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
-            CALL CONVECTIVELY_MIXTRACER(
-     I                              bi,bj,k,weightA,weightB,
-     U                              Tr1,
-     I                              myThid)
-#endif /* ALLOW_PASSIVE_TRACER */
 
 #ifdef ALLOW_PTRACERS
 C-          Convectively mix passive tracers across interface K

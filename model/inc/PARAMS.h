@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.126 2004/09/16 09:35:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.127 2004/09/17 22:57:11 heimbach Exp $
 C $Name:  $
 C
 
@@ -221,7 +221,6 @@ C                           linear relation Phi_surf = Bo_surf*eta
 C     momStepping   :: Turns momentum equation time-stepping off
 C     tempStepping  :: Turns temperature equation time-stepping off
 C     saltStepping  :: Turns salinity equation time-stepping off
-C     tr1Stepping   :: Turns passive tracer 1 time-stepping on/off
 C     useConstantF  :: Coriolis parameter set to f0
 C     useBetaPlaneF :: Coriolis parameter set to f0 + beta.y
 C     useSphereF    :: Coriolis parameter set to 2.omega.sin(phi)
@@ -279,7 +278,7 @@ C     monitor_stdio      :: use stdio for monitor output
      & saltDiffusion, saltAdvection, saltForcing,
      & useRealFreshWaterFlux,
      & rigidLid, implicitFreeSurface, exactConserv, uniformLin_PhiSurf,
-     & momStepping, tempStepping, saltStepping, tr1Stepping,
+     & momStepping, tempStepping, saltStepping,
      & metricTerms, usingSphericalPolarMTerms, useNHMTerms,
      & useConstantF, useBetaPlaneF, useSphereF,
      & useCDscheme,
@@ -327,7 +326,6 @@ C     monitor_stdio      :: use stdio for monitor output
       LOGICAL momStepping
       LOGICAL tempStepping
       LOGICAL saltStepping
-      LOGICAL tr1Stepping
       LOGICAL metricTerms
       LOGICAL useConstantF
       LOGICAL useBetaPlaneF

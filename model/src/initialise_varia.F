@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.38 2004/09/01 16:25:06 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.39 2004/09/17 22:57:12 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -38,8 +38,6 @@ C       |
 C       |-- INI_DYNVARS
 C       |
 C       |-- INI_FIELDS
-C       |
-C       |-- INI_TR1
 C       |
 C       |-- INI_AUTODIFF
 C       |
@@ -124,12 +122,6 @@ C     stored files.
       CALL INI_FIELDS( myThid )
 #endif
       _BARRIER
-
-#ifdef ALLOW_PASSIVE_TRACER
-C--   Initialise passive tracer(s)
-      CALL INI_TR1( myThid )
-      _BARRIER
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   Initialise active fields to help TAMC

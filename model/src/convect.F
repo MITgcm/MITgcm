@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.21 2003/10/15 22:55:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.22 2004/09/17 22:57:11 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -27,9 +27,7 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#ifdef ALLOW_PASSIVE_TRACER
-#include "TR1.h"
-#endif
+
       EXTERNAL DIFFERENT_MULTIPLE
       LOGICAL  DIFFERENT_MULTIPLE
 
@@ -54,15 +52,10 @@ C     == Local variables ==
 C     i,j    :: Loop counter
 C     tMix   :: Temp. for calculation of mixed theta.
 C     sMix   :: Temp. for calculation of mixed salt. 
-C     tr1Mix :: Temp. for calculation of mixed tracer.
 C     dSum   :: Temp. for layer thicknesses
       INTEGER i,j
       _RL tMix(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sMix(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef ALLOW_PASSIVE_TRACER
-ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
-      _RL tr1Mix(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#endif
       _RL dSum(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 CEOP
 
@@ -80,13 +73,6 @@ C--    Calculate heat content of two level column
      &               *_hFacC(i,j,k-1,bi,bj)*drF(k-1)
      &              +salt (i,j,k,bi,bj)
      &               *_hFacC(i,j,k,bi,bj)*drF(k)
-#ifdef ALLOW_PASSIVE_TRACER
-ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
-         tr1Mix(i,j) = Tr1 (i,j,k-1,bi,bj)
-     &               *_hFacC(i,j,k-1,bi,bj)*drF(k-1)
-     &              +Tr1  (i,j,k,bi,bj)
-     &               *_hFacC(i,j,k,bi,bj)*drF(k)
-#endif
          dSum(i,j) = _hFacC(i,j,k-1,bi,bj)*drF(k-1)
      &              +_hFacC(i,j,k,bi,bj)*drF(k)
         ENDDO
@@ -102,11 +88,6 @@ C--    Where statically unstable, mix the heat and salt
           theta(i,j,k  ,bi,bj) = tMix(i,j)/dSum(i,j)
           salt(i,j,k-1,bi,bj)  = sMix(i,j)/dSum(i,j)
           salt(i,j,k  ,bi,bj)  = sMix(i,j)/dSum(i,j)
-#ifdef ALLOW_PASSIVE_TRACER
-ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
-          Tr1(i,j,k-1,bi,bj)   = Tr1Mix(i,j)/dSum(i,j)
-          Tr1(i,j,k  ,bi,bj)   = Tr1Mix(i,j)/dSum(i,j)
-#endif
           ConvectCount(i,j,k) = ConvectCount(i,j,k) + 1.
          ENDIF
         ENDDO

@@ -86,19 +86,6 @@ C--     Read IO error counter
         CALL WRITE_FLD_XY_RL ( 'G_Jqnet.',suff, g_qnet, myIter, myThid)
         CALL WRITE_FLD_XY_RL ( 'G_Jempr.',suff, g_empmr, myIter, myThid)
 c
-cph        CALL WRITE_FLD_XYZ_RL( 
-cph     &       'G_Jgtnm1.',suff, g_gtnm1, myIter, myThid)
-cph        CALL WRITE_FLD_XYZ_RL( 
-cph     &       'G_Jgsnm1.',suff, g_gsnm1, myIter, myThid)
-cph        CALL WRITE_FLD_XYZ_RL( 
-cph     &       'G_Jgunm1.',suff, g_gunm1, myIter, myThid)
-cph        CALL WRITE_FLD_XYZ_RL( 
-cph     &       'G_Jgvnm1.',suff, g_gvnm1, myIter, myThid)
-#ifdef ALLOW_PASSIVE_TRACER
-cph        CALL WRITE_FLD_XYZ_RL( 
-cph     &       'G_Jgtr1nm1. ',suff, g_gtr1nm1, myIter, myThid)
-#endif
-c
         CALL WRITE_FLD_XYZ_RL( 
      &       'G_Jtheta.',suff, g_theta, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL( 
@@ -112,10 +99,6 @@ c
         CALL WRITE_FLD_XY_RL(
      &       'G_Jetan.',suff, g_vvel, myIter, myThid)
 
-#ifdef ALLOW_PASSIVE_TRACER
-        CALL WRITE_FLD_XYZ_RL( 
-     &       'G_Jtr1. ',suff, g_tr1, myIter, myThid)
-#endif
 #ifdef ALLOW_DIFFKR_CONTROL
         CALL WRITE_FLD_XYZ_RL ( 'G_Jdiffkr.',suff, g_diffkr, 
      &       myIter, myThid)

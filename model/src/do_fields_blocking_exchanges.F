@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.16 2004/09/01 16:25:06 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.17 2004/09/17 22:57:11 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -25,9 +25,6 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#ifdef ALLOW_PASSIVE_TRACER
-#include "TR1.h"
-#endif
 #ifdef ALLOW_CD_CODE
 #include "CD_CODE_VARS.h"
 #endif
@@ -57,10 +54,6 @@ c     IF ( exactConserv .AND. implicDiv2Dflow .NE. 0. _d 0)
 c    & _EXCH_XY_R8( etaN , myThid )
       _EXCH_XYZ_R8( theta, myThid )
       _EXCH_XYZ_R8( salt , myThid )
-#endif
-#ifdef ALLOW_PASSIVE_TRACER
-      IF ( tr1Stepping ) 
-     & _EXCH_XYZ_R8( Tr1 , myThid )
 #endif
 
 #ifndef ALLOW_OFFLINE

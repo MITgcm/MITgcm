@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.79 2004/09/10 12:19:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.80 2004/09/17 22:57:12 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -148,8 +148,6 @@ C    | | | |-INI_PSURF  :: Set model initial free-surface height/pressure.
 C    | | | |-INI_PRESSURE :: Compute model initial hydrostatic pressure
 C    | | | |-READ_CHECKPOINT :: Read the checkpoint
 C    | | |
-C    | | |-INI_TR1      :: Set initial tracer 1 distribution.
-C    | | |
 C    | | |-THE_CORRECTION_STEP :: Step forward to next time step.
 C    | | | |                   :: Here applied to move restart conditions
 C    | | | |                   :: (saved in mid timestep) to correct level in 
@@ -279,15 +277,6 @@ C/\  | | | | |-ADAMS_BASHFORTH2   :: Extrapolate tendencies forward in time.
 C/\  | | | | |-FREESURF_RESCALE_G :: Re-scale Gs for free-surface height.
 C/\  | | | |
 C/\  | | | |-TIMESTEP_TRACER      :: Step tracer field forward in time
-C/\  | | | |
-C/\  | | | |-CALC_GTR1            :: Calculate other tracer(s) tendency terms
-C/\  | | | | |
-C/\  | | | | |-GAD_CALC_RHS       :: Generalised advection package 
-C/\  | | | | |                    :: ( see pkg/gad )
-C/\  | | | | |
-C/\  | | | | |-EXTERNAL_FORCING_TR:: Problem specific forcing for tracer.
-C/\  | | | | |-ADAMS_BASHFORTH2   :: Extrapolate tendencies forward in time.
-C/\  | | | | |-FREESURF_RESCALE_G :: Re-scale Gs for free-surface height.
 C/\  | | | |
 C/\  | | | |-TIMESTEP_TRACER      :: Step tracer field forward in time
 C/\  | | | |

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.71 2004/09/15 21:23:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.72 2004/09/17 22:57:12 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -129,7 +129,6 @@ Cml      sBeta               = 7.4D-4
       saltStepping        = .TRUE.
       saltAdvection       = .TRUE.
       saltForcing         = .TRUE.
-      tr1Stepping         = .FALSE.
       metricTerms         = .TRUE.
       useNHMTerms         = .FALSE.
       implicitDiffusion   = .FALSE.
