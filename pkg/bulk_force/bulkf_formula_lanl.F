@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_formula_lanl.F,v 1.4 2003/11/23 01:36:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_formula_lanl.F,v 1.5 2004/04/07 23:42:48 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
       subroutine bulkf_formula_lanl(
      I                           uw, vw, us, Ta, Qa, nc, tsf_in,
      O                           flwupa, flha, fsha, df0dT,
-     O                           ust, vst, evp, ssq, 
+     O                           ust, vst, evp, ssq, dEvdT, 
      I                           iceornot, windread )
 
 c swd -- bulkf formula used in bulkf and ice pkgs
@@ -39,8 +39,9 @@ c output
       _RL df0dT              ! derivative of heat flux with respect to Tsf
       _RL ust                ! zonal wind stress (at grid center)
       _RL vst                ! meridional wind stress (at grid center)
-      _RL evp                ! evaporation rate (over open water)
+      _RL evp                ! evaporation rate (over open water) [kg/m2/s]
       _RL ssq                ! surface specific humidity (kg/kg)
+      _RL dEvdT              ! derivative of evap. with respect to Tsf [kg/m2/s/K]
 
 #ifdef ALLOW_BULK_FORCE
 
@@ -86,6 +87,7 @@ c local variables
       _RL csha
       _RL clha
       _RL zice
+      _RL ssq0, ssq1, ssq2   ! constant used in surface specific humidity
       integer niter_bulk, iter
 
 c --- external functions ---
@@ -95,6 +97,9 @@ c     _RL       exf_BulkqSat
 c     external  exf_BulkqSat
 c     _RL       exf_BulkRhn
 c     external  exf_BulkRhn
+
+      DATA   ssq0,           ssq1,           ssq2 
+     &     / 3.797915 _d 0 , 7.93252 _d -6 , 2.166847 _d -3 /
 
 cQQQQQQQQQQQQQQQQQQQQq
 c -- compute turbulent surface fluxes
@@ -124,9 +129,10 @@ c
               t0     = Ta*(1. _d 0 + humid_fac*Qa)
 cQQ           ssq    = 0.622*6.11*exp(22.47*(1.d0-Tf0kel/tsf))/p0
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-              ssq = 3.797915 _d 0*exp(
-     &                lath*(7.93252 _d -6 - 2.166847 _d -3/Tsf)
-     &                               )/p0
+c             ssq = 3.797915 _d 0*exp(
+c    &                lath*(7.93252 _d -6 - 2.166847 _d -3/Tsf)
+c    &                               )/p0
+              ssq = ssq0*exp( lath*(ssq1-ssq2/Tsf) ) / p0
 cBB debugging
 cBB             print*,'ice, ssq',  ssq
 c
@@ -175,7 +181,7 @@ c
 c
                 fsha  = csha*deltap
                 flha  = clha*delq
-                evp   = -flha/lath/rhofw
+                evp   = -flha/lath
 c
 c up long wave radiation
 cQQ           mixratio=Qa/(1-Qa)
@@ -197,7 +203,9 @@ cQQ  &                  *(1-0.6*nc**2)
               endif
 cQQ           dflhdT = -clha*Tf0kel*ssq*22.47/(tsf**2)
 c             dflhdT = -clha*Lath*ssq/(Rvap*tsf**2)
-              dflhdT = -clha*ssq*Lath*2.166847 _d -3/(Tsf**2)
+c             dflhdT = -clha*ssq*Lath*2.166847 _d -3/(Tsf**2)
+              dEvdT  =  clha*ssq*ssq2/(Tsf*Tsf)
+              dflhdT = -lath*dEvdT
               dfshdT = -csha
 cQQ           dflwupdT= 4.*0.985*stefan*tsf**3
 cQQ  &                  *(0.39-0.05*sqrt(ea))

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_forcing.F,v 1.5 2003/11/23 01:36:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_forcing.F,v 1.6 2004/04/07 23:42:48 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -47,7 +47,7 @@ c     == global variables ==
 #include "BULKF_INT.h"
 #include "BULKF_DIAG.h"
 #ifdef ALLOW_THSICE
-#include "THSICE.h"
+#include "THSICE_VARS.h"
 #endif
 c     == routine arguments ==
 
@@ -60,7 +60,7 @@ C     == Local variables ==
       integer bi,bj
       integer i,j,k
 
-      _RL     df0dT,hfl
+      _RL     df0dT,hfl, evp, dEvdT
 
 c variables to include seaice effect
       _RL     tmp
@@ -94,28 +94,32 @@ c     determine forcing field records
                iceornot=0
 #endif
 
-               call BULKF_FORMULA_LANL(
+               CALL BULKF_FORMULA_LANL(
      &            uwind(i,j,bi,bj), vwind(i,j,bi,bj),
      &            wspeed(i,j,bi,bj), Tair(i,j,bi,bj), Qair(i,j,bi,bj),
      &            cloud(i,j,bi,bj), tmp,
      &            flwup(i,j,bi,bj), flh(i,j,bi,bj), 
      &            fsh(i,j,bi,bj), df0dT,
      &            ustress(i,j,bi,bj), vstress(i,j,bi,bj),
-     &            evap(i,j,bi,bj), savssq(i,j,bi,bj),
+     &            evp, savssq(i,j,bi,bj), dEvdT,
      &            iceornot, readwindstress)
 
 C               Note that the LANL flux conventions are opposite
 C               of what they are in the model.
+
+C-             Convert from kg/m2/s to m/s
+               evap(i,j,bi,bj) = evp/rhofw
 
 cQQ use down long wave data
                flwupnet(i,j,bi,bj)=flwup(i,j,bi,bj)-flw(i,j,bi,bj)
 cQQ using down solar, need to have water albedo -- .1
 #ifdef ALLOW_THSICE
                if (ICEMASK(i,j,bi,bj).gt.0. _d 0) then
-                  call sfc_albedo(ICEHEIGHT(i,j,bi,bj),
-     &                               SNOWHEIGHT(i,j,bi,bj),
-     &                               Tsrf(i,j,bi,bj),
-     &                               sage(i,j,bi,bj), albedo)
+                  CALL THSICE_ALBEDO(
+     I                     ICEHEIGHT(i,j,bi,bj), SNOWHEIGHT(i,j,bi,bj),
+     I                     Tsrf(i,j,bi,bj), snowAge(i,j,bi,bj),
+     O                     albedo, 
+     I                     myThid )
                else
                   albedo= 0.1 _d 0
                endif

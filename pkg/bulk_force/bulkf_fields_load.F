@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.7 2003/11/23 01:36:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.8 2004/04/07 23:42:48 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
+#undef ALLOW_THSICE
  
 C     !ROUTINE: BULKF_FIELDS_LOAD
 C     !INTERFACE:
@@ -40,7 +41,7 @@ c #include "GRID.h"
 c #include "DYNVARS.h"
 #include "BULKF.h"
 #ifdef ALLOW_THSICE
-#include "THSICE.h"
+#include "THSICE_VARS.h"
 #endif
       LOGICAL DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
