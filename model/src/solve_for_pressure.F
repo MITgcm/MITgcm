@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.43 2004/12/14 16:54:08 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.44 2005/01/13 00:46:33 ce107 Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -62,6 +62,14 @@ C     == Local variables ==
       INTEGER numIters
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
+
+#ifdef TIME_PER_TIMESTEP
+CCE107 common block for per timestep timing
+C     !TIMING VARIABLES
+C     == Timing variables ==
+      REAL*8 utnew, utold, stnew, stold, wtnew, wtold
+      COMMON /timevars/ utnew, utold, stnew, stold, wtnew, wtold
+#endif
 
 C--   Save previous solution & Initialise Vector solution and source term :
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -375,5 +383,33 @@ C Western boundary
       ENDIF
 #endif
 
+#ifdef TIME_PER_TIMESTEP
+CCE107 Time per timestep information
+      _BEGIN_MASTER( myThid )
+      CALL TIMER_GET_TIME( utnew, stnew, wtnew )
+C Only output timing information after the 1st timestep
+      IF ( wtold .NE. 0.0D0 ) THEN
+        WRITE(msgBuf,'(A34,3F10.6)')
+     $        'User, system and wallclock time:', utnew - utold,
+     $        stnew - stold, wtnew - wtold
+         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      ENDIF
+      utold = utnew
+      stold = stnew
+      wtold = wtnew
+      _END_MASTER( myThid )
+#endif
+
       RETURN
       END
+
+#ifdef TIME_PER_TIMESTEP
+CCE107 Initialization of common block for per timestep timing
+      BLOCK DATA settimers
+C     !TIMING VARIABLES
+C     == Timing variables ==
+      REAL*8 utnew, utold, stnew, stold, wtnew, wtold
+      COMMON /timevars/ utnew, utold, stnew, stold, wtnew, wtold
+      DATA utnew, utold, stnew, stold, wtnew, wtold /6*0.0D0/
+      END
+#endif
