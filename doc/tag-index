@@ -1,7 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2 1998/05/30 02:19:49 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.3 1998/06/08 19:25:25 cnh Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint5
+ Created by AJA
+ contains updates to GM Redi
+ and reordered timestepping loop
+ for Implicit Diffusion.
 
 checkpoint4
  Created by cnh
