@@ -20,8 +20,8 @@ c     ==================================================================
 #ifdef ALLOW_COST_STATE_FINAL
       common /g_cost_state_final_r/
      &                g_objf_state_final
-      _RL  g_objf_state_final (snx,sny,nsx,nsy)
-cph      _RL  g_objf_state_final (snx,sny,nr,nsx,nsy,2)
+cph      _RL  g_objf_state_final (snx,sny,nsx,nsy)
+      _RL  g_objf_state_final (snx,sny,nsx,nsy,2)
 #endif
 
 #ifdef ALLOW_COST_VECTOR

@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.14 2004/03/23 19:42:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.15 2004/10/26 20:10:25 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -155,7 +155,7 @@ cph   assuming all xx_ fields are initialised to zero.
       ierr_grdchk = 0
 cphadmtlm(
       fcref = fc
-cphadmtlm      fcref = objf_state_final(45,4,1,1)
+cphadmtlm      fcref = objf_state_final(45,4,1,1,1)
 cphadmtlm)
 
       print *, 'ph-check fcref = ', fcref
@@ -255,14 +255,15 @@ cphadmtlm(
             g_fc = 0.
 cphadmtlm            do j=1,sny
 cphadmtlm               do i=1,snx
-cphadmtlm                  g_objf_state_final(i,j,1,1) = 0.
+cphadmtlm                  g_objf_state_final(i,j,1,1,1) = 0.
+cphadmtlm                  g_objf_state_final(i,j,1,1,2) = 0.
 cphadmtlm               enddo
 cphadmtlm            enddo
 cphadmtlm)
             call g_the_main_loop( mytime, myiter, mythid )
 cphadmtlm(
             ftlxxmemo = g_fc
-cphadmtlm            ftlxxmemo = g_objf_state_final(45,4,1,1)
+cphadmtlm            ftlxxmemo = g_objf_state_final(45,4,1,1,1)
 cphadmtlm)
             _BARRIER
 c--
@@ -303,7 +304,7 @@ c--   forward run with perturbed control vector
             call the_main_loop( mytime, myiter, mythid )
 cphadmtlm(
             fcpertplus = fc
-cphadmtlm            fcpertplus = objf_state_final(45,4,1,1)
+cphadmtlm            fcpertplus = objf_state_final(45,4,1,1,1)
 cphadmtlm)
             print *, 'ph-check fcpertplus = ', fcpertplus
             _BARRIER

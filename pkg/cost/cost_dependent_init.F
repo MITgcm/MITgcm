@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.5 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.6 2004/10/26 20:10:25 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -63,15 +63,14 @@ c     == end of interface ==
         end do
 #endif
 #ifdef ALLOW_COST_STATE_FINAL
-c        do k=1,nr
          do j=1,sNy
           do i=1,sNx
-           objf_state_final(i,j,bi,bj) = 0. _d 0
+           objf_state_final(i,j,bi,bj,1) = 0. _d 0
+           objf_state_final(i,j,bi,bj,2) = 0. _d 0
 cph No init. of cost_state_final here,
 cph because we need it in ADM*TLM
           end do
          end do
-c        end do
 #endif
         enddo
       enddo

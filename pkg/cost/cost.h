@@ -58,8 +58,8 @@ c                  function contributions.
 #ifdef ALLOW_COST_STATE_FINAL
       common /cost_state_final_r/
      &                objf_state_final
-      _RL  objf_state_final (snx,sny,nsx,nsy)
-cph      _RL  objf_state_final (snx,sny,nr,nsx,nsy,2)
+cph      _RL  objf_state_final (snx,sny,nsx,nsy)
+      _RL  objf_state_final (snx,sny,nsx,nsy,2)
 #endif
 
 #ifdef ALLOW_COST_VECTOR
