@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.6 2004/06/14 17:48:17 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.7 2004/07/20 17:46:38 adcroft Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "MOM_VECINV_OPTIONS.h"
 
       SUBROUTINE MOM_VI_V_CORIOLIS( 
      I        bi,bj,k,

@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_grad_ke.F,v 1.2 2001/05/29 14:01:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_grad_ke.F,v 1.3 2004/07/20 17:46:38 adcroft Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "MOM_VECINV_OPTIONS.h"
 
       SUBROUTINE MOM_VI_U_GRAD_KE( 
      I        bi,bj,K,

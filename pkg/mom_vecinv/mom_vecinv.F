@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.20 2004/06/02 13:23:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.21 2004/07/20 17:46:38 adcroft Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "MOM_VECINV_OPTIONS.h"
 
       SUBROUTINE MOM_VECINV( 
      I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,

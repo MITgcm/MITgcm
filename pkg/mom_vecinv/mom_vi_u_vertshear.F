@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_vertshear.F,v 1.4 2001/09/10 14:14:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_u_vertshear.F,v 1.5 2004/07/20 17:46:38 adcroft Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "MOM_VECINV_OPTIONS.h"
 
       SUBROUTINE MOM_VI_U_VERTSHEAR(
      I        bi,bj,K,
