@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.406 2004/12/09 09:03:32 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.407 2004/12/09 15:37:25 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -17,6 +17,8 @@ o add call monitor to TAF set of required calls (flow directives)
   and include in natl_box_adjoint
 o untangle a few ifdefs related to cost, ctrl, autodiff
   untangel a few ALLOW_ECCO_OPTIMIZATION
+o Apply Cooper & Haines representative estimates also at sub-surface (k=Nr)
+  (theta2, salt2 in ecco_cost_weights)
 
 checkpoint56c_post
 o OBCS as control variables
