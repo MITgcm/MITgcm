@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.12 2004/03/24 15:29:33 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.13 2004/07/27 03:19:56 edhill Exp $
 #
 #  A Makefile for MNC templates and testing
 #
@@ -55,6 +55,12 @@ TEMPLATE_FILES = \
   MNC_CW_READWRITE_I.F
 TEMPLATE_OBJECTS = $(TEMPLATE_FILES:.F=.o)
 
+mnc_netcdf_stubs.c: mnc_netcdf_stubs.h
+	-./build_netcdf_stubs > tmp
+	-cpp -P < tmp > mnc_netcdf_stubs.c
+
+mnc_netcdf_stubs.o: mnc_netcdf_stubs.c
+	-gcc -c mnc_netcdf_stubs.c
 
 templates: $(TEMPLATE_FILES) mnc_id_header.h
 
@@ -83,9 +89,12 @@ mnc_test_002: $(ALL_TEST) $(FILES) $(OBJECTS) mnc_test_002.o
 
 CLEAN:
 	@make clean
+	-rm -f mnc_netcdf_stubs.c
 Clean:
 	@make clean
 clean:
 	-rm -f *.o $(TEST_LINKS) $(TEST_HEADERS) $(TEST_FILES) $(TEST_OBJECTS)
 	-rm -f mnc_test_???.F mnc_test_??? test_???.nc t_out_???
 	-rm -f $(TEMPLATE_FILES) mnc_id_header.h
+	-rm -f mnc_netcdf_stubs.o
+

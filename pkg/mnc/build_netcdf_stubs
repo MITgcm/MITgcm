@@ -1,0 +1,33 @@
+#! /usr/bin/env bash
+#
+# $Header: /u/gcmpack/MITgcm/pkg/mnc/build_netcdf_stubs,v 1.1 2004/07/27 03:19:56 edhill Exp $
+# $Name:  $
+#
+
+cat mnc_netcdf_stubs.h
+
+FCTS="DOUBLE-double REAL-float INT-int"
+
+PREF_SUFF=`cat mnc_netcdf_stubs.h | grep '^#define' | grep 'SUFF )' | sed -e 's|(| |g' | awk '{print $2}'`
+
+for mac in $PREF_SUFF ; do
+    for ip in " " "_" "__" ; do
+	for is in " " "_" "__" ; do
+	    echo $mac" ( "$ip", "$is" )"
+	done
+    done
+done
+
+PREF_SUFF_FC=`cat mnc_netcdf_stubs.h | grep '^#define' | grep 'CTYPE )' | sed -e 's|(| |g' | awk '{print $2}'`
+
+for mac in $PREF_SUFF_FC ; do
+    for t in $FCTS ; do
+	ft=`echo $t | sed -e 's|-| |g' | sed -e 's|(| |g' | awk '{print $1}'`
+	ct=`echo $t | sed -e 's|-| |g' | sed -e 's|(| |g' | awk '{print $2}'`
+	for ip in " " "_" "__" ; do
+	    for is in " " "_" "__" ; do
+		echo $mac" ( "$ip", "$is", "$ft", "$ct" )"
+	    done
+	done
+    done
+done
