@@ -43,7 +43,6 @@
  mult_temp   = 1.,
  mult_salt   = 1.,
  mult_sst    = 1.,
- mult_atl    = 1.,
  mult_ctdt   = 1.,
  mult_ctds   = 1.,
 #

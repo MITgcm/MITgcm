@@ -62,7 +62,6 @@
  mult_salt0  = 1.,
  mult_sst    = 1.,
  mult_sss    = 1.,
- mult_atl    = 1.,
  mult_ctdt   = 1.,
  mult_ctds   = 1.,
  mult_xbt    = 1.,
