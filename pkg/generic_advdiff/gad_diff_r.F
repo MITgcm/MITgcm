@@ -1,32 +1,51 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_r.F,v 1.1 2001/05/30 19:34:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_r.F,v 1.2 2001/09/20 20:07:06 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GAD_DIFF_R
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DIFF_R( 
      I           bi,bj,k,
      I           KappaR,
      I           tracer,
      O           dfr,
      I           myThid )
-      IMPLICIT NONE
 
-C     == GLobal variables ==
+C !DESCRIPTION:
+C Calculates the vertical flux due to down-gradient diffusion of a tracer:
+C \begin{equation*}
+C F^r_{diff} = - \kappa_r \partial_r \theta
+C \end{equation*}
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  KappaR               :: vertical diffusivity
+C  tracer               :: tracer field
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL KappaR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL dfr   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  dfr                  :: vertical diffusive flux
+      _RL dfr   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+C  km1                  :: =k+1 for k<Nr, =Nr for k>-Nr
       INTEGER i,j,km1
-      LOGICAL TOP_LAYER
 
       km1=max(1,k-1)
 

@@ -1,29 +1,45 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_x.F,v 1.1 2001/05/30 19:34:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_x.F,v 1.2 2001/09/20 20:07:06 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GAD_GRAD_X
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GAD_GRAD_X( 
      I           bi,bj,k,
      I           xA,
      I           tracer,
      O           dTdx,
      I           myThid )
-      IMPLICIT NONE
 
-C     == GLobal variables ==
+C !DESCRIPTION:
+C Calculates the zonal gradient of a tracer: $\partial_x \theta$
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  tracer               :: tracer field
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dTdx  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  dTdx                 :: zonal gradient
+      _RL dTdx  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
       INTEGER i,j
+CEOP
 
 C     o Zonal tracer gradient
       DO j=1-Oly,sNy+Oly

@@ -1,30 +1,51 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_y.F,v 1.1 2001/05/30 19:34:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_diff_y.F,v 1.2 2001/09/20 20:07:06 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GAD_DIFF_Y
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GAD_DIFF_Y( 
      I           bi,bj,k,
      I           yA, diffKh,
      I           tracer,
      O           dfy,
      I           myThid )
-      IMPLICIT NONE
 
-C     == GLobal variables ==
+C !DESCRIPTION:
+C Calculates the meridional flux due to down-gradient diffusion of a tracer:
+C \begin{equation*}
+C F^y_{diff} = - \kappa_h \partial_y \theta
+C \end{equation*}
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
 
-C     == Routine arguments ==
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  yA                   :: area of face at V points
+C  diffKh               :: horizontal diffusivity
+C  tracer               :: tracer field
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL diffKh
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL dfy   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  dfx                  :: meridional diffusive flux
+      _RL dfy   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
       INTEGER i,j
+CEOP
 
       DO i=1-Olx,sNx+Olx
        dfy(i,1-Oly)=0.
