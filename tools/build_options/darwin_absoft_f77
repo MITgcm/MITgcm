@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_absoft_f77,v 1.1 2003/09/24 12:03:36 edhill Exp $
+#
+# tested on G4-PowerBook, 1GHz
+# uname -mrsvp: 
+# Darwin 6.6 Darwin Kernel Version 6.6: Thu May  1 21:48:54 PDT 2003;
+# root:xnu/xnu-344.34.obj~1/RELEASE_PPC  Power Macintosh powerpc
+# cc-compiler is available only with the Apple Developer Tools, 
+# so make sure that those are installed 
+#
+
+LN='/bin/ln -s'
+CPP='/usr/bin/cpp -traditional -P'
+FC='/Applications/Absoft/bin/f77'
+LINK='/Applications/Absoft/bin/f77'
+# -w: allow long source lines (up to 132 columns)
+# -W: suppress all warning messages
+# -N113: promotes real to 64bit, and complex to 128bit 
+# -N109: folds everything into UPPER case
+# -f: folds everything into lower case
+# -N3: inlcude record length information for squential unformatted files
+# -N15: append trailing underscores to procedure names
+# -q: quiet mode
+# -O: standard set of optimizations
+# -U: standard level of loop-unrolling (slows down compilation considerably)
+FFLAGS='-w -W -f -N15 -N113 -q'
+FOPTIM='-O -U'
+NOOPTFLAGS=
+LIBS='-L/Applications/Absoft/lib -lU77'
+
+S64='$(TOOLSDIR)/set64bitConst.sh'
+#MAKEDEPEND='${TOOLSDIR}/xmakedepend'
+MAKEDEPEND='makedepend'
+DEFINES='-DWORDLENGTH=4'
