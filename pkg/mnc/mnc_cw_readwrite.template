@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.23 2004/10/21 13:38:45 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.24 2004/10/22 21:30:31 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -93,6 +93,7 @@ C     !USES:
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "SIZE.h"
+#include "MNC_SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "MNC_PARAMS.h"
@@ -116,9 +117,9 @@ C     !LOCAL VARIABLES:
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) fname
       character*(MNC_MAX_CHAR) path_fname
-      REAL*8  resh_d( sNx + 2*OLx + sNy + 2*OLy )
-      REAL*4  resh_r( sNx + 2*OLx + sNy + 2*OLy )
-      INTEGER resh_i( sNx + 2*OLx + sNy + 2*OLy )
+      REAL*8  resh_d( MNC_MAX_BUFF )
+      REAL*4  resh_r( MNC_MAX_BUFF )
+      INTEGER resh_i( MNC_MAX_BUFF )
 #ifdef HAVE_STAT
       integer ntotenc, ncenc, nbytes, fs_isdone
       character*(200) cenc
@@ -427,6 +428,14 @@ C         Write the variable one vector at a time
       vstart(1) = udo(1) + 1
       vcount(1) = e(1) - s(1) + 1
 
+      IF (vcount(1) .GT. MNC_MAX_BUFF) THEN
+        write(msgbuf,'(2a,I7,a)') 'MNC_MAX_BUFF is too small',
+     &       '--please increase to at least ',
+     &       vcount(1), ' in ''MNC_SIZE.h'''
+        CALL PRINT_ERROR(msgBuf , 1)
+        STOP 'ABNORMAL END: S/R MNC_CW_RX_W_OFFSET'
+      ENDIF
+
       IF (stype(1:1) .EQ. 'D') THEN
         DO j1 = s(1),e(1)
           k1 = k2 + j1
@@ -530,6 +539,7 @@ C     !USES:
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "SIZE.h"
+#include "MNC_SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "MNC_PARAMS.h"
@@ -552,9 +562,9 @@ C     !LOCAL VARIABLES:
       character*(MNC_MAX_CHAR) fname
       character*(MNC_MAX_CHAR) path_fname
       integer indfg, fg1,fg2
-      REAL*8  resh_d( sNx + 2*OLx + sNy + 2*OLy )
-      REAL*4  resh_r( sNx + 2*OLx + sNy + 2*OLy )
-      INTEGER resh_i( sNx + 2*OLx + sNy + 2*OLy )
+      REAL*8  resh_d( MNC_MAX_BUFF )
+      REAL*4  resh_r( MNC_MAX_BUFF )
+      INTEGER resh_i( MNC_MAX_BUFF )
 
 C     Functions
       integer IFNBLNK, ILNBLNK
@@ -788,7 +798,15 @@ C         Read the variable one vector at a time
       kr = 0
       vstart(1) = udo(1) + 1
       vcount(1) = e(1) - s(1) + 1
-      
+
+      IF (vcount(1) .GT. MNC_MAX_BUFF) THEN
+        write(msgbuf,'(2a,I7,a)') 'MNC_MAX_BUFF is too small',
+     &       '--please increase to at least ',
+     &       vcount(1), ' in ''MNC_SIZE.h'''
+        CALL PRINT_ERROR(msgBuf , 1)
+        STOP 'ABNORMAL END: S/R MNC_CW_RX_R_OFFSET'
+      ENDIF
+
       IF (stype(1:1) .EQ. 'D') THEN
         err = NF_GET_VARA_DOUBLE(fid, idv, vstart, vcount, resh_d)
         CALL MNC_HANDLE_ERR(err, msgbuf, myThid)
