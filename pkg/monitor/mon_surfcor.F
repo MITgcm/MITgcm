@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.1 2002/11/22 02:33:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.2 2003/01/26 21:20:57 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,10 +7,13 @@ C $Name:  $
      I                       myThid )
 C     |==========================================================
 C     | SUBROUTINE MON_SURFCOR                                   
-C     | o Compute and write area-mean surface correction term    
+C     | o Compute and write area-mean surface expansion term    
+C     |   (also called "surface correction" with Linear FS)
 C     |==========================================================
-C     | Diagnose mean surface correction term  = w_surf * Tracer
+C     | Diagnose mean surface expansion term
+C     |             with r coordinate  = w_surf * Tracer
 C     |                 units = W_units * Tracer units ; + = out 
+C     |             with r* coord.:  = d.eta/dt * dz/H * Tracer
 C     | Atmosphere :                                               
 C     |   convert surf.cor(Theta) to surface heating, 
 C     |                 units= W/m2, + = out
@@ -33,18 +36,22 @@ C     === Routine arguments ===
 
 C     === Local variables ====
       INTEGER i,j,k,ks,bi,bj 
-      _RL theArea, wT_Mean, wS_Mean, tmp_wS_M
-      _RL tmpVal, ddPI, wT_Heat, theta2PE
+      _RL theArea, wT_Mean, wS_Mean, tmp_wS_M, wT_Heat
+      _RL theVol, vT_Mean, vS_Mean, vT_Heat, theta2PE
+      _RL tmpVol, tmpVal, conv_th2Heat, ddPI
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-c-- Compute surface correction term & do the integral
        theArea = 0.
+       theta2PE = 0.
        wT_Mean = 0.
        wS_Mean = 0.
        wT_Heat = 0.
-       theta2PE = 0.
+       vT_Mean = 0.
+       vS_Mean = 0.
+       vT_Heat = 0.
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid) 
+C-- Compute surface "expansion" term & do the integral
           tmp_wS_M = wS_Mean
           DO j=1,sNy
            DO i=1,sNx
@@ -56,7 +63,7 @@ c-- Compute surface correction term & do the integral
              wT_Mean = wT_Mean + tmpVal
              wS_Mean = wS_Mean
      &        + rA(i,j,bi,bj)*wVel(i,j,ks,bi,bj)* salt(i,j,ks,bi,bj)
-C-- Atmos in Pot.Temp => convert Omega*Theta to heat flux :
+C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
              IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
                wT_Heat = wT_Heat 
      &                 + tmpVal*atm_cp*((rC(ks)/atm_po)**atm_kappa) 
@@ -64,22 +71,6 @@ C-- Atmos in Pot.Temp => convert Omega*Theta to heat flux :
             ENDIF
            ENDDO
           ENDDO
-C-- Atmos in Pot.Temp => conmpute energy conversion Temp -> PE 
-C    = Omega*Theta*DeltaPI
-          IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
-           DO k=2,Nr
-            ddPI=atm_cp*( (rC(K-1)/atm_po)**atm_kappa
-     &                   -(rC( K )/atm_po)**atm_kappa )
-            DO j=1,sNy
-             DO i=1,sNx
-              theta2PE = theta2PE
-     &         - ddPI*rA(i,j,bi,bj)*wVel(i,j,k,bi,bj)
-     &           *(theta(i,j,k,bi,bj)+theta(i,j,k-1,bi,bj))*0.5 _d 0
-     &           *maskC(i,j,k-1,bi,bj)*maskC(i,j,k,bi,bj)
-             ENDDO
-            ENDDO
-           ENDDO
-          ENDIF
 #ifdef ALLOW_AIM
           IF ( useAIM ) THEN
            DO j=1,sNy
@@ -97,6 +88,57 @@ C    = Omega*Theta*DeltaPI
            wS_Mean = tmp_wS_M
           ENDIF
 #endif /* ALLOW_AIM */
+
+
+C-- Atmos in Pot.Temp => conmpute energy conversion Temp -> PE 
+C    = Omega*Theta*DeltaPI
+          IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
+           DO k=2,Nr
+            ddPI=atm_cp*( (rC(K-1)/atm_po)**atm_kappa
+     &                   -(rC( K )/atm_po)**atm_kappa )
+            DO j=1,sNy
+             DO i=1,sNx
+              theta2PE = theta2PE
+     &         - ddPI*rA(i,j,bi,bj)*wVel(i,j,k,bi,bj)
+     &           *(theta(i,j,k,bi,bj)+theta(i,j,k-1,bi,bj))*0.5 _d 0
+     &           *maskC(i,j,k-1,bi,bj)*maskC(i,j,k,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDIF
+
+#ifdef NONLIN_FRSURF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+        IF (select_rStar.NE.0) THEN 
+C-- Compute Volume expansion term & do the integral
+          vT_Mean = 0.
+          vS_Mean = 0.
+          vT_Heat = 0.
+          DO k=1,Nr
+           conv_th2Heat = atm_cp*((rC(k)/atm_po)**atm_kappa)
+           DO j=1,sNy
+            DO i=1,sNx
+              tmpVol  = rA(i,j,bi,bj)*h0FacC(i,j,k,bi,bj)*drF(k)
+              theVol  = theVol + tmpVol
+              tmpVal  = rStarDhCDt(i,j,bi,bj)*theta(i,j,k,bi,bj)
+              vT_Mean = vT_Mean + tmpVol*tmpVal
+              vS_Mean = vS_Mean
+     &          +tmpVol*rStarDhCDt(i,j,bi,bj)*salt(i,j,k,bi,bj)
+C-  Atmos in Pot.Temp => convert Omega*Theta to heat flux :
+              IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
+               vT_Heat = vT_Heat + tmpVol*tmpVal*conv_th2Heat
+              ENDIF
+            ENDDO
+           ENDDO
+          ENDDO             
+          wT_Mean = wT_Mean + vT_Mean
+          wS_Mean = wS_Mean + vS_Mean
+          wT_Heat = wT_Heat + vT_Heat
+        ENDIF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* NONLIN_FRSURF */
+
+C--    end bi,bj loop 
         ENDDO
        ENDDO
 
@@ -116,10 +158,9 @@ C    = Omega*Theta*DeltaPI
          theta2PE = theta2PE * rhoConst*recip_horiVertRatio
        ENDIF
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C     Print the Average value (monitor type output)
+C-    Print the Average value (monitor type output)
 
-       CALL MON_SET_PREF('surf_Corr',myThid)
+       CALL MON_SET_PREF('surfExpan',myThid)
        CALL MON_OUT_RL( '_theta', wT_Mean, mon_foot_mean ,myThid)
        CALL MON_OUT_RL( '_salt' , wS_Mean, mon_foot_mean ,myThid)
       IF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
