@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.292 2004/05/13 21:44:59 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.293 2004/05/14 16:31:58 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/land: only liquid water can diffuse or run-off
+o AIM using land: soil wetness availability account for snow
 o added printMapIncludesZeros to EEPARMS namelist
 
 checkpoint53a_post
