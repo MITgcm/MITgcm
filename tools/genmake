@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.80 2003/05/20 12:59:42 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.81 2003/06/25 21:56:49 heimbach Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -9,7 +9,7 @@
 #   modified by aja 01/00
 
 # Default lists
-if (! $?DISABLE) set DISABLE = ( aim autodiff cal cost ctrl ecco exf grdchk flt ptracers seaice therm_seaice bulk_force)
+if (! $?DISABLE) set DISABLE = ( aim autodiff cal cost ctrl ecco exf grdchk flt ptracers seaice therm_seaice bulk_force dic gchem )
 if (! $?ENABLE) set ENABLE  = ( )
 if (! $?DEFINES) set DEFINES = ( )
 if (! $?MODS) set MODS  = ( )
