@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.26 2002/02/07 20:00:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.27 2002/05/30 02:29:19 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -80,6 +80,7 @@ c--   Initialize storage for the cost function evaluation.
 CADJ  INIT dummytape = common, 1
 c--   Initialize storage for the outermost loop.
 CADJ  INIT tapelev3 = USER
+CADJ  INIT tapelev_ini_bibj_k   = USER
 #ifdef ALLOW_TAMC_CHECKPOINTING
        nIter0 = INT( startTime/deltaTClock )
        ikey_dynamics = 1
