@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.20 2004/07/01 21:45:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.21 2004/09/02 09:13:49 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -99,6 +99,14 @@ CEOP
 
 #ifdef ALLOW_KPP
       IF (useKPP) CALL KPP_CALC_DIFF(
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,K,
+     I        maskUp,
+     O        KappaRT,KappaRS,
+     I        myThid)
+#endif
+
+#ifdef ALLOW_PP81
+      IF (usePP81) CALL PP81_CALC_DIFF(
      I        bi,bj,iMin+1,iMax,jMin+1,jMax,K,
      I        maskUp,
      O        KappaRT,KappaRS,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.32 2004/09/01 16:25:06 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.33 2004/09/02 09:13:49 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -31,6 +31,10 @@ C       |
 C       |-- GMREDI_READPARMS
 C       |
 C       |-- KPP_READPARMS
+C       |
+C       |-- PP81_READPARMS
+C       |
+C       |-- MY82_READPARMS
 C       |
 C       |-- SBO_READPARMS
 C       |
@@ -76,6 +80,16 @@ C--   Initialize GM/Redi parameters
 #ifdef ALLOW_KPP
 C--   Initialize KPP parameters
       IF (useKPP) CALL KPP_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_PP81
+C--   Initialize PP81 parameters
+      IF (usePP81) CALL PP81_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_MY82
+C--   Initialize MY82 parameters
+      IF (useMY82) CALL MY82_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_SBO

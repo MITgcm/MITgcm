@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.41 2004/03/11 14:49:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.42 2004/09/02 09:13:49 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -117,6 +117,18 @@ C--   Do KPP diagnostics.
 C--   Do KPP diagnostics.
       IF (useKPP .AND. myIter.NE.nIter0 )
      & CALL KPP_DO_DIAGS( myTime, myIter, myThid )
+#endif
+
+#ifdef ALLOW_PP81
+C--   Do PP81 diagnostics.
+      IF (usePP81 .AND. myIter.NE.nIter0 )
+     & CALL PP81_DO_DIAGS( myTime, myIter, myThid )
+#endif
+
+#ifdef ALLOW_MY82
+C--   Do MY82 diagnostics.
+      IF (useMY82 .AND. myIter.NE.nIter0 )
+     & CALL MY82_DO_DIAGS( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_SBO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.34 2004/05/21 21:45:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.35 2004/09/02 09:13:49 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -26,6 +26,10 @@ C       |-- GMREDI_INIT
 C       |
 C       |-- KPP_INIT
 C       |-- KPP_OPEN_DIAGS
+C       |
+C       |-- PP81_INIT
+C       |
+C       |-- MY82_INIT
 C       |
 C       |-- SEAICE_INIT
 C       | 
@@ -86,6 +90,20 @@ C--   Initialize KPP vertical mixing scheme.
       IF (useKPP) THEN
        CALL KPP_INIT( myThid )
        CALL KPP_OPEN_DIAGS( myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_PP81
+C--   Initialize PP81 vertical mixing scheme.
+      IF (usePP81) THEN
+       CALL PP81_INIT( myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_MY82
+C--   Initialize KMY82 vertical mixing scheme.
+      IF (useMY82) THEN
+       CALL MY82_INIT( myThid )
       ENDIF
 #endif
 
