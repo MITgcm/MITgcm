@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.31 2002/02/10 00:35:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.32 2002/03/07 14:09:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -50,7 +50,7 @@ C     zcoord ::
       INTEGER                  bi, bj
       _RL                     xcoord(Nx)
       _RL                     ycoord(Ny)
-      _RL                     rcoord(Nr)
+      _RL                     rcoord(Nr+1)
       INTEGER coordLine
       INTEGER tileLine
 CEOP
@@ -298,11 +298,15 @@ CEOP
      &'   /* minus Vertical index orientation  */')
       CALL WRITE_1D_R8( horiVertRatio,1, INDEX_NONE,'horiVertRatio =',
      &'   /* Ratio on units : Horiz - Vertical */')
-      CALL WRITE_1D_R8( delZ,Nr, INDEX_K,'delZ = ',
-     &'   /* W spacing ( m ) */')
-      CALL WRITE_1D_R8( delP,Nr, INDEX_K,'delP = ',
-     &'   /* W spacing ( Pa ) */')
-      CALL WRITE_1D_R8( delR,Nr, INDEX_K,'delR = ',
+c     CALL WRITE_1D_R8( delZ,Nr, INDEX_K,'delZ = ',
+c    &'   /* W spacing ( m ) */')
+c     CALL WRITE_1D_R8( delP,Nr, INDEX_K,'delP = ',
+c    &'   /* W spacing ( Pa ) */')
+c     CALL WRITE_1D_R8( delR,Nr, INDEX_K,'delR = ',
+c    &'   /* W spacing ( units of r ) */')
+      CALL WRITE_1D_R8( drC,Nr, INDEX_K,'drC = ',
+     &'   /* C spacing ( units of r ) */')
+      CALL WRITE_1D_R8( drF,Nr, INDEX_K,'drF = ',
      &'   /* W spacing ( units of r ) */')
       CALL WRITE_1D_R8( delX, Nx, INDEX_I,'delX = ',
      &'   /* U spacing ( m - cartesian, degrees - spherical ) */')
@@ -333,6 +337,11 @@ CEOP
       ENDDO
       CALL WRITE_1D_R8( rcoord, Nr, INDEX_K,'rcoord = ',
      &'   /* P-point R coordinate (  units of r ) */')
+      DO K=1,Nr+1
+       rcoord(K) = rF(K)
+      ENDDO
+      CALL WRITE_1D_R8( rcoord, Nr+1, INDEX_K,'rF = ',
+     &'   /* W-Interf. R coordinate (  units of r ) */')
 
 C     Grid along selected grid lines
       coordLine = 1

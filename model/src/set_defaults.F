@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.33 2002/02/10 00:35:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.34 2002/03/07 14:09:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -57,6 +57,9 @@ C     Vertical gridding
       Ro_SeaLevel = 0.
       DO k=1,Nr
        delRdefault(k) = 0.
+      ENDDO
+      DO k=1,Nr+1
+       delRc(k) = UNSET_RL
       ENDDO
 
 C     Horizontal gridding

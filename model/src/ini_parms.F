@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.77 2002/03/04 17:26:41 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.78 2002/03/07 14:09:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -152,7 +152,7 @@ C--   Gridding parameters
      & usingCartesianGrid, dxSpacing, dySpacing, delX, delY, delZ,
      & usingSphericalPolarGrid, phiMin, thetaMin, rSphere,
      & usingCurvilinearGrid,
-     & delP, delR, rkFac, Ro_SeaLevel, groundAtK1,
+     & delP, delR, rkFac, Ro_SeaLevel, groundAtK1, delRc,
      & delXfile, delYfile
 
 C--   Input files
@@ -793,6 +793,12 @@ C--   Make metric term settings consistent with underlying grid.
       IF ( usingCurvilinearGrid ) THEN
        useSphereF    = .TRUE.
       ENDIF
+C--   set cell Center depth and put Interface at the middle between 2 C
+      setCenterDr = .FALSE.
+      IF (delRc(1).NE.UNSET_RL) setCenterDr=.TRUE.
+      DO K=1,Nr+1
+        IF (delRc(K).EQ.UNSET_RL) setCenterDr = .FALSE.
+      ENDDO
 C--   p, z, r coord parameters
       DO K = 1, Nr
        IF ( delZ(K) .NE. UNSET_RL ) zCoordInputData = .TRUE.
@@ -801,9 +807,14 @@ C--   p, z, r coord parameters
        IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delZ(K)
        IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delP(K)
        IF ( delR(K) .EQ. UNSET_RL ) delR(K) = delRDefault(K)
-       IF ( delR(K) .EQ. 0. ) THEN
+       IF (.NOT.setCenterDr .AND. delR(K).EQ.delRDefault(K) ) THEN
          WRITE(msgBuf,'(A,I4)')
      &  'S/R INI_PARMS: No value for delZ/delP/delR at K = ',K
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R INI_PARMS'
+       ELSEIF ( setCenterDr .AND. delR(K).NE.delRDefault(K) ) THEN
+         WRITE(msgBuf,'(2A,I4)') 'S/R INI_PARMS:',
+     &    ' Cannot specify both delRc and delZ/delP/delR at K=', K
          CALL PRINT_ERROR( msgBuf , 1)
          STOP 'ABNORMAL END: S/R INI_PARMS'
        ENDIF

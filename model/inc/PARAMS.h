@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.69 2002/03/04 17:26:40 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.70 2002/03/07 14:05:05 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -199,6 +199,7 @@ C     usingPCoords     :: Set to indicate that we are working in pressure
 C                        coords.
 C     usingZCoords     :: Set to indicate that we are working in height
 C                        coords.
+C     setCenterDr    :: set cell Center depth and put Interface at the middle
 C     nonHydrostatic :: Using non-hydrostatic terms
 C     globalFiles    :: Selects between "global" and "tiled" files
 C     allowFreezing  :: Allows water to freeze and form ice
@@ -219,7 +220,8 @@ C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 
      & useConstantF, useBetaPlaneF, useSphereF,
      & implicitDiffusion, implicitViscosity,
      & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax, 
-     & periodicExternalForcing, usingPCoords, usingZCoords,
+     & periodicExternalForcing, 
+     & usingPCoords, usingZCoords, setCenterDr,
      & nonHydrostatic, globalFiles,
      & allowFreezing, groundAtK1,
      & usePickupBeforeC35, debugMode,
@@ -266,6 +268,7 @@ C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 
       LOGICAL periodicExternalForcing
       LOGICAL usingPCoords
       LOGICAL usingZCoords
+      LOGICAL setCenterDr
       LOGICAL nonHydrostatic
       LOGICAL globalFiles
       LOGICAL allowFreezing
@@ -302,6 +305,7 @@ C           defaults to 0.51 but can be set at runtime.
 C     delP      :: Vertical grid spacing ( Pa ).
 C     delZ      :: Vertical grid spacing ( m  ).
 C     delR      :: Vertical grid spacing ( units of r ).
+C     delRc     :: Vertical grid spacing between cell centers (r unit).
 C     delX      :: Separation between cell faces (m) or (deg), depending
 C     delY        on input flags.
 C     gravity   :: Accel. due to gravity ( m/s^2 )
@@ -418,7 +422,7 @@ C     bottomDragLinear   :: Drag coefficient built in to core dynamics
 C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit, 
      & cg2dpcOffDFac, cg3dTargetResidual,
-     & delP, delZ, delR, delX, delY, 
+     & delP, delZ, delR, delRc, delX, delY,
      & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, 
      & phiMin, thetaMin, rSphere, recip_RSphere, f0, beta,
      & fCori, fCoriG,
@@ -450,6 +454,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL delZ(Nr)
       _RL delP(Nr)
       _RL delR(Nr)
+      _RL delRc(Nr+1)
       _RL delX(Nx)
       _RL delY(Ny)
       _RL deltaT

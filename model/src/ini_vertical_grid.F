@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.12 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.13 2002/03/07 14:09:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,11 +29,60 @@ C     myThid -  Number of this instance of INI_DEPTHS
 
 C     !LOCAL VARIABLES:
 C     == Local variables ==
-C     K
+C     K        :: loop index
+C     msgBuf   :: Informational/error meesage buffer  
       INTEGER K
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
-C     Calculate depths of centers and interfaces
+      IF (setCenterDr) THEN
+C-- Interface at middle between 2 centers :
+
+C-    Check that all thickness are > 0 :
+       DO K=1,Nr+1
+        IF (delRc(K).LE.0.) THEN
+         WRITE(msgBuf,'(A,I4,A,E16.8)')
+     &  'S/R INI_VERTICAL_GRID: delRc(K=',K,' )=',delRc(K)
+         CALL PRINT_ERROR( msgBuf , 1)
+         WRITE(msgBuf,'(A)')
+     &  'S/R INI_VERTICAL_GRID: Vert. grid spacing MUST BE > 0'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R INI_VERTICAL_GRID'
+        ENDIF
+       ENDDO
+
+C-    Calculate depths of centers and interfaces
+        rF(1)  = Ro_SeaLevel
+        rC(1)  = rF(1) - rkFac*delRc(1)
+        drC(1) = delRc(1)
+        drF(1) = delRc(1)
+       DO K=2,Nr
+        drC(K)   = delRc(K)
+        drF(K-1) =  drF(K-1) + 0.5 _d 0*delRc(K)
+        drF(K)   = 0.5 _d 0*delRc(K)
+        rC(K)    = rC(K-1) - rkFac*drC(K)
+        rF(K)    = rF(K-1) - rkFac*drF(K-1)
+       ENDDO
+        drF(Nr)  = drF(Nr) + delRc(Nr+1)
+        rF(Nr+1) = rF(Nr) - rkFac*drF(Nr)
+
+      ELSE
+C-- Center at middle between 2 interfaces :
+
+C-    Check that all thickness are > 0 :
+       DO K=1,Nr
+        IF (delR(K).LE.0.) THEN
+         WRITE(msgBuf,'(A,I4,A,E16.8)')
+     &  'S/R INI_VERTICAL_GRID: delR(K=',K,' )=',delR(K)
+         CALL PRINT_ERROR( msgBuf , 1)
+         WRITE(msgBuf,'(A)')
+     &  'S/R INI_VERTICAL_GRID: Vert. grid spacing MUST BE > 0'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R INI_VERTICAL_GRID'
+        ENDIF
+       ENDDO
+
+C-    Calculate depths of interfaces and centers 
       rF(1) = Ro_SeaLevel
       DO K=1,Nr
        drF(K)     = delR(K)
@@ -45,11 +94,16 @@ C     Calculate depths of centers and interfaces
        drC(K)     = 0.5 _d 0 *(delR(K-1)+delR(K))
        rC(K)      = rC(K-1) - rkFac*drC(K)
       ENDDO
+
+C--
+      ENDIF
+
+C-    Calculate reciprol vertical grid spacing :
       DO K=1,Nr
        saFac(K)  = 1. _d 0
        recip_drC(K)   = 1. _d 0/drC(K)
        recip_drF(K)   = 1. _d 0/drF(K)
       ENDDO
-C
+
       RETURN
       END
