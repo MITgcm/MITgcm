@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.10 2004/10/12 19:30:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.11 2005/03/21 18:18:56 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -33,6 +33,7 @@ c-----------------------------------------------------------------------
 #include "EEPARAMS.h"
 #include "SURFACE.h"
 #include "PARAMS.h"
+#include "chronos.h"
 
        integer myThid
 
@@ -57,7 +58,7 @@ c pe on dynamics and physics grid refers to bottom edge
        jdim2 = sNy
 
       IF ( startTime.EQ.0. .AND. nIter0.EQ.0 ) THEN
-      print *,' In fizhi_init_vars: Cold start '
+      print *,' In fizhi_init_vars: Beginning of New Experiment '
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
@@ -190,20 +191,23 @@ c Zero out fizhi tendency arrays on the dynamics grid
         enddo
 
 c Now initialize tke, xlmt, khmt, xxmt, yymt, ctmt, zetamt,
-c Now initialize land state too - tcanopy, etc...
-        do i = 1,nchp
-         ctmt(i,bi,bj) = 0.
-         xxmt(i,bi,bj) = 0.
-         yymt(i,bi,bj) = 0.
-         zetamt(i,bi,bj) = 0.
-        enddo
-        do L = 1,Nrphys
-        do i = 1,nchp
-         tke(i,L,bi,bj) = 0.
-         xlmt(i,L,bi,bj) = 0.
-         khmt(i,L,bi,bj) = 0.
-        enddo
-        enddo
+        if( (nhms.eq.nhms0) .and. (nymd.eq.nymd0) ) then
+         print *,' Cold Start: Zero out Turb second moments '
+         do i = 1,nchp
+          ctmt(i,bi,bj) = 0.
+          xxmt(i,bi,bj) = 0.
+          yymt(i,bi,bj) = 0.
+          zetamt(i,bi,bj) = 0.
+         enddo
+         do L = 1,Nrphys
+         do i = 1,nchp
+          tke(i,L,bi,bj) = 0.
+          xlmt(i,L,bi,bj) = 0.
+          khmt(i,L,bi,bj) = 0.
+         enddo
+         enddo
+        endif
+
 c Now initialize land state too - tcanopy, etc... SET FOR NOW, 
 c                                              READ CLIM FOR REAL
         do i = 1,nchp
@@ -215,6 +219,50 @@ c                                              READ CLIM FOR REAL
         swetdeep(i,bi,bj) = 0.5
         capac(i,bi,bj) = 0.
         snodep(i,bi,bj) = 0.
+        enddo
+
+        print *,' Initialize fizhi arrays that will be on pickup '
+        imstturblw(bi,bj) = 0
+        imstturbsw(bi,bj) = 0
+        iras(bi,bj) = 0
+        nlwcld(bi,bj) = 0
+        nlwlz(bi,bj) = 0
+        nswcld(bi,bj) = 0
+        nswlz(bi,bj) = 0
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         swlz(i,j,L) = 0.
+         lwlz(i,j,L) = 0.
+         qliqavesw(i,j,L) = 0.
+         qliqavelw(i,j,L) = 0.
+         fccavesw(i,j,L) = 0.
+         fccavelw(i,j,L) = 0.
+         cldtot_sw(i,j,L) = 0.
+         cldras_sw(i,j,L) = 0.
+         cldlsp_sw(i,j,L) = 0.
+         cldtot_lw(i,j,L) = 0.
+         cldras_lw(i,j,L) = 0.
+         cldlsp_lw(i,j,L) = 0.
+         lwdt(i,j,L,bi,bj) = 0.
+         swdt(i,j,L,bi,bj) = 0.
+         turbt(i,j,L,bi,bj) = 0.
+         moistt(i,j,L,bi,bj) = 0.
+         turbq(i,j,L,1,bi,bj) = 0.
+         moistq(i,j,L,1,bi,bj) = 0.
+         turbu(i,j,L,bi,bj) = 0.
+         moistu(i,j,L,bi,bj) = 0.
+         turbv(i,j,L,bi,bj) = 0.
+         moistv(i,j,L,bi,bj) = 0.
+        enddo
+        enddo
+        enddo
+        do j = 1,sNy
+        do i = 1,sNx
+         rainlsp(i,j) = 0.
+         raincon(i,j) = 0.
+         snowfall(i,j) = 0.
+        enddo
         enddo
 
        enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.49 2004/10/26 18:03:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.50 2005/03/21 18:18:56 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myIter,myid,
@@ -161,55 +161,6 @@ c Local Variables
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
 C***********************************************************************
-C Some initialization is for start of experiment, some for segment start
-C***********************************************************************
-
-      if((nhms.eq.nhms0) .and. (nymd.eq.nymd0) .and. (myIter.eq.0)) then
-       print *,' Initializing fizhi arrays on pickup '
-       imstturblw(bi,bj) = 0
-       imstturbsw(bi,bj) = 0
-       iras(bi,bj) = 0
-       nlwcld(bi,bj) = 0
-       nlwlz(bi,bj) = 0
-       nswcld(bi,bj) = 0
-       nswlz(bi,bj) = 0
-       do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        swlz(i,j,L) = 0.
-        lwlz(i,j,L) = 0.
-        qliqavesw(i,j,L) = 0.
-        qliqavelw(i,j,L) = 0.
-        fccavesw(i,j,L) = 0.
-        fccavelw(i,j,L) = 0.
-        cldtot_sw(i,j,L) = 0.
-        cldras_sw(i,j,L) = 0.
-        cldlsp_sw(i,j,L) = 0.
-        cldtot_lw(i,j,L) = 0.
-        cldras_lw(i,j,L) = 0.
-        cldlsp_lw(i,j,L) = 0.
-        lwdt(i,j,L,bi,bj) = 0.
-        swdt(i,j,L,bi,bj) = 0.
-        turbt(i,j,L,bi,bj) = 0.
-        moistt(i,j,L,bi,bj) = 0.
-        turbq(i,j,L,1,bi,bj) = 0.
-        moistq(i,j,L,1,bi,bj) = 0.
-        turbu(i,j,L,bi,bj) = 0.
-        moistu(i,j,L,bi,bj) = 0.
-        turbv(i,j,L,bi,bj) = 0.
-        moistv(i,j,L,bi,bj) = 0.
-       enddo
-       enddo
-       enddo
-       do j = jm1,jm2
-       do i = im1,im2
-        rainlsp(i,j) = 0.
-        raincon(i,j) = 0.
-        snowfall(i,j) = 0.
-       enddo
-       enddo
-
-      endif
 
       kappa = getcon('KAPPA')
       p0kappa = 1000.0 ** kappa
