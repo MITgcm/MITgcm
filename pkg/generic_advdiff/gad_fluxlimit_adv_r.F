@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.2 2001/07/12 00:30:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.3 2001/09/10 01:22:48 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
 
       SUBROUTINE GAD_FLUXLIMIT_ADV_R( 
-     I           bi,bj,k,deltaT,
+     I           bi_arg,bj_arg,k,dTarg,
      I           rTrans, wVel,
      I           tracer,
      O           wT,
@@ -19,10 +19,12 @@ C     |==========================================================|
 C     == GLobal variables ==
 #include "SIZE.h"
 #include "GRID.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 
 C     == Routine arguments ==
-      INTEGER bi,bj,k
-      _RL deltaT
+      INTEGER bi_arg,bj_arg,k
+      _RL dTarg
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -30,9 +32,22 @@ C     == Routine arguments ==
       INTEGER myThid
 
 C     == Local variables ==
-      INTEGER i,j,kp1,km1,km2
+      INTEGER i,j,kp1,km1,km2,bi,bj
       _RL Cr,Rjm,Rj,Rjp
 #include "GAD_FLUX_LIMITER.h"
+
+      IF (.NOT. multiDimAdvection) THEN
+C      If using the standard time-stepping/advection schemes (ie. AB-II)
+C      then the data-structures are all global arrays
+       bi=bi_arg
+       bj=bj_arg
+      ELSE
+C      otherwise if using the multi-dimensional advection schemes
+C      then the data-structures are all local arrays except
+C      for maskC(...) and wVel(...)
+       bi=1
+       bj=1
+      ENDIF
 
       km2=MAX(1,k-2)
       km1=MAX(1,k-1)
@@ -66,11 +81,11 @@ C     == Local variables ==
           ENDIF
          ENDIF
          Cr=Limiter(Cr)
-         wT(i,j) = maskC(i,j,kM1,bi,bj)*(
+         wT(i,j) = maskC(i,j,kM1,bi_arg,bj_arg)*(
      &     rTrans(i,j)*
      &        (Tracer(i,j,k,bi,bj)+Tracer(i,j,kM1,bi,bj))*0.5 _d 0
      &    +(ABS(rTrans(i,j))*(1-Cr)
-     &      +rTrans(i,j)*wVel(i,j,k,bi,bj)*deltaT*recip_drC(k)
+     &      +rTrans(i,j)*wVel(i,j,k,bi_arg,bj_arg)*dTarg*recip_drC(k)
      &                  *Cr
      &     )*Rj*0.5 _d 0                )
         ENDDO

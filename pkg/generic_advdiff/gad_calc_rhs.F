@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.7 2001/09/05 17:46:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.8 2001/09/10 01:22:48 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -78,6 +78,18 @@ C--   Make local copy of tracer array
        ENDDO
       ENDDO
 
+C--   Unless we have already calculated the advection terms we initialize
+C     the tendency to zero.
+      IF (.NOT. multiDimAdvection .OR.
+     &    advectionScheme.EQ.ENUM_CENTERED_2ND .OR.
+     &    advectionScheme.EQ.ENUM_UPWIND_3RD .OR.
+     &    advectionScheme.EQ.ENUM_CENTERED_4TH ) THEN
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         gTracer(i,j,k,bi,bj)=0.
+        ENDDO
+       ENDDO
+      ENDIF
 
 C--   Pre-calculate del^2 T if bi-harmonic coefficient is non-zero
       IF (diffK4 .NE. 0.) THEN
@@ -94,6 +106,10 @@ C--   Initialize net flux in X direction
       ENDDO
 
 C-    Advective flux in X
+      IF (.NOT. multiDimAdvection .OR.
+     &    advectionScheme.EQ.ENUM_CENTERED_2ND .OR.
+     &    advectionScheme.EQ.ENUM_UPWIND_3RD .OR.
+     &    advectionScheme.EQ.ENUM_CENTERED_4TH ) THEN
       IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
        CALL GAD_C2_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
       ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
@@ -117,6 +133,7 @@ C-    Advective flux in X
         fZon(i,j) = fZon(i,j) + af(i,j)
        ENDDO
       ENDDO
+      ENDIF
 
 C-    Diffusive flux in X
       IF (diffKh.NE.0.) THEN
@@ -164,6 +181,10 @@ C--   Initialize net flux in Y direction
       ENDDO
 
 C-    Advective flux in Y
+      IF (.NOT. multiDimAdvection .OR.
+     &    advectionScheme.EQ.ENUM_CENTERED_2ND .OR.
+     &    advectionScheme.EQ.ENUM_UPWIND_3RD .OR.
+     &    advectionScheme.EQ.ENUM_CENTERED_4TH ) THEN
       IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
        CALL GAD_C2_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
       ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
@@ -187,6 +208,7 @@ C-    Advective flux in Y
         fMer(i,j) = fMer(i,j) + af(i,j)
        ENDDO
       ENDDO
+      ENDIF
 
 C-    Diffusive flux in Y
       IF (diffKh.NE.0.) THEN
@@ -234,6 +256,10 @@ C--   Initialize net flux in R
       ENDDO
 
 C-    Advective flux in R
+      IF (.NOT. multiDimAdvection .OR.
+     &    advectionScheme.EQ.ENUM_CENTERED_2ND .OR.
+     &    advectionScheme.EQ.ENUM_UPWIND_3RD .OR.
+     &    advectionScheme.EQ.ENUM_CENTERED_4TH ) THEN
 C     Note: wVel needs to be masked 
       IF (K.GE.2) THEN
 C-    Compute vertical advective flux in the interior:
@@ -279,6 +305,7 @@ C-    add the advective flux to fVerT
         fVerT(i,j,kUp) = fVerT(i,j,kUp) + afFacT*af(i,j)
        ENDDO
       ENDDO
+      ENDIF
 
 C-    Diffusive flux in R
 C     Note: For K=1 then KM1=1 and this gives a dT/dr = 0 upper
@@ -354,7 +381,7 @@ C *note* should update KPP_TRANSPORT_T to set df  *aja*
 C--   Divergence of fluxes
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-        gTracer(i,j,k,bi,bj)=
+        gTracer(i,j,k,bi,bj)=gTracer(i,j,k,bi,bj)
      &   -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &    *recip_rA(i,j,bi,bj)
      &    *(
