@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.51 2000/06/21 20:46:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.52 2000/06/29 18:49:50 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -129,9 +129,10 @@ C                      index into fVerTerm.
       _RL sigmaY  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 
-#ifdef INCLUDE_CONVECT_CALL
+C This is currently also used by IVDC and Diagnostics
+C #ifdef INCLUDE_CONVECT_CALL
       _RL ConvectCount (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
-#endif
+C #endif
 
       INTEGER iMin, iMax
       INTEGER jMin, jMax
