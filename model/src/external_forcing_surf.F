@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.17 2003/12/05 02:40:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.18 2004/03/03 05:17:44 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,6 +28,9 @@ C     === Global variables ===
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#ifdef ALLOW_SEAICE
+#include "SEAICE.h"
+#endif /* ALLOW_SEAICE */
  
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -88,6 +91,17 @@ C--   Surface restoring term :
       IF ( doThetaClimRelax .OR. doSaltClimRelax ) THEN
        DO j = jMin, jMax
         DO i = iMin, iMax
+#ifdef ALLOW_SEAICE
+C     Don't restore under sea-ice
+C     Heat Flux (restoring term) : 
+          surfaceTendencyT(i,j,bi,bj) = surfaceTendencyT(i,j,bi,bj)
+     &      -lambdaThetaClimRelax * (1-AREA(i,j,1,bi,bj)
+     &         *(theta(i,j,kSurface,bi,bj)-SST(i,j,bi,bj))
+C     Salt Flux (restoring term) : 
+          surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
+     &      -lambdaSaltClimRelax * (1-AREA(i,j,1,bi,bj)
+     &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
+#else /* ifndef ALLOW_SEAICE */
 C     Heat Flux (restoring term) : 
          IF ( abs(yC(i,j,bi,bj)).LE.latBandClimRelax ) THEN
           surfaceTendencyT(i,j,bi,bj) = surfaceTendencyT(i,j,bi,bj)
@@ -98,6 +112,7 @@ C     Salt Flux (restoring term) :
      &      -lambdaSaltClimRelax
      &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
          ENDIF
+#endif /* ALLOW_SEAICE */
         ENDDO
        ENDDO
       ENDIF

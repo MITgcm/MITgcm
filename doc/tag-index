@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.263 2004/03/02 08:45:46 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.264 2004/03/03 05:17:44 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o no restoring terms under ice for pkg/seaice
 o moved SEAICE_DO_DIAGS to S/R do_the_model_io
 o bug fix for pkg/seaice pickups
 o change MNC call locations and add coordinate attributes

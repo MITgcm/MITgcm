@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.9 2003/12/14 04:56:18 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/ostres.F,v 1.10 2004/03/03 05:17:45 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -49,15 +49,7 @@ c do not introduce turning angle
 C--   Update overlap regions
       CALL EXCH_UV_XY_RL(WINDX, WINDY, .TRUE., myThid)
 
-C--   Interpolate wind stress (N/m^2) from South-West B-grid
-C     to South-West C-grid for forcing ocean model.
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-#ifdef SEAICE_EXTERNAL_FLUXES
-          IF (HEFF(I,J,1,bi,bj).GT.0.0) THEN
-#endif
+#ifndef SEAICE_EXTERNAL_FLUXES
 cdm !!! NOTE that wind stress under sea-ice is set to the      !!!
 cdm !!! same value as it would be if there was no sea-ice.     !!!
 cdm !!! This is a placeholder until a more physically-sensible !!!
@@ -65,19 +57,22 @@ cdm !!! stable solution is developed.  Apparently ocean stress !!!
 cdm !!! that is based on sea-ice velocity can cause trouble in !!!
 cdm !!! Arctic Ocean configurations.  This temporary solution  !!!
 cdm !!! also corresponds to that adopted by CCSM-2.            !!!
+C--   Interpolate wind stress (N/m^2) from South-West B-grid
+C     to South-West C-grid for forcing ocean model.
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1,sNy
+         DO i=1,sNx
             fu(I,J,bi,bj)=HALF
      &           *(WINDX(I,J+1,bi,bj)+WINDX(I,J,bi,bj))
             fv(I,J,bi,bj)=HALF
      &           *(WINDY(I+1,J,bi,bj)+WINDY(I,J,bi,bj))
-#ifdef SEAICE_EXTERNAL_FLUXES
-          ENDIF
-#endif
          ENDDO
         ENDDO
        ENDDO
       ENDDO
-
       CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
+#endif /* ifndef SEAICE_EXTERNAL_FLUXES */
 
 #endif /* ALLOW_SEAICE */
 
