@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.18 2004/08/04 18:23:44 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.19 2004/08/05 17:06:40 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -169,7 +169,7 @@ C   into bottom-up arrays for interpolation to dynamics grid
      . Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gsphy)
 
 
-        if( (1.eq.1) ) then
+        if( (2.eq.1) ) then
         print *,' In fizhi wrapper after phys2dyn before exchange ',bi
         do L = 1,Nr
          do j = 1,sNy

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.9 2004/08/04 22:57:35 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.10 2004/08/05 17:06:40 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -29,7 +29,6 @@ c-----------------------------------------------------------------------
 
        _RL tempij(sNx,sNy)
        integer i,j,L
-       _RL psurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
        idim1 = 1-OLx
        idim2 = sNx+OLx
@@ -48,7 +47,7 @@ c  Step forward the physics state using physics tendencies
      .      jdim1,jdim2,
      .      Nrphys,Nsx,Nsy,1,sNx,1,sNy,bi,bj,duphy,dvphy,dthphy,dsphy)
 
-      if(1.eq.1 )then
+      if(2.eq.1 )then
       print *,' In step fizhi fg, new fizhi fields ',bi,' dt= ',dt
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -80,18 +79,24 @@ c      print *,' vphy at level ',l,' ',tempij
         tempij(i,j) = sphy(i,j,L,bi,bj)
        enddo
        enddo
-c      print *,' sphy at level ',l,' ',tempij
+       print *,' sphy at level ',l,' ',tempij
       enddo
       endif
 
-        do j = jm1,jm2
-        do i = im1,im2
-         psurf(i,j)=Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
-        enddo
-        enddo
+        call qcheck (idim1,idim2,jdim1,jdim2,Nrphys,Nsx,Nsy,im1,im2,
+     .       jm1,jm2,bi,bj,dpphys,sphy)
 
-        call qcheck (idim1,idim2,jdim1,jdim2,Nrphys,im1,im2,jm1,jm2,
-     .                      dpphys(1,1,1,bi,bj),psurf,sphy(1,1,1,bi,bj))
+      if(2.eq.1 )then
+      print *,' In step fizhi fg after qcheck ',bi
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = sphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' sphy after qcheck at level ',l,' ',tempij
+      enddo
+      endif
 
        enddo
        enddo

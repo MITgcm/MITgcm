@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.34 2004/08/04 22:23:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.35 2004/08/05 17:06:40 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -251,7 +251,7 @@ C compute pressures - all pressure are converted here to hPa
       call pkappa (im2,jm2,Nrphys,ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),
      .                                                 pkl(1,1,1,bi,bj))
 
-      if(1.eq.1 )then
+      if(2.eq.1 )then
       print *,' In do fizhi, before fizhi driver - bi = ',bi
       do L = 1,Nrphys+1
        do j = jm1,jm2
@@ -291,7 +291,15 @@ c      print *,' v at level ',l,' ',tempij
         tempij(i,j) = q(i,j,L,1)
        enddo
        enddo
-c      print *,' q at level ',l,' ',tempij
+       print *,' q at level ',l,' ',tempij
+      enddo
+      do L = 1,Nrphys
+       do j = jm1,jm2
+       do i = im1,im2
+        tempij(i,j) = qstr(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' radiation q at level ',l,' ',tempij
       enddo
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -379,7 +387,7 @@ c     print *,' tgz ',tempij
      . qliqavelw(1,1,1,bi,bj),fccavesw(1,1,1,bi,bj),
      . fccavelw(1,1,1,bi,bj),qq(1,1,1,bi,bj))
 
-      if(1.eq.1)then
+      if(2.eq.1)then
       print *,' In do fizhi, after fizhi driver - bi = ',bi
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -489,7 +497,7 @@ c      print *,' moistq at level ',l,' ',tempij
       enddo
       enddo
 
-      if(1.eq.1 )then
+      if(2.eq.1 )then
       print *,' In do fizhi, computed fizhi tendencies ',bi
       do L = 1,Nrphys
        do j = jm1,jm2
@@ -521,7 +529,7 @@ c      print *,' dvphy at level ',l,' ',tempij
         tempij(i,j) = dsphy(i,j,L,bi,bj)
        enddo
        enddo
-c      print *,' dsphy at level ',l,' ',tempij
+       print *,' dsphy at level ',l,' ',tempij
       enddo
       endif
 

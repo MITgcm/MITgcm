@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_fillnegs.F,v 1.7 2004/08/05 14:39:30 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_fillnegs.F,v 1.8 2004/08/05 17:06:40 molod Exp $
 C $Name:  $
                                                                                      
 #include "FIZHI_OPTIONS.h"
-      SUBROUTINE QCHECK ( idim1,idim2,jdim1,jdim2,ldim,im1,im2,jm1,jm2,
-     .                            dp,pz,qz)
+      SUBROUTINE QCHECK ( idim1,idim2,jdim1,jdim2,ldim,Nsx,Nsy,im1,im2,
+     .     jm1,jm2,bi,bj,dp,qz)
 C***********************************************************************
 C  Purpose                                                              
 C     Check Specific Humidity Field for Negative values                 
@@ -19,32 +19,28 @@ C     JM1 ...... Start Meridional Span
 C     JM2 ...... End Meridional Span
 C     LDIM ..... Vertical   Dimension
 C     DP ....... Delta Pressure
-C     PZ ........Surface Pressure
 C     QZ ........Specific Humidity (g/g)
 C***********************************************************************
       implicit none
 
       integer idim1,idim2,jdim1,jdim2,Ldim,im1,im2,jm1,jm2
-      _RL delt
-      _RL qz(idim1:idim2,jdim1:jdim2,ldim)
-      _RL dp(idim1:idim2,jdim1:jdim2,ldim)
-      _RL pz(idim1:idim2,jdim1:jdim2)
+      integer Nsx,Nsy,bi,bj
+      _RL qz(idim1:idim2,jdim1:jdim2,ldim,Nsx,Nsy)
+      _RL dp(idim1:idim2,jdim1:jdim2,ldim,Nsx,Nsy)
 
       integer i,j,L,LM1
-      _RL getcon,grav,ddsig
+      _RL ddsig
 
-      grav = getcon('GRAVITY')
- 
 c Fill Negative Specific Humidities
 c ---------------------------------
       DO L=2,Ldim
       LM1 = L-1                                                     
       do j=jm1,jm2
       do i=im1,im2
-       ddsig = dp(i,j,LM1)/dp(i,j,L)                                     
-       if( qz(i,j,LM1).lt.0.0 ) then                                
-        qz(i,j,L  ) = qz(i,j,L) + qz(i,j,LM1)*ddsig
-        qz(i,j,LM1) = 0.0
+       ddsig = dp(i,j,LM1,bi,bj)/dp(i,j,L,bi,bj)                                     
+       if( qz(i,j,LM1,bi,bj).lt.0.0  _d 0) then                                
+        qz(i,j,L,bi,bj  ) = qz(i,j,L,bi,bj) + qz(i,j,LM1,bi,bj)*ddsig
+        qz(i,j,LM1,bi,bj) = 0.0 _d 0
        endif
       enddo
       enddo
@@ -52,7 +48,7 @@ c ---------------------------------
 
       do j=jm1,jm2
       do i=im1,im2
-       if( qz(i,j,Ldim).lt.0.0 ) qz(i,j,Ldim) = 0.0
+       if(qz(i,j,Ldim,bi,bj).lt.0.0  _d 0)qz(i,j,Ldim,bi,bj) = 0.0 _d 0
       enddo
       enddo
 

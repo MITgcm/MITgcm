@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.10 2004/08/04 22:57:35 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.11 2004/08/05 17:06:40 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -248,7 +248,7 @@ c    Last: Increment physics state by the correction term
      .   Nrphys,Nsx,Nsy,1,sNx,1,sNy,bi,bj,
      .                            uphytemp,vphytemp,thphytemp,sphytemp)
 
-      if(1.eq.1 )then
+      if(2.eq.1 )then
       print *,' In step fizhi corr, new fizhi fields ',bi,' dt= ',dt
       do L = 1,Nrphys
        do j = jdim1,jdim2
@@ -280,12 +280,26 @@ c      print *,' vphy at level ',l,' ',tempij
         tempij(i,j) = sphy(i,j,L,bi,bj)
        enddo
        enddo
-c      print *,' sphy at level ',l,' ',tempij
+       print *,' sphy at level ',l,' ',tempij
       enddo
       endif
 
-        call qcheck (im1,im2,jm1,jm2,Nrphys,idim1,idim2,jdim1,jdim2,
-     .         dpphys(1,1,1,bi,bj),pephy(1,1,1,bi,bj),sphy(1,1,1,bi,bj))
+        call qcheck (im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,idim1,idim2,
+     .         jdim1,jdim2,bi,bj,dpphys,sphy)
+
+      if(2.eq.1 )then
+      print *,' In step fizhi corr after qcheck ',bi
+      do L = 1,Nrphys
+       do j = jdim1,jdim2
+       do i = idim1,idim2
+        tempij(i,j) = sphy(i,j,L,bi,bj)
+       enddo
+       enddo
+       print *,' sphy after qcheck at level ',l,' ',tempij
+      enddo
+      endif
+
+
        enddo
        enddo
 
