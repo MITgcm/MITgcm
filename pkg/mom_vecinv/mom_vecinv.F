@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.11 2003/11/04 19:51:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.12 2004/01/03 00:51:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -435,18 +435,20 @@ c      CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,vort3,r_hFacZ,vCf,myThid)
 #endif
 
 C--   Vertical shear terms (-w*du/dr & -w*dv/dr)
-       CALL MOM_VI_U_VERTSHEAR(bi,bj,K,uVel,wVel,uCf,myThid)
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
+       IF ( .NOT. momImplVertAdv ) THEN
+        CALL MOM_VI_U_VERTSHEAR(bi,bj,K,uVel,wVel,uCf,myThid)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
+         ENDDO
         ENDDO
-       ENDDO
-       CALL MOM_VI_V_VERTSHEAR(bi,bj,K,vVel,wVel,vCf,myThid)
-       DO j=jMin,jMax
-        DO i=iMin,iMax
-         gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
+        CALL MOM_VI_V_VERTSHEAR(bi,bj,K,vVel,wVel,vCf,myThid)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
+         ENDDO
         ENDDO
-       ENDDO
+       ENDIF
 
 C--   Bernoulli term
        CALL MOM_VI_U_GRAD_KE(bi,bj,K,KE,uCf,myThid)
