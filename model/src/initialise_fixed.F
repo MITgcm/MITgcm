@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.16 2003/12/15 02:07:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.17 2003/12/17 04:02:20 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -58,6 +58,8 @@ C      |
 C      |-- CONFIG_CHECK
 C      |
 C      |-- CONFIG_SUMMARY
+C      |
+C      |-- NETCDF_WRITEGRID
 
 C     !USES:
       IMPLICIT NONE
@@ -139,6 +141,11 @@ C--   Finally summarise the model cofiguration
 C--   Post component-model configuration information to coupler
 C     and get config. info for other component(s).
       IF ( useCoupler ) CALL CPL_EXCH_CONFIGS( myThid )
+#endif
+
+#ifdef ALLOW_NETCDF
+C     Test NETCDF_WRITEGRID
+      CALL NETCDF_WRITEGRID( 'test', myThid )
 #endif
 
       RETURN
