@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.55 2001/02/20 15:02:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.56 2001/03/06 17:22:52 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -22,7 +22,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "CG2D.h"
 
 C     === Routine arguments ===
 C     myThid - Number of this instance of INI_PARMS
@@ -283,7 +282,7 @@ C--   Metric terms on/off flag.
       IF ( metricTerms ) THEN
        mTFacMom = 1.D0
       ELSE
-       mTFacMom = 1.D0
+       mTFacMom = 0.D0
       ENDIF
 C--   z,p,r coord input switching.
       IF ( viscAz .NE. UNSET_RL ) zCoordInputData = .TRUE.
@@ -545,7 +544,7 @@ C     o Consistent?
 
 C     o If taveFreq is finite, then we must make sure the diagnostics
 C       code is being compiled
-#ifndef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifndef ALLOW_TIMEAVE
       IF (taveFreq.NE.0.) THEN
         WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS: taveFreq <> 0  but you have'
@@ -554,8 +553,8 @@ C       code is being compiled
      &  'not compiled the model with the diagnostics routines.'
         CALL PRINT_ERROR( msgBuf , 1)
         WRITE(msgBuf,'(A,A)')
-     &  'Re-compile with:  #define INCLUDE_DIAGNOSTICS_INTERFACE_CODE',
-     &  '              or  -DINCLUDE_DIAGNOSTICS_INTERFACE_CODE'
+     &  'Re-compile with:  #define ALLOW_TIMEAVE',
+     &  '              or  -DALLOW_TIMEAVE'
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
@@ -700,7 +699,7 @@ C--   Make metric term settings consistent with underlying grid.
       IF ( usingCartesianGrid ) THEN
        usingSphericalPolarMterms = .FALSE.
        metricTerms = .FALSE.
-       mTFacMom = 0
+       mTFacMom = 0.
        useBetaPlaneF = .TRUE.
       ENDIF
       IF ( usingSphericalPolarGrid ) THEN
@@ -708,9 +707,7 @@ C--   Make metric term settings consistent with underlying grid.
        useBetaPlaneF = .FALSE.
        useSphereF    = .TRUE.
        omega         = 2.D0 * PI / ( 3600.D0 * 24.D0 )
-       usingSphericalPolarMterms = .TRUE.
-       metricTerms = .TRUE.
-       mTFacMom = 1
+       usingSphericalPolarMterms = metricTerms
       ENDIF
 C--   p, z, r coord parameters
       DO K = 1, Nr

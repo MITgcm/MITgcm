@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.15 2001/02/20 15:02:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.16 2001/03/06 17:25:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,7 +25,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "CG2D.h"
 
 C     === Routine arguments ===
 C     myThid - Number of this instance of INI_PARMS
@@ -105,7 +104,7 @@ C--   Set default "physical" parameters
       momStepping         = .TRUE.
       tempStepping        = .TRUE.
       saltStepping        = .TRUE.
-      metricTerms         = .FALSE.
+      metricTerms         = .TRUE.
       implicitDiffusion   = .FALSE.
       implicitViscosity   = .FALSE.
       nonHydrostatic      = .FALSE.
