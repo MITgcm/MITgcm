@@ -1,8 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.470 2005/04/06 17:36:42 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.471 2005/04/06 19:52:57 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57f_post
+o add parameter "baseTime" = model base time = time at iteration zero
+  new function DIFF_BASE_MULTIPLE (replace DIFFERENT_MULTIPLE) to 
+  account for baseTime shift
+o move Coriolis arrays from PARAMS.h to GRID.h
 checkpoint57f_pre
 
 o mnc-ifying the seaice package
