@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/do_fizhi.F,v 1.7 2004/10/21 16:27:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/do_fizhi.F,v 1.8 2004/10/26 17:47:12 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
-       subroutine do_fizhi(myid,
+       subroutine do_fizhi(myIter,myid,
      . idim1,idim2,jdim1,jdim2,Nrphin,Nsxin,Nsyin,im1,im2,jm1,jm2,bi,bj,
      . nchp,nchptot,nchpland,
      . uphy,vphy,thphy,sphy,pephy,lons,lats,Zsurf,
@@ -31,7 +31,7 @@ c-----------------------------------------------------------------------
 #include "chronos.h"
 
 C Argument list declarations
-      integer myid,im1,im2,jm1,jm2,idim1,idim2,jdim1,jdim2
+      integer myIter,myid,im1,im2,jm1,jm2,idim1,idim2,jdim1,jdim2
       integer Nrphin,Nsxin,Nsyin,bi,bj,nchp
       integer nchptot(Nsxin,Nsyin),nchpland(Nsxin,Nsyin)
       _RL uphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
