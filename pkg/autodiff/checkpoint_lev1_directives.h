@@ -42,6 +42,10 @@ CADJ STORE theta     = comlev1, key = ikey_dynamics
 
 #else /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
 
+cph empmr is needed for case buoyancyrelation .eq. 'OCEANICP'
+cph
+CADJ STORE empmr   = comlev1, key = ikey_dynamics
+c
 CADJ STORE taux0   = comlev1, key = ikey_dynamics
 CADJ STORE taux1   = comlev1, key = ikey_dynamics
 CADJ STORE tauy0   = comlev1, key = ikey_dynamics
@@ -54,9 +58,14 @@ CADJ STORE SST0    = comlev1, key = ikey_dynamics
 CADJ STORE SST1    = comlev1, key = ikey_dynamics
 CADJ STORE SSS0    = comlev1, key = ikey_dynamics
 CADJ STORE SSS1    = comlev1, key = ikey_dynamics
+#ifdef SHORTWAVE_HEATING
 CADJ STORE Qsw0    = comlev1, key = ikey_dynamics
 CADJ STORE Qsw1    = comlev1, key = ikey_dynamics
-
+#endif
+#ifdef ATMOSPHERIC_LOADING
+CADJ STORE pload0  = comlev1, key = ikey_dynamics
+CADJ STORE pload1  = comlev1, key = ikey_dynamics
+#endif
 
 #endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
 

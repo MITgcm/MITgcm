@@ -15,6 +15,7 @@ CADJ STORE wvel      = tapelev3, key = ilev_3
 CADJ STORE etan      = tapelev3, key = ilev_3
 CADJ STORE gu        = tapelev3, key = ilev_3
 CADJ STORE gv        = tapelev3, key = ilev_3
+CADJ STORE pressure  = tapelev3, key = ilev_3
 
 #ifdef INCLUDE_CD_CODE
 CADJ STORE uveld     = tapelev3, key = ilev_3
@@ -72,6 +73,16 @@ CADJ STORE vstress1  = tapelev3, key = ilev_3
 
 #else /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
 
+CADJ STORE empmr   = tapelev3, key = ilev_3
+CADJ STORE fu      = tapelev3, key = ilev_3
+CADJ STORE fv      = tapelev3, key = ilev_3
+CADJ STORE qnet    = tapelev3, key = ilev_3
+CADJ STORE sss     = tapelev3, key = ilev_3
+CADJ STORE sst     = tapelev3, key = ilev_3
+#ifdef ATMOSPHERIC_LOADING
+CADJ STORE pload   = tapelev3, key = ilev_3
+#endif
+c
 CADJ STORE taux0   = tapelev3, key = ilev_3
 CADJ STORE taux1   = tapelev3, key = ilev_3
 CADJ STORE tauy0   = tapelev3, key = ilev_3
@@ -84,8 +95,14 @@ CADJ STORE SST0    = tapelev3, key = ilev_3
 CADJ STORE SST1    = tapelev3, key = ilev_3
 CADJ STORE SSS0    = tapelev3, key = ilev_3
 CADJ STORE SSS1    = tapelev3, key = ilev_3
+#ifdef SHORTWAVE_HEATING
 CADJ STORE Qsw0    = tapelev3, key = ilev_3
 CADJ STORE Qsw1    = tapelev3, key = ilev_3
+#endif
+#ifdef ATMOSPHERIC_LOADING
+CADJ STORE pload0  = tapelev3, key = ilev_3
+CADJ STORE pload1  = tapelev3, key = ilev_3
+#endif
 
 #endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
 

@@ -83,7 +83,6 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/calc_common_factors.f		\
 		$(SOURCE_CODE)/calc_diffusivity.f		\
 		$(SOURCE_CODE)/calc_div_ghat.f			\
-		$(SOURCE_CODE)/calc_exact_eta.f			\
 		$(SOURCE_CODE)/calc_grad_phi_surf.f		\
 		$(SOURCE_CODE)/calc_gs.f			\
 		$(SOURCE_CODE)/calc_gt.f			\
@@ -101,6 +100,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/cycle_tracer.f			\
 		$(SOURCE_CODE)/different_multiple.f		\
 		$(SOURCE_CODE)/do_fields_blocking_exchanges.f	\
+		$(SOURCE_CODE)/do_stagger_fields_exchanges.f	\
 		$(SOURCE_CODE)/dynamics.f			\
 		$(SOURCE_CODE)/external_fields_load.f		\
 		$(SOURCE_CODE)/external_forcing.f		\
@@ -155,6 +155,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/ini_masks_etc.f			\
 		$(SOURCE_CODE)/ini_mixing.f			\
 		$(SOURCE_CODE)/ini_p_ground.f			\
+		$(SOURCE_CODE)/ini_pressure.f			\
 		$(SOURCE_CODE)/ini_pnh.f			\
 		$(SOURCE_CODE)/ini_psurf.f			\
 		$(SOURCE_CODE)/ini_salt.f			\
@@ -166,6 +167,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/ini_vertical_grid.f		\
 		$(SOURCE_CODE)/initialise_varia.f		\
 		$(SOURCE_CODE)/integrate_for_w.f		\
+		$(SOURCE_CODE)/integr_continuity.f		\
 		$(SOURCE_CODE)/modeldata_example.f		\
 								\
 		$(SOURCE_CODE)/mom_fluxform.f			\
@@ -181,6 +183,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/mom_u_adv_wu.f			\
 		$(SOURCE_CODE)/mom_u_bottomdrag.f		\
 		$(SOURCE_CODE)/mom_u_coriolis.f			\
+		$(SOURCE_CODE)/mom_u_coriolis_nh.f		\
 		$(SOURCE_CODE)/mom_u_del2u.f			\
 		$(SOURCE_CODE)/mom_u_metric_nh.f		\
 		$(SOURCE_CODE)/mom_u_metric_sphere.f		\
@@ -216,8 +219,10 @@ SRC_MODEL	= \
 		  						\
 		$(SOURCE_CODE)/packages_init_variables.f	\
 		$(SOURCE_CODE)/plot_field.f			\
+		$(SOURCE_CODE)/quasihydrostaticterms.f		\
 		$(SOURCE_CODE)/solve_for_pressure.f		\
 		$(SOURCE_CODE)/state_summary.f			\
+		$(SOURCE_CODE)/store_pressure.f			\
 		$(SOURCE_CODE)/timestep.f			\
 		$(SOURCE_CODE)/the_correction_step.f		\
 		$(SOURCE_CODE)/the_main_loop.f			\
@@ -236,6 +241,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/kpp_transport_t.f		\
 		  						\
 		$(SOURCE_CODE)/gmredi_calc_diff.f		\
+		$(SOURCE_CODE)/gmredi_calc_psi_b.f		\
 		$(SOURCE_CODE)/gmredi_calc_tensor.f		\
 		$(SOURCE_CODE)/gmredi_calc_uvflow.f		\
 		$(SOURCE_CODE)/gmredi_calc_wflow.f		\
@@ -243,6 +249,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/gmredi_init.f			\
 		$(SOURCE_CODE)/gmredi_rtransport.f		\
 		$(SOURCE_CODE)/gmredi_slope_limit.f		\
+		$(SOURCE_CODE)/gmredi_slope_psi.f		\
 		$(SOURCE_CODE)/gmredi_xtransport.f		\
 		$(SOURCE_CODE)/gmredi_ytransport.f		\
 								\
