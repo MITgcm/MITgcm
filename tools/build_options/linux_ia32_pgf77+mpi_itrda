@@ -1,17 +1,17 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_itrda,v 1.4 2004/09/18 16:09:44 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_itrda,v 1.5 2004/11/14 19:45:49 edhill Exp $
 #  $Name:  $
 #
 
 
-FC='/usr/local/mpich/mpich-1.2.1..7b_pgi/bin/mpif77'
-CC='/usr/local/mpich/mpich-1.2.1..7b_pgi/bin/mpicc'
+FC='mpif77'
+CC='mpicc'
 DEFINES='-DWORDLENGTH=4'
-INCLUDES='-I/usr/local/mpich/mpich-1.2.1..7b_pgi/include/'
-CPP='/lib/cpp  -traditional -P'
-LINK='/usr/local/mpich/mpich-1.2.1..7b_pgi/bin/mpif77'
-LIBS='-L/usr/local/mpich/mpich-1.2.1..7b_pgi/lib/ -lfmpich -lmpich'
+INCLUDES='-I/usr/local/pkg/mpich/mpich-pgi/include -I/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/include'
+CPP='cpp  -traditional -P'
+LINK='mpif77'
+LIBS='-L/usr/local/pkg/mpich/mpich-pgi/lib -L/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/lib'
 
 
 if test "x$IEEE" = x ; then
@@ -24,6 +24,4 @@ else
     FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'
 fi
 
-# netcdf
-# LIBS="$LIBS -lnetcdf"
 
