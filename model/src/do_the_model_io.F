@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.44 2004/09/16 09:35:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.45 2004/10/12 20:36:36 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -102,14 +102,14 @@ C     Do LAND time averages
 #endif
 
 #ifdef ALLOW_GMREDI
-C     Do KPP diagnostics.
+C     Do GMRedi diagnostics.
       IF (useGMRedi .AND. myIter.NE.nIter0 )
      &     CALL GMREDI_DIAGS( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_KPP
 C     Do KPP diagnostics.
-      IF (useKPP .AND. myIter.NE.nIter0 )
+      IF ( useKPP )
      &     CALL KPP_DO_DIAGS( myTime, myIter, myThid )
 #endif
 
