@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.23 1998/08/23 16:40:12 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.24 1998/08/23 16:57:50 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -118,10 +118,10 @@ C     hFacRClosed        and closed cell wall.
 C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  uDudxFac
       _RL  AhDudxFac
-      _RL  A4DudxFac
+      _RL  A4DuxxdxFac
       _RL  vDudyFac
       _RL  AhDudyFac
-      _RL  A4DudyFac
+      _RL  A4DuyydyFac
       _RL  rVelDudrFac
       _RL  ArDudrFac
       _RL  fuFac
@@ -130,10 +130,10 @@ C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  mtFacU
       _RL  uDvdxFac
       _RL  AhDvdxFac
-      _RL  A4DvdxFac
+      _RL  A4DvxxdxFac
       _RL  vDvdyFac
       _RL  AhDvdyFac
-      _RL  A4DvdyFac
+      _RL  A4DvyydyFac
       _RL  rVelDvdrFac
       _RL  ArDvdrFac
       _RL  fvFac
@@ -161,10 +161,10 @@ C--   Term by term tracer parmeters
 C     o U momentum equation
       uDudxFac     = afFacMom 
       AhDudxFac    = vfFacMom
-      A4DudxFac    = vfFacMom
+      A4DuxxdxFac  = vfFacMom
       vDudyFac     = afFacMom
       AhDudyFac    = vfFacMom
-      A4DudyFac    = vfFacMom
+      A4DuyydyFac  = vfFacMom
       rVelDudrFac  = afFacMom
       ArDudrFac    = vfFacMom
       mTFacU       = mtFacMom
@@ -174,10 +174,10 @@ C     o U momentum equation
 C     o V momentum equation
       uDvdxFac     = afFacMom 
       AhDvdxFac    = vfFacMom
-      A4DvdxFac    = vfFacMom
+      A4DvxxdxFac  = vfFacMom
       vDvdyFac     = afFacMom
       AhDvdyFac    = vfFacMom
-      A4DvdyFac    = vfFacMom
+      A4DvyydyFac  = vfFacMom
       rVelDvdrFac  = afFacMom
       ArDvdrFac    = vfFacMom
       mTFacV       = mtFacMom
@@ -192,6 +192,10 @@ C--   Adams-Bashforth weighting factors
 C---  Calculate mean and eddy fluxes between cells for zonal flow.
 C--   Zonal flux (fZon is at east face of "u" cell)
 C     Mean flow component of zonal flux
+#define _XAatP(    i,j,k,bi,bj) ( XA(i,j)+XA(i+1,j) )* 0.5 _d 0
+#define _YAatUBY(  i,j,k,bi,bj) ( YA(i,j)+YA(i-1,j) )* 0.5 _d 0
+#define _RAatU(    i,j,k,bi,bj) ( rA(i,j,bi,bj)*maskC(i,j) + rA(i-1,j,bi,bj)*maskC(i-1,j) ) * 0.5 _d 0
+#define _RAatU_Bot(i,j,k,bi,bj) ( rA(i,j,bi,bj) + rA(i-1,j,bi,bj) ) * 0.5 _d 0
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) =
@@ -203,7 +207,6 @@ C     Eddy component of zonal flux
 C     o Biharmonic terms
       DO j=jMin,jMax
        DO i=1-2, sNx+2
-#define _XAatP(i,j,k,bi,bj) ( XA(i,j)+XA(i+1,j) )* 0.5 _d 0
         v4F(i,j) =
      &   _XAatP(i,j,k,bi,bj)
      &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))*_recip_dxF(i,j,bi,bj)
@@ -219,7 +222,6 @@ C     o Biharmonic terms
       ENDDO
       DO j=jMin,jMax
        DO i=1-2, sNx+2
-#define _XAatP(i,j,k,bi,bj) ( XA(i,j)+XA(i+1,j) )* 0.5 _d 0
         v4F(i,j) =
      &   viscA4*_XAatP(i,j,k,bi,bj)
      &    *(vF(i+1,j)-vF(i,j))*_recip_dxF(i,j,bi,bj)
@@ -228,7 +230,6 @@ C     o Biharmonic terms
 C     o Laplacian terms
       DO j=jMin,jMax
        DO i=iMin,iMax
-#define _XAatP(i,j,k,bi,bj) ( XA(i,j)+XA(i+1,j) )* 0.5 _d 0
         vF(i,j) =
      &   -viscAh*_XAatP(i,j,k,bi,bj)
      &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))*_recip_dxF(i,j,bi,bj)
@@ -236,9 +237,9 @@ C     o Laplacian terms
       ENDDO
       DO j=jMin,jMax
        DO i=iMin,iMax
-        fZon(i,j) = uDudxFac  * aF (i,j) 
-     &            + AhDudxFac * vF (i,j)
-     &            + A4DudxFac * v4F(i,j)
+        fZon(i,j) = uDudxFac    * aF (i,j) 
+     &            + AhDudxFac   * vF (i,j)
+     &            + A4DuxxdxFac * v4F(i,j)
        ENDDO
       ENDDO
 C--   Meridional flux (fMer is at south face of "u" cell)
@@ -265,7 +266,6 @@ C     o Biharmonic term
         hFacRClosed= 1. _d 0 - hFacRopen
         hFacRClosed= 1. _d 0
 #ifdef NO_LATERAL_SLIP
-#define _YAatUBY(i,j,k,bi,bj) ( YA(i,j)+YA(i-1,j) )* 0.5 _d 0
         v4F(i,j) =
      &  _YAatUBY(i,j,k,bi,bj)*hFacRClosed
      &   *( (2.-_maskW(i,j-1,k,bi,bj))*_maskW(i,j,k,bi,bj)*uVel(i,j  ,k,bi,bj)
@@ -295,7 +295,6 @@ C     o Biharmonic term
         hFacRClosed= 1. _d 0 - hFacRopen
         hFacRClosed= 1. _d 0
 #ifdef NO_LATERAL_SLIP
-#define _YAatUBY(i,j,k,bi,bj) ( YA(i,j)+YA(i-1,j) )* 0.5 _d 0
         v4F(i,j) =
      &  viscA4*_YAatUBY(i,j,k,bi,bj)*hFacRClosed
      &   *( (2.-_maskW(i,j-1,k,bi,bj))*_maskW(i,j,k,bi,bj)*vF(i,j  )
@@ -318,7 +317,6 @@ C     o Laplacian term
         hFacRClosed= 1. _d 0 - hFacRopen
         hFacRClosed= 1. _d 0
 #ifdef NO_LATERAL_SLIP
-#define _YAatUBY(i,j,k,bi,bj) ( YA(i,j)+YA(i-1,j) )* 0.5 _d 0
         vF(i,j) =
      &  -viscAh*_YAatUBY(i,j,k,bi,bj)*hFacRClosed
      &   *( (2.-_maskW(i,j-1,k,bi,bj))*_maskW(i,j,k,bi,bj)*uVel(i,j  ,k,bi,bj)
@@ -335,9 +333,9 @@ C     o Laplacian term
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-        fMer(i,j) = vDudyFac  * aF (i,j) 
-     &            + AhDudyFac * vF (i,j)
-     &            + A4DudyFac * v4F(i,j)
+        fMer(i,j) = vDudyFac    * aF (i,j) 
+     &            + AhDudyFac   * vF (i,j)
+     &            + A4DuyydyFac * v4F(i,j)
        ENDDO
       ENDDO
 C--   Vertical flux (fVer is at upper face of "u" cell)
@@ -358,7 +356,6 @@ C       Note!!!! omitted.
 C     Eddy component of vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-#define _RAatU(i,j,k,bi,bj) ( rA(i,j,bi,bj)*maskC(i,j) + rA(i-1,j,bi,bj)*maskC(i-1,j) ) * 0.5 _d 0
 #ifdef NO_BOTTOM_SLIP
         vf(i,j) =
      &   -viscAr*_RAatU(i,j,k,bi,bj)
@@ -384,9 +381,8 @@ C     Bottom boundary condition
       IF ( k .EQ. Nr ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-#define _RAatU(i,j,k,bi,bj) ( rA(i,j,bi,bj) + rA(i-1,j,bi,bj) ) * 0.5 _d 0
          vf(i,j) =
-     &    -viscAr*_RAatU(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
+     &    -viscAr*_RAatU_Bot(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
      &    *uVel(i,j,k,bi,bj)*recip_drF(k)*2. _d 0*rkFac
         ENDDO
        ENDDO
@@ -467,6 +463,10 @@ C--   Set du/dt on boundaries to zero
 C---  Calculate mean and eddy fluxes between cells for meridional velocity.
 C--   Zonal flux (fZon is at west face of "v" cell)
 C     Mean flow component of zonal flux
+#define _XAatVBX(  i,j,k,bi,bj) ( XA(i,j)+XA(i,j-1) )* 0.5 _d 0
+#define _YAatP(    i,j,k,bi,bj) ( YA(i,j) + YA(i,j+1) ) *0.5 _d 0
+#define _RAatV(    i,j,k,bi,bj) ( _rA(i,j,bi,bj)*maskC(i,j) + _rA(i,j-1,bi,bj)*maskC(i,j-1) ) * 0.5 _d 0
+#define _RAatV_Bot(i,j,k,bi,bj) ( _rA(i,j,bi,bj) + _rA(i,j-1,bi,bj) ) * 0.5 _d 0
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) =
@@ -480,16 +480,37 @@ C       Note!!!! omitted.
        ENDDO
       ENDDO
 C     Eddy component of zonal flux
+C     o Biharmonic term
       DO j=jMin,jMax
-       DO i=iMin,iMax
-CcnhNeedsMacro
+       DO i=1-2, sNx+2
          hFacROpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
          hFacROpen=min(_hFacS(i,j,k,bi,bj),hFacROpen)
          hFacROpen=min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
          hFacRClosed=1. _d 0 -hFacROpen
          hFacRClosed=1. _d 0
 #ifdef NO_LATERAL_SLIP
-#define _XAatVBX(i,j,k,bi,bj) ( XA(i,j)+XA(i,j-1) )* 0.5 _d 0
+         v4F(i,j) =
+     &   _XAatVBX(i,j,k,bi,bj)*hFacRClosed*
+     &   ( (2.-_maskS(i-1,j,k,bi,bj))*_maskS(i,j,k,bi,bj)*vVel(i  ,j,k,bi,bj)
+     &    -(2.-_maskS(i,j,k,bi,bj))*_maskS(i-1,j,k,bi,bj)*vVel(i-1,j,k,bi,bj)
+     &   )*_recip_dxV(i,j,bi,bj)
+#else
+        v4F(i,j) =
+     &  _dyU(i,j,bi,bj)*drF(K)*hFacROpen*
+     &  (vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj))
+     &  *_recip_dxV(i,j,bi,bj)
+#endif
+       ENDDO
+      ENDDO
+C     o Laplacian term
+      DO j=jMin,jMax
+       DO i=iMin,iMax
+         hFacROpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
+         hFacROpen=min(_hFacS(i,j,k,bi,bj),hFacROpen)
+         hFacROpen=min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
+         hFacRClosed=1. _d 0 -hFacROpen
+         hFacRClosed=1. _d 0
+#ifdef NO_LATERAL_SLIP
          vf(i,j) =
      &   -viscAh*_XAatVBX(i,j,k,bi,bj)*hFacRClosed*
      &   ( (2.-_maskS(i-1,j,k,bi,bj))*_maskS(i,j,k,bi,bj)*vVel(i  ,j,k,bi,bj)
@@ -505,8 +526,9 @@ CcnhNeedsMacro
       ENDDO
       DO j=jMin,jMax
        DO i=iMin,iMax
-        fZon(i,j) = uDvdxFac  * af(i,j)
-     &            + AhDvdxFac * vf(i,j)
+        fZon(i,j) = uDvdxFac    * aF (i,j)
+     &            + AhDvdxFac   * vF (i,j)
+     &            + A4DvxxdxFac * v4F(i,j)
        ENDDO
       ENDDO
 C--   Meridional flux (fMer is at north face of "v" cell)
@@ -521,7 +543,6 @@ C     Mean flow component of meridional flux
 C     Eddy component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-#define _YAatP(i,j,k,bi,bj) ( YA(i,j) + YA(i,j+1) ) *0.5 _d 0
         vF(i,j) =
      &  -viscAh*_YAatP(i,j,k,bi,bj)
      &   *( vVel(i,j+1,k,bi,bj) - vVel(i,j,k,bi,bj) )*_recip_dyC(i,j,bi,bj)
@@ -529,8 +550,9 @@ C     Eddy component of meridional flux
       ENDDO
       DO j=jMin,jMax
        DO i=iMin,iMax
-        fMer(i,j) = vDvdyFac  * af(i,j) 
-     &            + AhDvdyFac * vf(i,j)
+        fMer(i,j) = vDvdyFac    * af(i,j) 
+     &            + AhDvdyFac   * vf(i,j)
+     &            + A4DvyydyFac * v4F(i,j)
        ENDDO
       ENDDO
 C--   Vertical flux (fVer is at upper face of "v" cell)
@@ -553,7 +575,6 @@ C       Note!!!! Is wMaskOverridde right for implicit free-surface?
 C     Eddy component of vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-#define _RAatV(i,j,k,bi,bj) ( _rA(i,j,bi,bj)*maskC(i,j) + _rA(i,j-1,bi,bj)*maskC(i,j-1) ) * 0.5 _d 0
 #ifdef NO_BOTTOM_SLIP
         vf(i,j) =
      &   -viscAr*_RAatV(i,j,k,bi,bj)
@@ -579,9 +600,8 @@ C     Bottom level boundary condition
       IF ( k .EQ. Nr ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-#define _RAatV(i,j,k,bi,bj) ( _rA(i,j,bi,bj) + _rA(i,j-1,bi,bj) ) * 0.5 _d 0
          vf(i,j) =
-     &    -viscAr*_RAatV(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
+     &    -viscAr*_RAatV_Bot(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
      &    *vVel(i,j,k,bi,bj)*recip_drF(k)*2. _d 0
         ENDDO
        ENDDO
