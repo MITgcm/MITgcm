@@ -1,9 +1,14 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.172 2003/07/18 21:16:49 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.173 2003/07/31 18:46:24 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o land pkg: read initial state from files.
+o AIM : add stratospheric drag in the upper level
+
 checkpoint51d_post
+o change function ILNBLNK (=> last non-blank char.) to return zero
+  (instead of the string length) when the string. char is empty
 o fix bug in dxV,dyU definition of cubed-sphere grid (ini_curvilinear_grid)
 o modif's to restore TAMC compatibility
   - avoid "_d" constructs in PARAMETER declarations
