@@ -107,11 +107,12 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
            QSWO(I,J,bi,bj)=Qsw(I,J,bi,bj)
 #else /* SEAICE_EXTERNAL_FLUXES undefined */
            ALB(I,J)=SEAICE_waterAlbedo                                
-           A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)+LWDOWN(I,J,bi,bj)
+           A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
+     &          +LWDOWN(I,J,bi,bj)*0.97 _d 0
      &          +D1*UG(I,J)*ATEMP(I,J,bi,bj)+D1W*UG(I,J)*AQH(I,J,bi,bj)
            B(I,J)=QS1*6.11 _d +00*EXP(17.2694 _d +00
      &          *(TICE(I,J,bi,bj)-TMELT)
-     &          /(TICE(I,J,bi,bj)-TMELT+237.3 _d +00))                   
+     &          /(TICE(I,J,bi,bj)-TMELT+237.3 _d +00))
            A2(I,J)=-D1*UG(I,J)*TICE(I,J,bi,bj)-D1W*UG(I,J)*B(I,J)
      &          -D3*(TICE(I,J,bi,bj)**4)
            FICE1(I,J,bi,bj)=-A1(I,J)-A2(I,J)    
@@ -151,12 +152,14 @@ C NOW DETERMINE FIXED FORCING TERM IN HEAT BUDGET
           DO I=1,sNx
            IF(HSNOW(I,J,bi,bj).GT.0.0) THEN
 C NO SW PENETRATION WITH SNOW
-            A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)+LWDOWN(I,J,bi,bj)
+            A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
+     &       +LWDOWN(I,J,bi,bj)*0.97 _d 0
      &       +D1*UG(I,J)*ATEMP(I,J,bi,bj)+D1I*UG(I,J)*AQH(I,J,bi,bj)
            ELSE
 C SW PENETRATION UNDER ICE
             A1(I,J)=(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
-     &       *(ONE-XIO*EXP(-1.5 _d 0*HICE(I,J)))+LWDOWN(I,J,bi,bj)
+     &       *(ONE-XIO*EXP(-1.5 _d 0*HICE(I,J)))
+     &       +LWDOWN(I,J,bi,bj)*0.97 _d 0
      &       +D1*UG(I,J)*ATEMP(I,J,bi,bj)+D1I*UG(I,J)*AQH(I,J,bi,bj)
            ENDIF
           ENDDO
@@ -205,7 +208,7 @@ C NOW DETERMINE NEW ICE TEMPERATURE
 C NOW SET ICE TEMP TO MIN OF TMELT/ITERATION RESULT  
           DO J=1,sNy
            DO I=1,sNx
-            TICE(I,J,bi,bj)=MIN(TICE(I,J,bi,bj),TMELT)            
+            TICE(I,J,bi,bj)=MIN(TICE(I,J,bi,bj),TMELT)
            ENDDO
           ENDDO
 

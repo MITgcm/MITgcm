@@ -54,6 +54,11 @@ C     i,j,bi,bj - Loop counters
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1,sNy
          DO I=1,sNx
+C Adjust surface air temperature according to ice conditions
+          IF(AREA(I,J,1,bi,bj).GE.0.75 _d 0
+     &      .AND.ATEMP(I,J,bi,bj).GT.273.052 _d 0) THEN
+           ATEMP(I,J,bi,bj)=273.052 _d 0
+          ENDIF
           SEAICE_SALT(I,J,bi,bj)=ZERO
           WATR(I,J,bi,bj)=ZERO
           AR(I,J,bi,bj)=MIN(AREA(I,J,2,bi,bj),
@@ -260,7 +265,7 @@ C NOW TRUNCATE AREA
           AREA(I,J,1,bi,bj)=AREA(I,J,1,bi,bj)*HEFFM(I,J,bi,bj)
           HEFF(I,J,1,bi,bj)=HEFF(I,J,1,bi,bj)*HEFFM(I,J,bi,bj)
 #ifdef DO_WE_NEED_THIS
-          HEFF(I,J,1,bi,bj)=MIN(MAX_HEFF,HEFF(I,J,1,bi,bj))
+c          HEFF(I,J,1,bi,bj)=MIN(MAX_HEFF,HEFF(I,J,1,bi,bj))
 #endif
           HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)*HEFFM(I,J,bi,bj)
          ENDDO

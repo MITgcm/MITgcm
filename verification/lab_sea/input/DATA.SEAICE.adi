@@ -1,5 +1,7 @@
 # SEAICE parameters
  &SEAICE_PARM01
+      SEAICEuseADI      = .TRUE.
+      npseudo           = 20
       SEAICEwriteState  = .TRUE.
       uwindFile         = 'u10m.labsea79'
       vwindFile         = 'v10m.labsea79'

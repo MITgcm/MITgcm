@@ -33,6 +33,7 @@ C     i,j,k,bi,bj - Loop counters
 
       INTEGER i, j, k, bi, bj
       _RS  mask_uice
+      INTEGER myIter
 
 #ifdef ALLOW_TIMEAVE
 C     Initialize averages to zero
@@ -61,8 +62,9 @@ C---  initialize grid info
          DO I=1,sNx
           CSTICE(i,j,bi,bj) =cos(yC(I,J,bi,bj)*deg2rad)
           CSUICE(i,j,bi,bj) =cos(yG(I,J,bi,bj)*deg2rad)
+          SINEICE(i,j,bi,bj)=sin(yC(I,J,bi,bj)*deg2rad)
+          TNGTICE(i,j,bi,bj)=SINEICE(i,j,bi,bj)/CSTICE(i,j,bi,bj)
           SINEICE(i,j,bi,bj)=sin(yG(I,J,bi,bj)*deg2rad)
-          TNGTICE(i,j,bi,bj)=tan(acos(CSTICE(i,j,bi,bj)))
           TNGICE(i,j,bi,bj) =SINEICE(i,j,bi,bj)/CSUICE(i,j,bi,bj)
           DXTICE(i,j,bi,bj)=dxF(i,j,bi,bj)/CSTICE(i,j,bi,bj)
           DXUICE(i,j,bi,bj)=dxV(i,j,bi,bj)/CSUICE(i,j,bi,bj)
@@ -87,6 +89,11 @@ C---  initialize grid info
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           TICE(I,J,bi,bj)=273.0 _d 0
+#ifdef SEAICE_MULTILEVEL
+          DO k=1,7
+           TICES(I,J,k,bi,bj)=273.0 _d 0
+          ENDDO
+#endif
           UICEC(I,J,bi,bj)=ZERO
           VICEC(I,J,bi,bj)=ZERO
           AMASS(I,J,bi,bj)=1000.0 _d 0
@@ -106,6 +113,30 @@ C--   Update overlap regions
       _EXCH_XY_R8(DXUICE, myThid)
       _EXCH_XY_R8(DYTICE, myThid)
       _EXCH_XY_R8(DYUICE, myThid)
+
+      myIter=0
+      CALL PLOT_FIELD_XYRL( CSTICE  , 'Current CSTICE  ' ,
+     &                        myIter, myThid )
+      CALL PLOT_FIELD_XYRL( CSUICE  , 'Current CSUICE  ' ,
+     &                        myIter, myThid )
+      CALL PLOT_FIELD_XYRL( TNGTICE  , 'Current TNGTICE  ' ,
+     &                        myIter, myThid )
+      CALL PLOT_FIELD_XYRL( TNGICE  , 'Current TNGICE  ' ,
+     &                        myIter, myThid )
+      CALL PLOT_FIELD_XYRL( SINEICE  , 'Current SINEICE  ' ,
+     &                        myIter, myThid )
+      CALL PLOT_FIELD_XYRL( DXTICE  , 'Current DXTICE  ' ,
+     &                        myIter, myThid )
+      CALL PLOT_FIELD_XYRL( DXUICE  , 'Current DXUICE  ' ,
+     &                        myIter, myThid )
+      CALL PLOT_FIELD_XYRL( DYTICE  , 'Current DYTICE  ' ,
+     &                        myIter, myThid )
+      CALL PLOT_FIELD_XYRL( DYUICE  , 'Current DYUICE  ' ,
+     &                        myIter, myThid )
+      CALL PLOT_FIELD_XYRL( HEFFM  , 'Current HEFFM  ' ,
+     &                        myIter, myThid )
+      CALL PLOT_FIELD_XYRL( UVM  , 'Current UVM  ' ,
+     &                        myIter, myThid )
 
 C--   Set model variables to initial/restart conditions
       IF ( nIter0 .NE. 0 ) THEN

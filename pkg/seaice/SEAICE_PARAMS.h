@@ -15,18 +15,18 @@ C
 C     SEAICEuseDYNAMICS - If false, do not use dynamics;
 C                         default is to use dynamics.
 C
-C     SEAICEuseLSR      - If true, use LSR rather than ADI solver;
-C                         default is ADI solver.
+C     SEAICEuseADI      - If true, use ADI rather than LSR solver;
+C                         default is LSR solver.
 C
 C     SEAICEwindOnCgrid - By default wind files, uwind and vwind,
 C        are defined on North-East B-grid U and V points.
 C        When this flag is set, wind files are defined on
 C        South-West C-grid U and V points.
 C
-      LOGICAL SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseLSR,
+      LOGICAL SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseADI,
      &        SEAICEwindOnCgrid
       COMMON /SEAICE_PARM_L/
-     &        SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseLSR,
+     &        SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseADI,
      &        SEAICEwindOnCgrid
 
 C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
@@ -76,6 +76,7 @@ C     SEAICE_dumpFreq    - SEAICE dump frequency.                     (s)
 C     SEAICE_taveFreq    - SEAICE time-averaging frequency.           (s)
 C     SEAICE_initialHEFF - initial sea-ice thickness                  (m)
 C     SEAICE_drag        - air-ice drag coefficient
+C     OCEAN_drag         - air-ocean drag coefficient
 C     SEAICE_waterDrag   - water-ice drag coefficient * water density
 C     SEAICE_albedo      - summer albedo
 C     SEAICE_drySnowAlb  - dry snow albedo
@@ -115,7 +116,7 @@ C
       _RL SEAICE_waterAlbedo, SEAICE_strength
       _RL SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce
       _RL SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity
-      _RL SEAICE_snowThick, SEAICE_shortwave
+      _RL SEAICE_snowThick, SEAICE_shortwave, OCEAN_drag
       _RL LSR_ERROR,DIFF1,A22,HO
       _RL WindForcingStart, WindForcingEnd, WindForcingPeriod
       _RL FluxForcingStart, FluxForcingEnd, FluxForcingPeriod
@@ -129,7 +130,7 @@ C
      &    SEAICE_waterAlbedo, SEAICE_strength,
      &    SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      &    SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
-     &    SEAICE_snowThick, SEAICE_shortwave,
+     &    SEAICE_snowThick, SEAICE_shortwave, OCEAN_drag,
      &    LSR_ERROR, DIFF1, A22, HO,
      &    WindForcingStart, WindForcingEnd, WindForcingPeriod,
      &    FluxForcingStart, FluxForcingEnd, FluxForcingPeriod,

@@ -113,7 +113,21 @@ Generating 1-CPU executable with SEAICE_EXTERNAL_FLUXES:
   make depend
   make
   mv mitgcmuv mitgcmuv_exf_fluxes
-  
+ 
+Generating 1-CPU executable with SEAICE_MULTILEVEL:
+  cd ../../../verification/lab_sea/input
+  ln -sf ../code/SIZE.h .
+  ln -sf ../code/CPP_EEOPTIONS.h .
+  ln -sf ../code/CPP_OPTIONS.NOEXF.h CPP_OPTIONS.h
+  ln -sf ../code/SEAICE_OPTIONS.MULTILEVEL.h SEAICE_OPTIONS.h
+  ../../../tools/genmake -makefile
+    ==> on alhena use:
+    ../../../tools/genmake -platform=o2k_noopt -makefile
+  make clean
+  make depend
+  make
+  mv mitgcmuv mitgcmuv_multilevel
+ 
 Generating 2-CPU executable:
   cd ../../../verification/lab_sea/input
   ln -sf ../code/SIZE.2x1.h SIZE.h
@@ -142,13 +156,13 @@ of open-water bulk fluxes are carried out within pkg/seaice.
 To run Experiment 1:
   cd ../../../verification/lab_sea/input
   ln -sf DATA.10hours data
-  ln -sf DATA.SEAICE.adi data.seaice
+  ln -sf DATA.SEAICE.lsr data.seaice
   mitgcmuv_1 >&! output.txt
   mkdir exp1
   mv *tave.0000000010.data exp1
 
 Use matlab script lookat_exp1.m to compare the output
-of exp1 with that from release1_p10 sea-ice code:
+of exp1 with that from release1_p16 sea-ice code:
   cd ../../../verification/lab_sea/matlab
   matlab
   lookat_exp1
@@ -157,13 +171,13 @@ of exp1 with that from release1_p10 sea-ice code:
 Instructions for running Experiment 2
 =====================================
 
-This is a 1-cpu test of the LSR solver.  The solution is
-compared to that of experiment 1, which used the ADI solver.
+This is a 1-cpu test of the ADI solver.  The solution is
+compared to that of experiment 1, which used the LSR solver.
 
 To run Experiment 2:
   cd ../../../verification/lab_sea/input
   ln -sf DATA.10hours data
-  ln -sf DATA.SEAICE.lsr data.seaice
+  ln -sf DATA.SEAICE.adi data.seaice
   mitgcmuv_1 >&! output.txt
   mkdir exp2
   mv *tave.0000000010.data exp2
@@ -201,8 +215,11 @@ results from exp3a and exp3b:
   matlab
   lookat_exp3
 
-If the dynamic ice solvers are correct, they should converge to a
-solution that is constant at each latitude.
+Both solvers should and do converge to solutions
+that are constant at each latitude.  But note that
+the two solutions are not exactly the same because
+the two solvers represent slightly different
+approximations of the viscous/plastic equations.
 
 
 Instructions for running Experiment 4
@@ -214,7 +231,7 @@ tile edges for sea-ice dynamic solvers.
 To run Experiment 4:
   cd ../../../verification/lab_sea/input
   ln -sf DATA.10hours data
-  ln -sf DATA.SEAICE.adi data.seaice
+  ln -sf DATA.SEAICE.lsr data.seaice
   mpirun -np 2 mitgcmuv_2x1
   mkdir exp4
   mv *tave.0000000010.data exp4
@@ -225,13 +242,12 @@ the 2-cpu output to that of exp1:
   matlab
   lookat_exp4
 
-The inaccuracy at the tile boundary can be decreased by increasing
-NPSEUDO in data.seaice at the expense of computation time.
-Also as sea-ice ages (thickens) the difference at the tiles becomes
-increasingly small.  For solver pkg/seaice/adi.F a value of NPSEUDO=10
-appears adequate for forward integrations but cannot be used for sea-ice
-adjoint model.  With NPSEUDO=300 or greater, the tile disappears, but the
-computational cost is very large (11 times that of teh forward model).
+The accuracy of the dynamic solvers is increased by
+reducing parameter LSR_ERROR for the LSR solver and
+by increasing parameter NPSEUDO for the ADI solver.
+The computational cost/accuracy trade-off is quite
+high for the ADI solver but relatively small for
+the LSR solver, which is the default solver.
 
 
 Instructions for running Experiment 5
@@ -243,7 +259,7 @@ convention used by seaice_get_forcing.F for multi-year forcing.
 To run Experiment 5:
   cd ../../../verification/lab_sea/input
   ln -sf      DATA.2years             data
-  ln -sf  DATA.SEAICE.adi      data.seaice
+  ln -sf  DATA.SEAICE.lsr      data.seaice
   ln -sf  evap.labsea1979  evap.labsea1980  
   ln -sf   flo.labsea1979   flo.labsea1980   
   ln -sf   fsh.labsea1979   fsh.labsea1980   
@@ -260,10 +276,10 @@ the 2-cpu output to SMMR-SSM/I data:
   matlab
   lookat_exp5
 
-Disclaimer:
-The comparison here is just for fun, not really supposed
-to look anything like the data.
-Otherwise it would put a lot of people out of business :-)
+The comparison here is just for fun.
+The configuration is too coarse and artificial
+to reproduce realistic sea-ice conditions.
+
 
 Instructions for running Experiment 6
 =====================================
@@ -284,6 +300,7 @@ the output of exp6 to that of exp1:
   cd ../verification/lab_sea/matlab
   matlab
   lookat_exp6
+
 
 Instructions for running Experiment 7
 =====================================
@@ -319,7 +336,7 @@ This experiment uses pkg/gmredi, pkg/kpp, pkg/seaice, and pkg/exf.
 To run Experiment 8:
   cd ../../../verification/lab_sea/input
   ln -sf DATA.10hours_exf data
-  ln -sf DATA.SEAICE.adi_exf data.seaice
+  ln -sf DATA.SEAICE.exf data.seaice
   mitgcmuv_exf_forcing >&! output.txt
   mkdir exp8
   mv *tave.0000000010.data exp8
@@ -341,7 +358,7 @@ open-water surface fluxes are provided by pkg/exf.
 To run Experiment 9:
   cd ../../../verification/lab_sea/input
   ln -sf DATA.10hours_exf data
-  ln -sf DATA.SEAICE.adi_exf data.seaice
+  ln -sf DATA.SEAICE.exf data.seaice
   mitgcmuv_exf_fluxes >&! output.txt
   mkdir exp9
   mv *tave.0000000010.data exp9
@@ -362,7 +379,7 @@ with bulk formula computation of evaporation fields.
 To run Experiment 10:
   cd ../../../verification/lab_sea/input
   ln -sf DATA.10hours_exf data
-  ln -sf DATA.SEAICE.adi_exf data.seaice
+  ln -sf DATA.SEAICE.exf data.seaice
   mitgcmuv_compute_evap >&! output.txt
   mkdir exp10
   mv *tave.0000000010.data exp10
@@ -372,3 +389,24 @@ the output of exp10 to that of exp8:
   cd ../../../verification/lab_sea/matlab
   matlab
   lookat_exp10
+
+
+Instructions for running Experiment 11
+======================================
+
+This is a 1-cpu, 10-hour integration similar to exp1, but
+with multi-level sea-ice thermodynamics.
+
+To run Experiment 10:
+  cd ../../../verification/lab_sea/input
+  ln -sf DATA.10hours data
+  ln -sf DATA.SEAICE.lsr data.seaice
+  mitgcmuv_multilevel >&! output.txt
+  mkdir exp11
+  mv *tave.0000000010.data exp11
+
+Use matlab script lookat_exp11.m to compare
+the output of exp11 to that of exp1:
+  cd ../../../verification/lab_sea/matlab
+  matlab
+  lookat_exp11

@@ -32,7 +32,7 @@ C     iUnit       - Work variable for IO unit number
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
-     & SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseLSR,
+     & SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseADI,
      & SEAICEwindOnCgrid,
      & LAD, IMAX_TICE, NPSEUDO,
      & SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
@@ -41,7 +41,7 @@ C--   SEAICE parameters
      & SEAICE_waterAlbedo, SEAICE_strength,
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
-     & SEAICE_snowThick, SEAICE_shortwave,
+     & SEAICE_snowThick, SEAICE_shortwave, OCEAN_drag,
      & uwindFile, vwindFile, atempFile, aqhFile, lwdownFile,
      & swdownFile, precipFile, evapFile, runoffFile, HeffFile,
      & LSR_ERROR, DIFF1, A22, HO,
@@ -71,12 +71,13 @@ C--   set default sea ice parameters
 #else
       SEAICEuseDYNAMICS  = .FALSE.
 #endif
-      SEAICEuseLSR       = .FALSE.
+      SEAICEuseADI       = .FALSE.
       SEAICEwindOnCgrid  = .FALSE.
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
       SEAICE_initialHEFF = ONE
-      SEAICE_drag        = 0.001  _d 0
+      SEAICE_drag        = 0.002  _d 0
+      OCEAN_drag         = 0.001  _d 0
       SEAICE_waterDrag   = 5.5    _d 0
       SEAICE_albedo      = 0.66   _d 0
       SEAICE_drySnowAlb  = 0.84   _d 0
@@ -103,7 +104,7 @@ C--   set default sea ice parameters
       HeffFile   = ' '
       LAD        = 2
       IMAX_TICE  = 10
-      NPSEUDO    = 10
+      NPSEUDO    = -99999.
       LSR_ERROR  = 0.0001    _d 0
       DIFF1      = .002      _d 0
       DIFF1      = 2.0*DIFF1
@@ -125,13 +126,13 @@ C DOUBLE HO BECAUSE OF MOD IN GROWTH
       SSSForcingPeriod  = -99999.
       StartingYear      = 1948.
       EndingYear        = 2000.
-      MAX_HEFF          = 6.      _d 0
+      MAX_HEFF          = 10.      _d 0
       MIN_ATEMP         = -50.    _d 0
       MIN_LWDOWN        = 60.     _d 0
       MAX_TICE          = 30.     _d 0
       MIN_TICE          = -50.    _d 0
       SEAICE_EPS        = 1.      _d -10
-      SEAICE_EPS_SQ     = SEAICE_EPS * SEAICE_EPS
+      SEAICE_EPS_SQ     = -99999.
 
 C--   Read settings from model parameter file "data.seaice".
       READ(UNIT=iUnit,NML=SEAICE_PARM01,IOSTAT=errIO)
@@ -191,8 +192,16 @@ C--   Everyone else must wait for the parameters to be loaded
      &     SSSForcingPeriod = FluxForcingPeriod
 #endif /* SEAICE_EXTERNAL_FORCING */
 
-C--   No pseudo time steps are needed for LSR solver.
-      IF ( SEAICEuseLSR ) NPSEUDO = 1
+      IF ( SEAICE_EPS_SQ .EQ. -99999. )
+     &     SEAICE_EPS_SQ = SEAICE_EPS * SEAICE_EPS
+
+      IF ( NPSEUDO .EQ. -99999. ) THEN
+         IF ( SEAICEuseADI ) THEN
+            NPSEUDO = 20
+         ELSE
+            NPSEUDO = 1
+         ENDIF
+      ENDIF
 
 #endif /* ALLOW_SEAICE */
 

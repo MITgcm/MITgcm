@@ -41,6 +41,6 @@ C     modified for sea-ice effects by pkg/seaice.
 C--   By default, the sea-ice package uses 2-category thermodynamics.
 C     When this flag is set, an 8-category calculation of ice
 C     thermodynamics is carried out in groatb.F
-#undef SEAICE_MULTILEVEL
+#define SEAICE_MULTILEVEL
 
 #endif /* ALLOW_SEAICE */

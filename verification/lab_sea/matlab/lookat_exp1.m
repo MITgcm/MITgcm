@@ -7,7 +7,7 @@ exp1_path='../input/exp1/';
 load SSMI
 
 % B-grid latitude for uice and vice
-Blat=lat+1; Blon=lon+1;
+Blat=lat-1; Blon=lon-1;
 
 % load model output
 area =readbin('../results/AREAtave.0000000010.data' ,[20 16 1],1);
@@ -40,7 +40,7 @@ set(gca,'xticklabel',[])
 
 subplot(322)
 mypcolor(lon,lat,area1'-area'); colorbar
-title('Difference with release1 patch10')
+title('Difference with release1 patch16')
 set(gca,'xticklabel',[])
 
 subplot(323)
@@ -50,7 +50,7 @@ set(gca,'xticklabel',[])
 
 subplot(324)
 mypcolor(lon,lat,heff1'-heff'); colorbar
-title('Difference with release1 patch10')
+title('Difference with release1 patch16')
 set(gca,'xticklabel',[])
 
 subplot(325)
@@ -63,4 +63,4 @@ mypcolor(Blon,Blat,icespeed1'-icespeed'); colorbar
 if mmax(abs(udir1-udir)) | mmax(abs(vdir1-vdir))
   hold on, myquiver(Blon,Blat,udir1'-udir',vdir1'-vdir','k');
 end
-title('Difference with release1 patch10')
+title('Difference with release1 patch16')

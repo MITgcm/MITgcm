@@ -44,6 +44,8 @@ C     == Local variables ==
             WRITE(suff,'(I10.10)') myIter
             _BARRIER
             _BEGIN_MASTER( myThid )
+            CALL WRITE_FLD_XY_RS( 'UWIND.',suff,uwind,myIter,myThid)
+            CALL WRITE_FLD_XY_RS( 'VWIND.',suff,vwind,myIter,myThid)
             CALL WRITE_FLD_XY_RS( 'FU.',suff,fu,myIter,myThid)
             CALL WRITE_FLD_XY_RS( 'FV.',suff,fv,myIter,myThid)
             CALL WRITE_FLD_XY_RS( 'EmPmR.',suff,EmPmR,myIter,myThid)
@@ -51,6 +53,25 @@ C     == Local variables ==
             CALL WRITE_FLD_XY_RS( 'Qsw.',suff,Qsw,myIter,myThid)
             _END_MASTER( myThid )
             _BARRIER
+
+#ifdef SEAICE_DEBUG
+       CALL PLOT_FIELD_XYRS( uwind , 'Current uwind ', myIter, myThid )
+       CALL PLOT_FIELD_XYRS( vwind , 'Current vwind ', myIter, myThid )
+       CALL PLOT_FIELD_XYRS( atemp , 'Current atemp ', myIter, myThid )
+       CALL PLOT_FIELD_XYRS( aqh   , 'Current aqh   ', myIter, myThid )
+       CALL PLOT_FIELD_XYRS( lwdown, 'Current lwdown', myIter, myThid )
+       CALL PLOT_FIELD_XYRS( swdown, 'Current swdown', myIter, myThid )
+       CALL PLOT_FIELD_XYRS( precip, 'Current precip', myIter, myThid )
+       CALL PLOT_FIELD_XYRL( evap  , 'Current evap  ', myIter, myThid )
+       CALL PLOT_FIELD_XYRS( runoff, 'Current runoff', myIter, myThid )
+       CALL PLOT_FIELD_XYRS( SSS   , 'Current SSS   ', myIter, myThid )
+       CALL PLOT_FIELD_XYRS( SST   , 'Current SST   ', myIter, myThid )
+       CALL PLOT_FIELD_XYRL( fu    , 'Current fu    ', myIter, myThid )
+       CALL PLOT_FIELD_XYRL( fv    , 'Current fv    ', myIter, myThid )
+       CALL PLOT_FIELD_XYRL( EmPmR , 'Current EmPmR ', myIter, myThid )
+       CALL PLOT_FIELD_XYRL( Qnet  , 'Current Qnet  ', myIter, myThid )
+       CALL PLOT_FIELD_XYRL( Qsw   , 'Current Qsw   ', myIter, myThid )
+#endif
 
             DO bj=myByLo(myThid),myByHi(myThid)
                DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -66,7 +87,11 @@ C     == Local variables ==
             CALL WRITE_FLD_XY_RS( 'UICE.',suff,arr,myIter,myThid)
             _END_MASTER( myThid )
             _BARRIER
-            
+#ifdef SEAICE_DEBUG
+       _EXCH_XY_R4( arr, myThid )
+       CALL PLOT_FIELD_XYRS( arr   , 'Current uice  ', myIter, myThid )
+#endif
+
             DO bj=myByLo(myThid),myByHi(myThid)
                DO bi=myBxLo(myThid),myBxHi(myThid)
                   DO j=1,sNy
@@ -81,6 +106,10 @@ C     == Local variables ==
             CALL WRITE_FLD_XY_RS( 'VICE.',suff,arr,myIter,myThid)
             _END_MASTER( myThid )
             _BARRIER
+#ifdef SEAICE_DEBUG
+       _EXCH_XY_R4( arr, myThid )
+       CALL PLOT_FIELD_XYRS( arr   , 'Current vice  ', myIter, myThid )
+#endif
             
             DO bj=myByLo(myThid),myByHi(myThid)
                DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -96,6 +125,10 @@ C     == Local variables ==
             CALL WRITE_FLD_XY_RS( 'HEFF.',suff,arr,myIter,myThid)
             _END_MASTER( myThid )
             _BARRIER
+#ifdef SEAICE_DEBUG
+       _EXCH_XY_R4( arr, myThid )
+       CALL PLOT_FIELD_XYRS( arr   , 'Current heff  ', myIter, myThid )
+#endif
             
             DO bj=myByLo(myThid),myByHi(myThid)
                DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -111,18 +144,9 @@ C     == Local variables ==
             CALL WRITE_FLD_XY_RS( 'AREA.',suff,arr,myIter,myThid)
             _END_MASTER( myThid )
             _BARRIER
-
 #ifdef SEAICE_DEBUG
-c      CALL PLOT_FIELD_XYRS( uwind ,'Current uwind ' , myIter, myThid )
-c      CALL PLOT_FIELD_XYRS( vwind ,'Current vwind ' , myIter, myThid )
-c      CALL PLOT_FIELD_XYRS( atemp ,'Current atemp ' , myIter, myThid )
-c      CALL PLOT_FIELD_XYRS( aqh   ,'Current aqh '   , myIter, myThid )
-c      CALL PLOT_FIELD_XYRS( lwdown,'Current lwdown ', myIter, myThid )
-c      CALL PLOT_FIELD_XYRS( swdown,'Current swdown ', myIter, myThid )
-       CALL PLOT_FIELD_XYRL( fu    ,'Current fu '    , myIter, myThid )
-       CALL PLOT_FIELD_XYRL( fv    ,'Current fv '    , myIter, myThid )
-       CALL PLOT_FIELD_XYRL( Qnet  ,'Current Qnet '  , myIter, myThid )
-       CALL PLOT_FIELD_XYRL( evap  ,'Current evap '  , myIter, myThid )
+       _EXCH_XY_R4( arr, myThid )
+       CALL PLOT_FIELD_XYRS( arr   , 'Current area  ', myIter, myThid )
 #endif
 
          ENDIF

@@ -39,6 +39,15 @@ C--    Going to do some IO. Make everyone except master thread wait.
 
 C--    Read ice model fields
        WRITE(fn,'(A,I10.10)') 'pickup_seaice.',nIter0
+#ifdef SEAICE_MULTILEVEL
+       CALL MDSREADFIELD( fn, precFloat64, 'RL', 7, TICES, 1, myThid )
+       CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, YNEG , 8, myThid )
+       CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, HSNOW, 9, myThid )
+       CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, UICE , 4, myThid )
+       CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, VICE , 5, myThid )
+       CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, HEFF , 6, myThid )
+       CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, AREA , 7, myThid )
+#else /* SEAICE_MULTILEVEL */
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, TICE , 1, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, YNEG , 2, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, HSNOW, 3, myThid )
@@ -46,6 +55,7 @@ C--    Read ice model fields
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, VICE , 3, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, HEFF , 4, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, AREA , 5, myThid )
+#endif /* SEAICE_MULTILEVEL */
 
        _END_MASTER( myThid )
        _BARRIER
@@ -147,6 +157,15 @@ C--    Write model fields
        ELSE
         WRITE(fn,'(A,A)') 'pickup_seaice.',checkPtSuff(nCheckLev)
        ENDIF
+#ifdef SEAICE_MULTILEVEL
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 7,  TICES,1, myIt,myThid)
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,  YNEG, 8, myIt,myThid)
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, HSNOW, 9, myIt,myThid)
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  UICE, 4, myIt,myThid)
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  VICE, 5, myIt,myThid)
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  HEFF, 6, myIt,myThid)
+       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  AREA, 7, myIt,myThid)
+#else /* SEAICE_MULTILEVEL */
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,  TICE, 1, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,  YNEG, 2, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, HSNOW, 3, myIt,myThid)
@@ -154,6 +173,7 @@ C--    Write model fields
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  VICE, 3, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  HEFF, 4, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  AREA, 5, myIt,myThid)
+#endif /* SEAICE_MULTILEVEL */
 
        _END_MASTER( myThid )
        _BARRIER

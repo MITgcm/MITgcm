@@ -8,7 +8,7 @@ exp2_path='../input/exp2/';
 load SSMI
 
 % B-grid latitude for uice and vice
-Blat=lat+1; Blon=lon+1;
+Blat=lat-1; Blon=lon-1;
 
 % load model output
 area1=readbin([exp1_path 'AREAtave.0000000010.data'],[20 16 1],1);
@@ -35,12 +35,12 @@ vdir2(in)=vice2(in)./icespeed2(in);
 % plot comparison figures
 clf, subplot(321)
 mypcolor(lon,lat,area2'); caxis([0 1]), colorbar
-title('Sea-ice concentration using LSR solver')
+title('Sea-ice concentration using ADI solver')
 set(gca,'xticklabel',[])
 
 subplot(322)
 mypcolor(lon,lat,area2'-area1'); colorbar
-title('Difference with ADI solver')
+title('Difference with LSR solver')
 set(gca,'xticklabel',[])
 
 subplot(323)
@@ -50,7 +50,7 @@ set(gca,'xticklabel',[])
 
 subplot(324)
 mypcolor(lon,lat,heff2'-heff1'); colorbar
-title('Difference with ADI solver')
+title('Difference with LSR solver')
 set(gca,'xticklabel',[])
 
 subplot(325)
@@ -63,4 +63,4 @@ mypcolor(Blon,Blat,icespeed2'-icespeed1'); colorbar
 if mmax(abs(udir2-udir1)) | mmax(abs(vdir2-vdir1))
   hold on, myquiver(Blon,Blat,udir2'-udir1',vdir2'-vdir1','k');
 end
-title('Difference with ADI solver')
+title('Difference with LSR solver')

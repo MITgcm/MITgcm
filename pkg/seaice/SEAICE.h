@@ -55,12 +55,18 @@ C
       _RL WATR       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
       COMMON/MIX/TMIX,TICE
+#ifdef SEAICE_MULTILEVEL
+      COMMON/MULTILEVEL/TICES
+#endif
       COMMON/GWATXY/GWATX,GWATY
       COMMON/WIND/WINDX,WINDY
       COMMON/RATE/FHEFF,FICE,FO,HCORR
       COMMON/QFLUX/QNETO,QNETI,QSWO,QSWI
       _RL TMIX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL TICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+#ifdef SEAICE_MULTILEVEL
+      _RL TICES      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,7,nSx,nSy)
+#endif
       _RL GWATX      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL GWATY      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL WINDX      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)

@@ -20,7 +20,7 @@ C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
       _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
       _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL DIFFA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL DIFFA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL DELTT
       INTEGER myThid
 CEndOfInterface
@@ -46,8 +46,8 @@ C     i,j,bi,bj - Loop counters
 C NOW DO DIFFUSION WITH NUIT CONVERSION
         DO j=1,sNy
          DO i=1,sNx
-          DELTXX1=DELTT*DIFFA(I,J)
-          DELTYY1=DELTT*DIFFA(I,J)
+          DELTXX1=DELTT*DIFFA(I,J,bi,bj)
+          DELTYY1=DELTT*DIFFA(I,J,bi,bj)
           DELTXX=DELTXX1/(DXTICE(I,J,bi,bj)*DXTICE(I,J,bi,bj)
      &          *CSTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
           DELTYY=DELTYY1/(DYTICE(I,J,bi,bj)*DYTICE(I,J,bi,bj)

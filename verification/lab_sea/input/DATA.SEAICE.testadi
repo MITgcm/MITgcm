@@ -1,6 +1,7 @@
 # SEAICE parameters
  &SEAICE_PARM01
-      npseudo           = 100
+      SEAICEuseADI      = .TRUE.
+      npseudo           = 500
       SEAICEwriteState  = .TRUE.
       uwindFile         = 'constantWind79'
       vwindFile         = 'constantWind79'

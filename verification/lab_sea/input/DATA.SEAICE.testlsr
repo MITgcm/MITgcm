@@ -1,8 +1,7 @@
 # SEAICE parameters
  &SEAICE_PARM01
-      SEAICEuseLSR      = .TRUE.
       npseudo           = 1
-      LSR_ERROR         = 1e-40
+      LSR_ERROR         = 1e-10
       SEAICEwriteState  = .TRUE.
       uwindFile         = 'constantWind79'
       vwindFile         = 'constantWind79'

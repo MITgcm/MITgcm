@@ -6,9 +6,10 @@ CStartOfInterface
       SUBROUTINE adi( myThid )
 C     /==========================================================\
 C     | SUBROUTINE  adi                                          |
-C     | o Solve ice momentum equation with an ADI method         |
-C     |   see Zhang and Rothrock, JGR, 105, 3325-3338, 2000      |
-C     |   Written by Jinlun Zhang, PSC/UW, Feb-2001              |
+C     | o Solve ice momentum equation with an ADI dynamics solver|
+C     |   (see Zhang and Rothrock, JGR, 105, 3325-3338, 2000)    |
+C     |   written by Jinlun Zhang, PSC/UW, Feb-2001              |
+C     |                     zhang@apl.washington.edu             |
 C     |==========================================================|
 C     \==========================================================/
       IMPLICIT NONE
@@ -21,7 +22,6 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_GRID.h"
 
- 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
       INTEGER myThid
@@ -152,8 +152,8 @@ c$taf loop = parallel
           AA1=((ETA(I,J-1,bi,bj)+ZETA(I,J-1,bi,bj))/CSUICE(I,J,bi,bj)
      &       +(ETA(I,J,bi,bj)+ZETA(I,J,bi,bj))
      &       /CSUICE(I,J,bi,bj))/CSUICE(I,J,bi,bj)
-          AA2=((ETA(I-1,J-1,bi,bj)
-     &       +ZETA(I-1,J-1,bi,bj))/CSUICE(I,J,bi,bj)
+          AA2=((ETA(I-1,J-1,bi,bj)+ZETA(I-1,J-1,bi,bj))
+     &       /CSUICE(I,J,bi,bj)
      &       +(ETA(I-1,J,bi,bj)+ZETA(I-1,J,bi,bj))
      &       /CSUICE(I,J,bi,bj))/CSUICE(I,J,bi,bj)
           AA3=ETA(I-1,J,bi,bj)+ETA(I,J,bi,bj)
@@ -170,8 +170,6 @@ c$taf loop = parallel
          END DO
         END DO
 
-cdm ==> this is equivalent to zeroing AU and CU at arbitrary locations
-cdm ==> in the middle of the ocean. Is this really what you want to do?
         DO J=1-OLy+1,sNy+OLy-1
          AU(1-OLx+1,J)=ZERO
          CU(sNx+OLx-1,J)=ZERO
@@ -185,8 +183,8 @@ c$taf loop = parallel
           AA1=((ETA(I,J-1,bi,bj)+ZETA(I,J-1,bi,bj))/CSUICE(I,J,bi,bj)
      &       +(ETA(I,J,bi,bj)+ZETA(I,J,bi,bj))
      &       /CSUICE(I,J,bi,bj))/CSUICE(I,J,bi,bj)
-          AA2=((ETA(I-1,J-1,bi,bj)
-     &       +ZETA(I-1,J-1,bi,bj))/CSUICE(I,J,bi,bj)
+          AA2=((ETA(I-1,J-1,bi,bj)+ZETA(I-1,J-1,bi,bj))
+     &       /CSUICE(I,J,bi,bj)
      &       +(ETA(I-1,J,bi,bj)+ZETA(I-1,J,bi,bj))
      &       /CSUICE(I,J,bi,bj))/CSUICE(I,J,bi,bj)
           AA3=ETA(I-1,J,bi,bj)+ETA(I,J,bi,bj)
@@ -219,22 +217,18 @@ c$taf loop = parallel
      &         *UICE(I,J,2,bi,bj)*TWO)*UVM(I,J,bi,bj)
          END DO
 
-cdm ==> CUU will contain bands of zeros at arbitrary locations
          DO I=1-OLx+1,sNx+OLx-1
           CUU(I)=CU(I,J)
          END DO
          URT(1-OLx+1)=URT(1-OLx+1)/BU(1-OLx+1,J)
          DO I=1-OLx+2,sNx+OLx-1
           IM=I-1
-cdm ==> following operation may require exchange or global sum
           CUU(I)=CUU(I)/(BU(I,J)-AU(I,J)*CUU(IM))
-cdm ==> following operation may require exchange or global sum
           URT(I)=(URT(I)-AU(I,J)*URT(IM))/(BU(I,J)-AU(I,J)*CUU(IM))
          END DO
          DO I=1-OLx+1,sNx+OLx-1-1
           J1=sNx+OLx-1-I
           J2=J1+1
-cdm ==> following operation may require exchange or global sum
           URT(J1)=URT(J1)-CUU(J1)*URT(J2)
          END DO
          DO I=1-OLx+1,sNx+OLx-1
@@ -251,8 +245,6 @@ c        END DO
        ENDDO
       ENDDO
 
-cdm ==> is this correct?  does it mean that tile boundaries
-cdm ==> will be slightly different?
        CALL SEAICE_EXCH( UICE, myThid )
 
 C NOW SECOND HALF
@@ -296,8 +288,8 @@ c$taf loop = parallel
           AA1=((ETA(I,J-1,bi,bj)+ZETA(I,J-1,bi,bj))/CSUICE(I,J,bi,bj)
      &       +(ETA(I,J,bi,bj)+ZETA(I,J,bi,bj))
      &       /CSUICE(I,J,bi,bj))/CSUICE(I,J,bi,bj)
-          AA2=((ETA(I-1,J-1,bi,bj)
-     &       +ZETA(I-1,J-1,bi,bj))/CSUICE(I,J,bi,bj)
+          AA2=((ETA(I-1,J-1,bi,bj)+ZETA(I-1,J-1,bi,bj))
+     &       /CSUICE(I,J,bi,bj)
      &       +(ETA(I-1,J,bi,bj)+ZETA(I-1,J,bi,bj))
      &       /CSUICE(I,J,bi,bj))/CSUICE(I,J,bi,bj)
 
@@ -318,8 +310,7 @@ c$taf loop = parallel
            AA9=ZERO
           END IF
 
-          FXY1(I,J)=AA9+AMASS(I,J,bi,bj)/SEAICE_DT
-     5             *UICE(I,J,1,bi,bj)*TWO
+          FXY1(I,J)=AA9+AMASS(I,J,bi,bj)/SEAICE_DT*UICE(I,J,1,bi,bj)*TWO
      5             -(AA1+AA2)*DELX2(I,J)*UICE(I,J,1,bi,bj)
      6             +((ETA(I,J-1,bi,bj)+ZETA(I,J-1,bi,bj)
      6             +ETA(I,J,bi,bj)+ZETA(I,J,bi,bj))
@@ -345,13 +336,11 @@ c$taf loop = parallel
          DO J=1-OLy+2,sNy+OLy-1
           JM=J-1
           CVV(J)=CVV(J)/(BV(I,J)-AV(I,J)*CVV(JM))
-cdm ==> following operation may require exchange or global sum
           VRT(J)=(VRT(J)-AV(I,J)*VRT(JM))/(BV(I,J)-AV(I,J)*CVV(JM))
          END DO
          DO J=1-OLy+1,sNy+OLy-1-1
           J1=sNy+OLy-1-J
           J2=J1+1
-cdm ==> following operation may require exchange or global sum
           VRT(J1)=VRT(J1)-CVV(J1)*VRT(J2)
          END DO
          DO J=1-OLy+1,sNy+OLy-1
@@ -373,13 +362,12 @@ c$taf loop = parallel
          DO I=1-OLx+1,sNx+OLx-1
           DO J=1-OLy+1,sNy+OLy-1
   
-           FXY(I,J)=-DRAGA(I,J,bi,bj)*UICEC(I,J,bi,bj)
-     3        +FORCEY(I,J,bi,bj)
+           FXY(I,J)=-DRAGA(I,J,bi,bj)*UICEC(I,J,bi,bj)+FORCEY(I,J,bi,bj)
      3        +(HALF*(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
      3        *(ZETA(I-1,J,bi,bj)+ZETA(I,J,bi,bj)
      3        -ZETA(I-1,J-1,bi,bj)-ZETA(I,J-1,bi,bj))*DELXY(I,J)
-     3        /CSUICE(I,J,bi,bj)
-     3        +HALF*ZETAMEAN(I,J)*((UICEC(I+1,J+1,bi,bj)
+     3        /CSUICE(I,J,bi,bj)+HALF*ZETAMEAN(I,J)
+     3        *((UICEC(I+1,J+1,bi,bj)
      3        -UICEC(I-1,J+1,bi,bj))/CSUICE(I,J+1,bi,bj)
      3        -(UICEC(I+1,J-1,bi,bj)-UICEC(I-1,J-1,bi,bj))
      3        /CSUICE(I,J-1,bi,bj))*DELXY(I,J))
@@ -387,8 +375,8 @@ c$taf loop = parallel
      4        -(HALF*(UICEC(I+1,J,bi,bj)-UICEC(I-1,J,bi,bj))
      4        *(ETA(I-1,J,bi,bj)+ETA(I,J,bi,bj)
      4        -ETA(I-1,J-1,bi,bj)-ETA(I,J-1,bi,bj))*DELXY(I,J)
-     4        /CSUICE(I,J,bi,bj)
-     4        +HALF*ETAMEAN(I,J)*((UICEC(I+1,J+1,bi,bj)
+     4        /CSUICE(I,J,bi,bj)+HALF*ETAMEAN(I,J)
+     4        *((UICEC(I+1,J+1,bi,bj)
      4        -UICEC(I-1,J+1,bi,bj))/CSUICE(I,J+1,bi,bj)
      4        -(UICEC(I+1,J-1,bi,bj)-UICEC(I-1,J-1,bi,bj))
      4        /CSUICE(I,J-1,bi,bj))*DELXY(I,J))
@@ -397,8 +385,8 @@ c$taf loop = parallel
      5        +UICEC(I,J+1,bi,bj)
      5        -UICEC(I+1,J,bi,bj)-UICEC(I,J,bi,bj))+ETA(I,J-1,bi,bj)
      5        *(UICEC(I+1,J,bi,bj)
-     5        +UICEC(I,J,bi,bj)-UICEC(I+1,J-1,bi,bj)
-     5        -UICEC(I,J-1,bi,bj))+ETA(I-1,J,bi,bj)
+     5        +UICEC(I,J,bi,bj)-UICEC(I+1,J-1,bi,bj)-UICEC(I,J-1,bi,bj))
+     5        +ETA(I-1,J,bi,bj)
      5        *(UICEC(I,J,bi,bj)+UICEC(I-1,J,bi,bj)-UICEC(I,J+1,bi,bj)
      5        -UICEC(I-1,J+1,bi,bj))
      5        +ETA(I-1,J-1,bi,bj)*(UICEC(I,J-1,bi,bj)
@@ -506,13 +494,11 @@ c$taf loop = parallel
           DO J=1-OLy+2,sNy+OLy-1
            JM=J-1
            CVV(J)=CVV(J)/(BV(I,J)-AV(I,J)*CVV(JM))
-cdm ==> following operation may require exchange or global sum
            VRT(J)=(VRT(J)-AV(I,J)*VRT(JM))/(BV(I,J)-AV(I,J)*CVV(JM))
           END DO
           DO J=1-OLy+1,sNy+OLy-1-1
            J1=sNy+OLy-1-J
            J2=J1+1
-cdm ==> following operation may require exchange or global sum
            VRT(J1)=VRT(J1)-CVV(J1)*VRT(J2)
           END DO
           DO J=1-OLy+1,sNy+OLy-1
@@ -529,8 +515,6 @@ c         END DO
        ENDDO
       ENDDO
 
-cdm ==> is this correct?  does it mean that tile boundaries
-cdm ==> will be slightly different?
        CALL SEAICE_EXCH( VICE, myThid )
 
 C NOW SECOND HALF
@@ -623,13 +607,11 @@ c$taf loop = parallel
           DO I=1-OLx+2,sNx+OLx-1
            IM=I-1
            CUU(I)=CUU(I)/(BU(I,J)-AU(I,J)*CUU(IM))
-cdm ==> following operation may require exchange or global sum
            URT(I)=(URT(I)-AU(I,J)*URT(IM))/(BU(I,J)-AU(I,J)*CUU(IM))
           END DO
           DO I=1-OLx+1,sNx+OLx-1-1
            J1=sNx+OLx-1-I
            J2=J1+1
-cdm ==> following operation may require exchange or global sum
            URT(J1)=URT(J1)-CUU(J1)*URT(J2)
           END DO
           DO I=1-OLx+1,sNx+OLx-1

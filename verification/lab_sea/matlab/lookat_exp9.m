@@ -8,7 +8,7 @@ exp9_path='../input/exp9/';
 load SSMI
 
 % B-grid latitude for uice and vice
-Blat=lat+1; Blon=lon+1;
+Blat=lat-1; Blon=lon-1;
 
 % load model output
 area1=readbin([exp8_path 'AREAtave.0000000010.data'],[20 16 1],1);

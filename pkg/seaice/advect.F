@@ -1,7 +1,7 @@
 C $Header:
 
 #include "SEAICE_OPTIONS.h"
- 
+
 CStartOfInterface
       SUBROUTINE advect( UICE,VICE,HEFF,HEFFM,myThid )
 C     /==========================================================\
@@ -10,14 +10,14 @@ C     | o Calculate ice advection                                |
 C     |==========================================================|
 C     \==========================================================/
       IMPLICIT NONE
- 
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_GRID.h"
- 
+
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
       _RL UICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
@@ -26,7 +26,7 @@ C     myThid - Thread no. that called this routine.
       _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       INTEGER myThid
 CEndOfInterface
- 
+
 #ifdef ALLOW_SEAICE
 
 C     === Local variables ===
@@ -36,9 +36,12 @@ C     i,j,k,bi,bj - Loop counters
       INTEGER K3
       _RL  DELTT
 
-      _RL UI   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL VI   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL DIFFA(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
+      _RL UI   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy,nSx,nSy)
+      _RL VI   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy,nSx,nSy)
+      _RL DIFFA(1-OLx:sNx+OLx, 1-OLy:sNy+OLy,nSx,nSy)
+
+#ifdef SEAICE_ALLOW_DYNAMICS
+      IF ( SEAICEuseDYNAMICS ) THEN
 
 C NOW DECIDE IF BACKWARD EULER OR LEAPFROG
       IF(LAD.EQ.1) THEN
@@ -58,8 +61,8 @@ C NOW REARRANGE H'S
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          UI(I,J)=UICE(I,J,1,bi,bj)
-          VI(I,J)=VICE(I,J,1,bi,bj)
+          UI(I,J,bi,bj)=UICE(I,J,1,bi,bj)
+          VI(I,J,bi,bj)=VICE(I,J,1,bi,bj)
          ENDDO
         ENDDO
 
@@ -80,16 +83,16 @@ C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
          DO I=0,sNx-1
           HEFF(I+1,J+1,1,bi,bj)=HEFF(I+1,J+1,K3,bi,bj)
      &     -DELTT*((HEFF(I+1,J+1,2,bi,bj)+HEFF
-     &     (I+2,J+1,2,bi,bj))*(UI(I+2,J+2)+UI(I+2,J+1))-
+     &     (I+2,J+1,2,bi,bj))*(UI(I+2,J+2,bi,bj)+UI(I+2,J+1,bi,bj))-
      &     (HEFF(I+1,J+1,2,bi,bj)+HEFF
-     &     (I,J+1,2,bi,bj))*(UI(I+1,J+2)+UI(I+1,J+1)))
+     &     (I,J+1,2,bi,bj))*(UI(I+1,J+2,bi,bj)+UI(I+1,J+1,bi,bj)))
      &     *(QUART/(DXTICE(I+1,J,bi,bj)*CSTICE(I,J+1,bi,bj)))
      &     -DELTT*((HEFF(I+1,J+1,2,bi,bj)
-     &     +HEFF(I+1,J+2,2,bi,bj))*(VI(I+1,J+2)
-     &     +VI(I+2,J+2)*CSUICE(I+1,J+2,bi,bj)
+     &     +HEFF(I+1,J+2,2,bi,bj))*(VI(I+1,J+2,bi,bj)
+     &     +VI(I+2,J+2,bi,bj))*CSUICE(I+1,J+2,bi,bj)
      &     -(HEFF(I+1,J+1,2,bi,bj)+HEFF(I+1,J,2,bi,bj))
-     &     *(VI(I+1,J+1)+VI(I+2,J+1))*CSUICE(I+1,J+1,bi,bj))
-     &     *(QUART/(DYTICE(I,J+1,bi,bj)*CSTICE(I,J+1,bi,bj))))
+     &     *(VI(I+1,J+1,bi,bj)+VI(I+2,J+1,bi,bj))*CSUICE(I+1,J+1,bi,bj))
+     &     *(QUART/(DYTICE(I,J+1,bi,bj)*CSTICE(I,J+1,bi,bj)))
          ENDDO
         ENDDO
        ENDDO
@@ -121,16 +124,17 @@ C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
             DO I=0,sNx-1
              HEFF(I+1,J+1,1,bi,bj)=HEFF(I+1,J+1,3,bi,bj)
      &        -DELTT*((HEFF(I+1,J+1,2,bi,bj)+HEFF
-     &        (I+2,J+1,2,bi,bj))*(UI(I+2,J+2)+UI(I+2,J+1))-
+     &        (I+2,J+1,2,bi,bj))*(UI(I+2,J+2,bi,bj)+UI(I+2,J+1,bi,bj))-
      &        (HEFF(I+1,J+1,2,bi,bj)+HEFF
-     &        (I,J+1,2,bi,bj))*(UI(I+1,J+2)+UI(I+1,J+1)))
+     &        (I,J+1,2,bi,bj))*(UI(I+1,J+2,bi,bj)+UI(I+1,J+1,bi,bj)))
      &        *(QUART/(DXTICE(I+1,J,bi,bj)*CSTICE(I,J+1,bi,bj)))
      &        -DELTT*((HEFF(I+1,J+1,2,bi,bj)
-     &        +HEFF(I+1,J+2,2,bi,bj))*(VI(I+1,J+2)
-     &        +VI(I+2,J+2)*CSUICE(I+1,J+2,bi,bj)
+     &        +HEFF(I+1,J+2,2,bi,bj))*(VI(I+1,J+2,bi,bj)
+     &        +VI(I+2,J+2,bi,bj))*CSUICE(I+1,J+2,bi,bj)
      &        -(HEFF(I+1,J+1,2,bi,bj)+HEFF(I+1,J,2,bi,bj))
-     &        *(VI(I+1,J+1)+VI(I+2,J+1))*CSUICE(I+1,J+1,bi,bj))
-     &        *(QUART/(DYTICE(I,J+1,bi,bj)*CSTICE(I,J+1,bi,bj))))
+     &        *(VI(I+1,J+1,bi,bj)+VI(I+2,J+1,bi,bj))
+     &        *CSUICE(I+1,J+1,bi,bj))
+     &        *(QUART/(DYTICE(I,J+1,bi,bj)*CSTICE(I,J+1,bi,bj)))
             ENDDO
            ENDDO
           ENDDO
@@ -159,8 +163,8 @@ C NOW CALCULATE DIFFUSION COEF ROUGHLY
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          DIFFA(I,J)=DIFF1*MIN(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj)
-     &                        ,DYTICE(I,J,bi,bj))
+          DIFFA(I,J,bi,bj)=DIFF1*MIN(DXTICE(I,J,bi,bj)
+     &                    *CSTICE(I,J,bi,bj),DYTICE(I,J,bi,bj))
          ENDDO
         ENDDO
        ENDDO
@@ -183,7 +187,7 @@ C NOW CALCULATE DIFFUSION COEF ROUGHLY
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          DIFFA(I,J)=-(MIN(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj)
+          DIFFA(I,J,bi,bj)=-(MIN(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj)
      &                    ,DYTICE(I,J,bi,bj)))**2/DELTT
          ENDDO
         ENDDO
@@ -201,6 +205,9 @@ C NOW CALCULATE DIFFUSION COEF ROUGHLY
         ENDDO
        ENDDO
       ENDDO
+
+      ENDIF
+#endif /* SEAICE_ALLOW_DYNAMICS */
 
 #endif /* ALLOW_SEAICE */
 

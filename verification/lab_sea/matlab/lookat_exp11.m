@@ -2,7 +2,7 @@
 % and to specify location of exp1 output
 cd ../../../verification/lab_sea/matlab
 exp1_path='../input/exp1/';
-exp8_path='../input/exp8/';
+exp11_path='../input/exp11/';
 
 % load monthly-mean SMMR-SSM/I data
 load SSMI
@@ -15,10 +15,10 @@ area1=readbin([exp1_path 'AREAtave.0000000010.data'],[20 16 1],1);
 heff1=readbin([exp1_path 'HEFFtave.0000000010.data'],[20 16 1],1);
 uice1=readbin([exp1_path 'UICEtave.0000000010.data'],[20 16 1],1);
 vice1=readbin([exp1_path 'VICEtave.0000000010.data'],[20 16 1],1);
-area2=readbin([exp8_path 'AREAtave.0000000010.data'],[20 16 1],1);
-heff2=readbin([exp8_path 'HEFFtave.0000000010.data'],[20 16 1],1);
-uice2=readbin([exp8_path 'UICEtave.0000000010.data'],[20 16 1],1);
-vice2=readbin([exp8_path 'VICEtave.0000000010.data'],[20 16 1],1);
+area2=readbin([exp11_path 'AREAtave.0000000010.data'],[20 16 1],1);
+heff2=readbin([exp11_path 'HEFFtave.0000000010.data'],[20 16 1],1);
+uice2=readbin([exp11_path 'UICEtave.0000000010.data'],[20 16 1],1);
+vice2=readbin([exp11_path 'VICEtave.0000000010.data'],[20 16 1],1);
 
 % compute ice speed and direction
 udir1=0*uice1; vdir1=0*vice1;
@@ -35,7 +35,7 @@ vdir2(in)=vice2(in)./icespeed2(in);
 % plot comparison figures
 clf, subplot(321)
 mypcolor(lon,lat,area2'); caxis([0 1]), colorbar
-title('Sea-ice concentration with pkg/exf')
+title('Sea-ice concentration with multilevel sea-ice')
 set(gca,'xticklabel',[])
 
 subplot(322)
