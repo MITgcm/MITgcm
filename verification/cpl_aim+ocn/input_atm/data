@@ -24,13 +24,13 @@
  hFacInf=0.2,
  hFacSup=2.0,
  uniformLin_PhiSurf=.FALSE.,
- staggerTimeStep=.TRUE.,
- readBinaryPrec=64,
- writeBinaryPrec=64,
  hFacMin=0.2,
  saltAdvScheme=3,
  vectorInvariantMomentum=.TRUE.,
  useJamartWetPoints=.TRUE.,
+ staggerTimeStep=.TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
  &
 
 # Elliptic solver parameters
@@ -59,8 +59,6 @@
 
 # Gridding parameters
  &PARM04
- usingCartesianGrid=.FALSE.,
- usingSphericalPolarGrid=.FALSE.,
  usingCurvilinearGrid=.TRUE.,
  delR=100.E2, 250.E2, 300.E2, 200.E2, 150.E2,
  Ro_SeaLevel=1.E5,

@@ -18,14 +18,15 @@
  &LAND_MODEL_PAR
 # land_calc_grT =.FALSE.,
 # land_calc_grW =.FALSE.,
-  land_impl_grT =.FALSE.,
-  land_calc_snow=.FALSE.,
-  land_calc_alb =.FALSE.,
+# land_impl_grT =.FALSE.,
+# land_calc_snow=.FALSE.,
+# land_calc_alb =.FALSE.,
   land_grT_iniFile='land_grT_ini.cpl.bin',
-  land_grW_iniFile='land_grW_ini.cpl.bin',
-  land_oldPickup=.TRUE.,
+  land_grW_iniFile='land_grW_ini.mn.bin',
+  land_snow_iniFile='land_snw_ini.cpl.bin',
+# land_oldPickup=.TRUE.,
   land_dzF= 0.1, 4.0,
-# land_diagFreq=1.,
+# land_diagFreq=2592000.,
  &
 
 #--  Physical constants (namelist LAND_PHYS_PAR):
@@ -38,6 +39,7 @@
 #     land_rhoLiqW    :: density of liquid water (kg/m3)
 #     land_rhoSnow    :: density of snow (kg/m3)
 #     land_Lfreez     :: Latent heat of freezing (J/kg)
+#     land_hMaxSnow   :: Maximum snow-thickness  (m)
 #     diffKsnow       :: thermal conductivity of snow (W/m/K)
 #     timeSnowAge     :: snow aging time scale   (s)
 #     hNewSnowAge     :: new snow thickness that refresh the snow-age (by 1/e)
@@ -46,5 +48,6 @@
 #     albOldSnow      :: albedo of old snow (snowAge > 35.d)
 #     hAlbSnow        :: snow thickness for albedo transition: snow/ground
  &LAND_PHYS_PAR
-  land_Lfreez=0.,
+# land_Lfreez=0.,
+  land_hMaxSnow=10.,
  &

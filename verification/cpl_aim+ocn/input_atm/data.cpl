@@ -1,8 +1,18 @@
 # Coupling package parameters, ATM component: 
-#     useImportSST   :: True => use the Imported SST from couler
+# cpl_earlyExpImpCall :: call coupler early in the time stepping call sequence
+#     cpl_oldPickup  :: restart from an old pickup (= until ckpt 52m_post)
+#     useImportMxlD  :: True => use Imported Mix.Layer Detph from coupler
+#     useImportSST   :: True => use the Imported SST from coupler
+#     useImportSSS   :: True => use the Imported SSS from coupler
+#     useImportVsq   :: True => use the Imported Surf. velocity^2
 #     cpl_atmSendFrq :: Frequency^-1 for sending data to coupler (s)
  &CPL_ATM_PARAM
-# useImportSST=.FALSE.,
+# cpl_earlyExpImpCall=.FALSE.,
+# cpl_oldPickup=.TRUE.,
+# useImportMxlD=.FALSE.,
+# useImportSST =.FALSE.,
+# useImportSSS =.FALSE.,
+# useImportVsq =.FALSE.,
   cpl_atmSendFrq=3600.,
  &
 

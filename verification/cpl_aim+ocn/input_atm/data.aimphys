@@ -25,19 +25,19 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #  aim_useFMsurfBC=.FALSE.,
 #  aim_useMMsurfFc=.TRUE.,
 #  aim_surfPotTemp=.TRUE.,
-#  aim_energPrecip=.TRUE.,
-#  aim_splitSIOsFx=.TRUE.,
+   aim_energPrecip=.TRUE.,
+   aim_splitSIOsFx=.TRUE.,
 #  aim_MMsufx = '.cs.bin',
 #  aim_MMsufxLength = 7,
    aim_LandFile= 'landFrc.cpl_FM.bin',
-   aim_albFile = 'albedo.cpl_FM.bin',
+   aim_albFile = 'albedo_cs32.bin',
    aim_vegFile = 'vegetFrc.cpl_FM.bin',
    aim_sstFile = 'seaSurfT.cpl_FM.bin',
    aim_lstFile = 'lndSurfT.cpl_FM.bin',
-   aim_oiceFile= 'seaIce.cpl2FM.bin',
+   aim_oiceFile= 'seaIce.cpl3FM.bin',
    aim_snowFile= 'snowDepth.cpl_FM.bin',
    aim_swcFile = 'soilMoist.cpl_FM.bin',
-#  aim_dragStrato= 2592000.,
+   aim_dragStrato= 2592000.,
 #  aim_clrSkyDiag=.TRUE.,
 #  aim_diagFreq=3600.,
  &
@@ -87,7 +87,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
  &AIM_PAR_SFL
 #  FTEMP0 = 0.,
 #  FHUM0  = 0.,
-   dTstab = 0.,
+#  dTstab = 0.,
  &
 
 #--   Convection constants (namelist AIM_PAR_CNV):
