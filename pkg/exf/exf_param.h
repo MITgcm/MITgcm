@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.14 2004/03/03 05:17:44 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.15 2004/03/24 21:46:20 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -353,7 +353,11 @@ c     exf_outscale_*    output scaling factors
      &                    , exf_outscal_sss
      &                    , exf_outscal_apressure
 
-#ifdef USE_EXF_INTERPOLATION
+#ifndef USE_EXF_INTERPOLATION
+c-- set dummy dimension 1
+       integer MAX_LAT_INC
+       parameter(MAX_LAT_INC = 1)
+#else
 c for lat interpolation, arraysize currently set to 250 max data values
        integer MAX_LAT_INC
        parameter(MAX_LAT_INC = 250)

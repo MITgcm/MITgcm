@@ -1,10 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.3 2004/03/17 23:08:09 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.4 2004/03/24 21:46:20 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "EXF_OPTIONS.h"
-
-#ifdef USE_EXF_INTERPOLATION
 
       subroutine exf_set_uv(
      &     uvecfile, uvecstartdate, uvecperiod,
@@ -81,6 +79,7 @@ c     *vec_lat_inc         :: vector y-grid increments for *vec
       integer mycurrentiter
       integer mythid
 
+#ifdef USE_EXF_INTERPOLATION
 c     == local variables ==
 
       logical first, changed
@@ -269,7 +268,7 @@ c     IF ( .NOT. useCubedSphereExchange )
 
       ENDIF
 
+#endif /* USE_EXF_INTERPOLATION */
+
       return
       end
-
-#endif /* USE_EXF_INTERPOLATION */
