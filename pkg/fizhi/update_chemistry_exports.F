@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.3 2004/06/10 21:50:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.4 2004/06/11 18:50:04 molod Exp $
 C $Name:  $
 
        subroutine update_chemistry_exports (myTime, myIter, myThid)
@@ -17,33 +17,43 @@ c-----------------------------------------------------------------------
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "fizhi_chemistry_coms.h"
+#include "fizhi_coms.h"
 #include "gridalt_mapping.h"
 #include "EEPARAMS.h"
+#include "chronos.h"
 
-       integer myTime, myIter, myThid
+      integer myTime, myIter, myThid
 
 c pe on physics grid refers to bottom edge
-       _RL pephy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys+1,nSx,nSy)
+      _RL pephy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys+1,nSx,nSy)
+      _RL pphy(sNx,sNy,Nrphys,nSx,nSy)
+      _RL oz1(nlatsoz,nlevsoz), strq1(nlatsq,nlevsq)
+      _RL waterin(sNx,sNy,Nrphys), xlat(sNx,sNy)
 
-       integer i, j, L, bi, bj
-       integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
-                                                                                    
-       im1 = 1-OLx
-       im2 = sNx+OLx
-       jm1 = 1-OLy
-       jm2 = sNy+OLy
-       idim1 = 1
-       idim2 = sNx
-       jdim1 = 1
-       jdim2 = sNy
-                                                                                    
+      integer i, j, L, bi, bj
+      integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
+      integer nhms1,nymd1,nhms2,nymd2,imns,ipls
+      _RL facm, facp
+
+      im1 = 1-OLx
+      im2 = sNx+OLx
+      jm1 = 1-OLy
+      jm2 = sNy+OLy
+      idim1 = 1
+      idim2 = sNx
+      jdim1 = 1
+      jdim2 = sNy
+
+      if( alarm('radsw').or.alarm('radlw') ) then
+
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
 
-C Compute pressures on physics grid
+c  Construct the physics grid pressures
         do j = 1,sNy
         do i = 1,sNx
-         pephy(i,j,1,bi,bj)=Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
+         pephy(i,j,1,bi,bj)=(Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj))/
+     .                       rstarExpC(i,j,bi,bj)
          do L = 2,Nrphys+1
           pephy(i,j,L,bi,bj)=pephy(i,j,L-1,bi,bj)-dpphys(i,j,L-1,bi,bj)
          enddo
@@ -52,35 +62,67 @@ c Do not use a zero field as the top edge pressure for interpolation
      .                               pephy(i,j,Nrphys+1,bi,bj) = 1.e-5
         enddo
         enddo
+        do j = 1,sNy
+        do i = 1,sNx
+         do L = 1,Nrphys
+          pphy(i,j,L,bi,bj)=(pephy(i,j,L+1,bi,bj)+pephy(i,j,L,bi,bj))/2.
+         enddo
+        enddo
+        enddo
 
-call time-bound
-call interp_time
-call interp chemistry
-c reminder - lats are in yC and lons in xC in GRID.h
+        do j = 1,sNy
+        do i = 1,sNx
+         xlat(i,j) = yC(i,j,bi,bj)
+         do L = 1,Nrphys
+          waterin(i,j,L) = sphy(i,j,L,bi,bj)
+         enddo
+        enddo
+        enddo
+
+        call time_bound(nymd,nhms,nymd1,nhms1,nymd2,nhms2,imns,ipls)
+        call interp_time(nymd,nhms,nymd1,nhms1,nymd2,nhms2,facm,facp)
+
+        do L = 1,nlevsoz
+        do j = 1,nlatsoz
+         oz1(j,L) = ozone(j,L,imns)*facm + ozone(j,L,ipls)*facp
+        enddo
+        enddo
+                                                                             
+        do L = 1,nlevsq
+        do j = 1,nlatsq
+         strq1(j,L) = stratq(j,L,imns)*facm + stratq(j,L,ipls)*facp
+        enddo
+        enddo
+
+        call interp_chemistry(strq1,nlevsq,nlatsq,levsq,latsq,
+     .   oz1,nlevsoz,nlatsoz,levsoz,latsoz,waterin,pphy,xlat,
+     .   im2,jm2,Nrphys,nSx,nSy,bi,bj,o3,qstr)
 
        enddo
        enddo
 
-       return
-       end
+      endif
+
+      return
+      end
 
       subroutine interp_chemistry (stratq,nwatlevs,nwatlats,watlevs,
      . watlats,ozone,nozolevs,nozolats,ozolevs,ozolats,
-     . qz,plz,ptop,xlat,im,jm,lm,ozrad,qzrad)
+     . qz,plz,ptop,xlat,im,jm,lm,nSx,nSy,bi,bj,ozrad,qzrad)
 
       implicit none
 
 c Input Variables
 c ---------------
-      integer nwatlevs,nwatlats,nozolevs,nozolats
+      integer nwatlevs,nwatlats,nozolevs,nozolats,nSx,nSy,bi,bj
       real stratq(nwatlats,nwatlevs),ozone(nozlats,nozlevs)
       integer watlevs(nwatlevs),watlats(nwatlats)
       integer ozlevs(nozlevs),ozlats(nozlats)
       real qz(im,jm,lm),plz(im,jm,lm)
       real ptop, xlat(im,jm)
       integer im,jm,lm
-      real ozrad(im,jm,lm)
-      real qzrad(im,jm,lm)
+      real ozrad(im,jm,lm,nSx,nSy)
+      real qzrad(im,jm,lm,nSx,nSy)
 
 c Local Variables
 c ---------------
@@ -92,9 +134,9 @@ C ****           Get Ozone and Stratospheric Moisture Data          ****
 C **********************************************************************
 
       call interp_qz (stratq,nwatlevs,nwatlats,watlevs,watlats,im*jm,
-     .                                             xlat,lm,plz,qz,qzrad)
+     .                                xlat,lm,plz,qz,qzrad(1,1,1,bi,bj))
       call interp_oz (ozone ,nozolevs,nozolats,ozolevs,ozolats,im*jm,
-     .                                             xlat,lm,plz,   ozrad)
+     .                                xlat,lm,plz,ozrad(1,1,1,bi,bj))
       return
       end
 

@@ -26,6 +26,6 @@ c -------------------------
 c Chemistry Exports
 c -------------------
       common /chem_exports/ o3, qstr 
-      _RL o3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
-      _RL qstr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      _RL o3(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL qstr(sNx,sNy,Nrphys,Nsx,Nsy)
 
