@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.13 2003/11/13 06:35:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.14 2003/12/30 02:37:11 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -112,10 +112,6 @@ C--    Read IO error counter
        beginIOErrCount = IO_ERRCOUNT(myThid)
 c      prevPrec = writeBinaryPrec
 c      writeBinaryPrec = precFloat32
-       CALL WRITE_FLD_XY_RL('uFluxtave.',suff,uFluxtave,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('vFluxtave.',suff,vFluxtave,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('tFluxtave.',suff,tFluxtave,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('sFluxtave.',suff,sFluxtave,myIter,myThid)
        CALL WRITE_FLD_XY_RL('ETAtave.'  ,suff,etatave  ,myIter,myThid)
        CALL WRITE_FLD_XY_RL('Eta2tave.' ,suff,Eta2tave ,myIter,myThid)
 
@@ -142,13 +138,17 @@ c      CALL WRITE_FLD_XYZ_RL('KEtave.',suff,KEtave,myIter,myThid)
        ENDIF
 #endif
        CALL WRITE_FLD_XYZ_RL('PhHytave.',suff,phiHydtave,myIter,myThid)
-       IF ( buoyancyRelation .NE. 'ATMOSPHERIC' ) THEN
-       CALL WRITE_FLD_XY_RL('PHLtave.',suff,phiHydLowtave,
-     &      myIter,myThid)
-       CALL WRITE_FLD_XY_RL('PHL2tave.',suff,phiHydLow2tave,
-     &      myIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('Convtave.',suff,ConvectCountTave,
-     &                       myIter,myThid)
+       IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
+        CALL WRITE_FLD_XY_RL('PHLtave.',suff,phiHydLowtave,
+     &       myIter,myThid)
+        CALL WRITE_FLD_XY_RL('PHL2tave.',suff,phiHydLow2tave,
+     &       myIter,myThid)
+        CALL WRITE_FLD_XYZ_RL('Convtave.',suff,ConvectCountTave,
+     &                        myIter,myThid)
+        CALL WRITE_FLD_XY_RL('uFluxtave.',suff,uFluxtave,myIter,myThid)
+        CALL WRITE_FLD_XY_RL('vFluxtave.',suff,vFluxtave,myIter,myThid)
+        CALL WRITE_FLD_XY_RL('tFluxtave.',suff,tFluxtave,myIter,myThid)
+        CALL WRITE_FLD_XY_RL('sFluxtave.',suff,sFluxtave,myIter,myThid)
        ENDIF
 
 #ifdef NONLIN_FRSURF
