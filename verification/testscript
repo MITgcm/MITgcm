@@ -1,4 +1,4 @@
-#!/bin/csh
+#!/bin/csh -f
 
 # Run this script from the verification directory
 # It will automatically configure, compile, run and verify all experiments
