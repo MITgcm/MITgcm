@@ -1,21 +1,29 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_g77,v 1.2 2004/03/01 18:29:54 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_g77,v 1.3 2004/12/16 08:30:11 mlosch Exp $
 #  $Name:  $
 #
+# tested without NetCDF support on
+# SunOS model 5.9 Generic_112233-11 sun4u sparc SUNW,Sun-Fire-15000
+# with f90: Forte Developer 7 Fortran 95 7.0 Patch 111714-03 2002/11/19
 
 
-FC=g77
-#DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
 DEFINES='-DWORDLENGTH=4'
-CPP='cpp  -traditional -P'
-NOOPTFLAGS='-O0'
 AWK='gawk'
+MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
 MAKE='gmake'
+CPP='/usr/ccs/lib/cpp -P'
+FC=g77
+# This is an example of how to specify where your 
+# netcdf libraries and include files are; 
+# in this particular example, they are in 
+# /usr/local/libs and /usr/local/include.
+# For g77, it is  probably necessary to use libraries
+# that have been compiled with g77 as well.
+INCLUDES='-I/usr/local/include'
+LIBS='-L/usr/local/lib -lnetcdf'
 
-# netcdf
-# LIBS="-lnetcdf"
-
+NOOPTFLAGS='-O0'
 #  For IEEE, use the "-ffloat-store" option
 if test "x$IEEE" = x ; then
     FFLAGS='-Wimplicit -Wunused -Wuninitialized'
