@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/Attic/ECCO_CPPOPTIONS.h,v 1.5 2004/03/12 22:18:16 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/Attic/ECCO_CPPOPTIONS.h,v 1.6 2004/03/17 23:30:51 dimitri Exp $
 C $Name:  $
 
 C CPP flags controlling which code is included in the files that
@@ -49,7 +49,6 @@ C   Options that are required to use pkg/exf with pkg/seaice.
 #define  ALLOW_RUNOFF
 
 C   Options that control relaxation terms.
-#undef   ALLOW_CLIM_CYCLIC
 #undef   ALLOW_CLIMTEMP_RELAXATION
 #undef   ALLOW_CLIMSALT_RELAXATION
 #undef   ALLOW_CLIMSST_RELAXATION

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/Attic/ECCO_CPPOPTIONS.h,v 1.8 2003/11/25 19:04:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_with_exf/code/Attic/ECCO_CPPOPTIONS.h,v 1.9 2004/03/17 23:30:51 dimitri Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -35,23 +35,10 @@ C   Bulk formulae related flags.
 #endif
 
 C   Relaxation to monthly climatologies.
-#undef ALLOW_CLIM_CYCLIC
 #undef  ALLOW_CLIMTEMP_RELAXATION
 #undef  ALLOW_CLIMSALT_RELAXATION
 #define  ALLOW_CLIMSST_RELAXATION
 #define  ALLOW_CLIMSSS_RELAXATION
-
-C   Relaxation to monthly climatologies.
-#ifdef ALLOW_CLIMSST_RELAXATION
-# define  ALLOW_MONTHLY_CLIMSST_RELAXATION
-#endif
-#ifdef ALLOW_CLIMSSS_RELAXATION
-# define  ALLOW_MONTHLY_CLIMSSS_RELAXATION
-#endif
-
-C   Relaxation to constant surface fields.
-#undef  ALLOW_CONST_SST_RELAXATION
-#undef  ALLOW_CONST_SSS_RELAXATION
 
 C   Use spatial interpolation to interpolate
 C   forcing files from input grid to model grid.
