@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.1 2001/05/30 19:34:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.2 2001/07/12 00:26:30 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -98,10 +98,12 @@ C-    Advective flux in X
       ELSEIF (gad_advection_scheme.EQ.ENUM_FLUX_LIMIT) THEN
        CALL GAD_FLUXLIMIT_ADV_X(
      &      bi,bj,k,deltaTtracer,uTrans,uVel,localT,af,myThid)
+      ELSEIF (gad_advection_scheme.EQ.ENUM_UPWIND_3RD ) THEN
+       CALL GAD_U3_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
       ELSEIF (gad_advection_scheme.EQ.ENUM_CENTERED_4TH) THEN
        CALL GAD_C4_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
       ELSE
-       stop 'CALC_GTRACER: Bad gad_advection_scheme (X)'
+       STOP 'GAD_CALC_RHS: Bad gad_advection_scheme (X)'
       ENDIF
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -160,10 +162,12 @@ C-    Advective flux in Y
       ELSEIF (gad_advection_scheme.EQ.ENUM_FLUX_LIMIT) THEN
        CALL GAD_FLUXLIMIT_ADV_Y(
      &       bi,bj,k,deltaTtracer,vTrans,vVel,localT,af,myThid)
+      ELSEIF (gad_advection_scheme.EQ.ENUM_UPWIND_3RD ) THEN
+       CALL GAD_U3_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
       ELSEIF (gad_advection_scheme.EQ.ENUM_CENTERED_4TH) THEN
        CALL GAD_C4_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
       ELSE
-       stop 'CALC_GTRACER: Bad gad_advection_scheme (Y)'
+       STOP 'GAD_CALC_RHS: Bad gad_advection_scheme (Y)'
       ENDIF
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
@@ -217,17 +221,39 @@ C--   Initialize net flux in R
       ENDDO
 
 C-    Advective flux in R
-      IF (gad_advection_scheme.EQ.ENUM_CENTERED_2ND) THEN
-       CALL GAD_C2_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
-      ELSEIF (gad_advection_scheme.EQ.ENUM_FLUX_LIMIT) THEN
-       CALL GAD_FLUXLIMIT_ADV_R(
+C     Note: wVel needs to be masked 
+      IF (K.GE.2) THEN
+C-    Compute vertical advective flux in the interior:
+       IF (gad_advection_scheme.EQ.ENUM_CENTERED_2ND) THEN
+        CALL GAD_C2_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
+       ELSEIF (gad_advection_scheme.EQ.ENUM_FLUX_LIMIT) THEN
+        CALL GAD_FLUXLIMIT_ADV_R(
      &       bi,bj,k,deltaTtracer,rTrans,wVel,tracer,af,myThid)
-      ELSEIF (gad_advection_scheme.EQ.ENUM_CENTERED_4TH) THEN
-       CALL GAD_C4_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
-c      CALL GAD_C2_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
+       ELSEIF (gad_advection_scheme.EQ.ENUM_UPWIND_3RD ) THEN
+        CALL GAD_U3_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
+       ELSEIF (gad_advection_scheme.EQ.ENUM_CENTERED_4TH) THEN
+        CALL GAD_C4_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
+c       CALL GAD_C2_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
+       ELSE
+        STOP 'GAD_CALC_RHS: Bad gad_advection_scheme (R)'
+       ENDIF
+C-    Surface "correction" term at k>1 :
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         af(i,j) = af(i,j)
+     &           + (maskC(i,j,k,bi,bj)-maskC(i,j,k-1,bi,bj))*
+     &             rTrans(i,j)*Tracer(i,j,k,bi,bj)
+        ENDDO
+       ENDDO 
       ELSE
-       stop 'CALC_GTRACER: Bad gad_advection_scheme (R)'
+C-    Surface "correction" term at k=1 :
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         af(i,j) = rTrans(i,j)*Tracer(i,j,k,bi,bj)
+        ENDDO
+       ENDDO 
       ENDIF
+C-    add the advective flux to fVerT
       DO j=jMin,jMax
        DO i=iMin,iMax
         fVerT(i,j,kUp) = fVerT(i,j,kUp) + afFacT*af(i,j)
