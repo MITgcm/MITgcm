@@ -27,7 +27,6 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-#include "ecco.h"
 #include "ctrl.h"
 #include "optim.h"
 

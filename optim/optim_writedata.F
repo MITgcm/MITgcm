@@ -181,10 +181,6 @@ c--         Write the data.
       do icvar = 1,maxcvars
          if ( ncvarindex(icvar) .ne. -1 ) then
             do icvrec = 1,ncvarrecs(icvar)
-cph(
-               print *,'in owd: icvar, icvrec, ncvarrecs, ncvarindex',
-     &              icvar, icvrec, ncvarrecs(icvar), ncvarindex(icvar)
-cph)
                do bj = 1,nsy
                   do bi = 1,nsx
                      write( funit ) ncvarindex(icvar)

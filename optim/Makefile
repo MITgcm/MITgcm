@@ -16,6 +16,7 @@ SRC		=	optim_main.F			\
 			optim_readdata.F		\
 			optim_writedata.F		\
 			optim_write_control.F		\
+			xerbla.F                        \
 			simul.F
 
 EXEDIR     = ./
