@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.24 2001/07/06 21:48:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.25 2001/07/09 16:46:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -79,34 +79,19 @@ C------
 C------
 C   1) Set R_low = the Lower (in r sense) boundary of the fluid column :
 C------
-      IF (groundAtK1) THEN
+      IF (groundAtK1 .OR. bathyFile .EQ. ' ') THEN
 C- e.g., atmosphere : R_low = Top of atmosphere
+C-            ocean : R_low = Bottom
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
+         DO j=1,sNy
+          DO i=1,sNx
            R_low(i,j,bi,bj) = rF(Nr+1)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ELSE
-C- e.g., ocean : R_low = Bottom
-       IF ( bathyFile .EQ. ' '  ) THEN
-C       Set up a flat bottom box with doubly periodic topology.
-C       H is the basic variable from which other terms are derived. It
-C       is the term that would be set from an external file for a
-C       realistic problem.  
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            R_low(i,j,bi,bj) = rF(Nr+1)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-       ELSE
         _BEGIN_MASTER( myThid )
 C Read the bathymetry using the mid-level I/O pacakage read_write_rec
 C The 0 is the "iteration" argument. The 1 is the record number.
@@ -119,11 +104,11 @@ c       CALL MDSREADFIELD( bathyFile, readBinaryPrec,
 c    &                     'RS', 1, R_low, 1, myThid )
         _END_MASTER(myThid)
 
-        _EXCH_XY_R4(R_low, myThid )
-
-       ENDIF
-C- end setup R_low
       ENDIF
+C- end setup R_low in the interior
+
+C- fill in the overlap :
+      _EXCH_XY_R4(R_low, myThid )
 
 c     CALL PLOT_FIELD_XYRS(R_low,'Bottom depths (ini_depths)',1,myThid)
 c     _BEGIN_MASTER( myThid )
@@ -136,14 +121,21 @@ C------
 C   2) Set R_surf = Surface boundary: ocean surface / ground for the atmosphere
 C------
 
-      IF ( topoFile.EQ.' ' .AND. 
-     &    (bathyFile.EQ.' ' .OR. .NOT.groundAtK1) ) THEN
+      IF ( groundAtK1 .AND. bathyFile.NE.' ' ) THEN
+C------ read directly Po_surf from bathyFile (only for backward compatibility) 
 
-C--------- set default value:
+        _BEGIN_MASTER( myThid )
+        CALL READ_REC_XY_RS( bathyFile, Ro_surf, 1, 0, myThid )
+        _END_MASTER(myThid)
+        _BARRIER
+
+      ELSEIF ( topoFile.EQ.' ' ) THEN
+C------ set default value:
+
         DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
+          DO j=1,sNy
+           DO i=1,sNx
             Ro_surf(i,j,bi,bj) = Ro_SeaLevel
            ENDDO
           ENDDO
@@ -151,16 +143,8 @@ C--------- set default value:
         ENDDO
 
       ELSE
-C--------- read from file:
+C------ read from file:
 
-       IF (groundAtK1 .AND. bathyFile.NE.' ') THEN
-C- read directly Po_surf from bathyFile (only for backward compatibility) 
-        _BEGIN_MASTER( myThid )
-        CALL READ_REC_XY_RS( bathyFile, Ro_surf, 1, 0, myThid )
-        _END_MASTER(myThid)
-        _BARRIER
-
-       ELSE 
 C- read surface topography (in m) from topoFile (case topoFile.NE.' '):
         _BEGIN_MASTER( myThid )
         CALL READ_REC_XY_RS( topoFile, Hloc, 1, 0, myThid )
@@ -168,10 +152,10 @@ C- read surface topography (in m) from topoFile (case topoFile.NE.' '):
         _BARRIER
 
         IF (buoyancyRelation .EQ. 'ATMOSPHERIC') THEN
-C------- 
+C----
 C   Convert Surface Geopotential to (reference) Surface Pressure 
 C   according to Tref profile, using same discretisation as in calc_phi_hyd
-C------- 
+C----
 c         _BEGIN_MASTER( myThid )
 c         CALL WRITE_FLD_XY_RS( 'topo_Z',' ',Hloc,0,myThid) 
 c         _END_MASTER(myThid)
@@ -184,7 +168,7 @@ c         _END_MASTER(myThid)
           _END_MASTER(myThid)
 
         ELSE
-C------- 
+C----
 C   Direct Transfer to Ro_surf :
           DO bj = myByLo(myThid), myByHi(myThid)
            DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -195,16 +179,14 @@ C   Direct Transfer to Ro_surf :
             ENDDO
            ENDDO
           ENDDO
+
         ENDIF
 
-C------- 
-C- end case "read topoFile"
-       ENDIF
-
-       _EXCH_XY_R4(Ro_surf, myThid )
-
-C--------- end setup Ro_surf (endif / set Default / read from file).
+C------ end case "read topoFile"
       ENDIF
+
+C----- fill in the overlap : 
+      _EXCH_XY_R4(Ro_surf, myThid )
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
