@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.7 1998/05/27 05:57:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.8 1998/05/27 21:01:47 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -180,7 +180,7 @@ C     Eddy component of zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         vf(i,j) =
-     &   -viscAh*_dyF(i,j,bi,bj)*dzF(k)*hFacC(i,j,k,bi,bj)
+     &   -viscAh*_dyF(i,j,bi,bj)*dzF(k)*_hFacC(i,j,k,bi,bj)
      &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))*rDxF(i,j,bi,bj)
        ENDDO
       ENDDO
@@ -208,9 +208,9 @@ C       Note!!!! omitted.
 C     Eddy component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-          hFacZOpen=min(hFacW(i,j,k,bi,bj),hFacW(i,j-1,k,bi,bj))
-          hFacZOpen=min(hFacS(i,j,k,bi,bj),hFacZOpen)
-          hFacZOpen=min(hFacS(i-1,j,k,bi,bj),hFacZOpen)
+          hFacZOpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
+          hFacZOpen=min(_hFacS(i,j,k,bi,bj),hFacZOpen)
+          hFacZOpen=min(_hFacS(i-1,j,k,bi,bj),hFacZOpen)
         hFacZClosed= 1. _d 0 - hFacZopen
 #ifdef NO_LATERAL_SLIP
         vF(i,j) =
@@ -307,7 +307,7 @@ C---  Coriolis term(s)
 C---  Pressure term ( -1/rho . dp/dx )
       DO j=jMin,jMax
        DO i=iMin,iMax
-        pf(i,j) = -rdxC(i,j,bi,bj)
+        pf(i,j) = - _rdxC(i,j,bi,bj)
      &   *(pH(i,j,k)-pH(i-1,j,k))/rhonil
        ENDDO
       ENDDO
@@ -316,7 +316,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
       DO j=jMin,jMax
        DO i=iMin,iMax
         gU(i,j,k,bi,bj) =
-     &   -rHFacW(i,j,k,bi,bj)*rdzF(k)*rDxC(i,j,bi,bj)*rDyG(i,j,bi,bj)*(
+     &   -rHFacW(i,j,k,bi,bj)*rdzF(k)*_rdxC(i,j,bi,bj)*rDyG(i,j,bi,bj)*(
      &    fZon(i,j  )    - fZon(i-1,j)
      &   +fMer(i,j+1)    - fMer(i  ,j)
      &   +fVerU(i,j,kUp) - fVerU(i,j,kDown)
@@ -361,9 +361,9 @@ C       Note!!!! omitted.
 C     Eddy component of zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-          hFacZOpen=min(hFacW(i,j,k,bi,bj),hFacW(i,j-1,k,bi,bj))
-          hFacZOpen=min(hFacS(i,j,k,bi,bj),hFacZOpen)
-          hFacZOpen=min(hFacS(i-1,j,k,bi,bj),hFacZOpen)
+          hFacZOpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
+          hFacZOpen=min(_hFacS(i,j,k,bi,bj),hFacZOpen)
+          hFacZOpen=min(_hFacS(i-1,j,k,bi,bj),hFacZOpen)
         hFacZClosed=1. _d 0 -hFacZOpen
 #ifdef NO_LATERAL_SLIP
         vf(i,j) =
@@ -402,7 +402,7 @@ C     Eddy component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         vF(i,j) =
-     &  -viscAh*_dxF(i,j,bi,bj)*dzF(k)*hFacC(i,j,k,bi,bj)
+     &  -viscAh*_dxF(i,j,bi,bj)*dzF(k)*_hFacC(i,j,k,bi,bj)
      &   *( vVel(i,j+1,k,bi,bj) - vVel(i,j,k,bi,bj) )*rDyC(i,j,bi,bj)
        ENDDO
       ENDDO

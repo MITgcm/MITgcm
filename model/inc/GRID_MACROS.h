@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.3 1998/05/27 05:57:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.4 1998/05/27 21:01:46 cnh Exp $
 C
 C     /==========================================================\
 C     | GRID_MACROS.h                                            |
@@ -10,9 +10,9 @@ C     | applies.                                                 |
 C     | define phi_CONST   - Indicates the variable phi is fixed |
 C     |                      in X, Y and Z.                      |
 C     | define phi_FX      - Indicates the variable phi only     |  
-C     |                      varies in X.                        |
+C     |                      varies in X (i.e.not in X or Z).    |
 C     | define phi_FY      - Indicates the variable phi only     |  
-C     |                      varies in Y.                        |
+C     |                      varies in Y (i.e.not in X or Z).    |
 C     | define phi_FXY     - Indicates the variable phi only     |  
 C     |                      varies in X and Y ( i.e. not Z).    |
 C     \==========================================================/
@@ -56,3 +56,61 @@ C     \==========================================================/
 #undef  DYU_FX
 #undef  DYU_FY
 #include "DYU_MACROS.h"
+
+#undef  HFACC_CONST   
+#undef  HFACC_FX
+#undef  HFACC_FY
+#undef  HFACC_FXY
+#include "HFACC_MACROS.h"
+
+#undef  HFACS_CONST   
+#undef  HFACS_FX
+#undef  HFACS_FY
+#undef  HFACS_FXY
+#include "HFACS_MACROS.h"
+
+#undef  HFACW_CONST   
+#undef  HFACW_FX
+#undef  HFACW_FY
+#undef  HFACW_FXY
+#include "HFACW_MACROS.h"
+
+#undef  RDXC_CONST
+#undef  RDXC_FX
+#undef  RDXC_FY
+#include "RDXC_MACROS.h"
+
+#undef  RDXF_CONST
+#undef  RDXF_FX
+#undef  RDXF_FY
+#include "RDXF_MACROS.h"
+
+#undef  RDXG_CONST
+#undef  RDXG_FX
+#undef  RDXG_FY
+#include "RDXG_MACROS.h"
+
+#undef  RDXV_CONST
+#undef  RDXV_FX
+#undef  RDXV_FY
+#include "RDXV_MACROS.h"
+
+#undef  RDYC_CONST
+#undef  RDYC_FX
+#undef  RDYC_FY
+#include "RDYC_MACROS.h"
+
+#undef  RDYF_CONST
+#undef  RDYF_FX
+#undef  RDYF_FY
+#include "RDYF_MACROS.h"
+
+#undef  RDYG_CONST
+#undef  RDYG_FX
+#undef  RDYG_FY
+#include "RDYG_MACROS.h"
+
+#undef  RDYU_CONST
+#undef  RDYU_FX
+#undef  RDYU_FY
+#include "RDYU_MACROS.h"

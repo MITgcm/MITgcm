@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_ph.F,v 1.4 1998/05/04 16:32:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_ph.F,v 1.5 1998/05/27 21:01:47 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -39,7 +39,7 @@ C     (This is now the actual hydrostatic pressure at the T/S points)
       DO j=jMin,jMax
        DO i=iMin,iMax
         pH(i,j,K)=pH(i,j,Km1)+Gravity*halfLayer
-     &  *0.5 _d 0*(dzF(Km1)*hFacC(i,j,Km1,bi,bj)+dzF(K)*hFacC(i,j,K,bi,bj))
+     &  *0.5 _d 0*(dzF(Km1)*_hFacC(i,j,Km1,bi,bj)+dzF(K)*_hFacC(i,j,K,bi,bj))
      &  *0.5 _d 0*( rhokm1(i,j)+rhokp1(i,j) )
        ENDDO
       ENDDO

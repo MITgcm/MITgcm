@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/grad_psurf.F,v 1.2 1998/05/25 16:17:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/grad_psurf.F,v 1.3 1998/05/27 21:01:47 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -27,7 +27,7 @@ C     == Local variables ==
 C     Zonal pressure term
       DO j=jMin,jMax
        DO i=iMin,iMax
-        pSurfX(i,j)=rDxC(i,j,bi,bj)*
+        pSurfX(i,j)=_rdxC(i,j,bi,bj)*
      &   (cg2d_x(i,j,bi,bj)-cg2d_x(i-1,j,bi,bj))
      &   *gBaro*rhonil
        ENDDO

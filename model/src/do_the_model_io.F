@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.4 1998/05/26 21:29:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.5 1998/05/27 21:01:47 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -65,36 +65,8 @@ C--    Write "text-plots" of certain fields
       ENDIF
 
 C--   Write model state to binary file
-       CALL WRITE_STATE( myCurrentTime, myIter, myThid )
-C      WRITE(suff,'(I10.10)') myIter
-C      CALL DFILE_SET_RW
-C      CALL DFILE_SET_CONT_ON_ERROR
-C      CALL WRITE_FLD_XYZ(  'U.',suff,      uVel)
-C      CALL WRITE_FLD_XYZ(  'V.',suff,      vVel)
-C      CALL WRITE_FLD_XYZ(  'T.',suff,     theta)
-C      CALL WRITE_FLD_XYZ(  'S.',suff,      salt)
-C      CALL WRITE_FLD_XYZ(  'W.',suff,  IO_tmp3d)
-C      CALL WRITE_FLD_XYZ('RHO.',suff,  IO_tmp3d)
-C      CALL WRITE_FLD_XYZ( 'PH.',suff,  IO_tmp3d)
-C      CALL WRITE_FLD_XY ( 'PS.',suff,  IO_tmp2d)
+      CALL WRITE_STATE( myCurrentTime, myIter, myThid )
 
-C--   Write model checkpoint files
-C     nCheck = 1,2,...nCheckLev, 1,2,...nCheckLev, etc...
-C     CALL WRITE_CHECKPOINT( myIter, myThid )
-C     nCheck = MOD(nCheck,nCheckLev)+1
-C     suff   = checkPtSuff(nCheck)
-C     CALL DFILE_SET_RW
-C     CALL DFILE_SET_CONT_ON_ERROR
-C     CALL WRITE_FLD_XYZ(  'uVel.',suff,uVel  )
-C     CALL WRITE_FLD_XYZ(  'vVel.',suff,vVel  )
-C     CALL WRITE_FLD_XYZ( 'theta.',suff,theta )
-C     CALL WRITE_FLD_XYZ(  'salt.',suff,salt  )
-C     CALL WRITE_FLD_XY ('cg2d_x.',suff,cg2d_x)
-C     CALL WRITE_FLD_XYZ(    'gu.',suff,gu    )
-C     CALL WRITE_FLD_XYZ(    'gv.',suff,gv    )
-C     CALL WRITE_FLD_XYZ( 'gunm1.',suff,gunm1 )
-C     CALL WRITE_FLD_XYZ( 'gvnm1.',suff,gvnm1 )
- 
       _BARRIER
 C
       RETURN
