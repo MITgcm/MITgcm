@@ -35,11 +35,11 @@ gmredi
 
 #  Known dependencies
 shap_filt	+mom_vecinv
-seaice		-therm_seaice
-therm_seaice	-seaice
+seaice		-thsice
+thsice		-seaice
 exf		-bulk_force
 bulk_force	-exf
-therm_seaice	+bulk_force
+thsice		+bulk_force
 gchem           +ptracers
 dic             +gchem
 
