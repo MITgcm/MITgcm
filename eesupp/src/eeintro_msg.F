@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeintro_msg.F,v 1.3 1998/10/28 03:11:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeintro_msg.F,v 1.4 1998/11/03 15:41:36 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -51,7 +51,8 @@ C     === Local variables ===
       WRITE(msgBuf,'(A)') '// account cnh'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
-      WRITE(msgBuf,'(A)') '// MITgcm UV Release: 0.0.0'
+      WRITE(msgBuf,'(A)') 
+     &'// MITgcm UV Release: $Name:  $'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '   '
