@@ -1,4 +1,5 @@
 # Packages
  &PACKAGES
  useGMRedi=.TRUE.,
+ useMNC=.TRUE.,
  &

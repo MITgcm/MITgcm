@@ -13,6 +13,7 @@
 # useImportTau =.FALSE.,
   useImportSLP =.FALSE.,
 # useImportSIce=.FALSE.,
-  cpl_taveFreq=2592000.,
+# cpl_taveFreq=2592000.,
+  cpl_taveFreq=1.,
  &
 

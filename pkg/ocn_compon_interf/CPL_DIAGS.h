@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/CPL_DIAGS.h,v 1.2 2004/05/21 19:42:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/Attic/CPL_DIAGS.h,v 1.3 2004/10/27 23:19:42 edhill Exp $
 C $Name:  $
 
 #ifdef COMPONENT_MODULE
@@ -65,3 +65,6 @@ c     _RL  VGtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #endif /* COMPONENT_MODULE */
 
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

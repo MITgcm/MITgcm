@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.2 2004/10/27 23:19:43 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/Attic/run_cpl_test_itrda,v 1.1 2004/10/27 23:19:43 edhill Exp $
 # $Name:  $
 
 Np=3
@@ -20,13 +20,13 @@ dir=`pwd`
 
 #- only works from a 3 nodes PBS bach session ( qsub -I -l nodes=3:p4 )
 #  on myrinet cluster:
-xx=`hostname | sed 's/[0-9]/X/g'`
-if test $xx != 'myrinet-X-XX'
-then
-  echo ' hostname='`hostname`
-  echo 'for now, works only on myrinet cluster'
-  exit 9
-fi
+#xx=`hostname | sed 's/[0-9]/X/g'`
+#if test $xx != 'myrinet-X-XX'
+#then
+#  echo ' hostname='`hostname`
+#  echo 'for now, works only on myrinet cluster'
+#  exit 9
+#fi
 if test 'dummy'$PBS_NODEFILE = 'dummy'
 then
   echo ' $PBS_NODEFILE not defined'
@@ -55,44 +55,44 @@ fi
 if test $kpr = 1
 then
 
- # cp -p ../../tools/build_options/linux_ia32_ifc+mpi_cg01 genmake_optfile
- cp optfile genmake_optfile
+ #cp -p ~/linux_ia32_ifc+mpi_itrda genmake_optfile
+ ln -s optfile_g77_itrda genmake_optfile
  echo '==== compile coupler:'
  cd build_cpl
  echo ' --- genmake2 (cpl):'
- ../../../tools/genmake2 -of ../genmake_optfile -ieee >  TTT.genmake.$$
+ ../../../tools/genmake2 -of ../genmake_optfile -mpi -ieee >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (cpl):'
  make depend > TTT.mkdepend.$$
  tail -5 TTT.mkdepend.$$
  echo ' --- make (cpl):'
- make > TTT.make.$$ 2>&1
+ make -j 2 > TTT.make.$$ 2>&1
  tail -10 TTT.make.$$
  echo ' ' ; cd $dir
 
  echo '==== compile OGCM:'
  cd build_ocn
  echo ' --- genmake2 (ocn):'
- ../../../tools/genmake2 -of ../genmake_optfile -ieee >  TTT.genmake.$$
+ ../../../tools/genmake2 -of ../genmake_optfile -mpi -ieee >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (ocn):'
  make depend > TTT.mkdepend.$$
  tail -10 TTT.mkdepend.$$
  echo ' --- make (ocn):'
- make > TTT.make.$$ 2>&1
+ make -j 2 > TTT.make.$$ 2>&1
  tail -10 TTT.make.$$
  echo ' ' ; cd $dir
 
  echo '==== compile AGCM:'
  cd build_atm
  echo ' --- genmake2 (atm):'
- ../../../tools/genmake2 -of ../genmake_optfile -ieee >  TTT.genmake.$$
+ ../../../tools/genmake2 -of ../genmake_optfile -mpi -ieee >  TTT.genmake.$$
  tail -5 TTT.genmake.$$
  echo ' --- make depend (atm):'
  make depend > TTT.mkdepend.$$
  tail -10 TTT.mkdepend.$$
  echo ' --- make (atm):'
- make > TTT.make.$$ 2>&1
+ make -j 2 > TTT.make.$$ 2>&1
  tail -10 TTT.make.$$
  echo ' ' ; cd $dir
 
@@ -114,6 +114,7 @@ then
   ./SHARE_OCN_GRID '../rank_1'
   cd $dir
 
+  rm -rf cpl ocn atm
   mkdir cpl ocn atm
   if test -f build_cpl/mitgcmuv ; then cp -p build_cpl/mitgcmuv cpl
   else echo 'file: build_cpl/mitgcmuv not found => stop'; exit; fi
@@ -143,7 +144,8 @@ then
  done
 
  cd $ROOTDIR
- /usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpirun.ch_gm -pg pr_group -wd $ROOTDIR --gm-kill 5 -v  ./build_cpl/mitgcmuv > std_outp 2>&1
+# /usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpirun.ch_gm -pg pr_group -wd $ROOTDIR --gm-kill 5 -v  ./build_cpl/mitgcmuv > std_outp 2>&1
+ mpirun -p4pg pr_group -v ./build_cpl/mitgcmuv > std_outp 2>&1
  tail -20 std_outp
  ls -l rank_?/pickup*.ckptA.001.001.data
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.3 2004/07/26 20:13:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ocn_compon_interf/cpl_readparms.F,v 1.4 2004/10/27 23:19:42 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -28,6 +28,9 @@ C     == Global variables ===
 
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "CPL_PARAMS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -63,7 +66,7 @@ C     cpl_taveFreq  :: Frequency^-1 for time-Aver. output (s)
      &    cpl_earlyExpImpCall,
      &    useImportHFlx, useImportFW, useImportTau,
      &    useImportSLP, useImportSIce,
-     &    cpl_taveFreq
+     &    cpl_taveFreq, cpl_snapshot_mnc, cpl_timeave_mnc
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -75,6 +78,8 @@ C-    Set default value:
       useImportSLP  = .TRUE.
       useImportSIce = .TRUE.
       cpl_taveFreq  = taveFreq
+      cpl_snapshot_mnc = snapshot_mnc
+      cpl_timeave_mnc  = timeave_mnc
       
       _BEGIN_MASTER(myThid)
       
@@ -144,6 +149,12 @@ C-    If land_taveFreq is positive, then must compile the land-diagnostics code
         STOP 'ABNORMAL END: S/R CPL_READPARMS'
       ENDIF
 
+C     Set IO flags
+      IF ( (.NOT. outputTypesInclusive) 
+     &     .AND. cpl_snapshot_mnc )  cpl_snapshot_mdsio = .FALSE.
+      IF ( (.NOT. outputTypesInclusive) 
+     &     .AND. cpl_timeave_mnc )  cpl_timeave_mdsio = .FALSE.
+      
 C-    derive other parameters:
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

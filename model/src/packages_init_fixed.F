@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.29 2004/10/13 20:42:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.30 2004/10/27 23:19:42 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -159,6 +159,10 @@ CAMM
       ENDIF
 #endif
 CAMM
+
+#ifdef COMPONENT_MODULE
+      IF ( useCoupler ) CALL CPL_INIT_FIXED( mythid )
+#endif
 
       RETURN
       END
