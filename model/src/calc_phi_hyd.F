@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.17 2001/09/27 18:14:20 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.18 2002/07/31 16:38:30 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -45,6 +45,7 @@ C     == Global variables ==
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "FFIELDS.h"
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
 #include "tamc_keys.h"
@@ -118,8 +119,11 @@ C       P(z=eta) = P(atmospheric_loading)
         IF (k.EQ.1) THEN
           DO j=jMin,jMax
             DO i=iMin,iMax
-C             *NOTE* The loading should go here but has not been implemented yet
-              phiHyd(i,j,k)=0.
+#ifdef ATMOSPHERIC_LOADING
+              phiHyd(i,j,k)=pload(i,j,bi,bj)*recip_rhoConst
+#else
+              phiHyd(i,j,k)=0. _d 0
+#endif
             ENDDO
           ENDDO
         ENDIF
@@ -230,7 +234,7 @@ C---------
           DO j=jMin,jMax
            DO i=iMin,iMax
              phiHyd(i,j,K) =
-     &          ddPIp*hFacC(I,J, K ,bi,bj)
+     &          ddPIp*_hFacC(I,J, K ,bi,bj)
      &               *(theta(I,J, K ,bi,bj)-tRef( K ))
            ENDDO
           ENDDO
@@ -242,9 +246,9 @@ C---------
           DO j=jMin,jMax
            DO i=iMin,iMax
              phiHyd(i,j,K) = phiHyd(i,j,K-1)
-     &         +ddPIm*hFacC(I,J,K-1,bi,bj)
+     &         +ddPIm*_hFacC(I,J,K-1,bi,bj)
      &               *(theta(I,J,K-1,bi,bj)-tRef(K-1))
-     &         +ddPIp*hFacC(I,J, K ,bi,bj)
+     &         +ddPIp*_hFacC(I,J, K ,bi,bj)
      &               *(theta(I,J, K ,bi,bj)-tRef( K ))
            ENDDO
           ENDDO
@@ -268,8 +272,8 @@ C---------
           DO j=jMin,jMax
            DO i=iMin,iMax
              phiHyd(i,j,K) =
-     &        ( ddPIm*max(zero, hFacC(i,j,K,bi,bj)-half)
-     &         +ddPIp*min(zero, hFacC(i,j,K,bi,bj)-half) )
+     &        ( ddPIm*max(zero, _hFacC(i,j,K,bi,bj)-half)
+     &         +ddPIp*min(zero, _hFacC(i,j,K,bi,bj)-half) )
      &               *(theta(i,j, K ,bi,bj)-tRef( K ))
      &               * maskC(i,j, K ,bi,bj)
            ENDDO
@@ -285,8 +289,8 @@ C---------
      &        + ddPIm*0.5
      &               *(theta(i,j,K-1,bi,bj)-tRef(K-1))
      &               * maskC(i,j,K-1,bi,bj)
-     &        +(ddPIm*max(zero, hFacC(i,j,K,bi,bj)-half)
-     &         +ddPIp*min(zero, hFacC(i,j,K,bi,bj)-half) )
+     &        +(ddPIm*max(zero, _hFacC(i,j,K,bi,bj)-half)
+     &         +ddPIp*min(zero, _hFacC(i,j,K,bi,bj)-half) )
      &               *(theta(i,j, K ,bi,bj)-tRef( K ))
      &               * maskC(i,j, K ,bi,bj)
            ENDDO
@@ -313,8 +317,8 @@ C---------
           DO j=jMin,jMax
            DO i=iMin,iMax
              phiHyd(i,j,K) =
-     &        ( ddPIm*max(zero,(hFacC(i,j,K,bi,bj)-one)*ratioRm+half)
-     &         +ddPIp*min(zero, hFacC(i,j,K,bi,bj)*ratioRp     -half) )
+     &        ( ddPIm*max(zero,(_hFacC(i,j,K,bi,bj)-one)*ratioRm+half)
+     &         +ddPIp*min(zero, _hFacC(i,j,K,bi,bj)*ratioRp     -half) )
      &               *(theta(i,j, K ,bi,bj)-tRef( K ))
      &               * maskC(i,j, K ,bi,bj)
            ENDDO
@@ -332,8 +336,8 @@ C---------
      &        + ddPIm*0.5
      &               *(theta(i,j,K-1,bi,bj)-tRef(K-1))
      &               * maskC(i,j,K-1,bi,bj)
-     &        +(ddPIm*max(zero,(hFacC(i,j,K,bi,bj)-one)*ratioRm+half)
-     &         +ddPIp*min(zero, hFacC(i,j,K,bi,bj)*ratioRp     -half) )
+     &        +(ddPIm*max(zero,(_hFacC(i,j,K,bi,bj)-one)*ratioRm+half)
+     &         +ddPIp*min(zero, _hFacC(i,j,K,bi,bj)*ratioRp     -half) )
      &               *(theta(i,j, K ,bi,bj)-tRef( K ))
      &               * maskC(i,j, K ,bi,bj)
            ENDDO

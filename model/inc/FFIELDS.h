@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.12 2001/09/21 03:54:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.13 2002/07/31 16:38:30 mlosch Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -38,6 +38,10 @@ C                                 (W/m^2/degrees -> degrees/second)
 
 C     SST    - Sea surface temperature (degrees) for relaxation
 C     SSS    - Sea surface salinity (psu) for relaxation
+C     pload  - for the ocean:      atmospheric pressure at z=eta
+C                Units are           Pa=N/m^2
+C              for the atmosphere: geopotential of the orography 
+C                Units are           meters (converted)
 
       COMMON /FFIELDS/
      &                 fu,
@@ -47,15 +51,26 @@ C     SSS    - Sea surface salinity (psu) for relaxation
      &                 dQdT,
      &                 EmPmR,
      &                 SST,
-     &                 SSS
+     &                 SSS,
+     &                 pload
+
       _RS  fu       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  fv       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  Qnet     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef SHORTWAVE_HEATING
       _RS  Qsw      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#else
+      _RS  Qsw      (1,1,1,1)
+#endif
       _RS  dQdT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  EmPmR    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SST      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SSS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ATMOSPHERIC_LOADING
+      _RS  pload    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#else
+      _RS  pload    (1,1,1,1)
+#endif
 
 C     surfaceTendencyU       (units are  m/s^2)
 C                -> usage in gU:     gU = gU + surfaceTendencyU[m/s^2]

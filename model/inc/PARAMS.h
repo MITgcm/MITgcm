@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.72 2002/06/21 18:36:04 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.73 2002/07/31 16:38:30 mlosch Exp $
 C $Name:  $
 C
 CBOP
@@ -69,6 +69,7 @@ C     surfQfile       :: File containing surface heat flux
 C     surfQswfile     :: File containing surface shortwave radiation
 C     dQdTfile        :: File containing thermal relaxation coefficient
 C     EmPmRfile       :: File containing surface fresh water flux
+C     pLoadFile       :: File containing pressure loading
 C     buoyancyRelation :: Flag used to indicate which relation to use to
 C                        get buoyancy.
       COMMON /PARM_C/ checkPtSuff,
@@ -78,7 +79,7 @@ C                        get buoyancy.
      &                saltClimFile, buoyancyRelation,
      &                EmPmRfile, surfQfile, surfQswfile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
-     &                dQdTfile
+     &                dQdTfile, ploadFile
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
       CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
@@ -95,6 +96,7 @@ C                        get buoyancy.
       CHARACTER*(MAX_LEN_FNAM) vVelInitFile
       CHARACTER*(MAX_LEN_FNAM) pSurfInitFile
       CHARACTER*(MAX_LEN_FNAM) dQdTfile
+      CHARACTER*(MAX_LEN_FNAM) ploadFile
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        :: Maximum number of iterations in the

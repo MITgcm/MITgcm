@@ -1,7 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.78 2002/07/13 05:00:16 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.79 2002/07/31 16:38:30 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint46a_post
+o Added (atmospheric) pressure loading
+  - new field in FFIELDS.h, etc...
+  - new cpp flag ATMOSPHERIC_LOADING
+o Changed hFacC to _hFacC in calc_phi_hyd.F
+o Added SHORTWAVE_HEATING to some files for consistency
+checkpoint46a_pre
 
 checkpoint46
 further merges from release1_p5

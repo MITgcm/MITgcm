@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.35 2002/06/15 03:28:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.36 2002/07/31 16:38:31 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -222,6 +222,7 @@ C--   Input files
       vVelInitFile    = ' '
       pSurfInitFile   = ' '
       dQdTFile        = ' '
+      ploadFile       = ' '
 
 C
       RETURN

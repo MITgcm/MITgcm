@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.22 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.23 2002/07/31 16:38:31 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,7 +49,16 @@ CEOP
           EmPmR           (i,j,bi,bj) = 0. _d 0
           SST             (i,j,bi,bj) = 0. _d 0
           SSS             (i,j,bi,bj) = 0. _d 0
+#ifdef SHORTWAVE_HEATING          
           Qsw             (i,j,bi,bj) = 0. _d 0
+#else
+          Qsw             (1,1,1,1)   = 0. _d 0
+#endif
+#ifdef ATMOSPHERIC_LOADING
+          pload           (i,j,bi,bj) = 0. _d 0
+#else
+          pload           (1,1,1,1)   = 0. _d 0
+#endif
           surfaceTendencyU(i,j,bi,bj) = 0. _d 0
           surfaceTendencyV(i,j,bi,bj) = 0. _d 0
           surfaceTendencyT(i,j,bi,bj) = 0. _d 0
@@ -83,6 +92,11 @@ C
        CALL READ_FLD_XY_RS( surfQswFile, ' ', Qsw, 0, myThid )
       ENDIF
 #endif
+#ifdef ATMOSPHERIC_LOADING
+      IF ( pLoadFile .NE. ' '  ) THEN
+       CALL READ_FLD_XY_RS( pLoadFile, ' ', pload, 0, myThid )
+      ENDIF
+#endif
       _END_MASTER(myThid)
 C
       _EXCH_XY_R4(fu   , myThid )
@@ -91,7 +105,13 @@ C
       _EXCH_XY_R4(EmPmR, myThid )
       _EXCH_XY_R4(SST  , myThid )
       _EXCH_XY_R4(SSS  , myThid )
+#ifdef SHORTWAVE_HEATING
       _EXCH_XY_R4(Qsw  , myThid )
+#endif
+#ifdef ATMOSPHERIC_LOADING
+      _EXCH_XY_R4(pload  , myThid )
+C     CALL PLOT_FIELD_XYRS( pload, 'S/R INI_FORCING pload',1,myThid)
+#endif
 
 C     CALL PLOT_FIELD_XYRS( fu, 'S/R INI_FORCING FU',1,myThid)
 C     CALL PLOT_FIELD_XYRS( fv, 'S/R INI_FORCING FV',1,myThid)
