@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.15 2004/10/27 18:25:05 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.16 2005/01/05 18:26:56 edhill Exp $
 #
 #  A Makefile for MNC templates and testing
 #
@@ -66,11 +66,11 @@ mnc_netcdf_stubs.o: mnc_netcdf_stubs.c
 templates: $(TEMPLATE_FILES) mnc_id_header.h
 
 MNC_CW_READWRITE_RS.F: mnc_cw_readwrite.template
-	cat $< | sed -e 's/RX/RS/g' | sed -e 's/__V/_RS/g' > $@
+	cat mnc_cw_readwrite.template | sed -e 's/RX/RS/g' | sed -e 's/__V/_RS/g' > MNC_CW_READWRITE_RS.F
 MNC_CW_READWRITE_RL.F: mnc_cw_readwrite.template
-	cat $< | sed -e 's/RX/RL/g' | sed -e 's/__V/_RL/g' > $@
+	cat mnc_cw_readwrite.template | sed -e 's/RX/RL/g' | sed -e 's/__V/_RL/g' > MNC_CW_READWRITE_RL.F
 MNC_CW_READWRITE_I.F: mnc_cw_readwrite.template
-	cat $< | sed -e 's/RX/I/g' | sed -e 's/__V/INTEGER/g' > $@
+	cat mnc_cw_readwrite.template | sed -e 's/RX/I/g' | sed -e 's/__V/INTEGER/g' > MNC_CW_READWRITE_I.F
 
 tag = ../../doc/tag-index
 
