@@ -1,6 +1,9 @@
 cswdptr -- added routine ---
 #include "CPP_OPTIONS.h"
-#include "GCHEM_OPTIONS.h"
+#include "PTRACERS_OPTIONS.h"
+#ifdef ALLOW_GCHEM
+# include "GCHEM_OPTIONS.h"
+#endif
 
       SUBROUTINE PTRACERS_STATV_WRITE(myTime, myIter, myThid)
 C     /==========================================================\
@@ -18,9 +21,8 @@ C     == Global variables ===
 #include "GRID.h"
 #include "TIMEAVE_STATV.h"
 #ifdef ALLOW_PTRACERS
-#include "PTRACERS.h"
-#include "PTRACERS_OPTIONS.h"
-#include "PTRACERS_STATV.h"
+# include "PTRACERS.h"
+# include "PTRACERS_STATV.h"
 #endif
 
       LOGICAL  DIFFERENT_MULTIPLE

@@ -1,8 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.2 2003/06/25 21:03:28 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.3 2003/06/27 01:56:17 heimbach Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
-#include "GCHEM_OPTIONS.h"
+#ifdef ALLOW_GCHEM
+# include "GCHEM_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: PTRACERS_INIT
@@ -18,10 +20,12 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "PTRACERS.h"
 cswdptr -- add ---
-#include "GRID.h"
-#include "GCHEM.h"
+#ifdef ALLOW_GCHEM
+# include "GCHEM.h"
+#endif
 cswdptr --- end add --
 
 
@@ -37,8 +41,13 @@ C  none
 C !LOCAL VARIABLES: ====================================================
 C  i,j,k,bi,bj,iTracer  :: loop indices
       INTEGER i,j,k,bi,bj,iTracer
+      CHARACTER*(10) suff
+#ifndef ALLOW_GCHEM
+      INTEGER tIter0
+      PARAMETER ( tIter0 = 0 )
+#endif
 CEOP
-
+        
 C Loop over tracers
       DO iTracer = 1, PTRACERS_num
 
@@ -50,9 +59,9 @@ C Initialize arrays in common blocks :
         DO k=1,Nr
          DO j=1-Oly,sNy+OLy
           DO i=1-Olx,sNx+Olx
-           pTracer(i,j,k,bi,bj,iTracer) = 0.
-           gPtr(i,j,k,bi,bj,iTracer) = 0.
-           gPtrNM1(i,j,k,bi,bj,iTracer) = 0.
+           pTracer(i,j,k,bi,bj,iTracer) = 0. _d 0
+           gPtr(i,j,k,bi,bj,iTracer)    = 0. _d 0
+           gPtrNM1(i,j,k,bi,bj,iTracer) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
@@ -85,32 +94,8 @@ cswdptr -- end change ---
          CALL READ_FLD_XYZ_RL(PTRACERS_initialFile(iTracer),' ',
      &            pTracer(1-Olx,1-Oly,1,1,1,iTracer) ,0,myThid)
          _END_MASTER(myThid)
-cswdptr -- add ---
         ELSE
-         DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-           DO k=1,nR
-            pTracer(i,j,k,bi,bj,iTracer)=0.d0
-cswddic QQQ
-            if (iTracer.eq.1)
-     &        pTracer(i,j,k,bi,bj,iTracer)=2.23d0 !dic mol/m3
-            if (iTracer.eq.2)
-     &        pTracer(i,j,k,bi,bj,iTracer)=2.37d0 !alk moleq/m3
-            if (iTracer.eq.3)
-     &        pTracer(i,j,k,bi,bj,iTracer)=2.17d-3 !po4 mol/m3
-            if (iTracer.eq.4)
-     &        pTracer(i,j,k,bi,bj,iTracer)=1.d-5 !dop mol/m3
-            if (iTracer.eq.5)
-     &        pTracer(i,j,k,bi,bj,iTracer)=0.17d0  !o2 mol/m3
-            if (iTracer.eq.6)
-     &        pTracer(i,j,k,bi,bj,iTracer)=4.d-7  !fe mol/m3
-           enddo
-          ENDDO
-          ENDDO
-         ENDDO
-         ENDDO
+cswdptr -- add ---
 cswdptr -- end add ---
         ENDIF
         _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,iTracer),myThid)
@@ -121,8 +106,13 @@ C Read from a pickup file if nIter0
 cswdptr IF (nIter0.NE.0) THEN
 cswdptr -- change --
       IF (nIter0.GT.tIter0) THEN
-cswdptr -- end change
-       CALL PTRACERS_READ_CHECKPOINT( nIter0,myThid )
+C--     Suffix for pickup files
+       IF (pickupSuff.EQ.' ') THEN
+         WRITE(suff,'(I10.10)') nIter0
+       ELSE
+         WRITE(suff,'(A10)') pickupSuff
+       ENDIF
+       CALL PTRACERS_READ_CHECKPOINT( nIter0,suff,myThid )
       ENDIF
 
 #endif /* ALLOW_PTRACERS */

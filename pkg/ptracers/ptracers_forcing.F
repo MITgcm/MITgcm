@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.1 2002/03/04 19:01:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.2 2003/06/27 01:56:17 heimbach Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -60,10 +60,12 @@ C Example of how to add forcing at the surface
 C Here, we'll copy the exact forcing used for salinity to allow us
 C to test everything is working.
           gPtracer(i,j,k,bi,bj)=gPtracer(i,j,k,bi,bj)
-     &      + EmPmR(i,j,bi,bj)*convertFW2Salt
-     &           *recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
-     &      - lambdaSaltClimRelax*
-     &           (pTracer(i,j,k,bi,bj,iTracer)-SSS(i,j,bi,bj))
+     &   +maskC(i,j,k,bi,bj)*surfaceTendencyS(i,j,bi,bj)
+
+cph     &      + EmPmR(i,j,bi,bj)*convertFW2Salt
+cph     &           *recip_drF(1)*recip_hFacC(i,j,1,bi,bj)
+cph     &      - lambdaSaltClimRelax*
+cph     &           (pTracer(i,j,k,bi,bj,iTracer)-SSS(i,j,bi,bj))
 
          ENDDO
         ENDDO

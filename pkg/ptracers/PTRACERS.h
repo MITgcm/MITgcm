@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.1 2002/03/04 19:01:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.2 2003/06/27 01:56:17 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -24,20 +24,20 @@ C     PTRACERS parameters
       _RL PTRACERS_diffK4(PTRACERS_num)
       _RL PTRACERS_diffKr(PTRACERS_num)
       INTEGER PTRACERS_advScheme(PTRACERS_num)
+      INTEGER PTRACERS_numInUse
       LOGICAL PTRACERS_useGMRedi(PTRACERS_num)
       LOGICAL PTRACERS_useKPP(PTRACERS_num)
-      INTEGER PTRACERS_numInUse
       LOGICAL PTRACERS_useRecords
       CHARACTER*(MAX_LEN_FNAM) PTRACERS_initialFile(PTRACERS_num)
       COMMON /PTRACERS_PARAMS/
-     &                   PTRACERS_advScheme,
      &                   PTRACERS_diffKh,
      &                   PTRACERS_diffK4,
      &                   PTRACERS_diffKr,
+     &                   PTRACERS_numInUse,
+     &                   PTRACERS_advScheme,
+     &                   PTRACERS_initialFile,
      &                   PTRACERS_useGMRedi,
      &                   PTRACERS_useKPP,
-     &                   PTRACERS_numInUse,
-     &                   PTRACERS_initialFile,
      &                   PTRACERS_useRecords
       NAMELIST /PTRACERS_PARM01/
      &                   PTRACERS_advScheme,
