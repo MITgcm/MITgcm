@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.2 2004/07/06 21:12:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.3 2004/09/01 16:25:06 stephd Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -72,6 +72,7 @@ C--     Loop over all layers, top to bottom
         DO K=1,Nr
 
 C-        Update tracer fields:  T(n) = T**, Gt(n-1) = Gt(n)
+#ifndef ALLOW_OFFLINE
           IF (tempStepping)
      &      CALL CYCLE_TRACER(
      I           bi,bj,iMin,iMax,jMin,jMax,K,
@@ -82,6 +83,7 @@ C-        Update tracer fields:  T(n) = T**, Gt(n-1) = Gt(n)
      I           bi,bj,iMin,iMax,jMin,jMax,K,
      U           salt,gS,gSNm1,
      I           myTime,myThid )
+#endif
 #ifdef ALLOW_PASSIVE_TRACER
           IF (tr1Stepping)
      &      CALL CYCLE_TRACER(
@@ -119,6 +121,7 @@ C--   Filter (and exchange)
       ENDIF
 #endif 
 
+#ifndef ALLOW_OFFLINE
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -134,6 +137,7 @@ C--     Convectively adjust new fields to be statically stable
 C--    End of 2nd bi,bj loop
        ENDDO
       ENDDO
+#endif
 
       RETURN
       END

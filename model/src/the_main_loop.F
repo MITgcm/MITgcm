@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.52 2004/07/13 16:48:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.53 2004/09/01 16:25:06 stephd Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -158,9 +158,17 @@ C--   Do IO if needed (Dump for start state).
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('DO_THE_MODEL_IO',myThid)
 #endif
+
+#ifdef ALLOW_OFFLINE
+      CALL TIMER_START('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
+      CALL OFFLINE_MODEL_IO( myTime, myIter, myThid )
+      CALL TIMER_STOP ('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
+#else
       CALL TIMER_START('DO_THE_MODEL_IO     [THE_MAIN_LOOP]', mythid)
       CALL DO_THE_MODEL_IO( myTime, myIter, mythid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [THE_MAIN_LOOP]', mythid)
+#endif
+
 
 #ifdef ALLOW_AUTODIFF_TAMC
       CALL TIMER_STOP ('ADJOINT SPIN-UP', mythid)

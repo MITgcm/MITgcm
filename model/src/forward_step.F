@@ -1,14 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.100 2004/07/26 20:18:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.101 2004/09/01 16:25:06 stephd Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
-cswdptr -- add --
 #ifdef ALLOW_GCHEM
 # include "GCHEM_OPTIONS.h"
 #endif
-cswdptr -- end add ---
+#ifdef ALLOW_OFFLINE
+# include "OFFLINE_OPTIONS.h"
+#endif
+
 
 CBOP
 C     !ROUTINE: FORWARD_STEP
@@ -216,6 +218,10 @@ CADJ STORE ptracer  = comlev1, key = ikey_dynamics
 # endif
 #endif
 
+#ifdef ALLOW_OFFLINE
+        call OFFLINE_FIELDS_LOAD( myTime, myIter, myThid )
+#endif
+
 #ifdef ALLOW_PTRACERS
 # ifdef ALLOW_GCHEM
          CALL GCHEM_FIELDS_LOAD( mytime, myiter, mythid )
@@ -255,6 +261,7 @@ C--     Step forward fields and calculate time tendency terms.
        CALL DO_ATMOSPHERIC_PHYS( myTime, myIter, myThid )
        CALL TIMER_STOP ('DO_ATMOSPHERIC_PHYS [FORWARD_STEP]',mythid)
 
+#ifndef ALLOW_OFFLINE
 #ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('DO_OCEANIC_PHYS',myThid)
@@ -262,6 +269,7 @@ C--     Step forward fields and calculate time tendency terms.
        CALL TIMER_START('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
        CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
+#endif
 
       IF ( .NOT.staggerTimeStep ) THEN
 #ifdef ALLOW_DEBUG
@@ -292,6 +300,7 @@ C      Read in coupling data that I import.
 #endif /* COMPONENT_MODULE */
 
 C--   Step forward fields and calculate time tendency terms.
+#ifndef ALLOW_OFFLINE
 #ifndef ALLOW_AUTODIFF_TAMC
       IF ( momStepping ) THEN
 #endif
@@ -304,6 +313,7 @@ C--   Step forward fields and calculate time tendency terms.
         CALL TIMER_STOP ('DYNAMICS            [FORWARD_STEP]',mythid)
 #ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
+#endif
 #endif
 
 #ifdef ALLOW_NONHYDROSTATIC
@@ -375,17 +385,21 @@ C      => Filtering of uVel,vVel is necessary
 C--   Solve elliptic equation(s).
 C     Two-dimensional only for conventional hydrostatic or 
 C     three-dimensional for non-hydrostatic and/or IGW scheme.
+#ifndef ALLOW_OFFLINE
       IF ( momStepping ) THEN
         CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
         CALL SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
         CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
       ENDIF
+#endif
 
 C--   Correct divergence in flow field and cycle time-stepping momentum
 c     IF ( momStepping ) THEN
+#ifndef ALLOW_OFFLINE
         CALL TIMER_START('UV_CORRECTION_STEP  [FORWARD_STEP]',myThid)
         CALL MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
         CALL TIMER_STOP ('UV_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+#endif
 c     ENDIF
 
 #ifdef EXACT_CONSERV
@@ -497,24 +511,34 @@ C--   State-variables statistics (time-aver, diagnostics ...)
       CALL DO_STATEVARS_DIAGS( myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_STATEVARS_DIAGS  [FORWARD_STEP]',myThid)
 
+#ifndef ALLOW_OFFLINE
 #ifdef ALLOW_MONITOR
 C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
       CALL MONITOR( myIter, myTime, myThid )
       CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
 #endif /* ALLOW_MONITOR */
+#endif
 
 C--   Do IO if needed.
+#ifdef ALLOW_OFFLINE
+      CALL TIMER_START('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
+      CALL OFFLINE_MODEL_IO( myTime, myIter, myThid )
+      CALL TIMER_STOP ('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
+#else
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
       CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
       CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
+#endif
 
 C--   Save state for restarts
       CALL TIMER_START('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
       CALL PACKAGES_WRITE_PICKUP(
      I               .FALSE., myTime, myIter, myThid )
+#ifndef ALLOW_OFFLINE
       CALL WRITE_CHECKPOINT(
      I               .FALSE., myTime, myIter, myThid )   
+#endif
       CALL TIMER_STOP ('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_DEBUG

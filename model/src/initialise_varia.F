@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.37 2004/07/27 00:21:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.38 2004/09/01 16:25:06 stephd Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -120,7 +120,9 @@ C--   Initialise model fields.
 C     Starting values of U, V, W, temp., salt. and tendency terms
 C     are set here. Fields are either set to default or read from
 C     stored files.
+#ifndef ALLOW_OFFLINE
       CALL INI_FIELDS( myThid )
+#endif
       _BARRIER
 
 #ifdef ALLOW_PASSIVE_TRACER
@@ -149,6 +151,7 @@ C     a pickup file written by MITgcmUV_checkpoint34 or earlier.
 #endif
 
 C--   Initial conditions are convectively adjusted (for historical reasons)
+#ifndef ALLOW_OFFLINE
       IF ( startTime .EQ. 0. .AND. cAdjFreq .NE. 0. ) THEN
 CADJ loop = parallel 
         DO bj = myByLo(myThid), myByHi(myThid)
@@ -165,6 +168,7 @@ CADJ loop = parallel
         ENDDO
         _BARRIER
       END IF
+#endif
 
 #ifdef NONLIN_FRSURF
 C--   Compute the surface level thickness <-- function of etaH(n)
@@ -185,6 +189,7 @@ C-    update also CG2D matrix (and preconditioner)
       ENDIF
 #endif /* NONLIN_FRSURF */
 
+#ifndef ALLOW_OFFLINE
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
@@ -194,6 +199,7 @@ C--   Integrate continuity vertically for vertical velocity
  
        ENDDO
       ENDDO
+#endif
 
 #ifdef EXACT_CONSERV
       IF ( exactConserv ) THEN
@@ -258,7 +264,9 @@ C AMM
 C AMM
 
 C--   Fill in overlap regions for wVel :
+#ifndef ALLOW_OFFLINE
       _EXCH_XYZ_R8(wVel,myThid) 
+#endif
 
 C--   Finally summarise the model state
       CALL STATE_SUMMARY( myThid )

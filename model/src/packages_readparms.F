@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.31 2004/06/03 20:02:02 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.32 2004/09/01 16:25:06 stephd Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -41,6 +41,8 @@ C       |
 C       |-- ZONAL_FILT_READPARMS
 C       |
 C       |-- OBCS_READPARMS
+C       |
+C       |-- OFFLINE_READPARMS
 C       |
 C       |-- COST_READPARMS
 C       |
@@ -96,6 +98,10 @@ C--   Initialize SEAICE parameters
 
 #ifdef ALLOW_OBCS
       IF (useOBCS) CALL OBCS_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_OFFLINE
+      call OFFLINE_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_BULK_FORCE

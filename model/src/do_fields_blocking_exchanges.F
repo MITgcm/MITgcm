@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.15 2004/07/07 22:23:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.16 2004/09/01 16:25:06 stephd Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,6 +48,7 @@ c     _EXCH_XYZ_R8( gTNm1 , myThid )
 c     _EXCH_XYZ_R8( gSNm1 , myThid )
 c     _EXCH_XYZ_R8( uVel , myThid )
 c     _EXCH_XYZ_R8( vVel , myThid )
+#ifndef ALLLOW_OFFLINE
       IF ( .NOT.staggerTimeStep .OR. .NOT.useMultiDimAdvec ) THEN
        CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
        _EXCH_XYZ_R8( wVel , myThid )
@@ -56,11 +57,13 @@ c     IF ( exactConserv .AND. implicDiv2Dflow .NE. 0. _d 0)
 c    & _EXCH_XY_R8( etaN , myThid )
       _EXCH_XYZ_R8( theta, myThid )
       _EXCH_XYZ_R8( salt , myThid )
+#endif
 #ifdef ALLOW_PASSIVE_TRACER
       IF ( tr1Stepping ) 
      & _EXCH_XYZ_R8( Tr1 , myThid )
 #endif
 
+#ifndef ALLOW_OFFLINE
 #ifdef ALLOW_CD_CODE
 c     _EXCH_XYZ_R8( guCD , myThid )
 c     _EXCH_XYZ_R8( gvCD , myThid )
@@ -69,6 +72,7 @@ c     _EXCH_XYZ_R8( gvCD , myThid )
 #endif
       IF ( useDynP_inEos_Zc )
      & _EXCH_XYZ_RL( totPhiHyd , myThid )
+#endif
 
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS)

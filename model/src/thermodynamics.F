@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.74 2004/07/13 16:48:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.75 2004/09/01 16:25:06 stephd Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -81,6 +81,9 @@ C     == Global variables ===
 #ifdef ALLOW_PASSIVE_TRACER
 #include "TR1.h"
 #endif
+#ifdef ALLOW_OFFLINE
+#include "OFFLINE.h"
+#endif
 #ifdef ALLOW_PTRACERS
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
@@ -104,6 +107,7 @@ C     == Global variables ===
 #  include "EBM.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
+
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -314,6 +318,7 @@ C to be able to exclude this scheme to avoid excessive storage and
 C recomputation. It *is* differentiable, if you need it.
 C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
 C disable this section of code.
+#ifndef ALLOW_OFFLINE
         IF (tempMultiDimAdvec) THEN
 #ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB ) 
@@ -326,6 +331,8 @@ C disable this section of code.
      O             gT,
      I             bi,bj,myTime,myIter,myThid)
         ENDIF
+#endif
+#ifndef ALLOW_OFFLINE
         IF (saltMultiDimAdvec) THEN
 #ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB ) 
@@ -338,6 +345,7 @@ C disable this section of code.
      O             gS,
      I             bi,bj,myTime,myIter,myThid)
         ENDIF
+#endif
 C Since passive tracers are configurable separately from T,S we
 C call the multi-dimensional method for PTRACERS regardless
 C of whether multiDimAdvection is set or not.
@@ -452,6 +460,7 @@ CADJ STORE KappaRS(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
 
 C--      Calculate active tracer tendencies (gT,gS,...)
 C        and step forward storing result in gTnm1, gSnm1, etc.
+#ifndef ALLOW_OFFLINE
          IF ( tempStepping ) THEN
            CALL CALC_GT(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
@@ -464,7 +473,9 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         theta, gT,
      I         myIter, myThid)
          ENDIF
+#endif
 
+#ifndef ALLOW_OFFLINE
          IF ( saltStepping ) THEN
            CALL CALC_GS(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
@@ -477,6 +488,7 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         salt, gS,
      I         myIter, myThid)
          ENDIF
+#endif
 #ifdef ALLOW_PASSIVE_TRACER
 ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
          IF ( tr1Stepping ) THEN
@@ -512,6 +524,7 @@ C--      Apply open boundary conditions
 C--      Freeze water
 C  this bit of code is left here for backward compatibility.
 C  freezing at surface level has been moved to FORWARD_STEP 
+#ifndef ALLOW_OFFLINE
          IF ( useOldFreezing .AND. .NOT. useSEAICE
      &       .AND. .NOT.(useThSIce.AND.k.EQ.1) ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -520,12 +533,14 @@ CADJ &   , key = kkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, k, myThid )
          ENDIF
+#endif
 
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO
 
 
 C--     Implicit vertical advection & diffusion 
+#ifndef ALLOW_OFFLINE
 #ifdef INCLUDE_IMPLVERTADV_CODE
         IF ( tempImplVertAdv ) THEN
           CALL GAD_IMPLICIT_R(
@@ -547,7 +562,9 @@ CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
      U         gT,
      I         myThid )
         ENDIF
+#endif
 
+#ifndef ALLOW_OFFLINE
 #ifdef INCLUDE_IMPLVERTADV_CODE
         IF ( saltImplVertAdv ) THEN
           CALL GAD_IMPLICIT_R(
@@ -569,6 +586,7 @@ CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
      U         gS,
      I         myThid )
         ENDIF
+#endif
 
 #ifdef ALLOW_PASSIVE_TRACER
         IF ( tr1Stepping .AND. implicitDiffusion ) THEN
