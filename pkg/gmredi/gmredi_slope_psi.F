@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.1 2001/12/16 18:54:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.2 2002/02/15 21:28:07 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -169,8 +169,8 @@ C-      Large, Danabasoglu and Doney, JPO 1997
           Cspd=2.
           Lrho=100.e3
           if (FCori(i,j,bi,bj).NE.0.) Lrho=Cspd/abs(Fcori(i,j,bi,bj))
-          Lrho=min(Lrho,100.e3)
-          Lrho=max(Lrho,15.e3)
+          Lrho=min(Lrho , 100. _d 3)
+          Lrho=max(Lrho , 15. _d 3)
 
           Smod = abs(SlopeX(i,j))
           f1=0.5*(1.+tanh( (GM_Scrit-Smod)/GM_Sd ))
