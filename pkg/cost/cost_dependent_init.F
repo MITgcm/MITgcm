@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.1 2002/01/17 17:01:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.2 2002/07/13 03:01:39 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 

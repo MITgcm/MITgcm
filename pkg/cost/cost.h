@@ -157,7 +157,10 @@ c                  function contributions.
      &                objf_ctdt,
      &                objf_ctds,
      &                objf_test,
-     &                objf_tracer
+     &                objf_tracer,
+     &                objf_entropy,
+     &                objf_t_misfit,
+     &                objf_eflux
 
       _RL  fc
       _RL  objf_hflux   (nsx,nsy)
@@ -174,6 +177,15 @@ c                  function contributions.
       _RL  objf_ctds (nsx,nsy)
       _RL  objf_test (nsx,nsy)
       _RL  objf_tracer (nsx,nsy)
+      _RL  objf_entropy (nsx,nsy)
+      _RL  objf_t_misfit (nsx,nsy)
+      _RL  objf_eflux (nsx,nsy)
+
+#ifdef ALLOW_COST_VECTOR
+      common /cost_array/
+     &                objf_vector
+      _RL  objf_vector (snx,nsx,nsy)
+#endif
 
 #ifdef ALLOW_COST_VECTOR
       common /cost_array/
@@ -195,7 +207,10 @@ c                  function contributions.
      &                    mult_ctdt,
      &                    mult_ctds,
      &                    mult_test,
-     &                    mult_tracer
+     &                    mult_tracer,
+     &                    mult_entropy,
+     &                    mult_t_misfit,
+     &                    mult_eflux
 
       _RL  mult_hq
       _RL  mult_hs
@@ -211,7 +226,9 @@ c                  function contributions.
       _RL  mult_ctds
       _RL  mult_test
       _RL  mult_tracer
-
+      _RL  mult_entropy
+      _RL  mult_t_misfit
+      _RL  mult_eflux
 
 c     Record counters relevant for the cost function evaluation.
 c     ==========================================================
@@ -290,21 +307,26 @@ c     wctds      - weight for CTD salinity.
      &                      wsalt,
      &                      wtp,wers,
      &                      wp,
-     &                      wctdt,wctds
-      _RL frame (1-olx:snx+olx,1-oly:sny+oly           )
-      _RL cosphi(1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL whflux   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL wsflux   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+     &                      wctdt,wctds,
+     &                      wunit,
+     &                      wefluxy,wefluxp
+      _RL frame   (1-olx:snx+olx,1-oly:sny+oly           )
+      _RL cosphi  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL whflux  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wsflux  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtauu   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
       _RL wtauv   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL wtheta    (                            nr,nsx,nsy)
-      _RL wsalt    (                            nr,nsx,nsy)
-      _RL wsst  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL wtp   (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL wers  (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL wp    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
-      _RL wctdt (                            nr,nsx,nsy)
-      _RL wctds (                            nr,nsx,nsy)
+      _RL wsst    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wtp     (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wers    (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wp      (1-olx:snx+olx,1-oly:sny+oly,   nsx,nsy)
+      _RL wtheta  (                            nr,nsx,nsy)
+      _RL wsalt   (                            nr,nsx,nsy)
+      _RL wctdt   (                            nr,nsx,nsy)
+      _RL wctds   (                            nr,nsx,nsy)
+      _RL wunit   (                            nr,nsx,nsy)
+      _RL wefluxy (                            nr,nsx,nsy)
+      _RL wefluxp (                            nr,nsx,nsy)
 
 
 c     Arrays that contain observations for the model-data comparison:
