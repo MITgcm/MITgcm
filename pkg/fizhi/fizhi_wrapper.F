@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.23 2004/10/21 15:18:11 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.24 2004/10/21 16:25:21 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -113,7 +113,7 @@ c Compute physics increments
         call do_fizhi(myThid,
      .  idim1,idim2,jdim1,jdim2,Nrphys,Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,
      .  nchp,nchptot,nchpland,
-     .  uphy,vphy,thphy,sphy,pephy4fiz,xC,yC,phi0surf,
+     .  uphy,vphy,thphy,sphy,pephy4fiz,xC,yC,topoZ,
      .  ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
      .  tgz,sst,sice,phis_var,landtype,fracland,emiss,albnirdr,albnirdf,
      .  albvisdr,albvisdf,ityp,chfr,alai,agrn,igrd,chlt,chlon,

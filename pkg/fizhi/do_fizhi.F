@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.45 2004/10/21 15:18:11 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.46 2004/10/21 16:26:53 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
      . idim1,idim2,jdim1,jdim2,Nrphin,Nsxin,Nsyin,im1,im2,jm1,jm2,bi,bj,
      . nchp,nchptot,nchpland,
-     . uphy,vphy,thphy,sphy,pephy,lons,lats,phi0surf,
+     . uphy,vphy,thphy,sphy,pephy,lons,lats,Zsurf,
      . ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
      . tgz,sst,sice,phis_var,landtype,fracland,emiss,albnirdr,albnirdf,
      . albvisdr,albvisdf,ityp,chfr,alai,agrn,igrd,chlat,chlon,
@@ -41,7 +41,7 @@ C Argument list declarations
       _RL pephy(idim1:idim2,jdim1:jdim2,Nrphin+1,Nsxin,Nsyin)
       _RS lons(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
       _RS lats(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
-      _RS phi0surf(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
+      _RS Zsurf(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
       _RL ctmt(nchp,Nsxin,Nsyin),xxmt(nchp,Nsxin,Nsyin)
       _RL yymt(nchp,Nsxin,Nsyin)
       _RL zetamt(nchp,Nsxin,Nsyin)
@@ -99,7 +99,7 @@ c Local Variables
       parameter (ntracer = 1)
 
       _RL xlats(sNx,sNy),xlons(sNx,sNy),sea_ice(sNx,sNy) 
-      _RL phi0(sNx,sNy)
+      _RL surfheight(sNx,sNy)
       _RL p(sNx,sNy,Nsx,Nsy)
       _RL u(sNx,sNy,Nrphys),v(sNx,sNy,Nrphys),t(sNx,sNy,Nrphys)
       _RL q(sNx,sNy,Nrphys,ntracer)
@@ -219,7 +219,7 @@ C***********************************************************************
       do i = im1,im2
        xlats(i,j) = lats(i,j,bi,bj)
        xlons(i,j) = lons(i,j,bi,bj)
-       phi0(i,j) = phi0surf(i,j,bi,bj)
+       surfheight(i,j) = Zsurf(i,j,bi,bj)
        raincon(i,j) = rainconin(i,j,bi,bj)
        rainlsp(i,j) = rainlspin(i,j,bi,bj)
        snowfall(i,j) = snowfallin(i,j,bi,bj)
