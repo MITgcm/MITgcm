@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.22 2003/11/29 00:58:43 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.23 2003/11/29 01:45:25 edhill Exp $
 #  $Name:  $
 #
 
@@ -70,15 +70,6 @@ build_mpack()
     echo "OK"
 }
 
-compare_lines()
-{
-    # use codelet to compare lines
-    if [ $verbose -gt 1 ]; then
-	cat tmp3.txt 1>&2
-    fi
-    return `./a.out < tmp3.txt`
-}
-
 testoutput_for_prop()
 {
     # testoutput_for_prop dir s1 label subdir
@@ -124,7 +115,9 @@ testoutput_for_prop()
 	cat tmp3.txt 1>&2
     fi
     echo "-1" >> tmp3.txt
-    digits_of_similarity=`./tmp_cmpnum < tmp3.txt`
+    # On the SGI O3K (*not* the O2K), "cat -n" inserts a ":" after the line number
+    cat tmp3.txt | sed -e 's|:||g' > tmp4.txt
+    digits_of_similarity=`./tmp_cmpnum < tmp4.txt`
     if [ $digits_of_similarity -eq 99 ]; then
 	if [ $verbose -gt 0 ]; then
 	    echo testoutput_for_prop: No comparison was available for \"$2\" 1>&2
@@ -135,7 +128,7 @@ testoutput_for_prop()
 	    echo There were $digits_of_similarity decimal places of similarity for \"$2\" 1>&2
 	fi
     fi
-    rm tmp1.txt tmp2.txt tmp3.txt
+    rm -f tmp1.txt tmp2.txt tmp3.txt tmp4.txt
     
     return $digits_of_similarity
 }
