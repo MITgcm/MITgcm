@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.37 1998/12/15 00:20:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.38 1999/05/03 14:37:02 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -525,8 +525,8 @@ C---- Meridional momentum equation starts here
 #ifdef INCLUDE_BH_MOMENTUM_DIFFUSION_CODE
 C--   del^2 V (for use in del^4 V)
 C     Zonal flux d/dx V
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx+1,sNx+Olx
         fZon(i,j) = drF(k)*hFacZ(i,j)
      &   *_dyU(i,j,bi,bj)
      &   *_recip_dxV(i,j,bi,bj)
@@ -534,8 +534,8 @@ C     Zonal flux d/dx V
        ENDDO
       ENDDO
 C     Meridional flux d/dy V
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx+1,sNx+Olx
+      DO j=1-Oly,sNy+Oly-1
+       DO i=1-Olx,sNx+Olx
         fMer(i,j) = drF(k)*_hFacC(i,j,k,bi,bj)
      &   *_dxF(i,j,bi,bj)
      &   *_recip_dyF(i,j,bi,bj)
