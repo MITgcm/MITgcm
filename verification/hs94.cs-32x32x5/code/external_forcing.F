@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/Attic/external_forcing.F,v 1.3 2001/06/06 19:46:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/Attic/external_forcing.F,v 1.4 2001/06/06 20:31:48 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -177,7 +177,7 @@ C      termP=0.5*( rF(kLev) + min( rF(kLev+1) , H(I,J,bi,bj) ) )
        termP=0.5 _d 0*( rF(kLev) + rF(kLev+1) )
        term2=10. _d 0*log(termP/rSurf)
      &          *(cos(yC(I,J,bi,bj)*deg2rad)**2)
-       thetaLim = 200. _d 0/ ((termP/rSurf)**(2./7.))
+       thetaLim = 200. _d 0/ ((termP/rSurf)**(2. _d 0/7. _d 0))
        thetaEq=315. _d 0-term1-term2
        thetaEq=MAX(thetaLim,thetaEq)
         kT=ka+(ks-ka)
