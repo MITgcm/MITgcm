@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.272 2004/03/29 22:10:28 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.273 2004/04/05 06:05:07 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o monitor package can write to NetCDF files and/or STDOUT
+o fix re-definition bug in MNC_GRID_INIT_ALL()
 o doc/api_reference added
   - a framework for building an API Reference Manual using all
     the "protex" comments embedded in the code
