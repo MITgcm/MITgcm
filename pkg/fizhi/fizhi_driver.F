@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.23 2004/08/12 15:21:22 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.24 2004/08/26 14:30:20 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -72,9 +72,9 @@ c ----------------
       _RL lwdt(im,jm,lm),lwdtclr(im,jm,lm)
       _RL swdt(im,jm,lm),swdtclr(im,jm,lm)
       _RL turbu(im,jm,lm),turbv(im,jm,lm),turbt(im,jm,lm)
-      _RL turbq(im,jm,lm)
+      _RL turbq(im,jm,lm,ntracer)
       _RL moistu(im,jm,lm),moistv(im,jm,lm),moistt(im,jm,lm)
-      _RL moistq(im,jm,lm)
+      _RL moistq(im,jm,lm,ntracer)
       _RL chemo3(im,jm,lm),chemq(im,jm,lm)
       _RL albvisdr(im,jm),albvisdf(im,jm),albnirdr(im,jm)
       _RL albnirdf(im,jm),emiss(im,jm,10)
