@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.19 2004/11/17 03:04:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.20 2004/12/22 07:27:07 dimitri Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -122,6 +122,8 @@ C Assign special directory
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
 
+      if ( .not. useSingleCPUIO ) then
+
 C Check first for global file with simple name (ie. fName)
       dataFName = fName
       inquire( file=dataFname, exist=exst )
@@ -131,7 +133,7 @@ C Check first for global file with simple name (ie. fName)
      &   ' MDSREADFIELD: opening global file: ',dataFName
         call print_message( msgbuf, standardmessageunit,
      &                     SQUEEZE_RIGHT , mythid)
-        endif
+       endif
        globalFile = .TRUE.
       endif
 
@@ -145,12 +147,10 @@ C If negative check for global file with MDS name (ie. fName.data)
      &    ' MDSREADFIELD: opening global file: ',dataFName
          call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
-         endif
+        endif
         globalFile = .TRUE.
        endif
       endif
-
-      if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
 
 C If we are reading from a global file then we open it here
       if (globalFile) then
@@ -365,11 +365,11 @@ C If global file was opened then close it
       endif
 
       endif
-c     endif ( .not. ( globalFile .and. useSingleCPUIO ) )
+c     endif ( .not. useSingleCPUIO )
 
       _END_MASTER( myThid )
 
-      if ( globalFile .and. useSingleCPUIO ) then
+      if ( useSingleCPUIO ) then
 
 C master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
@@ -378,9 +378,38 @@ C master thread of process 0, only, opens a global file
 #else
         IF ( .TRUE. ) THEN
 #endif /* ALLOW_USE_MPI */
-         length_of_rec=MDS_RECLEN( filePrec, x_size*y_size, mythid )
-         open( dUnit, file=dataFName, status='old',
-     &        access='direct', recl=length_of_rec )
+
+C Check first for global file with simple name (ie. fName)
+         dataFName = fName
+         inquire( file=dataFname, exist=exst )
+         if (exst) globalFile = .TRUE.
+
+C If negative check for global file with MDS name (ie. fName.data)
+         if (.NOT. globalFile) then
+          write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+          inquire( file=dataFname, exist=exst )
+          if (exst) globalFile = .TRUE.
+         endif
+
+C If global file is visible to process 0, then open it here.
+C Otherwise stop program.
+         if ( globalFile) then
+          length_of_rec=MDS_RECLEN( filePrec, x_size*y_size, mythid )
+          open( dUnit, file=dataFName, status='old',
+     &         access='direct', recl=length_of_rec )
+         else
+          write(msgbuf,'(2a)') ' MDSREADFIELD: filename: ',dataFName
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
+          write(msgbuf,'(a)')
+     &      ' MDSREADFIELD: File does not exist'
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
+          stop 'ABNORMAL END: S/R MDSREADFIELD'
+         endif
+
         ENDIF
        _END_MASTER( myThid )
 
@@ -475,7 +504,7 @@ c      ENDDO k=1,nNz
        _END_MASTER( myThid )
 
       endif
-c     endif ( globalFile .and. useSingleCPUIO )
+c     endif ( useSingleCPUIO )
 
       return
       end
