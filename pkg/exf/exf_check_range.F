@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.8 2004/12/02 20:50:58 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.9 2004/12/02 23:39:09 jmc Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -25,7 +25,8 @@ c     == routine arguments ==
 
 c     mythid - thread number for this instance of the routine.
 
-      integer mytime, myiter, mythid
+      _RL mytime
+      integer myiter, mythid
 
 c     == local variables ==
 
