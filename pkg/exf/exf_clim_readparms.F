@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_readparms.F,v 1.10 2005/01/01 04:59:17 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_readparms.F,v 1.11 2005/01/04 04:18:36 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -169,7 +169,7 @@ c     check for consistency
 
 
 #ifdef ALLOW_CLIMTEMP_RELAXATION
-      if ( climtempfile .NE. ' ' .AND. climtempperiod .NE. 0 ) then
+      if ( climtempfile .NE. ' ' .AND. climtempperiod .NE. 0. ) then
          call cal_FullDate( climtempstartdate1, climtempstartdate2,
      &        date_array,                    mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -179,7 +179,7 @@ c     check for consistency
 #endif
 
 #ifdef ALLOW_CLIMSALT_RELAXATION
-      if ( climsaltfile .NE. ' ' .AND. climsaltperiod .NE. 0 ) then      
+      if ( climsaltfile .NE. ' ' .AND. climsaltperiod .NE. 0. ) then      
         call cal_FullDate( climsaltstartdate1, climsaltstartdate2,
      &                     date_array,                    mythid )
         call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -189,7 +189,7 @@ c     check for consistency
 #endif
 
 #ifdef ALLOW_CLIMSST_RELAXATION
-      if ( climsstfile .NE. ' ' .AND. climsstperiod .NE. 0 ) then
+      if ( climsstfile .NE. ' ' .AND. climsstperiod .NE. 0. ) then
          call cal_FullDate( climsststartdate1, climsststartdate2,
      &        date_array,                  mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
@@ -199,7 +199,7 @@ c     check for consistency
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
-      if ( climsssfile .NE. ' ' .AND. climsssperiod .NE. 0 ) then
+      if ( climsssfile .NE. ' ' .AND. climsssperiod .NE. 0. ) then
          call cal_FullDate( climsssstartdate1, climsssstartdate2,
      &        date_array,                  mythid )
          call cal_TimePassed(modelstartdate,date_array,difftime,mythid)
