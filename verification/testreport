@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.36 2004/03/12 16:50:42 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.37 2004/03/12 18:51:05 edhill Exp $
 #  $Name:  $
 #
 
@@ -413,7 +413,7 @@ runmodel()
 	cd $1
 	printf 'runmodel ... ' 1>&2
 	# make output.txt
-	$COMMAND >> run.log 2>&1
+	( $COMMAND ) >> run.log 2>&1
 	RETVAL=$?
 	if test "x$RETVAL" = x0 ; then
 	    echo successful 1>&2
