@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.89 2002/10/07 16:35:31 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.90 2002/10/09 01:11:56 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o S/R aim_initialise.F replace S/R aim_init from file aim_do_inphys.F:
+ - read AIM physics parameters from a file (data.aimphys)
+ - set defaults values = F.Molteni paper (Clim.Dyn., 2002)
 
 checkpoint46j_post
 o split calc_exact_eta in 2 S/R : integr_continuity & update_etaH
