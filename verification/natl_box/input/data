@@ -80,7 +80,7 @@
 #
  &PARM03
  startTime  = 0.0,
- endTime    = 2592000.0,
+ endTime    = 72000.0,
  deltaTmom  = 3600.0,
  TauCD      = 172800.
  cAdjFreq   = 0.,
