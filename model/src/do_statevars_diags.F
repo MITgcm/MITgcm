@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.6 2005/01/31 19:45:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_statevars_diags.F,v 1.7 2005/02/14 00:46:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -84,6 +84,16 @@ C                    and stagger/synchronous TimeStep
         ENDDO
        ENDIF
 #endif /* ALLOW_THSICE */
+
+#ifdef ALLOW_LAND
+       IF ( seqFlag.EQ.0 .AND. useLand ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          CALL LAND_DIAGNOSTICS_FILL( myTime,myIter, bi,bj, myThid )
+         ENDDO
+        ENDDO
+       ENDIF
+#endif /* ALLOW_LAND */
 
       ENDIf
 #endif /* ALLOW_DIAGNOSTICS */
