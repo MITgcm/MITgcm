@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_strain.F,v 1.1 2004/05/14 17:43:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_strain.F,v 1.2 2004/05/24 18:44:27 adcroft Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -55,12 +55,16 @@ CEOP
 
 C       Strain of horizontal flow field (ignoring lopping factors)
         strain(I,J)=
-     &    dyu(I,J,bi,bj)*recip_dxv(I,J,bi,bj)*(
-     &              vFld( I , J )*recip_dyc( I , J ,bi,bj)
-     &             -vFld(I-1, J )*recip_dyc(I-1, J ,bi,bj) )
-     &   +dxv(I,J,bi,bj)*recip_dyu(I,J,bi,bj)*(
-     &             +uFld( I , J )*recip_dxc( I , J ,bi,bj)
-     &             -uFld( I ,J-1)*recip_dxc( I ,J-1,bi,bj) )
+     &    ( dyc( i , j ,bi,bj)*vFld( i , j )
+     &     -dyc(i-1, j ,bi,bj)*vFld(i-1, j )
+     &     +dxc( i , j ,bi,bj)*uFld( i , j )
+     &     -dxc( i ,j-1,bi,bj)*uFld( i ,j-1) )*recip_rAz(i,j,bi,bj)
+c    &    dyu(I,J,bi,bj)*recip_dxv(I,J,bi,bj)*(
+c    &              vFld( I , J )*recip_dyc( I , J ,bi,bj)
+c    &             -vFld(I-1, J )*recip_dyc(I-1, J ,bi,bj) )
+c    &   +dxv(I,J,bi,bj)*recip_dyu(I,J,bi,bj)*(
+c    &             +uFld( I , J )*recip_dxc( I , J ,bi,bj)
+c    &             -uFld( I ,J-1)*recip_dxc( I ,J-1,bi,bj) )
 
 C       Set strain to zero on boundaries (free-slip)
         IF (hFacZ(i,j).EQ.0.) THEN
@@ -72,18 +76,7 @@ C       Set strain to zero on boundaries (free-slip)
         
 C     Special stuff for Cubed Sphere
       IF (useCubedSphereExchange) THEN
-        I=1
-        J=1
-        strain(I,J)=0.
-        I=sNx+1
-        J=1
-        strain(I,J)=0.
-        I=1
-        J=sNy+1
-        strain(I,J)=0.
-        I=sNx+1
-        J=sNy+1
-        strain(I,J)=0.
+       STOP 'S/R MOM_CALC_STRAIN: We should not use strain on the cube!'
       ENDIF
 
       RETURN

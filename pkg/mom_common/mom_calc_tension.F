@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_tension.F,v 1.1 2004/05/14 17:43:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_tension.F,v 1.2 2004/05/24 18:44:27 adcroft Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -52,12 +52,16 @@ CEOP
 C Calculate tension of horizontal flow (ignoring lopping factors)
 C *NOTE* that masking is implicit in the contents of the (u,v) fields.
         tension(i,j)= 
-     &    (dyf(i,j,bi,bj)*recip_dxf(i,j,bi,bj))
-     &   *( uFld(i+1, j )*recip_dyg(i+1, j ,bi,bj)
-     &     -uFld( i , j )*recip_dyg( i , j ,bi,bj) )
-     &   -(dxf(i,j,bi,bj)*recip_dyf(i,j,bi,bj))
-     &   *( vFld( i ,j+1)*recip_dxg( i ,j+1,bi,bj)
-     &     -vFld( i , j )*recip_dxg( i , j ,bi,bj) )
+     &    ( dyg( i , j ,bi,bj)*uFld( i , j )
+     &     -dyg(i-1, j ,bi,bj)*uFld(i-1, j )
+     &     -dxg( i , j ,bi,bj)*vFld( i , j )
+     &     +dxg( i ,j-1,bi,bj)*vFld( i ,j-1) )*recip_rAz(i,j,bi,bj)
+c    &    (dyf(i,j,bi,bj)*recip_dxf(i,j,bi,bj))
+c    &   *( uFld(i+1, j )*recip_dyg(i+1, j ,bi,bj)
+c    &     -uFld( i , j )*recip_dyg( i , j ,bi,bj) )
+c    &   -(dxf(i,j,bi,bj)*recip_dyf(i,j,bi,bj))
+c    &   *( vFld( i ,j+1)*recip_dxg( i ,j+1,bi,bj)
+c    &     -vFld( i , j )*recip_dxg( i , j ,bi,bj) )
 
        ENDDO
       ENDDO
