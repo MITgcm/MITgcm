@@ -29,6 +29,7 @@
  implicitFreeSurface=.TRUE.,
  eosType='LINEAR',
  nonHydrostatic=.FALSE.,
+ useNHMTerms=.TRUE.,
  readBinaryPrec=64,
  globalFiles=.TRUE.,
  writeBinaryPrec=64,

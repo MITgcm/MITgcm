@@ -26,6 +26,7 @@
  eosType='LINEAR',
  hFacMin=0.2,
  nonHydrostatic=.FALSE.,
+ useNHMTerms=.TRUE.,
  readBinaryPrec=64,
  globalFiles=.TRUE.,
  &
