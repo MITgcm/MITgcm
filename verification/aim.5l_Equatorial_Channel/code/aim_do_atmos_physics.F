@@ -1,10 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/aim_do_atmos_physics.F,v 1.5 2001/05/29 14:01:46 adcroft Exp $
-C     $Name:  $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/aim_do_atmos_physics.F,v 1.6 2001/08/24 11:57:43 jmc Exp $
+C $Name:  $
 
 #include "AIM_OPTIONS.h"
 #undef OLD_AIM_GRIG_MAPPING
 
-      SUBROUTINE AIM_DO_ATMOS_PHYSICS( phi_hyd, currentTime, myThid )
+      SUBROUTINE AIM_DO_ATMOS_PHYSICS( phi_hyd, 
+     I                                 bi, bj,
+     I                                 currentTime, myThid )
 C     /==================================================================\
 C     | S/R AIM_DO_ATMOS_PHYSICS                                         |
 C     |==================================================================|
@@ -27,20 +29,25 @@ C     Physics package
       INTEGER NLAT
       INTEGER NLEV
       PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
-#include "com_physvar.h"
-#include "com_forcing1.h"
-#include "Lev_def.h"
-#include "AIM_DDT.h"
+
 C     MITgcm
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#include "AIM_FFIELDS.h"
+
+C     Physics package
+#include "com_physvar.h"
+#include "com_forcing1.h"
+#include "Lev_def.h"
 
 C     -------------- Routine arguments -----------------------------------
-      _RL phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL currentTime
+      INTEGER myThid
+      INTEGER bi, bj
 
 #ifdef ALLOW_AIM
 C     -------------- Local variables -------------------------------------
@@ -107,18 +114,18 @@ C     Katm          - Atmospheric K index
       real pvoltotNiv5
       SAVE pvoltotNiv5
       real ptotalNiv5
-      INTEGER bi, bj
       INTEGER Katm
+
 C
       pGround = 1.D5
       CPAIR   = 1004
       RD      =  287
 
+      CALL AIM_DYN2AIM( bi, bj, currentTime, myThid )
+
 C     Assume only one tile per proc. for now
-      bi  = 1
-      bj  = 1
-      IG0 = myXGlobalLo
-      JG0 = myYGlobalLo
+      IG0 = myXGlobalLo+(bi-1)*sNx
+      JG0 = myYGlobalLo+(bj-1)*sNy
 
 C      
 C     Physics package works with sub-domains 1:sNx,1:sNy,1:Nr.
@@ -144,7 +151,7 @@ C       the mean heave of the base of the atmosphere. )
        DO J=1,sNy
         DO I=1,sNx
          phiTotal(I,J,K) = phiTotal(I,J,K) +
-     &   recip_rhoConst*(phi_hyd(i,j,k,bi,bj))
+     &   recip_rhoConst*(phi_hyd(i,j,k))
         ENDDO
        ENDDO
       ENDDO
@@ -179,18 +186,20 @@ C     Note the mapping here is only valid for one tile per proc.
         DO I = 1, sNx
          I2 = (sNx)*(J-1)+I
          Katm = _KD2KA( K )
-         UG1(I2,Katm)   = 0.5*(uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
-         VG1(I2,Katm)   = 0.5*(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj))
+         UG1(I2,Katm,myThid)   = 
+     &    0.5*(uVel(I,J,K,bi,bj)+uVel(I+1,J,K,bi,bj))
+         VG1(I2,Katm,myThid)   = 
+     &    0.5*(vVel(I,J,K,bi,bj)+vVel(I,J+1,K,bi,bj))
 C        Physics works with temperature - not potential temp.
-         TG1(I2,Katm)   = theta(I,J,K,bi,bj)
+         TG1(I2,Katm,myThid)   = theta(I,J,K,bi,bj)
      &                  / ((pGround/pSurfs(K))**(RD/CPAIR))
-c_jmc    QG1(I2,Katm)   = salt(I,J,K,bi,bj)
-         QG1(I2,Katm)   = MAX(salt(I,J,K,bi,bj), 0. _d 0)
-         PHIG1(I2,Katm) = (phiTotal(I,J,K)- ptotalniv5 ) 
+c_jmc    QG1(I2,Katm,myThid)   = salt(I,J,K,bi,bj)
+         QG1(I2,Katm,myThid)   = MAX(salt(I,J,K,bi,bj), 0. _d 0)
+         PHIG1(I2,Katm,myThid) = (phiTotal(I,J,K)- ptotalniv5 ) 
      &                  + gravity*Hinitial(k)
 C *NOTE* Fix me for lopped cells
          if(hFacC(i,j,k,bi,bj).eq.1.) then
-           RHOG1(I2,Katm) = pSurfs(K)/RD/TG1(I2,Katm)
+           RHOG1(I2,Katm) = pSurfs(K)/RD/TG1(I2,Katm,myThid)
          else
            RHOG1(I2,Katm)=0.
          endif
@@ -198,13 +207,14 @@ C *NOTE* Fix me for lopped cells
         ENDDO
        ENDDO
       ENDDO
+
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c_jmc: add square of surface wind speed (center of C grid) = 2 * KE_surf
       DO J = 1, sNy
        DO I = 1, sNx
          I2 = I+(J-1)*sNx
          K = k_surf(i,j,bi,bj)
-         Vsurfsq(I2) = 0.5 * (
+         Vsurfsq(I2,myThid) = 0.5 * (
      &                 uVel(I,J,K,bi,bj)*uVel(I,J,K,bi,bj)
      &               + uVel(I+1,J,K,bi,bj)*uVel(I+1,J,K,bi,bj)
      &               + vVel(I,J,K,bi,bj)*vVel(I,J,K,bi,bj)
@@ -213,8 +223,9 @@ c_jmc: add square of surface wind speed (center of C grid) = 2 * KE_surf
 #ifdef OLD_AIM_GRIG_MAPPING
 c - to reproduce old results :
          Katm = _KD2KA( K )
-         Vsurfsq(I2) = UG1(I2,Katm)*UG1(I2,Katm)
-     &               + VG1(I2,Katm)*VG1(I2,Katm)
+         Vsurfsq(I2,myThid) =  
+     &     UG1(I2,Katm,myThid)*UG1(I2,Katm,myThid)
+     &   + VG1(I2,Katm,myThid)*VG1(I2,Katm,myThid)
 #endif /* OLD_AIM_GRIG_MAPPING */
        ENDDO
       ENDDO
@@ -226,26 +237,27 @@ C     -------------------------
       DO J=1,sNy
        DO I=1,sNx
         I2 = (sNx)*(J-1)+I
-        IF ( Nlevxy(I2) .NE. 0 ) THEN
-         PHI0(I2) = gravity*Hinitialw(Nlevxy(I2))
+        IF ( Nlevxy(I2,myThid) .NE. 0 ) THEN
+         PHI0(I2,myThid) = gravity*Hinitialw(Nlevxy(I2,myThid))
         ELSE
-         PHI0(I2) = 0.
+         PHI0(I2,myThid) = 0.
         ENDIF
        ENDDO
       ENDDO
+
 C
 C     Physics package works with log of surface pressure
 C     Get surface pressure from pbot-dpref/dz*Z'
       DO J=1,sNy
        DO I=1,sNx
         I2 = (sNx)*(J-1)+I
-        IF ( Nlevxy(I2) .NE. 0 ) THEN
-         PNLEVW(I2) = PsurfW(Nlevxy(I2))/pGround
+        IF ( Nlevxy(I2,myThid) .NE. 0 ) THEN
+         PNLEVW(I2,myThid) = PsurfW(Nlevxy(I2,myThid))/pGround
         ELSE
 C        Dummy value for land
-         PNLEVW(I2) = PsurfW(1)/pGround
+         PNLEVW(I2,myThid) = PsurfW(1)/pGround
         ENDIF
-        PSLG1(I2) = 0.
+        PSLG1(I2,myThid) = 0.
        ENDDO
       ENDDO
 cch      write(0,*)  '(PNLEVW(I2),I2=257,384)'
@@ -268,96 +280,80 @@ C     6. Land sea mask         - infer from exact zeros in soil moisture dataset
 C     7. Surface geopotential  - to be done when orography is in
 C                                dynamical kernel. Assume 0. for now.
       mnthIndex = INT(tYear*12.)+1
-      IF ( mnthIndex .NE. prevMnthIndex .OR.
-     &     FirstCall ) THEN
-       prevMnthIndex = mnthIndex
+C_cnh01      IF ( mnthIndex .NE. prevMnthIndex .OR.
+C_cnh01     &     FirstCall ) THEN
+C_cnh01       prevMnthIndex = mnthIndex
 C      Read in surface albedo data (input is in % 0-100 )
 C      scale to give fraction between 0-1 for Francos package.
-c_EqCh WRITE(fNam,'(A,A,A)' ) 'salb.',mnthNam(mnthIndex),'.sun.b'
-c_EqCh OPEN(1,FILE=fNam(1:14),STATUS='old',FORM='unformatted')
-c_EqCh READ(1) tmp4
-c_EqCh CLOSE(1)
-c_EqCh DO J=1,nYio
-c_EqCh  DO I=1,nXio
-c_EqCh   tmp4(I,J) = tmp4(I,J)/100.
-c_EqCh  ENDDO
-c_EqCh ENDDO
+C      WRITE(fNam,'(A,A,A)' ) 'salb.',mnthNam(mnthIndex),'.sun.b'
+C      OPEN(1,FILE=fNam(1:14),STATUS='old',FORM='unformatted')
+C      READ(1) tmp4
+C      CLOSE(1)
+C      DO J=1,nYio
+C       DO I=1,nXio
+C        tmp4(I,J) = aim_albedo(I,J)/100.
+C       ENDDO
+C      ENDDO
        DO J=1,sNy
         DO I=1,sNx
          I2 = (sNx)*(J-1)+I
-         alb0(I2) = 0.
-c_EqCh   IF ( IG0+I-1 .LE. nxIo .AND. JG0+J-1 .LE. nyIo ) THEN
-c_EqCh    alb0(I2) = tmp4(IG0+I-1,JG0+J-1)
-c_EqCh   ENDIF
+         alb0(I2,myThid) = 0.
+c_EqCh   alb0(I2,myThid) = aim_albedo(I,J,bi,bj)/100.
         ENDDO
        ENDDO
 C      Read in surface temperature data (input is in absolute temperature)
-c_EqCh WRITE(fNam,'(A,A,A)' ) 'tsurf.',mnthNam(mnthIndex),'.sun.b'
-c_EqCh OPEN(1,FILE=fNam(1:15),STATUS='old',FORM='unformatted')
-c_EqCh READ(1) tmp4
-c_EqCh CLOSE(1)
+C      WRITE(fNam,'(A,A,A)' ) 'tsurf.',mnthNam(mnthIndex),'.sun.b'
+C      OPEN(1,FILE=fNam(1:15),STATUS='old',FORM='unformatted')
+C      READ(1) tmp4
+C      CLOSE(1)
        DO J=1,sNy
         DO I=1,sNx
          I2 = (sNx)*(J-1)+I
-         sst1(I2) = 300.
-         stl1(I2) = 300.
-c_EqCh   IF ( IG0+I-1 .LE. nxIo .AND. JG0+J-1 .LE. nyIo ) THEN
-c_EqCh    sst1(I2) = tmp4(IG0+I-1,JG0+J-1)
-c_EqCh    stl1(I2) = tmp4(IG0+I-1,JG0+J-1)
-c_EqCh   ENDIF
-         sst1(I2) = 300.
+         sst1(I2,myThid) = 300.
+         stl1(I2,myThid) = 300.
+c_EqCh   sst1(I2,myThid) = aim_surfTemp(I,J,bi,bj)
+c_EqCh   stl1(I2,myThid) = aim_surfTemp(I,J,bi,bj)
+         sst1(I2,myThid) = 300.
      &    +10.*exp( -((float(I)-64.5)/25.)**2 )
      &    +10.*exp( -((float(J)-12.5)/25.)**2 )
-         stl1(I2) = sst1(I2)
+         stl1(I2,myThid) = sst1(I2,myThid)
         ENDDO
        ENDDO
 C
 C      Read in soil moisture data (input is in cm in bucket of depth 20cm. )
 C??? NOT CLEAR  scale for bucket depth of 75mm which is what Franco uses.
-c_EqCh WRITE(fNam,'(A,A,A)' ) 'smoist.',mnthNam(mnthIndex),'.sun.b'
-c_EqCh OPEN(1,FILE=fNam(1:16),STATUS='old',FORM='unformatted')
-c_EqCh READ(1) tmp4
-c_EqCh CLOSE(1)
-c_EqCh WRITE(0,*) ' Read file ', fNam(1:16), IG0, JG0
+C      WRITE(fNam,'(A,A,A)' ) 'smoist.',mnthNam(mnthIndex),'.sun.b'
+C      OPEN(1,FILE=fNam(1:16),STATUS='old',FORM='unformatted')
+C      READ(1) tmp4
+C      CLOSE(1)
+C      WRITE(0,*) ' Read file ', fNam(1:16), IG0, JG0
 cdj       tmp4 = (tmp4*7.5/20.)*10.
        DO J=1,sNy
         DO I=1,sNx
          I2 = (sNx)*(J-1)+I
-         soilq1(I2) = 0.
-c_EqCh   IF ( IG0+I-1 .LE. nxIo .AND. JG0+J-1 .LE. nyIo ) THEN
-c_EqCh    soilq1(I2) = tmp4(IG0+I-1,JG0+J-1)
-c_EqCh   ENDIF
+         soilq1(I2,myThid) = 0.
+c_EqCh   soilq1(I2,myThid) = aim_soilMoisture(I,J,bi,bj)/20.
         ENDDO
        ENDDO
-cdj      Soilqmax=MAxval(soilq1)
-       Soilqmax=20.
-cdj      if(Soilqmax.ne.0.) then
-c_EqCh DO J=1,sNy
-c_EqCh  DO I=1,sNx
-c_EqCh   I2 = (sNx)*(J-1)+I
-c_EqCh   soilq1(I2)=soilq1(I2)/Soilqmax
-c_EqCh  ENDDO
-c_EqCh ENDDO
-cdj      endif
-      ENDIF
+C_cnh01      ENDIF
 C
-      IF ( FirstCall ) THEN
+C_cnh01      IF ( FirstCall ) THEN
 C      Set snow depth, sea ice to zero for now
 C      Land-sea mask ( figure this out from where 
 C                      soil moisture is exactly zero ).
        DO J=1,sNy
         DO I=1,sNx
          I2 = (sNx)*(J-1)+I
-         fMask1(I2) = 1.
-         IF ( soilq1(I2) .EQ. 0. ) fMask1(I2) = 0.
-         oice1(I2) = 0.
-         snow1(I2) = 0.
+         fMask1(I2,myThid) = 1.
+         IF ( soilq1(I2,myThid) .EQ. 0. ) fMask1(I2,myThid) = 0.
+         oice1(I2,myThid) = 0.
+         snow1(I2,myThid) = 0.
         ENDDO
        ENDDO
 C      open(77,file='lsmask',form='unformatted')
 C      write(77) fmask1
 C      close(77)
-      ENDIF
+C_cnh01      ENDIF
 C
 C Addition may 15 . Reset humidity to 0. if negative
 C ---------------------------------------------------
@@ -370,8 +366,9 @@ Caja     ENDIF
 Caja    ENDDO
 Caja   ENDDO
 Caja  ENDDO
- 
-      CALL PDRIVER( tYear )
+
+
+      CALL PDRIVER( tYear, myThid )
 
 #ifdef ALLOW_TIMEAVE
 C     Calculate diagnostics for AIM
@@ -379,25 +376,8 @@ C     Calculate diagnostics for AIM
 #endif /* ALLOW_TIMEAVE */
 C
       FirstCall = .FALSE.
-C
-C     For velocity tendencies on C grid need to interpolate
-C     to do this in multi-processor mode we copy U and V tendencies
-C     into dynamics conforming array and then exchange.
-C     ** NOTE - Exchange at this point is not compatible with
-C               multiple-tiles per compute thread/process.
-C               However, AIM code itself is not compatible with
-C               this as its global data assumes only one "tile".
-      CALL AIM_UTVT2DYN( bi, bj, myThid )
-      _EXCH_XYZ_R8( AIM_UT, myThid )
-      _EXCH_XYZ_R8( AIM_VT, myThid )
 
-      DO J = 1, sNy
-       DO I = 1, sNx
-         I2 = I+(J-1)*sNx
-         aim_drag(I,J,bi,bj) = DRAG(I2)
-       ENDDO
-      ENDDO
-      _EXCH_XY_R8( aim_drag, myThid )
+      CALL AIM_AIM2DYN( bi, bj, currentTime, myThid )
 C
 #endif /* ALLOW_AIM */
 
