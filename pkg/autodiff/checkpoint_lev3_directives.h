@@ -15,14 +15,6 @@ CADJ STORE wvel      = tapelev3, key = ilev_3
 CADJ STORE etan      = tapelev3, key = ilev_3
 CADJ STORE totphihyd = tapelev3, key = ilev_3
 
-#ifdef ALLOW_CD_CODE
-CADJ STORE uveld     = tapelev3, key = ilev_3
-CADJ STORE vveld     = tapelev3, key = ilev_3
-CADJ STORE etanm1    = tapelev3, key = ilev_3
-CADJ STORE unm1      = tapelev3, key = ilev_3
-CADJ STORE vnm1      = tapelev3, key = ilev_3
-#endif /* ALLOW_CD_CODE */
-
 #ifdef EXACT_CONSERV
 CADJ STORE empmr     = tapelev3, key = ilev_3
 CADJ STORE etaH      = tapelev3, key = ilev_3
@@ -33,6 +25,10 @@ CADJ STORE hDivFlow  = tapelev3, key = ilev_3
 CADJ STORE tr1       = tapelev3, key = ilev_3
 CADJ STORE gtr1nm1   = tapelev3, key = ilev_3
 #endif /* ALLOW_PASSIVE_TRACER */
+
+#ifdef ALLOW_CD_CODE
+# include "cd_code_ad_check_lev3_dir.h"
+#endif /* ALLOW_CD_CODE */
 
 #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
 # include "exf_ad_check_lev3_dir.h"
