@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.5 2002/10/07 16:29:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.6 2003/02/18 15:37:44 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -141,8 +141,10 @@ C-- end if DDTT ...
 
 C-    Time Averages of "intermediate" fields (no hFactor)
       IF ( myIter .NE. nIter0 ) THEN
-        CALL TIMEAVE_CUMULATE(phiHydLowtave, phiHydLow, 1, deltaTclock, 
-     &                          bi, bj, myThid)
+        CALL TIMEAVE_CUMULATE(phiHydtave, totPhihyd,  Nr, 
+     &                                   deltaTclock, bi, bj, myThid)
+        CALL TIMEAVE_CUMULATE(phiHydLowtave, phiHydLow, 1,
+     &                                   deltaTclock, bi, bj, myThid)
         CALL TIMEAVE_CUMUL_2V(phiHydLow2Tave, 
      &       phiHydLow,phiHydLow, 1,  0, deltaTclock, bi, bj, myThid)
         DO K=1,Nr
