@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rs.F,v 1.4 2001/06/18 17:39:59 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rs.F,v 1.5 2001/06/25 20:35:23 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -36,10 +36,10 @@ C     === Local variables ====
      O                theMin,theMax,theMean,theSD,
      I                myThid )
 
-      CALL MON_OUT_RS( arrName, theMax,  mon_foot_max  )
-      CALL MON_OUT_RS( arrName, theMin,  mon_foot_min  )
-      CALL MON_OUT_RS( arrName, theMean, mon_foot_mean )
-      CALL MON_OUT_RS( arrName, theSD,   mon_foot_sd   )
+      CALL MON_OUT_RS( arrName, theMax,  mon_foot_max  ,myThid)
+      CALL MON_OUT_RS( arrName, theMin,  mon_foot_min  ,myThid)
+      CALL MON_OUT_RS( arrName, theMean, mon_foot_mean ,myThid)
+      CALL MON_OUT_RS( arrName, theSD,   mon_foot_sd   ,myThid)
 
       RETURN
       END

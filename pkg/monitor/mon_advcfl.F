@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_advcfl.F,v 1.3 2001/06/18 17:39:59 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_advcfl.F,v 1.4 2001/06/25 20:35:23 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -45,7 +45,7 @@ C     === Local variables ====
       ENDDO
       _GLOBAL_MAX_R8(theMax,myThid)
 
-      CALL MON_OUT_RL( label, theMax, mon_foot_max )
+      CALL MON_OUT_RL( label, theMax, mon_foot_max ,myThid)
 
       RETURN
       END

@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.1 2001/06/18 17:39:59 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.2 2001/06/25 20:35:23 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-      SUBROUTINE MON_OUT_I(pref, value, foot )
+      SUBROUTINE MON_OUT_I(pref, value, foot, myThid )
 C.sh  /==========================================================\
 C     | SUBROUTINE MON_OUT_I                                     |
 C     | o Formatted integer I/O for monitor print out.           |
@@ -18,6 +18,7 @@ C.gd  === Global data ===
       INTEGER  IFNBLNK
       EXTERNAL ILNBLNK
       INTEGER  ILNBLNK
+      INTEGER  myThid
 C.
 
 C.ra  === Routine arguments ===
@@ -85,13 +86,14 @@ C.
 
       msgBuf(35:35) = '='
 
+      _BEGIN_MASTER(myThid)
       WRITE(msgBuf(36:57),'(1X,I21)') value
-
       CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1 )
+      _END_MASTER()
 
       RETURN
       END
-      SUBROUTINE MON_OUT_RS(pref, value, foot )
+      SUBROUTINE MON_OUT_RS(pref, value, foot, myThid )
 C.sh  /==========================================================\
 C     | SUBROUTINE MON_OUT_RS                                    |
 C     | o Formatted RS I/O for monitor print out.                |
@@ -106,6 +108,7 @@ C.gd  === Global data ===
       INTEGER  IFNBLNK
       EXTERNAL ILNBLNK
       INTEGER  ILNBLNK
+      INTEGER  myThid
 C.
 
 C.ra  === Routine arguments ===
@@ -173,12 +176,14 @@ C.
 
       msgBuf(35:35) = '='
 
+      _BEGIN_MASTER(myThid)
       WRITE(msgBuf(36:57),'(1X,1P1E21.13)') value
-
       CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1 )
+      _END_MASTER()
+
       RETURN
       END
-      SUBROUTINE MON_OUT_RL(pref, value, foot )
+      SUBROUTINE MON_OUT_RL(pref, value, foot, myThid )
 C.sh  /==========================================================\
 C     | SUBROUTINE MON_OUT_RL                                    |
 C     | o Formatted RL I/O for monitor print out.                |
@@ -202,6 +207,7 @@ C.d   foot   - Field suffix ( ignored if == mon_string_none )
       CHARACTER*(*) pref
       _RL           value
       CHARACTER*(*) foot
+      INTEGER  myThid
 C.
 
 C.lv  === Local variables ===
@@ -260,8 +266,10 @@ C.
 
       msgBuf(35:35) = '='
 
+      _BEGIN_MASTER(myThid)
       WRITE(msgBuf(36:57),'(1X,1P1E21.13)') value
-
       CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1 )
+      _END_MASTER()
+
       RETURN
       END

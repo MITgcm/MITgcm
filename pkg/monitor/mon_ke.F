@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.6 2001/06/19 14:37:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_ke.F,v 1.7 2001/06/25 20:35:23 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -55,8 +55,8 @@ C     === Local variables ====
       _GLOBAL_SUM_R8(tmpVal,myThid)
       IF (tmpVal.NE.0.) theMean=theMean/tmpVal
 
-      CALL MON_OUT_RL( mon_string_none, theMax, mon_foot_max   )
-      CALL MON_OUT_RL( mon_string_none, theMean, mon_foot_mean )
+      CALL MON_OUT_RL( mon_string_none, theMax, mon_foot_max   ,myThid)
+      CALL MON_OUT_RL( mon_string_none, theMean, mon_foot_mean ,myThid)
 
       RETURN
       END
