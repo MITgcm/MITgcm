@@ -122,7 +122,11 @@ genmakemodel()
  ( cd $1;
    if [ $quick -eq 0 -o ! -r Makefile ]; then
     printf 'genmake ... ' 1>&2
-    ../../../tools/genmake -ieee -mods=../code > make.log 2>&1
+    if [ $ieee -eq 0 ]; then
+     ../../../tools/genmake -mods=../code > make.log 2>&1
+    else
+     ../../../tools/genmake -ieee -mods=../code > make.log 2>&1
+    fi
     if [ $? -ne 0 ]; then
      tail make.log
      echo genmakemodel: genmake failed 1>&2
@@ -309,6 +313,7 @@ debug=0
 verbose=1
 quick=0
 clean=0
+ieee=0
 longtest=0
 expts=''
 
@@ -320,9 +325,11 @@ do
    -verbose) verbose=2;;
    -debug) debug=1;;
    -clean) clean=1;;
+   -ieee) ieee=1;;
    -longtest) longtest=1;;
    -quiet) verbose=0;;
    -help) show_help; exit 0;;
+   -*) echo Unrecognized option:$arg; exit 9;;
    *) test -d $arg && expts=`echo $expts $arg`;;
  esac
 done
