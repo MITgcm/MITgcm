@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.11 2002/03/04 17:26:40 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.12 2002/03/24 02:08:21 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -24,6 +24,9 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#ifdef ALLOW_PASSIVE_TRACER
+#include "TR1.h"
+#endif
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
 #endif 
