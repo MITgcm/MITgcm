@@ -1,7 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.40 2001/05/14 22:19:51 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.41 2001/07/13 18:08:14 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+checkpoint40pre2
+o Updated to latest branch of AJA, JMC
+o Added gradient check package
+o Added routines for passive tracer handling
+o Added carbon sequestration sensitivity experiment
+
 checkpoint39
  o Modifications and fixes to support TAMC
    (mainly missing or wrong directives)
