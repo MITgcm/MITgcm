@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.11 2004/08/29 19:43:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.12 2004/10/22 02:24:04 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -240,7 +240,7 @@ c ---------------------------------
       if (iradsw.ne.0) then
       do j=jm1,jm2
       do i=im1,im2
-      qdiag(i,j,iradsw+l-1,bi,bj) = qdiag(i,j,iradsw+l-1,bi,bj) +
+      qdiag(i,j,iradsw+l-1,bi,bj) = qdiag(i,j,iradsw+l-1,bi,bj)
      .  + swdt(i,j,l,bi,bj)*radswt(i,j,bi,bj)*
      .                   pk(i,j,l,bi,bj)*pinv(i,j)*86400
       enddo
