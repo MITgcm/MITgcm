@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.4 2001/11/08 23:39:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.5 2002/03/06 01:29:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -31,8 +31,10 @@ C     == Routine arguments ==
       INTEGER myThid
 
 C     == Local variables ==
+C     vFld    :: velocity [m/s], meridional component
       INTEGER i,j
       _RL Rjm,Rj,Rjp,cfl,d0,d1,psiP,psiM,thetaP,thetaM
+      _RL vFld
 
       DO i=1-Olx,sNx+Olx
        vT(i,1-Oly)=0.D0
@@ -45,7 +47,10 @@ C     == Local variables ==
         Rj =(tracer(i,j)-tracer(i,j-1))*maskS(i,j,k,bi,bj)
         Rjm=(tracer(i,j-1)-tracer(i,j-2))*maskS(i,j-1,k,bi,bj)
 
-        cfl=abs(vVel(i,j,k,bi,bj)*deltaT*recip_dyc(i,j,bi,bj))
+c       vFld = vVel(i,j,k,bi,bj)
+        vFld = vTrans(i,j)*recip_dxG(i,j,bi,bj)
+     &       *recip_drF(k)*recip_hFacS(i,j,k,bi,bj)
+        cfl=abs(vFld*deltaT*recip_dyC(i,j,bi,bj))
         d0=(2.D0-cfl)*(1.D0-cfl)*oneSixth
         d1=(1.D0-cfl*cfl)*oneSixth
 c       thetaP=0.D0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_x.F,v 1.3 2001/09/21 13:11:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_x.F,v 1.4 2002/03/06 01:29:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -54,8 +54,10 @@ C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
 C  Cr                   :: slope ratio
 C  Rjm,Rj,Rjp           :: differences at i-1,i,i+1
+C  uFld                 :: velocity [m/s], zonal component
       INTEGER i,j
       _RL Cr,Rjm,Rj,Rjp
+      _RL uFld
 C Statement function provides Limiter(Cr)
 #include "GAD_FLUX_LIMITER.h"
 CEOP
@@ -65,9 +67,14 @@ CEOP
        uT(2-Olx,j)=0.
        uT(sNx+Olx,j)=0.
        DO i=1-Olx+2,sNx+Olx-1
+
+c       uFld = uVel(i,j,k,bi,bj)
+        uFld = uTrans(i,j)*recip_dyG(i,j,bi,bj)
+     &       *recip_drF(k)*recip_hFacW(i,j,k,bi,bj)
         Rjp=(tracer(i+1,j)-tracer(i,j))*maskW(i+1,j,k,bi,bj)
         Rj=(tracer(i,j)-tracer(i-1,j))*maskW(i,j,k,bi,bj)
         Rjm=(tracer(i-1,j)-tracer(i-2,j))*maskW(i-1,j,k,bi,bj)
+
         IF (Rj.NE.0.) THEN
          IF (uTrans(i,j).GT.0) THEN
            Cr=Rjm/Rj
@@ -86,7 +93,7 @@ CEOP
      &   uTrans(i,j)*(Tracer(i,j)+Tracer(i-1,j))*0.5 _d 0
      &   -0.5*(
      &        (1-Cr)*ABS(uTrans(i,j))
-     &        +uTrans(i,j)*uVel(i,j,k,bi,bj)*deltaT
+     &        +uTrans(i,j)*uFld*deltaT
      &         *recip_dxC(i,j,bi,bj)*Cr
      &        )*Rj
        ENDDO

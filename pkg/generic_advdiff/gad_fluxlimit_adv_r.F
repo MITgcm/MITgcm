@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.6 2002/01/17 16:48:59 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_r.F,v 1.7 2002/03/06 01:29:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -60,8 +60,10 @@ C  km2                  :: =max( k-2 , 1 )
 C  bi,bj                :: tile indices or (1,1) depending on use
 C  Cr                   :: slope ratio
 C  Rjm,Rj,Rjp           :: differences at i-1,i,i+1
+C  wFld                 :: velocity, vertical component
       INTEGER i,j,kp1,km1,km2,bi,bj
       _RL Cr,Rjm,Rj,Rjp
+      _RL wFld
 C Statement function provides Limiter(Cr)
 #include "GAD_FLUX_LIMITER.h"
 CEOP
@@ -92,11 +94,15 @@ C      for maskC(...) and wVel(...)
       ELSE
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
+
+c        wFld = wVel(i,j,k,bi_arg,bj_arg)
+         wFld = rTrans(i,j)*recip_rA(i,j,bi_arg,bj_arg)
          Rjp=(tracer(i,j,kp1,bi,bj)-tracer(i,j,k,bi,bj))
      &        *maskC(i,j,kp1,bi_arg,bj_arg)
          Rj=(tracer(i,j,k,bi,bj)-tracer(i,j,kM1,bi,bj))
          Rjm=(tracer(i,j,km1,bi,bj)-tracer(i,j,kM2,bi,bj))
      &        *maskC(i,j,km2,bi_arg,bj_arg)
+
          IF (Rj.NE.0.) THEN
           IF (rTrans(i,j).LT.0.) THEN
             Cr=Rjm/Rj
@@ -115,7 +121,7 @@ C      for maskC(...) and wVel(...)
      &     rTrans(i,j)*
      &        (Tracer(i,j,k,bi,bj)+Tracer(i,j,kM1,bi,bj))*0.5 _d 0
      &    +(ABS(rTrans(i,j))*(1-Cr)
-     &      +rTrans(i,j)*wVel(i,j,k,bi_arg,bj_arg)*dTarg*recip_drC(k)
+     &      +rTrans(i,j)*wFld*dTarg*recip_drC(k)
      &                  *Cr
      &     )*Rj*0.5 _d 0                )
         ENDDO
