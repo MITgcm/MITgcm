@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.84 2004/07/12 15:49:08 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.85 2004/07/14 21:26:53 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -179,40 +179,42 @@ look_for_makedepend()  {
     #    4) fall back to the buggy local xmakedpend script
     #
     if test "x${MAKEDEPEND}" = x ; then
-      which makedepend > /dev/null 2>&1
-      RV0=$?
-      cat <<EOF >> genmake_tc.f
+	which makedepend > /dev/null 2>&1
+	RV0=$?
+	cat <<EOF >> genmake_tc.f
       program test
       write(*,*) 'test'
       stop
       end
 EOF
-      makedepend genmake_tc.f > /dev/null 2>&1
-      RV1=$?
-      if test ! "x${RV0}${RV1}" = x00 ; then
-         echo "    a system-default makedepend was not found."
-
-	 #  Try to build the cyrus impl
-	 rm -f ./genmake_cy_md
-	 (
-	     cd $ROOTDIR/tools/cyrus-imapd-makedepend  \
-		 &&  ./configure > /dev/null 2>&1  \
-		 &&  make > /dev/null 2>&1
-	     if test -x ./makedepend.exe ; then
-		 $LN ./makedepend.exe ./makedepend
-	     fi
-	     ./makedepend ifparser.c > /dev/null 2>&1  \
-		 &&  echo "true"
-	 ) > ./genmake_cy_md
-	 grep true ./genmake_cy_md > /dev/null 2>&1
-	 RETVAL=$?
-	 if test "x$RETVAL" = x0 ; then
-	     MAKEDEPEND='$(TOOLSDIR)/cyrus-imapd-makedepend/makedepend'
-	 else
-	     MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
-	 fi
-	 rm -f ./genmake_cy_md
-      fi
+	makedepend genmake_tc.f > /dev/null 2>&1
+	RV1=$?
+	if test "x${RV0}${RV1}" = x00 ; then
+	    MAKEDEPEND=makedepend
+	else
+	    echo "    a system-default makedepend was not found."
+	    
+	    #  Try to build the cyrus implementation
+	    rm -f ./genmake_cy_md
+	    (
+		cd $ROOTDIR/tools/cyrus-imapd-makedepend  \
+		    &&  ./configure > /dev/null 2>&1  \
+		    &&  make > /dev/null 2>&1
+		if test -x ./makedepend.exe ; then
+		    $LN ./makedepend.exe ./makedepend
+		fi
+		./makedepend ifparser.c > /dev/null 2>&1  \
+		    &&  echo "true"
+	    ) > ./genmake_cy_md
+	    grep true ./genmake_cy_md > /dev/null 2>&1
+	    RETVAL=$?
+	    if test "x$RETVAL" = x0 ; then
+		MAKEDEPEND='$(TOOLSDIR)/cyrus-imapd-makedepend/makedepend'
+	    else
+		MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
+	    fi
+	    rm -f ./genmake_cy_md
+	fi
     fi
 }
 
