@@ -2,7 +2,7 @@
 
       SUBROUTINE DO_TIME_AVERAGES(
      I     myCurrentTime, myIter, bi, bj, K, kUp, kDown,
-     I     K13,K23,wVel,
+     I     K13,K23,wVel,KapGM,
      I     myThid)
 C     /==========================================================\
 C     | SUBROUTINE DO_TIME_AVERAGES                              |
@@ -27,13 +27,17 @@ C     myCurrentTime - Current time of simulation ( s )
       INTEGER myThid
       INTEGER myIter, bi, bj, K, kUp, kDown
       REAL    myCurrentTime
-      _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL KapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C     == Local variables ==
       REAL DDTT
+      LOGICAL TOP_LEVEL
  
+      TOP_LEVEL=K.EQ.1
+
 C     Initialize fields for the first call ever
       IF ( myIter .EQ. nIter0 ) THEN
          CALL TIMEAVER_INI_XYZ(thetatave, bi, bj, K, myThid)
@@ -45,6 +49,7 @@ C     Initialize fields for the first call ever
          CALL TIMEAVER_INI_XYZ(k13tave, bi, bj, K, myThid)
          CALL TIMEAVER_INI_XYZ(k23tave, bi, bj, K, myThid)
          CALL TIMEAVER_INI_XYZ(wVeltave, bi, bj, K, myThid)
+         IF (TOP_LEVEL) CALL TIMEAVER_INI_XY(KapGMtave, bi, bj, myThid)
          TimeAve(k,bi,bj)=0.
          InterTimeAve(k,bi,bj)=0.
       ENDIF
@@ -76,6 +81,8 @@ C     Time Averages of "intermediate" fields
       CALL TIMEAVER_INTER_XYZ(Nz, K13, k13tave, DDTT, bi, bj, K, K, myThid)
       CALL TIMEAVER_INTER_XYZ(Nz, K23, k23tave, DDTT, bi, bj, K, K, myThid)
       CALL TIMEAVER_INTER_XYZ(2, wVel, wVeltave, DDTT, bi, bj, K, kUp, myThid)
+      IF (TOP_LEVEL)
+     &  CALL TIMEAVER_INTER_XY(KapGM, KapGMtave, DDTT, bi, bj, myThid)
       InterTimeAve(k,bi,bj)=InterTimeAve(k,bi,bj)+DDTT
 
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.22 1998/07/01 19:57:22 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.23 1998/07/16 15:23:43 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -55,7 +55,7 @@ C--   Continuous equation parameters
      &   viscAh,  viscAz,  viscA4,
      &  diffKhT, diffKzT, diffK4T,
      &  diffKhS, diffKzS, diffK4S,
-     &  GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,
+     &  GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,GMmaxval,
      &  tRef, sRef, eosType,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
      & momPressureForcing, metricTerms,
@@ -171,6 +171,7 @@ C--   Set default "physical" parameters
       GMalpha=0.
       GMdepth=1000.
       GMkbackground=0.
+      GMmaxval=2500.d0
       tAlpha=2.d-4
       sBeta=7.4d-4
       eosType='LINEAR'

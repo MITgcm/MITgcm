@@ -25,8 +25,8 @@
       integer myThid
 ! Local
       integer i,j
-      _RL dSigmaDx,dSigmaDy,dSigmaDz,SlopeX,SlopeY,dZdSigma
-      _RL gradSmod,stratLimit,rMaxSlope
+      _RL dSigmaDx,dSigmaDy,dSigmaDz,SlopeX,SlopeY,dZdSigma,N2
+      _RL gradSmod,stratLimit,rMaxSlope,rRhonil
       _RL Small_Number
       parameter(Small_Number=1. _d -12)
       _RS deltaH,zero_rs
@@ -46,6 +46,7 @@
 
       rMaxSlope=0.
       if (GMmaxSlope.ne.0.) rMaxSlope=1. _d 0 / GMmaxSlope
+      rRhonil=1. _d 0 / Rhonil
 
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
@@ -70,6 +71,7 @@
         dSigmaDz=rDzC(k)*(rhotmp(i,j)-rhoKp1(i,j))
 !altern if (dSigmaDz.gt.stratLimit) dSigmaDz=stratLimit
         dSigmaDz=min(dSigmaDz,stratLimit)
+        N2=(-Gravity*rRhonil)*dSigmaDz
         dZdSigma=1. _d 0 / dSigmaDz
 
 ! Iso-neutral slopes
@@ -87,7 +89,10 @@
 
 ! Depth average of M^2/N^2 * N
         KapGM(i,j)=KapGM(i,j)+deltaH*
-     &      GMalpha*GMlength*GMlength* sqrt(K33(i,j,k))
+     &      GMalpha*GMlength*GMlength* sqrt(K33(i,j,k)*N2)
+
+! Limit range that KapGM can take
+        KapGM(i,j)=min(KapGM(i,j),GMmaxval)
 
        ENDDO
       ENDDO

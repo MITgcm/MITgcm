@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.20 1998/06/18 13:56:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.21 1998/07/16 15:23:43 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -237,6 +237,7 @@ C     GMlength  - Length to use in Visbeck et al. formula for K (m)
 C     GMalpha   - alpha to use in Visbeck et al. formula for K
 C     GMdepth   - Depth over which to integrate Richardson # (Visbeck et al.)
 C     GMkbackground - background value of GM/Redi coefficient
+C     GMmaxval  - max. value of KapGM allowed in GM/Redi scheme
 C     startTime - Starting time for this integration ( s ).
 C     endTime   - Ending time for this integration ( s ).
 C     chkPtFreq  - Frequency of rolling check pointing ( s ).
@@ -265,7 +266,7 @@ C                           number times externForcingPeriod)
      & thetaMin, rSphere, rRSphere, f0, fCori, beta, viscAh, viscAz, viscA4, 
      & diffKhT, diffKzT, diffK4T, diffKhS, diffKzS, diffK4S, delT, 
      & tauCD, rCD, freeSurfFac,
-     & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,
+     & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,GMmaxval,
      & gravity, gBaro, rhonil, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
@@ -306,6 +307,7 @@ C                           number times externForcingPeriod)
       _RL GMalpha
       _RL GMdepth
       _RL GMkbackground
+      _RL GMmaxval
       _RL gravity
       _RL gBaro
       _RL rhonil

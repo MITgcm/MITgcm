@@ -20,7 +20,8 @@ C
 C
       COMMON /DYNVARS_A/ 
      &                  uVeltave,vVeltave,thetatave,salttave,
-     &                  uttave,vttave,k13tave,k23tave,wVeltave
+     &                  uttave,vttave,k13tave,k23tave,wVeltave,
+     &                  KapGMtave
       _RL  uVeltave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
       _RL  vVeltave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
       _RL  thetatave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
@@ -30,3 +31,4 @@ C
       _RL  k13tave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
       _RL  k23tave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
       _RL  wVeltave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz,nSx,nSy)
+      _RL  KapGMtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
