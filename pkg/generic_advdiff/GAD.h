@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.9 2002/06/15 03:31:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.10 2002/11/12 20:42:24 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -49,15 +49,19 @@ C oneSixth :: Third/fourth order interpolation factor
       PARAMETER(oneSixth=1.D0/6.D0)
 
 C Differentiate between tracers (only needed for KPP -  arrgh!!!)
+cph                              and for GMRedi arrgh*arrgh!!!)
+cph  indices are used for TAF key computations, so need to
+cph  running from 1, 2, ...
+c
 C GAD_TEMPERATURE :: temperature
       INTEGER GAD_TEMPERATURE
-      PARAMETER(GAD_TEMPERATURE=101)
+      PARAMETER(GAD_TEMPERATURE=1)
 C GAD_SALINITY :: salinity
       INTEGER GAD_SALINITY
-      PARAMETER(GAD_SALINITY=102)
+      PARAMETER(GAD_SALINITY=2)
 C GAD_TR1 :: pssive tracer 1
       INTEGER GAD_TR1
-      PARAMETER(GAD_TR1=103)
+      PARAMETER(GAD_TR1=3)
 CEOP
 
 C--   COMMON /GAD_PARM_L/ Logical parameters for GAD pkg routines

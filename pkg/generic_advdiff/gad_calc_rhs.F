@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.14 2002/06/15 03:31:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.15 2002/11/12 20:42:24 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -196,7 +196,7 @@ C-    GM/Redi flux in X
 C *note* should update GMREDI_XTRANSPORT to use localT and set df  *aja*
         CALL GMREDI_XTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
-     I     xA,Tracer,
+     I     xA,Tracer,tracerIdentity,
      U     df,
      I     myThid)
       ENDIF
@@ -268,7 +268,7 @@ C-    GM/Redi flux in Y
 C *note* should update GMREDI_YTRANSPORT to use localT and set df  *aja*
        CALL GMREDI_YTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
-     I     yA,Tracer,
+     I     yA,Tracer,tracerIdentity,
      U     df,
      I     myThid)
       ENDIF
@@ -355,7 +355,7 @@ C-    GM/Redi flux in R
 C *note* should update GMREDI_RTRANSPORT to set df  *aja*
        CALL GMREDI_RTRANSPORT(
      I     iMin,iMax,jMin,jMax,bi,bj,K,
-     I     Tracer,
+     I     Tracer,tracerIdentity,
      U     df,
      I     myThid)
       ENDIF

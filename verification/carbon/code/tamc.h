@@ -98,15 +98,17 @@ c     and writing data.
       integer iloop_daily
 
       INTEGER    isbyte
-      PARAMETER( isbyte = 4 )
+      PARAMETER( isbyte      = 4 )
       INTEGER    maximpl
-      PARAMETER( maximpl = 6 )
+      PARAMETER( maximpl     = 6 )
       INTEGER    maxpass
-      PARAMETER( maxpass = 3 )
+      PARAMETER( maxpass     = 3 )
+      INTEGER    maxcube
+      PARAMETER( maxcube     = 1 )
 
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER iikey, kkey, passkey
+      INTEGER act0, act1, act2, act3, act4
+      INTEGER max0, max1, max2, max3
+      INTEGER iikey, kkey, passkey, igadkey
 
 c     ================================================================
 c     END OF HEADER TAMC

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.27 2002/05/30 02:29:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.28 2002/11/12 20:42:24 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -169,17 +169,29 @@ c--       Always check common block sizes for the checkpointing!
 CADJ INIT comlev1        = COMMON,nchklev_1
 CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt
 CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt
+c--
+#ifdef ALLOW_KPP
 CADJ INIT comlev1_kpp    = COMMON,nchklev_1*nsx*nsy
-#ifndef DISABLE_MULTIDIM_ADVECTION
-CADJ INIT comlev1_bibj_pass
+#endif /* ALLOW_KPP */
+c--
+#ifdef ALLOW_GMREDI
+CADJ INIT comlev1_gmredi_k_gad
 CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
+#endif /* ALLOW_GMREDI */
+c--
+#ifndef DISABLE_MULTIDIM_ADVECTION
+CADJ INIT comlev1_bibj_k_gad
+CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
+CADJ INIT comlev1_bibj_k_gad_pass
+CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass*maxcube
 #endif /* DISABLE_MULTIDIM_ADVECTION */
+c--
 #ifdef ALLOW_BULKFORMULAE
 CADJ INIT comlev1_exf_1
 CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
 CADJ INIT comlev1_exf_2
 CADJ &     = COMMON,niter_bulk*nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
-#endif
+#endif /* ALLOW_BULKFORMULAE */
 
           do ilev_1 = 1,nchklev_1
 
