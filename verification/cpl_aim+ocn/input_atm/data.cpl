@@ -1,0 +1,8 @@
+# Coupling package parameters, ATM component: 
+#     useImportSST   :: True => use the Imported SST from couler
+#     cpl_atmSendFrq :: Frequency^-1 for sending data to coupler (s)
+ &CPL_ATM_PARAM
+# useImportSST=.FALSE.,
+  cpl_atmSendFrq=3600.,
+ &
+
