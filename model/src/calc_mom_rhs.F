@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.10 1998/05/28 15:09:29 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.11 1998/05/30 02:10:16 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -198,7 +198,7 @@ C     Mean flow component of meridional flux
         af(i,j) =
      &   (vTrans(i,j)+vTrans(i-1,j))
      &  *(uVel(i,j,k,bi,bj)+uVel(i,j-1,k,bi,bj))*0.25 _d 0
-     &  *maskW(i,j,k,bi,bj)*maskW(i,j-1,k,bi,bj)
+     &  *_maskW(i,j,k,bi,bj)*_maskW(i,j-1,k,bi,bj)
 C       Note!!!! The line "*maskW(i,j,k,bi,bj)*maskW(i,j-1,k,bi,bj)" is
 C       Note!!!! boundary condition in the standard v010 CM5 code. The
 C       Note!!!! FV paper used a different bc in which this line is
@@ -218,8 +218,8 @@ C     Eddy component of meridional flux
      &   *( uVel(i,j  ,k,bi,bj)-uVel(i,j-1,k,bi,bj) )
      &   *_rdyU(i,j,bi,bj)
      &  -viscAh*_dxV(i,j,bi,bj)*dzF(k)*hFacZClosed
-     &   *( (2.-maskW(i,j-1,k,bi,bj))*maskW(i,j,k,bi,bj)*uVel(i,j  ,k,bi,bj)
-     &     -(2.-maskW(i,j,k,bi,bj))*maskW(i,j-1,k,bi,bj)*uVel(i,j-1,k,bi,bj)
+     &   *( (2.-_maskW(i,j-1,k,bi,bj))*_maskW(i,j,k,bi,bj)*uVel(i,j  ,k,bi,bj)
+     &     -(2.-_maskW(i,j,k,bi,bj))*_maskW(i,j-1,k,bi,bj)*uVel(i,j-1,k,bi,bj)
      &    )*_rdyU(i,j,bi,bj)
 #else
         vF(i,j) =
@@ -243,7 +243,7 @@ C     Mean flow component of vertical flux
      &   wMaskOverride*(wTrans(i,j)+wTrans(i-1,j))
      &  *( uVel(i,j,k,bi,bj)+uVel(i,j,kM1,bi,bj) )
      &  *0.25 _d 0
-     &  *(maskW(i,j,k,bi,bj)*maskW(i,j,kM1,bi,bj))
+     &  *(_maskW(i,j,k,bi,bj)*_maskW(i,j,kM1,bi,bj))
 C       Note!!!! The line "*(maskW(i,j,k,bi,bj)*maskW(i,j,kM1,bi,bj))" is
 C       Note!!!! boundary condition in the standard v010 CM5 code. The
 C       Note!!!! FV paper used a different bc in which this line is
@@ -257,14 +257,14 @@ C     Eddy component of vertical flux
 #ifdef NO_BOTTOM_SLIP
         vf(i,j) =
      &   -viscAz*_dxC(i,j,bi,bj)*_dyG(i,j,bi,bj)*wMaskOverride
-     &   *( ( 2.-maskW(i,j,k,bi,bj) )
-     &     *uVel(i,j,kM1,bi,bj) - uVel(i,j,k,bi,bj)*maskW(i,j,k,bi,bj)
+     &   *( ( 2.-_maskW(i,j,k,bi,bj) )
+     &     *uVel(i,j,kM1,bi,bj) - uVel(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
      &    )*rDzC(k)
 #else
         vf(i,j) =
      &   -viscAz*_dxC(i,j,bi,bj)*_dyG(i,j,bi,bj)
      &   *(uVel(i,j,km1,bi,bj)-uVel(i,j,k,bi,bj))
-    &    *maskW(i,j,k,bi,bj)*wMaskOverride
+    &    *_maskW(i,j,k,bi,bj)*wMaskOverride
 #endif
        ENDDO
       ENDDO
@@ -280,7 +280,7 @@ C     Bottom boundary condition
        DO j=jMin,jMax
         DO i=iMin,iMax
          vf(i,j) =
-     &    -viscAz*_dxC(i,j,bi,bj)*_dyG(i,j,bi,bj)*maskW(i,j,k,bi,bj)
+     &    -viscAz*_dxC(i,j,bi,bj)*_dyG(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
      &    *uVel(i,j,k,bi,bj)*rDzF(k)*2. _d 0
         ENDDO
        ENDDO
@@ -296,7 +296,7 @@ C---  Coriolis term(s)
       DO j=jMin,jMax
        DO i=iMin,iMax
         cf(i,j) = 
-     &    0.5  _d 0 *( fCori(i  ,j,bi,bj) + fCori(i-1,j,bi,bj)  )
+     &    0.5  _d 0 *( _fCori(i  ,j,bi,bj) + _fCori(i-1,j,bi,bj)  )
      &   *0.25 _d 0 *(
      &     vVel(i  ,j,k,bi,bj)+vVel(i  ,j+1,k,bi,bj)
      &    +vVel(i-1,j,k,bi,bj)+vVel(i-1,j+1,k,bi,bj)
@@ -331,7 +331,7 @@ C--   Forcing term
        DO j=jMin,jMax
         DO i=iMin,iMax
          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj) 
-     &    + uForcFac*fu(i,j,bi,bj)*maskW(i,j,k,bi,bj)
+     &    + uForcFac*fu(i,j,bi,bj)*_maskW(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -339,7 +339,7 @@ C--   Forcing term
 C--   Set du/dt on boundaries to zero
       DO j=jMin,jMax
        DO i=iMin,iMax
-        gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)*maskW(i,j,k,bi,bj)
+        gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)*_maskW(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
@@ -351,7 +351,7 @@ C     Mean flow component of zonal flux
         af(i,j) =
      &   (uTrans(i,j)+uTrans(i,j-1) )
      &  *(vVel(i,j,k,bi,bj)+vVel(i-1,j,k,bi,bj))*0.25 _d 0
-     &  *maskS(i,j,k,bi,bj)*maskS(i-1,j,k,bi,bj)
+     &  *_maskS(i,j,k,bi,bj)*_maskS(i-1,j,k,bi,bj)
 C       Note!!!! The line "*maskS(i,j,k,bi,bj)*maskS(i-1,j,k,bi,bj)" is
 C       Note!!!! boundary condition in the standard v010 CM5 code. The
 C       Note!!!! FV paper used a different bc in which this line is
@@ -371,8 +371,8 @@ C     Eddy component of zonal flux
      &  ( vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj)
      &  )*_rdxV(i,j,bi,bj)
      &  -viscAh*_dyU(i,j,bi,bj)*dzF(K)*hFacZClosed*
-     &  ( (2.-maskS(i-1,j,k,bi,bj))*maskS(i,j,k,bi,bj)*vVel(i  ,j,k,bi,bj)
-     &   -(2.-maskS(i,j,k,bi,bj))*maskS(i-1,j,k,bi,bj)*vVel(i-1,j,k,bi,bj)
+     &  ( (2.-_maskS(i-1,j,k,bi,bj))*_maskS(i,j,k,bi,bj)*vVel(i  ,j,k,bi,bj)
+     &   -(2.-_maskS(i,j,k,bi,bj))*_maskS(i-1,j,k,bi,bj)*vVel(i-1,j,k,bi,bj)
      &  )*_rdxV(i,j,bi,bj)
 #else
         vf(i,j) =
@@ -421,7 +421,7 @@ C     Mean flow component of vertical flux
      &   wMaskOverride*(wTrans(i,j)+wTrans(i,j-1))
      &  *( vVel(i,j,k,bi,bj)+vVel(i,j,kM1,bi,bj) )
      &  *0.25 _d 0
-     &  *maskS(i,j,k,bi,bj)*maskS(i,j,kM1,bi,bj)
+     &  *_maskS(i,j,k,bi,bj)*_maskS(i,j,kM1,bi,bj)
 C       Note!!!! The line "*(maskS(i,j,k,bi,bj)*maskS(i,j,kM1,bi,bj))" is
 C       Note!!!! boundary condition in the standard v010 CM5 code. The
 C       Note!!!! FV paper used a different bc in which this line is
@@ -436,14 +436,14 @@ C     Eddy component of vertical flux
 #ifdef NO_BOTTOM_SLIP
         vf(i,j) =
      &   -viscAz*_dyC(i,j,bi,bj)*_dxG(i,j,bi,bj)*wMaskOverride
-     &   *( ( 2.-maskS(i,j,k,bi,bj) )
-     &     *vVel(i,j,kM1,bi,bj) - vVel(i,j,k,bi,bj)*maskS(i,j,k,bi,bj)
+     &   *( ( 2.-_maskS(i,j,k,bi,bj) )
+     &     *vVel(i,j,kM1,bi,bj) - vVel(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
      &    )*rDzC(k)
 #else
         vf(i,j) =
      &   -viscAz*_dyC(i,j,bi,bj)*_dxG(i,j,bi,bj)
      &   *(vVel(i,j,km1,bi,bj)-vVel(i,j,k,bi,bj))
-     &    *maskS(i,j,k,bi,bj)*wMaskOverride
+     &    *_maskS(i,j,k,bi,bj)*wMaskOverride
 #endif
        ENDDO
       ENDDO
@@ -459,7 +459,7 @@ C     Bottom level boundary condition
        DO j=jMin,jMax
         DO i=iMin,iMax
          vf(i,j) =
-     &    -viscAz*_dyC(i,j,bi,bj)*_dxG(i,j,bi,bj)*maskS(i,j,k,bi,bj)
+     &    -viscAz*_dyC(i,j,bi,bj)*_dxG(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
      &    *vVel(i,j,k,bi,bj)*rDzF(k)*2. _d 0
         ENDDO
        ENDDO
@@ -475,7 +475,7 @@ C---  Coriolis term(s)
       DO j=jMin,jMax
        DO i=iMin,iMax
         cf(i,j) =
-     &   -0.5 _d 0 *(fCori(i,j  ,bi,bj)+fCori(i,j-1,bi,bj))
+     &   -0.5 _d 0 *(_fCori(i,j  ,bi,bj)+_fCori(i,j-1,bi,bj))
      &   *0.25 _d 0
      &   *( uVel(i,j  ,k,bi,bj)+uVel(i+1,j  ,k,bi,bj)
      &     +uVel(i,j-1,k,bi,bj)+uVel(i+1,j-1,k,bi,bj)
@@ -510,7 +510,7 @@ C--   Forcing term
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj) 
-     &    + foFacMom*fv(i,j,bi,bj)*maskS(i,j,k,bi,bj)
+     &    + foFacMom*fv(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -518,7 +518,7 @@ C--   Forcing term
 C--   Set dv/dt on boundaries to zero
       DO j=jMin,jMax
        DO i=iMin,iMax
-        gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)*maskS(i,j,k,bi,bj)
+        gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
@@ -532,7 +532,7 @@ C      Initialise source term on first pass
        DO j=jMin,jMax
         DO i=iMin,iMax
          cg2d_b(i,j,bi,bj) =
-     &    -freeSurfFac*zA(i,j,bi,bj)*
+     &    -freeSurfFac*_zA(i,j,bi,bj)*
      &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
         ENDDO
        ENDDO

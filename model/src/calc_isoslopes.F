@@ -40,15 +40,15 @@
 
 ! Horizontal gradient of Sigma at W points
         dSigmaDx=0.25*_rdxF(i,j,bi,bj)*
-     &   (maskW(i+1,j, k ,bi,bj)*(rhoKp1(i+1,j)-rhoKp1( i ,j))
-     &   +maskW( i ,j, k ,bi,bj)*(rhoKp1( i ,j)-rhoKp1(i-1,j))
-     &   +maskW(i+1,j,k-1,bi,bj)*(rhoKm1(i+1,j)-rhoKm1( i ,j))
-     &   +maskW( i ,j,k-1,bi,bj)*(rhoKm1( i ,j)-rhoKm1(i-1,j)) )
+     &   (_maskW(i+1,j, k ,bi,bj)*(rhoKp1(i+1,j)-rhoKp1( i ,j))
+     &   +_maskW( i ,j, k ,bi,bj)*(rhoKp1( i ,j)-rhoKp1(i-1,j))
+     &   +_maskW(i+1,j,k-1,bi,bj)*(rhoKm1(i+1,j)-rhoKm1( i ,j))
+     &   +_maskW( i ,j,k-1,bi,bj)*(rhoKm1( i ,j)-rhoKm1(i-1,j)) )
         dSigmaDy=0.25*_rdyF(i,j,bi,bj)*
-     &   (maskS(i,j+1, k ,bi,bj)*(rhoKp1(i,j+1)-rhoKp1(i, j ))
-     &   +maskS(i,  j, k ,bi,bj)*(rhoKp1(i, j )-rhoKp1(i,j-1))
-     &   +maskS(i,j+1,k-1,bi,bj)*(rhoKm1(i,j+1)-rhoKm1(i, j ))
-     &   +maskS(i, j ,k-1,bi,bj)*(rhoKm1(i, j )-rhoKm1(i,j-1)) )
+     &   (_maskS(i,j+1, k ,bi,bj)*(rhoKp1(i,j+1)-rhoKp1(i, j ))
+     &   +_maskS(i,  j, k ,bi,bj)*(rhoKp1(i, j )-rhoKp1(i,j-1))
+     &   +_maskS(i,j+1,k-1,bi,bj)*(rhoKm1(i,j+1)-rhoKm1(i, j ))
+     &   +_maskS(i, j ,k-1,bi,bj)*(rhoKm1(i, j )-rhoKm1(i,j-1)) )
 
 ! Calculate magnitude of horizontal gradient
         gradSmod=sqrt(dSigmaDx*dSigmaDx+dSigmaDy*dSigmaDy)

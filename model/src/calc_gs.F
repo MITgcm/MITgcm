@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.5 1998/05/28 15:09:29 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.6 1998/05/30 02:10:16 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -149,7 +149,7 @@ C     Diffusive component of vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         df(i,j) =
-     &   -diffKzS*zA(i,j,bi,bj)*rdzC(k)
+     &   -diffKzS*_zA(i,j,bi,bj)*rdzC(k)
      &   *(salt(i,j,kM1,bi,bj)-salt(i,j,k,bi,bj))
        ENDDO
       ENDDO

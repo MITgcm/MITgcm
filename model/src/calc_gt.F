@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.7 1998/05/28 15:09:29 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.8 1998/05/30 02:10:16 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -156,13 +156,13 @@ C--   Interpolate terms for Redi/GM scheme
       DO j=jMin,jMax
        DO i=iMin,iMax
         dTdx(i,j) = 0.5*( 
-     &   +0.5*(maskW(i+1,j,k,bi,bj)*_rdxC(i+1,j,bi,bj)*
+     &   +0.5*(_maskW(i+1,j,k,bi,bj)*_rdxC(i+1,j,bi,bj)*
      &           (theta(i+1,j,k,bi,bj)-theta(i,j,k,bi,bj))
-     &        +maskW(i,j,k,bi,bj)*_rdxC(i,j,bi,bj)*
+     &        +_maskW(i,j,k,bi,bj)*_rdxC(i,j,bi,bj)*
      &           (theta(i,j,k,bi,bj)-theta(i-1,j,k,bi,bj)))
-     &   +0.5*(maskW(i+1,j,km1,bi,bj)*_rdxC(i+1,j,bi,bj)*
+     &   +0.5*(_maskW(i+1,j,km1,bi,bj)*_rdxC(i+1,j,bi,bj)*
      &           (theta(i+1,j,km1,bi,bj)-theta(i,j,km1,bi,bj))
-     &        +maskW(i,j,km1,bi,bj)*_rdxC(i,j,bi,bj)*
+     &        +_maskW(i,j,km1,bi,bj)*_rdxC(i,j,bi,bj)*
      &           (theta(i,j,km1,bi,bj)-theta(i-1,j,km1,bi,bj)))
      &       )
        ENDDO
@@ -170,13 +170,13 @@ C--   Interpolate terms for Redi/GM scheme
       DO j=jMin,jMax
        DO i=iMin,iMax
         dTdy(i,j) = 0.5*(
-     &   +0.5*(maskS(i,j,k,bi,bj)*_rdyC(i,j,bi,bj)*
+     &   +0.5*(_maskS(i,j,k,bi,bj)*_rdyC(i,j,bi,bj)*
      &           (theta(i,j,k,bi,bj)-theta(i,j-1,k,bi,bj))
-     &        +maskS(i,j+1,k,bi,bj)*_rdyC(i,j+1,bi,bj)*
+     &        +_maskS(i,j+1,k,bi,bj)*_rdyC(i,j+1,bi,bj)*
      &           (theta(i,j+1,k,bi,bj)-theta(i,j,k,bi,bj)))
-     &   +0.5*(maskS(i,j,km1,bi,bj)*_rdyC(i,j,bi,bj)*
+     &   +0.5*(_maskS(i,j,km1,bi,bj)*_rdyC(i,j,bi,bj)*
      &           (theta(i,j,km1,bi,bj)-theta(i,j-1,km1,bi,bj))
-     &        +maskS(i,j+1,km1,bi,bj)*_rdyC(i,j+1,bi,bj)*
+     &        +_maskS(i,j+1,km1,bi,bj)*_rdyC(i,j+1,bi,bj)*
      &           (theta(i,j+1,km1,bi,bj)-theta(i,j,km1,bi,bj)))
      &       )
        ENDDO
@@ -197,7 +197,7 @@ C     Note: For K=1 then KM1=1 this gives a dT/dz = 0 upper
 C           boundary condition.
       DO j=jMin,jMax
        DO i=iMin,iMax
-        df(i,j) = zA(i,j,bi,bj)*(
+        df(i,j) = _zA(i,j,bi,bj)*(
      &   -(diffKzT+KapGM(i,j)*K33(i,j,k))*rdzC(k)
      &   *(theta(i,j,kM1,bi,bj)-theta(i,j,k,bi,bj))
      &   -KapGM(i,j)*K13(i,j,k)*dTdx(i,j)

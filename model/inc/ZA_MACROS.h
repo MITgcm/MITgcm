@@ -1,25 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYG_MACROS.h,v 1.2 1998/05/30 02:10:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/Attic/ZA_MACROS.h,v 1.1 1998/05/30 02:10:16 cnh Exp $
 C
 C     /==========================================================\
-C     | DYG_MACROS.h                                             |
+C     | ZA_MACROS.h                                              |
 C     |==========================================================|
 C     | These macros are used to reduce memory requirement and/or|
 C     | memory references when variables are fixed along a given |
 C     | axis or axes.                                            |
 C     \==========================================================/
 
-#ifdef DYG_CONST
-#define  _dyG(i,j,bi,bj) dyG(1,1,1,1)
+#ifdef ZA_CONST
+#define  _zA(i,j,bi,bj) zA(1,1,1,1)
 #endif
 
-#ifdef DYG_FX
-#define  _dyG(i,j,bi,bj) dyG(i,1,bi,1)
+#ifdef ZA_FX
+#define  _zA(i,j,bi,bj) zA(i,1,bi,1)
 #endif
 
-#ifdef DYG_FY
-#define  _dyG(i,j,bi,bj) dyG(1,j,1,bj)
+#ifdef ZA_FY
+#define  _zA(i,j,bi,bj) zA(1,j,1,bj)
 #endif
 
-#ifndef _dyG
-#define  _dyG(i,j,bi,bj) dyG(i,j,bi,bj)
+#ifndef _zA
+#define  _zA(i,j,bi,bj) zA(i,j,bi,bj)
 #endif

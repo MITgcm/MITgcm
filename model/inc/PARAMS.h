@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.12 1998/05/28 16:19:50 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.13 1998/05/30 02:10:16 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -8,6 +8,9 @@ C     | The values from the model's standard input file are      |
 C     | stored into the variables held here. Notes describing    |
 C     | the parameters can also be found here.                   |
 C     \==========================================================/
+
+C     Macros for special grid options
+#include "PARAMS_MACROS.h"
 
 C--   Contants
 C     Useful physical values
