@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_y.F,v 1.1 2001/05/30 19:34:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_y.F,v 1.2 2001/07/11 22:46:32 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,6 +9,11 @@ C $Name:  $
      I           tracer,
      O           vT,
      I           myThid )
+C     /==========================================================\
+C     | SUBROUTINE GAD_FLUXLIMIT_ADV_Y                           |
+C     | o Compute Meridional advective Flux of Tracer using      |
+C     |   Flux Limiter Scheme                                    |
+C     |==========================================================|
       IMPLICIT NONE
 
 C     == GLobal variables ==
@@ -31,8 +36,10 @@ C     == Local variables ==
 
       DO i=1-Olx,sNx+Olx
        vT(i,1-Oly)=0.
+       vT(i,2-Oly)=0.
+       vT(i,sNy+Oly)=0.
       ENDDO
-      DO j=1-Oly+1,sNy+Oly
+      DO j=1-Oly+2,sNy+Oly-1
        DO i=1-Olx,sNx+Olx
         Rjp=(tracer(i,j+1)-tracer(i,j))*maskS(i,j+1,k,bi,bj)
         Rj=(tracer(i,j)-tracer(i,j-1))*maskS(i,j,k,bi,bj)
