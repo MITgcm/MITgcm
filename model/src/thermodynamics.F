@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.45 2003/09/22 22:12:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.46 2003/09/23 05:31:30 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_OPTIONS.h"
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_GMREDI
 #  include "GMREDI_OPTIONS.h"
 # endif
 # ifdef ALLOW_KPP
 #  include "KPP_OPTIONS.h"
-# endif
-# ifdef ALLOW_PTRACERS
-#  include "PTRACERS_OPTIONS.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
