@@ -1,4 +1,5 @@
 Makefile
+api_ref
 *.tex
 .targets
 .dir_list_nocomments
