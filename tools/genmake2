@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.62 2004/01/15 19:19:59 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.63 2004/01/23 16:12:45 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -834,12 +834,21 @@ fi
 if test "x$LINK" = x ; then
     LINK=$FC
 fi
-if test "x$CPP" = x ; then
-    CPP="cpp"
-fi
 if test "x$MAKE" = x ; then
     MAKE="make"
 fi
+if test "x$CPP" = x ; then
+    CPP=cpp
+fi
+#EH3 === UGLY ===
+#  The following an ugly little hack to check for $CPP in /lib/ and it
+#  should eventually be replaced with a more general function that
+#  searches a combo of the user's path and a list of "usual suspects"
+#  to find the correct location for binaries such as $CPP.
+for i in " " "/lib/" ; do
+    echo "#define A a" | $i$CPP > test_cpp 2>&1 && CPP=$i$CPP
+done
+#EH3 === UGLY ===
 echo "#define A a" | $CPP > test_cpp 2>&1
 RETVAL=$?
 if test "x$RETVAL" != x0 ; then
