@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.11 2003/10/28 22:57:59 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.12 2003/11/13 21:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -322,6 +322,20 @@ C- jmc: but ultimately, this block can/will be removed.
      &   ' in "data", namelist PARM01' 
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)                      
+      ENDIF
+
+      IF ( useCDscheme .AND. useCubedSphereExchange ) THEN
+        WRITE(msgBuf,'(2A)')
+     &   'CONFIG_CHECK: CD-scheme not implemented on CubedSphere grid'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+
+      IF ( useOldFreezing .AND. allowFreezing ) THEN
+        WRITE(msgBuf,'(2A)')
+     &   'CONFIG_CHECK: cannot set both: allowFreezing & useOldFreezing'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
       WRITE(msgBuf,'(A)') 'CONFIG_CHECK: OK'

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.73 2003/11/13 06:35:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.74 2003/11/13 21:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -233,7 +233,7 @@ C     theta is dumped or time-averaged.
 C--   Freeze water at the surface
       IF ( allowFreezing .AND. .NOT. useSEAICE
      &                   .AND. .NOT. useThermSeaIce )
-     &   CALL FREEZE( myThid )
+     &   CALL FREEZE_SURFACE(  myTime, myIter, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_PTRACERS

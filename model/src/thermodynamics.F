@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.58 2003/11/13 06:35:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.59 2003/11/13 21:54:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -752,17 +752,17 @@ C--      Apply open boundary conditions
          END IF
 #endif   /* ALLOW_OBCS */
 
-c>>>>> has been moved to FORWARD_STEP
-cC--      Freeze water
-c         IF ( allowFreezing .AND. .NOT. useSEAICE
-c     &       .AND. .NOT.(useThermSeaIce.AND.k.EQ.1) ) THEN
-c#ifdef ALLOW_AUTODIFF_TAMC
-cCADJ STORE gT(:,:,k,bi,bj) = comlev1_bibj_k
-cCADJ &   , key = kkey, byte = isbyte
-c#endif /* ALLOW_AUTODIFF_TAMC */
-c            CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, k, myThid )
-c         ENDIF
-c>>>>> has been moved to FORWARD_STEP
+C--      Freeze water
+C  this bit of code is left here for backward compatibility.
+C  freezing at surface level has been moved to FORWARD_STEP 
+         IF ( useOldFreezing .AND. .NOT. useSEAICE
+     &       .AND. .NOT.(useThermSeaIce.AND.k.EQ.1) ) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gT(:,:,k,bi,bj) = comlev1_bibj_k
+CADJ &   , key = kkey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+            CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, k, myThid )
+         ENDIF
 
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO

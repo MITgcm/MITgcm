@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.53 2003/10/16 15:34:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.54 2003/11/13 21:54:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -137,6 +137,7 @@ Cml      sBeta               = 7.4D-4
       globalFiles         = .FALSE.
       useSingleCpuIO      = .FALSE.
       allowFreezing       = .FALSE.
+      useOldFreezing      = .FALSE.
       ivdc_kappa          = 0.D0
       groundAtK1          = .FALSE.
       bottomDragLinear    = 0.
