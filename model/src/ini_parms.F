@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.85 2002/10/07 16:20:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.86 2002/11/05 18:41:59 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -154,7 +154,7 @@ C--   Gridding parameters
       NAMELIST /PARM04/
      & usingCartesianGrid, dxSpacing, dySpacing, delX, delY, delZ,
      & usingSphericalPolarGrid, phiMin, thetaMin, rSphere,
-     & usingCurvilinearGrid, gravitySign,
+     & usingCurvilinearGrid,
      & delP, delR, rkFac, Ro_SeaLevel, groundAtK1, delRc,
      & delXfile, delYfile
 
