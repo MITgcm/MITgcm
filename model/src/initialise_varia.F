@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.14 2001/07/13 20:14:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.15 2001/07/30 20:39:18 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -32,8 +32,24 @@ C     == Local variables ==
       INTEGER bi,bj,K,iMin,iMax,jMin,jMax
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
-       nIter0 = INT( startTime/deltaTClock )
+
+      nIter0 = INT( startTime/deltaTClock )
+
+C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
+      CALL INI_LINEAR_PHISURF( myThid )
+
+C--   Set coriolis operators
+      CALL INI_CORI( myThid )
+
+C--   Set laplace operators for use in 2D conjugate gradient solver.
+      CALL INI_CG2D( myThid )
+
+#ifdef ALLOW_NONHYDROSTATIC
+C--   Set laplace operators for use in 3D conjugate gradient solver.
+      CALL INI_CG3D( myThid )
 #endif
+
+#endif /* ALLOW_TAMC_CHECKPOINTING */
 
       _BARRIER
 C--   Initialize DYNVARS arrays (state fields + G terms: Gu,Gv,...) to zero [always]
@@ -46,9 +62,11 @@ C     stored files.
       CALL INI_FIELDS( myThid )
       _BARRIER
 
+#ifdef ALLOW_PASSIVE_TRACER
 C--   Initialise passive tracer(s)
       CALL INI_TR1( myThid )
       _BARRIER
+#endif
 
       IF ( usePickupBeforeC35 ) THEN
 C-- IMPORTANT : Need to activate the following call to restart from 

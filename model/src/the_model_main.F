@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.39 2001/07/13 14:26:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.40 2001/07/30 20:39:18 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -67,7 +67,9 @@ C--   Set model configuration (fixed arrays)
       myCurrentTime = startTime
       myCurrentIter = nIter0
 
-#ifdef ALLOW_ADJOINT_RUN
+#if ( defined (ALLOW_ADJOINT_RUN) || \
+      defined (ALLOW_GRADIENT_CHECK) || \
+      defined (ALLOW_ECCO_OPTIMIZATION) )
 
       _BEGIN_MASTER( mythid )
       IF (myProcId .eq. 0) THEN

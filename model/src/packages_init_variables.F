@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.6 2001/07/13 14:26:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.7 2001/07/30 20:39:18 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
