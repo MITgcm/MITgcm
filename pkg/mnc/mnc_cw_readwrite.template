@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.15 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.16 2004/03/29 22:12:06 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -35,7 +35,7 @@ C     !INPUT PARAMETERS:
 C     !LOCAL VARIABLES:
       integer i,j,k, indv,nvf,nvl, n1,n2, igrid, ntot
       integer bis,bie, bjs,bje, uniq_tnum, nfname
-      integer fid, idv, indvids, ndim, indf, err, 
+      integer fid, idv, indvids, ndim, indf, err 
       integer lbi,lbj, bidim,bjdim, unlim_sz, kr
       integer p(9),s(9),e(9), dimnc(9)
       integer vstart(9),vcount(9), udo(9)
