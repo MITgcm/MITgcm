@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.8 2004/07/13 23:44:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.9 2004/07/14 00:47:28 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -49,7 +49,7 @@ c Local Variables
 c ---------------
       integer    ncrnd,nsecf
 
-      real       fracqq, rh,temp1,temp2,dum
+      real       fracqq, dum
       integer    snowcrit
       parameter (fracqq = 0.1)
 
@@ -103,13 +103,13 @@ c ---------------
       real saveu  (istrip,lm,ntracer)
       real usubcl (istrip,   ntracer)
 
-      real     ple(istrip,lm+1), gam(istrip,lm)
+      real     ple(istrip,lm+1)
       real      dp(istrip,lm)
       real      TL(ISTRIP,lm)  , SHL(ISTRIP,lm)
       real      PL(ISTRIP,lm)  , PLK(ISTRIP,lm)
       real    PLKE(ISTRIP,lm+1)
       real      TH(ISTRIP,lm)  ,CVTH(ISTRIP,lm)
-      real   SHSAT(ISTRIP,lm)  , CVQ(ISTRIP,lm)
+      real   CVQ(ISTRIP,lm)
       real      UL(ISTRIP,lm,ntracer)
       real     cvu(istrip,lm,ntracer)
       real  CLMAXO(ISTRIP,lm),CLBOTH(ISTRIP,lm)
@@ -118,10 +118,9 @@ c ---------------
       real    TMP3(ISTRIP,lm),  TMP4(ISTRIP,lm+1)
       real    TMP5(ISTRIP,lm+1)
       integer   ITMP1(ISTRIP,lm), ITMP2(ISTRIP,lm)
-      integer   ITMP3(ISTRIP,lm)
 
-      real   PRECIP(ISTRIP), PCMID(ISTRIP), PCNET(ISTRIP)
-      real   PCLOW (ISTRIP),    SP(ISTRIP),  PREP(ISTRIP)
+      real   PRECIP(ISTRIP), PCNET(ISTRIP)
+      real   SP(ISTRIP),  PREP(ISTRIP)
       real   PCPEN (ISTRIP,lm)
       integer pbl(istrip),depths(lm)
 
@@ -1062,21 +1061,25 @@ C **********************************************************************
      *,               cp,grav,rkappa,alhl,rhfrac,rasmax )
 C
 C*********************************************************************
-C*********************** ARIES   MODEL *******************************
 C********************* SUBROUTINE  RAS   *****************************
 C********************** 16 MARCH   1988 ******************************
 C*********************************************************************
 C
       implicit none
 
+C Argument List
+      integer nn,len,lenc,k,nltop,nlayr
       integer ntracer
-      integer nltop,nlayr
+      integer ncrnd
+      real dt
       real UOI(len,nlayr,ntracer),   POI(len,K)
       real QOI(len,K), PRS(len,K+1), PRJ(len,K+1)
       real rnd(ncrnd)
-C
       real RAINS(len,K), CLN(len,K), CLF(len,K)
       real cldmas(len,K), detrain(len,K)
+      real cp,grav,rkappa,alhl,rhfrac(len),rasmax
+
+C Local Variables
       real TCU(len,K), QCU(len,K)
       real ucu(len,K,ntracer)
       real ALF(len,K), BET(len,K), GAM(len,K)
@@ -1087,15 +1090,10 @@ C
       real TX1(len), TX2(len), TX3(len), TX4(len), TX5(len)
      *,         TX6(len), TX7(len), TX8(len), TX9(len)
      *,         TX11(len), TX12(len), TX13(len), TX14(len,ntracer)
-     *,         TX15(len), TX16(len)
-     *,         WFN(len), IA1(len), IA2(len), IA3(len)
+     *,         TX15(len)
+     *,         WFN(len) 
+      integer IA1(len), IA2(len), IA3(len)
       real cloudn(len), pcu(len)
-
-      real rhfrac(len),rasmax
- 
-      integer IC(ICM),   IRND(icm)
-      real cmass(len,K)
-      LOGICAL SETRAS
 
       integer krmin,icm
       real rknob, cmb2pa
@@ -1103,8 +1101,12 @@ C
       PARAMETER (ICM=1000)
       PARAMETER (CMB2PA=100.0)
       PARAMETER (rknob = 10.)
-C
-      integer i,L,nc
+
+      integer IC(ICM),   IRND(icm)
+      real cmass(len,K)
+      LOGICAL SETRAS
+
+      integer i,L,nc,ib,nt
       integer km1,kp1,kprv,kcr,kfx,ncmx
       real p00, crtmsf, frac, rasblf
 
@@ -1239,7 +1241,6 @@ c ---------------------------------------------------------
 
       RETURN
       END
-
       subroutine rndcloud (iras,nrnd,rnd,myid)
       implicit none
       integer n,iras,nrnd,myid
@@ -1306,9 +1307,9 @@ c --------------------------------------------------------------------
       iras0 = iras
       return
       end
-
-      real function random_numbx()
+      function random_numbx()
       implicit none
+      real random_numbx
 #if CRAY
       real ranf
       random_numbx = ranf()
@@ -1332,8 +1333,7 @@ c --------------------------------------------------------------------
 #endif
       return
       end
- 
-      SUBROUTINE CLOUD(nn,LEN, LENC, K, NLTOP, nlayr, IC, RASALF, 
+      SUBROUTINE CLOUD(nn,LEN, LENC, K, NLTOP, nlayr, IC, RASALF
      *,                 SETRAS, FRAC
      *,                 CP,  ALHL, RKAP, GRAV, P00, CRTMSF
      *,                 POI, QOI, UOI, Ntracer, PRS,  PRJ
@@ -1467,32 +1467,36 @@ C    IA, I1, and I2 are temporary integer arrays of length LENC
 C
 C
 C************************************************************************
-C
-C
+      implicit none
+C Argument List declarations
+      integer nn,LEN,LENC,K,NLTOP,nlayr,ic,ntracer
+      real rasalf
+      LOGICAL SETRAS
+      real frac, cp,  alhl, rkap, grav, p00, crtmsf
+      real POI(LEN,K),QOI(LEN,K),PRS(LEN,K+1),PRJ(LEN,K+1)
+      real uoi(len,nlayr,ntracer)
+      real PCU(LENC), CLN(LEN)
+      real TCU(LEN,K),  QCU(LEN,K),  ucu(len,k,ntracer), CMASS(LEN,K)
+      real ALF(LEN,K), BET(LEN,K),  GAM(LEN,K), PRH(LEN,K), PRI(LEN,K)
+      real HOL(LENC,K), ETA(LENC,K), HST(LENC,K), QOL(LENC,K)
+      real GMH(LENC,K)
+      real TX1(LENC), TX2(LENC), TX3(LENC), TX4(LENC)
+      real TX5(LENC), TX6(LENC), TX7(LENC), TX8(LENC)
+      real ALM(LENC), WFN(LENC), AKM(LENC), QS1(LENC)
+      real WLQ(LENC), CLF(LENC)
+      real uht(len,ntracer)
+      integer IA(LENC), I1(LENC),I2(LENC)
+      real      rhfrac(len)
 
+C Local Variables
+      real daylen,half,one,zero,cmb2pa,rhmax
       PARAMETER (DAYLEN=86400.0,  HALF=0.5,  ONE=1.0, ZERO=0.0)
       PARAMETER (CMB2PA=100.0)
       PARAMETER (RHMAX=0.9999)
+      real rkapp1,onebcp,albcp,onebg,cpbg,twobal
 C
-      integer nltop,ntracer,nlayr
-      DIMENSION POI(LEN,K),  QOI(LEN,K),  PRS(LEN,K+1)
-     *,         PRJ(LEN,K+1)
-     *,         TCU(LEN,K),  QCU(LEN,K),  CMASS(LEN,K), CLN(LEN)
-      real uoi(len,nlayr,ntracer)
-      DIMENSION ALF(LEN,K), BET(LEN,K),  GAM(LEN,K)
-     *,         PRH(LEN,K), PRI(LEN,K)
-      DIMENSION AKM(LENC),   WFN(LENC)
-      DIMENSION HOL(LENC,K), QOL(LENC,K),  ETA(LENC,K), HST(LENC,K)
-     *,         GMH(LENC,K), ALM(LENC),    WLQ(LENC),   QS1(LENC)
-     *,         TX1(LENC),   TX2(LENC), TX3(LENC),   TX4(LENC)
-     *,         TX5(LENC),   TX6(LENC), TX7(LENC),   TX8(LENC)
-     *,         CLF(LENC),   PCU(LENC)
-      DIMENSION IA(LENC),    I1(LENC),  I2(LENC)
-      real      rhfrac(len)
-      real ucu(len,k,ntracer),uht(len,ntracer)
-      LOGICAL SETRAS
-
-      integer nt
+      integer nt,km1,ic1,i,L,len1,len2,isav,len11,ii
+      integer lena,lena1,lenb,tem,tem1
  
 c Explicit Inline Directives
 c --------------------------
@@ -1512,7 +1516,7 @@ C
       KM1 = K  - 1
       IC1 = IC + 1
 C
-C      SETTIING ALF, BET, GAM, PRH, AND PRI : DONE ONLY WHEN SETRAS=.T.
+C      SETTING ALF, BET, GAM, PRH, AND PRI : DONE ONLY WHEN SETRAS=.T.
 C
 
       IF (SETRAS) THEN
@@ -2077,22 +2081,26 @@ C
       END
       SUBROUTINE RNCL(LEN, PL, RNO, CLF)
 C
-C
 C*********************************************************************
 C********************** Relaxed Arakawa-Schubert *********************
 C************************   SUBROUTINE  RNCL  ************************
 C**************************** 23 July 1992 ***************************
 C*********************************************************************
+      implicit none
+C Argument List declarations
+      integer len
+      real PL(LEN),  RNO(LEN), CLF(LEN)
 
+C Local Variables
+      real p5,p8,pt8,pt2,pfac,p4,p6,p7,p9,cucld,cfac
       PARAMETER (P5=500.0,  P8=800.0, PT8=0.8, PT2=0.2)
       PARAMETER (PFAC=PT2/(P8-P5))
-C
       PARAMETER (P4=400.0,    P6=401.0)
       PARAMETER (P7=700.0,    P9=900.0)
       PARAMETER (CUCLD=0.5,CFAC=CUCLD/(P6-P4))
+
+      integer i
 C
-      DIMENSION PL(LEN),  RNO(LEN), CLF(LEN)
- 
       DO 10 I=1,LEN
                            rno(i) = 1.0
 ccc   if( pl(i).le.400.0 ) rno(i) = max( 0.75, 1.0-0.0025*(400.0-pl(i)) )
@@ -2131,12 +2139,18 @@ C****  Note:  Data obtained from January Mean After-Analysis     *****
 C****         from 4x5 46-layer GEOS Assimilation                *****
 C****                                                            *****
 C*********************************************************************
- 
+      implicit none
+C Argument List declarations
+      integer len
       real PL(LEN), PLB(LEN), ACR(LEN)
 
+C Local variables
+      integer lma
       parameter  (lma=18)
-      real      p(lma)
-      real      a(lma)
+      real p(lma)
+      real a(lma)
+      integer i,L
+      real temp
 
       data p  / 93.81, 111.65, 133.46, 157.80, 186.51,
      .         219.88, 257.40, 301.21, 352.49, 409.76,
@@ -2174,6 +2188,23 @@ C*********************************************************************
      1   PLK,TH,TEMP1,TEMP2,TEMP3,ITMP1,ITMP2,RCON,RLAR,CLSBTH,tmscl,
      2   tmfrc,cp,gravity,alhl,gamfac,cldlz,RHCRIT,offset,alpha)
  
+      implicit none
+C Argument List declarations
+      integer nn,irun,nlay
+      real TL(IRUN,NLAY),QL(IRUN,NLAY),RAIN(IRUN,NLAY),
+     . PL(IRUN,NLAY),CLFRAC(IRUN,NLAY),SP(IRUN),TEMP1(IRUN,NLAY),
+     . TEMP2(IRUN,NLAY),PLKE(IRUN,NLAY+1),
+     . RCON(IRUN),RLAR(IRUN),DP(IRUN,NLAY),PLK(IRUN,NLAY),TH(IRUN,NLAY),
+     . TEMP3(IRUN,NLAY)
+      integer ITMP1(IRUN,NLAY),ITMP2(IRUN,NLAY)
+      real CLSBTH(IRUN,NLAY)
+      real tmscl,tmfrc,cp,gravity,alhl,gamfac,offset,alpha
+      real cldlz(irun,nlay)
+      real rhcrit(irun,nlay)
+C
+C Local Variables
+      real zm1p04,zero,two89,zp44,zp01,half,zp578,one,thousand,z3600
+      real zp1,zp001
       PARAMETER (ZM1P04 = -1.04E-4 )
       PARAMETER (ZERO = 0.)
       PARAMETER (TWO89= 2.89E-5)
@@ -2187,21 +2218,15 @@ C*********************************************************************
       PARAMETER ( THOUSAND = 1000.)
       PARAMETER ( Z3600 = 3600.)
 C
-       DIMENSION TL(IRUN,NLAY),QL(IRUN,NLAY),RAIN(IRUN,NLAY),
-     $ PL(IRUN,NLAY),CLFRAC(IRUN,NLAY),SP(IRUN),TEMP1(IRUN,NLAY),
-     $ TEMP2(IRUN,NLAY),PLKE(IRUN,NLAY+1),
-     $ RCON(IRUN),RLAR(IRUN),DP(IRUN,NLAY),PLK(IRUN,NLAY),TH(IRUN,NLAY),
-     $ TEMP3(IRUN,NLAY),ITMP1(IRUN,NLAY),
-     $ ITMP2(IRUN,NLAY),CLSBTH(IRUN,NLAY)
-C
-       DIMENSION EVP9(IRUN,NLAY)
-       real water(irun),crystal(irun)
-       real watevap(irun),iceevap(irun)
-       real fracwat,fracice, tice,rh,fact,dum
+      real EVP9(IRUN,NLAY)
+      real water(irun),crystal(irun)
+      real watevap(irun),iceevap(irun)
+      real fracwat,fracice, tice,rh,fact,dum
+      real rainmax(irun)
+      real getcon,rphf,elocp,cpog,relax
+      real exparg,arearat,rpow
 
-       real cldlz(irun,nlay)
-       real rhcrit(irun,nlay), rainmax(irun)
-       real offset, alpha
+      integer i,L,n,nlaym1,irnlay,irnlm1
 
 c Explicit Inline Directives
 c --------------------------
@@ -2403,8 +2428,6 @@ C  =======
 C    cloud ...... Cloud Fraction        (irun,irise)
 C
 C***********************************************************************
-C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
-C***********************************************************************
 
       implicit none
       integer  irun,irise
@@ -2415,19 +2438,15 @@ C***********************************************************************
       real   pl(irun,irise)
       real plke(irun,irise+1)
 
-      real tempth(irun)
-      real tempqs(irun)
-      real dhstar(irun)
       real  cloud(irun,irise)
       real cldwat(irun,irise)
       real     qs(irun,irise)
 
-      real cp, alhl, getcon, akap, pcheck
-      real ratio, temp, pke, elocp
-      real rhcrit,rh,dum,pbar,tbar
-      integer i,L,ntradesu,ntradesl
+      real cp, alhl, getcon, akap
+      real ratio, temp, elocp
+      real rhcrit,rh,dum
+      integer i,L
 
-      real factor
       real rhc(irun,irise)
       real offset,alpha
 
