@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.92 2004/05/14 21:08:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.93 2004/05/21 21:04:31 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,6 +45,9 @@ C     == Global variables ==
 #ifdef ALLOW_ZONAL_FILT
 # include "ZONAL_FILT.h"
 #endif
+#ifdef COMPONENT_MODULE
+# include "CPL_PARAMS.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "FFIELDS.h"
@@ -86,15 +89,17 @@ C           mytime are local variables passed around as routine
 C           arguments. Although this is fiddly it saves the need to 
 C           impose additional synchronisation points when they are 
 C           updated.
-C     myiter - iteration counter for this thread
-C     mytime - time counter for this thread
-C     mythid - thread number for this instance of the routine.
-      integer iloop
-      integer mythid 
-      integer myiter
-      _RL     mytime
+C     myIter - iteration counter for this thread
+C     myTime - time counter for this thread
+C     myThid - thread number for this instance of the routine.
+      INTEGER iloop
+      INTEGER myThid 
+      INTEGER myIter
+      _RL     myTime
 
+C     == Local variables ==
       integer i,L
+      INTEGER myItP1
 CEOP
 
 #ifdef ALLOW_DEBUG
@@ -264,7 +269,7 @@ CADJ STORE ptracer  = comlev1, key = ikey_dynamics
 #endif
 
 #ifdef COMPONENT_MODULE
-       IF ( useCoupler ) THEN
+       IF ( useCoupler .AND. cpl_earlyExpImpCall ) THEN
 C      Post coupling data that I export.
 C      Read in coupling data that I import.
          CALL TIMER_START('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
@@ -272,13 +277,10 @@ C      Read in coupling data that I import.
          CALL CPL_IMPORT_EXTERNAL_DATA( myIter, myTime, myThid )
          CALL TIMER_STOP ('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
        ENDIF
-#endif /* COMPONENT_MODULE */
-
-#ifdef COMPONENT_MODULE
 # ifndef ALLOW_AIM
 C jmc: don't know precisely where to put this call. leave it here for now.
        IF ( useCoupler ) THEN
-         CALL OCN_APPLY_IMPORT( myTime, myIter, myThid )
+         CALL OCN_APPLY_IMPORT( .TRUE., myTime, myIter, myThid )
        ENDIF
 # endif
 #endif /* COMPONENT_MODULE */
@@ -353,6 +355,23 @@ C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
         CALL TIMER_STOP ('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
       ENDIF
 #endif   
+
+#ifdef COMPONENT_MODULE
+       IF ( useCoupler .AND. .NOT.cpl_earlyExpImpCall ) THEN
+C      Post coupling data that I export.
+C      Read in coupling data that I import.
+         myItP1 = myIter + 1
+         CALL TIMER_START('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
+         CALL CPL_EXPORT_MY_DATA(       myItP1, myTime, myThid )
+         CALL CPL_IMPORT_EXTERNAL_DATA( myItP1, myTime, myThid )
+         CALL TIMER_STOP ('CPL_EXPORT-IMPORT  [FORWARD_STEP]',myThid)
+# ifndef ALLOW_AIM
+        IF ( useRealFreshWaterFlux ) THEN
+         CALL OCN_APPLY_IMPORT( .FALSE., myTime, myIter, myThid )
+        ENDIF
+# endif
+       ENDIF
+#endif /* COMPONENT_MODULE */
 
 C--   Step forward fields and calculate time tendency terms.
 #ifndef ALLOW_AUTODIFF_TAMC
