@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.11 2003/03/08 00:24:58 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.12 2003/04/29 18:09:27 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -292,6 +292,11 @@ c     Downward shortwave radiation.
 c     Downward longwave radiation.
       call exf_set_lwdown ( mycurrenttime, mycurrentiter, mythid )
 
+#endif
+
+#ifdef ATMOSPHERIC_LOADING
+c     Atmos. pressure forcing
+      call exf_set_apressure ( mycurrenttime, mycurrentiter, mythid )
 #endif
 
 c--   Use atmospheric state to compute surface fluxes.
@@ -599,6 +604,10 @@ c      _EXCH_XY_R8(vstress, mythid)
 
 #ifdef SHORTWAVE_HEATING
       _EXCH_XY_R8(swflux, mythid)
+#endif
+
+#ifdef ATMOSPHERIC_LOADING
+      _EXCH_XY_R8(apressure, mythid)
 #endif
 
       end
