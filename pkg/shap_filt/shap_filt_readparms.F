@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.4 2001/08/17 19:09:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.5 2001/12/11 14:31:59 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -22,11 +22,10 @@ C     === Routine arguments ===
 
 #ifdef ALLOW_SHAP_FILT
 
-      NAMELIST /SHAP_PARM01/ Shap_funct, 
-     &          nShapT,  nShapTrPhys,
-     &          nShapUV, nShapUVPhys,
-     &          Shap_Trtau, Shap_TrLength,
-     &          Shap_uvtau, Shap_uvLength
+      NAMELIST /SHAP_PARM01/
+     & Shap_funct, shap_filt_uvStar, shap_filt_TrStagg,
+     &    nShapT,  nShapTrPhys, Shap_Trtau, Shap_TrLength,
+     &    nShapUV, nShapUVPhys, Shap_uvtau, Shap_uvLength
 
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
@@ -51,6 +50,8 @@ c     SHAPIsOn=.TRUE.
 
 C--   Default flags and values for Shapiro Filter
       Shap_funct = 2
+      shap_filt_uvStar =.TRUE. 
+      shap_filt_TrStagg=.TRUE.
       nShapT = 0
       nShapUV = 0
       nShapTrPhys = 0
@@ -77,6 +78,30 @@ C--   Close the open data file
 
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
+
+C--   Check the parameters :
+ 
+       IF ( .NOT.shap_filt_uvStar ) THEN
+ 
+C- Notes: applying the filter at the end of the time step (after SOLVE_FOR_P)
+C    affects the barotropic flow divergence ; this might not be consistent
+C    with some option of the code.
+ 
+        IF ( rigidLid ) THEN
+         WRITE(msgBuf,'(2A)') 'SHAP_FILT with rigidLid ',
+     &                         'needs shap_filt_uvStar=.true.'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R SHAP_FILT_READPARMS'
+        ELSEIF ( .NOT.exactConserv ) THEN
+         WRITE(msgBuf,'(2A)') 'S/R SHAP_FILT_READPARMS: WARNING <<< ',
+     &    'applying Filter after SOLVE_FOR_P (shap_filt_uvStar=FALSE)'
+         CALL PRINT_ERROR( msgBuf , 1)
+         WRITE(msgBuf,'(2A)') 'S/R SHAP_FILT_READPARMS: WARNING <<< ',
+     &    'requires to recompute Eta after ==> turn on exactConserv '
+         CALL PRINT_ERROR( msgBuf , 1)
+        ENDIF
+ 
+       ENDIF                    
 
 #endif /* ALLOW_SHAP_FILT */
       RETURN
