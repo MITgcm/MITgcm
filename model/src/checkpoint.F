@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.28 2003/10/30 12:00:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.29 2003/10/30 18:44:26 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -391,27 +391,7 @@ C--     Write model fields
          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,totPhiHyd,
      &                      1,myIter,myThid)
         ENDIF
-#ifdef ALLOW_CD_CODE
-        IF (useCDscheme) THEN
-        IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIter
-        ELSE
-         WRITE(fn,'(A,A)') 'pickup_cd.',checkPtSuff(nCheckLev)
-        ENDIF
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVelD,1,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVelD,2,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uNM1, 3,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vNM1, 4,myIter,myThid)
-C- jmc: guCD & gvCD no longer exist. 
-C   write some stuff to maintain the same pickup size
-c       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,guCD, 5,myIter,myThid)
-c       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gvCD, 6,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uNM1, 5,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vNM1, 6,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaNm1,6*Nr+1,
-     &                     myIter,myThid)
-        ENDIF
-#endif /* ALLOW_CD_CODE */
+
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
          IF ( permCheckPoint ) THEN
@@ -432,6 +412,13 @@ C Create suffix to pass on to package pickup routines
          ELSE
           WRITE(fn,'(A)') checkPtSuff(nCheckLev)
          ENDIF
+
+#ifdef ALLOW_CD_CODE
+        IF (useCDscheme) THEN
+          CALL CD_CODE_WRITE_CHECKPOINT(
+     &               prec, lgf, permCheckPoint, myIter, myThid)
+        ENDIF
+#endif /* ALLOW_CD_CODE */
 
 #ifdef  ALLOW_OBCS
 C SPK 4/9/01: Open boundary checkpointing

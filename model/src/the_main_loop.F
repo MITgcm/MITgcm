@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.40 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.41 2003/10/30 18:44:26 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -45,6 +45,9 @@ c They provide the fields to be stored.
 # include "FFIELDS.h"
 # include "EOS.h"
 # include "GAD.h"
+# ifdef ALLOW_CD_CODE
+#  include "CD_CODE_VARS.h"
+# endif
 # ifdef ALLOW_PASSIVE_TRACER
 #  include "TR1.h"
 # endif

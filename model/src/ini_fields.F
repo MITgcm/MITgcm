@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.16 2003/10/30 12:00:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.17 2003/10/30 18:44:26 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -41,6 +41,10 @@ C--   Set model variables to initial/restart conditions
        CALL INI_SALT( myThid )
        CALL INI_PSURF( myThid )
        CALL INI_PRESSURE( myThid )
+#ifdef ALLOW_CD_CODE
+      IF (useCDscheme) 
+     &      CALL CD_CODE_INI_VARS( myThid )
+#endif
 #ifdef INCLUDE_EP_FORCING_CODE
        CALL INI_EP( myThid )
 #endif
@@ -50,11 +54,11 @@ C--   Set model variables to initial/restart conditions
         nIter0 = INT(startTime/deltaTClock )
        ENDIF
        CALL READ_CHECKPOINT( nIter0, myThid )
-      ENDIF
-
 #ifdef ALLOW_CD_CODE
-      IF (useCDscheme) CALL CD_CODE_INIT_VARS( nIter0, myThid )
+       IF (useCDscheme) 
+     &      CALL CD_CODE_READ_CHECKPOINT( nIter0, myThid )
 #endif
+      ENDIF
 
       RETURN
       END

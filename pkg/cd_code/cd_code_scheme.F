@@ -1,13 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/Attic/cd_scheme.F,v 1.3 2003/10/30 12:00:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/cd_code_scheme.F,v 1.1 2003/10/30 18:44:26 heimbach Exp $
 C $Name:  $
 
 #include "CD_CODE_OPTIONS.h"
 
 CBOP
-C !ROUTINE: CD_SCHEME
+C !ROUTINE: CD_CODE_SCHEME
 
 C !INTERFACE: ==========================================================
-      SUBROUTINE CD_SCHEME( 
+      SUBROUTINE CD_CODE_SCHEME( 
      I        bi,bj,k, dPhiHydX,dPhiHydY, guFld,gvFld,
      O        guCor,gvCor,
      I        myTime, myIter, myThid)
