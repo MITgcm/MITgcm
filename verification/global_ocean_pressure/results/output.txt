@@ -715,10 +715,7 @@
 (PID.TID 0000.0001) convertFW2Salt = /* convert F.W. Flux to Salt Flux (-1=use local S)(ppt)*/
 (PID.TID 0000.0001)                 3.500000000000000E+01
 (PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) multiDimAdvection =   /* enable/disable Multi-Dim Advection */
-(PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) staggerTimeStep =   /* Stagger time stepping on/off flag */
+(PID.TID 0000.0001) nonHydrostatic =  /* Non-Hydrostatic on/off flag */
 (PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) momStepping =  /* Momentum equation on/off flag */
@@ -730,8 +727,20 @@
 (PID.TID 0000.0001) momViscosity =  /* Momentum viscosity on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momImplVertAdv =/* Momentum implicit vert. advection on/off*/
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) implicitViscosity = /* Implicit viscosity on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) useCoriolis =  /* Coriolis on/off flag */
 (PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useCDscheme =  /* CD scheme on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useJamartWetPoints= /* Coriolis WetPoints method flag */
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) momForcing =  /* Momentum forcing on/off flag */
 (PID.TID 0000.0001)                   T
@@ -739,11 +748,23 @@
 (PID.TID 0000.0001) momPressureForcing =  /* Momentum pressure term on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) staggerTimeStep =   /* Stagger time stepping on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) multiDimAdvection =   /* enable/disable Multi-Dim Advection */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) implicitDiffusion =/* Implicit Diffusion on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tempStepping =  /* Temperature equation on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tempAdvection=  /* Temperature advection on/off flag */
 (PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tempImplVertAdv =/* Temp. implicit vert. advection on/off */
+(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) tempForcing  =  /* Temperature forcing on/off flag */
 (PID.TID 0000.0001)                   T
@@ -754,17 +775,11 @@
 (PID.TID 0000.0001) saltAdvection=  /* Salinity advection on/off flag */
 (PID.TID 0000.0001)                   T
 (PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) saltImplVertAdv =/* Sali. implicit vert. advection on/off */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) saltForcing  =  /* Salinity forcing on/off flag */
 (PID.TID 0000.0001)                   T
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) nonHydrostatic =  /* Non-Hydrostatic on/off flag */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useCDscheme =  /* CD scheme on/off flag */
-(PID.TID 0000.0001)                   F
-(PID.TID 0000.0001)     ;
-(PID.TID 0000.0001) useJamartWetPoints= /* Coriolis WetPoints method flag */
-(PID.TID 0000.0001)                   F
 (PID.TID 0000.0001)     ;
 (PID.TID 0000.0001) //
 (PID.TID 0000.0001) // Elliptic solver(s) paramters ( PARM02 in namelist )
@@ -1735,18 +1750,18 @@ time,fu0,fu1,fu =   1.7280E+05 -4.5368E-02 -3.5633E-02 -3.9527E-02  6.0000E-01  
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.4560E+05  3.5483E-01  0.0000E+00 -3.8878E-02 -6.1587E-02  1.5550E+02 -2.0964E-09    12     1  6.6667E-01  3.3333E-01
 time,fu0,fu1,fu =   3.4560E+05 -4.5368E-02 -3.5633E-02 -3.8878E-02  6.6667E-01  3.3333E-01
- cg2d: Sum(rhs),rhsMax =   6.93889390390723E-17  1.72945928711722E+02
+ cg2d: Sum(rhs),rhsMax =  -3.74700270810990E-16  1.72945928711722E+02
 (PID.TID 0000.0001)                    cg2d_init_res =    1.06014926367086E-01
 (PID.TID 0000.0001)                       cg2d_iters =    99
-(PID.TID 0000.0001)                         cg2d_res =    8.15177193614469E-10
+(PID.TID 0000.0001)                         cg2d_res =    8.15177193619526E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                     3
 (PID.TID 0000.0001) %MON time_secondsf                =   5.1840000000000E+05
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   5.1297753286323E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.1295481037448E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   7.0900526549963E-12
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.1295481037451E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -3.3545309251465E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.9696774459890E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3981509310588E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   7.1974517618097E-02
@@ -1759,8 +1774,8 @@ time,fu0,fu1,fu =   3.4560E+05 -4.5368E-02 -3.5633E-02 -3.8878E-02  6.6667E-01  
 (PID.TID 0000.0001) %MON dynstat_vvel_mean            =   1.5247168504973E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   4.1663366888732E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.2424151003544E-03
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   8.8862456021134E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.0818412022358E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   8.8862456021135E-01
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.0818412022359E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -1.5498459949708E-03
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.2224222012355E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   6.2569737891994E-02
@@ -1776,8 +1791,8 @@ time,fu0,fu1,fu =   3.4560E+05 -4.5368E-02 -3.5633E-02 -3.8878E-02  6.6667E-01  
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   2.6913038679664E-02
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   4.2013947592142E-02
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   2.1012741475392E-02
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   6.7819188088446E-02
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   6.7819188088446E-02
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   6.7819188088447E-02
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   6.7819188088447E-02
 (PID.TID 0000.0001) %MON pe_b_mean                    =  -8.1526783132165E-03
 (PID.TID 0000.0001) %MON ke_max                       =   2.0313786999838E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   1.2750686470966E-05
@@ -1789,24 +1804,24 @@ time,fu0,fu1,fu =   3.4560E+05 -4.5368E-02 -3.5633E-02 -3.8878E-02  6.6667E-01  
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400606306569E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337416740282E-04
 (PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.7624275980042E-02
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -2.8926312783412E-04
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -2.8926312783342E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   5.1840E+05  4.7556E-01  0.0000E+00 -3.8229E-02 -6.0721E-02  1.4696E+02 -2.0964E-09    12     1  7.3333E-01  2.6667E-01
 time,fu0,fu1,fu =   5.1840E+05 -4.5368E-02 -3.5633E-02 -3.8229E-02  7.3333E-01  2.6667E-01
- cg2d: Sum(rhs),rhsMax =   1.20736753927986E-15  1.72905618116674E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    8.88323940786072E-03
+ cg2d: Sum(rhs),rhsMax =   8.60422844084496E-16  1.72905618116674E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    8.88323940786358E-03
 (PID.TID 0000.0001)                       cg2d_iters =    91
-(PID.TID 0000.0001)                         cg2d_res =    9.15902666810214E-10
+(PID.TID 0000.0001)                         cg2d_res =    9.15902666808829E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                     4
 (PID.TID 0000.0001) %MON time_secondsf                =   6.9120000000000E+05
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   5.1013832711300E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2901638104023E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   2.9820132874131E-12
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2901638103973E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   1.7450068601368E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   4.0207170733603E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3955142833888E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   6.1609535493572E-02
@@ -1821,7 +1836,7 @@ time,fu0,fu1,fu =   5.1840E+05 -4.5368E-02 -3.5633E-02 -3.8229E-02  7.3333E-01  
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.5552159995445E-03
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.1534444350596E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.3278287843375E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -9.7457886737217E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -9.7457886737209E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.4928687949953E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   7.3883507898299E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9664831878906E+01
@@ -1836,9 +1851,9 @@ time,fu0,fu1,fu =   5.1840E+05 -4.5368E-02 -3.5633E-02 -3.8229E-02  7.3333E-01  
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   2.6758708237996E-02
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   4.9444188242542E-02
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   2.3090166888777E-02
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   8.2187501691761E-02
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   8.2187501691761E-02
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.3977546154487E-03
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   8.2187501691764E-02
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   8.2187501691764E-02
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.3977546154485E-03
 (PID.TID 0000.0001) %MON ke_max                       =   2.4116842654642E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   1.7824362706865E-05
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
@@ -1849,39 +1864,39 @@ time,fu0,fu1,fu =   5.1840E+05 -4.5368E-02 -3.5633E-02 -3.8229E-02  7.3333E-01  
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400708520647E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337649615541E-04
 (PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.0062359859406E-02
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -2.3718668973328E-04
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -2.3718668973315E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   6.9120E+05  5.9629E-01  0.0000E+00 -3.7580E-02 -5.9855E-02  1.3842E+02 -2.0964E-09    12     1  8.0000E-01  2.0000E-01
 time,fu0,fu1,fu =   6.9120E+05 -4.5368E-02 -3.5633E-02 -3.7580E-02  8.0000E-01  2.0000E-01
- cg2d: Sum(rhs),rhsMax =  -3.10862446895044E-15  1.72918685742056E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    4.68680989909321E-03
+ cg2d: Sum(rhs),rhsMax =  -2.76167977375508E-15  1.72918685742058E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    4.68680989914414E-03
 (PID.TID 0000.0001)                       cg2d_iters =    94
-(PID.TID 0000.0001)                         cg2d_res =    9.71861530130474E-10
+(PID.TID 0000.0001)                         cg2d_res =    9.71861530149826E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                     5
 (PID.TID 0000.0001) %MON time_secondsf                =   8.6400000000000E+05
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   5.8773429950977E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.4342806697838E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   4.7640410056495E-12
-(PID.TID 0000.0001) %MON dynstat_eta_sd               =   4.0653016510732E+04
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.4342806697877E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   1.3186321269259E-11
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   4.0653016510733E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3953583530542E+04
-(PID.TID 0000.0001) %MON dynstat_uvel_max             =   5.9543736426933E-02
+(PID.TID 0000.0001) %MON dynstat_uvel_max             =   5.9543736426934E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -9.1775117794307E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -4.7330517597917E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   3.5781752298174E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.5504532226945E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   6.0695130334328E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -7.2172497340078E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   7.4645435863114E-04
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   7.4645435863112E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   6.3128256804597E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   1.8433814985822E-03
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.4020032070420E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.5220719277431E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -6.8519351417174E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -6.8519351417178E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.7381308379847E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   8.3626762899879E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9661584826047E+01
@@ -1896,9 +1911,9 @@ time,fu0,fu1,fu =   6.9120E+05 -4.5368E-02 -3.5633E-02 -3.7580E-02  8.0000E-01  
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   2.6634288478325E-02
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   5.3867625671592E-02
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   2.8043917450964E-02
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   9.5633393123271E-02
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   9.5633393123271E-02
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.4403861982938E-03
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   9.5633393123269E-02
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   9.5633393123269E-02
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.4403861982937E-03
 (PID.TID 0000.0001) %MON ke_max                       =   3.6258454728481E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   2.4012661414743E-05
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
@@ -1908,42 +1923,42 @@ time,fu0,fu1,fu =   6.9120E+05 -4.5368E-02 -3.5633E-02 -3.7580E-02  8.0000E-01  
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3435913020472E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400840474315E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337802947340E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   6.0157019980003E-03
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -1.1548439229789E-04
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   6.0157019980002E-03
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -1.1548439229779E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   8.6400E+05  7.1702E-01  0.0000E+00 -3.6931E-02 -5.8989E-02  1.2989E+02 -2.0964E-09    12     1  8.6667E-01  1.3333E-01
 time,fu0,fu1,fu =   8.6400E+05 -4.5368E-02 -3.5633E-02 -3.6931E-02  8.6667E-01  1.3333E-01
- cg2d: Sum(rhs),rhsMax =  -2.38697950294409E-15  1.72928021225934E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    3.45139699140289E-03
+ cg2d: Sum(rhs),rhsMax =  -1.62370117351429E-15  1.72928021225933E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    3.45139699151355E-03
 (PID.TID 0000.0001)                       cg2d_iters =    91
-(PID.TID 0000.0001)                         cg2d_res =    9.78813015935073E-10
+(PID.TID 0000.0001)                         cg2d_res =    9.78813015991542E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                     6
 (PID.TID 0000.0001) %MON time_secondsf                =   1.0368000000000E+06
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   6.2209409981545E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.5072851669996E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   8.1728521301638E-12
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.5072851670007E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   2.0713632399325E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   4.0801322073600E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3953933554542E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   7.3968233367015E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -9.0172290133027E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -3.8964179272238E-05
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =  -3.8964179272234E-05
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   4.2141440558397E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.7359279197000E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   6.9116494046450E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -8.3440815266817E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   2.7833870296926E-04
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   2.7833870296925E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   7.2913719417560E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   2.1078935075189E-03
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.6176785005062E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.6176785005061E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.6533396907615E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -3.9198026064942E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -3.9198026064948E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.9514667893793E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.1433753301435E-02
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.1433753301437E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9706282897796E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -2.5961459503672E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.6026389662626E+00
@@ -1958,7 +1973,7 @@ time,fu0,fu1,fu =   8.6400E+05 -4.5368E-02 -3.5633E-02 -3.6931E-02  8.6667E-01  
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   3.2422424353111E-02
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.0549015569659E-01
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.0549015569659E-01
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.5184392836661E-03
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.5184392836663E-03
 (PID.TID 0000.0001) %MON ke_max                       =   3.8298313174922E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   3.1908181094144E-05
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
@@ -1968,42 +1983,42 @@ time,fu0,fu1,fu =   8.6400E+05 -4.5368E-02 -3.5633E-02 -3.6931E-02  8.6667E-01  
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436014131472E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400918690520E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337864360060E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   2.1317179650397E-03
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -6.0616788314403E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   2.1317179650399E-03
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -6.0616788314388E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.0368E+06  8.3775E-01  0.0000E+00 -3.6282E-02 -5.8123E-02  1.2135E+02 -2.0964E-09    12     1  9.3333E-01  6.6667E-02
 time,fu0,fu1,fu =   1.0368E+06 -4.5368E-02 -3.5633E-02 -3.6282E-02  9.3333E-01  6.6667E-02
- cg2d: Sum(rhs),rhsMax =  -8.18789480661053E-16  1.72940039471528E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    3.58750402753403E-03
+ cg2d: Sum(rhs),rhsMax =   1.17961196366423E-15  1.72940039471530E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    3.58750402758490E-03
 (PID.TID 0000.0001)                       cg2d_iters =    91
-(PID.TID 0000.0001)                         cg2d_res =    9.19982459592014E-10
+(PID.TID 0000.0001)                         cg2d_res =    9.19982459609374E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                     7
 (PID.TID 0000.0001) %MON time_secondsf                =   1.2096000000000E+06
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   6.1155547604864E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.5059623616657E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   2.3731513690306E-12
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.5059623616652E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   3.6708356060269E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   4.0659437810066E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3955577295553E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   8.8189836914901E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -7.5475971930813E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   3.1900303795469E-04
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   3.1900303795470E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   4.9839450380671E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   1.8998665214449E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   7.6043254870672E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -9.4863250741315E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -9.9610559323579E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -9.9610559323580E-05
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   8.1826612271081E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   2.3434668459286E-03
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.7915102851140E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.7915102851138E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.7236786142680E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -8.5393493076388E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -8.5393493076386E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.1276769792272E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.7203108131103E-02
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.7203108131104E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9752525179090E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -2.6766339728278E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.6027764357500E+00
@@ -2018,18 +2033,18 @@ time,fu0,fu1,fu =   1.0368E+06 -4.5368E-02 -3.5633E-02 -3.6282E-02  9.3333E-01  
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   3.6860816390820E-02
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.1178102762542E-01
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.1178102762542E-01
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.6507613339750E-03
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.6507613339751E-03
 (PID.TID 0000.0001) %MON ke_max                       =   5.0511133543479E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   4.1311917196791E-05
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
-(PID.TID 0000.0001) %MON vort_r_min                   =  -2.7681522208124E-07
-(PID.TID 0000.0001) %MON vort_r_max                   =   2.6892707208669E-07
+(PID.TID 0000.0001) %MON vort_r_min                   =  -2.7681522208123E-07
+(PID.TID 0000.0001) %MON vort_r_max                   =   2.6892707208668E-07
 (PID.TID 0000.0001) %MON vort_a_mean                  =  -2.4531016238591E-05
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436098291155E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400918832574E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337849785344E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.6209610365445E-03
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -5.5062144236780E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.6209610365444E-03
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -5.5062144236784E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
@@ -2048,34 +2063,34 @@ time,fu0,fu1,fu =   1.0368E+06 -4.5368E-02 -3.5633E-02 -3.6282E-02  9.3333E-01  
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: deltageopotjmd95.bin
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.2096E+06  9.5848E-01  0.0000E+00 -3.5633E-02 -5.7257E-02  1.1281E+02 -2.0964E-09     1     2  0.0000E+00  1.0000E+00
 time,fu0,fu1,fu =   1.2096E+06 -3.5633E-02 -1.4435E-02 -3.5633E-02  0.0000E+00  1.0000E+00
- cg2d: Sum(rhs),rhsMax =  -8.88178419700125E-16  1.72953755070508E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    3.93574816391929E-03
+ cg2d: Sum(rhs),rhsMax =   2.52575738102223E-15  1.72953755070503E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    3.93574816401798E-03
 (PID.TID 0000.0001)                       cg2d_iters =    90
-(PID.TID 0000.0001)                         cg2d_res =    8.67541391207231E-10
+(PID.TID 0000.0001)                         cg2d_res =    8.67541391238118E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                     8
 (PID.TID 0000.0001) %MON time_secondsf                =   1.3824000000000E+06
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   5.6617513998830E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.4430055509817E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   7.0067715734065E-13
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.4430055509873E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -1.7399859798796E-13
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   4.0356617829698E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3957808585334E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   1.0172737110236E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -6.5374030234265E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   5.4566233520692E-04
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   5.4566233520693E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   5.8261907454147E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.0399793960990E-03
-(PID.TID 0000.0001) %MON dynstat_vvel_max             =   8.1474832893509E-02
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   8.1474832893508E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.0475388141092E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -3.3374681936799E-04
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -3.3374681936798E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   8.9610190332796E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   2.5440447859689E-03
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.9170802494182E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.7392509093160E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.7826811364497E-04
-(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.2630218048142E-01
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.7392509093159E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.7826811364501E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.2630218048141E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   1.0084102235321E-01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9804736284657E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -2.7604594238904E+00
@@ -2086,7 +2101,7 @@ time,fu0,fu1,fu =   1.2096E+06 -3.5633E-02 -1.4435E-02 -3.5633E-02  0.0000E+00  
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   2.9778314484473E+01
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.4718001104347E+01
 (PID.TID 0000.0001) %MON dynstat_salt_sd              =   2.9442253807843E-01
-(PID.TID 0000.0001) %MON dynstat_salt_del2            =   2.6382091186383E-02
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   2.6382091186382E-02
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   6.7249039057111E-02
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   4.0703998215741E-02
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.1933299052196E-01
@@ -2101,40 +2116,40 @@ time,fu0,fu1,fu =   1.2096E+06 -3.5633E-02 -1.4435E-02 -3.5633E-02  0.0000E+00  
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436152146031E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400853010847E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337784306214E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -4.3265484955504E-03
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -5.6964605893353E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -4.3265484955506E-03
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -5.6964605893503E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.3824E+06  8.5911E-01  0.0000E+00 -3.4220E-02 -5.4615E-02  1.1534E+02 -2.0964E-09     1     2  6.6667E-02  9.3333E-01
 time,fu0,fu1,fu =   1.3824E+06 -3.5633E-02 -1.4435E-02 -3.4220E-02  6.6667E-02  9.3333E-01
- cg2d: Sum(rhs),rhsMax =  -4.30211422042248E-16  1.72967906282843E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    3.96270101036395E-03
+ cg2d: Sum(rhs),rhsMax =   1.95676808090184E-15  1.72967906282845E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    3.96270101027546E-03
 (PID.TID 0000.0001)                       cg2d_iters =    92
-(PID.TID 0000.0001)                         cg2d_res =    9.26993962903029E-10
+(PID.TID 0000.0001)                         cg2d_res =    9.26993962910344E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                     9
 (PID.TID 0000.0001) %MON time_secondsf                =   1.5552000000000E+06
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   5.2268303005649E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.3568478647439E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -2.2897295806036E-12
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.3568478647485E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   4.5518118892208E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   4.0032063929328E+04
-(PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3959225220683E+04
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3959225220684E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   1.1448767301229E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -6.6937232148293E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.2892028603317E-04
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.2892028603318E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   6.7070490589749E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.1577253053304E-03
-(PID.TID 0000.0001) %MON dynstat_vvel_max             =   8.4913125303659E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.1294488939952E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -4.1852410169228E-04
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   8.4913125303660E-02
+(PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.1294488939953E-01
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -4.1852410169226E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   9.6114317829658E-03
-(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   2.7078707501131E-03
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.9910166122327E+00
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   2.7078707501132E-03
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   1.9910166122324E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.7055307315022E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   3.5988316604184E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   3.5988316604189E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.3569587499962E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   1.0250588521592E-01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9845474780632E+01
@@ -2151,7 +2166,7 @@ time,fu0,fu1,fu =   1.3824E+06 -3.5633E-02 -1.4435E-02 -3.4220E-02  6.6667E-02  
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   4.3886761184162E-02
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.2739493515569E-01
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.2739493515569E-01
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.7721727132631E-03
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.7721727132629E-03
 (PID.TID 0000.0001) %MON ke_max                       =   7.7151372247149E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   6.2037973482529E-05
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
@@ -2161,25 +2176,25 @@ time,fu0,fu1,fu =   1.3824E+06 -3.5633E-02 -1.4435E-02 -3.4220E-02  6.6667E-02  
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436172394647E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400747424832E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337690673272E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.4609908287183E-03
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -5.4001573300204E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.4609908287182E-03
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -5.4001573300230E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.5552E+06  7.5973E-01  0.0000E+00 -3.2807E-02 -5.1974E-02  1.1787E+02 -2.0964E-09     1     2  1.3333E-01  8.6667E-01
 time,fu0,fu1,fu =   1.5552E+06 -3.5633E-02 -1.4435E-02 -3.2807E-02  1.3333E-01  8.6667E-01
- cg2d: Sum(rhs),rhsMax =  -5.13478148889135E-16  1.72980800633957E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    3.62695521565526E-03
+ cg2d: Sum(rhs),rhsMax =  -1.42941214420489E-15  1.72980800633961E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    3.62695521560528E-03
 (PID.TID 0000.0001)                       cg2d_iters =    93
-(PID.TID 0000.0001)                         cg2d_res =    9.19571280163621E-10
+(PID.TID 0000.0001)                         cg2d_res =    9.19571280152476E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                    10
 (PID.TID 0000.0001) %MON time_secondsf                =   1.7280000000000E+06
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   5.1372737622820E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2841919525688E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -4.5763851614265E-12
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2841919525660E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   5.7059556939028E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.9769765977491E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3960643105580E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   1.2630603097682E-01
@@ -2189,12 +2204,12 @@ time,fu0,fu1,fu =   1.5552E+06 -3.5633E-02 -1.4435E-02 -3.2807E-02  1.3333E-01  
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.2639205745996E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   8.6873279182542E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.1933262080555E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -3.8445031543394E-04
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -3.8445031543395E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.0130009593846E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   2.8365043598829E-03
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.0207514206317E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.0207514206315E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.6345195450669E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   4.4775871111040E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   4.4775871111031E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.4123949920857E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   1.0254506394264E-01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9880790568028E+01
@@ -2211,8 +2226,8 @@ time,fu0,fu1,fu =   1.5552E+06 -3.5633E-02 -1.4435E-02 -3.2807E-02  1.3333E-01  
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   4.6368828714753E-02
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.3317599457366E-01
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.3317599457366E-01
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.6739271907690E-03
-(PID.TID 0000.0001) %MON ke_max                       =   9.1174084266098E-03
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.6739271907691E-03
+(PID.TID 0000.0001) %MON ke_max                       =   9.1174084266099E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   7.2538708809241E-05
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
 (PID.TID 0000.0001) %MON vort_r_min                   =  -4.0597716331735E-07
@@ -2221,32 +2236,32 @@ time,fu0,fu1,fu =   1.5552E+06 -3.5633E-02 -1.4435E-02 -3.2807E-02  1.3333E-01  
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436164012588E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400633754448E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337595053004E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.1197734018666E-03
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -5.2476314477013E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.1197734018667E-03
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -5.2476314477130E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.7280E+06  6.6036E-01  0.0000E+00 -3.1393E-02 -4.9332E-02  1.2039E+02 -2.0964E-09     1     2  2.0000E-01  8.0000E-01
 time,fu0,fu1,fu =   1.7280E+06 -3.5633E-02 -1.4435E-02 -3.1393E-02  2.0000E-01  8.0000E-01
- cg2d: Sum(rhs),rhsMax =  -1.99840144432528E-15  1.72990806573900E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    3.12693255388073E-03
+ cg2d: Sum(rhs),rhsMax =  -1.12410081243297E-15  1.72990806573893E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    3.12693255393434E-03
 (PID.TID 0000.0001)                       cg2d_iters =    91
-(PID.TID 0000.0001)                         cg2d_res =    9.41623334499127E-10
+(PID.TID 0000.0001)                         cg2d_res =    9.41623334481140E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                    11
 (PID.TID 0000.0001) %MON time_secondsf                =   1.9008000000000E+06
-(PID.TID 0000.0001) %MON dynstat_eta_max              =   4.7513739896498E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2588064193680E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   2.3339368442619E-12
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   4.7513739896497E+04
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2588064193684E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -2.8248344395185E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.9595096943294E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3961818309107E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   1.3711742228903E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -6.4754327132085E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_mean            =   4.7896958416272E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   8.5766912758554E-03
-(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.3669394305819E-03
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.3669394305820E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   8.9472864393265E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.2387115858413E-01
 (PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -2.8045046897180E-04
@@ -2254,7 +2269,7 @@ time,fu0,fu1,fu =   1.7280E+06 -3.5633E-02 -1.4435E-02 -3.1393E-02  2.0000E-01  
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   2.9318056325504E-03
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.1374447248128E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.5548489699687E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   4.5215440071550E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   4.5215440071559E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.4343836622198E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   1.0143198536092E-01
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9910876643039E+01
@@ -2266,57 +2281,57 @@ time,fu0,fu1,fu =   1.7280E+06 -3.5633E-02 -1.4435E-02 -3.1393E-02  2.0000E-01  
 (PID.TID 0000.0001) %MON dynstat_salt_min             =   2.9774406625824E+01
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.4718001095458E+01
 (PID.TID 0000.0001) %MON dynstat_salt_sd              =   2.9442147470373E-01
-(PID.TID 0000.0001) %MON dynstat_salt_del2            =   2.6410165917575E-02
-(PID.TID 0000.0001) %MON advcfl_uvel_max              =   9.0644383974570E-02
-(PID.TID 0000.0001) %MON advcfl_vvel_max              =   4.8132358916719E-02
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.3649302382821E-01
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.3649302382821E-01
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.5000508728268E-03
+(PID.TID 0000.0001) %MON dynstat_salt_del2            =   2.6410165917576E-02
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   9.0644383974568E-02
+(PID.TID 0000.0001) %MON advcfl_vvel_max              =   4.8132358916720E-02
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.3649302382820E-01
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.3649302382820E-01
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.5000508728269E-03
 (PID.TID 0000.0001) %MON ke_max                       =   1.0551185537178E-02
 (PID.TID 0000.0001) %MON ke_mean                      =   8.3050547139910E-05
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
-(PID.TID 0000.0001) %MON vort_r_min                   =  -4.6845104027942E-07
+(PID.TID 0000.0001) %MON vort_r_min                   =  -4.6845104027941E-07
 (PID.TID 0000.0001) %MON vort_r_max                   =   4.2580599579662E-07
 (PID.TID 0000.0001) %MON vort_a_mean                  =  -2.4531015314924E-05
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436137276269E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400538993474E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337519794206E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -3.7970446591732E-03
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -5.6064620142903E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -3.7970446591736E-03
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -5.6064620142896E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   1.9008E+06  5.6099E-01  0.0000E+00 -2.9980E-02 -4.6691E-02  1.2292E+02 -2.0964E-09     1     2  2.6667E-01  7.3333E-01
 time,fu0,fu1,fu =   1.9008E+06 -3.5633E-02 -1.4435E-02 -2.9980E-02  2.6667E-01  7.3333E-01
- cg2d: Sum(rhs),rhsMax =   3.37230243729891E-15  1.72997154636375E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    2.73183151553658E-03
+ cg2d: Sum(rhs),rhsMax =   1.04083408558608E-15  1.72997154636374E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    2.73183151558438E-03
 (PID.TID 0000.0001)                       cg2d_iters =    84
-(PID.TID 0000.0001)                         cg2d_res =    8.91277330971940E-10
+(PID.TID 0000.0001)                         cg2d_res =    8.91277331075770E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                    12
 (PID.TID 0000.0001) %MON time_secondsf                =   2.0736000000000E+06
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   4.2957375273692E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2540141475711E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -5.8493621147238E-13
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2540141475732E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -7.7378443368010E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.9503389606320E+04
-(PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3962703372477E+04
+(PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3962703372478E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   1.4843376992416E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -6.9027727584676E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   3.4368353625984E-04
-(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   9.5587069154010E-03
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   3.4368353625983E-04
+(PID.TID 0000.0001) %MON dynstat_uvel_sd              =   9.5587069154011E-03
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.4639827056845E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   9.0793661508824E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.2719203335910E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -1.5660024770509E-04
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -1.5660024770506E-04
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.0783416680556E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   2.9991184105152E-03
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   2.9991184105153E-03
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.2828403545948E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.4727510144343E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   3.9594042989327E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   3.9594042989318E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.4285440829597E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.9697378214004E-02
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.9697378214006E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9935979696734E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -3.0223750554618E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.6033618821412E+00
@@ -2327,56 +2342,56 @@ time,fu0,fu1,fu =   1.9008E+06 -3.5633E-02 -1.4435E-02 -2.9980E-02  2.6667E-01  
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.4718001105604E+01
 (PID.TID 0000.0001) %MON dynstat_salt_sd              =   2.9441709983090E-01
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   2.6441632429396E-02
-(PID.TID 0000.0001) %MON advcfl_uvel_max              =   9.7107977461088E-02
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   9.7107977461087E-02
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   4.9422744333418E-02
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.3719975151554E-01
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.3719975151554E-01
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.2992363171888E-03
-(PID.TID 0000.0001) %MON ke_max                       =   1.1974233280988E-02
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -8.2992363171889E-03
+(PID.TID 0000.0001) %MON ke_max                       =   1.1974233280989E-02
 (PID.TID 0000.0001) %MON ke_mean                      =   9.3565124453895E-05
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
 (PID.TID 0000.0001) %MON vort_r_min                   =  -5.0685699380114E-07
-(PID.TID 0000.0001) %MON vort_r_max                   =   4.6224507959225E-07
+(PID.TID 0000.0001) %MON vort_r_max                   =   4.6224507959226E-07
 (PID.TID 0000.0001) %MON vort_a_mean                  =  -2.4531015157075E-05
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436104282730E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400476001119E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337477620817E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -2.1023866793330E-03
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -6.1239432801055E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -2.1023866793324E-03
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -6.1239432801108E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.0736E+06  4.6162E-01  0.0000E+00 -2.8567E-02 -4.4050E-02  1.2545E+02 -2.0964E-09     1     2  3.3333E-01  6.6667E-01
 time,fu0,fu1,fu =   2.0736E+06 -3.5633E-02 -1.4435E-02 -2.8567E-02  3.3333E-01  6.6667E-01
- cg2d: Sum(rhs),rhsMax =  -1.33226762955019E-15  1.73000010865400E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    2.58837430320854E-03
+ cg2d: Sum(rhs),rhsMax =  -5.13478148889135E-16  1.73000010865401E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    2.58837430317815E-03
 (PID.TID 0000.0001)                       cg2d_iters =    88
-(PID.TID 0000.0001)                         cg2d_res =    8.46683364547365E-10
+(PID.TID 0000.0001)                         cg2d_res =    8.46683364567072E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                    13
 (PID.TID 0000.0001) %MON time_secondsf                =   2.2464000000000E+06
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   4.2948340569036E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2455781210122E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   2.0954727549565E-12
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2455781210184E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   8.9028358540227E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.9482745975470E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3963388015785E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   1.5902780884782E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -7.3961501408116E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   2.3222277546623E-04
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   2.3222277546622E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   1.0547398758357E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.5592693828242E-03
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.5592693828243E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   9.1003856281374E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.3058526260668E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -5.1752339090916E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -5.1752339090915E-05
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.0929001104447E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   3.0421866870018E-03
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.4171445036695E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.4411326670919E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   3.0735617406816E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.4411326670920E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   3.0735617406821E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.4000459796975E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.7676201855436E-02
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.7676201855438E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9956271897364E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -3.0756285166412E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.6034590870234E+00
@@ -2393,50 +2408,50 @@ time,fu0,fu1,fu =   2.0736E+06 -3.5633E-02 -1.4435E-02 -2.8567E-02  3.3333E-01  
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.3519869353095E-01
 (PID.TID 0000.0001) %MON pe_b_mean                    =  -8.1066590880121E-03
 (PID.TID 0000.0001) %MON ke_max                       =   1.3355692200279E-02
-(PID.TID 0000.0001) %MON ke_mean                      =   1.0394546978406E-04
+(PID.TID 0000.0001) %MON ke_mean                      =   1.0394546978407E-04
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
-(PID.TID 0000.0001) %MON vort_r_min                   =  -5.2049880000357E-07
-(PID.TID 0000.0001) %MON vort_r_max                   =   4.7336685842290E-07
+(PID.TID 0000.0001) %MON vort_r_min                   =  -5.2049880000358E-07
+(PID.TID 0000.0001) %MON vort_r_max                   =   4.7336685842292E-07
 (PID.TID 0000.0001) %MON vort_a_mean                  =  -2.4531015079028E-05
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436075752449E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400449433598E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337471428652E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.6025987878384E-04
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -6.0358546465939E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.6025987878378E-04
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -6.0358546466000E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.2464E+06  3.6224E-01  0.0000E+00 -2.7154E-02 -4.1408E-02  1.2798E+02 -2.0964E-09     1     2  4.0000E-01  6.0000E-01
 time,fu0,fu1,fu =   2.2464E+06 -3.5633E-02 -1.4435E-02 -2.7154E-02  4.0000E-01  6.0000E-01
- cg2d: Sum(rhs),rhsMax =   1.37390099297363E-15  1.73000150166626E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    2.58972096459432E-03
+ cg2d: Sum(rhs),rhsMax =  -4.85722573273506E-16  1.73000150166629E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    2.58972096456020E-03
 (PID.TID 0000.0001)                       cg2d_iters =    88
-(PID.TID 0000.0001)                         cg2d_res =    9.90552695556827E-10
+(PID.TID 0000.0001)                         cg2d_res =    9.90552695540090E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                    14
 (PID.TID 0000.0001) %MON time_secondsf                =   2.4192000000000E+06
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   4.3130163612768E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2543608457153E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -3.0046950203445E-12
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2543608457123E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   7.3941348809222E-13
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.9518068114272E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3964255774965E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   1.6830304595861E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -7.9853833218192E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   1.7504257558068E-04
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   1.7504257558066E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   1.1517398650242E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.6532815429261E-03
+(PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.6532815429262E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   9.0201401449844E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.3247688995908E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   1.2558141831767E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   1.2558141831771E-05
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.0964164707587E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   3.0637084896890E-03
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.5417069486606E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.5100963583911E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.1249075968782E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.5417069486607E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.5100963583910E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.1249075968775E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.3537484450972E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.5583509248346E-02
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.5583509248349E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9971857892329E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -3.1241396002628E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.6035544691780E+00
@@ -2451,50 +2466,50 @@ time,fu0,fu1,fu =   2.2464E+06 -3.5633E-02 -1.4435E-02 -2.7154E-02  4.0000E-01  
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   5.1476270090352E-02
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.3045314075517E-01
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.3045314075517E-01
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -7.9405779719010E-03
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -7.9405779719011E-03
 (PID.TID 0000.0001) %MON ke_max                       =   1.4667009175922E-02
 (PID.TID 0000.0001) %MON ke_mean                      =   1.1397125014104E-04
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
 (PID.TID 0000.0001) %MON vort_r_min                   =  -5.1258017885185E-07
-(PID.TID 0000.0001) %MON vort_r_max                   =   4.6624569904312E-07
+(PID.TID 0000.0001) %MON vort_r_max                   =   4.6624569904311E-07
 (PID.TID 0000.0001) %MON vort_a_mean                  =  -2.4531015083494E-05
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436058777075E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400455784766E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337495417158E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   4.9385551506147E-04
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -4.7717281420326E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   4.9385551506158E-04
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -4.7717281420386E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.4192E+06  2.6287E-01  0.0000E+00 -2.5740E-02 -3.8767E-02  1.3050E+02 -2.0964E-09     1     2  4.6667E-01  5.3333E-01
 time,fu0,fu1,fu =   2.4192E+06 -3.5633E-02 -1.4435E-02 -2.5740E-02  4.6667E-01  5.3333E-01
- cg2d: Sum(rhs),rhsMax =   1.45716771982052E-15  1.72998547146471E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    2.55874390037791E-03
+ cg2d: Sum(rhs),rhsMax =   1.42941214420489E-15  1.72998547146471E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    2.55874390037214E-03
 (PID.TID 0000.0001)                       cg2d_iters =    89
-(PID.TID 0000.0001)                         cg2d_res =    8.26388182644239E-10
+(PID.TID 0000.0001)                         cg2d_res =    8.26388182600285E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                    15
 (PID.TID 0000.0001) %MON time_secondsf                =   2.5920000000000E+06
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   4.4272746937188E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2733331570793E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   9.8913517052326E-13
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2733331570854E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   1.9119276426754E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.9586691492311E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3965700271858E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   1.7615302496300E-01
-(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -8.4389753513656E-02
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -8.4389753513657E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_mean            =   1.8262574723598E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   1.2447549757819E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.7472293315077E-03
-(PID.TID 0000.0001) %MON dynstat_vvel_max             =   8.8498064448480E-02
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   8.8498064448482E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.3287236572011E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   3.2384875316195E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   3.2384875316199E-05
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.0901195518227E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   3.0698344248780E-03
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.6569044906746E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.5547932050911E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.2979507803626E-04
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.5547932050912E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   1.2979507803639E-04
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.2947306131303E-01
 (PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.3649216911955E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9982785580741E+01
@@ -2507,56 +2522,56 @@ time,fu0,fu1,fu =   2.4192E+06 -3.5633E-02 -1.4435E-02 -2.5740E-02  4.6667E-01  
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.4718001087010E+01
 (PID.TID 0000.0001) %MON dynstat_salt_sd              =   2.9440921061601E-01
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   2.6605029963420E-02
-(PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.1210750908066E-01
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.1210750908065E-01
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   5.1629939285748E-02
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.2299767529994E-01
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.2299767529994E-01
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -7.8116846101021E-03
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -7.8116846101019E-03
 (PID.TID 0000.0001) %MON ke_max                       =   1.5884790981219E-02
 (PID.TID 0000.0001) %MON ke_mean                      =   1.2345018059989E-04
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
 (PID.TID 0000.0001) %MON vort_r_min                   =  -4.8909102707091E-07
-(PID.TID 0000.0001) %MON vort_r_max                   =   4.9988509145845E-07
+(PID.TID 0000.0001) %MON vort_r_max                   =   4.9988509145846E-07
 (PID.TID 0000.0001) %MON vort_a_mean                  =  -2.4531015159430E-05
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436055917736E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400485710277E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337537890246E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   9.4388694879515E-04
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -2.2212085612900E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   9.4388694879500E-04
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =  -2.2212085612888E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.5920E+06  1.6350E-01  0.0000E+00 -2.4327E-02 -3.6125E-02  1.3303E+02 -2.0964E-09     1     2  5.3333E-01  4.6667E-01
 time,fu0,fu1,fu =   2.5920E+06 -3.5633E-02 -1.4435E-02 -2.4327E-02  5.3333E-01  4.6667E-01
- cg2d: Sum(rhs),rhsMax =   3.16413562018170E-15  1.72996022066965E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    2.45008509658900E-03
+ cg2d: Sum(rhs),rhsMax =  -1.66533453693773E-16  1.72996022066966E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    2.45008509668037E-03
 (PID.TID 0000.0001)                       cg2d_iters =    89
-(PID.TID 0000.0001)                         cg2d_res =    7.73750765672176E-10
+(PID.TID 0000.0001)                         cg2d_res =    7.73750765680419E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                    16
 (PID.TID 0000.0001) %MON time_secondsf                =   2.7648000000000E+06
-(PID.TID 0000.0001) %MON dynstat_eta_max              =   4.6789405938975E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2852436728303E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   3.4430402334257E-12
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   4.6789405938976E+04
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2852436728152E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -2.4263731809840E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.9659503890932E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3966763343792E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   1.8326059198590E-01
-(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -8.7623465776190E-02
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -8.7623465776191E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_mean            =   2.4727625608033E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   1.3323140580782E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.8447694519208E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   8.9080998842195E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.3177977563318E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   1.7431152157339E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =   1.7431152157344E-05
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.0756937775330E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   3.0670882855678E-03
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.7623140564556E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.5768143055670E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   6.7075620793866E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.5768143055669E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   6.7075620793831E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.2284687211626E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.1870765815791E-02
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.1870765815792E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9989060863063E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -3.2072080143470E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.6037435815491E+00
@@ -2571,7 +2586,7 @@ time,fu0,fu1,fu =   2.5920E+06 -3.5633E-02 -1.4435E-02 -2.4327E-02  5.3333E-01  
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   5.1205393824044E-02
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.1294530438996E-01
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.1294530438996E-01
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -7.7299703761878E-03
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -7.7299703761877E-03
 (PID.TID 0000.0001) %MON ke_max                       =   1.6992342859805E-02
 (PID.TID 0000.0001) %MON ke_mean                      =   1.3228021475551E-04
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
@@ -2581,42 +2596,42 @@ time,fu0,fu1,fu =   2.5920E+06 -3.5633E-02 -1.4435E-02 -2.4327E-02  5.3333E-01  
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436065618286E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400527412205E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337585325661E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   8.6715430967263E-04
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   1.2480401641006E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   8.6715430967255E-04
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   1.2480401640896E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.7648E+06  6.4124E-02  0.0000E+00 -2.2914E-02 -3.3484E-02  1.3556E+02 -2.0964E-09     1     2  6.0000E-01  4.0000E-01
 time,fu0,fu1,fu =   2.7648E+06 -3.5633E-02 -1.4435E-02 -2.2914E-02  6.0000E-01  4.0000E-01
- cg2d: Sum(rhs),rhsMax =   2.63677968348475E-16  1.72993070116002E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    2.30541350156981E-03
+ cg2d: Sum(rhs),rhsMax =  -1.66533453693773E-16  1.72993070116000E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    2.30541350156234E-03
 (PID.TID 0000.0001)                       cg2d_iters =    86
-(PID.TID 0000.0001)                         cg2d_res =    9.80493554958036E-10
+(PID.TID 0000.0001)                         cg2d_res =    9.80493554934950E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                    17
 (PID.TID 0000.0001) %MON time_secondsf                =   2.9376000000000E+06
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   4.8392797065095E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2898951790087E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =   6.7310631688979E-12
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2898951790145E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -2.5321976948072E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.9709927340981E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3967311187149E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   1.9076618932105E-01
-(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -9.1158802867277E-02
+(PID.TID 0000.0001) %MON dynstat_uvel_min             =  -9.1158802867278E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_mean            =   3.4910137497112E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   1.4133812149429E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   2.9457256095874E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   9.2144757699594E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.2921766108887E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -1.5114334468521E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -1.5114334468529E-05
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.0552145670269E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   3.0594166998036E-03
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.8570474406975E+00
 (PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.5805358431705E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.3315401980235E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =   2.3315401980140E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.1606932846065E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.0379056950803E-02
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   9.0379056950804E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9990663773984E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -3.2418974117261E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.6038393020907E+00
@@ -2629,8 +2644,8 @@ time,fu0,fu1,fu =   2.7648E+06 -3.5633E-02 -1.4435E-02 -2.2914E-02  6.0000E-01  
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   2.6687101279480E-02
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.1878421815170E-01
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   5.0209838294882E-02
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.0048998823487E-01
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.0048998823487E-01
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.0048998823486E-01
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   1.0048998823486E-01
 (PID.TID 0000.0001) %MON pe_b_mean                    =  -7.7031976055354E-03
 (PID.TID 0000.0001) %MON ke_max                       =   1.7979383853277E-02
 (PID.TID 0000.0001) %MON ke_mean                      =   1.4043121442934E-04
@@ -2642,41 +2657,41 @@ time,fu0,fu1,fu =   2.7648E+06 -3.5633E-02 -1.4435E-02 -2.2914E-02  6.0000E-01  
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400569134545E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337625318573E-04
 (PID.TID 0000.0001) %MON surfExpan_theta_mean         =   4.6724516592975E-04
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   5.0635246124504E-05
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   5.0635246124508E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   2.9376E+06 -3.5249E-02  0.0000E+00 -2.1501E-02 -3.0843E-02  1.3808E+02 -2.0964E-09     1     2  6.6667E-01  3.3333E-01
 time,fu0,fu1,fu =   2.9376E+06 -3.5633E-02 -1.4435E-02 -2.1501E-02  6.6667E-01  3.3333E-01
- cg2d: Sum(rhs),rhsMax =  -7.91033905045424E-16  1.72989818823048E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    2.20657756225963E-03
+ cg2d: Sum(rhs),rhsMax =   2.63677968348475E-16  1.72989818823049E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    2.20657756210015E-03
 (PID.TID 0000.0001)                       cg2d_iters =    84
-(PID.TID 0000.0001)                         cg2d_res =    8.44018806702392E-10
+(PID.TID 0000.0001)                         cg2d_res =    8.44018806641019E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                    18
 (PID.TID 0000.0001) %MON time_secondsf                =   3.1104000000000E+06
-(PID.TID 0000.0001) %MON dynstat_eta_max              =   4.8834901967635E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2835667851995E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -3.9545565587660E-12
+(PID.TID 0000.0001) %MON dynstat_eta_max              =   4.8834901967634E+04
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2835667851939E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -6.1357700972876E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.9723822732025E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3967135699173E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   1.9673996481535E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -9.5060539827593E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   4.6370201557752E-04
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   4.6370201557754E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   1.4870643207826E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   3.0459660703842E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_max             =   9.4736791357298E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.2522379481547E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -4.6941415042774E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -4.6941415042785E-05
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.0310270044951E-02
-(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   3.0533328328516E-03
+(PID.TID 0000.0001) %MON dynstat_vvel_del2            =   3.0533328328517E-03
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   2.9401062609262E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.6425587314124E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -8.0936295045709E-06
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.6425587314123E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -8.0936295044723E-06
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.0968400296952E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   8.9285516341659E-02
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   8.9285516341658E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9987563634940E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -3.2721039006167E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.6039358448372E+00
@@ -2687,11 +2702,11 @@ time,fu0,fu1,fu =   2.9376E+06 -3.5633E-02 -1.4435E-02 -2.1501E-02  6.6667E-01  
 (PID.TID 0000.0001) %MON dynstat_salt_mean            =   3.4718000829492E+01
 (PID.TID 0000.0001) %MON dynstat_salt_sd              =   2.9441390429794E-01
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   2.6708400585591E-02
-(PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.2370205306021E-01
+(PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.2370205306022E-01
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   4.8657949968866E-02
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   9.8319616505780E-02
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   9.8319616505780E-02
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -7.7318655583728E-03
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   9.8319616505777E-02
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   9.8319616505777E-02
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -7.7318655583727E-03
 (PID.TID 0000.0001) %MON ke_max                       =   1.8840518487564E-02
 (PID.TID 0000.0001) %MON ke_mean                      =   1.4789028421486E-04
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
@@ -2701,42 +2716,42 @@ time,fu0,fu1,fu =   2.9376E+06 -3.5633E-02 -1.4435E-02 -2.1501E-02  6.6667E-01  
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436104415797E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400602137696E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337650151509E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.3057687609618E-05
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   8.5133114123188E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.3057687609806E-05
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   8.5133114123178E-05
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.1104E+06 -1.3462E-01  0.0000E+00 -2.0088E-02 -2.8201E-02  1.4061E+02 -2.0964E-09     1     2  7.3333E-01  2.6667E-01
 time,fu0,fu1,fu =   3.1104E+06 -3.5633E-02 -1.4435E-02 -2.0088E-02  7.3333E-01  2.6667E-01
- cg2d: Sum(rhs),rhsMax =   3.60822483003176E-16  1.72986107157335E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    2.18102075735533E-03
+ cg2d: Sum(rhs),rhsMax =  -1.24900090270330E-16  1.72986107157334E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    2.18102075744880E-03
 (PID.TID 0000.0001)                       cg2d_iters =    87
-(PID.TID 0000.0001)                         cg2d_res =    8.56758188804163E-10
+(PID.TID 0000.0001)                         cg2d_res =    8.56758188883266E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                    19
 (PID.TID 0000.0001) %MON time_secondsf                =   3.2832000000000E+06
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   4.8224387810835E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2712801151485E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -3.0527236515495E-12
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2712801151432E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   5.7806651660442E-12
 (PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.9703080446797E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3966250517720E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.0110488562270E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -9.8447664576721E-02
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   5.6927868164452E-04
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   5.6927868164450E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   1.5524672097449E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   3.1434729665341E-03
-(PID.TID 0000.0001) %MON dynstat_vvel_max             =   9.6880621949246E-02
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   9.6880621949245E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.1986189037159E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -6.3709247180647E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -6.3709247180645E-05
 (PID.TID 0000.0001) %MON dynstat_vvel_sd              =   1.0056186913520E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   3.0513816223691E-03
 (PID.TID 0000.0001) %MON dynstat_wvel_max             =   3.0106680347352E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.7726738951173E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -3.4991382505082E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.7726738951175E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -3.4991382505196E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   2.0415220987053E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   8.8715894787577E-02
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   8.8715894787574E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9979731582096E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -3.2978794209873E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.6040337120728E+00
@@ -2749,54 +2764,54 @@ time,fu0,fu1,fu =   3.1104E+06 -3.5633E-02 -1.4435E-02 -2.0088E-02  7.3333E-01  
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   2.6751195257701E-02
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.2742110724838E-01
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   4.6574485891189E-02
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   9.7953098619632E-02
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   9.7953098619632E-02
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -7.8070785074201E-03
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   9.7953098619630E-02
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   9.7953098619630E-02
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -7.8070785074202E-03
 (PID.TID 0000.0001) %MON ke_max                       =   1.9573379174943E-02
 (PID.TID 0000.0001) %MON ke_mean                      =   1.5462324650433E-04
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
-(PID.TID 0000.0001) %MON vort_r_min                   =  -5.4491986943830E-07
+(PID.TID 0000.0001) %MON vort_r_min                   =  -5.4491986943831E-07
 (PID.TID 0000.0001) %MON vort_r_max                   =   5.7991893718312E-07
 (PID.TID 0000.0001) %MON vort_a_mean                  =  -2.4531015679743E-05
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436123403868E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400621938255E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337655976064E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -3.6261606636038E-04
-(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   1.1038369875510E-04
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -3.6261606636009E-04
+(PID.TID 0000.0001) %MON surfExpan_salt_mean          =   1.1038369875512E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b =   3.2832E+06 -2.3399E-01  0.0000E+00 -1.8674E-02 -2.5560E-02  1.4314E+02 -2.0964E-09     1     2  8.0000E-01  2.0000E-01
 time,fu0,fu1,fu =   3.2832E+06 -3.5633E-02 -1.4435E-02 -1.8674E-02  8.0000E-01  2.0000E-01
- cg2d: Sum(rhs),rhsMax =  -2.31759056390501E-15  1.72981616755520E+02
-(PID.TID 0000.0001)                    cg2d_init_res =    2.20678526671165E-03
+ cg2d: Sum(rhs),rhsMax =  -1.49880108324396E-15  1.72981616755526E+02
+(PID.TID 0000.0001)                    cg2d_init_res =    2.20678526676200E-03
 (PID.TID 0000.0001)                       cg2d_iters =    88
-(PID.TID 0000.0001)                         cg2d_res =    8.50857072532254E-10
+(PID.TID 0000.0001)                         cg2d_res =    8.50857072354783E-10
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Begin MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %MON time_tsnumber                =                    20
 (PID.TID 0000.0001) %MON time_secondsf                =   3.4560000000000E+06
 (PID.TID 0000.0001) %MON dynstat_eta_max              =   4.6919005419131E+04
-(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2592391553796E+04
-(PID.TID 0000.0001) %MON dynstat_eta_mean             =  -7.0953679211567E-12
-(PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.9661648705773E+04
+(PID.TID 0000.0001) %MON dynstat_eta_min              =  -9.2592391553804E+04
+(PID.TID 0000.0001) %MON dynstat_eta_mean             =   1.1875993921403E-12
+(PID.TID 0000.0001) %MON dynstat_eta_sd               =   3.9661648705774E+04
 (PID.TID 0000.0001) %MON dynstat_eta_del2             =   2.3964945571459E+04
 (PID.TID 0000.0001) %MON dynstat_uvel_max             =   2.0380492237442E-01
 (PID.TID 0000.0001) %MON dynstat_uvel_min             =  -1.0119271351064E-01
-(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.5145501847690E-04
+(PID.TID 0000.0001) %MON dynstat_uvel_mean            =   6.5145501847691E-04
 (PID.TID 0000.0001) %MON dynstat_uvel_sd              =   1.6087071613469E-02
 (PID.TID 0000.0001) %MON dynstat_uvel_del2            =   3.2340693052590E-03
-(PID.TID 0000.0001) %MON dynstat_vvel_max             =   9.8610241397013E-02
+(PID.TID 0000.0001) %MON dynstat_vvel_max             =   9.8610241397014E-02
 (PID.TID 0000.0001) %MON dynstat_vvel_min             =  -1.1322532849998E-01
-(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -5.8030660618948E-05
-(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   9.8150653861471E-03
+(PID.TID 0000.0001) %MON dynstat_vvel_mean            =  -5.8030660618936E-05
+(PID.TID 0000.0001) %MON dynstat_vvel_sd              =   9.8150653861472E-03
 (PID.TID 0000.0001) %MON dynstat_vvel_del2            =   3.0584558743831E-03
-(PID.TID 0000.0001) %MON dynstat_wvel_max             =   3.0682364113622E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.8897157139923E+00
-(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -6.2928682844552E-05
+(PID.TID 0000.0001) %MON dynstat_wvel_max             =   3.0682364113621E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_min             =  -1.8897157139922E+00
+(PID.TID 0000.0001) %MON dynstat_wvel_mean            =  -6.2928682844485E-05
 (PID.TID 0000.0001) %MON dynstat_wvel_sd              =   1.9981011353268E-01
-(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   8.8540856878391E-02
+(PID.TID 0000.0001) %MON dynstat_wvel_del2            =   8.8540856878390E-02
 (PID.TID 0000.0001) %MON dynstat_theta_max            =   2.9967149828683E+01
 (PID.TID 0000.0001) %MON dynstat_theta_min            =  -3.3192712225289E+00
 (PID.TID 0000.0001) %MON dynstat_theta_mean           =   3.6041327875055E+00
@@ -2809,9 +2824,9 @@ time,fu0,fu1,fu =   3.2832E+06 -3.5633E-02 -1.4435E-02 -1.8674E-02  8.0000E-01  
 (PID.TID 0000.0001) %MON dynstat_salt_del2            =   2.6780454885955E-02
 (PID.TID 0000.0001) %MON advcfl_uvel_max              =   1.2984289288530E-01
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   4.3995730823193E-02
-(PID.TID 0000.0001) %MON advcfl_wvel_max              =   9.7216024118122E-02
-(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   9.7216024118122E-02
-(PID.TID 0000.0001) %MON pe_b_mean                    =  -7.9131751042499E-03
+(PID.TID 0000.0001) %MON advcfl_wvel_max              =   9.7216024118124E-02
+(PID.TID 0000.0001) %MON advcfl_W_hf_max              =   9.7216024118124E-02
+(PID.TID 0000.0001) %MON pe_b_mean                    =  -7.9131751042498E-03
 (PID.TID 0000.0001) %MON ke_max                       =   2.0295634582817E-02
 (PID.TID 0000.0001) %MON ke_mean                      =   1.6057159230543E-04
 (PID.TID 0000.0001) %MON ke_vol                       =   1.3442141716555E+22
@@ -2821,7 +2836,7 @@ time,fu0,fu1,fu =   3.2832E+06 -3.5633E-02 -1.4435E-02 -1.8674E-02  8.0000E-01  
 (PID.TID 0000.0001) %MON vort_a_sd                    =   7.3436137405296E-05
 (PID.TID 0000.0001) %MON vort_p_mean                  =  -2.9400628701737E-05
 (PID.TID 0000.0001) %MON vort_p_sd                    =   1.0337644867771E-04
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -4.5391094252773E-04
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -4.5391094252805E-04
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   1.2287946970987E-04
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2829,134 +2844,134 @@ time,fu0,fu1,fu =   3.2832E+06 -3.5633E-02 -1.4435E-02 -1.8674E-02  8.0000E-01  
 (PID.TID 0000.0001) %CHECKPOINT        20 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:  16.9500008
-(PID.TID 0000.0001)         System time:  0.150000006
-(PID.TID 0000.0001)     Wall clock time:  17.316559
+(PID.TID 0000.0001)         System time:  0.119999995
+(PID.TID 0000.0001)     Wall clock time:  17.285453
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:  0.159999996
-(PID.TID 0000.0001)         System time:  0.0299999993
-(PID.TID 0000.0001)     Wall clock time:  0.218760014
+(PID.TID 0000.0001)         System time:  0.0199999996
+(PID.TID 0000.0001)     Wall clock time:  0.195224047
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  16.6900004
-(PID.TID 0000.0001)         System time:  0.0800000001
-(PID.TID 0000.0001)     Wall clock time:  16.966742
+(PID.TID 0000.0001)           User time:  16.7100008
+(PID.TID 0000.0001)         System time:  0.0600000042
+(PID.TID 0000.0001)     Wall clock time:  16.95346
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.120000005
-(PID.TID 0000.0001)         System time:  0.040000001
-(PID.TID 0000.0001)     Wall clock time:  0.254982948
+(PID.TID 0000.0001)           User time:  0.170000017
+(PID.TID 0000.0001)         System time:  0.00999999978
+(PID.TID 0000.0001)     Wall clock time:  0.276869059
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [THE_MAIN_LOOP]":
 (PID.TID 0000.0001)           User time:  0.099999994
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0981770754
+(PID.TID 0000.0001)     Wall clock time:  0.0984220505
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.0399999917
-(PID.TID 0000.0001)         System time:  0.0200000033
-(PID.TID 0000.0001)     Wall clock time:  0.0689049959
+(PID.TID 0000.0001)           User time:  0.0499999821
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.0723119974
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  16.4300004
-(PID.TID 0000.0001)         System time:  0.0199999958
-(PID.TID 0000.0001)     Wall clock time:  16.544564
+(PID.TID 0000.0001)           User time:  16.3900008
+(PID.TID 0000.0001)         System time:  0.0500000045
+(PID.TID 0000.0001)     Wall clock time:  16.505744
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  16.4300004
-(PID.TID 0000.0001)         System time:  0.0199999958
-(PID.TID 0000.0001)     Wall clock time:  16.5441239
+(PID.TID 0000.0001)           User time:  16.3900008
+(PID.TID 0000.0001)         System time:  0.0500000045
+(PID.TID 0000.0001)     Wall clock time:  16.5053031
 (PID.TID 0000.0001)          No. starts: 20
 (PID.TID 0000.0001)           No. stops: 20
 (PID.TID 0000.0001)   Seconds in section "UPDATE_ETAH        [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00224864483
+(PID.TID 0000.0001)     Wall clock time:  0.00220525265
 (PID.TID 0000.0001)          No. starts: 20
 (PID.TID 0000.0001)           No. stops: 20
 (PID.TID 0000.0001)   Seconds in section "CALC_SURF_DR      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0200002193
+(PID.TID 0000.0001)           User time:  0.0100002289
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0284653902
+(PID.TID 0000.0001)     Wall clock time:  0.0288420916
 (PID.TID 0000.0001)          No. starts: 20
 (PID.TID 0000.0001)           No. stops: 20
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FIELDS_LOAD[FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0599999726
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.111725092
+(PID.TID 0000.0001)           User time:  0.0599992573
+(PID.TID 0000.0001)         System time:  0.00999999791
+(PID.TID 0000.0001)     Wall clock time:  0.110203147
 (PID.TID 0000.0001)          No. starts: 20
 (PID.TID 0000.0001)           No. stops: 20
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.86999989
+(PID.TID 0000.0001)           User time:  4.85999846
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  4.9024272
+(PID.TID 0000.0001)     Wall clock time:  4.87078702
 (PID.TID 0000.0001)          No. starts: 20
 (PID.TID 0000.0001)           No. stops: 20
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.050000906
+(PID.TID 0000.0001)           User time:  0.0699999332
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0459877253
+(PID.TID 0000.0001)     Wall clock time:  0.0459010601
 (PID.TID 0000.0001)          No. starts: 40
 (PID.TID 0000.0001)           No. stops: 40
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  4.73999906
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  4.75186932
+(PID.TID 0000.0001)           User time:  4.74000263
+(PID.TID 0000.0001)         System time:  0.0100000016
+(PID.TID 0000.0001)     Wall clock time:  4.74826491
 (PID.TID 0000.0001)          No. starts: 20
 (PID.TID 0000.0001)           No. stops: 20
 (PID.TID 0000.0001)   Seconds in section "UPDATE_SURF_DR     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0200004578
+(PID.TID 0000.0001)           User time:  0.00999999046
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0167381763
+(PID.TID 0000.0001)     Wall clock time:  0.0168045759
 (PID.TID 0000.0001)          No. starts: 20
 (PID.TID 0000.0001)           No. stops: 20
 (PID.TID 0000.0001)   Seconds in section "UPDATE_CG2D        [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.150000095
+(PID.TID 0000.0001)           User time:  0.129999399
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.144535899
+(PID.TID 0000.0001)     Wall clock time:  0.145551085
 (PID.TID 0000.0001)          No. starts: 20
 (PID.TID 0000.0001)           No. stops: 20
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  3.19999927
+(PID.TID 0000.0001)           User time:  3.20999932
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  3.19382191
+(PID.TID 0000.0001)     Wall clock time:  3.1908412
 (PID.TID 0000.0001)          No. starts: 20
 (PID.TID 0000.0001)           No. stops: 20
 (PID.TID 0000.0001)   Seconds in section "THE_CORRECTION_STEP [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.280002
+(PID.TID 0000.0001)           User time:  1.25999939
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  1.28113282
+(PID.TID 0000.0001)     Wall clock time:  1.28175223
 (PID.TID 0000.0001)          No. starts: 20
 (PID.TID 0000.0001)           No. stops: 20
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.97999811
-(PID.TID 0000.0001)         System time:  0.00999999791
-(PID.TID 0000.0001)     Wall clock time:  1.99013162
+(PID.TID 0000.0001)           User time:  1.99000108
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  1.9886862
 (PID.TID 0000.0001)          No. starts: 20
 (PID.TID 0000.0001)           No. stops: 20
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0500011444
-(PID.TID 0000.0001)         System time:  0.00999999791
-(PID.TID 0000.0001)     Wall clock time:  0.0681107044
+(PID.TID 0000.0001)           User time:  0.0400009155
+(PID.TID 0000.0001)         System time:  0.0300000049
+(PID.TID 0000.0001)     Wall clock time:  0.0685619116
 (PID.TID 0000.0001)          No. starts: 20
 (PID.TID 0000.0001)           No. stops: 20
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT    [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000435233116
+(PID.TID 0000.0001)     Wall clock time:  0.00043797493
 (PID.TID 0000.0001)          No. starts: 20
 (PID.TID 0000.0001)           No. stops: 20
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.100000381
-(PID.TID 0000.0001)         System time:  0.0400000066
-(PID.TID 0000.0001)     Wall clock time:  0.130952954
+(PID.TID 0000.0001)           User time:  0.0799999237
+(PID.TID 0000.0001)         System time:  0.0399999917
+(PID.TID 0000.0001)     Wall clock time:  0.136667013
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001) // ======================================================
