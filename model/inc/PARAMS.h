@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.142 2005/01/11 20:49:24 afe Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.143 2005/02/10 05:25:37 heimbach Exp $
 C $Name:  $
 C
 
@@ -299,7 +299,8 @@ C     monitor_stdio      :: use stdio for monitor output
      & readPickupWithTracer, writePickupWithTracer,
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
      & timeave_mdsio, snapshot_mdsio, monitor_stdio,
-     & outputTypesInclusive
+     & outputTypesInclusive, 
+     & inAdMode, inAdTrue, inAdFalse, inAdExact
 
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
@@ -374,6 +375,7 @@ C     monitor_stdio      :: use stdio for monitor output
       LOGICAL pickup_write_immed
       LOGICAL timeave_mdsio, snapshot_mdsio, monitor_stdio
       LOGICAL outputTypesInclusive
+      LOGICAL inAdMode, inAdTrue, inAdFalse, inAdExact
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
@@ -558,7 +560,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & recip_rhoConst, rhoConst, 
      & rhoConstFresh, convertEmP2rUnit, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq, adjDumpFreq,
-     & diagFreq, taveFreq, tave_lastIter, monitorFreq,
+     & diagFreq, taveFreq, tave_lastIter, monitorFreq, adjMonitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cosPower, cAdjFreq, omega, rotationPeriod,
      & tauThetaClimRelax, lambdaThetaClimRelax,
@@ -655,6 +657,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL taveFreq
       _RL tave_lastIter
       _RL monitorFreq
+      _RL adjMonitorFreq
       _RL afFacMom
       _RL vfFacMom
       _RL pfFacMom

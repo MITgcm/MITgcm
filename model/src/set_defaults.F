@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.82 2005/01/19 01:51:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.83 2005/02/10 05:25:37 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -169,6 +169,8 @@ Cml      sBeta               = 7.4D-4
       highOrderVorticity  = .FALSE.
       useAbsVorticity     = .FALSE.
       debugLevel          = debLevA
+      inAdMode            = .FALSE.
+      inAdExact           = .TRUE.
 
 C--   Set (free)surface-related parameters
       implicitFreeSurface = .TRUE.
@@ -232,6 +234,7 @@ C--   Time stepping parameters
       diagFreq          = deltaT*0
       snapshot_mdsio    = .TRUE.
       monitorFreq       = -1.
+      adjMonitorFreq    = 0.
       monitor_stdio     = .TRUE.
       taveFreq          = deltaT*0
       timeave_mdsio     = .TRUE.

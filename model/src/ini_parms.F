@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.145 2005/01/19 01:51:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.146 2005/02/10 05:25:37 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -172,7 +172,8 @@ C--   Continuous equation parameters
      & useAbsVorticity,
      & useRealFreshWaterFlux, convertFW2Salt,
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
-     & zonal_filt_lat
+     & zonal_filt_lat,
+     & inAdExact
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
@@ -187,7 +188,7 @@ C--   Time stepping parammeters
      & forcing_In_AB, abEps, tauCD, rCD,
      & startTime, endTime, chkPtFreq,
      & dumpFreq, adjDumpFreq, taveFreq, tave_lastIter, deltaTClock,
-     & diagFreq, monitorFreq, pChkPtFreq, cAdjFreq, 
+     & diagFreq, monitorFreq, adjMonitorFreq, pChkPtFreq, cAdjFreq, 
      & outputTypesInclusive, 
      & tauThetaClimRelax, tauSaltClimRelax, latBandClimRelax, 
      & tauTr1ClimRelax,
@@ -1138,6 +1139,15 @@ c      rkFac = -1.D0
 c-- gradually replacing debugMode by debugLevel
       IF ( debugMode ) debugLevel = debLevB
 
+c-- flag for approximate adjoint
+      IF ( inAdExact ) THEN
+       inAdTrue  = .FALSE.
+       inAdFALSE = .FALSE.
+      ELSE
+       inAdTrue  = .TRUE.
+       inAdFALSE = .FALSE.
+      ENDIF
+C
       CLOSE(iUnit)
 
 C--   Check whether any retired parameters were found.
