@@ -32,7 +32,7 @@ c -----------------------
       integer frequency(ndim)        ! Frequency of Output (hhmmss)
       _RL levels (ndim,ndim)         ! List Output Levels
       character*8 fields(ndim,ndim)  ! List Output Fields
-      character*80 filename(ndim)    ! List Output Filename
+      character*8 filename(ndim)    ! List Output Filename
       character*8 blank
 
       namelist / diagnostics_list / frequency,levels,fields,filename

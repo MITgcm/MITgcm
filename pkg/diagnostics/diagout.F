@@ -1,4 +1,4 @@
-      subroutine  diagout (myThid,listnum)
+      subroutine  diagout (myThid,myIter,listnum)
 C***********************************************************************
 C
 C  Purpose
@@ -25,7 +25,7 @@ C***********************************************************************
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"
 
-      integer myThid, listnum
+      integer myThid, myIter, listnum
 
       integer i, j, k, m, n, bi, bj
       character*8 parms1
@@ -39,8 +39,16 @@ C***********************************************************************
       equivalence (     parms1 , parse1(1) )
       equivalence ( mate_index , parse1(6) )
 
+      CHARACTER*(MAX_LEN_FNAM) pref
+      CHARACTER*(MAX_LEN_MBUF) suff
+      CHARACTER*(80) fn
+      logical glf
 
       undef = getcon('UNDEF')
+      glf = .FALSE.
+      WRITE(suff,'(I10.10)') myIter
+      pref = fnames(listnum)
+      WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
 
       do n=1,nfields(listnum)
        do m=1,ndiagt
@@ -91,8 +99,8 @@ c --------------------------------------
           endif
          endif
         endif
+       call mdswritefield(fn,64,glf,'RL',kdiag(m),qtmp1,1,myIter,myThid)
        enddo
-       call mdswritefield(k)
       enddo
 
   100 format(i3)

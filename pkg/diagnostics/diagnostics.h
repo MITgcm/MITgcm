@@ -1440,7 +1440,7 @@ C diag_choices common
       integer nfields(numlists)
       _RL levs (numperlist,numlists)
       character*8 flds (numperlist,numlists)
-      character*80 fnames(numlists)
+      character*8 fnames(numlists)
 
       common /diag_choices/ levs,flds,fnames,freq,nlevels,nfields,nlists
 
