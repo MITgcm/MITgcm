@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/quasihydrostaticterms.F,v 1.2 2002/11/14 22:36:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/quasihydrostaticterms.F,v 1.3 2005/04/06 18:20:22 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -22,6 +22,7 @@ C--   == Global data ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "DYNVARS.h"
 
 C--   == Routine arguments ==
