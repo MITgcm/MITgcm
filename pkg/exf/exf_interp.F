@@ -41,7 +41,8 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
      I   lat_0, lat_inc,
      I   nx_in, ny_in, method, mythid)
 
-C
+      implicit none
+
 C     infile       = name of the input file (direct access binary)
 C     filePrec     = file precicision (currently not used, assumes real*4)
 C     arrout       = output arrays (different for each processor)
@@ -57,6 +58,10 @@ C
 
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#ifdef ALLOW_USE_MPI
+# include "EESUPPORT.h"
+# include "PARAMS.h"
+#endif /* ALLOW_USE_MPI */
 
 C subroutine variables
       character*(*) infile
@@ -78,48 +83,84 @@ C local variables
       real*8   lagran
       real*4   arrayin(-1:nx_in+2 ,      -1:ny_in+2)
       real*8   x_in   (-1:nx_in+2), y_in(-1:ny_in+2)
-      integer  i, j, k, l, js, bi, bj, sp, interp_unit
+      integer  i, j, k, l, js, bi, bj, interp_unit, sp
+      real*4   global(nx_in,ny_in)
+
+      _BEGIN_MASTER( myThid )
 
 C check input arguments
-      if ( .NOT. (filePrec .EQ. 32) )
-     & stop 'stop in exf_interp.F: value of filePrec not allowed'
+       if ( .NOT. (filePrec .EQ. 32) )
+     &     stop 'stop in exf_interp.F: value of filePrec not allowed'
 
 C read in input data
-      call mdsfindunit( interp_unit, mythid)
-      open(interp_unit,file=infile,status='old',access='direct',
-     & recl=nx_in*ny_in*4)
-      read(interp_unit,rec=irecord) ((arrayin(i,j),i=1,nx_in),j=1,ny_in)
+#ifdef ALLOW_USE_MPI
+       if (useSingleCPUIO) then
+
+C master thread of process 0, only, opens a global file
+        IF( mpiMyId .EQ. 0 ) THEN
+         call mdsfindunit( interp_unit, mythid)
+         open(interp_unit,file=infile,status='old',access='direct',
+     &        recl=nx_in*ny_in*4)
+         read(interp_unit,rec=irecord)
+     &        ((global(i,j),i=1,nx_in),j=1,ny_in)
+         close(interp_unit)
+        ENDIF
+
+C broadcast to all processes
+        call MPI_BCAST(global,nx_in*ny_in,MPI_REAL,
+     &       0,MPI_COMM_MODEL,ierr)
+        do j=1,ny_in
+         do i=1,nx_in
+          arrayin(i,j)=global(i,j)
+         enddo
+        enddo
+
+       else
+#endif /* ALLOW_USE_MPI */
+
+        call mdsfindunit( interp_unit, mythid)
+        open(interp_unit,file=infile,status='old',access='direct',
+     &       recl=nx_in*ny_in*4)
+        read(interp_unit,rec=irecord)
+     &       ((arrayin(i,j),i=1,nx_in),j=1,ny_in)
+        close(interp_unit)
+
+#ifdef ALLOW_USE_MPI
+       endif
+#endif /* ALLOW_USE_MPI */
+
 #ifdef _BYTESWAPIO
-      call MDS_BYTESWAPR4((nx_in+4)*(ny_in+4), arrayin )
-#endif
-      close(interp_unit)
+       call MDS_BYTESWAPR4((nx_in+4)*(ny_in+4), arrayin )
+#endif /* _BYTESWAPIO */
 
 C setup input grid
-      do i=-1,nx_in+2
-       x_in(i) = lon_0 + (i-1.)*lon_inc
-      enddo
-      y_in(0) = lat_0 - lat_inc(1)
-      y_in(-1)= lat_0 - 2.*lat_inc(1)
-      y_in(1) = lat_0
-      do j=2,ny_in
-      y_in(j) = y_in(j-1) + lat_inc(j-1)
-      enddo
-      y_in(ny_in+1) = y_in(ny_in) + lat_inc(ny_in-1)
-      y_in(ny_in+2) = y_in(ny_in) + 2.*lat_inc(ny_in-1)
+       do i=-1,nx_in+2
+        x_in(i) = lon_0 + (i-1.)*lon_inc
+       enddo
+       y_in(0) = lat_0 - lat_inc(1)
+       y_in(-1)= lat_0 - 2.*lat_inc(1)
+       y_in(1) = lat_0
+       do j=2,ny_in
+        y_in(j) = y_in(j-1) + lat_inc(j-1)
+       enddo
+       y_in(ny_in+1) = y_in(ny_in) + lat_inc(ny_in-1)
+       y_in(ny_in+2) = y_in(ny_in) + 2.*lat_inc(ny_in-1)
 
 C enlarge boundary
-      do j=1,ny_in
-         arrayin(0,j)       = arrayin(nx_in,j)
-         arrayin(-1,j)      = arrayin(nx_in-1,j)
-         arrayin(nx_in+1,j) = arrayin(1,j)
-         arrayin(nx_in+2,j) = arrayin(2,j)
-      enddo
-      do i=-1,nx_in+2
-         arrayin(i,0)       = arrayin(i,1)
-         arrayin(i,-1)      = arrayin(i,1)
-         arrayin(i,ny_in+1) = arrayin(i,ny_in)
-         arrayin(i,ny_in+2) = arrayin(i,ny_in) 
-      enddo
+       do j=1,ny_in
+        arrayin(0,j)       = arrayin(nx_in,j)
+        arrayin(-1,j)      = arrayin(nx_in-1,j)
+        arrayin(nx_in+1,j) = arrayin(1,j)
+        arrayin(nx_in+2,j) = arrayin(2,j)
+       enddo
+       do i=-1,nx_in+2
+        arrayin(i,0)       = arrayin(i,1)
+        arrayin(i,-1)      = arrayin(i,1)
+        arrayin(i,ny_in+1) = arrayin(i,ny_in)
+        arrayin(i,ny_in+2) = arrayin(i,ny_in) 
+       enddo
+
+      _END_MASTER( myThid )
 
       do bj = mybylo(mythid), mybyhi(mythid)
        do bi = mybxlo(mythid), mybxhi(mythid)
