@@ -22,7 +22,7 @@ ln -s ../build/mitgcmuv_ftl .
 
 # Compile code in build/:
  cd ../build
- ../../../tools/genmake2 -mods=../code
+ ../../../tools/genmake2 -ieee -mods=../code
  make depend
  make adall
 
@@ -49,7 +49,7 @@ ln -s ../build/mitgcmuv_ftl .
  cd ../build
  rm -f *.o *.f *.p rii_files *.flow
  rm -f *.F *.h *.c Makefile* *.template genmake_*
- ../../../tools/genmake2 -mods=../code_bulk
+ ../../../tools/genmake2 -ieee -mods=../code_bulk
  make depend
  make adall
 
@@ -73,7 +73,7 @@ ln -s ../build/mitgcmuv_ftl .
  cd ../build
  rm -f *.o *.f *.p rii_files *.flow
  rm -f *.F *.h *.c Makefile* *.template genmake_*
- ../../../tools/genmake2 -mods=../code_seaice
+ ../../../tools/genmake2 -ieee -mods=../code_seaice
  cp ../code_seaice/SEAICE_OPTIONS.h.FLUXES SEAICE_OPTIONS.h
  make depend
  make adall
@@ -88,7 +88,7 @@ ln -s ../build/mitgcmuv_ftl .
 # To verify the results of the gradient check, type:
  grep grad-res output.txt
 # A reference output is in:
- grep grad-res ../results_bulk/output.txt_adm
+ grep grad-res ../results_seaice/output_exp4.txt_adm
 
 
 ####################
@@ -102,7 +102,7 @@ ln -s ../build/mitgcmuv_ftl .
  cd ../build
  rm -f *.o *.f *.p rii_files *.flow
  rm -f *.F *.h *.c Makefile* *.template genmake_*
- ../../../tools/genmake2 -mods=../code_seaice
+ ../../../tools/genmake2 -ieee -mods=../code_seaice
  make depend
  make adall
 
@@ -227,7 +227,7 @@ ln -s ../build/mitgcmuv_ftl .
  cd ../build
  rm -f *.o *.f *.p rii_files *.flow
  rm -f *.F *.h *.c Makefile* *.template genmake_*
- ../../../tools/genmake2 -mods=../code_seaice
+ ../../../tools/genmake2 -ieee -mods=../code_seaice
  make depend
  make adall
  make ftlall
@@ -397,7 +397,7 @@ ln -s ../build/mitgcmuv_ftl .
  cd ../build
  rm -f *.o *.f *.p rii_files *.flow
  rm -f *.F *.h *.c Makefile* *.template genmake_*
- ../../../tools/genmake2 -mods=../code_seaice
+ ../../../tools/genmake2 -ieee -mods=../code_seaice
  cp ../code_seaice/SEAICE_OPTIONS.h.DYN SEAICE_OPTIONS.h
  make depend
  make adall
@@ -500,7 +500,7 @@ ln -s ../build/mitgcmuv_ftl .
 # Compile code in build/:
  rm -f *.o *.f *.p rii_files *.flow
  rm -f *.F *.h *.c Makefile* *.template genmake_*
- ../../../tools/genmake2 -mods=../code_seaice
+ ../../../tools/genmake2 -ieee -mods=../code_seaice
  cp ../code_seaice/SEAICE_OPTIONS.h.MULTILEVEL SEAICE_OPTIONS.h
  make depend
  make adall

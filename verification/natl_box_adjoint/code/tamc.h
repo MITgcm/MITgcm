@@ -1,3 +1,7 @@
+C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code/Attic/tamc.h,v 1.4 2004/09/17 23:08:43 heimbach Exp $
+C $Name:  $
+
+#include "PACKAGES_CONFIG.h"
 
 c     ================================================================
 c     HEADER TAMC
@@ -101,10 +105,12 @@ c     and writing data.
       PARAMETER( isbyte      = 4 )
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
-      INTEGER    maxpass
-#ifdef ALLOW_PASSIVE_TRACER
-      PARAMETER( maxpass     = 3 )
+#ifdef ALLOW_PTRACERS
+cph moved this to PTRACERS_SIZE.h
+cph      INTEGER    maxpass
+cph      PARAMETER( maxpass     = PTRACERS_num + 2 )
 #else
+      INTEGER    maxpass
       PARAMETER( maxpass     = 2 )
 #endif
       INTEGER    maxcube

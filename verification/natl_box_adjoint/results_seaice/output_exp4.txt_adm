@@ -8,7 +8,7 @@
 (PID.TID 0000.0001) // MITgcmUV version:  checkpoint54f_post
 (PID.TID 0000.0001) // Build user:        heimbach
 (PID.TID 0000.0001) // Build host:        sea
-(PID.TID 0000.0001) // Build date:        Fri Sep 17 09:15:43 EDT 2004
+(PID.TID 0000.0001) // Build date:        Fri Sep 17 08:45:55 EDT 2004
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // Execution Environment parameter file "eedata"
@@ -1633,6 +1633,8 @@
 (PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00000672
 (PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00000672
 (PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00000672
+(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00000672
+(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00000672
 (PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00002016
 (PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00002016
 (PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00000672
@@ -1712,7 +1714,7 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
- cg2d: Sum(rhs),rhsMax =   2.35922392732846E-16  4.50073683088850E-01
+ cg2d: Sum(rhs),rhsMax =   3.43475248243408E-16  4.50066414921348E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.91666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -1757,7 +1759,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.60982338570648E-15  5.54297940188794E-01
+ cg2d: Sum(rhs),rhsMax =   1.17961196366423E-15  5.54342607906056E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -1804,7 +1806,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.12500000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   4.16333634234434E-16  5.82335877747629E-01
+ cg2d: Sum(rhs),rhsMax =   2.35922392732846E-15  5.82383037129275E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.75000000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -1849,7 +1851,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E-01
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =  -1.05471187339390E-15  6.06154220107162E-01
+ cg2d: Sum(rhs),rhsMax =   1.63757896132211E-15  6.06210326717938E-01
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_aqh.0000000000.001.001.data
@@ -1867,12 +1869,12 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_Lev.salt__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: tbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_SST_fields__020_016_23.data
-  --> objf_temp(bi,bj)    =  2412.0553
-  --> objf_salt(bi,bj)    =  472.14043
+  --> objf_temp(bi,bj)    =  2413.99248
+  --> objf_salt(bi,bj)    =  472.13926
   --> objf_temp0(bi,bj)   =  0.
   --> objf_salt0(bi,bj)   =  0.
   --> objf_tmi(bi,bj)     =  0.
-  --> objf_sst(bi,bj)     =  14.840552
+  --> objf_sst(bi,bj)     =  15.0133275
   --> objf_sss(bi,bj)     =  0.
   --> objf_h(bi,bj)       =  0.
   --> objf_hmean          =  0.
@@ -1913,12 +1915,12 @@
   --> objf_curmtr(bi,bj)  =  0.
   --> objf_obcsvol        =  0.
   --> objf_ice(bi,bj)     =  0.
-  --> objf_kapgm(bi,bj)   =  5.33864041E-06
+  --> objf_kapgm(bi,bj)   =  5.34843552E-06
   --> objf_diffkr(bi,bj)  =  0.
   --> objf_ini_fin(bi,bj) =  0.
   --> objf_hmean  (GLOBAL) =  0.
   --> objf_obcsvol(GLOBAL) =  0.
-  --> fc                   =  2899.03628
+  --> fc                   =  2901.14507
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: tbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_SST_fields__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: adtbar.0000000000.001.001.data
@@ -2125,6 +2127,10 @@
 (PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00015456
 (PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_27_the_main_loop_vnm1.it0000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00015456
+(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_28_the_main_loop_hflux0.it0000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00000672
+(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_29_the_main_loop_hflux1.it0000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00000672
 (PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_36_the_main_loop_aqh0.it0000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00000672
 (PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev3_37_the_main_loop_aqh1.it0000.001.001.data
@@ -2235,6 +2241,8 @@
 (PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00000672
 (PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00000672
 (PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00000672
+(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00000672
+(PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00000672
 (PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00002016
 (PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00002016
 (PID.TID 0000.0001)  MDS_WRITE_RL_VEC: irec =  00000001   00000672
@@ -2314,7 +2322,7 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
- cg2d: Sum(rhs),rhsMax =   2.35922392732846E-16  4.50073683088850E-01
+ cg2d: Sum(rhs),rhsMax =   3.43475248243408E-16  4.50066414921348E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.91666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -2359,7 +2367,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.60982338570648E-15  5.54297940188794E-01
+ cg2d: Sum(rhs),rhsMax =   1.17961196366423E-15  5.54342607906056E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -2406,7 +2414,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.12500000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   4.16333634234434E-16  5.82335877747629E-01
+ cg2d: Sum(rhs),rhsMax =   2.35922392732846E-15  5.82383037129275E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.75000000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -2451,7 +2459,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E-01
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =  -1.05471187339390E-15  6.06154220107162E-01
+ cg2d: Sum(rhs),rhsMax =   1.63757896132211E-15  6.06210326717938E-01
 (PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_1_the_main_loop_gs.it0000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00015456
 (PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_2_the_main_loop_gt.it0000.001.001.data
@@ -2496,6 +2504,10 @@
 (PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00015456
 (PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_24_the_main_loop_vnm1.it0000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00015456
+(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_25_the_main_loop_hflux0.it0000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00000672
+(PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_26_the_main_loop_hflux1.it0000.001.001.data
+(PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00000672
 (PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_33_the_main_loop_aqh0.it0000.001.001.data
 (PID.TID 0000.0001)  MDS_READ_RL_VEC: irec =  00000001   00000672
 (PID.TID 0000.0001)  MDSREADVECTOR: opening file: tapelev2_34_the_main_loop_aqh1.it0000.001.001.data
@@ -2632,7 +2644,7 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
- cg2d: Sum(rhs),rhsMax =   2.35922392732846E-16  4.50073683088850E-01
+ cg2d: Sum(rhs),rhsMax =  -5.44703171456717E-16  4.50066414921348E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.91666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -2677,7 +2689,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.87350135405495E-15  5.54297940188794E-01
+ cg2d: Sum(rhs),rhsMax =  -4.13558076672871E-15  5.54342607906056E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -2724,7 +2736,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.12500000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   5.44009282066327E-15  5.82335877747629E-01
+ cg2d: Sum(rhs),rhsMax =  -2.88657986402541E-15  5.82383037129274E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.75000000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -2769,7 +2781,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E-01
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =  -1.63757896132211E-15  6.06154220107163E-01
+ cg2d: Sum(rhs),rhsMax =  -7.77156117237610E-16  6.06210326717939E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.75000000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -2993,7 +3005,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.12500000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =  -1.37043154602168E-15  2.18870785192263E-04
+ cg2d: Sum(rhs),rhsMax =   7.59808882477842E-16  2.18711985788303E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -3176,7 +3188,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.22818422099158E-15  1.09101615504535E-03
+ cg2d: Sum(rhs),rhsMax =  -1.90819582357449E-17  1.47533273618681E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.91666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -3383,7 +3395,7 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
- cg2d: Sum(rhs),rhsMax =   1.36609473733174E-15  3.13021162691034E-03
+ cg2d: Sum(rhs),rhsMax =   3.10862446895044E-15  3.08469611852959E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   T   F   0.10000000E+01
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -11110,7 +11122,7 @@
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: maskS.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_vwind.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD_GL: opening file: adxx_vwind.0000000000.001.001.data
- ph-check fcref =   2899.03628
+ ph-check fcref =   2901.14507
  grad-res -------------------------------
  grad-res  proc    #    i    j    k            fc ref        fc + eps        fc - eps
  grad-res  proc    #    i    j    k          adj grad         fd grad      1 - fd/adj
@@ -11275,7 +11287,7 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
- cg2d: Sum(rhs),rhsMax =   2.35922392732846E-16  4.50073683088850E-01
+ cg2d: Sum(rhs),rhsMax =   3.43475248243408E-16  4.50066414921348E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.91666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -11320,7 +11332,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   3.23352455922077E-15  5.54297940188794E-01
+ cg2d: Sum(rhs),rhsMax =   2.35922392732846E-16  5.54342607905637E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -11367,7 +11379,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.12500000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.58206781009085E-15  5.82335877747798E-01
+ cg2d: Sum(rhs),rhsMax =   2.55351295663786E-15  5.82383037127210E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.75000000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -11412,7 +11424,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E-01
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   3.69149155687865E-15  6.06154220107925E-01
+ cg2d: Sum(rhs),rhsMax =   4.16333634234434E-16  6.06210326712841E-01
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_aqh.0000000000.001.001.data
@@ -11430,12 +11442,12 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_Lev.salt__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: tbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_SST_fields__020_016_23.data
-  --> objf_temp(bi,bj)    =  2412.0553
-  --> objf_salt(bi,bj)    =  472.14043
+  --> objf_temp(bi,bj)    =  2413.99248
+  --> objf_salt(bi,bj)    =  472.13926
   --> objf_temp0(bi,bj)   =  0.
   --> objf_salt0(bi,bj)   =  0.
   --> objf_tmi(bi,bj)     =  0.
-  --> objf_sst(bi,bj)     =  14.840552
+  --> objf_sst(bi,bj)     =  15.0133275
   --> objf_sss(bi,bj)     =  0.
   --> objf_h(bi,bj)       =  0.
   --> objf_hmean          =  0.
@@ -11476,15 +11488,15 @@
   --> objf_curmtr(bi,bj)  =  0.
   --> objf_obcsvol        =  0.
   --> objf_ice(bi,bj)     =  0.
-  --> objf_kapgm(bi,bj)   =  5.33864041E-06
+  --> objf_kapgm(bi,bj)   =  5.34843552E-06
   --> objf_diffkr(bi,bj)  =  0.
   --> objf_ini_fin(bi,bj) =  0.
   --> objf_hmean  (GLOBAL) =  0.
   --> objf_obcsvol(GLOBAL) =  0.
-  --> fc                   =  2899.03628
- ph-check fcpertplus =   2899.03628
+  --> fc                   =  2901.14507
+ ph-check fcpertplus =   2901.14507
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
- ph-check fcpertminus =   2899.03628
+ ph-check fcpertminus =   2901.14507
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  cal_TimeStamp: iter =          0 time =  0.00000000E+00
@@ -11645,7 +11657,7 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
- cg2d: Sum(rhs),rhsMax =   2.35922392732846E-16  4.50073683088850E-01
+ cg2d: Sum(rhs),rhsMax =   3.43475248243408E-16  4.50066414921348E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.91666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -11690,7 +11702,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =  -5.41233724504764E-16  5.54297940188794E-01
+ cg2d: Sum(rhs),rhsMax =   4.92661467177413E-15  5.54342607906476E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -11737,7 +11749,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.12500000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   4.99600361081320E-15  5.82335877747458E-01
+ cg2d: Sum(rhs),rhsMax =   2.91433543964104E-15  5.82383037131302E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.75000000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -11782,7 +11794,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E-01
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   6.10622663543836E-16  6.06154220106170E-01
+ cg2d: Sum(rhs),rhsMax =   2.05391259555654E-15  6.06210326723016E-01
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_aqh.0000000000.001.001.data
@@ -11800,12 +11812,12 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_Lev.salt__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: tbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_SST_fields__020_016_23.data
-  --> objf_temp(bi,bj)    =  2412.0553
-  --> objf_salt(bi,bj)    =  472.14043
+  --> objf_temp(bi,bj)    =  2413.99248
+  --> objf_salt(bi,bj)    =  472.13926
   --> objf_temp0(bi,bj)   =  0.
   --> objf_salt0(bi,bj)   =  0.
   --> objf_tmi(bi,bj)     =  0.
-  --> objf_sst(bi,bj)     =  14.840552
+  --> objf_sst(bi,bj)     =  15.0133275
   --> objf_sss(bi,bj)     =  0.
   --> objf_h(bi,bj)       =  0.
   --> objf_hmean          =  0.
@@ -11846,17 +11858,17 @@
   --> objf_curmtr(bi,bj)  =  0.
   --> objf_obcsvol        =  0.
   --> objf_ice(bi,bj)     =  0.
-  --> objf_kapgm(bi,bj)   =  5.33864041E-06
+  --> objf_kapgm(bi,bj)   =  5.34843552E-06
   --> objf_diffkr(bi,bj)  =  0.
   --> objf_ini_fin(bi,bj) =  0.
   --> objf_hmean  (GLOBAL) =  0.
   --> objf_obcsvol(GLOBAL) =  0.
-  --> fc                   =  2899.03628
+  --> fc                   =  2901.14507
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
  grad-res -------------------------------
- grad-res     0    1    8    3    1   0.289903628E+04 0.289903628E+04 0.289903628E+04
- grad-res     0    1    1   20    0   0.122017890E-01 0.122017946E-01 -.453814613E-06
-(PID.TID 0000.0001)       precision_grdchk_result ADM     2.89903628133271E+03     1.22017890240560E-02
+ grad-res     0    1    8    3    1   0.290114507E+04 0.290114507E+04 0.290114507E+04
+ grad-res     0    1    1   20    0   0.104377897E-01 0.104379797E-01 -.181963372E-04
+(PID.TID 0000.0001)       precision_grdchk_result ADM     2.90114506690087E+03     1.04377897244018E-02
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  20, ichknum =  1
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_atemp.0000000000.001.001.data
@@ -12020,7 +12032,7 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
- cg2d: Sum(rhs),rhsMax =   2.35922392732846E-16  4.50073683088850E-01
+ cg2d: Sum(rhs),rhsMax =   3.43475248243408E-16  4.50066414921348E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.91666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -12065,7 +12077,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.60982338570648E-15  5.54297940188794E-01
+ cg2d: Sum(rhs),rhsMax =   2.04003480774873E-15  5.54342607905977E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -12112,7 +12124,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.12500000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   4.60742555219440E-15  5.82335877747658E-01
+ cg2d: Sum(rhs),rhsMax =   5.07927033766009E-15  5.82383037128893E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.75000000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -12157,7 +12169,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E-01
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.88737914186277E-15  6.06154220107328E-01
+ cg2d: Sum(rhs),rhsMax =   1.02695629777827E-15  6.06210326717347E-01
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_aqh.0000000000.001.001.data
@@ -12175,12 +12187,12 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_Lev.salt__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: tbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_SST_fields__020_016_23.data
-  --> objf_temp(bi,bj)    =  2412.0553
-  --> objf_salt(bi,bj)    =  472.14043
+  --> objf_temp(bi,bj)    =  2413.99248
+  --> objf_salt(bi,bj)    =  472.13926
   --> objf_temp0(bi,bj)   =  0.
   --> objf_salt0(bi,bj)   =  0.
   --> objf_tmi(bi,bj)     =  0.
-  --> objf_sst(bi,bj)     =  14.840552
+  --> objf_sst(bi,bj)     =  15.0133275
   --> objf_sss(bi,bj)     =  0.
   --> objf_h(bi,bj)       =  0.
   --> objf_hmean          =  0.
@@ -12221,15 +12233,15 @@
   --> objf_curmtr(bi,bj)  =  0.
   --> objf_obcsvol        =  0.
   --> objf_ice(bi,bj)     =  0.
-  --> objf_kapgm(bi,bj)   =  5.33864041E-06
+  --> objf_kapgm(bi,bj)   =  5.34843552E-06
   --> objf_diffkr(bi,bj)  =  0.
   --> objf_ini_fin(bi,bj) =  0.
   --> objf_hmean  (GLOBAL) =  0.
   --> objf_obcsvol(GLOBAL) =  0.
-  --> fc                   =  2899.03628
- ph-check fcpertplus =   2899.03628
+  --> fc                   =  2901.14507
+ ph-check fcpertplus =   2901.14507
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
- ph-check fcpertminus =   2899.03628
+ ph-check fcpertminus =   2901.14507
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  cal_TimeStamp: iter =          0 time =  0.00000000E+00
@@ -12390,7 +12402,7 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
- cg2d: Sum(rhs),rhsMax =   2.35922392732846E-16  4.50073683088850E-01
+ cg2d: Sum(rhs),rhsMax =   3.43475248243408E-16  4.50066414921348E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.91666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -12435,7 +12447,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.60982338570648E-15  5.54297940188794E-01
+ cg2d: Sum(rhs),rhsMax =  -3.33066907387547E-16  5.54342607906137E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -12482,7 +12494,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.12500000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.58206781009085E-15  5.82335877747599E-01
+ cg2d: Sum(rhs),rhsMax =   5.13478148889135E-15  5.82383037129619E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.75000000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -12527,7 +12539,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E-01
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.69309011255336E-15  6.06154220106999E-01
+ cg2d: Sum(rhs),rhsMax =   6.66133814775094E-16  6.06210326718680E-01
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_aqh.0000000000.001.001.data
@@ -12545,12 +12557,12 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_Lev.salt__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: tbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_SST_fields__020_016_23.data
-  --> objf_temp(bi,bj)    =  2412.0553
-  --> objf_salt(bi,bj)    =  472.14043
+  --> objf_temp(bi,bj)    =  2413.99248
+  --> objf_salt(bi,bj)    =  472.13926
   --> objf_temp0(bi,bj)   =  0.
   --> objf_salt0(bi,bj)   =  0.
   --> objf_tmi(bi,bj)     =  0.
-  --> objf_sst(bi,bj)     =  14.840552
+  --> objf_sst(bi,bj)     =  15.0133275
   --> objf_sss(bi,bj)     =  0.
   --> objf_h(bi,bj)       =  0.
   --> objf_hmean          =  0.
@@ -12591,17 +12603,17 @@
   --> objf_curmtr(bi,bj)  =  0.
   --> objf_obcsvol        =  0.
   --> objf_ice(bi,bj)     =  0.
-  --> objf_kapgm(bi,bj)   =  5.33864041E-06
+  --> objf_kapgm(bi,bj)   =  5.34843553E-06
   --> objf_diffkr(bi,bj)  =  0.
   --> objf_ini_fin(bi,bj) =  0.
   --> objf_hmean  (GLOBAL) =  0.
   --> objf_obcsvol(GLOBAL) =  0.
-  --> fc                   =  2899.03628
+  --> fc                   =  2901.14507
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
  grad-res -------------------------------
- grad-res     0    2    2    5    1   0.289903628E+04 0.289903628E+04 0.289903628E+04
- grad-res     0    2    2   40    0   0.480299634E-03 0.480320068E-03 -.425439022E-04
-(PID.TID 0000.0001)       precision_grdchk_result ADM     2.89903628133271E+03     4.80299634342877E-04
+ grad-res     0    2    2    5    1   0.290114507E+04 0.290114507E+04 0.290114507E+04
+ grad-res     0    2    2   40    0   0.799733943E-03 0.799716418E-03 0.219136304E-04
+(PID.TID 0000.0001)       precision_grdchk_result ADM     2.90114506690087E+03     7.99733942606228E-04
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  40, ichknum =  2
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_atemp.0000000000.001.001.data
@@ -12765,7 +12777,7 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
- cg2d: Sum(rhs),rhsMax =   2.35922392732846E-16  4.50073683088850E-01
+ cg2d: Sum(rhs),rhsMax =   3.43475248243408E-16  4.50066414921348E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.91666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -12810,7 +12822,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   2.10942374678780E-15  5.54297940188794E-01
+ cg2d: Sum(rhs),rhsMax =   3.95516952522712E-15  5.54342607904410E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -12857,7 +12869,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.12500000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   4.30211422042248E-15  5.82335877747977E-01
+ cg2d: Sum(rhs),rhsMax =   2.41473507855972E-15  5.82383037122449E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.75000000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -12902,7 +12914,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E-01
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.83186799063151E-15  6.06154220108468E-01
+ cg2d: Sum(rhs),rhsMax =   4.69069227904129E-15  6.06210326702998E-01
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_aqh.0000000000.001.001.data
@@ -12920,12 +12932,12 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_Lev.salt__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: tbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_SST_fields__020_016_23.data
-  --> objf_temp(bi,bj)    =  2412.0553
-  --> objf_salt(bi,bj)    =  472.14043
+  --> objf_temp(bi,bj)    =  2413.99248
+  --> objf_salt(bi,bj)    =  472.13926
   --> objf_temp0(bi,bj)   =  0.
   --> objf_salt0(bi,bj)   =  0.
   --> objf_tmi(bi,bj)     =  0.
-  --> objf_sst(bi,bj)     =  14.840552
+  --> objf_sst(bi,bj)     =  15.0133275
   --> objf_sss(bi,bj)     =  0.
   --> objf_h(bi,bj)       =  0.
   --> objf_hmean          =  0.
@@ -12966,15 +12978,15 @@
   --> objf_curmtr(bi,bj)  =  0.
   --> objf_obcsvol        =  0.
   --> objf_ice(bi,bj)     =  0.
-  --> objf_kapgm(bi,bj)   =  5.33864041E-06
+  --> objf_kapgm(bi,bj)   =  5.34843552E-06
   --> objf_diffkr(bi,bj)  =  0.
   --> objf_ini_fin(bi,bj) =  0.
   --> objf_hmean  (GLOBAL) =  0.
   --> objf_obcsvol(GLOBAL) =  0.
-  --> fc                   =  2899.03628
- ph-check fcpertplus =   2899.03628
+  --> fc                   =  2901.14507
+ ph-check fcpertplus =   2901.14507
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
- ph-check fcpertminus =   2899.03628
+ ph-check fcpertminus =   2901.14507
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  cal_TimeStamp: iter =          0 time =  0.00000000E+00
@@ -13135,7 +13147,7 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
- cg2d: Sum(rhs),rhsMax =   2.35922392732846E-16  4.50073683088850E-01
+ cg2d: Sum(rhs),rhsMax =   3.43475248243408E-16  4.50066414921348E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.91666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -13180,7 +13192,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.13797860024079E-15  5.54297940188793E-01
+ cg2d: Sum(rhs),rhsMax =  -8.74300631892311E-16  5.54342607907703E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -13227,7 +13239,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.12500000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   4.99600361081320E-15  5.82335877747279E-01
+ cg2d: Sum(rhs),rhsMax =   1.77635683940025E-15  5.82383037135950E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.75000000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -13272,7 +13284,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E-01
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   3.05311331771918E-15  6.06154220105647E-01
+ cg2d: Sum(rhs),rhsMax =   2.85882428840978E-15  6.06210326732794E-01
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_aqh.0000000000.001.001.data
@@ -13290,12 +13302,12 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_Lev.salt__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: tbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_SST_fields__020_016_23.data
-  --> objf_temp(bi,bj)    =  2412.0553
-  --> objf_salt(bi,bj)    =  472.14043
+  --> objf_temp(bi,bj)    =  2413.99248
+  --> objf_salt(bi,bj)    =  472.13926
   --> objf_temp0(bi,bj)   =  0.
   --> objf_salt0(bi,bj)   =  0.
   --> objf_tmi(bi,bj)     =  0.
-  --> objf_sst(bi,bj)     =  14.840552
+  --> objf_sst(bi,bj)     =  15.0133275
   --> objf_sss(bi,bj)     =  0.
   --> objf_h(bi,bj)       =  0.
   --> objf_hmean          =  0.
@@ -13336,17 +13348,17 @@
   --> objf_curmtr(bi,bj)  =  0.
   --> objf_obcsvol        =  0.
   --> objf_ice(bi,bj)     =  0.
-  --> objf_kapgm(bi,bj)   =  5.33864041E-06
+  --> objf_kapgm(bi,bj)   =  5.34843552E-06
   --> objf_diffkr(bi,bj)  =  0.
   --> objf_ini_fin(bi,bj) =  0.
   --> objf_hmean  (GLOBAL) =  0.
   --> objf_obcsvol(GLOBAL) =  0.
-  --> fc                   =  2899.03628
+  --> fc                   =  2901.14507
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
  grad-res -------------------------------
- grad-res     0    3    9    6    1   0.289903628E+04 0.289903628E+04 0.289903628E+04
- grad-res     0    3    3   60    0   0.984295726E-02 0.984296094E-02 -.373724243E-06
-(PID.TID 0000.0001)       precision_grdchk_result ADM     2.89903628133271E+03     9.84295725665067E-03
+ grad-res     0    3    9    6    1   0.290114507E+04 0.290114507E+04 0.290114507E+04
+ grad-res     0    3    3   60    0   0.846442776E-02 0.846456487E-02 -.161981958E-04
+(PID.TID 0000.0001)       precision_grdchk_result ADM     2.90114506690087E+03     8.46442776278817E-03
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  60, ichknum =  3
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: adxx_atemp.0000000000.001.001.data
@@ -13510,7 +13522,7 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
- cg2d: Sum(rhs),rhsMax =   2.35922392732846E-16  4.50073683088850E-01
+ cg2d: Sum(rhs),rhsMax =   3.43475248243408E-16  4.50066414921348E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.91666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -13555,7 +13567,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.16573417585641E-15  5.54297940188794E-01
+ cg2d: Sum(rhs),rhsMax =   3.20576898360514E-15  5.54342607905796E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -13602,7 +13614,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.12500000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   5.55111512312578E-17  5.82335877747783E-01
+ cg2d: Sum(rhs),rhsMax =  -2.77555756156289E-17  5.82383037128234E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.75000000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -13647,7 +13659,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E-01
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =  -1.33226762955019E-15  6.06154220107719E-01
+ cg2d: Sum(rhs),rhsMax =  -2.91433543964104E-15  6.06210326716079E-01
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_aqh.0000000000.001.001.data
@@ -13665,12 +13677,12 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_Lev.salt__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: tbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_SST_fields__020_016_23.data
-  --> objf_temp(bi,bj)    =  2412.0553
-  --> objf_salt(bi,bj)    =  472.140431
+  --> objf_temp(bi,bj)    =  2413.99248
+  --> objf_salt(bi,bj)    =  472.13926
   --> objf_temp0(bi,bj)   =  0.
   --> objf_salt0(bi,bj)   =  0.
   --> objf_tmi(bi,bj)     =  0.
-  --> objf_sst(bi,bj)     =  14.840552
+  --> objf_sst(bi,bj)     =  15.0133275
   --> objf_sss(bi,bj)     =  0.
   --> objf_h(bi,bj)       =  0.
   --> objf_hmean          =  0.
@@ -13711,15 +13723,15 @@
   --> objf_curmtr(bi,bj)  =  0.
   --> objf_obcsvol        =  0.
   --> objf_ice(bi,bj)     =  0.
-  --> objf_kapgm(bi,bj)   =  5.33864041E-06
+  --> objf_kapgm(bi,bj)   =  5.34843552E-06
   --> objf_diffkr(bi,bj)  =  0.
   --> objf_ini_fin(bi,bj) =  0.
   --> objf_hmean  (GLOBAL) =  0.
   --> objf_obcsvol(GLOBAL) =  0.
-  --> fc                   =  2899.03628
- ph-check fcpertplus =   2899.03628
+  --> fc                   =  2901.14507
+ ph-check fcpertplus =   2901.14507
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
- ph-check fcpertminus =   2899.03628
+ ph-check fcpertminus =   2901.14507
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  cal_TimeStamp: iter =          0 time =  0.00000000E+00
@@ -13880,7 +13892,7 @@
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_swflsfc__020_016_23.data
- cg2d: Sum(rhs),rhsMax =   2.35922392732846E-16  4.50073683088850E-01
+ cg2d: Sum(rhs),rhsMax =   3.43475248243408E-16  4.50066414921348E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.91666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -13925,7 +13937,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.16666667E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   1.65145674912992E-15  5.54297940188794E-01
+ cg2d: Sum(rhs),rhsMax =   2.27595720048157E-15  5.54342607906317E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -13972,7 +13984,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.12500000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   4.85722573273506E-15  5.82335877747475E-01
+ cg2d: Sum(rhs),rhsMax =   4.21884749357559E-15  5.82383037130260E-01
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.75000000E+00
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
@@ -14017,7 +14029,7 @@
 (PID.TID 0000.0001)  exf_GetFFieldsRec: first, changed, fac:   F   F   0.83333333E-01
 (PID.TID 0000.0001)  exf_GetFFieldsRec:      count0, count1:   1   2
 (PID.TID 0000.0001) 
- cg2d: Sum(rhs),rhsMax =   9.71445146547012E-16  6.06154220106436E-01
+ cg2d: Sum(rhs),rhsMax =   4.94049245958195E-15  6.06210326719630E-01
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_aqh.0000000000.001.001.data
@@ -14035,12 +14047,12 @@
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_Lev.salt__020_016_23.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: tbar.0000000000.001.001.data
 (PID.TID 0000.0001)  MDSREADFIELD: opening global file: PH_SST_fields__020_016_23.data
-  --> objf_temp(bi,bj)    =  2412.0553
-  --> objf_salt(bi,bj)    =  472.14043
+  --> objf_temp(bi,bj)    =  2413.99248
+  --> objf_salt(bi,bj)    =  472.13926
   --> objf_temp0(bi,bj)   =  0.
   --> objf_salt0(bi,bj)   =  0.
   --> objf_tmi(bi,bj)     =  0.
-  --> objf_sst(bi,bj)     =  14.840552
+  --> objf_sst(bi,bj)     =  15.0133275
   --> objf_sss(bi,bj)     =  0.
   --> objf_h(bi,bj)       =  0.
   --> objf_hmean          =  0.
@@ -14081,17 +14093,17 @@
   --> objf_curmtr(bi,bj)  =  0.
   --> objf_obcsvol        =  0.
   --> objf_ice(bi,bj)     =  0.
-  --> objf_kapgm(bi,bj)   =  5.33864041E-06
+  --> objf_kapgm(bi,bj)   =  5.34843552E-06
   --> objf_diffkr(bi,bj)  =  0.
   --> objf_ini_fin(bi,bj) =  0.
   --> objf_hmean  (GLOBAL) =  0.
   --> objf_obcsvol(GLOBAL) =  0.
-  --> fc                   =  2899.03628
+  --> fc                   =  2901.14507
 (PID.TID 0000.0001)  MDSREADFIELD: opening file: xx_atemp.0000000000.001.001.data
  grad-res -------------------------------
- grad-res     0    4    3    8    1   0.289903628E+04 0.289903628E+04 0.289903628E+04
- grad-res     0    4    4   80    0   0.920269812E-03 0.920219918E-03 0.542170741E-04
-(PID.TID 0000.0001)       precision_grdchk_result ADM     2.89903628133271E+03     9.20269812380216E-04
+ grad-res     0    4    3    8    1   0.290114507E+04 0.290114507E+04 0.290114507E+04
+ grad-res     0    4    4   80    0   -.978714740E-03 -.978532171E-03 0.186539991E-03
+(PID.TID 0000.0001)       precision_grdchk_result ADM     2.90114506690087E+03    -9.78714740286891E-04
  ph-grd  ierr ---------------------------
  ph-grd  ierr =  0, icomp =  80, ichknum =  4
 (PID.TID 0000.0001) 
@@ -14104,16 +14116,16 @@
 (PID.TID 0000.0001) grdchk output:            procId               I        ITILEPOS        JTILEPOS           LAYER            X(I)      X(I)+/-EPS
 (PID.TID 0000.0001) grdchk output:                                FC             FC1             FC2 FC1-FC2/(2*EPS)    ADJ GRAD(FC)   1-FDGRD/ADGRD
 (PID.TID 0000.0001) grdchk output:                 0               1               8               3               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.289903628E+04 0.289903628E+04 0.289903628E+04 0.122017946E-01 0.122017890E-01 -.453814613E-06
+(PID.TID 0000.0001) grdchk output:                   0.290114507E+04 0.290114507E+04 0.290114507E+04 0.104379797E-01 0.104377897E-01 -.181963372E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               2               2               5               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.289903628E+04 0.289903628E+04 0.289903628E+04 0.480320068E-03 0.480299634E-03 -.425439022E-04
+(PID.TID 0000.0001) grdchk output:                   0.290114507E+04 0.290114507E+04 0.290114507E+04 0.799716418E-03 0.799733943E-03 0.219136304E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               3               9               6               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.289903628E+04 0.289903628E+04 0.289903628E+04 0.984296094E-02 0.984295726E-02 -.373724243E-06
+(PID.TID 0000.0001) grdchk output:                   0.290114507E+04 0.290114507E+04 0.290114507E+04 0.846456487E-02 0.846442776E-02 -.161981958E-04
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) grdchk output:                 0               4               3               8               1 0.000000000E+00 -.100000000E-03
-(PID.TID 0000.0001) grdchk output:                   0.289903628E+04 0.289903628E+04 0.289903628E+04 0.920219918E-03 0.920269812E-03 0.542170741E-04
+(PID.TID 0000.0001) grdchk output:                   0.290114507E+04 0.290114507E+04 0.290114507E+04 -.978532171E-03 -.978714740E-03 0.186539991E-03
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001) // =======================================================
@@ -14121,218 +14133,218 @@
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) 
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  28.3700008
-(PID.TID 0000.0001)         System time:  5.51000021
-(PID.TID 0000.0001)     Wall clock time:  115.044247
+(PID.TID 0000.0001)           User time:  26.75
+(PID.TID 0000.0001)         System time:  4.82000015
+(PID.TID 0000.0001)     Wall clock time:  109.019086
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.0799999982
+(PID.TID 0000.0001)           User time:  0.109999999
 (PID.TID 0000.0001)         System time:  0.0899999999
-(PID.TID 0000.0001)     Wall clock time:  4.84212685
+(PID.TID 0000.0001)     Wall clock time:  3.78260684
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK     [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.0200000033
-(PID.TID 0000.0001)         System time:  0.049999997
-(PID.TID 0000.0001)     Wall clock time:  1.09979105
+(PID.TID 0000.0001)           User time:  0.0199999958
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.813698053
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "ADTHE_MAIN_LOOP          [ADJOINT RUN]":
-(PID.TID 0000.0001)           User time:  17.9
-(PID.TID 0000.0001)         System time:  4.89999995
-(PID.TID 0000.0001)     Wall clock time:  94.5640929
+(PID.TID 0000.0001)           User time:  16.3399993
+(PID.TID 0000.0001)         System time:  4.29999985
+(PID.TID 0000.0001)     Wall clock time:  89.918422
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "DYNSOLVER          [SEAICE_MODEL]":
-(PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.0199999809
-(PID.TID 0000.0001)     Wall clock time:  0.0551583767
+(PID.TID 0000.0001)           User time:  0.00999999046
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.0545978546
 (PID.TID 0000.0001)          No. starts: 44
 (PID.TID 0000.0001)           No. stops: 44
 (PID.TID 0000.0001)   Seconds in section "I/O (WRITE)        [ADJOINT LOOP]":
 (PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.0100002289
-(PID.TID 0000.0001)     Wall clock time:  0.0390665531
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.040460825
 (PID.TID 0000.0001)          No. starts: 68
 (PID.TID 0000.0001)           No. stops: 68
 (PID.TID 0000.0001)   Seconds in section "STATEKPP      [KPP_CALC]":
-(PID.TID 0000.0001)           User time:  0.349996805
-(PID.TID 0000.0001)         System time:  0.0100002289
-(PID.TID 0000.0001)     Wall clock time:  0.392163992
+(PID.TID 0000.0001)           User time:  0.330000877
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.392853022
 (PID.TID 0000.0001)          No. starts: 44
 (PID.TID 0000.0001)           No. stops: 44
 (PID.TID 0000.0001)   Seconds in section "KPPMIX [KPP_CALC]":
-(PID.TID 0000.0001)           User time:  0.850003958
+(PID.TID 0000.0001)           User time:  0.810002208
 (PID.TID 0000.0001)         System time:  0.00999975204
-(PID.TID 0000.0001)     Wall clock time:  0.884525061
+(PID.TID 0000.0001)     Wall clock time:  0.82993865
 (PID.TID 0000.0001)          No. starts: 44
 (PID.TID 0000.0001)           No. stops: 44
 (PID.TID 0000.0001)   Seconds in section "CTRL_PACK           [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.0300006866
+(PID.TID 0000.0001)           User time:  0.0100002289
 (PID.TID 0000.0001)         System time:  0.0100002289
-(PID.TID 0000.0001)     Wall clock time:  0.0775489807
+(PID.TID 0000.0001)     Wall clock time:  0.0756378174
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "GRDCHK_MAIN         [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  10.3400002
-(PID.TID 0000.0001)         System time:  0.460000038
-(PID.TID 0000.0001)     Wall clock time:  14.4538219
+(PID.TID 0000.0001)           User time:  10.2700005
+(PID.TID 0000.0001)         System time:  0.409999847
+(PID.TID 0000.0001)     Wall clock time:  14.422184
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "ECCO SPIN-UP":
-(PID.TID 0000.0001)           User time:  3.04999924
-(PID.TID 0000.0001)         System time:  0.110000134
-(PID.TID 0000.0001)     Wall clock time:  3.94649553
+(PID.TID 0000.0001)           User time:  3.03000069
+(PID.TID 0000.0001)         System time:  0.150000572
+(PID.TID 0000.0001)     Wall clock time:  3.94687653
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  2.98999977
-(PID.TID 0000.0001)         System time:  0.0200004578
-(PID.TID 0000.0001)     Wall clock time:  3.08078408
+(PID.TID 0000.0001)           User time:  2.98000145
+(PID.TID 0000.0001)         System time:  0.029999733
+(PID.TID 0000.0001)     Wall clock time:  3.08427405
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.0599994659
-(PID.TID 0000.0001)         System time:  0.0899996758
-(PID.TID 0000.0001)     Wall clock time:  0.835749149
+(PID.TID 0000.0001)           User time:  0.0499992371
+(PID.TID 0000.0001)         System time:  0.120000839
+(PID.TID 0000.0001)     Wall clock time:  0.8324368
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "ECCO MAIN LOOP":
-(PID.TID 0000.0001)           User time:  7.17000008
-(PID.TID 0000.0001)         System time:  0.260000229
-(PID.TID 0000.0001)     Wall clock time:  9.59611201
+(PID.TID 0000.0001)           User time:  7.12999916
+(PID.TID 0000.0001)         System time:  0.230000019
+(PID.TID 0000.0001)     Wall clock time:  9.60234833
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "COST_AVERAGESFIELDS   [ECCO MAIN]":
 (PID.TID 0000.0001)           User time:  0.0199985504
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0554456711
+(PID.TID 0000.0001)         System time:  0.0100002289
+(PID.TID 0000.0001)     Wall clock time:  0.0575430393
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "EXF_GETFORCING     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0600013733
-(PID.TID 0000.0001)         System time:  0.0399999619
-(PID.TID 0000.0001)     Wall clock time:  0.766476631
+(PID.TID 0000.0001)           User time:  0.13999939
+(PID.TID 0000.0001)         System time:  0.0199995041
+(PID.TID 0000.0001)     Wall clock time:  0.780599356
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "SEAICE_MODEL       [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.149999619
-(PID.TID 0000.0001)         System time:  0.0300002098
-(PID.TID 0000.0001)     Wall clock time:  0.272541285
+(PID.TID 0000.0001)           User time:  0.160003662
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.271661997
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0391042233
+(PID.TID 0000.0001)     Wall clock time:  0.0399036407
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.59999847
-(PID.TID 0000.0001)         System time:  0.0199999809
-(PID.TID 0000.0001)     Wall clock time:  2.77105522
+(PID.TID 0000.0001)           User time:  2.5399971
+(PID.TID 0000.0001)         System time:  0.00999975204
+(PID.TID 0000.0001)     Wall clock time:  2.73280239
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  1.70999908
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  1.73272204
+(PID.TID 0000.0001)           User time:  1.68000221
+(PID.TID 0000.0001)         System time:  0.0100002289
+(PID.TID 0000.0001)     Wall clock time:  1.7290957
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.00000763
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  2.05381179
+(PID.TID 0000.0001)           User time:  2.01000214
+(PID.TID 0000.0001)         System time:  0.00999975204
+(PID.TID 0000.0001)     Wall clock time:  2.05487204
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.299993515
+(PID.TID 0000.0001)           User time:  0.309997559
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.339763403
+(PID.TID 0000.0001)     Wall clock time:  0.341329336
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "UV_CORRECTION_STEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.100000381
+(PID.TID 0000.0001)           User time:  0.0600013733
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.118112087
+(PID.TID 0000.0001)     Wall clock time:  0.119751692
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "TS_CORRECTION_STEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0499992371
+(PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0632061958
+(PID.TID 0000.0001)     Wall clock time:  0.0649340153
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0700016022
-(PID.TID 0000.0001)         System time:  0.00999975204
-(PID.TID 0000.0001)     Wall clock time:  0.131059885
+(PID.TID 0000.0001)           User time:  0.0799999237
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.132085323
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0381970406
+(PID.TID 0000.0001)         System time:  0.00999975204
+(PID.TID 0000.0001)     Wall clock time:  0.039804697
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.11000061
-(PID.TID 0000.0001)         System time:  0.130000114
-(PID.TID 0000.0001)     Wall clock time:  0.553059816
+(PID.TID 0000.0001)           User time:  0.119998932
+(PID.TID 0000.0001)         System time:  0.11000061
+(PID.TID 0000.0001)     Wall clock time:  0.546925306
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT    [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.00999975204
-(PID.TID 0000.0001)     Wall clock time:  0.0382709503
+(PID.TID 0000.0001)         System time:  0.0100002289
+(PID.TID 0000.0001)     Wall clock time:  0.039837122
 (PID.TID 0000.0001)          No. starts: 32
 (PID.TID 0000.0001)           No. stops: 32
 (PID.TID 0000.0001)   Seconds in section "ECCO SPIN-DOWN":
-(PID.TID 0000.0001)           User time:  0.120000839
-(PID.TID 0000.0001)         System time:  0.0799999237
-(PID.TID 0000.0001)     Wall clock time:  0.720477104
+(PID.TID 0000.0001)           User time:  0.0900001526
+(PID.TID 0000.0001)         System time:  0.0199995041
+(PID.TID 0000.0001)     Wall clock time:  0.681833744
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "COST_AVERAGESFIELDS [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.0399990082
-(PID.TID 0000.0001)         System time:  0.0300002098
-(PID.TID 0000.0001)     Wall clock time:  0.148582458
+(PID.TID 0000.0001)           User time:  0.0299987793
+(PID.TID 0000.0001)         System time:  0.00999975204
+(PID.TID 0000.0001)     Wall clock time:  0.146345377
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "COST_FORCING        [ECCO SPIN-UP]":
 (PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.174118996
+(PID.TID 0000.0001)         System time:  0.00999975204
+(PID.TID 0000.0001)     Wall clock time:  0.169812679
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "COST_HYD           [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.0700016022
-(PID.TID 0000.0001)         System time:  0.0399999619
-(PID.TID 0000.0001)     Wall clock time:  0.220290661
+(PID.TID 0000.0001)           User time:  0.0500011444
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.208800077
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "COST_SST           [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.0100002289
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0691540241
+(PID.TID 0000.0001)           User time:  0.
+(STOP NORMAL END statement executed
+PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.0655112267
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "COST_FINAL         [ECCO SPIN-DOWN]":
-(PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.00999975204
-(PID.TID 0000.0001)     Wall clock time:  0.0471298695
+(PID.TID 0000.0001)           User time:  0.0100002289
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.0315487385
 (PID.TID 0000.0001)          No. starts: 8
 (PID.TID 0000.0001)           No. stops: 8
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT       [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:  0.
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.00125789642
+(PID.TID 0000.0001)         System time:  0.0100002289
+(PID.TID 0000.0001)     Wall clock time:  0.00124788284
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001) // ======================================================
-(PID.TID 0000.0001) // TSTOP NORMAL END statement executed
-ile <-> Tile communication statistics
+(PID.TID 0000.0001) // Tile <-> Tile communication statistics
 (PID.TID 0000.0001) // ======================================================
 (PID.TID 0000.0001) // o Tile number: 000001
 (PID.TID 0000.0001) //         No. X exchanges =              0
@@ -14346,8 +14358,8 @@ ile <-> Tile communication statistics
 (PID.TID 0000.0001) //          Total. Y spins =              0
 (PID.TID 0000.0001) //            Avg. Y spins =       0.00E+00
 (PID.TID 0000.0001) // o Thread number: 000001
-(PID.TID 0000.0001) //            No. barriers =          29080
+(PID.TID 0000.0001) //            No. barriers =          29092
 (PID.TID 0000.0001) //      Max. barrier spins =              1
 (PID.TID 0000.0001) //      Min. barrier spins =              1
-(PID.TID 0000.0001) //     Total barrier spins =          29080
+(PID.TID 0000.0001) //     Total barrier spins =          29092
 (PID.TID 0000.0001) //      Avg. barrier spins =       1.00E+00
