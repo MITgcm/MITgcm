@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.20 2005/03/03 21:26:34 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.21 2005/03/07 20:01:01 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -70,7 +70,6 @@ C***********************************************************************
          real*4  veg_32(im,jm,maxtyp,Nxg,Nyg)
 
       integer i,j,k,bi,bj,ierr1,kveg
-
 
       call mdsfindunit( kveg, myThid )
       close(kveg)
@@ -174,11 +173,11 @@ c         ------------
             enddo
           enddo
           
-          print *,'Number of Total Tiles for bi=',bi,': ',nchptot(bi,bj)
-          print *,'Number of Land  Tiles for bi=',bi,': ',nchpland(bi,bj)
+          print *,'No of Total Tiles for bi=',bi,': ',nchptot(bi,bj)
+          print *,'No of Land  Tiles for bi=',bi,': ',nchpland(bi,bj)
 
         ENDDO
       ENDDO
-      
+
       RETURN
       END
