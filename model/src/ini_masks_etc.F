@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.6 1998/09/06 14:45:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.7 1998/09/08 01:37:49 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -43,6 +43,7 @@ C         Inverse of depth
           ELSE
            recip_H(i,j,bi,bj) = 1. _d 0 /  abs( H(i,j,bi,bj) )
           ENDIF
+          depthInK(i,j,bi,bj) = 0.
          ENDDO
         ENDDO
        ENDDO
@@ -55,6 +56,12 @@ C     Calculate lopping factor hFacC
         DO K=1, Nr
          DO J=1,sNy
           DO I=1,sNx
+C          Round depths within a small fraction of layer depth to that
+C          layer depth.
+           IF ( ABS(H(I,J,bi,bj)-rF(K)) .LT. 1. _d -6*ABS(rF(K)) .AND.
+     &          ABS(H(I,J,bi,bj)-rF(K)) .LT. 1. _d -6*ABS(H(I,J,bi,bj)) )THEN
+            H(I,J,bi,bj) = rF(K)
+           ENDIF
            IF     ( H(I,J,bi,bj)*rkFac .GE. rF(K)*rkFac ) THEN
 C           Top of cell is below base of domain
             hFacC(I,J,K,bi,bj) = 0.
@@ -64,7 +71,11 @@ C           Base of domain is below bottom of this cell
            ELSE
 C           Base of domain is in this cell
 C           Set hFac to the fraction of the cell that is open.
-            hFacC(I,J,K,bi,bj) = (rF(K)*rkFac-H(I,J,bi,bj)*rkFac)*recip_drF(K)
+C           hFacC(I,J,K,bi,bj) = (rF(K)*rkFac-H(I,J,bi,bj)*rkFac)*recip_drF(K)
+CcnhDebugStarts
+C Impose full-step
+            hFacC(I,J,K,bi,bj) = 1.
+CCnhDebugEnds
            ENDIF
 C Impose minimum fraction
            IF (hFacC(I,J,K,bi,bj).LT.hFacMin) THEN
@@ -82,12 +93,16 @@ C Impose minimum size (dimensional)
              hFacC(I,J,K,bi,bj)=hFacMinDr*recip_drF(k)
             ENDIF
            ENDIF
+           depthInK(i,j,bi,bj) = depthInK(i,j,bi,bj) + hFacC(i,j,k,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
       ENDDO
       _EXCH_XYZ_R4(hFacC , myThid )
+      _EXCH_XY_R4( depthInK, myThid )
+
+      CALL PLOT_FIELD_XYRS( depthInK, 'Model Depths K Index' , 1, myThid )
 
 C     hFacW and hFacS (at U and V points)
       DO bj=myByLo(myThid), myByHi(myThid)

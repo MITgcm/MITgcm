@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.3 1998/09/07 15:36:24 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.4 1998/09/08 01:37:49 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -38,6 +38,10 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
 C     == Local variables ==
       INTEGER i,j
       _RL pf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+CcnhDEbugStarts
+      INTEGER i1, j1
+CcnhDebugEnds
 
 C--   Pressure equation source term
 C     Term is the vertical integral of the divergence of the 
@@ -82,6 +86,16 @@ C    &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
      &   pf(i,j+1)-pf(i,j)
        ENDDO
       ENDDO
+
+CcnhDebugSTarts
+C     IF ( K .EQ. 10 .OR. K .EQ. 1 ) THEN
+C      i1 = 54
+C      j1 = 26
+C      WRITE(0,*) ' @ I = ', i1, ' , J = ', j1, ' K = ', K
+C      WRITE(0,*) '  cg2d_b = ', cg2d_b(i1,j1,bi,bj)
+C     ENDIF
+CcnhDebugEnds
+
 
       RETURN
       END

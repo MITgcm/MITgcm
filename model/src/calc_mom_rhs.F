@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.29 1998/09/06 17:35:19 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.30 1998/09/08 01:37:49 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -142,6 +142,11 @@ C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  mtFacV
 C     ab05, ab15 - Adams-Bashforth time-stepping weights.
       _RL  ab05, ab15
+
+CcnhDebugStarts
+      INTEGER i1, j1
+CcnhDebugEnds
+
       rVelMaskOverride=1.
       IF ( k .EQ. 1 ) rVelMaskOverride=freeSurfFac
 C     Initialise intermediate terms
@@ -159,29 +164,29 @@ C     Initialise intermediate terms
       ENDDO
 C--   Term by term tracer parmeters
 C     o U momentum equation
-      uDudxFac     = afFacMom*0.D0
-      AhDudxFac    = vfFacMom*0.D0
+      uDudxFac     = afFacMom*1.D0
+      AhDudxFac    = vfFacMom*1.D0
       A4DuxxdxFac  = vfFacMom*0.D0
-      vDudyFac     = afFacMom*0.D0
-      AhDudyFac    = vfFacMom*0.D0
+      vDudyFac     = afFacMom*1.D0
+      AhDudyFac    = vfFacMom*1.D0
       A4DuyydyFac  = vfFacMom*0.D0
       rVelDudrFac  = afFacMom*0.D0
       ArDudrFac    = vfFacMom*0.D0
       mTFacU       = mtFacMom*0.D0
-      fuFac        = cfFacMom*0.D0
+      fuFac        = cfFacMom*1.D0
       phxFac       = pfFacMom*0.D0
       uForcFac     = foFacMom*1.D0
 C     o V momentum equation
-      uDvdxFac     = afFacMom*0.D0
-      AhDvdxFac    = vfFacMom*0.D0
+      uDvdxFac     = afFacMom*1.D0
+      AhDvdxFac    = vfFacMom*1.D0
       A4DvxxdxFac  = vfFacMom*0.D0
-      vDvdyFac     = afFacMom*0.D0
-      AhDvdyFac    = vfFacMom*0.D0
+      vDvdyFac     = afFacMom*1.D0
+      AhDvdyFac    = vfFacMom*1.D0
       A4DvyydyFac  = vfFacMom*0.D0
       rVelDvdrFac  = afFacMom*0.D0
       ArDvdrFac    = vfFacMom*0.D0
       mTFacV       = mtFacMom*0.D0
-      fvFac        = cfFacMom*0.D0
+      fvFac        = cfFacMom*1.D0
       phyFac       = pfFacMom*0.D0
       vForcFac     = foFacMom*1.D0
 
@@ -244,6 +249,16 @@ C     o Laplacian terms
      &            + A4DuxxdxFac * v4F(i,j)
        ENDDO
       ENDDO
+CcnhDebugSTarts
+C     IF ( K .EQ. 10 ) THEN
+C      i1 = 54
+C      j1 = 26
+C      WRITE(0,*) ' @ I = ', i1, ' , J = ', j1, ' K = ',K
+C      WRITE(0,*) '  _XAatP = ', _XAatP(i1,j1,k,bi,bj)
+C      WRITE(0,*) '  vF     = ', vF(i1,j1)
+C      WRITE(0,*) '  fZon   = ', fZon(i1,j1)
+C     ENDIF
+CcnhDebugEnds
 C--   Meridional flux (fMer is at south face of "u" cell)
 C     Mean flow component of meridional flux
       DO j=jMin,jMax
@@ -419,6 +434,23 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
      &   +phxFac * pf(i,j)
        ENDDO
       ENDDO
+
+CcnhDebugSTarts
+C     IF ( K .EQ. 10 ) THEN
+C      i1 = 54
+C      j1 = 26
+C      WRITE(0,*) ' @ I = ', i1, ' , J = ', j1
+C      WRITE(0,*) '  fZon   = ', fZon(i1,j1)
+C      WRITE(0,*) '  gU     = ', gU  (i1,j1,k,bi,bj)
+C     ENDIF
+C     IF ( k .NE. 1 .AND. k .NE. 10  ) THEN
+C      DO j=jMin,jMax
+C       DO i=iMin,iMax
+C        gU(i,j,k,bi,bj) = 0.
+C       ENDDO
+C      ENDDO
+C     ENDIF
+CcnhDebugEnds
 
 C--   Forcing term
       IF ( k .EQ. 1 ) THEN

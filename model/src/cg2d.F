@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.11 1998/09/07 16:23:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.12 1998/09/08 01:37:49 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -66,6 +66,11 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
       REAL    rhsMax
       REAL    rhsNorm
 
+CcnhDebugStarts
+      CHARACTER*(MAX_LEN_FNAM) suff
+CcnhDebugEnds
+
+
 C--   Initialise inverter
       etaNBuf(1,myThid)   = 0. D0
       errBuf(1,myThid)    = 0. D0
@@ -75,6 +80,8 @@ C--   Initialise inverter
 CcnhDebugStarts
 C     _EXCH_XY_R8( cg2d_b, myThid )
 C     CALL PLOT_FIELD_XYRL( cg2d_b, 'CG2D.0 CG2D_B' , 1, myThid )
+C     suff = 'unnormalised'
+C     CALL WRITE_FLD_XY_RL (  'cg2d_b.',suff,    cg2d_b, 1, myThid)
 CcnhDebugEnds
 
 C--   Normalise RHS
@@ -110,6 +117,8 @@ C--   Update overlaps
       _EXCH_XY_R8( cg2d_x, myThid )
 CcnhDebugStarts
 C     CALL PLOT_FIELD_XYRL( cg2d_b, 'CG2D.1 CG2D_B' , 1, myThid )
+C     suff = 'normalised'
+C     CALL WRITE_FLD_XY_RL (  'cg2d_b.',suff,    cg2d_b, 1, myThid)
 CcnhDebugEnds
 
 C--   Initial residual calculation

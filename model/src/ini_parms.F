@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.30 1998/09/06 17:35:20 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.31 1998/09/08 01:37:49 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -391,7 +391,7 @@ C--   Time stepping parameters
       chkPtFreq         = 3600.*25
       dumpFreq          = 3600.*100
       taveFreq          = 0.
-      writeStatePrec    = precFloat32
+      writeStatePrec    = precFloat64
       nCheckLev         = 1
       checkPtSuff(1)    = 'ckptA'
       checkPtSuff(2)    = 'ckptB'
