@@ -2,14 +2,6 @@
 
 <article id="MITgcm-Development-HOWTO">
 
-<!--
-Build commands:
-  db2ps -d ldp.dsl devel_HOWTO.sgml
-  db2pdf -d ldp.dsl devel_HOWTO.sgml
-  db2html -d ./ldp.dsl devel_HOWTO.sgml
-  db2html -u -d ./ldp.dsl devel_HOWTO.sgml
--->
-
   <articleinfo>
     <title>MITgcm Development HOWTO</title>
 
@@ -63,17 +55,17 @@ Build commands:
     <sect2>
       <title>User Manual</title>
 
-      <para>Before jumping into
-      development, please familiarize yourself with the MITgcm user
-      manual which is available <ulink
-      url="http://mitgcm.org/">on the main web page</ulink>.  This
-      document contains volumes of useful information and is included
-      here by reference.</para>
+      <para>Before jumping into development, please familiarize yourself with
+	the <ulink url="http://mitgcm.org/docs.html"> MITgcm user manual
+	</ulink>.  This document contains volumes of useful information and is
+	included here by reference.</para>
 
-      <para>Also, a "snapshot" or<ulink
+      <!--
+      <para>Also, a "snapshot" or <ulink
       url="http://mitgcm.org/dev_docs/">development version</ulink> of
       the user manual may be available, though this is only put on the
       web for testing purposes.</para>
+      -->
     </sect2>
 
     <sect2>
@@ -300,10 +292,10 @@ checkpoint50d_pre
       server using:</para>
 
 <screen>
-$ export CVS_RSH=ssh
-$ export CVSROOT=':ext:auden.lcs.mit.edu:/u/u3/gcmpack'
-$ mkdir scratch
-$ cvs co MITgcm manual mitgcm.org
+  $ export CVS_RSH=ssh
+  $ export CVSROOT=':ext:auden.lcs.mit.edu:/u/u3/gcmpack'
+  $ mkdir scratch
+  $ cvs co MITgcm manual mitgcm.org
 </screen>
 
       <para>These commands extract the necessary information from the
@@ -371,8 +363,8 @@ $ cvs co MITgcm manual mitgcm.org
       site can be built using:</para>
 
 <screen>
-$ cd mitgcm.org/devel/buildweb
-$ make All
+  $ cd mitgcm.org/devel/buildweb
+  $ make All
 </screen>
 
       <para>Which builds the PDF from the LaTeX source, creates the
@@ -390,7 +382,7 @@ $ make All
       area:</para>
 
 <screen>
-$ mv scratch/dev_docs /u/u0/httpd/html
+  $ mv scratch/dev_docs /u/u0/httpd/html
 </screen>
 
       <para>and the update is complete.</para>
@@ -412,9 +404,9 @@ $ mv scratch/dev_docs /u/u0/httpd/html
 	For MITgcm, the process is similar.  Typical commands are:</para>
 
 <screen>
-$ genmake -mods=../code
-$ make depend
-$ make
+  $ genmake -mods=../code
+  $ make depend
+  $ make
 </screen>
 
       <para>The following sections describe the individual steps in the build
@@ -448,7 +440,7 @@ $ make
 	simple as:</para>
 
 <screen>
-$ genmake2 -mods=../code
+  $ genmake2 -mods=../code
 </screen>
 
 	<para>However, some systems (particularly commercial Unixes that lack a
@@ -457,8 +449,8 @@ $ genmake2 -mods=../code
 	  the following: </para>
 
 <screen>
-$ /usr/bin/sh genmake2 -make=gmake  -mods=../code
-$ /opt/gnu/bin/bash genmake2 -ieee -make=/usr/local/bin/gmake -mods=../code
+  $ /usr/bin/sh genmake2 -make=gmake  -mods=../code
+  $ /opt/gnu/bin/bash genmake2 -ieee -make=/usr/local/bin/gmake -mods=../code
 </screen>
 
 	<para>The genmake2 code has been written in a Bourne and BASH (v1)
@@ -491,7 +483,7 @@ $ /opt/gnu/bin/bash genmake2 -ieee -make=/usr/local/bin/gmake -mods=../code
 	  from:</para>
 
 <screen>
-$ genmake2 -help
+  $ genmake2 -help
 </screen>
 
 	<para>The most important options for <filename>genmake2</> are:</para>
@@ -547,7 +539,6 @@ $ genmake2 -help
 	      specified, then it is assumed that the two packages are compatible
 	      and will function either with or without each other.</para>
 	    </listitem>
-
 	  </varlistentry>
 
 	  <varlistentry>
@@ -558,6 +549,24 @@ $ genmake2 -help
 	      to be used.  If not set, the default package list will
 	      be read from
 	      <filename>$ROOTDIR/pkg/pkg_default</>.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>-adof=/path/to/file</></term>
+	    <term><filename>-adoptfile=/path/to/file</></term>
+	    <listitem>
+	      <para>This option specifies the "adjoint" or automatic
+		differentiation options file to be used.  The file is analogous
+		to the "optfile" defined above but it specifies information for
+		the AD build process.  The default file is located in <filename>
+		$ROOTDIR/tools/adjoint_options/adjoint_default </> and it
+		defines the "TAF" and "TAMC" compilers.  An alternate version is
+		also available at <filename>
+		$ROOTDIR/tools/adjoint_options/adjoint_staf </> that selects the
+		newer "STAF" compiler.  As with any compilers, it is helpful to
+		have their directories listed in your $PATH environment
+		variable.</para>
 	    </listitem>
 	  </varlistentry>
 
@@ -615,15 +624,16 @@ $ genmake2 -help
       </sect3>
 
       <sect3 id="makefile_use">
-	<title>Using <filename>Makefile</></title>
+	<title>Using the <filename>Makefile</></title>
 
-	<para>Once a <filename>Makefile</> has been created, one can
-	build an executable using:</para>
+	<para>Once a <filename>Makefile</> has been created using
+	  <filename>genmake2</>, one can build a "standard" (forward
+	  simulator) executable using:</para>
 
 <screen>
-$ make CLEAN
-$ make depend
-$ make
+  $ make CLEAN
+  $ make depend
+  $ make
 </screen>
 
 	<para>The "make CLEAN" step will remove any stale source files, include
@@ -647,10 +657,39 @@ $ make
 	  substitutions) custom definitions such as variable types within the
 	  source files.  This additional stage is necessary in order to overcome
 	  some of the inconsistencies in the sizes of objects (bytes) between
-	  different compilers.</para>
+	  different compilers. The result of the build process is an executable
+	  with the name <filename>mitgcmuv</>.</para>
 
-	<para>Please report compilation failures or other problems to
-	  <email>MITgcm-support@mitgcm.org</email>.</para>
+	<para>In addition to the forward simulator described above, the
+	  <filename>Makefile</> also has a number of targets that can be used to
+	  produce various adjoint and tangent-linear builds for optimization and
+	  other parameter-sensitivity problems.  The additional targets within
+	  the <filename>Makefile</> are:</para>
+
+	<variablelist>
+
+	  <varlistentry>
+	    <term><filename>make adall</></term>
+	    <listitem>
+	      <para>This target produces an <filename>mitgcmuv_ad</> executable
+		using the <filename>taf</> or <filename>staf</> adjoint
+		compiler.  See the <filename>genmake2</> "-adof" option for 
+		compiler selection.</para>
+	    </listitem>
+	  </varlistentry>
+
+	  <varlistentry>
+	    <term><filename>make ftlall</></term>
+	    <listitem>
+	      <para>Similar to <filename>make adall</> above, this
+		produces...</para>
+	    </listitem>
+	  </varlistentry>
+
+	</variablelist>
+
+	<para>Please report any compilation failures or other build problems to
+	  the <email>MITgcm-support@mitgcm.org</email> list.</para>
 
       </sect3>
 
@@ -683,16 +722,16 @@ $ make
 	line as simple as:</para>
 
 <screen>
-$ cd verification
-$ ./testreport -ieee
+  $ cd verification
+  $ ./testreport -ieee
 </screen>
 
 	<para>However, some systems (those lacking or wiht a broken "/bin/sh")
 	  may require an explicit shell invocation such as:</para>
 
 <screen>
-$ sh ./testreport -ieee -t 'exp0 exp4'
-$ /some/path/to/bash ./testreport -ieee -t 'ideal_2D_oce lab_sea natl_box'
+  $ sh ./testreport -ieee -t 'exp0 exp4'
+  $ /some/path/to/bash ./testreport -ieee -t 'ideal_2D_oce lab_sea natl_box'
 </screen>
 
 	<para>The <filename>testreport</> script accepts a number of
