@@ -1,7 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_mapping.h,v 1.5 2004/07/13 21:21:05 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gridalt/gridalt_mapping.h,v 1.6 2004/08/04 22:30:52 molod Exp $
 C $Name:  $
-
-#include "PACKAGES_CONFIG.h"
 
 c Alternate grid Mapping Common
 c ------------------------------
