@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.18 2004/09/01 22:42:18 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.19 2004/09/30 19:45:24 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -188,7 +188,7 @@ c Determine Total number of Random Clouds to Check
 c ---------------------------------------------
       ncrnd = (lm-nltop+1)/2
 
-      if(first .and. myid.eq.1) then
+      if(first .and. myid.eq.1 .and. bi.eq.1 ) then
        print *
        print *,'Top Level Allowed for Convection : ',nltop
        print *,'          Highest Sub-Cloud Level: ',nsubmax

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.37 2004/08/19 23:45:54 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.38 2004/09/30 19:45:24 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -155,7 +155,7 @@ C***********************************************************************
 
       if( (nhms.eq.nhms0) .and. (nymd.eq.nymd0) ) then
        _BEGIN_MASTER(myid)
-       if(myid.eq.1) print *,' Initializing fizhi arrays '
+       if(bi.eq.1) print *,' Initializing fizhi arrays '
        _END_MASTER(myid)
        imstturblw = 0
        imstturbsw = 0

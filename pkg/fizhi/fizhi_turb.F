@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.26 2004/09/09 20:51:09 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.27 2004/09/30 19:45:24 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -323,7 +323,7 @@ c **********************************************************************
 
       if( const.eq.0.0 ) then
       qbeg = .true.
-          if( myid.eq.0 ) then
+          if( myid.eq.1 .and. bi.eq.1 ) then
           print *
           print *, 'Warning!'
           print *, 'Turbulent Kinetic Energy has not been initialized.'

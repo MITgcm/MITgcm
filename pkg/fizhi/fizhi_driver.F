@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.25 2004/09/09 20:51:09 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.26 2004/09/30 19:45:24 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -167,7 +167,6 @@ C ====================
 C LONG WAVE RADIATION
 C ===================
       IF ( alarm('radlw') ) THEN
-       print *,' calling lw '
 
 c Set Reference Ground Temperature
 c --------------------------------
