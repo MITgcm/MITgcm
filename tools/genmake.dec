@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake.dec,v 1.5 1998/06/22 16:24:51 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake.dec,v 1.6 1998/06/30 12:26:33 cnh Exp $
 #
 #  Makefile generator for MITgcm UV codes
 #
@@ -40,10 +40,11 @@ set EXE         = ( mitgcmuv       )
 #          it is better to use -O5 and no KAP serial optimisation.                 
 # ***************************************************************************************************
 set CPP      = ( '/usr/bin/cpp -P $(INCLUDES) -DTARGET_DEC' )
-set FCOMP1p  = ( 'kapf90 -scan=132 -noconc -cmp=' )
+set FCOMP1p  = ( 'kapf -scan=132 -noconc -cmp=' )
 set FCOMP1s  = ( 'cat >' )
-set FCOMP2   = ( 'f90 $(INCLUDES) -r8 -extend_source -u -O5 -fast -tune host -automatic -call_shared -c -notransform_loops -align dcommons -p1 -inline all' )
-set FCOMP20  = ( 'f90 $(INCLUDES) -r8 -extend_source -u -O0 -c -automatic -align dcommons -p1' )
+set FCOMP2   = ( 'f77 -convert big_endian $(INCLUDES) -r8 -extend_source -u -O5 -fast -tune host \
+                  -automatic -call_shared -c -notransform_loops -align dcommons -p1 -inline all' )
+set FCOMP20  = ( 'f77 -convert big_endian $(INCLUDES) -r8 -extend_source -u -O0 -c -automatic -align dcommons -p1' )
 set LINK1    = ( 'f77 -O5 -fast -tune host -automatic -call_shared -align dcommons -p1' )
 set LINK2    = ( '-lfmpi -lmpi -lkmp_osfp10 -pthread' )
 set INCLUDES = ( '-I. -I$(EESUPP_IDIR) -I$(MODEL_IDIR)' )
