@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.9 2000/06/09 02:45:04 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.10 2000/06/12 13:38:50 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -44,7 +44,9 @@ C     == Local variables ==
       INTEGER kkey
 #endif
 
-      IF (Nr.GT.1) THEN		! Only need do anything if Nr>1
+C--   Only need do anything if Nr>1
+      IF (Nr.GT.1) THEN
+
 C--    Beginning of forward sweep (top level)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -55,6 +57,7 @@ C--    Beginning of forward sweep (top level)
          IF (b(i,j).NE.0.) bet(i,j)=1. / b(i,j)
         ENDDO
        ENDDO
+
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -70,6 +73,7 @@ CADJ store gXNm1 = comlev1_impl2d, key = idkey
 
 C--   Middle of forward sweep
       IF (Nr.GT.2) THEN
+
        DO k=2,Nr-1
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -95,6 +99,11 @@ CADJ store bet  = comlev1_impl3d, key = kkey
         DO j=jMin,jMax
          DO i=iMin,iMax
           gam(i,j,k)=ckm1(i,j)*bet(i,j)
+         ENDDO
+        ENDDO
+
+        DO j=jMin,jMax
+         DO i=iMin,iMax
           bet(i,j)=b(i,j)-a(i,j)*gam(i,j,k)
           IF (bet(i,j).NE.0.) bet(i,j)=1. / bet(i,j)
          ENDDO
@@ -113,7 +122,9 @@ CADJ store gXNm1(:,:,k-1:k,bi,bj) = comlev1_impl3d, key = kkey
         ENDDO
 
        ENDDO
+
       ENDIF
+
       IF (Nr.GT.1) THEN
 C--    End of forward sweep (bottom level)
        DO j=jMin,jMax
@@ -134,6 +145,10 @@ CADJ store bet  = comlev1_impl2d, key = idkey
        DO j=jMin,jMax
         DO i=iMin,iMax
          gam(i,j,Nr)=ckm1(i,j)*bet(i,j)
+        ENDDO
+       ENDDO
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          bet(i,j)=b(i,j)-a(i,j)*gam(i,j,Nr)
          IF (bet(i,j).NE.0.) bet(i,j)=1. / bet(i,j)
         ENDDO
@@ -163,6 +178,7 @@ C--    Backward sweep
          ENDDO
         ENDDO
        ENDDO
+
       ENDIF
 
       RETURN
