@@ -537,6 +537,7 @@ c-----------------------------------------------------------------------
       integer ia,ib,levs,numpts,npeice
       integer index(numpts)
       _RL a(ia,levs), b(ib,levs), chfr(ib)
+      real b(ib,levs)
 
       integer i,L,offset,len
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.9 2004/07/14 15:52:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.10 2004/07/14 17:31:57 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -796,11 +796,11 @@ c-----output parameters
 
 c-----temporary array
  
-      integer i,j,k,ik
+      integer i,j,k
       real  cc(m,n,3),tauclb(m,n,np),tauclf(m,n,np)
       real  dp(m,n,np),wh(m,n,np),oh(m,n,np),scal(m,n,np)
       real  swh(m,n,np+1),so2(m,n,np+1),df(m,n,np+1)
-      real  sdf(m,n),sclr(m,n),csm(m,n),taux,x
+      real  sdf(m,n),sclr(m,n),csm(m,n),x
  
 c-----------------------------------------------------------------
 
@@ -1022,7 +1022,7 @@ c-----output parameters
 c-----temporary variables
 
       integer i,j,k,im,it,ia,kk
-      real   fm,ft,fa,xai,taucl,taux
+      real   fm,ft,fa,xai,taux
 
 c-----pre-computed table
 
@@ -1266,7 +1266,6 @@ c-----temporary array
       real  ssacl(m,n,np),asycl(m,n,np)
       real  rr(m,n,np+1,2),tt(m,n,np+1,2),td(m,n,np+1,2),
      *       rs(m,n,np+1,2),ts(m,n,np+1,2)
-      real  rssab(m,n,np+1),rabx(m,n,np+1),rsabx(m,n,np+1)
       real  fall(m,n,np+1),fclr(m,n,np+1)
       real  fsdir(m,n),fsdif(m,n)
 
@@ -1676,8 +1675,6 @@ c-----temporary array
       real  taux,reff1,reff2,g1,g2,asycl(m,n,np)
       real  td(m,n,np+1,2),rr(m,n,np+1,2),tt(m,n,np+1,2),
      *       rs(m,n,np+1,2),ts(m,n,np+1,2)
-      real  upflux(m,n,np+1),dwflux(m,n,np+1),
-     *     rssab(m,n,np+1),rabx(m,n,np+1),rsabx(m,n,np+1)
       real  fall(m,n,np+1),fclr(m,n,np+1),fsdir(m,n),fsdif(m,n)
       real  asyclt(m,n)
       real  rr1t(m,n),tt1t(m,n),td1t(m,n),rs1t(m,n),ts1t(m,n)
@@ -2124,11 +2121,14 @@ c*******************************************************************
 
 c*******************************************************************
 c compute exponential for arguments in the range 0> fin > -10.
+c*******************************************************************
+      implicit none
+      real  fin,expmn
 
+      real one,expmin,e1,e2,e3,e4
       parameter (one=1.0, expmin=-10.0)
       parameter (e1=1.0,        e2=-2.507213e-1)
       parameter (e3=2.92732e-2, e4=-3.827800e-3)
-      real  fin,expmn
 
       if (fin .lt. expmin) fin = expmin
       expmn = ((e4*fin + e3)*fin+e2)*fin+e1

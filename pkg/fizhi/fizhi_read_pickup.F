@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.3 2004/06/07 18:11:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.4 2004/07/14 17:31:57 molod Exp $
 C $Name:  $
 
 CBOP
@@ -36,11 +36,9 @@ C     myThid  :: Number of this instance
 C     !LOCAL VARIABLES:
 C     fn      :: character buffer for creating filename
 C     prec    :: precision of pickup files
-C     lgf     :: flag to write "global" files
 C     k       :: loop index
-      INTEGER prec, iChar, lChar, k
+      INTEGER prec
       CHARACTER*(MAX_LEN_FNAM) fn
-      LOGICAL lgf
 
       WRITE(fn,'(A,I10.10)') 'pickup_fizhi.',myIter
       prec = precFloat64

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.11 2004/06/17 21:45:29 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.12 2004/07/14 17:31:58 molod Exp $
 C $Name:  $
 
        subroutine update_earth_exports (myTime, myIter, myThid)
@@ -622,7 +622,7 @@ C**** -----------------------------------------------------------
 
       DATA GRN /0.33, 0.67/
 
-      include 'snwmid.h'
+#include "snwmid.h"
       DATA SNWALB /.65, .38, .65, .38,
      *             .65, .38, .65, .38,
      *             .65, .38, .65, .38,
@@ -1075,7 +1075,7 @@ C water
      &   0.9788, 0.9833, 0.9819, 0.9820, 0.9835, 0.9865, 
      &   0.9886, 0.9719, 0.9719, 0.9719, 0.9719, 0.9719/
 
-      include 'snwmid.h'
+#include "snwmid.h"
 
 c Convert to the 10 bands needed by Chou Radiation
 c ------------------------------------------------

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.4 2004/06/10 21:50:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.5 2004/07/14 17:31:57 molod Exp $
 C $Name:  $
 
       subroutine fizhi_alarms (nymdb,nhmsb,ndt)
@@ -26,9 +26,10 @@ c ----------------
 c MPI Utilities
 c -------------
 #ifdef ALLOW_USE_MPI
-      include 'mpif.h'
+#include "mpif.h"
+      integer  ierror
 #endif
-      integer  myid,ierror
+      integer  myid
 
 c Physics Frequencies
 c -------------------

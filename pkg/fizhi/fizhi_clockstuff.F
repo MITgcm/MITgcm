@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.10 2004/07/13 18:26:45 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.11 2004/07/14 17:31:57 molod Exp $
 C $Name:  $
 
       subroutine set_alarm (tag,date,time,freq)
@@ -36,7 +36,7 @@ c -------------
 #endif
 
       integer myid
-      logical alarm,first,set
+      logical first,set
       data          first /.true./
 
       integer n

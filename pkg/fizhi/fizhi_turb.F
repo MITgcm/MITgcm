@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.9 2004/07/13 23:44:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.10 2004/07/14 17:31:57 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
       subroutine turbio (im,jm,nlay,istrip,nymd,nhms,bi,bj
-     1 ,ndturb,ptop, pz, uz, vz, tz, qz, ntracers,ptracers,
+     1 ,ndturb,ptop, pz, uz, vz, tz, qz, ntracers,ptracers
      2 ,plz,plze,dpres,pkht,pkz,ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke
      3 ,tgz,fracland,landtype
      4 ,tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac
@@ -93,7 +93,7 @@ c-----------------------------------------------------------------------
       implicit none
 
 #ifdef ALLOW_USE_MPI
-      include 'mpif.h'
+#include "mpif.h"
 #endif
 
 #ifdef ALLOW_DIAGNOSTICS
@@ -103,10 +103,11 @@ c-----------------------------------------------------------------------
 #endif
 
       integer im,jm,nlay,istrip,nymd,nhms,bi,bj,ndturb
+      integer ntracers, ptracers
+      integer nchp,nchplnd
       real ptop
       real pz(im,jm),uz(im,jm,nlay),vz(im,jm,nlay),tz(im,jm,nlay)
       real qz(im,jm,nlay,ntracers)
-      integer ntracers, ptracers
       real plz(im,jm,nlay),plze(im,jm,nlay+1),dpres(im,jm,nlay)
       real pkht(im,jm,nlay+1),pkz(im,jm,nlay)
       real ctmt(nchp),xxmt(nchp),yymt(nchp),zetamt(nchp)
@@ -115,7 +116,6 @@ c-----------------------------------------------------------------------
       integer landtype(im,jm)
       real tcanopy(nchp),tdeep(nchp),ecanopy(nchp),swetshal(nchp)
       real swetroot(nchp),swetdeep(nchp),snodep(nchp),capac(nchp)
-      integer nchp,nchplnd
       real chfr(nchp),chlt(nchp),chlon(nchp)
       integer igrd(nchp),ityp(nchp)
       real alai(nchp),agrn(nchp),thkz(im,jm)
@@ -151,18 +151,13 @@ C Set fmu and ed to zero for no background diffusion
       real tmpdiag(im,jm)
       real   thtgz(im*jm)
 
-      real u2m(im,jm), u10m(im,jm)  
-      real v2m(im,jm), v10m(im,jm)  
-      real t2m(im,jm), t10m(im,jm)  
-      real q2m(im,jm), q10m(im,jm)  
-
       integer nland
       real alwcoeff(nchp),blwcoeff(nchp)
       real netsw(nchp)
       real cnvprec(nchp),lsprec(nchp)
       real snowprec(nchp)
       real pardiff(nchp),pardirct(nchp)
-      real pmsc(nchp),radmsc(nchp)
+      real pmsc(nchp)
       real netlw(nchp)
       real sqscat(nchp), rsoil1(nchp)
       real rsoil2(nchp)
@@ -184,7 +179,7 @@ C Set fmu and ed to zero for no background diffusion
  
       real lats(istrip),lons(istrip),cosz(istrip),icest(istrip)
       real rainls(istrip),raincon(istrip),newsnow(istrip)
-      real lwnet(istrip),pardf(istrip),pardr(istrip),swnet(istrip)
+      real pardf(istrip),pardr(istrip),swnet(istrip)
       real hlwdwn(istrip),alwrad(istrip),blwrad(istrip),tmpnlay(istrip)
       real laistrip(istrip),grnstrip(istrip),z2str(istrip),cd(istrip)
       real scatstr(istrip), rs1str(istrip), rs2str(istrip)
@@ -206,7 +201,7 @@ C Set fmu and ed to zero for no background diffusion
       real u(istrip,nlay+1), v(istrip,nlay+1), th(istrip,nlay+1)
       real sh(istrip,nlay+1), thv(istrip,nlay+1), pe(istrip,nlay+1)
       real tracers(istrip,nlay+1,ntracers)
-      real pke(istrip,nlay+1)
+      real dpstr(istrip,nlay),pke(istrip,nlay+1)
       real pk(istrip,nlay), qq(istrip,nlay),   p(istrip,nlay)
       real sri(istrip,nlay), skh(istrip,nlay), skm(istrip,nlay)
       real stuflux(istrip,nlay), stvflux(istrip,nlay)
@@ -220,12 +215,10 @@ C Set fmu and ed to zero for no background diffusion
       real tc(istrip),td(istrip),qa(istrip)
       real swet1(istrip),swet2(istrip),swet3(istrip)
       real capacity(istrip),snowdepth(istrip)
-      real strflx(istrip), stz0(istrip)
-      real stcndi(istrip), stdiag(istrip)
+      real stz0(istrip)
+      real stdiag(istrip)
       real tends(istrip),sustar(istrip), sz0(istrip),pbldpth(istrip)
-      real sdtsrf(istrip), stg(istrip), sqs(istrip)
-      real sct(istrip), scu(istrip), swinds(istrip), sdtg(istrip)
-      real sts(istrip), sqg(istrip)
+      real sct(istrip), scu(istrip), swinds(istrip)
       real stu2m(istrip),stv2m(istrip),stt2m(istrip),stq2m(istrip)
       real stu10m(istrip),stv10m(istrip),stt10m(istrip),stq10m(istrip)
       integer  stwatr(istrip)
@@ -240,7 +233,7 @@ C Set fmu and ed to zero for no background diffusion
       parameter ( ndlsm = 1 )
       real qdiaglsm(nchp,ndlsm)
 
-      integer nsecf,nmonf,ndayf
+      integer n,nsecf,nmonf,ndayf
       nsecf(n) = n/10000*3600 + mod(n,10000)/100* 60 + mod(n,100)
       nmonf(n) = mod(n,10000)/100
       ndayf(n) = mod(n,100)
@@ -249,7 +242,7 @@ C Set fmu and ed to zero for no background diffusion
       real faceps,grav,caltoj,virtcon,getcon
       real heatw,undef,timstp,delttrb,dttrb,ra
       real edle,rmu,cltj10,atimstp,tice,const
-      integer istnp1,istnlay,itrtrb,i,j,L,k,n,nn,nt
+      integer istnp1,istnlay,itrtrb,i,j,L,nn,nt
       integer nocean, nice
       integer ndmoist,time_left,ndum
       integer ntracedim
@@ -315,8 +308,13 @@ c **********************************************************************
       sum = sum + tke(n,L)
       enddo
       enddo
+
+#ifdef ALLOW_USE_MPI
       call mpi_allreduce(sum,const,1,mpi_double_precision,mpi_sum,
      .                                                mpi_comm_world,n)
+#else 
+      const = sum
+#endif
 
       if( const.eq.0.0 ) then
       qbeg = .true.
@@ -1147,25 +1145,6 @@ c ------------------------------
      1                      qdiag(1,1,iq10m,bi,bj),ijall,1,nn,.false.)
       endif
 
-c Fill 2m and 10m Couplings (Not Re-producible)
-c ---------------------------------------------
-      call paste2grd (  stu2m,igrd,chfrstr,istrip,nchp, u2m,ijall,1,
-     .                                                      nn,.true. )
-      call paste2grd (  stv2m,igrd,chfrstr,istrip,nchp, v2m,ijall,1,
-     .                                                      nn,.true. )
-      call paste2grd (  stt2m,igrd,chfrstr,istrip,nchp, t2m,ijall,1,
-     .                                                      nn,.true. )
-      call paste2grd (  stq2m,igrd,chfrstr,istrip,nchp, q2m,ijall,1,
-     .                                                      nn,.true. )
-      call paste2grd ( stu10m,igrd,chfrstr,istrip,nchp,u10m,ijall,1,
-     .                                                      nn,.false.)
-      call paste2grd ( stv10m,igrd,chfrstr,istrip,nchp,v10m,ijall,1,
-     .                                                      nn,.false.)
-      call paste2grd ( stt10m,igrd,chfrstr,istrip,nchp,t10m,ijall,1,
-     .                                                      nn,.false.)
-      call paste2grd ( stq10m,igrd,chfrstr,istrip,nchp,q10m,ijall,1,
-     .                                                      nn,.false.)
-
 c**********************************************************************
 c   more diagnostics: land surface model parameters
 c**********************************************************************
@@ -1531,26 +1510,16 @@ C     -------
 C    PROFILES RETURNED WITH UPDATED VALUES
 C
 C**********************************************************************
-C
-C
-      PARAMETER ( B1      =   16.6    )  
-      PARAMETER ( B3      = 1. / B1  )  
-      PARAMETER ( ALPHA   = 0.1       )
-      PARAMETER ( HALPHA = ALPHA * 0.5 )
-      PARAMETER ( QQMIN  = 0.005      )
-      PARAMETER ( QBUSTR = 2.550952   )
-      real    argmax, onethrd, z1pem25, b2
-      PARAMETER (ARGMAX = 30.)
-      PARAMETER (ONETHRD = 1./3. )
-      PARAMETER (Z1PEM25 = 1.E-25)
-      PARAMETER ( B2    =  10.1 )
-      PARAMETER ( two   =   2.0 )
+      implicit none
 
-      DIMENSION TH(irun,NLEV+1),THV(irun,NLEV+1),SH(irun,NLEV+1)
-      DIMENSION U(irun,NLEV+1),V(irun,NLEV+1),QQ(irun,NLEV)
-      DIMENSION PL(irun,NLEV),PLE(irun,NLEV+1),PLK(irun,NLEV)
-      DIMENSION PLKE(irun,NLEV+1),DPSTR(irun,NLEV)
-      DIMENSION IWATER(irun),Z0(irun)
+C Argument list declarations
+      integer nn,irun,nlev,ntrace,ntracedim.itrtrb,nhms,nymd
+      real TH(irun,NLEV+1),THV(irun,NLEV+1),SH(irun,NLEV+1)
+      real U(irun,NLEV+1),V(irun,NLEV+1),QQ(irun,NLEV)
+      real PL(irun,NLEV),PLE(irun,NLEV+1),PLK(irun,NLEV)
+      real PLKE(irun,NLEV+1),DPSTR(irun,NLEV)
+      integer IWATER(irun)
+      real Z0(irun)
       real tracers(irun,nlev+1,ntracedim)
       real KMBG,KHBG
       LOGICAL QBEG,TPROF
@@ -1562,6 +1531,21 @@ C
       real ctsave(irun),xxsave(irun),yysave(irun)
       real zetasave(irun),xlsave(irun,nlev),khsave(irun,nlev)
       real qliq(irun,nlev),turbfcc(irun,nlev)
+
+C
+      real b1,b3,alpha,halpha,qqmin,qbustr
+      PARAMETER ( B1      =   16.6    )  
+      PARAMETER ( B3      = 1. / B1  )  
+      PARAMETER ( ALPHA   = 0.1       )
+      PARAMETER ( HALPHA = ALPHA * 0.5 )
+      PARAMETER ( QQMIN  = 0.005      )
+      PARAMETER ( QBUSTR = 2.550952   )
+      real    argmax, onethrd, z1pem25, b2, two
+      PARAMETER (ARGMAX = 30.)
+      PARAMETER (ONETHRD = 1./3. )
+      PARAMETER (Z1PEM25 = 1.E-25)
+      PARAMETER ( B2    =  10.1 )
+      PARAMETER ( two   =   2.0 )
 
 C Diagnostic Variables
 C --------------------
