@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.6 1998/06/29 14:04:32 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.7 1998/06/30 12:25:14 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -226,7 +226,7 @@ C--   Remove previous meta information if there was any
 
 C--   Open data file
       nameOfDFile(fileHandle,myThid) = fNam(i1Lo:i1Hi)
-      OPEN(UNIT=dUnit,NAME=fNam(i1Lo:i1Hi),STATUS='UNKNOWN', !ERR=799,
+      OPEN(UNIT=dUnit,NAME=fNam(i1Lo:i1Hi),STATUS='UNKNOWN', ERR=799,
      &     FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
 
 
