@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.40 1999/06/29 18:33:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.41 1999/07/28 16:32:12 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -202,6 +202,11 @@ C     o V momentum equation
       fvFac        = cfFacMom*1.
       phyFac       = pfFacMom*1.
       vForcFac     = foFacMom*1.
+
+      IF (implicitViscosity) THEN
+       ArDudrFac = 0.
+       ArDvdrFac = 0.
+      ENDIF
 
 C--   Adams-Bashforth weighting factors
       ab15   =  1.5 _d 0 + abEps

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.4 1999/06/29 18:33:26 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.5 1999/07/28 16:32:14 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -108,6 +108,7 @@ C--   Set default "physical" parameters
       saltStepping        = .TRUE.
       metricTerms         = .FALSE.
       implicitDiffusion   = .FALSE.
+      implicitViscosity   = .FALSE.
       openBoundaries      = .FALSE.
       nonHydrostatic      = .FALSE.
       globalFiles         = .FALSE.

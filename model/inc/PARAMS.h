@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.39 1999/06/29 18:33:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.40 1999/07/28 16:32:03 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -160,6 +160,7 @@ C     useConstantF  - Coriolis parameter set to f0
 C     useBetaPlaneF - Coriolis parameter set to f0 + beta.y
 C     useSphereF    - Coriolis parameter set to 2.omega.sin(phi)
 C     implicitDiffusion - Turns implicit vertical diffusion on
+C     implicitViscosity - Turns implicit vertical viscosity on
 C     doThetaClimRelax - Set true if relaxation to temperature
 C                        climatology is required.
 C     doSaltClimRelax  - Set true if relaxation to salinity
@@ -182,7 +183,8 @@ C     allowFreezing  - Allows water to freeze and form ice
      & momStepping, tempStepping, saltStepping,
      & metricTerms, usingSphericalPolarMTerms,
      & useConstantF, useBetaPlaneF, useSphereF,
-     & implicitDiffusion, doThetaClimRelax, doSaltClimRelax,
+     & implicitDiffusion, implicitViscosity,
+     & doThetaClimRelax, doSaltClimRelax,
      & periodicExternalForcing, usingPCoords, usingZCoords,
      & openBoundaries, nonHydrostatic, globalFiles,
      & allowFreezing
@@ -212,6 +214,7 @@ C     allowFreezing  - Allows water to freeze and form ice
       LOGICAL useBetaPlaneF
       LOGICAL useSphereF
       LOGICAL implicitDiffusion
+      LOGICAL implicitViscosity
       LOGICAL doThetaClimRelax
       LOGICAL doSaltClimRelax
       LOGICAL periodicExternalForcing

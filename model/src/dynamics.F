@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.43 1999/05/24 15:42:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.44 1999/07/28 16:32:12 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -501,6 +501,9 @@ C--     Implicit diffusion
      I         deltaTtracer, KappaRS,recip_HFacC,
      U         gSNm1,
      I         myThid )
+        ENDIF ! implicitDiffusion
+C--     Implicit viscosity
+        IF (implicitViscosity) THEN
          IF (momStepping) THEN
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -525,7 +528,7 @@ C--     Implicit diffusion
      I         myThid )
 #endif
          ENDIF ! momStepping
-        ENDIF ! implicitDiffusion
+        ENDIF ! implicitViscosity
  
        ENDDO
       ENDDO

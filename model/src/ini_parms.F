@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.44 1999/06/29 18:33:26 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.45 1999/07/28 16:32:13 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -95,7 +95,8 @@ C--   Continuous equation parameters
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
      & implicitFreeSurface, rigidLid, freeSurfFac, hFacMin, hFacMinDz,
-     & tempStepping, saltStepping, momStepping, implicitDiffusion,
+     & tempStepping, saltStepping, momStepping,
+     & implicitDiffusion, implicitViscosity,
      & viscAr, diffKrT, diffKrS, hFacMinDr,
      & viscAp, diffKpT, diffKpS, hFacMinDp,
      & rhoConst, buoyancyRelation, HeatCapacity_Cp,
