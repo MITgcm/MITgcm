@@ -92,7 +92,7 @@ c     bi, bj - array indices on which to apply calculations
 c     myTime - Current time in simulation
 
       INTEGER bi, bj
-      INTEGER ikey
+CADJ  INTEGER ikey
       INTEGER myThid
       _RL     myTime
 

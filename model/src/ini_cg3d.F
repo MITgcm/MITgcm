@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.5 2000/03/14 17:47:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.6 2000/03/24 18:31:31 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -29,6 +29,8 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 CEndOfInterface
 
+#ifdef ALLOW_NONHYDROSTATIC
+
 C     === Local variables ===
 C     xG, yG - Global coordinate location.
 C     zG
@@ -49,8 +51,6 @@ C     myNorm - Work variable used in clculating normalisation factor
 CcnhDebugStarts
       _RL    phi(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 CcnhDebugEnds
-
-#ifdef ALLOW_NONHYDROSTATIC
 
 C--   Initialise laplace operator
 C     aW3d: Ax/dX

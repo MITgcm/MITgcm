@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.23 2000/03/14 16:09:41 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.24 2000/03/24 18:31:31 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -82,7 +82,7 @@ C     I, J, N     - Loop counters ( N counts CG iterations )
 
 
 CcnhDebugStarts
-      CHARACTER*(MAX_LEN_FNAM) suff
+C     CHARACTER*(MAX_LEN_FNAM) suff
 CcnhDebugEnds
 
 

@@ -22,6 +22,8 @@ C     == Routine arguments ==
 C     myThid - Instance number for this innvocation of CALC_GW
       INTEGER myThid
 
+#ifdef ALLOW_NONHYDROSTATIC
+
 C     == Local variables ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       _RL      aF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -47,8 +49,6 @@ C     I,J,K - Loop counters
 
       _RL  Half
       PARAMETER(Half=0.5D0)
-
-#ifdef ALLOW_NONHYDROSTATIC
 
 #define I0 1
 #define In sNx
