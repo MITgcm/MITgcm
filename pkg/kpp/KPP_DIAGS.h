@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/KPP_DIAGS.h,v 1.3 2001/03/06 17:50:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/KPP_DIAGS.h,v 1.4 2004/07/24 01:16:25 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_KPP
@@ -26,7 +26,7 @@ C----------------------------------------------------------------
 C     kpp_TimeAve - time of temporal integration (s) for each thread
 C----------------------------------------------------------------
 
-      REAL kpp_TimeAve(Nr,nSx,nSy)
+      _RL kpp_TimeAve(Nr,nSx,nSy)
       COMMON /KPP_TAVE/ kpp_TimeAve
 
 C----------------------------------------------------------------
