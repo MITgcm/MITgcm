@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.24 2001/10/27 02:16:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.25 2001/11/20 21:13:09 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -136,7 +136,6 @@ C--     Step forward fields and calculate time tendency terms.
         CALL TIMER_STOP ('DYNAMICS            [THE_MAIN_LOOP]',mythid)
         ENDIF
 
-#ifndef ALLOW_AUTODIFF_TAMC
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Step forward W field in N-H algorithm
         IF ( momStepping .AND. nonHydrostatic ) THEN
@@ -145,7 +144,6 @@ C--   Step forward W field in N-H algorithm
           CALL TIMER_STOP ('CALC_GW          [THE_MAIN_LOOP]',myThid)
         ENDIF
 #endif
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef NONLIN_FRSURF
 C--   update hfacC,W,S and recip_hFac according to etaH(n+1) :
