@@ -1,28 +1,42 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.4 2003/12/24 00:29:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_surfcor.F,v 1.5 2004/04/03 21:17:10 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
 
-      SUBROUTINE MON_SURFCOR(
-     I                       myThid )
-C     |==========================================================
-C     | SUBROUTINE MON_SURFCOR                                   
-C     | o Compute and write area-mean surface expansion term    
-C     |   (also called "surface correction" with Linear FS)
-C     |==========================================================
-C     | Diagnose mean surface expansion term
-C     |             with r coordinate  = w_surf * Tracer
-C     |                 units = W_units * Tracer units ; + = out 
-C     |             with r* coord.:  = d.eta/dt * dz/H * Tracer
-C     | Atmosphere :                                               
-C     |   convert surf.cor(Theta) to surface heating, 
-C     |                 units= W/m2, + = out
-C     |   compute mean conversion term Temp -> PE , units= W/m2, 
-C     |               + = decreasing heat content, increasing PE
-C     |==========================================================
-      IMPLICIT NONE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MON_SURFCOR
 
-C     === Global data ===
+C     !INTERFACE:
+      SUBROUTINE MON_SURFCOR(
+     I     myThid )
+
+C     !DESCRIPTION:
+C     Compute and write area-mean surface expansion term (also called
+C     ``surface correction'' with Linear FS).
+C
+C     Diagnose mean surface expansion term
+C     \begin{equation}
+C       \mbox{with r coordinate} = (\mbox{w surf})(\mbox{Tracer})
+C     \end{equation}
+C     \begin{equation}
+C       \mbox{units} = (\mbox{W units})(\mbox{Tracer units})
+C       \ ; \ \mbox{+ = out} 
+C     \end{equation}
+C     \begin{equation}
+C       \mbox{with r* coord}) = \frac{d\eta}{dt} \frac{dz}{H}
+C       (\mbox{Tracer})
+C     \end{equation}
+C     
+C     Atmosphere: convert surf.cor(Theta) to surface heating, 
+C     \begin{equation}
+C       \mbox{units} = \frac{W}{m^2}, \mbox{+ = out}
+C     \end{equation}
+C     compute mean conversion term Temp -> PE , units= W/m2, 
+C     + = decreasing heat content, increasing PE
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -31,10 +45,11 @@ C     === Global data ===
 #include "GRID.h"
 #include "MONITOR.h"
 
-C     === Routine arguments ===
+C     !INPUT PARAMETERS:
       INTEGER myThid
+CEOP
 
-C     === Local variables ====
+C     !LOCAL VARIABLES:
       INTEGER i,j,k,ks,bi,bj 
       _RL theArea, wT_Mean, wS_Mean, tmp_wS_M, wT_Heat
       _RL vT_Mean, vS_Mean, vT_Heat, theta2PE

@@ -1,39 +1,37 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.9 2004/03/05 02:28:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.10 2004/04/03 21:17:10 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
 
-      SUBROUTINE MON_STATS_RL(
-     I                myNr, arr, arrMask,arrhFac, arrArea, arrDr,
-     O                theMin,theMax,theMean,theSD,theDel2,theVol,
-     I                myThid )
-C     /==========================================================\
-C     | SUBROUTINE MON_STATS_RL                                  |
-C     | o Calculate bare statistics of global array "_RL arr"    |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MON_STATS_RL
 
-C     === Global data ===
+C     !INTERFACE:
+      SUBROUTINE MON_STATS_RL(
+     I     myNr, arr, arrMask,arrhFac, arrArea, arrDr,
+     O     theMin,theMax,theMean,theSD,theDel2,theVol,
+     I     myThid )
+
+C     Calculate bare statistics of global array ``\_RL arr''.
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 
-C     === Routine arguments ===
+C     !INPUT PARAMETERS:
       INTEGER myNr
       _RL arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RS arrhFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RS arrArea(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS arrDr(myNr)
-      _RL theMin
-      _RL theMax
-      _RL theMean
-      _RL theSD
-      _RL theDel2
-      _RL theVol
+      _RL theMin, theMax, theMean, theSD, theDel2, theVol
       INTEGER myThid
+CEOP
 
-C     === Local variables ====
+C     !LOCAL VARIABLES:
       INTEGER bi,bj,I,J,K
       INTEGER numPnts
       LOGICAL noPnts

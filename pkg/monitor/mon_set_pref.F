@@ -1,30 +1,34 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_set_pref.F,v 1.1 2003/05/13 18:18:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_set_pref.F,v 1.2 2004/04/03 21:17:10 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
 
-      SUBROUTINE MON_SET_PREF(prefString, myThid )
-C     /==========================================================\
-C     | SUBROUTINE MON_SET_PREF                                  |
-C     | o Set default monitor prefix string.                     |
-C     \==========================================================/
-      IMPLICIT NONE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MON_SET_PREF
 
-C     === Global data ===
+C     !INTERFACE:
+      SUBROUTINE MON_SET_PREF( prefString, myThid )
+
+C     !DESCRIPTION:
+C     Set default monitor prefix string.
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "MONITOR.h"
-
       EXTERNAL IFNBLNK, ILNBLNK
       INTEGER  IFNBLNK, ILNBLNK
 
-C     === Routine arguments ===
+C     !INPUT PARAMETERS:
 C     prefString - String to use for prefixing monitor output
 C     myThid     - Instance number of this call to monitor
       CHARACTER*(*) prefString
       INTEGER myThid
+CEOP
 
-C     === Local variables ===
+C     !LOCAL VARIABLES:
 C     I0, I1 - String first and last indices
 C     IL     - String length
       INTEGER I0, I1

@@ -1,18 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.7 2004/03/15 01:37:23 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.8 2004/04/03 21:17:10 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "MONITOR_OPTIONS.h"
 
-      SUBROUTINE MON_VORT3(
-     I                     myIter, myThid )
-C     *==========================================================*
-C     | SUBROUTINE MON_VORT3
-C     | o Calculates stats for Vorticity (z-component)
-C     *==========================================================*
-      IMPLICIT NONE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MON_VORT3
 
-C     === Global data ===
+C     !INTERFACE:
+      SUBROUTINE MON_VORT3(
+     I     myIter, myThid )
+
+C     !DESCRIPTION:
+C     Calculates stats for Vorticity (z-component).
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -24,10 +28,11 @@ C     === Global data ===
 #include "W2_EXCH2_PARAMS.h"
 #endif /* ALLOW_EXCH2 */
 
-C     === Routine arguments ===
+C     !INPUT PARAMETERS:
       INTEGER myIter, myThid
+CEOP
 
-C     === Local variables ====
+C     !LOCAL VARIABLES:
       INTEGER bi,bj,i,j,k
       INTEGER iMax,jMax
       _RL numPnts, theVol, theArea, tmpVal, tmpAre, tmpVol

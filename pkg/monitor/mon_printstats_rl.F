@@ -1,26 +1,29 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rl.F,v 1.7 2003/05/13 18:18:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_printstats_rl.F,v 1.8 2004/04/03 21:17:10 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
 
-      SUBROUTINE MON_PRINTSTATS_RL(
-     I                myNr, arr, arrName, 
-     I                arrMask,arrhFac,arrArea,arrDr,
-     I                myThid )
-C     /==========================================================\
-C     | SUBROUTINE MON_PRINTSTATS_RL                             |
-C     | o Prints to STDOUT the bare statistics of global array   |
-C     |   "_RL arr" with label "arrName"                         |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MON_KE
 
-C     === Global data ===
+C     !INTERFACE:
+      SUBROUTINE MON_PRINTSTATS_RL(
+     I     myNr, arr, arrName, 
+     I     arrMask,arrhFac,arrArea,arrDr,
+     I     myThid )
+
+C     !DESCRIPTION:
+C     Prints to STDOUT the bare statistics of global array "\_RL arr"
+C     with label "arrName".
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "MONITOR.h"
 
-C     === Routine arguments ===
+C     !INPUT PARAMETERS:
       INTEGER myNr
       _RL arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RS arrMask(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
@@ -29,19 +32,15 @@ C     === Routine arguments ===
       _RS arrDr(myNr)
       CHARACTER*(*) arrName
       INTEGER myThid
+CEOP
 
-C     === Local variables ====
-      _RL theMin
-      _RL theMax
-      _RL theMean
-      _RL theSD
-      _RL theDel2
-      _RL theVol
+C     !LOCAL VARIABLES:
+      _RL theMin, theMax, theMean, theSD, theDel2, theVol
 
       CALL MON_STATS_RL(
-     I                myNr, arr, arrMask,arrhFac,arrArea,arrDr,
-     O                theMin,theMax,theMean,theSD,theDel2,theVol,
-     I                myThid )
+     I     myNr, arr, arrMask, arrhFac, arrArea, arrDr,
+     O     theMin, theMax, theMean, theSD, theDel2, theVol,
+     I     myThid )
 
       CALL MON_OUT_RL( arrName, theMax,  mon_foot_max  ,myThid)
       CALL MON_OUT_RL( arrName, theMin,  mon_foot_min  ,myThid)

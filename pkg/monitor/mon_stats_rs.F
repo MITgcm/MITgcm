@@ -1,33 +1,34 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rs.F,v 1.5 2004/03/05 02:28:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rs.F,v 1.6 2004/04/03 21:17:10 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
 
-      SUBROUTINE MON_STATS_RS(
-     I                myNr, arr,
-     O                theMin,theMax,theMean,theSD,
-     I                myThid )
-C     /==========================================================\
-C     | SUBROUTINE MON_STATS_RS                                  |
-C     | o Calculate bare statistics of global array "_RS arr"    |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MON_STATS_RS
 
-C     === Global data ===
+C     !INTERFACE:
+      SUBROUTINE MON_STATS_RS(
+     I     myNr, arr,
+     O     theMin,theMax,theMean,theSD,
+     I     myThid )
+
+C     !DESCRIPTION:
+C     Calculate bare statistics of global array ``\_RS arr''.
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 
-C     === Routine arguments ===
+C     !INPUT PARAMETERS:
       INTEGER myNr
       _RS arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
-      _RL theMin
-      _RL theMax
-      _RL theMean
-      _RL theSD
+      _RL theMin, theMax, theMean, theSD
       INTEGER myThid
+CEOP
 
-C     === Local variables ====
+C     !LOCAL VARIABLES:
       INTEGER bi,bj,I,J,K
       INTEGER numPnts
       LOGICAL noPnts
