@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.9 2005/02/28 19:38:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.10 2005/03/01 15:48:03 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -125,24 +125,37 @@ C       Now define:  Zmdxxxxxx, Zudxxxxxx, Zldxxxxxx
           WRITE(dn(1),'(3a,i6.6)') 'Z',ctmp(i:i),'d',nlevels(listnum)
           CALL MNC_CW_ADD_GNAME(dn(1), 1, dim, dn, ib, ie, myThid)
           CALL MNC_CW_ADD_VNAME(dn(1), dn(1), 0,0, myThid)
-          DO j = 1,nlevels(listnum)
-            IF (i .EQ. 1) THEN
-              ztmp(j) = rC(levs(j,listnum))
-              CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
-     &             'Dimensional coordinate value at the mid point',
-     &             myThid)
-            ELSEIF (i .EQ. 2) THEN
-              ztmp(j) = rF(levs(j,listnum) + 1)
-              CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
-     &             'Dimensional coordinate value at the upper point',
-     &             myThid)
-            ELSEIF (i .EQ. 3) THEN
-              ztmp(j) = rF(levs(j,listnum))
-              CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
-     &             'Dimensional coordinate value at the lower point',
-     &             myThid)
-            ENDIF
-          ENDDO
+
+C         The following three ztmp() loops should eventually be modified
+C         to reflect the fractional nature of levs(j,l) -- they should
+C         do something like:
+C            ztmp(j) = rC(INT(FLOOR(levs(j,l)))) 
+C                      + ( rC(INT(FLOOR(levs(j,l)))) 
+C                          + rC(INT(CEIL(levs(j,l)))) )
+C                        / ( levs(j,l) - FLOOR(levs(j,l)) )
+C         for averaged levels.
+          IF (i .EQ. 1) THEN
+            DO j = 1,nlevels(listnum)
+              ztmp(j) = rC(NINT(levs(j,listnum)))
+            ENDDO
+            CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
+     &           'Dimensional coordinate value at the mid point',
+     &           myThid)
+          ELSEIF (i .EQ. 2) THEN
+            DO j = 1,nlevels(listnum)
+              ztmp(j) = rF(NINT(levs(j,listnum)) + 1)
+            ENDDO
+            CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
+     &           'Dimensional coordinate value at the upper point',
+     &           myThid)
+          ELSEIF (i .EQ. 3) THEN
+            DO j = 1,nlevels(listnum)
+              ztmp(j) = rF(NINT(levs(j,listnum)))
+            ENDDO
+            CALL MNC_CW_ADD_VATTR_TEXT(dn(1),'description',
+     &           'Dimensional coordinate value at the lower point',
+     &           myThid)
+          ENDIF
           CALL MNC_CW_RS_W('D',diag_mnc_bn,0,0, dn(1), ztmp, myThid)
           CALL MNC_CW_DEL_VNAME(dn(1), myThid)
           CALL MNC_CW_DEL_GNAME(dn(1), myThid)
