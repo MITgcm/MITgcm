@@ -1,7 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.149 2003/04/17 15:36:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.150 2003/04/30 07:04:08 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint50c_pre
+Merging from release1_p13:
+o bug fix for pkg/seaice dynamic solver
+o Added SEAICE_initialHEFF to pkg/seaice
 
 checkpoint50b_post
 o store u*,v* in gU,V instead of in guNm1,gvNm1

@@ -19,7 +19,12 @@ C     === Global variables ===
 #include "FFIELDS.h"
 #include "SEAICE.h"
 #include "SEAICE_FFIELDS.h"
- 
+       COMMON /SEAICE_BOUND_RL/
+     &    MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
+     &    SEAICE_EPS, SEAICE_EPS_SQ
+      _RL SEAICE_EPS, SEAICE_EPS_SQ
+      _RL MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE
+
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
       _RL A22
@@ -33,7 +38,7 @@ C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
       INTEGER KOPEN
-      _RL U1, V1
+      _RL U1, V1, SPEED_SQ
 
       _RL HICE (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL UG   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
@@ -68,11 +73,16 @@ C NOW DETERMINE MIXED LAYER TEMPERATURE
 
         DO J=1,sNy
          DO I=1,sNx
-          U1=0.25 _d 0*(UWIND(I-1,J-1,bi,bj)+UWIND(I-1,J,bi,bj)
-     1      +UWIND(I,J-1,bi,bj)+UWIND(I,J,bi,bj))
-          V1=0.25 _d 0*(VWIND(I-1,J-1,bi,bj)+VWIND(I-1,J,bi,bj)
-     1      +VWIND(I,J-1,bi,bj)+VWIND(I,J,bi,bj))
-          UG(I,J)=SQRT(U1**2+V1**2)
+          U1=0.25 _d 0*(UWIND(I+1,J+1,bi,bj)+UWIND(I+1,J,bi,bj)
+     1      +UWIND(I,J+1,bi,bj)+UWIND(I,J,bi,bj))
+          V1=0.25 _d 0*(VWIND(I+1,J+1,bi,bj)+VWIND(I+1,J,bi,bj)
+     1      +VWIND(I,J+1,bi,bj)+VWIND(I,J,bi,bj))
+          SPEED_SQ = U1**2 + V1**2
+          IF ( SPEED_SQ .LT. SEAICE_EPS_SQ ) THEN
+             UG(I,J)=SEAICE_EPS
+          ELSE
+             UG(I,J)=SQRT(SPEED_SQ)
+          ENDIF
          ENDDO
         ENDDO
 

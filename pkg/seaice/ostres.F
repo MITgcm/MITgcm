@@ -87,7 +87,7 @@ C--   Update overlap regions
       _EXCH_XY_R8(WINDX, myThid)
       _EXCH_XY_R8(WINDY, myThid)
 
-C--   Interpolate wind stress (N/m^2) from North-East B-grid
+C--   Interpolate wind stress (N/m^2) from South-West B-grid
 C     to South-West C-grid for forcing ocean model.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -97,9 +97,9 @@ C     to South-West C-grid for forcing ocean model.
           IF (HEFF(I,J,1,bi,bj).GT.0.0) THEN
 #endif
              fu(I,J,bi,bj)=HALF
-     &            *(WINDX(I-1,J-1,bi,bj)+WINDX(I-1,J,bi,bj))
+     &            *(WINDX(I,J+1,bi,bj)+WINDX(I,J,bi,bj))
              fv(I,J,bi,bj)=HALF
-     &            *(WINDY(I-1,J-1,bi,bj)+WINDY(I,J-1,bi,bj))
+     &            *(WINDY(I+1,J,bi,bj)+WINDY(I,J,bi,bj))
 #ifdef SEAICE_EXTERNAL_FLUXES
           ENDIF
 #endif

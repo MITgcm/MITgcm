@@ -195,16 +195,14 @@ To run Experiment 3:
   mkdir exp3b
   mv *tave.0000000001.data exp3b
 
-Use matlab script lookat_exp3.m to compare
-the output of exp2 to that of exp1:
+Use matlab script lookat_exp3.m to look at
+results from exp3a and exp3b:
   cd ../../../verification/lab_sea/matlab
   matlab
   lookat_exp3
 
 If the dynamic ice solvers are correct, they should converge to a
-constant solution.  The tests above show that both the ADI and the LSR
-solver are unable to handle periodic domains and therefore that they
-cannot be "correctly" parallelized.
+solution that is constant at each latitude.
 
 
 Instructions for running Experiment 4
@@ -232,7 +230,8 @@ NPSEUDO in data.seaice at the expense of computation time.
 Also as sea-ice ages (thickens) the difference at the tiles becomes
 increasingly small.  For solver pkg/seaice/adi.F a value of NPSEUDO=10
 appears adequate for forward integrations but cannot be used for sea-ice
-adjoint model.  Work is underway to fix this problem.
+adjoint model.  With NPSEUDO=300 or greater, the tile disappears, but the
+computational cost is very large (11 times that of teh forward model).
 
 
 Instructions for running Experiment 5

@@ -6,7 +6,13 @@ CStartOfInterface
       SUBROUTINE seaice_model( myTime, myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE SEAICE_MODEL                                  |
-C     | o Time stepping of sea ice model.                        |
+C     | o Time stepping of a dynamic thermodynamic sea ice model |
+C     |  Dynamics solver: Zhang/Hibler, JGR, 102, 8691-8702, 1997|
+C     |    and          Zhang/Rothrock, JGR, 105, 3325-3338, 2000|
+C     |  Thermodynamics:        Hibler, MWR, 108, 1943-1973, 1980|
+C     |  Rheology:              Hibler, JPO,   9,  815- 846, 1979|
+C     |  Written by Jinlun Zhang (PSC/UW), Feb-2001              |
+C     |  Incorporated into MITgcm by Dimitris Menemenlis (JPL)   |
 C     |==========================================================|
 C     \==========================================================/
       IMPLICIT NONE
@@ -67,10 +73,10 @@ C--   Third level model velocity is used as proxy for geostrophic velocity
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=0,sNy+1
          DO i=0,sNx+1
-          GWATX(I,J,bi,bj)=HALF*(uVel(i+1,j,3,bi,bj)
-     &                         +uVel(i+1,j+1,3,bi,bj))
-          GWATY(I,J,bi,bj)=HALF*(vVel(i,j+1,3,bi,bj)
-     &                         +vVel(i+1,j+1,3,bi,bj))
+          GWATX(I,J,bi,bj)=HALF*(uVel(i,j,3,bi,bj)
+     &                         +uVel(i,j-1,3,bi,bj))
+          GWATY(I,J,bi,bj)=HALF*(vVel(i,j,3,bi,bj)
+     &                         +vVel(i-1,j,3,bi,bj))
 #ifdef SEAICE_DEBUG
 c          write(*,'(2i4,2i2,f7.1,7f12.3)')
 c     &     ,i,j,bi,bj,UVM(I,J,bi,bj)

@@ -56,9 +56,9 @@ C NOW DO DIFFUSION WITH NUIT CONVERSION
      &     -HEFF(I,J,3,bi,bj))*HEFFM(I+1,J,bi,bj)
      &     -(HEFF(I,J,3,bi,bj)-HEFF(I-1,J,3,bi,bj))*HEFFM(I-1,J,bi,bj))
      &     +DELTYY*((HEFF(I,J+1,3,bi,bj)-HEFF(I,J,3,bi,bj))
-     &     *CSUICE(I,J,bi,bj)*HEFFM(I,J+1,bi,bj)
+     &     *CSUICE(I+1,J+1,bi,bj)*HEFFM(I,J+1,bi,bj)
      &     -(HEFF(I,J,3,bi,bj)-HEFF(I,J-1,3,bi,bj))
-     &     *CSUICE(I,J-1,bi,bj)*HEFFM(I,J-1,bi,bj))
+     &     *CSUICE(I+1,J,bi,bj)*HEFFM(I,J-1,bi,bj))
          ENDDO
         ENDDO
 

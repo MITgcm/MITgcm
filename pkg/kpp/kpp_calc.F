@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.16 2003/03/21 23:18:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.17 2003/04/30 07:04:08 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -132,9 +132,9 @@ c     imin, imax, jmin, jmax  - array computation indices
       parameter( minusone=-1.0)
       _KPP_RL    p0    , p5    , p25     , p125      , p0625
       parameter( p0=0.0, p5=0.5, p25=0.25, p125=0.125, p0625=0.0625 )
-      integer    imin      , imax        , jmin      , jmax
+      integer   imin      ,imax          ,jmin      ,jmax
 #ifdef FRUGAL_KPP
-      parameter( imin=1    , imax=sNx    , jmin=1    , jmax=sNy     )
+      parameter(imin=1    ,imax=sNx      ,jmin=1    ,jmax=sNy      )
 #else
       parameter(imin=2-OLx,imax=sNx+OLx-1,jmin=2-OLy,jmax=sNy+OLy-1)
 #endif

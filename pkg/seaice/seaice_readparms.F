@@ -50,7 +50,8 @@ C--   SEAICE parameters
      & SSTForcingStart,  SSTForcingEnd,  SSTForcingPeriod,
      & SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod,
      & StartingYear, EndingYear,
-     & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE
+     & MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
+     & SEAICE_EPS, SEAICE_EPS_SQ
 
       _BEGIN_MASTER(myThid)
 
@@ -129,6 +130,8 @@ C DOUBLE HO BECAUSE OF MOD IN GROWTH
       MIN_LWDOWN        = 60.     _d 0
       MAX_TICE          = 30.     _d 0
       MIN_TICE          = -50.    _d 0
+      SEAICE_EPS        = 1.      _d -10
+      SEAICE_EPS_SQ     = 1.      _d -20
 
 C--   Read settings from model parameter file "data.seaice".
       READ(UNIT=iUnit,NML=SEAICE_PARM01,IOSTAT=errIO)

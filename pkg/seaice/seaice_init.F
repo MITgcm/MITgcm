@@ -59,15 +59,15 @@ C---  initialize grid info
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1,sNy
          DO I=1,sNx
-          TNGTICE(i,j,bi,bj)=tanPhiAtU(i,j,bi,bj)
-          TNGICE(i,j,bi,bj) =tanPhiAtV(i,j+1,bi,bj)
-          CSTICE(i,j,bi,bj) =cos(atan(tanPhiAtU(i,j,bi,bj)))
-          CSUICE(i,j,bi,bj) =cos(atan(tanPhiAtV(i,j+1,bi,bj)))
-          SINEICE(i,j,bi,bj)=sin(atan(tanPhiAtV(i,j+1,bi,bj)))
+          CSTICE(i,j,bi,bj) =cos(yC(I,J,bi,bj)*deg2rad)
+          CSUICE(i,j,bi,bj) =cos(yG(I,J,bi,bj)*deg2rad)
+          SINEICE(i,j,bi,bj)=sin(yG(I,J,bi,bj)*deg2rad)
+          TNGTICE(i,j,bi,bj)=tan(acos(CSTICE(i,j,bi,bj)))
+          TNGICE(i,j,bi,bj) =SINEICE(i,j,bi,bj)/CSUICE(i,j,bi,bj)
           DXTICE(i,j,bi,bj)=dxF(i,j,bi,bj)/CSTICE(i,j,bi,bj)
-          DXUICE(i,j,bi,bj)=dxC(i+1,j,bi,bj)/CSUICE(i,j,bi,bj)
+          DXUICE(i,j,bi,bj)=dxV(i,j,bi,bj)/CSUICE(i,j,bi,bj)
           DYTICE(i,j,bi,bj)=dyF(i,j,bi,bj)
-          DYUICE(i,j,bi,bj)=dyC(i,j+1,bi,bj)
+          DYUICE(i,j,bi,bj)=dyU(i,j,bi,bj)
          ENDDO
         ENDDO
         DO j=1-OLy,sNy+OLy
@@ -79,8 +79,8 @@ C---  initialize grid info
         DO J=1,sNy
          DO I=1,sNx
           UVM(i,j,bi,bj)=ZERO
-          mask_uice=HEFFM(I,J,  bi,bj)+HEFFM(I+1,J+1,bi,bj)
-     &             +HEFFM(I,J+1,bi,bj)+HEFFM(I+1,J,  bi,bj)
+          mask_uice=HEFFM(I,J,  bi,bj)+HEFFM(I-1,J-1,bi,bj)
+     &             +HEFFM(I,J-1,bi,bj)+HEFFM(I-1,J,  bi,bj)
           IF(mask_uice.GT.3.5) UVM(I,J,bi,bj)=ONE
          ENDDO
         ENDDO

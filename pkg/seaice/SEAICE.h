@@ -9,18 +9,18 @@ C     |   Contains most sea ice field declarations.              |
 C     \==========================================================/
 C
 C     UICE  - zonal ice velocity in m/s
-C             at North-East B-grid U point
+C             at South-West B-grid U point
 C             >0 from West to East
 C     VICE  - meridional ice velocity in m/s
-C             at North-East B-grid U point
+C             at South-West B-grid U point
 C             >0 from South to North
-C             note: the North-East B-grid U and V points are on
-C                the upper, right-hand corner of each grid cell
+C             note: the South-West B-grid U and V points are on
+C                the lower, left-hand corner of each grid cell
 C     AREA  - fractional ice-covered area in m^2/m^2
-C             at North-East B-grid tracer point
+C             at South-West B-grid tracer point
 C             0 is no cover, 1 is 100% cover
 C     HEFF  - effective ice thickness in m
-C             at North-East B-grid tracer point
+C             at South-West B-grid tracer point
 C             note: for non-zero AREA, actual ice
 C                thickness is HEFF / AREA
 C

@@ -80,15 +80,15 @@ C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
          DO I=0,sNx-1
           HEFF(I+1,J+1,1,bi,bj)=HEFF(I+1,J+1,K3,bi,bj)
      &     -DELTT*((HEFF(I+1,J+1,2,bi,bj)+HEFF
-     &     (I+2,J+1,2,bi,bj))*(UI(I+1,J+1)+UI(I+1,J))-
+     &     (I+2,J+1,2,bi,bj))*(UI(I+2,J+2)+UI(I+2,J+1))-
      &     (HEFF(I+1,J+1,2,bi,bj)+HEFF
-     &     (I,J+1,2,bi,bj))*(UI(I,J+1)+UI(I,J)))
+     &     (I,J+1,2,bi,bj))*(UI(I+1,J+2)+UI(I+1,J+1)))
      &     *(QUART/(DXTICE(I+1,J,bi,bj)*CSTICE(I,J+1,bi,bj)))
      &     -DELTT*((HEFF(I+1,J+1,2,bi,bj)
-     &     +HEFF(I+1,J+2,2,bi,bj))*(VI(I,J+1)
-     &     +VI(I+1,J+1)*CSUICE(I,J+1,bi,bj)
+     &     +HEFF(I+1,J+2,2,bi,bj))*(VI(I+1,J+2)
+     &     +VI(I+2,J+2)*CSUICE(I+1,J+2,bi,bj)
      &     -(HEFF(I+1,J+1,2,bi,bj)+HEFF(I+1,J,2,bi,bj))
-     &     *(VI(I,J)+VI(I+1,J))*CSUICE(I,J,bi,bj))
+     &     *(VI(I+1,J+1)+VI(I+2,J+1))*CSUICE(I+1,J+1,bi,bj))
      &     *(QUART/(DYTICE(I,J+1,bi,bj)*CSTICE(I,J+1,bi,bj))))
          ENDDO
         ENDDO
@@ -121,15 +121,15 @@ C NOW GO THROUGH STANDARD CONSERVATIVE ADVECTION
             DO I=0,sNx-1
              HEFF(I+1,J+1,1,bi,bj)=HEFF(I+1,J+1,3,bi,bj)
      &        -DELTT*((HEFF(I+1,J+1,2,bi,bj)+HEFF
-     &        (I+2,J+1,2,bi,bj))*(UI(I+1,J+1)+UI(I+1,J))-
+     &        (I+2,J+1,2,bi,bj))*(UI(I+2,J+2)+UI(I+2,J+1))-
      &        (HEFF(I+1,J+1,2,bi,bj)+HEFF
-     &        (I,J+1,2,bi,bj))*(UI(I,J+1)+UI(I,J)))
+     &        (I,J+1,2,bi,bj))*(UI(I+1,J+2)+UI(I+1,J+1)))
      &        *(QUART/(DXTICE(I+1,J,bi,bj)*CSTICE(I,J+1,bi,bj)))
      &        -DELTT*((HEFF(I+1,J+1,2,bi,bj)
-     &        +HEFF(I+1,J+2,2,bi,bj))*(VI(I,J+1)
-     &        +VI(I+1,J+1)*CSUICE(I,J+1,bi,bj)
+     &        +HEFF(I+1,J+2,2,bi,bj))*(VI(I+1,J+2)
+     &        +VI(I+2,J+2)*CSUICE(I+1,J+2,bi,bj)
      &        -(HEFF(I+1,J+1,2,bi,bj)+HEFF(I+1,J,2,bi,bj))
-     &        *(VI(I,J)+VI(I+1,J))*CSUICE(I,J,bi,bj))
+     &        *(VI(I+1,J+1)+VI(I+2,J+1))*CSUICE(I+1,J+1,bi,bj))
      &        *(QUART/(DYTICE(I,J+1,bi,bj)*CSTICE(I,J+1,bi,bj))))
             ENDDO
            ENDDO

@@ -143,10 +143,13 @@ C     MIN_ATEMP  - minimum air temperature   (deg C)
 C     MIN_LWDOWN - minimum downward longwave (W/m^2)
 C     MAX_TICE   - maximum ice temperature   (deg C)
 C     MIN_TICE   - minimum ice temperature   (deg C)
+C     SEAICE_EPS, SEAICE_EPS_SQ - used to reduce derivative singularities
 C
       _RL MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE
+      _RL SEAICE_EPS, SEAICE_EPS_SQ
       COMMON /SEAICE_BOUND_RL/
-     &    MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE
+     &    MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE,
+     &    SEAICE_EPS, SEAICE_EPS_SQ
 
 C--   Seaice time step
       COMMON /SEAICE_R/ SEAICE_DT

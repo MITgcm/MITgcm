@@ -13,46 +13,46 @@ C     uwind     :: Surface (10-m) zonal wind velocity in m/s
 C                  > 0 for increase in uVel, which is west to
 C                      east for cartesian and spherical polar grids
 C                  Typical range: -10 < uwind < 10
-C                  Northeast B-grid U point
+C                  Southwest B-grid U point
 C
 C     vwind     :: Surface (10-m) meridional wind velocity in m/s
 C                  > 0 for increase in vVel, which is south to
 C                      north for cartesian and spherical polar grids
 C                  Typical range: -10 < vwind < 10
-C                  Northeast B-grid V point
+C                  Southwest B-grid V point
 C
 C     evap      :: Evaporation in m/s
 C                  > 0 for increase in salt (ocean salinity)
 C                  Typical range: 0 < evap < 2.5e-7
-C                  Northeast B-grid tracer point
+C                  Southwest B-grid tracer point
 C
 C     precip    :: Precipitation in m/s
 C                  > 0 for decrease in salt (ocean salinity)
 C                  Typical range: 0 < precip < 5e-7
-C                  Northeast B-grid tracer point
+C                  Southwest B-grid tracer point
 C
 C     runoff    :: River and glacier runoff in m/s
 C                  > 0 for decrease in salt (ocean salinity)
 C                  Typical range: 0 < runoff < ????
-C                  Northeast B-grid tracer point
+C                  Southwest B-grid tracer point
 C
 C     atemp     :: Surface (2-m) air temperature in deg K
 C                  Typical range: 200 < atemp < 300
-C                  Northeast B-grid tracer point
+C                  Southwest B-grid tracer point
 C
 C     aqh       :: Surface (2m) specific humidity in kg/kg
 C                  Typical range: 0 < aqh < 0.02
-C                  Northeast B-grid tracer point
+C                  Southwest B-grid tracer point
 C
 C     swdown    :: Downward shortwave radiation in W/m^2
 C                  > 0 for increase in theta (ocean warming)
 C                  Typical range: 0 < swdown < 450
-C                  Northeast B-grid tracer point
+C                  Southwest B-grid tracer point
 C
 C     lwdown    :: Downward longwave radiation in W/m^2
 C                  > 0 for increase in theta (ocean warming)
 C                  Typical range: 50 < lwdown < 450
-C                  Northeast B-grid tracer point
+C                  Southwest B-grid tracer point
 C
 C
 C     NOTES:

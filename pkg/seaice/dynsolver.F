@@ -7,6 +7,9 @@ CStartOfInterface
 C     /==========================================================\
 C     | SUBROUTINE dynsolver                                     |
 C     | o Ice dynamics solver                                    |
+C     |  See Zhang and Hibler,   JGR, 102, 8691-8702, 1997       |
+C     |      Zhang and Rothrock, JGR, 105, 3325-3338, 2000       |
+C     |  and Hibler,             JPO,   9,  815- 846, 1979       |
 C     |==========================================================|
 C     \==========================================================/
       IMPLICIT NONE
@@ -85,9 +88,9 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
         DO j=1,sNy
          DO i=1,sNx
           AMASS(I,J,bi,bj)=RHOICE*QUART*(HEFF(i,j,1,bi,bj)
-     &           +HEFF(i+1,j,1,bi,bj)
-     &           +HEFF(i,j+1,1,bi,bj)
-     &           +HEFF(i+1,j+1,1,bi,bj))
+     &           +HEFF(i-1,j,1,bi,bj)
+     &           +HEFF(i,j-1,1,bi,bj)
+     &           +HEFF(i-1,j-1,1,bi,bj))
           COR_ICE(I,J,bi,bj)=AMASS(I,J,bi,bj)
      &         *TWO*OMEGA*SINEICE(I,J,bi,bj)
          ENDDO
@@ -103,16 +106,21 @@ C--   Wind stress computed here from wind on South-West C-grid
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           AAA=SQRT((HALF*(UWIND(I+1,J,bi,bj)+UWIND(I+1,J+1,bi,bj)))**2
-     &          +(HALF*(VWIND(I,J+1,bi,bj)+VWIND(I+1,J+1,bi,bj)))**2)
+           AAA=(HALF*(UWIND(I,J,bi,bj)+UWIND(I,J-1,bi,bj)))**2+
+     &         (HALF*(VWIND(I,J,bi,bj)+VWIND(I-1,J,bi,bj)))**2
+           IF ( AAA .LT. SEAICE_EPS_SQ ) THEN
+              AAA=SEAICE_EPS
+           ELSE
+              AAA=SQRT(AAA)
+           ENDIF
            DAIRN(I,J,bi,bj)=RHOAIR*SEAICE_drag*
      &          (2.70 _d 0+0.142 _d 0*AAA+0.0764 _d 0*AAA*AAA)
            FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &          (COSWIN*HALF*(UWIND(I+1,J,bi,bj)+UWIND(I+1,J+1,bi,bj))
-     &          -SINWIN*HALF*(VWIND(I,J+1,bi,bj)+VWIND(I+1,J+1,bi,bj)))
+     &          (COSWIN*HALF*(UWIND(I,J,bi,bj)+UWIND(I,J-1,bi,bj))
+     &          -SINWIN*HALF*(VWIND(I,J,bi,bj)+VWIND(I-1,J,bi,bj)))
            FORCEY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &          (SINWIN*HALF*(UWIND(I+1,J,bi,bj)+UWIND(I+1,J+1,bi,bj))
-     &          +COSWIN*HALF*(VWIND(I,J+1,bi,bj)+VWIND(I+1,J+1,bi,bj)))
+     &          (SINWIN*HALF*(UWIND(I,J,bi,bj)+UWIND(I,J-1,bi,bj))
+     &          +COSWIN*HALF*(VWIND(I,J,bi,bj)+VWIND(I-1,J,bi,bj)))
           ENDDO
          ENDDO
         ENDDO
@@ -124,7 +132,12 @@ C--   Wind stress computed here from wind on South-West B-grid
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           AAA=SQRT(UWIND(I,J,bi,bj)**2+VWIND(I,J,bi,bj)**2)
+           AAA=UWIND(I,J,bi,bj)**2+VWIND(I,J,bi,bj)**2
+           IF ( AAA .LT. SEAICE_EPS_SQ ) THEN
+              AAA=SEAICE_EPS
+           ELSE
+              AAA=SQRT(AAA)
+           ENDIF
            DAIRN(I,J,bi,bj)=RHOAIR*SEAICE_drag*
      &          (2.70 _d 0+0.142 _d 0*AAA+0.0764 _d 0*AAA*AAA)
            FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(COSWIN*UWIND(I,J,bi,bj)
@@ -173,11 +186,11 @@ C--   Update overlap regions for PRESS
 C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
      &          -(QUART/(DXUICE(I,J,bi,bj)*CSUICE(I,J,bi,bj)))
-     &          *(PRESS(I+1,J,bi,bj)+PRESS(I+1,J+1,bi,bj)
-     &          -PRESS(I,J,bi,bj)-PRESS(I,J+1,bi,bj))
+     &          *(PRESS(I,J,bi,bj)+PRESS(I,J-1,bi,bj)
+     &          -PRESS(I-1,J,bi,bj)-PRESS(I-1,J-1,bi,bj))
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)-QUART/DYUICE(I,J,bi,bj)
-     &          *(PRESS(I,J+1,bi,bj)+PRESS(I+1,J+1,bi,bj)
-     &          -PRESS(I,J,bi,bj)-PRESS(I+1,J,bi,bj))
+     &          *(PRESS(I,J,bi,bj)+PRESS(I-1,J,bi,bj)
+     &          -PRESS(I,J-1,bi,bj)-PRESS(I-1,J-1,bi,bj))
 C NOW KEEP FORCEX0
           FORCEX0(I,J,bi,bj)=FORCEX(I,J,bi,bj)
           FORCEY0(I,J,bi,bj)=FORCEY(I,J,bi,bj)
@@ -187,8 +200,8 @@ C NOW KEEP FORCEX0
       ENDDO
 
 C DO PSEUDO-TIMESTEPS TO OBTAIN AN ACCURATE VISCOUS-PLASTIC SOLUTION
-C 10 PSEUDO-TIMESTEPS OR MORE ARE SUGGESTED FOR HIGH-RESOLUTION (~10KM)
-C 1 PSEUDO-TIMESTEP CAN BE USED FOR LOW-RESOLUTION GLOBAL MODELING
+C A RANGE OF 5-300 PSEUDO-TIMESTEPS IS SUGGESTED DEPENDING ON ACCURACY
+C REQUIREMENTS OF SPECIFIC APPLICATION
 C NPSEUDO is now set in data.seaice input file
 C TIMESTEP FOR PSEUDO-TIMESTEPPING
       SEAICE_DT = DELTAT/NPSEUDO
@@ -247,22 +260,24 @@ C NOW ADD IN CURRENT FORCE
          DO i=1,sNx
 C NOW EVALUATE STRAIN RATES
           E11(I,J,bi,bj)=HALF/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
-     &                  *(UICE(I,J,1,bi,bj)+UICE(I,J-1,1,bi,bj)
-     &                  -UICE(I-1,J,1,bi,bj)-UICE(I-1,J-1,1,bi,bj))
-     &                  -QUART*(VICE(I,J,1,bi,bj)+VICE(I-1,J,1,bi,bj)
-     &                  +VICE(I-1,J-1,1,bi,bj)+VICE(I,J-1,1,bi,bj))
+     &                  *(UICE(I+1,J+1,1,bi,bj)+UICE(I+1,J,1,bi,bj)
+     &                  -UICE(I,J+1,1,bi,bj)-UICE(I,J,1,bi,bj))
+     &                  -QUART*(VICE(I+1,J+1,1,bi,bj)
+     &                  +VICE(I,J+1,1,bi,bj)
+     &                  +VICE(I,J,1,bi,bj)+VICE(I+1,J,1,bi,bj))
      &                  *TNGTICE(I,J,bi,bj)/RADIUS
           E22(I,J,bi,bj)=HALF/DYTICE(I,J,bi,bj)
-     &                  *(VICE(I,J,1,bi,bj)+VICE(I-1,J,1,bi,bj)
-     &                  -VICE(I,J-1,1,bi,bj)-VICE(I-1,J-1,1,bi,bj))
+     &                  *(VICE(I+1,J+1,1,bi,bj)+VICE(I,J+1,1,bi,bj)
+     &                  -VICE(I+1,J,1,bi,bj)-VICE(I,J,1,bi,bj))
           E12(I,J,bi,bj)=HALF*(HALF/DYTICE(I,J,bi,bj)
-     &                  *(UICE(I,J,1,bi,bj)+UICE(I-1,J,1,bi,bj)
-     &                  -UICE(I,J-1,1,bi,bj)-UICE(I-1,J-1,1,bi,bj))
+     &                  *(UICE(I+1,J+1,1,bi,bj)+UICE(I,J+1,1,bi,bj)
+     &                  -UICE(I+1,J,1,bi,bj)-UICE(I,J,1,bi,bj))
      &                  +HALF/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
-     &                  *(VICE(I,J,1,bi,bj)+VICE(I,J-1,1,bi,bj)
-     &                  -VICE(I-1,J,1,bi,bj)-VICE(I-1,J-1,1,bi,bj))
-     &                  +QUART*(UICE(I,J,1,bi,bj)+UICE(I-1,J,1,bi,bj)
-     &                  +UICE(I-1,J-1,1,bi,bj)+UICE(I,J-1,1,bi,bj))
+     &                  *(VICE(I+1,J+1,1,bi,bj)+VICE(I+1,J,1,bi,bj)
+     &                  -VICE(I,J+1,1,bi,bj)-VICE(I,J,1,bi,bj))
+     &                  +QUART*(UICE(I+1,J+1,1,bi,bj)
+     &                  +UICE(I,J+1,1,bi,bj)
+     &                  +UICE(I,J,1,bi,bj)+UICE(I+1,J,1,bi,bj))
      &                  *TNGTICE(I,J,bi,bj)/RADIUS)
 C  NOW EVALUATE VISCOSITIES
           DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(ONE+ECM2)
@@ -338,22 +353,24 @@ C NOW ADD IN CURRENT FORCE
          DO i=1,sNx
 C NOW EVALUATE STRAIN RATES
           E11(I,J,bi,bj)=HALF/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
-     &                  *(UICE(I,J,1,bi,bj)+UICE(I,J-1,1,bi,bj)
-     &                  -UICE(I-1,J,1,bi,bj)-UICE(I-1,J-1,1,bi,bj))
-     &                  -QUART*(VICE(I,J,1,bi,bj)+VICE(I-1,J,1,bi,bj)
-     &                  +VICE(I-1,J-1,1,bi,bj)+VICE(I,J-1,1,bi,bj))
+     &                  *(UICE(I+1,J+1,1,bi,bj)+UICE(I+1,J,1,bi,bj)
+     &                  -UICE(I,J+1,1,bi,bj)-UICE(I,J,1,bi,bj))
+     &                  -QUART*(VICE(I+1,J+1,1,bi,bj)
+     &                  +VICE(I,J+1,1,bi,bj)
+     &                  +VICE(I,J,1,bi,bj)+VICE(I+1,J,1,bi,bj))
      &                  *TNGTICE(I,J,bi,bj)/RADIUS
           E22(I,J,bi,bj)=HALF/DYTICE(I,J,bi,bj)
-     &                  *(VICE(I,J,1,bi,bj)+VICE(I-1,J,1,bi,bj)
-     &                  -VICE(I,J-1,1,bi,bj)-VICE(I-1,J-1,1,bi,bj))
+     &                  *(VICE(I+1,J+1,1,bi,bj)+VICE(I,J+1,1,bi,bj)
+     &                  -VICE(I+1,J,1,bi,bj)-VICE(I,J,1,bi,bj))
           E12(I,J,bi,bj)=HALF*(HALF/DYTICE(I,J,bi,bj)
-     &                  *(UICE(I,J,1,bi,bj)+UICE(I-1,J,1,bi,bj)
-     &                  -UICE(I,J-1,1,bi,bj)-UICE(I-1,J-1,1,bi,bj))
+     &                  *(UICE(I+1,J+1,1,bi,bj)+UICE(I,J+1,1,bi,bj)
+     &                  -UICE(I+1,J,1,bi,bj)-UICE(I,J,1,bi,bj))
      &                  +HALF/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
-     &                  *(VICE(I,J,1,bi,bj)+VICE(I,J-1,1,bi,bj)
-     &                  -VICE(I-1,J,1,bi,bj)-VICE(I-1,J-1,1,bi,bj))
-     &                  +QUART*(UICE(I,J,1,bi,bj)+UICE(I-1,J,1,bi,bj)
-     &                  +UICE(I-1,J-1,1,bi,bj)+UICE(I,J-1,1,bi,bj))
+     &                  *(VICE(I+1,J+1,1,bi,bj)+VICE(I+1,J,1,bi,bj)
+     &                  -VICE(I,J+1,1,bi,bj)-VICE(I,J,1,bi,bj))
+     &                  +QUART*(UICE(I+1,J+1,1,bi,bj)
+     &                  +UICE(I,J+1,1,bi,bj)
+     &                  +UICE(I,J,1,bi,bj)+UICE(I+1,J,1,bi,bj))
      &                  *TNGTICE(I,J,bi,bj)/RADIUS)
 C  NOW EVALUATE VISCOSITIES
           DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(ONE+ECM2)

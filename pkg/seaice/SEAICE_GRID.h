@@ -8,19 +8,19 @@ C     | o Sea ice model grid parameters.                         |
 C     \==========================================================/
 C
 C     TNGTICE   - tan(phi) at the B-grid cell center
-C     TNGICE    - tan(phi) at the north-east corner of the B-grid cell
+C     TNGICE    - tan(phi) at the south-west corner of the B-grid cell
 C     CSTICE    - cos(phi) at the B-grid cell center
-C     CSUICE    - cos(phi) at north-east corner of the B-grid cell
-C     SINEICE   - sin(phi) at north-east corner of the B-grid cell
+C     CSUICE    - cos(phi) at south-west corner of the B-grid cell
+C     SINEICE   - sin(phi) at south-west corner of the B-grid cell
 C     DXTICE    - Cell face separation in X thru B-grid cell center
 C     DYTICE    - Cell face separation in Y thru B-grid cell center
-C     DXUICE    - Separation in X with the north-east corner at the center
-C     DYUICE    - Separation in Y with the north-east corner at the center
+C     DXUICE    - Separation in X with the south-west corner at the center
+C     DYUICE    - Separation in Y with the south-west corner at the center
 C
 C     |       e                       e 
 C     |       t                       t
 C     |       c                       c
-C     |                  |<------dxuice(i=1)--------->|
+C     |                  |<------dxuice(i=2)--------->|
 C     |       uv---------------------uv--------------etc...
 C     |       |                       |
 C     |       |                       |
