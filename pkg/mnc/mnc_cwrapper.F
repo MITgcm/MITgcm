@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.14 2004/07/06 03:55:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.15 2004/07/06 21:04:28 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -65,6 +65,49 @@ C     Check that this name is not already defined
         mnc_cw_is(i,indg)   = inds_beg(i)
         mnc_cw_ie(i,indg)   = inds_end(i)
       ENDDO
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C     !ROUTINE: MNC_CW_DEL_GNAME
+
+C     !INTERFACE:
+      SUBROUTINE MNC_CW_DEL_GNAME( 
+     I     name, 
+     I     myThid )
+
+C     !DESCRIPTION:
+C     Delete a grid name from the MNC convenience wrapper layer.
+      
+C     !USES:
+      implicit none
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+
+C     !INPUT PARAMETERS:
+      integer myThid
+      character*(*) name
+CEOP
+
+C     !LOCAL VARIABLES:
+      integer nnf,nnl, indg
+
+C     Functions
+      integer IFNBLNK, ILNBLNK
+
+      nnf = IFNBLNK(name)
+      nnl = ILNBLNK(name)
+
+C     Check that this name is not already defined
+      CALL MNC_GET_IND(MNC_MAX_ID, name, mnc_cw_gname, indg, myThid)
+      IF (indg .LT. 1) THEN
+        RETURN
+      ENDIF
+
+      mnc_cw_gname(indg)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
+      mnc_cw_ndim(indg) = 0
 
       RETURN
       END
@@ -549,6 +592,46 @@ C     Check that gname exists
       mnc_cw_vbij(2,indv) = bj_dim
 
       CALL MNC_CW_ADD_VATTR_TEXT(vname,1,'mitgcm_grid',gname, myThid)
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C     !ROUTINE: MNC_CW_DEL_VNAME
+
+C     !INTERFACE:
+      SUBROUTINE MNC_CW_DEL_VNAME( 
+     I     vname, 
+     I     myThid )
+
+C     !DESCRIPTION: 
+C     Delete a variable type from the MNC CW layer.
+  
+C     !USES:
+      implicit none
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+
+C     !INPUT PARAMETERS:
+      integer myThid
+      character*(*) vname
+CEOP
+
+C     !LOCAL VARIABLES:
+      integer i, indv
+
+C     Check that this vname is not already defined
+      CALL MNC_GET_IND(MNC_MAX_ID, vname, mnc_cw_vname, indv, myThid)
+      IF (indv .LT. 1) THEN
+        RETURN
+      ENDIF
+
+      mnc_cw_vname(indv)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
+      mnc_cw_vgind(indv) = 0
+      DO i = 1,3
+        mnc_cw_vnat(i,indv) = 0
+      ENDDO
 
       RETURN
       END
