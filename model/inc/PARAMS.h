@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.99 2003/12/15 23:00:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.100 2004/01/03 00:32:23 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -215,6 +215,9 @@ C     useCDscheme   :: use CD-scheme to calculate Coriolis terms.
 C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 1986)
 C     implicitDiffusion :: Turns implicit vertical diffusion on
 C     implicitViscosity :: Turns implicit vertical viscosity on
+C     tempImplVertAdv :: Turns on implicit vertical advection for Temperature
+C     saltImplVertAdv :: Turns on implicit vertical advection for Salinity
+C     momImplVertAdv  :: Turns on implicit vertical advection for Momentum
 C     multiDimAdvection :: Flag that enable multi-dimension advection
 C     forcing_In_AB :: if False, put forcing (Temp,Salt,Tracers) contribution
 C                      out off Adams-Bashforth time stepping.
@@ -256,6 +259,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & useCDscheme,
      & useEnergyConservingCoriolis, useJamartWetPoints,
      & implicitDiffusion, implicitViscosity,
+     & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & multiDimAdvection, forcing_In_AB,
      & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax, 
      & periodicExternalForcing, 
@@ -302,6 +306,9 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL useJamartWetPoints
       LOGICAL implicitDiffusion
       LOGICAL implicitViscosity
+      LOGICAL tempImplVertAdv 
+      LOGICAL saltImplVertAdv 
+      LOGICAL momImplVertAdv
       LOGICAL multiDimAdvection
       LOGICAL forcing_In_AB
       LOGICAL doThetaClimRelax

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.29 2003/11/25 16:07:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.30 2004/01/03 00:32:23 jmc Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
@@ -20,6 +20,9 @@ C o Include/exclude call to S/R CONVECT
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
+
+C o Include/exclude Implicit vertical advection code
+#define INCLUDE_IMPLVERTADV_CODE
 
 C o Include/exclude nonHydrostatic code
 #undef ALLOW_NONHYDROSTATIC
