@@ -25,8 +25,8 @@
  &
 # Time stepping parameters
  &PARM03
- startTime=0,
- endTime=12000, 
+ startTime=0.,
+ endTime=12000., 
  deltaTmom=1200.0,
  deltaTtracer=1200.0,
  abEps=0.1,
