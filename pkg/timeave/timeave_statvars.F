@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.6 2003/02/18 15:37:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.7 2003/05/01 22:17:42 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -49,10 +49,12 @@ C-    Initialize fields for the first call ever
         CALL TIMEAVE_RESET(TTtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(UUtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(VVtave,    Nr, bi, bj, myThid)
+        CALL TIMEAVE_RESET(UVtave,    Nr, bi, bj, myThid)
 c       CALL TIMEAVE_RESET(KEtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(UTtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(VTtave,    Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(WTtave,    Nr, bi, bj, myThid)
+        CALL TIMEAVE_RESET(TdiffRtave,Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(phiHydtave,Nr, bi, bj, myThid)
         CALL TIMEAVE_RESET(phiHydLowtave,1, bi, bj, myThid)
         CALL TIMEAVE_RESET(phiHydLow2Tave,1, bi, bj, myThid)
@@ -88,7 +90,7 @@ C-    Time Averages of single fields (no hFactor)
       CALL TIMEAVE_CUMULATE(salttave, salt,  Nr, DDTT, bi, bj, myThid)
       CALL TIMEAVE_CUMULATE(uVeltave, uVel,  Nr, DDTT, bi, bj, myThid)
       CALL TIMEAVE_CUMULATE(vVeltave, vVel,  Nr, DDTT, bi, bj, myThid)
-      CALL TIMEAVE_CUMULATE(wVeltave, wVel, Nr,  DDTT, bi, bj, myThid)
+      CALL TIMEAVE_CUMULATE(wVeltave, wVel,  Nr, DDTT, bi, bj, myThid)
 
 C-    Time Averages of "double" fields (no hFactor)
       CALL TIMEAVE_CUMUL_2V(Eta2tave, etaN,etaN, 1,  0,
@@ -98,6 +100,8 @@ C-    Time Averages of "double" fields (no hFactor)
       CALL TIMEAVE_CUMUL_2V(UUtave, uVel,  uVel, Nr, 0,
      &     DDTT, bi, bj, myThid)
       CALL TIMEAVE_CUMUL_2V(VVtave, vVel,  vVel, Nr, 0,
+     &     DDTT, bi, bj, myThid)
+      CALL TIMEAVE_CUMUL_2V(UVtave, uVel,  vVel, Nr, 12,
      &     DDTT, bi, bj, myThid)
 c     CALL TIMEAVE_CUMUL_KE(KEtave, uVel,  vVel, Nr,
 c    &     DDTT, bi, bj, myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.4 2002/09/18 16:38:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.5 2003/05/01 22:17:42 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_TIMEAVE
@@ -34,10 +34,12 @@ C     Eta2tave     ::  eta * eta
 C     TTtave       :: theta * theta
 C     UUtave       :: uVel * uVel (used to compute the averaged KE)
 C     VVtave       :: vVel * vVel (used to compute the averaged KE)
+C     UVtave       :: uVel * vVel (at vorticity point, i.e. grid-corner)
 C     KEtave       :: Kinetic Energy
 C     UTtave       :: uVel * theta (* hFacW)
 C     VTtave       :: vVel * theta (* hFacS)
 C     WTtave       :: wVel * theta
+C     tDiffRtave   :: vertical diffusion flux of Temperature (theta)
 C     phiHydtave   :: Hydrostatic (ocean) pressure / (atmos) geo- Potential
 C     phiHydLowtave:: Hydrostatic (ocean) pressure / (atmos) geo- Potential
 C                     at the fixed boundary: (ocean) bottom pressure
@@ -52,8 +54,8 @@ C     ConvectCountTave :: Average number of convective adjustment event
      &                  etatave,Eta2tave,
      &                  uVeltave,vVeltave,wVeltave,
      &                  thetatave,salttave,
-     &                  TTtave,UUtave,VVtave,
-     &                  UTtave,VTtave,WTtave,
+     &                  TTtave,UUtave,VVtave,UVtave,
+     &                  UTtave,VTtave,WTtave,TdiffRtave,
      &                  phiHydtave,
      &                  phiHydLowtave,phiHydLow2Tave,
      &                  ConvectCountTave
@@ -68,10 +70,12 @@ c    &                 ,KEtave
       _RL  TTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  UUtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  VVtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  UVtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 c     _RL  KEtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  UTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  VTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  WTtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL TdiffRtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phiHydtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL phiHydLowtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL phiHydLow2Tave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

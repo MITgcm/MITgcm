@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.5 2002/10/07 16:29:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.6 2003/05/01 22:17:42 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -61,6 +61,7 @@ C-     Normalize by integrated time
           CALL TIMEAVE_NORMALIZ(TTtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(UUtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(VVtave,   TimeAve_half,Nr,bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(UVtave,   TimeAve_half,Nr,bi,bj,myThid)
 c         CALL TIMEAVE_NORMALIZ(KEtave,   TimeAve_half,Nr,bi,bj,myThid)
 #ifdef NONLIN_FRSURF
 C-     Normalize by integrated time
@@ -74,6 +75,8 @@ c         CALL TIMEAVE_NORMALIZ(hFacStave,TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(VTtave,   TimeAve_half,Nr,bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(WTtave,   TimeAve_half,Nr,bi,bj,myThid)
 
+          CALL TIMEAVE_NORMALIZ(TdiffRtave,TimeAve_full,Nr,
+     &                            bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(phiHydtave,TimeAve_full,Nr,
      &                            bi,bj,myThid)
           CALL TIMEAVE_NORMALIZ(phiHydLowtave,TimeAve_full,1,
@@ -109,11 +112,13 @@ c      writeBinaryPrec = precFloat32
        CALL WRITE_FLD_XYZ_RL('TTtave.',suff,TTtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('UUtave.',suff,UUtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('VVtave.',suff,VVtave,myIter,myThid)
+       CALL WRITE_FLD_XYZ_RL('UVtave.',suff,UVtave,myIter,myThid)
 c      CALL WRITE_FLD_XYZ_RL('KEtave.',suff,KEtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('UTtave.',suff,UTtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('VTtave.',suff,VTtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('WTtave.',suff,WTtave,myIter,myThid)
 
+       CALL WRITE_FLD_XYZ_RL('Tdiftave.',suff,TdiffRtave,myIter,myThid)
        CALL WRITE_FLD_XYZ_RL('PhHytave.',suff,phiHydtave,myIter,myThid)
        IF ( buoyancyRelation .NE. 'ATMOSPHERIC' ) THEN
        CALL WRITE_FLD_XY_RL('PHLtave.',suff,phiHydLowtave,
