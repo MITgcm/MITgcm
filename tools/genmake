@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.29 2001/02/08 18:00:24 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.30 2001/02/23 15:52:02 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -179,23 +179,16 @@ foreach dr ($SOURCEDIRS)
   endif
   echo Adding mods directory $adr
 end
-if (! $?STANDARDDIRS) set STANDARDDIRS=(eesupp model diags)
-foreach dr ($STANDARDDIRS)
-  set adr=$ROOTDIR/$dr/src
-  if (! -d $adr) then
-    echo Source directory $adr not found.; exit 1
-  endif
-  echo Adding source directory $adr
-  set SOURCEDIRS = ($SOURCEDIRS $adr)
-  set idr = `echo $adr | sed 's/src/inc/'`
-  set INCLUDEDIRS = ($INCLUDEDIRS $idr)
-end
 if (! $?PACKAGES) then
   set PACKAGES=(`cd $ROOTDIR/pkg; ls -1 | grep -v CVS`)
 endif
 foreach dr ($PACKAGES)
   set enable
   foreach p ($DISABLE)
+   if (! -d $ROOTDIR/pkg/$p) then
+     echo Specified package \"$p\" does not exist.
+     exit 1
+   endif
    if ($dr == $p) unset enable
    if ($p == 'all') unset enable
   end
@@ -213,6 +206,17 @@ foreach dr ($PACKAGES)
   else
     echo "*" Package \"$dr\" has not been enabled.
   endif
+end
+if (! $?STANDARDDIRS) set STANDARDDIRS=(eesupp model diags)
+foreach dr ($STANDARDDIRS)
+  set adr=$ROOTDIR/$dr/src
+  if (! -d $adr) then
+    echo Source directory $adr not found.; exit 1
+  endif
+  echo Adding source directory $adr
+  set SOURCEDIRS = ($SOURCEDIRS $adr)
+  set idr = `echo $adr | sed 's/src/inc/'`
+  set INCLUDEDIRS = ($INCLUDEDIRS $idr)
 end
 
 # This is the generic configuration.
