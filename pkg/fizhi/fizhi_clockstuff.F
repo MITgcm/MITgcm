@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.13 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.14 2004/09/29 02:58:51 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
-      subroutine set_alarm (tag,date,time,freq)
+      subroutine set_alarm (tag,datein,timein,freq)
 C***********************************************************************        
 C  Purpose                                                                      
 C  -------                                                                      
@@ -19,7 +19,7 @@ C***********************************************************************
 
       implicit none
       character*(*) tag
-      integer       freq,date,time
+      integer       freq,datein,timein
 
 #ifdef ALLOW_USE_MPI
 #include "SIZE.h"
@@ -32,8 +32,9 @@ C***********************************************************************
 #ifdef ALLOW_USE_MPI
 c MPI Utilities
 c -------------
-#include "mpif.h"
-      integer  mpi_comm_model,ierror
+c#include "mpif.h"
+c      integer  mpi_comm_model,ierror
+      integer  ierror
 #endif
 
       integer myid
@@ -51,9 +52,9 @@ c -------------
          ntags    = 1
           tags(1) = tag
          freqs(1) = freq
-         dates(1) = date
-         times(1) = time
-         if( myid.eq.1 ) write(6,100) date,time,freq,tags(1)
+         dates(1) = datein
+         times(1) = timein
+         if( myid.eq.1 ) write(6,100) datein,timein,freq,tags(1)
       else
 
       set = .false.
@@ -63,12 +64,12 @@ c -------------
          print *, 'Warning!  Alarm has already been set for Tag: ',tag
          print *, 'Changing  Alarm Information:'
          print *, 'Frequency: ',freqs(n),' (Old) ',freq,' (New)'
-         print *, '    Date0: ',dates(n),' (Old) ',date,' (New)'
-         print *, '    Time0: ',times(n),' (Old) ',time,' (New)'
+         print *, '    Date0: ',dates(n),' (Old) ',datein,' (New)'
+         print *, '    Time0: ',times(n),' (Old) ',timein,' (New)'
         endif
         freqs(n) = freq
-        dates(n) = date
-        times(n) = time
+        dates(n) = datein
+        times(n) = timein
         set = .true.
        endif
       enddo
@@ -84,9 +85,9 @@ c -------------
          endif
           tags(ntags) = tag
          freqs(ntags) = freq
-         dates(ntags) = date
-         times(ntags) = time
-         if( myid.eq.1 ) write(6,100) date,time,freq,tags(ntags)
+         dates(ntags) = datein
+         times(ntags) = timein
+         if( myid.eq.1 ) write(6,100) datein,timein,freq,tags(ntags)
       endif
       endif
 
@@ -96,7 +97,7 @@ c -------------
       return
       end
 
-      subroutine get_alarm (tag,date,time,freq,tleft)
+      subroutine get_alarm (tag,datein,timein,freq,tleft)
 C***********************************************************************        
 C  Purpose                                                                      
 C  -------                                                                      
@@ -108,16 +109,16 @@ C     tag ....... Character String Tagging Alarm Process
 C
 C  Output
 C  ------
-C     date ...... Begining  Date for Alarm
-C     time ...... Begining  Time for Alarm
-C     freq ...... Frequency Interval for Alarm
-C     tleft ..... Time Remaining (seconds) before Alarm is TRUE
+C     datein ...... Begining  Date for Alarm
+C     timein ...... Begining  Time for Alarm
+C     freq ........ Frequency Interval for Alarm
+C     tleft ....... Time Remaining (seconds) before Alarm is TRUE
 C
 C***********************************************************************        
 
       implicit none
       character*(*) tag
-      integer freq,date,time,tleft
+      integer freq,datein,timein,tleft
 
 #ifdef ALLOW_USE_MPI
 #include "SIZE.h"
@@ -130,8 +131,9 @@ C***********************************************************************
 #ifdef ALLOW_USE_MPI
 c MPI Utilities
 c -------------
-#include "mpif.h"
-      integer  mpi_comm_model,ierror
+c#include "mpif.h"
+c      integer  mpi_comm_model,ierror
+      integer  ierror
 #endif
 
       logical set,alarm
@@ -148,14 +150,14 @@ c -------------
       do n=1,ntags
       if(tag.eq.tags(n)) then
        freq  = freqs(n)
-       date  = dates(n)
-       time  = times(n)
+       datein  = dates(n)
+       timein  = times(n)
 
        if( alarm(tag) ) then
        tleft = 0
        else
        call get_time (nymd,nhms)
-       tleft = nsecf(freq) - nalarm(freq,nymd,nhms,date,time )
+       tleft = nsecf(freq) - nalarm(freq,nymd,nhms,datein,timein )
        endif
 
        set = .true.
@@ -165,8 +167,8 @@ c -------------
       if(.not.set) then
       if( myid.eq.1 ) print *, 'Alarm has not been set for Tag: ',tag
       freq  = 0
-      date  = 0
-      time  = 0
+      datein  = 0
+      timein  = 0
       tleft = 0
       endif
 
@@ -176,23 +178,23 @@ c -------------
       function alarm (tag)
       implicit none
       character*(*) tag
-      integer date,time
+      integer datein,timein
       logical alarm
 #include "chronos.h"
 
       integer n,modalarm,nalarm,freq,date0,time0
-      modalarm(freq,date0,time0) = nalarm (freq,date,time,date0,time0 )
+      modalarm(freq,date0,time0) = nalarm (freq,datein,timein,date0,time0 )
 
-      call get_time (date,time)
+      call get_time (datein,timein)
 
       alarm = .false.
       do n=1,ntags
       if( tags(n).eq.tag  ) then
           if( freqs(n).eq.0 ) then
-          alarm = (dates(n).eq.date) .and. (times(n).eq.time)
+          alarm = (dates(n).eq.datein) .and. (times(n).eq.timein)
           else
-          alarm = ( date.gt.dates(n) .or.
-     .             (date.eq.dates(n) .and. time.ge.times(n)) ) .and.
+          alarm = ( datein.gt.dates(n) .or.
+     .             (datein.eq.dates(n) .and. timein.ge.times(n)) ) .and.
      .              modalarm( freqs(n),dates(n),times(n) ).eq.0
           endif
       endif
@@ -201,9 +203,9 @@ c -------------
       return
       end
 
-      subroutine set_time (date,time)
+      subroutine set_time (datein,timein)
       implicit none
-      integer  date,time
+      integer  datein,timein
 
 #ifdef ALLOW_USE_MPI
 #include "SIZE.h"
@@ -216,8 +218,9 @@ c -------------
 #ifdef ALLOW_USE_MPI
 c MPI Utilities
 c -------------
-#include "mpif.h"
-      integer  mpi_comm_model,ierror
+c#include "mpif.h"
+c      integer  mpi_comm_model,ierror
+      integer  ierror
 #endif
       integer myid
 
@@ -228,23 +231,23 @@ c -------------
 #endif
       if(  myid.eq.1 ) then
       print *, 'Setting Clock'
-      print *, 'Date: ',date
-      print *, 'Time: ',time
+      print *, 'Date: ',datein
+      print *, 'Time: ',timein
       endif
 
-      nymd = date
-      nhms = time
+      nymd = datein
+      nhms = timein
       return
       end
 
-      subroutine get_time (date,time)
+      subroutine get_time (datein,timein)
       implicit none
-      integer date,time
+      integer datein,timein
 
 #include "chronos.h"
 
-      date = nymd
-      time = nhms
+      datein = nymd
+      timein = nhms
       return
       end
 
@@ -401,7 +404,7 @@ C***********************************************************************
       INTEGER  YEAR1, MONTH1, DAY1, SEC1
       INTEGER  YEAR2, MONTH2, DAY2, SEC2
 
-      _RL time, time1, time2
+      _RL time00, time1, time2
                                                                                 
       INTEGER    DAYSCY                                                         
       PARAMETER (DAYSCY = 365*4+1)                                   
@@ -450,15 +453,15 @@ C***********************************************************************
 C*                     COMPUTE INTERPOLATION FACTORS                   *        
 C***********************************************************************        
                                                                                 
-      time  = DAY  + MNDY(MONTH ,MOD(YEAR ,4)+1) + float(sec )/86400.
+      time00  = DAY  + MNDY(MONTH ,MOD(YEAR ,4)+1) + float(sec )/86400.
       time1 = DAY1 + MNDY(MONTH1,MOD(YEAR1,4)+1) + float(sec1)/86400.
       time2 = DAY2 + MNDY(MONTH2,MOD(YEAR2,4)+1) + float(sec2)/86400.
 
-      if( time .lt.time1 ) time  = time  + dayscy
+      if( time00 .lt.time1 ) time00  = time00  + dayscy
       if( time2.lt.time1 ) time2 = time2 + dayscy
 
-      fac1  = (time2-time)/(time2-time1)
-      fac2  = (time-time1)/(time2-time1)
+      fac1  = (time2-time00)/(time2-time1)
+      fac2  = (time00-time1)/(time2-time1)
 
       RETURN
       END

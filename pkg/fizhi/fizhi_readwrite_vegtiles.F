@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.8 2004/09/29 00:19:48 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.9 2004/09/29 02:58:51 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -28,6 +28,7 @@ C     !USES:
 
       EXTERNAL ILNBLNK
       INTEGER ILNBLNK
+      INTEGER MDS_RECLEN
 
 C     !INPUT/OUTPUT PARAMETERS:
       CHARACTER*(MAX_LEN_FNAM) fn
@@ -116,7 +117,7 @@ C       fizhi_earth_coms.h
 
        write(dataFname(1:80),'(2a,i3.3,a,'.001',a)')
      &              fn(1:ilst),'.',iG,'.','.data'
-       open( dUnit, file=dataFName, status='unknown',
+       open( iUnit, file=dataFName, status='unknown',
      &       access='direct', recl=length_of_rec )
 
        irec = 0
@@ -293,8 +294,14 @@ C     !USES:
 #ifdef ALLOW_MNC
 #include "MNC_PARAMS.h"
 #endif
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
+
       EXTERNAL ILNBLNK
       INTEGER ILNBLNK
+      INTEGER MDS_RECLEN
 
 C     !INPUT/OUTPUT PARAMETERS:
       CHARACTER*1 prec
@@ -367,7 +374,7 @@ C       fizhi_land_coms.h
 
        write(dataFname(1:80),'(2a,i3.3,a,'.001',a)')
      &              fn(1:ilst),'.',iG,'.','.data'
-       open( dUnit, file=dataFName, status='old',
+       open( iUnit, file=dataFName, status='old',
      &       access='direct', recl=length_of_rec )
 
        irec = 0
