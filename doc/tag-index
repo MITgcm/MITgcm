@@ -1,7 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.367 2004/10/13 21:49:05 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.368 2004/10/14 06:00:06 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint55g_post
+o Renaming carbon AD experiments to comply with testreport conventions
+o Updating adjoint of Held-Suarez hs94.1x64x5
+o Fixing directives for non-ECCO forward_step, after ECCO directives
+  have been fixed to avoid recomp. of do_oceanic_phys
+  Works well for global_ocean.90x40x15,
+  but recomp. issue remains for carbon
+o Updating adjoint output for natl_box_adjoint after 
+  pkg/ecco has been modified (see taga c55d_post)
 
 checkpoint55f_post
 o rename to timeave_init_fixed
