@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_COST.h,v 1.2 2004/09/02 19:47:48 edhill Exp $
+C $Name:  $
+
 DIC_COST.h
          _RL totcost
 c control variables
@@ -11,3 +14,7 @@ cQQ      _RL ligand_tot
      &    totcost
 cQQ  &   ,alpha, rain_ratio, KScav, ligand_stab, ligand_tot
 
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_DIAGS.h,v 1.2 2004/09/02 19:47:48 edhill Exp $
+C $Name:  $
+
 c DIC_DIAGS.h
          _RL po4obs (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
          _RL o2obs  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
@@ -34,3 +37,7 @@ cQQ	 _RL O2lev4  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,12,nSx,nSy)
      &    po4lev1,  po4lev2,  po4lev3 , 
      &    o2lev1 , o2lev2 , o2lev3 , 
      &    obsm_timetave, po4varm, o2varm
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

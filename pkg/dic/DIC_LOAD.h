@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/dic/DIC_LOAD.h,v 1.2 2004/09/02 19:47:48 edhill Exp $
+C $Name:  $
+
 #include "GCHEM_OPTIONS.h"
 
       COMMON /dic_load/
@@ -20,3 +23,7 @@
 	      _RS feinput1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

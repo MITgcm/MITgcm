@@ -1,6 +1,9 @@
+C $Header: /u/gcmpack/MITgcm/pkg/dic/Attic/DIC_ABIOTIC.h,v 1.4 2004/09/02 19:47:48 edhill Exp $
+C $Name:  $
+
 C     /==========================================================\
-C     | DIC_ABIOTIC.h                                                |
-C     | o Carbon Variables                                      |
+C     | DIC_ABIOTIC.h
+C     | o Carbon Variables
 C     |==========================================================|
 
        COMMON /CARBON_NEEDS/
@@ -69,3 +72,7 @@ C schmidt number coefficients
       _RL  sox3
       _RL  sox4
 
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***
