@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.1 2004/06/15 14:47:24 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.2 2004/06/15 16:06:03 molod Exp $
 C $Name:  $
-                                                                                    
+
+#include "CPP_OPTIONS.h"
       subroutine turbio (im,jm,nlay,maxtypes,istrip,nymd,nhms
      1 ,ndturb,ptop, pz, uz, vz, tz, qz, ntracers,ptracers,
      2 ,plz,plze,dpres,pkht,pkz,ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke
@@ -8,7 +9,6 @@ C $Name:  $
      4 ,tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac
      5 ,nchp,nchplnd,chfr,chlt,chlon,igrd,ityp,alai,agrn
      6 ,surftype,tilefrac,thkz,tprof
-     7 ,qdiag,ndiagsiz,qdiaglsm,ndlsm
      8 ,duturb, dvturb, dtturb,dqturb,radlwg,st4,dst4,radswg,radswt
      9 ,fdifpar,fdirpar,rainlsp,rainconv,snowfall,tempref
      1 ,imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw
@@ -82,8 +82,6 @@ c      swetroot- root level moisture field capacity fraction real[tiles]
 c      swetdeep- deep soil level moisture field capacity fraction real[tiles]
 c      snodep  - depth of snow pack in cm liquid water equiv real[tiles]
 c      capac   - leaf canopy water reservoir in cm real[tiles]
-c      qdiag   - diagnostics array - real[im,jm,ndiagsiz]
-c      qdiaglsm- tile diagnostics array - real[nchp,ndlsm]
 c output:
 c      duturb  - change in zonal wind component due to turbulent processes
 c                per unit time in m/sec**2 - real[lon,lat,levels]
@@ -111,10 +109,11 @@ c-----------------------------------------------------------------------
       implicit none
 
 #include "mpif.h"
+#ifdef ALLOW_DIAGNOSTICS
 #include "diagnostics.h"
+#endif
 
-      integer n,im,jm,nlay,maxtypes,istrip,nymd,nhms,ndturb,ndiagsiz
-      integer ndlsm
+      integer n,im,jm,nlay,maxtypes,istrip,nymd,nhms,ndturb
       real   ptop
       integer nchp,nchplnd,landtype(im,jm),igrd(nchp)
       integer ityp(nchp)
@@ -149,8 +148,6 @@ c-----------------------------------------------------------------------
       real thkz(im,jm)
 
       logical tprof
-      real qdiag(im,jm,ndiagsiz)
-      real qdiaglsm(nchp,ndlsm)
 
       real duturb(im,jm,nlay),dvturb(im,jm,nlay)
       real dtturb(im,jm,nlay),dqturb(im,jm,nlay,ntracers)
@@ -268,6 +265,10 @@ C Set fmu and ed to zero for no background diffusion
       real xlsave(istrip,nlay),khsave(istrip,nlay)
       real qliq(istrip,nlay),turbfcc(istrip,nlay)
       real qliqmsc(nchp,nlay),fccmsc(nchp,nlay)
+
+      integer ndlsm
+      parameter ( ndlsm = 1 )
+      real qdiaglsm(nchp,ndlsm)
 
       integer nsecf,nmonf,ndayf
       nsecf(n) = n/10000*3600 + mod(n,10000)/100* 60 + mod(n,100)

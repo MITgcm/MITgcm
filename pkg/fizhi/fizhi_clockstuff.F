@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.7 2004/06/10 21:50:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.8 2004/06/15 16:06:03 molod Exp $
 C $Name:  $
 
       subroutine set_alarm (tag,date,time,freq)
@@ -492,7 +492,7 @@ C     Tick the Clock by NDT (seconds)
 C
 C***********************************************************************
 
-      include 'time.com'
+#include 'chronos.h'
 
       IF(NDT.NE.0) THEN
       NSEC = NSECF(NHMS) + NDT

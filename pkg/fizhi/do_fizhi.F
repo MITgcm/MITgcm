@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.5 2004/06/14 22:04:29 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.6 2004/06/15 16:06:03 molod Exp $
 C $Name:  $
        subroutine do_fizhi(uphy,vphy,thphy,sphy,pephy,
      .                              ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
@@ -32,7 +32,7 @@ c-----------------------------------------------------------------------
 c
       integer i,j,L
 
-      call physdrv (nymd,nhms,myid,im,jm,lm,ptracer,ntracer,
+      call fizhi_driver (nymd,nhms,myid,im,jm,lm,ptracer,ntracer,
      . ndmoist,ndturb,ndlw,ndsw,xlats,xlons,
      . p,u,v,t,q,pl,ple,dpres,pkht,pkl,fracland,landtype,radswt,
      . maxtyp,surftype,tilefrac,phis_var,sea_ice,

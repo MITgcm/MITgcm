@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.1 2004/06/15 14:47:23 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.2 2004/06/15 16:06:03 molod Exp $
 C $Name:  $
 
+#include "CPP_OPTIONS.h"
       subroutine lwrio (nymd,nhms,istrip,npcs,
      .                  pz,tz,qz,plz,plze,pkz,pkht,oz,co2,
      .                  cfc11,cfc12,cfc22,
@@ -9,15 +10,16 @@ C $Name:  $
      .                  dtradlw,dlwdtg,dtradlwc,lwgclr,
      .                  im,jm,lm,ptop,
      .                  nlwcld,cldlw,clwmo,nlwlz,lwlz,
-     .                  lpnt,qdiag,nd,
-     .                  imstturb,qliqave,fccave,landtype)
+     .                  lpnt,imstturb,qliqave,fccave,landtype)
 
       implicit none
+#ifdef ALLOW_DIAGNOSTICS
 #include 'diagnostics.h'
+#endif
 
 c Input Variables
 c ---------------
-      integer nymd,nhms,istrip,npcs,nd
+      integer nymd,nhms,istrip,npcs
  
       integer im,jm,lm        
       real  ptop              
@@ -48,7 +50,6 @@ c ---------------
 
       real emissivity(im,jm,10)  
       real        tgz(im,jm)     
-      real      qdiag(im,jm,nd)  
       logical   lpnt             
       integer   imstturb         
       real    qliqave(im,jm,lm)  

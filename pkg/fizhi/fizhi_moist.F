@@ -1,19 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.1 2004/06/15 14:47:23 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.2 2004/06/15 16:06:03 molod Exp $
 C $Name:  $
-                                                                                    
+
+#include "CPP_OPTIONS.h"
       subroutine moistio (ndmoist,istrip,npcs,pz,tz,qz,ntracer,ptracer,
      .   pkht,qqz,dumoist,dvmoist,dtmoist,dqmoist,
      .   im,jm,lm,sige,sig,dsig,ptop,
      .   iras,rainlsp,rainconv,snowfall,
      .   nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,
      .   nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,
-     .   lpnt,qdiag,nd,myid)
+     .   lpnt,myid)
 
+#ifdef ALLOW_DIAGNOSTICS
 #include "diagnostics.h"
+#endif
 
 c Input Variables
 c ---------------
-      integer ndmoist,istrip,npcs,nd,myid
+      integer ndmoist,istrip,npcs,myid
 
       integer im,jm,lm                
       real  ptop                      
@@ -53,7 +56,6 @@ c ---------------
       real  cldtot_lw(im,jm,lm)       
       real       lwlz(im,jm,lm)       
 
-      real  qdiag(im,jm,nd)           
       logical lpnt                    
 
 c Local Variables
@@ -162,9 +164,9 @@ C **********************************************************************
 
 C Minimum Large-Scale Cloud Fraction at rhcrit
       alpha  = 0.80         
-C Difference in fraction between SR and LS Thresshold
+C Difference in fraction between SR and LS Threshold
       offset = 0.10         
-C Large-Scale Relative Humidity Threshold in PLB
+C Large-Scale Relative Humidity Threshold in PBL
       rhmin  = 0.90         
 C Maximum Cloud Fraction associated with RAS
       rasmax = 1.00         
@@ -484,21 +486,21 @@ C  Used in Slingo-Ritter clouds as well - define offset between SR and LS
 C Top level of atan func above this rh_threshold = rhmin
       pup = 600.		
       do i=num,num+nindeces(nsubcl)-1
-        do L = nsubcl, lm
-          rhcrit(i,L) = 1.
-        enddo
-        do L = 1, nsubcl-1
-          pcheck = (1000.-ptop)*sig(L) + ptop
-          if (pcheck .le. pup) then
-            rhcrit(i,L) = rhmin
-          else
-            ppbl = (1000.-ptop)*sig(nsubcl) + ptop
-            rhcrit(i,L) = rhmin + (1.-rhmin)/(19.) * ((
-     .        atan( (2.*(pcheck-pup)/(ppbl-pup)-1.) *
+       do L = nsubcl, lm
+         rhcrit(i,L) = 1.
+       enddo
+       do L = 1, nsubcl-1
+        pcheck = (1000.-ptop)*sig(L) + ptop
+        if (pcheck .le. pup) then
+         rhcrit(i,L) = rhmin
+        else
+         ppbl = (1000.-ptop)*sig(nsubcl) + ptop
+         rhcrit(i,L) = rhmin + (1.-rhmin)/(19.) * 
+     .      ((atan( (2.*(pcheck-pup)/(ppbl-pup)-1.) *
      .       tan(20.*pi/21.-0.5*pi) ) 
      .        + 0.5*pi) * 21./pi - 1.)
-          endif
-        enddo
+        endif
+       enddo
       enddo
 
 c Save Initial Values of Temperature and Specific Humidity

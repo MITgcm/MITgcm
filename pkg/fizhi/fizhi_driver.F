@@ -1,4 +1,8 @@
-      subroutine physdrv (nymd,nhms,myid,im,jm,lm,ptracer,ntracer,
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.1 2004/06/15 16:06:03 molod Exp $
+C $Name:  $
+                                                                                 
+#include "CPP_OPTIONS.h"
+      subroutine fizhi_driver (nymd,nhms,myid,im,jm,lm,ptracer,ntracer,
      . ndmoist,ndturb,ndlw,ndsw,xlats,xlons,
      . p,u,v,t,q,pl,ple,dpres,pkht,pkl,fracland,landtype,radswt,
      . maxtyp,surftype,tilefrac,phis_var,sea_ice,
@@ -15,8 +19,7 @@
      . cldtot_lw,clras_lw,cldlsp_lw,nlwlz,lwlz,nswcld,cldtot_sw,
      . clras_sw,cldlsp_sw,nswlz,swlz,imstturbsw,imstturblw,qliqavesw,
      . qliqavelw,fccavesw,fccavelw,qq,u2m,v2m,t2m,q2m,u10m,v10m,t10m,
-     . q10m,tgz,gwet,snow,chemo3,chemq,diag2d,ndiag2d,diag3d,ndiag3d)
-
+     . q10m,tgz,gwet,snow,chemo3,chemq)
 C***********************************************************************        
 C  Purpose                                                                      
 C  -------                                                                      
@@ -35,7 +38,9 @@ C***********************************************************************
 
 c Diagnostic Common
 c -----------------
+#ifdef ALLOW_DIAGNOSTICS
 #include 'diagnostics.h'
+#endif
 
 c Timers Common
 c -------------
@@ -50,7 +55,7 @@ c ----------------
       integer nozolevs,nozolats
       integer iras,nlwcld,nlwlz,nswcld,nswlz
       integer imstturbsw,imstturblw
-      integer ndiag2d,ndiag3d,ndmoist,ndturb,ndlw,ndsw
+      integer ndmoist,ndturb,ndlw,ndsw
 
       real xlats(im,jm), xlons(im,jm)
       real p(im,jm)
@@ -96,7 +101,6 @@ c ----------------
       real u2m(im,jm),v2m(im,jm),t2m(im,jm),q2m(im,jm),u10m(im,jm)
       real v10m(im,jm),t10m(im,jm),q10m(im,jm),tgz(im,jm)
       real gwet(im,jm),snow(im,jm)
-      real diag2d(nchp,ndiag2d),diag3d(im,jm,ndiag3d)
 
 c Local Variables
 c ---------------
@@ -140,7 +144,7 @@ C ====================
      .   albvisdr,albvisdf,albnirdr,albnirdf,swdt,swdtclr,
      .   radswg,swgclr,albedo,fdifpar,fdirpar,osr,osrclr,im,jm,lm,
      .   ptop,nswcld,cldtot_sw,cldras_sw,nswlz,swlz,
-     .   .false.,diag3d,ndiag3d,imstturbsw,qliqavesw,
+     .   .false.,imstturbsw,qliqavesw,
      .   fccavesw,landtype,xlats,xlons )
 
       ENDIF
@@ -167,7 +171,7 @@ c --------------------------------
      .   cfc11,cfc12,cfc22,methane,n2o,emiss,tgz,radlwg,st4,dst4,
      .   lwdt,dlwdtg,lwdtclr,lwgclr,im,jm,lm,ptop,
      .   nlwcld,cldtot_lw,cldras_lw,nlwlz,lwlz,
-     .   .false.,diag3d,ndiag3d,imstturblw,qliqavelw,
+     .   .false.,imstturblw,qliqavelw,
      .   fccavelw,landtype )
 
       ENDIF
@@ -182,7 +186,7 @@ C ==========
      .   tgz,gwet,snow,fracland,landtype,
      .   tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac,
      .   nchp,nchpland,chfr,chlt,chlon,igrd,ityp,alai,agrn,
-     .   surftype,tilefrac,sea_ice,lpnt,diag3d,ndiag3d,diag2d,ndiag2d,
+     .   surftype,tilefrac,sea_ice,lpnt,
      .   turbu,turbv,turbt,turbq,radlwg,st4,dst4,radswg,radswt,
      .   fdifpar,fdirpar,rainlsp,rainconv,snowfall,tg0,
      .   imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw,qq,
@@ -194,7 +198,7 @@ C Comment this out for now - run tropospheric resolutions only.
 C Need to see how to get zonal wavelengths on the cube.
 
 c     call gwdrag (myid,p,pl,ple,dpres,pkht,pkl,u,v,t,q,phis_var,
-c    .   turbu,turbv,turbt,diag3d,ndiag3d,im,jm,lm,ptop,istrip,npcs,
+c    .   turbu,turbv,turbt,im,jm,lm,ptop,istrip,npcs,
 c    .   imglobal)
 
       endif
@@ -208,7 +212,7 @@ C ===============
      .    rainlsp,rainconv,snowfall,
      .    nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,
      .    nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,
-     .              .false.,diag3d,ndiag3d,myid)
+     .              .false.,myid)
 
       endif
 
