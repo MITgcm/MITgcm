@@ -1,25 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.6 2003/01/21 19:34:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.7 2004/11/21 15:57:17 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE GMREDI_SLOPE_PSI(
-     I             dSigmaDrW,dSigmaDrS,
-     I             depthZ,K,
-     U             SlopeX, SlopeY,
      O             taperX, taperY,
+     U             SlopeX, SlopeY,
+     U             dSigmaDrW,dSigmaDrS,
+     I             LrhoW, LrhoS, depthZ, K,
      I             bi,bj, myThid )
 C     /==========================================================\
 C     | SUBROUTINE GMREDI_SLOPE_PSI                              |
 C     | o Calculate slopes for use in GM/Redi tensor             |
 C     |==========================================================|
 C     | On entry:                                                |
-C     |            dSigmaDrW conatins the d/dz Sigma             |
+C     |            dSigmaDrW,S  contains the d/dz Sigma          |
 C     |            SlopeX/Y     contains X/Y gradients of sigma  |
-C     |            depthZ       conatins the height (m) of level |
+C     |            depthZ       contains the height (m) of level |
 C     | On exit:                                                 |
-C     |            dSigmaDrW conatins the effective dSig/dz      |
+C     |            dSigmaDrW,S  contains the effective dSig/dz   |
 C     |            SlopeX/Y     contains X/Y slopes              |
 C     |            taperFct     contains tapering funct. value ; |
 C     |                         = 1 when using no tapering       |
@@ -39,12 +39,14 @@ C     == Global variables ==
 
 C     == Routine arguments ==
 C
+      _RL taperX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL taperY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL SlopeX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL SlopeY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dSigmaDrW(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dSigmaDrS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL taperX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL taperY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL LrhoW(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL LrhoS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL depthZ
       INTEGER K,bi,bj,myThid
 CEndOfInterface
@@ -55,14 +57,15 @@ CEndOfInterface
 C     == Local variables ==
       _RL gradSmod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dSigmaDrLtd(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL drdsigmaltd(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL  SlopeSqr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL f1,Smod,f2,Rnondim,Cspd,Lrho
+      _RL f1,Smod,f2,Rnondim
       _RL maxSlopeSqr
-      _RL tmpvar
+      _RL slopeCutoff
       _RL fpi
       PARAMETER(fpi=3.141592653589793047592d0)
       INTEGER i,j
+
+      slopeCutoff = SQRT( GM_slopeSqCutoff )
 
 #ifdef ALLOW_AUTODIFF_TAMC
       act1 = bi - myBxLo(myThid)
@@ -93,35 +96,35 @@ C       (this turns out to be the same as Cox slope clipping)
 C-- X-comp
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      DO j=1-Oly+1,sNy+Oly-1
-       DO i=1-Olx+1,sNx+Olx-1
-        dSigmaDrLtd(i,j) = 0. _d 0
-       ENDDO
-      ENDDO
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          dSigmaDrLtd(i,j) = 0. _d 0
+         ENDDO
+        ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C-      Cox 1987 "Slope clipping"
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-          dsigmadrltd(i,j) = -(GM_Small_Number+
-     &     abs(SlopeX(i,j))*GM_rMaxSlope)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          dSigmaDrLtd(i,j) = -(GM_Small_Number+
+     &     ABS(SlopeX(i,j))*GM_rMaxSlope)
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE dSigmaDrltd(:,:)  = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dSigmaDrLtd(:,:)  = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-          IF (dSigmaDrW(i,j).GE.dsigmadrltd(i,j))
-     &        dSigmaDrW(i,j) = dsigmadrltd(i,j)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          IF (dSigmaDrW(i,j).GE.dSigmaDrLtd(i,j))
+     &        dSigmaDrW(i,j) = dSigmaDrLtd(i,j)
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE dSigmaDrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
           SlopeX(i,j) = -SlopeX(i,j)/dSigmaDrW(i,j)
           taperX(i,j)=1. _d 0
          ENDDO
@@ -130,33 +133,33 @@ CADJ STORE dSigmaDrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 C-- Y-comp
 
 #ifdef ALLOW_AUTODIFF_TAMC
-      DO j=1-Oly+1,sNy+Oly-1
-       DO i=1-Olx+1,sNx+Olx-1
-        dSigmaDrLtd(i,j) = 0. _d 0
-       ENDDO
-      ENDDO
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          dSigmaDrLtd(i,j) = 0. _d 0
+         ENDDO
+        ENDDO
 #endif /* ALLOW_AUTODIFF_TAMC */
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-          dsigmadrltd(i,j) = -(GM_Small_Number+
-     &     abs(SlopeY(i,j))*GM_rMaxSlope)
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          dSigmaDrLtd(i,j) = -(GM_Small_Number+
+     &     ABS(SlopeY(i,j))*GM_rMaxSlope)
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE dSigmaDrltd(:,:)  = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dSigmaDrLtd(:,:)  = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-          IF (dSigmaDrS(i,j).GE.dsigmadrltd(i,j))
-     &        dSigmaDrS(i,j) = dsigmadrltd(i,j)
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          IF (dSigmaDrS(i,j).GE.dSigmaDrLtd(i,j))
+     &        dSigmaDrS(i,j) = dSigmaDrLtd(i,j)
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE dSigmaDrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
           SlopeY(i,j) = -SlopeY(i,j)/dSigmaDrS(i,j)
           taperY(i,j)=1. _d 0
          ENDDO
@@ -177,23 +180,19 @@ CADJ STORE slopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
-        tmpvar = sqrt( GM_slopeSqCutoff )
-
 C- Compute the slope, no clipping, but avoid reverse slope in negatively 
 C                                  stratified (Sigma_Z > 0) region :
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-          dsigmadrltd(i,j) = -GM_Small_Number
-          IF (dSigmaDrW(i,j).GE.dsigmadrltd(i,j))
-     &        dSigmaDrW(i,j) = dsigmadrltd(i,j)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          IF (dSigmaDrW(i,j).GE.-GM_Small_Number)
+     &        dSigmaDrW(i,j) = -GM_Small_Number
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE dsigmadrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-          drdsigmaltd(i,j) = 1./dSigmaDrW(i,j)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
           SlopeX(i,j) = -SlopeX(i,j)/dSigmaDrW(i,j)
           taperX(i,j)= 1. _d 0
          ENDDO
@@ -201,10 +200,10 @@ CADJ STORE dsigmadrW(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE slopex(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-          IF ( ABS(SlopeX(i,j)) .GE. tmpvar ) THEN
-             SlopeX(i,j) = SIGN(tmpvar,SlopeX(i,j))
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          IF ( ABS(SlopeX(i,j)) .GE. slopeCutoff ) THEN
+             SlopeX(i,j) = SIGN(slopeCutoff,SlopeX(i,j))
              taperX(i,j) = 0. _d 0
           ENDIF
          ENDDO
@@ -215,18 +214,17 @@ CADJ STORE slopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE dSigmaDrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
 
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-          dsigmadrltd(i,j) = -GM_Small_Number
-          IF (dSigmaDrS(i,j).GE.dsigmadrltd(i,j))
-     &        dSigmaDrS(i,j) = dsigmadrltd(i,j)
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          IF (dSigmaDrS(i,j).GE.-GM_Small_Number)
+     &        dSigmaDrS(i,j) = -GM_Small_Number
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE dsigmadrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
           SlopeY(i,j) = -SlopeY(i,j)/dSigmaDrS(i,j)
           taperY(i,j)=1. _d 0
          ENDDO
@@ -234,10 +232,10 @@ CADJ STORE dsigmadrS(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE slopey(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-          IF ( ABS(SlopeY(i,j)) .GE. tmpvar ) THEN
-             SlopeY(i,j) = SIGN(tmpvar,SlopeY(i,j))
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          IF ( ABS(SlopeY(i,j)) .GE. slopeCutoff ) THEN
+             SlopeY(i,j) = SIGN(slopeCutoff,SlopeY(i,j))
              taperY(i,j) = 0. _d 0
           ENDIF
          ENDDO
@@ -253,91 +251,93 @@ CADJ STORE slopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
        IF (GM_taper_scheme.EQ.'linear') THEN
 
 C-      Simplest adiabatic tapering = Smax/Slope (linear)
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-
-          Smod = abs(SlopeX(i,j))
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          Smod = ABS(SlopeX(i,j))
           IF ( Smod .GT. GM_maxSlope .AND.
-     &           Smod .LT. tmpvar )
+     &           Smod .LT. slopeCutoff )
      &           taperX(i,j)=GM_maxSlope/(Smod+GM_Small_Number)
-          Smod = abs(SlopeY(i,j))
+         ENDDO
+        ENDDO
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          Smod = ABS(SlopeY(i,j))
           IF ( Smod .GT. GM_maxSlope .AND.
-     &           Smod .LT. tmpvar ) 
+     &           Smod .LT. slopeCutoff ) 
      &           taperY(i,j)=GM_maxSlope/(Smod+GM_Small_Number)
-
          ENDDO
         ENDDO
 
        ELSEIF (GM_taper_scheme.EQ.'gkw91') THEN
 
 C-      Gerdes, Koberle and Willebrand, Clim. Dyn. 1991
-
         maxSlopeSqr = GM_maxSlope*GM_maxSlope
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-
-          IF ( abs(SlopeX(i,j)) .GT. GM_maxSlope .AND.
-     &           abs(SlopeX(i,j)) .LT. tmpvar ) 
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          IF ( ABS(SlopeX(i,j)) .GT. GM_maxSlope .AND.
+     &           ABS(SlopeX(i,j)) .LT. slopeCutoff ) 
      &           taperX(i,j)=maxSlopeSqr/
      &           ( SlopeX(i,j)*SlopeX(i,j) + GM_Small_Number )
-          IF ( abs(SlopeY(i,j)) .GT. GM_maxSlope .AND.
-     &           abs(SlopeY(i,j)) .LT. tmpvar )
+         ENDDO
+        ENDDO
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          IF ( ABS(SlopeY(i,j)) .GT. GM_maxSlope .AND.
+     &           ABS(SlopeY(i,j)) .LT. slopeCutoff )
      &           taperY(i,j)=maxSlopeSqr/
      &           ( SlopeY(i,j)*SlopeY(i,j) + GM_Small_Number )
-
          ENDDO
         ENDDO
 
        ELSEIF (GM_taper_scheme.EQ.'dm95') THEN
 
 C-      Danabasoglu and McWilliams, J. Clim. 1995
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
-
-          Smod = abs(SlopeX(i,j))
-          taperX(i,j)=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
-          Smod = abs(SlopeY(i,j))
-          taperY(i,j)=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
-
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          Smod = ABS(SlopeX(i,j))
+          taperX(i,j)=op5*( 1. _d 0 + TANH( (GM_Scrit-Smod)/GM_Sd ))
+         ENDDO
+        ENDDO
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          Smod = ABS(SlopeY(i,j))
+          taperY(i,j)=op5*( 1. _d 0 + TANH( (GM_Scrit-Smod)/GM_Sd ))
          ENDDO
         ENDDO
 
        ELSEIF (GM_taper_scheme.EQ.'ldd97') THEN
 
 C-      Large, Danabasoglu and Doney, JPO 1997
-        DO j=1-Oly+1,sNy+Oly-1
-         DO i=1-Olx+1,sNx+Olx-1
 
-          Cspd=2. _d 0
-          Lrho=100. _d 3
-          if (fCori(i,j,bi,bj).NE.0.) Lrho=Cspd/abs(fCori(i,j,bi,bj))
-          Lrho=min(Lrho , 100. _d 3)
-          Lrho=max(Lrho , 15. _d 3)
-
-          Smod = abs(SlopeX(i,j))
-          if ( Smod .LT. tmpvar ) then
-          f1=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
-          if (Smod.NE.0.) then
-            Rnondim=depthZ/(Lrho*Smod)
-          else
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx+1,sNx+Olx
+          Smod = ABS(SlopeX(i,j))
+          IF ( Smod .LT. slopeCutoff ) THEN
+          f1=op5*( 1. _d 0 + TANH( (GM_Scrit-Smod)/GM_Sd ))
+          IF (Smod.NE.0.) THEN
+            Rnondim=depthZ/(LrhoW(i,j)*Smod)
+          ELSE
             Rnondim=0.
-          endif
-          f2=op5*( 1. _d 0 + sin( fpi*(Rnondim-op5)))
+          ENDIF
+          f2=op5*( 1. _d 0 + SIN( fpi*(Rnondim-op5)))
           taperX(i,j)=f1*f2
-          endif
+          ENDIF
+         ENDDO
+        ENDDO
 
-          Smod = abs(SlopeY(i,j))
-          if ( Smod .LT. tmpvar ) then
-          f1=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
-          if (Smod.NE.0.) then
-            Rnondim=depthZ/(Lrho*Smod)
-          else
+        DO j=1-Oly+1,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          Smod = ABS(SlopeY(i,j))
+          IF ( Smod .LT. slopeCutoff ) THEN
+          f1=op5*( 1. _d 0 + TANH( (GM_Scrit-Smod)/GM_Sd ))
+          IF (Smod.NE.0.) THEN
+            Rnondim=depthZ/(LrhoS(i,j)*Smod)
+          ELSE
             Rnondim=0.
-          endif
-          f2=op5*( 1. _d 0 + sin( fpi*(Rnondim-op5)))
+          ENDIF
+          f2=op5*( 1. _d 0 + SIN( fpi*(Rnondim-op5)))
           taperY(i,j)=f1*f2
-          endif
-
+          ENDIF
          ENDDO
         ENDDO
 
@@ -348,7 +348,6 @@ C-      Large, Danabasoglu and Doney, JPO 1997
 #endif /* GM_EXCLUDE_TAPERING */
 
       ENDIF
-
 
 #endif /* BOLUS_ADVEC */
 #endif /* ALLOW_GMREDI */

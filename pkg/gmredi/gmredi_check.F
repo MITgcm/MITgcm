@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.10 2003/11/12 03:58:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.11 2004/11/21 15:57:17 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -108,22 +108,38 @@ C     Make sure we are not trying to use some arrays that are unavailable
       ENDIF
 #endif
 
+C     Check size of overlap region
       IF ( GM_AdvForm .AND. .NOT.GM_AdvSeparate
-     &       .AND. (tempMultiDimAdvec.OR.saltMultiDimAdvec)
+     &       .AND. GM_Visbeck_alpha.NE.0.
+     &       .AND. useMultiDimAdvec
      &       .AND. (Olx.LT.3 .OR. Oly.LT.3) ) THEN
-C note: a) this is a practical limitation. In theory, WITHOUT Visbeck,
-C       changing some loop indices would make it works with Olx=Oly=2
-C       b) we really need 1 flag (like multiDimAdvection) that tells
-C       if a least 1 tracer is using a multi-Dim advection scheme.
-        WRITE(msgBuf,'(A,2I3,A)')
-     &  'GMREDI_CHECK: Olx,Oly WRONG: cannot use those AdvScheme (',
-     &     tempAdvScheme, saltAdvScheme, ') '
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A,A)')
-     &  'GMREDI_CHECK: and GM_AdvForm(not_Separate) with',
-     &  ' (Olx,Oly) smaller than 3'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+C       Visbeck variable K requires 1 more row/column in the overlap:
+C       might need to increase Olx,Oly from 2 to 3 if GM advective
+C       form & multi-dim advection are used. This happens when:
+C       a) using a 5 points stencil advection scheme ; or
+C       b) using a 3 points stencil advection scheme on CS-grid
+C note: not clear how to check (b) since none of the advection scheme 
+C       currently implemented falls in this category, except if
+C       GAD_FLUX_LIMITER.h is changed to use a "constant" flux-limiter 
+C       (from Lax-Wendroff to 1rst Order upwind).
+C-------
+c       IF ( (useCubedSphereExchange 
+c    &       .AND.(    tempAdvScheme.EQ.ENUM_LAXWENDROFF
+c    &            .OR. saltAdvScheme.EQ.ENUM_LAXWENDROFF )
+c    &       ).OR.(    tempAdvScheme.EQ.ENUM_FLUX_LIMIT
+c    &            .OR. saltAdvScheme.EQ.ENUM_FLUX_LIMIT
+c    &            .OR. tempAdvScheme.EQ.ENUM_DST3_FLUX_LIMIT
+c    &            .OR. saltAdvScheme.EQ.ENUM_DST3_FLUX_LIMIT
+c    &            .OR. tempAdvScheme.EQ.ENUM_DST3
+c    &            .OR. saltAdvScheme.EQ.ENUM_DST3 )
+c    &     ) THEN
+          WRITE(msgBuf,'(A,A)')
+     &     'GMREDI_CHECK: Visbeck + GM_AdvForm in MultiDimAdvec'
+          CALL PRINT_ERROR( msgBuf , myThid)
+          WRITE(msgBuf,'(A)') 'GMREDI_CHECK: need at least Olx,Oly = 3'
+          CALL PRINT_ERROR( msgBuf , myThid)
+          STOP 'ABNORMAL END: S/R GMREDI_CHECK'
+c       ENDIF
       ENDIF
 
       _END_MASTER(myThid)

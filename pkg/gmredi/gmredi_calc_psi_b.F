@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.5 2003/01/21 19:34:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.6 2004/11/21 15:57:17 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -7,6 +7,7 @@ CStartOfInterface
       SUBROUTINE GMREDI_CALC_PSI_B(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             sigmaX, sigmaY, sigmaR,
+     I             ldd97_LrhoW, ldd97_LrhoS,
      I             myThid )
 C     /==========================================================\
 C     | SUBROUTINE GMREDI_CALC_PSI_B                             |
@@ -34,6 +35,8 @@ C
       _RL sigmaX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL sigmaY(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL sigmaR(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
+      _RL ldd97_LrhoW(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL ldd97_LrhoS(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER myThid
 CEndOfInterface
@@ -86,28 +89,30 @@ CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
        ENDDO
 #endif
 
-      DO j=1-Oly+1,sNy+Oly-1
-       DO i=1-Olx+1,sNx+Olx-1
-
 C      Gradient of Sigma below U and V points
-        SlopeX(i,j)=op5*( sigmaX(i,j,km1)+sigmaX(i,j,k) )
-     &                 *maskW(i,j,k,bi,bj)
-        dSigmaDrW(i,j)=op5*( sigmaR(i-1,j,k)+sigmaR(i,j,k) )
-     &                 *maskW(i,j,k,bi,bj)
-        SlopeY(i,j)=op5*( sigmaY(i,j,km1)+sigmaY(i,j,k) )
-     &                 *maskS(i,j,k,bi,bj)
-        dSigmaDrS(i,j)=op5*( sigmaR(i,j-1,k)+sigmaR(i,j,k) )
-     &                 *maskS(i,j,k,bi,bj)
-
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx+1,sNx+Olx
+         SlopeX(i,j)=op5*( sigmaX(i,j,km1)+sigmaX(i,j,k) )
+     &                  *maskW(i,j,k,bi,bj)
+         dSigmaDrW(i,j)=op5*( sigmaR(i-1,j,k)+sigmaR(i,j,k) )
+     &                  *maskW(i,j,k,bi,bj)
+        ENDDO
        ENDDO
-      ENDDO
+       DO j=1-Oly+1,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         SlopeY(i,j)=op5*( sigmaY(i,j,km1)+sigmaY(i,j,k) )
+     &                  *maskS(i,j,k,bi,bj)
+         dSigmaDrS(i,j)=op5*( sigmaR(i,j-1,k)+sigmaR(i,j,k) )
+     &                  *maskS(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
 
-C     Calculate slopes , taper and/or clip
-      CALL GMREDI_SLOPE_PSI(
-     I             dSigmaDrW, dSigmaDrS,
-     I             rF(K),K,
-     U             SlopeX, SlopeY,
+C      Calculate slopes , taper and/or clip
+       CALL GMREDI_SLOPE_PSI(
      O             taperX, taperY,
+     U             SlopeX, SlopeY,
+     U             dSigmaDrW, dSigmaDrS,
+     I             ldd97_LrhoW, ldd97_LrhoS, rF(k), k,
      I             bi, bj, myThid )
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -117,36 +122,31 @@ CADJ STORE taperX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE taperY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      DO j=1-Oly+1,sNy+Oly-1
-       DO i=1-Olx+1,sNx+Olx-1
-
 C-  Compute the 2 stream-function Components ( GM bolus vel.) 
-        GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j)
-     &   *( GM_background_K
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx+1,sNx+Olx
+          GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j)
+     &     *( GM_background_K
 #ifdef GM_VISBECK_VARIABLE_K
-     &    +op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
+     &      +op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
-     &    )*maskW(i,j,k,bi,bj)
-        GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)
-     &   *( GM_background_K
+     &      )*maskW(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+       DO j=1-Oly+1,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)
+     &     *( GM_background_K
 #ifdef GM_VISBECK_VARIABLE_K
-     &    +op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
+     &      +op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
-     &    )*maskS(i,j,k,bi,bj)
-
-#ifdef ALLOW_TIMEAVE
-C--     Time-average
-        GM_PsiXtave(i,j,k,bi,bj)=GM_PsiXtave(i,j,k,bi,bj)
-     &                          +GM_PsiX(i,j,k,bi,bj)*deltaTclock
-        GM_PsiYtave(i,j,k,bi,bj)=GM_PsiYtave(i,j,k,bi,bj)
-     &                          +GM_PsiY(i,j,k,bi,bj)*deltaTclock
-#endif /* ALLOW_TIMEAVE */
-
+     &      )*maskS(i,j,k,bi,bj)
+        ENDDO
        ENDDO
-      ENDDO
 
-C-----
+C----- end of loop on level k
        ENDDO
+
       ENDIF
 #endif /* GM_BOLUS_ADVEC */
 #endif /* ALLOW_GMREDI */
