@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.13 2004/10/18 16:04:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.14 2004/10/18 19:11:17 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -174,6 +174,9 @@ C     simple:
      &     .AND. snapshot_mnc ) snapshot_mdsio = .FALSE.
       IF ( (.NOT. outputTypesInclusive) 
      &     .AND. monitor_mnc ) monitor_stdio = .FALSE.
+
+C     Reads are always an exclusive relationship
+      IF (pickup_read_mnc) pickup_read_mdsio = .FALSE.
 
 C     Create the MNC output directory
       IF (mnc_use_outdir) THEN
