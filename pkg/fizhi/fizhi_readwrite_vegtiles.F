@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.5 2004/09/23 03:28:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.6 2004/09/28 16:27:42 edhill Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -11,8 +11,6 @@ C     !DESCRIPTION:
 
 C     !USES:
       IMPLICIT NONE
-
-C     == Global variables ===
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
 #include "fizhi_land_SIZE.h"
@@ -46,14 +44,13 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         bnam(i:i) = ' '
       ENDDO
       ilst = ILNBLNK(fn)
-      if(pickupflg.eq.0) then
-       prec = 'D'
-       WRITE(bnam,'(a,a)') 'pickup_vegtiles.', fn(1:ilst)
+      if (pickupflg.eq.0) then
+        prec = 'D'
+        WRITE(bnam,'(a,a)') 'pickup_vegtiles.', fn(1:ilst)
       else
-       prec = 'D'
-       WRITE(bnam,'(a,a)') 'state_vegtiles.', fn(1:ilst)
+        prec = 'D'
+        WRITE(bnam,'(a,a)') 'state_vegtiles.', fn(1:ilst)
       endif
-
       
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
@@ -82,10 +79,10 @@ C       fizhi_land_coms.h
         CALL MNC_CW_RL_W(prec,bnam,0,0,'capac', capac, myThid)
         CALL MNC_CW_RL_W(prec,bnam,0,0,'chlt', chlt, myThid)
         CALL MNC_CW_RL_W(prec,bnam,0,0,'chlon', chlon, myThid)
-        CALL MNC_CW_RL_W('I',bnam,0,0,'igrd', igrd, myThid)
+        CALL MNC_CW_I_W('I',bnam,0,0,'igrd', igrd, myThid)
 
 C       fizhi_earth_coms.h
-        CALL MNC_CW_RL_W('I',bnam,0,0,'ityp', ityp, myThid)
+        CALL MNC_CW_I_W('I',bnam,0,0,'ityp', ityp, myThid)
         CALL MNC_CW_RL_W(prec,bnam,0,0,'chfr', chfr, myThid)
 
       ENDIF
@@ -106,8 +103,6 @@ C     !DESCRIPTION:
 
 C     !USES:
       IMPLICIT NONE
-
-C     == Global variables ===
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
 #include "fizhi_land_SIZE.h"
@@ -144,7 +139,7 @@ C     !LOCAL VARIABLES:
       IF (useMNC) THEN
 
 C       Write fizhi veg-space variables using the MNC package
-        CALL MNC_FILE_CLOSE_ALL_MATCHING(fn, myThid)
+        CALL MNC_FILE_CLOSE_ALL_MATCHING(bnam, myThid)
         CALL MNC_CW_SET_UDIM(bnam, 1, myThid)
 
 C       fizhi_coms.h
