@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.3 2004/11/16 05:42:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.4 2004/11/22 20:37:18 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -51,60 +51,96 @@ c      CALL MNC_CW_ADD_VATTR_TEXT('model_time','units','s', myThid)
       CALL MNC_CW_ADD_VNAME('adU', 'U_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adU','units','[cost]/[m/s]', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adU','long_name',
-     &     'adj. zonal velocity', myThid)
+     &     'adjoint zonal velocity', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adU',
      &     'coordinates','XU YU RC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('adV', 'V_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adV','units','[cost]/[m/s]', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adV','long_name',
-     &     'adj. merid. velocity', myThid)
+     &     'adjoint merid. velocity', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adV',
      &     'coordinates','XV YV RC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('adT', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adT','units','[cost]/[degC]', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adT','long_name',
-     &     'adj. potential_temperature', myThid)
+     &     'adjoint potential_temperature', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adT',
      &     'coordinates','XC YC RC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('adS', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adS','units','[cost]/[psu]', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adS','long_name',
-     &     'adj. salinity', myThid)
+     &     'adjoint salinity', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adS',
      &     'coordinates','XC YC RC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('adEta', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adEta','units','[cost]/[m]', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adEta','long_name',
-     &     'adj. free-surface_r-anomaly', myThid)
+     &     'adjoint free-surface_r-anomaly', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adEta',
      &     'coordinates','XC YC RC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('adW', 'Cen_xy_Hn__C__t', 4,5, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adW','units','[cost]/[m/s]', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adW','long_name',
-     &     'adj. vertical velocity', myThid)
+     &     'adjoint vertical velocity', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adW',
      &     'coordinates','XC YC RC iter', myThid)
 
-      CALL MNC_CW_ADD_VNAME('adSST', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VNAME('adQnet', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adQnet',
+     &     'units','[cost]/[W/m^2]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adQnet','long_name',
+     &     'adjoint net upward heat flux', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adQnet',
+     &     'coordinates','XC YC RC iter', myThid)
+
+      CALL MNC_CW_ADD_VNAME('adEmpmr', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adEmpmr',
+     &     'units','[cost]/[m/s]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adEmpmr','long_name',
+     &     'adjoint net upward freshwater flux', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adEmpmr',
+     &     'coordinates','XC YC RC iter', myThid)
+
+      CALL MNC_CW_ADD_VNAME(    'adFu', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adFu',
+     &     'units','[cost]/[N/m^2]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adFu','long_name',
+     &     'adjoint zonal wind stress', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adFu',
+     &     'coordinates','XC YC RC iter', myThid)
+
+      CALL MNC_CW_ADD_VNAME(    'adFv', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adFv',
+     &     'units','[cost]/[N/m^2]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adFv','long_name',
+     &     'adjoint zonal meridional stress', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adFv',
+     &     'coordinates','XC YC RC iter', myThid)
+
+#ifdef ALLOW_SST0_CONTROL
+      CALL MNC_CW_ADD_VNAME(    'adSST', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adSST',
      &     'units','[cost]/[degC]', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adSST','long_name',
-     &     'adj. sea_surface_temperature', myThid)
+     &     'adjoint sea_surface_temperature', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adSST',
      &     'coordinates','XC YC RC iter', myThid)
+#endif
 
-      CALL MNC_CW_ADD_VNAME('adSSS', 'Cen_xy_Hn__-__t', 3,4, myThid)
+#ifdef ALLOW_SSS0_CONTROL
+      CALL MNC_CW_ADD_VNAME(    'adSSS', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adSSS',
-     &     'units','[cost]/[degC]', myThid)
+     &     'units','[cost]/[psu]', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adSSS','long_name',
-     &     'adj. sea_surface_temperature', myThid)
+     &     'adjoint sea_surface_salinity', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adSSS',
      &     'coordinates','XC YC RC iter', myThid)
+#endif
 
 C     Write coordinates to "adstate" file
       CALL MNC_CW_SET_UDIM('adstate', 0, myThid)
