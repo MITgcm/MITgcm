@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.17 2003/11/23 04:17:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.18 2004/02/23 23:03:20 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,7 +59,9 @@ C     data.pkg namelists
      &          useSBO,
      &          useSEAICE,
      &          useBulkForce,
-     &          useThSIce
+     &          useThSIce,
+     &          usefizhi,
+     &          usegridalt
 
 
 CEOP
@@ -92,6 +94,8 @@ C--   Default package configuration
       useSeaIce=.FALSE.
       useBulkForce=.FALSE.
       useThSIce=.FALSE.
+      usefizhi=.FALSE.
+      usegridalt=.FALSE.
 
 
 C--   Read parameters from open data file
