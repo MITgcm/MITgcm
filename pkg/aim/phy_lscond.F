@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_lscond.F,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_lscond.F,v 1.3 2001/05/29 19:28:53 cnh Exp $
 C $Name:  $
 
       SUBROUTINE LSCOND (PSA,QA,QSAT,
-     *                   PRECLS,DTLSC,DQLSC)
+     *                   PRECLS,DTLSC,DQLSC,myThid)
 C--
 C--   SUBROUTINE LSCOND (PSA,QA,QSAT,
 C--  *                   PRECLS,DTLSC,DQLSC) 
@@ -19,14 +19,16 @@ C--
 
 
       IMPLICIT rEAL*8 (A-H,O-Z)
-
+      INTEGER  myThid
 
 C     Resolution parameters
 C
 #include "atparam.h"
 #include "atparam1.h"
+#include "EEPARAMS.h"
 #include "Lev_def.h"
 C
+      INTEGER NLAT, NLON, NLEV, NGP
       PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
 
 C     Physical constants + functions of sigma and latitude
@@ -40,6 +42,8 @@ C     Large-scale condensation constants
       REAL PSA(NGP), QA(NGP,NLEV), QSAT(NGP,NLEV)
 
       REAL PRECLS(NGP), DTLSC(NGP,NLEV), DQLSC(NGP,NLEV)
+
+      INTEGER J, K
 
 
 C--   1. Initialization
@@ -66,7 +70,7 @@ C
 C--   3. Large-scale precipitation
 
       DO J=1,NGP
-        DO K=2,NLEVxy(J)
+        DO K=2,NLEVxy(J,myThid)
           PFACT = DSIG(K)*PRG
           PRECLS(J) = PRECLS(J)-PFACT*DQLSC(J,K)
         ENDDO

@@ -1,9 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_vdifsc.F,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_vdifsc.F,v 1.3 2001/05/29 19:28:53 cnh Exp $
 C $Name:  $
 
 cch      SUBROUTINE VDIFSC (UA,VA,SE,RH,QA,QSAT,
       SUBROUTINE VDIFSC (UA,VA,Ta,RH,QA,QSAT,
-     &                   UTENVD,VTENVD,TTENVD,QTENVD)
+     &                   UTENVD,VTENVD,TTENVD,QTENVD,
+     &                   myThid)
 C-
 C--   SUBROUTINE VDIFSC (UA,VA,SE,RH,QA,QSAT,
 C--  &                   UTENVD,VTENVD,TTENVD,QTENVD)
@@ -24,12 +25,13 @@ C-
 
 
       IMPLICIT rEAL*8 (A-H,O-Z)
-
+      INTEGER  myThid
 
 C     Resolution parameters
 
 #include "atparam.h"
 #include "atparam1.h"
+#include "EEPARAMS.h"
 #include "Lev_def.h"
 C
       PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
@@ -101,16 +103,16 @@ C
 C--   2. Vertical diffusion and shallow convection
 C
       DO J=1,NGP
-        NL1(J)=NLEVxy(J)-1
+        NL1(J)=NLEVxy(J,myThid)-1
       ENDDO
 C
       RTVD = -1./(3600.*TRVDI)
       RTSQ = -1./(3600.*TRSHC)
 C
       DO J=1,NGP
-       IF ( NLEVxy(J) .GT. 0 ) THEN
-        RTST(J) = RTSQ*DSIG(NL1(J))/((DSIG(NLEVxy(J))+DSIG(NL1(J)))*CP)
-        RNL1(J) = -DSIG(NLEVxy(J))/DSIG(NL1(J))
+       IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
+        RTST(J) = RTSQ*DSIG(NL1(J))/((DSIG(NLEVxy(J,myThid))+DSIG(NL1(J)))*CP)
+        RNL1(J) = -DSIG(NLEVxy(J,myThid))/DSIG(NL1(J))
        ENDIF
       ENDDO
 C
@@ -118,30 +120,30 @@ C
 C New writing of the Conditional stability
 C ----------------------------------------
       DO J=1,NGP
-       IF ( NLEVxy(J) .GT. 0 ) THEN
-        DO k=NL1(J),NLEVxy(J)
+       IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
+        DO k=NL1(J),NLEVxy(J,myThid)
          Th(J,K)=Ta(J,K)*(Pground/Prefs(k))**(RD/CP)
         ENDDO
        ENDIF
       ENDDO
 C
       DO J=1,NGP
-       IF ( NLEVxy(J) .GT. 0 ) THEN
-        dThdp=(Th(J,NL1(J))-Th(J,NLEVxy(J)))
-     &              *((Prefw(NLEVxy(J))/Pground)**(RD/CP))*CP
-        stab(J)=dThdp+ALHC*(QSAT(J,NL1(J))-QSAT(J,NLEVxy(J)))
+       IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
+        dThdp=(Th(J,NL1(J))-Th(J,NLEVxy(J,myThid)))
+     &              *((Prefw(NLEVxy(J,myThid))/Pground)**(RD/CP))*CP
+        stab(J)=dThdp+ALHC*(QSAT(J,NL1(J))-QSAT(J,NLEVxy(J,myThid)))
        ENDIF
       ENDDO
  121  continue
 C
       DO J=1,NGP
 C
-cch        DMSE = (SE(J,NLEVxy(J))-SE(J,NL1(J)))+
-cch     &                ALHC*(QA(J,NLEVxy(J))-QSAT(J,NL1(J)))
+cch        DMSE = (SE(J,NLEVxy(J,myThid))-SE(J,NL1(J)))+
+cch     &                ALHC*(QA(J,NLEVxy(J,myThid))-QSAT(J,NL1(J)))
        DMSE = - stab(J)
-       IF ( NLEVxy(J) .GT. 0 ) THEN
-        QEQL = MIN(QA(J,NLEVxy(J)),RH(J,NL1(J))*QSAT(J,NLEVxy(J)))
-cchdbg        QEQL = MIN(QA(J,NLEVxy(J)),QA(J,NL1(J)))
+       IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
+        QEQL = MIN(QA(J,NLEVxy(J,myThid)),RH(J,NL1(J))*QSAT(J,NLEVxy(J,myThid)))
+cchdbg        QEQL = MIN(QA(J,NLEVxy(J,myThid)),QA(J,NL1(J)))
        ENDIF
 C
         IF (DMSE.GE.0.0) THEN
@@ -165,19 +167,19 @@ C ****************************************************
 C
 C         2.1 Shallow convection
 C
-          IF ( NLEVxy(J) .GT. 0 ) THEN
-           TTENVD(J,NLEVxy(J)) = RTST(J)*DMSE 
-           TTENVD(J,NL1(J))  = RNL1(J)*TTENVD(J,NLEVxy(J))
-           QTENVD(J,NLEVxy(J)) = RTSQ*(QA(J,NLEVxy(J))-QEQL)
-           QTENVD(J,NL1(J))  = RNL1(J)*QTENVD(J,NLEVxy(J))
+          IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
+           TTENVD(J,NLEVxy(J,myThid)) = RTST(J)*DMSE 
+           TTENVD(J,NL1(J))  = RNL1(J)*TTENVD(J,NLEVxy(J,myThid))
+           QTENVD(J,NLEVxy(J,myThid)) = RTSQ*(QA(J,NLEVxy(J,myThid))-QEQL)
+           QTENVD(J,NL1(J))  = RNL1(J)*QTENVD(J,NLEVxy(J,myThid))
           ENDIF
 C
         ELSE
 C
 C         2.2 Vertical diffusion of moisture
 
-          QTENVD(J,NLEVxy(J)) = RTVD*(QA(J,NLEVxy(J))-QEQL)
-          QTENVD(J,NL1(J))  = RNL1(J)*QTENVD(J,NLEVxy(J))
+          QTENVD(J,NLEVxy(J,myThid)) = RTVD*(QA(J,NLEVxy(J,myThid))-QEQL)
+          QTENVD(J,NL1(J))  = RNL1(J)*QTENVD(J,NLEVxy(J,myThid))
 C
         ENDIF
 C

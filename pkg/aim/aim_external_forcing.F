@@ -1,7 +1,8 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_external_forcing.F,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_external_forcing.F,v 1.3 2001/05/29 19:28:53 cnh Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
+#undef OLD_AIM_GRIG_MAPPING
 
 CStartOfInterface
       SUBROUTINE AIM_EXTERNAL_FORCING_U(
@@ -11,6 +12,7 @@ C     /==========================================================\
 C     | S/R AIM_EXTERNAL_FORCING_U                               |
 C     | o Add AIM tendency terms to U tendency.                  |
 C     \==========================================================/
+      IMPLICIT rEAL*8 (A-H,O-Z) 
 
 C     == Global data ==
 #include "SIZE.h"
@@ -20,14 +22,7 @@ C     == Global data ==
 #include "DYNVARS.h"
 
 #ifdef ALLOW_AIM
-#include "atparam0.h"
-#include "atparam1.h"
-      INTEGER NGP
-      INTEGER NLON
-      INTEGER NLAT
-      INTEGER NLEV
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
-#include "com_physvar.h"
+#include "AIM2DYN.h"
 #endif /* ALLOW_AIM */
 
 C     == Routine arguments ==
@@ -44,20 +39,65 @@ CEndOfInterface
 #ifdef ALLOW_AIM
 C     == Local variables ==
 C     Loop counters
-      INTEGER I, J
-      INTEGER I2, I3, kAtm
+      INTEGER i, j
 
-      DO J=1,sNy
-       DO I=1,sNx
-        I2 = sNx*(J-1)+I
-        I3 = sNx*(J-1)+mod(I+sNx-2,sNx)+1
-         Katm = _KD2KA( Klev )
-         gU(i,j,kLev,bi,bj) =
-     &   gU(i,j,kLev,bi,bj) + 0.5*(UT_PBL(I2,katm)+UT_PBL(I3,katm))
+
+#ifdef OLD_AIM_GRIG_MAPPING
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+c - to reproduce old results :
+      IF (kLev.eq.1) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          IF ( hFacW(i,j,kLev,bi,bj) .NE. 0. ) THEN
+           gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+     &      -aim_drag(i-1,j,bi,bj)
+     &          *0.25*(uVel(i-1,j,kLev,bi,bj)+uVel(i,j,kLev,bi,bj))
+     &      -aim_drag(i,j,bi,bj)
+     &          *0.25*(uVel(i,j,kLev,bi,bj)+uVel(i+1,j,kLev,bi,bj))
+          ENDIF
+         ENDDO
+        ENDDO
+      ELSE
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          IF ( hFacW(i,j,kLev,bi,bj) .NE. 0. ) THEN
+           gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+     &      -(1.-maskC(i-1,j,kLev-1,bi,bj))*aim_drag(i-1,j,bi,bj)
+     &          *0.25*(uVel(i-1,j,kLev,bi,bj)+uVel(i,j,kLev,bi,bj))
+     &      -(1.-maskC( i ,j,kLev-1,bi,bj))*aim_drag( i ,j,bi,bj)
+     &          *0.25*(uVel(i,j,kLev,bi,bj)+uVel(i+1,j,kLev,bi,bj))
+          ENDIF
+         ENDDO
+        ENDDO
+      ENDIF
+#else  /* OLD_AIM_GRIG_MAPPING */
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      IF (kLev.eq.1) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         IF ( hFacW(i,j,kLev,bi,bj) .NE. 0. ) THEN
+          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+     &     -( aim_drag(i-1,j,bi,bj)+aim_drag(i,j,bi,bj) )
+     &       * 0.5 _d 0 * uVel(i,j,kLev,bi,bj)
+         ENDIF
+        ENDDO
        ENDDO
-      ENDDO
-
-      _EXCH_XYZ_R8( gU , myThid) 
+      ELSE
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         IF ( hFacW(i,j,kLev,bi,bj) .NE. 0. ) THEN
+          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
+     &     -( (1.-maskC(i-1,j,kLev-1,bi,bj)) 
+     &         *aim_drag(i-1,j,bi,bj)*0.0
+     &       +(1.-maskC( i ,j,kLev-1,bi,bj)) 
+     &         *aim_drag( i ,j,bi,bj)*0.0
+     &      )* 0.5 _d 0 * uVel(i,j,kLev,bi,bj)
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* OLD_AIM_GRIG_MAPPING */
 
 #endif /* ALLOW_AIM */
 
@@ -82,14 +122,7 @@ C     == Global data ==
 #include "FFIELDS.h"
 
 #ifdef ALLOW_AIM
-#include "atparam0.h"
-#include "atparam1.h"
-      INTEGER NGP
-      INTEGER NLON
-      INTEGER NLAT
-      INTEGER NLEV
-      PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
-#include "com_physvar.h"
+#include "AIM2DYN.h"
 #endif /* ALLOW_AIM */
 
 C     == Routine arguments ==
@@ -106,22 +139,64 @@ CEndOfInterface
 #ifdef ALLOW_AIM
 C     == Local variables ==
 C     Loop counters
-      INTEGER I, J
-      INTEGER I2, I3, JN, kAtm
+      INTEGER i, j
 
-      DO J=1,sNy
-       DO I=1,sNx
-        I2 = sNx*(J-1)+I
-        JN = J
-        IF ( JN .EQ. sNy ) JN = sNy-1
-        I3 = sNx*(JN )+I
-         Katm = _KD2KA( Klev )
-         gV(i,j,kLev,bi,bj) =
-     &   gV(i,j,kLev,bi,bj) + 0.5*(VT_PBL(I2,katm)+VT_PBL(I3,katm))
+C     call CHKSUM_TILED( ' drag AAA ',aim_drag,1,bi,bj,myThid )
+
+#ifdef OLD_AIM_GRIG_MAPPING
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+c - to reproduce old results :
+      IF (kLev.eq.1) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         IF ( hFacS(i,j,kLev,bi,bj) .NE. 0. ) THEN
+          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+     &     -aim_drag(i,j-1,bi,bj)
+     &         *0.25*(vVel(i,j-1,kLev,bi,bj)+vVel(i,j,kLev,bi,bj))
+     &     -aim_drag(i,j,bi,bj)
+     &         *0.25*(vVel(i,j,kLev,bi,bj)+vVel(i,j+1,kLev,bi,bj))
+         ENDIF
+        ENDDO
        ENDDO
-      ENDDO
-
-      _EXCH_XYZ_R8( gV , myThid) 
+      ELSE
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         IF ( hFacS(i,j,kLev,bi,bj) .NE. 0. ) THEN
+          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+     &     -(1.-maskC(i,j-1,kLev-1,bi,bj))*aim_drag(i,j-1,bi,bj)
+     &         *0.25*(vVel(i,j-1,kLev,bi,bj)+vVel(i,j,kLev,bi,bj))
+     &     -(1.-maskC(i, j ,kLev-1,bi,bj))*aim_drag(i, j ,bi,bj)
+     &         *0.25*(vVel(i,j,kLev,bi,bj)+vVel(i,j+1,kLev,bi,bj))
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
+#else  /* OLD_AIM_GRIG_MAPPING */
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      IF (kLev.eq.1) THEN
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         IF ( hFacS(i,j,kLev,bi,bj) .NE. 0. ) THEN
+          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+     &     -( aim_drag(i,j-1,bi,bj)+aim_drag(i,j,bi,bj) )
+     &       * 0.5 _d 0 * vVel(i,j,kLev,bi,bj)
+         ENDIF
+        ENDDO
+       ENDDO
+      ELSE
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         IF ( hFacS(i,j,kLev,bi,bj) .NE. 0. ) THEN
+          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
+     &     -( (1.-maskC(i,j-1,kLev-1,bi,bj))*aim_drag(i,j-1,bi,bj)
+     &       +(1.-maskC(i, j ,kLev-1,bi,bj))*aim_drag(i, j ,bi,bj)
+     &      )* 0.5 _d 0 * vVel(i,j,kLev,bi,bj)
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#endif /* OLD_AIM_GRIG_MAPPING */
 
 #endif /* ALLOW_AIM */
 
@@ -135,6 +210,7 @@ C     /==========================================================\
 C     | S/R AIM_EXTERNAL_FORCING_T                               |
 C     | o Add AIM tendency to T                                  | 
 C     \==========================================================/
+      IMPLICIT rEAL*8 (A-H,O-Z) 
 
 C     == Global data ==
 #include "SIZE.h"
@@ -152,6 +228,7 @@ C     == Global data ==
       INTEGER NLEV
       PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
 #include "com_physvar.h"
+#include "AIM2DYN.h"
 #endif
 
 C     == Routine arguments ==
@@ -168,31 +245,45 @@ CEndOfInterface
 #ifdef ALLOW_AIM
 C     == Local variables ==
 C     Loop counters
-      INTEGER I, J
+      INTEGER I, J, I2, katm
+      _RL phiTemp( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy,nSx,nSy)
 
 C--   Forcing term
-      _RL thetaLim,kT,ka,ks,term1,term2,thetaEq,termP,rSurf
       _RL pGround
+      _RL convert_fact
 
-C--   Forcing term
+
+C--   Forcing: 
+C-    AIM heating/cooling tendencies terms: Convert to Pot.Temp and Add to gT
       pGround = 1. _d 5
       RD      = 287. _d 0
       CPAIR   = 1004. _d 0
-      DO J=1,sNy
-       DO I=1,sNx
-        I2 = sNx*(J-1)+I
-        katm = _KD2KA( Klev )
-        gT(i,j,kLev,bi,bj) = gT(i,j,kLev,bi,bj) +(
-     &                           TT_PBL(I2,katm)
-     &                          +TT_CNV(I2,katm)
-     &                          +TT_LSC(I2,katm)
-     &                          +TT_RSW(I2,katm)
-     &                          +TT_RLW(I2,katm)
-     &        )*((pGround/rC(kLev))**(RD/CPAIR))
+      katm = _KD2KA( Klev )
+      convert_fact = ((pGround/rC(kLev))**(RD/CPAIR))
+      DO J=1-OLy,sNy+OLy
+       DO I=1-OLx,sNx+OLx
+C       I2 = sNx*(J-1)+I
+C       phiTemp(I,J,bi,bj) = gT(i,j,kLev,bi,bj)
+C    &        +convert_fact*(
+C    &                        TT_PBL(I2,katm)
+C    &                       +TT_CNV(I2,katm)
+C    &                       +TT_LSC(I2,katm)
+C    &                       +TT_RSW(I2,katm)
+C    &                       +TT_RLW(I2,katm)
+C    &                       )
+        phiTemp(I,J,bi,bj) = gT(i,j,kLev,bi,bj)
+     &                      +aim_dTdt(i,j,kLev,bi,bj)
        ENDDO
       ENDDO
 
-      _EXCH_XYZ_R8( gT , myThid) 
+C     This can't stay here
+C     _EXCH_XY_R8( phiTemp , myThid) 
+
+      DO J=1-OLy,sNy+OLy
+       DO I=1-OLx,sNx+OLx
+        gT(i,j,kLev,bi,bj) = maskC(i,j,kLev,bi,bj)*phiTemp(I,J,bi,bj)
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_AIM */
 
@@ -206,6 +297,7 @@ C     /==========================================================\
 C     | S/R AIM_EXTERNAL_FORCING_S                               |
 C     | o Add AIM tendency to S.                                 |
 C     \==========================================================/
+      IMPLICIT rEAL*8 (A-H,O-Z) 
 
 C     == Global data ==
 #include "SIZE.h"
@@ -223,6 +315,7 @@ C     == Global data ==
       INTEGER NLEV
       PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
 #include "com_physvar.h"
+#include "AIM2DYN.h"
 #endif
 
 
@@ -237,23 +330,35 @@ C     kLev
       INTEGER myThid
 CEndOfInterface
 
+
 #ifdef ALLOW_AIM
 C     == Local variables ==
 C     Loop counters
-      INTEGER I, J
+      INTEGER I, J, I2, katm
+      _RL phiTemp( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy,nSx,nSy)
 
-      DO J=1,sNy
-       DO I=1,sNx
-        katm = _KD2KA( kLev )
+      katm = _KD2KA( kLev )
+      DO J=1-OLy,sNy+OLy
+       DO I=1-OLx,sNx+OLx
         I2 = sNx*(J-1)+I
-            gS(i,j,kLev,bi,bj) = gS(i,j,kLev,bi,bj)
-     &                       +QT_PBL(I2,katm)
-     &                       +QT_CNV(I2,katm)
-     &                       +QT_LSC(I2,katm)
+C       phiTemp(i,j,bi,bj) = gS(i,j,kLev,bi,bj)
+C    &                       +QT_PBL(I2,katm)
+C    &                       +QT_CNV(I2,katm)
+C    &                       +QT_LSC(I2,katm)
+        phiTemp(I,J,bi,bj) = gS(i,j,kLev,bi,bj)
+     &                      +aim_dSdt(i,j,kLev,bi,bj)
        ENDDO
       ENDDO
 
-      _EXCH_XYZ_R8( gS , myThid) 
+C     This can't stay here
+C     _EXCH_XY_R8( phiTemp , myThid) 
+C     _EXCH_XYZ_R8( gS , myThid) 
+
+      DO J=1-OLy,sNy+OLy
+       DO I=1-OLx,sNx+OLx
+        gS(i,j,kLev,bi,bj) = maskC(i,j,kLev,bi,bj)*phiTemp(I,J,bi,bj)
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_AIM */
 

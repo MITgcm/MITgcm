@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/ini_inphys.F,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/ini_inphys.F,v 1.3 2001/05/29 19:28:53 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-      SUBROUTINE INPHYS (FSG,HSG,RLAT)
+      SUBROUTINE INPHYS (FSG,HSG,RLAT,myThid)
 
       IMPLICIT rEAL*8 ( A-H,O-Z)
 
@@ -23,14 +23,18 @@ C
 #include "atparam.h"
 #include "atparam1.h"
 C
+      INTEGER NLON, NLAT, NLEV, NGP
       PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
+
+      INTEGER myThid
 C
 C
-#include "Lev_def.h"
 
 #include "GRID.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+
+#include "Lev_def.h"
 C
 C     Physical constants + functions of sigma and latitude
 C
@@ -49,18 +53,14 @@ C     == Routine Arguments ==
       REAL FSG(NLEV), HSG(0:NLEV), RLAT(NLAT)  
 
 C     == Local Variables ==
-      INTEGER I2
-      INTEGER bi, bj
+      INTEGER K
       DATA Pground /1. _d +5/
 
-C     == Set for a single tile per proc. for now
-      bi = 1
-      bj = 1
-C
 C---  1. Time independent parameters and arrays
 C
 C     1.1 Physical constants
 C
+      IF ( myThid .EQ. 1 ) THEN
       P0 = 1. _d +5
       GG = 9.81 _d 0
       RD = 287. _d 0
@@ -91,7 +91,7 @@ C     Fsurf = Ffull(nlev)+WVI(nlev,2)*(Ffull(nlev)-Ffull(nlev-1))
 C
       DO K=1,NLEV-1
        WVI(K,1)=1./(SIGL(K+1)-SIGL(K))
-       WVI(K,2)=(DLOG(SIGH(K))-SIGL(K))*WVI(K,1)
+       WVI(K,2)=(LOG(SIGH(K))-SIGL(K))*WVI(K,1)
       ENDDO
 C
       WVI(NLEV,1)=0.
@@ -99,11 +99,6 @@ C
 cchdbg
       WVI(NLEV,2)=-SIGL(NLEV)*WVI(NLEV-1,1)
 cchdbg
-C
-      DO J=1,NLAT
-       FMU(J,1)=SIN(RLAT(J))
-       FMU(J,2)=1.5 _d 0*FMU(J,1)**2-0.5 _d 0
-      ENDDO
 C
 C---  2. Constants for boundary forcing (common FORCON):
 C
@@ -212,30 +207,7 @@ C
 cchdbg *******************************************
       TRSHC = 12. _d 0
 cchdbg *******************************************
-C
-C Computation of the last air-level
-C ---------------------------------
-      I2=0
-      DO J=1,NLAT
-        DO I=1,NLON
-          I2=I2+1
-          NLEVxy(I2) =0
-          NLEVxyU(I2)=0
-          NLEVxyV(I2)=0
-          DO k=1,NLEV
-            NLEVxy(I2) = NLEVxy(I2)  +int( hFacC(I,J,K,bi,bj) )
-            NLEVxyU(I2)= NLEVxyU(I2) +int( hFacW(I,J,K,bi,bj) )
-            NLEVxyV(I2)= NLEVxyV(I2) +int( hFacS(I,J,K,bi,bj) )
-          ENDDO
-        ENDDO
-      ENDDO
-CcnhDebugStarts
-      UT_PBL = 0.
-      VT_PBL = 0.
-CcnhDebugEnds
-C     DO I=1,NLON
-C       NLEVxyV(I)=1
-C     ENDDO
+      ENDIF
 
 CcnhDebugStarts
 C     write(0,*) 'MAXVAL(NLEVxy)=',MAXVAL(NLEVxy)

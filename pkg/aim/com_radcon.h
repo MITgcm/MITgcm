@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/com_radcon.h,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/com_radcon.h,v 1.3 2001/05/29 19:28:53 cnh Exp $
 C $Name:  $
 
 C--
@@ -25,4 +25,4 @@ C--   /FLDRAD/: Transmissivity and blackbody radiation (workspace)
 C--    TAU    = transmissivity of atmospheric layers
 C--    ST4A   = blackbody emission from full and half atmospheric levels 
 
-      COMMON /RADFLD/ TAU(NGP,NLEV), ST4A(NGP,NLEV,2)
+      COMMON /RADFLD/ TAUORIG(NGP,NLEV),ST4AORIG(NGP,NLEV,2)

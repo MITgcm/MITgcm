@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_inphys.F,v 1.4 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_inphys.F,v 1.5 2001/05/29 19:28:53 cnh Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -46,11 +46,14 @@ C     J, K, bi,bj  - Loop counters
       ENDDO
       HSG(1) = rF(Nr+1)/pGround
 
-      DO J=1,sNy
-       RLAT(J) = yC(1,J,1,1)*deg2rad
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO J=1,sNy
+         RLAT(J) = yC(1,J,bi,bj)*deg2rad
+        ENDDO
+        CALL INPHYS( FSG, HSG, RLAT, myThid )
+       ENDDO
       ENDDO
-
-      CALL INPHYS( FSG, HSG, RLAT )
 
 #ifdef ALLOW_TIMEAVE 
 C     Initialise diagnostic counters ( these are cleared on model starti i.e. not

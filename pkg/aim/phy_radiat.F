@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_radiat.F,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_radiat.F,v 1.3 2001/05/29 19:28:53 cnh Exp $
 C $Name:  $
 
-      SUBROUTINE SOL_OZ (SOLC,TYEAR,FSOL,OZONE)
+      SUBROUTINE SOL_OZ (SOLC,TYEAR,FSOL,OZONE,myThid)
 
 C--
 C--   SUBROUTINE SOL_OZ (SOLC,TYEAR,FSOL,OZONE)
@@ -16,13 +16,17 @@ C--
 
 
       IMPLICIT rEAL*8 (A-H,O-Z)
+      INTEGER  myThid
 
+#include "EEPARAMS.h"
 
 C     Resolution parameters
 C
 #include "atparam.h"
 #include "atparam1.h"
 C
+      INTEGER NLON, NLAT, NLEV, NGP
+      INTEGER I, J
       PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
 C
 C     Constants + functions of sigma and latitude
@@ -39,10 +43,12 @@ C     ALPHA = year phase ( 0 - 2pi, 0 = winter solstice = 22dec.h00 )
       COZ1= 0.0
 C     COZ1= 0.2*SIN(ALPHA)
       COZ2= 0.3
+
 C
       DO J=1,NLAT
-        FSOL(1,J)=SOLC*MAX(0.,1.0+CSR1*FMU(J,1)+CSR2*FMU(J,2))
-        OZONE(1,J)=1.0+COZ1*FMU(J,1)+COZ2*FMU(J,2)
+        FSOL(1,J)=
+     &   SOLC*MAX(0.,1.0+CSR1*FMU(J,1,myThid)+CSR2*FMU(J,2,myThid))
+        OZONE(1,J)=1.0+COZ1*FMU(J,1,myThid)+COZ2*FMU(J,2,myThid)
         DO I=2,NLON
           FSOL(I,J)=FSOL(1,J)
           OZONE(I,J)=OZONE(1,J)
@@ -54,8 +60,9 @@ C
 
 
       SUBROUTINE RADSW (PSA,QA,RH,
-     *                  FSOL,OZONE,ALB,
-     *                  CLOUDC,FTOP,FSFC,DFABS)
+     *                  FSOL,OZONE,ALB,TAU,
+     *                  CLOUDC,FTOP,FSFC,DFABS,
+     I                  myThid)
 C--
 C--  SUBROUTINE RADSW (PSA,QA,RH,
 C-- *                  FSOL,OZONE,ALB,
@@ -77,14 +84,18 @@ C--
 
 
       IMPLICIT rEAL*8 (A-H,O-Z)
+      INTEGER  myThid
 
 
 C     Resolution parameters
 C
 #include "atparam.h"
 #include "atparam1.h"
+#include "EEPARAMS.h"
 #include "Lev_def.h"
 C
+      INTEGER NLON, NLAT, NLEV, NGP
+      INTEGER K, J
       PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
 C
 C     Constants + functions of sigma and latitude
@@ -96,7 +107,7 @@ C
 #include "com_radcon.h"
 C
       REAL PSA(NGP), QA(NGP,NLEV), RH(NGP,NLEV),
-     *     FSOL(NGP), OZONE(NGP), ALB(NGP)
+     *     FSOL(NGP), OZONE(NGP), ALB(NGP), TAU(NGP,NLEV)
 
       REAL CLOUDC(NGP), FTOP(NGP), FSFC(NGP), DFABS(NGP,NLEV)
 
@@ -114,7 +125,7 @@ Cchdbg
 cchdbg
 C
       DO J=1,NGP
-        NL1(J)=NLEVxy(J)-1
+        NL1(J)=NLEVxy(J,myThid)-1
       ENDDO
 C
 C--   1.  Cloud cover:
@@ -135,6 +146,7 @@ C
       DO 123 J=1,NGP
         DFABS(J,K)=0.
   123 CONTINUE 
+
 C
       DO 124 J=1,NGP
       DO 124 K=2,NL1(J)
@@ -149,7 +161,7 @@ cchdbg *******************************************
 cchdbg        CLOUDC(J)=MIN(CLOUDC(J),DRHCL)/DRHCL
 cchdbg *******************************************
 clear sky experiment
-c       cloudc(j) = 0.
+C       cloudc(j) = 0.
   126 CONTINUE
 C
 C
@@ -170,9 +182,9 @@ chhh      WRITE(0,*) ' Hello from RADSW'
   204 CONTINUE
 
       DO 206 J=1,NGP
-       IF ( NLEVxy(J) .GT. 0 ) THEN
-        TAU(J,NLEVxy(J))=EXP(-(ABSSW+ABWSW*QA(J,NLEVxy(J)))
-     *                              *PSA(J)*DSIG(NLEVxy(J)))
+       IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
+        TAU(J,NLEVxy(J,myThid))=EXP(-(ABSSW+ABWSW*QA(J,NLEVxy(J,myThid)))
+     *                              *PSA(J)*DSIG(NLEVxy(J,myThid)))
        ENDIF
   206 CONTINUE
 C
@@ -184,6 +196,9 @@ C
         FLUX(J)=TAU(J,1)*TAUOZ(J)*FSOL(J)
         DFABS(J,1)=FSOL(J)-FLUX(J)
   312 CONTINUE
+
+C     RETURN
+
 C	
 C     3.2  Reflection at the top of the troposphere 
 C          (proportional to cloud cover).
@@ -197,11 +212,14 @@ C
 C     3.3  Absorption in the troposphere
 C
       DO 332 J=1,NGP
-      DO 332 K=2,NLEVxy(J)
+      DO 332 K=2,NLEVxy(J,myThid)
         DFABS(J,K)=FLUX(J)
         FLUX(J)=TAU(J,K)*FLUX(J)
         DFABS(J,K)=DFABS(J,K)-FLUX(J)
   332 CONTINUE
+
+Cxx   RETURN
+
 C
 C---  4. Shortwave upward flux 
 C	
@@ -216,17 +234,22 @@ C
 C     4.2  Absorption in the atmosphere
 C
       DO 422 J=1,NGP
-      DO 422 K=NLEVxy(J),1,-1
+      DO 422 K=NLEVxy(J,myThid),1,-1
         DFABS(J,K)=DFABS(J,K)+FLUX(J)
         FLUX(J)=TAU(J,K)*FLUX(J)
         DFABS(J,K)=DFABS(J,K)-FLUX(J)
   422 CONTINUE
+
+Cxx   RETURN
+
 C
 C     4.3  Absorbed solar radiation = incoming - outgoing
 C
       DO 432 J=1,NGP
         FTOP(J)=FTOP(J)-FLUX(J)
   432 CONTINUE
+
+C     RETURN
 cdj
 c     write(0,*)'position j=20'
 c     j=20
@@ -249,12 +272,15 @@ C
       DO 512 J=1,NGP
         TAU(J,1)=EXP(-ABSLW*PSA(J)*DSIG(1))
   512 CONTINUE
+
 C
       DO 514 J=1,NGP
       DO 514 K=2,NL1(J)
         TAU(J,K)=EXP(-(ABSLW+ABWLW*QA(J,K)
      *           +ABCLW*CLOUDC(J)*QA(J,NL1(J)))*PSA(J)*DSIG(K))
   514 CONTINUE
+
+C     RETURN
 C
 cchdbg ***************************************************
 c      ABCLW1=0.15
@@ -298,12 +324,14 @@ C
 C *********************************************************************
 C *********************************************************************
 
+C     RETURN
+
       ABWLW1=0.7
       DO 516 J=1,NGP
-       IF ( NLEVxy(J) .GT. 0 ) THEN
-        TAU(J,NLEVxy(J))=EXP(-(ABSLW+ABWLW*QA(J,NLEVxy(J)))*PSA(J)
-cchdbg        TAU(J,NLEVxy(J))=EXP(-(ABSLW+ABWLW1*QA(J,NLEVxy(J)))*PSA(J)
-     *                     *DSIG(NLEVxy(J)))
+       IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
+        TAU(J,NLEVxy(J,myThid))=EXP(-(ABSLW+ABWLW*QA(J,NLEVxy(J,myThid)))*PSA(J)
+cchdbg        TAU(J,NLEVxy(J,myThid))=EXP(-(ABSLW+ABWLW1*QA(J,NLEVxy(J,myThid)))*PSA(J)
+     *                     *DSIG(NLEVxy(J,myThid)))
        ENDIF
   516 CONTINUE
 
@@ -314,7 +342,9 @@ C---
 
 
       SUBROUTINE RADLW (IMODE,TA,TS,ST4S,
-     *                  FTOP,FSFC,DFABS,FDOWN)
+     &                  TAU,ST4A,
+     *                  FTOP,FSFC,DFABS,FDOWN, 
+     I                  myThid)
 C--
 C--   SUBROUTINE RADLW (IMODE,TA,TS,ST4S,
 C--  *                  FTOP,FSFC,DFABS)
@@ -333,14 +363,17 @@ C--
 
 
       IMPLICIT rEAL*8 (A-H,O-Z)
-
+      INTEGER  myThid
 
 C     Resolution parameters
 C
 #include "atparam.h"
 #include "atparam1.h"
+#include "EEPARAMS.h"
 #include "Lev_def.h"
 C
+      INTEGER NLON, NLAT, NLEV, NGP
+      INTEGER K, J
       PARAMETER ( NLON=IX, NLAT=IL, NLEV=KX, NGP=NLON*NLAT )
 C
 C     Constants + functions of sigma and latitude
@@ -351,13 +384,15 @@ C     Radiation parameters
 C
 #include "com_radcon.h"
 C
-      REAL TA(NGP,NLEV), TS(NGP), ST4S(NGP)
+      REAL TA(NGP,NLEV), TS(NGP), ST4S(NGP), 
+     &     TAU(NGP,NLEV), ST4A(NGP,NLEV,2)
 
       REAL FTOP(NGP), FSFC(NGP), DFABS(NGP,NLEV)
       REAL FDOWN(NGP)
 
       REAL FLUX(NGP), BRAD(NGP), STCOR(NGP)
       INTEGER NL1(NGP)
+      INTEGER IMODE, J0, Jl
 C
 Cchdbg
       INteger npas
@@ -369,15 +404,18 @@ Cchdbg
       REAL ST4SMoy(NGP)
       SAVE FluxMoy, ST4SMoy
 Cchdbg
+
       DO J=1,NGP
-        NL1(J)=NLEVxy(J)-1
+        NL1(J)=NLEVxy(J,myThid)-1
       ENDDO
+
 C
       DO K=1,NLEV
         DO J=1,NGP
           DFABS(J,K)=0.
         ENDDO
       ENDDO
+
 C
 C---  1. Blackbody emission from atmospheric full and half levels.
 C        Temperature is interpolated as a linear function of ln sigma.
@@ -385,7 +423,7 @@ C        At the lower boundary, the emission is linearly extrapolated;
 C        at the upper boundary, the atmosphere is assumed isothermal.
 C
       DO 102 J=1,NGP
-      DO 102 K=1,NLEVxy(J)
+      DO 102 K=1,NLEVxy(J,myThid)
         ST4A(J,K,1)=TA(J,K)*TA(J,K)
         ST4A(J,K,1)=SBC*ST4A(J,K,1)*ST4A(J,K,1)
   102 CONTINUE
@@ -396,10 +434,11 @@ C
         ST4A(J,K,2)=ST4A(J,K,2)*ST4A(J,K,2)
         ST4A(J,K,2)=SBC*ST4A(J,K,2)*ST4A(J,K,2)
   104 CONTINUE
+
 C
       DO 106 J=1,NGP
-       IF ( NLEVxy(J) .GT. 0 ) THEN
-        ST4A(J,NLEVxy(J),2)=2.*ST4A(J,NLEVxy(J),1)-ST4A(J,NL1(J),2)
+       IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
+        ST4A(J,NLEVxy(J,myThid),2)=2.*ST4A(J,NLEVxy(J,myThid),1)-ST4A(J,NL1(J),2)
        ENDIF
   106 CONTINUE
 C
@@ -411,7 +450,7 @@ C
 C
       J0=0
       DO JL=1,NLAT
-        CORR=COR0+COR1*FMU(JL,1)+COR2*FMU(JL,2)
+        CORR=COR0+COR1*FMU(JL,1,myThid)+COR2*FMU(JL,2,myThid)
         DO J=J0+1,J0+NLON
           STCOR(J)=CORR
         ENDDO
@@ -434,7 +473,7 @@ C
 C     3.2  Troposphere
 C
       DO 322 J=1,NGP
-      DO 322 K=2,NLEVxy(J)
+      DO 322 K=2,NLEVxy(J,myThid)
         DFABS(J,K)=FLUX(J)
         BRAD(J)=ST4A(J,K,2)+TAU(J,K)*(ST4A(J,K,1)-ST4A(J,K,2))
         FLUX(J)=TAU(J,K)*(FLUX(J)-BRAD(J))+BRAD(J)
@@ -499,7 +538,7 @@ C
 C     4.2  Troposphere
 C
       DO 422 J=1,NGP
-      DO 422 K=NLEVxy(J),2,-1
+      DO 422 K=NLEVxy(J,myThid),2,-1
         DFABS(J,K)=DFABS(J,K)+FLUX(J)
         BRAD(J)=ST4A(J,K-1,2)+TAU(J,K)*(ST4A(J,K,1)-ST4A(J,K-1,2))
         FLUX(J)=TAU(J,K)*(FLUX(J)-BRAD(J))+BRAD(J)

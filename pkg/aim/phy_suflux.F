@@ -1,9 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_suflux.F,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/phy_suflux.F,v 1.3 2001/05/29 19:28:53 cnh Exp $
 C $Name:  $
 
-      SUBROUTINE SUFLUX (PSA,UA,VA,TA,QA,RH,QSAT,PHI,
+      SUBROUTINE SUFLUX (PSA,UA,VA,TA,QA,RH,QSAT,Vsurfsq,PHI,
      *                   PHI0,FMASK,TLAND,TSEA,SWAV,SSR,SLR,
-     *                   USTR,VSTR,SHF,EVAP,T0,Q0,QSAT0,SPEED0)
+     *                   DRAG,USTR,VSTR,SHF,EVAP,T0,Q0,QSAT0,SPEED0,
+     &                   myThid)
 C--
 C--   SUBROUTINE SUFLUX (PSA,UA,VA,TA,QA,RH,PHI,
 C--  *                   PHI0,FMASK,TLAND,TSEA,SWAV,
@@ -26,6 +27,13 @@ C--   Output:  USTR   = u stress                         (2-dim)
 C--            VSTR   = v stress                         (2-dim)
 C--            SHF    = sensible heat flux               (2-dim)
 C--            EVAP   = evaporation [g/(m^2 s)]          (2-dim)
+C - added (jmc) :
+C--           Vsurfsq = square of surface wind speed (2-dim,input)
+C--                       ==> UA,VA are no longer used
+C--            DRAG   = surface Drag term (= Cd*|V|) (2-dim,output)
+C--                       ==> USTR,VSTR are no longer used
+C--         myThid    = Instance number of this instance of the
+C--                     the routine.
 C--
 
 
@@ -33,6 +41,7 @@ C--
 
 
 C     Resolution parameters
+#include "EEPARAMS.h"
 #include "atparam.h"
 #include "atparam1.h"
 #include "Lev_def.h"
@@ -46,11 +55,14 @@ C     Physical constants + functions of sigma and latitude
 C     Surface flux constants
 
 #include "com_sflcon.h"
+
 C
       REAL PSA(NGP), UA(NGP,NLEV), VA(NGP,NLEV), TA(NGP,NLEV),
      *     QA(NGP,NLEV), RH(NGP,NLEV), QSAT(NGP,NLEV), PHI(NGP,NLEV),
      *     PHI0(NGP), FMASK(NGP), TLAND(NGP), TSEA(NGP), SWAV(NGP),
      *     SSR(NGP), SLR(NGP)
+      REAL Vsurfsq(NGP), DRAG(NGP)
+      INTEGER myThid
 C
       REAL USTR(NGP,3), VSTR(NGP,3), SHF(NGP,3), EVAP(NGP,3)
 C									
@@ -79,17 +91,30 @@ Cchdbg
       SAVE denmoy1, denmoy2
       REAL Q0moy(NGP)
       SAVE Q0moy
+      REAL factwind2
 C
 C--   1. Extrapolation of wind, temp, hum. and density to the surface
 C
 C     1.1 Wind components
 C   
       DO J=1,NGP
-        IF ( NLEVxyU(J) .GT. 0 ) THEN
-         U0(J) = FWIND0*UA(J,NLEVxyU(J))
-        ENDIF
-        IF ( NLEVxyV(J) .GT. 0 ) THEN
-         V0(J) = FWIND0*VA(J,NLEVxyV(J))
+c_jmc   IF ( NLEVxyU(J) .GT. 0 ) THEN
+c_jmc    U0(J) = FWIND0*UA(J,NLEVxyU(J))
+c_jmc   ENDIF
+c_jmc   IF ( NLEVxyV(J) .GT. 0 ) THEN
+c_jmc    V0(J) = FWIND0*VA(J,NLEVxyV(J))
+c_jmc   ENDIF
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C-- Note(jmc): If we interpolate U,V from C_grid to A_grid (center of the mesh)
+C     the above distinction between NLEVxy_Upt,Vpt is no longer valid !
+C     same thing (again) few lines below.
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+        IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
+         U0(J) = FWIND0*UA(J,NLEVxy(J,myThid))
+         V0(J) = FWIND0*VA(J,NLEVxy(J,myThid))
+        ELSE
+         U0(J) = 0.0
+         V0(J) = 0.0
         ENDIF
 C       U0(J) = UA(J,5)
 C       V0(J) = VA(J,5)
@@ -100,16 +125,17 @@ C
       GTEMP0 = 1.D0-FTEMP0
       RCP = 1.D0/CP
       DO J=1,NGP
-        NL1(J)=NLEVxy(J)-1
+        NL1(J)=NLEVxy(J,myThid)-1
       ENDDO
 C
       DO J=1,NGP
-       IF ( NLEVxy(J) .GT. 0 ) THEN
-        T0(J,1) = TA(J,NLEVxy(J))+WVI(NLEVxy(J),2)*
-     &                          (TA(J,NLEVxy(J))-TA(J,NL1(J)))
+       IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
+        T0(J,1) = TA(J,NLEVxy(J,myThid))+WVI(NLEVxy(J,myThid),2)*
+     &                          (TA(J,NLEVxy(J,myThid))-TA(J,NL1(J)))
 ccccc        T0(J,2) = TA(J,NLEVxy(J))+RCP*(PHI(J,NLEVxy(J))-PHI0(J))
-        T0(J,2) = TA(J,NLEVxy(J))*
-     &         ((Psurfw(NLEVxy(J))/Psurfs(Nlevxy(J)))**(RD/CP))
+        T0(J,2) = TA(J,NLEVxy(J,myThid))*
+     &         ((Psurfw(NLEVxy(J,myThid))/
+     &           Psurfs(Nlevxy(J,myThid)))**(RD/CP))
        ELSE
         T0(J,1) = 273.16 _d 0
         T0(J,2) = 273.16 _d 0
@@ -125,8 +151,8 @@ C
       GHUM0 = 1. _d 0-FHUM0
 C
       DO J=1,NGP
-       IF ( NLEVxy(J) .GT. 0 ) THEN
-        WORK(J)=RH(J,Nlevxy(J))
+       IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
+        WORK(J)=RH(J,Nlevxy(J,myThid))
 cchdbg
 c        WORK(J) = RH(J,NLEVxy(J))+WVI(NLEVxy(J),2)*
 c     &                          (RH(J,NLEVxy(J))-RH(J,NL1(J)))
@@ -134,11 +160,11 @@ cchdbg
        ENDIF
       ENDDO
 C
-      CALL SHTORH (-1,NGP,T0,PSA,1. _d 0,Q0,WORK,QSAT0)
+      CALL SHTORH (-1,NGP,T0,PSA,1. _d 0,Q0,WORK,QSAT0,myThid)
 C
       DO J=1,NGP
-       IF ( NLEVxy(J) .GT. 0 ) THEN
-        Q0(J)=FHUM0*Q0(J)+GHUM0*QA(J,NLEVxy(J))
+       IF ( NLEVxy(J,myThid) .GT. 0 ) THEN
+        Q0(J)=FHUM0*Q0(J)+GHUM0*QA(J,NLEVxy(J,myThid))
        ENDIF
       ENDDO
 
@@ -146,13 +172,16 @@ C     1.4 Density * wind speed (including gustiness factor)
 
       PRD = P0/RD
       VG2 = VGUST*VGUST
+      factwind2 = FWIND0*FWIND0
 C
       DO J=1,NGP
-        DENVV(J,3)=(PRD*PSA(J)/T0(J,1))*
-     *           SQRT(U0(J)*U0(J)+V0(J)*V0(J)+VG2)
+c_jmc   SPEED0(J)=SQRT(U0(J)*U0(J)+V0(J)*V0(J)+VG2)
+        SPEED0(J)=SQRT(factwind2*Vsurfsq(J)+VG2)
+        DENVV(J,3)=(PRD*PSA(J)/T0(J,1))*SPEED0(J)
+c_jmc   DENVV(J,3)=(PRD*PSA(J)/T0(J,1))*
+c_jmc*           SQRT(U0(J)*U0(J)+V0(J)*V0(J)+VG2)
 cchdbg        DENVV(J,3)=0.7*(PRD*PSA(J)/T0(J,1))*
 cchdbg     *           SQRT(U0(J)*U0(J)+V0(J)*V0(J)+VG2)
-        SPEED0(J)=SQRT(U0(J)*U0(J)+V0(J)*V0(J)+VG2)
       ENDDO
 C
 C     1.5 Stability correction for heat/moisture fluxes
@@ -176,15 +205,40 @@ C
 C     2.1 Wind stress
 C
       DO J=1,NGP
-       IF ( NLEVxyu(J) .GT. 0  ) THEN
-        USTR(J,1) = -CDL*DENVV(J,3)*UA(J,NLEVxyu(J))
-        USTR(J,2) = -CDS*DENVV(J,3)*UA(J,NLEVxyu(J))
-       ENDIF
-       IF ( NLEVxyv(J) .GT. 0  ) THEN
-        VSTR(J,1) = -CDL*DENVV(J,3)*VA(J,NLEVxyv(J))
-        VSTR(J,2) = -CDS*DENVV(J,3)*VA(J,NLEVxyv(j))
+c_jmc  IF ( NLEVxyu(J) .GT. 0  ) THEN
+c_jmc   USTR(J,1) = -CDL*DENVV(J,3)*UA(J,NLEVxyu(J))
+c_jmc   USTR(J,2) = -CDS*DENVV(J,3)*UA(J,NLEVxyu(J))
+c_jmc  ENDIF
+c_jmc  IF ( NLEVxyv(J) .GT. 0  ) THEN
+c_jmc   VSTR(J,1) = -CDL*DENVV(J,3)*VA(J,NLEVxyv(J))
+c_jmc   VSTR(J,2) = -CDS*DENVV(J,3)*VA(J,NLEVxyv(j))
+c_jmc  ENDIF
+C-- cf Note(jmc) above. 
+       IF ( NLEVxy(J,myThid) .GT. 0  ) THEN
+        USTR(J,1) = -CDL*DENVV(J,3)*UA(J,NLEVxy(J,myThid))
+        USTR(J,2) = -CDS*DENVV(J,3)*UA(J,NLEVxy(J,myThid))
+        VSTR(J,1) = -CDL*DENVV(J,3)*VA(J,NLEVxy(J,myThid))
+        VSTR(J,2) = -CDS*DENVV(J,3)*VA(J,NLEVxy(J,myThid))
+       ELSE
+        USTR(J,1) = 0.
+        USTR(J,2) = 0.
+        VSTR(J,1) = 0.
+        VSTR(J,2) = 0.
        ENDIF
       ENDDO
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+c   Compute surface drag term (= C_drag*|V| ) to allow direct computation 
+c     of surface stress on C-grid.
+c     add Land + Sea contributions ; Convert to surface pressure level 
+      DO J=1,NGP
+       IF ( NLEVxy(J,myThid) .GT. 0  ) THEN
+        DRAG(J) = ( CDS+FMASK(J)*(CDL-CDS) )
+     &                         * DENVV(J,3) * GRDSIG(NLEVxy(J,myThid))
+       ELSE
+        DRAG(J) = 0.
+       ENDIF
+      ENDDO
+c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C
 C     2.2 Sensible heat flux (from clim. TS over land)
 C
@@ -256,17 +310,19 @@ c        CALL DUMP_WRITE2D ( NGP,1,'AUX.', nIter,aux , iErr)
 C
 C     2.3 Evaporation
 C
-      CALL SHTORH (0,NGP,TLAND,PSA,1. _d 0,QDUMMY,RDUMMY,QSAT0(1,1))
-      CALL SHTORH (0,NGP,TSEA ,PSA,1. _d 0,QDUMMY,RDUMMY,QSAT0(1,2))
+      CALL SHTORH (0,NGP,TLAND,PSA,1. _d 0,QDUMMY,RDUMMY,QSAT0(1,1),myThid)
+      CALL SHTORH (0,NGP,TSEA ,PSA,1. _d 0,QDUMMY,RDUMMY,QSAT0(1,2),myThid)
 
       DO J=1,NGP
 Cdj        EVAP(J,1) = CHL*DENVV(J,1)*MAX(0. _d 0,SWAV(J)*QSAT0(J,1)-Q0(J))
-        EVAP(J,1)=CHL*DENVV(J,1)*MIN(1. _d 0,SWAV(J))*(QSAT0(J,1)-Q0(J))
+c_jmc: EVAP(J,1)=CHL*DENVV(J,1)*MIN(1. _d 0,SWAV(J))*(QSAT0(J,1)-Q0(J))
+       EVAP(J,1)=CHL*DENVV(J,1)*MAX(0. _d 0,SWAV(J)*(QSAT0(J,1)-Q0(J)))
 cdj try new scheme : assume that the net heat flux on land is zero
 cdj                  at all time and at all points (this is equivalent
 cdj                  to say that the land has a zero heat capacity)
 cdj        EVAP(J,1) = SSR(J)-SLR(J)-SHF(J,1)
-        EVAP(J,2) = CHS*DENVV(J,2)*(QSAT0(J,2)-Q0(J))
+c_jmc:  EVAP(J,2) = CHS*DENVV(J,2)*(QSAT0(J,2)-Q0(J))
+        EVAP(J,2) = CHS*DENVV(J,2)*MAX(0. _d 0,QSAT0(J,2)-Q0(J))
       ENDDO
 
 

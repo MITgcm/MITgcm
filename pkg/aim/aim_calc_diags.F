@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_calc_diags.F,v 1.4 2001/05/29 14:01:37 adcroft Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_calc_diags.F,v 1.5 2001/05/29 19:28:53 cnh Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -9,6 +9,7 @@ C     /==========================================================\
 C     | SUBROUTINE AIM_CALC_DIAGS                                |
 C     | o Calculate AIM diagnostics                              |
 C     \==========================================================/
+      IMPLICIT rEAL*8 (A-H,O-Z) 
 
 C     === Global variables ===
 #include "SIZE.h"
@@ -42,7 +43,7 @@ CEndOfInterface
 #ifdef ALLOW_AIM
 
 C     == Local variables ==
-      INTEGER I,J,I2
+      INTEGER I,J,I2,K
       _RL DDTT
 
 #ifdef ALLOW_TIMEAVE
@@ -52,17 +53,17 @@ C     == Local variables ==
       DO J=1,sNy
        DO I=1,sNx
         I2 = sNx*(J-1)+I
-        USTRtave(i,j,bi,bj)   = USTRtave(i,j,bi,bj)   + USTR(I2,3)*DDTT
-        VSTRtave(i,j,bi,bj)   = VSTRtave(i,j,bi,bj)   + VSTR(I2,3)*DDTT
-        TSRtave(i,j,bi,bj)    = TSRtave(i,j,bi,bj)    + TSR(I2)*DDTT
-        OLRtave(i,j,bi,bj)    = OLRtave(i,j,bi,bj)    + OLR(I2)*DDTT
-        SSRtave(i,j,bi,bj)    = SSRtave(i,j,bi,bj)    + SSR(I2)*DDTT
-        SLRtave(i,j,bi,bj)    = SLRtave(i,j,bi,bj)    + SLR(I2)*DDTT
-        SHFtave(i,j,bi,bj)    = SHFtave(i,j,bi,bj)    + SHF(I2,3)*DDTT
-        EVAPtave(i,j,bi,bj)   = EVAPtave(i,j,bi,bj)   + EVAP(I2,3)*DDTT
-        PRECNVtave(i,j,bi,bj) = PRECNVtave(i,j,bi,bj) + PRECNV(I2)*DDTT
-        PRECLStave(i,j,bi,bj) = PRECLStave(i,j,bi,bj) + PRECLS(I2)*DDTT
-        CLOUDCtave(i,j,bi,bj) = CLOUDCtave(i,j,bi,bj) + CLOUDC(I2)*DDTT
+        USTRtave(i,j,bi,bj)   = USTRtave(i,j,bi,bj)   + USTR(I2,3,myThid)*DDTT
+        VSTRtave(i,j,bi,bj)   = VSTRtave(i,j,bi,bj)   + VSTR(I2,3,myThid)*DDTT
+        TSRtave(i,j,bi,bj)    = TSRtave(i,j,bi,bj)    + TSR(I2,myThid)*DDTT
+        OLRtave(i,j,bi,bj)    = OLRtave(i,j,bi,bj)    + OLR(I2,myThid)*DDTT
+        SSRtave(i,j,bi,bj)    = SSRtave(i,j,bi,bj)    + SSR(I2,myThid)*DDTT
+        SLRtave(i,j,bi,bj)    = SLRtave(i,j,bi,bj)    + SLR(I2,myThid)*DDTT
+        SHFtave(i,j,bi,bj)    = SHFtave(i,j,bi,bj)    + SHF(I2,3,myThid)*DDTT
+        EVAPtave(i,j,bi,bj)   = EVAPtave(i,j,bi,bj)   + EVAP(I2,3,myThid)*DDTT
+        PRECNVtave(i,j,bi,bj) = PRECNVtave(i,j,bi,bj) + PRECNV(I2,myThid)*DDTT
+        PRECLStave(i,j,bi,bj) = PRECLStave(i,j,bi,bj) + PRECLS(I2,myThid)*DDTT
+        CLOUDCtave(i,j,bi,bj) = CLOUDCtave(i,j,bi,bj) + CLOUDC(I2,myThid)*DDTT
        ENDDO
       ENDDO
 
