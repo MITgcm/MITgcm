@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.97 2004/09/04 18:19:20 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.98 2004/09/07 21:28:47 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1742,6 +1742,8 @@ for d in $alldirs ; do
                   ./AD_CONFIG.h)
 			;;
                   ./FC_NAMEMANGLE.h)
+			;;
+                  ./BUILD_INFO.h)
 			;;
                   *)
 		  	touch .links.tmp/$sf
