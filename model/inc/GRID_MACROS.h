@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.4 1998/05/27 21:01:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.5 1998/05/28 15:03:13 cnh Exp $
 C
 C     /==========================================================\
 C     | GRID_MACROS.h                                            |
@@ -114,3 +114,21 @@ C     \==========================================================/
 #undef  RDYU_FX
 #undef  RDYU_FY
 #include "RDYU_MACROS.h"
+
+#undef  RHFACC_CONST   
+#undef  RHFACC_FX
+#undef  RHFACC_FY
+#undef  RHFACC_FXY
+#include "RHFACC_MACROS.h"
+
+#undef  RHFACS_CONST   
+#undef  RHFACS_FX
+#undef  RHFACS_FY
+#undef  RHFACS_FXY
+#include "RHFACS_MACROS.h"
+
+#undef  RHFACW_CONST   
+#undef  RHFACW_FX
+#undef  RHFACW_FY
+#undef  RHFACW_FXY
+#include "RHFACW_MACROS.h"
