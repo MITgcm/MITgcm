@@ -1,7 +1,23 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.200 2003/10/30 12:24:44 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.201 2003/10/30 19:21:04 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint51q_post
+o cd_code:
+  - moved cd_scheme.F -> cd_code_scheme.F
+  - separate read_checkpoint from cd_code_ini_vars.F
+  - separated cd_code part from write_checkpoint
+  - updated AD_SOURCE, generated .flow
+  - added CD_CODE_VARS.h to the_main_loop
+  - Moving cd_code specific store dir.s to pkg/cd_code
+o ctrl package totally restructured
+  - pack/unpack now optional and decoupled from
+    xx_/adxx_ I/O
+  - ctrl_pack/unpack cleaned
+    (new routines ctrl_init_ctrlvar.F, pkg/ctrl/ctrl_init_wet.F)
+  - confined inclusion of AD_CONFIG.h to where necessary.
+o genmake2: changed AD dependencies from SRCFILES to AD_FILES
 
 checkpoint51p_post
 o create initial cd_code package
