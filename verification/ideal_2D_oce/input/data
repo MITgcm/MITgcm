@@ -1,0 +1,78 @@
+# ====================
+# | Model parameters |
+# ====================
+#
+# Continuous equation parameters
+ &PARM01
+ tRef= 18.8, 16.3, 13.1, 10.4, 8.1, 6.0, 4.5,
+      3.4, 2.7, 2.2, 1.8, 1.5, 1.2, 1.0, 0.9,
+ sRef= 15*34.7,
+ cosPower=1.,
+ viscAz=1.E-3,
+ viscAh=12.E5,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.TRUE.,
+ bottomDragLinear=1.E-3,
+#diffK4T=2.E12,
+ diffKhT=0.E3,
+ diffKzT=1.E-5,
+ ivdc_kappa=100.,
+ implicitDiffusion=.TRUE.,
+ eosType='LINEAR',
+ tAlpha=2.E-4,
+ sBeta =0.E-4,
+ saltStepping=.FALSE.,
+ gravity=9.81,
+ rhonil=1035.,
+ implicitFreeSurface=.TRUE.,
+ exactConserv=.TRUE.,
+ staggerTimeStep=.TRUE.,
+ readBinaryPrec=64,
+ tempAdvScheme=77,
+ &
+
+# Elliptic solver parameters
+ &PARM02
+ cg2dMaxIters=1000,
+#cg2dTargetResidual=1.E-13,
+ cg2dTargetResWunit=1.E-17,
+ &
+
+# Time stepping parameters
+ &PARM03
+ niter0=36000,
+ nTimeSteps=20,
+#endTime=3110400000.,
+ deltaTmom=1200.0,
+ deltaTfreesurf=3600.0,
+ deltaTtracer=86400.0,
+ deltaTClock =86400.0,
+ abEps=0.1,
+ tauCD=321428.,
+ tauThetaClimRelax=2592000.0,
+ chkptFreq=0.0,
+ pChkptFreq=3110400000.0,
+ taveFreq=1555200000.0,
+ dumpFreq=1555200000.0,
+ diagFreq=1555200000.0,
+#monitorFreq=31104000.0,
+ monitorFreq=1.0,
+ &
+
+# Gridding parameters
+ &PARM04
+ usingCartesianGrid=.FALSE.,
+ usingSphericalPolarGrid=.TRUE.,
+ delRc= 20.,  60.,  85., 120., 165., 215., 265., 315.,
+       365., 415., 465., 515., 565., 615., 665., 350.,
+ phiMin=-84.,
+ delY=56*3,
+ delX=1*3,
+ &
+
+# Input datasets
+ &PARM05
+ bathyFile='topo_sl.bin',
+ zonalWindFile='taux_sl.bin',
+ thetaClimFile='sst_sl.bin',
+ &
