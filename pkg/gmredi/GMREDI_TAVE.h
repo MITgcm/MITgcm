@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/GMREDI_DIAGS.h,v 1.5 2002/11/14 22:43:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_TAVE.h,v 1.1 2005/01/04 00:11:39 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
 
-C     /==========================================================\
-C     | GM_DIAGS.h                                               |
-C     | o Header for GM?Redi diagnostic output                   |
-C     \==========================================================/
+C     *==========================================================*
+C     | GMREDI_TAVE.h
+C     | o Header for GM-Redi time-average output
+C     *==========================================================*
 
 #ifdef ALLOW_TIMEAVE
 
