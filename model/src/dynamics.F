@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.63 2001/02/20 15:06:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.64 2001/03/06 16:59:44 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,7 +26,6 @@ C     \==========================================================/
 C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "CG2D.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
@@ -40,8 +39,8 @@ C     == Global variables ===
 # include "KPP.h"
 #endif
 
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
-#include "AVER.h"
+#ifdef ALLOW_TIMEAVE
+#include "TIMEAVE_STATV.h"
 #endif
 
 C     == Routine arguments ==
@@ -539,9 +538,9 @@ C       (note: this loop will be replaced by CALL CALC_GRAD_ETA)
           DO j=jMin,jMax
             DO i=iMin,iMax 
               phiSurfX(i,j) = _recip_dxC(i,j,bi,bj)*gBaro
-     &           *(cg2d_x(i,j,bi,bj)-cg2d_x(i-1,j,bi,bj)) 
+     &           *(etaN(i,j,bi,bj)-etaN(i-1,j,bi,bj)) 
               phiSurfY(i,j) = _recip_dyC(i,j,bi,bj)*gBaro 
-     &           *(cg2d_x(i,j,bi,bj)-cg2d_x(i,j-1,bi,bj)) 
+     &           *(etaN(i,j,bi,bj)-etaN(i,j-1,bi,bj)) 
             ENDDO
           ENDDO
         ENDIF
@@ -670,18 +669,16 @@ c         CALL WRITE_FLD_XYZ_RL('PH.',suff,phiHyd,myIter+1,myThid)
 c       ENDIF
 Cjmc(end)
 
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifdef ALLOW_TIMEAVE
         IF (taveFreq.GT.0.) THEN 
-         DO K=1,Nr
-          CALL TIMEAVER_1FLD_XYZ(phiHyd, phiHydtave, 
-     I                              deltaTclock, bi, bj, K, myThid)
+          CALL TIMEAVE_CUMULATE(phiHydtave, phiHyd, Nr,
+     I                              deltaTclock, bi, bj, myThid)
           IF (ivdc_kappa.NE.0.) THEN
-            CALL TIMEAVER_1FLD_XYZ(ConvectCount, ConvectCountTave,
-     I                              deltaTclock, bi, bj, K, myThid)
+            CALL TIMEAVE_CUMULATE(ConvectCountTave, ConvectCount, Nr,
+     I                              deltaTclock, bi, bj, myThid)
           ENDIF
-         ENDDO
         ENDIF
-#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
+#endif /* ALLOW_TIMEAVE */
 
        ENDDO
       ENDDO
