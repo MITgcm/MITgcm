@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/Attic/cost_init.F,v 1.4 2002/07/13 03:01:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/Attic/cost_initvaria.F,v 1.2 2003/06/23 22:29:05 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
 
-      subroutine cost_init( mythid )
+      subroutine cost_initvaria( mythid )
 
 c     ==================================================================
-c     SUBROUTINE cost_init
+c     SUBROUTINE cost_initvaria
 c     ==================================================================
 c
 c     o Initialise the variable cost function part.
@@ -19,7 +19,7 @@ c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
 c
 c     ==================================================================
-c     SUBROUTINE cost_init
+c     SUBROUTINE cost_initvaria
 c     ==================================================================
 
       implicit none

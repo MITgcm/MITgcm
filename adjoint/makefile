@@ -3,8 +3,8 @@ RM               = rm -f
 LOC              = $(PWD)
 TAMC             = tamc
 ###TAMC             = /data43/ralf/tamc/tamc
-###TAF              = taf
-TAF              = ~fastopt/bin/taf
+TAF              = taf
+###TAF              = ~fastopt/bin/taf
 DEST             = .
 SOURCE_CODE      = ../bin
 ADJOINT_SCRIPT   = ../adjoint
@@ -249,11 +249,12 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/gmredi_xtransport.f		\
 		$(SOURCE_CODE)/gmredi_ytransport.f		\
 								\
+		$(SOURCE_CODE)/ctrl_init_variables.f		\
 		$(SOURCE_CODE)/ctrl_map_ini.f			\
 		$(SOURCE_CODE)/ctrl_map_forcing.f		\
 		  						\
 		$(SOURCE_CODE)/cost_final.f			\
-		$(SOURCE_CODE)/cost_init.f			\
+		$(SOURCE_CODE)/cost_initvaria.f			\
 		$(SOURCE_CODE)/cost_tile.f			\
 		$(SOURCE_CODE)/cost_test.f			\
 		$(SOURCE_CODE)/cost_tracer.f			\

@@ -30,7 +30,7 @@ C       >>> Extract adjoint state
 #undef ALLOW_AUTODIFF_MONITOR
 C
 C o use divided adjoint to split adjoint computations
-#define ALLOW_DIVIDED_ADJOINT
+#undef ALLOW_DIVIDED_ADJOINT
 #undef ALLOW_DIVIDED_ADJOINT_MPI
 
 C ********************************************************************
