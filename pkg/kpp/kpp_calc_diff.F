@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_calc_diff.F,v 1.8 2001/08/13 18:05:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_calc_diff.F,v 1.9 2004/10/17 23:05:09 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -47,7 +47,7 @@ C     I, J, K - Loop counters
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
      &                     - diffKr(i,j,k,bi,bj) )
 #else
-     &                     - diffKrT )
+     &                     - diffKrNrT(k) )
 #endif
        ENDDO
       ENDDO
@@ -59,7 +59,7 @@ C     I, J, K - Loop counters
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
      &                     - diffKr(i,j,k,bi,bj) )
 #else
-     &                     - diffKrS )
+     &                     - diffKrNrS(k) )
 #endif
        ENDDO
       ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.131 2004/10/14 13:44:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.132 2004/10/17 23:03:08 jmc Exp $
 C $Name:  $
 C
 
@@ -406,6 +406,8 @@ C     gBaro     :: Accel. due to gravity used in barotropic equation ( m/s^2 )
 C     rhoNil    :: Reference density for the linear equation of state
 C     rhoConst  :: Vertically constant reference density 
 C     rhoConstFresh :: Constant reference density for fresh water (rain)
+C     tRef      :: reference vertical profile for potential temperature
+C     sRef      :: reference vertical profile for salinity/specific humidity 
 C     startTime :: Start time for model ( s )
 C     phiMin    :: Latitude of southern most cell face.
 C     thetaMin  :: Longitude of western most cell face (this
@@ -437,14 +439,14 @@ C     viscA4Grid:: non-dimensional grid-size dependent bi-harmonic viscosity
 C     viscC4leith :: Leith non-dimensional viscosity factor
 C     diffKhT   :: Laplacian diffusion coeff. for mixing of
 C                 heat laterally ( m^2/s )
-C     diffKrT   :: Laplacian diffusion coeff. for mixing of
-C                 heat vertically ( units of r^2/s )
+C     diffKrNrT :: vertical profile of Laplacian diffusion coeff. 
+C                 for mixing of heat vertically ( units of r^2/s )
 C     diffK4T   :: Biharmonic diffusion coeff. for mixing of
 C                 heat laterally ( m^4/s )
 C     diffKhS  ::  Laplacian diffusion coeff. for mixing of
 C                 salt laterally ( m^2/s )
-C     diffKrS   :: Laplacian diffusion coeff. for mixing of
-C                 salt vertically ( units of r^2/s )
+C     diffKrNrS :: vertical profile of Laplacian diffusion coeff. 
+C                 for mixing of salt vertically ( units of r^2/s ), 
 C     diffK4S   :: Biharmonic diffusion coeff. for mixing of
 C                 salt laterally ( m^4/s )
 C     diffKrBL79surf :: T/S surface diffusivity (m^2/s) Bryan and Lewis, 1979
@@ -533,8 +535,8 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & viscAh, viscAhW, viscAhMax, viscAhGrid, viscC2leith,
      & viscA4,  viscA4Max, viscA4Grid, viscC4leith,
      & viscAr, viscAstrain, viscAtension,
-     & diffKhT, diffK4T, diffKrT,
-     & diffKhS, diffK4S, diffKrS,
+     & diffKhT, diffK4T, diffKrNrT,
+     & diffKhS, diffK4S, diffKrNrS,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
      & delT, tauCD, rCD, freeSurfFac, implicSurfPress, implicDiv2Dflow,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
@@ -598,10 +600,10 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL viscA4Grid
       _RL viscC4leith
       _RL diffKhT 
-      _RL diffKrT
+      _RL diffKrNrT(Nr)
       _RL diffK4T 
       _RL diffKhS 
-      _RL diffKrS
+      _RL diffKrNrS(Nr)
       _RL diffK4S 
       _RL diffKrBL79surf
       _RL diffKrBL79deep

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.130 2004/10/14 21:40:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.131 2004/10/17 23:03:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -82,6 +82,7 @@ C
       LOGICAL pCoordInputData
       LOGICAL rCoordInputData
       INTEGER coordsSet
+      LOGICAL diffKrSet
 
 C     Variables which have vertical coordinate system dependency.
 C     delZ      :: Vertical grid spacing ( m  ).
@@ -104,8 +105,10 @@ C                 salt vertically ( Pa^2/s )
       _RL viscAp
       _RL diffKzT
       _RL diffKpT
+      _RL diffKrT
       _RL diffKzS
       _RL diffKpS
+      _RL diffKrS
 
 C     Retired main data file parameters. Kept here to trap use of old data files.
 C     zonal_filt_lat  - Moved to package "zonal_filt"
@@ -140,7 +143,7 @@ C--   Continuous equation parameters
      & tempStepping, saltStepping, momStepping,
      & implicitDiffusion, implicitViscosity,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
-     & viscAr, diffKrT, diffKrS, hFacMinDr,
+     & viscAr, diffKrT, diffKrS, diffKrNrT, diffKrNrS, hFacMinDr,
      & viscAp, diffKpT, diffKpS, hFacMinDp,
      & diffKrBL79surf, diffKrBL79deep, diffKrBL79scl, diffKrBL79Ho,
      & rhoConst, rhoConstFresh, buoyancyRelation, HeatCapacity_Cp,
@@ -217,7 +220,7 @@ C--   Initialise "which vertical coordinate system used" flags.
       usingZCoords    = .FALSE.
       coordsSet       = 0
 
-C--   Iniialise retired parameters to unlikely value
+C--   Initialise retired parameters to unlikely value
       nRetired = 0
       zonal_filt_lat  = UNSET_RL
       gravitySign     = UNSET_RL
@@ -296,6 +299,10 @@ C--   Set default "physical" parameters
       diffKzS  = UNSET_RL
       diffKpS  = UNSET_RL
       diffKrS  = UNSET_RL
+      DO k=1,Nr
+       diffKrNrT(k) = UNSET_RL
+       diffKrNrS(k) = UNSET_RL
+      ENDDO
       gBaro    = UNSET_RL
       rhoConst = UNSET_RL
       omega    = UNSET_RL
@@ -432,6 +439,20 @@ C--   z,p,r coord input switching.
       IF ( diffKrT .EQ. UNSET_RL )          diffKrT = diffKzT
       IF ( diffKrT .EQ. UNSET_RL )          diffKrT = diffKpT
       IF ( diffKrT .EQ. UNSET_RL )          diffKrT = diffKrTDefault
+      diffKrSet = .TRUE.
+      DO k=1,Nr
+        IF ( diffKrNrT(k).EQ. UNSET_RL ) diffKrSet = .FALSE.
+      ENDDO
+      IF ( .NOT.diffKrSet ) THEN
+        DO k=1,Nr
+         diffKrNrT(k) = diffKrT
+        ENDDO
+      ELSEIF ( diffKrT.NE.diffKrTDefault ) THEN
+       WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
+     &    'diffKrNrT and diffKrT (or Kp,Kz) in input file data'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ENDIF
 
       IF ( diffKzS .NE. UNSET_RL ) zCoordInputData  = .TRUE.
       IF ( diffKpS .NE. UNSET_RL ) pCoordInputData  = .TRUE.
@@ -439,6 +460,20 @@ C--   z,p,r coord input switching.
       IF ( diffKrS .EQ. UNSET_RL )          diffKrS = diffKzS
       IF ( diffKrS .EQ. UNSET_RL )          diffKrS = diffKpS
       IF ( diffKrS .EQ. UNSET_RL )          diffKrS = diffKrSDefault
+      diffKrSet = .TRUE.
+      DO k=1,Nr
+        IF ( diffKrNrS(k).EQ. UNSET_RL ) diffKrSet = .FALSE.
+      ENDDO
+      IF ( .NOT.diffKrSet ) THEN
+        DO k=1,Nr
+         diffKrNrS(k) = diffKrS
+        ENDDO
+      ELSEIF ( diffKrS.NE.diffKrSDefault ) THEN
+       WRITE(msgBuf,'(2A)') 'S/R INI_PARMS: Cannot set both ',
+     &    'diffKrNrS and diffKrS (or Kp,Kz) in input file data'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ENDIF
 
       IF ( hFacMinDz .NE. UNSET_RL ) zCoordInputData = .TRUE.
       IF ( hFacMinDp .NE. UNSET_RL ) pCoordInputData = .TRUE.

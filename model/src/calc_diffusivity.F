@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.23 2004/09/16 09:35:11 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.24 2004/10/17 23:03:38 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -67,7 +67,7 @@ CEOP
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
      &       + diffKr(i,j,k,bi,bj)
 #else
-     &       + diffKrT
+     &       + diffKrNrT(k)
 #endif
      &       + KbryanLewis79
      &      )
@@ -82,7 +82,7 @@ CEOP
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
      &       + diffKr(i,j,k,bi,bj)
 #else
-     &       + diffKrS
+     &       + diffKrNrS(k)
 #endif
      &       + KbryanLewis79
      &      )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.11 2004/10/07 19:31:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.12 2004/10/17 23:05:09 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -138,8 +138,8 @@ C-----------------------------------------------------------------------
                   do i = 1-OLx, sNx+OLx
                      KPPghat       (i,j,k,bi,bj) = 0.
                      KPPviscAz  (i,j,k,bi,bj) = viscAr
-                     KPPdiffKzT (i,j,k,bi,bj) = diffKrT
-                     KPPdiffKzS (i,j,k,bi,bj) = diffKrS
+                     KPPdiffKzT (i,j,k,bi,bj) = diffKrNrT(k)
+                     KPPdiffKzS (i,j,k,bi,bj) = diffKrNrS(k)
                   end do
                end do
             end do

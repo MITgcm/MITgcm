@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.8 2004/10/10 06:08:50 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.9 2004/10/17 23:06:52 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -67,7 +67,7 @@ C     Set defaults values for parameters in PTRACERS.h
         PTRACERS_advScheme(iTracer)=saltAdvScheme
         PTRACERS_diffKh(iTracer)=diffKhS
         PTRACERS_diffK4(iTracer)=diffK4S
-        PTRACERS_diffKr(iTracer)=diffKrS
+        PTRACERS_diffKr(iTracer)=diffKrNrS(1)
         PTRACERS_useGMRedi(iTracer)=useGMRedi
         PTRACERS_useKPP(iTracer)=useKPP
         PTRACERS_initialFile(iTracer)=' '

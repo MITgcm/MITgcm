@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.60 2004/10/13 04:37:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.61 2004/10/17 23:03:38 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -111,14 +111,14 @@ C     zcoord ::
      &'   /* Laplacian diffusion of heat laterally ( m^2/s ) */')
       CALL WRITE_0D_R8( diffK4T, INDEX_NONE,'diffK4T =',
      &'   /* Bihaarmonic diffusion of heat laterally ( m^4/s ) */')
-      CALL WRITE_0D_R8( diffKrT, INDEX_NONE,'diffKrT =',
-     &'   /* Laplacian diffusion of heat vertically ( m^2/s ) */')
       CALL WRITE_0D_R8( diffKhS, INDEX_NONE,'diffKhS =',
      &'   /* Laplacian diffusion of salt laterally ( m^2/s ) */')
       CALL WRITE_0D_R8( diffK4S, INDEX_NONE,'diffK4S =',
      &'   /* Bihaarmonic diffusion of salt laterally ( m^4/s ) */')
-      CALL WRITE_0D_R8( diffKrS, INDEX_NONE,'diffKrS =',
-     &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
+      CALL WRITE_1D_R8( diffKrNrT, Nr, INDEX_K,'diffKrNrT =',
+     & ' /* vertical profile of vertical diffusion of Temp ( m^2/s )*/')
+      CALL WRITE_1D_R8( diffKrNrS, Nr, INDEX_K,'diffKrNrS =',
+     & ' /* vertical profile of vertical diffusion of Salt ( m^2/s )*/')
       CALL WRITE_0D_R8( diffKrBL79surf, INDEX_NONE,'diffKrBL79surf =',
      &'   /* Surface diffusion for Bryan and Lewis 1979 ( m^2/s ) */')
       CALL WRITE_0D_R8( diffKrBL79deep, INDEX_NONE,'diffKrBL79deep =',
