@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_init.F,v 1.8 2002/11/14 22:43:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_init.F,v 1.9 2004/03/24 15:21:15 adcroft Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -27,10 +27,6 @@ C     myThid -  Number of this instance of KPP_INIT
 #ifdef ALLOW_GMREDI
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
-C     iUnit       - Work variable for IO unit number
-      CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER iUnit
       INTEGER i,j,k,bi,bj
 
       DO bj = myByLo(myThid), myByHi(myThid)
