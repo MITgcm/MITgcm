@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.9 2004/04/06 19:24:34 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.10 2004/04/06 21:03:14 dimitri Exp $
 C $Name:  $
 
 CBOP
@@ -105,20 +105,20 @@ C     performance.
 #define _GLOBAL_MAX_R4(a,b) CALL GLOBAL_MAX_R4 ( a, b )
 #define _MPI_TYPE_RS MPI_REAL
 #endif
-#define _EXCH_XY_R4(a,b) CALL EXCH2_XY_RL ( a, b )
-#define _EXCH_XYZ_R4(a,b) CALL EXCH2_XYZ_RL ( a, b )
+#define _EXCH_XY_R4(a,b) CALL EXCH_XY_RL ( a, b )
+#define _EXCH_XYZ_R4(a,b) CALL EXCH_XYZ_RL ( a, b )
 
 #define _RL Real*8
-#define _EXCH_XY_R8(a,b) CALL EXCH2_XY_RL ( a, b )
-#define _EXCH_XYZ_R8(a,b) CALL EXCH2_XYZ_RL ( a, b )
+#define _EXCH_XY_R8(a,b) CALL EXCH_XY_RL ( a, b )
+#define _EXCH_XYZ_R8(a,b) CALL EXCH_XYZ_RL ( a, b )
 #define _GLOBAL_SUM_R8(a,b) CALL GLOBAL_SUM_R8 ( a, b )
 #define _GLOBAL_MAX_R8(a,b) CALL GLOBAL_MAX_R8 ( a, b )
 #define _MPI_TYPE_RL MPI_DOUBLE_PRECISION
 
-#define _EXCH_XY_RS(a,b) CALL EXCH2_XY_RL ( a, b )
-#define _EXCH_XYZ_RS(a,b) CALL EXCH2_XYZ_RL ( a, b )
-#define _EXCH_XY_RL(a,b) CALL EXCH2_XY_RL ( a, b )
-#define _EXCH_XYZ_RL(a,b) CALL EXCH2_XYZ_RL ( a, b )
+#define _EXCH_XY_RS(a,b) CALL EXCH_XY_RL ( a, b )
+#define _EXCH_XYZ_RS(a,b) CALL EXCH_XYZ_RL ( a, b )
+#define _EXCH_XY_RL(a,b) CALL EXCH_XY_RL ( a, b )
+#define _EXCH_XYZ_RL(a,b) CALL EXCH_XYZ_RL ( a, b )
 
 #define _MPI_TYPE_R4 MPI_REAL
 #ifdef TARGET_SGI
