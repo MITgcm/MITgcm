@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.4 2003/01/10 23:41:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_psi.F,v 1.5 2003/01/12 21:27:20 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE GMREDI_SLOPE_PSI_B(
+      SUBROUTINE GMREDI_SLOPE_PSI(
      I             dSigmaDrW,dSigmaDrS,
      I             depthZ,K,
      U             SlopeX, SlopeY,
      O             taperX, taperY,
      I             bi,bj, myThid )
 C     /==========================================================\
-C     | SUBROUTINE GMREDI_SLOPE_PSI_B                            |
+C     | SUBROUTINE GMREDI_SLOPE_PSI                              |
 C     | o Calculate slopes for use in GM/Redi tensor             |
 C     |==========================================================|
 C     | On entry:                                                |
@@ -265,8 +265,8 @@ C-      Large, Danabasoglu and Doney, JPO 1997
          DO i=1-Olx+1,sNx+Olx-1
 
           Cspd=2. _d 0
-          Lrho=100. _d 0
-          if (FCori(i,j,bi,bj).NE.0.) Lrho=Cspd/abs(Fcori(i,j,bi,bj))
+          Lrho=100. _d 3
+          if (fCori(i,j,bi,bj).NE.0.) Lrho=Cspd/abs(fCori(i,j,bi,bj))
           Lrho=min(Lrho , 100. _d 3)
           Lrho=max(Lrho , 15. _d 3)
 
@@ -281,13 +281,13 @@ C-      Large, Danabasoglu and Doney, JPO 1997
           taperX(i,j)=f1*f2
 
           Smod = abs(SlopeY(i,j))
-          f1=op5*(1.+tanh( (GM_Scrit-Smod)/GM_Sd ))
+          f1=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
           if (Smod.NE.0.) then
             Rnondim=depthZ/(Lrho*Smod)
           else
             Rnondim=0.
           endif
-          f2=op5*(1.+sin( fpi*(Rnondim-op5)))
+          f2=op5*( 1. _d 0 + sin( fpi*(Rnondim-op5)))
           taperY(i,j)=f1*f2
 
          ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.3 2003/01/10 23:41:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.4 2003/01/12 21:27:20 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -103,7 +103,7 @@ C      Gradient of Sigma below U and V points
       ENDDO
 
 C     Calculate slopes , taper and/or clip
-      CALL GMREDI_SLOPE_PSI_B(
+      CALL GMREDI_SLOPE_PSI(
      I             dSigmaDrW, dSigmaDrS,
      I             rF(K),K,
      U             SlopeX, SlopeY,
