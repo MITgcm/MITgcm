@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.6 2004/03/08 21:20:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.7 2004/03/15 01:37:23 cnh Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "MONITOR_OPTIONS.h"
 
       SUBROUTINE MON_VORT3(

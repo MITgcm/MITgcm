@@ -1,0 +1,24 @@
+Supplementary code mods sets for alternate verification tests
+that involve additional code mods. The tests here are designed to check that
+cube tilings that have multiple tiles per cube face and that have
+missing tiles for all land regions are working OK.
+
+Code mods are in addition to the base mods in code/, i.e. they are applied in genmake2 together
+using a command such as
+% ../../../tools/genmake2 -mods="../code_alt/code.176t_8x4 ../code"
+
+Directories
+code.12t_32x16  :: Same as base but with 12 tiles each of 32x16
+
+code.192t_8x4   :: Same as base but with 192 tiles each of 8x4
+
+code.176t_8x4   :: Same as base but with 176 tiles each of 8x4. This
+                :: case has dropped the 8x4 tiles that are
+                :: all land in bathy_Hmin50.bin.
+
+The modified "ini_masks_etc.F" in code.192t_8x4/ was used to generate
+the list of all land tiles for code.176t_8x4/. This list is used by the
+utils/exch2/matlab_topology_generator/driver.m program. The "driver.m"
+program reads an optional file "blanklist.txt" that lists tiles that
+are blank in the full tile case. The topology files (W2_EXCH2_TOPOLOGY.h 
+and w2_e2setup.F) that are generated are then missing thise tiles.
