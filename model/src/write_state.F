@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.21 2003/02/18 15:25:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.22 2003/05/13 19:14:18 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -134,7 +134,8 @@ C         transfer analyse a particular snap-shots
         CALL WRITE_FLD_XYZ_RL( 'S.',suff,salt,myIter,myThid)
         CALL WRITE_FLD_XY_RL('Eta.',suff,etaN,myIter,myThid)
         CALL WRITE_FLD_XYZ_RL( 'W.',suff,wVel,myIter,myThid)
-        CALL WRITE_FLD_XYZ_RL( 'PH.',suff,totPhiHyd,myIter,myThid)
+        IF ( useDynP_inEos_Zc .OR. myIter.NE.nIter0 )
+     &  CALL WRITE_FLD_XYZ_RL( 'PH.',suff,totPhiHyd,myIter,myThid)
         IF ( buoyancyRelation .NE. 'ATMOSPHERIC' )
      &   CALL WRITE_FLD_XY_RL('PHL.',suff,phiHydLow,myIter,myThid)
 #ifdef ALLOW_PASSIVE_TRACER
