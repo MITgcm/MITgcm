@@ -58,6 +58,7 @@
  taveFreq=   864000.,
 #monitorFreq=31104000.,
  monitorFreq=1.,
+ monitor_ioinc=.TRUE.,
 # 2 months restoring timescale for temperature
  tauThetaClimRelax =  5184000.0,
 # 6 months restoring timescale for salinity
@@ -89,6 +90,7 @@
  thetaClimFile=  'lev_sst.bin',
  saltClimFile=   'lev_sss.bin',
  surfQFile=      'ncep_qnet.bin',
+ the_run_name=   'global_ocean.90x40x15',
 # fresh water flux is turned off, uncomment next line to turn on
 # (not recommened together with surface salinity restoring)
 # EmPmRFile=      'ncep_emp.bin',
