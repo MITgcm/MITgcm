@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_external_fields_load.F,v 1.4 2002/09/27 20:05:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_external_fields_load.F,v 1.5 2003/12/06 00:10:16 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
  
 CStartOfInterface
-      SUBROUTINE AIM_EXTERNAL_FIELDS_LOAD( 
+      SUBROUTINE AIM_FIELDS_LOAD( 
      I            myTime, myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE AIM_EXTERNAL_FIELDS_LOAD                      |
