@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.9 2002/02/08 22:22:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.10 2002/07/09 15:52:20 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -173,10 +173,12 @@ C
        _EXCH_XY_R4(SST1  , myThid )
        _EXCH_XY_R4(SSS0  , myThid )
        _EXCH_XY_R4(SSS1  , myThid )
-       _EXCH_XY_R4(taux0 , myThid )
-       _EXCH_XY_R4(taux1 , myThid )
-       _EXCH_XY_R4(tauy0 , myThid )
-       _EXCH_XY_R4(tauy1 , myThid )
+c      _EXCH_XY_R4(taux0 , myThid )
+c      _EXCH_XY_R4(taux1 , myThid )
+c      _EXCH_XY_R4(tauy0 , myThid )
+c      _EXCH_XY_R4(tauy1 , myThid )
+       CALL EXCH_UV_XY_RS(taux0,tauy0,.TRUE.,myThid)
+       CALL EXCH_UV_XY_RS(taux1,tauy1,.TRUE.,myThid)
        _EXCH_XY_R4(Qnet0, myThid )
        _EXCH_XY_R4(Qnet1, myThid )
        _EXCH_XY_R4(EmPmR0, myThid )
