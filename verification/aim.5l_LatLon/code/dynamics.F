@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/code/Attic/dynamics.F,v 1.3 2001/06/18 17:39:59 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/code/Attic/dynamics.F,v 1.4 2001/08/01 20:31:01 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -543,6 +543,19 @@ CADJ &   , key = kkey, byte = isbyte
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO
 
+       ENDDO
+      ENDDO
+#ifdef ALLOW_AIM
+      IF ( useAIM ) THEN
+       CALL AIM_AIM2DYN_EXCHANGES( myTime, myThid )
+      ENDIF
+#endif /* ALLOW_AIM */
+c     IF (staggerTimeStep.AND.useCubedSphereExchange) THEN
+       _EXCH_XYZ_R8(gTnm1,myThid)
+       _EXCH_XYZ_R8(gSnm1,myThid)
+c     ENDIF
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C? Patrick? What about this one?
