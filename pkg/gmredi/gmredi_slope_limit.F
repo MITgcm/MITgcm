@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.4 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.5 2001/08/13 18:09:23 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -178,8 +178,8 @@ C-      Large, Danabasoglu and Doney, JPO 1997
             Rnondim=0.
           endif
           f2=0.5*(1.+sin( fpi*(Rnondim-0.5)))
-          SlopeX(i,j) = sx*f1
-          SlopeY(i,j) = sy*f1
+          SlopeX(i,j) = sx*f1*f2
+          SlopeY(i,j) = sy*f1*f2
 
          ENDDO
         ENDDO
