@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_write_rs_vec.F,v 1.2 2003/07/08 15:00:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_write_rs_vec.F,v 1.3 2004/11/30 16:11:10 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -28,7 +28,7 @@ C Arguments
 C Local
       character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
-      if ( debugLevel .GE. debLevA ) then
+      if ( debugLevel .GE. debLevB ) then
        write(msgbuf,'(a,i9.8,2x,i9.8)')
      &  ' MDS_WRITE_RS_VEC: irec = ',irec,narr
        call print_message( msgbuf, standardmessageunit,

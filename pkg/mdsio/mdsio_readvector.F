@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.4 2003/07/18 21:10:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.5 2004/11/30 16:11:10 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -99,7 +99,7 @@ C Check first for global file with simple name (ie. fName)
       dataFName = fName
       inquire( file=dataFname, exist=exst )
       if (exst) then
-       if ( debugLevel .GE. debLevA ) then
+       if ( debugLevel .GE. debLevB ) then
         write(msgbuf,'(a,a)')
      &   ' MDSREADVECTOR: opening global file: ',dataFName
         call print_message( msgbuf, standardmessageunit,
@@ -113,7 +113,7 @@ C If negative check for global file with MDS name (ie. fName.data)
        write(dataFname(1:128),'(2a)') fName(1:IL),'.data'
        inquire( file=dataFname, exist=exst )
        if (exst) then
-        if ( debugLevel .GE. debLevA ) then
+        if ( debugLevel .GE. debLevB ) then
          write(msgbuf,'(a,a)')
      &     ' MDSREADVECTOR: opening global file: ',dataFName
          call print_message( msgbuf, standardmessageunit,
@@ -144,7 +144,7 @@ C If we are reading from a tiled MDS file then we open each one here
 C Of course, we only open the file if the tile is "active"
 C (This is a place-holder for the active/passive mechanism)
          if (exst) then
-          if ( debugLevel .GE. debLevA ) then
+          if ( debugLevel .GE. debLevB ) then
            write(msgbuf,'(a,a)')
      &      ' MDSREADVECTOR: opening file: ',dataFName
            call print_message( msgbuf, standardmessageunit,
