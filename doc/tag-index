@@ -1,7 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.134 2003/02/18 05:33:53 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.135 2003/02/18 19:19:56 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint48g_post
+--- EOS:
+o compute locally the pressure for use in EOS: UNESCO, JMD95P, MDJWF
+  store total Potential in totPhyHyd for diagnostics & EOS.
+o fix restart and overlap Pb when using Z-coord and EOS funct. of P
+--- Pressure/geopotential gradient:
+o use Ro_surf & R_low instead of hFac in cal_phi_hyd:
+o NLFS + p-coord.: eta*Alpha' is not longer lagging 1.time-step behind
+  ( changes results of global_ocean_pressure )
+o NLFS + z-coord.: add eta*Rho' contribution.
+o accurate phiHyd when using interface-W at the middle between 2 centers
+ ( changes results of ideal_2D_oce )
+o includes r* 2nd term in potential gradient.
 
 checkpoint48f_post
 Merging from release1_p12:
