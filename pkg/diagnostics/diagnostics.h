@@ -305,6 +305,11 @@ C diagarrays common
       CHARACTER*8   CUTRAC5 
       CHARACTER*8   CVTRAC5 
       CHARACTER*8   CWTRAC5 
+      CHARACTER*8   CTRAC1  
+      CHARACTER*8   CTRAC2  
+      CHARACTER*8   CTRAC3  
+      CHARACTER*8   CTRAC4  
+      CHARACTER*8   CTRAC5  
 
       EQUIVALENCE ( CDIAG( 1) ,  CUFLUX  )
       EQUIVALENCE ( CDIAG( 2) ,  CVFLUX  )
@@ -578,6 +583,11 @@ C diagarrays common
       EQUIVALENCE ( CDIAG(278),  CUTRAC5   )
       EQUIVALENCE ( CDIAG(279),  CVTRAC5   )
       EQUIVALENCE ( CDIAG(280),  CWTRAC5   )
+      EQUIVALENCE ( CDIAG(281),  CTRAC1    )
+      EQUIVALENCE ( CDIAG(282),  CTRAC2    )
+      EQUIVALENCE ( CDIAG(283),  CTRAC3    )
+      EQUIVALENCE ( CDIAG(284),  CTRAC4    )
+      EQUIVALENCE ( CDIAG(285),  CTRAC5    )
 
       integer       iUFLUX   , kUFLUX   , nUFLUX
       integer       iVFLUX   , kVFLUX   , nVFLUX
@@ -851,6 +861,11 @@ C diagarrays common
       integer       iUTRAC5  , kUTRAC5,   nUTRAC5
       integer       iVTRAC5  , kVTRAC5,   nVTRAC5
       integer       iWTRAC5  , kWTRAC5,   nWTRAC5
+      integer       iTRAC1   , kTRAC1 ,   nTRAC1
+      integer       iTRAC2   , kTRAC2 ,   nTRAC2
+      integer       iTRAC3   , kTRAC3 ,   nTRAC3
+      integer       iTRAC4   , kTRAC4 ,   nTRAC4
+      integer       iTRAC5   , kTRAC5 ,   nTRAC5
 
 
 c Diagnostic Pointers
@@ -1127,6 +1142,11 @@ c -------------------
       EQUIVALENCE ( IDIAG(278),  IUTRAC5   )
       EQUIVALENCE ( IDIAG(279),  IVTRAC5   )
       EQUIVALENCE ( IDIAG(280),  IWTRAC5   )
+      EQUIVALENCE ( IDIAG(281),  ITRAC1    )
+      EQUIVALENCE ( IDIAG(282),  ITRAC2    )
+      EQUIVALENCE ( IDIAG(283),  ITRAC3    )
+      EQUIVALENCE ( IDIAG(284),  ITRAC4    )
+      EQUIVALENCE ( IDIAG(285),  ITRAC5    )
 
 
 c Diagnostic Levels
@@ -1403,6 +1423,11 @@ c -----------------
       EQUIVALENCE ( KDIAG(278),  KUTRAC5   )
       EQUIVALENCE ( KDIAG(279),  KVTRAC5   )
       EQUIVALENCE ( KDIAG(280),  KWTRAC5   )
+      EQUIVALENCE ( KDIAG(281),  KTRAC1    )
+      EQUIVALENCE ( KDIAG(282),  KTRAC2    )
+      EQUIVALENCE ( KDIAG(283),  KTRAC3    )
+      EQUIVALENCE ( KDIAG(284),  KTRAC4    )
+      EQUIVALENCE ( KDIAG(285),  KTRAC5    )
 
 
 c Diagnostic Counters
@@ -1679,6 +1704,11 @@ c -------------------
       EQUIVALENCE ( NDIAG(278),  NUTRAC5   )
       EQUIVALENCE ( NDIAG(279),  NVTRAC5   )
       EQUIVALENCE ( NDIAG(280),  NWTRAC5   )
+      EQUIVALENCE ( NDIAG(281),  NTRAC1    )
+      EQUIVALENCE ( NDIAG(282),  NTRAC2    )
+      EQUIVALENCE ( NDIAG(283),  NTRAC3    )
+      EQUIVALENCE ( NDIAG(284),  NTRAC4    )
+      EQUIVALENCE ( NDIAG(285),  NTRAC5    )
 
 
 C diagnostics common

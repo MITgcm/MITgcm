@@ -1,275 +1,85 @@
-       subroutine diagnostics_fill_state(myThid)
+       subroutine diagnostics_fill_ptracers(myThid)
        implicit none
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "CPP_OPTIONS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-# ifdef ALLOW_PTRACERS
-#  include "PTRACERS.h"
-# endif
+#include "PTRACERS.h"
 
       integer myThid 
       _RL dummy(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr,Nsx,Nsy)
-      integer i,j,K,bi,bj
+      integer i,j,K,N,bi,bj
+      character *8 diagname
+      diagname = '        '
 
-        call fill_diagnostics(myThid,'ETAN    ',0,1,0,1,1,etaN)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,1,bi,bj) = etaN(i,j,bi,bj)*etaN(i,j,bi,bj)
-          enddo
-          enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'ETANSQ  ',0,1,0,1,1,dummy)
-
-        call fill_diagnostics(myThid,'UVEL    ',0,Nr,0,1,1,uVel)
-        call fill_diagnostics(myThid,'VVEL    ',0,Nr,0,1,1,vVel)
-        call fill_diagnostics(myThid,'WVEL    ',0,Nr,0,1,1,wVel)
-        call fill_diagnostics(myThid,'THETA   ',0,Nr,0,1,1,theta)
-        call fill_diagnostics(myThid,'SALT    ',0,Nr,0,1,1,salt)
+      do N = 1,PTRACERS_numInUse
 
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
           do j = 1-OLy,sNy+Oly
           do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*uVel(i,j,K,bi,bj)
+           dummy(i,j,K,bi,bj) = ptracers(i,j,K,bi,bj,N) * 
+     .                      hFacC(i,j,K,bi,bj)*drF(K)
           enddo
           enddo
          enddo
         enddo
         enddo
-        call fill_diagnostics(myThid,'UVELSQ  ',0,Nr,0,1,1,dummy)
+        diagname = '        '
+        write(diagname,(a4,i1))'TRAC',N
+        call fill_diagnostics(myThid,diagname,0,Nr,0,1,1,dummy)
 
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
           do j = 1-OLy,sNy+Oly
           do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*vVel(i,j,K,bi,bj)
+           dummy(i,j,K,bi,bj) = ptracers(i,j,K,bi,bj,N) * 
+     .                      uVel(i,j,K,bi,bj)*hFacW(i,j,K,bi,bj)
           enddo
           enddo
          enddo
         enddo
         enddo
-        call fill_diagnostics(myThid,'VVELSQ  ',0,Nr,0,1,1,dummy)
+        diagname = '        '
+        write(diagname,(a5,i1))'UTRAC',N
+        call fill_diagnostics(myThid,diagname,0,Nr,0,1,1,dummy)
 
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
           do j = 1-OLy,sNy+Oly
           do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*wVel(i,j,K,bi,bj)
+           dummy(i,j,K,bi,bj) = ptracers(i,j,K,bi,bj,N) * 
+     .                      vVel(i,j,K,bi,bj)*hFacS(i,j,K,bi,bj)
           enddo
           enddo
          enddo
         enddo
         enddo
-        call fill_diagnostics(myThid,'WVELSQ  ',0,Nr,0,1,1,dummy)
+        diagname = '        '
+        write(diagname,(a5,i1))'VTRAC',N
+        call fill_diagnostics(myThid,diagname,0,Nr,0,1,1,dummy)
 
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
           do j = 1-OLy,sNy+Oly
           do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = theta(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
+           dummy(i,j,K,bi,bj) = ptracers(i,j,K,bi,bj,N) * 
+     .                      wVel(i,j,K,bi,bj)*hFacC(i,j,K,bi,bj)
           enddo
           enddo
          enddo
         enddo
         enddo
-        call fill_diagnostics(myThid,'THETASQ ',0,Nr,0,1,1,dummy)
+        diagname = '        '
+        write(diagname,(a5,i1))'WTRAC',N
+        call fill_diagnostics(myThid,diagname,0,Nr,0,1,1,dummy)
 
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = salt(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'SALTSQ  ',0,Nr,0,1,1,dummy)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*vVel(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'UVELVVEL',0,Nr,0,1,1,dummy)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'UVELTH  ',0,Nr,0,1,1,dummy)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'VVELTH  ',0,Nr,0,1,1,dummy)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'WVELTH  ',0,Nr,0,1,1,dummy)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'UVELSLT ',0,Nr,0,1,1,dummy)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'VVELSLT ',0,Nr,0,1,1,dummy)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'WVELSLT ',0,Nr,0,1,1,dummy)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*hFacW(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'UVELMASS',0,Nr,0,1,1,salt)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*hFacS(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'VVELMASS',0,Nr,0,1,1,dummy)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
-     .                                * hFacW(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'UTHMASS ',0,Nr,0,1,1,dummy)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
-     .                                * hFacW(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'VTHMASS ',0,Nr,0,1,1,dummy)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
-     .                                * hFacW(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'USLTMASS',0,Nr,0,1,1,dummy)
-
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
-     .                                * hFacW(i,j,K,bi,bj)
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        call fill_diagnostics(myThid,'VSLTMASS',0,Nr,0,1,1,dummy)
-
+      enddo
 
       return
       end

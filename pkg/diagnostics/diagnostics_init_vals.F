@@ -342,6 +342,11 @@ c ----------------
       cdiag(278) = 'UTRAC5  '
       cdiag(279) = 'VTRAC5  '
       cdiag(280) = 'WTRAC5  '
+      cdiag(281) = 'TRAC1   '
+      cdiag(282) = 'TRAC2   '
+      cdiag(283) = 'TRAC3   '
+      cdiag(284) = 'TRAC4   '
+      cdiag(285) = 'TRAC5   '
 
 c Diagnostic Descriptions
 c ----------------------------------------------------------------------
@@ -698,6 +703,11 @@ c ----------------------------------------------------------------------
       tdiag(278)  = 'Zonal Mass-Weighted Transp of Tracer 5 (m-kg/s-kg)'
       tdiag(279)  = 'Merid Mass-Weighted Transp of Tracer 5 (m-kg/s-kg)'
       tdiag(280)  = 'Vert  Mass-Weighted Transp of Tracer 5 (m-kg/s-kg)'
+      tdiag(281)  = 'Mass-Weighted Tracer 1 (kgkg)'
+      tdiag(282)  = 'Mass-Weighted Tracer 2 (kgkg)'
+      tdiag(283)  = 'Mass-Weighted Tracer 3 (kgkg)'
+      tdiag(284)  = 'Mass-Weighted Tracer 4 (kgkg)'
+      tdiag(285)  = 'Mass-Weighted Tracer 5 (kgkg)'
 
 c Diagnostic Units
 c ----------------
@@ -981,6 +991,11 @@ c ----------------
       udiag(278) = 'm-kg/s-kg       '
       udiag(279) = 'm-kg/s-kg       '
       udiag(280) = 'm-kg/s-kg       '
+      udiag(281) = 'kg/kg           '
+      udiag(282) = 'kg/kg           '
+      udiag(283) = 'kg/kg           '
+      udiag(284) = 'kg/kg           '
+      udiag(285) = 'kg/kg           '
 
 c Diagnostic Parms
 c ----------------
@@ -1264,6 +1279,11 @@ c ----------------
       gdiag(278) = 'UU   279M       '
       gdiag(279) = 'VV   278M       '
       gdiag(280) = 'WM      M       '
+      gdiag(281) = 'SM P    M       '
+      gdiag(282) = 'SM P    M       '
+      gdiag(283) = 'SM P    M       '
+      gdiag(284) = 'SM P    M       '
+      gdiag(285) = 'SM P    M       '
         
 c Diagnostic Levels
 c -----------------
@@ -1547,6 +1567,11 @@ c -----------------
       KDIAG(278)= Nr
       KDIAG(279)= Nr
       KDIAG(280)= Nr
+      KDIAG(281)= Nr
+      KDIAG(282)= Nr
+      KDIAG(283)= Nr
+      KDIAG(284)= Nr
+      KDIAG(285)= Nr
 
       do n=1,ndiagt
       idiag (n) = 0
