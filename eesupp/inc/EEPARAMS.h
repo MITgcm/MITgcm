@@ -1,4 +1,4 @@
-C $Id: EEPARAMS.h,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/EEPARAMS.h,v 1.2 1998/04/23 20:59:34 cnh Exp $
 C
 C     /==========================================================\
 C     | EEPARAMS.h                                               |
@@ -142,5 +142,3 @@ C                   but that makes it easier.
       INTEGER scrUnit1
       INTEGER scrUnit2
       INTEGER standardMessageUnit
-
-C $Id: EEPARAMS.h,v 1.1.1.1 1998/04/22 19:15:30 cnh Exp $

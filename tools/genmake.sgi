@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Id: genmake.sgi,v 1.1.1.1 1998/04/22 19:15:31 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake.sgi,v 1.2 1998/04/23 21:00:52 cnh Exp $
 #
 #  Makefile generator for MITgcm UV codes
 #
