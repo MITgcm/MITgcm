@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.16 2003/05/12 16:32:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.17 2003/12/22 15:05:16 adcroft Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 CBOP
@@ -86,8 +86,8 @@ C     processes. A process can be its own neighbor!
       pidE        = 1
       pidN        = 1
       pidS        = 1
-      errorMessageUnit    = 0
-      standardMessageUnit = 6
+c     errorMessageUnit    = 0
+c     standardMessageUnit = 6
 
 #ifdef ALLOW_USE_MPI
 C--
@@ -550,4 +550,4 @@ C
       RETURN
       END
 
-C $Id: ini_procs.F,v 1.16 2003/05/12 16:32:27 adcroft Exp $
+C $Id: ini_procs.F,v 1.17 2003/12/22 15:05:16 adcroft Exp $
