@@ -1,11 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/GMREDI_OPTIONS.h,v 1.3 2003/10/24 05:52:05 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/GMREDI_OPTIONS.h,v 1.4 2003/10/26 21:26:56 heimbach Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
 C
 C Use this file for selecting options within the GM/Redi package
 C
-C GM/Redi is enabled with ALLOW_GMREDI in CPP_OPTIONS.h
+#ifndef GMREDI_OPTIONS_H
+#define GMREDI_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
 
 #ifndef GMREDI_OPTIONS_H
 #define GMREDI_OPTIONS_H
@@ -43,4 +45,3 @@ C It's not needed, only for tests, and very memory-consuming
 
 #endif /* ALLOW_GMREDI */
 #endif /* GMREDI_OPTIONS_H */
-
