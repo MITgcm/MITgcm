@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.10 2004/07/23 17:32:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.11 2004/09/21 12:57:50 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -155,6 +155,7 @@ C and should be less than 1/8, for example viscAh=0.01
      &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
         endif
 
+#ifdef MOM_VI_ORIGINAL_VISCA4
         Dim=dyF( i ,j-1,bi,bj)*dStar( i ,j-1)
         Dij=dyF( i , j ,bi,bj)*dStar( i , j )
         Dmj=dyF(i-1, j ,bi,bj)*dStar(i-1, j )
@@ -162,31 +163,60 @@ C and should be less than 1/8, for example viscAh=0.01
         Zip=dxV( i ,j+1,bi,bj)*hFacZ( i ,j+1)*zStar( i ,j+1)
         Zij=dxV( i , j ,bi,bj)*hFacZ( i , j )*zStar( i , j )
         Zpj=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*zStar(i+1, j )
+#else
+        Dim=dStar( i ,j-1)
+        Dij=dStar( i , j )
+        Dmj=dStar(i-1, j )
+
+        Zip=hFacZ( i ,j+1)*zStar( i ,j+1)
+        Zij=hFacZ( i , j )*zStar( i , j )
+        Zpj=hFacZ(i+1, j )*zStar(i+1, j )
+#endif
+
 
 C This bit scales the harmonic dissipation operator to be proportional
 C to the grid-cell area over the time-step. viscAh is then non-dimensional
 C and should be less than 1/8, for example viscAh=0.01 
-        if (useVariableViscosity) then
+        IF (useVariableViscosity) THEN
           Dij=Dij*viscA4_D(i,j)
           Dim=Dim*viscA4_D(i,j-1)
           Dmj=Dmj*viscA4_D(i-1,j)
           Zij=Zij*viscA4_Z(i,j)
           Zip=Zip*viscA4_Z(i,j+1)
           Zpj=Zpj*viscA4_Z(i+1,j)
+
+#ifdef MOM_VI_ORIGINAL_VISCA4
           uD4 = recip_rAw(i,j,bi,bj)*(
      &                             ( (Dij-Dmj)*cosFacU(j,bi,bj) )
      &   -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij ) )
           vD4 = recip_rAs(i,j,bi,bj)*(
      &    recip_hFacS(i,j,k,bi,bj)*( (Zpj-Zij)*cosFacV(j,bi,bj) )
      &   +                         ( Dij-Dim ) )
-        else
+        ELSE
           uD4 = recip_rAw(i,j,bi,bj)*(
      &                             viscA4*( (Dij-Dmj)*cosFacU(j,bi,bj) )
      &   -recip_hFacW(i,j,k,bi,bj)*viscA4*( Zip-Zij ) )
           vD4 = recip_rAs(i,j,bi,bj)*(
      &    recip_hFacS(i,j,k,bi,bj)*viscA4*( (Zpj-Zij)*cosFacV(j,bi,bj) )
      &   +                         viscA4*( Dij-Dim ) )
-        endif
+#else /* MOM_VI_ORIGINAL_VISCA4 */
+          uD4 = (
+     &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
+     &      -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj) )
+          vD4 = (
+     &       recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
+     &                                           *cosFacV(j,bi,bj)
+     &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
+        ELSE
+          uD4 = viscA4*(
+     &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
+     &      -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj) )
+          vD4 = viscA4*(
+     &       recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
+     &                                           *cosFacV(j,bi,bj)
+     &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
+#endif /* MOM_VI_ORIGINAL_VISCA4 */
+        ENDIF
 
         uDissip(i,j) = uD2 - uD4
         vDissip(i,j) = vD2 - vD4
