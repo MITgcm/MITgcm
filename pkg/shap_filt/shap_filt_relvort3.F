@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_relvort3.F,v 1.2 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_relvort3.F,v 1.3 2004/02/25 22:11:09 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -73,6 +73,7 @@ C     Special stuff for Cubed Sphere
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
 cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
+         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
          I=sNx+1
          J=1
          vort3(I,J)=
@@ -82,6 +83,7 @@ cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
 cph    &      vFld(I,J)*dyc(I,J,bi,bj)
+         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
          I=1
          J=sNy+1
          vort3(I,J)=
@@ -91,6 +93,7 @@ cph    &      vFld(I,J)*dyc(I,J,bi,bj)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
 cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
+         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
          I=sNx+1
          J=sNy+1
          vort3(I,J)=
@@ -100,6 +103,7 @@ cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
 cph    &      vFld(I,J)*dyc(I,J,bi,bj)
+         IF (hFacZ(i,j).EQ.0. _d 0) vort3(i,j) = 0. _d 0
        ENDIF
 
 #endif /* ALLOW_SHAP_FILT */
