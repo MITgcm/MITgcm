@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.3 2004/01/08 07:24:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.4 2004/01/17 13:55:49 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -30,6 +30,7 @@ C     Write blanks or zeros to all the name and ID tables
           mnc_fv_ids(i,j) = 0
           mnc_fg_ids(i,j) = 0
           mnc_fd_ind(i,j) = 0
+          mnc_f_alld(i,j) = 0
         ENDDO
       ENDDO
 
@@ -48,7 +49,7 @@ C     Local Variables
       integer i,j, n_id
 
 C     n_id = mnc_max_id
-      n_id = 4
+      n_id = 5
 
       write(*,*) 'mnc_f_names :'
       DO i = 1,n_id
@@ -69,19 +70,23 @@ C     n_id = mnc_max_id
 
       write(*,*) 'mnc_f_info :'
       DO i = 1,n_id
-        write(*,*) (mnc_f_info(i,j), j=1,20)
+        write(*,*) (mnc_f_info(i,j), j=1,30)
       ENDDO
       write(*,*) 'mnc_fg_ids :'
       DO i = 1,n_id
-        write(*,*) (mnc_fg_ids(i,j), j=1,20)
+        write(*,*) (mnc_fg_ids(i,j), j=1,30)
       ENDDO
       write(*,*) 'mnc_fd_ind :'
       DO i = 1,n_id
-        write(*,*) (mnc_fd_ind(i,j), j=1,20)
+        write(*,*) (mnc_fd_ind(i,j), j=1,30)
       ENDDO
       write(*,*) 'mnc_fv_ids :'
       DO i = 1,n_id
-        write(*,*) (mnc_fv_ids(i,j), j=1,20)
+        write(*,*) (mnc_fv_ids(i,j), j=1,30)
+      ENDDO
+      write(*,*) 'mnc_f_alld :'
+      DO i = 1,n_id
+        write(*,*) (mnc_f_alld(i,j), j=1,30)
       ENDDO
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_001.T,v 1.6 2004/01/08 07:34:01 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_001.T,v 1.7 2004/01/17 13:55:49 edhill Exp $
 C $Name:  $
 
 C     Simple test program for MNC
@@ -75,28 +75,31 @@ C     In FORTRAN, the first variable cycles most quickly
       print*, ' Calling MNC_INIT() ...'
       CALL MNC_INIT(myThid)
 
-      print*, ' Calling MNC_DIM_INIT() ...'
-      DO i = 1,ndim
-        CALL MNC_DIM_INIT(myThid, dnames(i), dnames(i), dims(i))
-        print*, '   ... created dimension: ', i
-      ENDDO
-
       print*, ' Calling MNC_FILE_CREATE() ...'
       CALL MNC_FILE_CREATE(myThid, fname)
 
+      print*, ' Calling MNC_DIM_INIT() ...'
+      DO i = 1,ndim
+        CALL MNC_DIM_INIT(myThid,fname, dnames(i),dnames(i),dims(i))
+        ii = ILNBLNK(dnames(i))
+        print*, '   ... created dimension: ', dnames(i)(1:ii)
+      ENDDO
+
+      CALL MNC_DUMP()
+
       print*, ' Calling MNC_GRID_INIT() ...'
       gname1(1:10) = 'xyzt      '
-      CALL MNC_GRID_INIT(myThid, fname, gname1, ndim, dnames)
+      CALL MNC_GRID_INIT(myThid,fname, gname1, ndim, dnames)
       gname2(1:10) = 't         '
-      CALL MNC_GRID_INIT(myThid, fname, gname2, 1, dnames(4))
+      CALL MNC_GRID_INIT(myThid,fname, gname2, 1, dnames(4))
 
       print*, ' Calling MNC_VAR_INIT_DBL() ...'
       vname1(1:4) = 'time'
       units(1:19) = 'days since 1970-1-1'
-      CALL MNC_VAR_INIT_DBL(myThid, fname, gname2, vname1, units )
+      CALL MNC_VAR_INIT_DBL(myThid,fname, gname2, vname1, units )
       vname2(1:4) = 'temp'
       units(1:19) = 'deg C              '
-      CALL MNC_VAR_INIT_DBL(myThid, fname, gname1, vname2, units )
+      CALL MNC_VAR_INIT_DBL(myThid,fname, gname1, vname2, units )
 
       print*, ' Calling MNC_VAR_ADD_ATTR_STR() ...'
       atname(1:9) = 'grid_type'
@@ -111,7 +114,7 @@ C     In FORTRAN, the first variable cycles most quickly
       print*, ' Calling MNC_VAR_WRITE_DBL() ...'
       CALL MNC_VAR_WRITE_DBL(myThid, fname, vname2, var)
 
-C     CALL MNC_DUMP()
+      CALL MNC_DUMP()
 
       print*, ' Calling MNC_FILE_CLOSE() ...'
       CALL MNC_FILE_CLOSE(myThid, fname)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.6 2004/01/14 23:02:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.7 2004/01/17 13:55:49 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -42,8 +42,7 @@ C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer i,n, err, fid, ind
-      character*(MNC_MAX_CHAR) aname
+      integer n, err, fid, ind
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Is the file already open?
@@ -79,6 +78,7 @@ C       Error
       mnc_f_info(ind,2) = fid
       mnc_f_info(ind,3) = 0
       mnc_fv_ids(ind,1) = 0
+      mnc_f_alld(ind,1) = 0
 
       RETURN
       END
@@ -93,7 +93,7 @@ C==================================================================
 
       implicit none
 C     Arguments
-      integer myThid, len
+      integer myThid
       character*(*) fname, atname, sval
 
       CALL MNC_FILE_ADD_ATTR_ANY(myThid,fname,atname, 1, 
@@ -114,7 +114,7 @@ C==================================================================
 C     Arguments
       integer myThid, len
       character*(*) fname, atname
-      _RL dval
+      REAL*8 dval
 
       CALL MNC_FILE_ADD_ATTR_ANY(myThid,fname,atname, 2, 
      &     ' ', len, dval, 0.0, 0 )
@@ -134,7 +134,7 @@ C==================================================================
 C     Arguments
       integer myThid, len
       character*(*) fname, atname
-      _RS rval
+      REAL*4 rval
 
       CALL MNC_FILE_ADD_ATTR_ANY(myThid,fname,atname, 3, 
      &     ' ', len, 0.0D0, rval, 0 )
@@ -176,14 +176,14 @@ C==================================================================
 C     Arguments
       integer myThid, atype, len, iv
       character*(*) fname, atname, sv
-      _RL dv
-      _RS rv
+      REAL*8 dv
+      REAL*4 rv
       
 C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer i, n, err, fid, ind, n1,n2, lens
+      integer n, err, fid, ind, n1, lens
       character*(MNC_MAX_CHAR) s1
       character*(MAX_LEN_MBUF) msgbuf
       
@@ -264,7 +264,7 @@ C     Check that the file is open
       write(msgbuf,'(3a)') ' cannot close file ''', fname, ''''
       CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
 
-C     Clear all the file, grid, and variable names and refs
+C     Clear all the file, grid, variable, and dim names and refs
       n = mnc_fv_ids(ind,1)
       IF (n .GE. 1) THEN
         DO i = 1,n
@@ -273,6 +273,12 @@ C     Clear all the file, grid, and variable names and refs
           mnc_v_names(k)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
         ENDDO
       ENDIF
+      n = mnc_f_alld(ind,1)
+      DO i = 1,n
+        j = mnc_f_alld(ind,i+1)
+        mnc_d_names(j)(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+      ENDDO
+      mnc_f_alld(ind,1) = 0
       DO i = 1,3
         mnc_f_info(ind,i) = 0
       ENDDO
@@ -300,14 +306,15 @@ C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer ind, fid, def, err
+      integer ind, fid, def, err, n
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Verify that the file is open
       CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, ind)
       IF (ind .LT. 0) THEN
+        n = ILNBLNK(fname)
         write(msgbuf,'(3a)') 'MNC ERROR: file ''',
-     &       fname, ''' must be opened first'
+     &       fname(1:n), ''' must be opened first'
         CALL print_error( msgbuf, mythid )
         stop 'ABNORMAL END: S/R MNC_FILE_REDEF'
       ENDIF
@@ -344,14 +351,15 @@ C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer ind, fid, def, err
+      integer ind, fid, def, err, n
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Verify that the file is open
       CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, ind)
       IF (ind .LT. 0) THEN
+        n = ILNBLNK(fname)
         write(msgbuf,'(3a)') 'MNC ERROR: file ''',
-     &       fname, ''' must be opened first'
+     &       fname(1:n), ''' must be opened first'
         CALL print_error( msgbuf, mythid )
         stop 'ABNORMAL END: S/R MNC_FILE_REDEF'
       ENDIF

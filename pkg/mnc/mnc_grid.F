@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.5 2004/01/14 23:02:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.6 2004/01/17 13:55:49 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -27,8 +27,9 @@ C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer i,j,k,ig, n, indf,indg,indd, id, fid, ngrid
+      integer i,j,k,ig,ii,jj,kk, n,nf, indf,indg,indd, id, fid, ngrid
       integer ng_ind,lg_ind, ds_last, idd, err, dn,dnpn, dimind
+      integer ndim_file
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) name
       character*(3*MNC_MAX_CHAR) dim_names
@@ -37,13 +38,13 @@ C     Local Variables
 
 C     Get the file ID and indicies
       file_name(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
-      n = ILNBLNK(fname)
-      IF (n .GT. MNC_MAX_CHAR) n = MNC_MAX_CHAR
-      file_name(1:n) = fname(1:n)
+      nf = ILNBLNK(fname)
+      IF (nf .GT. MNC_MAX_CHAR) nf = MNC_MAX_CHAR
+      file_name(1:nf) = fname(1:nf)
       CALL MNC_GET_IND(myThid, MNC_MAX_ID, file_name, mnc_f_names, indf)
       IF (indf .LT. 1) THEN
-        write(msgbuf,'(3a)') 'MNC ERROR: file ''', file_name, 
-     &       '''does not exist--must be previously initialized'
+        write(msgbuf,'(3a)') 'MNC ERROR: file ''', file_name(1:nf), 
+     &       ''' does not exist'
         CALL print_error( msgbuf, mythid )
         stop 'ABNORMAL END: S/R MNC_GRID_INIT'
       ENDIF
@@ -97,16 +98,30 @@ C     Add the dimensions
         n = ILNBLNK(dnames(i))
         name(1:n) = dnames(i)(1:n)
 
-        CALL MNC_GET_IND(myThid, MNC_MAX_ID, name, mnc_d_names, indd)
+C       Search for the dimension ID within the list of dimensions
+C       defined for this file
+        ndim_file = mnc_f_alld(indf,1)
+        indd = 0
+        DO ii = 1,ndim_file
+          jj = mnc_f_alld(indf,ii)
+          kk = ILNBLNK(mnc_d_names(jj))
+          IF ((n .EQ. kk) 
+     &         .AND. (name(1:n) .EQ. mnc_d_names(jj)(1:kk))) THEN
+            indd = jj
+            GOTO 10
+          ENDIF
+        ENDDO
+ 10     CONTINUE
         IF (indd .LT. 1) THEN
-          write(msgbuf,'(3a)') 'MNC ERROR: dimension ''',
-     &         name(1:n), ''' does not exist'
+          write(msgbuf,'(5a)') 'MNC ERROR: dimension ''',
+     &         name(1:n), ''' does not exist for file ''', 
+     &         fname(1:nf), ''''
           CALL print_error( msgbuf, mythid )
           stop 'ABNORMAL END: S/R MNC_GRID_INIT'
         ENDIF
         name(1:MNC_MAX_CHAR) = mnc_d_names(indd)(1:MNC_MAX_CHAR)
 
-C       Check if the dim is already defined within the file
+C       Check if the dim is already defined within a grid
         CALL MNC_GRID_GET_DIMIND(indf, name, dimind)
         if (dimind .GT. 0) THEN
 

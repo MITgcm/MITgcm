@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.7 2004/01/15 04:31:24 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.8 2004/01/17 13:55:49 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -88,9 +88,9 @@ C     Functions
 
 C     Local Variables
       integer i,j,k, n, indf,indv, fid, nd, ngrid, is,ie, err
-      integer vid, nv, ind_g_finfo
+      integer vid, nv, ind_g_finfo, needed
       character*(MAX_LEN_MBUF) msgbuf
-      integer rids(10), ids(10)
+      integer ids(20)
       integer lenf,leng,lenv,lenu
 
 C     Strip trailing spaces
@@ -108,6 +108,16 @@ C     Check that the file is open
         stop 'ABNORMAL END: S/R MNC_VAR_INIT_ANY'
       ENDIF
       fid = mnc_f_info(indf,2)
+
+C     Check for sufficient storage space in mnc_fv_ids
+      needed = 1 + 3*(mnc_fv_ids(indf,1) + 1)
+      IF (needed .GE. MNC_MAX_INFO) THEN
+        write(msgbuf,'(2a,i7,a)') 'MNC ERROR: MNC_MAX_INFO exceeded', 
+     &       ': please increase it to ', 2*MNC_MAX_INFO, 
+     &       ' in the file ''pkg/mnc/mnc_common.h'''
+        CALL print_error(msgbuf, mythid)
+        stop 'ABNORMAL END: S/R MNC_VAR_INIT_ANY'
+      ENDIF
 
 C     Get the grid information
       ngrid = mnc_f_info(indf,3)
@@ -197,7 +207,7 @@ C==================================================================
 C     Arguments
       integer myThid,nv
       character*(*) fname,vname,atname
-      _RL dval(*)
+      REAL*8 dval(*)
 
       CALL MNC_VAR_ADD_ATTR_ANY(myThid,fname,vname,atname, 
      &     2, ' ', nv, dval, 0.0, 0)
@@ -218,7 +228,7 @@ C==================================================================
 C     Arguments
       integer myThid,nv
       character*(*) fname,vname,atname
-      _RS rval(*)
+      REAL*4 rval(*)
 
       CALL MNC_VAR_ADD_ATTR_ANY(myThid,fname,vname,atname, 
      &     3, ' ', nv, 0.0D0, rval, 0)
@@ -264,15 +274,15 @@ C     Arguments
       integer myThid,atype,len
       character*(*) fname,vname,atname
       character*(*) cs
-      _RL dv(*)
-      _RS rv(*)
+      REAL*8 dv(*)
+      REAL*4 rv(*)
       integer iv(*)
 
 C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer i,j,k, n, nv, indf,ind_fv_ids, fid,vid, err
+      integer n, indf,ind_fv_ids, fid,vid, err
       character*(MAX_LEN_MBUF) msgbuf
       integer lenf,lenv,lenat,lens
 
@@ -329,7 +339,7 @@ C==================================================================
 C     Arguments
       integer myThid
       character*(*) fname,vname
-      _RL var(*)
+      REAL*8 var(*)
 
       CALL MNC_VAR_WRITE_ANY(myThid,fname,vname, 1, var, 0.0, 0 )
       RETURN
@@ -347,7 +357,7 @@ C==================================================================
 C     Arguments
       integer myThid
       character*(*) fname,vname
-      _RS var(*)
+      REAL*4 var(*)
 
       CALL MNC_VAR_WRITE_ANY(myThid,fname,vname, 2, 0.0D0, var, 0 )
       RETURN
@@ -390,8 +400,8 @@ C==================================================================
 C     Arguments
       integer myThid, vtype
       character*(*) fname,vname
-      _RL dv(*)
-      _RS rv(*)
+      REAL*8 dv(*)
+      REAL*4 rv(*)
       integer iv(*)
 
 C     Functions
@@ -402,7 +412,6 @@ C     Local Variables
       character*(MAX_LEN_MBUF) msgbuf
       integer lenf,lenv, lend
       integer vstart(100), vcount(100)
-      integer rvstart(100), rvcount(100)
 
 C     Strip trailing spaces
       lenf = ILNBLNK(fname)

@@ -47,8 +47,7 @@ using a simple interface such as:
   ...
   MNC_FILE_READ_HEADER(  myThid, fname )
 
-  MNC_DIM_INIT(		 myThid, dname, dunits, dlen )
-  MNC_DIM_REMOVE(	 myThid, dname )
+  MNC_DIM_INIT(		 myThid, fname, dname, dunits, dlen )
 
   MNC_GRID_INIT(	 myThid, fname, gname, ndim, dnames )
   MNC_GRID_SET_LL(	 myThid, fname, gname, type, lats, lons )
@@ -57,7 +56,7 @@ using a simple interface such as:
   MNC_VAR_INIT_REAL(	 myThid, fname, gname, vname, units )
   MNC_VAR_INIT_INT(	 myThid, fname, gname, vname, units )
   MNC_VAR_INIT_ANY(	 myThid, fname, gname, vname, units, type )
-  MNC_VAR_ADD_ATTR_STR(	 myThid, fname, vname, atname, nv, sval )
+  MNC_VAR_ADD_ATTR_STR(	 myThid, fname, vname, atname, sval )
   MNC_VAR_ADD_ATTR_DBL(	 myThid, fname, vname, atname, nv, dval )
   MNC_VAR_ADD_ATTR_REAL( myThid, fname, vname, atname, nv, rval )
   MNC_VAR_ADD_ATTR_INT(	 myThid, fname, vname, atname, nv, ival )
@@ -79,11 +78,12 @@ associations between files, "grids", variables, and dimensions.
 To-Do:
 ======
 
- 1) CNH pointed out that grid interpolation needs to be handled
-    "on-the-fly" since pre-processing would result in overly large
-    input files.  We need an interpolation API...
+ 1) NAMING -- We should (as much as possible) try to name variables so
+    that they are in agreement with the CF naming conventions.
 
- 2) AM described her "diags" (or "myDiags" or "mDiags") interface
+ 2) UNITS -- as with the names we need to follow conventions
+
+ 3) AM described her "diags" (or "myDiags" or "mDiags") interface
     which should use MNC for output.  The data storage idea is similar
     to the MNC tables-of-indicies approach but also includes one huge
     double-precision "accumulator" to hold all the temporary values
@@ -91,8 +91,13 @@ To-Do:
 
       vname ( ni ) 
       vlen  ( ni ) 
-      vind  ( ni ) -----+
-		        |
+      vind  ( ni ) ------+
+		         |
 
       vij_diag ( i, j, [...] )  w/ lat/lon indicies
       vgl_diag ( [...] )        wo/ lat/lon indicies (global)
+
+ 4) CNH pointed out that grid interpolation needs to be handled
+    "on-the-fly" since pre-processing would result in overly large
+    input files.  We need an interpolation API...
+

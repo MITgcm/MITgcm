@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.4 2004/01/07 19:50:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.5 2004/01/17 13:55:49 edhill Exp $
 C $Name:  $
 
 C     ==========================================
@@ -58,20 +58,23 @@ C     mnc_fv_ids (fi,-) : nVar, n1,ID1,ig1, n2,ID2,ig2, ...
 C     .                         |          |
 C     mnc_v_names (vi)  :   <---+----------+
 C
+C     mnc_f_alld (fi,di): ndim, id1,id2,... (indicies of all file dims)
+C
 C     fi  :  file index
 C     vi  :  variable index
 C     di  :  dimension index
 
       integer MNC_MAX_ID, MNC_MAX_CHAR, MNC_MAX_INFO
-      parameter ( MNC_MAX_ID   =  500 )
+      parameter ( MNC_MAX_ID   = 1000 )
       parameter ( MNC_MAX_CHAR =  100 )
-      parameter ( MNC_MAX_INFO =   40 )
+      parameter ( MNC_MAX_INFO =  150 )
 
       COMMON /MNC_VARS/
      &     mnc_blank_name, 
      &     mnc_f_names, mnc_g_names, mnc_v_names, 
      &     mnc_d_names, mnc_d_units, mnc_d_size, 
-     &     mnc_f_info,  mnc_fg_ids,  mnc_fd_ind,  mnc_fv_ids
+     &     mnc_f_info,  mnc_fg_ids,  mnc_fd_ind,  mnc_fv_ids, 
+     &     mnc_f_alld
 
       character*(MNC_MAX_CHAR) mnc_blank_name
       character*(MNC_MAX_CHAR) mnc_f_names(MNC_MAX_ID)
@@ -83,6 +86,7 @@ C     di  :  dimension index
       integer mnc_fg_ids(MNC_MAX_ID,MNC_MAX_INFO)
       integer mnc_fd_ind(MNC_MAX_ID,MNC_MAX_INFO)
       integer mnc_fv_ids(MNC_MAX_ID,MNC_MAX_INFO)
+      integer mnc_f_alld(MNC_MAX_ID,MNC_MAX_INFO)
       integer mnc_d_size(MNC_MAX_ID)
 
 
