@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.10 2004/07/16 20:08:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.11 2004/07/16 20:11:04 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1310,6 +1310,7 @@ c --------------------------------------------------------------------
       function random_numbx()
       implicit none
       real random_numbx
+      random_numbx = 0
 #ifdef CRAY
       real ranf
       random_numbx = ranf()
