@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.86 2004/12/10 19:56:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.87 2005/01/26 14:39:20 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -617,7 +617,7 @@ C--   Call time stepping loop of full model
       CALL THE_MAIN_LOOP( myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
 
-#endif /* ALLOW_TANGENTLINEAR_RUN ALLOW_ADJOINT_RUN ALLOW_ADMTLM_RUN */
+#endif /* ALLOW_TANGENTLINEAR_RUN ALLOW_ADJOINT_RUN ALLOW_ADMTLM */
 
 C--   Final checkpoint (in case the in-loop checkpoint was missed)
       CALL TIMER_START('WRITE_CHECKPOINT       [THE_MODEL_MAIN]',myThid)
