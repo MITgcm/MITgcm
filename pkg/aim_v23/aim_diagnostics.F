@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.9 2004/12/14 04:37:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.10 2004/12/20 19:09:20 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -239,23 +239,23 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
         CALL DIAGNOSTICS_FILL( aim_dSdt,
      &                        'DIABQ   ', 0, Nr, 1,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( TT_RSW(1,1,myThid),
-     &                        'RADSW   ', 0,-Nr, 3,bi,bj, myThid )
+     &                        'RADSW   ',-1, Nr, 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( TT_RLW(1,1,myThid),
-     &                        'RADLW   ', 0,-Nr, 3,bi,bj, myThid )
+     &                        'RADLW   ',-1, Nr, 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( TT_CNV(1,1,myThid),
-     &                        'DTCONV  ', 0,-Nr, 3,bi,bj, myThid )
+     &                        'DTCONV  ',-1, Nr, 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( TT_PBL(1,1,myThid),
-     &                        'TURBT   ', 0,-Nr, 3,bi,bj, myThid )
+     &                        'TURBT   ',-1, Nr, 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( TT_LSC(1,1,myThid),
-     &                        'DTLS    ', 0,-Nr, 3,bi,bj, myThid )
+     &                        'DTLS    ',-1, Nr, 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( QT_CNV(1,1,myThid),
-     &                        'DQCONV  ', 0,-Nr, 3,bi,bj, myThid )
+     &                        'DQCONV  ',-1, Nr, 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( QT_PBL(1,1,myThid),
-     &                        'TURBQ   ', 0,-Nr, 3,bi,bj, myThid )
+     &                        'TURBQ   ',-1, Nr, 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( QT_LSC(1,1,myThid),
-     &                        'DQLS    ', 0,-Nr, 3,bi,bj, myThid )
+     &                        'DQLS    ',-1, Nr, 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( RH(1,1,myThid),
-     &                        'RELHUM  ', 0,-Nr, 3,bi,bj, myThid )
+     &                        'RELHUM  ',-1, Nr, 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( TSR(1,myThid),
      &                        'OSR     ', 1, 1 , 3,bi,bj, myThid )
         CALL DIAGNOSTICS_FILL( OLR(1,myThid),
@@ -303,9 +303,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #ifdef ALLOW_CLR_SKY_DIAG
         IF ( aim_clrSkyDiag ) THEN 
           CALL DIAGNOSTICS_FILL( TT_SWclr(1,1,myThid),
-     &                        'SWCLR   ', 0,-Nr, 3,bi,bj, myThid )
+     &                        'SWCLR   ',-1, Nr, 3,bi,bj, myThid )
           CALL DIAGNOSTICS_FILL( TT_LWclr(1,1,myThid),
-     &                        'LWCLR   ', 0,-Nr, 3,bi,bj, myThid )
+     &                        'LWCLR   ',-1, Nr, 3,bi,bj, myThid )
           CALL DIAGNOSTICS_FILL( TSWclr(1,myThid),
      &                        'OSRCLR  ', 1, 1 , 3,bi,bj, myThid )
           CALL DIAGNOSTICS_FILL( OLWclr(1,myThid),

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.15 2004/12/14 04:51:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.16 2004/12/20 19:08:21 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -47,7 +47,6 @@ C     == Local variables ==
       _RL Zip,Zij,Zpj,Dim,Dij,Dmj,uD2,vD2,uD4,vD4
       _RL Alin,AlinMin,AlinMax,Alth,grdVrt,vg2,vg4,vg4Min,vg4Max
       LOGICAL useVariableViscosity
-      INTEGER klev
 
       useVariableViscosity=
      &      (viscAhGrid*deltaTmom.NE.0.)
@@ -269,9 +268,8 @@ C and should be less than 1/8, for example viscAh=0.01
 
 #ifdef ALLOW_DIAGNOSTICS
       IF (useDiagnostics) THEN
-       klev = -1 * k
-       CALL DIAGNOSTICS_FILL(viscAh_D,'VISCAH  ',klev,1,2,bi,bj,myThid)
-       CALL DIAGNOSTICS_FILL(viscA4_D,'VISCA4  ',klev,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(viscAh_D,'VISCAH  ',k,1,2,bi,bj,myThid)
+       CALL DIAGNOSTICS_FILL(viscA4_D,'VISCA4  ',k,1,2,bi,bj,myThid)
       ENDIF
 #endif
 

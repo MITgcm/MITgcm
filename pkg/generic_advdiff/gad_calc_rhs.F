@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.32 2004/12/16 22:29:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.33 2004/12/20 19:10:13 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -112,7 +112,6 @@ C af               :: advective flux
 C df               :: diffusive flux
 C localT           :: local copy of tracer field
 #ifdef ALLOW_DIAGNOSTICS
-      INTEGER     kk
       CHARACTER*8 diagName
       CHARACTER*4 GAD_DIAG_SUFX, diagSufx 
       EXTERNAL    GAD_DIAG_SUFX
@@ -218,8 +217,7 @@ C-    Advective flux in X
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
           diagName = 'ADVx'//diagSufx
-          kk = -k
-          CALL DIAGNOSTICS_FILL(af,diagName, kk,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL(af,diagName, k,1, 2,bi,bj, myThid)
         ENDIF
 #endif
       ENDIF
@@ -263,8 +261,7 @@ C       excluding advective terms:
       IF ( useDiagnostics .AND.
      &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. useGMRedi) ) THEN
           diagName = 'DIFx'//diagSufx
-          kk = -k
-          CALL DIAGNOSTICS_FILL(df,diagName, kk,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
       ENDIF
 #endif
 
@@ -306,8 +303,7 @@ C-    Advective flux in Y
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
           diagName = 'ADVy'//diagSufx
-          kk = -k
-          CALL DIAGNOSTICS_FILL(af,diagName, kk,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL(af,diagName, k,1, 2,bi,bj, myThid)
         ENDIF
 #endif
       ENDIF
@@ -351,8 +347,7 @@ C       excluding advective terms:
       IF ( useDiagnostics .AND.
      &    (diffKh.NE.0. .OR. diffK4 .NE.0. .OR. useGMRedi) ) THEN
           diagName = 'DIFy'//diagSufx
-          kk = -k
-          CALL DIAGNOSTICS_FILL(df,diagName, kk,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
       ENDIF
 #endif
 
@@ -394,8 +389,7 @@ C-     add the advective flux to fVerT
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
           diagName = 'ADVr'//diagSufx
-          kk = -k
-          CALL DIAGNOSTICS_FILL(af,diagName, kk,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL(af,diagName, k,1, 2,bi,bj, myThid)
         ENDIF
 #endif
       ENDIF
@@ -437,8 +431,7 @@ C       Explicit terms only & excluding advective terms:
       IF ( useDiagnostics .AND.
      &    (.NOT.implicitDiffusion .OR. useGMRedi) ) THEN
           diagName = 'DFrE'//diagSufx
-          kk = -k
-          CALL DIAGNOSTICS_FILL(df,diagName, kk,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL(df,diagName, k,1, 2,bi,bj, myThid)
       ENDIF
 #endif
 

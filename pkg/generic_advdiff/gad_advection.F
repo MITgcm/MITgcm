@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.33 2004/12/16 22:28:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.34 2004/12/20 19:10:13 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -141,7 +141,6 @@ C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       INTEGER myTile, nCFace
       LOGICAL N_edge, S_edge, E_edge, W_edge
 #ifdef ALLOW_DIAGNOSTICS
-      INTEGER     kk
       CHARACTER*8 diagName
       CHARACTER*4 GAD_DIAG_SUFX, diagSufx
       EXTERNAL    GAD_DIAG_SUFX
@@ -605,11 +604,10 @@ C-    horizontal advection done; store intermediate result in 3D array:
 
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
-          kk = -k
           diagName = 'ADVx'//diagSufx
-          CALL DIAGNOSTICS_FILL(afx,diagName, kk,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL(afx,diagName, k,1, 2,bi,bj, myThid)
           diagName = 'ADVy'//diagSufx
-          CALL DIAGNOSTICS_FILL(afy,diagName, kk,1, 2,bi,bj, myThid)
+          CALL DIAGNOSTICS_FILL(afy,diagName, k,1, 2,bi,bj, myThid)
         ENDIF
 #endif
 
@@ -732,10 +730,9 @@ C--   Divergence of vertical fluxes
  
 #ifdef ALLOW_DIAGNOSTICS
         IF ( useDiagnostics ) THEN
-          kk = -k
           diagName = 'ADVr'//diagSufx
           CALL DIAGNOSTICS_FILL( fVerT(1-Olx,1-Oly,kUp),
-     &                           diagName, kk,1, 2,bi,bj, myThid)
+     &                           diagName, k,1, 2,bi,bj, myThid)
         ENDIF
 #endif
 
