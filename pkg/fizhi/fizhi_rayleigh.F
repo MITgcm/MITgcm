@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_rayleigh.F,v 1.4 2004/10/22 17:56:03 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_rayleigh.F,v 1.5 2004/10/26 01:01:58 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -61,15 +61,6 @@ C **********************************************************************
       cpinv = 1.0/getcon('CP')
       virtcon = getcon('VIRTCON')
       dampcoef = 2./3.
-
-      do L=1,lm
-       do j=1,jm
-       do i=1,im
-        dz(i,j,L) = cpog * (pekap(i,j,L+1)-pekap(i,j,L)) * t(i,j,L) *
-     .                (1.+virtcon*s(i,j,L))
-       enddo
-       enddo
-      enddo
 
       do L=1,lm
        do j=1,jm
