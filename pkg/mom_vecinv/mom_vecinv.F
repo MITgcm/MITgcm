@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.28 2004/11/02 01:04:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.29 2004/11/05 18:39:15 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -66,21 +66,17 @@ C     == Functions ==
       EXTERNAL DIFFERENT_MULTIPLE
 
 C     == Local variables ==
-      _RL      aF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      vF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      vrF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      uCf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL      vCf (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      mT (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL      pF (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+c     _RL      mT (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2u(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL del2v(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tension(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS xA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RS yA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dStar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -95,29 +91,12 @@ C     hFacROpen        - Lopped cell factos used tohold fraction of open
 C     hFacRClosed        and closed cell wall.
       _RL  rVelMaskOverride
 C     xxxFac - On-off tracer parameters used for switching terms off.
-      _RL  uDudxFac
-      _RL  AhDudxFac
-      _RL  A4DuxxdxFac
-      _RL  vDudyFac
-      _RL  AhDudyFac
-      _RL  A4DuyydyFac
-      _RL  rVelDudrFac
       _RL  ArDudrFac
-      _RL  fuFac
       _RL  phxFac
-      _RL  mtFacU
-      _RL  uDvdxFac
-      _RL  AhDvdxFac
-      _RL  A4DvxxdxFac
-      _RL  vDvdyFac
-      _RL  AhDvdyFac
-      _RL  A4DvyydyFac
-      _RL  rVelDvdrFac
+c     _RL  mtFacU
       _RL  ArDvdrFac
-      _RL  fvFac
       _RL  phyFac
-      _RL  vForcFac
-      _RL  mtFacV
+c     _RL  mtFacV
       _RL wVelBottomOverride
       LOGICAL bottomDragTerms
       LOGICAL writeDiag
@@ -164,13 +143,11 @@ C       write(*,*) 'offsets = ',(offsets(i),i=1,9)
 C     Initialise intermediate terms
       DO J=1-OLy,sNy+OLy
        DO I=1-OLx,sNx+OLx
-        aF(i,j)   = 0.
         vF(i,j)   = 0.
         vrF(i,j)  = 0.
         uCf(i,j)   = 0.
         vCf(i,j)   = 0.
-        mT(i,j)   = 0.
-        pF(i,j)   = 0.
+c       mT(i,j)   = 0.
         del2u(i,j) = 0.
         del2v(i,j) = 0.
         dStar(i,j) = 0.
@@ -189,30 +166,13 @@ C     Initialise intermediate terms
 
 C--   Term by term tracer parmeters
 C     o U momentum equation
-      uDudxFac     = afFacMom*1.
-      AhDudxFac    = vfFacMom*1.
-      A4DuxxdxFac  = vfFacMom*1.
-      vDudyFac     = afFacMom*1.
-      AhDudyFac    = vfFacMom*1.
-      A4DuyydyFac  = vfFacMom*1.
-      rVelDudrFac  = afFacMom*1.
       ArDudrFac    = vfFacMom*1.
-      mTFacU       = mtFacMom*1.
-      fuFac        = cfFacMom*1.
+c     mTFacU       = mtFacMom*1.
       phxFac       = pfFacMom*1.
 C     o V momentum equation
-      uDvdxFac     = afFacMom*1.
-      AhDvdxFac    = vfFacMom*1.
-      A4DvxxdxFac  = vfFacMom*1.
-      vDvdyFac     = afFacMom*1.
-      AhDvdyFac    = vfFacMom*1.
-      A4DvyydyFac  = vfFacMom*1.
-      rVelDvdrFac  = afFacMom*1.
       ArDvdrFac    = vfFacMom*1.
-      mTFacV       = mtFacMom*1.
-      fvFac        = cfFacMom*1.
+c     mTFacV       = mtFacMom*1.
       phyFac       = pfFacMom*1.
-      vForcFac     = foFacMom*1.
 
       IF (     no_slip_bottom
      &    .OR. bottomDragQuadratic.NE.0.
@@ -230,17 +190,6 @@ C-- with stagger time stepping, grad Phi_Hyp is directly incoporated in TIMESTEP
 
 C--   Calculate open water fraction at vorticity points
       CALL MOM_CALC_HFACZ(bi,bj,k,hFacZ,r_hFacZ,myThid)
-
-C---- Calculate common quantities used in both U and V equations
-C     Calculate tracer cell face open areas
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        xA(i,j) = _dyG(i,j,bi,bj)
-     &   *drF(k)*_hFacW(i,j,k,bi,bj)
-        yA(i,j) = _dxG(i,j,bi,bj)
-     &   *drF(k)*_hFacS(i,j,k,bi,bj)
-       ENDDO
-      ENDDO
 
 C     Make local copies of horizontal flow field
       DO j=1-OLy,sNy+OLy
