@@ -1,0 +1,129 @@
+#! /usr/bin/env bash
+#
+# $Header: /u/gcmpack/MITgcm/tools/calc_diagnostics_dims,v 1.1 2004/02/13 06:05:49 edhill Exp $
+# $Name:  $
+
+#  The purpose of this script is to calculate the exact number of "z"
+#  dimensions needed within a FORTRAN storage array for the MITgcm
+#  diagnostics package.
+
+usage()
+{
+    cat <<EOF
+
+Usage:  $0  data_file mitgcm_root var_name [ separator ]
+
+where:
+  data_file     : is the path and file name for the 
+                    "data.diagnostics" file
+  mitgcm_root   : is the path to the "root" directory of
+                    the MITgcm source tree
+  var_name      : is the name of the variable(s) containing
+                    the diagnostic strings
+  separator     : an optional argument specifying the 
+                    separator character within the data
+                    file (default='&')
+
+EOF
+}
+
+COMMANDL="$0 $@"
+
+DATA_FILE="$1"
+MITGCM_ROOT="$2"
+VAR_NAME="$3"
+SEPARATOR="$4"
+nd_tot=0
+
+#  Check that the arguments were specified and are read-able
+if test "x$DATA_FILE" = x ; then
+    echo "ERROR: the \"data.diagnostics\" file was not specified"
+    echo "  -- please set it using the first argument."
+    usage
+    exit 1
+fi
+pack_h="$MITGCM_ROOT"/pkg/diagnostics/diagnostics.h
+if test ! -r $pack_h ; then
+    echo "ERROR: cannot read file \"$pack_h\" "
+    echo "  -- please check that the file exists and that "
+    echo "  \$MITGCM_ROOT is correctly set using the "
+    echo "  second argument."
+    usage
+    exit 1
+fi
+init_vals="$MITGCM_ROOT"/pkg/diagnostics/diagnostics_init_vals.F
+if test ! -r $init_vals ; then
+    echo "ERROR: cannot read file \"$init_vals\" "
+    echo "  -- please check that the file exists and that "
+    echo "  \$MITGCM_ROOT is correctly set using the "
+    echo "  second argument."
+    usage
+    exit 1
+fi
+fizhi_SIZE="$MITGCM_ROOT"/pkg/fizhi/fizhi_SIZE.h
+if test ! -r $fizhi_SIZE ; then
+    echo "ERROR: cannot read file \"$fizhi_SIZE\" "
+    echo "  -- please check that the file exists and that "
+    echo "  \$MITGCM_ROOT is correctly set using the "
+    echo "  second argument."
+    usage
+    exit 1
+fi
+if test "x$VAR_NAME" = x ; then
+    echo "ERROR: \"\$VAR_NAME\" was not specified -- please set it"
+    echo "  using the third argument."
+    usage
+    exit 1
+fi
+if test "x$SEPARATOR" = x ; then
+    SEPARATOR='&'
+fi
+if test ! -r $DATA_FILE ; then
+    echo "ERROR: cannot read file \"$DATA_FILE\""
+    usage
+    exit 1
+fi
+
+
+#  Get the diagnostic names
+echo -n "" > ./tmp_diagnostic_names
+DNAMES=
+vcode=0
+cat $DATA_FILE | while read line ; do
+    r0=t
+    r1=t
+    echo $line | grep '^[ ]*#' > /dev/null 2>&1  &&  r0=f
+    echo $line | grep "$SEPARATOR" > /dev/null 2>&1  &&  r1=f
+    if test "x$vcode" = x1 ; then
+	echo $line | grep '=' > /dev/null 2>&1  &&  vcode=0
+    fi
+    echo $line | grep "$VAR_NAME"'[ ]*=' > /dev/null 2>&1  &&  vcode=1
+    if test $r0 = t -a $r1 = t -a ! "x$vcode" = x0 ; then
+	t1=`echo $line | sed -e "s|$VAR_NAME| |g" | sed -e 's|=| |g'`
+	t2=`echo $t1 | sed -e "s|'| |g" | sed -e 's|,| |g'`
+	echo "$t2" >> ./tmp_diagnostic_names
+    fi
+done
+DNAMES=`cat ./tmp_diagnostic_names`
+rm -rf ./tmp_diagnostic_names
+
+#  Get the size of $NRPHYS
+t1=`cat $fizhi_SIZE | grep -i Nrphys | grep -i "^[ ]*parameter"`
+t2=`echo $t1 | sed -e 's|(| |g' | sed -e 's|)| |g' | sed -e 's|=| |g'`
+NRPHYS=`echo $t2 | awk '{print $3}'`
+
+#  Get the number of "z" dimensions
+numz=0
+for dnam in $DNAMES ; do
+    t1=`grep -i "n"$dnam $pack_h | grep -i '^[ ]*EQUIVALENCE'`
+    t2=`echo $t1 | sed -e 's|(| |g' | sed -e 's|)| |g'`
+    t3=`echo $t2 | awk '{print $3}'`
+    if test ! "x$t3" = x ; then
+	t1=`cat $init_vals | grep -i '^[ ]*KDIAG' | grep $t3`
+	t2=`echo $t1 | sed -e 's|(| |g' | sed -e 's|)| |g'`
+	t3=`echo $t2 | sed -e 's|=| |g' | awk '{print $3}'`
+	t1=`echo $t3 | sed -e "s|nrphys|$NRPHYS|g"`
+	numz=$(( $numz + $t1 ))
+    fi
+done
+echo "$numz"
