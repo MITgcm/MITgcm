@@ -7,8 +7,10 @@ DEST             = .
 SOURCE_CODE      = ../bin
 ADJOINT_SCRIPT   = ../adjoint
 BASE             = ..
-TAMCFLAGS        = -reverse -i4 -r4
-TAFFLAGS         = -reverse -i4 -r4
+ADTAMCFLAGS      = -reverse -i4 -r4 -admark  ad
+ADTAFFLAGS       = -reverse -i4 -r4 -admark  ad
+TLTAMCFLAGS      = -forward -i4 -r4 -ftlmark g_
+TLTAFFLAGS       = -forward -i4 -r4 -ftlmark g_
 PKG		= $(BASE)/pkg
 
 DIFF_FLAGS       = -toplevel the_main_loop		\
@@ -25,10 +27,11 @@ DIFF_FLAGS       = -toplevel the_main_loop		\
 				xx_kapgm_dummy'		\
                    -output 'fc'
 
-TAMCFLAG         = $(TAMCFLAGS) $(DIFF_FLAGS) -admark ad
+ADTAMCFLAG         = $(ADTAMCFLAGS) $(DIFF_FLAGS)
+ADTAFFLAG          = $(ADTAFFLAGS)  $(DIFF_FLAGS)
 
-TAFFLAG          = $(TAFFLAGS) $(DIFF_FLAGS) -admark ad
-
+TLTAMCFLAG         = $(TLTAMCFLAGS) $(DIFF_FLAGS)
+TLTAFFLAG          = $(TLTAFFLAGS)  $(DIFF_FLAGS)
 
 # Source files for the MITgcmUV
 SRC_MODEL	= \
@@ -205,14 +208,22 @@ SRC_MODEL	= \
 # rules
 #--------------------------------------------------------
 
-adcode:
+allcode:
 	cd $(DEST) ; cat $(SRC_MODEL) >! tamc_code_ecco.f
+
 admodeltamc:
-	cd $(DEST) ; $(TAMC) $(TAMCFLAG) tamc_code_ecco.f	\
+	cd $(DEST) ; $(TAMC) $(ADTAMCFLAG) tamc_code_ecco.f	\
            >! tamc_code_ecco_ad.prot
 
 admodeltaf:
-	cd $(DEST) ; $(TAF) $(TAFFLAG) tamc_code_ecco.f
+	cd $(DEST) ; $(TAF) $(ADTAFFLAG) tamc_code_ecco.f
+
+tlmodeltamc:
+	cd $(DEST) ; $(TAMC) $(TLTAMCFLAG) tamc_code_ecco.f	\
+           >! tamc_code_ecco_tl.prot
+
+tlmodeltaf:
+	cd $(DEST) ; $(TAF) $(TLTAFFLAG) tamc_code_ecco.f
 
 adchange:
 	${ADJOINT_SCRIPT}/adjoint_ecco_sed.com \
@@ -224,6 +235,10 @@ adrestore:
 	cp $(PKG)/autodiff/adjoint_model.F_template	\
            $(PKG)/autodiff/adjoint_model.F
 
-adtamc:  adcode admodeltamc
+tltamc:  allcode tlmodeltamc
 
-adtaf:  adcode admodeltaf
+tltaf:  allcode tlmodeltaf
+
+adtamc:  allcode admodeltamc
+
+adtaf:  allcode admodeltaf
