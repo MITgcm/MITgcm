@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.4 2005/01/31 19:37:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.5 2005/02/11 19:33:59 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -59,10 +59,20 @@ C     === Local variables ===
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( stressReduction.GT. 0. _d 0 ) THEN
+C-     needs new Ice Fraction in halo region to apply wind-stress reduction
        iMin = 1-Olx
        iMax = sNx+Olx-1
        jMin = 1-Oly
        jMax = sNy+Oly-1
+#ifdef ATMOSPHERIC_LOADING
+      ELSEIF ( useRealFreshWaterFlux ) THEN
+C-     needs sea-ice loading in part of the halo regions for grad.Phi0surf
+C      to be valid at the boundaries ( d/dx 1:sNx+1 ; d/dy 1:sNy+1 )
+       iMin = 0
+       iMax = sNx+1
+       jMin = 0
+       jMax = sNy+1
+#endif /* ATMOSPHERIC_LOADING */
       ELSE
        iMin = 1
        iMax = sNx
@@ -165,6 +175,10 @@ c       IF ( .FALSE. ) THEN
 C--  end bi,bj loop
        ENDDO
       ENDDO
+
+#ifdef ATMOSPHERIC_LOADING
+c     IF (useRealFreshWaterFlux) _EXCH_XY_RS(sIceLoad, myThid)
+#endif
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif  /*ALLOW_THSICE*/
