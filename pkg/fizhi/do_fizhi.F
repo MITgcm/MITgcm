@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.18 2004/07/07 19:33:48 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.19 2004/07/13 18:26:45 molod Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
        subroutine do_fizhi(myid,uphy,vphy,thphy,sphy,pephy,lons,lats,
      .   ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     .   tgz,sice,phis_var,landtype,fracland,emiss,albnidr,albnirdf,
+     .   tgz,sice,phis_var,landtype,fracland,emiss,albnirdr,albnirdf,
      .   albvisdr,albvisdf,ityp,chfr,alai,agrn,igrd,chlat,chlon,
      .   tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,snodep,capac,
      .   o3,qstr,co2,cfc11,cfc12,cfc22,n2o,methane,
@@ -21,10 +21,11 @@ c Note: routine is called from inside a bi-bj loop
 c
 c-----------------------------------------------------------------------
       implicit none
+#include "chronos.h"
 
 C Argument list declarations
       integer myid,im1,im2,jm1,jm2,idim1,idim2,jdim1,jdim2
-      integer Nrphys,Nsx,Nsy,bi,bj,nchp,nchpland,
+      integer Nrphys,Nsx,Nsy,bi,bj,nchp,nchpland
       _RL uphy(idim1:idim2,jdim1:jdim2,Nrphys,Nsx,Nsy)
       _RL vphy(idim1:idim2,jdim1:jdim2,Nrphys,Nsx,Nsy)
       _RL thphy(idim1:idim2,jdim1:jdim2,Nrphys,Nsx,Nsy)
@@ -48,7 +49,7 @@ C Argument list declarations
       _RL tcanopy(nchp,Nsx,Nsy),tdeep(nchp,Nsx,Nsy)
       _RL ecanopy(nchp,Nsx,Nsy),swetshal(nchp,Nsx,Nsy)
       _RL swetroot(nchp,Nsx,Nsy),swetdeep(nchp,Nsx,Nsy)
-      _RL snodep(nchp,Nsx,Nsy),capac(nchp,Nsx,Nsy),
+      _RL snodep(nchp,Nsx,Nsy),capac(nchp,Nsx,Nsy)
       _RL o3(im2,jm2,Nsx,Nsy),qstr(im2,jm2,Nsx,Nsy)
       _RL co2,cfc11,cfc12,cfc22,n2o(Nrphys),methane(Nrphys)
       _RL duphy(idim1:idim2,jdim1:jdim2,Nrphys,Nsx,Nsy)
@@ -57,6 +58,8 @@ C Argument list declarations
       _RL dsphy(idim1:idim2,jdim1:jdim2,Nrphys,Nsx,Nsy)
 c
       integer ptracer,ntracer
+      parameter (ptracer = 1)
+      parameter (ntracer = 1)
       integer iras,nlwcld,nlwlz,nswcld,nswlz
       integer imstturbsw,imstturblw
 
@@ -70,15 +73,17 @@ c
       real lwdt(im2,jm2,Nrphys,Nsx,Nsy),lwdtclr(im2,jm2,Nrphys,Nsx,Nsy) 
       real swdt(im2,jm2,Nrphys,Nsx,Nsy),swdtclr(im2,jm2,Nrphys,Nsx,Nsy)
       real turbu(im2,jm2,Nrphys,Nsx,Nsy),turbv(im2,jm2,Nrphys,Nsx,Nsy)
-      real turbt(im2,jm2,Nrphys,Nsx,Nsy),turbq(im2,jm2,Nrphys,Nsx,Nsy)
+      real turbt(im2,jm2,Nrphys,Nsx,Nsy)
+      real turbq(im2,jm2,Nrphys,ntracer,Nsx,Nsy)
       real moistu(im2,jm2,Nrphys,Nsx,Nsy),moistv(im2,jm2,Nrphys,Nsx,Nsy)
-      real moistt(im2,jm2,Nrphys,Nsx,Nsy),moistq(im2,jm2,Nrphys,Nsx,Nsy)
+      real moistt(im2,jm2,Nrphys,Nsx,Nsy)
+      real moistq(im2,jm2,Nrphys,ntracer,Nsx,Nsy)
       real radswt(im2,jm2,Nsx,Nsy),radswg(im2,jm2,Nsx,Nsy)
       real swgclr(im2,jm2,Nsx,Nsy)
       real fdirpar(im2,jm2,Nsx,Nsy),fdifpar(im2,jm2,Nsx,Nsy)
       real osr(im2,jm2,Nsx,Nsy),osrclr(im2,jm2,Nsx,Nsy)
       real tg0(im2,jm2,Nsx,Nsy),radlwg(im2,jm2,Nsx,Nsy)
-      real st4(im2,jm2,Nsx,Nsy)
+      real lwgclr(im2,jm2,Nsx,Nsy),st4(im2,jm2,Nsx,Nsy)
       real dst4(im2,jm2,Nsx,Nsy),dlwdtg(im2,jm2,Nrphys,Nsx,Nsy)
       real rainlsp(im2,jm2,Nsx,Nsy),raincon(im2,jm2,Nsx,Nsy)
       real snowfall(im2,jm2,Nsx,Nsy)
@@ -103,15 +108,15 @@ c
       logical alarm
       external alarm
 
-      save lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq
-      save moistu,moistv,moistt,moistq
-      save radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
-      save st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras
-      save nlwcld,cldtot_lw,clras_lw,cldlsp_lw,nlwlz,lwlz
-      save nswcld,cldtot_sw,clras_sw,cldlsp_sw,nswlz,swlz,
-      save imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw,fccavelw
-      save qq
-      save pl,ple,dpres,pkle,pkl
+c     save lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq
+c     save moistu,moistv,moistt,moistq
+c     save radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
+c     save st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras
+c     save nlwcld,cldtot_lw,clras_lw,cldlsp_lw,nlwlz,lwlz
+c     save nswcld,cldtot_sw,clras_sw,cldlsp_sw,nswlz,swlz,
+c     save imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw,fccavelw
+c     save qq
+c     save pl,ple,dpres,pkle,pkl
 
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
@@ -124,12 +129,10 @@ C***********************************************************************
       call astro ( nymd,nhms, xlats,xlons, im2*jm2, cosz,ra )
       do j=jm1,jm2
       do i=im1,im2
-       radswt(i,j) = S0*(1.0/ra**2)*cosz(i,j)
+       radswt(i,j,bi,bj) = S0*(1.0/ra**2)*cosz(i,j)
       enddo
       enddo
 
-      ptracer = 1
-      ntracer = 1
 
       if( alarm('moist') .or. alarm('turb')   .or.
      .    alarm('radsw') .or. alarm('radlw') ) then
@@ -152,10 +155,10 @@ C compute pressures - all pressure are converted here to hPa
        v(i,j,L) = vphy(i,j,L,bi,bj)
        t(i,j,L) = thphy(i,j,L,bi,bj)/p0kappa
        q(i,j,L,1) = sphy(i,j,L,bi,bj)
-       pl(i,j,L,bi,bj) = (pephy(i,j,L,bi,bj)+pephy(i,j,L+1))/200.
-       dpres(i,j,L,bi,bj) = (pephy(i,j,L+1,bi,bj)-pephy(i,j,L))/100.
+       pl(i,j,L,bi,bj) = (pephy(i,j,L,bi,bj)+pephy(i,j,L+1,bi,bj))/200.
+       dpres(i,j,L,bi,bj)=(pephy(i,j,L+1,bi,bj)-pephy(i,j,L,bi,bj))/100.
        ple(i,j,L,bi,bj) = pephy(i,j,L,bi,bj)/100.
-       pkle(i,j,L,bi,bj) = (ple(i,j,L) /100.) **kappa
+       pkle(i,j,L,bi,bj) = (ple(i,j,L,bi,bj) /100.) **kappa
       enddo
       enddo
       enddo
@@ -166,26 +169,25 @@ C compute pressures - all pressure are converted here to hPa
       call fizhi_driver(myid,im2,jm2,Nrphys,bi,bj,ptracer,ntracer,xlats,
      . xlons,p(1,1,bi,bj),u,v,t,q,pl(1,1,1,bi,bj),ple(1,1,1,bi,bj),
      . dpres(1,1,1,bi,bj),pkle(1,1,1,bi,bj),pkl(1,1,1,bi,bj),
-     . fracland(1,1,bi,bj),landtype(1,1,bi,bj),radswt,
-     . phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,
-     . nchp,chlat(1,bi,bj),chlon(1,bi,bj),igrd(1,bi,bj),nchpland,
-     . chfr(1,bi,bj),ityp(1,bi,bj),
-     . tcanopy(1,bi,bj),tdeep(1,bi,bj),ecanopy(1,bi,bj),
+     . fracland(1,1,bi,bj),landtype(1,1,bi,bj),radswt(1,1,bi,bj),
+     . phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,nchp,chlat(1,bi,bj),
+     . chlon(1,bi,bj),igrd(1,bi,bj),nchpland,chfr(1,bi,bj),ityp(1,bi,bj)
+     . ,tcanopy(1,bi,bj),tdeep(1,bi,bj),ecanopy(1,bi,bj),
      . swetshal(1,bi,bj),swetroot(1,bi,bj),swetdeep(1,bi,bj),
      . capac(1,bi,bj),snodep(1,bi,bj),
      . ctmt(1,bi,bj),xxmt(1,bi,bj),yymt(1,bi,bj),zetamt(1,bi,bj),
      . xlmt(1,1,bi,bj),khmt(1,1,bi,bj),tke(1,1,bi,bj),
-     . albvisdr(1,bi,bj),albvisdf(1,bi,bj),albnirdr(1,bi,bj),
-     . albnirdf(1,bi,bj),emiss(1,bi,bj),alai(1,bi,bj),agrn(1,bi,bj),
+     . albvisdr(1,1,bi,bj),albvisdf(1,1,bi,bj),albnirdr(1,1,bi,bj),
+     . albnirdf(1,1,bi,bj),emiss(1,1,1,bi,bj),alai(1,bi,bj),
+     . agrn(1,bi,bj),
      . qstr(1,1,bi,bj),o3(1,1,bi,bj),co2,cfc11,cfc12,cfc22,methane,n2o,
      . lwdt(1,1,1,bi,bj),lwdtclr(1,1,1,bi,bj),swdt(1,1,1,bi,bj),
      . swdtclr(1,1,1,bi,bj),turbu(1,1,1,bi,bj),turbv(1,1,1,bi,bj),
-     . turbt(1,1,1,bi,bj),turbq(1,1,1,bi,bj),
-     . moistu(1,1,1,bi,bj),moistv(1,1,1,bi,bj),moistt(1,1,1,bi,bj),
-     . moistq(1,1,1,bi,bj),
+     . turbt(1,1,1,bi,bj),turbq(1,1,1,1,bi,bj),moistu(1,1,1,bi,bj),
+     . moistv(1,1,1,bi,bj),moistt(1,1,1,bi,bj),moistq(1,1,1,1,bi,bj),
      . radswg(1,1,bi,bj),swgclr(1,1,bi,bj),fdirpar(1,1,bi,bj),
      . fdifpar(1,1,bi,bj),osr(1,1,bi,bj),osrclr(1,1,bi,bj),
-     . tg0(1,1,bi,bj),radlwg(1,1,bi,bj),
+     . tg0(1,1,bi,bj),radlwg(1,1,bi,bj),lwgclr(1,1,bi,bj),
      . st4(1,1,bi,bj),dst4(1,1,bi,bj),dlwdtg(1,1,1,bi,bj),
      . rainlsp(1,1,bi,bj),raincon(1,1,bi,bj),snowfall(1,1,bi,bj),iras,
      . nlwcld,cldtot_lw(1,1,1,bi,bj),clras_lw(1,1,1,bi,bj),
@@ -213,7 +215,7 @@ C compute pressures - all pressure are converted here to hPa
       enddo
       enddo
 
-      call fizhi_step_diag(myThid,p,uphy,vphy,thphy,sphy,qq,pkl,dpres,
+      call fizhi_step_diag(myid,p,uphy,vphy,thphy,sphy,qq,pkl,dpres,
      .  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,
      .  turbu,turbv,turbt,turbq,moistu,moistv,moistt,moistq,
      .  lwdt,swdt,lwdtclr,swdtclr,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,bi,bj)

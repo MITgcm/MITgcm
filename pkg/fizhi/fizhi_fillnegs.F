@@ -24,7 +24,6 @@ C***********************************************************************
 
       integer i,j,L,LM1
       real    getcon,grav,ddsig
-      real    tmp1(im,jm)
 
       grav = getcon('GRAVITY')
  
@@ -97,18 +96,12 @@ c ---------------
       real        dyv(im,jm)
       real        dyp(im,jm)
 
-      real, allocatable, save :: d2p(:,:)
-
-      logical first
-      data    first /.true./
+      real d2p(im,jm)
 
 C *********************************************************
 C ****                 Initialization                  ****
 C *********************************************************
 
-      if (first) then
-
-      allocate ( d2p(im,jm) )
       pi = 4.0*atan(1.0)
       a  = getcon('EARTH RADIUS')
 
@@ -185,9 +178,6 @@ c -----------------------
       d2p(i,jm-1) = dxv(i,jm-2)*dyp(i,jm-1)
       enddo
 
-      first = .false.
-      endif
-
       undef = getcon('UNDEF')
 
 C *********************************************************
@@ -220,15 +210,15 @@ C *********************************************************
       if( L.eq.1    ) then
       array(5) = -undef
       else
-      array(5) = pq(i,j,L-1)*d2p(i,j)*dp(i,j,L)1)
+      array(5) = pq(i,j,L-1)*d2p(i,j)*dp(i,j,L)
       endif
       if( L.eq.lm   ) then
       array(6) = -undef
       else
-      array(6) = pq(i,j,L+1)*d2p(i,j)*dp(i,j,L)1)
+      array(6) = pq(i,j,L+1)*d2p(i,j)*dp(i,j,L)
       endif
 
-      call maxval (array,6,-qval,qmax,imax)
+      call maxval1 (array,6,-qval,qmax,imax)
 
       if( imax.eq.0 ) then
           sum = 0.0
@@ -274,7 +264,7 @@ C *********************************************************
       return
       end
 
-      subroutine maxval (q,im,qval,qmax,imax)
+      subroutine maxval1 (q,im,qval,qmax,imax)
 C***********************************************************************
 C  PURPOSE                                                              
 C     Find the location and value of the array element which is greater

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.10 2004/07/12 21:33:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.11 2004/07/13 18:26:45 molod Exp $
 C $Name:  $
                                                                                  
 #include "CPP_OPTIONS.h"
@@ -13,10 +13,10 @@ C $Name:  $
      . chemq,chemo3,co2,cfc11,cfc12,cfc22,methane,n2o,
      . lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq,
      . moistu,moistv,moistt,moistq,
-     . radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg,
+     . radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg,lwgclr,
      . st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras,nlwcld,
-     . cldtot_lw,clras_lw,cldlsp_lw,nlwlz,lwlz,nswcld,cldtot_sw,
-     . clras_sw,cldlsp_sw,nswlz,swlz,imstturbsw,imstturblw,qliqavesw,
+     . cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,nswcld,cldtot_sw,
+     . cldras_sw,cldlsp_sw,nswlz,swlz,imstturbsw,imstturblw,qliqavesw,
      . qliqavelw,fccavesw,fccavelw,qq)
 C***********************************************************************        
 C  Purpose                                                                      
@@ -42,7 +42,7 @@ c -----------------
 
 c Timers Common
 c -------------
-#include 'chronos.h'
+#include "chronos.h"
 
 c Input Parameters
 c ----------------
@@ -77,12 +77,12 @@ c ----------------
       real alai(nchp),agrn(nchp)
       real radswg(im,jm),swgclr(im,jm)
       real fdirpar(im,jm),fdifpar(im,jm),osr(im,jm),osrclr(im,jm)
-      real tg0(im,jm),radlwg(im,jm),st4(im,jm),dst4(im,jm)
+      real tg0(im,jm),radlwg(im,jm),lwgclr(im,jm),st4(im,jm),dst4(im,jm)
       real dlwdtg(im,jm,lm)
       real rainlsp(im,jm),raincon(im,jm),snowfall(im,jm)
-      real cldtot_lw(im,jm,lm),clras_lw(im,jm,lm),cldlsp_lw(im,jm,lm)
+      real cldtot_lw(im,jm,lm),cldras_lw(im,jm,lm),cldlsp_lw(im,jm,lm)
       real lwlz(im,jm,lm)
-      real cldtot_sw(im,jm,lm),clras_sw(im,jm,lm),cldlsp_sw(im,jm,lm)
+      real cldtot_sw(im,jm,lm),cldras_sw(im,jm,lm),cldlsp_sw(im,jm,lm)
       real swlz(im,jm,lm)
       real qliqavesw(im,jm,lm),qliqavelw(im,jm,lm)
       real fccavesw(im,jm,lm),fccavelw(im,jm,lm)
@@ -102,9 +102,9 @@ c ---------------
       integer low_level,mid_level,nltop,nsubmin,nsubmax,Lup
       integer ndmoist,ndturb,ndlw,ndsw
       integer istrip,npcs
-      integer i,j,L,n
+      integer i,j
       integer ndum,ndpnt
-      real dum,akap,getcon
+      real akap,getcon
       real ptop
       logical lpnt
 
@@ -182,15 +182,15 @@ C ==========
       IF ( alarm('turb') ) THEN
 
       call turbio (im,jm,lm,1,nymd,nhms,bi,bj,ndturb,
-     .   ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
-     .   ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     .   tgz,fracland,landtype,
-     .   tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac,
-     .   nchp,nchpland,chfr,chlt,chlon,igrd,ityp,alai,agrn,sea_ice,lpnt,
-     .   turbu,turbv,turbt,turbq,radlwg,st4,dst4,radswg,radswt,
-     .   fdifpar,fdirpar,rainlsp,rainconv,snowfall,tg0,
-     .   imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw,qq,
-     .   myid)
+     .  ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
+     .  ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
+     .  tgz,fracland,landtype,
+     .  tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac,
+     .  nchp,nchpland,chfr,chlat,chlon,igrd,ityp,alai,agrn,sea_ice,lpnt,
+     .  turbu,turbv,turbt,turbq,radlwg,st4,dst4,radswg,radswt,
+     .  fdifpar,fdirpar,rainlsp,raincon,snowfall,tg0,
+     .  imstturblw,imstturbsw,qliqavelw,qliqavesw,fccavelw,fccavesw,qq,
+     .  myid)
 
 c Add Gravity-Wave Drag Tendency
 c ------------------------------
@@ -210,7 +210,7 @@ C ===============
      .    low_level,mid_level,nltop,nsubmin,nsubmax,Lup,
      .    p,pl,ple,dpres,pkht,pkl,t,q,bi,bj,ntracer,ptracer,qq,
      .    moistu,moistv,moistt,moistq,im,jm,lm,ptop,iras,
-     .    rainlsp,rainconv,snowfall,
+     .    rainlsp,raincon,snowfall,
      .    nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,
      .    nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,
      .              .false.,myid)

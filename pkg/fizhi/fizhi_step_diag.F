@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.2 2004/06/24 18:56:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.3 2004/07/13 18:26:45 molod Exp $
 C $Name:  $
                                                                                        
 #include "CPP_OPTIONS.h"
@@ -9,7 +9,9 @@ C $Name:  $
 C***********************************************************************
       implicit none
 
+#ifdef ALLOW_DIAGNOSTICS
 #include "diagnostics.h"
+#endif
 
       integer myThid,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,bi,bj
       real p(im2,jm2,Nsx,Nsy)
