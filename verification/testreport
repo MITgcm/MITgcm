@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.47 2004/08/03 02:48:57 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.48 2004/11/17 21:38:35 jmc Exp $
 #  $Name:  $
 #
 
@@ -436,11 +436,13 @@ runmodel()
 	    # else
 	    #   cp output.txt_adm $CDIR"/output.txt_adm"
 	    # fi
+            if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	    return 0
 	else
 	    tail run.log
 	    echo failed 1>&2
 	    cp run.log $CDIR"/run.log"
+            if test -s STDERR.0000 ; then cp STDERR.0000 $CDIR"/STDERR.0000" ; fi
 	    return 1
 	fi
     )
