@@ -16,7 +16,6 @@
  gravity=9.81,
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
- useCDscheme=.TRUE.,
  eosType='LINEAR',
  readBinaryPrec=64,
  &
