@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.32 2003/12/15 00:53:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.33 2003/12/15 18:51:02 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -155,13 +155,6 @@ C--     Read model fields
 c        CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
         ENDIF
 #endif
-
-C SPK 4/9/01: Open boundary checkpointing
-#ifdef  ALLOW_OBCS
-        IF (useOBCS) THEN
-          CALL OBCS_READ_CHECKPOINT(prec, suff, myThid)
-        ENDIF
-#endif  /* ALLOW_OBCS */
 
 #endif /* OLD_STYLE_WITH_MANY_FILES */
 
