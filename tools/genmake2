@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.91 2004/07/30 14:31:40 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.92 2004/07/30 15:59:33 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1850,9 +1850,11 @@ MAKEDEPEND = ${MAKEDEPEND}
 # Special preprocessor (KAP on DECs, FPP on Crays)
 KPP = ${KPP}
 # Fortran compiler
-FC = ${FC}
+FC = ${FC} in
 # Fortran compiler
 F90C = ${F90C}
+# C compiler
+CC = ${CC}
 # Link editor
 LINK = ${LINK} ${LDADD}
 
