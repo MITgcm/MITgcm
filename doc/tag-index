@@ -1,7 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.271 2004/03/23 19:47:05 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.272 2004/03/29 22:10:28 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o doc/api_reference added
+  - a framework for building an API Reference Manual using all
+    the "protex" comments embedded in the code
+  - see pkg/generic_advdiff, pkg/mnc for examples
 o MNC:
   - make myThid the last argument for all subroutines
   - new default for the grid files: NO halos
