@@ -25,7 +25,7 @@ c                       south (s), and western (w) mask, resp. .
       parameter ( maxcvars = 30 )
 
       integer     ctrlprec
-      parameter ( ctrlprec = 64 )
+      parameter ( ctrlprec = 32 )
 
       common /controlvars_i/
      &                       nvartype,
@@ -97,6 +97,58 @@ c                       south (s), and western (w) mask, resp. .
      &                     , yadprefix
       character*(1) ncvargrd(maxcvars)
       character*(2) yadprefix
+
+      common /controlvec_header_i/
+     &        filenvartype,
+     &        filenvarlength,
+     &        fileOptimCycle,
+     &        filencbuffindex,
+     &        fileIg,
+     &        fileJg,
+     &        fileI,
+     &        fileJ,
+     &        filensx,
+     &        filensy,
+     &        filek,
+     &        filenWetcGlobal,
+     &        filenWetsGlobal,
+     &        filenWetwGlobal,
+     &        filenWetvGlobal,
+     &        filencvarindex,
+     &        filencvarrecs,
+     &        filencvarxmax,
+     &        filencvarymax,
+     &        filencvarnrmax
+      integer        filenvartype
+      integer        filenvarlength
+      integer        fileOptimCycle
+      integer        filencbuffindex
+      integer        fileIg
+      integer        fileJg
+      integer        fileI
+      integer        fileJ
+      integer        filensx
+      integer        filensy
+      integer        filek
+      integer        filenWetcGlobal(nr)
+      integer        filenWetsGlobal(nr)
+      integer        filenWetwGlobal(nr)
+      integer        filenWetvGlobal(nr)
+      integer        filencvarindex(maxcvars)
+      integer        filencvarrecs(maxcvars)
+      integer        filencvarxmax(maxcvars)
+      integer        filencvarymax(maxcvars)
+      integer        filencvarnrmax(maxcvars)
+
+      common /controlvec_header_r/
+     &               filefc
+      _RL            filefc
+
+      common /controlvec_header_c/
+     &        fileYctrlid,
+     &        filencvargrd
+      character*(10) fileYctrlid
+      character*( 1) filencvargrd(maxcvars)
 
 c     Define unit weight as a placeholder
       common /ctrl_weights_unit_r/
@@ -339,7 +391,9 @@ c     xx_obcse_file - control vector salin. at boundary
      &                      scalname, 
      &                      maskname, 
      &                      metaname,
-     &                      yctrlid
+     &                      yctrlid,
+     &                      yctrlposunpack,
+     &                      yctrlpospack
       character*2 yadmark
       character*9 ctrlname
       character*9 costname
@@ -347,6 +401,8 @@ c     xx_obcse_file - control vector salin. at boundary
       character*9 maskname
       character*9 metaname
       character*10 yctrlid
+      character*4 yctrlposunpack
+      character*4 yctrlpospack
 
 c     Calendar information for the control variables:
 c     ===============================================

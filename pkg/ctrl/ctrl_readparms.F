@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.5 2003/10/23 04:41:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.6 2004/05/28 16:04:42 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -110,7 +110,7 @@ c--   Read the namelist input.
      &  xx_bottomdrag_file
 
       namelist /ctrl_packnames/
-     &  yadmark, yctrlid,
+     &  yadmark, yctrlid, yctrlposunpack, yctrlpospack,
      &  ctrlname, costname, scalname, maskname, metaname
 
       _BEGIN_MASTER( myThid )
@@ -184,6 +184,8 @@ c--     Set default values.
         yadmark             = 'ad'
 #endif
         yctrlid             = 'MIT_CE_000'
+        yctrlposunpack      = '.opt'
+        yctrlpospack        = '.opt'
         ctrlname            = ' '
         costname            = ' '
         scalname            = ' '

@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.12 2003/11/06 22:05:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.13 2004/05/28 16:04:42 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -87,28 +87,6 @@ c     == local variables ==
 
       logical lxxadxx
       
-      integer        filenvartype
-      integer        filenvarlength
-      character*(10) fileYctrlid
-      integer        fileOptimCycle
-      integer        filencbuffindex
-      _RL            fileDummy
-      integer        fileIg
-      integer        fileJg
-      integer        fileI
-      integer        fileJ
-      integer        filensx
-      integer        filensy
-      integer        filek
-      integer        filenWetcGlobal(nr)
-      integer        filenWetsGlobal(nr)
-      integer        filenWetwGlobal(nr)
-      integer        filenWetvGlobal(nr)
-      integer        filencvarindex(maxcvars)
-      integer        filencvarrecs(maxcvars)
-      integer        filencvarxmax(maxcvars)
-      integer        filencvarymax(maxcvars)
-      integer        filencvarnrmax(maxcvars)
 cgg(  Add OBCS mask names.
 #ifdef ALLOW_OBCSN_CONTROL
       integer        filenWetobcsnGlo(nr,nobcs)
@@ -124,7 +102,6 @@ cgg(  Add OBCS mask names.
 #endif
       integer iobcs
 cgg)
-      character*( 1) filencvargrd(maxcvars)
 
 c     == external ==
 
@@ -137,9 +114,6 @@ c     == end of interface ==
       optimcycle = 0
       fmin       = 0. _d 0
 #endif
-
-c--   Check if this is the first model time step.
-      if ( first ) then
 
 c--   Assign file names.
 
@@ -171,15 +145,24 @@ c--     Only the master thread will do I/O.
         _BEGIN_MASTER( mythid )
 
 c *********************************************************************
-c if NOT very first iteration of optimization
-cgg     OPTIMCYCLE 100 RESERVED for MANUAL CONTROL RESTARTS.
-cgg        if ( optimcycle .ne. 0 ) then
-        if ( optimcycle .ne. 0 .and. optimcycle .ne. 100) then
-c *********************************************************************
 
+      if ( first ) then
+c     >>> Initialise control vector for optimcycle=0 <<<
+          lxxadxx   = .TRUE.
           ictrlgrad = 1
           write(cfile(1:128),'(4a,i4.4)')
-     &         ctrlname(1:9),'_',yctrlid(1:10),'.opt',optimcycle
+     &         ctrlname(1:9),'_',yctrlid(1:10), 
+     &         yctrlposunpack(1:4), optimcycle
+          print *, 'ph-pack: unpacking ', ctrlname(1:9)
+      else
+c     >>> Write gradient vector <<<
+          lxxadxx   = .FALSE.
+          ictrlgrad = 2
+          write(cfile(1:128),'(4a,i4.4)')
+     &         costname(1:9),'_',yctrlid(1:10),
+     &         yctrlposunpack(1:4), optimcycle
+          print *, 'ph-pack: unpacking ', costname(1:9)
+       endif
 
           call mdsfindunit( cunit, mythid )
           open( cunit, file   = cfile,
@@ -192,7 +175,7 @@ c--       Header information.
           read(cunit) filenvarlength
           read(cunit) fileYctrlid
           read(cunit) fileOptimCycle
-          read(cunit) fileDummy
+          read(cunit) filefc
           read(cunit) fileIg
           read(cunit) fileJg
           read(cunit) filensx
@@ -522,14 +505,8 @@ c----------------------------------------------------------------------
 #endif
 
          close ( cunit )
-
-        endif
-cgg   End of optimcycle 0 or 100 conditional clause.
  
       _END_MASTER( mythid )
-
-      endif
-cgg   End of "first" if.
 
 #endif /* EXCLUDE_CTRL_PACK */
 

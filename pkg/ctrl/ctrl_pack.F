@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.12 2003/11/06 22:05:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.13 2004/05/28 16:04:42 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -137,20 +137,24 @@ c
 c--     Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
-      if ( first .AND. optimcycle .EQ. 0 ) then
+      if ( first ) then
 c     >>> Initialise control vector for optimcycle=0 <<<
           lxxadxx   = .TRUE.
           ictrlgrad = 1
           fcloc     = fmin
           write(cfile(1:128),'(4a,i4.4)')
-     &      ctrlname(1:9),'_',yctrlid(1:10),'.opt', optimcycle
+     &         ctrlname(1:9),'_',yctrlid(1:10), 
+     &         yctrlpospack, optimcycle
+          print *, 'ph-pack: unpacking ', ctrlname(1:9)
       else
 c     >>> Write gradient vector <<<
           lxxadxx   = .FALSE.
           ictrlgrad = 2
           fcloc     = fc
           write(cfile(1:128),'(4a,i4.4)')
-     &    costname(1:9),'_',yctrlid(1:10),'.opt', optimcycle
+     &         costname(1:9),'_',yctrlid(1:10), 
+     &         yctrlpospack, optimcycle
+          print *, 'ph-pack: unpacking ', costname(1:9)
        endif
 
        call mdsfindunit( cunit, mythid )
@@ -160,20 +164,20 @@ c     >>> Write gradient vector <<<
      &      access  = 'sequential'   )
 
 c--       Header information.
-          write(cunit) nvartype
-          write(cunit) nvarlength
-          write(cunit) yctrlid
-          write(cunit) optimCycle
-          write(cunit) fcloc
-          write(cunit) 1
-          write(cunit) 1
-          write(cunit) 1
-          write(cunit) 1
-          write(cunit) (nWetcGlobal(k), k=1,nr)
-          write(cunit) (nWetsGlobal(k), k=1,nr)
-          write(cunit) (nWetwGlobal(k), k=1,nr)
+          write(cunit) filenvartype
+          write(cunit) filenvarlength
+          write(cunit) fileyctrlid
+          write(cunit) fileoptimCycle
+          write(cunit) filefc
+          write(cunit) fileIg
+          write(cunit) fileJg
+          write(cunit) filensx
+          write(cunit) filensy
+          write(cunit) (filenWetcGlobal(k), k=1,nr)
+          write(cunit) (filenWetsGlobal(k), k=1,nr)
+          write(cunit) (filenWetwGlobal(k), k=1,nr)
 #ifdef ALLOW_CTRL_WETV
-          write(cunit) (nWetvGlobal(k), k=1,nr)
+          write(cunit) (filenWetvGlobal(k), k=1,nr)
 #endif
 
 #ifdef ALLOW_OBCSN_CONTROL
@@ -188,12 +192,12 @@ c--       Header information.
 #ifdef ALLOW_OBCSE_CONTROL
           write(cunit) ((nWetobcseGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
 #endif
-          write(cunit) (ncvarindex(i), i=1,maxcvars)
-          write(cunit) (ncvarrecs(i),  i=1,maxcvars)
-          write(cunit) (nx,  i=1,maxcvars)
-          write(cunit) (ny,  i=1,maxcvars)
-          write(cunit) (ncvarnrmax(i), i=1,maxcvars)
-          write(cunit) (ncvargrd(i),   i=1,maxcvars)
+          write(cunit) (filencvarindex(i), i=1,maxcvars)
+          write(cunit) (filencvarrecs(i),  i=1,maxcvars)
+          write(cunit) (filencvarxmax(i),  i=1,maxcvars)
+          write(cunit) (filencvarymax(i),  i=1,maxcvars)
+          write(cunit) (filencvarnrmax(i), i=1,maxcvars)
+          write(cunit) (filencvargrd(i),   i=1,maxcvars)
           write(cunit)
 
 #ifdef ALLOW_THETA0_CONTROL

@@ -74,25 +74,6 @@ c     == local variables ==
       _RL   weightfldxz( snx,nsx,npx,nsy,npy,nr,nobcs )
 #endif
 
-      integer        filenvartype
-      integer        filenvarlength
-      character*(10) fileExpId
-      integer        fileOptimCycle
-      integer        filencbuffindex
-      _RL            fileDummy
-      integer        fileIg
-      integer        fileJg
-      integer        fileI
-      integer        fileJ
-      integer        filensx
-      integer        filensy
-      integer        filek
-      integer        filencvarindex(maxcvars)
-      integer        filencvarrecs(maxcvars)
-      integer        filencvarxmax(maxcvars)
-      integer        filencvarymax(maxcvars)
-      integer        filencvarnrmax(maxcvars)
-      character*( 1) filencvargrd(maxcvars)
 cgg(
       integer igg
       _RL     gg
