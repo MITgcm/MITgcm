@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.13 2002/03/24 02:12:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.14 2002/06/15 03:31:17 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -11,7 +11,7 @@ C !INTERFACE: ==========================================================
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
      I           diffKh, diffK4, KappaRT, Tracer,
-     I           tracerIdentity, advectionScheme,
+     I           tracerIdentity, advectionScheme, calcAdvection,
      U           fVerT, gTracer,
      I           myThid )
 
@@ -63,6 +63,7 @@ C  KappaRT              :: 3-D array for vertical diffusion coefficient
 C  Tracer               :: tracer field
 C  tracerIdentity       :: identifier for the tracer (required only for KPP)
 C  advectionScheme      :: advection scheme to use
+C  calcAdvection        :: =False if Advec terms computed with multiDim scheme
 C  myThid               :: thread number
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k,kUp,kDown,kM1
@@ -77,6 +78,7 @@ C  myThid               :: thread number
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       INTEGER tracerIdentity
       INTEGER advectionScheme
+      LOGICAL calcAdvection
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
@@ -128,10 +130,7 @@ C--   Make local copy of tracer array
 
 C--   Unless we have already calculated the advection terms we initialize
 C     the tendency to zero.
-      IF (.NOT. multiDimAdvection .OR.
-     &    advectionScheme.EQ.ENUM_CENTERED_2ND .OR.
-     &    advectionScheme.EQ.ENUM_UPWIND_3RD .OR.
-     &    advectionScheme.EQ.ENUM_CENTERED_4TH ) THEN
+      IF (calcAdvection) THEN
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          gTracer(i,j,k,bi,bj)=0. _d 0
@@ -154,10 +153,7 @@ C--   Initialize net flux in X direction
       ENDDO
 
 C-    Advective flux in X
-      IF (.NOT. multiDimAdvection .OR.
-     &    advectionScheme.EQ.ENUM_CENTERED_2ND .OR.
-     &    advectionScheme.EQ.ENUM_UPWIND_3RD .OR.
-     &    advectionScheme.EQ.ENUM_CENTERED_4TH ) THEN
+      IF (calcAdvection) THEN
       IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
        CALL GAD_C2_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
       ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
@@ -229,10 +225,7 @@ C--   Initialize net flux in Y direction
       ENDDO
 
 C-    Advective flux in Y
-      IF (.NOT. multiDimAdvection .OR.
-     &    advectionScheme.EQ.ENUM_CENTERED_2ND .OR.
-     &    advectionScheme.EQ.ENUM_UPWIND_3RD .OR.
-     &    advectionScheme.EQ.ENUM_CENTERED_4TH ) THEN
+      IF (calcAdvection) THEN
       IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
        CALL GAD_C2_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
       ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
@@ -297,10 +290,7 @@ C-    Bi-harmonic flux in Y
       ENDIF
 
 C-    Advective flux in R
-      IF (.NOT. multiDimAdvection .OR.
-     &    advectionScheme.EQ.ENUM_CENTERED_2ND .OR.
-     &    advectionScheme.EQ.ENUM_UPWIND_3RD .OR.
-     &    advectionScheme.EQ.ENUM_CENTERED_4TH ) THEN
+      IF (calcAdvection) THEN
 C     Note: wVel needs to be masked 
       IF (K.GE.2) THEN
 C-    Compute vertical advective flux in the interior:
@@ -358,11 +348,6 @@ C           boundary condition.
       ELSE
        CALL GAD_DIFF_R(bi,bj,k,KappaRT,tracer,df,myThid)
       ENDIF
-c     DO j=1-Oly,sNy+Oly
-c      DO i=1-Olx,sNx+Olx
-c       fVerT(i,j,kUp) = fVerT(i,j,kUp) + df(i,j)*maskUp(i,j)
-c      ENDDO
-c     ENDDO
 
 #ifdef ALLOW_GMREDI
 C-    GM/Redi flux in R
@@ -373,11 +358,6 @@ C *note* should update GMREDI_RTRANSPORT to set df  *aja*
      I     Tracer,
      U     df,
      I     myThid)
-c      DO j=1-Oly,sNy+Oly
-c       DO i=1-Olx,sNx+Olx
-c        fVerT(i,j,kUp) = fVerT(i,j,kUp) + df(i,j)*maskUp(i,j)
-c       ENDDO
-c      ENDDO
       ENDIF
 #endif
 

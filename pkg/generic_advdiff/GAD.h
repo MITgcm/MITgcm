@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.8 2001/09/28 02:26:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.9 2002/06/15 03:31:17 jmc Exp $
 C $Name:  $
 
 CBOP
@@ -52,10 +52,25 @@ C Differentiate between tracers (only needed for KPP -  arrgh!!!)
 C GAD_TEMPERATURE :: temperature
       INTEGER GAD_TEMPERATURE
       PARAMETER(GAD_TEMPERATURE=101)
-C GAD_TEMPERATURE :: salinity
+C GAD_SALINITY :: salinity
       INTEGER GAD_SALINITY
       PARAMETER(GAD_SALINITY=102)
 C GAD_TR1 :: pssive tracer 1
       INTEGER GAD_TR1
       PARAMETER(GAD_TR1=103)
 CEOP
+
+C--   COMMON /GAD_PARM_L/ Logical parameters for GAD pkg routines
+C     tempMultiDimAdvec :: set to T if using multi-dimension advection for Temp
+C     saltMultiDimAdvec :: set to T if using multi-dimension advection for Salt
+C     tempAdamsBashforth :: set to T if using Adams-Bashforth stepping for Temp
+C     saltAdamsBashforth :: set to T if using Adams-Bashforth stepping for Salt
+      LOGICAL tempMultiDimAdvec
+      LOGICAL saltMultiDimAdvec
+      LOGICAL tr1_MultiDimAdvec
+      LOGICAL tempAdamsBashforth
+      LOGICAL saltAdamsBashforth
+      LOGICAL tr1_AdamsBashforth
+      COMMON /GAD_PARM_L/
+     & tempMultiDimAdvec , saltMultiDimAdvec , tr1_MultiDimAdvec,
+     & tempAdamsBashforth, saltAdamsBashforth, tr1_AdamsBashforth
