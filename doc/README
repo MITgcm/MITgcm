@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/README,v 1.12 1998/07/16 16:58:32 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/README,v 1.13 1998/07/17 02:20:13 cnh Exp $
 
 
 MITgcmUV Getting Started
@@ -57,6 +57,12 @@ o Installing
      These files are written on a per process basis. The .meta
      file indicates the location and shape of the subdomain in
      each .data file.
+    
+     This 4 degree global ocean climatological simulation is the baseline
+     configuration for the MITgcmUV code. The change files that 
+     convert the model to a different configuration in the 
+     verification directory all assume that the model is configured for
+     the baseline case and change the model code accordingly.
 
 o Running
 
