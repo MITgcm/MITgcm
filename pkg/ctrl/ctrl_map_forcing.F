@@ -13,6 +13,7 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
+#include "DYNVARS.h"
 #include "GRID.h"
 
 #include "ctrl.h"
@@ -42,8 +43,6 @@ C     == Local variables ==
       character*( 80)   fnamehflux
       character*( 80)   fnamesss
       character*( 80)   fnamesst
-      character*( 80)   fnamediffkr
-      character*( 80)   fnamekapgm
 
 c     == external ==
 
@@ -175,50 +174,6 @@ c--   sst0.
             enddo
           enddo
         enddo
-      enddo
-#endif
-
-#ifdef ALLOW_DIFFKR_CONTROL
-c--   diffkr.
-      il=ilnblnk( xx_diffkr_file )
-      write(fnamediffkr(1:80),'(2a,i10.10)')
-     &     xx_diffkr_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamediffkr, tmpfld3d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_diffkr_dummy )
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-                diffkr(i,j,k,bi,bj) = diffkr(i,j,k,bi,bj) +
-     &                                tmpfld3d(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-       enddo
-      enddo
-#endif
-
-#ifdef ALLOW_KAPGM_CONTROL
-c--   kapgm.
-      il=ilnblnk( xx_kapgm_file )
-      write(fnamekapgm(1:80),'(2a,i10.10)')
-     &     xx_kapgm_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamekapgm, tmpfld3d, 1,
-     &                      doglobalread, ladinit, optimcycle,
-     &                      mythid, xx_kapgm_dummy )
-      do bj = jtlo,jthi
-        do bi = itlo,ithi
-          do k = 1,nr
-            do j = jmin,jmax
-              do i = imin,imax
-                kapgm(i,j,k,bi,bj) = kapgm(i,j,k,bi,bj) +
-     &                               tmpfld3d(i,j,k,bi,bj)
-              enddo
-            enddo
-          enddo
-       enddo
       enddo
 #endif
 

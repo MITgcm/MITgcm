@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.2 2001/07/13 13:40:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.3 2001/08/13 18:10:26 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -269,36 +269,58 @@ cph    index 17    reserved for passive tracer TR1
 cph    index 18,19 reserved for sst, sss
 cph)
 
+#ifdef ALLOW_DIFFKR_CONTROL
+      _BEGIN_MASTER( mythid )
+        ncvarindex(15) = 115
+        ncvarrecs (15) =   1
+        ncvarxmax (15) = snx
+        ncvarymax (15) = sny
+        ncvarnrmax(15) =  nr
+        ncvargrd  (15) = 'c'
+      _END_MASTER( mythid )
+#endif /* ALLOW_DIFFKR_CONTROL */
+
+#ifdef ALLOW_KAPGM_CONTROL
+      _BEGIN_MASTER( mythid )
+        ncvarindex(16) = 116
+        ncvarrecs (16) =   1
+        ncvarxmax (16) = snx
+        ncvarymax (16) = sny
+        ncvarnrmax(16) =  nr
+        ncvargrd  (16) = 'c'
+      _END_MASTER( mythid )
+#endif /* ALLOW_KAPGM_CONTROL */
+
 #ifdef ALLOW_TR10_CONTROL
       _BEGIN_MASTER( mythid )
         ncvarindex(17) = 117
-        ncvarrecs(17)  =   1
-        ncvarxmax(17)  = snx
-        ncvarymax(17)  = sny
+        ncvarrecs (17) =   1
+        ncvarxmax (17) = snx
+        ncvarymax (17) = sny
         ncvarnrmax(17) =  nr
-        ncvargrd(17)   = 'c'
+        ncvargrd  (17) = 'c'
       _END_MASTER( mythid )
 #endif /* ALLOW_TR10_CONTROL */
 
 #ifdef ALLOW_SST0_CONTROL
       _BEGIN_MASTER( mythid )
         ncvarindex(18) = 118
-        ncvarrecs(18)  =   1
-        ncvarxmax(18)  = snx
-        ncvarymax(18)  = sny
+        ncvarrecs (18) =   1
+        ncvarxmax (18) = snx
+        ncvarymax (18) = sny
         ncvarnrmax(18) =   1
-        ncvargrd(18)   = 'c'
+        ncvargrd  (18) = 'c'
       _END_MASTER( mythid )
 #endif /* ALLOW_SST0_CONTROL */
 
 #ifdef ALLOW_SSS0_CONTROL
       _BEGIN_MASTER( mythid )
         ncvarindex(19) = 119
-        ncvarrecs(19)  =   1
-        ncvarxmax(19)  = snx
-        ncvarymax(19)  = sny
+        ncvarrecs (19) =   1
+        ncvarxmax (19) = snx
+        ncvarymax (19) = sny
         ncvarnrmax(19) =   1
-        ncvargrd(19)   = 'c'
+        ncvargrd  (19) = 'c'
       _END_MASTER( mythid )
 #endif /* ALLOW_SSS0_CONTROL */
 

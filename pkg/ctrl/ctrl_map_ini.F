@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.2 2001/07/13 13:40:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.3 2001/08/13 18:10:26 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -61,6 +61,8 @@ c     == local variables ==
       character*( 80)   fnametheta
       character*( 80)   fnamesalt
       character*( 80)   fnametr1
+      character*( 80)   fnamediffkr
+      character*( 80)   fnamekapgm
 
 c     == external ==
 
@@ -164,6 +166,50 @@ c--   Temperature field.
       enddo
 #endif
 
+#ifdef ALLOW_DIFFKR_CONTROL
+c--   diffkr.
+      il=ilnblnk( xx_diffkr_file )
+      write(fnamediffkr(1:80),'(2a,i10.10)')
+     &     xx_diffkr_file(1:il),'.',optimcycle
+      call active_read_xyz( fnamediffkr, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_diffkr_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                diffkr(i,j,k,bi,bj) = diffkr(i,j,k,bi,bj) +
+     &                                tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
+#ifdef ALLOW_KAPGM_CONTROL
+c--   kapgm.
+      il=ilnblnk( xx_kapgm_file )
+      write(fnamekapgm(1:80),'(2a,i10.10)')
+     &     xx_kapgm_file(1:il),'.',optimcycle
+      call active_read_xyz( fnamekapgm, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_kapgm_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                kapgm(i,j,k,bi,bj) = kapgm(i,j,k,bi,bj) +
+     &                               tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
 
 c--   Update the tile edges.
 
@@ -176,9 +222,16 @@ c--   Update the tile edges.
       _EXCH_XYZ_R8( gsNm1, mythid )
 #endif
 #ifdef ALLOW_TR10_CONTROL
-      _EXCH_XYZ_R8(  tr1, mythid )
+      _EXCH_XYZ_R8(     tr1, mythid )
       _EXCH_XYZ_R8( gTr1Nm1, mythid )
 #endif
+#ifdef ALLOW_DIFFKR_CONTROL
+      _EXCH_XYZ_R8( diffkr, mythid)
+#endif
+#ifdef ALLOW_KAPGM_CONTROL
+      _EXCH_XYZ_R8( kapgm, mythid)
+#endif
+
 
       return
       end

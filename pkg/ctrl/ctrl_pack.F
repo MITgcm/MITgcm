@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.2 2001/07/13 13:40:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.3 2001/08/13 18:10:26 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -598,6 +598,97 @@ c     --> check cbuffindex.
 
 #endif
 
+#ifdef ALLOW_DIFFKR_CONTROL
+
+          il=ilnblnk( xx_diffkr_file)
+          write(fname(1:80),'(80a)') ' '
+          write(fname(1:80),'(2a,i10.10)')
+     &         xx_diffkr_file(1:il),'.',optimcycle
+          call MDSREADFIELD_3D_GL( fname, 
+     &                          prec, 'RL', Nr, globfld3d, 
+     &                          1,  mythid)
+
+          write(cunit) ncvarindex(15)
+          write(cunit) 1
+          write(cunit) 1
+          do k = 1,nr
+           cbuffindex = 0
+            do jp = 1,nPy
+             do bj = jtlo,jthi
+              do j = jmin,jmax
+               do ip = 1,nPx
+                do bi = itlo,ithi
+                 do i = imin,imax
+                    if (globmsk(i,bi,ip,j,bj,jp,k)  .ne. 0. ) then
+                       cbuffindex = cbuffindex + 1
+#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
+                       cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+cph     &                      * sqrt(wdiffkr(k,bi,bj))
+#else
+                       cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+#endif
+                    endif
+                 enddo
+                enddo
+               enddo
+              enddo
+             enddo
+            enddo
+c     --> check cbuffindex.
+            if ( cbuffindex .gt. 0) then
+               write(cunit) cbuffindex
+               write(cunit) k
+               write(cunit) (cbuff(ii), ii=1,cbuffindex)
+            endif
+         enddo
+            
+#endif
+
+#ifdef ALLOW_KAPGM_CONTROL
+
+          il=ilnblnk( xx_kapgm_file)
+          write(fname(1:80),'(80a)') ' '
+          write(fname(1:80),'(2a,i10.10)')
+     &         xx_kapgm_file(1:il),'.',optimcycle
+          call MDSREADFIELD_3D_GL( fname, 
+     &                          prec, 'RL', Nr, globfld3d, 
+     &                          1,  mythid)
+
+          write(cunit) ncvarindex(16)
+          write(cunit) 1
+          write(cunit) 1
+          do k = 1,nr
+           cbuffindex = 0
+            do jp = 1,nPy
+             do bj = jtlo,jthi
+              do j = jmin,jmax
+               do ip = 1,nPx
+                do bi = itlo,ithi
+                 do i = imin,imax
+                    if (globmsk(i,bi,ip,j,bj,jp,k)  .ne. 0. ) then
+                       cbuffindex = cbuffindex + 1
+#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
+                       cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+cph     &                      * sqrt(wkapgm(k,bi,bj))
+#else
+                       cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+#endif
+                    endif
+                 enddo
+                enddo
+               enddo
+              enddo
+             enddo
+            enddo
+c     --> check cbuffindex.
+            if ( cbuffindex .gt. 0) then
+               write(cunit) cbuffindex
+               write(cunit) k
+               write(cunit) (cbuff(ii), ii=1,cbuffindex)
+            endif
+         enddo
+            
+#endif
 
           close ( cunit )
 
@@ -1098,6 +1189,103 @@ c     --> check cbuffindex.
             endif
 
 #endif
+
+#ifdef ALLOW_DIFFKR_CONTROL
+
+          il=ilnblnk( xx_diffkr_file)
+          write(fname(1:80),'(80a)') ' '
+          write(fname(1:80),'(3a,i10.10)')
+     &         yadmark,xx_diffkr_file(1:il),'.',optimcycle
+
+          call MDSREADFIELD_3D_GL( fname, 
+     &                          prec, 'RL', Nr, 
+     &                          globfld3d, 
+     &                          1,  mythid)
+          
+          write(cunit) ncvarindex(9)
+          write(cunit) 1
+          write(cunit) 1
+          do k = 1,nr
+           cbuffindex = 0
+            do jp = 1,nPy
+             do bj = jtlo,jthi
+              do j = jmin,jmax
+               do ip = 1,nPx
+                do bi = itlo,ithi
+                 do i = imin,imax
+                    if (globmsk(i,bi,ip,j,bj,jp,k)  .ne. 0. ) then
+                       cbuffindex = cbuffindex + 1
+#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
+                       cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+cph     &                      * sqrt(wdiffkr(k,bi,bj))
+#else
+                       cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+#endif
+                    endif
+                 enddo
+                enddo
+               enddo
+              enddo
+             enddo
+            enddo
+c     --> check cbuffindex.
+            if ( cbuffindex .gt. 0) then
+               write(cunit) cbuffindex
+               write(cunit) k
+               write(cunit) (cbuff(ii), ii=1,cbuffindex)
+            endif
+         enddo
+
+#endif
+
+#ifdef ALLOW_KAPGM_CONTROL
+
+          il=ilnblnk( xx_kapgm_file)
+          write(fname(1:80),'(80a)') ' '
+          write(fname(1:80),'(3a,i10.10)')
+     &         yadmark,xx_kapgm_file(1:il),'.',optimcycle
+
+          call MDSREADFIELD_3D_GL( fname, 
+     &                          prec, 'RL', Nr, 
+     &                          globfld3d, 
+     &                          1,  mythid)
+          
+          write(cunit) ncvarindex(9)
+          write(cunit) 1
+          write(cunit) 1
+          do k = 1,nr
+           cbuffindex = 0
+            do jp = 1,nPy
+             do bj = jtlo,jthi
+              do j = jmin,jmax
+               do ip = 1,nPx
+                do bi = itlo,ithi
+                 do i = imin,imax
+                    if (globmsk(i,bi,ip,j,bj,jp,k)  .ne. 0. ) then
+                       cbuffindex = cbuffindex + 1
+#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
+                       cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+cph     &                      * sqrt(wkapgm(k,bi,bj))
+#else
+                       cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+#endif
+                    endif
+                 enddo
+                enddo
+               enddo
+              enddo
+             enddo
+            enddo
+c     --> check cbuffindex.
+            if ( cbuffindex .gt. 0) then
+               write(cunit) cbuffindex
+               write(cunit) k
+               write(cunit) (cbuff(ii), ii=1,cbuffindex)
+            endif
+         enddo
+
+#endif
+
 
           close ( cunit )
 
