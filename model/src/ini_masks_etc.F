@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.21 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.22 2001/07/05 21:44:25 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,6 +29,12 @@ C     myThid -  Number of this instance of INI_MASKS_ETC
       INTEGER myThid
 CEndOfInterface
 
+C     == Local variables in common ==
+C     tmpfld  - Temporary array used to compute & write Total Depth
+C               has to be in common for multi threading
+      COMMON / LOCAL_INI_MASKS_ETC / tmpfld
+      _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
 C     == Local variables ==
 C     bi,bj  - Loop counters
 C     I,J,K
@@ -40,7 +46,6 @@ C     I,J,K
 #endif
       _RL hFacCtmp
       _RL hFacMnSz
-      _RS tmpfld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C- Calculate lopping factor hFacC : over-estimate the part inside of the domain
 C    taking into account the lower_R Boundary (Bathymetrie / Top of Atmos)
@@ -157,10 +162,6 @@ C         Inverse of fluid column thickness (1/r_unit)
        ENDDO
       ENDDO
 C     _EXCH_XY_R4(   recip_Rcol, myThid )
-      CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,0,myThid)
-      CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
-C     CALL MDSWRITEFIELD( 'Depth', writeBinaryPrec, .TRUE.,
-C    &                    'RS', 1, tmpfld, 1, -1, myThid )
 
 C     hFacW and hFacS (at U and V points)
       DO bj=myByLo(myThid), myByHi(myThid)
@@ -193,6 +194,17 @@ C     We should really supply a flag for doing this.
         ENDDO
        ENDDO
       ENDDO
+
+C-    Write to disk: Total Column Thickness & hFac(C,W,S):
+      _BARRIER
+      _BEGIN_MASTER( myThid )
+C     CALL MDSWRITEFIELD( 'Depth', writeBinaryPrec, .TRUE.,
+C    &                    'RS', 1, tmpfld, 1, -1, myThid )
+      CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,0,myThid)
+      CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
+      CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
+      CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
+      _END_MASTER(myThid)
 
       CALL PLOT_FIELD_XYZRS( hFacC, 'hFacC' , Nr, 1, myThid )
       CALL PLOT_FIELD_XYZRS( hFacW, 'hFacW' , Nr, 1, myThid )
