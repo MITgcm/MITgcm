@@ -1,4 +1,4 @@
-function [AA] = rdmds(fnamearg,varargin)
+function [AA,iters] = rdmds(fnamearg,varargin)
 % RDMDS  Read MITgcmUV meta/data files
 %
 % A = RDMDS(FNAME)
@@ -43,7 +43,7 @@ function [AA] = rdmds(fnamearg,varargin)
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
 %  
 %  
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.12 2001/11/27 19:21:56 adcroft Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.13 2002/06/12 14:57:29 adcroft Exp $
 
 % Default options
 ieee='b';
@@ -75,6 +75,9 @@ for ind=1:size(varargin,2);
    disp([ sprintf('Reading %i time levels:',size(iters,2)) sprintf(' %i',iters) ]);
   elseif isinf(arg)
    iters=scanforfiles(fname);
+   if isempty(iters)
+    AA=[];iters=[];return;
+   end
    disp([ sprintf('Found %i time levels, reading %i',size(iters,2),iters(end)) ]);
    iters=iters(end);
   elseif prod(arg>=0) & prod(round(arg)==arg)
@@ -340,6 +343,7 @@ arr=reshape(arr,N);
 %
 function [iters] = scanforfiles(fname)
 
+iters=[];
 allfiles=dir([fname '.*.001.001.meta']);
 if isempty(allfiles)
  allfiles=dir([fname '.*.meta']);
