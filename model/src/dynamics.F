@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.72 2001/07/13 14:26:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.73 2001/07/20 19:16:28 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -785,6 +785,7 @@ Cjmc(end)
 #ifndef EXCLUDE_DEBUGMODE
       If (debugMode) THEN
        CALL DEBUG_STATS_RL(1,EtaN,'EtaN (DYNAMICS)',myThid)
+       CALL DEBUG_STATS_RL(Nr,uVel,'Uvel (DYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,vVel,'Vvel (DYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,wVel,'Wvel (DYNAMICS)',myThid)
        CALL DEBUG_STATS_RL(Nr,theta,'Theta (DYNAMICS)',myThid)
