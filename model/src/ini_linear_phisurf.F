@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.8 2003/01/10 23:41:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.9 2003/02/26 03:11:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -33,6 +33,12 @@ C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
       INTEGER myThid
+
+C     == Local variables in common ==
+C     Hloc  - Temporary array used to write surface topography
+C             has to be in common for multi threading
+      COMMON / LOCAL_INI_PHISURF / topoHloc
+      _RS topoHloc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)   
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
@@ -177,22 +183,32 @@ C                               or topographic geopotential anom. (p-coord)
         ENDDO
 
       IF ( buoyancyRelation .eq. 'ATMOSPHERIC'
-     &               .AND. selectFindRoSurf.EQ.1 ) THEN
+     &                   .AND. topoFile.NE.' ' ) THEN
 
 #ifdef ALLOW_AUTODIFF_TAMC
          STOP 'CANNOT PRESENTLY USE THIS OPTION WITH ADJOINT'
 #else
 
-C-    set phi0surf = starting point for integrating Geopotential:
-        CALL INI_P_GROUND( -selectFindRoSurf, 
-     O                     phi0surf, 
+C--   Compute topoH = PhiRef(Po_surf)/g ; is different from original 
+C      topoZ(read from file) because of truncation of Po_surf.
+C     NOTE: not clear for now which topoZ needs to be saved in common block
+C--   AND set phi0surf = starting point for integrating Geopotential;
+
+        CALL INI_P_GROUND( -2, 
+     O                     topoHloc, 
      I                     Ro_surf, myThid )
 
+        _BEGIN_MASTER( myThid )
+        CALL WRITE_FLD_XY_RS( 'topo_H',' ',topoHloc,0,myThid)
+        _END_MASTER( myThid )
+
+       IF (selectFindRoSurf.NE.0) THEN
         _EXCH_XY_RS(phi0surf, myThid)
 
         _BEGIN_MASTER( myThid ) 
         CALL WRITE_FLD_XY_RS( 'phi0surf',' ',phi0surf,0,myThid) 
         _END_MASTER( myThid )
+       ENDIF
 
 #endif /* ALLOW_AUTODIFF_TAMC */
 

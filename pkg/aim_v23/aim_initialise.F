@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.3 2003/01/03 03:51:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.4 2003/02/26 03:10:50 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -88,7 +88,7 @@ C     initialize common block RADFIX (originally called from FORDATE in SPEEDY)
 
 C--   Set truncSurfP : used to correct for truncation (because of hFacMin)
 C      of surface reference pressure Ro_surf that affects Surf.Temp.
-      CALL INI_P_GROUND(selectFindRoSurf, topoZ, truncSurfP, myThid )
+      CALL INI_P_GROUND(1, topoZ, truncSurfP, myThid )
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO j=1,sNy

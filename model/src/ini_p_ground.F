@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_p_ground.F,v 1.4 2002/12/10 02:55:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_p_ground.F,v 1.5 2003/02/26 03:11:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -31,9 +31,9 @@ C     == Global variables ==
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     selectMode :: 0 = find Pfld from Hfld using Theta_Ref profile
-C                   1 = find Pfld from Hfld using Analytic fct Theta(Lat,P)
-C                  -1 = compute Hfld from Pfld using Analytic  Theta(Lat,P)
+C     selectMode ::  > 0 = find Pfld from Hfld ; < 0 = compute Hfld from Pfld
+C                   selectFindRoSurf = 0 : use Theta_Ref profile
+C                   selectFindRoSurf = 1 : use analytic fct Theta(Lat,P)
 C     Hfld (input/outp) :: Ground elevation [m] 
 C     Pfld (outp/input) :: reference Pressure at the ground [Pa] 
       INTEGER selectMode
@@ -62,15 +62,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       INTEGER bi,bj,i,j,K, Ks
       _RL ddPI, Po_surf
       _RL phiRef(2*Nr+1), rHalf(2*Nr+1)
+      LOGICAL findPoSurf
 
       INTEGER nLevHvR
       PARAMETER ( nLevHvR = 60 )
       _RL plowHvR, dpHvR, pLevHvR(nLevHvR+1), pMidHvR(nLevHvR)
       _RL thetaHvR(nLevHvR), PiHvR(nLevHvR+1), dPiHvR(nLevHvR)
       _RL recip_kappa, PiLoc, zLoc, dzLoc, yLatLoc, phiLoc
+      _RL  psNorm, rMidKp1 
+      _RL ratioRm(Nr), ratioRp(Nr)
       INTEGER kLev
 #ifdef CHECK_ANALYLIC_THETA
-      _RL tmpVar(nLevAn,61)
+      _RL tmpVar(nLevHvR,61)
 #endif
 CEOP
 
@@ -88,7 +91,7 @@ CEOP
       ENDDO
        rHalf(2*Nr+1) = rF(Nr+1)
 
-      IF (selectMode .LE. 0) THEN
+      IF (selectMode*selectFindRoSurf .LE. 0) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C- Compute Reference Geopotential at Half levels :
 C    Tracer level: phiRef(2K)  ;  Interface_W level: phiRef(2K+1)
@@ -143,10 +146,10 @@ C- Write to check :
       ENDDO
       _END_MASTER( myThid )
 
-C-- endif selectMode =< 0
+C-- endif selectMode*selectFindRoSurf =< 0
       ENDIF
 
-      IF (selectMode .EQ. 0) THEN
+      IF (selectFindRoSurf.EQ.0 .AND. selectMode .GT. 0 ) THEN
 C- Find Po_surf : Linear between 2 half levels :
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -168,10 +171,10 @@ c          IF (Hfld(i,j,bi,bj).GT.phiRef(2*Nr+1)) Po_surf=rHalf(2*Nr+1)
       ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C-- endif selectMode=0
+C-- endif selectFindRoSurf=0 & selectMode > 0
       ENDIF
 
-      IF (abs(selectMode) .EQ. 1) THEN
+      IF ( selectFindRoSurf.EQ.1 ) THEN
 C-- define high resolution Pressure discretization:
 
       recip_kappa = 1. _d 0 / atm_kappa
@@ -185,6 +188,15 @@ C-- define high resolution Pressure discretization:
         PiHvR(k+1)  = atm_Cp*(pLevHvR(k+1)**atm_kappa)
         pMidHvR(k)= (pLevHvR(k)+pLevHvR(k+1))*0.5 _d 0 
         dPiHvR(k) = PiHvR(k) - PiHvR(k+1)
+      ENDDO
+
+C--   to modify pressure when using non fully linear relation between Phi & p
+C       (Integr_GeoPot=2 & Tracer Point at middle between 2 interfaces)
+      DO k=1,Nr
+         ratioRm(k) = 1. _d 0
+         ratioRp(k) = 1. _d 0
+         IF (k.GT.1 ) ratioRm(k) = 0.5 _d 0*drC(k)/(rF(k)-rC(k))
+         IF (k.LT.Nr) ratioRp(k) = 0.5 _d 0*drC(k+1)/(rC(k)-rF(k+1)) 
       ENDDO
 
 #ifdef CHECK_ANALYLIC_THETA
@@ -202,16 +214,17 @@ C-- define high resolution Pressure discretization:
       STOP 'CHECK_ANALYLIC_THETA'
 #endif /* CHECK_ANALYLIC_THETA */
 
-C-- endif |selectMode|=1
+C-- endif selectFindRoSurf=1
       ENDIF
 
-      IF (selectMode .EQ. 1) THEN
+      IF ( selectFindRoSurf*selectMode .GT. 0) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C- Find Po_surf such as g*Hfld = Phi[Po_surf,theta(yLat,p)]:
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C- start bi,bj loop:
+
         DO j=1,sNy
          DO i=1,sNx
           IF ( Hfld(i,j,bi,bj) .LE. 0. _d 0) THEN
@@ -226,13 +239,13 @@ C- start bi,bj loop:
 C-    compute  phi/g corresponding to next p_level:
              dzLoc = dPiHvR(k)*thetaHvR(k)*recip_gravity 
              IF ( Hfld(i,j,bi,bj) .LE. zLoc+dzLoc ) THEN
-C-    compute the normalized surf. Pressure Po_surf
+C-    compute the normalized surf. Pressure psNorm
                PiLoc = PiHvR(k) 
      &               - gravity*(Hfld(i,j,bi,bj)-zLoc)/thetaHvR(k)
-               Po_surf = (PiLoc/atm_Cp)**recip_kappa 
+               psNorm = (PiLoc/atm_Cp)**recip_kappa 
 C- use linear interpolation:
-c              Po_surf = pLevHvR(k) 
-c    &                 - dpHvR*(Hfld(i,j,bi,bj)-zLoc)/dzLoc
+c              psNorm = pLevHvR(k) 
+c    &                - dpHvR*(Hfld(i,j,bi,bj)-zLoc)/dzLoc
                zLoc = -1.
              ELSE
                zLoc = zLoc + dzLoc 
@@ -250,56 +263,60 @@ c    &                 - dpHvR*(Hfld(i,j,bi,bj)-zLoc)/dzLoc
              CALL PRINT_ERROR( msgBuf , myThid)
              STOP 'ABNORMAL END: S/R INI_P_GROUND'  
            ELSE
-             Pfld(i,j,bi,bj) = Po_surf*atm_Po
+             Pfld(i,j,bi,bj) = psNorm*atm_Po
            ENDIF
           ENDIF
          ENDDO
         ENDDO
+
+        IF (selectMode.EQ.2 .AND. integr_GeoPot.NE.1) THEN
+C---------
+C     Modify pressure to account for non fully linear relation between 
+C      Phi & p (due to numerical truncation of the Finite Difference scheme)
+C---------
+          DO j=1,sNy
+           DO i=1,sNx
+             Po_surf = Pfld(i,j,bi,bj)
+              IF ( Po_surf.LT.rC(1) .AND. Po_surf.GT.rC(Nr) ) THEN
+                findPoSurf = .TRUE.
+                DO k=1,Nr
+                  IF ( findPoSurf .AND. Po_surf.GE.rC(k) ) THEN
+                    Po_surf = rC(k) + (Po_surf-rC(k))/ratioRm(k)
+                    findPoSurf = .FALSE.
+                  ENDIF
+                  rMidKp1 = rF(k+1)
+                  IF (k.LT.Nr) rMidKp1 = (rC(k)+rC(k+1))*0.5 _d 0 
+                  IF ( findPoSurf .AND. Po_surf.GE.rMidKp1 ) THEN
+                    Po_surf = rC(k) + (Po_surf-rC(k))/ratioRp(k)
+                    findPoSurf = .FALSE.
+                  ENDIF
+                ENDDO
+                IF ( findPoSurf ) 
+     &               STOP 'S/R INI_P_GROUND: Pb with selectMode=2'
+              ENDIF 
+             Pfld(i,j,bi,bj) = Po_surf
+           ENDDO
+          ENDDO
+C---------
+        ENDIF
+
 C- end bi,bj loop.
        ENDDO
       ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C-- endif selectMode=1
+C-- endif selectFindRoSurf*selectMode > 0
       ENDIF
 
-      IF (selectMode .EQ. -1) THEN
+      IF (selectMode .LT. 0) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C  goal: evaluate phi0surf (used for computing geopotential'= Phi - PhiRef):
-C   phi0surf = g*Ztopo-PhiRef(Ro_surf) if no truncation was applied to Ro_surf;
-C  but because of hFacMin, surf.ref.pressure (=Ro_surf) is truncated and
-C   phi0surf = Phi(Theta-Analytic,P=Ro_surf) - PhiRef(P=Ro_surf)
-C-----
+C--- Compute Hfld = Phi(Pfld)/g.
 
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
 C- start bi,bj loop:
 
-C--   Compute Hfld from g*Hfld = Phi[Po_surf,theta(yLat,p)]:
-        DO j=1,sNy
-         DO i=1,sNx
-          IF ( Pfld(i,j,bi,bj) .GE. Ro_SeaLevel) THEN
-           Hfld(i,j,bi,bj) = 0.
-          ELSE
-           Po_surf = Pfld(i,j,bi,bj)/atm_Po
-           kLev = 1 + INT( (pLevHvR(1)-Po_surf)/dpHvR )
-           yLatLoc  = yC(i,j,bi,bj)
-           CALL ANALYLIC_THETA( yLatLoc , pMidHvR,
-     &                       thetaHvR, kLev, mythid)
-C-    compute height at level pLev(kLev) just below Pfld:
-           zLoc = 0.
-           DO k=1,kLev-1
-             dzLoc = dPiHvR(k)*thetaHvR(k)*recip_gravity 
-             zLoc = zLoc + dzLoc
-           ENDDO
-           dzLoc = ( PiHvR(kLev)-atm_Cp*(Po_surf**atm_kappa) )
-     &         * thetaHvR(kLev)*recip_gravity 
-           Hfld(i,j,bi,bj) = zLoc + dzLoc
-          ENDIF
-         ENDDO
-        ENDDO
-
-C--  compute phi0surf (stored in Hfld):
+C--  Compute Hfld from g*Hfld = PhiRef(Po_surf)
         DO j=1,sNy
          DO i=1,sNx
 C-   compute phiLoc = PhiRef(Ro_surf):
@@ -314,18 +331,74 @@ C-   compute phiLoc = PhiRef(Ro_surf):
      &       + (phiRef(2*ks+1)-phiRef(2*ks))
      &        *(Pfld(i,j,bi,bj)-rC(ks))/(rHalf(2*ks+1)-rHalf(2*ks))
            ENDIF
-           Hfld(i,j,bi,bj) = gravity*(Hfld(i,j,bi,bj) - phiLoc)
+           Hfld(i,j,bi,bj) = phiLoc
           ELSE
            Hfld(i,j,bi,bj) = 0.
           ENDIF
          ENDDO
         ENDDO
+
+        IF (selectFindRoSurf.EQ.1) THEN
+C-----
+C  goal: evaluate phi0surf (used for computing geopotential'= Phi - PhiRef):
+C   phi0surf = g*Ztopo-PhiRef(Ro_surf) if no truncation was applied to Ro_surf;
+C  but because of hFacMin, surf.ref.pressure (=Ro_surf) is truncated and
+C   phi0surf = Phi(Theta-Analytic,P=Ro_surf) - PhiRef(P=Ro_surf)
+C-----
+C--   Compute Hfld from g*Hfld = Phi[Po_surf,theta(yLat,p)]:
+         DO j=1,sNy
+          DO i=1,sNx
+           zLoc = 0.
+           IF ( Pfld(i,j,bi,bj) .LT. Ro_SeaLevel) THEN
+            Po_surf = Pfld(i,j,bi,bj)
+C---------
+C     Modify pressure to account for non fully linear relation between 
+C      Phi & p (due to numerical truncation of the Finite Difference scheme)
+             IF (selectMode.EQ.-2 .AND. integr_GeoPot.NE.1) THEN
+              IF ( Po_surf.LT.rC(1) .AND. Po_surf.GT.rC(Nr) ) THEN
+                findPoSurf = .TRUE.
+                DO k=1,Nr
+                  IF ( findPoSurf .AND. Po_surf.GE.rC(k) ) THEN
+                    Po_surf = rC(k) + (Po_surf-rC(k))*ratioRm(k)
+                    findPoSurf = .FALSE.
+                  ENDIF
+                  IF ( findPoSurf .AND. Po_surf.GE.rF(k+1) ) THEN
+                    Po_surf = rC(k) + (Po_surf-rC(k))*ratioRp(k)
+                    findPoSurf = .FALSE.
+                  ENDIF
+                ENDDO
+              ENDIF 
+             ENDIF 
+C---------
+            psNorm = Po_surf/atm_Po
+            kLev = 1 + INT( (pLevHvR(1)-psNorm)/dpHvR )
+            yLatLoc  = yC(i,j,bi,bj)
+            CALL ANALYLIC_THETA( yLatLoc , pMidHvR,
+     &                        thetaHvR, kLev, mythid)
+C-    compute height at level pLev(kLev) just below Pfld:
+            DO k=1,kLev-1
+              dzLoc = dPiHvR(k)*thetaHvR(k)*recip_gravity 
+              zLoc = zLoc + dzLoc
+            ENDDO
+            dzLoc = ( PiHvR(kLev)-atm_Cp*(psNorm**atm_kappa) )
+     &            * thetaHvR(kLev)*recip_gravity 
+            zLoc = zLoc + dzLoc
+           ENDIF
+C-    compute phi0surf = Phi[Po_surf,theta(yLat,p)] - PhiRef(Po_surf)
+           phi0surf(i,j,bi,bj) = gravity*(zLoc - Hfld(i,j,bi,bj))
+C-    save Phi[Po_surf,theta(yLat,p)] in Hfld (replacing PhiRef(Po_surf)):
+           Hfld(i,j,bi,bj) = zLoc
+          ENDDO
+         ENDDO
+C- endif selectFindRoSurf=1
+        ENDIF
+
 C- end bi,bj loop.
        ENDDO
       ENDDO
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C-- endif selectMode=-1
+C-- endif selectMode < 0
       ENDIF
 
       RETURN
