@@ -1,11 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.2 2004/07/06 21:12:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.3 2004/07/13 16:48:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-c #ifdef ALLOW_PTRACERS
-c # include "PTRACERS_OPTIONS.h"
-c #endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_GMREDI
@@ -43,6 +40,7 @@ c #ifdef ALLOW_PASSIVE_TRACER
 c #include "TR1.h"
 c #endif
 c #ifdef ALLOW_PTRACERS
+c #include "PTRACERS_SIZE.h"
 c #include "PTRACERS.h"
 c #endif
 c #ifdef ALLOW_TIMEAVE

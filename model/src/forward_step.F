@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.98 2004/07/07 22:23:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.99 2004/07/13 16:48:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -72,6 +72,7 @@ C     == Global variables ==
 #  include "OBCS.h"
 # endif
 # ifdef ALLOW_PTRACERS
+#  include "PTRACERS_SIZE.h"
 #  include "PTRACERS.h"
 # endif
 # ifdef ALLOW_CD_CODE

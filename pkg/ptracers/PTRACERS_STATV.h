@@ -1,4 +1,5 @@
-cswdptr --- added routine ----
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS_STATV.h,v 1.3 2004/07/13 16:47:11 jmc Exp $
+C $Name:  $
 
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_TIMEAVE
@@ -31,4 +32,4 @@ C     ptracertave    : tracer values (mol/m-3)
       _RL ptracer_half(Nr,nSx,nSy), ptracer_full(Nr,nSx,nSy)
 
 #endif /* ALLOW_TIMEAVE */ 
-#endif
+#endif /* ALLOW_PTRACERS */ 

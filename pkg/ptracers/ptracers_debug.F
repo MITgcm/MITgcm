@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_debug.F,v 1.2 2003/10/31 17:40:36 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_debug.F,v 1.3 2004/07/13 16:47:48 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -18,6 +18,7 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 
 C !INPUT PARAMETERS: ===================================================

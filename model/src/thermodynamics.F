@@ -1,11 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.73 2004/07/07 01:32:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.74 2004/07/13 16:48:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_PTRACERS
-# include "PTRACERS_OPTIONS.h"
-#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef ALLOW_GMREDI
@@ -85,6 +82,7 @@ C     == Global variables ===
 #include "TR1.h"
 #endif
 #ifdef ALLOW_PTRACERS
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #endif
 #ifdef ALLOW_TIMEAVE

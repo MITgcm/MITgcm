@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fill_diagnostics.F,v 1.1 2004/06/14 22:37:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_fill_diagnostics.F,v 1.2 2004/07/13 16:47:49 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -10,6 +10,7 @@ C $Name:  $
 #include "EEPARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 
       integer myThid 

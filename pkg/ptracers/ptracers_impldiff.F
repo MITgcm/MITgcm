@@ -1,11 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_impldiff.F,v 1.3 2003/11/20 02:26:18 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_impldiff.F,v 1.4 2004/07/13 16:47:49 jmc Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
 #include "PTRACERS_OPTIONS.h"
-#ifdef ALLOW_AUTODIFF
-# include "CPP_OPTIONS.h"
-#endif
 
 CBOP
 C !ROUTINE: PTRACERS_IMPLDIFF
@@ -21,6 +17,7 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #include "PARAMS.h"
 #include "GRID.h"
@@ -58,7 +55,7 @@ C Loop over tracers
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act0 = iTracer - 1
-          max0 = NUMBER_OF_PTRACERS
+          max0 = PTRACERS_num
           act1 = bi - myBxLo(myThid)
           max1 = myBxHi(myThid) - myBxLo(myThid) + 1
           act2 = bj - myByLo(myThid)

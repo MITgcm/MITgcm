@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_read_checkpoint.F,v 1.5 2004/07/06 18:33:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_read_checkpoint.F,v 1.6 2004/07/13 16:47:49 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -17,6 +17,7 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 
 C !INPUT PARAMETERS: ===================================================

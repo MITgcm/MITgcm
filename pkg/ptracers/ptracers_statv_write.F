@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_statv_write.F,v 1.4 2003/11/13 06:35:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_statv_write.F,v 1.5 2004/07/13 16:47:49 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -18,13 +18,12 @@ C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "DYNVARS.h"
-#include "GRID.h"
-#include "TIMEAVE_STATV.h"
-#ifdef ALLOW_PTRACERS
-# include "PTRACERS.h"
-# include "PTRACERS_STATV.h"
-#endif
+c #include "DYNVARS.h"
+c #include "GRID.h"
+c #include "TIMEAVE_STATV.h"
+#include "PTRACERS_SIZE.h"
+#include "PTRACERS.h"
+#include "PTRACERS_STATV.h"
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.4 2003/11/13 06:35:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.5 2004/07/13 16:47:49 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -16,6 +16,7 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #include "PARAMS.h"
 
@@ -36,6 +37,20 @@ C  msgBuf		:: message buffer
       INTEGER iUnit
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
+
+C     PTRACERS_taveFreq :: Frequency with which time-averaged PTRACERS
+C                          are written to post-processing files.
+      NAMELIST /PTRACERS_PARM01/
+     &                   PTRACERS_taveFreq,
+     &                   PTRACERS_advScheme,
+     &                   PTRACERS_diffKh,
+     &                   PTRACERS_diffK4,
+     &                   PTRACERS_diffKr,
+     &                   PTRACERS_useGMRedi,
+     &                   PTRACERS_useKPP,
+     &                   PTRACERS_numInUse,
+     &                   PTRACERS_initialFile,
+     &                   PTRACERS_useRecords
 
 C This routine has been called by the main model so we set our
 C internal flag to indicate we are in business

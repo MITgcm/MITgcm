@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_OPTIONS.h,v 1.4 2003/11/20 15:01:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/PTRACERS_OPTIONS.h,v 1.5 2004/07/13 16:47:11 jmc Exp $
 C $Name:  $
 
 C CPP options file for PTRACERS package
@@ -15,13 +15,11 @@ C Use this file for selecting options within the PTRACERS package
 C NUMBER_OF_PTRACERS defines how many passive tracers are allocated/exist.
 C This CPP macro is *only* used in PTRACERS.h to set an integer parameter.
 C <Please> do not make use of it elsewhere.
+C   Note: this CPP macro has been removed to avoid confusion and risk of
+C    error resulting from multiple definitions (default + explicit) within
+C    the code. The number of tracers is now defined within PTRACERS_SIZE.h
+C---
 
-
-C If NUMBER_OF_PTRACERS is not specified elsewhere and ALLOW_PTRACERS
-C is set then NUMBER_OF_PTRACERS is set here (default 1)
-#ifndef NUMBER_OF_PTRACERS
-#define NUMBER_OF_PTRACERS 1
-#endif
 
 C CPP Macros go here
 

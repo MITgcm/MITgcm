@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.1 2003/09/24 04:52:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_forcing_surf.F,v 1.2 2004/07/13 16:47:49 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
 
 CBOP
-C !ROUTINE: PTRACERS_FORCING
+C !ROUTINE: PTRACERS_FORCING_SURF
 
 C !INTERFACE: ==========================================================
       SUBROUTINE PTRACERS_FORCING_SURF(
@@ -20,6 +20,7 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"

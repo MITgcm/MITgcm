@@ -1,11 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.51 2004/05/21 21:45:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.52 2004/07/13 16:48:48 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_PTRACERS
-# include "PTRACERS_OPTIONS.h"
-#endif
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
@@ -58,6 +55,7 @@ c They provide the fields to be stored.
 #  include "TR1.h"
 # endif
 # ifdef ALLOW_PTRACERS
+#  include "PTRACERS_SIZE.h"
 #  include "PTRACERS.h"
 # endif
 # ifdef ALLOW_NONHYDROSTATIC
@@ -237,7 +235,7 @@ CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
 c--
 #ifdef ALLOW_PTRACERS
 CADJ INIT comlev1_bibj_ptracers = COMMON,
-CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*NUMBER_OF_PTRACERS
+CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*PTRACERS_num
 #endif /* ALLOW_PTRACERS */
 c--
 #ifndef DISABLE_MULTIDIM_ADVECTION

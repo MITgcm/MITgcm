@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_gterm_blocking_exchanges.F,v 1.1 2002/03/04 19:01:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_gterm_blocking_exchanges.F,v 1.2 2004/07/13 16:47:49 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -16,6 +16,7 @@ C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 
 C !INPUT PARAMETERS: ===================================================
