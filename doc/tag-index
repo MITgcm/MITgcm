@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.348 2004/09/21 15:47:59 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.349 2004/09/21 23:20:17 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o EXCH_UV for CS-grid: add one u,v in the corner-halo region, allows
+  to compute vorticity on a wider stencil [e.g., vort3(0,1)&(1,0)]
+  affects advect_cs results (for the wrong reason): update output.txt
 o use a more standard discretization for biharmonic viscosity ; 
  (original version still available with #define MOM_VI_ORIGINAL_VISCA4 )
   affects results of dome set-up: update output.txt 
