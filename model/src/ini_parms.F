@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.151 2005/04/06 18:25:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.152 2005/04/06 20:18:19 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -213,6 +213,7 @@ C--   Input files
      & zonalWindFile, meridWindFile,
      & thetaClimFile, saltClimFile,
      & surfQfile, surfQnetFile, surfQswFile, EmPmRfile, saltFluxFile,
+     & lambdaThetaFile, lambdaSaltFile,
      & uVelInitFile, vVelInitFile, pSurfInitFile,
      & dQdTFile, ploadFile,tCylIn,tCylOut,
      & eddyTauxFile, eddyTauyFile,
@@ -773,18 +774,14 @@ C     o CD coupling (CD scheme):
 C     o Temperature climatology relaxation time scale
       IF ( tauThetaClimRelax .EQ. 0.D0 ) THEN
        doThetaClimRelax     = .FALSE.
-       lambdaThetaClimRelax = 0.D0
       ELSE
        doThetaClimRelax     = .TRUE.
-       lambdaThetaClimRelax = 1./tauThetaClimRelax
       ENDIF
 C     o Salinity climatology relaxation time scale
       IF ( tauSaltClimRelax .EQ. 0.D0 ) THEN
        doSaltClimRelax     = .FALSE.
-       lambdaSaltClimRelax = 0.D0
       ELSE
        doSaltClimRelax     = .TRUE.
-       lambdaSaltClimRelax = 1./tauSaltClimRelax
       ENDIF
 C     o Tracer 1 climatology relaxation time scale
       IF ( tauTr1ClimRelax .EQ. 0.D0 ) THEN

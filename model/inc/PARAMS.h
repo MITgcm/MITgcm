@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.150 2005/04/06 18:23:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.151 2005/04/06 20:18:19 heimbach Exp $
 C $Name:  $
 C
 
@@ -84,6 +84,7 @@ C     the_run_name    :: string identifying the name of the model "run"
      &                saltClimFile, buoyancyRelation,
      &                EmPmRfile, saltFluxFile,
      &                surfQfile, surfQnetFile, surfQswFile,
+     &                lambdaThetaFile, lambdaSaltFile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                dQdTfile, ploadFile,
      &                eddyTauxFile, eddyTauyFile,
@@ -111,6 +112,8 @@ C     the_run_name    :: string identifying the name of the model "run"
       CHARACTER*(MAX_LEN_FNAM) ploadFile
       CHARACTER*(MAX_LEN_FNAM) eddyTauxFile
       CHARACTER*(MAX_LEN_FNAM) eddyTauyFile
+      CHARACTER*(MAX_LEN_FNAM) lambdaThetaFile
+      CHARACTER*(MAX_LEN_FNAM) lambdaSaltFile
       CHARACTER*(MAX_LEN_FNAM) mdsioLocalDir
       CHARACTER*(MAX_LEN_FNAM) the_run_name
       CHARACTER*(6) eosType
@@ -674,6 +677,11 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL convertEmP2rUnit
       _RL tRef(Nr)
       _RL sRef(Nr)
+      _RS fCori(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS fCoriG(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS fCoriCos(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS lambdaThetaClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS lambdaSaltClimRelax(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL baseTime
       _RL startTime
       _RL endTime
@@ -697,9 +705,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL omega
       _RL rotationPeriod
       _RL tauThetaClimRelax
-      _RL lambdaThetaClimRelax
       _RL tauSaltClimRelax
-      _RL lambdaSaltClimRelax
       _RL tauTr1ClimRelax
       _RL lambdaTr1ClimRelax
       _RL latBandClimRelax

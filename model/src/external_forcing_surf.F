@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.29 2004/12/17 19:17:56 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.30 2005/04/06 20:18:19 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -75,30 +75,25 @@ C--   Start with surface restoring term :
 C     Do not restore under sea-ice
 C     Heat Flux (restoring term) : 
           surfaceForcingT(i,j,bi,bj) = 
-     &      -lambdaThetaClimRelax * (1-AREA(i,j,1,bi,bj))
+     &      -lambdaThetaClimRelax(i,j,bi,bj) * (1-AREA(i,j,1,bi,bj))
      &         *(theta(i,j,ks,bi,bj)-SST(i,j,bi,bj))
      &         *drF(ks)*hFacC(i,j,ks,bi,bj)
 C     Salt Flux (restoring term) : 
           surfaceForcingS(i,j,bi,bj) =
-     &      -lambdaSaltClimRelax * (1-AREA(i,j,1,bi,bj))
+     &      -lambdaSaltClimRelax(i,j,bi,bj) * (1-AREA(i,j,1,bi,bj))
      &         *(salt(i,j,ks,bi,bj)-SSS(i,j,bi,bj))
      &         *drF(ks)*hFacC(i,j,ks,bi,bj)
 #else /* ifndef ALLOW_SEAICE */
 C     Heat Flux (restoring term) : 
-         IF ( abs(yC(i,j,bi,bj)).LE.latBandClimRelax ) THEN
           surfaceForcingT(i,j,bi,bj) = 
-     &      -lambdaThetaClimRelax
+     &      -lambdaThetaClimRelax(i,j,bi,bj)
      &         *(theta(i,j,ks,bi,bj)-SST(i,j,bi,bj))
      &         *drF(ks)*hFacC(i,j,ks,bi,bj)
 C     Salt Flux (restoring term) : 
           surfaceForcingS(i,j,bi,bj) =
-     &      -lambdaSaltClimRelax
+     &      -lambdaSaltClimRelax(i,j,bi,bj)
      &         *(salt(i,j,ks,bi,bj)-SSS(i,j,bi,bj))
      &         *drF(ks)*hFacC(i,j,ks,bi,bj)
-         ELSE
-          surfaceForcingT(i,j,bi,bj) = 0. _d 0
-          surfaceForcingS(i,j,bi,bj) = 0. _d 0
-         ENDIF
 #endif /* ALLOW_SEAICE */
         ENDDO
        ENDDO
