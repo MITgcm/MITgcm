@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.87 2002/05/30 02:30:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.88 2002/07/13 04:59:42 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -222,6 +222,13 @@ C     uninitialised but inert locations.
        ENDDO
       ENDDO
 
+C-- Call to routine for calculation of
+C   Eliassen-Palm-flux-forced U-tendency,
+C   if desired:
+#ifdef INCLUDE_EP_FORCING_CODE
+      CALL CALC_EP_FORCING(myThid)
+#endif
+
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   HPF directive to help TAMC
 CHPF$ INDEPENDENT
@@ -385,12 +392,9 @@ C--      Apply open boundary conditions
 C--     end of dynamics k loop (1:Nr)
         ENDDO
 
-
-
 C--     Implicit viscosity
         IF (implicitViscosity.AND.momStepping) THEN
 #ifdef    ALLOW_AUTODIFF_TAMC
-          idkey = iikey + 3
 CADJ STORE gUNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
@@ -399,7 +403,6 @@ CADJ STORE gUNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
      U         gUNm1,
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
-          idkey = iikey + 4
 CADJ STORE gVNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
@@ -419,7 +422,6 @@ C--      Apply open boundary conditions
 
 #ifdef    INCLUDE_CD_CODE
 #ifdef    ALLOW_AUTODIFF_TAMC
-          idkey = iikey + 5
 CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
@@ -428,7 +430,6 @@ CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
      U         vVelD,
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
-          idkey = iikey + 6
 CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
