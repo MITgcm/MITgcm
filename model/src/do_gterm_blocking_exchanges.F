@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.3 1998/06/08 21:43:01 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/do_gterm_blocking_exchanges.F,v 1.4 1998/06/09 15:58:36 adcroft Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
       SUBROUTINE DO_GTERM_BLOCKING_EXCHANGES(myThid)
 C     /==========================================================\
@@ -37,9 +37,15 @@ C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
       INTEGER myThid
 
-      _EXCH_XYZ_R8( Gu , myThid )
-      _EXCH_XYZ_R8( Gv , myThid )
-      _EXCH_XYZ_R8( Gt , myThid )
+c     _EXCH_XYZ_R8( Gu , myThid )
+c     _EXCH_XYZ_R8( Gv , myThid )
+c     _EXCH_XYZ_R8( Gt , myThid )
+      _EXCH_XYZ_R8( gUNm1 , myThid )
+      _EXCH_XYZ_R8( gVNm1 , myThid )
+c     _EXCH_XYZ_R8( gTNm1 , myThid )
+      _EXCH_XYZ_R8( theta , myThid )
+c     _EXCH_XYZ_R8( uVel , myThid )
+c     _EXCH_XYZ_R8( vVel , myThid )
 #ifdef ALLOW_CD
       _EXCH_XYZ_R8( guCD , myThid )
       _EXCH_XYZ_R8( gvCD , myThid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.14 1998/06/08 21:43:01 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.15 1998/06/09 15:58:36 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -227,8 +227,8 @@ C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
      I      bi,bj,iMin,iMax,jMin,jMax,1,rhoKm1,rhoKm1,
      U      pH,
      I      myThid )
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=jMin,jMax
+         DO I=iMin,iMax
           rhoKp1(I,J)=rhoKm1(I,J)
          ENDDO
         ENDDO
@@ -243,8 +243,8 @@ copt I     bi, bj, iMin, iMax, jMin, jMax,  K-1, K-1, eosType,
 copt O     rhoKm1,
 copt I     myThid )
 C       rhoKm1=rhoKp1
-        DO J=1-Oly,sNy+Oly
-         DO I=1-Olx,sNx+Olx
+        DO J=jMin,jMax
+         DO I=iMin,iMax
           rhoKm1(I,J)=rhoKp1(I,J)
          ENDDO
         ENDDO
@@ -365,23 +365,24 @@ C--     Implicit diffusion
        ENDDO
       ENDDO
 
-      write(0,*) 'dynamics: pS',minval(cg2d_x),maxval(cg2d_x)
-      write(0,*) 'dynamics: U',minval(uVel(1:sNx,1:sNy,:,:,:)),
-     &                         maxval(uVel(1:sNx,1:sNy,:,:,:))
-      write(0,*) 'dynamics: V',minval(vVel(1:sNx,1:sNy,:,:,:)),
-     &                         maxval(vVel(1:sNx,1:sNy,:,:,:))
-      write(0,*) 'dynamics: K13',minval(K13(1:sNx,1:sNy,:)),
-     &                         maxval(K13(1:sNx,1:sNy,:))
-      write(0,*) 'dynamics: K23',minval(K23(1:sNx,1:sNy,:)),
-     &                         maxval(K23(1:sNx,1:sNy,:))
-      write(0,*) 'dynamics: K33',minval(K33(1:sNx,1:sNy,:)),
-     &                         maxval(K33(1:sNx,1:sNy,:))
-      write(0,*) 'dynamics: gT',minval(gT(1:sNx,1:sNy,:,:,:)),
-     &                         maxval(gT(1:sNx,1:sNy,:,:,:))
-      write(0,*) 'dynamics: T',minval(Theta(1:sNx,1:sNy,:,:,:)),
-     &                         maxval(Theta(1:sNx,1:sNy,:,:,:))
-      write(0,*) 'dynamics: pH',minval(pH/(Gravity*Rhonil)),
-     &                          maxval(pH/(Gravity*Rhonil))
+      write(0,*) 'dynamics: pS ',minval(cg2d_x(1:sNx,1:sNy,:,:)),
+     &                           maxval(cg2d_x(1:sNx,1:sNy,:,:))
+      write(0,*) 'dynamics: U  ',minval(uVel(1:sNx,1:sNy,:,:,:)),
+     &                           maxval(uVel(1:sNx,1:sNy,:,:,:))
+      write(0,*) 'dynamics: V  ',minval(vVel(1:sNx,1:sNy,:,:,:)),
+     &                           maxval(vVel(1:sNx,1:sNy,:,:,:))
+cblk  write(0,*) 'dynamics: K13',minval(K13(1:sNx,1:sNy,:)),
+cblk &                           maxval(K13(1:sNx,1:sNy,:))
+cblk  write(0,*) 'dynamics: K23',minval(K23(1:sNx,1:sNy,:)),
+cblk &                           maxval(K23(1:sNx,1:sNy,:))
+cblk  write(0,*) 'dynamics: K33',minval(K33(1:sNx,1:sNy,:)),
+cblk &                           maxval(K33(1:sNx,1:sNy,:))
+      write(0,*) 'dynamics: gT ',minval(gT(1:sNx,1:sNy,:,:,:)),
+     &                           maxval(gT(1:sNx,1:sNy,:,:,:))
+      write(0,*) 'dynamics: T  ',minval(Theta(1:sNx,1:sNy,:,:,:)),
+     &                           maxval(Theta(1:sNx,1:sNy,:,:,:))
+cblk  write(0,*) 'dynamics: pH ',minval(pH/(Gravity*Rhonil)),
+cblk &                           maxval(pH/(Gravity*Rhonil))
 
       RETURN
       END

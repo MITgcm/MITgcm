@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_vvel.F,v 1.3 1998/06/08 21:43:01 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_vvel.F,v 1.4 1998/06/09 15:58:36 adcroft Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE INI_VVEL( myThid )
