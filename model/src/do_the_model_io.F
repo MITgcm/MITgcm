@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.25 2002/11/22 03:01:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.26 2003/01/03 03:52:44 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -92,12 +92,13 @@ C--   Write model state to binary file
 C--   Do time averages
       IF (taveFreq.GT.0.) THEN
        CALL TIMEAVE_STATV_WRITE( myCurrentTime, myIter, myThid )
-#ifdef ALLOW_AIM
-       IF (useAIM)
-     &  CALL AIM_WRITE_TAVE( myCurrentTime, myIter, myThid )
-#endif                                                             
       ENDIF
 #endif
+#ifdef ALLOW_AIM
+C--   Do AIM time averages
+      IF (useAIM)
+     &  CALL AIM_WRITE_TAVE( myCurrentTime, myIter, myThid )
+#endif                                                             
 
 #ifdef ALLOW_GMREDI
 C--   Do KPP diagnostics.
