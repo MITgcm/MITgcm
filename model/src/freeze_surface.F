@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/freeze_surface.F,v 1.3 2003/11/18 00:02:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/freeze_surface.F,v 1.4 2004/07/18 01:04:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -23,7 +23,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-c #include "GRID.h"
+#include "GRID.h"
 #include "FFIELDS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -55,12 +55,13 @@ C     Check for water that should have frozen
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          IF (theta(I,J,k,bi,bj) .LT. Tfreezing) THEN
-             surfaceTendencyTice(I,J,bi,bj) =
-     &            ( Tfreezing - theta(I,J,k,bi,bj) ) / deltaTtracer
-             theta(I,J,k,bi,bj) = Tfreezing
+          IF (theta(i,j,k,bi,bj) .LT. Tfreezing) THEN
+             surfaceForcingTice(i,j,bi,bj) =
+     &            ( Tfreezing - theta(i,j,k,bi,bj) )
+     &                    *drF(k)*hFacC(i,j,k,bi,bj) / deltaTtracer
+             theta(i,j,k,bi,bj) = Tfreezing
           ELSE
-             surfacetendencyTice(I,J,bi,bj) = 0. _d 0
+             surfaceForcingTice(i,j,bi,bj) = 0. _d 0
           ENDIF
          ENDDO
         ENDDO

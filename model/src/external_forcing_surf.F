@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.25 2004/07/17 23:35:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.26 2004/07/18 01:04:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,37 +53,116 @@ C     number of surface interface layer
       INTEGER ks
 CEOP
 
-      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
        ks        = Nr 
-      else
+      ELSE
        ks        = 1
-      endif
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( doThetaClimRelax .OR. doSaltClimRelax ) THEN
+C--   Start with surface restoring term :
+
+       DO j = jMin, jMax
+        DO i = iMin, iMax
+#ifdef ALLOW_SEAICE
+C     Don't restore under sea-ice
+C     Heat Flux (restoring term) : 
+          surfaceForcingT(i,j,bi,bj) = 
+     &      -lambdaThetaClimRelax * (1-AREA(i,j,1,bi,bj))
+     &         *(theta(i,j,ks,bi,bj)-SST(i,j,bi,bj))
+     &         *drF(ks)*hFacC(i,j,ks,bi,bj)
+C     Salt Flux (restoring term) : 
+          surfaceForcingS(i,j,bi,bj) =
+     &      -lambdaSaltClimRelax * (1-AREA(i,j,1,bi,bj))
+     &         *(salt(i,j,ks,bi,bj)-SSS(i,j,bi,bj))
+     &         *drF(ks)*hFacC(i,j,ks,bi,bj)
+#else /* ifndef ALLOW_SEAICE */
+C     Heat Flux (restoring term) : 
+         IF ( abs(yC(i,j,bi,bj)).LE.latBandClimRelax ) THEN
+          surfaceForcingT(i,j,bi,bj) = 
+     &      -lambdaThetaClimRelax
+     &         *(theta(i,j,ks,bi,bj)-SST(i,j,bi,bj))
+     &         *drF(ks)*hFacC(i,j,ks,bi,bj)
+C     Salt Flux (restoring term) : 
+          surfaceForcingS(i,j,bi,bj) =
+     &      -lambdaSaltClimRelax
+     &         *(salt(i,j,ks,bi,bj)-SSS(i,j,bi,bj))
+     &         *drF(ks)*hFacC(i,j,ks,bi,bj)
+         ELSE
+          surfaceForcingT(i,j,bi,bj) = 0. _d 0
+          surfaceForcingS(i,j,bi,bj) = 0. _d 0
+         ENDIF
+#endif /* ALLOW_SEAICE */
+        ENDDO
+       ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef NONLIN_FRSURF
+C-    T,S surface forcing will be applied (thermodynamics) after the update
+C     of surf.thickness (hFac): account for change in surf.thickness
+       IF (staggerTimeStep.AND.nonlinFreeSurf.GT.0) THEN
+        IF (select_rStar.GT.0) THEN
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+            surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
+     &                                  * rStarExpC(i,j,bi,bj)
+            surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
+     &                                  * rStarExpC(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ELSE
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           IF (ks.EQ.ksurfC(i,j,bi,bj)) THEN
+            surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
+     &             *recip_hFacC(i,j,ks,bi,bj)*hFac_surfC(i,j,bi,bj)
+            surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
+     &             *recip_hFacC(i,j,ks,bi,bj)*hFac_surfC(i,j,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDIF
+       ENDIF
+#endif /* NONLIN_FRSURF */
+
+      ELSE
+C--   No restoring for T & S : set surfaceForcingT,S to zero :
+
+       DO j = jMin, jMax
+        DO i = iMin, iMax
+          surfaceForcingT(i,j,bi,bj) = 0. _d 0
+          surfaceForcingS(i,j,bi,bj) = 0. _d 0
+        ENDDO
+       ENDDO
+
+C--   end restoring / no restoring block.
+      ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Surface Fluxes :
 
       DO j = jMin, jMax
          DO i = iMin, iMax
 
-c     Zonal wind stress fu:
-          surfaceTendencyU(i,j,bi,bj) = 
+C     Zonal wind stress fu:
+          surfaceForcingU(i,j,bi,bj) = 
      &      fu(i,j,bi,bj)*horiVertRatio*recip_rhoConst
-c    &           *recip_drF(ks)*recip_hFacW(i,j,ks,bi,bj)
-c     Meridional wind stress fv:
-          surfaceTendencyV(i,j,bi,bj) = 
+C     Meridional wind stress fv:
+          surfaceForcingV(i,j,bi,bj) = 
      &      fv(i,j,bi,bj)*horiVertRatio*recip_rhoConst
-c    &           *recip_drF(ks)*recip_hFacS(i,j,ks,bi,bj)
-c     Net heat flux Qnet:
-          surfaceTendencyT(i,j,bi,bj) = 
+C     Net heat flux Qnet:
+          surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
      &       - ( Qnet(i,j,bi,bj)
 #ifdef SHORTWAVE_HEATING
-     &           -Qsw(i,j,bi,bj)
+     &          -Qsw(i,j,bi,bj)
 #endif
      &         ) *recip_Cp*horiVertRatio*recip_rhoConst
-c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)
 C     Net Salt Flux : 
-          surfaceTendencyS(i,j,bi,bj) = 
+          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
      &      -saltFlux(i,j,bi,bj)*horiVertRatio*recip_rhoConst
-c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)
 
          ENDDO
       ENDDO
@@ -113,10 +192,9 @@ c
        IF (temp_EvPrRn.NE.UNSET_RL) THEN
         DO j = jMin, jMax
          DO i = iMin, iMax
-          surfaceTendencyT(i,j,bi,bj) = surfaceTendencyT(i,j,bi,bj)
+          surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)
      &      + PmEpR(i,j,bi,bj)
      &         *( temp_EvPrRn - theta(i,j,ks,bi,bj) )
-c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj) 
      &         *convertEmP2rUnit
          ENDDO
         ENDDO
@@ -125,10 +203,9 @@ c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)
        IF (salt_EvPrRn.NE.UNSET_RL) THEN
         DO j = jMin, jMax
          DO i = iMin, iMax
-          surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
+          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
      &      + PmEpR(i,j,bi,bj)
      &         *( salt_EvPrRn - salt(i,j,ks,bi,bj) )
-c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj) 
      &         *convertEmP2rUnit
          ENDDO
         ENDDO
@@ -147,9 +224,8 @@ c   and is converted to a salt tendency.
 c- converts EmPmR to salinity tendency using surface local salinity
         DO j = jMin, jMax
          DO i = iMin, iMax
-          surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
+          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
      &      + EmPmR(i,j,bi,bj)*salt(i,j,ks,bi,bj)
-c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)
      &         *convertEmP2rUnit
          ENDDO
         ENDDO
@@ -157,90 +233,13 @@ c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)
 c- converts EmPmR to virtual salt flux using uniform salinity (default=35)
         DO j = jMin, jMax
          DO i = iMin, iMax
-          surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
+          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)
      &      + EmPmR(i,j,bi,bj)*convertFW2Salt
-c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj) 
      &         *convertEmP2rUnit
          ENDDO
         ENDDO
        ENDIF
 
-      ENDIF
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C--   Convert to tendency:
-      DO j=jMin,jMax
-        DO i=iMin,iMax
-          surfaceTendencyU(i,j,bi,bj) = surfaceTendencyU(i,j,bi,bj)
-     &           *recip_drF(ks)*recip_hFacW(i,j,ks,bi,bj)
-          surfaceTendencyV(i,j,bi,bj) = surfaceTendencyV(i,j,bi,bj)
-     &           *recip_drF(ks)*recip_hFacS(i,j,ks,bi,bj)
-          surfaceTendencyT(i,j,bi,bj) = surfaceTendencyT(i,j,bi,bj)
-     &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj) 
-          surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
-     &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj) 
-        ENDDO
-      ENDDO
-
-#ifdef NONLIN_FRSURF
-C-    T,S surface tendencies will be applied (thermodynamics) after the update
-C     of surf.thickness (hFac): account for change in surf.thickness
-      IF (staggerTimeStep.AND.nonlinFreeSurf.GT.0) THEN
-       IF (select_rStar.GT.0) THEN
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-           surfaceTendencyT(i,j,bi,bj) = surfaceTendencyT(i,j,bi,bj)
-     &                                 / rStarExpC(i,j,bi,bj)
-           surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
-     &                                 / rStarExpC(i,j,bi,bj)
-         ENDDO
-        ENDDO
-       ELSE
-        DO j=jMin,jMax
-         DO i=iMin,iMax
-          IF (ks.EQ.ksurfC(i,j,bi,bj)) THEN
-           surfaceTendencyT(i,j,bi,bj) = surfaceTendencyT(i,j,bi,bj)
-     &             *hFacC(i,j,ks,bi,bj)/hFac_surfC(i,j,bi,bj)
-           surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
-     &             *hFacC(i,j,ks,bi,bj)/hFac_surfC(i,j,bi,bj)
-          ENDIF
-         ENDDO
-        ENDDO
-       ENDIF
-      ENDIF
-#endif /* NONLIN_FRSURF */
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C--   Add surface restoring term :
-
-      IF ( doThetaClimRelax .OR. doSaltClimRelax ) THEN
-       DO j = jMin, jMax
-        DO i = iMin, iMax
-#ifdef ALLOW_SEAICE
-C     Don't restore under sea-ice
-C     Heat Flux (restoring term) : 
-          surfaceTendencyT(i,j,bi,bj) = surfaceTendencyT(i,j,bi,bj)
-     &      -lambdaThetaClimRelax * (1-AREA(i,j,1,bi,bj))
-     &         *(theta(i,j,ks,bi,bj)-SST(i,j,bi,bj))
-C     Salt Flux (restoring term) : 
-          surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
-     &      -lambdaSaltClimRelax * (1-AREA(i,j,1,bi,bj))
-     &         *(salt(i,j,ks,bi,bj)-SSS(i,j,bi,bj))
-#else /* ifndef ALLOW_SEAICE */
-C     Heat Flux (restoring term) : 
-         IF ( abs(yC(i,j,bi,bj)).LE.latBandClimRelax ) THEN
-          surfaceTendencyT(i,j,bi,bj) = surfaceTendencyT(i,j,bi,bj)
-     &      -lambdaThetaClimRelax
-     &         *(theta(i,j,ks,bi,bj)-SST(i,j,bi,bj))
-C     Salt Flux (restoring term) : 
-          surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
-     &      -lambdaSaltClimRelax
-     &         *(salt(i,j,ks,bi,bj)-SSS(i,j,bi,bj))
-         ENDIF
-#endif /* ALLOW_SEAICE */
-        ENDDO
-       ENDDO
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -288,7 +287,7 @@ C   (requires time varying dP(Nr) like dP(k-bottom) with NonLin FS).
 #endif /* ATMOSPHERIC_LOADING */
 
 #ifdef ALLOW_EBM
-c--    Values for surfaceTendencyT, surfaceTendencyS
+c--    Values for surfaceForcingT, surfaceForcingS
 c      are overwritten by those produced by EBM
 cph    AD recomputation problems if these IF useEBM are used
 cph      IF ( useEBM ) THEN

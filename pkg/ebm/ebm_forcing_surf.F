@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ebm/Attic/ebm_forcing_surf.F,v 1.3 2004/05/21 21:45:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ebm/Attic/ebm_forcing_surf.F,v 1.4 2004/07/18 01:06:31 jmc Exp $
 C $Name:  $
 
 #include "EBM_OPTIONS.h"
@@ -64,30 +64,28 @@ C--   Surface Fluxes :
          DO i = iMin, iMax
 
 c     Zonal wind stress fu:
-          surfaceTendencyU(i,j,bi,bj) = 
+          surfaceForcingU(i,j,bi,bj) = 
      &      fu(i,j,bi,bj)*horiVertRatio*recip_rhoConst
-     &           *recip_drF(kSurface)*recip_hFacW(i,j,kSurface,bi,bj)
      &           + winPert(i,j,bi,bj)
+     &            *drF(kSurface)*hFacW(i,j,kSurface,bi,bj)
 c     Meridional wind stress fv:
-          surfaceTendencyV(i,j,bi,bj) = 
+          surfaceForcingV(i,j,bi,bj) = 
      &      fv(i,j,bi,bj)*horiVertRatio*recip_rhoConst
-     &           *recip_drF(kSurface)*recip_hFacS(i,j,kSurface,bi,bj)
 c     Net heat flux Qnet:
-          surfaceTendencyT(i,j,bi,bj) = 
+          surfaceForcingT(i,j,bi,bj) = 
      &      -Qnet(i,j,bi,bj)*recip_Cp*horiVertRatio*recip_rhoConst
-     &         *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
      &      -lambdaThetaZonRelax*maskC(i,j,kSurface,bi,bj)*
      &         (theta(i,j,kSurface,bi,bj)-ZonalMeanSST(j,bj))
+     &        *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
 
 C     Net Salt Flux : 
-          surfaceTendencyS(i,j,bi,bj) = 
+          surfaceForcingS(i,j,bi,bj) = 
      &      EmPmR(i,j,bi,bj)*convertFW2Salt*convertEmP2rUnit
-     &         *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
      &      +Run(i,j,bi,bj)*scale_runoff
      &         *convertFW2Salt*convertEmP2rUnit
-     &         *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj)
      &      -lambdaSaltClimRelax*maskC(i,j,kSurface,bi,bj)*
      &         (salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
+     &        *drF(kSurface)*hFacC(i,j,kSurface,bi,bj)
 
          ENDDO
        ENDDO

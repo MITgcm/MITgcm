@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.25 2004/05/14 21:08:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.26 2004/07/18 01:04:23 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -79,8 +79,8 @@ C     Add windstress momentum impulse into the top-layer
        DO j=jMin,jMax
         DO i=iMin,iMax
          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
-     &   +foFacMom*surfaceTendencyU(i,j,bi,bj)
-     &   *_maskW(i,j,kLev,bi,bj)
+     &   +foFacMom*surfaceForcingU(i,j,bi,bj)
+     &   *recip_drF(kLev)*recip_hFacW(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -167,8 +167,8 @@ C     Add windstress momentum impulse into the top-layer
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
-     &   +foFacMom*surfaceTendencyV(i,j,bi,bj)
-     &   *_maskS(i,j,kLev,bi,bj)
+     &   +foFacMom*surfaceForcingV(i,j,bi,bj)
+     &   *recip_drF(kLev)*recip_hFacS(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -264,7 +264,8 @@ C     Add heat in top-layer
        DO j=jMin,jMax
         DO i=iMin,iMax
          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
-     &     +maskC(i,j,kLev,bi,bj)*surfaceTendencyT(i,j,bi,bj)
+     &     +surfaceForcingT(i,j,bi,bj)
+     &     *recip_drF(kLev)*recip_hFacC(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -288,6 +289,7 @@ C Penetrating SW radiation
      &   -Qsw(i,j,bi,bj)*(swfracb(1)*maskC(i,j,klev,bi,bj)
      &                   -swfracb(2)*maskC(i,j,kp1, bi,bj))
      &    *recip_Cp*recip_rhoConst*recip_drF(klev)
+c    &                            *recip_hFacC(i,j,kLev,bi,bj)
        ENDDO
       ENDDO
 #endif
@@ -377,7 +379,8 @@ C     Add fresh-water in top-layer
        DO j=jMin,jMax
         DO i=iMin,iMax
          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &   +maskC(i,j,kLev,bi,bj)*surfaceTendencyS(i,j,bi,bj)
+     &     +surfaceForcingS(i,j,bi,bj)
+     &     *recip_drF(kLev)*recip_hFacC(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
       ENDIF
