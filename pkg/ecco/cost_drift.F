@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_drift.F,v 1.4 2005/03/28 23:49:49 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -211,19 +211,22 @@ c--       Loop over the model layers
 c--         Compute model misfit and cost function term for
 c           the temperature field.
             do j = jmin,jmax
-              do i = imin,imax
-                  if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
+             do i = imin,imax
+              if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
                      fctiles = fctiles +
      &                  (wsalt(k,bi,bj)*cosphi(i,j,bi,bj)*2.5*
      &          (Slmean(i,j,k,bi,bj)/nl - Sfmean(i,j,k,bi,bj)/nf)*
      &          (Slmean(i,j,k,bi,bj)/nl - Sfmean(i,j,k,bi,bj)/nf))
-     &                  
                      fctilet = fctilet +
      &                  (wtheta(k,bi,bj)*cosphi(i,j,bi,bj)*2.5*
      &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf)*
      &          (Tlmean(i,j,k,bi,bj)/nl - Tfmean(i,j,k,bi,bj)/nf))
-                  endif
-              enddo
+                     if ( wtheta(k,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
+     &                 num_tdrift(bi,bj) = num_tdrift(bi,bj) + 1. _d 0
+                     if ( wsalt(k,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
+     &                 num_sdrift(bi,bj) = num_sdrift(bi,bj) + 1. _d 0
+              endif
+             enddo
             enddo
 
           enddo

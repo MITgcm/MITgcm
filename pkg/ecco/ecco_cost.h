@@ -387,6 +387,110 @@ c                  function contributions.
       _RL  objf_salt_ini_fin(nsx,nsy)
       _RL  objf_eddytau(nsx,nsy)
 
+      common /ecco_cost_num/
+     &                num_hflux,
+     &                num_hfluxm,
+     &                num_hfluxmm,
+     &                num_sflux,
+     &                num_sfluxm,
+     &                num_sfluxmm,
+     &                num_tauu,
+     &                num_tauum,
+     &                num_tauv,
+     &                num_tauvm,
+     &                num_hmean,
+     &                num_h,
+     &                num_temp,
+     &                num_salt,
+     &                num_temp0,
+     &                num_salt0,
+     &                num_sst,
+     &                num_tmi,
+     &                num_sss,
+     &                num_ctdt,
+     &                num_ctds,
+     &                num_ctdtclim,
+     &                num_ctdsclim,
+     &                num_xbt,
+     &                num_argot,
+     &                num_argos,
+     &                num_drift,
+     &                num_tdrift,
+     &                num_sdrift,
+     &                num_wdrift,
+     &                num_scatx,
+     &                num_scaty,
+     &                num_scatxm,
+     &                num_scatym,
+     &                num_atemp,
+     &                num_aqh,
+     &                num_uwind,
+     &                num_vwind,
+     &                num_obcsn,
+     &                num_obcss,
+     &                num_obcsw,
+     &                num_obcse,
+     &                num_obcsvol,
+     &                num_curmtr,
+     &                num_ageos,
+     &                num_ice,
+     &                num_diffkr,
+     &                num_theta_ini_fin,
+     &                num_salt_ini_fin,
+     &                num_eddytau
+
+      _RL  num_hflux  (nsx,nsy)
+      _RL  num_hfluxm (nsx,nsy)
+      _RL  num_hfluxmm(nsx,nsy)
+      _RL  num_sflux  (nsx,nsy)
+      _RL  num_sfluxm (nsx,nsy)
+      _RL  num_sfluxmm(nsx,nsy)
+      _RL  num_tauu   (nsx,nsy)
+      _RL  num_tauum  (nsx,nsy)
+      _RL  num_tauv   (nsx,nsy)
+      _RL  num_tauvm  (nsx,nsy)
+      _RL  num_hmean
+      _RL  num_h    (nsx,nsy)
+      _RL  num_temp (nsx,nsy)
+      _RL  num_salt (nsx,nsy)
+      _RL  num_temp0(nsx,nsy)
+      _RL  num_salt0(nsx,nsy)
+      _RL  num_sst  (nsx,nsy)
+      _RL  num_tmi  (nsx,nsy)
+      _RL  num_sss  (nsx,nsy) 
+      _RL  num_ctdt (nsx,nsy)
+      _RL  num_ctds (nsx,nsy)
+      _RL  num_ctdtclim (nsx,nsy)
+      _RL  num_ctdsclim (nsx,nsy)
+      _RL  num_xbt  (nsx,nsy)
+      _RL  num_argot(nsx,nsy)
+      _RL  num_argos(nsx,nsy)
+      _RL  num_drift(nsx,nsy)
+      _RL  num_tdrift(nsx,nsy)
+      _RL  num_sdrift(nsx,nsy)
+      _RL  num_wdrift(nsx,nsy)
+      _RL  num_scatx(nsx,nsy)
+      _RL  num_scaty(nsx,nsy)
+      _RL  num_scatxm(nsx,nsy)
+      _RL  num_scatym(nsx,nsy)
+      _RL  num_atemp(nsx,nsy)
+      _RL  num_aqh  (nsx,nsy)
+      _RL  num_uwind(nsx,nsy)
+      _RL  num_vwind(nsx,nsy)
+      _RL  num_obcsn(nsx,nsy)
+      _RL  num_obcss(nsx,nsy)
+      _RL  num_obcsw(nsx,nsy)
+      _RL  num_obcse(nsx,nsy)
+      _RL  num_obcsvol
+      _RL  num_curmtr(nsx,nsy)
+      _RL  num_ageos(nsx,nsy)
+      _RL  num_ice  (nsx,nsy)
+      _RL  num_kapgm(nsx,nsy)
+      _RL  num_diffkr(nsx,nsy)
+      _RL  num_theta_ini_fin(nsx,nsy)
+      _RL  num_salt_ini_fin(nsx,nsy)
+      _RL  num_eddytau(nsx,nsy)
+
       common /ecco_cost_aux_r/
      &                    mult_hflux,
      &                    mult_sflux,

@@ -118,6 +118,8 @@ c--         Determine the weights to be used.
                   fctile = fctile
      &                 + wuwind(i,j,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
+                  if ( wuwind(i,j,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
+     &                 num_uwind(bi,bj) = num_uwind(bi,bj) + 1. _d 0
                 endif
               enddo
             enddo

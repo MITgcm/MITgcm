@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ecco_cost_initvaria.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ecco_cost_initvaria.F,v 1.4 2005/03/28 23:49:49 heimbach Exp $
 
 #include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -126,6 +126,55 @@ c--   Initialize the tiled cost function contributions.
           objf_kapgm(bi,bj)    = 0. _d 0
           objf_theta_ini_fin(bi,bj) = 0. _d 0
           objf_salt_ini_fin(bi,bj)  = 0. _d 0
+c
+          num_hflux(bi,bj)    = 0. _d 0
+          num_hfluxm(bi,bj)   = 0. _d 0
+          num_hfluxmm(bi,bj)  = 0. _d 0
+          num_sflux(bi,bj)    = 0. _d 0
+          num_sfluxm(bi,bj)   = 0. _d 0
+          num_sfluxmm(bi,bj)  = 0. _d 0
+          num_tauu(bi,bj)     = 0. _d 0
+          num_tauum(bi,bj)    = 0. _d 0
+          num_tauv(bi,bj)     = 0. _d 0
+          num_tauvm(bi,bj)    = 0. _d 0
+          num_temp(bi,bj)     = 0. _d 0
+          num_salt(bi,bj)     = 0. _d 0
+          num_temp0(bi,bj)    = 0. _d 0
+          num_salt0(bi,bj)    = 0. _d 0
+          num_tmi(bi,bj)      = 0. _d 0
+          num_sst(bi,bj)      = 0. _d 0
+          num_sss(bi,bj)      = 0. _d 0
+          num_h(bi,bj)        = 0. _d 0
+          num_ctdt(bi,bj)     = 0. _d 0
+          num_ctds(bi,bj)     = 0. _d 0
+          num_ctdtclim(bi,bj) = 0. _d 0
+          num_ctdsclim(bi,bj) = 0. _d 0
+          num_xbt(bi,bj)      = 0. _d 0
+          num_argot(bi,bj)    = 0. _d 0
+          num_argos(bi,bj)    = 0. _d 0
+          num_drift(bi,bj)    = 0. _d 0
+          num_wdrift(bi,bj)   = 0. _d 0
+          num_sdrift(bi,bj)   = 0. _d 0
+          num_tdrift(bi,bj)   = 0. _d 0
+          num_scatx(bi,bj)    = 0. _d 0
+          num_scaty(bi,bj)    = 0. _d 0
+          num_scatxm(bi,bj)   = 0. _d 0
+          num_scatym(bi,bj)   = 0. _d 0
+          num_atemp(bi,bj)    = 0. _d 0
+          num_aqh(bi,bj)      = 0. _d 0
+          num_uwind(bi,bj)    = 0. _d 0
+          num_vwind(bi,bj)    = 0. _d 0
+          num_obcsn(bi,bj)    = 0. _d 0
+          num_obcss(bi,bj)    = 0. _d 0
+          num_obcsw(bi,bj)    = 0. _d 0
+          num_obcse(bi,bj)    = 0. _d 0
+          num_curmtr(bi,bj)   = 0. _d 0
+          num_ageos(bi,bj)    = 0. _d 0
+          num_ice(bi,bj)      = 0. _d 0
+          num_diffkr(bi,bj)   = 0. _d 0
+          num_kapgm(bi,bj)    = 0. _d 0
+          num_theta_ini_fin(bi,bj) = 0. _d 0
+          num_salt_ini_fin(bi,bj)  = 0. _d 0
         enddo
       enddo
 
@@ -191,6 +240,8 @@ c--   Initialise the "global" parts of the cost function.
       _BEGIN_MASTER( mythid )
         objf_obcsvol = 0. _d 0
         objf_hmean   = 0. _d 0
+        num_obcsvol = 0. _d 0
+        num_hmean   = 0. _d 0
       _END_MASTER( mythid )
 
       _BARRIER

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.5 2005/02/24 00:03:51 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.6 2005/03/28 23:49:49 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -593,8 +593,10 @@ ce      irec  =   2
 ce(   due to Patrick's processing:
       irec  = 1
 ce)
-      call mdsreadfield( uwind_errfile, cost_iprec, cost_yftype, nnz, 
+      if ( uwind_errfile .NE. ' ' ) then
+         call mdsreadfield( uwind_errfile, cost_iprec, cost_yftype, nnz, 
      &                   wuwind, irec, mythid )
+      endif
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -651,8 +653,10 @@ ce(   due to Patrick's processing:
       irec  = 1
 ce)
 
-      call mdsreadfield( vwind_errfile, cost_iprec, cost_yftype, nnz, 
+      if ( vwind_errfile .NE. ' ' ) then
+         call mdsreadfield( vwind_errfile, cost_iprec, cost_yftype, nnz, 
      &                   wvwind, irec, mythid )
+      endif
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -711,8 +715,10 @@ ce      irec  =  2
 ce(   due to Patrick's processing:
       irec  = 1
 ce)
-      call mdsreadfield( atemp_errfile, cost_iprec, cost_yftype, nnz, 
+      if ( atemp_errfile .NE. ' ' ) then
+         call mdsreadfield( atemp_errfile, cost_iprec, cost_yftype, nnz, 
      &                   watemp, irec, mythid )
+      endif
 
       do bj = jtlo,jthi
         do bi = itlo,ithi
@@ -730,6 +736,8 @@ c--           Data are in units of W/m**2.
           enddo
         enddo
       enddo
+
+
 #endif
 
 #if (defined (ALLOW_SFLUX_COST_CONTRIBUTION))
@@ -771,8 +779,10 @@ ce      irec  =  2
 ce(   due to Patrick's processing:
       irec  = 1
 ce)
-      call mdsreadfield( aqh_errfile, cost_iprec, cost_yftype, nnz, 
+      if ( aqh_errfile .NE. ' ' ) then
+         call mdsreadfield( aqh_errfile, cost_iprec, cost_yftype, nnz, 
      &                   waqh, irec, mythid )
+      endif
 
       do bj = jtlo,jthi
         do bi = itlo,ithi

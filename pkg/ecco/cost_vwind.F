@@ -118,6 +118,8 @@ c--         Determine the weights to be used.
                   fctile = fctile
      &                 + wvwind(i,j,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
+                  if ( wvwind(i,j,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
+     &                 num_vwind(bi,bj) = num_vwind(bi,bj) + 1. _d 0
                 endif
               enddo
             enddo

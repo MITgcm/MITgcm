@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.6 2005/02/28 17:33:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.7 2005/03/28 23:49:49 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -42,8 +42,10 @@ c     == local variables ==
       integer itlo,ithi
       integer jtlo,jthi
       integer ifc
+      integer totnum
 
       _RL f_temp0, f_salt0,  f_temp, f_salt 
+      _RL f_uwind, f_vwind, f_atemp, f_aqh
       _RL f_tauu, f_tauv, f_hflux, f_sflux 
       _RL f_tauum, f_tauvm, f_hfluxm, f_sfluxm 
       _RL f_hfluxmm, f_sfluxmm 
@@ -57,6 +59,23 @@ c     == local variables ==
       _RL f_ini_fin
       _RL f_kapgm, f_diffkr
       _RL f_eddytau
+
+      _RL no_temp0, no_salt0,  no_temp, no_salt 
+      _RL no_uwind, no_vwind, no_atemp, no_aqh
+      _RL no_tauu, no_tauv, no_hflux, no_sflux 
+      _RL no_tauum, no_tauvm, no_hfluxm, no_sfluxm 
+      _RL no_hfluxmm, no_sfluxmm 
+      _RL no_sst, no_tmi, no_sss, no_atl, no_ctdt, no_ctds
+      _RL no_drifter, no_xbt, no_tdrift, no_sdrift, no_wdrift
+      _RL no_argot, no_argos, no_ssh ,no_ctdtclim, no_ctdsclim
+      _RL no_scatx, no_scaty, no_scatxm, no_scatym
+      _RL no_obcsn, no_obcss, no_obcsw, no_obcse
+      _RL no_ageos, no_curmtr
+      _RL no_ice
+      _RL no_ini_fin
+      _RL no_kapgm, no_diffkr
+      _RL no_eddytau
+      _RL no_hmean
 
       character*20 cfname
 #ifdef ECCO_VERBOSE
@@ -86,6 +105,10 @@ c     == end of interface ==
       f_sflux  = 0. _d 0
       f_sfluxm  = 0. _d 0
       f_sfluxmm  = 0. _d 0
+      f_uwind  = 0. _d 0
+      f_vwind  = 0. _d 0
+      f_atemp  = 0. _d 0
+      f_aqh  = 0. _d 0
       f_ssh = 0. _d 0
       f_sst = 0. _d 0
       f_tmi = 0. _d 0
@@ -93,8 +116,8 @@ c     == end of interface ==
       f_atl = 0. _d 0
       f_ctdt = 0. _d 0 
       f_ctds = 0. _d 0
-      f_ctdtclim = 0.D0 
-      f_ctdsclim = 0.D0
+      f_ctdtclim = 0. _d 0 
+      f_ctdsclim = 0. _d 0
       f_xbt = 0. _d 0
       f_argot = 0. _d 0
       f_argos = 0. _d 0
@@ -118,113 +141,59 @@ c     == end of interface ==
       f_diffkr  = 0. _d 0
       f_eddytau = 0. _d 0
 
+      no_temp = 0. _d 0
+      no_salt = 0. _d 0
+      no_temp0 = 0. _d 0
+      no_salt0 = 0. _d 0 
+      no_tauu = 0. _d 0 
+      no_tauum = 0. _d 0 
+      no_tauv = 0. _d 0 
+      no_tauvm = 0. _d 0 
+      no_hflux = 0. _d 0 
+      no_hfluxm = 0. _d 0 
+      no_hfluxmm = 0. _d 0 
+      no_sflux  = 0. _d 0
+      no_sfluxm  = 0. _d 0
+      no_sfluxmm  = 0. _d 0
+      no_uwind  = 0. _d 0
+      no_vwind  = 0. _d 0
+      no_atemp  = 0. _d 0
+      no_aqh  = 0. _d 0
+      no_ssh = 0. _d 0
+      no_sst = 0. _d 0
+      no_tmi = 0. _d 0
+      no_sss = 0. _d 0
+      no_atl = 0. _d 0
+      no_ctdt = 0. _d 0 
+      no_ctds = 0. _d 0
+      no_ctdtclim = 0. _d 0 
+      no_ctdsclim = 0. _d 0
+      no_xbt = 0. _d 0
+      no_argot = 0. _d 0
+      no_argos = 0. _d 0
+      no_drifter = 0. _d 0 
+      no_sdrift = 0. _d 0
+      no_tdrift = 0. _d 0
+      no_wdrift = 0. _d 0
+      no_scatx = 0. _d 0
+      no_scaty = 0. _d 0
+      no_scatxm = 0. _d 0
+      no_scatym = 0. _d 0
+      no_obcsn   = 0. _d 0
+      no_obcss   = 0. _d 0
+      no_obcsw   = 0. _d 0
+      no_obcse   = 0. _d 0
+      no_curmtr  = 0. _d 0
+      no_ageos   = 0. _d 0
+      no_ice     = 0. _d 0
+      no_ini_fin = 0. _d 0
+      no_kapgm   = 0. _d 0
+      no_diffkr  = 0. _d 0
+      no_eddytau = 0. _d 0
+
 c--   Sum up all contributions.
       do bj = jtlo,jthi
         do bi = itlo,ithi
-
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_temp(bi,bj)    =',objf_temp(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_salt(bi,bj)    =',objf_salt(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_temp0(bi,bj)   =',objf_temp0(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_salt0(bi,bj)   =',objf_salt0(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_sst(bi,bj)     =',objf_sst(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_tmi(bi,bj)     =',objf_tmi(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_sss(bi,bj)     =',objf_sss(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_h(bi,bj)       =',objf_h(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_hmean          =',objf_hmean
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_tauu(bi,bj)    =',objf_tauu(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_tauum(bi,bj)   =',objf_tauum(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_tauv(bi,bj)    =',objf_tauv(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_tauvm(bi,bj)   =',objf_tauvm(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_hflux(bi,bj)   =',objf_hflux(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_hflux(bi,bj)   =',objf_hfluxm(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_hflux(bi,bj)   =',objf_hfluxmm(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_sflux(bi,bj)   =',objf_sflux(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_sflux(bi,bj)   =',objf_sfluxm(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_sflux(bi,bj)   =',objf_sfluxmm(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_atl(bi,bj)     =',objf_atl(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_ctdt(bi,bj)    =',objf_ctdt(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_ctds(bi,bj)    =',objf_ctds(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_ctdtclim(bi,bj)=',objf_ctdtclim(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_ctdsclim(bi,bj)=',objf_ctdsclim(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_xbt(bi,bj)     =',objf_xbt(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_argot(bi,bj)   =',objf_argot(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_argos(bi,bj)   =',objf_argos(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_drift(bi,bj)   =',objf_drift(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_tdrift(bi,bj)  =',objf_tdrift(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_sdrift(bi,bj)  =',objf_sdrift(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_wdrift(bi,bj)  =',objf_wdrift(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_scatx(bi,bj)   =',objf_scatx(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_scaty(bi,bj)   =',objf_scaty(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_scatxm(bi,bj)  =',objf_scatxm(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_scatym(bi,bj)  =',objf_scatym(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_uwind(bi,bj)   =',objf_uwind(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_vwind(bi,bj)   =',objf_vwind(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_atemp(bi,bj)   =',objf_atemp(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_aqh(bi,bj)     =',objf_aqh(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_obcsn(bi,bj)   =',objf_obcsn(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_obcss(bi,bj)   =',objf_obcss(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_obcsw(bi,bj)   =',objf_obcsw(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_obcse(bi,bj)   =',objf_obcse(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_ageos(bi,bj)   =',objf_ageos(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_curmtr(bi,bj)  =',objf_curmtr(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_obcsvol        =',objf_obcsvol
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_ice(bi,bj)     =',objf_ice(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_kapgm(bi,bj)   =',objf_kapgm(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_diffkr(bi,bj)  =',objf_diffkr(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_ini_fin(bi,bj) =',
-     &         objf_theta_ini_fin(bi,bj) + objf_salt_ini_fin(bi,bj)
-          write(standardmessageunit,'(A,D22.15)')
-     &          ' --> objf_eddytau(bi,bj) =', objf_eddytau(bi,bj)
  
           fc = fc
      &            + mult_temp    * objf_temp(bi,bj)
@@ -290,6 +259,10 @@ c--   Sum up all contributions.
           f_sflux= f_sflux + objf_sflux(bi,bj)  
           f_sfluxm = f_sfluxm + objf_sfluxm(bi,bj)  
           f_sfluxmm = f_sfluxmm + objf_sfluxmm(bi,bj)  
+          f_uwind = f_uwind + objf_uwind(bi,bj)
+          f_vwind = f_vwind + objf_vwind(bi,bj)
+          f_atemp = f_atemp + objf_atemp(bi,bj)
+          f_aqh = f_aqh + objf_aqh(bi,bj)
           f_ssh  = f_ssh + objf_h(bi,bj) 
           f_sst  = f_sst + objf_sst(bi,bj) 
           f_tmi  = f_tmi + objf_tmi(bi,bj) 
@@ -319,6 +292,48 @@ c--   Sum up all contributions.
      &         objf_theta_ini_fin(bi,bj) + objf_salt_ini_fin(bi,bj)
           f_eddytau = f_eddytau + objf_eddytau(bi,bj) 
 
+          no_temp = no_temp + num_temp(bi,bj)
+          no_salt = no_salt + num_salt(bi,bj)
+          no_temp0 = no_temp0 + num_temp0(bi,bj)
+          no_salt0 = no_salt0 + num_salt0(bi,bj) 
+          no_tauu = no_tauu + num_tauu(bi,bj)
+          no_tauum  = no_tauum + num_tauum(bi,bj)
+          no_tauv = no_tauv + num_tauv(bi,bj)
+          no_tauvm  = no_tauvm + num_tauvm(bi,bj)
+          no_hflux= no_hflux + num_hflux(bi,bj)   
+          no_hfluxm = no_hfluxm + num_hfluxm(bi,bj)   
+          no_hfluxmm = no_hfluxmm + num_hfluxmm(bi,bj)   
+          no_sflux= no_sflux + num_sflux(bi,bj)  
+          no_sfluxm = no_sfluxm + num_sfluxm(bi,bj)  
+          no_sfluxmm = no_sfluxmm + num_sfluxmm(bi,bj)  
+          no_ssh  = no_ssh + num_h(bi,bj) 
+          no_sst  = no_sst + num_sst(bi,bj) 
+          no_tmi  = no_tmi + num_tmi(bi,bj) 
+          no_sss  = no_sss + num_sss(bi,bj)
+          no_ctdt = no_ctdt + num_ctdt(bi,bj)
+          no_ctds = no_ctds + num_ctds(bi,bj) 
+          no_ctdtclim = no_ctdtclim + num_ctdtclim(bi,bj)
+          no_ctdsclim = no_ctdsclim + num_ctdsclim(bi,bj) 
+          no_xbt  = no_xbt + num_xbt(bi,bj)
+          no_argot  = no_argot + num_argot(bi,bj)
+          no_argos  = no_argos + num_argos(bi,bj)
+          no_drifter = no_drifter + num_drift(bi,bj)
+          no_sdrift = no_sdrift + num_sdrift(bi,bj)
+          no_tdrift = no_tdrift + num_tdrift(bi,bj)
+          no_wdrift = no_wdrift + num_wdrift(bi,bj)
+          no_scatx = no_scatx + num_scatx(bi,bj)
+          no_scaty = no_scaty + num_scaty(bi,bj)
+          no_scatxm = no_scatxm + num_scatxm(bi,bj)
+          no_scatym = no_scatym + num_scatym(bi,bj)
+          no_curmtr = no_curmtr + num_curmtr(bi,bj)
+          no_ageos = no_ageos + num_ageos(bi,bj)
+          no_ice = no_ice + num_ice(bi,bj)
+          no_kapgm = no_kapgm + num_kapgm(bi,bj)
+          no_diffkr = no_diffkr + num_diffkr(bi,bj)
+          no_ini_fin = no_ini_fin +
+     &         num_theta_ini_fin(bi,bj) + num_salt_ini_fin(bi,bj)
+          no_eddytau = no_eddytau + num_eddytau(bi,bj) 
+
         enddo
       enddo
 
@@ -344,6 +359,10 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_sfluxm , myThid )
       _GLOBAL_SUM_R8( f_sfluxmm , myThid )
        f_sfluxmm = f_sfluxmm*f_sfluxmm/float(npx*npy)
+      _GLOBAL_SUM_R8( f_uwind , myThid )
+      _GLOBAL_SUM_R8( f_vwind , myThid )
+      _GLOBAL_SUM_R8( f_atemp , myThid )
+      _GLOBAL_SUM_R8( f_aqh , myThid )
       _GLOBAL_SUM_R8( f_ssh , myThid )
       _GLOBAL_SUM_R8( f_sst , myThid )
       _GLOBAL_SUM_R8( f_tmi , myThid )
@@ -376,6 +395,161 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_ini_fin , myThid )
       _GLOBAL_SUM_R8( f_eddytau , myThid )
 
+      _GLOBAL_SUM_R8( no_temp , myThid )
+      _GLOBAL_SUM_R8( no_salt , myThid )
+      _GLOBAL_SUM_R8( no_temp0, myThid )
+      _GLOBAL_SUM_R8( no_salt0, myThid )
+      _GLOBAL_SUM_R8( no_tauu , myThid )
+      _GLOBAL_SUM_R8( no_tauum , myThid )
+      _GLOBAL_SUM_R8( no_tauv , myThid )
+      _GLOBAL_SUM_R8( no_tauvm , myThid )
+      _GLOBAL_SUM_R8( no_hflux , myThid )
+      _GLOBAL_SUM_R8( no_hfluxm , myThid )
+      _GLOBAL_SUM_R8( no_hfluxmm , myThid )
+      _GLOBAL_SUM_R8( no_sflux , myThid )
+      _GLOBAL_SUM_R8( no_sfluxm , myThid )
+      _GLOBAL_SUM_R8( no_sfluxmm , myThid )
+      _GLOBAL_SUM_R8( no_uwind , myThid )
+      _GLOBAL_SUM_R8( no_vwind , myThid )
+      _GLOBAL_SUM_R8( no_atemp , myThid )
+      _GLOBAL_SUM_R8( no_aqh , myThid )
+      _GLOBAL_SUM_R8( no_ssh , myThid )
+      _GLOBAL_SUM_R8( no_sst , myThid )
+      _GLOBAL_SUM_R8( no_tmi , myThid )
+      _GLOBAL_SUM_R8( no_sss , myThid )
+      _GLOBAL_SUM_R8( no_atl , myThid )
+      _GLOBAL_SUM_R8( no_ctdt , myThid )
+      _GLOBAL_SUM_R8( no_ctds , myThid ) 
+      _GLOBAL_SUM_R8( no_ctdtclim , myThid  )
+      _GLOBAL_SUM_R8( no_ctdsclim , myThid  ) 
+      _GLOBAL_SUM_R8( no_xbt , myThid )
+      _GLOBAL_SUM_R8( no_argot , myThid )
+      _GLOBAL_SUM_R8( no_argos , myThid )
+      _GLOBAL_SUM_R8( no_drifter , myThid ) 
+      _GLOBAL_SUM_R8( no_sdrift , myThid )
+      _GLOBAL_SUM_R8( no_tdrift , myThid )    
+      _GLOBAL_SUM_R8( no_wdrift , myThid )    
+      _GLOBAL_SUM_R8( no_scatx , myThid )    
+      _GLOBAL_SUM_R8( no_scaty , myThid )    
+      _GLOBAL_SUM_R8( no_scatxm , myThid )    
+      _GLOBAL_SUM_R8( no_scatym , myThid )    
+      _GLOBAL_SUM_R8( no_obcsn , myThid )
+      _GLOBAL_SUM_R8( no_obcss , myThid )
+      _GLOBAL_SUM_R8( no_obcsw , myThid )
+      _GLOBAL_SUM_R8( no_obcse , myThid )
+      _GLOBAL_SUM_R8( no_curmtr , myThid )
+      _GLOBAL_SUM_R8( no_ageos , myThid )
+      _GLOBAL_SUM_R8( no_kapgm , myThid )
+      _GLOBAL_SUM_R8( no_diffkr , myThid )
+      _GLOBAL_SUM_R8( no_ice , myThid )
+      _GLOBAL_SUM_R8( no_ini_fin , myThid )
+      _GLOBAL_SUM_R8( no_eddytau , myThid )
+
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_temp    =',f_temp
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_salt    =',f_salt
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_temp0   =',f_temp0
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_salt0   =',f_salt0
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_sst     =',f_sst
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_tmi     =',f_tmi
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_sss     =',f_sss
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_ssh       =',f_ssh
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_tauu    =',f_tauu
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_tauum   =',f_tauum
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_tauv    =',f_tauv
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_tauvm   =',f_tauvm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_hflux   =',f_hflux
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_hflux   =',f_hfluxm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_hflux   =',f_hfluxmm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_sflux   =',f_sflux
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_sflux   =',f_sfluxm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_sflux   =',f_sfluxmm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_uwind     =',f_uwind
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_vwind     =',f_vwind
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_atemp     =',f_atemp
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_aqh     =',f_aqh
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_atl     =',f_atl
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_ctdt    =',f_ctdt
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_ctds    =',f_ctds
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_ctdtclim=',f_ctdtclim
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_ctdsclim=',f_ctdsclim
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_xbt     =',f_xbt
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_argot   =',f_argot
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_argos   =',f_argos
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_drifter   =',f_drifter
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_tdrift  =',f_tdrift
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_sdrift  =',f_sdrift
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_wdrift  =',f_wdrift
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_scatx   =',f_scatx
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_scaty   =',f_scaty
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_scatxm  =',f_scatxm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_scatym  =',f_scatym
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_uwind   =',f_uwind
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_vwind   =',f_vwind
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_atemp   =',f_atemp
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_aqh     =',f_aqh
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_obcsn   =',f_obcsn
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_obcss   =',f_obcss
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_obcsw   =',f_obcsw
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_obcse   =',f_obcse
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_ageos   =',f_ageos
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_curmtr  =',f_curmtr
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_ice     =',f_ice
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_kapgm   =',f_kapgm
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_diffkr  =',f_diffkr
+      write(standardmessageunit,'(A,D22.15)')
+     &     ' --> f_eddytau =', f_eddytau
+
 c--   Each process has calculated the global part for itself.
       _BEGIN_MASTER( mythid )
 
@@ -386,57 +560,61 @@ c--   Each process has calculated the global part for itself.
      &           ' --> objf_hmean           =',objf_hmean
         write(standardmessageunit,'(A,D22.15)')
      &           ' --> fc               =', fc
+        no_hmean = num_hmean
     
         write(cfname,'(A,i4.4)') 'costfunction',optimcycle
         open(unit=ifc,file=cfname)
       
         write(ifc,*) 'fc =', fc
-        write(ifc,*) 'f_temp =', f_temp 
-        write(ifc,*) 'f_salt =', f_salt 
-        write(ifc,*) 'f_temp0 =', f_temp0 
-        write(ifc,*) 'f_salt0 =', f_salt0
-        write(ifc,*) 'f_tauu =', f_tauu 
-        write(ifc,*) 'f_tauum =', f_tauum 
-        write(ifc,*) 'f_tauv =', f_tauv 
-        write(ifc,*) 'f_tauvm =', f_tauvm 
-        write(ifc,*) 'f_hflux =', f_hflux 
-        write(ifc,*) 'f_hfluxm =', f_hfluxm 
-        write(ifc,*) 'f_hfluxmm =', f_hfluxmm 
-        write(ifc,*) 'f_sflux =', f_sflux 
-        write(ifc,*) 'f_sfluxm =', f_sfluxm 
-        write(ifc,*) 'f_sfluxmm =', f_sfluxmm 
-        write(ifc,*) 'f_ssh =', f_ssh
-        write(ifc,*) 'f_sst =', f_sst
-        write(ifc,*) 'f_tmi =', f_tmi
-        write(ifc,*) 'f_sss =', f_sss
-        write(ifc,*) 'f_atl =', f_atl
-        write(ifc,*) 'f_ctdt =', f_ctdt 
-        write(ifc,*) 'f_ctds =', f_ctds
-        write(ifc,*) 'f_ctdtclim =', f_ctdtclim
-        write(ifc,*) 'f_ctdsclim =', f_ctdsclim
-        write(ifc,*) 'f_xbt =', f_xbt
-        write(ifc,*) 'f_argot =', f_argot
-        write(ifc,*) 'f_argos =', f_argos
-        write(ifc,*) 'objf_hmean =', objf_hmean 
-        write(ifc,*) 'f_drifter =', f_drifter 
-        write(ifc,*) 'f_sdrift =', f_sdrift
-        write(ifc,*) 'f_tdrift =', f_tdrift
-        write(ifc,*) 'f_wdrift =', f_wdrift
-        write(ifc,*) 'f_scatx =', f_scatx
-        write(ifc,*) 'f_scaty =', f_scaty
-        write(ifc,*) 'f_scatxm =', f_scatxm
-        write(ifc,*) 'f_scatym =', f_scatym
-        write(ifc,*) 'f_obcsn =', f_obcsn
-        write(ifc,*) 'f_obcss =', f_obcss
-        write(ifc,*) 'f_obcsw =', f_obcsw
-        write(ifc,*) 'f_obcse =', f_obcse
-        write(ifc,*) 'f_obcsvol=', objf_obcsvol
-        write(ifc,*) 'f_ageos =', f_ageos
-        write(ifc,*) 'f_ice   =', f_ice
-        write(ifc,*) 'f_kapgm =', f_kapgm
-        write(ifc,*) 'f_diffkr=', f_diffkr
-        write(ifc,*) 'f_ini_fin =', f_ini_fin
-        write(ifc,*) 'f_eddytau =', f_eddytau
+        write(ifc,*) 'f_temp =', f_temp, no_temp
+        write(ifc,*) 'f_salt =', f_salt, no_salt
+        write(ifc,*) 'f_temp0 =', f_temp0, no_temp0
+        write(ifc,*) 'f_salt0 =', f_salt0, no_salt0
+        write(ifc,*) 'f_tauu =', f_tauu, no_tauu
+        write(ifc,*) 'f_tauum =', f_tauum, no_tauum
+        write(ifc,*) 'f_tauv =', f_tauv, no_tauv
+        write(ifc,*) 'f_tauvm =', f_tauvm, no_tauvm
+        write(ifc,*) 'f_hflux =', f_hflux, no_hflux
+        write(ifc,*) 'f_hfluxm =', f_hfluxm, no_hfluxm
+        write(ifc,*) 'f_hfluxmm =', f_hfluxmm, no_hfluxmm
+        write(ifc,*) 'f_sflux =', f_sflux, no_sflux
+        write(ifc,*) 'f_sfluxm =', f_sfluxm, no_sfluxm
+        write(ifc,*) 'f_sfluxmm =', f_sfluxmm, no_sfluxmm
+        write(ifc,*) 'f_uwind =', f_uwind, no_uwind
+        write(ifc,*) 'f_vwind =', f_vwind, no_vwind
+        write(ifc,*) 'f_atemp =', f_atemp, no_atemp
+        write(ifc,*) 'f_aqh =', f_aqh, no_aqh
+        write(ifc,*) 'f_ssh =', f_ssh, no_ssh
+        write(ifc,*) 'f_sst =', f_sst, no_sst
+        write(ifc,*) 'f_tmi =', f_tmi, no_tmi
+        write(ifc,*) 'f_sss =', f_sss, no_sss
+        write(ifc,*) 'f_atl =', f_atl, no_atl
+        write(ifc,*) 'f_ctdt =', f_ctdt, no_ctdt
+        write(ifc,*) 'f_ctds =', f_ctds, no_ctds
+        write(ifc,*) 'f_ctdtclim =', f_ctdtclim, no_ctdtclim
+        write(ifc,*) 'f_ctdsclim =', f_ctdsclim, no_ctdsclim
+        write(ifc,*) 'f_xbt =', f_xbt, no_xbt
+        write(ifc,*) 'f_argot =', f_argot, no_argot
+        write(ifc,*) 'f_argos =', f_argos, no_argos
+        write(ifc,*) 'objf_hmean =', objf_hmean, no_hmean
+        write(ifc,*) 'f_drifter =', f_drifter, no_drifter
+        write(ifc,*) 'f_sdrift =', f_sdrift, no_sdrift
+        write(ifc,*) 'f_tdrift =', f_tdrift, no_tdrift
+        write(ifc,*) 'f_wdrift =', f_wdrift, no_wdrift
+        write(ifc,*) 'f_scatx =', f_scatx, no_scatx
+        write(ifc,*) 'f_scaty =', f_scaty, no_scaty
+        write(ifc,*) 'f_scatxm =', f_scatxm, no_scatxm
+        write(ifc,*) 'f_scatym =', f_scatym, no_scatym
+        write(ifc,*) 'f_obcsn =', f_obcsn, no_obcsn
+        write(ifc,*) 'f_obcss =', f_obcss, no_obcss
+        write(ifc,*) 'f_obcsw =', f_obcsw, no_obcsw
+        write(ifc,*) 'f_obcse =', f_obcse, no_obcse
+        write(ifc,*) 'f_ageos =', f_ageos, no_ageos
+        write(ifc,*) 'f_ice   =', f_ice, no_ice
+        write(ifc,*) 'f_kapgm =', f_kapgm, no_kapgm
+        write(ifc,*) 'f_diffkr=', f_diffkr, no_diffkr
+        write(ifc,*) 'f_ini_fin =', f_ini_fin, no_ini_fin
+        write(ifc,*) 'f_eddytau =', f_eddytau, no_eddytau
 
         close(ifc)
         

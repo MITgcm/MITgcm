@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_merstress.F,v 1.3 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_merstress.F,v 1.4 2005/03/28 23:49:49 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -160,6 +160,8 @@ c--       Determine the weights to be used.
                 fctilem = fctilem
      &                    + cosphi(i,j,bi,bj)
      &                    *tmpx*tmpx
+                if ( cosphi(i,j,bi,bj) .ne. 0. )
+     &               num_tauvm(bi,bj) = num_tauvm(bi,bj) + 1. _d 0
               endif
             enddo
           enddo
@@ -211,6 +213,8 @@ c--         Determine the weights to be used.
                   fctile = fctile
      &                 + wtauv(i,j,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
+                  if ( wtauv(i,j,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
+     &                 num_tauv(bi,bj) = num_tauv(bi,bj) + 1. _d 0
                 endif
               enddo
             enddo

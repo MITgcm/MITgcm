@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sss.F,v 1.4 2005/03/28 19:40:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_sss.F,v 1.5 2005/03/28 23:49:49 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -123,7 +123,7 @@ c--         Loop over the model layers
 c--           Determine the mask on weights
               do j = jmin,jmax
                 do i = imin,imax
-                  cmask(i,j) = 1. _d 0
+                  cmask(i,j) = cosphi(i,j,bi,bj)
                   if (sssdat(i,j,bi,bj) .lt. spval .or.
      &		      sssdat(i,j,bi,bj) .gt. spmax .or.
      &                sssdat(i,j,bi,bj) .eq. 0.) then
@@ -145,10 +145,11 @@ cph                  endif
 c--         Compute cost rel. to monthly SSS field.
                 if (_hFacC(i,j,k,bi,bj) .ne. 0.) then
                    fctile_sss = fctile_sss +
-     &                  wsss(i,j,bi,bj)*cosphi(i,j,bi,bj)*cmask(i,j)*
+     &                  wsss(i,j,bi,bj)*cmask(i,j)*
      &                  ( (sbar(i,j,k,bi,bj)-sssdat(i,j,bi,bj))*
-     &                    (sbar(i,j,k,bi,bj)-sssdat(i,j,bi,bj))*
-     &                           sssmask(i,j,bi,bj) )
+     &                    (sbar(i,j,k,bi,bj)-sssdat(i,j,bi,bj)) )
+                   if ( wsss(i,j,bi,bj)*cmask(i,j) .ne. 0. )
+     &                  num_sss(bi,bj)  = num_sss(bi,bj)  + 1. _d 0
                 endif
               enddo
             enddo

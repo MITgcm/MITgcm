@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_theta.F,v 1.4 2005/03/28 19:40:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_argo_theta.F,v 1.5 2005/03/28 23:49:49 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -153,10 +153,6 @@ c--         Loop over the model layers
             fctile_argot = 0. _d 0
 
             do k = 1,nr
-
-c--           Determine the weights to be used.
-              do j = jmin,jmax
-                do i = imin,imax
 cph(
 cph               print *, 'WARNING: SPECIFIC SETUP FOR ECCO'
 cph               below statement could be replaced by following
@@ -164,21 +160,24 @@ cph               to make it independnet of Nr:
 cph
 cph               if ( rC(K) .GT. -1000. ) then
 cph)
-                  if( (argotobs(i,j,k,bi,bj) .ne. 0.).and.
+c--           Determine the weights to be used.
+              do j = jmin,jmax
+               do i = imin,imax
+                if( (argotobs(i,j,k,bi,bj) .ne. 0.).and.
      &             (argotobs(i,j,k,bi,bj) .gt. spval).and. 
      &             (argotobs(i,j,k,bi,bj) .lt. spmax).and.
      &             (_hFacC(i,j,13,bi,bj) .ne. 0.).and. 
      &             (_hFacC(i,j,k,bi,bj) .ne. 0.) )then
-                  www(i,j)    = cosphi(i,j,bi,bj)
-                  tmpobs(i,j) = SW_PTMP(rl_35,
-     $                 argotobs(i,j,k,bi,bj),ztop*rc(k),rl_0) 
-
-                  fctile_argot = fctile_argot + 
-     &                 wtheta2(i,j,k,bi,bj)*www(i,j)*
-     &                 (tbar(i,j,k,bi,bj)-tmpobs(i,j))*
-     &                 (tbar(i,j,k,bi,bj)-tmpobs(i,j))
+                 tmpobs(i,j) = SW_PTMP(rl_35,
+     $             argotobs(i,j,k,bi,bj),ztop*rc(k),rl_0) 
+                 fctile_argot = fctile_argot + 
+     &             wtheta2(i,j,k,bi,bj)*cosphi(i,j,bi,bj)*
+     &             (tbar(i,j,k,bi,bj)-tmpobs(i,j))*
+     &             (tbar(i,j,k,bi,bj)-tmpobs(i,j))
+                 if ( wtheta2(i,j,k,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
+     &             num_argot(bi,bj) = num_argot(bi,bj) + 1. _d 0
 		endif
-                enddo
+               enddo
               enddo
 c--         End of loop over layers.
             enddo

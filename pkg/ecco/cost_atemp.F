@@ -118,6 +118,8 @@ c--         Determine the weights to be used.
                   fctile = fctile
      &                 + watemp(i,j,bi,bj)*cosphi(i,j,bi,bj)
      &                 *tmpx*tmpx
+                  if ( watemp(i,j,bi,bj)*cosphi(i,j,bi,bj) .ne. 0. )
+     &                 num_atemp(bi,bj) = num_atemp(bi,bj) + 1
                 endif
               enddo
             enddo

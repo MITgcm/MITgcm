@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdt.F,v 1.4 2005/03/28 19:40:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdt.F,v 1.5 2005/03/28 23:49:49 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -184,7 +184,8 @@ c--                  The array ctdtobs contains CTD temperature.
      &                             (wtmp(i,j)*www(i,j))*
      &                             (tmpbar(i,j)-tmpobs(i,j))*
      &                             (tmpbar(i,j)-tmpobs(i,j))
-
+                     if ( wtmp(i,j)*www(i,j) .ne. 0. )
+     &                    num_ctdt(bi,bj) = num_ctdt(bi,bj) + 1. _d 0
                   endif
                 enddo
               enddo

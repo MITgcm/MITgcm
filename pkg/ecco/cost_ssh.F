@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/cost_ssh.F,v 1.3 2005/03/28 23:49:49 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -246,6 +246,8 @@ c--             The array psobs contains SSH anomalies.
                 junk       = ((psbar(i,j,bi,bj) - psmean(i,j,bi,bj)) -
      &                         tpobs(i,j,bi,bj))*tpmask(i,j,bi,bj)
                 tpcost   = tpcost + junk*junk*wwwtp(i,j)
+                if ( wwwtp(i,j) .ne. 0. )
+     &               num_h(bi,bj) = num_h(bi,bj) + 1. _d 0
               enddo
             enddo
 #endif
@@ -258,6 +260,8 @@ c--             The array ersobs contains SSH anomalies.
                 junk        = ((psbar(i,j,bi,bj) - psmean(i,j,bi,bj)) -
      &                         ersobs(i,j,bi,bj))*ersmask(i,j,bi,bj)
                 erscost   = erscost + junk*junk*wwwers(i,j)
+                if ( wwwers(i,j) .ne. 0. )
+     &               num_h(bi,bj) = num_h(bi,bj) + 1. _d 0
               enddo
 
             enddo
