@@ -1,0 +1,2108 @@
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) //                      MITgcm UV
+(PID.TID 0000.0001) //                      =========
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // execution environment starting up...
+(PID.TID 0000.0001) // Run starting Wed Apr  1 14:19:48 1998
+(PID.TID 0000.0001) // on melville.lcs.mit.edu
+(PID.TID 0000.0001) // account cnh
+(PID.TID 0000.0001) // MITgcm UV Release: $Name:  $
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Execution Environment parameter file "eedata"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># Example "eedata" file
+(PID.TID 0000.0001) ># Lines beginning "#" are comments
+(PID.TID 0000.0001) ># nTx - No. threads per process in X
+(PID.TID 0000.0001) ># nTy - No. threads per process in Y
+(PID.TID 0000.0001) > &EEPARMS
+(PID.TID 0000.0001) > nTx=1,nTy=1
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) ># Note: Some systems use & as the
+(PID.TID 0000.0001) ># namelist terminator. Other systems
+(PID.TID 0000.0001) ># use a / character (as shown here).
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Computational Grid Specification ( see files "SIZE.h" )
+(PID.TID 0000.0001) //                                  ( and "eedata"       )
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001)      nPx =    1 ; /* No. processes in X */
+(PID.TID 0000.0001)      nPy =    1 ; /* No. processes in Y */
+(PID.TID 0000.0001)      nSx =    1 ; /* No. tiles in X per process */
+(PID.TID 0000.0001)      nSy =    1 ; /* No. tiles in Y per process */
+(PID.TID 0000.0001)      sNx =   90 ; /* Tile size in X */
+(PID.TID 0000.0001)      sNy =   40 ; /* Tile size in Y */
+(PID.TID 0000.0001)      OLx =    3 ; /* Tile overlap distance in X */
+(PID.TID 0000.0001)      OLy =    3 ; /* Tile overlap distance in Y */
+(PID.TID 0000.0001)      nTx =    1 ; /* No. threads in X per process */
+(PID.TID 0000.0001)      nTy =    1 ; /* No. threads in Y per process */
+(PID.TID 0000.0001)       Nr =   20 ; /* No. levels in the vertical   */
+(PID.TID 0000.0001)       nX =   90 ; /* Total domain size in X ( = nPx*nSx*sNx ) */
+(PID.TID 0000.0001)       nY =   40 ; /* Total domain size in Y ( = nPy*nSy*sNy ) */
+(PID.TID 0000.0001)   nTiles =    1 ; /* Total no. tiles per process ( = nSx*nSy ) */
+(PID.TID 0000.0001)   nProcs =    1 ; /* Total no. processes ( = nPx*nPy ) */
+(PID.TID 0000.0001) nThreads =    1 ; /* Total no. threads per process ( = nTx*nTy ) */
+(PID.TID 0000.0001) usingMPI =    F ; /* Flag used to control whether MPI is in use */
+(PID.TID 0000.0001)                   /*  note: To execute a program with MPI calls */
+(PID.TID 0000.0001)                   /*  it must be launched appropriately e.g     */
+(PID.TID 0000.0001)                   /*  "mpirun -np 64 ......"                    */
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // Mapping of tiles to threads
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // -o- Thread   1, tiles (   1:   1,   1:   1)
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // Tile <-> Tile connectvity table
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // Tile number: 000001 (process no. = 000001)
+(PID.TID 0000.0001) //        WEST: Tile = 000001, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000001, bj = 000001
+(PID.TID 0000.0001) //        EAST: Tile = 000001, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000001, bj = 000001
+(PID.TID 0000.0001) //       SOUTH: Tile = 000001, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000001, bj = 000001
+(PID.TID 0000.0001) //       NORTH: Tile = 000001, Process = 000001, Comm = put
+(PID.TID 0000.0001) //                bi = 000001, bj = 000001
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Model parameter file "data"
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) ># ====================
+(PID.TID 0000.0001) ># | Model parameters |
+(PID.TID 0000.0001) ># ====================
+(PID.TID 0000.0001) >#
+(PID.TID 0000.0001) ># Continuous equation parameters
+(PID.TID 0000.0001) > &PARM01
+(PID.TID 0000.0001) > tRef= 16.0 , 15.2 , 14.5 , 13.9 , 13.3 ,
+(PID.TID 0000.0001) >       12.4 , 11.3 ,  9.9 ,  8.4 ,  6.7 ,
+(PID.TID 0000.0001) >        5.2 ,  3.8 ,  2.9 ,  2.3 ,  1.8 ,
+(PID.TID 0000.0001) >        1.5 ,  1.1 ,  0.8 ,  0.66,  0.63,
+(PID.TID 0000.0001) > sRef= 34.65, 34.75, 34.82, 34.87, 34.90,
+(PID.TID 0000.0001) >       34.90, 34.86, 34.78, 34.69, 34.60,
+(PID.TID 0000.0001) >       34.58, 34.62, 34.68, 34.72, 34.73,
+(PID.TID 0000.0001) >       34.74, 34.73, 34.73, 34.72, 34.72,
+(PID.TID 0000.0001) > viscAz=1.E-3,
+(PID.TID 0000.0001) > viscAh=5.E5,
+(PID.TID 0000.0001) > no_slip_sides=.FALSE.,
+(PID.TID 0000.0001) > no_slip_bottom=.TRUE.,
+(PID.TID 0000.0001) > diffKhT=1.E3,
+(PID.TID 0000.0001) > diffKzT=3.E-5,
+(PID.TID 0000.0001) > diffKhS=1.E3,
+(PID.TID 0000.0001) > diffKzS=3.E-5,
+(PID.TID 0000.0001) > beta=1.E-11,
+(PID.TID 0000.0001) > f0=1.e-4,
+(PID.TID 0000.0001) > tAlpha=2.E-4,
+(PID.TID 0000.0001) > sBeta =7.4E-4,
+(PID.TID 0000.0001) > gravity=9.81,
+(PID.TID 0000.0001) > rigidLid=.FALSE.,
+(PID.TID 0000.0001) > implicitFreeSurface=.TRUE.,
+(PID.TID 0000.0001) > eosType='LINEAR',
+(PID.TID 0000.0001) > GMkBackground=0000.d0,
+(PID.TID 0000.0001) > readBinaryPrec=32,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># Elliptic solver parameters
+(PID.TID 0000.0001) > &PARM02
+(PID.TID 0000.0001) > cg2dMaxIters=1000,
+(PID.TID 0000.0001) > cg2dTargetResidual=1.E-13,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># Time stepping parameters
+(PID.TID 0000.0001) > &PARM03
+(PID.TID 0000.0001) > startTime=0,
+(PID.TID 0000.0001) >#endTime=3110400000,
+(PID.TID 0000.0001) > endTime=2808000.,
+(PID.TID 0000.0001) > deltaTmom=2400.0,
+(PID.TID 0000.0001) > tauCD=321428.,
+(PID.TID 0000.0001) > deltaTtracer=108000.0,
+(PID.TID 0000.0001) > deltaTClock =108000.0,
+(PID.TID 0000.0001) > abEps=0.1,
+(PID.TID 0000.0001) > pChkptFreq=0.0,
+(PID.TID 0000.0001) > chkptFreq=0.0,
+(PID.TID 0000.0001) > dumpFreq=2592000.0,
+(PID.TID 0000.0001) > tauThetaClimRelax=2592000.0,
+(PID.TID 0000.0001) > tauSaltClimRelax=2592000.0,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># Gridding parameters
+(PID.TID 0000.0001) > &PARM04
+(PID.TID 0000.0001) > usingCartesianGrid=.FALSE.,
+(PID.TID 0000.0001) > usingSphericalPolarGrid=.TRUE.,
+(PID.TID 0000.0001) > delZ= 5.000000e+01, 5.000000e+01, 5.500000e+01, 6.000000e+01,
+(PID.TID 0000.0001) >       6.500000e+01, 7.000000e+01, 8.000000e+01, 9.500000e+01,
+(PID.TID 0000.0001) >       1.200000e+02, 1.550000e+02, 2.000000e+02, 2.600000e+02,
+(PID.TID 0000.0001) >       3.200000e+02, 4.000000e+02, 4.800000e+02, 5.700000e+02,
+(PID.TID 0000.0001) >       6.550000e+02, 7.250000e+02, 7.750000e+02, 8.150000e+02,
+(PID.TID 0000.0001) > phiMin=-80.,
+(PID.TID 0000.0001) > delY=40*4,
+(PID.TID 0000.0001) > delX=90*4,
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) >
+(PID.TID 0000.0001) ># Input datasets
+(PID.TID 0000.0001) > &PARM05
+(PID.TID 0000.0001) > bathyFile='topog-z',
+(PID.TID 0000.0001) > hydrogThetaFile='thetaLevCli',
+(PID.TID 0000.0001) > hydrogSaltFile='saltLevCli',
+(PID.TID 0000.0001) > zonalWindFile='windx',
+(PID.TID 0000.0001) > meridWindFile='windy',
+(PID.TID 0000.0001) > thetaClimFile='SST.bin'
+(PID.TID 0000.0001) > saltClimFile='SSS.bin'
+(PID.TID 0000.0001) > &
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // Read file(s) topog-z*
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Model depths at iteration          1
+(PID.TID 0000.0001) // CMIN =         -6.000000000000000E+03
+(PID.TID 0000.0001) // CMAX =         -5.000000000000000E+01
+(PID.TID 0000.0001) // CINT =          2.203703703703704E+02
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -2:  93:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  43:  -2:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001) //                I=7       I=17      I=27      I=37      I=47      I=57      I=67      I=77      I=87
+(PID.TID 0000.0001) // |--J--|**0123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123
+(PID.TID 0000.0001) //     43 ..............................................ppmkkkkkkkkkkkkmmpmmmm..........wpmkkkkkkkk.......
+(PID.TID 0000.0001) //     42 ..............................................yyxwrpmm...........................xwtt...........
+(PID.TID 0000.0001) //     41 ................................................................................................
+(PID.TID 0000.0001) //     40 ................................................................................................
+(PID.TID 0000.0001) //     39 ppmmmprxz...................................................................rtw.........wrppmmmp
+(PID.TID 0000.0001) //     38 rmmmmmr......................................................................vw........wwtrmmmmm
+(PID.TID 0000.0001) //     37 vmmpw........................................................................xrr...rprv..tvmmpw.
+(PID.TID 0000.0001) //     36 txxz..........................................mmprz..........................vpmm.mmprrpprtxxz..
+(PID.TID 0000.0001) //     35 r..++.................................ywxz.kgmmmmmmvr.ggkkmr..................pkkkkmpmmprpr..++.
+(PID.TID 0000.0001) //     34 w......................................wwwd-gd------d-ggkkkmp..................xmkkkkkkkgmw.....
+(PID.TID 0000.0001) //     33 gg.....................................mm-----------ddddggkkpr...............zz.tmkgkkkggggg....
+(PID.TID 0000.0001) //     32 g......................................k---d--------dddddgkkkp...............pkgkgdgkmmkgdg.....
+(PID.TID 0000.0001) //     31 .......................................-----d------dddddd-dggg.............kgdd-dd-gkpkgdd......
+(PID.TID 0000.0001) //     30 d.....................................----d--d-gddd----dd-dddg............gdddd---dkmkddddd.....
+(PID.TID 0000.0001) //     29 k.................................zvgk----d---ddd-------ddddgkkm.........pd-dd---gkkgk-dgkk.....
+(PID.TID 0000.0001) //     28 .................................yrggd----------dddd----ddgggkkk......pm.gddd----ggd--ddkm......
+(PID.TID 0000.0001) //     27 ..................................---dd---------dddgggdddddggkkkkm...kkmrrd-----dkg---dgk.......
+(PID.TID 0000.0001) //     26 ..................kmm....t.....mkg---dg----ddddgdddddgdddddddgkkkmk..m.kggk-----gkg--ddgm.......
+(PID.TID 0000.0001) //     25 ................kkkkk..mmpp...rkk.d--dg----dddddd-dd-dd---dddggkkkkk....kkkgdd-dgkd---dkk.......
+(PID.TID 0000.0001) //     24 ...............pkkkkkt.kkmp...kkk.---------dggd---dd-dd--dddgggkkkkmkgk.mkk.dpgddgg---dgk.......
+(PID.TID 0000.0001) //     23 ................dgkggmpkkkk.++ppkk----kggddddkd----dgdddddgggggkkkkmkkkm......mkggkkdddggg......
+(PID.TID 0000.0001) //     22 ggggk..........ddgkkkmkkkkk..++..d--dggdgkkggkgdd--ddkgddggkkkkkkkkmmkkmm.......mkkgkkkgddggggk.
+(PID.TID 0000.0001) //     21 dddgk.........gddggkkggggggg.....ppkkgkgdkpkkkgd----ddgggkkkkggkkkkkmmmmm........kkkkgkgdddddgk.
+(PID.TID 0000.0001) //     20 gdgggk.......kddgkgkggddggdd.......d...rrmrkkkdd----dddggggggggkkkkkkkkk............kdd-dggdgggk
+(PID.TID 0000.0001) //     19 kgdddg.......kggkkkkmddddddd--.kkkg-t...-dkkkddgd--ggddddkkgggkkkkkkkkkkd...........gd-dgkkgdddg
+(PID.TID 0000.0001) //     18 kddddg.......mkkkkkkkdddgd-------mv....mkkmd-kkkkgddkddgggkkkkkkkkkkkkkggg..........gd-dgkkddddg
+(PID.TID 0000.0001) //     17 kgd-dg.......m..gkkkggddg--------t......ggkggkmmp--ddgggkkkkkkkkmkkkkkgggk..........gd--gkkgd-dg
+(PID.TID 0000.0001) //     16 kgdddg......mp.ddkkmkggdg------k........wmmmgdkkp-ddggggggkkkkkkmkkkkkgkkgd........kgd--gkkgdddg
+(PID.TID 0000.0001) //     15 g-ddkg......kk.dddgkkkggggd---g..........ggpmggkr--ddgggggkkkkkmmkkkkkkkkgk.......pkgdddgkg-ddkg
+(PID.TID 0000.0001) //     14 kgdddgk....rggkdd-ggkkkkgggddd-...........gpkkgk--ddddgggkkkkkkmmmkkkkkkkkd......mkkgd-gkkkgdddg
+(PID.TID 0000.0001) //     13 kgkdddk...kmdgkggkggggkkkkkgddd..........-gtkkkk-----dgddggkkkkkmmkkkkkkkkg.....mkkkggggkmkgkddd
+(PID.TID 0000.0001) //     12 kkgdddgkgkkdddmkggdggkmkkkkkdddd.d---....dddprtm-----dd-ddggggkkkmkkkkkkkkg....pddddgkkkmkkkgddd
+(PID.TID 0000.0001) //     11 kkgddggddkgddgmkgddgkkmkkkkkggggd----ddxkgddkw.mgdgddgddddddggkkkkkkgkkkkk....pdddddddkkmmkkgddg
+(PID.TID 0000.0001) //     10 kkkgggddddddkmmmgddkkkmmmmkkkkkggggggggkkdddk.tpmddddgddddddggkkkkkkgggkkk...+gd-ddddggkkmkkkggg
+(PID.TID 0000.0001) //      9 mkkkkgdddddggkkkkgkmpmmkkkkmkmkkkkkkkgkkgddgkwtpddddddddggggggkkmkkkkgggkk...xg------ddgkkmkkkkg
+(PID.TID 0000.0001) //      8 kpmkkkkkkdddgkkgggggkrpkgkkkkkkkkkkkkkkkkgggkwgd---ddddggkkkkkkmkkggddgggk..zxrpmmkggggkkkkpmkkk
+(PID.TID 0000.0001) //      7 kkkgddddgd----ddddgggkmgddkkkkkkggggkkkkkkkgddddddddgggkkkkkkmmkkdddddddggkkkkkgkkkkg---gkkkkgdd
+(PID.TID 0000.0001) //      6 ddddddddd--d--dddddgggkpkggkkkkkgggggkkkkkmdddddgggggkmmkkggddddddddddddddggkkkkkkkkkk-dgddddddd
+(PID.TID 0000.0001) //      5 -dddddddddddddgddgkgkkmmmmkk.kkkkkkkkkkkkmmpkkkkkkmmmkkkkkggddddddgdddggggkkk.xpkkgggggddd-ddddd
+(PID.TID 0000.0001) //      4 ggkkkkkgggk.k..............................rpmmmkkkkkkkkkkkkgggggggggkgkkkm...xmkkkkggggggggkkkk
+(PID.TID 0000.0001) //      3 ..............................................ppmkkkkkkkkkkkkmmpmmmm..........wpmkkkkkkkk.......
+(PID.TID 0000.0001) //      2 ..............................................yyxwrpmm...........................xwtt...........
+(PID.TID 0000.0001) //      1 ................................................................................................
+(PID.TID 0000.0001) //      0 ................................................................................................
+(PID.TID 0000.0001) //     -1 ppmmmprxz...................................................................rtw.........wrppmmmp
+(PID.TID 0000.0001) //     -2 rmmmmmr......................................................................vw........wwtrmmmmm
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Model Depths K Index at iteration          1
+(PID.TID 0000.0001) // CMIN =          1.000000000000000E+00
+(PID.TID 0000.0001) // CMAX =          2.000000000000000E+01
+(PID.TID 0000.0001) // CINT =          7.037037037037037E-01
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -2:  93:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  43:  -2:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001) //                I=7       I=17      I=27      I=37      I=47      I=57      I=67      I=77      I=87
+(PID.TID 0000.0001) // |--J--|**0123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123
+(PID.TID 0000.0001) //     43 ..............................................ttuwwwwwwwwwwwwuutuuuu..........ntuwwwwwwww.......
+(PID.TID 0000.0001) //     42 ..............................................jjmnrtuu...........................mnqq...........
+(PID.TID 0000.0001) //     41 ................................................................................................
+(PID.TID 0000.0001) //     40 ................................................................................................
+(PID.TID 0000.0001) //     39 ttuuutrkf...................................................................rqn.........nrttuuut
+(PID.TID 0000.0001) //     38 ruuuuur......................................................................pn........nnqruuuuu
+(PID.TID 0000.0001) //     37 puutn........................................................................mrr...rtrp..qpuutn.
+(PID.TID 0000.0001) //     36 qmmd..........................................uutrd..........................ptuu.uutrrttrqmmd..
+(PID.TID 0000.0001) //     35 r..ac.................................inmf.wxuuuuuupr.xxwwur..................twwwwutuutrtr..ac.
+(PID.TID 0000.0001) //     34 n......................................nnnz+xz++++++z+xxwwwut..................muwwwwwwwxun.....
+(PID.TID 0000.0001) //     33 xx.....................................uu+++++++++++zzzzxxwwtr...............ff.quwxwwwxxxxx....
+(PID.TID 0000.0001) //     32 x......................................w+++z++++++++zzzzzxwwwt...............twxwxzxwuuwxzx.....
+(PID.TID 0000.0001) //     31 .......................................+++++z++++++zzzzzz+zxxx.............wxzz+zz+xwtwxzz......
+(PID.TID 0000.0001) //     30 z.....................................++++z++z+xzzz++++zz+zzzx............xzzzz+++zwuwzzzzz.....
+(PID.TID 0000.0001) //     29 w.................................fpxw++++z+++zzz+++++++zzzzxwwu.........tz+zz+++xwwxw+zxww.....
+(PID.TID 0000.0001) //     28 .................................irxxz++++++++++zzzz++++zzxxxwww......tu.xzzz++++xxz++zzwu......
+(PID.TID 0000.0001) //     27 ..................................+++zz+++++++++zzzxxxzzzzzxxwwwwu...wwurrz+++++zwx+++zxw.......
+(PID.TID 0000.0001) //     26 ..................wuu....q.....uwx+++zx++++zzzzxzzzzzxzzzzzzzxwwwuw..u.wxxw+++++xwx++zzxu.......
+(PID.TID 0000.0001) //     25 ................wwwww..uutt...rww.z++zx++++zzzzzz+zz+zz+++zzzxxwwwww....wwwxzz+zxwz+++zww.......
+(PID.TID 0000.0001) //     24 ...............twwwwwq.wwut...www.+++++++++zxxz+++zz+zz++zzzxxxwwwwuwxw.uww.ztxzzxx+++zxw.......
+(PID.TID 0000.0001) //     23 ................zxwxxutwwww.--ttww++++wxxzzzzwz++++zxzzzzzxxxxxwwwwuwwwu......uwxxwwzzzxxx......
+(PID.TID 0000.0001) //     22 xxxxw..........zzxwwwuwwwww..-c..z++zxxzxwwxxwxzz++zzwxzzxxwwwwwwwwuuwwuu.......uwwxwwwxzzxxxxw.
+(PID.TID 0000.0001) //     21 zzzxw.........xzzxxwwxxxxxxx.....ttwwxwxzwtwwwxz++++zzxxxwwwwxxwwwwwuuuuu........wwwwxwxzzzzzxw.
+(PID.TID 0000.0001) //     20 xzxxxw.......wzzxwxwxxzzxxzz.......z...rrurwwwzz++++zzzxxxxxxxxwwwwwwwww............wzz+zxxzxxxw
+(PID.TID 0000.0001) //     19 wxzzzx.......wxxwwwwuzzzzzzz++.wwwx+q...+zwwwzzxz++xxzzzzwwxxxwwwwwwwwwwz...........xz+zxwwxzzzx
+(PID.TID 0000.0001) //     18 wzzzzx.......uwwwwwwwzzzxz+++++++up....uwwuz+wwwwxzzwzzxxxwwwwwwwwwwwwwxxx..........xz+zxwwzzzzx
+(PID.TID 0000.0001) //     17 wxz+zx.......u..xwwwxxzzx++++++++q......xxwxxwuut++zzxxxwwwwwwwwuwwwwwxxxw..........xz++xwwxz+zx
+(PID.TID 0000.0001) //     16 wxzzzx......ut.zzwwuwxxzx++++++w........nuuuxzwwt+zzxxxxxxwwwwwwuwwwwwxwwxz........wxz++xwwxzzzx
+(PID.TID 0000.0001) //     15 x+zzwx......ww.zzzxwwwxxxxz+++x..........xxtuxxwr++zzxxxxxwwwwwuuwwwwwwwwxw.......twxzzzxwx+zzwx
+(PID.TID 0000.0001) //     14 wxzzzxw....rxxwzz+xxwwwwxxxzzz+...........xtwwxw++zzzzxxxwwwwwwuuuwwwwwwwwz......uwwxz+xwwwxzzzx
+(PID.TID 0000.0001) //     13 wxwzzzw...wuzxwxxwxxxxwwwwwxzzz..........+xqwwww+++++zxzzxxwwwwwuuwwwwwwwwx.....uwwwxxxxwuwxwzzz
+(PID.TID 0000.0001) //     12 wwxzzzxwxwwzzzuwxxzxxwuwwwwwzzzz.z+++....zzztrqu+++++zz+zzxxxxwwwuwwwwwwwwx....tzzzzxwwwuwwwxzzz
+(PID.TID 0000.0001) //     11 wwxzzxxzzwxzzxuwxzzxwwuwwwwwxxxxz++++zzkwxzzwn.uxzxzzxzzzzzzxxwwwwwwxwwwww....tzzzzzzzwwuuwwxzzx
+(PID.TID 0000.0001) //     10 wwwxxxzzzzzzwuuuxzzwwwuuuuwwwwwxxxxxxxxwwzzzw.qtuzzzzxzzzzzzxxwwwwwwxxxwww...cxz+zzzzxxwwuwwwxxx
+(PID.TID 0000.0001) //      9 uwwwwxzzzzzxxwwwwxwutuuwwwwuwuwwwwwwwxwwxzzxwnqtzzzzzzzzxxxxxxwwuwwwwxxxww...kx++++++zzxwwuwwwwx
+(PID.TID 0000.0001) //      8 wtuwwwwwwzzzxwwxxxxxwrtwxwwwwwwwwwwwwwwwwxxxwnxz+++zzzzxxwwwwwwuwwxxzzxxxw..dkrtuuwxxxxwwwwtuwww
+(PID.TID 0000.0001) //      7 wwwxzzzzxz++++zzzzxxxwuxzzwwwwwwxxxxwwwwwwwxzzzzzzzzxxxwwwwwwuuwwzzzzzzzxxwwwwwxwwwwx+++xwwwwxzz
+(PID.TID 0000.0001) //      6 zzzzzzzzz++z++zzzzzxxxwtwxxwwwwwxxxxxwwwwwuzzzzzxxxxxwuuwwxxzzzzzzzzzzzzzzxxwwwwwwwwww+zxzzzzzzz
+(PID.TID 0000.0001) //      5 +zzzzzzzzzzzzzxzzxwxwwuuuuww.wwwwwwwwwwwwuutwwwwwwuuuwwwwwxxzzzzzzxzzzxxxxwww.ktwwxxxxxzzz+zzzzz
+(PID.TID 0000.0001) //      4 xxwwwwwxxxw.w..............................rtuuuwwwwwwwwwwwwxxxxxxxxxwxwwwu...muwwwwxxxxxxxxwwww
+(PID.TID 0000.0001) //      3 ..............................................ttuwwwwwwwwwwwwuutuuuu..........ntuwwwwwwww.......
+(PID.TID 0000.0001) //      2 ..............................................jjmnrtuu...........................mnqq...........
+(PID.TID 0000.0001) //      1 ................................................................................................
+(PID.TID 0000.0001) //      0 ................................................................................................
+(PID.TID 0000.0001) //     -1 ttuuutrkf...................................................................rqn.........nrttuuut
+(PID.TID 0000.0001) //     -2 ruuuuur......................................................................pn........nnqruuuuu
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // Read file(s) thetaLevCli*
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial Temperature at iteration          1
+(PID.TID 0000.0001) // CMIN =         -1.668560028076172E+00
+(PID.TID 0000.0001) // CMAX =          2.932958030700684E+01
+(PID.TID 0000.0001) // CINT =          1.148079271669741E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 efffgf...................................................................bbb.........bbccd
+(PID.TID 0000.0001)     38 hhhh......................................................................bc........dddefg
+(PID.TID 0000.0001)     37 ij........................................................................ccc...ffgg..hhii
+(PID.TID 0000.0001)     36 i..........................................efeed..........................deee.fhhijjkkjji
+(PID.TID 0000.0001)     35 jj.................................dddd.ffffffffff.ghhiii..................defgghijkllll..
+(PID.TID 0000.0001)     34 ....................................deeefffgggggghhhhiijjj..................dfhijklmmmml..
+(PID.TID 0000.0001)     33 ....................................eeeffgggghhhhiiiiijjkkk...............ee.egkmmnnnnnmm.
+(PID.TID 0000.0001)     32 ....................................hhhiiiijjjjjkkkkklllmml...............iiihkopppoooon..
+(PID.TID 0000.0001)     31 ....................................mnnnnnnnnnnnnnnnnnooonm.............oprrrqrsrrrqqqp...
+(PID.TID 0000.0001)     30 ...................................rrrrrqqqqqqqpppppqqqqpon............suuuuutttsssrrrrq..
+(PID.TID 0000.0001)     29 ...............................ruuuuttttttttsssssssssssrrqpoo.........vvuuuuuutttttsssrr..
+(PID.TID 0000.0001)     28 ..............................uvvvvvvvvvvvvvvvvuuuuuuutssrrqq......wv.wwvvvvvvvuuutttss...
+(PID.TID 0000.0001)     27 ...............................xxxxwxxxxwxwwwwwwwwwvvuutttsssst...wxxxxxxxxxxwwwvvvuus....
+(PID.TID 0000.0001)     26 ...............xyy....y.....xxyyyyyyyyyyyyyxxxxxxxxwwvvvvuuuuvvw..w.yyyyyyyxxxxwwvvuts....
+(PID.TID 0000.0001)     25 .............xxyyz..yzzy...xyy.zzzzzzzzzzyyyyyyyxxxxwwwwwwwwxxxyy....zzyyyyyyxxxwwwvut....
+(PID.TID 0000.0001)     24 ............xxyzzzz.zzzz...yyz.zzzzzzzzzzzzyyyyyyyxxxxxxxxxxxyyyyxww.yyy.yyyyyxxxwwwvu....
+(PID.TID 0000.0001)     23 .............xyzzzzzzzzz.zyyzzzzzz++++zzzzzzzzzzzyyyyyyyyyyyyyyyxxwvw......yyyyyyxxxxww...
+(PID.TID 0000.0001)     22 xx..........yyzz+zzzzzzz..zz..zzz++++++++++zzzzzzzzzzyyyyyxxxxxxxxxwww.......yyyyyyyyyyxww
+(PID.TID 0000.0001)     21 ww.........yyyzzzzzzzz+++.....zzzz++++++++zzzzzzyyyyyyxxxwwwvvvvuuutut........yyyyyxxxxwww
+(PID.TID 0000.0001)     20 vvu.......yyyyyyzzzzzzzzz.......y...++++++++++zzzzzzzyyyyxxxwwwvvuuut............yyyxxxwvv
+(PID.TID 0000.0001)     19 vut.......yxyxxyyyyyyyzzzzz.zzzzzy...zz++++++++++++zzzzyyyyyxxxwwvvvus...........yyyxxxwww
+(PID.TID 0000.0001)     18 uut.......yyyyxyyyyyyyyyyyyyzzzz....yyyzzzzzz++z++zzzzzzyyyxxxwwvvuutsr..........yyxxxwvvv
+(PID.TID 0000.0001)     17 tts.......y..xxxxxxxxxxxxxxxyyy......xyyyyyyyyzzzzzzzzyyyyxxxwwvvuuutsr..........xxxwwvuut
+(PID.TID 0000.0001)     16 tsq......xx.xxwwwwwwwvvvvwwww........wwwxxxxxxxxxxxxxxxxxxxxxwvvvuuttssr........xxxxwvvuut
+(PID.TID 0000.0001)     15 srq......ww.wwwvvvvvuuuuuuuv..........vvvvvvvvvvvvvvvvvwwwwwwvvvuuttsrrq.......vwwwwvvuutt
+(PID.TID 0000.0001)     14 ssrp....vvvvvvuuuuuttstttstt...........uuuttutttttttuuuuuuuuuvuuuttssrqp......uvvvuuuuuuts
+(PID.TID 0000.0001)     13 rrrq...ttsssssrrrrrrqrqqqqqr..........uttsssssrrrrsrrsssssssssrrrrrrrqpo.....tttttsttttssr
+(PID.TID 0000.0001)     12 ppqqrssssrrqqqqpppooooooopppq.qppp....ssrqqqqqpppppppppppppoooopooppppon....orrrrrqqqqqqqp
+(PID.TID 0000.0001)     11 mlmopqpppppoooononnmmmlmmmmmnnnnnnnoopppppp.pooonnnnnnnnnmmmmmmmmmmnnnn....lmpoooooonnnnmm
+(PID.TID 0000.0001)     10 iiijkkkkkjjiijkkkkkkkkjjjjjjkkkkllllmnnnnn.lmmmnmmlllllmllllllkkkjkllll...kjlmlkkkkkjjjjii
+(PID.TID 0000.0001)      9 ffffffffffffefffeefgggggfggghhiiiiijjkllllkkkkkkkkkkkkjjjjjjiiiiiiijjjk...ihiiihggggfffeee
+(PID.TID 0000.0001)      8 ccccccddddddddeedddddddedeeeefffgfggghhhiiiiiiiihhhhhhhhhgggggghggggghi..hhhgffedddddddccc
+(PID.TID 0000.0001)      7 aaabbbccccccccccccccbccccccccddddddddeeffghhgggggfeedddeeffffffffggfggggggffeddccbbbbbbbbb
+(PID.TID 0000.0001)      6 aaaabbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccdeeeeeeedcbbbbbccccdddddeeeeeeeeddcccbbbaaaaaaaaaa
+(PID.TID 0000.0001)      5 aaabbbbbbbbaaaaabbbaaaaaa.aaabbbbbbbbbbbbbbbbbbbbbaaaaaaaabbbbcccccccbbbbb.aaaaaaaaaaaaaaa
+(PID.TID 0000.0001)      4 aaaaaaaa.a..............................aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aa--aaaaaaaaaaa
+(PID.TID 0000.0001)      3 ...........................................aaaaaa------------aaaa..........------aaaaa....
+(PID.TID 0000.0001)      2 ...........................................aaaaaa--...........................----........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // Read file(s) saltLevCli*
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Initial Salinity at iteration          1
+(PID.TID 0000.0001) // CMIN =          3.102835273742676E+01
+(PID.TID 0000.0001) // CMAX =          3.743946075439453E+01
+(PID.TID 0000.0001) // CINT =          2.374484450728805E-01
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 qqqqpp...................................................................ghi.........kmnpp
+(PID.TID 0000.0001)     38 rqpn......................................................................gh........mnoppq
+(PID.TID 0000.0001)     37 qo........................................................................hjj...noqq..pqqq
+(PID.TID 0000.0001)     36 p..........................................hhgeb..........................jmom.npqqrrrrrrq
+(PID.TID 0000.0001)     35 po.................................gghh.ghiiiihfdb.egggec..................gloppppqqrrrr..
+(PID.TID 0000.0001)     34 ....................................fghghhhhhhhhgfgggggfed..................flopppqrrsrr..
+(PID.TID 0000.0001)     33 ....................................gghhhhhhhhgghhgggggggfe...............-b.glprsrrssssr.
+(PID.TID 0000.0001)     32 ....................................hhijjjjjkjjjjiihhhhhggf...............cghiosttttssts..
+(PID.TID 0000.0001)     31 ....................................llmmmmmmmmmmmllkjkjihgh.............mpsttsuvuuuuuut...
+(PID.TID 0000.0001)     30 ...................................nooooooooonnnnnmmmmlkjih............qvwwwwwvvvvvvvvvv..
+(PID.TID 0000.0001)     29 ...............................knooooooopppppppppppppppomkjjj.........vwwwwwwwwxxxxxxwww..
+(PID.TID 0000.0001)     28 ..............................lnopoppppqqqqqqrrrrrrrrrrqpnlkk......tu.vwwxxxyyyzzzzyyxw...
+(PID.TID 0000.0001)     27 ...............................pppppqqqqqrrrrrrrrrqqqqqqponmmmp...wwvuwwwwxxyz++++zzyx....
+(PID.TID 0000.0001)     26 ...............vwu....h.....mmnooppppqqqqqrqqqqqqpppoppoooonnnoo..v.uuvvvuuuwyzzyyyxwu....
+(PID.TID 0000.0001)     25 .............uuvwv..gihf...llk.nnooopppppppppppoooonnoonnnnnmmmmm....uttsssstwwwwwwvut....
+(PID.TID 0000.0001)     24 ............utuvvuq.kkig...kjk.nnnnnoooooooooooonnnnnnnmmmmmlllllmmm.vuu.vsrrtuvuuuuts....
+(PID.TID 0000.0001)     23 .............stttspommki.eijjkmnmmmnnnnnnnnnnnnoonnnnnnnnmmmmmllklmml......srstttuttssp...
+(PID.TID 0000.0001)     22 qm..........ssrrrrqponml..jj..mnnnnoonnonopopppqqppppppppooonnnmlllkjj.......outtttssrrqrr
+(PID.TID 0000.0001)     21 qp.........rrrrrqqqpppnml.....mmnoooooppppqqrrrrrrrqqqqqqppppppppooonm........tuuuuutttsrr
+(PID.TID 0000.0001)     20 ssq.......rrrrqqqqppponmm.......n...noppppqqrssssssrssrrrrqqqqqqppppp............uuuutttts
+(PID.TID 0000.0001)     19 usr.......qqrqppppooonnmmml.kklmmm...nppoppppqrrssssssssssrrrrrrqqrqqq...........wvvuuuuuu
+(PID.TID 0000.0001)     18 vut.......qqqppoooonnnnnnnnnnnno....qqpppppppqrrsttttttuutttttttssssrrq..........xxxxxwwww
+(PID.TID 0000.0001)     17 uut.......q..qpppoooooooooooooo......rqqpqqqqrsrsttuuuvvvvvvvvvuuttssrq..........yzzyyxwwv
+(PID.TID 0000.0001)     16 tts......qq.qqqppqpqpppqqqqqq........rrrrrrrqrsssstttuuvvvwwwwvvvutsrrqq........yyzzyxxwvu
+(PID.TID 0000.0001)     15 tsr......rr.qqrrrrssrssssssr..........sssssssssssssssssstuvwvvuuvtsrqppp.......wxxxxxxwwvu
+(PID.TID 0000.0001)     14 ttsr....rrrrrrssstttttttttts...........sttttsssssssssrrrssttttttssrqpoon......vwwuuvvvvuuu
+(PID.TID 0000.0001)     13 tsss...rssssssssstttsttttttt..........sssssttssssrrssrrqqqqrrqqppppooonm.....svuuttttstttt
+(PID.TID 0000.0001)     12 rrrsrrrssssssrrssrrrrrrqrssss.srrs....ssssssssrrqqqqqqpqpoooonnnnnnnnmml....ksutsssrrrrrqr
+(PID.TID 0000.0001)     11 oooqrrrrrqqqppprrrqqpppppqqqqqpppqqrrsrrrrr.rrrqppponnnnnmmmmmmmllmmlml....korqppqrqqpppoo
+(PID.TID 0000.0001)     10 mmmnnooonmllkklnnnoonnonooooooopooppqqqppp.ooppppoonnnnnnmmmmmmmllmlllk...kmoponoonnnnnnnn
+(PID.TID 0000.0001)      9 lllllllllllkkklkkklllmmmmmmmnnnnnnnooooooonnnnoooooooonnnnnnnnmmmmmmmmk...kmnnnnmmmlllllll
+(PID.TID 0000.0001)      8 lllmmmmlllllllllllllllllllllllllllmmmmmmnnnnnnnnnnnnnnnnnnnnnnmnnmmmmml..ikmmmllllllllllll
+(PID.TID 0000.0001)      7 mmmmmmmllllllllllllllllllllllllllllllllllmmmmmmmmlllmmmmmmmmmmmmmmmmmmmlkllmmlllllllllllll
+(PID.TID 0000.0001)      6 mmmlllllllllllllllllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmlllmmmmmllllllmmm
+(PID.TID 0000.0001)      5 nnmmmllllllllllllllllllll.lllmmllllllllmmmmmmmmmmmmmmlllllllllllllllllllll.mmmmmmmmmmmmmmn
+(PID.TID 0000.0001)      4 nmmmllll.l..............................mmmmmmlmmmllkkkkkkkkkkkkkkkkkkkk...mnnnnnnnnnnmmnn
+(PID.TID 0000.0001)      3 ...........................................nmmmlllllkkkkklmmmmllk..........nnnnnmmmmmm....
+(PID.TID 0000.0001)      2 ...........................................nnnmmmmm...........................nnnm........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // CG2D normalisation factor =          0.9003045603690193327537684E-05
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field AW2D INI_CG2D.2 at iteration          1
+(PID.TID 0000.0001) // CMIN =          4.440318397389119E-03
+(PID.TID 0000.0001) // CMAX =          9.999999999999999E-01
+(PID.TID 0000.0001) // CINT =          3.687258080009669E-02
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -2:  93:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  43:  -2:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001) //                I=7       I=17      I=27      I=37      I=47      I=57      I=67      I=77      I=87
+(PID.TID 0000.0001) // |--J--|**0123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123
+(PID.TID 0000.0001) //     43 ...............................................qquzzzzzzzzzzzuuqquuu...........gquzzzzzzz.......
+(PID.TID 0000.0001) //     42 ...............................................ddgiquz............................gin...........
+(PID.TID 0000.0001) //     41 ................................................................................................
+(PID.TID 0000.0001) //     40 ................................................................................................
+(PID.TID 0000.0001) //     39 quuzzuqeb....................................................................ni..........iquuzzu
+(PID.TID 0000.0001) //     38 knuuuun.......................................................................g.........ggknuuuu
+(PID.TID 0000.0001) //     37 ggrnf.........................................................................el....llg...ggrnf.
+(PID.TID 0000.0001) //     36 hdda...........................................olja...........................flo..oljjjljhdda..
+(PID.TID 0000.0001) //     35 i...-..................................bca..qnnnnnnff..tqqni...................kqqqnkknkiii...-.
+(PID.TID 0000.0001) //     34 d.......................................dddurruxxxxxuurrooolj...................clooooooold.....
+(PID.TID 0000.0001) //     33 pp......................................kkvvvvvvvvvvssssppnnig................a..fknnnnnpppp....
+(PID.TID 0000.0001) //     32 o.......................................muurruuuuuuurrrrrommmh................hmmmoomjjjmoo.....
+(PID.TID 0000.0001) //     31 ........................................ssssqqsssssqqqqqqqqnnn..............lnqqqqqnlhhlnq......
+(PID.TID 0000.0001) //     30 p......................................rrrpprppmmppprrrppppppm.............mpppprrpkiikpppp.....
+(PID.TID 0000.0001) //     29 k..................................adkkqqqooqqooooqqqqqqoooomkki..........gooooqqmkkkkkomkk.....
+(PID.TID 0000.0001) //     28 ..................................aellnpppppppppnnnnnpppnnllljjj.......g..lnnnppplllnpnnjh......
+(PID.TID 0000.0001) //     27 ...................................ppnnnppppppppnnnllllnnnnlljjjjh....jheeenppppnjjlppnlj.......
+(PID.TID 0000.0001) //     26 ...................hh...........hikoomkkooommmmkkmmmmkkmmmmmmkiiihh.....ikiiooookiikommkh.......
+(PID.TID 0000.0001) //     25 .................iiii...hff....ei..momkkooommmmmmmmmmmmmoommmkkiiiii.....iiikmmmkiimoomii.......
+(PID.TID 0000.0001) //     24 ................fiiiid..igf....ii..oooooooomkkkmoommmmmmommmkkkiiiiggii..gi..ffkmkkkoomki.......
+(PID.TID 0000.0001) //     23 .................kiikgffiii..--ffiinnniikkllliilnnnlkkllllkkkkkiiiiggiig.......gikiiillkkk......
+(PID.TID 0000.0001) //     22 kkkki...........lkiiiggiiii...-...lnlkkkkiiikiikllnlliiklkkiiiiiiiigggigg........giiiiiiklkkkki.
+(PID.TID 0000.0001) //     21 lllji..........jljjiiijjjjjj......ffiiiijiffiiijlnnnlljjjiiiiijiiiiiggggg.........iiiiiijllllji.
+(PID.TID 0000.0001) //     20 jjjjji........iljiiiijjljjjl............eeeeiiillnnnllljjjjjjjjiiiiiiiii.............illljjjjjji
+(PID.TID 0000.0001) //     19 iikllk........ikiiiiggllllllln..iiikd....liiiilkklnkkkllliiikkiiiiiiiiiii............kllkiiikllk
+(PID.TID 0000.0001) //     18 iilllk........giiiiiiillkklnnnnnngc.....giggliiiiikliilkkkiiiiiiiiiiiiiikk...........kllkiiilllk
+(PID.TID 0000.0001) //     17 iikmmk...........iiiikkmkkoooooood.......kiikiggffommkkkiiiiiiiiggiiiiikki...........kmokiiikmmk
+(PID.TID 0000.0001) //     16 iikmmk.......f..miihhikkkkoooooi.........bhhhkiiffmmkkkkkkiiiiiihhiiiiiiiik.........ikmokiiikmmk
+(PID.TID 0000.0001) //     15 ikmmii.......i..mmkiiiikkkkmook...........kffhkieeommkkkkkiiiiihhhiiiiiiiii........fikmmkiikmmii
+(PID.TID 0000.0001) //     14 jjlnnlj.....eljjnnlljjjjjlllnnn............ffjjjjpnnnnllljjjjjjhhhhjjjjjjjj.......hjjlnljjjjlnnl
+(PID.TID 0000.0001) //     13 hjjjnnj....hhljjljjllljjjjjjlnn...........lddjjjjppppnllnlljjjjjhhhjjjjjjjj......hjjjllljhhjjjnn
+(PID.TID 0000.0001) //     12 kkkmoomkkkkkooiikmmmmkiikkkkkooo..oqq.....oogfddiqqqqooooommmmkkkiikkkkkkkk.....gooomkkkiikkkmoo
+(PID.TID 0000.0001) //     11 ikkmpmmmpkkmpmiikmpmkkiikkkkkmmmmprrrppbbkmpkc..immmpmmpppppmmkkkkkkkkkkkk.....gppppppkkiiikkmpm
+(PID.TID 0000.0001) //     10 jlllnnnqqqqqljjjjnqllljjjjjlllllnnnnnnnlllqql..ehjqqqnnqqqqqnnlllllllnnlll....-nqqqqqnnlljjlllnn
+(PID.TID 0000.0001) //      9 jjmmmmorrrroommmmmmjhhjjmmmjjjjmmmmmmmmmmoromccehrrrrrrroooooommjjmmmmoomm....bouuuuurrommjjmmmm
+(PID.TID 0000.0001) //      8 niiknnnnnnsspnnnppppngginnnnnnnnnnnnnnnnnnppnddpsvvssssppnnnnnnkknnppspppn...abgikknpppnnnniiknn
+(PID.TID 0000.0001) //      7 ooooruuurruxxxuuuurrrollruooooooorrrooooooooruuuuuuurrroooooollloouuuuuurrooooooooooorxxroooooru
+(PID.TID 0000.0001) //      6 wwwwwwwwww+ww+wwwwwtttqkkqtqqqqqqttttqqqqqnnwwwwtttttqnnnqqttwwwwwwwwwwwwwttqqqqqqqqqqqwttwwwwww
+(PID.TID 0000.0001) //      5 zzzzzzzzzzzzzzvvzvssssooooos..sssssssssssoollsssssoooosssssvvzzzzzvvzzvvvvsss..clssvvvvvzzzzzzzz
+(PID.TID 0000.0001) //      4 zzvvvvvvzzv.................................lnrrrvvvvvvvvvvvvzzzzzzzzvvvvvr....ervvvvzzzzzzzvvvv
+(PID.TID 0000.0001) //      3 ...............................................qquzzzzzzzzzzzuuqquuu...........gquzzzzzzz.......
+(PID.TID 0000.0001) //      2 ...............................................ddgiquz............................gin...........
+(PID.TID 0000.0001) //      1 ................................................................................................
+(PID.TID 0000.0001) //      0 ................................................................................................
+(PID.TID 0000.0001) //     -1 quuzzuqeb....................................................................ni..........iquuzzu
+(PID.TID 0000.0001) //     -2 knuuuun.......................................................................g.........ggknuuuu
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field AS2D INI_CG2D.2 at iteration          1
+(PID.TID 0000.0001) // CMIN =          4.373017719843080E-03
+(PID.TID 0000.0001) // CMAX =          5.299192642332048E-01
+(PID.TID 0000.0001) // CINT =          1.946467579679117E-02
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -2:  93:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  43:  -2:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001) //                I=7       I=17      I=27      I=37      I=47      I=57      I=67      I=77      I=87
+(PID.TID 0000.0001) // |--J--|**0123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123
+(PID.TID 0000.0001) //     43 ..............................................aaaaccdd...........................aabb...........
+(PID.TID 0000.0001) //     42 ................................................................................................
+(PID.TID 0000.0001) //     41 ................................................................................................
+(PID.TID 0000.0001) //     40 ................................................................................................
+(PID.TID 0000.0001) //     39 ccdddcc......................................................................ba.........abccdddc
+(PID.TID 0000.0001) //     38 beeda........................................................................aa..........bbeeda.
+(PID.TID 0000.0001) //     37 baa-.........................................................................add...dedb..cbaa-..
+(PID.TID 0000.0001) //     36 c..-..........................................gged-...........................egg.ggeddeddc..-..
+(PID.TID 0000.0001) //     35 b......................................bb-.ikggggggce.kkiige...................bgiigfggfefb.....
+(PID.TID 0000.0001) //     34 c......................................cccnqlnqqqqqqnnlljjjhg...................dhjjjjjjlhc.....
+(PID.TID 0000.0001) //     33 m......................................iirrprrrrrrrrppppmmkkgf...............aa.eikmkiikmmm.....
+(PID.TID 0000.0001) //     32 .......................................lsssqqssssssqqqqqqnlllh...............hlnlnqnlhjlnq......
+(PID.TID 0000.0001) //     31 .......................................uuururruorrrrrrrrrurooo.............morrurrrmjhmorr......
+(PID.TID 0000.0001) //     30 m.....................................vvvvsvvsspsssvvvvssssspm............pssssvvpmmkmsspmm.....
+(PID.TID 0000.0001) //     29 ..................................aeqnwwwwtwwwttttttwwwwttqqqnnk.........ittttwwwqnnqnttnk......
+(PID.TID 0000.0001) //     28 ..................................hqquuxxxxxxxxxuuuqqquuuuqqqooo......jl.huuuxxxuoquxxuqo.......
+(PID.TID 0000.0001) //     27 ..................................yyyuryyyyuuuuruuurrruuuuurrooool...l.lhhoyyyyyroryyuurl.......
+(PID.TID 0000.0001) //     26 ..................omm....g.....mo.vyyvsyyyyvvvvsvvvvvsvvvvvvvsooomo.....ooosvvyvsosyyvvom.......
+(PID.TID 0000.0001) //     25 ................ppppp..mmkk...hpp.vzzvszzzzvssvvvzvvzvvzzvvvsssppppm....mpp.vksvspszzzvpp.......
+(PID.TID 0000.0001) //     24 ................pppppg.ppmk...kkp.zzzzpsswwwspwzzzwwswwwwwsssssppppmppp.......mpssppwwwsp.......
+(PID.TID 0000.0001) //     23 ................wtpppmkpppp..--..p++wtpttppttptww++wtptwwttppppppppmmppm........mppppppttt......
+(PID.TID 0000.0001) //     22 ttttp..........wwtpppmppppp......kkpptpttpkppptww++wwptttppppppppppmmmmmm........pppppptwwttttp.
+(PID.TID 0000.0001) //     21 twttp.........twtptppttttttt.......p...iinippptw++++wwtttppppttpppppnnnn............ptptwttwttp.
+(PID.TID 0000.0001) //     20 pttttp.......pttppppmtwwttww.......w....imipppwtw++ttwwttpptttpppppppppp............pwwwtppttttp
+(PID.TID 0000.0001) //     19 ptwwwt.......mppppppmwwwtwww++.ppme.....ppmpppppptwtpwwttpppppppppppppppt...........tw+wtpptwwwt
+(PID.TID 0000.0001) //     18 pswwws.......m..pppppswwswzzzzzzzg......ppmsspmmkswwpsssppppppppmppppppssp..........swzwsppswwws
+(PID.TID 0000.0001) //     17 psvvvs.......k..sppmpssvszzzzzzp........dmmmspmmkzvvssssppppppppmpppppsppp..........svzzsppsvvvs
+(PID.TID 0000.0001) //     16 osvvos......mj.vvoomoossssvyyys..........mmjmsoohyvvssssssooooommooooooooso........osvvvsoosvvos
+(PID.TID 0000.0001) //     15 oruuor......oo.uuurooooorrruuur...........rjlorohyuuurrrroooooolllooooooooo.......joruuroooruuor
+(PID.TID 0000.0001) //     14 oqouuqo....hqqoqqoqqoooooooquuu...........qfooooxxuuuuqqqoooooolllooooooooq......looqqqqoloqouuq
+(PID.TID 0000.0001) //     13 nnntttn...nktqknqnqqqnknnnnnttt..........tqfigfkwwwwwtqttqqnnnnnkknnnnnnnnq.....knnnqnnnkknnnttt
+(PID.TID 0000.0001) //     12 mmpssppmpmmsspkmppspmmkmmmmmpppp.svvv....pssic.kpspsspssssppppmmmkmmmmmmmm.....isssspmmmkkmmpssp
+(PID.TID 0000.0001) //     11 mmmoooorrmormjjjorrmmmjjjjmmmmmoooooooobmorrm..hjrorrorrrrrroommmmmmommmmm....hrrrrrrommjjmmmooo
+(PID.TID 0000.0001) //     10 jllllnqqqqqnljjjlnljhjjjjjljljlllllllnlllqqnl.ehjqqqqnqqnnnnnnlljllllnnlll...-nqsqqqqnnlljjlllln
+(PID.TID 0000.0001) //      9 igikkkkkkppmmkkkkmkigfgkkkkikikkkkkkkkkkkmmmkcegpppppppmmkkkkkkiikkkkmmmkk...bfgiikmmmmkkkigikkk
+(PID.TID 0000.0001) //      8 jghjjjjjjnnnljjllllljegjljjjjjjjjjjjjjjjjjjljclnnnnnllljjjjjjhhhjjllnnlllj..-beghhjjllljjjjghjjj
+(PID.TID 0000.0001) //      7 iiikmmmmkmomoommmmkkkigfikiiiiiikkkkiiiiiigkmmmmkkkkkiggiiiiiggiimmmmmmmkkiiiiiiiiiiiiomkiiiikmm
+(PID.TID 0000.0001) //      6 lllllllllllllljlljhjhhgegghh.hhhhhhhhhhhhggehhhhhhggghgghhjjlllllljllljjjjhhh.aehhhhhhjljlllllll
+(PID.TID 0000.0001) //      5 iigggggiiig.g..............................defffggfffgggggggiiiiiiiiigigggf...aeggggiiiiiiiigggg
+(PID.TID 0000.0001) //      4 ..............................................ddeffffffffffffeedeeee..........adeffffffff.......
+(PID.TID 0000.0001) //      3 ..............................................aaaaccdd...........................aabb...........
+(PID.TID 0000.0001) //      2 ................................................................................................
+(PID.TID 0000.0001) //      1 ................................................................................................
+(PID.TID 0000.0001) //      0 ................................................................................................
+(PID.TID 0000.0001) //     -1 ccdddcc......................................................................ba.........abccdddc
+(PID.TID 0000.0001) //     -2 beeda........................................................................aa..........bbeeda.
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field pC   INI_CG2D.2 at iteration          1
+(PID.TID 0000.0001) // CMIN =         -1.556283596676755E+01
+(PID.TID 0000.0001) // CMAX =         -3.916598467717262E-01
+(PID.TID 0000.0001) // CINT =          5.618954118516973E-01
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -2:  93:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  43:  -2:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001) //                I=7       I=17      I=27      I=37      I=47      I=57      I=67      I=77      I=87
+(PID.TID 0000.0001) // |--J--|**0123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123
+(PID.TID 0000.0001) //     43 kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkzz+++++++++++++++z+++zkkkkkkkkkkwz++++++++zkkkkkkk
+(PID.TID 0000.0001) //     42 gggggggggggggggggggggggggggggggggggggggggggggguxxyz++zgggggggggggggggggggggggggggwyzyggggggggggg
+(PID.TID 0000.0001) //     41 ------------------------------------------------------------------------------------------------
+(PID.TID 0000.0001) //     40 ------------------------------------------------------------------------------------------------
+(PID.TID 0000.0001) //     39 ++++++zwrgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggyzxgggggggggxz++++++
+(PID.TID 0000.0001) //     38 z++++zykkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkxxkkkkkkkkwyzz++++z
+(PID.TID 0000.0001) //     37 yzzzwnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnwzynnnyzzxnnxyzzzwn
+(PID.TID 0000.0001) //     36 yxwsoooooooooooooooooooooooooooooooooooooooooozzzysoooooooooooooooooooooooooowzzzozzzzzzzzyxwsoo
+(PID.TID 0000.0001) //     35 yqqrrqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqtwwtqz+zzzzzzyxqz++zzyqqqqqqqqqqqqqqqqqqyz+++zzzzzzzyqqrrq
+(PID.TID 0000.0001) //     34 xrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrxyxz++++++++++++++++zyrrrrrrrrrrrrrrrrrrvz++++++++zxrrrrr
+(PID.TID 0000.0001) //     33 +yssssssssssssssssssssssssssssssssssssszz++++++++++++++++++zzysssssssssssssssuusyz+++++++++yssss
+(PID.TID 0000.0001) //     32 zssssssssssssssssssssssssssssssssssssssz++++++++++++++++++++zysssssssssssssssyzzz++++zz+++zsssss
+(PID.TID 0000.0001) //     31 ttttttttttttttttttttttttttttttttttttttt++++++++++++++++++++++ztttttttttttttz++++++++zzz+++tttttt
+(PID.TID 0000.0001) //     30 ztttttttttttttttttttttttttttttttttttttz++++++++++++++++++++++zttttttttttttz+++++++++zz++++zttttt
+(PID.TID 0000.0001) //     29 zuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuvxzz++++++++++++++++++++++++zyuuuuuuuuuy++++++++++++++++zuuuuu
+(PID.TID 0000.0001) //     28 uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuvyz+++++++++++++++++++++++++++zuuuuuuyyuz+++++++++++++++yuuuuuu
+(PID.TID 0000.0001) //     27 uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu++++++++++++++++++++++++++++++zzuuuzzzzz++++++++++++++zuuuuuuu
+(PID.TID 0000.0001) //     26 uuuuuuuuuuuuuuuuuuzzzuuuuwuuuuuzzz+++++++++++++++++++++++++++++++zzuuxuz++++++++++++++++zuuuuuuu
+(PID.TID 0000.0001) //     25 vvvvvvvvvvvvvvvvzz++zvvzzzyvvvyzzv+++++++++++++++++++++++++++++++++zvvvvz++z++++++++++++zvvvvvvv
+(PID.TID 0000.0001) //     24 vvvvvvvvvvvvvvvx++++zyvzzzzvvvz+zv+++++++++++++++++++++++++++++++++zzzzvzzzvzz++++++++++zvvvvvvv
+(PID.TID 0000.0001) //     23 vvvvvvvvvvvvvvvvz++++zz+++zvvvyzzz+++++++++++++++++++++++++++++++++z+++zvvvvvvzz+++++++++zvvvvvv
+(PID.TID 0000.0001) //     22 zzzzzvvvvvvvvvvz+++++zz+++zvvvvvvz+++++++++++++++++++++++++++++++++zz++zzvvvvvvvz+++++++++zzzzzv
+(PID.TID 0000.0001) //     21 ++++zvvvvvvvvvz++++++++++++zvvvvvyz+zzz++zz+++++++++++++++++++++++++zzzzzvvvvvvvvzzz++++++++++zv
+(PID.TID 0000.0001) //     20 +++++zvvvvvvvz++++++++++++++vvvvvvvzvvvyzzzz+++++++++++++++++++++++++++zvvvvvvvvvvvvz++++++++++z
+(PID.TID 0000.0001) //     19 +++++zvvvvvvvz++++++z++++++++zvzzzzzxvvvz+z+++++++++++++++++++++++++++++zvvvvvvvvvvvz++++++++++z
+(PID.TID 0000.0001) //     18 +++++zvvvvvvvzzz+++++++++++++++++zxvvvvy++z++++++++++++++++++++++++++++++zvvvvvvvvvvz++++++++++z
+(PID.TID 0000.0001) //     17 +++++zvvvvvvvyvvz++++++++++++++++yvvvvvvz+++++zzz+++++++++++++++z++++++++zvvvvvvvvvvz++++++++++z
+(PID.TID 0000.0001) //     16 +++++zvvvvvvyzvz+++z+++++++++++zvvvvvvvvxzzz+++zz++++++++++++++zz+++++++++zvvvvvvvvz+++++++++++z
+(PID.TID 0000.0001) //     15 +++++zuuuuuuzzu+++++++++++++++zuuuuuuuuuuz+zz++zz++++++++++++++zzz++++++++zuuuuuuuyz+++++++++++z
+(PID.TID 0000.0001) //     14 ++++++zuuuuy++z++++++++++++++++uuuuuuuuuuuzzz++++++++++++++++++zzz++++++++zuuuuuuzz+++++++++++++
+(PID.TID 0000.0001) //     13 ++++++zuuuzz+++++++++++++++++++uuuuuuuuuuz+zzzz++++++++++++++++zzz++++++++zuuuuuyz++++++zz++++++
+(PID.TID 0000.0001) //     12 +++++++zzz++++z+++++++z++++++++zuz++zuuuu+++zzyz++++++++++++++++zz++++++++zuuuuy++++++++zz++++++
+(PID.TID 0000.0001) //     11 ++++++++++++++zz++++++zz++++++++++++++zxz+++zxtz+++++++++++++++++++++++++ztttty+++++++++zz++++++
+(PID.TID 0000.0001) //     10 z++++++++++++zzz+++++zzzzz+++++++++++++z++++ztxzz++++++++++++++++++++++++ztttuz+++++++++zzz+++++
+(PID.TID 0000.0001) //      9 zz+++++++++++++++++zzzzz+++zzz++++++++++++++zxyz+++++++++++++++zz++++++++zssswz++++++++++zzz++++
+(PID.TID 0000.0001) //      8 zzz+++++++++++++++++zzzz++++++++++++++++++++zyz++++++++++++++++z+++++++++zsstwyzzz++++++++zzz+++
+(PID.TID 0000.0001) //      7 +++++++++++++++++++++zz++++++++++++++++++++++++++++++++++++++zz+++++++++++zzz+++++++++++++++++++
+(PID.TID 0000.0001) //      6 ++++++++++++++++++++++zz++++++++++++++++++z+++++++++++zz++++++++++++++++++++++++++++++++++++++++
+(PID.TID 0000.0001) //      5 ++++++++++++++++++++++zzzz+zoz+++++++++++zzz++++++++++++++++++++++++++++++++zovz++++++++++++++++
+(PID.TID 0000.0001) //      4 ++++++++++znunnnnnnnnnnnnnnnnnnnnnnnnnnnnnnyzz++++++++++++++++++++++++++++znnnwz++++++++++++++++
+(PID.TID 0000.0001) //      3 kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkzz+++++++++++++++z+++zkkkkkkkkkkwz++++++++zkkkkkkk
+(PID.TID 0000.0001) //      2 gggggggggggggggggggggggggggggggggggggggggggggguxxyz++zgggggggggggggggggggggggggggwyzyggggggggggg
+(PID.TID 0000.0001) //      1 ------------------------------------------------------------------------------------------------
+(PID.TID 0000.0001) //      0 ------------------------------------------------------------------------------------------------
+(PID.TID 0000.0001) //     -1 ++++++zwrgggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggggyzxgggggggggxz++++++
+(PID.TID 0000.0001) //     -2 z++++zykkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkxxkkkkkkkkwyzz++++z
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field pW   INI_CG2D.2 at iteration          1
+(PID.TID 0000.0001) // CMIN =         -1.377051571783448E+00
+(PID.TID 0000.0001) // CMAX =         -1.496744594817494E-02
+(PID.TID 0000.0001) // CINT =          5.044756021612122E-02
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -2:  93:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  43:  -2:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001) //                I=7       I=17      I=27      I=37      I=47      I=57      I=67      I=77      I=87
+(PID.TID 0000.0001) // |--J--|**0123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123
+(PID.TID 0000.0001) //     43 ...............................................rvwwxxxwwwwwwwwvvvvws...........ruwwwwwwwu.......
+(PID.TID 0000.0001) //     42 ...............................................anntuvs............................jrl...........
+(PID.TID 0000.0001) //     41 ................................................................................................
+(PID.TID 0000.0001) //     40 ................................................................................................
+(PID.TID 0000.0001) //     39 tvwwwvtse....................................................................kn..........qtvwwwv
+(PID.TID 0000.0001) //     38 svvwwvs.......................................................................-.........hssvvwwv
+(PID.TID 0000.0001) //     37 nvttr.........................................................................rl....psp...nvttr.
+(PID.TID 0000.0001) //     36 sskr...........................................rurw...........................sus..svvuuttsskr..
+(PID.TID 0000.0001) //     35 r...r..................................okr..tvvwwwuvn..twvvs...................tvwwwwvvvvur...r.
+(PID.TID 0000.0001) //     34 v.......................................prxwxxxxxxxxxxxxxxwwt...................vvwwwwwwwvv.....
+(PID.TID 0000.0001) //     33 xt......................................txxyyyyyyyyyyyxxxxxwwt................p..vwxxxwxxxxt....
+(PID.TID 0000.0001) //     32 v.......................................xxyyyyyyyyyyyyyyxxxxwv................uvwxxxxxwxxxv.....
+(PID.TID 0000.0001) //     31 ........................................xyyyyyyyyyyyyyyyyyyxxw..............vxxyyyyxxxxxxx......
+(PID.TID 0000.0001) //     30 w......................................xyyyyyyyyyyyyyyyyyyyyyx.............wyyyyyyyyxxxxyyw.....
+(PID.TID 0000.0001) //     29 v..................................xwvyyyyyyyyyyyyyyyyyyyyyyyyxu..........xyyyyyyyyxxxyyyxv.....
+(PID.TID 0000.0001) //     28 ..................................xxxyyyyyyyyyyyyyyyyyyyyyyyyyxw.......r..xyyyyyyyyyyyyyyw......
+(PID.TID 0000.0001) //     27 ...................................xyyyyyyyyyyyyyyyyyyyyyyyyyyyyxv....twxwyyyyyyyyyyyyyyx.......
+(PID.TID 0000.0001) //     26 ...................vu...........vvxyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyw.....wxyyyyyyyyyyyyyyx.......
+(PID.TID 0000.0001) //     25 .................vxyx...uxv....xx..yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyw.....xyxyyyyyyyyyyyyx.......
+(PID.TID 0000.0001) //     24 ................wyyyxy..xyx....wx..yzyyyyyyyyyyyyyzyyyyyyyyyyyyyyyyyxwv..vv..wyyyyyyyyyyx.......
+(PID.TID 0000.0001) //     23 .................xyyyyxyyyx..z+vxwyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyx.......vxyyyyyyyyx......
+(PID.TID 0000.0001) //     22 yxxxw...........xyyyyyyyyyx...z...xyyyyyyyyyyyyyyzyzyyyyyyyyyyyyyyyyyyxyw........xyyyyyyyyyxxxw.
+(PID.TID 0000.0001) //     21 yyyyy..........xyyyyyyyyyyyx......vyxxxxxyyyyyyyyyzyzyyyyyyyyyyyyyyyyyyyw.........vxxyyyyyyyyyy.
+(PID.TID 0000.0001) //     20 yyyyyx........xyyyyyyyyyyyyy............vyyyyyyyyyzyyyyyyyyyyyyyyyyyyyyx.............yyyyyyyyyyx
+(PID.TID 0000.0001) //     19 yyyyyy........xyyyyyyyyyyyyyyw..vwwvx....wyyyyyyyyyzyyyyyyyyyyyyyyyyyyyyx............yyyyyyyyyyy
+(PID.TID 0000.0001) //     18 yyyyyy........wwxyyyyyyyyyyyyzyyyyx.....wyyyxyyyyyyyyyyyyyyyyyyyyyyyyyyyyx...........yyyyyyyyyyy
+(PID.TID 0000.0001) //     17 yyyyyy...........xyyyyyyyyyzzzzyxy.......wyyyyyxyzyyyyyyyyyyyyyyyyyyyyyyyx...........yyyyyyyyyyy
+(PID.TID 0000.0001) //     16 yyyyyy.......u..xyyyyyyyyyyyyyyx.........yxxyxyxyzyyyyyyyyyyyyyyyyyyyyyyyyw.........xyyyyyyyyyyy
+(PID.TID 0000.0001) //     15 yyyyyx.......v..yyyyyyyyyyyyyyy...........vyxyxyyzyyyyyyyyyyyyyyxyxyyyyyyyx........xyyyyyyyyyyyx
+(PID.TID 0000.0001) //     14 xyyyyyx.....xxxyyyyyyyyyyyyyyyx............xxxyyyyyyyyyyyyyyyyxyxxyxyyyyyyx.......wxyyyyyxxyyyyy
+(PID.TID 0000.0001) //     13 xxyyyyx....vyyyyxyyyyxxxxxxyyyx...........vyywxxyyyyyyyyyyxyxxxxxxxxxxxxxxx......wxxyyyxxxxxyyyy
+(PID.TID 0000.0001) //     12 xxyyyyyxwwxyyyyxyxyyxxxxxxxxyyyw..wxw.....xxxwvxyyyyyyyyyyyyxxyxxxxxxxxxxxw.....xxyyyyxxxxxxyyyy
+(PID.TID 0000.0001) //     11 xxxyxyyyxyxyxxxxxyyyxxxxxxxxxxxxxxyyyxvyywyyxx..wxyyyyyyyyyyyxxxxxxxxxxxxw.....wxyyyyxyxxxxxxyxy
+(PID.TID 0000.0001) //     10 xxxxxxyyyyyxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxyxxx..uwyxyyyyyyyyxyxxxxxxxxxxxxw....+xyyyyyyxxxxxxxxxx
+(PID.TID 0000.0001) //      9 xxwxxxxxxyyyxxxxxxxxwwwxwxxxxxxxxxxxxxxxxxxxwxuvxxyyyyyxxxxxxxxxxxxxxxxxxw....ywxxxyxyxxxxxxwxxx
+(PID.TID 0000.0001) //      8 wwwwwxxxxxxxxxxxxxxxwwvwwxxxxxxxxxxxxxxxxxxxwxxwxyyyxxxxxxxxxxwwwwxxxxxxxw...vvuwwxxxxxxxxwwwwwx
+(PID.TID 0000.0001) //      7 xwwxxxxxxxxyyxxxxxxxxwwwxxxxxxxxxxxxxxxxxxwxxxxxxxxxxxxxwxxxwwwwwxxxxxxxxxwvvwwwwwwxxxxxxxxwwxxx
+(PID.TID 0000.0001) //      6 xxxxxxxxxxxyyxyxxxxxxxwwwwwxwwwwxxxxxxwwwwwxxxxxxxxxxwwwwwxxxxxxxxxxxxxxxxxwxwwwwwwwwwxxxxxxxxxx
+(PID.TID 0000.0001) //      5 xxxxxxxxxxxxxxxxwwwwwvvvvvvs..twwwwwwwwwvvuvwwwwwwwwwwwwwwxxxxxxxxxxxxxxxxxwt..uvwxxxxxxxxxxxxxx
+(PID.TID 0000.0001) //      4 xwwwwwwwwwu.................................quvwwwwwwwwwwwwwxxxxxxxxwwwwwwt....uvwwwxxxxxxxwwwww
+(PID.TID 0000.0001) //      3 ...............................................rvwwxxxwwwwwwwwvvvvws...........ruwwwwwwwu.......
+(PID.TID 0000.0001) //      2 ...............................................anntuvs............................jrl...........
+(PID.TID 0000.0001) //      1 ................................................................................................
+(PID.TID 0000.0001) //      0 ................................................................................................
+(PID.TID 0000.0001) //     -1 tvwwwvtse....................................................................kn..........qtvwwwv
+(PID.TID 0000.0001) //     -2 svvwwvs.......................................................................-.........hssvvwwv
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field pS   INI_CG2D.2 at iteration          1
+(PID.TID 0000.0001) // CMIN =         -4.691886552682878E-01
+(PID.TID 0000.0001) // CMAX =         -1.294292868072847E-02
+(PID.TID 0000.0001) // CINT =          1.689798987361331E-02
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -2:  93:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  43:  -2:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001) //                I=7       I=17      I=27      I=37      I=47      I=57      I=67      I=77      I=87
+(PID.TID 0000.0001) // |--J--|**0123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123
+(PID.TID 0000.0001) //     43 ..............................................y++++++z...........................++++...........
+(PID.TID 0000.0001) //     42 ................................................................................................
+(PID.TID 0000.0001) //     41 ................................................................................................
+(PID.TID 0000.0001) //     40 ................................................................................................
+(PID.TID 0000.0001) //     39 zzz+zzw......................................................................xs.........vyzzz+zz
+(PID.TID 0000.0001) //     38 yyzyz........................................................................rw..........vyyzyz.
+(PID.TID 0000.0001) //     37 wyzz.........................................................................pww...wxww..uwyzz..
+(PID.TID 0000.0001) //     36 s..u..........................................vxxwz...........................sxw.wxwxxwwws..u..
+(PID.TID 0000.0001) //     35 r......................................lrw.wxyyzzyyzx.wxxxwu...................ywwxxxxxxxvr.....
+(PID.TID 0000.0001) //     34 y......................................txzwxyyyyyyyxxxyxxxwwr...................twwxwwwxwwy.....
+(PID.TID 0000.0001) //     33 t......................................qxwxyxxyyyyyxxxxxxwwvvn...............xz.wwxwwwwwwxt.....
+(PID.TID 0000.0001) //     32 .......................................twxxxxxxxxxxxxxxxwxxwws...............vwwwwwwvvvwwu......
+(PID.TID 0000.0001) //     31 .......................................vxxxwxxwxxxxxxxxwwwwwwq.............uvwwwxwwvvvvwwu......
+(PID.TID 0000.0001) //     30 m.....................................txxwwwwwwwwwwwwwwwwwwwwu............swwwwwwwwuvuvwwwm.....
+(PID.TID 0000.0001) //     29 ..................................wvsvwwwwwwwwwwwwwwwwwwwwwwvutn.........nvwwwwwwvvwwwvvvr......
+(PID.TID 0000.0001) //     28 ..................................tvwvwwwwwwwwwvwwvwwwwwwvvvvuus......on.suwwwwwvvvvwvvvs.......
+(PID.TID 0000.0001) //     27 ..................................twvvvwwwwwwwwwvvvvvvvvvvvvvvuusp...-.puvuvwwwvvuuvwwvuq.......
+(PID.TID 0000.0001) //     26 ..................ptn....o.....pq.uwwvvvwwwvvvvvvwvvvvvwwwvvvuuuuup.....ruuuwvvvuuuvwwvuq.......
+(PID.TID 0000.0001) //     25 ................psuuq..nssk...nsq.swwwvvwwvvvvvvwvvvvvvvvvvvvvuuuuup....nsq.qvvuvvuvwvvup.......
+(PID.TID 0000.0001) //     24 ................tuuutr.rttq...ltp.twwvvwwvvvvvuvvwwvvvvwwvvvuuuuuuttrsp.......qtuuvvvvuut.......
+(PID.TID 0000.0001) //     23 ................tuuutsstutp..yy..quvvvuuuvvvuuuvwwvvvvvvvvuuuuuuuutttttp........ruuuvvvuvs......
+(PID.TID 0000.0001) //     22 tutsm..........rvuuutuuuuut......pvvusttttuuuuuvvwwvvvuvvuuuuuuuuuttttttf........pssuuuuvvtutsm.
+(PID.TID 0000.0001) //     21 vuvut.........ruuutuuuvvuuvp.......q...tvsssuuuvvwwvvvvuuuuuuutuuuutuuus............suvvuvvuvut.
+(PID.TID 0000.0001) //     20 uuvvuo.......luuuuutuuvvvvvt.......j....ttutuuuvvvvvvvvvuuuuuuuuuuuuttts............ruvvvuuuvvuo
+(PID.TID 0000.0001) //     19 uuvvvq.......qstuuutuuvvvvvwus.uuqs.....rutuuuvuvvvvuuvvuuuuuuuutuuuuuuuq...........qvvvuuuuvvvq
+(PID.TID 0000.0001) //     18 uuvvvr.......k..suutuvvvvvvwwwuvrq......quututuuuvvvvvvuvuuuuuututuuuuuuun..........rvvvuuuuvvvr
+(PID.TID 0000.0001) //     17 uuvvur.......k..tuuuuuvuvvwwwwvu........ttuutuutstvvvvvuvuuuuuutttuuuutvut..........tvvvuuuuvvur
+(PID.TID 0000.0001) //     16 uvvvvq......mq.pvvuuuuuvvwwwwvu..........oututussuwvvvvvuuuuuuuuttuuuuuuutn........puvwvuuuvvvvq
+(PID.TID 0000.0001) //     15 uvvvvt......ss.tvuuuuuvvuvvvwws...........qstuutwvwvvvvvvvuuuuuttuuuuuuuuuq.......ruuvvvvuuvvvvt
+(PID.TID 0000.0001) //     14 uuvvvvm....ruutvvvvvvvuuvvvvvwr...........rtsuuuuwwwwvvvvvvuuuuuttuuuuuuuup......quuvvvuuuuuvvvv
+(PID.TID 0000.0001) //     13 uvvvwvt...qvvvvvvvvvvvvuuuuvvwu..........ovwtuvuvwwwwwwwwvvvvvuuuuuuuuuuuun.....swwwvvvvuuuvvvwv
+(PID.TID 0000.0001) //     12 uvvwwwvvuuvvwuuuvwvvvuuuvvvvvwwt.tvvt....uwutr.qvwxwwwwwwwwwvvvvuvvvvvvvvt.....tvwwwwwvuuuuvvwww
+(PID.TID 0000.0001) //     11 uvwwwwwwwwwwwvuvvwwvvuuvvvvvwwwvvwxxxvtyswwvq..rvvwwwwwwwwwwwvvvvvvvvwwvvq....qvwwwwwwwvvuuvwwww
+(PID.TID 0000.0001) //     10 vvvwwwwxxxwwwwwwwwwvwvvvwwvwvwvwwwwwwwwvwwwws.mswwxxxxxwxxxwwwwvwvwwwwwwwr...vqwwxxxxxwwvvvvvwww
+(PID.TID 0000.0001) //      9 vwwwwwxxxxxxwwwwxwwwvvvvwwwwvwwwwwwwwwwwwxxwtqwxwxxxxxxxwxxxxwwwwwwxxxxwwr...luxyyxxxxxwwwvwwwww
+(PID.TID 0000.0001) //      8 wxwxxyyxxxyyyyyxyxxxwxwwxxxwxwxxxxxxxxxxxxxxxzwxyyyxyyxxxxxxwxwwwxxyxxyxxv..+zwxwxwxxxyyxxwxwxxy
+(PID.TID 0000.0001) //      7 yyyyyyyyyyyyyyyyyyyyxxxxxxxxxxxxxyyxxxxxxxxxyyyyyyyyxxyxxxyyyyyyyyyyyyyyyyxxxwxxxxxxxyyyxyyyyyyy
+(PID.TID 0000.0001) //      6 zzyzzzzzzzzyzyyyyyyyyyxxxyyw.wyyyyyyyyyyxxxyyzzyyyyyyxyyyyyyyyyzzyzyzyzzzyyyw.zxxyyyyyyyzyzzyzzz
+(PID.TID 0000.0001) //      5 zzzzzzzzzzy.w..............................wyyzzyyzzzyzzzzzzzzzzzzzzzzyzzyx...owyzzzzzzzzzzzzzzz
+(PID.TID 0000.0001) //      4 ..............................................yzzzzzzzzzzzzzzzzzzzzz..........qxzzzzzzzzz.......
+(PID.TID 0000.0001) //      3 ..............................................y++++++z...........................++++...........
+(PID.TID 0000.0001) //      2 ................................................................................................
+(PID.TID 0000.0001) //      1 ................................................................................................
+(PID.TID 0000.0001) //      0 ................................................................................................
+(PID.TID 0000.0001) //     -1 zzz+zzw......................................................................xs.........vyzzz+zz
+(PID.TID 0000.0001) //     -2 yyzyz........................................................................rw..........vyyzyz.
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Model configuration
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) // "Physical" paramters ( PARM01 in namelist )
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) tRef =   /* Reference temperature profile ( oC or oK ) */
+(PID.TID 0000.0001)                 1.600000000000000E+01,      /* K =  1 */
+(PID.TID 0000.0001)                 1.520000000000000E+01,      /* K =  2 */
+(PID.TID 0000.0001)                 1.450000000000000E+01,      /* K =  3 */
+(PID.TID 0000.0001)                 1.390000000000000E+01,      /* K =  4 */
+(PID.TID 0000.0001)                 1.330000000000000E+01,      /* K =  5 */
+(PID.TID 0000.0001)                 1.240000000000000E+01,      /* K =  6 */
+(PID.TID 0000.0001)                 1.130000000000000E+01,      /* K =  7 */
+(PID.TID 0000.0001)                 9.900000000000000E+00,      /* K =  8 */
+(PID.TID 0000.0001)                 8.400000000000000E+00,      /* K =  9 */
+(PID.TID 0000.0001)                 6.700000000000000E+00,      /* K = 10 */
+(PID.TID 0000.0001)                 5.200000000000000E+00,      /* K = 11 */
+(PID.TID 0000.0001)                 3.800000000000000E+00,      /* K = 12 */
+(PID.TID 0000.0001)                 2.900000000000000E+00,      /* K = 13 */
+(PID.TID 0000.0001)                 2.300000000000000E+00,      /* K = 14 */
+(PID.TID 0000.0001)                 1.800000000000000E+00,      /* K = 15 */
+(PID.TID 0000.0001)                 1.500000000000000E+00,      /* K = 16 */
+(PID.TID 0000.0001)                 1.100000000000000E+00,      /* K = 17 */
+(PID.TID 0000.0001)                 8.000000000000000E-01,      /* K = 18 */
+(PID.TID 0000.0001)                 6.600000000000000E-01,      /* K = 19 */
+(PID.TID 0000.0001)                 6.300000000000000E-01       /* K = 20 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) sRef =   /* Reference salinity profile ( ppt ) */
+(PID.TID 0000.0001)                 3.465000000000000E+01,      /* K =  1 */
+(PID.TID 0000.0001)                 3.475000000000000E+01,      /* K =  2 */
+(PID.TID 0000.0001)                 3.482000000000000E+01,      /* K =  3 */
+(PID.TID 0000.0001)                 3.487000000000000E+01,      /* K =  4 */
+(PID.TID 0000.0001)     2 @  3.490000000000000E+01,             /* K =  5:  6 */
+(PID.TID 0000.0001)                 3.486000000000000E+01,      /* K =  7 */
+(PID.TID 0000.0001)                 3.478000000000000E+01,      /* K =  8 */
+(PID.TID 0000.0001)                 3.469000000000000E+01,      /* K =  9 */
+(PID.TID 0000.0001)                 3.460000000000000E+01,      /* K = 10 */
+(PID.TID 0000.0001)                 3.458000000000000E+01,      /* K = 11 */
+(PID.TID 0000.0001)                 3.462000000000000E+01,      /* K = 12 */
+(PID.TID 0000.0001)                 3.468000000000000E+01,      /* K = 13 */
+(PID.TID 0000.0001)                 3.472000000000000E+01,      /* K = 14 */
+(PID.TID 0000.0001)                 3.473000000000000E+01,      /* K = 15 */
+(PID.TID 0000.0001)                 3.474000000000000E+01,      /* K = 16 */
+(PID.TID 0000.0001)     2 @  3.473000000000000E+01,             /* K = 17: 18 */
+(PID.TID 0000.0001)     2 @  3.472000000000000E+01              /* K = 19: 20 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscAh =   /* Lateral eddy viscosity ( m^2/s ) */
+(PID.TID 0000.0001)                 5.000000000000000E+05
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscAh =   /* Lateral biharmonic viscosity ( m^4/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscAz =   /* Vertical eddy viscosity ( m^2/s ) */
+(PID.TID 0000.0001)                 1.000000000000000E-03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) viscAr =   /* Vertical eddy viscosity ( units of r^2/s ) */
+(PID.TID 0000.0001)                 1.000000000000000E-03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffKhT =   /* Laplacian diffusion of heat laterally ( m^2/s ) */
+(PID.TID 0000.0001)                 1.000000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffKzT =   /* Laplacian diffusion of heat vertically ( m^2/s ) */
+(PID.TID 0000.0001)                 3.000000000000000E-05
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffK4T =   /* Bihaarmonic diffusion of heat laterally ( m^4/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffKhS =   /* Laplacian diffusion of salt laterally ( m^2/s ) */
+(PID.TID 0000.0001)                 1.000000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffKzS =   /* Laplacian diffusion of salt vertically ( m^2/s ) */
+(PID.TID 0000.0001)                 3.000000000000000E-05
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) diffK4S =   /* Bihaarmonic diffusion of salt laterally ( m^4/s ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tAlpha =   /* Linear EOS thermal expansion coefficient ( 1/degree ) */
+(PID.TID 0000.0001)                 2.000000000000000E-04
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) sBeta =   /* Linear EOS haline contraction coefficient ( 1/ppt ) */
+(PID.TID 0000.0001)                 7.400000000000000E-04
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rhonil =   /* Reference density ( kg/m^3 ) */
+(PID.TID 0000.0001)                 9.998000000000000E+02
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) gravity =   /* Gravitational acceleration ( m/s^2 ) */
+(PID.TID 0000.0001)                 9.810000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) gBaro =   /* Barotropic gravity ( m/s^2 ) */
+(PID.TID 0000.0001)                 9.810000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) f0 =   /* Reference coriolis parameter ( 1/s ) */
+(PID.TID 0000.0001)                 1.000000000000000E-04
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) beta =   /* Beta ( 1/(m.s) ) */
+(PID.TID 0000.0001)                 9.999999999999999E-12
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) freeSurfFac =   /* Implcit free surface factor */
+(PID.TID 0000.0001)                 1.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) implicitFreeSurface =   /* Implicit free surface on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rigidLid =   /* Rigid lid on/off flag */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momStepping =  /* Momentum equation on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momAdvection =  /* Momentum advection on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momViscosity =  /* Momentum viscosity on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) useCoriolis =  /* Coriolis on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momForcing =  /* Momentum forcing on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) momPressureForcing =  /* Momentum pressure term on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tempStepping =  /* Temperature equation on/off flag */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) GMMaxSlope =   /* Max. slope allowed in GM/Redi tensor */
+(PID.TID 0000.0001)                 1.000000000000000E-02
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) GMLength =   /* Length to use in Visbeck et al. formula for K (m) */
+(PID.TID 0000.0001)                 2.000000000000000E+05
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) GMAlpha =   /* alpha to use in Visbeck et al. formula for K */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) GMdepth =   /* Depth to integrate for Visbeck et. al Richardson # (m) */
+(PID.TID 0000.0001)                 1.000000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) GMkbackground =   /* background value of GM/Redi coefficient m^2/s */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) // Elliptic solver(s) paramters ( PARM02 in namelist )
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) cg2dMaxIters =   /* Upper limit on 2d con. grad iterations  */
+(PID.TID 0000.0001)                    1000
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) cg2dChkResFreq =   /* 2d con. grad convergence test frequency */
+(PID.TID 0000.0001)                       1
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) cg2dTargetResidual =   /* 2d con. grad target residual  */
+(PID.TID 0000.0001)                 1.000000000000000E-13
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) // Time stepping paramters ( PARM03 in namelist )
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) nIter0 =   /* Base timestep number  */
+(PID.TID 0000.0001)                       0
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) nTimeSteps =   /* Number of timesteps */
+(PID.TID 0000.0001)                      26
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) deltatTmom =   /* Momentum equation timestep ( s ) */
+(PID.TID 0000.0001)                 2.400000000000000E+03
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) deltatTtracer =   /* Tracer equation timestep ( s ) */
+(PID.TID 0000.0001)                 1.080000000000000E+05
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) deltatTClock  =   /* Model clock timestep ( s ) */
+(PID.TID 0000.0001)                 1.080000000000000E+05
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) cAdjFreq =   /* Convective adjustment interval ( s ) */
+(PID.TID 0000.0001)                 1.080000000000000E+05
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) abEps =   /* Adams-Bashforth stabilizing weight */
+(PID.TID 0000.0001)                 1.000000000000000E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) tauCD =   /* CD coupling time-scale ( s ) */
+(PID.TID 0000.0001)                 3.214280000000000E+05
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rCD =   /* Normalised CD coupling parameter */
+(PID.TID 0000.0001)                 9.925333200592357E-01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) startTime =   /* Run start time ( s ). */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) endTime =   /* Integration ending time ( s ). */
+(PID.TID 0000.0001)                 2.808000000000000E+06
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) pChkPtFreq =   /* Permanent restart/checkpoint file interval ( s ). */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) chkPtFreq =   /* Rolling restart/checkpoint file interval ( s ). */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) dumpFreq =   /* Model state write out interval ( s ). */
+(PID.TID 0000.0001)                 2.592000000000000E+06
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) // Gridding paramters ( PARM04 in namelist )
+(PID.TID 0000.0001) //
+(PID.TID 0000.0001) usingCartesianGrid =   /* Cartesian coordinates flag ( True / False ) */
+(PID.TID 0000.0001)                   F
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) usingSphericalPolarGrid =   /* Spherical coordinates flag ( True / False ) */
+(PID.TID 0000.0001)                   T
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) delZ =    /* W spacing ( m ) */
+(PID.TID 0000.0001)     2 @  5.000000000000000E+01,             /* K =  1:  2 */
+(PID.TID 0000.0001)                 5.500000000000000E+01,      /* K =  3 */
+(PID.TID 0000.0001)                 6.000000000000000E+01,      /* K =  4 */
+(PID.TID 0000.0001)                 6.500000000000000E+01,      /* K =  5 */
+(PID.TID 0000.0001)                 7.000000000000000E+01,      /* K =  6 */
+(PID.TID 0000.0001)                 8.000000000000000E+01,      /* K =  7 */
+(PID.TID 0000.0001)                 9.500000000000000E+01,      /* K =  8 */
+(PID.TID 0000.0001)                 1.200000000000000E+02,      /* K =  9 */
+(PID.TID 0000.0001)                 1.550000000000000E+02,      /* K = 10 */
+(PID.TID 0000.0001)                 2.000000000000000E+02,      /* K = 11 */
+(PID.TID 0000.0001)                 2.600000000000000E+02,      /* K = 12 */
+(PID.TID 0000.0001)                 3.200000000000000E+02,      /* K = 13 */
+(PID.TID 0000.0001)                 4.000000000000000E+02,      /* K = 14 */
+(PID.TID 0000.0001)                 4.800000000000000E+02,      /* K = 15 */
+(PID.TID 0000.0001)                 5.700000000000000E+02,      /* K = 16 */
+(PID.TID 0000.0001)                 6.550000000000000E+02,      /* K = 17 */
+(PID.TID 0000.0001)                 7.250000000000000E+02,      /* K = 18 */
+(PID.TID 0000.0001)                 7.750000000000000E+02,      /* K = 19 */
+(PID.TID 0000.0001)                 8.150000000000000E+02       /* K = 20 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) delP =    /* W spacing ( Pa ) */
+(PID.TID 0000.0001)    20 @  1.234567000000000E+05              /* K =  1: 20 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) delR =    /* W spacing ( units of r ) */
+(PID.TID 0000.0001)     2 @  5.000000000000000E+01,             /* K =  1:  2 */
+(PID.TID 0000.0001)                 5.500000000000000E+01,      /* K =  3 */
+(PID.TID 0000.0001)                 6.000000000000000E+01,      /* K =  4 */
+(PID.TID 0000.0001)                 6.500000000000000E+01,      /* K =  5 */
+(PID.TID 0000.0001)                 7.000000000000000E+01,      /* K =  6 */
+(PID.TID 0000.0001)                 8.000000000000000E+01,      /* K =  7 */
+(PID.TID 0000.0001)                 9.500000000000000E+01,      /* K =  8 */
+(PID.TID 0000.0001)                 1.200000000000000E+02,      /* K =  9 */
+(PID.TID 0000.0001)                 1.550000000000000E+02,      /* K = 10 */
+(PID.TID 0000.0001)                 2.000000000000000E+02,      /* K = 11 */
+(PID.TID 0000.0001)                 2.600000000000000E+02,      /* K = 12 */
+(PID.TID 0000.0001)                 3.200000000000000E+02,      /* K = 13 */
+(PID.TID 0000.0001)                 4.000000000000000E+02,      /* K = 14 */
+(PID.TID 0000.0001)                 4.800000000000000E+02,      /* K = 15 */
+(PID.TID 0000.0001)                 5.700000000000000E+02,      /* K = 16 */
+(PID.TID 0000.0001)                 6.550000000000000E+02,      /* K = 17 */
+(PID.TID 0000.0001)                 7.250000000000000E+02,      /* K = 18 */
+(PID.TID 0000.0001)                 7.750000000000000E+02,      /* K = 19 */
+(PID.TID 0000.0001)                 8.150000000000000E+02       /* K = 20 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) delX =    /* U spacing ( m - cartesian, degrees - spherical ) */
+(PID.TID 0000.0001)    90 @  4.000000000000000E+00              /* I =  1: 90 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) delY =    /* V spacing ( m - cartesian, degrees - spherical ) */
+(PID.TID 0000.0001)    40 @  4.000000000000000E+00              /* J =  1: 40 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) phiMin =    /* South edge (ignored - cartesian, degrees - spherical ) */
+(PID.TID 0000.0001)                -8.000000000000000E+01
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) thetaMin =    /* West edge ( ignored - cartesian, degrees - spherical ) */
+(PID.TID 0000.0001)                 0.000000000000000E+00
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rSphere =    /* Radius ( ignored - cartesian, m - spherical ) */
+(PID.TID 0000.0001)                 6.370000000000000E+06
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) xcoord =    /* P-point X coord ( m - cartesian, degrees - spherical ) */
+(PID.TID 0000.0001)                 2.000000000000000E+00,      /* I =  1 */
+(PID.TID 0000.0001)                 6.000000000000000E+00,      /* I =  2 */
+(PID.TID 0000.0001)                 1.000000000000000E+01,      /* I =  3 */
+(PID.TID 0000.0001)                 1.400000000000000E+01,      /* I =  4 */
+(PID.TID 0000.0001)                 1.800000000000000E+01,      /* I =  5 */
+(PID.TID 0000.0001)                 2.200000000000000E+01,      /* I =  6 */
+(PID.TID 0000.0001)                 2.600000000000000E+01,      /* I =  7 */
+(PID.TID 0000.0001)                 3.000000000000000E+01,      /* I =  8 */
+(PID.TID 0000.0001)                 3.400000000000000E+01,      /* I =  9 */
+(PID.TID 0000.0001)                 3.800000000000000E+01,      /* I = 10 */
+(PID.TID 0000.0001)                 4.200000000000000E+01,      /* I = 11 */
+(PID.TID 0000.0001)                 4.600000000000000E+01,      /* I = 12 */
+(PID.TID 0000.0001)                 5.000000000000000E+01,      /* I = 13 */
+(PID.TID 0000.0001)                 5.400000000000000E+01,      /* I = 14 */
+(PID.TID 0000.0001)                 5.800000000000000E+01,      /* I = 15 */
+(PID.TID 0000.0001)                 6.200000000000000E+01,      /* I = 16 */
+(PID.TID 0000.0001)                 6.600000000000000E+01,      /* I = 17 */
+(PID.TID 0000.0001)                 7.000000000000000E+01,      /* I = 18 */
+(PID.TID 0000.0001)                 7.400000000000000E+01,      /* I = 19 */
+(PID.TID 0000.0001)                 7.800000000000000E+01,      /* I = 20 */
+(PID.TID 0000.0001)                 8.200000000000000E+01,      /* I = 21 */
+(PID.TID 0000.0001)                 8.600000000000000E+01,      /* I = 22 */
+(PID.TID 0000.0001)                 9.000000000000000E+01,      /* I = 23 */
+(PID.TID 0000.0001)                 9.400000000000000E+01,      /* I = 24 */
+(PID.TID 0000.0001)                 9.800000000000000E+01,      /* I = 25 */
+(PID.TID 0000.0001)                 1.020000000000000E+02,      /* I = 26 */
+(PID.TID 0000.0001)                 1.060000000000000E+02,      /* I = 27 */
+(PID.TID 0000.0001)                 1.100000000000000E+02,      /* I = 28 */
+(PID.TID 0000.0001)                 1.140000000000000E+02,      /* I = 29 */
+(PID.TID 0000.0001)                 1.180000000000000E+02,      /* I = 30 */
+(PID.TID 0000.0001)                 1.220000000000000E+02,      /* I = 31 */
+(PID.TID 0000.0001)                 1.260000000000000E+02,      /* I = 32 */
+(PID.TID 0000.0001)                 1.300000000000000E+02,      /* I = 33 */
+(PID.TID 0000.0001)                 1.340000000000000E+02,      /* I = 34 */
+(PID.TID 0000.0001)                 1.380000000000000E+02,      /* I = 35 */
+(PID.TID 0000.0001)                 1.420000000000000E+02,      /* I = 36 */
+(PID.TID 0000.0001)                 1.460000000000000E+02,      /* I = 37 */
+(PID.TID 0000.0001)                 1.500000000000000E+02,      /* I = 38 */
+(PID.TID 0000.0001)                 1.540000000000000E+02,      /* I = 39 */
+(PID.TID 0000.0001)                 1.580000000000000E+02,      /* I = 40 */
+(PID.TID 0000.0001)                 1.620000000000000E+02,      /* I = 41 */
+(PID.TID 0000.0001)                 1.660000000000000E+02,      /* I = 42 */
+(PID.TID 0000.0001)                 1.700000000000000E+02,      /* I = 43 */
+(PID.TID 0000.0001)                 1.740000000000000E+02,      /* I = 44 */
+(PID.TID 0000.0001)                 1.780000000000000E+02,      /* I = 45 */
+(PID.TID 0000.0001)                 1.820000000000000E+02,      /* I = 46 */
+(PID.TID 0000.0001)                 1.860000000000000E+02,      /* I = 47 */
+(PID.TID 0000.0001)                 1.900000000000000E+02,      /* I = 48 */
+(PID.TID 0000.0001)                 1.940000000000000E+02,      /* I = 49 */
+(PID.TID 0000.0001)                 1.980000000000000E+02,      /* I = 50 */
+(PID.TID 0000.0001)                 2.020000000000000E+02,      /* I = 51 */
+(PID.TID 0000.0001)                 2.060000000000000E+02,      /* I = 52 */
+(PID.TID 0000.0001)                 2.100000000000000E+02,      /* I = 53 */
+(PID.TID 0000.0001)                 2.140000000000000E+02,      /* I = 54 */
+(PID.TID 0000.0001)                 2.180000000000000E+02,      /* I = 55 */
+(PID.TID 0000.0001)                 2.220000000000000E+02,      /* I = 56 */
+(PID.TID 0000.0001)                 2.260000000000000E+02,      /* I = 57 */
+(PID.TID 0000.0001)                 2.300000000000000E+02,      /* I = 58 */
+(PID.TID 0000.0001)                 2.340000000000000E+02,      /* I = 59 */
+(PID.TID 0000.0001)                 2.380000000000000E+02,      /* I = 60 */
+(PID.TID 0000.0001)                 2.420000000000000E+02,      /* I = 61 */
+(PID.TID 0000.0001)                 2.460000000000000E+02,      /* I = 62 */
+(PID.TID 0000.0001)                 2.500000000000000E+02,      /* I = 63 */
+(PID.TID 0000.0001)                 2.540000000000000E+02,      /* I = 64 */
+(PID.TID 0000.0001)                 2.580000000000000E+02,      /* I = 65 */
+(PID.TID 0000.0001)                 2.620000000000000E+02,      /* I = 66 */
+(PID.TID 0000.0001)                 2.660000000000000E+02,      /* I = 67 */
+(PID.TID 0000.0001)                 2.700000000000000E+02,      /* I = 68 */
+(PID.TID 0000.0001)                 2.740000000000000E+02,      /* I = 69 */
+(PID.TID 0000.0001)                 2.780000000000000E+02,      /* I = 70 */
+(PID.TID 0000.0001)                 2.820000000000000E+02,      /* I = 71 */
+(PID.TID 0000.0001)                 2.860000000000000E+02,      /* I = 72 */
+(PID.TID 0000.0001)                 2.900000000000000E+02,      /* I = 73 */
+(PID.TID 0000.0001)                 2.940000000000000E+02,      /* I = 74 */
+(PID.TID 0000.0001)                 2.980000000000000E+02,      /* I = 75 */
+(PID.TID 0000.0001)                 3.020000000000000E+02,      /* I = 76 */
+(PID.TID 0000.0001)                 3.060000000000000E+02,      /* I = 77 */
+(PID.TID 0000.0001)                 3.100000000000000E+02,      /* I = 78 */
+(PID.TID 0000.0001)                 3.140000000000000E+02,      /* I = 79 */
+(PID.TID 0000.0001)                 3.180000000000000E+02,      /* I = 80 */
+(PID.TID 0000.0001)                 3.220000000000000E+02,      /* I = 81 */
+(PID.TID 0000.0001)                 3.260000000000000E+02,      /* I = 82 */
+(PID.TID 0000.0001)                 3.300000000000000E+02,      /* I = 83 */
+(PID.TID 0000.0001)                 3.340000000000000E+02,      /* I = 84 */
+(PID.TID 0000.0001)                 3.380000000000000E+02,      /* I = 85 */
+(PID.TID 0000.0001)                 3.420000000000000E+02,      /* I = 86 */
+(PID.TID 0000.0001)                 3.460000000000000E+02,      /* I = 87 */
+(PID.TID 0000.0001)                 3.500000000000000E+02,      /* I = 88 */
+(PID.TID 0000.0001)                 3.540000000000000E+02,      /* I = 89 */
+(PID.TID 0000.0001)                 3.580000000000000E+02       /* I = 90 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) ycoord =    /* P-point Y coord ( m - cartesian, degrees - spherical ) */
+(PID.TID 0000.0001)                -7.800000000000000E+01,      /* J =  1 */
+(PID.TID 0000.0001)                -7.400000000000000E+01,      /* J =  2 */
+(PID.TID 0000.0001)                -7.000000000000000E+01,      /* J =  3 */
+(PID.TID 0000.0001)                -6.600000000000000E+01,      /* J =  4 */
+(PID.TID 0000.0001)                -6.200000000000000E+01,      /* J =  5 */
+(PID.TID 0000.0001)                -5.800000000000000E+01,      /* J =  6 */
+(PID.TID 0000.0001)                -5.400000000000000E+01,      /* J =  7 */
+(PID.TID 0000.0001)                -5.000000000000000E+01,      /* J =  8 */
+(PID.TID 0000.0001)                -4.600000000000000E+01,      /* J =  9 */
+(PID.TID 0000.0001)                -4.200000000000000E+01,      /* J = 10 */
+(PID.TID 0000.0001)                -3.800000000000000E+01,      /* J = 11 */
+(PID.TID 0000.0001)                -3.400000000000000E+01,      /* J = 12 */
+(PID.TID 0000.0001)                -3.000000000000000E+01,      /* J = 13 */
+(PID.TID 0000.0001)                -2.600000000000000E+01,      /* J = 14 */
+(PID.TID 0000.0001)                -2.200000000000000E+01,      /* J = 15 */
+(PID.TID 0000.0001)                -1.800000000000000E+01,      /* J = 16 */
+(PID.TID 0000.0001)                -1.400000000000000E+01,      /* J = 17 */
+(PID.TID 0000.0001)                -1.000000000000000E+01,      /* J = 18 */
+(PID.TID 0000.0001)                -6.000000000000000E+00,      /* J = 19 */
+(PID.TID 0000.0001)                -2.000000000000000E+00,      /* J = 20 */
+(PID.TID 0000.0001)                 2.000000000000000E+00,      /* J = 21 */
+(PID.TID 0000.0001)                 6.000000000000000E+00,      /* J = 22 */
+(PID.TID 0000.0001)                 1.000000000000000E+01,      /* J = 23 */
+(PID.TID 0000.0001)                 1.400000000000000E+01,      /* J = 24 */
+(PID.TID 0000.0001)                 1.800000000000000E+01,      /* J = 25 */
+(PID.TID 0000.0001)                 2.200000000000000E+01,      /* J = 26 */
+(PID.TID 0000.0001)                 2.600000000000000E+01,      /* J = 27 */
+(PID.TID 0000.0001)                 3.000000000000000E+01,      /* J = 28 */
+(PID.TID 0000.0001)                 3.400000000000000E+01,      /* J = 29 */
+(PID.TID 0000.0001)                 3.800000000000000E+01,      /* J = 30 */
+(PID.TID 0000.0001)                 4.200000000000000E+01,      /* J = 31 */
+(PID.TID 0000.0001)                 4.600000000000000E+01,      /* J = 32 */
+(PID.TID 0000.0001)                 5.000000000000000E+01,      /* J = 33 */
+(PID.TID 0000.0001)                 5.400000000000000E+01,      /* J = 34 */
+(PID.TID 0000.0001)                 5.800000000000000E+01,      /* J = 35 */
+(PID.TID 0000.0001)                 6.200000000000000E+01,      /* J = 36 */
+(PID.TID 0000.0001)                 6.600000000000000E+01,      /* J = 37 */
+(PID.TID 0000.0001)                 7.000000000000000E+01,      /* J = 38 */
+(PID.TID 0000.0001)                 7.400000000000000E+01,      /* J = 39 */
+(PID.TID 0000.0001)                 7.800000000000000E+01       /* J = 40 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) rcoord =    /* P-point R coordinate (  units of r ) */
+(PID.TID 0000.0001)                -2.500000000000000E+01,      /* K =  1 */
+(PID.TID 0000.0001)                -7.500000000000000E+01,      /* K =  2 */
+(PID.TID 0000.0001)                -1.275000000000000E+02,      /* K =  3 */
+(PID.TID 0000.0001)                -1.850000000000000E+02,      /* K =  4 */
+(PID.TID 0000.0001)                -2.475000000000000E+02,      /* K =  5 */
+(PID.TID 0000.0001)                -3.150000000000000E+02,      /* K =  6 */
+(PID.TID 0000.0001)                -3.900000000000000E+02,      /* K =  7 */
+(PID.TID 0000.0001)                -4.775000000000000E+02,      /* K =  8 */
+(PID.TID 0000.0001)                -5.850000000000000E+02,      /* K =  9 */
+(PID.TID 0000.0001)                -7.225000000000000E+02,      /* K = 10 */
+(PID.TID 0000.0001)                -9.000000000000000E+02,      /* K = 11 */
+(PID.TID 0000.0001)                -1.130000000000000E+03,      /* K = 12 */
+(PID.TID 0000.0001)                -1.420000000000000E+03,      /* K = 13 */
+(PID.TID 0000.0001)                -1.780000000000000E+03,      /* K = 14 */
+(PID.TID 0000.0001)                -2.220000000000000E+03,      /* K = 15 */
+(PID.TID 0000.0001)                -2.745000000000000E+03,      /* K = 16 */
+(PID.TID 0000.0001)                -3.357500000000000E+03,      /* K = 17 */
+(PID.TID 0000.0001)                -4.047500000000000E+03,      /* K = 18 */
+(PID.TID 0000.0001)                -4.797500000000000E+03,      /* K = 19 */
+(PID.TID 0000.0001)                -5.592500000000000E+03       /* K = 20 */
+(PID.TID 0000.0001)     ;
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Model current state
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // Wrote file(s) U.*0000000000
+(PID.TID 0000.0001) // Wrote file(s) V.*0000000000
+(PID.TID 0000.0001) // Wrote file(s) T.*0000000000
+(PID.TID 0000.0001) // Wrote file(s) S.*0000000000
+(PID.TID 0000.0001) // Wrote file(s) H.*0000000000
+(PID.TID 0000.0001) // Model state written, timestep         0
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // Read file(s) SST.bin*
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Theta Climatology at iteration          1
+(PID.TID 0000.0001) // CMIN =         -1.668560028076172E+00
+(PID.TID 0000.0001) // CMAX =          2.932958030700684E+01
+(PID.TID 0000.0001) // CINT =          1.148079271669741E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -2:  93:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  43:  -2:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001) //                I=7       I=17      I=27      I=37      I=47      I=57      I=67      I=77      I=87
+(PID.TID 0000.0001) // |--J--|**0123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123
+(PID.TID 0000.0001) //     43 ..............................................aaaaaa------------aaaa..........------aaaaa.......
+(PID.TID 0000.0001) //     42 ..............................................aaaaaa--...........................----...........
+(PID.TID 0000.0001) //     41 ................................................................................................
+(PID.TID 0000.0001) //     40 ................................................................................................
+(PID.TID 0000.0001) //     39 ccdefffgf...................................................................bbb.........bbccdeff
+(PID.TID 0000.0001) //     38 efghhhh......................................................................bc........dddefghhh
+(PID.TID 0000.0001) //     37 hiiij........................................................................ccc...ffgg..hhiiij.
+(PID.TID 0000.0001) //     36 jjii..........................................efeed..........................deee.fhhijjkkjjii..
+(PID.TID 0000.0001) //     35 l..jj.................................dddd.ffffffffff.ghhiii..................defgghijkllll..jj.
+(PID.TID 0000.0001) //     34 l......................................deeefffgggggghhhhiijjj..................dfhijklmmmml.....
+(PID.TID 0000.0001) //     33 mm.....................................eeeffgggghhhhiiiiijjkkk...............ee.egkmmnnnnnmm....
+(PID.TID 0000.0001) //     32 n......................................hhhiiiijjjjjkkkkklllmml...............iiihkopppoooon.....
+(PID.TID 0000.0001) //     31 .......................................mnnnnnnnnnnnnnnnnnooonm.............oprrrqrsrrrqqqp......
+(PID.TID 0000.0001) //     30 q.....................................rrrrrqqqqqqqpppppqqqqpon............suuuuutttsssrrrrq.....
+(PID.TID 0000.0001) //     29 r.................................ruuuuttttttttsssssssssssrrqpoo.........vvuuuuuutttttsssrr.....
+(PID.TID 0000.0001) //     28 .................................uvvvvvvvvvvvvvvvvuuuuuuutssrrqq......wv.wwvvvvvvvuuutttss......
+(PID.TID 0000.0001) //     27 ..................................xxxxwxxxxwxwwwwwwwwwvvuutttsssst...wxxxxxxxxxxwwwvvvuus.......
+(PID.TID 0000.0001) //     26 ..................xyy....y.....xxyyyyyyyyyyyyyxxxxxxxxwwvvvvuuuuvvw..w.yyyyyyyxxxxwwvvuts.......
+(PID.TID 0000.0001) //     25 ................xxyyz..yzzy...xyy.zzzzzzzzzzyyyyyyyxxxxwwwwwwwwxxxyy....zzyyyyyyxxxwwwvut.......
+(PID.TID 0000.0001) //     24 ...............xxyzzzz.zzzz...yyz.zzzzzzzzzzzzyyyyyyyxxxxxxxxxxxyyyyxww.yyy.yyyyyxxxwwwvu.......
+(PID.TID 0000.0001) //     23 ................xyzzzzzzzzz.zyyzzzzzz++++zzzzzzzzzzzyyyyyyyyyyyyyyyxxwvw......yyyyyyxxxxww......
+(PID.TID 0000.0001) //     22 xwwxx..........yyzz+zzzzzzz..zz..zzz++++++++++zzzzzzzzzzyyyyyxxxxxxxxxwww.......yyyyyyyyyyxwwxx.
+(PID.TID 0000.0001) //     21 wwwww.........yyyzzzzzzzz+++.....zzzz++++++++zzzzzzyyyyyyxxxwwwvvvvuuutut........yyyyyxxxxwwwww.
+(PID.TID 0000.0001) //     20 wvvvvu.......yyyyyyzzzzzzzzz.......y...++++++++++zzzzzzzyyyyxxxwwwvvuuut............yyyxxxwvvvvu
+(PID.TID 0000.0001) //     19 wwwvut.......yxyxxyyyyyyyzzzzz.zzzzzy...zz++++++++++++zzzzyyyyyxxxwwvvvus...........yyyxxxwwwvut
+(PID.TID 0000.0001) //     18 vvvuut.......yyyyxyyyyyyyyyyyyyzzzz....yyyzzzzzz++z++zzzzzzyyyxxxwwvvuutsr..........yyxxxwvvvuut
+(PID.TID 0000.0001) //     17 uuttts.......y..xxxxxxxxxxxxxxxyyy......xyyyyyyyyzzzzzzzzyyyyxxxwwvvuuutsr..........xxxwwvuuttts
+(PID.TID 0000.0001) //     16 uuttsq......xx.xxwwwwwwwvvvvwwww........wwwxxxxxxxxxxxxxxxxxxxxxwvvvuuttssr........xxxxwvvuuttsq
+(PID.TID 0000.0001) //     15 uttsrq......ww.wwwvvvvvuuuuuuuv..........vvvvvvvvvvvvvvvvvwwwwwwvvvuuttsrrq.......vwwwwvvuuttsrq
+(PID.TID 0000.0001) //     14 utsssrp....vvvvvvuuuuuttstttstt...........uuuttutttttttuuuuuuuuuvuuuttssrqp......uvvvuuuuuutsssr
+(PID.TID 0000.0001) //     13 ssrrrrq...ttsssssrrrrrrqrqqqqqr..........uttsssssrrrrsrrsssssssssrrrrrrrqpo.....tttttsttttssrrrr
+(PID.TID 0000.0001) //     12 qqpppqqrssssrrqqqqpppooooooopppq.qppp....ssrqqqqqpppppppppppppoooopooppppon....orrrrrqqqqqqqpppq
+(PID.TID 0000.0001) //     11 nmmmlmopqpppppoooononnmmmlmmmmmnnnnnnnoopppppp.pooonnnnnnnnnmmmmmmmmmmnnnn....lmpoooooonnnnmmmlm
+(PID.TID 0000.0001) //     10 jiiiiijkkkkkjjiijkkkkkkkkjjjjjjkkkkllllmnnnnn.lmmmnmmlllllmllllllkkkjkllll...kjlmlkkkkkjjjjiiiii
+(PID.TID 0000.0001) //      9 eeeffffffffffffefffeefgggggfggghhiiiiijjkllllkkkkkkkkkkkkjjjjjjiiiiiiijjjk...ihiiihggggfffeeefff
+(PID.TID 0000.0001) //      8 cccccccccddddddddeedddddddedeeeefffgfggghhhiiiiiiiihhhhhhhhhgggggghggggghi..hhhgffedddddddcccccc
+(PID.TID 0000.0001) //      7 bbbaaabbbccccccccccccccbccccccccddddddddeeffghhgggggfeedddeeffffffffggfggggggffeddccbbbbbbbbbaaa
+(PID.TID 0000.0001) //      6 aaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccdeeeeeeedcbbbbbccccdddddeeeeeeeeddcccbbbaaaaaaaaaaaaa
+(PID.TID 0000.0001) //      5 aaaaaabbbbbbbbaaaaabbbaaaaaa.aaabbbbbbbbbbbbbbbbbbbbbaaaaaaaabbbbcccccccbbbbb.aaaaaaaaaaaaaaaaaa
+(PID.TID 0000.0001) //      4 aaaaaaaaaaa.a..............................aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aa--aaaaaaaaaaaaaa
+(PID.TID 0000.0001) //      3 ..............................................aaaaaa------------aaaa..........------aaaaa.......
+(PID.TID 0000.0001) //      2 ..............................................aaaaaa--...........................----...........
+(PID.TID 0000.0001) //      1 ................................................................................................
+(PID.TID 0000.0001) //      0 ................................................................................................
+(PID.TID 0000.0001) //     -1 ccdefffgf...................................................................bbb.........bbccdeff
+(PID.TID 0000.0001) //     -2 efghhhh......................................................................bc........dddefghhh
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // Read file(s) SSS.bin*
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Salt Climatology at iteration          1
+(PID.TID 0000.0001) // CMIN =          3.102835273742676E+01
+(PID.TID 0000.0001) // CMAX =          3.743946075439453E+01
+(PID.TID 0000.0001) // CINT =          2.374484450728805E-01
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -2:  93:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  43:  -2:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001) //                I=7       I=17      I=27      I=37      I=47      I=57      I=67      I=77      I=87
+(PID.TID 0000.0001) // |--J--|**0123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123
+(PID.TID 0000.0001) //     43 ..............................................nmmmlllllkkkkklmmmmllk..........nnnnnmmmmmm.......
+(PID.TID 0000.0001) //     42 ..............................................nnnmmmmm...........................nnnm...........
+(PID.TID 0000.0001) //     41 ................................................................................................
+(PID.TID 0000.0001) //     40 ................................................................................................
+(PID.TID 0000.0001) //     39 nppqqqqpp...................................................................ghi.........kmnppqqq
+(PID.TID 0000.0001) //     38 ppqrqpn......................................................................gh........mnoppqrqp
+(PID.TID 0000.0001) //     37 qqqqo........................................................................hjj...noqq..pqqqqo.
+(PID.TID 0000.0001) //     36 rrqp..........................................hhgeb..........................jmom.npqqrrrrrrqp..
+(PID.TID 0000.0001) //     35 r..po.................................gghh.ghiiiihfdb.egggec..................gloppppqqrrrr..po.
+(PID.TID 0000.0001) //     34 r......................................fghghhhhhhhhgfgggggfed..................flopppqrrsrr.....
+(PID.TID 0000.0001) //     33 sr.....................................gghhhhhhhhgghhgggggggfe...............-b.glprsrrssssr....
+(PID.TID 0000.0001) //     32 s......................................hhijjjjjkjjjjiihhhhhggf...............cghiosttttssts.....
+(PID.TID 0000.0001) //     31 .......................................llmmmmmmmmmmmllkjkjihgh.............mpsttsuvuuuuuut......
+(PID.TID 0000.0001) //     30 v.....................................nooooooooonnnnnmmmmlkjih............qvwwwwwvvvvvvvvvv.....
+(PID.TID 0000.0001) //     29 w.................................knooooooopppppppppppppppomkjjj.........vwwwwwwwwxxxxxxwww.....
+(PID.TID 0000.0001) //     28 .................................lnopoppppqqqqqqrrrrrrrrrrqpnlkk......tu.vwwxxxyyyzzzzyyxw......
+(PID.TID 0000.0001) //     27 ..................................pppppqqqqqrrrrrrrrrqqqqqqponmmmp...wwvuwwwwxxyz++++zzyx.......
+(PID.TID 0000.0001) //     26 ..................vwu....h.....mmnooppppqqqqqrqqqqqqpppoppoooonnnoo..v.uuvvvuuuwyzzyyyxwu.......
+(PID.TID 0000.0001) //     25 ................uuvwv..gihf...llk.nnooopppppppppppoooonnoonnnnnmmmmm....uttsssstwwwwwwvut.......
+(PID.TID 0000.0001) //     24 ...............utuvvuq.kkig...kjk.nnnnnoooooooooooonnnnnnnmmmmmlllllmmm.vuu.vsrrtuvuuuuts.......
+(PID.TID 0000.0001) //     23 ................stttspommki.eijjkmnmmmnnnnnnnnnnnnoonnnnnnnnmmmmmllklmml......srstttuttssp......
+(PID.TID 0000.0001) //     22 qrrqm..........ssrrrrqponml..jj..mnnnnoonnonopopppqqppppppppooonnnmlllkjj.......outtttssrrqrrqm.
+(PID.TID 0000.0001) //     21 srrqp.........rrrrrqqqpppnml.....mmnoooooppppqqrrrrrrrqqqqqqppppppppooonm........tuuuuutttsrrqp.
+(PID.TID 0000.0001) //     20 ttsssq.......rrrrqqqqppponmm.......n...noppppqqrssssssrssrrrrqqqqqqppppp............uuuuttttsssq
+(PID.TID 0000.0001) //     19 uuuusr.......qqrqppppooonnmmml.kklmmm...nppoppppqrrssssssssssrrrrrrqqrqqq...........wvvuuuuuuusr
+(PID.TID 0000.0001) //     18 wwwvut.......qqqppoooonnnnnnnnnnnno....qqpppppppqrrsttttttuutttttttssssrrq..........xxxxxwwwwvut
+(PID.TID 0000.0001) //     17 wwvuut.......q..qpppoooooooooooooo......rqqpqqqqrsrsttuuuvvvvvvvvvuuttssrq..........yzzyyxwwvuut
+(PID.TID 0000.0001) //     16 wvutts......qq.qqqppqpqpppqqqqqq........rrrrrrrqrsssstttuuvvvwwwwvvvutsrrqq........yyzzyxxwvutts
+(PID.TID 0000.0001) //     15 wvutsr......rr.qqrrrrssrssssssr..........sssssssssssssssssstuvwvvuuvtsrqppp.......wxxxxxxwwvutsr
+(PID.TID 0000.0001) //     14 uuuttsr....rrrrrrssstttttttttts...........sttttsssssssssrrrssttttttssrqpoon......vwwuuvvvvuuutts
+(PID.TID 0000.0001) //     13 ttttsss...rssssssssstttsttttttt..........sssssttssssrrssrrqqqqrrqqppppooonm.....svuuttttstttttss
+(PID.TID 0000.0001) //     12 rqrrrrsrrrssssssrrssrrrrrrqrssss.srrs....ssssssssrrqqqqqqpqpoooonnnnnnnnmml....ksutsssrrrrrqrrrr
+(PID.TID 0000.0001) //     11 poooooqrrrrrqqqppprrrqqpppppqqqqqpppqqrrsrrrrr.rrrqppponnnnnmmmmmmmllmmlml....korqppqrqqpppooooo
+(PID.TID 0000.0001) //     10 nnnmmmnnooonmllkklnnnoonnonooooooopooppqqqppp.ooppppoonnnnnnmmmmmmmllmlllk...kmoponoonnnnnnnnmmm
+(PID.TID 0000.0001) //      9 llllllllllllllkkklkkklllmmmmmmmnnnnnnnooooooonnnnoooooooonnnnnnnnmmmmmmmmk...kmnnnnmmmllllllllll
+(PID.TID 0000.0001) //      8 llllllmmmmlllllllllllllllllllllllllllmmmmmmnnnnnnnnnnnnnnnnnnnnnnmnnmmmmml..ikmmmlllllllllllllll
+(PID.TID 0000.0001) //      7 lllmmmmmmmllllllllllllllllllllllllllllllllllmmmmmmmmlllmmmmmmmmmmmmmmmmmmmlkllmmlllllllllllllmmm
+(PID.TID 0000.0001) //      6 mmmmmmlllllllllllllllllllllllllllllllllllllllllllllllmmmmmmmmmmmmmmmmmmmmmmmlllmmmmmllllllmmmmmm
+(PID.TID 0000.0001) //      5 mmnnnmmmllllllllllllllllllll.lllmmllllllllmmmmmmmmmmmmmmlllllllllllllllllllll.mmmmmmmmmmmmmmnnnm
+(PID.TID 0000.0001) //      4 mnnnmmmllll.l..............................mmmmmmlmmmllkkkkkkkkkkkkkkkkkkkk...mnnnnnnnnnnmmnnnmm
+(PID.TID 0000.0001) //      3 ..............................................nmmmlllllkkkkklmmmmllk..........nnnnnmmmmmm.......
+(PID.TID 0000.0001) //      2 ..............................................nnnmmmmm...........................nnnm...........
+(PID.TID 0000.0001) //      1 ................................................................................................
+(PID.TID 0000.0001) //      0 ................................................................................................
+(PID.TID 0000.0001) //     -1 nppqqqqpp...................................................................ghi.........kmnppqqq
+(PID.TID 0000.0001) //     -2 ppqrqpn......................................................................gh........mnoppqrqp
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // Read file(s) windx*
+(PID.TID 0000.0001) // Read file(s) windy*
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field S/R LOAD_WIND_STRESS_CLIMATOLOGY FU at iteration          1
+(PID.TID 0000.0001) // CMIN =         -1.032922118902206E-01
+(PID.TID 0000.0001) // CMAX =          1.600433439016342E-01
+(PID.TID 0000.0001) // CINT =          9.753168733031661E-03
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -2:  93:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  43:  -2:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001) //                I=7       I=17      I=27      I=37      I=47      I=57      I=67      I=77      I=87
+(PID.TID 0000.0001) // |--J--|**0123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123
+(PID.TID 0000.0001) //     43 ...............................................llmmnnnnnnnmmmmllllll...........kkkkjjjjii.......
+(PID.TID 0000.0001) //     42 ...............................................kkllllm............................jjj...........
+(PID.TID 0000.0001) //     41 ................................................................................................
+(PID.TID 0000.0001) //     40 ................................................................................................
+(PID.TID 0000.0001) //     39 jjjjjjiii....................................................................lk..........jjjjjjj
+(PID.TID 0000.0001) //     38 jjkllmm.......................................................................l.........hijjkllm
+(PID.TID 0000.0001) //     37 jllmn.........................................................................ll....dde...jllmn.
+(PID.TID 0000.0001) //     36 nnmm...........................................fffg...........................mml..nopponnnnmm..
+(PID.TID 0000.0001) //     35 p...m..................................kjj..iihhiijkk..mmlki...................ooopstuttsrp...m.
+(PID.TID 0000.0001) //     34 q.......................................mmlmmmmmmnnnoppqqqpnl...................qstuuuuttrq.....
+(PID.TID 0000.0001) //     33 po......................................nopqqqpppppppqqqqqqpom................n..svvutsrrqpo....
+(PID.TID 0000.0001) //     32 n.......................................opqrqqrrqqqqqqqqqqqqpn................pppqtusrqppon.....
+(PID.TID 0000.0001) //     31 ........................................oppqqrrqqqqpppppoooonn..............oqrrpqrqpoonnm......
+(PID.TID 0000.0001) //     30 k......................................nopppqqqqppooonnnnmmmmm.............oqrrrqponnmmllkk.....
+(PID.TID 0000.0001) //     29 j..................................kkmmnnoonnnnmmmmllllkjjjjjkno..........lmnnnmmlllkkjjjjj.....
+(PID.TID 0000.0001) //     28 ..................................ijjkkkkkkkkjjjjiiiiihggggghikm.......i..jjjjjjjiiiiihhhh......
+(PID.TID 0000.0001) //     27 ...................................hhhhhhhgggggggffeeedddddefghjll....ggghgfggggggggffffg.......
+(PID.TID 0000.0001) //     26 ...................nn...........ddfgffffffeeeeddddddddccbbbcdefhjkl.....ffgheeeeeeddddeeg.......
+(PID.TID 0000.0001) //     25 .................mooo...lll....gg..gffeeedddcccccccccbabbbbbcdeghjkk.....dbbcddccccccdefi.......
+(PID.TID 0000.0001) //     24 ................lnoonn..lll....ii..hggfeedddcccccbbbbaabbbccdefhiijjiii..d-..edcccccdeghj.......
+(PID.TID 0000.0001) //     23 .................nmmmmmlmll..jjjijjjiihggffeeeeddddccccdcdeefghhiijjijjk.......ddddefghikl......
+(PID.TID 0000.0001) //     22 kkkll...........mmlllmmnnml...j...kkkjjiihhggggffeeeeeeeeefffgghhiiijklll........eeefghijkkkkll.
+(PID.TID 0000.0001) //     21 ijjkk..........jkkklllmmmmll......kkkkkjjjjihhhggffeeeeeeeefffggghiiijjjk.........eefggghiijjkk.
+(PID.TID 0000.0001) //     20 ghijjk........hijjjjkkkllkkk............jjjjiiihggffeeeeedeeeeeffggghhhh.............feffgghijjk
+(PID.TID 0000.0001) //     19 ffghik........hghhhhhhhhihhhhh..jjjii....iiiiiihhggffeeeeddddddddddeeefgh............edddeffghik
+(PID.TID 0000.0001) //     18 defghj........igfffeeeedddddefhiijj.....gggggggggggfffffeeeddddccccccdeefh...........eddcddefghj
+(PID.TID 0000.0001) //     17 deefgi...........dcccccbaaabcegijk.......eeeffffffffffffffeeeeddccccccddeg...........eeedddeefgi
+(PID.TID 0000.0001) //     16 eeeeeg.......i..fdcccbaaabbcdegj.........eeeeeeeeeeffffffffffeeeedddddddefh.........ggfffeeeeeeg
+(PID.TID 0000.0001) //     15 gfeeef.......g..feddccccdddeefg...........ffffffffffffggghggggggfffggffffgi........hhhhhgggfeeef
+(PID.TID 0000.0001) //     14 iihhggg.....hgeefffffggggghhihh............hhhhhhhhhhiiiiiiiihhiiihiihhhhhj.......hhiijjjjiihhgg
+(PID.TID 0000.0001) //     13 mmllkji....jiihhiijjjkkkklllmml...........kjjjjjkkkkkkkkjjjjjjjkkjjkkkkjkjk......jkkkkllllmmllkj
+(PID.TID 0000.0001) //     12 oonnonnmmnmllllllmmnnnoooppppppo..nnn.....llllllmlllllmmmlllkllmmllmmmmmmml.....lmmmnnnnnnoonnon
+(PID.TID 0000.0001) //     11 qqqrrrrrrpooopppprssssttsstttssrqppppppooonmmm..mmmmmmmnnnmmmnopppooooooon.....moooopqqqqqqqqrrr
+(PID.TID 0000.0001) //     10 ttuvvvvutssstttttvvwwwwxxxxwwvvuutsrrrqqqqppo..mmnnnnnooooooppqqrrqrrrrqqp....npqrrrrsssssttuvvv
+(PID.TID 0000.0001) //      9 vvwwxxxwvwwwxxxxxyyyzzzz+++zyxwwwwvutsssssrrqpoopppqqqqpppqqrsttttsstttssr....pqrssssstttuvvwwxx
+(PID.TID 0000.0001) //      8 uvvvvwvvwyyzzzyyyzzzzzyzz+zywvvwwwvuttssttttttssttuuttssrsstuvwwvuttttuuuu...rqrrrrrsssttuuvvvvw
+(PID.TID 0000.0001) //      7 ssttsstvxyxxwvvwwwwwwvvvvvvuttttttssrrrrstuuvvvvvvvvuutttttuuvvvusrrrstuvvvvrssrqqqqqqrrrsssttss
+(PID.TID 0000.0001) //      6 poooooqrsrrqpoppppppppooooooooooonnmmmnopqsttuuutttsssssssssrrrqpooopqrssssrrqppoonnnnoooopooooo
+(PID.TID 0000.0001) //      5 kkkkkllllkkjiiiiiijjjjjiiiii..iihhggghijlmnopppppoonoooqqqponmmlkklmmnnnnmmmm..lllkkkkkkkkkkkkkl
+(PID.TID 0000.0001) //      4 ihhhgggggff.................................llllmmmnnnnnooonmlkjjkkkkkkkkjj....jkjjjjjjiiiihhhgg
+(PID.TID 0000.0001) //      3 ...............................................llmmnnnnnnnmmmmllllll...........kkkkjjjjii.......
+(PID.TID 0000.0001) //      2 ...............................................kkllllm............................jjj...........
+(PID.TID 0000.0001) //      1 ................................................................................................
+(PID.TID 0000.0001) //      0 ................................................................................................
+(PID.TID 0000.0001) //     -1 jjjjjjiii....................................................................lk..........jjjjjjj
+(PID.TID 0000.0001) //     -2 jjkllmm.......................................................................l.........hijjkllm
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field S/R LOAD_WIND_STRESS_CLIMATOLOGY FV at iteration          1
+(PID.TID 0000.0001) // CMIN =         -7.049009948968887E-02
+(PID.TID 0000.0001) // CMAX =          8.463316410779953E-02
+(PID.TID 0000.0001) // CINT =          5.745306059166237E-03
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -2:  93:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  43:  -2:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001) //                I=7       I=17      I=27      I=37      I=47      I=57      I=67      I=77      I=87
+(PID.TID 0000.0001) // |--J--|**0123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123
+(PID.TID 0000.0001) //     43 ..............................................wvutssrr...........................mmmm...........
+(PID.TID 0000.0001) //     42 ................................................................................................
+(PID.TID 0000.0001) //     41 ................................................................................................
+(PID.TID 0000.0001) //     40 ................................................................................................
+(PID.TID 0000.0001) //     39 hhiijkl......................................................................ii.........gghhiijk
+(PID.TID 0000.0001) //     38 jklmo........................................................................if..........jjklmo.
+(PID.TID 0000.0001) //     37 mnoq.........................................................................ihg...-fjm..mmnoq..
+(PID.TID 0000.0001) //     36 q..p..........................................ggghi...........................hhf.cinpqqqqq..p..
+(PID.TID 0000.0001) //     35 o......................................ghi.hikkllllkk.mprssr...................ijijlnoppqqo.....
+(PID.TID 0000.0001) //     34 n......................................hhiiklmnnnonnnoppqqqqp...................lmnoooooonn.....
+(PID.TID 0000.0001) //     33 l......................................iiijkmmnnnnnnoooooonmmn...............lk.llmoponmlll.....
+(PID.TID 0000.0001) //     32 .......................................ihhijkklmmnnnnnooonmkih...............iijkkmnonmljh......
+(PID.TID 0000.0001) //     31 .......................................gghijkllmmmmnnnnnnmkida.............hijlmnnnnnmljhe......
+(PID.TID 0000.0001) //     30 f.....................................iijllmmmmmlllllmmmmljgc-............kllmnnnnmmmljhfef.....
+(PID.TID 0000.0001) //     29 ..................................dfijkllmmmmlllkkkkkllllkigebbe.........lmmmmmmllllkjigec......
+(PID.TID 0000.0001) //     28 ..................................eijkkkkllkkkjjjjjjjkkkkjigedcc......kk.llmllllllkkjigec.......
+(PID.TID 0000.0001) //     27 ..................................hijjkkkkkkkjjiiiiiijjjihgfedddeh...k.kkkklllkkkkjihgebb.......
+(PID.TID 0000.0001) //     26 ..................plk....o.....ge.iijjjkkkkjjiiiiiiiiihhgfeedccdfgi.....jkklkkkjjiigfdcab.......
+(PID.TID 0000.0001) //     25 ................rsplj..ooon...jhi.jjjjjjkjjiiiiihhhhggfffedddddeghjk....ihi.kkjiihgfedccg.......
+(PID.TID 0000.0001) //     24 ................trnkjj.noon...hjk.jkkkjjjjihhhhggggffgggffggghijkllljjj.......iihggffffgj.......
+(PID.TID 0000.0001) //     23 ................qnlkkkknoon..kj..kllkkkkkjjjjjiijjjjkkllmmnnopqqrrqqpooo........hhiiijklno......
+(PID.TID 0000.0001) //     22 srrrq..........onmlllllnnnm......lmmlkllllkkllllmmmmnnoopqqqqqrrrrsstttsq........jlnnopqqrsrrrq.
+(PID.TID 0000.0001) //     21 ssssr.........poonmmmmmnnnmm.......m...lmllkkkkkkkklllmmnoonoopppqqqqqqr............qqqrrrssssr.
+(PID.TID 0000.0001) //     20 sttsrp.......qqrppoooooooonn.......o....nnmllkkkkjjjjkllmmnnopqqrrsssrrs............pqrssssttsrp
+(PID.TID 0000.0001) //     19 ttttsq.......pqtsrqqqqrrrrqqqp.onmm.....oqponnllllkkkkklllmnnopqqrssssttt...........ppqrssttttsq
+(PID.TID 0000.0001) //     18 sstuus.......o..tssssrstuuuutsrpon......ssrqqpoooonmmmmmmlmmmnnoopqqrstuut..........nnopqrsstuus
+(PID.TID 0000.0001) //     17 qstvww.......o..rrrrrsttuvvvvutr........rssrrrqpppppoonnmmmmmmmmnnnopqrsuu..........lllmopqstvww
+(PID.TID 0000.0001) //     16 pqsvxy......rq.noppqqrrrstuuvwx..........srrrrrqqqqqqpponmmmmlllllmmopqsuvt........jkkllmnpqsvxy
+(PID.TID 0000.0001) //     15 opqtx+......qr.lmnoppqppqrrsuxz...........qqqqqppppppppoonnmlllkkklmmopqsvv.......jjkllllmopqtx+
+(PID.TID 0000.0001) //     14 mnoqtyz....mopnmnnnopppppqqrsvx...........pppppopppppppoonmmllkkkllmmnoprvy......llkkklkklmnoqty
+(PID.TID 0000.0001) //     13 klmopsu...mlmmmmmnnnnooopppqrst..........qpppoooooopppoonmmmllkjklmnmmopruw.....mmllkkkkkkklmops
+(PID.TID 0000.0001) //     12 ijkklnqqonmlllllllmlmmnnoooooopp.mlmn....qqppp.nnnnooooonmmmmljjjllkklmnpq.....mmlllmlllkjijkkln
+(PID.TID 0000.0001) //     11 ijjjjlmmmllkjjjjkklkkllmmmmmlllkkkkjklllnopoo..onnmmlllllkllmllkkkkkllllmm....klllmmmmllkjijjjjl
+(PID.TID 0000.0001) //     10 ihiiiiijiiiihgghiijjjklllkkjjjjjjiiiiijklmmnm.nnnmmlllkkkkkllllkkkkllllkji...kkllmmnmllkkiihiiii
+(PID.TID 0000.0001) //      9 hghhhhhgggggffffggghijkkjihhhhhiihhhgghiijjkkkkllllkkklllkkkkkklmmlkkkjhge...llllmmmmlllkihghhhh
+(PID.TID 0000.0001) //      8 ihhhhhhhgggggggggggghijkjjihhhiiihgfffggghhhhhhijkkjjjklllkjjjkmnnlkjihgee..klmmmmllllllkjihhhhh
+(PID.TID 0000.0001) //      7 kkllkkkkjjihhghhiijjkllmmnmlmllkjhhghhiihhhhhhiijkkkjjklmmmllllnoonmkjiihgghjlmnnnmmmmmmmlkkllkk
+(PID.TID 0000.0001) //      6 mmmnnooonmljkkkklmnooppppqqp.nnlkkklllllkkjjkkkllmmmmmlllmmllmmnooonnmlkjiiij.mnnnnnnnnnnnmmmnno
+(PID.TID 0000.0001) //      5 oooopqqqpon.m..............................nnooonnmmlllkkkllmnnooopponmlkkj...lmmnnnnoonoooooopq
+(PID.TID 0000.0001) //      4 ..............................................srqonnmllllmmnnooooooo..........kkklllllmno.......
+(PID.TID 0000.0001) //      3 ..............................................wvutssrr...........................mmmm...........
+(PID.TID 0000.0001) //      2 ................................................................................................
+(PID.TID 0000.0001) //      1 ................................................................................................
+(PID.TID 0000.0001) //      0 ................................................................................................
+(PID.TID 0000.0001) //     -1 hhiijkl......................................................................ii.........gghhiijk
+(PID.TID 0000.0001) //     -2 jklmo........................................................................if..........jjklmo.
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Current uVel   at iteration          0
+(PID.TID 0000.0001) // CMIN =          1.000000000000000E+32
+(PID.TID 0000.0001) // CMAX =         -1.000000000000000E+32
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 ..........................................................................................
+(PID.TID 0000.0001)     38 ..........................................................................................
+(PID.TID 0000.0001)     37 ..........................................................................................
+(PID.TID 0000.0001)     36 ..........................................................................................
+(PID.TID 0000.0001)     35 ..........................................................................................
+(PID.TID 0000.0001)     34 ..........................................................................................
+(PID.TID 0000.0001)     33 ..........................................................................................
+(PID.TID 0000.0001)     32 ..........................................................................................
+(PID.TID 0000.0001)     31 ..........................................................................................
+(PID.TID 0000.0001)     30 ..........................................................................................
+(PID.TID 0000.0001)     29 ..........................................................................................
+(PID.TID 0000.0001)     28 ..........................................................................................
+(PID.TID 0000.0001)     27 ..........................................................................................
+(PID.TID 0000.0001)     26 ..........................................................................................
+(PID.TID 0000.0001)     25 ..........................................................................................
+(PID.TID 0000.0001)     24 ..........................................................................................
+(PID.TID 0000.0001)     23 ..........................................................................................
+(PID.TID 0000.0001)     22 ..........................................................................................
+(PID.TID 0000.0001)     21 ..........................................................................................
+(PID.TID 0000.0001)     20 ..........................................................................................
+(PID.TID 0000.0001)     19 ..........................................................................................
+(PID.TID 0000.0001)     18 ..........................................................................................
+(PID.TID 0000.0001)     17 ..........................................................................................
+(PID.TID 0000.0001)     16 ..........................................................................................
+(PID.TID 0000.0001)     15 ..........................................................................................
+(PID.TID 0000.0001)     14 ..........................................................................................
+(PID.TID 0000.0001)     13 ..........................................................................................
+(PID.TID 0000.0001)     12 ..........................................................................................
+(PID.TID 0000.0001)     11 ..........................................................................................
+(PID.TID 0000.0001)     10 ..........................................................................................
+(PID.TID 0000.0001)      9 ..........................................................................................
+(PID.TID 0000.0001)      8 ..........................................................................................
+(PID.TID 0000.0001)      7 ..........................................................................................
+(PID.TID 0000.0001)      6 ..........................................................................................
+(PID.TID 0000.0001)      5 ..........................................................................................
+(PID.TID 0000.0001)      4 ..........................................................................................
+(PID.TID 0000.0001)      3 ..........................................................................................
+(PID.TID 0000.0001)      2 ..........................................................................................
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Current vVel   at iteration          0
+(PID.TID 0000.0001) // CMIN =          1.000000000000000E+32
+(PID.TID 0000.0001) // CMAX =         -1.000000000000000E+32
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 ..........................................................................................
+(PID.TID 0000.0001)     38 ..........................................................................................
+(PID.TID 0000.0001)     37 ..........................................................................................
+(PID.TID 0000.0001)     36 ..........................................................................................
+(PID.TID 0000.0001)     35 ..........................................................................................
+(PID.TID 0000.0001)     34 ..........................................................................................
+(PID.TID 0000.0001)     33 ..........................................................................................
+(PID.TID 0000.0001)     32 ..........................................................................................
+(PID.TID 0000.0001)     31 ..........................................................................................
+(PID.TID 0000.0001)     30 ..........................................................................................
+(PID.TID 0000.0001)     29 ..........................................................................................
+(PID.TID 0000.0001)     28 ..........................................................................................
+(PID.TID 0000.0001)     27 ..........................................................................................
+(PID.TID 0000.0001)     26 ..........................................................................................
+(PID.TID 0000.0001)     25 ..........................................................................................
+(PID.TID 0000.0001)     24 ..........................................................................................
+(PID.TID 0000.0001)     23 ..........................................................................................
+(PID.TID 0000.0001)     22 ..........................................................................................
+(PID.TID 0000.0001)     21 ..........................................................................................
+(PID.TID 0000.0001)     20 ..........................................................................................
+(PID.TID 0000.0001)     19 ..........................................................................................
+(PID.TID 0000.0001)     18 ..........................................................................................
+(PID.TID 0000.0001)     17 ..........................................................................................
+(PID.TID 0000.0001)     16 ..........................................................................................
+(PID.TID 0000.0001)     15 ..........................................................................................
+(PID.TID 0000.0001)     14 ..........................................................................................
+(PID.TID 0000.0001)     13 ..........................................................................................
+(PID.TID 0000.0001)     12 ..........................................................................................
+(PID.TID 0000.0001)     11 ..........................................................................................
+(PID.TID 0000.0001)     10 ..........................................................................................
+(PID.TID 0000.0001)      9 ..........................................................................................
+(PID.TID 0000.0001)      8 ..........................................................................................
+(PID.TID 0000.0001)      7 ..........................................................................................
+(PID.TID 0000.0001)      6 ..........................................................................................
+(PID.TID 0000.0001)      5 ..........................................................................................
+(PID.TID 0000.0001)      4 ..........................................................................................
+(PID.TID 0000.0001)      3 ..........................................................................................
+(PID.TID 0000.0001)      2 ..........................................................................................
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Current theta  at iteration          0
+(PID.TID 0000.0001) // CMIN =         -1.668560028076172E+00
+(PID.TID 0000.0001) // CMAX =          2.932958030700684E+01
+(PID.TID 0000.0001) // CINT =          1.148079271669741E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 efffgf...................................................................bbb.........bbccd
+(PID.TID 0000.0001)     38 hhhh......................................................................bc........dddefg
+(PID.TID 0000.0001)     37 ij........................................................................ccc...ffgg..hhii
+(PID.TID 0000.0001)     36 i..........................................efeed..........................deee.fhhijjkkjji
+(PID.TID 0000.0001)     35 jj.................................dddd.ffffffffff.ghhiii..................defgghijkllll..
+(PID.TID 0000.0001)     34 ....................................deeefffgggggghhhhiijjj..................dfhijklmmmml..
+(PID.TID 0000.0001)     33 ....................................eeeffgggghhhhiiiiijjkkk...............ee.egkmmnnnnnmm.
+(PID.TID 0000.0001)     32 ....................................hhhiiiijjjjjkkkkklllmml...............iiihkopppoooon..
+(PID.TID 0000.0001)     31 ....................................mnnnnnnnnnnnnnnnnnooonm.............oprrrqrsrrrqqqp...
+(PID.TID 0000.0001)     30 ...................................rrrrrqqqqqqqpppppqqqqpon............suuuuutttsssrrrrq..
+(PID.TID 0000.0001)     29 ...............................ruuuuttttttttsssssssssssrrqpoo.........vvuuuuuutttttsssrr..
+(PID.TID 0000.0001)     28 ..............................uvvvvvvvvvvvvvvvvuuuuuuutssrrqq......wv.wwvvvvvvvuuutttss...
+(PID.TID 0000.0001)     27 ...............................xxxxwxxxxwxwwwwwwwwwvvuutttsssst...wxxxxxxxxxxwwwvvvuus....
+(PID.TID 0000.0001)     26 ...............xyy....y.....xxyyyyyyyyyyyyyxxxxxxxxwwvvvvuuuuvvw..w.yyyyyyyxxxxwwvvuts....
+(PID.TID 0000.0001)     25 .............xxyyz..yzzy...xyy.zzzzzzzzzzyyyyyyyxxxxwwwwwwwwxxxyy....zzyyyyyyxxxwwwvut....
+(PID.TID 0000.0001)     24 ............xxyzzzz.zzzz...yyz.zzzzzzzzzzzzyyyyyyyxxxxxxxxxxxyyyyxww.yyy.yyyyyxxxwwwvu....
+(PID.TID 0000.0001)     23 .............xyzzzzzzzzz.zyyzzzzzz++++zzzzzzzzzzzyyyyyyyyyyyyyyyxxwvw......yyyyyyxxxxww...
+(PID.TID 0000.0001)     22 xx..........yyzz+zzzzzzz..zz..zzz++++++++++zzzzzzzzzzyyyyyxxxxxxxxxwww.......yyyyyyyyyyxww
+(PID.TID 0000.0001)     21 ww.........yyyzzzzzzzz+++.....zzzz++++++++zzzzzzyyyyyyxxxwwwvvvvuuutut........yyyyyxxxxwww
+(PID.TID 0000.0001)     20 vvu.......yyyyyyzzzzzzzzz.......y...++++++++++zzzzzzzyyyyxxxwwwvvuuut............yyyxxxwvv
+(PID.TID 0000.0001)     19 vut.......yxyxxyyyyyyyzzzzz.zzzzzy...zz++++++++++++zzzzyyyyyxxxwwvvvus...........yyyxxxwww
+(PID.TID 0000.0001)     18 uut.......yyyyxyyyyyyyyyyyyyzzzz....yyyzzzzzz++z++zzzzzzyyyxxxwwvvuutsr..........yyxxxwvvv
+(PID.TID 0000.0001)     17 tts.......y..xxxxxxxxxxxxxxxyyy......xyyyyyyyyzzzzzzzzyyyyxxxwwvvuuutsr..........xxxwwvuut
+(PID.TID 0000.0001)     16 tsq......xx.xxwwwwwwwvvvvwwww........wwwxxxxxxxxxxxxxxxxxxxxxwvvvuuttssr........xxxxwvvuut
+(PID.TID 0000.0001)     15 srq......ww.wwwvvvvvuuuuuuuv..........vvvvvvvvvvvvvvvvvwwwwwwvvvuuttsrrq.......vwwwwvvuutt
+(PID.TID 0000.0001)     14 ssrp....vvvvvvuuuuuttstttstt...........uuuttutttttttuuuuuuuuuvuuuttssrqp......uvvvuuuuuuts
+(PID.TID 0000.0001)     13 rrrq...ttsssssrrrrrrqrqqqqqr..........uttsssssrrrrsrrsssssssssrrrrrrrqpo.....tttttsttttssr
+(PID.TID 0000.0001)     12 ppqqrssssrrqqqqpppooooooopppq.qppp....ssrqqqqqpppppppppppppoooopooppppon....orrrrrqqqqqqqp
+(PID.TID 0000.0001)     11 mlmopqpppppoooononnmmmlmmmmmnnnnnnnoopppppp.pooonnnnnnnnnmmmmmmmmmmnnnn....lmpoooooonnnnmm
+(PID.TID 0000.0001)     10 iiijkkkkkjjiijkkkkkkkkjjjjjjkkkkllllmnnnnn.lmmmnmmlllllmllllllkkkjkllll...kjlmlkkkkkjjjjii
+(PID.TID 0000.0001)      9 ffffffffffffefffeefgggggfggghhiiiiijjkllllkkkkkkkkkkkkjjjjjjiiiiiiijjjk...ihiiihggggfffeee
+(PID.TID 0000.0001)      8 ccccccddddddddeedddddddedeeeefffgfggghhhiiiiiiiihhhhhhhhhgggggghggggghi..hhhgffedddddddccc
+(PID.TID 0000.0001)      7 aaabbbccccccccccccccbccccccccddddddddeeffghhgggggfeedddeeffffffffggfggggggffeddccbbbbbbbbb
+(PID.TID 0000.0001)      6 aaaabbbbbbbbbbbbbbbbbbbbbbbbbcccccccccccdeeeeeeedcbbbbbccccdddddeeeeeeeeddcccbbbaaaaaaaaaa
+(PID.TID 0000.0001)      5 aaabbbbbbbbaaaaabbbaaaaaa.aaabbbbbbbbbbbbbbbbbbbbbaaaaaaaabbbbcccccccbbbbb.aaaaaaaaaaaaaaa
+(PID.TID 0000.0001)      4 aaaaaaaa.a..............................aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aa--aaaaaaaaaaa
+(PID.TID 0000.0001)      3 ...........................................aaaaaa------------aaaa..........------aaaaa....
+(PID.TID 0000.0001)      2 ...........................................aaaaaa--...........................----........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Current cg2d_x  at iteration          0
+(PID.TID 0000.0001) // CMIN =          1.000000000000000E+32
+(PID.TID 0000.0001) // CMAX =         -1.000000000000000E+32
+(PID.TID 0000.0001) // CINT =          0.000000000000000E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -2:  93:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  43:  -2:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=7       I=17      I=27      I=37      I=47      I=57      I=67      I=77      I=87
+(PID.TID 0000.0001) |--J--|**0123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123
+(PID.TID 0000.0001)     43 ................................................................................................
+(PID.TID 0000.0001)     42 ................................................................................................
+(PID.TID 0000.0001)     41 ................................................................................................
+(PID.TID 0000.0001)     40 ................................................................................................
+(PID.TID 0000.0001)     39 ................................................................................................
+(PID.TID 0000.0001)     38 ................................................................................................
+(PID.TID 0000.0001)     37 ................................................................................................
+(PID.TID 0000.0001)     36 ................................................................................................
+(PID.TID 0000.0001)     35 ................................................................................................
+(PID.TID 0000.0001)     34 ................................................................................................
+(PID.TID 0000.0001)     33 ................................................................................................
+(PID.TID 0000.0001)     32 ................................................................................................
+(PID.TID 0000.0001)     31 ................................................................................................
+(PID.TID 0000.0001)     30 ................................................................................................
+(PID.TID 0000.0001)     29 ................................................................................................
+(PID.TID 0000.0001)     28 ................................................................................................
+(PID.TID 0000.0001)     27 ................................................................................................
+(PID.TID 0000.0001)     26 ................................................................................................
+(PID.TID 0000.0001)     25 ................................................................................................
+(PID.TID 0000.0001)     24 ................................................................................................
+(PID.TID 0000.0001)     23 ................................................................................................
+(PID.TID 0000.0001)     22 ................................................................................................
+(PID.TID 0000.0001)     21 ................................................................................................
+(PID.TID 0000.0001)     20 ................................................................................................
+(PID.TID 0000.0001)     19 ................................................................................................
+(PID.TID 0000.0001)     18 ................................................................................................
+(PID.TID 0000.0001)     17 ................................................................................................
+(PID.TID 0000.0001)     16 ................................................................................................
+(PID.TID 0000.0001)     15 ................................................................................................
+(PID.TID 0000.0001)     14 ................................................................................................
+(PID.TID 0000.0001)     13 ................................................................................................
+(PID.TID 0000.0001)     12 ................................................................................................
+(PID.TID 0000.0001)     11 ................................................................................................
+(PID.TID 0000.0001)     10 ................................................................................................
+(PID.TID 0000.0001)      9 ................................................................................................
+(PID.TID 0000.0001)      8 ................................................................................................
+(PID.TID 0000.0001)      7 ................................................................................................
+(PID.TID 0000.0001)      6 ................................................................................................
+(PID.TID 0000.0001)      5 ................................................................................................
+(PID.TID 0000.0001)      4 ................................................................................................
+(PID.TID 0000.0001)      3 ................................................................................................
+(PID.TID 0000.0001)      2 ................................................................................................
+(PID.TID 0000.0001)      1 ................................................................................................
+(PID.TID 0000.0001)      0 ................................................................................................
+(PID.TID 0000.0001)     -1 ................................................................................................
+(PID.TID 0000.0001)     -2 ................................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // Wrote file(s) U.*0000000000
+(PID.TID 0000.0001) // Wrote file(s) V.*0000000000
+(PID.TID 0000.0001) // Wrote file(s) T.*0000000000
+(PID.TID 0000.0001) // Wrote file(s) S.*0000000000
+(PID.TID 0000.0001) // Wrote file(s) H.*0000000000
+(PID.TID 0000.0001) // Model state written, timestep         0
+(PID.TID 0000.0001) 
+cg2d: Sum(rhs) =           4.27435864480685E-15
+ CG2D iters, err =      0          3.26388605515291E+00
+ CG2D iters, err =     41          6.05817968919008E-14
+cg2d: Sum(rhs) =          -4.79408179820950E-14
+ CG2D iters, err =      0          1.01813156759732E+00
+ CG2D iters, err =     40          6.09595125342639E-14
+cg2d: Sum(rhs) =           1.08940634291343E-14
+ CG2D iters, err =      0          2.55265084389230E+00
+ CG2D iters, err =     41          5.11383725748522E-14
+cg2d: Sum(rhs) =           2.27678986775004E-13
+ CG2D iters, err =      0          1.56694105969492E+00
+ CG2D iters, err =     40          7.85788169545282E-14
+cg2d: Sum(rhs) =           1.66366920240080E-13
+ CG2D iters, err =      0          1.17181057152644E+00
+ CG2D iters, err =     40          6.47272640898460E-14
+cg2d: Sum(rhs) =           2.75016120987459E-13
+ CG2D iters, err =      0          1.47091782389829E+00
+ CG2D iters, err =     40          7.33508534234448E-14
+cg2d: Sum(rhs) =           2.10498285468930E-13
+ CG2D iters, err =      0          1.25817558983455E+00
+ CG2D iters, err =     40          4.54604609873039E-14
+cg2d: Sum(rhs) =           5.15004705547994E-14
+ CG2D iters, err =      0          9.68896830228732E-01
+ CG2D iters, err =     39          6.43193699581145E-14
+cg2d: Sum(rhs) =           1.59219859519055E-13
+ CG2D iters, err =      0          8.34320805987554E-01
+ CG2D iters, err =     39          7.16146286978332E-14
+cg2d: Sum(rhs) =           7.86593012946923E-14
+ CG2D iters, err =      0          7.48360641382740E-01
+ CG2D iters, err =     39          7.89977701477572E-14
+cg2d: Sum(rhs) =           1.24969479209369E-13
+ CG2D iters, err =      0          6.65446258071681E-01
+ CG2D iters, err =     39          7.41383668181942E-14
+cg2d: Sum(rhs) =           1.87461157707958E-13
+ CG2D iters, err =      0          6.41672502778454E-01
+ CG2D iters, err =     39          6.89596869592280E-14
+cg2d: Sum(rhs) =           1.06581410364015E-14
+ CG2D iters, err =      0          5.48022410361831E-01
+ CG2D iters, err =     39          5.47252929494480E-14
+cg2d: Sum(rhs) =           6.17700335325821E-14
+ CG2D iters, err =      0          5.76326137278124E-01
+ CG2D iters, err =     38          9.60683446374062E-14
+cg2d: Sum(rhs) =           8.14209810684474E-14
+ CG2D iters, err =      0          7.06140022716784E-01
+ CG2D iters, err =     39          5.92884178587189E-14
+cg2d: Sum(rhs) =          -1.60260693604641E-13
+ CG2D iters, err =      0          7.41253931521344E-01
+ CG2D iters, err =     39          6.81236377751323E-14
+cg2d: Sum(rhs) =           6.65023591750469E-14
+ CG2D iters, err =      0          6.10009600132961E-01
+ CG2D iters, err =     39          6.45154095036374E-14
+cg2d: Sum(rhs) =           6.07291994469961E-14
+ CG2D iters, err =      0          5.04491339855965E-01
+ CG2D iters, err =     39          5.70743436879076E-14
+cg2d: Sum(rhs) =           1.36529676453279E-13
+ CG2D iters, err =      0          4.33044520152375E-01
+ CG2D iters, err =     38          9.87724150739509E-14
+cg2d: Sum(rhs) =          -7.94364574119300E-14
+ CG2D iters, err =      0          3.97760656428049E-01
+ CG2D iters, err =     38          8.77096913739855E-14
+cg2d: Sum(rhs) =          -1.53876911213047E-13
+ CG2D iters, err =      0          4.04702768708045E-01
+ CG2D iters, err =     38          8.26397394462690E-14
+cg2d: Sum(rhs) =          -3.83706955098262E-13
+ CG2D iters, err =      0          4.34499628156490E-01
+ CG2D iters, err =     38          8.48580267182921E-14
+cg2d: Sum(rhs) =          -3.42934014518903E-13
+ CG2D iters, err =      0          5.08539144547789E-01
+ CG2D iters, err =     38          9.18330427964205E-14
+cg2d: Sum(rhs) =          -5.30880894800134E-13
+ CG2D iters, err =      0          6.38554018567649E-01
+ CG2D iters, err =     39          4.41680167599729E-14
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Current uVel   at iteration         24
+(PID.TID 0000.0001) // CMIN =         -3.016789073172250E-01
+(PID.TID 0000.0001) // CMAX =          2.079987739469863E-01
+(PID.TID 0000.0001) // CINT =          1.887695115793375E-02
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 oooppp....................................................................pp..........ppoo
+(PID.TID 0000.0001)     38 oopp.......................................................................q.........pqrpp
+(PID.TID 0000.0001)     37 pp.........................................................................qp....ooo...tsr
+(PID.TID 0000.0001)     36 s...........................................ooop...........................qqp..onnnnoqsts
+(PID.TID 0000.0001)     35 .p..................................ppo..poopooopp..ppono...................qqpooonnnopr..
+(PID.TID 0000.0001)     34 .....................................pppppppppppppqpppoooo...................qqpqqppppqq..
+(PID.TID 0000.0001)     33 .....................................ppqpppppppppppqqpppppp................p..pppqqqppqqp.
+(PID.TID 0000.0001)     32 .....................................pppppppppppppppppppppp................ppppopppppppp..
+(PID.TID 0000.0001)     31 .....................................pppppppppppppppppppppp..............popppppppppppp...
+(PID.TID 0000.0001)     30 ....................................qrqpppppppppqqpppppppoo.............oppppppppppppppp..
+(PID.TID 0000.0001)     29 ................................pqqqqrqqqqqqqqqqqqqqqqppppooo..........pqqppppppppppppop..
+(PID.TID 0000.0001)     28 ...............................pqpqppqppqqqqqqqqqqqqqqqpppooo.......p..pqqpppppopppoooo...
+(PID.TID 0000.0001)     27 ................................pooppppppqqqqqqqqqqqqqqpppooopp....qqqqppppqpoooooonnn....
+(PID.TID 0000.0001)     26 ................pp...........pyrponnnooooooooooppoooonnnnnmnnopq.....ponoomoonnnnmmmmn....
+(PID.TID 0000.0001)     25 ..............qrqq...ppq....lo..onllllllllmmmlmmmmllllkkkkklmnopp.....mkllnlnmlllllllm....
+(PID.TID 0000.0001)     24 .............rrrrqq..pqq....hq..nrnkkkkkkkkkkkkkkkkkllllllmmnnoopppp..ll..lmmllllllmmn....
+(PID.TID 0000.0001)     23 ..............rqqqqqppqr..dbkzskitsnnmmmmmmmmmmmmmnnnnnooopppppppqqpp.......nmmmnnnoppq...
+(PID.TID 0000.0001)     22 pq...........ppqqqqqrqqq...-...n+yuqooooooooonnnnnoooooopopoopppppqqqq........nnnooopqqqqq
+(PID.TID 0000.0001)     21 pp..........opppqqqqrqqqr......vzwuqopqppoooonnnnmnnnnnnonooooooppoppp.........nmmnooooppp
+(PID.TID 0000.0001)     20 opp........oopppppppppppq............ppppoooonnnnmnmmmmmnmnmmnnnnnnno.............nnmmnooo
+(PID.TID 0000.0001)     19 ooo........onmmmmmnmmmmnnmn..rplmn....nnnnnoonnnnnmmmmmmmlllllllllmmno............mmllmmmn
+(PID.TID 0000.0001)     18 nno........pmhiiijjjjjjkllmmmoon.....mlllmlmmmmmnnmmmnnmmllllllkklllmmn...........mmlllmmm
+(PID.TID 0000.0001)     17 llm...........kijjjjjjklmmmnnmo.......mlkklllllmmmmnnnnnmmmmmmllllllllm...........nmlllkkk
+(PID.TID 0000.0001)     16 kkl.......q..pommmmnnnooooopp.........nmllmmmnnnnooooooonnnnnnnmnnmmmmmn.........ponmmlkkk
+(PID.TID 0000.0001)     15 lkk.......o..rqpppppqqqppppp...........onnnoooppppqqqqqppppppoooooonnnnn........qqponmmmll
+(PID.TID 0000.0001)     14 mmlm.....qppqqqqppppqqpppppp............poooooqqqqqqqqqqqqqqqqpppppooonn.......qrqqpponnnn
+(PID.TID 0000.0001)     13 oonn....prqqqppppppooooooopp...........pqpooooppppqqqqqqqqqpqqqqppppppon......pqrqqqpppooo
+(PID.TID 0000.0001)     12 opooqorrrrrqqppppoonnonnnnoop..ppp.....ppppppoooopppppppppppppppppppppoo.....pqqqqqqpppooo
+(PID.TID 0000.0001)     11 ooooonpqqqqqqqppponnnnnnnnnnoopppppqrrooopp..pooooopppppooooooooooopppp.....poqqppppppoooo
+(PID.TID 0000.0001)     10 nnnoooppppppqppppnnnmmnnnnnnnnnnooooooooop..ppoooooooooonnnnnnnnnnooopo....moppooopoooooon
+(PID.TID 0000.0001)      9 ooooonooooooooopoooommnoonnoonnnnoooooopqqsrqqpppppooonnnnnonnnmnoooppp....qppppoooonnoppo
+(PID.TID 0000.0001)      8 pqqppooooooooopoopqrqpppoopponnooopopppqppqrqqqqqqqqqpooooooonnnopppppq...sqqrrqpoonnnpppp
+(PID.TID 0000.0001)      7 rrrqpppooopppppopqrrrppppppoooppppppppponnoqqrqrrrqqqoooonnoooppqqqqqpppqqpopqrqqpponopqqr
+(PID.TID 0000.0001)      6 qqqpqqpppppppppppppppqqqqppqqqqqpppppppooopqrrrrsrrqqppooopqqrrrrrrrqqqqrqpqrqqqqqppppqqqq
+(PID.TID 0000.0001)      5 qqpppqqqqqpppppppppppqqqq..ppppppppppppppqqqqqqqrqqqpppopppqrrrrrqqppqqqqr..rqqppppppppppp
+(PID.TID 0000.0001)      4 pppppppp.................................pppppppppppppppqqqrrrqqqppppppp....qppppppppppppp
+(PID.TID 0000.0001)      3 ............................................oopppppqqqqqqrrqqpppp...........pppppppppp....
+(PID.TID 0000.0001)      2 ............................................poppppp............................ppp........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Current vVel   at iteration         24
+(PID.TID 0000.0001) // CMIN =         -5.309641371075009E-01
+(PID.TID 0000.0001) // CMAX =          3.012207328289984E-01
+(PID.TID 0000.0001) // CINT =          3.082166184949997E-02
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 ssss......................................................................pp.........qrsss
+(PID.TID 0000.0001)     38 sr........................................................................pp..........rrss
+(PID.TID 0000.0001)     37 s.........................................................................ppq...qrss..pqrs
+(PID.TID 0000.0001)     36 r..........................................qqqqq...........................qqq.qqrrssrqr..
+(PID.TID 0000.0001)     35 ....................................qqr.qqrqqqqqqp.qqrrrr...................qqqqqrrssssr..
+(PID.TID 0000.0001)     34 ....................................qqqqqqqqqqqqqqqqrrrrrq...................rrrrssssssr..
+(PID.TID 0000.0001)     33 ....................................qqqqqqqqqrrrrqqqqrrqqqq...............rr.qrrrrrrrrrq..
+(PID.TID 0000.0001)     32 ....................................qqqqqqqqqqqqqqqqqqqqqqq...............qqqqqqqqqqrrr...
+(PID.TID 0000.0001)     31 ....................................qqpppppppppppppppppqqqq.............rrqqqqqqqqqqrrr...
+(PID.TID 0000.0001)     30 ...................................qqppppppppppppppppqqqqqq............qqppppppqqqqqqqqq..
+(PID.TID 0000.0001)     29 ...............................rqqqpppppppppppppppppqqqqqqppp.........qqqqqqqqqqrrrrrrr...
+(PID.TID 0000.0001)     28 ...............................rqqqqqqqqqqqqqqqqqqqqqqqqqqqpp......rr.rqqqqqqrrrrrrrrr....
+(PID.TID 0000.0001)     27 ...............................rrqrrrrrrrrrrrrrrrrrrrrrrrrqqppp...r.rrrqqqrrrrrrssrrrq....
+(PID.TID 0000.0001)     26 ...............ppq....q.....y+.rrrrrrrrrrrrrrrrrrrrrrsrrrrqqqqpq.....srrqsqrrrrsrrrrrq....
+(PID.TID 0000.0001)     25 .............qqppp..qqqp...vzq.qsrrrrrrrrrrrrrrrrrrrrrrrrrqqqqqqq....rsr.rsrrrrrrrrqqq....
+(PID.TID 0000.0001)     24 .............qqpppp.qqqp...sn-.joqqqqqrrrrrrrrrqqrrrrrrrrrrrrqqqqqqq.......qrrsrrrrrqq....
+(PID.TID 0000.0001)     23 .............qppoppppqqq..st..ywoopqqqqqqqqqqrrrrrrrssssssrrrrrqqrrrr........rrrrrrrrrr...
+(PID.TID 0000.0001)     22 rq..........qppppppppppq......njloqqrrrqqqqqrrrrrrrrrrrrrrrrqqqqqqqqqq........rrrsrrrrrrrr
+(PID.TID 0000.0001)     21 rq.........rqpppppppqqqqq.......o...rrrrrrrrrrrrrrrrssssrrrrrrrrrrrrq............tsssrrrrr
+(PID.TID 0000.0001)     20 rrq.......tsrrrqqqqqrrrqr.......r....rrrrrrrrrqqqqqrrrrrrrsssssssssrr............tssssrrsr
+(PID.TID 0000.0001)     19 qqq.......tsstttsssrrrrrqqq.pqrq.....ssrrrrrqqqqqqqqqqqqqqqrrrrrrrrrrr...........ssrrrrrrr
+(PID.TID 0000.0001)     18 rrr.......s..tsrrqqqqqqqqqqqpqq......srqqqqqqqqqqqqqqqqqqppqqqqqqqqrrrr..........ssrrqrrrr
+(PID.TID 0000.0001)     17 rrr.......r..qqpppoooooppppqq........qqqppppppppppppppqqppppppqqqqqqrrr..........rrqqqqqqq
+(PID.TID 0000.0001)     16 qqq......rr.qqqppppppppppppp..........qqqppppqpppppppppqppppppqqqqqqqqrr........qrrqqqpqqq
+(PID.TID 0000.0001)     15 qqq......qq.pqqqqqqpqqqqqqqq...........qqqqqrrqqqqqqqqqqqqqqqqqqqqqqqrrr.......qrrqqqqqqqq
+(PID.TID 0000.0001)     14 qqqp....qrqqqrrqqqqqqqqrrqqq...........qrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr......qrrrrrrqqqqq
+(PID.TID 0000.0001)     13 rrrq...rrssrrrsrrrrqrrrrrrrq..........qqrrrrssssrrrrrrrrrrrrrrrrsssrrrrq.....rrssssrrrrrrr
+(PID.TID 0000.0001)     12 sssssssssssssssssrrrrrrrrrrrr.rrrq....qqqqr.qrrrrrrrrrrrrrrrrrrssssssrr.....rrssssssrrrsss
+(PID.TID 0000.0001)     11 sssssstttssssssrrrrrrsssrrsssrrrrrrrqqqqpq..qrsssrrrrqrrrrrqrrrrssrrrrr....pqrsssssrrrqrrs
+(PID.TID 0000.0001)     10 rrrrrrsssrrsssrqppqqrrsrrqqrrqrrrrrrqqqrqr.qpqrrsrrrrrrrrrrqqrrrsssssrr...qooqrrrrrqqqppqq
+(PID.TID 0000.0001)      9 qqqqqqrrqqpqrrrrqppppqqqqqqqqpppqppppppppppppppqpppooooppppppppqrrrrrqq...rpoppqqqqqpppppp
+(PID.TID 0000.0001)      8 ppppqqrrqqpppqqqqpooppqqqqqqqqqppqppoooopppqqqqqqpoonoopooppppqqrrrrrrq..qponoopqqqpppppoo
+(PID.TID 0000.0001)      7 pqqqqqrqqqqpqqqpqpppppqqppqqqqppppqqqpponnoopoopppooooooooooooppppppppoooooooooopqqqppppop
+(PID.TID 0000.0001)      6 qqqqqqqqqpppppppppppppqpp.ppppppoooppqpppoonoooooppppppppoopppppppppooonoo.ppppppqqqqqqqqq
+(PID.TID 0000.0001)      5 qqqqqqqq.q..............................qqqpppppppqqqqqqqqpppppppppppppo...qppqqqqqqrrqqqq
+(PID.TID 0000.0001)      4 ...........................................qpqqqqqqqqqqqqqqqppppp..........qpppqqqqqrr....
+(PID.TID 0000.0001)      3 ...........................................qqqqqqqq...........................qqqq........
+(PID.TID 0000.0001)      2 ..........................................................................................
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Current theta  at iteration         24
+(PID.TID 0000.0001) // CMIN =         -1.850751076794731E+00
+(PID.TID 0000.0001) // CMAX =          3.005649533986753E+01
+(PID.TID 0000.0001) // CINT =          1.181749867283787E+00
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(   1:  90:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  40:   1:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=10      I=20      I=30      I=40      I=50      I=60      I=70      I=80      I=90
+(PID.TID 0000.0001) |--J--|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|123456789|
+(PID.TID 0000.0001)     40 ..........................................................................................
+(PID.TID 0000.0001)     39 efgggg...................................................................bbc.........bccde
+(PID.TID 0000.0001)     38 hhhh......................................................................cc........dddefg
+(PID.TID 0000.0001)     37 ij........................................................................cdd...fggg..ggii
+(PID.TID 0000.0001)     36 i..........................................ffeed..........................deee.ghhijjjjjjj
+(PID.TID 0000.0001)     35 jj.................................deee.ffffffffff.ghhiii..................eefgghijkklkk..
+(PID.TID 0000.0001)     34 ....................................eeefffggggggghhhhiijjj..................degijjklmmml..
+(PID.TID 0000.0001)     33 ....................................eeeffgggghhhhhiiiijjjkj...............ee.egjlmmnnmmml.
+(PID.TID 0000.0001)     32 ....................................hhhiiiiijjjjjkkkkkllllk...............hhhgjnooooonnn..
+(PID.TID 0000.0001)     31 ....................................lmmmmmmmmmmmmmnnnnnnnnm.............npqqqpqrrqqqppp...
+(PID.TID 0000.0001)     30 ...................................qqqqqqqqpppppoppppppppon............rsttttssssrrrqqqq..
+(PID.TID 0000.0001)     29 ...............................rtttttssssssssrrrrrrrrrrrqqpon.........uuuttttttsssssrrqq..
+(PID.TID 0000.0001)     28 ..............................tuvvuuuuuuuuuuuuuuuuuttttsrrqqp......vv.wvvuvuvuuuutttsrr...
+(PID.TID 0000.0001)     27 ...............................wwwwwwwwwwwwwvvwvvvvvuuuttssrrst...wwxxxwwwwwwwvvvuutts....
+(PID.TID 0000.0001)     26 ...............xxx....x.....wwxxxxxxyxxxxxxxxxxwwwwvvvuuuuutuuvw..w.yyxxxxxxwwwvvvuusr....
+(PID.TID 0000.0001)     25 .............wxxyy..yyyy...xxv.yyyyyyyyyyyxxxxxxxwwwwwvvvvvwwwxxy....yyxxxxxxxwwwvvuts....
+(PID.TID 0000.0001)     24 ............xxxyyzz.yyyy...xvt.yyzzzzzyyyyyyyyxxxxxxwwwwwwwxxxyyyxww.xxx.xxxxxwwwvvvut....
+(PID.TID 0000.0001)     23 .............xyyzzyyyyyy.yxuwv+zyzzzzzzzzzyyyyyyyyyyyyxxxxxxxxyyyxxww......yxxxxxxwwwvv...
+(PID.TID 0000.0001)     22 ww..........xxyzzzzyyyyy..yw..wwyzzzzzzzzzzzzzyyyyyyyyxxxxxwwwwwwwwwww.......xxxxxxxxxxwww
+(PID.TID 0000.0001)     21 vv.........xxyyyzzzzzzzzy.....xxyyzzzzzzzzzyyyyyyyxxxxxxwwwvvvvuuuttuu........xxxxxxxwwvvw
+(PID.TID 0000.0001)     20 vut.......xxxxyyyyyyyyyyy.......y...zzzzzzzzzzzzyyyyyyyxxwwwwwvvuuuut............yxxxwwvvv
+(PID.TID 0000.0001)     19 utt.......xxxxxxxxxxxxyyyxx.xyyyxx...zzzzzzzzzzzzzzzzyyyxxxxwwwvvvvuts...........yxxxwwwvv
+(PID.TID 0000.0001)     18 uts.......xxxxwxxwxxxxxxxxxxxxxy....xyyyzzzzzzzzzzzzzyyyyxxxwwvvuuuutsr..........xxxwwvvvu
+(PID.TID 0000.0001)     17 ssr.......x..wwwwwwwwwwwwwwwxxx......xxxyyyyyyyyyyyyyyyyxxxwwwvuuutttsr..........xxwwvuuut
+(PID.TID 0000.0001)     16 srq......vw.wwvvvvwwvvvvvvvvw........wwwwwwwxwwxxxxxxxxxxxwwwvvvuuttsrrq........wwwwvvuutt
+(PID.TID 0000.0001)     15 srp......vu.vvvuuuvuututttuu..........vuuvvvvvvvvvvvvvvvvvvvvvvvuttsrrqq.......uvvvvvuutts
+(PID.TID 0000.0001)     14 rrqp....uuuuuuttttttssssssst...........tttttttttttttttuuuuuuuuutttssrrqp......uuuuuuuuttss
+(PID.TID 0000.0001)     13 rrqq...sssrrssrqqqqqqqqppqqr..........ttssrrrrrrqrrrrrssssssrrrrrrrqqqpo.....ststsssssssrr
+(PID.TID 0000.0001)     12 pppqqrrrrrqqqqpoooonnoooooopp.poop....rrqqqqqppppppppppppppoooooooppppon....oqrqqqqqqqqppp
+(PID.TID 0000.0001)     11 lllnoppooooonnnnnnmmllllllllmnmmmnnnopppppp.oonnnnnnnnnnnmmmmmmmmlmnnnn....kmoonnnnnnnnmml
+(PID.TID 0000.0001)     10 ihiijjjjjiiihijjjjkkjjjiijjjjkkkklllmmnmmn.lmmmmmmllllllllllkkkkjjjkkkl...kjlmlkjjjjjjjjii
+(PID.TID 0000.0001)      9 eeeeeeefefffeefffeffgggfffggghhiiiiijjkkklkkkkkkkkkkkjjjjiiiiiiiiiiiiij...iiiiihgffffffeee
+(PID.TID 0000.0001)      8 cccccccdddddddeeedddddddddddeffffffggghhhiiiiiiihghhhhggggggggggggggghi..hhhgffedddddddccc
+(PID.TID 0000.0001)      7 baabbccccccccccccccccccccccccddddddddeeffghgggggffeedddeeffffffffffffgggggffeedccbbbbbbbbb
+(PID.TID 0000.0001)      6 aaabbbccccccccccccccbbbccbbbbcccccccccccdeeeeeeedcbbbbbcccddddddeeeeeeeedddccbbbbbbabbbbba
+(PID.TID 0000.0001)      5 aabbbbbbbbbbbbbbbbbbbaaaa.abbbbbbbbbbbbbbbccbbbbbbbbbbbbbbbbbcccccccccbbbb.baaaaaaaaaaaaaa
+(PID.TID 0000.0001)      4 aaaaaaaa.a..............................aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aa---aaaaaaaaaa
+(PID.TID 0000.0001)      3 ...........................................aaaaaaa---aaaaaaaaaaaa..........a-a--aaaaaa....
+(PID.TID 0000.0001)      2 ...........................................aaaaaaaa...........................--aa........
+(PID.TID 0000.0001)      1 ..........................................................................................
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // Field Current cg2d_x  at iteration         24
+(PID.TID 0000.0001) // CMIN =         -2.098438627597648E+00
+(PID.TID 0000.0001) // CMAX =          1.290778426315589E+00
+(PID.TID 0000.0001) // CINT =          1.255265575523421E-01
+(PID.TID 0000.0001) // SYMBOLS (CMIN->CMAX): -abcdefghijklmnopqrstuvwxyz+
+(PID.TID 0000.0001) //                  0.0: .
+(PID.TID 0000.0001) // RANGE I (Lo:Hi:Step):(  -2:  93:   1)
+(PID.TID 0000.0001) // RANGE J (Lo:Hi:Step):(  43:  -2:  -1)
+(PID.TID 0000.0001) // RANGE K (Lo:Hi:Step):(   1:   1:   1)
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) K =   1
+(PID.TID 0000.0001)                I=7       I=17      I=27      I=37      I=47      I=57      I=67      I=77      I=87
+(PID.TID 0000.0001) |--J--|**0123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123456|890123
+(PID.TID 0000.0001)     43 ..............................................ccccdddddddeddddddddde..........aaaabbbbccc.......
+(PID.TID 0000.0001)     42 ..............................................ccccdddd...........................baaa...........
+(PID.TID 0000.0001)     41 ................................................................................................
+(PID.TID 0000.0001)     40 ................................................................................................
+(PID.TID 0000.0001)     39 fgghhiijk...................................................................ffe.........fffgghhi
+(PID.TID 0000.0001)     38 ghiiijj......................................................................gg........fefghiiij
+(PID.TID 0000.0001)     37 jjijj........................................................................ihh...mmnn..mjjijj.
+(PID.TID 0000.0001)     36 mljk..........................................mmnno..........................jiij.mmmnpqqomljk..
+(PID.TID 0000.0001)     35 s..nq.................................jiij.lllmmmnnnn.nnnopq..................kjjjkllmopqrs..nq.
+(PID.TID 0000.0001)     34 u......................................kjkllllmmmmnnnmnnnopqq..................kkkllmnoqrsu.....
+(PID.TID 0000.0001)     33 vv.....................................kkkklllmmmnnnnnooopppqq...............pp.mnopqqrstuvv....
+(PID.TID 0000.0001)     32 v......................................lllmmmnnooooppppppqqqqq...............qqqpqqrrsttuuv.....
+(PID.TID 0000.0001)     31 .......................................mnoooppqqqqqqqqqrrrrrrq.............rsssssssttttuvv......
+(PID.TID 0000.0001)     30 w.....................................qqrrrrrssssssssrrrrrrrrr............ttuvvuuuuuuuuvvvw.....
+(PID.TID 0000.0001)     29 w.................................vvuuuuuutttttttttttssssssrrrqp.........vvvvvvvuuuuvvvvvww.....
+(PID.TID 0000.0001)     28 .................................vvvvvvvuuuuuuuttttttttssssrrrqq......tt.wwvvvuuuuuuuuuuvv......
+(PID.TID 0000.0001)     27 ..................................vvvvuuuuuuuuuttttttttssssrrrqppo...ssuvwvvvvuuuuuuuuuuu.......
+(PID.TID 0000.0001)     26 ..................rrr....s.....wyxwvuuuuuuuuuuuttttttttsssrrrqqqpoo..r.uvvvvvuvuutttttttt.......
+(PID.TID 0000.0001)     25 ................rrrrr..tttt...vz+.wvuuuuuttttttttttttssssrrrqqqqppoo....vvvvwuuutttttttts.......
+(PID.TID 0000.0001)     24 ...............rrrrrrr.tttt...xws.uwvutttttttttttttsssssrrrrqqqqpppoonn.vuu.uuuutttttssss.......
+(PID.TID 0000.0001)     23 ................ssssrsstttt.uwtrooquwutttttttttttsssssssrrrrqqqqpppooonn......uttttsssssss......
+(PID.TID 0000.0001)     22 rrrss..........sssssssttttt..xw..sxywutttssssssssssssssrrrrrqqqppppoooooo.......tttsssssssrrrss.
+(PID.TID 0000.0001)     21 rrrrr.........sssssssttttttu.....xzwvtssssssrsssssssrrrrrrrqqqppppoooonnn........tsssssrrrrrrrr.
+(PID.TID 0000.0001)     20 rrrrrr.......tsssssssttttuuu.......u...srrrrrssssssssrrrrrrrqqqqpppooooo............ssrrrrrrrrrr
+(PID.TID 0000.0001)     19 rrrrrr.......tttttttttttuuuuuv.vvuuuu...rrrrrsssssssssssrrrrrqqqqpppppooo...........ssrrrrrrrrrr
+(PID.TID 0000.0001)     18 rrrrrr.......uttutttuuuuuuuuuuuvvvv....qqqrrrrssssssssrrrrrrrrqqqqppppppop..........ssrrrrrrrrrr
+(PID.TID 0000.0001)     17 rrrrrr.......v..vuuttutuuuuuuuuvvv......rqqrrrrrsssssssrrrrrrrqqqqqppppppp..........tsrrrrrrrrrr
+(PID.TID 0000.0001)     16 rrrrrr......yw.xwvuuuuuuuuuttuuu........rrrrrrrrrsrrrrrrrrrrrrqqqqqqqqppppo........utssrrrrrrrrr
+(PID.TID 0000.0001)     15 rrrrrr......yw.wvuuuttttttttttt..........srrrrrrrrrrrrrrrrrrrqqqqrqqqqqpppo.......vutssrrrrrrrrr
+(PID.TID 0000.0001)     14 ssssrrr....zxwwvvutttssssssssss...........sssrrrrrrrqqqqqqrrqqqrrrrqqqqqppo......vuttsssssssssrr
+(PID.TID 0000.0001)     13 ssssssr...xxxxwvvuttsssssssrrrr..........sssssssrrqqqqqppqqqqqqqqqrrqqqppoo.....uuuttsssssssssss
+(PID.TID 0000.0001)     12 ssssssssuvwwwwwwvvuttttssssrrrqq.qqpp....rrrsstsrrqpppppppppppppqqqqqppppon....rttsssrrrrsssssss
+(PID.TID 0000.0001)     11 rsssrrsstttsttttttsssssssssrrrqppqppppoopqqrst.srrqpppppppoooppppqqppooooo....nqrrqqqqpqqrrsssrr
+(PID.TID 0000.0001)     10 pqqqqqqqqponnnnnnooppqqrrqqqqqqqqqqppppppqqqr.nqrrqqppooopppoopppqqpooonnn...mlopponnmmnnopqqqqq
+(PID.TID 0000.0001)      9 lmnnnnmmmlkkjkkkjjijkmnoponmmnnnooppoooppqppqoopqqqppppoooppppppqqrqpponnn...ijmnnmlkjjjkklmnnnn
+(PID.TID 0000.0001)      8 hikkkjjiiihhhhijiihhijklllkkkjkkllmmmllmmllllmlmmmmmllllllllmmmnoppponmlll..ihikkkjihgghhhhikkkj
+(PID.TID 0000.0001)      7 fgggggggggggggghhhhggggiiiiiiiijjjjjjiihhiijjkkkkkjiihhhhiijklmnnoonnmlkjjiigefggghggfeffffggggg
+(PID.TID 0000.0001)      6 ddeeeefffffffffgffggfffghhhhhhiiihhhhhhggfghhhhhhhggfeeeffghijjkkkkjjiihhhhhhhgfeeeeeeedddddeeee
+(PID.TID 0000.0001)      5 dddddeeeeeeeeeeeefffffggffff.fffggggggggggffeeeeeeeeeeeeefffgghhhhhgggggffggg.acccddddddcdddddde
+(PID.TID 0000.0001)      4 cccccdddddd.e..............................dcccddddddeeeeffffffffffffggffff...-abbcccccccccccccd
+(PID.TID 0000.0001)      3 ..............................................ccccdddddddeddddddddde..........aaaabbbbccc.......
+(PID.TID 0000.0001)      2 ..............................................ccccdddd...........................baaa...........
+(PID.TID 0000.0001)      1 ................................................................................................
+(PID.TID 0000.0001)      0 ................................................................................................
+(PID.TID 0000.0001)     -1 fgghhiijk...................................................................ffe.........fffgghhi
+(PID.TID 0000.0001)     -2 ghiiijj......................................................................gg........fefghiiij
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) // END OF FIELD                                          =
+(PID.TID 0000.0001) // =======================================================
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001) // Wrote file(s) U.*0000000024
+(PID.TID 0000.0001) // Wrote file(s) V.*0000000024
+(PID.TID 0000.0001) // Wrote file(s) T.*0000000024
+(PID.TID 0000.0001) // Wrote file(s) S.*0000000024
+(PID.TID 0000.0001) // Wrote file(s) H.*0000000024
+(PID.TID 0000.0001) // Model state written, timestep        24
+(PID.TID 0000.0001) 
+cg2d: Sum(rhs) =          -5.70710145808562E-13
+ CG2D iters, err =      0          7.08268973010361E-01
+ CG2D iters, err =     39          4.70650144680219E-14
+cg2d: Sum(rhs) =          -1.05482289569636E-12
+ CG2D iters, err =      0          6.85702550625222E-01
+ CG2D iters, err =     38          8.14361584683426E-14
+(PID.TID 0000.0001) // Wrote file(s) uVel.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) gU.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) gUNm1.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) vVel.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) gV.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) gVNm1.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) theta.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) gT.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) gTNm1.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) salt.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) gS.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) gSNm1.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) cg2d_x.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) cg2d_xNM1.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) uVelD.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) vVelD.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) uNM1.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) vNM1.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) guCD.*ckptA
+(PID.TID 0000.0001) // Wrote file(s) gvCD.*ckptA
+(PID.TID 0000.0001) // Model checkpoint written, timestep        26
+(PID.TID 0000.0001) 
+(PID.TID 0000.0001)  Seconds in section "ALL":
+(PID.TID 0000.0001)          User time:   27.1391406953335
+(PID.TID 0000.0001)        System time:  0.820505004376173
+(PID.TID 0000.0001)    Wall clock time:   29.8713231086731
+(PID.TID 0000.0001)         No. starts:           1
+(PID.TID 0000.0001)          No. stops:           1
+(PID.TID 0000.0001)  Seconds in section "SPIN-UP":
+(PID.TID 0000.0001)          User time:  0.687225013971329
+(PID.TID 0000.0001)        System time:  0.296547990292311
+(PID.TID 0000.0001)    Wall clock time:   1.58031690120697
+(PID.TID 0000.0001)         No. starts:           1
+(PID.TID 0000.0001)          No. stops:           1
+(PID.TID 0000.0001)  Seconds in section "INITIALISE          [SPIN-UP]":
+(PID.TID 0000.0001)          User time:  0.365687012672424
+(PID.TID 0000.0001)        System time:  0.220745008438826
+(PID.TID 0000.0001)    Wall clock time:  0.975088000297546
+(PID.TID 0000.0001)         No. starts:           1
+(PID.TID 0000.0001)          No. stops:           1
+(PID.TID 0000.0001)  Seconds in section "I/O (WRITE)         [SPIN-UP]":
+(PID.TID 0000.0001)          User time:  0.321538001298904
+(PID.TID 0000.0001)        System time:  7.580298185348511E-002
+(PID.TID 0000.0001)    Wall clock time:  0.605228900909424
+(PID.TID 0000.0001)         No. starts:           1
+(PID.TID 0000.0001)          No. stops:           1
+(PID.TID 0000.0001)  Seconds in section "MAIN LOOP":
+(PID.TID 0000.0001)          User time:   24.0920256972313
+(PID.TID 0000.0001)        System time:  0.224910020828247
+(PID.TID 0000.0001)    Wall clock time:   24.8136370182037
+(PID.TID 0000.0001)         No. starts:           1
+(PID.TID 0000.0001)          No. stops:           1
+(PID.TID 0000.0001)  Seconds in section "I/O (READ)         [MAIN LOOP]":
+(PID.TID 0000.0001)          User time:  4.081654548645020E-002
+(PID.TID 0000.0001)        System time:  1.249498128890991E-002
+(PID.TID 0000.0001)    Wall clock time:  0.126819014549255
+(PID.TID 0000.0001)         No. starts:          26
+(PID.TID 0000.0001)          No. stops:          26
+(PID.TID 0000.0001)  Seconds in section "DYNAMICS           [MAIN LOOP]":
+(PID.TID 0000.0001)          User time:   22.0720019936562
+(PID.TID 0000.0001)        System time:  6.247505545616150E-002
+(PID.TID 0000.0001)    Wall clock time:   22.2067303657532
+(PID.TID 0000.0001)         No. starts:          26
+(PID.TID 0000.0001)          No. stops:          26
+(PID.TID 0000.0001)  Seconds in section "I/O (WRITE)        [MAIN LOOP]":
+(PID.TID 0000.0001)          User time:  0.699718952178955
+(PID.TID 0000.0001)        System time:  0.136611998081207
+(PID.TID 0000.0001)    Wall clock time:   1.16658401489258
+(PID.TID 0000.0001)         No. starts:          78
+(PID.TID 0000.0001)          No. stops:          78
+(PID.TID 0000.0001)  Seconds in section "SOLVE_FOR_PRESSURE [MAIN LOOP]":
+(PID.TID 0000.0001)          User time:  0.973778724670410
+(PID.TID 0000.0001)        System time:  9.162932634353638E-003
+(PID.TID 0000.0001)    Wall clock time:   1.00014090538025
+(PID.TID 0000.0001)         No. starts:          26
+(PID.TID 0000.0001)          No. stops:          26
+(PID.TID 0000.0001)  Seconds in section "BLOCKING_EXCHANGES [MAIN LOOP]":
+(PID.TID 0000.0001)          User time:  0.304876446723938
+(PID.TID 0000.0001)        System time:  1.666009426116943E-003
+(PID.TID 0000.0001)    Wall clock time:  0.308363795280457
+(PID.TID 0000.0001)         No. starts:          26
+(PID.TID 0000.0001)          No. stops:          26
+(PID.TID 0000.0001)  Seconds in section "SPIN-DOWN":
+(PID.TID 0000.0001)          User time:   2.35988998413086
+(PID.TID 0000.0001)        System time:  0.299046993255615
+(PID.TID 0000.0001)    Wall clock time:   3.46652209758759
+(PID.TID 0000.0001)         No. starts:           1
+(PID.TID 0000.0001)          No. stops:           1
+(PID.TID 0000.0001)  Seconds in section "I/O (WRITE)         [SPIN-DOWN]":
+(PID.TID 0000.0001)          User time:   1.46358108520508
+(PID.TID 0000.0001)        System time:  0.294048964977264
+(PID.TID 0000.0001)    Wall clock time:   2.56514298915863
+(PID.TID 0000.0001)         No. starts:           2
+(PID.TID 0000.0001)          No. stops:           2
+(PID.TID 0000.0001)  Seconds in section "DYNAMICS            [SPIN-DOWN]":
+(PID.TID 0000.0001)          User time:  0.896308898925781
+(PID.TID 0000.0001)        System time:  4.998028278350830E-003
+(PID.TID 0000.0001)    Wall clock time:  0.901379108428955
+(PID.TID 0000.0001)         No. starts:           1
+(PID.TID 0000.0001)          No. stops:           1
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // Tile <-> Tile communication statistics
+(PID.TID 0000.0001) // ======================================================
+(PID.TID 0000.0001) // o Tile number: 000001
+(PID.TID 0000.0001) //         No. X exchanges =           2317
+(PID.TID 0000.0001) //            Max. X spins =              1
+(PID.TID 0000.0001) //            Min. X spins =              1
+(PID.TID 0000.0001) //          Total. X spins =           2317
+(PID.TID 0000.0001) //            Avg. X spins =       1.00E+00
+(PID.TID 0000.0001) //         No. Y exchanges =           2317
+(PID.TID 0000.0001) //            Max. Y spins =              1
+(PID.TID 0000.0001) //            Min. Y spins =              1
+(PID.TID 0000.0001) //          Total. Y spins =           2317
+(PID.TID 0000.0001) //            Avg. Y spins =       1.00E+00
+(PID.TID 0000.0001) // o Thread number: 000001
+(PID.TID 0000.0001) //            No. barriers =              0
+(PID.TID 0000.0001) //      Max. barrier spins =              0
+(PID.TID 0000.0001) //      Min. barrier spins =     1000000000
+(PID.TID 0000.0001) //     Total barrier spins =              0
+(PID.TID 0000.0001) //      Avg. barrier spins =       0.00E+00
+NORMAL END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp4/Attic/CPP_EEOPTIONS.h,v 1.1 1998/12/08 19:44:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp4/code/Attic/CPP_EEOPTIONS.h,v 1.1 1998/12/15 00:02:27 adcroft Exp $
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |

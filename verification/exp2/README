@@ -1,0 +1,34 @@
+Example: "4x4 Steady Global Simulation"
+=======================================
+
+To apply the changes to the default configuration of MITgcmUV:
+  cp ../verification/exp2/code/SIZE.h ../model/inc/
+  cp ../verification/exp2/code/CPP_OPTIONS.h ../model/inc/
+  cp ../verification/exp2/code/CPP_EEOPTIONS.h ../eesupp/inc/
+
+Configure and compile the code:
+  cd bin
+  ../tools/genmake -makefile
+  make depend
+  make
+
+To run:
+  cd ../exe
+  cp ../verification/exp2/input/* .
+  dmpirun -np 4 mitgcmuv  ( Digital )
+
+There is comparison output in two directories:
+ ../verification/exp2/results
+ ../verification/exp2/results.oldcode
+
+To obtain the "oldcode" numbers make the following changes
+to the older code: 
+CPP_OPTIONS.h must have
+  #define OLD_ADV_BCS
+  #define OLD_UV_GEOMETRY
+calc_mom_rhs.F must have
+  #undef  NO_LATERAL_SLIP
+  #define NO_BOTTOM_SLIP
+
+Comments:
+The input data is real*4.

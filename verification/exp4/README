@@ -1,2 +1,28 @@
+Example: "Flow over a bump with Open Boundaries"
+================================================
+
+To apply the changes to the default configuration of MITgcmUV:
+  cp ../verification/exp4/code/SIZE.h ../model/inc/
+  cp ../verification/exp4/code/CPP_OPTIONS.h ../model/inc/
+  cp ../verification/exp4/code/CPP_EEOPTIONS.h ../eesupp/inc/
+
+Configure and compile the code:
+  cd bin
+  ../tools/genmake -makefile
+  make depend
+  make
+
+To run:
+  cd ../exe
+  cp ../verification/exp4/input/* .
+  ./mitgcmuv
+
+There is comparison output in the directory:
+ ../verification/exp4/results
+
+Comments:
+The input data is real*4.
+
+
 See the file doc/OpenBound.html or doc/OpenBound.txt for information
 on open boundaries

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp4/Attic/CPP_OPTIONS.h,v 1.1 1998/12/08 19:44:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/CPP_OPTIONS.h,v 1.1 1998/12/14 23:59:58 adcroft Exp $
 C
 
 C 
@@ -8,7 +8,7 @@ C
 
 C o Include/exclude code for C-D grid method of integrating the 
 C   coriolis terms
-#undef   INCLUDE_CD_CODE
+#define  INCLUDE_CD_CODE
 
 C o Include/exclude diagnostics package interface code
 #define  INCLUDE_DIAGNOSTICS_INTERFACE_CODE
@@ -111,6 +111,10 @@ C o Include/exclude call to S/R CALC_ISOSLOPES
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
+
+C o Use "natural" boundary conditions for salinity
+C   instead of the "virtual salt flux"
+#undef USE_NATURAL_BCS
 
 C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F

@@ -8,6 +8,8 @@
  sRef= 8*35.,
  viscAz=1.E-3,
  viscAh=1.E3,
+ no_slip_sides=.FALSE.,
+ no_slip_bottom=.FALSE.,
  viscA4=0.E12,
  diffKhT=1.E3,
  diffKzT=1.E-5,
@@ -25,6 +27,7 @@
  eosType='LINEAR',
  hFacMin=0.2,
  openBoundaries=.TRUE.,
+ readBinaryPrec=64,
  &
 
 # Elliptic solver parameters
