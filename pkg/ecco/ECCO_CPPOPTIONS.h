@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ECCO_CPPOPTIONS.h,v 1.5 2003/11/01 04:50:02 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ECCO_CPPOPTIONS.h,v 1.6 2004/12/03 00:49:52 mlosch Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
@@ -24,6 +24,9 @@ C o include dump of snap shots for checks
 #undef  ALLOW_ECCO_ADJOINT_RUN
 #undef  ALLOW_ECCO_GRADIENT_CHECK
 #undef  ALLOW_ECCO_OPTIMIZATION
+
+C Flag to include (dirty adhoc) balancing of boudary fluxes
+#undef ALLOW_CTRL_OBCS_BALANCE
 
 C       >>> Do a long protocol.
 #undef ECCO_VERBOSE
