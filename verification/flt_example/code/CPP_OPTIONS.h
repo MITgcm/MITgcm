@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/flt_example/code/Attic/CPP_OPTIONS.h,v 1.1 2001/09/13 17:43:56 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/flt_example/code/Attic/CPP_OPTIONS.h,v 1.2 2001/11/26 15:55:38 adcroft Exp $
 C $Name:  $
 C
 
@@ -35,7 +35,7 @@ C   coriolis terms
 #undef   INCLUDE_CD_CODE
 
 C o Include/exclude code for open-boundary conditions
-#define  ALLOW_OBCS
+#undef   ALLOW_OBCS
 
 C o Include/exclude diagnostics package interface code
 #define  ALLOW_TIMEAVE
