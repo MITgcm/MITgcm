@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.11 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.12 2003/10/28 22:57:59 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -58,7 +58,7 @@ ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
       _EXCH_XYZ_R8( Tr1  , myThid )
 #endif
 
-#ifdef INCLUDE_CD_CODE
+#ifdef ALLOW_CD_CODE
 c     _EXCH_XYZ_R8( guCD , myThid )
 c     _EXCH_XYZ_R8( gvCD , myThid )
       _EXCH_XYZ_R8( uVelD , myThid )

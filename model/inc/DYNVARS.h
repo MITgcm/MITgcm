@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.22 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.23 2003/10/28 22:57:59 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,7 +54,7 @@ C           implicDiv2DFlow=0 => etaH=etaN ; =1 => etaH=etaNm1 ;
       _RL  gtNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gsNm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-#ifdef INCLUDE_CD_CODE
+#ifdef ALLOW_CD_CODE
       COMMON /DYNVARS_CD/ 
      &                   uVelD, vVelD,
      &                   etaNm1,

@@ -15,13 +15,13 @@ CADJ STORE wvel      = tapelev2, key = ilev_2
 CADJ STORE etan      = tapelev2, key = ilev_2
 CADJ STORE totphihyd = tapelev2, key = ilev_2
 
-#ifdef INCLUDE_CD_CODE
+#ifdef ALLOW_CD_CODE
 CADJ STORE uveld     = tapelev2, key = ilev_2
 CADJ STORE vveld     = tapelev2, key = ilev_2
 CADJ STORE etanm1    = tapelev2, key = ilev_2
 CADJ STORE unm1      = tapelev2, key = ilev_2
 CADJ STORE vnm1      = tapelev2, key = ilev_2
-#endif /* INCLUDE_CD_CODE */
+#endif /* ALLOW_CD_CODE */
 
 #ifdef EXACT_CONSERV
 CADJ STORE empmr     = tapelev2, key = ilev_2

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.10 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.11 2003/10/28 22:57:59 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,10 +40,10 @@ CEOP
 
 C-  check that CPP option is "defined" when running-flag parameter is on:
 
-#ifndef INCLUDE_CD_CODE
+#ifndef ALLOW_CD_CODE
       IF (useCDscheme) THEN
         WRITE(msgBuf,'(A)') 
-     &   'CONFIG_CHECK: #undef INCLUDE_CD_CODE and'
+     &   'CONFIG_CHECK: #undef ALLOW_CD_CODE and'
         CALL PRINT_ERROR( msgBuf , myThid)
         WRITE(msgBuf,'(A)')
      &   'CONFIG_CHECK: useCDscheme is TRUE'

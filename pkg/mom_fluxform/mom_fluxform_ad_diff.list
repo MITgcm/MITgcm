@@ -6,7 +6,6 @@ mom_calc_ke.f
 mom_calc_rtrans.f
 mom_calc_strain.f
 mom_calc_tension.f
-mom_cdscheme.f
 mom_u_adv_uu.f
 mom_u_adv_vu.f
 mom_u_adv_wu.f

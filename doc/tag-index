@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.197 2003/10/27 23:00:59 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.198 2003/10/28 22:57:59 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o create initial cd_code package
+o cleanup verification/*/code/GMREDI_OPTIONS.h
+o cleanup testreport
 
 checkpoint51o_post
 o bringing AD-related verif's up to date with genmake2

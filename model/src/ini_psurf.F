@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.5 2002/01/30 04:12:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.6 2003/10/28 22:57:59 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -61,7 +61,7 @@ C     Read an initial state
 C
       _EXCH_XY_R8(etaN, myThid)
 
-#ifdef INCLUDE_CD_CODE
+#ifdef ALLOW_CD_CODE
 C--   By default, initialize etaNm1 with etaN : 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

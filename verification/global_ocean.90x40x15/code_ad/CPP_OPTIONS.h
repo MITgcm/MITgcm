@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/CPP_OPTIONS.h,v 1.8 2003/10/27 22:42:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/CPP_OPTIONS.h,v 1.9 2003/10/28 22:58:00 edhill Exp $
 C $Name:  $
 
 C CPP flags controlling which code in included in the files that
@@ -13,9 +13,6 @@ C will be compiled.
 #ifdef ALLOW_KPP
 #define  SHORTWAVE_HEATING
 #endif
-
-C   coriolis terms
-#define  INCLUDE_CD_CODE
 
 C o Include/exclude momentum eqn metric terms code
 #define INCLUDE_MOMENTUM_METRIC_TERM_CODE

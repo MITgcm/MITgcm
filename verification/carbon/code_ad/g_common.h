@@ -29,7 +29,7 @@ C     heimbach@mit.edu 11-Jan-2001
       _RL g_vvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL g_wvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
-#ifdef INCLUDE_CD_CODE
+#ifdef ALLOW_CD_CODE
       common /g_dynvars_cd/ 
      &                      g_uveld, g_vveld,
      &                      g_etanm1, 

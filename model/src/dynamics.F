@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.101 2003/10/10 22:56:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.102 2003/10/28 22:57:59 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -439,7 +439,7 @@ C--      Apply open boundary conditions
          END IF
 #endif   /* ALLOW_OBCS */
 
-#ifdef    INCLUDE_CD_CODE
+#ifdef    ALLOW_CD_CODE
 #ifdef    ALLOW_AUTODIFF_TAMC
 CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
@@ -456,7 +456,7 @@ CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
      I         deltaTmom, KappaRV,recip_HFacS,
      U         uVelD,
      I         myThid )
-#endif    /* INCLUDE_CD_CODE */
+#endif    /* ALLOW_CD_CODE */
 C--     End If implicitViscosity.AND.momStepping
         ENDIF
  

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.33 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.34 2003/10/28 22:57:59 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -48,7 +49,7 @@ C     == Local variables ==
       _RL phxFac,phyFac, psFac
       _RL     gUtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gVtmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-#ifdef INCLUDE_CD_CODE
+#ifdef ALLOW_CD_CODE
       _RL     guCor(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL     gvCor(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
@@ -86,7 +87,7 @@ C-    Initialize local arrays (not really necessary but safer)
        DO i=1-Olx,sNx+Olx
         gUtmp(i,j) = 0. _d 0
         gVtmp(i,j) = 0. _d 0
-#ifdef INCLUDE_CD_CODE
+#ifdef ALLOW_CD_CODE
         guCor(i,j) = 0. _d 0
         gvCor(i,j) = 0. _d 0
 #endif
@@ -154,15 +155,14 @@ C-     for CD-scheme, compute gU,Vtmp = gU,V^n + forcing
         ENDDO
       ENDIF
 
-#ifdef INCLUDE_CD_CODE
-#ifdef ALLOW_MOM_FLUXFORM
+#ifdef ALLOW_CD_CODE
       IF (useCDscheme) THEN
 C-     Step forward D-grid velocity using C-grid gU,Vtmp = gU,V^n + forcing
 C      and return coriolis terms on C-grid (guCor,gvCor)
-        CALL MOM_CDSCHEME(
-     I                    bi,bj,k, dPhiHydX,dPhiHydY, gUtmp,gVtmp,
-     O                    guCor,gvCor,
-     I                    myTime, myIter, myThid)
+        CALL CD_SCHEME(
+     I                  bi,bj,k, dPhiHydX,dPhiHydY, gUtmp,gVtmp,
+     O                  guCor,gvCor,
+     I                  myTime, myIter, myThid)
         DO j=jMin,jMax
          DO i=iMin,iMax
           gUtmp(i,j) = gU(i,j,k,bi,bj)
@@ -172,8 +172,7 @@ C      and return coriolis terms on C-grid (guCor,gvCor)
          ENDDO
         ENDDO
       ENDIF
-#endif /* ALLOW_MOM_FLUXFORM */
-#endif /* INCLUDE_CD_CODE */
+#endif /* ALLOW_CD_CODE */
 
 #ifdef NONLIN_FRSURF
       IF (.NOT. vectorInvariantMomentum 

@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cd_code/Attic/cd_scheme.F,v 1.1 2003/10/25 17:13:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cd_code/Attic/cd_scheme.F,v 1.2 2003/10/28 22:57:59 edhill Exp $
 C $Name:  $
 
-#include "MOM_FLUXFORM_OPTIONS.h"
+#include "CD_CODE_OPTIONS.h"
 
 CBOP
 C !ROUTINE: CD_SCHEME

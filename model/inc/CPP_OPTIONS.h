@@ -1,16 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.26 2003/10/16 15:47:57 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.27 2003/10/28 22:57:59 edhill Exp $
 C $Name:  $
 
 #ifndef CPP_OPTIONS_H
 #define CPP_OPTIONS_H
 
-ceh3 #include "PACKAGES_CONFIG.h"
-
 C CPP flags controlling particular source code features
-
-C o Include/exclude code for C-D grid method of integrating the 
-C   coriolis terms
-#undef  INCLUDE_CD_CODE
 
 C o Include/exclude temperature forcing code
 C#define  INCLUDE_T_FORCING_CODE

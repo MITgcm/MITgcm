@@ -30,7 +30,7 @@ cph      _RL adetah(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL advvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       _RL adwvel(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
-#ifdef INCLUDE_CD_CODE
+#ifdef ALLOW_CD_CODE
       common /addynvars_cd/ 
      &                      aduveld, advveld,
      &                      adetanm1, 

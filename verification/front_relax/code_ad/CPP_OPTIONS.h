@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/CPP_OPTIONS.h,v 1.4 2003/10/27 22:43:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/CPP_OPTIONS.h,v 1.5 2003/10/28 22:58:00 edhill Exp $
 C $Name:  $
 
 C CPP flags controlling which code in included in the files that
@@ -14,10 +14,6 @@ C o Shortwave heating as extra term in external_forcing.F
 #ifdef ALLOW_KPP
 #define  SHORTWAVE_HEATING
 #endif
-
-C o Include/exclude code for C-D grid method of integrating the 
-C   coriolis terms
-#undef  INCLUDE_CD_CODE
 
 C o Include/exclude momentum eqn metric terms code
 #define INCLUDE_MOMENTUM_METRIC_TERM_CODE

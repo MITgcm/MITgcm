@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.39 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.40 2003/10/28 22:57:59 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -65,7 +65,7 @@ C--   Save previous solution & Initialise Vector solution and source term :
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-#ifdef INCLUDE_CD_CODE
+#ifdef ALLOW_CD_CODE
           etaNm1(i,j,bi,bj) = etaN(i,j,bi,bj)
 #endif
           cg2d_x(i,j,bi,bj) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)

@@ -1,13 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/CPP_OPTIONS.h,v 1.13 2003/10/09 22:19:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/CPP_OPTIONS.h,v 1.14 2003/10/28 22:57:59 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 
 C CPP flags controlling particular source code features
-
-C o Include/exclude code for C-D grid method of integrating the 
-C   coriolis terms
-#define INCLUDE_CD_CODE
 
 C o Include/exclude temperature forcing code
 C#define  INCLUDE_T_FORCING_CODE
