@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/fill_diagnostics.F,v 1.10 2004/06/21 15:42:38 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/fill_diagnostics.F,v 1.11 2004/06/25 19:23:02 molod Exp $
 C $Name:  $
 
       subroutine fill_diagnostics (myThid, chardiag, levflg, nlevs, 
@@ -21,8 +21,11 @@ C                  0 indicates that the bi-bj loop must be done here
 C                  1 indicates that the bi-bj loop is done OUTSIDE
 C                  2 indicates that the bi-bj loop is done OUTSIDE
 C                      AND that we have been sent a local array
-C     bi ......... X-direction process(or) number - used for bibjflg=1,2
-C     bj ......... Y-direction process(or) number - used for bibjflg=1,2
+C                  3 indicates that the bi-bj loop is done OUTSIDE
+C                      AND that we have been sent a local array
+C                      AND that the array has the shadow regions
+C     bi ......... X-direction process(or) number - used for bibjflg=1-3
+C     bj ......... Y-direction process(or) number - used for bibjflg=1-3
 C     arrayin .... Field to increment diagnostics array
 C                  NOTE: User beware! If a local (1 tile only) array
 C                        is sent here, bibjflg MUST NOT be set to 0
@@ -44,6 +47,7 @@ c ===============
       integer i, j, n, ndiagnum, bihere, bjhere, levhere, ipointer
       _RL array(1-OLx:sNx+Olx,1-Oly:sNy+Oly,nlevs,Nsx,Nsy)
       _RL arrayloc(sNx,sNy,nlevs)
+      _RL arrayloc2(1-OLx:sNx+Olx,1-Oly:sNy+Oly,nlevs)
       integer irun,jrun,krun,birun,bjrun
 
 C Run through list of active diagnostics to make sure
@@ -159,6 +163,35 @@ C   Check to see if we need to do a bi-bj loop here
         do i = 1,sNx
          qdiag(i,j,ipointer+levflg-1,bi,bj) =
      .  qdiag(i,j,ipointer+levflg-1,bi,bj) + arrayloc(i,j,nlevs)
+        enddo
+        enddo
+       endif
+
+      elseif(bibjflg.eq.3) then
+       irun = sNx+2*Olx
+       jrun = sNy+2*Oly
+       krun = nlevs
+       birun = 1
+       bjrun = 1
+
+       if(levflg.eq.0)then
+        do levhere = 1,nlevs
+         call fillit(arrayin,irun,jrun,krun,levhere,levhere,birun,bjrun,
+     .                                              1,1,arrayloc2)
+         do j = 1,sNy
+         do i = 1,sNx
+          qdiag(i,j,ipointer+levhere-1,bi,bj) =
+     .  qdiag(i,j,ipointer+levhere-1,bi,bj) + arrayloc2(i,j,levhere)
+         enddo
+         enddo
+        enddo
+       else
+        call fillit(arrayin,irun,jrun,krun,levflg,1,birun,bjrun,
+     .                                              1,1,arrayloc2)
+        do j = 1,sNy
+        do i = 1,sNx
+         qdiag(i,j,ipointer+levflg-1,bi,bj) =
+     .  qdiag(i,j,ipointer+levflg-1,bi,bj) + arrayloc2(i,j,nlevs)
         enddo
         enddo
        endif
