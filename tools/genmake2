@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.5 2003/08/27 22:12:31 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.6 2003/09/05 00:25:42 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -109,8 +109,10 @@ usage()  {
     echo "      -pdepend=NAME | --pdepend=NAME"
     echo "    -pdefault NAME | --pdefault NAME"
     echo "      -pdefault=NAME | --pdefault=NAME"
-    echo "    -makefile NAME | -ma NAME"
-    echo "      --makefile=NAME | -ma=NAME"
+    echo "    -make NAME | -m NAME"
+    echo "      --make=NAME | -m=NAME"
+    echo "    -makefile NAME | -mf NAME"
+    echo "      --makefile=NAME | -mf=NAME"
     echo "    -platform NAME | --platform NAME | -pl NAME | --pl NAME"
     echo "      -platform=NAME | --platform=NAME | -pl=NAME | --pl=NAME"
     echo "    -rootdir NAME | --rootdir NAME | -rd NAME | --rd NAME"
@@ -273,9 +275,14 @@ for ac_option ; do
 	-pdefault=* | --pdefault=*)
 	    PDEFAULT=$ac_optarg ;;
 	
-	-makefile | -ma)
+	-make | --make | -m | --m)
+	    ac_prev=MAKE ;;
+	-make=* | --make=* | -m=* | --m=*)
+	    MAKE=$ac_optarg ;;
+	
+	-makefile | --makefile | -ma | --ma)
 	    ac_prev=MAKEFILE ;;
-	--makefile=* | -ma=*)
+	-makefile=* | --makefile=* | -ma=* | --ma=*)
 	    MAKEFILE=$ac_optarg ;;
 	
 	-platform | --platform | -pl | --pl)
