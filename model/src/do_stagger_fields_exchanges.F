@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.4 2004/07/07 22:23:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_stagger_fields_exchanges.F,v 1.5 2004/07/07 22:52:52 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -21,7 +21,6 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#include "GAD.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
