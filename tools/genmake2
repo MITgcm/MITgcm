@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.99 2004/09/27 15:49:48 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.100 2004/09/30 16:46:45 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1490,6 +1490,41 @@ done
 rm -f ./.tmp_pack
 echo "    packages are:  $PACKAGES"
 
+#  Check availability of NetCDF and then either build the MNC template
+#  files or delete mnc from the list of available packages.
+echo $PACKAGES | grep ' mnc ' > /dev/null 2>&1
+RETVAL=$?
+if test "x$RETVAL" = x0 ; then
+    if test "x$HAVE_NETCDF" != xt ; then
+	cat <<EOF
+
+*********************************************************************
+WARNING: the "mnc" package was enabled but tests failed to compile
+  NetCDF applications.  Please check that:
+
+  1) NetCDF is correctly installed for this compiler and
+  2) the LIBS variable (within the "optfile") specifies the correct 
+       NetCDF library to link against.
+
+  Due to this failure, the "mnc" package is now DISABLED.
+*********************************************************************
+
+EOF
+	PACKAGES=`echo $PACKAGES | sed -e 's/mnc//g'`
+	DISABLE="$DISABLE mnc"
+    else
+	( cd $ROOTDIR"/pkg/mnc" && $MAKE templates ) > make_mnc.errors 2>&1
+	RETVAL=$?
+	if test "x${RETVAL}" = x0 ; then
+	    rm -f make_mnc.errors
+	else
+	    echo "Error: problem encountered while building source files in pkg/mnc:"
+	    cat make_mnc.errors 1>&2
+	    exit 1
+	fi
+    fi
+fi
+
 echo "  applying package dependency rules"
 ck=
 while test "x$ck" != xtt ; do
@@ -1573,39 +1608,6 @@ for i in $PACKAGES ; do
 	exit 1
     fi
 done
-
-#  Build MNC templates and check for ability to build and use NetCDF
-echo $PACKAGES | grep ' mnc ' > /dev/null 2>&1
-RETVAL=$?
-if test "x$RETVAL" = x0 ; then
-    ( cd $ROOTDIR"/pkg/mnc" && $MAKE templates ) > make_mnc.errors 2>&1
-    RETVAL=$?
-    if test "x${RETVAL}" = x0 ; then
-	rm -f make_mnc.errors
-    else
-	echo "Error: problem encountered while building source files in pkg/mnc:"
-	cat make_mnc.errors 1>&2
-	exit 1
-    fi
-    if test "x$HAVE_NETCDF" != xt ; then
-	cat <<EOF
-
-*********************************************************************
-WARNING: the "mnc" package was enabled but tests failed to compile
-  NetCDF applications.  Please check that:
-
-  1) NetCDF is correctly installed for this compiler and
-  2) the LIBS variable (within the "optfile") specifies the correct 
-       NetCDF library to link against.
-
-  Due to this failure, the "mnc" package is now DISABLED.
-*********************************************************************
-
-EOF
-	temp=`echo $PACKAGES | sed -e 's/mnc//g'`
-	PACKAGES=$temp
-    fi
-fi
 
 # Create a list of #define and #undef to enable/disable packages
 PACKAGES_DOT_H=PACKAGES_CONFIG.h
