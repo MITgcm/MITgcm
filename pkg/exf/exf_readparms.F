@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.24 2005/01/04 04:18:36 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.25 2005/02/21 05:32:55 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -95,7 +95,7 @@ c     Surface flux data.
      &         swfluxfile,         lwfluxfile, apressurefile,
      &         swdownfile,         lwdownfile,
      &          exf_iprec,         exf_yftype, 
-     & useExfYearlyFields,   useExfCheckRange,
+     & useExfYearlyFields,  twoDigitYear,  useExfCheckRange,
      &   exf_inscal_hflux,  exf_inscal_sflux,
      & exf_inscal_ustress,  exf_inscal_vstress,
      &   exf_inscal_uwind,  exf_inscal_vwind,    exf_inscal_evap,
@@ -310,6 +310,7 @@ c     Initialise file type and field precision
       exf_iprec            = 32
       exf_yftype           = 'RL'
       useExfYearlyFields   = .FALSE.
+      twoDigitYear         = .FALSE.
       useExfCheckRange     = .TRUE.
 
 c     Input scaling factors.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.7 2004/12/20 23:32:52 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.8 2005/02/21 05:32:55 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -119,12 +119,33 @@ c     get record numbers and interpolation factor
 
             if ( first ) then
                if (useExfYearlyFields) then
+C     Complete filenames with YR or _YEAR extension
                   il = ilnblnk( uvecfile )
-                  write(uvecfile0(1:128),'(2a,i4.4)')
-     &                 uvecfile(1:il),'_',year0
+                  if (twoDigitYear) then
+                     if (year0.ge.2000) then
+                        write(uvecfile0(1:128),'(a,i2.2)')
+     &                       uvecfile(1:il),year0-2000
+                     else
+                        write(uvecfile0(1:128),'(a,i2.2)')
+     &                       uvecfile(1:il),year0-1900
+                     endif
+                  else
+                     write(uvecfile0(1:128),'(2a,i4.4)')
+     &                    uvecfile(1:il),'_',year0
+                  endif
                   il = ilnblnk( vvecfile )
-                  write(vvecfile0(1:128),'(2a,i4.4)')
-     &                 vvecfile(1:il),'_',year0
+                  if (twoDigitYear) then
+                     if (year0.ge.2000) then
+                        write(vvecfile0(1:128),'(a,i2.2)')
+     &                       vvecfile(1:il),year0-2000
+                     else
+                        write(vvecfile0(1:128),'(a,i2.2)')
+     &                       vvecfile(1:il),year0-1900
+                     endif
+                  else
+                     write(vvecfile0(1:128),'(2a,i4.4)')
+     &                    vvecfile(1:il),'_',year0
+                  endif
                else
                   uvecfile0 = uvecfile
                   vvecfile0 = vvecfile
@@ -189,12 +210,33 @@ c     apply mask
                call exf_SwapFFields( uvec0, uvec1, mythid )
                call exf_SwapFFields( vvec0, vvec1, mythid )
                if (useExfYearlyFields) then
+C     Complete filenames with YR or _YEAR extension
                   il = ilnblnk( uvecfile )
-                  write(uvecfile1(1:128),'(2a,i4.4)')
-     &                 uvecfile(1:il),'_',year0
+                  if (twoDigitYear) then
+                     if (year1.ge.2000) then
+                        write(uvecfile1(1:128),'(a,i2.2)')
+     &                       uvecfile(1:il),year1-2000
+                     else
+                        write(uvecfile1(1:128),'(a,i2.2)')
+     &                       uvecfile(1:il),year1-1900
+                     endif
+                  else
+                     write(uvecfile1(1:128),'(2a,i4.4)')
+     &                    uvecfile(1:il),'_',year1
+                  endif
                   il = ilnblnk( vvecfile )
-                  write(vvecfile1(1:128),'(2a,i4.4)')
-     &                 vvecfile(1:il),'_',year0
+                  if (twoDigitYear) then
+                     if (year1.ge.2000) then
+                        write(vvecfile1(1:128),'(a,i2.2)')
+     &                       vvecfile(1:il),year1-2000
+                     else
+                        write(vvecfile1(1:128),'(a,i2.2)')
+     &                       vvecfile(1:il),year1-1900
+                     endif
+                  else
+                     write(vvecfile1(1:128),'(2a,i4.4)')
+     &                    vvecfile(1:il),'_',year1
+                  endif
                else
                   uvecfile1 = uvecfile
                   vvecfile1 = vvecfile

@@ -102,9 +102,20 @@ c     get record numbers and interpolation factor for gen
 
          if ( first ) then
             if (useExfYearlyFields) then
+C     Complete filename with YR or _YEAR extension
                il = ilnblnk( genfile )
-               write(genfile0(1:128),'(2a,i4.4)')
-     &              genfile(1:il),'_',year0
+               if (twoDigitYear) then
+                  if (year0.ge.2000) then
+                     write(genfile0(1:128),'(a,i2.2)')
+     &                    genfile(1:il),year0-2000
+                  else
+                     write(genfile0(1:128),'(a,i2.2)')
+     &                    genfile(1:il),year0-1900
+                  endif
+               else
+                  write(genfile0(1:128),'(2a,i4.4)')
+     &                 genfile(1:il),'_',year0
+               endif
             else
                genfile0 = genfile
             endif
@@ -132,9 +143,20 @@ c     get record numbers and interpolation factor for gen
             call exf_SwapFFields( gen0, gen1, mythid )
             
             if (useExfYearlyFields) then
+C     Complete filename with YR or _YEAR extension
                il = ilnblnk( genfile )
-               write(genfile1(1:128),'(2a,i4.4)')
-     &              genfile(1:il),'_',year1
+               if (twoDigitYear) then
+                  if (year1.ge.2000) then
+                     write(genfile1(1:128),'(a,i2.2)')
+     &                    genfile(1:il),year1-2000
+                  else
+                     write(genfile1(1:128),'(a,i2.2)')
+     &                    genfile(1:il),year1-1900
+                  endif
+               else
+                  write(genfile1(1:128),'(2a,i4.4)')
+     &                 genfile(1:il),'_',year1
+               endif
             else
                genfile1 = genfile
             endif
