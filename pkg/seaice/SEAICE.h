@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.12 2004/06/03 13:54:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.13 2004/07/22 23:43:43 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_SEAICE
@@ -46,7 +46,7 @@ CEOP
       _RL UICEC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL VICEC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
-      COMMON/TRANS/HEFF,HSNOW
+      COMMON/SEAICE_TRANS/HEFF,HSNOW
       COMMON/ARRAY/HEFFM,UVM
       COMMON/OFL/YNEG
       COMMON/RIV/RIVER
