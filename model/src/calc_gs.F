@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.11 1998/07/15 22:22:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.12 1998/08/18 16:32:41 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
 CStartOfInterFace
       SUBROUTINE CALC_GS( 
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     I           xA,yA,uTrans,vTrans,wTrans,maskup,maskC,
-     I           K13,K23,KappaZS,KapGM,
+     I           xA,yA,uTrans,vTrans,rTrans,maskup,maskC,
+     I           K13,K23,KappaRS,KapGM,
      U           af,df,fZon,fMer,fVerS,
      I           myThid )
 C     /==========================================================\
@@ -70,12 +70,12 @@ C     myThid - Instance number for this innvocation of CALC_GT
       _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL wTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
-      _RL KappaZS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL KappaRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL KapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -109,7 +109,7 @@ C     Advective component of zonal flux
 C     Zonal tracer gradient
       DO j=jMin,jMax
        DO i=iMin,iMax
-        dSdx(i,j) = _rdxC(i,j,bi,bj)*
+        dSdx(i,j) = _recip_dxC(i,j,bi,bj)*
      &  (salt(i,j,k,bi,bj)-salt(i-1,j,k,bi,bj))
        ENDDO
       ENDDO
@@ -139,7 +139,7 @@ C       Advective component of meridional flux
 C     Zonal tracer gradient
       DO j=jMin,jMax
        DO i=iMin,iMax
-        dSdy(i,j) = _rdyC(i,j,bi,bj)*
+        dSdy(i,j) = _recip_dyC(i,j,bi,bj)*
      &  (salt(i,j,k,bi,bj)-salt(i,j-1,k,bi,bj))
        ENDDO
       ENDDO
@@ -161,13 +161,13 @@ C--   Interpolate terms for Redi/GM scheme
       DO j=jMin,jMax
        DO i=iMin,iMax
         dSdx(i,j) = 0.5*( 
-     &   +0.5*(_maskW(i+1,j,k,bi,bj)*_rdxC(i+1,j,bi,bj)*
+     &   +0.5*(_maskW(i+1,j,k,bi,bj)*_recip_dxC(i+1,j,bi,bj)*
      &           (salt(i+1,j,k,bi,bj)-salt(i,j,k,bi,bj))
-     &        +_maskW(i,j,k,bi,bj)*_rdxC(i,j,bi,bj)*
+     &        +_maskW(i,j,k,bi,bj)*_recip_dxC(i,j,bi,bj)*
      &           (salt(i,j,k,bi,bj)-salt(i-1,j,k,bi,bj)))
-     &   +0.5*(_maskW(i+1,j,km1,bi,bj)*_rdxC(i+1,j,bi,bj)*
+     &   +0.5*(_maskW(i+1,j,km1,bi,bj)*_recip_dxC(i+1,j,bi,bj)*
      &           (salt(i+1,j,km1,bi,bj)-salt(i,j,km1,bi,bj))
-     &        +_maskW(i,j,km1,bi,bj)*_rdxC(i,j,bi,bj)*
+     &        +_maskW(i,j,km1,bi,bj)*_recip_dxC(i,j,bi,bj)*
      &           (salt(i,j,km1,bi,bj)-salt(i-1,j,km1,bi,bj)))
      &       )
        ENDDO
@@ -175,13 +175,13 @@ C--   Interpolate terms for Redi/GM scheme
       DO j=jMin,jMax
        DO i=iMin,iMax
         dSdy(i,j) = 0.5*(
-     &   +0.5*(_maskS(i,j,k,bi,bj)*_rdyC(i,j,bi,bj)*
+     &   +0.5*(_maskS(i,j,k,bi,bj)*_recip_dyC(i,j,bi,bj)*
      &           (salt(i,j,k,bi,bj)-salt(i,j-1,k,bi,bj))
-     &        +_maskS(i,j+1,k,bi,bj)*_rdyC(i,j+1,bi,bj)*
+     &        +_maskS(i,j+1,k,bi,bj)*_recip_dyC(i,j+1,bi,bj)*
      &           (salt(i,j+1,k,bi,bj)-salt(i,j,k,bi,bj)))
-     &   +0.5*(_maskS(i,j,km1,bi,bj)*_rdyC(i,j,bi,bj)*
+     &   +0.5*(_maskS(i,j,km1,bi,bj)*_recip_dyC(i,j,bi,bj)*
      &           (salt(i,j,km1,bi,bj)-salt(i,j-1,km1,bi,bj))
-     &        +_maskS(i,j+1,km1,bi,bj)*_rdyC(i,j+1,bi,bj)*
+     &        +_maskS(i,j+1,km1,bi,bj)*_recip_dyC(i,j+1,bi,bj)*
      &           (salt(i,j+1,km1,bi,bj)-salt(i,j,km1,bi,bj)))
      &       )
        ENDDO
@@ -194,7 +194,7 @@ C     (this plays the role of the free-surface correction)
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) =
-     &   wTrans(i,j)*(salt(i,j,k,bi,bj)+salt(i,j,kM1,bi,bj))*0.5 _d 0
+     &   rTrans(i,j)*(salt(i,j,k,bi,bj)+salt(i,j,kM1,bi,bj))*0.5 _d 0
        ENDDO
       ENDDO
 C     Diffusive component of vertical flux
@@ -211,8 +211,8 @@ C           boundary condition.
       IF (.NOT.implicitDiffusion) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-         df(i,j) = df(i,j) + _zA(i,j,bi,bj)*(
-     &    -KappaZS(i,j,k)*rdzC(k)
+         df(i,j) = df(i,j) + _rA(i,j,bi,bj)*(
+     &    -KappaRS(i,j,k)*recip_drC(k)
      &    *(salt(i,j,kM1,bi,bj)-salt(i,j,k,bi,bj))
      &    )
         ENDDO
@@ -240,16 +240,13 @@ C           they are not algorithmically correct. These points
 C           are not used.
       DO j=jMin,jMax
        DO i=iMin,iMax
-C    &   -_rhFacC(i,j,k,bi,bj)*rdzF(k)*_rdxF(i,j,bi,bj)*_rdyF(i,j,bi,bj)
-C    &   -_rhFacC(i,j,k,bi,bj)*rdzF(k)/_zA(i,j,bi,bj)
-C #define _rVolS(i,j,k,bi,bj) _rhFacC(i,j,k,bi,bj)*rdzF(k)*_rdxF(i,j,bi,bj)*_rdyF(i,j,bi,bj)
-#define _rVolS(i,j,k,bi,bj) _rhFacC(i,j,k,bi,bj)*rdzF(k)/_zA(i,j,bi,bj)
+#define _recip_VolS(i,j,k,bi,bj) _recip_hFacC(i,j,k,bi,bj)*recip_dzF(k)/_rA(i,j,bi,bj)
         gS(i,j,k,bi,bj)=
-     &   -_rVolS(i,j,k,bi,bj)
+     &   -_recip_VolS(i,j,k,bi,bj)
      &   *(
      &    +( fZon(i+1,j)-fZon(i,j) )
      &    +( fMer(i,j+1)-fMer(i,j) )
-     &    +( fVerS(i,j,kUp)-fVerS(i,j,kDown) )
+     &    +( fVerS(i,j,kUp)-fVerS(i,j,kDown) )*rkFac
      &    )
        ENDDO
       ENDDO

@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.6 1998/06/08 21:43:00 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.7 1998/08/18 16:32:41 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
 CStartOfInterFace
       SUBROUTINE CALC_COMMON_FACTORS( 
      I        bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     O        xA,yA,uTrans,vTrans,wTrans,wVel,maskC,maskUp,
+     O        xA,yA,uTrans,vTrans,rTrans,rVel,maskC,maskUp,
      I        myThid)
 
 C     /==========================================================\
@@ -37,8 +37,8 @@ C     xA      - Tracer cell face area normal to X
 C     yA      - Tracer cell face area normal to X
 C     uTrans  - Zonal volume transport through cell face
 C     vTrans  - Meridional volume transport through cell face
-C     wTrans  - Vertical volume transport through cell face
-C     wVel    - Vertical velocity at cell upper and lower faces
+C     rTrans  - R-direction volume transport through cell face
+C     rVel    - R-direction velocity at cell upper and lower faces
 C     maskC   - land/water mask for tracer points
 C     maskUp  - land/water mask for Wvel points (above tracer level)
 C     myThid - Instance number for this innvocation of CALC_COMMON_FACTORS
@@ -48,8 +48,8 @@ C
       _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL wTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL wVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 C
@@ -69,8 +69,8 @@ C                         into fluxUD.
 C--   Calculate tracer cell face open areas
       DO j=jMin,jMax
        DO i=iMin,iMax
-        xA(i,j) = _dyG(i,j,bi,bj)*dzF(k)*_hFacW(i,j,k,bi,bj)
-        yA(i,j) = _dxG(i,j,bi,bj)*dzF(k)*_hFacS(i,j,k,bi,bj)
+        xA(i,j) = _dyG(i,j,bi,bj)*drF(k)*_hFacW(i,j,k,bi,bj)
+        yA(i,j) = _dxG(i,j,bi,bj)*drF(k)*_hFacS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
@@ -87,16 +87,16 @@ C--   Calculate vertical "volume transport" through
 C--   tracer cell face *above* this level.
       DO j=jMin,jMax
        DO i=iMin,iMax
-        wTrans(i,j) = uTrans(i,j)-uTrans(i+1,j)
-     &               +vTrans(i,j)-vTrans(i,j+1)
-     &               +wTrans(i,j)
+        rTrans(i,j) = uTrans(i,j)*recip_rkFac-uTrans(i+1,j)*_recip_rkFac
+     &               +vTrans(i,j)*_recip_rkFac-vTrans(i,j+1)*_recip_rkFac
+     &               +rTrans(i,j)
        ENDDO
       ENDDO
 
 C--   Vertical velocity at upper face
       DO j=jMin,jMax
        DO i=iMin,iMax
-        wVel(i,j,kUp) = wTrans(i,j)/_zA(i,j,bi,bj)
+        rVel(i,j,kUp) = rTrans(i,j)/_rA(i,j,bi,bj)
        ENDDO
       ENDDO
 

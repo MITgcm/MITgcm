@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.4 1998/06/10 16:05:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.5 1998/08/18 16:32:41 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -6,13 +6,12 @@ CStartOfInterFace
       SUBROUTINE CALC_DIFFUSIVITY( 
      I        bi,bj,iMin,iMax,jMin,jMax,K,
      I        maskC,maskUp,KapGM,K33,
-     O        KappaZT,KappaZS,
+     O        KappaRT,KappaRS,
      I        myThid)
 
 C     /==========================================================\
 C     | SUBROUTINE CALC_DIFFUSIVITY                              |
 C     | o Calculate net diffusivity                              |
-C     |==========================================================|
 C     \==========================================================/
       IMPLICIT NONE
 
@@ -33,8 +32,8 @@ C
       _RS maskUp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL KapGM(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL K33(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
-      _RL KappaZT(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
-      _RL KappaZS(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
+      _RL KappaRT(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
+      _RL KappaRS(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
       INTEGER myThid
 CEndOfInterface
 
@@ -44,15 +43,15 @@ C     I, J, K - Loop counters
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-        KappaZT(i,j,k) = maskC(i,j)*maskUp(i,j)*
-     &      ( diffKzT + KapGM(i,j)*K33(i,j,k) )
+        KappaRT(i,j,k) = maskC(i,j)*maskUp(i,j)*
+     &      ( diffKrT + KapGM(i,j)*K33(i,j,k) )
        ENDDO
       ENDDO
 
       DO j=jMin,jMax
        DO i=iMin,iMax
-        KappaZS(i,j,k) = maskC(i,j)*maskUp(i,j)*
-     &      ( diffKzS + KapGM(i,j)*K33(i,j,k) )
+        KappaRS(i,j,k) = maskC(i,j)*maskUp(i,j)*
+     &      ( diffKrS + KapGM(i,j)*K33(i,j,k) )
        ENDDO
       ENDDO
 

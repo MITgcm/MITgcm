@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.13 1998/06/22 15:26:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.14 1998/08/18 16:32:41 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
 CStartOfInterFace
       SUBROUTINE CALC_GT( 
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     I           xA,yA,uTrans,vTrans,wTrans,maskup,maskC,
-     I           K13,K23,KappaZT,KapGM,
+     I           xA,yA,uTrans,vTrans,rTrans,maskup,maskC,
+     I           K13,K23,KappaRT,KapGM,
      U           af,df,fZon,fMer,fVerT,
      I           myThid )
 C     /==========================================================\
@@ -57,7 +57,7 @@ C     xA      - Tracer cell face area normal to X
 C     yA      - Tracer cell face area normal to X
 C     uTrans  - Zonal volume transport through cell face
 C     vTrans  - Meridional volume transport through cell face
-C     wTrans  - Vertical volume transport through cell face
+C     rTrans  - Vertical volume transport through cell face
 C     af      - Advective flux component work array
 C     df      - Diffusive flux component work array
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
@@ -70,12 +70,12 @@ C     myThid - Instance number for this innvocation of CALC_GT
       _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL wTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
-      _RL KappaZT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
+      _RL KappaRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL KapGM (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL af    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -109,7 +109,7 @@ C     Advective component of zonal flux
 C     Zonal tracer gradient
       DO j=jMin,jMax
        DO i=iMin,iMax
-        dTdx(i,j) = _rdxC(i,j,bi,bj)*
+        dTdx(i,j) = _recip_dxC(i,j,bi,bj)*
      &  (theta(i,j,k,bi,bj)-theta(i-1,j,k,bi,bj))
        ENDDO
       ENDDO
@@ -139,7 +139,7 @@ C       Advective component of meridional flux
 C     Zonal tracer gradient
       DO j=jMin,jMax
        DO i=iMin,iMax
-        dTdy(i,j) = _rdyC(i,j,bi,bj)*
+        dTdy(i,j) = _recip_dyC(i,j,bi,bj)*
      &  (theta(i,j,k,bi,bj)-theta(i,j-1,k,bi,bj))
        ENDDO
       ENDDO
@@ -161,13 +161,13 @@ C--   Interpolate terms for Redi/GM scheme
       DO j=jMin,jMax
        DO i=iMin,iMax
         dTdx(i,j) = 0.5*( 
-     &   +0.5*(_maskW(i+1,j,k,bi,bj)*_rdxC(i+1,j,bi,bj)*
+     &   +0.5*(_maskW(i+1,j,k,bi,bj)*_recip_dxC(i+1,j,bi,bj)*
      &           (theta(i+1,j,k,bi,bj)-theta(i,j,k,bi,bj))
-     &        +_maskW(i,j,k,bi,bj)*_rdxC(i,j,bi,bj)*
+     &        +_maskW(i,j,k,bi,bj)*_recip_dxC(i,j,bi,bj)*
      &           (theta(i,j,k,bi,bj)-theta(i-1,j,k,bi,bj)))
-     &   +0.5*(_maskW(i+1,j,km1,bi,bj)*_rdxC(i+1,j,bi,bj)*
+     &   +0.5*(_maskW(i+1,j,km1,bi,bj)*_recip_dxC(i+1,j,bi,bj)*
      &           (theta(i+1,j,km1,bi,bj)-theta(i,j,km1,bi,bj))
-     &        +_maskW(i,j,km1,bi,bj)*_rdxC(i,j,bi,bj)*
+     &        +_maskW(i,j,km1,bi,bj)*_recip_dxC(i,j,bi,bj)*
      &           (theta(i,j,km1,bi,bj)-theta(i-1,j,km1,bi,bj)))
      &       )
        ENDDO
@@ -175,13 +175,13 @@ C--   Interpolate terms for Redi/GM scheme
       DO j=jMin,jMax
        DO i=iMin,iMax
         dTdy(i,j) = 0.5*(
-     &   +0.5*(_maskS(i,j,k,bi,bj)*_rdyC(i,j,bi,bj)*
+     &   +0.5*(_maskS(i,j,k,bi,bj)*_recip_dyC(i,j,bi,bj)*
      &           (theta(i,j,k,bi,bj)-theta(i,j-1,k,bi,bj))
-     &        +_maskS(i,j+1,k,bi,bj)*_rdyC(i,j+1,bi,bj)*
+     &        +_maskS(i,j+1,k,bi,bj)*_recip_dyC(i,j+1,bi,bj)*
      &           (theta(i,j+1,k,bi,bj)-theta(i,j,k,bi,bj)))
-     &   +0.5*(_maskS(i,j,km1,bi,bj)*_rdyC(i,j,bi,bj)*
+     &   +0.5*(_maskS(i,j,km1,bi,bj)*_recip_dyC(i,j,bi,bj)*
      &           (theta(i,j,km1,bi,bj)-theta(i,j-1,km1,bi,bj))
-     &        +_maskS(i,j+1,km1,bi,bj)*_rdyC(i,j+1,bi,bj)*
+     &        +_maskS(i,j+1,km1,bi,bj)*_recip_dyC(i,j+1,bi,bj)*
      &           (theta(i,j+1,km1,bi,bj)-theta(i,j,km1,bi,bj)))
      &       )
        ENDDO
@@ -194,15 +194,15 @@ C     (this plays the role of the free-surface correction)
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) =
-     &   wTrans(i,j)*(theta(i,j,k,bi,bj)+theta(i,j,kM1,bi,bj))*0.5 _d 0
+     &   rTrans(i,j)*(theta(i,j,k,bi,bj)+theta(i,j,kM1,bi,bj))*0.5 _d 0
        ENDDO
       ENDDO
 C     Diffusive component of vertical flux
-C     Note: For K=1 then KM1=1 this gives a dT/dz = 0 upper
+C     Note: For K=1 then KM1=1 this gives a dT/dr = 0 upper
 C           boundary condition.
       DO j=jMin,jMax
        DO i=iMin,iMax
-        df(i,j) = _zA(i,j,bi,bj)*(
+        df(i,j) = _rA(i,j,bi,bj)*(
      &   -KapGM(i,j)*K13(i,j,k)*dTdx(i,j)
      &   -KapGM(i,j)*K23(i,j,k)*dTdy(i,j)
      &   )
@@ -211,8 +211,8 @@ C           boundary condition.
       IF (.NOT.implicitDiffusion) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-         df(i,j) = df(i,j) + _zA(i,j,bi,bj)*(
-     &    -KappaZT(i,j,k)*rdzC(k)
+         df(i,j) = df(i,j) + _rA(i,j,bi,bj)*(
+     &    -KappaZT(i,j,k)*recip_drC(k)
      &    *(theta(i,j,kM1,bi,bj)-theta(i,j,k,bi,bj))
      &    )
         ENDDO
@@ -240,16 +240,13 @@ C           they are not algorithmically correct. These points
 C           are not used.
       DO j=jMin,jMax
        DO i=iMin,iMax
-C    &   -_rhFacC(i,j,k,bi,bj)*rdzF(k)*_rdxF(i,j,bi,bj)*_rdyF(i,j,bi,bj)
-C    &   -_rhFacC(i,j,k,bi,bj)*rdzF(k)/_zA(i,j,bi,bj)
-C #define _rVolT(i,j,k,bi,bj) _rhFacC(i,j,k,bi,bj)*rdzF(k)*_rdxF(i,j,bi,bj)*_rdyF(i,j,bi,bj)
-#define _rVolT(i,j,k,bi,bj) _rhFacC(i,j,k,bi,bj)*rdzF(k)/_zA(i,j,bi,bj)
+#define _recip_VolT(i,j,k,bi,bj) _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)/_rA(i,j,bi,bj)
         gT(i,j,k,bi,bj)=
-     &   -_rVolT(i,j,k,bi,bj)
+     &   -_recip_VolT(i,j,k,bi,bj)
      &   *(
      &    +( fZon(i+1,j)-fZon(i,j) )
      &    +( fMer(i,j+1)-fMer(i,j) )
-     &    +( fVerT(i,j,kUp)-fVerT(i,j,kDown) )
+     &    +( fVerT(i,j,kUp)-fVerT(i,j,kDown) )*rkFac
      &    )
        ENDDO
       ENDDO

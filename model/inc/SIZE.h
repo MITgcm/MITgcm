@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.14 1998/08/15 17:02:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SIZE.h,v 1.15 1998/08/18 16:32:41 cnh Exp $
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |
@@ -49,7 +49,7 @@ C     Nr  - No. points in R for full process domain.
 
 C     l - Runtime global problem size in X
 C     m - Runtime global problem size in Y
-C     n - Runtime global problem size in Z
+C     n - Runtime global problem size in R
       COMMON /RUNSIZ/ l, m, n
       INTEGER l
       INTEGER m
