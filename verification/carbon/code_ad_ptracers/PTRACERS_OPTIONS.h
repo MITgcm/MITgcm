@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad_ptracers/Attic/PTRACERS_OPTIONS.h,v 1.1 2003/10/26 01:45:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad_ptracers/Attic/PTRACERS_OPTIONS.h,v 1.2 2003/11/20 02:28:38 heimbach Exp $
 C $Name:  $
 
 C CPP options file for PTRACERS package
@@ -7,6 +7,9 @@ C Use this file for selecting options within the PTRACERS package
 C
 C PTRACERS is enabled with ALLOW_PTRACERS in CPP_OPTIONS.h or in
 C the Makefile with DEFINES=-DALLOW_PTRACERS
+
+#ifndef PTRACERS_OPTIONS_H
+#define PTRACERS_OPTIONS_H
 
 #include "CPP_OPTIONS.h"
 
@@ -26,3 +29,4 @@ C is set then NUMBER_OF_PTRACERS is set here (default 1)
 #endif
 
 #endif /* ALLOW_PTRACERS */
+#endif /* PTRACERS_OPTIONS_H */

@@ -1,4 +1,10 @@
 
+#include "PACKAGES_CONFIG.h"
+
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_OPTIONS.h"
+#endif
+
 c     ================================================================
 c     HEADER TAMC
 c     ================================================================
@@ -7,13 +13,12 @@ c     o Header for the use of the Tangent Linear and Adjoint Model
 c       Compiler (TAMC).
 c
 c     started: Christian Eckert eckert@mit.edu  04-Feb-1999
-c
 c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
 c              - New parameter nlevchk_0 for dimensionalising
 c                common blocks in the undef ALLOW_TAMC_CHECKPOINTING case
 c              - nhreads_chkpt was declared at the wrong place
-c
-c
+c              - new keys, separate for different packages
+
 c     ================================================================
 c     HEADER TAMC
 c     ================================================================
@@ -59,7 +64,7 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
       integer    nchklev_1
       parameter( nchklev_1      =    5 )
       integer    nchklev_2
-      parameter( nchklev_2      =   90 )
+      parameter( nchklev_2      =    2 )
 c      parameter( nchklev_2      =  150 )
       integer    nchklev_3
       parameter( nchklev_3      =    3 )
@@ -104,10 +109,14 @@ c     and writing data.
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
       INTEGER    maxpass
-#ifdef ALLOW_PASSIVE_TRACER
-      PARAMETER( maxpass     = 3 )
+#ifdef ALLOW_PTRACERS
+      PARAMETER( maxpass     = NUMBER_OF_PTRACERS + 2 )
 #else
+# ifdef ALLOW_PASSIVE_TRACER
+      PARAMETER( maxpass     = 3 )
+# else
       PARAMETER( maxpass     = 2 )
+# endif
 #endif
       INTEGER    maxcube
       PARAMETER( maxcube     = 1 )
@@ -115,7 +124,7 @@ c     and writing data.
       INTEGER act0, act1, act2, act3, act4
       INTEGER max0, max1, max2, max3
       INTEGER iikey, kkey, passkey, igadkey, 
-     &        itdkey, idynkey, igmkey, ikppkey
+     &        itdkey, idynkey, igmkey, ikppkey, iptrkey
 
 c     ================================================================
 c     END OF HEADER TAMC

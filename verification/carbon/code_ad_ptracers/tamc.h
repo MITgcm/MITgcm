@@ -1,4 +1,10 @@
 
+#include "PACKAGES_CONFIG.h"
+
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_OPTIONS.h"
+#endif
+
 c     ================================================================
 c     HEADER TAMC
 c     ================================================================
@@ -7,13 +13,12 @@ c     o Header for the use of the Tangent Linear and Adjoint Model
 c       Compiler (TAMC).
 c
 c     started: Christian Eckert eckert@mit.edu  04-Feb-1999
-c
 c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
 c              - New parameter nlevchk_0 for dimensionalising
 c                common blocks in the undef ALLOW_TAMC_CHECKPOINTING case
 c              - nhreads_chkpt was declared at the wrong place
-c
-c
+c              - new keys, separate for different packages
+
 c     ================================================================
 c     HEADER TAMC
 c     ================================================================
@@ -104,12 +109,14 @@ c     and writing data.
       INTEGER    maximpl
       PARAMETER( maximpl     = 6 )
       INTEGER    maxpass
-#if (defined (ALLOW_PASSIVE_TRACER) || \
-     defined (ALLOW_PTRACERS))
-      PARAMETER( maxpass     = 3 )
-cph      PARAMETER( maxpass     = PTRACERS_num+2 )
+#ifdef ALLOW_PTRACERS
+      PARAMETER( maxpass     = NUMBER_OF_PTRACERS + 2 )
 #else
+# ifdef ALLOW_PASSIVE_TRACER
+      PARAMETER( maxpass     = 3 )
+# else
       PARAMETER( maxpass     = 2 )
+# endif
 #endif
       INTEGER    maxcube
       PARAMETER( maxcube     = 1 )
