@@ -1,8 +1,7 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_yz.F,v 1.5 2003/10/23 04:41:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_pack_yz.F,v 1.6 2003/10/30 19:09:06 heimbach Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
 
 

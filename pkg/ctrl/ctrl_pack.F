@@ -1,16 +1,10 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.10 2003/10/23 04:41:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.11 2003/10/30 19:09:05 heimbach Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
 
-
-      subroutine ctrl_pack(
-     I                      myiter,
-     I                      mytime,
-     I                      mythid
-     &                    )
+      subroutine ctrl_pack( first, mythid )
 
 c     ==================================================================
 c     SUBROUTINE ctrl_pack
@@ -31,6 +25,8 @@ c                ALLOW_ECCO_OPTIMIZATION
 c
 c              G. Gebbie, added open boundary control packing,
 c                  gebbie@mit.edu  18 -Mar- 2003
+c
+c              heimbach@mit.edu totally restrucured 28-Oct-2003
 c
 c     ==================================================================
 c     SUBROUTINE ctrl_pack
@@ -55,15 +51,18 @@ c     == global variables ==
 
 c     == routine arguments ==
 
-      integer myiter
-      _RL     mytime
+      logical first
       integer mythid
 
+#ifndef EXCLUDE_CTRL_PACK
 c     == local variables ==
 
 #ifndef ALLOW_ECCO_OPTIMIZATION
       integer optimcycle
+      _RL    fmin
 #endif
+
+      _RL    fcloc
 
       integer i, j, k
       integer ii
@@ -76,61 +75,13 @@ c     == local variables ==
       logical doglobalread
       logical ladinit
       integer cbuffindex
-
+      logical lxxadxx
+      
       integer cunit
-      _RL     tmpvar
+      integer ictrlgrad
 
       character*(128) cfile
       character*( 80) weighttype
-
-      character*( 80) fname_theta
-      character*( 80) fname_salt
-      character*( 80) fname_hflux
-      character*( 80) fname_sflux
-      character*( 80) fname_tauu
-      character*( 80) fname_tauv
-      character*( 80) adfname_theta
-      character*( 80) adfname_salt
-      character*( 80) adfname_hflux
-      character*( 80) adfname_sflux
-      character*( 80) adfname_tauu
-      character*( 80) adfname_tauv
-      character*( 80)   fname_atemp
-      character*( 80) adfname_atemp
-      character*( 80)   fname_aqh
-      character*( 80) adfname_aqh
-      character*( 80)   fname_uwind
-      character*( 80) adfname_uwind
-      character*( 80)   fname_vwind
-      character*( 80) adfname_vwind
-      character*( 80)   fname_obcsn
-      character*( 80) adfname_obcsn
-      character*( 80)   fname_obcss
-      character*( 80) adfname_obcss
-      character*( 80)   fname_obcsw
-      character*( 80) adfname_obcsw
-      character*( 80)   fname_obcse
-      character*( 80) adfname_obcse
-      character*( 80)   fname_diffkr
-      character*( 80) adfname_diffkr
-      character*( 80)   fname_kapgm
-      character*( 80) adfname_kapgm
-      character*( 80)   fname_tr1
-      character*( 80) adfname_tr1
-      character*( 80)   fname_sst
-      character*( 80) adfname_sst
-      character*( 80)   fname_sss
-      character*( 80) adfname_sss
-      character*( 80)   fname_hfacc
-      character*( 80) adfname_hfacc
-      character*( 80)   fname_efluxy
-      character*( 80) adfname_efluxy
-      character*( 80)   fname_efluxp
-      character*( 80) adfname_efluxp
-      character*( 80)   fname_bottomdrag
-      character*( 80) adfname_bottomdrag
-
-      logical lxxadxx
 
 c     == external ==
 
@@ -141,9 +92,8 @@ c     == end of interface ==
 
 #ifndef ALLOW_ECCO_OPTIMIZATION
       optimcycle = 0
+      fmin       = 0. _d 0
 #endif
-
-      tmpvar = -9999. _d 0
 
 c--   Tiled files are used.
       doglobalread = .false.
@@ -153,84 +103,66 @@ c--   Initialise adjoint variables on active files.
 
 c--   Assign file names.
 
-      call ctrl_set_fname(
-     I     xx_theta_file, fname_theta, adfname_theta, mythid )
-      call ctrl_set_fname(
-     I     xx_salt_file, fname_salt, adfname_salt, mythid )
-      call ctrl_set_fname(
-     I     xx_hflux_file, fname_hflux, adfname_hflux, mythid )
-      call ctrl_set_fname(
-     I     xx_sflux_file, fname_sflux, adfname_sflux, mythid )
-      call ctrl_set_fname(
-     I     xx_tauu_file, fname_tauu, adfname_tauu, mythid )
-      call ctrl_set_fname(
-     I     xx_tauv_file, fname_tauv, adfname_tauv, mythid )
-      call ctrl_set_fname(
-     I     xx_atemp_file, fname_atemp, adfname_atemp, mythid )
-      call ctrl_set_fname(
-     I     xx_aqh_file, fname_aqh, adfname_aqh, mythid )
-      call ctrl_set_fname(
-     I     xx_uwind_file, fname_uwind, adfname_uwind, mythid )
-      call ctrl_set_fname(
-     I     xx_vwind_file, fname_vwind, adfname_vwind, mythid )
-      call ctrl_set_fname(
-     I     xx_obcsn_file, fname_obcsn, adfname_obcsn, mythid )
-      call ctrl_set_fname(
-     I     xx_obcss_file, fname_obcss, adfname_obcss, mythid )
-      call ctrl_set_fname(
-     I     xx_obcsw_file, fname_obcsw, adfname_obcsw, mythid )
-      call ctrl_set_fname(
-     I     xx_obcse_file, fname_obcse, adfname_obcse, mythid )
-      call ctrl_set_fname(
-     I     xx_diffkr_file, fname_diffkr, adfname_diffkr, mythid )
-      call ctrl_set_fname(
-     I     xx_kapgm_file, fname_kapgm, adfname_kapgm, mythid )
-      call ctrl_set_fname(
-     I     xx_tr1_file, fname_tr1, adfname_tr1, mythid )
-      call ctrl_set_fname(
-     I     xx_sst_file, fname_sst, adfname_sst, mythid )
-      call ctrl_set_fname(
-     I     xx_sss_file, fname_sss, adfname_sss, mythid )
-      call ctrl_set_fname(
-     I     xx_hfacc_file, fname_hfacc, adfname_hfacc, mythid )
-      call ctrl_set_fname(
-     I     xx_efluxy_file, fname_efluxy, adfname_efluxy, mythid )
-      call ctrl_set_fname(
-     I     xx_efluxp_file, fname_efluxp, adfname_efluxp, mythid )
-      call ctrl_set_fname(
-     I     xx_bottomdrag_file, fname_bottomdrag, adfname_bottomdrag
-     I   , mythid )
+      call ctrl_set_fname(xx_theta_file, fname_theta, mythid)
+      call ctrl_set_fname(xx_salt_file, fname_salt, mythid)
+      call ctrl_set_fname(xx_hflux_file, fname_hflux, mythid)
+      call ctrl_set_fname(xx_sflux_file, fname_sflux, mythid)
+      call ctrl_set_fname(xx_tauu_file, fname_tauu, mythid)
+      call ctrl_set_fname(xx_tauv_file, fname_tauv, mythid)
+      call ctrl_set_fname(xx_atemp_file, fname_atemp, mythid)
+      call ctrl_set_fname(xx_aqh_file, fname_aqh, mythid)
+      call ctrl_set_fname(xx_uwind_file, fname_uwind, mythid)
+      call ctrl_set_fname(xx_vwind_file, fname_vwind, mythid)
+      call ctrl_set_fname(xx_obcsn_file, fname_obcsn, mythid)
+      call ctrl_set_fname(xx_obcss_file, fname_obcss, mythid)
+      call ctrl_set_fname(xx_obcsw_file, fname_obcsw, mythid)
+      call ctrl_set_fname(xx_obcse_file, fname_obcse, mythid)
+      call ctrl_set_fname(xx_diffkr_file, fname_diffkr, mythid)
+      call ctrl_set_fname(xx_kapgm_file, fname_kapgm, mythid)
+      call ctrl_set_fname(xx_tr1_file, fname_tr1, mythid)
+      call ctrl_set_fname(xx_sst_file, fname_sst, mythid)
+      call ctrl_set_fname(xx_sss_file, fname_sss, mythid)
+      call ctrl_set_fname(xx_hfacc_file, fname_hfacc, mythid)
+      call ctrl_set_fname(xx_efluxy_file, fname_efluxy, mythid)
+      call ctrl_set_fname(xx_efluxp_file, fname_efluxp, mythid)
+      call ctrl_set_fname(xx_bottomdrag_file, fname_bottomdrag, mythid)
 
 c
 c--     Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
 
-c     >>> Write control vector <<<
-
-cph   this part was removed since it's not necessary
-cph   and causes huge amounts of wall clock time on parallel machines
-
-
-
-c     >>> Write gradient vector <<<
-      lxxadxx = .FALSE.
-
-          call mdsfindunit( cunit, mythid )
+      print *, 'ph-pack in pack '
+      if ( first .AND. optimcycle .EQ. 0 ) then
+c     >>> Initialise control vector for optimcycle=0 <<<
+      print *, 'ph-pack in ctrl '
+          lxxadxx   = .TRUE.
+          ictrlgrad = 1
+          fcloc     = fmin
           write(cfile(1:128),'(4a,i4.4)')
-     &    costname(1:9),'_',yctrlid(1:10),'.opt',
-     &    optimcycle
+     &      ctrlname(1:9),'_',yctrlid(1:10),'.opt', optimcycle
+      else
+c     >>> Write gradient vector <<<
+      print *, 'ph-pack in cost '
+          lxxadxx   = .FALSE.
+          ictrlgrad = 2
+          fcloc     = fc
+          write(cfile(1:128),'(4a,i4.4)')
+     &    costname(1:9),'_',yctrlid(1:10),'.opt', optimcycle
+       endif
 
-          open( cunit, file   = cfile,
-     &               status = 'unknown',
-     &               form   = 'unformatted',
-     &               access  = 'sequential'   )
+      print *, 'ph-pack vor open ', optimcycle, cfile
+       call mdsfindunit( cunit, mythid )
+       open( cunit, file   = cfile,
+     &      status = 'unknown',
+     &      form   = 'unformatted',
+     &      access  = 'sequential'   )
 
 c--       Header information.
           write(cunit) nvartype
           write(cunit) nvarlength
           write(cunit) yctrlid
           write(cunit) optimCycle
-          write(cunit) fc
+          write(cunit) fcloc
           write(cunit) 1
           write(cunit) 1
           write(cunit) 1
@@ -241,6 +173,7 @@ c--       Header information.
 #ifdef ALLOW_CTRL_WETV
           write(cunit) (nWetvGlobal(k), k=1,nr)
 #endif
+
 #ifdef ALLOW_OBCSN_CONTROL
           write(cunit) ((nWetobcsnGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
 #endif
@@ -266,7 +199,7 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtheta"
           call ctrl_set_pack_xyz(
-     &         cunit, ivartype, adfname_theta, "hFacC",
+     &         cunit, ivartype, fname_theta(ictrlgrad), "hFacC",
      &         weighttype, wtheta, lxxadxx, mythid)
 #endif
 
@@ -275,7 +208,7 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsalt"
           call ctrl_set_pack_xyz(
-     &         cunit, ivartype, adfname_salt, "hFacC",
+     &         cunit, ivartype, fname_salt(ictrlgrad), "hFacC",
      &         weighttype, wsalt, lxxadxx, mythid)
 #endif
 
@@ -285,8 +218,8 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "whflux"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_hflux, "hFacC", weighttype,
-     &         lxxadxx, mythid)
+     &         cunit, ivartype, fname_hflux(ictrlgrad), "hFacC",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
 #if (defined (ALLOW_SFLUX_CONTROL) || \
@@ -295,8 +228,8 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsflux"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_sflux, "hFacC", weighttype,
-     &         lxxadxx, mythid)
+     &         cunit, ivartype, fname_sflux(ictrlgrad), "hFacC",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
 #if (defined (ALLOW_USTRESS_CONTROL) || \
@@ -305,8 +238,8 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtauu"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_tauu, "maskW", weighttype,
-     &         lxxadxx, mythid)
+     &         cunit, ivartype, fname_tauu(ictrlgrad), "maskW",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
 #if (defined (ALLOW_VSTRESS_CONTROL) || \
@@ -315,8 +248,8 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtauv"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_tauv, "maskS", weighttype,
-     &         lxxadxx, mythid)
+     &         cunit, ivartype, fname_tauv(ictrlgrad), "maskS",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_ATEMP_CONTROL
@@ -324,8 +257,8 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "watemp"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_atemp, "hFacC", weighttype,
-     &         lxxadxx, mythid)
+     &         cunit, ivartype, fname_atemp(ictrlgrad), "hFacC",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_AQH_CONTROL
@@ -333,8 +266,8 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "waqh"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_aqh, "hFacC", weighttype,
-     &         lxxadxx, mythid)
+     &         cunit, ivartype, fname_aqh(ictrlgrad), "hFacC",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_UWIND_CONTROL
@@ -342,8 +275,8 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wuwind"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_uwind, "maskW", weighttype,
-     &         lxxadxx, mythid)
+     &         cunit, ivartype, fname_uwind(ictrlgrad), "maskW",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_VWIND_CONTROL
@@ -351,8 +284,8 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wvwind"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_vwind, "maskS", weighttype,
-     &         lxxadxx, mythid)
+     &         cunit, ivartype, fname_vwind(ictrlgrad), "maskS",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_OBCSN_CONTROL
@@ -360,7 +293,7 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wobcsn"
           call ctrl_set_pack_xz(
-     &         cunit, ivartype, adfname_obcsn, "maskobcsn",
+     &         cunit, ivartype, fname_obcsn(ictrlgrad), "maskobcsn",
      &         weighttype, wobcsn, lxxadxx, mythid)
 #endif
 
@@ -369,7 +302,7 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wobcss"
           call ctrl_set_pack_xz(
-     &         cunit, ivartype, adfname_obcss, "maskobcss",
+     &         cunit, ivartype, fname_obcss(ictrlgrad), "maskobcss",
      &         weighttype, wobcss, lxxadxx, mythid)
 #endif
 
@@ -378,7 +311,7 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wobcsw"
           call ctrl_set_pack_yz(
-     &         cunit, ivartype, adfname_obcsw, "maskobcsw",
+     &         cunit, ivartype, fname_obcsw(ictrlgrad), "maskobcsw",
      &         weighttype, wobcsw, lxxadxx, mythid)
 #endif
 
@@ -387,7 +320,7 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wobcse"
           call ctrl_set_pack_yz(
-     &         cunit, ivartype, adfname_obcse, "maskobcse",
+     &         cunit, ivartype, fname_obcse(ictrlgrad), "maskobcse",
      &         weighttype, wobcse, lxxadxx, mythid)
 #endif
 
@@ -396,7 +329,7 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wdiffkr"
           call ctrl_set_pack_xyz(
-     &         cunit, ivartype, adfname_diffkr, "hFacC",
+     &         cunit, ivartype, fname_diffkr(ictrlgrad), "hFacC",
      &         weighttype, wunit, lxxadxx, mythid)
 #endif
 
@@ -405,7 +338,7 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wkapgm"
           call ctrl_set_pack_xyz(
-     &         cunit, ivartype, adfname_kapgm, "hFacC",
+     &         cunit, ivartype, fname_kapgm(ictrlgrad), "hFacC",
      &         weighttype, wunit, lxxadxx, mythid)
 #endif
 
@@ -414,7 +347,7 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wtr1"
           call ctrl_set_pack_xyz(
-     &         cunit, ivartype, adfname_tr1, "hFacC",
+     &         cunit, ivartype, fname_tr1(ictrlgrad), "hFacC",
      &         weighttype, wunit, lxxadxx, mythid)
 #endif
 
@@ -423,8 +356,8 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsst0"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_sst, "hFacC", weighttype,
-     &         lxxadxx, mythid)
+     &         cunit, ivartype, fname_sst(ictrlgrad), "hFacC",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_SSS0_CONTROL
@@ -432,8 +365,8 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsss0"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_sss, "hFacC", weighttype,
-     &         lxxadxx, mythid)
+     &         cunit, ivartype, fname_sss(ictrlgrad), "hFacC",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
 #ifdef ALLOW_HFACC_CONTROL
@@ -442,12 +375,12 @@ c--       Header information.
           write(weighttype(1:80),'(a)') "whfacc"
 # ifdef ALLOW_HFACC3D_CONTROL
           call ctrl_set_pack_xyz(
-     &         cunit, ivartype, adfname_hfacc, "hFacC",
+     &         cunit, ivartype, fname_hfacc(ictrlgrad), "hFacC",
      &         weighttype, wunit, lxxadxx, mythid)
 # else
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_hfacc, "hFacC", weighttype,
-     &         lxxadxx, mythid)
+     &         cunit, ivartype, fname_hfacc(ictrlgrad), "hFacC",
+     &         weighttype, lxxadxx, mythid)
 # endif
 #endif
 
@@ -456,7 +389,7 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wefluxy0"
           call ctrl_set_pack_xyz(
-     &         cunit, ivartype, adfname_efluxy, "hFacS",
+     &         cunit, ivartype, fname_efluxy(ictrlgrad), "hFacS",
      &         weighttype, wunit, lxxadxx, mythid)
 #endif
 
@@ -465,7 +398,7 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wefluxp0"
           call ctrl_set_pack_xyz(
-     &         cunit, ivartype, adfname_efluxp, "hFacV",
+     &         cunit, ivartype, fname_efluxp(ictrlgrad), "hFacV",
      &         weighttype, wunit, lxxadxx, mythid)
 #endif
 
@@ -474,13 +407,15 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wbottomdrag"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_bottomdrag, "hFacC", weighttype,
-     &         lxxadxx, mythid)
+     &         cunit, ivartype, fname_bottomdrag(ictrlgrad), "hFacC",
+     &         weighttype, lxxadxx, mythid)
 #endif
 
           close ( cunit )
 
         _END_MASTER( mythid )
+
+#endif /* EXCLUDE_CTRL_PACK */
 
       return
       end

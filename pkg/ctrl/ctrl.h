@@ -1,4 +1,5 @@
 
+
 c     ==================================================================
 c     HEADER CONTROLVARS
 c     ==================================================================
@@ -463,6 +464,30 @@ c                         control part.
       integer xx_obcssstartdate(4)
       integer xx_obcswstartdate(4)
       integer xx_obcsestartdate(4)
+
+      character*( 80)   fname_theta(2)
+      character*( 80)   fname_salt(2)
+      character*( 80)   fname_hflux(2)
+      character*( 80)   fname_sflux(2)
+      character*( 80)   fname_tauu(2)
+      character*( 80)   fname_tauv(2)
+      character*( 80)   fname_atemp(2)
+      character*( 80)   fname_aqh(2)
+      character*( 80)   fname_uwind(2)
+      character*( 80)   fname_vwind(2)
+      character*( 80)   fname_obcsn(2)
+      character*( 80)   fname_obcss(2)
+      character*( 80)   fname_obcsw(2)
+      character*( 80)   fname_obcse(2)
+      character*( 80)   fname_diffkr(2)
+      character*( 80)   fname_kapgm(2)
+      character*( 80)   fname_tr1(2)
+      character*( 80)   fname_sst(2)
+      character*( 80)   fname_sss(2)
+      character*( 80)   fname_hfacc(2)
+      character*( 80)   fname_efluxy(2)
+      character*( 80)   fname_efluxp(2)
+      character*( 80)   fname_bottomdrag(2)
 
 c     ==================================================================
 c     END OF HEADER CONTROLVARS

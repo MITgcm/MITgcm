@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.64 2003/10/27 22:32:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.65 2003/10/30 19:09:05 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -469,11 +469,14 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
-#include "CG3D.h"
+# include "CG3D.h"
 #endif
 
+#ifdef ALLOW_ECCO_OPTIMIZATION
+# include "optim.h"
+#endif
 #ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
+# include "tamc.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -494,8 +497,14 @@ C     myCurrentIter - Iteration counter for this thread
       _RL     myCurrentTime
       logical  exst
       logical  lastdiva
+#ifndef ALLOW_ECCO_OPTIMIZATION
+      integer optimcycle
+#endif
 CEOP
 c--   set default:
+#ifndef ALLOW_ECCO_OPTIMIZATION
+      optimcycle = 0
+#endif
       lastdiva = .TRUE.
 
 #ifndef DISABLE_DEBUGMODE
@@ -525,17 +534,24 @@ c
 c
 #elif ( defined (ALLOW_AUTODIFF))
 
+# ifndef EXCLUDE_CTRL_PACK
       _BEGIN_MASTER( mythid )
       IF (myProcId .eq. 0) THEN
          inquire( file='costfinal', exist=exst )
-         IF ( .NOT. exst) THEN
+         IF ( .NOT. exst ) THEN
             CALL TIMER_START('CTRL_UNPACK      [THE_MODEL_MAIN]',mythid)
-            CALL CTRL_UNPACK( mycurrentiter, mycurrenttime, mythid )
+            CALL CTRL_UNPACK( .TRUE. , mythid )
             CALL TIMER_STOP ('CTRL_UNPACK      [THE_MODEL_MAIN]',mythid)
+            IF ( optimcycle.EQ.0 .AND. mycurrentiter.EQ.niter0 ) THEN
+               CALL TIMER_START('CTRL_PACK     [THE_MODEL_MAIN]',mythid)
+               CALL CTRL_PACK( .TRUE. , mythid )
+               CALL TIMER_STOP ('CTRL_PACK     [THE_MODEL_MAIN]',mythid)
+            ENDIF
          ENDIF
       ENDIF
       _END_MASTER( mythid )
       _BARRIER
+# endif /* EXCLUDE_CTRL_PACK */
 
       CALL COST_DEPENDENT_INIT ( mythid )
       _BARRIER
@@ -572,15 +588,17 @@ c--
 c
 # endif
 
+# ifndef EXCLUDE_CTRL_PACK
       _BEGIN_MASTER( mythid )
       IF ( myProcId .eq. 0 .AND. lastdiva ) THEN
          CALL TIMER_START('CTRL_PACK           [THE_MODEL_MAIN]',mythid)
-         call CTRL_PACK( mycurrentiter, mycurrenttime, mythid )
+         call CTRL_PACK( .FALSE. , mythid )
          CALL TIMER_STOP ('CTRL_PACK           [THE_MODEL_MAIN]',mythid)
       ENDIF
       _END_MASTER( mythid )
       _BARRIER
-c
+# endif /* EXCLUDE_CTRL_PACK */
+
 
 # ifdef ALLOW_GRDCHK
       IF ( useGrdchk .AND. lastdiva ) THEN
