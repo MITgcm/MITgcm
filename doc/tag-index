@@ -1,7 +1,20 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.38 2001/04/10 22:35:24 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.39 2001/05/14 22:19:04 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+checkpoint39
+ o Modifications and fixes to support TAMC
+   (mainly missing or wrong directives)
+ o Corrected common blocks when fooling TAMC to produce adjoint I/O
+   in addummy_in_stepping
+ o Updated verification/vero/ (bug fixes in code/, correct pickups in input/)
+ o Enabled "sliced" (xz-,yz-) exchanges, needed for obcs.
+ o Included following packages:
+   cal: calendar
+   exf: external forcing
+   ecco: essential routines to control use of cal, exf
+         (NB: this is not the full ECCO environment)
+
 checkpoint38
  o see notes_c37_adj.txt
  o corrected wrong layer index in external_forcing_t
