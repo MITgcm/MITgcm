@@ -34,6 +34,7 @@ C     myCurrentTime - Current time of simulation ( s )
       INTEGER myThid
       INTEGER myIter
       REAL    myCurrentTime
+      INTEGER prevPrec
 
 C     == Local variables ==
 C     suff - Hold suffix part of a filename
@@ -94,12 +95,15 @@ C        Normalize by integrated time
 C        Write to files
          _BARRIER
          _BEGIN_MASTER( myThid )
+         prevPrec = writeBinaryPrec
+         writeBinaryPrec = precFloat32
          CALL WRITE_FLD_XYZ_RL('Ttave.',suff,thetatave,myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('Stave.',suff,salttave,myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('uVeltave.',suff,uVeltave,myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('vVeltave.',suff,vVeltave,myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('UTtave.',suff,uttave,myIter,myThid)
          CALL WRITE_FLD_XYZ_RL('VTtave.',suff,vttave,myIter,myThid)
+         writeBinaryPrec = prevPrec
          _END_MASTER( myThid )
          _BARRIER
 
