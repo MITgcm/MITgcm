@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diags.F,v 1.1 2003/11/23 01:20:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diags.F,v 1.2 2003/12/22 21:06:13 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -162,7 +162,9 @@ C      Reset averages to zero
 
 C     Dump a snap-shot of main state variables:
       IF ( DIFFERENT_MULTIPLE(thSIce_diagFreq,myTime,myTime-deltaTClock)
-     &     .OR. myIter.EQ.nIter0 ) THEN
+     &     .OR. myTime.EQ.startTime
+     &     .OR. myTime.EQ.endTime ) THEN
+
        WRITE(suff,'(I10.10)') myIter
 
        CALL WRITE_FLD_XY_RL('ice_icemask.',  suff,iceMask,
