@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.56 2001/09/27 19:37:27 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.57 2001/11/08 23:40:52 heimbach Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -520,6 +520,30 @@ switch ($platform$USEMPI)
     set FOPTIM     = ( '-O0' )
     set NOOPTFLAGS = ( '-O0' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F')
+    breaksw
+  case SP3:
+# originally from A. Biastoch, SIO.
+    echo "Configuring for IBM SP POWER3"
+    set SOURCEDIRS  = ( ./ $SOURCEDIRS )
+    set LN         = ( 'ln -s' )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_PWR3 -DTARGET_SGI -DWORDLENGTH=4' )
+    set INCLUDES   = ( '-I/usr/lpp/ppe.poe/include' )
+#    set CPP        = ( '/lib/cpp' )
+    set FC         = ( 'mpxlf95' )
+    set LINK       = ( 'mpxlf95' )
+    set FLAGS      = ( '-O3 -qarch=pwr3 -qtune=pwr3 -qcache=auto -qmaxmem=-1' \
+                           '-bmaxdata:0x80000000 -bloadmap:mitgcmuv.map' )
+    set FFLAGS     = ( '-qfixed=132 -O3 -qarch=pwr3 -qtune=pwr3 -qcache=auto -qmaxmem=-1' \
+                           '-bmaxdata:0x80000000 ' )
+    set LDFLAGS    = ( '-O3 -qarch=pwr3 -qtune=pwr3 -qcache=auto -qmaxmem=-1' \
+                           '-bmaxdata:0x80000000' )
+    set LIBS       = ( ' timer_stats.o -L/usr/local/apps/mass -lmass' )
+#   set FFLAGS     = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4' )
+#    set FOPTIM     = ( '-O3' )
+#   set NOOPTFLAGS = ( '-O0' )
+#   set NOOPTFILES = ( 'barrier.F different_multiple.F ' \
+#                      'external_fields_load.F' )
+    set RMFILES    = ( 'rii_files' )
     breaksw
   default:
     echo "Error: platform not recognized: uname -p = " $platform$USEMPI

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.11 2001/09/21 14:31:12 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.12 2001/11/08 23:40:52 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -13,6 +13,9 @@ C--   TIMER_START     - Starts CPU timer for code section.
 C--   TIMER_STOP      - Stop CPU tier for code section.
 C--   Routines marked "M" contain specific machine dependent code.
 C--   Routines marked "U" contain UNIX OS calls.
+
+CGG   Modified following A. Biastoch for use with SP3. Is backwards
+CGG   compatible. G. Gebbie, gebbie@mit.edu, 20 Oct 2001, Scripps.
 
 CBOP
 C     !ROUTINE: TIMER_INDEX
@@ -465,10 +468,14 @@ C     wallClockTime :: Wall clock time returned
 
 C     !USES:
 #ifndef TARGET_T3E
-#ifndef TARGET_CRAY_VECTOR
+# ifndef TARGET_CRAY_VECTOR
+#  ifdef TARGET_PWR3
+      Real*8 system_time, user_time, timenow
+#  else
       Real*4 ETIME
       EXTERNAL ETIME
-#endif
+#  endif
+# endif
 #endif
 
 C     !LOCAL VARIABLES:
@@ -481,18 +488,18 @@ CEOP
 C     Real*8 MPI_Wtime
 C     EXTERNAL MPI_Wtime
 
-#if (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR))
-      userTime = 0.
-      systemTime = 0.
+#if (defined (TARGET_PWR3))
+      userTime      = user_time()
+      systemTime    = system_time()
+      wallClockTime = timenow()
+#elif (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR))
+      userTime      = 0.
+      systemTime    = 0.
+      wallClockTime = 0.
 #else
       ACTUAL = ETIME(TARRAY)
       userTime      = TARRAY(1)
       systemTime    = TARRAY(2)
-#endif
-
-#if (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR))
-      wallClockTime = 0.
-#else
       CALL CLOC(wTime)
       wallClockTime = wtime
 #endif
