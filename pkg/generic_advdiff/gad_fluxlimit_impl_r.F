@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_impl_r.F,v 1.1 2004/01/07 21:37:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_impl_r.F,v 1.2 2004/03/24 15:20:35 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -69,8 +69,6 @@ C     rUpwind              :: upwind   contribution
       _RL Cr,Rjm,Rj,Rjp, w_CFL
       _RL upwindFac(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rCenter, rUpwind
-      _RL zero, one, two
-
 
 C Statement function provides Limiter(Cr)
 #include "GAD_FLUX_LIMITER.h"
