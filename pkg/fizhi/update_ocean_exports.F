@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.19 2005/03/08 20:05:46 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.20 2005/03/08 22:14:20 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -17,16 +17,32 @@ c-----------------------------------------------------------------------
 #include "fizhi_ocean_coms.h"
 #include "EEPARAMS.h"
 #include "chronos.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
 
        integer myIter, myThid
        _RL myTime
 
-       integer i, j, bi, bj, biglobal, bjglobal
+       integer i, j, bi, bj, bislot, bjslot
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
-       integer nSxglobal, nSyglobal
+       integer xsize, ysize
        integer ksst,kice
        _RL        sstmin 
        parameter ( sstmin = 273.16 )
+
+#if defined(ALLOW_EXCH2)
+       PARAMETER ( xsize = exch2_domain_nxt * sNx )
+       PARAMETER ( ysize = exch2_domain_nyt * sNy )
+#else
+       PARAMETER ( xsize = Nx )
+       PARAMETER ( ysize = Ny )
+#endif
+       _RL sst1(xsize,ysize),sst2(xsize,ysize)
+       _RL sice1(xsize,ysize),sice2(xsize,ysize)
+
+       save sst1, sst2, sice1, sice2
 
        idim1 = 1-OLx
        idim2 = sNx+OLx
@@ -36,8 +52,6 @@ c-----------------------------------------------------------------------
        im2 = sNx
        jm1 = 1
        jm2 = sNy
-       nSxglobal = nSx*nPx
-       nSyglobal = nSy*nPy
 
        call mdsfindunit( ksst, myThid )
        call mdsfindunit( kice, myThid )
@@ -46,14 +60,18 @@ C***********************************************************************
 
        DO BJ = myByLo(myThid),myByHi(myThid)
        DO BI = myBxLo(myThid),myBxHi(myThid)
-
-       biglobal=bi+(myXGlobalLo-1)/im2
-       bjglobal=bj+(myYGlobalLo-1)/jm2
+#if defined(ALLOW_EXCH2)
+       bislot = exch2_txglobalo(W2_myTileList(bi))-1
+       bjslot = exch2_tyglobalo(W2_myTileList(bi))-1
+#else
+       bislot = myXGlobalLo-1+(bi-1)*sNx
+       bjslot = myYGlobalLo-1+(bj-1)*sNy
+#endif
 
        call getsst(ksst,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,
-     .  nSy,nSxglobal,nSyglobal,bi,bj,biglobal,bjglobal,nymd,nhms,sst)
+     .  nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,sst1,sst2,sst)
        call getsice(kice,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,
-     .  nSy,nSxglobal,nSyglobal,bi,bj,biglobal,bjglobal,nymd,nhms,sice)
+     .  nSy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,sice1,sice2,sice)
 
 c Check for Minimum Open-Water SST
 c --------------------------------
@@ -66,13 +84,16 @@ c --------------------------------
 
        ENDDO
        ENDDO
+       _EXCH_XYZ_R8(sst,myThid)
+       _EXCH_XYZ_R8(sice,myThid)
 
        return
        end
 
        subroutine getsice(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
-     .     nSumx,nSumy,nPgx,nPgy,bi,bj,biglobal,bjglobal,nymd,nhms,sice)
-C************************************************************************
+     .            nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .                                             sicebc1,sicebc2,sice)
+C***********************************************************************
 C
 C!ROUTINE:	GETSICE
 C!DESCRIPTION:	GETSICE returns the sea ice depth.
@@ -92,12 +113,12 @@ C!      jm1       Begin of y-direction span for filling sice
 C!      jm2       End of y-direction span for filling sice
 C!      nSumx     Number of processors in x-direction (local processor)
 C!      nSumy     Number of processors in y-direction (local processor)
-C!      nPgx      Number of processors in x-direction (global)
-C!      nPgx      Number of processors in y-direction (global)
+C!      xsize      Number of processors in x-direction (global)
+C!      ysize      Number of processors in y-direction (global)
 C!      bi        Processor number in x-direction (local to processor)
 C!      bj        Processor number in y-direction (local to processor)
-C!      biglobal  Processor number in x-direction (global)
-C!      bjglobal  Processor number in y-direction (global)
+C!      bislot  Processor number in x-direction (global)
+C!      bjslot  Processor number in y-direction (global)
 C!	nymd	  YYMMDD of the current model timestep
 C!	nhms	  HHMMSS of the model time
 C
@@ -116,8 +137,10 @@ C--------------------------------------------------------------------------
 #include "SIZE.h"
 
       integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSumx,nSumy
-      integer nPgx,nPgy,bi,bj,biglobal,bjglobal,nymd,nhms
+      integer xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms
 
+      _RL sicebc1(xsize,ysize)
+      _RL sicebc2(xsize,ysize)
       _RL sice(idim1:idim2,jdim1:jdim2,nSumx,nSumy)
 
 C Maximum number of dates in one year for the data
@@ -129,12 +152,10 @@ C Maximum number of dates in one year for the data
       character*40 sicedata
       _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
       logical first, found, error
-      integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybc
+      integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc
       integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
       integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
 
-      _RL sicebc1(sNx,sNy,nSx*nPx,nSy*nPy)
-      _RL sicebc2(sNx,sNy,nSx*nPx,nSy*nPy)
 
 C--------- Variable Initialization ---------------------------------
 
@@ -142,10 +163,9 @@ C--------- Variable Initialization ---------------------------------
       data error /.false./
 
 c  save header info
-      save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
+      save imbc,jmbc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
       save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
       save first
-      save sicebc1, sicebc2
 
 c  this only works for between 1950-2050
       if (nymd .lt. 500101) then
@@ -168,7 +188,7 @@ c  for the first time so first isnt checked below.
         nymdbc2   = 0
         nhmsbc1   = 0
         nhmsbc2   = 0
-        first = .false.
+c       first = .false.
       endif
 
 C---------- Read in Header file ----------------------------------
@@ -180,10 +200,10 @@ C---------- Read in Header file ----------------------------------
 
        close(iunit)
        open (iunit,file=sicedata,form='unformatted',access='direct',
-     .                                         recl=im2*jm2*nPgx*nPgy*4)
+     .                                         recl=xsize*ysize*4)
        nrec = 1
        call bcheader (iunit, ndmax, nrec,
-     .          cname, cdscrip, imbc, jmbc, npxbc, npybc, lat0, lon0, 
+     .          cname, cdscrip, imbc, jmbc, lat0, lon0, 
      .          ndatebc, nymdbc, nhmsbc, undef, error)
 
 C--------- Check data for Compatibility ------------------------------
@@ -195,10 +215,10 @@ C Check for correct data in boundary condition file
        endif
 
 C Check Horizontal Resolution
-       if(.not.error.and.imbc*jmbc*npxbc*npybc.ne.im2*jm2*npgx*npgy)then
+       if(.not.error.and.imbc*jmbc.ne.xsize*ysize)then
         write(6,*) ' B.C. Resolution DOES NOT match Model Resolution!'
-        write(6,*) ' B.C. Resolution:  ',imbc*jmbc*npxbc*npybc
-        write(6,*) 'Model Resolution:  ',im2*jm2*npgx*npgy
+        write(6,*) ' B.C. Resolution:  ',imbc*jmbc
+        write(6,*) 'Model Resolution:  ',xsize*ysize
         error = .true.
        endif
 
@@ -268,7 +288,7 @@ c  from previous call to getsice then read new data
          nymdbc2 = nymdbc(nd)
          nhmsbc1 = nhmsbc(nd-1)
          nhmsbc2 = nhmsbc(nd)
-         call bcdata (iunit,imbc,jmbc,nPgx,nPgy,nd,nd+1,sicebc1,sicebc2)
+         call bcdata (iunit,imbc,jmbc,nd,nd+1,sicebc1,sicebc2)
          found = .true.
         else
          nd = nd + 1
@@ -295,8 +315,8 @@ C---------- Interpolate sice data ------------------------------------
 
       do j = jm1,jm2
       do i = im1,im2
-       sice(i,j,bi,bj) = sicebc1(i,j,biglobal,bjglobal)*fac1 
-     .                 + sicebc2(i,j,biglobal,bjglobal)*fac2 
+       sice(i,j,bi,bj) = sicebc1(i+bislot,j+bjslot)*fac1 
+     .                 + sicebc2(i+bislot,j+bjslot)*fac2 
 c average to 0 or 1
 c -----------------
        if (sice(i,j,bi,bj) .ge. 0.5) then
@@ -320,8 +340,9 @@ C---------------------------------------------------------------------------
       return
       end
       subroutine getsst(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
-     .      nSumx,nSumy,nPgx,nPgy,bi,bj,biglobal,bjglobal,nymd,nhms,sst)
-C************************************************************************
+     .            nSumx,nSumy,xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms,
+     .                                                sstbc1,sstbc2,sst)
+C***********************************************************************
 C
 C!ROUTINE:	GETSST
 C!DESCRIPTION:	GETSST gets the SST data.
@@ -335,18 +356,18 @@ C!      idim1     Start dimension in x-direction
 C!      idim2     End dimension in x-direction
 C!      jdim1     Start dimension in y-direction
 C!      jdim2     End dimension in y-direction
-C!      im1       Begin of x-direction span for filling sice
-C!      im2       End of x-direction span for filling sice
-C!      jm1       Begin of y-direction span for filling sice
-C!      jm2       End of y-direction span for filling sice
+C!      im1       Begin of x-direction span for filling sst
+C!      im2       End of x-direction span for filling sst
+C!      jm1       Begin of y-direction span for filling sst
+C!      jm2       End of y-direction span for filling sst
 C!      nSumx     Number of processors in x-direction (local processor)
 C!      nSumy     Number of processors in y-direction (local processor)
-C!      nPgx      Number of processors in x-direction (global)
-C!      nPgy      Number of processors in y-direction (global)
+C!      xsize     x-dimension of global array
+C!      ysize     y-dimension of global array
 C!      bi        Processor number in x-direction (local to processor)
 C!      bj        Processor number in y-direction (local to processor)
-C!      biglobal  Processor number in x-direction (global)
-C!      bjglobal  Processor number in y-direction (global)
+C!      bislot    Slot number into global array in x-direction (global)
+C!      bjslot    Slot number into global array in y-direction (global)
 C!	nymd	  YYMMDD of the current model timestep
 C!	nhms	  HHMMSS of the model time
 C
@@ -357,7 +378,7 @@ C!ROUTINES CALLED:
 C
 C!	bcdata		Reads the data for a given unit number
 C!	bcheader	Reads the header info for a given unit number
-C!     interp_time   Returns weights for linear interpolation
+C!     interp_time      Returns weights for linear interpolation
 C
 C--------------------------------------------------------------------------
 
@@ -365,8 +386,10 @@ C--------------------------------------------------------------------------
 #include "SIZE.h"
 
       integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSumx,nSumy
-      integer nPgx,nPgy,bi,bj,biglobal,bjglobal,nymd,nhms
+      integer xsize,ysize,bi,bj,bislot,bjslot,nymd,nhms
 
+      _RL sstbc1(xsize,ysize)
+      _RL sstbc2(xsize,ysize)
       _RL sst(idim1:idim2,jdim1:jdim2,nSumx,nSumy)
 
 C Maximum number of dates in one year for the data
@@ -378,12 +401,10 @@ C Maximum number of dates in one year for the data
       character*20 sstdata
       _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
       logical first, found, error
-      integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybc
+      integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc
       integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
       integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
 
-      _RL sstbc1(sNx,sNy,nSx*nPx,nSy*nPy)
-      _RL sstbc2(sNx,sNy,nSx*nPx,nSy*nPy)
 
 C--------- Variable Initialization ---------------------------------
 
@@ -391,10 +412,9 @@ C--------- Variable Initialization ---------------------------------
       data error /.false./
 
 c  save header info
-      save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
+      save imbc,jmbc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
       save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
       save first
-      save sstbc1, sstbc2
 
 c  this only works for between 1950-2050
       if (nymd .lt. 500101) then
@@ -416,7 +436,7 @@ c  for the first time so first isnt checked below.
         nymdbc2   = 0
         nhmsbc1   = 0
         nhmsbc2   = 0
-        first = .false.
+c       first = .false.
       endif
 
 C---------- Read in Header file ----------------------------------
@@ -428,10 +448,10 @@ C---------- Read in Header file ----------------------------------
 
        close(iunit)
        open (iunit,file=sstdata,form='unformatted',access='direct',
-     .                                        recl=im2*jm2*nPgx*nPgy*4)
+     .                                        recl=xsize*ysize*4)
        nrec = 1
        call bcheader (iunit, ndmax, nrec,
-     .          cname, cdscrip, imbc, jmbc, npxbc, npybc, lat0, lon0, 
+     .          cname, cdscrip, imbc, jmbc, lat0, lon0, 
      .          ndatebc, nymdbc, nhmsbc, undef, error)
 
 C--------- Check data for Compatibility
@@ -443,10 +463,10 @@ C Check for correct data in boundary condition file
        endif
 
 C Check Horizontal Resolution
-       if(.not.error.and.imbc*jmbc*npxbc*npybc.ne.im2*jm2*npgx*npgy)then
+       if(.not.error.and.imbc*jmbc.ne.xsize*ysize)then
         write(6,*) ' B.C. Resolution DOES NOT match Model Resolution!'
-        write(6,*) ' B.C. Resolution:  ',imbc*jmbc*npxbc*npybc
-        write(6,*) 'Model Resolution:  ',im2*jm2*npgx*npgy
+        write(6,*) ' B.C. Resolution:  ',imbc*jmbc
+        write(6,*) 'Model Resolution:  ',xsize*ysize
         error = .true.
        endif
 
@@ -517,7 +537,7 @@ c  from previous call to getsst then read new data
          nymdbc2 = nymdbc(nd)
          nhmsbc1 = nhmsbc(nd-1)
          nhmsbc2 = nhmsbc(nd)
-         call bcdata (iunit,imbc,jmbc,nPgx,nPgy,nd,nd+1,sstbc1,sstbc2)
+         call bcdata (iunit,imbc,jmbc,nd,nd+1,sstbc1,sstbc2)
          found = .true.
         else
          nd = nd + 1
@@ -544,15 +564,15 @@ C---------- Interpolate SST data ------------------------------------
 
       do j = jm1,jm2
       do i = im1,im2
-       sst(i,j,bi,bj) = sstbc1(i,j,biglobal,bjglobal)*fac1 
-     .                + sstbc2(i,j,biglobal,bjglobal)*fac2 
+       sst(i,j,bi,bj) = sstbc1(i+bislot,j+bjslot)*fac1 
+     .                + sstbc2(i+bislot,j+bjslot)*fac2 
       enddo
       enddo
  
       return
       end
 
-      subroutine bcdata (iunit,im,jm,nPx,nPy,nrec1,nrec2,field1,field2)
+      subroutine bcdata (iunit,im,jm,nrec1,nrec2,field1,field2)
 C************************************************************************
 C
 C!ROUTINE:      BCDATA
@@ -564,49 +584,43 @@ C
 C!INPUT PARAMETERS:
 C!      im      number of x points
 C!      im      number of x points
-C!      nPx     number of faces in x-direction
-C!      nPy     number of faces in y-direction
 C!      nrec1   record number of the time before the model time
 C!      nrec2   record number of the time after the model time
 C
 C!OUTPUT PARAMETERS:
-C!      field1(im,jm,nPx,nPy)  data field before the model time
-C!      field2(im,jm,nPx,nPy)  data field after the model time
+C!      field1(im,jm)  data field before the model time
+C!      field2(im,jm)  data field after the model time
 C
 C--------------------------------------------------------------------------
       implicit none
 
-      integer iunit,im,jm,nPx,nPy,nrec1,nrec2
+      integer iunit,im,jm,nrec1,nrec2
 
-      _RL  field1(im,jm,nPx,nPy)
-      _RL  field2(im,jm,nPx,nPy)
+      _RL  field1(im,jm)
+      _RL  field2(im,jm)
 
-      integer i,j,n1,n2
-      real*4 f1(im,jm,nPx,nPy), f2(im,jm,nPx,nPy)
+      integer i,j
+      real*4 f1(im,jm), f2(im,jm)
 
 C--------- Read file -----------------------------------------------
       read(iunit,rec=nrec1) f1
       read(iunit,rec=nrec2) f2
 
-      do n2=1,nPy
-      do n1=1,nPx
 #ifdef _BYTESWAPIO
-      call MDS_BYTESWAPR4( im*jm, f1(1,1,n1,n2))
-      call MDS_BYTESWAPR4( im*jm, f2(1,1,n1,n2))
+      call MDS_BYTESWAPR4( im*jm, f1)
+      call MDS_BYTESWAPR4( im*jm, f2)
 #endif
       do j=1,jm
       do i=1,im
-       field1(i,j,n1,n2) = f1(i,j,n1,n2)
-       field2(i,j,n1,n2) = f2(i,j,n1,n2)
-      enddo
-      enddo
+       field1(i,j) = f1(i,j)
+       field2(i,j) = f2(i,j)
       enddo
       enddo
 
       return
       end
       subroutine bcheader (iunit, ndmax, nrec,
-     .           cname, cdscrip, im, jm, npx, npy, lat0, lon0, ndatebc, 
+     .           cname, cdscrip, im, jm, lat0, lon0, ndatebc, 
      .           nymdbc, nhmsbc, undef, error)
 C************************************************************************
 C
@@ -623,8 +637,6 @@ C!      cname         name of the data in the file header
 C!      cdscrip	      description of the data in the file header
 C!      im            number of x points
 C!      jm            number of y points
-C!      npx           number of faces (processors) in x-direction
-C!      npy           number of faces (processors) in x-direction
 C!      lat0          starting latitude for the data grid
 C!      lon0          starting longitude for the data grid
 C!      ndatebc	      number of date/times of the data in the file
@@ -640,42 +652,46 @@ C--------------------------------------------------------------------------
 
       character*8  cname
       character*80 cdscrip
-      integer im,jm,npx,npy,ndatebc,nymdbc(ndmax),nhmsbc(ndmax)
+      character*112 dummy112
+      integer im,jm,ndatebc,nymdbc(ndmax),nhmsbc(ndmax)
       _RL lat0,lon0,undef
       logical error
 
       integer i
-      integer*4 im_32,jm_32,npx_32,npy_32
+      integer*4 im_32,jm_32
       integer*4 ndatebc_32,nhmsbc_32(ndmax),nymdbc_32(ndmax)
       real*4 lat0_32,lon0_32,undef_32
 
 C--------- Read file -----------------------------------------------
 
       read(iunit,rec=nrec,err=500) cname, cdscrip, 
-     .     im_32, jm_32, npx_32, npy_32, lat0_32, lon0_32, 
-     .     ndatebc_32, undef_32,
-     .     (nymdbc_32(i), nhmsbc_32(i), i=1,ndatebc_32)
+     .     im_32, jm_32, lat0_32, lon0_32, 
+     .     ndatebc_32, undef_32
+
 #ifdef _BYTESWAPIO
       call MDS_BYTESWAPI4( 1, im_32)
       call MDS_BYTESWAPI4( 1, jm_32)
       call MDS_BYTESWAPR4( 1, lat0_32)
       call MDS_BYTESWAPR4( 1, lon0_32)
+      call MDS_BYTESWAPI4( 1, ndatebc_32)
       call MDS_BYTESWAPR4( 1, undef_32)
 #endif
 
-      print *,' Read header: ',cname, cdscrip
-      print *,' Read header: ',im_32, jm_32
-      print *,' Read header: ',npx_32, npy_32
+      read(iunit,rec=nrec,err=500) dummy112,
+     .     (nymdbc_32(i), nhmsbc_32(i), i=1,ndatebc_32)
+
       im = im_32
       jm = jm_32
-      npx = npx_32
-      npy = npy_32
       lat0 = lat0_32
       lon0 = lon0_32
       undef = undef_32
 
       ndatebc = ndatebc_32
       do i=1,ndatebc
+#ifdef _BYTESWAPIO
+      call MDS_BYTESWAPI4( 1, nymdbc_32(i))
+      call MDS_BYTESWAPI4( 1, nhmsbc_32(i))
+#endif
       nymdbc(i) = nymdbc_32(i)
       nhmsbc(i) = nhmsbc_32(i)
       enddo
