@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.23 2000/03/24 16:03:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.24 2000/06/09 02:45:04 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -102,6 +102,20 @@ C     I, J, K - Loop counters
       _RS frac (1-OLx:sNx+OLx,1-OLy:sNy+OLy)	! used by KPP mixing scheme
       _RS negone				! used as argument to SWFRAC
       integer jwtype 				! index for Jerlov water type
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C--   only the kUp part of fverT is set in this subroutine
+C--   the kDown is still required
+
+      fVerT(1,1,kDown) = fVerT(1,1,kDown)
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        fZon(i,j)      = 0.0
+        fMer(i,j)      = 0.0
+        fVerT(i,j,kUp) = 0.0
+       ENDDO
+      ENDDO
 #endif
 
       afFacT = 1. _d 0

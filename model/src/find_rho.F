@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.10 1999/08/06 15:01:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.11 2000/06/09 02:45:04 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 #define USE_FACTORIZED_POLY
@@ -37,6 +37,14 @@ C     \==========================================================/
       _RL refTemp,refSalt,sigRef,tP,sP,deltaSig
       character*(max_len_mbuf) msgbuf
 ! -----------------------------------------------------------------
+
+#ifdef ALLOW_AUTODIFF_TAMC
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        rholoc(i,j) = 0.0
+       ENDDO
+      ENDDO
+#endif
 
       if (eqn.eq.'LINEAR') then
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.48 2000/03/14 17:47:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.49 2000/06/09 02:45:04 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -20,6 +20,12 @@ C     | =====                                                    |
 C     | C*P* comments indicating place holders for which code is |
 C     |      presently being developed.                          |
 C     \==========================================================/
+c
+c     changed: Patrick Heimbach heimbach@mit.edu 6-Jun-2000
+c              - computation of ikey wrong for nTx,nTy > 1
+c                and/or nsx,nsy > 1: act1 and act2 were
+c                mixed up.
+
       IMPLICIT NONE
 
 C     == Global variables ===
@@ -29,8 +35,14 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+
 #ifdef ALLOW_KPP
 #include "KPPMIX.h"
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+#include "tamc.h"
+#include "tamc_keys.h"
 #endif
 
 C     == Routine arguments ==
@@ -136,6 +148,16 @@ C                      index into fVerTerm.
       INTEGER k, kM1, kUp, kDown
       LOGICAL BOTTOM_LAYER
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER    isbyte
+      PARAMETER( isbyte = 4 )
+
+      INTEGER act1, act2, act3, act4
+      INTEGER max1, max2, max3
+      INTEGER ikact, iikey,kkey
+      INTEGER maximpl
+#endif
+
 C---    The algorithm...
 C
 C       "Correction Step"
@@ -181,6 +203,11 @@ C         (1 + dt * K * d_zz) theta[n] = theta*
 C         (1 + dt * K * d_zz) salt[n] = salt*
 C---
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C--   dummy statement to end declaration part
+      ikey = 1
+#endif
+
 C--   Set up work arrays with valid (i.e. not NaN) values
 C     These inital values do not alter the numerical results. They
 C     just ensure that all memory references are to valid floating
@@ -218,8 +245,40 @@ C     uninitialised but inert locations.
       ENDDO
 
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C--   HPF directive to help TAMC
+!HPF$ INDEPENDENT
+#endif
+
       DO bj=myByLo(myThid),myByHi(myThid)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C--    HPF directive to help TAMC
+!HPF$  INDEPENDENT, NEW (rTrans,rVel,fVerT,fVerS,fVerU,fVerV
+!HPF$&                  ,phiHyd,K13,K23,K33,KapGM
+!HPF$&                  ,utrans,vtrans,maskc,xA,yA
+!HPF$&                  ,KappaRT,KappaRS,KappaRU,KappaRV
+!HPF$&                  )
+#endif
+
        DO bi=myBxLo(myThid),myBxHi(myThid)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+
+          act3 = myThid - 1
+          max3 = nTx*nTy
+
+          act4 = ikey_dynamics - 1
+
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif
 
 C--     Set up work arrays that need valid initial values
         DO j=1-OLy,sNy+OLy
@@ -274,21 +333,43 @@ C--     Update fields in top level according to tendency terms
         CALL CORRECTION_STEP(
      I       bi,bj,iMin,iMax,jMin,jMax,K,
      I       etaSurfX,etaSurfY,myTime,myThid)
+
 #ifdef ALLOW_OBCS
-        IF (openBoundaries) CALL APPLY_OBCS1( bi, bj, K, myThid )
+        IF (openBoundaries) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uvel (:,:,k,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE vvel (:,:,k,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE theta(:,:,k,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE salt(:,:,k,bi,bj)   = comlev1_2d, key = ikey, byte = isbyte
 #endif
+           CALL APPLY_OBCS1( bi, bj, K, myThid )
+        END IF
+#endif
+
         IF ( .NOT. BOTTOM_LAYER ) THEN
 C--      Update fields in layer below according to tendency terms
          CALL CORRECTION_STEP(
      I        bi,bj,iMin,iMax,jMin,jMax,K+1,
      I        etaSurfX,etaSurfY,myTime,myThid)
 #ifdef ALLOW_OBCS
-         IF (openBoundaries) CALL APPLY_OBCS1( bi, bj, K+1, myThid )
+         IF (openBoundaries) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uvel (:,:,k,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE vvel (:,:,k,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE theta(:,:,k,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE salt(:,:,k,bi,bj)   = comlev1_2d, key = ikey, byte = isbyte
+#endif
+            CALL APPLY_OBCS1( bi, bj, K+1, myThid )
+         END IF
 #endif
         ENDIF
 #endif
 C--     Density of 1st level (below W(1)) reference to level 1
 #ifdef  INCLUDE_FIND_RHO_CALL
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,k,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE salt (:,:,k,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+#endif
         CALL FIND_RHO(
      I     bi, bj, iMin, iMax, jMin, jMax, K, K, eosType,
      O     rhoKm1,
@@ -303,22 +384,42 @@ C--     Density of 1st level (below W(1)) reference to level 1
 C--      Check static stability with layer below
 C--      and mix as needed.
 #ifdef  INCLUDE_FIND_RHO_CALL
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,k,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE salt (:,:,k,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+#endif
          CALL FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax, K+1, K, eosType,
      O      rhoKp1,
      I      myThid )
 #endif
+
 #ifdef  INCLUDE_CONVECT_CALL
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE rhoKm1(:,:)  = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE rhoKp1(:,:)  = comlev1_2d, key = ikey, byte = isbyte
+#endif
          CALL CONVECT(
      I       bi,bj,iMin,iMax,jMin,jMax,K+1,rhoKm1,rhoKp1,
      U       ConvectCount,
      I       myTime,myIter,myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,k+1,bi,bj),theta(:,:,k,bi,bj)
+CADJ &     = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE salt (:,:,k+1,bi,bj),salt (:,:,k,bi,bj)
+CADJ &     = comlev1_2d, key = ikey, byte = isbyte
 #endif
+
+#endif
+
 C--      Implicit Vertical Diffusion for Convection
          IF (ivdc_kappa.NE.0.) CALL CALC_IVDC(
      I       bi,bj,iMin,iMax,jMin,jMax,K+1,rhoKm1,rhoKp1,
      U       ConvectCount, KappaRT, KappaRS,
      I       myTime,myIter,myThid)
+CRG: do we need do store STORE KappaRT, KappaRS ?
+
 C--      Recompute density after mixing
 #ifdef  INCLUDE_FIND_RHO_CALL
          CALL FIND_RHO(
@@ -339,8 +440,17 @@ C--     phiHyd(z=0)=0
      U      phiHyd,
      I      myThid )
 
+C----------------------------------------------
+C--     start of downward loop
+C----------------------------------------------
         DO K=2,Nr
+
+#ifdef ALLOW_AUTODIFF_TAMC
+         kkey = ikact*(Nr-2+1) + (k-2) + 1
+#endif
+
          BOTTOM_LAYER = K .EQ. Nr
+
 #ifdef DO_PIPELINED_CORRECTION_STEP
          IF ( .NOT. BOTTOM_LAYER ) THEN
 C--       Update fields in layer below according to tendency terms
@@ -348,12 +458,25 @@ C--       Update fields in layer below according to tendency terms
      I         bi,bj,iMin,iMax,jMin,jMax,K+1,
      I         etaSurfX,etaSurfY,myTime,myThid)
 #ifdef ALLOW_OBCS
-          IF (openBoundaries) CALL APPLY_OBCS1( bi, bj, K+1, myThid )
+          IF (openBoundaries) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE uvel (:,:,k,bi,bj)  = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE vvel (:,:,k,bi,bj)  = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE theta(:,:,k,bi,bj)  = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE salt(:,:,k,bi,bj)   = comlev1_2d, key = ikey, byte = isbyte
+#endif
+             CALL APPLY_OBCS1( bi, bj, K+1, myThid )
+          END IF
 #endif
          ENDIF
 #endif
+
 C--      Density of K level (below W(K)) reference to K level
 #ifdef  INCLUDE_FIND_RHO_CALL
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,k,bi,bj)  = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE salt (:,:,k,bi,bj)  = comlev1_3d, key = kkey, byte = isbyte
+#endif
          CALL FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax,  K, K, eosType,
      O      rhoK,
@@ -367,22 +490,44 @@ C--      Density of K level (below W(K)) reference to K level
 C--       Check static stability with layer below and mix as needed.
 C--       Density of K+1 level (below W(K+1)) reference to K level.
 #ifdef  INCLUDE_FIND_RHO_CALL
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,k,bi,bj)  = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE salt (:,:,k,bi,bj)  = comlev1_3d, key = kkey, byte = isbyte
+#endif
           CALL FIND_RHO(
      I       bi, bj, iMin, iMax, jMin, jMax,  K+1, K, eosType,
      O       rhoKp1,
      I       myThid )
 #endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE rhok  (:,:)   = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE rhoKm1(:,:)   = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE rhoKp1(:,:)   = comlev1_3d, key = kkey, byte = isbyte
+#endif
+
 #ifdef  INCLUDE_CONVECT_CALL
           CALL CONVECT(
      I        bi,bj,iMin,iMax,jMin,jMax,K+1,rhoK,rhoKp1,
      U        ConvectCount,
      I        myTime,myIter,myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,k+1,bi,bj),theta(:,:,k,bi,bj)
+CADJ &     = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE salt (:,:,k+1,bi,bj),salt (:,:,k,bi,bj)
+CADJ &     = comlev1_3d, key = kkey, byte = isbyte
 #endif
+#endif
+
 C--      Implicit Vertical Diffusion for Convection
-         IF (ivdc_kappa.NE.0.) CALL CALC_IVDC(
+         IF (ivdc_kappa.NE.0.) THEN
+            CALL CALC_IVDC(
      I       bi,bj,iMin,iMax,jMin,jMax,K+1,rhoKm1,rhoKp1,
      U       ConvectCount, KappaRT, KappaRS,
      I       myTime,myIter,myThid)
+CRG: do we need do store STORE KappaRT, KappaRS ?
+         END IF
+
 C--       Recompute density after mixing
 #ifdef  INCLUDE_FIND_RHO_CALL
           CALL FIND_RHO(
@@ -409,13 +554,21 @@ C--      Calculate iso-neutral slopes for the GM/Redi parameterisation
      O        rhoTmp,
      I        myThid )
 #endif
+
 #ifdef  INCLUDE_CALC_ISOSLOPES_CALL
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE rhoTmp(:,:)  = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE rhok  (:,:)  = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE rhoKm1(:,:)  = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE kapgm (:,:)  = comlev1_3d, key = kkey, byte = isbyte
+#endif
          CALL CALC_ISOSLOPES(
      I        bi, bj, iMin, iMax, jMin, jMax, K,
      I        rhoKm1, rhoK, rhotmp,
      O        K13, K23, K33, KapGM,
      I        myThid )
 #endif
+
          DO J=jMin,jMax
           DO I=iMin,iMax
 #ifdef  INCLUDE_FIND_RHO_CALL
@@ -424,11 +577,25 @@ C--      Calculate iso-neutral slopes for the GM/Redi parameterisation
            buoyKm1(I,J) = buoyK(I,J)
           ENDDO
          ENDDO
-        ENDDO ! K
+        ENDDO
+C--     end of k loop
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE theta(:,:,:,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE salt (:,:,:,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE uvel (:,:,:,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE vvel (:,:,:,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+#endif
 
 #ifdef ALLOW_KPP
+C----------------------------------------------
 C--     Compute KPP mixing coefficients
+C----------------------------------------------
         IF (usingKPPmixing) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE fu  (:,:  ,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+CADJ STORE fv  (:,:  ,bi,bj)  = comlev1_2d, key = ikey, byte = isbyte
+#endif
          CALL TIMER_START('KVMIX (FIND KPP COEFFICIENTS) [DYNAMICS]'
      I          , myThid)
          CALL KVMIX(
@@ -438,26 +605,43 @@ C--     Compute KPP mixing coefficients
         ENDIF
 #endif
 
+C----------------------------------------------
+C--     start of upward loop
+C----------------------------------------------
         DO K = Nr, 1, -1
 
          kM1  =max(1,k-1)   ! Points to level above k (=k-1)
          kUp  =1+MOD(k+1,2) ! Cycles through 1,2 to point to layer above
          kDown=1+MOD(k,2)   ! Cycles through 2,1 to point to current layer
+
          iMin = 1-OLx+2
          iMax = sNx+OLx-1
          jMin = 1-OLy+2
          jMax = sNy+OLy-1
+
+#ifdef ALLOW_AUTODIFF_TAMC 
+         kkey = ikact*(Nr-1+1) + (k-1) + 1
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE rvel  (:,:,kDown)  = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE rTrans(:,:)        = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE KappaRT(:,:,:)     = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE KappaRS(:,:,:)     = comlev1_3d, key = kkey, byte = isbyte
+#endif
 
 C--      Get temporary terms used by tendency routines
          CALL CALC_COMMON_FACTORS (
      I        bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      O        xA,yA,uTrans,vTrans,rTrans,rVel,maskC,maskUp,
      I        myThid)
+
 #ifdef ALLOW_OBCS
         IF (openBoundaries) THEN
          CALL APPLY_OBCS3( bi, bj, K, Kup, rTrans, rVel, myThid )
         ENDIF
 #endif
+
 #ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
 C--      Calculate the total vertical diffusivity
          CALL CALC_DIFFUSIVITY(
@@ -475,6 +659,17 @@ C--      Calculate accelerations in the momentum equations
      U         aTerm,xTerm,cTerm,mTerm,pTerm,
      U         fZon, fMer, fVerU, fVerV,
      I         myTime, myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef INCLUDE_CD_CODE
+         ELSE
+            DO j=1-OLy,sNy+OLy
+               DO i=1-OLx,sNx+OLx
+                  guCD(i,j,k,bi,bj) = 0.0
+                  gvCD(i,j,k,bi,bj) = 0.0
+               END DO
+            END DO
+#endif
+#endif
          ENDIF
 C--      Calculate active tracer tendencies
          IF ( tempStepping ) THEN
@@ -506,11 +701,22 @@ C--      Prediction step (step forward all model variables)
      I       myIter, myThid)
 #ifdef ALLOW_OBCS
 C--      Apply open boundary conditions
-         IF (openBoundaries) CALL APPLY_OBCS2( bi, bj, K, myThid )
+         IF (openBoundaries) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gunm1(:,:,k,bi,bj)  = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE gvnm1(:,:,k,bi,bj)  = comlev1_3d, key = kkey, byte = isbyte
+CADJ STORE gwnm1(:,:,k,bi,bj)  = comlev1_3d, key = kkey, byte = isbyte
+#endif
+            CALL APPLY_OBCS2( bi, bj, K, myThid )
+         END IF
 #endif
 C--      Freeze water
-         IF (allowFreezing)
-     &   CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, K, myThid )
+         IF (allowFreezing) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gTNm1(:,:,k,bi,bj)  = comlev1_3d, key = kkey, byte = isbyte
+#endif
+            CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, K, myThid )
+         END IF
 
 #ifdef DIVG_IN_DYNAMICS
 C--      Diagnose barotropic divergence of predicted fields
@@ -535,42 +741,78 @@ C--      Cumulative diagnostic calculations (ie. time-averaging)
 
 C--     Implicit diffusion
         IF (implicitDiffusion) THEN
-         IF (tempStepping) CALL IMPLDIFF(
+
+#ifdef ALLOW_AUTODIFF_TAMC
+           maximpl = 6
+           iikey = ikact*maximpl
+#endif
+
+         IF (tempStepping) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+            idkey = iikey + 1
+#endif
+            CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         deltaTtracer, KappaRT,recip_HFacC,
      U         gTNm1,
      I         myThid )
-         IF (saltStepping) CALL IMPLDIFF(
+         END IF
+
+         IF (saltStepping) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+         idkey = iikey + 2
+#endif
+            CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         deltaTtracer, KappaRS,recip_HFacC,
      U         gSNm1,
      I         myThid )
+         END IF
+
         ENDIF ! implicitDiffusion
+
 C--     Implicit viscosity
         IF (implicitViscosity) THEN
+
          IF (momStepping) THEN
+#ifdef ALLOW_AUTODIFF_TAMC
+         idkey = iikey + 3
+#endif
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         deltaTmom, KappaRU,recip_HFacW,
      U         gUNm1,
      I         myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+         idkey = iikey + 4
+#endif
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         deltaTmom, KappaRV,recip_HFacS,
      U         gVNm1,
      I         myThid )
+
 #ifdef INCLUDE_CD_CODE
+
+#ifdef ALLOW_AUTODIFF_TAMC
+         idkey = iikey + 5
+#endif
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         deltaTmom, KappaRU,recip_HFacW,
      U         vVelD,
      I         myThid )
+#ifdef ALLOW_AUTODIFF_TAMC
+        idkey = iikey + 6
+#endif
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         deltaTmom, KappaRV,recip_HFacS,
      U         uVelD,
      I         myThid )
+
 #endif
+
          ENDIF ! momStepping
         ENDIF ! implicitViscosity
  

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_isoslopes.F,v 1.14 2000/04/10 14:36:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_isoslopes.F,v 1.15 2000/06/09 02:45:04 heimbach Exp $
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
@@ -47,6 +47,25 @@ C     == Local variables ==
       _RS deltaH,zero_rs
       PARAMETER(zero_rs=0.)
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      DO i=1-OLx,sNx+OLx
+        K13  (i,  1-OLy,k) = 0.0
+        K23  (i,  1-OLy,k) = 0.0
+        K33  (i,  1-OLy,k) = 0.0
+        K13  (i,sNy+OLy,k) = 0.0
+        K23  (i,sNy+OLy,k) = 0.0
+        K33  (i,sNy+OLy,k) = 0.0
+      ENDDO
+      DO j=1-OLy,sNy+OLy
+        K13  (  1-OLx,j,k) = 0.0
+        K23  (  1-OLx,j,k) = 0.0
+        K33  (  1-OLx,j,k) = 0.0
+        K13  (sNx+OLx,j,k) = 0.0
+        K23  (sNx+OLx,j,k) = 0.0
+        K33  (sNx+OLx,j,k) = 0.0
+      ENDDO
+#endif
+
 C     Calculate terms for mean Richardson number
 C     which is used in the "variable K" parameterisaton.
 C     Distance between interface above layer and the integration depth (GMdepth)
@@ -61,7 +80,13 @@ C     Now we convert deltaH to a non-dimensional fraction
       rMaxSlope=0.
       if (GMmaxSlope.ne.0.) rMaxSlope=1. _d 0 / GMmaxSlope
 
+#ifdef ALLOW_AUTODIFF_TAMC
+!HPF$ INDEPENDENT
+#endif
       DO j=1-Oly+1,sNy+Oly-1
+#ifdef ALLOW_AUTODIFF_TAMC
+!HPF$ INDEPENDENT
+#endif
        DO i=1-Olx+1,sNx+Olx-1
 
 C      Horizontal gradient of Sigma at rVel points
@@ -93,7 +118,15 @@ C      Horizontal gradient of Sigma at rVel points
      &        *(rhoKm1(i, j )-rhoKm1(i,j-1)) )
 
 C       Calculate magnitude of horizontal gradient
+#ifdef ALLOW_AUTODIFF_TAMC
+        if (dSigmaDx*dSigmaDx+dSigmaDy*dSigmaDy .eq. 0) then
+          gradSmod=0.0
+        else
+          gradSmod=sqrt(dSigmaDx*dSigmaDx+dSigmaDy*dSigmaDy)
+        endif
+#else
         gradSmod=sqrt(dSigmaDx*dSigmaDx+dSigmaDy*dSigmaDy)
+#endif
 
 C       Limit Stratification
         stratLimit=-Small_Number-gradSmod*rMaxSlope

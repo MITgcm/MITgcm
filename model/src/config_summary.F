@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.21 1999/07/30 15:42:58 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.22 2000/06/09 02:45:04 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE CONFIG_SUMMARY( myThid )
-C     /==========================================================\
+C     /==========================================================
 C     | SUBROUTINE CONFIG_SUMMARY                                |
 C     | o Summarize model prognostic variables.                  |
 C     |==========================================================|
@@ -35,9 +35,9 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER                  I,J,K
       INTEGER                  bi, bj
-      _RL                      xcoord(Nx)
-      _RL                      ycoord(Ny)
-      _RL                      rcoord(Nr)
+      _RL                     xcoord(Nx)
+      _RL                     ycoord(Ny)
+      _RL                     rcoord(Nr)
 
 
       _BARRIER
@@ -69,41 +69,41 @@ C     == Local variables ==
      &'   /* Reference temperature profile ( oC or oK ) */')
       CALL WRITE_1D_R8( sRef, Nr, INDEX_K,'sRef =',
      &'   /* Reference salinity profile ( ppt ) */')
-      CALL WRITE_1D_R8( viscAh, 1, INDEX_NONE,'viscAh =',
+      CALL WRITE_0D_R8( viscAh, INDEX_NONE,'viscAh =',
      &'   /* Lateral eddy viscosity ( m^2/s ) */')
-      CALL WRITE_1D_R8( viscA4, 1, INDEX_NONE,'viscA4 =',
+      CALL WRITE_0D_R8( viscA4, INDEX_NONE,'viscAh =',
      &'   /* Lateral biharmonic viscosity ( m^4/s ) */')
-      CALL WRITE_1D_L( no_slip_sides,1, INDEX_NONE,
+      CALL WRITE_0D_L( no_slip_sides, INDEX_NONE,
      & 'no_slip_sides =', '  /* Viscous BCs: No-slip sides */')
       IF ( viscAz .NE. UNSET_RL ) THEN
-       CALL WRITE_1D_R8( viscAz, 1, INDEX_NONE,'viscAz =',
+       CALL WRITE_0D_R8( viscAz, INDEX_NONE,'viscAz =',
      & '   /* Vertical eddy viscosity ( m^2/s ) */')
       ENDIF
       IF ( viscAp .NE. UNSET_RL ) THEN
-       CALL WRITE_1D_R8( viscAp, 1, INDEX_NONE,'viscAp =',
+       CALL WRITE_0D_R8( viscAp, INDEX_NONE,'viscAp =',
      & '   /* Vertical eddy viscosity ( Pa^2/s ) */')
       ENDIF
-      CALL WRITE_1D_R8( viscAr, 1, INDEX_NONE,'viscAr =',
+      CALL WRITE_0D_R8( viscAr,  INDEX_NONE,'viscAr =',
      &'   /* Vertical eddy viscosity ( units of r^2/s ) */')
-      CALL WRITE_1D_R8( diffKhT, 1, INDEX_NONE,'diffKhT =',
+      CALL WRITE_0D_R8( diffKhT, INDEX_NONE,'diffKhT =',
      &'   /* Laplacian diffusion of heat laterally ( m^2/s ) */')
-      CALL WRITE_1D_R8( diffK4T, 1, INDEX_NONE,'diffK4T =',
+      CALL WRITE_0D_R8( diffK4T, INDEX_NONE,'diffK4T =',
      &'   /* Bihaarmonic diffusion of heat laterally ( m^4/s ) */')
-      CALL WRITE_1D_R8( diffKzT, 1, INDEX_NONE,'diffKzT =',
+      CALL WRITE_0D_R8( diffKzT, INDEX_NONE,'diffKzT =',
      &'   /* Laplacian diffusion of heat vertically ( m^2/s ) */')
-      CALL WRITE_1D_R8( diffKrT, 1, INDEX_NONE,'diffKrT =',
+      CALL WRITE_0D_R8( diffKrT, INDEX_NONE,'diffKrT =',
      &'   /* Laplacian diffusion of heat vertically ( m^2/s ) */')
-      CALL WRITE_1D_R8( diffKhS, 1, INDEX_NONE,'diffKhS =',
+      CALL WRITE_0D_R8( diffKhS, INDEX_NONE,'diffKhS =',
      &'   /* Laplacian diffusion of salt laterally ( m^2/s ) */')
-      CALL WRITE_1D_R8( diffK4S, 1, INDEX_NONE,'diffK4S =',
+      CALL WRITE_0D_R8( diffK4S, INDEX_NONE,'diffK4S =',
      &'   /* Bihaarmonic diffusion of salt laterally ( m^4/s ) */')
-      CALL WRITE_1D_R8( diffKzS, 1, INDEX_NONE,'diffKzS =',
+      CALL WRITE_0D_R8( diffKzS, INDEX_NONE,'diffKzS =',
      &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
-      CALL WRITE_1D_R8( diffKrS, 1, INDEX_NONE,'diffKrS =',
+      CALL WRITE_0D_R8( diffKrS, INDEX_NONE,'diffKrS =',
      &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
-      CALL WRITE_1D_R8( tAlpha,1, INDEX_NONE,'tAlpha =',
+      CALL WRITE_0D_R8( tAlpha,  INDEX_NONE,'tAlpha =',
      &'   /* Linear EOS thermal expansion coefficient ( 1/degree ) */')
-      CALL WRITE_1D_R8( sBeta, 1, INDEX_NONE,'sBeta =',
+      CALL WRITE_0D_R8( sBeta,   INDEX_NONE,'sBeta =',
      &'   /* Linear EOS haline contraction coefficient ( 1/ppt ) */')
       IF ( eosType .EQ. 'POLY3' ) THEN
         WRITE(msgBuf,'(A)') 
@@ -115,54 +115,54 @@ C     == Local variables ==
      &                    SQUEEZE_RIGHT , 1)
         ENDDO
       ENDIF
-      CALL WRITE_1D_R8( rhonil,1, INDEX_NONE,'rhonil =',
+      CALL WRITE_0D_R8( rhonil,  INDEX_NONE,'rhonil =',
      &'   /* Reference density ( kg/m^3 ) */')
-      CALL WRITE_1D_R8( rhoConst,1, INDEX_NONE,'rhoConst =',
+      CALL WRITE_0D_R8( rhoConst, INDEX_NONE,'rhoConst =',
      &'   /* Reference density ( kg/m^3 ) */')
-      CALL WRITE_1D_R8( gravity,1, INDEX_NONE,'gravity =',
+      CALL WRITE_0D_R8( gravity, INDEX_NONE,'gravity =',
      &'   /* Gravitational acceleration ( m/s^2 ) */')
-      CALL WRITE_1D_R8( gBaro,1, INDEX_NONE,'gBaro =',
+      CALL WRITE_0D_R8( gBaro,   INDEX_NONE,'gBaro =',
      &'   /* Barotropic gravity ( m/s^2 ) */')
-      CALL WRITE_1D_R8( f0,1, INDEX_NONE,'f0 =',
+      CALL WRITE_0D_R8( f0,      INDEX_NONE,'f0 =',
      &'   /* Reference coriolis parameter ( 1/s ) */')
-      CALL WRITE_1D_R8( beta,1, INDEX_NONE,'beta =',
+      CALL WRITE_0D_R8( beta,    INDEX_NONE,'beta =',
      &'   /* Beta ( 1/(m.s) ) */')
-      CALL WRITE_1D_R8( freeSurfFac,1, INDEX_NONE,'freeSurfFac =',
+      CALL WRITE_0D_R8( freeSurfFac, INDEX_NONE,'freeSurfFac =',
      &'   /* Implcit free surface factor */')
-      CALL WRITE_1D_L( implicitFreeSurface,1, INDEX_NONE,
+      CALL WRITE_0D_L( implicitFreeSurface, INDEX_NONE,
      &                 'implicitFreeSurface =',
      &'   /* Implicit free surface on/off flag */')
-      CALL WRITE_1D_L( rigidLid,1, INDEX_NONE,
+      CALL WRITE_0D_L( rigidLid, INDEX_NONE,
      &                 'rigidLid =',
      &'   /* Rigid lid on/off flag */')
-      CALL WRITE_1D_L( momStepping,1, INDEX_NONE,
+      CALL WRITE_0D_L( momStepping,  INDEX_NONE,
      & 'momStepping =', '  /* Momentum equation on/off flag */')
-      CALL WRITE_1D_L( momAdvection,1, INDEX_NONE,
+      CALL WRITE_0D_L( momAdvection, INDEX_NONE,
      & 'momAdvection =', '  /* Momentum advection on/off flag */')
-      CALL WRITE_1D_L( momViscosity,1, INDEX_NONE,
+      CALL WRITE_0D_L( momViscosity, INDEX_NONE,
      & 'momViscosity =', '  /* Momentum viscosity on/off flag */')
-      CALL WRITE_1D_L( useCoriolis,1, INDEX_NONE,
+      CALL WRITE_0D_L( useCoriolis,  INDEX_NONE,
      & 'useCoriolis =', '  /* Coriolis on/off flag */')
-      CALL WRITE_1D_L( momForcing,1, INDEX_NONE,
+      CALL WRITE_0D_L( momForcing,   INDEX_NONE,
      & 'momForcing =', '  /* Momentum forcing on/off flag */')
-      CALL WRITE_1D_L( momPressureForcing,1, INDEX_NONE,
+      CALL WRITE_0D_L( momPressureForcing, INDEX_NONE,
      & 'momPressureForcing =',  
      & '  /* Momentum pressure term on/off flag */')
-      CALL WRITE_1D_L( tempStepping,1, INDEX_NONE,
+      CALL WRITE_0D_L( tempStepping,  INDEX_NONE,
      & 'tempStepping =', '  /* Temperature equation on/off flag */')
-      CALL WRITE_1D_L( openBoundaries,1, INDEX_NONE,
+      CALL WRITE_0D_L( openBoundaries, INDEX_NONE,
      & 'openBoundaries =', '  /* OpenBoundaries on/off flag */')
-      CALL WRITE_1D_L( nonHydrostatic,1, INDEX_NONE,
+      CALL WRITE_0D_L( nonHydrostatic, INDEX_NONE,
      & 'nonHydrostatic =', '  /* Non-Hydrostatic on/off flag */')
-      CALL WRITE_1D_R8( GMMaxSlope,1, INDEX_NONE,'GMMaxSlope =',
+      CALL WRITE_0D_R8( GMmaxslope,   INDEX_NONE,'GMMaxslope =',
      &'   /* Max. slope allowed in GM/Redi tensor */')
-      CALL WRITE_1D_R8( GMLength,1, INDEX_NONE,'GMLength =',
+      CALL WRITE_0D_R8( GMlength,     INDEX_NONE,'GMlength =',
      &'   /* Length to use in Visbeck et al. formula for K (m) */')
-      CALL WRITE_1D_R8( GMAlpha,1, INDEX_NONE,'GMAlpha =',
+      CALL WRITE_0D_R8( GMalpha,      INDEX_NONE,'GMalpha =',
      &'   /* alpha to use in Visbeck et al. formula for K */')
-      CALL WRITE_1D_R8( GMdepth,1, INDEX_NONE,'GMdepth =',
+      CALL WRITE_0D_R8( GMdepth,      INDEX_NONE,'GMdepth =',
      &'   /* Depth to integrate for Visbeck et. al Richardson # (m) */')
-      CALL WRITE_1D_R8( GMkbackground,1, INDEX_NONE,'GMkbackground =',
+      CALL WRITE_0D_R8( GMkbackground,INDEX_NONE,'GMkbackground =',
      &'   /* background value of GM/Redi coefficient m^2/s */')
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
@@ -175,11 +175,11 @@ C     == Local variables ==
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &                    SQUEEZE_RIGHT , 1)
-      CALL WRITE_1D_I( cg2dMaxIters,1, INDEX_NONE,'cg2dMaxIters =',
+      CALL WRITE_0D_I( cg2dMaxIters,   INDEX_NONE,'cg2dMaxIters =',
      &'   /* Upper limit on 2d con. grad iterations  */')
-      CALL WRITE_1D_I( cg2dChkResFreq,1, INDEX_NONE,'cg2dChkResFreq =',
+      CALL WRITE_0D_I( cg2dChkResFreq, INDEX_NONE,'cg2dChkResFreq =',
      &'   /* 2d con. grad convergence test frequency */')
-      CALL WRITE_1D_R8( cg2dTargetResidual,1, INDEX_NONE,
+      CALL WRITE_0D_R8( cg2dTargetResidual, INDEX_NONE,
      & 'cg2dTargetResidual =',
      &'   /* 2d con. grad target residual  */')
 
@@ -193,33 +193,33 @@ C     == Local variables ==
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &                    SQUEEZE_RIGHT , 1)
-      CALL WRITE_1D_I( nIter0,1, INDEX_NONE,'nIter0 =',
+      CALL WRITE_0D_I( nIter0, INDEX_NONE,'nIter0 =',
      &'   /* Base timestep number  */')
-      CALL WRITE_1D_I( nTimeSteps,1, INDEX_NONE,'nTimeSteps =',
+      CALL WRITE_0D_I( nTimeSteps, INDEX_NONE,'nTimeSteps =',
      &'   /* Number of timesteps */')
-      CALL WRITE_1D_R8( deltaTmom,1, INDEX_NONE,'deltaTmom =',
+      CALL WRITE_0D_R8( deltaTmom, INDEX_NONE,'deltatTmom =',
      &'   /* Momentum equation timestep ( s ) */')
-      CALL WRITE_1D_R8( deltaTtracer,1, INDEX_NONE,'deltaTtracer =',
+      CALL WRITE_0D_R8( deltaTtracer, INDEX_NONE,'deltatTtracer =',
      &'   /* Tracer equation timestep ( s ) */')
-      CALL WRITE_1D_R8( deltaTClock ,1, INDEX_NONE,'deltaTClock  =',
+      CALL WRITE_0D_R8( deltaTClock, INDEX_NONE,'deltatTClock  =',
      &'   /* Model clock timestep ( s ) */')
-      CALL WRITE_1D_R8( cAdjFreq,1, INDEX_NONE,'cAdjFreq =',
+      CALL WRITE_0D_R8( cAdjFreq, INDEX_NONE,'cAdjFreq =',
      &'   /* Convective adjustment interval ( s ) */')
-      CALL WRITE_1D_R8( abEps,1, INDEX_NONE,'abEps =',
+      CALL WRITE_0D_R8( abeps, INDEX_NONE,'abeps =',
      &'   /* Adams-Bashforth stabilizing weight */')
-      CALL WRITE_1D_R8( tauCD,1, INDEX_NONE,'tauCD =',
+      CALL WRITE_0D_R8( tauCD, INDEX_NONE,'tauCD =',
      &'   /* CD coupling time-scale ( s ) */')
-      CALL WRITE_1D_R8( rCD,1, INDEX_NONE,'rCD =',
+      CALL WRITE_0D_R8( rCD, INDEX_NONE,'rCD =',
      &'   /* Normalised CD coupling parameter */')
-      CALL WRITE_1D_R8( startTime,1, INDEX_NONE,'startTime =',
+      CALL WRITE_0D_R8( startTime, INDEX_NONE,'startTime =',
      &'   /* Run start time ( s ). */')
-      CALL WRITE_1D_R8( endTime,1, INDEX_NONE,'endTime =',
+      CALL WRITE_0D_R8( endTime, INDEX_NONE,'endTime =',
      &'   /* Integration ending time ( s ). */')
-      CALL WRITE_1D_R8( pChkPtFreq,1, INDEX_NONE,'pChkPtFreq =',
+      CALL WRITE_0D_R8( pChkPtFreq, INDEX_NONE,'pChkPtFreq =',
      &'   /* Permanent restart/checkpoint file interval ( s ). */')
-      CALL WRITE_1D_R8( chkPtFreq,1, INDEX_NONE,'chkPtFreq =',
+      CALL WRITE_0D_R8( chkPtFreq, INDEX_NONE,'chkPtFreq =',
      &'   /* Rolling restart/checkpoint file interval ( s ). */')
-      CALL WRITE_1D_R8( dumpFreq,1, INDEX_NONE,'dumpFreq =',
+      CALL WRITE_0D_R8( dumpFreq, INDEX_NONE,'dumpFreq =',
      &'   /* Model state write out interval ( s ). */')
 
       WRITE(msgBuf,'(A)') '//  '
@@ -232,10 +232,10 @@ C     == Local variables ==
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &                    SQUEEZE_RIGHT , 1)
-      CALL WRITE_1D_L( usingCartesianGrid,1, INDEX_NONE,
+      CALL WRITE_0D_L( usingCartesianGrid, INDEX_NONE,
      & 'usingCartesianGrid =',
      &'   /* Cartesian coordinates flag ( True / False ) */')
-      CALL WRITE_1D_L( usingSphericalPolarGrid,1, INDEX_NONE,
+      CALL WRITE_0D_L( usingSphericalPolarGrid, INDEX_NONE,
      & 'usingSphericalPolarGrid =',
      &'   /* Spherical coordinates flag ( True / False ) */')
       CALL WRITE_1D_R8( delZ,Nr, INDEX_K,'delZ = ',
@@ -248,28 +248,28 @@ C     == Local variables ==
      &'   /* U spacing ( m - cartesian, degrees - spherical ) */')
       CALL WRITE_1D_R8( delY, Ny, INDEX_J,'delY = ',
      &'   /* V spacing ( m - cartesian, degrees - spherical ) */')
-      CALL WRITE_1D_R8( phiMin, 1, INDEX_NONE,'phiMin = ',
+      CALL WRITE_0D_R8( phiMin, INDEX_NONE,'phiMin = ',
      &'   /* South edge (ignored - cartesian, degrees - spherical ) */')
-      CALL WRITE_1D_R8( thetaMin, 1, INDEX_NONE,'thetaMin = ',
+      CALL WRITE_0D_R8( thetaMin, INDEX_NONE,'thetaMin = ',
      &'   /* West edge ( ignored - cartesian, degrees - spherical ) */')
-      CALL WRITE_1D_R8( rSphere, 1, INDEX_NONE,'rSphere = ',
+      CALL WRITE_0D_R8( rSphere, INDEX_NONE,'rSphere = ',
      &'   /* Radius ( ignored - cartesian, m - spherical ) */')
       DO bi=1,nSx
        DO I=1,sNx
-        xcoord((bi-1)*sNx+I) = xc(I,1,bi,1)
+        xcoord((bi-1)*sNx+I) = xC(I,1,bi,1)
        ENDDO
       ENDDO
       CALL WRITE_1D_R8( xcoord, sNx*nSx, INDEX_I,'xcoord = ',
      &'   /* P-point X coord ( m - cartesian, degrees - spherical ) */')
       DO bj=1,nSy
        DO J=1,sNy
-        ycoord((bj-1)*sNy+J) = yc(1,J,1,bj)
+        ycoord((bj-1)*sNy+J) = yC(1,J,1,bj)
        ENDDO
       ENDDO
       CALL WRITE_1D_R8( ycoord, sNy*nSy, INDEX_J,'ycoord = ',
      &'   /* P-point Y coord ( m - cartesian, degrees - spherical ) */')
       DO K=1,Nr
-       rcoord(K) = rc(K)
+       rcoord(K) = rC(K)
       ENDDO
       CALL WRITE_1D_R8( rcoord, Nr, INDEX_K,'rcoord = ',
      &'   /* P-point R coordinate (  units of r ) */')

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.8 1999/05/18 18:01:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.9 2000/06/09 02:45:04 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -19,6 +19,10 @@ C     == Global data ==
 #include "PARAMS.h"
 #include "GRID.h"
 
+#ifdef ALLOW_AUTODIFF_TAMC
+#include "tamc_keys.h"
+#endif
+
 C     == Routine Arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       _RL deltaTX
@@ -36,6 +40,10 @@ C     == Local variables ==
       _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL gam(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 
+#ifdef ALLOW_AUTODIFF_TAMC
+      INTEGER kkey
+#endif
+
       IF (Nr.GT.1) THEN		! Only need do anything if Nr>1
 C--    Beginning of forward sweep (top level)
        DO j=jMin,jMax
@@ -45,13 +53,29 @@ C--    Beginning of forward sweep (top level)
          b(i,j)=1.-c(i,j)
          bet(i,j)=0.
          IF (b(i,j).NE.0.) bet(i,j)=1. / b(i,j)
-         gXnm1(i,j,1,bi,bj)=gXnm1(i,j,1,bi,bj)*bet(i,j)
         ENDDO
        ENDDO
       ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store bet   = comlev1_impl3d, key = idkey
+CADJ store gXNm1 = comlev1_impl2d, key = idkey
+#endif
+
+       DO j=jMin,jMax
+        DO i=iMin,iMax
+         gXNm1(i,j,1,bi,bj) = gXNm1(i,j,1,bi,bj)*bet(i,j)
+        ENDDO
+       ENDDO
+
 C--   Middle of forward sweep
       IF (Nr.GT.2) THEN
        DO k=2,Nr-1
+
+#ifdef ALLOW_AUTODIFF_TAMC
+        kkey = (idkey-1)*(Nr-2) + k-1
+#endif
+
         DO j=jMin,jMax
          DO i=iMin,iMax
           ckm1(i,j)=c(i,j)
@@ -62,15 +86,32 @@ C--   Middle of forward sweep
           b(i,j)=1.-c(i,j)-a(i,j)
          ENDDO
         ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store ckm1 = comlev1_impl3d, key = kkey
+CADJ store bet  = comlev1_impl3d, key = kkey
+#endif
+
         DO j=jMin,jMax
          DO i=iMin,iMax
           gam(i,j,k)=ckm1(i,j)*bet(i,j)
           bet(i,j)=b(i,j)-a(i,j)*gam(i,j,k)
           IF (bet(i,j).NE.0.) bet(i,j)=1. / bet(i,j)
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store bet = comlev1_impl3d, key = kkey
+CADJ store gXNm1(:,:,k-1:k,bi,bj) = comlev1_impl3d, key = kkey
+#endif
+
+        DO j=jMin,jMax
+         DO i=iMin,iMax
           gXnm1(i,j,k,bi,bj)=(gXnm1(i,j,k,bi,bj)
      &       -a(i,j)*gXnm1(i,j,k-1,bi,bj))*bet(i,j)
          ENDDO
         ENDDO
+
        ENDDO
       ENDIF
       IF (Nr.GT.1) THEN
@@ -83,15 +124,36 @@ C--    End of forward sweep (bottom level)
          b(i,j)=1.-a(i,j)
         ENDDO
        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store ckm1 = comlev1_impl2d, key = idkey
+CADJ store a,b  = comlev1_impl2d, key = idkey
+CADJ store bet  = comlev1_impl2d, key = idkey
+#endif
+
        DO j=jMin,jMax
         DO i=iMin,iMax
          gam(i,j,Nr)=ckm1(i,j)*bet(i,j)
          bet(i,j)=b(i,j)-a(i,j)*gam(i,j,Nr)
          IF (bet(i,j).NE.0.) bet(i,j)=1. / bet(i,j)
+        ENDDO
+       ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store gXnm1 = comlev1_impl2d, key = idkey
+#endif
+
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          gXnm1(i,j,Nr,bi,bj)=(gXnm1(i,j,Nr,bi,bj)
      &      -a(i,j)*gXnm1(i,j,Nr-1,bi,bj))*bet(i,j)
         ENDDO
        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ store gam                = comlev1_impl2d, key = idkey
+#endif
+
 C--    Backward sweep
        DO k=Nr-1,1,-1
         DO j=jMin,jMax
