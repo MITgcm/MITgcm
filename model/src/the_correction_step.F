@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.21 2003/04/17 13:40:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.22 2003/06/25 21:06:35 stephd Exp $
 C Tag $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -192,6 +192,11 @@ C--     for vertical velocity and "etaN" (exact volume conservation) :
         IF (taveFreq.GT.0.) THEN 
           CALL TIMEAVE_STATVARS(myTime, myIter, bi, bj, myThid)
         ENDIF
+cswdptr -- add ---
+#ifdef ALLOW_PTRACERS
+          CALL PTRACERS_STATVARS(myTime, myIter, bi, bj, myThid)
+#endif
+cswdptr -- end add ---
 #endif /* ALLOW_TIMEAVE */
 
 C--    End of 2nd bi,bj loop

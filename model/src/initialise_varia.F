@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.30 2003/06/12 18:27:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.31 2003/06/25 21:06:35 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -186,6 +186,11 @@ C--   initialise time-average arrays with initial state values
         IF (taveFreq.GT.0.) THEN
            CALL TIMEAVE_STATVARS(startTime, nIter0, bi, bj, myThid)
         ENDIF
+cswdptr -- add ---
+#ifdef ALLOW_PTRACERS
+           CALL PTRACERS_STATVARS(startTime, nIter0, bi, bj, myThid)
+#endif
+cswdptr -- end add ---
 #endif /* ALLOW_TIMEAVE */
 
 C--   end bi,bj loop.

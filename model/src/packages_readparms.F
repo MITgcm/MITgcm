@@ -110,6 +110,9 @@ cswdice --- end add ---
 
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS) CALL PTRACERS_READPARMS( myThid )
+cswdptr -- add --
+      IF (usePTRACERS) CALL GCHEM_READPARMS( myThid )
+cswdptr -- end add ---
 #endif
 
 #if (defined (ALLOW_ADJOINT_RUN) || \

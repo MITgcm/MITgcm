@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.29 2003/06/19 15:00:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.30 2003/06/25 21:06:35 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -94,6 +94,11 @@ C--   Write model state to binary file
 C--   Do time averages
       IF (taveFreq.GT.0.) THEN
        CALL TIMEAVE_STATV_WRITE( myCurrentTime, myIter, myThid )
+cswdptr -- add ---
+#ifdef ALLOW_PTRACERS
+       CALL PTRACERS_STATV_WRITE( myCurrentTime, myIter, myThid )
+#endif
+cswdptr -- end add ---
       ENDIF
 #endif
 #ifdef ALLOW_AIM
@@ -147,6 +152,15 @@ C--   Do seaice diagnostics.
      & CALL ICE_DIAGS( myCurrentTime, myIter, myThid )
 #endif
 cswdice -- end add ---
+
+cswdptr ---  add ---
+#ifdef ALLOW_PTRACERS
+C--   Do ptracer diagnostics.
+      IF (usePTRACERS)
+     & CALL GCHEM_DIAGS( myCurrentTime, myIter, myThid )
+#endif
+cswdptr -- end add ---
+
 
       RETURN
       END

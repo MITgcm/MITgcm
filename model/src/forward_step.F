@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.53 2003/05/13 17:42:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.54 2003/06/25 21:06:35 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -355,6 +355,16 @@ C--   Do "blocking" sends and receives for field "overlap" terms
       CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
       CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
       CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+
+cswdptr -- add for seperate timestepping of chemical/biological/forcing
+cswdptr    of ptracers ---
+#ifdef ALLOW_PTRACERS
+#ifdef PTRACERS_SEPERATE_FORCING
+        call GCHEM_FORCING( myTime,myIter,myThid )
+#endif
+#endif
+cswdptr -- end add ---
+
 
 #ifdef ALLOW_FLT
 C--   Calculate float trajectories
