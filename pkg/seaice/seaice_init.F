@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.14 2003/11/13 06:35:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.15 2004/01/13 17:50:24 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -21,6 +21,8 @@ C     === Global variables ===
 #include "SEAICE_GRID.h"
 #include "SEAICE_DIAGS.h"
 #include "SEAICE_PARAMS.h"
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
@@ -33,7 +35,7 @@ C     i,j,k,bi,bj - Loop counters
 
       INTEGER i, j, k, bi, bj
       _RS  mask_uice
-      INTEGER myIter
+      INTEGER myIter, myTile
 
 #ifdef ALLOW_TIMEAVE
 C     Initialize averages to zero
@@ -83,8 +85,7 @@ c
       ENDDO
 cph)
 
-
-C---  initialize grid info
+C--   Initialize grid info
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1,sNy
@@ -101,7 +102,6 @@ C---  initialize grid info
           DYUICE(i,j,bi,bj)=dyU(i,j,bi,bj)
          ENDDO
         ENDDO
-
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           HEFFM(i,j,bi,bj)=ONE
@@ -116,6 +116,43 @@ C---  initialize grid info
           IF(mask_uice.GT.3.5) UVM(I,J,bi,bj)=ONE
          ENDDO
         ENDDO
+
+C--   Special stuff for cubed sphere: assume grid is rectangular and
+C     set UV mask to zero except for Arctic and Antarctic cube faces.
+        IF (useCubedSphereExchange) THEN
+         DO J=1,sNy
+          DO I=1,sNx
+           CSTICE(i,j,bi,bj) = ONE
+           CSUICE(i,j,bi,bj) = ONE
+           TNGTICE(i,j,bi,bj)= ZERO
+           TNGICE(i,j,bi,bj) = ZERO
+           DXTICE(i,j,bi,bj) = dxF(i,j,bi,bj)
+           DXUICE(i,j,bi,bj) = dxV(i,j,bi,bj)
+          ENDDO
+         ENDDO
+         myTile = W2_myTileList(bi)
+         IF ( exch2_myFace(myTile) .EQ. 1 .OR.
+     &        exch2_myFace(myTile) .EQ. 6 .OR.
+     &        exch2_myFace(myTile) .EQ. 2 .OR.
+     &        exch2_myFace(myTile) .EQ. 4 .OR.
+     &        exch2_myFace(myTile) .EQ. 5 ) THEN
+          DO J=1,sNy
+           DO I=1,sNx
+            UVM(i,j,bi,bj)=ZERO
+           ENDDO
+          ENDDO
+         ELSEIF ( exch2_isWedge(myTile) .EQ. 1 ) THEN
+          I=1
+          DO J=1,sNy
+           UVM(i,j,bi,bj)=ZERO
+          ENDDO
+         ELSEIF ( exch2_isSedge(myTile) .EQ. 1 ) THEN
+          J=1
+          DO I=1,sNx
+           UVM(i,j,bi,bj)=ZERO
+          ENDDO
+         ENDIF
+        ENDIF
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
