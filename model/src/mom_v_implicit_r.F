@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/mom_v_implicit_r.F,v 1.1 2004/01/03 00:41:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/mom_v_implicit_r.F,v 1.2 2004/12/03 15:41:15 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -49,8 +49,6 @@ c     _RL e5d(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL rFlx
 CEOP
 
-      IF (Nr.LE.1) RETURN
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Solve for V-component :
 C----------------------------
@@ -73,7 +71,8 @@ c        e5d(i,j,k) = 0. _d 0
       ENDDO
       diagonalNumber = 1
 
-      IF (implicitViscosity) THEN
+      IF ( implicitViscosity .AND. Nr.GT.1 ) THEN
+
 C--   set the tri-diagonal matrix to solve the implicit viscosity
        diagonalNumber = 3
 C-     1rst lower diagonal :
@@ -92,7 +91,7 @@ C-     1rst upper diagonal :
         DO j=jMin,jMax
          DO i=iMin,iMax
           IF (maskS(i,j,k+1,bi,bj).EQ.1.) 
-     &     d5d(i,j,k) = -deltaTtracer
+     &     d5d(i,j,k) = -deltaTmom
      &                 *recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
      &                 *KappaRV(i,j,k+1)*recip_drC(k+1)
          ENDDO
@@ -110,7 +109,7 @@ C-     Main diagonal :
 C--   end if implicitDiffusion
       ENDIF
 
-      IF (momImplVertAdv) THEN
+      IF ( momImplVertAdv .AND. Nr.GT.1 ) THEN
 
         diagonalNumber = 3
         DO k=2,Nr
