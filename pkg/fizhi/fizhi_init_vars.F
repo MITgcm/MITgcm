@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/Attic/fizhi_init_vars-fake.F,v 1.4 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.1 2004/06/04 16:23:37 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_vars (myThid)

@@ -1,21 +1,29 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/Attic/update_ocean_exports-fake.F,v 1.2 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.1 2004/06/04 16:23:37 molod Exp $
 C $Name:  $
 
-       subroutine update_ocean_exports (myTime, myIter, myThid)
+       subroutine update_earth_exports (myTime, myIter, myThid)
 c----------------------------------------------------------------------
-c  Subroutine update_ocean_exports - 'Wrapper' routine to update
-c        the fields related to the ocean's surface that are needed
+c  Subroutine update_earth_exports - 'Wrapper' routine to update
+c        the fields related to the earth's surface that are needed
 c        by fizhi.
 c        Also: Set up "bi, bj loop" and some timers and clocks here.
 c
-c Call:  getsst  (Return the current sst field-read dataset if needed)
-c        getsice (Return the current sea ice field-read data if needed)
+c Call:  getalb    (Set the 4 albedos based on veg type and time)
+c        getemiss  (Set the surface emissivity based on the veg type
+c                              and the snow depth)
+c        getlgr    (Set the leaf area index and surface greenness, 
+c                              based on veg type and month) 
 c-----------------------------------------------------------------------
        implicit none
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "GRID.h"
-#include "ocean_coms.h"
+#include "land_SIZE.h"
+#include "fizhi_SIZE.h"
+#include "DYNVARS.h"
+#include "fizhi_coms.h"
+#include "gridalt_mapping.h"
+#include "land_coms.h"
 #include "EEPARAMS.h"
 
        integer myTime, myIter, myThid
@@ -34,9 +42,6 @@ c-----------------------------------------------------------------------
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
-
-c      call getsst
-c      call getsice
 
        enddo
        enddo

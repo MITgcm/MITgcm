@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/Attic/fizhi_init_fixed-fake.F,v 1.3 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.1 2004/06/04 16:23:37 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_fixed (myThid)
