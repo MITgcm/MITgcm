@@ -61,6 +61,11 @@ C coefficients for determining saturation O2
 C set carbon mol/m3 <---> mol/kg conversion factor
       permil = 1.0 / 1024.5
 
+cph this is to please TAF
+      gsm_s = 0.
+      gsm_dic = 0.
+      gsm_alk = 0.
+
 c
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

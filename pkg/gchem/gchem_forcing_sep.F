@@ -30,21 +30,23 @@ C  myThid               :: thread number
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
 
-         _BARRIER
-         _BEGIN_MASTER( mythid )
+       _BARRIER
+       _BEGIN_MASTER( mythid )
 
 ccccccccccccccccccccccccc
 c global calculations   c
 ccccccccccccccccccccccccc
 #ifdef DIC_BIOTIC
 c find global surface averages
+       gsm_s = 0.
+       gsm_dic = 0.
+       gsm_alk = 0.
        call tracer_meanarea(myThid,salt, 1,gsm_s)
        call tracer_meanarea(myThid,
      &               ptracer(1-Olx,1-Oly,1,1,1,1), 1, gsm_dic)
        print*,'mean surface dic', gsm_dic,gsm_s
        call tracer_meanarea(myThid,
      &               ptracer(1-Olx,1-Oly,1,1,1,2), 1, gsm_alk)
-
 #endif
 ccccccccccccccccccccccccccccccccccccccccccc
 
@@ -55,9 +57,9 @@ ccccccccccccccccccccccccccccccccccccccccccc
 ccccccccccccccccccccccccc
 c chemical forcing      c
 ccccccccccccccccccccccccc
-C$TAF loop = parallel
+C$taf loop = parallel
        DO bj=myByLo(myThid),myByHi(myThid)
-C$TAF loop = parallel
+C$taf loop = parallel
         DO bi=myBxLo(myThid),myBxHi(myThid)
 
         jMin=1-OLy

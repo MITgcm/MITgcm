@@ -36,22 +36,6 @@ C     == Local variables ==
       _RL aWght,bWght,rdt
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 c
-C First call requires that we initialize everything to zero for safety
-       IF (myIter .EQ. nIter0) THEN
-         CALL LEF_ZERO( wspeed0,myThid )
-         CALL LEF_ZERO( wspeed1,myThid )
-         CALL LEF_ZERO( atmosp0,myThid )
-         CALL LEF_ZERO( atmosp1,myThid )
-         CALL LEF_ZERO( silica0,myThid )
-         CALL LEF_ZERO( silica1,myThid )
-         CALL LEF_ZERO( ice0,myThid )
-         CALL LEF_ZERO( ice1,myThid )
-#ifdef ALLOW_FE
-         CALL LEF_ZERO( feinput0,myThid )
-         CALL LEF_ZERO( feinput1,myThid )
-#endif
-       ENDIF
-c
       IF ( periodicExternalForcing ) THEN
 
 

@@ -25,6 +25,11 @@ c initialize parameters   c
 ccccccccccccccccccccccccccc
 #ifdef DIC_BIOTIC
           print*,'QQ load dic parameters, initial vari' 
+c these two needed to be recalled for adjoint
+          call DIC_BIOTIC_PARAM(myThid)
+          call DIC_ABIOTIC_PARAM(myThid)
+c -- 
+          CALL DIC_INI_FORCING(myThid)
           call DIC_SURFFORCING_INIT(myThid)
           call DIC_BIOTIC_INIT(myThid )
 #endif

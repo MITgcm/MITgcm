@@ -50,8 +50,8 @@ cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
 ccccccccccccccccccccccccccccccccccccccccc
 c read in silica field
-         CALL LEF_ZERO( wspeed0,myThid )
-         CALL LEF_ZERO( wspeed1,myThid )
+         CALL LEF_ZERO( silica0,myThid )
+         CALL LEF_ZERO( silica1,myThid )
        rdt=1. _d 0 / deltaTclock
        nForcingPeriods=
      &  int(externForcingCycle/externForcingPeriod+0.5)
