@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_external_fields_load.F,v 1.2 2001/06/18 17:39:58 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_external_fields_load.F,v 1.3 2002/01/08 22:33:10 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "AIM_OPTIONS.h"
  
 CStartOfInterface
       SUBROUTINE AIM_EXTERNAL_FIELDS_LOAD( 
@@ -26,6 +26,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "AIM_FFIELDS.h"
  
 C     === Routine arguments ===
@@ -43,13 +44,15 @@ C     === Functions ===
 
 #ifdef ALLOW_AIM
 C     === Local variables ===
-C     I, J  - Loop counters
-C     tYear - Fraction within year of myTime
-C     mnthIndex     - Current time in whole months
+C     bi,bj, i,j  - Loop counters
+C     tYear       - Fraction within year of myTime
+C     mnthIndex   - Current time in whole months
 C     prevMnthIndex
-C     fNam          - Strings used in constructing file names
+C     fNam        - Strings used in constructing file names
 C     mnthNam
-      INTEGER I, J
+C     pfact       - used to convert Pot.Temp. to in-situ Temp.
+      INTEGER bi,bj, i, j
+      _RL pfact
       REAL tYear
       INTEGER mnthIndex
       INTEGER prevMnthIndex
@@ -80,22 +83,71 @@ C       Calculate offset into a year
 C        New month so load in data
          prevMnthIndex = mnthIndex
 C        o Albedo ( convert % to fraction )
-         WRITE(fNam,'(A,A,A)' ) 'salb.',mnthNam(mnthIndex),'.cs.bin'
+         WRITE(fNam,'(A,A,A)' ) 'salb.',mnthNam(mnthIndex),'.ft.bin'
+c        WRITE(fNam,'(A,A,A)' ) 'salb.',mnthNam(mnthIndex),'.sun.b'
          CALL MDSREADFIELD(fNam(1:15),readBinaryPrec,'RS',1,
      O    aim_albedo,  
      I    1,myThid)
 
 C        o Surface temperature ( in kelvin )
-         WRITE(fNam,'(A,A,A)' ) 'tsurf.',mnthNam(mnthIndex),'.cs.bin'
-         CALL MDSREADFIELD(fNam(1:16),readBinaryPrec,'RS',1,
+         WRITE(fNam,'(A,A,A)' ) 'stheta.',mnthNam(mnthIndex),'.ft.bin'
+c        WRITE(fNam,'(A,A,A)' ) 'tsurf.',mnthNam(mnthIndex),'.ft.bin'
+c        WRITE(fNam,'(A,A,A)' ) 'tsurf.',mnthNam(mnthIndex),'.sun.b'
+         CALL MDSREADFIELD(fNam(1:17),readBinaryPrec,'RS',1,
      O    aim_surftemp,  
      I    1,myThid)
 
-C        o Soil moisture ( convert to 20cm bucket fraction )
-         WRITE(fNam,'(A,A,A)' ) 'smoist.',mnthNam(mnthIndex),'.cs.bin'
+C        o Soil moisture 
+         WRITE(fNam,'(A,A,A)' ) 'smoist.',mnthNam(mnthIndex),'.ft.bin'
+c        WRITE(fNam,'(A,A,A)' ) 'smoist.',mnthNam(mnthIndex),'.sun.b'
          CALL MDSREADFIELD(fNam(1:17),readBinaryPrec,'RS',1,
      O    aim_soilMoisture,  
      I    1,myThid)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--  Converts fields for direct use in Atmos. Physics routine.
+C     better here rather than in "aim_do_atmos" since:
+C     a) change together conversion factor and input file name.
+C     b) conversion applied only 1 time / month ; 
+C     c) easy to check here (variable in common).
+
+         DO bj=1,nSy
+          DO bi=1,nSx
+
+C-  Converts surface albedo : input data is in % 0-100
+C     and Francos package needs a fraction between 0-1
+           DO j=1,sNy
+            DO i=1,sNx
+             aim_albedo(I,J,bi,bj) = aim_albedo(I,J,bi,bj)/100.
+            ENDDO
+           ENDDO
+
+C-  Converts soil moisture (case input is in cm in bucket of depth 20cm.)
+c          DO j=1,sNy
+c           DO i=1,sNx
+c            aim_soilMoisture(I,J,bi,bj) = aim_soilMoisture(I,J,bi,bj)
+c    &                                   /20.
+c           ENDDO
+c          ENDDO
+           
+C-  Converts surface potential temp. to in-situ temperature :
+           DO j=1,sNy
+            DO i=1,sNx
+             pfact = (Ro_surf(i,j,bi,bj)/atm_po)**atm_kappa
+             aim_surftemp(i,j,bi,bj) = aim_surftemp(i,j,bi,bj) 
+     &                               * pfact
+            ENDDO
+           ENDDO
+
+C-- end bi,bj loops
+          ENDDO
+         ENDDO
+
+         IF (FirstCall) 
+     &     CALL WRITE_FLD_XY_RL('aim_Tsurf',' ',aim_surftemp,0,myThid)     
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
         ENDIF
 

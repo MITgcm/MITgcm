@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_atmos_physics.F,v 1.8 2001/09/25 19:55:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_atmos_physics.F,v 1.9 2002/01/08 22:33:10 jmc Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -173,9 +173,10 @@ c_jmc: Because AIM physics LSC is not applied in the stratosphere (top level),
 c      ==> move water wapor from the stratos to the surface level.
       DO J = 1-Oly, sNy+Oly
        DO I = 1-Olx, sNx+Olx
-c       k = k_surf(i,j,bi,bj)
-c       salt(I,J,k,bi,bj) = salt(I,J,k,bi,bj)
-c    &   + maskC(i,j,Nr,bi,bj)*salt(I,J,Nr,bi,bj)*drF(Nr)*recip_drF(k)
+        k = ksurfC(i,j,bi,bj)
+        IF (k.LE.Nr)
+     &    salt(I,J,k,bi,bj) = salt(I,J,k,bi,bj)
+     &                      + salt(I,J,Nr,bi,bj)*drF(Nr)*recip_drF(k)
         salt(I,J,Nr,bi,bj) = 0.
        ENDDO
       ENDDO
@@ -282,9 +283,9 @@ C     Physics package needs to know time of year as a fraction
 
 C
 C     Load external data needed by physics package
-C     1. Albedo
-C     2. Soil moisture
-C     3. Surface temperatures
+C     1. Albedo                (between 0-1)
+C     2. Soil moisture         (between 0-1)
+C     3. Surface temperatures  (in situ Temp. [K])
 C     4. Snow depth            - assume no snow for now
 C     5. Sea ice               - assume no sea ice for now
 C     6. Land sea mask         - infer from exact zeros in soil moisture dataset
@@ -309,7 +310,8 @@ C      ENDDO
         DO I=1,sNx
          I2 = (sNx)*(J-1)+I
          alb0(I2,myThid) = 0.
-         alb0(I2,myThid) = aim_albedo(I,J,bi,bj)/100.
+c        alb0(I2,myThid) = aim_albedo(I,J,bi,bj)/100.
+         alb0(I2,myThid) = aim_albedo(I,J,bi,bj)
         ENDDO
        ENDDO
 C      Read in surface temperature data (input is in absolute temperature)
@@ -339,7 +341,8 @@ cdj       tmp4 = (tmp4*7.5/20.)*10.
         DO I=1,sNx
          I2 = (sNx)*(J-1)+I
          soilq1(I2,myThid) = 0.
-         soilq1(I2,myThid) = aim_soilMoisture(I,J,bi,bj)/20.
+c        soilq1(I2,myThid) = aim_soilMoisture(I,J,bi,bj)/20.
+         soilq1(I2,myThid) = aim_soilMoisture(I,J,bi,bj)
         ENDDO
        ENDDO
 C_cnh01      ENDIF
