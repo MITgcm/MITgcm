@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.16 2004/10/14 13:44:54 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.17 2004/11/02 01:02:25 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -200,7 +200,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-  check parameter consistency :
 
-      IF ( viscA4.NE.0. .AND. (Olx.LT.3 .OR. Oly.LT.3)) THEN
+      IF ( ( Olx.LT.3 .OR. Oly.LT.3 ) .AND.
+     &     ( viscC4leith.NE.0. .OR. viscA4Grid.NE.0.
+     &      .OR. viscA4D.NE.0. .OR. viscA4Z.NE.0. ) ) THEN
         WRITE(msgBuf,'(A,A)')
      &  'CONFIG_CHECK: cannot use Biharmonic Visc. (viscA4) with',
      &  ' overlap (Olx,Oly) smaller than 3'
