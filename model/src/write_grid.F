@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.8 2004/12/14 23:00:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.9 2005/02/16 01:55:06 edhill Exp $
 C $Name:  $
       
 #include "PACKAGES_CONFIG.h"
@@ -93,14 +93,14 @@ C       Grid spacing, areas and hFacs
         CALL MNC_CW_ADD_VNAME('drF', '-_-_--__C__-', 0,0, myThid)
         CALL MNC_CW_ADD_VNAME('saFac', '-_-_--__C__-', 0,0, myThid)
 
-        CALL MNC_CW_ADD_VNAME('dxC', 'Cen_xy_Hn__-__-', 3,4, myThid)
-        CALL MNC_CW_ADD_VNAME('dyC', 'Cen_xy_Hn__-__-', 3,4, myThid)
+        CALL MNC_CW_ADD_VNAME('dxC', 'U_xy_Hn__-__-', 3,4, myThid)
+        CALL MNC_CW_ADD_VNAME('dyC', 'V_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('dxF', 'Cen_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('dyF', 'Cen_xy_Hn__-__-', 3,4, myThid)
-        CALL MNC_CW_ADD_VNAME('dxG', 'Cen_xy_Hn__-__-', 3,4, myThid)
-        CALL MNC_CW_ADD_VNAME('dyG', 'Cen_xy_Hn__-__-', 3,4, myThid)
-        CALL MNC_CW_ADD_VNAME('dxV', 'U_xy_Hn__-__-', 3,4, myThid)
-        CALL MNC_CW_ADD_VNAME('dyU', 'V_xy_Hn__-__-', 3,4, myThid)
+        CALL MNC_CW_ADD_VNAME('dxG', 'V_xy_Hn__-__-', 3,4, myThid)
+        CALL MNC_CW_ADD_VNAME('dyG', 'U_xy_Hn__-__-', 3,4, myThid)
+        CALL MNC_CW_ADD_VNAME('dxV', 'Cor_xy_Hn__-__-', 3,4, myThid)
+        CALL MNC_CW_ADD_VNAME('dyU', 'Cor_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('rA', 'Cen_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('rAw', 'Cen_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('rAs', 'Cen_xy_Hn__-__-', 3,4, myThid)
@@ -111,8 +111,8 @@ C       Grid spacing, areas and hFacs
         CALL MNC_CW_ADD_VNAME('Ro_surf','Cen_xy_Hn__-__-',3,4,myThid)
         CALL MNC_CW_ADD_VNAME('Depth', 'Cen_xy_Hn__-__-', 3,4,myThid)
         CALL MNC_CW_ADD_VNAME('HFacC', 'Cen_xy_Hn__C__-', 4,5,myThid)
-        CALL MNC_CW_ADD_VNAME('HFacW', 'Cen_xy_Hn__C__-', 4,5,myThid)
-        CALL MNC_CW_ADD_VNAME('HFacS', 'Cen_xy_Hn__C__-', 4,5,myThid)
+        CALL MNC_CW_ADD_VNAME('HFacW', 'U_xy_Hn__C__-', 4,5,myThid)
+        CALL MNC_CW_ADD_VNAME('HFacS', 'V_xy_Hn__C__-', 4,5,myThid)
         
         CALL MNC_CW_ADD_VATTR_TEXT('drC','description',
      &       'r cell center separation',myThid)
