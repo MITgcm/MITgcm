@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.4 2003/02/26 03:16:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.5 2003/08/01 04:03:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -60,16 +60,69 @@ C     i,j :: Loop counters
       INTEGER i,j
       _RL varLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL factorZ, factorP, conv_theta2T
+      _RL factPI
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 CEOP
 
 #ifdef NONLIN_FRSURF
-      IF (select_rStar.GE.1 .AND. nonlinFreeSurf.GE.4 ) THEN
-       DO j=jMin-1,jMax
-        DO i=iMin-1,iMax
-         varLoc(i,j) = phiHydC(i,j)*rStarFacC(i,j,bi,bj)
-     &               + phi0surf(i,j,bi,bj)
+      IF (select_rStar.GE.2 .AND. nonlinFreeSurf.GE.4 ) THEN
+C-    Integral of b.dr = rStarFac * Integral of b.dr* :
+C      and will add later (select_rStar=2) the contribution of 
+C      the slope of the r* coordinate.
+       IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
+C-     Consistent with Phi'= Integr[ theta'.dPi ] :
+        DO j=jMin-1,jMax
+         DO i=iMin-1,iMax
+          varLoc(i,j) = phiHydC(i,j)*rStarFacC(i,j,bi,bj)**atm_kappa
+     &                + phi0surf(i,j,bi,bj)
+         ENDDO
         ENDDO
-       ENDDO
+       ELSE
+        DO j=jMin-1,jMax
+         DO i=iMin-1,iMax
+          varLoc(i,j) = phiHydC(i,j)*rStarFacC(i,j,bi,bj)
+     &                + phi0surf(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDIF
+      ELSEIF (select_rStar.GE.1 .AND. nonlinFreeSurf.GE.4 ) THEN
+C-    Integral of b.dr but scaled to correspond to a fixed r-level (=r*)
+C      no contribution of the slope of the r* coordinate (select_rStar=1)
+       IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
+C-     Consistent with Phi'= Integr[ theta'.dPi ] :
+        DO j=jMin-1,jMax
+         DO i=iMin-1,iMax
+          IF (Ro_surf(i,j,bi,bj).EQ.rC(k)) THEN
+           factPI=atm_Cp*( ((etaH(i,j,bi,bj)+rC(k))/atm_Po)**atm_kappa  
+     &                    -(                 rC(k) /atm_Po)**atm_kappa 
+     &                  )
+           varLoc(i,j) = factPI*alphRho(i,j)
+          ELSEIF (Ro_surf(i,j,bi,bj).NE.0. _d 0) THEN
+           factPI = (rC(k)/Ro_surf(i,j,bi,bj))**atm_kappa
+           varLoc(i,j) = phiHydC(i,j)
+     &                  *(rStarFacC(i,j,bi,bj)**atm_kappa - factPI)
+     &                  /(1. _d 0 -factPI)
+     &                 + phi0surf(i,j,bi,bj)
+          ENDIF
+         ENDDO
+        ENDDO
+       ELSE
+        DO j=jMin-1,jMax
+         DO i=iMin-1,iMax
+          IF (Ro_surf(i,j,bi,bj).EQ.rC(k)) THEN
+           WRITE(msgBuf,'(2A)') 'CALC_GRAD_PHI_HYD: ',
+     &      'Problem when Ro_surf=rC with select_rStar,integr_GeoPot=1,4'
+           CALL PRINT_ERROR( msgBuf , myThid)
+           STOP 'CALC_GRAD_PHI_HYD: Pb in r* options implementation'
+          ELSE
+           varLoc(i,j) = phiHydC(i,j)
+     &                  *(etaH(i,j,bi,bj)+Ro_surf(i,j,bi,bj)-rC(k))
+     &                  /                (Ro_surf(i,j,bi,bj)-rC(k))
+     &                 + phi0surf(i,j,bi,bj)
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDIF
       ELSE
 #else /* NONLIN_FRSURF */
       IF (.TRUE.) THEN
@@ -136,11 +189,11 @@ C--    p* coordinate slope term: alpha' * Grad_r( p )
         DO j=jMin,jMax
          DO i=iMin,iMax
           dPhiHydX(i,j) = dPhiHydX(i,j)
-     &     +factorP*(tFld(i-1,j,k,bi,bj)+tFld(i,j,k,bi,bj)-2.*tRef(k))
+     &     +factorP*(alphRho(i-1,j)+alphRho(i,j))
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i-1,j,bi,bj))
      &             *rC(k)*recip_dxC(i,j,bi,bj)   
           dPhiHydY(i,j) = dPhiHydY(i,j)
-     &     +factorP*(tFld(i,j-1,k,bi,bj)+tFld(i,j,k,bi,bj)-2.*tRef(k))
+     &     +factorP*(alphRho(i,j-1)+alphRho(i,j))
      &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i,j-1,bi,bj))
      &             *rC(k)*recip_dyC(i,j,bi,bj)   
          ENDDO

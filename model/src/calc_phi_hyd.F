@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.29 2003/02/18 15:30:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.30 2003/08/01 04:03:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -317,6 +317,15 @@ C       This is the hydrostatic geopotential calculation for the Atmosphere
 C       The ideal gas law is used implicitly here rather than calculating
 C       the specific volume, analogous to the oceanic case.
 
+C--     virtual potential temperature anomaly (including water vapour effect)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          alphaRho(i,j)=maskC(i,j,k,bi,bj)
+     &             *( tFld(i,j,k,bi,bj)*(sFld(i,j,k,bi,bj)*atm_Rq+one) 
+     &               -tRef(k) )
+         ENDDO
+        ENDDO
+
 C---    Integrate d Phi / d pi
 
        IF (integr_GeoPot.EQ.0) THEN
@@ -344,12 +353,8 @@ C-----------------------------------------------------------------------
 C-------- This discretization is the energy conserving form
          DO j=jMin,jMax
           DO i=iMin,iMax
-             phiHydC(i,j) = phiHydF(i,j)
-     &          +ddPIm*maskC(i,j,k,bi,bj)
-     &                *(tFld(i,j,k,bi,bj)-tRef(k))
-             phiHydF(i,j) = phiHydC(i,j)
-     &          +ddPIp*maskC(i,j,k,bi,bj)
-     &                *(tFld(i,j,k,bi,bj)-tRef(k))
+             phiHydC(i,j) = phiHydF(i,j) +ddPIm*alphaRho(i,j)
+             phiHydF(i,j) = phiHydC(i,j) +ddPIp*alphaRho(i,j)
           ENDDO
          ENDDO
 C end: Energy Conserving Form, No hFac  --
@@ -377,16 +382,11 @@ C---------
              ddRloc = ddRloc + surfPhiFac*etaH(i,j,bi,bj)
 #endif
              phiHydC(i,j) = ddRloc*recip_drF(k)*2. _d 0
-     &          *ddPIm*maskC(i,j,k,bi,bj)
-     &                *(tFld(i,j,k,bi,bj)-tRef(k))
+     &          *ddPIm*alphaRho(i,j)
            ELSE
-             phiHydC(i,j) = phiHydF(i,j)
-     &          +ddPIm*maskC(i,j,k,bi,bj)
-     &                *(tFld(i,j,k,bi,bj)-tRef(k))
+             phiHydC(i,j) = phiHydF(i,j) +ddPIm*alphaRho(i,j)
            ENDIF
-             phiHydF(i,j) = phiHydC(i,j)
-     &          +ddPIp*maskC(i,j,k,bi,bj)
-     &                *(tFld(i,j,k,bi,bj)-tRef(k))
+             phiHydF(i,j) = phiHydC(i,j) +ddPIp*alphaRho(i,j)
           ENDDO
          ENDDO
 C end: Finite Volume Form, with Part-Cell Topo, linear in P by Half level
@@ -427,15 +427,11 @@ C---------
 #endif
              phiHydC(i,j) =( MAX(zero,ddRloc)*rec_dRm*ddPIm
      &                      +MIN(zero,ddRloc)*rec_dRp*ddPIp )
-     &                *(tFld(i,j,k,bi,bj)-tRef(k))
+     &                    *alphaRho(i,j)
            ELSE
-             phiHydC(i,j) = phiHydF(i,j)
-     &          +ddPIm*maskC(i,j,k,bi,bj)
-     &                *(tFld(I,J,k,bi,bj)-tRef(k))
+             phiHydC(i,j) = phiHydF(i,j) +ddPIm*alphaRho(i,j)
            ENDIF
-             phiHydF(i,j) = phiHydC(i,j)
-     &          +ddPIp*maskC(i,j,k,bi,bj)
-     &                *(tFld(I,J,k,bi,bj)-tRef(k))
+             phiHydF(i,j) = phiHydC(i,j) +ddPIp*alphaRho(i,j)
           ENDDO
          ENDDO
 C end: Finite Difference Form, with Part-Cell Topo
