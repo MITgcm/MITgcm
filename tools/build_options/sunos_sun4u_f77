@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_f77,v 1.5 2004/12/16 14:27:24 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_f77,v 1.6 2005/01/07 10:04:34 mlosch Exp $
 #  $Name:  $  
 #
 # tested on 
@@ -12,9 +12,9 @@
 FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
 S64='$(TOOLSDIR)/set64bitConst.sh'
 DEFINES='-DWORDLENGTH=4'
-AWK='gawk'
+#AWK='gawk'
 MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
-#MAKE='make'
+#MAKE='gmake'
 CPP='/usr/ccs/lib/cpp -P'
 # this one works, too
 #CPP='/opt/sfw/bin/cpp -traditional -P'
