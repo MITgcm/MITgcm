@@ -25,7 +25,7 @@ c                       south (s), and western (w) mask, resp. .
       parameter ( maxcvars = 30 )
 
       integer     ctrlprec
-      parameter ( ctrlprec = 64 )
+      parameter ( ctrlprec = 32 )
 
       common /controlvars_i/
      &                       nvartype,

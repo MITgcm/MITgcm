@@ -94,8 +94,8 @@ c     == end of interface ==
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec
-      readBinaryPrec = precFloat64
-      prec           = precFloat64
+      readBinaryPrec = precFloat32
+      prec           = precFloat32
 
       write(adfname(1:80),'(80a)') ' '
       adpref = 'ad'
@@ -300,8 +300,8 @@ c     == end of interface ==
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec
-      readBinaryPrec = precFloat64
-      prec           = precFloat64
+      readBinaryPrec = precFloat32
+      prec           = precFloat32
 
 c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
@@ -478,8 +478,8 @@ c     == end of interface ==
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec
-      readBinaryPrec = precFloat64
-      prec           = precFloat64
+      readBinaryPrec = precFloat32
+      prec           = precFloat32
 
       write(adfname(1:80),'(80a)') ' '
       adpref = 'ad'
@@ -684,8 +684,8 @@ c     == end of interface ==
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec
-      readBinaryPrec = precFloat64
-      prec           = precFloat64
+      readBinaryPrec = precFloat32
+      prec           = precFloat32
 
 c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
