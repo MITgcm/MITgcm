@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.34 2004/12/19 00:14:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.35 2005/01/04 00:29:06 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -23,6 +23,12 @@ C       |-- DIAGNOSTICS_INIT_EARLY
 C       |-- DIAGNOSTICS_MAIN_INIT
 C       |
 C       |-- GAD_INIT
+C       |
+C       |-- CD_CODE_INIT_FIXED
+C       |
+C       |-- GMREDI_INIT_FIXED
+C       |
+C       |-- OPPS_INIT
 C       |
 C       |-- OBCS_INIT_FIXED
 C       |
@@ -50,9 +56,7 @@ C       |-- PTRACERS_INITIALISE
 C       |
 C       |-- GCHEM_INIT_FIXED
 C       |
-C       |-- CD_CODE_INIT_FIXED
-C       |
-C       |-- OPPS_INIT
+C       |-- THSICE_INIT_FIXED
 C       |
 C       |-- CPL_INIT_FIXED
 C       |
@@ -82,6 +86,23 @@ CEOP
 C--   Initialize fixed params for GAD
       CALL GAD_INIT( myThid )
 #endif
+
+#ifdef ALLOW_CD_CODE
+      IF (useCDscheme) THEN
+       CALL CD_CODE_INIT_FIXED(mythid)
+      ENDIF
+#endif
+
+#ifdef ALLOW_GMREDI
+C--   Initialize fixed arrays for GM-Redi
+      IF ( useGMRedi ) THEN
+       CALL GMREDI_INIT_FIXED( myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_OPPS
+      IF (useOPPS) CALL OPPS_INIT( myThid )
+#endif /* ALLOW_OPPS */
 
 C--   Initialize fixed arrays for OBCS
 #ifdef ALLOW_OBCS
@@ -163,21 +184,13 @@ C--   Initialise the control variables
       IF (usePTRACERS) CALL PTRACERS_INITIALISE(mythid)
 #endif
 
-#ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
       IF (useGCHEM) CALL GCHEM_INIT_FIXED(mythid)
 #endif
-#endif
 
-#ifdef ALLOW_CD_CODE
-      IF (useCDscheme) THEN
-       CALL CD_CODE_INIT_FIXED(mythid)
-      ENDIF
+#ifdef ALLOW_THSICE
+      IF (useThSIce) CALL THSICE_INIT_FIXED(mythid)
 #endif
-
-#ifdef ALLOW_OPPS
-      IF (useOPPS) CALL OPPS_INIT( myThid )
-#endif /* ALLOW_OPPS */
 
 #ifdef COMPONENT_MODULE
       IF ( useCoupler ) CALL CPL_INIT_FIXED( mythid )
