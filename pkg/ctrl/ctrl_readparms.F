@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.12 2005/02/28 17:29:38 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.13 2005/03/30 18:40:40 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -130,67 +130,67 @@ c--     Set default values.
         doZscaleUnpack      = .FALSE.
         doZscalePack        = .FALSE.
 
-        xx_theta_file      = ' '
-        xx_salt_file       = ' '
+        xx_theta_file      = 'xx_theta'
+        xx_salt_file       = 'xx_salt'
         xx_hfluxstartdate1 =   0
         xx_hfluxstartdate2 =   0
         xx_hfluxperiod     =   0. _d 0
-        xx_hflux_file      = ' '
+        xx_hflux_file      = 'xx_hfl'
         xx_sfluxstartdate1 =   0
         xx_sfluxstartdate2 =   0
         xx_sfluxperiod     =   0. _d 0
-        xx_sflux_file      = ' '
+        xx_sflux_file      = 'xx_sfl'
         xx_tauustartdate1  =   0
         xx_tauustartdate2  =   0
         xx_tauuperiod      =   0. _d 0
-        xx_tauu_file       = ' '
+        xx_tauu_file       = 'xx_tauu'
         xx_tauvstartdate1  =   0
         xx_tauvstartdate2  =   0
         xx_tauvperiod      =   0. _d 0
-        xx_tauv_file       = ' '
+        xx_tauv_file       = 'xx_tauv'
         xx_atempstartdate1  =   0
         xx_atempstartdate2  =   0
         xx_atempperiod      =   0. _d 0
-        xx_atemp_file       = ' '
+        xx_atemp_file       = 'xx_atemp'
         xx_aqhstartdate1    =   0
         xx_aqhstartdate2    =   0
         xx_aqhperiod        =   0. _d 0
-        xx_aqh_file         = ' '
+        xx_aqh_file         = 'xx_aqh'
         xx_uwindstartdate1  =   0
         xx_uwindstartdate2  =   0
         xx_uwindperiod      =   0. _d 0
-        xx_uwind_file       = ' '
+        xx_uwind_file       = 'xx_uwind'
         xx_vwindstartdate1  =   0
         xx_vwindstartdate2  =   0
         xx_vwindperiod      =   0. _d 0
-        xx_vwind_file       = ' '
+        xx_vwind_file       = 'xx_vwind'
         xx_obcsnstartdate1  =   0
         xx_obcsnstartdate2  =   0
         xx_obcsnperiod      =   0. _d 0
-        xx_obcsn_file       = ' '
+        xx_obcsn_file       = 'xx_obcsn'
         xx_obcssstartdate1  =   0
         xx_obcssstartdate2  =   0
         xx_obcssperiod      =   0. _d 0
-        xx_obcss_file       = ' '
+        xx_obcss_file       = 'xx_obcss'
         xx_obcswstartdate1  =   0
         xx_obcswstartdate2  =   0
         xx_obcswperiod      =   0. _d 0
-        xx_obcsw_file       = ' '
+        xx_obcsw_file       = 'xx_obcsw'
         xx_obcsestartdate1  =   0
         xx_obcsestartdate2  =   0
         xx_obcseperiod      =   0. _d 0
-        xx_obcse_file       = ' '
-        xx_diffkr_file      = ' '
-        xx_kapgm_file       = ' '
-        xx_tr1_file         = ' '
-        xx_sst_file         = ' '
-        xx_sss_file         = ' '
-        xx_hfacc_file       = ' '
-        xx_efluxy_file      = ' '
-        xx_efluxp_file      = ' '
-        xx_bottomdrag_file  = ' '
-        xx_edtaux_file      = ' '
-        xx_edtauy_file      = ' '
+        xx_obcse_file       = 'xx_obcse'
+        xx_diffkr_file      = 'xx_diffkr'
+        xx_kapgm_file       = 'xx_kapgm'
+        xx_tr1_file         = 'xx_ptr'
+        xx_sst_file         = 'xx_sst'
+        xx_sss_file         = 'xx_sss'
+        xx_hfacc_file       = 'xx_hfacc'
+        xx_efluxy_file      = 'xx_efluxy'
+        xx_efluxp_file      = 'xx_efluxp'
+        xx_bottomdrag_file  = 'xx_bottomdrag'
+        xx_edtaux_file      = 'xx_edtaux'
+        xx_edtauy_file      = 'xx_edtauy'
 
 #ifdef ALLOW_TANGENTLINEAR_RUN
         yadprefix           = 'g_'
