@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.9 2003/08/04 22:53:41 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.10 2003/08/07 02:31:29 dimitri Exp $
 c
 c
 c     ==================================================================
@@ -365,13 +365,6 @@ c     input and output scaling factors
      &                    , exf_outscal_sss
      &                    , exf_outscal_apressure
 
-c     EXFwindOnBgrid - By default wind files, uwind and vwind,
-c     are defined on Southwest C-grid U and V points.
-c     When this flag is set, wind files are defined on
-c     Southwest B-grid U and V points.
-      LOGICAL             EXFwindOnBgrid
-      COMMON /EXF_PARM_L/ EXFwindOnBgrid
-
 #ifdef USE_EXF_INTERPOLATION
 c for lat interpolation, arraysize currently set to 250 max data values
        integer MAX_LAT_INC
@@ -395,37 +388,37 @@ c for lat interpolation, arraysize currently set to 250 max data values
       _RL runoff_lat0, runoff_lat_inc(MAX_LAT_INC)
       INTEGER runoff_nlon, runoff_nlat
       _RL atemp_lon0, atemp_lon_inc
-      _RL atemp_lat0, atemp_lat_inc
+      _RL atemp_lat0, atemp_lat_inc(MAX_LAT_INC)
       INTEGER atemp_nlon, atemp_nlat
       _RL aqh_lon0, aqh_lon_inc
-      _RL aqh_lat0, aqh_lat_inc
+      _RL aqh_lat0, aqh_lat_inc(MAX_LAT_INC)
       INTEGER aqh_nlon, aqh_nlat
       _RL evap_lon0, evap_lon_inc
-      _RL evap_lat0, evap_lat_inc
+      _RL evap_lat0, evap_lat_inc(MAX_LAT_INC)
       INTEGER evap_nlon, evap_nlat
       _RL precip_lon0, precip_lon_inc
-      _RL precip_lat0, precip_lat_inc
+      _RL precip_lat0, precip_lat_inc(MAX_LAT_INC)
       INTEGER precip_nlon, precip_nlat
       _RL uwind_lon0, uwind_lon_inc
-      _RL uwind_lat0, uwind_lat_inc
+      _RL uwind_lat0, uwind_lat_inc(MAX_LAT_INC)
       INTEGER uwind_nlon, uwind_nlat
       _RL vwind_lon0, vwind_lon_inc
-      _RL vwind_lat0, vwind_lat_inc
+      _RL vwind_lat0, vwind_lat_inc(MAX_LAT_INC)
       INTEGER vwind_nlon, vwind_nlat
       _RL lwflux_lon0, lwflux_lon_inc
-      _RL lwflux_lat0, lwflux_lat_inc
+      _RL lwflux_lat0, lwflux_lat_inc(MAX_LAT_INC)
       INTEGER lwflux_nlon, lwflux_nlat
       _RL swdown_lon0, swdown_lon_inc
-      _RL swdown_lat0, swdown_lat_inc
+      _RL swdown_lat0, swdown_lat_inc(MAX_LAT_INC)
       INTEGER swdown_nlon, swdown_nlat
       _RL lwdown_lon0, lwdown_lon_inc
-      _RL lwdown_lat0, lwdown_lat_inc
+      _RL lwdown_lat0, lwdown_lat_inc(MAX_LAT_INC)
       INTEGER lwdown_nlon, lwdown_nlat
       _RL apressure_lon0,apressure_lon_inc
-      _RL apressure_lat0,apressure_lat_inc
+      _RL apressure_lat0,apressure_lat_inc(MAX_LAT_INC)
       INTEGER apressure_nlon,apressure_nlat
 
-      common /exf_interp/
+      common /exf_interpolation/
      & ustress_lon0, ustress_lon_inc,
      & ustress_lat0, ustress_lat_inc,
      & ustress_nlon, ustress_nlat,

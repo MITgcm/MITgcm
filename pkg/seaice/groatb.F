@@ -1,7 +1,7 @@
 C $Header:
 
 #include "SEAICE_OPTIONS.h"
- 
+
 CStartOfInterface
       SUBROUTINE groatb( A22, myThid )
 C     /==========================================================\
@@ -43,7 +43,7 @@ C     i,j,bi,bj - Loop counters
 
       INTEGER i, j, bi, bj
       INTEGER KOPEN
-      _RL U1, V1, SPEED_SQ
+      _RL SPEED_SQ
       _RL HICE (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL UG   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
 
@@ -53,10 +53,6 @@ C     i,j,bi,bj - Loop counters
       _RL HICEP(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL FICEP(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
 #endif
-
-C if this is not done before then do it here
-      _EXCH_XY_R8(UWIND, myThid)
-      _EXCH_XY_R8(VWIND, myThid)
 
 CADJ loop = parallel
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -114,11 +110,7 @@ C NOW DETERMINE MIXED LAYER TEMPERATURE
 
         DO J=1,sNy
          DO I=1,sNx
-          U1=0.25 _d 0*(UWIND(I+1,J+1,bi,bj)+UWIND(I+1,J,bi,bj)
-     1      +UWIND(I,J+1,bi,bj)+UWIND(I,J,bi,bj))
-          V1=0.25 _d 0*(VWIND(I+1,J+1,bi,bj)+VWIND(I+1,J,bi,bj)
-     1      +VWIND(I,J+1,bi,bj)+VWIND(I,J,bi,bj))
-          SPEED_SQ = U1**2 + V1**2
+          SPEED_SQ = UWIND(I,J,bi,bj)**2 + VWIND(I,J,bi,bj)**2
           IF ( SPEED_SQ .LE. SEAICE_EPS_SQ ) THEN
              UG(I,J)=SEAICE_EPS
           ELSE

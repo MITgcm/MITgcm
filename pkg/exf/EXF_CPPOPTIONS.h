@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/EXF_CPPOPTIONS.h,v 1.5 2003/08/04 22:53:41 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/EXF_CPPOPTIONS.h,v 1.6 2003/08/07 02:31:29 dimitri Exp $
 C
 #include "CPP_OPTIONS.h"
 C 
@@ -60,6 +60,12 @@ c
 c   >>> ALLOW_CLIMSSS_RELAXATION <<<
 c       Allow the relaxation to a monthly climatology of sea surface
 c       salinity, e.g. the Levitus climatology.
+c
+c   >>> USE_EXF_INTERPOLATION <<<
+c       Allows specification of arbitrary Cartesian input grids.
+c
+c   >>> BICUBIC <<<
+c       Use bicubic instead of bilinear spatial interpolation.
 c
 c   ====================================================================
 c

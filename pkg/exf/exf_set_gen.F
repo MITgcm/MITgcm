@@ -5,7 +5,7 @@
      &     genfld, gen0, gen1, genmask,
 #ifdef USE_EXF_INTERPOLATION
      &     gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
-     &     gen_nlon, gen_nlat,
+     &     gen_nlon, gen_nlat, gen_xout, gen_yout,
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 
@@ -17,9 +17,11 @@ c     o set external forcing gen
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
 c     changed: heimbach@mit.edu 10-Jan-2002
-c              mods for pkg/seaice: menemenlis@jpl.nasa.gov 20-Dec-2002
+c              20-Dec-2002: mods for pkg/seaice, menemenlis@jpl.nasa.gov
 c              heimbach@mit.edu: totally re-organized exf_set_... 
 c              replaced all routines by one generic routine
+c              5-Aug-2003: added USE_EXF_INTERPOLATION for arbitrary
+c                          input grid capability
 
 c     ==================================================================
 c     SUBROUTINE exf_set_gen
@@ -50,9 +52,17 @@ c     == routine arguments ==
       integer mycurrentiter
       integer mythid
 #ifdef USE_EXF_INTERPOLATION
+c     gen_lon_0 ,gen_lat_0 :: longitude and latitude of SouthWest
+c                             corner of global input grid
+c     gen_nlon, gen_nlat   :: input x-grid and y-grid size
+c     gen_lon_inc          :: scalar x-grid increment
+c     gen_lat_inc          :: vector y-grid increments
+c     gen_xout, gen_yout   :: coordinates for output grid
       _RL gen_lon0, gen_lon_inc
       _RL gen_lat0, gen_lat_inc(MAX_LAT_INC)
       INTEGER gen_nlon, gen_nlat
+      _RS gen_xout  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS gen_yout  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 c     == local variables ==
@@ -78,8 +88,8 @@ c     get record numbers and interpolation factor for gen
 
          if ( first ) then
 #ifdef USE_EXF_INTERPOLATION
-            call new_interp( genfile, exf_iprec
-     &           , gen1, count0, xC, yC
+            call exf_interp( genfile, exf_iprec
+     &           , gen1, count0, gen_xout, gen_yout
      &           , gen_lon0,gen_lon_inc
      &           , gen_lat0,gen_lat_inc
      &           , gen_nlon,gen_nlat,mythid
@@ -101,8 +111,8 @@ c     get record numbers and interpolation factor for gen
             call exf_SwapFFields( gen0, gen1, mythid )
             
 #ifdef USE_EXF_INTERPOLATION
-            call new_interp( genfile, exf_iprec
-     &           , gen1, count1, xC, yC
+            call exf_interp( genfile, exf_iprec
+     &           , gen1, count1, gen_xout, gen_yout
      &           , gen_lon0,gen_lon_inc
      &           , gen_lat0,gen_lat_inc
      &           , gen_nlon,gen_nlat,mythid

@@ -38,7 +38,7 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
         end
 
 
-       SUBROUTINE new_interp(
+       SUBROUTINE exf_interp(
      I   infile,
      I   filePrec,
      O   arrayout,
@@ -48,22 +48,24 @@ CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
      I   nx_in,ny_in,mythid)
 
 C
-C *** infile = name of the input file (global binary,before interp.)
-C     filePrec = file precicision
-C     arrout = output arrays (different for each processor)
-C     irecord = record number in global file
-C     xG,yG = coordinates for output grid
-C     lon_0 ,lat_0 = lon and lat of sw corner of global input grid
-C     nx_in,ny_in = input x-grid size and y-grid size.
+C *** infile       = name of the input file (global binary, before interp.)
+C     filePrec     = file precicision
+C     arrout       = output arrays (different for each processor)
+C     irecord      = record number in global file
+C     xG,yG        = coordinates for output grid
+C     lon_0, lat_0 = lon and lat of sw corner of global input grid
+C     lon_inc      = scalar x-grid increment
+C     lat_inc      = vector y-grid increments
+C     nx_in, ny_in = input x-grid and y-grid size
 C
 
-C      include 'mpif.h'
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "exf_param.h"
 
-Clocal variables
+C local variables
+
       integer ierr
       integer nx_in, ny_in
       integer irecord, filePrec
@@ -78,8 +80,8 @@ Clocal variables
       external lagran
       real*8 lagran
 
-      real*8 lon_0,lon_inc
-      real*8 lat_0,lat_inc(ny_in-1)
+      _RL lon_0,lon_inc
+      _RL lat_0,lat_inc(ny_in-1)
       real*4 arrayin(-1:nx_in+2,-1:ny_in+2)
       real*8 x_in(-1:nx_in+2),y_in(-1:ny_in+2)
 
@@ -92,6 +94,7 @@ Clocal variables
       integer interp_unit
 
 C read in input data
+
       call mdsfindunit( interp_unit, mythid)
       open(interp_unit,file=infile,status='old',access='direct',
      & recl=nx_in*ny_in*4)
@@ -102,6 +105,7 @@ C read in input data
       close(interp_unit)
 
 C setup input grid
+
       do i=-1,nx_in+2
        x_in(i) = lon_0 + (i-1.)*lon_inc
       enddo
@@ -117,9 +121,16 @@ C setup input grid
       y_in(ny_in+1) = y_in(ny_in) + lat_inc(ny_in-1)
       y_in(ny_in+2) = y_in(ny_in) + 2.*lat_inc(ny_in-1)
 
-c      do j=-1,ny_in+2
-c       y_in(j) = lat_0 + (j-1.)*lat_inc
-c      enddo
+C check validity of input/output parameters
+
+      if ( xG(1,1)   .le. x_in(0)        .or.
+     &     xG(snx,1) .ge. x_in(nx_in+1)  .or.
+     &     yG(1,1)   .lt. y_in(1)        .or.
+     &     yG(1,sny) .gt. y_in(ny_in) )  then
+         print*,'ERROR in S/R EXF_INTERP:'
+         print*,'   input grid must encompass output grid.'
+         STOP   ' ABNORMAL END: S/R EXF_INTERP'
+      endif
 
 C enlarge boundary
 
@@ -137,7 +148,8 @@ C enlarge boundary
          arrayin(i,ny_in+2) = arrayin(i,ny_in) 
        enddo
 
-Ccompute interpolation indices 
+C compute interpolation indices 
+
         do i=1,snx
           if (xG(i,1)-x_in(1) .ge. 0.) then 
             w_ind(i) = int((xG(i,1)-x_in(1))/lon_inc) + 1                    
@@ -158,17 +170,9 @@ Ccompute interpolation indices
             s_ind(j) = js
             n_ind(j) = js + 1
         enddo
- 
-c        do j=1,sny
-c          if (yG(1,j)-y_in(1) .ge. 0.) then
-c            s_ind(j) = int((yG(1,j)-y_in(1))/lat_inc) + 1
-c          else
-c            s_ind(j) = int((yG(1,j)-y_in(1))/lat_inc)
-c          endif
-c          n_ind(j) = s_ind(j) + 1
-c        enddo
-        
-Cinterpolate
+
+C interpolate
+
       do bj = mybylo(mythid), mybyhi(mythid)
         do bi = mybxlo(mythid), mybxhi(mythid)
 

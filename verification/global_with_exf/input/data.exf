@@ -26,7 +26,7 @@
  ustressstartdate1=19920101,
  ustressstartdate2=000000,
  ustressperiod=2592000.0,
- ustress_lon0    = 2
+ ustress_lon0    = 0
  ustress_lon_inc = 4
  ustress_lat0    = -78
  ustress_lat_inc = 40*4
@@ -38,7 +38,7 @@
  vstressperiod=2592000.0,
  vstress_lon0    = 2
  vstress_lon_inc = 4
- vstress_lat0    = -78
+ vstress_lat0    = -80
  vstress_lat_inc = 40*4
  vstress_nlon    = 90
  vstress_nlat    = 40

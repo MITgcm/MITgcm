@@ -11,13 +11,6 @@ c
 c   Many assumptions that are made in the current version should, and
 c   can, be relaxed in later versions:
 c
-c   - There is an inconsistency in the formulation of forcing variables
-c     defined on southern and western points on the C-grid, since the
-c     the atmospheric stability is calculated on center points of the
-c     C-grid.  Also need to make sure that with options EXFwindOnBgrid
-c     and/or SEAICEwindOnCgrid set, wind and wind stress is interpolated
-c     to correct grid location.
-c
 c   - equidistancy in time -->  general data set (non-equidistant in
 c                                                 time)
 c

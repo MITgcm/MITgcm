@@ -18,16 +18,9 @@ C
 C     SEAICEuseADI      - If true, use ADI rather than LSR solver;
 C                         default is LSR solver.
 C
-C     SEAICEwindOnCgrid - By default wind files, uwind and vwind,
-C        are defined on North-East B-grid U and V points.
-C        When this flag is set, wind files are defined on
-C        South-West C-grid U and V points.
-C
-      LOGICAL SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseADI,
-     &        SEAICEwindOnCgrid
+      LOGICAL SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseADI
       COMMON /SEAICE_PARM_L/
-     &        SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseADI,
-     &        SEAICEwindOnCgrid
+     &        SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseADI
 
 C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
 C     LAD        - time stepping used for sea-ice advection:
@@ -95,7 +88,8 @@ C     SEAICE_shortwave   - penetration shortwave radiation factor
 C     LSR_ERROR          - sets accuracy of LSR solver
 C     DIFF1              - parameter used in advect.F
 C     A22                - parameter used in growth.F
-C     HO                 - parameter used in growth.F
+C     HO                 - demarcation thickness between thin and
+C                          thick ice: HO is a key ice-growth parameter
 C     WindForcingStart   - Time of first  wind forcing record  (s)
 C     WindForcingEnd     - Time of last   wind forcing record  (s)
 C     WindForcingPeriod  - Period between wind forcing records (s)

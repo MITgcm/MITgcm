@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input/data.exf,v 1.5 2003/05/23 21:58:05 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/verification/lab_sea/input/data.exf,v 1.6 2003/08/07 02:31:29 dimitri Exp $
 #
 # *********************
 # External Forcing Data
@@ -78,6 +78,4 @@
 #
  exf_iprec         = 32,
  exf_yftype        = 'RL',
-#
- EXFwindOnBgrid    = .TRUE.
  &

@@ -113,7 +113,7 @@ Generating 1-CPU executable with SEAICE_EXTERNAL_FLUXES:
   make depend
   make
   mv mitgcmuv mitgcmuv_exf_fluxes
- 
+
 Generating 1-CPU executable with SEAICE_MULTILEVEL:
   cd ../../../verification/lab_sea/input
   ln -sf ../code/SIZE.h .
@@ -127,7 +127,7 @@ Generating 1-CPU executable with SEAICE_MULTILEVEL:
   make depend
   make
   mv mitgcmuv mitgcmuv_multilevel
- 
+
 Generating 2-CPU executable:
   cd ../../../verification/lab_sea/input
   ln -sf ../code/SIZE.2x1.h SIZE.h
@@ -162,7 +162,7 @@ To run Experiment 1:
   mv *tave.0000000010.data exp1
 
 Use matlab script lookat_exp1.m to compare the output
-of exp1 with that from release1_p16 sea-ice code:
+of exp1 with that from checkpoint51f sea-ice code:
   cd ../../../verification/lab_sea/matlab
   matlab
   lookat_exp1
@@ -297,7 +297,7 @@ To run Experiment 6:
 
 Use the matlab script lookat_exp6.m to compare
 the output of exp6 to that of exp1:
-  cd ../verification/lab_sea/matlab
+  cd ../../../verification/lab_sea/matlab
   matlab
   lookat_exp6
 

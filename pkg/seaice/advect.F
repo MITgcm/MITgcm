@@ -44,10 +44,6 @@ C     i,j,k,bi,bj - Loop counters
       _RL VI   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy,nSx,nSy)
       _RL DIFFA(1-OLx:sNx+OLx, 1-OLy:sNy+OLy,nSx,nSy)
 
-#ifdef SEAICE_ALLOW_DYNAMICS
-
-      IF ( SEAICEuseDYNAMICS ) THEN
-
 C NOW DECIDE IF BACKWARD EULER OR LEAPFROG
       IF(LAD.EQ.1) THEN
 C LEAPFROG
@@ -214,9 +210,6 @@ C NOW CALCULATE DIFFUSION COEF ROUGHLY
         ENDDO
        ENDDO
       ENDDO
-
-      ENDIF
-#endif /* SEAICE_ALLOW_DYNAMICS */
 
 #endif /* ALLOW_SEAICE */
 

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.9 2003/08/04 22:53:42 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.10 2003/08/07 02:31:29 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -123,8 +123,7 @@ c     Surface flux data.
      &         lwfluxconst,
      &         swdownconst,
      &         lwdownconst,
-     &         apressureconst,
-     &         EXFwindOnBgrid
+     &         apressureconst
 #ifdef USE_EXF_INTERPOLATION
      & ,ustress_lon0, ustress_lon_inc,
      & ustress_lat0, ustress_lat_inc,
@@ -355,8 +354,6 @@ c     Output scaling factors.
       exf_outscal_sst      =  1. _d 0
       exf_outscal_sss      =  1. _d 0
       exf_outscal_apressure=  1. _d 0
-c
-      EXFwindOnBgrid = .FALSE.
 
 c     Check for the availability of the right calendar version.
       if ( calendarversion .ne. usescalendarversion ) then

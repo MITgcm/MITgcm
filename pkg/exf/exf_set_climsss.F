@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsss.F,v 1.7 2003/08/04 22:53:42 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsss.F,v 1.8 2003/08/07 02:31:29 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -80,7 +80,7 @@ c     get record numbers and interpolation factor for climsss
 
          if ( first ) then
 #ifdef USE_EXF_INTERPOLATION
-          call new_interp(
+          call exf_interp(
      &    climsssfile, exf_clim_iprec
      &  , climsss1, count0, xC, yC
      &  ,climsss_lon0,climsss_lon_inc
@@ -102,7 +102,7 @@ c     get record numbers and interpolation factor for climsss
          if (( first ) .or. ( changed )) then
             call exf_SwapFFields( climsss0, climsss1, mythid )
 #ifdef USE_EXF_INTERPOLATION
-          call new_interp(
+          call exf_interp(
      &    climsssfile, exf_iprec
      &  , climsss1, count1, xC, yC
      &  ,climsss_lon0,climsss_lon_inc

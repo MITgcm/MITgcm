@@ -52,7 +52,7 @@ c     == end of interface ==
 
       if ( runofffile .NE. ' ' ) then
 #ifdef USE_EXF_INTERPOLATION
-         call new_interp(
+         call exf_interp(
      &    runofffile, exf_iprec
      &  , runoff, 1, xC, yC
      &  ,runoff_lon0,runoff_lon_inc

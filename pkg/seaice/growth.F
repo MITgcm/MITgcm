@@ -81,11 +81,6 @@ CADJ &                         key = iicekey, byte = isbyte
 cph)
         DO J=1,sNy
          DO I=1,sNx
-C Adjust surface air temperature according to ice conditions
-          IF(AREA(I,J,1,bi,bj).GE.0.75 _d 0
-     &      .AND.ATEMP(I,J,bi,bj).GT.273.052 _d 0) THEN
-           ATEMP(I,J,bi,bj)=273.052 _d 0
-          ENDIF
           SEAICE_SALT(I,J,bi,bj)=ZERO
           WATR(I,J,bi,bj)=ZERO
          ENDDO

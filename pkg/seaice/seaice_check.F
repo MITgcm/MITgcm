@@ -15,10 +15,6 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "SEAICE_PARAMS.h"
-#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
-      LOGICAL             EXFwindOnBgrid
-      COMMON /EXF_PARM_L/ EXFwindOnBgrid
-#endif
 
 C     === Routine arguments ===
 C     myThid -  Number of this instance of SEAICE_CHECK
@@ -84,20 +80,6 @@ C     At present this option is hardwired for pkg/exf.
      &        SQUEEZE_RIGHT , myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
 #endif
-         IF(.NOT.SEAICEwindOnCgrid .AND. .NOT.EXFwindOnBgrid) THEN
-         WRITE(msgBuf,'(A)')
-     &        'please set either SEAICEwindOnCgrid or EXFwindOnBgrid '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
-         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-         ENDIF
-         IF(SEAICEwindOnCgrid .AND. EXFwindOnBgrid) THEN
-         WRITE(msgBuf,'(A)')
-     &        'please unset either SEAICEwindOnCgrid or EXFwindOnBgrid '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
-         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-         ENDIF
 #endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
 #endif /* SEAICE_EXTERNAL_FORCING */
 
@@ -110,22 +92,7 @@ C     At present this option is hardwired for pkg/exf.
          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &        SQUEEZE_RIGHT , myThid )
          STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-#else /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
-         IF(.NOT.SEAICEwindOnCgrid .AND. .NOT.EXFwindOnBgrid) THEN
-         WRITE(msgBuf,'(A)')
-     &        'please set either SEAICEwindOnCgrid or EXFwindOnBgrid '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
-         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-         ENDIF
-         IF(SEAICEwindOnCgrid .AND. EXFwindOnBgrid) THEN
-         WRITE(msgBuf,'(A)')
-     &        'please unset either SEAICEwindOnCgrid or EXFwindOnBgrid '
-         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &        SQUEEZE_RIGHT , myThid )
-         STOP 'ABNORMAL END: S/R SEAICE_CHECK'
-         ENDIF
-#endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+#endif
 #endif /* SEAICE_EXTERNAL_FLUXES */
 
 #endif /* ALLOW_SEAICE */

@@ -33,7 +33,6 @@ C     iUnit       - Work variable for IO unit number
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
      & SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseADI,
-     & SEAICEwindOnCgrid,
      & LAD, IMAX_TICE, NPSEUDO,
      & SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_dryIceAlb,
@@ -72,7 +71,6 @@ C--   set default sea ice parameters
       SEAICEuseDYNAMICS  = .FALSE.
 #endif
       SEAICEuseADI       = .FALSE.
-      SEAICEwindOnCgrid  = .FALSE.
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
       SEAICE_initialHEFF = ONE

@@ -45,7 +45,7 @@ C     i,j,bi,bj - Loop counters
       INTEGER i, j, bi, bj, kii
       _RL DWAT, DAIR, RHOICE, RHOAIR, SINWIN, COSWIN, SINWAT, COSWAT
       _RL GRAV, ECCEN, ECM2, RADIUS, DELT1, DELT2, PSTAR, AAA
-      _RL TEMPVAR
+      _RL TEMPVAR, U1, V1
 
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL PRESS0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
@@ -101,77 +101,38 @@ C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
 
 C--   NOW SET UP FORCING FIELDS
 
-      IF (SEAICEwindOnCgrid) THEN
-C--   Wind stress computed here from wind on South-West C-grid
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           AAA=(HALF*(UWIND(I,J,bi,bj)+UWIND(I,J-1,bi,bj)))**2+
-     &         (HALF*(VWIND(I,J,bi,bj)+VWIND(I-1,J,bi,bj)))**2
-           IF ( AAA .LE. SEAICE_EPS_SQ ) THEN
-              AAA=SEAICE_EPS
-           ELSE
-              AAA=SQRT(AAA)
-           ENDIF
+C--   Wind stress is computed on South-West B-grid U/V
+C     locations from wind on tracer locations
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1,sNy
+         DO i=1,sNx
+          U1=QUART*(UWIND(I-1,J-1,bi,bj)+UWIND(I-1,J,bi,bj)
+     &             +UWIND(I  ,J-1,bi,bj)+UWIND(I  ,J,bi,bj))
+          V1=QUART*(VWIND(I-1,J-1,bi,bj)+VWIND(I-1,J,bi,bj)
+     &             +VWIND(I  ,J-1,bi,bj)+VWIND(I  ,J,bi,bj))
+          AAA=U1**2+V1**2
+          IF ( AAA .LE. SEAICE_EPS_SQ ) THEN
+             AAA=SEAICE_EPS
+          ELSE
+             AAA=SQRT(AAA)
+          ENDIF
 C first ocean surface stress
-           DAIRN(I,J,bi,bj)=RHOAIR*OCEAN_drag
-     &          *(2.70 _d 0+0.142 _d 0*AAA+0.0764 _d 0*AAA*AAA)
-           WINDX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &          (COSWIN*HALF*(UWIND(I,J,bi,bj)+UWIND(I,J-1,bi,bj))
-     &          -SINWIN*HALF*(VWIND(I,J,bi,bj)+VWIND(I-1,J,bi,bj)))
-           WINDY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &          (SINWIN*HALF*(UWIND(I,J,bi,bj)+UWIND(I,J-1,bi,bj))
-     &          +COSWIN*HALF*(VWIND(I,J,bi,bj)+VWIND(I-1,J,bi,bj)))
+          DAIRN(I,J,bi,bj)=RHOAIR*OCEAN_drag
+     &         *(2.70 _d 0+0.142 _d 0*AAA+0.0764 _d 0*AAA*AAA)
+          WINDX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(COSWIN*U1-SINWIN*V1)
+          WINDY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(SINWIN*U1+COSWIN*V1)
 
 C now ice surface stress
-           DAIRN(I,J,bi,bj)=RHOAIR*(SEAICE_drag*AAA*AREA(I,J,1,bi,bj)
-     &          +OCEAN_drag*(2.70 _d 0+0.142 _d 0*AAA
-     &          +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,1,bi,bj)))
-           FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &          (COSWIN*HALF*(UWIND(I,J,bi,bj)+UWIND(I,J-1,bi,bj))
-     &          -SINWIN*HALF*(VWIND(I,J,bi,bj)+VWIND(I-1,J,bi,bj)))
-           FORCEY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &          (SINWIN*HALF*(UWIND(I,J,bi,bj)+UWIND(I,J-1,bi,bj))
-     &          +COSWIN*HALF*(VWIND(I,J,bi,bj)+VWIND(I-1,J,bi,bj)))
-          ENDDO
+          DAIRN(I,J,bi,bj)=RHOAIR*(SEAICE_drag*AAA*AREA(I,J,1,bi,bj)
+     &         +OCEAN_drag*(2.70 _d 0+0.142 _d 0*AAA
+     &         +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,1,bi,bj)))
+          FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(COSWIN*U1-SINWIN*V1)
+          FORCEY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(SINWIN*U1+COSWIN*V1)
          ENDDO
         ENDDO
        ENDDO
-
-      ELSE
-C--   Wind stress computed here from wind on South-West B-grid
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
-           AAA=UWIND(I,J,bi,bj)**2+VWIND(I,J,bi,bj)**2
-           IF ( AAA .LE. SEAICE_EPS_SQ ) THEN
-              AAA=SEAICE_EPS
-           ELSE
-              AAA=SQRT(AAA)
-           ENDIF
-C first ocean surface stress
-           DAIRN(I,J,bi,bj)=RHOAIR*OCEAN_drag
-     &          *(2.70 _d 0+0.142 _d 0*AAA+0.0764 _d 0*AAA*AAA)
-           WINDX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &          (COSWIN*UWIND(I,J,bi,bj)-SINWIN*VWIND(I,J,bi,bj))
-           WINDY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &          (SINWIN*UWIND(I,J,bi,bj)+COSWIN*VWIND(I,J,bi,bj))
-
-C now ice surface stress
-           DAIRN(I,J,bi,bj)=RHOAIR*(SEAICE_drag*AAA*AREA(I,J,1,bi,bj)
-     &          +OCEAN_drag*(2.70 _d 0+0.142 _d 0*AAA
-     &          +0.0764 _d 0*AAA*AAA)*(ONE-AREA(I,J,1,bi,bj)))
-           FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &          (COSWIN*UWIND(I,J,bi,bj)-SINWIN*VWIND(I,J,bi,bj))
-           FORCEY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-     &          (SINWIN*UWIND(I,J,bi,bj)+COSWIN*VWIND(I,J,bi,bj))
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDIF
+      ENDDO
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
