@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.90 2003/06/05 16:03:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.91 2003/06/12 18:08:04 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -587,13 +587,13 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL bottomDragLinear
       _RL bottomDragQuadratic
 
-      COMMON /PARM_A/ HeatCapacity_Cp,recip_Cp,
-     &                Lamba_theta
+C--   COMMON /PARM_A/ Thermodynamics constants ?
+      COMMON /PARM_A/ HeatCapacity_Cp,recip_Cp
       _RL HeatCapacity_Cp
-      _RL Lamba_theta
       _RL recip_Cp
 
-C Atmospheric physical parameters (Ideal Gas EOS, ...)
+C--   COMMON /PARM_ATM/ Atmospheric physical parameters (Ideal Gas EOS, ...)
+C     celsius2K :: convert centigrade (Celsius) degree to Kelvin
 C     atm_Po    :: standard reference pressure
 C     atm_Cp    :: specific heat (Cp) of the (dry) air at constant pressure
 C     atm_Rd    :: gas constant for dry air
@@ -602,8 +602,11 @@ C     integr_GeoPot :: option to select the way we integrate the geopotential
 C                     (still a subject of discussions ...) 
 C     selectFindRoSurf :: select the way surf. ref. pressure (=Ro_surf) is
 C             derived from the orography. Implemented: 0,1 (see INI_P_GROUND)
-      COMMON /PARM_ATM/ atm_Cp, atm_Rd, atm_kappa, atm_Po,
-     &                  integr_GeoPot, selectFindRoSurf
+      COMMON /PARM_ATM/ 
+     &            celsius2K,
+     &            atm_Cp, atm_Rd, atm_kappa, atm_Po,
+     &            integr_GeoPot, selectFindRoSurf
+      _RL celsius2K
       _RL atm_Po, atm_Cp, atm_Rd, atm_kappa 
       INTEGER integr_GeoPot, selectFindRoSurf
 
@@ -612,6 +615,7 @@ C Logical flags for selecting packages
       LOGICAL useGMRedi
       LOGICAL useOBCS
       LOGICAL useAIM
+      LOGICAL useLand
       LOGICAL useGrdchk
       LOGICAL useECCO
       LOGICAL useSHAP_FILT
@@ -625,7 +629,7 @@ cswdblk -- add ---
       LOGICAL useThermSEAICE
 cswdblk --- end add ---
       COMMON /PARM_PACKAGES/
-     &        useKPP, useGMRedi, useOBCS, useAIM, useECCO, 
+     &        useKPP, useGMRedi, useOBCS, useAIM, useLand, useECCO, 
      &        useSHAP_FILT, useZONAL_FILT, useGrdchk, useFLT,
      &        usePTRACERS,  useSBO, useSEAICE, 
 cswdblk -- add ---
