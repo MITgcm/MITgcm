@@ -55,6 +55,7 @@
  pChkptFreq  =31104000., 
  taveFreq    =31104000., 
  dumpFreq    =31104000., 
+ monitorFreq =2592000.,
 #tave_lastIter=0.,
  periodicExternalForcing=.TRUE.,
  externForcingPeriod=2592000.,
