@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_del2uv.F,v 1.4 2004/01/22 17:17:19 afe Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_del2uv.F,v 1.5 2004/02/06 20:52:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -16,8 +16,8 @@ C
 C     == Global variables ==
 #include "SIZE.h"
 #include "GRID.h"
-#ifdef USE_W2
 #include "EEPARAMS.h"
+#ifdef USE_W2
 #include "W2_EXCH2_TOPOLOGY.h"
 #include "W2_EXCH2_PARAMS.h"
 #endif /* USE_W2 */
@@ -33,16 +33,16 @@ C     == Routine arguments ==
 
 C     == Local variables ==
       INTEGER I,J
-#ifndef USE_W2
-      _RL Zip,Zij,Zpj,Dim,Dij,Dmj
-#else /* USE_W2 */
       _RL Zip,Zij,Zpj,Dim,Dij,Dmj,uDij
       LOGICAL northWestCorner, northEastCorner,
      &        southWestCorner, southEastCorner
+#ifdef USE_W2
       INTEGER myTile
+#endif /* USE_W2 */
 
 C     Special stuff for Cubed Sphere
       IF (useCubedSphereExchange) THEN
+#ifdef USE_W2
          southWestCorner = .FALSE.
          southEastCorner = .FALSE.
          northWestCorner = .FALSE.
@@ -64,8 +64,13 @@ C     Special stuff for Cubed Sphere
      &        exch2_isNedge(myTile) .EQ. 1 ) THEN
             northWestCorner = .TRUE.
          ENDIF
-      ENDIF
+#else
+         southWestCorner = .TRUE.
+         southEastCorner = .TRUE.
+         northWestCorner = .TRUE.
+         northEastCorner = .TRUE.
 #endif /* USE_W2 */
+      ENDIF
 
 C     - Laplacian  and bi-harmonic terms
       DO j=2-Oly,sNy+Oly-1
@@ -88,7 +93,6 @@ c       Zpj=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*vort3(i+1, j )
         Zij=                   hFacZ( i , j )*vort3( i , j )
         Zpj=                   hFacZ(i+1, j )*vort3(i+1, j )
 
-#ifdef USE_W2
 C     Special stuff for Cubed Sphere
         uDij=Dij
         IF (useCubedSphereExchange) THEN
@@ -140,7 +144,6 @@ C   TILE         U(N+1,N)       D(N+1,N)        U(N+2,N)
          endif
         ENDIF
 
-#endif /* USE_W2 */
 c       del2u(i,j) = recip_rAw(i,j,bi,bj)*(
 c    &   +recip_hFacW(i,j,k,bi,bj)*( Dij-Dmj )
 c    &   -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij ) )
@@ -148,11 +151,7 @@ c       del2u(i,j) = recip_rAw(i,j,bi,bj)*(
 c    &   +                         ( Dij-Dmj )
 c    &   -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij ) )
         del2u(i,j) =
-#ifndef USE_W2
-     &   +                         ( Dij-Dmj )*recip_DXC(i,j,bi,bj)
-#else /* USE_W2 */
      &   +                         ( uDij-Dmj )*recip_DXC(i,j,bi,bj)
-#endif /* USE_W2 */
      &   -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj)
 
 c       del2v(i,j) = recip_rAs(i,j,bi,bj)*(

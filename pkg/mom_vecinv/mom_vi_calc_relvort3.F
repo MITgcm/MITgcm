@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_calc_relvort3.F,v 1.6 2004/02/06 19:23:28 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_calc_relvort3.F,v 1.7 2004/02/06 20:52:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -34,9 +34,9 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
 
 C     == Local variables ==
       INTEGER i,j
-#ifdef USE_W2
       LOGICAL northWestCorner, northEastCorner,
      &        southWestCorner, southEastCorner
+#ifdef USE_W2
       INTEGER myTile
 #endif /* USE_W2 */
 
@@ -79,11 +79,11 @@ c    &                            /hFacZ(i,j)
 
 C     Special stuff for Cubed Sphere
       IF (useCubedSphereExchange) THEN
-#ifdef USE_W2
        southWestCorner = .FALSE.
        southEastCorner = .FALSE.
        northWestCorner = .FALSE.
        northEastCorner = .FALSE.
+#ifdef USE_W2
        myTile = W2_myTileList(bi)
        IF ( exch2_isWedge(myTile) .EQ. 1 .AND.
      &      exch2_isSedge(myTile) .EQ. 1 ) THEN
@@ -101,6 +101,12 @@ C     Special stuff for Cubed Sphere
      &      exch2_isNedge(myTile) .EQ. 1 ) THEN
         northWestCorner = .TRUE.
        ENDIF
+#else
+       southWestCorner = .TRUE.
+       southEastCorner = .TRUE.
+       northWestCorner = .TRUE.
+       northEastCorner = .TRUE.
+#endif /* USE_W2 */
 C
        IF ( southWestCorner ) THEN
 C               U(0,1)     D(0,1)      U(1,1)     TILE
@@ -112,7 +118,6 @@ C                |                      |
 C                      --- V(0,0) ---  Z(1,0) --- V(1,0) ---
 C                                       |
 C                                      U(1,-1)
-#endif /* USE_W2 */
          I=1
          J=1
          vort3(I,J)=
@@ -122,7 +127,6 @@ C                                      U(1,-1)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
 cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
-#ifdef USE_W2
         vort3(I-1,J)=
      &      recip_rAz(I-1,J,bi,bj)*(
      &      vFld(I-1,J)*dyc(I-1,J,bi,bj)
@@ -144,7 +148,6 @@ C               |                          |
 C   V(N,0) --- Z(N+1,0) --- V(N+1,0) ---
 C               |                          |
 C              U(N+1,-1)
-#endif /* USE_W2 */
          I=sNx+1
          J=1
          vort3(I,J)=
@@ -154,7 +157,6 @@ C              U(N+1,-1)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
 cph    &      vFld(I,J)*dyc(I,J,bi,bj)
-#ifdef USE_W2
         vort3(I+1,J)=
      &      recip_rAz(I+1,J,bi,bj)*(
      &      vFld(I+1,J)*dyc(I+1,J,bi,bj)
@@ -176,7 +178,6 @@ C                  |                          |
 C   V(-1,N+1) --- Z(0,N+1) --- V(0,N+1) ---  Z(1,N+1) --- V(1,N+1) ---
 C                  |                          |
 C                 U(0,N)       D(0,N)        U(1,N)       TILE
-#endif /* USE_W2 */
          I=1
          J=sNy+1
          vort3(I,J)=
@@ -186,7 +187,6 @@ C                 U(0,N)       D(0,N)        U(1,N)       TILE
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
 cph    &     -vFld(I-1,J)*dyc(I-1,J,bi,bj)
-#ifdef USE_W2
         vort3(I-1,J)=
      &      recip_rAz(I-1,J,bi,bj)*(
      &      vFld(I-1,J)*dyc(I-1,J,bi,bj)
@@ -208,7 +208,6 @@ C                 |                              |
 C   V(N,N+1) --- Z(N+1,N+1) --- V(N+1,N+1) ---  Z(N+2,N+1) --- V(N+3,N+1) ---
 C                 |                              |
 C   TILE         U(N+1,N)       D(N+1,N)        U(N+2,N)
-#endif /* USE_W2 */
          I=sNx+1
          J=sNy+1
          vort3(I,J)=
@@ -218,7 +217,6 @@ C   TILE         U(N+1,N)       D(N+1,N)        U(N+2,N)
      &     +uFld(I,J-1)*dxc(I,J-1,bi,bj)
      &     )
 cph    &      vFld(I,J)*dyc(I,J,bi,bj)
-#ifdef USE_W2
         vort3(I+1,J)=
      &      recip_rAz(I+1,J,bi,bj)*(
      &      vFld(I+1,J)*dyc(I+1,J,bi,bj)
@@ -229,7 +227,6 @@ c    &     -uFld(I+1,J)*dxc(I+1,J,bi,bj)
      &                           )
         vort3(I,J+1)=vort3(I+1,J)
         ENDIF
-#endif /* USE_W2 */
        ENDIF
 
       RETURN
