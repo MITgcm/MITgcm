@@ -1,55 +1,8 @@
-      SUBROUTINE AVGGRD(IGRD,CHFR,B,MXCHPS,NCHP,FRACG,A,IM,JM)
-
-      implicit none
-      real zero
-      parameter (zero = 0.)
-      integer i,im,jm,mxchps,nchp
-      integer igrd(mxchps)
-      real A(IM,JM), B(MXCHPS), CHFR(MXCHPS), FRACG(IM,JM)
-
-      IF(NCHP.GT.0) THEN
-        DO I=1,IM*JM
-         A(I,1) = ZERO
-        ENDDO
-
-        DO I=1,NCHP
-         A(IGRD(I),1) = A(IGRD(I),1) + B(I)*CHFR(I)
-        ENDDO
-
-        DO I=1,IM*JM
-         IF(FRACG(I,1).GT.ZERO) THEN
-           A(I,1) = A(I,1)/FRACG(I,1)
-         ENDIF
-        ENDDO
-      ELSE
-        PRINT *, 'ERROR IN AVGGRD'
-        CALL my_EXIT(1)
-      ENDIF
-
-      RETURN
-      END
-      SUBROUTINE BMPGRD(IGRD,CHFR,B,MXCHPS,NCHP,A,IM,JM)
-
-      implicit none
-      integer i,im,jm,mxchps,nchp
-      integer igrd(mxchps)
-      real A(IM,JM), B(MXCHPS), CHFR(MXCHPS)
-
-      IF(NCHP.GT.0) THEN
-        DO I=1,NCHP
-         A(IGRD(I),1) = A(IGRD(I),1) + B(I)*CHFR(I)
-        ENDDO
-      ELSE
-        PRINT *, 'ERROR IN BMPGRD'
-        CALL my_EXIT(1)
-      ENDIF
-
-      RETURN
-      END
       function minval (q,im)
       implicit none
+#include "CPP_OPTIONS.h"
       integer  im, i
-      real   q(im), minval
+      _RL   q(im), minval
       minval = 1.e15
       do i=1,im
       if( q(i).lt.minval ) minval = q(i)
@@ -96,46 +49,9 @@ C **********************************************************************
       RETURN
       END
 
-      SUBROUTINE P2KAP ( PKE,PE,IRN,LM,PK,T1 )                                  
-C***********************************************************************        
-C  PURPOSE                                                                      
-C     CALCULATE PHILLIPS P**KAPPA                                               
-C  ARGUEMENTS                                                                   
-C     PKE .... SIGMA EDGE-LEVEL PRESSURE**KAPPA                                 
-C     PE ..... SIGMA EDGE-LEVEL PRESSURE                                        
-C     IRN .... HORIZONTAL DIMENSION                                             
-C     LM ..... VERTICAL   DIMENSION                                             
-C     PK ..... SIGMA      LEVEL PRESSURE**KAPPA                                 
-C     T1 ..... TEMPORARY  WORK ARRAY                                            
-C                                                                               
-C***********************************************************************        
-C*                GODDARD LABORATORY FOR ATMOSPHERES                            
-C***********************************************************************        
-C                                                                               
-      PARAMETER ( ONE = 1.0 )                                                   
-                                                                                
-      real PKE(IRN,LM+1)                                                   
-      real  PE(IRN,LM+1)                                                   
-      real  PK(IRN,LM)                                                     
-      real  T1(IRN,LM+1)                                                   
-                                                                                
-      AKAP  = GETCON('KAPPA')                                                   
-                                                                                
-      IRNLM   = IRN*LM                                                          
-      IRNLMP1 = IRN*(LM+1)                                                      
-                                                                                
-      DO I=1,IRNLMP1                                                         
-      T1(I,1) = PE(I,1)*PKE(I,1)                                                
-      ENDDO
-
-      DO I=1,IRNLM                                                           
-      PK(I,1) = ( T1(I,2)-T1(I,1) ) / ((ONE+AKAP)*( PE(I,2)-PE(I,1) ))          
-      ENDDO
-                                                                                
-      RETURN                                                                    
-      END                                                                       
       SUBROUTINE STRIP(A,B,IA,IB,L,K)                                           
-      real A(IA,L), B(IB,L)                                                
+#include "CPP_OPTIONS.h"
+      _RL A(IA,L), B(IB,L)                                                
       INTEGER   OFFSET                                                          
                                                                                 
       OFFSET = IB*(K-1)                                                         
@@ -161,7 +77,8 @@ C
       RETURN                                                                    
       END                                                                       
       SUBROUTINE PASTE(B,A,IB,IA,L,K)                                           
-      real A(IA,L), B(IB,L)                                                
+#include "CPP_OPTIONS.h"
+      _RL A(IA,L), B(IB,L)                                                
       INTEGER   OFFSET                                                          
                                                                                 
       OFFSET = IB*(K-1)                                                         
@@ -176,7 +93,8 @@ C
       RETURN                                                                    
       END                                                                       
       SUBROUTINE PSTBMP(B,A,IB,IA,L,K)                                          
-      real A(IA,L), B(IB,L)                                                
+#include "CPP_OPTIONS.h"
+      _RL A(IA,L), B(IB,L)                                                
       INTEGER   OFFSET                                                          
                                                                                 
       OFFSET = IB*(K-1)                                                         
@@ -240,26 +158,27 @@ C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
 C***********************************************************************
 
       IMPLICIT NONE
-      REAL TT, P, Q, DQDT
+#include "CPP_OPTIONS.h"
+      _RL TT, P, Q, DQDT
       LOGICAL LDQDT
-      REAL AIRMW, H2OMW
+      _RL AIRMW, H2OMW
       
       PARAMETER ( AIRMW  = 28.97      )                                         
       PARAMETER ( H2OMW  = 18.01      )                                         
 
-      REAL ESFAC, ERFAC
+      _RL ESFAC, ERFAC
       PARAMETER ( ESFAC = H2OMW/AIRMW       )
       PARAMETER ( ERFAC = (1.0-ESFAC)/ESFAC )
 
-      real aw0, aw1, aw2, aw3, aw4, aw5, aw6
-      real bw0, bw1, bw2, bw3, bw4, bw5, bw6
-      real ai0, ai1, ai2, ai3, ai4, ai5, ai6
-      real bi0, bi1, bi2, bi3, bi4, bi5, bi6
+      _RL aw0, aw1, aw2, aw3, aw4, aw5, aw6
+      _RL bw0, bw1, bw2, bw3, bw4, bw5, bw6
+      _RL ai0, ai1, ai2, ai3, ai4, ai5, ai6
+      _RL bi0, bi1, bi2, bi3, bi4, bi5, bi6
 
-      real d0, d1, d2, d3, d4, d5, d6
-      real e0, e1, e2, e3, e4, e5, e6
-      real f0, f1, f2, f3, f4, f5, f6
-      real g0, g1, g2, g3, g4, g5, g6
+      _RL d0, d1, d2, d3, d4, d5, d6
+      _RL e0, e1, e2, e3, e4, e5, e6
+      _RL f0, f1, f2, f3, f4, f5, f6
+      _RL g0, g1, g2, g3, g4, g5, g6
 
 c ********************************************************
 c ***  Polynomial Coefficients WRT Water (Lowe, 1977) ****
@@ -349,10 +268,10 @@ c ********************************************************
       parameter ( g5 = 0.262430726e-09 * esfac )
       parameter ( g6 = 0.481960676e-12 * esfac )
 
-      REAL        TMAX, TICE
+      _RL        TMAX, TICE
       PARAMETER ( TMAX=323.15, TICE=273.16)
       
-      REAL T, D, W, QX, DQX
+      _RL T, D, W, QX, DQX
       T = MIN(TT,TMAX) - TICE
       DQX = 0.
       QX  = 0.
@@ -411,15 +330,13 @@ c ------------------------------------
       END
       subroutine vqsat (tt,p,q,dqdt,ldqdt,n)
       implicit none
+#include "CPP_OPTIONS.h"
       integer  i,n
       logical  ldqdt
-      real     tt(n), p(n), q(n), dqdt(n)
+      _RL     tt(n), p(n), q(n), dqdt(n)
 #if CRAY
 #if f77
 cfpp$ expand (qsat)
-#endif
-#if f90
-!DIR$ inline always qsat
 #endif
 #endif
       do i=1,n
@@ -430,8 +347,9 @@ cfpp$ expand (qsat)
 
       subroutine stripit(a,b,irun,ia,ib,l,k)
       implicit none
+#include "CPP_OPTIONS.h"
       integer ia,ib,irun,l,k
-      real a(ia,l), b(ib,l)
+      _RL a(ia,l), b(ib,l)
       integer   i,j,len,offset
 
       offset = ib*(k-1)
@@ -458,6 +376,7 @@ cfpp$ expand (qsat)
 
       subroutine stripitint(a,b,irun,ia,ib,l,k)
       implicit none
+#include "CPP_OPTIONS.h"
       integer ia,ib,irun,l,k,a(ia,l),b(ib,l)
       integer i,j,len,offset
 
@@ -485,7 +404,8 @@ cfpp$ expand (qsat)
 
       subroutine pastit(b,a,ib,ia,irun,L,k)
       implicit none
-      real a(ia,l), b(ib,l)
+#include "CPP_OPTIONS.h"
+      _RL a(ia,l), b(ib,l)
       integer ib,ia,L,k,irun,len,offset
       integer i,j
 
@@ -502,7 +422,8 @@ cfpp$ expand (qsat)
 
       subroutine pstbitint(b,a,ib,ia,irun,l,k)
       implicit none
-      real a(ia,l)
+#include "CPP_OPTIONS.h"
+      _RL a(ia,l)
       integer b(ib,l)
       integer ib,ia,L,k,irun,len,offset
       integer i,j
@@ -521,7 +442,8 @@ cfpp$ expand (qsat)
 
       subroutine pstbmpit(b,a,ib,ia,irun,l,k)
       implicit none
-      real a(ia,l), b(ib,l)
+#include "CPP_OPTIONS.h"
+      _RL a(ia,l), b(ib,l)
       integer ib,ia,L,k,irun,len,offset
       integer i,j
 
@@ -556,8 +478,9 @@ c output:
 c      b      - array to be filled, ie, one processors field [ib,levs]
 c-----------------------------------------------------------------------
       implicit none
+#include "CPP_OPTIONS.h"
       integer ia,ib,irun,levs,npeice
-      real a(ia,levs), b(ib,levs)
+      _RL a(ia,levs), b(ib,levs)
       integer index(irun)
       integer i,k,len,offset
 
@@ -610,9 +533,10 @@ c within a parallel region.
 c-----------------------------------------------------------------------
 
       implicit none
+#include "CPP_OPTIONS.h"
       integer ia,ib,levs,numpts,npeice
       integer index(numpts)
-      real a(ia,levs), b(ib,levs), chfr(ib)
+      _RL a(ia,levs), b(ib,levs), chfr(ib)
 
       integer i,L,offset,len
 
@@ -655,13 +579,14 @@ c within a parallel region.
 c-----------------------------------------------------------------------
 
       implicit none
+#include "CPP_OPTIONS.h"
       integer ia,ib,levs,numpts,npeice
       integer index(numpts)
-      real a(ia,levs), b(ib,levs), chfr(ib)
+      _RL a(ia,levs), b(ib,levs), chfr(ib)
       logical check
 
       integer i,L,offset,len
-      real    undef,getcon
+      _RL    undef,getcon
 
       offset = ib*(npeice-1)
       len    = min(ib,numpts-offset)
@@ -691,9 +616,10 @@ c-----------------------------------------------------------------------
       SUBROUTINE GRD2MSC(A,IM,JM,IGRD,B,MXCHPS,NCHP)
 
       implicit none
+#include "CPP_OPTIONS.h"
       integer im,jm,mxchps,nchp
       integer igrd(mxchps)
-      real A(IM,JM), B(MXCHPS)
+      _RL A(IM,JM), B(MXCHPS)
 
       integer i
 
@@ -711,14 +637,15 @@ c-----------------------------------------------------------------------
       SUBROUTINE MSC2GRD(IGRD,CHFR,B,MXCHPS,NCHP,FRACG,A,IM,JM)
 
       implicit none
-      real zero,one
+#include "CPP_OPTIONS.h"
+      _RL zero,one
       parameter ( one = 1.)
       parameter (zero = 0.)
       integer im,jm,mxchps,nchp
       integer igrd(mxchps)
-      real A(IM,JM), B(MXCHPS), CHFR(MXCHPS), FRACG(IM,JM)
+      _RL A(IM,JM), B(MXCHPS), CHFR(MXCHPS), FRACG(IM,JM)
 
-      real VT1(IM,JM)
+      _RL VT1(IM,JM)
       integer i
 
       IF(NCHP.GE.0) THEN
@@ -744,13 +671,14 @@ c-----------------------------------------------------------------------
      1       agrn,zoch,z2ch,cdrc,cdsc,sqsc,ufac,rsl1,rsl2,rdcs)
 
        implicit none
+#include "CPP_OPTIONS.h"
 
        integer nymd,nhms,nchp,mxchps,ityp(mxchps)
-       real chlt(mxchps)
-       real alai(mxchps),agrn(mxchps)
-       real zoch(mxchps), z2ch(mxchps), cdrc(mxchps), cdsc(mxchps)
-       real sqsc(mxchps), ufac(mxchps), rsl1(mxchps), rsl2(mxchps)
-       real rdcs(mxchps)
+       _RL chlt(mxchps)
+       _RL alai(mxchps),agrn(mxchps)
+       _RL zoch(mxchps), z2ch(mxchps), cdrc(mxchps), cdsc(mxchps)
+       _RL sqsc(mxchps), ufac(mxchps), rsl1(mxchps), rsl2(mxchps)
+       _RL rdcs(mxchps)
 
 C*********************************************************************
 C********************* SUBROUTINE CHPPRM  ****************************
@@ -760,14 +688,14 @@ C*********************************************************************
       integer ntyps
       parameter (ntyps=10)
 
-      real pblzet
+      _RL pblzet
       parameter (pblzet = 50.)
       integer k1,k2,nymd1,nhms1,nymd2,nhms2,i
-      real getcon,vkrm,rootl,vroot,dum1,dum2,alphaf
-      real facm,facp
-      real scat,d
+      _RL getcon,vkrm,rootl,vroot,dum1,dum2,alphaf
+      _RL facm,facp
+      _RL scat,d
 
-      real
+      _RL
      &     vgdd(12, ntyps),    vgz0(12, ntyps),
      &     vgrd(12, ntyps),    vgrt(12, ntyps),
 

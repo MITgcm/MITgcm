@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.9 2004/06/09 20:33:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.10 2004/06/10 20:17:17 molod Exp $
 C $Name:  $
 
       subroutine fizhi_init_veg(mythid,vegdata,im,jm,Nsx,Nsy,Nxg,Nyg,
@@ -49,14 +49,15 @@ C                 10:  DARK DESERT
 C                100:  OCEAN
 C***********************************************************************
       implicit none
+#include "CPP_OPTIONS.h"
 #include "EEPARAMS.h"
 
       integer mythid,im,jm,maxtyp,nchp,Nsx,Nsy,Nxg,Nyg
       integer surftype(im,jm,maxtyp,Nsx,Nsy)
       integer igrd(nchp,Nsx,Nsy),ityp(nchp,Nsx,Nsy)
-      real tilefrac(im,jm,maxtyp,Nsx,Nsy)
-      real lats(im,jm,nSx,nSy), lons(im,jm,nSx,nSy)
-      real chfr(nchp,Nsx,Nsy),chlt(nchp,Nsx,Nsy),chlon(nchp,Nsx,Nsy)
+      _RL tilefrac(im,jm,maxtyp,Nsx,Nsy)
+      _RL lats(im,jm,nSx,nSy), lons(im,jm,nSx,nSy)
+      _RL chfr(nchp,Nsx,Nsy),chlt(nchp,Nsx,Nsy),chlon(nchp,Nsx,Nsy)
       character*40 vegdata
       integer imdata,jmdata,Nxgdata,Nygdata
       integer nchplocal,nchpland,biglobal,bjglobal

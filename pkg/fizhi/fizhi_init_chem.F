@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.2 2004/06/08 15:09:01 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.3 2004/06/10 20:17:17 molod Exp $
 C $Name:  $
 
       subroutine fizhi_init_chem(mythid,nozlats,nozlevs,ozlats,ozlevs,
@@ -19,6 +19,7 @@ C            each tile [nchp,Nsx,Nsy]
 C
 C***********************************************************************
       implicit none
+#include "CPP_OPTIONS.h"
       integer mythid,nozlevs,nozlats,nwatlevs,nwatlats,Nrphys
       _RL oz(nozlats,nozlevs), water(nwatlats,nwatlevs)
       _RL ozlats(nozlats), ozlevs(nozlevs)
@@ -26,7 +27,7 @@ C***********************************************************************
       _RL pressure(Nrphys),methane(Nrphys),n2o(Nrphys)
       _RL co2,cfc11,cfc12,cfc22
 
-      real getcon
+      _RL getcon
 
       call read_qz (kqz,water,watlats,watlevs,nwatlats,nwatlevs,12)
       call read_oz (koz,o3,ozlats,ozlevs,nozlats,nozlevs,12)
@@ -58,17 +59,18 @@ C
 C***********************************************************************
 
       implicit none
+#include "CPP_OPTIONS.h"
       integer  ku,nlat,nlev,ntime
 
       _RL   qz(nlat,nlev,ntime)
-      real lats(nlat)
-      real levs(nlev)
+      _RL lats(nlat)
+      _RL levs(nlev)
 
       integer time
       integer lat
       integer lev
 
-      real voltomas
+      _RL voltomas
       parameter ( voltomas = 0.622e-6 )
 
       rewind ku
@@ -126,19 +128,20 @@ C
 C***********************************************************************
 
       implicit none
+#include "CPP_OPTIONS.h"
       integer  ku,nlat,nlev,ntime
 
       _RL   oz(nlat,nlev,ntime)
-      real*4 o3(nlat)
-      real lats(nlat)
-      real levs(nlev)
+      _RL*4 o3(nlat)
+      _RL lats(nlat)
+      _RL levs(nlev)
 
       integer time
       integer lat
       integer lev
       integer nrec
 
-      real plevs(34)
+      _RL plevs(34)
       data plevs/ 0.003, 0.005, 0.007, 0.01, 0.015, 0.02, 0.03, 0.05,
      .            0.07, 0.1, 0.15, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 2.0,
      .            3.0, 5.0, 7.0, 10.0, 15.0, 20.0, 30.0, 50.0, 70.0,
@@ -190,15 +193,16 @@ C*         Climatological Annual and Global Mean Height Data           *
 C***********************************************************************
 
       implicit none
+#include "CPP_OPTIONS.h"
 
       _RL n2o(Nrphys),methane(Nrphys)
       integer Nrphys
       _RL pres(Nrphys)
-      real hght(Nrphys), slope,pr1,pr2,hpr1,hpr2
+      _RL hght(Nrphys), slope,pr1,pr2,hpr1,hpr2
       integer L,L1,L2,lup,ldn
 
-      real plevc (46), plevz(46)
-      real hghtc (46), hghtz(46)
+      _RL plevc (46), plevz(46)
+      _RL hghtc (46), hghtz(46)
 
       data plevc /1000.00, 975.00, 950.00, 925.00, 900.00,
      .             875.00, 850.00, 825.00, 800.00, 750.00,

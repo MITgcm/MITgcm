@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.4 2004/06/09 20:33:36 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.5 2004/06/10 20:17:17 molod Exp $
 C $Name:  $
 
       subroutine set_alarm (tag,date,time,freq)
@@ -383,18 +383,19 @@ C    fac2     : Interpolation factor for Boundary Data 2
 C                                                                               
 C                                                                               
 C***********************************************************************        
+#include "CPP_OPTIONS.h"
                                                                                 
       INTEGER  YEAR , MONTH , DAY , SEC                                                    
       INTEGER  YEAR1, MONTH1, DAY1, SEC1
       INTEGER  YEAR2, MONTH2, DAY2, SEC2
 
-      real     fac1, fac2
-      real     time, time1, time2
+      _RL     fac1, fac2
+      _RL     time, time1, time2
                                                                                 
       INTEGER    DAYSCY                                                         
       PARAMETER (DAYSCY = 365*4+1)                                   
 
-      REAL       MNDY(12,4)              
+      _RL       MNDY(12,4)              
                                                                                 
       LOGICAL FIRST                                                             
       DATA    FIRST/.TRUE./                                                     
@@ -692,11 +693,12 @@ C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
 C***********************************************************************
 
       implicit none
+#include "CPP_OPTIONS.h"
 
 c Input Variables
 c ---------------
       integer nymd, nhms, irun
-      real    cosz(irun), alat(irun), alon(irun), ra
+      _RL    cosz(irun), alat(irun), alon(irun), ra
 
 c Local Variables
 c ---------------
@@ -704,9 +706,9 @@ c ---------------
       integer dayscy
       integer i,n,nsecf,k,km,kp
 
-      real hc
-      real pi, zero, one, two, six, dg2rd, yrlen, eqnx, ob, ecc, per
-      real daylen, fac, thm, thp, thnow, zs, zc, sj, cj
+      _RL hc
+      _RL pi, zero, one, two, six, dg2rd, yrlen, eqnx, ob, ecc, per
+      _RL daylen, fac, thm, thp, thnow, zs, zc, sj, cj
 
       parameter ( pi    = 3.1415926535898)
       parameter ( zero  = 0.0 )
@@ -723,7 +725,7 @@ c ---------------
       parameter ( per    = 102.0*dg2rd)
       parameter ( daylen = 86400.)
 
-      REAL      TH(DAYSCY),T0,T1,T2,T3,T4,FUN,Y,MNDY(12,4)
+      _RL      TH(DAYSCY),T0,T1,T2,T3,T4,FUN,Y,MNDY(12,4)
 
       LOGICAL FIRST
       DATA    FIRST/.TRUE./

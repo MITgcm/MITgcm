@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.6 2004/06/09 20:33:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.7 2004/06/10 20:17:17 molod Exp $
 C $Name:  $
 
        subroutine update_earth_exports (myTime, myIter, myThid)
@@ -27,10 +27,10 @@ c-----------------------------------------------------------------------
 
       integer myTime, myIter, myThid
 
-      real lats(sNx,sNy), lons(sNx,sNy), cosz(sNx,sNy)
-      real fraci(sNx,sNy), fracl(sNx,sNy)
-      real ficetile(nchp)
-      real ra
+      _RL lats(sNx,sNy), lons(sNx,sNy), cosz(sNx,sNy)
+      _RL fraci(sNx,sNy), fracl(sNx,sNy)
+      _RL ficetile(nchp)
+      _RL ra
       integer i, j, L, bi, bj
       integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
       integer sec, day, month
@@ -76,7 +76,8 @@ C*              Get Leaf-Area-Index and Greenness Index                *
 C***********************************************************************
 
       if( alarm('turb') .or. alarm('radsw') ) then
-      call getlgr (sec,month,day,chlt,ityp,nchpland,bi,bj,alai,agrn )
+      call getlgr (sec,month,day,chlt,ityp,nchpland,nSx,nSy,bi,bj,
+     .                                                       alai,agrn )
       endif
 
 C **********************************************************************
@@ -140,17 +141,18 @@ C     ANIRDF:   near infra-red, diffuse albedo.
 C*******************************************************************
 
       IMPLICIT NONE
+#include "CPP_OPTIONS.h"
 
       INTEGER IRUN
-      REAL AVISDR  (IRUN), ANIRDR (IRUN), AVISDF (IRUN), ANIRDF (IRUN),
+      _RL AVISDR  (IRUN), ANIRDR (IRUN), AVISDF (IRUN), ANIRDF (IRUN),
      `	     VLAI   (IRUN),   VGRN (IRUN),   ZTH  (IRUN),    SNW (IRUN)
       INTEGER ITYP (IRUN)
 
-      REAL ALVDRS,  ALIDRS
-      REAL ALVDRDL, ALIDRDL
-      REAL ALVDRDD, ALIDRDD
-      REAL ALVDRI,  ALIDRI
-      REAL minval
+      _RL ALVDRS,  ALIDRS
+      _RL ALVDRDL, ALIDRDL
+      _RL ALVDRDD, ALIDRDD
+      _RL ALVDRI,  ALIDRI
+      _RL minval
       external     minval
 
       PARAMETER (  ALVDRS  = 0.100 )  ! Albedo of soil         for visible   direct solar radiation.
@@ -166,9 +168,9 @@ C*******************************************************************
 
       INTEGER NTYPS
       INTEGER NLAI
-      REAL ZERO, ONE
-      REAL EPSLN, BLAI, DLAI
-      REAL ALATRM
+      _RL ZERO, ONE
+      _RL EPSLN, BLAI, DLAI
+      _RL ALATRM
       PARAMETER (NLAI = 14 )
       PARAMETER (EPSLN = 1.E-6)
       PARAMETER (BLAI = 0.5)
@@ -196,22 +198,22 @@ C
 *
 	INTEGER I, LAI
 
-	REAL FAC,               GAMMA,          BETA,          ALPHA,
+	_RL FAC,               GAMMA,          BETA,          ALPHA,
      `	     DX,                DY,             ALA,           GRN (2),
      `	     SNWALB (4, NTYPS), SNWMID (NTYPS)
 
 * [ Definition of Functions: ]
 *
-	REAL COEFF
+	_RL COEFF
 
 C   Constants used in albedo calculations:
 
-      REAL ALVDR (NLAI, 2, NTYPS)
-      REAL BTVDR (NLAI, 2, NTYPS)
-      REAL GMVDR (NLAI, 2, NTYPS)
-      REAL ALIDR (NLAI, 2, NTYPS)
-      REAL BTIDR (NLAI, 2, NTYPS)
-      REAL GMIDR (NLAI, 2, NTYPS)
+      _RL ALVDR (NLAI, 2, NTYPS)
+      _RL BTVDR (NLAI, 2, NTYPS)
+      _RL GMVDR (NLAI, 2, NTYPS)
+      _RL ALIDR (NLAI, 2, NTYPS)
+      _RL BTIDR (NLAI, 2, NTYPS)
+      _RL GMIDR (NLAI, 2, NTYPS)
 
 C  (Data statements for ALVDR described in full; data statements for
 C   other constants follow same framework.)
@@ -660,10 +662,11 @@ cfpp$ expand (coeff)
       RETURN
       END
       FUNCTION COEFF(TABLE, NTABL, LAI ,DX, DY)
+#include "CPP_OPTIONS.h"
          
       INTEGER NTABL, LAI
  
-      REAL TABLE (NTABL, 2), DX, DY
+      _RL TABLE (NTABL, 2), DX, DY
  
       COEFF = (TABLE(LAI,  1)
      *      + (TABLE(LAI  ,2) - TABLE(LAI  ,1)) * DY ) * (1.0-DX)
@@ -672,33 +675,31 @@ cfpp$ expand (coeff)
  
       RETURN
       END
-      SUBROUTINE GETLGR(sec,IMON,IDAY,ALAT,ITYP,NCHPS,ALAI,AGRN)
 
-C*********************************************************************
-C*********************** ARIES   MODEL *******************************
-C********************* SUBROUTINE GETLGR  ****************************
-C**********************  14 JUNE 1991   ******************************
+      SUBROUTINE GETLGR(sec,IMON,IDAY,ALAT,ITYP,NCHPS,nSx,nSy,bi,bj,
+     .                                                      ALAI,AGRN)
 C*********************************************************************
       implicit none
+#include "CPP_OPTIONS"
 
       integer ntyps
-      real one,daylen
+      _RL one,daylen
       PARAMETER (NTYPS=10)
       parameter (one = 1.)
       parameter (daylen = 86400.)
 
-      integer sec, imon, iday, nchps
-      real ALAI(NCHPS), AGRN(NCHPS), ALAT(NCHPS)
-      integer ITYP(NCHPS)
+      integer sec, imon, iday, nchps, nSx, nSy, bi, bj
+      _RL ALAI(NCHPS,nSx,nSy), AGRN(NCHPS,nSx,nSy) 
+      _RL ALAT(NCHPS)
+      integer ITYP(NCHPS,nSx,nSy)
 
       integer i,midmon,midm,midp,id,k1,k2,kk1,kk2
-      real fac
+      _RL fac
 
       INTEGER     DAYS(12)
       DATA        DAYS/31,28,31,30,31,30,31,31,30,31,30,31/
 
-
-      REAL VGLA(12,NTYPS), VGGR(12,NTYPS)
+      _RL VGLA(12,NTYPS), VGGR(12,NTYPS)
 
       DATA VGLA  /
      1    5.117, 5.117, 5.117, 5.117, 5.117, 5.117, 5.117, 5.117,
@@ -782,17 +783,19 @@ C*********************************************************************
        KK2 = MOD(K2+5,12) + 1
       ENDIF
 
-      ALAI(I) = VGLA(KK2,ITYP(I))*FAC + VGLA(KK1,ITYP(I))*(ONE-FAC)
-      AGRN(I) = VGGR(KK2,ITYP(I))*FAC + VGGR(KK1,ITYP(I))*(ONE-FAC)
+      ALAI(I,bi,bj) = VGLA(KK2,ITYP(I,bi,bj))*FAC+
+     .                                 VGLA(KK1,ITYP(I,bi,bj))*(ONE-FAC)
+      AGRN(I,bi,bj) = VGGR(KK2,ITYP(I,bi,bj))*FAC+
+     .                                 VGGR(KK1,ITYP(I,bi,bj))*(ONE-FAC)
 
   220 CONTINUE
 
       RETURN
       END
 
-      subroutine getalb(sec,month,day,cosz,snodep,fraci,fracg,
-     1              im,jm,nchp,nchpland,igrd,ityp,chfr,chlt,
-     2              alai,agrn,albvr,albvf,albnr,albnf)
+      subroutine getalb(sec,month,day,cosz,snodep,fraci,fracg,im,jm,
+     .                  nchp,nchpland,nSx,nSy,bi,bj,igrd,ityp,chfr,chlt,
+     .                  alai,agrn,albvr,albvf,albnr,albnf)
 C***********************************************************************
 C  PURPOSE
 C     To act as an interface to routine sibalb, which calculates
@@ -803,21 +806,25 @@ C sec      - number of seconds into the day of current time
 C month    - month of the year of current time
 C day      - day of the month of current time
 C cosz     - local cosine of the zenith angle [im,jm]
-C snodep   - snow cover in meters [nchp]
+C snodep   - snow cover in meters [nchp,nSx,nSy]
 C fraci    - real array in grid space of total sea ice fraction [im,jm]
 C fracg    - real array in grid space of total land fraction [im,jm]
 C im       - model grid longitude dimension
 C jm       - model grid latitude dimension (number of lat. points)
 C nchp     - integer actual number of tiles in tile space
 C nchpland - integer number of land tiles
+C nSx      - number of processors in x-direction
+C nSy      - number of processors in y-direction
+C bi       - processors index in x-direction
+C bj       - processors index in y-direction
 C igrd     - integer array in tile space of grid point number for each
-C            tile [nchp]
+C            tile [nchp,nSx,nSy]
 C ityp     - integer array in tile space of land surface type for each
-C            tile [nchp]
+C            tile [nchp,nSx,nSy]
 C chfr     - real array in tile space of land surface type fraction for
-C            each tile [nchp]
+C            each tile [nchp,nSx,nSy]
 C chlt     - real array in tile space of latitude value for each tile
-C            [nchp]
+C            [nchp,nSx,nSy]
 C
 C OUTPUT:
 C albvr    - real array [im,jm] of visible direct beam albedo
@@ -827,27 +834,28 @@ C albnf    - real array [im,jm] of near-ir diffuse beam albedo
 C
 C***********************************************************************
       implicit none
-      real one,a0,a1,a2,a3,ocnalb,albsi
+#include "CPP_OPTIONS.h"
+
+      integer sec,month,day,im,jm,nchp,nchpland,nSx,nSy,bi,bj
+      _RL cosz(im,jm),fraci(im,jm),fracg(im,jm)
+      _RL snodep(nchp,nSx,nSy),chfr(nchp,nSx,nSy),chlt(nchp,nSx,nSy)
+      integer igrd(nchp,nSx,nSy),ityp(nchp,nSx,nSy)
+      _RL alai(nchp,nSx,nSy),agrn(nchp,nSx,nSy)
+      _RL albvr(im,jm,nSx,nSy),albvf(im,jm,nSx,nSy)
+      _RL albnr(im,jm,nSx,nSy),albnf(im,jm,nSx,nSy)
+
+      _RL one,a0,a1,a2,a3,ocnalb,albsi
       PARAMETER (one = 1.)
       PARAMETER (A0= 0.40670980)
       PARAMETER (A1=-1.2523634 )
       PARAMETER (A2= 1.4224051 )
       PARAMETER (A3=-0.55573341)
       PARAMETER (OCNALB=0.08)
-ccc   PARAMETER (ALBSI=0.6)
-      PARAMETER (ALBSI=0.7)  ! Increased to GEOS-1 Value (0.7) L.Takacs 4/2/96
+      PARAMETER (ALBSI=0.7)
  
-      integer sec,month,day,im,jm,nchp,nchpland
-      real cosz(im,jm),fraci(im,jm),fracg(im,jm)
-      real snodep(nchp),chfr(nchp),chlt(nchp)
-      integer igrd(nchp),ityp(nchp)
-      real albvr(im,jm),albvf(im,jm),albnr(im,jm)
-      real albnf(im,jm)
-
-      real alboc(im,jm)
-      real AVISDR(nchp),ANIRDR(nchp),AVISDF(nchp)
-      real ANIRDF(nchp),zenith(nchp)
-      real alai(nchp),agrn(nchp)
+      _RL alboc(im,jm)
+      _RL AVISDR(nchp),ANIRDR(nchp),AVISDF(nchp)
+      _RL ANIRDF(nchp),zenith(nchp)
       integer i,j
 
       DO I=1,IM
@@ -867,20 +875,25 @@ C and now some conversions from grid space to tile space before sibalb
  
 C and now call sibalb
  
-      call sibalb(avisdr,anirdr,avisdf,anirdf,alai,agrn,zenith,
-     1     snodep,ityp,nchpland)
+      call sibalb(avisdr,anirdr,avisdf,anirdf,alai(1,bi,bj),
+     .  agrn(1,bi,bj),zenith,snodep(1,bi,bj),ityp(1,bi,bj),nchpland)
  
 C finally some transformations back to grid space for albedos
  
-      call msc2grd(igrd,chfr,avisdr,nchp,nchpland,fracg,albvr,im,jm)
-      call msc2grd(igrd,chfr,avisdf,nchp,nchpland,fracg,albvf,im,jm)
-      call msc2grd(igrd,chfr,anirdr,nchp,nchpland,fracg,albnr,im,jm)
-      call msc2grd(igrd,chfr,anirdf,nchp,nchpland,fracg,albnf,im,jm)
+      call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),avisdr,nchp,nchpland,
+     .                                      fracg,albvr(1,bi,bj),im,jm)
+      call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),avisdf,nchp,nchpland,
+     .                                      fracg,albvf(1,bi,bj),im,jm)
+      call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),anirdr,nchp,nchpland,
+     .                                      fracg,albnr(1,bi,bj),im,jm)
+      call msc2grd(igrd(1,bi,bj),chfr(1,bi,bj),anirdf,nchp,nchpland,
+     .                                      fracg,albnf(1,bi,bj),im,jm)
  
       return
       end
 
-      subroutine getemiss (fracg,im,jm,nchp,igrd,ityp,chfr,snowdep,fraci,emiss)
+      subroutine getemiss(fracg,im,jm,nchp,igrd,ityp,chfr,snowdep,fraci,
+     .                                                            emiss)
 C***********************************************************************
 C  PURPOSE
 C     To act as an interface to routine to emissivity, which calculates
@@ -906,14 +919,15 @@ C emiss    - real array [im,jm,10] of surface emissivities (fraction)
 C
 C***********************************************************************
       implicit none
+#include "CPP_OPTIONS.h"
       integer im,jm,nchp
-      real fracg(im,jm)
-      real chfr(nchp)
+      _RL fracg(im,jm)
+      _RL chfr(nchp)
       integer igrd(nchp), ityp(nchp)
-      real snowdep(nchp),fraci(nchp)
-      real emiss(im,jm,10)
+      _RL snowdep(nchp),fraci(nchp)
+      _RL emiss(im,jm,10)
 
-      real emisstile(nchp,10)
+      _RL emisstile(nchp,10)
       integer i,n
 
       do i = 1,10
@@ -938,14 +952,15 @@ c ---------------------------------------------
 
       subroutine emissivity (snowdepth,fraci,numpts,ityp,newemis)
       implicit none
+#include "CPP_OPTIONS.h"
       integer numpts
       integer   ityp(numpts)
-      real snowdepth(numpts),fraci(numpts)
-      real   newemis(numpts,10)
+      _RL snowdepth(numpts),fraci(numpts)
+      _RL   newemis(numpts,10)
 
-      real emis(12,11)
-      real snwmid(10)
-      real fac
+      _RL emis(12,11)
+      _RL snwmid(10)
+      _RL fac
       integer i,j
 
 c-----------------------------------------------------------------------
@@ -1107,7 +1122,7 @@ C***********************************************************************
       integer i,j,nSx,nSy,bi,bj,maxtyp
       integer surftype(im,jm,nSx,nSy)
       _RL surftype(im,jm,nSx,nSy)
-      real frac(im,jm)
+      _RL frac(im,jm)
 
       integer  i,j,k
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.9 2004/06/09 20:33:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.10 2004/06/10 20:17:17 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_fixed (myThid)
@@ -40,7 +40,7 @@ c-----------------------------------------------------------------------
        integer nymdb,nhmsb
        character*40 vegdata
        _RL pressure(Nrphys)
-       real lats(sNx,sNy,nSx,nSy), lons(sNx,sNy,nSx,nSy)
+       _RL lats(sNx,sNy,nSx,nSy), lons(sNx,sNy,nSx,nSy)
 
        im1 = 1-OLx
        im2 = sNx+OLx

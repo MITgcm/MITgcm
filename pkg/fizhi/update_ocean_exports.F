@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.5 2004/06/09 16:23:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.6 2004/06/10 20:17:17 molod Exp $
 C $Name:  $
 
        subroutine update_ocean_exports (myTime, myIter, myThid)
@@ -24,7 +24,7 @@ c-----------------------------------------------------------------------
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
        integer nSxglobal, nSyglobal
        integer ksst,kice
-       real        sstmin 
+       _RL        sstmin 
        parameter ( sstmin = 273.16 )
 
        idim1 = 1-OLx
@@ -125,13 +125,13 @@ C Maximum number of dates in one year for the data
 
       character*8  cname
       character*80 cdscrip
-      real fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
+      _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
       logical first, found, error
       integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybd
       integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
       integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
 
-      real sicebc1(im2,jm2,nPx,nPy),sicebc2(im2,jm2,nPx,nPy)
+      _RL sicebc1(im2,jm2,nPx,nPy),sicebc2(im2,jm2,nPx,nPy)
 
 C--------- Variable Initialization ---------------------------------
 
@@ -370,13 +370,13 @@ C Maximum number of dates in one year for the data
 
       character*8  cname
       character*80 cdscrip
-      real fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
+      _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
       logical first, found, error
       integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybd
       integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
       integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
 
-      real sstbc1(im2,jm2,nPx,nPy),sstbc2(im2,jm2,nPx,nPy)
+      _RL sstbc1(im2,jm2,nPx,nPy),sstbc2(im2,jm2,nPx,nPy)
 
 C--------- Variable Initialization ---------------------------------
 
@@ -566,11 +566,12 @@ C!      field2(im,jm,nPx,nPy)  data field after the model time
 C
 C--------------------------------------------------------------------------
       implicit none
+#include "CPP_OPTIONS.h"
 
       integer iunit,im,jm,nPx,nPy,nrec1,nrec2
 
-      real  field1(im,jm)
-      real  field2(im,jm)
+      _RL  field1(im,jm)
+      _RL  field2(im,jm)
 
       integer i,j,n1,n2
       real*4 f1(im,jm,nPx,nPy), f1(im,jm,nPx,nPy)
@@ -622,13 +623,14 @@ C!      error         logical TRUE if dataset problem
 C
 C--------------------------------------------------------------------------
       implicit none
+#include "CPP_OPTIONS.h"
 
       integer iunit, ndmax, nrec
 
       character*8  cname
       character*80 cdscrip
       integer im,jm,npx,npy,ndatebc,nymdbc(ndmax),nhmsbc(ndmax)
-      real lat0,lon0,undef
+      _RL lat0,lon0,undef
       logical error
 
       integer i,n
