@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.28 2003/12/15 02:07:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.29 2004/02/12 16:01:32 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -154,6 +154,13 @@ c--   Initialize ECCO package parameters
 C--   set Coupling parameters
       IF ( useCoupler ) CALL CPL_READPARMS( myThid )
 #endif /* COMPONENT_MODULE */
+
+CAMM
+#ifdef ALLOW_DIAGNOSTICS
+C--   set diagnostics choices
+      IF ( usediagnostics ) call diag_readparms(myThid )
+#endif /* ALLOW_DIAGNOSTICS */
+CAMM
 
       RETURN
       END
