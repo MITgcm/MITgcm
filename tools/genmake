@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.38 2001/07/13 15:16:48 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.39 2001/07/31 15:22:12 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -294,19 +294,20 @@ endif
 
 # Platform specific options
 switch ($platform$USEMPI)
-  case OSF1:
   case OSF1+mpi:
+    echo "Configuring for DEC Alpha with MPI"
+    set LIBS       = ( '-lfmpi -lmpi -lkmp_osfp10 -pthread' )
+  case OSF1:
     echo "Configuring for DEC Alpha"
     set CPP        = ( '/usr/bin/cpp -P' )
     set DEFINES    = ( ${DEFINES}  '-DTARGET_DEC -DWORDLENGTH=1' )
-    set KPP        = ( 'kapf' )
-    set KPPFILES   = ( 'main.F' )
-    set KFLAGS1    = ( '-scan=132 -noconc -cmp=' )
+    set KPP        = ( )
+    set KPPFILES   = ( )
+    set KFLAGS1    = ( )
     set FC         = ( 'f77' )
     set FFLAGS     = ( '-convert big_endian -r8 -extend_source -automatic -call_shared -notransform_loops -align dcommons' )
     set FOPTIM     = ( '-O5 -fast -tune host -inline all' )
     set NOOPTFLAGS = ( '-O0' )
-    set LIBS       = ( '-lfmpi -lmpi -lkmp_osfp10 -pthread' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F')
     set RMFILES    = ( '*.p.out' )
     breaksw
