@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/SHAP_FILT.h,v 1.4 2001/12/11 14:31:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/SHAP_FILT.h,v 1.5 2002/03/04 01:31:02 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHAP_FILT
@@ -28,10 +28,22 @@ C        and pure numerical filter (power nShap - nShap_Phys)
      &         Shap_funct, nShapT, nShapTrPhys, nShapUV, nShapUVPhys
 
 C-    Shapiro Filter (real) parameters
+C     Shap_Trtau    :: Time scale for tracer filter
+C     Shap_TrLength :: Length scale for tracer filter
+C     Shap_uvtau    :: Time scale for momentum filter
+C     Shap_TrLength :: Length scale for momentum filter
+C     Shap_noSlip   :: No-slip parameter (=0 free sleep ; =1 No-slip)
       _RL Shap_Trtau, Shap_TrLength
       _RL Shap_uvtau, Shap_uvLength
+      _RL Shap_noSlip
       COMMON /SHAP_FILT_PARAMS/ 
      &                  Shap_Trtau, Shap_TrLength,
-     &                  Shap_uvtau, Shap_uvLength
+     &                  Shap_uvtau, Shap_uvLength, Shap_noSlip
+
+C-    Shapiro Filter temporary working arrays :
+      _RL Shap_tmpFld1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL Shap_tmpFld2(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      COMMON /SHAP_FILT_WRK_FLD/ 
+     &                  Shap_tmpFld1, Shap_tmpFld2
 
 #endif /* ALLOW_SHAP_FILT */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.5 2001/12/11 14:31:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.6 2002/03/04 01:31:02 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -25,7 +25,8 @@ C     === Routine arguments ===
       NAMELIST /SHAP_PARM01/
      & Shap_funct, shap_filt_uvStar, shap_filt_TrStagg,
      &    nShapT,  nShapTrPhys, Shap_Trtau, Shap_TrLength,
-     &    nShapUV, nShapUVPhys, Shap_uvtau, Shap_uvLength
+     &    nShapUV, nShapUVPhys, Shap_uvtau, Shap_uvLength,
+     &    Shap_noSlip
 
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
@@ -60,6 +61,7 @@ C--   Default flags and values for Shapiro Filter
       Shap_TrLength = 0.
       Shap_uvtau = deltaTMom
       Shap_TrLength = 0.
+      Shap_noSlip = 0.
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=SHAP_PARM01)
@@ -69,15 +71,63 @@ C--   Read parameters from open data file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-      write(*,*) 'Shap_funct, nShap_Tr,UV _Phys=',
-     &    Shap_funct, nShapT, nShapUV, nShapTrPhys, nShapUVPhys
-      write(*,*) 'Shap_Trtau,Shap_uvtau=',Shap_Trtau,Shap_uvtau
 C--   Close the open data file
       CLOSE(iUnit)
+
+C- print out some kee parameters :
+      CALL WRITE_0D_I( Shap_funct, INDEX_NONE,
+     & 'Shap_funct =',
+     & '   /* select Shapiro filter function */')  
+      CALL WRITE_0D_I( nShapT , INDEX_NONE,
+     & 'nShapTr =',
+     & '   /* power of Shapiro filter for Tracers */')  
+      CALL WRITE_0D_I( nShapUV, INDEX_NONE,
+     & 'nShapUV =',
+     & '   /* power of Shapiro filter for momentum */')  
+
+      IF (Shap_funct.EQ.2) THEN
+       CALL WRITE_0D_I( nShapTrPhys, INDEX_NONE,
+     & 'nShapTrPhys =',
+     & '   /* power of physical-space filter (Tracer) */')  
+       CALL WRITE_0D_I( nShapUVPhys, INDEX_NONE,
+     & 'nShapUVPhys =',
+     & '   /* power of physical-space filter (Momentum) */')  
+      ENDIF
+
+      CALL WRITE_0D_R8( Shap_Trtau, INDEX_NONE,
+     & 'Shap_Trtau =',
+     & '   /* time scale of Shapiro filter (Tracer) */')  
+      CALL WRITE_0D_R8( Shap_TrLength, INDEX_NONE,
+     & 'Shap_TrLength =',
+     & '   /* Length scale of Shapiro filter (Tracer) */')  
+      CALL WRITE_0D_R8( Shap_uvtau, INDEX_NONE,
+     & 'Shap_uvtau =',
+     & '   /* time scale of Shapiro filter (Momentum) */')  
+      CALL WRITE_0D_R8( Shap_uvLength, INDEX_NONE,
+     & 'Shap_uvLength =',
+     & '   /* Length scale of Shapiro filter (Momentum) */')  
+      CALL WRITE_0D_R8( Shap_noSlip, INDEX_NONE,
+     & 'Shap_noSlip =',
+     & '  /* No-slip parameter (0=Free-slip ; 1=No-slip)*/')  
+
       _END_MASTER(myThid)
 
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
+
+C--   Check the Options :
+#ifndef USE_OLD_SHAPIRO_FILTERS
+#ifdef NO_SLIP_SHAP
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+         WRITE(msgBuf,'(2A)') 'SHAP_FILT: CPP-option NO_SLIP_SHAP',
+     &                        ' only in OLD_SHAPIRO S/R ;'
+         CALL PRINT_ERROR( msgBuf , 1)
+         WRITE(msgBuf,'(2A)') ' ==> use parameter Shap_noSlip=1. ',
+     &                        '(in "data.shap") instead'
+         CALL PRINT_ERROR( msgBuf , 1)
+         STOP 'ABNORMAL END: S/R SHAP_FILT_READPARMS'
+#endif
+#endif
 
 C--   Check the parameters :
  

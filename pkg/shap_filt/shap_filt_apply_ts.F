@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.2 2001/12/11 14:35:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.3 2002/03/04 01:31:02 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -22,9 +22,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#ifdef ALLOW_SHAP_FILT
 #include "SHAP_FILT.h"
-#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myTime               :: current time
@@ -43,7 +41,11 @@ C sFld                  :: input and filtered salinity field
 #ifdef ALLOW_SHAP_FILT
 
 C !LOCAL VARIABLES: ====================================================
-C none
+#ifdef USE_OLD_SHAPIRO_FILTERS
+C     == Local variables ==
+C     bi,bj,k :: loop index
+      INTEGER bi, bj, k
+#endif /* USE_OLD_SHAPIRO_FILTERS */
 
 CEOP
 
@@ -73,44 +75,44 @@ CEOP
         IF ( tempStepping .AND. nShapT.GT.0) THEN
           IF (Shap_funct.EQ.1) THEN
             CALL SHAP_FILT_TRACER_S1(
-     U           tFld,
-     I           myTime, myThid )
-          ELSEIF (Shap_funct.EQ.2) THEN
+     U           tFld, Shap_tmpFld1,
+     I           Nr, myTime, myThid )
+          ELSEIF (Shap_funct.EQ.2 .OR. Shap_funct.EQ.21) THEN
             CALL SHAP_FILT_TRACER_S2(
-     U           tFld,
-     I           myTime, myThid )
+     U           tFld, Shap_tmpFld1,
+     I           Nr, myTime, myThid )
           ELSEIF (Shap_funct.EQ.4) THEN
             CALL SHAP_FILT_TRACER_S4(
-     U           tFld,
-     I           myTime, myThid )
+     U           tFld, Shap_tmpFld1,
+     I           Nr, myTime, myThid )
           ELSEIF (Shap_funct.EQ.20) THEN
             CALL SHAP_FILT_TRACER_S2G(
-     U           tFld,
-     I           myTime, myThid )
+     U           tFld, Shap_tmpFld1,
+     I           Nr, myTime, myThid )
           ELSE
-           STOP 'SHAP_FILT_APPLY: Ooops! Bad Shap_funct in T block'
+           STOP 'SHAP_FILT_APPLY_TS: Ooops! Bad Shap_funct in T block'
           ENDIF
         ENDIF
 
         IF ( saltStepping .AND. nShapT.GT.0) THEN 
           IF (Shap_funct.EQ.1) THEN
             CALL SHAP_FILT_TRACER_S1(
-     U           sFld,
-     I           myTime, myThid )
-          ELSEIF (Shap_funct.EQ.2) THEN
+     U           sFld, Shap_tmpFld1,
+     I           Nr, myTime, myThid )
+          ELSEIF (Shap_funct.EQ.2 .OR. Shap_funct.EQ.21) THEN
             CALL SHAP_FILT_TRACER_S2(
-     U           sFld,
-     I           myTime, myThid )
+     U           sFld, Shap_tmpFld1,
+     I           Nr, myTime, myThid )
           ELSEIF (Shap_funct.EQ.4) THEN
             CALL SHAP_FILT_TRACER_S4(
-     U           sFld,
-     I           myTime, myThid )
+     U           sFld, Shap_tmpFld1,
+     I           Nr, myTime, myThid )
           ELSEIF (Shap_funct.EQ.20) THEN
             CALL SHAP_FILT_TRACER_S2G(
-     U           sFld,
-     I           myTime, myThid )
+     U           sFld, Shap_tmpFld1,
+     I           Nr, myTime, myThid )
           ELSE
-           STOP 'SHAP_FILT_APPLY: Ooops! Bad Shap_funct in S block'
+           STOP 'SHAP_FILT_APPLY_TS: Ooops! Bad Shap_funct in S block'
           ENDIF
         ENDIF
 
