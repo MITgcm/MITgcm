@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.95 2003/02/28 02:20:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.96 2003/04/17 13:41:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -353,7 +353,7 @@ C        distinguishe between Stagger and Non Stagger time stepping
          ENDIF
 
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
-C        and step forward storing the result in gUnm1, gVnm1, etc...
+C        and step forward storing the result in gU, gV, etc...
          IF ( momStepping ) THEN
 #ifndef DISABLE_MOM_FLUXFORM
            IF (.NOT. vectorInvariantMomentum) CALL MOM_FLUXFORM(
@@ -372,26 +372,15 @@ C        and step forward storing the result in gUnm1, gVnm1, etc...
            CALL TIMESTEP(
      I         bi,bj,iMin,iMax,jMin,jMax,k,
      I         dPhiHydX,dPhiHydY, phiSurfX, phiSurfY,
-     I         myIter, myThid)
+     I         myTime, myIter, myThid)
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
-         IF (useOBCS) THEN
-           CALL OBCS_APPLY_UV( bi, bj, k, gUnm1, gVnm1, myThid )
-         END IF
+           IF (useOBCS) THEN
+             CALL OBCS_APPLY_UV( bi, bj, k, gU, gV, myThid )
+           ENDIF
 #endif   /* ALLOW_OBCS */
 
-#ifdef   ALLOW_AUTODIFF_TAMC
-#ifdef   INCLUDE_CD_CODE
-         ELSE
-           DO j=1-OLy,sNy+OLy
-             DO i=1-OLx,sNx+OLx
-               guCD(i,j,k,bi,bj) = 0.0
-               gvCD(i,j,k,bi,bj) = 0.0
-             END DO
-           END DO
-#endif   /* INCLUDE_CD_CODE */
-#endif   /* ALLOW_AUTODIFF_TAMC */
          ENDIF
 
 
@@ -401,12 +390,12 @@ C--     end of dynamics k loop (1:Nr)
 C--     Implicit viscosity
         IF (implicitViscosity.AND.momStepping) THEN
 #ifdef    ALLOW_AUTODIFF_TAMC
-CADJ STORE gUNm1(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
+CADJ STORE gU(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         deltaTmom, KappaRU,recip_HFacW,
-     U         gUNm1,
+     U         gU,
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
 CADJ STORE gVNm1(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
@@ -414,14 +403,14 @@ CADJ STORE gVNm1(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         deltaTmom, KappaRV,recip_HFacS,
-     U         gVNm1,
+     U         gV,
      I         myThid )
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
          IF (useOBCS) THEN
            DO K=1,Nr
-             CALL OBCS_APPLY_UV( bi, bj, k, gUnm1, gVnm1, myThid )
+             CALL OBCS_APPLY_UV( bi, bj, k, gU, gV, myThid )
            ENDDO
          END IF
 #endif   /* ALLOW_OBCS */
