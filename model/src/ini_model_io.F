@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.8 2004/09/29 03:45:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.9 2004/10/07 21:52:29 edhill Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -8,22 +8,17 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 CBOP
 C     !ROUTINE: INI_MODEL_IO
+
 C     !INTERFACE:
       SUBROUTINE INI_MODEL_IO( myThid )
 
-C     !DESCRIPTION: \bv
-C     ini_model_io() is where run-time/experiment specific data are passed
-C     to any I/O packages ready that will be used for I/O of model state
-C     variables.
-C     This is specifically for setting up once only information such as
-C     shape/size of variables, units, etc... and is only for state variables.
-C     \ev
+C     !DESCRIPTION: 
+C     Pass specific setup data to any I/O packages necessary for I/O of
+C     model state variables.  This is specifically for setting up (once
+C     only!)  information such as shape/size of variables, units,
+C     etc... and is primarily for state and snapshot variables.
 
-C     !CALLING SEQUENCE:
-C     PACKAGES_INIT_FIXED
-C       |
-C       |-- MNC_INIT
-
+C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
@@ -198,6 +193,25 @@ C     Write coordinates to "state" file
       CALL MNC_CW_RS_W('R','state',0,0,'YG',yG, myThid)
       CALL MNC_CW_RS_W('R','state',0,0,'RC',rC, myThid)
       CALL MNC_CW_RS_W('R','state',0,0,'RF',rF, myThid)
+
+C     Define variables used in mom_vecinv
+C     CALL MNC_CW_ADD_VNAME('fV', 'Cen_xy_Hn__-__t', 0,0, myThid)
+C     CALL MNC_CW_ADD_VATTR_TEXT('','units','', myThid)
+C     CALL MNC_CW_ADD_VATTR_TEXT('','long_name',
+C     &     'potential_temperature', myThid)
+      
+      CALL MNC_CW_ADD_VNAME('fV', 'Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('fU', 'Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('zV', 'Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('zU', 'Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('Ds', 'Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('Dt', 'Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('Du', 'Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('Dv', 'Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('Z3', 'Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('W3', 'Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('KE', 'Cen_xy_Hn__-__t', 0,0, myThid)
+      CALL MNC_CW_ADD_VNAME('D', 'Cen_xy_Hn__-__t', 0,0, myThid)
 
 #ifdef ALLOW_AUTODIFF_MONITOR
       CALL AUTODIFF_INI_MODEL_IO( myThid )
