@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.1 2004/12/17 21:28:25 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.2 2004/12/18 19:18:08 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -112,7 +112,7 @@ C     !LOCAL VARIABLES:
       integer nids, cv_did(1)
       character*(MAX_LEN_MBUF) msgbuf
       integer cv_start(1), cv_count(1)
-      _RS rtmp(sNx * sNy)
+      _RS rtmp(sNx + sNy + Nr)
 
 C     Functions
       integer IFNBLNK, ILNBLNK
