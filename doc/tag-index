@@ -1,7 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.168 2003/06/25 21:17:05 stephd Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.169 2003/06/27 02:15:54 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+>>>checkpoint51b_post
+adjoint of ptracers
+o disentangled ALLOW_PTRACERS using new ALLOW_GCHEM
+o extended state in checkpoint_lev?, etc.
+o alternative ctrl/cost with tr1 or ptracer
+o new comlev1_bibj_ptracers
+o new ptracers.flow
+o made ptracers_forcing same as external_forcing_s
+o added verification for adjoint with ptracers
+  - adm. grdchk fail so far
+  - tlm. grdchk OK
+  - checked tapelev/comlev recomputations: OK
+<<<checkpoint51b_pre
 
 checkpoint51a_post
 o added code for biogeochemistry package
