@@ -3,6 +3,4 @@
   useGMRedi = .TRUE.,
   useKPP    = .TRUE.,
   useSEAICE = .TRUE.,
-  useSBO    = .FALSE.,
-  useECCO   = .FALSE.,
  &

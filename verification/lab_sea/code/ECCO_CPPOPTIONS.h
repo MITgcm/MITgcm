@@ -1,5 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/Attic/ECCO_CPPOPTIONS.h,v 1.5 2004/03/12 22:18:16 dimitri Exp $
+C $Name:  $
 
-C 
 C CPP flags controlling which code is included in the files that
 C will be compiled.
 C
@@ -44,10 +45,8 @@ C   Options that are required to use pkg/exf with pkg/seaice.
 #define  ALLOW_ATM_TEMP
 #define  ALLOW_ATM_WIND
 #define  ALLOW_DOWNWARD_RADIATION
+#define  ALLOW_BULKFORMULAE
 #define  ALLOW_RUNOFF
-
-C   Evaporation is read-in from file.
-#define  EXF_READ_EVAP
 
 C   Options that control relaxation terms.
 #undef   ALLOW_CLIM_CYCLIC
