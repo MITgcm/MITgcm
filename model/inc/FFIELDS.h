@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.20 2003/11/01 04:50:02 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.21 2003/11/10 19:55:06 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -34,10 +34,11 @@ C              > 0 for increase in salt (ocean salinity)
 C              Typical range: -1e-7 < EmPmR < 1e-7
 C              Southwest C-grid tracer point
 C
-C  saltFlux :: Net upward salt flux in g/m^2/s
-C              mass of Salt taken out of the ocean per time unit (second).
+C  saltFlux :: Net upward salt flux in psu.kg/m^2/s
+C              flux of Salt taken out of the ocean per time unit (second).
 C              Note: a) only used when salty sea-ice forms or melts.
-C                    b) units: not in kg/m^2/s because salinity [g/kg]
+C                    b) units: when salinity (unit= psu) is expressed
+C              	        in g/kg, saltFlux unit becomes g/m^2/s.
 C              > 0 for decrease in SSS.
 C              Southwest C-grid tracer point
 C
