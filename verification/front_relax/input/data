@@ -51,7 +51,7 @@
  usingSphericalPolarGrid=.FALSE.,
  delZ= 50., 50., 55., 60., 65., 70., 80., 95.,
        120., 155., 200., 260., 320., 400., 480.,
- delX=64*10.E3,
+ delX=1*10.E3,
 #delY=32*10.E3,
  delYfile='dy.bin',
  &
