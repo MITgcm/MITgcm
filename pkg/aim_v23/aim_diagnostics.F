@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.11 2005/04/06 18:35:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.12 2005/04/06 19:08:48 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -91,7 +91,7 @@ C--   write clear-sky tendencies to files :
 #endif /* ALLOW_CLR_SKY_DIAG */
       ENDIF
 
-      IF ( DIFF_BASE_MULTIPLE(baseTime,im_diagFreq,
+      IF ( DIFF_BASE_MULTIPLE(baseTime,aim_diagFreq,
      &                        myTime+deltaTClock,deltaTClock)
      &   ) THEN 
        WRITE(suff,'(I10.10)') myIter+1
