@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.6 2002/11/29 13:38:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.7 2003/03/07 02:45:48 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -697,9 +697,9 @@ c--   Northern obc.
 #ifdef ALLOW_OBCSS_CONTROL
 c--   Southern obc.
 
-      _BEGIN_MASTER( mythid )
 c-------------------------------------------------------------------------------------------
 c--
+      _BEGIN_MASTER( mythid )
 #ifdef ALLOW_CALENDAR
         call cal_TimePassed( xx_obcssstartdate, modelstartdate,
      &                       difftime, mythid )

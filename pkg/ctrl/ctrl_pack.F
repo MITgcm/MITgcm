@@ -222,7 +222,9 @@ c--       Header information.
           write(cunit) (nWetcGlobal(k), k=1,nr)
           write(cunit) (nWetsGlobal(k), k=1,nr)
           write(cunit) (nWetwGlobal(k), k=1,nr)
+#ifdef ALLOW_CTRL_WETV
           write(cunit) (nWetvGlobal(k), k=1,nr)
+#endif
 #ifdef ALLOW_OBCSN_CONTROL
           write(cunit) ((nWetobcsnGlo(k,iobcs), k=1,nr),iobcs= 1,nobcs)
 #endif

@@ -455,7 +455,9 @@ c--       Header information.
           read(cunit) (filenWetcGlobal(k),   k=1,nr)
           read(cunit) (filenWetsGlobal(k),   k=1,nr)
           read(cunit) (filenWetwGlobal(k),   k=1,nr)
+#ifdef ALLOW_CTRL_WETV
           read(cunit) (filenWetvGlobal(k),   k=1,nr)
+#endif
 
 cgg(     Add OBCS mask information to the header.
 #ifdef ALLOW_OBCSN_CONTROL
@@ -945,7 +947,9 @@ c--       Header information.
           write(cunit) (nWetcGlobal(k), k=1,nr)
           write(cunit) (nWetsGlobal(k), k=1,nr)
           write(cunit) (nWetwGlobal(k), k=1,nr)
+#ifdef ALLOW_CTRL_WETC
           write(cunit) (nWetvGlobal(k), k=1,nr)
+#endif
 
 cgg(    Add OBCS Mask information into the header section for optimization.
 #ifdef ALLOW_OBCSN_CONTROL
