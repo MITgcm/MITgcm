@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.6 2003/04/17 13:42:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.7 2003/08/03 02:49:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -31,6 +31,9 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef ALLOW_TIMEAVE
+#include "TIMEAVE_STATV.h"
+#endif
 
 C     == Routine arguments ==
 C     fVerU   - Flux of momentum in the vertical
@@ -52,6 +55,8 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
       INTEGER myIter
       INTEGER myThid
       INTEGER bi,bj,iMin,iMax,jMin,jMax
+
+#ifndef DISABLE_MOM_VECINV
 
 C     == Functions ==
       LOGICAL  DIFFERENT_MULTIPLE
@@ -220,6 +225,10 @@ C     Calculate velocity field "volume transports" through tracer cell faces.
        ENDDO
       ENDDO
 
+C note (jmc) : Dissipation and Vort3 advection do not necesary
+C              use the same maskZ (and hFacZ)  => needs 2 call(s)
+c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
+
       CALL MOM_VI_CALC_KE(bi,bj,k,uFld,vFld,KE,myThid)
 
       CALL MOM_VI_CALC_HDIV(bi,bj,k,uFld,vFld,hDiv,myThid)
@@ -259,6 +268,9 @@ C      or in terms of tension and strain
      I                    myThid)
        ENDIF
       ENDIF
+
+C-    Return to standard hfacZ (min-4) and mask vort3 accordingly:
+c     CALL MOM_VI_MASK_VORT3(bi,bj,k,hFacZ,r_hFacZ,vort3,myThid)
 
 C---- Zonal momentum equation starts here
 
@@ -308,12 +320,6 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 
-C--   Forcing term (moved to timestep.F)
-c     IF (momForcing)
-c    &  CALL EXTERNAL_FORCING_U(
-c    I     iMin,iMax,jMin,jMax,bi,bj,k,
-c    I     myCurrentTime,myThid)
-
 C--   Metric terms for curvilinear grid systems
 c     IF (usingSphericalPolarMTerms) THEN
 C      o Spherical polar grid metric terms
@@ -324,7 +330,6 @@ c        gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+mTFacU*mT(i,j)
 c       ENDDO
 c      ENDDO
 c     ENDIF
-
 
 C---- Meridional momentum equation starts here
 
@@ -374,12 +379,6 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 
-C--   Forcing term (moved to timestep.F)
-c     IF (momForcing)
-c    & CALL EXTERNAL_FORCING_V(
-c    I     iMin,iMax,jMin,jMax,bi,bj,k,
-c    I     myCurrentTime,myThid)
-
 C--   Metric terms for curvilinear grid systems
 c     IF (usingSphericalPolarMTerms) THEN
 C      o Spherical polar grid metric terms
@@ -393,7 +392,7 @@ c     ENDIF
 
 C--   Horizontal Coriolis terms
       IF (useCoriolis .AND. .NOT.useCDscheme) THEN
-       CALL MOM_VI_CORIOLIS(bi,bj,K,uFld,vFld,omega3,r_hFacZ,
+       CALL MOM_VI_CORIOLIS(bi,bj,k,uFld,vFld,omega3,hFacZ,r_hFacZ,
      &                      uCf,vCf,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -406,7 +405,8 @@ C--   Horizontal Coriolis terms
       IF (momAdvection) THEN
 C--   Horizontal advection of relative vorticity
 c      CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,omega3,r_hFacZ,uCf,myThid)
-       CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,vort3,r_hFacZ,uCf,myThid)
+       CALL MOM_VI_U_CORIOLIS(bi,bj,k,vFld,vort3,hFacZ,r_hFacZ,
+     &                        uCf,myThid)
 c      CALL MOM_VI_U_CORIOLIS_C4(bi,bj,K,vFld,vort3,r_hFacZ,uCf,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -414,13 +414,23 @@ c      CALL MOM_VI_U_CORIOLIS_C4(bi,bj,K,vFld,vort3,r_hFacZ,uCf,myThid)
         ENDDO
        ENDDO
 c      CALL MOM_VI_V_CORIOLIS(bi,bj,K,uFld,omega3,r_hFacZ,vCf,myThid)
-       CALL MOM_VI_V_CORIOLIS(bi,bj,K,uFld,vort3,r_hFacZ,vCf,myThid)
+       CALL MOM_VI_V_CORIOLIS(bi,bj,k,uFld,vort3,hFacZ,r_hFacZ,
+     &                        vCf,myThid)
 c      CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,vort3,r_hFacZ,vCf,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
         ENDDO
        ENDDO
+
+#ifdef ALLOW_TIMEAVE
+       IF (taveFreq.GT.0.) THEN
+         CALL TIMEAVE_CUMUL_1K1T(uZetatave,vCf,deltaTClock,
+     &                           Nr, k, bi, bj, myThid)
+         CALL TIMEAVE_CUMUL_1K1T(vZetatave,uCf,deltaTClock,
+     &                           Nr, k, bi, bj, myThid)
+       ENDIF
+#endif
 
 C--   Vertical shear terms (-w*du/dr & -w*dv/dr)
        CALL MOM_VI_U_VERTSHEAR(bi,bj,K,uVel,wVel,uCf,myThid)
@@ -476,6 +486,8 @@ c      CALL WRITE_LOCAL_RL('W3','I10',1,omega3,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('KE','I10',1,KE,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('D','I10',1,hdiv,bi,bj,k,myIter,myThid)
       ENDIF
+
+#endif /* DISABLE_MOM_VECINV */
 
       RETURN
       END

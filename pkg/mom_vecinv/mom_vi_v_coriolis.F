@@ -1,18 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.3 2001/09/05 17:46:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.4 2003/08/03 02:49:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE MOM_VI_V_CORIOLIS( 
-     I        bi,bj,K,
-     I        uFld,omega3,r_hFacZ,
+     I        bi,bj,k,
+     I        uFld,omega3,hFacZ,r_hFacZ,
      O        vCoriolisTerm,
      I        myThid)
       IMPLICIT NONE
-C     /==========================================================\
-C     | S/R MOM_VI_V_CORIOLIS                                    |
-C     |==========================================================|
-C     \==========================================================/
+C     *==========================================================*
+C     | S/R MOM_VI_V_CORIOLIS
+C     | o Calculate zonal flux of vorticity at V point
+C     *==========================================================*
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -21,29 +21,32 @@ C     == Global variables ==
 #include "PARAMS.h"
 
 C     == Routine arguments ==
-      INTEGER bi,bj,K
+      INTEGER bi,bj,k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL omega3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS hFacZ (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vCoriolisTerm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 C     == Local variables ==
+      LOGICAL upwindVort3, use_original_hFac
       INTEGER I,J
       _RL uBarXY,vort3v
-      LOGICAL upwindVort3
+      _RS epsil
+      PARAMETER ( upwindVort3      =.FALSE. )
+      PARAMETER ( use_original_hFac=.FALSE. )
 
-      upwindVort3=.FALSE.
+      epsil = 1. _d -9
 
-       DO J=2-Oly,sNy+Oly
-        DO I=1-Olx,sNx+Olx-1
+      DO J=2-Oly,sNy+Oly
+       DO I=1-Olx,sNx+Olx-1
+        IF ( use_original_hFac ) THEN
          uBarXY=0.25*(
      &       uFld( i , j )*dyG( i , j ,bi,bj)*hFacW( i , j ,k,bi,bj)
      &      +uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacW(i+1, j ,k,bi,bj)
      &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacW( i ,j-1,k,bi,bj)
      &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacW(i+1,j-1,k,bi,bj))
-c        uBarXY=0.25*( uFld(i, j )+uFld(i+1, j )
-c    &                +uFld(i,j-1)+uFld(i+1,j-1))
          IF (upwindVort3) THEN
           IF (uBarXY.GT.0.) THEN
            vort3v=omega3(i,j)*r_hFacZ(i,j)
@@ -51,12 +54,30 @@ c    &                +uFld(i,j-1)+uFld(i+1,j-1))
            vort3v=omega3(i+1,j)*r_hFacZ(i+1,j)
           ENDIF
          ELSE
-          vort3v=0.5*(omega3(i,j)*r_hFacZ(i,j)
-     &               +omega3(i+1,j)*r_hFacZ(i+1,j))
+           vort3v=0.5*(omega3(i,j)*r_hFacZ(i,j)
+     &                +omega3(i+1,j)*r_hFacZ(i+1,j))
          ENDIF
-         vCoriolisTerm(i,j)=
-     &   -vort3v*uBarXY*recip_dyc(i,j,bi,bj)
-     &   *_maskS(I,J,K,bi,bj)
+        ELSE
+c--      test a different formulation (relatively to hFac)
+         uBarXY=0.5*(
+     &       uFld( i , j )*dyG( i , j ,bi,bj)*hFacZ(i,j)
+     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacZ(i,j)
+     &      +uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacZ(i+1,j)
+     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacZ(i+1,j)
+     &              )/MAX( epsil, hFacZ(i,j)+hFacZ(i+1,j) )
+         IF (upwindVort3) THEN
+          IF (uBarXY.GT.0.) THEN
+           vort3v=omega3(i,j)
+          ELSE
+           vort3v=omega3(i+1,j)
+          ENDIF
+         ELSE
+           vort3v=0.5*(omega3(i,j)+omega3(i+1,j))
+         ENDIF
+        ENDIF
+
+        vCoriolisTerm(i,j)=
+     &   -vort3v*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
 C high order vorticity advection term
 c    &   ...
 C linear Coriolis term
@@ -68,8 +89,8 @@ c    &   -0.5 *( fCori(I,J  ,bi,bj)*uBarX(I,J  ,K,bi,bj) +
 c    &           fCori(I,J-1,bi,bj)*uBarX(I,J-1,K,bi,bj)  )
 C original form of Coriolis term (copied from calc_mom_rhs)
 c    &   -0.5*(fCori(i,j,bi,bj)+fCori(i,j-1,bi,bj))*uBarXY
-        ENDDO
        ENDDO
+      ENDDO
 
       RETURN
       END
