@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.1 2001/07/06 21:39:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_linear_phisurf.F,v 1.2 2001/08/27 18:43:46 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -76,10 +76,11 @@ C--- Bo = d/d_p(Phi_surf) = tRef_surf*d/d_p(PI) ; PI = Cp*(p/Po)^kappa
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO J=1-Oly,sNy+Oly
            DO I=1-Olx,sNx+Olx
-            IF (Ro_surf(I,J,bi,bj).GT.0. _d 0) THEN
+            IF ( Ro_surf(I,J,bi,bj).GT.0. _d 0 
+     &          .AND. ksurfC(I,J,bi,bj).LE.Nr ) THEN
               dPIdp = (atm_cp*atm_kappa/atm_po)*
      &         (Ro_surf(I,J,bi,bj)/atm_po)**(atm_kappa-1. _d 0)
-              Bo_surf(I,J,bi,bj) = dPIdp*tRef(k_surf(I,J,bi,bj))
+              Bo_surf(I,J,bi,bj) = dPIdp*tRef(ksurfC(I,J,bi,bj))
               recip_Bo(I,J,bi,bj) = 1. _d 0 / Bo_surf(I,J,bi,bj)
             ELSE
               Bo_surf(I,J,bi,bj) = 0.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/aim_do_atmos_physics.F,v 1.6 2001/08/24 11:57:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/Attic/aim_do_atmos_physics.F,v 1.7 2001/08/27 18:47:06 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -212,8 +212,9 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 c_jmc: add square of surface wind speed (center of C grid) = 2 * KE_surf
       DO J = 1, sNy
        DO I = 1, sNx
-         I2 = I+(J-1)*sNx
-         K = k_surf(i,j,bi,bj)
+        I2 = I+(J-1)*sNx
+        K = ksurfC(i,j,bi,bj)
+        IF (K.LE.Nr) THEN
          Vsurfsq(I2,myThid) = 0.5 * (
      &                 uVel(I,J,K,bi,bj)*uVel(I,J,K,bi,bj)
      &               + uVel(I+1,J,K,bi,bj)*uVel(I+1,J,K,bi,bj)
@@ -227,6 +228,9 @@ c - to reproduce old results :
      &     UG1(I2,Katm,myThid)*UG1(I2,Katm,myThid)
      &   + VG1(I2,Katm,myThid)*VG1(I2,Katm,myThid)
 #endif /* OLD_AIM_GRIG_MAPPING */
+        ELSE
+         Vsurfsq(I2,myThid) = 0.
+        ENDIF
        ENDDO
       ENDDO
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
