@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.116 2005/01/06 15:32:16 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.117 2005/02/09 15:59:24 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -722,14 +722,14 @@ check_netcdf_libs()  {
 	return
     fi
     echo "" > genmake_tnc.log
-    cat <<EOF > genmake_tnc.for
+    cat <<EOF > genmake_tnc.F
       program fgennc
 #include "netcdf.inc"
 EOF
     if test ! "x$MPI" = x ; then
-	echo '#include "mpif.h"' >> genmake_tnc.for
+	echo '#include "mpif.h"' >> genmake_tnc.F
     fi
-    cat <<EOF >> genmake_tnc.for
+    cat <<EOF >> genmake_tnc.F
       integer iret, ncid, xid
       iret = nf_create('genmake_tnc.nc', NF_CLOBBER, ncid)
       IF (iret .NE. NF_NOERR) write(*,*) NF_STRERROR(iret)
@@ -740,10 +740,10 @@ EOF
       end
 EOF
     echo "Executing:" > genmake_tnc.log
-    echo "  $CPP $DEFINES $INCLUDES genmake_tnc.for > genmake_tnc.f" \
+    echo "  $CPP $DEFINES $INCLUDES genmake_tnc.F > genmake_tnc.$FS" \
 	> genmake_tnc.log
     RET_CPP=f
-    $CPP $DEFINES $INCLUDES genmake_tnc.for > genmake_tnc.f 2>/dev/null  \
+    $CPP $DEFINES $INCLUDES genmake_tnc.F > genmake_tnc.$FS 2>/dev/null  \
 	&&  RET_CPP=t
     if test "x$RET_CPP" = xf ; then
 	echo "  WARNING: CPP failed to pre-process the netcdf test." \
@@ -752,9 +752,9 @@ EOF
 	    > genmake_tnc.log
     fi
     echo "Executing:" > genmake_tnc.log
-    echo "  $FC $FFLAGS $FOPTIM -c genmake_tnc.f" > genmake_tnc.log
+    echo "  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS" > genmake_tnc.log
     echo "  $LINK -o genmake_tnc.o $LIBS" > genmake_tnc.log
-    $FC $FFLAGS $FOPTIM -c genmake_tnc.f >> genmake_tnc.log 2>&1  \
+    $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 	&&  $LINK -o genmake_tnc genmake_tnc.o $LIBS >> genmake_tnc.log 2>&1
     RET_COMPILE=$?
 
@@ -769,8 +769,8 @@ EOF
 	HAVE_NETCDF=t
     else
 	# try again with "-lnetcdf" added to the libs
-	$CPP $DEFINES $INCLUDES genmake_tnc.for > genmake_tnc.f 2>/dev/null  \
-	    &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.f >> genmake_tnc.log 2>&1  \
+	$CPP $DEFINES $INCLUDES genmake_tnc.F > genmake_tnc.$FS 2>/dev/null  \
+	    &&  $FC $FFLAGS $FOPTIM -c genmake_tnc.$FS >> genmake_tnc.log 2>&1  \
 	    &&  $LINK -o genmake_tnc genmake_tnc.o $LIBS -lnetcdf >> genmake_tnc.log 2>&1
 	RET_COMPILE=$?
 	if test "x$RET_COMPILE" = x0 ; then
