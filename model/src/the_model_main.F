@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.13 1998/06/17 21:07:02 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.14 1998/06/18 13:56:06 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -86,6 +86,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "CG2D.h"
 #include "DYNVARS.h"
+#include "AVER.h"
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -116,6 +117,11 @@ C--    Load forcing/external data fields
 
 C--    Step forward fields and calculate time tendency terms
        CALL DYNAMICS( myCurrentTime, myCurrentIter, myThid )
+
+C--    Do time averages
+       IF (taveFreq.GT.0.) THEN
+         CALL DO_TIME_AVERAGES( myCurrentTime, myCurrentIter, myThid )
+       ENDIF
 
 C--    Do IO if needed.
 C      Note:
@@ -151,19 +157,18 @@ C      "state" files. This example is referred to as a checkpoint
 C      at time level 1 
        CALL WRITE_CHECKPOINT( .FALSE., myCurrentTime, myCurrentIter, myThid )
 
-       write(0,*) maxval(abs(uVel)),maxval(abs(vVel))
-       if (maxval(abs(uVel)).gt.10.) goto 911
-       if (maxval(abs(vVel)).gt.10.) goto 911
-       if (maxval(abs(theta)).gt.40.) goto 911
       ENDDO
-
- 911  continue
 
 C--   Final checkpoint (incase the in-loop checkpoint was missed)
       CALL WRITE_CHECKPOINT( .TRUE., myCurrentTime, myCurrentIter, myThid )
 
 C--   Step-forward U/V/Theta/Salt for purposes of final I/O dump
       CALL DYNAMICS( myCurrentTime, myCurrentIter, myThid )
+
+C--   Do time averages
+      IF (taveFreq.GT.0.) THEN
+        CALL DO_TIME_AVERAGES( myCurrentTime, myCurrentIter, myThid )
+      ENDIF
 
 C--   Dump for end state
       CALL WRITE_STATE( myCurrentTime, myCurrentIter, myThid )

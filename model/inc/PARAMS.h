@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.19 1998/06/17 21:07:01 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.20 1998/06/18 13:56:06 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -243,6 +243,8 @@ C     chkPtFreq  - Frequency of rolling check pointing ( s ).
 C     pChkPtFreq - Frequency of permanent check pointing ( s ).
 C     dumpFreq  - Frequency with which model state is written to
 C                 post-processing files ( s ).
+C     taveFreq  - Frequency with which time-averaged model state is written to
+C                 post-processing files ( s ).
 C     afFacMom  - Advection of momentum term scaling parameter
 C     vfFacMom  - Momentum viscosity scaling parameter
 C     pfFacMom  - Momentum pressure forcing parameter
@@ -265,7 +267,7 @@ C                           number times externForcingPeriod)
      & tauCD, rCD, freeSurfFac,
      & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,
      & gravity, gBaro, rhonil, tRef, sRef,
-     & endTime, chkPtFreq, pchkPtFreq, dumpFreq,
+     & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
      & cAdjFreq, omega, tauThetaClimRelax, lambdaThetaClimRelax,
      & tauSaltClimRelax, lambdaSaltClimRelax,
@@ -315,6 +317,7 @@ C                           number times externForcingPeriod)
       _RL chkPtFreq
       _RL pChkPtFreq
       _RL dumpFreq
+      _RL taveFreq
       _RL afFacMom
       _RL vfFacMom
       _RL pfFacMom
