@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.8 1998/06/15 05:13:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.9 1998/06/22 16:24:51 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -105,7 +105,7 @@ C
       END
 
 CStartofinterface
-      SUBROUTINE PRINT_LIST_I( fld, lFld, index_type, ioUnit )
+      SUBROUTINE PRINT_LIST_I( fld, lFld, index_type, markEnd, compact, ioUnit )
 C     /==========================================================\
 C     | o SUBROUTINE PRINT_LIST_I                                |
 C     |==========================================================|
@@ -127,10 +127,16 @@ C                  INDEX_K    => /* K = nnn */
 C                  INDEX_I    => /* I = nnn */
 C                  INDEX_J    => /* J = nnn */
 C                  INDEX_NONE =>
+C     compact -  Flag to control use of repeat symbol for same valued
+C                fields.
+C     markEnd -  Flag to control whether there is a separator after the
+C                last element
 C     ioUnit -  Unit number for IO.
       INTEGER lFld 
       INTEGER index_type
       INTEGER fld(lFld)
+      LOGICAL markEnd
+      LOGICAL compact
       INTEGER ioUnit
 CEndifinterface
 
@@ -170,7 +176,7 @@ C     K    - Loop counter
       xOld = fld(1)
       DO K=2,lFld
        xNew = fld(K  )
-       IF ( xNew .NE. xOld ) THEN
+       IF ( .NOT. compact .OR. xNew .NE. xOld ) THEN
         nDup = iHi-iLo+1
         IF ( nDup .EQ. 1 ) THEN
          WRITE(msgBuf,'(A,I5,A)') '              ',xOld,punc
@@ -191,6 +197,7 @@ C     K    - Loop counter
        ENDIF
       ENDDO
       punc = ' '
+      IF ( markEnd ) punc = ','
       nDup = iHi-iLo+1
       IF    ( nDup .EQ. 1 ) THEN
        WRITE(msgBuf,'(A,I5,A)') '              ',xOld,punc
@@ -208,7 +215,7 @@ C     K    - Loop counter
       END
 
 CStartofinterface
-      SUBROUTINE PRINT_LIST_L( fld, lFld, index_type, ioUnit )
+      SUBROUTINE PRINT_LIST_L( fld, lFld, index_type, markEnd, compact, ioUnit )
 C     /==========================================================\
 C     | o SUBROUTINE PRINT_LIST_L                                |
 C     |==========================================================|
@@ -230,10 +237,16 @@ C                  INDEX_K    => /* K = nnn */
 C                  INDEX_I    => /* I = nnn */
 C                  INDEX_J    => /* J = nnn */
 C                  INDEX_NONE =>
+C     compact -  Flag to control use of repeat symbol for same valued
+C                fields.
+C     markEnd -  Flag to control whether there is a separator after the
+C                last element
 C     ioUnit -  Unit number for IO.
       INTEGER lFld 
       INTEGER index_type
       LOGICAL fld(lFld)
+      LOGICAL markEnd
+      LOGICAL compact
       INTEGER ioUnit
 CEndifinterface
 
@@ -273,7 +286,7 @@ C     K    - Loop counter
       xOld = fld(1)
       DO K=2,lFld
        xNew = fld(K  )
-       IF ( xNew .NE. xOld ) THEN
+       IF ( .NOT. compact .OR. xNew .NE. xOld ) THEN
         nDup = iHi-iLo+1
         IF ( nDup .EQ. 1 ) THEN
          WRITE(msgBuf,'(A,L5,A)') '              ',xOld,punc
@@ -294,6 +307,7 @@ C     K    - Loop counter
        ENDIF
       ENDDO
       punc = ' '
+      IF ( markEnd ) punc = ','
       nDup = iHi-iLo+1
       IF    ( nDup .EQ. 1 ) THEN
        WRITE(msgBuf,'(A,L5,A)') '              ',xOld,punc
@@ -311,7 +325,7 @@ C     K    - Loop counter
       END
 
 CStartofinterface
-      SUBROUTINE PRINT_LIST_R8( fld, lFld, index_type, ioUnit )
+      SUBROUTINE PRINT_LIST_R8( fld, lFld, index_type, markEnd, compact, ioUnit )
 C     /==========================================================\
 C     | o SUBROUTINE PRINT_LIST_R8                               |
 C     |==========================================================|
@@ -333,10 +347,16 @@ C                  INDEX_K    => /* K = nnn */
 C                  INDEX_I    => /* I = nnn */
 C                  INDEX_J    => /* J = nnn */
 C                  INDEX_NONE =>
+C     compact -  Flag to control use of repeat symbol for same valued
+C                fields.
+C     markEnd -  Flag to control whether there is a separator after the
+C                last element
 C     ioUnit -  Unit number for IO.
       INTEGER lFld 
       INTEGER index_type
       Real*8  fld(lFld)
+      LOGICAL markEnd
+      LOGICAL compact
       INTEGER ioUnit
 CEndifinterface
 
@@ -376,7 +396,7 @@ C     K    - Loop counter
       xOld = fld(1)
       DO K=2,lFld
        xNew = fld(K  )
-       IF ( xNew .NE. xOld ) THEN
+       IF ( .NOT. compact .OR. xNew .NE. xOld ) THEN
         nDup = iHi-iLo+1
         IF ( nDup .EQ. 1 ) THEN
          WRITE(msgBuf,'(A,1PE23.15,A)') '              ',xOld,punc
@@ -397,6 +417,7 @@ C     K    - Loop counter
        ENDIF
       ENDDO
       punc = ' '
+      IF ( markEnd ) punc = ','
       nDup = iHi-iLo+1
       IF    ( nDup .EQ. 1 ) THEN
        WRITE(msgBuf,'(A,1PE23.15,A)') '              ',xOld,punc

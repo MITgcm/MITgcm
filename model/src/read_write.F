@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.7 1998/06/22 15:26:26 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.8 1998/06/22 16:24:51 adcroft Exp $
 #include "CPP_EEOPTIONS.h"
 
 C--  File read_write.F: Routines to handle mid-level I/O interface.
@@ -13,8 +13,8 @@ C--   o WRITE_1D_R8 - Write list of real*8 values
 C--                   Uses MITgcmUV environment file format.
 C--   o WRITE_FLD_XY_RL  - Write two-dimensional model _RL field.
 C--   o WRITE_FLD_XYZ_RL - Write three-dimensional model _RL field.
-C--   o WRITE_CHECKPOINT - Write out checkpoint files for restarting.
 C--   o WRITE_STATE - Write out model state.
+C--   o WRITE_CHECKPOINT - Write out checkpoint files for restarting.
 
 CStartofinterface
       SUBROUTINE READ_CHECKPOINT ( myIter, myThid )
@@ -213,6 +213,8 @@ C          U.0000000100
      & pref(s1Lo:s1Hi)
        WRITE( fNamMeta, '(A)' )
      & pref(s1Lo:s1Hi)
+       s2Lo = 1
+       s2Hi = 1
       ELSE
        WRITE( fNamData, '(A,A)' )
      & pref(s1Lo:s1Hi),
@@ -378,13 +380,15 @@ C          U.0000000100
      & suff(s2Lo:s2Hi)
        WRITE( fNamMeta, '(A)' )
      & suff(s2Lo:s2Hi)
+       s1Lo = 1
+       s1Hi = 1
       ELSEIF ( suff .EQ. ' ' ) THEN
        WRITE( fNamData, '(A)' )
      & pref(s1Lo:s1Hi)
        WRITE( fNamMeta, '(A)' )
      & pref(s1Lo:s1Hi)
-       s2Lo=1
-       s2Hi=1
+       s2Lo = 1
+       s2Hi = 1
       ELSE
        WRITE( fNamData, '(A,A)' )
      & pref(s1Lo:s1Hi),
@@ -550,6 +554,8 @@ C          U.0000000100
      & pref(s1Lo:s1Hi)
        WRITE( fNamMeta, '(A)' )
      & pref(s1Lo:s1Hi)
+       s2Lo = 1
+       s2Hi = 1
       ELSE
        WRITE( fNamData, '(A,A)' )
      & pref(s1Lo:s1Hi),
@@ -724,6 +730,8 @@ C          U.0000000100
      & pref(s1Lo:s1Hi)
        WRITE( fNamMeta, '(A)' )
      & pref(s1Lo:s1Hi)
+       s2Lo = 1
+       s2Hi = 1
       ELSE
        WRITE( fNamData, '(A,A)' )
      & pref(s1Lo:s1Hi),
@@ -855,7 +863,7 @@ C     == Local variables ==
 
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_I( fld, lFld, index_type, standardMessageUnit )
+      CALL PRINT_LIST_I( fld, lFld, index_type, .FALSE., .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
 C
@@ -897,7 +905,7 @@ C     == Local variables ==
 
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_L( fld, lFld, index_type, standardMessageUnit )
+      CALL PRINT_LIST_L( fld, lFld, index_type, .FALSE., .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
 C
@@ -939,7 +947,7 @@ C     == Local variables ==
 
       WRITE(msgBuf,'(A,A)') head, comment
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
-      CALL PRINT_LIST_R8( fld, lFld, index_type, standardMessageUnit )
+      CALL PRINT_LIST_R8( fld, lFld, index_type, .FALSE., .TRUE., standardMessageUnit )
       WRITE(msgBuf,'(A)')   '    ;     '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
 C
@@ -1019,14 +1027,12 @@ C          U.p0001.t0001.meta.0000000100
       s1Hi = ILNBLNK(pref)
       s2Lo = IFNBLNK(suff)
       s2Hi = ILNBLNK(suff)
-      WRITE( fNamData, '(A,A,I4.4,A,I4.4,A,A)' )
-     & pref(s1Lo:s1Hi),
-     & 'p',myProcId,'.t',myThid, '.data.', 
-     & suff(s2Lo:s2Hi)
-      WRITE( fNamMeta, '(A,A,I4.4,A,I4.4,A,A)' )
-     & pref(s1Lo:s1Hi),
-     & 'p',myProcId,'.t',myThid, '.meta.', 
-     & suff(s2Lo:s2Hi)
+      WRITE( fNamData, '(A,A,A,I4.4,A,I4.4,A)' )
+     & pref(s1Lo:s1Hi),suff(s2Lo:s2Hi),
+     & '.p',myProcId,'.t',myThid, '.data'
+      WRITE( fNamMeta, '(A,A,A,I4.4,A,I4.4,A)' )
+     & pref(s1Lo:s1Hi),suff(s2Lo:s2Hi),
+     & '.p',myProcId,'.t',myThid, '.meta'
 
 C--   Open file
       CALL DFILE_OPEN( fNamData, fNamMeta, myThid,
@@ -1177,14 +1183,12 @@ C          U.p0001.t0001.meta.0000000100
       s1Hi = ILNBLNK(pref)
       s2Lo = IFNBLNK(suff)
       s2Hi = ILNBLNK(suff)
-      WRITE( fNamData, '(A,A,I4.4,A,I4.4,A,A)' )
-     & pref(s1Lo:s1Hi),
-     & 'p',myProcId,'.t',myThid, '.data.', 
-     & suff(s2Lo:s2Hi)
-      WRITE( fNamMeta, '(A,A,I4.4,A,I4.4,A,A)' )
-     & pref(s1Lo:s1Hi),
-     & 'p',myProcId,'.t',myThid, '.meta.', 
-     & suff(s2Lo:s2Hi)
+      WRITE( fNamData, '(A,A,A,I4.4,A,I4.4,A,A)' )
+     & pref(s1Lo:s1Hi),suff(s2Lo:s2Hi),
+     & '.p',myProcId,'.t',myThid, '.data'
+      WRITE( fNamMeta, '(A,A,A,I4.4,A,I4.4,A,A)' )
+     & pref(s1Lo:s1Hi),suff(s2Lo:s2Hi),
+     & '.p',myProcId,'.t',myThid, '.meta'
 
 C--   Open file
       CALL DFILE_OPEN( fNamData, fNamMeta, myThid,
@@ -1451,9 +1455,9 @@ C     myThid - Thread number for this instance of the routine.
 C     myIter - Iteration number
 C     myCurrentTime - Current time of simulation ( s )
       LOGICAL forceOutput
+      REAL    myCurrentTime
       INTEGER myThid
       INTEGER myIter
-      REAL    myCurrentTime
 CEndofinterface
 
 C     == Local variables ==

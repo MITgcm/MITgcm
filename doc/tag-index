@@ -1,7 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.6 1998/06/22 16:09:37 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.7 1998/06/22 16:24:50 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint9
+ MPI fix. Filename changes (meta/data). salbin*y stuff.
+ General tidy-up.
+ SST.bin SSS.bin added to verification/exp2
 
 checkpoint8
  Inludes time-dependant forcing and time-averaging.

@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake.dec,v 1.4 1998/06/22 15:26:26 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake.dec,v 1.5 1998/06/22 16:24:51 adcroft Exp $
 #
 #  Makefile generator for MITgcm UV codes
 #
@@ -31,7 +31,7 @@ set MODEL_IDIR  = ( ../model/inc/  )
 set TDIR        = ( ../tools/      )
 set BDIR        = ( ../bin/        )
 set EDIR        = ( ../exe/        )
-set EXE         = ( MITgcmUV       )
+set EXE         = ( mitgcmuv       )
 
 # ***************************************************************************************************
 # Pathnames and arguments for the commands used on this platform

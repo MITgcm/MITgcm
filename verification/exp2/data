@@ -41,15 +41,16 @@ cg2dTargetResidual=1.E-13,
 # Time stepping parameters
 &PARM03
  startTime=0,
- endTime=3110400000,
- deltaTmom=3600.0,
-tauCD=321428.,
+#endTime=3110400000,
+ endTime=2808000.,
+ deltaTmom=2400.0,
+ tauCD=321428.,
  deltaTtracer=108000.0,
  deltaTClock =108000.0,
  abEps=0.1,
  pChkptFreq=0.0,
  chkptFreq=0.0,
- dumpFreq=2592000.,
+ dumpFreq=2592000.0,
  tauThetaClimRelax=2592000.0,
  tauSaltClimRelax=2592000.0,
 /
@@ -64,7 +65,7 @@ delZ= 5.000000e+01, 5.000000e+01, 5.500000e+01, 6.000000e+01,
       3.200000e+02, 4.000000e+02, 4.800000e+02, 5.700000e+02,
       6.550000e+02, 7.250000e+02, 7.750000e+02, 8.150000e+02,
 phiMin=-80.,
-delY=41*4,
+delY=40*4,
 delX=90*4,
 /
 
@@ -75,6 +76,6 @@ delX=90*4,
  hydrogSaltFile='saltLevCli',
  zonalWindFile='windx',
  meridWindFile='windy',
- thetaClimFile='thetaLevCli'
- saltClimFile='saltLevCli'
+ thetaClimFile='SST.bin'
+ saltClimFile='SSS.bin'
 /

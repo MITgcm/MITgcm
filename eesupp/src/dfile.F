@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.4 1998/06/22 15:26:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.5 1998/06/22 16:24:51 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -325,7 +325,7 @@ C--   Check that file is active
        iLo = IFNBLNK(fNam)
        iHi = ILNBLNK(fNam)
        ioUnit = dUnitNumber(fileHandle,myThid)
-       READ(ioUnit) (ioBuf_R4(I),I=1,lBuffer)
+       READ(ioUnit,ERR=899) (ioBuf_R4(I),I=1,lBuffer)
 
 
  1000 CONTINUE
@@ -570,25 +570,32 @@ C--   Now write meta information
        WRITE(msgBuf,'(A)') '// START OF META DATA'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
-       WRITE(msgBuf,'(A,A)') ' id = ','/* Identifier */'
+       WRITE(msgBuf,'(A,A)') ' id =[ ','/* Identifier */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-       CALL PRINT_LIST_I( fileId, 1, INDEX_NONE, ioUnit )
-       WRITE(msgBuf,'(A)')   '    ;     '
-       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-
-       WRITE(msgBuf,'(A,A)') ' nDims = ','/* Number of dimensions */'
-       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-       CALL PRINT_LIST_I( nDims, 1, INDEX_NONE, ioUnit )
-       WRITE(msgBuf,'(A)')   '    ;     '
+       CALL PRINT_LIST_I( fileId, 1, INDEX_NONE, .FALSE., .TRUE., ioUnit )
+       WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
-       WRITE(msgBuf,'(A,A)') ' dimList = ',
+       WRITE(msgBuf,'(A,A)') ' nDims =[ ','/* Number of dimensions */'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
+       CALL PRINT_LIST_I( nDims, 1, INDEX_NONE, .FALSE., .TRUE., ioUnit )
+       WRITE(msgBuf,'(A)')   '   ];     '
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
+
+       WRITE(msgBuf,'(A,A)') ' dimList =[ ',
      &  '/* Global1, local min1, local max1, ... */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
        DO I=1,nDims
-        CALL PRINT_LIST_I( dimList((I-1)*3+1), 3, INDEX_NONE, ioUnit )
+        CALL PRINT_LIST_I( dimList((I-1)*3+1), 3, INDEX_NONE, I.NE.nDims, .FALSE., ioUnit )
        ENDDO
-       WRITE(msgBuf,'(A)')   '    ;     '
+       WRITE(msgBuf,'(A)')   '   ];     '
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
+
+       WRITE(msgBuf,'(A,A)') ' format =[ ','/* Field format */'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
+       WRITE(msgBuf,'(16X,A)')   '''float32'''
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
+       WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
        WRITE(msgBuf,'(A)') '// END OF META DATA'
@@ -692,25 +699,34 @@ C--   Now write meta information
        WRITE(msgBuf,'(A)') '// START OF META DATA'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
-       WRITE(msgBuf,'(A,A)') ' id = ','/* Identifier */'
+       WRITE(msgBuf,'(A,A)') ' id =[ ','/* Identifier */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-       CALL PRINT_LIST_I( fileId, 1, INDEX_NONE, ioUnit )
-       WRITE(msgBuf,'(A)')   '    ;     '
-       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-
-       WRITE(msgBuf,'(A,A)') ' nDims = ','/* Number of dimensions */'
-       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
-       CALL PRINT_LIST_I( nDims, 1, INDEX_NONE, ioUnit )
-       WRITE(msgBuf,'(A)')   '    ;     '
+       CALL PRINT_LIST_I( fileId, 1, INDEX_NONE, .FALSE., .TRUE., ioUnit )
+       WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
 
-       WRITE(msgBuf,'(A,A)') ' dimList = ',
+       WRITE(msgBuf,'(A,A)') ' nDims =[ ','/* Number of dimensions */'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
+       CALL PRINT_LIST_I( nDims, 1, INDEX_NONE, .FALSE., .TRUE., ioUnit )
+       WRITE(msgBuf,'(A)')   '   ];     '
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
+
+       WRITE(msgBuf,'(A,A)') ' dimList =[ ',
      &  '/* Global1, local min1, local max1, ... */'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
        DO I=1,nDims
-        CALL PRINT_LIST_I( dimList((I-1)*3+1), 3, INDEX_NONE, ioUnit )
+        CALL PRINT_LIST_I( dimList((I-1)*3+1), 3, INDEX_NONE, I.NE.nDims, .FALSE., ioUnit )
        ENDDO
+       WRITE(msgBuf,'(A)')   '   ];     '
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
+
+       WRITE(msgBuf,'(A,A)') ' format =[ ','/* Field format */'
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
+       WRITE(msgBuf,'(16X,A)')   '''float64'''
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
+       WRITE(msgBuf,'(A)')   '   ];     '
+       CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
+
        WRITE(msgBuf,'(A)') '// END OF META DATA'
        CALL PRINT_MESSAGE( msgBuf, ioUnit, SQUEEZE_RIGHT , 1)
        metaDataStatus(fileHandle,myThid) = metaDataWritten
