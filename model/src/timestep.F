@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.17 1999/08/30 18:25:33 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.18 2000/09/11 20:53:25 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -10,16 +10,19 @@ C     \==========================================================/
      I                     K,
      I                     myIter, myThid )
       implicit none
-! Common
+
+C     == Global variables ==
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+
 C     == Routine Arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER K
       INTEGER myIter, myThid
+
 C     == Local variables ==
       INTEGER i,j
       _RL ab15,ab05
