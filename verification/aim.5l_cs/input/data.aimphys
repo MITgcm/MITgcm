@@ -1,5 +1,29 @@
 # AIM physics package parameters:
 
+C--   AIM interface parameter (namelist AIM_PARAMS):
+#     aim_useFMsurfBC :: select surface B.C. from Franco Molteni
+#     aim_useMMsurfFc :: select Monthly Mean surface forcing (e.g., NCEP)
+#     aim_surfPotTemp :: surf.Temp input file is in Pot.Temp (aim_useMMsurfFc)
+#     aim_MMsufx   :: sufix for all Monthly Mean surface forcing files
+#     aim_MMsufxLength :: Length of sufix (Monthly Mean surf. forc. files)
+#     aim_LandFile :: file name for Land fraction       (F.M. surfBC)
+#     aim_albFile  :: file name for Albedo input file   (F.M. surfBC)
+#     aim_vegFile  :: file name for vegetation fraction (F.M. surfBC)
+#     aim_sstFile  :: file name for  Sea.Surf.Temp      (F.M. surfBC)
+#     aim_lstFile  :: file name for Land.Surf.Temp      (F.M. surfBC)
+#     aim_oiceFile :: file name for Sea Ice fraction    (F.M. surfBC)
+#     aim_snowFile :: file name for Snow depth          (F.M. surfBC)
+#     aim_swcFile  :: file name for Soil Water content  (F.M. surfBC)
+#     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
+#     aim_tendFreq :: Frequency^-1 for tendencies output (s)
+ &AIM_PARAMS
+   aim_useFMsurfBC=.FALSE.,
+   aim_useMMsurfFc=.TRUE.,
+#  aim_surfPotTemp=.TRUE.,
+   aim_MMsufx = '.cs.bin',
+   aim_MMsufxLength = 7,
+ &
+
 #--   Physical constants
 #      P0   = reference pressure
 #      GG   = gravity accel.
