@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c4_adv_y.F,v 1.2 2001/07/11 22:46:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c4_adv_y.F,v 1.3 2001/08/20 20:45:15 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -13,6 +13,7 @@ C     /==========================================================\
 C     | SUBROUTINE GAD_C4_ADV_Y                                  |
 C     | o Compute Meridional advective Flux of Tracer using      |
 C     |   4th Order Centered Scheme                              |
+C     | o reduced to 2nd or 3rd Order near a boundary            |
 C     |==========================================================|
       IMPLICIT NONE
 
@@ -40,15 +41,21 @@ C     == Local variables ==
       ENDDO
       DO j=1-Oly+2,sNy+Oly-1
        DO i=1-Olx,sNx+Olx
-        Rjp=(tracer(i,j+1)-tracer(i,j))*maskS(i,j+1,k,bi,bj)
-        Rj=(tracer(i,j)-tracer(i,j-1))*maskS(i,j,k,bi,bj)
-        Rjm=(tracer(i,j-1)-tracer(i,j-2))*maskS(i,j-1,k,bi,bj)
-        Rjjp=Rjp-Rj
-        Rjjm=Rj-Rjm
-        vT(i,j) = 
+        Rjp=(tracer(i,j+1)-tracer(i,j))
+c    &     *maskS(i,j+1,k,bi,bj)
+        Rj =(tracer(i,j)-tracer(i,j-1))
+c    &     *maskS(i,j,k,bi,bj)
+        Rjm=(tracer(i,j-1)-tracer(i,j-2))
+c    &     *maskS(i,j-1,k,bi,bj)
+C- jmc: mask not needed here above if Rjjp & Rjjm & vTrans are masked
+        Rjjp=(Rjp-Rj)*maskS(i,j+1,k,bi,bj)
+        Rjjm=(Rj-Rjm)*maskS(i,j-1,k,bi,bj)
+        vT(i,j) =
      &   vTrans(i,j)*(
      &     Tracer(i,j)+Tracer(i,j-1)-oneSixth*( Rjjp+Rjjm )
      &               )*0.5 _d 0
+     &  +ABS( vTrans(i,j) )*0.5 _d 0*oneSixth*( Rjjp-Rjjm )
+     &    *( 1. _d 0 - maskS(i,j-1,k,bi,bj)*maskS(i,j+1,k,bi,bj) )
        ENDDO
       ENDDO
 

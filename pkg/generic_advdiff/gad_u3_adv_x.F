@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3_adv_x.F,v 1.1 2001/07/12 00:31:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3_adv_x.F,v 1.2 2001/08/20 20:44:01 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -13,6 +13,7 @@ C     /==========================================================\
 C     | SUBROUTINE GAD_U3_ADV_X                                  |
 C     | o Compute Zonal advective Flux of Tracer using           |
 C     |   3rd Order Upwind Scheme                                |
+C     | o reduced to 2nd or 3rd Order near a boundary            |
 C     |==========================================================|
       IMPLICIT NONE
 
@@ -37,11 +38,15 @@ C     == Local variables ==
        uT(2-Olx,j)=0.
        uT(sNx+Olx,j)=0.
        DO i=1-Olx+2,sNx+Olx-1
-        Rjp=(tracer(i+1,j)-tracer(i,j))*maskW(i+1,j,k,bi,bj)
-        Rj =(tracer(i,j)-tracer(i-1,j))*maskW(i,j,k,bi,bj)
-        Rjm=(tracer(i-1,j)-tracer(i-2,j))*maskW(i-1,j,k,bi,bj)
-        Rjjp=Rjp-Rj
-        Rjjm=Rj-Rjm
+        Rjp=(tracer(i+1,j)-tracer(i,j))
+c    &     *maskW(i+1,j,k,bi,bj)
+        Rj =(tracer(i,j)-tracer(i-1,j))
+c    &     *maskW(i,j,k,bi,bj)
+        Rjm=(tracer(i-1,j)-tracer(i-2,j))
+c    &     *maskW(i-1,j,k,bi,bj)
+C- jmc: mask not needed here above if Rjjp & Rjjm & uTrans are masked
+        Rjjp=(Rjp-Rj)*maskW(i+1,j,k,bi,bj)
+        Rjjm=(Rj-Rjm)*maskW(i-1,j,k,bi,bj)
         uT(i,j) = 
      &   uTrans(i,j)*(
      &     Tracer(i,j)+Tracer(i-1,j)-oneSixth*( Rjjp+Rjjm )
