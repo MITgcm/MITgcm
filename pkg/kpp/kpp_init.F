@@ -1,18 +1,19 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.10 2004/07/18 01:18:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_init.F,v 1.11 2004/10/07 19:31:14 edhill Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C     !ROUTINE: KPP_INIT
 
+C     !INTERFACE:
       SUBROUTINE KPP_INIT( myThid )
-C     /==========================================================\
-C     | SUBROUTINE KPP_INIT                                      |
-C     | o Routine to initialize KPP parameters and variables.    |
-C     |==========================================================|
-C     | Initialize KPP parameters and variables.                 |
-C     \==========================================================/
-      IMPLICIT NONE
 
-C     === Global variables ===
+C     !DESCRIPTION:
+C     Routine to initialize KPP parameters and variables.
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -20,13 +21,12 @@ C     === Global variables ===
 #include "KPP.h"
 #include "KPP_PARAMS.h"
 
-C     === Routine arguments ===
-C     myThid -  Number of this instance of KPP_INIT
+C     !INPUT PARAMETERS:
       INTEGER myThid
+CEOP
 
+C     !LOCAL VARIABLES:
 #ifdef ALLOW_KPP
-
-C     === Local variables ===
 C     i,j,k,bi,bj - Loop counters
 C     zehat       - zeta * ustar**3
 C     zeta        - Stability parameter d/l

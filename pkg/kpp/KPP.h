@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP.h,v 1.7 2004/05/05 22:50:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP.h,v 1.8 2004/10/07 19:31:14 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_KPP
@@ -38,3 +38,8 @@ CEOP
       COMMON /kpp_short/ KPPfrac
 
 #endif /* ALLOW_KPP */
+
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

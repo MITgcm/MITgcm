@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.362 2004/10/01 16:15:29 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.363 2004/10/07 19:31:14 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o further mnc-ification
+  - add verification/lab_sea to the list with mnc setups
+  - fix undefined mnc v-names in cd_code
+  - add kpp to mnc output (both snapshot and timeave)
 o non-hydrostatic code
   - added horizontal viscosity parameter viscAhW for w, that replaces viscAh
     in calc_gw.F

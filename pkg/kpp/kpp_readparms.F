@@ -1,28 +1,34 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.8 2003/02/18 05:33:55 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.9 2004/10/07 19:31:14 edhill Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
-      SUBROUTINE KPP_READPARMS( myThid )
-C     /==========================================================\
-C     | SUBROUTINE KPP_READPARMS                                 |
-C     | o Routine to read in file data.kpp                       |
-C     \==========================================================/
-      IMPLICIT NONE
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C     !ROUTINE: KPP_READPARMS
 
-C     === Global variables ===
+C     !INTERFACE:
+      SUBROUTINE KPP_READPARMS( myThid )
+
+C     !DESCRIPTION:
+C     Routine to read in file data.kpp
+
+C     !USES:
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#ifdef ALLOW_MNC
+#include "MNC_PARAMS.h"
+#endif
 #include "GRID.h"
 #include "KPP_PARAMS.h"
 
-C     === Routine arguments ===
-C     myThid -  Number of this instance of KPP_INIT
+C     !INPUT PARAMETERS:
       INTEGER myThid
+CEOP
 
+C     !LOCAL VARIABLES:
 #ifdef ALLOW_KPP
-
-C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
 C     errIO       - IO error flag
 C     iUnit       - Work variable for IO unit number
@@ -151,6 +157,67 @@ C      CALL MODELDATA_EXAMPLE( myThid )
      &                    SQUEEZE_RIGHT , 1)
 
       _END_MASTER(myThid)
+
+#ifdef ALLOW_MNC
+      IF (useMNC) THEN
+C       Define grid types for KPP variables
+        CALL MNC_CW_ADD_VNAME('KPPviscAz', 'Cen_xy_Hn__C__t',
+     &       4,5, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPviscAz','units','m^2/s', 
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPviscAz','long_name',
+     &       'KPP_vertical_eddy_viscosity_coefficient', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPviscAz',
+     &       'coordinates','XC YC RC iter', myThid)
+        
+        CALL MNC_CW_ADD_VNAME('KPPdiffKzS', 'Cen_xy_Hn__C__t', 
+     &       4,5, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzS','units','m^2/s', 
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzS','long_name',
+     &       'KPP_salt-tracer_vertical_diffusion_coefficient', 
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzS',
+     &       'coordinates','XC YC RC iter', myThid)
+        
+        CALL MNC_CW_ADD_VNAME('KPPdiffKzT', 'Cen_xy_Hn__C__t', 
+     &       4,5, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzT','units','m^2/s', 
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzT','long_name',
+     &       'KPP_vertical_heat_diffusion_coefficient', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPdiffKzT',
+     &       'coordinates','XC YC RC iter', myThid)
+        
+        CALL MNC_CW_ADD_VNAME('KPPghat', 'Cen_xy_Hn__C__t', 
+     &       4,5, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPghat','units','s/m^2', 
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPghat','long_name',
+     &       'KPP_nonlocal_transport_coefficient', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPghat',
+     &       'coordinates','XC YC RC iter', myThid)
+        
+        CALL MNC_CW_ADD_VNAME('KPPhbl', 'Cen_xy_Hn__-__t', 
+     &       3,4, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPhbl','units','m', 
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPhbl','long_name',
+     &       'KPP_mixing_layer_depth', myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPhbl',
+     &       'coordinates','XC YC iter', myThid)
+        
+        CALL MNC_CW_ADD_VNAME('KPPfrac', 'Cen_xy_Hn__-__t', 
+     &       3,4, myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPfrac','units','dimless', 
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPfrac','long_name',
+     &       'KPP_short-wave_fraction_penetrating_mixing_layer', 
+     &       myThid)
+        CALL MNC_CW_ADD_VATTR_TEXT('KPPfrac',
+     &       'coordinates','XC YC iter', myThid)
+      ENDIF
+#endif /* ALLOW_MNC */
 
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER

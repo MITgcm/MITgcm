@@ -72,3 +72,7 @@ C   usually not necessary, but useful for testing
 #endif /* ALLOW_KPP */
 #endif /* KPP_OPTIONS_H */
 
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.8 2004/07/18 01:18:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.9 2004/10/07 19:31:14 edhill Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -224,3 +224,8 @@ c-----------------------------------------------------------------------
       common /kmixcbm/ cstar, cg
 
 #endif /* ALLOW_KPP */
+
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/KPP_DIAGS.h,v 1.4 2004/07/24 01:16:25 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/KPP_DIAGS.h,v 1.5 2004/10/07 19:31:14 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_KPP
@@ -45,3 +45,8 @@ C----------------------------------------------------------------
 #endif
 
 #endif
+
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***
