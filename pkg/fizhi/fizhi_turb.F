@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.10 2004/07/14 17:31:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.11 2004/07/14 21:47:05 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -210,7 +210,6 @@ C Set fmu and ed to zero for no background diffusion
       real dshdthg(istrip,nlay),dthdthg(istrip,nlay)
       real dshdshg(istrip,nlay),dthdshg(istrip,nlay)
       real transth(istrip,nlay), transsh(istrip,nlay)
-      real checktrb(istrip,nlay)
 
       real tc(istrip),td(istrip),qa(istrip)
       real swet1(istrip),swet2(istrip),swet3(istrip)
@@ -230,7 +229,7 @@ C Set fmu and ed to zero for no background diffusion
       real qliqmsc(nchp,nlay),fccmsc(nchp,nlay)
 
       integer ndlsm
-      parameter ( ndlsm = 1 )
+      parameter ( ndlsm = 40)
       real qdiaglsm(nchp,ndlsm)
 
       integer n,nsecf,nmonf,ndayf
@@ -331,21 +330,6 @@ c **********************************************************************
 c                            Initialization
 c **********************************************************************
       
-c Zero-out 2m and 10m Couplings
-c -----------------------------
-      do j = 1,jm
-      do i = 1,im
-       u2m(i,j) = 0.0
-       v2m(i,j) = 0.0
-       t2m(i,j) = 0.0
-       q2m(i,j) = 0.0
-      u10m(i,j) = 0.0
-      v10m(i,j) = 0.0
-      t10m(i,j) = 0.0
-      q10m(i,j) = 0.0
-      enddo
-      enddo
-
 c Initialize diagnostic for ground temperature change
 c ---------------------------------------------------
       if(idtg.gt.0) then
@@ -639,8 +623,7 @@ c -----------
      4 stq10m,istrip,nlay,nymd,nhms,grav,cp,rgas,faceps,virtcon,undef,
      5 dshdthg,dshdshg,dthdthg,dthdshg,eturb,dedqa,dedtc,
      6 hsturb,dhsdqa,dhsdtc,transth,transsh,
-     7 ctsave,xxsave,yysave,zetasave,xlsave,khsave,qliq,turbfcc,
-     8 checktrb)
+     7 ctsave,xxsave,yysave,zetasave,xlsave,khsave,qliq,turbfcc)
 
       call pastit (qq,tke,istrip,nchp,nchp,nlay,nn)
       call pastit (ctsave,ctmt,istrip,nchp,nchp,1,nn)
@@ -880,7 +863,7 @@ c***********************************************************************
       call pstbmpit(chfrstr,qdiaglsm(1,2),istrip,nchp,nchp,1,nn)
       call pstbmpit(lats,qdiaglsm(1,3),istrip,nchp,nchp,1,nn)
       call pstbmpit(lons,qdiaglsm(1,4),istrip,nchp,nchp,1,nn)
-      call pstbmpit(igrdstr,qdiaglsm(1,5),istrip,nchp,nchp,1,nn)
+c     call pstbmpit(igrdstr,qdiaglsm(1,5),istrip,nchp,nchp,1,nn)
       call pstbmpit(tc,qdiaglsm(1,6),istrip,nchp,nchp,1,nn)
       call pstbmpit(td,qdiaglsm(1,7),istrip,nchp,nchp,1,nn)
       call pstbmpit(qa,qdiaglsm(1,8),istrip,nchp,nchp,1,nn)
@@ -954,11 +937,6 @@ c**********************************************************************
       enddo
       enddo
  
-      if(tprof)then
-       CALL PNTPRF (1,IJALL,nlay,NYMD,NHMS,transth,'TRB T FLUX      ')
-       CALL PNTPRF (1,IJALL,nlay,NYMD,NHMS,transsh,'TRB Q FLUX      ')
-      endif
-
 c tendency updates
 c ----------------
       do  l=1,nlay
@@ -1163,12 +1141,6 @@ c**********************************************************************
      .             nchp,qdiag(1,1,icapacity,bi,bj),ijall,1,nn,.false.)
       if(isnow.gt.0)call paste2grd(snowdepth,igrd,chfrstr,istrip,nchp,
      .                  qdiag(1,1,isnow,bi,bj)    ,ijall,1,nn,.false.)
-
-c**********************************************************************
-      IF(Iudiag1.GT.0) then
-      call paste2grd(checktrb,igrd,chfrstr,istrip,nchp,
-     1                   qdiag(1,1,iudiag1,bi,bj),ijall,nlay,nn,.false.)
-      endif
 
 c**********************************************************************
 c end regions loop
@@ -1513,7 +1485,7 @@ C**********************************************************************
       implicit none
 
 C Argument list declarations
-      integer nn,irun,nlev,ntrace,ntracedim.itrtrb,nhms,nymd
+      integer nn,irun,nlev,ntrace,ntracedim,itrtrb,nhms,nymd
       real TH(irun,NLEV+1),THV(irun,NLEV+1),SH(irun,NLEV+1)
       real U(irun,NLEV+1),V(irun,NLEV+1),QQ(irun,NLEV)
       real PL(irun,NLEV),PLE(irun,NLEV+1),PLK(irun,NLEV)
@@ -1521,8 +1493,19 @@ C Argument list declarations
       integer IWATER(irun)
       real Z0(irun)
       real tracers(irun,nlev+1,ntracedim)
-      real KMBG,KHBG
+      real dtau,KMBG,KHBG
       LOGICAL QBEG,TPROF
+      real SWINDS(irun)
+      real SRI(irun,nlev), ET(irun,nlev)
+      real EU (irun,nlev)
+      real WU(irun,nlev)
+      real WV (irun,nlev), pbldpth(irun)
+      real sustar(irun), sz0(irun)
+      real freqdg(irun,nlev-1)
+      real sct(irun), scu(irun)
+      real stu2m(irun),stv2m(irun),stt2m(irun),stq2m(irun)
+      real stu10m(irun),stv10m(irun),stt10m(irun),stq10m(irun)
+      real grav,cp,rgas,faceps,virtcon,undef
       real eturb(irun),dedqa(irun),dedtc(irun)
       real hsturb(irun),dhsdqa(irun),dhsdtc(irun)
       real dshdthg(irun,nlev),dthdthg(irun,nlev)
@@ -1532,7 +1515,7 @@ C Argument list declarations
       real zetasave(irun),xlsave(irun,nlev),khsave(irun,nlev)
       real qliq(irun,nlev),turbfcc(irun,nlev)
 
-C
+C Local Variables
       real b1,b3,alpha,halpha,qqmin,qbustr
       PARAMETER ( B1      =   16.6    )  
       PARAMETER ( B3      = 1. / B1  )  
@@ -1547,67 +1530,41 @@ C
       PARAMETER ( B2    =  10.1 )
       PARAMETER ( two   =   2.0 )
 
-C Diagnostic Variables
-C --------------------
-      DIMENSION SWINDS(irun)
-      DIMENSION    SRI(irun,nlev), ET(irun,nlev)
-      DIMENSION    EU (irun,nlev)
-      DIMENSION    WU(irun,nlev)
-      DIMENSION    WV (irun,nlev), pbldpth(irun)
-      DIMENSION sustar(irun),          sz0(irun)
-      DIMENSION    sct(irun),          scu(irun)
-      dimension stu2m(irun),stv2m(irun),stt2m(irun),stq2m(irun)
-      dimension stu10m(irun),stv10m(irun),
-     1                              stt10m(irun),stq10m(irun)
-      DIMENSION freqdg(irun,nlev-1)
+      real AHS (irun), HS(irun)
+      real XX  (irun), YY(irun), CU(irun)
+      real CT(irun),  USTAR(irun)
+      real RIB(irun),   ZETA(irun), WS(irun)
+      real DTHS(irun), DELTHS(irun)
+      real DTHL(irun), DELTHL(irun)
+      real RIBIN(irun),CUIN(irun)
+      real CTIN(irun),ZETAIN(irun)
+      real USTARIN(irun),RHOSIN(irun),Z0IN(irun)
+      real qqcolmin(irun),qqcolmax(irun),levpbl(irun)
 
-C Dynamic Variables
-C -----------------
-      DIMENSION AHS (irun), HS(irun)
-      DIMENSION XX  (irun), YY(irun), CU(irun)
-      DIMENSION CT     (irun),  USTAR(irun)
-      DIMENSION RIB    (irun),   ZETA(irun), WS(irun)
-      DIMENSION DTHS   (irun), DELTHS(irun)
-      DIMENSION DTHL   (irun), DELTHL(irun)
-      DIMENSION TG     (irun)
-      DIMENSION RIBIN  (irun),   CUIN(irun)
-      DIMENSION CTIN   (irun), ZETAIN(irun)
-      DIMENSION USTARIN(irun), RHOSIN(irun), Z0IN(irun)
-      DIMENSION    TMP1(irun),   TMP2(irun)
-      DIMENSION    TMP3(irun),  ITMP1(irun)
-      DIMENSION   ITMP2(irun)
-      dimension qqcolmin(irun),qqcolmax(irun),levpbl(irun)
+      real ADZ1(irun,nlev), DZ1TMP(irun,nlev)
+      real DZ3(irun,nlev), TEMP(irun,nlev)
+      real DV(irun,nlev), DTHV(irun,nlev)
+      real DPK(irun,nlev), STRT(irun,nlev)
+      real DW2(irun,nlev), RI(irun,nlev)
+      real RHOZPK(irun,nlev), Q(irun,nlev)
+      real RIINIT(irun,nlev), DU(irun,nlev)
+      real QQINIT(irun,nlev), RHOKDZ(irun,nlev)
+      real RHODZ2(irun,nlev)
+      REAL KM(irun,nlev), KH(irun,nlev)
 
-C Dynamic Variables
-C -----------------
-      DIMENSION ADZ1   (irun,nlev  ), DZ1TMP(irun,nlev)
-      DIMENSION DZ3    (irun,nlev  ), TEMP  (irun,nlev)
-      DIMENSION DV     (irun,nlev  ), DTHV  (irun,nlev)
-      DIMENSION DPK    (irun,nlev  ), STRT  (irun,nlev)
-      DIMENSION DW2    (irun,nlev  ), RI    (irun,nlev)
-      DIMENSION RHOZPK (irun,nlev  ), Q     (irun,nlev)
-      DIMENSION RIINIT (irun,nlev  ), DU    (irun,nlev)
-      DIMENSION QQINIT (irun,nlev  ), RHOKDZ(irun,nlev)
-      DIMENSION RHODZ2 (irun,nlev  )
-      REAL      KM     (irun,nlev  ),     KH(irun,nlev)
+      real DELTH  (irun,nlev+1), DELSH (irun,nlev+1)
+      real FLXFAC (irun,nlev+1)
+      real FLXFPK (irun,nlev+1)
 
-C Dynamic Variables
-C -----------------
-      DIMENSION DELTH  (irun,nlev+1), DELSH (irun,nlev+1)
-      DIMENSION FLXFAC (irun,nlev+1), DTHG  (irun,nlev+1)
-      DIMENSION FLXFPK (irun,nlev+1)
-
-C Dynamic Variables
-C -----------------
-      DIMENSION ADZ2   (irun,nlev-1), RHODZ1(irun,nlev-1)
-      DIMENSION VKZE   (irun,nlev-1), VKZM  (irun,nlev-1)
-      DIMENSION XL     (irun,nlev-1), QXLM  (irun,nlev-1)
-      DIMENSION QQE    (irun,nlev-1), QE    (irun,nlev-1)
-      DIMENSION P3     (irun,nlev-1), XQ    (irun,nlev-1)
-      DIMENSION XLDIAG (irun,nlev-1), FLXFCE(irun,nlev-1)
+      real ADZ2   (irun,nlev-1), RHODZ1(irun,nlev-1)
+      real VKZE   (irun,nlev-1), VKZM  (irun,nlev-1)
+      real XL     (irun,nlev-1), QXLM  (irun,nlev-1)
+      real QQE    (irun,nlev-1), QE    (irun,nlev-1)
+      real P3     (irun,nlev-1), XQ    (irun,nlev-1)
+      real XLDIAG (irun,nlev-1), FLXFCE(irun,nlev-1)
 
       LOGICAL FIRST,LAST
-      DIMENSION IBITSTB(irun,nlev),IBITSTR(irun),INTQ(irun,nlev)
+      integer IBITSTB(irun,nlev),INTQ(irun,nlev)
  
 C arrays for use by moist bouyancy calculation
 C -----------------
@@ -1622,42 +1579,42 @@ C -----------------
       real BETAL(irun,NLEV),BETAT1(irun,NLEV)
       real BETAW1(irun,NLEV),SBAR(irun,NLEV)
       real SHSAT(irun,NLEV)
-      real TEMPOR(irun,NLEV)
 
 C Some space for variables to be used in called routines
       logical LWATER
       integer IVBITRIB(irun)
-      DIMENSION VHZ(irun)
-      DIMENSION VH0(irun)
-      DIMENSION VPSIM(irun),VAPSIM(irun)
-      DIMENSION VPSIG(irun),VPSIHG(irun)
-      DIMENSION VTEMP(irun),VDZETA(irun)
-      DIMENSION VDZ0(irun),VDPSIM(irun)
-      DIMENSION VDPSIH(irun),VZH(irun)
-      DIMENSION VXX0(irun),VYY0(irun)
-      DIMENSION VAPSIHG(irun),VRIB1(irun),VWS1(irun)
-      DIMENSION VPSIH(irun),VZETAL(irun)
-      DIMENSION VZ0L(irun),VPSIH2(irun)
-      DIMENSION VX0PSIM(irun),VG(irun),VG0(irun),VR1MG0(irun)
-      DIMENSION VZ2(irun),VDZSEA(irun),VAZ0(irun),VXNUM1(irun)
-      DIMENSION VPSIGB2(irun),VDX(irun),VDXPSIM(irun),VDY(irun)
-      DIMENSION VXNUM2(irun),VDEN(irun),VAWS1(irun),VXNUM3(irun)
-      DIMENSION VXNUM(irun),VDZETA1(irun),VDZETA2(irun)
-      DIMENSION VZCOEF2(irun),VZCOEF1(irun),VTEMPLIN(irun)
-      DIMENSION VDPSIMC(irun),VDPSIHC(irun)
-      integer types(irun)
-      character*40 name
+      real VHZ(irun)
+      real VH0(irun)
+      real VPSIM(irun),VAPSIM(irun)
+      real VPSIG(irun),VPSIHG(irun)
+      real VTEMP(irun),VDZETA(irun)
+      real VDZ0(irun),VDPSIM(irun)
+      real VDPSIH(irun),VZH(irun)
+      real VXX0(irun),VYY0(irun)
+      real VAPSIHG(irun),VRIB1(irun),VWS1(irun)
+      real VPSIH(irun),VZETAL(irun)
+      real VZ0L(irun),VPSIH2(irun)
+      real VX0PSIM(irun),VG(irun),VG0(irun),VR1MG0(irun)
+      real VZ2(irun),VDZSEA(irun),VAZ0(irun),VXNUM1(irun)
+      real VPSIGB2(irun),VDX(irun),VDXPSIM(irun),VDY(irun)
+      real VXNUM2(irun),VDEN(irun),VAWS1(irun),VXNUM3(irun)
+      real VXNUM(irun),VDZETA1(irun),VDZETA2(irun)
+      real VZCOEF2(irun),VZCOEF1(irun),VTEMPLIN(irun)
+      real VDPSIMC(irun),VDPSIHC(irun)
 
-      DIMENSION DZITRP(irun,nlev-1), STBFCN(irun,nlev)
-      DIMENSION    XL0(irun,nlev),       Q1(irun,nlev-1)
-      DIMENSION WRKIT1(irun,nlev-1)
-      DIMENSION WRKIT2(irun,nlev-1)
-      DIMENSION WRKIT3(irun,nlev-1)
-      DIMENSION WRKIT4(irun,nlev-1)
+      real DZITRP(irun,nlev-1),STBFCN(irun,nlev)
+      real XL0(irun,nlev),Q1(irun,nlev-1)
+      real WRKIT1(irun,nlev-1)
+      real WRKIT2(irun,nlev-1)
+      real WRKIT3(irun,nlev-1)
+      real WRKIT4(irun,nlev-1)
       INTEGER INT1(irun,nlev), INT2(irun,nlev-1)
  
-      real vrt1con,pi,rsq2pi,p5sr,clh
-      integer nt
+      real vrt1con,pi,rsq2pi,p5sr,clh,vk,rvk,aitr,gbycp,fac1,fac2
+      real getcon,dum,errf
+      integer istnlv,nlevm1,nlevm2,nlevml,nlevp1,istnm1,istnm2,istnp1
+      integer istnml,istnmq,istlmq,nlevmq
+      integer i,iter,init,n,nt,LL,L,Lp,Lp1,lmin,lminq,lminq1,ibit
 
       vk = getcon('VON KARMAN')
       rvk = 1./vk
@@ -1677,39 +1634,6 @@ C Some space for variables to be used in called routines
       P5SR = 0.5**0.5
       CLH = GETCON('LATENT HEAT COND') / CP
 
-C CALL POINT BY POINT DIAGNOSTIC ROUTINE FOR 'BEFORE' VALUES
-C ----------------------------------------------------------
-      IF(TPROF) THEN
-      do i = 1,irun
-       types(i) = 1
-      enddo
-      name = 'mid pressure'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,pl)
-      name = 'edge pressure'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev+1,name,ple)
-      name = 'mid p ** kappa'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,plke)
-      name = 'edge p ** kappa'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev+1,name,plke)
-      name = 'theta before'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev+1,name,th)
-      name = 'theta virtual before'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev+1,name,thv)
-      name = 'q before'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev+1,name,sh)
-      name = 'u wind before'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,u)
-      name = 'v wind before'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,V)
-      name = 'heat cap ground'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,1,name,hcapg)
-      name = 'latent heat at ground'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,1,name,clhg)
-      name = 'net surface rad'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,1,name,radflx)
-      name = 'background heat transfer'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,1,name,khbg)
-      ENDIF
 C SET INITIAL NUMBER OF ITERATIONS OF SFCFLX
 C ------------------------------------------
       N = 6
@@ -2469,60 +2393,6 @@ C
        WV(I,1) =  WV(I,1) * AITR
 9194  CONTINUE
 C
-C  IF TPROF, CALL POINT BY POINT DIAGNOSTIC ROUTINE FOR 'AFTER' VALUES
-C
-       IF(TPROF)THEN
-      name = 'tke before'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,qqinit)
-      name = 'richardson number before'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,riinit)
-      name = 'theta after'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev+1,name,th)
-      name = 'theta virtual after'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev+1,name,thv)
-      name = 'q after'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev+1,name,sh)
-      name = 'u wind after'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,u)
-      name = 'v wind after'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,V)
-      name = 'tke after'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,qq)
-      name = 'richardson number after'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,ri)
-      name = 'trb u flux'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,wu)
-      name = 'trb v flux'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,wv)
-      name = 'trb t flux'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,wt)
-      name = 'trb q flux'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,wsh)
-      name = 'eddy coef mom'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,eu)
-      name = 'eddy coef heat'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,et)
-      name = 'length scale'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,xldiag)
-      name = 'layer heights'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,nlev,name,dz1tmp)
-      name = 'q ground'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,1,name,shg)
-      name = 'rib initial'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,1,name,ribin)
-      name = 'cu initial'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,1,name,cuin)
-      name = 'ct initial'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,1,name,ctin)
-      name = 'ustar initial'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,1,name,ustarin)
-      name = 'rho sfc initial'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,1,name,rhosin)
-      name = 'z0 initial'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,1,name,z0in)
-      name = 'zeta initial'
-      call pntprf(irun,irun,lons,lats,types,nymd,nhms,1,name,zetain)
-       ENDIF
       RETURN
       END
        SUBROUTINE SFCFLX(NN,VUS,VVS,VTHV1,VTHV2,VTH1,VTH2,VSH1,
@@ -2577,8 +2447,41 @@ C    CU            -         MOMENTUM TRANSPORT COEFFICIENT
 C    CT            -         HEAT TRANSPORT COEFFICIENT
 C
 C**********************************************************************
-C
+      implicit none
 
+C Argument List Declarations
+      integer nn,n,irun
+      real aitr,cp,rgas,undef
+      real VUS(IRUN),VVS(IRUN),VTHV1(IRUN),VTHV2(IRUN)
+      real VTH1(IRUN),VTH2(IRUN),VSH1(IRUN),VSH2(IRUN)
+      real VPK(IRUN),VPKE(IRUN),VPE(IRUN)
+      real VZ0(IRUN),VHS(IRUN),VAHS(IRUN)
+      integer IVWATER(IRUN)
+      LOGICAL FIRST,LAST
+      real VRHO(IRUN),VRHOZPK(IRUN)
+      real VKM(IRUN),VKH(IRUN),VUSTAR(IRUN),VXX(IRUN)
+      real VYY(IRUN),VCU(IRUN),VCT(IRUN),VRIB(IRUN)
+      real VZETA(IRUN),VWS(IRUN)
+      real stu2m(irun),stv2m(irun),stt2m(irun),stq2m(irun)
+      real stu10m(irun),stv10m(irun),stt10m(irun),stq10m(irun)
+      LOGICAL LWATER
+      integer IVBITRIB(irun)
+      real VHZ(irun),VPSIM(irun),VAPSIM(irun),VPSIG(irun),VPSIHG(irun)
+      real VTEMP(irun),VDZETA(irun),VDZ0(irun),VDPSIM(irun)
+      real VDPSIH(irun),VZH(irun),VXX0(irun),VYY0(irun)
+      real VAPSIHG(irun),VRIB1(irun),VWS1(irun)
+      real VPSIH(irun),VZETAL(irun),VZ0L(irun),VPSIH2(irun),VH0(irun)
+      real VX0PSIM(irun),VG(irun),VG0(irun),VR1MG0(irun)
+      real VZ2(irun),VDZSEA(irun),VAZ0(irun),VXNUM1(irun)
+      real VPSIGB2(irun),VDX(irun),VDXPSIM(irun),VDY(irun)
+      real VXNUM2(irun),VDEN(irun),VAWS1(irun),VXNUM3(irun)
+      real VXNUM(irun),VDZETA1(irun),VDZETA2(irun)
+      real VZCOEF2(irun),VZCOEF1(irun),VTEMPLIN(irun)
+      real VDPSIMC(irun),VDPSIHC(irun)
+
+C Local Variables
+      real USTMX3,USTZ0S,Z0MIN,H0BYZ0,USTH0S,H0VEG,Z0VEGM,PRFAC
+      real XPFAC,DIFSQT
       PARAMETER ( USTMX3 =   0.0632456)
       PARAMETER ( USTZ0S =   0.2030325E-5)
       PARAMETER ( Z0MIN  =  USTZ0S/USTMX3)
@@ -2590,40 +2493,10 @@ C
       PARAMETER ( XPFAC  = .55        )  
       PARAMETER ( DIFSQT  = 3.872983E-3)
 
-       DIMENSION VUS(IRUN),VVS(IRUN),VTHV1(IRUN),VTHV2(IRUN)
-       DIMENSION VTH1(IRUN),VTH2(IRUN),VSH1(IRUN),VSH2(IRUN)
-       DIMENSION VPK(IRUN),VPKE(IRUN),VPE(IRUN)
-       DIMENSION VZ0(IRUN),IVWATER(IRUN),VHS(IRUN),VAHS(IRUN)
-       DIMENSION VRHO(IRUN),VRHOZPK(IRUN)
-       DIMENSION VKM(IRUN),VKH(IRUN),VUSTAR(IRUN),VXX(IRUN)
-       DIMENSION VYY(IRUN),VCU(IRUN),VCT(IRUN),VRIB(IRUN)
-       DIMENSION VZETA(IRUN),VWS(IRUN)
-       dimension stu2m(irun),stv2m(irun),stt2m(irun),stq2m(irun)
-       dimension stu10m(irun),stv10m(irun),stt10m(irun),stq10m(irun)
-       LOGICAL FIRST,LAST
-       LOGICAL LWATER
-       integer IVBITRIB(irun)
-C
-       DIMENSION VHZ(irun)
-       DIMENSION VH0(irun)
-       DIMENSION VPSIM(irun),VAPSIM(irun)
-       DIMENSION VPSIG(irun),VPSIHG(irun)
-       DIMENSION VTEMP(irun),VDZETA(irun)
-       DIMENSION VDZ0(irun),VDPSIM(irun)
-       DIMENSION VDPSIH(irun),VZH(irun)
-       DIMENSION VXX0(irun),VYY0(irun)
-       DIMENSION VAPSIHG(irun),VRIB1(irun),VWS1(irun)
-       DIMENSION VPSIH(irun),VZETAL(irun)
-       DIMENSION VZ0L(irun),VPSIH2(irun)
-       DIMENSION VX0PSIM(irun),VG(irun),VG0(irun),VR1MG0(irun)
-       DIMENSION VZ2(irun),VDZSEA(irun),VAZ0(irun),VXNUM1(irun)
-       DIMENSION VPSIGB2(irun),VDX(irun),VDXPSIM(irun),VDY(irun)
-       DIMENSION VXNUM2(irun),VDEN(irun),VAWS1(irun),VXNUM3(irun)
-       DIMENSION VXNUM(irun),VDZETA1(irun),VDZETA2(irun)
-       DIMENSION VZCOEF2(irun),VZCOEF1(irun),VTEMPLIN(irun)
-       DIMENSION VDPSIMC(irun),VDPSIHC(irun)
-
-       dimension psihdiag(irun),psimdiag(irun)
+      real psihdiag(irun),psimdiag(irun)
+      real getcon,vk,rvk,vk2,bmdl
+      integer iwater,itype
+      integer i,iter
 C
       vk = getcon('VON KARMAN')
       rvk = 1./vk
@@ -2960,16 +2833,20 @@ C                  (IFLAG=3), OR BOTH (IFLAG=1)
 C     N     -  LENGTH OF VECTOR TO BE SOLVED
 C
 C**********************************************************************
+      implicit none
+
+C Argument List Declarations
+      integer n,iflag
+      real PHIM(N),PHIH(N),Z(N)
+
+C Local Variables
+      integer I1(N),I2(N)
+      real ZSTAR(N),E1(N),E2(N),TEMP1(N)
 C
-      DIMENSION PHIM(N),PHIH(N),Z(N)
-      DIMENSION INT72(N), INTMAX(N)
-      DIMENSION ZSTAR(N),I1(N),I2(N)
-      DIMENSION E1(N),E2(N),TEMP1(N)
-C
-      DIMENSION PHIM0(385),ZLINM1(75),ZLINM2(75),ZLINM3(36)
-      DIMENSION ZLOGM1(74),ZLOGM2(75),ZLOGM3(50)
-      DIMENSION PHIH0(385),ZLINH1(75),ZLINH2(75),ZLINH3(36)
-      DIMENSION ZLOGH1(74),ZLOGH2(75),ZLOGH3(50)
+      real PHIM0(385),ZLINM1(75),ZLINM2(75),ZLINM3(36)
+      real ZLOGM1(74),ZLOGM2(75),ZLOGM3(50)
+      real PHIH0(385),ZLINH1(75),ZLINH2(75),ZLINH3(36)
+      real ZLOGH1(74),ZLOGH2(75),ZLOGH3(50)
       EQUIVALENCE (PHIM0(1),ZLINM1(1)),(PHIM0(76),ZLINM2(1))
       EQUIVALENCE (PHIM0(151),ZLINM3(1))
       EQUIVALENCE (PHIM0(187),ZLOGM1(1)),(PHIM0(261),ZLOGM2(1))
@@ -3148,6 +3025,8 @@ C
      &  0.664746,0.663985,0.663227,0.662473,0.661723,
      &  0.660977,0.660234,0.659495,0.658759,0.658027,
      &  0.657298/
+
+      integer ibit1,ibit2,i
 C
       IBIT1 = 0
       IBIT2 = 0
@@ -3254,8 +3133,15 @@ C  SUBPROGRAMS NEEDED
 C     PHI  -  COMPUTES SIMILARITY FUNCTION FOR MOMENTUM AND SCALARS
 C
 C**********************************************************************
-C
-C
+      implicit none
+
+C Argument List Declarations
+      integer irun,iflag
+      real VZZ(IRUN),VZH(IRUN),VPSIM(IRUN),VPSIH(IRUN),
+     1     VX(IRUN),VXS(IRUN),VY(IRUN),VYS(IRUN)
+ 
+C Local Variables
+      real ZWM,RZWM,Z0M,ZCM,RZCM,CM1,CM2,CM6,CM7,CM8ARG,YCM
       PARAMETER ( ZWM     =    1.    )
       PARAMETER ( RZWM    =  1./ZWM  )
       PARAMETER ( Z0M     =    0.2    )
@@ -3268,18 +3154,16 @@ C
       PARAMETER ( CM8ARG  =  CM7*ZCM*RZWM / (CM2+ZCM)  )
       PARAMETER ( YCM     =  6. / ( 1. + 6.*CM1*ZCM )  )
 
-      DIMENSION VZZ(IRUN),VZH(IRUN),VPSIM(IRUN),VPSIH(IRUN),
-     1     VX(IRUN),VXS(IRUN),VY(IRUN),VYS(IRUN)
- 
-      DIMENSION INTSTB(irun),INT72(irun),INTZ0(irun)
-      DIMENSION  ZZ0(irun),Z(irun),Z2(irun),Z1(irun),Z0(irun)
-      DIMENSION  X0(irun),X1(irun),Y0(irun),Y1(irun)
-      DIMENSION  XX(irun),XXS(irun),YY(irun),YYS(irun)
-      DIMENSION  PSIMM(irun),PSIHH(irun)
-      DIMENSION  PSI2(irun),TEMP(irun)
-      DIMENSION  HZ(irun),ARG0(irun),ARG1(irun),DX(irun)
-      DIMENSION  X0NUM(irun),X1NUM(irun),X0DEN(irun)
-      DIMENSION  X1DEN(irun),Y1DEN(irun),Z2ZWM(irun)
+      integer INTSTB(irun),INTZ0(irun)
+      real ZZ0(irun),Z(irun),Z2(irun),Z1(irun),Z0(irun)
+      real X0(irun),X1(irun),Y0(irun),Y1(irun)
+      real PSI2(irun),TEMP(irun)
+      real HZ(irun),ARG0(irun),ARG1(irun),DX(irun)
+      real X0NUM(irun),X1NUM(irun),X0DEN(irun)
+      real X1DEN(irun),Y1DEN(irun),Z2ZWM(irun)
+      real cm3,cm4,cm5,cm8
+      integer ibit,index
+      integer i
 C
       CM3 =   sqrt( 0.2/CM1-0.01 )
       CM4 =   1./CM3
@@ -3568,8 +3452,26 @@ C
 C     TRBITP -  INTERPOLATES TO HEIGHT WHERE RI = RICR
 C
 C**********************************************************************
-C
-C
+      implicit none
+
+C Argument List Declarations
+      integer irun,nlev,init,lmin,lminq,lminq1
+      real cp
+      real STRT(irun,NLEV),DW2(irun,NLEV),DZ3(irun,NLEV)
+      real Q(irun,NLEV),VKZM(irun,NLEV-1),VKZE(irun,NLEV-1)
+      real DTHV(irun,NLEV),DPK(irun,NLEV),DU(irun,NLEV)
+      real DV(irun,NLEV)
+      real QXLM(irun,NLEV-1),XL(irun,NLEV-1)
+      real DZITRP(irun,nlev-1),STBFCN(irun,nlev)
+      real XL0(irun,nlev),Q1(irun,nlev-1)
+      real WRKIT1(irun,nlev-1),WRKIT2(irun,nlev-1)
+      real WRKIT3(irun,nlev-1)
+      real WRKIT4(irun,nlev-1)
+      INTEGER INT1(irun,nlev), INT2(irun,nlev-1)
+
+C Local Variables
+      real rf1,rf2,e5,d4,d1,rfc,ricr,alpha,dzcnv,xl0cnv,xl0min
+      real clmt,clmt53
       PARAMETER ( RF1     = 0.2340678 )
       PARAMETER ( RF2     = 0.2231172 )
       PARAMETER ( E5      = 49.66     )  
@@ -3583,21 +3485,10 @@ C
       PARAMETER ( XL0MIN  = 1.        )
       PARAMETER ( CLMT    = 0.23      )  
       PARAMETER ( CLMT53  = 5. * CLMT / 3. )
- 
- 
-      DIMENSION STRT(irun,NLEV),   DW2(irun,NLEV), DZ3(irun,NLEV)
-      DIMENSION DTHV(irun,NLEV),   DPK(irun,NLEV),  DU(irun,NLEV)
-      DIMENSION   DV(irun,NLEV),     Q(irun,NLEV)
-      DIMENSION VKZM(irun,NLEV-1),VKZE(irun,NLEV-1)
-      DIMENSION QXLM(irun,NLEV-1),  XL(irun,NLEV-1)
-      DIMENSION DZITRP(irun,nlev-1), STBFCN(irun,nlev)
-      DIMENSION    XL0(irun,nlev),       Q1(irun,nlev-1)
-      DIMENSION WRKIT1(irun,nlev-1)
-      DIMENSION WRKIT2(irun,nlev-1)
-      DIMENSION WRKIT3(irun,nlev-1)
-      DIMENSION WRKIT4(irun,nlev-1)
-C
-      INTEGER INT1(irun,nlev), INT2(irun,nlev-1)
+
+      integer ibit,nlevm1,nlevp1,istnlv,istnm1,nlevml,istnml,Lp1
+      integer istnmq,istlmq,lminp,lm1,lmin1
+      integer i,L,LL
 C
       NLEVM1 = NLEV - 1
       NLEVP1 = NLEV + 1
@@ -3801,8 +3692,21 @@ C     -------
 C    DZITRP        -         INTERPOLATION COEFFICIENT
 C
 C**********************************************************************
-C
-C
+      implicit none
+
+C Argument List Declarations
+      integer irun,nlev
+      real cp
+      real STBFCN(irun,NLEV+1)
+      integer INTCHG(irun,NLEV)
+      real DTHV(irun,NLEV+1),DPK(irun,NLEV+1)
+      real DU(irun,NLEV+1),DV(irun,NLEV+1)
+      real DZITRP(irun,NLEV+1)
+      real AAA(irun,NLEV),BBB(irun,NLEV)
+      real CCC(irun,NLEV),DDD(irun,NLEV)
+
+C Local Variables
+      real rf1,rf2,e5,d4,d1,rfc,ricr
       PARAMETER ( RF1     = 0.2340678 )
       PARAMETER ( RF2     = 0.2231172 )
       PARAMETER ( E5      = 49.66     )  
@@ -3811,12 +3715,8 @@ C
       PARAMETER ( RFC     = 0.1912323 )
       PARAMETER ( RICR    = ( (RF1-RFC)*RFC ) / ( (RF2-RFC)*D1 )  )
 
-      DIMENSION STBFCN(irun,NLEV+1), INTCHG(irun,NLEV)
-      DIMENSION DTHV  (irun,NLEV+1), DPK   (irun,NLEV+1)
-      DIMENSION DU    (irun,NLEV+1), DV    (irun,NLEV+1)
-      DIMENSION DZITRP(irun,NLEV+1)
-      DIMENSION AAA   (irun,NLEV), BBB   (irun,NLEV)
-      DIMENSION CCC   (irun,NLEV), DDD   (irun,NLEV)
+      integer istnlv
+      integer i
 C
 C *********************************************************************
 C ****           QUADRATIC INTERPOLATION OF RI TO RICR VIA          ***
@@ -3879,9 +3779,19 @@ C    QQE           -         EQUILIBRIUM TURBULENT KINETIC ENERGY
 C    BITSTB        -         BIT '1' WHERE QE GREATER THAN ZERO
 C
 C**********************************************************************
-C
-C
- 
+      implicit none
+
+C Argument List Declarations
+      integer nlev,nlay,irun
+      real RI(irun,NLEV),STRT(irun,NLEV),DW2(irun,NLEV)
+      real XL(irun,NLEV),ZKM(irun,NLEV),ZKH(irun,NLEV)
+      real QE(irun,NLEV),QQE(irun,NLEV)
+      INTEGER INTSTB(irun,nlev)
+      real EE(irun,nlay-1),RF(irun,nlay-1)
+
+C Local Variables
+      real b1,b2,d3,rf1,rf2,d3b2,d2,e5,d4,d1,d1half,d2half
+      real rfc,ricr,ch,cm 
       PARAMETER ( B1      =   16.6    )  
       PARAMETER ( B2      =   10.1    )
       PARAMETER ( D3      = 0.29397643 )
@@ -3899,13 +3809,9 @@ C
       PARAMETER ( CH      = 2.5828674 )
       PARAMETER ( CM      = CH / D1   )
 
- 
-      DIMENSION RI(irun,NLEV), STRT(irun,NLEV), DW2(irun,NLEV)
-      DIMENSION XL(irun,NLEV),  ZKM(irun,NLEV), ZKH(irun,NLEV)
-      DIMENSION QE(irun,NLEV),  QQE(irun,NLEV)
-      INTEGER INTSTB(irun,nlev)
-      DIMENSION     EE(irun,nlay-1),  RF(irun,nlay-1)
-C
+      integer istnlv
+      integer i
+
       ISTNLV = irun * NLEV
 C
 C *********************************************************************
@@ -3976,9 +3882,17 @@ C    ZKH           -         HEAT TRANSPORT COEFFICIENT
 C    P3            -         PRODUCTION RATE OF TURBULENT KINETIC ENERG
 C
 C**********************************************************************
-C
-C
- 
+      implicit none
+
+C Argument list Declarations
+      integer nlev,nlay,irun
+      real Q(irun,NLEV),XL(irun,NLEV),STRT(irun,NLEV)
+      real DW2(irun,NLEV)
+      INTEGER INTSTB(irun,nlay), INTQ(irun,nlay)
+      real ZKM(irun,NLEV),ZKH(irun,NLEV),P3(irun,NLEV)
+
+C Local Variables
+      real a1,a2,a4,c1,a5,a3,b1,b2,b3,ff2,ff3,ff4
       PARAMETER ( A1      =   0.92    )
       PARAMETER ( A2      =   0.74    )
       PARAMETER ( A4      = 6. * A1 * A1)
@@ -3992,14 +3906,11 @@ C
       PARAMETER ( FF3     = (3.*A2*B2) - (9.*A2*A2 )  )
       PARAMETER ( FF4     = (3.*A2*B2) + (12.*A1*A2 )  )
 
- 
-      DIMENSION   Q(irun,NLEV),  XL(irun,NLEV), STRT(irun,NLEV)
-      DIMENSION DW2(irun,NLEV)
-      DIMENSION ZKM(irun,NLEV), ZKH(irun,NLEV),   P3(irun,NLEV)
-C
-      DIMENSION F2(irun,nlay-1),  F3(irun,nlay-1)
-      DIMENSION F4(irun,nlay-1),  XQ(irun,nlay-1)
-      INTEGER INTSTB(irun,nlay), INTQ(irun,nlay)
+      real F2(irun,nlay-1),F3(irun,nlay-1)
+      real F4(irun,nlay-1),XQ(irun,nlay-1)
+
+      integer istnlv
+      integer i
 C
       ISTNLV = irun * NLEV
 C
@@ -4070,15 +3981,18 @@ C    DXX1G         -         SOURCE TERM FOR XX1 AT GROUND
 C    DXX1G         -         SOURCE TERM FOR XX2 AT GROUND
 C
 C**********************************************************************
+      implicit none
+
+C Argument List Declarations
+      integer nlev,itype,irun
+      real XX1(irun,NLEV+1),XX2(irun,NLEV+1)
+      real RHOKDZ(irun,NLEV),FLXFAC(irun,NLEV+1)
+      real DXX1G(irun),DXX2G(irun)
+      real epsl
 C
-C
- 
- 
-      DIMENSION    XX1(irun,NLEV+1),    XX2(irun,NLEV+1)
-      DIMENSION RHOKDZ(irun,NLEV)  , FLXFAC(irun,NLEV+1)
-      DIMENSION  DXX1G(irun)    ,     DXX2G(irun)
-C
-      DIMENSION AA(irun,nlev), BB(irun,nlev), CC(irun,nlev+1)
+      real AA(irun,nlev), BB(irun,nlev), CC(irun,nlev+1)
+      integer istnlv,istnm1,nlevp1,istnlx
+      integer i
 C
       ISTNLV = irun * NLEV
       ISTNM1 = ISTNLV - irun
@@ -4137,8 +4051,13 @@ C
       RETURN
       END
       SUBROUTINE VTRI0 ( A,B,C,F,Y,K,irun)
-      DIMENSION A(irun,K),B(irun,K),C(irun,K),Y(irun,K+1)
-      DIMENSION F(irun,K)
+      implicit none
+
+      integer k,irun
+      real A(irun,K),B(irun,K),C(irun,K),Y(irun,K+1)
+      real F(irun,K)
+
+      integer i,L,Lm1
 C
       DO 9000 I = 1,irun
        A(I,1) = 1. / A(I,1)
@@ -4163,7 +4082,12 @@ C
       END
 C
       SUBROUTINE VTRI1 ( A,B,Y,K,irun)
-      DIMENSION A(irun,K),B(irun,K),Y(irun,K+1)
+      implicit none
+
+      integer k,irun
+      real A(irun,K),B(irun,K),Y(irun,K+1)
+
+      integer i,L
 C
       DO 200 L = K,1,-1
        DO 9000 I = 1,irun
@@ -4175,8 +4099,13 @@ C
       END
 C
       SUBROUTINE VTRI2 ( A,B,C,F,Y,K,irun)
-      DIMENSION A(irun,K),B(irun,K),C(irun,K),F(irun,K)
-      DIMENSION Y(irun,K+1)
+      implicit none
+
+      integer k,irun
+      real A(irun,K),B(irun,K),C(irun,K),F(irun,K)
+      real Y(irun,K+1)
+
+      integer i,L
 C
       DO 100 L = 2,K
        DO 9000 I = 1,irun
@@ -4237,8 +4166,30 @@ C    DPSIH         -         D PSIH
 C    BITRIB        -         BIT ARRAY - '1' WHERE RIB1 = 0
 C
 C**********************************************************************
-C
-C
+      implicit none
+
+C Argument List Declarations
+      integer nn,irun,itype
+      real VRIB1(IRUN),VRIB2(IRUN)
+      real VWS1(IRUN),VWS2(IRUN),VZ1(IRUN),VUSTAR(IRUN)
+      integer IWATER(IRUN)
+      real VAPSIM(IRUN),VAPSIHG(IRUN)
+      real VPSIH(IRUN),VPSIG(IRUN),VX(IRUN)
+      real VX0(IRUN),VY(IRUN),VY0(IRUN)
+      LOGICAL LWATER
+      real VDZETA(IRUN),VDZ0(IRUN),VDPSIM(IRUN)
+      real VDPSIH(IRUN)
+      integer INTRIB(IRUN)
+      real VX0PSIM(irun),VG(irun),VG0(irun),VR1MG0(irun)
+      real VZ2(irun),VDZSEA(irun),VAZ0(irun),VXNUM1(irun)
+      real VPSIGB2(irun),VDX(irun),VDXPSIM(irun),VDY(irun)
+      real VXNUM2(irun),VDEN(irun),VAWS1(irun),VXNUM3(irun)
+      real VXNUM(irun),VDZETA1(irun),VDZETA2(irun)
+      real VZCOEF2(irun),VZCOEF1(irun),VTEMPLIN(irun)
+      real VDPSIMC(irun),VDPSIHC(irun)
+
+C Local Variables
+      real xx0max,prfac,xpfac,difsqt,ustz0s,h0byz0,usth0s
       PARAMETER ( XX0MAX  =   1.49821 )
       PARAMETER ( PRFAC  = 0.595864   )
       PARAMETER ( XPFAC  = .55        )  
@@ -4247,27 +4198,9 @@ C
       PARAMETER ( H0BYZ0 =    30.0    )
       PARAMETER ( USTH0S =  H0BYZ0*USTZ0S )
 
-      DIMENSION VRIB1(IRUN),VRIB2(IRUN)
-      DIMENSION VWS1(IRUN),VWS2(IRUN),VZ1(IRUN),VUSTAR(IRUN)
-      DIMENSION VAPSIM(IRUN),VAPSIHG(IRUN)
-      DIMENSION VPSIH(IRUN),VPSIG(IRUN),VX(IRUN)
-      DIMENSION VX0(IRUN),VY(IRUN),VY0(IRUN)
-      DIMENSION VDZETA(IRUN),VDZ0(IRUN),VDPSIM(IRUN)
-      DIMENSION VDPSIH(IRUN)
-      DIMENSION IWATER(IRUN),INTRIB(IRUN)
-      LOGICAL LWATER
-      DIMENSION VX0PSIM(irun),VG(irun),VG0(irun),VR1MG0(irun)
-      DIMENSION VZ2(irun),VDZSEA(irun),VAZ0(irun),VXNUM1(irun)
-      DIMENSION VPSIGB2(irun),VDX(irun),VDXPSIM(irun),VDY(irun)
-      DIMENSION VXNUM2(irun),VDEN(irun),VAWS1(irun),VXNUM3(irun)
-      DIMENSION VXNUM(irun),VDZETA1(irun),VDZETA2(irun)
-      DIMENSION VZCOEF2(irun),VZCOEF1(irun),VTEMPLIN(irun)
-      DIMENSION VDPSIMC(irun),VDPSIHC(irun)
-C
- 
- 
-      DIMENSION VINT1(irun),VINT2(irun)
-C
+      integer VINT1(irun),VINT2(irun)
+      real getcon,vk,bmdl,b2uhs
+      integer i
 C
       vk = getcon('VON KARMAN')
       BMDL    = VK * XPFAC * PRFAC / DIFSQT
@@ -4525,19 +4458,25 @@ C        COMPUTE ROUGHNESS LENGTH FOR OCEAN POINTS
 C          BASED ON FUNCTIONS OF LARGE AND POND
 C          AND OF KONDO --- DESIGNED FOR K = .4
 C *********************************************************************
-C
-C
+      implicit none 
+
+C Argument List Delcarations
+      integer irun
+      real VZSEA(IRUN),VUSTAR(IRUN),VDZSEA(IRUN)
+      integer IWATER(IRUN)
+      LOGICAL LDZSEA
+
+C Local Variables
+      real USTMX1,USTMX2,USTMX3
       PARAMETER ( USTMX1 =   1.14973  )
       PARAMETER ( USTMX2 =   0.381844 )
       PARAMETER ( USTMX3 =   0.0632456)
 
-      DIMENSION VZSEA(IRUN),VUSTAR(IRUN),VDZSEA(IRUN)
-      DIMENSION IWATER(IRUN)
-      DIMENSION AA(IRUN ,5),TEMP(IRUN)
-      LOGICAL LDZSEA
-      DIMENSION INT2(IRUN ), INT3(IRUN ), INT4(IRUN)
-C
-      DIMENSION AA1(5),AA2(5),AA3(5),AA4(5)
+      real AA(IRUN,5),TEMP(IRUN)
+      integer INT2(IRUN),INT3(IRUN),INT4(IRUN)
+      integer i,k
+
+      real AA1(5),AA2(5),AA3(5),AA4(5)
       DATA AA1/.2030325E-5,0.0,0.0,0.0,0.0/
       DATA AA2/-0.402451E-08,0.239597E-04,0.117484E-03,0.191918E-03,
      1         0.395649E-04/
@@ -4620,135 +4559,6 @@ C
 C
       RETURN
       END
-      subroutine pntquants_turb(nlaygcm)
-C**********************************************************************
-C  Subroutine to initialize the list of quantities for turbulence
-C    package point by point diagnostic output
-C**********************************************************************
-      implicit none
-      integer nlaygcm
-      character * 40 name
-      integer nlev
-
-      name = 'mid pressure'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'edge pressure'
-      nlev = nlaygcm+1
-      call pntquants(name,nlev)
-      name = 'mid p ** kappa'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'edge p ** kappa'
-      nlev = nlaygcm+1
-      call pntquants(name,nlev)
-      name = 'theta before'
-      nlev = nlaygcm+1
-      call pntquants(name,nlev)
-      name = 'theta virtual before'
-      nlev = nlaygcm+1
-      call pntquants(name,nlev)
-      name = 'q before'
-      nlev = nlaygcm+1
-      call pntquants(name,nlev)
-      name = 'u wind before'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'v wind before'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'heat cap ground'
-      nlev = 1
-      call pntquants(name,nlev)
-      name = 'latent heat at ground'
-      nlev = 1
-      call pntquants(name,nlev)
-      name = 'net surface rad'
-      nlev = 1
-      call pntquants(name,nlev)
-      name = 'background heat transfer'
-      nlev = 1
-      call pntquants(name,nlev)
-      name = 'tke before'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'richardson number before'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'theta after'
-      nlev = nlaygcm+1
-      call pntquants(name,nlev)
-      name = 'theta virtual after'
-      nlev = nlaygcm+1
-      call pntquants(name,nlev)
-      name = 'q after'
-      nlev = nlaygcm+1
-      call pntquants(name,nlev)
-      name = 'u wind after'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'v wind after'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'tke after'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'richardson number after'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'trb u flux'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'trb v flux'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'trb t flux'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'trb q flux'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'eddy coef mom'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'eddy coef heat'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'length scale'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'layer heights'
-      nlev = nlaygcm
-      call pntquants(name,nlev)
-      name = 'q ground'
-      nlev = 1
-      call pntquants(name,nlev)
-      name = 'rib initial'
-      nlev = 1
-      call pntquants(name,nlev)
-      name = 'cu initial'
-      nlev = 1
-      call pntquants(name,nlev)
-      name = 'ct initial'
-      nlev = 1
-      call pntquants(name,nlev)
-      name = 'ustar initial'
-      nlev = 1
-      call pntquants(name,nlev)
-      name = 'rho sfc initial'
-      nlev = 1
-      call pntquants(name,nlev)
-      name = 'z0 initial'
-      nlev = 1
-      call pntquants(name,nlev)
-      name = 'zeta initial'
-      nlev = 1
-      call pntquants(name,nlev)
-      name = 'beta coeff'
-      nlev = 1
-      call pntquants(name,nlev)
-      return
-      end
 
       subroutine seaice ( nocean, timstp, hice,
      .                     eturb,  dedtc,  
@@ -4766,7 +4576,8 @@ C**********************************************************************
       real seaic(nocean)
 
 C  rho*C = 1.93e6 J/(m**3 K) ; Peixoto & Oort
-      real, parameter ::  rhoC = 1.93e6  
+      real rhoC
+      parameter (rhoC = 1.93e6)
 
       real faceps,getcon,latent,codt,deltg,hice
       integer i
