@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.5 2004/07/07 20:07:47 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.6 2004/07/08 14:53:45 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
       subroutine moistio (ndmoist,istrip,npcs,
      .   lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup,
-     .   pz,pl,ple,dpres,pkht,pkl,tz,qz,bi,bj,ntracer,ptracer,
+     .   pz,plz,plze,dpres,pkht,pkl,tz,qz,bi,bj,ntracer,ptracer,
      .   qqz,dumoist,dvmoist,dtmoist,dqmoist,
      .   im,jm,lm,ptop,
      .   iras,rainlsp,rainconv,snowfall,
@@ -20,7 +20,7 @@ c Input Variables
 c ---------------
       integer ndmoist,istrip,npcs
       integer lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup
-      real pz(im,jm),pl(im,jm,lm),ple(im,jm,lm+1),dpres(im,jm,lm)
+      real pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1),dpres(im,jm,lm)
       real pkht(im,jm,lm+1),pkl(im,jm,lm)
       real tz(im,jm,lm),qz(im,jm,lm,ntracer)       
       integer bi,bj,ntracer,ptracer         
@@ -74,7 +74,10 @@ c ---------------------------------------
       real     thgather(im*jm,lm)
       real     shgather(im*jm,lm)
       real    pkzgather(im*jm,lm)
-      real    pkegather(im*jm,lm)
+      real    pkegather(im*jm,lm+1)
+      real    plzgather(im*jm,lm)
+      real    plegather(im*jm,lm+1)
+      real     dpgather(im*jm,lm)
       real    tmpgather(im*jm,lm)
       real   deltgather(im*jm,lm)
       real   delqgather(im*jm,lm)
@@ -95,6 +98,7 @@ c ---------------
       real usubcl (istrip,   ntracer)
 
       real     ple(istrip,lm+1), gam(istrip,lm)
+      real      dp(istrip,lm)
       real      TL(ISTRIP,lm)  , SHL(ISTRIP,lm)
       real      PL(ISTRIP,lm)  , PLK(ISTRIP,lm)
       real    PLKE(ISTRIP,lm+1)
@@ -235,14 +239,19 @@ c ----------------------------------------------------------------
       do index = 1,im*jm
        levgather(index) = levpbl(pblindex(index),1)
         pigather(index) =     pz(pblindex(index),1)
+        pkegather(index,lm+1) = pkht(pblindex(index),1,lm+1)
+        plegather(index,lm+1) = ple(pblindex(index),1,lm+1)
       enddo
 
       do L = 1,lm
        do index = 1,im*jm
-         thgather(index,L) =   tz(pblindex(index),1,L)
-         shgather(index,L) =   qz(pblindex(index),1,L,1)
+         thgather(index,L) = tz(pblindex(index),1,L)
+         shgather(index,L) = qz(pblindex(index),1,L,1)
         pkegather(index,L) = pkht(pblindex(index),1,L)
-        pkzgather(index,L) = pkl (pblindex(index),1,L)
+        pkzgather(index,L) = pkl(pblindex(index),1,L)
+        plegather(index,L) = plze(pblindex(index),1,L)
+        plzgather(index,L) = plz(pblindex(index),1,L)
+         dpgather(index,L) = dpres(pblindex(index),1,L)
        enddo
       enddo
       do nt = 1,ntracer-ptracer
@@ -285,7 +294,10 @@ C **********************************************************************
 
        CALL STRIP (  pigather, SP      ,im*jm,ISTRIP,1 ,NN )
        CALL STRIP ( pkzgather, PLK     ,im*jm,ISTRIP,lm,NN )
-       CALL STRIP ( pkegather, PLKE    ,im*jm,ISTRIP,lm,NN )
+       CALL STRIP ( pkegather, PLKE    ,im*jm,ISTRIP,lm+1,NN )
+       CALL STRIP ( plzgather, PL      ,im*jm,ISTRIP,lm,NN )
+       CALL STRIP ( plegather, PLE     ,im*jm,ISTRIP,lm+1,NN )
+       CALL STRIP (  dpgather, dp      ,im*jm,ISTRIP,lm,NN )
        CALL STRIP (  thgather, TH      ,im*jm,ISTRIP,lm,NN )
        CALL STRIP (  shgather, SHL     ,im*jm,ISTRIP,lm,NN )
        CALL STRINT( levgather, pbl     ,im*jm,ISTRIP,1 ,NN )
@@ -293,17 +305,6 @@ C **********************************************************************
        do nt = 1,ntracer-ptracer
        call strip ( ugather(1,1,nt), ul(1,1,nt),im*jm,istrip,lm,nn )
        enddo
-
-      do l = 1,lm
-      do i = 1,istrip
-       PL(I,L) =  SIG(L)*SP(I) + PTOP
-      PLE(I,L) = SIGE(L)*SP(I) + PTOP
-      enddo
-      enddo
-
-      do i = 1,istrip
-      PLE(I,lm+1) = SP(I) + PTOP
-      enddo
 
 C **********************************************************************
 C ****        SETUP FOR RAS CUMULUS PARAMETERIZATION                ****
@@ -400,16 +401,16 @@ c -------------------------------
        ENDDO
        DO L=2,lm
        DO I=num,num+nindeces(nsubcl)-1
-        TMP5(I,L) = PLKE(I,L-1)*P0KINV
+        TMP5(I,L) = PLKE(I,L)*P0KINV
        ENDDO
        ENDDO
        DO  I=num,num+nindeces(nsubcl)-1
         TMP4(I,lm+1) = PLE (I,lm+1)
-        TMP5(I,lm+1) = PLKE(I,lm)*P0KINV
+        TMP5(I,lm+1) = PLKE(I,lm+1)*P0KINV
        ENDDO
        DO 113 I=num,num+nindeces(nsubcl)-1
         TMP4(I,NSUBCL+1) = PLE (I,lm+1)
-        TMP5(I,NSUBCL+1) = PLKE(I,lm)*P0KINV
+        TMP5(I,NSUBCL+1) = PLKE(I,lm+1)*P0KINV
  113   CONTINUE
 
       do i=num,num+nindeces(nsubcl)-1
@@ -446,11 +447,11 @@ C Top level of atan func above this rh_threshold = rhmin
          rhcrit(i,L) = 1.
        enddo
        do L = 1, nsubcl-1
-        pcheck = (1000.-ptop)*sig(L) + ptop
+        pcheck = pl(i,L)
         if (pcheck .le. pup) then
          rhcrit(i,L) = rhmin
         else
-         ppbl = (1000.-ptop)*sig(nsubcl) + ptop
+         ppbl = pl(i,nsubcl)
          rhcrit(i,L) = rhmin + (1.-rhmin)/(19.) * 
      .      ((atan( (2.*(pcheck-pup)/(ppbl-pup)-1.) *
      .       tan(20.*pi/21.-0.5*pi) ) 
@@ -480,8 +481,8 @@ c --------------------------------------------------------
 c Compute Diagnostic CLDMAS in RAS Subcloud Layers
 c ------------------------------------------------
        do L=nsubcl,lm
-        dum = dsig(L)/(1.0-sige(nsubcl))
        do I=num,num+nindeces(nsubcl)-1
+        dum = dp(i,L)/(ple(i,lm+1)-ple(i,nsubcl))
         cldmas(i,L) = cldmas(i,L-1) - dum*cldmas(i,nsubcl-1)
        enddo
        enddo
@@ -595,7 +596,7 @@ C *********************************************************************
       ENDDO
       ENDDO
  
-       CALL RNEVP (NN,ISTRIP,lm,TL,SHL,PCPEN,PL,CLFRAC,SP,DSIG,PLKE,
+       CALL RNEVP (NN,ISTRIP,lm,TL,SHL,PCPEN,PL,CLFRAC,SP,DP,PLKE,
      .  PLK,TH,TMP1,TMP2,TMP3,ITMP1,ITMP2,PCNET,PRECIP,
      .  CLSBTH,TMSTP,1.,cp,grav,alhl,gamfac,cldlz,rhcrit,offset,alpha)
 
@@ -963,7 +964,7 @@ c ------------------------------------
 
       do L = 1,lm
       do i = 1,im*jm
-       plev = sig(L)*pz(i,1)+ptop
+       plev = pl(i,L)
  
 c Compute Time-averaged Cloud and Water Amounts for Longwave Radiation
 c --------------------------------------------------------------------
@@ -2195,7 +2196,7 @@ C*********************************************************************
 
       RETURN
       END
-       SUBROUTINE RNEVP(NN,IRUN,NLAY,TL,QL,RAIN,PL,CLFRAC,SP,DSIG,PLKE,
+       SUBROUTINE RNEVP(NN,IRUN,NLAY,TL,QL,RAIN,PL,CLFRAC,SP,DP,PLKE,
      1   PLK,TH,TEMP1,TEMP2,TEMP3,ITMP1,ITMP2,RCON,RLAR,CLSBTH,tmscl,
      2   tmfrc,cp,gravity,alhl,gamfac,cldlz,RHCRIT,offset,alpha)
  
@@ -2214,8 +2215,8 @@ C*********************************************************************
 C
        DIMENSION TL(IRUN,NLAY),QL(IRUN,NLAY),RAIN(IRUN,NLAY),
      $ PL(IRUN,NLAY),CLFRAC(IRUN,NLAY),SP(IRUN),TEMP1(IRUN,NLAY),
-     $ TEMP2(IRUN,NLAY),PLKE(IRUN,NLAY),
-     $ RCON(IRUN),RLAR(IRUN),DSIG(NLAY),PLK(IRUN,NLAY),TH(IRUN,NLAY),
+     $ TEMP2(IRUN,NLAY),PLKE(IRUN,NLAY+1),
+     $ RCON(IRUN),RLAR(IRUN),DP(IRUN,NLAY),PLK(IRUN,NLAY),TH(IRUN,NLAY),
      $ TEMP3(IRUN,NLAY),ITMP1(IRUN,NLAY),
      $ ITMP2(IRUN,NLAY),CLSBTH(IRUN,NLAY)
 C
@@ -2280,8 +2281,7 @@ C INVERSE OF MASS IN EACH LAYER
 c -----------------------------
       DO L = 1,NLAY
       DO I = 1,IRUN
-      TEMP3(I,L) = SP(I) * DSIG(L)
-      TEMP3(I,L) = GRAVITY*ZP01 / TEMP3(I,L)
+      TEMP3(I,L) = GRAVITY*ZP01 / DP(I,L)
       ENDDO
       ENDDO
  
