@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/EOS.h,v 1.3 2003/02/18 15:12:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/EOS.h,v 1.4 2003/07/18 20:06:45 heimbach Exp $
 C $Name:  $
 CBOP
 C    !ROUTINE: EOS.h
@@ -17,8 +17,8 @@ CEOP
 
 C     PARAMETER SItoBar
       _RL SItoBar, SItodBar
-      PARAMETER ( SItoBar  = 1. _d -05 )
-      PARAMETER ( SItodBar = 1. _d -04 )
+      PARAMETER ( SItoBar  = 1.D-05 )
+      PARAMETER ( SItodBar = 1.D-04 )
 
 C Linear equation of state
 C     tAlpha    :: Linear EOS thermal expansion coefficient ( 1/degree ).
