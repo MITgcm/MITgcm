@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.11 1998/06/15 05:13:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.12 1998/06/16 15:26:57 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -139,7 +139,7 @@ C--    Do "blocking" sends and receives for tendency "overlap" terms
 C--    Save state for restarts
 C      Note:
 C      =====
-C      Because of the ordereing of the timestepping code and
+C      Because of the ordering of the timestepping code and
 C      tendency term code at end of loop model arrays hold
 C      U,V,T,S  at "time-level" N but gu, gv, gs, gt, guNM1,... 
 C      at "time-level" N+1/2 (guNM1 at "time-level" N+1/2 is 
@@ -153,9 +153,14 @@ C      at time level 1
 
       ENDDO
 
-C--   Dump for end state and final checkpoint
-      CALL WRITE_STATE( myCurrentTime, myCurrentIter, myThid )
+C--   Final checkpoint (incase the in-loop checkpoint was missed)
       CALL WRITE_CHECKPOINT( .TRUE., myCurrentTime, myCurrentIter, myThid )
+
+C--   Step-forward U/V/Theta/Salt for purposes of final I/O dump
+      CALL DYNAMICS( myCurrentTime, myCurrentIter, myThid )
+
+C--   Dump for end state
+      CALL WRITE_STATE( myCurrentTime, myCurrentIter, myThid )
 
 
       RETURN
