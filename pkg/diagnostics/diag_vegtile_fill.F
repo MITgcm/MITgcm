@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.4 2005/02/18 19:44:11 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.5 2005/02/23 16:01:54 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -81,9 +81,6 @@ C we are trying to fill a valid diagnostic
        ENDDO
       ENDDO
 
-      print *,' in diag_vegtile_fill for ',chardiag,
-     .     ' ndiagnum ',ndiagnum,' ipointer ',ipointer
-
 C If-sequence to see if we are a valid and an active diagnostic
 
       IF ( ndiagnum.NE.0 .AND. ipointer.NE.0 ) THEN
@@ -148,7 +145,6 @@ C-      Check for consistency with Nb of levels reserved in storage array
 
        DO k = kFirst,kLast
         kd = kd0 + ksgn*k
-        print *,' level slot in qdiag= ',kd, ' level from input= ',k
         if( check ) then
          undef = getcon('UNDEF')
          do i= 1,Lena
