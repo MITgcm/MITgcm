@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.10 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_grid.F,v 1.11 2001/11/26 15:43:28 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -80,7 +80,13 @@ C     and general post-analysis)
       CALL WRITE_FLD_XY_RS( 'YC',' ',YC,0,myThid)
       CALL WRITE_FLD_XY_RS( 'XG',' ',XG,0,myThid)
       CALL WRITE_FLD_XY_RS( 'YG',' ',YG,0,myThid)
-      CALL WRITE_FLD_XY_RS( 'AC',' ',rA,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'RAC',' ',rA,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'RAW',' ',rAw,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'RAS',' ',rAs,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'DXG',' ',DXG,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,0,myThid)
 
 C--   Print out statistics of each horizontal grid array (helps when debugging)
       CALL MON_PRINTSTATS_RS(1,XC,'XC',myThid)
