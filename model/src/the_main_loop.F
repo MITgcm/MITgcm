@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.36 2003/03/07 23:48:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.37 2003/05/13 17:42:00 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -100,6 +100,10 @@ C     == Local variables ==
 #endif
 CEOP
 
+#ifndef DISABLE_DEBUGMODE
+      IF (debugMode) CALL DEBUG_ENTER('THE_MAIN_LOOP',myThid)
+#endif
+
 #ifdef ALLOW_AUTODIFF_TAMC
 c--   Initialize storage for the cost function evaluation.
 CADJ  INIT dummytape = common, 1
@@ -113,17 +117,27 @@ CADJ  INIT tapelev_ini_bibj_k   = USER
       CALL TIMER_START('ADJOINT SPIN-UP', mythid)
 #endif
 
+#ifndef DISABLE_DEBUGMODE
+      IF (debugMode) CALL DEBUG_CALL('INITIALISE_VARIA',myThid)
+#endif
+
 C--   Set initial conditions (variable arrays)
       CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
       CALL INITIALISE_VARIA( mythid )
       CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
 
 c--   Dump for start state.
+#ifndef DISABLE_DEBUGMODE
+      IF (debugMode) CALL DEBUG_CALL('WRITE_STATE',myThid)
+#endif
       CALL TIMER_START('WRITE_STATE         [THE_MAIN_LOOP]', mythid)
       CALL WRITE_STATE( mytime, myiter, mythid )
       CALL TIMER_STOP ('WRITE_STATE         [THE_MAIN_LOOP]', mythid)
 
 #ifndef EXCLUDE_MONITOR
+#ifndef DISABLE_DEBUGMODE
+      IF (debugMode) CALL DEBUG_CALL('MONITOR',myThid)
+#endif
 C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_START('MONITOR             [THE_MAIN_LOOP]', mythid)
       CALL MONITOR( myIter, myTime, myThid )
@@ -273,6 +287,9 @@ c--     >>> Loop body start <<<
         ikey_dynamics = ilev_1
 #endif
 
+#ifndef DISABLE_DEBUGMODE
+      IF (debugMode) CALL DEBUG_CALL('FORWARD_STEP',myThid)
+#endif
 
         CALL TIMER_START('FORWARD_STEP        [THE_MAIN_LOOP]',mythid)
         CALL FORWARD_STEP( iloop, mytime, myiter, mythid )
@@ -313,5 +330,9 @@ c--   Sum all cost function contributions.
 
       _BARRIER
       CALL TIMER_STOP ('MAIN LOOP           [THE_MAIN_LOOP]', mythid)
+
+#ifndef DISABLE_DEBUGMODE
+      IF (debugMode) CALL DEBUG_LEAVE('THE_MAIN_LOOP',myThid)
+#endif
 
       END
