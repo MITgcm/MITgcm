@@ -1,0 +1,9 @@
+# Example "data.mnc" file
+# Lines beginning "#" are comments
+ &MNC_01
+ useMNC = .TRUE.,
+ mnc_echo_gtypes = .TRUE.,
+ &
+# Note: Some systems use & as the
+# namelist terminator. Other systems
+# use a / character (as shown here).
