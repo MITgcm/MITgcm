@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.356 2004/09/27 08:02:05 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.357 2004/09/27 09:01:16 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -20,6 +20,8 @@ o more obcs stuff
     for reading boundary values. This routine is called from 
     obcs_prescribe_read
   - updated obcs_check
+  - changed sponge layer relaxation parameter units for days to seconds
+  - turned off sponge layer by default
 
 checkpoint55c_post
 o obcs stuff
