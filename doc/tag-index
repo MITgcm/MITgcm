@@ -1,7 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.24 2000/03/15 16:17:17 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.25 2000/04/05 15:37:10 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint26
+ o moved some #ifdef in optional routines to encompass everything
+   except the argument declarations. This was using up some memory.
+ o fixed macros like _ADT to work with both versions of Linux cpp
+ o cleaned up some unused and uninitialized variables
+   (helps when debugging with strict compile options)
+ o split up CPP_EEOPTIONS.h into options and macros
+   (macros are now in eesupp/inc/CPP_EEMACROS.h)
+ o patch for 2 processor JAM mode
 
 checkpoint25
  o updates for OBCs and NH
