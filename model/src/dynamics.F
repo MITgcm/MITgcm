@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.15 1998/06/09 15:58:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.16 1998/06/09 16:34:03 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -174,6 +174,7 @@ C     uninitialised but inert locations.
         rhokm1(i,j)  = 0. _d 0
         rhokp1(i,j)  = 0. _d 0
         rhotmp(i,j)  = 0. _d 0
+        maskC (i,j)  = 0. _d 0
        ENDDO
       ENDDO
 
