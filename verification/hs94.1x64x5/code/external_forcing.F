@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code/Attic/external_forcing.F,v 1.5 2001/06/04 20:20:18 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code/Attic/external_forcing.F,v 1.6 2001/06/07 18:01:19 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,13 +49,13 @@ C     _RL velDragHeightFac
       _RL termP,kV,kF
 
 C--   Forcing term(s)
-      kF=1./86400.
+      kF=1. _d 0/86400. _d 0
       DO J=jMin,jMax
        DO I=iMin,iMax
         IF ( HFacW(i,j,kLev,bi,bj) .GT. 0. ) THEN
 C        termP=0.5*( rF(kLev) + min( rF(kLev+1) ,
 C    &           min(H(I,J,bi,bj),H(I,J-1,bi,bj))            ) )
-         termP=0.5*( rF(kLev) + rF(kLev+1) )
+         termP=0.5 _d 0*( rF(kLev) + rF(kLev+1) )
          kV=kF*MAX(0. _d 0,
      &  (termP*recip_Rcol(I,J,bi,bj)-0.7 _d 0)/(1. _d 0-0.7 _d 0) )
          gU(i,j,kLev,bi,bj)=gU(i,j,kLev,bi,bj)
@@ -112,13 +112,13 @@ C     _RL velDragHeightFac
       _RL termP,kV,kF
 
 C--   Forcing term(s)
-      kF=1./86400.
+      kF=1. _d 0/86400. _d 0
       DO J=jMin,jMax
        DO I=iMin,iMax
         IF ( HFacS(i,j,kLev,bi,bj) .GT. 0. ) THEN
 C        termP=0.5*( rF(kLev) + min( rF(kLev+1) ,
 C    &           min(H(I,J,bi,bj),H(I,J-1,bi,bj))            ) )
-         termP=0.5*( rF(kLev) + rF(kLev+1) )
+         termP=0.5 _d 0*( rF(kLev) + rF(kLev+1) )
          kV=kF*MAX(0. _d 0,
      &  (termP*recip_Rcol(I,J,bi,bj)-0.7 _d 0)/(1. _d 0-0.7 _d 0) )
          gV(i,j,kLev,bi,bj)=gV(i,j,kLev,bi,bj)
@@ -177,7 +177,7 @@ C      termP=0.5*( rF(kLev) + min( rF(kLev+1) , H(I,J,bi,bj) ) )
        term2=10. _d 0*log(termP/rSurf)
      &          *(cos(yC(1,J,bi,bj)*deg2rad)**2)
        thetaLim = 200. _d 0/ ((termP/rSurf)**(2. _d 0/7. _d 0))
-       thetaEq=315.-term1-term2
+       thetaEq=315. _d 0-term1-term2
        thetaEq=MAX(thetaLim,thetaEq)
        DO I=iMin,iMax
         kT=ka+(ks-ka)
