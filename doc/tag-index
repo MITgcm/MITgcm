@@ -1,8 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.343 2004/09/10 12:26:41 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.344 2004/09/16 12:40:37 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add two new packages
+  - ggl90, TKE-model of Gaspar et al. (1990), Blanke+Delecluse (1993)
+    + subject to optimization (memory)
+  - opps, OPPS (ocean penetrative plume scheme) of Paluszkiewicz+Romea (1997)
+    + subject to reordering (many GOTOs in the original code)
+    + so far opps is called for every (i,j) point, and then operates in
+      the vertical; one may want to reorder the scheme in order operate in
+      horizontal slabs at the cost of (a lot of) memory, at least ten new 3D 
+      fields)
 o overhaul of IO so that we now have flags for MDSIO and/or MNC
   - all verification tests compile and run with linux_ia32_g77
   - defaults are compatible with current input files--nothing 
