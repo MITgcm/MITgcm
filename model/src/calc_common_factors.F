@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.11 1999/03/22 15:54:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.12 2000/06/09 14:26:30 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -64,6 +64,11 @@ C                         are switched with layer to be the appropriate index
 C                         into fluxUD.
       INTEGER i,j
       LOGICAL TOP_LAYER
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C--   rvel(:,:kDown) is still required
+      rVel(1,1,kDown) = rVel(1,1,kDown)
+#endif
 
       TOP_LAYER = K .EQ. 1
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.19 1999/05/26 20:26:41 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.20 2000/06/09 14:26:30 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -96,6 +96,20 @@ C     I, J, K - Loop counters
       _RL dSdx(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dSdy(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL df4   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+#ifdef ALLOW_AUTODIFF_TAMC
+C--   only the kUp part of fverS is set in this subroutine
+C--   the kDown is still required
+
+      fVerS(1,1,kDown) = fVerS(1,1,kDown)
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        fZon(i,j)      = 0.0
+        fMer(i,j)      = 0.0
+        fVerS(i,j,kUp) = 0.0
+       ENDDO
+      ENDDO
+#endif
 
       afFacS = 1. _d 0
       dfFacS = 1. _d 0
