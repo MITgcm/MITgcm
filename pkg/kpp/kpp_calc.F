@@ -1,9 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.25 2004/05/05 07:15:41 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.26 2004/05/05 22:50:54 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C !ROUTINE: KPP_CALC
 

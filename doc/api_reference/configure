@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.8 2004/04/06 21:01:45 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.9 2004/05/05 22:50:54 dimitri Exp $
 #
 #  A script to generate the Makefile for the API Reference
 
@@ -120,7 +120,7 @@ api_main.tex: introduction.tex \$(ALLTEX)
 
 api_main.dvi:  api_main.tex
 	latex api_main
-	latex api_main
+	bibtex api_main
 	latex api_main
 	latex api_main
 

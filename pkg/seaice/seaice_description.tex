@@ -1,65 +1,36 @@
 %%
-%%  $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_description.tex,v 1.1 2004/05/05 07:15:41 dimitri Exp $
+%%  $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_description.tex,v 1.2 2004/05/05 22:50:54 dimitri Exp $
 %%  $Name:  $
 %%
 
 \chapter{Dynamic Thermodynamic Seaice Package}
   
 Package ``seaice'' provides a dynamic and thermodynamic interactive sea-ice
-model.
-
-
-Sea ice covers up to $30\times 10^6$ km$^2$ of the ocean's surface
-(almost 10\%).  Because of lack of data, meteorological fields have
-large uncertainties in polar regions.  The inclusion of a sea ice
-model will permit ECCO to make use of satellite observations over
-ice-covered oceans.  For example, SSM/I ice motion may be a better
-estimate of surface stress than that provided by NCEP or ECMWF.
-Another motivation for including sea ice is that global estimates of
-atmospheric fluxes over the ocean are {\em not} possible without a sea
-ice model because of huge storage and transport sea ice terms, e.g.,
-latent heat of fusion and freshwater transport.  Finally, a complete
-global ocean state estimation, the central goal of ECCO, requires
-inclusion of the Arctic Ocean.  Proper representation of polar regions
-in the ECCO products will make it possible to address a host of
-interesting and important science questions pertaining to
-oceanographic links in polar-subpolar interactions.
-
-A sea ice model is now available for the MIT GCM and ready for
-inclusion in the first public release of the model.  The sea ice code
-is robust (53-year global integration with NCEP forcing), sensible
-(results already compare favorably with data prior to any tuning or
-assimilation), clean (a single entry point and relatively trouble-free
-parsing by the adjoint model compiler), and parallelized (the 53-year
-integration used 32 processors).  Herein we discuss sea-ice model
-characteristics, its numerical implementation, some prelinary
-results, and remaining challenges.
-
-\section{Sea-Ice Model Description}
-
-Sea-ice model thermodynamics are based on Hibler \cite{hib80}, that is, a
-2-category model that simulates ice thickness and concentration.  Snow is
-simulated as per Zhang et al. \cite{zha98a}.  Although recent years have seen
-an increased use of multi-category thickness distribution sea-ice models for
-climate studies, the Hibler 2-category ice model is still the most widely used
-model and has resulted in realistic simulation of sea-ice variability on
+model.  Sea-ice model thermodynamics are based on Hibler \cite{hib80}, that
+is, a 2-category model that simulates ice thickness and concentration.  Snow
+is simulated as per Zhang et al. \cite{zha98a}.  Although recent years have
+seen an increased use of multi-category thickness distribution sea-ice models
+for climate studies, the Hibler 2-category ice model is still the most widely
+used model and has resulted in realistic simulation of sea-ice variability on
 regional and global scales.  Being less complicated, compared to
-multi-category models, a 2-category model will permit easier application of
+multi-category models, the 2-category model permits easier application of
 adjoint model optimization methods.
 
 Note, however, that the Hibler 2-category model and its variants use a
-so-called zero-layer thermodynamic model to estimate ice growth and
-decay.  The zero-layer thermodynamic model assumes that ice does not
-store heat and, therefore, tends to exaggerate the seasonal
-variability in ice thickness.  This exaggeration can be significantly
-reduced by using Semtner's \cite{sem76} three-layer thermodynamic
-model that permits heat storage in ice.  Recently, the three-layer
-thermodynamic model has been reformulated by Winton \cite{win00}.  The
-reformulation improves model physics by representing the brine content
-of the upper ice with a variable heat capacity.  It also improves
-model numerics and consumes less computer time and memory.  We plan to
-adapt and make use of Winton's thermodynamic sea-ice model in our
-study.
+so-called zero-layer thermodynamic model to estimate ice growth and decay.
+The zero-layer thermodynamic model assumes that ice does not store heat and,
+therefore, tends to exaggerate the seasonal variability in ice thickness.
+This exaggeration can be significantly reduced by using Semtner's \cite{sem76}
+three-layer thermodynamic model that permits heat storage in ice.  Recently,
+the three-layer thermodynamic model has been reformulated by Winton
+\cite{win00}.  The reformulation improves model physics by representing the
+brine content of the upper ice with a variable heat capacity.  It also
+improves model numerics and consumes less computer time and memory.  The
+Winton sea-ice thermodynamics have been ported to the MIT GCM; they currently
+reside under pkg/thsice.  At present pkg/thsice is not fully compatible with
+pkg/seaice and with pkg/exf.  But the eventual objective is to have fully
+compatible and interchangeable thermodynamic packages for sea-ice, so that it
+becomes possible to use Hibler dynamics with Winton thermodyanmics.
 
 The ice dynamics models that are most widely used for large-scale
 climate studies are the viscous-plastic (VP) model \cite{hib79}, the
@@ -74,21 +45,6 @@ to use the VP model as the dynamic component of our ice model.  To do
 this we extended the alternating-direction-implicit (ADI) method of
 Zhang and Rothrock \cite{zha00} for use in a parallel configuration.
 
-\section{Numerical Implementation}
-
-The sea ice model is implemented as a package and follows standard MIT
-GCM package structure and guidelines.  To improve portability to all
-existing and future versions of the MIT GCM, the sea ice package has a
-single entry point: it replaces the subroutine that loads external
-forcing fields.  All sea-ice input, output, checkpointing, and pickup
-operations as well as the dynamic and thermodynamic components take
-place during this single call.  Furthermore, contrary to existing
-practice, the sea ice model does not modify surface temperature and
-salinity directly.  Instead the interaction with the MIT GCM is
-through the computation of equivalent net fluxes at the ice-ocean
-interface.  This facilitates interfacing with other MIT GCM packages,
-for example, the mixed layer parameterization.
-
 The sea ice model requires the following input fields: 10-m winds, 2-m air
 temperature and specific humidity, downward longwave and shortwave radiations,
 precipitation, evaporation, and river and glacier runoff.  The sea ice model
@@ -99,49 +55,10 @@ precipitation minus runoff, net surface heat flux, and net shortwave flux.
 The sea-ice model is global: in ice-free regions bulk formulae are used to
 estimate oceanic forcing from the atmospheric fields.
 
-\section{Preliminary Results}
-
-The coupled sea-ice ocean model was tested in a 53-year integration using the
-same configuration as that of the ECCO 2$^\circ$ optimization, that is, an
-80$^\circ$S--80$^\circ$N quasi-global configuration with 23 vertical levels.
-KPP and GM mixing schemes were turned on.  Daily forcing (12-hourly for winds)
-was from the NCEP 1948--2000 reanalysis.  Overall, the resulting estimates of
-sea ice extent compare favorably with passive microwave (SMMR, SSM/I) data
-producing a realistic seasonal cycle and interannual variability prior to any
-tuning or data assimilation.  There are of course residual differences, for
-example, the model tends to underestimate extent of summer sea-ice around
-Antarctica.  These differences will become the signal for the planned
-assimilation of passive microwave data.
-
-To understand the impact of sea ice on the large scale ocean circulation, a
-second 53-year integration was carried out excluding the dynamic/thermodynamic
-sea-ice model, but maintaining a minimum cap of $-1.8^\circ$ C in the surface
-temperature.  Fig.~\ref{overturn} compares meridional overturning strength in
-North Atlantic and Southern Oceans for the two 53-year integrations.  The
-presence of sea ice in the model damps both the amplitude and variability of
-overturning strength.  Although the causes for these large differences have
-not yet been fully diagnosed, it is clear that the proper representation of
-sea ice can have a huge impact on the large-scale model circulation.
-
-\section{Discussion}
-
-The sea ice model is an important step towards the goal of a truly {\em
-global} ocean circulation estimate by the ECCO consortium.  But much work is
-still needed.  This includes obtaining and testing the adjoint sea-ice model,
-learning to use passive microwave and other sea ice data as constraints in the
-optimization, and experimenting with effective sea ice control parameters, for
-example, ice strength, drag coefficients, and surface albedo.  It is proposed
-that these tasks be under-
-%\begin{figure}[t]
-%{\psfig{file=FORECCO1.eps,width=3.2in}}
-%\vspace{-.7cm}
-%\caption{Impact of Sea Ice on Ocean Circulation.}
-%\label{overturn}
-%\end{figure}
-%\vspace{.3cm}
-\noindent taken in the older, quasi-global, 2$^\circ$ ECCO configuration
-before being ported to the current higher resolution one.  Another important
-task is the inclusion of the Arctic Ocean, either through the elegant, but
-still experimental, cubed-sphere configuration that is being developed by
-A. Adcroft or through a more conventional approach, for example, by displacing
-the North Pole singularity over a land location or by using a nested-grid.
+% This is a (commented out) example of using epsfig to
+% include a figure, Fig.~\ref{overturn}.
+% \begin{figure}[t]
+% {\epsfig{file=../../pkg/seaice/seaice_fig1.eps,width=3.2in}}
+% \caption{Impact of Sea Ice on Ocean Circulation.}
+% \label{overturn}
+% \end{figure}

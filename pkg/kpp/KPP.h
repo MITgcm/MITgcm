@@ -1,8 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP.h,v 1.6 2001/02/04 14:38:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP.h,v 1.7 2004/05/05 22:50:54 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_KPP
 
+CBOP
+C !ROUTINE: KPP.h
+
+C !DESCRIPTION: \bv
 C     /==========================================================\
 C     | KPP.h                                                    |
 C     | o Basic header for KPP vertical mixing parameterization. |
@@ -20,6 +24,8 @@ C     KPPhbl     - Mixing layer depth                                     (m)
 C     KPPfrac    - Fraction of short-wave flux penetrating mixing layer
 C
 C-----------------------------------------------------------------------
+C \ev
+CEOP
 
       _RL KPPviscAz  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL KPPdiffKzS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

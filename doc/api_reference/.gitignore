@@ -10,4 +10,5 @@ api_ref
 *.toc
 *.pdf
 *.ps
-
+*.bbl
+*.blg

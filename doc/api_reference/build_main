@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-#  $Header: /u/gcmpack/MITgcm/doc/api_reference/build_main,v 1.4 2004/04/01 04:23:33 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/doc/api_reference/build_main,v 1.5 2004/05/05 22:50:54 dimitri Exp $
 #
 #  A script to generate the main LaTeX file given the list of sections.
 
@@ -88,6 +88,10 @@ for file ; do
 done
 
 cat <<EOF >> api_main.tex
+
+
+\bibliography{mitgcm}
+
 
 \end{document}
 

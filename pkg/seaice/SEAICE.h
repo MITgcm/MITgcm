@@ -1,8 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.10 2004/05/03 21:13:07 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.11 2004/05/05 22:50:54 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_SEAICE
 
+CBOP
+C !ROUTINE: SEAICE.h
+
+C !DESCRIPTION: \bv
 C     /==========================================================\
 C     | SEAICE.h                                                 |
 C     | o Basic header for sea ice model.                        |
@@ -24,7 +28,8 @@ C     HEFF  - effective ice thickness in m
 C             at South-West B-grid tracer point
 C             note: for non-zero AREA, actual ice
 C                thickness is HEFF / AREA
-C
+C \ev
+CEOP
       COMMON/SEAICE_DYNVARS/UICE,VICE,AREA
       COMMON/SEAICE_DYNVARS1/
      &       ETA,ZETA,DRAGS,DRAGA,AMASS,FORCEX,FORCEY,UICEC,VICEC
