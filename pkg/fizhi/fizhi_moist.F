@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.12 2004/07/18 23:17:00 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.13 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "FIZHI_OPTIONS.h"
       subroutine moistio (ndmoist,istrip,npcs,
      .   lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup,
      .   pz,plz,plze,dpres,pkht,pkl,tz,qz,bi,bj,ntracer,ptracer,
@@ -27,21 +26,21 @@ c ---------------
       integer ndmoist,istrip,npcs
       integer bi,bj,ntracer,ptracer         
       integer lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup
-      real pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1),dpres(im,jm,lm)
-      real pkht(im,jm,lm+1),pkl(im,jm,lm)
-      real tz(im,jm,lm),qz(im,jm,lm,ntracer)       
-      real qqz(im,jm,lm)
-      real dumoist(im,jm,lm),dvmoist(im,jm,lm)
-      real dtmoist(im,jm,lm),dqmoist(im,jm,lm,ntracer)
-      real ptop
+      _RL pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1),dpres(im,jm,lm)
+      _RL pkht(im,jm,lm+1),pkl(im,jm,lm)
+      _RL tz(im,jm,lm),qz(im,jm,lm,ntracer)       
+      _RL qqz(im,jm,lm)
+      _RL dumoist(im,jm,lm),dvmoist(im,jm,lm)
+      _RL dtmoist(im,jm,lm),dqmoist(im,jm,lm,ntracer)
+      _RL ptop
       integer iras
-      real rainlsp(im,jm),rainconv(im,jm),snowfall(im,jm)
+      _RL rainlsp(im,jm),rainconv(im,jm),snowfall(im,jm)
       integer nswcld,nswlz
-      real cldlsp_sw(im,jm,lm),cldras_sw(im,jm,lm)
-      real cldtot_sw(im,jm,lm),swlz(im,jm,lm)
+      _RL cldlsp_sw(im,jm,lm),cldras_sw(im,jm,lm)
+      _RL cldtot_sw(im,jm,lm),swlz(im,jm,lm)
       integer nlwcld,nlwlz
-      real  cldlsp_lw(im,jm,lm),cldras_lw(im,jm,lm)
-      real  cldtot_lw(im,jm,lm),lwlz(im,jm,lm)
+      _RL  cldlsp_lw(im,jm,lm),cldras_lw(im,jm,lm)
+      _RL  cldtot_lw(im,jm,lm),lwlz(im,jm,lm)
       logical lpnt
       integer myid
 
@@ -49,48 +48,48 @@ c Local Variables
 c ---------------
       integer    ncrnd,nsecf
 
-      real       fracqq, dum
+      _RL       fracqq, dum
       integer    snowcrit
       parameter (fracqq = 0.1)
 
-      real   cldsr(im,jm,lm)
-      real   srcld(istrip,lm)
+      _RL   cldsr(im,jm,lm)
+      _RL   srcld(istrip,lm)
 
-      real plev
-      real cldnow,cldlsp_mem,cldlsp,cldras_mem,cldras
-      real watnow,watmin,cldmin
-      real cldprs(im,jm),cldtmp(im,jm)
-      real cldhi (im,jm),cldlow(im,jm)
-      real cldmid(im,jm),totcld(im,jm)
+      _RL plev
+      _RL cldnow,cldlsp_mem,cldlsp,cldras_mem,cldras
+      _RL watnow,watmin,cldmin
+      _RL cldprs(im,jm),cldtmp(im,jm)
+      _RL cldhi (im,jm),cldlow(im,jm)
+      _RL cldmid(im,jm),totcld(im,jm)
 
-      real   CLDLS(im,jm,lm)  , CPEN(im,jm,lm)
-      real    tmpimjm(im,jm)
-      real    lsp_new(im,jm)
-      real   conv_new(im,jm)
-      real   snow_new(im,jm)
+      _RL   CLDLS(im,jm,lm)  , CPEN(im,jm,lm)
+      _RL    tmpimjm(im,jm)
+      _RL    lsp_new(im,jm)
+      _RL   conv_new(im,jm)
+      _RL   snow_new(im,jm)
 
-      real  qqcolmin(im,jm)
-      real  qqcolmax(im,jm)
+      _RL  qqcolmin(im,jm)
+      _RL  qqcolmax(im,jm)
       integer levpbl(im,jm)
 
 c Gathered Arrays for Variable Cloud Base
 c ---------------------------------------
-      real    raincgath(im*jm)
-      real     pigather(im*jm)
-      real     thgather(im*jm,lm)
-      real     shgather(im*jm,lm)
-      real    pkzgather(im*jm,lm)
-      real    pkegather(im*jm,lm+1)
-      real    plzgather(im*jm,lm)
-      real    plegather(im*jm,lm+1)
-      real     dpgather(im*jm,lm)
-      real    tmpgather(im*jm,lm)
-      real   deltgather(im*jm,lm)
-      real   delqgather(im*jm,lm)
-      real      ugather(im*jm,lm,ntracer)
-      real   delugather(im*jm,lm,ntracer)
-      real     deltrnev(im*jm,lm)
-      real     delqrnev(im*jm,lm)
+      _RL    raincgath(im*jm)
+      _RL     pigather(im*jm)
+      _RL     thgather(im*jm,lm)
+      _RL     shgather(im*jm,lm)
+      _RL    pkzgather(im*jm,lm)
+      _RL    pkegather(im*jm,lm+1)
+      _RL    plzgather(im*jm,lm)
+      _RL    plegather(im*jm,lm+1)
+      _RL     dpgather(im*jm,lm)
+      _RL    tmpgather(im*jm,lm)
+      _RL   deltgather(im*jm,lm)
+      _RL   delqgather(im*jm,lm)
+      _RL      ugather(im*jm,lm,ntracer)
+      _RL   delugather(im*jm,lm,ntracer)
+      _RL     deltrnev(im*jm,lm)
+      _RL     delqrnev(im*jm,lm)
 
       integer  nindeces(lm)
       integer  pblindex(im*jm)
@@ -98,51 +97,51 @@ c ---------------------------------------
 
 c Stripped Arrays
 c ---------------
-      real saveth (istrip,lm)
-      real saveq  (istrip,lm)
-      real saveu  (istrip,lm,ntracer)
-      real usubcl (istrip,   ntracer)
+      _RL saveth (istrip,lm)
+      _RL saveq  (istrip,lm)
+      _RL saveu  (istrip,lm,ntracer)
+      _RL usubcl (istrip,   ntracer)
 
-      real     ple(istrip,lm+1)
-      real      dp(istrip,lm)
-      real      TL(ISTRIP,lm)  , SHL(ISTRIP,lm)
-      real      PL(ISTRIP,lm)  , PLK(ISTRIP,lm)
-      real    PLKE(ISTRIP,lm+1)
-      real      TH(ISTRIP,lm)  ,CVTH(ISTRIP,lm)
-      real   CVQ(ISTRIP,lm)
-      real      UL(ISTRIP,lm,ntracer)
-      real     cvu(istrip,lm,ntracer)
-      real  CLMAXO(ISTRIP,lm),CLBOTH(ISTRIP,lm)
-      real  CLSBTH(ISTRIP,lm)
-      real    TMP1(ISTRIP,lm),  TMP2(ISTRIP,lm)
-      real    TMP3(ISTRIP,lm),  TMP4(ISTRIP,lm+1)
-      real    TMP5(ISTRIP,lm+1)
+      _RL     ple(istrip,lm+1)
+      _RL      dp(istrip,lm)
+      _RL      TL(ISTRIP,lm)  , SHL(ISTRIP,lm)
+      _RL      PL(ISTRIP,lm)  , PLK(ISTRIP,lm)
+      _RL    PLKE(ISTRIP,lm+1)
+      _RL      TH(ISTRIP,lm)  ,CVTH(ISTRIP,lm)
+      _RL   CVQ(ISTRIP,lm)
+      _RL      UL(ISTRIP,lm,ntracer)
+      _RL     cvu(istrip,lm,ntracer)
+      _RL  CLMAXO(ISTRIP,lm),CLBOTH(ISTRIP,lm)
+      _RL  CLSBTH(ISTRIP,lm)
+      _RL    TMP1(ISTRIP,lm),  TMP2(ISTRIP,lm)
+      _RL    TMP3(ISTRIP,lm),  TMP4(ISTRIP,lm+1)
+      _RL    TMP5(ISTRIP,lm+1)
       integer   ITMP1(ISTRIP,lm), ITMP2(ISTRIP,lm)
 
-      real   PRECIP(ISTRIP), PCNET(ISTRIP)
-      real   SP(ISTRIP),  PREP(ISTRIP)
-      real   PCPEN (ISTRIP,lm)
+      _RL   PRECIP(ISTRIP), PCNET(ISTRIP)
+      _RL   SP(ISTRIP),  PREP(ISTRIP)
+      _RL   PCPEN (ISTRIP,lm)
       integer pbl(istrip),depths(lm)
 
-      real   cldlz(istrip,lm), cldwater(im,jm,lm)
-      real   rhfrac(istrip), rhmin, pup, ppbl, rhcrit(istrip,lm)
-      real   offset, alpha, rasmax
+      _RL   cldlz(istrip,lm), cldwater(im,jm,lm)
+      _RL   rhfrac(istrip), rhmin, pup, ppbl, rhcrit(istrip,lm)
+      _RL   offset, alpha, rasmax
 
       logical first
       logical lras
-      real    clfrac (istrip,lm)
-      real    cldmas (istrip,lm)
-      real    detrain(istrip,lm)
-      real    psubcld    (istrip), psubcldg (im,jm)
-      real    psubcld_cnt(istrip), psubcldgc(im,jm)
-      real rnd(lm/2)
+      _RL    clfrac (istrip,lm)
+      _RL    cldmas (istrip,lm)
+      _RL    detrain(istrip,lm)
+      _RL    psubcld    (istrip), psubcldg (im,jm)
+      _RL    psubcld_cnt(istrip), psubcldgc(im,jm)
+      _RL rnd(lm/2)
       DATA      FIRST /.TRUE./
 
       integer imstp,nsubcl,nlras
       integer i,j,iloop,index,l,nn,num,numdeps,nt
-      real tmstp,tminv,sday,grav,alhl,cp,elocp,gamfac
-      real rkappa,p0kappa,p0kinv,ptopkap,pcheck
-      real tice,getcon,pi
+      _RL tmstp,tminv,sday,grav,alhl,cp,elocp,gamfac
+      _RL rkappa,p0kappa,p0kinv,ptopkap,pcheck
+      _RL tice,getcon,pi
  
 C **********************************************************************
 C ****                     INITIALIZATION                           ****
@@ -1071,44 +1070,44 @@ C Argument List
       integer nn,len,lenc,k,nltop,nlayr
       integer ntracer
       integer ncrnd
-      real dt
-      real UOI(len,nlayr,ntracer),   POI(len,K)
-      real QOI(len,K), PRS(len,K+1), PRJ(len,K+1)
-      real rnd(ncrnd)
-      real RAINS(len,K), CLN(len,K), CLF(len,K)
-      real cldmas(len,K), detrain(len,K)
-      real cp,grav,rkappa,alhl,rhfrac(len),rasmax
+      _RL dt
+      _RL UOI(len,nlayr,ntracer),   POI(len,K)
+      _RL QOI(len,K), PRS(len,K+1), PRJ(len,K+1)
+      _RL rnd(ncrnd)
+      _RL RAINS(len,K), CLN(len,K), CLF(len,K)
+      _RL cldmas(len,K), detrain(len,K)
+      _RL cp,grav,rkappa,alhl,rhfrac(len),rasmax
 
 C Local Variables
-      real TCU(len,K), QCU(len,K)
-      real ucu(len,K,ntracer)
-      real ALF(len,K), BET(len,K), GAM(len,K)
+      _RL TCU(len,K), QCU(len,K)
+      _RL ucu(len,K,ntracer)
+      _RL ALF(len,K), BET(len,K), GAM(len,K)
      *,         ETA(len,K), HOI(len,K)
      *,         PRH(len,K), PRI(len,K)
-      real HST(len,K), QOL(len,K), GMH(len,K)
+      _RL HST(len,K), QOL(len,K), GMH(len,K)
  
-      real TX1(len), TX2(len), TX3(len), TX4(len), TX5(len)
+      _RL TX1(len), TX2(len), TX3(len), TX4(len), TX5(len)
      *,         TX6(len), TX7(len), TX8(len), TX9(len)
      *,         TX11(len), TX12(len), TX13(len), TX14(len,ntracer)
      *,         TX15(len)
      *,         WFN(len) 
       integer IA1(len), IA2(len), IA3(len)
-      real cloudn(len), pcu(len)
+      _RL cloudn(len), pcu(len)
 
       integer krmin,icm
-      real rknob, cmb2pa
+      _RL rknob, cmb2pa
       PARAMETER (KRMIN=01)
       PARAMETER (ICM=1000)
       PARAMETER (CMB2PA=100.0)
       PARAMETER (rknob = 10.)
 
       integer IC(ICM),   IRND(icm)
-      real cmass(len,K)
+      _RL cmass(len,K)
       LOGICAL SETRAS
 
       integer i,L,nc,ib,nt
       integer km1,kp1,kprv,kcr,kfx,ncmx
-      real p00, crtmsf, frac, rasblf
+      _RL p00, crtmsf, frac, rasblf
 
       do L = 1,k
       do I = 1,LENC
@@ -1244,11 +1243,11 @@ c ---------------------------------------------------------
       subroutine rndcloud (iras,nrnd,rnd,myid)
       implicit none
       integer n,iras,nrnd,myid
-      real random_numbx
-      real rnd(nrnd)
+      _RL random_numbx
+      _RL rnd(nrnd)
       integer irm
       parameter (irm = 1000)
-      real random(irm)
+      _RL random(irm)
       integer i,mcheck,numrand,iseed,index
       logical first
       data    first /.true./
@@ -1311,14 +1310,14 @@ c --------------------------------------------------------------------
       implicit none
       integer iseed
       real *8 seed,port_rand
-      real random_numbx
+      _RL random_numbx
       random_numbx = 0
 #ifdef CRAY
-      real ranf
+      _RL ranf
       random_numbx = ranf()
 #else 
 #ifdef SGI
-      real rand
+      _RL rand
       random_numbx = rand()
 #endif
       random_numbx = port_rand(seed)
@@ -1475,30 +1474,30 @@ C************************************************************************
       implicit none
 C Argument List declarations
       integer nn,LEN,LENC,K,NLTOP,nlayr,ic,ntracer
-      real rasalf
+      _RL rasalf
       LOGICAL SETRAS
-      real frac, cp,  alhl, rkap, grav, p00, crtmsf
-      real POI(LEN,K),QOI(LEN,K),PRS(LEN,K+1),PRJ(LEN,K+1)
-      real uoi(len,nlayr,ntracer)
-      real PCU(LENC), CLN(LEN)
-      real TCU(LEN,K),  QCU(LEN,K),  ucu(len,k,ntracer), CMASS(LEN,K)
-      real ALF(LEN,K), BET(LEN,K),  GAM(LEN,K), PRH(LEN,K), PRI(LEN,K)
-      real HOL(LENC,K), ETA(LENC,K), HST(LENC,K), QOL(LENC,K)
-      real GMH(LENC,K)
-      real TX1(LENC), TX2(LENC), TX3(LENC), TX4(LENC)
-      real TX5(LENC), TX6(LENC), TX7(LENC), TX8(LENC)
-      real ALM(LENC), WFN(LENC), AKM(LENC), QS1(LENC)
-      real WLQ(LENC), CLF(LENC)
-      real uht(len,ntracer)
+      _RL frac, cp,  alhl, rkap, grav, p00, crtmsf
+      _RL POI(LEN,K),QOI(LEN,K),PRS(LEN,K+1),PRJ(LEN,K+1)
+      _RL uoi(len,nlayr,ntracer)
+      _RL PCU(LENC), CLN(LEN)
+      _RL TCU(LEN,K),  QCU(LEN,K),  ucu(len,k,ntracer), CMASS(LEN,K)
+      _RL ALF(LEN,K), BET(LEN,K),  GAM(LEN,K), PRH(LEN,K), PRI(LEN,K)
+      _RL HOL(LENC,K), ETA(LENC,K), HST(LENC,K), QOL(LENC,K)
+      _RL GMH(LENC,K)
+      _RL TX1(LENC), TX2(LENC), TX3(LENC), TX4(LENC)
+      _RL TX5(LENC), TX6(LENC), TX7(LENC), TX8(LENC)
+      _RL ALM(LENC), WFN(LENC), AKM(LENC), QS1(LENC)
+      _RL WLQ(LENC), CLF(LENC)
+      _RL uht(len,ntracer)
       integer IA(LENC), I1(LENC),I2(LENC)
-      real      rhfrac(len)
+      _RL      rhfrac(len)
 
 C Local Variables
-      real daylen,half,one,zero,cmb2pa,rhmax
+      _RL daylen,half,one,zero,cmb2pa,rhmax
       PARAMETER (DAYLEN=86400.0,  HALF=0.5,  ONE=1.0, ZERO=0.0)
       PARAMETER (CMB2PA=100.0)
       PARAMETER (RHMAX=0.9999)
-      real rkapp1,onebcp,albcp,onebg,cpbg,twobal
+      _RL rkapp1,onebcp,albcp,onebg,cpbg,twobal
 C
       integer nt,km1,ic1,i,L,len1,len2,isav,len11,ii
       integer lena,lena1,lenb,tem,tem1
@@ -2094,10 +2093,10 @@ C*********************************************************************
       implicit none
 C Argument List declarations
       integer len
-      real PL(LEN),  RNO(LEN), CLF(LEN)
+      _RL PL(LEN),  RNO(LEN), CLF(LEN)
 
 C Local Variables
-      real p5,p8,pt8,pt2,pfac,p4,p6,p7,p9,cucld,cfac
+      _RL p5,p8,pt8,pt2,pfac,p4,p6,p7,p9,cucld,cfac
       PARAMETER (P5=500.0,  P8=800.0, PT8=0.8, PT2=0.2)
       PARAMETER (PFAC=PT2/(P8-P5))
       PARAMETER (P4=400.0,    P6=401.0)
@@ -2147,15 +2146,15 @@ C*********************************************************************
       implicit none
 C Argument List declarations
       integer len
-      real PL(LEN), PLB(LEN), ACR(LEN)
+      _RL PL(LEN), PLB(LEN), ACR(LEN)
 
 C Local variables
       integer lma
       parameter  (lma=18)
-      real p(lma)
-      real a(lma)
+      _RL p(lma)
+      _RL a(lma)
       integer i,L
-      real temp
+      _RL temp
 
       data p  / 93.81, 111.65, 133.46, 157.80, 186.51,
      .         219.88, 257.40, 301.21, 352.49, 409.76,
@@ -2196,20 +2195,20 @@ C Local variables
       implicit none
 C Argument List declarations
       integer nn,irun,nlay
-      real TL(IRUN,NLAY),QL(IRUN,NLAY),RAIN(IRUN,NLAY),
+      _RL TL(IRUN,NLAY),QL(IRUN,NLAY),RAIN(IRUN,NLAY),
      . PL(IRUN,NLAY),CLFRAC(IRUN,NLAY),SP(IRUN),TEMP1(IRUN,NLAY),
      . TEMP2(IRUN,NLAY),PLKE(IRUN,NLAY+1),
      . RCON(IRUN),RLAR(IRUN),DP(IRUN,NLAY),PLK(IRUN,NLAY),TH(IRUN,NLAY),
      . TEMP3(IRUN,NLAY)
       integer ITMP1(IRUN,NLAY),ITMP2(IRUN,NLAY)
-      real CLSBTH(IRUN,NLAY)
-      real tmscl,tmfrc,cp,gravity,alhl,gamfac,offset,alpha
-      real cldlz(irun,nlay)
-      real rhcrit(irun,nlay)
+      _RL CLSBTH(IRUN,NLAY)
+      _RL tmscl,tmfrc,cp,gravity,alhl,gamfac,offset,alpha
+      _RL cldlz(irun,nlay)
+      _RL rhcrit(irun,nlay)
 C
 C Local Variables
-      real zm1p04,zero,two89,zp44,zp01,half,zp578,one,thousand,z3600
-      real zp1,zp001
+      _RL zm1p04,zero,two89,zp44,zp01,half,zp578,one,thousand,z3600
+      _RL zp1,zp001
       PARAMETER (ZM1P04 = -1.04E-4 )
       PARAMETER (ZERO = 0.)
       PARAMETER (TWO89= 2.89E-5)
@@ -2223,13 +2222,13 @@ C Local Variables
       PARAMETER ( THOUSAND = 1000.)
       PARAMETER ( Z3600 = 3600.)
 C
-      real EVP9(IRUN,NLAY)
-      real water(irun),crystal(irun)
-      real watevap(irun),iceevap(irun)
-      real fracwat,fracice, tice,rh,fact,dum
-      real rainmax(irun)
-      real getcon,rphf,elocp,cpog,relax
-      real exparg,arearat,rpow
+      _RL EVP9(IRUN,NLAY)
+      _RL water(irun),crystal(irun)
+      _RL watevap(irun),iceevap(irun)
+      _RL fracwat,fracice, tice,rh,fact,dum
+      _RL rainmax(irun)
+      _RL getcon,rphf,elocp,cpog,relax
+      _RL exparg,arearat,rpow
 
       integer i,L,n,nlaym1,irnlay,irnlm1
 
@@ -2437,23 +2436,23 @@ C***********************************************************************
       implicit none
       integer  irun,irise
 
-      real   th(irun,irise)
-      real    q(irun,irise)
-      real  plk(irun,irise)
-      real   pl(irun,irise)
-      real plke(irun,irise+1)
+      _RL   th(irun,irise)
+      _RL    q(irun,irise)
+      _RL  plk(irun,irise)
+      _RL   pl(irun,irise)
+      _RL plke(irun,irise+1)
 
-      real  cloud(irun,irise)
-      real cldwat(irun,irise)
-      real     qs(irun,irise)
+      _RL  cloud(irun,irise)
+      _RL cldwat(irun,irise)
+      _RL     qs(irun,irise)
 
-      real cp, alhl, getcon, akap
-      real ratio, temp, elocp
-      real rhcrit,rh,dum
+      _RL cp, alhl, getcon, akap
+      _RL ratio, temp, elocp
+      _RL rhcrit,rh,dum
       integer i,L
 
-      real rhc(irun,irise)
-      real offset,alpha
+      _RL rhc(irun,irise)
+      _RL offset,alpha
 
 c Explicit Inline Directives
 c --------------------------
@@ -2499,11 +2498,11 @@ c -----------------------------------------------
       subroutine ctei ( th,q,cldfrc,cldwat,pl,plk,plke,im,lm )
       implicit none
       integer im,lm
-      real  th(im,lm),q(im,lm),plke(im,lm+1),cldwat(im,lm)
-      real plk(im,lm),pl(im,lm),cldfrc(im,lm)
+      _RL  th(im,lm),q(im,lm),plke(im,lm+1),cldwat(im,lm)
+      _RL plk(im,lm),pl(im,lm),cldfrc(im,lm)
       integer i,L
-      real    getcon,cp,alhl,elocp,cpoel,t,p,s,qs,dqsdt,dq
-      real    k,krd,kmm,f
+      _RL    getcon,cp,alhl,elocp,cpoel,t,p,s,qs,dqsdt,dq
+      _RL    k,krd,kmm,f
 
       cp     = getcon('CP')
       alhl   = getcon('LATENT HEAT COND')
@@ -2540,8 +2539,8 @@ c -----------------------------------------------
       subroutine back2grd(gathered,indeces,scattered,irun)
       implicit none
       integer i,irun,indeces(irun)
-      real gathered(irun),scattered(irun)
-      real temp(irun)
+      _RL gathered(irun),scattered(irun)
+      _RL temp(irun)
       do i = 1,irun
        temp(indeces(i)) = gathered(i)
       enddo

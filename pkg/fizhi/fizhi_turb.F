@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.13 2004/07/23 22:32:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.14 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "FIZHI_OPTIONS.h"
       subroutine turbio (im,jm,nlay,istrip,nymd,nhms,bi,bj
      1 ,ndturb,ptop, pz, uz, vz, tz, qz, ntracers,ptracers
      2 ,plz,plze,dpres,pkht,pkz,ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke
@@ -106,39 +105,39 @@ c-----------------------------------------------------------------------
       integer im,jm,nlay,istrip,nymd,nhms,bi,bj,ndturb
       integer ntracers, ptracers
       integer nchp,nchptot,nchplnd
-      real ptop
-      real pz(im,jm),uz(im,jm,nlay),vz(im,jm,nlay),tz(im,jm,nlay)
-      real qz(im,jm,nlay,ntracers)
-      real plz(im,jm,nlay),plze(im,jm,nlay+1),dpres(im,jm,nlay)
-      real pkht(im,jm,nlay+1),pkz(im,jm,nlay)
-      real ctmt(nchp),xxmt(nchp),yymt(nchp),zetamt(nchp)
-      real xlmt(nchp,nlay),khmt(nchp,nlay),tke(nchp,nlay)
-      real tgz(im, jm),fracland(im,jm)
+      _RL ptop
+      _RL pz(im,jm),uz(im,jm,nlay),vz(im,jm,nlay),tz(im,jm,nlay)
+      _RL qz(im,jm,nlay,ntracers)
+      _RL plz(im,jm,nlay),plze(im,jm,nlay+1),dpres(im,jm,nlay)
+      _RL pkht(im,jm,nlay+1),pkz(im,jm,nlay)
+      _RL ctmt(nchp),xxmt(nchp),yymt(nchp),zetamt(nchp)
+      _RL xlmt(nchp,nlay),khmt(nchp,nlay),tke(nchp,nlay)
+      _RL tgz(im, jm),fracland(im,jm)
       integer landtype(im,jm)
-      real tcanopy(nchp),tdeep(nchp),ecanopy(nchp),swetshal(nchp)
-      real swetroot(nchp),swetdeep(nchp),snodep(nchp),capac(nchp)
-      real chfr(nchp),chlt(nchp),chlon(nchp)
+      _RL tcanopy(nchp),tdeep(nchp),ecanopy(nchp),swetshal(nchp)
+      _RL swetroot(nchp),swetdeep(nchp),snodep(nchp),capac(nchp)
+      _RL chfr(nchp),chlt(nchp),chlon(nchp)
       integer igrd(nchp),ityp(nchp)
-      real alai(nchp),agrn(nchp),thkz(im,jm)
+      _RL alai(nchp),agrn(nchp),thkz(im,jm)
       logical tprof
-      real duturb(im,jm,nlay),dvturb(im,jm,nlay)
-      real dtturb(im,jm,nlay),dqturb(im,jm,nlay,ntracers)
-      real st4(im,jm),dst4(im,jm)
-      real radswg(im,jm),radswt(im,jm),radlwg(im,jm)
-      real fdifpar(im,jm),fdirpar(im,jm)
-      real rainlsp(im,jm),rainconv(im,jm),snowfall(im,jm)
-      real tempref (im,jm)
+      _RL duturb(im,jm,nlay),dvturb(im,jm,nlay)
+      _RL dtturb(im,jm,nlay),dqturb(im,jm,nlay,ntracers)
+      _RL st4(im,jm),dst4(im,jm)
+      _RL radswg(im,jm),radswt(im,jm),radlwg(im,jm)
+      _RL fdifpar(im,jm),fdirpar(im,jm)
+      _RL rainlsp(im,jm),rainconv(im,jm),snowfall(im,jm)
+      _RL tempref (im,jm)
       integer imstturblw, imstturbsw
-      real qliqavesw(im,jm,nlay),qliqavelw(im,jm,nlay)
-      real fccavelw (im,jm,nlay),fccavesw (im,jm,nlay)
-      real qqgrid   (im,jm,nlay)
+      _RL qliqavesw(im,jm,nlay),qliqavelw(im,jm,nlay)
+      _RL fccavelw (im,jm,nlay),fccavesw (im,jm,nlay)
+      _RL qqgrid   (im,jm,nlay)
       integer myid
 
 C Local Variables
 
       integer numstrips
       integer ijall
-      real fmu,hice,tref,pref,cti,ed
+      _RL fmu,hice,tref,pref,cti,ed
 C Set fmu and ed to zero for no background diffusion
       parameter ( fmu    = 0.00000    ) 
       parameter ( hice   =   300.     )
@@ -147,106 +146,106 @@ C Set fmu and ed to zero for no background diffusion
       parameter ( cti    =   0.0052   )
       parameter ( ed     =   0.0      )
 
-      real qliqtmp(im,jm,nlay)
-      real  fcctmp(im,jm,nlay)
-      real tmpdiag(im,jm)
-      real   thtgz(im*jm)
+      _RL qliqtmp(im,jm,nlay)
+      _RL  fcctmp(im,jm,nlay)
+      _RL tmpdiag(im,jm)
+      _RL   thtgz(im*jm)
 
       integer nland
-      real alwcoeff(nchp),blwcoeff(nchp)
-      real netsw(nchp)
-      real cnvprec(nchp),lsprec(nchp)
-      real snowprec(nchp)
-      real pardiff(nchp),pardirct(nchp)
-      real pmsc(nchp)
-      real netlw(nchp)
-      real sqscat(nchp), rsoil1(nchp)
-      real rsoil2(nchp)
-      real rdc(nchp),u2fac(nchp)
-      real z2ch(nchp)
-      real zoch(nchp),cdrc(nchp)
-      real cdsc(nchp)
-      real dqsdt(nchp)
-      real tground(nchp),qground(nchp)
-      real utility(nchp)
-      real    qice(nchp)
-      real   dqice(nchp)
+      _RL alwcoeff(nchp),blwcoeff(nchp)
+      _RL netsw(nchp)
+      _RL cnvprec(nchp),lsprec(nchp)
+      _RL snowprec(nchp)
+      _RL pardiff(nchp),pardirct(nchp)
+      _RL pmsc(nchp)
+      _RL netlw(nchp)
+      _RL sqscat(nchp), rsoil1(nchp)
+      _RL rsoil2(nchp)
+      _RL rdc(nchp),u2fac(nchp)
+      _RL z2ch(nchp)
+      _RL zoch(nchp),cdrc(nchp)
+      _RL cdsc(nchp)
+      _RL dqsdt(nchp)
+      _RL tground(nchp),qground(nchp)
+      _RL utility(nchp)
+      _RL    qice(nchp)
+      _RL   dqice(nchp)
 
-      real dumsc(nchp,nlay),dvmsc(nchp,nlay)
-      real dtmsc(nchp,nlay),dqmsc(nchp,nlay,ntracers)
+      _RL dumsc(nchp,nlay),dvmsc(nchp,nlay)
+      _RL dtmsc(nchp,nlay),dqmsc(nchp,nlay,ntracers)
 
-      real shg(nchp),z0(nchp),icethk(nchp)
+      _RL shg(nchp),z0(nchp),icethk(nchp)
       integer water(nchp)
  
-      real lats(istrip),lons(istrip),cosz(istrip),icest(istrip)
-      real rainls(istrip),raincon(istrip),newsnow(istrip)
-      real pardf(istrip),pardr(istrip),swnet(istrip)
-      real hlwdwn(istrip),alwrad(istrip),blwrad(istrip),tmpnlay(istrip)
-      real laistrip(istrip),grnstrip(istrip),z2str(istrip),cd(istrip)
-      real scatstr(istrip), rs1str(istrip), rs2str(istrip)
-      real rdcstr(istrip),u2fstr(istrip),dqsdtstr(istrip)
-      real eturb(istrip),dedqa(istrip),dedtc(istrip)
-      real hsturb(istrip),dhsdqa(istrip),dhsdtc(istrip)
-      real savetc(istrip),saveqa(istrip),lwstrip(istrip)
-      real chfrstr(istrip),psurf(istrip),shgstr(istrip)
+      _RL lats(istrip),lons(istrip),cosz(istrip),icest(istrip)
+      _RL rainls(istrip),raincon(istrip),newsnow(istrip)
+      _RL pardf(istrip),pardr(istrip),swnet(istrip)
+      _RL hlwdwn(istrip),alwrad(istrip),blwrad(istrip),tmpnlay(istrip)
+      _RL laistrip(istrip),grnstrip(istrip),z2str(istrip),cd(istrip)
+      _RL scatstr(istrip), rs1str(istrip), rs2str(istrip)
+      _RL rdcstr(istrip),u2fstr(istrip),dqsdtstr(istrip)
+      _RL eturb(istrip),dedqa(istrip),dedtc(istrip)
+      _RL hsturb(istrip),dhsdqa(istrip),dhsdtc(istrip)
+      _RL savetc(istrip),saveqa(istrip),lwstrip(istrip)
+      _RL chfrstr(istrip),psurf(istrip),shgstr(istrip)
       integer types(istrip),igrdstr(istrip)
-      real evap(istrip),shflux(istrip),runoff(istrip),bomb(istrip)
-      real eint(istrip),esoi(istrip),eveg(istrip),esno(istrip)
-      real smelt(istrip),hlatn(istrip),hlwup(istrip),gdrain(istrip)
-      real runsrf(istrip),fwsoil(istrip),evpot(istrip)
-      real strdg1(istrip),strdg2(istrip),strdg3(istrip),strdg4(istrip)
-      real strdg5(istrip),strdg6(istrip),strdg7(istrip),strdg8(istrip)
-      real strdg9(istrip),tmpstrip(istrip),qicestr(istrip)
-      real dqicestr(istrip)
+      _RL evap(istrip),shflux(istrip),runoff(istrip),bomb(istrip)
+      _RL eint(istrip),esoi(istrip),eveg(istrip),esno(istrip)
+      _RL smelt(istrip),hlatn(istrip),hlwup(istrip),gdrain(istrip)
+      _RL runsrf(istrip),fwsoil(istrip),evpot(istrip)
+      _RL strdg1(istrip),strdg2(istrip),strdg3(istrip),strdg4(istrip)
+      _RL strdg5(istrip),strdg6(istrip),strdg7(istrip),strdg8(istrip)
+      _RL strdg9(istrip),tmpstrip(istrip),qicestr(istrip)
+      _RL dqicestr(istrip)
 
-      real u(istrip,nlay+1), v(istrip,nlay+1), th(istrip,nlay+1)
-      real sh(istrip,nlay+1), thv(istrip,nlay+1), pe(istrip,nlay+1)
-      real tracers(istrip,nlay+1,ntracers)
-      real dpstr(istrip,nlay),pke(istrip,nlay+1)
-      real pk(istrip,nlay), qq(istrip,nlay),   p(istrip,nlay)
-      real sri(istrip,nlay), skh(istrip,nlay), skm(istrip,nlay)
-      real stuflux(istrip,nlay), stvflux(istrip,nlay)
-      real sttflux(istrip,nlay), stqflux(istrip,nlay)
-      real frqtrb(istrip,nlay-1)
-      real dshdthg(istrip,nlay),dthdthg(istrip,nlay)
-      real dshdshg(istrip,nlay),dthdshg(istrip,nlay)
-      real transth(istrip,nlay), transsh(istrip,nlay)
+      _RL u(istrip,nlay+1), v(istrip,nlay+1), th(istrip,nlay+1)
+      _RL sh(istrip,nlay+1), thv(istrip,nlay+1), pe(istrip,nlay+1)
+      _RL tracers(istrip,nlay+1,ntracers)
+      _RL dpstr(istrip,nlay),pke(istrip,nlay+1)
+      _RL pk(istrip,nlay), qq(istrip,nlay),   p(istrip,nlay)
+      _RL sri(istrip,nlay), skh(istrip,nlay), skm(istrip,nlay)
+      _RL stuflux(istrip,nlay), stvflux(istrip,nlay)
+      _RL sttflux(istrip,nlay), stqflux(istrip,nlay)
+      _RL frqtrb(istrip,nlay-1)
+      _RL dshdthg(istrip,nlay),dthdthg(istrip,nlay)
+      _RL dshdshg(istrip,nlay),dthdshg(istrip,nlay)
+      _RL transth(istrip,nlay), transsh(istrip,nlay)
 
-      real tc(istrip),td(istrip),qa(istrip)
-      real swet1(istrip),swet2(istrip),swet3(istrip)
-      real capacity(istrip),snowdepth(istrip)
-      real stz0(istrip)
-      real stdiag(istrip)
-      real tends(istrip),sustar(istrip), sz0(istrip),pbldpth(istrip)
-      real sct(istrip), scu(istrip), swinds(istrip)
-      real stu2m(istrip),stv2m(istrip),stt2m(istrip),stq2m(istrip)
-      real stu10m(istrip),stv10m(istrip),stt10m(istrip),stq10m(istrip)
+      _RL tc(istrip),td(istrip),qa(istrip)
+      _RL swet1(istrip),swet2(istrip),swet3(istrip)
+      _RL capacity(istrip),snowdepth(istrip)
+      _RL stz0(istrip)
+      _RL stdiag(istrip)
+      _RL tends(istrip),sustar(istrip), sz0(istrip),pbldpth(istrip)
+      _RL sct(istrip), scu(istrip), swinds(istrip)
+      _RL stu2m(istrip),stv2m(istrip),stt2m(istrip),stq2m(istrip)
+      _RL stu10m(istrip),stv10m(istrip),stt10m(istrip),stq10m(istrip)
       integer  stwatr(istrip)
-      real  wspeed(istrip)
+      _RL  wspeed(istrip)
 
-      real ctsave(istrip),xxsave(istrip),yysave(istrip),zetasave(istrip)
-      real xlsave(istrip,nlay),khsave(istrip,nlay)
-      real qliq(istrip,nlay),turbfcc(istrip,nlay)
-      real qliqmsc(nchp,nlay),fccmsc(nchp,nlay)
+      _RL ctsave(istrip),xxsave(istrip),yysave(istrip),zetasave(istrip)
+      _RL xlsave(istrip,nlay),khsave(istrip,nlay)
+      _RL qliq(istrip,nlay),turbfcc(istrip,nlay)
+      _RL qliqmsc(nchp,nlay),fccmsc(nchp,nlay)
 
       integer ndlsm
       parameter ( ndlsm = 40)
-      real qdiaglsm(nchp,ndlsm)
+      _RL qdiaglsm(nchp,ndlsm)
 
       integer n,nsecf,nmonf,ndayf
       nsecf(n) = n/10000*3600 + mod(n,10000)/100* 60 + mod(n,100)
       nmonf(n) = mod(n,10000)/100
       ndayf(n) = mod(n,100)
 
-      real pi,secday,sdayopi2,rgas,akap,cp,alhl
-      real faceps,grav,caltoj,virtcon,getcon
-      real heatw,undef,timstp,delttrb,dttrb,ra
-      real edle,rmu,cltj10,atimstp,tice,const
+      _RL pi,secday,sdayopi2,rgas,akap,cp,alhl
+      _RL faceps,grav,caltoj,virtcon,getcon
+      _RL heatw,undef,timstp,delttrb,dttrb,ra
+      _RL edle,rmu,cltj10,atimstp,tice,const
       integer istnp1,istnlay,itrtrb,i,j,L,nn,nt
       integer nocean, nice
       integer ndmoist,time_left,ndum
       integer ntracedim
-      real    dtfac,timstp2,sum
+      _RL    dtfac,timstp2,sum
 C logical begin flag - set to true to indicate a cold start
       logical qbeg    
 
@@ -1488,132 +1487,132 @@ C**********************************************************************
 
 C Argument list declarations
       integer nn,irun,nlev,ntrace,ntracedim,itrtrb,nhms,nymd
-      real TH(irun,NLEV+1),THV(irun,NLEV+1),SH(irun,NLEV+1)
-      real U(irun,NLEV+1),V(irun,NLEV+1),QQ(irun,NLEV)
-      real PL(irun,NLEV),PLE(irun,NLEV+1),PLK(irun,NLEV)
-      real PLKE(irun,NLEV+1),DPSTR(irun,NLEV)
+      _RL TH(irun,NLEV+1),THV(irun,NLEV+1),SH(irun,NLEV+1)
+      _RL U(irun,NLEV+1),V(irun,NLEV+1),QQ(irun,NLEV)
+      _RL PL(irun,NLEV),PLE(irun,NLEV+1),PLK(irun,NLEV)
+      _RL PLKE(irun,NLEV+1),DPSTR(irun,NLEV)
       integer IWATER(irun)
-      real Z0(irun)
-      real tracers(irun,nlev+1,ntracedim)
-      real dtau,KMBG,KHBG
+      _RL Z0(irun)
+      _RL tracers(irun,nlev+1,ntracedim)
+      _RL dtau,KMBG,KHBG
       LOGICAL QBEG,TPROF
-      real SWINDS(irun)
-      real SRI(irun,nlev), ET(irun,nlev)
-      real EU (irun,nlev)
-      real WU(irun,nlev)
-      real WV (irun,nlev), pbldpth(irun)
-      real sustar(irun), sz0(irun)
-      real freqdg(irun,nlev-1)
-      real sct(irun), scu(irun)
-      real stu2m(irun),stv2m(irun),stt2m(irun),stq2m(irun)
-      real stu10m(irun),stv10m(irun),stt10m(irun),stq10m(irun)
-      real grav,cp,rgas,faceps,virtcon,undef
-      real eturb(irun),dedqa(irun),dedtc(irun)
-      real hsturb(irun),dhsdqa(irun),dhsdtc(irun)
-      real dshdthg(irun,nlev),dthdthg(irun,nlev)
-      real dshdshg(irun,nlev),dthdshg(irun,nlev)
-      real transth(irun,nlev),transsh(irun,nlev)
-      real ctsave(irun),xxsave(irun),yysave(irun)
-      real zetasave(irun),xlsave(irun,nlev),khsave(irun,nlev)
-      real qliq(irun,nlev),turbfcc(irun,nlev)
+      _RL SWINDS(irun)
+      _RL SRI(irun,nlev), ET(irun,nlev)
+      _RL EU (irun,nlev)
+      _RL WU(irun,nlev)
+      _RL WV (irun,nlev), pbldpth(irun)
+      _RL sustar(irun), sz0(irun)
+      _RL freqdg(irun,nlev-1)
+      _RL sct(irun), scu(irun)
+      _RL stu2m(irun),stv2m(irun),stt2m(irun),stq2m(irun)
+      _RL stu10m(irun),stv10m(irun),stt10m(irun),stq10m(irun)
+      _RL grav,cp,rgas,faceps,virtcon,undef
+      _RL eturb(irun),dedqa(irun),dedtc(irun)
+      _RL hsturb(irun),dhsdqa(irun),dhsdtc(irun)
+      _RL dshdthg(irun,nlev),dthdthg(irun,nlev)
+      _RL dshdshg(irun,nlev),dthdshg(irun,nlev)
+      _RL transth(irun,nlev),transsh(irun,nlev)
+      _RL ctsave(irun),xxsave(irun),yysave(irun)
+      _RL zetasave(irun),xlsave(irun,nlev),khsave(irun,nlev)
+      _RL qliq(irun,nlev),turbfcc(irun,nlev)
 
 C Local Variables
-      real b1,b3,alpha,halpha,qqmin,qbustr
+      _RL b1,b3,alpha,halpha,qqmin,qbustr
       PARAMETER ( B1      =   16.6    )  
       PARAMETER ( B3      = 1. / B1  )  
       PARAMETER ( ALPHA   = 0.1       )
       PARAMETER ( HALPHA = ALPHA * 0.5 )
       PARAMETER ( QQMIN  = 0.005      )
       PARAMETER ( QBUSTR = 2.550952   )
-      real    argmax, onethrd, z1pem25, b2, two
+      _RL    argmax, onethrd, z1pem25, b2, two
       PARAMETER (ARGMAX = 30.)
       PARAMETER (ONETHRD = 1./3. )
       PARAMETER (Z1PEM25 = 1.E-25)
       PARAMETER ( B2    =  10.1 )
       PARAMETER ( two   =   2.0 )
 
-      real AHS (irun), HS(irun)
-      real XX  (irun), YY(irun), CU(irun)
-      real CT(irun),  USTAR(irun)
-      real RIB(irun),   ZETA(irun), WS(irun)
-      real DTHS(irun), DELTHS(irun)
-      real DTHL(irun), DELTHL(irun)
-      real RIBIN(irun),CUIN(irun)
-      real CTIN(irun),ZETAIN(irun)
-      real USTARIN(irun),RHOSIN(irun),Z0IN(irun)
-      real qqcolmin(irun),qqcolmax(irun),levpbl(irun)
+      _RL AHS (irun), HS(irun)
+      _RL XX  (irun), YY(irun), CU(irun)
+      _RL CT(irun),  USTAR(irun)
+      _RL RIB(irun),   ZETA(irun), WS(irun)
+      _RL DTHS(irun), DELTHS(irun)
+      _RL DTHL(irun), DELTHL(irun)
+      _RL RIBIN(irun),CUIN(irun)
+      _RL CTIN(irun),ZETAIN(irun)
+      _RL USTARIN(irun),RHOSIN(irun),Z0IN(irun)
+      _RL qqcolmin(irun),qqcolmax(irun),levpbl(irun)
 
-      real ADZ1(irun,nlev), DZ1TMP(irun,nlev)
-      real DZ3(irun,nlev), TEMP(irun,nlev)
-      real DV(irun,nlev), DTHV(irun,nlev)
-      real DPK(irun,nlev), STRT(irun,nlev)
-      real DW2(irun,nlev), RI(irun,nlev)
-      real RHOZPK(irun,nlev), Q(irun,nlev)
-      real RIINIT(irun,nlev), DU(irun,nlev)
-      real QQINIT(irun,nlev), RHOKDZ(irun,nlev)
-      real RHODZ2(irun,nlev)
-      REAL KM(irun,nlev), KH(irun,nlev)
+      _RL ADZ1(irun,nlev), DZ1TMP(irun,nlev)
+      _RL DZ3(irun,nlev), TEMP(irun,nlev)
+      _RL DV(irun,nlev), DTHV(irun,nlev)
+      _RL DPK(irun,nlev), STRT(irun,nlev)
+      _RL DW2(irun,nlev), RI(irun,nlev)
+      _RL RHOZPK(irun,nlev), Q(irun,nlev)
+      _RL RIINIT(irun,nlev), DU(irun,nlev)
+      _RL QQINIT(irun,nlev), RHOKDZ(irun,nlev)
+      _RL RHODZ2(irun,nlev)
+      _RL KM(irun,nlev), KH(irun,nlev)
 
-      real DELTH  (irun,nlev+1), DELSH (irun,nlev+1)
-      real FLXFAC (irun,nlev+1)
-      real FLXFPK (irun,nlev+1)
+      _RL DELTH  (irun,nlev+1), DELSH (irun,nlev+1)
+      _RL FLXFAC (irun,nlev+1)
+      _RL FLXFPK (irun,nlev+1)
 
-      real ADZ2   (irun,nlev-1), RHODZ1(irun,nlev-1)
-      real VKZE   (irun,nlev-1), VKZM  (irun,nlev-1)
-      real XL     (irun,nlev-1), QXLM  (irun,nlev-1)
-      real QQE    (irun,nlev-1), QE    (irun,nlev-1)
-      real P3     (irun,nlev-1), XQ    (irun,nlev-1)
-      real XLDIAG (irun,nlev-1), FLXFCE(irun,nlev-1)
+      _RL ADZ2   (irun,nlev-1), RHODZ1(irun,nlev-1)
+      _RL VKZE   (irun,nlev-1), VKZM  (irun,nlev-1)
+      _RL XL     (irun,nlev-1), QXLM  (irun,nlev-1)
+      _RL QQE    (irun,nlev-1), QE    (irun,nlev-1)
+      _RL P3     (irun,nlev-1), XQ    (irun,nlev-1)
+      _RL XLDIAG (irun,nlev-1), FLXFCE(irun,nlev-1)
 
       LOGICAL FIRST,LAST
       integer IBITSTB(irun,nlev),INTQ(irun,nlev)
  
 C arrays for use by moist bouyancy calculation
 C -----------------
-      real TL(irun,NLEV),DTH(irun,NLEV)
-      real DSH(irun,NLEV)
-      real SHL(irun,NLEV)
-      real AA(irun,NLEV),BB(irun,NLEV),SSDEV(irun,NLEV)
-      real ARG(irun,NLEV),XXZETA(irun),QBYU(irun)
-      real SVAR(irun,NLEV),Q1M(irun,NLEV)
-      real FCC(irun,NLEV)
-      real BETAT(irun,NLEV),BETAW(irun,NLEV)
-      real BETAL(irun,NLEV),BETAT1(irun,NLEV)
-      real BETAW1(irun,NLEV),SBAR(irun,NLEV)
-      real SHSAT(irun,NLEV)
+      _RL TL(irun,NLEV),DTH(irun,NLEV)
+      _RL DSH(irun,NLEV)
+      _RL SHL(irun,NLEV)
+      _RL AA(irun,NLEV),BB(irun,NLEV),SSDEV(irun,NLEV)
+      _RL ARG(irun,NLEV),XXZETA(irun),QBYU(irun)
+      _RL SVAR(irun,NLEV),Q1M(irun,NLEV)
+      _RL FCC(irun,NLEV)
+      _RL BETAT(irun,NLEV),BETAW(irun,NLEV)
+      _RL BETAL(irun,NLEV),BETAT1(irun,NLEV)
+      _RL BETAW1(irun,NLEV),SBAR(irun,NLEV)
+      _RL SHSAT(irun,NLEV)
 
 C Some space for variables to be used in called routines
       logical LWATER
       integer IVBITRIB(irun)
-      real VHZ(irun)
-      real VH0(irun)
-      real VPSIM(irun),VAPSIM(irun)
-      real VPSIG(irun),VPSIHG(irun)
-      real VTEMP(irun),VDZETA(irun)
-      real VDZ0(irun),VDPSIM(irun)
-      real VDPSIH(irun),VZH(irun)
-      real VXX0(irun),VYY0(irun)
-      real VAPSIHG(irun),VRIB1(irun),VWS1(irun)
-      real VPSIH(irun),VZETAL(irun)
-      real VZ0L(irun),VPSIH2(irun)
-      real VX0PSIM(irun),VG(irun),VG0(irun),VR1MG0(irun)
-      real VZ2(irun),VDZSEA(irun),VAZ0(irun),VXNUM1(irun)
-      real VPSIGB2(irun),VDX(irun),VDXPSIM(irun),VDY(irun)
-      real VXNUM2(irun),VDEN(irun),VAWS1(irun),VXNUM3(irun)
-      real VXNUM(irun),VDZETA1(irun),VDZETA2(irun)
-      real VZCOEF2(irun),VZCOEF1(irun),VTEMPLIN(irun)
-      real VDPSIMC(irun),VDPSIHC(irun)
+      _RL VHZ(irun)
+      _RL VH0(irun)
+      _RL VPSIM(irun),VAPSIM(irun)
+      _RL VPSIG(irun),VPSIHG(irun)
+      _RL VTEMP(irun),VDZETA(irun)
+      _RL VDZ0(irun),VDPSIM(irun)
+      _RL VDPSIH(irun),VZH(irun)
+      _RL VXX0(irun),VYY0(irun)
+      _RL VAPSIHG(irun),VRIB1(irun),VWS1(irun)
+      _RL VPSIH(irun),VZETAL(irun)
+      _RL VZ0L(irun),VPSIH2(irun)
+      _RL VX0PSIM(irun),VG(irun),VG0(irun),VR1MG0(irun)
+      _RL VZ2(irun),VDZSEA(irun),VAZ0(irun),VXNUM1(irun)
+      _RL VPSIGB2(irun),VDX(irun),VDXPSIM(irun),VDY(irun)
+      _RL VXNUM2(irun),VDEN(irun),VAWS1(irun),VXNUM3(irun)
+      _RL VXNUM(irun),VDZETA1(irun),VDZETA2(irun)
+      _RL VZCOEF2(irun),VZCOEF1(irun),VTEMPLIN(irun)
+      _RL VDPSIMC(irun),VDPSIHC(irun)
 
-      real DZITRP(irun,nlev-1),STBFCN(irun,nlev)
-      real XL0(irun,nlev),Q1(irun,nlev-1)
-      real WRKIT1(irun,nlev-1)
-      real WRKIT2(irun,nlev-1)
-      real WRKIT3(irun,nlev-1)
-      real WRKIT4(irun,nlev-1)
+      _RL DZITRP(irun,nlev-1),STBFCN(irun,nlev)
+      _RL XL0(irun,nlev),Q1(irun,nlev-1)
+      _RL WRKIT1(irun,nlev-1)
+      _RL WRKIT2(irun,nlev-1)
+      _RL WRKIT3(irun,nlev-1)
+      _RL WRKIT4(irun,nlev-1)
       INTEGER INT1(irun,nlev), INT2(irun,nlev-1)
  
-      real vrt1con,pi,rsq2pi,p5sr,clh,vk,rvk,aitr,gbycp,fac1,fac2
-      real getcon,dum,errf
+      _RL vrt1con,pi,rsq2pi,p5sr,clh,vk,rvk,aitr,gbycp,fac1,fac2
+      _RL getcon,dum,errf
       integer istnlv,nlevm1,nlevm2,nlevml,nlevp1,istnm1,istnm2,istnp1
       integer istnml,istnmq,istlmq,nlevmq
       integer i,iter,init,n,nt,LL,L,Lp,Lp1,lmin,lminq,lminq1,ibit
@@ -2453,37 +2452,37 @@ C**********************************************************************
 
 C Argument List Declarations
       integer nn,n,irun
-      real aitr,cp,rgas,undef
-      real VUS(IRUN),VVS(IRUN),VTHV1(IRUN),VTHV2(IRUN)
-      real VTH1(IRUN),VTH2(IRUN),VSH1(IRUN),VSH2(IRUN)
-      real VPK(IRUN),VPKE(IRUN),VPE(IRUN)
-      real VZ0(IRUN),VHS(IRUN),VAHS(IRUN)
+      _RL aitr,cp,rgas,undef
+      _RL VUS(IRUN),VVS(IRUN),VTHV1(IRUN),VTHV2(IRUN)
+      _RL VTH1(IRUN),VTH2(IRUN),VSH1(IRUN),VSH2(IRUN)
+      _RL VPK(IRUN),VPKE(IRUN),VPE(IRUN)
+      _RL VZ0(IRUN),VHS(IRUN),VAHS(IRUN)
       integer IVWATER(IRUN)
       LOGICAL FIRST,LAST
-      real VRHO(IRUN),VRHOZPK(IRUN)
-      real VKM(IRUN),VKH(IRUN),VUSTAR(IRUN),VXX(IRUN)
-      real VYY(IRUN),VCU(IRUN),VCT(IRUN),VRIB(IRUN)
-      real VZETA(IRUN),VWS(IRUN)
-      real stu2m(irun),stv2m(irun),stt2m(irun),stq2m(irun)
-      real stu10m(irun),stv10m(irun),stt10m(irun),stq10m(irun)
+      _RL VRHO(IRUN),VRHOZPK(IRUN)
+      _RL VKM(IRUN),VKH(IRUN),VUSTAR(IRUN),VXX(IRUN)
+      _RL VYY(IRUN),VCU(IRUN),VCT(IRUN),VRIB(IRUN)
+      _RL VZETA(IRUN),VWS(IRUN)
+      _RL stu2m(irun),stv2m(irun),stt2m(irun),stq2m(irun)
+      _RL stu10m(irun),stv10m(irun),stt10m(irun),stq10m(irun)
       LOGICAL LWATER
       integer IVBITRIB(irun)
-      real VHZ(irun),VPSIM(irun),VAPSIM(irun),VPSIG(irun),VPSIHG(irun)
-      real VTEMP(irun),VDZETA(irun),VDZ0(irun),VDPSIM(irun)
-      real VDPSIH(irun),VZH(irun),VXX0(irun),VYY0(irun)
-      real VAPSIHG(irun),VRIB1(irun),VWS1(irun)
-      real VPSIH(irun),VZETAL(irun),VZ0L(irun),VPSIH2(irun),VH0(irun)
-      real VX0PSIM(irun),VG(irun),VG0(irun),VR1MG0(irun)
-      real VZ2(irun),VDZSEA(irun),VAZ0(irun),VXNUM1(irun)
-      real VPSIGB2(irun),VDX(irun),VDXPSIM(irun),VDY(irun)
-      real VXNUM2(irun),VDEN(irun),VAWS1(irun),VXNUM3(irun)
-      real VXNUM(irun),VDZETA1(irun),VDZETA2(irun)
-      real VZCOEF2(irun),VZCOEF1(irun),VTEMPLIN(irun)
-      real VDPSIMC(irun),VDPSIHC(irun)
+      _RL VHZ(irun),VPSIM(irun),VAPSIM(irun),VPSIG(irun),VPSIHG(irun)
+      _RL VTEMP(irun),VDZETA(irun),VDZ0(irun),VDPSIM(irun)
+      _RL VDPSIH(irun),VZH(irun),VXX0(irun),VYY0(irun)
+      _RL VAPSIHG(irun),VRIB1(irun),VWS1(irun)
+      _RL VPSIH(irun),VZETAL(irun),VZ0L(irun),VPSIH2(irun),VH0(irun)
+      _RL VX0PSIM(irun),VG(irun),VG0(irun),VR1MG0(irun)
+      _RL VZ2(irun),VDZSEA(irun),VAZ0(irun),VXNUM1(irun)
+      _RL VPSIGB2(irun),VDX(irun),VDXPSIM(irun),VDY(irun)
+      _RL VXNUM2(irun),VDEN(irun),VAWS1(irun),VXNUM3(irun)
+      _RL VXNUM(irun),VDZETA1(irun),VDZETA2(irun)
+      _RL VZCOEF2(irun),VZCOEF1(irun),VTEMPLIN(irun)
+      _RL VDPSIMC(irun),VDPSIHC(irun)
 
 C Local Variables
-      real USTMX3,USTZ0S,Z0MIN,H0BYZ0,USTH0S,H0VEG,Z0VEGM,PRFAC
-      real XPFAC,DIFSQT
+      _RL USTMX3,USTZ0S,Z0MIN,H0BYZ0,USTH0S,H0VEG,Z0VEGM,PRFAC
+      _RL XPFAC,DIFSQT
       PARAMETER ( USTMX3 =   0.0632456)
       PARAMETER ( USTZ0S =   0.2030325E-5)
       PARAMETER ( Z0MIN  =  USTZ0S/USTMX3)
@@ -2495,8 +2494,8 @@ C Local Variables
       PARAMETER ( XPFAC  = .55        )  
       PARAMETER ( DIFSQT  = 3.872983E-3)
 
-      real psihdiag(irun),psimdiag(irun)
-      real getcon,vk,rvk,vk2,bmdl
+      _RL psihdiag(irun),psimdiag(irun)
+      _RL getcon,vk,rvk,vk2,bmdl
       integer iwater,itype
       integer i,iter
 C
@@ -2839,16 +2838,16 @@ C**********************************************************************
 
 C Argument List Declarations
       integer n,iflag
-      real PHIM(N),PHIH(N),Z(N)
+      _RL PHIM(N),PHIH(N),Z(N)
 
 C Local Variables
       integer I1(N),I2(N)
-      real ZSTAR(N),E1(N),E2(N),TEMP1(N)
+      _RL ZSTAR(N),E1(N),E2(N),TEMP1(N)
 C
-      real PHIM0(385),ZLINM1(75),ZLINM2(75),ZLINM3(36)
-      real ZLOGM1(74),ZLOGM2(75),ZLOGM3(50)
-      real PHIH0(385),ZLINH1(75),ZLINH2(75),ZLINH3(36)
-      real ZLOGH1(74),ZLOGH2(75),ZLOGH3(50)
+      _RL PHIM0(385),ZLINM1(75),ZLINM2(75),ZLINM3(36)
+      _RL ZLOGM1(74),ZLOGM2(75),ZLOGM3(50)
+      _RL PHIH0(385),ZLINH1(75),ZLINH2(75),ZLINH3(36)
+      _RL ZLOGH1(74),ZLOGH2(75),ZLOGH3(50)
       EQUIVALENCE (PHIM0(1),ZLINM1(1)),(PHIM0(76),ZLINM2(1))
       EQUIVALENCE (PHIM0(151),ZLINM3(1))
       EQUIVALENCE (PHIM0(187),ZLOGM1(1)),(PHIM0(261),ZLOGM2(1))
@@ -3139,11 +3138,11 @@ C**********************************************************************
 
 C Argument List Declarations
       integer irun,iflag
-      real VZZ(IRUN),VZH(IRUN),VPSIM(IRUN),VPSIH(IRUN),
+      _RL VZZ(IRUN),VZH(IRUN),VPSIM(IRUN),VPSIH(IRUN),
      1     VX(IRUN),VXS(IRUN),VY(IRUN),VYS(IRUN)
  
 C Local Variables
-      real ZWM,RZWM,Z0M,ZCM,RZCM,CM1,CM2,CM6,CM7,CM8ARG,YCM
+      _RL ZWM,RZWM,Z0M,ZCM,RZCM,CM1,CM2,CM6,CM7,CM8ARG,YCM
       PARAMETER ( ZWM     =    1.    )
       PARAMETER ( RZWM    =  1./ZWM  )
       PARAMETER ( Z0M     =    0.2    )
@@ -3157,13 +3156,13 @@ C Local Variables
       PARAMETER ( YCM     =  6. / ( 1. + 6.*CM1*ZCM )  )
 
       integer INTSTB(irun),INTZ0(irun)
-      real ZZ0(irun),Z(irun),Z2(irun),Z1(irun),Z0(irun)
-      real X0(irun),X1(irun),Y0(irun),Y1(irun)
-      real PSI2(irun),TEMP(irun)
-      real HZ(irun),ARG0(irun),ARG1(irun),DX(irun)
-      real X0NUM(irun),X1NUM(irun),X0DEN(irun)
-      real X1DEN(irun),Y1DEN(irun),Z2ZWM(irun)
-      real cm3,cm4,cm5,cm8
+      _RL ZZ0(irun),Z(irun),Z2(irun),Z1(irun),Z0(irun)
+      _RL X0(irun),X1(irun),Y0(irun),Y1(irun)
+      _RL PSI2(irun),TEMP(irun)
+      _RL HZ(irun),ARG0(irun),ARG1(irun),DX(irun)
+      _RL X0NUM(irun),X1NUM(irun),X0DEN(irun)
+      _RL X1DEN(irun),Y1DEN(irun),Z2ZWM(irun)
+      _RL cm3,cm4,cm5,cm8
       integer ibit,index
       integer i
 C
@@ -3458,22 +3457,22 @@ C**********************************************************************
 
 C Argument List Declarations
       integer irun,nlev,init,lmin,lminq,lminq1
-      real cp
-      real STRT(irun,NLEV),DW2(irun,NLEV),DZ3(irun,NLEV)
-      real Q(irun,NLEV),VKZM(irun,NLEV-1),VKZE(irun,NLEV-1)
-      real DTHV(irun,NLEV),DPK(irun,NLEV),DU(irun,NLEV)
-      real DV(irun,NLEV)
-      real QXLM(irun,NLEV-1),XL(irun,NLEV-1)
-      real DZITRP(irun,nlev-1),STBFCN(irun,nlev)
-      real XL0(irun,nlev),Q1(irun,nlev-1)
-      real WRKIT1(irun,nlev-1),WRKIT2(irun,nlev-1)
-      real WRKIT3(irun,nlev-1)
-      real WRKIT4(irun,nlev-1)
+      _RL cp
+      _RL STRT(irun,NLEV),DW2(irun,NLEV),DZ3(irun,NLEV)
+      _RL Q(irun,NLEV),VKZM(irun,NLEV-1),VKZE(irun,NLEV-1)
+      _RL DTHV(irun,NLEV),DPK(irun,NLEV),DU(irun,NLEV)
+      _RL DV(irun,NLEV)
+      _RL QXLM(irun,NLEV-1),XL(irun,NLEV-1)
+      _RL DZITRP(irun,nlev-1),STBFCN(irun,nlev)
+      _RL XL0(irun,nlev),Q1(irun,nlev-1)
+      _RL WRKIT1(irun,nlev-1),WRKIT2(irun,nlev-1)
+      _RL WRKIT3(irun,nlev-1)
+      _RL WRKIT4(irun,nlev-1)
       INTEGER INT1(irun,nlev), INT2(irun,nlev-1)
 
 C Local Variables
-      real rf1,rf2,e5,d4,d1,rfc,ricr,alpha,dzcnv,xl0cnv,xl0min
-      real clmt,clmt53
+      _RL rf1,rf2,e5,d4,d1,rfc,ricr,alpha,dzcnv,xl0cnv,xl0min
+      _RL clmt,clmt53
       PARAMETER ( RF1     = 0.2340678 )
       PARAMETER ( RF2     = 0.2231172 )
       PARAMETER ( E5      = 49.66     )  
@@ -3698,17 +3697,17 @@ C**********************************************************************
 
 C Argument List Declarations
       integer irun,nlev
-      real cp
-      real STBFCN(irun,NLEV+1)
+      _RL cp
+      _RL STBFCN(irun,NLEV+1)
       integer INTCHG(irun,NLEV)
-      real DTHV(irun,NLEV+1),DPK(irun,NLEV+1)
-      real DU(irun,NLEV+1),DV(irun,NLEV+1)
-      real DZITRP(irun,NLEV+1)
-      real AAA(irun,NLEV),BBB(irun,NLEV)
-      real CCC(irun,NLEV),DDD(irun,NLEV)
+      _RL DTHV(irun,NLEV+1),DPK(irun,NLEV+1)
+      _RL DU(irun,NLEV+1),DV(irun,NLEV+1)
+      _RL DZITRP(irun,NLEV+1)
+      _RL AAA(irun,NLEV),BBB(irun,NLEV)
+      _RL CCC(irun,NLEV),DDD(irun,NLEV)
 
 C Local Variables
-      real rf1,rf2,e5,d4,d1,rfc,ricr
+      _RL rf1,rf2,e5,d4,d1,rfc,ricr
       PARAMETER ( RF1     = 0.2340678 )
       PARAMETER ( RF2     = 0.2231172 )
       PARAMETER ( E5      = 49.66     )  
@@ -3785,15 +3784,15 @@ C**********************************************************************
 
 C Argument List Declarations
       integer nlev,nlay,irun
-      real RI(irun,NLEV),STRT(irun,NLEV),DW2(irun,NLEV)
-      real XL(irun,NLEV),ZKM(irun,NLEV),ZKH(irun,NLEV)
-      real QE(irun,NLEV),QQE(irun,NLEV)
+      _RL RI(irun,NLEV),STRT(irun,NLEV),DW2(irun,NLEV)
+      _RL XL(irun,NLEV),ZKM(irun,NLEV),ZKH(irun,NLEV)
+      _RL QE(irun,NLEV),QQE(irun,NLEV)
       INTEGER INTSTB(irun,nlev)
-      real EE(irun,nlay-1),RF(irun,nlay-1)
+      _RL EE(irun,nlay-1),RF(irun,nlay-1)
 
 C Local Variables
-      real b1,b2,d3,rf1,rf2,d3b2,d2,e5,d4,d1,d1half,d2half
-      real rfc,ricr,ch,cm 
+      _RL b1,b2,d3,rf1,rf2,d3b2,d2,e5,d4,d1,d1half,d2half
+      _RL rfc,ricr,ch,cm 
       PARAMETER ( B1      =   16.6    )  
       PARAMETER ( B2      =   10.1    )
       PARAMETER ( D3      = 0.29397643 )
@@ -3888,13 +3887,13 @@ C**********************************************************************
 
 C Argument list Declarations
       integer nlev,nlay,irun
-      real Q(irun,NLEV),XL(irun,NLEV),STRT(irun,NLEV)
-      real DW2(irun,NLEV)
+      _RL Q(irun,NLEV),XL(irun,NLEV),STRT(irun,NLEV)
+      _RL DW2(irun,NLEV)
       INTEGER INTSTB(irun,nlay), INTQ(irun,nlay)
-      real ZKM(irun,NLEV),ZKH(irun,NLEV),P3(irun,NLEV)
+      _RL ZKM(irun,NLEV),ZKH(irun,NLEV),P3(irun,NLEV)
 
 C Local Variables
-      real a1,a2,a4,c1,a5,a3,b1,b2,b3,ff2,ff3,ff4
+      _RL a1,a2,a4,c1,a5,a3,b1,b2,b3,ff2,ff3,ff4
       PARAMETER ( A1      =   0.92    )
       PARAMETER ( A2      =   0.74    )
       PARAMETER ( A4      = 6. * A1 * A1)
@@ -3908,8 +3907,8 @@ C Local Variables
       PARAMETER ( FF3     = (3.*A2*B2) - (9.*A2*A2 )  )
       PARAMETER ( FF4     = (3.*A2*B2) + (12.*A1*A2 )  )
 
-      real F2(irun,nlay-1),F3(irun,nlay-1)
-      real F4(irun,nlay-1),XQ(irun,nlay-1)
+      _RL F2(irun,nlay-1),F3(irun,nlay-1)
+      _RL F4(irun,nlay-1),XQ(irun,nlay-1)
 
       integer istnlv
       integer i
@@ -3987,12 +3986,12 @@ C**********************************************************************
 
 C Argument List Declarations
       integer nlev,itype,irun
-      real XX1(irun,NLEV+1),XX2(irun,NLEV+1)
-      real RHOKDZ(irun,NLEV),FLXFAC(irun,NLEV+1)
-      real DXX1G(irun),DXX2G(irun)
-      real epsl
+      _RL XX1(irun,NLEV+1),XX2(irun,NLEV+1)
+      _RL RHOKDZ(irun,NLEV),FLXFAC(irun,NLEV+1)
+      _RL DXX1G(irun),DXX2G(irun)
+      _RL epsl
 C
-      real AA(irun,nlev), BB(irun,nlev), CC(irun,nlev+1)
+      _RL AA(irun,nlev), BB(irun,nlev), CC(irun,nlev+1)
       integer istnlv,istnm1,nlevp1,istnlx
       integer i
 C
@@ -4056,8 +4055,8 @@ C
       implicit none
 
       integer k,irun
-      real A(irun,K),B(irun,K),C(irun,K),Y(irun,K+1)
-      real F(irun,K)
+      _RL A(irun,K),B(irun,K),C(irun,K),Y(irun,K+1)
+      _RL F(irun,K)
 
       integer i,L,Lm1
 C
@@ -4087,7 +4086,7 @@ C
       implicit none
 
       integer k,irun
-      real A(irun,K),B(irun,K),Y(irun,K+1)
+      _RL A(irun,K),B(irun,K),Y(irun,K+1)
 
       integer i,L
 C
@@ -4104,8 +4103,8 @@ C
       implicit none
 
       integer k,irun
-      real A(irun,K),B(irun,K),C(irun,K),F(irun,K)
-      real Y(irun,K+1)
+      _RL A(irun,K),B(irun,K),C(irun,K),F(irun,K)
+      _RL Y(irun,K+1)
 
       integer i,L
 C
@@ -4172,26 +4171,26 @@ C**********************************************************************
 
 C Argument List Declarations
       integer nn,irun,itype
-      real VRIB1(IRUN),VRIB2(IRUN)
-      real VWS1(IRUN),VWS2(IRUN),VZ1(IRUN),VUSTAR(IRUN)
+      _RL VRIB1(IRUN),VRIB2(IRUN)
+      _RL VWS1(IRUN),VWS2(IRUN),VZ1(IRUN),VUSTAR(IRUN)
       integer IWATER(IRUN)
-      real VAPSIM(IRUN),VAPSIHG(IRUN)
-      real VPSIH(IRUN),VPSIG(IRUN),VX(IRUN)
-      real VX0(IRUN),VY(IRUN),VY0(IRUN)
+      _RL VAPSIM(IRUN),VAPSIHG(IRUN)
+      _RL VPSIH(IRUN),VPSIG(IRUN),VX(IRUN)
+      _RL VX0(IRUN),VY(IRUN),VY0(IRUN)
       LOGICAL LWATER
-      real VDZETA(IRUN),VDZ0(IRUN),VDPSIM(IRUN)
-      real VDPSIH(IRUN)
+      _RL VDZETA(IRUN),VDZ0(IRUN),VDPSIM(IRUN)
+      _RL VDPSIH(IRUN)
       integer INTRIB(IRUN)
-      real VX0PSIM(irun),VG(irun),VG0(irun),VR1MG0(irun)
-      real VZ2(irun),VDZSEA(irun),VAZ0(irun),VXNUM1(irun)
-      real VPSIGB2(irun),VDX(irun),VDXPSIM(irun),VDY(irun)
-      real VXNUM2(irun),VDEN(irun),VAWS1(irun),VXNUM3(irun)
-      real VXNUM(irun),VDZETA1(irun),VDZETA2(irun)
-      real VZCOEF2(irun),VZCOEF1(irun),VTEMPLIN(irun)
-      real VDPSIMC(irun),VDPSIHC(irun)
+      _RL VX0PSIM(irun),VG(irun),VG0(irun),VR1MG0(irun)
+      _RL VZ2(irun),VDZSEA(irun),VAZ0(irun),VXNUM1(irun)
+      _RL VPSIGB2(irun),VDX(irun),VDXPSIM(irun),VDY(irun)
+      _RL VXNUM2(irun),VDEN(irun),VAWS1(irun),VXNUM3(irun)
+      _RL VXNUM(irun),VDZETA1(irun),VDZETA2(irun)
+      _RL VZCOEF2(irun),VZCOEF1(irun),VTEMPLIN(irun)
+      _RL VDPSIMC(irun),VDPSIHC(irun)
 
 C Local Variables
-      real xx0max,prfac,xpfac,difsqt,ustz0s,h0byz0,usth0s
+      _RL xx0max,prfac,xpfac,difsqt,ustz0s,h0byz0,usth0s
       PARAMETER ( XX0MAX  =   1.49821 )
       PARAMETER ( PRFAC  = 0.595864   )
       PARAMETER ( XPFAC  = .55        )  
@@ -4201,7 +4200,7 @@ C Local Variables
       PARAMETER ( USTH0S =  H0BYZ0*USTZ0S )
 
       integer VINT1(irun),VINT2(irun)
-      real getcon,vk,bmdl,b2uhs
+      _RL getcon,vk,bmdl,b2uhs
       integer i
 C
       vk = getcon('VON KARMAN')
@@ -4464,21 +4463,21 @@ C *********************************************************************
 
 C Argument List Delcarations
       integer irun
-      real VZSEA(IRUN),VUSTAR(IRUN),VDZSEA(IRUN)
+      _RL VZSEA(IRUN),VUSTAR(IRUN),VDZSEA(IRUN)
       integer IWATER(IRUN)
       LOGICAL LDZSEA
 
 C Local Variables
-      real USTMX1,USTMX2,USTMX3
+      _RL USTMX1,USTMX2,USTMX3
       PARAMETER ( USTMX1 =   1.14973  )
       PARAMETER ( USTMX2 =   0.381844 )
       PARAMETER ( USTMX3 =   0.0632456)
 
-      real AA(IRUN,5),TEMP(IRUN)
+      _RL AA(IRUN,5),TEMP(IRUN)
       integer INT2(IRUN),INT3(IRUN),INT4(IRUN)
       integer i,k
 
-      real AA1(5),AA2(5),AA3(5),AA4(5)
+      _RL AA1(5),AA2(5),AA3(5),AA4(5)
       DATA AA1/.2030325E-5,0.0,0.0,0.0,0.0/
       DATA AA2/-0.402451E-08,0.239597E-04,0.117484E-03,0.191918E-03,
      1         0.395649E-04/
@@ -4570,18 +4569,18 @@ C
      .                       pke,  seaic, tc, qa ) 
       implicit none
       integer  nocean
-      real timstp
-      real eturb(nocean),dedtc(nocean),hsturb(nocean),dhsdtc(nocean)
-      real swnet(nocean),lwnet(nocean),  dst4(nocean)
-      real  qice(nocean),dqice(nocean)
-      real   pke(nocean),   tc(nocean),    qa(nocean)
-      real seaic(nocean)
+      _RL timstp
+      _RL eturb(nocean),dedtc(nocean),hsturb(nocean),dhsdtc(nocean)
+      _RL swnet(nocean),lwnet(nocean),  dst4(nocean)
+      _RL  qice(nocean),dqice(nocean)
+      _RL   pke(nocean),   tc(nocean),    qa(nocean)
+      _RL seaic(nocean)
 
 C  rho*C = 1.93e6 J/(m**3 K) ; Peixoto & Oort
-      real rhoC
+      _RL rhoC
       parameter (rhoC = 1.93e6)
 
-      real faceps,getcon,latent,codt,deltg,hice
+      _RL faceps,getcon,latent,codt,deltg,hice
       integer i
 
       faceps = getcon('EPSFAC')

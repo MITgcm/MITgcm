@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.23 2004/07/23 22:32:27 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.24 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
-#include "CPP_EEOPTIONS.h"
+#include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,uphy,vphy,thphy,sphy,pephy,lons,lats,
      . ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
      . tgz,sice,phis_var,landtype,fracland,emiss,albnirdr,albnirdf,
@@ -68,47 +68,52 @@ c Local Variables
       integer iras,nlwcld,nlwlz,nswcld,nswlz
       integer imstturbsw,imstturblw
 
-      real xlats(sNx,sNy), xlons(sNx,sNy), sea_ice(sNx,sNy) 
-      real p(sNx,sNy,Nsx,Nsy)
-      real u(sNx,sNy,Nrphys), v(sNx,sNy,Nrphys), t(sNx,sNy,Nrphys)
-      real q(sNx,sNy,Nrphys,ntracer)
-      real pl(sNx,sNy,Nrphys,Nsx,Nsy),pkl(sNx,sNy,Nrphys,Nsx,Nsy)
-      real ple(sNx,sNy,Nrphys+1,Nsx,Nsy),pkle(sNx,sNy,Nrphys+1,Nsx,Nsy)
-      real dpres(sNx,sNy,Nrphys,Nsx,Nsy)
-      real lwdt(sNx,sNy,Nrphys,Nsx,Nsy),lwdtclr(sNx,sNy,Nrphys,Nsx,Nsy) 
-      real swdt(sNx,sNy,Nrphys,Nsx,Nsy),swdtclr(sNx,sNy,Nrphys,Nsx,Nsy)
-      real turbu(sNx,sNy,Nrphys,Nsx,Nsy),turbv(sNx,sNy,Nrphys,Nsx,Nsy)
-      real turbt(sNx,sNy,Nrphys,Nsx,Nsy)
-      real turbq(sNx,sNy,Nrphys,ntracer,Nsx,Nsy)
-      real moistu(sNx,sNy,Nrphys,Nsx,Nsy),moistv(sNx,sNy,Nrphys,Nsx,Nsy)
-      real moistt(sNx,sNy,Nrphys,Nsx,Nsy)
-      real moistq(sNx,sNy,Nrphys,ntracer,Nsx,Nsy)
-      real radswt(sNx,sNy,Nsx,Nsy),radswg(sNx,sNy,Nsx,Nsy)
-      real swgclr(sNx,sNy,Nsx,Nsy)
-      real fdirpar(sNx,sNy,Nsx,Nsy),fdifpar(sNx,sNy,Nsx,Nsy)
-      real osr(sNx,sNy,Nsx,Nsy),osrclr(sNx,sNy,Nsx,Nsy)
-      real tg0(sNx,sNy,Nsx,Nsy),radlwg(sNx,sNy,Nsx,Nsy)
-      real lwgclr(sNx,sNy,Nsx,Nsy),st4(sNx,sNy,Nsx,Nsy)
-      real dst4(sNx,sNy,Nsx,Nsy),dlwdtg(sNx,sNy,Nrphys,Nsx,Nsy)
-      real rainlsp(sNx,sNy,Nsx,Nsy),raincon(sNx,sNy,Nsx,Nsy)
-      real snowfall(sNx,sNy,Nsx,Nsy)
-      real cldtot_lw(sNx,sNy,Nrphys,Nsx,Nsy)
-      real clras_lw(sNx,sNy,Nrphys,Nsx,Nsy)
-      real cldlsp_lw(sNx,sNy,Nrphys,Nsx,Nsy)
-      real lwlz(sNx,sNy,Nrphys,Nsx,Nsy)
-      real cldtot_sw(sNx,sNy,Nrphys,Nsx,Nsy)
-      real clras_sw(sNx,sNy,Nrphys,Nsx,Nsy)
-      real cldlsp_sw(sNx,sNy,Nrphys,Nsx,Nsy)
-      real swlz(sNx,sNy,Nrphys,Nsx,Nsy)
-      real qliqavesw(sNx,sNy,Nrphys,Nsx,Nsy)
-      real qliqavelw(sNx,sNy,Nrphys,Nsx,Nsy)
-      real fccavesw(sNx,sNy,Nrphys,Nsx,Nsy)
-      real fccavelw(sNx,sNy,Nrphys,Nsx,Nsy)
-      real qq(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL xlats(sNx,sNy),xlons(sNx,sNy),sea_ice(sNx,sNy) 
+      _RL p(sNx,sNy,Nsx,Nsy)
+      _RL u(sNx,sNy,Nrphys),v(sNx,sNy,Nrphys),t(sNx,sNy,Nrphys)
+      _RL q(sNx,sNy,Nrphys,ntracer)
+      _RL pl(sNx,sNy,Nrphys,Nsx,Nsy),pkl(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL ple(sNx,sNy,Nrphys+1,Nsx,Nsy)
+      _RL pkle(sNx,sNy,Nrphys+1,Nsx,Nsy)
+      _RL dpres(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL lwdt(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL lwdtclr(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL swdt(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL swdtclr(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL turbu(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL turbv(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL turbt(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL turbq(sNx,sNy,Nrphys,ntracer,Nsx,Nsy)
+      _RL moistu(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL moistv(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL moistt(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL moistq(sNx,sNy,Nrphys,ntracer,Nsx,Nsy)
+      _RL radswt(sNx,sNy,Nsx,Nsy),radswg(sNx,sNy,Nsx,Nsy)
+      _RL swgclr(sNx,sNy,Nsx,Nsy)
+      _RL fdirpar(sNx,sNy,Nsx,Nsy),fdifpar(sNx,sNy,Nsx,Nsy)
+      _RL osr(sNx,sNy,Nsx,Nsy),osrclr(sNx,sNy,Nsx,Nsy)
+      _RL tg0(sNx,sNy,Nsx,Nsy),radlwg(sNx,sNy,Nsx,Nsy)
+      _RL lwgclr(sNx,sNy,Nsx,Nsy),st4(sNx,sNy,Nsx,Nsy)
+      _RL dst4(sNx,sNy,Nsx,Nsy),dlwdtg(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL rainlsp(sNx,sNy,Nsx,Nsy),raincon(sNx,sNy,Nsx,Nsy)
+      _RL snowfall(sNx,sNy,Nsx,Nsy)
+      _RL cldtot_lw(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL clras_lw(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL cldlsp_lw(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL lwlz(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL cldtot_sw(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL clras_sw(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL cldlsp_sw(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL swlz(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL qliqavesw(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL qliqavelw(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL fccavesw(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL fccavelw(sNx,sNy,Nrphys,Nsx,Nsy)
+      _RL qq(sNx,sNy,Nrphys,Nsx,Nsy)
 
       integer i,j,L
-      real getcon, kappa, p0kappa, s0, ra
-      real cosz(sNx,sNy)
+      _RL getcon, kappa, p0kappa, s0, ra
+      _RL cosz(sNx,sNy)
 
       logical alarm
       external alarm

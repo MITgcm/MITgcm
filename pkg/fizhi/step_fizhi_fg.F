@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.5 2004/07/16 19:37:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.6 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
        subroutine step_fizhi_fg (myTime, myIter, myThid, dt)
 c-----------------------------------------------------------------------
 c  Subroutine step_fizhi_fg - 'Wrapper' routine to advance
@@ -11,7 +12,6 @@ c        Also: Set up "bi, bj loop" and some timers and clocks here.
 c Call: step_physics
 c-----------------------------------------------------------------------
        implicit none
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
 #include "fizhi_land_SIZE.h"

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.4 2004/07/23 22:32:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.5 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
        subroutine fizhi_init_vars (myThid)
 c-----------------------------------------------------------------------
 c  Routine to initialise the fizhi state.
@@ -20,7 +21,6 @@ c
 c Calls: dyn2phys (x4)
 c-----------------------------------------------------------------------
        implicit none
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
 #include "fizhi_land_SIZE.h"

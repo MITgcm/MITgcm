@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.15 2004/07/23 22:32:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.16 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
        subroutine update_earth_exports (myTime, myIter, myThid)
 c----------------------------------------------------------------------
 c  Subroutine update_earth_exports - 'Wrapper' routine to update
@@ -14,7 +15,6 @@ c        getemiss  (Set the surface emissivity based on the veg type
 c                              and the snow depth)
 c-----------------------------------------------------------------------
        implicit none
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "GRID.h"
 #include "fizhi_land_SIZE.h"
@@ -31,12 +31,12 @@ c-----------------------------------------------------------------------
 
       logical alarm
       external alarm
-      real lats(sNx,sNy), lons(sNx,sNy), cosz(sNx,sNy)
-      real fraci(sNx,sNy), fracl(sNx,sNy)
-      real ficetile(nchp)
-      real radius
-      real tmpij(sNx,sNy)
-      real tmpchp(nchp)
+      _RL lats(sNx,sNy), lons(sNx,sNy), cosz(sNx,sNy)
+      _RL fraci(sNx,sNy), fracl(sNx,sNy)
+      _RL ficetile(nchp)
+      _RL radius
+      _RL tmpij(sNx,sNy)
+      _RL tmpchp(nchp)
       integer i, j, n, bi, bj
       integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
       integer sec, day, month
@@ -161,12 +161,11 @@ C     ANIRDF:   near infra-red, diffuse albedo.
 C*******************************************************************
 
       IMPLICIT NONE
-#include "CPP_EEOPTIONS.h"
 
       INTEGER IRUN
-      real AVISDR  (IRUN), ANIRDR (IRUN), AVISDF (IRUN), ANIRDF (IRUN)
+      _RL AVISDR  (IRUN), ANIRDR (IRUN), AVISDF (IRUN), ANIRDF (IRUN)
       _RL VLAI(IRUN),VGRN (IRUN), SNW(IRUN)
-      REAL ZTH(IRUN)
+      _RL ZTH(IRUN)
       INTEGER ITYP (IRUN)
 
       _RL ALVDRS,  ALIDRS
@@ -223,15 +222,15 @@ C                 10:  DARK DESERT
 C
 
       INTEGER I, LAI
-      real FAC,GAMMA,BETA,ALPHA,DX,DY,ALA,GRN (2),SNWALB(4,NTYPS)
-      real COEFF
+      _RL FAC,GAMMA,BETA,ALPHA,DX,DY,ALA,GRN (2),SNWALB(4,NTYPS)
+      _RL COEFF
 
-      real ALVDR (NLAI, 2, NTYPS)
-      real BTVDR (NLAI, 2, NTYPS)
-      real GMVDR (NLAI, 2, NTYPS)
-      real ALIDR (NLAI, 2, NTYPS)
-      real BTIDR (NLAI, 2, NTYPS)
-      real GMIDR (NLAI, 2, NTYPS)
+      _RL ALVDR (NLAI, 2, NTYPS)
+      _RL BTVDR (NLAI, 2, NTYPS)
+      _RL GMVDR (NLAI, 2, NTYPS)
+      _RL ALIDR (NLAI, 2, NTYPS)
+      _RL BTIDR (NLAI, 2, NTYPS)
+      _RL GMIDR (NLAI, 2, NTYPS)
 
 C  (Data statements for ALVDR described in full; data statements for
 C   other constants follow same framework.)
@@ -677,11 +676,10 @@ cfpp$ expand (coeff)
       RETURN
       END
       FUNCTION COEFF(TABLE, NTABL, LAI ,DX, DY)
-#include "CPP_EEOPTIONS.h"
          
       INTEGER NTABL, LAI
-      real coeff 
-      real TABLE (NTABL, 2), DX, DY
+      _RL coeff 
+      _RL TABLE (NTABL, 2), DX, DY
  
       COEFF = (TABLE(LAI,  1)
      *      + (TABLE(LAI  ,2) - TABLE(LAI  ,1)) * DY ) * (1.0-DX)
@@ -695,7 +693,6 @@ cfpp$ expand (coeff)
      .    nSx,nSy,bi,bj,ALAI,AGRN)
 C*********************************************************************
       implicit none
-#include "CPP_EEOPTIONS.h"
 
       integer ntyps
       _RL one,daylen
@@ -849,10 +846,9 @@ C albnf    - real array [im,jm] of near-ir diffuse beam albedo
 C
 C***********************************************************************
       implicit none
-#include "CPP_EEOPTIONS.h"
 
       integer sec,month,day,im,jm,nchp,nchptot,nchpland,nSx,nSy,bi,bj
-      real cosz(im,jm),fraci(im,jm),fracg(im,jm)
+      _RL cosz(im,jm),fraci(im,jm),fracg(im,jm)
       _RL snodep(nchp,nSx,nSy),chfr(nchp,nSx,nSy),chlt(nchp,nSx,nSy)
       integer igrd(nchp,nSx,nSy),ityp(nchp,nSx,nSy)
       _RL alai(nchp,nSx,nSy),agrn(nchp,nSx,nSy)
@@ -868,11 +864,11 @@ C***********************************************************************
       PARAMETER (OCNALB=0.08)
       PARAMETER (ALBSI=0.7)
  
-      real alboc(im,jm)
-      real AVISDR(nchp),ANIRDR(nchp),AVISDF(nchp)
-      real ANIRDF(nchp)
-      real zenith(nchp)
-      real tmpij(im,jm)
+      _RL alboc(im,jm)
+      _RL AVISDR(nchp),ANIRDR(nchp),AVISDF(nchp)
+      _RL ANIRDF(nchp)
+      _RL zenith(nchp)
+      _RL tmpij(im,jm)
       integer i,j
 
       DO I=1,IM
@@ -986,17 +982,16 @@ C emiss    - real array [im,jm,10,nSx,nSy] - surface emissivity (frac)
 C
 C***********************************************************************
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer im,jm,nchp,nSx,nSy,bi,bj
-      real fracg(im,jm)
+      _RL fracg(im,jm)
       _RL chfr(nchp,nSx,nSy)
       integer igrd(nchp,nSx,nSy), ityp(nchp,nSx,nSy)
       _RL snowdep(nchp,nSx,nSy)
-      real fraci(nchp)
+      _RL fraci(nchp)
       _RL emiss(im,jm,10,nSx,nSy)
 
-      real emisstile(nchp,10)
-      real tmpij(im,jm)
+      _RL emisstile(nchp,10)
+      _RL tmpij(im,jm)
       integer i,j,k,n
 
       do i = 1,10
@@ -1032,15 +1027,14 @@ c ---------------------------------------------
 
       subroutine emissivity (snowdepth,fraci,numpts,ityp,newemis)
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer numpts
       integer   ityp(numpts)
       _RL snowdepth(numpts)
-      real fraci(numpts)
-      real newemis(numpts,10)
+      _RL fraci(numpts)
+      _RL newemis(numpts,10)
 
-      real emis(12,11)
-      real fac
+      _RL emis(12,11)
+      _RL fac
       integer i,j
 
 c-----------------------------------------------------------------------
@@ -1218,12 +1212,11 @@ C     To compute the total fraction of land within a model grid-box
 C
 C***********************************************************************
       implicit none
-#include "CPP_EEOPTIONS.h"
 
       integer im,jm,nSx,nSy,bi,bj,maxtyp
       integer surftype(im,jm,maxtyp,nSx,nSy)
       _RL tilefrac(im,jm,maxtyp,nSx,nSy)
-      real frac(im,jm)
+      _RL frac(im,jm)
 
       integer  i,j,k
 

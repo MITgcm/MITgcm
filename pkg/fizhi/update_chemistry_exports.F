@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.8 2004/07/16 19:37:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.9 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
        subroutine update_chemistry_exports (myTime, myIter, myThid)
 c----------------------------------------------------------------------
 c  Subroutine update_chemistry_exports - 'Wrapper' routine to update
@@ -11,7 +12,6 @@ c
 c Call:  interp_chemistry
 c-----------------------------------------------------------------------
        implicit none
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
 #include "fizhi_land_SIZE.h"
@@ -26,15 +26,15 @@ c-----------------------------------------------------------------------
       integer myTime, myIter, myThid
 
 c pe on physics grid refers to bottom edge
-      real pephy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys+1,nSx,nSy)
-      real pphy(sNx,sNy,Nrphys,nSx,nSy)
-      real oz1(nlatsoz,nlevsoz), strq1(nlatsq,nlevsq)
-      real waterin(sNx,sNy,Nrphys), xlat(sNx,sNy)
+      _RL pephy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys+1,nSx,nSy)
+      _RL pphy(sNx,sNy,Nrphys,nSx,nSy)
+      _RL oz1(nlatsoz,nlevsoz), strq1(nlatsq,nlevsq)
+      _RL waterin(sNx,sNy,Nrphys), xlat(sNx,sNy)
 
       integer i, j, L, LL, bi, bj
       integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
       integer nhms1,nymd1,nhms2,nymd2,imns,ipls
-      real facm, facp
+      _RL facm, facp
       logical alarm
       external alarm
 
@@ -111,18 +111,17 @@ c                                         (even though dpphy counted bottom up)
      . watlats,ozone,nozlevs,nozlats,ozlevs,ozlats,
      . qz,plz,xlat,im,jm,lm,nSx,nSy,bi,bj,ozrad,qzrad)
 
-#include "CPP_OPTIONS.h"
       implicit none
 
 c Input Variables
 c ---------------
       integer nwatlevs,nwatlats,nozlevs,nozlats,nSx,nSy,bi,bj
-      real stratq(nwatlats,nwatlevs),ozone(nozlats,nozlevs)
+      _RL stratq(nwatlats,nwatlevs),ozone(nozlats,nozlevs)
       _RL watlevs(nwatlevs),watlats(nwatlats)
       _RL ozlevs(nozlevs),ozlats(nozlats)
       integer im,jm,lm
-      real qz(im,jm,lm),plz(im,jm,lm)
-      real xlat(im,jm)
+      _RL qz(im,jm,lm),plz(im,jm,lm)
+      _RL xlat(im,jm)
       _RL ozrad(im,jm,lm,nSx,nSy)
       _RL qzrad(im,jm,lm,nSx,nSy)
 
@@ -155,17 +154,16 @@ C                 (kg/kg mass mixing ratio)
 C
 C***********************************************************************
 
-#include "CPP_OPTIONS.h"
       implicit none 
       integer nwatlevs,nwatlats
-      real stratq ( nwatlats,nwatlevs )
+      _RL stratq ( nwatlats,nwatlevs )
       _RL watlats (nwatlats)
       _RL watlevs (nwatlevs)
 
       integer irun,nlevs
-      real xlat  (irun)
-      real pres  (irun,nlevs)
-      real qz_in (irun,nlevs)
+      _RL xlat  (irun)
+      _RL pres  (irun,nlevs)
+      _RL qz_in (irun,nlevs)
       _RL qz_out(irun,nlevs)
 
 c Local Variables
@@ -176,11 +174,11 @@ c ---------------
       parameter ( dpq = pql-pqu )
 
       integer i,k,L1,L2,LM,LP
-      real h2o_time_lat (irun,nwatlevs)
-      real       qz_clim(irun,nlevs)
+      _RL h2o_time_lat (irun,nwatlevs)
+      _RL       qz_clim(irun,nlevs)
 
-      real  qpr1(irun), qpr2(irun), slope(irun)
-      real   pr1(irun),  pr2(irun)
+      _RL  qpr1(irun), qpr2(irun), slope(irun)
+      _RL   pr1(irun),  pr2(irun)
 
       integer  jlat,jlatm,jlatp
 
@@ -292,18 +290,17 @@ C     pres ....... Three-dimensional array of pressures
 C     ozrad ...... Ozone on Physics Grid (kg/kg mass mixing radtio)
 C
 C***********************************************************************
-#include "CPP_OPTIONS.h"
       implicit none
       integer nozlevs,nozlats,irun,nlevs
-      real ozone(nozlats,nozlevs)
-      real xlat(irun)
-      real plevs(irun,nlevs)
+      _RL ozone(nozlats,nozlevs)
+      _RL xlat(irun)
+      _RL plevs(irun,nlevs)
       _RL ozrad(irun,nlevs)
       _RL ozlevs(nozlevs),ozlats(nozlats)
 
 c Local Variables
 c ---------------
-      real zero,one,o3min,voltomas
+      _RL zero,one,o3min,voltomas
       PARAMETER ( ZERO     = 0.0 )
       PARAMETER ( ONE      = 1.0 )
       PARAMETER ( O3MIN    = 1.0E-10  )
@@ -311,9 +308,9 @@ c ---------------
 
       integer  i,k,L1,L2,LM,LP
       integer  jlat,jlatm,jlatp
-      real  O3INT1(IRUN,nozlevs)
-      real    QPR1(IRUN), QPR2(IRUN), SLOPE(IRUN)
-      real     PR1(IRUN),  PR2(IRUN)
+      _RL  O3INT1(IRUN,nozlevs)
+      _RL    QPR1(IRUN), QPR2(IRUN), SLOPE(IRUN)
+      _RL     PR1(IRUN),  PR2(IRUN)
 
 C **********************************************************************
 C ****           INTERPOLATE ozone data to model latitudes           ***

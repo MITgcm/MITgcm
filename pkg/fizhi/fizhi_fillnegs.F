@@ -1,3 +1,7 @@
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_fillnegs.F,v 1.4 2004/07/26 18:45:17 molod Exp $
+C $Name:  $
+                                                                                     
+#include "FIZHI_OPTIONS.h"
       SUBROUTINE PQCHECK ( PQZ,PZ,DP,IM,JM,LM,delt)
 C***********************************************************************
 C  Purpose                                                              
@@ -17,13 +21,13 @@ C***********************************************************************
       implicit none
 
       integer im,jm,lm
-      real delt
+      _RL delt
 
-      real     PQZ(IM,JM,LM), DP(IM,JM,LM)                        
-      real      PZ(IM,JM)
+      _RL     PQZ(IM,JM,LM), DP(IM,JM,LM)                        
+      _RL      PZ(IM,JM)
 
       integer i,j,L,LM1
-      real    getcon,grav,ddsig
+      _RL    getcon,grav,ddsig
 
       grav = getcon('GRAVITY')
  
@@ -72,31 +76,29 @@ C     the sum of immediate surrounding positive values is tried.
 C     If sum is not large enough, tracer is simply set to zero.
 C                                                                       
 C***********************************************************************
-C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
-C***********************************************************************
 
       implicit none
 
 c Input Variables
 c ---------------
       integer im,jm,lm
-      real    pq(im,jm,lm),dlam(im),dphi(jm),dp(im,jm,lm)
+      _RL    pq(im,jm,lm),dlam(im),dphi(jm),dp(im,jm,lm)
 
 c Local Variables
 c ---------------
       integer  i,j,l,im1,ip1,imax,m
-      real     lam(im), phi(jm)
-      real     array(6)
-      real     pi,a,getcon,undef
-      real     qmax,qval,sum,fact
+      _RL     lam(im), phi(jm)
+      _RL     array(6)
+      _RL     pi,a,getcon,undef
+      _RL     qmax,qval,sum,fact
 
-      real        dxu(im,jm)
-      real        dxv(im,jm)
-      real        dxp(im,jm)
-      real        dyv(im,jm)
-      real        dyp(im,jm)
+      _RL        dxu(im,jm)
+      _RL        dxv(im,jm)
+      _RL        dxp(im,jm)
+      _RL        dyv(im,jm)
+      _RL        dyp(im,jm)
 
-      real d2p(im,jm)
+      _RL d2p(im,jm)
 
 C *********************************************************
 C ****                 Initialization                  ****
@@ -283,11 +285,9 @@ C  Note:
 C     If no array element is larger than qval, then imax = 0         
 C                                                                       
 C***********************************************************************
-C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
-C***********************************************************************
       implicit none
       integer  im, i, imax
-      real   q(im), qmax, qval
+      _RL   q(im), qmax, qval
       qmax = qval
       imax = 0
       do i=1,im

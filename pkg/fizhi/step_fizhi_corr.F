@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.7 2004/06/14 20:34:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.8 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
        subroutine step_fizhi_corr (myTime, myIter, myThid)
 c----------------------------------------------------------------------
 c  Subroutine step_fizhi_corr - 'Wrapper' routine to advance
@@ -18,7 +19,6 @@ c      dyn2phys (4) (interpolate A-Grid correction term to physics grid)
 c      step_physics (advance physics state by correction term)
 c-----------------------------------------------------------------------
        implicit none
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "GRID.h"
 #include "fizhi_SIZE.h"

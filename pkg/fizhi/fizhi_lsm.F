@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.3 2004/07/16 20:00:42 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.4 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
       SUBROUTINE TILE (
      I                 NCH, DTSTEP, ITYP, TRAINL,TRAINC, TSNOW,  UM,
      I                 ETURB,  DEDQA,  DEDTC,  HSTURB, DHSDQA, DHSDTC,
@@ -30,18 +31,18 @@ C****
 C****
       INTEGER NCH
       INTEGER ITYP(NCH)
-      REAL  DTSTEP,  TRAINL(NCH), TRAINC(NCH), TSNOW(NCH), UM(NCH),
+      _RL  DTSTEP,  TRAINL(NCH), TRAINC(NCH), TSNOW(NCH), UM(NCH),
      &       ETURB(NCH),  DEDQA(NCH), HSTURB(NCH), DHSDTC(NCH),
      &         TM (NCH),     CD(NCH), SUNANG(NCH), DHSDQA(NCH),
      &         QM (NCH), PARDIR(NCH), PARDIF(NCH),  SWNET(NCH),
      &      HLWDWN(NCH),   PSUR(NCH),   ZLAI(NCH),  GREEN(NCH),
      &          Z2(NCH), SQSCAT(NCH),  DEDTC(NCH)
-      REAL  RSOIL1(NCH), RSOIL2(NCH),    RDC(NCH),  U2FAC(NCH),
+      _RL  RSOIL1(NCH), RSOIL2(NCH),    RDC(NCH),  U2FAC(NCH),
      &     QSATTC(NCH), DQSDTC(NCH),  ALWRAD(NCH), BLWRAD(NCH),
      &          TC(NCH),     TD(NCH),     QA(NCH),   BOMB(NCH),
      &       SWET1(NCH),  SWET2(NCH),  SWET3(NCH),  CAPAC(NCH), 
      &        SNOW(NCH),   EVAP(NCH), SHFLUX(NCH), RUNOFF(NCH)
-      REAL   EINT(NCH),    ESOI(NCH),   EVEG(NCH),   ESNO(NCH),
+      _RL   EINT(NCH),    ESOI(NCH),   EVEG(NCH),   ESNO(NCH),
      &     STRDG1(NCH),  STRDG2(NCH), STRDG3(NCH), STRDG4(NCH),
      &     STRDG5(NCH),  STRDG6(NCH), STRDG7(NCH), STRDG8(NCH),
      &     STRDG9(NCH),
@@ -49,7 +50,7 @@ C****
      &     RUNSRF(NCH),  FWSOIL(NCH)
 C****
       INTEGER ChNo
-      REAL     SWET(nch,NLAY),   VGPSAT(NTYPS),   VGCSAT (NTYPS),
+      _RL     SWET(nch,NLAY),   VGPSAT(NTYPS),   VGCSAT (NTYPS),
      &       VGZDEP(NLAY,NTYPS),   VGSLOP(NTYPS),            DELTC,
      &                    DELEA,    VGPH1(NTYPS),     VGPH2(NTYPS),
      &            VGRPLN(NTYPS),    CSOIL0(NTYPS),          WSOI12,
@@ -57,25 +58,25 @@ C****
      &            DELZ23(NTYPS)
 C****
 
-      REAL PHLAY(nch,NLAY), AKLAY(nch,NLAY), SWET12(nch),
+      _RL PHLAY(nch,NLAY), AKLAY(nch,NLAY), SWET12(nch),
      &      CSOIL(nch),
      &       RCUN(nch),     VPDSTR(nch),   ESATTX(nch),
      &       VPDSTX(nch),   VGBEEX(nch)
-      REAL EMAXRT(nch), VGWMAX(NLAY,NTYPS), FTEMP(nch),
+      _RL EMAXRT(nch), VGWMAX(NLAY,NTYPS), FTEMP(nch),
      &        PHR(nch),      SOILCO(nch),    RC(nch),
      &        EAX(nch),          TX(nch),   RCX(nch),
      &     DRCDTC(nch),      SATCAP(nch),   PAR(nch),
      &       PDIR(nch),       DUMMY(nch)
-      REAL FTEMPX(nch),  DRCDEA(nch), VGPSAX(nch), VGCSAX(nch),
+      _RL FTEMPX(nch),  DRCDEA(nch), VGPSAX(nch), VGCSAX(nch),
      &                VGZDEX(NLAY,nch), VGSLOX(nch), VGPH1X(nch),
      &     VGPH2X(nch),  VGRPLX(nch)
-      REAL  DEDEA(nch),  DHSDEA(nch),     EM(nch), ESATTC(nch),
+      _RL  DEDEA(nch),  DHSDEA(nch),     EM(nch), ESATTC(nch),
      &     DESDTC(nch),      EA(nch),     RA(nch),   ALHX(nch),
      &     WETEQ1(nch), WETEQ2(nch),
      &        RX1(nch),     RX2(nch), SNWFRC(nch), POTFRC(nch),
      &     ESNFRC(nch),  EIRFRC(nch),   FCAN(nch),  EPFRC,
      &     DEFCIT, EADJST, RTBS
-      real cmpbug
+      _RL cmpbug
 
 C****
       DATA VGWMAX   /8.4,    621.6,      840.0,
@@ -514,11 +515,11 @@ C****
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
-      REAL  TRAINL(NCH), TRAINC(NCH), TSNOW(NCH),  SATCAP(NCH),  
+      _RL  TRAINL(NCH), TRAINC(NCH), TSNOW(NCH),  SATCAP(NCH),  
      &      WMAX(NLAY,NTYPS), TC(NCH),   CSOIL(NCH),   CAPAC(NCH),     
      &      SNOW(NCH), SWET1(NCH),  RUNOFF(NCH),  SMELT(NCH),
      &     RUNSRF(NCH), FWSOIL(NCH), WETEQ1(NCH), WETINT
-      REAL DTSTEP, SNOWM, WATADD, CAVAIL, THRUC, WRUNC, WRUNL,
+      _RL DTSTEP, SNOWM, WATADD, CAVAIL, THRUC, WRUNC, WRUNL,
      &     TIMFRL, TIMFRC, FWETL, FWETC, THRU1, THRU2, THRUL, XTCORR,
      &     WETFRC
 C****
@@ -691,13 +692,13 @@ C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
 
-      REAL  SUNANG(NCH),   PDIR(NCH),   PAR(NCH),   ZLAI(NCH),
+      _RL  SUNANG(NCH),   PDIR(NCH),   PAR(NCH),   ZLAI(NCH),
      &      SQSCAT(NCH),  GREEN(NCH),  RCUN(NCH)
 
-      REAL   VGCHIL(NTYPS), VGZMEW(NTYPS),         
+      _RL   VGCHIL(NTYPS), VGZMEW(NTYPS),         
      &       VGRST1(NTYPS), VGRST2(NTYPS), VGRST3(NTYPS)
 
-      REAL            RHO4,         EXTK1,         EXTK2,
+      _RL            RHO4,         EXTK1,         EXTK2,
      &               RCINV,         GAMMA,          EKAT,    DUM1,
      &                DUM2,          DUM3,            AA,      BB,
      &                  ZK,            CC
@@ -789,7 +790,7 @@ C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
 
-      REAL    WET(NCH),    PHR(NCH), SOILCO(NCH), VGPSAX(NCH),
+      _RL    WET(NCH),    PHR(NCH), SOILCO(NCH), VGPSAX(NCH),
      &     VGCSAX(NCH), VGBEEX(NCH),  DELZ(NTYPS),  WETEQ(NCH),
      &     WEXPB,  WET0,  PHEQ
 
@@ -839,7 +840,7 @@ C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
 
-      REAL       DTSTEP, ESATTC(NCH), DESDTC(NCH),   ALHX(NCH),
+      _RL       DTSTEP, ESATTC(NCH), DESDTC(NCH),   ALHX(NCH),
      &       ETURB(NCH),  DEDEA(NCH),  DEDTC(NCH),
      &      HSTURB(NCH), DHSDEA(NCH), DHSDTC(NCH),
      &          RC(NCH), DRCDEA(NCH), DRCDTC(NCH),
@@ -850,17 +851,17 @@ C****
      &               SWET1(NCH,NLAY),   SNOW(NCH),
      &      RUNOFF(NCH),   EVAP(NCH), SHFLUX(NCH),  SMELT(NCH),
      &       HLWUP(NCH),   BOMB(NCH)
-      REAL STRDG1(NCH),STRDG2(NCH),STRDG3(NCH),STRDG4(NCH)
-      REAL STRDG5(NCH),STRDG6(NCH),STRDG7(NCH),STRDG8(NCH)
-      REAL STRDG9(NCH)
+      _RL STRDG1(NCH),STRDG2(NCH),STRDG3(NCH),STRDG4(NCH)
+      _RL STRDG5(NCH),STRDG6(NCH),STRDG7(NCH),STRDG8(NCH)
+      _RL STRDG9(NCH)
 
-      REAL     HLWTC,  CDEEPS,      Q0,  RHOAIR,   CONST,  DHLWTC,
+      _RL     HLWTC,  CDEEPS,      Q0,  RHOAIR,   CONST,  DHLWTC,
      &        EPLANT,     A11,     A12,     A21,     A22,      F0,
      &           DEA,     DTC,  SNLEFT,     Q0X,  Q0SNOW,
      &         EANEW,  ESATNW,  EHARMN, DETERM, DENOM
 
       LOGICAL CHOKE
-      real deepfac(ntyps)
+      _RL deepfac(ntyps)
       DATA deepfac /1.,1.,1.,1.,1.,1.,1.,1.,1.,1./
 C****
 C**** -------------------------------------------------------------------
@@ -1137,8 +1138,8 @@ C****
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
-      REAL    ESATTC(NCH), EA(NCH),  VPDSTR(NCH)
-c     REAL  VGDFAC(NTYPS)
+      _RL    ESATTC(NCH), EA(NCH),  VPDSTR(NCH)
+c     _RL  VGDFAC(NTYPS)
 C****
 c     DATA VGDFAC /   .0273,    .0357,    .0310,    .0238,
 c    5                .0275,    .0275,       0.,       0.,
@@ -1178,8 +1179,8 @@ C****
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo, TypPtr
-      REAL TC(NCH), FTEMP(NCH)
-      REAL    VGTLL(MemFac*NTYPS),    VGTU(MemFac*NTYPS),
+      _RL TC(NCH), FTEMP(NCH)
+      _RL    VGTLL(MemFac*NTYPS),    VGTU(MemFac*NTYPS),
      &       VGTCF1(MemFac*NTYPS),  VGTCF2(MemFac*NTYPS),
      &       VGTCF3(MemFac*NTYPS)
 C****
@@ -1248,11 +1249,11 @@ C****
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
-      REAL  ESATTC(NCH),      EA(NCH),     PHR(NCH),  SOILCO(NCH),
+      _RL  ESATTC(NCH),      EA(NCH),     PHR(NCH),  SOILCO(NCH),
      &        RCUN(NCH),  VPDSTR(NCH),   FTEMP(NCH),      TC(NCH),
      &        PSUR(NCH),      Z2(NCH),  RSOIL1(NCH),  RSOIL2(NCH),
      &      VGPH1X(NCH),  VGPH2X(NCH),  VGRPLX(NCH),      RC(NCH)
-      REAL   RCUNTD,  RHOAIR,   CONST,     DEF,     D12,     DR2,
+      _RL   RCUNTD,  RHOAIR,   CONST,     DEF,     D12,     DR2,
      &        RSOIL,      R0,    EEST,  RSTFAC
 C****
 C**** -----------------------------------------------------------------
@@ -1296,10 +1297,10 @@ C****
       IMPLICIT NONE
       INTEGER NCH
       INTEGER ChNo
-      REAL     UM(NCH),   U2FAC(NCH),     Z2(NCH),    RDC(NCH), 
+      _RL     UM(NCH),   U2FAC(NCH),     Z2(NCH),    RDC(NCH), 
      &        WET(NCH),  ESATTC(NCH),     EA(NCH),
      &         RC(NCH),     RX1(NCH),    RX2(NCH)
-      REAL  U2, RSURF, HESAT
+      _RL  U2, RSURF, HESAT
 C****
 C**** -----------------------------------------------------------------
 
@@ -1351,9 +1352,9 @@ C****
       IMPLICIT NONE
       INTEGER NCH
       INTEGER ChNo
-      REAL CAPAC(NCH), SNOW(NCH), SATCAP(NCH), RA(NCH), ETURB(NCH),
+      _RL CAPAC(NCH), SNOW(NCH), SATCAP(NCH), RA(NCH), ETURB(NCH),
      &          RC(NCH), SNWFRC(NCH), POTFRC(NCH)
-      REAL ETCRIT,RAMPFC
+      _RL ETCRIT,RAMPFC
 
 C**** (Note: ETCRIT arbitrarily set to ~-5 W/m2, or -2.e-6 mm/sec.)
       DATA ETCRIT/ -2.E-6 /
@@ -1418,14 +1419,14 @@ C****
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
-      REAL    EVAP(NCH),  SATCAP(NCH),  VGWMAX(NLAY,NTYPS),
+      _RL    EVAP(NCH),  SATCAP(NCH),  VGWMAX(NLAY,NTYPS),
      &          TC(NCH),      RA(NCH),             RC(NCH),
      &       CAPAC(NCH),    SNOW(NCH),    SWET(nch,NLAY),
      &      RUNOFF(NCH),     RX1(NCH),
      &         RX2(NCH),  RUNSRF(NCH),  FWSOIL(NCH),
      &      ESNFRC(NCH),  EIRFRC(NCH)
-      REAL EINT(NCH), ESOI(NCH), EVEG(NCH), ESNO(NCH)
-      REAL  DTSTEP, EGRO, FWS, THRU, DEWRUN,
+      _RL EINT(NCH), ESOI(NCH), EVEG(NCH), ESNO(NCH)
+      _RL  DTSTEP, EGRO, FWS, THRU, DEWRUN,
      &     WTOTAL,WLAY1,WLAY2,ELAY1,ELAY2,EGROI
 C****
 C**** -----------------------------------------------------------------
@@ -1568,11 +1569,11 @@ C****
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
-      REAL  VGSLOX(NCH), RUNOFF(NCH), GDRAIN(NCH)
-      REAL  ZDEP12,   AKAVE,  GWFLUX,  ZDEP23,  HALFMX,  DHDZ,
+      _RL  VGSLOX(NCH), RUNOFF(NCH), GDRAIN(NCH)
+      _RL  ZDEP12,   AKAVE,  GWFLUX,  ZDEP23,  HALFMX,  DHDZ,
      &    FAREA, TFM2, FRAMP
 
-      REAL   WSMAX(NLAY,NTYPS),   PHLAY(nch,NLAY),
+      _RL   WSMAX(NLAY,NTYPS),   PHLAY(nch,NLAY),
      &       AKLAY(nch,NLAY),             TC(NCH),
      &                  DTSTEP,    SWET(nch,NLAY),
      &      VGZDEX(NLAY,nch),  WETEQ1(NCH),  WETEQ2(NCH),

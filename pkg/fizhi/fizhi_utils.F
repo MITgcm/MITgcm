@@ -1,8 +1,11 @@
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.9 2004/07/26 18:45:17 molod Exp $
+C $Name:  $
+
+#include "FIZHI_OPTIONS.h"
       function minval (q,im)
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer  im, i
-      real q(im), minval
+      _RL q(im), minval
       minval = 1.e15
       do i=1,im
       if( q(i).lt.minval ) minval = q(i)
@@ -23,9 +26,9 @@ C        USED TO COMPUTE FRACTIONAL CLOUD COVER AND LIQUID WATER CONTENT
 C          FROM TURBULENCE STATISTICS
 C **********************************************************************
       implicit none
-      real arg,errf
+      _RL arg,errf
  
-      real aa1,aa2,aa3,aa4,aa5,pp,x2,x3,x4,x5
+      _RL aa1,aa2,aa3,aa4,aa5,pp,x2,x3,x4,x5
       PARAMETER ( AA1  =   0.254829592 )
       PARAMETER ( AA2  =  -0.284496736 )
       PARAMETER ( AA3  =   1.421413741 )
@@ -37,7 +40,7 @@ C **********************************************************************
       PARAMETER ( X4   =   AA5 / AA3   )
       PARAMETER ( X5   =   AA5 / AA4   )
  
-      real aarg,tt
+      _RL aarg,tt
       
       ERRF = 1.
       AARG=ABS(ARG)
@@ -56,9 +59,8 @@ C **********************************************************************
 
       SUBROUTINE STRIP(A,B,IA,IB,L,K)                                           
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer ia,ib,L,K
-      real A(IA,L), B(IB,L)                                                
+      _RL A(IA,L), B(IB,L)                                                
       
       INTEGER OFFSET,Len,i,j
                                                                                 
@@ -86,9 +88,8 @@ C **********************************************************************
       END                                                                       
       SUBROUTINE PASTE(B,A,IB,IA,L,K)                                           
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer ia,ib,L,K
-      real A(IA,L), B(IB,L)                                                
+      _RL A(IA,L), B(IB,L)                                                
 
       INTEGER OFFSET,LEN,i,j
                                                                                 
@@ -105,9 +106,8 @@ C **********************************************************************
       END                                                                       
       SUBROUTINE PSTBMP(B,A,IB,IA,L,K)                                          
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer ia,ib,L,K
-      real A(IA,L), B(IB,L)                                                
+      _RL A(IA,L), B(IB,L)                                                
 
       INTEGER OFFSET,LEN,i,j
                                                                                 
@@ -173,28 +173,27 @@ C
 C***********************************************************************
 
       IMPLICIT NONE
-#include "CPP_EEOPTIONS.h"
-      real TT, P, Q, DQDT
+      _RL TT, P, Q, DQDT
       LOGICAL LDQDT
 
-      real AIRMW, H2OMW
+      _RL AIRMW, H2OMW
       
       PARAMETER ( AIRMW  = 28.97      )                                         
       PARAMETER ( H2OMW  = 18.01      )                                         
 
-      real ESFAC, ERFAC
+      _RL ESFAC, ERFAC
       PARAMETER ( ESFAC = H2OMW/AIRMW       )
       PARAMETER ( ERFAC = (1.0-ESFAC)/ESFAC )
 
-      real aw0, aw1, aw2, aw3, aw4, aw5, aw6
-      real bw0, bw1, bw2, bw3, bw4, bw5, bw6
-      real ai0, ai1, ai2, ai3, ai4, ai5, ai6
-      real bi0, bi1, bi2, bi3, bi4, bi5, bi6
+      _RL aw0, aw1, aw2, aw3, aw4, aw5, aw6
+      _RL bw0, bw1, bw2, bw3, bw4, bw5, bw6
+      _RL ai0, ai1, ai2, ai3, ai4, ai5, ai6
+      _RL bi0, bi1, bi2, bi3, bi4, bi5, bi6
 
-      real d0, d1, d2, d3, d4, d5, d6
-      real e0, e1, e2, e3, e4, e5, e6
-      real f0, f1, f2, f3, f4, f5, f6
-      real g0, g1, g2, g3, g4, g5, g6
+      _RL d0, d1, d2, d3, d4, d5, d6
+      _RL e0, e1, e2, e3, e4, e5, e6
+      _RL f0, f1, f2, f3, f4, f5, f6
+      _RL g0, g1, g2, g3, g4, g5, g6
 
 c ********************************************************
 c ***  Polynomial Coefficients WRT Water (Lowe, 1977) ****
@@ -284,10 +283,10 @@ c ********************************************************
       parameter ( g5 = 0.262430726e-09 * esfac )
       parameter ( g6 = 0.481960676e-12 * esfac )
 
-      real TMAX, TICE
+      _RL TMAX, TICE
       PARAMETER ( TMAX=323.15, TICE=273.16)
       
-      real T, D, W, QX, DQX
+      _RL T, D, W, QX, DQX
       T = MIN(TT,TMAX) - TICE
       DQX = 0.
       QX  = 0.
@@ -346,10 +345,9 @@ c ------------------------------------
       END
       subroutine vqsat (tt,p,q,dqdt,ldqdt,n)
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer  i,n
       logical  ldqdt
-      real tt(n), p(n), q(n), dqdt(n)
+      _RL tt(n), p(n), q(n), dqdt(n)
 #ifdef CRAY
 #ifdef f77
 cfpp$ expand (qsat)
@@ -363,9 +361,8 @@ cfpp$ expand (qsat)
 
       subroutine stripit(a,b,irun,ia,ib,l,k)
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer ia,ib,irun,l,k
-      real a(ia,l), b(ib,l)
+      _RL a(ia,l), b(ib,l)
       integer   i,j,len,offset
 
       offset = ib*(k-1)
@@ -392,7 +389,6 @@ cfpp$ expand (qsat)
 
       subroutine stripitint(a,b,irun,ia,ib,l,k)
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer ia,ib,irun,l,k,a(ia,l),b(ib,l)
       integer i,j,len,offset
 
@@ -420,10 +416,9 @@ cfpp$ expand (qsat)
 
       subroutine pastit(b,a,ib,ia,irun,L,k)
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer ib,ia,L,k,irun,len,offset
       integer i,j
-      real a(ia,l), b(ib,l)
+      _RL a(ia,l), b(ib,l)
 
       offset = ib*(k-1)
       len    = min(ib,irun-offset)
@@ -438,9 +433,8 @@ cfpp$ expand (qsat)
 
       subroutine pstbitint(b,a,ib,ia,irun,l,k)
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer ib,ia,L,k,irun,len,offset
-      real a(ia,l)
+      _RL a(ia,l)
       integer b(ib,l)
       integer i,j
 
@@ -458,9 +452,8 @@ cfpp$ expand (qsat)
 
       subroutine pstbmpit(b,a,ib,ia,irun,l,k)
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer ib,ia,L,k,irun,len,offset
-      real a(ia,l), b(ib,l)
+      _RL a(ia,l), b(ib,l)
       integer i,j
 
       offset = ib*(k-1)
@@ -494,9 +487,8 @@ c output:
 c      b      - array to be filled, ie, one processors field [ib,levs]
 c-----------------------------------------------------------------------
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer ia,ib,irun,levs,npeice
-      real a(ia,levs), b(ib,levs)
+      _RL a(ia,levs), b(ib,levs)
       integer index(irun)
       integer i,k,len,offset
 
@@ -549,10 +541,9 @@ c within a parallel region.
 c-----------------------------------------------------------------------
 
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer ia,ib,levs,numpts,npeice
       integer index(numpts)
-      real a(ia,levs), b(ib,levs), chfr(ib)
+      _RL a(ia,levs), b(ib,levs), chfr(ib)
 
       integer i,L,offset,len
 
@@ -596,14 +587,13 @@ c within a parallel region.
 c-----------------------------------------------------------------------
 
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer ia,ib,levs,numpts,npeice
       integer index(numpts)
-      real a(ia,levs), b(ib,levs), chfr(ib)
+      _RL a(ia,levs), b(ib,levs), chfr(ib)
       logical check
 
       integer i,L,offset,len
-      real    undef,getcon
+      _RL    undef,getcon
 
       offset = ib*(npeice-1)
       len    = min(ib,numpts-offset)
@@ -633,10 +623,9 @@ c-----------------------------------------------------------------------
       SUBROUTINE GRD2MSC(A,IM,JM,IGRD,B,MXCHPS,NCHP)
 
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer im,jm,mxchps,nchp
       integer igrd(mxchps)
-      real A(IM,JM), B(MXCHPS)
+      _RL A(IM,JM), B(MXCHPS)
 
       integer i
 
@@ -654,15 +643,14 @@ c-----------------------------------------------------------------------
       SUBROUTINE MSC2GRD(IGRD,CHFR,B,MXCHPS,NCHP,FRACG,A,IM,JM)
 
       implicit none
-#include "CPP_EEOPTIONS.h"
-      real zero,one
+      _RL zero,one
       parameter ( one = 1.)
       parameter (zero = 0.)
       integer im,jm,mxchps,nchp
       integer igrd(mxchps)
-      real A(IM,JM), B(MXCHPS), CHFR(MXCHPS), FRACG(IM,JM)
+      _RL A(IM,JM), B(MXCHPS), CHFR(MXCHPS), FRACG(IM,JM)
 
-      real VT1(IM,JM)
+      _RL VT1(IM,JM)
       integer i
 
       print *,' In msc2grd ',(igrd(i),i=1,nchp)
@@ -693,14 +681,13 @@ c-----------------------------------------------------------------------
      1       agrn,zoch,z2ch,cdrc,cdsc,sqsc,ufac,rsl1,rsl2,rdcs)
 
        implicit none
-#include "CPP_EEOPTIONS.h"
 
        integer nymd,nhms,nchp,mxchps,ityp(mxchps)
-       real chlt(mxchps)
-       real alai(mxchps),agrn(mxchps)
-       real zoch(mxchps), z2ch(mxchps), cdrc(mxchps), cdsc(mxchps)
-       real sqsc(mxchps), ufac(mxchps), rsl1(mxchps), rsl2(mxchps)
-       real rdcs(mxchps)
+       _RL chlt(mxchps)
+       _RL alai(mxchps),agrn(mxchps)
+       _RL zoch(mxchps), z2ch(mxchps), cdrc(mxchps), cdsc(mxchps)
+       _RL sqsc(mxchps), ufac(mxchps), rsl1(mxchps), rsl2(mxchps)
+       _RL rdcs(mxchps)
 
 C*********************************************************************
 C********************* SUBROUTINE CHPPRM  ****************************
@@ -710,14 +697,14 @@ C*********************************************************************
       integer ntyps
       parameter (ntyps=10)
 
-      real pblzet
+      _RL pblzet
       parameter (pblzet = 50.)
       integer k1,k2,nymd1,nhms1,nymd2,nhms2,i
-      real getcon,vkrm,rootl,vroot,dum1,dum2,alphaf
-      real facm,facp
-      real scat,d
+      _RL getcon,vkrm,rootl,vroot,dum1,dum2,alphaf
+      _RL facm,facp
+      _RL scat,d
 
-      real
+      _RL
      &     vgdd(12, ntyps),    vgz0(12, ntyps),
      &     vgrd(12, ntyps),    vgrt(12, ntyps),
 
@@ -899,11 +886,11 @@ C***********************************************************************
       implicit  none
 
       integer   im,jm,lm
-      real      ple (im,jm,lm+1)
-      real      pkle(im,jm,lm+1)
-      real      pkz (im,jm,lm)
+      _RL ple(im,jm,lm+1)
+      _RL pkle(im,jm,lm+1)
+      _RL pkz(im,jm,lm)
 
-      real akap1,getcon
+      _RL akap1,getcon
       integer i,j,L
  
       akap1 = 1.0 + getcon('KAPPA')

@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.11 2004/07/16 20:08:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.12 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
-#include "PACKAGES_CONFIG.h"
+#include "FIZHI_OPTIONS.h"
       subroutine swrio (nymd,nhms,bi,bj,ndswr,myid,istrip,npcs,
      .        low_level,mid_level,
      .        pz,plz,plze,dpres,pkht,pkz,tz,qz,oz,co2,
@@ -25,76 +24,76 @@ c ---------------
       integer nymd,nhms,bi,bj,ndswr,myid,istrip,npcs
       integer mid_level,low_level
       integer im,jm,lm        
-      real  ptop
-      real pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1),dpres(im,jm,lm)
-      real pkht(im,jm,lm+1),pkz(im,jm,lm)
-      real tz(im,jm,lm),qz(im,jm,lm)
-      real oz(im,jm,lm)
-      real co2
-      real albvisdr(im,jm),albvisdf(im,jm),albnirdr(im,jm)
-      real albnirdf(im,jm)
-      real radswg(im,jm),swgclr(im,jm),fdifpar(im,jm),fdirpar(im,jm)
-      real osr(im,jm),osrclr(im,jm),dtradsw(im,jm,lm),dtswclr(im,jm,lm)
+      _RL  ptop
+      _RL pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1),dpres(im,jm,lm)
+      _RL pkht(im,jm,lm+1),pkz(im,jm,lm)
+      _RL tz(im,jm,lm),qz(im,jm,lm)
+      _RL oz(im,jm,lm)
+      _RL co2
+      _RL albvisdr(im,jm),albvisdf(im,jm),albnirdr(im,jm)
+      _RL albnirdf(im,jm)
+      _RL radswg(im,jm),swgclr(im,jm),fdifpar(im,jm),fdirpar(im,jm)
+      _RL osr(im,jm),osrclr(im,jm),dtradsw(im,jm,lm),dtswclr(im,jm,lm)
       integer nswcld,nswlz    
-      real cldsw(im,jm,lm),cswmo(im,jm,lm),swlz(im,jm,lm)   
+      _RL cldsw(im,jm,lm),cswmo(im,jm,lm),swlz(im,jm,lm)   
       logical lpnt            
       integer imstturb        
-      real qliqave(im,jm,lm),fccave(im,jm,lm)  
+      _RL qliqave(im,jm,lm),fccave(im,jm,lm)  
       integer landtype(im,jm) 
-      real xlats(im,jm),xlons(im,jm)
+      _RL xlats(im,jm),xlons(im,jm)
 
 c Local Variables
 c ---------------
       integer   i,j,L,nn,nsecf
       integer   ntmstp,nymd2,nhms2
-      real      getcon,grav,cp,undef
-      real      ra,alf,reffw,reffi,tminv
+      _RL      getcon,grav,cp,undef
+      _RL      ra,alf,reffw,reffi,tminv
 
       parameter ( reffw = 10.0 )   
       parameter ( reffi = 65.0 )   
 
-      real tdry(im,jm,lm)
-      real TEMP1(im,jm)
-      real TEMP2(im,jm)
-      real zenith (im,jm)
-      real cldtot (im,jm,lm)
-      real cldmxo (im,jm,lm)
-      real totcld (im,jm)
-      real cldlow (im,jm)
-      real cldmid (im,jm)
-      real cldhi  (im,jm)
-      real taulow (im,jm)
-      real taumid (im,jm)
-      real tauhi  (im,jm)
-      real tautype(im,jm,lm,3)
-      real tau(im,jm,lm)
-      real albedo(im,jm)    
+      _RL tdry(im,jm,lm)
+      _RL TEMP1(im,jm)
+      _RL TEMP2(im,jm)
+      _RL zenith (im,jm)
+      _RL cldtot (im,jm,lm)
+      _RL cldmxo (im,jm,lm)
+      _RL totcld (im,jm)
+      _RL cldlow (im,jm)
+      _RL cldmid (im,jm)
+      _RL cldhi  (im,jm)
+      _RL taulow (im,jm)
+      _RL taumid (im,jm)
+      _RL tauhi  (im,jm)
+      _RL tautype(im,jm,lm,3)
+      _RL tau(im,jm,lm)
+      _RL albedo(im,jm)    
 
-      real PK(ISTRIP,lm)
-      real qzl(ISTRIP,lm),CLRO(ISTRIP,lm)
-      real TZL(ISTRIP,lm)
-      real OZL(ISTRIP,lm)
-      real PLE(ISTRIP,lm+1)
-      real COSZ(ISTRIP)
-      real dpstrip(ISTRIP,lm)
+      _RL PK(ISTRIP,lm)
+      _RL qzl(ISTRIP,lm),CLRO(ISTRIP,lm)
+      _RL TZL(ISTRIP,lm)
+      _RL OZL(ISTRIP,lm)
+      _RL PLE(ISTRIP,lm+1)
+      _RL COSZ(ISTRIP)
+      _RL dpstrip(ISTRIP,lm)
 
-      real albuvdr(ISTRIP),albuvdf(ISTRIP)
-      real albirdr(ISTRIP),albirdf(ISTRIP)
-      real difpar (ISTRIP),dirpar (ISTRIP)
+      _RL albuvdr(ISTRIP),albuvdf(ISTRIP)
+      _RL albirdr(ISTRIP),albirdf(ISTRIP)
+      _RL difpar (ISTRIP),dirpar (ISTRIP)
 
-      real fdirir(istrip),fdifir(istrip)
-      real fdiruv(istrip),fdifuv(istrip)
+      _RL fdirir(istrip),fdifir(istrip)
+      _RL fdiruv(istrip),fdifuv(istrip)
 
-      real flux(istrip,lm+1)
-      real fluxclr(istrip,lm+1)
-      real dtsw(istrip,lm)
-      real dtswc(istrip,lm)
+      _RL flux(istrip,lm+1)
+      _RL fluxclr(istrip,lm+1)
+      _RL dtsw(istrip,lm)
+      _RL dtswc(istrip,lm)
 
-      real taul   (istrip,lm)
-      real reff   (istrip,lm,2)
-      real tauc   (istrip,lm,2)
-      real taua   (istrip,lm)
-      real tstrip (istrip)
+      _RL taul   (istrip,lm)
+      _RL reff   (istrip,lm,2)
+      _RL tauc   (istrip,lm,2)
+      _RL taua   (istrip,lm)
+      _RL tstrip (istrip)
 
       logical first
       data first /.true./
@@ -586,24 +585,22 @@ C                  tau(im,jm,lm,2):  Suspended Water
 C                  tau(im,jm,lm,3):  Raindrops
 C
 C***********************************************************************
-C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
-C***********************************************************************
 
       implicit none
 
       integer  im,jm,lm,i,j,L
 
-      real  tl(im,jm,lm)
-      real  pl(im,jm,lm)
-      real ple(im,jm,lm+1)
-      real  lz(im,jm,lm)
-      real  cf(im,jm,lm)
-      real cfm(im,jm,lm)
-      real tau(im,jm,lm,3)
+      _RL  tl(im,jm,lm)
+      _RL  pl(im,jm,lm)
+      _RL ple(im,jm,lm+1)
+      _RL  lz(im,jm,lm)
+      _RL  cf(im,jm,lm)
+      _RL cfm(im,jm,lm)
+      _RL tau(im,jm,lm,3)
       integer lwi(im,jm)
 
-      real dp, alf, fracls, fraccu
-      real tauice, tauh2o, tauras
+      _RL dp, alf, fracls, fraccu
+      _RL tauice, tauh2o, tauras
 
 c Compute Cloud Optical Depths
 c ----------------------------
@@ -776,31 +773,31 @@ c-----Explicit Inline Directives
 cfpp$ expand (expmn)
 #endif
 #endif
-      real expmn
+      _RL expmn
 
 c-----input parameters
 
       integer m,n,ndim,np,ict,icb
-      real pl(m,ndim,np+1),ta(m,ndim,np),wa(m,ndim,np),oa(m,ndim,np)
-      real  taucld(m,ndim,np,2),reff(m,ndim,np,2)
-      real  fcld(m,ndim,np),taual(m,ndim,np)
-      real  rsirbm(m,ndim),rsirdf(m,ndim),
+      _RL pl(m,ndim,np+1),ta(m,ndim,np),wa(m,ndim,np),oa(m,ndim,np)
+      _RL  taucld(m,ndim,np,2),reff(m,ndim,np,2)
+      _RL  fcld(m,ndim,np),taual(m,ndim,np)
+      _RL  rsirbm(m,ndim),rsirdf(m,ndim),
      *     rsuvbm(m,ndim),rsuvdf(m,ndim),cosz(m,ndim),co2
 
 c-----output parameters
 
-      real  flx(m,ndim,np+1),flc(m,ndim,np+1)
-      real  fdirir(m,ndim),fdifir(m,ndim)
-      real  fdirpar(m,ndim),fdifpar(m,ndim)
-      real  fdiruv(m,ndim),fdifuv(m,ndim)
+      _RL  flx(m,ndim,np+1),flc(m,ndim,np+1)
+      _RL  fdirir(m,ndim),fdifir(m,ndim)
+      _RL  fdirpar(m,ndim),fdifpar(m,ndim)
+      _RL  fdiruv(m,ndim),fdifuv(m,ndim)
 
 c-----temporary array
  
       integer i,j,k
-      real  cc(m,n,3),tauclb(m,n,np),tauclf(m,n,np)
-      real  dp(m,n,np),wh(m,n,np),oh(m,n,np),scal(m,n,np)
-      real  swh(m,n,np+1),so2(m,n,np+1),df(m,n,np+1)
-      real  sdf(m,n),sclr(m,n),csm(m,n),x
+      _RL  cc(m,n,3),tauclb(m,n,np),tauclf(m,n,np)
+      _RL  dp(m,n,np),wh(m,n,np),oh(m,n,np),scal(m,n,np)
+      _RL  swh(m,n,np+1),so2(m,n,np+1),df(m,n,np+1)
+      _RL  sdf(m,n),sclr(m,n),csm(m,n),x
  
 c-----------------------------------------------------------------
 
@@ -1013,22 +1010,22 @@ c********************************************************************
 c-----input parameters
 
       integer m,n,ndim,np,ict,icb
-      real  cosz(m,ndim),fcld(m,ndim,np),taucld(m,ndim,np,2)
+      _RL  cosz(m,ndim),fcld(m,ndim,np),taucld(m,ndim,np,2)
 
 c-----output parameters
 
-      real  cc(m,n,3),tauclb(m,n,np),tauclf(m,n,np)
+      _RL  cc(m,n,3),tauclb(m,n,np),tauclf(m,n,np)
 
 c-----temporary variables
 
       integer i,j,k,im,it,ia,kk
-      real   fm,ft,fa,xai,taux
+      _RL   fm,ft,fa,xai,taux
 
 c-----pre-computed table
 
       integer   nm,nt,na
       parameter (nm=11,nt=9,na=11) 
-      real   dm,dt,da,t1,caib(nm,nt,na),caif(nt,na)
+      _RL   dm,dt,da,t1,caib(nm,nt,na),caif(nt,na)
       parameter (dm=0.1,dt=0.30103,da=0.1,t1=-0.9031)
 
 c-----include the pre-computed table for cai
@@ -1238,42 +1235,42 @@ cfpp$ expand (sagpol)
 cfpp$ expand (expmn) 
 #endif 
 #endif 
-      real expmn
+      _RL expmn
 
 c-----input parameters
 
       integer m,n,ndim,np,ict,icb
-      real  taucld(m,ndim,np,2),reff(m,ndim,np,2),fcld(m,ndim,np)
-      real  tauclb(m,n,np),tauclf(m,n,np),cc(m,n,3)
-      real  rsirbm(m,ndim),rsirdf(m,ndim)
-      real  wh(m,n,np),taual(m,ndim,np),csm(m,n)
+      _RL  taucld(m,ndim,np,2),reff(m,ndim,np,2),fcld(m,ndim,np)
+      _RL  tauclb(m,n,np),tauclf(m,n,np),cc(m,n,3)
+      _RL  rsirbm(m,ndim),rsirdf(m,ndim)
+      _RL  wh(m,n,np),taual(m,ndim,np),csm(m,n)
 
 c-----output (updated) parameters
 
-      real  flx(m,ndim,np+1),flc(m,ndim,np+1)
-      real  fdirir(m,ndim),fdifir(m,ndim)
+      _RL  flx(m,ndim,np+1),flc(m,ndim,np+1)
+      _RL  fdirir(m,ndim),fdifir(m,ndim)
 
 c-----static parameters
 
       integer nk,nband
       parameter (nk=10,nband=3)
-      real  xk(nk),hk(nband,nk),ssaal(nband),asyal(nband)
-      real  aia(nband,3),awa(nband,3),aig(nband,3),awg(nband,3)
+      _RL  xk(nk),hk(nband,nk),ssaal(nband),asyal(nband)
+      _RL  aia(nband,3),awa(nband,3),aig(nband,3),awg(nband,3)
 
 c-----temporary array
 
       integer ib,ik,i,j,k
-      real  ssacl(m,n,np),asycl(m,n,np)
-      real  rr(m,n,np+1,2),tt(m,n,np+1,2),td(m,n,np+1,2),
+      _RL  ssacl(m,n,np),asycl(m,n,np)
+      _RL  rr(m,n,np+1,2),tt(m,n,np+1,2),td(m,n,np+1,2),
      *       rs(m,n,np+1,2),ts(m,n,np+1,2)
-      real  fall(m,n,np+1),fclr(m,n,np+1)
-      real  fsdir(m,n),fsdif(m,n)
+      _RL  fall(m,n,np+1),fclr(m,n,np+1)
+      _RL  fsdir(m,n),fsdif(m,n)
 
-      real  tauwv,tausto,ssatau,asysto,tauto,ssato,asyto
-      real  taux,reff1,reff2,w1,w2,g1,g2
-      real  ssaclt(m,n),asyclt(m,n)
-      real  rr1t(m,n),tt1t(m,n),td1t(m,n),rs1t(m,n),ts1t(m,n)
-      real  rr2t(m,n),tt2t(m,n),td2t(m,n),rs2t(m,n),ts2t(m,n)
+      _RL  tauwv,tausto,ssatau,asysto,tauto,ssato,asyto
+      _RL  taux,reff1,reff2,w1,w2,g1,g2
+      _RL  ssaclt(m,n),asyclt(m,n)
+      _RL  rr1t(m,n),tt1t(m,n),td1t(m,n),rs1t(m,n),ts1t(m,n)
+      _RL  rr2t(m,n),tt2t(m,n),td2t(m,n),rs2t(m,n),ts2t(m,n)
 
 c-----water vapor absorption coefficient for 10 k-intervals.
 c     unit: cm^2/gm
@@ -1650,35 +1647,35 @@ cfpp$ expand (sagpol)
 c-----input parameters
 
       integer m,n,ndim,np,ict,icb
-      real  taucld(m,ndim,np,2),reff(m,ndim,np,2),fcld(m,ndim,np)
-      real  tauclb(m,n,np),tauclf(m,n,np),cc(m,n,3)
-      real  oh(m,n,np),dp(m,n,np),taual(m,ndim,np)
-      real  rsuvbm(m,ndim),rsuvdf(m,ndim),csm(m,n)
+      _RL  taucld(m,ndim,np,2),reff(m,ndim,np,2),fcld(m,ndim,np)
+      _RL  tauclb(m,n,np),tauclf(m,n,np),cc(m,n,3)
+      _RL  oh(m,n,np),dp(m,n,np),taual(m,ndim,np)
+      _RL  rsuvbm(m,ndim),rsuvdf(m,ndim),csm(m,n)
 
 c-----output (updated) parameter
 
-      real  flx(m,ndim,np+1),flc(m,ndim,np+1)
-      real  fdirpar(m,ndim),fdifpar(m,ndim)
-      real  fdiruv(m,ndim),fdifuv(m,ndim)
+      _RL  flx(m,ndim,np+1),flc(m,ndim,np+1)
+      _RL  fdirpar(m,ndim),fdifpar(m,ndim)
+      _RL  fdiruv(m,ndim),fdifuv(m,ndim)
 
 c-----static parameters
 
       integer nband
       parameter (nband=8)
-      real  hk(nband),xk(nband),ry(nband)
-      real  asyal(nband),ssaal(nband),aig(3),awg(3)
+      _RL  hk(nband),xk(nband),ry(nband)
+      _RL  asyal(nband),ssaal(nband),aig(3),awg(3)
 
 c-----temporary array
 
       integer i,j,k,ib
-      real  taurs,tauoz,tausto,ssatau,asysto,tauto,ssato,asyto
-      real  taux,reff1,reff2,g1,g2,asycl(m,n,np)
-      real  td(m,n,np+1,2),rr(m,n,np+1,2),tt(m,n,np+1,2),
+      _RL  taurs,tauoz,tausto,ssatau,asysto,tauto,ssato,asyto
+      _RL  taux,reff1,reff2,g1,g2,asycl(m,n,np)
+      _RL  td(m,n,np+1,2),rr(m,n,np+1,2),tt(m,n,np+1,2),
      *       rs(m,n,np+1,2),ts(m,n,np+1,2)
-      real  fall(m,n,np+1),fclr(m,n,np+1),fsdir(m,n),fsdif(m,n)
-      real  asyclt(m,n)
-      real  rr1t(m,n),tt1t(m,n),td1t(m,n),rs1t(m,n),ts1t(m,n)
-      real  rr2t(m,n),tt2t(m,n),td2t(m,n),rs2t(m,n),ts2t(m,n)
+      _RL  fall(m,n,np+1),fclr(m,n,np+1),fsdir(m,n),fsdif(m,n)
+      _RL  asyclt(m,n)
+      _RL  rr1t(m,n),tt1t(m,n),td1t(m,n),rs1t(m,n),ts1t(m,n)
+      _RL  rr2t(m,n),tt2t(m,n),td2t(m,n),rs2t(m,n),ts2t(m,n)
 
 c-----hk is the fractional extra-terrestrial solar flux.
 c     the sum of hk is 0.47074.
@@ -1960,23 +1957,23 @@ c-----Explicit Inline Directives
 cfpp$ expand (expmn)
 #endif  
 #endif
-      real expmn
+      _RL expmn
 
-      real  zero,one,two,three,four,fourth,seven,tumin
+      _RL  zero,one,two,three,four,fourth,seven,tumin
       parameter (one=1., three=3.)
       parameter (seven=7., two=2.)
       parameter (four=4., fourth=.25)
       parameter (zero=0., tumin=1.e-20)
 
 c-----input parameters
-      real  tau,ssc,g0,csm
+      _RL  tau,ssc,g0,csm
 
 c-----output parameters
-      real  rr,tt,td
+      _RL  rr,tt,td
 
 c-----temporary parameters
 
-      real  zth,ff,xx,taup,sscp,gp,gm1,gm2,gm3,akk,alf1,alf2,
+      _RL  zth,ff,xx,taup,sscp,gp,gm1,gm2,gm3,akk,alf1,alf2,
      *     all,bll,st7,st8,cll,dll,fll,ell,st1,st2,st3,st4
 c
                 zth = one / csm
@@ -2084,22 +2081,22 @@ c-----Explicit Inline Directives
 cfpp$ expand (expmn)
 #endif  
 #endif
-      real expmn
+      _RL expmn
 
-      real  one,three,four
+      _RL  one,three,four
       parameter (one=1., three=3., four=4.)
 
 c-----output parameters:
 
-      real  tau,ssc,g0
+      _RL  tau,ssc,g0
 
 c-----output parameters:
 
-      real  rll,tll
+      _RL  rll,tll
 
 c-----temporary arrays
 
-      real  xx,uuu,ttt,emt,up1,um1,st1
+      _RL  xx,uuu,ttt,emt,up1,um1,st1
 
              xx  = one-ssc*g0
              uuu = sqrt( xx/(one-ssc))
@@ -2123,9 +2120,9 @@ c*******************************************************************
 c compute exponential for arguments in the range 0> fin > -10.
 c*******************************************************************
       implicit none
-      real  fin,expmn
+      _RL  fin,expmn
 
-      real one,expmin,e1,e2,e3,e4
+      _RL one,expmin,e1,e2,e3,e4
       parameter (one=1.0, expmin=-10.0)
       parameter (e1=1.0,        e2=-2.507213e-1)
       parameter (e3=2.92732e-2, e4=-3.827800e-3)
@@ -2178,23 +2175,23 @@ c-----input parameters
 
       integer m,n,np,ict,icb
 
-      real  rr(m,n,np+1,2),tt(m,n,np+1,2),td(m,n,np+1,2)
-      real  rs(m,n,np+1,2),ts(m,n,np+1,2)
-      real  cc(m,n,3)
+      _RL  rr(m,n,np+1,2),tt(m,n,np+1,2),td(m,n,np+1,2)
+      _RL  rs(m,n,np+1,2),ts(m,n,np+1,2)
+      _RL  cc(m,n,3)
 
 c-----temporary array
 
       integer i,j,k,ih,im,is
-      real  rra(m,n,np+1,2,2),tta(m,n,np+1,2,2),tda(m,n,np+1,2,2)
-      real  rsa(m,n,np+1,2,2),rxa(m,n,np+1,2,2)
-      real  ch(m,n),cm(m,n),ct(m,n),flxdn(m,n,np+1)
-      real  fdndir(m,n),fdndif(m,n),fupdif
-      real  denm,xx
+      _RL  rra(m,n,np+1,2,2),tta(m,n,np+1,2,2),tda(m,n,np+1,2,2)
+      _RL  rsa(m,n,np+1,2,2),rxa(m,n,np+1,2,2)
+      _RL  ch(m,n),cm(m,n),ct(m,n),flxdn(m,n,np+1)
+      _RL  fdndir(m,n),fdndif(m,n),fupdif
+      _RL  denm,xx
 
 c-----output parameters
 
-      real  fclr(m,n,np+1),fall(m,n,np+1)
-      real  fsdir(m,n),fsdif(m,n)
+      _RL  fclr(m,n,np+1),fall(m,n,np+1)
+      _RL  fsdir(m,n),fsdif(m,n)
 
 c-----initialize all-sky flux (fall) and surface downward fluxes
 
@@ -2494,16 +2491,16 @@ c     due to co2 absorption.
 c-----input parameters
 
       integer m,n,np
-      real  csm(m,n),swc(m,n,np+1),swh(m,n,np+1),cah(22,19)
+      _RL  csm(m,n),swc(m,n,np+1),swh(m,n,np+1),cah(22,19)
 
 c-----output (undated) parameter
 
-      real  df(m,n,np+1)
+      _RL  df(m,n,np+1)
 
 c-----temporary array
 
       integer i,j,k,ic,iw 
-      real  xx,clog,wlog,dc,dw,x1,x2,y2
+      _RL  xx,clog,wlog,dc,dw,x1,x2,y2
 
 c********************************************************************
 c-----include co2 look-up table

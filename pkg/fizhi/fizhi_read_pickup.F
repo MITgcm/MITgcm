@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.4 2004/07/14 17:31:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.5 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
 CBOP
 C     !ROUTINE: FIZHI_READ_PICKUP
 C     !INTERFACE:
@@ -18,7 +19,6 @@ CEOP
       IMPLICIT NONE
 
 C     == Global variables ===
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
 #include "fizhi_land_SIZE.h"

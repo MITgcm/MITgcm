@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.2 2004/07/16 16:11:36 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.3 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
        subroutine getpwhere(myThid,numpress,pressures,levpressures)
 c***********************************************************************
 c subroutine getpwhere
@@ -27,7 +28,6 @@ c       physics levels specified in make_phys_grid from gridalt package.
 c***********************************************************************
        implicit none
 c
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "fizhi_SIZE.h"
 #include "GRID.h"
@@ -42,9 +42,9 @@ c Require 12 bottom levels (300 mb worth) for the physics,
 c    Counting from bottom to top, the dp's are:
        integer ntry
        parameter (ntry=12)
-       real dptry(ntry), dptry_pedge(ntry+1)
-       real drF_pedge(Nr+1),drF_pmid(Nr),drF_accum(Nr)
-       real pref(Nrphys) 
+       _RL dptry(ntry), dptry_pedge(ntry+1)
+       _RL drF_pedge(Nr+1),drF_pmid(Nr),drF_accum(Nr)
+       _RL pref(Nrphys) 
        integer plevref(Nrphys)
        data dptry /300.000, 600.000,1000.000,1400.000,1700.000,2500.000,
      .            2500.000,2500.000,2500.000,5000.000,5000.000,5000.000/

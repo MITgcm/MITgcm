@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.5 2004/07/14 17:31:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.6 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
       subroutine fizhi_alarms (nymdb,nhmsb,ndt)
 
 C***********************************************************************        

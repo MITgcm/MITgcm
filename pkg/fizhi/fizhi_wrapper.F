@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.13 2004/07/23 22:32:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.14 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "FIZHI_OPTIONS.h"
        subroutine fizhi_wrapper (myTime, myIter, myThid)
 c-----------------------------------------------------------------------
 c  Subroutine fizhi_wrapper - 'Wrapper' routine to interface

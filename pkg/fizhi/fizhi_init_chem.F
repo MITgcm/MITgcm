@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.8 2004/07/23 22:32:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.9 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
       subroutine fizhi_init_chem(mythid,nozlats,nozlevs,ntimesoz,
      . ozlats,ozlevs,o3,
      . nwatlats,nwatlevs,ntimesq,watlats,watlevs,water,
@@ -17,7 +18,6 @@ C OUTPUT:
 C
 C***********************************************************************
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer mythid,nozlevs,nozlats,nwatlevs,nwatlats,Nrphys
       integer ntimesoz,ntimesq
       _RL o3(nozlats,nozlevs,ntimesoz)
@@ -27,7 +27,7 @@ C***********************************************************************
       _RL pressure(Nrphys),methane(Nrphys),n2o(Nrphys)
       _RL co2,cfc11,cfc12,cfc22
 
-      real getcon
+      _RL getcon
       integer kqz,koz
       call mdsfindunit( kqz, myThid )
       call mdsfindunit( koz, myThid )
@@ -62,7 +62,6 @@ C
 C***********************************************************************
 
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer  ku,nlat,nlev,ntime
 
       _RL qz(nlat,nlev,ntime)
@@ -73,7 +72,7 @@ C***********************************************************************
       integer lat
       integer lev
 
-      real voltomas
+      _RL voltomas
       parameter ( voltomas = 0.622e-6 )
 
       open(ku,file='sage.data',form='formatted')
@@ -130,11 +129,10 @@ C
 C***********************************************************************
 
       implicit none
-#include "CPP_EEOPTIONS.h"
       integer  ku,nlat,nlev,ntime
 
       _RL   oz(nlat,nlev,ntime)
-      real o3(nlat)
+      _RL o3(nlat)
       _RL lats(nlat)
       _RL levs(nlev)
 
@@ -194,7 +192,6 @@ C*         Climatological Annual and Global Mean Height Data           *
 C***********************************************************************
 
       implicit none
-#include "CPP_EEOPTIONS.h"
 
       integer Nrphys
       _RL n2o(Nrphys),methane(Nrphys)

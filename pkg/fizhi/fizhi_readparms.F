@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.4 2004/07/22 22:33:55 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.5 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
       subroutine fizhi_readparms (myThid)
 C***********************************************************************
 C  Purpose
@@ -13,7 +14,6 @@ C     myThid ... Process(or) number
 C***********************************************************************
       implicit none
 
-#include "CPP_OPTIONS.h"
 #include "chronos.h"
 #include "EEPARAMS.h"
 

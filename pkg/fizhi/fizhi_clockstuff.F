@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.12 2004/07/16 19:37:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.13 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
       subroutine set_alarm (tag,date,time,freq)
 C***********************************************************************        
 C  Purpose                                                                      
@@ -394,13 +395,13 @@ C***********************************************************************
       implicit none
 
       integer nhms,nymd,nhms1,nymd1,nhms2,nymd2
-      real fac1,fac2
+      _RL fac1,fac2
                                                                                 
       INTEGER  YEAR , MONTH , DAY , SEC
       INTEGER  YEAR1, MONTH1, DAY1, SEC1
       INTEGER  YEAR2, MONTH2, DAY2, SEC2
 
-      real time, time1, time2
+      _RL time, time1, time2
                                                                                 
       INTEGER    DAYSCY                                                         
       PARAMETER (DAYSCY = 365*4+1)                                   
@@ -722,7 +723,6 @@ C
 C***********************************************************************
 
       implicit none
-#include "CPP_EEOPTIONS.h"
 
 c Input Variables
 c ---------------

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/CtoA.F,v 1.4 2004/06/10 20:53:19 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/CtoA.F,v 1.5 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
        subroutine CtoA(myThid,fieldin1,fieldin2,mask1,mask2,im1,im2,jm1,
      .  jm2,numlevs,Nsx,Nsy,idim1,idim2,jdim1,jdim2,fieldout1,fieldout2)
 c----------------------------------------------------------------------
@@ -26,7 +27,6 @@ c
 c Call: exchange on c-grid
 c-----------------------------------------------------------------------
        implicit none
-#include "CPP_EEOPTIONS.h"
 #include "EEPARAMS.h"
 
        integer myThid, numlevs

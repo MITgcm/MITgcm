@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_update_time.F,v 1.1 2004/06/08 16:12:53 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_update_time.F,v 1.2 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
       subroutine fizhi_update_time (myThid,deltat)
 C***********************************************************************
 C  Purpose

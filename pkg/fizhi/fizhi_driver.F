@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.12 2004/07/23 22:32:27 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.13 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
                                                                                  
-#include "CPP_OPTIONS.h"
+#include "FIZHI_OPTIONS.h"
       subroutine fizhi_driver (myid,im,jm,lm,bi,bj,ptracer,ntracer,
      . xlats,xlons,
      . p,u,v,t,q,pl,ple,dpres,pkht,pkl,fracland,landtype,radswt,
@@ -51,43 +51,47 @@ c ----------------
       integer iras,nlwcld,nlwlz,nswcld,nswlz
       integer imstturbsw,imstturblw
 
-      real xlats(im,jm), xlons(im,jm)
-      real p(im,jm)
-      real u(im,jm,lm), v(im,jm,lm), t(im,jm,lm)
-      real q(im,jm,lm,ntracer)
-      real pl(im,jm,lm),ple(im,jm,lm+1),dpres(im,jm,lm),pkht(im,jm,lm)
-      real pkl(im,jm,lm)
-      real radswt(im,jm), fracland(im,jm), landtype(im,jm)
-      real phis_var(im,jm), sea_ice(im,jm)
-      real chlat(nchp),chlon(nchp),chfr(nchp)
-      real tcanopy(nchp),tdeep(nchp),ecanopy(nchp),swetshal(nchp)
-      real swetroot(nchp),swetdeep(nchp),capac(nchp),snodep(nchp)
-      real ctmt(nchp),xxmt(nchp),yymt(nchp),zetamt(nchp)
-      real xlmt(nchp,lm),khmt(nchp,lm),tke(nchp,lm)
-      real co2,cfc11,cfc12,cfc22,methane(lm),n2o(lm)
-      real lwdt(im,jm,lm),lwdtclr(im,jm,lm)
-      real swdt(im,jm,lm),swdtclr(im,jm,lm)
-      real turbu(im,jm,lm),turbv(im,jm,lm),turbt(im,jm,lm)
-      real turbq(im,jm,lm)
-      real moistu(im,jm,lm),moistv(im,jm,lm),moistt(im,jm,lm)
-      real moistq(im,jm,lm)
-      real chemo3(im,jm,lm),chemq(im,jm,lm)
-      real albvisdr(im,jm),albvisdf(im,jm),albnirdr(im,jm)
-      real albnirdf(im,jm),emiss(im,jm)
-      real alai(nchp),agrn(nchp)
-      real radswg(im,jm),swgclr(im,jm)
-      real fdirpar(im,jm),fdifpar(im,jm),osr(im,jm),osrclr(im,jm)
-      real tg0(im,jm),radlwg(im,jm),lwgclr(im,jm),st4(im,jm),dst4(im,jm)
-      real dlwdtg(im,jm,lm)
-      real rainlsp(im,jm),raincon(im,jm),snowfall(im,jm)
-      real cldtot_lw(im,jm,lm),cldras_lw(im,jm,lm),cldlsp_lw(im,jm,lm)
-      real lwlz(im,jm,lm)
-      real cldtot_sw(im,jm,lm),cldras_sw(im,jm,lm),cldlsp_sw(im,jm,lm)
-      real swlz(im,jm,lm)
-      real qliqavesw(im,jm,lm),qliqavelw(im,jm,lm)
-      real fccavesw(im,jm,lm),fccavelw(im,jm,lm)
-      real qq(im,jm,lm)
-      real tgz(im,jm)
+      _RL xlats(im,jm), xlons(im,jm)
+      _RL p(im,jm)
+      _RL u(im,jm,lm),v(im,jm,lm),t(im,jm,lm)
+      _RL q(im,jm,lm,ntracer)
+      _RL pl(im,jm,lm),ple(im,jm,lm+1),dpres(im,jm,lm)
+      _RL pkht(im,jm,lm)
+      _RL pkl(im,jm,lm)
+      _RL radswt(im,jm), fracland(im,jm), landtype(im,jm)
+      _RL phis_var(im,jm), sea_ice(im,jm)
+      _RL chlat(nchp),chlon(nchp),chfr(nchp)
+      _RL tcanopy(nchp),tdeep(nchp),ecanopy(nchp),swetshal(nchp)
+      _RL swetroot(nchp),swetdeep(nchp),capac(nchp),snodep(nchp)
+      _RL ctmt(nchp),xxmt(nchp),yymt(nchp),zetamt(nchp)
+      _RL xlmt(nchp,lm),khmt(nchp,lm),tke(nchp,lm)
+      _RL co2,cfc11,cfc12,cfc22,methane(lm),n2o(lm)
+      _RL lwdt(im,jm,lm),lwdtclr(im,jm,lm)
+      _RL swdt(im,jm,lm),swdtclr(im,jm,lm)
+      _RL turbu(im,jm,lm),turbv(im,jm,lm),turbt(im,jm,lm)
+      _RL turbq(im,jm,lm)
+      _RL moistu(im,jm,lm),moistv(im,jm,lm),moistt(im,jm,lm)
+      _RL moistq(im,jm,lm)
+      _RL chemo3(im,jm,lm),chemq(im,jm,lm)
+      _RL albvisdr(im,jm),albvisdf(im,jm),albnirdr(im,jm)
+      _RL albnirdf(im,jm),emiss(im,jm)
+      _RL alai(nchp),agrn(nchp)
+      _RL radswg(im,jm),swgclr(im,jm)
+      _RL fdirpar(im,jm),fdifpar(im,jm),osr(im,jm),osrclr(im,jm)
+      _RL tg0(im,jm),radlwg(im,jm),lwgclr(im,jm),st4(im,jm)
+      _RL dst4(im,jm)
+      _RL dlwdtg(im,jm,lm)
+      _RL rainlsp(im,jm),raincon(im,jm),snowfall(im,jm)
+      _RL cldtot_lw(im,jm,lm),cldras_lw(im,jm,lm)
+      _RL cldlsp_lw(im,jm,lm)
+      _RL lwlz(im,jm,lm)
+      _RL cldtot_sw(im,jm,lm),cldras_sw(im,jm,lm)
+      _RL cldlsp_sw(im,jm,lm)
+      _RL swlz(im,jm,lm)
+      _RL qliqavesw(im,jm,lm),qliqavelw(im,jm,lm)
+      _RL fccavesw(im,jm,lm),fccavelw(im,jm,lm)
+      _RL qq(im,jm,lm)
+      _RL tgz(im,jm)
 
 c Local Variables
 c ---------------
@@ -96,7 +100,7 @@ c ---------------
       integer numpcheck
       parameter (numpcheck = 5)
       integer pchecklevs(numpcheck)
-      real pcheckpress(numpcheck)
+      _RL pcheckpress(numpcheck)
       data pcheckpress/950.,750.,700.,400.,10./
 
       integer low_level,mid_level,nltop,nsubmin,nsubmax,Lup
@@ -104,8 +108,8 @@ c ---------------
       integer istrip,npcs
       integer i,j
       integer ndum,ndpnt
-      real akap,getcon
-      real ptop
+      _RL akap,getcon
+      _RL ptop
       logical lpnt
 
       istrip = min( im*jm,71 )

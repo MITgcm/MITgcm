@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.5 2004/07/14 14:50:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.6 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "FIZHI_OPTIONS.h"
       subroutine fizhi_step_diag(myThid,p,uphy,vphy,thphy,sphy,qq,pk,dp,
      .  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,
      .  turbu,turbv,turbt,turbq,moistu,moistv,moistt,moistq,
@@ -18,30 +17,30 @@ C***********************************************************************
 #endif
 
       integer myThid,im1,im2,jm1,jm2,Nrphys,Nbi,Nbj,bi,bj,ntracer
-      real p(im2,jm2,Nbi,Nbj)
-      real uphy(im2,jm2,Nrphys,Nbi,Nbj),vphy(im2,jm2,Nrphys,Nbi,Nbj)
-      real thphy(im2,jm2,Nrphys,Nbi,Nbj),sphy(im2,jm2,Nrphys,Nbi,Nbj)
-      real qq(im2,jm2,Nrphys),pk(im2,jm2,Nrphys,Nbi,Nbj)
-      real dp(im2,jm2,Nrphys,Nbi,Nbj)
-      real radswt(im2,jm2,Nbi,Nbj),radswg(im2,jm2,Nbi,Nbj)
-      real swgclr(im2,jm2,Nbi,Nbj),osr(im2,jm2,Nbi,Nbj)
-      real osrclr(im2,jm2,Nbi,Nbj),st4(im2,jm2,Nbi,Nbj)
-      real dst4(im2,jm2,Nbi,Nbj),tgz(im2,jm2,Nbi,Nbj)
-      real tg0(im2,jm2,Nbi,Nbj),radlwg(im2,jm2,Nbi,Nbj)
-      real lwgclr(im2,jm2,Nbi,Nbj)
-      real turbu(im2,jm2,Nrphys,Nbi,Nbj),turbv(im2,jm2,Nrphys,Nbi,Nbj)
-      real turbt(im2,jm2,Nrphys,Nbi,Nbj)
-      real turbq(im2,jm2,Nrphys,ntracer,Nbi,Nbj)
-      real moistu(im2,jm2,Nrphys,Nbi,Nbj),moistv(im2,jm2,Nrphys,Nbi,Nbj)
-      real moistt(im2,jm2,Nrphys,Nbi,Nbj)
-      real moistq(im2,jm2,Nrphys,ntracer,Nbi,Nbj)
-      real lwdt(im2,jm2,Nrphys,Nbi,Nbj),swdt(im2,jm2,Nrphys,Nbi,Nbj)
-      real lwdtclr(im2,jm2,Nrphys,Nbi,Nbj)
-      real swdtclr(im2,jm2,Nrphys,Nbi,Nbj)
-      real dlwdtg(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL p(im2,jm2,Nbi,Nbj)
+      _RL uphy(im2,jm2,Nrphys,Nbi,Nbj),vphy(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL thphy(im2,jm2,Nrphys,Nbi,Nbj),sphy(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL qq(im2,jm2,Nrphys),pk(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL dp(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL radswt(im2,jm2,Nbi,Nbj),radswg(im2,jm2,Nbi,Nbj)
+      _RL swgclr(im2,jm2,Nbi,Nbj),osr(im2,jm2,Nbi,Nbj)
+      _RL osrclr(im2,jm2,Nbi,Nbj),st4(im2,jm2,Nbi,Nbj)
+      _RL dst4(im2,jm2,Nbi,Nbj),tgz(im2,jm2,Nbi,Nbj)
+      _RL tg0(im2,jm2,Nbi,Nbj),radlwg(im2,jm2,Nbi,Nbj)
+      _RL lwgclr(im2,jm2,Nbi,Nbj)
+      _RL turbu(im2,jm2,Nrphys,Nbi,Nbj),turbv(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL turbt(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL turbq(im2,jm2,Nrphys,ntracer,Nbi,Nbj)
+      _RL moistu(im2,jm2,Nrphys,Nbi,Nbj),moistv(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL moistt(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL moistq(im2,jm2,Nrphys,ntracer,Nbi,Nbj)
+      _RL lwdt(im2,jm2,Nrphys,Nbi,Nbj),swdt(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL lwdtclr(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL swdtclr(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL dlwdtg(im2,jm2,Nrphys,Nbi,Nbj)
 
       integer  i,j,L
-      real pinv(im2,jm2), qbar(im2,jm2)
+      _RL pinv(im2,jm2), qbar(im2,jm2)
 
 C **********************************************************************        
 

@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.9 2004/07/14 17:31:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.10 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
-#include "PACKAGES_CONFIG.h"
+#include "FIZHI_OPTIONS.h"
       subroutine lwrio (nymd,nhms,bi,bj,istrip,npcs,low_level,mid_level,
      .                  pz,plz,plze,dpres,pkht,pkz,tz,qz,oz,
      .                  co2,cfc11,cfc12,cfc22,methane,n2o,emissivity,
@@ -24,55 +23,55 @@ c ---------------
       integer nymd,nhms,istrip,npcs,bi,bj
       integer mid_level,low_level
       integer im,jm,lm        
-      real  ptop              
-      real pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1)
-      real dpres(im,jm,lm),pkht(im,jm,lm+1),pkz(im,jm,lm)
-      real tz(im,jm,lm),qz(im,jm,lm),oz(im,jm,lm)
-      real co2,cfc11,cfc12,cfc22,methane(lm),n2o(lm)    
-      real emissivity(im,jm,10)
-      real tgz(im,jm),radlwg(im,jm),st4(im,jm),dst4(im,jm)     
-      real dtradlw(im,jm,lm),dlwdtg (im,jm,lm) 
-      real dtradlwc(im,jm,lm),lwgclr(im,jm)     
+      _RL  ptop              
+      _RL pz(im,jm),plz(im,jm,lm),plze(im,jm,lm+1)
+      _RL dpres(im,jm,lm),pkht(im,jm,lm+1),pkz(im,jm,lm)
+      _RL tz(im,jm,lm),qz(im,jm,lm),oz(im,jm,lm)
+      _RL co2,cfc11,cfc12,cfc22,methane(lm),n2o(lm)    
+      _RL emissivity(im,jm,10)
+      _RL tgz(im,jm),radlwg(im,jm),st4(im,jm),dst4(im,jm)     
+      _RL dtradlw(im,jm,lm),dlwdtg (im,jm,lm) 
+      _RL dtradlwc(im,jm,lm),lwgclr(im,jm)     
       integer nlwcld,nlwlz
-      real cldlw(im,jm,lm),clwmo(im,jm,lm),lwlz(im,jm,lm)
+      _RL cldlw(im,jm,lm),clwmo(im,jm,lm),lwlz(im,jm,lm)
       logical lpnt
       integer imstturb
-      real qliqave(im,jm,lm),fccave(im,jm,lm)
+      _RL qliqave(im,jm,lm),fccave(im,jm,lm)
       integer landtype(im,jm)
 
 c Local Variables
 c ---------------
       integer i,j,l,n,nn
 
-      real cldtot (im,jm,lm)
-      real cldmxo (im,jm,lm)
+      _RL cldtot (im,jm,lm)
+      _RL cldmxo (im,jm,lm)
 
-      real pl(istrip,lm)
-      real pk(istrip,lm)
-      real pke(istrip,lm)
-      real ple(istrip,lm+1)
+      _RL pl(istrip,lm)
+      _RL pk(istrip,lm)
+      _RL pke(istrip,lm)
+      _RL ple(istrip,lm+1)
 
-      real ADELPL(ISTRIP,lm)
-      real dtrad(istrip,lm),dtradc(istrip,lm)
-      real OZL(ISTRIP,lm),TZL(ISTRIP,lm)
-      real SHZL(ISTRIP,lm),CLRO(ISTRIP,lm)
-      real CLMO(ISTRIP,lm)
-      real flx(ISTRIP,lm+1),flxclr(ISTRIP,lm+1)
-      real cldlz(istrip,lm)
-      real dfdts(istrip,lm+1),dtdtg(istrip,lm)
+      _RL ADELPL(ISTRIP,lm)
+      _RL dtrad(istrip,lm),dtradc(istrip,lm)
+      _RL OZL(ISTRIP,lm),TZL(ISTRIP,lm)
+      _RL SHZL(ISTRIP,lm),CLRO(ISTRIP,lm)
+      _RL CLMO(ISTRIP,lm)
+      _RL flx(ISTRIP,lm+1),flxclr(ISTRIP,lm+1)
+      _RL cldlz(istrip,lm)
+      _RL dfdts(istrip,lm+1),dtdtg(istrip,lm)
 
-      real emiss(istrip,10)
-      real taual(istrip,lm,10)
-      real ssaal(istrip,lm,10)
-      real asyal(istrip,lm,10)
-      real cwc(istrip,lm,3)
-      real reff(istrip,lm,3)
-      real tauc(istrip,lm,3)
+      _RL emiss(istrip,10)
+      _RL taual(istrip,lm,10)
+      _RL ssaal(istrip,lm,10)
+      _RL asyal(istrip,lm,10)
+      _RL cwc(istrip,lm,3)
+      _RL reff(istrip,lm,3)
+      _RL tauc(istrip,lm,3)
 
-      real SGMT4(ISTRIP),TSURF(ISTRIP),dsgmt4(ISTRIP)
+      _RL SGMT4(ISTRIP),TSURF(ISTRIP),dsgmt4(ISTRIP)
       integer lwi(istrip)
 
-      real getcon,secday,convrt
+      _RL getcon,secday,convrt
 
       logical high,  trace, cldwater
       data high /.true./
@@ -551,59 +550,59 @@ cfpp$ expand (b10kdis)
 c---- input parameters ------
 
       integer m,n,ndim,np,ict,icb
-      real pl(m,ndim,np+1),ta(m,ndim,np),wa(m,ndim,np),oa(m,ndim,np),
+      _RL pl(m,ndim,np+1),ta(m,ndim,np),wa(m,ndim,np),oa(m,ndim,np),
      *     ts(m,ndim)
-      real co2,n2o(np),ch4(np),cfc11,cfc12,cfc22,emiss(m,ndim,10)
-      real cwc(m,ndim,np,3),taucl(m,ndim,np,3),reff(m,ndim,np,3),
+      _RL co2,n2o(np),ch4(np),cfc11,cfc12,cfc22,emiss(m,ndim,10)
+      _RL cwc(m,ndim,np,3),taucl(m,ndim,np,3),reff(m,ndim,np,3),
      *     fcld(m,ndim,np)
-      real taual(m,ndim,np,10),ssaal(m,ndim,np,10),asyal(m,ndim,np,10)
+      _RL taual(m,ndim,np,10),ssaal(m,ndim,np,10),asyal(m,ndim,np,10)
       logical cldwater,high,trace
 
 c---- output parameters ------
 
-      real flx(m,ndim,np+1),flc(m,ndim,np+1),dfdts(m,ndim,np+1),
+      _RL flx(m,ndim,np+1),flc(m,ndim,np+1),dfdts(m,ndim,np+1),
      *     st4(m,ndim)
 
 c---- static data -----
 
-      real cb(5,10)
-      real xkw(9),aw(9),bw(9),pm(9),fkw(6,9),gkw(6,3),xke(9)
-      real aib(3,10),awb(4,10),aiw(4,10),aww(4,10),aig(4,10),awg(4,10)
+      _RL cb(5,10)
+      _RL xkw(9),aw(9),bw(9),pm(9),fkw(6,9),gkw(6,3),xke(9)
+      _RL aib(3,10),awb(4,10),aiw(4,10),aww(4,10),aig(4,10),awg(4,10)
       integer ne(9),mw(9)
 
 c---- temporary arrays -----
 
-      real pa(m,n,np),dt(m,n,np)
-      real sh2o(m,n,np+1),swpre(m,n,np+1),swtem(m,n,np+1)
-      real sco3(m,n,np+1),scopre(m,n,np+1),scotem(m,n,np+1)
-      real dh2o(m,n,np),dcont(m,n,np),dco2(m,n,np),do3(m,n,np)
-      real dn2o(m,n,np),dch4(m,n,np)
-      real df11(m,n,np),df12(m,n,np),df22(m,n,np)
-      real th2o(m,n,6),tcon(m,n,3),tco2(m,n,6,2)
-      real tn2o(m,n,4),tch4(m,n,4),tcom(m,n,2)
-      real tf11(m,n),tf12(m,n),tf22(m,n)
-      real h2oexp(m,n,np,6),conexp(m,n,np,3),co2exp(m,n,np,6,2)
-      real n2oexp(m,n,np,4),ch4exp(m,n,np,4),comexp(m,n,np,2)
-      real f11exp(m,n,np),  f12exp(m,n,np),  f22exp(m,n,np)
-      real clr(m,n,0:np+1),fclr(m,n)
-      real blayer(m,n,0:np+1),dlayer(m,n,np+1),dbs(m,n)
-      real clrlw(m,n),clrmd(m,n),clrhi(m,n)
-      real cwp(m,n,np,3)
-      real trant(m,n),tranal(m,n),transfc(m,n,np+1),trantcr(m,n,np+1)
-      real flxu(m,n,np+1),flxd(m,n,np+1),flcu(m,n,np+1),flcd(m,n,np+1)
-      real rflx(m,n,np+1),rflc(m,n,np+1)
+      _RL pa(m,n,np),dt(m,n,np)
+      _RL sh2o(m,n,np+1),swpre(m,n,np+1),swtem(m,n,np+1)
+      _RL sco3(m,n,np+1),scopre(m,n,np+1),scotem(m,n,np+1)
+      _RL dh2o(m,n,np),dcont(m,n,np),dco2(m,n,np),do3(m,n,np)
+      _RL dn2o(m,n,np),dch4(m,n,np)
+      _RL df11(m,n,np),df12(m,n,np),df22(m,n,np)
+      _RL th2o(m,n,6),tcon(m,n,3),tco2(m,n,6,2)
+      _RL tn2o(m,n,4),tch4(m,n,4),tcom(m,n,2)
+      _RL tf11(m,n),tf12(m,n),tf22(m,n)
+      _RL h2oexp(m,n,np,6),conexp(m,n,np,3),co2exp(m,n,np,6,2)
+      _RL n2oexp(m,n,np,4),ch4exp(m,n,np,4),comexp(m,n,np,2)
+      _RL f11exp(m,n,np),  f12exp(m,n,np),  f22exp(m,n,np)
+      _RL clr(m,n,0:np+1),fclr(m,n)
+      _RL blayer(m,n,0:np+1),dlayer(m,n,np+1),dbs(m,n)
+      _RL clrlw(m,n),clrmd(m,n),clrhi(m,n)
+      _RL cwp(m,n,np,3)
+      _RL trant(m,n),tranal(m,n),transfc(m,n,np+1),trantcr(m,n,np+1)
+      _RL flxu(m,n,np+1),flxd(m,n,np+1),flcu(m,n,np+1),flcd(m,n,np+1)
+      _RL rflx(m,n,np+1),rflc(m,n,np+1)
 
       logical oznbnd,co2bnd,h2otbl,conbnd,n2obnd
       logical ch4bnd,combnd,f11bnd,f12bnd,f22bnd,b10bnd
 
-      real c1 (nx,nc,nt),c2 (nx,nc,nt),c3 (nx,nc,nt)
-      real o1 (nx,no,nt),o2 (nx,no,nt),o3 (nx,no,nt)
-      real h11(nx,nh,nt),h12(nx,nh,nt),h13(nx,nh,nt)
-      real h21(nx,nh,nt),h22(nx,nh,nt),h23(nx,nh,nt)
-      real h81(nx,nh,nt),h82(nx,nh,nt),h83(nx,nh,nt)
+      _RL c1 (nx,nc,nt),c2 (nx,nc,nt),c3 (nx,nc,nt)
+      _RL o1 (nx,no,nt),o2 (nx,no,nt),o3 (nx,no,nt)
+      _RL h11(nx,nh,nt),h12(nx,nh,nt),h13(nx,nh,nt)
+      _RL h21(nx,nh,nt),h22(nx,nh,nt),h23(nx,nh,nt)
+      _RL h81(nx,nh,nt),h82(nx,nh,nt),h83(nx,nh,nt)
 
-      real dp,xx,p1,dwe,dpe,a1,b1,fk1,a2,b2,fk2
-      real w1,w2,w3,g1,g2,g3,ww,gg,ff,taux,reff1,reff2
+      _RL dp,xx,p1,dwe,dpe,a1,b1,fk1,a2,b2,fk2
+      _RL w1,w2,w3,g1,g2,g3,ww,gg,ff,taux,reff1,reff2
 
 c-----the following coefficients (equivalent to table 2 of
 c     chou and suarez, 1995) are for computing spectrally 
@@ -1717,11 +1716,11 @@ c***********************************************************************
 
 c---- input parameters -----
 
-      real pa(m,n,np),dt(m,n,np),sabs0(m,n,np)
+      _RL pa(m,n,np),dt(m,n,np),sabs0(m,n,np)
 
 c---- output parameters -----
 
-      real sabs(m,n,np+1),spre(m,n,np+1),stem(m,n,np+1)
+      _RL sabs(m,n,np+1),spre(m,n,np+1),stem(m,n,np+1)
 
 c*********************************************************************
         do j=1,n
@@ -1772,20 +1771,20 @@ c**********************************************************************
 
 c---- input parameters ------
 
-      real dh2o(m,n,np),pa(m,n,np),dt(m,n,np)
+      _RL dh2o(m,n,np),pa(m,n,np),dt(m,n,np)
 
 c---- output parameters -----
 
-      real h2oexp(m,n,np,6)
+      _RL h2oexp(m,n,np,6)
 
 c---- static data -----
 
       integer mw(9)
-      real xkw(9),aw(9),bw(9),pm(9)
+      _RL xkw(9),aw(9),bw(9),pm(9)
 
 c---- temporary arrays -----
 
-      real xh,xh1
+      _RL xh,xh1
 
 c**********************************************************************
 c    note that the 3 sub-bands in band 3 use the same set of xkw, aw,
@@ -1888,15 +1887,15 @@ c**********************************************************************
 
 c---- input parameters ------
 
-      real dcont(m,n,np)
+      _RL dcont(m,n,np)
 
 c---- updated parameters -----
 
-      real conexp(m,n,np,3)
+      _RL conexp(m,n,np,3)
 
 c---- static data -----
 
-      real xke(9)
+      _RL xke(9)
 
 c**********************************************************************
 
@@ -1949,15 +1948,15 @@ c**********************************************************************
 
 c---- input parameters -----
 
-      real dco2(m,n,np),pa(m,n,np),dt(m,n,np)
+      _RL dco2(m,n,np),pa(m,n,np),dt(m,n,np)
 
 c---- output parameters -----
 
-      real co2exp(m,n,np,6,2)
+      _RL co2exp(m,n,np,6,2)
 
 c---- temporary arrays -----
 
-      real xc
+      _RL xc
 
 c**********************************************************************
 
@@ -2051,15 +2050,15 @@ c**********************************************************************
 
 c---- input parameters -----
 
-      real dn2o(m,n,np),pa(m,n,np),dt(m,n,np)
+      _RL dn2o(m,n,np),pa(m,n,np),dt(m,n,np)
 
 c---- output parameters -----
 
-      real n2oexp(m,n,np,4)
+      _RL n2oexp(m,n,np,4)
 
 c---- temporary arrays -----
 
-      real xc,xc1,xc2
+      _RL xc,xc1,xc2
 
 c**********************************************************************
 
@@ -2127,15 +2126,15 @@ c**********************************************************************
 
 c---- input parameters -----
 
-      real dch4(m,n,np),pa(m,n,np),dt(m,n,np)
+      _RL dch4(m,n,np),pa(m,n,np),dt(m,n,np)
 
 c---- output parameters -----
 
-      real ch4exp(m,n,np,4)
+      _RL ch4exp(m,n,np,4)
 
 c---- temporary arrays -----
 
-      real xc
+      _RL xc
 
 c**********************************************************************
 
@@ -2199,15 +2198,15 @@ c**********************************************************************
 
 c---- input parameters -----
 
-      real dcom(m,n,np),dt(m,n,np)
+      _RL dcom(m,n,np),dt(m,n,np)
 
 c---- output parameters -----
 
-      real comexp(m,n,np,2)
+      _RL comexp(m,n,np,2)
 
 c---- temporary arrays -----
 
-      real xc,xc1,xc2
+      _RL xc,xc1,xc2
 
 c**********************************************************************
 
@@ -2276,19 +2275,19 @@ c**********************************************************************
 
 c---- input parameters -----
 
-      real dcfc(m,n,np),dt(m,n,np)
+      _RL dcfc(m,n,np),dt(m,n,np)
 
 c---- output parameters -----
 
-      real cfcexp(m,n,np)
+      _RL cfcexp(m,n,np)
 
 c---- static data -----
 
-      real a1,b1,fk1,a2,b2,fk2
+      _RL a1,b1,fk1,a2,b2,fk2
 
 c---- temporary arrays -----
 
-      real xf
+      _RL xf
 
 c**********************************************************************
 
@@ -2338,17 +2337,17 @@ c**********************************************************************
 
 c---- input parameters -----
 
-      real dh2o(m,n,np),dcont(m,n,np),dn2o(m,n,np)
-      real dco2(m,n,np),pa(m,n,np),dt(m,n,np)
+      _RL dh2o(m,n,np),dcont(m,n,np),dn2o(m,n,np)
+      _RL dco2(m,n,np),pa(m,n,np),dt(m,n,np)
 
 c---- output parameters -----
 
-      real h2oexp(m,n,np,6),conexp(m,n,np,3),co2exp(m,n,np,6,2)
+      _RL h2oexp(m,n,np,6),conexp(m,n,np,3),co2exp(m,n,np,6,2)
      *    ,n2oexp(m,n,np,4)
 
 c---- temporary arrays -----
 
-      real xx,xx1,xx2,xx3
+      _RL xx,xx1,xx2,xx3
 
 c**********************************************************************
 
@@ -2489,17 +2488,17 @@ c**********************************************************************
 
 c---- input parameters -----
 
-      real w1,p1,dwe,dpe
-      real sabs(m,n,np+1),spre(m,n,np+1),stem(m,n,np+1)
-      real coef1(nx,nh,nt),coef2(nx,nh,nt),coef3(nx,nh,nt)
+      _RL w1,p1,dwe,dpe
+      _RL sabs(m,n,np+1),spre(m,n,np+1),stem(m,n,np+1)
+      _RL coef1(nx,nh,nt),coef2(nx,nh,nt),coef3(nx,nh,nt)
 
 c---- update parameter -----
 
-      real tran(m,n)
+      _RL tran(m,n)
 
 c---- temporary variables -----
 
-      real x1,x2,x3,we,pe,fw,fp,pa,pb,pc,ax,ba,bb,t1,ca,cb,t2
+      _RL x1,x2,x3,we,pe,fw,fp,pa,pb,pc,ax,ba,bb,t1,ca,cb,t2
       integer iw,ip,nn
 
 c**********************************************************************
@@ -2597,17 +2596,17 @@ c**********************************************************************
 
 c---- input parameters ------
 
-      real conexp(m,n,np,3),h2oexp(m,n,np,6)
+      _RL conexp(m,n,np,3),h2oexp(m,n,np,6)
       integer ne(9)
-      real  fkw(6,9),gkw(6,3)
+      _RL  fkw(6,9),gkw(6,3)
 
 c---- updated parameters -----
 
-      real th2o(m,n,6),tcon(m,n,3),tran(m,n)
+      _RL th2o(m,n,6),tcon(m,n,3),tran(m,n)
 
 c---- temporary arrays -----
 
-      real trnth2o
+      _RL trnth2o
 
 c-----tco2 are the six exp factors between levels k1 and k2 
 c     tran is the updated total transmittance between levels k1 and k2
@@ -2731,15 +2730,15 @@ c**********************************************************************
 
 c---- input parameters -----
 
-      real co2exp(m,n,np,6,2)
+      _RL co2exp(m,n,np,6,2)
 
 c---- updated parameters -----
 
-      real tco2(m,n,6,2),tran(m,n)
+      _RL tco2(m,n,6,2),tran(m,n)
 
 c---- temporary arrays -----
 
-      real xc
+      _RL xc
 
 c-----tco2 is the 6 exp factors between levels k1 and k2. 
 c     xc is the total co2 transmittance given by eq. (53).
@@ -2820,15 +2819,15 @@ c**********************************************************************
 
 c---- input parameters -----
 
-      real n2oexp(m,n,np,4)
+      _RL n2oexp(m,n,np,4)
 
 c---- updated parameters -----
 
-      real tn2o(m,n,4),tran(m,n)
+      _RL tn2o(m,n,4),tran(m,n)
 
 c---- temporary arrays -----
 
-      real xc
+      _RL xc
 
 c-----tn2o is the 2 exp factors between levels k1 and k2. 
 c     xc is the total n2o transmittance
@@ -2897,15 +2896,15 @@ c**********************************************************************
 
 c---- input parameters -----
 
-      real ch4exp(m,n,np,4)
+      _RL ch4exp(m,n,np,4)
 
 c---- updated parameters -----
 
-      real tch4(m,n,4),tran(m,n)
+      _RL tch4(m,n,4),tran(m,n)
 
 c---- temporary arrays -----
 
-      real xc
+      _RL xc
 
 c-----tch4 is the 2 exp factors between levels k1 and k2. 
 c     xc is the total ch4 transmittance
@@ -2971,15 +2970,15 @@ c**********************************************************************
 
 c---- input parameters -----
 
-      real comexp(m,n,np,2)
+      _RL comexp(m,n,np,2)
 
 c---- updated parameters -----
 
-      real tcom(m,n,2),tran(m,n)
+      _RL tcom(m,n,2),tran(m,n)
 
 c---- temporary arrays -----
 
-      real xc
+      _RL xc
 
 c-----tcom is the 2 exp factors between levels k1 and k2. 
 c     xc is the total co2-minor transmittance
@@ -3039,11 +3038,11 @@ c**********************************************************************
 
 c---- input parameters -----
 
-      real cfcexp(m,n,np)
+      _RL cfcexp(m,n,np)
 
 c---- updated parameters -----
 
-      real tcfc(m,n),tran(m,n)
+      _RL tcfc(m,n),tran(m,n)
 
 c-----tcfc is the exp factors between levels k1 and k2. 
 
@@ -3095,17 +3094,17 @@ c**********************************************************************
 
 c---- input parameters -----
 
-      real h2oexp(m,n,np,6),conexp(m,n,np,3),co2exp(m,n,np,6,2)
+      _RL h2oexp(m,n,np,6),conexp(m,n,np,3),co2exp(m,n,np,6,2)
      *    ,n2oexp(m,n,np,4)
 
 c---- updated parameters -----
 
-      real th2o(m,n,6),tcon(m,n,3),tco2(m,n,6,2),tn2o(m,n,4)
+      _RL th2o(m,n,6),tcon(m,n,3),tco2(m,n,6,2),tn2o(m,n,4)
      *    ,tran(m,n)
 
 c---- temporary arrays -----
 
-      real xx
+      _RL xx
 
 c-----initialize tran
 

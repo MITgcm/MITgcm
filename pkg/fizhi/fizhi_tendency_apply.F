@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.4 2004/06/07 18:11:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_tendency_apply.F,v 1.5 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
       subroutine fizhi_tendency_apply_u(iMin, iMax, jMin, jMax,
      .    bi,bj,kLev,myTime,myThid)
 C=======================================================================
@@ -20,7 +21,6 @@ C        Assumes that U and V tendencies are already on C-Grid
 C=======================================================================
       implicit none
 
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
@@ -62,7 +62,6 @@ C        Assumes that U and V tendencies are already on C-Grid
 C=======================================================================
       implicit none
 
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
@@ -103,7 +102,6 @@ C Notes: Routine works for one level at a time
 C=======================================================================
       implicit none
 
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"
@@ -144,7 +142,6 @@ C Notes: Routine works for one level at a time
 C=======================================================================
       implicit none
 
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "GRID.h"
 #include "EEPARAMS.h"

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.12 2004/07/20 16:24:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.13 2004/07/26 18:45:17 molod Exp $
 C $Name:  $
 
+#include "FIZHI_OPTIONS.h"
        subroutine update_ocean_exports (myTime, myIter, myThid)
 c----------------------------------------------------------------------
 c  Subroutine update_ocean_exports - 'Wrapper' routine to update
@@ -11,7 +12,6 @@ c Call:  getsst  (Return the current sst field-read dataset if needed)
 c        getsice (Return the current sea ice field-read data if needed)
 c-----------------------------------------------------------------------
        implicit none
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "GRID.h"
 #include "fizhi_ocean_coms.h"
@@ -112,7 +112,6 @@ C
 C--------------------------------------------------------------------------
 
       implicit none
-#include "CPP_EEOPTIONS.h"
 #include "SIZE.h"
 
       integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSumx,nSumy
@@ -126,14 +125,14 @@ C Maximum number of dates in one year for the data
 
       character*8  cname
       character*80 cdscrip
-      real fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
+      _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
       logical first, found, error
       integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybc
       integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
       integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
 
-      real sicebc1(sNx,sNy,nSx*nPx,nSy*nPy)
-      real sicebc2(sNx,sNy,nSx*nPx,nSy*nPy)
+      _RL sicebc1(sNx,sNy,nSx*nPx,nSy*nPy)
+      _RL sicebc2(sNx,sNy,nSx*nPx,nSy*nPy)
 
 C--------- Variable Initialization ---------------------------------
 
@@ -359,7 +358,6 @@ C
 C--------------------------------------------------------------------------
 
       implicit none
-#include "CPP_EEOPTIONS.h"
 #include "SIZE.h"
 
       integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSumx,nSumy
@@ -373,14 +371,14 @@ C Maximum number of dates in one year for the data
 
       character*8  cname
       character*80 cdscrip
-      real fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
+      _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
       logical first, found, error
       integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybc
       integer ndatebc,nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
       integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
 
-      real sstbc1(sNx,sNy,nSx*nPx,nSy*nPy)
-      real sstbc2(sNx,sNy,nSx*nPx,nSy*nPy)
+      _RL sstbc1(sNx,sNy,nSx*nPx,nSy*nPy)
+      _RL sstbc2(sNx,sNy,nSx*nPx,nSy*nPy)
 
 C--------- Variable Initialization ---------------------------------
 
@@ -570,13 +568,11 @@ C!      field2(im,jm,nPx,nPy)  data field after the model time
 C
 C--------------------------------------------------------------------------
       implicit none
-#include "PACKAGES_CONFIG.h"
-#include "CPP_EEOPTIONS.h"
 
       integer iunit,im,jm,nPx,nPy,nrec1,nrec2
 
-      real  field1(im,jm,nPx,nPy)
-      real  field2(im,jm,nPx,nPy)
+      _RL  field1(im,jm,nPx,nPy)
+      _RL  field2(im,jm,nPx,nPy)
 
       integer i,j,n1,n2
       real*4 f1(im,jm,nPx,nPy), f2(im,jm,nPx,nPy)
@@ -632,15 +628,13 @@ C!      error         logical TRUE if dataset problem
 C
 C--------------------------------------------------------------------------
       implicit none
-#include "PACKAGES_CONFIG.h"
-#include "CPP_EEOPTIONS.h"
 
       integer iunit, ndmax, nrec
 
       character*8  cname
       character*80 cdscrip
       integer im,jm,npx,npy,ndatebc,nymdbc(ndmax),nhmsbc(ndmax)
-      real lat0,lon0,undef
+      _RL lat0,lon0,undef
       logical error
 
       integer i
