@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.6 2004/01/08 07:34:01 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.7 2004/01/15 04:31:24 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -105,7 +105,7 @@ C     Check that the file is open
         write(msgbuf,'(3a)') 'MNC ERROR: file ''', fname, 
      &       ''' must be opened first'
         CALL print_error(msgbuf, mythid)
-        stop 'ABNORMAL END: S/R MNC_VAR_INIT_DBL'
+        stop 'ABNORMAL END: S/R MNC_VAR_INIT_ANY'
       ENDIF
       fid = mnc_f_info(indf,2)
 
@@ -115,7 +115,7 @@ C     Get the grid information
         write(msgbuf,'(3a)') 'MNC ERROR: file ''', fname(1:lenf), 
      &       ''' contains NO grids'
         CALL print_error(msgbuf, mythid)
-        stop 'ABNORMAL END: S/R MNC_VAR_INIT_DBL'
+        stop 'ABNORMAL END: S/R MNC_VAR_INIT_ANY'
       ENDIF
       DO i = 1,ngrid
         j = 4 + (i-1)*3
@@ -137,7 +137,7 @@ C     Get the grid information
       write(msgbuf,'(5a)') 'MNC ERROR: file ''', fname(1:lenf), 
      &     ''' does not contain grid ''', gname(1:leng), ''''
       CALL print_error(msgbuf, mythid)
-      stop 'ABNORMAL END: S/R MNC_VAR_INIT_DBL'
+      stop 'ABNORMAL END: S/R MNC_VAR_INIT_ANY'
  10   CONTINUE
 
 C     Add the variable definition

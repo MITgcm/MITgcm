@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.25 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.26 2004/01/15 04:31:24 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -163,6 +163,10 @@ c       CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
 #endif /* ALLOW_PTRACERS */
          _END_MASTER( myThid )
          _BARRIER
+
+#ifdef ALLOW_MNC
+C      CALL MNC_W_...
+#endif
 
       ENDIF
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.17 2003/12/17 04:02:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.18 2004/01/15 04:31:24 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,7 +59,7 @@ C      |-- CONFIG_CHECK
 C      |
 C      |-- CONFIG_SUMMARY
 C      |
-C      |-- NETCDF_WRITEGRID
+C      |-- MNC_W_GRIDINFO
 
 C     !USES:
       IMPLICIT NONE
@@ -143,9 +143,10 @@ C     and get config. info for other component(s).
       IF ( useCoupler ) CALL CPL_EXCH_CONFIGS( myThid )
 #endif
 
-#ifdef ALLOW_NETCDF
-C     Test NETCDF_WRITEGRID
-      CALL NETCDF_WRITEGRID( 'test', myThid )
+#ifdef ALLOW_MNC
+C     Test MNC
+      CALL MNC_INIT(myThid)
+      CALL MNC_W_GRIDINFO(myThid, 'test')
 #endif
 
       RETURN
