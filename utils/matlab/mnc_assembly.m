@@ -97,6 +97,8 @@ while frdone == 0
   all_ncf(n).bj             = fnc.bj(1);
   all_ncf(n).sNx            = fnc.sNx(1);
   all_ncf(n).sNy            = fnc.sNy(1);
+  all_ncf(n).Nx             = fnc.Nx(1);
+  all_ncf(n).Ny             = fnc.Ny(1);
   all_ncf(n).Z              = fnc.Z(1);
 
   if exch == 2
@@ -131,7 +133,7 @@ end
 
 %  check for consistent sNx,sNy
 if (prod(double([all_ncf.sNx] == all_ncf(1).sNx)) ~= 1) ...
-      || (prod(double([all_ncf.sNy] == all_ncf(1).sNy)) ~= 1)
+      | (prod(double([all_ncf.sNy] == all_ncf(1).sNy)) ~= 1)
   disp('Error: the "sNx,sNy" values for all the tiles are not');
   disp('   uniform.  Future versions of this function will be');
   disp('   able to handle non-uniform grid sizes but this');
@@ -272,11 +274,25 @@ if all_ncf(1).exch == 1
 
   %  exch "1":
   
-  bi_max = max([all_ncf.bi]);
-  bj_max = max([all_ncf.bj]);
-  Xmax = bi_max * all_ncf(1).sNx;
-  Ymax = bj_max * all_ncf(1).sNy;
-  
+% $$$   bi_max = max([all_ncf.bi]);
+% $$$   bj_max = max([all_ncf.bj]);
+% $$$   Xmax = bi_max * all_ncf(1).sNx;
+% $$$   Ymax = bj_max * all_ncf(1).sNy;
+  Xmax = all_ncf(1).Nx;
+  Ymax = all_ncf(1).Ny;
+  % at this point I have to make some assumptions about the domain
+  % decomposition 
+  bi_max = Xmax/all_ncf(1).sNx;
+  bj_max = Ymax/all_ncf(1).sNy;
+  itile = 0;
+  for bj=1:bj_max
+    for bi=1:bi_max
+      itile = itile+1;
+      all_ncf(itile).bi=bi;
+      all_ncf(itile).bj=bj;
+    end
+  end
+
   horzdim = struct('names',{},'lens',{});
   horzdim(1).names = { 'X' };  horzdim(1).lens = { Xmax     };
   horzdim(2).names = {'Xp1'};  horzdim(2).lens = { Xmax + 1 };
@@ -328,7 +344,7 @@ if all_ncf(1).exch == 1
     disp(sprintf('  Copying variable:   %s',myvars(ivar).name))
     for itile = 1:length(all_ncf)
 
-      if (myvars(ivar).has_horiz == 1) || (itile == 1)
+      if (myvars(ivar).has_horiz == 1) | (itile == 1)
         
         clear nct;
         nct = all_ncf(itile).nc{1};
@@ -410,7 +426,7 @@ elseif all_ncf(1).exch == 2
     comm = [ comm sprintf('''%s''',myvars(ivar).dim_names{id}) ];
     for id = 2:length(myvars(ivar).dim_names)
       dname = myvars(ivar).dim_names{id};
-      if (dname(1) == 'Y') && (myvars(ivar).has_horiz == 1)
+      if (dname(1) == 'Y') & (myvars(ivar).has_horiz == 1)
         comm = [ comm sprintf(',''%s''','iface') ];
       end
       comm = [ comm sprintf(',''%s''',dname) ];
@@ -434,7 +450,7 @@ elseif all_ncf(1).exch == 2
     disp(sprintf('  Copying variable:   %s',myvars(ivar).name))
     for itile = 1:length(all_ncf)
 
-      if (myvars(ivar).has_horiz == 1) || (itile == 1)
+      if (myvars(ivar).has_horiz == 1) | (itile == 1)
         
         clear nct;
         nct = all_ncf(itile).nc{1};
