@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_adv_wu.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_adv_wu.F,v 1.4 2002/12/10 03:02:38 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,6 +25,9 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef NONLIN_FRSURF
+#include "SURFACE.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
@@ -46,8 +49,24 @@ C  i,j                  :: loop indices
       INTEGER I,J
 CEOP
 
+#ifdef NONLIN_FRSURF
+      IF ( k.EQ.Nr+1 .AND.
+     &     useRealFreshWaterFlux .AND.
+     &     buoyancyRelation .EQ. 'OCEANICP' ) THEN 
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx+1,sNx+Olx
+         advectiveFluxWU(i,j) = convertEmP2rUnit*
+     &      ( PmEpR( i ,j,bi,bj)*rA( i ,j,bi,bj)
+     &       +PmEpR(i-1,j,bi,bj)*rA(i-1,j,bi,bj)
+     &      )*0.5 _d 0 * uFld(i,j,k-1,bi,bj)
+        ENDDO
+       ENDDO
+
+      ELSEIF ( k.GT.Nr .OR. (k.EQ.1.AND.rigidLid) ) THEN
+#else /* NONLIN_FRSURF */
       IF ( k.GT.Nr .OR.
      &    (k.EQ.1.AND.rigidLid) ) THEN
+#endif /* NONLIN_FRSURF */
 C     Advective flux = 0  at k=Nr+1 ; = 0 at k=1 if rigid-lid
 
       DO j=1-Oly,sNy+Oly

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.15 2002/11/12 20:42:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.16 2002/12/10 03:02:00 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -41,6 +41,7 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "SURFACE.h"
 #include "GAD.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -289,6 +290,21 @@ C-    Bi-harmonic flux in Y
        ENDDO
       ENDIF
 
+#ifdef NONLIN_FRSURF
+C--   Compute vertical flux fVerT(kDown) at interface k+1 (between k & k+1):
+      IF ( calcAdvection .AND. K.EQ.Nr .AND.
+     &     useRealFreshWaterFlux .AND.
+     &     buoyancyRelation .EQ. 'OCEANICP' ) THEN   
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         fVerT(i,j,kDown) = convertEmP2rUnit*PmEpR(i,j,bi,bj)
+     &     *rA(i,j,bi,bj)*maskC(i,j,k,bi,bj)*Tracer(i,j,k,bi,bj)
+        ENDDO
+       ENDDO 
+      ENDIF
+#endif /* NONLIN_FRSURF */
+
+C--   Compute vertical flux fVerT(kUp) at interface k (between k-1 & k):
 C-    Advective flux in R
       IF (calcAdvection) THEN
 C     Note: wVel needs to be masked 

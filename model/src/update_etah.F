@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.1 2002/10/07 16:17:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.2 2002/12/10 03:00:59 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -50,7 +50,9 @@ CEOP
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef NONLIN_FRSURF
-       IF (useRealFreshWaterFlux .AND. nonlinFreeSurf.GT.0) THEN
+c      IF (useRealFreshWaterFlux .AND. nonlinFreeSurf.GT.0) THEN
+       IF ( (nonlinFreeSurf.GT.0 .OR. buoyancyRelation.EQ.'OCEANICP')
+     &      .AND. useRealFreshWaterFlux ) THEN
 
 C-- Called at the beginning of the time step : 
 C-  keep present time EmPmR to compute later (S/R EXTERNAL_FORCING_SURF)
@@ -63,14 +65,14 @@ C   tracers and momentum flux associated with fresh water input.
           ENDDO
          ENDDO
 
-        ELSEIF( myTime .EQ. 0. _d 0 ) THEN
+        ELSE
           DO j=1-Oly,sNy+Oly
            DO i=1-Olx,sNx+Olx
             PmEpR(i,j,bi,bj) = 0. _d 0
            ENDDO
           ENDDO
 
-        ELSE
+          IF( myTime .NE. 0. _d 0 .AND. nonlinFreeSurf.GE.0 ) THEN
 C     needs previous time-step value of E-P-R, that has not been loaded
 C     and was not in pickup-file ; try to use etaN & etaH instead.
           DO j=1,sNy
@@ -79,8 +81,10 @@ C     and was not in pickup-file ; try to use etaN & etaH instead.
      &        hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
      &      + (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
      &       /(implicDiv2Dflow*deltaTfreesurf)
+            PmEpR(i,j,bi,bj) = PmEpR(i,j,bi,bj)/convertEmP2rUnit
            ENDDO
           ENDDO
+          ENDIF
         ENDIF
 
        ENDIF
@@ -150,9 +154,17 @@ C- end bi,bj loop.
       ENDDO 
 
       IF (implicDiv2Dflow .NE. 1. _d 0 .OR. useOBCS )
-     &    _EXCH_XY_R8(etaH, myThid ) 
+     &    _EXCH_XY_RL(etaH, myThid ) 
 
 #endif /* EXACT_CONSERV */
+
+#ifdef NONLIN_FRSURF
+      IF ( buoyancyRelation.EQ.'OCEANICP'
+     &     .AND. useRealFreshWaterFlux
+     &     .AND. myTime.EQ.startTime ) THEN
+          _EXCH_XY_RS(PmEpR, myThid ) 
+      ENDIF
+#endif /* NONLIN_FRSURF */
 
       RETURN
       END

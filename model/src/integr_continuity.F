@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.1 2002/10/07 16:17:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.2 2002/12/10 03:00:59 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -55,6 +55,7 @@ C     vTrans :: Volume transports ( vVel.yA )
       INTEGER i,j,k
       _RL uTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL vTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL wSurf
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -143,6 +144,35 @@ C--    Integrate continuity vertically for vertical velocity
      O                       wVel,
      I                       myThid )
  
+#ifdef NONLIN_FRSURF
+       IF ( k.EQ.Nr .AND. myTime.NE. 0. _d 0 .AND.
+     &      useRealFreshWaterFlux .AND. 
+     &      buoyancyRelation .EQ. 'OCEANICP' ) THEN
+
+        IF ( myTime.NE.startTime ) THEN
+          DO j=1,sNy
+           DO i=1,sNx
+             wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj) 
+     &         -convertEmP2rUnit*EmPmR(i,j,bi,bj)*maskC(i,j,k,bi,bj)
+           ENDDO
+          ENDDO
+        ELSEIF (nonlinFreeSurf.GE.0) THEN
+C     needs previous time-step value of E-P-R, that has not been loaded
+C     and was not in pickup-file ; try to use etaN & etaH instead.
+          DO j=1,sNy
+           DO i=1,sNx
+             wSurf = hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
+     &             + (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
+     &              /(implicDiv2Dflow*deltaTfreesurf)
+             wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj) 
+     &                  + wSurf*maskC(i,j,k,bi,bj) 
+           ENDDO
+          ENDDO      
+        ENDIF
+
+       ENDIF
+#endif /* NONLIN_FRSURF */
+
 #ifdef ALLOW_OBCS
 #ifdef ALLOW_NONHYDROSTATIC
 C--    Apply OBC to W if in N-H mode
