@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_PARAMS.h,v 1.2 2003/07/31 18:22:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_PARAMS.h,v 1.3 2004/03/11 14:42:00 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAND
@@ -11,39 +11,72 @@ C     |   - vertical discretization
 C     *==========================================================*
 
 C--   COMMON /LAND_PAR_L/: logical parameters
-C     land_calc_grT :: step forward ground Temperature
-C     land_calc_grW :: step forward soil moiture
+C     land_calc_grT  :: step forward ground Temperature
+C     land_calc_grW  :: step forward soil moiture
+C     land_impl_grT  :: solve ground Temperature implicitly
+C     land_calc_snow :: step forward snow thickness
+C     land_calc_alb  :: compute albedo of snow over land
+C     land_oldPickup :: restart from an old pickup (= before checkpoint 52l_pre)
       COMMON /LAND_PAR_L/
-     &  land_calc_grT, land_calc_grW
+     &    land_calc_grT, land_calc_grW, 
+     &    land_impl_grT, land_calc_snow,
+     &    land_calc_alb, land_oldPickup
       LOGICAL land_calc_grT
       LOGICAL land_calc_grW
+      LOGICAL land_impl_grT
+      LOGICAL land_calc_snow
+      LOGICAL land_calc_alb
+      LOGICAL land_oldPickup
 
 C--   COMMON /LAND_PAR_C/: Character valued parameters
-C     land_grT_iniFile :: File containing initial ground Temp.
-C     land_grW_iniFile :: File containing initial ground Water.
+C     land_grT_iniFile  :: File containing initial ground Temp.
+C     land_grW_iniFile  :: File containing initial ground Water.
+C     land_snow_iniFile :: File containing initial snow thickness.
       COMMON /LAND_PAR_C/ 
-     &    land_grT_iniFile, land_grW_iniFile
+     &    land_grT_iniFile, land_grW_iniFile, land_snow_iniFile
       CHARACTER*(MAX_LEN_FNAM) land_grT_iniFile
       CHARACTER*(MAX_LEN_FNAM) land_grW_iniFile
+      CHARACTER*(MAX_LEN_FNAM) land_snow_iniFile
 
 C--   COMMON /LAND_PAR_R/: real-type parameters
 C     land_deltaT     :: land model time-step
 C     land_taveFreq   :: Frequency^-1 for time-Aver. output (s)
 C     land_diagFreq   :: Frequency^-1 for diagnostic output (s)
-C     land_grdLambda  :: Thermal conductivity of the ground (W.m-1.K-1)
-C     land_heatCs     :: Heat capacity of dry soil (J.m-3.k_1)
-C     land_heatCw     :: Heat capacity of water    (J.m-3.k_1)
+C     land_monFreq    :: Frequency^-1 for monitor    output (s)
+C     land_grdLambda  :: Thermal conductivity of the ground (W/m/K)
+C     land_heatCs     :: Heat capacity of dry soil (J/m3/K)
+C     land_CpWater    :: Heat capacity of water    (J/kg/K)
 C     land_wTauDiff   :: soil moisture diffusion time scale (s)
 C     land_waterCap   :: field capacity per meter of soil (1)
 C     land_fractRunOff:: fraction of water in excess which run-off (1)
-      COMMON /LAND_PAR_R/ 
-     &    land_deltaT, land_taveFreq, land_diagFreq,
-     &    land_grdLambda, land_heatCs, land_heatCw,
-     &    land_wTauDiff, land_waterCap, land_fractRunOff
+C     land_rhoSnow    :: density of snow (kg/m3)
+C     land_rhoLiqW    :: density of liquid water (kg/m3)
+C     land_Lfreez     :: Latent heat of freezing (J/kg)
+C     recip_Lfreez    :: reciprol of Latent heat (kg/J)
+C     diffKsnow       :: thermal conductivity of snow (W/m/K)
+C     timeSnowAge     :: snow aging time scale   (s)
+C     hNewSnowAge     :: new snow thickness that refreshes snow-age (by 1/e)
+C     albColdSnow     :: albedo of cold (=dry) new snow (Tsfc < -10)
+C     albWarmSnow     :: albedo of warm (=wet) new snow (Tsfc = 0)
+C     albOldSnow      :: albedo of old snow (snowAge > 35.d)
+C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
 
-      _RL land_deltaT, land_taveFreq, land_diagFreq
-      _RL land_grdLambda, land_heatCs, land_heatCw
+      COMMON /LAND_PAR_R/ 
+     &    land_deltaT, land_taveFreq, land_diagFreq, land_monFreq,
+     &    land_grdLambda, land_heatCs, land_CpWater,
+     &    land_wTauDiff, land_waterCap, land_fractRunOff,
+     &    land_rhoLiqW, 
+     &    land_rhoSnow, land_Lfreez, recip_Lfreez, 
+     &    diffKsnow, timeSnowAge, hNewSnowAge,
+     &    albColdSnow, albWarmSnow, albOldSnow, hAlbSnow
+
+      _RL land_deltaT, land_taveFreq, land_diagFreq, land_monFreq
+      _RL land_grdLambda, land_heatCs, land_CpWater
       _RL land_wTauDiff, land_waterCap, land_fractRunOff
+      _RL land_rhoLiqW
+      _RL land_rhoSnow, land_Lfreez, recip_Lfreez
+      _RL diffKsnow, timeSnowAge, hNewSnowAge
+      _RL albColdSnow, albWarmSnow, albOldSnow, hAlbSnow
 
 C--   COMMON /LAND_GRID_R/: layer dependent parameters
 C     land_dzF        :: layer thickness

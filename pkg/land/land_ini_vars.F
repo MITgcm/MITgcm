@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_ini_vars.F,v 1.2 2003/07/31 18:22:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_ini_vars.F,v 1.3 2004/03/11 14:42:00 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -40,10 +40,54 @@ CEOP
 
 C     == Local Variables == 
 C     msgBuf      - Informational/error meesage buffer
+C     i,j,k,bi,bj :: loop indices
+C     grd_HeatCp   :: Heat capacity of the ground (J/m3/K)
+C     mWater       :: water content of the ground (kg/m3)
+C     temp_af      :: ground temperature if above freezing
+C     temp_bf      :: ground temperature if below freezing
 c     CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER i,j,k,bi,bj
+      _RL grd_HeatCp, mWater
+      _RL temp_af, temp_bf
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+C--   Initialize Land package variables
+
+C-    Over all tiles
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+
+C-      3D arrays
+        DO k=1,land_nLev
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx
+           land_groundT(i,j,k,bi,bj) = 0. _d 0
+           land_enthalp(i,j,k,bi,bj) = 0. _d 0
+           land_groundW(i,j,k,bi,bj) = 0. _d 0
+          ENDDO
+         ENDDO
+        ENDDO
+
+C-      2D arrays
+        DO J=1-Oly,sNy+Oly
+         DO I=1-Olx,sNx+Olx
+           land_skinT  (i,j,bi,bj) = 0. _d 0
+           land_hSnow  (i,j,bi,bj) = 0. _d 0
+           land_snowAge(i,j,bi,bj) = 0. _d 0
+           land_runOff (i,j,bi,bj) = 0. _d 0
+           land_enRnOf (i,j,bi,bj) = 0. _d 0
+           land_HeatFLx(i,j,bi,bj) = 0. _d 0
+           land_Pr_m_Ev(i,j,bi,bj) = 0. _d 0
+           land_EnWFlux(i,j,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+
+C-     end bi,bj loops
+       ENDDO
+      ENDDO
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       IF ( startTime.EQ.0. .AND. nIter0.EQ.0 ) THEN
 
@@ -57,7 +101,14 @@ C--   Define the initial state : read from file
         CALL MDSREADFIELD( land_grW_iniFile, readBinaryPrec, 'RL',
      &                     land_nLev, land_groundW, 1, myThid)
        ENDIF
+       IF ( land_snow_iniFile .NE. ' ' ) THEN
+        CALL MDSREADFIELD( land_snow_iniFile,readBinaryPrec, 'RL',
+     &                     1, land_hSnow, 1, myThid)
+       ENDIF
        _END_MASTER(myThid)
+
+C-     to have a consistent initial stater: derive surface Temp, 
+C       & enthalpy (assuming liquid water only):
 
       ELSEIF ( land_calc_grT .OR. land_calc_grW ) THEN
 
@@ -68,6 +119,54 @@ c     ELSE
 C-    a trick to allow to start without a land pickup:
 C        load grT & grW from AIM surf. BC in S/R aim_land2aim
       ENDIF
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+
+C-     to have a consistent initial state: derive surface Temp, 
+C       & enthalpy (assuming liquid water only):
+        IF ( ( startTime.EQ.0. .AND. nIter0.EQ.0 ) .OR.
+     &   .NOT.( land_calc_grT .OR. land_calc_grW ) .OR.
+     &       land_oldPickup ) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+c          IF ( land_frc(i,j,bi,bj).GT.0. ) THEN
+            DO k=1,land_nLev
+             mWater = land_rhoLiqW*land_waterCap
+     &               *land_groundW(i,j,k,bi,bj)
+             grd_HeatCp = land_heatCs + land_CpWater*mWater
+             land_enthalp(i,j,k,bi,bj) = 
+     &                     grd_HeatCp*land_groundT(i,j,k,bi,bj)
+             IF (land_groundT(i,j,k,bi,bj).LT. 0. _d 0) 
+     &       land_enthalp(i,j,k,bi,bj) = land_enthalp(i,j,k,bi,bj)
+     &                                 - land_Lfreez*mWater
+            ENDDO
+             land_skinT(i,j,bi,bj) = land_groundT(i,j,1,bi,bj)
+c          ENDIF
+          ENDDO
+         ENDDO
+      ELSE
+         DO j=1,sNy
+          DO i=1,sNx
+            DO k=1,land_nLev
+             mWater = land_rhoLiqW*land_waterCap
+     &               *land_groundW(i,j,k,bi,bj)
+             grd_HeatCp = land_heatCs + land_CpWater*mWater
+C         temperature if below freezing:
+             temp_bf = (land_enthalp(i,j,k,bi,bj)+land_Lfreez*mWater)
+     &                                            / grd_HeatCp
+C         temperature if above freezing:
+             temp_af =  land_enthalp(i,j,k,bi,bj) / grd_HeatCp
+             land_groundT(i,j,k,bi,bj) =
+     &               MIN( temp_bf, MAX(temp_af, 0. _d 0) )
+            ENDDO
+          ENDDO
+         ENDDO
+        ENDIF
+
+C-     end bi,bj loops
+       ENDDO
+      ENDDO
 
 #endif /* ALLOW_LAND */
 

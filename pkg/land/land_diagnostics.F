@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_diagnostics.F,v 1.1 2003/06/12 17:54:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_diagnostics.F,v 1.2 2004/03/11 14:42:00 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -29,9 +29,6 @@ C-- size for MITgcm & Land package :
 #include "LAND_VARS.h"
 #include "LAND_TAVE.h"
 
-      LOGICAL  DIFFERENT_MULTIPLE
-      EXTERNAL DIFFERENT_MULTIPLE
-
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     land_frc :: land fraction [0-1]
@@ -46,8 +43,11 @@ CEOP
 
 #ifdef ALLOW_LAND
 
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C     == Local Variables == 
-      INTEGER i,j,k, iterWr
+      INTEGER k, iterWr
       CHARACTER*(MAX_LEN_MBUF) suff
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -66,11 +66,21 @@ c      _BEGIN_MASTER( myThid )
 C--   Write ground Temp and soil moisture :
         CALL WRITE_LOCAL_RL('land_groundT','I10',1,
      &       land_groundT(1-OLx,1-OLy,k,bi,bj),bi,bj,k,iterWr,myThid)
+        CALL WRITE_LOCAL_RL('land_enthalp','I10',1,
+     &       land_enthalp(1-OLx,1-OLy,k,bi,bj),bi,bj,k,iterWr,myThid)
         CALL WRITE_LOCAL_RL('land_groundW','I10',1,
      &       land_groundW(1-OLx,1-OLy,k,bi,bj),bi,bj,k,iterWr,myThid)
        ENDDO
+        CALL WRITE_LOCAL_RL('land_skinT', 'I10',1,
+     &       land_skinT(1-OLx,1-OLy,bi,bj),  bi,bj,1,iterWr,myThid)
+        CALL WRITE_LOCAL_RL('land_hSnow', 'I10',1,
+     &       land_hSnow(1-OLx,1-OLy,bi,bj),  bi,bj,1,iterWr,myThid)
+        CALL WRITE_LOCAL_RL('land_snAge', 'I10',1,
+     &       land_snowAge(1-OLx,1-OLy,bi,bj),bi,bj,1,iterWr,myThid)
         CALL WRITE_LOCAL_RL('land_RunOff','I10',1,
-     &       land_runOff(1-OLx,1-OLy,bi,bj),bi,bj,1,iterWr,myThid)
+     &       land_runOff(1-OLx,1-OLy,bi,bj), bi,bj,1,iterWr,myThid)
+        CALL WRITE_LOCAL_RL('land_enRnOf','I10',1,
+     &       land_enRnOf(1-OLx,1-OLy,bi,bj), bi,bj,1,iterWr,myThid)
 
 c      _END_MASTER( myThid )
 c      _BARRIER
@@ -86,9 +96,19 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Sum ground Temp, soil moisture and Run-Off:
       CALL TIMEAVE_CUMULATE(land_grTtave,land_groundT,land_nLev,
      &                      land_deltaT, bi, bj, myThid )
+      CALL TIMEAVE_CUMULATE(land_entave, land_enthalp,land_nLev,
+     &                      land_deltaT, bi, bj, myThid )
       CALL TIMEAVE_CUMULATE(land_grWtave,land_groundW,land_nLev,
      &                      land_deltaT, bi, bj, myThid )
+      CALL TIMEAVE_CUMULATE(land_sTtave, land_skinT ,1,
+     &                      land_deltaT, bi, bj, myThid )
+      CALL TIMEAVE_CUMULATE(land_hStave, land_hSnow ,1,
+     &                      land_deltaT, bi, bj, myThid )
+      CALL TIMEAVE_CUMULATE(land_sAtave, land_snowAge,1,
+     &                      land_deltaT, bi, bj, myThid )
       CALL TIMEAVE_CUMULATE(land_ROftave,land_runOff,1,
+     &                      land_deltaT, bi, bj, myThid )
+      CALL TIMEAVE_CUMULATE(land_eROtave,land_enRnOf,1,
      &                      land_deltaT, bi, bj, myThid )
 
 C-    Keep record of how much time has been integrated over
@@ -104,4 +124,3 @@ C-    Keep record of how much time has been integrated over
 
       RETURN
       END
-

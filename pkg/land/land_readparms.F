@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.3 2004/01/18 18:14:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.4 2004/03/11 14:42:00 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -29,7 +29,7 @@ C-- size for MITgcm & Land package :
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==       
-C     myThid -  Number of this instance
+C     myThid     ::  Number of this instance
       INTEGER myThid
 CEOP
 
@@ -50,48 +50,88 @@ C     iL         :: Work variable for length of file-name
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Land model parameters:
-C     land_calc_grT :: step forward ground Temperature
-C     land_calc_grW :: step forward soil moiture
-C     land_grT_iniFile :: File containing initial ground Temp.
-C     land_grW_iniFile :: File containing initial ground Water.
-C     land_deltaT   :: land model time-step
-C     land_taveFreq :: Frequency^-1 for time-Aver. output (s)
-C     land_diagFreq :: Frequency^-1 for diagnostic output (s)
-C     land_dzF      :: layer thickness
+C     land_calc_grT  :: step forward ground Temperature
+C     land_calc_grW  :: step forward soil moiture
+C     land_impl_grT  :: solve ground Temperature implicitly
+C     land_calc_snow :: step forward snow thickness
+C     land_calc_alb  :: compute albedo of snow over land
+C     land_oldPickup :: restart from an old pickup (= before checkpoint 52j)
+C     land_grT_iniFile  :: File containing initial ground Temp.
+C     land_grW_iniFile  :: File containing initial ground Water.
+C     land_snow_iniFile :: File containing initial snow thickness.
+C     land_deltaT    :: land model time-step
+C     land_taveFreq  :: Frequency^-1 for time-Aver. output (s)
+C     land_diagFreq  :: Frequency^-1 for diagnostic output (s)
+C     land_monFreq   :: Frequency^-1 for monitor    output (s)
+C     land_dzF       :: layer thickness
       NAMELIST /LAND_MODEL_PAR/
      &    land_calc_grT, land_calc_grW, 
-     &    land_grT_iniFile, land_grW_iniFile,
-     &    land_deltaT, land_taveFreq, land_diagFreq,
+     &    land_impl_grT, land_calc_snow,
+     &    land_calc_alb, land_oldPickup, 
+     &    land_grT_iniFile, land_grW_iniFile, land_snow_iniFile,
+     &    land_deltaT, land_taveFreq, land_diagFreq, land_monFreq,
      &    land_dzF
 
 C--   Physical constants :
 C     land_grdLambda  :: Thermal conductivity of the ground
-C     land_heatCs     :: Heat capacity of dry soil
-C     land_heatCw     :: Heat capacity of water
+C     land_heatCs     :: Heat capacity of dry soil (J/m3/K)
+C     land_CpWater    :: Heat capacity of water    (J/kg/K)
 C     land_wTauDiff   :: soil moisture diffusion time scale
 C     land_waterCap   :: field capacity per meter of soil
 C     land_fractRunOff:: fraction of water in excess which run-off
+C     land_rhoLiqW    :: density of liquid water (kg/m3)
+C     land_rhoSnow    :: density of snow (kg/m3)
+C     land_Lfreez     :: Latent heat of freezing (J/kg)
+C     timeSnowAge     :: snow aging time scale   (s)
+C     hNewSnowAge     :: new snow thickness that refresh the snow-age (by 1/e)
+C     albColdSnow     :: albedo of cold (=dry) new snow (Tsfc < -10)
+C     albWarmSnow     :: albedo of warm (=wet) new snow (Tsfc = 0)
+C     albOldSnow      :: albedo of old snow (snowAge > 35.d)
+C     hAlbSnow        :: snow thickness for albedo transition: snow/ground
 
       NAMELIST /LAND_PHYS_PAR/
-     &    land_grdLambda, land_heatCs, land_heatCw,
-     &    land_wTauDiff, land_waterCap, land_fractRunOff
+     &    land_grdLambda, land_heatCs, land_CpWater,
+     &    land_wTauDiff, land_waterCap, land_fractRunOff,
+     &    land_rhoLiqW,
+     &    land_rhoSnow, land_Lfreez, 
+     &    diffKsnow, timeSnowAge, hNewSnowAge,
+     &    albColdSnow, albWarmSnow, albOldSnow, hAlbSnow
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Set default value:
       land_calc_grT = .TRUE. 
       land_calc_grW = .TRUE.
+      land_impl_grT = .TRUE. 
+      land_calc_snow= .TRUE. 
+      land_calc_alb = .TRUE. 
+      land_oldPickup= .FALSE. 
       land_grT_iniFile = ' '
       land_grW_iniFile = ' '
+      land_snow_iniFile= ' '
       land_deltaT   = deltaTclock
       land_taveFreq = taveFreq
       land_diagFreq = dumpFreq
+      land_monFreq = monitorFreq
       land_grdLambda= 0.42 _d 0
       land_heatCs   = 1.13 _d 6
-      land_heatCw   =  4.2 _d 6
+      land_CpWater  =  4.2 _d 3
+c     land_CpWater  = HeatCapacity_Cp
       land_wTauDiff =  48. _d 0*3600. _d 0
       land_waterCap = 0.24 _d 0
       land_fractRunOff = 0.5 _d 0
+      land_rhoLiqW  = rhoConstFresh
+C-    snow parameters:
+      land_rhoSnow  = 330. _d 0
+      land_Lfreez   = 334. _d 3
+      diffKsnow     = 0.30 _d 0
+      timeSnowAge   = 50. _d 0 * 86400. _d 0
+      hNewSnowAge   = 2. _d -3
+      albColdSnow   = 0.85 _d 0
+      albWarmSnow   = 0.70 _d 0
+      albOldSnow    = 0.55 _d 0
+      hAlbSnow      = 0.30 _d 0
+C-    layer thickness:
       DO k=1,land_nLev
        land_dzF(k) = -1.
        land_rec_dzC(k) = -1.
@@ -121,7 +161,33 @@ C--   Close the open data file
       CLOSE(iUnit)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C-    derive other parameters:
+
+      land_impl_grT = land_calc_grT .AND. land_impl_grT
+
+      tmpvar = 0. _d 0
+      DO k=1,land_nLev
+       tmpvar = tmpvar+land_dzF(k)
+       IF (tmpvar.GT.0. _d 0) land_rec_dzC(k) = 2. _d 0 / tmpvar
+       tmpvar = land_dzF(k)
+      ENDDO
+      IF ( land_Lfreez.NE. 0. _d 0 ) THEN 
+        recip_Lfreez = 1. _d 0 / land_Lfreez
+      ELSE
+        recip_Lfreez = 0. _d 0
+      ENDIF
+
 C--   Check parameters and model configuration
+
+      IF ( land_nLev.NE.2 .AND. land_impl_grT ) THEN
+        WRITE(msgBuf,'(2A,I3)') 'LAND_READPARMS: ',
+     &  ' land_impl_grT=.T. but land_nLev=',land_nLev
+        CALL PRINT_ERROR( msgBuf, myThid)
+        WRITE(msgBuf,'(A)')
+     &  'Implicit scheme only implemented for 2 levels land Temp'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        STOP 'ABNORMAL END: S/R LAND_READPARMS'
+      ENDIF
 
 C-    If land_taveFreq is positive, then must compile the land-diagnostics code
 #ifndef ALLOW_LAND_TAVE
@@ -129,21 +195,25 @@ C-    If land_taveFreq is positive, then must compile the land-diagnostics code
         WRITE(msgBuf,'(2A)') 'LAND_READPARMS:',
      &  ' land_taveFreq > 0 but ALLOW_LAND_TAVE undefined'
         CALL PRINT_ERROR( msgBuf, myThid)
-        WRITE(msgBuf,'(2A)')
-     &  'Re-compile with: #define ALLOW_LAND_TAVE',
-     &                    '  or -DALLOW_LAND_TAVE'
+        WRITE(msgBuf,'(2A)') 'Re-compile setting: ',
+     &  '#define ALLOW_LAND_TAVE (in LAND_OPTIONS.h)'
         CALL PRINT_ERROR( msgBuf, myThid)
         STOP 'ABNORMAL END: S/R LAND_READPARMS'
       ENDIF
 #endif /* ALLOW_LAND_TAVE */
 
-C-    derive other parameters:
-      tmpvar = 0. _d 0
-      DO k=1,land_nLev
-       tmpvar = tmpvar+land_dzF(k)
-       IF (tmpvar.GT.0. _d 0) land_rec_dzC(k) = 2. _d 0 / tmpvar
-       tmpvar = land_dzF(k)
-      ENDDO
+C-    If land_monFreq is > 0, then must compile the monitor pkg
+#ifndef ALLOW_MONITOR
+      IF (land_monFreq.GT.0.) THEN
+        WRITE(msgBuf,'(2A)') 'LAND_READPARMS:',
+     &  ' land_monFreq > 0 but ALLOW_MONITOR undefined'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        WRITE(msgBuf,'(2A)')
+     &  'Re-compile with pkg monitor (in packages.conf)'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        STOP 'ABNORMAL END: S/R LAND_READPARMS'
+      ENDIF
+#endif /* ALLOW_MONITOR */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Print out parameter values :
@@ -165,6 +235,15 @@ C- namelist LAND_MODEL_PAR:
        CALL WRITE_0D_L( land_calc_grW, INDEX_NONE,
      &                 'land_calc_grW =',
      &   ' /* step forward soil moiture on/off flag */')       
+       CALL WRITE_0D_L( land_impl_grT, INDEX_NONE,
+     &                 'land_impl_grT =',
+     &   ' /* solve ground temperature implicitly */')       
+       CALL WRITE_0D_L( land_calc_snow, INDEX_NONE,
+     &                 'land_calc_snow =',
+     &   ' /* step forward snow thickness */')
+       CALL WRITE_0D_L( land_calc_alb, INDEX_NONE,
+     &                 'land_calc_alb =',
+     &   ' /* compute land+snow albedo */')
       iL = ILNBLNK( land_grT_iniFile )
 c     IF ( iL.EQ.LEN(land_grT_iniFile) ) iL=0
       IF ( iL.GE.1 ) THEN 
@@ -177,10 +256,19 @@ c     IF ( iL.EQ.LEN(land_grT_iniFile) ) iL=0
        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
       ENDIF
       iL = ILNBLNK( land_grW_iniFile )
-c     IF ( iL.EQ.LEN(land_grW_iniFile) ) iL=0
       IF ( iL.GE.1 ) THEN 
        WRITE(msgBuf,'(A,A)') 'land_grW_iniFile = ', 
      &                       '/* Initial soil-Water Input-File */'
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       WRITE(msgBuf,'(16X,A)') land_grW_iniFile(1:iL)
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+       msgBuf='    ;'
+       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
+      ENDIF
+      iL = ILNBLNK( land_snow_iniFile )
+      IF ( iL.GE.1 ) THEN 
+       WRITE(msgBuf,'(A,A)') 'land_snow_iniFile= ', 
+     &                  '/* Initial snow thickness Input-File */'
        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
        WRITE(msgBuf,'(16X,A)') land_grW_iniFile(1:iL)
        CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
@@ -193,6 +281,8 @@ c     IF ( iL.EQ.LEN(land_grW_iniFile) ) iL=0
      &   ' /* Frequency^-1 for time-Aver. output (s) */')
        CALL WRITE_0D_R8( land_diagFreq, INDEX_NONE,'land_diagFreq =',
      &   ' /* Frequency^-1 for diagnostic output (s) */')
+       CALL WRITE_0D_R8( land_diagFreq, INDEX_NONE,'land_monFreq =',
+     &   ' /* Frequency^-1 for monitor output (s) */')
        CALL WRITE_1D_R8( land_dzF,land_nLev, INDEX_K,'land_dzF = ',
      &   ' /* layer thickness ( m ) */')
        CALL WRITE_1D_R8(land_rec_dzC,land_nLev,INDEX_K,'land_rec_dzC= '
@@ -202,15 +292,35 @@ C- namelist LAND_PHYS_PAR:
        CALL WRITE_0D_R8(land_grdLambda,INDEX_NONE,'land_grdLambda =',
      &   ' /* Thermal conductivity of the ground (W/m/K)*/')
        CALL WRITE_0D_R8( land_heatCs,INDEX_NONE,'land_heatCs =',
-     &   ' /* Heat capacity of dry soil (J.m-3.K-1) */')
-       CALL WRITE_0D_R8( land_heatCw,INDEX_NONE,'land_heatCw =',
-     &   ' /* Heat capacity of water    (J.m-3.K-1) */')
+     &   ' /* Heat capacity of dry soil (J/m3/K) */')
+       CALL WRITE_0D_R8( land_CpWater,INDEX_NONE,'land_CpWater =',
+     &   ' /* Heat capacity of water    (J/kg/K) */')
        CALL WRITE_0D_R8( land_wTauDiff,INDEX_NONE,'land_wTauDiff =',
      &   ' /* soil moisture diffusion time scale (s) */')
        CALL WRITE_0D_R8( land_waterCap,INDEX_NONE,'land_waterCap =',
      &   ' /* field capacity per meter of soil (1) */')
        CALL WRITE_0D_R8(land_fractRunOff,INDEX_NONE,'land_fractRunOff='
      &  ,' /* fraction of water in excess which run-off */')
+       CALL WRITE_0D_R8(land_rhoLiqW,INDEX_NONE,'land_rhoLiqW =',
+     &   ' /* density of liquid water (kg/m3) */')
+       CALL WRITE_0D_R8(land_rhoSnow,INDEX_NONE,'land_rhoSnow =',
+     &   ' /* density of snow (kg/m3) */')
+       CALL WRITE_0D_R8(land_Lfreez,INDEX_NONE,'land_Lfreez =',
+     &   ' /* Latent heat of freezing (J/kg) */')
+       CALL WRITE_0D_R8(diffKsnow,INDEX_NONE,'diffKsnow =',
+     &   ' /* thermal conductivity of snow (W/m/K) */')
+       CALL WRITE_0D_R8(timeSnowAge,INDEX_NONE,'timeSnowAge =',
+     &   ' /* snow aging time scale   (s) */')
+       CALL WRITE_0D_R8(hNewSnowAge,INDEX_NONE,'hNewSnowAge =',
+     &   ' /* new snow thickness to refresh snow-age by 1/e */')
+       CALL WRITE_0D_R8(albColdSnow,INDEX_NONE,'albColdSnow =',
+     &   ' /* albedo of cold (=dry) new snow */')
+       CALL WRITE_0D_R8(albWarmSnow,INDEX_NONE,'albWarmSnow =',
+     &   ' /* albedo of warm (=wet) new snow */')
+       CALL WRITE_0D_R8(albOldSnow, INDEX_NONE,'albOldSnow =',
+     &   ' /* albedo of old snow (snowAge >35.d)*/')
+       CALL WRITE_0D_R8(hAlbSnow, INDEX_NONE,'hAlbSnow =',
+     &   ' /* snow depth for albedo transition */')
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

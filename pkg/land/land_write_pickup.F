@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_write_pickup.F,v 1.1 2003/06/12 17:54:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_write_pickup.F,v 1.2 2004/03/11 14:42:00 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -42,26 +42,35 @@ C     !LOCAL VARIABLES:
 C     fn      :: character buffer for creating filename
 C     prec    :: precision of pickup files
 C     lgf     :: flag to write "global" files
-      INTEGER prec, iChar, lChar
+c     INTEGER prec, iChar, lChar, k
+      INTEGER prec, lChar, k
       CHARACTER*(MAX_LEN_FNAM) fn
       LOGICAL lgf
+
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+
 CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      lChar = 0
-      DO iChar = 1,len(suff)
-       IF ( suff(iChar:iChar) .NE. ' ') lChar=iChar
-      ENDDO
+      lChar = ILNBLNK(suff)
       WRITE(fn,'(A,A)') 'pickup_land.',suff(1:lChar)
       prec = precFloat64
       lgf = globalFiles
 
 C--   Write fields as consecutive records
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',land_nLev,
-     &                   land_groundT,1,myIter,myThid)
+     &                   land_enthalp,1,myIter,myThid)
       CALL MDSWRITEFIELD(fn,prec,lgf,'RL',land_nLev,
      &                   land_groundW,2,myIter,myThid)
+      k=2*land_nLev
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,
+     &                   land_skinT,  k+1,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,
+     &                   land_hSnow,  k+2,myIter,myThid)
+      CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,
+     &                   land_snowAge,k+3,myIter,myThid)
 
 #endif /* ALLOW_LAND */
 

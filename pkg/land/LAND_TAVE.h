@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_TAVE.h,v 1.1 2003/06/12 17:54:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/LAND_TAVE.h,v 1.2 2004/03/11 14:42:00 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_LAND
@@ -18,15 +18,27 @@ C--   COMMON /LAND_TAVE/ Timer for Land Time-Average Diagnostics
       _RL land_timeAve(Nr,nSx,nSy)
 
 C--   COMMON /LAND_TAVE_A/ Time average land-variables
-C     land_grTtave  :: time average ground Temp.
-C     land_grWtave  :: time average soil moisture 
-C     land_ROftave  :: time average Run-Off
+C     land_grTtave  :: time average ground Temp. (oC)
+C     land_entave   :: time average enthalpy of each layer (J/m3)
+C     land_grWtave  :: time average soil moisture [0-1]
+C     land_sTtave   :: time average surface Temperature (oC)
+C     land_hStave   :: time average thickness of snow (m)
+C     land_sAtave   :: time average snow age (s)
+C     land_ROftave  :: time average Run-Off per surf unit [m/s]
+C     land_eROtave  :: time average energy flux related to run-Off [W/m2]
       COMMON /LAND_TAVE_A/
-     &            land_grTtave, land_grWtave, land_ROftave
+     &            land_grTtave, land_entave , land_grWtave,
+     &            land_sTtave , land_hStave , land_sAtave ,
+     &            land_ROftave, land_eROtave 
 
       _RL land_grTtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,land_nLev,nSx,nSy)
+      _RL land_entave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,land_nLev,nSx,nSy)
       _RL land_grWtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,land_nLev,nSx,nSy)
+      _RL land_sTtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL land_hStave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL land_sAtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL land_ROftave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL land_eROtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #endif /* ALLOW_LAND_TAVE */
 
