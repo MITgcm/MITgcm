@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.3 2001/08/13 18:10:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.4 2002/03/24 02:13:45 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -428,31 +428,33 @@ cph)
 c
 c     Summation of wet point counters 
 c
-      CALL GLOBAL_SUM_INT( nvarlength,  myThid )
-      ntmp=0
-      do bj=1,nSy
-         do bi=1,nSx
-            ntmp=ntmp+nWetcTile(bi,bj,k)
+      do k = 1, Nr
+         CALL GLOBAL_SUM_INT( nvarlength,  myThid )
+         ntmp=0
+         do bj=1,nSy
+            do bi=1,nSx
+               ntmp=ntmp+nWetcTile(bi,bj,k)
+            enddo
          enddo
-      enddo
-      CALL GLOBAL_SUM_INT( ntmp,  myThid )
-      nWetcTile(1,1,k)=ntmp
-      ntmp=0
-      do bj=1,nSy
-         do bi=1,nSx
-            ntmp=ntmp+nWetsTile(bi,bj,k)
+         CALL GLOBAL_SUM_INT( ntmp,  myThid )
+         nWetcTile(1,1,k)=ntmp
+         ntmp=0
+         do bj=1,nSy
+            do bi=1,nSx
+               ntmp=ntmp+nWetsTile(bi,bj,k)
+            enddo
          enddo
-      enddo
-      CALL GLOBAL_SUM_INT( ntmp,  myThid )
-      nWetsTile(1,1,k)=ntmp
-      ntmp=0
-      do bj=1,nSy
-         do bi=1,nSx
-            ntmp=ntmp+nWetwTile(bi,bj,k)
+         CALL GLOBAL_SUM_INT( ntmp,  myThid )
+         nWetsTile(1,1,k)=ntmp
+         ntmp=0
+         do bj=1,nSy
+            do bi=1,nSx
+               ntmp=ntmp+nWetwTile(bi,bj,k)
+            enddo
          enddo
+         CALL GLOBAL_SUM_INT( ntmp,  myThid )
+         nWetwTile(1,1,k)=ntmp
       enddo
-      CALL GLOBAL_SUM_INT( ntmp,  myThid )
-      nWetwTile(1,1,k)=ntmp
 
       print*, 'ctrl_init: no. of control variables: ', nvartype
       print*, 'ctrl_init: control vector length:    ', nvarlength
