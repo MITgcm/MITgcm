@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.9 2003/03/07 05:13:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.10 2003/05/12 19:45:17 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -48,6 +48,7 @@ C     msgBuffer        :: Used to build messages for printing.
       CHARACTER*(MAX_LEN_MBUF) msgBuffer
       INTEGER mpiRC
       CHARACTER*13 fNam
+      INTEGER nptmp
 #endif /* ALLOW_USE_MPI */
 CEOP
 
@@ -145,9 +146,10 @@ C      Strictly we are allowed more procs. but knowing there
 C      is an exact match makes things easier.
        IF ( numberOfProcs .NE. nPx*nPy ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,2(X,I))')
+        nptmp = nPx*nPy
+        WRITE(msgBuffer,'(A,2I5)')
      &  'S/R INI_PROCS: No. of processes not equal to nPx*nPy',
-     &  numberOfProcs, nPx*nPy
+     &  numberOfProcs, nptmp
         CALL PRINT_ERROR( msgBuffer , myThid)
         GOTO 999
        ENDIF
