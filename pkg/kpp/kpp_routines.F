@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.8 2001/03/25 22:33:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.9 2001/09/18 20:30:59 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -674,7 +674,7 @@ C     break data flow dependence on diffus
 
       do ki = 1, Nr
          do i = 1, imt
-            if     (kmtj(i) .EQ. 0      ) then
+            if     (kmtj(i) .LE. 1      ) then
                diffus(i,ki,1) = 0.
                diffus(i,ki,2) = 0.
             elseif (ki      .GE. kmtj(i)) then
