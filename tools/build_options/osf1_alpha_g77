@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/osf1_alpha_g77,v 1.1 2004/03/02 18:25:59 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/osf1_alpha_g77,v 1.2 2004/07/17 02:05:34 edhill Exp $
 #  $Name:  $
 #
 
@@ -9,7 +9,9 @@ FC=g77
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
 CPP='/usr/bin/cpp -P'
 NOOPTFLAGS='-O0'
-MAKEDEPEND='mkdep -f depend.out'
+#EH3  Remove the buggy mkdep since the newly included cyrus version
+#EH3  works much better on machines such as "halem"
+#EH3  MAKEDEPEND='mkdep -f depend.out'
 
 # netcdf
 # LIBS="-lnetcdf"
