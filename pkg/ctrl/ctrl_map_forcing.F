@@ -66,10 +66,10 @@ CEOP
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
 
       doglobalread = .false.
       ladinit      = .false.
@@ -186,6 +186,22 @@ c--   sst0.
           enddo
         enddo
       enddo
+#endif
+
+#if (defined (ALLOW_TAUU0_CONTROL) || defined (ALLOW_TAUV0_CONTROL))
+       CALL EXCH_UV_XY_RS(fu,fv,.TRUE.,myThid)
+#endif
+#ifdef ALLOW_SFLUX0_CONTROL
+       _EXCH_XY_R4(EmPmR, myThid )
+#endif
+#ifdef ALLOW_HFLUX0_CONTROL
+       _EXCH_XY_R4(Qnet,  myThid )
+#endif
+#ifdef ALLOW_SST0_CONTROL
+       _EXCH_XY_R4(SST,   myThid )
+#endif
+#ifdef ALLOW_SSS0_CONTROL
+       _EXCH_XY_R4(SSS,   myThid )
 #endif
 
       END

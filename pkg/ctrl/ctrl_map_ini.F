@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.7 2002/11/29 13:38:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.8 2003/01/21 19:18:35 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -71,10 +71,10 @@ CEOP
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
-      jmin = 1-oly
-      jmax = sny+oly
-      imin = 1-olx
-      imax = snx+olx
+      jmin = 1
+      jmax = sny
+      imin = 1
+      imax = snx
 
       doglobalread = .false.
       ladinit      = .false.
