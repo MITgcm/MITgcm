@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.30 2002/02/07 20:00:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.31 2002/02/08 22:14:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -217,7 +217,7 @@ C     Two-dimensional only for conventional hydrostatic or
 C     three-dimensional for non-hydrostatic and/or IGW scheme.
       IF ( momStepping ) THEN
       CALL TIMER_START('SOLVE_FOR_PRESSURE  [THE_MAIN_LOOP]',myThid)
-      CALL SOLVE_FOR_PRESSURE( myThid )
+      CALL SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
       CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [THE_MAIN_LOOP]',myThid)
       ENDIF
 
