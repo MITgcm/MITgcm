@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.219 2003/12/06 21:41:18 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.220 2003/12/07 20:37:32 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o change global_ocean.cs32x15 because of Pb with GM on CS-grid.
 
 checkpoint52d_pre
 o surface flux time-av diagnostic modified for NLFS & RealFreshWater 
