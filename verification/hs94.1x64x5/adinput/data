@@ -29,7 +29,7 @@
  nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
  writeBinaryPrec=64,
- globalFiles=.TRUE.,
+# globalFiles=.TRUE.,
  staggerTimestep=.TRUE.,
  tr1Stepping=.TRUE.,
  &
