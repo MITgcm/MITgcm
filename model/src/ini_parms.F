@@ -1,3 +1,4 @@
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.105 2004/01/03 00:39:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
