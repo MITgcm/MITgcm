@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.17 2004/01/15 03:38:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.18 2004/03/02 08:45:46 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -202,8 +202,11 @@ C--   Update overlap regions
 
 C--   Set model variables to initial/restart conditions
       IF ( nIter0 .NE. 0 ) THEN
+
          CALL SEAICE_READ_PICKUP ( myThid )
+
       ELSE
+
          DO bj=myByLo(myThid),myByHi(myThid)
             DO bi=myBxLo(myThid),myBxHi(myThid)
                DO j=1-OLy,sNy+OLy
@@ -221,27 +224,28 @@ C--   Set model variables to initial/restart conditions
                ENDDO
             ENDDO
          ENDDO
-      ENDIF
 
 C--   Read initial sea-ice thickness from file if available.
-      IF ( HeffFile .NE. ' ' ) THEN
-         _BEGIN_MASTER( myThid )
-         CALL READ_FLD_XY_RL( HeffFile, ' ', ZETA, 0, myThid )
-         _END_MASTER(myThid)
-         _EXCH_XY_R8(ZETA,myThid)
-         DO bj=myByLo(myThid),myByHi(myThid)
-            DO bi=myBxLo(myThid),myBxHi(myThid)
-               DO j=1-OLy,sNy+OLy
-                  DO i=1-OLx,sNx+OLx
-                     DO k=1,3
-                        HEFF(I,J,k,bi,bj) = MAX(ZETA(i,j,bi,bj),ZERO)
-                        IF ( ZETA(i,j,bi,bj).EQ.ZERO )
-     &                       AREA(I,J,k,bi,bj) = ZERO
+         IF ( HeffFile .NE. ' ' ) THEN
+            _BEGIN_MASTER( myThid )
+            CALL READ_FLD_XY_RL( HeffFile, ' ', ZETA, 0, myThid )
+            _END_MASTER(myThid)
+            _EXCH_XY_R8(ZETA,myThid)
+            DO bj=myByLo(myThid),myByHi(myThid)
+               DO bi=myBxLo(myThid),myBxHi(myThid)
+                  DO j=1-OLy,sNy+OLy
+                     DO i=1-OLx,sNx+OLx
+                        DO k=1,3
+                         HEFF(I,J,k,bi,bj) = MAX(ZETA(i,j,bi,bj),ZERO)
+                         IF ( ZETA(i,j,bi,bj).EQ.ZERO )
+     &                        AREA(I,J,k,bi,bj) = ZERO
+                        ENDDO
                      ENDDO
                   ENDDO
                ENDDO
             ENDDO
-         ENDDO
+         ENDIF
+         
       ENDIF
 
 C---  Complete initialization

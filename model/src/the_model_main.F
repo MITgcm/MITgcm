@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.73 2004/02/23 19:14:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.74 2004/03/02 08:45:46 dimitri Exp $
 C $Name:  $
 
 CBOI
@@ -378,6 +378,7 @@ C/\  | | | |-GMREDI_DIAGS        :: GM diags. see pkg/gmredi
 C/\  | | | |-KPP_DO_DIAGS        :: KPP diags. see pkg/kpp
 C/\  | | | |-SBO_CALC            :: SBO diags. see pkg/sbo
 C/\  | | | |-SBO_DIAGS           :: SBO diags. see pkg/sbo
+C/\  | | | |-SEAICE_DO_DIAGS     :: SEAICE diags. see pkg/seaice
 C/\  | | | |-GCHEM_DIAGS         :: gchem diags. see pkg/gchem
 C/\  | | |
 C/\  | | |-WRITE_CHECKPOINT :: Do I/O for restart files.

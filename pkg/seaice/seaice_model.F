@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.15 2003/12/15 18:39:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.16 2004/03/02 08:45:46 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -132,7 +132,7 @@ C--   Update overlap regions for a bunch of stuff
       _EXCH_XYZ_R8(theta , myThid )
 
 C--   Sea ice diagnostics.
-      CALL SEAICE_DO_DIAGS( myTime, myIter, myThid )
+C     <= moved to S/R do_the_model_io with other pkgs
 
 C--   Write sea ice restart files
 C     <= moved to S/R packages_write_pickup with other pkgs

@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.262 2004/02/26 22:39:55 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.263 2004/03/02 08:45:46 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o moved SEAICE_DO_DIAGS to S/R do_the_model_io
+o bug fix for pkg/seaice pickups
 o change MNC call locations and add coordinate attributes
 o mask vorticity at the corner ; affects global_ocean.cs output
 o fix ini_curvilinear_grid ; test CS experiments with mpi
