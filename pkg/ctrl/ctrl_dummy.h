@@ -11,6 +11,7 @@ c     ==================================================================
       common /ctrl_dummy/
      &                    xx_theta_dummy
      &                  , xx_salt_dummy
+     &                  , xx_tr1_dummy
      &                  , xx_hflux_dummy
      &                  , xx_sflux_dummy
      &                  , xx_tauu_dummy
@@ -21,6 +22,7 @@ c     ==================================================================
      &                  , xx_kapgm_dummy
       _RL xx_theta_dummy
       _RL xx_salt_dummy
+      _RL xx_tr1_dummy
       _RL xx_hflux_dummy
       _RL xx_sflux_dummy
       _RL xx_tauu_dummy

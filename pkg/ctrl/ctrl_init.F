@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.1 2001/03/25 22:33:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.2 2001/07/13 13:40:17 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -72,6 +72,8 @@ c     == local variables ==
       integer startrec
       integer endrec
 
+      _RL nwetc3d
+
       character*(max_len_prec) record
       character*(max_len_mbuf) msgbuf
 
@@ -86,6 +88,7 @@ c--   Read the namelist input.
       namelist /ctrl_nml/
      &  xx_theta_file,
      &  xx_salt_file,
+     &  xx_tr1_file,
      &  xx_tauu_file,
      &  xx_tauv_file,
      &  xx_sflux_file,
@@ -113,6 +116,7 @@ c--   Read the namelist input.
 c--     Set default values.
         xx_theta_file      = ' '
         xx_salt_file       = ' '
+        xx_tr1_file        = ' '
         xx_tauu_file       = ' '
         xx_tauv_file       = ' '
         xx_sflux_file      = ' '
@@ -257,25 +261,44 @@ c--   =====================
       _END_MASTER( mythid )
 #endif /* ALLOW_TAUV0_CONTROL */
 
+cph(
+cph    index  7-10 reserved for atmos. state,
+cph    index 11-14 reserved for open boundaries,
+cph    index 15-16 reserved for mixing coeff.
+cph    index 17    reserved for passive tracer TR1
+cph    index 18,19 reserved for sst, sss
+cph)
+
+#ifdef ALLOW_TR10_CONTROL
+      _BEGIN_MASTER( mythid )
+        ncvarindex(17) = 117
+        ncvarrecs(17)  =   1
+        ncvarxmax(17)  = snx
+        ncvarymax(17)  = sny
+        ncvarnrmax(17) =  nr
+        ncvargrd(17)   = 'c'
+      _END_MASTER( mythid )
+#endif /* ALLOW_TR10_CONTROL */
+
 #ifdef ALLOW_SST0_CONTROL
       _BEGIN_MASTER( mythid )
-        ncvarindex(7) = 107
-        ncvarrecs(7)  =   1
-        ncvarxmax(7)  = snx
-        ncvarymax(7)  = sny
-        ncvarnrmax(7) =   1
-        ncvargrd(7)   = 'c'
+        ncvarindex(18) = 118
+        ncvarrecs(18)  =   1
+        ncvarxmax(18)  = snx
+        ncvarymax(18)  = sny
+        ncvarnrmax(18) =   1
+        ncvargrd(18)   = 'c'
       _END_MASTER( mythid )
 #endif /* ALLOW_SST0_CONTROL */
 
 #ifdef ALLOW_SSS0_CONTROL
       _BEGIN_MASTER( mythid )
-        ncvarindex(8) = 108
-        ncvarrecs(8)  =   1
-        ncvarxmax(8)  = snx
-        ncvarymax(8)  = sny
-        ncvarnrmax(8) =   1
-        ncvargrd(8)   = 'c'
+        ncvarindex(19) = 119
+        ncvarrecs(19)  =   1
+        ncvarxmax(19)  = snx
+        ncvarymax(19)  = sny
+        ncvarnrmax(19) =   1
+        ncvargrd(19)   = 'c'
       _END_MASTER( mythid )
 #endif /* ALLOW_SSS0_CONTROL */
 
@@ -359,6 +382,27 @@ c--   Determine the total number of control variables.
          endif
       enddo
       
+cph(
+      print *, 'ph-wet 1: nvarlength = ', nvarlength
+      print *, 'ph-wet 2: surface wet C = ', nwetctile(1,1,1)
+      print *, 'ph-wet 3: surface wet W = ', nwetwtile(1,1,1)
+      print *, 'ph-wet 4: surface wet S = ', nwetstile(1,1,1)
+      nwetc3d = 0
+      do k = 1, Nr
+         nwetc3d = nwetc3d + nwetctile(1,1,k)
+      end do
+      print *, 'ph-wet 5: 3D center wet points = ', nwetc3d
+      do i = 1, 6
+         print *, 'ph-wet 6: no recs for i = ', i, ncvarrecs(i)
+      end do
+      print *, 'ph-wet 7: ',
+     &     2*nwetc3d +
+     &     ncvarrecs(3)*nwetctile(1,1,1) +
+     &     ncvarrecs(4)*nwetctile(1,1,1) +
+     &     ncvarrecs(5)*nwetwtile(1,1,1) +
+     &     ncvarrecs(6)*nwetstile(1,1,1)
+cph)
+
 c
 c     Summation of wet point counters 
 c

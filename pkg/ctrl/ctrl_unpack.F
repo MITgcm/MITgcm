@@ -1,16 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.1 2001/03/25 22:33:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.2 2001/07/13 13:40:17 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
 
-      subroutine ctrl_Unpack(
+      subroutine ctrl_unpack(
      I                        myiter,
      I                        mytime,
      I                        mythid
      &                      )
 
 c     ==================================================================
-c     SUBROUTINE ctrl_Unpack
+c     SUBROUTINE ctrl_unpack
 c     ==================================================================
 c
 c     o Unpack the control vector such that the land points are filled
@@ -31,7 +31,7 @@ c              - single processor reads global parameter file
 c               and writes multiple xx* and adxx* files
 c
 c     ==================================================================
-c     SUBROUTINE ctrl_Unpack
+c     SUBROUTINE ctrl_unpack
 c     ==================================================================
 
       implicit none
@@ -45,6 +45,7 @@ c     == global variables ==
 
 #include "ctrl.h"
 #include "cost.h"
+#include "optim.h"
 
 c     == routine arguments ==
 
@@ -200,6 +201,22 @@ c--     Only the master thread will do I/O.
      &                         prec, 'RL', Nr, globfld3d, 
      &                         1,optimcycle,  mythid)
 #endif /* ALLOW_SALT0_CONTROL */
+
+#ifdef ALLOW_TR10_CONTROL
+        il=ilnblnk( xx_tr1_file )
+        write(  fname(1:80),'(80a)') ' '
+        write(adfname(1:80),'(80a)') ' '
+        write(fname(1:80),'(2a,i10.10)')
+     &       xx_tr1_file(1:il),'.',optimcycle
+        write(adfname(1:80),'(3a,i10.10)')
+     &       yadmark,xx_tr1_file(1:il),'.',optimcycle
+        call MDSWRITEFIELD_3D_GL( adfname, 
+     &                         prec, 'RL', Nr, globfld3d, 
+     &                         1, optimcycle, mythid)
+        call MDSWRITEFIELD_3D_GL( fname, 
+     &                         prec, 'RL', Nr, globfld3d, 
+     &                         1,optimcycle,  mythid)
+#endif /* ALLOW_TR10_CONTROL */
 
 #ifdef ALLOW_HFLUX0_CONTROL
         il=ilnblnk( xx_hflux_file )

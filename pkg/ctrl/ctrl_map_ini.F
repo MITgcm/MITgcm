@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.1 2001/03/25 22:33:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.2 2001/07/13 13:40:17 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -33,9 +33,11 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "DYNVARS.h"
+#include "TR1.h"
 
 #include "ctrl.h"
 #include "ctrl_dummy.h"
+#include "optim.h"
 
 c     == routine arguments ==
 
@@ -58,6 +60,7 @@ c     == local variables ==
 
       character*( 80)   fnametheta
       character*( 80)   fnamesalt
+      character*( 80)   fnametr1
 
 c     == external ==
 
@@ -136,6 +139,31 @@ c--   Temperature field.
       enddo
 #endif
 
+#ifdef ALLOW_TR10_CONTROL
+c--   Temperature field.
+      il=ilnblnk( xx_tr1_file )
+      write(fnametr1(1:80),'(2a,i10.10)')
+     &     xx_tr1_file(1:il),'.',optimcycle
+      call active_read_xyz( fnametr1, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_tr1_dummy )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                tr1(i,j,k,bi,bj) = tr1(i,j,k,bi,bj) +
+     &                               fac*tmpfld3d(i,j,k,bi,bj)
+                gsNm1(i,j,k,bi,bj) = gsNm1(i,j,k,bi,bj) +
+     &                               fac*tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
 
 c--   Update the tile edges.
 
@@ -146,6 +174,10 @@ c--   Update the tile edges.
 #ifdef ALLOW_SALT0_CONTROL
       _EXCH_XYZ_R8(  salt, mythid )
       _EXCH_XYZ_R8( gsNm1, mythid )
+#endif
+#ifdef ALLOW_TR10_CONTROL
+      _EXCH_XYZ_R8(  tr1, mythid )
+      _EXCH_XYZ_R8( gTr1Nm1, mythid )
 #endif
 
       return

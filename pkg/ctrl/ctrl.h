@@ -23,9 +23,6 @@ c                       south (s), and western (w) mask, resp. .
       integer     maxcvars
       parameter ( maxcvars = 20 )
 
-      integer     optimcycle
-      parameter ( optimcycle = 0 )
-
       common /controlvars_i/
      &                       nvartype,
      &                       nvarlength,
@@ -82,6 +79,7 @@ c     xx_salt_file  - control vector salinity part.
       common /controlfiles_c/
      &                      xx_theta_file
      &                    , xx_salt_file
+     &                    , xx_tr1_file
      &                    , xx_tauu_file
      &                    , xx_tauv_file
      &                    , xx_sflux_file
@@ -92,6 +90,7 @@ c     xx_salt_file  - control vector salinity part.
      &                    , xx_kapgm_file
       character*(MAX_LEN_FNAM) xx_theta_file
       character*(MAX_LEN_FNAM) xx_salt_file
+      character*(MAX_LEN_FNAM) xx_tr1_file
       character*(MAX_LEN_FNAM) xx_tauu_file
       character*(MAX_LEN_FNAM) xx_tauv_file
       character*(MAX_LEN_FNAM) xx_sflux_file

@@ -17,6 +17,7 @@ C     == Global variables ===
 
 #include "ctrl.h"
 #include "ctrl_dummy.h"
+#include "optim.h"
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.

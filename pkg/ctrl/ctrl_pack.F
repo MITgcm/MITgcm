@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.1 2001/03/25 22:33:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.2 2001/07/13 13:40:17 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -42,6 +42,7 @@ c     == global variables ==
 
 #include "ctrl.h"
 #include "cost.h"
+#include "optim.h"
 
 c     == routine arguments ==
 
@@ -219,6 +220,52 @@ c     --> check cbuffindex.
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                        cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
      &                      * sqrt(wsalt(k,bi,bj))
+#else
+                       cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+#endif
+                    endif
+                 enddo
+                enddo
+               enddo
+              enddo
+             enddo
+            enddo
+c     --> check cbuffindex.
+            if ( cbuffindex .gt. 0) then
+               write(cunit) cbuffindex
+               write(cunit) k
+               write(cunit) (cbuff(ii), ii=1,cbuffindex)
+            endif
+         enddo
+            
+#endif
+
+#ifdef ALLOW_TR10_CONTROL
+
+          il=ilnblnk( xx_tr1_file)
+          write(fname(1:80),'(80a)') ' '
+          write(fname(1:80),'(2a,i10.10)')
+     &         xx_tr1_file(1:il),'.',optimcycle
+          call MDSREADFIELD_3D_GL( fname, 
+     &                          prec, 'RL', Nr, globfld3d, 
+     &                          1,  mythid)
+
+          write(cunit) ncvarindex(9)
+          write(cunit) 1
+          write(cunit) 1
+          do k = 1,nr
+           cbuffindex = 0
+            do jp = 1,nPy
+             do bj = jtlo,jthi
+              do j = jmin,jmax
+               do ip = 1,nPx
+                do bi = itlo,ithi
+                 do i = imin,imax
+                    if (globmsk(i,bi,ip,j,bj,jp,k)  .ne. 0. ) then
+                       cbuffindex = cbuffindex + 1
+#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
+                       cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+cph     &                      * sqrt(wtr1(k,bi,bj))
 #else
                        cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
 #endif
@@ -692,6 +739,53 @@ c     --> check cbuffindex.
 
 #endif
 
+#ifdef ALLOW_TR10_CONTROL
+
+          il=ilnblnk( xx_tr1_file)
+          write(fname(1:80),'(80a)') ' '
+          write(fname(1:80),'(3a,i10.10)')
+     &         yadmark,xx_tr1_file(1:il),'.',optimcycle
+
+          call MDSREADFIELD_3D_GL( fname, 
+     &                          prec, 'RL', Nr, 
+     &                          globfld3d, 
+     &                          1,  mythid)
+          
+          write(cunit) ncvarindex(9)
+          write(cunit) 1
+          write(cunit) 1
+          do k = 1,nr
+           cbuffindex = 0
+            do jp = 1,nPy
+             do bj = jtlo,jthi
+              do j = jmin,jmax
+               do ip = 1,nPx
+                do bi = itlo,ithi
+                 do i = imin,imax
+                    if (globmsk(i,bi,ip,j,bj,jp,k)  .ne. 0. ) then
+                       cbuffindex = cbuffindex + 1
+#ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
+                       cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+cph     &                      * sqrt(wtr1(k,bi,bj))
+#else
+                       cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+#endif
+                    endif
+                 enddo
+                enddo
+               enddo
+              enddo
+             enddo
+            enddo
+c     --> check cbuffindex.
+            if ( cbuffindex .gt. 0) then
+               write(cunit) cbuffindex
+               write(cunit) k
+               write(cunit) (cbuff(ii), ii=1,cbuffindex)
+            endif
+         enddo
+
+#endif
 
 #ifdef ALLOW_HFLUX0_CONTROL
 
