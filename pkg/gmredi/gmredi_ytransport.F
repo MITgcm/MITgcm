@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.6 2002/03/06 01:56:27 jmc Exp $
-C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
@@ -22,6 +20,11 @@ C     == GLobal variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "GMREDI.h"
+ 
+#ifdef ALLOW_AUTODIFF_TAMC
+#include "tamc.h"
+#include "tamc_keys.h"
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     == Routine arguments ==
 C     iMin,iMax,jMin,  - Range of points for which calculation
@@ -43,7 +46,27 @@ C     I, J - Loop counters
       INTEGER km1,kp1 
       _RL vTrans, maskp1, dTdz
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+          kkey = (ikey-1)*Nr + k
+#endif /* ALLOW_AUTODIFF_TAMC */
+
       IF (useGMRedi) THEN
+ 
+#ifdef GM_NON_UNITY_DIAGONAL
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE Kvy(:,:,k,bi,bj)     = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif
+#endif
 
 C--   Area integrated meridional flux
       DO j=jMin,jMax

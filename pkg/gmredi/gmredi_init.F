@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_init.F,v 1.6 2001/12/16 18:54:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_init.F,v 1.7 2002/03/24 02:33:16 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -40,23 +40,23 @@ C     Initialize arrays in common blocks :
         DO k=1,Nr
          DO j=1-Oly,sNy+OLy
           DO i=1-Olx,sNx+Olx
-           Kwx(i,j,k,bi,bj) = 0.
-           Kwy(i,j,k,bi,bj) = 0.
-           Kwz(i,j,k,bi,bj) = 0.
+           Kwx(i,j,k,bi,bj) = 0. _d 0
+           Kwy(i,j,k,bi,bj) = 0. _d 0
+           Kwz(i,j,k,bi,bj) = 0. _d 0
 #ifdef GM_EXTRA_DIAGONAL
-           Kuz(i,j,k,bi,bj) = 0.
-           Kvz(i,j,k,bi,bj) = 0.
+           Kuz(i,j,k,bi,bj) = 0. _d 0
+           Kvz(i,j,k,bi,bj) = 0. _d 0
 #endif
 #ifdef GM_NON_UNITY_DIAGONAL
-           Kux(i,j,k,bi,bj) = 0.
-           Kvy(i,j,k,bi,bj) = 0.
+           Kux(i,j,k,bi,bj) = 0. _d 0
+           Kvy(i,j,k,bi,bj) = 0. _d 0
 #endif
 #ifdef GM_BOLUS_ADVEC
-           GM_PsiX(i,j,k,bi,bj) = 0.
-           GM_PsiY(i,j,k,bi,bj) = 0.
+           GM_PsiX(i,j,k,bi,bj) = 0. _d 0
+           GM_PsiY(i,j,k,bi,bj) = 0. _d 0
 #endif
 #ifdef GM_VISBECK_VARIABLE_K
-          VisbeckK(i,j,bi,bj) = 0.
+          VisbeckK(i,j,bi,bj) = 0. _d 0
 #endif
           ENDDO
          ENDDO
@@ -68,7 +68,7 @@ C     Initialize averages to zero
         CALL TIMEAVE_RESET(GM_Kwy_T,Nr, bi,bj,myThid)
         CALL TIMEAVE_RESET(GM_Kwz_T,Nr, bi,bj,myThid)
         DO k=1,Nr
-         GM_TimeAve(k,bi,bj)=0.
+         GM_TimeAve(k,bi,bj)=0. _d 0
         ENDDO
 #ifdef GM_VISBECK_VARIABLE_K
         CALL TIMEAVE_RESET(Visbeck_K_T, 1, bi,bj,myThid)

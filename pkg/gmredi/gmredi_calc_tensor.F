@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.9 2001/12/16 18:54:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.10 2002/03/24 02:33:16 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -24,6 +24,11 @@ C     == Global variables ==
 #include "GMREDI.h"
 #include "GMREDI_DIAGS.h"
 
+#ifdef ALLOW_AUTODIFF_TAMC
+#include "tamc.h"
+#include "tamc_keys.h"
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C     == Routine arguments ==
 C
       _RL sigmaX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -42,39 +47,70 @@ C     == Local variables ==
       _RL dSigmaDrReal(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL SlopeSqr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL taperFct(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL maskp1, Kgm_tmp
+      _RL maskp1, maskm1, Kgm_tmp
 
 #ifdef GM_VISBECK_VARIABLE_K
       _RS deltaH,zero_rs
       PARAMETER(zero_rs=0.)
       _RL N2,SN
-      _RL Ssq
+      _RL Ssq(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 #endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       DO k=2,Nr
 C-- 1rst loop on k : compute Tensor Coeff. at W points.
-c      km1 = MAX(1,k-1)
+       km1 = MAX(1,k-1)
+       maskm1 = 1. _d 0
+       IF (k.LE.1) maskm1 = 0. _d 0
 
 #ifdef ALLOW_AUTODIFF_TAMC
-!HPF$ INDEPENDENT
+       kkey = (ikey-1)*Nr + k
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         SlopeX(i,j)       = 0. _d 0
+         SlopeY(i,j)       = 0. _d 0
+         dSigmaDrReal(i,j) = 0. _d 0
+         SlopeSqr(i,j)     = 0. _d 0
+         taperFct(i,j)     = 0. _d 0
+         Kwx(i,j,k,bi,bj)  = 0. _d 0
+         Kwy(i,j,k,bi,bj)  = 0. _d 0
+         Kwz(i,j,k,bi,bj)  = 0. _d 0
+        ENDDO
+       ENDDO
 #endif
+
       DO j=1-Oly+1,sNy+Oly-1
-#ifdef ALLOW_AUTODIFF_TAMC
-!HPF$ INDEPENDENT
-#endif
        DO i=1-Olx+1,sNx+Olx-1
 
 C      Gradient of Sigma at rVel points
-        SlopeX(i,j)=0.25*( sigmaX(i+1, j ,k-1) +sigmaX(i,j,k-1)
+        SlopeX(i,j)=0.25*( sigmaX(i+1, j ,km1) +sigmaX(i,j,km1)
      &                    +sigmaX(i+1, j , k ) +sigmaX(i,j, k ) )
-     &                  *maskC(i,j,k,bi,bj)
-        SlopeY(i,j)=0.25*( sigmaY( i ,j+1,k-1) +sigmaY(i,j,k-1)
+     &                  *maskC(i,j,k,bi,bj)*maskm1
+        SlopeY(i,j)=0.25*( sigmaY( i ,j+1,km1) +sigmaY(i,j,km1)
      &                    +sigmaY( i ,j+1, k ) +sigmaY(i,j, k ) )
-     &                  *maskC(i,j,k,bi,bj)
-        dSigmaDrReal(i,j)=sigmaR(i,j,k)
+     &                  *maskC(i,j,k,bi,bj)*maskm1
+        dSigmaDrReal(i,j)=sigmaR(i,j,k)*maskm1
 
        ENDDO
       ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dsigmadrreal(:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Calculate slopes for use in tensor, taper and/or clip
       CALL GMREDI_SLOPE_LIMIT(
@@ -88,10 +124,21 @@ C     Calculate slopes for use in tensor, taper and/or clip
        DO i=1-Olx+1,sNx+Olx-1
 
 C       Mask Iso-neutral slopes
-        SlopeX(i,j)=SlopeX(i,j)*maskC(i,j,k,bi,bj)
-        SlopeY(i,j)=SlopeY(i,j)*maskC(i,j,k,bi,bj)
-        SlopeSqr(i,j)=SlopeSqr(i,j)*maskC(i,j,k,bi,bj)
-c       Ssq=SlopeX(i,j)*SlopeX(i,j)+SlopeY(i,j)*SlopeY(i,j)
+        SlopeX(i,j)=SlopeX(i,j)*maskC(i,j,k,bi,bj)*maskm1
+        SlopeY(i,j)=SlopeY(i,j)*maskC(i,j,k,bi,bj)*maskm1
+        SlopeSqr(i,j)=SlopeSqr(i,j)*maskC(i,j,k,bi,bj)*maskm1
+
+       ENDDO
+      ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE SlopeSqr(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+      DO j=1-Oly+1,sNy+Oly-1
+       DO i=1-Olx+1,sNx+Olx-1
 
 C       Components of Redi/GM tensor 
         Kwx(i,j,k,bi,bj)= SlopeX(i,j)*taperFct(i,j)
@@ -102,7 +149,7 @@ C       Components of Redi/GM tensor
 
 C- note (jmc) : moved here since only used in VISBECK_VARIABLE_K 
 C           but don't know if *taperFct (or **2 ?) is necessary 
-        Ssq=SlopeSqr(i,j)*taperFct(i,j)
+        Ssq(i,j)=SlopeSqr(i,j)*taperFct(i,j)
 
 C--     Depth average of M^2/N^2 * N
 
@@ -118,9 +165,9 @@ C       Now we convert deltaH to a non-dimensional fraction
         deltaH=deltaH/GM_Visbeck_depth
 
         IF (K.eq.2) VisbeckK(i,j,bi,bj)=0.
-        IF (Ssq.NE.0.) THEN
+        IF (Ssq(i,j).NE.0.) THEN
          N2= -Gravity*recip_Rhonil*dSigmaDrReal(i,j)
-         SN=sqrt(Ssq*N2)
+         SN=sqrt(Ssq(i,j)*N2)
          VisbeckK(i,j,bi,bj)=VisbeckK(i,j,bi,bj)+deltaH
      &      *GM_Visbeck_alpha*GM_Visbeck_length*GM_Visbeck_length*SN
         ENDIF
@@ -152,6 +199,7 @@ C-     Limit range that KapGM can take
 
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 C-- 2nd loop on k : compute Tensor Coeff. at U,V levels.
       DO k=1,Nr
        kp1 = MIN(Nr,k+1)
@@ -207,7 +255,12 @@ C     Calculate slopes for use in tensor, taper and/or clip
 #ifdef GM_VISBECK_VARIABLE_K
      &     +0.5*(VisbeckK(i,j,bi,bj)+VisbeckK(i-1,j,bi,bj))
 #endif
-     &     )*taperFct(i,j)
+     &     )
+     &     *taperFct(i,j)
+         ENDDO
+        ENDDO
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
           Kux(i,j,k,bi,bj) = MAX( Kux(i,j,k,bi,bj), GM_Kmin_horiz )
          ENDDO
         ENDDO
@@ -258,7 +311,12 @@ C     Calculate slopes for use in tensor, taper and/or clip
 #ifdef GM_VISBECK_VARIABLE_K
      &     +0.5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
 #endif
-     &     )*taperFct(i,j)
+     &     )
+     &     *taperFct(i,j)
+         ENDDO
+        ENDDO
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
           Kvy(i,j,k,bi,bj) = MAX( Kvy(i,j,k,bi,bj), GM_Kmin_horiz )
          ENDDO
         ENDDO
