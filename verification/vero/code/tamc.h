@@ -57,18 +57,18 @@ c     nthreads_chkpt - Number of threads to be used; nth_chkpt .eq. nTx*nTy
 #ifdef ALLOW_TAMC_CHECKPOINTING
 
       integer    nchklev_1
-      parameter( nchklev_1      =  36 )
+      parameter( nchklev_1      =   9 )
       integer    nchklev_2
-      parameter( nchklev_2      =  30 )
+      parameter( nchklev_2      =  90 )
       integer    nchklev_3
-      parameter( nchklev_3      =  60 )
+      parameter( nchklev_3      =  90 )
 
 c--   Note always check for the correct sizes of the common blocks!
 
 #else /* ALLOW_TAMC_CHECKPOINTING undefined */
 
       integer    nchklev_0
-      parameter( nchklev_0      =  5760 )
+      parameter( nchklev_0      =  64800 )
 
 #endif /* ALLOW_TAMC_CHECKPOINTING */
 
@@ -98,13 +98,18 @@ c     and writing data.
       integer iloop_daily
 
       INTEGER    isbyte
-      PARAMETER( isbyte = 4 )
+      PARAMETER( isbyte      = 4 )
       INTEGER    maximpl
-      PARAMETER( maximpl = 6 )
+      PARAMETER( maximpl     = 6 )
+      INTEGER    maxpass
+      PARAMETER( maxpass     = 3 )
+      INTEGER    maxcube
+      PARAMETER( maxcube     = 1 )
 
-      INTEGER act1, act2, act3, act4
-      INTEGER max1, max2, max3
-      INTEGER iikey, kkey
+      INTEGER act0, act1, act2, act3, act4
+      INTEGER max0, max1, max2, max3
+      INTEGER iikey, kkey, passkey, igadkey, 
+     &        itdkey, idynkey, igmkey
 
 c     ================================================================
 c     END OF HEADER TAMC
