@@ -1,7 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.71 2002/05/01 01:35:30 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.72 2002/05/30 02:38:38 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint45b_post
+o cleaned exchange calls in cg2d
+o Included CPP option ALLOW_AUTODIFF_MONITOR in forward_step
+o included CPP option SINGLE_LAYER_MODE in thermodynamics
+  to configure barotropic setup (Martin Losch)
+o moved some initialisations within bi,bj loop in dynamics
+  (TAF flow dependency)
+o in initialise_varia, moved call packages_init_variables
+  before convective_adjustment_init
+  (corresponding adjustment of TAF tape initialisation).
+o in calc_diffusivity/calc_viscosity extended domain to full overlap.
 
 checkpoint45a_post
 o compute Rho over the whole domain (extend iMin,jMin indices)
