@@ -34,3 +34,13 @@ C flow directives for S/R DEBUG_MSG
 C----------------------------------------
 CADJ SUBROUTINE DEBUG_MSG INPUT  = 1,2
 CADJ SUBROUTINE DEBUG_MSG  OUTPUT =
+
+C----------------------------------------
+C flow directives for S/R DEBUG_CS_CORNER_UV
+C----------------------------------------
+CADJ SUBROUTINE DEBUG_CS_CORNER_UV INPUT  = 1,2,3,4,5,6,7
+CADJ SUBROUTINE DEBUG_CS_CORNER_UV  OUTPUT =
+
+
+
+

@@ -10,7 +10,6 @@ exf_getffields.f
 exf_getffieldrec.f
 exf_getforcing.f
 exf_mapfields.f
-exf_getobcs.f
 exf_getsurfacefluxes.f
 exf_swapffields.f
 exf_filter_rl.f
