@@ -1,9 +1,14 @@
+#ifdef TARGET_LINUX
+#undef  FORTRAN_MANGLE_TRAILING_UNDERSCORE
+#else
 #define FORTRAN_MANGLE_TRAILING_UNDERSCORE
+#endif
 #define TIM_USES_GETTIMEOFDAY
 
-#define procedure_cloc cloc
 #ifdef FORTRAN_MANGLE_TRAILING_UNDERSCORE
 #define procedure_cloc cloc_
+#else
+#define procedure_cloc cloc
 #endif
 #ifdef TIM_USES_OSF_GETCLOCK
 #include <stdio.h>
