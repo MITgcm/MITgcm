@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.66 2004/02/23 21:51:32 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.67 2004/02/24 19:00:32 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -145,18 +145,27 @@ EOF
 	echo "   "$p_FC
 	if test "x$FC" = x ; then
 	    FC=`echo $p_FC | $AWK '{print $1}'`
+	    echo "  Setting FORTRAN compiler to: "$FC
 	fi
     fi
 
-    for i in $p_FC ; do
-	p_OF=$ROOTDIR"/tools/build_options/"$PLATFORM"_"$i
-	if test -r $p_OF ; then
-	    OPTFILE=$p_OF
-	    echo "  The options file:  $p_OF"
-	    echo "    appears to match so we'll use it."
-	    break
-	fi
-    done
+    if test "x$OPTFILE" = x ; then
+	OPTFILE=$ROOTDIR"/tools/build_options/"$PLATFORM"_"$FC
+	if test ! -r $OPTFILE ; then
+             echo "  I looked for the file "$OPTFILE" but did not find it"
+        fi
+    fi
+#    echo "  The options file:  $p_OF"
+#    echo "    appears to match so we'll use it."
+#   for i in $p_FC ; do
+#p_OF=$ROOTDIR"/tools/build_options/"$PLATFORM"_"$i
+#if test -r $p_OF ; then
+#    OPTFILE=$p_OF
+#    echo "  The options file:  $p_OF"
+#    echo "    appears to match so we'll use it."
+#    break
+#fi
+#   done
     if test "x$OPTFILE" = x ; then
 	cat 1>&2 <<EOF
 
@@ -293,6 +302,13 @@ Usage: "$0" [OPTIONS]
           Do or don't use IEEE numerics.  Note that this option 
           *only* works if it is supported by the OPTFILE that 
           is being used.
+
+    -mpi | --mpi
+          Include MPI header files and link to MPI libraries
+    -mpi=PATH | --mpi=PATH
+          Include MPI header files and link to MPI libraries using MPI_ROOT
+          set to PATH. i.e. Include files from $PATH/include, link to libraries
+          from $PATH/lib and use binaries from $PATH/bin.
 
   While it is most often a single word, the "NAME" variables specified 
   above can in many cases be a space-delimited string such as:
@@ -476,6 +492,11 @@ EOF
 }
 
 
+
+###############################################################################
+#   Sequential part of script starts here
+###############################################################################
+
 #  Set defaults here
 COMMANDL="$0 $@"
 
@@ -486,7 +507,6 @@ KPP=
 FC=
 CPP=
 LINK=
-# DEFINES="-DWORDLENGTH=4"
 DEFINES=
 PACKAGES=
 ENABLE=
@@ -507,6 +527,8 @@ LIBS=
 KPPFILES=
 NOOPTFILES=
 NOOPTFLAGS=
+MPI=
+MPIPATH=
 
 # DEFINES checked by test compilation
 HAVE_SYSTEM=
@@ -705,6 +727,12 @@ for ac_option ; do
 	    IEEE=true ;;
 	-noieee | --noieee)
 	    IEEE= ;;
+
+	-mpi | --mpi)
+	    MPI=true ;;
+	-mpi=* | --mpi=*)
+	    MPIPATH=$ac_optarg
+	    MPI=true ;;
 	
 #	-jam | --jam)
 #	    JAM=1 ;;
@@ -897,6 +925,10 @@ EOF
 fi
 rm -f genmake_test_ln genmake_tlink
 
+if test ! "x$MPI" = x ; then
+      echo "  Turning on MPI cpp macros"
+      DEFINES="$DEFINS -DALLOW_USE_MPI -DALWAYS_USE_MPI"
+fi
 
 printf "\n===  Checking system libraries  ===\n"
 echo -n "  Do we have the system() command using $FC...  "
