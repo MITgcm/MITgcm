@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.34 2004/03/08 21:15:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.35 2004/03/09 03:57:25 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -173,17 +173,22 @@ C     Write dynvars using the MNC package
       CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'T', 0, theta)
       CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'S', 0, salt)
       CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'Eta', 0, etaN)
+#ifdef NONLIN_FRSURF
+      IF ( nonlinFreeSurf.GE.0)
+     &CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'EtaNH', 0, etaH)
+#endif
 
       DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO i=1,sNx
-            DO j=1,sNy
+          DO j=1,sNy
+            DO i=1,sNx
               etaN(i,j,bi,bj) = 0.0D0
+              etaH(i,j,bi,bj) = 0.0D0
             ENDDO
           ENDDO
           DO k=1,Nr
-            DO i=1,sNx
-              DO j=1,sNy
+            DO j=1,sNy
+              DO i=1,sNx
                 uVel(i,j,k,bi,bj)  = 0.0D0
                 vVel(i,j,k,bi,bj)  = 0.0D0
                 theta(i,j,k,bi,bj) = 0.0D0
@@ -202,6 +207,10 @@ C     Read variables from the pickup file
       CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'T',1,theta)
       CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'S',1,salt)
       CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'Eta',1,etaN)
+#ifdef NONLIN_FRSURF
+      IF ( nonlinFreeSurf.GE.0)
+     &CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'EtaNH', 1, etaH)
+#endif
 
 #endif /* ALLOW_MNC */
 

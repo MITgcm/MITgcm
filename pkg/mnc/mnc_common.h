@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.10 2004/03/08 21:15:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.11 2004/03/09 03:57:25 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -98,7 +98,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       parameter ( MNC_MAX_ID   = 1000 )
       parameter ( MNC_MAX_CHAR =  100 )
       parameter ( MNC_MAX_INFO =  200 )
-      parameter ( MNC_CW_MAX_I =  100 )
+      parameter ( MNC_CW_MAX_I =  200 )
 
       COMMON /MNC_VARS/
      &     mnc_blank_name, 

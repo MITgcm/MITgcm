@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_mnc_io.F,v 1.2 2004/03/08 16:48:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_mnc_io.F,v 1.3 2004/03/09 03:57:25 edhill Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -56,6 +56,11 @@ C     Create MNC definitions for DYNVARS.h variables
       CALL MNC_CW_ADD_VATTR_TEXT(myThid,'Eta',1,'long_name',
      &     'free-surface_r-anomaly')
       CALL MNC_CW_ADD_VATTR_TEXT(myThid,'Eta',1,
+     &     'coordinates','XC YC RC iter')
+      CALL MNC_CW_ADD_VNAME(myThid, 'EtaNH', 'Cen_xy_Hn__-__t', 3,4)
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'EtaNH',1,'long_name',
+     &     'free-surface_r-anomaly')
+      CALL MNC_CW_ADD_VATTR_TEXT(myThid,'EtaNH',1,
      &     'coordinates','XC YC RC iter')
 
       CALL MNC_CW_ADD_VNAME(myThid, 'W', 'Cen_xy_Hn__C__t', 4,5)
