@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.34 2005/02/17 00:03:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.35 2005/04/03 16:01:21 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -203,9 +203,18 @@ C-    Advective flux in X
      I            uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
      O            af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+         IF ( inAdMode ) THEN
+cph This block is to trick the adjoint:
+cph IF inAdExact=.FALSE., we want to use DST3 
+cph with limiters in forward, but without limiters in reverse.
+          CALL GAD_DST3_ADV_X( bi,bj,k, dTtracerLev(k),
+     I           uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
+     O           af, myThid )
+         ELSE
           CALL GAD_DST3FL_ADV_X( bi,bj,k, dTtracerLev(k),
-     I            uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
-     O            af, myThid )
+     I           uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
+     O           af, myThid )
+         ENDIF
         ELSE
          STOP 'GAD_CALC_RHS: Bad advectionScheme (X)'
         ENDIF
@@ -289,9 +298,18 @@ C-    Advective flux in Y
      I            vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
      O            af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+         IF ( inAdMode ) THEN
+cph This block is to trick the adjoint:
+cph IF inAdExact=.FALSE., we want to use DST3 
+cph with limiters in forward, but without limiters in reverse.
+          CALL GAD_DST3_ADV_Y( bi,bj,k, dTtracerLev(k),
+     I           vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
+     O           af, myThid )
+         ELSE
           CALL GAD_DST3FL_ADV_Y( bi,bj,k, dTtracerLev(k),
-     I            vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
-     O            af, myThid )
+     I           vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
+     O           af, myThid )
+         ENDIF
         ELSE
           STOP 'GAD_CALC_RHS: Bad advectionScheme (Y)'
         ENDIF
@@ -375,8 +393,16 @@ C-    Compute vertical advective flux in the interior:
           CALL GAD_DST3_ADV_R(
      &         bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
         ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-          CALL GAD_DST3FL_ADV_R(
-     &         bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
+cph This block is to trick the adjoint:
+cph IF inAdExact=.FALSE., we want to use DST3 
+cph with limiters in forward, but without limiters in reverse.
+          IF ( inAdMode ) THEN
+           CALL GAD_DST3_ADV_R(
+     &        bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
+          ELSE
+           CALL GAD_DST3FL_ADV_R(
+     &        bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
+          ENDIF
         ELSE
           STOP 'GAD_CALC_RHS: Bad vertAdvecScheme (R)'
         ENDIF
