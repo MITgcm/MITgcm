@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.21 1998/07/16 15:23:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.22 1998/07/29 18:33:47 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -230,6 +230,8 @@ C     deltaTtracer - Timestep for tracer equations ( s )
 C     freesurfFac  - Parameter to turn implicit free surface term on or off
 C                    freesurfac = 1. uses implicit free surface
 C                    freesurfac = 0. uses rigid lid
+C     hFacMin   - Minimum fraction size of a cell (affects hFacC etc...)
+C     hFacMinDz - Minimum dimesional size of a cell (affects hFacC etc...)
 C     tauCD     - CD scheme coupling timescale ( 1/s )
 C     rCD       - CD scheme normalised coupling parameter ( 0-1 )
 C     GMmaxslope  - max. slope allowed in GM/Redi tensor
@@ -265,7 +267,7 @@ C                           number times externForcingPeriod)
      & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, phiMin, 
      & thetaMin, rSphere, rRSphere, f0, fCori, beta, viscAh, viscAz, viscA4, 
      & diffKhT, diffKzT, diffK4T, diffKhS, diffKzS, diffK4S, delT, 
-     & tauCD, rCD, freeSurfFac,
+     & tauCD, rCD, freeSurfFac, hFacMin, hFacMinDz,
      & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,GMmaxval,
      & gravity, gBaro, rhonil, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq,
@@ -289,6 +291,8 @@ C                           number times externForcingPeriod)
       _RL rRSphere
       _RL f0
       _RL freeSurfFac
+      _RL hFacMin
+      _RL hFacMinDz
       _RL beta
       _RL viscAh
       _RL viscAz

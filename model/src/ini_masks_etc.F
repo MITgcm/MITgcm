@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.2 1998/07/02 15:46:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.3 1998/07/29 18:33:47 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -41,7 +41,7 @@ C         Inverse of depth
           IF ( h(i,j,bi,bj) .EQ. 0. _d 0 ) THEN
            rH(i,j,bi,bj) = 0. _d 0
           ELSE
-           rH(i,j,bi,bj) = 1. _d 0 /  H(i,j,bi,bj)
+           rH(i,j,bi,bj) = 1. _d 0 /  abs( H(i,j,bi,bj) )
           ENDIF
          ENDDO
         ENDDO
@@ -55,17 +55,32 @@ C     Calculate lopping factor hFacC
         DO K=1, Nz
          DO J=1,sNy
           DO I=1,sNx
-           IF     ( H(I,J,bi,bj) .LE. zFace(K) ) THEN
-C           Below base of domain
+           IF     ( H(I,J,bi,bj) .GE. zFace(K) ) THEN
+C           Top of cell is below base of domain
             hFacC(I,J,K,bi,bj) = 0.
-           ELSEIF ( H(I,J,bi,bj) .GT. zFace(K+1) ) THEN
-C           Base of domain is below this cell
+           ELSEIF ( H(I,J,bi,bj) .LE. zFace(K+1) ) THEN
+C           Base of domain is below bottom of this cell
             hFacC(I,J,K,bi,bj) = 1.
            ELSE
 C           Base of domain is in this cell
-C           Set hFac tp the fraction of the cell that is open.
-            hFacC(I,J,K,bi,bj) =
-     &        (zFace(K)-H(I,J,bi,bj))/(zFace(K)-zFace(K+1))
+C           Set hFac to the fraction of the cell that is open.
+            hFacC(I,J,K,bi,bj) = (zFace(K)-H(I,J,bi,bj))*rdzF(K)
+           ENDIF
+C Impose minimum fraction
+           IF (hFacC(I,J,K,bi,bj).LT.hFacMin) THEN
+            IF (hFacC(I,J,K,bi,bj).LT.hFacMin*0.5) THEN
+             hFacC(I,J,K,bi,bj)=0.
+            ELSE
+             hFacC(I,J,K,bi,bj)=hFacMin
+            ENDIF
+           ENDIF
+C Impose minimum size (dimensional)
+           IF (dzF(k)*hFacC(I,J,K,bi,bj).LT.hFacMinDz) THEN
+            IF (dzF(k)*hFacC(I,J,K,bi,bj).LT.hFacMinDz*0.5) THEN
+             hFacC(I,J,K,bi,bj)=0.
+            ELSE
+             hFacC(I,J,K,bi,bj)=hFacMinDz*rDzF(k)
+            ENDIF
            ENDIF
           ENDDO
          ENDDO
