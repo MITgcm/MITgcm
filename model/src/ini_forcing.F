@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.31 2003/11/13 06:35:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.32 2004/04/06 00:23:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,11 +51,7 @@ CEOP
           saltFlux        (i,j,bi,bj) = 0. _d 0
           SST             (i,j,bi,bj) = 0. _d 0
           SSS             (i,j,bi,bj) = 0. _d 0
-#ifdef SHORTWAVE_HEATING          
           Qsw             (i,j,bi,bj) = 0. _d 0
-#else
-          Qsw             (1,1,1,1)   = 0. _d 0
-#endif
 #ifdef ATMOSPHERIC_LOADING
           pload           (i,j,bi,bj) = 0. _d 0
 #endif
