@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_x.F,v 1.4 2002/03/06 01:29:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_x.F,v 1.5 2004/09/24 16:53:45 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -10,7 +10,7 @@ C !INTERFACE: ==========================================================
       SUBROUTINE GAD_FLUXLIMIT_ADV_X( 
      I           bi,bj,k,deltaT,
      I           uTrans, uVel,
-     I           tracer,
+     I           maskLocW, tracer,
      O           uT,
      I           myThid )
 
@@ -43,6 +43,7 @@ C  myThid               :: thread number
       _RL deltaT
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uVel  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
@@ -71,9 +72,9 @@ CEOP
 c       uFld = uVel(i,j,k,bi,bj)
         uFld = uTrans(i,j)*recip_dyG(i,j,bi,bj)
      &       *recip_drF(k)*recip_hFacW(i,j,k,bi,bj)
-        Rjp=(tracer(i+1,j)-tracer(i,j))*maskW(i+1,j,k,bi,bj)
-        Rj=(tracer(i,j)-tracer(i-1,j))*maskW(i,j,k,bi,bj)
-        Rjm=(tracer(i-1,j)-tracer(i-2,j))*maskW(i-1,j,k,bi,bj)
+        Rjp=(tracer(i+1,j)-tracer( i ,j))*maskLocW(i+1,j)
+        Rj =(tracer( i ,j)-tracer(i-1,j))*maskLocW( i ,j)
+        Rjm=(tracer(i-1,j)-tracer(i-2,j))*maskLocW(i-1,j)
 
         IF (Rj.NE.0.) THEN
          IF (uTrans(i,j).GT.0) THEN

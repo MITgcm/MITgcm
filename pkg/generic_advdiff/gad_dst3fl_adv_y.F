@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.5 2002/03/06 01:29:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.6 2004/09/24 16:53:46 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -6,7 +6,7 @@ C $Name:  $
       SUBROUTINE GAD_DST3FL_ADV_Y( 
      I           bi,bj,k,deltaT,
      I           vTrans, vVel,
-     I           tracer,
+     I           maskLocS, tracer,
      O           vT,
      I           myThid )
 C     /==========================================================\
@@ -26,6 +26,7 @@ C     == Routine arguments ==
       _RL deltaT
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
@@ -43,9 +44,9 @@ C     vFld    :: velocity [m/s], meridional component
       ENDDO
       DO j=1-Oly+2,sNy+Oly-1
        DO i=1-Olx,sNx+Olx
-        Rjp=(tracer(i,j+1)-tracer(i,j))*maskS(i,j+1,k,bi,bj)
-        Rj =(tracer(i,j)-tracer(i,j-1))*maskS(i,j,k,bi,bj)
-        Rjm=(tracer(i,j-1)-tracer(i,j-2))*maskS(i,j-1,k,bi,bj)
+        Rjp=(tracer(i,j+1)-tracer(i, j ))*maskLocS(i,j+1)
+        Rj =(tracer(i, j )-tracer(i,j-1))*maskLocS(i, j )
+        Rjm=(tracer(i,j-1)-tracer(i,j-2))*maskLocS(i,j-1)
 
 c       vFld = vVel(i,j,k,bi,bj)
         vFld = vTrans(i,j)*recip_dxG(i,j,bi,bj)
