@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean_pressure/code/Attic/SIZE.h,v 1.2 2003/02/11 14:17:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean_pressure/code/Attic/SIZE.h,v 1.3 2004/01/21 21:21:36 adcroft Exp $
 C $Name:  $
 
 C
@@ -38,11 +38,11 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Nr
       PARAMETER (
      &           sNx =  90,
-     &           sNy =  40,
+     &           sNy =  20,
      &           OLx =   2,
      &           OLy =   2,
      &           nSx =   1,
-     &           nSy =   1,
+     &           nSy =   2,
      &           nPx =   1,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
