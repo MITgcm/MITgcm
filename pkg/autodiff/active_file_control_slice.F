@@ -21,6 +21,9 @@ c
 c     ==================================================================
 
 
+CBOP
+C     !ROUTINE: active_read_xz_rl
+C     !INTERFACE:
       subroutine active_read_xz_rl(
      I                           active_var_file,
      O                           active_var,
@@ -33,34 +36,39 @@ c     ==================================================================
      I                           mythid
      &                         )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE active_read_xz_rl
 c     ==================================================================
-c
-c     o Read an active variable from file.
-c
-c     The variable *globalfile* can be used as a switch, which allows
-c     to read from a global file. The adjoint files are, however, always
-c     treated as tiled files.
-c
+c     o Read an active sliced xz _RL variable from file.
 c     started: heimbach@mit.edu 05-Mar-2001
-c
 c     ==================================================================
 c     SUBROUTINE active_read_xz_rl
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-
+c     active_var_file: filename
+c     active_var:      array
+c     irec:            record number
+c     myOptimIter:     number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
+c     doglobalread:    flag for global or local read/write
+c                      (default: .false.)
+c     lAdInit:         initialisation of corresponding adjoint
+c                      variable and write to active file
+c     mynr:            vertical array dimension
+c     theSimulationMode: forward mode or reverse mode simulation
       character*(*) active_var_file
-
       logical  globalfile
       logical  lAdInit
       integer  irec
@@ -70,27 +78,24 @@ c     == routine arguments ==
       integer  mythid
       _RL     active_var(1-olx:snx+olx,mynr,nsx,nsy)
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
-
       character*(2)  adpref
       character*(80) adfname
-
       integer bi,bj
       integer i,j,k
       integer oldprec
       integer prec
       integer il
       integer ilnblnk
-
       logical writeglobalfile
-
       _RL  active_data_t(1-olx:snx+olx,nsx,nsy)
 
 c     == functions ==
-
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec
@@ -222,6 +227,9 @@ c     Reset default io precision.
 
 c     ==================================================================
 
+CBOP
+C     !ROUTINE: active_write_xz_rl
+C     !INTERFACE:
       subroutine active_write_xz_rl(
      I                            active_var_file,
      I                            active_var,
@@ -233,30 +241,39 @@ c     ==================================================================
      I                            mythid
      &                          )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE active_write_xz_rl
 c     ==================================================================
-c
-c     o Write an active variable to a file.
-c
+c     o Write an active xz _RL variable to a file.
 c     started: heimbach@mit.edu 05-Mar-2001
-c
 c     ==================================================================
 c     SUBROUTINE active_write_xz_rl
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-
+c     active_var_file: filename
+c     active_var:      array
+c     irec:            record number
+c     myOptimIter:     number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
+c     doglobalread:    flag for global or local read/write
+c                      (default: .false.)
+c     lAdInit:         initialisation of corresponding adjoint
+c                      variable and write to active file
+c     mynr:            vertical array dimension
+c     theSimulationMode: forward mode or reverse mode simulation
       character*(*) active_var_file
-
       integer  mynr
       logical  globalfile
       integer  irec
@@ -265,8 +282,8 @@ c     == routine arguments ==
       integer  mythid
       _RL     active_var(1-olx:snx+olx,mynr,nsx,nsy)
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
-
       integer  i,j,k
       integer  bi,bj
       _RL  active_data_t(1-olx:snx+olx,nsx,nsy)
@@ -274,6 +291,7 @@ c     == local variables ==
       integer  prec
 
 c     == end of interface ==
+CEOP
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec
@@ -359,6 +377,9 @@ c     Reset default io precision.
 
 c     ==================================================================
 
+CBOP
+C     !ROUTINE: active_read_yz_rl
+C     !INTERFACE:
       subroutine active_read_yz_rl(
      I                           active_var_file,
      O                           active_var,
@@ -371,34 +392,39 @@ c     ==================================================================
      I                           mythid
      &                         )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE active_read_yz_rl
 c     ==================================================================
-c
-c     o Read an active variable from file.
-c
-c     The variable *globalfile* can be used as a switch, which allows
-c     to read from a global file. The adjoint files are, however, always
-c     treated as tiled files.
-c
+c     o Read an active sliced yz _RL variable from file.
 c     started: heimbach@mit.edu 05-Mar-2001
-c
 c     ==================================================================
 c     SUBROUTINE active_read_yz_rl
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-
+c     active_var_file: filename
+c     active_var:      array
+c     irec:            record number
+c     myOptimIter:     number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
+c     doglobalread:    flag for global or local read/write
+c                      (default: .false.)
+c     lAdInit:         initialisation of corresponding adjoint
+c                      variable and write to active file
+c     mynr:            vertical array dimension
+c     theSimulationMode: forward mode or reverse mode simulation
       character*(*) active_var_file
-
       logical  globalfile
       logical  lAdInit
       integer  irec
@@ -408,27 +434,24 @@ c     == routine arguments ==
       integer  mythid
       _RL     active_var(1-oly:sny+oly,mynr,nsx,nsy)
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
-
       character*(2)  adpref
       character*(80) adfname
-
       integer bi,bj
       integer i,j,k
       integer oldprec
       integer prec
       integer il
       integer ilnblnk
-
       logical writeglobalfile
-
       _RL  active_data_t(1-oly:sny+oly,nsx,nsy)
 
 c     == functions ==
-
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec
@@ -560,6 +583,9 @@ c     Reset default io precision.
 
 c     ==================================================================
 
+CBOP
+C     !ROUTINE: active_write_yz_rl
+C     !INTERFACE:
       subroutine active_write_yz_rl(
      I                            active_var_file,
      I                            active_var,
@@ -571,30 +597,39 @@ c     ==================================================================
      I                            mythid
      &                          )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE active_write_yz_rl
 c     ==================================================================
-c
-c     o Write an active variable to a file.
-c
+c     o Write an active yz _RL variable to a file.
 c     started: heimbach@mit.edu 05-Mar-2001
-c
 c     ==================================================================
 c     SUBROUTINE active_write_yz_rl
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-
+c     active_var_file: filename
+c     active_var:      array
+c     irec:            record number
+c     myOptimIter:     number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
+c     doglobalread:    flag for global or local read/write
+c                      (default: .false.)
+c     lAdInit:         initialisation of corresponding adjoint
+c                      variable and write to active file
+c     mynr:            vertical array dimension
+c     theSimulationMode: forward mode or reverse mode simulation
       character*(*) active_var_file
-
       integer  mynr
       logical  globalfile
       integer  irec
@@ -603,8 +638,8 @@ c     == routine arguments ==
       integer  mythid
       _RL     active_var(1-oly:sny+oly,mynr,nsx,nsy)
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
-
       integer  i,j,k
       integer  bi,bj
       _RL  active_data_t(1-oly:sny+oly,nsx,nsy)
@@ -612,6 +647,7 @@ c     == local variables ==
       integer  prec
 
 c     == end of interface ==
+CEOP
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec

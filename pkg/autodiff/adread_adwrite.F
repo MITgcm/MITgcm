@@ -57,6 +57,9 @@ c
 c     ==================================================================
 
 
+CBOP
+C     !ROUTINE: adread
+C     !INTERFACE:
       subroutine adread(
      I                   mythid,
      I                   name,
@@ -69,42 +72,41 @@ c     ==================================================================
      I                   irec
      &                 )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE adread
 c     ==================================================================
-c
 c     o Read direct access file.
-c
 c     A call to this routine implies an open-read-close sequence
 c     since it uses the MITgcmUV i/o routine MDSREADVECTOR. Only
 c     the master thread reads the data. Otherwise each thread would
 c     read from file.
-c
 c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 15-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c     changed: Patrick Heimbach heimbach@mit.edu 27-May-2000
-c
-c              - changed subroutine parameter list: skipped myiter
-c
 c     ==================================================================
 c     SUBROUTINE adread
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "ctrl.h"
 #include "optim.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
+c     name   -  extended tape name.
+c     len    -  number of characters in name.
+c     tid    -  tape identifier.
+c     vid    -  identifies the variable to be stored on tape.
+c     var    -  values to be stored.
+c     size   -  size in bytes of the type of variable var.
+c     length -  dimension of the variable stored on the tape.
+c     mythid -  number of the thread or instance of the program.
+c     irec   -  record number to be written.
 
       integer mythid
       character*(*) name
@@ -116,19 +118,19 @@ c     == routine arguments ==
       integer irec
       _RL     var(length)
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
-
       character*(7) itername
       character*(80) fname
       integer il
       integer bx,by
 
 c     == functions ==
-
       integer  ilnblnk
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
       write(fname(1:80),'(a)') ' '
       write(itername,'(a,i4.4)') '.it',optimcycle
@@ -151,6 +153,9 @@ c     Everyone must wait for the read operation to be completed.
       end
 
 
+CBOP
+C     !ROUTINE: adwrite
+C     !INTERFACE:
       subroutine adwrite(
      I                    mythid,
      I                    name,
@@ -163,43 +168,42 @@ c     Everyone must wait for the read operation to be completed.
      I                    irec
      &                  )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE adwrite
 c     ==================================================================
-c
 c     o Write to direct access file.
-c
 c     A call to this routine implies an open-read-close sequence
 c     since it uses the MITgcmUV i/o routine MDSREADVECTOR. Only
 c     the master thread writes the data. Otherwise each thread would
 c     write to file. This would result in an excessive waste of
 c     disk space.
-c
 c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 15-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c     changed: Patrick Heimbach heimbach@mit.edu 27-May-2000
-c
-c              - changed subroutine parameter list: skipped myiter
-c
 c     ==================================================================
 c     SUBROUTINE adwrite
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "ctrl.h"
 #include "optim.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
+c     name   -  extended tape name.
+c     len    -  number of characters in name.
+c     tid    -  tape identifier.
+c     vid    -  identifies the variable to be stored on tape.
+c     var    -  values to be stored.
+c     size   -  size in bytes of the type of variable var.
+c     length -  dimension of the variable stored on the tape.
+c     mythid -  number of the thread or instance of the program.
+c     irec   -  record number to be written.
 
       integer mythid
       character*(*) name
@@ -211,8 +215,8 @@ c     == routine arguments ==
       integer irec
       _RL     var(length)
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
-
       character*(7) itername
       character*(80) fname
       integer il
@@ -220,11 +224,11 @@ c     == local variables ==
       logical globalfile
 
 c     == functions ==
-
       integer ilnblnk
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
       globalfile = .false.
       il         = ilnblnk( name )

@@ -1,4 +1,28 @@
 
+CBOP
+C     !ROUTINE: flow directives for active_file.F
+C     !INTERFACE:
+C     !DESCRIPTION: \bv
+c     ==================================================================
+c     active_file.flow
+c     ==================================================================
+c     provides flow directives for routines in active_file.F
+c     required by TAMC/TAF
+c     * active_read_xy
+c     * active_read_xyz
+c     * active_read_xz
+c     * active_read_yz
+c     * active_write_xy
+c     * active_write_xyz
+c     * active_write_xz
+c     * active_write_yz
+c     _tile_ routines are not used nd my not be up-to-date. PH
+c     ==================================================================
+c     active_file.flow
+c     ==================================================================
+C     \ev
+CEOP
+
 c----------------------------------------
 c subroutine active_read_xy
 c----------------------------------------

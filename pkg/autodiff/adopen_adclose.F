@@ -57,6 +57,9 @@ c
 c     ==================================================================
 
 
+CBOP
+C     !ROUTINE: adopen
+C     !INTERFACE:
       subroutine adopen(
      I                   mythid,
 cph(
@@ -70,33 +73,35 @@ cph)
      I                   length
      &                 )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE adopen
 c     ==================================================================
-c
 c     o Dummy routine expected to be available by TAMC I/O.
-c
 c     This routine is simply a dummy routine expected to be available by
 c     the Tangent Linear and Adjoint Model Compiler(TAMC). Files are
 c     opened and closed by the routines that are called by *adread* and
 c     *adwrite*.
-c
 c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 15-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
 c     ==================================================================
 c     SUBROUTINE adopen
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
+c     name   -  extended tape name.
+c     len    -  number of characters in name.
+c     tid    -  tape identifier.
+c     vid    -  identifies the variable to be stored on tape.
+c     size   -  size in bytes of the type of variable var.
+c     length -  dimension of the variable stored on the tape.
+c     mythid -  number of the thread or instance of the program.
 
       integer mythid
 cph(
@@ -109,14 +114,19 @@ cph)
       integer size
       integer length
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
 
 c     == end of interface ==
+CEOP
 
       return
       end
 
 
+CBOP
+C     !ROUTINE: adclose
+C     !INTERFACE:
       subroutine adclose(
      I                    mythid,
 cph(
@@ -131,33 +141,35 @@ cph)
      &                  )
 
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE adclose
 c     ==================================================================
-c
 c     o Dummy routine expected to be available by TAMC I/O.
-c
 c     This routine is simply a dummy routine expected to be available by
 c     the Tangent Linear and Adjoint Model Compiler(TAMC). Files are
 c     opened and closed by the routines that are called by *adread* and
 c     *adwrite*.
-c
 c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 15-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
 c     ==================================================================
 c     SUBROUTINE adclose
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
+c     name   -  extended tape name.
+c     len    -  number of characters in name.
+c     tid    -  tape identifier.
+c     vid    -  identifies the variable to be stored on tape.
+c     size   -  size in bytes of the type of variable var.
+c     length -  dimension of the variable stored on the tape.
+c     mythid -  number of the thread or instance of the program.
 
       integer mythid
 cph(
@@ -170,9 +182,11 @@ cph)
       integer size
       integer length
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
 
 c     == end of interface ==
+CEOP
 
       return
       end

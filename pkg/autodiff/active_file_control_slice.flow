@@ -1,4 +1,23 @@
 
+CBOP
+C     !ROUTINE: flow directives for active_file_control_slice.F
+C     !INTERFACE:
+C     !DESCRIPTION: \bv
+c     ==================================================================
+c     active_file_control_slice.flow
+c     ==================================================================
+c     provides flow directives for routines in active_file_control.F
+c     required by TAMC/TAF
+c     * active_read_xz_rl
+c     * active_read_yz_rl
+c     * active_write_xz_rl
+c     * active_write_yz_rl
+c     ==================================================================
+c     active_file_control_slice.flow
+c     ==================================================================
+C     \ev
+CEOP
+
 c----------------------------------------
 c subroutine active_read_xz_rl
 c----------------------------------------

@@ -1,18 +1,4 @@
 
-CADJ SUBROUTINE active_read_rl  INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
-CADJ SUBROUTINE active_read_rl  OUTPUT  =    2
-
-CADJ SUBROUTINE active_write_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8
-CADJ SUBROUTINE active_write_rl OUTPUT  =    2
-
-CADJ SUBROUTINE active_read_tile_rl  INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
-CADJ SUBROUTINE active_read_tile_rl  INPUT  += 10, 11
-CADJ SUBROUTINE active_read_tile_rl  OUTPUT  =    2
-
-CADJ SUBROUTINE active_write_tile_rl INPUT   = 1, 2, 3, 4, 5, 6, 7, 8, 9
-CADJ SUBROUTINE active_write_tile_rl INPUT  += 10
-CADJ SUBROUTINE active_write_tile_rl OUTPUT  =    2
-
 #include "CPP_OPTIONS.h"
 
 c     ==================================================================
@@ -35,17 +21,17 @@ c     o  adactive_write_tile_xyz  - Adjoint of active_write_tile_xyz
 c
 c
 c        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
-c
 c                 - Added routines that do active writes on tiles
 c                   instead of a whole thread.
-c
 c        changed: Patrick Heimbach heimbach@mit.edu 27-May-2000
-c
 c                 - changed suboutine argument list: 
 c                   dropped mycurrentiter, mycurrenttime
 c
 c     ==================================================================
 
+CBOP
+C     !ROUTINE: adactive_read_xy
+C     !INTERFACE:
       subroutine adactive_read_xy(
      I                             active_var_file,
      I                             irec,
@@ -56,37 +42,35 @@ c     ==================================================================
      I                             adactive_var
      &                           )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
-c     SUBROUTINE active_read_xy
+c     SUBROUTINE adactive_read_xy
 c     ==================================================================
-c
 c     o Adjoint of active_read_xy.
-c
 c     started: Christian Eckert eckert@mit.edu 24-May-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 11-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c     changed: Patrick Heimbach heimbach@mit.edu 27-May-2000
-c
-c              - changed suboutine argument list: 
-c                dropped mycurrentiter, mycurrenttime
-c
 c     ==================================================================
-c     SUBROUTINE active_read_xy
+c     SUBROUTINE adactive_read_xy
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-
+c     active_var_file: filename
+c     adactive_var:    array
+c     irec:            record number
+c     myIter:          number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
+c     doglobalread:    flag for global or local read/write
+c                      (default: .false.)
+c     lAdInit:         initialisation of corresponding adjoint
+c                      variable and write to active file
       character*(*) active_var_file
       _RL     adactive_var(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       integer irec
@@ -94,8 +78,8 @@ c     == routine arguments ==
       logical doglobalread
       logical lAdInit
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
-
       integer mynr
       integer il
       integer ilnblnk
@@ -103,10 +87,10 @@ c     == local variables ==
       character*(80) fname
 
 c     == functions ==
-
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
       mynr   = 1
       adpref = 'ad'
@@ -123,6 +107,9 @@ c     == end of interface ==
 
       end
 
+CBOP
+C     !ROUTINE: adactive_read_xyz
+C     !INTERFACE:
       subroutine adactive_read_xyz(
      I                              active_var_file,
      I                              irec,
@@ -133,37 +120,34 @@ c     == end of interface ==
      I                              adactive_var
      &                            )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE adactive_read_xyz
 c     ==================================================================
-c
 c     o Adjoint of active_read_xyz.
-c
 c     started: Christian Eckert eckert@mit.edu 24-May-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 11-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c     changed: Patrick Heimbach heimbach@mit.edu 27-May-2000
-c
-c              - changed suboutine argument list: 
-c                dropped mycurrentiter, mycurrenttime
-c
 c     ==================================================================
 c     SUBROUTINE adactive_read_xyz
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
 c     == routine arguments ==
-
+c     active_var_file: filename
+c     adactive_var:    array
+c     irec:            record number
+c     myIter:          number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
+c     doglobalread:    flag for global or local read/write
+c                      (default: .false.)
+c     lAdInit:         initialisation of corresponding adjoint
+c                      variable and write to active file
       character*(*) active_var_file
       _RL     adactive_var(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       integer irec
@@ -171,8 +155,8 @@ c     == routine arguments ==
       logical doglobalread
       logical lAdInit
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
-
       integer mynr
       integer il
       integer ilnblnk
@@ -180,10 +164,10 @@ c     == local variables ==
       character*(80) fname
 
 c     == functions ==
-
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
       mynr   = nr
       adpref = 'ad'
@@ -200,6 +184,9 @@ c     == end of interface ==
 
       end
 
+CBOP
+C     !ROUTINE: adactive_read_xy
+C     !INTERFACE:
       subroutine adactive_write_xy(
      I                              active_var_file,
      I                              irec,
@@ -210,45 +197,38 @@ c     == end of interface ==
      &                            )
 
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE adactive_write_xy
 c     ==================================================================
-c
 c     o Adjoint of active_write_xy.
-c
 c     started: Christian Eckert eckert@mit.edu 24-May-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 11-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c     changed: Patrick Heimbach heimbach@mit.edu 27-May-2000
-c
-c              - changed suboutine argument list: 
-c                dropped mycurrentiter, mycurrenttime
-c
 c     ==================================================================
 c     SUBROUTINE adactive_write_xy
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
 c     == routine arguments ==
-
+c     active_var_file: filename
+c     adactive_var:    array
+c     irec:            record number
+c     myIter:          number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
       character*(*) active_var_file
       _RL     adactive_var(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       integer irec
       integer myiter,mythid
       _RL     dummy
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
-
       integer mynr
       integer il
       integer ilnblnk
@@ -257,10 +237,10 @@ c     == local variables ==
       logical globalfile
 
 c     == functions ==
-
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
       mynr   = 1
       adpref = 'ad'
@@ -280,6 +260,9 @@ c     == end of interface ==
       end
 
 
+CBOP
+C     !ROUTINE: adactive_read_xyz
+C     !INTERFACE:
       subroutine adactive_write_xyz(
      I                               active_var_file,
      I                               irec,
@@ -290,45 +273,38 @@ c     == end of interface ==
      &                             )
 
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE adactive_write_xyz
 c     ==================================================================
-c
 c     o Adjoint of active_write_xyz.
-c
 c     started: Christian Eckert eckert@mit.edu 24-May-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 11-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c     changed: Patrick Heimbach heimbach@mit.edu 27-May-2000
-c
-c              - changed suboutine argument list: 
-c                dropped mycurrentiter, mycurrenttime
-c
 c     ==================================================================
 c     SUBROUTINE adactive_write_xyz
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
 c     == routine arguments ==
-
+c     active_var_file: filename
+c     adactive_var:    array
+c     irec:            record number
+c     myIter:          number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
       character*(*) active_var_file
       _RL     adactive_var(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
       integer irec
       integer myiter,mythid
       _RL dummy
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
-
       integer mynr
       integer il
       integer ilnblnk
@@ -337,10 +313,10 @@ c     == local variables ==
       logical globalfile
 
 c     == functions ==
-
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
       mynr   = nr
       adpref = 'ad'

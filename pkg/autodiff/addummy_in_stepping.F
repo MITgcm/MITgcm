@@ -1,18 +1,33 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.5 2001/08/13 18:07:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.6 2001/09/28 04:19:27 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: addummy_in_stepping
+C     !INTERFACE:
       subroutine addummy_in_stepping( mytime, myiter, myThid )
-      IMPLICIT NONE
-C     /==========================================================\
-C     | SUBROUTINE addummy_in_stepping                           |
-C     |==========================================================|
-C     == Global variables ===
 
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | SUBROUTINE addummy_in_stepping                           |
+C     *==========================================================*
+C     Extract adjoint variable from TAMC/TAF-generated
+C     adjoint common blocks, contained in adcommon.h
+C     and write fields to file;
+C     Make sure common blocks in adcommon.h are up-to-date
+C     w.r.t. current adjoint code.
+C     *==========================================================*
+C     | SUBROUTINE addummy_in_stepping                           |
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-
 #include "adcommon.h"
 
       LOGICAL  DIFFERENT_MULTIPLE
@@ -20,11 +35,17 @@ C     == Global variables ===
       INTEGER  IO_ERRCOUNT
       EXTERNAL IO_ERRCOUNT
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
+C     myIter - iteration counter for this thread
+C     myTime - time counter for this thread
 C     myThid - Thread number for this instance of the routine.
       integer myThid
       integer myiter
       _RL     mytime 
+
+C     !LOCAL VARIABLES:
+c     == local variables ==
 C     suff - Hold suffix part of a filename
 C     beginIOErrCount - Begin and end IO error counts
 C     endIOErrCount
@@ -33,6 +54,9 @@ C     msgBuf - Error message buffer
       INTEGER beginIOErrCount
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+c     == end of interface ==
+CEOP
 
       call TIMER_START('I/O (WRITE)        [ADJOINT LOOP]', myThid )
 

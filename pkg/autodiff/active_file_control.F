@@ -21,13 +21,15 @@ c                                 operations.
 c
 c
 c        changed: Christian Eckert eckert@mit.edu 24-Apr-2000
-c
 c                 - Added routines that do active writes on tiles
 c                   instead of a whole thread.
 c
 c     ==================================================================
 
 
+CBOP
+C     !ROUTINE: active_read_rl
+C     !INTERFACE:
       subroutine active_read_rl(
      I                           active_var_file,
      O                           active_var,
@@ -40,49 +42,42 @@ c     ==================================================================
      I                           mythid
      &                         )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE active_read_rl
 c     ==================================================================
-c
-c     o Read an active variable from file.
-c
+c     o Read an active _RL variable from file.
 c     The variable *globalfile* can be used as a switch, which allows
 c     to read from a global file. The adjoint files are, however, always
 c     treated as tiled files.
-c
 c     started: Christian Eckert eckert@mit.edu    Jan-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 23-Nov-1999
-c
-c              - interchanged the i,j loops
-c
-c              Christian Eckert eckert@mit.edu 11-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c              Christian Eckert eckert@mit.edu 31-Mar-2000
-c
-c              - Added BEGIN/END_MASTER and BARRIER for multiple
-c                threads and synchronisation, respectively. Added
-c                logical lAdInit.
-c
 c     ==================================================================
 c     SUBROUTINE active_read_rl
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-
+c     active_var_file: filename
+c     active_var:      array
+c     irec:            record number
+c     myOptimIter:     number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
+c     doglobalread:    flag for global or local read/write
+c                      (default: .false.)
+c     lAdInit:         initialisation of corresponding adjoint
+c                      variable and write to active file
+c     mynr:            vertical array dimension
+c     theSimulationMode: forward mode or reverse mode simulation
       character*(*) active_var_file
-
       logical  globalfile
       logical  lAdInit
       integer  irec
@@ -92,27 +87,24 @@ c     == routine arguments ==
       integer  mythid
       _RL     active_var(1-olx:snx+olx,1-oly:sny+oly,mynr,nsx,nsy)
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
-
       character*(2)  adpref
       character*(80) adfname
-
       integer bi,bj
       integer i,j,k
       integer oldprec
       integer prec
       integer il
       integer ilnblnk
-
       logical writeglobalfile
-
       _RL  active_data_t(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
 c     == functions ==
-
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec
@@ -249,6 +241,9 @@ c     Reset default io precision.
       end
 
 
+CBOP
+C     !ROUTINE: active_write_rl
+C     !INTERFACE:
       subroutine active_write_rl(
      I                            active_var_file,
      I                            active_var,
@@ -260,44 +255,39 @@ c     Reset default io precision.
      I                            mythid
      &                          )
 
+C     !DESCRIPTION: \bv
 c     ==================================================================
 c     SUBROUTINE active_write_rl
 c     ==================================================================
-c
-c     o Write an active variable to a file.
-c
+c     o Write an active _RL variable to a file.
 c     started: Christian Eckert eckert@mit.edu    Jan-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 23-Nov-1999
-c
-c              - interchanged the i,j loops
-c
-c              Christian Eckert eckert@mit.edu 11-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c              Christian Eckert eckert@mit.edu 31-Mar-2000
-c
-c              - Added BEGIN/END_MASTER and BARRIER for multiple
-c                threads and synchronisation, respectively.
-c
 c     ==================================================================
 c     SUBROUTINE active_write_rl
 c     ==================================================================
+C     \ev
 
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-
+c     active_var_file: filename
+c     active_var:      array
+c     irec:            record number
+c     myOptimIter:     number of optimization iteration (default: 0)
+c     mythid:          thread number for this instance
+c     doglobalread:    flag for global or local read/write
+c                      (default: .false.)
+c     lAdInit:         initialisation of corresponding adjoint
+c                      variable and write to active file
+c     mynr:            vertical array dimension
+c     theSimulationMode: forward mode or reverse mode simulation
       character*(*) active_var_file
-
       integer  mynr
       logical  globalfile
       integer  irec
@@ -306,8 +296,8 @@ c     == routine arguments ==
       integer  mythid
       _RL     active_var(1-olx:snx+olx,1-oly:sny+oly,mynr,nsx,nsy)
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
-
       integer  i,j,k
       integer  bi,bj
       _RL  active_data_t(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -315,6 +305,7 @@ c     == local variables ==
       integer  prec
 
 c     == end of interface ==
+CEOP
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec
