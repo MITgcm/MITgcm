@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/fill_diagnostics.F,v 1.14 2004/07/21 21:13:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/fill_diagnostics.F,v 1.15 2004/07/24 02:32:52 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -19,7 +19,10 @@ C                  0 indicates multiple levels incremented in qdiag
 C                  non-0 (any integer) - WHICH single level to increment.
 C                  negative integer - the input data array is single-leveled
 C                  positive integer - the input data array is multi-leveled
-C     nlevs ...... Number of levels to be incremented (1 if levflg > 0)
+C     nlevs ...... indicates Number of levels to be filled (1 if levflg <> 0)
+C                  positive: fill in "nlevs" levels in the same order as
+C                            the input array 
+C                  negative: fill in -nlevs levels in reverse order.
 C     bibjflg .... Integer flag to indicate instructions for bi bj loop
 C                  0 indicates that the bi-bj loop must be done here
 C                  1 indicates that the bi-bj loop is done OUTSIDE
@@ -79,7 +82,7 @@ C   Check to see if we need to do a bi-bj loop here
       if(bibjflg.eq.0) then
        irun = sNx+2*Olx
        jrun = sNy+2*Oly
-       krun = nlevs
+       krun = abs(nlevs)
 c      birun = myBxHi(myThid)-myBxLo(myThid)+1
 c      bjrun = myByHi(myThid)-myByLo(myThid)+1
        birun = nSx
@@ -89,13 +92,15 @@ c      bjrun = myByHi(myThid)-myByLo(myThid)+1
        do bihere=myBxLo(myThid), myBxHi(myThid)
 
        if(levflg.eq.0)then
-        do levhere = 1,nlevs
+        do levhere = 1,krun
+         level = levhere
+         IF (nlevs.LT.0) level=1-nlevs-levhere
          call fillit(arrayin,irun,jrun,krun,levhere,birun,bjrun,
      .                                              bihere,bjhere,array)
          do j = 1,sNy
          do i = 1,sNx
-          qdiag(i,j,ipointer+levhere-1,bihere,bjhere) = 
-     .  qdiag(i,j,ipointer+levhere-1,bihere,bjhere) + 
+          qdiag(i,j,ipointer+level-1,bihere,bjhere) = 
+     .  qdiag(i,j,ipointer+level-1,bihere,bjhere) + 
      .                       array(i,j)
          enddo
          enddo
@@ -129,18 +134,20 @@ c      bjrun = myByHi(myThid)-myByLo(myThid)+1
       elseif(bibjflg.eq.1) then
        irun = sNx+2*Olx
        jrun = sNy+2*Oly
-       krun = nlevs
+       krun = abs(nlevs)
        birun = nSx
        bjrun = nSy
 
        if(levflg.eq.0)then
-        do levhere = 1,nlevs
+        do levhere = 1,krun
+         level = levhere
+         IF (nlevs.LT.0) level=1-nlevs-levhere
          call fillit(arrayin,irun,jrun,krun,levhere,birun,bjrun,
      .                                              bi,bj,array)
          do j = 1,sNy
          do i = 1,sNx
-          qdiag(i,j,ipointer+levhere-1,bi,bj) =
-     .  qdiag(i,j,ipointer+levhere-1,bi,bj) +
+          qdiag(i,j,ipointer+level-1,bi,bj) =
+     .  qdiag(i,j,ipointer+level-1,bi,bj) +
      .                       array(i,j)
          enddo
          enddo
@@ -169,18 +176,20 @@ c      bjrun = myByHi(myThid)-myByLo(myThid)+1
       elseif(bibjflg.eq.2) then
        irun = sNx
        jrun = sNy
-       krun = nlevs
+       krun = abs(nlevs)
        birun = 1
        bjrun = 1
 
        if(levflg.eq.0)then
-        do levhere = 1,nlevs
+        do levhere = 1,krun
+         level = levhere
+         IF (nlevs.LT.0) level=1-nlevs-levhere
          call fillit(arrayin,irun,jrun,krun,levhere,birun,bjrun,
      .                                              1,1,arrayloc)
          do j = 1,sNy
          do i = 1,sNx
-          qdiag(i,j,ipointer+levhere-1,bi,bj) =
-     .  qdiag(i,j,ipointer+levhere-1,bi,bj) + arrayloc(i,j)
+          qdiag(i,j,ipointer+level-1,bi,bj) =
+     .  qdiag(i,j,ipointer+level-1,bi,bj) + arrayloc(i,j)
          enddo
          enddo
         enddo
@@ -208,18 +217,20 @@ c      bjrun = myByHi(myThid)-myByLo(myThid)+1
       elseif(bibjflg.eq.3) then
        irun = sNx+2*Olx
        jrun = sNy+2*Oly
-       krun = nlevs
+       krun = abs(nlevs)
        birun = 1
        bjrun = 1
 
        if(levflg.eq.0)then
-        do levhere = 1,nlevs
+        do levhere = 1,krun
+         level = levhere
+         IF (nlevs.LT.0) level=1-nlevs-levhere
          call fillit(arrayin,irun,jrun,krun,levhere,birun,bjrun,
      .                                              1,1,array)
          do j = 1,sNy
          do i = 1,sNx
-          qdiag(i,j,ipointer+levhere-1,bi,bj) =
-     .  qdiag(i,j,ipointer+levhere-1,bi,bj) + array(i,j)
+          qdiag(i,j,ipointer+level-1,bi,bj) =
+     .  qdiag(i,j,ipointer+level-1,bi,bj) + array(i,j)
          enddo
          enddo
         enddo
