@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.44 2003/07/11 16:00:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.45 2003/09/22 22:12:05 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -82,6 +82,9 @@ C     == Global variables ===
 #ifdef ALLOW_PASSIVE_TRACER
 #include "TR1.h"
 #endif
+#ifdef ALLOW_PTRACERS
+#include "PTRACERS.h"
+#endif
 #ifdef ALLOW_TIMEAVE
 #include "TIMEAVE_STATV.h"
 #endif
@@ -96,9 +99,6 @@ C     == Global variables ===
 # endif
 # ifdef ALLOW_GMREDI
 #  include "GMREDI.h"
-# endif
-# ifdef ALLOW_PTRACERS
-#  include "PTRACERS.h"
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -243,9 +243,7 @@ C This is currently also used by IVDC and Diagnostics
            ConvectCount(i,j,k) = 0.
            KappaRT(i,j,k)    = 0. _d 0
            KappaRS(i,j,k)    = 0. _d 0
-#ifdef ALLOW_AUTODIFF_TAMC
-cph all the following init. are necessary for TAF
-cph although some of these are re-initialised later.
+C- tracer tendency needs to be set to zero (moved here from gad_calc_rhs):
            gT(i,j,k,bi,bj)   = 0. _d 0
            gS(i,j,k,bi,bj)   = 0. _d 0
 # ifdef ALLOW_PASSIVE_TRACER
@@ -256,6 +254,9 @@ cph although some of these are re-initialised later.
             gPTr(i,j,k,bi,bj,itracer) = 0. _d 0
            ENDDO
 # endif
+#ifdef ALLOW_AUTODIFF_TAMC
+cph all the following init. are necessary for TAF
+cph although some of these are re-initialised later.
 # ifdef ALLOW_GMREDI
            Kwx(i,j,k,bi,bj)  = 0. _d 0
            Kwy(i,j,k,bi,bj)  = 0. _d 0
