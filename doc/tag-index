@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.399 2004/12/03 01:09:51 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.400 2004/12/03 16:47:45 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o OBCS: extend application of tracer open boundary conditions
+  to a strip beyond the boundary of width Olx/Oly
 
 checkpoint56c_post
 o OBCS as control variables
