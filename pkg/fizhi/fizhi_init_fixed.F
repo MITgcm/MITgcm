@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.16 2004/07/28 01:25:07 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.17 2004/09/01 18:32:33 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -41,6 +41,7 @@ c-----------------------------------------------------------------------
        integer im1, im2, jm1, jm2, idim2, jdim2
        integer nymdb,nhmsb
        character*40 vegdata
+       _RL pressure0(Nrphys)
        _RL pressure(Nrphys)
        _RL lats(sNx,sNy,Nsx,Nsy), lons(sNx,sNy,Nsx,Nsy)
        _RL fracland(sNx,sNy,Nsx,Nsy)
@@ -88,9 +89,13 @@ C And now fill the earth export landtype
 
 C Compute pressure profile to get methane and n2o values (bottom-up)
 
-       pressure(1)=1000.
+       pressure0(1)=1000.
        do L = 2,Nrphys+1
-        pressure(L)=pressure(L-1)-dpphys0(1,1,L-1,1,1)/100.
+        pressure0(L)=pressure0(L-1)-dpphys0(1,1,L-1,1,1)/100.
+       enddo
+C Now flip pressure to a top-down array to send to fizhi
+       do L = 1,Nrphys+1
+        pressure(L)=pressure0(Nrphys+2-L)
        enddo
 
        call fizhi_init_chem(mythid,
