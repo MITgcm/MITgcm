@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.20 2003/11/26 15:04:42 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.21 2003/11/27 16:15:39 edhill Exp $
 #  $Name:  $
 #
 
@@ -198,24 +198,18 @@ genmakemodel()
 	    command="$GENMAKE2  -ds -m $MAKE --mods=../code"
 	    if test "x$OPTFILE" != xNONE ; then
 		command="$command --optfile=$OPTFILE"
-		# echo "  command=\"$command\""
 	    fi
 	    if test "x$IEEE" != x ; then
 		command="$command -ieee"
 	    fi
-	    # echo "command: \"$command\""
 	    printf 'genmake ... ' 1>&2
 	    $command > make.log 2>&1
 	    RETVAL=$?
-	    for i in genmake_state genmake_optfile genmake_local Makefile ; do
-		if test -r $i ; then
-		    cp $i $CDIR
-		fi
-	    done
+	    cp Makefile $CDIR
 	    if test "x$RETVAL" != x0 ; then
 		tail make.log
 		echo "genmakemodel: genmake failed" 1>&2
-		cp make.log $CDIR
+		cp genmake_* make.log $CDIR
 		return 1
 	    else
 		echo "successful" 1>&2
@@ -369,13 +363,13 @@ c         print *,int(log10(diff)),diff
       end
 EOFA
 
-    f77 tmp_cmpnum.f
+    f77 -o a.out tmp_cmpnum.f
     if [ -x ./a.out ]; then
 	echo "OK"
 	return 0
     else
 	echo
-	echo "createcodelet: failed to compile codelet" 
+	echo "ERROR: failed to compile comparison code" 
 	exit 1
     fi
 }
@@ -434,8 +428,6 @@ scandirs()
 }
 
 
-###############################################################################
-###############################################################################
 ###############################################################################
 
 
@@ -596,16 +588,6 @@ SUMMARY="$DRESULTS/summary.txt"
 echo -n "Start time:  " >> $SUMMARY
 start_date=`date`
 echo $start_date > $SUMMARY
-cat << EOF | tee -a $SUMMARY
-                T           S           U           V
-G D M    c        m  s        m  s        m  s        m  s
-E p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
-N n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
-2 d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
-
-EOF
-
-NDIR=0
 
 of_path=
 if test "x$OPTFILE" != xNONE ; then
@@ -619,14 +601,29 @@ if test "x$OPTFILE" != xNONE ; then
 	fi
 	file=${OPTFILE##*/}
 	OPTFILE=$of_path/$file
+	cp $OPTFILE $DRESULTS
+	echo >> $SUMMARY
+	echo "  OPTFILE=$OPTFILE" >> $SUMMARY
     else
-	echo
-	echo "WARNING: can't read OPTFILE=\"$OPTFILE\" but will try to use it..."
+	echo | tee $SUMMARY
+	echo "ERROR: can't read OPTFILE=\"$OPTFILE\"" | tee $SUMMARY
+	exit 1
     fi
+else
+    echo >> $SUMMARY
+    echo "No \"OPTFILE\" was explicitly specified by testreport," >> $SUMMARY
+    echo "   so the genmake default will be used." >> $SUMMARY
 fi
 echo
-echo "OPTFILE=$OPTFILE" >> $SUMMARY
 echo >> $SUMMARY
+cat << EOF | tee -a $SUMMARY
+                T           S           U           V
+G D M    c        m  s        m  s        m  s        m  s
+E p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
+N n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
+2 d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
+
+EOF
 
 #  ...and each test directory...
 for dir in $TESTDIRS ; do
@@ -724,23 +721,16 @@ for dir in $TESTDIRS ; do
     fi
     
     echo
-    formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} \
-	${run:-N} $results
+    fres=`formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results`
     echo
-    formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} \
-	${run:-N} $results >> $SUMMARY
-    echo "fresults='" > $CDIR"/summary.txt"
-    formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} \
-	${run:-N} $results >> $CDIR"/summary.txt"
-    echo "'" >> $CDIR"/summary.txt"
+    echo "$fres" >> $SUMMARY
+    echo "fresults='$fres'" > $CDIR"/summary.txt"
     echo "MACH='$MACH'" >> $CDIR"/summary.txt"
     echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
     echo "DATE='$DATE'" >> $CDIR"/summary.txt"
     echo "tdir='$dir'" >> $CDIR"/summary.txt"
     
     echo "-------------------------------------------------------------------------------"
-    
-    NDIR=$(( $NDIR + 1 ))
     
 done
 
