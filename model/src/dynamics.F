@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.60 2001/02/07 16:28:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.61 2001/02/07 21:48:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -52,11 +52,9 @@ C     == Local variables
 C     xA, yA                 - Per block temporaries holding face areas
 C     uTrans, vTrans, rTrans - Per block temporaries holding flow 
 C                              transport
-C     rVel                     o uTrans: Zonal transport
+C                              o uTrans: Zonal transport
 C                              o vTrans: Meridional transport
 C                              o rTrans: Vertical transport
-C                              o rVel:   Vertical velocity at upper and 
-C                                        lower cell faces.
 C     maskC,maskUp             o maskC: land/water mask for tracer cells
 C                              o maskUp: land/water mask for W points
 C     fVer[STUV]               o fVer: Vertical flux term - note fVer
@@ -85,7 +83,6 @@ C                      index into fVerTerm.
       _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL rVel    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RS maskC   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -138,14 +135,13 @@ C       "Calculation of Gs"
 C       ===================
 C       This is where all the accelerations and tendencies (ie.
 C       physics, parameterizations etc...) are calculated
-C         rVel = sum_r ( div. u[n] )
 C         rho = rho ( theta[n], salt[n] )
 C         b   = b(rho, theta)
 C         K31 = K31 ( rho )
-C         Gu[n] = Gu( u[n], v[n], rVel, b, ... )
-C         Gv[n] = Gv( u[n], v[n], rVel, b, ... )
-C         Gt[n] = Gt( theta[n], u[n], v[n], rVel, K31, ... )
-C         Gs[n] = Gs( salt[n], u[n], v[n], rVel, K31, ... )
+C         Gu[n] = Gu( u[n], v[n], wVel, b, ... )
+C         Gv[n] = Gv( u[n], v[n], wVel, b, ... )
+C         Gt[n] = Gt( theta[n], u[n], v[n], wVel, K31, ... )
+C         Gs[n] = Gs( salt[n], u[n], v[n], wVel, K31, ... )
 C
 C       "Time-stepping" or "Prediction"
 C       ================================
@@ -209,7 +205,7 @@ CHPF$ INDEPENDENT
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--    HPF directive to help TAMC
-CHPF$  INDEPENDENT, NEW (rTrans,rVel,fVerT,fVerS,fVerU,fVerV
+CHPF$  INDEPENDENT, NEW (rTrans,fVerT,fVerS,fVerU,fVerV
 CHPF$&                  ,phiHyd,utrans,vtrans,maskc,xA,yA
 CHPF$&                  ,KappaRT,KappaRS,KappaRU,KappaRV
 CHPF$&                  )
@@ -238,8 +234,6 @@ C--     Set up work arrays that need valid initial values
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           rTrans(i,j)   = 0. _d 0
-          rVel  (i,j,1) = 0. _d 0
-          rVel  (i,j,2) = 0. _d 0
           fVerT (i,j,1) = 0. _d 0
           fVerT (i,j,2) = 0. _d 0
           fVerS (i,j,1) = 0. _d 0
@@ -410,7 +404,6 @@ C--       kDown  Cycles through 2,1 to point to current layer
 #ifdef ALLOW_AUTODIFF_TAMC 
 CPatrick Is this formula correct?
          kkey = (ikey-1)*(Nr-1+1) + (k-1) + 1
-CADJ STORE rvel  (:,:,kDown) = comlev1_bibj_k, key = kkey, byte = isbyte
 CADJ STORE rTrans(:,:)       = comlev1_bibj_k, key = kkey, byte = isbyte
 CADJ STORE KappaRT(:,:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
 CADJ STORE KappaRS(:,:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
@@ -419,7 +412,7 @@ CADJ STORE KappaRS(:,:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
 C--      Get temporary terms used by tendency routines
          CALL CALC_COMMON_FACTORS (
      I        bi,bj,iMin,iMax,jMin,jMax,k,km1,kup,kDown,
-     O        xA,yA,uTrans,vTrans,rTrans,rVel,maskC,maskUp,
+     O        xA,yA,uTrans,vTrans,rTrans,maskC,maskUp,
      I        myThid)
 
 #ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
