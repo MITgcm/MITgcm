@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_amd64_pgf77+mpi,v 1.1 2004/12/20 16:02:29 edhill Exp $
+#
+
+FC='pgmpif77'
+CC='pgcc'
+LINK='pgmpif77'
+MPI='true'
+DEFINES='-DWORDLENGTH=4'
+
+INCLUDES='-I/opt/scali/include'
+CPP='/usr/bin/cpp -P -traditional'
+#LIBS='-L/usr/local/mpich-1.2.1/pgi_fortran_binding/lib/ -lfmpich -lmpich'
+#INCLUDES='-I/usr/local/mpich-1.2.1/pgi_fortran_binding/include'
+#INCLUDES='$INCLUDES -I/usr/local/include'
+
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FOPTIM='-tp amd64 -O2 -Munroll'
+# -Mvect=cachesize:512000,transform
+else
+    #  Try to follow IEEE-754
+    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
+    FOPTIM='-tp amd64 -v -O2 -Munroll -Kieee'
+# -Mvect=cachesize:512000,transform
+fi
+
+#LIBS='-L/usr/local/mpich-1.2.1/pgi_fortran_binding/lib/ -lfmpich -lmpich'
+#LIBS='-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich'
