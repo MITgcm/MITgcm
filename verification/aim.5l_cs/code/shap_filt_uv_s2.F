@@ -1,16 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/shap_filt_uv_s2.F,v 1.1 2002/01/09 00:28:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/shap_filt_uv_s2.F,v 1.2 2002/03/04 01:39:50 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
 
-      SUBROUTINE SHAP_FILT_UV_S2( 
-     U           uFld, vFld,
-     I           myTime, myThid )
-C     /==========================================================\
-C     | S/R SHAP_FILT_UV_S2                                      |
-C     | Applies Shapiro filter to U,V field over one XY slice    |
-C     | of one tile at a time.                                   |
-C     \==========================================================/
+CBOP
+C     !ROUTINE: SHAP_FILT_UV_S2
+C     !INTERFACE:
+      SUBROUTINE SHAP_FILT_UV_S2(
+     U           uFld, vFld, tmpFldU, tmpFldV,
+     I           kSize, myTime, myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R SHAP_FILT_UV_S2
+C     | o Applies Shapiro filter to velocity field (u & v).
+C     | o use filtering function "S2" = [1 - (d_xx+d_yy)^n]
+C     | o Options for computational filter (no grid spacing)
+C     |   or physical space filter (with grid spacing) or both.
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
@@ -19,15 +28,26 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SHAP_FILT.h"
-#include "SHAP_FILT_UV.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments
-      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+C     uFld :: velocity field (U component) on which filter applies
+C     vFld :: velocity field (V component) on which filter applies
+C     tmpFldU :: working temporary array
+C     tmpFldV :: working temporary array
+C     kSize :: length of 3rd Dim : either =1 (2D field) or =Nr (3D field)
+C     myTime :: Current time in simulation
+C     myThid :: Thread number for this instance of SHAP_FILT_UV_S2
+      INTEGER kSize
+      _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
+      _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy)
+      _RL tmpFldU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy) 
+      _RL tmpFldV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,kSize,nSx,nSy) 
       _RL     myTime
       INTEGER myThid
 
 #ifdef ALLOW_SHAP_FILT
+
 C------
 C  Combine computational Filter of Div & Vorticity 
 C   and Physical Filter of U,V field 
@@ -38,19 +58,21 @@ C                        and return filtered U.V in physical space
 C   nShapUVPhys = nShapUV  ==> Filter in Physical space only (power nShapUV)
 C------  
 
+C     !LOCAL VARIABLES: 
 C     == Local variables ==
-      INTEGER bi,bj,K,I,J,N
+      INTEGER bi,bj,k,i,j,N
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS r_hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy) 
       _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskZ
+CEOP
 
       IF (nShapUV.GT.0 .AND. Shap_uvtau.GT.0.) THEN
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
+          DO K=1,kSize
            DO J=1-Oly,sNy+Oly
             DO I=1-Olx,sNx+Olx 
              tmpFldU(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
@@ -69,11 +91,15 @@ C    [d_xx+d_yy]^n tmpFld
 
        DO N=1,nShapUV
 
-        CALL EXCH_UV_XYZ_RL(tmpFldU,tmpFldV,.TRUE.,myThid)
+        IF (kSize.EQ.Nr) THEN
+          CALL EXCH_UV_XYZ_RL(tmpFldU,tmpFldV,.TRUE.,myThid)
+        ELSE
+          CALL EXCH_UV_XY_RL(tmpFldU,tmpFldV,.TRUE.,myThid)
+        ENDIF
 
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO K=1,Nr
+          DO K=1,kSize
 
 C    [d_xx+d_yy] tmpFld
          IF (N.LE.nShapUVPhys) THEN
@@ -116,7 +142,6 @@ c---
             IF (maskZ.GE.2.) THEN
              vort3(I,J)=
      &          tmpFldV(I,J,k,bi,bj)
-c    &         -tmpFldV(I-1,J,k,bi,bj)
      &         -tmpFldU(I,J,k,bi,bj)
      &         +tmpFldU(I,J-1,k,bi,bj)
              vort3(I,J)=vort3(I,J)*4.d0/3.d0
@@ -130,7 +155,6 @@ c---
      &                                 +maskS(i-1,j,k,bi,bj)
             IF (maskZ.GE.2.) THEN
              vort3(I,J)=
-c    &          tmpFldV(I,J,k,bi,bj)
      &         -tmpFldV(I-1,J,k,bi,bj)
      &         -tmpFldU(I,J,k,bi,bj)
      &         +tmpFldU(I,J-1,k,bi,bj)
@@ -146,7 +170,6 @@ c---
             IF (maskZ.GE.2.) THEN
              vort3(I,J)=
      &          tmpFldV(I,J,k,bi,bj)
-c    &         -tmpFldV(I-1,J,k,bi,bj)
      &         -tmpFldU(I,J,k,bi,bj)
      &         +tmpFldU(I,J-1,k,bi,bj)
              vort3(I,J)=vort3(I,J)*4.d0/3.d0
@@ -160,7 +183,6 @@ c---
      &                                 +maskS(i-1,j,k,bi,bj)
             IF (maskZ.GE.2.) THEN
              vort3(I,J)=
-c    &          tmpFldV(I,J,k,bi,bj)
      &         -tmpFldV(I-1,J,k,bi,bj)
      &         -tmpFldU(I,J,k,bi,bj)
      &         +tmpFldU(I,J-1,k,bi,bj)
@@ -228,10 +250,10 @@ C end loop N=1,nShapUV
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C      F <-  [1 - (d_xx+d_yy)^n *deltat/tau].F
+C      F <-  [1 - (d_xx+d_yy)^n *deltaT/tau].F
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO K=1,Nr
+         DO K=1,kSize
           DO J=1,sNy+1
            DO I=1,sNx
             uFld(i,j,k,bi,bj)=uFld(i,j,k,bi,bj)
@@ -248,7 +270,13 @@ C      F <-  [1 - (d_xx+d_yy)^n *deltat/tau].F
         ENDDO
        ENDDO
 
-      CALL EXCH_UV_XYZ_RL(uFld,vFld,.TRUE.,myThid)
+        IF (kSize.EQ.Nr) THEN
+          CALL EXCH_UV_XYZ_RL(uFld,vFld,.TRUE.,myThid)
+        ELSEIF (kSize.EQ.1) THEN
+          CALL EXCH_UV_XY_RL(uFld,vFld,.TRUE.,myThid)
+        ELSE
+          STOP 'S/R SHAP_FILT_UV_S2: kSize is wrong'
+        ENDIF
 
       ENDIF
 #endif /* ALLOW_SHAP_FILT */
