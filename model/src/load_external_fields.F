@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.3 1998/06/22 15:26:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.4 1998/07/15 22:22:24 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
  
@@ -272,10 +272,10 @@ C      data for the period ahead and the period behind myTime.
 
 C--    SST
        WRITE(filename(1:40),'(A,I10.10,A)') 
-     &      'levtemp.',intime0+1,'.bin'
+     &      'levtemp_m.',intime0+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', SST, myIter, myThid )
        WRITE(filename(1:40),'(A,I10.10,A)') 
-     &      'levtemp.',intime1+1,'.bin'
+     &      'levtemp_m.',intime1+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', SSTdot, myIter, myThid )
     
 C      Set SSTdot to the total change over the period
@@ -316,10 +316,10 @@ C
 
 C--    SSS
        WRITE(filename(1:40),'(A,I10.10,A)') 
-     &      'levsalt.',intime0+1,'.bin'
+     &      'levsalt_m.',intime0+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', SSS, myIter, myThid )
        WRITE(filename(1:40),'(A,I10.10,A)') 
-     &      'levsalt.',intime1+1,'.bin'
+     &      'levsalt_m.',intime1+1,'.bin'
        CALL READ_FLD_XY_RS( filename, ' ', SSSdot, myIter, myThid )
     
 C      Set SSSdot to the total change over the period
@@ -496,28 +496,29 @@ C      Convert Qnetdot into the increment to Qnet per time-step (here after)
        ENDDO
 C
 
-C--    EmPpR
+C--    EmPmR
 Cfix   WRITE(filename(1:40),'(A,I10.10,A)') 
 Cfix &      'EmP_y.',intime0+1,'.bin'
        filename='EmP_y.bin'
-       CALL READ_FLD_XY_RS( filename, ' ', EmPpR, myIter, myThid )
+       CALL READ_FLD_XY_RS( filename, ' ', EmPmR, myIter, myThid )
 Cfix   WRITE(filename(1:40),'(A,I10.10,A)') 
-Cfix &      'EmPpR.',intime1+1,'.bin'
-Cfix   CALL READ_FLD_XY_RS( filename, ' ', EmPpRdot, myIter, myThid )
+Cfix &      'EmPmR.',intime1+1,'.bin'
+Cfix   CALL READ_FLD_XY_RS( filename, ' ', EmPmRdot, myIter, myThid )
     
-C      Set EmPpRdot to the total change over the period
+C      Set EmPmRdot to the total change over the period
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-Cfix       EmPpRdot(i,j,bi,bj) = EmPpRdot(i,j,bi,bj)-EmPpR(i,j,bi,bj)
-           EmPpR(i,j,bi,bj) = EmPpR(i,j,bi,bj)/(3153600000.*delZ(1))*35.
-           EmPpRdot(i,j,bi,bj) = 0.
+Cfix       EmPmRdot(i,j,bi,bj) = EmPmRdot(i,j,bi,bj)-EmPmR(i,j,bi,bj)
+C sign change is becuase data is infact P-E not E-P
+           EmPmR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)/(3153600000.*delZ(1))*35.
+           EmPmRdot(i,j,bi,bj) = 0.
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-C      Interpolate EmPpR to correct time (necessary only for myTime=startTime)
+C      Interpolate EmPmR to correct time (necessary only for myTime=startTime)
        aWght=(myForcingTime-externForcingCycle*
      &               int(myForcingTime/externForcingCycle)
      &       )/externForcingPeriod - float(intime0)
@@ -525,18 +526,18 @@ C      Interpolate EmPpR to correct time (necessary only for myTime=startTime)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           EmPpR(i,j,bi,bj) = EmPpR(i,j,bi,bj)+aWght*EmPpRdot(i,j,bi,bj)
+           EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)+aWght*EmPmRdot(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
 
-C      Convert EmPpRdot into the increment to EmPpR per time-step (here after)
+C      Convert EmPmRdot into the increment to EmPmR per time-step (here after)
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1,sNy
           DO i=1,sNx
-           EmPpRdot(i,j,bi,bj)=EmPpRdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
+           EmPmRdot(i,j,bi,bj)=EmPmRdot(i,j,bi,bj)*deltaTclock/externForcingPeriod 
           ENDDO
          ENDDO
         ENDDO
@@ -549,11 +550,17 @@ C
        _EXCH_XY_R4(fu   , myThid )
        _EXCH_XY_R4(fv   , myThid )
        _EXCH_XY_R4(Qnet , myThid )
-       _EXCH_XY_R4(EmPpR, myThid )
+       _EXCH_XY_R4(EmPmR, myThid )
+       _EXCH_XY_R4(SSTdot  , myThid )
+       _EXCH_XY_R4(SSSdot  , myThid )
+       _EXCH_XY_R4(fudot   , myThid )
+       _EXCH_XY_R4(fvdot   , myThid )
+       _EXCH_XY_R4(Qnetdot , myThid )
+       _EXCH_XY_R4(EmPmRdot, myThid )
 C
       ELSE
 
-C      Increment SST,SSS,fu,fv,Qnet,EmPpR
+C      Increment SST,SSS,fu,fv,Qnet,EmPmR
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
@@ -563,11 +570,16 @@ C      Increment SST,SSS,fu,fv,Qnet,EmPpR
            fu(i,j,bi,bj) = fu(i,j,bi,bj)+fudot(i,j,bi,bj)
            fv(i,j,bi,bj) = fv(i,j,bi,bj)+fvdot(i,j,bi,bj)
            Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj)+Qnetdot(i,j,bi,bj)
-           EmPpR(i,j,bi,bj) = EmPpR(i,j,bi,bj)+EmPpRdot(i,j,bi,bj)
+           EmPmR(i,j,bi,bj) = EmPmR(i,j,bi,bj)+EmPmRdot(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
        ENDDO
+       IF (myThid.EQ.1 .AND. myForcingTime.LT.62208000.) THEN
+        write(0,'(a,1p6e10.2)') 'SST,SS,fu,fv,Q,E-P = ',
+     &   SST(1,12,1,1),SSS(1,12,1,1),fu(1,12,1,1),fv(1,12,1,1),
+     &   Qnet(1,12,1,1),EmPmR(1,12,1,1)
+       ENDIF
 
       ENDIF
 
@@ -601,13 +613,13 @@ C     === Local variables ===
            SST(i,j,bi,bj) = 0.
            SSS(i,j,bi,bj) = 0.
            Qnet(i,j,bi,bj) = 0.
-           EmPpR(i,j,bi,bj) = 0.
+           EmPmR(i,j,bi,bj) = 0.
            fudot(i,j,bi,bj) = 0.
            fvdot(i,j,bi,bj) = 0.
            SSTdot(i,j,bi,bj) = 0.
            SSSdot(i,j,bi,bj) = 0.
            Qnetdot(i,j,bi,bj) = 0.
-           EmPpRdot(i,j,bi,bj) = 0.
+           EmPmRdot(i,j,bi,bj) = 0.
           ENDDO
          ENDDO
         ENDDO
