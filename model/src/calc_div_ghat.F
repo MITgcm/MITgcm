@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.2 1998/08/22 17:51:07 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.3 1998/09/07 15:36:24 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -52,7 +52,7 @@ C        cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
 C    &    -freeSurfFac*_rA(i,j,bi,bj)*
 C    &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
          cg2d_b(i,j,bi,bj) =
-     &    -freeSurfFac*_rA(i,j,bi,bj)*
+     &    -freeSurfFac*_rA(i,j,bi,bj)*horiVertRatio*
      &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
         ENDDO
        ENDDO
