@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.4 2001/02/04 14:38:50 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.5 2001/03/06 18:01:02 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -80,19 +80,18 @@ C----------------------------------------------------------------
 C     Do KPP time averaging.
 C----------------------------------------------------------------
 
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifdef ALLOW_TIMEAVE
 
 C     Initialize averages to zero
       IF ( myIter.EQ.nIter0 ) THEN
          DO bj = myByLo(myThid), myByHi(myThid)
             DO bi = myBxLo(myThid), myBxHi(myThid)
+               CALL TIMEAVE_RESET(KPPviscAztave, Nr,bi,bj,myThid)
+               CALL TIMEAVE_RESET(KPPdiffKzTtave,Nr,bi,bj,myThid)
+               CALL TIMEAVE_RESET(KPPghattave,   Nr,bi,bj,myThid)
+               CALL TIMEAVE_RESET(KPPdiffKzStave,Nr,bi,bj,myThid)
+               CALL TIMEAVE_RESET(KPPhbltave,    1, bi,bj,myThid)
                DO k=1,Nr
-                  CALL TIMEAVER_INI_XYZ(KPPviscAztave, bi,bj,K,myThid)
-                  CALL TIMEAVER_INI_XYZ(KPPdiffKzTtave, bi,bj,K,myThid)
-                  CALL TIMEAVER_INI_XYZ(KPPghattave, bi,bj,K,myThid)
-                  CALL TIMEAVER_INI_XYZ(KPPdiffKzStave, bi,bj,K,myThid)
-                  IF (K.EQ.1)
-     &                 CALL TIMEAVER_INI_XY(KPPhbltave, bi,bj,myThid)
                   kpp_TimeAve(k,bi,bj)=0.
                ENDDO
             ENDDO
@@ -110,20 +109,18 @@ C     Time Average KPP fields
       ENDIF
       DO bj = myByLo(myThid), myByHi(myThid)
          DO bi = myBxLo(myThid), myBxHi(myThid)
-            DO k=1,Nr
-               CALL TIMEAVER_1FLD_XYZ(
-     &              KPPviscAz,KPPviscAztave,  DDTT,bi,bj,K,myThid)
-               CALL TIMEAVER_1FLD_XYZ(
-     &              KPPdiffKzT,KPPdiffKzTtave,DDTT,bi,bj,K,myThid)
-               CALL TIMEAVER_1FLD_XYZ(
-     &              KPPghat,   KPPghattave,   DDTT,bi,bj,K,myThid)
-               CALL TIMEAVER_1FLD_XYZ(
-     &              KPPdiffKzS,KPPdiffKzStave,DDTT,bi,bj,K,myThid)
-               IF (K.EQ.1)
-     &              CALL TIMEAVER_1FLD_XYZ(
-     &              KPPhbl,KPPhbltave,DDTT,bi,bj,1,myThid)
-               
+            CALL TIMEAVE_CUMULATE(
+     &           KPPviscAztave, KPPviscAz, Nr,DDTT,bi,bj,myThid)
+            CALL TIMEAVE_CUMULATE(
+     &           KPPdiffKzTtave,KPPdiffKzT,Nr,DDTT,bi,bj,myThid)
+            CALL TIMEAVE_CUMULATE(
+     &           KPPghattave,   KPPghat,   Nr,DDTT,bi,bj,myThid)
+            CALL TIMEAVE_CUMULATE(
+     &           KPPdiffKzStave,KPPdiffKzS,Nr,DDTT,bi,bj,myThid)
+            CALL TIMEAVE_CUMULATE(
+     &           KPPhbltave,    KPPhbl,    1, DDTT,bi,bj,myThid)
 C     Keep record of how much time has been integrated over
+            DO k=1,Nr
                kpp_TimeAve(k,bi,bj)=kpp_TimeAve(k,bi,bj)+DDTT
             ENDDO
          ENDDO
@@ -138,18 +135,16 @@ C     Dump files and restart average computation if needed
 C     Normalize by integrated time
          DO bj = myByLo(myThid), myByHi(myThid)
             DO bi = myBxLo(myThid), myBxHi(myThid)
-               DO k=1,Nr
-                  CALL TIMEAVER_FINAL_XYZ(KPPviscAztave,kpp_timeave,
-     &                 bi,bj,K,myThid)
-                  CALL TIMEAVER_FINAL_XYZ(KPPdiffKzTtave,kpp_timeave,
-     &                 bi,bj,K,myThid)
-                  CALL TIMEAVER_FINAL_XYZ(KPPghattave,kpp_timeave,
-     &                 bi,bj,K,myThid)
-                  CALL TIMEAVER_FINAL_XYZ(KPPdiffKzStave,kpp_timeave,
-     &                 bi,bj,K,myThid)
-               ENDDO
-               CALL TIMEAVER_FINAL_XY(KPPhbltave,kpp_timeave,
-     &              bi,bj,myThid)
+               CALL TIMEAVE_NORMALIZ(KPPviscAztave,kpp_timeave,
+     &                 Nr, bi,bj,myThid)
+               CALL TIMEAVE_NORMALIZ(KPPdiffKzTtave,kpp_timeave,
+     &                 Nr, bi,bj,myThid)
+               CALL TIMEAVE_NORMALIZ(KPPghattave,kpp_timeave,
+     &                 Nr, bi,bj,myThid)
+               CALL TIMEAVE_NORMALIZ(KPPdiffKzStave,kpp_timeave,
+     &                 Nr, bi,bj,myThid)
+               CALL TIMEAVE_NORMALIZ(KPPhbltave,kpp_timeave,
+     &                 1,  bi,bj,myThid)
             ENDDO
          ENDDO
          
@@ -170,17 +165,12 @@ C--   Increment record counter
 C     Reset averages to zero
          DO bj = myByLo(myThid), myByHi(myThid)
             DO bi = myBxLo(myThid), myBxHi(myThid)
+               CALL TIMEAVE_RESET(KPPviscAztave, Nr,bi,bj,myThid)
+               CALL TIMEAVE_RESET(KPPdiffKzTtave,Nr,bi,bj,myThid)
+               CALL TIMEAVE_RESET(KPPghattave,   Nr,bi,bj,myThid)
+               CALL TIMEAVE_RESET(KPPdiffKzStave,Nr,bi,bj,myThid)
+               CALL TIMEAVE_RESET(KPPhbltave,    1, bi,bj,myThid)
                DO k=1,Nr
-                  CALL TIMEAVER_INI_XYZ(KPPviscAztave,
-     &                 bi,bj,K,myThid)
-                  CALL TIMEAVER_INI_XYZ(KPPdiffKzTtave,
-     &                 bi,bj,K,myThid)
-                  CALL TIMEAVER_INI_XYZ(KPPghattave,
-     &                 bi,bj,K,myThid)
-                  CALL TIMEAVER_INI_XYZ(KPPdiffKzStave,
-     &                 bi,bj,K,myThid)
-                  IF (K.EQ.1)
-     &                 CALL TIMEAVER_INI_XY(KPPhbltave, bi,bj,myThid)
                   kpp_TimeAve(k,bi,bj)=0.
                ENDDO
             ENDDO
@@ -190,20 +180,18 @@ C     Time Average KPP fields
          DDTT=0.5*deltaTclock
          DO bj = myByLo(myThid), myByHi(myThid)
             DO bi = myBxLo(myThid), myBxHi(myThid)
-               DO k=1,Nr
-                  CALL TIMEAVER_1FLD_XYZ(
-     &                 KPPviscAz,KPPviscAztave,  DDTT,bi,bj,K,myThid)
-                  CALL TIMEAVER_1FLD_XYZ(
-     &                 KPPdiffKzT,KPPdiffKzTtave,DDTT,bi,bj,K,myThid)
-                  CALL TIMEAVER_1FLD_XYZ(
-     &                 KPPghat,   KPPghattave,   DDTT,bi,bj,K,myThid)
-                  CALL TIMEAVER_1FLD_XYZ(
-     &                 KPPdiffKzS,KPPdiffKzStave,DDTT,bi,bj,K,myThid)
-                  IF (K.EQ.1)
-     &                 CALL TIMEAVER_1FLD_XYZ(
-     &                 KPPhbl,KPPhbltave,DDTT,bi,bj,1,myThid)
-                  
+               CALL TIMEAVE_CUMULATE(
+     &              KPPviscAztave, KPPviscAz, Nr,DDTT,bi,bj,myThid)
+               CALL TIMEAVE_CUMULATE(
+     &              KPPdiffKzTtave,KPPdiffKzT,Nr,DDTT,bi,bj,myThid)
+               CALL TIMEAVE_CUMULATE(
+     &              KPPghattave,   KPPghat,   Nr,DDTT,bi,bj,myThid)
+               CALL TIMEAVE_CUMULATE(
+     &              KPPdiffKzStave,KPPdiffKzS,Nr,DDTT,bi,bj,myThid)
+               CALL TIMEAVE_CUMULATE(
+     &              KPPhbltave,    KPPhbl,    1, DDTT,bi,bj,myThid)
 C     Keep record of how much time has been integrated over
+               DO k=1,Nr
                   kpp_TimeAve(k,bi,bj)=kpp_TimeAve(k,bi,bj)+DDTT
                ENDDO
             ENDDO

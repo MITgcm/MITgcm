@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_init.F,v 1.4 2001/02/04 14:38:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_init.F,v 1.5 2001/03/06 18:01:07 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -33,22 +33,22 @@ C     iUnit       - Work variable for IO unit number
       INTEGER iUnit
       INTEGER k,bi,bj
 
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifdef ALLOW_TIMEAVE
 C     Initialize averages to zero
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
+        CALL TIMEAVE_RESET(GM_Kwx_T,Nr, bi,bj,myThid)
+        CALL TIMEAVE_RESET(GM_Kwy_T,Nr, bi,bj,myThid)
+        CALL TIMEAVE_RESET(GM_Kwz_T,Nr, bi,bj,myThid)
         DO k=1,Nr
-         CALL TIMEAVER_INI_XYZ(GM_Kwx_T,bi,bj,K,myThid)
-         CALL TIMEAVER_INI_XYZ(GM_Kwy_T,bi,bj,K,myThid)
-         CALL TIMEAVER_INI_XYZ(GM_Kwz_T,bi,bj,K,myThid)
          GM_TimeAve(k,bi,bj)=0.
         ENDDO
 #ifdef GM_VISBECK_VARIABLE_K
-        CALL TIMEAVER_INI_XY(Visbeck_K_T, bi,bj,myThid)
+        CALL TIMEAVE_RESET(Visbeck_K_T, 1, bi,bj,myThid)
 #endif
        ENDDO
       ENDDO
-#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
+#endif /* ALLOW_TIMEAVE */
 
 #endif /* ALLOW_GMREDI */
 

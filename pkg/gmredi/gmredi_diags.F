@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_diags.F,v 1.4 2001/02/15 18:43:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_diags.F,v 1.5 2001/03/06 18:01:07 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -37,7 +37,7 @@ C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) suff
 
 
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifdef ALLOW_TIMEAVE
 
 
 C     Dump files and restart average computation if needed
@@ -47,17 +47,15 @@ C     Dump files and restart average computation if needed
 C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO k=1,Nr
-          CALL TIMEAVER_FINAL_XYZ(GM_Kwx_T,GM_timeave,
-     &                 bi,bj,K,myThid)
-          CALL TIMEAVER_FINAL_XYZ(GM_Kwy_T,GM_timeave,
-     &                 bi,bj,K,myThid)
-          CALL TIMEAVER_FINAL_XYZ(GM_Kwz_T,GM_timeave,
-     &                 bi,bj,K,myThid)
-         ENDDO
+         CALL TIMEAVE_NORMALIZ(GM_Kwx_T,GM_timeave, Nr,
+     &                 bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZ(GM_Kwy_T,GM_timeave, Nr,
+     &                 bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZ(GM_Kwz_T,GM_timeave, Nr,
+     &                 bi,bj,myThid)
 #ifdef GM_VISBECK_VARIABLE_K
-         CALL TIMEAVER_FINAL_XY(Visbeck_K_T,GM_timeave,
-     &              bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZ(Visbeck_K_T,GM_timeave, 1,
+     &                 bi,bj,myThid)
 #endif
         ENDDO
        ENDDO
@@ -75,21 +73,21 @@ C      Normalize by integrated time
 C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
+         CALL TIMEAVE_RESET(GM_Kwx_T,Nr,bi,bj,myThid)
+         CALL TIMEAVE_RESET(GM_Kwy_T,Nr,bi,bj,myThid)
+         CALL TIMEAVE_RESET(GM_Kwz_T,Nr,bi,bj,myThid)
          DO k=1,Nr
-          CALL TIMEAVER_INI_XYZ(GM_Kwx_T,bi,bj,K,myThid)
-          CALL TIMEAVER_INI_XYZ(GM_Kwy_T,bi,bj,K,myThid)
-          CALL TIMEAVER_INI_XYZ(GM_Kwz_T,bi,bj,K,myThid)
           GM_TimeAve(k,bi,bj)=0.
          ENDDO
 #ifdef GM_VISBECK_VARIABLE_K
-         CALL TIMEAVER_INI_XY(Visbeck_K_T,bi,bj,myThid)
+         CALL TIMEAVE_RESET(Visbeck_K_T,1,bi,bj,myThid)
 #endif
         ENDDO
        ENDDO
          
       ENDIF
 
-#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
+#endif /* ALLOW_TIMEAVE */
       
 #endif /* ALLOW_GMREDI */
       

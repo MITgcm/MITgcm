@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_inphys.F,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_do_inphys.F,v 1.3 2001/03/06 18:01:13 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -51,26 +51,26 @@ C     J, K - Loop counters
 
       CALL INPHYS( FSG, HSG, RLAT )
 
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE 
+#ifdef ALLOW_TIMEAVE 
 C     Initialise diagnostic counters ( these are cleared on model starti i.e. not
 C     loaded from history file for now ).
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        CALL TIMEAVER_INI_XY(USTRtave, bi, bj, myThid)
-        CALL TIMEAVER_INI_XY(VSTRtave, bi, bj, myThid)
-        CALL TIMEAVER_INI_XY(TSRtave, bi, bj, myThid)
-        CALL TIMEAVER_INI_XY(OLRtave, bi, bj, myThid)
-        CALL TIMEAVER_INI_XY(SSRtave, bi, bj, myThid)
-        CALL TIMEAVER_INI_XY(SLRtave, bi, bj, myThid)
-        CALL TIMEAVER_INI_XY(SHFtave, bi, bj, myThid)
-        CALL TIMEAVER_INI_XY(EVAPtave, bi, bj, myThid)
-        CALL TIMEAVER_INI_XY(PRECNVtave, bi, bj, myThid)
-        CALL TIMEAVER_INI_XY(PRECLStave, bi, bj, myThid)
-        CALL TIMEAVER_INI_XY(CLOUDCtave, bi, bj, myThid)
+        CALL TIMEAVE_RESET(USTRtave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(VSTRtave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(TSRtave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(OLRtave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(SSRtave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(SLRtave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(SHFtave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(EVAPtave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(PRECNVtave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(PRECLStave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(CLOUDCtave, 1, bi, bj, myThid)
         AIM_TimeAve(1,bi,bj) = 0.
        ENDDO
       ENDDO
-#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
+#endif /* ALLOW_TIMEAVE */
 
 #endif /* ALLOW_AIM */
 
