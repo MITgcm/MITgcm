@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.34 2001/02/08 18:13:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.35 2001/02/14 22:50:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -66,19 +66,22 @@ C  |    |  |  |  |
 C /|\   |  |  |  |--DYNAMICS
 C  |    |  |  |  |   o Evaluate "forward" terms
 C /|\   |  |  |  |
-C  |    |  |  |  |--DO_THE_MODEL_IO
-C /|\   |  |  |  |   o Write model state
+C  |    |  |  |  |--SOLVE_FOR_PRESSURE
+C /|\   |  |  |  |   o Find pressure field to keep flow non-divergent
 C  |    |  |  |  |
-C /|\   |  |  |  |--SOLVE_FOR_PRESSURE
-C  |    |  |  |  |   o Find pressure field to keep flow non-divergent
+C /|\   |  |  |  |--THE_CORRECTION_STEP
+C  |    |  |  |  |   o Correct flow field with and cycle time-stepping arrays
 C /|\   |  |  |  |
 C  |    |  |  |  |--DO_GTERM_BLOCKING_EXCHANGES
 C /|\   |  |  |  |   o Update overlap regions
 C  |    |  |  |  |
-C /|\   |  |  |  |--WRITE_CHECKPOINT
-C  |    |  |  |  |   o Write restart file(s)
-C /|\   |  |  |
+C /|\   |  |  |  |--DO_THE_MODEL_IO
+C  |    |  |  |  |   o Write model state
+C /|\   |  |  |  |
+C  |    |  |  |  |--WRITE_CHECKPOINT
+C /|\   |  |  |  |   o Write restart file(s)
 C  |    |  |  |
+C /|\   |  |  |
 C  |<== |  |  | ** Time stepping loop finishes here **
 C       |  |  |
 C       |  |  |--

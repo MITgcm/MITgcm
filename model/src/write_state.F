@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.7 2001/02/07 16:57:46 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.8 2001/02/14 22:50:10 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -81,7 +81,7 @@ C     == Local variables ==
 
       IF ( 
      &     ( DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,
-     &     myCurrentTime-deltaTClock) .AND. myCurrentTime.NE.startTime )
+     &     myCurrentTime-deltaTClock) .AND. myCurrentTime.NE.endTime )
      &     .OR. forceOutput
      &     ) THEN
          iRec = int ( (myCurrentTime-startTime) / dumpFreq +1.5 )

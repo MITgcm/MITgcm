@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.6 2001/02/04 14:38:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.7 2001/02/14 22:50:10 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
       SUBROUTINE FORWARD_STEP(
-     I                    doHalfStep, iLoop,
+     I                    iLoop,
      U                    myCurrentTime, myCurrentIter,
      &                    myThid)
 C     /==========================================================\
@@ -32,10 +32,6 @@ C  |    |  |--DYNAMICS
 C /|\   |  |   o Evaluate "forward" terms
 C  |    |  |
 C /|\   |  |
-C  |    |  |--DO_THE_MODEL_IO
-C /|\   |  |   o Write model state
-C  |    |  |
-C /|\   |  |
 C  |    |  |--SOLVE_FOR_PRESSURE
 C /|\   |  |   o Find pressure field to keep flow non-divergent
 C  |    |  |
@@ -46,6 +42,10 @@ C  |    |  |     and cycle time-stepping arrays (for all fields)
 C /|\   |  |
 C  |    |  |--DO_GTERM_BLOCKING_EXCHANGES
 C /|\   |  |   o Update overlap regions
+C  |    |  |
+C /|\   |  |
+C  |    |  |--DO_THE_MODEL_IO
+C /|\   |  |   o Write model state
 C  |    |  |
 C /|\   |  |
 C  |    |  |--WRITE_CHECKPOINT
@@ -66,12 +66,10 @@ C     == Global variables ===
 #endif
 
 C     == Routine arguments ==
-C     doHalfStep - If .TRUE. then this is the last half step
 C     iLoop         - Invocation count (counter in THE_MAIN_LOOP)
 C     myCurrentIter - Iteration counter for this thread
 C     myCurrentTime - Time counter for this thread
 C     myThid - Thread number for this instance of the routine.
-      LOGICAL doHalfStep
       INTEGER iLoop
       INTEGER myCurrentIter
       _RL     myCurrentTime
@@ -113,20 +111,6 @@ C--   Step forward all tiles, filter and exchange.
      I           myThid )
 #endif
 
-C--   Do IO if needed.
-C     Note:
-C     =====
-C     At this point model arrays hold U,V,T,S  at "time-level" N 
-C     and cg2d_x at "time-level" N-1/2 where N = I+timeLevBase-1. 
-C     By convention this is taken to be the model "state". 
-      CALL TIMER_START('I/O (WRITE)        [FORWARD_STEP]',myThid)
-      CALL DO_THE_MODEL_IO(
-     &        doHalfStep, myCurrentTime, myCurrentIter, myThid )
-      CALL TIMER_STOP ('I/O (WRITE)        [FORWARD_STEP]',myThid)
-
-
-      IF (.NOT. doHalfStep) THEN
-
 C--   Solve elliptic equation(s).
 C     Two-dimensional only for conventional hydrostatic or 
 C     three-dimensional for non-hydrostatic and/or IGW scheme.
@@ -135,26 +119,29 @@ C     three-dimensional for non-hydrostatic and/or IGW scheme.
       CALL TIMER_STOP ('SOLVE_FOR_PRESSURE [FORWARD_STEP]',myThid)
 
 C--   Correct divergence in flow field and cycle time-stepping
-C     arrays (for all fields)
+C     arrays (for all fields) ; update time-counter
+      myCurrentIter = nIter0 + iLoop
+      myCurrentTime = startTime + deltaTClock * float(iLoop)
       CALL THE_CORRECTION_STEP(myCurrentTime, myCurrentIter, myThid)
 
 C--   Do "blocking" sends and receives for tendency "overlap" terms
-C     CALL TIMER_START('BLOCKING_EXCHANGES [FORWARD_STEP]',myThid)
-C     CALL DO_GTERM_BLOCKING_EXCHANGES( myThid )
-C     CALL TIMER_STOP ('BLOCKING_EXCHANGES [FORWARD_STEP]',myThid)
+c     CALL TIMER_START('BLOCKING_EXCHANGES [FORWARD_STEP]',myThid)
+c     CALL DO_GTERM_BLOCKING_EXCHANGES( myThid )
+c     CALL TIMER_STOP ('BLOCKING_EXCHANGES [FORWARD_STEP]',myThid)
 
 C--   Do "blocking" sends and receives for field "overlap" terms
       CALL TIMER_START('BLOCKING_EXCHANGES [FORWARD_STEP]',myThid)
       CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
       CALL TIMER_STOP ('BLOCKING_EXCHANGES [FORWARD_STEP]',myThid)
 
-c     myCurrentIter = myCurrentIter + 1
-c     myCurrentTime = myCurrentTime + deltaTClock 
-      myCurrentIter = nIter0 + iLoop
-      myCurrentTime = startTime + deltaTClock * float(iLoop)
+C--   Do IO if needed.
+      CALL TIMER_START('I/O (WRITE)        [FORWARD_STEP]',myThid)
+      CALL DO_THE_MODEL_IO(.FALSE., 
+     &                     myCurrentTime, myCurrentIter, myThid )
+      CALL TIMER_STOP ('I/O (WRITE)        [FORWARD_STEP]',myThid)
 
 C--   Save state for restarts
-C     Note:
+C     Note:    (jmc: is it still the case after ckp35 ?)
 C     =====
 C     Because of the ordering of the timestepping code and
 C     tendency term code at end of loop model arrays hold
@@ -171,7 +158,6 @@ C     at time level 1
      &        .FALSE., myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('I/O (WRITE)        [FORWARD_STEP]',myThid)
 
-      ENDIF
 
       RETURN
       END
