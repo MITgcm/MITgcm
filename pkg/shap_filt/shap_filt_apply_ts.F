@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.3 2002/03/04 01:31:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.4 2003/08/03 03:12:36 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -40,12 +40,16 @@ C sFld                  :: input and filtered salinity field
 
 #ifdef ALLOW_SHAP_FILT
 
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+
 C !LOCAL VARIABLES: ====================================================
-#ifdef USE_OLD_SHAPIRO_FILTERS
 C     == Local variables ==
+#ifdef USE_OLD_SHAPIRO_FILTERS
 C     bi,bj,k :: loop index
       INTEGER bi, bj, k
 #endif /* USE_OLD_SHAPIRO_FILTERS */
+      CHARACTER*(MAX_LEN_MBUF) suff
 
 CEOP
 
@@ -92,6 +96,22 @@ CEOP
           ELSE
            STOP 'SHAP_FILT_APPLY_TS: Ooops! Bad Shap_funct in T block'
           ENDIF
+
+C-----    Diagnostic of Shapiro Filter effect on temperature :
+C         Note: Shap_tmpFld1 from shap_filt_tracer_s2 (and not s1, s4)
+C               is directly proportional to Delta-Tr due to the Filter
+          IF ( Shap_funct.NE.1 .AND. Shap_funct.NE.4 .AND.
+     &     DIFFERENT_MULTIPLE(Shap_diagFreq,myTime,myTime-deltaTClock)
+     &       ) THEN
+           _BARRIER
+           _BEGIN_MASTER( myThid )
+           WRITE(suff,'(I10.10)') myIter
+           CALL WRITE_FLD_XYZ_RL( 'shap_dT.', suff, Shap_tmpFld1,
+     &                            myIter, myThid)
+           _END_MASTER( myThid )
+           _BARRIER
+          ENDIF
+
         ENDIF
 
         IF ( saltStepping .AND. nShapT.GT.0) THEN 
@@ -114,6 +134,22 @@ CEOP
           ELSE
            STOP 'SHAP_FILT_APPLY_TS: Ooops! Bad Shap_funct in S block'
           ENDIF
+
+C-----    Diagnostic of Shapiro Filter effect on salinity :
+C         Note: Shap_tmpFld1 from shap_filt_tracer_s2 (and not s1, s4) 
+C               is directly proportional to Delta-Tr due to the Filter
+          IF ( Shap_funct.NE.1 .AND. Shap_funct.NE.4 .AND.
+     &     DIFFERENT_MULTIPLE(Shap_diagFreq,myTime,myTime-deltaTClock)
+     &       ) THEN
+           _BARRIER
+           _BEGIN_MASTER( myThid )
+           WRITE(suff,'(I10.10)') myIter
+           CALL WRITE_FLD_XYZ_RL( 'shap_dS.', suff, Shap_tmpFld1,
+     &                            myIter, myThid)
+           _END_MASTER( myThid )
+           _BARRIER
+          ENDIF
+
         ENDIF
 
 #endif /* USE_OLD_SHAPIRO_FILTERS */

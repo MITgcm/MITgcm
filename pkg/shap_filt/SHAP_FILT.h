@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/SHAP_FILT.h,v 1.5 2002/03/04 01:31:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/SHAP_FILT.h,v 1.6 2003/08/03 03:12:36 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_SHAP_FILT
@@ -33,12 +33,15 @@ C     Shap_TrLength :: Length scale for tracer filter
 C     Shap_uvtau    :: Time scale for momentum filter
 C     Shap_TrLength :: Length scale for momentum filter
 C     Shap_noSlip   :: No-slip parameter (=0 free sleep ; =1 No-slip)
+C     Shap_diagFreq :: Frequency^-1 for diagnostic output (s)
       _RL Shap_Trtau, Shap_TrLength
       _RL Shap_uvtau, Shap_uvLength
       _RL Shap_noSlip
+      _RL Shap_diagFreq
       COMMON /SHAP_FILT_PARAMS/ 
      &                  Shap_Trtau, Shap_TrLength,
-     &                  Shap_uvtau, Shap_uvLength, Shap_noSlip
+     &                  Shap_uvtau, Shap_uvLength, Shap_noSlip,
+     &                  Shap_diagFreq
 
 C-    Shapiro Filter temporary working arrays :
       _RL Shap_tmpFld1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.7 2002/07/31 21:01:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.8 2003/08/03 03:12:36 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -26,7 +26,7 @@ C     === Routine arguments ===
      & Shap_funct, shap_filt_uvStar, shap_filt_TrStagg,
      &    nShapT,  nShapTrPhys, Shap_Trtau, Shap_TrLength,
      &    nShapUV, nShapUVPhys, Shap_uvtau, Shap_uvLength,
-     &    Shap_noSlip
+     &    Shap_noSlip, Shap_diagFreq
 
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
@@ -62,6 +62,7 @@ C--   Default flags and values for Shapiro Filter
       Shap_uvtau = deltaTMom
       Shap_TrLength = 0.
       Shap_noSlip = 0.
+      Shap_diagFreq = diagFreq
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=SHAP_PARM01)
@@ -108,7 +109,10 @@ C- print out some kee parameters :
      & '   /* Length scale of Shapiro filter (Momentum) */')  
       CALL WRITE_0D_R8( Shap_noSlip, INDEX_NONE,
      & 'Shap_noSlip =',
-     & '  /* No-slip parameter (0=Free-slip ; 1=No-slip)*/')  
+     &  '  /* No-slip parameter (0=Free-slip ; 1=No-slip)*/')  
+      CALL WRITE_0D_R8( Shap_diagFreq, INDEX_NONE,
+     & 'Shap_diagFreq =',
+     & '   /* Frequency^-1 for diagnostic output (s)*/')  
 
       _END_MASTER(myThid)
 
