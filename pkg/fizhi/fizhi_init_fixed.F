@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.4 2004/06/07 21:36:45 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.5 2004/06/08 15:09:01 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_fixed (myThid)
@@ -30,6 +30,7 @@ c-----------------------------------------------------------------------
 #include "fizhi_earth_coms.h"
 #include "fizhi_land_coms.h"
 #include "chronos.h"
+#include "gridalt_mapping.h"
 
        integer myThid
 
@@ -37,6 +38,7 @@ c-----------------------------------------------------------------------
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
        integer nymdb,nhmsb
        character*40 vegdata
+       _RL pressure(Nrphys)
 
        im1 = 1-OLx
        im2 = sNx+OLx
@@ -54,10 +56,10 @@ c-----------------------------------------------------------------------
      .            surftype,tilefrac,igrd,ityp,chfr )
 
 C Compute pressure profile to get methane and n2o values (bottom-up)
-       do bj = myByLo(myThid), myByHi(myThid)
-       do bi = myBxLo(myThid), myBxHi(myThid)
 
-       enddo
+       pressure(1)=1000.
+       do L = 2,Nrphys+1
+        pressure(L)=pressure(L-1)-dpphys0(1,1,L-1,1,1)
        enddo
 
        call fizhi_init_chem(mythid,
