@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.15 2003/10/11 16:37:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.16 2003/10/26 01:01:23 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -179,14 +179,6 @@ C     Initialise intermediate terms
         fMer(i,j) = 0.
         rTransU(i,j) = 0.
         rTransV(i,j) = 0.
-#ifdef ALLOW_AUTODIFF_TAMC
-C- jmc: this is wrong, but at least with #ifdef/endif TAMC, it does not break 
-C       the forward code ; (same thing in mom_vectinv)
-        fVerU(i,j,1) = 0. _d 0
-        fVerU(i,j,2) = 0. _d 0
-        fVerV(i,j,1) = 0. _d 0
-        fVerV(i,j,2) = 0. _d 0
-#endif
        ENDDO
       ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.8 2003/10/10 23:00:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.9 2003/10/26 01:01:23 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -115,7 +115,6 @@ C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  phyFac
       _RL  vForcFac
       _RL  mtFacV
-      INTEGER km1,kp1
       _RL wVelBottomOverride
       LOGICAL bottomDragTerms
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -123,8 +122,15 @@ C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL hDiv(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
-      km1=MAX(1,k-1)
-      kp1=MIN(Nr,k+1)
+#ifdef ALLOW_AUTODIFF_TAMC
+C--   only the kDown part of fverU/V is set in this subroutine
+C--   the kUp is still required
+C--   In the case of mom_fluxform Kup is set as well
+C--   (at least in part)
+      fVerU(1,1,kUp) = fVerU(1,1,kUp)
+      fVerV(1,1,kUp) = fVerV(1,1,kUp)
+#endif
+
       rVelMaskOverride=1.
       IF ( k .EQ. 1 ) rVelMaskOverride=freeSurfFac
       wVelBottomOverride=1.
@@ -152,10 +158,6 @@ C     Initialise intermediate terms
 #ifdef ALLOW_AUTODIFF_TAMC
         strain(i,j)  = 0. _d 0
         tension(i,j) = 0. _d 0
-        fVerU(i,j,1) = 0. _d 0
-        fVerU(i,j,2) = 0. _d 0
-        fVerV(i,j,1) = 0. _d 0
-        fVerV(i,j,2) = 0. _d 0
 #endif
        ENDDO
       ENDDO
