@@ -24,7 +24,9 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
+#ifdef ALLOW_OBCS
 #include "OBCS.h"
+#endif
 
 #include "exf_param.h"
 

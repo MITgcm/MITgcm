@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.1 2001/05/14 22:08:40 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.2 2001/07/30 20:41:20 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -187,8 +187,6 @@ c     == local variables ==
 
 #endif /* ALLOW_BULKFORMULAE */
 
-      _RL     maskc(1-olx:snx+olx,1-oly:sny+oly)
-
 c     == external functions ==
 
       integer  ilnblnk
@@ -302,14 +300,6 @@ c     Loop over tiles.
       do bj = mybylo(mythid),mybyhi(mythid)
         do bi = mybxlo(mythid),mybxhi(mythid)
           k = 1
-
-c         Calculate mask for tracer cells (0 => land, 1 => water).
-          do j = 1-oly,sny+oly
-            do i = 1-olx,snx+olx
-              maskc(i,j) = exf_one
-              if (_hFacC(i,j,k,bi,bj) .eq. 0.) maskc(i,j) = 0. _d 0
-            enddo
-          enddo
 
           do j = 1-oly,sny+oly
             do i = 1-olx,snx+olx
@@ -474,6 +464,7 @@ ce     &                             flamb*tau*qstar/ustar
       enddo
 
 c     Add all contributions.
+      k = 1
       do bj = mybylo(mythid),mybyhi(mythid)
         do bi = mybxlo(mythid),mybxhi(mythid)
           do j = 1,sny
@@ -488,14 +479,14 @@ c             Net surface heat flux.
               hfl = hfl + swflux(i,j,bi,bj)
 #endif /* ALLOW_KPP undef */
 c             Heat flux:
-              hflux(i,j,bi,bj) = hfl*maskc(i,j)
+              hflux(i,j,bi,bj) = hfl*maskc(i,j,k,bi,bj)
 c             Salt flux from Precipitation and Evaporation.
               sflux(i,j,bi,bj) = precip(i,j,bi,bj) - evap(i,j,bi,bj)
 #endif /* ALLOW_ATM_TEMP */
 
 #else
-              hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskc(i,j)
-              sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskc(i,j)
+              hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskc(i,j,k,bi,bj)
+              sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskc(i,j,k,bi,bj)
 #endif /* ALLOW_BULKFORMULAE */
             enddo
           enddo
