@@ -60,6 +60,7 @@ SRC_MODEL	= \
 		$(PKG)/autodiff/open_copy_data_file.flow\
 		$(PKG)/autodiff/timeave.flow		\
 		  		  				\
+		$(SOURCE_CODE)/adams_bashforth2.f		\
 		$(SOURCE_CODE)/calc_buoyancy.f			\
 		$(SOURCE_CODE)/calc_common_factors.f		\
 		$(SOURCE_CODE)/calc_diffusivity.f		\
