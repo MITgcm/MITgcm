@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_control.F,v 1.3 1999/05/24 15:17:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_control.F,v 1.4 2000/03/14 15:55:50 adcroft Exp $
 
 C      MITgcmUV Exchange routine
 C      -------------------------
@@ -162,6 +162,7 @@ C      theSimulationMode - Holds working copy of simulation mode
 C      theCornerMode     - Holds working copy of corner mode
        INTEGER theSimulationMode
        INTEGER theCornerMode
+       INTEGER I,J,K,bi,bj
 
        theSimulationMode = simulationMode
        theCornerMode     = cornerMode
@@ -229,6 +230,22 @@ C--    not active).
      I            myOLw, myOLe, myOLs, myOLn, myNz,
      I            exchWidthX, exchWidthY,
      I            theSimulationMode, theCornerMode, myThid )
+C      Special case for zonal average model i.e. case where sNx == 1
+C      In this case a forward mode exchange simply sets array to
+C      the i=1 value for all i.
+       IF ( sNx .EQ. 1 ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO K = 1,myNz
+           DO J = 1-myOLs,sNy+myOLn
+            DO I = 1-myOLw,sNx+myOLe
+             array(I,J,K,bi,bj) = array(sNx,J,K,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
 
        RETURN
        END
@@ -313,6 +330,7 @@ C      theSimulationMode - Holds working copy of simulation mode
 C      theCornerMode     - Holds working copy of corner mode
        INTEGER theSimulationMode
        INTEGER theCornerMode
+       INTEGER I,J,K,bi,bj
 
        theSimulationMode = simulationMode
        theCornerMode     = cornerMode
@@ -410,6 +428,22 @@ C--     not active).
      I             myOLw, myOLe, myOLs, myOLn, myNz,
      I             exchWidthX, exchWidthY,
      I             theSimulationMode, theCornerMode, myThid )
+       ENDIF
+C      Special case for zonal average model i.e. case where sNx == 1
+C      In this case a forward mode exchange simply sets array to
+C      the i=1 value for all i.
+       IF ( sNx .EQ. 1 ) THEN
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+          DO K = 1,myNz
+           DO J = 1-myOLs,sNy+myOLn
+            DO I = 1-myOLw,sNx+myOLe
+             array(I,J,K,bi,bj) = array(sNx,J,K,bi,bj)
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
        ENDIF
 
        RETURN
