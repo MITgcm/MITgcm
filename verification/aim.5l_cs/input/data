@@ -60,7 +60,7 @@
 #monitorFreq=86400.,
  monitorFreq=1.,
  monitor_ioinc=.TRUE.,
- diagFreq=2250.0,
+#diagFreq=2250.0,
  &
 
 # Gridding parameters
