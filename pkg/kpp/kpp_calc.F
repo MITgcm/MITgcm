@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.4 2000/11/13 16:37:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.5 2000/11/29 22:29:23 adcroft Exp $
 
 #include "KPP_OPTIONS.h"
 
@@ -340,7 +340,8 @@ c initialize arrays to zero
      &         vddiff(I,J,1,2) * SurfaceTendencyS(i,j,bi,bj)
      &       ) *
      &       delZ(1) / work2(I,J)
-        bosol(I,J) = - gravity * vddiff(I,J,1,1) * Qsw(i,j,bi,bj) *
+        bosol(I,J) = gravity * vddiff(I,J,1,1) * Qsw(i,j,bi,bj) *
+     &       recip_Cp*recip_rhoNil*recip_dRf(1) *
      &       delZ(1) / work2(I,J)
        END DO
       END DO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/Attic/external_fields_load.F,v 1.2 2000/11/14 03:45:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box/code/Attic/external_fields_load.F,v 1.3 2000/11/29 22:29:23 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
  
@@ -182,10 +182,10 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
      &                       +aWght*SST1(i,j,bi,bj)
           SSS(i,j,bi,bj)   = bWght*SSS0(i,j,bi,bj)  
      &                       +aWght*SSS1(i,j,bi,bj)
-          fu(i,j,bi,bj)    = bWght*taux0(i,j,bi,bj) 
-     &                       +aWght*taux1(i,j,bi,bj)
-          fv(i,j,bi,bj)    = bWght*tauy0(i,j,bi,bj) 
-     &                       +aWght*tauy1(i,j,bi,bj)
+          fu(i,j,bi,bj)    = -(bWght*taux0(i,j,bi,bj) 
+     &                       +aWght*taux1(i,j,bi,bj))
+          fv(i,j,bi,bj)    = -(bWght*tauy0(i,j,bi,bj) 
+     &                       +aWght*tauy1(i,j,bi,bj))
           Qnet(i,j,bi,bj)  = bWght*Qnet0(i,j,bi,bj)
      &                       +aWght*Qnet1(i,j,bi,bj)
           EmPmR(i,j,bi,bj) = bWght*EmPmR0(i,j,bi,bj)
@@ -198,9 +198,6 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
         ENDDO
        ENDDO
       ENDDO
-
-C     Convert units and signs
-      CALL EXTERNAL_FIELDS_SCALE( myThid )
 
 C endif for periodicForcing
       ENDIF

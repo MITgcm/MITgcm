@@ -39,23 +39,26 @@ C     === Local variables ===
 
 c     Zonal wind stress fu:
           surfaceTendencyU(i,j,bi,bj) = fu(i,j,bi,bj)
-
+     &         *horiVertRatio*recip_rhoNil*recip_dRf(1)
 c     Meridional wind stress fv:
           surfaceTendencyV(i,j,bi,bj) = fV(i,j,bi,bj)
-
+     &         *horiVertRatio*recip_rhoNil*recip_dRf(1)
 c     Net heat flux Qnet:
-          surfaceTendencyT(i,j,bi,bj) = Qnet(i,j,bi,bj)
+          surfaceTendencyT(i,j,bi,bj) = -Qnet(i,j,bi,bj)
+     &        *recip_Cp*recip_rhoNil*recip_dRf(1)
      &         - lambdaThetaClimRelax*
      &           (theta(i,j,1,bi,bj)-SST(i,j,bi,bj))
 
 #ifdef USE_NATURAL_BCS
 c     Freshwater flux EmPmR:
           surfaceTendencyS(i,j,bi,bj) = EmPmR(i,j,bi,bj)
+     &         *recip_dRf(1)*salt(i,j,1,bi,bj)
      &         - lambdaSaltClimRelax*
      &           (salt(i,j,1,bi,bj)-SSS(i,j,bi,bj))
 #else 
 c     Freshwater flux EmPmR:
           surfaceTendencyS(i,j,bi,bj) = EmPmR(i,j,bi,bj)
+     &         *recip_dRf(1)*35.
      &         - lambdaSaltClimRelax*
      &           (salt(i,j,1,bi,bj)-SSS(i,j,bi,bj))
 #endif          

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.3 2000/11/13 21:40:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.4 2000/11/29 22:29:23 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
  
@@ -201,9 +201,6 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
         ENDDO
        ENDDO
       ENDDO
-
-C     Convert units and signs (!)
-      CALL EXTERNAL_FIELDS_SCALE( myThid )
 
 C-- Diagnostics
       IF (myThid.EQ.1 .AND. myTime.LT.62208000.) THEN

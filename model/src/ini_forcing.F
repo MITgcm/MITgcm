@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.19 2000/11/13 16:32:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.20 2000/11/29 22:29:23 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -86,9 +86,6 @@ C
 
 C     CALL PLOT_FIELD_XYRS( fu, 'S/R INI_FORCING FU',1,myThid)
 C     CALL PLOT_FIELD_XYRS( fv, 'S/R INI_FORCING FV',1,myThid)
-
-C     Convert units and signs
-      CALL EXTERNAL_FIELDS_SCALE( myThid )
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/external_fields_load.F,v 1.1 2000/11/13 16:41:29 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/external_fields_load.F,v 1.2 2000/11/29 22:29:23 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
  
@@ -201,9 +201,6 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
         ENDDO
        ENDDO
       ENDDO
-
-C     Convert units and signs
-      CALL EXTERNAL_FIELDS_SCALE( myThid )
 
 C endif for periodicForcing
       ENDIF
