@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.25 2004/11/19 01:33:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.26 2004/12/04 17:57:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -137,7 +137,13 @@ CEOP
 
 #ifdef ALLOW_AUTODIFF
       CALL AUTODIFF_CHECK( myThid )
+#endif
+
+#ifdef ALLOW_CTRL
       CALL CTRL_CHECK( myThid )
+#endif
+
+#ifdef ALLOW_COST
       CALL COST_CHECK( myThid )
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.36 2004/11/19 01:33:32 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.37 2004/12/04 17:57:06 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -165,14 +165,16 @@ cswdptr -- add --
 #endif
 cswdptr -- end add ---
 
-#ifdef ALLOW_AUTODIFF
+#ifdef ALLOW_CTRL
 C--   Initialise the optim. parameters.
       call optim_readparms( myThid )
 C--   Initialise the control parameters
       call ctrl_readparms( myThid )
+#endif
+
+#ifdef ALLOW_COST
 C--   Initialise the cost parameters
       call cost_readparms( mythid )
-      _BARRIER
 #endif
 
 #ifdef ALLOW_GRDCHK

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.84 2004/12/04 17:02:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.85 2004/12/04 17:57:06 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -538,8 +538,10 @@ c
       _BARRIER
 # endif /* EXCLUDE_CTRL_PACK */
 
+# ifdef ALLOW_COST
       CALL COST_DEPENDENT_INIT ( mythid )
       _BARRIER
+# endif
 
 # if ( defined (ALLOW_TANGENTLINEAR_RUN) )
 c

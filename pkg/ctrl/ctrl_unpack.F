@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.15 2004/11/17 03:06:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.16 2004/12/04 17:57:37 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -47,9 +47,11 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ctrl.h"
-#include "cost.h"
 #include "optim.h"
 
+#ifdef ALLOW_COST
+# include "cost.h"
+#endif
 #ifdef ALLOW_ECCO
 # include "ecco_cost.h"
 #else
