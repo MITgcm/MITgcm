@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.27 2003/02/18 05:33:53 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.28 2003/06/12 18:29:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -73,6 +73,7 @@ C--   all threads fields are ready.
 
        _BARRIER
 
+       IF (debugMode) THEN 
 C--    Write "text-plots" of certain fields
        CALL PLOT_FIELD_XYZRL( uVel , 'Current uVel  ' , 
      &                        Nr, myIter, myThid )
@@ -82,6 +83,7 @@ C--    Write "text-plots" of certain fields
      &                        Nr, myIter, myThid )
        CALL PLOT_FIELD_XYRL( etaN  , 'Current etaN  ' , 
      &                        myIter, myThid )
+       ENDIF
 
       ENDIF
 
@@ -98,6 +100,11 @@ C--   Do time averages
 C--   Do AIM time averages
       IF (useAIM)
      &  CALL AIM_WRITE_TAVE( myCurrentTime, myIter, myThid )
+#endif                                                             
+#ifdef ALLOW_LAND
+C--   Do LAND time averages
+      IF (useLAND)
+     &  CALL LAND_WRITE_TAVE( myCurrentTime, myIter, myThid )
 #endif                                                             
 
 #ifdef ALLOW_GMREDI
