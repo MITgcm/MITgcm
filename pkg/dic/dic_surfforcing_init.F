@@ -1,4 +1,4 @@
-#include "CPP_OPTIONS.h"
+#include "DIC_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
@@ -20,8 +20,10 @@ C     == GLobal variables ==
 #include "GRID.h"
 #include "FFIELDS.h"
 #include "DIC_ABIOTIC.h"
+#include "GCHEM.h"
 #ifdef DIC_BIOTIC
 #include "PTRACERS.h"
+#include "DIC_LOAD.h"
 #endif
 
 C     == Routine arguments ==
@@ -30,6 +32,9 @@ C     == Routine arguments ==
 #ifdef ALLOW_PTRACERS
 C     == Local variables ==
        INTEGER I,J, kLev, it
+       INTEGER intime0,intime1
+       _RL aWght,bWght,rdt
+       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 C Number of iterations for pCO2 solvers...
 C Solubility relation coefficients
 C local variables for carbon chem
@@ -42,6 +47,59 @@ C local variables for carbon chem
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
       kLev=1
+
+ccccccccccccccccccccccccccccccccccccccccc
+c read in silica field
+         CALL LEF_ZERO( wspeed0,myThid )
+         CALL LEF_ZERO( wspeed1,myThid )
+       rdt=1. _d 0 / deltaTclock
+       nForcingPeriods=
+     &  int(externForcingCycle/externForcingPeriod+0.5)
+cswd QQ change for placement of chem forcing (ie. after timestep)
+       Imytm=int((nIter0*deltaTclock)*rdt+0.5)
+       Ifprd=int(externForcingPeriod*rdt+0.5)
+       Ifcyc=int(externForcingCycle*rdt+0.5)
+       Iftm=mod( Imytm+Ifcyc-Ifprd/2 ,Ifcyc)
+       intime0=int(Iftm/Ifprd)
+       intime1=mod(intime0+1,nForcingPeriods)
+       aWght=float( Iftm-Ifprd*intime0 )/float( Ifprd )
+       bWght=1.-aWght
+
+       intime0=intime0+1
+       intime1=intime1+1
+       
+       _BEGIN_MASTER(myThid)
+
+        WRITE(*,*)
+     &    'S/R EXTERNAL_FIELDS_LOAD: Reading new dic data',
+     &                 intime0, intime1
+
+      IF ( SilicaFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( SilicaFile,silica0,intime0,
+     &        nIter0,myThid )
+         CALL READ_REC_XY_RS( SilicaFile,silica1,intime1,
+     &        nIter0,myThid )
+       ENDIF
+
+       _END_MASTER(myThid)
+C
+       _EXCH_XY_R4(silica0, myThid )
+       _EXCH_XY_R4(silica1, myThid )
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+          IF ( SilicaFile .NE. ' '  ) THEN
+             SILICA(i,j,bi,bj)    = bWght*silica0(i,j,bi,bj)
+     &                        +aWght*silica1(i,j,bi,bj)
+           ELSE
+             SILICA(i,j,bi,bj)   =7.6838e-3*maskC(i,j,1,bi,bj)
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
 
 C =================================================================
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -68,7 +126,7 @@ cQQQQ check ptracer numbers
              surfphos(i,j)  = 5.1225e-4 * maskC(i,j,kLev,bi,bj)
 #endif
 C FOR NON-INTERACTIVE Si
-             surfsi(i,j)   =  7.6838e-3 * maskC(i,j,kLev,bi,bj)
+             surfsi(i,j)   =  Silica(i,j,bi,bj) * maskC(i,j,kLev,bi,bj)
              PTR_CO2(i,j,kLev) = PTRACER(i,j,klev,bi,bj,1)
      &                          * maskC(i,j,kLev,bi,bj)
           ENDDO

@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_init.F,v 1.1 2003/10/06 20:11:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_init.F,v 1.2 2003/10/31 17:41:39 stephd Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
 CStartOfInterface

@@ -47,7 +47,7 @@ c
 
 C First call requires that we initialize everything to zero for safety
 cQQQ need to check timing
-       IF ( myIter .EQ. nIter0+1 ) THEN
+       IF ( myIter .EQ. nIter0 ) THEN
          CALL LEF_ZERO( wspeed0,myThid )
          CALL LEF_ZERO( wspeed1,myThid )
          CALL LEF_ZERO( atmosp0,myThid )
@@ -62,7 +62,7 @@ C Now calculate whether it is time to update the forcing arrays
        nForcingPeriods=
      &  int(externForcingCycle/externForcingPeriod+0.5)
 cswd QQ change for placement of chem forcing (ie. after timestep)
-       Imytm=int((myTime-deltaTclock)*rdt+0.5)
+       Imytm=int(myTime*rdt+0.5)
        Ifprd=int(externForcingPeriod*rdt+0.5)
        Ifcyc=int(externForcingCycle*rdt+0.5)
        Iftm=mod( Imytm+Ifcyc-Ifprd/2 ,Ifcyc)
@@ -80,7 +80,7 @@ cswd QQ change for placement of chem forcing (ie. after timestep)
 cswd QQ  need nIter0+1 since chem forcing after time step
        IF (
      &   Iftm-Ifprd*(intime0-1).EQ. 0
-     &   .OR. myIter .EQ. nIter0+1
+     &   .OR. myIter .EQ. nIter0
      &    ) THEN
 
 

@@ -60,7 +60,7 @@ C Now calculate whether it is time to update the forcing arrays
        nForcingPeriods=
      &  int(externForcingCycle/externForcingPeriod+0.5)
 cswd QQ change for placement of chem forcing (ie. after timestep)
-       Imytm=int((myTime-deltaTclock)*rdt+0.5)
+       Imytm=int(myTime*rdt+0.5)
        Ifprd=int(externForcingPeriod*rdt+0.5)
        Ifcyc=int(externForcingCycle*rdt+0.5)
        Iftm=mod( Imytm+Ifcyc-Ifprd/2 ,Ifcyc)
