@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.230 2003/12/17 14:22:38 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.231 2003/12/18 06:20:53 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -6,6 +6,8 @@ $Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.230 2003/12/17 14:22:38 adcroft Exp
 o fix deltaTfreesurf in update_cg2d.F (left from c45d_post): affects 2
   ocean exp. that use NLFS: global_ocean.cs32x15 & global_ocean_pressure
 o added exf_offset_atemp for Celsius to Kelvin conversion of atemp
+o eesupp/inc/EEPARAMS.h: MAX_NO_PROCS=1024
+o pkg/cal/cal_toseconds.F fix for long (>60 years) integrations
 
 checkpoint52d_post
 o re-tiled many expts to allow comparison in multi-processor mode

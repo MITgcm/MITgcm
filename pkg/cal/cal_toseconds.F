@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_toseconds.F,v 1.5 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_toseconds.F,v 1.6 2003/12/18 06:20:53 dimitri Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -56,12 +56,8 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      integer fac
-      integer ndays
-      integer nsecs
-      integer hhmmss
-      integer ierr
-      integer check_sign
+      _RL     fac, nsecs, ndays, hhmmss
+      integer ierr, check_sign
 
 c     == end of interface ==
 c     print *,'cal_toseconds: date',date
