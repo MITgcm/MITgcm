@@ -83,6 +83,7 @@ Heres a further "convenience wrapper" written on top of the above UI:
   MNC_CW_WRITE( myThid,myIter, filebn,bi,bj, Gtype, RX, vname, var )
   MNC_CW_READ(  myThid,myIter, filebn,bi,bj, Gtype, RX, vname, var )
 
+  MNC_CW_RX_WRITES_YY( myThid, fbname,bi,bj, vtype, indu, var )
 
 
 To-Do:

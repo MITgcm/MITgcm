@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.7 2004/01/27 05:47:32 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.8 2004/01/31 04:13:09 edhill Exp $
 #
 #  A Makefile for MNC templates and testing
 #
@@ -18,7 +18,7 @@ FC = f77
 
 
 TEST_LINKS =   EEPARAMS.h utils.F
-TEST_HEADERS = PACKAGES_CONFIG.h CPP_OPTIONS.h
+TEST_HEADERS = PACKAGES_CONFIG.h CPP_OPTIONS.h SIZE.h
 TEST_FILES =   mnc_test_utils.F
 
 FILES = \
@@ -68,7 +68,7 @@ mnc_id_header.h:
 test: all mnc_test_001 mnc_test_002
 	echo "running mnc_test_001 ..."
 	./mnc_test_001 > t_out_001 && ncdump test_001.nc | head -20
-	./mnc_test_002
+	./mnc_test_002 > t_out_002 && tail -15 t_out_002
 
 mnc_test_001: $(ALL_TEST) $(FILES) $(OBJECTS) mnc_test_001.o
 	$(FC) -o mnc_test_001 mnc_test_001.o $(OBJECTS) $(TEST_OBJECTS) -lnetcdf

@@ -1,35 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.2 2004/01/29 05:30:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.3 2004/01/31 04:13:09 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-C       SUBROUTINE MNC_CW_W_RL( 
-C      I     myThid, myIter, 
-C      I     filebn, 
-C      I     bi,bj, 
-C      I     Gtype, 
-C      I     Rtype, 
-C      I     vname, 
-C      I     var )
-
-C       implicit none
-C #include "netcdf.inc"
-C #include "mnc_common.h"
-C #include "EEPARAMS.h"
-
-C C     Arguments
-C       integer myThid, myIter, bi,bj
-C       character*(*) filebn, Gtype
-C       character*(2) Rtype
-C       _RL var*(*)
-
-      
-
-C       RETURN
-C       END
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_CW_ADD_GNAME( 
@@ -98,6 +71,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Local Variables
       integer i,j, ntot
 
+      write(*,'(a)') 'The currently defined Grid Types are:'
       ntot = 0
       DO j = 1,MNC_MAX_ID
         IF (mnc_cw_gname(j)(1:MNC_MAX_CHAR) 
@@ -110,10 +84,42 @@ C     Local Variables
      &         '  | ', (mnc_cw_is(i,j), i=1,5),
      &         '  | ', (mnc_cw_ie(i,j), i=1,5),
      &         '  | ', (mnc_cw_dn(i,j)(1:4), i=1,5)
-          
 
         ENDIF
       ENDDO
+
+      write(*,'(a)') 'The currently defined Variable Types are:'
+      ntot = 0
+      DO j = 1,MNC_MAX_ID
+        IF (mnc_cw_vname(j)(1:MNC_MAX_CHAR) 
+     &       .NE. mnc_blank_name(1:MNC_MAX_CHAR)) THEN
+
+          ntot = ntot + 1
+          write(*,'(2i5,a3,a25,a3,i4)') j, ntot, ' : ', 
+     &         mnc_cw_vname(j)(1:20), ' : ', mnc_cw_vgind(j)
+
+          DO i = 1,mnc_cw_vnat(1,j)
+            write(*,'(a14,i4,a3,a25,a3,a25)') '      text_at:',i, 
+     &           ' : ', mnc_cw_vtnm(i,j)(1:25), ' : ',
+     &           mnc_cw_vtat(i,j)(1:25)
+          ENDDO
+          DO i = 1,mnc_cw_vnat(2,j)
+            write(*,'(a14,i4,a3,a25,a3,i20)') '      int__at:',i, 
+     &           ' : ', mnc_cw_vinm(i,j)(1:25), ' : ',
+     &           mnc_cw_viat(i,j)
+          ENDDO
+          DO i = 1,mnc_cw_vnat(3,j)
+            write(*,'(a14,i4,a3,a25,a3,f25.10)') '      dbl__at:',i, 
+     &           ' : ', mnc_cw_vdnm(i,j)(1:25), ' : ',
+     &           mnc_cw_vdat(i,j)
+          ENDDO
+
+        ENDIF
+      ENDDO
+      IF (ntot .EQ. 0) THEN
+        write(*,'(a)') '   None defined!'
+      ENDIF
+
 
       RETURN
       END
@@ -360,8 +366,6 @@ C     Check that gname exists
         CALL print_error(msgbuf, mythid)
         stop 'ABNORMAL END: S/R MNC_CW_ADD_VNAME'
       ENDIF
-      CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_cw_gname, 
-     &     indg)
 
       mnc_cw_vname(indv)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
       mnc_cw_vname(indv)(1:(nvl-nvf+1)) = vname(nvf:nvl)
@@ -369,6 +373,77 @@ C     Check that gname exists
       DO i = 1,3
         mnc_cw_vnat(i,indv) = 0
       ENDDO
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MNC_CW_ADD_VATTR_TEXT( 
+     I     myThid, 
+     I     vname, 
+     I     ntat, 
+     I     tnames, 
+     I     tvals ) 
+
+      implicit none
+
+C     Arguments
+      integer myThid, ntat
+      character*(*) vname, tnames(*), tvals(*)
+
+      CALL MNC_CW_ADD_VATTR_ANY(myThid, vname, 
+     &     ntat, 0, 0, 
+     &     tnames, ' ', ' ', 
+     &     tvals, 0, 0.0D0 )
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MNC_CW_ADD_VATTR_INT( 
+     I     myThid, 
+     I     vname, 
+     I     niat, 
+     I     inames, 
+     I     ivals ) 
+
+      implicit none
+
+C     Arguments
+      integer myThid, niat
+      character*(*) vname, inames(*)
+      integer ivals(*)
+
+      CALL MNC_CW_ADD_VATTR_ANY(myThid, vname, 
+     &     0, niat, 0, 
+     &     ' ', inames, ' ', 
+     &     ' ', ivals, 0.0D0 )
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MNC_CW_ADD_VATTR_DBL( 
+     I     myThid, 
+     I     vname, 
+     I     ndat, 
+     I     dnames, 
+     I     dvals ) 
+
+      implicit none
+
+C     Arguments
+      integer myThid, ndat
+      character*(*) vname, dnames(*)
+      REAL*8 dvals(*)
+
+      CALL MNC_CW_ADD_VATTR_ANY(myThid, vname, 
+     &     0, 0, ndat, 
+     &     ' ', ' ', dnames, 
+     &     ' ', 0, dvals )
 
       RETURN
       END
@@ -444,6 +519,78 @@ C     Double Attributes
         mnc_cw_vdat(n+i,indv) = dvals(i)
       ENDDO
       mnc_cw_vnat(3,indv) = n + ndat
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MNC_CW_GET_TILE_NUM( 
+     I     myThid, 
+     I     bi, bj, 
+     O     uniq_tnum ) 
+
+      implicit none
+#include "EEPARAMS.h"
+#include "SIZE.h"
+
+C     Arguments
+      integer myThid, bi,bj, uniq_tnum
+
+C     Local Variables
+      integer iG,jG
+
+#ifdef ALLOW_EXCH2
+
+#include "W2_EXCH2_PARAMS.h"
+      uniq_tnum = W2_myTileList(bi)
+
+#else
+
+C     Global tile number for simple (non-cube) domains
+      iG = bi+(myXGlobalLo-1)/sNx
+      jG = bj+(myYGlobalLo-1)/sNy
+C     .          full rows                partial rows
+      uniq_tnum = (jG - 1)*nPx*(nSx*nSy) + (iG - 1)*(nSx*nSy)
+
+#endif
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MNC_CW_FILE_AORC( 
+     I     myThid, 
+     I     fname ) 
+
+      implicit none
+#include "netcdf.inc"
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+
+C     Arguments
+      integer myThid
+      character*(*) fname
+
+C     Local Variables
+      integer i, ierr, indf
+      character*(MAX_LEN_MBUF) msgbuf
+
+C     Check if the file is already open
+      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
+      IF (indf .GT. 0) THEN
+        RETURN
+      ENDIF
+
+C     Try to open an existing file
+      CALL MNC_FILE_TRY_READ(myThid, fname, ierr)
+      IF (ierr .EQ. NF_NOERR) THEN
+        RETURN
+      ENDIF
+
+C     Try to create a new one
+      
 
       RETURN
       END

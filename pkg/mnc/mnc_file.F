@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.10 2004/01/27 05:47:32 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.11 2004/01/31 04:13:09 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -470,11 +470,43 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       implicit none
 #include "netcdf.inc"
-#include "mnc_common.h"
 #include "EEPARAMS.h"
 
 C     Arguments
       integer myThid
+      character*(*) fname
+
+C     Functions
+      integer IFNBLNK, ILNBLNK
+
+C     Local Variables
+      integer ierr, nff,nlf
+      character*(MAX_LEN_MBUF) msgbuf
+
+      nff = IFNBLNK(fname)
+      nlf = ILNBLNK(fname)
+      CALL MNC_FILE_TRY_READ(myThid, fname, ierr)
+      write(msgbuf,'(3a)') 'MNC ERROR: cannot open file ''', 
+     &     fname(nff:nlf), ''' for read/write access'
+      CALL MNC_HANDLE_ERR(myThid, ierr, msgbuf)
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MNC_FILE_TRY_READ( 
+     I     myThid, 
+     I     fname, 
+     I     ierr ) 
+
+      implicit none
+#include "netcdf.inc"
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+
+C     Arguments
+      integer myThid, ierr
       character*(*) fname
 
 C     Functions
@@ -493,9 +525,11 @@ C     Open and save the filename and fID
       nff = IFNBLNK(fname)
       nlf = ILNBLNK(fname)
       err = NF_OPEN(fname, NF_WRITE, fid)
-      write(msgbuf,'(3a)') 'MNC ERROR: cannot open file ''', 
-     &     fname(nff:nlf), ''' for read/write access'
-      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+      ierr = NF_NOERR
+      IF (err .NE. NF_NOERR) THEN
+        ierr = err
+        RETURN
+      ENDIF
       CALL MNC_GET_NEXT_EMPTY_IND(myThid,MNC_MAX_ID,mnc_f_names,indf) 
       mnc_f_names(indf)(1:(nlf-nff+1)) = fname(nff:nlf)
       mnc_f_info(indf,2) = fid

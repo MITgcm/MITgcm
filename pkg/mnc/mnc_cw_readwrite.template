@@ -1,0 +1,111 @@
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.1 2004/01/31 04:13:09 edhill Exp $
+C $Name:  $
+      
+#include "MNC_OPTIONS.h"
+      
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MNC_CW_RX_WRITES_YY( 
+     I     myThid, 
+     I     fbname, bi,bj, 
+     I     vtype, 
+     I     indu, 
+     I     var ) 
+
+      implicit none
+
+#include "netcdf.inc"
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+#include "PARAMS.h"
+#include "GRID.h"
+
+C     Arguments
+      integer myThid, bi,bj, indu
+      character*(*) fbname, vtype
+      _RX var(*)
+
+C     Functions
+      integer IFNBLNK, ILNBLNK
+
+C     Local Variables
+      integer i, indv,nvf,nvl, n1,n2
+      integer bis,bie, bjs,bje, iG,jG, uniq_tnum
+      integer tile_num
+      character*(MAX_LEN_MBUF) msgbuf
+      character*(MNC_MAX_CHAR) fname
+
+C     Temporary storage for the simultaneous type conversion and
+C     re-shaping before passing to NetCDF
+#define mnc_rtype_YY
+#ifdef  mnc_rtype_D
+      REAL*8 resh( sNx + 2*OLx + sNy + 2*OLy )
+#endif
+#ifdef  mnc_rtype_R
+      REAL*4 resh( sNx + 2*OLx + sNy + 2*OLy )
+#endif
+#undef mnc_rtype_YY
+
+C     Only do I/O if I am the master thread
+      _BEGIN_MASTER( myThid )
+
+C     Check that the Variable Type exists
+      nvf = IFNBLNK(vtype)
+      nvl = ILNBLNK(vtype)
+      CALL MNC_GET_IND(myThid, MNC_MAX_ID, vtype, mnc_cw_vname, indv)
+      IF (indg .LT. 1) THEN
+        write(msgbuf,'(3a)') 'MNC_CW_RX_WRITES_YY ERROR: vtype ''', 
+     &       vtype(nff:nfl), ''' is not defined'
+        CALL print_error(msgbuf, mythid)
+        stop 'ABNORMAL END: S/R MNC_CW_RX_WRITES_YY'
+      ENDIF
+
+      IF (bi .LT. 1) THEN
+        bis = 1
+        bie = nSx
+      ELSE
+        bis = bi
+        bie = bi
+      ENDIF
+      IF (bj .LT. 1) THEN
+        bjs = 1
+        bje = nSy
+      ELSE
+        bjs = bj
+        bje = bj
+      ENDIF
+
+      DO bj = bjs,bje
+        DO bi = bis,bie
+
+C         Create the file name
+          CALL MNC_CW_GET_TILE_NUM(myThid, bi,bj, uniq_tnum)
+          fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+          n1 = IFNBLNK(fbname)
+          n2 = ILNBLNK(fbname)
+          ntot = n2 - n1 + 1
+          fname(1:ntot) = fbname(n1:n2)
+          ntot = ntot + 1
+          fname(ntot:ntot) = '.'
+          write(fname((ntot+1):(ntot+9)),'(i6.6,a3)') uniq_tnum, '.nc'
+
+C         Append to existing or create new file
+          CALL MNC_CW_FILE_AORC(myThid, fname)
+
+C         Write the variable one row at a time
+
+
+        ENDDO
+      ENDDO
+
+      _END_MASTER( myThid )
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

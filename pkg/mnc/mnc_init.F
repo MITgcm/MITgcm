@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.7 2004/01/29 05:30:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.8 2004/01/31 04:13:09 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -12,10 +12,10 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Arguments
 
 C     Local Variables
-      integer i,j, g
+      integer i,j, g, v
       character blank*(MNC_MAX_CHAR)
 
-C     Write blanks or zeros to all the name and ID tables
+C     Write blanks or zeros to all the internal names and ID tables
       DO i = 1,mnc_max_char
         blank(i:i) = ' ';
       ENDDO
@@ -35,14 +35,26 @@ C     Write blanks or zeros to all the name and ID tables
         ENDDO
       ENDDO
 
+C     The outer tables
       DO g = 1,MNC_MAX_ID
         mnc_cw_gname(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
+        mnc_cw_vname(g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
+        mnc_cw_vgind(g) = 0
         mnc_cw_ndim(g) = 0
         DO i = 1,MNC_CW_MAX_I
           mnc_cw_dn(i,g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
+          mnc_cw_vtnm(i,g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
+          mnc_cw_vinm(i,g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
+          mnc_cw_vdnm(i,g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
+          mnc_cw_vtat(i,g)(1:MNC_MAX_CHAR) = blank(1:MNC_MAX_CHAR)
           mnc_cw_dims(i,g) = 0
           mnc_cw_is(i,g) = 0
           mnc_cw_ie(i,g) = 0
+          mnc_cw_viat(i,g) = 0
+          mnc_cw_vdat(i,g) = 0.0D0
+        ENDDO
+        DO i = 1,3
+          mnc_cw_vnat(i,g) = 0
         ENDDO
       ENDDO
 
