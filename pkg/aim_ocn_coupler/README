@@ -1,0 +1,128 @@
+
+***************************************************************************************
+|                               Initialisation                                        |
+***************************************************************************************
+
+MITCOMPONENT_init
+=================
+
+      CALL MITCOMPONENT_init( 
+     I                  name, 
+     O                  comm )
+      
+      name - Name of component to register e.g.
+             'ocean', 'atmos', 'ice', 'land'. Up to
+             MAX_COMPONENTS ( see "CPLR_SIG.h" )
+             are allowed. Default is MAX_COMPONENTS = 10.
+
+      comm - MPI_Communicator which includes all procs.
+             that registered as component type 'name.
+
+      Each process can only register as one component type.
+
+      Every process has to call MITCOMPONENT_init at the
+      same point otherwise everything deadlocks or dies.
+      Except the coupler process which calls MITCOUPLER_init.
+
+      Initialises the MPI context for a particular component
+      model. On return the component is given a communicator
+      that can be used for communication based on MPI
+      for the processes of the component. Internal 
+      coupler data structures are also populated that
+      hold information about the component. Typical start-up 
+      sequence is
+
+      Ocean model (N processes)
+        :
+        :
+      MPI_Init
+      MITCOMPONENT_init('Ocean', MPI_COMM_Ocean )
+             
+      Atmos model (M processes)
+        :
+        :
+      MPI_Init
+      MITCOMPONENT_init('Atmos', MPI_COMM_Atmos )
+
+      Coupler (one process only)
+        :
+        :
+      MPI_Init
+      MITCOUPLER_init( 'Coupler', MPI_COMM_Coupler )
+             
+
+MITCOMPONENT_tile_register
+==========================
+      MITCOMPONENT_tile_register(
+     I                           ntx, nty, ireg, rreg )
+      ntx  - number of tiles in X to register
+      nty  - number of tiles in Y to register
+      ireg - array of integer tile attributes. 
+             Current attributes are:
+             ireg(1,bi,bj) - tile size in X
+             ireg(2,bi,bj) - tile size in Y
+             ireg(3,bi,bj) - tile base coordinate on global grid in X
+             ireg(4,bi,bj) - tile base coordinate on global grid in Y
+             Declared:
+             INTEGER IREG(4,NTX,NTY)
+
+      rreg - array of float (32-bit) tile attributes
+             Current attributes are:
+             rreg is not used at the moment.
+             Declared:
+             REAL*4 RREG(4,NTX,NTY)
+
+MITCOMPONENT_register
+=====================
+      MITCOMPONENT_register( 
+     I                      nx, ny, 1, 1 )
+      routine for registering tile size for a single tile model.
+      Deprecated - use MITCOMPONENT_tile_register with ntx and nty
+      set to 1. This routine will not be supported in future coupler releases.
+
+
+
+
+
+
+
+***************************************************************************************
+|                               Sending data                                          |
+***************************************************************************************
+COMPSEND_R4
+===========
+      COMPSEND_R4('Q_a',nx,0,ny,0,Q_surf)
+      REAL*4 Q_surf(nx,ny)
+
+COMPSEND_R4TILES
+================
+      COMPSEND_R4TILES('SST_o',nx,0,ny,0,1,nSx,nSy, SST)
+      REAK*4 SST(SNX,SNY,NSX,NSY)
+
+COMPSEND_R8TILES
+================
+      COMPSEND_R8TILES('Ocean Mask',nx,0,ny,0,1,nSx,nSy, landmask)
+      REAK*8 LANDMASK(SNX,SNY,NSX,NSY)
+
+
+
+
+
+
+***************************************************************************************
+|                               Receiving data                                        |
+***************************************************************************************
+COMPRECV_R4
+===========
+      COMPRECV_R4('SST_a',nx,0,ny,0,SST)
+      REAL*4 SST(nx,ny)
+      CALL COMPRECV_R4(dataname,sNx,OLx,sNy,OLy,array)
+      REAL*4 array(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+COMPRECV_R8
+===========
+      COMPRECV_R8('Ocean Mask',nx,0,ny,0,landmask)
+      REAL*8 landmask(nx,ny)
+      CALL COMPRECV_R8(dataname,sNx,OLx,sNy,OLy,array)
+      REAL*8 array(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+

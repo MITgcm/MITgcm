@@ -1,0 +1,55 @@
+Issues with the current coupler:
+
+It should have been written in C.
+
+It should have more "safe mode" timeout options. For example
+poll for receiver ready before sending to catch deadlocks.
+Poll for receive and trap too many spins waiting
+for an event.
+
+There is only one coupler.
+Coupler has no concept of being "tiled" itself. A heirarchical
+structure of coupled "couplers" could be envisioned.
+Only one tile set per process can be registered.
+
+No real support for multi-threaded codes.
+
+Coupler itself is pure sequential
+
+The coupler only supports transfer of two-dimensional fields.
+
+Wrong name errors are not trapped clearly.
+
+Consistency between components is hard to validate.
+
+Coupled setup consists of a coupling layer plus one or more component
+models and communications API for talking between the coupling
+layer and the components. 
+
+Coupling layer really provides two functions
+
+1. An limited form of associative storage into which component models can export 
+   data and from which component models can import data.  Data is exported
+   and imported using a text string to identify it. Abstraction is similar 
+   to that of a simple file system. There are implicit synchronisation
+   rules that need to be adhered to. Could be extended to allow file system
+   access and/or http based communication.
+
+2. Extrapolation and interpolation modules which are used to map
+   data between component models having differing grids.
+
+ Associative Storage Function
+ ============================
+ Data is exported and imported using a text string to identify it. Abstraction 
+ is similar to that of a simple file system. In the current coupler 
+ implementation there are implicit synchronisation rules that need to be 
+ adhered to. A component model cannot asynchronously request data. Could be 
+ extended to allow file system access and/or http based communication.
+
+ Extrapolation and interpolation
+ ===============================
+ This maps data between different representations.
+
+
+
+
