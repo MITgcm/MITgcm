@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.2 2004/12/19 20:27:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill.F,v 1.3 2004/12/20 19:07:12 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -29,15 +29,12 @@ C  ----------------------
 C     inpFld ..... Field to increment diagnostics array
 C     chardiag ... Character expression for diag to fill
 C     kLev   ..... Integer flag for vertical levels:
-C                  0 indicates multiple levels incremented in qdiag
-C                  non-0 (any integer) - WHICH single level to increment.
-C                  negative INTEGER - the input data array is single-leveled
-C                  positive INTEGER - the input data array is multi-leveled
-C     nLevs ...... indicates Number of levels of the input field array:
-C                  |nLevs| = 3rd dimension size of inpFld array (=1 if kLev <0)
-C                  positive: fill in "nLevs" levels in the same order as
-C                            the input array 
-C                  negative: fill in -nLevs levels in reverse order.
+C                  > 0 (any integer): WHICH single level to increment in qdiag.
+C                  0,-1 to increment "nLevs" levels in qdiag,
+C                  0 : fill-in in the same order as the input array 
+C                  -1: fill-in in reverse order.
+C     nLevs ...... indicates Number of levels of the input field array
+C                  (whether to fill-in all the levels (kLev<1) or just one (kLev>0))
 C     bibjFlg .... Integer flag to indicate instructions for bi bj loop
 C                  0 indicates that the bi-bj loop must be done here
 C                  1 indicates that the bi-bj loop is done OUTSIDE
@@ -65,9 +62,9 @@ C ===============
       INTEGER m, n 
       INTEGER ndiagnum, ipointer
       INTEGER sizI1,sizI2,sizJ1,sizJ2
-      INTEGER sizK,sizTx,sizTy
-      INTEGER iRun, jRun, kl, bi, bj
-      INTEGER k, kFirst, kLast
+      INTEGER sizTx,sizTy
+      INTEGER iRun, jRun, k, bi, bj
+      INTEGER kFirst, kLast
       INTEGER kd, kd0, ksgn, kStore
       CHARACTER*8 parms1
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -139,28 +136,31 @@ C-      Dimension of the input array:
          sizTx = nSx
          sizTy = nSy
         ENDIF
-        IF (kLev.GE.0) THEN
-         sizK = ABS(nLevs)
-        ELSE
-         sizK = 1
-        ENDIF
-C-      Which part of inpFld to add : kl = 3rd index,
-C         and do the loop >> do k=kFirst,kLast ; kl = min(k,sizK) <<
-        IF (kLev.EQ.0) THEN
+C-      Which part of inpFld to add : k = 3rd index,
+C         and do the loop >> do k=kFirst,kLast <<
+        IF (kLev.LE.0) THEN
           kFirst = 1
-          kLast  = sizK
+          kLast  = nLevs
+        ELSEIF ( nLevs.EQ.1 ) THEN
+          kFirst = 1
+          kLast  = 1
+        ELSEIF ( kLev.LE.nLevs ) THEN
+          kFirst = kLev
+          kLast  = kLev
         ELSE
-          kFirst = ABS(kLev)
-          kLast  = ABS(kLev)
+          STOP 'ABNORMAL END: S/R DIAGNOSTICS_FILL kLev > nLevs > 0'
         ENDIF
 C-      Which part of qdiag to update: kd = 3rd index, 
 C         and do the loop >> do k=kFirst,kLast ; kd = kd0 + k*ksgn <<
-        IF ( nLevs.GT.0 ) THEN
+        IF ( kLev.EQ.-1 ) THEN
+          ksgn = -1
+          kd0 = ipointer + nLevs
+        ELSEIF ( kLev.EQ.0 ) THEN
           ksgn = 1
           kd0 = ipointer - 1
         ELSE
-          ksgn = -1
-          kd0 = ipointer + sizK
+          ksgn = 0
+          kd0 = ipointer + kLev - 1
         ENDIF
 
 C-      Check for consistency with Nb of levels reserved in storage array
@@ -189,12 +189,11 @@ C-      Check for consistency with Nb of levels reserved in storage array
           DO bi=myBxLo(myThid), myBxHi(myThid)
            DO k = kFirst,kLast
             kd = kd0 + ksgn*k
-            kl = MIN(k,sizK)
             CALL DIAGNOSTICS_DO_FILL(
      U                  qdiag(1-OLx,1-OLy,kd,bi,bj),
      I                  inpFld,
-     I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
-     I                  iRun,jRun,kl,bi,bj,
+     I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
+     I                  iRun,jRun,k,bi,bj,
      I                  myThid)
            ENDDO
           ENDDO
@@ -204,12 +203,11 @@ C-      Check for consistency with Nb of levels reserved in storage array
           bj = MIN(bjArg,sizTy)
           DO k = kFirst,kLast
             kd = kd0 + ksgn*k
-            kl = MIN(k,sizK)
             CALL DIAGNOSTICS_DO_FILL(
      U                  qdiag(1-OLx,1-OLy,kd,biArg,bjArg),
      I                  inpFld,
-     I                  sizI1,sizI2,sizJ1,sizJ2,sizK,sizTx,sizTy,
-     I                  iRun,jRun,kl,bi,bj,
+     I                  sizI1,sizI2,sizJ1,sizJ2,nLevs,sizTx,sizTy,
+     I                  iRun,jRun,k,bi,bj,
      I                  myThid)
           ENDDO
         ENDIF
