@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.5 2004/02/26 22:31:58 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.6 2004/03/08 21:15:49 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -24,7 +24,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Arguments
       integer myThid, bi,bj, indu
       character*(*) fbname, vtype
-      _RX var(*)
+      __V var(*)
 
 C     Functions
       integer IFNBLNK, ILNBLNK
@@ -41,10 +41,13 @@ C     Local Variables
 C     Temporary storage for the simultaneous type conversion and
 C     re-shaping before passing to NetCDF
 #ifdef  mnc_rtype_D
-      REAL*8 resh( sNx + 2*OLx + sNy + 2*OLy )
+      REAL*8  resh( sNx + 2*OLx + sNy + 2*OLy )
 #endif
 #ifdef  mnc_rtype_R
-      REAL*4 resh( sNx + 2*OLx + sNy + 2*OLy )
+      REAL*4  resh( sNx + 2*OLx + sNy + 2*OLy )
+#endif
+#ifdef  mnc_rtype_I
+      INTEGER resh( sNx + 2*OLx + sNy + 2*OLy )
 #endif
 
 C     Only do I/O if I am the master thread
@@ -55,10 +58,10 @@ C     Check that the Variable Type exists
       nvl = ILNBLNK(vtype)
       CALL MNC_GET_IND(myThid, MNC_MAX_ID, vtype, mnc_cw_vname, indv)
       IF (indv .LT. 1) THEN
-        write(msgbuf,'(3a)') 'MNC_CW_RX_WRITES_YY ERROR: vtype ''', 
+        write(msgbuf,'(3a)') 'MNC_CW_RX_W_YY ERROR: vtype ''', 
      &       vtype(nvf:nvl), ''' is not defined'
         CALL print_error(msgbuf, mythid)
-        STOP 'ABNORMAL END: S/R MNC_CW_RX_WRITES_YY'
+        STOP 'ABNORMAL END: S/R MNC_CW_RX_W_YY'
       ENDIF
       igrid = mnc_cw_vgind(indv)
 
@@ -121,6 +124,9 @@ C         Ensure that the variable is defined
 #ifdef  mnc_rtype_R
       CALL MNC_VAR_INIT_REAL(myThid,fname,mnc_cw_gname(igrid),vtype)
 #endif
+#ifdef  mnc_rtype_I
+      CALL MNC_VAR_INIT_INT(myThid,fname,mnc_cw_gname(igrid),vtype)
+#endif
           DO i = 1,mnc_fv_ids(indf,1)
             j = 2 + 3*(i - 1)
             IF (mnc_v_names(mnc_fv_ids(indf,j)) .EQ. vtype) THEN
@@ -130,7 +136,7 @@ C         Ensure that the variable is defined
               GOTO 10
             ENDIF
           ENDDO
-          write(msgbuf,'(4a)') 'MNC_MNC_CW_RX_WRITES_YY ERROR: ', 
+          write(msgbuf,'(4a)') 'MNC_MNC_CW_RX_W_YY ERROR: ', 
      &         'cannot reference variable ''', vtype, ''''
           CALL print_error(msgbuf, mythid)
           STOP 'ABNORMAL END: package MNC'
@@ -263,6 +269,9 @@ C         Write the variable one vector at a time
 #ifdef  mnc_rtype_R
       err = NF_PUT_VARA_REAL(fid, idv, vstart, vcount, resh)
 #endif
+#ifdef  mnc_rtype_I
+      err = NF_PUT_VARA_INT(fid, idv, vstart, vcount, resh)
+#endif
 
                     ENDDO
                   ENDDO
@@ -274,7 +283,7 @@ C         Write the variable one vector at a time
 C         Sync the file
           err = NF_SYNC(fid)
           write(msgbuf,'(3a)') 'sync for file ''', fname, 
-     &         ''' in S/R MNC_CW_RX_WRITES_YY'
+     &         ''' in S/R MNC_CW_RX_W_YY'
           CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
 
         ENDDO
@@ -308,27 +317,32 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     Arguments
       integer myThid, bi,bj, indu
       character*(*) fbname, vtype
-      _RX var(*)
+      __V var(*)
 
 C     Functions
       integer IFNBLNK, ILNBLNK
 
 C     Local Variables
-      integer i,j,k, indv,nvf,nvl, n1,n2, igrid, ntot
-      integer bis,bie, bjs,bje, uniq_tnum, nfname, fid, idv, indvids
+      integer i,k, indv,nvf,nvl, n1,n2, igrid, ntot
+      integer bis,bie, bjs,bje, uniq_tnum, nfname, fid, idv
       integer ndim, indf, err, lbi,lbj, bidim,bjdim, unlim_sz, kr
-      integer ind_fv_ids, ind_vt
-      integer f_sNx,f_sNy,f_OLx,f_OLy, ires
+      integer ind_fv_ids, ind_vt, ierr, atype, alen
+      integer f_sNx,f_sNy, ires
+      integer p(9),s(9),e(9), vstart(9),vcount(9), udo(9)
+      integer j1,j2,j3,j4,j5,j6,j7, k1,k2,k3,k4,k5,k6,k7
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) fname
 
 C     Temporary storage for the simultaneous type conversion and
 C     re-shaping before passing to NetCDF
 #ifdef  mnc_rtype_D
-      REAL*8 resh( sNx + 2*OLx + sNy + 2*OLy )
+      REAL*8  resh( sNx + 2*OLx + sNy + 2*OLy )
 #endif
 #ifdef  mnc_rtype_R
-      REAL*4 resh( sNx + 2*OLx + sNy + 2*OLy )
+      REAL*4  resh( sNx + 2*OLx + sNy + 2*OLy )
+#endif
+#ifdef  mnc_rtype_I
+      INTEGER resh( sNx + 2*OLx + sNy + 2*OLy )
 #endif
 
 C     Only do I/O if I am the master thread
@@ -347,8 +361,8 @@ C     Check that the Variable Type exists
       igrid = mnc_cw_vgind(ind_vt)
 
 C     Check for bi,bj indicies
-      bidim = mnc_cw_vbij(1,indv)
-      bjdim = mnc_cw_vbij(2,indv)
+      bidim = mnc_cw_vbij(1,ind_vt)
+      bjdim = mnc_cw_vbij(2,ind_vt)
 
 C     Set the bi,bj indicies
       bis = bi
@@ -378,9 +392,10 @@ C         Create the file name
           fname(ntot:ntot) = '.'
           write(fname((ntot+1):(ntot+9)),'(i6.6,a3)') uniq_tnum, '.nc'
           nfname = ntot+9
+      write(*,*) 'The read file is: ', fname(1:nfname)
 
 C         Open the existing file 
-          CALL MNC_FILE_OPEN(myThid, fname, 1, indf)
+          CALL MNC_FILE_TRY_READ(myThid, fname, ierr, indf)
 
 C         Check that the variable (VType) is defined within the file
           CALL MNC_GET_FVINDS(myThid, fname, vtype, indf, ind_fv_ids)
@@ -392,42 +407,179 @@ C         Check that the variable (VType) is defined within the file
             STOP 'ABNORMAL END: S/R MNC_CW_RX_R_YY'
           ENDIF
           fid = mnc_f_info(indf,2)
+          idv = mnc_fv_ids(indf,ind_fv_ids+1)
 
-C         Check that the VType sizes and in-file sizes match
-          err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNx', NF_INT, 1, f_sNx)
-          CALL MNC_HANDLE_ERR(myThid, err, 
-     &         'reading attribute ''sNx'' in S/R MNC_CW_RX_R_YY')
-          err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNy', NF_INT, 1, f_sNy)
-          CALL MNC_HANDLE_ERR(myThid, err, 
-     &         'reading attribute ''sNy'' in S/R MNC_CW_RX_R_YY')
-          err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'OLx', NF_INT, 1, f_OLx)
-          CALL MNC_HANDLE_ERR(myThid, err, 
-     &         'reading attribute ''OLx'' in S/R MNC_CW_RX_R_YY')
-          err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'OLy', NF_INT, 1, f_OLy)
-          CALL MNC_HANDLE_ERR(myThid, err, 
-     &         'reading attribute ''OLy'' in S/R MNC_CW_RX_R_YY')
+      write(*,*) 'indf,ind_fv_ids = ', indf,ind_fv_ids
+
+C         Check that the current sNy,sNy values and the in-file values
+C         are compatible and WARN (only warn) if not
+          f_sNx = -1
+          f_sNy = -1
+          err = NF_INQ_ATT(fid,NF_GLOBAL, 'sNx',atype,alen)
+          IF ((err .EQ. NF_NOERR) .AND. (alen .EQ. 1)) THEN
+            err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNx', f_sNx)
+            CALL MNC_HANDLE_ERR(myThid, err, 
+     &           'reading attribute ''sNx'' in S/R MNC_CW_RX_R_YY')
+          ENDIF
+          err = NF_INQ_ATT(fid,NF_GLOBAL, 'sNy',atype,alen)
+          IF ((err .EQ. NF_NOERR) .AND. (alen .EQ. 1)) THEN
+            err = NF_GET_ATT_INT(fid, NF_GLOBAL, 'sNy', f_sNy)
+            CALL MNC_HANDLE_ERR(myThid, err, 
+     &           'reading attribute ''sNy'' in S/R MNC_CW_RX_R_YY')
+          ENDIF
           IF ((f_sNx .NE. sNx) .OR. (f_sNy .NE. sNy)) THEN
-            write(msgbuf,'(5a)') 'MNC_CW_RX_R_YY ERROR: the sizes of ',
-     &           '''sNx'' and ''sNy'' within the file ''', 
-     &           fname(1:nfname), ''' do not match the current sizes', 
-     &           ' within the model'
+            write(msgbuf,'(5a)') 'MNC_CW_RX_R_YY WARNING: the ',
+     &           'attributes ''sNx'' and ''sNy'' within the file ''', 
+     &           fname(1:nfname), ''' do not exist or do not match ',
+     &           'the current sizes within the model'
             CALL print_error(msgbuf, mythid)
-            STOP 'ABNORMAL END: S/R MNC_CW_RX_R_YY'
           ENDIF
 
-          CALL MNC_COMP_VTYPE_VAR(myThid,ind_vt, indf,ind_fv_ids, ires)
-
+C         Check that the in-memory variable and the in-file variables
+C         are of compatible sizes
+          ires = 1
+          CALL MNC_CHK_VTYP_R_NCVAR(myThid, ind_vt, 
+     &         indf, ind_fv_ids, indu, ires)
           IF (ires .LT. 0) THEN
-            write(msgbuf,'(7a)') 'MNC_CW_RX_R_YY ERROR: the sizes of ',
-     &           ' the in-program variable ''', vtype(nvf:nvl), 
+            write(msgbuf,'(7a)') 'MNC_CW_RX_R_YY WARNING: the sizes ',
+     &           'of the in-program variable ''', vtype(nvf:nvl), 
      &           ''' and the corresponding variable within file ''',
      &           fname(1:nfname), ''' are not compatible -- please ',
-     &           'check the sizes!'
+     &           'check the sizes'
             CALL print_error(msgbuf, mythid)
             STOP 'ABNORMAL END: S/R MNC_CW_RX_R_YY'
           ENDIF
 
+C         Check for bi,bj indicies
+          bidim = mnc_cw_vbij(1,ind_vt)
+          bjdim = mnc_cw_vbij(2,ind_vt)
+          write(*,*) 'bidim,bjdim = ', bidim,bjdim
 
+C         Set the dimensions for the in-memory array
+          ndim = mnc_cw_ndim(igrid)
+          k = mnc_cw_dims(1,igrid)
+          IF (k .GT. 0) THEN
+            p(1) = k
+          ELSE
+            p(1) = 1
+          ENDIF
+          DO i = 2,9
+            k = mnc_cw_dims(i,igrid)
+            IF (k .LT. 1) THEN
+              k = 1
+            ENDIF
+            IF ((bidim .GT. 0) .AND. (i .EQ. bidim)) THEN
+              p(i) = nSx * p(i-1)
+            ELSEIF ((bjdim .GT. 0) .AND. (i .EQ. bjdim)) THEN
+              p(i) = nSy * p(i-1)
+            ELSE
+              p(i) = k * p(i-1)
+            ENDIF
+          ENDDO
+
+C         Set starting and ending indicies for the in-memory array and
+C         the unlimited dimension offset for the NetCDF array
+          DO i = 1,9
+            udo(i) = 0
+            s(i) = 1
+            e(i) = 1
+            IF (i .LE. ndim) THEN
+              s(i) = mnc_cw_is(i,igrid)
+              e(i) = mnc_cw_ie(i,igrid)
+            ENDIF
+C           Check for the unlimited dimension
+            IF ((i .EQ. ndim) 
+     &           .AND. (mnc_cw_dims(i,igrid) .EQ. -1)) THEN
+              IF (indu .GT. 0) THEN
+C               Use the indu value
+                udo(i) = indu - 1
+              ELSEIF (indu .EQ. -1) THEN
+C               Append one to the current unlimited dim size
+                CALL MNC_DIM_UNLIM_SIZE(myThid, fname, unlim_sz)
+                udo(i) = unlim_sz
+              ELSE
+C               Use the current unlimited dim size
+                CALL MNC_DIM_UNLIM_SIZE(myThid, fname, unlim_sz)
+                udo(i) = unlim_sz - 1
+              ENDIF
+            ENDIF
+          ENDDO
+          IF (bidim .GT. 0) THEN
+            s(bidim) = lbi
+            e(bidim) = lbi
+          ENDIF
+          IF (bjdim .GT. 0) THEN
+            s(bjdim) = lbj
+            e(bjdim) = lbj
+          ENDIF
+
+      DO i = 9,1,-1
+        write(*,*) 'i,p(i),s(i),e(i) = ', i,': ',p(i),s(i),e(i)
+      ENDDO
+          
+          CALL MNC_FILE_ENDDEF(myThid,fname)
+
+          write(msgbuf,'(5a)') 'reading variable type ''', 
+     &         vtype(nvf:nvl), ''' within file ''', 
+     &         fname(1:nfname), ''''
+
+C         Read the variable one vector at a time
+          DO j7 = s(7),e(7)
+            k7 = (j7 - 1)*p(6)
+            vstart(7) = udo(7) + j7 - s(7) + 1
+            vcount(7) = 1
+            DO j6 = s(6),e(6)
+              k6 = (j6 - 1)*p(5) + k7
+              vstart(6) = udo(6) + j6 - s(6) + 1
+              vcount(6) = 1
+              DO j5 = s(5),e(5)
+                k5 = (j5 - 1)*p(4) + k6
+                vstart(5) = udo(5) + j5 - s(5) + 1
+                vcount(5) = 1
+                DO j4 = s(4),e(4)
+                  k4 = (j4 - 1)*p(3) + k5
+                  vstart(4) = udo(4) + j4 - s(4) + 1
+                  vcount(4) = 1
+                  DO j3 = s(3),e(3)
+                    k3 = (j3 - 1)*p(2) + k4
+                    vstart(3) = udo(3) + j3 - s(3) + 1
+                    vcount(3) = 1
+                    DO j2 = s(2),e(2)
+                      k2 = (j2 - 1)*p(1) + k3
+                      vstart(2) = udo(2) + j2 - s(2) + 1
+                      vcount(2) = 1
+
+      vstart(1) = udo(1) + 1
+      vcount(1) = e(1) - s(1) + 1
+      
+#ifdef  mnc_rtype_D
+      err = NF_GET_VARA_DOUBLE(fid, idv, vstart, vcount, resh)
+#endif
+#ifdef  mnc_rtype_R
+      err = NF_GET_VARA_REAL(fid, idv, vstart, vcount, resh)
+#endif
+#ifdef  mnc_rtype_I
+      err = NF_GET_VARA_INT(fid, idv, vstart, vcount, resh)
+#endif
+
+      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+
+      kr = 0
+      DO j1 = s(1),e(1)
+        k1 = k2 + j1
+        kr = kr + 1
+        var(k1) = resh(kr)
+      ENDDO
+      
+ 
+                    ENDDO
+                  ENDDO
+                ENDDO
+              ENDDO
+            ENDDO
+          ENDDO
+
+C         End the lbj,lbi loops
         ENDDO
       ENDDO
 

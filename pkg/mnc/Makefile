@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.10 2004/02/05 00:13:47 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.11 2004/03/08 21:15:49 edhill Exp $
 #
 #  A Makefile for MNC templates and testing
 #
@@ -53,8 +53,11 @@ utils.F:
 #   MNC_RESHAPE_RS_D.F MNC_RESHAPE_RL_D.F \
 #   MNC_RESHAPE_RS_R.F MNC_RESHAPE_RL_R.F
 TEMPLATE_FILES = \
-  MNC_CW_READWRITE_RS_D.F MNC_CW_READWRITE_RL_D.F \
-  MNC_CW_READWRITE_RS_R.F MNC_CW_READWRITE_RL_R.F
+  MNC_CW_READWRITE_RS_D.F MNC_CW_READWRITE_RL_D.F  \
+  MNC_CW_READWRITE_RS_R.F MNC_CW_READWRITE_RL_R.F  \
+  MNC_CW_READWRITE_I_I.F  \
+  MNC_CW_READWRITE_RS_I.F MNC_CW_READWRITE_RL_I.F  \
+  MNC_CW_READWRITE_I_R.F  MNC_CW_READWRITE_I_D.F
 TEMPLATE_OBJECTS = $(TEMPLATE_FILES:.F=.o)
 
 
@@ -70,14 +73,25 @@ MNC_RESHAPE_RL_R.F: mnc_reshape.template
 	cat $<  | sed -e 's/RX/RL/g' | sed -e 's/YY/R/g' > $@
 
 MNC_CW_READWRITE_RS_D.F: mnc_cw_readwrite.template
-	cat $< | sed -e 's/RX/RS/g' | sed -e 's/YY/D/g' > $@
+	cat $< | sed -e 's/RX/RS/g' | sed -e 's/__V/_RS/g' | sed -e 's/YY/D/g' > $@
 MNC_CW_READWRITE_RL_D.F: mnc_cw_readwrite.template
-	cat $< | sed -e 's/RX/RL/g' | sed -e 's/YY/D/g' > $@
-MNC_CW_READWRITE_RS_R.F: mnc_cw_readwrite.template
-	cat $< | sed -e 's/RX/RS/g' | sed -e 's/YY/R/g' > $@
-MNC_CW_READWRITE_RL_R.F: mnc_cw_readwrite.template
-	cat $< | sed -e 's/RX/RL/g' | sed -e 's/YY/R/g' > $@
+	cat $< | sed -e 's/RX/RL/g' | sed -e 's/__V/_RL/g' | sed -e 's/YY/D/g' > $@
 
+MNC_CW_READWRITE_RS_R.F: mnc_cw_readwrite.template
+	cat $< | sed -e 's/RX/RS/g' | sed -e 's/__V/_RS/g' | sed -e 's/YY/R/g' > $@
+MNC_CW_READWRITE_RL_R.F: mnc_cw_readwrite.template
+	cat $< | sed -e 's/RX/RL/g' | sed -e 's/__V/_RL/g' | sed -e 's/YY/R/g' > $@
+
+MNC_CW_READWRITE_I_I.F: mnc_cw_readwrite.template
+	cat $< | sed -e 's/RX/I/g' | sed -e 's/__V/INTEGER/g' | sed -e 's/YY/I/g' > $@
+MNC_CW_READWRITE_RS_I.F: mnc_cw_readwrite.template
+	cat $< | sed -e 's/RX/RS/g' | sed -e 's/__V/_RS/g' | sed -e 's/YY/I/g' > $@
+MNC_CW_READWRITE_RL_I.F: mnc_cw_readwrite.template
+	cat $< | sed -e 's/RX/RL/g' | sed -e 's/__V/_RL/g' | sed -e 's/YY/I/g' > $@
+MNC_CW_READWRITE_I_R.F: mnc_cw_readwrite.template
+	cat $< | sed -e 's/RX/I/g' | sed -e 's/__V/INTEGER/g' | sed -e 's/YY/R/g' > $@
+MNC_CW_READWRITE_I_D.F: mnc_cw_readwrite.template
+	cat $< | sed -e 's/RX/I/g' | sed -e 's/__V/INTEGER/g' | sed -e 's/YY/D/g' > $@
 
 tag = ../../doc/tag-index
 

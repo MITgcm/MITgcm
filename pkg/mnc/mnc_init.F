@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.8 2004/01/31 04:13:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_init.F,v 1.9 2004/03/08 21:15:49 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -64,54 +64,61 @@ C     The outer tables
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       SUBROUTINE MNC_DUMP()
+      CALL MNC_DUMP_ALL(5, 20)
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MNC_DUMP_ALL( n_id, n_items )
 
 #include "mnc_common.h"
 
 C     Arguments
+      integer n_id, n_items
 
 C     Local Variables
-      integer i,j, n_id
+      integer i,j
 
 C     n_id = mnc_max_id
-      n_id = 5
 
       write(*,*) 'mnc_f_names :'
       DO i = 1,n_id
-        write(*,'(a,a40)') '  :', mnc_f_names(i)
+        write(*,'(i3,a,a40)') i,':', mnc_f_names(i)
       ENDDO
       write(*,*) 'mnc_g_names :'
       DO i = 1,n_id
-        write(*,'(a,a40)') '  :', mnc_g_names(i)
+        write(*,'(i3,a,a40)') i,':', mnc_g_names(i)
       ENDDO
       write(*,*) 'mnc_v_names :'
       DO i = 1,n_id
-        write(*,'(a,a40)') '  :', mnc_v_names(i)
+        write(*,'(i3,a,a40)') i,':', mnc_v_names(i)
       ENDDO
       write(*,*) 'mnc_d_names :'
       DO i = 1,n_id
-        write(*,'(a,a40)') '  :', mnc_d_names(i)
+        write(*,'(i3,a,a40)') i,':', mnc_d_names(i)
       ENDDO
 
       write(*,*) 'mnc_d_ids, mnc_d_size :'
       DO i = 1,n_id
-        write(*,*) mnc_d_ids(i), mnc_d_size(i)
+        write(*,*) i,': ',mnc_d_ids(i), mnc_d_size(i)
       ENDDO
 
       write(*,*) 'mnc_f_info :'
       DO i = 1,n_id
-        write(*,*) (mnc_f_info(i,j), j=1,30)
+        write(*,*) i,': ',(mnc_f_info(i,j), j=1,n_items)
       ENDDO
       write(*,*) 'mnc_fd_ind :'
       DO i = 1,n_id
-        write(*,*) (mnc_fd_ind(i,j), j=1,30)
+        write(*,*) i,': ',(mnc_fd_ind(i,j), j=1,n_items)
       ENDDO
       write(*,*) 'mnc_fv_ids :'
       DO i = 1,n_id
-        write(*,*) (mnc_fv_ids(i,j), j=1,30)
+        write(*,*) i,': ',(mnc_fv_ids(i,j), j=1,n_items)
       ENDDO
       write(*,*) 'mnc_f_alld :'
       DO i = 1,n_id
-        write(*,*) (mnc_f_alld(i,j), j=1,30)
+        write(*,*) i,': ',(mnc_f_alld(i,j), j=1,n_items)
       ENDDO
 
       RETURN

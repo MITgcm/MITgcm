@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.33 2003/12/15 18:51:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.34 2004/03/08 21:15:49 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -72,6 +72,10 @@ C     fn      :: Temp. for building file name.
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(10) suff
       INTEGER prec
+#ifdef ALLOW_MNC
+      INTEGER i,j,k, bi,bj
+      _RL     mnc_iter
+#endif
 CEOP
 
 C--    Going to really do some IO. Make everyone except master thread wait.
@@ -158,6 +162,50 @@ c        CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
 
 #endif /* OLD_STYLE_WITH_MANY_FILES */
 
+
+#ifdef ALLOW_MNC
+      mnc_iter = myIter
+
+C     Write dynvars using the MNC package
+      CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'iter',-1,mnc_iter)
+      CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'U', 0, uVel)
+      CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'V', 0, vVel)
+      CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'T', 0, theta)
+      CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'S', 0, salt)
+      CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'Eta', 0, etaN)
+
+      DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO i=1,sNx
+            DO j=1,sNy
+              etaN(i,j,bi,bj) = 0.0D0
+            ENDDO
+          ENDDO
+          DO k=1,Nr
+            DO i=1,sNx
+              DO j=1,sNy
+                uVel(i,j,k,bi,bj)  = 0.0D0
+                vVel(i,j,k,bi,bj)  = 0.0D0
+                theta(i,j,k,bi,bj) = 0.0D0
+                salt(i,j,k,bi,bj)  = 0.0D0
+              ENDDO
+            ENDDO
+          ENDDO
+        ENDDO
+      ENDDO
+
+C     Read variables from the pickup file
+      CALL MNC_FILE_CLOSE_ALL_MATCHING(myThid, 'pickup')
+      CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'iter',1,mnc_iter)
+      CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'U',1,uVel)
+      CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'V',1,vVel)
+      CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'T',1,theta)
+      CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'S',1,salt)
+      CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'Eta',1,etaN)
+
+#endif /* ALLOW_MNC */
+
+
        _END_MASTER( myThid )
        _BARRIER
 
@@ -239,6 +287,9 @@ C     myTime :: Current time of simulation ( s )
       INTEGER myThid
       INTEGER myIter
       _RL     myTime
+#ifdef ALLOW_MNC
+      _RL     mnc_iter
+#endif
 
 C     == Common blocks ==
       COMMON /PCKP_GBLFLS/ globalFile
@@ -364,6 +415,16 @@ c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
 #endif
 
 #endif /* OLD_STYLE_WITH_MANY_FILES */
+
+
+#ifdef ALLOW_MNC
+      mnc_iter = myIter
+
+C     Write dynvars using the MNC package
+C      CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'iter',0,mnc_iter)
+C      CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'U', 0, uVel)
+#endif /* ALLOW_MNC */
+
 
 C--     Write suffix for stdout information
         IF ( permCheckPoint ) THEN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.12 2004/02/04 05:45:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.13 2004/03/08 21:15:49 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -40,19 +40,20 @@ C     Arguments
       integer myThid,indf
       character*(*) fname
       integer itype
-C     itype => [ 0=new | 1=append ]
+C     itype => [ 0=new | 1=append | 2=read-only ]
 
 C     Functions
       integer ILNBLNK
 
 C     Local Variables
-      integer n, err, fid
+      integer n, err, fid, nf
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Is the file already open?
+      nf = ILNBLNK(fname)
       CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
       IF (indf .GT. 0) THEN
-        write(msgbuf,'(3a)') 'MNC_FILE_OPEN ERROR: ''', fname, 
+        write(msgbuf,'(3a)') 'MNC_FILE_OPEN ERROR: ''', fname(1:nf), 
      &       ''' is already open -- cannot open twice'
         CALL print_error(msgbuf, mythid)
         stop 'ABNORMAL END: package MNC'
@@ -254,61 +255,66 @@ C     Arguments
       integer myThid
       character*(*) fname
 
+C     Functions
+      integer ILNBLNK
+
 C     Local Variables
-      integer i,j,k,n, err, fid, ind
+      integer i,j,k,n, err, fid, indf, nf
       character*(MAX_LEN_MBUF) msgbuf
 
+      nf = ILNBLNK(fname)
+
 C     Check that the file is open
-      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, ind)
-      IF (ind .LT. 1) THEN
-        write(msgbuf,'(3a)') 'MNC Warning: file ''', fname, 
+      CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
+      IF (indf .LT. 1) THEN
+        write(msgbuf,'(3a)') 'MNC Warning: file ''', fname(1:nf), 
      &       ''' is already closed'
         CALL print_error( msgbuf, mythid )
         RETURN
       ENDIF
-      fid = mnc_f_info(ind,2)
+      fid = mnc_f_info(indf,2)
       err = NF_CLOSE(fid)
-      write(msgbuf,'(3a)') ' cannot close file ''', fname, ''''
+      write(msgbuf,'(3a)') ' cannot close file ''', fname(1:nf), ''''
       CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
 
 C     Clear all the info associated with this file
 C     variables
-      n = mnc_fv_ids(ind,1)
+      n = mnc_fv_ids(indf,1)
       IF (n .GE. 1) THEN
         DO i = 1,n
           j = 2 + 3*(i - 1)
-          k = mnc_fv_ids(ind,j)
+          k = mnc_fv_ids(indf,j)
           mnc_v_names(k)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
         ENDDO
-        DO i = 1,(1 + 3*n)
-          mnc_fv_ids(ind,i) = 0
+        DO i = 1,MNC_MAX_INFO
+          mnc_fv_ids(indf,i) = 0
         ENDDO
       ENDIF
 C     dims
-      n = mnc_f_alld(ind,1)
-      mnc_f_alld(ind,1) = 0
+      n = mnc_f_alld(indf,1)
+      mnc_f_alld(indf,1) = 0
       DO i = 1,n
-        j = mnc_f_alld(ind,i+1)
+        j = mnc_f_alld(indf,i+1)
         mnc_d_ids(j)  = 0
         mnc_d_size(j) = 0
         mnc_d_names(j)(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
-        mnc_f_alld(ind,i+1) = 0
+        mnc_f_alld(indf,i+1) = 0
       ENDDO
 C     grids
-      n = mnc_f_info(ind,3)
+      n = mnc_f_info(indf,3)
       IF (n .GT. 0) THEN
         DO i = 1,n
           j = 4 + 3*(i - 1)
-          k = mnc_f_info(ind,j)
+          k = mnc_f_info(indf,j)
           mnc_g_names(k)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
         ENDDO
         DO i = 1,MNC_MAX_INFO
-          mnc_fd_ind(ind,i) = 0
-          mnc_f_info(ind,i) = 0
+          mnc_fd_ind(indf,i) = 0
+          mnc_f_info(indf,i) = 0
         ENDDO
       ENDIF
 C     file name
-      mnc_f_names(ind)(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+      mnc_f_names(indf)(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
 
       RETURN
       END

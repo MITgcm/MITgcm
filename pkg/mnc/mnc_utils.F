@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.8 2004/02/26 22:31:58 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.9 2004/03/08 21:15:49 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -187,63 +187,80 @@ C     Find the vID
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C     The purpose of this function is to determine whether the
-C     dimensions (sizes) of a specific variable within the MNC low-level
-C     look-up tables matches the dimensions of a Variable Type defined
-C     within the upper-level CW layer.
+C     Here, we determine whether the dimensions (sizes) of a specific
+C     variable within the MNC low-level look-up tables matches the
+C     dimensions of a Variable Type defined within the upper-level CW
+C     layer.
 C
-C     YES  ==>  ires > 0
-C     NO   ==>  ires < 0
+C     Return values:
+C     .  YES  ==>  ires > 0
+C     .  NO   ==>  ires < 0
 
-      SUBROUTINE MNC_COMP_VTYPE_VAR( 
+      SUBROUTINE MNC_CHK_VTYP_R_NCVAR( 
      I     myThid, 
      I     ind_vt, 
      I     indf,
      I     ind_fv_ids, 
+     I     indu, 
      O     ires )
 
       implicit none
 #include "mnc_common.h"
+#include "EEPARAMS.h"
 
 C     Arguments
-      INTEGER  myThid, ind_vt, indf, ind_fv_ids, ires
+      INTEGER  myThid, ind_vt, indf, ind_fv_ids, indu, ires
+
+C     Functions
+      integer ILNBLNK
 
 C     Locals
-      integer      i,k, ind_cw_g, ig,ids,ide,nint
+      integer  ii,k, ind_cw_g, ig,ids,ide,nint, indd, cw_len, nk
+      integer  ndim_vt, ncgt,ncvr,ncvf, npb, sz_min
       character*1  ch
+      character*(MAX_LEN_MBUF) pbuf, msgbuf
 
       ires = -1
 
-C     grid index for the internal  representation
+C     grid indicies for the internal (as-read-from-the-file) data
       ig = mnc_fv_ids(indf,ind_fv_ids+2)
       ids = mnc_f_info(indf,ig+1)
       ide = mnc_f_info(indf,ig+2)
       nint = ids - ide + 1
 
-C     GType index for CW
-C       ind_cw_g = mnc_cw_vgind(ind_vt)
-C       IF (nint .NE. mnc_cw_ndim(ind_cw_g)) THEN
-C         RETURN
-C       ENDIF
-C       k = 0
-C       DO i = ids,ide
-C         k = k + 1
-C         indd = mnc_fd_ind(indf,i)
-C         ch = mnc_d_names(indd)(1:1)
-C         cw_len = mnc_cw_ie(k,ind_cw_g) - mnc_cw_is(k,ind_cw_g) + 1
-C         IF (ch .EQ. 'X') THEN
-          
-C         ELSEIF (ch .EQ. 'Y') THEN
-          
-C         ELSE
-          
-C         ENDIF
-        
-C         IF (mnc_fd_ind(indf,i) .NE. cw_len) THEN
-C           RETURN
-C         ENDIF
-C       ENDDO
+      ind_cw_g = mnc_cw_vgind(ind_vt)
+      ncgt = ILNBLNK(mnc_cw_gname(ind_cw_g))
+      ncvr = ILNBLNK(mnc_v_names(mnc_fv_ids(indf,ind_fv_ids)))
+      ncvf = ILNBLNK(mnc_f_names(indf))
+      write(pbuf,'(7a)') 'MNC_CHK_VTYP_R_NCVAR WARNING: var ''',
+     &     mnc_v_names(mnc_fv_ids(indf,ind_fv_ids))(1:ncvr),
+     &     ''' within file ''', mnc_f_names(indf)(1:ncvf), 
+     &     ''' does not satisy the size needed by GType ''',
+     &     mnc_cw_gname(ind_cw_g)(1:ncgt), ''''
+      npb = ILNBLNK(pbuf)
+      ndim_vt = mnc_cw_ndim(ind_cw_g)
+      nk = nint
+      IF (ndim_vt .LT. nk)  nk = ndim_vt
+      IF (nint .NE. ndim_vt) THEN
+        write(msgbuf,'(2a)') pbuf(1:npb), ' -- too few dims'
+        CALL print_error(msgbuf, myThid)
+      ENDIF
 
+C     Check that the necessary size exists along each dimension
+      DO k = 1,nk
+        ii = ids + (k - 1)
+        sz_min = mnc_cw_dims(k,ind_cw_g)
+        IF (sz_min .EQ. -1)  sz_min = indu
+        indd = mnc_fd_ind(indf,ii)
+        IF (mnc_d_size(indd) .LT. sz_min) THEN
+          write(msgbuf,'(2a,i3,a,i3,a,i3)') pbuf(1:npb), ': dim #', 
+     &         k, ' is too small: ', mnc_d_size(indd), ' vs ',
+     &         mnc_cw_ie(k,ind_cw_g)
+          CALL print_error(msgbuf, myThid)
+          RETURN
+        ENDIF
+      ENDDO
+      
 C     Reaching this point means all tests passed
       ires = 1
 
