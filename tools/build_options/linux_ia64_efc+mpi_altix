@@ -18,7 +18,7 @@ fi
 FOPTIM='-O3 -align'
 #P3  FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' ) 
 #P4  FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' ) 
-LIBS='-L/opt/sgi/mpt/1.9.1.0//lib -lPEPCF90 -lmpi'
+LIBS='-L/opt/sgi/mpt/1.9.1.0/lib -lPEPCF90 -lmpi'
 
 FC=efc
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -D_BYTESWAPIO -DWORDLENGTH=4'
