@@ -1,11 +1,21 @@
 
 #include "CTRL_CPPOPTIONS.h"
 
+CBOP
+C     !ROUTINE: ctrl_map_ini
+C     !INTERFACE:
       SUBROUTINE CTRL_MAP_FORCING(myThid)
-C     /==========================================================\
-C     | SUBROUTINE CTRL_MAP_FORCING                              |
-C     |==========================================================|
-C     \==========================================================/
+
+C     !DESCRIPTION: \bv
+c     *=================================================================
+c     | SUBROUTINE CTRL_MAP_FORCING                              
+c     | Add the surface flux anomalies of the control vector
+c     | to the model flux fields and update the tile halos.
+c     | The control vector is defined in the header file "ctrl.h".
+c     *=================================================================
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
@@ -15,15 +25,16 @@ C     == Global variables ===
 #include "FFIELDS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
       INTEGER myThid
 
+C     !LOCAL VARIABLES:
 C     == Local variables ==
       integer bi,bj
       integer i,j,k
@@ -45,11 +56,11 @@ C     == Local variables ==
       character*( 80)   fnamesst
 
 c     == external ==
-
       integer  ilnblnk
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)

@@ -1,51 +1,40 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.4 2001/08/13 23:28:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.5 2001/09/28 15:15:55 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
+CBOP
+C     !ROUTINE: ctrl_map_ini
+C     !INTERFACE:
+      subroutine ctrl_map_ini( mythid )
 
-      subroutine ctrl_map_ini(
-     I                     mythid
-     &                   )
+C     !DESCRIPTION: \bv
+c     *=================================================================
+c     | SUBROUTINE ctrl_map_ini
+c     | Add the temperature, salinity, and diffusivity parts of the 
+c     | control vector to the model state and update the tile halos. 
+c     | The control vector is defined in the header file "ctrl.h".
+c     *=================================================================
+C     \ev
 
-c     ==================================================================
-c     SUBROUTINE ctrl_map_ini
-c     ==================================================================
-c
-c     o Add the temperature and salinity parts of the control vector to
-c       the model state and update the tile edges. The control vector is
-c       defined in the header file "ctrl.h".
-c
-c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
-c
-c     changed: Christian Eckert eckert@mit.edu 23-Feb-2000
-c
-c              - Restructured the code in order to create a package
-c                for the MITgcmUV.
-c
-c     ==================================================================
-c     SUBROUTINE ctrl_map_ini
-c     ==================================================================
-
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "TR1.h"
-
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-
       integer mythid
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
 
-      _RL     fac
       integer bi,bj
       integer i,j,k
       integer itlo,ithi
@@ -64,12 +53,14 @@ c     == local variables ==
       character*( 80)   fnamediffkr
       character*( 80)   fnamekapgm
 
-c     == external ==
+      _RL     fac
 
+c     == external ==
       integer  ilnblnk
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
       jtlo = mybylo(mythid)
       jthi = mybyhi(mythid)

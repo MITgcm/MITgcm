@@ -1,55 +1,44 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.3 2001/08/13 18:10:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.4 2001/09/28 15:15:55 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
+CBOP
+C     !ROUTINE: ctrl_pack
+C     !INTERFACE:
+      subroutine ctrl_pack( myiter, mytime, mythid )
 
-      subroutine ctrl_pack(
-     I                      myiter,
-     I                      mytime,
-     I                      mythid
-     &                    )
+C     !DESCRIPTION: \bv
+c     *=================================================================
+c     | SUBROUTINE ctrl_pack
+c     | Pack the control vector
+c     | * All control variable and adjoint variable fields are
+c     |   read from disk.
+c     | * Wet points are extracted, and elements are
+c     |   normalized (optional)
+c     | * A single control vector containing only (normalized
+c     |   wet points is written to file.
+c     *=================================================================
+C     \ev
 
-c     ==================================================================
-c     SUBROUTINE ctrl_pack
-c     ==================================================================
-c
-c     o Compress the control vector such that only ocean points are
-c       written to file.
-c
-c     started: Christian Eckert eckert@mit.edu  10-Mar=2000
-c
-c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
-c              - Transferred some filename declarations
-c                from here to namelist in ctrl_init
-c  
-c              Patrick Heimbach heimbach@mit.edu 16-Jun-2000
-c              - single file name convention with or without
-c                ALLOW_ECCO_OPTIMIZATION
-c
-c
-c     ==================================================================
-c     SUBROUTINE ctrl_pack
-c     ==================================================================
-
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-
 #include "ctrl.h"
 #include "cost.h"
 #include "optim.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-
       integer myiter
       _RL     mytime
       integer mythid
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
 
       integer bi,bj
@@ -62,12 +51,13 @@ c     == local variables ==
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
+      integer cbuffindex
+      integer cunit
+      integer prec
 
       logical doglobalread
       logical ladinit
-      integer cbuffindex
 
-      integer cunit
       _RL     cbuff( snx*nsx*npx*sny*nsy*npy )
       _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globfld2d( snx,nsx,npx,sny,nsy,npy )
@@ -77,14 +67,12 @@ c     == local variables ==
       character*(128) cfile
       character*( 80) fname
 
-      integer prec
-
 c     == external ==
-
       integer  ilnblnk
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
       prec           = precFloat64
       tmpvar         = -9999. _d 0

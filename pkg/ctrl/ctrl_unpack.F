@@ -1,58 +1,93 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.2 2001/07/13 13:40:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.3 2001/09/28 15:15:55 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
-
-      subroutine ctrl_unpack(
-     I                        myiter,
-     I                        mytime,
-     I                        mythid
-     &                      )
-
-c     ==================================================================
-c     SUBROUTINE ctrl_unpack
-c     ==================================================================
-c
-c     o Unpack the control vector such that the land points are filled
-c       in.
-c
-c     started: Christian Eckert eckert@mit.edu  10-Mar-2000
-c
-c     changed: Patrick Heimbach heimbach@mit.edu 06-Jun-2000
-c              - Transferred some filename declarations
-c                from here to namelist in ctrl_init
-c
-c              Patrick Heimbach heimbach@mit.edu 16-Jun-2000
-c              - single file name convention with or without
-c                ALLOW_ECCO_OPTIMIZATION
+CBOI
 C
-c              Armin Koehl akoehl@ucsd.edu 05-Dec-2000
-c              - single processor reads global parameter file
-c               and writes multiple xx* and adxx* files
+C !TITLE: CONTROL VECTOR
+C !AUTHORS: mitgcm developers ( support@mitgcm.org )
+C !AFFILIATION: Massachussetts Institute of Technology
+C !DATE:
+C !INTRODUCTION: control vector handling
+C \bv
+c The control vector package is connected to the differntiability
+c of the code. Differentiability refers to computing the derivative
+c of a cost function with respect to a set of control variables
+c (initial state, boundary values, model parameters).
+c To reduce memory, the control variables are kept on file and
+c are only read/written, when needed.
+c To achieve this, adjoint support routines are available which
+c handle I/O of active variables.
+c In addition, a single control vector is created, which contains
+c all wet points of all control variables.
 c
-c     ==================================================================
-c     SUBROUTINE ctrl_unpack
-c     ==================================================================
+C     !CALLING SEQUENCE:
+c    ...
+c     |-- the_model_main
+c         |
+c         |-- initialise_fixed
+c         |   |
+c         |   |-- packages_readparms
+c         |       |
+c         |       |-- ctrl_init                - initialise control
+c         |                                      package
+c         |-- ctrl_unpack                      - unpack control vector
+c         |
+c         |-- adthe_main_loop                  - forward/adjoint run
+c         |   |
+c         |   |-- initialise_variables
+c         |   |   |
+c         |   |   |-- packages_init_variables
+c         |   |       |
+c         |   |       |-- ctrl_map_ini         - link init. state to
+c         |   |                                  control variables
+c         |   |-- ctrl_map_forcing             - link forcing fields to
+c         |  ...                                 control variables
+c         |
+c         |-- ctrl_pack                        - pack control vector
+C \ev
+CEOP
 
+CBOP
+C     !ROUTINE: ctrl_unpack
+C     !INTERFACE:
+      subroutine ctrl_unpack( myiter, mytime, mythid )
+
+C     !DESCRIPTION: \bv
+c     *=================================================================
+c     | SUBROUTINE ctrl_unpack
+c     | Unpack the control vector
+c     | * If in sensitivity study mode,
+c     |   control variable and adjoint variable arrays and files
+c     |   are initialised.
+c     | * If in optimization mode,
+c     |   wet points of updated control variables (i.e. anomalies 
+c     |   to corresponding fields) from previous optimization
+c     |   iteration are extracted from single control vector,
+c     |   mapped onto full (2D or 3D) fields and distributed 
+c     |   to control variable files.
+c     *=================================================================
+C     \ev
+
+C     !USES:
       implicit none
 
 c     == global variables ==
-
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
-
 #include "ctrl.h"
 #include "cost.h"
 #include "optim.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 c     == routine arguments ==
-
       integer myiter
       _RL     mytime
       integer mythid
 
+C     !LOCAL VARIABLES:
 c     == local variables ==
 
       integer bi,bj
@@ -66,19 +101,20 @@ c     == local variables ==
       integer jtlo,jthi
       integer jmin,jmax
       integer imin,imax
-
       integer nrec_hfl
       integer nrec_sfl
       integer nrec_ust
       integer nrec_vst
-
       integer cbuffindex
       integer cunit
+      integer prec
+
       _RL     cbuff( snx*nsx*npx*sny*nsy*npy )
       _RL     globfld3d( snx,nsx,npx,sny,nsy,npy,nr )
       _RL     globfld2d( snx,nsx,npx,sny,nsy,npy )
       _RL     globmsk( snx,nsx,npx,sny,nsy,npy,nr )
-      character*(128) cfile
+      _RL     fileDummy
+      _RL     dummy
 
       logical first
       
@@ -87,8 +123,6 @@ c     == local variables ==
       character*(10) fileExpId
       integer        fileOptimCycle
       integer        filecindex
-      _RL            fileDummy
-      _RL            dummy
       integer        fileIg
       integer        fileJg
       integer        fileI
@@ -108,15 +142,14 @@ c     == local variables ==
 
       character*( 80)   fname
       character*( 80) adfname
-
-      integer prec
+      character*(128) cfile
 
 c     == external ==
-
       integer  ilnblnk
       external ilnblnk
 
 c     == end of interface ==
+CEOP
 
       prec = precFloat64
       dummy = 0.
