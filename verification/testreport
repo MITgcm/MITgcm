@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.11 2003/10/10 03:29:44 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.12 2003/10/28 19:16:49 edhill Exp $
 #  $Name:  $
 #
 
@@ -156,7 +156,6 @@ testoutput()
     if [ $debug -gt 0 ]; then
 	echo testoutput: cg2dres=$cg2dres 1>&2
     fi
-    
     testoutput_for_prop $1 "dynstat_theta_min" "theta minimum" $2; tmin=$?
     testoutput_for_prop $1 "dynstat_theta_max" "theta maximum" $2; tmax=$?
     testoutput_for_prop $1 "dynstat_theta_mean" "theta mean" $2; tmean=$?
@@ -293,8 +292,16 @@ linkdata()
     # linkdata flag
     #
     # symbolically link data files to run directory
-    if [ $1 -ne 0 ]; then
-	( cd $2 ;  ln -sf ../input/* . )
+    if test "x$1" = x1 ; then
+	(
+	    cd $2
+	    files=`( cd ../input ; ls -1 | grep -v CVS )`
+	    for i in $files ; do
+		if test ! -d "../input/"$i ; then
+		    ln -sf "../input/"$i $i
+		fi
+	    done
+	)
     fi
 }
 
@@ -633,15 +640,14 @@ for dir in $TESTDIRS ; do
     unset genmake makedepend make run
     results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
 
-    if [ -r $dir/build ]; then
-	seperatebuilddir=1
-	builddir=build
-	rundir=build
-	( cd $dir/build; ln -sf ../input/* . )
-    else
-	seperatebuilddir=0
-	builddir=input
-	rundir=input
+    builddir="input"
+    rundir="input"
+    use_seperate_build=0
+    if test -d $dir/build -a -r $dir/build ; then
+	builddir="build"
+	rundir="build"
+	use_seperate_build=1
+	linkdata $use_seperate_build $dir/$rundir
     fi
     
     CODE_DIR=$dir/code
@@ -696,8 +702,8 @@ for dir in $TESTDIRS ; do
 	    && makeclean $dir/$builddir \
 	    && makedependmodel $dir/$builddir && makedepend=Y \
 	    && makemodel $dir/$builddir && make=Y \
-	    && linkdata $seperatebuilddir $dir/$rundir \
-	    && runmodel $dir/$builddir && run=Y \
+	    && linkdata $use_seperate_build $dir/$rundir \
+	    && runmodel $dir/$rundir && run=Y \
 	    && results=`testoutput $dir $rundir`
     fi
     
@@ -742,5 +748,7 @@ done
 
 rm tmp_cmpnum.f a.out
 
-cat $SUMMARY
+if test "x$CLEANUP" != xt ; then
+    cat $SUMMARY
+fi
 
