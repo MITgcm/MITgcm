@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.436 2005/01/26 00:20:49 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.437 2005/01/27 14:11:44 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o add "_d 0" in freeze ; change some "FLOAT" to "DFLOAT";
+checkpoint57c_pre
+
+o add "_d 0" in freeze ; change some "FLOAT" to "DFLOAT" and went back (TAF);
   update output.txt of exp. global_ocean.90x40x15
 o fix in ini_eos.F (one "_d 0" was missing): now g77 & ifc give much closer 
   results; update global_ocean_pressure & global_ocean.cs32x15 output.txt
