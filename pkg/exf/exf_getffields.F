@@ -1,8 +1,8 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.18 2003/10/23 04:41:40 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.19 2003/11/06 22:11:02 heimbach Exp $
 C $Name:  $
 
-#include "AD_CONFIG.h"
+#include "PACKAGES_CONFIG.h"
 #include "EXF_OPTIONS.h"
 
       subroutine exf_getffields( mycurrenttime, mycurrentiter, mythid )
@@ -34,9 +34,7 @@ c     == global variables ==
 #include "exf_fields.h"
 #include "exf_constants.h"
 
-#if (defined (ALLOW_ADJOINT_RUN) || \
-     defined (ALLOW_TANGENTLINEAR_RUN) || \
-     defined (ALLOW_ECCO_OPTIMIZATION))
+#ifdef ALLOW_AUTODIFF
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 #endif

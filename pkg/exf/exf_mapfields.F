@@ -1,7 +1,6 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.7 2003/10/09 04:19:19 edhill Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.8 2003/11/06 22:11:03 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
-
 
       subroutine exf_mapfields( mythid )
 
@@ -49,6 +48,8 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "FFIELDS.h"
+#include "GRID.h"
+
 #include "exf_param.h"
 #include "exf_constants.h"
 #include "exf_fields.h"
@@ -140,8 +141,15 @@ CADJ STORE ustress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
             enddo
           enddo
           do j = jmin,jmax
-            do i = imin,imax
-             fu(i,j,bi,bj)   = exf_outscal_ustress*ustress(i,j,bi,bj)
+            do i = imin+1,imax
+#if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
+c     Shift wind stresses calculated at C-points to W/S points
+              fu(i,j,bi,bj) = exf_outscal_ustress*
+     &              (ustress(i,j,bi,bj)+ustress(i-1,j,bi,bj))/2.*
+     &              maskW(i,j,1,bi,bj)
+#else
+              fu(i,j,bi,bj) = exf_outscal_ustress*ustress(i,j,bi,bj)
+#endif
             enddo
           enddo
 
@@ -166,9 +174,16 @@ CADJ STORE vstress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
               endif
             enddo
           enddo
-          do j = jmin,jmax
+          do j = jmin+1,jmax
             do i = imin,imax
-             fv(i,j,bi,bj)   = exf_outscal_vstress*vstress(i,j,bi,bj)
+#if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
+c     Shift wind stresses calculated at C-points to W/S points
+              fv(i,j,bi,bj) = exf_outscal_vstress*
+     &              (vstress(i,j,bi,bj)+vstress(i,j-1,bi,bj))/2.*
+     &              maskS(i,j,1,bi,bj)
+#else
+              fv(i,j,bi,bj) = exf_outscal_vstress*vstress(i,j,bi,bj)
+#endif
             enddo
           enddo
 
