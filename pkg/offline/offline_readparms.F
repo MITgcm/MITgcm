@@ -28,7 +28,7 @@ C--   Bulk Formula parameter
       NAMELIST /OFFLINE_PARM01/
      &         UvelFile, VvelFile, WvelFile, ThetFile,
      &         SaltFile, ConvFile, GMwxFile, GMwyFile,
-     &         GMwzFile
+     &         GMwzFile, HfluxFile, SfluxFile
 
       NAMELIST /OFFLINE_PARM02/
      &         offlineIter0, deltaToffline, offlineForcingPeriod, 
@@ -62,6 +62,8 @@ C--   Default values
       GMwxFile=' '
       GMwyFile=' '
       GMwzFile=' ' 
+      HFluxFile=' '
+      SFluxFile=' '
 
 C--   Read parameters from open data file
       READ(UNIT=iUnit,NML=OFFLINE_PARM01)

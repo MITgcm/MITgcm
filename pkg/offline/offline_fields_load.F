@@ -17,15 +17,8 @@ C     | This routine needs to be customised for particular
 C     | experiments.                                              
 C     | Notes                                                     
 C     | =====                                                     
-C     | Two-dimensional and three-dimensional I/O are handled in  
-C     | the following way under MITgcmUV. A master thread         
-C     | performs I/O using system calls. This threads reads data  
-C     | into a temporary buffer. At present the buffer is loaded  
-C     | with the entire model domain. This is probably OK for now 
-C     | Each thread then copies data from the buffer to the       
-C     | region of the proper array it is responsible for.         
-C     | =====                                                     
-C     | Conversion of flux fields are described in FFIELDS.h      
+C     | currently the file names need to be specific lengths
+C     | would like to make this more flexible QQ
 C     *==========================================================*
 
 C     !USES:
@@ -59,6 +52,9 @@ C     myIter - Simulation timestep number
 
 c     fn      :: Temp. for building file name.
       CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*18 fn2
+      CHARACTER*15 fn3
+      CHARACTER*19 fn4
       INTEGER prec
 
  
@@ -74,9 +70,11 @@ C     Above use static heap storage to allow exchange.
 C     aWght, bWght :: Interpolation weights
       COMMON /OFFLINEFFIELDS/
      &                 uvel0, vvel0, wvel0, tave0, save0, 
-     &                 conv0,
+     &                 conv0, gmkx0, gmky0, gmkz0, hflx0,
+     &                 sflx0,
      &                 uvel1, vvel1, wvel1, tave1, save1,
-     &                 conv1
+     &                 conv1, gmkx1, gmky1, gmkz1, hflx1,
+     &                 sflx1
       _RS  uvel0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  uvel1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  vvel0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -95,6 +93,10 @@ C     aWght, bWght :: Interpolation weights
       _RS  gmky1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  gmkz0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RS  gmkz1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RS  hflx0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  hflx1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  sflx0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  sflx1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 c     _RS  tmp      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  tmp
       _RL  sfac     (1-OLy:sNy+OLy,nSy)
@@ -122,6 +124,8 @@ C First call requires that we initialize everything to zero for safety
        CALL LEF_ZERO3( gmkx0 ,myThid )
        CALL LEF_ZERO3( gmky0 ,myThid )
        CALL LEF_ZERO3( gmkz0 ,myThid )
+       CALL LEF_ZERO2( hflx0 ,myThid )
+       CALL LEF_ZERO2( sflx0 ,myThid )
        CALL LEF_ZERO3( uvel1 ,myThid )
        CALL LEF_ZERO3( vvel1 ,myThid )
        CALL LEF_ZERO3( wvel1 ,myThid )
@@ -131,7 +135,8 @@ C First call requires that we initialize everything to zero for safety
        CALL LEF_ZERO3( gmkx1 ,myThid )
        CALL LEF_ZERO3( gmky1 ,myThid )
        CALL LEF_ZERO3( gmkz1 ,myThid )
-
+       CALL LEF_ZERO2( hflx1 ,myThid )
+       CALL LEF_ZERO2( sflx1 ,myThid )
       ENDIF
 
 C Now calculate whether it is time to update the forcing arrays
@@ -168,70 +173,95 @@ c if reading own files setup reading here
 #else
 c
        IF ( Uvelfile      .NE. ' '  ) THEN
-        WRITE(fn,'(A,I10.10)') 'uVeltave.',intime0*Ifprd+offlineIter0
+        WRITE(fn2,'(A)') Uvelfile
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uvel0,   1,myThid)
-        WRITE(fn,'(A,I10.10)') 'uVeltave.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uvel1,   1,myThid)
        ENDIF
 c      
        IF ( Vvelfile      .NE. ' '  ) THEN
-        WRITE(fn,'(A,I10.10)') 'vVeltave.',intime0*Ifprd+offlineIter0
+        WRITE(fn2,'(A)') Vvelfile
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,vvel0,   1,myThid)
-        WRITE(fn,'(A,I10.10)') 'vVeltave.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,vvel1,   1,myThid)
        ENDIF
 c      
        IF (Wvelfile      .NE. ' '  ) THEN
-        WRITE(fn,'(A,I10.10)') 'wVeltave.',intime0*Ifprd+offlineIter0
+        WRITE(fn2,'(A)') Wvelfile
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,wvel0,   1,myThid)
-        WRITE(fn,'(A,I10.10)') 'wVeltave.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,wvel1,   1,myThid)
        ENDIF
 
        IF (Thetfile      .NE. ' '  ) THEN
-        WRITE(fn,'(A,I10.10)') 'Ttave.',intime0*Ifprd+offlineIter0
+        WRITE(fn3,'(A)') Thetfile
+        WRITE(fn,'(A,A,I10.10)') fn3,'.',intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,tave0,   1,myThid)
-        WRITE(fn,'(A,I10.10)') 'Ttave.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn3,'.',intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,tave1,   1,myThid)
        ENDIF
 
        IF (Saltfile       .NE. ' ' ) THEN
-        WRITE(fn,'(A,I10.10)') 'Stave.',intime0*Ifprd+offlineIter0
+        WRITE(fn3,'(A)') Saltfile
+        WRITE(fn,'(A,A,I10.10)') fn3,'.',intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,save0,   1,myThid)
-        WRITE(fn,'(A,I10.10)') 'Stave.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn3,'.',intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,save1,   1,myThid)
        ENDIF
 
        IF (ConvFile       .NE. ' ' ) THEN
-        WRITE(fn,'(A,I10.10)') 'Convtave.',intime0*Ifprd+offlineIter0
+        WRITE(fn2,'(A)') ConvFile
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,conv0,   1,myThid)
-        WRITE(fn,'(A,I10.10)') 'Convtave.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,conv1,   1,myThid)
        ENDIF
 c
 
        IF (GMwxFile       .NE. ' ' ) THEN
-        WRITE(fn,'(A,I10.10)') 'GM_Kwx-T.',intime0*Ifprd+offlineIter0
+        WRITE(fn2,'(A)') GMwxFile
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmkx0,   1,myThid)
-        WRITE(fn,'(A,I10.10)') 'GM_Kwx-T.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmkx1,   1,myThid)
        ENDIF
 
        IF (GMwyFile       .NE. ' ') THEN
-        WRITE(fn,'(A,I10.10)') 'GM_Kwy-T.',intime0*Ifprd+offlineIter0
+        WRITE(fn2,'(A)') GMwyFile
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmky0,   1,myThid)
-        WRITE(fn,'(A,I10.10)') 'GM_Kwy-T.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmky1,   1,myThid)
        ENDIF
 c
        IF (GMwzFile       .NE. ' ') THEN
-        WRITE(fn,'(A,I10.10)') 'GM_Kwz-T.',intime0*Ifprd+offlineIter0
+        WRITE(fn2,'(A)') GMwzFile
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime0*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmkz0,   1,myThid)
-        WRITE(fn,'(A,I10.10)') 'GM_Kwz-T.',intime1*Ifprd+offlineIter0
+        WRITE(fn,'(A,A,I10.10)') fn2,'.',intime1*Ifprd+offlineIter0
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gmkz1,   1,myThid)
        ENDIF
-
-#endif /* NOT_MODEL_FILES */
+c
+       IF (HFluxFile      .NE. ' ') THEN
+        WRITE(fn4,'(A)') HFluxFile
+        WRITE(fn,'(A,A,I10.10)') fn4,'.',intime0*Ifprd+offlineIter0
+        CALL MDSREADFIELD(fn,prec,'RL',1,hflx0,   1,myThid)
+        WRITE(fn,'(A,A,I10.10)') fn4,'.',intime1*Ifprd+offlineIter0
+        CALL MDSREADFIELD(fn,prec,'RL',1,hflx1,   1,myThid)
+       ENDIF
+c
+       IF (SFluxFile      .NE. ' ') THEN
+        WRITE(fn4,'(A)') SFluxFile
+        WRITE(fn,'(A,A,I10.10)') fn4,'.',intime0*Ifprd+offlineIter0
+        CALL MDSREADFIELD(fn,prec,'RL',1,sflx0,   1,myThid)
+        WRITE(fn,'(A,A,I10.10)') fn4,'.',intime1*Ifprd+offlineIter0
+        CALL MDSREADFIELD(fn,prec,'RL',1,sflx1,   1,myThid)
+       ENDIF
+c
+#endif /* else NOT_MODEL_FILES */
 
        _END_MASTER(myThid)
 
@@ -254,6 +284,11 @@ C
        _EXCH_XYZ_R4(gmky1 , myThid )
        _EXCH_XYZ_R4(gmkz0, myThid )
        _EXCH_XYZ_R4(gmkz1, myThid )
+       _EXCH_XY_R4(hflx0 , myThid )
+       _EXCH_XY_R4(hflx1 , myThid )
+       _EXCH_XY_R4(sflx0, myThid )
+       _EXCH_XY_R4(sflx1, myThid )
+
  
 c
       ENDIF
@@ -287,6 +322,14 @@ C--   Interpolate uvel, vvel, wvel
           Kwz(i,j,k,bi,bj)    =  bWght*gmkz0(i,j,k,bi,bj)
      &                       +aWght*gmkz1(i,j,k,bi,bj)
 #endif
+          surfaceForcingT(i,j,bi,bj) = bWght*hflx0(i,j,bi,bj)
+     &                       +aWght*hflx1(i,j,bi,bj)
+          surfaceForcingT(i,j,bi,bj) = surfaceForcingT(i,j,bi,bj)/
+     &        (HeatCapacity_Cp*recip_horiVertRatio*rhoConst)
+          surfaceForcingS(i,j,bi,bj) =  bWght*sflx0(i,j,bi,bj)
+     &                       +aWght*sflx1(i,j,bi,bj)
+          surfaceForcingS(i,j,bi,bj) = surfaceForcingS(i,j,bi,bj)/
+     &       (recip_horiVertRatio*rhoConst)
          ENDDO
         ENDDO
        ENDDO
@@ -347,6 +390,40 @@ CEOP
          ENDDO
         ENDDO
         enddo
+       ENDDO
+      ENDDO
+      CALL TIMER_STOP ('OFFLINE_FIELDS_LOAD      [I/O]', myThid)
+
+      RETURN
+      END
+
+C     !ROUTINE: LEF_ZERO2
+C     !INTERFACE:
+      SUBROUTINE LEF_ZERO2( arr ,myThid )
+C     !DESCRIPTION: \bv
+C     This routine simply sets the argument array to zero
+C     Used only by EXTERNAL_FIELDS_LOAD
+C     \ev
+C     !USES:
+      IMPLICIT NONE
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+C     !INPUT/OUTPUT PARAMETERS:
+C     === Arguments ===
+      _RS  arr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER myThid
+C     !LOCAL VARIABLES:
+C     === Local variables ===
+      INTEGER i,j,bi,bj
+CEOP
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          arr(i,j,bi,bj)=0.
+         ENDDO
+        ENDDO
        ENDDO
       ENDDO
       CALL TIMER_STOP ('OFFLINE_FIELDS_LOAD      [I/O]', myThid)
