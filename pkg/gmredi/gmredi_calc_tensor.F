@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.14 2003/01/10 00:48:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.15 2003/01/12 21:35:27 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -41,7 +41,7 @@ CEndOfInterface
 #ifdef ALLOW_GMREDI
 
 C     == Local variables ==
-      INTEGER i,j,k,km1,kp1
+      INTEGER i,j,k,kp1
       _RL SlopeX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL SlopeY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dSigmaDx(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -49,7 +49,7 @@ C     == Local variables ==
       _RL dSigmaDrReal(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL SlopeSqr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL taperFct(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL maskp1, maskm1, Kgm_tmp
+      _RL maskp1, Kgm_tmp
 
 #ifdef GM_VISBECK_VARIABLE_K
       _RL deltaH,zero_rs
@@ -81,9 +81,6 @@ C     == Local variables ==
 
       DO k=2,Nr
 C-- 1rst loop on k : compute Tensor Coeff. at W points.
-       km1 = MAX(1,k-1)
-       maskm1 = 1. _d 0
-       IF (k.LE.1) maskm1 = 0. _d 0
 
 #ifdef ALLOW_AUTODIFF_TAMC
        kkey = (igmkey-1)*Nr + k
@@ -118,13 +115,13 @@ C-- 1rst loop on k : compute Tensor Coeff. at W points.
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
 C      Gradient of Sigma at rVel points
-        dSigmaDx(i,j)=op25*( sigmaX(i+1, j ,km1) +sigmaX(i,j,km1)
+        dSigmaDx(i,j)=op25*( sigmaX(i+1, j ,k-1) +sigmaX(i,j,k-1)
      &                    +sigmaX(i+1, j , k ) +sigmaX(i,j, k ) )
-     &                  *maskC(i,j,k,bi,bj)*maskm1
-        dSigmaDy(i,j)=op25*( sigmaY( i ,j+1,km1) +sigmaY(i,j,km1)
+     &                  *maskC(i,j,k,bi,bj)
+        dSigmaDy(i,j)=op25*( sigmaY( i ,j+1,k-1) +sigmaY(i,j,k-1)
      &                    +sigmaY( i ,j+1, k ) +sigmaY(i,j, k ) )
-     &                  *maskC(i,j,k,bi,bj)*maskm1
-        dSigmaDrReal(i,j)=sigmaR(i,j,k)*maskm1
+     &                  *maskC(i,j,k,bi,bj)
+        dSigmaDrReal(i,j)=sigmaR(i,j,k)
        ENDDO
       ENDDO
 
@@ -147,9 +144,9 @@ C     Calculate slopes for use in tensor, taper and/or clip
        DO i=1-Olx+1,sNx+Olx-1
 
 C       Mask Iso-neutral slopes
-        SlopeX(i,j)=SlopeX(i,j)*maskC(i,j,k,bi,bj)*maskm1
-        SlopeY(i,j)=SlopeY(i,j)*maskC(i,j,k,bi,bj)*maskm1
-        SlopeSqr(i,j)=SlopeSqr(i,j)*maskC(i,j,k,bi,bj)*maskm1
+        SlopeX(i,j)=SlopeX(i,j)*maskC(i,j,k,bi,bj)
+        SlopeY(i,j)=SlopeY(i,j)*maskC(i,j,k,bi,bj)
+        SlopeSqr(i,j)=SlopeSqr(i,j)*maskC(i,j,k,bi,bj)
 
        ENDDO
       ENDDO
@@ -268,7 +265,7 @@ C     Gradient of Sigma at U points
      &          *_maskW(i,j,k,bi,bj)
         dSigmaDrReal(i,j)=op25*( sigmaR(i-1,j, k ) +sigmaR(i,j, k )
      &                  +maskp1*(sigmaR(i-1,j,kp1) +sigmaR(i,j,kp1)) )
-     &          *_maskW(i,j,k,bi,bj)*maskp1
+     &          *_maskW(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
@@ -341,7 +338,7 @@ C     Gradient of Sigma at V points
      &          *_maskS(i,j,k,bi,bj)
         dSigmaDrReal(i,j)=op25*( sigmaR(i,j-1, k ) +sigmaR(i,j, k )
      &                  +maskp1*(sigmaR(i,j-1,kp1) +sigmaR(i,j,kp1)) )
-     &          *_maskS(i,j,k,bi,bj)*maskp1
+     &          *_maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 

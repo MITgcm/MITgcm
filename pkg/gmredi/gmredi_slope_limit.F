@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.17 2003/01/12 21:35:27 jmc Exp $
+C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
@@ -56,9 +58,9 @@ C     == Local variables ==
       _RL Small_Number
       _RL Small_Taper
       _RL Large_SlopeSqr
-      PARAMETER(Small_Number=1.D-20)
+      PARAMETER(Small_Number=1.D-12)
       PARAMETER(Small_Taper=1.D+03)
-      PARAMETER(Large_SlopeSqr=1.D+08)
+      PARAMETER(Large_SlopeSqr=1.D+48)
 
       _RL gradSmod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dSigmaDrLtd(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
@@ -69,6 +71,7 @@ C     == Local variables ==
       _RL fpi
       PARAMETER(fpi=3.141592653589793047592d0)
       INTEGER i,j
+c     Small_Number=GM_Small_Number
 
 #ifdef ALLOW_AUTODIFF_TAMC
       act1 = bi - myBxLo(myThid)
@@ -94,7 +97,7 @@ C     == Local variables ==
       IF (GM_taper_scheme.EQ.'orig' .OR.
      &    GM_taper_scheme.EQ.'clipping') THEN
 
-#if (defined (GM_TAPER_ORIG_CLIPPING))
+#ifdef GM_TAPER_ORIG_CLIPPING
 
 C-      Original implementation in mitgcmuv
 C       (this turns out to be the same as Cox slope clipping)
@@ -102,8 +105,8 @@ C       (this turns out to be the same as Cox slope clipping)
 C-      Cox 1987 "Slope clipping"
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
-          tmpfld(i,j) = DSigmaDX(i,j)*DSigmaDX(i,j) + 
-     &                  DSigmaDY(i,j)*DSigmaDY(i,j)
+          tmpfld(i,j) = dSigmaDx(i,j)*dSigmaDx(i,j) + 
+     &                  dSigmaDy(i,j)*dSigmaDy(i,j)
           IF ( tmpfld(i,j) .EQ. 0. ) THEN
            gradSmod(i,j) = 0. _d 0
           ELSE
@@ -140,8 +143,8 @@ cnostore CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
            SlopeY(i,j) = 0. _d 0
           ELSE
            dRdSigmaLtd(i,j) = 1./( dSigmaDrReal(i,j) )
-           SlopeX(i,j)=-DSigmaDX(i,j)*dRdSigmaLtd(i,j)
-           SlopeY(i,j)=-DSigmaDY(i,j)*dRdSigmaLtd(i,j)
+           SlopeX(i,j)=-dSigmaDx(i,j)*dRdSigmaLtd(i,j)
+           SlopeY(i,j)=-dSigmaDy(i,j)*dRdSigmaLtd(i,j)
           ENDIF
          ENDDO
         ENDDO
@@ -159,15 +162,15 @@ cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
          ENDDO
         ENDDO
 
-#else
+#else /* GM_TAPER_ORIG_CLIPPING */
 
-        STOP 'Need to set runtime flag GM_taper_scheme correctly'
+        STOP 'Need to compile with "#define GM_TAPER_ORIG_CLIPPING"'
 
 #endif /* GM_TAPER_ORIG_CLIPPING */
 
       ELSE IF (GM_taper_scheme.EQ.'ac02') THEN
 
-#if (defined (GM_TAPER_AC02))
+#ifdef GM_TAPER_AC02
 
         maxSlopeSqr = GM_maxSlope*GM_maxSlope
         DO j=1-Oly+1,sNy+Oly-1
@@ -199,15 +202,15 @@ cph          ENDIF
          ENDDO
         ENDDO
 
-#else
+#else /* GM_TAPER_AC02 */
        
-        STOP 'Need to set runtime flag GM_taper_scheme correctly'
+        STOP 'Need to compile with "#define GM_TAPER_AC02"'
 
 #endif /* GM_TAPER_AC02 */
 
       ELSE
 
-#if (defined (GM_TAPER_REST))
+#ifdef GM_TAPER_REST
 
 C----------------------------------------------------------------------
 
@@ -247,8 +250,11 @@ cnostore CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
             SlopeY(i,j) = 0. _d 0
            ENDIF
           ELSE
-           SlopeX(i,j) = -dSigmaDx(i,j)/dSigmaDrReal(i,j)
-           SlopeY(i,j) = -dSigmaDy(i,j)/dSigmaDrReal(i,j)
+           dRdSigmaLtd(i,j) = 1. _d 0 / dSigmaDrReal(i,j)
+           SlopeX(i,j)=-dSigmaDx(i,j)*dRdSigmaLtd(i,j)
+           SlopeY(i,j)=-dSigmaDy(i,j)*dRdSigmaLtd(i,j)
+c          SlopeX(i,j) = -dSigmaDx(i,j)/dSigmaDrReal(i,j)
+c          SlopeY(i,j) = -dSigmaDy(i,j)/dSigmaDrReal(i,j)
           ENDIF
          ENDDO
         ENDDO
@@ -266,7 +272,7 @@ cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
           IF ( SlopeSqr(i,j) .GT. Large_SlopeSqr ) THEN
              slopeSqr(i,j) = Large_SlopeSqr
              taperFct(i,j) = 0. _d 0
-          END IF
+          ENDIF
          ENDDO
         ENDDO
 
@@ -332,9 +338,9 @@ C-      Large, Danabasoglu and Doney, JPO 1997
           ELSE IF ( SlopeSqr(i,j) .LT. Large_SlopeSqr ) THEN
            Smod=sqrt(SlopeSqr(i,j))
            f1=op5*( 1. _d 0 + tanh( (GM_Scrit-Smod)/GM_Sd ))
-           Cspd=2. _d 3
+           Cspd=2. _d 0
            Lrho=100. _d 3
-           if (FCori(i,j,bi,bj).NE.0.) Lrho=Cspd/abs(Fcori(i,j,bi,bj))
+           if (fCori(i,j,bi,bj).NE.0.) Lrho=Cspd/abs(fCori(i,j,bi,bj))
            Lrho=min(Lrho , 100. _d 3)
            Lrho=max(Lrho , 15. _d 3)
            Rnondim=depthZ/(Lrho*Smod)
@@ -349,7 +355,11 @@ C-      Large, Danabasoglu and Doney, JPO 1997
         STOP 'GMREDI_SLOPE_LIMIT: Bad GM_taper_scheme'
        ENDIF
 
-#endif
+#else /* GM_TAPER_REST */
+       
+        STOP 'Need to compile with "#define GM_TAPER_REST"'
+
+#endif /* GM_TAPER_REST */
 
       ENDIF
 
