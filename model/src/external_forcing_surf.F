@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.11 2002/12/10 02:55:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.12 2003/09/24 04:52:38 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !ROUTINE: EXTERNAL_FORCING_SURF
 C     !INTERFACE:
       SUBROUTINE EXTERNAL_FORCING_SURF( 
      I             bi, bj, iMin, iMax, jMin, jMax,
-     I             myThid )
+     I             myTime, myIter, myThid )
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE EXTERNAL_FORCING_SURF                          
@@ -30,7 +30,11 @@ C     === Global variables ===
  
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
+C     myTime - Current time in simulation
+C     myIter - Current iteration number in simulation
 C     myThid :: Thread no. that called this routine.
+      _RL myTime
+      INTEGER myIter
       INTEGER myThid
       INTEGER bi,bj
       INTEGER iMin, iMax
@@ -171,6 +175,13 @@ c- converts EmPmR to virtual salt flux using uniform salinity (default=35)
 
       ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef ALLOW_PTRACERS
+      IF ( usePTRACERS ) THEN
+         CALL PTRACERS_FORCING_SURF(
+     I                              bi, bj, iMin, iMax, jMin, jMax,
+     I                              myTime,myIter,myThid )
+      ENDIF
+#endif /* ALLOW_PTRACERS */
 
 #ifdef ATMOSPHERIC_LOADING
 

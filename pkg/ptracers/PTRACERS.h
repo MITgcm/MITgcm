@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.2 2003/06/27 01:56:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.3 2003/09/24 04:52:39 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -59,10 +59,10 @@ C     gPtrNM1  :: work-space for time-stepping
      &              PTRACERS_num)
       _RL  gPtrNM1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy,
      &              PTRACERS_num)
-      COMMON /PTRACERS_FIELDS/ 
-     &                   pTracer,
-     &                   gPtr,
-     &                   gPtrNM1
+      _RL  surfaceTendencyPtr (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy,
+     &              PTRACERS_num)
+      COMMON /PTRACERS_FIELDS/
+     &              pTracer, gPtr, gPtrNM1, surfaceTendencyPtr
 
 CEOP
 #endif /* ALLOW_PTRACERS */

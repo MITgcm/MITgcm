@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.8 2003/08/04 22:53:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.9 2003/09/24 04:52:39 dimitri Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -128,7 +128,7 @@ cswdptr - add--
 cswdptr - end add ---
        IF ( forcing_In_AB )
      &   CALL PTRACERS_FORCING(
-     I                        bi,bj,k,iTracer,
+     I                        bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
      U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                        myIter,myTime,myThid)
 cswdptr --add---
@@ -152,7 +152,7 @@ cswdptr - add--
 cswdptr - end add ---
        IF ( .NOT.forcing_In_AB )
      &   CALL PTRACERS_FORCING(
-     I                        bi,bj,k,iTracer,
+     I                        bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
      U                        gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I                        myIter,myTime,myThid)
 cswdptr - add--

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.20 2003/09/22 22:13:11 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.21 2003/09/24 04:52:38 dimitri Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -412,7 +412,7 @@ C *note* should update KPP_TRANSPORT_T to set df  *aja*
      &         tracerIdentity .LE. (GAD_TR1+PTRACERS_numInUse-1)) THEN
         CALL KPP_TRANSPORT_PTR(
      I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
-     I     tracerIdentity,KappaRT,
+     I     tracerIdentity-GAD_TR1+1,KappaRT,
      U     df )
 #endif
        ELSE

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.46 2003/09/23 05:31:30 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.47 2003/09/24 04:52:38 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -439,7 +439,7 @@ C       relaxation terms, etc.
 #endif
         CALL EXTERNAL_FORCING_SURF(
      I             bi, bj, iMin, iMax, jMin, jMax,
-     I             myThid )
+     I             myTime, myIter, myThid )
 
 C--    end of if/else block useThermSeaIce --
        ENDIF

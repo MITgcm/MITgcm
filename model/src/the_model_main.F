@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.55 2003/06/24 20:47:19 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.56 2003/09/24 04:52:38 dimitri Exp $
 C $Name:  $
 
 CBOI
@@ -232,7 +232,8 @@ C/\  | | | |-CALC_IVDC       :: Set Implicit Vertical Diffusivity for Convection
 C/\  | | | |
 C/\  | | | |-OBCS_CALC            :: Open bndy. package ( see pkg/obcs ).
 C/\  | | | |-EXTERNAL_FORCING_SURF:: Accumulates appropriately dimensioned 
-C/\  | | | |                      :: forcing terms.
+C/\  | | | | |                    :: forcing terms.
+C/\  | | | | |-PTRACERS_FORCING_SURF :: Tracer package ( see pkg/ptracers ).
 C/\  | | | |
 C/\  | | | |-GMREDI_CALC_TENSOR   :: GM package ( see pkg/gmredi ).
 C/\  | | | |-GMREDI_CALC_TENSOR_DUMMY :: GM package ( see pkg/gmredi ). 
@@ -250,7 +251,9 @@ C/\  | | | |
 C/\  | | | |-CALC_GT              :: Calculate the temperature tendency terms
 C/\  | | | | |
 C/\  | | | | |-GAD_CALC_RHS       :: Generalised advection package 
-C/\  | | | | |                    :: ( see pkg/gad )
+C/\  | | | | | |                  :: ( see pkg/gad )
+C/\  | | | | | |-KPP_TRANSPORT_T  :: KPP non-local transport ( see pkg/kpp ).
+C/\  | | | | |
 C/\  | | | | |-EXTERNAL_FORCING_T :: Problem specific forcing for temperature.
 C/\  | | | | |-ADAMS_BASHFORTH2   :: Extrapolate tendencies forward in time.
 C/\  | | | | |-FREESURF_RESCALE_G :: Re-scale Gt for free-surface height.
@@ -260,7 +263,9 @@ C/\  | | | |
 C/\  | | | |-CALC_GS              :: Calculate the salinity tendency terms
 C/\  | | | | |
 C/\  | | | | |-GAD_CALC_RHS       :: Generalised advection package 
-C/\  | | | | |                    :: ( see pkg/gad )
+C/\  | | | | | |                  :: ( see pkg/gad )
+C/\  | | | | | |-KPP_TRANSPORT_S  :: KPP non-local transport ( see pkg/kpp ).
+C/\  | | | | |
 C/\  | | | | |-EXTERNAL_FORCING_S :: Problem specific forcing for salt.
 C/\  | | | | |-ADAMS_BASHFORTH2   :: Extrapolate tendencies forward in time.
 C/\  | | | | |-FREESURF_RESCALE_G :: Re-scale Gs for free-surface height.
@@ -270,12 +275,24 @@ C/\  | | | |
 C/\  | | | |-CALC_GTR1            :: Calculate other tracer(s) tendency terms
 C/\  | | | | |
 C/\  | | | | |-GAD_CALC_RHS       :: Generalised advection package 
-C/\  | | | | |                    :: ( see pkg/gad )
+C/\  | | | | | |                  :: ( see pkg/gad )
+C/\  | | | | | |-KPP_TRANSPORT_PTR:: KPP non-local transport ( see pkg/kpp ).
+C/\  | | | | |
 C/\  | | | | |-EXTERNAL_FORCING_TR:: Problem specific forcing for tracer.
 C/\  | | | | |-ADAMS_BASHFORTH2   :: Extrapolate tendencies forward in time.
 C/\  | | | | |-FREESURF_RESCALE_G :: Re-scale Gs for free-surface height.
 C/\  | | | |
 C/\  | | | |-TIMESTEP_TRACER      :: Step tracer field forward in time
+C/\  | | | |
+C/\  | | | |-PTRACERS_INTEGRATE   :: Integrate other tracer(s) ( see pkg/ptracers ).
+C/\  | | | | |
+C/\  | | | | |-GAD_CALC_RHS       :: Generalised advection package 
+C/\  | | | | |                    :: ( see pkg/gad )
+C/\  | | | | |-PTRACERS_FORCING   :: Problem specific forcing for tracer.
+C/\  | | | | |-ADAMS_BASHFORTH2   :: Extrapolate tendencies forward in time.
+C/\  | | | | |-FREESURF_RESCALE_G :: Re-scale Gs for free-surface height.
+C/\  | | | | |-TIMESTEP_TRACER    :: Step tracer field forward in time
+C/\  | | | |
 C/\  | | | |-OBCS_APPLY_TS        :: Open bndy. package (see pkg/obcs ).
 C/\  | | | |-FREEZE               :: Limit range of temperature.
 C/\  | | | |

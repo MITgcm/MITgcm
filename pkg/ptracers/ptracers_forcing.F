@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.3 2003/09/23 04:34:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_forcing.F,v 1.4 2003/09/24 04:52:39 dimitri Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -8,7 +8,7 @@ C !ROUTINE: PTRACERS_FORCING
 
 C !INTERFACE: ==========================================================
       SUBROUTINE PTRACERS_FORCING(
-     I                            bi,bj,k,iTracer,
+     I                            bi,bj,iMin,iMax,jMin,jMax,k,iTracer,
      U                            gPtracer,
      I                            myIter,myTime,myThid )
 
@@ -27,13 +27,14 @@ C !USES: ===============================================================
 
 C !INPUT PARAMETERS: ===================================================
 C  bi,bj                :: tile indices
+C  iMin iMax jMin jMax  :: working range of tile for applying forcing
 C  k                    :: vertical level number
 C  iTracer              :: passive tracer index
 C  gPtracer             :: the tendancy array
 C  myIter               :: time-step number
 C  myTime               :: model time
 C  myThid               :: thread number
-      INTEGER bi,bj,k,iTracer
+      INTEGER bi,bj,iMin, iMax, jMin, jMax,k,iTracer
       _RL gPtracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       INTEGER myIter
       _RL myTime
@@ -47,18 +48,25 @@ C  gPtracer		:: updates tendancy array
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
       INTEGER i,j
+C     number of surface interface layer
+      INTEGER kSurface
 CEOP
 
-C Example of how to add forcing at the surface
-       IF (k.EQ.1) THEN
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
+      if ( buoyancyRelation .eq. 'OCEANICP' ) then
+       kSurface = Nr
+      else
+       kSurface = 1
+      endif
 
-C Here, we'll copy the exact forcing used for salinity to allow us
-C to test everything is working.
-          gPtracer(i,j,k,bi,bj)=gPtracer(i,j,k,bi,bj)
-     &   +maskC(i,j,k,bi,bj)*surfaceTendencyS(i,j,bi,bj)
+C--   Surface forcing term is surfaceTendencyPtr, previously computed
+C     by PTRACERS_FORCING because it is needed by KPP_TRANSPORT_PTR.
 
+       IF ( k .EQ. kSurface ) THEN
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          gPtracer(i,j,k,bi,bj) = gPtracer(i,j,k,bi,bj) +
+     &           maskC(i,j,k,bi,bj) *
+     &           surfaceTendencyPtr(i,j,bi,bj,iTracer)
          ENDDO
         ENDDO
        ENDIF

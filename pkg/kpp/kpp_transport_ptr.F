@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.2 2003/08/04 22:53:42 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.3 2003/09/24 04:52:38 dimitri Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -58,7 +58,7 @@ C     I, J - Loop counters
        DO i=iMin,iMax
          df(i,j) = df(i,j) - _rA(i,j,bi,bj) * 
      &          KappaRtr(i,j,k) * KPPghat(i,j,km1,bi,bj) * drF(1) *
-     &          SurfaceTendencyS(i,j,bi,bj)
+     &          surfaceTendencyPtr(i,j,bi,bj,tracerIdentity)
        ENDDO
       ENDDO
 
