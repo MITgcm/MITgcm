@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.2 1998/04/24 02:11:37 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.3 1998/04/26 23:41:54 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -85,21 +85,18 @@ C                     and off.
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
 C               - Target residual for cg2d solver.
-C     delZ      - Vertical grid spacing (Pa) - delZ is the distance
+C     delZ      - Vertical grid spacing ( m ) - delZ is the distance
 C                 between "w" surfaces.
 C     delX      - Separation between cell faces (m) or (deg), depending
 C     delY        on input flags.
 C     gravity   - Accel. due to gravity ( m/s^2 )
 C     ronil     - Reference density
-C     startTime - Start time for model
-C     oBandBeg  - Offline bands start and end times.
-C     oBandEnd
-C     oPeriodLength - Lenght of offline period.
+C     startTime - Start time for model ( s )
 C     phiMin    - Latitude of southern most cell face.
 C     thetaMin  - Longitude of western most cell face (this
 C                 is an "inert" parameter but it is included
 C                 to make geographical references simple.)
-C     rSphere   - Radius of sphere for a spherical polar grid.
+C     rSphere   - Radius of sphere for a spherical polar grid ( m ).
 C     f0        - Reference coriolis parameter ( 1/s )
 C                 ( Southern edge f for beta plane )
 C     beta      - df/dy ( s^-1.m^-1 )
@@ -121,7 +118,9 @@ C     diffKzS   - Laplacian diffusion coeff. for mixing of
 C                 salt vertically ( m^2/s )
 C     diffK4S   - Biharmonic diffusion coeff. for mixing of
 C                 salt laterally ( m^4/s )
-C     delt      - Timestep ( s )
+C     deltaT    - Default timestep ( s )
+C     deltaTMom    - Timestep for momemtum equations ( s )
+C     deltaTtracer - Timestep for tracer equations ( s )
 C     tauCD     - CD scheme coupling timescale ( 1/s )
 C     rCD       - CD scheme normalised coupling parameter ( 0-1 )
 C     startTime - Starting time for this integration ( s ).
@@ -129,22 +128,20 @@ C     endTime   - Ending time for this integration ( s ).
 C     chkPtFreq - Frequency of check pointing ( s ).
 C     dumpFreq  - Frequency with which model state is written to
 C                 post-processing files ( s ).
-      COMMON /PARM_R/ cg2dTargetResidual, delZ, delX, delY,
-     & deltaTmom, deltaTtracer, abeps, startTime, oBandBeg, oBandEnd,
-     & oPeriodLength, phiMin, thetaMin, rSphere, f0, fCori, beta,
-     & viscAh, viscAz, viscA4, diffKhT, diffKzT, diffK4T,
-     & diffKhS, diffKzS, diffK4S, delT, tauCD, rCD,
+      COMMON /PARM_R/ cg2dTargetResidual, delZ, delX, delY, deltaT,
+     & deltaTmom, deltaTtracer, abeps, startTime, phiMin, thetaMin, 
+     & rSphere, f0, fCori, beta, viscAh, viscAz, viscA4, diffKhT, diffKzT, 
+     & diffK4T, diffKhS, diffKzS, diffK4S, delT, tauCD, rCD,
      & tAlpha, sBeta, gravity, rhonil, tRef, sRef,
      & endTime, chkPtFreq, dumpFreq
       REAL cg2dTargetResidual
       REAL delZ(Nz)
       REAL delX(Nx)
       REAL delY(Ny)
+      REAL deltaT
       REAL deltaTmom
       REAL deltaTtracer
       REAL abeps
-      REAL oBandBeg(nOBands),oBandEnd(nOBands)
-      REAL oPeriodLength
       REAL phiMin
       REAL thetaMin
       REAL rSphere

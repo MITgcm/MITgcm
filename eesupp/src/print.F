@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.3 1998/04/23 20:56:54 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.4 1998/04/26 23:41:54 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -6,6 +6,10 @@ C--   File printf.F: Routines for performing formatted textual I/O
 C--                  in the MITgcm UV implementation environment.
 C--    Contents
 C--    o print_error    Does IO with **ERROR** highlighted header
+C--    o print_list_r8  Prints one-deimensional list of Real*8
+C--                     numbers.
+C--    o print_mapr4    Formats ABCD... contour map of a Real*4 field
+C--                     Uses print_message for writing
 C--    o print_mapr8    Formats ABCD... contour map of a Real*8 field
 C--                     Uses print_message for writing
 C--    o print_message  Does IO with unhighlighted header
@@ -88,6 +92,109 @@ C       The write statement may need to be marked as a critical section.
        ENDIF
       ENDIF
 C
+      RETURN
+      END
+
+CStartofinterface
+      SUBROUTINE PRINT_LIST_R8( fld, lFld, index_type, ioUnit )
+CEndifinterface
+C     /==========================================================\
+C     | o SUBROUTINE PRINT_LIST_R8                               |
+C     |==========================================================|
+C     | Routine for producing list of values for a field with    |
+C     | duplicate values collected into                          |
+C     |    n @ value                                             |
+C     | record.                                                  |
+C     \==========================================================/
+
+C     == Global data ==  
+#include "SIZE.h"
+#include "EEPARAMS.h"
+
+C     == Routine arguments ==
+C     fld    -  Data to be printed
+C     lFld   -  Number of elements to be printed
+C     index_type - Flag indicating which type of index to print
+C                  INDEX_K    => /* K = nnn */
+C                  INDEX_I    => /* I = nnn */
+C                  INDEX_J    => /* J = nnn */
+C                  INDEX_NONE =>
+C     ioUnit -  Unit number for IO.
+      INTEGER lFld 
+      INTEGER index_type
+      Real*8  fld(lFld)
+      INTEGER ioUnit
+
+C     == Local variables ==
+C     iLo  - Range index holders for selecting elements with
+C     iHi    with the same value
+C     nDup - Number of duplicates
+C     xNew, xOld - Hold current and previous values of field
+C     punc - Field separator
+C     msgBuf - IO buffer
+C     index_lab - Index for labelling elements
+C     K    - Loop counter
+      INTEGER iLo
+      INTEGER iHi
+      INTEGER nDup
+      Real*8 xNew, xOld
+      CHARACTER punc
+      CHARACTER(MAX_LEN_MBUF) msgBuf
+      CHARACTER*2 commOpen,commClose
+      CHARACTER*3 index_lab
+      INTEGER K
+
+      IF     ( index_type .EQ. INDEX_I ) THEN
+       index_lab = 'I ='
+      ELSEIF ( index_type .EQ. INDEX_J ) THEN
+       index_lab = 'J ='
+      ELSEIF ( index_type .EQ. INDEX_K ) THEN
+       index_lab = 'K ='
+      ELSE
+       index_lab = '?='
+      ENDIF
+      commOpen  = '/*'
+      commClose = '*/'
+      iLo = 1
+      iHi = 1
+      punc = ','
+      xOld = fld(1)
+      DO K=2,lFld
+       xNew = fld(K  )
+       IF ( xNew .NE. xOld ) THEN
+        nDup = iHi-iLo+1
+        IF ( nDup .EQ. 1 ) THEN
+         WRITE(msgBuf,'(A,1PE23.15,A)') '              ',xOld,punc
+         IF ( index_type .NE. INDEX_NONE ) 
+     &    WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') commOpen,index_lab,iLo,commClose
+        ELSE
+         WRITE(msgBuf,'(I,'' '',A,1PE23.15,A)') nDup,'@',xOld,punc
+         IF ( index_type .NE. INDEX_NONE ) 
+     &    WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
+     &    commOpen,index_lab,iLo,':',iHi,commClose
+        ENDIF
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+        iLo  = K
+        iHi  = K
+        xOld = xNew
+       ELSE
+        iHi = K
+       ENDIF
+      ENDDO
+      punc = ' '
+      nDup = iHi-iLo+1
+      IF    ( nDup .EQ. 1 ) THEN
+       WRITE(msgBuf,'(A,1PE23.15,A)') '              ',xOld,punc
+       IF ( index_type .NE. INDEX_NONE ) 
+     &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') commOpen,index_lab,iLo,commClose
+      ELSEIF( nDup .GT. 1 ) THEN
+       WRITE(msgBuf,'(I,'' '',A,1PE23.15,A)') nDup,'@',xOld,punc
+       IF ( index_type .NE. INDEX_NONE ) 
+     &  WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
+     &  commOpen,index_lab,iLo,':',iHi,commClose
+      ENDIF
+      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+
       RETURN
       END
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.2 1998/04/24 02:05:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.3 1998/04/26 23:41:54 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -80,7 +80,9 @@ C     aS2d: integral in Z Ay/dY
       _BEGIN_MASTER( myThid )
        cg2dNorm = myNorm
 CcnhDebugStarts
-       WRITE(msgBuf,*) ' CG2D normalisation factor = ', cg2dNorm
+       WRITE(msgBuf,'(A,F)') '// CG2D normalisation factor = ', cg2dNorm
+       CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+       WRITE(msgBuf,*) '                               '
        CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
 CcnhDebugEnds
       _END_MASTER( myThid )

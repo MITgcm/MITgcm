@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.4 1998/04/24 02:08:39 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.5 1998/04/26 23:41:54 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -32,12 +32,12 @@ CEndOfInterface
 
 C     == Local variables ==
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      INTEGER                  I,J,K
+
 
       _BARRIER
-
       _BEGIN_MASTER(myThid)
-      WRITE(msgBuf,100) '// '
-      CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
+
       WRITE(msgBuf,'(A)')
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
@@ -47,11 +47,32 @@ C     == Local variables ==
      &'// ======================================================='
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
+
+      CALL WRITE_1D_R8( tRef, Nz, INDEX_K,'tRef =',
+     &'   /* Reference temperature profile ( oC or oK ) */')
+      CALL WRITE_1D_R8( viscAh, 1, INDEX_NONE,'viscAh =',
+     &'   /* Lateral eddy viscosity ( m^2/s ) */')
+      CALL WRITE_1D_R8( viscAz, 1, INDEX_NONE,'viscAz =',
+     &'   /* Vertical eddy viscosity ( m^2/s ) */')
+      CALL WRITE_1D_R8( diffKhT, 1, INDEX_NONE,'diffKhT =',
+     &'   /* Laplacian diffusion of heat laterally ( m^2/s ) */')
+      CALL WRITE_1D_R8( diffKzT, 1, INDEX_NONE,'diffKzT =',
+     &'   /* Laplacian diffusion of heat vertically ( m^2/s ) */')
+      CALL WRITE_1D_R8( diffK4T, 1, INDEX_NONE,'diffK4T =',
+     &'   /* Bihaarmonic diffusion of heat laterally ( m^4/s ) */')
+      CALL WRITE_1D_R8( diffKhS, 1, INDEX_NONE,'diffKhS =',
+     &'   /* Laplacian diffusion of salt laterally ( m^2/s ) */')
+      CALL WRITE_1D_R8( diffKzS, 1, INDEX_NONE,'diffKzS =',
+     &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
+      CALL WRITE_1D_R8( diffK4S, 1, INDEX_NONE,'diffK4S =',
+     &'   /* Bihaarmonic diffusion of salt laterally ( m^4/s ) */')
+
+
       WRITE(msgBuf,'(A)') ' '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &  SQUEEZE_RIGHT , 1)
-      _END_MASTER(myThid)
 
+      _END_MASTER(myThid)
       _BARRIER
 
 

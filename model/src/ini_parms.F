@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.3 1998/04/24 03:53:28 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.4 1998/04/26 23:41:54 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -199,11 +199,12 @@ C--   Elliptic solver parameters
 
 C--   Time stepping parameters
       startTime      = 0.
-      nTimeSteps     = 1
-      endTime        = 3600.*300
+      nTimeSteps     = 0
+      endTime        = 0.
       nIter0         = 0
-      deltaTtracer   = 1200. _d 0
-      deltaTMom      = 1200. _d 0
+      deltaT         = 0.
+      deltaTtracer   = 0.
+      deltaTMom      = 0.
       abEps          = 0.01
       chkPtFreq      = 3600.*25
       dumpFreq       = 3600.*100
@@ -225,6 +226,18 @@ C--   Time stepping parameters
        CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
    8  CONTINUE
+C     Process "timestepping" params
+C     o Time step size
+      IF ( deltaT       .EQ. 0. ) deltaT       = deltaTmom
+      IF ( deltaT       .EQ. 0. ) deltaT       = deltaTtracer
+      IF ( deltaTmom    .EQ. 0. ) deltaTmom    = deltaT
+      IF ( deltaTtracer .EQ. 0. ) deltaTtracer = deltaT
+C     o Time step count
+      IF ( endTime .NE. 0 ) THEN
+       IF ( deltaT .NE. 0 ) nTimeSteps = INT(endTime/deltaT)
+      ENDIF
+C     o Finish time
+      IF ( endTime .EQ. 0. ) endTime = FLOAT(nTimeSteps)*deltaT
  
 C--   Grid parameters
 C     In cartesian coords distances are in metres
@@ -284,29 +297,6 @@ C     In spherical polar distances are in degrees
        CALL PRINT_ERROR( msgBuf , myThid)
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
- 
-C--   Example offline config. parameters
-C     Set to 12 equal length one month periods
-      oBandBeg(1) = 0. _d 0
-      oBandEnd(1) = 2592000. _d 0
-      DO I=2, nOBands
-       oBandBeg(I) = oBandBeg(I-1)
-       oBandEnd(I) = oBandBeg(I)+2592000. _d 0
-      ENDDO
-      oPeriodLength = oBandEnd(nOBands)
-      oBandId( 1) = 'jan'
-      oBandId( 2) = 'feb'
-      oBandId( 3) = 'mar'
-      oBandId( 4) = 'apr'
-      oBandId( 5) = 'may'
-      oBandId( 6) = 'jun'
-      oBandId( 7) = 'jul'
-      oBandId( 8) = 'aug'
-      oBandId( 9) = 'sep'
-      oBandId(10) = 'oct'
-      oBandId(11) = 'nov'
-      oBandId(12) = 'dec'
-      numStepsPerPickup = NINT( oBandEnd(1) / deltaTtracer )
 
       _END_MASTER(myThid)
 
