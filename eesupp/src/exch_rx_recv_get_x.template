@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_x.template,v 1.3 2003/11/12 00:02:44 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_rx_recv_get_x.template,v 1.4 2004/09/02 14:02:50 jmc Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
@@ -153,7 +153,7 @@ C        i.e. we only lock waiting for data that we need.
          westCommMode = _tileCommModeW(bi,bj)
          eastCommMode = _tileCommModeE(bi,bj)
    10    CONTINUE
-          CALL FOOL_THE_COMPILER
+          CALL FOOL_THE_COMPILER( spinCount )
           spinCount = spinCount+1
 C         IF ( myThid .EQ. 1 .AND. spinCount .GT. _EXCH_SPIN_LIMIT ) THEN
 C          WRITE(*,*) ' eBl = ', ebl
