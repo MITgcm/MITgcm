@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.10 2004/09/29 14:38:40 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.11 2004/09/30 15:17:42 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -109,18 +109,19 @@ C       fizhi_earth_coms.h
 
 #ifdef ALLOW_EXCH2
        tn = W2_myTileList(bi)
+       iG = tn
+       jG = 1
 #else
        iG = bi+(myXGlobalLo-1)/sNx
        jG = bj+(myYGlobalLo-1)/sNy
        tn = (jG - 1)*(nPx*nSx) + iG
 #endif /* ALLOW_EXCH2 */
 
-       write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
-     &              fn(1:ilst),'.',iG,'.',jG,'.data'
+       write(dataFname(1:80),'(a,2a,i3.3,a,i3.3,a)')
+     &  'pickup_vegtiles.',fn(1:ilst),'.',iG,'.',jG,'.data'
        open( iUnit, file=dataFName, status='unknown',
      &       access='direct', recl=length_of_rec )
 
-       irec = 0
 C First write single-level turbulence fields
        do n = 1,nchp
         r8seg(n) = ctmt(n,bi,bj)
@@ -323,9 +324,9 @@ C     !LOCAL VARIABLES:
       DO i = 1,80
         bnam(i:i) = ' '
       ENDDO
-      WRITE(fn,'(I10.10)') Iter
+      WRITE(fn,'(a,I10.10)') 'pickup_vegtiles.',Iter
       ilst = ILNBLNK(fn)
-      WRITE(bnam,'(a,a)') 'pickup_vegtiles.', fn(1:ilst)
+      WRITE(bnam,'(a,I10.10)') 'pickup_vegtiles.',Iter
       fileprec = 64
       prec = 'D'
       
@@ -366,6 +367,8 @@ C       fizhi_land_coms.h
 
 #ifdef ALLOW_EXCH2
        tn = W2_myTileList(bi)
+       iG = tn
+       jG = 1
 #else
        iG = bi+(myXGlobalLo-1)/sNx
        jG = bj+(myYGlobalLo-1)/sNy
