@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.2 2004/06/07 16:04:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.3 2004/06/07 18:04:06 molod Exp $
 C $Name:  $
 
-      subroutine fizhi_init_veg ( mythid, vegdata,im,jm,bi,bj,maxtyp,
+      subroutine fizhi_init_veg(mythid,vegdata,im,jm,maxbi,maxbj,maxtyp,
      . surftype,tilefrac,igrd,ityp,chfr )
 C***********************************************************************
 C Subroutine fizhi_init_veg - routine to read in the land surface types,
@@ -15,8 +15,8 @@ C mythid   - thread number (processor number)
 C vegdata  - Character*40 Vegetation Dataset name
 C im       - model grid longitude dimension
 C jm       - model grid latitude dimension (number of lat. points)
-C bi       - Number of processors in x-direction
-C bj       - Number of processors in y-direction
+C maxbi    - Number of processors in x-direction
+C maxbj    - Number of processors in y-direction
 C maxtyp   - maximum allowable number of land surface types per grid box
 C nchpmax  - integer maximum per-processor number of tiles in tile space
 C
@@ -49,11 +49,11 @@ C***********************************************************************
       implicit none
 #include "EEPARAMS.h"
 
-      integer mythid,im,jm,maxtyp,nchpmax
-      integer surftype(im,jm,maxtyp,bi,bj)
-      integer igrd(nchpmax,bi,bj),ityp(nchpmax,bi,bj)
-      real tilefrac(im,jm,maxtyp,bi,bj)
-      real chfr(nchpmax,bi,bj)
+      integer mythid,im,jm,maxtyp,nchpmax,maxbi,maxbj
+      integer surftype(im,jm,maxtyp,maxbi,maxbj)
+      integer igrd(nchpmax,bi,bj),ityp(nchpmax,maxbi,maxbj)
+      real tilefrac(im,jm,maxtyp,maxbi,maxbj)
+      real chfr(nchpmax,maxbi,maxbj)
       character*40 vegdata
       integer imdata,jmdata,bidata,bjdata
       integer nchp,nchpland
@@ -62,9 +62,8 @@ C***********************************************************************
       integer*4 iveg_32(im,jm,maxtyp,bi,bj)
          real*4  veg_32(im,jm,maxtyp,bi,bj)
 
-      integer i,j,k,bilocal,bjlocal,ierr1,kveg
+      integer i,j,k,bi,bj,ierr1,kveg
 
-      IF (myThid.eq.1) THEN
       call mdsfindunit( kveg, myThid )
       close(kveg)
       open(kveg,file=vegdata,form='unformatted',access='sequential', 
@@ -78,6 +77,7 @@ C***********************************************************************
        call exit(101)
       endif
       close(kveg)
+      IF (myThid.eq.1) THEN
       imdata = im_32
       jmdata = jm_32
       bidata = bi_32
@@ -97,14 +97,14 @@ C***********************************************************************
       bidata = bi_32
       bjdata = bj_32
 
-      DO BJLOCAL = myByLo(myThid), myByHi(myThid)
-      DO BILOCAL = myBxLo(myThid), myBxHi(myThid)
+      DO BJ = myByLo(myThid), myByHi(myThid)
+      DO BI = myBxLo(myThid), myBxHi(myThid)
                                                                                  
       do k = 1,maxtyp
       do j = 1,jm_32
       do i = 1,im_32
-       surftype(i,j,k,bilocal,bjlocal) = iveg_32(i,j,k,bilocal,bjlocal) 
-       tilefrac(i,j,k,bilocal,bjlocal) = veg_32(i,j,k,bilocal,bjlocal)
+       surftype(i,j,k,bi,bj) = iveg_32(i,j,k,bi,bj) 
+       tilefrac(i,j,k,bi,bj) = veg_32(i,j,k,bi,bj)
       enddo
       enddo
       enddo
@@ -151,7 +151,7 @@ c ------------
       enddo
       enddo
 
-      print *, 'bi ',bilocal,' bj ',bjlocal
+      print *, 'bi ',bi,' bj ',bj
       print *, 'Number of Total Tiles: ',nchp
       print *, 'Number of Land  Tiles: ',nchplnd
       print *
