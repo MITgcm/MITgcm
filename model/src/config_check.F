@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.14 2004/03/25 15:35:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.15 2004/07/18 21:59:29 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -154,9 +154,20 @@ C       code is being compiled
         WRITE(msgBuf,'(A)')
      &  'compiled the model with the pressure loading code.'
         CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A,A)')
-     &  'Re-compile with:  #define ATMOSPHERIC_LOADING',
-     &  '              or  -DATMOSPHERIC_LOADING'
+        WRITE(msgBuf,'(A)')
+     &  'Re-compile with:  #define ATMOSPHERIC_LOADING'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+      IF ( useRealFreshWaterFlux .AND. useThSIce ) THEN
+        WRITE(msgBuf,'(A)')
+     &  'CONFIG_CHECK: sIceLoad is computed but'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &  'pressure loading code is not compiled.'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &  'Re-compile with:  #define ATMOSPHERIC_LOADING'
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
@@ -167,14 +178,10 @@ C       code is being compiled
 #ifndef ALLOW_TIMEAVE
       IF (taveFreq.NE.0.) THEN
         WRITE(msgBuf,'(A)')
-     &  'CONFIG_CHECK: taveFreq <> 0  but you have'
+     &  'CONFIG_CHECK: taveFreq <> 0  but pkg/timeave is not compiled'
         CALL PRINT_ERROR( msgBuf , 1)
         WRITE(msgBuf,'(A)')
-     &  'not compiled the model with the diagnostics routines.'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A,A)')
-     &  'Re-compile with:  #define ALLOW_TIMEAVE',
-     &  '              or  -DALLOW_TIMEAVE'
+     &  'Re-compile with pkg "timeave" in packages.conf'
         CALL PRINT_ERROR( msgBuf , 1)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
@@ -283,8 +290,9 @@ c     ENDIF
      &                    SQUEEZE_RIGHT , myThid)                      
       ENDIF
 
-      IF (useRealFreshWaterFlux .AND. exactConserv
-     &    .AND.startTime.NE.0. .AND. implicSurfPress.EQ.0. _d 0) THEN
+      IF ( useRealFreshWaterFlux .AND. exactConserv
+     &     .AND. implicDiv2DFlow.EQ.0. _d 0
+     &     .AND. startTime.NE.0. .AND. usePickupBeforeC54 ) THEN
         WRITE(msgBuf,'(A)') 
      &   'CONFIG_CHECK: RealFreshWaterFlux+implicSurfP=0+exactConserv:'
         CALL PRINT_ERROR( msgBuf , myThid)
@@ -294,7 +302,19 @@ c     ENDIF
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 
-#ifdef NONLIN_FRSURF
+      IF ( useRealFreshWaterFlux .AND. .NOT.exactConserv 
+     &     .AND. implicDiv2DFlow.NE.1. ) THEN
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: **WARNNING** ',
+     &   'RealFreshWater & implicDiv2DFlow < 1'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)                      
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: works better',
+     &   ' with exactConserv=.T. (+ #define EXACT_CONSERV)'
+        CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
+     &                    SQUEEZE_RIGHT , myThid)                      
+      ENDIF
+
+#ifdef EXACT_CONSERV
       IF (useRealFreshWaterFlux .AND. .NOT.exactConserv
      &            .AND. buoyancyRelation.EQ.'OCEANICP' ) THEN
         WRITE(msgBuf,'(A)') 
@@ -306,17 +326,6 @@ c     ENDIF
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 #else
-      IF (useRealFreshWaterFlux .AND. exactConserv
-     &            .AND. implicSurfPress.NE.1. _d 0 ) THEN
-        WRITE(msgBuf,'(A)') 
-     &   'CONFIG_CHECK: Pb with restart in this config'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: ==> use #define NONLIN_FRSURF to fix it'
-        CALL PRINT_ERROR( msgBuf , myThid)
-        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
-      ENDIF
-
       IF (useRealFreshWaterFlux
      &            .AND. buoyancyRelation.EQ.'OCEANICP' ) THEN
         WRITE(msgBuf,'(A)') 
@@ -324,11 +333,11 @@ c     ENDIF
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)                      
         WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: ==> use #define NONLIN_FRSURF to fix it'
+     &   'CONFIG_CHECK: ==> use #define EXACT_CONSERV to fix it'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)                      
       ENDIF
-#endif /* NONLIN_FRSURF */
+#endif /* EXACT_CONSERV */
 
       IF (.NOT.useCDscheme .AND. (tauCD.NE.0. .OR. rCD.NE.-1.) ) THEN
 C- jmc: since useCDscheme is a new [04-13-03] flag (default=F), 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.7 2004/07/06 01:05:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.8 2004/07/18 22:00:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -192,7 +192,7 @@ C--    Integrate continuity vertically for vertical velocity
      O                       wVel,
      I                       myThid )
  
-#if ( defined EXACT_CONSERV && defined NONLIN_FRSURF ) 
+#ifdef EXACT_CONSERV
        IF ( k.EQ.Nr .AND. myTime.NE. 0. _d 0 .AND.
      &      useRealFreshWaterFlux .AND. 
      &      buoyancyRelation .EQ. 'OCEANICP' ) THEN
@@ -205,7 +205,7 @@ C--    Integrate continuity vertically for vertical velocity
           ENDDO
 
        ENDIF
-#endif /* EXACT_CONSERV & NONLIN_FRSURF */
+#endif /* EXACT_CONSERV */
 
 #ifdef ALLOW_OBCS
 #ifdef ALLOW_NONHYDROSTATIC
