@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.13 2004/10/14 22:11:42 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.14 2004/12/14 16:54:08 edhill Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -109,7 +109,7 @@ C       Read fields as consecutive records
         CALL MNC_CW_RL_R('D',fn,0,0,'sphy',sphy,myThid)
 
 
-        _END_MASTER()
+        _END_MASTER(myThid)
 
       ENDIF
 #endif

@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.411 2004/12/13 23:12:03 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.412 2004/12/14 16:54:08 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o every instance of _END_MASTER() has been found and replaced with 
+  _END_MASTER( myThid ) in order to satisfy certain picky Sun 
+  preprocessors
 o re-arrange diagnostics pkg initialisation:
  - allow each package to extend the available diagnostics list
  - add some checking and fix small problems (multi-threaded, ...)

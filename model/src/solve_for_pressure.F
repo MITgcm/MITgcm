@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.42 2003/11/04 18:40:58 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.43 2004/12/14 16:54:08 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -218,7 +218,7 @@ C- dump CG2D output at monitorFreq (to reduce size of STD-OUTPUT files) :
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
         WRITE(msgBuf,'(A34,1PE24.14)') 'cg2d_res =',lastResidual
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-        _END_MASTER( )
+        _END_MASTER( myThid )
        ENDIF
       ENDIF
 
@@ -368,7 +368,7 @@ C Western boundary
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
         WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_res =',lastResidual
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-        _END_MASTER( )
+        _END_MASTER( myThid )
        ENDIF
       ENDIF
 

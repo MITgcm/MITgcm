@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.13 2004/10/10 06:08:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.14 2004/12/14 16:54:08 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -217,7 +217,7 @@ C     write(*,*) 'mon_write_stdout = ''', mon_write_stdout, ''''
 #ifdef ALLOW_USE_MPI
         ENDIF
 #endif /* ALLOW_USE_MPI */
-      _END_MASTER()
+      _END_MASTER(myThid)
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.13 2004/05/05 00:23:37 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/lsr.F,v 1.14 2004/12/14 16:54:08 edhill Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -347,7 +347,7 @@ C ITERATION END -----------------------------------------------------
       IF ( debugLevel .GE. debLevB ) THEN
        _BEGIN_MASTER( myThid )
         write(*,'(A,I6,1P2E22.14)')' U lsr iters, error = ',ICOUNT1,S1
-       _END_MASTER( )
+       _END_MASTER( myThid )
       ENDIF
 
 C NOW FOR VICE
@@ -572,7 +572,7 @@ C ITERATION END -----------------------------------------------------
       IF ( debugLevel .GE. debLevB ) THEN
        _BEGIN_MASTER( myThid )
         write(*,'(A,I6,1P2E22.14)')' V lsr iters, error = ',ICOUNT2,S2
-       _END_MASTER( )
+       _END_MASTER( myThid )
       ENDIF
 
 C NOW END
