@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.12 2004/10/10 06:08:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.13 2004/12/14 23:00:53 edhill Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -179,17 +179,17 @@ C     Create MNC definitions for DYNVARS.h variables
       CALL MNC_CW_ADD_VNAME('gW', 'Cen_xy_Hn__C__t', 4,5, myThid)
 
 C     Write coordinates to "state" file
-      CALL MNC_CW_SET_UDIM('state', 0, myThid)
-      CALL MNC_CW_RS_W('R','state',0,0,'XC',xC, myThid)
-      CALL MNC_CW_RS_W('R','state',0,0,'YC',yC, myThid)
-      CALL MNC_CW_RS_W('R','state',0,0,'XU',xG, myThid)
-      CALL MNC_CW_RS_W('R','state',0,0,'YU',yC, myThid)
-      CALL MNC_CW_RS_W('R','state',0,0,'XV',xC, myThid)
-      CALL MNC_CW_RS_W('R','state',0,0,'YV',yG, myThid)
-      CALL MNC_CW_RS_W('R','state',0,0,'XG',xG, myThid)
-      CALL MNC_CW_RS_W('R','state',0,0,'YG',yG, myThid)
-      CALL MNC_CW_RS_W('R','state',0,0,'RC',rC, myThid)
-      CALL MNC_CW_RS_W('R','state',0,0,'RF',rF, myThid)
+C     CALL MNC_CW_SET_UDIM('state', 0, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'XC',xC, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'YC',yC, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'XU',xG, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'YU',yC, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'XV',xC, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'YV',yG, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'XG',xG, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'YG',yG, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'RC',rC, myThid)
+C     CALL MNC_CW_RS_W('R','state',0,0,'RF',rF, myThid)
 
 C     Define variables used in mom_vecinv
 C     CALL MNC_CW_ADD_VNAME('fV', 'Cen_xy_Hn__-__t', 0,0, myThid)

@@ -1,8 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.412 2004/12/14 16:54:08 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.413 2004/12/14 23:00:53 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o changes per discussion of AM, JMC, & EH3 today:
+  - move redundant "grid" variables out of "state" -- in preparation of 
+    creating proper CF-style coordinate variables and in recognition 
+    that any/all grid variables can be easily copied (eg. w/NCO) from 
+    the grid files into any of the other NetCDF files
+  - *always* output grid variables with MDSIO (this will eventually be 
+    changed)
+  - output MNC grid file if useMNC is true
 o every instance of _END_MASTER() has been found and replaced with 
   _END_MASTER( myThid ) in order to satisfy certain picky Sun 
   preprocessors

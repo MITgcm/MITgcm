@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.7 2004/11/02 18:06:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.8 2004/12/14 23:00:53 edhill Exp $
 C $Name:  $
       
 #include "PACKAGES_CONFIG.h"
@@ -61,34 +61,33 @@ C             Total fluid column thickness (r_unit) :
 
       _BEGIN_MASTER( myThid )
 
-      IF (snapshot_mdsio) THEN
-C       Write horizontal grid arrays
-        CALL WRITE_FLD_XY_RS( 'XC',' ',XC,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'YC',' ',YC,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'XG',' ',XG,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'YG',' ',YG,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'RAC',' ',rA,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'RAW',' ',rAw,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'RAS',' ',rAs,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'DXG',' ',DXG,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,0,myThid)
-        CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,0,myThid)
-C       Write 3D geometry arrays
-        CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,0,myThid)
-        CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
-        CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
-        CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
-        IF (buoyancyRelation .EQ. 'ATMOSPHERIC')
-     &       CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,0,myThid)
+C     Write horizontal grid arrays
+      CALL WRITE_FLD_XY_RS( 'XC',' ',XC,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'YC',' ',YC,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'XG',' ',XG,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'YG',' ',YG,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'RAC',' ',rA,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'RAW',' ',rAw,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'RAS',' ',rAs,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'DXG',' ',DXG,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'DYG',' ',DYG,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'DXC',' ',DXC,0,myThid)
+      CALL WRITE_FLD_XY_RS( 'DYC',' ',DYC,0,myThid)
+C     Write 3D geometry arrays
+      CALL WRITE_FLD_XY_RS( 'Depth',' ',tmpfld,0,myThid)
+      CALL WRITE_FLD_XYZ_RS( 'hFacC',' ',hFacC,0,myThid)
+      CALL WRITE_FLD_XYZ_RS( 'hFacW',' ',hFacW,0,myThid)
+      CALL WRITE_FLD_XYZ_RS( 'hFacS',' ',hFacS,0,myThid)
+      IF (buoyancyRelation .EQ. 'ATMOSPHERIC')
+     &     CALL WRITE_FLD_XY_RS( 'topo_P',' ',Ro_surf,0,myThid)
 
-      ENDIF
       _END_MASTER(myThid)
 
 #ifdef ALLOW_MNC
-      IF (useMNC .AND. snapshot_mnc) THEN
+      _BEGIN_MASTER( myThid )
+      IF (useMNC) THEN
         bfname='grid'
-
+        
 C       Grid spacing, areas and hFacs
         CALL MNC_CW_ADD_VNAME('drC', '-_-_--__C__-', 0,0, myThid)
         CALL MNC_CW_ADD_VNAME('drF', '-_-_--__C__-', 0,0, myThid)
@@ -201,6 +200,7 @@ C       Write the GRID.h variables to a file
         CALL MNC_CW_RL_W('D',bfname,0,0,'HFacS',HFacS,myThid)
 
       ENDIF
+      _END_MASTER(myThid)
 #endif /* ALLOW_MNC */
 
       RETURN
