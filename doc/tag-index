@@ -1,10 +1,34 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.203 2003/11/04 21:42:15 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.204 2003/11/06 22:52:11 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint51u_post
+o this is the post-merge tag of the ecco-branch
+  (needs another clean checkout and re-testing)
+o various natl_box_adjoint configs and results
+  but no input fields
+o obcs adjoint not yet merged!
+o adding ECCO global 1x1 and 2x2 degree configs
+o updated/extended some store directives for seaice
+o pkg/ecco now containes ecco-specific part of cost function
+o top level routines the_main_loop, forward_step
+  supersede those in model/src/
+  previous input data.cost now in data.ecco
+  (new namelist ecco_cost_nml)
+o in ctrl/ cleaned some cross-dependencies and updated CPP options
+
+checkpoint51t_post
+o this is the pre-merge tag of the ecco-branch
+
 checkpoint51s_post
 o cleanup: removed various obsolete #define-s
+o pkg/grdchk
+  - renamed 'ph-grd 3' to 'grad-res'
+  - merged from ecco-branch 
+    (remaining bug fixes for obcs gradient checks)
+  - additional high-precision output for testreport
+    (grep for 'precision_grdchk_result')
 
 checkpoint51r_post
 o cleaned up or removed CPP_OPTIONS.h files
