@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.4 2002/07/13 03:01:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.5 2003/01/21 19:20:52 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -28,6 +28,7 @@ c     == global variables ==
 
 #include "EEPARAMS.h"
 #include "SIZE.h"
+#include "PARAMS.h"
 
 #include "cost.h"
 #include "ctrl.h"
@@ -95,6 +96,10 @@ c--   Do global summation.
       _GLOBAL_SUM_R8( fc , myThid )
 
 #endif /* ALLOW_COST_VECTOR */
+
+c--   set averaging freq. to zero to avoid re-write of
+c--   averaged fields in reverse checkpointing loops
+      taveFreq = 0.
 
 #endif /* ALLOW_COST */
 
