@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.14 1998/08/18 16:32:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.15 1998/08/21 12:29:55 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -213,7 +213,7 @@ C           boundary condition.
         DO i=iMin,iMax
          df(i,j) = df(i,j) + _rA(i,j,bi,bj)*(
      &    -KappaZT(i,j,k)*recip_drC(k)
-     &    *(theta(i,j,kM1,bi,bj)-theta(i,j,k,bi,bj))
+     &    *(theta(i,j,kM1,bi,bj)-theta(i,j,k,bi,bj))*rkFac
      &    )
         ENDDO
        ENDDO

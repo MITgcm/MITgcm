@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.19 1998/08/20 20:21:23 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.20 1998/08/21 12:29:55 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -271,7 +271,7 @@ C     Eddy component of vertical flux
 #else
         vf(i,j) =
      &   -viscAr*_dxC(i,j,bi,bj)*_dyG(i,j,bi,bj)
-     &   *(uVel(i,j,km1,bi,bj)-uVel(i,j,k,bi,bj))*rkFac
+     &   *(uVel(i,j,km1,bi,bj)-uVel(i,j,k,bi,bj))*rkFac*recip_drC(k)
     &    *_maskW(i,j,k,bi,bj)*rVelMaskOverride
 #endif
        ENDDO
@@ -304,7 +304,7 @@ C     Bottom boundary condition
 C---  Hydrostatic term ( -1/rhoConst . dphi/dx )
       DO j=jMin,jMax
        DO i=iMin,iMax
-        pf(i,j) = - _rdxC(i,j,bi,bj)
+        pf(i,j) = - _recip_dxC(i,j,bi,bj)
      &   *(phi_hyd(i,j,k)-phi_hyd(i-1,j,k))/rhoConst
        ENDDO
       ENDDO
@@ -455,7 +455,7 @@ C       Note!!!! Is wMaskOverridde right for implicit free-surface?
 C     Eddy component of vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
-#define _RAatV(i,j,k,bi,bj) ( _zA(i,j,bi,bj)*maskC(i,j) + _zA(i,j-1,bi,bj)*maskC(i,j-1) ) * 0.5 _d 0
+#define _RAatV(i,j,k,bi,bj) ( _rA(i,j,bi,bj)*maskC(i,j) + _rA(i,j-1,bi,bj)*maskC(i,j-1) ) * 0.5 _d 0
 #ifdef NO_BOTTOM_SLIP
         vf(i,j) =
      &   -viscAr*_RAatV(i,j,k,bi,bj)
@@ -465,7 +465,7 @@ C     Eddy component of vertical flux
 #else
         vf(i,j) =
      &   -viscAr*_dyC(i,j,bi,bj)*_dxG(i,j,bi,bj)
-     &   *(vVel(i,j,km1,bi,bj)-vVel(i,j,k,bi,bj))*rkFac*
+     &   *(vVel(i,j,km1,bi,bj)-vVel(i,j,k,bi,bj))*rkFac*recip_drC(k)
      &    *_maskS(i,j,k,bi,bj)*wMaskOverride
 #endif
        ENDDO
@@ -481,9 +481,9 @@ C     Bottom level boundary condition
       IF ( k .EQ. nZ ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-#define _ZAatV(i,j,k,bi,bj) ( _zA(i,j,bi,bj) + _zA(i,j-1,bi,bj) ) * 0.5 _d 0
+#define _RAatV(i,j,k,bi,bj) ( _rA(i,j,bi,bj) + _rA(i,j-1,bi,bj) ) * 0.5 _d 0
          vf(i,j) =
-     &    -viscAr*_ZAatV(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
+     &    -viscAr*_RAatV(i,j,k,bi,bj)*_maskS(i,j,k,bi,bj)
      &    *rVel(i,j,k,bi,bj)*recip_drF(k)*2. _d 0
         ENDDO
        ENDDO
@@ -508,7 +508,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
        DO i=iMin,iMax
         gV(i,j,k,bi,bj) =
      &   -_rhFacS(i,j,k,bi,bj)*recip_drF(k)/
-     &     ( 0.5 _d 0 *( _zA(i,j,bi,bj)+ _zA(i,j-1,bi,bj)) )
+     &     ( 0.5 _d 0 *( _rA(i,j,bi,bj)+ _rA(i,j-1,bi,bj)) )
      &  *(fZon(i+1,j)          - fZon(i,j  )
      &   +fMer(i,j  )          - fMer(i,j-1)
      &   +fVerV(i,j,kUp)*rkFac - fVerV(i,j,kDown)*rkFac
@@ -658,7 +658,7 @@ C--   Meridional velocity coriolis term
 C     gradx(p)+gU
       DO j=jMin,jMax
        DO i=iMin,iMax
-        af(i,j) = -_maskW(i,j,k,bi,bj)*_rdxC(i,j,bi,bj)*
+        af(i,j) = -_maskW(i,j,k,bi,bj)*_recip_dxC(i,j,bi,bj)*
      &            (pf(i,j)-pf(i-1,j))
      &            +gU(i,j,k,bi,bj)
        ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_grad_eta_surf.F,v 1.1 1998/08/20 19:25:04 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_grad_eta_surf.F,v 1.2 1998/08/21 12:29:55 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -30,7 +30,7 @@ C     == Local variables ==
 C     Zonal term
       DO j=jMin,jMax
        DO i=iMin,iMax
-        etaSurfX(i,j)=_rdxC(i,j,bi,bj)*
+        etaSurfX(i,j)=_recip_dxC(i,j,bi,bj)*
      &   (cg2d_x(i,j,bi,bj)-cg2d_x(i-1,j,bi,bj))
        ENDDO
       ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.23 1998/08/15 16:55:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.24 1998/08/21 12:29:55 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -182,12 +182,19 @@ C           number of iterations for convergence in a test case to
 C           drop form 192 -> 134! Need to investigate this further!
 C           For now I have introduced a parameter cg2dpcOffDFac which
 C           defaults to 0.51 but can be set at runtime.
+C     delP      - Vertical grid spacing ( Pa ).
+C     delZ      - Vertical grid spacing ( m  ).
+C     rkFac     - Vertical coordinate to vertical index orientation.
+C                 ( 1 same orientation, -1 opposite orientation )
+C                 ( vertical coord == m  -> rkFac = -1 )
+C                 ( vertical coord == Pa -> rkFac =  1 )
 C     delR      - Vertical grid spacing ( units of r ).
 C     delX      - Separation between cell faces (m) or (deg), depending
 C     delY        on input flags.
 C     gravity   - Accel. due to gravity ( m/s^2 )
 C     gBaro     - Accel. due to gravity used in barotropic equation ( m/s^2 )
 C     ronil     - Reference density
+C     rhoConst  - Vertically constant reference density 
 C     startTime - Start time for model ( s )
 C     phiMin    - Latitude of southern most cell face.
 C     thetaMin  - Longitude of western most cell face (this
@@ -203,18 +210,24 @@ C     viscAh    - Eddy viscosity coeff. for mixing of
 C                 momentum laterally ( m^2/s )
 C     viscAz    - Eddy viscosity coeff. for mixing of
 C                 momentum vertically ( m^2/s )
+C     viscAr    - Eddy viscosity coeff. for mixing of
+C                 momentum vertically ( units of r^2/s )
 C     viscA4    - Biharmonic viscosity coeff. for mixing of
 C                 momentum laterally ( m^4/s )
 C     diffKhT   - Laplacian diffusion coeff. for mixing of
 C                 heat laterally ( m^2/s )
 C     diffKzT   - Laplacian diffusion coeff. for mixing of
 C                 heat vertically ( m^2/s )
+C     diffKrT   - Laplacian diffusion coeff. for mixing of
+C                 heat vertically ( units of r^2/s )
 C     diffK4T   - Biharmonic diffusion coeff. for mixing of
 C                 heat laterally ( m^4/s )
 C     diffKhS  -  Laplacian diffusion coeff. for mixing of
 C                 salt laterally ( m^2/s )
 C     diffKzS   - Laplacian diffusion coeff. for mixing of
 C                 salt vertically ( m^2/s )
+C     diffKrS   - Laplacian diffusion coeff. for mixing of
+C                 salt vertically ( units of r^2/s )
 C     diffK4S   - Biharmonic diffusion coeff. for mixing of
 C                 salt laterally ( m^4/s )
 C     deltaT    - Default timestep ( s )
@@ -229,31 +242,33 @@ C     deltaTtracer - Timestep for tracer equations ( s )
 C     freesurfFac  - Parameter to turn implicit free surface term on or off
 C                    freesurfac = 1. uses implicit free surface
 C                    freesurfac = 0. uses rigid lid
-C     hFacMin   - Minimum fraction size of a cell (affects hFacC etc...)
-C     hFacMinDz - Minimum dimesional size of a cell (affects hFacC etc...)
-C     tauCD     - CD scheme coupling timescale ( 1/s )
-C     rCD       - CD scheme normalised coupling parameter ( 0-1 )
-C     GMmaxslope  - max. slope allowed in GM/Redi tensor
-C     GMlength  - Length to use in Visbeck et al. formula for K (m)
-C     GMalpha   - alpha to use in Visbeck et al. formula for K
-C     GMdepth   - Depth over which to integrate Richardson # (Visbeck et al.)
-C     GMkbackground - background value of GM/Redi coefficient
-C     GMmaxval  - max. value of KapGM allowed in GM/Redi scheme
-C     startTime - Starting time for this integration ( s ).
-C     endTime   - Ending time for this integration ( s ).
-C     chkPtFreq  - Frequency of rolling check pointing ( s ).
-C     pChkPtFreq - Frequency of permanent check pointing ( s ).
-C     dumpFreq  - Frequency with which model state is written to
-C                 post-processing files ( s ).
+C     hFacMin      - Minimum fraction size of a cell (affects hFacC etc...)
+C     hFacMinDz    - Minimum dimesional size of a cell (affects hFacC etc..., m)
+C     hFacMinDr    - Minimum dimesional size of a cell (affects hFacC etc..., units of r)
+C     tauCD        - CD scheme coupling timescale ( 1/s )
+C     rCD          - CD scheme normalised coupling parameter ( 0-1 )
+C     GMmaxslope   - max. slope allowed in GM/Redi tensor
+C     GMlength     - Length to use in Visbeck et al. formula for K (m)
+C     GMalpha      - alpha to use in Visbeck et al. formula for K
+C     GMdepth      - Depth over which to integrate Richardson # (Visbeck et al.)
+C     GMkbackground - background value of GM/Redi diffusion coefficient ( m^2/s )
+C     GMmaxval      - max. value of KapGM allowed in GM/Redi scheme ( m^2/s )
+C     startTime     - Starting time for this integration ( s ).
+C     endTime       - Ending time for this integration ( s ).
+C     chkPtFreq     - Frequency of rolling check pointing ( s ).
+C     pChkPtFreq    - Frequency of permanent check pointing ( s ).
+C     dumpFreq      - Frequency with which model state is written to
+C                     post-processing files ( s ).
+C     afFacMom      - Advection of momentum term tracer parameter
+C     vfFacMom      - Momentum viscosity tracer parameter
+C     pfFacMom      - Momentum pressure forcing tracer parameter
+C     cfFacMom      - Coriolis term tracer parameter
+C     foFacMom      - Momentum forcing tracer parameter
+C     mtFacMom      - Metric terms tracer parameter
+C     cAdjFreq      - Frequency of convective adjustment
+C
 C     taveFreq  - Frequency with which time-averaged model state is written to
 C                 post-processing files ( s ).
-C     afFacMom  - Advection of momentum term scaling parameter
-C     vfFacMom  - Momentum viscosity scaling parameter
-C     pfFacMom  - Momentum pressure forcing parameter
-C     cfFacMom  - Coriolis term scaling parameter
-C     foFacMom  - Momentum forcing scaling parameter
-C     mtFacMom  - Metric terms scaling parameter
-C     cAdjFreq  - Frequency of convective adjustment
 C     tauThetaClimRelax - Relaxation to climatology time scale ( s ).
 C     lambdaThetaClimRelax - Inverse time scale for relaxation ( 1/s ).
 C     tauSaltClimRelax - Relaxation to climatology time scale ( s ).
@@ -262,11 +277,14 @@ C     externForcingPeriod - Is the period of which forcing varies (eg. 1 month)
 C     externForcingCycle - Is the repeat time of the forcing (eg. 1 year)
 C                          (note: externForcingCycle must be an integer
 C                           number times externForcingPeriod)
-      COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, delR, delX, delY, 
+      COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, 
+     & delP, delZ, delR, delX, delY, 
      & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, phiMin, 
-     & thetaMin, rSphere, rRSphere, f0, fCori, beta, viscAh, viscAz, viscA4, 
-     & diffKhT, diffKzT, diffK4T, diffKhS, diffKzS, diffK4S, delT, 
-     & tauCD, rCD, freeSurfFac, hFacMin, hFacMinDz,
+     & thetaMin, rSphere, rRSphere, f0, fCori, beta, 
+     & viscAh,  viscAz,  viscA4,  viscAr,
+     & diffKhT, diffKzT, diffK4T, diffKrT,
+     & diffKhS, diffKzS, diffK4S, diffKsT,
+     & delT, tauCD, rCD, freeSurfFac, hFacMin, hFacMinDz,
      & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,GMmaxval,
      & gravity, gBaro, rhonil, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq,
