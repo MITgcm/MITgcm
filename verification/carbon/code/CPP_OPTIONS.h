@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/CPP_OPTIONS.h,v 1.8 2002/07/13 03:42:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/CPP_OPTIONS.h,v 1.9 2002/11/15 03:37:58 heimbach Exp $
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -141,6 +141,12 @@ C o Add passive tracer advection routines
 
 C o Include/exclude monitor package
 #define EXCLUDE_MONITOR
+
+C o Include/exclude code for sea-ice model
+#undef  ALLOW_SEAICE
+
+c o Allow atmospheric loading
+#define ATMOSPHERIC_LOADING 
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"

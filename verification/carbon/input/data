@@ -46,7 +46,7 @@
 # startTime         = 49766400000.,
  startTime         = 0.,
 # endTime           = 49767264000.,
- endTime           = 259200.,
+ endTime           = 345600.,
  deltaTmom         = 2400.0,
  tauCD=321428.,
  deltaTtracer      = 86400.0,
