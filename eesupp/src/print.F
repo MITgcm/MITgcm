@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.2 1998/04/23 20:37:31 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.3 1998/04/23 20:56:54 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -970,5 +970,3 @@ C       The write statement may need to ne marked as a critical section.
 C
       RETURN
       END
-
-C $Id: print.F,v 1.2 1998/04/23 20:37:31 cnh Exp $

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch.F,v 1.2 1998/04/23 20:37:30 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch.F,v 1.3 1998/04/23 20:56:54 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -1380,5 +1380,3 @@ C--   y-axis exchanges
 
       RETURN
       END
-
-C $Id: exch.F,v 1.2 1998/04/23 20:37:30 cnh Exp $

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.2 1998/04/23 20:37:30 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.3 1998/04/23 20:56:54 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -549,5 +549,3 @@ C
 
       RETURN
       END
-
-C $Id: ini_procs.F,v 1.2 1998/04/23 20:37:30 cnh Exp $
