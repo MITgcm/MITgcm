@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_state.F,v 1.5 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_state.F,v 1.6 2004/08/18 15:41:18 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -69,6 +69,9 @@ C--   Write fields as consecutive records
        pref = 'fizhi_T.'
        WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
        call mdswritefield(fn,64,glf,'RL',Nrphys,thphy,1,myIter,myThid)
+       pref = 'fizhi_S.'
+       WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
+       call mdswritefield(fn,64,glf,'RL',Nrphys,sphy,1,myIter,myThid)
 
       ENDIF
 
