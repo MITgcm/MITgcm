@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.360 2004/09/27 18:01:22 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.361 2004/09/29 12:27:09 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -29,6 +29,7 @@ o more obcs stuff
   - changed sponge layer relaxation parameter units for days to seconds
   - turned off sponge layer by default
   - changed argument list of OBCS_CALC to myTime+deltaTclock
+  - fixed about 35 bugs in obcs_external_fields_load
 
 checkpoint55c_post
 o obcs stuff

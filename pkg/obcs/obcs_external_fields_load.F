@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.1 2004/09/24 12:32:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/Attic/obcs_external_fields_load.F,v 1.2 2004/09/29 12:27:09 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -102,7 +102,7 @@ C      data for the period ahead and the period behind myTime.
        WRITE(*,*)
      &  'S/R OBCS_EXTERNAL_FIELDS_LOAD: Reading new data',myTime,myIter
 
-#ifdef ALLOW_OBCS_WEST
+#ifdef ALLOW_OBCS_EAST
 C     Eastern boundary
       IF ( OBEuFile .NE. ' '  ) THEN
        CALL MDSREADFIELDYZ ( OBEuFile, readBinaryPrec,
@@ -116,13 +116,13 @@ C     Eastern boundary
        CALL MDSREADFIELDYZ ( OBEvFile, readBinaryPrec,
      &        'RL', Nr, OBEv1, intime0, myThid )
       ENDIF
-      IF ( OBEuFile .NE. ' '  ) THEN
+      IF ( OBEtFile .NE. ' '  ) THEN
        CALL MDSREADFIELDYZ ( OBEtFile, readBinaryPrec,
      &        'RL', Nr, OBEt0, intime0, myThid )
        CALL MDSREADFIELDYZ ( OBEtFile, readBinaryPrec,
      &        'RL', Nr, OBEt1, intime0, myThid )
       ENDIF
-      IF ( OBEuFile .NE. ' '  ) THEN
+      IF ( OBEsFile .NE. ' '  ) THEN
        CALL MDSREADFIELDYZ ( OBEsFile, readBinaryPrec,
      &        'RL', Nr, OBEs0, intime0, myThid )
        CALL MDSREADFIELDYZ ( OBEsFile, readBinaryPrec,
@@ -143,13 +143,13 @@ C     Western boundary
        CALL MDSREADFIELDYZ ( OBWvFile, readBinaryPrec,
      &        'RL', Nr, OBWv1, intime0, myThid )
       ENDIF
-      IF ( OBWuFile .NE. ' '  ) THEN
+      IF ( OBWtFile .NE. ' '  ) THEN
        CALL MDSREADFIELDYZ ( OBWtFile, readBinaryPrec,
      &        'RL', Nr, OBWt0, intime0, myThid )
        CALL MDSREADFIELDYZ ( OBWtFile, readBinaryPrec,
      &        'RL', Nr, OBWt1, intime0, myThid )
       ENDIF
-      IF ( OBWuFile .NE. ' '  ) THEN
+      IF ( OBWsFile .NE. ' '  ) THEN
        CALL MDSREADFIELDYZ ( OBWsFile, readBinaryPrec,
      &        'RL', Nr, OBWs0, intime0, myThid )
        CALL MDSREADFIELDYZ ( OBWsFile, readBinaryPrec,
@@ -170,13 +170,13 @@ C     Northern boundary
        CALL MDSREADFIELDXZ ( OBNvFile, readBinaryPrec,
      &        'RL', Nr, OBNv1, intime0, myThid )
       ENDIF
-      IF ( OBNuFile .NE. ' '  ) THEN
+      IF ( OBNtFile .NE. ' '  ) THEN
        CALL MDSREADFIELDXZ ( OBNtFile, readBinaryPrec,
      &        'RL', Nr, OBNt0, intime0, myThid )
        CALL MDSREADFIELDXZ ( OBNtFile, readBinaryPrec,
      &        'RL', Nr, OBNt1, intime0, myThid )
       ENDIF
-      IF ( OBNuFile .NE. ' '  ) THEN
+      IF ( OBNsFile .NE. ' '  ) THEN
        CALL MDSREADFIELDXZ ( OBNsFile, readBinaryPrec,
      &        'RL', Nr, OBNs0, intime0, myThid )
        CALL MDSREADFIELDXZ ( OBNsFile, readBinaryPrec,
@@ -197,13 +197,13 @@ C     Southern boundary
        CALL MDSREADFIELDXZ ( OBSvFile, readBinaryPrec,
      &        'RL', Nr, OBSv1, intime0, myThid )
       ENDIF
-      IF ( OBSuFile .NE. ' '  ) THEN
+      IF ( OBStFile .NE. ' '  ) THEN
        CALL MDSREADFIELDXZ ( OBStFile, readBinaryPrec,
      &        'RL', Nr, OBSt0, intime0, myThid )
        CALL MDSREADFIELDXZ ( OBStFile, readBinaryPrec,
      &        'RL', Nr, OBSt1, intime0, myThid )
       ENDIF
-      IF ( OBSuFile .NE. ' '  ) THEN
+      IF ( OBSsFile .NE. ' '  ) THEN
        CALL MDSREADFIELDXZ ( OBSsFile, readBinaryPrec,
      &        'RL', Nr, OBSs0, intime0, myThid )
        CALL MDSREADFIELDXZ ( OBSsFile, readBinaryPrec,
@@ -276,90 +276,123 @@ C     if not periodicForcing
 C     read boundary values once and for all
        IF ( myIter .EQ. nIter0 ) THEN
         _BEGIN_MASTER(myThid)
-C      If the above condition is met then we need to read in
-C      data for the period ahead and the period behind myTime.
+C      Read constant boundary conditions only for myIter = nIter0
        WRITE(*,*)
      &  'S/R OBCS_EXTERNAl_FIELDS_LOAD: Reading new data',myTime,myIter
        inTime0 = 1
-#ifdef ALLOW_OBCS_WEST
+#ifdef ALLOW_OBCS_EAST
 C     Eastern boundary
         IF ( OBEuFile .NE. ' '  ) THEN
          CALL MDSREADFIELDYZ ( OBEuFile, readBinaryPrec,
-     &        'RL', Nr, OBEu, inTime0, myThid )
+     &        'RL', Nr, OBEu0, inTime0, myThid )
         ENDIF
         IF ( OBEvFile .NE. ' '  ) THEN
          CALL MDSREADFIELDYZ ( OBEvFile, readBinaryPrec,
-     &        'RL', Nr, OBEv, inTime0, myThid )
+     &        'RL', Nr, OBEv0, inTime0, myThid )
         ENDIF
-        IF ( OBEuFile .NE. ' '  ) THEN
+        IF ( OBEtFile .NE. ' '  ) THEN
          CALL MDSREADFIELDYZ ( OBEtFile, readBinaryPrec,
-     &        'RL', Nr, OBEt, inTime0, myThid )
+     &        'RL', Nr, OBEt0, inTime0, myThid )
         ENDIF
-        IF ( OBEuFile .NE. ' '  ) THEN
+        IF ( OBEsFile .NE. ' '  ) THEN
          CALL MDSREADFIELDYZ ( OBEsFile, readBinaryPrec,
-     &        'RL', Nr, OBEs, inTime0, myThid )
+     &        'RL', Nr, OBEs0, inTime0, myThid )
         ENDIF
 #endif /* ALLOW_OBCS_WEST */
 #ifdef ALLOW_OBCS_WEST
 C     Western boundary
         IF ( OBWuFile .NE. ' '  ) THEN
          CALL MDSREADFIELDYZ ( OBWuFile, readBinaryPrec,
-     &        'RL', Nr, OBWu, inTime0, myThid )
+     &        'RL', Nr, OBWu0, inTime0, myThid )
         ENDIF
         IF ( OBWvFile .NE. ' '  ) THEN
          CALL MDSREADFIELDYZ ( OBWvFile, readBinaryPrec,
-     &        'RL', Nr, OBWv, inTime0, myThid )
+     &        'RL', Nr, OBWv0, inTime0, myThid )
         ENDIF
-        IF ( OBWuFile .NE. ' '  ) THEN
+        IF ( OBWtFile .NE. ' '  ) THEN
          CALL MDSREADFIELDYZ ( OBWtFile, readBinaryPrec,
-     &        'RL', Nr, OBWt, inTime0, myThid )
+     &        'RL', Nr, OBWt0, inTime0, myThid )
         ENDIF
-        IF ( OBWuFile .NE. ' '  ) THEN
+        IF ( OBWsFile .NE. ' '  ) THEN
          CALL MDSREADFIELDYZ ( OBWsFile, readBinaryPrec,
-     &        'RL', Nr, OBWs, inTime0, myThid )
+     &        'RL', Nr, OBWs0, inTime0, myThid )
         ENDIF
 #endif /* ALLOW_OBCS_WEST */
 #ifdef ALLOW_OBCS_NORTH
 C     Northern boundary
         IF ( OBNuFile .NE. ' '  ) THEN
          CALL MDSREADFIELDXz ( OBNuFile, readBinaryPrec,
-     &        'RL', Nr, OBNu, inTime0, myThid )
+     &        'RL', Nr, OBNu0, inTime0, myThid )
         ENDIF
         IF ( OBNvFile .NE. ' '  ) THEN
          CALL MDSREADFIELDXZ ( OBNvFile, readBinaryPrec,
-     &        'RL', Nr, OBNv, inTime0, myThid )
+     &        'RL', Nr, OBNv0, inTime0, myThid )
         ENDIF
-        IF ( OBNuFile .NE. ' '  ) THEN
+        IF ( OBNtFile .NE. ' '  ) THEN
          CALL MDSREADFIELDXZ ( OBNtFile, readBinaryPrec,
-     &        'RL', Nr, OBNt, inTime0, myThid )
+     &        'RL', Nr, OBNt0, inTime0, myThid )
         ENDIF
-        IF ( OBNuFile .NE. ' '  ) THEN
+        IF ( OBNsFile .NE. ' '  ) THEN
          CALL MDSREADFIELDXZ ( OBNsFile, readBinaryPrec,
-     &        'RL', Nr, OBNs, inTime0, myThid )
+     &        'RL', Nr, OBNs0, inTime0, myThid )
         ENDIF
 #endif /* ALLOW_OBCS_NORTH */
 #ifdef ALLOW_OBCS_SOUTH
 C     Southern boundary
         IF ( OBSuFile .NE. ' '  ) THEN
          CALL MDSREADFIELDXz ( OBSuFile, readBinaryPrec,
-     &        'RL', Nr, OBSu, inTime0, myThid )
+     &        'RL', Nr, OBSu0, inTime0, myThid )
         ENDIF
         IF ( OBSvFile .NE. ' '  ) THEN
          CALL MDSREADFIELDXZ ( OBSvFile, readBinaryPrec,
-     &        'RL', Nr, OBSv, inTime0, myThid )
+     &        'RL', Nr, OBSv0, inTime0, myThid )
         ENDIF
-        IF ( OBSuFile .NE. ' '  ) THEN
+        IF ( OBStFile .NE. ' '  ) THEN
          CALL MDSREADFIELDXZ ( OBStFile, readBinaryPrec,
-     &        'RL', Nr, OBSt, inTime0, myThid )
+     &        'RL', Nr, OBSt0, inTime0, myThid )
         ENDIF
-        IF ( OBSuFile .NE. ' '  ) THEN
+        IF ( OBSsFile .NE. ' '  ) THEN
          CALL MDSREADFIELDXZ ( OBSsFile, readBinaryPrec,
-     &        'RL', Nr, OBSs, inTime0, myThid )
+     &        'RL', Nr, OBSs0, inTime0, myThid )
         ENDIF
 #endif /* ALLOW_OBCS_SOUTH */
         _END_MASTER(myThid)
 C     endif myIter .EQ. nIter0
        ENDIF
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO K = 1, Nr
+          DO j=1-Oly,sNy+Oly
+#ifdef ALLOW_OBCS_EAST
+           OBEu(j,k,bi,bj) = OBEu0(j,k,bi,bj)  
+           OBEv(j,k,bi,bj) = OBEv0(j,k,bi,bj)  
+           OBEt(j,k,bi,bj) = OBEt0(j,k,bi,bj)  
+           OBEs(j,k,bi,bj) = OBEs0(j,k,bi,bj)  
+#endif /* ALLOW_OBCS_EAST */
+#ifdef ALLOW_OBCS_WEST
+           OBWu(j,k,bi,bj) = OBWu0(j,k,bi,bj)  
+           OBWv(j,k,bi,bj) = OBWv0(j,k,bi,bj)  
+           OBWt(j,k,bi,bj) = OBWt0(j,k,bi,bj)  
+           OBWs(j,k,bi,bj) = OBWs0(j,k,bi,bj)  
+#endif /* ALLOW_OBCS_WEST */
+          ENDDO
+          DO i=1-Olx,sNx+Olx
+#ifdef ALLOW_OBCS_NORTH
+           OBNu(i,k,bi,bj) = OBNu0(i,k,bi,bj)  
+           OBNv(i,k,bi,bj) = OBNv0(i,k,bi,bj)  
+           OBNt(i,k,bi,bj) = OBNt0(i,k,bi,bj)  
+           OBNs(i,k,bi,bj) = OBNs0(i,k,bi,bj)  
+#endif /* ALLOW_OBCS_NORTH */
+#ifdef ALLOW_OBCS_SOUTH
+           OBSu(i,k,bi,bj) = OBSu0(i,k,bi,bj)  
+           OBSv(i,k,bi,bj) = OBSv0(i,k,bi,bj)  
+           OBSt(i,k,bi,bj) = OBSt0(i,k,bi,bj)  
+           OBSs(i,k,bi,bj) = OBSs0(i,k,bi,bj)  
+#endif /* ALLOW_OBCS_SOUTH */
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO	
 C     endif for periodicForcing
       ENDIF
 
