@@ -1,3 +1,12 @@
 Example "double-gyre" experiment
 This directory contains chnages that reconfigure the baseline MITgcmUV 
 setup for a double-gyre beta plane experiment.
+
+To apply the chagesto the baseline configuration of MITgcmUV
+ 1. Install baseline code
+ 2. cd verification/exp1
+ 3. ./setup.sh
+ 4. cd ../../bin
+ 5. make
+ 6. dmpirun -np 4 ../exe/mitgcmuv  ( Digital )
+
