@@ -1,13 +1,13 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake.sgi,v 1.3 1998/04/24 19:32:20 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake.sgi,v 1.4 1998/06/29 14:44:39 cnh Exp $
 #
 #  Makefile generator for MITgcm UV codes
 #
 
 # Generate make files for SGI IRIX system
-set mfile = ( Makefile.sgi     )
-set mach  = ( 'SGI IRIX/mips4'    )
+set mfile = ( Makefile.sgi )
+set mach  = ( 'SGI IRIX/mips4' )
 
 # Directories for source, includes, binaries and executables
 # Note
@@ -23,19 +23,23 @@ set mach  = ( 'SGI IRIX/mips4'    )
 #   set BDIR       = (  )
 #   set EDIR       = (  )
 set PSUPP_SDIR = ( ../eesupp/src/ )
-set MODEL_SDIR = ( ../model/src/ )
+set MODEL_SDIR = ( ../model/src/  )
 set PSUPP_IDIR = ( ../eesupp/inc/ )
-set MODEL_IDIR = ( ../model/inc/ )
-set TDIR       = ( ../tools/ )
-set BDIR       = ( ../bin/       )
-set EDIR       = ( ../exe/       )
-set EXE        = ( barrier       )
+set MODEL_IDIR = ( ../model/inc/  )
+set TDIR       = ( ../tools/      )
+set BDIR       = ( ../bin/        )
+set EDIR       = ( ../exe/        )
+set EXE        = ( MITgcmUV       )
 
-set CPP   = ( '/lib/cpp -P $(INCLUDES) -DUSE_IRIX' )
-set FCOMP = ( 'f77 -extend_source -mp -mpio -bytereclen -O3 -r10000 -c' )
-set LINK  = ( 'f77 -mp -mpio -bytereclen -O3 -r10000 ' )
-set INCLUDES = ( '-I. -I$(PSUPP_IDIR) -I$(MODEL_IDIR) ' \
-                 '-I/usr/local/mpi/include' )
+set CPP      = ( '/lib/cpp -P' )
+set FCOMP    = ( 'f77' )
+set LINK     = ( 'f77' )
+#set LINK     = ( 'mpif77' )
+set DEFINES  = ( '-DUSE_IRIX' )
+set F77FLAGS = ( '-extend_source -mp -mpio -bytereclen -Ofast -r10000' )
+set INCLUDES = ( '-I.' )
+#set INCLUDES = ( '-I. -I/usr/local/mpi/include' )
+set LIBS     = ( ' ' )
 
 echo "Creating make file ${mfile} "
 echo "#"                    > ${mfile}
@@ -78,18 +82,22 @@ MODEL_IDIR = ${MODEL_IDIR}
 TDIR       = ${TDIR}
 BDIR       = ${BDIR}  
 EDIR       = ${EDIR}
-INCLUDES   = ${INCLUDES}
 EXE        = \$(EDIR)${EXE}
+
+# C preprocessor
+CPP = ${CPP}
+# Fortran compiler
+FC = ${FCOMP}
+# Link editor
+LINK = ${LINK}
+
+# Defines for CPP
+DEFINES = ${DEFINES}
+# Includes for CPP
+INCLUDES = ${INCLUDES} -I\$(PSUPP_IDIR) -I\$(MODEL_IDIR)
+# Optim./debug for FC
+F77FLAGS = ${F77FLAGS}
 EOF
-
-echo "# C preprocessor   " >> ${mfile}
-echo 'CPP        =' ${CPP} >> ${mfile}
-echo "# Fortran compiler " >> ${mfile}
-echo 'FCOMP = '${FCOMP}    >> ${mfile}
-echo "# Link editor      " >> ${mfile}
-echo 'LINK  = '${LINK}     >> ${mfile}
-echo "                   " >> ${mfile}
-
 
 set psupp_slist = ( )
 set psupp_olist = ( )
@@ -100,12 +108,6 @@ if ( ${PSUPP_SDIR} != ${MODEL_SDIR} ) then
    set fname = ( ${f:t}       )
    set pf    = ( ${fname:r}.f )
    set of    = ( ${fname:r}.o )
-   echo ${pf}: '$(PSUPP_SDIR)'${fname}   >> ${mfile}.$$
-   echo '	@echo Preprocessing $(PSUPP_SDIR)'${fname} >> ${mfile}.$$
-   echo '	@ $(CPP) $(PSUPP_SDIR)'${fname}' > '$pf >> ${mfile}.$$
-   echo ${of}: ${pf}  >> ${mfile}.$$
-   echo '	@echo Compiling '${pf} >> ${mfile}.$$
-   echo '	@ $(FCOMP) '$pf >> ${mfile}.$$
    set psupp_slist = ( ${psupp_slist} ${f}  )
    set psupp_olist = ( ${psupp_olist} ${of} )
   end
@@ -120,12 +122,6 @@ if ( "${flist}" != "" ) then
   set fname = ( ${f:t}       )
   set pf    = ( ${fname:r}.f )
   set of    = ( ${fname:r}.o )
-  echo ${pf}: '$(MODEL_SDIR)'${fname}   >> ${mfile}.$$
-  echo '	@echo Preprocessing $(MODEL_SDIR)'${fname} >> ${mfile}.$$
-  echo '	@ $(CPP) $(MODEL_SDIR)'${fname}' > '$pf >> ${mfile}.$$
-  echo ${of}: ${pf}  >> ${mfile}.$$
-  echo '	@echo Compiling '${pf} >> ${mfile}.$$
-  echo '	@ $(FCOMP) '$pf >> ${mfile}.$$
   set model_slist = ( ${model_slist} ${f}  )
   set model_olist = ( ${model_olist} ${of} )
  end
@@ -198,16 +194,27 @@ echo "# ===========      " >> ${mfile}
 echo "# Begin rules      " >> ${mfile}
 echo "# ===========      " >> ${mfile}
 echo "                   " >> ${mfile}
+echo ".SUFFIXES:         " >> ${mfile}
+echo ".SUFFIXES: .o .f .F" >> ${mfile}
+echo "                   " >> ${mfile}
 echo '$(EXE): $(objs)    ' >> ${mfile}
-echo '	$(LINK) -o $(EXE) $(objs)' >> ${mfile}
+echo '	$(LINK) -o $(EXE) $(F77FLAGS) $(objs)' >> ${mfile}
+echo "                   " >> ${mfile}
+echo '.F.f:' >> ${mfile}
+echo '	$(CPP) $(INCLUDES) $(DEFINES) $< > $@' >> ${mfile}
+echo '.f.o:' >> ${mfile}
+echo '	$(FC) $(F77FLAGS) -c $<' >> ${mfile}
 echo "                   " >> ${mfile}
 echo 'clean:  ' >> ${mfile}
-echo '	rm *.o *.f               ' >> ${mfile}
+echo '	-rm -f *.o *.f   ' >> ${mfile}
+echo '	-rm -rf rii_files' >> ${mfile}
+echo 'Clean:  ' >> ${mfile}
+echo '	@make clean      ' >> ${mfile}
+echo '	-rm -f *.h *.F   ' >> ${mfile}
 echo "                   " >> ${mfile}
 echo 'depend:  ' >> ${mfile}
-echo '	makedepend -f $(TDIR)'${mfile}' $(INCLUDES) $(srcs) ' >> ${mfile}
+echo '	ln -sf $(PSUPP_SDIR)/*.F $(MODEL_SDIR)/*.F .' >> ${mfile}
+echo '#	ln -sf $(PSUPP_IDIR)/*.h $(MODEL_IDIR)/*.h .' >> ${mfile}
+echo '	makedepend $(INCLUDES) -o .f *.F' >> ${mfile}
 echo "                   " >> ${mfile}
-cat ${mfile}.$$ >> ${mfile}
-\rm ${mfile}.$$
 
-# $ Id: $
