@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.6 2004/06/08 22:26:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.7 2004/06/09 18:35:31 molod Exp $
 C $Name:  $
 
       subroutine fizhi_init_veg(mythid,vegdata,im,jm,Nsx,Nsy,Nxg,Nyg,
-     . maxtyp,nchp,surftype,tilefrac,igrd,ityp,chfr )
+     .maxtyp,nchp,lons,lats,surftype,tilefrac,igrd,ityp,chfr,chlt,chlon)
 C***********************************************************************
 C Subroutine fizhi_init_veg - routine to read in the land surface types,
 C      interpolate to the models grid, and set up tile space for use by 
@@ -13,12 +13,14 @@ C INPUT:
 C 
 C mythid   - thread number (processor number)
 C vegdata  - Character*40 Vegetation Dataset name
-C im       - model grid longitude dimension
-C jm       - model grid latitude dimension (number of lat. points)
+C im       - longitude dimension
+C jm       - latitude dimension (number of lat. points)
 C Nsx      - Number of processors in x-direction
 C Nsy      - Number of processors in y-direction
 C maxtyp   - maximum allowable number of land surface types per grid box
 C nchp     - integer per-processor number of tiles in tile space
+C lons     - longitude in degrees [im,jm,nSx,nSy]
+C lats     - latitude in degrees [im,jm,nSx,nSy]
 C
 C OUTPUT:
 C
@@ -53,7 +55,8 @@ C***********************************************************************
       integer surftype(im,jm,maxtyp,Nsx,Nsy)
       integer igrd(nchp,Nsx,Nsy),ityp(nchp,Nsx,Nsy)
       real tilefrac(im,jm,maxtyp,Nsx,Nsy)
-      real chfr(nchp,Nsx,Nsy)
+      real lats(im,jm,nSx,nSy), lons(im,jm,nSx,nSy)
+      real chfr(nchp,Nsx,Nsy),chlt(nchp,Nsx,Nsy),chlon(nchp,Nsx,Nsy)
       character*40 vegdata
       integer imdata,jmdata,Nxgdata,Nygdata
       integer nchplocal,nchpland,biglobal,bjglobal
@@ -112,6 +115,8 @@ c   create chip arrays for :
 c      igrd :  grid index
 c      ityp :  veg. type
 c      chfr :  vegetation fraction
+c      chlon:  chip longitude
+c      chlt :  chip latitude
 
 c  nchplnd<=nchplocal is the actual number of land chips
 
@@ -127,6 +132,8 @@ c -----------
        igrd (nchplnd,bi,bj) = i + (j-1)*im
        ityp (nchplnd,bi,bj) = surftype(i,j,k,bi,bj)
        chfr (nchplnd,bi,bj) = tilefrac(i,j,k,bi,bj)
+       chlon(nchplnd,bi,bj) = lons(i,j,bi,bj)
+       chlt (nchplnd,bi,bj) = lats(i,j,bi,bj)
       endif
       enddo
       enddo
@@ -145,6 +152,8 @@ c ------------
        igrd (nchplocal,bi,bj) = i + (j-1)*im
        ityp (nchplocal,bi,bj) = surftype(i,j,k,bi,bj)
        chfr (nchplocal,bi,bj) = tilefrac(i,j,k,bi,bj)
+       chlon(nchplocal,bi,bj) = lons(i,j,bi,bj)
+       chlt (nchplocal,bi,bj) = lats(i,j,bi,bj)
       endif
       enddo
       enddo

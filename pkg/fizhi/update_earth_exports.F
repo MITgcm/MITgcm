@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.3 2004/06/09 16:46:31 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.4 2004/06/09 18:35:31 molod Exp $
 C $Name:  $
 
        subroutine update_earth_exports (myTime, myIter, myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.6 2004/06/08 22:26:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.7 2004/06/09 18:35:31 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_fixed (myThid)
@@ -31,14 +31,16 @@ c-----------------------------------------------------------------------
 #include "fizhi_land_coms.h"
 #include "chronos.h"
 #include "gridalt_mapping.h"
+#include "GRID.h"
 
        integer myThid
 
-       integer bi, bj
+       integer i,j,bi,bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
        integer nymdb,nhmsb
        character*40 vegdata
        _RL pressure(Nrphys)
+       real lats(nSx,nSy,sNx,sNy), lons(nSx,nSy,sNx,sNy)
 
        im1 = 1-OLx
        im2 = sNx+OLx
@@ -52,8 +54,20 @@ c-----------------------------------------------------------------------
        nhmsb = nhms0
 
        call fizhi_alarms(nymdb,nhmsb,deltaTClock)
+
+       do bj = myByLo(myThid), myByHi(myThid)
+       do bi = myBxLo(myThid), myBxHi(myThid)
+       do j = 1,nSy
+       do i = 1,nSx
+        lons(i,j,bi,bj) = xC(i,j,bi,bj)
+        lats(i,j,bi,bj) = yC(i,j,bi,bj)
+       enddo
+       enddo
+       enddo
+       enddo
        call fizhi_init_veg ( mythid, vegdata,idim2,jdim2,Nsx,Nsy,
-     .  nSx*nPx,nSy*nPy,maxtyp,nchp,surftype,tilefrac,igrd,ityp,chfr )
+     .                 nSx*nPx,nSy*nPy,maxtyp,nchp,lons,lats,
+     .            surftype,tilefrac,igrd,ityp,chfr,chlt,chlon)
 
 C Compute pressure profile to get methane and n2o values (bottom-up)
 
