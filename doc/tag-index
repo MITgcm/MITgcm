@@ -1,7 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.18 1998/12/15 21:01:56 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.19 1999/03/22 17:40:01 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint20
+ o Tidied up open-boundaries some more
+ o Added non-hydrostatic code
+ o Fixed some input data
+ o Modified MPI start-up to work in "coupled" context.
 
 checkpoint19
  o Tidied up directory structure for verification experiments.
@@ -9,7 +15,7 @@ checkpoint19
  o Corrected advective terms near boundaries.
  o Added CPP flag for "old UV" geometry and corrected spherical geometry.
  o Implemented free-slip/no-slip BCs and del^4 dissipation.
- o Split default parameters out f ini_parms.F into set_defaults.F.
+ o Split default parameters out of ini_parms.F into set_defaults.F.
 
 checkpoint18
  o Further changes for optional code generation with 
