@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.11 2003/11/06 22:01:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.12 2004/04/18 20:36:56 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -79,11 +79,20 @@ CEOP
 
 #ifdef ALLOW_CAL
 ceh3 this should have an IF ( useCALENDAR ) THEN
-      myiter=0
-      call  cal_GetMonthsRec(
-     O     fac, first, changed, count0, count1,
-     I     mytime, myiter, mythid )
-      jwtype=jerl(count0)
+CML(
+C     myIter = 0 makes cal_getMonthsRec always return count0=12
+C     so that jerl(count0) = 2.
+C     The following lines are meant to be an example of how to
+C     include time dependent water types. However, it would probably
+C     make more sense to first think about a regionally varying
+C     water type before implementing a time dependence.
+CML      myiter=0
+CML      call  cal_GetMonthsRec(
+CML     O     fac, first, changed, count0, count1,
+CML     I     mytime, myiter, mythid )
+CML      jwtype=jerl(count0)
+CML)
+      jwtype=2
 #else /* ALLOW_CAL undef */
       jwtype=2
 #endif /* ALLOW_CAL */
