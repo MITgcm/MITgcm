@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_g77,v 1.5 2004/12/16 14:27:24 mlosch Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_g77,v 1.6 2005/02/26 07:25:21 mlosch Exp $
 #  $Name:  $
 #
 # tested without NetCDF support on
@@ -8,7 +8,7 @@
 # SunOS tphs14.awi-bremerhaven.de 5.8 Generic_117350-08 sun4u sparc SUNW,Sun-Blade-1000
 # with g77 version 2.95.3 20010315 (release) (from FSF-g77 version 0.5.25 20010315 (release))
 
-
+FC_NAMEMANGLE="#define FC_NAMEMANGLE(X) X ## _"
 DEFINES='-DWORDLENGTH=4'
 AWK='gawk'
 MAKEDEPEND='$(TOOLSDIR)/xmakedepend'
