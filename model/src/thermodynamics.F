@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.9 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.10 2001/09/27 18:06:43 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -579,10 +579,10 @@ C--     end of thermodynamic k loop (Nr:1)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C? Patrick? What about this one?
-cph Keys iikey and idkey don't seem to be needed
+cph Keys iikey and idkey dont seem to be needed
 cph since storing occurs on different tape for each
 cph impldiff call anyways.
-cph Thus, common block comlev1_impl isn't needed either.
+cph Thus, common block comlev1_impl isnt needed either.
 cph Storing below needed in the case useGMREDI.
         iikey = (ikey-1)*maximpl
 #endif /* ALLOW_AUTODIFF_TAMC */
