@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.338 2004/07/30 14:31:40 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.339 2004/09/01 12:41:50 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add "verification/dic_example" which contains a dic-gchem-ptracer setup
+  provided by Stephanie Dutkiewicz
 o genmake2: add ability to search for C compilers and cleanup test output
   - fixes recent SX-6 problems and should help with others (eg. HP-UX)
 
