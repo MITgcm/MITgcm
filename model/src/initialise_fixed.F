@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.9 2002/01/31 14:52:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.10 2002/08/07 16:55:52 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -31,6 +31,8 @@ C      |
 C      |-- MON_INIT
 C      |
 C      |-- INI_GRID
+C      |
+C      |-- INI_EOS
 C      |
 C      |-- INI_DEPTHS
 C      |
@@ -86,6 +88,10 @@ C--   Initialise MONITOR I/O streams so we can report config. info
 C--   Set model grid.
 C     Variables defining model grid spacing are defined.
       CALL INI_GRID( myThid )
+      _BARRIER
+
+C--   Set equation of state parameters.
+      CALL INI_EOS( myThid )
       _BARRIER
 
 C--   Initialise map of depths

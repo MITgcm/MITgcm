@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.88 2002/07/13 04:59:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.89 2002/08/07 16:55:52 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -96,6 +96,8 @@ C      |
 C      |-- CALC_VISCOSITY
 C      |
 C      |-- CALC_PHI_HYD  
+C      |
+C      |-- STORE_PRESSURE
 C      |
 C      |-- MOM_FLUXFORM  
 C      |
@@ -345,6 +347,11 @@ C        distinguishe between Stagger and Non Stagger time stepping
      U        phiHyd,
      I        myThid )
          ENDIF
+
+C        calculate pressure from phiHyd and store it on common block
+C        variable pressure
+         CALL STORE_PRESSURE( bi, bj, k, phiHyd, myThid ) 
+
 
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gUnm1, gVnm1, etc...

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.36 2002/07/31 16:38:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.37 2002/08/07 16:55:52 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -31,6 +31,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+Cml#include "EOS.h"
 #include "GRID.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -103,8 +104,8 @@ C--   Set default "physical" parameters
       diffK4S             = 0.D11
       cosPower            = 0.
       HeatCapacity_Cp     = 3994.D0
-      tAlpha              = 2.D-4
-      sBeta               = 7.4D-4
+Cml      tAlpha              = 2.D-4
+Cml      sBeta               = 7.4D-4
       eosType             = 'LINEAR'
       buoyancyRelation    = 'OCEANIC'
       hFacMin             = 1.D0

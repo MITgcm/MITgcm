@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.73 2002/07/31 16:38:30 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.74 2002/08/07 16:55:52 mlosch Exp $
 C $Name:  $
 C
 CBOP
@@ -72,6 +72,8 @@ C     EmPmRfile       :: File containing surface fresh water flux
 C     pLoadFile       :: File containing pressure loading
 C     buoyancyRelation :: Flag used to indicate which relation to use to
 C                        get buoyancy.
+C     eosType         :: choose the equation of state:
+C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P
       COMMON /PARM_C/ checkPtSuff,
      &                bathyFile, topoFile,
      &                hydrogThetaFile, hydrogSaltFile,
@@ -79,7 +81,8 @@ C                        get buoyancy.
      &                saltClimFile, buoyancyRelation,
      &                EmPmRfile, surfQfile, surfQswfile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
-     &                dQdTfile, ploadFile
+     &                dQdTfile, ploadFile,
+     &                eosType
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
       CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
@@ -97,6 +100,7 @@ C                        get buoyancy.
       CHARACTER*(MAX_LEN_FNAM) pSurfInitFile
       CHARACTER*(MAX_LEN_FNAM) dQdTfile
       CHARACTER*(MAX_LEN_FNAM) ploadFile
+      CHARACTER*(6) eosType
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        :: Maximum number of iterations in the
@@ -559,16 +563,15 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL Lamba_theta
       _RL recip_Cp
 
-C Equation of State (polynomial coeffients)
-      COMMON /PARM_EOS_NL/ eosC,eosSig0,eosRefT,eosRefS
-      _RL eosC(9,Nr+1),eosSig0(Nr+1),eosRefT(Nr+1),eosRefS(Nr+1)
-C Linear equation of state
-C     tAlpha    :: Linear EOS thermal expansion coefficient ( 1/degree ).
-C     sBeta     :: Linear EOS haline contraction coefficient.
-      COMMON /PARM_EOS_LIN/ tAlpha,sBeta,eosType
-      _RL tAlpha
-      _RL sBeta
-      character*(6) eosType
+CmlC Equation of State (polynomial coeffients)
+Cml      COMMON /PARM_EOS_NL/ eosC,eosSig0,eosRefT,eosRefS
+Cml      _RL eosC(9,Nr+1),eosSig0(Nr+1),eosRefT(Nr+1),eosRefS(Nr+1)
+CmlC Linear equation of state
+CmlC     tAlpha    :: Linear EOS thermal expansion coefficient ( 1/degree ).
+CmlC     sBeta     :: Linear EOS haline contraction coefficient.
+Cml      COMMON /PARM_EOS_LIN/ tAlpha,sBeta,eosType
+Cml      _RL tAlpha
+Cml      _RL sBeta
 
 C Atmospheric physical parameters (Ideal Gas EOS, ...)
 C     atm_po    :: standard reference pressure

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/obcs_calc.F,v 1.4 2002/04/06 01:33:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/obcs_calc.F,v 1.5 2002/08/07 16:55:52 mlosch Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -19,6 +19,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "EOS.h"
 #include "OBCS.h"
 
 C     == Routine arguments ==

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/utils/knudsen2/knudsen2.f,v 1.3 2002/08/07 16:55:52 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/utils/knudsen2/unesco.f,v 1.1 2002/08/07 16:55:52 mlosch Exp $
 
       PROGRAM KNUDSEN2
       implicit none
@@ -25,6 +25,7 @@ C     Number of terms in fit polynomial
 
 C     Functions (Density and Potential temperature)
       DOUBLE PRECISION DN
+      DOUBLE PRECISION DUNESCO
       real POTEM
 C
 C     Arrays for least squares routine
@@ -130,7 +131,8 @@ C  potential temperature and calculate the corresponding density.
           D=Z(MP)
           S=SPick(K)
           T=TPick(K)
-          DenPick(K)=DN(T,S,D)
+C          DenPick(K)=DN(T,S,D)
+          DenPick(K)=DUNESCO(T,S,D)
           Theta(K)=POTEM(T,S,D)
           Tsum=Tsum+TPick(K)
           Ssum=Ssum+SPick(K)
@@ -150,7 +152,8 @@ C     Calculate the average potential temperature of the callocation points
         ThetaBar=ThetaSum/ FLOAT( NumCallocPt )
 
 C     Set the reference temperature, salinity and density
-        DensityRef=DN(Tbar,Sbar,D)
+C        DensityRef=DN(Tbar,Sbar,D)
+        DensityRef=DUNESCO(Tbar,Sbar,D)
 
         SalRef = Sbar
 
@@ -1031,3 +1034,71 @@ C     UNITS ARE DEG.C., PPT, DBARS (OR METERS)
       DN=(SIGMA+ALPHA)/(1.-1.E-3*ALPHA)
       RETURN
       END
+
+      double precision function dunesco(t,s,d)
+
+      implicit none
+      real t,s,d
+      double precision t2,t3,t4,s2,s3o2,p,p2,r,comp
+
+c     convert from meters to bars
+      p = d*0.1D0
+      
+      t2 = t*t
+      t3 = t2*t
+      t4 = t3*t
+      
+      s2 = s*s
+      if (s .lt. 0.) then
+         write(*,*) '****************************'
+         write(*,*) '* subroutine density_field *'
+         write(*,*) '****************************'
+         write(*,*) '             WARNING: salinity takes on'
+         write(*,*)
+     &        '             negative values '
+         write(*,*) '             S = ', s
+         write(*,*) '             This is not supposed to ',
+     &        'happen. Have a look!'
+         stop
+      end if
+      s3o2 = sqrt(s2*s)
+      
+      
+***   density at one standard atmosphere pressure (p=0) in si-units
+      
+      r =    999.842594                 + 6.793952e-02 * t 
+     &     -          9.095290e-3  * t2 + 1.001685e-04 * t3  
+     &     -          1.120083e-06 * t4 + 6.536332e-9  * t4*t
+     &     + s    * ( 8.24493e-01       - 4.0899e-3    * t 
+     &              + 7.6438e-05   * t2 - 8.2467e-07   * t3 
+     &              + 5.3875e-09   * t4 ) 
+     &     + s3o2 * (                   - 5.72466e-03 
+     &              + 1.0227e-04   * t  - 1.6546e-06   * t2 ) 
+     &     +          4.8314e-04   * s2 
+
+***   density at depth d[m] = p[bar] :
+***   include depth effect of secant bulk modulus k(s,t,p) if desired
+              
+      p2   = p*p
+      
+      comp = 19652.21 
+     &     +        148.4206       * t  -   2.327105     * t2 
+     &     +          1.360477e-02 * t3 -   5.155288e-05 * t4  
+     &     + p    * ( 3.239908          +   1.43713e-03  * t 
+     &              + 1.16092e-04  * t2 -   5.77905e-07  * t3 )  
+     &     + p2   * ( 8.50935e-05       -   6.12293e-06  * t 
+     &              + 5.2787e-08   * t2 ) 
+     &     + s    * (54.6746            -   0.603459     * t 
+     &              + 1.09987e-02  * t2 -   6.1670e-5    * t3 ) 
+     &     + s3o2 * ( 7.944e-02         +   1.6483e-02   * t 
+     &              - 5.3009e-04*t2)        
+     &     + p*s  * ( 2.2838e-03 
+     &              - 1.0981e-05   * t  -   1.6078e-06   * t2 ) 
+     &              + 1.91075e-04  * p*s3o2  
+     &     + p2*s * (                   -  9.9348e-07 
+     &              + 2.0816e-08   * t  +   9.1697e-10   * t2 )
+
+      dunesco = r/(1.D0-(p/comp))-1000.D0
+
+      return
+      end

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.81 2002/07/31 16:38:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.82 2002/08/07 16:55:52 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -28,6 +28,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "EOS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -263,6 +264,8 @@ C--   Set default "physical" parameters
       hFacMinDz           = UNSET_RL
       hFacMinDp           = UNSET_RL
       convertFW2Salt = UNSET_RL
+      tAlpha              = UNSET_RL
+      sBeta               = UNSET_RL
       READ(UNIT=iUnit,NML=PARM01) !,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
@@ -657,7 +660,7 @@ C     In spherical polar distances are in degrees
       dySpacing = UNSET_RL
       delXfile = ' '
       delYfile = ' '
-      READ(UNIT=iUnit,NML=PARM04) !,IOSTAT=errIO)
+      READ(UNIT=iUnit,NML=PARM04,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
      &  'S/R INI_PARMS'
@@ -752,25 +755,6 @@ C
        recip_rSphere = 1.D0/rSphere
       ELSE
        recip_rSphere = 0.
-      ENDIF
-C--   Initialize EOS coefficients (3rd order polynomial)
-      IF (eostype.eq.'POLY3') THEN
-       OPEN(37,FILE='POLY3.COEFFS',STATUS='OLD',FORM='FORMATTED')
-       READ(37,*) I
-       IF (I.NE.Nr) THEN
-        WRITE(msgBuf,'(A)')
-     &  'ini_parms: attempt to read POLY3.COEFFS failed'
-        CALL PRINT_ERROR( msgBuf , 1)
-        WRITE(msgBuf,'(A)')
-     &  '           because bad # of levels in data'
-        CALL PRINT_ERROR( msgBuf , 1)
-        STOP 'Bad data in POLY3.COEFFS'
-       ENDIF
-       READ(37,*) (eosRefT(K),eosRefS(K),eosSig0(K),K=1,Nr)
-       DO K=1,Nr
-        READ(37,*) (eosC(I,K),I=1,9)
-       ENDDO
-       CLOSE(37)
       ENDIF
 C--   Check for conflicting grid definitions.
       goptCount = 0
