@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.4 2004/07/13 23:44:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.5 2004/07/14 14:50:04 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -6,7 +6,8 @@ C $Name:  $
       subroutine fizhi_step_diag(myThid,p,uphy,vphy,thphy,sphy,qq,pk,dp,
      .  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,
      .  turbu,turbv,turbt,turbq,moistu,moistv,moistt,moistq,
-     .  lwdt,swdt,lwdtclr,swdtclr,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,bi,bj)
+     .  lwdt,swdt,lwdtclr,swdtclr,dlwdtg,
+     .  im1,im2,jm1,jm2,Nrphys,Nbi,Nbj,bi,bj,ntracer)
 C***********************************************************************
       implicit none
 
@@ -16,25 +17,28 @@ C***********************************************************************
 #include "diagnostics.h"
 #endif
 
-      integer myThid,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,bi,bj
-      real p(im2,jm2,Nsx,Nsy)
-      real uphy(im2,jm2,Nrphys,Nsx,Nsy),vphy(im2,jm2,Nrphys,Nsx,Nsy)
-      real thphy(im2,jm2,Nrphys,Nsx,Nsy),sphy(im2,jm2,Nrphys,Nsx,Nsy)
-      real qq(im2,jm2,Nrphys),pk(im2,jm2,Nrphys,Nsx,Nsy)
-      real dp(im2,jm2,Nrphys,Nsx,Nsy)
-      real radswt(im2,jm2,Nsx,Nsy),radswg(im2,jm2,Nsx,Nsy)
-      real swgclr(im2,jm2,Nsx,Nsy),osr(im2,jm2,Nsx,Nsy)
-      real osrclr(im2,jm2,Nsx,Nsy),st4(im2,jm2,Nsx,Nsy)
-      real dst4(im2,jm2,Nsx,Nsy),tgz(im2,jm2,Nsx,Nsy)
-      real tg0(im2,jm2,Nsx,Nsy),radlwg(im2,jm2,Nsx,Nsy)
-      real lwgclr(im2,jm2,Nsx,Nsy)
-      real turbu(im2,jm2,Nrphys,Nsx,Nsy),turbv(im2,jm2,Nrphys,Nsx,Nsy)
-      real turbt(im2,jm2,Nrphys,Nsx,Nsy),turbq(im2,jm2,Nrphys,Nsx,Nsy)
-      real moistu(im2,jm2,Nrphys,Nsx,Nsy),moistv(im2,jm2,Nrphys,Nsx,Nsy)
-      real moistt(im2,jm2,Nrphys,Nsx,Nsy),moistq(im2,jm2,Nrphys,Nsx,Nsy)
-      real lwdt(im2,jm2,Nrphys,Nsx,Nsy),swdt(im2,jm2,Nrphys,Nsx,Nsy)
-      real lwdtclr(im2,jm2,Nrphys,Nsx,Nsy)
-      real swdtclr(im2,jm2,Nrphys,Nsx,Nsy)
+      integer myThid,im1,im2,jm1,jm2,Nrphys,Nbi,Nbj,bi,bj,ntracer
+      real p(im2,jm2,Nbi,Nbj)
+      real uphy(im2,jm2,Nrphys,Nbi,Nbj),vphy(im2,jm2,Nrphys,Nbi,Nbj)
+      real thphy(im2,jm2,Nrphys,Nbi,Nbj),sphy(im2,jm2,Nrphys,Nbi,Nbj)
+      real qq(im2,jm2,Nrphys),pk(im2,jm2,Nrphys,Nbi,Nbj)
+      real dp(im2,jm2,Nrphys,Nbi,Nbj)
+      real radswt(im2,jm2,Nbi,Nbj),radswg(im2,jm2,Nbi,Nbj)
+      real swgclr(im2,jm2,Nbi,Nbj),osr(im2,jm2,Nbi,Nbj)
+      real osrclr(im2,jm2,Nbi,Nbj),st4(im2,jm2,Nbi,Nbj)
+      real dst4(im2,jm2,Nbi,Nbj),tgz(im2,jm2,Nbi,Nbj)
+      real tg0(im2,jm2,Nbi,Nbj),radlwg(im2,jm2,Nbi,Nbj)
+      real lwgclr(im2,jm2,Nbi,Nbj)
+      real turbu(im2,jm2,Nrphys,Nbi,Nbj),turbv(im2,jm2,Nrphys,Nbi,Nbj)
+      real turbt(im2,jm2,Nrphys,Nbi,Nbj)
+      real turbq(im2,jm2,Nrphys,ntracer,Nbi,Nbj)
+      real moistu(im2,jm2,Nrphys,Nbi,Nbj),moistv(im2,jm2,Nrphys,Nbi,Nbj)
+      real moistt(im2,jm2,Nrphys,Nbi,Nbj)
+      real moistq(im2,jm2,Nrphys,ntracer,Nbi,Nbj)
+      real lwdt(im2,jm2,Nrphys,Nbi,Nbj),swdt(im2,jm2,Nrphys,Nbi,Nbj)
+      real lwdtclr(im2,jm2,Nrphys,Nbi,Nbj)
+      real swdtclr(im2,jm2,Nrphys,Nbi,Nbj)
+      real dlwdtg(im2,jm2,Nrphys,Nbi,Nbj)
 
       integer  i,j,L
       real pinv(im2,jm2), qbar(im2,jm2)
@@ -243,7 +247,7 @@ c -------------------------------------------
       do i=im1,im2
       qdiag(i,j,iswclr+l-1,bi,bj) = qdiag(i,j,iswclr+l-1,bi,bj) +
      .           swdtclr(i,j,l,bi,bj)*radswt(i,j,bi,bj)*
-     .                           pk(i,j,l,bi,bj)*pinv(i,j,bi,bj)*86400
+     .                           pk(i,j,l,bi,bj)*pinv(i,j)*86400
       enddo
       enddo
       endif
@@ -339,7 +343,7 @@ c ---------------------------------------------
       do j=jm1,jm2
       do i=im1,im2
       qdiag(i,j,ivdtmoist,bi,bj) = qdiag(i,j,ivdtmoist,bi,bj) + 
-     .      qbar(i,j)*pinv(i,j,bi,bj)*pinv(i,j,bi,bj)*86400
+     .      qbar(i,j)*pinv(i,j)*pinv(i,j)*86400
       enddo
       enddo
       endif
@@ -363,7 +367,7 @@ c --------------------------------------------
       do j=jm1,jm2
       do i=im1,im2
       qdiag(i,j,ivdtturb,bi,bj) = qdiag(i,j,ivdtturb,bi,bj) + 
-     .      qbar(i,j)*pinv(i,j,bi,bj)*pinv(i,j,bi,bj)*86400
+     .      qbar(i,j)*pinv(i,j)*pinv(i,j)*86400
       enddo
       enddo
       endif
@@ -388,7 +392,7 @@ c -------------------------------------------------------
       do j=jm1,jm2
       do i=im1,im2
       qdiag(i,j,ivdtradlw,bi,bj) = qdiag(i,j,ivdtradlw,bi,bj) + 
-     .      qbar(i,j)*pinv(i,j,bi,bj)*pinv(i,j,bi,bj)*86400
+     .      qbar(i,j)*pinv(i,j)*pinv(i,j)*86400
       enddo
       enddo
       endif
@@ -412,7 +416,7 @@ c -------------------------------------------------------
       do j=jm1,jm2
       do i=im1,im2
       qdiag(i,j,ivdtradsw,bi,bj) = qdiag(i,j,ivdtradsw,bi,bj) + 
-     . qbar(i,j)*radswt(i,j,bi,bj)*pinv(i,j,bi,bj)*pinv(i,j,bi,bj)*86400
+     . qbar(i,j)*radswt(i,j,bi,bj)*pinv(i,j)*pinv(i,j)*86400
       enddo
       enddo
       endif
