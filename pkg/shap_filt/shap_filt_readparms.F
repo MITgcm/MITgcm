@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.3 2001/06/15 15:14:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.4 2001/08/17 19:09:23 adcroft Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -68,9 +68,9 @@ C--   Read parameters from open data file
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
 
-      write(0,*) 'Shap_funct, nShap_Tr,UV _Phys=',
+      write(*,*) 'Shap_funct, nShap_Tr,UV _Phys=',
      &    Shap_funct, nShapT, nShapUV, nShapTrPhys, nShapUVPhys
-      write(0,*) 'Shap_Trtau,Shap_uvtau=',Shap_Trtau,Shap_uvtau
+      write(*,*) 'Shap_Trtau,Shap_uvtau=',Shap_Trtau,Shap_uvtau
 C--   Close the open data file
       CLOSE(iUnit)
       _END_MASTER(myThid)
