@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.56 2004/12/09 16:41:41 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.57 2004/12/09 16:52:08 jmc Exp $
 #  $Name:  $
 #
 
@@ -520,7 +520,7 @@ createcodelet()
 int main( int argc, char** argv )  {
   int linnum,best,lncnt;
   double a,b,abave,relerr;
-  best = -16;
+  best = -22;
   lncnt = 0;
   while( 1 & (lncnt+=1) < 999 )  {
     scanf("%d", &linnum);
@@ -529,13 +529,9 @@ int main( int argc, char** argv )  {
     abave = 0.5*(fabs(a)+fabs(b));
     if (abave > 0.0) {
       relerr=fabs(a-b)/abave;
-      if (relerr > 0.0) {
-        linnum = (int)log10(relerr);
-        best = (best > linnum) ? best : linnum;
-      }
-    }
-    else {
-      if (best == -16)  best = -22;
+      if (relerr > 0.0) { linnum = (int)log10(relerr); }
+      else { linnum = -16 ; }
+      best = (best > linnum) ? best : linnum;
     }
   }
   if (lncnt == 999) best=-29;
