@@ -1567,16 +1567,16 @@
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON pe_b_mean                    =   5.9554643656869E-04
+(PID.TID 0000.0001) %MON pe_b_mean                    =   5.9554643656868E-04
 (PID.TID 0000.0001) %MON ke_max                       =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON ke_mean                      =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
 (PID.TID 0000.0001) %MON surfExpan_theta_mean         =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   0.0000000000000E+00
@@ -1629,17 +1629,17 @@
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON pe_b_mean                    =   5.8087512602998E-04
 (PID.TID 0000.0001) %MON ke_max                       =   2.0893797387818E-04
-(PID.TID 0000.0001) %MON ke_mean                      =   7.2483065937735E-06
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_mean                      =   7.2483065937734E-06
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.5997053060281E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.6066964388441E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -3.6782924595724E-15
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -3.6625659785212E-15
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -1689,17 +1689,17 @@
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON pe_b_mean                    =   5.5320028932084E-04
 (PID.TID 0000.0001) %MON ke_max                       =   7.9478437867637E-04
-(PID.TID 0000.0001) %MON ke_mean                      =   2.7674836709141E-05
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_mean                      =   2.7674836709140E-05
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.4422634215153E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.4540175899330E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -2.9123345679591E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -2.9318584551601E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -1747,19 +1747,19 @@
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   8.3966508472194E-05
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   9.8248081034793E-05
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON pe_b_mean                    =   5.1518170884125E-04
+(PID.TID 0000.0001) %MON pe_b_mean                    =   5.1518170884124E-04
 (PID.TID 0000.0001) %MON ke_max                       =   1.6717716232066E-03
-(PID.TID 0000.0001) %MON ke_mean                      =   5.8613025205103E-05
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_mean                      =   5.8613025205102E-05
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.5118385949992E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.5470827299480E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -1.9595824390272E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -1.9585892244459E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -1810,16 +1810,16 @@
 (PID.TID 0000.0001) %MON pe_b_mean                    =   4.7008138449964E-04
 (PID.TID 0000.0001) %MON ke_max                       =   2.7302837547475E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   9.6794640369420E-05
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -4.9971433204625E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.0178540757436E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   5.3187550613077E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   5.3189051181662E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -1867,19 +1867,19 @@
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.2750625523688E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.4968811296847E-04
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON pe_b_mean                    =   4.2137240192187E-04
+(PID.TID 0000.0001) %MON pe_b_mean                    =   4.2137240192186E-04
 (PID.TID 0000.0001) %MON ke_max                       =   3.8494233343854E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   1.3874081807703E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.6577594292791E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.6707213857762E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   9.0273469205789E-16
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   1.1321190439575E-15
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -1927,19 +1927,19 @@
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.4403183406400E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.6941141968238E-04
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON pe_b_mean                    =   3.7238622112180E-04
+(PID.TID 0000.0001) %MON pe_b_mean                    =   3.7238622112181E-04
 (PID.TID 0000.0001) %MON ke_max                       =   4.9106114923442E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   1.8111470169025E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.3115294261786E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.2843676614510E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   5.5144126539505E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   5.5806401677273E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -1989,17 +1989,17 @@
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON pe_b_mean                    =   3.2602670262296E-04
 (PID.TID 0000.0001) %MON ke_max                       =   5.8105120957771E-03
-(PID.TID 0000.0001) %MON ke_mean                      =   2.2100736233726E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_mean                      =   2.2100736233725E-04
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   2.1761318777414E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   2.1021118017832E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   4.7729363649289E-15
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   4.9524214117486E-15
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2049,17 +2049,17 @@
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON pe_b_mean                    =   2.8456937464485E-04
 (PID.TID 0000.0001) %MON ke_max                       =   6.4714405318063E-03
-(PID.TID 0000.0001) %MON ke_mean                      =   2.5613849050446E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_mean                      =   2.5613849050445E-04
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   7.8985776787698E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   7.9211561010454E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   3.8302970511027E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   3.8389720113789E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2110,16 +2110,16 @@
 (PID.TID 0000.0001) %MON pe_b_mean                    =   2.4955358405113E-04
 (PID.TID 0000.0001) %MON ke_max                       =   6.8477162883765E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   2.8496421264256E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   2.5264765416393E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   2.5701917626426E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -5.4964516695930E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -5.5405652604226E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2169,17 +2169,17 @@
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON pe_b_mean                    =   2.2176450897016E-04
 (PID.TID 0000.0001) %MON ke_max                       =   6.9271600751688E-03
-(PID.TID 0000.0001) %MON ke_mean                      =   3.0669505245179E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_mean                      =   3.0669505245178E-04
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.3780373070681E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.3303214837873E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -3.9888222608672E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -3.9695306346837E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2230,16 +2230,16 @@
 (PID.TID 0000.0001) %MON pe_b_mean                    =   2.0129299310567E-04
 (PID.TID 0000.0001) %MON ke_max                       =   6.7279257630264E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   3.2123607517021E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   2.2201961542812E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   2.2397090386427E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   5.0486765204355E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   5.0459711817728E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2290,16 +2290,16 @@
 (PID.TID 0000.0001) %MON pe_b_mean                    =   1.8765456027408E-04
 (PID.TID 0000.0001) %MON ke_max                       =   6.2917759679184E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   3.2906785517373E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.8374578881053E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.8321340067487E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   8.2290202115038E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   8.3150862266551E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2350,16 +2350,16 @@
 (PID.TID 0000.0001) %MON pe_b_mean                    =   1.7994518652512E-04
 (PID.TID 0000.0001) %MON ke_max                       =   5.6754684763357E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   3.3109068871129E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.1112316425732E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.2205311340355E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -1.2466484968869E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -1.2888597498983E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2407,19 +2407,19 @@
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.4613624978686E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.5540261692828E-04
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON pe_b_mean                    =   1.7701059493077E-04
+(PID.TID 0000.0001) %MON pe_b_mean                    =   1.7701059493076E-04
 (PID.TID 0000.0001) %MON ke_max                       =   5.1490980784985E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   3.2845528609934E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   5.7493033142335E-17
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   5.5463625800639E-17
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   1.1786076026663E-13
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   1.1891619378841E-13
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2469,17 +2469,17 @@
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON pe_b_mean                    =   1.7760782041257E-04
 (PID.TID 0000.0001) %MON ke_max                       =   4.6085373728495E-03
-(PID.TID 0000.0001) %MON ke_mean                      =   3.2240119557041E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_mean                      =   3.2240119557040E-04
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   3.4794319823251E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   3.5523060510399E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   2.2065459739436E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   2.2902382153154E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2527,19 +2527,19 @@
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.3259103563371E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   1.1275740059338E-04
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON pe_b_mean                    =   1.8054207358267E-04
+(PID.TID 0000.0001) %MON pe_b_mean                    =   1.8054207358266E-04
 (PID.TID 0000.0001) %MON ke_max                       =   4.1745614638405E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   3.1411992947610E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   2.2691980237779E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   2.3035469620718E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -4.5369836943361E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -4.4832461399580E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2589,17 +2589,17 @@
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON pe_b_mean                    =   1.8476777056415E-04
 (PID.TID 0000.0001) %MON ke_max                       =   3.8496598094021E-03
-(PID.TID 0000.0001) %MON ke_mean                      =   3.0465392563237E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_mean                      =   3.0465392563236E-04
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.1483569413553E-15
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.1448335502643E-15
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -3.6296416193343E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =  -3.5653435812570E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2649,17 +2649,17 @@
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON pe_b_mean                    =   1.8944908788639E-04
 (PID.TID 0000.0001) %MON ke_max                       =   3.5272212850460E-03
-(PID.TID 0000.0001) %MON ke_mean                      =   2.9483598452112E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_mean                      =   2.9483598452111E-04
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   3.6669108906592E-17
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   3.2735123872982E-17
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   1.0346874063777E-13
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   1.0370789867145E-13
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2710,16 +2710,16 @@
 (PID.TID 0000.0001) %MON pe_b_mean                    =   1.9398158992831E-04
 (PID.TID 0000.0001) %MON ke_max                       =   3.2938539519167E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   2.8526763472685E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   9.7171455332142E-17
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   9.5184509596285E-17
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   7.5848456029584E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   7.5321021413442E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2770,16 +2770,16 @@
 (PID.TID 0000.0001) %MON pe_b_mean                    =   1.9798148051954E-04
 (PID.TID 0000.0001) %MON ke_max                       =   3.0649002188312E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   2.7632987488041E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.0424745620849E-15
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -1.0417730094966E-15
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   9.7611605070349E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   9.8213025032045E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2829,17 +2829,17 @@
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON pe_b_mean                    =   2.0125219805516E-04
 (PID.TID 0000.0001) %MON ke_max                       =   2.8710148241220E-03
-(PID.TID 0000.0001) %MON ke_mean                      =   2.6821657265954E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_mean                      =   2.6821657265953E-04
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.0896775533143E-15
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.0934638302809E-15
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   3.6480260046139E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   3.5868555529628E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2887,19 +2887,19 @@
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.0634437924623E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   5.2130872497104E-05
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON pe_b_mean                    =   2.0373911344138E-04
+(PID.TID 0000.0001) %MON pe_b_mean                    =   2.0373911344137E-04
 (PID.TID 0000.0001) %MON ke_max                       =   2.7017109645109E-03
-(PID.TID 0000.0001) %MON ke_mean                      =   2.6097976145239E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_mean                      =   2.6097976145238E-04
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.6360613030369E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =  -5.5628209253115E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   6.7231820205116E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   6.7643635560116E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -2947,19 +2947,19 @@
 (PID.TID 0000.0001) %MON advcfl_vvel_max              =   1.0344434791580E-04
 (PID.TID 0000.0001) %MON advcfl_wvel_max              =   5.0718065909923E-05
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON pe_b_mean                    =   2.0548213848914E-04
+(PID.TID 0000.0001) %MON pe_b_mean                    =   2.0548213848915E-04
 (PID.TID 0000.0001) %MON ke_max                       =   2.5395864036970E-03
 (PID.TID 0000.0001) %MON ke_mean                      =   2.5457702700377E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   9.5138719383191E-16
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   9.5461124097550E-16
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   6.8666014567471E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   6.8718567529176E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
@@ -3009,152 +3009,152 @@
 (PID.TID 0000.0001) %MON advcfl_W_hf_max              =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON pe_b_mean                    =   2.0657363529013E-04
 (PID.TID 0000.0001) %MON ke_max                       =   2.4095936335493E-03
-(PID.TID 0000.0001) %MON ke_mean                      =   2.4891359345762E-04
-(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378178E+19
+(PID.TID 0000.0001) %MON ke_mean                      =   2.4891359345761E-04
+(PID.TID 0000.0001) %MON ke_vol                       =   5.0990436378179E+19
 (PID.TID 0000.0001) %MON vort_r_min                   =   0.0000000000000E+00
 (PID.TID 0000.0001) %MON vort_r_max                   =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON vort_a_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON vort_p_mean                  =  -2.2965227706617E-21
-(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514375E-05
-(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.0638605115796E-15
+(PID.TID 0000.0001) %MON vort_a_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_a_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON vort_p_mean                  =   0.0000000000000E+00
+(PID.TID 0000.0001) %MON vort_p_sd                    =   8.3955319514376E-05
+(PID.TID 0000.0001) %MON surfExpan_theta_mean         =   1.0729838367477E-15
 (PID.TID 0000.0001) %MON surfExpan_salt_mean          =   0.0000000000000E+00
-(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   4.2119484458917E-14
+(PID.TID 0000.0001) %MON surfExpan_Heat_mean          =   4.2602991229401E-14
 (PID.TID 0000.0001) %MON En_Budget_T2PE_mean          =   0.0000000000000E+00
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) // End MONITOR dynamic field statistics
 (PID.TID 0000.0001) // =======================================================
 (PID.TID 0000.0001) %CHECKPOINT        24 ckptA
 (PID.TID 0000.0001)   Seconds in section "ALL                    [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  3.74000001
-(PID.TID 0000.0001)         System time:  0.0700000003
-(PID.TID 0000.0001)     Wall clock time:  3.80727506
+(PID.TID 0000.0001)           User time:  3.73000002
+(PID.TID 0000.0001)         System time:  0.0900000036
+(PID.TID 0000.0001)     Wall clock time:  3.95414901
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_FIXED       [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  0.119999997
-(PID.TID 0000.0001)         System time:  0.0199999996
-(PID.TID 0000.0001)     Wall clock time:  0.139554024
+(PID.TID 0000.0001)           User time:  0.129999995
+(PID.TID 0000.0001)         System time:  0.0299999993
+(PID.TID 0000.0001)     Wall clock time:  0.177146912
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "THE_MAIN_LOOP          [THE_MODEL_MAIN]":
-(PID.TID 0000.0001)           User time:  3.61000002
-(PID.TID 0000.0001)         System time:  0.0300000012
-(PID.TID 0000.0001)     Wall clock time:  3.64141798
+(PID.TID 0000.0001)           User time:  3.59000003
+(PID.TID 0000.0001)         System time:  0.0499999989
+(PID.TID 0000.0001)     Wall clock time:  3.73269796
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "INITIALISE_VARIA    [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.00999999791
+(PID.TID 0000.0001)           User time:  0.0100000054
 (PID.TID 0000.0001)         System time:  0.00999999978
-(PID.TID 0000.0001)     Wall clock time:  0.0204238892
+(PID.TID 0000.0001)     Wall clock time:  0.0210659504
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [THE_MAIN_LOOP]":
 (PID.TID 0000.0001)           User time:  0.0300000012
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0301520824
+(PID.TID 0000.0001)     Wall clock time:  0.0301389694
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  0.0200000107
-(PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0162420273
+(PID.TID 0000.0001)           User time:  0.
+(PID.TID 0000.0001)         System time:  0.0100000016
+(PID.TID 0000.0001)     Wall clock time:  0.027338028
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "MAIN LOOP           [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  3.55000001
-(PID.TID 0000.0001)         System time:  0.0200000014
-(PID.TID 0000.0001)     Wall clock time:  3.57444715
+(PID.TID 0000.0001)           User time:  3.55000003
+(PID.TID 0000.0001)         System time:  0.0299999975
+(PID.TID 0000.0001)     Wall clock time:  3.6540041
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001)   Seconds in section "FORWARD_STEP        [THE_MAIN_LOOP]":
-(PID.TID 0000.0001)           User time:  3.55000001
-(PID.TID 0000.0001)         System time:  0.0200000014
-(PID.TID 0000.0001)     Wall clock time:  3.57371664
+(PID.TID 0000.0001)           User time:  3.55000003
+(PID.TID 0000.0001)         System time:  0.0299999975
+(PID.TID 0000.0001)     Wall clock time:  3.65327883
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "EXTERNAL_FIELDS_LOAD[FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.00999999046
+(PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000709056854
+(PID.TID 0000.0001)     Wall clock time:  0.000694274902
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "DO_ATMOSPHERIC_PHYS [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000695943832
+(PID.TID 0000.0001)     Wall clock time:  0.000692367554
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "DO_OCEANIC_PHYS     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.00999999046
+(PID.TID 0000.0001)           User time:  0.0200001001
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0149793625
+(PID.TID 0000.0001)     Wall clock time:  0.0149374008
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "THERMODYNAMICS      [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.119999915
+(PID.TID 0000.0001)           User time:  0.0899999142
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0893950462
+(PID.TID 0000.0001)     Wall clock time:  0.0891883373
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "DYNAMICS            [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.419999942
-(PID.TID 0000.0001)         System time:  0.0100000016
-(PID.TID 0000.0001)     Wall clock time:  0.433928013
+(PID.TID 0000.0001)           User time:  0.429999813
+(PID.TID 0000.0001)         System time:  0.
+(PID.TID 0000.0001)     Wall clock time:  0.432798624
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "SOLVE_FOR_PRESSURE  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  2.0000001
+(PID.TID 0000.0001)           User time:  2.04000019
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  2.01952767
+(PID.TID 0000.0001)     Wall clock time:  2.02281308
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "UV_CORRECTION_STEP  [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0799999237
+(PID.TID 0000.0001)           User time:  0.0599999428
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0654528141
+(PID.TID 0000.0001)     Wall clock time:  0.0657691956
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "TS_CORRECTION_STEP  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000734090805
+(PID.TID 0000.0001)     Wall clock time:  0.000739574432
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "BLOCKING_EXCHANGES  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.0108492374
+(PID.TID 0000.0001)     Wall clock time:  0.0108761787
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "DO_STATEVARS_DIAGS  [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000694990158
+(PID.TID 0000.0001)     Wall clock time:  0.000700950623
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "MONITOR             [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.860000193
+(PID.TID 0000.0001)           User time:  0.880000085
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.867324114
+(PID.TID 0000.0001)     Wall clock time:  0.875837564
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "DO_THE_MODEL_IO     [FORWARD_STEP]":
-(PID.TID 0000.0001)           User time:  0.0499999523
-(PID.TID 0000.0001)         System time:  0.00999999978
-(PID.TID 0000.0001)     Wall clock time:  0.05879879
+(PID.TID 0000.0001)           User time:  0.00999999046
+(PID.TID 0000.0001)         System time:  0.0299999975
+(PID.TID 0000.0001)     Wall clock time:  0.127606153
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT    [FORWARD_STEP]":
 (PID.TID 0000.0001)           User time:  0.
 (PID.TID 0000.0001)         System time:  0.
-(PID.TID 0000.0001)     Wall clock time:  0.000708580017
+(PID.TID 0000.0001)     Wall clock time:  0.000710248947
 (PID.TID 0000.0001)          No. starts: 24
 (PID.TID 0000.0001)           No. stops: 24
 (PID.TID 0000.0001)   Seconds in section "WRITE_CHECKPOINT       [THE_MODEL_MAIN]":
 (PID.TID 0000.0001)           User time:  0.00999999046
-(PID.TID 0000.0001)         System time:  0.0199999996
-(PID.TID 0000.0001)     Wall clock time:  0.0261640549
+(PID.TID 0000.0001)         System time:  0.0100000054
+(PID.TID 0000.0001)     Wall clock time:  0.0441679955
 (PID.TID 0000.0001)          No. starts: 1
 (PID.TID 0000.0001)           No. stops: 1
 (PID.TID 0000.0001) // ======================================================
