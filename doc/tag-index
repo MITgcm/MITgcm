@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.421 2004/12/19 00:59:16 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.422 2004/12/20 02:42:42 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o test diagnostics pkg in dic_example (no output) and ideal_2D_oce (with ouput)
+o Implement instantaneous output within pkg diagnostics:
+  setting a negative frequency in data.diagnostics produces
+ "snap-shot" output (as opposed to time-average if freq > 0)
 o move out off EQUIVALENCE all diagnostics that fizhi does not use ;
   NOTE: change ptracer diagnostics name: use 2 characters to work with 
         more than 9 tracers. Add also diagnostics of advect & diffus flux.
