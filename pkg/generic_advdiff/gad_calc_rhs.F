@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.4 2001/09/04 14:53:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.5 2001/09/04 17:00:48 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -112,8 +112,8 @@ C-    Advective flux in X
       ELSE
        STOP 'GAD_CALC_RHS: Bad advectionScheme (X)'
       ENDIF
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
         fZon(i,j) = fZon(i,j) + af(i,j)
        ENDDO
       ENDDO
@@ -122,8 +122,8 @@ C-    Diffusive flux in X
       IF (diffKh.NE.0.) THEN
        CALL GAD_DIFF_X(bi,bj,k,xA,diffKh,localT,df,myThid)
       ELSE
-       DO j=jMin,jMax
-        DO i=iMin,iMax
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
          df(i,j) = 0.
         ENDDO
        ENDDO
@@ -140,8 +140,8 @@ C *note* should update GMREDI_XTRANSPORT to use localT and set df  *aja*
      I     myThid)
       ENDIF
 #endif
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
         fZon(i,j) = fZon(i,j) + df(i,j)
        ENDDO
       ENDDO
@@ -149,8 +149,8 @@ C *note* should update GMREDI_XTRANSPORT to use localT and set df  *aja*
 C-    Bi-harmonic duffusive flux in X
       IF (diffK4 .NE. 0.) THEN
        CALL GAD_BIHARM_X(bi,bj,k,xA,df4,diffK4,df,myThid)
-       DO j=jMin,jMax
-        DO i=iMin,iMax
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
          fZon(i,j) = fZon(i,j) + df(i,j)
         ENDDO
        ENDDO
@@ -227,8 +227,8 @@ C-    Bi-harmonic flux in Y
       ENDIF
 
 C--   Initialize net flux in R
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
         fVerT(i,j,kUp) = 0.
        ENDDO
       ENDDO
@@ -274,8 +274,8 @@ C-    Surface "correction" term at k=1 :
        ENDDO 
       ENDIF
 C-    add the advective flux to fVerT
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
         fVerT(i,j,kUp) = fVerT(i,j,kUp) + afFacT*af(i,j)
        ENDDO
       ENDDO
@@ -284,16 +284,16 @@ C-    Diffusive flux in R
 C     Note: For K=1 then KM1=1 and this gives a dT/dr = 0 upper
 C           boundary condition.
       IF (implicitDiffusion) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
          df(i,j) = 0.
         ENDDO
        ENDDO
       ELSE
        CALL GAD_DIFF_R(bi,bj,k,KappaRT,tracer,df,myThid)
       ENDIF
-c     DO j=jMin,jMax
-c      DO i=iMin,iMax
+c     DO j=1-Oly,sNy+Oly
+c      DO i=1-Olx,sNx+Olx
 c       fVerT(i,j,kUp) = fVerT(i,j,kUp) + dfFacT*df(i,j)*maskUp(i,j)
 c      ENDDO
 c     ENDDO
@@ -307,16 +307,16 @@ C *note* should update GMREDI_RTRANSPORT to set df  *aja*
      I     maskUp,Tracer,
      U     df,
      I     myThid)
-c      DO j=jMin,jMax
-c       DO i=iMin,iMax
+c      DO j=1-Oly,sNy+Oly
+c       DO i=1-Olx,sNx+Olx
 c        fVerT(i,j,kUp) = fVerT(i,j,kUp) + dfFacT*df(i,j)*maskUp(i,j)
 c       ENDDO
 c      ENDDO
       ENDIF
 #endif
 
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
         fVerT(i,j,kUp) = fVerT(i,j,kUp) + dfFacT*df(i,j)*maskUp(i,j)
        ENDDO
       ENDDO
@@ -324,8 +324,8 @@ c      ENDDO
 #ifdef ALLOW_KPP
 C-    Add non local KPP transport term (ghat) to diffusive T flux.
       IF (useKPP) THEN
-       DO j=jMin,jMax
-        DO i=iMin,iMax
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
          df(i,j) = 0.
         ENDDO
        ENDDO
@@ -343,8 +343,8 @@ C *note* should update KPP_TRANSPORT_T to set df  *aja*
        ELSE
         STOP 'GAD_CALC_RHS: Ooops'
        ENDIF
-       DO j=jMin,jMax
-        DO i=iMin,iMax
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
          fVerT(i,j,kUp) = fVerT(i,j,kUp) + dfFacT*df(i,j)*maskUp(i,j)
         ENDDO
        ENDDO
@@ -352,8 +352,8 @@ C *note* should update KPP_TRANSPORT_T to set df  *aja*
 #endif
 
 C--   Divergence of fluxes
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j=1-Oly,sNy+Oly
+       DO i=1-Olx,sNx+Olx
         gTracer(i,j,k,bi,bj)=
      &   -_recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &    *recip_rA(i,j,bi,bj)
