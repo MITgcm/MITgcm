@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.82 2004/02/18 22:23:18 heimbach Exp $
+C $eader: /u/u3/gcmpack/MITgcm/model/src/forward_step.F,v 1.79 2003/12/15 23:00:44 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -88,6 +88,7 @@ C     mythid - thread number for this instance of the routine.
       integer mythid 
       integer myiter
       _RL     mytime
+
       integer i,L
 CEOP
 
@@ -278,11 +279,6 @@ C jmc: don't know precisely where to put this call. leave it here for now.
 #endif /* COMPONENT_MODULE */
 
 C--     Step forward fields and calculate time tendency terms.
-C AMM
-#ifdef ALLOW_GRIDALT
-        if (useGRIDALT) CALL GRIDALT_UPDATE(myThid)
-#endif
-C AMM
 
 C AMM
 #ifdef ALLOW_FIZHI
@@ -293,7 +289,7 @@ C AMM
          CALL TIMER_START('FIZHI_WRAPPER       [FORWARD_STEP]',mythid)
          CALL FIZHI_WRAPPER ( myTime, myIter, myThid )
          CALL TIMER_STOP ('FIZHI_WRAPPER       [FORWARD_STEP]',mythid)
-         CALL STEP_FIZHI_FG ( myTime, myIter, myThid )
+         CALL STEP_FIZHI_FG ( myTime, myIter, myThid, deltaTtracer )
         endif
 #endif
 C AMM
@@ -459,6 +455,12 @@ ceh3 needs an IF ( use GCHEM ) THEN
 #endif /* PTRACERS_SEPARATE_FORCING */
 #endif /* ALLOW_GCHEM */
 cswdptr -- end add ---
+
+C AMM
+#ifdef ALLOW_GRIDALT
+        if (useGRIDALT) CALL GRIDALT_UPDATE(myThid)
+#endif
+C AMM
 
 C AMM
 #ifdef ALLOW_FIZHI
