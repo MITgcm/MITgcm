@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.77 2004/05/28 15:47:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.78 2004/07/25 03:00:16 edhill Exp $
 C $Name:  $
 
 CBOI
@@ -146,6 +146,7 @@ C    | | | |-INI_THETA  :: Set model initial temperature field.
 C    | | | |-INI_SALT   :: Set model initial salinity field.
 C    | | | |-INI_PSURF  :: Set model initial free-surface height/pressure.
 C    | | | |-INI_PRESSURE :: Compute model initial hydrostatic pressure
+C    | | | |-READ_CHECKPOINT :: Read the checkpoint
 C    | | |
 C    | | |-INI_TR1      :: Set initial tracer 1 distribution.
 C    | | |
