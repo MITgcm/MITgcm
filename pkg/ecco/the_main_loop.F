@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.4 2004/02/23 19:14:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.5 2004/03/24 21:49:53 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
@@ -674,11 +674,13 @@ C      where N = I+timeLevBase-1
 C     Thus a checkpoint contains U.0000000000, GU.0000000001 and 
 C     etaN.0000000001 in the indexing scheme used for the model 
 C     "state" files. This example is referred to as a checkpoint 
-C     at time level 1 
+C     at time level 1
       CALL TIMER_START('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
+      CALL PACKAGES_WRITE_PICKUP(
+     I        .FALSE., myTime, myIter, myThid )
       CALL WRITE_CHECKPOINT(
      &        .FALSE., myTime, myIter, myThid )
-      CALL TIMER_STOP ('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
+      CALL TIMER_STOP ('PACKAGES_WRITE_PICK [FORWARD_STEP]',myThid)
 
 ctest      myiter = niter0 + iloop
 ctest      mytime = starttime + float(iloop)*deltaTClock
