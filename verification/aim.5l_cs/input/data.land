@@ -6,7 +6,7 @@
 #     land_impl_grT  :: solve ground Temperature implicitly
 #     land_calc_snow :: step forward snow thickness
 #     land_calc_alb  :: compute albedo of snow over land
-#     land_oldPickup :: restart from an old pickup (=before checkpoint 52l)
+#     land_oldPickup :: restart from an old pickup (=before checkpoint 52l_post)
 #     land_grT_iniFile  :: File containing initial ground Temp.
 #     land_grW_iniFile  :: File containing initial ground Water.
 #     land_snow_iniFile :: File containing initial snow thickness.
@@ -18,12 +18,12 @@
  &LAND_MODEL_PAR
 # land_calc_grT =.FALSE.,
 # land_calc_grW =.FALSE.,
-  land_impl_grT =.FALSE.,
-  land_calc_snow=.FALSE.,
-  land_calc_alb =.FALSE.,
+# land_impl_grT =.FALSE.,
+# land_calc_snow=.FALSE.,
+# land_calc_alb =.FALSE.,
   land_grT_iniFile='land_grT_ini.bin',
   land_grW_iniFile='land_grW_ini.bin',
-  land_oldPickup=.TRUE.,
+# land_oldPickup=.TRUE.,
   land_dzF= 0.1, 4.0,
 # land_diagFreq=1.,
  &
@@ -47,5 +47,5 @@
 #     albOldSnow      :: albedo of old snow (snowAge > 35.d)
 #     hAlbSnow        :: snow thickness for albedo transition: snow/ground
  &LAND_PHYS_PAR
-  land_Lfreez=0.,
+# land_Lfreez=0.,
  &

@@ -25,8 +25,8 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #  aim_useFMsurfBC=.FALSE.,
 #  aim_useMMsurfFc=.TRUE.,
 #  aim_surfPotTemp=.TRUE.,
-#  aim_energPrecip=.TRUE.,
-#  aim_splitSIOsFx=.TRUE.,
+   aim_energPrecip=.TRUE.,
+   aim_splitSIOsFx=.TRUE.,
    aim_LandFile= 'landFrc.2f2.bin',
    aim_albFile = 'albedo.FM.bin',
    aim_vegFile = 'vegetFrc.FM.bin',
@@ -35,7 +35,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
    aim_oiceFile= 'seaIce.2f2.bin',
    aim_snowFile= 'snowDepth.FM.bin',
    aim_swcFile = 'soilMoist.FM.bin',
-#  aim_dragStrato= 2592000.,
+   aim_dragStrato= 2592000.,
 #  aim_clrSkyDiag=.TRUE.,
 #  aim_diagFreq=3600.,
  &
@@ -61,7 +61,6 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #      SWWIL  = Soil wetness at wilting point  (volume fraction)
 #      hSnowWetness :: snow depth (m) corresponding to maximum wetness
  &AIM_PAR_FOR
-   hSnowWetness = 0.,
  &
 
 #--   Constants for surface fluxes (namelist AIM_PAR_SFL):

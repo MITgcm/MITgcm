@@ -24,16 +24,13 @@
  hFacInf=0.2,
  hFacSup=2.0,
  uniformLin_PhiSurf=.FALSE.,
- staggerTimeStep=.TRUE.,
- readBinaryPrec=64,
- writeBinaryPrec=64,
- usePickupBeforeC54=.TRUE.,
  hFacMin=0.2,
-#tempAdvScheme=77,
  saltAdvScheme=3,
  vectorInvariantMomentum=.TRUE.,
  useJamartWetPoints=.TRUE.,
- useJamartMomAdv=.FALSE.,
+ staggerTimeStep=.TRUE.,
+ readBinaryPrec=64,
+ writeBinaryPrec=64,
  &
 
 # Elliptic solver parameters
@@ -45,7 +42,7 @@
 
 # Time stepping parameters
  &PARM03
- nIter0=207360,
+ nIter0=69120,
  nTimeSteps=10,
 # 1yr, 10yr:
 #endTime=31104000.,
@@ -57,14 +54,13 @@
  pChkptFreq=2592000.,
  taveFreq=2592000.,
  dumpFreq=7776000.,
-#monitorFreq=86400.,
+ monitorFreq=86400.,
  monitorFreq=1.,
 #diagFreq=2250.0,
  &
 
 # Gridding parameters
  &PARM04
- usingCartesianGrid=.FALSE.,
  usingCurvilinearGrid=.TRUE.,
  delR=100.E2, 250.E2, 300.E2, 200.E2, 150.E2,
  Ro_SeaLevel=1.E5,
