@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.16 2003/10/26 01:01:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.17 2004/05/24 15:15:16 adcroft Exp $
 C $Name:  $
 
 CBOI
@@ -253,7 +253,7 @@ C     Calculate velocity field "volume transports" through tracer cell faces.
        ENDDO
       ENDDO
 
-      CALL MOM_CALC_KE(bi,bj,k,uFld,vFld,KE,myThid)
+      CALL MOM_CALC_KE(bi,bj,k,3,uFld,vFld,KE,myThid)
 
 C---  First call (k=1): compute vertical adv. flux fVerU(kUp) & fVerV(kUp)
       IF (momAdvection.AND.k.EQ.1) THEN
