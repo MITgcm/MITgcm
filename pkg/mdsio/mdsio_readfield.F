@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.4 2003/12/08 02:13:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.5 2003/12/08 04:59:44 dimitri Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -43,7 +43,7 @@ C Created: 03/16/99 adcroft@mit.edu
 C Global variables / common blocks
 #include "SIZE.h"
 #include "EEPARAMS.h"
-# include "PARAMS.h"
+#include "PARAMS.h"
 #ifdef ALLOW_USE_MPI
 # include "EESUPPORT.h"
 #endif /* ALLOW_USE_MPI */
@@ -137,7 +137,7 @@ C If negative check for global file with MDS name (ie. fName.data)
       endif
 
 C If we are reading from a global file then we open it here
-      if (globalFile) then  
+      if (globalFile) then
 
 #ifdef ALLOW_USE_MPI
        if ( useSingleCPUIO) then
@@ -148,15 +148,11 @@ C master thread of process 0, only, opens a global file
          open( dUnit, file=dataFName, status='old',
      &        access='direct', recl=length_of_rec )
         ENDIF
-        fileIsOpen= .TRUE.
         DO k=1,nNz
          IF( mpiMyId .EQ. 0 ) THEN 
           irec = k+nNz*(irecord-1)
           if (filePrec .eq. precFloat32) then
            read(dUnit,rec=irec) global_r4
-#ifdef _BYTESWAPIO
-           call MDS_BYTESWAPR4( Nx*Ny, global_r4 )
-#endif
            DO J=1,Ny
             DO I=1,Nx
              global(I,J) = global_r4(I,J)
@@ -171,13 +167,23 @@ C master thread of process 0, only, opens a global file
            stop 'ABNORMAL END: S/R MDSREADFIELD'
           endif
          ENDIF
+#ifdef _BYTESWAPIO
+         call MDS_BYTESWAPR8( Nx*Ny, global )
+#endif
+
+      _END_MASTER( myThid )
 
          CALL SCATTER_2D(global,local,mythid)
-
-         if (arrType .eq. 'RS') then
-          call PASStoRS( local,arr,k,nNz,mythid )
-         elseif (arrType .eq. 'RL') then
-          call PASStoRL( local,arr,k,nNz,mythid )
+         if (arrType .eq. 'RS' .or. arrType .eq. 'RL' ) then
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO J=1-Oly,sNy+Oly
+             DO I=1-Olx,sNx+Olx
+              arr(I,J,k,bi,bj) = local(I,J,bi,bj)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
          else
           write(msgbuf,'(a)')
      &           ' MDSREADFIELD: illegal value for arrType'
@@ -185,6 +191,9 @@ C master thread of process 0, only, opens a global file
           stop 'ABNORMAL END: S/R MDSREADFIELD'
          endif
         ENDDO
+
+      _BEGIN_MASTER( myThid )
+        close( dUnit )
 
        else
 #endif /* ALLOW_USE_MPI */
@@ -200,105 +209,105 @@ C master thread of process 0, only, opens a global file
 
       endif 
 
-      if (.NOT. useSingleCPUIO) then
 C Loop over all tiles
-       do bj=1,nSy
-        do bi=1,nSx
+      do bj=1,nSy
+       do bi=1,nSx
+
 C If we are reading from a tiled MDS file then we open each one here
-         if (.NOT. globalFile) then
-          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
-          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-          write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
-     &         pfName(1:pIL),'.',iG,'.',jG,'.data'
-          inquire( file=dataFname, exist=exst )
+        if (.NOT. globalFile) then
+         iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
+         jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
+         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+     &        pfName(1:pIL),'.',iG,'.',jG,'.data'
+         inquire( file=dataFname, exist=exst )
 C Of course, we only open the file if the tile is "active"
 C (This is a place-holder for the active/passive mechanism
-          if (exst) then
-           if ( debugLevel .GE. debLevA ) then
-            write(msgbuf,'(a,a)')
-     &             ' MDSREADFIELD: opening file: ',dataFName
-            call print_message( msgbuf, standardmessageunit,
-     &           SQUEEZE_RIGHT , mythid)
-           endif
-           length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
-           open( dUnit, file=dataFName, status='old',
-     &          access='direct', recl=length_of_rec )
-           fileIsOpen=.TRUE.
-          else
-           fileIsOpen=.FALSE.
-           write(msgbuf,'(3a)')
-     &          ' MDSREADFIELD: filename: ',dataFName, pfName
+         if (exst) then
+          if ( debugLevel .GE. debLevA ) then
+           write(msgbuf,'(a,a)')
+     &            ' MDSREADFIELD: opening file: ',dataFName
            call print_message( msgbuf, standardmessageunit,
      &          SQUEEZE_RIGHT , mythid)
-           write(msgbuf,'(a)')
-     &          ' MDSREADFIELD: File does not exist'
-           call print_error( msgbuf, mythid )
-           stop 'ABNORMAL END: S/R MDSREADFIELD'
           endif
+          length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
+          open( dUnit, file=dataFName, status='old',
+     &         access='direct', recl=length_of_rec )
+          fileIsOpen=.TRUE.
+         else
+          fileIsOpen=.FALSE.
+          write(msgbuf,'(3a)')
+     &         ' MDSREADFIELD: filename: ',dataFName, pfName
+          call print_message( msgbuf, standardmessageunit,
+     &         SQUEEZE_RIGHT , mythid)
+          write(msgbuf,'(a)')
+     &         ' MDSREADFIELD: File does not exist'
+          call print_error( msgbuf, mythid )
+          stop 'ABNORMAL END: S/R MDSREADFIELD'
          endif
+        endif
 
-         if (fileIsOpen) then
-          do k=1,nNz
-           do j=1,sNy
-            if (globalFile) then
-             iG = myXGlobalLo-1 + (bi-1)*sNx
-             jG = myYGlobalLo-1 + (bj-1)*sNy
-             irec=1 + INT(iG/sNx) + nSx*nPx*(jG+j-1) + nSx*nPx*Ny*(k-1)
-     &             + nSx*nPx*Ny*nNz*(irecord-1)
-            else
-             iG = 0
-             jG = 0
-             irec=j + sNy*(k-1) + sNy*nNz*(irecord-1)
-            endif
-            if (filePrec .eq. precFloat32) then
-             read(dUnit,rec=irec) r4seg
+        if (fileIsOpen) then
+         do k=1,nNz
+          do j=1,sNy
+           if (globalFile) then
+            iG = myXGlobalLo-1 + (bi-1)*sNx
+            jG = myYGlobalLo-1 + (bj-1)*sNy
+            irec=1 + INT(iG/sNx) + nSx*nPx*(jG+j-1) + nSx*nPx*Ny*(k-1)
+     &           + nSx*nPx*Ny*nNz*(irecord-1)
+           else
+            iG = 0
+            jG = 0
+            irec=j + sNy*(k-1) + sNy*nNz*(irecord-1)
+           endif
+           if (filePrec .eq. precFloat32) then
+            read(dUnit,rec=irec) r4seg
 #ifdef _BYTESWAPIO
-             call MDS_BYTESWAPR4( sNx, r4seg )
+            call MDS_BYTESWAPR4( sNx, r4seg )
 #endif
-             if (arrType .eq. 'RS') then
-              call MDS_SEG4toRS( j,bi,bj,k,nNz, r4seg, .TRUE., arr )
-             elseif (arrType .eq. 'RL') then
-              call MDS_SEG4toRL( j,bi,bj,k,nNz, r4seg, .TRUE., arr )
-             else
-              write(msgbuf,'(a)')
-     &               ' MDSREADFIELD: illegal value for arrType'
-              call print_error( msgbuf, mythid )
-              stop 'ABNORMAL END: S/R MDSREADFIELD'
-             endif
-            elseif (filePrec .eq. precFloat64) then
-             read(dUnit,rec=irec) r8seg
-#ifdef _BYTESWAPIO
-             call MDS_BYTESWAPR8( sNx, r8seg )
-#endif
-             if (arrType .eq. 'RS') then
-              call MDS_SEG8toRS( j,bi,bj,k,nNz, r8seg, .TRUE., arr )
-             elseif (arrType .eq. 'RL') then
-              call MDS_SEG8toRL( j,bi,bj,k,nNz, r8seg, .TRUE., arr )
-             else
-              write(msgbuf,'(a)')
-     &               ' MDSREADFIELD: illegal value for arrType'
-              call print_error( msgbuf, mythid )
-              stop 'ABNORMAL END: S/R MDSREADFIELD'
-             endif
+            if (arrType .eq. 'RS') then
+             call MDS_SEG4toRS( j,bi,bj,k,nNz, r4seg, .TRUE., arr )
+            elseif (arrType .eq. 'RL') then
+             call MDS_SEG4toRL( j,bi,bj,k,nNz, r4seg, .TRUE., arr )
             else
              write(msgbuf,'(a)')
-     &              ' MDSREADFIELD: illegal value for filePrec'
+     &              ' MDSREADFIELD: illegal value for arrType'
              call print_error( msgbuf, mythid )
              stop 'ABNORMAL END: S/R MDSREADFIELD'
             endif
+           elseif (filePrec .eq. precFloat64) then
+            read(dUnit,rec=irec) r8seg
+#ifdef _BYTESWAPIO
+            call MDS_BYTESWAPR8( sNx, r8seg )
+#endif
+            if (arrType .eq. 'RS') then
+             call MDS_SEG8toRS( j,bi,bj,k,nNz, r8seg, .TRUE., arr )
+            elseif (arrType .eq. 'RL') then
+             call MDS_SEG8toRL( j,bi,bj,k,nNz, r8seg, .TRUE., arr )
+            else
+             write(msgbuf,'(a)')
+     &              ' MDSREADFIELD: illegal value for arrType'
+             call print_error( msgbuf, mythid )
+             stop 'ABNORMAL END: S/R MDSREADFIELD'
+            endif
+           else
+            write(msgbuf,'(a)')
+     &             ' MDSREADFIELD: illegal value for filePrec'
+            call print_error( msgbuf, mythid )
+            stop 'ABNORMAL END: S/R MDSREADFIELD'
+           endif
 C End of j loop
-           enddo
-C End of k loop
           enddo
-          if (.NOT. globalFile) then
-           close( dUnit )
-           fileIsOpen = .FALSE.
-          endif
+C End of k loop
+         enddo
+         if (.NOT. globalFile) then
+          close( dUnit )
+          fileIsOpen = .FALSE.
          endif
+        endif
+
 C End of bi,bj loops
-        enddo
        enddo
-      ENDIF
+      enddo
 
 C If global file was opened then close it
       if (fileIsOpen .AND. globalFile) then
@@ -311,46 +320,3 @@ C If global file was opened then close it
 C     ------------------------------------------------------------------
       return
       end
-
-
-C=======================================================================
-
-	subroutine passToRS(local,arr,k,nNz,mythid)
-	implicit none
-#include "EEPARAMS.h"
-#include "SIZE.h"
-        _RL local(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
-        integer i,j,k,bi,bj,nNz
-        _RS arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nNz,nSx,nSy) 
-        integer mythid
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
-            arr(I,J,k,bi,bj) = local(I,J,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        return
-        end
-
-        subroutine passToRL(local,arr,k,nNz,mythid)
-        implicit none
-#include "EEPARAMS.h"
-#include "SIZE.h"
-        _RL local(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nSx,nSy)
-        integer i,j,k,bi,bj,nNz
-        _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nNz,nSx,nSy)
-        integer mythid
-        DO bj = myByLo(myThid), myByHi(myThid)
-         DO bi = myBxLo(myThid), myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
-            arr(I,J,k,bi,bj) = local(I,J,bi,bj)
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-        return
-        end
