@@ -48,8 +48,8 @@ c Now take average
        do bi = myBxLo(myThid), myBxHi(myThid)
 
         do L = 1,numlevs
-         do j = jdim1-1,jdim2+1
-         do i = idim1-1,idim2+1
+         do j = jdim1,jdim2
+         do i = idim1,idim2
           if( (mask1(i,j,L,bi,bj).ne.0.) .or. 
      .                               (mask1(i+1,j,L,bi,bj).ne.0.) ) then
            fieldout1(i,j,L,bi,bj) = 

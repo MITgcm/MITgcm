@@ -1,4 +1,4 @@
-       subroutine step_fizhi_fg (myTime, myIter, myThid)
+       subroutine step_fizhi_fg (myTime, myIter, myThid, dt)
 c-----------------------------------------------------------------------
 c  Subroutine step_fizhi_fg - 'Wrapper' routine to advance
 c        the physics state and make a 'first guess' at the new
@@ -19,6 +19,7 @@ c-----------------------------------------------------------------------
 
        integer i, j, L, bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
+       _RL dt
 
        im1 = 1-OLx
        im2 = sNx+OLx
@@ -33,7 +34,7 @@ c-----------------------------------------------------------------------
        do bi = myBxLo(myThid), myBxHi(myThid)
 
 c  Step forward the physics state using physics tendencies
-        call step_physics(uphy,vphy,thphy,sphy,im1,im2,jm1,jm2,
+        call step_physics(uphy,vphy,thphy,sphy,dt,im1,im2,jm1,jm2,
      .      Nrphys,Nsx,Nsy,1,sNx,1,sNy,bi,bj,duphy,dvphy,dthphy,dsphy)
 
        enddo

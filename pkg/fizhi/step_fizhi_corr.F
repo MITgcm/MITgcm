@@ -43,6 +43,7 @@ c pe on dynamics and physics grid refers to bottom edge
 
        integer i, j, L, Lbotij, bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
+       _RL dt
 
        im1 = 1-OLx
        im2 = sNx+OLx
@@ -52,6 +53,7 @@ c pe on dynamics and physics grid refers to bottom edge
        idim2 = sNx
        jdim1 = 1
        jdim2 = sNy
+       dt = 1.
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
@@ -152,17 +154,18 @@ c    Fifth: Interpolate correction terms to physics grid
        do bi = myBxLo(myThid), myBxHi(myThid)
 
         call dyn2phys(udyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
-     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,uphytemp)
+     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,uphytemp)
         call dyn2phys(vdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
-     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,vphytemp)
+     .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,vphytemp)
         call dyn2phys(thdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
      .     1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,thphytemp)
         call dyn2phys(sdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,1,sNx,
      .      1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,sphytemp)
-c    Last: Increment physics state by the correction term
 
-        call step_physics(uphy,vphy,thphy,sphy,im1,im2,jm1,jm2,Nrphys,
-     .   Nsx,Nsy,1,sNx,1,sNy,bi,bj,uphytemp,vphytemp,thphytemp,sphytemp)
+c    Last: Increment physics state by the correction term
+        call step_physics(uphy,vphy,thphy,sphy,dt,im1,im2,jm1,jm2,
+     .   Nrphys,Nsx,Nsy,1,sNx,1,sNy,bi,bj,
+     .                            uphytemp,vphytemp,thphytemp,sphytemp)
 
        enddo
        enddo

@@ -36,8 +36,6 @@ c-----------------------------------------------------------------------
 
        integer i, j, L, bi, bj
 
-       
-
 c Call the exchange routine to fill in the halo regions
        call exch_uv_agrid_xyz_RL (fieldin1,fieldin2,myThid)
 
@@ -46,8 +44,8 @@ c Now take average
        do bi = myBxLo(myThid), myBxHi(myThid)
 
         do L = 1,numlevs
-         do j = jdim1-1,jdim2+1
-         do i = idim1-1,idim2+1
+         do j = jdim1,jdim2
+         do i = idim1,idim2
           if( (mask(i-1,j,L,bi,bj).ne.0.) .or.
      .                                  (mask(i,j,L,bi,bj).ne.0.) ) then
            fieldout1(i,j,L,bi,bj) = 

@@ -48,7 +48,8 @@ c pe on dynamics and physics grid refers to bottom edge
 c  Construct the physics grid pressures
         do j = 1,sNy
         do i = 1,sNx
-         pephy(i,j,1,bi,bj)=Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
+         pephy(i,j,1,bi,bj)=(Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj))/
+     .                       rstarExpC(i,j,bi,bj)
          do L = 2,Nrphys+1
           pephy(i,j,L,bi,bj)=pephy(i,j,L-1,bi,bj)-dpphys(i,j,L-1,bi,bj)
          enddo
@@ -66,10 +67,11 @@ C Build pressures on dynamics grid
         enddo
         enddo
         do j = 1,sNy
-        do i = 1,sNx+1
+        do i = 1,sNx
          Lbotij = ksurfC(i,j,bi,bj)
          if(Lbotij.ne.0.) 
-     .    pedyn(i,j,Lbotij,bi,bj) = Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
+     . pedyn(i,j,Lbotij,bi,bj) = (Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj))/
+     .                         rstarExpC(i,j,bi,bj)
         enddo
         enddo
         do j = 1,sNy
@@ -107,6 +109,14 @@ c Interpolate (A-Grid) physics increments to dynamics grid
 c Convert guphy and gvphy from A-grid to C-grid for use by dynamics
        call AtoC(myThid,guphy,gvphy,maskC,im1,im2,jm1,jm2,Nr,
      .                      Nsx,Nsy,1,sNx,1,sNy,guphy,gvphy)
+
+c Call the c-grid exchange routine to fill in the halo regions (du,dv)
+       call exch_uv_xyz_RL(guphy,gvphy,.TRUE.,myThid)
+c Call the a-grid exchange routine to fill in the halo regions (dth,ds)
+       call exch_RL_cube(gthphy,OLx, OLx, OLy, OLy, Nr,OLx, OLy,
+     .            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+       call exch_RL_cube(gsphy,OLx, OLx, OLy, OLy, Nr,OLx, OLy,
+     .            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
 
       return
       end

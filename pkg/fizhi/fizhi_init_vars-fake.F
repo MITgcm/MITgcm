@@ -66,7 +66,7 @@ C Build pressures on dynamics grid
         enddo
         enddo
         do j = 1,sNy
-        do i = 1,sNx+1
+        do i = 1,sNx
          Lbotij = ksurfC(i,j,bi,bj)
          if(Lbotij.ne.0.) 
      .    pedyn(i,j,Lbotij,bi,bj) = Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
@@ -88,10 +88,6 @@ C Build pressures on physics grid
         do j = 1,sNy
         do i = 1,sNx
          pephy(i,j,1,bi,bj)=Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
-c        do L = 1,Nr
-c         pephy(i,j,1,bi,bj)=pephy(i,j,1,bi,bj) -
-c    .                                    (1.-hfacC(i,j,L,bi,bj))*drF(L)
-c        enddo
          do L = 2,Nrphys+1
           pephy(i,j,L,bi,bj)=pephy(i,j,L-1,bi,bj)-dpphys0(i,j,L-1,bi,bj)
          enddo
@@ -125,9 +121,9 @@ c Create initial fields on phys. grid - Move Dynamics u and v to A-Grid
 
 c Create initial fields on phys. grid - interpolate from dyn. grid
         call dyn2phys(udyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
-     .    1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,uphy)
+     .    1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,uphy)
         call dyn2phys(vdyntemp,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
-     .    1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,1,vphy)
+     .    1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,vphy)
         call dyn2phys(theta,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,
      .   1,sNx,1,sNy,bi,bj,windphy,pephy,ksurfC,Nrphys,nlperdyn,0,thphy)
         call dyn2phys(salt,pedyn,im1,im2,jm1,jm2,Nr,Nsx,Nsy,

@@ -114,8 +114,8 @@ C=======================================================================
 
       integer i, j
 
-      do j=1,sNy
-       do i=1,sNx
+      do j=jMin,jMax
+       do i=iMin,iMax
         gT(i,j,kLev,bi,bj) = maskC(i,j,kLev,bi,bj)
      .       *( gT(i,j,kLev,bi,bj) + gthphy(i,j,kLev,bi,bj) )
        enddo
@@ -155,8 +155,8 @@ C=======================================================================
 
       integer i, j
 
-      do j=1,sNy
-       do i=1,sNx
+      do j=jMin,jMax
+       do i=iMin,iMax
         gS(i,j,kLev,bi,bj) = maskC(i,j,kLev,bi,bj)
      .       *( gS(i,j,kLev,bi,bj) + gsphy(i,j,kLev,bi,bj) )
        enddo
