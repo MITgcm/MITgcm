@@ -1,7 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.14 1998/09/29 18:57:53 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.15 1998/10/28 03:23:17 cnh Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint16
+ o Minor changes to exchange routines to support 
+   accumulation in reverse mode. Adjoint of an
+   assignment is an addition.
+ o Changes to support compilation by TAMC (LR(1) 
+   syntax) and by g77 under Linux ( 72 character
+   limit ).
 
 checkpoint15
  Rewrote exchange routines to allow

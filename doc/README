@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/README,v 1.13 1998/07/17 02:20:13 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/README,v 1.14 1998/10/28 03:23:17 cnh Exp $
 
 
 MITgcmUV Getting Started
@@ -24,7 +24,7 @@ o Installing
   the steps below:
 
   1. Extract MITgcmUV from the downloadable archive
-     tar -xvf checkpoint12.tar 
+     tar -xvf cNN.tar 
 
   2. Create platform specific make file
      For example on a Digital UNIX machine the script "genmake.dec" can
