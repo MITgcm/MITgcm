@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.17 2001/03/06 16:57:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.18 2001/03/08 20:40:57 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,10 +49,10 @@ C--   Save previous solution & Initialise Vector solution and source term :
 #ifdef INCLUDE_CD_CODE
           etaNm1(i,j,bi,bj) = etaN(i,j,bi,bj)
 #endif
-          cg2d_x(i,j,bi,bj) = etaN(i,j,bi,bj)
+          cg2d_x(i,j,bi,bj) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
           cg2d_b(i,j,bi,bj) = 0.
 #ifdef USE_NATURAL_BCS
-     &     + freeSurfFac*_rA(i,j,bi,bj)*horiVertRatio*
+     &     + freeSurfFac*_rA(i,j,bi,bj)*
      &       EmPmR(I,J,bi,bj)/deltaTMom
 #endif
          ENDDO
@@ -87,24 +87,26 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
         DO j=1,sNy
          DO i=1,sNx
           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
-     &       +freeSurfFac*_rA(I,J,bi,bj)*horiVertRatio*(
-     &          -cg2d_x(I,J,bi,bj)
-     &          -cg3d_x(I,J,1,bi,bj)
-     &        )/deltaTMom/deltaTMom
+     &      -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTMom
+     &        *( etaN(i,j,bi,bj)
+     &          +cg3d_x(i,j,1,bi,bj)*horiVertRatio/gravity )
           cg3d_b(i,j,1,bi,bj) = cg3d_b(i,j,1,bi,bj)
-     &      +freeSurfFac*_rA(I,J,bi,bj)*horiVertRatio*(
-     &         -cg2d_x(I,J,bi,bj)
-     &         -cg3d_x(I,J,1,bi,bj)
-     &       )/deltaTMom/deltaTMom
+     &      -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTMom
+     &        *( etaN(i,j,bi,bj)
+     &          +cg3d_x(i,j,1,bi,bj)*horiVertRatio/gravity )
+C-jmc
+c    &      -freeSurfFac*_rA(i,j,bi,bj)*recip_Bo(i,j,bi,bj)
+c    &        *( cg2d_x(i,j,bi,bj) + cg3d_x(i,j,1,bi,bj) )
+c    &        /deltaTMom/deltaTMom
+C-jmc
          ENDDO
         ENDDO
 #else
         DO j=1,sNy
          DO i=1,sNx
           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
-     &       +freeSurfFac*_rA(I,J,bi,bj)*horiVertRatio*(
-     &          -cg2d_x(I,J,bi,bj)
-     &        )/deltaTMom/deltaTMom
+     &      -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTMom
+     &        * etaN(i,j,bi,bj)
          ENDDO
         ENDDO
 #endif
@@ -152,7 +154,7 @@ C--   Transfert the 2D-solution to "etaN" :
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          etaN(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
+          etaN(i,j,bi,bj) = recip_Bo(i,j,bi,bj)*cg2d_x(i,j,bi,bj)
          ENDDO
         ENDDO
        ENDDO
@@ -167,9 +169,9 @@ C     see CG3D.h for the interface to this routine.
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=1,sNy+1
           DO i=1,sNx+1
-           uf(i,j)=-gBaro*_recip_dxC(i,j,bi,bj)*
+           uf(i,j)=-_recip_dxC(i,j,bi,bj)*
      &         (cg2d_x(i,j,bi,bj)-cg2d_x(i-1,j,bi,bj))
-           vf(i,j)=-gBaro*_recip_dyC(i,j,bi,bj)*
+           vf(i,j)=-_recip_dyC(i,j,bi,bj)*
      &         (cg2d_x(i,j,bi,bj)-cg2d_x(i,j-1,bi,bj))
           ENDDO
          ENDDO
@@ -207,12 +209,9 @@ C Western boundary
      &       -dRF(K)*dYG( i ,j,bi,bj)*hFacW( i ,j,k,bi,bj)*uf( i ,j)
      &       +dRF(K)*dXG(i,j+1,bi,bj)*hFacS(i,j+1,k,bi,bj)*vf(i,j+1)
      &       -dRF(K)*dXG(i, j ,bi,bj)*hFacS(i, j ,k,bi,bj)*vf(i, j )
-     &       +(
-     &         -wVel(i,j,k+1,bi,bj)
+     &       +( freeSurfFac*etaN(i,j,bi,bj)/deltaTMom
+     &          -wVel(i,j,k+1,bi,bj)
      &        )*_rA(i,j,bi,bj)/deltaTmom
-     &       +freeSurfFac*_rA(I,J,bi,bj)*horiVertRatio*(
-     &          +cg2d_x(I,J,bi,bj)
-     &        )/deltaTMom/deltaTMom
           ENDDO
          ENDDO
          DO K=2,Nr-1
