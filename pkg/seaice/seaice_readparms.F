@@ -35,7 +35,7 @@ C--   SEAICE parameters
      & SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseLSR,
      & SEAICEwindOnCgrid,
      & LAD, IMAX_TICE, NPSEUDO,
-     & SEAICE_dumpFreq, SEAICE_taveFreq,
+     & SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_albedo,
      & SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
      & SEAICE_waterAlbedo, SEAICE_strength,
@@ -65,11 +65,16 @@ C--   SEAICE parameters
 
 C--   set default sea ice parameters
       SEAICEwriteState   = .FALSE.
+#ifdef SEAICE_ALLOW_DYNAMICS
       SEAICEuseDYNAMICS  = .TRUE.
+#else
+      SEAICEuseDYNAMICS  = .FALSE.
+#endif
       SEAICEuseLSR       = .FALSE.
       SEAICEwindOnCgrid  = .FALSE.
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
+      SEAICE_initialHEFF = ONE
       SEAICE_drag        = 0.001  _d 0
       SEAICE_waterDrag   = 5.5    _d 0
       SEAICE_albedo      = 0.66   _d 0

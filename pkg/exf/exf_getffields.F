@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.8 2003/02/18 05:33:54 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.9 2003/02/25 06:35:46 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -119,6 +119,7 @@ c     == global variables ==
 #include "DYNVARS.h"
 #include "GRID.h"
 
+#include "exf_param.h"
 #include "exf_fields.h"
 #include "exf_constants.h"
 
@@ -332,14 +333,30 @@ cdm? can olx, oly be eliminated?
 #endif
 
 #ifdef ALLOW_DOWNWARD_RADIATION
-c--   Compute net longwave and shortwave radiation:
+c--   Compute net from downward and downward from net longwave and
+c     shortwave radiation, if needed.
 c     lwflux = Stefan-Boltzman constant * emissivity * SST - lwdown
 c     swflux = - ( 1 - albedo ) * swdown
-               lwflux(i,j,bi,bj) = 5.5 _d -08 *
+
+#ifdef ALLOW_ATM_TEMP
+      if ( lwfluxfile .EQ. ' ' .AND. lwdownfile .NE. ' ' )
+     &     lwflux(i,j,bi,bj) = 5.5 _d -08 *
      &              ((theta(i,j,k,bi,bj)+cen2kel)**4)
      &              - lwdown(i,j,bi,bj)
-               swflux(i,j,bi,bj) = -0.9 _d 0 * swdown(i,j,bi,bj)
+      if ( lwfluxfile .NE. ' ' .AND. lwdownfile .EQ. ' ' )
+     &     lwdown(i,j,bi,bj) = 5.5 _d -08 *
+     &              ((theta(i,j,k,bi,bj)+cen2kel)**4)
+     &              - lwflux(i,j,bi,bj)
 #endif
+
+#if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
+      if ( swfluxfile .EQ. ' ' .AND. swdownfile .NE. ' ' )
+     &     swflux(i,j,bi,bj) = -0.9 _d 0 * swdown(i,j,bi,bj)
+      if ( swfluxfile .NE. ' ' .AND. swdownfile .EQ. ' ' )
+     &     swdown(i,j,bi,bj) = -1.111111 _d 0 * swflux(i,j,bi,bj)
+#endif
+
+#endif /* ALLOW_DOWNWARD_RADIATION */
 
 c--   Compute the turbulent surface fluxes.
 
@@ -576,9 +593,8 @@ c             Salt flux from Precipitation and Evaporation.
 c     Update the tile edges.
       _EXCH_XY_R8(hflux,   mythid)
       _EXCH_XY_R8(sflux,   mythid)
-c      _EXCH_XY_R8(ustress, mythid)
-c      _EXCH_XY_R8(vstress, mythid)
-       CALL EXCH_UV_XY_RS(ustress, vstress, .TRUE., myThid)
+      _EXCH_XY_R8(ustress, mythid)
+      _EXCH_XY_R8(vstress, mythid)
 
 #ifdef SHORTWAVE_HEATING
       _EXCH_XY_R8(swflux, mythid)

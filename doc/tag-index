@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.135 2003/02/18 19:19:56 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.136 2003/02/25 06:35:46 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+untagged
+o Added net flux to downward flux conversion to pkg/exf/exf_getffields.F
+o Added SEAICE_initialHEFF to pkg/seaice
 
 checkpoint48g_post
 --- EOS:

@@ -52,11 +52,10 @@ C     precipFile      - File containing precip
 C     evapFile        - File containing evap
 C     runoffFile      - File containing runoffF
 C     HeffFile        - File containing initial sea-ice thickness
-C        !!! NOTE !!! By default, initial sea-ice conditions are
-C        HEFF=1 and AREA=1.  This means that there can be large
-C        artificial fluxes of heat and freshwater in the surface layer
-C        during the first model time step.  To avoid this it is a good
-C        idea to specify initial HEFF.
+C        !!! NOTE !!! Initial sea-ice thickness can also be set using
+C        SEAICE_initialHEFF below.  But a constant initial condition
+C        can mean large artificial fluxes of heat and freshwater in
+C        the surface layer during the first model time step.
 C
       CHARACTER*(MAX_LEN_FNAM) uwindFile
       CHARACTER*(MAX_LEN_FNAM) vwindFile
@@ -75,6 +74,7 @@ C
 C--   COMMON /SEAICE_PARM_RL/ Real valued parameters of sea ice model.
 C     SEAICE_dumpFreq    - SEAICE dump frequency.                     (s)
 C     SEAICE_taveFreq    - SEAICE time-averaging frequency.           (s)
+C     SEAICE_initialHEFF - initial sea-ice thickness                  (m)
 C     SEAICE_drag        - air-ice drag coefficient
 C     SEAICE_waterDrag   - water-ice drag coefficient * water density
 C     SEAICE_albedo      - summer albedo
@@ -109,7 +109,7 @@ C     SSSForcingPeriod   - Period between SSS  forcing records (s)
 C     StartingYear       - Starting year of integration
 C     EndingYear         - Ending year of integration
 C
-      _RL SEAICE_dumpFreq, SEAICE_taveFreq
+      _RL SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF
       _RL SEAICE_drag, SEAICE_waterDrag, SEAICE_albedo
       _RL SEAICE_drySnowAlb, SEAICE_wetSnowAlb
       _RL SEAICE_waterAlbedo, SEAICE_strength
@@ -123,7 +123,7 @@ C
       _RL SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod
       _RL StartingYear,     EndingYear
       COMMON /SEAICE_PARM_RL/
-     &    SEAICE_dumpFreq, SEAICE_taveFreq,
+     &    SEAICE_dumpFreq, SEAICE_taveFreq, SEAICE_initialHEFF,
      &    SEAICE_drag, SEAICE_waterDrag, SEAICE_albedo,
      &    SEAICE_drySnowAlb, SEAICE_wetSnowAlb,
      &    SEAICE_waterAlbedo, SEAICE_strength,
@@ -138,11 +138,11 @@ C
      &    StartingYear,     EndingYear
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
-C     MAX_HEFF   - maximum ice thickness (m)
-C     MIN_ATEMP  - minimum air temperature (deg C)
+C     MAX_HEFF   - maximum ice thickness     (m)
+C     MIN_ATEMP  - minimum air temperature   (deg C)
 C     MIN_LWDOWN - minimum downward longwave (W/m^2)
-C     MAX_TICE   - maximum ice temperature (deg C)
-C     MIN_TICE   - minimum ice temperature (deg C)
+C     MAX_TICE   - maximum ice temperature   (deg C)
+C     MIN_TICE   - minimum ice temperature   (deg C)
 C
       _RL MAX_HEFF, MIN_ATEMP, MIN_LWDOWN, MAX_TICE, MIN_TICE
       COMMON /SEAICE_BOUND_RL/

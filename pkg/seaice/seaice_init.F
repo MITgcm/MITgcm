@@ -119,7 +119,7 @@ C--   Set model variables to initial/restart conditions
                      YNEG(I,J,bi,bj)=ZERO
                      TMIX(I,J,bi,bj)=TICE(I,J,bi,bj)
                      DO k=1,3
-                        HEFF(I,J,k,bi,bj)=ONE
+                        HEFF(I,J,k,bi,bj)=SEAICE_initialHEFF
                         AREA(I,J,k,bi,bj)=HEFFM(i,j,bi,bj)
                         UICE(I,J,k,bi,bj)=ZERO
                         VICE(I,J,k,bi,bj)=ZERO

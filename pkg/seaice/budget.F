@@ -164,15 +164,17 @@ C NOW COMPUTE OTHER TERMS IN HEAT BUDGET
 C COME HERE AT START OF ITERATION
 
 crg check wether a2 is needed in the list of variables
-c$taf loop = iteration TICE,A2
+cdm Ralf, the line below causes following error message
+cdm INTERNAL ERROR: cannot find var clone to ada2
+cdm c$taf loop = iteration TICE,A2
          DO ITER=1,IMAX_TICE
 
           DO J=1,sNy
            DO I=1,sNx
             B(I,J)=QS1*(C1*TICE(I,J,bi,bj)**4+C2*TICE(I,J,bi,bj)**3
-     ?            +C3*TICE(I,J,bi,bj)**2+C4*TICE(I,J,bi,bj)+C5)
+     &            +C3*TICE(I,J,bi,bj)**2+C4*TICE(I,J,bi,bj)+C5)
             A2(I,J)=-D1*UG(I,J)*TICE(I,J,bi,bj)-D1I*UG(I,J)*B(I,J)
-     ?             -D3*(TICE(I,J,bi,bj)**4)
+     &             -D3*(TICE(I,J,bi,bj)**4)
             B(I,J)=XKS/(HSNOW(I,J,bi,bj)/HICE(I,J)+XKS/XKI)/HICE(I,J)
             A3(I,J)=4.0 _d +00*D3*(TICE(I,J,bi,bj)**3)+B(I,J)+D1*UG(I,J)
             B(I,J)=B(I,J)*(TB-TICE(I,J,bi,bj))
