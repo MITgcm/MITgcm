@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.14 2004/11/13 06:19:10 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.15 2005/01/23 00:40:25 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -404,10 +404,13 @@ c**************************************
 
 #ifdef ALLOW_SEAICE
 cph this simple runtime flag causes a lot of recomp.
-cph      IF ( useSEAICE ) THEN
+      IF ( useSEAICE ) THEN
 #ifndef DISABLE_DEBUGMODE
          IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('SEAICE_MODEL',myThid)
+#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE area  = comlev1, key = ikey_dynamics
 #endif
          CALL TIMER_START('SEAICE_MODEL       [FORWARD_STEP]',myThid)
          CALL SEAICE_MODEL( myTime, myIter, myThid )
@@ -415,7 +418,7 @@ cph      IF ( useSEAICE ) THEN
 #ifdef ALLOW_COST_ICE
          CALL COST_ICE    ( myTime, myIter, myThid )
 #endif
-cph      ENDIF
+      ENDIF
 #endif /* ALLOW_SEAICE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
