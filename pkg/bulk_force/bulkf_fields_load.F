@@ -447,19 +447,19 @@ c       _EXCH_XY_R8(fv , myThid )
 
 
 C-- Diagnostics
-      IF (myThid.EQ.1 .AND. myTime.LT.62208000.) THEN
-        write(*,'(a,1p5e12.4,2i6,2e12.4)')
-     &   'time,TAIR,QAIR,RAIN,SOLAR,i0,i1,a,b = ',
-     &   myTime,
-     &   TAIR(1,sNy,1,1),QAIR(1,sNy,1,1),
-     &   RAIN(1,sNy,1,1),SOLAR(1,sNy,1,1),
-     &   intime0,intime1,aWght,bWght
-        write(*,'(a,1p4e12.4,2e12.4)')
-     &   'time,tair0,tair1,TAIR = ',
-     &   myTime,
-     &   tair0(1,sNy,1,1),tair1(1,sNy,1,1),TAIR(1,sNy,1,1),
-     &   aWght,bWght
-      ENDIF
+c      IF (myThid.EQ.1 .AND. myTime.LT.62208000.) THEN
+c        write(*,'(a,1p5e12.4,2i6,2e12.4)')
+c     &   'time,TAIR,QAIR,RAIN,SOLAR,i0,i1,a,b = ',
+c     &   myTime,
+c     &   TAIR(1,sNy,1,1),QAIR(1,sNy,1,1),
+c     &   RAIN(1,sNy,1,1),SOLAR(1,sNy,1,1),
+c     &   intime0,intime1,aWght,bWght
+c        write(*,'(a,1p4e12.4,2e12.4)')
+c     &   'time,tair0,tair1,TAIR = ',
+c     &   myTime,
+c     &   tair0(1,sNy,1,1),tair1(1,sNy,1,1),TAIR(1,sNy,1,1),
+c     &   aWght,bWght
+c      ENDIF
 
 C endif for periodicForcing
       ENDIF

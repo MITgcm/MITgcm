@@ -7,14 +7,17 @@ C  variable for forcing using bulk
 c  formula
 c -------------------------------
 c   FORCING VARIABLES
-c  tair      - air temperature
-c  qair      - specific humidity at surface
-c  rain      - precipitation, which may become snow
-c  solar     - shortwave radiation
-c  flw       - downward longwave flux
-c  uwind      - zonal wind speed
-c  vwind      - meridional wind speed
-c  wspeed     - wind speed
+C Mandatory:
+c  tair      - air temperature (K)
+c  qair      - specific humidity at surface (Kg/Kg)
+c  rain      - precipitation, which may become snow (m/s), <0 decreases salinity
+c  solar     - shortwave radiation (W/m^2), <0 for ocean warming
+c  flw       - downward longwave flux (W/m^2), <0 for ocean warming
+c  wspeed    - wind speed (m/s)
+C
+C Optional:
+c  uwind      - zonal wind speed (m/s)
+c  vwind      - meridional wind speed (m/s)
 c  runoff     - freshwater runoff
 c  qnetch     - net heat flux (cheating)
 c  empch      - E-P (cheating)
