@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_shtorh.F,v 1.1 2002/11/22 17:17:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_shtorh.F,v 1.2 2003/04/26 23:38:15 jmc Exp $
 C $Name:  $
  
 #include "AIM_OPTIONS.h"
@@ -55,7 +55,7 @@ C
         QSAT(J)=0.
         IF (TA(J).GE.T0) THEN
           QSAT(J)=E0*EXP(C1*(TA(J)-T0)/(TA(J)-T1))
-        ELSE IF ( TA(J).GT.0.) then
+        ELSE IF ( TA(J).GT.T2) THEN
           QSAT(J)=E0*EXP(C2*(TA(J)-T0)/(TA(J)-T2))
         ENDIF
   110 CONTINUE
