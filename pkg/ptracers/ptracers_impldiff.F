@@ -1,7 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_impldiff.F,v 1.2 2003/06/27 01:56:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_impldiff.F,v 1.3 2003/11/20 02:26:18 heimbach Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "PTRACERS_OPTIONS.h"
+#ifdef ALLOW_AUTODIFF
+# include "CPP_OPTIONS.h"
+#endif
 
 CBOP
 C !ROUTINE: PTRACERS_IMPLDIFF

@@ -1,7 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.4 2003/09/25 03:01:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_transport_ptr.F,v 1.5 2003/11/20 02:26:18 heimbach Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "KPP_OPTIONS.h"
+#ifdef ALLOW_PTRACERS
+# include "PTRACERS_OPTIONS.h"
+#endif
 
       subroutine KPP_TRANSPORT_PTR (
      I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
