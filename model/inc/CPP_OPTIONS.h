@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.10 1999/05/24 15:42:22 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.11 1999/07/28 16:21:38 adcroft Exp $
 C
 
 C 
@@ -6,12 +6,15 @@ C CPP flags controlling which code in included in the files that
 C will be compiled.
 C
 
+C o Include/exclude code for KPP mixing scheme
+#undef  ALLOW_KPP
+
 C o Include/exclude code for C-D grid method of integrating the 
 C   coriolis terms
-#define  INCLUDE_CD_CODE
+#undef  INCLUDE_CD_CODE
 
 C o Include/exclude code for open-boundary conditions
-#undef   ALLOW_OBCS
+#undef  ALLOW_OBCS
 
 C o Include/exclude diagnostics package interface code
 #define  INCLUDE_DIAGNOSTICS_INTERFACE_CODE
@@ -115,9 +118,12 @@ C o Include/exclude call to S/R CALC_ISOSLOPES
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
 
+C o Allow nonHydrostatic code
+#undef  ALLOW_NONHYDROSTATIC
+
 C o Use "natural" boundary conditions for salinity
 C   instead of the "virtual salt flux"
-#undef USE_NATURAL_BCS
+#undef  USE_NATURAL_BCS
 
 C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F
