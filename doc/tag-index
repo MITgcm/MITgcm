@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.320 2004/07/05 20:05:07 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.321 2004/07/05 23:56:43 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+tag before changing staggerTimeStep
+checkpoint54a_pre
 
 o require forcing_In_AB=.FALSE. and remove surfaceTendencyTice from pkg/seaice
   - modified verification/lab_sea and natl_box_adjoint accordingly
