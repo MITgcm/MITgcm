@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.64 2001/09/27 18:04:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.65 2001/09/28 03:25:15 adcroft Exp $
 C $Name:  $
 C
 CBOP
@@ -222,7 +222,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & allowFreezing, groundAtK1,
      & usePickupBeforeC35, debugMode,
      & readPickupWithTracer, writePickupWithTracer,
-     & multiDimAdvection
+     & multiDimAdvection, useEnergyConservingCoriolis
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingCurvilinearGrid
@@ -271,6 +271,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL readPickupWithTracer
       LOGICAL writePickupWithTracer
       LOGICAL multiDimAdvection
+      LOGICAL useEnergyConservingCoriolis
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     gg2dTargetResidual

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.70 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.71 2001/09/28 03:25:15 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -118,7 +118,7 @@ C--   Continuous equation parameters
      & usePickupBeforeC35, debugMode, 
      & readPickupWithTracer, writePickupWithTracer,
      & tempAdvScheme, saltAdvScheme, tracerAdvScheme,
-     & multiDimAdvection
+     & multiDimAdvection, useEnergyConservingCoriolis
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/

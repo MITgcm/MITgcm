@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_coriolis.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_coriolis.F,v 1.4 2001/09/28 03:25:15 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -45,17 +45,31 @@ C  i,j                  :: loop indices
       INTEGER I,J
 CEOP
 
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx+1,sNx+Olx
-        uCoriolisTerm(i,j) =
+      IF (useEnergyConservingCoriolis) THEN
+C Energy conserving discretization
+       DO j=1-Oly,sNy+Oly-1
+        DO i=1-Olx+1,sNx+Olx
+         uCoriolisTerm(i,j) =
+     &     0.5*( _fCori( i ,j,bi,bj)
+     &          *0.5*( vFld( i ,j)+vFld( i ,j+1) )
+     &         + _fCori(i-1,j,bi,bj)
+     &          *0.5*( vFld(i-1,j)+vFld(i-1,j+1) ) )
+        ENDDO
+       ENDDO
+      ELSE
+C Original discretization
+       DO j=1-Oly,sNy+Oly-1
+        DO i=1-Olx+1,sNx+Olx
+         uCoriolisTerm(i,j) =
      &     0.5*( _fCori( i ,j,bi,bj) +
      &           _fCori(i-1,j,bi,bj)  )
      &   *0.25*(
      &     vFld( i ,j)+vFld( i ,j+1)
      &    +vFld(i-1,j)+vFld(i-1,j+1)
      &         )
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
       RETURN
       END
