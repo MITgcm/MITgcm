@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.2 1998/04/24 02:05:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.3 1998/04/24 03:07:12 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -45,10 +45,6 @@ C     Step forward zonal velocity
          uVel(i,j,k,bi,bj)=uVel(i,j,k,bi,bj)
      &    +deltaTmom*(ab15*gU(i,j,k,bi,bj)+ab05*gUNm1(i,j,k,bi,bj)
      &                -pg(i,j)/rhonil 
-CcnhDebugStarts
-Cdbg &                -rdxC(i,j,bi,bj)*
-Cdbg &                 (pHSave(i,j,k,bi,bj)-pHSave(i-1,j,k,bi,bj))/rhonil
-CcnhDebugEnds
      &    )*maskW(i,j,k,bi,bj)
          gUNm1(i,j,k,bi,bj)=gU(i,j,k,bi,bj)
         ENDDO
@@ -69,10 +65,6 @@ C     Step forward meridional velocity
          vVel(i,j,k,bi,bj)=vVel(i,j,k,bi,bj)
      &    +deltaTmom*(ab15*gV(i,j,k,bi,bj)+ab05*gVNm1(i,j,k,bi,bj)
      &                -pg(i,j)/rhonil 
-CcnhDebugStarts
-Cdbg &                -rdyC(i,j,bi,bj)*
-Cdbg &                 (pHSave(i,j,k,bi,bj)-pHSave(i,j-1,k,bi,bj))/rhonil
-CcnhDebugEnds
      &               )*maskS(i,j,k,bi,bj)
          gVNm1(i,j,k,bi,bj)=gV(i,j,k,bi,bj)
         ENDDO
