@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.51 2000/06/21 19:06:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.52 2000/09/11 23:04:18 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -119,7 +119,7 @@ C--   Gridding parameters
       NAMELIST /PARM04/
      & usingCartesianGrid, dxSpacing, dySpacing, delX, delY, delZ,
      & usingSphericalPolarGrid, phiMin, thetaMin, rSphere,
-     & l, m, n, delP, delR, rkFac,
+     & delP, delR, rkFac,
      & delXfile, delYfile
 
 C--   Input files
@@ -127,7 +127,7 @@ C--   Input files
      & bathyFile, hydrogThetaFile, hydrogSaltFile, 
      & zonalWindFile, meridWindFile,
      & thetaClimFile, saltClimFile,
-     & surfQfile, EmPmRfile,
+     & surfQfile, EmPmRfile, surfQswfile, 
      & uVelInitFile, vVelInitFile, pSurfInitFile
 
 C--   Open Boundaries
