@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.8 2004/06/23 20:41:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.9 2004/07/01 18:40:40 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -213,7 +213,7 @@ C $Name:  $
          enddo
         enddo
         enddo
-        call fill_diagnostics(myThid,'UVELMASS',0,Nr,0,1,1,salt)
+        call fill_diagnostics(myThid,'UVELMASS',0,Nr,0,1,1,dummy)
 
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
