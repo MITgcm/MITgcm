@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsalt.F,v 1.7 2003/10/09 04:19:19 edhill Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsalt.F,v 1.8 2004/03/17 23:08:09 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -60,23 +60,27 @@ c     == end of interface ==
 
       if ( climsaltfile .NE. ' ' ) then
 
-#ifdef ALLOW_CLIM_CYCLIC
+         if ( climsaltperiod .EQ. 0 ) then
+
 c     record numbers are assumed 1 to 12 corresponding to
 c     Jan. through Dec.
-         call cal_GetMonthsRec(
-     O        fac, first, changed,
-     O        count0, count1,
-     I        mycurrenttime, mycurrentiter, mythid
-     &        )
-#else
+            call cal_GetMonthsRec(
+     O           fac, first, changed,
+     O           count0, count1,
+     I           mycurrenttime, mycurrentiter, mythid
+     &           )
+
+         else
+
 c     get record numbers and interpolation factor for climsalt
-         call exf_GetFFieldRec(
-     I        climsaltstartdate, climsaltperiod
-     O        , fac, first, changed
-     O        , count0, count1
-     I        , mycurrenttime, mycurrentiter, mythid
-     &        )
-#endif
+            call exf_GetFFieldRec(
+     I           climsaltstartdate, climsaltperiod
+     O           , fac, first, changed
+     O           , count0, count1
+     I           , mycurrenttime, mycurrentiter, mythid
+     &           )
+
+         endif
 
          if ( first ) then
             call mdsreadfield( climsaltfile, exf_clim_iprec

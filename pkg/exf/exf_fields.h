@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.8 2003/08/07 02:31:29 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.9 2004/03/17 23:08:09 dimitri Exp $
 c
 c
 c     ==================================================================
@@ -113,9 +113,10 @@ c     NOTES:
 c     ======
 c
 c     All surface forcing fields are defined at the center of
-c     each grid (the rVel location in model/inc/GRID.h) except
-c     for ustress and vstress, which are defined to coincide
-c     with Southwest C-grid U and V points, respectively.
+c     each grid (the rVel location in model/inc/GRID.h) with
+c     one exception.  When both ALLOW_BULKFORMULAE and
+c     USE_EXF_INTERPOLATION are undefined, ustress and vstress are
+c     defined at the Southwest C-grid U and V points, respectively.
 c
 c     Input and output units and sign conventions can be customized
 c     using variables exf_inscal_* and exf_outscal_*, which are set
@@ -162,11 +163,6 @@ c
       _RL sflux0    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL sflux1    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
-#if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
-      common /exf_evap/ evap
-      _RL evap      (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-
 #ifdef ALLOW_ATM_TEMP
       common /exf_atm_temp_r/ atemp, aqh, lwflux, precip
       _RL atemp     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -196,14 +192,11 @@ c
 #endif
 
 #if defined(ALLOW_ATM_TEMP) || defined(EXF_READ_EVAP)
+      common /exf_evap/ evap
+      _RL evap      (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       common /exfl_evap_r/ evap0, evap1
       _RL evap0     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL evap1     (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-#endif
-
-#if defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE)
-      common /exfl_runoff_r/ runoff
-      _RL runoff    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
 #ifdef ALLOW_DOWNWARD_RADIATION
@@ -222,4 +215,9 @@ c
       _RL apressure (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL apressure0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL apressure1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+
+#if defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE)
+      common /exfl_runoff_r/ runoff
+      _RL runoff    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif

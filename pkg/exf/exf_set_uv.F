@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.2 2004/03/15 17:15:38 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.3 2004/03/17 23:08:09 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -14,7 +14,7 @@ C $Name:  $
      &     vvecfile, vvecstartdate, vvecperiod,
      &     exf_inscal_vvec, vvec, vvec0, vvec1, vvecmask,
      &     vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
-     &     vvec_nlon, vvec_nlat, output_xC_yC,
+     &     vvec_nlon, vvec_nlat,
      &     mycurrenttime, mycurrentiter, mythid )
 
 c     ==================================================================
@@ -56,9 +56,6 @@ c         *vec_lat_0          corner of global input grid for *vec
 c     *vec_nlon, *vec_nlat :: input x-grid and y-grid size for *vec
 c     *vec_lon_inc         :: scalar x-grid increment for *vec
 c     *vec_lat_inc         :: vector y-grid increments for *vec
-c     output_xC_yC         :: when true, output grid is (xC,yC)
-c                             otherwise, uvec is at (xG,yC) and
-c                             vvec is at (xC,yG).
 
       character*(128) uvecfile
       _RL     uvecstartdate, uvecperiod
@@ -80,7 +77,6 @@ c                             vvec is at (xC,yG).
       _RL vvec_lon0, vvec_lon_inc
       _RL vvec_lat0, vvec_lat_inc(MAX_LAT_INC)
       INTEGER vvec_nlon, vvec_nlat
-      logical output_xC_yC
       _RL     mycurrenttime
       integer mycurrentiter
       integer mythid
@@ -108,11 +104,6 @@ c     some restrictions that can be relaxed later on
                print*,'For useCubedSphereExchange, S/R exf_set_uv.F'
                print*,'assumes that the u and v wind or wind stress'
                print*,'files have the same startdate and period.'
-               stop
-            endif
-            if ( .not. output_xC_yC ) then
-               print*,'For useCubedSphereExchange, S/R exf_set_uv.F'
-               print*,'assumes that the output grid is (xC,yC).'
                stop
             endif
 
@@ -261,7 +252,6 @@ c     Interpolate linearly onto the current time.
       ELSE
 c     IF ( .NOT. useCubedSphereExchange )
 
-         IF ( output_xC_yC ) THEN
             call exf_set_gen(
      &           uvecfile, uvecstartdate, uvecperiod,
      &           exf_inscal_uvec,
@@ -276,22 +266,6 @@ c     IF ( .NOT. useCubedSphereExchange )
      &           vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
      &           vvec_nlon, vvec_nlat, xC, yC,
      &           mycurrenttime, mycurrentiter, mythid )
-         ELSE
-            call exf_set_gen(
-     &           uvecfile, uvecstartdate, uvecperiod,
-     &           exf_inscal_uvec,
-     &           uvec, uvec0, uvec1, uvecmask,
-     &           uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
-     &           uvec_nlon, uvec_nlat, xG, yC,
-     &           mycurrenttime, mycurrentiter, mythid )
-            call exf_set_gen(
-     &           vvecfile, vvecstartdate, vvecperiod,
-     &           exf_inscal_vvec,
-     &           vvec, vvec0, vvec1, vvecmask,
-     &           vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
-     &           vvec_nlon, vvec_nlat, xC, yG,
-     &           mycurrenttime, mycurrentiter, mythid )
-         ENDIF
 
       ENDIF
 

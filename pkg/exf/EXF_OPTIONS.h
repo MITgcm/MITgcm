@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.4 2003/11/25 16:07:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/EXF_OPTIONS.h,v 1.5 2004/03/17 23:08:09 dimitri Exp $
 C $Name:  $
 
 #ifndef EXF_OPTIONS_H
@@ -54,11 +54,6 @@ c       If defined, river and glacier runoff can be read-in from files.
 c
 c   >>> ATMOSPHERIC_LOADING <<<
 c       If defined, atmospheric pressure can be read-in from files.
-c
-c   >>> ALLOW_CLIM_CYCLIC <<<
-c       If defined, relaxation file record numbers are assumed 1 to
-c       12 corresponding to Jan. through Dec.  Otherwise relaxation
-c       file record numbers are specified in data.exf_clim
 c
 c   >>> ALLOW_CLIMTEMP_RELAXATION <<<
 c       Allow the relaxation to a monthly climatology of potential

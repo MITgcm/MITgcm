@@ -1,11 +1,6 @@
 c   To Do:
 c   ------
 c
-c   Get rid of *clim* files and absorb the code in the non-clim
-c   equivalents.  There is no reason to distinguish climatological
-c   variables from others input fields.  VAriable repeatPeriod
-c   makes ALLOW_CLIM_CYCLIC obsolete.
-c
 c   Many assumptions that are made in the current version should, and
 c   can, be relaxed in later versions:
 c

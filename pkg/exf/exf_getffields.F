@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.21 2003/12/16 23:28:40 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.22 2004/03/17 23:08:09 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -47,17 +47,38 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-      logical output_xC_yC
       integer i, j, bi, bj
 
 c     == end of interface ==
 
 c--   read forcing fields from files and temporal interpolation
 
-#ifdef ALLOW_ATM_WIND
+c     Zonal and meridional wind stress.
+#ifdef USE_EXF_INTERPOLATION
+      call exf_set_uv(
+     &     ustressfile, ustressstartdate, ustressperiod,
+     &     exf_inscal_ustress, ustress, ustress0, ustress1, ustressmask,
+     &     ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
+     &     ustress_nlon, ustress_nlat,
+     &     vstressfile, vstressstartdate, vstressperiod,
+     &     exf_inscal_vstress, vstress, vstress0, vstress1, vstressmask,
+     &     vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
+     &     vstress_nlon, vstress_nlat,
+     &     mycurrenttime, mycurrentiter, mythid )
+#else /* ifndef USE_EXF_INTERPOLATION */
+      call exf_set_gen( 
+     &     ustressfile, ustressstartdate, ustressperiod,
+     &     exf_inscal_ustress,
+     &     ustress, ustress0, ustress1, ustressmask,
+     &     mycurrenttime, mycurrentiter, mythid )
+      call exf_set_gen(
+     &     vstressfile, vstressstartdate, vstressperiod,
+     &     exf_inscal_vstress,
+     &     vstress, vstress0, vstress1, vstressmask,
+     &     mycurrenttime, mycurrentiter, mythid )
+#endif /* USE_EXF_INTERPOLATION */
 
-c     wind is defined on cell center points
-      output_xC_yC = .true.
+#ifdef ALLOW_ATM_WIND
 
 c     Zonal and meridional wind.
 #ifdef USE_EXF_INTERPOLATION
@@ -69,7 +90,7 @@ c     Zonal and meridional wind.
      &     vwindfile, vwindstartdate, vwindperiod,
      &     exf_inscal_vwind, vwind, vwind0, vwind1, vwindmask,
      &     vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
-     &     vwind_nlon, vwind_nlat, output_xC_yC,
+     &     vwind_nlon, vwind_nlat,
      &     mycurrenttime, mycurrentiter, mythid )
 #else /* ifndef USE_EXF_INTERPOLATION */
       call exf_set_gen(
@@ -98,37 +119,27 @@ c     Zonal and meridional wind.
      &     mycurrenttime, mycurrentiter, mythid )
 #endif /* ALLOW_VWIND_CONTROL */
 
-#else  /* ifndef ALLOW_ATM_WIND */
+#endif /* ALLOW_ATM_WIND */
 
-c     wind stress is defined on southwest c-grid velocity points
-      output_xC_yC = .false.
-
-c     Zonal and meridional wind stress.
+c     Atmospheric heat flux.
+      call exf_set_gen  ( 
+     &     hfluxfile, hfluxstartdate, hfluxperiod, exf_inscal_hflux,
+     &     hflux, hflux0, hflux1, hfluxmask, 
 #ifdef USE_EXF_INTERPOLATION
-      call exf_set_uv(
-     &     ustressfile, ustressstartdate, ustressperiod,
-     &     exf_inscal_ustress, ustress, ustress0, ustress1, ustressmask,
-     &     ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
-     &     ustress_nlon, ustress_nlat,
-     &     vstressfile, vstressstartdate, vstressperiod,
-     &     exf_inscal_vstress, vstress, vstress0, vstress1, vstressmask,
-     &     vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
-     &     vstress_nlon, vstress_nlat, output_xC_yC,
+     &     hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
+     &     hflux_nlon, hflux_nlat, xC, yC,
+#endif
      &     mycurrenttime, mycurrentiter, mythid )
-#else /* ifndef USE_EXF_INTERPOLATION */
-      call exf_set_gen( 
-     &     ustressfile, ustressstartdate, ustressperiod,
-     &     exf_inscal_ustress,
-     &     ustress, ustress0, ustress1, ustressmask,
-     &     mycurrenttime, mycurrentiter, mythid )
-      call exf_set_gen(
-     &     vstressfile, vstressstartdate, vstressperiod,
-     &     exf_inscal_vstress,
-     &     vstress, vstress0, vstress1, vstressmask,
-     &     mycurrenttime, mycurrentiter, mythid )
-#endif /* USE_EXF_INTERPOLATION */
 
-#endif /* ifndef ALLOW_ATM_WIND */
+c     Salt flux.
+      call exf_set_gen  ( 
+     &     sfluxfile, sfluxstartdate, sfluxperiod, exf_inscal_sflux,
+     &     sflux, sflux0, sflux1, sfluxmask, 
+#ifdef USE_EXF_INTERPOLATION
+     &     sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
+     &     sflux_nlon, sflux_nlat, xC, yC,
+#endif
+     &     mycurrenttime, mycurrentiter, mythid )
 
 #ifdef ALLOW_ATM_TEMP
 
@@ -199,29 +210,7 @@ c     Precipitation.
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
 
-#else  /* ifndef ALLOW_ATM_TEMP */
-
-c     Atmospheric heat flux.
-      call exf_set_gen  ( 
-     &     hfluxfile, hfluxstartdate, hfluxperiod, exf_inscal_hflux,
-     &     hflux, hflux0, hflux1, hfluxmask, 
-#ifdef USE_EXF_INTERPOLATION
-     &     hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
-     &     hflux_nlon, hflux_nlat, xC, yC,
-#endif
-     &     mycurrenttime, mycurrentiter, mythid )
-
-c     Salt flux.
-      call exf_set_gen  ( 
-     &     sfluxfile, sfluxstartdate, sfluxperiod, exf_inscal_sflux,
-     &     sflux, sflux0, sflux1, sfluxmask, 
-#ifdef USE_EXF_INTERPOLATION
-     &     sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
-     &     sflux_nlon, sflux_nlat, xC, yC,
-#endif
-     &     mycurrenttime, mycurrentiter, mythid )
-
-#endif /* ifndef ALLOW_ATM_TEMP */
+#endif /* ALLOW_ATM_TEMP */
 
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
 c     Net short wave radiative flux.
@@ -283,6 +272,5 @@ c     Atmos. pressure forcing
 #endif
      &     mycurrenttime, mycurrentiter, mythid )
 #endif
-
 
       end
