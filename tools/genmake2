@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.119 2005/03/09 19:57:00 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.120 2005/03/11 07:25:17 mlosch Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -197,9 +197,9 @@ EOF
       end
 EOF
 	makedepend genmake_tc.f > /dev/null 2>&1
+	RV1=$?
 	test -f $MAKEFILE  &&  rm -f $MAKEFILE
 	test -f $MAKEFILE".tst"  &&  mv -f $MAKEFILE".tst" $MAKEFILE
-	RV1=$?
 	if test "x${RV0}${RV1}" = x00 ; then
 	    MAKEDEPEND=makedepend
 	else
