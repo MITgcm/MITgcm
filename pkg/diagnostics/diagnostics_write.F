@@ -14,6 +14,8 @@ C***********************************************************************
 #include "SIZE.h"
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 
       integer myThid, myIter
 
@@ -25,7 +27,7 @@ C***********************************************************************
 C***   Check to see if its time for Diagnostic Output                ***
 C***********************************************************************
       do n=1,nlists
-      if ( mod(freq(n),myIter).eq.0 ) then
+      if ( mod(freq(n),myIter).eq.0 .and. myIter.ne.niter0) then
        call diagout(myThid,myIter,n)
        call clrindx(myThid,n)
       endif
