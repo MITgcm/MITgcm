@@ -70,7 +70,3 @@
 # Open-boundaries
  &PARM06
  &
-
-# KPP Mixing scheme
- &PARM07
- &

@@ -28,7 +28,6 @@
  rigidLid=.FALSE.,
  implicitFreeSurface=.TRUE.,
  eosType='LINEAR',
- GMkBackground=0000.d0,
  readBinaryPrec=32,
  &
 
@@ -83,8 +82,4 @@
 
 # Open-boundaries
  &PARM06
- &
-
-# KPP Mixing scheme
- &PARM07
  &
