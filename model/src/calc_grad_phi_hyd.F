@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.2 2003/02/09 02:00:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.3 2003/02/18 15:30:47 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -8,7 +8,7 @@ C     !ROUTINE: CALC_GRAD_PHI_HYD
 C     !INTERFACE:
       SUBROUTINE CALC_GRAD_PHI_HYD( 
      I                       k, bi, bj, iMin,iMax, jMin,jMax,
-     I                       phiHyd, alphRho, tFld, sFld,
+     I                       phiHydC, alphRho, tFld, sFld,
      O                       dPhiHydX, dPhiHydY,
      I                       myTime, myIter, myThid)
 C     !DESCRIPTION: \bv
@@ -26,12 +26,13 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#include "DYNVARS.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
 C     bi,bj      :: tile index            
 C     iMin,iMax,jMin,jMax :: Loop counters
-C     phiHyd     :: Hydrostatic Potential anomaly 
+C     phiHydC    :: Hydrostatic Potential anomaly 
 C                  (atmos: =Geopotential ; ocean-z: =Pressure/rho)
 C     alphRho    :: Density (z-coord) or specific volume (p-coord)
 C     tFld       :: Potential temp.
@@ -41,7 +42,8 @@ C     myTime :: Current time
 C     myIter :: Current iteration number
 C     myThid :: Instance number for this call of the routine.
       INTEGER k, bi,bj, iMin,iMax, jMin,jMax
-      _RL phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+c     _RL phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL phiHydC(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL alphRho(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL tFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL sFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
@@ -57,40 +59,95 @@ C     == Local variables ==
 C     i,j :: Loop counters
       INTEGER i,j
       _RL varLoc(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL factorZ, factorP, conv_theta2T
 CEOP
 
-      DO j=jMin-1,jMax
-       DO i=iMin-1,iMax
-        varLoc(i,j) = phiHyd(i,j,k)+phi0surf(i,j,bi,bj)
-c       varLoc(i,j) = phiHyd(i,j,k)
+#ifdef NONLIN_FRSURF
+      IF (select_rStar.GE.1 .AND. nonlinFreeSurf.GE.4 ) THEN
+       DO j=jMin-1,jMax
+        DO i=iMin-1,iMax
+         varLoc(i,j) = phiHydC(i,j)*rStarFacC(i,j,bi,bj)
+     &               + phi0surf(i,j,bi,bj)
+        ENDDO
        ENDDO
-      ENDDO
+      ELSE
+#else /* NONLIN_FRSURF */
+      IF (.TRUE.) THEN
+#endif /* NONLIN_FRSURF */
+       DO j=jMin-1,jMax
+        DO i=iMin-1,iMax
+         varLoc(i,j) = phiHydC(i,j)+phi0surf(i,j,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
 
-C-    Zonal gradient
+C--   Zonal & Meridional gradient of potential anomaly
       DO j=jMin,jMax
        DO i=iMin,iMax
         dPhiHydX(i,j) = _recip_dxC(i,j,bi,bj)
      &                *( varLoc(i,j)-varLoc(i-1,j) )
-c    &              *( (phiHyd(i,j,k)-phiHyd(i-1,j,k)) 
-c    &                +(phi0surf(i,j,bi,bj)-phi0surf(i-1,j,bi,bj))
-c    &              *( (phiHyd(i,j,k)+phi0surf(i,j,bi,bj))
-c    &                -(phiHyd(i-1,j,k)+phi0surf(i-1,j,bi,bj))
-c    &               )
+        dPhiHydY(i,j) = _recip_dyC(i,j,bi,bj)
+     &                *( varLoc(i,j)-varLoc(i,j-1) )
        ENDDO
       ENDDO
 
-C-    Meridional gradient
-      DO j=jMin,jMax
-       DO i=iMin,iMax
-        dPhiHydY(i,j) = _recip_dyC(i,j,bi,bj)
-     &                *( varLoc(i,j)-varLoc(i,j-1) )
-c    &              *( (phiHyd(i,j,k)-phiHyd(i,j-1,k)) 
-c    &                +(phi0surf(i,j,bi,bj)-phi0surf(i,j-1,bi,bj))
-c    &              *( (phiHyd(i,j,k)+phi0surf(i,j,bi,bj))
-c    &                -(phiHyd(i,j-1,k)+phi0surf(i,j-1,bi,bj))
-c    &               )
-       ENDDO
-      ENDDO
+#ifdef NONLIN_FRSURF
+      IF (select_rStar.GE.2 .AND. nonlinFreeSurf.GE.1 ) THEN
+       IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
+C--    z* coordinate slope term: rho'/rho0 * Grad_r(g.z)
+        factorZ = gravity*recip_rhoConst*0.5 _d 0
+        DO j=jMin-1,jMax
+         DO i=iMin-1,iMax
+          varLoc(i,j) = etaH(i,j,bi,bj)
+     &                *(1. _d 0 + rC(k)*recip_Rcol(i,j,bi,bj))
+         ENDDO
+        ENDDO
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          dPhiHydX(i,j) = dPhiHydX(i,j)
+     &     +factorZ*(alphRho(i-1,j)+alphRho(i,j))
+     &             *(varLoc(i,j)-varLoc(i-1,j))
+     &             *recip_dxC(i,j,bi,bj)
+          dPhiHydY(i,j) = dPhiHydY(i,j)
+     &     +factorZ*(alphRho(i,j-1)+alphRho(i,j))
+     &             *(varLoc(i,j)-varLoc(i,j-1))
+     &             *recip_dyC(i,j,bi,bj)   
+         ENDDO
+        ENDDO
+       ELSEIF (buoyancyRelation .EQ. 'OCEANICP' ) THEN
+C--    p* coordinate slope term: alpha' * Grad_r( p )
+        factorP = 0.5 _d 0
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          dPhiHydX(i,j) = dPhiHydX(i,j)
+     &     +factorP*(alphRho(i-1,j)+alphRho(i,j))
+     &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i-1,j,bi,bj))
+     &             *rC(k)*recip_dxC(i,j,bi,bj)   
+          dPhiHydY(i,j) = dPhiHydY(i,j)
+     &     +factorP*(alphRho(i,j-1)+alphRho(i,j))
+     &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i,j-1,bi,bj))
+     &             *rC(k)*recip_dyC(i,j,bi,bj)   
+         ENDDO
+        ENDDO
+       ELSEIF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
+C--    p* coordinate slope term: alpha' * Grad_r( p )
+        conv_theta2T = (rC(k)/atm_Po)**atm_kappa
+        factorP = (atm_Rd/rC(k))*conv_theta2T*0.5 _d 0
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          dPhiHydX(i,j) = dPhiHydX(i,j)
+     &     +factorP*(tFld(i-1,j,k,bi,bj)+tFld(i,j,k,bi,bj))
+     &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i-1,j,bi,bj))
+     &             *rC(k)*recip_dxC(i,j,bi,bj)   
+          dPhiHydY(i,j) = dPhiHydY(i,j)
+     &     +factorP*(tFld(i,j-1,k,bi,bj)+tFld(i,j,k,bi,bj))
+     &             *(rStarFacC(i,j,bi,bj)-rStarFacC(i,j-1,bi,bj))
+     &             *rC(k)*recip_dyC(i,j,bi,bj)   
+         ENDDO
+        ENDDO
+       ENDIF
+      ENDIF
+#endif /* NONLIN_FRSURF */
 
 #endif /* INCLUDE_PHIHYD_CALCULATION_CODE */
 
