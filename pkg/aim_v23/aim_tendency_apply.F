@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.5 2004/05/21 17:49:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.6 2004/07/26 03:29:34 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -36,12 +36,25 @@ C     kLev
 CEndOfInterface
 
 #ifdef ALLOW_AIM
+C     == Local variables in common block ==
+C     aim_uStress :: surface stress applied to zonal wind 
+      COMMON /LOCAL_AIM_TENDENCY_APPLY_U/ aim_uStress
+      _RL aim_uStress(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 C     == Local variables ==
 C     i,j  - Loop counters
       INTEGER i, j
       _RL DDTT, uStr_tmp
 
       DDTT = deltaTclock
+
+      IF ( myTime.EQ.startTime .AND. kLev.EQ.1 ) THEN
+C-    Initialise diagnostic array aim_uStress
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         aim_uStress(i,j,bi,bj) = 0.
+        ENDDO
+       ENDDO
+      ENDIF
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( kLev.EQ.Nr .AND. aim_dragStrato.GT.0. ) THEN
@@ -63,16 +76,15 @@ C        is not supposed to be applied in stratosphere
           gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
      &                       + uStr_tmp*gravity*recip_drF(kLev)
      &                       * recip_hFacW(i,j,kLev,bi,bj)
-#ifdef ALLOW_AIM_TAVE
-          USTRtave(i,j,bi,bj) = USTRtave(i,j,bi,bj) + uStr_tmp*DDTT
-#endif
+          aim_uStress(i,j,bi,bj) = uStr_tmp
          ENDIF
         ENDDO
        ENDDO
       ELSE
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( maskW(i,j,kLev,bi,bj) .NE. 0. ) THEN
+         IF ( maskW(i,j,kLev-1,bi,bj) .EQ. 0.
+     &    .AND. maskW(i,j,kLev,bi,bj) .NE. 0. ) THEN
           uStr_tmp = 
      &      -( (1.-maskC(i-1,j,kLev-1,bi,bj))*aim_drag(i-1,j,bi,bj)
      &        +(1.-maskC( i ,j,kLev-1,bi,bj))*aim_drag( i ,j,bi,bj)
@@ -80,14 +92,25 @@ C        is not supposed to be applied in stratosphere
           gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
      &                       + uStr_tmp*gravity*recip_drF(kLev)
      &                       * recip_hFacW(i,j,kLev,bi,bj)
-#ifdef ALLOW_AIM_TAVE
-          USTRtave(i,j,bi,bj) = USTRtave(i,j,bi,bj) + uStr_tmp*DDTT
-#endif
+          aim_uStress(i,j,bi,bj) = uStr_tmp
          ENDIF
         ENDDO
        ENDDO
       ENDIF
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_AIM_TAVE
+      IF (aim_taveFreq.NE.0 .AND. kLev.EQ.Nr) THEN
+        CALL TIMEAVE_CUMULATE( USTRtave, aim_uStress, 1,
+     &                         deltaTclock, bi, bj, myThid ) 
+      ENDIF
+#endif
+#ifdef ALLOW_DIAGNOSTICS
+      IF (usediagnostics .AND. kLev.EQ.Nr) THEN
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'UFLUX   ',0,1,1,bi,bj,aim_uStress)
+      ENDIF
+#endif
 
 #endif /* ALLOW_AIM */
 
@@ -126,12 +149,25 @@ C     kLev
 CEndOfInterface
 
 #ifdef ALLOW_AIM
+C     == Local variables in common block ==
+C     aim_uStress :: surface stress applied to meridional wind 
+      COMMON /LOCAL_AIM_TENDENCY_APPLY_V/ aim_vStress
+      _RL aim_vStress(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
 C     == Local variables ==
 C     Loop counters
       INTEGER i, j
       _RL DDTT, vStr_tmp
 
       DDTT = deltaTclock
+
+      IF ( myTime.EQ.startTime .AND. kLev.EQ.1 ) THEN
+C-    Initialise diagnostic array aim_uStress
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         aim_vStress(i,j,bi,bj) = 0.
+        ENDDO
+       ENDDO
+      ENDIF
 
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       IF ( kLev.EQ.Nr .AND. aim_dragStrato.GT.0. ) THEN
@@ -153,16 +189,15 @@ C        is not supposed to be applied in the stratosphere
           gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
      &                       + vStr_tmp*gravity*recip_drF(kLev)
      &                       * recip_hFacS(i,j,kLev,bi,bj)
-#ifdef ALLOW_AIM_TAVE
-          VSTRtave(i,j,bi,bj) = VSTRtave(i,j,bi,bj) + vStr_tmp*DDTT
-#endif
+          aim_vStress(i,j,bi,bj) = vStr_tmp
          ENDIF
         ENDDO
        ENDDO
       ELSE
        DO j=jMin,jMax
         DO i=iMin,iMax
-         IF ( maskS(i,j,kLev,bi,bj) .NE. 0. ) THEN
+         IF ( maskS(i,j,kLev-1,bi,bj) .EQ. 0.
+     &    .AND. maskS(i,j,kLev,bi,bj) .NE. 0. ) THEN
           vStr_tmp = 
      &     -( (1.-maskC(i,j-1,kLev-1,bi,bj))*aim_drag(i,j-1,bi,bj)
      &       +(1.-maskC(i, j ,kLev-1,bi,bj))*aim_drag(i, j ,bi,bj)
@@ -170,14 +205,25 @@ C        is not supposed to be applied in the stratosphere
           gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
      &                       + vStr_tmp*gravity*recip_drF(kLev)
      &                       * recip_hFacS(i,j,kLev,bi,bj)
-#ifdef ALLOW_AIM_TAVE
-          VSTRtave(i,j,bi,bj) = VSTRtave(i,j,bi,bj) + vStr_tmp*DDTT
-#endif
+          aim_vStress(i,j,bi,bj) = vStr_tmp
          ENDIF
         ENDDO
        ENDDO
       ENDIF
 c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_AIM_TAVE
+      IF (aim_taveFreq.NE.0 .AND. kLev.EQ.Nr) THEN
+        CALL TIMEAVE_CUMULATE( VSTRtave, aim_vStress, 1,
+     &                         deltaTclock, bi, bj, myThid ) 
+      ENDIF
+#endif
+#ifdef ALLOW_DIAGNOSTICS
+      IF (usediagnostics .AND. kLev.EQ.Nr) THEN
+        CALL FILL_DIAGNOSTICS(myThid,
+     &            'VFLUX   ',0,1,1,bi,bj,aim_vStress)
+      ENDIF
+#endif
 
 #endif /* ALLOW_AIM */
 
