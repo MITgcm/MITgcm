@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.257 2004/02/23 19:19:15 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.258 2004/02/23 19:20:16 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -14,6 +14,7 @@ o paramter list of CALL ADTHE_MAIN_LOOP
 o added initial do_the_model_io to ecco
 o set all ...Freq to zero after cost_final
   taveFreq, dumpFreq, pChkptFreq
+o MAIN and ECCO differentiability restored
 
 checkpoint52j_post
 o fix nchklev in tamc.h for global_ocean...
