@@ -310,6 +310,13 @@ C diagarrays common
       CHARACTER*8   CTRAC3  
       CHARACTER*8   CTRAC4  
       CHARACTER*8   CTRAC5  
+      CHARACTER*8   CDICBIOA
+      CHARACTER*8   CDICCARB
+      CHARACTER*8   CDICTFLX
+      CHARACTER*8   CDICOFLX
+      CHARACTER*8   CDICCFLX
+      CHARACTER*8   CDICPCO2
+      CHARACTER*8   CDICPHAV
 
       EQUIVALENCE ( CDIAG( 1) ,  CUFLUX  )
       EQUIVALENCE ( CDIAG( 2) ,  CVFLUX  )
@@ -588,6 +595,13 @@ C diagarrays common
       EQUIVALENCE ( CDIAG(283),  CTRAC3    )
       EQUIVALENCE ( CDIAG(284),  CTRAC4    )
       EQUIVALENCE ( CDIAG(285),  CTRAC5    )
+      EQUIVALENCE ( CDIAG(286),  CDICBIOA  )
+      EQUIVALENCE ( CDIAG(287),  CDICCARB  )
+      EQUIVALENCE ( CDIAG(288),  CDICTFLX  )
+      EQUIVALENCE ( CDIAG(289),  CDICOFLX  )
+      EQUIVALENCE ( CDIAG(290),  CDICCFLX  )
+      EQUIVALENCE ( CDIAG(291),  CDICPCO2  )
+      EQUIVALENCE ( CDIAG(292),  CDICPHAV  )
 
       integer       iUFLUX   , kUFLUX   , nUFLUX
       integer       iVFLUX   , kVFLUX   , nVFLUX
@@ -866,6 +880,13 @@ C diagarrays common
       integer       iTRAC3   , kTRAC3 ,   nTRAC3
       integer       iTRAC4   , kTRAC4 ,   nTRAC4
       integer       iTRAC5   , kTRAC5 ,   nTRAC5
+      integer       iDICBIOA , kDICBIOA , nDICBIOA
+      integer       iDICCARB , kDICCARB , nDICCARB
+      integer       iDICTFLX , kDICTFLX , nDICTFLX
+      integer       iDICOFLX , kDICOFLX , nDICOFLX
+      integer       iDICCFLX , kDICCFLX , nDICCFLX
+      integer       iDICPCO2 , kDICPCO2 , nDICPCO2
+      integer       iDICPHAV , kDICPHAV , nDICPHAV
 
 
 c Diagnostic Pointers
@@ -1147,6 +1168,13 @@ c -------------------
       EQUIVALENCE ( IDIAG(283),  ITRAC3    )
       EQUIVALENCE ( IDIAG(284),  ITRAC4    )
       EQUIVALENCE ( IDIAG(285),  ITRAC5    )
+      EQUIVALENCE ( IDIAG(286),  IDICBIOA  )
+      EQUIVALENCE ( IDIAG(287),  IDICCARB  )
+      EQUIVALENCE ( IDIAG(288),  IDICTFLX  )
+      EQUIVALENCE ( IDIAG(289),  IDICOFLX  )
+      EQUIVALENCE ( IDIAG(290),  IDICCFLX  )
+      EQUIVALENCE ( IDIAG(291),  IDICPCO2  )
+      EQUIVALENCE ( IDIAG(292),  IDICPHAV  )
 
 
 c Diagnostic Levels
@@ -1428,6 +1456,13 @@ c -----------------
       EQUIVALENCE ( KDIAG(283),  KTRAC3    )
       EQUIVALENCE ( KDIAG(284),  KTRAC4    )
       EQUIVALENCE ( KDIAG(285),  KTRAC5    )
+      EQUIVALENCE ( KDIAG(286),  KDICBIOA  )
+      EQUIVALENCE ( KDIAG(287),  KDICCARB  )
+      EQUIVALENCE ( KDIAG(288),  KDICTFLX  )
+      EQUIVALENCE ( KDIAG(289),  KDICOFLX  )
+      EQUIVALENCE ( KDIAG(290),  KDICCFLX  )
+      EQUIVALENCE ( KDIAG(291),  KDICPCO2  )
+      EQUIVALENCE ( KDIAG(292),  KDICPHAV  )
 
 
 c Diagnostic Counters
@@ -1709,6 +1744,13 @@ c -------------------
       EQUIVALENCE ( NDIAG(283),  NTRAC3    )
       EQUIVALENCE ( NDIAG(284),  NTRAC4    )
       EQUIVALENCE ( NDIAG(285),  NTRAC5    )
+      EQUIVALENCE ( NDIAG(286),  NDICBIOA  )
+      EQUIVALENCE ( NDIAG(287),  NDICCARB  )
+      EQUIVALENCE ( NDIAG(288),  NDICTFLX  )
+      EQUIVALENCE ( NDIAG(289),  NDICOFLX  )
+      EQUIVALENCE ( NDIAG(290),  NDICCFLX  )
+      EQUIVALENCE ( NDIAG(291),  NDICPCO2  )
+      EQUIVALENCE ( NDIAG(292),  NDICPHAV  )
 
 
 C diagnostics common

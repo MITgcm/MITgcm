@@ -347,6 +347,13 @@ c ----------------
       cdiag(283) = 'TRAC3   '
       cdiag(284) = 'TRAC4   '
       cdiag(285) = 'TRAC5   '
+      cdiag(286) = 'DICBIOA '
+      cdiag(287) = 'DICCARB '
+      cdiag(288) = 'DICTFLX '
+      cdiag(289) = 'DICOFLX '
+      cdiag(290) = 'DICCFLX '
+      cdiag(291) = 'DICPCO2 '
+      cdiag(292) = 'DICPHAV '
 
 c Diagnostic Descriptions
 c ----------------------------------------------------------------------
@@ -703,11 +710,18 @@ c ----------------------------------------------------------------------
       tdiag(278)  = 'Zonal Mass-Weighted Transp of Tracer 5 (m-kg/s-kg)'
       tdiag(279)  = 'Merid Mass-Weighted Transp of Tracer 5 (m-kg/s-kg)'
       tdiag(280)  = 'Vert  Mass-Weighted Transp of Tracer 5 (m-kg/s-kg)'
-      tdiag(281)  = 'Mass-Weighted Tracer 1 (kgkg)'
-      tdiag(282)  = 'Mass-Weighted Tracer 2 (kgkg)'
-      tdiag(283)  = 'Mass-Weighted Tracer 3 (kgkg)'
-      tdiag(284)  = 'Mass-Weighted Tracer 4 (kgkg)'
-      tdiag(285)  = 'Mass-Weighted Tracer 5 (kgkg)'
+      tdiag(281)  = 'Mass-Weighted Tracer 1 ()'
+      tdiag(282)  = 'Mass-Weighted Tracer 2 ()'
+      tdiag(283)  = 'Mass-Weighted Tracer 3 ()'
+      tdiag(284)  = 'Mass-Weighted Tracer 4 ()'
+      tdiag(285)  = 'Mass-Weighted Tracer 5 ()'
+      tdiag(286)  = 'Biological Productivity (mol/m3/s)'
+      tdiag(287)  = 'Carbonate chg-biol prod and remin (mol eq/m3/s)'
+      tdiag(288)  = 'Tendency of DIC due to air-sea exch (mol/m3/s)'
+      tdiag(289)  = 'Tendency of O2 due to air-sea exch (mol/m3/s)'
+      tdiag(290)  = 'Flux of CO2 - air-sea exch (mol/m2/s)'
+      tdiag(291)  = 'Partial Pressure of CO2 (atm)'
+      tdiag(292)  = 'pH (dimensionless)'
 
 c Diagnostic Units
 c ----------------
@@ -996,6 +1010,13 @@ c ----------------
       udiag(283) = 'kg/kg           '
       udiag(284) = 'kg/kg           '
       udiag(285) = 'kg/kg           '
+      udiag(286) = 'mol/m3/sec      '
+      udiag(287) = 'mol eq/m3/sec   '
+      udiag(288) = 'mol/m3/sec      '
+      udiag(289) = 'mol/m3/sec      '
+      udiag(290) = 'mol/m2/sec      '
+      udiag(291) = 'atm             '
+      udiag(292) = 'dimensionless   '
 
 c Diagnostic Parms
 c ----------------
@@ -1248,7 +1269,7 @@ c ----------------
       gdiag(247) = 'UU   248M       '
       gdiag(248) = 'VV   247M       '
       gdiag(249) = 'WM      L       '
-      gdiag(250) = 'UZ      M       '
+      gdiag(250) = 'UZ   250M       '
       gdiag(251) = 'UU   252M       '
       gdiag(252) = 'VV   251M       '
       gdiag(253) = 'WM      M       '
@@ -1284,6 +1305,13 @@ c ----------------
       gdiag(283) = 'SM P    M       '
       gdiag(284) = 'SM P    M       '
       gdiag(285) = 'SM P    M       '
+      gdiag(286) = 'SM P    M       '
+      gdiag(287) = 'SM P    M       '
+      gdiag(288) = 'SM P    L       '
+      gdiag(289) = 'SM P    L       '
+      gdiag(290) = 'SM P    L       '
+      gdiag(291) = 'SM P    M       '
+      gdiag(292) = 'SM P    M       '
         
 c Diagnostic Levels
 c -----------------
@@ -1572,6 +1600,13 @@ c -----------------
       KDIAG(283)= Nr
       KDIAG(284)= Nr
       KDIAG(285)= Nr
+      KDIAG(286)= Nr
+      KDIAG(287)= Nr
+      KDIAG(288)= 1
+      KDIAG(289)= 1
+      KDIAG(290)= 1
+      KDIAG(291)= 1
+      KDIAG(292)= 1
 
       do n=1,ndiagt
       idiag (n) = 0

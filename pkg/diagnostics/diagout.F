@@ -35,6 +35,9 @@ C***********************************************************************
       _RL qtmp1(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr+Nrphys,Nsx,Nsy)
       _RL qtmp2(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr+Nrphys,Nsx,Nsy)
       _RL undef, getcon
+      integer ilnblnk
+      external ilnblnk
+      integer ilen
 
       equivalence (     parms1 , parse1(1) )
       equivalence ( mate_index , parse1(6) )
@@ -48,7 +51,8 @@ C***********************************************************************
       glf = .FALSE.
       WRITE(suff,'(I10.10)') myIter
       pref = fnames(listnum)
-      WRITE( fn, '(A,A,A)' ) pref(1:8),'.',suff(1:10)
+      ilen=ilnblnk( pref )
+      WRITE( fn, '(A,A,A)' ) pref(1:ilen),'.',suff(1:10)
 
       do n=1,nfields(listnum)
        do m=1,ndiagt

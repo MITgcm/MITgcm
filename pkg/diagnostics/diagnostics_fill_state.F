@@ -17,8 +17,8 @@
 
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
+          do j = 1,sNy
+          do i = 1,sNx
            dummy(i,j,1,bi,bj) = etaN(i,j,bi,bj)*etaN(i,j,bi,bj)
           enddo
           enddo
@@ -35,8 +35,8 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
+          do j = 1,sNy
+          do i = 1,sNx
            dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*uVel(i,j,K,bi,bj)
           enddo
           enddo
@@ -48,8 +48,8 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
+          do j = 1,sNy
+          do i = 1,sNx
            dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*vVel(i,j,K,bi,bj)
           enddo
           enddo
@@ -61,8 +61,8 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
+          do j = 1,sNy
+          do i = 1,sNx
            dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*wVel(i,j,K,bi,bj)
           enddo
           enddo
@@ -74,8 +74,8 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
+          do j = 1,sNy
+          do i = 1,sNx
            dummy(i,j,K,bi,bj) = theta(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
           enddo
           enddo
@@ -87,8 +87,8 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
+          do j = 1,sNy
+          do i = 1,sNx
            dummy(i,j,K,bi,bj) = salt(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
           enddo
           enddo
@@ -100,8 +100,8 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
+          do j = 1,sNy
+          do i = 1,sNx
            dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*vVel(i,j,K,bi,bj)
           enddo
           enddo
@@ -113,8 +113,8 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
+          do j = 1,sNy
+          do i = 1,sNx
            dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
           enddo
           enddo
@@ -126,8 +126,8 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
+          do j = 1,sNy
+          do i = 1,sNx
            dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
           enddo
           enddo
@@ -138,10 +138,22 @@
 
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
+         do K=2,Nr
+          do j = 1,sNy
+          do i = 1,sNx
+           dummy(i,j,K,bi,bj) = 0.
+          enddo
+          enddo
+         enddo
+        enddo
+        enddo
+        do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+         do K=2,Nr
+          do j = 1,sNy
+          do i = 1,sNx
+           dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*0.5*
+     .                 (theta(i,j,K,bi,bj)+theta(i,j,K-1,bi,bj))
           enddo
           enddo
          enddo
@@ -152,8 +164,8 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
+          do j = 1,sNy
+          do i = 1,sNx
            dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
           enddo
           enddo
@@ -165,8 +177,8 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
+          do j = 1,sNy
+          do i = 1,sNx
            dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
           enddo
           enddo
@@ -178,9 +190,10 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
+          do j = 1,sNy
+          do i = 1,sNx
+           dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*0.5*
+     .                 (salt(i,j,K,bi,bj)+salt(i,j,K-1,bi,bj))
           enddo
           enddo
          enddo
@@ -191,8 +204,8 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
+          do j = 1,sNy
+          do i = 1,sNx
            dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*hFacW(i,j,K,bi,bj)
           enddo
           enddo
@@ -204,8 +217,8 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
+          do j = 1,sNy
+          do i = 1,sNx
            dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*hFacS(i,j,K,bi,bj)
           enddo
           enddo
@@ -217,9 +230,10 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
+          do j = 1,sNy
+          do i = 1,sNx
+           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*
+     .         0.5*(theta(i,j,K,bi,bj)+theta(i-1,j,K,bi,bj))
      .                                * hFacW(i,j,K,bi,bj)
           enddo
           enddo
@@ -231,9 +245,10 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
+          do j = 1,sNy
+          do i = 1,sNx
+           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*
+     .         0.5*(theta(i,j,K,bi,bj)+theta(i,j-1,K,bi,bj))
      .                                * hFacW(i,j,K,bi,bj)
           enddo
           enddo
@@ -245,9 +260,10 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
+          do j = 1,sNy
+          do i = 1,sNx
+           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*
+     .         0.5*(salt(i,j,K,bi,bj)+salt(i-1,j,K,bi,bj))
      .                                * hFacW(i,j,K,bi,bj)
           enddo
           enddo
@@ -259,9 +275,10 @@
         do bj = myByLo(myThid), myByHi(myThid)
         do bi = myBxLo(myThid), myBxHi(myThid)
          do K=1,Nr
-          do j = 1-OLy,sNy+Oly
-          do i = 1-OLx,sNx+Olx
-           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
+          do j = 1,sNy
+          do i = 1,sNx
+           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*
+     .         0.5*(salt(i,j,K,bi,bj)+salt(i,j-1,K,bi,bj))
      .                                * hFacW(i,j,K,bi,bj)
           enddo
           enddo
