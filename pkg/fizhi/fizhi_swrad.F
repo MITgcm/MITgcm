@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.7 2004/07/13 23:44:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.8 2004/07/14 15:49:07 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -46,8 +46,8 @@ c ---------------
 c Local Variables
 c ---------------
       integer   i,j,L,nn,nsecf
-      integer   nb2,ntmstp,nymd2,nhms2
-      real      getcon,grav,cp,undef,pcheck
+      integer   ntmstp,nymd2,nhms2
+      real      getcon,grav,cp,undef
       real      ra,alf,reffw,reffi,tminv
 
       parameter ( reffw = 10.0 )   
@@ -75,7 +75,7 @@ c ---------------
       real TZL(ISTRIP,lm)
       real OZL(ISTRIP,lm)
       real PLE(ISTRIP,lm+1)
-      real OSZ(ISTRIP)
+      real COSZ(ISTRIP)
       real dpstrip(ISTRIP,lm)
 
       real albuvdr(ISTRIP),albuvdf(ISTRIP)
@@ -1033,8 +1033,8 @@ c-----pre-computed table
 
 c-----include the pre-computed table for cai
 
-      include 'cai.dat'
-      save caib,caif
+#include "cai-dat.h"
+#     save caib,caif
 
 
 c-----clouds within each of the high, middle, and low clouds are
@@ -2508,8 +2508,8 @@ c-----temporary array
 c********************************************************************
 c-----include co2 look-up table
 
-      include 'cah.dat'
-      save cah
+#include "cah-dat.h"
+#     save cah
  
 c********************************************************************
 c-----table look-up for the reduction of clear-sky solar
