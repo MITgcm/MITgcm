@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.116 2004/07/06 00:54:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.117 2004/07/09 22:32:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -175,7 +175,7 @@ C--   Continuous equation parameters
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
      & cg2dMaxIters, cg2dChkResFreq, cg2dTargetResidual, 
-     & cg2dTargetResWunit, cg2dpcOffDFac,
+     & cg2dTargetResWunit, cg2dpcOffDFac, cg2dPreCondFreq,
      & cg3dMaxIters, cg3dChkResFreq, cg3dTargetResidual
 
 C--   Time stepping parammeters

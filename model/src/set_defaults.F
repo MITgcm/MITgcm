@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.65 2004/07/06 00:54:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.66 2004/07/09 22:32:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -211,6 +211,7 @@ C--   Elliptic solver parameters
       cg2dTargetResWunit = -1.
       cg2dChkResFreq     = 1
       cg2dpcOffDFac      = 0.51D0
+      cg2dPreCondFreq    = 1
       cg3dMaxIters       = 150
       cg3dTargetResidual = 1.D-7
       cg3dChkResFreq     = 1

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.53 2004/07/07 22:23:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.54 2004/07/09 22:32:35 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -327,6 +327,11 @@ c    &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
       CALL WRITE_0D_R8( cg2dTargetResidual, INDEX_NONE,
      & 'cg2dTargetResidual =',
      &'   /* 2d con. grad target residual  */')
+      CALL WRITE_0D_R8( cg2dTargetResWunit, INDEX_NONE,
+     & 'cg2dTargetResWunit =',
+     &'   /* CG2d target residual [W units] */')
+      CALL WRITE_0D_I( cg2dPreCondFreq, INDEX_NONE,'cg2dPreCondFreq =',
+     &'   /* Freq. for updating cg2d preconditioner */')
 
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.5 2003/12/17 05:05:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.6 2004/07/09 22:32:35 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,7 +54,16 @@ C     faceArea - Temporary used to hold cell face areas.
       INTEGER I, J, K
       _RL     faceArea
       _RL     pW_tmp, pS_tmp
+      LOGICAL updatePreCond
 CEOP
+
+C--   Decide when to update cg2d Preconditioner :
+      IF ( cg2dPreCondFreq.EQ.0 ) THEN
+        updatePreCond = .FALSE.
+      ELSE
+        updatePreCond = ( myIter.EQ.nIter0 )
+        IF ( MOD(myIter,cg2dPreCondFreq).EQ.0 ) updatePreCond=.TRUE.
+      ENDIF
 
 C--   Initialise laplace operator
 C     aW2d: integral in Z Ax/dX
@@ -105,8 +114,9 @@ C     aS2d: integral in Z Ay/dY
      &                     *implicSurfPress*implicDiv2DFlow
          ENDDO
         ENDDO
+        IF ( updatePreCond ) THEN
 C--   Start to compute preconditioner matrix (use cg2d_q as temporary array)
-        DO J=1,sNy
+         DO J=1,sNy
          DO I=1,sNx
           cg2d_q(I,J,bi,bj) = -(
      &     aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
@@ -115,10 +125,13 @@ C--   Start to compute preconditioner matrix (use cg2d_q as temporary array)
      &     rA(I,J,bi,bj)/deltaTMom/deltaTfreesurf
      &    )
          ENDDO
-        ENDDO
+         ENDDO
+        ENDIF
+C-    end bi,bj loops
        ENDDO
       ENDDO
       
+      IF ( updatePreCond ) THEN
 C--   Update overlap regions
       _EXCH_XY_R8(cg2d_q, myThid)
 
@@ -150,6 +163,8 @@ C--   Initialise preconditioner
         ENDDO
        ENDDO
       ENDDO
+C-    if update Preconditioner : end
+      ENDIF
 
 #endif /* NONLIN_FRSURF */
 

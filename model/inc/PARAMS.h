@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.118 2004/07/07 22:22:18 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.119 2004/07/09 22:31:16 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -110,6 +110,8 @@ C     cg2dMaxIters        :: Maximum number of iterations in the
 C                           two-dimensional con. grad solver.
 C     cg2dChkResFreq      :: Frequency with which to check residual
 C                           in con. grad solver.
+C     cg2dPreCondFreq     :: Frequency for updating cg2d preconditioner
+C                            (non-linear free-surf.)
 C     cg3dMaxIters        :: Maximum number of iterations in the
 C                           three-dimensional con. grad solver.
 C     cg3dChkResFreq      :: Frequency with which to check residual
@@ -134,7 +136,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
 
       COMMON /PARM_I/
      &        cg2dMaxIters,
-     &        cg2dChkResFreq,
+     &        cg2dChkResFreq, cg2dPreCondFreq,
      &        cg3dMaxIters,
      &        cg3dChkResFreq,
      &        nIter0, nTimeSteps, nEndIter,
@@ -148,6 +150,7 @@ C     debugLevel          :: debug level selector: higher -> more writing
      &        debugLevel
       INTEGER cg2dMaxIters
       INTEGER cg2dChkResFreq
+      INTEGER cg2dPreCondFreq
       INTEGER cg3dMaxIters
       INTEGER cg3dChkResFreq
       INTEGER nIter0
@@ -356,7 +359,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL writePickupWithTracer
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
-C     gg2dTargetResidual
+C     cg2dTargetResidual
 C          :: Target residual for cg2d solver; no unit (RHS normalisation)
 C     cg2dTargetResWunit
 C          :: Target residual for cg2d solver; W unit (No RHS normalisation)
