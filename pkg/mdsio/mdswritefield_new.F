@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.3 2004/03/15 01:37:22 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.4 2004/03/24 21:24:20 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -265,9 +265,9 @@ C Loop over all tiles
 
            if (filePrec .eq. precFloat32) then
             if (arrType .eq. 'RS') then
-             call MDS_SEG4toRS( j,bi,bj,k,nNz, r4seg, .FALSE., arr )
+             call MDS_SEG4toRS( j,bi,bj,k,nNzdim, r4seg, .FALSE., arr )
             elseif (arrType .eq. 'RL') then
-             call MDS_SEG4toRL( j,bi,bj,k,nNz, r4seg, .FALSE., arr )
+             call MDS_SEG4toRL( j,bi,bj,k,nNzdim, r4seg, .FALSE., arr )
             else
              write(msgbuf,'(a)')
      &        ' MDSWRITEFIELD: illegal value for arrType'
@@ -280,9 +280,9 @@ C Loop over all tiles
                         write(dUnit,rec=irec) r4seg
            elseif (filePrec .eq. precFloat64) then
             if (arrType .eq. 'RS') then
-             call MDS_SEG8toRS( j,bi,bj,k,nNz, r8seg, .FALSE., arr )
+             call MDS_SEG8toRS( j,bi,bj,k,nNzdim, r8seg, .FALSE., arr )
             elseif (arrType .eq. 'RL') then
-             call MDS_SEG8toRL( j,bi,bj,k,nNz, r8seg, .FALSE., arr )
+             call MDS_SEG8toRL( j,bi,bj,k,nNzdim, r8seg, .FALSE., arr )
             else
              write(msgbuf,'(a)')
      &         ' MDSWRITEFIELD: illegal value for arrType'
@@ -350,9 +350,9 @@ C If we are writing to a tiled MDS file then we open each one here
            endif
            if (filePrec .eq. precFloat32) then
             if (arrType .eq. 'RS') then
-             call MDS_SEG4toRS( j,bi,bj,k,nNz, r4seg, .FALSE., arr )
+             call MDS_SEG4toRS( j,bi,bj,k,nNzdim, r4seg, .FALSE., arr )
             elseif (arrType .eq. 'RL') then
-             call MDS_SEG4toRL( j,bi,bj,k,nNz, r4seg, .FALSE., arr )
+             call MDS_SEG4toRL( j,bi,bj,k,nNzdim, r4seg, .FALSE., arr )
             else
              write(msgbuf,'(a)')
      &         ' MDSWRITEFIELD: illegal value for arrType'
@@ -365,9 +365,9 @@ C If we are writing to a tiled MDS file then we open each one here
             write(dUnit,rec=irec) r4seg
            elseif (filePrec .eq. precFloat64) then
             if (arrType .eq. 'RS') then
-             call MDS_SEG8toRS( j,bi,bj,k,nNz, r8seg, .FALSE., arr )
+             call MDS_SEG8toRS( j,bi,bj,k,nNzdim, r8seg, .FALSE., arr )
             elseif (arrType .eq. 'RL') then
-             call MDS_SEG8toRL( j,bi,bj,k,nNz, r8seg, .FALSE., arr )
+             call MDS_SEG8toRL( j,bi,bj,k,nNzdim, r8seg, .FALSE., arr )
             else
              write(msgbuf,'(a)')
      &         ' MDSWRITEFIELD: illegal value for arrType'
