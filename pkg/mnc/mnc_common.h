@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.1 2004/01/05 06:20:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.2 2004/01/06 23:19:27 edhill Exp $
 C $Name:  $
 
 C     ==========================================
@@ -57,6 +57,10 @@ C     mnc_fv_ids (fi,-) : nVar, n1,ID1, n2,ID2, ...
 C     .                         |       |
 C     mnc_v_names (vi)  :   <---+-------+
 C     mnc_v_units (vi)  :   <---+-------+
+C
+C     fi  :  file index
+C     vi  :  variable index
+C     di  :  dimension index
 
       integer MNC_MAX_ID, MNC_MAX_CHAR, MNC_MAX_INFO
       parameter ( MNC_MAX_ID   =  500 )

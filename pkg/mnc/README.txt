@@ -1,4 +1,7 @@
 
+API Discussions:
+================
+
 As discussed in our group meeting of 2003-12-17 (AJA, CNH, JMC, AM,
 PH, EH3), the NetCDF interface should resemble the following FORTRAN
 subroutines:
@@ -34,6 +37,7 @@ using a simple interface such as:
 
   MNC_INIT(		 myThid )
 
+  MNC_FILE_CREATE(	 myThid, fname )
   MNC_FILE_OPEN(	 myThid, fname, itype )
   MNC_FILE_ADD_ATTR_STR( myThid, fname, atname, sval )
   MNC_FILE_ADD_ATTR_INT( myThid, fname, atname, ival )
@@ -42,10 +46,10 @@ using a simple interface such as:
   MNC_FILE_READ_HEADER(  myThid, fname )
 
   MNC_DIM_INIT(		 myThid, dname, dunits, dlen )
+  MNC_DIM_REMOVE(	 myThid, dname )
 
   MNC_GRID_INIT(	 myThid, fname, gname, ndim, dnames )
-  MNC_GRID_SET_XY_1DLL(	 myThid, fname, gname, lats, lons )
-  MNC_GRID_SET_XY_2DLL(	 myThid, fname, gname, lats, lons )
+  MNC_GRID_SET_LL(	 myThid, fname, gname, type, lats, lons )
 
   MNC_VAR_INIT_DBL(	 myThid, fname, gname, vname, fillval )
   MNC_VAR_INIT_REAL(	 myThid, fname, gname, vname, fillval )
@@ -62,3 +66,11 @@ using a simple interface such as:
 The above interface is powerful yet easy to use (easier than the
 entire NetCDF interface) since it helps the user keep track of the
 associations between files, "grids", variables, and dimensions.
+
+
+To-Do:
+======
+
+ 1) CNH pointed out that grid interpolation needs to be handled
+    "on-the-fly" since pre-processing would result in overly large
+    input files.  We need an interpolation API...

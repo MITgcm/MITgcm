@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.1 2004/01/05 06:20:08 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.2 2004/01/06 23:19:27 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -40,5 +40,6 @@ C     Is the file open?
       ENDIF
       fid = mnc_f_info(ind,2)
 
+      RETURN
       END
 

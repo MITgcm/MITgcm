@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.1 2004/01/05 06:20:08 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.2 2004/01/06 23:19:27 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -25,6 +25,7 @@ C     Locals
         CALL print_error( msgbuf, mythid )
         stop 'ABNORMAL END: package MNC'
       ENDIF
+      RETURN
       END
 
 C==================================================================

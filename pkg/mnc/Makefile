@@ -17,6 +17,7 @@ TEST_HEADERS = PACKAGES_CONFIG.h CPP_OPTIONS.h
 TEST_FILES =   mnc_test_utils.F
 
 FILES = \
+  mnc_dim.F \
   mnc_file.F \
   mnc_grid.F \
   mnc_init.F \
