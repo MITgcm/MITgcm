@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.115 2005/01/06 15:09:54 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.116 2005/01/06 15:32:16 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1722,14 +1722,14 @@ for n in $names ; do
 	    fi
 	done
 	if test "x$has_pack" = xf ; then
-	    undef=`echo "ALLOW_$n" | $AWK '{print toupper($0)}'`
+	    undef=`echo "ALLOW_$n" | sed -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
             DISABLED_PACKAGES="$DISABLED_PACKAGES -U$undef"
 	fi
     fi
 done
 ENABLED_PACKAGES=
 for i in $PACKAGES ; do
-    def=`echo "ALLOW_$i" | $AWK '{print toupper($0)}'`
+    def=`echo "ALLOW_$i" | sed -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
     ENABLED_PACKAGES="$ENABLED_PACKAGES -D$def"
 #eh3 DEFINES="$DEFINES -D$def"
 
