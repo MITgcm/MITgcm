@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.27 2004/09/24 16:52:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.28 2004/09/27 14:45:09 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -441,6 +441,7 @@ C--   Divergence of fluxes
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB
+     &   .AND. tracerIdentity.EQ.GAD_TEMPERATURE
      &   .AND. k.EQ.2 .AND. myIter.EQ.1+nIter0
      &   .AND. nPx.EQ.1 .AND. nPy.EQ.1
      &   .AND. useCubedSphereExchange ) THEN
