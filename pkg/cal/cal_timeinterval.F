@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_timeinterval.F,v 1.1 2001/05/14 22:07:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_timeinterval.F,v 1.2 2003/10/07 16:35:04 dimitri Exp $
 
 #include "CAL_CPPOPTIONS.h"
 
@@ -67,13 +67,13 @@ c     == end of interface ==
       if (timeunit .eq. 'secs') then
 
         date(1) = int(timeint/float(secondsperday))
-        nsecs   = int(timeint - float(date(1)*secondsperday))
+        nsecs   = int(timeint - float(date(1)) * float(secondsperday))
 
       else if (timeunit .eq. 'model') then
 
         date(1) = int(timeint*modelstep/float(secondsperday))
         nsecs   = int(timeint*modelstep -
-     &                float(date(1)*secondsperday))
+     &                float(date(1)) * float(secondsperday))
 
       else
 
