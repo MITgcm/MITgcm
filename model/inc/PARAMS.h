@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.124 2004/09/10 12:19:29 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.125 2004/09/15 21:23:32 edhill Exp $
 C $Name:  $
 C
 
@@ -268,7 +268,7 @@ C     pickup_read_mdsio  :: use mdsio to read  pickups
 C     pickup_write_immed :: echo the pickup immediately (for conversion)
 C     timeave_mdsio      :: use mdsio for timeave output
 C     snapshot_mdsio     :: use mdsio for "snapshot" (dumpfreq/diagfreq) output
-C     monitor_mdsio      :: use mdsio for monitor output
+C     monitor_stdio      :: use stdio for monitor output
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid, usingCylindricalGrid,
      & no_slip_sides,no_slip_bottom,
@@ -297,7 +297,7 @@ C     monitor_mdsio      :: use mdsio for monitor output
      & usePickupBeforeC35, usePickupBeforeC54, debugMode,
      & readPickupWithTracer, writePickupWithTracer,
      & pickup_read_mdsio, pickup_write_mdsio, pickup_write_immed,
-     & timeave_mdsio, snapshot_mdsio, monitor_mdsio
+     & timeave_mdsio, snapshot_mdsio, monitor_stdio
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingCylindricalGrid
@@ -370,7 +370,7 @@ C     monitor_mdsio      :: use mdsio for monitor output
       LOGICAL writePickupWithTracer
       LOGICAL pickup_read_mdsio, pickup_write_mdsio
       LOGICAL pickup_write_immed
-      LOGICAL timeave_mdsio, snapshot_mdsio, monitor_mdsio
+      LOGICAL timeave_mdsio, snapshot_mdsio, monitor_stdio
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual

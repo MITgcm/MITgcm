@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.121 2004/09/10 12:19:29 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.122 2004/09/15 21:23:32 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -745,7 +745,7 @@ C     default to .FALSE., the logic here is simple:
       IF ( (.NOT. snapshot_ioinc) 
      &     .AND. snapshot_mnc ) snapshot_mdsio = .FALSE.
       IF ( (.NOT. monitor_ioinc) 
-     &     .AND. monitor_mnc ) monitor_mdsio = .FALSE.
+     &     .AND. monitor_mnc ) monitor_stdio = .FALSE.
 #endif
 
 C--   Grid parameters

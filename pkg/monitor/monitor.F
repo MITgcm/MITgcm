@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.18 2004/09/10 12:19:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.19 2004/09/15 21:23:33 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -38,7 +38,7 @@ CEOP
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) msgBuf   
       _RL dT
-      INTEGER time_as_int
+      INTEGER time_as_int, i
 
       dT=deltaTclock
 
@@ -50,7 +50,7 @@ C       Dynamics field monitor start
         IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
 #endif /* ALLOW_USE_MPI */
           
-          IF (monitor_mdsio) THEN
+          IF (monitor_stdio) THEN
             WRITE(msgBuf,'(2A)') '// ==========================',
      &           '============================='
             CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
@@ -71,12 +71,16 @@ C       Dynamics field monitor start
         
 #ifdef ALLOW_MNC
         IF (useMNC .AND. monitor_mnc) THEN
+          DO i = 1,MAX_LEN_MBUF
+            mon_fname(i:i) = ' '
+          ENDDO
+          mon_fname(1:7) = 'monitor'
           CALL MNC_CW_APPEND_VNAME(
      &         'iter', '-_-_--__-__t', 0,0, myThid)
-          CALL MNC_CW_SET_UDIM('monitor', -1, myThid)
+          CALL MNC_CW_SET_UDIM(mon_fname, -1, myThid)
           CALL MNC_CW_I_W(
-     &        'I','monitor',1,1,'iter', myIter, myThid)
-          CALL MNC_CW_SET_UDIM('monitor', 0, myThid)
+     &        'I',mon_fname,1,1,'iter', myIter, myThid)
+          CALL MNC_CW_SET_UDIM(mon_fname, 0, myThid)
           mon_write_mnc = .TRUE.
         ENDIF
 #endif /*  ALLOW_MNC  */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.10 2004/09/10 12:19:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.11 2004/09/15 21:23:32 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -205,10 +205,10 @@ C     write(*,*) 'mon_write_stdout = ''', mon_write_stdout, ''''
      &           mon_vname, '-_-_--__-__t', 0,0, myThid)
             IF (itype .EQ. 1)
      &           CALL MNC_CW_I_W(
-     &           'I','monitor',1,1,mon_vname, ival, myThid)
+     &           'I',mon_fname,1,1,mon_vname, ival, myThid)
             IF (itype .EQ. 2)
      &           CALL MNC_CW_RL_W(
-     &           'D','monitor',1,1,mon_vname, dval, myThid)
+     &           'D',mon_fname,1,1,mon_vname, dval, myThid)
           ENDIF
 #endif /*  ALLOW_MNC  */
 
