@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.2 2003/07/31 18:22:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_readparms.F,v 1.3 2004/01/18 18:14:20 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -126,8 +126,8 @@ C--   Check parameters and model configuration
 C-    If land_taveFreq is positive, then must compile the land-diagnostics code
 #ifndef ALLOW_LAND_TAVE
       IF (land_taveFreq.GT.0.) THEN
-        WRITE(msgBuf,'(A)')
-     &  'LAND_READPARMS: land_taveFreq > 0 but ALLOW_LAND_TAVE undefined'
+        WRITE(msgBuf,'(2A)') 'LAND_READPARMS:',
+     &  ' land_taveFreq > 0 but ALLOW_LAND_TAVE undefined'
         CALL PRINT_ERROR( msgBuf, myThid)
         WRITE(msgBuf,'(2A)')
      &  'Re-compile with: #define ALLOW_LAND_TAVE',
