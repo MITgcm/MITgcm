@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.1 1998/09/29 18:53:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_communication_patterns.F,v 1.2 1999/05/24 14:25:55 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -94,7 +94,7 @@ C     tile in this process.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 C       o My tile identifier
-        tileNo(bi,bj) = (bj0(myPy)-1+bj-1)*nSx*nPx+bi0(myPx)+bi-1
+Crg     tileNo(bi,bj) = (bj0(myPy)-1+bj-1)*nSx*nPx+bi0(myPx)+bi-1
         thePx = myPx
         thePy = myPy
         theBj = bj
@@ -113,7 +113,7 @@ C       o My west neighbor tile and process identifier
          procW = pidW
          IF ( pxW .LT. 1 ) pxW   = nPx
         ENDIF
-        tileNoW (bi,bj) = (bj0(myPy)-1+bj-1)*nSx*nPx+bi0(pxW)+biW-1
+Crg     tileNoW (bi,bj) = (bj0(myPy)-1+bj-1)*nSx*nPx+bi0(pxW)+biW-1
         thePx = pxW
         thePy = myPy
         theBj = bj
@@ -135,7 +135,7 @@ C       o My east neighbor tile and process identifier
          procE = pidE
          IF ( pxE .GT. nPx ) pxE   = 1
         ENDIF
-        tileNoE(bi,bj)  = (bj0(myPy)-1+bj-1)*nSx*nPx+bi0(pxE)+biE-1
+Crg     tileNoE(bi,bj)  = (bj0(myPy)-1+bj-1)*nSx*nPx+bi0(pxE)+biE-1
         thePx = pxE
         thePy = myPy
         theBi = biE
@@ -157,7 +157,7 @@ C       o My north neighbor tile and process identifier
          procN = pidN
          IF ( pyN .GT. nPy ) pyN   = 1
         ENDIF
-         tileNoN(bi,bj) = (bj0(pyN)-1+bjN-1)*nSx*nPx+bi0(myPx)+bi-1
+Crg     tileNoN(bi,bj) = (bj0(pyN)-1+bjN-1)*nSx*nPx+bi0(myPx)+bi-1
         thePx = myPx
         thePy = pyN 
         theBi = bi
@@ -179,7 +179,7 @@ C       o My south neighbor tile and process identifier
          procS = pidS
          IF ( pyS .LT. 1 ) pyS = nPy
         ENDIF
-         tileNoS(bi,bj) = (bj0(pyS+1)-1+bjS-1)*nSx*nPx+bi0(myPx+1)+bi-1
+Crg     tileNoS(bi,bj) = (bj0(pyS+1)-1+bjS-1)*nSx*nPx+bi0(myPx+1)+bi-1
         thePx = myPx
         thePy = pyS
         theBi = bi
