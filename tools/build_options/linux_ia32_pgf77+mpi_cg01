@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_cg01,v 1.6 2005/01/31 19:30:14 ce107 Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_cg01,v 1.7 2005/02/01 19:12:54 jmc Exp $
 #
 
 FC='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpif77'
@@ -12,11 +12,11 @@ NOOPTFLAGS='-O0'
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
     FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-fastsse -Mvect=cachesize:524288,transform'
+    FOPTIM='-fast -Mvect=cachesize:524288,transform'
 else
     #  Try to follow IEEE-754
     FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-O0 -Mvect=sse -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
+    FOPTIM='-O0 -Mvect=sse -pc64 -Mcache_align -Kieee'
 fi
 
 INCLUDEDIRS='/usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/include'
