@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.117 2005/02/09 15:59:24 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.118 2005/02/09 17:34:19 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -581,13 +581,13 @@ WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here
 EOF
 	return 1
     fi
-    cat > genmake_tcomp.f <<EOF
+    cat > genmake_tcomp.$FS <<EOF
       subroutine tcall( string )
       character*(*) string
       call tsub( string )
       end
 EOF
-    $FC $FFLAGS $DEFINES -c genmake_tcomp.f >> genmake_warnings 2>&1
+    $FC $FFLAGS $DEFINES -c genmake_tcomp.$FS >> genmake_warnings 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
 	FC_NAMEMANGLE=$default_nm
@@ -653,9 +653,9 @@ void FC_NAMEMANGLE(cloc) ( double *curtim )
  *curtim = *curtim/1.E6;
 }
 EOF
-    make genmake_tc_1.o >> genmake_tc.log 2>&1
+    make genmake_tc_1.o >> genmake_warnings 2>&1
     RET_C=$?
-    cat <<EOF > genmake_tc_2.f
+    cat <<EOF > genmake_tc_2.$FS
       program hello
       Real*8 wtime
       external cloc
@@ -663,9 +663,9 @@ EOF
       print *," HELLO WORLD", wtime
       end program hello
 EOF
-    $FC $FFLAGS -o genmake_tc genmake_tc_2.f genmake_tc_1.o >> genmake_tc.log 2>&1
+    $FC $FFLAGS -o genmake_tc genmake_tc_2.$FS genmake_tc_1.o >> genmake_warnings 2>&1
     RET_F=$?
-    test -x ./genmake_tc  &&  ./genmake_tc >> genmake_tc.log 2>&1
+    test -x ./genmake_tc  &&  ./genmake_tc >> genmake_warnings 2>&1
     RETVAL=$?
     if test "x$RETVAL" = x0 ; then
 	HAVE_CLOC=t
@@ -698,14 +698,14 @@ void FC_NAMEMANGLE(tfsize) ( int *nbyte )
 EOF
     make genmake_tc_1.o >> genmake_tc.log 2>&1
     RET_C=$?
-    cat <<EOF > genmake_tc_2.f
+    cat <<EOF > genmake_tc_2.$FS
       program hello
       integer nbyte
       call tfsize(nbyte)
       print *," HELLO WORLD", nbyte
       end program hello
 EOF
-    $FC $FFLAGS -o genmake_tc genmake_tc_2.f genmake_tc_1.o >> genmake_tc.log 2>&1
+    $FC $FFLAGS -o genmake_tc genmake_tc_2.$FS genmake_tc_1.o >> genmake_tc.log 2>&1
     RET_F=$?
     test -x ./genmake_tc  &&  ./genmake_tc >> genmake_tc.log 2>&1
     RETVAL=$?
@@ -1286,12 +1286,12 @@ fi
 
 printf "\n===  Checking system libraries  ===\n"
 printf "  Do we have the system() command using $FC...  "
-cat > genmake_tcomp.f <<EOF
+cat > genmake_tcomp.$FS <<EOF
       program hello
       call system('echo hi')
       end
 EOF
-$FC $FFLAGS $DEFINES -o genmake_tcomp genmake_tcomp.f > genmake_tcomp.log 2>&1
+$FC $FFLAGS $DEFINES -o genmake_tcomp genmake_tcomp.$FS > genmake_tcomp.log 2>&1
 RETVAL=$?
 if test "x$RETVAL" = x0 ; then
     HAVE_SYSTEM=t
@@ -1304,7 +1304,7 @@ fi
 rm -f genmake_tcomp*
 
 printf "  Do we have the fdate() command using $FC...  "
-cat > genmake_tcomp.f <<EOF
+cat > genmake_tcomp.$FS <<EOF
       program hello
       CHARACTER(128) string
       string = ' '
@@ -1312,7 +1312,7 @@ cat > genmake_tcomp.f <<EOF
       print *, string
       end
 EOF
-$FC $FFLAGS $DEFINES -o genmake_tcomp genmake_tcomp.f > genmake_tcomp.log 2>&1
+$FC $FFLAGS $DEFINES -o genmake_tcomp genmake_tcomp.$FS > genmake_tcomp.log 2>&1
 RETVAL=$?
 if test "x$RETVAL" = x0 ; then
     HAVE_FDATE=t
@@ -1325,7 +1325,7 @@ fi
 rm -f genmake_tcomp*
 
 printf "  Do we have the etime() command using $FC...  "
-cat > genmake_tcomp.f <<EOF
+cat > genmake_tcomp.$FS <<EOF
       program hello
       REAL*4 ACTUAL, TARRAY(2)
       EXTERNAL ETIME
@@ -1334,7 +1334,7 @@ cat > genmake_tcomp.f <<EOF
       print *, tarray
       end
 EOF
-$FC $FFLAGS $DEFINES -o genmake_tcomp genmake_tcomp.f > genmake_tcomp.log 2>&1
+$FC $FFLAGS $DEFINES -o genmake_tcomp genmake_tcomp.$FS > genmake_tcomp.log 2>&1
 RETVAL=$?
 if test "x$RETVAL" = x0 ; then
     HAVE_ETIME=t

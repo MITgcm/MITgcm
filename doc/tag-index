@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.447 2005/02/08 20:39:58 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.448 2005/02/09 17:34:19 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o make genmake2 more portable by using ".$FS" instead of ".f" for more
+  of the test compilations (eg. IBM xlf on Mac OSX w/HFS filesys)
 o add coordinate variables to the MNC output from the diagnostics package
 o change MNC-flags default value: true when useMNC=TRUE
 o add a "readgrid_mnc" flag to MNC and give model/src/ini_curvilinear_grid.F
