@@ -52,9 +52,8 @@ c       CALL TIMEAVE_STATV_WRITE( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_GCHEM
-ceh3 ???  why is one package depending upon another here?
-C--   Do ptracer diagnostics.
-      IF (usePTRACERS)
+C--   Do gchem diagnostics.
+      IF ( useGCHEM )
      & CALL GCHEM_DIAGS( myTime, myIter, myThid )
 #endif
 
