@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.7 2004/01/23 21:26:55 afe Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.8 2004/01/26 21:08:07 afe Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -176,9 +176,9 @@ C If we are reading from a tiled MDS file then we open each one here
         if (fileIsOpen) then
          do k=1,nNz
           do j=1,tNy
-          write(*,fmt='(1X,A,I3,A,I3,A,I3,A,I3,A,I3,A,I3)') 'tby=', tby,
-     &        ', tgx=', tgx,
-     &            ', tnx=',tnx, ', tny=', tny, ', j=',j,', tn=',tn
+c          write(*,fmt='(1X,A,I3,A,I3,A,I3,A,I3,A,I3,A,I3)') 'tby=', tby,
+c     &        ', tgx=', tgx,
+c     &            ', tnx=',tnx, ', tny=', tny, ', j=',j,', tn=',tn
             
             irec = domainLength*tby + (tgx-1)/tnx + 1 +
      &             domainLength*(j-1) + 
@@ -186,7 +186,7 @@ C If we are reading from a tiled MDS file then we open each one here
      &             domainLength*domainHeight*tny*nNz*(irecord-1) 
 c             write(*,fmt='(1X,A,I6,A,I3)') 'record = ',irec,',thingy=',
 c     &          (tgx-1)/tnx
-             write(*,fmt='(1X,A,I6)') 'record = ',irec
+c             write(*,fmt='(1X,A,I6)') 'record = ',irec
  
            if (filePrec .eq. precFloat32) then
             read(dUnit,rec=irec) r4seg
