@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.87 2003/02/18 15:12:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.88 2003/03/17 16:59:38 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -350,6 +350,7 @@ C     f0        :: Reference coriolis parameter ( 1/s )
 C                 ( Southern edge f for beta plane )
 C     beta      :: df/dy ( s^-1.m^-1 )
 C     omega     :: Angular velocity ( rad/s )
+C     rotationPeriod :: Rotation period (s) (= 2.pi/omega)
 C     viscAh    :: Eddy viscosity coeff. for mixing of
 C                 momentum laterally ( m^2/s )
 C     viscAz    :: Eddy viscosity coeff. for mixing of
@@ -468,7 +469,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq,
      & diagFreq, taveFreq, tave_lastIter, monitorFreq,
      & afFacMom, vfFacMom, pfFacMom, cfFacMom, foFacMom, mtFacMom,
-     & cosPower, cAdjFreq, omega, 
+     & cosPower, cAdjFreq, omega, rotationPeriod,
      & tauThetaClimRelax, lambdaThetaClimRelax,
      & tauSaltClimRelax, lambdaSaltClimRelax,
      & tauTr1ClimRelax, lambdaTr1ClimRelax,
@@ -562,6 +563,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL cosPower
       _RL cAdjFreq
       _RL omega
+      _RL rotationPeriod
       _RL tauThetaClimRelax
       _RL lambdaThetaClimRelax
       _RL tauSaltClimRelax
