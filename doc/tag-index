@@ -1,7 +1,18 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.30 2000/09/11 23:30:54 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.31 2000/11/13 16:49:41 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint32
+ o Scaling of forcing fields moved from external_forcing.F to
+   external_fields_scale.F, called directly after loading fields.
+ o Surface relaxation terms added to surface tendency fields in
+   extra subroutine.
+ o impldiff.F changed to avoid storing by TAMC of huge intermediate
+   fields.
+ o Changes in GMRedi to comply with packaging structure.
+ o Modifications and bug fixes in KPP package.
+ o Verification experiment for KPP added (verification/nat_box/)
 
 checkpoint31
  o Packages interface brought in line with defined standard
