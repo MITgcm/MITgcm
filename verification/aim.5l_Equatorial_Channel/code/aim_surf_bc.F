@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/aim_surf_bc.F,v 1.1 2004/01/24 20:41:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/aim_surf_bc.F,v 1.2 2004/03/11 15:36:49 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -56,7 +56,8 @@ C     == Local variables ==
 C     i,j,k,I2      - Loop counters
       INTEGER i,j,I2
       _RL SDEP1, IDEP2, SDEP2, SWWIL2, RSW, soilw_0, soilw_1
-      _RL DALB, RSD, alb_sea, alb_land
+      _RL RSD, alb_land, tFreez
+c     _RL DALB, alb_sea
 
 C_EqCh: start
       CHARACTER*(MAX_LEN_MBUF) suff
@@ -85,7 +86,7 @@ C-     Set Land-sea mask (in [0,1]) from aim_landFr to fMask1:
         DO j=1,sNy
          DO i=1,sNx
           I2 = i+(j-1)*sNx
-          fMask1(I2,myThid) = aim_landFr(i,j,bi,bj)
+          fMask1(I2,1,myThid) = aim_landFr(i,j,bi,bj)
          ENDDO
         ENDDO
 
@@ -136,8 +137,27 @@ C-    Set snow depth & sea-ice fraction :
          ENDDO
         ENDDO
 
+        IF (aim_splitSIOsFx) THEN
+C-    Split Ocean and Sea-Ice surf. temp. ; remove ice-fraction < 1 %
+         tFreez = celsius2K - 1.9 _d 0
+         DO J=1,NGP
+          sti1(J,myThid) = sst1(J,myThid) 
+          IF ( oice1(J) .GT. 1. _d -2 ) THEN
+            sst1(J,myThid) = MAX(sst1(J,myThid),tFreez);
+            sti1(J,myThid) = sst1(J,myThid) 
+     &                     +(sti1(J,myThid)-sst1(J,myThid))/oice1(J)
+          ELSE
+            oice1(J) = 0. _d 0
+          ENDIF
+         ENDDO
+        ELSE
+         DO J=1,NGP
+          sti1(J,myThid) = sst1(J,myThid) 
+         ENDDO
+        ENDIF
+
 C-    Surface Albedo : (from F.M. FORDATE S/R)
-        DALB=ALBICE-ALBSEA
+c_FM    DALB=ALBICE-ALBSEA
         RSD=1. _d 0/SDALB
         DO j=1,sNy
          DO i=1,sNx
@@ -149,9 +169,12 @@ c_FM      ALB1(I,J)=FMASK1(I,J)*ALBL+FMASK0(I,J)*ALBS
           alb_land = aim_albedo(i,j,bi,bj)
      &       + MAX( 0. _d 0, ALBSN-aim_albedo(i,j,bi,bj) )
      &        *MIN( 1. _d 0, RSD*snow1(I2))
-          alb_sea  = ALBSEA + DALB*oice1(I2)
-          alb1(I2,myThid) = alb_sea 
-     &        + (alb_land - alb_sea)*fMask1(I2,myThid)
+c         alb_sea  = ALBSEA + DALB*oice1(I2)
+c         alb1(I2,0,myThid) = alb_sea 
+c    &        + (alb_land - alb_sea)*fMask1(I2,1,myThid)
+          alb1(I2,1,myThid) = alb_land
+          alb1(I2,2,myThid) = ALBSEA
+          alb1(I2,3,myThid) = ALBICE
          ENDDO
         ENDDO
 
@@ -172,14 +195,18 @@ C      Set surface albedo data (in [0,1]) from aim_albedo to alb1 :
         DO j=1,sNy
          DO i=1,sNx
           I2 = i+(j-1)*sNx
-          alb1(I2,myThid) = aim_albedo(i,j,bi,bj)
+          alb1(I2,1,myThid) = aim_albedo(i,j,bi,bj)
+          alb1(I2,2,myThid) = aim_albedo(i,j,bi,bj)
+          alb1(I2,3,myThid) = aim_albedo(i,j,bi,bj)
          ENDDO
         ENDDO
        ELSE
         DO j=1,sNy
          DO i=1,sNx
           I2 = i+(j-1)*sNx
-          alb1(I2,myThid) = 0.
+          alb1(I2,1,myThid) = 0.
+          alb1(I2,2,myThid) = 0.
+          alb1(I2,3,myThid) = 0.
          ENDDO
         ENDDO
        ENDIF
@@ -190,6 +217,7 @@ C      Set surface temperature data from aim_S/LSurfTemp to sst1 & stl1 :
           I2 = i+(j-1)*sNx
           sst1(I2,myThid) = aim_surfTemp(i,j,bi,bj)
           stl1(I2,myThid) = aim_surfTemp(i,j,bi,bj)
+          sti1(I2,myThid) = aim_surfTemp(i,j,bi,bj)
          ENDDO
         ENDDO
        ELSE
@@ -198,16 +226,18 @@ C      Set surface temperature data from aim_S/LSurfTemp to sst1 & stl1 :
           I2 = i+(j-1)*sNx
           sst1(I2,myThid) = 300.
           stl1(I2,myThid) = 300.
+          sti1(I2,myThid) = 300.
 C_EqCh: start
           sst1(I2,myThid) = 280.
-     &     +20. _d 0 *exp( -((xC(i,j,bi,bj)-xBump)/dxBump)**2  
+     &     +20. _d 0 *exp( -((xC(i,j,bi,bj)-xBump)/dxBump)**2
      &                     -((yC(i,j,bi,bj)-yBump)/dyBump)**2 )
           stl1(I2,myThid) = sst1(I2,myThid)
+          sti1(I2,myThid) = sst1(I2,myThid)
 C_EqCh: end
          ENDDO
         ENDDO
 C_EqCh: start
-        IF (myIter.EQ.nIter0) THEN 
+        IF (myIter.EQ.nIter0) THEN
          WRITE(suff,'(I10.10)') myIter
          CALL AIM_WRITE_LOCAL('aim_SST.',suff,1,sst1(1,myThid),
      &                                   bi,bj,1,myIter,myThid)
@@ -236,31 +266,28 @@ C-     Set Land-sea mask (in [0,1])
 C          from aim_landFr to fMask1 (aim_useFMsurfBC)
 C       or from where soil moisture is exactly zero (aim_useMMsurfFc)
        IF (aim_useMMsurfFc) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-          I2 = i+(j-1)*sNx
-          fMask1(I2,myThid) = 1.
-          IF ( soilw1(I2,myThid).EQ.0. ) fMask1(I2,myThid) = 0.
-         ENDDO
+        DO J=1,NGP
+          fMask1(J,1,myThid) = 1.
+          IF ( soilw1(J,myThid).EQ.0. ) fMask1(J,1,myThid) = 0.
         ENDDO
        ELSE
         DO j=1,sNy
          DO i=1,sNx
           I2 = i+(j-1)*sNx
-          fMask1(I2,myThid) = 0.
+          fMask1(I2,1,myThid) = 0.
          ENDDO
         ENDDO
        ENDIF
 
 C-     Set Snow depth and Sea Ice 
 C      (not needed here since albedo is loaded from file)
-c       DO j=1,sNy
-c        DO i=1,sNx
-c         I2 = i+(j-1)*sNx
-c         oice1(I2,myThid) = 0.
-c         snow1(I2,myThid) = 0.
-c        ENDDO
-c       ENDDO
+        DO j=1,sNy
+         DO i=1,sNx
+          I2 = i+(j-1)*sNx
+          oice1(I2) = 0.
+          snow1(I2) = 0.
+         ENDDO
+        ENDDO
 
 C-- endif/else aim_useFMsurfBC
       ENDIF
@@ -268,34 +295,20 @@ C-- endif/else aim_useFMsurfBC
 #ifdef COMPONENT_MODULE
       IF ( useCoupler ) THEN
        IF ( useImportSST ) THEN
-        DO J=1,sNy
-         DO I=1,sNx
+        DO j=1,sNy
+         DO i=1,sNx
 
 c         IF ( SSTocn(I,J,bi,bj) .NE. 0. ) THEN
           IF ( aim_landFr(i,j,bi,bj) .LT. 1. ) THEN
-           I2 = (sNx)*(J-1)+I
-C--   take SST from the ocean compon. where Sea-Ice fraction is zero
+           I2 = i+(j-1)*sNx
+C--   take SST from the ocean compon where Sea-Ice fraction is zero
            IF ( oice1(I2).EQ.0. ) THEN
             sst1(I2,myThid) = SSTocn(i,j,bi,bj)+celsius2K
-C--   take SST from the ocean compon. if clearly warmer than freezing
-C       and reset sea-ice fraction & albedo
            ELSEIF ( SSTocn(i,j,bi,bj).GE. -1. _d 0)  THEN
+C--   take SST from the ocean compon if clearly warmer than freezing
+C       then reset sea-ice fraction
             sst1(I2,myThid) = SSTocn(i,j,bi,bj)+celsius2K
-            IF (aim_useFMsurfBC) THEN
-             oice1(I2) = 0.
-             IF (aim_landFr(i,j,bi,bj).EQ. 0.) THEN
-              alb1(I2,myThid) = ALBSEA
-             ELSE
-C- note: this part never used with current coupled set-up (only full cell 
-C        land / sea)
-              alb_land = aim_albedo(i,j,bi,bj)
-     &        + MAX( 0. _d 0, ALBSN-aim_albedo(i,j,bi,bj) )
-     &         *MIN( 1. _d 0, RSD*snow1(I2))
-              alb_sea  = ALBSEA + DALB*oice1(I2)
-              alb1(I2,myThid) = alb_sea 
-     &         + (alb_land - alb_sea)*fMask1(I2,myThid)
-             ENDIF
-            ENDIF
+            oice1(I2) = 0.
            ENDIF
           ENDIF
 
@@ -308,9 +321,34 @@ C        land / sea)
 #ifdef ALLOW_LAND
       IF (useLand) THEN
 C-    Use land model output instead of prescribed Temp & moisture
-        CALL AIM_LAND2AIM( myTime, myIter, bi, bj, myThid ) 
+        CALL AIM_LAND2AIM( 
+     I           aim_landFr, aim_veget, aim_albedo, snow1,
+     U           stl1(1,mythid), soilw1(1,mythid), alb1(1,1,myThid),
+     I           myTime, myIter, bi, bj, myThid ) 
       ENDIF
 #endif /* ALLOW_LAND */
+
+C-- set the sea-ice & open ocean fraction :
+        DO J=1,NGP
+          fMask1(J,3,myThid) =(1. _d 0 - fMask1(J,1,myThid))
+     &                        *oice1(J)
+          fMask1(J,2,myThid) = 1. _d 0 - fMask1(J,1,myThid) 
+     &                                 - fMask1(J,3,myThid)
+        ENDDO
+
+C-- set the mean albedo :
+        DO J=1,NGP
+          alb1(J,0,myThid) = fMask1(J,1,myThid)*alb1(J,1,myThid)
+     &                     + fMask1(J,2,myThid)*alb1(J,2,myThid)
+     &                     + fMask1(J,3,myThid)*alb1(J,3,myThid)
+        ENDDO
+
+        IF (.NOT.aim_splitSIOsFx) THEN
+         DO J=1,NGP
+          fMask1(J,3,myThid) = 0. _d 0
+          fMask1(J,2,myThid) = 1. _d 0 - fMask1(J,1,myThid) 
+         ENDDO
+        ENDIF
 
 #endif /* ALLOW_AIM */
 
