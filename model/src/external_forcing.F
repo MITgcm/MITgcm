@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.3 1998/12/15 00:20:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.4 1999/05/05 14:52:49 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -30,7 +30,8 @@ C     jMin
 C     jMax
 C     kLev
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      INTEGER myCurrentTime, myThid
+      _RL myCurrentTime
+      INTEGER myThid
 CEndOfInterface
 
 C     == Local variables ==
@@ -81,7 +82,8 @@ C     jMin
 C     jMax
 C     kLev
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      INTEGER myCurrentTime, myThid
+      _RL myCurrentTime
+      INTEGER myThid
 CEndOfInterface
 C     == Local variables ==
 C     Loop counters
@@ -132,7 +134,8 @@ C     jMax
 C     kLev
       _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      INTEGER myCurrentTime, myThid
+      _RL myCurrentTime
+      INTEGER myThid
 CEndOfInterface
 
 C     == Local variables ==
@@ -184,7 +187,8 @@ C     jMax
 C     kLev
       _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax, jMin, jMax, kLev, bi, bj
-      INTEGER myCurrentTime, myThid
+      _RL myCurrentTime
+      INTEGER myThid
 CEndOfInterface
 
 C     == Local variables ==
