@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.55 2001/01/08 16:37:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.56 2001/01/29 20:05:46 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -33,11 +33,14 @@ C     == Global variables ===
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
 # include "tamc_keys.h"
+# include "FFIELDS.h"
+# ifdef ALLOW_KPP
+#  include "KPP.h"
+# endif
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
-
-#ifdef ALLOW_KPP
-# include "KPP.h"
-#endif
 
 C     == Routine arguments ==
 C     myTime - Current time in simulation
@@ -664,6 +667,18 @@ CADJ STORE sigmaR(:,:,:) = comlev1, key=ikey, byte=isbyte
 CADJ STORE KappaRT(:,:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 CADJ STORE KappaRS(:,:,:)     = comlev1_bibj, key=ikey, byte=isbyte
 
+#ifdef ALLOW_GMREDI
+C-- R.G. We need to define a new tape since Kw use mythid instead of bi,bj
+CADJ STORE Kwx(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE Kwy(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE Kwz(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
+#endif
+
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+=======
 C-- R.G. We need to define a new tape since Kw use mythid instead of bi,bj
 CADJ STORE Kwx(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
 CADJ STORE Kwy(:,:,:,myThid)  = comlev1_bibj, key=ikey, byte=isbyte
@@ -738,11 +753,10 @@ C--      kDown  Cycles through 2,1 to point to current layer
 
 #ifdef ALLOW_AUTODIFF_TAMC 
          kkey = (ikey-1)*(Nr-1+1) + (k-1) + 1
-
-CADJ STORE rvel  (:,:,kDown) = comlev1_bibj_k, key = kkey, byte = isbyte
-CADJ STORE rTrans(:,:)       = comlev1_bibj_k, key = kkey, byte = isbyte
-CADJ STORE KappaRT(:,:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
-CADJ STORE KappaRS(:,:,:)    = comlev1_bibj_k, key = kkey, byte = isbyte
+CADJ STORE rvel  (:,:,kdown)  = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE rTrans(:,:)        = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE KappaRT(:,:,k)     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE KappaRS(:,:,k)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--      Get temporary terms used by tendency routines
