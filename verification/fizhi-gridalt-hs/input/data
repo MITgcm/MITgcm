@@ -51,7 +51,7 @@
  &PARM03
  niter0=0,
 #nTimeSteps=691200,
- nTimeSteps=2,
+ nTimeSteps=4,
 #endTime=864000.0,
  deltaT=450.0,
  forcing_In_AB=.FALSE.,
