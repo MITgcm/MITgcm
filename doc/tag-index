@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.407 2004/12/09 15:37:25 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.408 2004/12/09 17:41:09 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint57
 o add horizontal bi-harmonic viscosity for vertical velocity
   - new parameter viscA4W (defaults to viscA4)
   - affects only non-hydrostatic code
