@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.240 2004/01/14 03:49:57 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.241 2004/01/15 03:38:22 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -7,6 +7,9 @@ o genmake2: add build & execute test for NetCDF code
 o modded aim.5l_cs and global_ocean.cs32x15 to use exch2, removed
   old grid files, moved CPP_EEMACROS.h to pkg/exch2
 o added useSingleCPUIO flag to monitor.F and mon_out.F
+o added temporary hack for sea-ice dynamics on the cube:
+  metric terms are ignored and it is assumed that
+  there is no sea-ice on cube faces 1, 2, 4, and 5.
 
 checkpoint52f_post
 o added exch2 cube routines to pkg/exch2

@@ -57,13 +57,11 @@ Instructions for generating 1-CPU and 2-CPU executables
 
 Generating 1-CPU executable:
   cd verification/lab_sea/input
+  ln -sf ../code/packages.conf .
   ln -sf ../code/SIZE.h .
   ln -sf ../code/CPP_EEOPTIONS.h .
-  ln -sf ../code/CPP_OPTIONS.NOEXF.h CPP_OPTIONS.h
   rm -f SEAICE_OPTIONS.h
-  ../../../tools/genmake -makefile
-    ==> on alhena use:
-    ../../../tools/genmake -platform=o2k_noopt -makefile
+  ../../../tools/genmake2
   make clean
   make depend
   make
@@ -71,14 +69,13 @@ Generating 1-CPU executable:
 
 Generating 1-CPU executable with SEAICE_EXTERNAL_FORCING:
   cd ../../../verification/lab_sea/input
+  ln -sf ../code/packages.conf .
   ln -sf ../code/SIZE.h .
   ln -sf ../code/CPP_EEOPTIONS.h .
   ln -sf ../code/CPP_OPTIONS.h .
   ln -sf ../code/ECCO_CPPOPTIONS.h .
   ln -sf ../code/SEAICE_OPTIONS.h .
-  ../../../tools/genmake -makefile
-    ==> on alhena use:
-    ../../../tools/genmake -platform=o2k_noopt -makefile
+  ../../../tools/genmake2
   make clean
   make depend
   make
@@ -86,14 +83,13 @@ Generating 1-CPU executable with SEAICE_EXTERNAL_FORCING:
 
 1-CPU executable with SEAICE_EXTERNAL_FORCING, without READ_EVAP
   cd ../../../verification/lab_sea/input
+  ln -sf ../code/packages.conf .
   ln -sf ../code/SIZE.h .
   ln -sf ../code/CPP_EEOPTIONS.h .
   ln -sf ../code/CPP_OPTIONS.h .
   ln -sf ../code/ECCO_CPPOPTIONS.BULK.h ECCO_CPPOPTIONS.h
   ln -sf ../code/SEAICE_OPTIONS.h .
-  ../../../tools/genmake -makefile
-    ==> on alhena use:
-    ../../../tools/genmake -platform=o2k_noopt -makefile
+  ../../../tools/genmake2
   make clean
   make depend
   make
@@ -101,14 +97,13 @@ Generating 1-CPU executable with SEAICE_EXTERNAL_FORCING:
 
 Generating 1-CPU executable with SEAICE_EXTERNAL_FLUXES:
   cd ../../../verification/lab_sea/input
+  ln -sf ../code/packages.conf .
   ln -sf ../code/SIZE.h .
   ln -sf ../code/CPP_EEOPTIONS.h .
   ln -sf ../code/CPP_OPTIONS.h .
   ln -sf ../code/ECCO_CPPOPTIONS.BULK.h ECCO_CPPOPTIONS.h
   ln -sf ../code/SEAICE_OPTIONS.EXF_FLUXES.h SEAICE_OPTIONS.h
-  ../../../tools/genmake -makefile
-    ==> on alhena use:
-    ../../../tools/genmake -platform=o2k_noopt -makefile
+  ../../../tools/genmake2
   make clean
   make depend
   make
@@ -116,13 +111,11 @@ Generating 1-CPU executable with SEAICE_EXTERNAL_FLUXES:
 
 Generating 1-CPU executable with SEAICE_MULTILEVEL:
   cd ../../../verification/lab_sea/input
+  ln -sf ../code/packages.conf .
   ln -sf ../code/SIZE.h .
   ln -sf ../code/CPP_EEOPTIONS.h .
-  ln -sf ../code/CPP_OPTIONS.NOEXF.h CPP_OPTIONS.h
   ln -sf ../code/SEAICE_OPTIONS.MULTILEVEL.h SEAICE_OPTIONS.h
-  ../../../tools/genmake -makefile
-    ==> on alhena use:
-    ../../../tools/genmake -platform=o2k_noopt -makefile
+  ../../../tools/genmake2
   make clean
   make depend
   make
@@ -130,15 +123,11 @@ Generating 1-CPU executable with SEAICE_MULTILEVEL:
 
 Generating 2-CPU executable:
   cd ../../../verification/lab_sea/input
+  ln -sf ../code/packages.conf .
   ln -sf ../code/SIZE.2x1.h SIZE.h
-  ln -sf ../code/CPP_EEOPTIONS.MPI.h CPP_EEOPTIONS.h
-  ln -sf ../code/CPP_OPTIONS.NOEXF.h CPP_OPTIONS.h
+  ln -sf ../code/CPP_EEOPTIONS.h_mpi CPP_EEOPTIONS.h
   rm -f SEAICE_OPTIONS.h
-  ../../../tools/genmake -mpi -makefile
-    ==> on alhena for comparison purposes use:
-      ../../../tools/genmake -mpi -platform=o2k_noopt -makefile
-    ==> on alhena for fast execution use:
-      ../../../tools/genmake -mpi -platform=o2k -makefile
+  ../../../tools/genmake2 -mpi
   make clean
   make depend
   make

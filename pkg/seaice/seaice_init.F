@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.16 2004/01/13 23:43:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.17 2004/01/15 03:38:22 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -66,8 +66,8 @@ cph   to avoid partial recomputation issues
        DO bi=myBxLo(myThid),myBxHi(myThid)
 c
         DO K=1,3
-         DO J=1,sNy
-          DO I=1,sNx
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
            HEFF(I,J,k,bi,bj)=SEAICE_initialHEFF
            AREA(I,J,k,bi,bj)=ZERO
            UICE(I,J,k,bi,bj)=ZERO
@@ -76,8 +76,8 @@ c
          ENDDO
         ENDDO
 c
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           HSNOW(I,J,bi,bj)=0.2 _d 0
           ZETA(I,J,bi,bj)=ZERO
          ENDDO
@@ -90,8 +90,8 @@ cph)
 C--   Initialize grid info
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=1-OLy,sNy+OLy
+         DO I=1-OLx,sNx+OLx
           CSTICE(i,j,bi,bj) =cos(yC(I,J,bi,bj)*deg2rad)
           CSUICE(i,j,bi,bj) =cos(yG(I,J,bi,bj)*deg2rad)
           SINEICE(i,j,bi,bj)=sin(yC(I,J,bi,bj)*deg2rad)
@@ -110,8 +110,8 @@ C--   Initialize grid info
           IF (_hFacC(i,j,1,bi,bj).eq.0.) HEFFM(i,j,bi,bj)=ZERO
          ENDDO
         ENDDO
-        DO J=1,sNy
-         DO I=1,sNx
+        DO J=2-OLy,sNy+OLy
+         DO I=2-OLx,sNx+OLx
           UVM(i,j,bi,bj)=ZERO
           mask_uice=HEFFM(I,J,  bi,bj)+HEFFM(I-1,J-1,bi,bj)
      &             +HEFFM(I,J-1,bi,bj)+HEFFM(I-1,J,  bi,bj)
@@ -123,8 +123,8 @@ C--   Initialize grid info
 C--   Special stuff for cubed sphere: assume grid is rectangular and
 C     set UV mask to zero except for Arctic and Antarctic cube faces.
         IF (useCubedSphereExchange) THEN
-         DO J=1,sNy
-          DO I=1,sNx
+         DO J=1-OLy,sNy+OLy
+          DO I=1-OLx,sNx+OLx
            CSTICE(i,j,bi,bj) = ONE
            CSUICE(i,j,bi,bj) = ONE
            TNGTICE(i,j,bi,bj)= ZERO
@@ -135,23 +135,22 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
          ENDDO
          myTile = W2_myTileList(bi)
          IF ( exch2_myFace(myTile) .EQ. 1 .OR.
-     &        exch2_myFace(myTile) .EQ. 6 .OR.
      &        exch2_myFace(myTile) .EQ. 2 .OR.
      &        exch2_myFace(myTile) .EQ. 4 .OR.
      &        exch2_myFace(myTile) .EQ. 5 ) THEN
-          DO J=1,sNy
-           DO I=1,sNx
+          DO J=1-OLy,sNy+OLy
+           DO I=1-OLx,sNx+OLx
             UVM(i,j,bi,bj)=ZERO
            ENDDO
           ENDDO
          ELSEIF ( exch2_isWedge(myTile) .EQ. 1 ) THEN
           I=1
-          DO J=1,sNy
+          DO J=1-OLy,sNy+OLy
            UVM(i,j,bi,bj)=ZERO
           ENDDO
          ELSEIF ( exch2_isSedge(myTile) .EQ. 1 ) THEN
           J=1
-          DO I=1,sNx
+          DO I=1-OLx,sNx+OLx
            UVM(i,j,bi,bj)=ZERO
           ENDDO
          ENDIF
@@ -176,15 +175,6 @@ C     set UV mask to zero except for Arctic and Antarctic cube faces.
 
 C--   Update overlap regions
       _EXCH_XY_R8(UVM, myThid)
-      _EXCH_XY_R8(TNGTICE, myThid)
-      _EXCH_XY_R8(TNGICE, myThid)
-      _EXCH_XY_R8(CSTICE, myThid)
-      _EXCH_XY_R8(CSUICE, myThid)
-      _EXCH_XY_R8(SINEICE, myThid)
-      _EXCH_XY_R8(DXTICE, myThid)
-      _EXCH_XY_R8(DXUICE, myThid)
-      _EXCH_XY_R8(DYTICE, myThid)
-      _EXCH_XY_R8(DYUICE, myThid)
 
       myIter=0
       CALL PLOT_FIELD_XYRL( CSTICE  , 'Current CSTICE  ' ,
