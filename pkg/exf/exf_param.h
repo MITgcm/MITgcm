@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.3 2002/11/12 20:34:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.4 2002/12/19 13:44:51 cheisey Exp $
 c
 c
 c     ==================================================================
@@ -29,6 +29,8 @@ c     HEADER exf_param
 c     ==================================================================
 
 c     Calendar data.
+      _RL     repeatPeriod
+
       integer hfluxstartdate1
       integer hfluxstartdate2
       integer hfluxstartdate(4)
@@ -156,6 +158,7 @@ c     File names.
       character*(128) apressurefile
 
       common /exf_param_i/
+     &                          repeatPeriod,
      &                          hfluxstartdate1,   hfluxstartdate2,
      &                          atempstartdate1,   atempstartdate2,
      &                          aqhstartdate1,     aqhstartdate2,

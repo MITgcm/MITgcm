@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.1 2001/05/14 22:08:40 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.2 2002/12/19 13:44:51 cheisey Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -44,6 +44,7 @@ c     == global variables ==
 c cal: modelstart, modelstep
 #include "EEPARAMS.h"
 #include "cal.h"
+#include "exf_param.h"
 
 c     == routine arguments ==
 
@@ -66,16 +67,24 @@ c     == local variables ==
 
       integer fldcount
       _RL     fldsecs
+      _RL     fldsecs0
+      _RL     fldsecs1
       integer prevfldcount
       _RL     prevfldsecs
       integer flddate(4)
-
 
 #ifdef EXF_VERBOSE
       character*(max_len_mbuf) msgbuf
 #endif
 
 c     == end of interface ==
+c      print *,'exf_GetFFieldRec: fldstartdate',fldstartdate
+c      print *,'exf_GetFFieldRec: fldperiod',fldperiod
+c      print *,'exf_GetFFieldRec: fac',fac
+c      print *,'exf_GetFFieldRec: first',first
+c      print *,'exf_GetFFieldRec: changed',changed
+c      print *,'exf_GetFFieldRec: count0',count0
+c      print *,'exf_GetFFieldRec: count1',count1
 
 c     Determine the current date.
       call cal_GetDate( myiter, mytime, mydate, mythid )
@@ -85,6 +94,20 @@ c     Determine the flux record just before mycurrentdate.
       call cal_ToSeconds( difftime, fldsecs, mythid )
       fldsecs  = int(fldsecs/fldperiod)*fldperiod
       fldcount = int(fldsecs/fldperiod) + 1
+c     If using repeating data (e.g. monthly means) then make
+C     fldsecs cycle around
+      if (repeatPeriod.ne.0.) then
+       fldsecs0=mod(fldsecs,repeatPeriod)
+c       print *,'repeat: ',fldsecs
+      endif
+c     Determine the flux record just after mycurrentdate.
+      count0 = int(fldsecs0/fldperiod) + 1
+      fldsecs1  = int((fldsecs+fldperiod)/fldperiod)*fldperiod
+      if (repeatPeriod.ne.0.) then
+       fldsecs1=mod(fldsecs1,repeatPeriod)
+c       print *,'repeat: ',fldsecs1
+      endif
+      count1 = int(fldsecs1/fldperiod) + 1
 
 c     Set switches for reading new records.
       first = ((mytime - modelstart) .lt. 0.5*modelstep)
@@ -107,9 +130,6 @@ c     Set switches for reading new records.
           changed = .false.
         endif
       endif
-
-      count0 = fldcount
-      count1 = fldcount + 1
 
       call cal_TimeInterval( fldsecs, 'secs', difftime, mythid )
       call cal_AddTime( fldstartdate, difftime, flddate, mythid )

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.3 2002/11/12 20:34:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.4 2002/12/19 13:44:51 cheisey Exp $
 
 #include "EXF_CPPOPTIONS.h"
 #ifdef ALLOW_OBCS
@@ -35,6 +35,7 @@ c              - added new obcs parameters (for each boundaries)
 c     included runoff D. Stammer, Nov. 25, 2001
 c     included pressure forcing. heimbach@mit.edu 05-Nov-2002
 c
+c     added "repeatPeriod" for cycling of forcing datasets 19-Dec-2002
 c     ==================================================================
 c     SUBROUTINE exf_readparms
 c     ==================================================================
@@ -67,6 +68,7 @@ c     == end of interface ==
 
 c     Surface flux data.
       namelist /exf_nml/
+     &    repeatPeriod,
      &    hfluxstartdate1,    hfluxstartdate2,   hfluxperiod,
      &    atempstartdate1,    atempstartdate2,   atempperiod,
      &      aqhstartdate1,      aqhstartdate2,     aqhperiod,
@@ -166,6 +168,9 @@ c     Calendar data.
       apressurestartdate1    = 0
       apressurestartdate2    = 0
       apressureperiod        = 0.0 _d 0
+
+      repeatPeriod           = 0.0 _d 0
+
 
 c     Data files.
       hfluxfile          = ' '
