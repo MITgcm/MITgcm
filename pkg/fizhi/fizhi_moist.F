@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.14 2004/07/26 19:51:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.15 2004/07/28 01:25:07 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -186,7 +186,7 @@ c Determine Total number of Random Clouds to Check
 c ---------------------------------------------
       ncrnd = (lm-nltop+1)/2
 
-      if(first .and. myid.eq.0) then
+      if(first .and. myid.eq.1) then
        print *
        print *,'Top Level Allowed for Convection : ',nltop
        print *,'          Highest Sub-Cloud Level: ',nsubmax
@@ -1261,7 +1261,7 @@ c ---------------------------------------------------------
        do i = 1,nrnd
         rnd(i) = 0
        enddo
-       if(first .and. myid.eq.0) print *,' NO RANDOM CLOUDS IN RAS '
+       if(first .and. myid.eq.1) print *,' NO RANDOM CLOUDS IN RAS '
        go to 100
       endif
 
@@ -1270,8 +1270,8 @@ c ---------------------------------------------------------
 c First Time In From a Continuing RESTART (IRAS.GT.1) or Reading a New RESTART
 c ----------------------------------------------------------------------------
       if( first.and.(iras.gt.1) .or. iras.ne.iras0+1 )then
-       if( myid.eq.0 ) print *, 'Recreating Rand Numb Array in RNDCLOUD'
-       if( myid.eq.0 ) print *, 'IRAS: ',iras,'  IRAS0: ',iras0
+       if( myid.eq.1 ) print *, 'Recreating Rand Numb Array in RNDCLOUD'
+       if( myid.eq.1 ) print *, 'IRAS: ',iras,'  IRAS0: ',iras0
        numrand = mod(iras,irm/nrnd) * nrnd
        iseed   = iras * nrnd - numrand
        call random_seedx(iseed)

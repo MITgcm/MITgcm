@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.13 2004/07/26 19:51:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.14 2004/07/28 01:25:07 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -120,7 +120,7 @@ C ------------------------------
       enddo
       enddo
 
-      if (first .and. myid.eq.0 ) then
+      if (first .and. myid.eq.1 ) then
       print *
       print *,'Low-Level Clouds are Grouped between levels: ',
      .         lm,' and ',low_level
@@ -149,7 +149,6 @@ C **********************************************************************
       ENDIF
       ENDDO
       ENDDO
-
 
 C **********************************************************************
 c ****        Compute Two-Dimension Total Cloud Fraction (0-1)      ****
@@ -1404,7 +1403,7 @@ c-----integration over the k-distribution function
             do i= 1, m
 
              tauwv=xk(ik)*wh(i,j,k)
- 
+
 c-----compute total optical thickness, single scattering albedo,
 c     and asymmetry factor.
  
@@ -1530,8 +1529,23 @@ c     in certain parallel processors.
 
 c-----flux calculations
  
-        call cldflx (m,n,np,ict,icb,cc,rr,tt,td,rs,ts,
-     *               fclr,fall,fsdir,fsdif)
+       do k= 1, np+1
+        do j= 1, n
+         do i= 1, m
+          fclr(i,j,k) = 0.
+          fall(i,j,k) = 0.
+         enddo
+        enddo
+       enddo
+       do j= 1, n
+        do i= 1, m
+         fsdir(i,j) = 0.
+         fsdif(i,j) = 0.
+        enddo
+       enddo
+
+c       call cldflx (m,n,np,ict,icb,cc,rr,tt,td,rs,ts,
+c    *               fclr,fall,fsdir,fsdif)
 
        do k= 1, np+1
         do j= 1, n
@@ -1887,8 +1901,22 @@ c-----compute reflectance and transmittance for cloud layers
 
 c-----flux calculations
  
-        call cldflx (m,n,np,ict,icb,cc,rr,tt,td,rs,ts,
-     *               fclr,fall,fsdir,fsdif)
+       do k= 1, np+1
+        do j= 1, n
+         do i= 1, m
+          fclr(i,j,k) = 0.
+          fall(i,j,k) = 0.
+         enddo
+        enddo
+       enddo
+       do j= 1, n
+        do i= 1, m
+         fsdir(i,j) = 0.
+         fsdif(i,j) = 0.
+        enddo
+       enddo
+c       call cldflx (m,n,np,ict,icb,cc,rr,tt,td,rs,ts,
+c    *               fclr,fall,fsdir,fsdif)
 
        do k= 1, np+1
         do j= 1, n

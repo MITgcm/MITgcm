@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.15 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.16 2004/07/28 01:25:07 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -90,13 +90,23 @@ C Compute pressure profile to get methane and n2o values (bottom-up)
 
        pressure(1)=1000.
        do L = 2,Nrphys+1
-        pressure(L)=pressure(L-1)-dpphys0(1,1,L-1,1,1)
+        pressure(L)=pressure(L-1)-dpphys0(1,1,L-1,1,1)/100.
        enddo
 
        call fizhi_init_chem(mythid,
      .      nlatsoz,nlevsoz,ntimesoz,latsoz,levsoz,ozone,
      .      nlatsq,nlevsq,ntimesq,latsq,levsq,stratq,
      .      Nrphys,pressure,n2o,methane,co2,cfc11,cfc12,cfc22)
+
+       do bj = myByLo(myThid), myByHi(myThid)
+       do bi = myBxLo(myThid), myBxHi(myThid)
+        do j=jm1,jm2
+        do i=im1,im2
+         phis_var(i,j,bi,bj) = 0.
+        enddo
+        enddo
+       enddo
+       enddo
 
        return
        end

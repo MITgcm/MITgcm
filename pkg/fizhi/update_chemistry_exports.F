@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.9 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.10 2004/07/28 01:25:07 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -32,20 +32,16 @@ c pe on physics grid refers to bottom edge
       _RL waterin(sNx,sNy,Nrphys), xlat(sNx,sNy)
 
       integer i, j, L, LL, bi, bj
-      integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
+      integer im1, im2, jm1, jm2
       integer nhms1,nymd1,nhms2,nymd2,imns,ipls
       _RL facm, facp
       logical alarm
       external alarm
 
-      im1 = 1-OLx
-      im2 = sNx+OLx
-      jm1 = 1-OLy
-      jm2 = sNy+OLy
-      idim1 = 1
-      idim2 = sNx
-      jdim1 = 1
-      jdim2 = sNy
+      im1 = 1
+      im2 = sNx
+      jm1 = 1
+      jm2 = sNy
 
       if( alarm('radsw').or.alarm('radlw') ) then
 
@@ -66,7 +62,8 @@ c                                         (even though dpphy counted bottom up)
         do j = 1,sNy
         do i = 1,sNx
          do L = 1,Nrphys
-          pphy(i,j,L,bi,bj)=(pephy(i,j,L+1,bi,bj)+pephy(i,j,L,bi,bj))/2.
+          pphy(i,j,L,bi,bj)=(pephy(i,j,L+1,bi,bj)+pephy(i,j,L,bi,bj))
+     .                                              /200.
          enddo
         enddo
         enddo
@@ -130,14 +127,15 @@ C ****           Get Ozone and Stratospheric Moisture Data          ****
 C **********************************************************************
 
       call interp_qz (stratq,nwatlevs,nwatlats,watlevs,watlats,im*jm,
-     .                                xlat,lm,plz,qz,qzrad(1,1,1,bi,bj))
+     .                         bi,bj, xlat,lm,plz,qz,qzrad(1,1,1,bi,bj))
       call interp_oz (ozone ,nozlevs,nozlats,ozlevs,ozlats,im*jm,
-     .                                xlat,lm,plz,ozrad(1,1,1,bi,bj))
+     .                         bi,bj, xlat,lm,plz,ozrad(1,1,1,bi,bj))
+
       return
       end
 
       subroutine interp_qz(stratq,nwatlevs,nwatlats,watlevs,watlats,
-     .                               irun,xlat,nlevs,pres,qz_in,qz_out )
+     .                         irun,bi,bj,xlat,nlevs,pres,qz_in,qz_out )
 C***********************************************************************
 C  Purpose
 C     To Interpolate Chemistry Moisture from Chemistry Grid to Physics Grid
@@ -156,6 +154,7 @@ C***********************************************************************
 
       implicit none 
       integer nwatlevs,nwatlats
+      integer bi,bj
       _RL stratq ( nwatlats,nwatlevs )
       _RL watlats (nwatlats)
       _RL watlevs (nwatlevs)
@@ -275,7 +274,7 @@ c
       end
 
       subroutine interp_oz (ozone,nozlevs,nozlats,ozlevs,ozlats,
-     .                                      irun,xlat,nlevs,plevs,ozrad)
+     .                            irun,bi,bj,xlat,nlevs,plevs,ozrad)
 C***********************************************************************
 C  Purpose
 C     To Interpolate Chemistry Ozone from Chemistry Grid to Physics Grid
@@ -292,6 +291,7 @@ C
 C***********************************************************************
       implicit none
       integer nozlevs,nozlats,irun,nlevs
+      integer bi,bj
       _RL ozone(nozlats,nozlevs)
       _RL xlat(irun)
       _RL plevs(irun,nlevs)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.6 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_alarms.F,v 1.7 2004/07/28 01:25:07 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -116,6 +116,7 @@ c ----------------
       call set_alarm ( 'radlw',nymdb,nhmsb,ndlw    )
       call set_alarm ( 'turb' ,nymdb,nhmsb,ndturb  )
       call set_alarm ( 'moist',nymdb,nhmsb,ndmoist )
+      call set_alarm ( 'pnt',nymdb,nhmsb,0 )
 
       return
       end

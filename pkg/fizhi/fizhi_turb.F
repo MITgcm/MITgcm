@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.15 2004/07/26 19:51:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.16 2004/07/28 01:25:07 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -348,7 +348,14 @@ c **********************************************************************
 
       numstrips   = ((nchptot-1)/istrip) + 1
 
+      print *,' In turb - about to call grd2msc for ',nchptot,' tiles '
+      print *,' im ',im,' jm ',jm,' nchp ',nchp,' ijall ',ijall
+      print *,' igrd ',(igrd(i),i=1,nchptot)
+      print *,' pz ',(pz(i,1),i=1,ijall)
+      stop
+
       call grd2msc(pz(1,1),im,jm,igrd,pmsc,nchp,nchptot)
+
       call grd2msc(tgz,im,jm,igrd,tground,nchp,nchptot)
       do i = 1,ijall
        tmpdiag(i,1) = st4(i,1) + dst4(i,1)*(tgz(i,1)-tempref(i,1)) 
@@ -460,6 +467,8 @@ c -----------------------------------
       nqice = nqice + 1
       endif
 
+      print *,' In turb - did all initialization - ready for regions '
+      stop
 c**********************************************************************
 c                        loop over regions
 c**********************************************************************

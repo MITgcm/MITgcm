@@ -1,14 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.25 2004/07/27 04:10:56 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.26 2004/07/28 01:25:07 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
-       subroutine do_fizhi(myid,uphy,vphy,thphy,sphy,pephy,lons,lats,
+       subroutine do_fizhi(myid,
+     . idim1,idim2,jdim1,jdim2,Nrphin,Nsxin,Nsyin,im1,im2,jm1,jm2,bi,bj,
+     . nchp,nchptot,nchpland,
+     . uphy,vphy,thphy,sphy,pephy,lons,lats,
      . ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     . tgz,sice,phis_var,landtype,fracland,emiss,albnirdr,albnirdf,
+     . tgz,sst,sice,phis_var,landtype,fracland,emiss,albnirdr,albnirdf,
      . albvisdr,albvisdf,ityp,chfr,alai,agrn,igrd,chlat,chlon,
      . tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,snodep,capac,
      . o3,qstr,co2,cfc11,cfc12,cfc22,n2o,methane,
-     . idim1,idim2,jdim1,jdim2,Nrphin,Nsxin,Nsyin,im1,im2,jm1,jm2,bi,bj,
-     . nchp,nchptot,nchpland,
      . duphy,dvphy,dthphy,dsphy)
 c-----------------------------------------------------------------------
 c Interface routine to calculate physics increments - calls fizhi_driver.
@@ -33,16 +34,18 @@ C Argument list declarations
       _RL thphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL sphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL pephy(idim1:idim2,jdim1:jdim2,Nrphin+1,Nsxin,Nsyin)
-      _RL lons(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
-      _RL lats(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
+      _RS lons(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
+      _RS lats(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
       _RL ctmt(nchp,Nsxin,Nsyin),xxmt(nchp,Nsxin,Nsyin)
       _RL yymt(nchp,Nsxin,Nsyin)
       _RL zetamt(nchp,Nsxin,Nsyin)
       _RL xlmt(nchp,Nrphin,Nsxin,Nsyin),khmt(nchp,Nrphin,Nsxin,Nsyin)
       _RL tke(nchp,Nrphin,Nsxin,Nsyin)
       _RL tgz(im2,jm2,Nsxin,Nsyin)
+      _RL sst(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
       _RL sice(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
-      _RL phis_var(im2,jm2,Nsxin,Nsyin),landtype(im2,jm2,Nsxin,Nsyin)
+      _RL phis_var(im2,jm2,Nsxin,Nsyin)
+      integer landtype(im2,jm2,Nsxin,Nsyin)
       _RL fracland(im2,jm2,Nsxin,Nsyin),emiss(im2,jm2,10,Nsxin,Nsyin)
       _RL albvisdr(im2,jm2,Nsxin,Nsyin),albvisdf(im2,jm2,Nsxin,Nsyin)
       _RL albnirdr(im2,jm2,Nsxin,Nsyin),albnirdf(im2,jm2,Nsxin,Nsyin)
@@ -54,7 +57,8 @@ C Argument list declarations
       _RL ecanopy(nchp,Nsxin,Nsyin),swetshal(nchp,Nsxin,Nsyin)
       _RL swetroot(nchp,Nsxin,Nsyin),swetdeep(nchp,Nsxin,Nsyin)
       _RL snodep(nchp,Nsxin,Nsyin),capac(nchp,Nsxin,Nsyin)
-      _RL o3(im2,jm2,Nsxin,Nsyin),qstr(im2,jm2,Nsxin,Nsyin)
+      _RL o3(im2,jm2,Nrphin,Nsxin,Nsyin)
+      _RL qstr(im2,jm2,Nrphin,Nsxin,Nsyin)
       _RL co2,cfc11,cfc12,cfc22,n2o(Nrphin),methane(Nrphin)
       _RL duphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
       _RL dvphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
@@ -146,6 +150,13 @@ C***********************************************************************
       p0kappa = 1000.0 ** kappa
       S0 = getcon('S0')
       
+      do j = jm1,jm2
+      do i = im1,im2
+       xlats(i,j) = lats(i,j,bi,bj)
+       xlons(i,j) = lons(i,j,bi,bj)
+      enddo
+      enddo
+
       call astro ( nymd,nhms, xlats,xlons, im2*jm2, cosz,ra )
       do j=jm1,jm2
       do i=im1,im2
@@ -162,8 +173,6 @@ C compute pressures - all pressure are converted here to hPa
        ple(i,j,Nrphys+1,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)/100.
        pkle(i,j,Nrphys+1,bi,bj)=(pephy(i,j,Nrphys+1,bi,bj)/100.) **kappa
        p(i,j,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)/100.
-       xlats(i,j) = lats(i,j,bi,bj)
-       xlons(i,j) = lons(i,j,bi,bj)
        sea_ice(i,j) = sice(i,j,bi,bj)
       enddo
       enddo
@@ -199,7 +208,8 @@ C compute pressures - all pressure are converted here to hPa
      . albvisdr(1,1,bi,bj),albvisdf(1,1,bi,bj),albnirdr(1,1,bi,bj),
      . albnirdf(1,1,bi,bj),emiss(1,1,1,bi,bj),alai(1,bi,bj),
      . agrn(1,bi,bj),
-     . qstr(1,1,bi,bj),o3(1,1,bi,bj),co2,cfc11,cfc12,cfc22,methane,n2o,
+     . qstr(1,1,1,bi,bj),o3(1,1,1,bi,bj),
+     . co2,cfc11,cfc12,cfc22,methane,n2o,
      . lwdt(1,1,1,bi,bj),lwdtclr(1,1,1,bi,bj),swdt(1,1,1,bi,bj),
      . swdtclr(1,1,1,bi,bj),turbu(1,1,1,bi,bj),turbv(1,1,1,bi,bj),
      . turbt(1,1,1,bi,bj),turbq(1,1,1,1,bi,bj),moistu(1,1,1,bi,bj),

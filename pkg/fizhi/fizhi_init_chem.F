@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.10 2004/07/26 20:11:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_chem.F,v 1.11 2004/07/28 01:25:07 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -171,7 +171,8 @@ C Note: 2 quantities in Ozone Dataset
       nrec = lev+(time-1)*nlev*2   
       read(ku,rec=nrec) o3
            do lat=1,nlat
-           oz(lat,nlev-lev+1,time) = o3(lat)
+C          oz(lat,nlev-lev+1,time) = o3(lat)
+           oz(lat,nlev-lev+1,time) = 1.e-9
            enddo
       enddo
       enddo
