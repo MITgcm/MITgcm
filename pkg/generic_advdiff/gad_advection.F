@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.30 2004/09/27 14:42:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.31 2004/09/29 04:53:30 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -244,11 +244,13 @@ C--   Make local copy of tracer array and mask West & South
        ENDDO
       ENDDO
 
+#ifndef ALLOW_AUTODIFF_TAMC
       IF (useCubedSphereExchange) THEN
         withSigns = .FALSE.
         CALL FILL_CS_CORNER_UV_RS( 
      &            withSigns, maskLocW,maskLocS, bi,bj, myThid )
       ENDIF
+#endif
 
 C--   Multiple passes for different directions on different tiles
 C--   For cube need one pass for each of red, green and blue axes.
@@ -303,6 +305,7 @@ C       a) needed in overlap only
 C   and b) the overlap of myTile are not cube-face Edges
        IF ( .NOT.overlapOnly .OR. N_edge .OR. S_edge ) THEN
 
+#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in X
 #ifdef MULTIDIM_OLD_VERSION
         IF ( useCubedSphereExchange ) THEN
@@ -312,6 +315,7 @@ C-     Internal exchange for calculations in X
 #endif
          CALL FILL_CS_CORNER_TR_RL( .TRUE., localTij, bi,bj, myThid )
         ENDIF
+#endif
 
 C-     Advective flux in X
         DO j=1-Oly,sNy+Oly
@@ -346,10 +350,12 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 C-     Advective flux in X : done
        ENDIF
 
+#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for next calculations in Y
        IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
          CALL FILL_CS_CORNER_TR_RL(.FALSE., localTij, bi,bj, myThid )
        ENDIF
+#endif
 
 C-     Update the local tracer field where needed:
 
@@ -436,6 +442,7 @@ C       a) needed in overlap only
 C   and b) the overlap of myTile are not cube-face edges
        IF ( .NOT.overlapOnly .OR. E_edge .OR. W_edge ) THEN
 
+#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for calculations in Y
 #ifdef MULTIDIM_OLD_VERSION
         IF ( useCubedSphereExchange ) THEN
@@ -445,6 +452,7 @@ C-     Internal exchange for calculations in Y
 #endif
          CALL FILL_CS_CORNER_TR_RL(.FALSE., localTij, bi,bj, myThid )
         ENDIF
+#endif
 
 C-     Advective flux in Y
         DO j=1-Oly,sNy+Oly
@@ -479,10 +487,12 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 C-     Advective flux in Y : done
        ENDIF
 
+#ifndef ALLOW_AUTODIFF_TAMC
 C-     Internal exchange for next calculations in X
        IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
          CALL FILL_CS_CORNER_TR_RL( .TRUE., localTij, bi,bj, myThid )
        ENDIF
+#endif
 
 C-     Update the local tracer field where needed:
 

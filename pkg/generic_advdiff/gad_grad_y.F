@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_y.F,v 1.4 2004/09/24 16:54:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_grad_y.F,v 1.5 2004/09/29 04:53:30 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -47,10 +47,12 @@ C  i,j              :: loop indices
       INTEGER i,j
 CEOP
 
+#ifndef ALLOW_AUTODIFF_TAMC
 C--   Internal exchange for calculations in Y
       IF (useCubedSphereExchange) THEN
         CALL FILL_CS_CORNER_TR_RL(.FALSE., tracer, bi,bj, myThid )
       ENDIF
+#endif
 
 C     o Meridional tracer gradient
       DO i=1-Olx,sNx+Olx
