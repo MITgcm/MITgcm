@@ -27,15 +27,15 @@
  exactConserv=.TRUE.,
 ## select_rStar=1,
 # z - begin
-#   nonlinFreeSurf=3,
-#   hFacInf=0.2,
-#   hFacSup=2.0,
+    nonlinFreeSurf=3,
+    hFacInf=0.0002,
+    hFacSup=20.0,
 # z - end
 # z* - begin
-    select_rStar=2,
-    nonlinFreeSurf=4,
-    hFacInf=0.0002,
-    hFacSup=22.5,
+#   select_rStar=2,
+#   nonlinFreeSurf=4,
+#   hFacInf=0.2,
+#   hFacSup=2.5,
 # * - end
  &
 
@@ -49,6 +49,7 @@
  &PARM03
  startTime=0.,
  endTime=864000.,
+#endTime=86400.,
  deltaT=1200.0,
  cAdjFreq=0.,
  abEps=0.02,

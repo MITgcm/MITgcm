@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/external_forcing.F,v 1.1 2003/01/30 18:33:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/external_forcing.F,v 1.2 2003/03/25 15:24:25 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -74,7 +74,7 @@ c     tidal_freq=2.*pi/(43200.+25.*60.)
 C But for convenience we are using 12 hour period
       tidal_freq=2.*pi/(43200.)
 C Make the tide relatively strong (about 1 m)
-      tidal_Hscale=100.
+      tidal_Hscale=10.
       IF ( usingCartesianGrid ) THEN
        Coord2longitude=1./rSphere
       ELSEIF ( usingSphericalPolarGrid ) THEN
@@ -88,10 +88,11 @@ C Make the tide relatively strong (about 1 m)
          longitud2=XC(i,j,bi,bj)*Coord2longitude
          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
      &   +gravity*tidal_Hscale*
-     &    ( SIN( tidal_freq*myCurrentTime +longitud2 )
-     &     -SIN( tidal_freq*myCurrentTime +longitud1 )
+     &    ( SIN( tidal_freq*myCurrentTime + 2.*longitud2 )
+     &     -SIN( tidal_freq*myCurrentTime + 2.*longitud1 )
      &    )*recip_DXC(i,j,bi,bj)
      &   *_maskW(i,j,kLev,bi,bj)
+     &   *min( myCurrentTime/86400. , 1.)
        ENDDO
       ENDDO
 
