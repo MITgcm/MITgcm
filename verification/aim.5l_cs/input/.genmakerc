@@ -1,14 +1,14 @@
-# $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/input/Attic/.genmakerc,v 1.2 2002/11/05 18:40:20 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/input/Attic/.genmakerc,v 1.3 2002/11/22 17:42:24 jmc Exp $
 # $Name:  $
 
 # Force use of PGI f77
 #if (`uname` == 'Linux') set platform=( Linux+pgi )
 
 # Disable packages that are not needed
-set DISABLE=( $DISABLE kpp gmredi obcs mom_fluxform )
+set DISABLE=( $DISABLE kpp gmredi obcs mom_fluxform zonal_filt )
 
 # Enable packages that are needed but are disabled by default
-set ENABLE=( $ENABLE aim )
+# set ENABLE=( $ENABLE aim_v23 )
 
 # We can also specify other defaults
 set ROOTDIR=../../..
