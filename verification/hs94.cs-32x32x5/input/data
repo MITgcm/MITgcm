@@ -51,8 +51,8 @@
  chkptFreq=0.0,
  dumpFreq=21600.0,
  monitorFreq=1.,
- taveFreq=6000.,
- tave_lastiter=1.,
+ taveFreq=2592000.,
+#tave_lastiter=1.,
  &
 
 # Gridding parameters
