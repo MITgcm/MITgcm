@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/CPP_OPTIONS.h,v 1.9 2002/11/15 03:37:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/CPP_OPTIONS.h,v 1.10 2003/01/10 01:02:46 heimbach Exp $
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -18,7 +18,7 @@ C o Shortwave heating as extra term in external_forcing.F
 #endif
 
 C o Include/exclude code for Shapiro filters
-#define  ALLOW_SHAP_FILT
+#undef  ALLOW_SHAP_FILT
 
 C o Include/exclude code for C-D grid method of integrating the 
 C   coriolis terms

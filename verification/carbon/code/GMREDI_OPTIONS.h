@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/GMREDI_OPTIONS.h,v 1.3 2002/11/15 03:37:58 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/GMREDI_OPTIONS.h,v 1.4 2003/01/10 01:02:46 heimbach Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -23,15 +23,15 @@ C This allows to use Visbeck et al formulation to compute K_GM+Redi
 
 C This allows the leading diagonal (top two rows) to be non-unity
 C (a feature required when tapering adiabatically).
-#undef  GM_NON_UNITY_DIAGONAL
+#define  GM_NON_UNITY_DIAGONAL
 
 C Allows to use different values of K_GM and K_Redi ; also to
 C be used with the advective form (Bolus velocity) of GM
-#undef  GM_EXTRA_DIAGONAL
+#define  GM_EXTRA_DIAGONAL
 
 C Allows to use the advective form (Bolus velocity) of GM
 C  instead of the Skew-Flux form (=default)
-#undef  GM_BOLUS_ADVEC
+#define  GM_BOLUS_ADVEC
 
 
 #endif /* ALLOW_GMREDI */
