@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.8 2004/02/19 21:02:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rl.F,v 1.9 2004/03/05 02:28:11 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -27,10 +27,10 @@ C     === Routine arguments ===
       _RS arrDr(myNr)
       _RL theMin
       _RL theMax
-      _RL theMean,theMeanTile
-      _RL theSD,theSDTile
-      _RL theDel2,theDel2Tile
-      _RL theVol,theVolTile
+      _RL theMean
+      _RL theSD
+      _RL theDel2
+      _RL theVol
       INTEGER myThid
 
 C     === Local variables ====
@@ -40,6 +40,7 @@ C     === Local variables ====
       _RL tmpVal,rNumPnts
       _RL theVar,theVarTile
       _RL tmpVol
+      _RL theMeanTile, theSDTile, theDel2Tile, theVolTile
 
       theMin=0.
       theMax=0.
@@ -61,13 +62,11 @@ C     === Local variables ====
          DO J=1,sNy
           DO I=1,sNx
            tmpVal=arr(I,J,K,bi,bj)
-c          IF (tmpVal.NE.0. .AND. noPnts) THEN
            IF (arrMask(I,J,K,bi,bj).NE.0. .AND. noPnts) THEN
             theMin=tmpVal
             theMax=tmpVal
             noPnts=.FALSE.
            ENDIF
-c          IF (tmpVal.NE.0.) THEN
            IF (arrMask(I,J,K,bi,bj).NE.0.) THEN
             theMin=min(theMin,tmpVal)
             theMax=max(theMax,tmpVal)
@@ -94,17 +93,13 @@ c          IF (tmpVal.NE.0.) THEN
        ENDDO
       ENDDO
 
-      theMin=-theMin
-      _GLOBAL_MAX_R8(theMin,myThid)
-      theMin=-theMin
-      _GLOBAL_MAX_R8(theMax,myThid)
       _GLOBAL_SUM_R8(theDel2,myThid)
       _GLOBAL_SUM_R8(theVol,myThid)
       _GLOBAL_SUM_R8(theMean,myThid)
       _GLOBAL_SUM_R8(theVar,myThid)
       tmpVal=FLOAT(numPnts)
       _GLOBAL_SUM_R8(tmpVal,myThid)
-      numPnts=INT(tmpVal+0.5)
+      numPnts=NINT(tmpVal)
 
       IF (tmpVal.GT.0.) THEN
        rNumPnts=1./tmpVal
@@ -114,6 +109,12 @@ c          IF (tmpVal.NE.0.) THEN
       IF (theVol.GT.0.) THEN
        theMean=theMean/theVol
        theVar=theVar/theVol
+       IF ( noPnts ) theMin = theMean
+       theMin=-theMin
+       _GLOBAL_MAX_R8(theMin,myThid)
+       theMin=-theMin
+       IF ( noPnts ) theMax = theMean
+       _GLOBAL_MAX_R8(theMax,myThid)
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)

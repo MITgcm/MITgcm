@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rs.F,v 1.4 2004/02/06 19:59:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_rs.F,v 1.5 2004/03/05 02:28:11 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -23,8 +23,8 @@ C     === Routine arguments ===
       _RS arr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,myNr,nSx,nSy)
       _RL theMin
       _RL theMax
-      _RL theMean,theMeanTile
-      _RL theSD,theSDTile
+      _RL theMean
+      _RL theSD
       INTEGER myThid
 
 C     === Local variables ====
@@ -33,6 +33,7 @@ C     === Local variables ====
       LOGICAL noPnts
       _RL tmpVal,rNumPnts
       _RL theVar,theVarTile
+      _RL theMeanTile,theSDTile
 
       theMin=0.
       theMax=0.
@@ -70,10 +71,6 @@ C     === Local variables ====
        ENDDO
       ENDDO
 
-      theMin=-theMin
-      _GLOBAL_MAX_R8(theMin,myThid)
-      theMin=-theMin
-      _GLOBAL_MAX_R8(theMax,myThid)
       _GLOBAL_SUM_R8(theMean,myThid)
       _GLOBAL_SUM_R8(theVar,myThid)
       tmpVal=FLOAT(numPnts)
@@ -84,6 +81,12 @@ C     === Local variables ====
        rNumPnts=1./tmpVal
        theMean=theMean*rNumPnts
        theVar=theVar*rNumPnts
+       IF ( noPnts ) theMin = theMean
+       theMin=-theMin
+       _GLOBAL_MAX_R8(theMin,myThid)
+       theMin=-theMin
+       IF ( noPnts ) theMax = theMean
+       _GLOBAL_MAX_R8(theMax,myThid)
 
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_latbnd_rl.F,v 1.3 2004/03/03 23:45:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_stats_latbnd_rl.F,v 1.4 2004/03/05 02:28:11 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -98,10 +98,6 @@ C-    set k index range [k1,k2]
       ENDDO
 
       DO n=1,nSepBnd
-       theMin(n)=-theMin(n)
-       _GLOBAL_MAX_R8(theMin(n), myThid)
-       theMin(n)=-theMin(n)
-       _GLOBAL_MAX_R8(theMax(n), myThid)
        _GLOBAL_SUM_R8(theVol(n), myThid)
        _GLOBAL_SUM_R8(theMean(n),myThid)
        _GLOBAL_SUM_R8(theVar(n), myThid)
@@ -111,6 +107,13 @@ C-    set k index range [k1,k2]
        IF (theVol(n).GT.0.) THEN
         theMean(n)= theMean(n)/theVol(n)
         theVar(n) = theVar(n) /theVol(n)
+        theVar(n) = theVar(n) -theMean(n)*theMean(n)
+        IF ( noPnts(n) ) theMin(n) = theMean(n)
+        theMin(n) = -theMin(n)
+        _GLOBAL_MAX_R8(theMin(n), myThid)
+        theMin(n)=-theMin(n)
+        IF ( noPnts(n) ) theMax(n) = theMin(n)
+        _GLOBAL_MAX_R8(theMax(n), myThid)
        ENDIF
       ENDDO
 
