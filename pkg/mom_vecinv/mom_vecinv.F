@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.5 2003/04/11 13:35:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.6 2003/04/17 13:42:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -308,11 +308,11 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 
-C--   Forcing term
-      IF (momForcing)
-     &  CALL EXTERNAL_FORCING_U(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,
-     I     myCurrentTime,myThid)
+C--   Forcing term (moved to timestep.F)
+c     IF (momForcing)
+c    &  CALL EXTERNAL_FORCING_U(
+c    I     iMin,iMax,jMin,jMax,bi,bj,k,
+c    I     myCurrentTime,myThid)
 
 C--   Metric terms for curvilinear grid systems
 c     IF (usingSphericalPolarMTerms) THEN
@@ -374,11 +374,11 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 
-C--   Forcing term
-      IF (momForcing)
-     & CALL EXTERNAL_FORCING_V(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,
-     I     myCurrentTime,myThid)
+C--   Forcing term (moved to timestep.F)
+c     IF (momForcing)
+c    & CALL EXTERNAL_FORCING_V(
+c    I     iMin,iMax,jMin,jMax,bi,bj,k,
+c    I     myCurrentTime,myThid)
 
 C--   Metric terms for curvilinear grid systems
 c     IF (usingSphericalPolarMTerms) THEN
@@ -392,7 +392,7 @@ c      ENDDO
 c     ENDIF
 
 C--   Horizontal Coriolis terms
-      IF (useCoriolis) THEN
+      IF (useCoriolis .AND. .NOT.useCDscheme) THEN
        CALL MOM_VI_CORIOLIS(bi,bj,K,uFld,vFld,omega3,r_hFacZ,
      &                      uCf,vCf,myThid)
        DO j=jMin,jMax
