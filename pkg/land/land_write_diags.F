@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_write_diags.F,v 1.2 2004/11/11 01:42:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_write_diags.F,v 1.3 2004/11/14 19:55:59 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -48,8 +48,7 @@ C     == Local variables ==
       LOGICAL gf
 
 #ifdef ALLOW_AIM
-c     IF ( land_monFreq.NE.0. ) THEN
-      IF ( land_monFreq.NE.0. .AND. myIter.NE.nIter0 ) THEN
+      IF ( land_monFreq.NE.0. ) THEN
         CALL LAND_MONITOR( aim_landFr, myTime, myIter, myThid )
       ENDIF
 #endif
