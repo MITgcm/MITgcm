@@ -48,7 +48,7 @@ C***********************************************************************
       glf = .FALSE.
       WRITE(suff,'(I10.10)') myIter
       pref = fnames(listnum)
-      WRITE( fn, '(A,A)' ) pref(1:8),suff(1:10)
+      WRITE( fn, '(A,A)' ) pref(1:8),'.',suff(1:10)
 
       do n=1,nfields(listnum)
        do m=1,ndiagt
