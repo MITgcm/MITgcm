@@ -7,8 +7,14 @@ CADJ SUBROUTINE TIMEAVE_CUMULATE  OUTPUT = 1
 C----------------------------------------
 C subroutine  TIMEAVE_CUMUL_1T
 C----------------------------------------
-CADJ SUBROUTINE TIMEAVE_CUMUl_1T  INPUT  =   2,3,4,5,6,7
+CADJ SUBROUTINE TIMEAVE_CUMUL_1T  INPUT  =   2,3,4,5,6,7
 CADJ SUBROUTINE TIMEAVE_CUMUL_1T  OUTPUT = 1
+
+C----------------------------------------
+C subroutine  TIMEAVE_CUMUL_DIF_1T
+C----------------------------------------
+CADJ SUBROUTINE TIMEAVE_CUMUL_DIF_1T  INPUT  =   2,3,4,5,6,7,8,9
+CADJ SUBROUTINE TIMEAVE_CUMUL_DIF_1T  OUTPUT = 1
 
 C----------------------------------------
 C subroutine  TIMEAVE_STATVARS

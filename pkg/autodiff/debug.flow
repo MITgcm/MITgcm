@@ -11,3 +11,26 @@ C----------------------------------------
 CADJ SUBROUTINE DEBUG_STATS_RS INPUT  = 1,2,3,4
 CADJ SUBROUTINE DEBUG_STATS_RS  OUTPUT =
 
+C----------------------------------------
+C flow directives for S/R DEBUG_CALL
+C----------------------------------------
+CADJ SUBROUTINE DEBUG_CALL INPUT  = 1,2
+CADJ SUBROUTINE DEBUG_CALL  OUTPUT =
+
+C----------------------------------------
+C flow directives for S/R DEBUG_LEAVE
+C----------------------------------------
+CADJ SUBROUTINE DEBUG_LEAVE INPUT  = 1,2
+CADJ SUBROUTINE DEBUG_LEAVE  OUTPUT =
+
+C----------------------------------------
+C flow directives for S/R DEBUG_ENTER
+C----------------------------------------
+CADJ SUBROUTINE DEBUG_ENTER INPUT  = 1,2
+CADJ SUBROUTINE DEBUG_ENTER  OUTPUT =
+
+C----------------------------------------
+C flow directives for S/R DEBUG_MSG
+C----------------------------------------
+CADJ SUBROUTINE DEBUG_MSG INPUT  = 1,2
+CADJ SUBROUTINE DEBUG_MSG  OUTPUT =

@@ -24,8 +24,6 @@ CADJ STORE vveld     = tapelev3, key = ilev_3
 CADJ STORE etanm1    = tapelev3, key = ilev_3
 CADJ STORE unm1      = tapelev3, key = ilev_3
 CADJ STORE vnm1      = tapelev3, key = ilev_3
-CADJ STORE gucd      = tapelev3, key = ilev_3
-CADJ STORE gvcd      = tapelev3, key = ilev_3
 #endif /* INCLUDE_CD_CODE */
 
 #ifdef ALLOW_PASSIVE_TRACER
