@@ -1,10 +1,37 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.385 2004/11/16 14:33:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.386 2004/11/17 04:18:45 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint56
 o AIM: read land-Fraction earlier (from ini-fixed) and monitor land at nIter0
 o mnc: cleanup "full" files--fixes out-of-memory problem
+o ECCO-GODAE
+  * model/, pkg/, code/, input/ now complete w.r.t. ECCO-GODAE production setup
+  * fully merged and updated from SIO code
+    windstress sign change affects
+    - exf_inscal_[u/v]stress
+    - sign of xx_tau[u/v] adjustments
+    - signs in cost_scat
+  * ctrl_get_gen: avoid update of tau[u/v] for first few days
+  * natl_box_adjoint updated and compressed
+  * 2-level checkpoint switch added
+    (tested in EXP. 1 of natl_box_adjoint)
+  * new switch doInitXX to avoid init. of xx_... in optimcycle=0
+o SVD
+  * first complete, non-hacked version for SVD calculations
+  * all interfaces clean w.r.t to handling of xx_..., adxx_..., g_xx_...
+    performed via direct access files admtlm_vector.it????
+    (via ctrl_[un]pack)
+  * optimcycle is used for ARPACK iteration counter
+    (note: adxx_... is iterated, rather than xx_...; latter is constant!)
+  * EV problem ok w.r.t. L2-norm in tangent space; need to check other norms
+    and add linear transforms where necessary 
+  * controls are initial/final SST, SSS (can be extended; need to check
+    ctrl_set_[un]pack_xyz.F according to ctrl_set_[un]pack_xy.F
+o mdsio: filename info to both stderr, stdout
+o exf: exf_inscal_runoff: separated default conversion [m/year] -> [m/sec]
+  from sign change 
 
 checkpoint55j_post
 o isolate dissipation tendency (allow to keep it out off AB) in V.I form.
