@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.95 2004/08/05 16:04:32 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.96 2004/08/09 02:28:51 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -689,9 +689,12 @@ check_netcdf_libs()  {
       IF (iret .NE. NF_NOERR) write(*,*) NF_STRERROR(iret)
       end
 EOF
-    #echo "$CPP $DEFINES $INCLUDES"
+    #echo "$CPP $DEFINES $INCLUDES genmake_tnc.for > genmake_tnc.f"
+    #echo "$FC $FFLAGS $FOPTIM -c genmake_tnc.f"
+    #echo "$LINK -o genmake_tnc.o $LIBS"
     $CPP $DEFINES $INCLUDES genmake_tnc.for > genmake_tnc.f 2>/dev/null  \
-	&&  $FC $FFLAGS $FOPTIM -o genmake_tnc genmake_tnc.f $LIBS >> genmake_tnc.log 2>&1
+	&&  $FC $FFLAGS $FOPTIM -c genmake_tnc.f  \
+	&&  $LINK -o genmake_tnc genmake_tnc.o $LIBS >> genmake_tnc.log 2>&1
     RET_COMPILE=$?
     test -x ./genmake_tnc  &&  ./genmake_tnc >> genmake_tnc.log 2>&1
     RETVAL=$?
