@@ -1,4 +1,4 @@
-C $Id: model.F,v 1.4 1998/06/15 05:13:54 cnh Exp $
+C $Id: model.F,v 1.5 1998/06/23 13:36:42 adcroft Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 C================================================================================
@@ -164,6 +164,7 @@ C     \----------------------------------------------------------------/
       gS = 0.
       nIts = numberOfTimeSteps
       DO J =1, nIts
+c      write(0,*) 'model: T  ',minval(T),maxval(T)
        nIter   = nIter+1
        RHS2d   = 0.
        divH    = 0.
@@ -231,10 +232,10 @@ CMIC$  END GUARD
 CMIC$  END DO
 CMIC$  END PARALLEL
 CcnhDebugStarts
-       WRITE(0,*) ' GUNM1 K=1 at T = ', currentTime
-       CALL PLOT_FIELD(GUNM1(_I3(1,:,:)),Nx,Ny)
-       WRITE(0,*) ' GVNM1 K=1 at T = ', currentTime
-       CALL PLOT_FIELD(GVNM1(_I3(1,:,:)),Nx,Ny)
+c      WRITE(0,*) ' GUNM1 K=1 at T = ', currentTime
+c      CALL PLOT_FIELD(GUNM1(_I3(1,:,:)),Nx,Ny)
+c      WRITE(0,*) ' GVNM1 K=1 at T = ', currentTime
+c      CALL PLOT_FIELD(GVNM1(_I3(1,:,:)),Nx,Ny)
 CcnhDebugEnds
 C      /----------------------------------------------------------------\
 C      | Find the pressure that keeps flow non-divergent.               |
@@ -245,7 +246,7 @@ C      | Non-hydrostatic pressure is found from.                        |
 C      | del**2(pnh) = div(G)+1/DT*div(u)-del**2(ph)-del_xy**2(ps)      |
 C      \----------------------------------------------------------------/
 CcnhDebugStarts
-       WRITE(0,*) ' S/R MODEL: CALL PFIND'
+c      WRITE(0,*) ' S/R MODEL: CALL PFIND'
 CcnhDebugEnds
        CALL PFIND( RHS2D, rPrmBz, divH,
      O            PH , PS )
@@ -273,17 +274,17 @@ CMIC$  END PARALLEL
      I               U, V, PS,
      O               W )
 CcnhDebugStarts
-       WRITE(0,*) ' S/R MODEL: CALL UPDATE_UV'
-       WRITE(0,*) ' U K=1 at t = ', currentTime
-       CALL PLOT_FIELD(U(_I3(1,:,:)),Nx,Ny)
-       WRITE(0,*) ' V K=1 at t = ', currentTime
-       CALL PLOT_FIELD(V(_I3(1,:,:)),Nx,Ny)
-       WRITE(0,*) ' W K=2 at t = ', currentTime
-       CALL PLOT_FIELD(W(_I3(2,:,:))/-9808.038D0,Nx,Ny)
+c      WRITE(0,*) ' S/R MODEL: CALL UPDATE_UV'
+c      WRITE(0,*) ' U K=1 at t = ', currentTime
+c      CALL PLOT_FIELD(U(_I3(1,:,:)),Nx,Ny)
+c      WRITE(0,*) ' V K=1 at t = ', currentTime
+c      CALL PLOT_FIELD(V(_I3(1,:,:)),Nx,Ny)
+c      WRITE(0,*) ' W K=2 at t = ', currentTime
+c      CALL PLOT_FIELD(W(_I3(2,:,:))/-9808.038D0,Nx,Ny)
 CcnhDebugEnds
 C      CALL LOAD_SST
        currentTime = currentTime+DELT
-       WRITE(0,*) currentTime
+c      WRITE(0,*) currentTime
 #ifdef GMGS
 C      /----------------------------------------------------------------\
 C      | Calculate eddy parameterisation terms.                         |
@@ -343,8 +344,8 @@ CMIC$  END PARALLEL
        S = S + GS*DELT*asyncFac*0.
 #endif
 CcnhDebugStarts
-       WRITE(0,*) ' T K=1 at t = ', currentTime
-       CALL PLOT_FIELD(T(_I3(1,:,:)),Nx,Ny)
+c      WRITE(0,*) ' T K=1 at t = ', currentTime
+c      CALL PLOT_FIELD(T(_I3(1,:,:)),Nx,Ny)
 CcnhDebugEnds
 C      /----------------------------------------------------------------\
 C      | Diagnose density field.                                        |
@@ -386,25 +387,25 @@ CMIC$  DO PARALLEL
 CMIC$  END DO
 CMIC$  END PARALLEL
 CcnhDebugStarts
-       WRITE(0,*) ' RPRM K=1 at t = ', currentTime
-       CALL PLOT_FIELD(rPrm(_I3(1,:,:)),Nx,Ny)
+c      WRITE(0,*) ' RPRM K=1 at t = ', currentTime
+c      CALL PLOT_FIELD(rPrm(_I3(1,:,:)),Nx,Ny)
 CcnhDebugEnds
        rPrmBz(_I3(1,:,:)) = rPrm(_I3(1,:,:))
        DO K = 2, nz
         rPrmBz(_I3(K,:,:)) = ( rPrm(_I3(K,:,:))+rPrm(_I3(K-1,:,:)) )*0.5
        ENDDO
  
-       write(0,*) 'model: gT ',minval(gTnm1),maxval(gTnm1)
-       write(0,*) 'model: T  ',minval(T),maxval(T)
-       write(0,*) 'model: pH ',minval(pH),maxval(pH)
+!      write(0,*) 'model: gT ',minval(gTnm1),maxval(gTnm1)
+!      write(0,*) 'model: T* ',minval(T),maxval(T)
+!      write(0,*) 'model: pH ',minval(pH),maxval(pH)
 !      write(0,*) 'model: gU ',minval(gUnm1),maxval(gUnm1)
 !      write(0,*) 'model: gV ',minval(gVnm1),maxval(gVnm1)
-       write(0,*) 'model: PS ',minval(PS),maxval(PS)
-       write(0,*) 'model: U  ',minval(U),maxval(U)
-       write(0,*) 'model: V  ',minval(V),maxval(V)
-       write(0,*) 'model: K13',minval(K31),maxval(K31)
-       write(0,*) 'model: K23',minval(K32),maxval(K32)
-       write(0,*) 'model: K33',minval(K33),maxval(K33)
+!      write(0,*) 'model: PS ',minval(PS),maxval(PS)
+!      write(0,*) 'model: U  ',minval(U),maxval(U)
+!      write(0,*) 'model: V  ',minval(V),maxval(V)
+!      write(0,*) 'model: K31',minval(K31),maxval(K31)
+!      write(0,*) 'model: K32',minval(K32),maxval(K32)
+!      write(0,*) 'model: K33',minval(K33),maxval(K33)
 
       ENDDO
 C     /----------------------------------------------------------------\

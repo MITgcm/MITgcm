@@ -1,4 +1,4 @@
-C $Id: set_defaults.F,v 1.4 1998/06/15 05:13:54 cnh Exp $
+C $Id: set_defaults.F,v 1.5 1998/06/23 13:36:42 adcroft Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 C================================================================================
@@ -97,7 +97,7 @@ C
       CP          = 3900.D0
 CENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNOREENDIGNORE
 
-       delT       = 3600.D0
+       delT       = 2400.D0
       freeSurfFac = 1.D0
        startTime  = 0.
       endTime     = startTime+10.*delT
@@ -414,7 +414,7 @@ C      tAlpha     = 0.D-4
 
 C     Numerics parameters
       abEps     = 0.1
-      rAja      = 9.887999800888535E-01
+      rAja      = 9.925333200592357E-01
 C     rAja      = 0.
       dUnit               = 10
       scrUnit1            = 11
@@ -463,14 +463,14 @@ C       fu(i,j) = -tauMax
       OPEN ( 11, FILE='windx', STATUS='old' , FORM='unformatted')
       READ (11) tmpXY
 C     Fu = tmpXY/DELPS(1)*G*0.1*uMask(_I3(1,:,:))           ! Dynes/cm**2 -> m/s**2
-      Fu = tmpXY/DELPS(1)*G*0.1
-      Fu = 0.1/DELPS(1)*G
+      Fu = tmpXY/DELPS(1)*G
+C     Fu = 0.1/DELPS(1)*G
       CLOSE(11)
 
       OPEN ( 11, FILE='windy', STATUS='old' , FORM='unformatted')
       READ (11) tmpXY
 C     Fu = tmpXY/DELPS(1)*G*0.1*uMask(_I3(1,:,:))           ! Dynes/cm**2 -> m/s**2
-      Fv = tmpXY/DELPS(1)*G*0.
+      Fv = tmpXY/DELPS(1)*G
       CLOSE(11)
 
 C

@@ -1,4 +1,4 @@
-C $Id: g_calc.F,v 1.2 1998/06/08 21:42:59 cnh Exp $
+C $Id: g_calc.F,v 1.3 1998/06/23 13:36:41 adcroft Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 
@@ -549,7 +549,7 @@ C === Vertical advective flux of V ====================================
 C     o Laplacian Diffusion<Line 1> + Advection<Line 2,3>
 C     fZK: -KzMomentum*VAreaZ*dz[V] + Bz[V]*By[Az*W]
       IF ( .NOT. TOP_LAYER    ) THEN
-       WRITE(0,*) ' fZK subsurface layer '
+c      WRITE(0,*) ' fZK subsurface layer '
        DO J = 1, ny
         DO I = 1, nx
          fZK(I,J) = 0.
@@ -564,7 +564,7 @@ C    Note!!!! omitted.
         ENDDO
        ENDDO
       ELSE
-       WRITE(0,*) ' fZK top layer '
+c      WRITE(0,*) ' fZK top layer '
        DO J = 1, ny
         DO I = 1, nx
          fZK(I,J) = 0.D0
@@ -597,8 +597,8 @@ C    Note!!!! omitted.
         ENDDO
        ENDDO
       ENDIF
-      WRITE(0,*) 'K, MAXVAL(fZK)   = ', K, MAXVAL(fZK)
-      WRITE(0,*) 'K, MAXVAL(fZKP1) = ', K, MAXVAL(fZKP1)
+c     WRITE(0,*) 'K, MAXVAL(fZK)   = ', K, MAXVAL(fZK)
+c     WRITE(0,*) 'K, MAXVAL(fZKP1) = ', K, MAXVAL(fZKP1)
 C === Combine advective and diffusive fluxes of V =====================
 C     o V tendency is minus divergence of diffusive and advective flux.
 C     gV:  -div(fX,fY,fZ) = -1/VVolume*(dx[fX]+dy[fY]+fZK-fZKP1)

@@ -1,4 +1,4 @@
-C $Id: pfind.F,v 1.1 1998/05/25 20:21:05 cnh Exp $
+C $Id: pfind.F,v 1.2 1998/06/23 13:36:42 adcroft Exp $
 #include "CPP_OPTIONS.h"
 #include "CPP_MACROS.h"
 # define _D(a) 
@@ -66,7 +66,7 @@ C     \--------------------------------------------------------------/
       INTEGER I, J, K
 
 C     _D(( ' S/R PFIND: MAXVAL(RHS2d) = ',MAXVAL(RHS2d)))
-      WRITE(0,*) ' S/R PFIND: MAXVAL(RHS2d) = ',MAXVAL(RHS2d)
+c     WRITE(0,*) ' S/R PFIND: MAXVAL(RHS2d) = ',MAXVAL(RHS2d)
 
       DO J=1,Ny
        DO I=1,Nx
@@ -85,8 +85,8 @@ C       \-------------------------------------------------------------/
       ELSEIF ( divHMx .LT. divHMin ) THEN
        IF ( toler2d .LT. 1.    ) toler2d = toler2d * 1.1
       ENDIF
-      WRITE(0,*) ' S/R PFIND MAX(DIVxy) = ',divHMx
-      WRITE(0,*) ' S/R PFIND normalisation factor  = ',1.D0/aNorm2d
+c     WRITE(0,*) ' S/R PFIND MAX(DIVxy) = ',divHMx
+c     WRITE(0,*) ' S/R PFIND normalisation factor  = ',1.D0/aNorm2d
 C     RHS2d = RHS2d
       rMax = MAXVAL(ABS(RHS2d))
       _D(( ' S/R PFIND: aNorm2d = ',aNorm2d))
@@ -126,7 +126,7 @@ C      CALL CG2D    (
       _D(( ' S/R PFIND: MAXVAL(PS) = ',MAXVAL(PS) ))
       _D(( ' S/R PFIND: MINVAL(PS) = ',MINVAL(PS) ))
 CcnhDebugStarts
-      WRITE(0,*) '  S/R PFIND: nIts2, resid2 ', numIt2, sqrt(rFinal2)
+c     WRITE(0,*) '  S/R PFIND: nIts2, resid2 ', numIt2, sqrt(rFinal2)
 CcnhDebugEnds
 C
       RETURN
