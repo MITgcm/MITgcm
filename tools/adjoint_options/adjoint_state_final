@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_state_final,v 1.1 2004/10/22 11:46:03 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/adjoint_options/adjoint_state_final,v 1.2 2005/02/02 22:15:19 heimbach Exp $
 #  $Name:  $
 #
 
@@ -16,7 +16,7 @@
 
 TAF=taf
 TAMC=tamc
-LIBS=-larpack
+LIBS="${LIBS} -larpack"
 
 AD_TAMC_FLAGS='-reverse -admark ad -i4 -r4 -l tamc_ad.log'
 AD_TAF_FLAGS='-reverse -admark ad -i4 -r4 -l taf_ad.log -flow taf_ad_flow.log -nonew_arg'
