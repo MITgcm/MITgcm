@@ -35,32 +35,30 @@ vdir1(in)=vice1(in)./icespeed1(in);
 
 clf, subplot(321)
 mypcolor(lon,lat,area1'); caxis([0 1]), colorbar
-title('Sea-ice concentration')
+title('Sea-ice concentration, this run')
 set(gca,'xticklabel',[])
 
 subplot(322)
-mypcolor(lon,lat,area1'-area'); colorbar
-title('Difference with checkpoint51f')
+mypcolor(lon,lat,area'); caxis([0 1]), colorbar
+title('Sea-ice concentration, checkpoint52l')
 set(gca,'xticklabel',[])
 
 subplot(323)
-mypcolor(lon,lat,heff1'); caxis([0 .3]), colorbar
-title('Effective sea-ice thickness (m)')
+mypcolor(lon,lat,heff1'); caxis([0 .6]), colorbar
+title('Effective sea-ice thickness (m), this run')
 set(gca,'xticklabel',[])
 
 subplot(324)
-mypcolor(lon,lat,heff1'-heff'); colorbar
-title('Difference with checkpoint51f')
+mypcolor(lon,lat,heff'); caxis([0 .6]), colorbar
+title('Effective sea-ice thickness (m), checkpoint52l')
 set(gca,'xticklabel',[])
 
 subplot(325)
-mypcolor(Blon,Blat,icespeed1'); caxis([0 10]), colorbar
+mypcolor(Blon,Blat,icespeed1'); caxis([0 12]), colorbar
 hold on, myquiver(Blon,Blat,udir1',vdir1','k');
-title('Sea-ice velocity (cm/s)')
+title('Sea-ice velocity (cm/s), this run')
 
 subplot(326)
-mypcolor(Blon,Blat,icespeed1'-icespeed'); colorbar
-if mmax(abs(udir1-udir)) | mmax(abs(vdir1-vdir))
-  hold on, myquiver(Blon,Blat,udir1'-udir',vdir1'-vdir','k');
-end
-title('Difference with checkpoint51f')
+mypcolor(Blon,Blat,icespeed'); caxis([0 12]), colorbar
+hold on, myquiver(Blon,Blat,udir',vdir','k');
+title('Sea-ice velocity (cm/s), checkpoint52l')

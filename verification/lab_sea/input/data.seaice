@@ -1,4 +1,5 @@
 # SEAICE parameters
  &SEAICE_PARM01
-      SEAICEwriteState  = .TRUE.
+      SEAICEwriteState   = .TRUE.
+      SEAICE_initialHEFF = 1.0
  &
