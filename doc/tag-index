@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.416 2004/12/17 00:52:42 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.417 2004/12/17 05:03:43 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/thSIce: read initial state from 6 files ; allow monitor to use MNC.
 o add diagnostics of advective & diffusive flux for T & S (pTracers coming soon)
   this is based directly on what the model compute, so that the content of
   each diagnostics might be affected by switching options (e.g., implicitDiffusion)
