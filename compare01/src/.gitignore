@@ -1,0 +1,4 @@
+*.f
+*.o
+MITgcm*
+fort.*
