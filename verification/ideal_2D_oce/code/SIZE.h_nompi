@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code/Attic/SIZE.h_nompi,v 1.2 2003/09/10 02:25:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/Attic/SIZE.h_nompi,v 1.1 2003/09/10 02:25:47 edhill Exp $
 C $Name:  $
 
 C
@@ -37,12 +37,12 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =  90,
-     &           sNy =  40,
-     &           OLx =   2,
-     &           OLy =   2,
+     &           sNx =   1,
+     &           sNy =  14,
+     &           OLx =   3,
+     &           OLy =   3,
      &           nSx =   1,
-     &           nSy =   1,
+     &           nSy =   4,
      &           nPx =   1,
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,

@@ -1,10 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code/Attic/CPP_EEOPTIONS.h_nompi,v 1.2 2003/09/10 02:25:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/Attic/CPP_EEOPTIONS.h_mpi,v 1.1 2003/09/10 02:25:47 edhill Exp $
 C $Name:  $
-
 C
-C     /==========================================================\
+CBOP
+C     !ROUTINE: CPP_EEOPTIONS.h
+C     !INTERFACE:
+C     include "CPP_EEOPTIONS.h"
+C
+C     !DESCRIPTION:
+C     *==========================================================*
 C     | CPP_EEOPTIONS.h                                          |
-C     |==========================================================|
+C     *==========================================================*
 C     | C preprocessor "execution environment" supporting        |
 C     | flags. Use this file to set flags controlling the        |
 C     | execution environment in which a model runs - as opposed |
@@ -23,7 +28,8 @@ C     |       set all options as selectable at runtime but then  |
 C     |       once an experimental configuration has been        |
 C     |       identified, rebuild the code with the appropriate  |
 C     |       options set at compile time.                       |
-C     \==========================================================/
+C     *==========================================================*
+CEOP
 
 #ifndef _CPP_EEOPTIONS_H_
 #define _CPP_EEOPTIONS_H_
@@ -47,8 +53,8 @@ C     undef this option.
 #undef  FMTFTN_IO_THREADSAFE
 
 C--   Control MPI based parallel processing
-#undef  ALLOW_USE_MPI
-#undef  ALWAYS_USE_MPI
+#define ALLOW_USE_MPI
+#define ALWAYS_USE_MPI
  
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.

@@ -1,6 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code/Attic/SIZE.h_nompi,v 1.2 2003/09/10 02:25:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code/Attic/SIZE.h_nompi,v 1.1 2003/09/10 02:25:46 edhill Exp $
 C $Name:  $
-
 C
 C     /==========================================================\
 C     | SIZE.h Declare size of underlying computational grid.    |
@@ -37,10 +36,10 @@ C     Nr  - No. points in Z for full process domain.
       INTEGER Ny
       INTEGER Nr
       PARAMETER (
-     &           sNx =  90,
-     &           sNy =  40,
-     &           OLx =   2,
-     &           OLy =   2,
+     &           sNx =   1,
+     &           sNy =  32,
+     &           OLx =   3,
+     &           OLy =   3,
      &           nSx =   1,
      &           nSy =   1,
      &           nPx =   1,

@@ -1,6 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code/Attic/CPP_EEOPTIONS.h_nompi,v 1.2 2003/09/10 02:25:46 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp0/code/Attic/CPP_EEOPTIONS.h_nompi,v 1.1 2003/09/10 02:25:46 edhill Exp $
 C $Name:  $
-
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
