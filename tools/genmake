@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.47 2001/08/23 19:33:44 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.48 2001/09/04 17:17:47 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -689,7 +689,7 @@ links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES)
 small_f: \$(F77FILES)
 
 output.txt: \$(EXECUTABLE)
-	@echo -n "running ... "
+	@printf 'running ... '
 	@\$(EXECUTABLE) > \$@
 
 clean:

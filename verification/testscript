@@ -224,7 +224,7 @@ runmodel()
     if [ $quick -eq 0 ]; then
      rm -f output.txt
     fi
-    echo -n "runmodel: " 1>&2
+    printf 'runmodel: ' 1>&2
     make output.txt && return 0
 #   if [ ! -r output.txt -o $quick -eq 0 ]; then
 #    echo runmodel: running... 1>&2
