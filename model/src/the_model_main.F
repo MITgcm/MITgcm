@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.17 1998/07/01 19:49:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.18 1998/07/01 19:57:22 adcroft Exp $
 
-#include "CPP_EEOPTIONS.h"
+#include "CPP_OPTIONS.h"
 
       SUBROUTINE THE_MODEL_MAIN(myThid)
 C     /==========================================================\
