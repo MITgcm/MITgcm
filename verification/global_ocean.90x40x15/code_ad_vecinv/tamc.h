@@ -1,9 +1,7 @@
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad_vecinv/Attic/tamc.h,v 1.5 2004/07/13 18:14:50 jmc Exp $
+C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
-
-#ifdef ALLOW_PTRACERS
-# include "PTRACERS_OPTIONS.h"
-#endif
 
 c     ================================================================
 c     HEADER TAMC
@@ -108,7 +106,7 @@ c     and writing data.
       PARAMETER( maximpl     = 6 )
       INTEGER    maxpass
 #ifdef ALLOW_PTRACERS
-      PARAMETER( maxpass     = NUMBER_OF_PTRACERS + 2 )
+      PARAMETER( maxpass     = PTRACERS_num + 2 )
 #else
 # ifdef ALLOW_PASSIVE_TRACER
       PARAMETER( maxpass     = 3 )
