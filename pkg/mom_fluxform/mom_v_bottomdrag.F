@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_v_bottomdrag.F,v 1.2 2001/05/29 14:01:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_v_bottomdrag.F,v 1.3 2001/07/13 13:47:50 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -48,8 +48,13 @@ C-  No-slip BCs impose a drag at bottom
      &   *( 
      &      2.*KappaRV(i,j,kp1)*rkFac*rdrckp1*viscFac
      &     + bottomDragLinear
-     &     + bottomDragQuadratic*sqrt(KE(i,j)+KE(i,j-1))
      &    )*(1.-maskDown)*vFld(i,j)
+        IF ( (KE(i,j)+KE(i,j-1)) .NE. 0. ) THEN
+         vDragTerms(i,j)=vDragTerms(i,j)
+     &    -_recip_hFacS(i,j,k,bi,bj)*recip_drF(k)
+     &    *bottomDragQuadratic*sqrt(KE(i,j)+KE(i,j-1))
+     &    *(1.-maskDown)*vFld(i,j)
+        ENDIF
        ENDDO
       ENDDO
 
