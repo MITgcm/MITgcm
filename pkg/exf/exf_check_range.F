@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.18 2005/02/11 17:24:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.19 2005/03/26 18:12:59 dimitri Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -90,7 +90,7 @@ c             Zonal wind stress.
               endif
 c
 c             Meridional wind stress.
-              if ( ABS(vstress(i,j,bi,bj)) .GT. 2.2 .AND.
+              if ( ABS(vstress(i,j,bi,bj)) .GT. 2.3 .AND.
      &             hFacS(i,j,1,bi,bj) .NE. 0. ) then
                  write(standardmessageunit,'(A,2(2X,I5),2X,D22.15)')
      &                'EXF WARNING: vstress out of range for i,j= ',
