@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.5 2004/07/13 18:03:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_surfforcing_init.F,v 1.6 2004/09/01 16:22:03 stephd Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
@@ -40,6 +40,7 @@ C  myThid               :: thread number
 C !LOCAL VARIABLES: ====================================================
        INTEGER I,J, kLev, it
        INTEGER intime0,intime1
+       _RL otime
        _RL aWght,bWght,rdt
        INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 C Number of iterations for pCO2 solvers...
@@ -88,6 +89,11 @@ cswd QQ change for placement of chem forcing (ie. after timestep)
          CALL READ_REC_XY_RS( SilicaFile,silica1,intime1,
      &        nIter0,myThid )
        ENDIF
+
+#ifdef ALLOW_OFFLINE
+         otime=nIter0*deltaTclock
+         call OFFLINE_FIELDS_LOAD( otime, nIter0, myThid )
+#endif
 
        _END_MASTER(myThid)
 C
