@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/filter_dxml.F,v 1.1 1998/11/06 22:44:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/filter_dxml.F,v 1.2 1999/05/18 17:58:46 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_DXML_FFT
@@ -38,7 +38,8 @@ C     STOP
 
       RETURN
       END
-      SUBROUTINE FILTER_DXML_DFFT_APPLY( phi, j, bi, bj, gridLoc, myThid )
+      SUBROUTINE FILTER_DXML_DFFT_APPLY(
+     &         phi, j, bi, bj, gridLoc, myThid )
 
 C     /==========================================================\
 C     | S/R FILTER_DXML_DFFT_APPLY                               |
