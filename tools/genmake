@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.74 2003/02/18 05:33:55 dimitri Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.75 2003/02/28 02:52:49 heimbach Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -379,18 +379,23 @@ endif
 # Platform specific options
 switch ($platform$USEMPI)
   case OSF1+mpi:
+#ph: e.g. halem.gsfc.nasa.gov
     echo "Configuring for DEC Alpha with MPI"
     set LIBS       = ( '-lfmpi -lmpi -lkmp_osfp10 -pthread' )
+#ph: -lkmp_osfp10 not needed on some/many platforms
   case OSF1:
     echo "Configuring for DEC Alpha"
     set CPP        = ( '/usr/bin/cpp -P' )
     set DEFINES    = ( ${DEFINES}  '-DTARGET_DEC -DWORDLENGTH=1' )
+    set MAKEDEPEND = ( mkdep -f depend.out )
+#ph: makedepend not available on some/many DEC Alpha's; use mkdep instead
     set KPP        = ( )
     set KPPFILES   = ( )
     set KFLAGS1    = ( )
     set FC         = ( 'f77' )
     set FFLAGS     = ( '-convert big_endian -r8 -extend_source -automatic -call_shared -notransform_loops -align dcommons' )
     set FOPTIM     = ( '-O5 -fast -tune host -inline all' )
+#ph: -O5 probably too aggressive in conjunction with adjoint code
     set NOOPTFLAGS = ( '-O0' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F')
     set RMFILES    = ( '*.p.out' )
@@ -643,6 +648,7 @@ switch ($platform$USEMPI)
     breaksw
   case SP3:
 # originally from A. Biastoch, SIO.
+# e.g. horizon.npaci.edu
     echo "Configuring for IBM SP POWER3"
     set SOURCEDIRS  = ( ./ $SOURCEDIRS )
     set LN         = ( 'ln -s' )
@@ -656,6 +662,30 @@ switch ($platform$USEMPI)
     set FFLAGS     = ( '-qfixed=132 -O3 -qarch=pwr3 -qtune=pwr3 -qcache=auto -qmaxmem=-1' \
                            '-bmaxdata:0x80000000 ' )
     set LDFLAGS    = ( '-O3 -qarch=pwr3 -qtune=pwr3 -qcache=auto -qmaxmem=-1' \
+                           '-bmaxdata:0x80000000' )
+    set LIBS       = ( ' -L/usr/local/apps/mass -lmass' )
+#   set FFLAGS     = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4' )
+#    set FOPTIM     = ( '-O3' )
+#   set NOOPTFLAGS = ( '-O0' )
+#   set NOOPTFILES = ( 'barrier.F different_multiple.F ' \
+#                      'external_fields_load.F' )
+    set RMFILES    = ( 'rii_files' )
+    breaksw
+  case SP4:
+#ph: e.g. bluesky.ucar.edu, marcellus.navo.hpc.mil
+    echo "Configuring for IBM SP POWER4"
+    set SOURCEDIRS  = ( ./ $SOURCEDIRS )
+    set LN         = ( 'ln -s' )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_PWR3 -DTARGET_SGI -DWORDLENGTH=4' )
+    set INCLUDES   = ( '-I/usr/lpp/ppe.poe/include' )
+#    set CPP        = ( '/lib/cpp' )
+    set FC         = ( 'mpxlf95' )
+    set LINK       = ( 'mpxlf95' )
+    set FLAGS      = ( '-O3 -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1' \
+                           '-bmaxdata:0x80000000 -bloadmap:mitgcmuv.map' )
+    set FFLAGS     = ( '-qfixed=132 -O3 -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1' \
+                           '-bmaxdata:0x80000000 ' )
+    set LDFLAGS    = ( '-O3 -qarch=pwr4 -qtune=pwr4 -qcache=auto -qmaxmem=-1' \
                            '-bmaxdata:0x80000000' )
     set LIBS       = ( ' -L/usr/local/apps/mass -lmass' )
 #   set FFLAGS     = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4' )
