@@ -1,0 +1,24 @@
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1 1998/05/26 14:38:05 cnh Exp $
+
+    Notes on tags used in MITgcmUV
+    ==============================
+checkpoint3
+ Created by cnh
+ Added extra flags for runtime options
+ Added this file
+ Added implicit free-surface
+ Added pre-conditioner
+ Put compare01 into repository ( compare01/... )
+ Put data and eedata into repository ( verification/exp1 )
+
+checkpoint2
+ Created by AJA
+ Added GM/Redi
+
+checkpoint1
+ Created by AJA
+ Restructured kloop in dynamics.F
+ Added non-linear EOS
+
+baseline - Original checked in code
+
