@@ -22,7 +22,7 @@ function [S] = rdmnc(varargin)
 % >> S=rdmnd('state.*','XC','YC','RC','T',Inf);
 % >> imagesc( S.XC, S.YC, S.T(:,:,1)' );
 %
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.1 2004/03/08 16:45:56 adcroft Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmnc.m,v 1.2 2005/02/02 10:31:22 mlosch Exp $
 
 %Defaults
 global verbose
@@ -78,14 +78,17 @@ end
 
 % -----------------------------------------------------------------------------
 function [result] = ismncfile(nc);
-result=~isempty(nc.('MITgcm_mnc_ver'));
+result=~isempty(nc.MITgcm_mnc_ver);
+%MLresult=~isempty(nc.('MITgcm_mnc_ver'));
 % -----------------------------------------------------------------------------
 function [A] = read_att(nc);
 global verbose
 allatt=ncnames(att(nc)); if verbose; allatt, end
 A='none';
 for attr=allatt;
- A.(char(attr))=nc.(char(attr))(:);
+ tmp = char(attr);
+ eval(['A.' tmp '= nc.' tmp '(:);'])
+%ML A.(char(attr))=nc.(char(attr))(:);
 end
 % -----------------------------------------------------------------------------
 function [i0,j0,fn] = findTileOffset(S);
@@ -126,8 +129,10 @@ for ivar=1:size(varlist,2);
   disp(['No such variable ''' cvar ''' in netcdf file' name(nc)])
  else
   tmpdata=squeeze(permute(tmpdata,[9:-1:1]));
-  S.(cvar)=tmpdata;
-  S.attributes.(cvar)=read_att(nc{cvar});
+  eval(['S.' cvar '=tmpdata;'])
+  eval(['S.attributes.' cvar '=read_att(nc{' cvar '});'])
+%ML  S.(cvar)=tmpdata;
+%ML  S.attributes.(cvar)=read_att(nc{cvar});
  end
 end
 % -----------------------------------------------------------------------------
@@ -188,8 +193,11 @@ for ivar=1:size(varlist,2);
   else
    j0=0;
   end
-  S.(cvar)(i0+(1:ni),j0+(1:nj),(1:nk),(1:nm),(1:nn),(1:no),(1:np))=tmpdata;
-  S.attributes.(cvar)=read_att(nc{cvar});
+  eval(['S.' cvar ...
+	'(i0+(1:ni),j0+(1:nj),(1:nk),(1:nm),(1:nn),(1:no),(1:np))=tmpdata;'])
+  eval(['S.attributes.' cvar ' =read_att(nc{''' cvar '''});'])
+%ML  S.(cvar)(i0+(1:ni),j0+(1:nj),(1:nk),(1:nm),(1:nn),(1:no),(1:np))=tmpdata;
+%ML  S.attributes.(cvar)=read_att(nc{cvar});
  end
 end
 
