@@ -1,8 +1,4 @@
-#ifndef USE_W2
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_calc_relvort3.F,v 1.5 2004/01/22 17:17:19 afe Exp $
-#else /* USE_W2 */
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_calc_relvort3.F,v 1.5 2004/01/22 17:17:19 afe Exp $
-#endif /* USE_W2 */
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_calc_relvort3.F,v 1.6 2004/02/06 19:23:28 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -80,11 +76,7 @@ c    &                            /hFacZ(i,j)
 
        ENDDO
       ENDDO
-#ifndef USE_W2
-        
-#else /* USE_W2 */
 
-#endif /* USE_W2 */
 C     Special stuff for Cubed Sphere
       IF (useCubedSphereExchange) THEN
 #ifdef USE_W2

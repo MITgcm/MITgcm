@@ -1,8 +1,4 @@
-#ifndef USE_W2
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.3 2004/01/22 17:17:19 afe Exp $
-#else /* USE_W2 */
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.3 2004/01/22 17:17:19 afe Exp $
-#endif /* USE_W2 */
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.4 2004/02/06 19:23:28 dimitri Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -188,9 +184,7 @@ c         AZcorner = 0.75 _d 0
             hFacZ(iMax,j)=0.
             vort3(iMax,j)=0.
            ENDDO
-#ifndef USE_W2
-C--        S.W. corner:
-#else /* USE_W2 */
+#ifdef USE_W2
           ENDIF
 C--       S.W. corner:
           IF ( southWestCorner ) THEN
