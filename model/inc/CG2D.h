@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.9 2001/09/21 03:54:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.10 2002/05/30 02:26:01 heimbach Exp $
 C $Name:  $
 
 CBOP
@@ -54,5 +54,5 @@ C     cg2d_s -   "
       COMMON /CG2D_I_WK_R/
      & cg2d_q, cg2d_r, cg2d_s
       _RL  cg2d_q(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  cg2d_r(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
-      _RL  cg2d_s(1-1:sNx+1,1-1:sNy+1,nSx,nSy)
+      _RL  cg2d_r(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  cg2d_s(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

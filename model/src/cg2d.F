@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.34 2001/09/26 18:09:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.35 2002/05/30 02:26:01 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -197,47 +197,13 @@ C     _EXCH_XY_R8( cg2d_r, myThid )
 #ifdef LETS_MAKE_JAM
       CALL EXCH_XY_O1_R8_JAM( cg2d_r )
 #else
-       OLw        = 1
-       OLe        = 1
-       OLn        = 1
-       OLs        = 1
-       exchWidthX = 1
-       exchWidthY = 1
-       myNz       = 1
-      IF (useCubedSphereExchange) THEN
-       CALL EXCH_RL_CUBE( cg2d_r,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-      ELSE
-       CALL EXCH_RL( cg2d_r,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-      ENDIF
+      CALL EXCH_XY_RL( cg2d_r, myThid )
 #endif
 C     _EXCH_XY_R8( cg2d_s, myThid )
 #ifdef LETS_MAKE_JAM
       CALL EXCH_XY_O1_R8_JAM( cg2d_s )
 #else
-       OLw        = 1
-       OLe        = 1
-       OLn        = 1
-       OLs        = 1
-       exchWidthX = 1
-       exchWidthY = 1
-       myNz       = 1
-      IF (useCubedSphereExchange) THEN
-       CALL EXCH_RL_CUBE( cg2d_s,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-      ELSE
-       CALL EXCH_RL( cg2d_s,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-      ENDIF
+      CALL EXCH_XY_RL( cg2d_s, myThid )
 #endif
        _GLOBAL_SUM_R8( sumRHS, myThid )
        _GLOBAL_SUM_R8( err   , myThid )
@@ -315,24 +281,7 @@ C      _EXCH_XY_R8( cg2d_s, myThid )
 #ifdef LETS_MAKE_JAM
       CALL EXCH_XY_O1_R8_JAM( cg2d_s )
 #else
-       OLw        = 1
-       OLe        = 1
-       OLn        = 1
-       OLs        = 1
-       exchWidthX = 1
-       exchWidthY = 1
-       myNz       = 1
-      IF (useCubedSphereExchange) THEN
-       CALL EXCH_RL_CUBE( cg2d_s,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-      ELSE
-       CALL EXCH_RL( cg2d_s,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-      ENDIF
+      CALL EXCH_XY_RL( cg2d_s, myThid )
 #endif
 
 C==    Evaluate laplace operator on conjugate gradient vector
@@ -391,24 +340,7 @@ C      _EXCH_XY_R8(cg2d_r, myThid )
 #ifdef LETS_MAKE_JAM
       CALL EXCH_XY_O1_R8_JAM( cg2d_r )
 #else
-       OLw        = 1
-       OLe        = 1
-       OLn        = 1
-       OLs        = 1
-       exchWidthX = 1
-       exchWidthY = 1
-       myNz       = 1
-      IF (useCubedSphereExchange) THEN
-       CALL EXCH_RL_CUBE( cg2d_r,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-      ELSE
-       CALL EXCH_RL( cg2d_r,
-     I            OLw, OLe, OLs, OLn, myNz,
-     I            exchWidthX, exchWidthY,
-     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
-      ENDIF
+      CALL EXCH_XY_RL( cg2d_r, myThid )
 #endif
 
    10 CONTINUE
