@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.82 2004/11/16 05:42:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.83 2004/11/17 15:23:35 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -463,11 +463,9 @@ C     == Global variables ===
 # include "CG3D.h"
 #endif
 
-#ifdef ALLOW_ECCO_OPTIMIZATION
-# include "optim.h"
-#endif
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
+# include "optim.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
