@@ -1,11 +1,9 @@
-C $Header: /u/gcmpack/models/MITgcmUV/model/src/ini_forcing.F,v 1.15 1998/12/15 00:20:34 adcroft Exp
+C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.5 2000/06/21 19:00:47 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
-C I.Fukumori 8/24/98 
-CStartOfInterface
       SUBROUTINE SWFRAC(
-     I     imax, fact, z, jwtype,
+     I     imax, fact, z,
      O     swdk )
 C     /==========================================================\
 C     | SUBROUTINE SWFRAC                                        |
@@ -25,26 +23,31 @@ C     \==========================================================/
 
       IMPLICIT NONE
 
-      integer nwtype
-      PARAMETER(nwtype=5)  ! max number of different water types 
-
 C     === Routine arguments ===
 
 C     input arguments
-      INTEGER imax              ! number of vertical grid points
-      _RS fact                  ! scale  factor to apply to depth array
-      _RS z(imax)               ! vertical depth for desired sw fraction
-                                ! (fact*z) is negative distance (m) from surface
-      INTEGER jwtype            ! index for jerlov water type
+C     imax    number of vertical grid points
+C     fact    scale  factor to apply to depth array
+C     z       vertical depth for desired sw fraction
+C             (fact*z) is negative distance (m) from surface
+C     jwtype  index for jerlov water type
+
+      INTEGER imax
+      _RS fact
+      _RS z(imax)
 
 C     output arguments
-      _RS swdk(imax)            ! short wave (radiation) fractional decay
-
-#ifdef ALLOW_KPP
+C     swdk    short wave (radiation) fractional decay
+      _RS     swdk(imax)
 
 C     === Local variables ===
+
+C     max number of different water types 
+      integer   nwtype
+      PARAMETER(nwtype = 5)
+
       _RS facz
-      _RS rfac(nwtype),a1(nwtype),a2(nwtype)
+      _RL rfac(nwtype),a1(nwtype),a2(nwtype)
       INTEGER i
 C
 C     Jerlov water type :  I       IA      IB      II      III
@@ -53,7 +56,9 @@ C
       DATA rfac         /  0.58 ,  0.62 ,  0.67 ,  0.77 ,  0.78 /
       DATA a1           /  0.35 ,  0.6  ,  1.0  ,  1.5  ,  1.4  /
       DATA a2           / 23.0  , 20.0  , 17.0  , 14.0  ,  7.9  /
+      INTEGER jwtype
 C
+      jwtype=1
       DO i = 1,imax
          facz = fact*z(i)
          IF (facz .LT. (-200.)) THEN
@@ -63,8 +68,6 @@ C
      $                + (1.-rfac(jwtype)) * exp(facz/a2(jwtype))
          ENDIF
       ENDDO
-
-#endif
 
       RETURN
       END
