@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.79 2003/05/15 17:19:25 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.80 2003/05/20 12:59:42 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -940,6 +940,7 @@ CLEAN:
 	@make Clean
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
 	-find \$(EXEDIR) -name "*.data" -exec rm {} \;
+	-find \$(EXEDIR) -name "fort.*" -exec rm {} \;
 	-rm -f \$(EXECUTABLE)
 
 makefile:
