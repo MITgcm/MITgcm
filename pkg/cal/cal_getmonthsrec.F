@@ -1,0 +1,213 @@
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_getmonthsrec.F,v 1.1 2001/05/14 22:07:26 heimbach Exp $
+
+#include "CAL_CPPOPTIONS.h"
+
+      subroutine cal_GetMonthsRec(
+     O                             fac, first, changed,
+     O                             count0, count1,
+     I                             mytime, myiter, mythid
+     &                           )
+
+c     ==================================================================
+c     SUBROUTINE cal_GetMonthsRec
+c     ==================================================================
+c
+c     o Given the current model time or iteration number this routine
+c       returns the corrresponding months that will have to be used in
+c       order to interpolate monthly mean fields. The routine derives 
+c       from *exf_GetMonthsRec* of the external forcing package.
+c
+c     started: Christian Eckert eckert@mit.edu 21-Apr-2000
+c              - ported from the external forcing package and slightly
+c                modified (10 --> nmonthyear-2, 12 --> nmonthyear).
+c
+c     changed: Patrick Heimbach heimbach@mit.edu 15-Jun-2000
+c              - fixed bug for count1 = nmonthyear
+c
+c     ==================================================================
+c     SUBROUTINE cal_GetMonthsRec
+c     ==================================================================
+
+      implicit none
+
+c     == global variables ==
+
+#include "cal.h"
+
+c     == routine arguments ==
+
+      _RL     fac
+      logical first
+      logical changed
+      integer count0
+      integer count1
+      _RL     mytime
+      integer myiter
+      integer mythid
+
+c     == local variables ==
+
+      integer currentdate(4)
+      integer midtime(4)
+      integer middate(4)
+      integer middate0(4)
+      integer middate1(4)
+      integer prevdate(4)
+      integer shifttime(4)
+      integer startofmonth(4)
+      integer endofmonth(4)
+      integer difftime(4)
+      integer present
+      integer previous
+      integer next
+      integer prevcount
+      integer modelsteptime(4)
+
+      _RL     currentsecs
+      _RL     prevsecs
+      _RL     midsecs_np
+      _RL     diffsecs
+      _RL     midsecs
+
+c     == end of interface ==
+
+ce    --> Include a check whether the right calendar is used.
+
+      shifttime(1) =  1
+      shifttime(2) =  0
+      shifttime(3) =  0
+      shifttime(4) = -1
+
+      call cal_TimeInterval( -modelstep, 'secs', modelsteptime,
+     &                        mythid )
+
+c     Determine the current date and the current month.
+      call cal_GetDate( myiter, mytime, currentdate, mythid )
+
+      present         = mod(currentdate(1)/100,100)
+      startofmonth(1) = (currentdate(1)/100)*100 + 1
+      startofmonth(2) = 0
+      startofmonth(3) = 0
+      startofmonth(4) = 0
+      endofmonth(1)   = (currentdate(1)/100)*100 +
+     &                  ndaymonth(present,currentdate(3))
+      endofmonth(2)   = 235959
+      endofmonth(3)   = 0
+      endofmonth(4)   = 0
+
+      call cal_FullDate( startofmonth(1), startofmonth(2),
+     &                   startofmonth, mythid )
+      call cal_FullDate( endofmonth(1), endofmonth(2),
+     &                   endofmonth, mythid )
+
+c     Determine middle of current month.
+      currentsecs = float(
+     &              (mod(currentdate(1),100)-1)*secondsperday +
+     &              currentdate(2)/10000*secondsperhour +
+     &              mod(currentdate(2)/100,100)*secondsperminute +
+     &              mod(currentdate(2),100)
+     &              )
+      midsecs     = float(ndaymonth(present,currentdate(3))*
+     &                    secondsperday/2)
+
+      call cal_TimeInterval( midsecs, 'secs', midtime, mythid )
+      call cal_AddTime( startofmonth, midtime, middate, mythid )
+      call cal_AddTime( currentdate, modelsteptime, prevdate, mythid )
+
+      prevsecs = float(
+     &           (mod(prevdate(1),100)-1)*secondsperday +
+     &           prevdate(2)/10000*secondsperhour +
+     &           mod(prevdate(2)/100,100)*secondsperminute +
+     &           mod(prevdate(2),100)
+     &           )
+
+c--   Set switches for reading new records.
+      first = ((mytime - modelstart) .lt. 0.5*modelstep)
+
+      if ( first ) then
+        changed = .false.
+      endif
+
+      if ( currentsecs .lt. midsecs ) then
+
+        count0    = mod(present+nmonthyear-2,nmonthyear)+1
+        prevcount = count0
+
+        shifttime(1) = -shifttime(1)
+        call cal_AddTime( startofmonth, shifttime, middate0, mythid )
+        middate0(1) = (middate0(1)/100)*100 + 1
+        middate0(2) = 0
+        middate0(3) = 0
+        middate0(4) = 0
+        call cal_FullDate( middate0(1), middate0(2), middate0,
+     &                     mythid )
+
+        previous   = mod(middate0(1)/100,100)
+
+        midsecs_np = float(ndaymonth(previous,middate0(3))*
+     &                     secondsperday/2)
+
+        call cal_TimeInterval( midsecs_np, 'secs', midtime, mythid )
+        call cal_AddTime( middate0, midtime, middate0, mythid )
+
+        count1 = present
+
+        middate1(1) = middate(1)
+        middate1(2) = middate(2)
+        middate1(3) = middate(3)
+        middate1(4) = middate(4)
+
+      else
+
+        count0 = present
+
+        if ( prevsecs .lt. midsecs ) then
+          prevcount = mod(present+nmonthyear-2,nmonthyear)+1
+        else
+          prevcount = present
+        endif
+
+        middate0(1) = middate(1)
+        middate0(2) = middate(2)
+        middate0(3) = middate(3)
+        middate0(4) = middate(4)
+
+        count1 = mod(present+1,nmonthyear)
+        if ( count1 .EQ. 0 ) count1 = nmonthyear
+
+        call cal_AddTime( endofmonth, shifttime, middate1, mythid )
+        middate1(1) = (middate1(1)/100)*100 + 1
+        middate1(2) = 0
+        middate1(3) = 0
+        middate1(4) = 0
+
+        call cal_FullDate( middate1(1), middate1(2), middate1,
+     &                     mythid )
+        next       = mod(middate1(1)/100,100)
+        midsecs_np = float(ndaymonth(next,middate1(3))*
+     &                     secondsperday/2)
+        call cal_TimeInterval( midsecs_np, 'secs', midtime, mythid )
+        call cal_AddTime( middate1, midtime, middate1, mythid )
+
+      endif
+
+      call cal_SubDates( middate1, middate0, difftime, mythid )
+      call cal_ToSeconds( difftime, diffsecs, mythid )
+
+c     Set counters, switches, and the linear interpolation factor.
+      if ( (.not. first) .and. (prevcount .ne. count0) ) then
+        changed = .true.
+      else
+        changed = .false.
+      endif
+
+      if ( currentsecs .lt. midsecs ) then
+        fac = (midsecs - currentsecs)/diffsecs
+      else
+        fac = (2.*midsecs + midsecs_np - currentsecs)/
+     &        diffsecs
+      endif
+
+      return
+      end
+

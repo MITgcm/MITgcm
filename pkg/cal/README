@@ -1,0 +1,426 @@
+c $Header: /u/gcmpack/MITgcm/pkg/cal/Attic/README,v 1.1 2001/05/14 22:07:26 heimbach Exp $
+c
+c
+c     =================================
+c     Calendar Package for the MITgcmUV
+c     =================================
+c
+c
+c     This calendar tool was originally intended to enable the use of
+c     absolute dates (Gregorian Calendar dates) in the ocean general
+c     circulation model MITgcmuv. There is, however, a fair amount of
+c     routines that can be used independently of the MITgcmuv. After
+c     some minor modifications the whole package can be used either
+c     as a stand-alone calendar or in connection with any dynamical
+c     model that needs calendar dates. Some straightforward extensions
+c     are still pending e.g. the availability of the Julian Calendar,
+c     to be able to resolve fractions of a second, and to have a time-
+c     step that is longer than one day.
+c
+c     Current version: 0.2.0
+c
+c     I'm grateful to any suggestions made by users of this tool in
+c     order to improve it. Please report bugs and suggestions to:
+c
+c       Christian Eckert: eckert@mit.edu
+c       Patrick Heimbach: heimbach@mit.edu
+c
+c
+c     Here, you find a documentation of the general architecture of this
+c     calendar tool and a short description of individual routines. For
+c     specific questions on the individual routines please have a look
+c     at their headers and of course at their code.
+c
+c
+c     =========
+c     Contents.
+c     =========
+c
+c     (0) Basic assumptions for this version of the calendar tool.
+c     (1) Format of calendar dates.
+c     (2) Calendar dates and time intervals.
+c     (3) Using the calendar tool together with the MITgcmUV.
+c     (4) Using the calendar tool as a stand-alone program.
+c     (5) The individual calendars.
+c     (6) The individual calendar routines.
+c     (7) Short Description of the routines.
+c     (8) How to get started.
+c     (9) History.
+c
+c
+c     (0) Basic assumptions for this version of the calendar tool.
+c     ============================================================
+c
+c         It is assumed that the SMALLEST TIME INTERVAL to be resolved is
+c         ONE SECOND.
+c
+c         Further assumptions are that there is an INTEGER NUMBER OF
+c         MODEL STEPS EACH DAY, and that AT LEAST ONE STEP EACH DAY is
+c         made.
+c
+c         Not each individual routine depends on these assumptions; there
+c         are only a few places where they enter.
+c
+c         I plan to get rid of these assumptions as soon as possible in
+c         an adequate way.
+c
+c
+c     (1) Format of calendar dates.
+c     =============================
+c
+c         In this calendar tool a complete date specification is defined
+c         as the following integer array:
+c
+c           integer date(4)
+c
+c           ( yyyymmdd, hhmmss, leap_year, dayofweek )
+c
+c             date(1) = yyyymmdd    <-- Year-Month-Day
+c             date(2) =   hhmmss    <-- Hours-Minutes-Seconds
+c             date(3) = leap_year   <-- Leap Year/No Leap Year
+c             date(4) = dayofweek   <-- Day of the Week
+c
+c             leap_year is either equal to 1 (normal year)
+c                              or equal to 2 (leap year)
+c
+c             dayofweek has a range of 1 to 7.
+c
+c               In case the Gregorian Calendar is used, the first
+c               day of the week is Friday, since day of the Gregorian
+c               Calendar was Friday, 15 Oct. 1582. As a date array
+c               this date would be specified as
+c
+c               refdate(1) = 15821015
+c               refdate(2) =        0
+c               refdate(3) =        1
+c               refdate(4) =        1
+c
+c
+c     (2) Calendar dates and time intervals.
+c     ======================================
+c
+c         Subtracting calendar dates yields time intervals.
+c         Time intervals have the following format:
+c
+c         integer datediff(4)
+c
+c           datediff(1) = # Days
+c           datediff(2) = hhmmss
+c           datediff(3) =      0
+c           datediff(4) =     -1
+c
+c         Such time intervals can be added to or can be subtracted from
+c         calendar dates. Time intervals can be added to and be
+c         subtracted from each other.
+c
+c
+c     (3) Using the calendar tool together with the MITgcmUV.
+c     =======================================================
+c
+c         Each routine has as an argument the thread number that it is
+c         belonging to, even if this number is not used in the routine
+c         itself.
+c
+c         In order to include the calendar tool into the MITgcmUV
+c         setup the MITgcmUV subroutine "initialise.F" or the routine
+c         "initilise_fixed.F", depending on the MITgcmUV release, has
+c         to be modified in the following way:
+c
+c         #ifdef ALLOW_CALENDAR
+c         C--   Initialise the calendar package.
+c         #ifdef USE_CAL_NENDITER
+c               CALL cal_Init(
+c              I               startTime,
+c              I               endTime,
+c              I               deltaTclock,
+c              I               nIter0,
+c              I               nEndIter,
+c              I               nTimeSteps,
+c              I               myThid
+c              &             )
+c         #else
+c               CALL cal_Init(
+c              I               startTime,
+c              I               endTime,
+c              I               deltaTclock,
+c              I               nIter0,
+c              I               nTimeSteps,
+c              I               myThid
+c              &             )
+c         #endif
+c               _BARRIER
+c         #endif
+c
+c         It is useful to have the CPP flag ALLOW_CALENDAR in
+c         order to switch from the usual MITgcmUV setup to the
+c         one that includes the calendar tool. The CPP flag
+c         USE_CAL_NENDITER has been introduced in order to enable
+c         the use of the calendar for MITgcmUV releases earlier
+c         than checkpoint 25 which do not have the global variable
+c         *nEndIter*.
+c
+c
+c     (4) Using the calendar tool as a stand-alone program.
+c     =====================================================
+c
+c
+c         This will sometime be available.
+c
+c
+c     (5) The individual calendars
+c     ============================
+c
+c         (a) Simple Model Calendar
+c
+c               This calendar can be used by defining
+c
+c                  TheCalendar='model'
+c
+c               in the calendar's data file "data.cal".
+c
+c               In this case a year is assumed to have 360 days. The
+c               model year is divided into 12 months with 30 days each.
+c
+c         (b) Gregorian Calendar
+c
+c               This calendar can be used by defining
+c
+c                  TheCalendar='gregorian'
+c
+c               in the calendar's data file "data.cal".
+c
+c         (c) Julian Calendar
+c
+c               Not implemented yet.
+c
+c         (d) Julian Days
+c
+c               Not implemented yet.
+c
+c         (e) Just the Model's Timestep
+c
+c               Not implemented yet.
+c
+c
+c     (6) The individual calendar routines
+c     ====================================
+c
+c        The numbering of the routines is used in the error codes
+c        that are used to print error messages. See the routine
+c        "cal_PrintError" for details.
+c
+c         ( 0) cal_Init             (sub)              version 0.1.0
+c         ( 1) cal_Set              (sub)              version 0.1.0
+c         ( 2) cal_GetDate          (sub)              version 0.1.0
+c         ( 3) cal_FullDate         (sub)              version 0.1.0
+c         ( 4) cal_IsLeap           (integer fun)      version 0.1.0
+c         ( 5) cal_TimePassed       (sub)              version 0.1.0
+c         ( 6) cal_AddTime          (sub)              version 0.1.0
+c         ( 7) cal_TimeInterval     (sub)              version 0.1.0
+c         ( 8) cal_SubDates         (sub)              version 0.1.0
+c         ( 9) cal_ConvDate         (sub)              version 0.1.0
+c         (10) cal_ToSeconds        (sub)              version 0.1.0
+c         (11) cal_StepsPerDay      (sub)              version 0.1.0
+c         (12) cal_DaysPerMonth     (sub)              version 0.1.0
+c         (13) cal_MonthsPerYear    (sub)              version 0.1.0
+c         (14) cal_IntYears         (integer fun)      version 0.1.0
+c         (15) cal_IntMonths        (integer fun)      version 0.1.0
+c         (16) cal_IntDays          (integer fun)      version 0.1.0
+c         (17) cal_nStepDay         (integer fun)      version 0.1.0
+c         (18) cal_CheckDate        (sub)              version 0.1.0
+c         (19) cal_PrintError       (sub)              version 0.1.0
+c         (20) cal_PrintDate        (sub)              version 0.1.0
+c         (21) cal_Summary          (sub)              version 0.1.0
+c         (22) cal_CopyDate         (sub)              version 0.1.1
+c         (23) cal_WeekDay          (sub)              version 0.1.3
+c         (24) cal_CompDates        (logical fun)      version 0.1.4
+c         (25) cal_NumInts          (integer fun)      version 0.1.4
+c         (26) cal_StepsForDay      (sub)              version 0.1.6
+c         (27) cal_DaysForMonth     (sub)              version 0.1.6
+c         (28) cal_MonthsForYear    (sub)              version 0.1.6
+c         (29) cal_GetMonthsRec     (sub)              version 0.1.6
+c         (30  cal_IntSteps         (integer fun)      version 0.1.7
+c         (31) cal_TimeStamp        (sub)              version 0.1.7
+c
+c
+c     (7) Short Description of the routines.
+c     ======================================
+c
+c      o  cal_Init          - Initialise the calendar. This is the interface
+c                             to the MITgcmUV.
+c
+c      o  cal_Set           - Sets the calendar according to the user
+c                             specifications.
+c
+c      o  cal_GetDate       - Given the model's current timestep or the
+c                             model's current time return the corresponding
+c                             calendar date.
+c
+c      o  cal_FullDate      - Complete a date specification (leap year and
+c                             day of the week).
+c
+c      o  cal_IsLeap        - Determine whether a given year is a leap year.
+c
+c      o  cal_TimePassed    - Determine the time passed between two dates.
+c
+c      o  cal_AddTime       - Add a time interval either to a time interval
+c                             or to a date.
+c
+c      o  cal_TimeInterval  - Given a time interval return the corresponding
+c                             date array.
+c
+c      o  cal_SubDates      - Determine the time interval between two dates
+c                             or between two time intervals.
+c
+c      o  cal_ConvDate      - Decompose a date array or a time interval
+c                             array into its components.
+c
+c      o  cal_CopyDate      - Copy a date array or a time interval array to
+c                             another array.
+c
+c      o  cal_CompDates     - Compare two calendar dates or time intervals. 
+c
+c      o  cal_ToSeconds     - Given a time interval array return the number
+c                             of seconds.
+c
+c      o  cal_WeekDay       - Return the weekday as a string given the
+c                             calendar date.
+c
+c      o  cal_NumInts       - Return the number of time intervals between two
+c                             given dates.
+c
+c      o  cal_StepsPerDay   - Given an iteration number or the current
+c                             integration time return the number of time
+c                             steps to integrate in the current calendar day.
+c
+c      o  cal_DaysPerMonth  - Given an iteration number or the current
+c                             integration time return the number of days
+c                             to integrate in this calendar month.
+c
+c      o  cal_MonthsPerYear - Given an iteration number or the current
+c                             integration time return the number of months
+c                             to integrate in the current calendar year.
+c
+c      o  cal_StepsForDay   - Given the integration day return the number
+c                             of steps to be integrated, the first step,
+c                             and the last step in the day specified. The
+c                             first and the last step refer to the total
+c                             number of steps (1, ... , cal_IntSteps).
+c
+c      o  cal_DaysForMonth  - Given the integration month return the number
+c                             of days to be integrated, the first day,
+c                             and the last day in the month specified. The
+c                             first and the last day refer to the total
+c                             number of steps (1, ... , cal_IntDays).
+c
+c      o  cal_MonthsForYear - Given the integration year return the number
+c                             of months to be integrated, the first month,
+c                             and the last month in the year specified. The
+c                             first and the last step refer to the total
+c                             number of steps (1, ... , cal_IntMonths).
+c
+c      o  cal_Intsteps      - Return the number of calendar years that are
+c                             affected by the current integration.
+c
+c      o  cal_IntDays       - Return the number of calendar days that are
+c                             affected by the current integration.
+c
+c      o  cal_IntMonths     - Return the number of calendar months that are
+c                             affected by the current integration.
+c
+c      o  cal_IntYears      - Return the number of calendar years that are
+c                             affected by the current integration.
+c
+c      o  cal_nStepDay      - Return the number of time steps that can be
+c                             performed during one calendar day.
+c
+c      o  cal_CheckDate     - Do some simple checks on a date array or on a
+c                             time interval array.
+c
+c      o  cal_PrintError    - Print error messages according to the flags
+c                             raised by the calendar routines.
+c
+c      o  cal_PrintDate     - Print a date array in some format suitable for
+c                             the MITgcmuv's protocol output.
+c
+c      o  cal_TimeStamp     - Given the time and the iteration number return
+c                             the date and print all the above numbers.
+c
+c      o  cal_Summary       - List all the setttings of the calendar tool.
+c
+c
+c
+c      (8) How to get started.
+c      =======================
+c
+c                     Copy all the routines and headers to the distribution
+c                     after you have installed the latter.
+c
+c                     cal_<name>.F      -->  cNN/model/src/cal_<name>.F
+c                     cal.h             -->  cNN/model/inc/cal.h
+c                     CAL_CPPOPTIONS.h  -->  cNN/model/inc/CAL_CPPOPTIONS.h
+c                     data.cal          -->  cNN/exe/data.cal
+c
+c                     Add the line
+c
+c                       #include "CAL_CPPOPTIONS.h"
+c
+c                     to the routine that calls "cal_Init".
+c
+c                     Set the parameters in "data.cal" approriately. The
+c                     Set *nTimeSteps* in the MITgcmUV "data" file to the
+c                     number od time steps you would like to integrate.
+c
+c                     CAUTION: Be aware of the current limitations of the
+c                              calendar (see above).
+c
+c                     To specify the integration interval in "data.cal"
+c
+c                     startdate1=YYYYMMDD,
+c                     startdate2=HHMMSS,
+c
+c
+c     (9) History
+c     ===========
+c
+c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
+c
+c     changed: Christian Eckert eckert@mit.edu  19-Jan-2000
+c
+c              Christian Eckert eckert@mit.edu  03-Feb-2000
+c
+c              - Introduced new routine and function names, cal_<NAME>,
+c                for verion 0.1.3.
+c
+c              Christian Eckert eckert@mit.edu  24-Feb-2000
+c
+c              - Added routine cal_CompDates.
+c
+c              Christian Eckert eckert@mit.edu  22-Mar-2000
+c
+c              - Added CPP flag to support different checkpoints of
+c                the MITgcmUV, namely c24 and c25.
+c
+c              Christian Eckert eckert@mit.edu  21-Apr-2000
+c
+c              - Added routines *cal_StepsForDay*, *cal_DaysForMonth*,
+c                *cal_MonthsForYear*, and *cal_GetMonthsRec*.
+c
+c              Christian Eckert eckert@mit.edu  01-May-2000
+c
+c              - Added routine cal_IntSteps.
+c
+c              Christian Eckert eckert@mit.edu  04-May-2000
+c
+c              - Added routine cal_TimeStamp. This routine
+c                used to be called ecco_TimeStamp.
+c
+c              Patrick Heimbach heimbach@mit.edu 20-Jun-2000
+c              - Bug fixes in:
+c                 * cal_addtime.F (computation of datesecs)
+c                 * cal_getmonthsrec.F (computation of count1)
+c                 * cal_subdates.F (72 line length)
+c                 * cal_summary.F (replaced write_1d_r8 by
+c                                           write_0d_r8)
+c
+c     ==================================================================
