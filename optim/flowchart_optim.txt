@@ -1,0 +1,76 @@
+
+Flow chart for offline optimization based upon ECCO/MITGCMUV c27
+################################################################
+Patrick Heimbach, MIT 00/06/08
+
+/data10/heimbach/ecco/ecco_c27/optim
+
+   **********
+   optim_main
+   **********
+    |
+    |--- optim_numbmod (Get the number of control variables)
+    |    |
+    |    |--- (read data.<...>)
+    |    |
+    |    |--- optim_readdata.F (Read header of control vector)
+    |    |
+    |    |--- (Determine the total number of control variables)
+    |    |
+    |    o
+    |
+    |--- optim_sub (Call the subroutine)
+    |    |
+    |    |--- optim_initmod (Initialisize model and set first guess control variables)
+    |    |
+    |    |--- lsopt_top (Large scale optimization)
+    |    |    |
+    |    |    |--- ....
+    |    |    |
+    |    |    |--- simul (Call combined modified forward model and adjoint model)
+    |    |    |    |
+    |    |    |    |--- optim_readdata(ecco_ctrl) (instead of running the model online,...
+    |    |    |    |--- optim_readdata(ecco_cost) ... read the data after offline run)
+    |    |    |    |
+    |    |    |    o
+    |    |    |
+    |    |    |--- ... (perform line search)
+    |    |    |
+    |    |    |--- optim_write_control (Write new control vector to file ecco_ctrl)
+    |    |    |    |
+    |    |    |    |--- optim_writedata (Write new control vector to file ecco_ctrl)
+    |    |    |    |
+    |    |    |    o
+    |    |    |
+    |    |    o
+    |    |
+    |    o
+    |
+    o
+
+
+Interface between ECCO environment and offline line search lsopt:
+################################################################
+
+ECCO: the_model_main -> ctrl_finalise -> ctrl_pack:
+      should write 2 files:
+        - ecco_ctrl: xx_...     ok
+        - ecco_cost: adxx_...   ok
+
+LSOPT: optim_main -> optim_sub -> lsopt_top -> simul:
+       should read 2 files:
+        - ecco_ctrl: xx_...     ok
+        - ecco_cost: adxx_...   ok
+
+LSOPT: optim_main -> optim_sub -> lsopt_top -> optim_write_control::
+       should write 1 file:
+        - ecco_ctrl: xx_...     ok
+
+ECCO: the_model_main -> initialise_fixed -> ctrl_init -> ctrl_unpack:
+       should read 1 file:
+        - ecco_ctrl: xx_...     ok
+
+
+
+
+       

@@ -1,0 +1,340 @@
+
+Description of large scale optimization package, Version 2.1.0
+##############################################################
+Patrick Heimbach, MIT/EAPS, 02-Mar-2000
+
+reference:
+#########
+
+J.C. Gilbert & C. Lemarechal
+Some numerical experiments with variable-storage quasi-Newton algorithms
+Mathematical Programming 45 (1989), pp. 407-435
+
+flow chart
+##########
+
+      lsopt_top
+          |
+          |---- check arguments
+          |---- CALL INSTORE
+          |       |
+          |       |---- determine whether OPWARMI available:
+          |                * if no:  cold start: create OPWARMI
+          |                * if yes: warm start: read from OPWARMI
+          |             create or open OPWARMD
+          |
+          |---- check consistency between OPWARMI and model parameters
+          | 
+          |---- >>> if COLD start: <<<
+          |      |  first simulation with f.g. xx_0; output: first ff_0, gg_0
+          |      |  set first preconditioner value xdiff_0 to 1
+          |      |  store xx(0), gg(0), xdiff(0) to OPWARMD (first 3 entries)
+          |      |
+          |     >>> else: WARM start: <<<
+          |         read xx(i), gg(i) from OPWARMD (first 2 entries)
+          |         for first warm start after cold start, i=0
+          |
+          |
+          |
+          |---- /// if ITMAX > 0: perform optimization (increment loop index i)
+          |      (
+          |      )---- save current values of gg(i-1) -> gold(i-1), ff -> fold(i-1)
+          |      (---- CALL LSUPDXX
+          |      )       |
+          |      (       |---- >>> if jmax=0 <<<
+          |      )       |      |  first optimization after cold start:
+          |      (       |      |  preconditioner estimated via ff_0 - ff_(first guess)
+          |      )       |      |  dd(i-1) = -gg(i-1)*preco
+          |      (       |      |  
+          |      )       |     >>> if jmax > 0 <<<
+          |      (       |         dd(i-1) = -gg(i-1)
+          |      )       |         CALL HESSUPD
+          |      (       |           |
+          |      )       |           |---- dd(i-1) modified via Hessian approx.
+          |      (       |
+          |      )       |---- >>> if <dd,gg> >= 0 <<<
+          |      (       |         ifail = 4
+          |      )       |
+          |      (       |---- compute step size: tact(i-1)
+          |      )       |---- compute update: xdiff(i) = xx(i-1) + tact(i-1)*dd(i-1)
+          |      (
+          |      )---- >>> if ifail = 4 <<<
+          |      (         goto 1000
+          |      )
+          |      (---- CALL OPTLINE / LSLINE
+          |      )       |
+          |      (       |
+          |      )       |
+          |      (       |---- /// loop over simulations
+          |      )              (  
+          |      (              )---- CALL SIMUL
+          |      )              (       |
+          |      (              )       |----  input: xdiff(i)
+          |      )              (       |---- output: ff(i), gg(i)
+          |      (              )       |---- >>> if ONLINE <<<
+          |      )              (                 runs model and adjoint
+          |      (              )             >>> if OFFLINE <<<
+          |      )              (                 reads those values from file
+          |      (              )
+          |      )              (---- 1st Wolfe test:
+          |      (              )     ff(i) <= tact*xpara1*<gg(i-1),dd(i-1)>
+          |      )              (
+          |      (              )---- 2nd Wolfe test:
+          |      )              (     <gg(i),dd(i-1)> >= xpara2*<gg(i-1),dd(i-1)>
+          |      (              )
+          |      )              (---- >>> if 1st and 2nd Wolfe tests ok <<<
+          |      (              )      |  320: update xx: xx(i) = xdiff(i)
+          |      )              (      |
+          |      (              )     >>> else if 1st Wolfe test not ok <<<
+          |      )              (      |  500: INTERpolate new tact:
+          |      (              )      |  barr*tact < tact < (1-barr)*tact
+          |      )              (      |  CALL CUBIC
+          |      (              )      |
+          |      )              (     >>> else if 2nd Wolfe test not ok <<<
+          |      (              )         350: EXTRApolate new tact:
+          |      )              (         (1+barmin)*tact < tact < 10*tact
+          |      (              )         CALL CUBIC
+          |      )              (
+          |      (              )---- >>> if new tact > tmax <<<
+          |      )              (      |  ifail = 7
+          |      (              )      |
+          |      )              (---- >>> if new tact < tmin OR tact*dd < machine precision <<<
+          |      (              )      |  ifail = 8
+          |      )              (      |
+          |      (              )---- >>> else <<<
+          |      )              (         update xdiff for new simulation
+          |      (              )
+          |      )             \\\ if nfunc > 1: use inter-/extrapolated tact and xdiff
+          |      (                               for new simulation
+          |      )                               N.B.: new xx is thus not based on new gg, but
+          |      (                                     rather on new step size tact
+          |      )        
+          |      (        
+          |      )        
+          |      (---- store new values xx(i), gg(i) to OPWARMD (first 2 entries)
+          |      )---- >>> if ifail = 7,8,9 <<<
+          |      (         goto 1000
+          |      )
+          |      (---- compute new pointers jmin, jmax to include latest values
+          |      )     gg(i)-gg(i-1), xx(i)-xx(i-1) to Hessian matrix estimate
+          |      (---- store gg(i)-gg(i-1), xx(i)-xx(i-1) to OPWARMD
+          |      )     (entries 2*jmax+2, 2*jmax+3)
+          |      (
+          |      )---- CALL DGSCALE
+          |      (       |
+          |      )       |---- call dostore
+          |      (       |       |
+          |      )       |       |---- read preconditioner of previous iteration diag(i-1)
+          |      (       |             from OPWARMD (3rd entry)
+          |      )       |
+          |      (       |---- compute new preconditioner diag(i), based upon diag(i-1),
+          |      )       |     gg(i)-gg(i-1), xx(i)-xx(i-1)
+          |      (       |
+          |      )       |---- call dostore
+          |      (               |
+          |      )               |---- write new preconditioner diag(i) to OPWARMD (3rd entry)
+          |      (
+          |---- \\\ end of optimization iteration loop
+          |
+          |
+          |
+          |---- CALL OUTSTORE
+          |       |
+          |       |---- store gnorm0, ff(i), current pointers jmin, jmax, iterabs to OPWARMI
+          |
+          |---- >>> if OFFLINE version <<<
+          |         xx(i+1) needs to be computed as input for offline optimization
+          |          |
+          |          |---- CALL LSUPDXX
+          |          |       |
+          |          |       |---- compute dd(i), tact(i) -> xdiff(i+1) = x(i) + tact(i)*dd(i)
+          |          |
+          |          |---- CALL WRITE_CONTROL
+          |          |       |
+          |          |       |---- write xdiff(i+1) to special file for offline optim.
+          |
+          |---- print final information
+          |
+          O
+
+
+
+Remarks:
+#######
+
+1. Difference between offline/online version
+--------------------------------------------
+
+- Offline version: Every call to simul refers to a read procedure which
+                   reads the result of an offline forward and adjoint run
+                   Therefore, only one call to simul is allowed,
+                     itmax = 0, for cold start
+                     itmax = 1, for warm start
+                   Also, at the end, x(i+1) needs to be computed and saved
+                   to be available for the offline model and adjoint run
+
+-  Online version: Every call to simul refers to an execution of the forward and adjoint model.
+                   Several iterations of optimization may thus be performed within
+                   a single run of the main program (main_lsopt).
+                   The following cases may occur:
+                     - cold start only (no optimization)
+                     - cold start & one or several iterations of optimization
+                     - warm start from previous cold start with one or several iterations
+                     - warm start from previous warm start with one or several iterations
+
+In order to achieve minimum difference between the online and offline code
+xdiff(i+1) is stored to file at the end of an (offline) iteration,
+but recomputed identically at the beginning of the next iteration.
+
+2. Number of iterations vs. number of simulations
+-------------------------------------------------
+
+- itmax: controls the max. number of iterations
+- nfunc: controls the max. number of simulations within one iteration
+
+Summary: From one iteration to the next the descent direction changes.
+         Within one iteration more than one forward and adjoint run may be performed.
+         The updated control used as input for these simulations uses the same
+         descent direction, but different step sizes.
+
+In detail:
+From one iteration to the next the descent direction dd changes using
+the result for the adjoint vector gg of the previous iteration.
+In lsline the updated control xdiff(i,1) = xx(i-1) + tact(i-1,1)*dd(i-1) serves as input for
+a forward and adjoint model run yielding a new gg(i,1).
+In general, the new solution passes the 1st and 2nd Wolfe tests 
+so xdiff(i,1) represents the solution sought: xx(i) = xdiff(i,1).
+If one of the two tests fails, an inter- or extrapolation is invoked to determine
+a new step size tact(i-1,2).
+If more than one function call is permitted, the new step size is used together
+with the "old" descent direction dd(i-1) (i.e. dd is not updated using the new gg(i)),
+to compute a new xdiff(i,2) = xx(i-1) + tact(i-1,2)*dd(i-1) that serves as input
+in a new forward and adjoint run, yielding gg(i,2).
+If now, both Wolfe tests are successfull, the updated solution is given by
+xx(i) = xdiff(i,2) = xx(i-1) + tact(i-1,2)*dd(i-1).
+
+3. Double-usage of fields dd and xdiff
+--------------------------------------
+
+In order to save memory both the fields dd and xdiff have a double usage.
+
+- xdiff: in lsopt_top: used as x(i) - x(i-1) for Hessian update
+         in lsline:    intermediate result for control update x = x + tact*dd
+
+- dd   : in lsopt_top, lsline: descent vector, dd = -gg   & hessupd
+         in dgscale:           intermediate result to compute new preconditioner
+
+4. Notice for user of old code
+------------------------------
+
+Three relevant changes needed to switch to new version:
+  
+  (i): OPWARMI file: two variables added:
+               gnorm0  : norm of first (cold start) gradient
+               iabsiter: total number of iterations with respect to cold start
+
+ (ii): routine names that are referenced by main_lsopt.f
+       lsoptv1 -> lsopt_top
+       lsline1 -> lsline
+
+(iii): parameter list of lsopt_top
+       logical loffline included
+
+parameter file lsopt.par
+########################
+
+The optimization is controlled by a set of parameters
+provided through the standard input file lsopt.par,
+which is generated within the job script.
+
+  NUPDATE  : max. no. of update pairs (gg(i)-gg(i-1), xx(i)-xx(i-1))
+             to be stored in OPWARMD to estimate Hessian
+             [pair of current iter. is stored in (2*jmax+2, 2*jmax+3)
+             jmax must be > 0 to access these entries]
+             Presently NUPDATE must be > 0 
+             (i.e. iteration without reference to previous
+              iterations through OPWARMD has not been tested)
+  EPSX     : relative precision on xx bellow which xx should not be improved
+  EPSG     : relative precision on gg below which optimization is considered successful
+  IPRINT   : controls verbose (>=1) or non-verbose output
+  NUMITER  : max. number of iterations of optimisation
+             NUMTER = 0: cold start only, no optimization
+  ITER_NUM : index of new restart file to be created (not necessarily = NUMITER!)
+  NFUNC    : max. no. of simulations per iteration
+             (must be > 0)
+             is used if step size tact is inter-/extrapolated;
+             in this case, if NFUNC > 1, a new simulation is performed with
+             same gradient but "improved" step size
+  FMIN     : first guess cost function value
+             (only used as long as first iteration not completed,
+             i.e. for jmax <= 0)
+
+OPWARMI, OPWARMD files
+######################
+
+Two files retain values of previous iterations which are
+used in latest iteration to update Hessian.
+OPWARMI: contains index settings and scalar variables
+OPWARMD: contains vectors
+
+Structure of OPWARMI file:
+-------------------------
+   
+    n, fc, isize, m, jmin, jmax, gnorm0, iabsiter
+
+    n  = nn      : no. of control variables
+    fc = ff      : cost value of last iteration
+    isize        : no. of bytes per record in OPWARMD
+    m = nupdate  : max. no. of updates for Hessian
+    jmin, jmax   : pointer indices for OPWARMD file (cf. below)
+    gnorm0       : norm of first (cold start) gradient gg
+    iabsiter     : total number of iterations with respect to cold start
+
+Structure of OPWARMD file:
+-------------------------
+   entry
+     1    : xx(i)         : control vector of latest iteration
+     2    : gg(i)         : gradient of latest iteration
+     3    : xdiff(i), diag: preconditioning vector; (1,...,1) for cold start
+    ---
+ 2*jmax+2 : gold = g(i) - g(i-1) for last update (jmax)
+ 2*jmax+3 : xdiff = tact * d = xx(i) - xx(i-1) for last update (jmax)
+
+if jmax = 0: cold start; no Hessian update used to compute dd
+if jmax > nupdate, old positions are overwritten, starting
+                with position pair (4,5)
+
+Example 1: jmin = 1, jmax = 3, mupd = 5
+
+  1   2   3   |   4   5     6   7     8   9     empty     empty
+|___|___|___| | |___|___| |___|___| |___|___| |___|___| |___|___|
+      0       |     1         2         3
+
+Example 2: jmin = 3, jmax = 7, mupd = 5   ---> jmax = 2
+
+  1   2   3   |  
+|___|___|___| | |___|___| |___|___| |___|___| |___|___| |___|___|
+              |     6         7         3         4         5
+
+
+
+Error handling
+##############
+
+  ifail |   description
+--------+----------------------------------------------------------
+   < 0  | should not appear (flag indic in simul.F not used)
+     0  | normal mode during execution
+     1  | an input argument is wrong
+     2  | warm start file is corrupted
+     3  | the initial gradient is too small
+     4  | the search direction is not a descent one
+     5  | maximal number of iterations reached
+     6  | maximal number of simulations reached (handled passively)
+     7  | the linesearch failed
+     8  | the function could not be improved
+     9  | optline parameters wrong
+    10  | cold start, no optimization done
+    11  | convergence achieved within precision
+
+

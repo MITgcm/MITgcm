@@ -1,0 +1,23 @@
+This is TeX, Version 3.14159 (Web2C 7.3.1) (format=latex 2000.3.7)  9 OCT 2001 11:10
+**manual
+(/usr/share/texmf/tex/latex/tools/q.tex
+LaTeX2e <1998/12/01> patch level 1
+Babel <v3.6x> and hyphenation patterns for american, french, german, ngerman, i
+talian, nohyphenation, loaded.
+File ignored
+)
+! Emergency stop.
+<*> manual
+          
+*** (job aborted, no legal \end found)
+
+ 
+Here is how much of TeX's memory you used:
+ 5 strings out of 10898
+ 83 string characters out of 96882
+ 43974 words of memory out of 263001
+ 3017 multiletter control sequences out of 10000+0
+ 3640 words of font info for 14 fonts, out of 400000 for 1000
+ 14 hyphenation exceptions out of 1000
+ 5i,0n,1p,79b,7s stack positions out of 300i,100n,500p,50000b,4000s
+No pages of output.

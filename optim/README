@@ -1,0 +1,70 @@
+
+c     expid           - experiment name
+c     optimcycle      - optimization no.
+c     missing value   - missing value identifier (usually -9999.)
+c     ig              - global start index x (zonal)
+c     jg              - global start index y (medid.)
+c     nsx             - no. of x-subgrids
+c     nsy             - no. of y-subgrids
+
+ >>> MISSING: <<<
+c     nr              - no. of z-points vertical
+c     snx
+c     sny
+c     nvartype
+c     nvarlength
+ >>> <<<
+
+c     maxcvars        - Number of control variables
+c                       (currently 6; 2 init. + 4 bound.)
+      integer     maxcvars
+      parameter ( maxcvars = 20 )
+
+c     ncvarindex      - "arbitrary" index to define variable:
+c                       * 101: initial temp.
+c                       * 102: initial sali.
+c                       * 103: heat flux
+c                       * 104: freshwater flux
+c                       * 105: u stress (zonal)
+c                       * 106: v stress (meri.)
+      integer ncvarindex    ( maxcvars )
+
+c     ncvarrecs       - no. of records in control vector
+c                       * = 1                      for init. temp./sali.
+c                       * = endrec - startrec + 1  for fluxes
+      integer ncvarrecs     ( maxcvars )
+
+c     ncvarrecstart   - first record:
+c                       * NOT DEFINED  for init. temp./sali.
+c                       * = startrec   for fluxes
+      integer ncvarrecstart ( maxcvars )
+
+c     ncvarrecsend    - last record:
+c                       * NOT DEFINED  for init. temp./sali.
+c                       * = endrec     for fluxes
+      integer ncvarrecsend  ( maxcvars )
+
+c     ncvarxmax       - no. of x-points in subgrid (zonal)
+c                       = snx
+      integer ncvarxmax     ( maxcvars )
+
+c     ncvarymax       - no. of y-points in subgrid (meri.)
+c                       = sny
+      integer ncvarymax     ( maxcvars )
+
+c     ncvarnrmax      - no. of z-points (vert.)
+c                       * = nr  for init. temp./sali.
+c                       * = 1   for fluxes
+      integer ncvarnrmax    ( maxcvars )
+
+c     nwet[c/s/w]tile - Number of wet points in a tile for center (c),
+c                       south (s), and western (w) mask, resp.
+      integer nwetctile     ( nsx, nsy, nr )
+      integer nwetstile     ( nsx, nsy, nr )
+      integer nwetwtile     ( nsx, nsy, nr )
+
+c     ncvargrd        - position in grid
+c                       * = 'c' : (center,center)
+c                       * = 's' : (center,south)
+c                       * = 'w' : (west,center)
+      character*(1) ncvargrd(maxcvars)

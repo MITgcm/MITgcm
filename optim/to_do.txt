@@ -1,0 +1,16 @@
+
+Steps towards finishing up the offline optim. interface to ECCO
+###############################################################
+(Patrick Heimbach 00/06/08)
+
+- split into single subroutines
+- according to package structure, 
+  call those optim_... (or ctrl_...?)
+- harmonise all routines with data.ctrl 
+  (especially file names that are specified in data.ctrl)
+- create CPP options file for various flags
+- get rid of read block in numbmod
+- make sure unit no.'s are ok
+- make sure all necesarry files are read/written
+  (may have to extend ctrl_pack/ctrl_unpack)
+
