@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_datetime.F,v 1.1 2004/09/30 19:37:54 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_write_datetime.F,v 1.2 2004/10/22 14:52:14 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -16,7 +16,8 @@ C     Write Fizhi date and time to ascii file
 #include "chronos.h"
 
 C     !INPUT PARAMETERS:
-      integer myTime, myIter, myThid
+      integer myIter, myThid
+      _RL myTime
 CEOP
 
       integer ku

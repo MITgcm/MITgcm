@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.24 2004/10/21 16:25:21 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.25 2004/10/22 14:52:14 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -30,7 +30,8 @@ c-----------------------------------------------------------------------
 #include "fizhi_ocean_coms.h"
 #include "fizhi_chemistry_coms.h"
 
-       integer myTime, myIter, myThid 
+       integer myIter, myThid 
+       _RL myTime
 
 c pe on dynamics and physics grid refers to bottom edge
        _RL pephy4fiz(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nrphys+1,nSx,nSy)

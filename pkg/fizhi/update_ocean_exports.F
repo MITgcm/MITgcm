@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.13 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.14 2004/10/22 14:52:14 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -18,7 +18,8 @@ c-----------------------------------------------------------------------
 #include "EEPARAMS.h"
 #include "chronos.h"
 
-       integer myTime, myIter, myThid
+       integer myIter, myThid
+       _RL myTime
 
        integer i, j, bi, bj, biglobal, bjglobal
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2

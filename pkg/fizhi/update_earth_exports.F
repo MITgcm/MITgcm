@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.22 2004/08/12 15:21:22 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.23 2004/10/22 14:52:14 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -27,7 +27,8 @@ c-----------------------------------------------------------------------
 #include "fizhi_ocean_coms.h"
 #include "EEPARAMS.h"
 
-      integer myTime, myIter, myThid
+      integer myIter, myThid
+      _RL myTime
 
       logical alarm
       external alarm

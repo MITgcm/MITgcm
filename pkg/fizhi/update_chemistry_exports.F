@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.10 2004/07/28 01:25:07 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_chemistry_exports.F,v 1.11 2004/10/22 14:52:14 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -23,7 +23,8 @@ c-----------------------------------------------------------------------
 #include "EEPARAMS.h"
 #include "chronos.h"
 
-      integer myTime, myIter, myThid
+      integer myIter, myThid
+      _RL myTime
 
 c pe on physics grid refers to bottom edge
       _RL pephy(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nrphys+1,nSx,nSy)

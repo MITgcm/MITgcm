@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.10 2004/08/05 17:06:40 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.11 2004/10/22 14:52:14 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -21,7 +21,8 @@ c-----------------------------------------------------------------------
 #include "DYNVARS.h"
 #include "GRID.h"
 
-       integer myTime, myIter, myThid 
+       integer myIter, myThid 
+       _RL myTime
 
        integer bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
