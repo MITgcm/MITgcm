@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.14 2004/12/18 02:18:55 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.15 2005/02/22 17:25:20 jmc Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -158,14 +158,14 @@ C     Create MNC definitions for DYNVARS.h variables
      &     'free-surface_r-anomaly', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Eta','units','m', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('Eta',
-     &     'coordinates','XC YC RC iter', myThid)
+     &     'coordinates','XC YC iter', myThid)
 
       CALL MNC_CW_ADD_VNAME('EtaH', 'Cen_xy_Hn__-__t', 3,4, myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('EtaH','long_name',
      &     'column-thickness_r-anomaly', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('EtaH','units','m', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('EtaH',
-     &     'coordinates','XC YC RC iter', myThid)
+     &     'coordinates','XC YC iter', myThid)
       CALL MNC_CW_ADD_VNAME('dEtaHdt', 'Cen_xy_Hn__-__t', 3,4, myThid)
 
       CALL MNC_CW_ADD_VNAME('W', 'Cen_xy_Hn__C__t', 4,5, myThid)
