@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_g77,v 1.1 2004/03/01 18:22:09 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/sunos_sun4u_g77,v 1.2 2004/03/01 18:29:54 edhill Exp $
 #  $Name:  $
 #
 
@@ -19,10 +19,10 @@ MAKE='gmake'
 #  For IEEE, use the "-ffloat-store" option
 if test "x$IEEE" = x ; then
     FFLAGS='-Wimplicit -Wunused -Wuninitialized'
-    FOPTIM='-O3 -malign-double -funroll-loops'
+    FOPTIM='-O3 -funroll-loops'
 else
     FFLAGS='-Wimplicit -Wunused -ffloat-store'
-    FOPTIM='-O0 -malign-double'
+    FOPTIM='-O0'
 fi
 
 
