@@ -1,12 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.312 2004/06/25 00:28:53 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.313 2004/06/25 19:49:14 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint53f_post
+o modifications that affect AIM experiment results (update output.txt):
+  - no advection of S at top interface Nr (pkg/generic_advdiff) 
+  - air surf. temp: use lower value between T0 & T1 (phy_suflux_prep.F)
 o AIM pkg:
   - include stability function into surf.Flux derivative relative to Tsurf
   - calculate clear-sky radiation & surface temp. change (for diagnostics)
-
+ 
 checkpoint53e_post
 o merged cylindrical coord configuration
 o added rotating_tank experiment
