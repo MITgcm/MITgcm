@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_init.F,v 1.5 2003/11/23 01:36:55 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_init.F,v 1.6 2004/05/04 16:32:35 adcroft Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -43,7 +43,9 @@ c     CHARACTER*(MAX_LEN_FNAM) fn
 c     set up bulk formula arrays to zero
         DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-              BULKF_timeave(1,bi,bj)=0. _d 0
+#ifdef ALLOW_TIMEAVE
+          IF (taveFreq.GT.0.) THEN
+          BULKF_timeave(1,bi,bj)=0. _d 0
           DO J=1,sNy
            DO I=1,sNx
 c             evapora(i,j,bi,bj)=0. _d 0
@@ -58,6 +60,12 @@ c             evapora(i,j,bi,bj)=0. _d 0
               BULK_flwupnet_AVE(i,j,bi,bj)=0. _d 0
               BULK_solar_AVE(i,j,bi,bj)=0. _d 0
               BULK_ssq_AVE(i,j,bi,bj)=0. _d 0
+           ENDDO
+          ENDDO
+          ENDIF
+#endif /* ALLOW_TIMEAVE */
+          DO J=1,sNy
+           DO I=1,sNx
 #ifdef CONSERV_BULKF
               CONS_Qnet(i,j,bi,bj)=0. _d 0
               CONS_EmPmR(i,j,bi,bj)=0. _d 0
