@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.21 2002/04/30 22:53:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.22 2002/05/30 02:31:01 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -302,6 +302,10 @@ C--       Apply OBC to W if in N-H mode
 #endif    /* ALLOW_NONHYDROSTATIC */
 #endif    /* ALLOW_OBCS */
 
+C--       Attention: by defining "SINGLE_LAYER_MODE" in CPP_OPTIONS.h 
+C--       MOST of THERMODYNAMICS will be disabled
+#ifndef SINGLE_LAYER_MODE
+
 C--       Calculate gradients of potential density for isoneutral
 C         slope terms (e.g. GM/Redi tensor or IVDC diffusivity)
 c         IF ( k.GT.1 .AND. (useGMRedi.OR.ivdc_kappa.NE.0.) ) THEN
@@ -343,6 +347,8 @@ c ==> should use sigmaR !!!
      I        myTime, myIter, myThid)
           ENDIF
 
+#endif /* SINGLE_LAYER_MODE */
+
 C--     end of diagnostic k loop (Nr:1)
         ENDDO
 
@@ -377,8 +383,17 @@ CADJ STORE surfacetendencyT(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
+C--     Attention: by defining "SINGLE_LAYER_MODE" in CPP_OPTIONS.h 
+C--     MOST of THERMODYNAMICS will be disabled
+#ifndef SINGLE_LAYER_MODE
+
 #ifdef  ALLOW_GMREDI
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE sigmaX(:,:,k)        = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE sigmaY(:,:,k)        = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE sigmaR(:,:,k)        = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
         IF (useGMRedi) THEN
           CALL GMREDI_CALC_TENSOR(
@@ -687,6 +702,8 @@ C--      Apply open boundary conditions
 
 C--     End If implicitDiffusion
         ENDIF
+
+#endif /* SINGLE_LAYER_MODE */
 
 Ccs-
        ENDDO
