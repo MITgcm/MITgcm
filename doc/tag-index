@@ -1,7 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.110 2002/12/16 17:12:23 cheisey Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.111 2002/12/16 21:51:50 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint47d_post
+o fixed bug in the oceanic pressure coordinates code: vertical viscosity 
+  at the bottom boundary had an erroneous half slip boundary condition
+o added bottom drag and no slip boundary condition capabilities to 
+  oceanic pressure coordinates code
+o added new verification experiment global_ocean_pressure, this experiment is
+  also described in the tutorial section of the manual
+checkpoint47d_pre
 
 checkpoint47c_post
 o Added a verification experiment for a global cubed-sphere ocean run
