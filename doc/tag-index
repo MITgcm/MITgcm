@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.377 2004/10/28 01:23:50 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.378 2004/11/02 01:20:04 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o allow (vecinv only) a different horiz. viscosity for Divergence and Vorticity; 
+  affects (truncation level) output.txt of global_ocean.cs32x15(&.thsice)
 
 checkpoint55i_post
 o change arrays for total vertical diffusivity (2.D if explicit,
