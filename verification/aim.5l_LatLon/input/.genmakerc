@@ -1,9 +1,8 @@
-# $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/input/Attic/.genmakerc,v 1.4 2002/11/22 03:16:37 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/verification/aim.5l_LatLon/input/Attic/.genmakerc,v 1.5 2002/11/23 22:35:46 jmc Exp $
 # $Name:  $
 
 # Force use of PGI f77
 #if (`uname` == 'Linux') set platform=( Linux+pgi )
-set FC=(ifc)
 
 # Disable packages that are not needed
 set DISABLE=( $DISABLE kpp gmredi obcs aim_v23 )
