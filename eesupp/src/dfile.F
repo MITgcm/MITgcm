@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.5 1998/06/22 16:24:51 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.6 1998/06/29 14:04:32 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -218,15 +218,15 @@ C--   Remove previous meta information if there was any
        IF ( aMode .EQ. accessModeRW ) THEN
         OPEN(UNIT=mUnit,NAME=fNamMeta(i2Lo:i2Hi),STATUS='UNKNOWN',ERR=899)
         CLOSE(mUnit,ERR=899)
+        OPEN(UNIT=mUnit,NAME=fNamMeta(i2Lo:i2Hi),STATUS='UNKNOWN',ERR=899)
+        metaDataStatus(fileHandle,myThid) = metaDataNotWritten
+        nameOfMFile(fileHandle,myThid) = fNamMeta(i2Lo:i2Hi)
        ENDIF
-       OPEN(UNIT=mUnit,NAME=fNamMeta(i2Lo:i2Hi),STATUS='UNKNOWN',ERR=899)
-       metaDataStatus(fileHandle,myThid) = metaDataNotWritten
-       nameOfMFile(fileHandle,myThid) = fNamMeta(i2Lo:i2Hi)
       ENDIF
 
 C--   Open data file
       nameOfDFile(fileHandle,myThid) = fNam(i1Lo:i1Hi)
-      OPEN(UNIT=dUnit,NAME=fNam(i1Lo:i1Hi),STATUS='UNKNOWN',ERR=799,
+      OPEN(UNIT=dUnit,NAME=fNam(i1Lo:i1Hi),STATUS='UNKNOWN', !ERR=799,
      &     FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
 
 

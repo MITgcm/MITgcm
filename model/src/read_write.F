@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.8 1998/06/22 16:24:51 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.9 1998/06/29 14:04:32 cnh Exp $
 #include "CPP_EEOPTIONS.h"
 
 C--  File read_write.F: Routines to handle mid-level I/O interface.
@@ -60,7 +60,7 @@ C--    Going to really do some IO. Make everyone except master thread wait.
 C--     Set suffix for this set of data files.
         WRITE(suff,'(I10.10)') myIter
 
-C--     Set IO "context" for writing state
+C--     Set IO "context" for reading state
         CALL DFILE_SET_RO
         CALL DFILE_SET_CONT_ON_ERROR
 C       Force 64-bit IO
@@ -225,6 +225,7 @@ C          U.0000000100
       ENDIF
 
 C--   Open file
+      CALL DFILE_SET_RO
       CALL DFILE_OPEN( fNamData, fNamMeta, myThid,
      O                 fileHandle )
       IF ( fileHandle .LE. 0 ) GOTO 1000
@@ -399,6 +400,7 @@ C          U.0000000100
       ENDIF
 
 C--   Open file
+      CALL DFILE_SET_RO
       CALL DFILE_OPEN( fNamData, fNamMeta, myThid,
      O                 fileHandle )
       IF ( fileHandle .LE. 0 ) GOTO 1000
@@ -566,6 +568,7 @@ C          U.0000000100
       ENDIF
 
 C--   Open file
+      CALL DFILE_SET_RO
       CALL DFILE_OPEN( fNamData, fNamMeta, myThid,
      O                 fileHandle )
       IF ( fileHandle .LE. 0 ) GOTO 1000
@@ -742,6 +745,7 @@ C          U.0000000100
       ENDIF
       
 C--   Open file
+      CALL DFILE_SET_RO
       CALL DFILE_OPEN( fNamData, fNamMeta, myThid,
      O                 fileHandle )
       IF ( fileHandle .LE. 0 ) GOTO 1000
