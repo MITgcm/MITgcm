@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.7 2001/09/19 02:43:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.8 2001/09/19 16:07:28 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -544,12 +544,12 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         xA,yA,uTrans,vTrans,rTrans,maskUp,
      I         KappaRT,
      U         fVerTr1,
-     I         myTime, myThid)
+     I         myTime,myIter,myThid)
            CALL TIMESTEP_TRACER(
      I         bi,bj,iMin,iMax,jMin,jMax,k,tracerAdvScheme,
      I         Tr1, gTr1,
      U         gTr1NM1,
-     I         myIter,myIter,myThid)
+     I         myIter,myThid)
          ENDIF
 #endif
 
