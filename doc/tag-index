@@ -1,7 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.111 2002/12/16 21:51:50 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.112 2002/12/27 14:26:14 cheisey Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint47e_post
+o created a tag prior to creating a branch
+
+
 
 checkpoint47d_post
 o fixed bug in the oceanic pressure coordinates code: vertical viscosity 
