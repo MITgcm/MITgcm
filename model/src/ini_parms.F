@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.109 2004/05/13 15:40:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.110 2004/05/26 14:50:10 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -132,8 +132,8 @@ C--   Continuous equation parameters
      & gravitySign,
      & gravity, gBaro, rhonil, tAlpha, sBeta, 
      & f0, beta, omega, rotationPeriod,
-     & viscAh, viscAhMax, viscAhGrid,
-     & viscA4, viscA4Max, viscA4Grid,
+     & viscAh, viscAhMax, viscAhGrid, viscC2leith,
+     & viscA4, viscA4Max, viscA4Grid, viscC4leith,
      & viscAz,  cosPower, viscAstrain, viscAtension,
      & diffKhT, diffKzT, diffK4T, 
      & diffKhS, diffKzS, diffK4S,

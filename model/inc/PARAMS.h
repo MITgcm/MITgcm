@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.109 2004/05/14 21:08:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.110 2004/05/26 14:50:09 adcroft Exp $
 C $Name:  $
 C
 CBOP
@@ -380,12 +380,14 @@ C     viscAr    :: Eddy viscosity coeff. for mixing of
 C                 momentum vertically ( units of r^2/s )
 C     viscA4    :: Biharmonic viscosity coeff. for mixing of
 C                 momentum laterally ( m^4/s )
+C     viscC2leith :: Leith non-dimensional viscosity factor
 C     viscAhMax :: Maximum eddy viscosity coeff. for mixing of
 C                 momentum laterally ( m^2/s )
 C     viscA4Max :: Maximum biharmonic viscosity coeff. for mixing of
 C                 momentum laterally ( m^4/s )
 C     viscAhGrid:: non-dimensional grid-size dependent viscosity
 C     viscA4Grid:: non-dimensional grid-size dependent bi-harmonic viscosity
+C     viscC4leith :: Leith non-dimensional viscosity factor
 C     diffKhT   :: Laplacian diffusion coeff. for mixing of
 C                 heat laterally ( m^2/s )
 C     diffKrT   :: Laplacian diffusion coeff. for mixing of
@@ -477,8 +479,8 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & abeps, startTime, 
      & phiMin, thetaMin, rSphere, recip_RSphere, f0, beta,
      & fCori, fCoriG, fCoriCos,
-     & viscAh,  viscAhMax, viscAhGrid,
-     & viscA4,  viscA4Max, viscA4Grid,
+     & viscAh,  viscAhMax, viscAhGrid, viscC2leith,
+     & viscA4,  viscA4Max, viscA4Grid, viscC4leith,
      & viscAr, viscAstrain, viscAtension,
      & diffKhT, diffK4T, diffKrT,
      & diffKhS, diffK4S, diffKrS,
@@ -533,12 +535,14 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL viscAh
       _RL viscAhMax
       _RL viscAhGrid
+      _RL viscC2leith
       _RL viscAstrain
       _RL viscAtension
       _RL viscAr
       _RL viscA4 
       _RL viscA4Max
       _RL viscA4Grid
+      _RL viscC4leith
       _RL diffKhT 
       _RL diffKrT
       _RL diffK4T 

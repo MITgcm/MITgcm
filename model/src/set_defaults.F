@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.59 2004/03/04 04:00:12 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.60 2004/05/26 14:50:10 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -97,6 +97,7 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       viscAh              = 0.D3
       viscAhGrid          = 0.D0
       viscAhMax           = 1.D21
+      viscC2leith         = 0.D0
       viscAstrain         = 0.D3
       viscAtension        = 0.D3
       diffKhT             = 0.D3
@@ -109,6 +110,7 @@ C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
       viscA4              = 0.D11
       viscA4Grid          = 0.D0
       viscA4Max           = 1.D21
+      viscC4leith         = 0.D0
       diffK4T             = 0.D11
       diffK4S             = 0.D11
       cosPower            = 0.

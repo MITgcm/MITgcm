@@ -1,9 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.303 2004/05/25 07:48:47 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.304 2004/05/26 14:50:09 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 
+o added Leith (Phys. Fluids, 1968, 10, 1409-1416) variable viscosity for
+  vector-invarianet equations
+  - note: does *NOT* yet use same variable visc. for no-slip BC's.
 o recoded the lateral boundary conditions for non-hydrostatic w, this time
   hopefully without new bugs
   - still to do: biharmonic friction for non-hydrostatic w

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.47 2004/02/07 16:27:19 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.48 2004/05/26 14:50:09 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -95,12 +95,16 @@ CEOP
      &'   /* Maximum lateral eddy viscosity ( m^2/s ) */')
       CALL WRITE_0D_R8( viscAhGrid, INDEX_NONE,'viscAhGrid =',
      &'   /* Grid dependent lateral eddy viscosity ( non-dim. ) */')
+      CALL WRITE_0D_R8( viscC2leith, INDEX_NONE,'viscC2leith =',
+     &'   /* Leith harmonic viscosity factor ( non-dom. ) */')
       CALL WRITE_0D_R8( viscA4, INDEX_NONE,'viscA4 =',
      &'   /* Lateral biharmonic viscosity ( m^4/s ) */')
       CALL WRITE_0D_R8( viscA4Max, INDEX_NONE,'viscA4Max =',
      &'   /* Maximum biharmonic viscosity ( m^2/s ) */')
       CALL WRITE_0D_R8( viscA4Grid, INDEX_NONE,'viscA4Grid =',
      &'   /* Grid dependent biharmonic viscosity ( non-dim. ) */')
+      CALL WRITE_0D_R8( viscC4leith, INDEX_NONE,'viscC4leith =',
+     &'   /* Leith biharmonic viscosity factor ( non-dom. ) */')
       CALL WRITE_0D_L( no_slip_sides, INDEX_NONE,
      & 'no_slip_sides =', '  /* Viscous BCs: No-slip sides */')
 c     IF ( viscAz .NE. UNSET_RL ) THEN

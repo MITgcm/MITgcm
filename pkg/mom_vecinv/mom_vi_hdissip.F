@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.5 2004/02/07 23:15:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.6 2004/05/26 14:50:10 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,6 +6,7 @@ C $Name:  $
       SUBROUTINE MOM_VI_HDISSIP(
      I        bi,bj,k,
      I        hDiv,vort3,hFacZ,dStar,zStar,
+c    I        viscAh_Z,viscAh_D,viscA4_Z,viscA4_D,
      O        uDissip,vDissip,
      I        myThid)
       IMPLICIT NONE
@@ -27,6 +28,10 @@ C     == Routine arguments ==
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL dStar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL zStar(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscAh_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA4_Z(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL viscA4_D(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vDissip(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
@@ -34,44 +39,104 @@ C     == Routine arguments ==
 C     == Local variables ==
       INTEGER I,J
       _RL Zip,Zij,Zpj,Dim,Dij,Dmj,uD2,vD2,uD4,vD4
+      _RL Alin,Alth,grdVrt,vg2,vg4
+      LOGICAL useVariableViscosity
+
+      useVariableViscosity=
+     &      (viscAhGrid*deltaTmom.NE.0.)
+     &  .OR.(viscA4Grid*deltaTmom.NE.0.)
+     &  .OR.(viscC2leith.NE.0.)
+     &  .OR.(viscC4leith.NE.0.)
+
+      IF (deltaTmom.NE.0.) THEN
+       vg2=viscAhGrid/deltaTmom
+       vg4=viscA4Grid/deltaTmom
+      ELSE
+       vg2=0.
+       vg4=0.
+      ENDIF
+
+C     - Viscosity
+      IF (useVariableViscosity) THEN
+       DO j=2-Oly,sNy+Oly-1
+        DO i=2-Olx,sNx+Olx-1
+C This is the vector magnitude of the vorticity gradient
+c        grdVrt=sqrt(0.25*(
+c    &      ((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))**2
+c    &     +((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj))**2
+c    &     +((vort3(i+1,j+1)-vort3(i,j+1))*recip_DXG(i,j+1,bi,bj))**2
+c    &     +((vort3(i+1,j+1)-vort3(i+1,j))*recip_DYG(i+1,j,bi,bj))**2 ))
+C but this approximation will work on cube (and differs by as much as 4X)
+         grdVrt=abs((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))
+         grdVrt=max(grdVrt,
+     &        abs((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj)))
+         grdVrt=max(grdVrt,
+     &        abs((vort3(i+1,j+1)-vort3(i,j+1))*recip_DXG(i,j+1,bi,bj)))
+         grdVrt=max(grdVrt,
+     &        abs((vort3(i+1,j+1)-vort3(i+1,j))*recip_DYG(i+1,j,bi,bj)))
+         Alth=viscC2leith*grdVrt*(rA(i,j,bi,bj)**1.5)
+         Alin=viscAh+vg2*rA ( i , j ,bi,bj)
+         viscAh_D(i,j)=min(viscAhMax,Alin+Alth)
+
+         Alth=viscC4leith*grdVrt*0.125*(rA(i,j,bi,bj)**2.5)
+         Alin=viscA4+vg4*(rA ( i , j ,bi,bj)**2)
+         viscA4_D(i,j)=min(viscA4Max,Alin+Alth)
+
+C This is the vector magnitude of the vorticity gradient
+c        grdVrt=sqrt(0.25*(
+c    &      ((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))**2
+c    &     +((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj))**2
+c    &     +((vort3(i-1,j)-vort3(i,j))*recip_DXG(i-1,j,bi,bj))**2
+c    &     +((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj))**2 ))
+C but this approximation will work on cube (and differs by as much as 4X)
+         grdVrt=abs((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))
+         grdVrt=max(grdVrt,
+     &          abs((vort3(i,j+1)-vort3(i,j))*recip_DYG(i,j,bi,bj)))
+         grdVrt=max(grdVrt,
+     &          abs((vort3(i-1,j)-vort3(i,j))*recip_DXG(i-1,j,bi,bj)))
+         grdVrt=max(grdVrt,
+     &          abs((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj)))
+         Alth=viscC2leith*grdVrt*(rAz(i,j,bi,bj)**1.5)
+         Alin=viscAh+vg2*rAz( i , j ,bi,bj)
+         viscAh_Z(i,j)=min(viscAhMax,Alin+Alth)
+
+         Alth=viscC4leith*grdVrt*0.125*(rAz(i,j,bi,bj)**2.5)
+         Alin=viscA4+vg4*(rAz( i , j ,bi,bj)**2)
+         viscA4_Z(i,j)=min(viscA4Max,Alin+Alth)
+        ENDDO
+       ENDDO
+      ELSE
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         viscAh_D(i,j)=viscAh
+         viscAh_Z(i,j)=viscAh
+         viscA4_D(i,j)=viscA4
+         viscA4_Z(i,j)=viscA4
+        ENDDO
+       ENDDO
+      ENDIF
 
 C     - Laplacian  and bi-harmonic terms
       DO j=2-Oly,sNy+Oly-1
        DO i=2-Olx,sNx+Olx-1
 
-c       Dim=dyF( i ,j-1,bi,bj)*hFacC( i ,j-1,k,bi,bj)*hDiv( i ,j-1)
-c       Dij=dyF( i , j ,bi,bj)*hFacC( i , j ,k,bi,bj)*hDiv( i , j )
-c       Dmj=dyF(i-1, j ,bi,bj)*hFacC(i-1, j ,k,bi,bj)*hDiv(i-1, j )
-c       Dim=dyF( i ,j-1,bi,bj)*                       hDiv( i ,j-1)
-c       Dij=dyF( i , j ,bi,bj)*                       hDiv( i , j )
-c       Dmj=dyF(i-1, j ,bi,bj)*                       hDiv(i-1, j )
-        Dim=                                          hDiv( i ,j-1)
-        Dij=                                          hDiv( i , j )
-        Dmj=                                          hDiv(i-1, j )
-
-c       Zip=dxV( i ,j+1,bi,bj)*hFacZ( i ,j+1)*vort3( i ,j+1)
-c       Zij=dxV( i , j ,bi,bj)*hFacZ( i , j )*vort3( i , j )
-c       Zpj=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*vort3(i+1, j )
-        Zip=                   hFacZ( i ,j+1)*vort3( i ,j+1)
-        Zij=                   hFacZ( i , j )*vort3( i , j )
-        Zpj=                   hFacZ(i+1, j )*vort3(i+1, j )
+        Dim=hDiv( i ,j-1)
+        Dij=hDiv( i , j )
+        Dmj=hDiv(i-1, j )
+        Zip=hFacZ( i ,j+1)*vort3( i ,j+1)
+        Zij=hFacZ( i , j )*vort3( i , j )
+        Zpj=hFacZ(i+1, j )*vort3(i+1, j )
 
 C This bit scales the harmonic dissipation operator to be proportional
 C to the grid-cell area over the time-step. viscAh is then non-dimensional
 C and should be less than 1/8, for example viscAh=0.01 
-        if (viscAhGrid*deltaTmom.NE.0.) then
-          Dij=Dij*
-     &     min(viscAh+viscAhGrid*rA ( i , j ,bi,bj)/deltaTmom,viscAhMax)
-          Dim=Dim*
-     &     min(viscAh+viscAhGrid*rA ( i ,j-1,bi,bj)/deltaTmom,viscAhMax)
-          Dmj=Dmj*
-     &     min(viscAh+viscAhGrid*rA (i-1, j ,bi,bj)/deltaTmom,viscAhMax)
-          Zij=Zij*
-     &     min(viscAh+viscAhGrid*rAz( i , j ,bi,bj)/deltaTmom,viscAhMax)
-          Zip=Zip*
-     &     min(viscAh+viscAhGrid*rAz( i ,j+1,bi,bj)/deltaTmom,viscAhMax)
-          Zpj=Zpj*
-     &     min(viscAh+viscAhGrid*rAz(i+1, j ,bi,bj)/deltaTmom,viscAhMax)
+        if (useVariableViscosity) then
+          Dij=Dij*viscAh_D(i,j)
+          Dim=Dim*viscAh_D(i,j-1)
+          Dmj=Dmj*viscAh_D(i-1,j)
+          Zij=Zij*viscAh_Z(i,j)
+          Zip=Zip*viscAh_Z(i,j+1)
+          Zpj=Zpj*viscAh_Z(i+1,j)
           uD2 = (
      &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
      &      -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj) )
@@ -80,33 +145,18 @@ C and should be less than 1/8, for example viscAh=0.01
      &                                           *cosFacV(j,bi,bj)
      &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
         else
-c       uD2 = recip_rAw(i,j,bi,bj)*(
-c    &    recip_hFacW(i,j,k,bi,bj)*viscAh*( (Dij-Dmj)*cosFacU(j,bi,bj) )
-c    &   -recip_hFacW(i,j,k,bi,bj)*viscAh*( Zip-Zij ) )
-c       uD2 = recip_rAw(i,j,bi,bj)*(
-c    &                             viscAh*( (Dij-Dmj)*cosFacU(j,bi,bj) )
-c    &   -recip_hFacW(i,j,k,bi,bj)*viscAh*( Zip-Zij ) )
           uD2 = viscAh*(
      &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
      &      -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj) )
-c       vD2 = recip_rAs(i,j,bi,bj)*(
-c    &    recip_hFacS(i,j,k,bi,bj)*viscAh*( (Zpj-Zij)*cosFacV(j,bi,bj) )
-c    &   +recip_hFacS(i,j,k,bi,bj)*viscAh*( Dij-Dim ) )
-c       vD2 = recip_rAs(i,j,bi,bj)*(
-c    &    recip_hFacS(i,j,k,bi,bj)*viscAh*( (Zpj-Zij)*cosFacV(j,bi,bj) )
-c    &   +                         viscAh*( Dij-Dim ) )
           vD2 = viscAh*(
      &       recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
      &                                           *cosFacV(j,bi,bj)
      &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
         endif
 
-c       Dim=dyF( i ,j-1,bi,bj)*hFacC( i ,j-1,k,bi,bj)*dStar( i ,j-1)
-c       Dij=dyF( i , j ,bi,bj)*hFacC( i , j ,k,bi,bj)*dStar( i , j )
-c       Dmj=dyF(i-1, j ,bi,bj)*hFacC(i-1, j ,k,bi,bj)*dStar(i-1, j )
-        Dim=dyF( i ,j-1,bi,bj)*                       dStar( i ,j-1)
-        Dij=dyF( i , j ,bi,bj)*                       dStar( i , j )
-        Dmj=dyF(i-1, j ,bi,bj)*                       dStar(i-1, j )
+        Dim=dyF( i ,j-1,bi,bj)*dStar( i ,j-1)
+        Dij=dyF( i , j ,bi,bj)*dStar( i , j )
+        Dmj=dyF(i-1, j ,bi,bj)*dStar(i-1, j )
 
         Zip=dxV( i ,j+1,bi,bj)*hFacZ( i ,j+1)*zStar( i ,j+1)
         Zij=dxV( i , j ,bi,bj)*hFacZ( i , j )*zStar( i , j )
@@ -115,25 +165,13 @@ c       Dmj=dyF(i-1, j ,bi,bj)*hFacC(i-1, j ,k,bi,bj)*dStar(i-1, j )
 C This bit scales the harmonic dissipation operator to be proportional
 C to the grid-cell area over the time-step. viscAh is then non-dimensional
 C and should be less than 1/8, for example viscAh=0.01 
-        if (viscA4Grid*deltaTmom.NE.0.) then
-          Dij = Dij * min(
-     &         viscA4+viscA4Grid*(rA ( i , j ,bi,bj)**2)/deltaTmom,
-     &         viscA4Max)
-          Dim = Dim * min(
-     &         viscA4+viscA4Grid*(rA ( i ,j-1,bi,bj)**2)/deltaTmom,
-     &         viscA4Max)
-          Dmj = Dmj * min(
-     &         viscA4+viscA4Grid*(rA (i-1, j ,bi,bj)**2)/deltaTmom,
-     &         viscA4Max)
-          Zij = Zij * min(
-     &         viscA4+viscA4Grid*(rAz( i , j ,bi,bj)**2)/deltaTmom,
-     &         viscA4Max)
-          Zip = Zip * min(
-     &         viscA4+viscA4Grid*(rAz( i ,j+1,bi,bj)**2)/deltaTmom,
-     &         viscA4Max)
-          Zpj = Zpj * min(
-     &         viscA4+viscA4Grid*(rAz(i+1, j ,bi,bj)**2)/deltaTmom,
-     &         viscA4Max)
+        if (useVariableViscosity) then
+          Dij=Dij*viscA4_D(i,j)
+          Dim=Dim*viscA4_D(i,j-1)
+          Dmj=Dmj*viscA4_D(i-1,j)
+          Zij=Zij*viscA4_Z(i,j)
+          Zip=Zip*viscA4_Z(i,j+1)
+          Zpj=Zpj*viscA4_Z(i+1,j)
           uD4 = recip_rAw(i,j,bi,bj)*(
      &                             ( (Dij-Dmj)*cosFacU(j,bi,bj) )
      &   -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij ) )
@@ -141,16 +179,9 @@ C and should be less than 1/8, for example viscAh=0.01
      &    recip_hFacS(i,j,k,bi,bj)*( (Zpj-Zij)*cosFacV(j,bi,bj) )
      &   +                         ( Dij-Dim ) )
         else
-c       uD4 = recip_rAw(i,j,bi,bj)*(
-c    &    recip_hFacW(i,j,k,bi,bj)*viscA4*( (Dij-Dmj)*cosFacU(j,bi,bj) )
-c    &   -recip_hFacW(i,j,k,bi,bj)*viscA4*( Zip-Zij ) )
           uD4 = recip_rAw(i,j,bi,bj)*(
      &                             viscA4*( (Dij-Dmj)*cosFacU(j,bi,bj) )
      &   -recip_hFacW(i,j,k,bi,bj)*viscA4*( Zip-Zij ) )
-
-c       vD4 = recip_rAs(i,j,bi,bj)*(
-c    &    recip_hFacS(i,j,k,bi,bj)*viscA4*( (Zpj-Zij)*cosFacV(j,bi,bj) )
-c    &   +recip_hFacS(i,j,k,bi,bj)*viscA4*( Dij-Dim ) )
           vD4 = recip_rAs(i,j,bi,bj)*(
      &    recip_hFacS(i,j,k,bi,bj)*viscA4*( (Zpj-Zij)*cosFacV(j,bi,bj) )
      &   +                         viscA4*( Dij-Dim ) )
