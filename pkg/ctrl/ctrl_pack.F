@@ -419,7 +419,7 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsst0"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_sst0, "hFacC", weighttype,
+     &         cunit, ivartype, adfname_sst, "hFacC", weighttype,
      &         lxxadxx, mythid)
 #endif
 
@@ -428,7 +428,7 @@ c--       Header information.
           write(weighttype(1:80),'(80a)') ' '
           write(weighttype(1:80),'(a)') "wsss0"
           call ctrl_set_pack_xy(
-     &         cunit, ivartype, adfname_sss0, "hFacC", weighttype,
+     &         cunit, ivartype, adfname_sss, "hFacC", weighttype,
      &         lxxadxx, mythid)
 #endif
 

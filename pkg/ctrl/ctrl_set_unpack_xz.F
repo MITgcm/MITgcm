@@ -58,7 +58,7 @@ c     == local variables ==
       integer bi,bj
       integer ip,jp
       integer i,j,k
-      integer ii
+      integer ii,jj,kk
       integer il
       integer irec,iobcs,nrec_nl
       integer itlo,ithi
@@ -229,10 +229,13 @@ cgg       And now back-calculate what iobcs should be.
                    do i = imin,imax
                     if ( globmskxz(i,bi,ip,bj,jp,k,iobcs) .ne. 0. ) then
                        cbuffindex = cbuffindex + 1
-                       globfld3d(i,bi,ip,j,bj,jp,k) = cbuff(cbuffindex)
+                       jj=mod((j-1)*nr+k-1,sny)+1
+                       kk=int((j-1)*nr+k-1)/sny+1
+                       globfld3d(i,bi,ip,jj,bj,jp,kk) = 
+     &                      cbuff(cbuffindex)
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
-                       globfld3d(i,bi,ip,j,bj,jp,k) = 
-     &                      globfld3d(i,bi,ip,j,bj,jp,k)/
+                       globfld3d(i,bi,ip,jj,bj,jp,kk) = 
+     &                      globfld3d(i,bi,ip,jj,bj,jp,kk)/
 # ifdef CTRL_UNPACK_PRECISE
      &                      sqrt(weightfldxz(i,bi,ip,bj,jp,k,iobcs))
 # else
@@ -240,7 +243,7 @@ cgg       And now back-calculate what iobcs should be.
 # endif
 #endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
                     else
-                       globfld3d(i,bi,ip,j,bj,jp,k) = 0. _d 0
+                       globfld3d(i,bi,ip,jj,bj,jp,kk) = 0. _d 0
                     endif
                    enddo
                   enddo

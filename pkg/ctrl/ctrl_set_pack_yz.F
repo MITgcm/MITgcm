@@ -59,7 +59,7 @@ c     == local variables ==
       integer bi,bj
       integer ip,jp
       integer i,j,k
-      integer ii
+      integer ii,kk
       integer il
       integer irec,iobcs,nrec_nl
       integer itlo,ithi
@@ -213,10 +213,12 @@ cgg    Get rid of any sensitivity to barotropic velocity.
                  do j = jmin,jmax
                   if (globmskyz(bi,ip,j,bj,jp,k,iobcs)  .ne. 0. ) then
                      cbuffindex = cbuffindex + 1
+                     ii=mod((i-1)*nr+k-1,snx)+1
+                     kk=int((i-1)*nr+k-1)/snx+1
 #ifdef ALLOW_NONDIMENSIONAL_CONTROL_IO
                      if (lxxadxx) then
                         cbuff(cbuffindex) = 
-     &                       globfld3d(i,bi,ip,j,bj,jp,k) *
+     &                       globfld3d(ii,bi,ip,j,bj,jp,kk) *
 #ifdef CTRL_PACK_PRECISE
      &                       sqrt(weightfldyz(bi,ip,j,bj,jp,k,iobcs))
 #else
@@ -224,7 +226,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
 #endif
                      else
                         cbuff(cbuffindex) = 
-     &                       globfld3d(i,bi,ip,j,bj,jp,k) /
+     &                       globfld3d(ii,bi,ip,j,bj,jp,kk) /
 #ifdef CTRL_PACK_PRECISE
      &                       sqrt(weightfldyz(bi,ip,j,bj,jp,k,iobcs))
 #else
@@ -232,7 +234,7 @@ cgg    Get rid of any sensitivity to barotropic velocity.
 #endif
                      endif
 #else /* ALLOW_NONDIMENSIONAL_CONTROL_IO undef */
-                     cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
+                     cbuff(cbuffindex) = globfld3d(ii,bi,ip,j,bj,jp,kk)
 #endif /* ALLOW_NONDIMENSIONAL_CONTROL_IO */
                   endif
                  enddo
