@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.77 2001/08/13 23:26:56 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.78 2001/08/14 00:19:42 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -159,8 +159,8 @@ C     uninitialised but inert locations.
        DO i=1-OLx,sNx+OLx
         DO k=1,Nr
          phiHyd(i,j,k)  = 0. _d 0 
-cph         KappaRU(i,j,k) = 0. _d 0
-cph         KappaRV(i,j,k) = 0. _d 0
+         KappaRU(i,j,k) = 0. _d 0
+         KappaRV(i,j,k) = 0. _d 0
          sigmaX(i,j,k) = 0. _d 0
          sigmaY(i,j,k) = 0. _d 0
          sigmaR(i,j,k) = 0. _d 0
