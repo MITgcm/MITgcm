@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.36 1998/11/06 22:44:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.37 1998/12/08 19:44:29 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -92,7 +92,8 @@ C--   Continuous equation parameters
      & tempStepping, saltStepping, momStepping, implicitDiffusion,
      & viscAr, diffKrT, diffKrS, hFacMinDr,
      & viscAp, diffKpT, diffKpS, hFacMinDp,
-     & rhoConst, buoyancyRelation
+     & rhoConst, buoyancyRelation,
+     & openBoundaries
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
@@ -119,6 +120,9 @@ C--   Input files
      & zonalWindFile, meridWindFile, thetaClimFile,
      & saltClimFile
 
+C--   Open Boundaries
+      NAMELIST /PARM06/
+     & OB_Jnorth, OB_Jsouth, OB_Ieast, OB_Iwest
 
 C
       _BEGIN_MASTER(myThid)
@@ -248,6 +252,7 @@ C--   Set default "physical" parameters
       saltStepping        = .TRUE.
       metricTerms         = .TRUE.
       implicitDiffusion   = .FALSE.
+      openBoundaries      = .FALSE.
       READ(UNIT=iUnit,NML=PARM01,IOSTAT=errIO)
       IF ( errIO .LT. 0 ) THEN
        WRITE(msgBuf,'(A)')
@@ -699,6 +704,30 @@ C     being combined and a single frame of reference is needed.
       recip_horiVertRatio = 1./horiVertRatio
       IF ( zCoordInputData ) usingZCoords = .TRUE.
       IF ( pCoordInputData ) usingPCoords = .TRUE.
+
+C-- OBCS
+      DO I=1,Nx
+       OB_Jnorth(I)=0
+       OB_Jsouth(I)=0
+      ENDDO
+      DO J=1,Ny
+       OB_Ieast(J)=0
+       OB_Iwest(J)=0
+      ENDDO
+      IF (openBoundaries) THEN
+       READ(UNIT=iUnit,NML=PARM06)
+       DO J=1,Ny
+        if (OB_Ieast(J).lt.0) OB_Ieast(J)=OB_Ieast(J)+Nx+1
+       ENDDO
+       DO I=1,Nx
+        if (OB_Jnorth(I).lt.0) OB_Jnorth(I)=OB_Jnorth(I)+Ny+1
+       ENDDO
+       write(0,*) 'OB Jn =',OB_Jnorth
+       write(0,*) 'OB Js =',OB_Jsouth
+       write(0,*) 'OB Ie =',OB_Ieast
+       write(0,*) 'OB Iw =',OB_Iwest
+      ENDIF
+
 C
       CLOSE(iUnit)
 

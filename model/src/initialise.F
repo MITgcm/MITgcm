@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.7 1998/11/06 22:44:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/initialise.F,v 1.8 1998/12/08 19:44:29 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -34,6 +34,10 @@ C--   Set model parameters.
 C     Parameters are set to defaults and then updates are read from
 C     an input file called data.
       CALL INI_PARMS(  myThid )
+      _BARRIER
+
+C--   Open boundaries positions
+      CALL INI_OBCS( myThid )
       _BARRIER
 
 C--   Set model grid.

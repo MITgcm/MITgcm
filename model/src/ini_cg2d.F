@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.21 1998/11/06 22:44:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.22 1998/12/08 19:44:28 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -19,6 +19,7 @@ C     === Global variables ===
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "CG2D.h"
+#include "OBCS.h"
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
@@ -66,6 +67,20 @@ C     aS2d: integral in Z Ay/dY
           ENDDO
          ENDDO
         ENDDO
+        IF (openBoundaries) THEN
+         DO I=1,sNx
+          IF (OB_Jn(I,bi,bj).NE.0) aS2d(I,OB_Jn(I,bi,bj),bi,bj)=0.
+          IF (OB_Jn(I,bi,bj).NE.0) aS2d(I,OB_Jn(I,bi,bj)+1,bi,bj)=0.
+          IF (OB_Js(I,bi,bj).NE.0) aS2d(I,OB_Js(I,bi,bj)+1,bi,bj)=0.
+          IF (OB_Js(I,bi,bj).NE.0) aS2d(I,OB_Js(I,bi,bj),bi,bj)=0.
+         ENDDO
+         DO J=1,sNy
+          IF (OB_Ie(J,bi,bj).NE.0) aW2d(OB_Ie(J,bi,bj),J,bi,bj)=0.
+          IF (OB_Ie(J,bi,bj).NE.0) aW2d(OB_Ie(J,bi,bj)+1,J,bi,bj)=0.
+          IF (OB_Iw(J,bi,bj).NE.0) aW2d(OB_Iw(J,bi,bj)+1,J,bi,bj)=0.
+          IF (OB_Iw(J,bi,bj).NE.0) aW2d(OB_Iw(J,bi,bj),J,bi,bj)=0.
+         ENDDO
+        ENDIF
         DO J=1,sNy
          DO I=1,sNx
           myNorm = MAX(ABS(aW2d(I,J,bi,bj)),myNorm)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.34 1998/11/06 22:44:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.35 1998/12/08 19:44:28 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -162,6 +162,7 @@ C     usingPCoords     - Set to indicate that we are working in pressure
 C                        coords.
 C     usingZCoords     - Set to indicate that we are working in height
 C                        coords.
+C     openBoundaries - Using open-boundaries
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & momViscosity, momAdvection, momForcing, useCoriolis, 
      & momPressureForcing,tempDiffusion, tempAdvection, tempForcing,
@@ -171,7 +172,8 @@ C                        coords.
      & metricTerms, usingSphericalPolarMTerms,
      & useConstantF, useBetaPlaneF, useSphereF,
      & implicitDiffusion, doThetaClimRelax, doSaltClimRelax,
-     & periodicExternalForcing, usingPCoords, usingZCoords
+     & periodicExternalForcing, usingPCoords, usingZCoords,
+     & openBoundaries
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingSphericalPolarMTerms
@@ -201,6 +203,7 @@ C                        coords.
       LOGICAL periodicExternalForcing
       LOGICAL usingPCoords
       LOGICAL usingZCoords
+      LOGICAL openBoundaries
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
@@ -446,3 +449,30 @@ C     sBeta     - Linear EOS haline contraction coefficient.
       _RL sBeta
       character*(6) eosType
 
+C These are input arrays (of integers) that contain the *absolute*
+C computational index of an open-boundary (OB) point.
+C A zero (0) element means there is no corresponding OB in that column/row.
+C The computational coordinate refers to "tracer" cells.
+C For a northern/southern OB, the OB V point is to the south/north.
+C For an eastern/western OB, the OB U point is to the west/east.
+C eg.
+C     OB_Jnorth(3)=34  means that: 
+C          T( 3 ,34) is a an OB point
+C          U(3:4,34) is a an OB point
+C          V( 4 ,34) is a an OB point
+C while
+C     OB_Jsouth(3)=1  means that:
+C          T( 3 ,1) is a an OB point
+C          U(3:4,1) is a an OB point
+C          V( 4 ,2) is a an OB point
+C 
+C For convenience, negative values for Jnorth/Ieast refer to
+C points relative to the Northern/Eastern edges of the model
+C eg. OB_Jnorth(3)=-1  means that the point (3,Ny-1) is a northern O-B.
+C
+      COMMON /PARM_OB/
+     & OB_Jnorth,OB_Jsouth,OB_Ieast,OB_Iwest
+      INTEGER OB_Jnorth(Nx)
+      INTEGER OB_Jsouth(Nx)
+      INTEGER OB_Ieast(Ny)
+      INTEGER OB_Iwest(Ny)

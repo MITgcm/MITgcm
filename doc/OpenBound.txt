@@ -1,0 +1,85 @@
+Open Boundaries Implementation in MITgcmUV
+
+These are some quick explanatory notes regards implementation of open
+boundaries (OB) and the example configuration found in
+.../verification/exp4/
+
+
+Input and control of OBs
+
+   * The open boundaries code is used only if the LOGICAL parameter
+     openBondaries is .TRUE.
+   * Four 1-dimensional INTEGER arrays indicate the position of an OB:
+     OB_Jnorth, OB_Jsouth, OB_Ieast and OB_Iwest.
+
+The values of OB_* indicate the absolute computational coordinate of an open
+boundary. eg. OB_Jsouth(3)=4
+means that in the column I=3 there is a "southern" OB at tracer point J=4.
+Similarly OB_Iwest(2)=1 means that
+the tracer point (2,1) is an OB point. This structure for specifying OBs
+assumes that there will be only one northern and southern OB per column and
+similar in the other direction. An entry of 0 (zero) means there is now OB
+in that column/row.
+
+The reference to "tracer points" above introduces an important distinction
+between particular boundaries due to the C-grid staggering of variables. At
+a northern OB tracer point (i,j) the OB v-velocity point is at (i,j)  while
+at a southern OB tracer point (i,j) the OB v-velocity point is at (i,j+1).
+This is all taken care of in the code but when specifying OB values it is
+important to remember the physical coordinates of T,S,U and V are not the
+same for a given computational index.
+
+
+Changing the type of open boundary
+
+The supplied code simply specifies model variables at the appropriate
+points. The value to be specified can (and should) be determine using a
+radiative condition. A skeleton code is supplied set_obcs.F to illustrate
+how
+this might be done. This is the only routine that needs to be edited. Edit
+others at your own peril!
+
+
+The examples
+
+There are three examples in .../verification/exp4/
+
+  1. A zonal channel (solid side walls) with open boundaries at either end:
+     data.channel
+  2. A zonal channel with a Gaussian bump and open boundaries at either end:
+     data.bumpchannel
+  3. An open domain (OBs on four sides) with a Gaussian bump: data.bump
+
+Each data file has a corresponding topog.* file which is specified through
+the variable bathyFile in data.*
+The physical problem has a flow of U=25 cm/s specified at all open
+boundaries. The details of the experiment can be found in Adcroft's thesis
+(Imperial College) and in Adcroft, Hill and Marshall, MWR 1997.
+
+The differences between the supplied data.* files also show how to turn
+particular OBs on and off.
+
+Compiling and running the examples
+
+The examples supplied are the barotropic zonal flow over a Gaussian bump in
+a channel.
+
+   * Header files: Copy or link SIZE.h, CPP_OPTIONS.h and CP_EEOPTIONS.h
+     from .../verification/exp4/ to .../model/inc/, .../model/inc/ and
+     .../eesupp.inc/ respectively
+   * Modified source: Copy set_obcs.F to .../model/src/
+
+Now compile the code as usual:
+
+   * cd bin
+   * ../tools/genmake -makefile
+   * make depend
+   * make
+
+To run the code you must first choose a data file to use:
+
+   * cd ../verification/exp4
+   * cp data.bump data
+   * ../../exe/mitgcmuv
+
+Happy Open Boundarying!
