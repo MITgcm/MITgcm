@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.13 2003/03/07 23:46:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_alpha.F,v 1.14 2003/09/10 22:21:22 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -133,7 +133,12 @@ C     abbreviations
                t3 = t2*t1
                
                s1  = salt(i,j,k,bi,bj)
+              IF ( s1 .GT. 0. _d 0 ) THEN
                s3o2 = SQRT(s1*s1*s1)
+              ELSE
+               s1   = 0. _d 0
+               s3o2 = 0. _d 0
+              ENDIF
                
                p1  = locPres(i,j)*SItoBar
                p2 = p1*p1
@@ -222,7 +227,12 @@ C     of sea water at p
                t1  = theta(i,j,k,bi,bj)
                t2  = t1*t1
                s1  = salt(i,j,k,bi,bj)
+              IF ( s1 .GT. 0. _d 0 ) THEN
                sp5 = SQRT(s1) 
+              ELSE
+               s1  = 0. _d 0
+               sp5 = 0. _d 0
+              ENDIF
 
                p1   = locPres(i,j)*SItodBar
                p1t1 = p1*t1
@@ -230,7 +240,7 @@ C     of sea water at p
                dnum_dtheta = eosMDJWFnum(1)
      &              + t1*(2.*eosMDJWFnum(2) + 3.*eosMDJWFnum(3)*t1) 
      &              + eosMDJWFnum(5)*s1                                 
-     &              + p1t1*(2.*eosMDJWFnum(8) + 2.*eosMDJWFnum(11)*p1)    
+     &              + p1t1*(2.*eosMDJWFnum(8) + 2.*eosMDJWFnum(11)*p1)
             
                dden_dtheta = eosMDJWFden(1) 
      &              + t1*(2.*eosMDJWFden(2) 
@@ -373,7 +383,12 @@ C     abbreviations
                t3 = t2*t1
                
                s1  = salt(i,j,k,bi,bj)
+              IF ( s1 .GT. 0. _d 0 ) THEN
                s3o2 = 1.5*SQRT(s1)
+              ELSE
+               s1   = 0. _d 0
+               s3o2 = 0. _d 0
+              ENDIF
 
                p1  = locPres(i,j)*SItoBar
 
@@ -448,7 +463,12 @@ C     of sea water at p
                t1  = theta(i,j,k,bi,bj)
                t2  = t1*t1
                s1  = salt(i,j,k,bi,bj)
+              IF ( s1 .GT. 0. _d 0 ) THEN
                sp5 = SQRT(s1) 
+              ELSE
+               s1  = 0. _d 0
+               sp5 = 0. _d 0
+              ENDIF
          
                p1   = locPres(i,j)*SItodBar
                p1t1 = p1*t1

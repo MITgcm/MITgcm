@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.24 2003/02/18 15:25:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.25 2003/09/10 22:21:22 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -258,7 +258,12 @@ C     abbreviations
             t4 = t3*t
 
             s  = sFld(i,j,k,bi,bj)
+           IF ( s .GT. 0. _d 0 ) THEN
             s3o2 = s*SQRT(s)
+           ELSE
+            s    = 0. _d 0
+            s3o2 = 0. _d 0
+           ENDIF
             
 C     density of freshwater at the surface
             rfresh = 
@@ -347,7 +352,12 @@ C     abbreviations
             t4 = t3*t
 
             s  = sFld(i,j,k,bi,bj)
+          IF ( s .GT. 0. _d 0 ) THEN
             s3o2 = s*SQRT(s)
+          ELSE
+            s    = 0. _d 0
+            s3o2 = 0. _d 0
+          ENDIF
 C
             p = locPres(i,j)*SItoBar
             p2 = p*p
@@ -522,7 +532,12 @@ C     abbreviations
             t1  = tFld(i,j,k,bi,bj) 
             t2 = t1*t1
             s1  = sFld(i,j,k,bi,bj)
+           IF ( s1 .GT. 0. _d 0 ) THEN
             sp5 = SQRT(s1) 
+           ELSE
+            s1  = 0. _d 0
+            sp5 = 0. _d 0
+           ENDIF
             
             p1   = locPres(i,j)*SItodBar
             p1t1 = p1*t1
