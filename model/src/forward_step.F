@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.43 2002/12/06 20:10:58 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.44 2002/12/21 00:33:54 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -227,7 +227,7 @@ C-    update also CG2D matrix (and preconditioner)
       IF ( momStepping .AND. nonlinFreeSurf.GT.2 ) THEN
         CALL TIMER_START('UPDATE_CG2D        [FORWARD_STEP]',mythid)
         CALL UPDATE_CG2D( myTime, myIter, myThid )
-        CALL TIMER_START('UPDATE_CG2D        [FORWARD_STEP]',mythid)
+        CALL TIMER_STOP ('UPDATE_CG2D        [FORWARD_STEP]',mythid)
       ENDIF
 #endif
 
