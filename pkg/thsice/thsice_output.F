@@ -1,18 +1,20 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diags.F,v 1.7 2004/11/11 01:29:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_output.F,v 1.1 2005/01/04 00:23:58 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
 
 CBOP
-C     !ROUTINE: THSICE_DIAGS
+C     !ROUTINE: THSICE_OUTPUT
 C     !INTERFACE:
-      SUBROUTINE THSICE_DIAGS( myTime, myIter, myThid )
+      SUBROUTINE THSICE_OUTPUT( myTime, myIter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | S/R THSICE_DIAGS
-C     | o Do ICE diagnostic output
+C     | S/R THSICE_OUTPUT
+C     | o general routine for ThSIce output
 C     *==========================================================*
+C     | - write time-average & snap-shot output
+C     | - call monitor to write global quantities
 C     *==========================================================*
 C     \ev
 
@@ -29,9 +31,9 @@ C     === Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
-C     myTime - Current time of simulation ( s )
-C     myIter - Iteration number
-C     myThid -  Number of this instance of INI_FORCING
+C     myTime :: Current time of simulation ( s )
+C     myIter :: Iteration number
+C     myThid :: my Thread Id number
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
