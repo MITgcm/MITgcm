@@ -1,16 +1,16 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_aces,v 1.1 2004/11/13 03:23:28 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_aces,v 1.2 2005/01/13 00:35:30 ce107 Exp $
 #  $Name:  $
 #
 
 
 FC='mpif77'
 CC='mpicc'
-DEFINES='-DWORDLENGTH=4'
+DEFINES='-DWORDLENGTH=4 -DALLOW_USE_MPI -DALWAYS_USE_MPI'
 CPP='cpp  -traditional -P'
 LINK='mpif77'
-INCLUDES='-I/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/include'
+INCLUDEDIRS='-I/usr/local/pkg/mpich/mpich-pgi/include -I/usr/local/pkg/pgi/pgi-5.2/linux86/5.2/include'
 
 
 if test "x$IEEE" = x ; then
