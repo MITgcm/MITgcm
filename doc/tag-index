@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.308 2004/06/12 21:18:11 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.309 2004/06/14 19:05:36 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint53d_post
 o faulks upgraded: re-generate output.txt that have changed:
    global_ocean.cs32x15(.thsice), global_ocean_ebm, lab_sea, natl_box
 o Added Bryan and Lewis, 1979, vertical diffusivity profile
@@ -10,7 +12,7 @@ o added Sadourny discretization of Coriolis
   - moved some PARAMETERS from mom_*_coriolis.F to PARAMS.h
   - re-enabled use of omega3 (useAbsVorticity)
 o added Leith (Phys. Fluids, 1968, 10, 1409-1416) variable viscosity for
-  vector-invarianet equations
+  vector-invariant equations
   - note: does *NOT* yet use same variable visc. for no-slip BC's.
 o recoded the lateral boundary conditions for non-hydrostatic w, this time
   hopefully without new bugs
