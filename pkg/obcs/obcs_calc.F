@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.5 2002/01/30 04:22:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.6 2002/02/08 22:16:09 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 
-      SUBROUTINE OBCS_CALC( bi, bj, futureTime, 
+      SUBROUTINE OBCS_CALC( bi, bj, futureTime, futureIter,
      &                      uVel, vVel, wVel, theta, salt, 
      &                      myThid )
 C     /==========================================================\
@@ -23,6 +23,7 @@ C     === Global variables ===
 
 C     == Routine arguments ==
       INTEGER bi, bj
+      INTEGER futureIter
       _RL futureTime
       _RL uVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL vVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)

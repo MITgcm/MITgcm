@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.5 2002/01/30 04:22:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_init_variables.F,v 1.6 2002/02/08 22:16:09 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -87,7 +87,7 @@ C     == Local variables ==
 C--   Apply OBCS values to initial conditions for consistancy
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
-        CALL OBCS_CALC( bi, bj, startTime,
+        CALL OBCS_CALC( bi, bj, startTime, nIter0,
      &        uVel, vVel, wVel, theta, salt, myThid )
         DO K=1,Nr
          CALL OBCS_APPLY_UV( bi, bj, k, uVel, vVel, myThid )
