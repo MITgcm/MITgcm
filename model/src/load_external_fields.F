@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.4 1998/07/15 22:22:24 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.5 1998/09/06 14:45:11 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
  
@@ -173,13 +173,28 @@ CEndOfInterface
 
 C     === Local variables ===
 C     msgBuf - Error message buffer
+C     bi,bj,i,j - Loop counters
+C     gamma     - Input data to acceleration conversion factor.
       CHARACTER*(MAX_LEN_FNAM) msgBuf
       INTEGER bi,bj,i,j
+      _RL gamma
 
 
       _BEGIN_MASTER(myThid)
 
       IF (.NOT. zonalWindFile .EQ. ' ' ) THEN
+C--    Set gamma to convert from N/m^2 to m/s^2
+       IF     ( UsingZCoords ) THEN
+        gamma = 1. _d 0 / (delR(1)*rhonil)
+       ELSEIF ( UsingPCoords ) THEN
+        gamma = Gravity / (delR(1))
+       ELSE
+        WRITE(msgBuf,'(A)')  'S/R LOAD_WIND_STRESS_CLIMATOLOGY'
+        CALL PRINT_ERROR( msgBuf, 1 )
+        WRITE(msgBuf,'(A)')'No relation converting input to acceleration.'
+        CALL PRINT_ERROR( msgBuf, 1 )
+        STOP 'ABNORMAL END: S/R LOAD_WIND_STRESS_CLIMATOLOGY'
+       ENDIF
        CALL READ_FLD_XY_RS( zonalWindFile, ' ', fu, 0, myThid )
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -193,6 +208,18 @@ C     msgBuf - Error message buffer
       ENDIF
 
       IF (.NOT. meridWindFile .EQ. ' ' ) THEN
+C--    Set gamma to convert from N/m^2 to m/s^2
+       IF     ( UsingZCoords ) THEN
+        gamma = 1. _d 0 / (delR(1)*rhonil)
+       ELSEIF ( UsingPCoords ) THEN
+        gamma = Gravity / (delR(1))
+       ELSE
+        WRITE(msgBuf,'(A)')  'S/R LOAD_WIND_STRESS_CLIMATOLOGY'
+        CALL PRINT_ERROR( msgBuf, 1 )
+        WRITE(msgBuf,'(A)')'No relation converting input to acceleration.'
+        CALL PRINT_ERROR( msgBuf, 1 )
+        STOP 'ABNORMAL END: S/R LOAD_WIND_STRESS_CLIMATOLOGY'
+       ENDIF
        CALL READ_FLD_XY_RS( meridWindFile, ' ', fv, 0, myThid )
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)

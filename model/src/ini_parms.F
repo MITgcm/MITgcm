@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.28 1998/09/05 17:52:13 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.29 1998/09/06 14:45:11 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -91,6 +91,7 @@ C--   Continuous equation parameters
      & implicitFreeSurface, rigidLid, freeSurfFac, hFacMin, hFacMinDz,
      & tempStepping, saltStepping, momStepping, implicitDiffusion,
      & viscAr, diffKrT, diffKrS, hFacMinDr,
+     & viscAp, diffKpT, diffKpS, hFacMinDp,
      & rhoConst, buoyancyRelation
 
 C--   Elliptic solver parameters
@@ -124,6 +125,8 @@ C--   Initialise "which vertical coordinate system used" flags.
       zCoordInputData = .FALSE.
       pCoordInputData = .FALSE.
       rCoordInputData = .FALSE.
+      usingPCoords    = .FALSE.
+      usingZCoords    = .FALSE.
       coordsSet       = 0
 
 C--   Open the parameter file
@@ -663,6 +666,8 @@ C
       IF ( pCoordInputData .AND. rkFac .EQ. UNSET_I ) rkFac = -1.D0
       IF ( rCoordInputData .AND. rkFac .EQ. UNSET_I ) rkFac =  1.D0
       recip_rkFac = 1.D0 / rkFac
+      IF ( zCoordInputData ) usingZCoords = .TRUE.
+      IF ( pCoordInputData ) usingPCoords = .TRUE.
 C
       CLOSE(iUnit)
 

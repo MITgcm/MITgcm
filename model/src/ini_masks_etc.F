@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.5 1998/08/24 02:25:01 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.6 1998/09/06 14:45:11 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -22,7 +22,7 @@ C     === Global variables ===
 #include "GRID.h"
 
 C     == Routine arguments ==
-C     myThid -  Number of this instance of INI_CARTESIAN_GRID
+C     myThid -  Number of this instance of INI_MASKS_ETC
       INTEGER myThid
 CEndOfInterface
 
@@ -55,16 +55,16 @@ C     Calculate lopping factor hFacC
         DO K=1, Nr
          DO J=1,sNy
           DO I=1,sNx
-           IF     ( H(I,J,bi,bj) .GE. rF(K) ) THEN
+           IF     ( H(I,J,bi,bj)*rkFac .GE. rF(K)*rkFac ) THEN
 C           Top of cell is below base of domain
             hFacC(I,J,K,bi,bj) = 0.
-           ELSEIF ( H(I,J,bi,bj) .LE. rF(K+1) ) THEN
+           ELSEIF ( H(I,J,bi,bj)*rkFac .LE. rF(K+1)*rkFac ) THEN
 C           Base of domain is below bottom of this cell
             hFacC(I,J,K,bi,bj) = 1.
            ELSE
 C           Base of domain is in this cell
 C           Set hFac to the fraction of the cell that is open.
-            hFacC(I,J,K,bi,bj) = (rF(K)-H(I,J,bi,bj))*recip_drF(K)
+            hFacC(I,J,K,bi,bj) = (rF(K)*rkFac-H(I,J,bi,bj)*rkFac)*recip_drF(K)
            ENDIF
 C Impose minimum fraction
            IF (hFacC(I,J,K,bi,bj).LT.hFacMin) THEN

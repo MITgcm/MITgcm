@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.17 1998/08/22 17:51:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.18 1998/09/06 14:45:11 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -107,8 +107,8 @@ CcnhDebugEnds
       _EXCH_XY_R4(aW2d, myThid)
       _EXCH_XY_R4(aS2d, myThid)
 CcnhDebugStarts
-C     CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.2' , 1, myThid )
-C     CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
+      CALL PLOT_FIELD_XYRS( aW2d, 'AW2D INI_CG2D.2' , 1, myThid )
+      CALL PLOT_FIELD_XYRS( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
 CcnhDebugEnds
 
 C--   Initialise preconditioner
@@ -133,19 +133,19 @@ C           defaults to 0.51 but can be set at runtime.
           aC = -(
      &     aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
      &    +aS2d(I,J,bi,bj) + aS2D(I  ,J+1,bi,bj)
-     &    +freeSurfFac*myNorm*
+     &    +freeSurfFac*myNorm*  Gravity*rhoConst*
      &     rA(I,J,bi,bj)/deltaTMom/deltaTMom
      &    )
           aCs = -(
      &     aW2d(I,J-1,bi,bj) + aW2d(I+1,J-1,bi,bj)
      &    +aS2d(I,J-1,bi,bj) + aS2d(I  ,J  ,bi,bj)
-     &    +freeSurfFac*myNorm*
+     &    +freeSurfFac*myNorm*  Gravity*rhoConst*
      &     rA(I,J-1,bi,bj)/deltaTMom/deltaTMom
      &    )
           aCw = -(
      &     aW2d(I-1,J,bi,bj) + aW2d(I  ,J  ,bi,bj)
      &    +aS2d(I-1,J,bi,bj) + aS2d(I-1,J+1,bi,bj)
-     &    +freeSurfFac*myNorm*
+     &    +freeSurfFac*myNorm*  Gravity*rhoConst*
      &     rA(I-1,J,bi,bj)/deltaTMom/deltaTMom
      &    )
           IF ( aC .EQ. 0. ) THEN
@@ -176,6 +176,11 @@ C--   Update overlap regions
       _EXCH_XY_R4(pC, myThid)
       _EXCH_XY_R4(pW, myThid)
       _EXCH_XY_R4(pS, myThid)
+CcnhDebugStarts
+      CALL PLOT_FIELD_XYRS( pC, 'pC   INI_CG2D.2' , 1, myThid )
+      CALL PLOT_FIELD_XYRS( pW, 'pW   INI_CG2D.2' , 1, myThid )
+      CALL PLOT_FIELD_XYRS( pS, 'pS   INI_CG2D.2' , 1, myThid )
+CcnhDebugEnds
 
 C--   Set default values for initial guess and RHS
       IF ( startTime .EQ. 0 ) THEN
