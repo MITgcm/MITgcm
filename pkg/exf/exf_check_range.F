@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.17 2005/02/06 17:26:23 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_check_range.F,v 1.18 2005/02/11 17:24:41 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -65,7 +65,8 @@ c             Heat flux.
               if ( ( hflux(i,j,bi,bj) .GT. 1600. .OR.
      &               hflux(i,j,bi,bj) .LT. -500. ) .AND.
      &              hFacC(i,j,1,bi,bj) .NE. 0. ) then
-                 print *, 'EXF WARNING: hflux out of range for i,j= ',
+                 write(standardmessageunit,'(A,2(2X,I5),2X,D22.15)')
+     &                'EXF WARNING: hflux out of range for i,j= ',
      &                i, j, hflux(i,j,bi,bj)
                  exferr = 1
               endif
@@ -73,7 +74,8 @@ c
 c             Salt flux.
               if ( ABS(sflux(i,j,bi,bj)) .GT. 1.E-6 .AND.
      &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
-                 print *, 'EXF WARNING: sflux out of range for i,j= ',
+                 write(standardmessageunit,'(A,2(2X,I5),2X,D22.15)')
+     &                'EXF WARNING: sflux out of range for i,j= ',
      &                i, j, sflux(i,j,bi,bj)
                  exferr = 1
               endif
@@ -81,7 +83,8 @@ c
 c             Zonal wind stress.
               if ( ABS(ustress(i,j,bi,bj)) .GT. 2.5 .AND.
      &             hFacW(i,j,1,bi,bj) .NE. 0. ) then
-                 print *, 'EXF WARNING: ustress out of range for i,j= ',
+                 write(standardmessageunit,'(A,2(2X,I5),2X,D22.15)')
+     &                'EXF WARNING: ustress out of range for i,j= ',
      &                i, j, ustress(i,j,bi,bj)
                  exferr = 1
               endif
@@ -89,7 +92,8 @@ c
 c             Meridional wind stress.
               if ( ABS(vstress(i,j,bi,bj)) .GT. 2.2 .AND.
      &             hFacS(i,j,1,bi,bj) .NE. 0. ) then
-                 print *, 'EXF WARNING: vstress out of range for i,j= ',
+                 write(standardmessageunit,'(A,2(2X,I5),2X,D22.15)')
+     &                'EXF WARNING: vstress out of range for i,j= ',
      &                i, j, vstress(i,j,bi,bj)
                  exferr = 1
               endif
@@ -98,7 +102,8 @@ c
 c             zonal wind speed
               if ( ABS(uwind(i,j,bi,bj)) .GT. 100. .AND.
      &             hFacW(i,j,1,bi,bj) .NE. 0. ) then
-                 print *, 'EXF WARNING: uwind out of range for i,j= ',
+                 write(standardmessageunit,'(A,2(2X,I5),2X,D22.15)')
+     &                'EXF WARNING: uwind out of range for i,j= ',
      &                i, j, uwind(i,j,bi,bj)
                  exferr = 1
               endif
@@ -106,7 +111,8 @@ c
 c             zonal wind speed
               if ( ABS(vwind(i,j,bi,bj)) .GT. 100. .AND.
      &             hFacS(i,j,1,bi,bj) .NE. 0. ) then
-                 print *, 'EXF WARNING: vwind out of range for i,j= ',
+                 write(standardmessageunit,'(A,2(2X,I5),2X,D22.15)')
+     &                'EXF WARNING: vwind out of range for i,j= ',
      &                i, j, vwind(i,j,bi,bj)
                  exferr = 1
               endif
@@ -117,7 +123,8 @@ c             2-m air temperature
               if ( (atemp(i,j,bi,bj) .LT. 183 .OR.
      &             atemp(i,j,bi,bj) .GT. 343 ) .AND.
      &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
-                 print *, 'EXF WARNING: atemp + exf_offset_atemp ',
+                 write(standardmessageunit,'(A,2(2X,I5),2X,D22.15)')
+     &                'EXF WARNING: atemp + exf_offset_atemp ',
      &                'out of range for i,j= ',
      &                i, j, atemp(i,j,bi,bj)
                  exferr = 1
@@ -127,7 +134,8 @@ c             2-m specific humidity
               if ( (aqh(i,j,bi,bj) .LT. 0. .OR.
      &             aqh(i,j,bi,bj) .GT. 0.1 ) .AND.
      &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
-                 print *, 'EXF WARNING: aqh out of range for i,j= ',
+                 write(standardmessageunit,'(A,2(2X,I5),2X,D22.15)')
+     &                'EXF WARNING: aqh out of range for i,j= ',
      &                i, j, aqh(i,j,bi,bj)
                  exferr = 1
               endif
@@ -136,7 +144,8 @@ c             precipitation rate
               if ( (precip(i,j,bi,bj) .LT. 0. .OR.
      &             precip(i,j,bi,bj) .GT. 2.E-6 ) .AND.
      &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
-                 print *, 'EXF WARNING: precip out of range for i,j= ',
+                 write(standardmessageunit,'(A,2(2X,I5),2X,D22.15)')
+     &                'EXF WARNING: precip out of range for i,j= ',
      &                i, j, precip(i,j,bi,bj)
                  exferr = 1
               endif
@@ -147,7 +156,8 @@ c             Short wave radiative flux.
               if ( (swflux(i,j,bi,bj) .GT. 1. .OR.
      &             swflux(i,j,bi,bj) .LT. -1000. ) .AND.
      &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
-                 print *, 'EXF WARNING: swflux out of range for i,j= ',
+                 write(standardmessageunit,'(A,2(2X,I5),2X,D22.15)')
+     &                'EXF WARNING: swflux out of range for i,j= ',
      &                i, j, swflux(i,j,bi,bj)
                  exferr = 1
               endif
@@ -158,19 +168,26 @@ c             Runoff.
               if ( (runoff(i,j,bi,bj) .LT. 0. .OR.
      &             runoff(i,j,bi,bj) .GT. 1.E-6 ) .AND.
      &             hFacC(i,j,1,bi,bj) .NE. 0. ) then
-                 print *, 'EXF WARNING: runoff out of range for i,j= ',
+                 write(standardmessageunit,'(A,2(2X,I5),2X,D22.15)')
+     &                'EXF WARNING: runoff out of range for i,j= ',
      &                i, j, runoff(i,j,bi,bj)
-                 print *, 'Please note that input units for runoff are'
-                 print *, 'm/s not m/yr.  If input file is in m/yr, set'
-                 print *, 'exf_inscal_runoff=3.171e-8'
-                 print *, 'in the data.exf input file.'
+                 write(standardmessageunit,'(A)')
+     &                'Please note that input units for runoff are'
+                 write(standardmessageunit,'(A)')
+     &                'm/s not m/yr.  If input file is in m/yr, set'
+                 write(standardmessageunit,'(A)')
+     &                'exf_inscal_runoff=3.170979198E-8'
+                 write(standardmessageunit,'(A)')
+     &                'in the data.exf input file.'
                  exferr = 1
               endif
 #endif
 
               if ( exferr .NE. 0 ) then
-               print *, 'EXF WARNING: If you think these values are OK '
-               print *, 'EXF WARNING: then set useExfCheckRange=.FALSE.'
+               write(standardmessageunit,'(A)')
+     &                'EXF WARNING: If you think these values are OK '
+               write(standardmessageunit,'(A)')
+     &                'EXF WARNING: then set useExfCheckRange=.FALSE.'
                STOP 'in S/R exf_check_range'
               endif
 
