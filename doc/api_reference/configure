@@ -1,0 +1,110 @@
+#! /usr/bin/env sh
+#
+#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.1 2004/03/26 19:41:44 edhill Exp $
+#
+#  A script to generate the Makefile for the API Reference
+
+if ! test -r ./dir_list ; then
+    cat <<EOF 
+ERROR: cannot read the directory list -- please verify that this 
+  script is run in MITGCM_ROOT/doc/api_reference and that the 
+  "dir_list" file is readable.
+EOF
+    exit 1
+fi
+
+cat ./dir_list | grep -v '^[ ]*#' | grep -v '^[ ]*$' > ./.dir_list_nocomments
+
+name=$0
+cat <<EOF > Makefile
+#
+#  CREATED BY $name -- DO NOT EDIT !!!
+#
+
+all: all_protex
+
+clean:
+	-rm -f *.tex
+
+EOF
+
+rm -rf ./.targets
+cat ./.dir_list_nocomments | while read line ; do
+
+    echo >> Makefile
+    base_target=`echo $line | awk '{print $1}' | sed -e 's|/|__|g'`
+    target=$base_target".tex"
+    echo "Finding files for \"$target\" in: $line"
+    F_files=""
+    h_files=""
+    c_files=""
+    for i in $line ; do
+	F_files="$F_files"`ls -1 ../../$i/*.F  2>/dev/null`
+	h_files="$h_files"`ls -1 ../../$i/*.h  2>/dev/null`
+	c_files="$c_files"`ls -1 ../../$i/*.c  2>/dev/null`
+    done
+
+    # *.F
+    printf '%s' $base_target"_F = " >> Makefile
+    for i in $F_files ; do
+	printf '\\\n%s' " $i " >> Makefile
+    done
+    printf '\n' >> Makefile
+
+    # *.h
+    printf '%s' $base_target"_h = " >> Makefile
+    for i in $h_files ; do
+	printf '\\\n%s' " $i " >> Makefile
+    done
+    printf '\n' >> Makefile
+
+    # *.c
+    printf '%s' $base_target"_c = " >> Makefile
+    for i in $c_files ; do
+	printf '\\\n%s' " $i " >> Makefile
+    done
+    printf '\n' >> Makefile
+    d_F="\$("$base_target"_F)"
+    d_h="\$("$base_target"_h)"
+    d_c="\$("$base_target"_c)"
+    cat <<EOF >> Makefile
+$target: $d_F $d_h $d_c
+	-rm -f $target
+EOF
+    if test ! "x$F_files" = x ; then
+	printf '\t%s\n' "-./protex -7 $d_F >> $target" >> Makefile
+    fi
+    if test ! "x$h_files" = x ; then
+	printf '\t%s\n' "-./protex -7 $d_h >> $target" >> Makefile
+    fi
+    if test ! "x$c_files" = x ; then
+	printf '\t%s\n' "-./protex -C $d_c >> $target" >> Makefile
+    fi
+
+    if test ! "x$target" = x ; then
+	printf '%s' " $target" >> ./.targets
+    fi
+done
+
+alltex=`cat ./.targets`
+printf '\n%s' "ALLTEX = " >> Makefile
+for i in $alltex ; do
+    printf '\\\n%s' " $i " >> Makefile
+done
+printf '\n\n' >> Makefile
+
+cat <<EOF >> Makefile
+
+makefile:
+	$0
+
+
+all_protex: \$(ALLTEX)
+	-echo "hi"
+
+
+EOF
+
+rm -f ./.dir_list_nocomments
+
+

@@ -1,0 +1,6 @@
+Makefile
+*.tex
+.targets
+.dir_list_nocomments
+
+
