@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.21 2003/11/27 16:15:39 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.22 2003/11/29 00:58:43 edhill Exp $
 #  $Name:  $
 #
 
@@ -120,8 +120,11 @@ testoutput_for_prop()
     if [ $debug -gt 0 ]; then
 	echo testoutput_for_prop: compare_lines 1>&2
     fi
-    compare_lines
-    digits_of_similarity=$?
+    if [ $verbose -gt 1 ]; then
+	cat tmp3.txt 1>&2
+    fi
+    echo "-1" >> tmp3.txt
+    digits_of_similarity=`./tmp_cmpnum < tmp3.txt`
     if [ $digits_of_similarity -eq 99 ]; then
 	if [ $verbose -gt 0 ]; then
 	    echo testoutput_for_prop: No comparison was available for \"$2\" 1>&2
@@ -338,33 +341,36 @@ createcodelet()
     # create codelet for comparing model output
 
     echo -n "creating the comparison code...  "
-    cat > tmp_cmpnum.f <<EOFA
-      program cmpnum
-      implicit none
-      real*8 a,b,diff
-      integer linnum,best
-      best=-16
-  99  read(*,*,end=70,err=60) linnum,a,b
-      diff=0.5*(abs(a)+abs(b))
-c     print *,a,b,diff,abs(a-b)/diff
-      if (diff.gt.1.e-12) then
-        diff=abs(a-b)/diff
-        if (diff.gt.0.) then
-c         print *,int(log10(diff)),diff
-          linnum=int(log10(diff))
-          best=max(best,linnum)
-        endif
-      else
-        if (best.eq.-16.and.diff.ne.0.) best=-22
-      endif
-      goto 99
-  60  stop 'cmpnum: An error occured reading a,b'
-  70  print *,-best
-      end
-EOFA
+    cat > tmp_cmpnum.c <<EOF
+#include <stdio.h>
+#include <math.h>
+int main( int argc, char** argv )  {
+  int linnum,best;
+  double a,b,diff;
+  best = -16;
+  while( 1 )  {
+    scanf("%d", &linnum);
+    if (linnum == -1)  break;
+    scanf("%lf", &a);  scanf("%lf", &b);
+    diff = 0.5*(fabs(a)+fabs(b));
+    if (diff > 1.e-12) {
+      diff=fabs(a-b)/diff;
+      if (diff > 0.0) {
+        linnum = (int)log10(diff);
+        best = (best > linnum) ? best : linnum;
+      }
+      else {
+        if (best == -16 && diff != 0)  best = -22;
+      }
+    }
+  }
+  printf("%d\n", -best);
+  return 0;
+}
+EOF
+    cc -o tmp_cmpnum tmp_cmpnum.c -lm
 
-    f77 -o a.out tmp_cmpnum.f
-    if [ -x ./a.out ]; then
+    if [ -x ./tmp_cmpnum ]; then
 	echo "OK"
 	return 0
     else
@@ -766,7 +772,8 @@ else
     fi
 fi
 
-rm tmp_cmpnum.f a.out
+# rm -f tmp_cmpnum.f a.out
+rm -f tmp_cmpnum.c tmp_cmpnum
 
 if test "x$CLEANUP" != xt ; then
     cat $SUMMARY
