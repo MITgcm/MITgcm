@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.22 2003/11/13 06:35:13 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.23 2004/04/05 23:42:52 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -88,11 +88,7 @@ C                Units are           meters (converted)
       _RS  fu       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  fv       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  Qnet     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#ifdef SHORTWAVE_HEATING
       _RS  Qsw      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#else
-      _RS  Qsw      (1,1,1,1)
-#endif
       _RS  dQdT     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  EmPmR    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  saltFlux (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
