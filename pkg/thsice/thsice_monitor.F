@@ -1,0 +1,211 @@
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.1 2003/11/23 01:20:13 jmc Exp $
+C $Name:  $
+
+#include "THSICE_OPTIONS.h"
+
+CStartOfInterface
+      SUBROUTINE THSICE_MONITOR( myTime, myIter, myThid )
+C     *==========================================================*
+C     | SUBROUTINE THSICE_MONITOR
+C     | o Do ICE global & Hemispheric diagnostic
+C     *==========================================================*
+C     *==========================================================*
+      IMPLICIT NONE
+
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#include "THSICE_PARAMS.h"
+#include "THSICE.h"
+#ifdef ALLOW_MONITOR
+#include "MONITOR.h"
+#endif
+
+C     == Routine arguments ==
+C     myTime - Current time of simulation ( s )
+C     myIter - Iteration number
+C     myThid -  Number of this instance of INI_FORCING
+      _RL     myTime
+      INTEGER myIter
+      INTEGER myThid
+CEndOfInterface
+
+#ifdef ALLOW_THSICE
+#ifdef ALLOW_MONITOR
+
+C     == Local variables ==
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+      CHARACTER*10 mon_var
+      CHARACTER*2 mon_sufx(0:2)
+      _RS yBand(2), locDr(1)
+      _RL theMin(2), theMax(2)
+      _RL theMean(2), theVar(2), theVol(2)
+      _RL theMeanG, theVarG, theVolG
+      _RL theMean0, theMean1, theMean2, theEnergy
+      _RL theMin0, theMax0, theSD, theDel2
+
+      DATA yBand / 0. , 0. /
+      DATA locDr / 1. /
+      DATA mon_sufx / '_G' , '_S' , '_N' /
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      IF ( DIFFERENT_MULTIPLE(thSIce_monFreq,myTime,myTime-deltaTclock)
+     &     .OR. myIter.EQ.nIter0 ) THEN
+
+       _BEGIN_MASTER(myThid)
+        WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+        WRITE(msgBuf,'(A)') '// Begin MONITOR Therm.SeaIce statistics'
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+        WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+       _END_MASTER(myThid)
+
+        CALL MON_SET_PREF('thSI_',myThid)
+        CALL MON_OUT_RL('time_sec', myTime,mon_string_none,myThid)
+        
+C-- Ice area and Ice thickness :
+        CALL  MON_STATS_LATBND_RL(
+     I                1, 2, yBand,
+     I                iceheight, iceMask, maskH, rA, yC, locDr,
+     O                theMin, theMax, theMean, theVar, theVol,
+     I                myThid )
+        theVolG= theVol(1)+theVol(2)
+        theMeanG= theMean(1)*theVol(1)+theMean(2)*theVol(2)
+        IF (theVolG.GT.0.) theMeanG = theMeanG / theVolG
+
+        mon_var='Ice_Area'
+        CALL MON_OUT_RL(mon_var, theVolG  , mon_sufx(0), myThid)
+        CALL MON_OUT_RL(mon_var, theVol(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var, theVol(2), mon_sufx(2), myThid)
+        mon_var='IceH_ave'
+        CALL MON_OUT_RL(mon_var,theMeanG  , mon_sufx(0), myThid)
+        CALL MON_OUT_RL(mon_var,theMean(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var,theMean(2), mon_sufx(2), myThid)
+        mon_var='IceH_max'
+        CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
+
+C-- Snow thickness :
+        CALL  MON_STATS_LATBND_RL(
+     I                1, 2, yBand,
+     I                snowheight, iceMask, maskH, rA, yC, locDr,
+     O                theMin, theMax, theMean, theVar, theVol,
+     I                myThid )
+        theVolG= theVol(1)+theVol(2)
+        theMeanG= theMean(1)*theVol(1)+theMean(2)*theVol(2)
+        theEnergy = -rhos*Lfresh*theMeanG
+        IF (theVolG.GT.0.) theMeanG = theMeanG / theVolG
+
+        mon_var='SnwH_ave'
+        CALL MON_OUT_RL(mon_var,theMeanG  , mon_sufx(0), myThid)
+        CALL MON_OUT_RL(mon_var,theMean(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var,theMean(2), mon_sufx(2), myThid)
+        mon_var='SnwH_max'
+        CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
+
+C-- Total Energy :
+        CALL  MON_STATS_RL(
+     I                1, Qice1, iceMask, iceheight, rA, locDr,
+     O                theMin0,theMax0,theMean1,theSD,theDel2,theVolG,
+     I                myThid )
+        CALL  MON_STATS_RL(
+     I                1, Qice2, iceMask, iceheight, rA, locDr,
+     O                theMin0,theMax0,theMean2,theSD,theDel2,theVolG,
+     I                myThid )
+        theEnergy = theEnergy -rhoi*(theMean1+theMean2)*theVolG/2
+        mon_var='TotEnerg'
+        CALL MON_OUT_RL(mon_var, theEnergy, mon_sufx(0), myThid)
+
+C-- Surface Temp. :
+        CALL  MON_STATS_LATBND_RL(
+     I                1, 2, yBand,
+     I                Tsrf, iceMask, maskH, rA, yC, locDr,
+     O                theMin, theMax, theMean, theVar, theVol,
+     I                myThid )
+        theVolG= theVol(1)+theVol(2)
+        theMeanG= theMean(1)*theVol(1)+theMean(2)*theVol(2)
+        IF (theVolG.GT.0.) theMeanG = theMeanG / theVolG
+
+        mon_var='Tsrf_ave'
+        CALL MON_OUT_RL(mon_var,theMeanG  , mon_sufx(0), myThid)
+        CALL MON_OUT_RL(mon_var,theMean(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var,theMean(2), mon_sufx(2), myThid)
+        mon_var='Tsrf_min'
+        CALL MON_OUT_RL(mon_var, theMin(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var, theMin(2), mon_sufx(2), myThid)
+        mon_var='Tsrf_max'
+        CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
+
+C-- 1rst level (volume-mean) Temp. :
+        CALL  MON_STATS_LATBND_RL(
+     I                1, 2, yBand,
+     I                Tice1, iceMask, iceheight, rA, yC, locDr,
+     O                theMin, theMax, theMean, theVar, theVol,
+     I                myThid )
+        theVolG = theVol(1)+theVol(2)
+        theMeanG= theMean(1)*theVol(1)+theMean(2)*theVol(2)
+        IF (theVolG.GT.0.) theMeanG = theMeanG / theVolG
+
+c       mon_var='IceVolum'
+c       CALL MON_OUT_RL(mon_var, theVolG  , mon_sufx(0), myThid)
+c       CALL MON_OUT_RL(mon_var, theVol(1), mon_sufx(1), myThid)
+c       CALL MON_OUT_RL(mon_var, theVol(2), mon_sufx(2), myThid)
+        mon_var='Tic1_ave'
+        CALL MON_OUT_RL(mon_var,theMeanG  , mon_sufx(0), myThid)
+        CALL MON_OUT_RL(mon_var,theMean(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var,theMean(2), mon_sufx(2), myThid)
+        mon_var='Tic1_min'
+        CALL MON_OUT_RL(mon_var, theMin(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var, theMin(2), mon_sufx(2), myThid)
+        mon_var='Tic1_max'
+        CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
+         
+C-- 2nd  level (volume-mean) Temp. :
+        CALL  MON_STATS_LATBND_RL(
+     I                1, 2, yBand,
+     I                Tice2, iceMask, iceheight, rA, yC, locDr,
+     O                theMin, theMax, theMean, theVar, theVol,
+     I                myThid )
+        theMeanG= theMean(1)*theVol(1)+theMean(2)*theVol(2)
+        IF (theVolG.GT.0.) theMeanG = theMeanG / theVolG
+
+        mon_var='Tic2_ave'
+        CALL MON_OUT_RL(mon_var,theMeanG  , mon_sufx(0), myThid)
+        CALL MON_OUT_RL(mon_var,theMean(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var,theMean(2), mon_sufx(2), myThid)
+        mon_var='Tic2_min'
+        CALL MON_OUT_RL(mon_var, theMin(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var, theMin(2), mon_sufx(2), myThid)
+        mon_var='Tic2_max'
+        CALL MON_OUT_RL(mon_var, theMax(1), mon_sufx(1), myThid)
+        CALL MON_OUT_RL(mon_var, theMax(2), mon_sufx(2), myThid)
+
+       _BEGIN_MASTER(myThid)
+        WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+        WRITE(msgBuf,'(A)') '// End MONITOR Therm.SeaIce statistics'
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+        WRITE(msgBuf,'(A)')
+     &'// ======================================================='
+        CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
+       _END_MASTER(myThid)
+
+      ENDIF
+
+#endif /* ALLOW_MONITOR */
+#endif /* ALLOW_THSICE */
+      
+      RETURN
+      END

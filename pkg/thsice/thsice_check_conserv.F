@@ -1,0 +1,102 @@
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check_conserv.F,v 1.1 2003/11/23 01:20:13 jmc Exp $
+C $Name:  $
+
+#include "THSICE_OPTIONS.h"
+ 
+C     !ROUTINE: THSICE_CHECK_CONSERV
+C     !INTERFACE:
+      SUBROUTINE THSICE_CHECK_CONSERV(
+     I             dBug, i, j, bi, bj, iceStart,
+     I             iceFrac, compact, hIce, hSnow, qicen,
+     I             qleft, ffresh, fsalt, flxAtm, frwAtm,
+     I             myTime, myIter, myThid )
+C     *==========================================================*
+C     | SUBROUTINE  THSICE_CHECK_CONSERV             
+C     | o Check Conservation of Energy, water and salt
+C     *==========================================================*
+
+C     !USES:
+      IMPLICIT NONE
+C     === Global variables ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+c #include "PARAMS.h"
+#include "THSICE_SIZE.h"
+#include "THSICE_PARAMS.h"
+#include "THSICE.h"
+#include "THSICE_DIAGS.h"
+ 
+C     !INPUT/OUTPUT PARAMETERS:
+C     === Routine arguments ===
+C     myIter :: iteration counter for this thread
+C     myTime :: time counter for this thread
+C     myThid :: thread number for this instance of the routine.
+      LOGICAL dBug
+      INTEGER i,j, bi,bj
+      INTEGER iceStart
+      _RL iceFrac
+      _RL compact, hIce, hSnow, qicen(nlyr)
+      _RL qleft, fsalt, ffresh
+      _RL flxAtm, frwAtm
+      _RL  myTime
+      INTEGER myIter
+      INTEGER myThid
+
+#ifdef ALLOW_THSICE
+C     !LOCAL VARIABLES:
+C     === Local variables ===
+      _RL dEnerg, dWater, dSalt
+      _RL flxFrac
+
+ 1010 FORMAT(A,1P4E11.3)
+
+c         iceFrac = iceMask(i,j,bi,bj)
+          flxFrac = iceFrac
+          IF (iceStart.EQ.1) flxFrac = 1.
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+          dEnerg= -rhos*snowHeight(i,j,bi,bj)*qsnow 
+     &            -rhoi*iceHeight(i,j,bi,bj)
+     &             *(Qice1(i,j,bi,bj)+Qice2(i,j,bi,bj))*0.5
+          dWater = rhos*snowheight(i,j,bi,bj)+rhoi*iceHeight(i,j,bi,bj)
+          dSalt =  rhoi*iceHeight(i,j,bi,bj)*saltice
+         IF (dBug) WRITE(6,1010) 'ThSI_CHK: Ener0,Water0,Salt0 =',
+     &    dEnerg, dWater, dSalt
+C--
+          dEnerg = dEnerg*iceFrac
+     &     + compact*( rhos*hSnow*qsnow 
+     &               + rhoi*hIce*(qicen(1)+qicen(2))*0.5
+     &               )
+          dWater = dWater*iceFrac
+     &     - compact*( rhos*hSnow + rhoi*hIce )
+          dSalt =  dSalt*iceFrac
+     &     - compact* rhoi*hIce*saltice
+
+         IF (dBug) WRITE(6,1010) 'ThSI_CHK: dEner,dH20,dSal /dt=',
+     &    dEnerg/thSIce_deltaT,dWater/thSIce_deltaT,dSalt/thSIce_deltaT
+         IF (dBug) WRITE(6,1010) 'ThSI_CHK: fxH,fxW,fxS=',flxAtm-qleft,
+     &     -ffresh-frwAtm*rhofw,-fsalt
+          dEnerg = dEnerg + thSIce_deltaT*flxFrac*(flxAtm-qleft)
+          dWater = dWater - thSIce_deltaT*flxFrac*(ffresh+frwAtm*rhofw)
+          dSalt  = dSalt  - thSIce_deltaT*flxFrac*fsalt
+
+#ifdef ALLOW_TIMEAVE
+          ICE_qleft_AVE(i,j,bi,bj) = ICE_qleft_AVE(i,j,bi,bj)
+     &          + dEnerg
+          ICE_fresh_AVE(i,j,bi,bj) = ICE_fresh_AVE(i,j,bi,bj)
+     &          + dWater
+          ICE_salFx_AVE(i,j,bi,bj) = ICE_salFx_AVE(i,j,bi,bj)
+     &          + dSalt
+#endif /*ALLOW_TIMEAVE*/
+C--
+         IF (dBug) WRITE(6,1010) 'ThSI_CHK: resid.H,W,S=',
+     &    dEnerg/thSIce_deltaT,dWater/thSIce_deltaT,dSalt/thSIce_deltaT
+         IF (dBug) WRITE(6,1010) 'ThSI_CHK: hIc,hSn,snow*dt=',
+     &    hIce, hSnow, snow(i,j,bi,bj)*thSIce_deltaT
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#endif  /*ALLOW_THSICE*/
+
+      RETURN
+      END
