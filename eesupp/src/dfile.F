@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.8 1998/10/28 03:11:33 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.9 1999/05/24 14:31:23 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -54,6 +54,7 @@ C     |==========================================================|
 C     | Controlling routine for doing actual I/O operations.     |
 C     | Close the file referred to by handle fielHandle.         |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -117,6 +118,7 @@ C     | for meta data. It is possible to use more unit numbers   |
 C     | and/or have different unit numbers per thread. This is   |
 C     | not done here.                                           |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -154,6 +156,7 @@ C     | Controlling routine for doing actual I/O operations.     |
 C     | Routine returns a handle to the caller that can be used  |
 C     | in subsequent read and write operations.                 |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -216,10 +219,10 @@ C--   Remove previous meta information if there was any
       metaDataStatus(fileHandle,myThid) = metaDataWritten
       IF ( fNamMeta .NE. ' ' ) THEN
        IF ( aMode .EQ. accessModeRW ) THEN
-        OPEN(UNIT=mUnit,NAME=fNamMeta(i2Lo:i2Hi),
+        OPEN(UNIT=mUnit,FILE=fNamMeta(i2Lo:i2Hi),
      &       STATUS='UNKNOWN',ERR=899)
         CLOSE(mUnit,ERR=899)
-        OPEN(UNIT=mUnit,NAME=fNamMeta(i2Lo:i2Hi),
+        OPEN(UNIT=mUnit,FILE=fNamMeta(i2Lo:i2Hi),
      &       STATUS='UNKNOWN',ERR=899)
         metaDataStatus(fileHandle,myThid) = metaDataNotWritten
         nameOfMFile(fileHandle,myThid) = fNamMeta(i2Lo:i2Hi)
@@ -228,7 +231,7 @@ C--   Remove previous meta information if there was any
 
 C--   Open data file
       nameOfDFile(fileHandle,myThid) = fNam(i1Lo:i1Hi)
-      OPEN(UNIT=dUnit,NAME=fNam(i1Lo:i1Hi),STATUS='UNKNOWN', ERR=799,
+      OPEN(UNIT=dUnit,FILE=fNam(i1Lo:i1Hi),STATUS='UNKNOWN', ERR=799,
      &     FORM='UNFORMATTED',ACCESS='SEQUENTIAL')
 
 
@@ -288,6 +291,7 @@ C     | model input. Could do elaborate reads from netCDF or     |
 C     | using regular C I/O primitives. For now we use plain     |
 C     | F77.                                                     |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -371,6 +375,7 @@ C     | model input. Could do elaborate reads from netCDF or     |
 C     | using regular C I/O primitives. For now we use plain     |
 C     | F77.                                                     |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -447,6 +452,7 @@ C     /==========================================================\
 C     | SUBROUTINE DFILE_SET_RO                                  |
 C     | o Sets new connections to be read-only.                  |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -463,6 +469,7 @@ C     /==========================================================\
 C     | SUBROUTINE DFILE_SET_RW                                  |
 C     | o Sets new connections to be read-write                  |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -479,6 +486,7 @@ C     /==========================================================\
 C     | SUBROUTINE DFILE_SET_STOP_ON_ERROR                       |
 C     | o Sets new connections to STOP on error                  |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -495,6 +503,7 @@ C     /==========================================================\
 C     | SUBROUTINE DFILE_SET_CONT_ON_ERROR                       |
 C     | o Sets new connections to continue on error              |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -523,6 +532,7 @@ C     | extra info. which describes the data - in this case it   |
 C     | is information indicating the subregion of the global    |
 C     | dataset being written out.                               |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -655,6 +665,7 @@ C     | extra info. which describes the data - in this case it   |
 C     | is information indicating the subregion of the global    |
 C     | dataset being written out.                               |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
