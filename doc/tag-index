@@ -1,7 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.340 2004/09/01 16:57:12 stephd Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.341 2004/09/02 09:21:55 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint54e_post
+o add two new packages
+  - pp81 (Packanowski and Philander, 1981), Richardson number and 
+    stratification dependent mixing
+  - my82 (Mellor and Yamada, 1982) level 2 turbulence closure scheme
+  - these scheme operate in a similar manner as KPP (without ghat, of 
+    course), however there is only one diffusivity that is used for both
+    temperature and salinity (and passive tracers)ç
 o add offline package
 o add "verification/dic_example" which contains a dic-gchem-ptracer setup
   provided by Stephanie Dutkiewicz
