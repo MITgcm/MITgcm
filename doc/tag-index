@@ -1,7 +1,24 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.29 2000/07/13 14:22:58 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.30 2000/09/11 23:30:54 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint31
+ o Packages interface brought in line with defined standard
+   -> new routines packages_...F
+   -> changes in initialise_fixed.F, initialise_varia.F
+   -> enables initialisation interface for ECCO package
+ o Rescaling of external forcing fields immediately after read
+   (removed from external_forcing.F) 
+   -> new: surface_fields_scale.F
+   -> affects ini_foorcing.F, external_fields_load.F
+ o Computation of surface tendencies before tendency updates.
+   -> new: external_forcing_surf.F
+ o Change of variable names useGMRedi, useKPP, useECCO
+ o Further changes in dynamics.F, impldiff.F for TAMC
+ o Tested for experiments 0, 2, 4.
+   - not yet tested for GMRedi.
+   - not yet tested for KPP.
 
 checkpoint30
  o Updates for OBCs
