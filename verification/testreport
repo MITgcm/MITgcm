@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.12 2003/10/28 19:16:49 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.13 2003/11/03 14:32:05 edhill Exp $
 #  $Name:  $
 #
 
@@ -579,7 +579,9 @@ if test "x$RETVAL" != x0 ; then
     exit 1
 fi
 SUMMARY="$DRESULTS/summary.txt"
+echo -n "Start time:  " >> $SUMMARY
 date > $SUMMARY
+date > dfile
 cat << EOF >> $SUMMARY
                 T           S           U           V
 G D M    c        m  s        m  s        m  s        m  s
@@ -746,7 +748,12 @@ for dir in $TESTDIRS ; do
     
 done
 
-rm tmp_cmpnum.f a.out
+echo -n "Start time:  " >> $SUMMARY
+date -r dfile >> $SUMMARY
+echo -n "End time:    " >> $SUMMARY
+date >> $SUMMARY
+
+rm tmp_cmpnum.f a.out dfile
 
 if test "x$CLEANUP" != xt ; then
     cat $SUMMARY
