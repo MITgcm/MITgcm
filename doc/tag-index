@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.166 2003/06/24 16:14:59 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.167 2003/06/24 18:27:09 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -8,6 +8,8 @@ o merged improved packages from ecco-branch (ecco_c51_e34) to MAIN
   - autodiff, ctrl, exf, grdchk, seaice
   kept separate packages
   - cost, ecco, obcs
+o updating verification/internal_wave, verification/lab_sea
+  (all verif's pass on faulks.lcs.mit.edu RH7.3, g77)
 
 checkpoint50i_post
 o Preparing next differentiable checkpoint and sync
