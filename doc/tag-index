@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.117 2003/01/12 21:47:59 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.118 2003/01/13 14:31:49 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -6,6 +6,7 @@ o gmredi: fix few bugs and restore parameter values (e.g., Small_Number=1.D-12)
   and scheme (e.g., Large_SlopeSqr=1.D+48) of checkpoint47f_post
 
 checkpoint48
+checkpoint47h_post (duplicate tag for PH's c48 tag, in order to move c48)
 This will be a good checkpoint to plug into the ecco-branch.
 o few modif.'s to get latest version adjointed
   (mainly kick out code in ini_linear_phisurf)
