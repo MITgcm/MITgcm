@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.5 2001/08/13 18:09:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.6 2001/08/15 14:15:07 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -48,7 +48,7 @@ C     == Local variables ==
       _RL gradSmod,stratLimit,f1,Smod,f2,Rnondim,Cspd,Lrho
       _RL dSigmaDrLtd
       _RL fpi
-      PARAMETER(fpi=3.141592653589793047592)
+      PARAMETER(fpi=3.141592653589793047592d0)
       INTEGER i,j
       _RL     sx, sy
 
