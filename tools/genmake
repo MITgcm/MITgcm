@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.55 2001/09/27 19:06:30 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.56 2001/09/27 19:37:27 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -455,20 +455,6 @@ switch ($platform$USEMPI)
     set FOPTIM     = ( '-ffast-math -fexpensive-optimizations -fomit-frame-pointer -O3' )
     set LINK       = ( 'g77' )
     breaksw
-  case Linux*+mpi:
-    set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
-    set INCLUDES   = ( '-I/usr/local/include' )
-  case Linux*:
-    echo "Configuring for " $platform
-    set LN         = ( '/bin/ln -s' )
-    set CPP        = ( '/lib/cpp  -traditional -P' )
-    set DEFINES    = ( ${DEFINES} '-D_BYTESWAPIO -DWORDLENGTH=4' )
-    set FC         = ( 'g77' )
-    set FFLAGS     = ( '-Wimplicit -Wunused -Wuninitialized' )
-    if ($?IEEE) set FFLAGS     = ( $FFLAGS '-ffloat-store' )
-    set FOPTIM     = ( '-O3 -malign-double -funroll-loops' )
-    set LINK       = ( 'g77' )
-    breaksw
   case Linux*+pgi+mpi:
     if ($?include_jam_libs) then
      set INCLUDES   = ( '-I/usr/local/mpich-1.2.1/pgi_fortran_binding/include' )
@@ -486,6 +472,20 @@ switch ($platform$USEMPI)
     set FFLAGS     = ( '-byteswapio -r8 -Mnodclchk -Mextend' )
     set FOPTIM     = ( '-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee' )
     set LINK       = ( 'pgf77' )
+    breaksw
+  case Linux*+mpi:
+    set LIBS       = ( '-L/usr/local/lib/LINUX/ch_p4/ -lfmpich -lmpich' )
+    set INCLUDES   = ( '-I/usr/local/include' )
+  case Linux*:
+    echo "Configuring for " $platform
+    set LN         = ( '/bin/ln -s' )
+    set CPP        = ( '/lib/cpp  -traditional -P' )
+    set DEFINES    = ( ${DEFINES} '-D_BYTESWAPIO -DWORDLENGTH=4' )
+    set FC         = ( 'g77' )
+    set FFLAGS     = ( '-Wimplicit -Wunused -Wuninitialized' )
+    if ($?IEEE) set FFLAGS     = ( $FFLAGS '-ffloat-store' )
+    set FOPTIM     = ( '-O3 -malign-double -funroll-loops' )
+    set LINK       = ( 'g77' )
     breaksw
   case T3E:
   case sn6312:
