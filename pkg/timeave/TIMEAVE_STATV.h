@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.12 2004/01/25 00:31:52 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/TIMEAVE_STATV.h,v 1.13 2004/03/04 00:01:34 jmc Exp $
 C $Name:  $
 
 #include "TIMEAVE_OPTIONS.h"
@@ -67,10 +67,13 @@ C     ConvectCountTave :: Average number of convective adjustment event
      &                 ,UTtave,VTtave,WTtave
 #ifndef HRCUBE
      &                 ,Eta2tave,TTtave,UUtave,VVtave,UVtave
-     &                 ,TdiffRtave,phiHydtave
+     &                 ,TdiffRtave
+#ifdef ALLOW_MOM_VECINV
+     &                 ,uZetatave, vZetatave
+#endif /* ALLOW_MOM_VECINV */
+     &                 ,phiHydtave
      &                 ,phiHydLowtave,phiHydLow2Tave
      &                 ,ConvectCountTave
-c    &                 ,KEtave
 #endif /* ndef HRCUBE */
       _RL  uFluxtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  vFluxtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -91,7 +94,6 @@ c    &                 ,KEtave
       _RL  UUtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  VVtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  UVtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-c     _RL  KEtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL TdiffRtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #ifdef ALLOW_MOM_VECINV
       _RL uZetatave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
