@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.64 2002/08/07 19:48:44 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.65 2002/08/07 19:57:48 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -338,7 +338,9 @@ else
  else
   echo "No compiler found\!"
   echo I tried looking for \"$likelysuspects\" in your \$PATH but found none
-  exit 13
+  echo I will continue anyway and see what happens.
+  set FC = ( 'f77' )
+# exit 13
  endif
 endif
 
