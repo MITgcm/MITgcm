@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/input/Attic/.genmakerc,v 1.5 2002/11/05 18:40:13 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/input/Attic/.genmakerc,v 1.6 2002/11/22 03:28:22 jmc Exp $
 # $Name:  $
 
 # Force use of PGI f77
@@ -6,7 +6,7 @@
 set FC=(ifc)
 
 # Disable packages that are not needed
-set DISABLE=( $DISABLE kpp gmredi obcs )
+set DISABLE=( $DISABLE kpp gmredi obcs aim_v23 )
 
 # Enable packages that are needed but are disabled by default
 set ENABLE=( aim )
