@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.224 2003/12/15 02:21:14 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.225 2003/12/15 23:40:21 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
@@ -23,6 +23,8 @@ o check-in the first version of the coupler + interfaces for multi-components
    - atmosphere: use pkg aim_v23 ; no sea-ice for now. 
    - ocean and atmos. share the same horizontal grid (no interpolation).
    - exchanges between component and coupler is done in forward_step
+o new verification experiment, cpl_aim+ocn: 
+   coupled ocean - AIM atmosphere on cs32 grid. 
 
 checkpoint52d_pre
 o surface flux time-av diagnostic modified for NLFS & RealFreshWater 
