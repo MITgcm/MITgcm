@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdsclim.F,v 1.2 2003/12/03 23:08:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_ctdsclim.F,v 1.3 2003/12/20 20:11:14 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -81,7 +81,7 @@ c     == local variables ==
       character*(MAX_LEN_MBUF) msgbuf
 
 #ifdef GENERIC_BAR_MONTH
-      integer mrec, nyears, iyear
+      integer mrec, nyears, iyear, tmpmon
 #endif      
 c     == external functions ==
 
@@ -132,6 +132,11 @@ c--   Read tiled data.
 
 #ifdef GENERIC_BAR_MONTH
 c--   Loop over month
+      if (nmonsrec.GT.12) then
+         tmpmon = 12
+      else
+         tmpmon = nmonsrec
+      endif
       do irec = 1,12
          nyears=int((nmonsrec-irec)/12)+1
          if(nyears.gt.0) then
