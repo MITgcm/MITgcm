@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.6 2001/06/18 17:39:58 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.7 2001/07/06 21:39:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -56,6 +56,9 @@ C--   Derive masks, lopping factors and recipricols of quantities.
 C     Volumes and areas are set according to grid and depth map.
       CALL INI_MASKS_ETC( myThid )
       _BARRIER
+
+C--   Set Bo_surf => define the Linear Relation: Phi_surf(eta)
+      CALL INI_LINEAR_PHISURF( myThid )
 
 C--   Set coriolis operators
       CALL INI_CORI( myThid )

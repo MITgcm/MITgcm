@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.35 2001/06/07 15:53:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.36 2001/07/06 21:39:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -45,42 +45,6 @@ C     sumArea - Work variable used to compute the total Domain Area
       _RS     myNorm
       _RL     sumArea
       _RL     aC, aCw, aCs
-
-C-- Initialise -Boyancy at surface level : Bo_surf
-C   Bo_surf is defined as d/dr(Phi_surf) and set to g/rtoz (linear free surface)
-C     with rtoz = conversion factor from r-unit to z-unit  (=horiVertRatio)
-C   an acurate formulation will include P_surf and T,S_surf effects on rho_surf:
-C    z-ocean (rtoz=1) : Bo_surf = - Boyancy = gravity * rho_surf/rho_0 
-C    p-atmos (rtoz=rho_c*g) : Bo_surf = (1/rho)_surf
-C--
-      IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
-             Bo_surf(I,J,bi,bj) = recip_rhoConst
-             recip_Bo(I,J,bi,bj) = rhoConst
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-      ELSE
-C-  gBaro = gravity (except for External mode test with reduced gravity)
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO J=1-Oly,sNy+Oly
-           DO I=1-Olx,sNx+Olx
-             Bo_surf(I,J,bi,bj) = gBaro
-             recip_Bo(I,J,bi,bj) = 1. _d 0 / gBaro
-           ENDDO
-          ENDDO
-         ENDDO
-        ENDDO
-      ENDIF
-
-C--   Update overlap regions
-      _EXCH_XY_R8(Bo_surf, myThid)
-      _EXCH_XY_R8(recip_Bo, myThid)
 
 C--   Initialise laplace operator
 C     aW2d: integral in Z Ax/dX
