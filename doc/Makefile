@@ -11,7 +11,7 @@ ALL = \
 all: $(ALL)
 
 install: all
-	scp -r $(ALL) mitgcm.org:/u/httpd/html/devel_HOWTO/
+	./install_devel_HOWTO
 
 devel_HOWTO.ps:  devel_HOWTO.sgml
 	db2ps -d ldp.dsl devel_HOWTO.sgml
