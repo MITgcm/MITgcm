@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.31 2003/11/12 21:14:57 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.32 2003/11/12 22:05:47 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -338,6 +338,9 @@ EOF
     fi
 
     FC_NAMEMANGLE="#define FC_NAMEMANGLE(X)  $nmangle"
+
+    #  cleanup the testing files
+    rm -f genmake_tcomp.* genmake_test.*
 }
 
 #  Set defaults here
