@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/darwin_g77,v 1.1 2003/09/24 12:03:36 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/darwin_g77,v 1.2 2003/11/13 22:03:39 edhill Exp $
 #
 # tested on G4-PowerBook, 1GHz
 # cc-compiler is available only with the Apple Developer Tools, 
@@ -8,7 +8,6 @@
 # g77 can be optained from FINK: http://fink.sourceforge.net
 #
 
-LN='/bin/ln -s'
 CPP='/usr/bin/cpp -traditional -P'
 FC=g77
 LINK=g77

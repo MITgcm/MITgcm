@@ -5,7 +5,6 @@
 #  tested on faulks, 20030818
 
 
-LN='/bin/ln -s'
 CPP='/lib/cpp  -traditional -P'
 
 #  Note that the -mp switch is for ieee "maintain precision" and is

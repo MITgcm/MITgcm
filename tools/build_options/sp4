@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4,v 1.3 2003/09/05 00:25:42 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/sp4,v 1.4 2003/11/13 22:03:39 edhill Exp $
 #
 
 #  tested on bluesky, EH3 2003-09-04
@@ -13,7 +13,6 @@ MAKEDEPEND=makedepend
 DEFINES='-DTARGET_PWR3 -DTARGET_SGI -DWORDLENGTH=4'
 
 #ph: e.g. bluesky.ucar.edu, marcellus.navo.hpc.mil
-LN='ln -s'
 INCLUDES='-I/usr/lpp/ppe.poe/include'
 #    set CPP        = ( '/lib/cpp' )
 CPP='/lib/cpp -P'

@@ -1,11 +1,10 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/osf1_halem,v 1.1 2003/09/03 19:34:57 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/osf1_halem,v 1.2 2003/11/13 22:03:39 edhill Exp $
 #
 
 #  confirmed on Halem by eh3, 2003-09-03
 
-LN='ln -s'
 S64='$(TOOLSDIR)/set64bitConst.sh'
 MAKEDEPEND='mkdep -f depend.out'
 DEFINES='-DTARGET_DEC -DWORDLENGTH=1'

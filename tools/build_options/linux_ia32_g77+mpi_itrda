@@ -1,10 +1,9 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_itrda,v 1.1 2003/11/13 00:57:35 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_g77+mpi_itrda,v 1.2 2003/11/13 22:03:39 edhill Exp $
 #
 
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -D_BYTESWAPIO -DWORDLENGTH=4'
-LN='/bin/ln -s'
 CPP='/lib/cpp  -traditional -P'
 
 FC='/usr/local/mpich/mpich-1.2.1..7b_gnu/bin/mpif77'

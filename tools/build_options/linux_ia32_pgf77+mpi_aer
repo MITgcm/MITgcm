@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77+mpi_aer,v 1.1 2003/11/13 00:57:35 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77+mpi_aer,v 1.2 2003/11/13 22:03:39 edhill Exp $
 #
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
@@ -8,7 +8,6 @@ MAKEDEPEND=makedepend
 DEFINES='-DWORDLENGTH=4'
 
 
-LN='/bin/ln -s'
 CPP='/lib/cpp  -traditional -P'
 FC='/opt/mpich/bin/mpif77'
 LINK='/opt/mpich/bin/mpif77'

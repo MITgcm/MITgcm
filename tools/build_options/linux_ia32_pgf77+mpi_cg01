@@ -1,10 +1,9 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_cg01,v 1.1 2003/09/29 16:15:24 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_cg01,v 1.2 2003/11/13 22:03:39 edhill Exp $
 #
 
 DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
-LN='/bin/ln -s'
 CPP='/lib/cpp  -traditional -P'
 FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
 FOPTIM='-tp p6 -v -O2 -Munroll -Mvect=cachesize:512000,transform -Kieee'

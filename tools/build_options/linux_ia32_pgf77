@@ -1,10 +1,9 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.1 2003/09/29 16:15:24 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.2 2003/11/13 22:03:39 edhill Exp $
 #
 
 DEFINES='-DWORDLENGTH=4'
-LN='/bin/ln -s'
 CPP='/lib/cpp -traditional -P'
 FC='pgf77'
 FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_x86_64_g77,v 1.1 2003/11/10 21:52:41 cnh Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_x86_64_g77,v 1.2 2003/11/13 22:03:39 edhill Exp $
 #  $Name:  $
 #
 # Build options for Suse 9 Opteron
@@ -9,7 +9,6 @@
 
 FC=g77
 DEFINES='-D_BYTESWAPIO -DWORDLENGTH=4'
-LN='/bin/ln -s'
 CPP='cpp  -traditional -P'
 NOOPTFLAGS='-O0'
 #MAKEDEPEND=/usr/X11R6/bin/gccmakedep

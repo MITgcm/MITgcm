@@ -1,13 +1,12 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_itrda,v 1.1 2003/11/13 00:57:35 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/linux_ia32_pgf77+mpi_itrda,v 1.2 2003/11/13 22:03:39 edhill Exp $
 #
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
 MAKEDEPEND=makedepend
 DEFINES='-DWORDLENGTH=4'
 
-LN='/bin/ln -s'
 CPP='/lib/cpp  -traditional -P'
 FC='/usr/local/mpich/mpich-1.2.1..7b_pgi/bin/mpif77'
 LINK='/usr/local/mpich/mpich-1.2.1..7b_pgi/bin/mpif77'

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_xlf,v 1.1 2003/11/10 21:52:41 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/build_options/darwin_ppc_xlf,v 1.2 2003/11/13 22:03:39 edhill Exp $
 #
 # Build options for Darwin on G5 Mac with IBM XL Fortran compilers
 # tested on G5 dual, 2GHz
@@ -15,7 +15,6 @@
 #     ETIME (timers.F) and FDATE (utils.F) are not available with Darwin+XLF so need to be switched out.
 #
 
-LN='/bin/ln -s'
 CPP='/usr/bin/cpp -traditional -P'
 FC=/opt/ibmcmp/xlf/8.1/bin/f77
 LINK=/opt/ibmcmp/xlf/8.1/bin/f77
