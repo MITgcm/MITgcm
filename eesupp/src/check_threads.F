@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.3 1998/10/28 03:11:33 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/check_threads.F,v 1.4 1999/05/18 17:39:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -24,6 +24,7 @@ C     | and allow a programmer to modify this routine and the    |
 C     | barrier code to allow threads to be scheduled more       |
 C     | appropriately.                                           |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global data ===
 #include "SIZE.h"
@@ -59,7 +60,7 @@ C
       IF ( nChecks .GT. 10 ) THEN
        thError(myThid) = .TRUE.
        eeBootError     = .TRUE.
-       WRITE(msgBuffer,'(A,I,A,I,A)')
+       WRITE(msgBuffer,'(A,I5,A,I5,A)')
      &  'S/R INI_CHECK_THREADS: Only ',numberThreadsRunning,
      &  ' thread(s), ',nThreads,' are needed for this configuration!'
         CALL PRINT_ERROR( msgBuffer , myThid)

@@ -1,8 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.5 1998/10/28 03:11:33 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.6 1999/05/18 17:39:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE BARRIER_INIT
+      IMPLICIT NONE
 
 #include "SIZE.h"
 #include "EEPARAMS.h"

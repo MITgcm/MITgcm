@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.5 1998/10/28 03:11:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/main.F,v 1.6 1999/05/18 17:39:21 adcroft Exp $
 
 C--   Get C preprocessor options
 #include "CPP_OPTIONS.h"
@@ -19,6 +19,7 @@ C     |    routine.                                              |
 C     | 3. call procedure EEDIE to perform execution environment |
 C     |    shutdown.                                             |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 C     Include all the "shared" data here. That means all common

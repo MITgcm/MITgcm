@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.5 1999/03/22 17:37:42 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot_minimal.F,v 1.6 1999/05/18 17:39:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -21,6 +21,7 @@ C     | Note: This routine can also be compiled with CPP         |
 C     | directives set so that no multi-processing is initialise.|
 C     | This is OK and should work fine.                         |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global data ===
 #include "SIZE.h"
@@ -46,7 +47,7 @@ C--   Default values set to single processor case
       numberOfProcs = 1
       myProcId      = 0
       pidIO         = myProcId 
-      myProcessStr  = '??????'
+      myProcessStr  = '------'
 C     Set a dummy value for myThid because we are not multi-threading
 C     yet.
       myThid        = 1
@@ -63,7 +64,7 @@ C      forked within mpirun - now thats an open standard!
        CALL MPI_INIT( mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &        'S/R INI_PROCS: MPI_INIT return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -71,16 +72,16 @@ C      forked within mpirun - now thats an open standard!
        ENDIF
 C--    MPI has now been initialized but now we need to either
 C      ask for a communicator or pretend that we have:
-C      Ask coupler interface for a communicator
-c      call MITCOMPONENT_init( 'MITgcmUV', MPI_COMM_MODEL )
 C      Pretend that we have asked for a communicator
        MPI_COMM_MODEL = MPI_COMM_WORLD
+C      Ask coupler interface for a communicator
+c hook call MITCOMPONENT_init( 'MITgcmUV', MPI_COMM_MODEL )
 
 C--    Get my process number
        CALL MPI_COMM_RANK( MPI_COMM_MODEL, mpiMyId, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &        'S/R INI_PROCS: MPI_COMM_RANK return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -103,7 +104,7 @@ C      find out about processes that did not start up.
        CALL MPI_BARRIER( MPI_COMM_MODEL, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &        'S/R INI_PROCS: MPI_BARRIER return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -114,7 +115,7 @@ C--    Get number of MPI processes
        CALL MPI_COMM_SIZE ( MPI_COMM_MODEL, mpiNProcs, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &        'S/R INI_PROCS: MPI_COMM_SIZE return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)

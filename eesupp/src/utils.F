@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.5 1998/10/28 03:11:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.6 1999/05/18 17:39:22 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -20,6 +20,7 @@ C     /==========================================================\
 C     | SUBROUTINE DATE                                          |
 C     | o Return current date                                    |
 C     \==========================================================/
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 C
@@ -71,6 +72,7 @@ C     /==========================================================\
 C     | FUNCTION IFNBLNK                                         |
 C     | o Find first non-blank in character string.              |
 C     \==========================================================/
+      IMPLICIT NONE
 C
       CHARACTER*(*) string
 CEndOfInterface
@@ -95,6 +97,7 @@ C     /==========================================================\
 C     | FUNCTION ILNBLNK                                         |
 C     | o Find last non-blank in character string.               |
 C     \==========================================================/
+      IMPLICIT NONE
       CHARACTER*(*) string
 CEndOfInterface
       INTEGER L, LS
@@ -117,7 +120,7 @@ C     /==========================================================\
 C     | FUNCTION IO_ERRCOUNT                                     |
 C     | o Reads IO error counter.                                |
 C     \==========================================================/
-
+      IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -138,6 +141,7 @@ C     /==========================================================\
 C     | SUBROUTINE LCASE                                         |
 C     | o Convert character string to all lower case.            |
 C     \==========================================================/
+      IMPLICIT NONE
       CHARACTER*(*) string
 CEndOfInterface
       CHARACTER*26  LOWER
@@ -163,6 +167,7 @@ C     /==========================================================\
 C     | SUBROUTINE MACHINE                                       |
 C     | o Return computer identifier in string.                  |
 C     \==========================================================/
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
       CHARACTER*(*) string
@@ -219,6 +224,7 @@ C
       END
 C***********************************************************************
       SUBROUTINE UCASE ( string )
+      IMPLICIT NONE
 C     Translate string to upper case.
       CHARACTER*(*) string
       CHARACTER*26  LOWER

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_threading_environment.F,v 1.5 1998/09/29 18:50:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_threading_environment.F,v 1.6 1999/05/18 17:39:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -16,6 +16,7 @@ C     | responsible for.                                         |
 C     | The multiple threads are spawned in the top level MAIN   |
 C     | routine.                                                 |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global data ==
 #include "SIZE.h"
@@ -87,7 +88,7 @@ C--   Initialise exchange mechanism
       CALL EXCH_INIT
 
       IF   ( nThreads .NE. nTx*nTy ) THEN
-       WRITE(msgBuf,'(A,A,A,I,A,I)') 
+       WRITE(msgBuf,'(A,A,A,I5,A,I5)') 
      &  'S/R INI_THREADING_ENVIRONMENT:',
      &  ' Total number of threads is not the same as nTx*nTy.',
      &  ' nTx * nTy = ',nTx*nTy,' nThreads = ',nThreads

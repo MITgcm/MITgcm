@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/memsync.F,v 1.2 1998/12/08 19:47:16 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/memsync.F,v 1.3 1999/05/18 17:39:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -19,5 +19,6 @@ C     |  Note: I have yet to show this is necessary although     |
 C     |        the Memory Channel writes must need something like|
 C     |        this.                                             |
 C     \==========================================================/
+      IMPLICIT NONE
 
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.3 1998/10/28 03:11:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eedie.F,v 1.4 1999/05/18 17:39:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -13,6 +13,7 @@ C     | Note: This routine can also be compiled with CPP         |
 C     | directives set so that no multi-processing is initialised|
 C     | This is OK and should work fine.                         |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -45,7 +46,7 @@ C     bug or you may need a different parallel compiler for main.F
        IF ( threadIsComplete(I) ) nThreadsDone = nThreadsDone+1
       ENDDO
       IF ( nThreadsDone .LT. nThreads ) THEN
-       WRITE(msgBuf,'(A,I,A,I,A)')
+       WRITE(msgBuf,'(A,I5,A,I5,A)')
      & 'S/R EEDIE: Only ',nThreadsDone,
      & ' threads have completed, ',nThreads,
      & ' are expected for this configuration!'
@@ -67,7 +68,7 @@ C--   ======================================
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeEndError = .TRUE.
         fatalError = .TRUE.
-        WRITE(msgBuf,'(A,I)')
+        WRITE(msgBuf,'(A,I5)')
      &       'S/R FIN_PROCS: MPI_FINALIZE return code',
      &       mpiRC
         CALL PRINT_ERROR( msgBuf, 1 )

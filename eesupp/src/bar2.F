@@ -1,6 +1,7 @@
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE BAR2_INIT( myThid )
+      IMPLICIT NONE
 C
 #include "SIZE.h"
 #include "EEPARAMS.h"
@@ -24,6 +25,7 @@ C
       RETURN
       END
       SUBROUTINE BAR2( myThid )
+      IMPLICIT NONE
 C
 #include "SIZE.h"
 #include "EEPARAMS.h"

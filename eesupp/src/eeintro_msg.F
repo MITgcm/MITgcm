@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeintro_msg.F,v 1.4 1998/11/03 15:41:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeintro_msg.F,v 1.5 1999/05/18 17:39:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -10,6 +10,7 @@ C     | o Write basic introductory message.                      |
 C     |==========================================================|
 C     | This routine could be customised for different platforms.|
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global data ===
 #include "SIZE.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.7 1998/12/08 21:35:08 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.8 1999/05/18 17:39:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -14,6 +14,7 @@ C     | before multi-threaded parallelism. THe routine reads an  |
 C     | an "execution environment" input parameter file holding  |
 C     | information about the number of threads at run-time.     |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global variables ===
 #include "SIZE.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eewrite_eeenv.F,v 1.4 1998/10/28 03:11:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eewrite_eeenv.F,v 1.5 1999/05/18 17:39:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -14,6 +14,7 @@ C     | the computational mode in which the model operatoes. It  |
 C     | includes the computational grid but does not include any |
 C     | model specific nuerical parameters.                      |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global data ===
 #include "SIZE.h"

@@ -1,7 +1,7 @@
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE GSUM_R8_INIT( myThid )
-C
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
@@ -25,7 +25,7 @@ C
       RETURN
       END
       SUBROUTINE GSUM_R8( myPhi, answer, myThid )
-C
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/write_field.F,v 1.4 1998/08/22 17:51:06 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/write_field.F,v 1.5 1999/05/18 17:39:22 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -19,7 +19,7 @@ C     | the data for process.                                    |
 C     | By default output files are written split and have to be |
 C     | merged in a post-processing stage - YUK!                 |
 C     \==========================================================/
-
+      IMPLICIT NONE
 C     == GLobal variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"

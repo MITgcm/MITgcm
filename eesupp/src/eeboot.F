@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.4 1998/05/21 18:30:08 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeboot.F,v 1.5 1999/05/18 17:39:21 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -13,6 +13,7 @@ C     | Note: This routine can also be compiled with CPP         |
 C     | directives set so that no multi-processing is initialised|
 C     | This is OK and should work fine.                         |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
