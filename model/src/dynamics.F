@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.62 2001/02/14 22:51:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.63 2001/02/20 15:06:21 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -72,8 +72,8 @@ C                      pressure anomaly
 C                      In p coords phiHydiHyd is the geopotential 
 C                      surface height 
 C                      anomaly.
-C     etaSurfX,      - Holds surface elevation gradient in X and Y.
-C     etaSurfY
+C     phiSurfX, - gradient of Surface potentiel (Pressure/rho, ocean)
+C     phiSurfY             or geopotentiel (atmos) in X and Y direction
 C     KappaRT,       - Total diffusion in vertical for T and S.
 C     KappaRS          (background + spatially varying, isopycnal term).
 C     iMin, iMax     - Ranges and sub-block indices on which calculations
@@ -96,6 +96,8 @@ C                      index into fVerTerm.
       _RL phiHyd  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL rhokm1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhok    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL KappaRT (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRS (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL KappaRU (1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -200,6 +202,8 @@ C     uninitialised but inert locations.
         rhoKM1 (i,j) = 0. _d 0
         rhok   (i,j) = 0. _d 0
         maskC  (i,j) = 0. _d 0
+        phiSurfX(i,j) = 0. _d 0
+        phiSurfY(i,j) = 0. _d 0
        ENDDO
       ENDDO
 
@@ -523,7 +527,24 @@ C--      Apply open boundary conditions
 C--     End If implicitDiffusion
         ENDIF
 
+C--     Start computation of dynamics
+        iMin = 1-OLx+2
+        iMax = sNx+OLx-1
+        jMin = 1-OLy+2
+        jMax = sNy+OLy-1
 
+C--     Explicit part of the Surface Pressure Gradient (add in TIMESTEP)
+C       (note: this loop will be replaced by CALL CALC_GRAD_ETA)
+        IF (implicSurfPress.NE.1.) THEN
+          DO j=jMin,jMax
+            DO i=iMin,iMax 
+              phiSurfX(i,j) = _recip_dxC(i,j,bi,bj)*gBaro
+     &           *(cg2d_x(i,j,bi,bj)-cg2d_x(i-1,j,bi,bj)) 
+              phiSurfY(i,j) = _recip_dyC(i,j,bi,bj)*gBaro 
+     &           *(cg2d_x(i,j,bi,bj)-cg2d_x(i,j-1,bi,bj)) 
+            ENDDO
+          ENDDO
+        ENDIF
 
 C--     Start of dynamics loop
         DO k=1,Nr
@@ -535,11 +556,6 @@ C--       kDown  Cycles through 2,1 to point to current layer
           km1  = MAX(1,k-1)
           kup  = 1+MOD(k+1,2)
           kDown= 1+MOD(k,2)
-
-          iMin = 1-OLx+2
-          iMax = sNx+OLx-1
-          jMin = 1-OLy+2
-          jMax = sNy+OLy-1
 
 C--      Integrate hydrostatic balance for phiHyd with BC of 
 C        phiHyd(z=0)=0
@@ -567,7 +583,8 @@ C        and step forward storing the result in gUnm1, gVnm1, etc...
      U         fVerU, fVerV,
      I         myTime, myThid)
            CALL TIMESTEP(
-     I         bi,bj,iMin,iMax,jMin,jMax,k,phiHyd,
+     I         bi,bj,iMin,iMax,jMin,jMax,k,
+     I         phiHyd, phiSurfX, phiSurfY,
      I         myIter, myThid)
 
 #ifdef   ALLOW_OBCS

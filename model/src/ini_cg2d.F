@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.29 2001/02/04 14:38:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.30 2001/02/20 15:06:21 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -63,10 +63,12 @@ C     aS2d: integral in Z Ay/dY
            faceArea = _dyG(I,J,bi,bj)*drF(K)
      &               *_hFacW(I,J,K,bi,bj)
            aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj) + 
+     &      implicSurfPress*implicDiv2DFlow*
      &      gBaro*faceArea*recip_dxC(I,J,bi,bj)
            faceArea = _dxG(I,J,bi,bj)*drF(K)
      &               *_hFacS(I,J,K,bi,bj)
            aS2d(I,J,bi,bj) = aS2d(I,J,bi,bj) + 
+     &      implicSurfPress*implicDiv2DFlow*
      &      gBaro*faceArea*recip_dyC(I,J,bi,bj)
           ENDDO
          ENDDO

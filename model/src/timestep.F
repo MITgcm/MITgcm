@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.20 2001/02/04 14:38:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.21 2001/02/20 15:06:21 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -7,10 +7,10 @@ C     /==========================================================\
 C     | S/R TIMESTEP                                             |
 C     | o Step model fields forward in time                      |
 C     \==========================================================/
-      SUBROUTINE TIMESTEP( bi, bj, iMin, iMax, jMin, jMax,
-     I                     K, phiHyd,
+      SUBROUTINE TIMESTEP( bi, bj, iMin, iMax, jMin, jMax, K,
+     I                     phiHyd, phiSurfX, phiSurfY,
      I                     myIter, myThid )
-      implicit none
+      IMPLICIT NONE
 
 C     == Global variables ==
 #include "SIZE.h"
@@ -18,18 +18,23 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "CG2D.h"
 
 C     == Routine Arguments ==
-C     phiHyd - Hydrostatic pressure (ocean) or geopotentiel (atmos)
+C     phiHyd    - Hydrostatic pressure (ocean) or geopotentiel (atmos)
+C     phiSurfX, - gradient of Surface potentiel (Pressure/rho, ocean)
+C     phiSurfY             or geopotentiel (atmos) in X and Y direction
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER K
       _RL     phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr) 
+      _RL     phiSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL     phiSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myIter, myThid
 
 C     == Local variables ==
       INTEGER i,j
       _RL ab15,ab05
-      _RL phxFac,phyFac
+      _RL phxFac,phyFac, psFac
 
 C     Adams-Bashforth timestepping weights
 Caja  IF (myIter .EQ. 0) THEN
@@ -41,12 +46,14 @@ Caja  ELSE
 Caja  ENDIF
 
 C     Step forward zonal velocity (store in Gu)
+      psFac = pfFacMom*(1. _d 0 - implicSurfPress)
       DO j=jMin,jMax
         DO i=iMin,iMax
-          gUNm1(i,j,k,bi,bj)=uVel(i,j,k,bi,bj)
-     &    +deltaTmom*(ab15*gU(i,j,k,bi,bj)+ab05*gUNm1(i,j,k,bi,bj)
+          gUNm1(i,j,k,bi,bj)=uVel(i,j,k,bi,bj) + deltaTmom * (
+     &       ab15*gU(i,j,k,bi,bj)+ab05*gUNm1(i,j,k,bi,bj)
+     &     - psFac*phiSurfX(i,j)
 #ifdef INCLUDE_CD_CODE
-     &    +guCD(i,j,k,bi,bj)
+     &     + guCD(i,j,k,bi,bj)
 #endif
      &        )*_maskW(i,j,k,bi,bj)
         ENDDO
@@ -66,12 +73,14 @@ C--   -grad Phi_Hyd has not been incorporated to gU and is added here:
       ENDIF
 
 C     Step forward meridional velocity (store in Gv)
+      psFac = pfFacMom*(1. _d 0 - implicSurfPress)
       DO j=jMin,jMax
         DO i=iMin,iMax
-          gVNm1(i,j,k,bi,bj)=vVel(i,j,k,bi,bj)
-     &    +deltaTmom*(ab15*gV(i,j,k,bi,bj)+ab05*gVNm1(i,j,k,bi,bj)
+          gVNm1(i,j,k,bi,bj)=vVel(i,j,k,bi,bj) + deltaTmom * (
+     &       ab15*gV(i,j,k,bi,bj)+ab05*gVNm1(i,j,k,bi,bj)
+     &     - psFac*phiSurfY(i,j)
 #ifdef INCLUDE_CD_CODE
-     &    +gvCD(i,j,k,bi,bj)
+     &     + gvCD(i,j,k,bi,bj)
 #endif
      &        )*_maskS(i,j,k,bi,bj)
         ENDDO

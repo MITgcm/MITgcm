@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.11 2001/02/04 14:38:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.12 2001/02/20 15:06:21 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -55,21 +55,41 @@ C      Initialise source term on first pass
         DO i=1,sNx
 C Note: The source term containing cg2d_x and cg3d_x (at k=1)
 C       has been moved to solve_for_pressure.F for convenience.
-         cg2d_b(i,j,bi,bj) =
-     &     freeSurfFac*_rA(i,j,bi,bj)*horiVertRatio*( 0.
+         cg2d_b(i,j,bi,bj) = 0.
 #ifdef USE_NATURAL_BCS
-     &      +EmPmR(I,J,bi,bj)/deltaTMom
+     &     + freeSurfFac*_rA(i,j,bi,bj)*horiVertRatio*
+     &       EmPmR(I,J,bi,bj)/deltaTMom
 #endif
-     &     )
         ENDDO
        ENDDO
       ENDIF
 
-      DO j=1,sNy
-       DO i=1,sNx+1
-        pf(i,j) = xA(i,j)*gUNm1(i,j,k,bi,bj) / deltaTmom
-       ENDDO
-      ENDDO
+      IF (implicDiv2Dflow.EQ.1.) then
+C     Fully Implicit treatment of the Barotropic Flow Divergence
+        DO j=1,sNy
+         DO i=1,sNx+1
+          pf(i,j) = xA(i,j)*gUNm1(i,j,k,bi,bj) / deltaTmom
+         ENDDO
+        ENDDO
+      ELSE
+C     Explicit+Implicit part of the Barotropic Flow Divergence
+C      => Filtering of uVel,vVel is necessary
+#ifdef ALLOW_ZONAL_FILT
+        IF (zonal_filt_lat.LT.90.) THEN 
+          CALL ZONAL_FILTER(
+     &      uVel, hFacW, 1-1, sNy+1, k, k, bi, bj, 1, myThid)
+          CALL ZONAL_FILTER(
+     &      vVel, hFacS, 1-1, sNy+1, k, k, bi, bj, 2, myThid)
+        ENDIF
+#endif
+        DO j=1,sNy
+         DO i=1,sNx+1
+          pf(i,j) = ( implicDiv2Dflow * gUNm1(i,j,k,bi,bj)
+     &          + (1.-implicDiv2Dflow) * uVel(i,j,k,bi,bj)
+     &               ) * xA(i,j) / deltaTmom
+         ENDDO
+        ENDDO
+      ENDIF
       DO j=1,sNy
        DO i=1,sNx
         cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj) +
@@ -87,12 +107,23 @@ C       has been moved to solve_for_pressure.F for convenience.
       ENDIF
 #endif
 
-      DO j=1,sNy+1
-       DO i=1,sNx
-        pf(i,j) = yA(i,j)*gVNm1(i,j,k,bi,bj) / deltatmom
-       ENDDO
-      ENDDO
-
+      IF (implicDiv2Dflow.EQ.1.) then
+C     Fully Implicit treatment of the Barotropic Flow Divergence
+        DO j=1,sNy+1
+         DO i=1,sNx
+          pf(i,j) = yA(i,j)*gVNm1(i,j,k,bi,bj) / deltatmom
+         ENDDO
+        ENDDO
+      ELSE
+C     Explicit+Implicit part of the Barotropic Flow Divergence
+        DO j=1,sNy+1
+         DO i=1,sNx
+          pf(i,j) = ( implicDiv2Dflow * gVNm1(i,j,k,bi,bj)
+     &          + (1.-implicDiv2Dflow) * vVel(i,j,k,bi,bj)
+     &               ) * yA(i,j) / deltaTmom
+         ENDDO
+        ENDDO
+      ENDIF
       DO j=1,sNy
        DO i=1,sNx
         cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj) +
