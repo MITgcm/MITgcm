@@ -4,7 +4,12 @@
 #   copy CS grid-file from ../input_ocn 
 #   this reduce the disk space required when downloading this set-up
 
-impDir='../input_ocn'
+if test $# = 1
+then
+ impDir=$1
+else
+ impDir='../input_ocn'
+fi
 dirAtm=`pwd`
 
 echo 'Import CS-grid files from dir:' $impDir
