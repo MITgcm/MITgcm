@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/do_fizhi.F,v 1.5 2004/10/15 21:15:06 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/do_fizhi.F,v 1.6 2004/10/21 15:19:18 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
      . idim1,idim2,jdim1,jdim2,Nrphin,Nsxin,Nsyin,im1,im2,jm1,jm2,bi,bj,
      . nchp,nchptot,nchpland,
-     . uphy,vphy,thphy,sphy,pephy,lons,lats,
+     . uphy,vphy,thphy,sphy,pephy,lons,lats,phi0surf,
      . ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
      . tgz,sst,sice,phis_var,landtype,fracland,emiss,albnirdr,albnirdf,
      . albvisdr,albvisdf,ityp,chfr,alai,agrn,igrd,chlat,chlon,
@@ -41,6 +41,7 @@ C Argument list declarations
       _RL pephy(idim1:idim2,jdim1:jdim2,Nrphin+1,Nsxin,Nsyin)
       _RS lons(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
       _RS lats(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
+      _RS phi0surf(idim1:idim2,jdim1:jdim2,Nsxin,Nsyin)
       _RL ctmt(nchp,Nsxin,Nsyin),xxmt(nchp,Nsxin,Nsyin)
       _RL yymt(nchp,Nsxin,Nsyin)
       _RL zetamt(nchp,Nsxin,Nsyin)
