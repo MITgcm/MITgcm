@@ -1,0 +1,17 @@
+#
+#  $Header: /u/gcmpack/MITgcm/tools/example_scripts/README,v 1.1 2003/09/18 17:03:02 edhill Exp $
+#
+
+This directory is a collection of scripts and "crontab" entries mostly
+intended for automated testing.  These scripts are not intended for
+casual users.  If you have any questions about them or would like help
+writing one for your system, please contact Ed Hill <eh3@mit.edu>.
+
+The naming convention is "$MACHINE_$INFO" where $MACHINE gives some
+indication of where the script is supposed to run and $INFO gives some
+idea of its purpose.
+
+
+
+  bs1101en
+
