@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_open_diags.F,v 1.1 2000/06/21 19:45:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_open_diags.F,v 1.2 2001/01/29 20:09:23 heimbach Exp $
 
 #include "KPP_OPTIONS.h"
 
@@ -13,6 +13,7 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+
 #include "KPP_PARAMS.h"
 #include "KPP_DIAGS.h"
 

@@ -72,6 +72,7 @@ C     requirements to OLx=1, OLy=1.
 #    define KPP_NEEDS_OVERLAP_4
 #  endif
 #  ifdef KPP_NEEDS_OVERLAP_4
+#ifdef KPP_REACTIVATE_OL4
       IF (OLx.LT.4 .OR. OLy.LT.4) THEN
        WRITE(msgBuf,'(A)') 'KPP horizontal smoothing requires OLx=OLy=4'
        CALL PRINT_ERROR( msgBuf , 1)
@@ -79,6 +80,7 @@ C     requirements to OLx=1, OLy=1.
        CALL PRINT_ERROR( msgBuf , 1)
        STOP 'ABNORMAL END: S/R KPP_CHECK'
       ENDIF
+#endif
 #  endif
 #endif
 

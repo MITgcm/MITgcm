@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_calc_diff.F,v 1.5 2000/11/13 16:37:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_calc_diff.F,v 1.6 2001/01/29 20:09:23 heimbach Exp $
 
 #include "KPP_OPTIONS.h"
 
       SUBROUTINE KPP_CALC_DIFF( 
      I        bi,bj,iMin,iMax,jMin,jMax,K,
      I        maskUp,
-     O        KappaRT,KappaRS,KappaRU,KappaRV,
+     U        KappaRT,KappaRS,KappaRU,KappaRV,
      I        myThid)
 
 C     /==========================================================\

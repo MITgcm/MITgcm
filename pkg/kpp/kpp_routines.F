@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.4 2000/11/13 16:37:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.5 2001/01/29 20:09:23 heimbach Exp $
 
 #include "KPP_OPTIONS.h"
 
@@ -653,6 +653,10 @@ c     fRi, fcon             function of Rig
       integer i, ki, mr
       _KPP_RL c1, c0
 
+#ifdef ALLOW_KPP_VERTICALLY_SMOOTH
+CADJ INIT kpp_ri_tape_mr = common, 1
+#endif
+
 c constants
       c1 = 1.0
       c0 = 0.0
@@ -662,6 +666,10 @@ c     compute interior gradient Ri at all interfaces ki=1,Nr, (not surface)
 c     use diffus(*,*,1) as temporary storage of Ri to be smoothed
 c     use diffus(*,*,2) as temporary storage for Brunt-Vaisala squared
 c     set values at bottom and below to nearest value above bottom
+#ifdef ALLOW_AUTODIFF_TAMC
+C     break data flow dependence on diffus
+      diffus(1,1,1) = 0.0
+#endif
 
       do ki = 1, Nr
          do i = 1, imt
@@ -681,18 +689,16 @@ c     set values at bottom and below to nearest value above bottom
 
 c-----------------------------------------------------------------------
 c     vertically smooth Ri
- 
+#ifdef ALLOW_KPP_VERTICALLY_SMOOTH
       do mr = 1, num_v_smooth_Ri
 
-CADJ store diffus(:,:,1) = comlev1_kpp_sm
-CADJ &  , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2 /)
+CADJ store diffus(:,:,1) = kpp_ri_tape_mr
+CADJ &  , key=mr, shape=(/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2 /)
 
          call z121 (
      U     diffus(1,0,1))
       end do
-
-CADJ store diffus = comlev1_kpp
-CADJ &  , key = ikey, shape = (/ (sNx+2*OLx)*(sNy+2*OLy),Nr+2,3 /)
+#endif
 
 c-----------------------------------------------------------------------
 c                           after smoothing loop

@@ -43,6 +43,9 @@ C o When set, smooth vertical viscosity horizontally
 C o When set, smooth vertical diffusivity horizontally
 #undef KPP_SMOOTH_DIFF
 
+C o Switch on vertical smoothing, the number of sweeps is set in the namelist
+#undef ALLOW_KPP_VERTICALLY_SMOOTH
+
 C o Get rid of vertical resolution dependence of dVsq term by
 C   estimating a surface velocity that is independent of first
 C   level thickness in the model.
