@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.18 2004/01/15 04:31:24 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.19 2004/01/15 19:21:24 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -59,6 +59,7 @@ C      |-- CONFIG_CHECK
 C      |
 C      |-- CONFIG_SUMMARY
 C      |
+C      |-- MNC_INIT
 C      |-- MNC_W_GRIDINFO
 
 C     !USES:
