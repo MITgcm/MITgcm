@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.38 2003/02/28 02:20:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.39 2003/05/01 22:30:33 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -127,6 +127,7 @@ C     phiSurfX, - gradient of Surface potentiel (Pressure/rho, ocean)
 C     phiSurfY             or geopotentiel (atmos) in X and Y direction
 C     KappaRT,       - Total diffusion in vertical for T and S.
 C     KappaRS          (background + spatially varying, isopycnal term).
+C     useVariableK   = T when vertical diffusion is not constant
 C     iMin, iMax     - Ranges and sub-block indices on which calculations
 C     jMin, jMax       are applied.
 C     bi, bj
@@ -153,6 +154,7 @@ C                      index into fVerTerm.
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 C     This is currently used by IVDC and Diagnostics
       _RL ConvectCount (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      LOGICAL useVariableK
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       INTEGER bi, bj
@@ -503,13 +505,6 @@ C       AIM - atmospheric intermediate model, physics package code.
         ENDIF
 #endif /* ALLOW_AIM */
 
-#ifdef ALLOW_TIMEAVE
-        IF (taveFreq.GT.0. .AND. ivdc_kappa.NE.0.) THEN
-          CALL TIMEAVE_CUMULATE(ConvectCountTave, ConvectCount, Nr,
-     I                               deltaTclock, bi, bj, myThid)
-        ENDIF
-#endif /* ALLOW_TIMEAVE */ 
-
 #ifndef DISABLE_MULTIDIM_ADVECTION
 C--     Some advection schemes are better calculated using a multi-dimensional
 C       method in the absence of any other terms and, if used, is done here.
@@ -751,27 +746,28 @@ C--      Apply open boundary conditions
 C--     End If implicitDiffusion
         ENDIF
 
+#ifdef ALLOW_TIMEAVE
+        IF (taveFreq.GT.0. .AND. ivdc_kappa.NE.0.) THEN
+          CALL TIMEAVE_CUMUL_1T(ConvectCountTave, ConvectCount,
+     I                           Nr, deltaTclock, bi, bj, myThid)
+        ENDIF
+        useVariableK = useKPP .OR. useGMredi .OR. ivdc_kappa.NE.0.
+        IF (taveFreq.GT.0. .AND. useVariableK ) THEN
+         IF (implicitDiffusion) THEN
+          CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, gT, kappaRT,
+     I                        Nr, 3, deltaTclock, bi, bj, myThid)
+         ELSE
+          CALL TIMEAVE_CUMUL_DIF_1T(TdiffRtave, theta, kappaRT,
+     I                        Nr, 3, deltaTclock, bi, bj, myThid)
+         ENDIF
+        ENDIF
+#endif /* ALLOW_TIMEAVE */ 
+
 #endif /* SINGLE_LAYER_MODE */
 
-Ccs-
+C--   end bi,bj loops.
        ENDDO
       ENDDO
-
-#ifdef ALLOW_AIM
-c     IF ( useAIM ) THEN
-c      CALL AIM_AIM2DYN_EXCHANGES( myTime, myThid )
-c     ENDIF
-#endif /* ALLOW_AIM */
-c     IF ( staggerTimeStep ) THEN
-c      IF ( useAIM .OR. useCubedSphereExchange ) THEN 
-c        IF (tempStepping) _EXCH_XYZ_R8(gT,myThid)
-c        IF (saltStepping) _EXCH_XYZ_R8(gS,myThid)
-c      ELSEIF ( useGMRedi .AND. Oly.LT.4 ) THEN
-cc       .AND. GM_AdvForm .AND. .NOT.GM_AdvSeparate ) THEN
-c        IF (tempMultiDimAdvec) _EXCH_XYZ_R8(gT,myThid)
-c        IF (saltMultiDimAdvec) _EXCH_XYZ_R8(gS,myThid)
-c      ENDIF  
-c     ENDIF  
 
 #ifndef DISABLE_DEBUGMODE
       If (debugMode) THEN
