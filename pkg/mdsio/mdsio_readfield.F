@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.15 2004/04/06 00:52:58 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.16 2004/04/07 13:27:27 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -64,11 +64,10 @@ C Functions
       integer MDS_RECLEN
 C Local variables
       character*(80) dataFName,pfName
-      integer iG,jG,irec,bi,bj,i,j,k,dUnit,IL,pIL
+      character*(max_len_mbuf) msgbuf
       logical exst
-      Real*4 r4seg(sNx)
-      Real*8 r8seg(sNx)
       logical globalFile,fileIsOpen
+      integer iG,jG,irec,bi,bj,i,j,k,dUnit,IL,pIL
       integer x_size,y_size,iG_IO,jG_IO,length_of_rec,npe
 #if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
       PARAMETER ( x_size = exch2_domain_nxt * sNx )
@@ -78,10 +77,11 @@ C Local variables
       PARAMETER ( y_size = Ny )
 #endif
       Real*4 xy_buffer_r4(x_size,y_size)
+      Real*4 r4seg(sNx)
+      Real*8 r8seg(sNx)
       Real*8 xy_buffer_r8(x_size,y_size)
-      character*(max_len_mbuf) msgbuf
       Real*8 global   (Nx,Ny)
-      _RL local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_EXCH2
       integer domainHeight,domainLength,tby,tgx,tny,tnx,tn
 #endif /* ALLOW_EXCH2 */

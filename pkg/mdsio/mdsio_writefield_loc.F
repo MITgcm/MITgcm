@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_loc.F,v 1.3 2003/10/05 16:22:22 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writefield_loc.F,v 1.4 2004/04/07 13:27:27 dimitri Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "MDSIO_OPTIONS.h"
 
       SUBROUTINE MDSWRITEFIELD_LOC(
@@ -53,6 +54,8 @@ C          open(dUnit, ..., status='old', ... -> status='unknown'
 C
 C Changed: 01/06/02 menemenlis@jpl.nasa.gov
 C          added useSingleCpuIO hack
+C changed:  1/23/04 afe@ocean.mit.edu
+C          added exch2 handling -- yes, the globalfile logic is nuts
 
       implicit none
 C Global variables / common blocks
@@ -60,6 +63,10 @@ C Global variables / common blocks
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "PARAMS.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
 
 C Routine arguments
       character*(*) fName
@@ -78,20 +85,31 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName,metaFName
-      integer iG,jG,irec,bi,bj,j,k,dUnit,IL
+      character*(80) dataFName,metaFName,pfName
+      character*(max_len_mbuf) msgbuf
+      logical fileIsOpen
+      integer iG,jG,irec,bi,bj,i,j,k,dUnit,IL,pIL
+      integer dimList(3,3),ndims
+      integer x_size,y_size,iG_IO,jG_IO,length_of_rec,npe
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+      PARAMETER ( x_size = exch2_domain_nxt * sNx )
+      PARAMETER ( y_size = exch2_domain_nyt * sNy )
+#else
+      PARAMETER ( x_size = Nx )
+      PARAMETER ( y_size = Ny )
+#endif
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
-      integer dimList(3,3),ndims
-      integer length_of_rec
-      logical fileIsOpen
-      character*(max_len_mbuf) msgbuf
-#ifdef ALLOW_USE_MPI
-      integer i
-      Real*8  global(Nx,Ny)
-      Real*4  global_r4(Nx,Ny)
-      _RL     local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif /* ALLOW_USE_MPI */
+      Real*4 xy_buffer_r4(x_size,y_size)
+      Real*8 xy_buffer_r8(x_size,y_size)
+      Real*8 global(Nx,Ny)
+      _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#ifdef ALLOW_EXCH2
+      integer domainHeight,domainLength,tby,tgx,tny,tnx,tn
+#endif /* ALLOW_EXCH2 */
+      COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
+      INTEGER mpi_myXGlobalLo(nPx*nPy)
+      INTEGER mpi_myYGlobalLo(nPx*nPy)
 
 C     ------------------------------------------------------------------
 
@@ -112,7 +130,16 @@ C Record number must be >= 1
 
 C Assume nothing
       fileIsOpen=.FALSE.
-      IL=ILNBLNK( fName )
+      IL  = ILNBLNK( fName )
+      pIL = ILNBLNK( mdsioLocalDir )
+
+C Assign special directory
+      if ( mdsioLocalDir .NE. ' ' ) then
+       write(pFname(1:80),'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
+      else
+       pFname= fName
+      endif
+      pIL=ILNBLNK( pfName )
 
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
@@ -127,7 +154,7 @@ C Master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
         IF( mpiMyId .EQ. 0 ) THEN
          write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
-         length_of_rec=MDS_RECLEN( filePrec, Nx*Ny, mythid )
+         length_of_rec=MDS_RECLEN(filePrec,x_size*y_size,mythid)
          if (irecord .EQ. 1) then
           open( dUnit, file=dataFName, status=_NEW_STATUS,
      &        access='direct', recl=length_of_rec )
@@ -154,20 +181,69 @@ C Gather array and write it to file, one vertical level at a time
          IF( mpiMyId .EQ. 0 ) THEN
           irec=k+nNz*(irecord-1)
           if (filePrec .eq. precFloat32) then
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
            DO J=1,Ny
             DO I=1,Nx
-             global_r4(I,J) = global(I,J)
+             xy_buffer_r4(I,J) = 0.0
             ENDDO
            ENDDO
+           bj=1
+           DO npe=1,nPx*nPy
+            DO bi=1,nSx
+             DO J=1,sNy
+              DO I=1,sNx
+               iG=mpi_myXGlobalLo(npe)-1+(bi-1)*sNx+i
+               jG=mpi_myYGlobalLo(npe)-1+(bj-1)*sNy+j
+               iG_IO=exch2_txglobalo(W2_mpi_myTileList(npe,bi))+i-1
+               jG_IO=exch2_tyglobalo(W2_mpi_myTileList(npe,bi))+j-1
+               xy_buffer_r4(iG_IO,jG_IO) = global(iG,jG)
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDDO
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+           DO J=1,Ny
+            DO I=1,Nx
+             xy_buffer_r4(I,J) = global(I,J)
+            ENDDO
+           ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
 #ifdef _BYTESWAPIO
-           call MDS_BYTESWAPR4( Nx*Ny, global_r4 )
+           call MDS_BYTESWAPR4( x_size*y_size, xy_buffer_r4 )
 #endif
-           write(dUnit,rec=irec) global_r4
+           write(dUnit,rec=irec) xy_buffer_r4
           elseif (filePrec .eq. precFloat64) then
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+           DO J=1,Ny
+            DO I=1,Nx
+             xy_buffer_r8(I,J) = 0.0
+            ENDDO
+           ENDDO
+           bj=1
+           DO npe=1,nPx*nPy
+            DO bi=1,nSx
+             DO J=1,sNy
+              DO I=1,sNx
+               iG=mpi_myXGlobalLo(npe)-1+(bi-1)*sNx+i
+               jG=mpi_myYGlobalLo(npe)-1+(bj-1)*sNy+j
+               iG_IO=exch2_txglobalo(W2_mpi_myTileList(npe,bi))+i-1
+               jG_IO=exch2_tyglobalo(W2_mpi_myTileList(npe,bi))+j-1
+               xy_buffer_r8(iG_IO,jG_IO) = global(iG,jG)
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDDO
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+           DO J=1,Ny
+            DO I=1,Nx
+             xy_buffer_r8(I,J) = global(I,J)
+            ENDDO
+           ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
 #ifdef _BYTESWAPIO
-           call MDS_BYTESWAPR8( Nx*Ny, global )
+           call MDS_BYTESWAPR8( x_size*y_size, xy_buffer_r8 )
 #endif
-           write(dUnit,rec=irec) global
+           write(dUnit,rec=irec) xy_buffer_r8
           else
            write(msgbuf,'(a)')
      &       ' MDSWRITEFIELD: illegal value for filePrec'
@@ -221,6 +297,79 @@ C If we are writing to a global file then we open it here
        endif
       endif
 
+#ifdef ALLOW_EXCH2
+      if (globalFile) then
+      domainLength = exch2_domain_nxt
+      domainHeight = exch2_domain_nyt
+C Loop over all tiles
+      do bj=1,nSy
+       do bi=1,nSx
+        tn = W2_myTileList(bi)
+        tby = exch2_tbasey(tn)
+        tgx = exch2_txglobalo(tn)
+        tny = exch2_tny(tn)
+        tnx = exch2_tnx(tn)
+        if (fileIsOpen) then
+         do k=1,nNz
+          do j=1,tNy
+
+           irec = domainLength*tby + (tgx-1)/tnx + 1 +
+     &            domainLength*(j-1) + 
+     &            domainLength*domainHeight*tny*(k-1) +
+     &            domainLength*domainHeight*tny*nNz*(irecord-1) 
+
+
+           if (filePrec .eq. precFloat32) then
+            if (arrType .eq. 'RS') then
+             call MDS_SEG4toRS( j,bi,bj,k,nNzdim, r4seg, .FALSE., arr )
+            elseif (arrType .eq. 'RL') then
+             call MDS_SEG4toRL( j,bi,bj,k,nNzdim, r4seg, .FALSE., arr )
+            else
+             write(msgbuf,'(a)')
+     &        ' MDSWRITEFIELD: illegal value for arrType'
+                call print_error( msgbuf, mythid )
+             stop 'ABNORMAL END: S/R MDSWRITEFIELD'
+            endif
+#ifdef _BYTESWAPIO
+                        call MDS_BYTESWAPR4( sNx, r4seg )
+#endif
+                        write(dUnit,rec=irec) r4seg
+           elseif (filePrec .eq. precFloat64) then
+            if (arrType .eq. 'RS') then
+             call MDS_SEG8toRS( j,bi,bj,k,nNzdim, r8seg, .FALSE., arr )
+            elseif (arrType .eq. 'RL') then
+             call MDS_SEG8toRL( j,bi,bj,k,nNzdim, r8seg, .FALSE., arr )
+            else
+             write(msgbuf,'(a)')
+     &         ' MDSWRITEFIELD: illegal value for arrType'
+             call print_error( msgbuf, mythid )
+             stop 'ABNORMAL END: S/R MDSWRITEFIELD'
+            endif
+#ifdef _BYTESWAPIO
+            call MDS_BYTESWAPR8( sNx, r8seg )
+#endif
+            write(dUnit,rec=irec) r8seg
+           else
+            write(msgbuf,'(a)')
+     &        ' MDSWRITEFIELD: illegal value for filePrec'
+            call print_error( msgbuf, mythid )
+            stop 'ABNORMAL END: S/R MDSWRITEFIELD'
+           endif
+C End of j loop
+          enddo
+C End of k loop
+         enddo
+        else ! .not. fileIsOpen 
+         write(msgbuf,'(a)')
+     &     ' MDSWRITEFIELD: I should never get to this point'
+         call print_error( msgbuf, mythid )
+         stop 'ABNORMAL END: S/R MDSWRITEFIELD'
+        endif
+       enddo
+       enddo
+       else ! not global file
+
+#endif /* ALLOW_EXCH2 */
 C Loop over all tiles
       do bj=1,nSy
        do bi=1,nSx
@@ -229,7 +378,7 @@ C If we are writing to a tiled MDS file then we open each one here
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
          write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
-     &              fName(1:IL),'.',iG,'.',jG,'.data'
+     &              pfName(1:pIL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
           length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
           open( dUnit, file=dataFName, status=_NEW_STATUS,
@@ -311,7 +460,7 @@ C Create meta-file for each tile if we are tiling
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
          write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
-     &              fName(1:IL),'.',iG,'.',jG,'.meta'
+     &              pfName(1:pIL),'.',iG,'.',jG,'.meta'
          dimList(1,1)=Nx
          dimList(2,1)=myXGlobalLo+(bi-1)*sNx
          dimList(3,1)=myXGlobalLo+bi*sNx-1
@@ -329,6 +478,11 @@ C Create meta-file for each tile if we are tiling
 C End of bi,bj loops
        enddo
       enddo
+c#endif /* ALLOW_EXCH2 */
+
+#ifdef ALLOW_EXCH2
+      endif ! global fle
+#endif /* ALLOW_EXCH2 */
 
 C If global file was opened then close it
       if (fileIsOpen .AND. globalFile) then

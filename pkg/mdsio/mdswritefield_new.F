@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.4 2004/03/24 21:24:20 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdswritefield_new.F,v 1.5 2004/04/07 13:27:27 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -56,7 +56,7 @@ C
 C Changed: 01/06/02 menemenlis@jpl.nasa.gov
 C          added useSingleCpuIO hack
 C changed:  1/23/04 afe@ocean.mit.edu
-c          added exch2 handling -- yes, the globalfile logic is nuts
+C          added exch2 handling -- yes, the globalfile logic is nuts
 
       implicit none
 C Global variables / common blocks
@@ -87,22 +87,30 @@ C Functions
       integer MDS_RECLEN
 C Local variables
       character*(80) dataFName,metaFName,pfName
-      integer iG,jG,irec,bi,bj,j,k,dUnit,IL,pIL
+      character*(max_len_mbuf) msgbuf
+      logical fileIsOpen
+      integer iG,jG,irec,bi,bj,i,j,k,dUnit,IL,pIL
+      integer dimList(3,3),ndims
+      integer x_size,y_size,iG_IO,jG_IO,length_of_rec,npe
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+      PARAMETER ( x_size = exch2_domain_nxt * sNx )
+      PARAMETER ( y_size = exch2_domain_nyt * sNy )
+#else
+      PARAMETER ( x_size = Nx )
+      PARAMETER ( y_size = Ny )
+#endif
       Real*4 r4seg(sNx)
       Real*8 r8seg(sNx)
-      integer dimList(3,3),ndims
-      integer length_of_rec
-      logical fileIsOpen
-      character*(max_len_mbuf) msgbuf
+      Real*4 xy_buffer_r4(x_size,y_size)
+      Real*8 xy_buffer_r8(x_size,y_size)
+      Real*8 global(Nx,Ny)
+      _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ALLOW_EXCH2
       integer domainHeight,domainLength,tby,tgx,tny,tnx,tn
 #endif /* ALLOW_EXCH2 */
-#ifdef ALLOW_USE_MPI
-      integer i
-      Real*8  global(Nx,Ny)
-      Real*4  global_r4(Nx,Ny)
-      _RL     local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#endif /* ALLOW_USE_MPI */
+      COMMON /GlobalLo/ mpi_myXGlobalLo, mpi_myYGlobalLo
+      INTEGER mpi_myXGlobalLo(nPx*nPy)
+      INTEGER mpi_myYGlobalLo(nPx*nPy)
 
 C     ------------------------------------------------------------------
 
@@ -147,7 +155,7 @@ C Master thread of process 0, only, opens a global file
        _BEGIN_MASTER( myThid )
         IF( mpiMyId .EQ. 0 ) THEN
          write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
-         length_of_rec=MDS_RECLEN( filePrec, Nx*Ny, mythid )
+         length_of_rec=MDS_RECLEN(filePrec,x_size*y_size,mythid)
          if (irecord .EQ. 1) then
           open( dUnit, file=dataFName, status=_NEW_STATUS,
      &        access='direct', recl=length_of_rec )
@@ -174,20 +182,69 @@ C Gather array and write it to file, one vertical level at a time
          IF( mpiMyId .EQ. 0 ) THEN
           irec=k+nNz*(irecord-1)
           if (filePrec .eq. precFloat32) then
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
            DO J=1,Ny
             DO I=1,Nx
-             global_r4(I,J) = global(I,J)
+             xy_buffer_r4(I,J) = 0.0
             ENDDO
            ENDDO
+           bj=1
+           DO npe=1,nPx*nPy
+            DO bi=1,nSx
+             DO J=1,sNy
+              DO I=1,sNx
+               iG=mpi_myXGlobalLo(npe)-1+(bi-1)*sNx+i
+               jG=mpi_myYGlobalLo(npe)-1+(bj-1)*sNy+j
+               iG_IO=exch2_txglobalo(W2_mpi_myTileList(npe,bi))+i-1
+               jG_IO=exch2_tyglobalo(W2_mpi_myTileList(npe,bi))+j-1
+               xy_buffer_r4(iG_IO,jG_IO) = global(iG,jG)
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDDO
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+           DO J=1,Ny
+            DO I=1,Nx
+             xy_buffer_r4(I,J) = global(I,J)
+            ENDDO
+           ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
 #ifdef _BYTESWAPIO
-           call MDS_BYTESWAPR4( Nx*Ny, global_r4 )
+           call MDS_BYTESWAPR4( x_size*y_size, xy_buffer_r4 )
 #endif
-           write(dUnit,rec=irec) global_r4
+           write(dUnit,rec=irec) xy_buffer_r4
           elseif (filePrec .eq. precFloat64) then
+#if defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO)
+           DO J=1,Ny
+            DO I=1,Nx
+             xy_buffer_r8(I,J) = 0.0
+            ENDDO
+           ENDDO
+           bj=1
+           DO npe=1,nPx*nPy
+            DO bi=1,nSx
+             DO J=1,sNy
+              DO I=1,sNx
+               iG=mpi_myXGlobalLo(npe)-1+(bi-1)*sNx+i
+               jG=mpi_myYGlobalLo(npe)-1+(bj-1)*sNy+j
+               iG_IO=exch2_txglobalo(W2_mpi_myTileList(npe,bi))+i-1
+               jG_IO=exch2_tyglobalo(W2_mpi_myTileList(npe,bi))+j-1
+               xy_buffer_r8(iG_IO,jG_IO) = global(iG,jG)
+              ENDDO
+             ENDDO
+            ENDDO
+           ENDDO
+#else /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
+           DO J=1,Ny
+            DO I=1,Nx
+             xy_buffer_r8(I,J) = global(I,J)
+            ENDDO
+           ENDDO
+#endif /* defined(ALLOW_EXCH2) && !defined(MISSING_TILE_IO) */
 #ifdef _BYTESWAPIO
-           call MDS_BYTESWAPR8( Nx*Ny, global )
+           call MDS_BYTESWAPR8( x_size*y_size, xy_buffer_r8 )
 #endif
-           write(dUnit,rec=irec) global
+           write(dUnit,rec=irec) xy_buffer_r8
           else
            write(msgbuf,'(a)')
      &       ' MDSWRITEFIELD: illegal value for filePrec'
