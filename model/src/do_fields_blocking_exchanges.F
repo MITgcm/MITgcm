@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.9 2002/10/07 16:24:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.10 2003/02/18 15:26:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -62,6 +62,8 @@ c     _EXCH_XYZ_R8( gvCD , myThid )
       _EXCH_XYZ_R8( uVelD , myThid )
       _EXCH_XYZ_R8( vVelD , myThid )
 #endif
+      IF ( useDynP_inEos_Zc )
+     & _EXCH_XYZ_RL( totPhiHyd , myThid )
 
 #ifdef ALLOW_PTRACERS
       CALL PTRACERS_FIELDS_BLOCKING_EXCHANGES(myThid)

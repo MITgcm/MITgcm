@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.18 2002/12/11 14:25:39 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.19 2003/02/18 15:26:07 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -135,6 +135,12 @@ C--     Read model fields
         IF ( nonlinFreeSurf.GE.0)
      &  CALL MDSREADFIELD(fn,prec,'RL',1,etaH,12*Nr+2,myThid)
 #endif
+
+        IF ( useDynP_inEos_Zc ) THEN
+         WRITE(fn,'(A,I10.10)') 'pickup_ph.',myIter
+         CALL MDSREADFIELD(fn,prec,'RL',Nr,totPhiHyd,1,myThid)
+        ENDIF
+
 #ifdef INCLUDE_CD_CODE
         WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIter
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uVelD,    1,myThid)
@@ -200,6 +206,9 @@ c     _EXCH_XYZ_R8(gvNM1 , myThid )
       _EXCH_XYZ_R8(gsNM1 , myThid )
       _EXCH_XY_R8 (etaN, myThid )
       _EXCH_XY_R8( etaH, myThid )
+
+      IF ( useDynP_inEos_Zc )
+     & _EXCH_XYZ_RL( totPhiHyd, myThid )
 
 #ifdef INCLUDE_CD_CODE
 c**** CALL EXCH_DUV_XYZ_RL(uVelD,vVelD,.TRUE.,myThid)
@@ -392,6 +401,16 @@ C--     Write model fields
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,etaH,12*Nr+2,
      &                     myIter,myThid)
 #endif
+
+        IF ( useDynP_inEos_Zc ) THEN
+         IF ( permCheckPoint ) THEN
+          WRITE(fn,'(A,I10.10)') 'pickup_ph.',myIter
+         ELSE
+          WRITE(fn,'(A,A)') 'pickup_ph.',checkPtSuff(nCheckLev)
+         ENDIF
+         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,totPhiHyd,
+     &                      1,myIter,myThid)
+        ENDIF
 #ifdef INCLUDE_CD_CODE
         IF ( permCheckPoint ) THEN
          WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIter
