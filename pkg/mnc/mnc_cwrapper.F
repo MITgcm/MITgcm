@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.13 2004/04/05 06:01:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.14 2004/07/06 03:55:53 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -115,13 +115,13 @@ C     !LOCAL VARIABLES:
           
           ntot = ntot + 1
           s1(1:NBLNK) = blnk(1:NBLNK)
-          write(s1,'(a5,2i5,a3,a20,i3,a3,5i4,a4,5i4,a4,5i4,6a4)')
+          write(s1,'(a5,2i5,a3,a20,i3,a3,5i4,a4,5i4,a4,5i4,6a8)')
      &         'MNC: ',
      &         j, ntot, ' : ', mnc_cw_gname(j)(1:20), mnc_cw_ndim(j), 
      &         ' : ', (mnc_cw_dims(i,j), i=1,5), 
      &         '  | ', (mnc_cw_is(i,j), i=1,5),
      &         '  | ', (mnc_cw_ie(i,j), i=1,5),
-     &         '  | ', (mnc_cw_dn(i,j)(1:4), i=1,5)
+     &         '  | ', (mnc_cw_dn(i,j)(1:7), i=1,5)
           CALL PRINT_MESSAGE(
      &         s1, standardMessageUnit, SQUEEZE_RIGHT, mythid)
           
@@ -194,7 +194,7 @@ C     !ROUTINE: MNC_CW_INIT
 
 C     !INTERFACE:
       SUBROUTINE MNC_CW_INIT( 
-     I     sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr, 
+     I     sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr, NrPhys, 
      I     myThid )
 
 C     !DESCRIPTION:
@@ -230,14 +230,14 @@ C     !USES:
 C     !INPUT PARAMETERS:
       integer myThid
       integer sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr
+      integer NrPhys
 CEOP
 
 C     !LOCAL VARIABLES:
       integer CW_MAX_LOC
       parameter ( CW_MAX_LOC = 5 )
       integer i, ihorz,ihsub,ivert,itime,ihalo, is,ih, n,ntot
-      integer ndim, ncomb
-      character*(MAX_LEN_MBUF) msgbuf
+      integer ndim, ncomb, nvch, NrPh
       character*(MNC_MAX_CHAR) name
       character*(MNC_MAX_CHAR) dn(CW_MAX_LOC)
       character*(5) horz_dat(CW_MAX_LOC), hsub_dat(CW_MAX_LOC),
@@ -246,7 +246,8 @@ C     !LOCAL VARIABLES:
       integer dim(CW_MAX_LOC), ib(CW_MAX_LOC), ie(CW_MAX_LOC)
 
 C     Functions
-      integer IFNBLNK, ILNBLNK
+      integer ILNBLNK
+      external ILNBLNK
 
 C     ......12345....12345....12345....12345....12345...
       data horz_dat /
@@ -256,9 +257,15 @@ C     ......12345....12345....12345....12345....12345...
       data halo_dat /
      &     'Hn   ', 'Hy   ', '--   ', '     ', '     '  /
       data vert_dat /
-     &     '-    ', 'C    ', 'I    ', '     ', '     '  /
+     &     '-    ', 'C    ', 'I    ', 'Phys ', 'PhysI'  /
       data time_dat /
      &     '-    ', 't    ', '     ', '     ', '     '  /
+
+      if (NrPhys .lt. 1) then
+        NrPh = Nr
+      else
+        NrPh = NrPhys
+      endif
 
       ncomb = 0
       DO ihorz = 1,5
@@ -277,7 +284,7 @@ C           Loop just ONCE if the Horiz component is "-"
               ENDIF
             ENDIF
             
-            DO ivert = 1,3
+            DO ivert = 1,5
               DO itime = 1,2
                 
 C               horiz and hsub
@@ -290,11 +297,14 @@ C               horiz and hsub
                 name((ntot+1):(ntot+n)) = hsub_dat(ihsub)(1:n)
                 ntot = ntot + n
 
-C               vert, time, and halo
-                write(name((ntot+1):(ntot+9)), '(a1,2a2,a1,a2,a1)') 
-     &               '_', halo_dat(ihalo)(1:2), '__',
-     &               vert_dat(ivert)(1:1), '__', 
-     &               time_dat(itime)(1:1)
+C               halo, vert, and time
+                write(name((ntot+1):(ntot+5)), '(a1,2a2)')
+     &               '_', halo_dat(ihalo)(1:2), '__'
+                nvch = ILNBLNK(vert_dat(ivert))
+                n = ntot+6+nvch-1
+                name((ntot+6):(n)) = vert_dat(ivert)(1:nvch)
+                write(name((n+1):(n+3)), '(a2,a1)') 
+     &               '__', time_dat(itime)(1:1)
 
                 ndim = 0
                 DO i = 1,CW_MAX_LOC
@@ -377,6 +387,20 @@ C               Vertical dimension
                   dim(ndim) = Nr + 1
                   ib(ndim)  = 1
                   ie(ndim)  = Nr + 1
+                ENDIF
+                IF (vert_dat(ivert)(1:5) .EQ. 'Phys ') THEN
+                  ndim = ndim + 1
+                  dn(ndim)(1:5) = 'Zphys'
+                  dim(ndim) = NrPh
+                  ib(ndim)  = 1
+                  ie(ndim)  = NrPh
+                ENDIF
+                IF (vert_dat(ivert)(1:5) .EQ. 'PhysI') THEN
+                  ndim = ndim + 1
+                  dn(ndim)(1:7) = 'Zphysm1'
+                  dim(ndim) = NrPh - 1
+                  ib(ndim)  = 1
+                  ie(ndim)  = NrPh - 1
                 ENDIF
 
 C               Time dimension
@@ -780,8 +804,7 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer i, ierr
-      character*(MAX_LEN_MBUF) msgbuf
+      integer ierr
 
 C     Check if the file is already open
       CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)

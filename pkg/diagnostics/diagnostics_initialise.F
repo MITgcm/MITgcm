@@ -1,26 +1,30 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_initialise.F,v 1.7 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_initialise.F,v 1.8 2004/07/06 03:55:53 edhill Exp $
 C $Name:  $
 
-      subroutine diagnostics_initialise (myThid)
-C***********************************************************************
-C
-C  PURPOSE
-C     Set Pointer Locations for Diagnostics in diag_list
-C
-C  INPUT:
-C   myThid ..... Process(or) number
-C
-C***********************************************************************
-      implicit none
+#include "DIAG_OPTIONS.h"
+      
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C     !ROUTINE: DIAGNOSTICS_INITIALISE
 
+C     !INTERFACE:
+      SUBROUTINE DIAGNOSTICS_INITIALISE(myThid)
+
+C     !DESCRIPTION:
+C     Set Pointer Locations for Diagnostics in diag_list.
+      
+C     !USES:
+      implicit none
 #include "EEPARAMS.h"
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"
 
+C     !INPUT PARAMETERS:
       integer myThid
+CEOP
 
+C     !LOCAL VARIABLES:
       integer ndiagcount
       integer m,mm,n
       logical found
@@ -31,7 +35,7 @@ C **** Calculate pointers for diagnostics set to non-zero frequency ****
 C **********************************************************************
 
       call diagnostics_init_vals (myThid)
-
+      
       ndiagcount = 0
       do n=1,nlists
        do m=1,nfields(n)
@@ -53,16 +57,16 @@ C **********************************************************************
 C **********************************************************************
 C **** Zero out the qdiag array which accumulates during integration****
 C **********************************************************************
-      do bj=myByLo(myThid), myByHi(myThid)
-      do bi=myBxLo(myThid), myBxHi(myThid)
-       do n = 1,numdiags
-        do j = 1,sNy
-        do i = 1,sNx
-         qdiag(i,j,n,bi,bj) = 0.
+      do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+          do n = 1,numdiags
+            do j = 1,sNy
+              do i = 1,sNx
+                qdiag(i,j,n,bi,bj) = 0. _d 0
+              enddo
+            enddo
+          enddo
         enddo
-        enddo
-       enddo
-      enddo
       enddo
 
       return

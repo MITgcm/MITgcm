@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/fill_diagnostics.F,v 1.12 2004/07/01 18:59:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/fill_diagnostics.F,v 1.13 2004/07/06 03:55:53 edhill Exp $
 C $Name:  $
+
+#include "DIAG_OPTIONS.h"
 
       subroutine fill_diagnostics (myThid, chardiag, levflg, nlevs, 
      .          bibjflg, bi, bj, arrayin) 
@@ -33,7 +35,6 @@ C                        or there will be out of bounds problems!
 C***********************************************************************
        implicit none
 #include "EEPARAMS.h"
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"

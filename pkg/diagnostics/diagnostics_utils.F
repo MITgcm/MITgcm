@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.8 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.9 2004/07/06 03:55:53 edhill Exp $
 C $Name:  $
+
+#include "DIAG_OPTIONS.h"
 
       subroutine getdiag (myThid,lev,ipoint,undef,qtmp)
 C***********************************************************************        
@@ -17,8 +19,6 @@ C    qtmp ..... AVERAGED DIAGNOSTIC QUANTITY
 C                                                                               
 C***********************************************************************        
       implicit none
-
-#include "PACKAGES_CONFIG.h"
 #include "EEPARAMS.h"
 #include "CPP_OPTIONS.h"
 #include "SIZE.h"

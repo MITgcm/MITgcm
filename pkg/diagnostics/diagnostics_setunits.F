@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_setunits.F,v 1.3 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_setunits.F,v 1.4 2004/07/06 03:55:53 edhill Exp $
 C $Name:  $
+
+#include "DIAG_OPTIONS.h"
 
       subroutine diagnostics_setunits (myThid, chardiag, diagunits)
 C***********************************************************************
@@ -14,7 +16,6 @@ C     chardiag ... Character *8 expression for diag to fill
 C     diagunits .. Character *16 expression for diag units
 C***********************************************************************
        implicit none
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"

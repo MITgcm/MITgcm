@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.6 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write.F,v 1.7 2004/07/06 03:55:53 edhill Exp $
 C $Name:  $
+
+#include "DIAG_OPTIONS.h"
 
       subroutine diagnostics_write (myThid, myIter) 
 C***********************************************************************
@@ -13,7 +15,6 @@ C     myIter ..... Current Iteration Number
 C     myThid ..... Current Process(or)
 C***********************************************************************
        implicit none
-#include "CPP_OPTIONS.h"
 #include "SIZE.h"
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"
@@ -29,13 +30,13 @@ c ===============
 C***********************************************************************
 C***   Check to see if its time for Diagnostic Output                ***
 C***********************************************************************
-      do n=1,nlists
-      if ( myIter.ne.niter0) then
-       if ( mod(myIter,freq(n)).eq.0 ) then
-        call diagout(myThid,myIter,n)
-        call clrindx(myThid,n)
-       endif
-      endif
+      do n = 1,nlists
+        if ( myIter.ne.niter0) then
+          if ( mod(myIter,freq(n)).eq.0 ) then
+            call diagout(myThid,myIter,n)
+            call clrindx(myThid,n)
+          endif
+        endif
       enddo
 
       return

@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.9 2004/07/01 18:40:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.10 2004/07/06 03:55:53 edhill Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "DIAG_OPTIONS.h"
 
        subroutine diagnostics_fill_state(myThid)
+
        implicit none
 #include "SIZE.h"
 #include "EEPARAMS.h"
