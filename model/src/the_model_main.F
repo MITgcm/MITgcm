@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.83 2004/11/17 15:23:35 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.84 2004/12/04 17:02:26 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -465,6 +465,8 @@ C     == Global variables ===
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
+#endif
+#ifdef ALLOW_CTRL
 # include "optim.h"
 #endif
 
@@ -570,6 +572,16 @@ cph      CALL ADTHE_MAIN_LOOP ( mythid )
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
 #  endif /* ALLOW_DIVIDED_ADJOINT */
 c
+# else /* forward run only within AD setting */
+
+#ifdef ALLOW_DEBUG
+      IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
+#endif
+C--   Call time stepping loop of full model
+      CALL TIMER_START('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
+      CALL THE_MAIN_LOOP( myCurrentTime, myCurrentIter, myThid )
+      CALL TIMER_STOP ('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
+
 # endif
 
 # ifndef EXCLUDE_CTRL_PACK
@@ -598,7 +610,6 @@ c
 #ifdef ALLOW_DEBUG
       IF (debugMode) CALL DEBUG_CALL('THE_MAIN_LOOP',myThid)
 #endif
-
 C--   Call time stepping loop of full model
       CALL TIMER_START('THE_MAIN_LOOP          [THE_MODEL_MAIN]',myThid)
       CALL THE_MAIN_LOOP( myCurrentTime, myCurrentIter, myThid )
