@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.28 2001/03/06 17:02:57 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.29 2001/03/08 20:49:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -37,6 +37,7 @@ C     === Global data ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "CG2D_INTERNAL.h"
+#include "SURFACE.h"
 
 C     === Routine arguments ===
 C     myThid - Thread on which I am working.
@@ -156,7 +157,7 @@ C--   Initial residual calculation
      &    -aW2d(I+1,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J  ,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J+1,bi,bj)*cg2d_x(I  ,J  ,bi,bj)
-     &    -freeSurfFac*_rA(i,j,bi,bj)* horiVertRatio*
+     &    -freeSurfFac*_rA(i,j,bi,bj)*recip_Bo(i,j,bi,bj)* 
      &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom*cg2dNorm
      &    )
           err            = err            + 
@@ -302,7 +303,7 @@ C==    q = A.s
      &    -aW2d(I+1,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J  ,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
      &    -aS2d(I  ,J+1,bi,bj)*cg2d_s(I  ,J  ,bi,bj)
-     &    -freeSurfFac*_rA(i,j,bi,bj)* horiVertRatio*
+     &    -freeSurfFac*_rA(i,j,bi,bj)*recip_Bo(i,j,bi,bj)* 
      &     cg2d_s(I  ,J  ,bi,bj)/deltaTMom/deltaTMom*cg2dNorm
           alpha = alpha+cg2d_s(I,J,bi,bj)*cg2d_q(I,J,bi,bj)
           ENDDO
