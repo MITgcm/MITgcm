@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.19 2005/01/04 15:57:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.20 2005/01/25 22:28:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -95,20 +95,20 @@ cph       CALL LEF_ZERO( Qsw1 ,myThid )
 cph      ENDIF
 
 C Now calculate whether it is time to update the forcing arrays
-      rdt=1. _d 0 / deltaTclock
-      nForcingPeriods=int(externForcingCycle/externForcingPeriod+0.5)
-      Imytm=int(myTime*rdt+0.5)
-      Ifprd=int(externForcingPeriod*rdt+0.5)
-      Ifcyc=int(externForcingCycle*rdt+0.5)
-      Iftm=mod( Imytm+Ifcyc-Ifprd/2 ,Ifcyc)
+      rdt = 1. _d 0 / deltaTclock
+      nForcingPeriods = NINT(externForcingCycle/externForcingPeriod)
+      Imytm = NINT(myTime*rdt)
+      Ifprd = NINT(externForcingPeriod*rdt)
+      Ifcyc = NINT(externForcingCycle*rdt)
+      Iftm  = MOD( Imytm+Ifcyc-Ifprd/2, Ifcyc)
 
-      intime0=int(Iftm/Ifprd)
-      intime1=mod(intime0+1,nForcingPeriods)
-      aWght=float( Iftm-Ifprd*intime0 )/float( Ifprd )
-      bWght=1.-aWght
-
-      intime0=intime0+1
-      intime1=intime1+1
+      intime0 = 1 + INT(Iftm/Ifprd)
+      intime1 = 1 + MOD(intime0,nForcingPeriods)
+C-jmc: with some option of g77, FLOAT results in real*4 evaluation
+C      of aWght; using DFLOAT always force real*8 computation:
+c     aWght =  FLOAT( Iftm-Ifprd*(intime0 - 1) ) /  FLOAT( Ifprd )
+      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
+      bWght = 1. _d 0 - aWght
 
       IF (
      &  Iftm-Ifprd*(intime0-1) .EQ. 0
@@ -119,8 +119,9 @@ C Now calculate whether it is time to update the forcing arrays
 
 C      If the above condition is met then we need to read in
 C      data for the period ahead and the period behind myTime.
-       WRITE(*,*)
-     &  'S/R EXTERNAL_FIELDS_LOAD: Reading new data',myTime,myIter
+       WRITE(standardMessageUnit,'(A,2I5,I10,1P1E20.12)')
+     &  'S/R EXTERNAL_FIELDS_LOAD: Reading new data:',
+     &  intime0, intime1, myIter, myTime
 
       IF ( zonalWindFile .NE. ' '  ) THEN
        CALL MDSREADFIELD ( zonalWindFile, readBinaryPrec,
@@ -261,16 +262,17 @@ C--   Interpolate fu,fv,Qnet,EmPmR,SST,SSS,Qsw
       ENDDO
 
 C-- Print for checking:
+c     IF ( debugLevel.GE.debLevA  .AND. myIter.LT.50+nIter0) THEN
       IF ( debugLevel.GE.debLevA  .AND. myTime.LT.62208000.) THEN
         _BEGIN_MASTER( myThid )
-        write(*,'(a,1p7e12.4,2i6,2e12.4)')
+        WRITE(standardMessageUnit,'(a,1p7e12.4,2i6,2e12.4)')
      &   'time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b = ',
      &   myTime,
      &   SST(1,sNy,1,1),SSS(1,sNy,1,1),
      &   fu(1,sNy,1,1),fv(1,sNy,1,1),
      &   Qnet(1,sNy,1,1),EmPmR(1,sNy,1,1),
      &   intime0,intime1,aWght,bWght
-        write(*,'(a,1p7e12.4)')
+        WRITE(standardMessageUnit,'(a,1p4e12.4,2E23.15)')
      &   'time,fu0,fu1,fu = ',
      &   myTime,
      &   taux0(1,sNy,1,1),taux1(1,sNy,1,1),fu(1,sNy,1,1),
