@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.16 2004/03/02 08:45:46 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.17 2004/05/03 06:58:39 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -9,7 +9,6 @@ C     /===========================================================\
 C     | SUBROUTINE SEAICE_MODEL                                   |
 C     | o Time stepping of a dynamic/thermodynamic sea ice model. |
 C     |  Dynamics solver: Zhang/Hibler, JGR, 102, 8691-8702, 1997 |
-C     |    and          Zhang/Rothrock, JGR, 105, 3325-3338, 2000 |
 C     |  Thermodynamics:        Hibler, MWR, 108, 1943-1973, 1980 |
 C     |  Rheology:              Hibler, JPO,   9,  815- 846, 1979 |
 C     |  Snow:          Zhang et al.  , JPO,  28,  191- 217, 1998 |
@@ -25,6 +24,7 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "DYNVARS.h"
 #include "PARAMS.h"
+#include "GRID.h"
 #include "FFIELDS.h"
 #include "SEAICE.h"
 #include "SEAICE_PARAMS.h"
@@ -51,7 +51,7 @@ CEndOfInterface
 C     === Local variables ===
 C     i,j,bi,bj - Loop counters
 
-      INTEGER i, j, bi, bj
+      INTEGER i, j, bi, bj, kgeo
 
 #ifdef SEAICE_EXTERNAL_FORCING
 C--   Atmospheric state and runoff are from
@@ -69,15 +69,20 @@ C--   Load atmospheric state and runoff.
       CALL SEAICE_GET_FORCING ( myTime, myIter, myThid )
 #endif /* SEAICE_EXTERNAL_FORCING */
 
-C--   Third level model velocity is used as proxy for geostrophic velocity
+C--   As a proxy for geostrophic velocity,
+C     choose the level that is >= 50 m with kgeo > 1
+      KGEO = 2
+      DO WHILE ( abs(rC(KGEO)) .LT. 50 .AND. KGEO .LT. Nr )
+         KGEO = KGEO + 1
+      ENDDO
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=0,sNy+1
          DO i=0,sNx+1
-          GWATX(I,J,bi,bj)=HALF*(uVel(i,j,3,bi,bj)
-     &                         +uVel(i,j-1,3,bi,bj))
-          GWATY(I,J,bi,bj)=HALF*(vVel(i,j,3,bi,bj)
-     &                         +vVel(i-1,j,3,bi,bj))
+          GWATX(I,J,bi,bj)=HALF*(uVel(i,j,KGEO,bi,bj)
+     &                         +uVel(i,j-1,KGEO,bi,bj))
+          GWATY(I,J,bi,bj)=HALF*(vVel(i,j,KGEO,bi,bj)
+     &                         +vVel(i-1,j,KGEO,bi,bj))
 #ifdef SEAICE_DEBUG
 c          write(*,'(2i4,2i2,f7.1,7f12.3)')
 c     &     ,i,j,bi,bj,UVM(I,J,bi,bj)
