@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.11 2001/02/04 14:38:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/plot_field.F,v 1.12 2001/03/06 17:10:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -32,7 +32,6 @@ C     \==========================================================/
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "CG2D.h"
 
 C     == Routine arguments ==
 C     fld - Field to plot
@@ -116,7 +115,6 @@ C     \==========================================================/
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "CG2D.h"
 
 C     == Routine arguments ==
 C     fld - Field to plot
@@ -200,7 +198,6 @@ C     \==========================================================/
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "CG2D.h"
 
 C     == Routine arguments ==
 C     fld - Field to plot
@@ -294,7 +291,6 @@ C     \==========================================================/
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "CG2D.h"
 
 C     == Routine arguments ==
 C     fld - Field to plot

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.21 2001/02/20 15:06:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.22 2001/03/06 17:10:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -18,7 +18,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "CG2D.h"
 
 C     == Routine Arguments ==
 C     phiHyd    - Hydrostatic pressure (ocean) or geopotentiel (atmos)

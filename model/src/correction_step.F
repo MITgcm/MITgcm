@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.15 2001/02/20 15:06:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.16 2001/03/06 17:10:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -19,7 +19,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "CG2D.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "CG3D.h"
 #endif

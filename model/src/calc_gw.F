@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.6 2001/02/04 14:38:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.7 2001/03/06 17:10:29 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -16,7 +16,6 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "CG2D.h"
 #include "GW.h"
 #include "CG3D.h"
 
