@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.7 1998/11/06 22:44:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.8 1998/12/08 18:04:51 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -73,6 +73,7 @@ C     Set initial tendency terms
           DO I=1,sNx
            gs   (I,J,K,bi,bj) = 0. _d 0
            gsNM1(I,J,K,bi,bj) = 0. _d 0
+           IF (hFacC(I,J,K,bi,bj).EQ.0) salt(I,J,K,bi,bj) = 0.
           ENDDO
          ENDDO
         ENDDO
