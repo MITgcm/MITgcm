@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.8 2001/09/26 18:09:14 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.9 2002/02/08 22:22:06 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -149,10 +149,8 @@ C      data for the period ahead and the period behind myTime.
        CALL READ_REC_XY_RS( surfQFile,Qnet1,intime1,myIter,myThid )
       ENDIF
       IF ( EmPmRfile .NE. ' '  ) THEN
-Cfixed CALL READ_REC_XY_RS( EmPmRfile,EmPmR0,intime0,myIter,myThid )
-Cfixed CALL READ_REC_XY_RS( EmPmRfile,EmPmR1,intime1,myIter,myThid )
-       CALL READ_REC_XY_RS( EmPmRfile,EmPmR0,1,myIter,myThid )
-       CALL READ_REC_XY_RS( EmPmRfile,EmPmR1,1,myIter,myThid )
+       CALL READ_REC_XY_RS( EmPmRfile,EmPmR0,intime0,myIter,myThid )
+       CALL READ_REC_XY_RS( EmPmRfile,EmPmR1,intime1,myIter,myThid )
       ENDIF
       IF ( thetaClimFile .NE. ' '  ) THEN
        CALL READ_REC_XY_RS( thetaClimFile,SST0,intime0,myIter,myThid )
