@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.105 2002/11/22 19:07:47 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.106 2002/11/23 22:39:36 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint47a_post
 o new pkg: aim_v23 
  = F. Molteni atmos.physics (SPEEDY, ver23) adapted to MITgcm. 
    for now, keep the same surface forcing as before.
@@ -10,6 +11,8 @@ o new pkg: aim_v23
  - aim.5l_cs: use new aim pkg (run 10yr & get better results than before)
  - aim.5l_LatLon & aim.5l_Equatorial_Channel are still using old aim pkg
 o add diagnostic of surface correction term in monitor output
+
+o bulk_force and therm_seaice 
 
 checkpoint47
 differentiable version of checkpoint46n_post
