@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/obcs_calc.F,v 1.2 2001/02/02 21:36:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/obcs_calc.F,v 1.3 2001/06/07 20:39:03 adcroft Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -43,7 +43,7 @@ C     == Local variables ==
       _RL tmpsum
 
 C Vertical mode number
-      mz=1.0
+      mz=1.0 _d 0
 C Stratification
       strat = 1.0 _d -6 / (gravity*tAlpha)
 
@@ -58,12 +58,16 @@ C Create a vertical structure function with zero mean
        vertStructWst(K)=vertStructWst(K)-tmpsum
       enddo
 c
-      obTimeScale = 44567.0
-       kx=mz*2.*pi/400.0*sqrt((2.0*pi*2.0*pi/(obTimeScale*obTimeScale)
+      obTimeScale = 44567.0 _d 0
+       kx=mz*2. _d 0*pi/400.0 _d 0
+     &  *sqrt((2.0 _d 0*pi*2.0 _d 0*pi/(obTimeScale*obTimeScale)
      & - f0*f0)/(1.0 _d -6
-     & - 2.0*pi*2.0*pi/(obTimeScale*obTimeScale)))
-      Uinflow = 0.024
-      rampTime2 = 4*44567.0
+     & - 2.0 _d 0*pi*2.0 _d 0*pi/(obTimeScale*obTimeScale)))
+      Uinflow = 0.024 _d 0
+C *NOTE* I have commented out the ramp function below
+C just to speed things up. You will probably want to use it
+C for smoother looking solutions.
+      rampTime2 = 4. _d 0*44567.0 _d 0
 
 
 C     Eastern OB
@@ -95,44 +99,45 @@ C     Western OB
       ELSE
         DO K=1,Nr
           DO J=1-Oly,sNy+Oly
-          OBWu(J,K,bi,bj)=0.
+          OBWu(J,K,bi,bj)=0. _d 0
      &       +Uinflow
      &       *vertStructWst(K)
-     &       *sin(2.*PI*futureTime/obTimeScale)
-     &       *(exp(futureTime/rampTime2)
-     &   - exp(-futureTime/rampTime2))
-     &   /(exp(futureTime/rampTime2)
-     &  + exp(-futureTime/rampTime2))
-     &   *cos(kx*(3-2-0.5)*delX(1))
-          OBWv(J,K,bi,bj)=0.
+     &       *sin(2. _d 0*PI*futureTime/obTimeScale)
+c    &       *(exp(futureTime/rampTime2)
+c    &   - exp(-futureTime/rampTime2))
+c    &   /(exp(futureTime/rampTime2)
+c    &  + exp(-futureTime/rampTime2))
+     &   *cos(kx*(3. _d 0-2. _d 0-0.5 _d 0)*delX(1))
+          OBWv(J,K,bi,bj)=0. _d 0
      &       +Uinflow
-     &       *f0/(2.0*PI/obTimeScale)
+     &       *f0/(2.0 _d 0*PI/obTimeScale)
      &       *vertStructWst(K)
-     &       *cos(2.*PI*futureTime/obTimeScale )
+     &       *cos(2. _d 0*PI*futureTime/obTimeScale )
      & * (exp(futureTime/rampTime2)
      &   - exp(-futureTime/rampTime2))
      &   /(exp(futureTime/rampTime2)
      &  + exp(-futureTime/rampTime2))
           OBWt(J,K,bi,bj)=tRef(K)
-     & + Uinflow*sin(mz*PI*(float(k)-0.5)/float(Nr))
-     & * sin(2.0*PI*futureTime/obTimeScale)
+     & + Uinflow*sin(mz*PI*(float(k)-0.5 _d 0)/float(Nr))
+     & * sin(2.0 _d 0*PI*futureTime/obTimeScale)
      & *sqrt(strat/(tAlpha*gravity))
-     & *sqrt(2.0*PI/obTimeScale*2.0*PI/obTimeScale - f0*f0)
-     & /(2.0*PI/obTimeScale)
-     & * (exp(futureTime/rampTime2)
-     &   - exp(-futureTime/rampTime2))
-     &   /(exp(futureTime/rampTime2)
-     &  + exp(-futureTime/rampTime2))
+     & *sqrt(2.0 _d 0*PI/obTimeScale*2.0*PI/obTimeScale - f0*f0)
+     & /(2.0 _d 0*PI/obTimeScale)
+c    & * (exp(futureTime/rampTime2)
+c    &   - exp(-futureTime/rampTime2))
+c    &   /(exp(futureTime/rampTime2)
+c    &  + exp(-futureTime/rampTime2))
 #ifdef ALLOW_NONHYDROSTATIC
           OBWw(J,K,bi,bj)=-Uinflow
-     & *sqrt(2.0*PI/obTimeScale*2.0*PI/obTimeScale - f0*f0)
-     & /sqrt(strat*strat - 2.0*PI/obTimeScale*2.0*PI/obTimeScale)
-     & *sin(mz*PI*(float(k)-0.5)/float(Nr))
-     &       *cos(2.*PI*futureTime/obTimeScale)
-     &       *(exp(futureTime/rampTime2)
-     &   - exp(-futureTime/rampTime2))
-     &   /(exp(futureTime/rampTime2)
-     &  + exp(-futureTime/rampTime2))
+     & *sqrt(2.0 _d 0*PI/obTimeScale*2.0 _d 0*PI/obTimeScale - f0*f0)
+     & /sqrt(strat*strat -
+     &          2.0 _d 0*PI/obTimeScale*2.0 _d 0*PI/obTimeScale)
+     & *sin(mz*PI*(float(k)-0.5 _d 0)/float(Nr))
+     &       *cos(2. _d 0*PI*futureTime/obTimeScale)
+c    &       *(exp(futureTime/rampTime2)
+c    &   - exp(-futureTime/rampTime2))
+c    &   /(exp(futureTime/rampTime2)
+c    &  + exp(-futureTime/rampTime2))
 #endif
           ENDDO
         ENDDO
