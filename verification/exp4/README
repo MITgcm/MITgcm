@@ -2,9 +2,10 @@ Example: "Flow over a bump with Open Boundaries"
 ================================================
 
 To apply the changes to the default configuration of MITgcmUV:
-  cp ../verification/exp4/code/SIZE.h ../model/inc/
-  cp ../verification/exp4/code/CPP_OPTIONS.h ../model/inc/
-  cp ../verification/exp4/code/CPP_EEOPTIONS.h ../eesupp/inc/
+  cp ../verification/exp4/code/SIZE.h ../bin/
+  cp ../verification/exp4/code/CPP_OPTIONS.h ../bin/
+  cp ../verification/exp4/code/CPP_EEOPTIONS.h ../bin/
+  cp ../verification/exp4/code/set_obcs.F ../bin/
 
 Configure and compile the code:
   cd bin
