@@ -1,11 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.370 2004/10/18 16:04:19 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.371 2004/10/20 14:59:23 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint55h_post
+o add verification test "vermix"
 o remove all the *_ioinc flags and replace with the single global
   outputTypesInclusive flag
 o allow to set a vertical profile of vertical diffusivity for T & S
+o call PACKAGE_BOOT & PACKAGES_READPARMS just after INI_PARMS
+o useMNC moved from data.mnc to data.pkg
 
 checkpoint55g_post
 o Renaming carbon AD experiments to comply with testreport conventions
