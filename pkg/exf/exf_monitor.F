@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.2 2004/12/02 00:39:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_monitor.F,v 1.3 2004/12/03 06:58:48 dimitri Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -25,6 +25,7 @@ C     !USES:
 # include "MONITOR.h"
 #endif
 #include "exf_fields.h"
+#include "exf_clim_fields.h"
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
@@ -83,6 +84,22 @@ C       Print some statistics about input forcing fields
 #if defined (ALLOW_RUNOFF) || defined (ALLOW_SEAICE)
         CALL MON_PRINTSTATS_RL(1,runoff,'_runoff',
      &       maskH,maskH,rA ,drF,myThid)
+#endif
+#ifdef ALLOW_CLIMSST_RELAXATION
+        CALL MON_PRINTSTATS_RL(1,climsst,'_climsst',
+     &       maskH,maskH,rA ,drF,myThid)
+#endif
+#ifdef ALLOW_CLIMSSS_RELAXATION
+        CALL MON_PRINTSTATS_RL(1,climsss,'_climsss',
+     &       maskH,maskH,rA ,drF,myThid)
+#endif
+#ifdef ALLOW_CLIMTEMP_RELAXATION
+        CALL MON_PRINTSTATS_RL(Nr,climtemp,'_climtemp',
+     &       maskC,hFacC,rA ,drF,myThid)
+#endif
+#ifdef ALLOW_CLIMSALT_RELAXATION
+        CALL MON_PRINTSTATS_RL(Nr,climsalt,'_rclimsalt',
+     &       maskC,hFacC,rA ,drF,myThid)
 #endif
 
 #endif /* ALLOW_MONITOR */
