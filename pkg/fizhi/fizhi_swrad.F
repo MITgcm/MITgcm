@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.12 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.13 2004/07/26 19:51:08 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -33,7 +33,8 @@ c ---------------
       _RL albvisdr(im,jm),albvisdf(im,jm),albnirdr(im,jm)
       _RL albnirdf(im,jm)
       _RL radswg(im,jm),swgclr(im,jm),fdifpar(im,jm),fdirpar(im,jm)
-      _RL osr(im,jm),osrclr(im,jm),dtradsw(im,jm,lm),dtswclr(im,jm,lm)
+      _RL osr(im,jm),osrclr(im,jm),dtradsw(im,jm,lm)
+      _RL dtswclr(im,jm,lm)
       integer nswcld,nswlz    
       _RL cldsw(im,jm,lm),cswmo(im,jm,lm),swlz(im,jm,lm)   
       logical lpnt            

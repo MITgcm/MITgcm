@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.6 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.7 2004/07/26 19:51:08 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -18,8 +18,10 @@ C***********************************************************************
 
       integer myThid,im1,im2,jm1,jm2,Nrphys,Nbi,Nbj,bi,bj,ntracer
       _RL p(im2,jm2,Nbi,Nbj)
-      _RL uphy(im2,jm2,Nrphys,Nbi,Nbj),vphy(im2,jm2,Nrphys,Nbi,Nbj)
-      _RL thphy(im2,jm2,Nrphys,Nbi,Nbj),sphy(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL uphy(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL vphy(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL thphy(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL sphy(im2,jm2,Nrphys,Nbi,Nbj)
       _RL qq(im2,jm2,Nrphys),pk(im2,jm2,Nrphys,Nbi,Nbj)
       _RL dp(im2,jm2,Nrphys,Nbi,Nbj)
       _RL radswt(im2,jm2,Nbi,Nbj),radswg(im2,jm2,Nbi,Nbj)
@@ -28,13 +30,16 @@ C***********************************************************************
       _RL dst4(im2,jm2,Nbi,Nbj),tgz(im2,jm2,Nbi,Nbj)
       _RL tg0(im2,jm2,Nbi,Nbj),radlwg(im2,jm2,Nbi,Nbj)
       _RL lwgclr(im2,jm2,Nbi,Nbj)
-      _RL turbu(im2,jm2,Nrphys,Nbi,Nbj),turbv(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL turbu(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL turbv(im2,jm2,Nrphys,Nbi,Nbj)
       _RL turbt(im2,jm2,Nrphys,Nbi,Nbj)
       _RL turbq(im2,jm2,Nrphys,ntracer,Nbi,Nbj)
-      _RL moistu(im2,jm2,Nrphys,Nbi,Nbj),moistv(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL moistu(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL moistv(im2,jm2,Nrphys,Nbi,Nbj)
       _RL moistt(im2,jm2,Nrphys,Nbi,Nbj)
       _RL moistq(im2,jm2,Nrphys,ntracer,Nbi,Nbj)
-      _RL lwdt(im2,jm2,Nrphys,Nbi,Nbj),swdt(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL lwdt(im2,jm2,Nrphys,Nbi,Nbj)
+      _RL swdt(im2,jm2,Nrphys,Nbi,Nbj)
       _RL lwdtclr(im2,jm2,Nrphys,Nbi,Nbj)
       _RL swdtclr(im2,jm2,Nrphys,Nbi,Nbj)
       _RL dlwdtg(im2,jm2,Nrphys,Nbi,Nbj)

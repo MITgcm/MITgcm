@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.13 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.14 2004/07/26 19:51:08 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -51,6 +51,8 @@ c ---------------
       _RL       fracqq, dum
       integer    snowcrit
       parameter (fracqq = 0.1)
+      _RL one
+      parameter (one=1.)
 
       _RL   cldsr(im,jm,lm)
       _RL   srcld(istrip,lm)
@@ -602,7 +604,7 @@ C *********************************************************************
  
        CALL RNEVP (NN,ISTRIP,lm,TL,SHL,PCPEN,PL,CLFRAC,SP,DP,PLKE,
      .  PLK,TH,TMP1,TMP2,TMP3,ITMP1,ITMP2,PCNET,PRECIP,
-     .  CLSBTH,TMSTP,1.,cp,grav,alhl,gamfac,cldlz,rhcrit,offset,alpha)
+     .  CLSBTH,TMSTP,one,cp,grav,alhl,gamfac,cldlz,rhcrit,offset,alpha)
 
 C **********************************************************************
 C ****                     TENDENCY UPDATES                         ****

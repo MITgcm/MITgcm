@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.14 2004/07/26 18:45:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.15 2004/07/26 19:51:08 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -180,7 +180,8 @@ C Set fmu and ed to zero for no background diffusion
       _RL lats(istrip),lons(istrip),cosz(istrip),icest(istrip)
       _RL rainls(istrip),raincon(istrip),newsnow(istrip)
       _RL pardf(istrip),pardr(istrip),swnet(istrip)
-      _RL hlwdwn(istrip),alwrad(istrip),blwrad(istrip),tmpnlay(istrip)
+      _RL hlwdwn(istrip),alwrad(istrip),blwrad(istrip)
+      _RL tmpnlay(istrip)
       _RL laistrip(istrip),grnstrip(istrip),z2str(istrip),cd(istrip)
       _RL scatstr(istrip), rs1str(istrip), rs2str(istrip)
       _RL rdcstr(istrip),u2fstr(istrip),dqsdtstr(istrip)
@@ -223,7 +224,8 @@ C Set fmu and ed to zero for no background diffusion
       integer  stwatr(istrip)
       _RL  wspeed(istrip)
 
-      _RL ctsave(istrip),xxsave(istrip),yysave(istrip),zetasave(istrip)
+      _RL ctsave(istrip),xxsave(istrip),yysave(istrip)
+      _RL zetasave(istrip)
       _RL xlsave(istrip,nlay),khsave(istrip,nlay)
       _RL qliq(istrip,nlay),turbfcc(istrip,nlay)
       _RL qliqmsc(nchp,nlay),fccmsc(nchp,nlay)
@@ -2194,7 +2196,7 @@ C ----------------------------------
      1      * QXLM(I,LMINQ1)
 9306  CONTINUE
        CALL TRBDIF(QQ(1,LMINQ1),P3(1,LMINQ1),RHOKDZ(1,LMINQ1),
-     1       FLXFCE(1,LMINQ1),DTHS,DELTHS,NLEVMQ,1,1.0E-20,irun)
+     1       FLXFCE(1,LMINQ1),DTHS,DELTHS,NLEVMQ,1,1.0 _d -20,irun)
 C
 C SAVE KH BEFORE ADDING DIMENSIONS FOR USE BY MOIST BOUYANCY CALCULATION
 C
@@ -2235,7 +2237,7 @@ C
       DO 9132 I =1,irun
       DELTH(I,NLEVP1) = 1.
 9132  CONTINUE
-       CALL TRBDIF(TH,DELTH,TEMP,FLXFPK,DTHS,DELTHS,NLEV,2,0.,irun)
+       CALL TRBDIF(TH,DELTH,TEMP,FLXFPK,DTHS,DELTHS,NLEV,2,0. _d 0,irun)
       do i = 1,irun
        hsturb(i) = -1.* dths(i)
        dhsdtc(i) = -1.* delths(i)
@@ -2261,7 +2263,8 @@ C
       DELSH(I,NLEVP1) = 1.
 9140  CONTINUE
 
-       CALL TRBDIF(SH,DELSH,RHOKDZ,FLXFAC,DTHL,DELTHL,NLEV,2,0.,irun)
+       CALL TRBDIF(SH,DELSH,RHOKDZ,FLXFAC,DTHL,DELTHL,NLEV,
+     .                                     2,0. _d 0,irun)
       do i = 1,irun
        eturb(i) = -1.* dthl(i)
        dedqa(i) = -1.* delthl(i)
@@ -2289,7 +2292,7 @@ C
       tracers(i,nlev+1,nt) = tracers(i,nlev,nt)
       enddo
       CALL TRBDIF(tracers(1,1,nt),DELSH,RHOKDZ,FLXFAC,DTHL,DELTHL,
-     .                                                  NLEV,4,0.,irun)
+     .                                         NLEV,4,0. _d 0,irun)
       enddo
 C
 C   CALCULATE INTERNAL FLUXES AND UPDATE PROGNOSTIC VARIABLES: U AND V
@@ -2297,7 +2300,7 @@ C
       DO 9172 I =1,ISTNLV
       RHOKDZ(I,1) = RHODZ2(I,1) * KM(I,1)
 9172  CONTINUE
-       CALL TRBDIF(U,V,RHOKDZ,FLXFAC,DTHS,DELTHS,NLEV,3,0.,irun)
+       CALL TRBDIF(U,V,RHOKDZ,FLXFAC,DTHS,DELTHS,NLEV,3,0. _d 0,irun)
 C ( FILL DIAGNOSTIC ARRAYS IF REQUIRED )
       DO 9174 I =1,ISTNLV
       WU(I,1) = WU(I,1) + RHOKDZ(I,1) * ( U(I,2) - U(I,1) )
