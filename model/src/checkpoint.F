@@ -1,5 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.4 2001/02/04 14:38:46 cnh Exp $
-C $Name:  $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.5 2001/02/20 19:58:52 jmc Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -29,7 +28,7 @@ C
       END
 
 CStartofinterface
-      SUBROUTINE READ_CHECKPOINT ( myIt, myThid )
+      SUBROUTINE READ_CHECKPOINT ( myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE READ_PICKUP                                   |
 C     | o Controlling routine for IO to write restart file.      |
@@ -53,9 +52,9 @@ C     == Global variables ===
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-C     myIt - Iteration number
+C     myIter - Iteration number
       INTEGER myThid
-      INTEGER myIt
+      INTEGER myIter
 CEndofinterface
 
 C     == Local variables ==
@@ -76,24 +75,24 @@ C--     Read model fields
 C       Raw fields
         CALL READ_REC_XYZ_RL(  'uVel',   uVel, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(    'gU',     gU, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL( 'gUNm1',  gUNm1, 1,myIter, myThid)
+        CALL READ_REC_XYZ_RL( 'guNm1',  gUNm1, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'vVel',   vVel, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(    'gV',     gV, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL( 'gVNm1',  gVNm1, 1,myIter, myThid)
+        CALL READ_REC_XYZ_RL( 'gvNm1',  gVNm1, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL( 'theta',  theta, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(    'gT',     gT, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL( 'gTNm1',  gTNm1, 1,myIter, myThid)
+        CALL READ_REC_XYZ_RL( 'gtNm1',  gTNm1, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'salt',   salt, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(    'gS',     gS, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL( 'gSNm1',  gSNm1, 1,myIter, myThid)
+        CALL READ_REC_XYZ_RL( 'gsNm1',  gSNm1, 1,myIter, myThid)
         CALL READ_REC_XY_RL ('cg2d_x', cg2d_x, 1,myIter, myThid)
 #ifdef INCLUDE_CD_CODE
         CALL READ_REC_XY_RL
-     &   ( 'cg2d_xNM1',suff, cg2d_xNM1, 1,myIter, myThid)
+     &               ( 'cg2d_xNm1', cg2d_xNM1, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'uVelD', uVelD, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'vVelD', vVelD, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'uNM1',  uNM1, 1,myIter, myThid)
-        CALL READ_REC_XYZ_RL(  'vNM1',  vNM1, 1,myIter, myThid)
+        CALL READ_REC_XYZ_RL(  'uNm1',  uNM1, 1,myIter, myThid)
+        CALL READ_REC_XYZ_RL(  'vNm1',  vNM1, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'guCD',  guCD, 1,myIter, myThid)
         CALL READ_REC_XYZ_RL(  'gvCD',  gvCD, 1,myIter, myThid)
 #endif
@@ -109,7 +108,7 @@ C       Raw fields
         prec = precFloat64
 
 C--     Read model fields
-        WRITE(fn,'(A,I10.10)') 'pickup.',myIt
+        WRITE(fn,'(A,I10.10)') 'pickup.',myIter
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uVel,   1,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gU,     2,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gUnm1,  3,myThid)
@@ -124,7 +123,7 @@ C--     Read model fields
         CALL MDSREADFIELD(fn,prec,'RL',Nr,gSnm1, 12,myThid)
         CALL MDSREADFIELD(fn,prec,'RL', 1,cg2d_x,12*Nr+1,myThid)
 #ifdef INCLUDE_CD_CODE
-        WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIt
+        WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIter
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uVelD,    1,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,vVelD,    2,myThid)
         CALL MDSREADFIELD(fn,prec,'RL',Nr,uNM1,     3,myThid)
@@ -135,7 +134,7 @@ C--     Read model fields
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIt
+         WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
          CALL MDSREADFIELD(fn,prec,'RL',Nr,wVel, 1,myThid)
          CALL MDSREADFIELD(fn,prec,'RL',Nr,gW,   2,myThid)
          CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
@@ -186,7 +185,7 @@ C--    Fill in edge regions
 
 CStartofinterface
       SUBROUTINE WRITE_CHECKPOINT ( modelEnd, myCurrentTime, 
-     &                              myIt, myThid )
+     &                              myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE WRITE_PICKUP                                  |
 C     | o Controlling routine for IO to write restart file.      |
@@ -224,11 +223,11 @@ C     == Global variables ===
 C     == Routine arguments ==
 C     modelEnd    - Checkpoint call at end of model run.
 C     myThid - Thread number for this instance of the routine.
-C     myIt - Iteration number
+C     myIter - Iteration number
 C     myCurrentTime - Current time of simulation ( s )
       LOGICAL modelEnd    
       INTEGER myThid
-      INTEGER myIt
+      INTEGER myIter
       _RL     myCurrentTime
 CEndofinterface
 
@@ -318,50 +317,50 @@ C       Raw fields
 
 C--     Write model fields
         IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup.',myIt
+         WRITE(fn,'(A,I10.10)') 'pickup.',myIter
         ELSE
          WRITE(fn,'(A,A)') 'pickup.',checkPtSuff(nCheckLev)
         ENDIF
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVel,  1,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gU,    2,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gUnm1, 3,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVel,  4,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gV,    5,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gVnm1, 6,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,theta, 7,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gT,    8,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gTnm1, 9,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,salt, 10,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gS,   11,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gSnm1,12,myIt,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVel,  1,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gU,    2,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gUnm1, 3,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVel,  4,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gV,    5,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gVnm1, 6,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,theta, 7,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gT,    8,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gTnm1, 9,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,salt, 10,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gS,   11,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gSnm1,12,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,cg2d_x,12*Nr+1,
-     &                     myIt,myThid)
+     &                     myIter,myThid)
 #ifdef INCLUDE_CD_CODE
         IF ( permCheckPoint ) THEN
-         WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIt
+         WRITE(fn,'(A,I10.10)') 'pickup_cd.',myIter
         ELSE
          WRITE(fn,'(A,A)') 'pickup_cd.',checkPtSuff(nCheckLev)
         ENDIF
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVelD,1,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVelD,2,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uNM1, 3,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vNM1, 4,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,guCD, 5,myIt,myThid)
-        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gvCD, 6,myIt,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uVelD,1,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vVelD,2,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,uNM1, 3,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,vNM1, 4,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,guCD, 5,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gvCD, 6,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,cg2d_xNM1,6*Nr+1,
-     &                     myIt,myThid)
+     &                     myIter,myThid)
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
          IF ( permCheckPoint ) THEN
-          WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIt
+          WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
          ELSE
           WRITE(fn,'(A,A)') 'pickup_nh.',checkPtSuff(nCheckLev)
          ENDIF
-         WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIt
-         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,wVel, 1,myIt,myThid)
-         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gW,   2,myIt,myThid)
-         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIt,myThid)
+         WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
+         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,wVel, 1,myIter,myThid)
+         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gW,   2,myIter,myThid)
+         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
         ENDIF
 #endif
         IF ( .NOT. permCheckPoint ) THEN
