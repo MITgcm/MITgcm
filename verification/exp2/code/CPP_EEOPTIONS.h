@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/CPP_EEOPTIONS.h,v 1.2 1999/05/21 21:54:33 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/CPP_EEOPTIONS.h,v 1.3 2000/03/14 16:23:12 adcroft Exp $
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
@@ -110,6 +110,17 @@ C--   Control use of communication that is atomic to computation.
 C     Under MPI selects/deselects "blocking" sends and receives.
 #define ALLOW_SYNC_COMMUNICATION
 #undef  ALWAYS_USE_SYNC_COMMUNICATION
+
+--   Control use of JAM routines for Artic network
+C     These invoke optimized versions of "exchange" and "sum" that
+C     utilize the programmable aspect of Artic cards.
+#undef  LETS_MAKE_JAM
+#undef  JAM_WITH_TWO_PROCS_PER_NODE
+#ifdef LETS_MAKE_JAM
+#define _JAMEXT _jam
+#else
+#define _JAMEXT
+#endif
 
 C--   Control storage of floating point operands
 C     On many systems it improves performance only to use

@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.11 1999/05/07 18:12:29 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.12 2000/03/14 16:21:41 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -29,6 +29,10 @@ while ($#allargs)
  case -mpi:
    echo "Enabling MPI options"
    set USEMPI
+   breaksw
+ case -jam:
+   set include_jam_libs
+   echo "Including paths to JAM libraries"
    breaksw
  case -help:
    echo "usage: $0 [-help] [-makefile[=...]] [-platform=...] [-mpi]"
@@ -291,6 +295,42 @@ INCLUDEDIRS = ${INCLUDEDIRS}
 EXEDIR     = ${EXEDIR}
 EXECUTABLE = \$(EXEDIR)${EXECUTABLE}
 
+EOF
+
+
+# JAM libraries on Hyades
+if ($?include_jam_libs) then
+cat >> ${mfile} <<EOF
+# extra stuff for Hyades ............................................
+HYADES_DIR = /u/u0/cnh/jam-lib/software
+WORK_DIR   = \$(HYADES_DIR)
+DEPOSIT_DIR = linux_bin
+
+STARTXOBJDIR = startx_util/\$(DEPOSIT_DIR)
+STARTXOBJ = \$(WORK_DIR)/startx_util/\$(DEPOSIT_DIR)/startx_timer.o \
+            \$(WORK_DIR)/startx_util/\$(DEPOSIT_DIR)/startx_util.o \
+            \$(WORK_DIR)/startx_util/\$(DEPOSIT_DIR)/client.o \
+            \$(WORK_DIR)/startx_util/\$(DEPOSIT_DIR)/csutil.o
+
+JAMOBJDIR  = jam/\$(DEPOSIT_DIR)
+JAMOBJ     = \$(WORK_DIR)/jam/\$(DEPOSIT_DIR)/jam_init.o \
+             \$(WORK_DIR)/jam/\$(DEPOSIT_DIR)/jam_kernel.o \
+             \$(WORK_DIR)/jam/\$(DEPOSIT_DIR)/jam_malloc.o \
+             \$(WORK_DIR)/jam/\$(DEPOSIT_DIR)/jam_vmalloc.o \
+             \$(WORK_DIR)/jam/\$(DEPOSIT_DIR)/jam_mutex.o
+
+JAMCOBJDIR = jam_collective/\$(DEPOSIT_DIR)
+JAMCOBJ    = \$(WORK_DIR)/jam_collective/\$(DEPOSIT_DIR)/jam_collective.o
+
+XLIBS      = \$(STARTXOBJ) \$(JAMOBJ) \$(JAMCOBJ)
+
+# ..................................................................
+
+EOF
+endif
+
+
+cat >> ${mfile} <<EOF
 # Unix ln (link)
 LN = ${LN}
 # C preprocessor
@@ -344,6 +384,11 @@ Clean:
 	@make clean
 	-find . -type l -exec rm {} \;
 	-rm Makefile.bak
+CLEAN:
+	@make Clean
+	-find ../verification/ -name "*.meta" -exec rm {} \;
+	-find ../verification/ -name "*.data" -exec rm {} \;
+	-rm \$(EXECUTABLE)
 
 # The normal chain of rules is (  .F - .f - .o  )
 .F.f:
