@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/CPP_OPTIONS.h,v 1.3 2003/10/09 22:41:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/internal_wave/code/CPP_OPTIONS.h,v 1.9 2003/10/09 22:45:43 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
