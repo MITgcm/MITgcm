@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.26 2001/02/07 03:37:46 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.27 2001/02/07 14:00:06 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -50,6 +50,7 @@ while ($#allargs)
     echo "***" Command line \"$arg\" will override this.
    endif
    set ROOTDIR = ( `echo $arg | sed 's/-rootdir=//' `)
+   if (! $?EXEDIR) set EXEDIR = ( . )
    breaksw
  case -mods:
  case -mods=:
