@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.5 2004/01/08 07:24:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.6 2004/01/08 07:34:01 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -295,7 +295,6 @@ C     Strip trailing spaces
 
 C     Set the attribute
       CALL MNC_FILE_REDEF(myThid, fname)
-      print *, 'atype = ', atype
       IF (atype .EQ. 1) THEN
         err = NF_PUT_ATT_TEXT(fid, vid, atname, lens, cs)
       ELSEIF (atype .EQ. 2) THEN
