@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.2 2004/03/20 20:35:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.3 2004/03/22 05:10:10 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -132,6 +132,51 @@ C--   Report contents of model parameter file
       WRITE(msgBuf,'(a)') ' MNC_READPARMS: finished reading data.mnc'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &     SQUEEZE_RIGHT , 1)
+
+      CALL MNC_SET_OUTDIR(myThid)
+
+      RETURN
+      END
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+      SUBROUTINE MNC_SET_OUTDIR( myThid )
+
+      implicit none
+
+#include "SIZE.h"
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+C     Arguments
+      integer myThid
+
+C     Functions
+      integer ILNBLNK
+
+C     Local Variables
+      integer i, nstr, iodate, ioseq, num
+
+#define HAVE_MNCCDIR
+#ifdef HAVE_MNCCDIR
+      CALL mnccdir(iodate, ioseq)
+#else
+      iodate = 1
+      ioseq = 1
+#endif
+
+      DO i = 1,MNC_MAX_CHAR
+        mnc_out_path(i:i) = ' '
+      ENDDO
+      WRITE(mnc_out_path,'(a4,i8,a1,i4,a1)') 
+     &     'mnc_', iodate, '_', ioseq, '/'
+      nstr = ILNBLNK(mnc_out_path)
+      DO i = 1,nstr
+        IF (mnc_out_path(i:i) .EQ. ' ')  mnc_out_path(i:i) = '0'
+      ENDDO
+      num = ILNBLNK(mnc_out_path)
+      write(*,*) 'mnc_out_path = ', mnc_out_path(1:num)
 
       RETURN
       END

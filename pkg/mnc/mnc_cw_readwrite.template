@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.10 2004/03/21 03:44:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.11 2004/03/22 05:10:10 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -8,7 +8,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE MNC_CW_RX_W_YY( 
      I     fbname, bi,bj, 
      I     vtype, 
-C     I     indu, 
      I     var, 
      I     myThid )
 
@@ -35,9 +34,10 @@ C     Local Variables
       integer ndim, indf, err, lbi,lbj, bidim,bjdim, unlim_sz, kr
       integer p(9),s(9),e(9), dimnc(9), vstart(9),vcount(9), udo(9)
       integer j1,j2,j3,j4,j5,j6,j7, k1,k2,k3,k4,k5,k6,k7
-      integer indfg, fg1,fg2
+      integer indfg, fg1,fg2, npath
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) fname
+      character*(MNC_MAX_CHAR) path_fname
 
 C     Temporary storage for the simultaneous type conversion and
 C     re-shaping before passing to NetCDF
@@ -108,6 +108,13 @@ C         Create the file name
           fname(ntot:ntot) = '.'
           write(fname((ntot+1):(ntot+9)),'(i6.6,a3)') uniq_tnum, '.nc'
           nfname = ntot+9
+
+C         Add the path to the file name
+c          path_fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+c          npath = ILNBLNK(mnc_out_path)
+c          path_fname(1:npath) = mnc_out_path(1:npath)
+c          path_fname((npath+1):(npath+1+nfname)) = fname(1:nfname)
+c          fname(1:MNC_MAX_CHAR) = path_fname(1:MNC_MAX_CHAR)
 
 C         Append to an existing or create a new file
           CALL MNC_CW_FILE_AORC(fname, indf, myThid)
@@ -322,7 +329,6 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
       SUBROUTINE MNC_CW_RX_R_YY( 
      I     fbname, bi,bj, 
      I     vtype, 
-C     I     indu, 
      I     var, 
      I     myThid )
 

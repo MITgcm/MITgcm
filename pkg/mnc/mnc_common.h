@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.14 2004/03/20 20:35:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.15 2004/03/22 05:10:10 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -105,7 +105,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &     mnc_f_names, mnc_g_names, mnc_v_names, 
      &     mnc_d_names, mnc_d_ids,   mnc_d_size, 
      &     mnc_f_info,  mnc_fd_ind,  mnc_fv_ids, 
-     &     mnc_f_alld
+     &     mnc_f_alld,
+     &     mnc_out_path
 
       COMMON /MNC_CW_VARS/
      &     mnc_cw_gname, mnc_cw_ndim, mnc_cw_dims, 
@@ -147,6 +148,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       character*(MNC_MAX_CHAR) mnc_cw_fgnm(MNC_MAX_ID)
       integer mnc_cw_fgud(MNC_MAX_ID)
+
+      character*(MNC_MAX_CHAR) mnc_out_path
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CEH3 ;;; Local Variables: ***
