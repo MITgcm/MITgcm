@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_store_qshortwave.F,v 1.1 2003/12/15 02:44:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_store_qshortwave.F,v 1.2 2004/04/18 15:38:45 jmc Exp $
 C $Name:  $  
 
 #include "AIM_OPTIONS.h"
@@ -54,7 +54,7 @@ c      DO bi=myBxLo(myThid),myBxHi(myThid)
          DO I=1,sNx
           II = (sNx)*(J-1)+I
           Qshortwave(I,J,bi,bj) = 
-     &    Qshortwave(I,J,bi,bj) - SSR(II,myThid)*cplTimeFraction
+     &    Qshortwave(I,J,bi,bj) - SSR(II,2,myThid)*cplTimeFraction
          ENDDO
         ENDDO
 c      ENDDO

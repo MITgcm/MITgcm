@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/atm_store_heatflux.F,v 1.1 2003/12/15 02:44:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/atm_store_heatflux.F,v 1.2 2004/04/18 15:38:45 jmc Exp $
 C $Name:  $  
 
 #include "AIM_OPTIONS.h"
@@ -69,8 +69,8 @@ c      DO bi=myBxLo(myThid),myBxHi(myThid)
      &    HeatFlux(I,J,bi,bj) + 
      &             ( EVAP(II,2,myThid)*ALHC
      &           +    SHF(II,2,myThid)
-     &           +    SLR(II,myThid)
-     &           -    SSR(II,myThid) )*cplTimeFraction
+     &           +    SLR(II,2,myThid)
+     &           -    SSR(II,2,myThid) )*cplTimeFraction
          ENDDO
         ENDDO
 c      ENDDO
