@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.14 2001/02/05 19:27:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.15 2001/02/20 15:02:16 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -92,6 +92,8 @@ C--   Set default "physical" parameters
       buoyancyRelation    = 'OCEANIC'
       implicitFreeSurface = .TRUE.
       rigidLid            = .FALSE.
+      implicSurfPress     = 1.D0
+      implicDiv2DFlow     = 1.D0
       hFacMin             = 1.D0
       hFacMinDrDefault    = 0.D0
       staggerTimeStep     = .FALSE.

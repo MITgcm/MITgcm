@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.26 2001/02/04 16:46:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.27 2001/02/20 15:02:16 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -131,13 +131,22 @@ C     == Local variables ==
       CALL WRITE_0D_R8( beta,    INDEX_NONE,'beta =',
      &'   /* Beta ( 1/(m.s) ) */')
       CALL WRITE_0D_R8( freeSurfFac, INDEX_NONE,'freeSurfFac =',
-     &'   /* Implcit free surface factor */')
+     &'   /* Implicit free surface factor */')
       CALL WRITE_0D_L( implicitFreeSurface, INDEX_NONE,
      &                 'implicitFreeSurface =',
      &'   /* Implicit free surface on/off flag */')
       CALL WRITE_0D_L( rigidLid, INDEX_NONE,
      &                 'rigidLid =',
      &'   /* Rigid lid on/off flag */')
+      CALL WRITE_0D_R8( implicSurfPress, INDEX_NONE,
+     &'implicSurfPress =',
+     &'   /* Surface Pressure implicit factor (0-1)*/')
+      CALL WRITE_0D_R8( implicDiv2Dflow, INDEX_NONE,
+     &'implicDiv2Dflow =',
+     &'   /* Barot. Flow Div. implicit factor (0-1)*/')
+      CALL WRITE_0D_L( staggerTimeStep, INDEX_NONE,
+     &                 'staggerTimeStep =',
+     &'   /* Stagger time stepping on/off flag */')
       CALL WRITE_0D_L( momStepping,  INDEX_NONE,
      & 'momStepping =', '  /* Momentum equation on/off flag */')
       CALL WRITE_0D_L( momAdvection, INDEX_NONE,

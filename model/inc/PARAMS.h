@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.47 2001/02/04 14:38:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.48 2001/02/20 15:00:54 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -320,6 +320,10 @@ C     deltaTtracer - Timestep for tracer equations ( s )
 C     freesurfFac  - Parameter to turn implicit free surface term on or off
 C                    freesurfac = 1. uses implicit free surface
 C                    freesurfac = 0. uses rigid lid
+C     implicSurfPress - parameter of the Crank-Nickelson time stepping :
+C                     Implicit part of Surface Pressure Gradient ( 0-1 )
+C     implicDiv2Dflow - parameter of the Crank-Nickelson time stepping :
+C                     Implicit part of barotropic flow Divergence ( 0-1 )
 C     hFacMin      - Minimum fraction size of a cell (affects hFacC etc...)
 C     hFacMinDz    - Minimum dimesional size of a cell (affects hFacC etc..., m)
 C     hFacMinDp    - Minimum dimesional size of a cell (affects hFacC etc..., Pa)
@@ -368,7 +372,8 @@ C         "     Quadratic  ( linear: 1/s, quadratic: 1/m )
      & viscAh,  viscAz,  viscA4,  viscAr,
      & diffKhT, diffKzT, diffK4T, diffKrT,
      & diffKhS, diffKzS, diffK4S, diffKrS,
-     & delT, tauCD, rCD, freeSurfFac, hFacMin, hFacMinDz, 
+     & delT, tauCD, rCD, freeSurfFac, implicSurfPress, implicDiv2Dflow,
+     & hFacMin, hFacMinDz,
      & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
      & recip_rhoConst, rhoConst, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq, taveFreq,
@@ -401,6 +406,8 @@ C         "     Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL recip_RSphere
       _RL f0
       _RL freeSurfFac
+      _RL implicSurfPress
+      _RL implicDiv2Dflow
       _RL hFacMin
       _RL hFacMinDz
       _RL hFacMinDp
