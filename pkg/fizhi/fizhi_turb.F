@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.24 2004/08/12 15:21:22 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.25 2004/08/26 14:41:56 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -245,7 +245,7 @@ C Set fmu and ed to zero for no background diffusion
       integer nocean, nice
       integer ndmoist,time_left,ndum
       integer ntracedim
-      _RL    dtfac,timstp2,sum
+      _RL    dtfac,timstp2,sum0
 C logical begin flag - set to true to indicate a cold start
       logical qbeg    
 
@@ -307,18 +307,18 @@ c **********************************************************************
       
       qbeg = .false.
 
-      sum = 0.0
+      sum0 = 0.0
       do L=1,nlay
       do n=1,nchptot
-      sum = sum + tke(n,L)
+      sum0 = sum0 + tke(n,L)
       enddo
       enddo
 
 #ifdef ALLOW_USE_MPI
-      call mpi_allreduce(sum,const,1,mpi_double_precision,mpi_sum,
+      call mpi_allreduce(sum0,const,1,mpi_double_precision,mpi_sum,
      .                                                mpi_comm_world,n)
 #else 
-      const = sum
+      const = sum0
 #endif
 
       if( const.eq.0.0 ) then
@@ -1493,7 +1493,7 @@ c *********************************************************************
        do j =1,jm
        do i =1,im
         qdiag(i,j,iturbt+l-1,bi,bj) =  qdiag(i,j,iturbt+l-1,bi,bj)
-     .                   + dtturb(i,j,l) * pkz(i,1,l)*atimstp*secday
+     .                   + dtturb(i,j,l) * pkz(i,j,l)*atimstp*secday
        enddo
        enddo
        endif
@@ -1527,13 +1527,11 @@ c -------------------------------------------
        do i =1,ijall
         duturb(i,1,l) = duturb(i,1,l)*atimstp
         dvturb(i,1,l) = dvturb(i,1,l)*atimstp
-c       dtturb(i,1,l) = dtturb(i,1,l)*thtgz(i)
-        dtturb(i,1,l) = dtturb(i,1,l)*atimstp
+        dtturb(i,1,l) = dtturb(i,1,l)*thtgz(i)
        enddo
        do nt = 1,ntracers
         do i =1,ijall
-c        dqturb(i,1,l,nt) = dqturb(i,1,l,nt)*thtgz(i)
-         dqturb(i,1,l,nt) = dqturb(i,1,l,nt)*atimstp
+         dqturb(i,1,l,nt) = dqturb(i,1,l,nt)*thtgz(i)
         enddo
        enddo
       enddo

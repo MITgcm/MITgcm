@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.19 2004/08/12 15:21:22 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.20 2004/08/26 14:41:56 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -2002,7 +2002,7 @@ c-----output parameters
 c-----temporary parameters
 
       _RL  zth,ff,xx,taup,sscp,gp,gm1,gm2,gm3,akk,alf1,alf2,
-     *     all,bll,st7,st8,cll,dll,fll,ell,st1,st2,st3,st4
+     *     all1,bll,st7,st8,cll,dll,fll,ell,st1,st2,st3,st4
 c
                 zth = one / csm
  
@@ -2039,11 +2039,11 @@ c   alf1 and alf2 are alpha1 and alpha2 from eqs (23) & (24) of K & H
                 alf1 = gm1 - gm3 * xx
                 alf2 = gm2 + gm3 * xx
  
-c  all is last term in eq(21) of K & H
+c  all1 is last term in eq(21) of K & H
 c  bll is last term in eq(22) of K & H
  
                 xx  = akk * two
-                all = (gm3 - alf2 * zth    )*xx*td
+                all1 = (gm3 - alf2 * zth    )*xx*td
                 bll = (one - gm3 + alf1*zth)*xx
  
                 xx  = akk * zth
@@ -2069,7 +2069,7 @@ c  bll is last term in eq(22) of K & H
 c   rr is r-hat of eq(21) of K & H
 c   tt is diffuse part of t-hat of eq(22) of K & H
  
-                rr =   ( cll-dll*st4    -all*st2)*st1
+                rr =   ( cll-dll*st4    -all1*st2)*st1
                 tt = - ((fll-ell*st4)*td-bll*st2)*st1
  
                 rr = max(rr,zero)
@@ -2528,7 +2528,7 @@ c-----output (undated) parameter
 c-----temporary array
 
       integer i,j,k,ic,iw 
-      _RL  xx,clog,wlog,dc,dw,x1,x2,y2
+      _RL  xx,clog1,wlog,dc,dw,x1,x2,y2
 
 c********************************************************************
 c-----include co2 look-up table
@@ -2545,15 +2545,15 @@ c     extraterrestrial solar flux in the co2 bands.
        do j= 1, n
         do i= 1, m
           xx=1./.3
-          clog=log10(swc(i,j,k)*csm(i,j))
+          clog1=log10(swc(i,j,k)*csm(i,j))
           wlog=log10(swh(i,j,k)*csm(i,j))
-          ic=int( (clog+3.15)*xx+1.)
+          ic=int( (clog1+3.15)*xx+1.)
           iw=int( (wlog+4.15)*xx+1.)
           if(ic.lt.2)ic=2
           if(iw.lt.2)iw=2
           if(ic.gt.22)ic=22
           if(iw.gt.19)iw=19     
-          dc=clog-float(ic-2)*.3+3.
+          dc=clog1-float(ic-2)*.3+3.
           dw=wlog-float(iw-2)*.3+4.   
           x1=cah(1,iw-1)+(cah(1,iw)-cah(1,iw-1))*xx*dw
           x2=cah(ic-1,iw-1)+(cah(ic-1,iw)-cah(ic-1,iw-1))*xx*dw
