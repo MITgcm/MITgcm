@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.71 2004/03/10 23:34:04 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.72 2004/03/12 15:50:06 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -80,7 +80,8 @@ find_possible_configs()  {
     tmp3=`echo $tmp2 | sed -e 's/power macintosh/ppc/'`
     tmp1=`echo $tmp3 | sed -e 's|x86_64|amd64|'`
     tmp2=`echo $tmp1 | sed -e 's/i[3-6]86/ia32/' | sed -e 's/athlon/ia32/'`
-    PLATFORM=$tmp2
+    tmp3=`echo $tmp2 | sed -e 's/cray sv1/craysv1/'`
+    PLATFORM=$tmp3
     OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
     echo "  The platform appears to be:  $PLATFORM"
     
@@ -119,7 +120,7 @@ find_possible_configs()  {
     #    4) fall back to the buggy local xmakedpend script
     #
     if test "x${MAKEDEPEND}" = x ; then
-      which makedepend >& /dev/null
+      which makedepend > /dev/null 2>&1
       RETVAL=$?
       if test ! "x${RETVAL}" = x0 ; then
          echo "    a system-default makedepend was not found."
@@ -1656,6 +1657,7 @@ depend:
 	@make links
 	\$(MAKEDEPEND) -o .f \$(DEFINES) \$(INCLUDES) \$(SRCFILES)
 	\$(TOOLSDIR)/f90mkdepend >> \$(MAKEFILE)
+	-rm -f makedepend.out
 
 links: \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(SPECIAL_FILES)
 
