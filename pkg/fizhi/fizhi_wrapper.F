@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.26 2004/10/26 17:46:16 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.27 2005/03/15 18:03:18 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -107,7 +107,7 @@ c Do not use a zero field as the top edge pressure for interpolation
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
         call get_landfrac(im2,jm2,Nsx,Nsy,bi,bj,maxtyp,
-     .        surftype,tilefrac,fracland)
+     .        surftype,tilefrac,fracland(1,1,bi,bj))
 c
 c Compute physics increments
 
