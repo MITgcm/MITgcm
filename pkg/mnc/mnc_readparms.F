@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.18 2005/02/08 17:58:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.19 2005/02/13 17:39:32 jmc Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -82,12 +82,20 @@ C     Verify that the file exists and, if not, disable MNC
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &       SQUEEZE_RIGHT , mythid)
       ELSE
+c       WRITE(msgBuf,'(3a)')
+c    &       'Data file: ''',data_file(1:nl),
+c    &       ''' does not exist so MNC will be disabled'
+c       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+c    &       SQUEEZE_RIGHT , mythid)
+c       RETURN
+C- jmc: found strange things when data.mnc is missing: 
+C       "MNC will be disabled" is not implemented
+C       => Safer, in this case, to stop the run here.
         WRITE(msgBuf,'(3a)')
      &       'Data file: ''',data_file(1:nl),
-     &       ''' does not exist so MNC will be disabled'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &       SQUEEZE_RIGHT , mythid)
-        RETURN
+     &       ''' does not exist ==> STOP'
+        CALL PRINT_ERROR( msgBuf, mythid)
+        STOP 'ABNORMAL END: S/R MNC_READPARMS'
       ENDIF
 
 C     Open files
