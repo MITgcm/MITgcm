@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.37 2003/11/14 05:25:46 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.38 2003/11/14 12:52:56 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -290,6 +290,7 @@ EOF
 	echo "WARNING: C test compile fails -- please see \"genmake_errors\""
 	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
 	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
+	rm -f genmake_tcomp.* genmake_test.*
 	return 1
     fi
     c_tcall=`nm genmake_test.o | grep tcall | cut -d ' ' -f 3`
@@ -300,6 +301,7 @@ EOF
 	echo "WARNING: The \"nm\" command failed."
 	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
 	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
+	rm -f genmake_tcomp.* genmake_test.*
 	return 1
     fi
     cat > genmake_tcomp.f <<EOF
@@ -317,6 +319,7 @@ EOF
 	echo "WARNING: FORTRAN test compile fails -- please see \"genmake_errors\""
 	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
 	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
+	rm -f genmake_tcomp.* genmake_test.*
 	return 1
     fi
     f_tcall=`nm genmake_tcomp.o | grep tcall | cut -d ' ' -f 3`
@@ -327,6 +330,7 @@ EOF
 	echo "WARNING: The \"nm\" command failed."
 	echo "WARNING: We'll try to use: FC_NAMEMANGLE='$FC_NAMEMANGLE'"
 	echo "WARNING: Please contact <MITgcm-support@mitgcm.org> if you need help here."
+	rm -f genmake_tcomp.* genmake_test.*
 	return 1
     fi
 
