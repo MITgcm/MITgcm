@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.2 1998/07/15 22:05:44 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.3 1998/07/16 23:50:44 cnh Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -138,6 +138,33 @@ switch ($platform$USEMPI)
     set LIBS       = ( '-L/usr/local/mpi/lib/solaris/ch_shmem -lmpi -lthread' \
                        '-lsocket -lnsl -fast' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
+    breaksw
+  case onyx:
+  case onyx+mpi:
+    echo "Configuring for SGI ONYX running IRIX64"
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI' )
+    set INCLUDES   = ( '-I/usr/include' )
+    set FFLAGS     = ( '-extend_source -bytereclen -r10000 -64' )
+    set FOPTIM     = ( '-O2' )
+    set NOOPTFLAGS = ( '-O0' )
+    set NOOPTFILES = ( 'barrier.F different_multiple.F ' \
+                       'load_external_fields.F' )
+    set LIBS       = ( '-lmpi' )
+    breaksw
+  case exemplar:
+  case exemplar+mpi:
+    echo "Configuring for HP Exemplar"
+    set CPP        = ( '/usr/ccs/lbin/cpp -P' )
+    set DEFINES    = ( ${DEFINES}  '-DTARGET_HP' )
+    set INCLUDES   = ( '-I/opt/mpi/include' )
+    set FC         = ( 'mpif77' )
+    set LINK       = ( 'mpif77' )
+    set FFLAGS     = ( '+es +U77 +Onoautopar +Oexemplar_model' \
+                       '+Okernel_threads' )
+    set FOPTIM     = ( '+O2' )
+    set NOOPTFLAGS = ( '-O0' )
+    set NOOPTFILES = ( 'barrier.F different_multiple.F' \
+                       'load_external_fields.F' )
     breaksw
   default:
     echo "Error: platform not recognized: uname -p = " $platform$USEMPI
