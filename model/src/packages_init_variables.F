@@ -27,6 +27,8 @@ C       |-- OBCS_INIT_VARIABLES
 C       |
 C       |-- PTRACERS_INIT
 C       |
+C       |-- LAND_INI_VARS
+C       |
 C       |-- CTRL_MAP_INI
 C       |
 C       |-- EXF_INIT
@@ -81,6 +83,10 @@ C--   Open boundaries data
 
 #ifdef ALLOW_PTRACERS
       IF ( usePTRACERS ) CALL PTRACERS_INIT( mythid )
+#endif
+
+#ifdef ALLOW_LAND
+      IF ( useLAND ) CALL LAND_INI_VARS( mythid )
 #endif
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.6 2003/02/11 03:03:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.7 2003/06/12 18:21:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,6 +25,10 @@ C       |
 C       |-- FLT_INIT
 C       |
 C       |-- ZONAL_FILT_INIT
+C       |
+C       |-- AIM_INITIALISE
+C       |
+C       |-- LAND_INITIALISE
 
 C     !USES:
       IMPLICIT NONE
@@ -61,6 +65,16 @@ C--   Latitude circle filter initialisation
        CALL ZONAL_FILT_INIT(myThid)
       _BARRIER
       ENDIF
+#endif
+
+#ifdef ALLOW_AIM
+C--   Initialise & Read AIM physical parameters
+      IF (useAIM) CALL AIM_INITIALISE( myThid )
+#endif
+
+#ifdef ALLOW_LAND
+C--   Initialise & Read Land package parameters
+      IF (useLand) CALL LAND_INITIALISE( myThid )
 #endif
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.21 2003/06/05 16:03:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.22 2003/06/12 18:21:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -467,6 +467,13 @@ C SPK 4/9/01: Open boundary checkpointing
 C--     Write restart file for floats
         IF (useFLT) THEN
           CALL FLT_RESTART(myTime, myIter, myThid)
+        ENDIF
+#endif
+
+#ifdef ALLOW_LAND
+C--     Write pickup file for Lnad package:
+        IF (useLand) THEN
+          CALL LAND_WRITE_PICKUP(fn,myTime,myIter,myThid)
         ENDIF
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.14 2003/02/18 05:33:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.15 2003/06/12 18:21:34 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -51,6 +51,7 @@ cswdice -- addd useThermSeaIce to NAMELIST
      &          useGMRedi,
      &          useOBCS,
      &          useAIM,
+     &          useLand,
      &          useGrdchk,
      &          useECCO,
      &          useSHAP_FILT,
@@ -82,6 +83,7 @@ C--   Default package configuration
       useGMRedi=.FALSE.
       useOBCS=.FALSE.
       useAIM=.FALSE.
+      useLand=.FALSE.
       useGrdchk=.FALSE.
       useECCO=.FALSE.
       useSHAP_FILT=.FALSE.
@@ -113,5 +115,5 @@ C--   Close the open data file
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 
-      return
-      end
+      RETURN
+      END
