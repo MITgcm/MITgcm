@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.5 2004/06/09 18:54:20 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.6 2004/06/09 20:33:37 molod Exp $
 C $Name:  $
 
        subroutine update_earth_exports (myTime, myIter, myThid)
@@ -22,11 +22,15 @@ c-----------------------------------------------------------------------
 #include "gridalt_mapping.h"
 #include "fizhi_land_coms.h"
 #include "fizhi_earth_coms.h"
+#include "fizhi_ocean_coms.h"
 #include "EEPARAMS.h"
 
       integer myTime, myIter, myThid
 
       real lats(sNx,sNy), lons(sNx,sNy), cosz(sNx,sNy)
+      real fraci(sNx,sNy), fracl(sNx,sNy)
+      real ficetile(nchp)
+      real ra
       integer i, j, L, bi, bj
       integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
       integer sec, day, month
@@ -55,12 +59,24 @@ c-----------------------------------------------------------------------
        enddo
        enddo
 
+       call get_landfrac(im2,jm2,nSx,nSy,bi,bj,maxtyp,surftype,tilefrac,
+     .                                                            fracl)
+       do j = jm1,jm2
+       do i = im1,im2
+        if(sea_ice(i,j,bi,bj).gt.0.) then
+           fraci(i,j) = 1.
+        else
+           fraci(i,j) = 0.
+        endif
+       enddo
+       enddo
+
 C***********************************************************************
 C*              Get Leaf-Area-Index and Greenness Index                *
 C***********************************************************************
 
       if( alarm('turb') .or. alarm('radsw') ) then
-      call getlgr (sec,month,day,chlt,ityp,nchpland,alai,agrn )
+      call getlgr (sec,month,day,chlt,ityp,nchpland,bi,bj,alai,agrn )
       endif
 
 C **********************************************************************
@@ -68,10 +84,10 @@ C                      Compute Surface Albedo
 C **********************************************************************
 
       if( alarm('radsw') ) then
-       call astro  ( nymd,nhms, lats,lons, im2*jm2, cosz,ra )
-       call getalb ( sec,month,day,cosz,snodep,fraci,fracl,
-     .              im,jm,nchp,nchpland,igrd,ityp,chfr,chlt,alai,agrn,
-     .              albvisdr,albvisdf,albnirdr,albnirdf )
+       call astro(nymd,nhms,lats,lons,im2*jm2,cosz,ra)
+       call getalb(sec,month,day,cosz,snodep,fraci,fracl,im2,jm2,nchp,
+     .             nchpland,nSx,nSy,bi,bj,igrd,ityp,chfr,chlt,alai,agrn,
+     .             albvisdr,albvisdf,albnirdr,albnirdf )
       endif
 
 
@@ -80,9 +96,9 @@ C                      Compute Surface Emissivity
 C **********************************************************************
 
       if( alarm('radlw') ) then
-       call grd2msc  ( fraci,im,jm,igrd,ficetile,nchp,nchp )
-       call getemiss ( fracl,im,jm,nchp,igrd,ityp,chfr,snodep,ficetile,
-     .                                             emiss )
+       call grd2msc(fraci,im2,jm2,igrd,ficetile,nchp,nchp)
+       call getemiss(fracl,im2,jm2,nchp,nSx,nSy,bi,bj,igrd,ityp,chfr,
+     .      snodep,ficetile,emiss)
       endif
 
 
@@ -1074,6 +1090,42 @@ c--------------------------------
          newemis(i,10) =  emis( 4,9)
         endif
        endif
+      enddo
+
+      return
+      end
+      subroutine get_landfrac(im,jm,nSx,nSy,bi,bj,maxtyp,surftype,
+     .                                                    tilefrac,frac)
+C***********************************************************************
+C  Purpose
+C     To compute the total fraction of land within a model grid-box
+C
+C***********************************************************************
+      implicit none
+#include "CPP_OPTIONS.h"
+
+      integer i,j,nSx,nSy,bi,bj,maxtyp
+      integer surftype(im,jm,nSx,nSy)
+      _RL surftype(im,jm,nSx,nSy)
+      real frac(im,jm)
+
+      integer  i,j,k
+
+      do j=1,jm
+      do i=1,im
+      frac(i,j) = 0.0
+      enddo
+      enddo
+
+      do k=1,maxtyp
+      do j=1,jm
+      do i=1,im
+      if(surftype(i,j,k,bi,bj).lt.100.and.
+                                       tilefrac(i,j,k,bi,bj).gt.0.0)then
+       frac(i,j) = frac(i,j) + tilefrac(i,j,k,bi,bj)
+      endif
+      enddo
+      enddo
       enddo
 
       return

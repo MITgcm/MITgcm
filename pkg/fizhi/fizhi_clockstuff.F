@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.3 2004/06/04 20:42:34 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_clockstuff.F,v 1.4 2004/06/09 20:33:36 molod Exp $
 C $Name:  $
 
       subroutine set_alarm (tag,date,time,freq)
@@ -660,3 +660,152 @@ C***********************************************************************
 
       RETURN                                                                    
       END                                                                       
+
+      SUBROUTINE ASTRO ( NYMD,NHMS,ALAT,ALON,IRUN,COSZ,RA )
+C***********************************************************************
+C
+C  INPUT:
+C  ======
+C    NYMD      : CURRENT YYMMDD
+C    NHMS      : CURRENT HHMMSS
+C    ALAT(IRUN):LATITUDES  IN DEGREES.
+C    ALON(IRUN):LONGITUDES IN DEGREES. (0 = GREENWICH, + = EAST).
+C    IRUN      : # OF POINTS TO CALCULATE
+C
+C  OUTPUT:
+C  =======
+C    COSZ(IRUN)  : COSINE OF ZENITH ANGLE.
+C    RA          : EARTH-SUN DISTANCE IN UNITS OF
+C                  THE ORBITS SEMI-MAJOR AXIS.
+C
+C  NOTE:
+C  =====
+C  THE INSOLATION AT THE TOP OF THE ATMOSPHERE IS:
+C
+C  S(I) = (SOLAR CONSTANT)*(1/RA**2)*COSZ(I),
+C
+C  WHERE:
+C  RA AND COSZ(I) ARE THE TWO OUTPUTS OF THIS SUBROUTINE.
+C
+C***********************************************************************
+C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
+C***********************************************************************
+
+      implicit none
+
+c Input Variables
+c ---------------
+      integer nymd, nhms, irun
+      real    cosz(irun), alat(irun), alon(irun), ra
+
+c Local Variables
+c ---------------
+      integer year, day, sec, month, iday, idayp1
+      integer dayscy
+      integer i,n,nsecf,k,km,kp
+
+      real hc
+      real pi, zero, one, two, six, dg2rd, yrlen, eqnx, ob, ecc, per
+      real daylen, fac, thm, thp, thnow, zs, zc, sj, cj
+
+      parameter ( pi    = 3.1415926535898)
+      parameter ( zero  = 0.0 )
+      parameter ( one   = 1.0 )
+      parameter ( two   = 2.0 )
+      parameter ( six   = 6.0 )
+      parameter ( dg2rd = pi/180. )
+
+      parameter ( yrlen  = 365.25  )
+      parameter ( dayscy = 365*4+1 )
+      parameter ( eqnx   =  80.9028)
+      parameter ( ob     =  23.45*dg2rd )
+      parameter ( ecc    =   0.0167 )
+      parameter ( per    = 102.0*dg2rd)
+      parameter ( daylen = 86400.)
+
+      REAL      TH(DAYSCY),T0,T1,T2,T3,T4,FUN,Y,MNDY(12,4)
+
+      LOGICAL FIRST
+      DATA    FIRST/.TRUE./
+      SAVE
+
+      DATA MNDY /0,31,60,91,121,152,182,213,244,274,305,335,366,
+     .           397,34*0 /
+
+      FUN(Y) = (TWO*PI/((ONE-ECC**2)**1.5))*(ONE/YRLEN)
+     .       * (ONE - ECC*COS(Y-PER)) ** 2
+
+C***********************************************************************
+C*                          SET CURRENT TIME                           *
+C***********************************************************************
+
+      YEAR  = NYMD / 10000
+      MONTH = MOD(NYMD,10000) / 100
+      DAY   = MOD(NYMD,100)
+      SEC   = NSECF(NHMS)
+
+C***********************************************************************
+C*                 COMPUTE DAY-ANGLES FOR 4-YEAR CYCLE                 *
+C***********************************************************************
+
+      IF(FIRST) THEN
+           DO 100 I=15,48
+           MNDY(I,1) = MNDY(I-12,1) + 365
+100        CONTINUE
+
+           KM  = INT(EQNX) + 1
+           FAC = KM-EQNX
+           T0 = ZERO
+           T1 = FUN(T0         )*FAC
+           T2 = FUN(ZERO+T1/TWO)*FAC
+           T3 = FUN(ZERO+T2/TWO)*FAC
+           T4 = FUN(ZERO+T3    )*FAC
+           TH(KM) = (T1 + TWO*(T2 + T3) + T4) / SIX
+
+           DO 200 K=2,DAYSCY
+           T1 = FUN(TH(KM)       )
+           T2 = FUN(TH(KM)+T1/TWO)
+           T3 = FUN(TH(KM)+T2/TWO)
+           T4 = FUN(TH(KM)+T3    )
+           KP = MOD(KM,DAYSCY) + 1
+           TH(KP) = TH(KM) + (T1 + TWO*(T2 + T3) + T4) / SIX
+           KM = KP
+ 200       CONTINUE
+
+           FIRST=.FALSE.
+      ENDIF
+
+C***********************************************************************
+C*            COMPUTE EARTH-SUN DISTANCE TO CURRENT SECOND             *
+C***********************************************************************
+
+      IDAY   = DAY + MNDY(MONTH,MOD(YEAR,4)+1)
+      IDAYP1 = MOD( IDAY,DAYSCY) + 1
+      THM    = MOD( TH(IDAY)  ,TWO*PI)
+      THP    = MOD( TH(IDAYP1),TWO*PI)
+
+      IF(THP.LT.THM) THP = THP + TWO*PI
+      FAC   = FLOAT(SEC)/DAYLEN
+      THNOW = THM*(ONE-FAC) + THP*FAC
+
+      ZS = SIN(THNOW) * SIN(OB)
+      ZC = SQRT(ONE-ZS*ZS)
+      RA = (1.-ECC*ECC) / ( ONE-ECC*COS(THNOW-PER) )
+
+C***********************************************************************
+C*                 COMPUTE COSINE OF THE ZENITH ANGLE                  *
+C***********************************************************************
+
+      FAC  = FAC*TWO*PI + PI
+      DO I = 1,IRUN
+
+      HC = COS( FAC+ALON(I)*DG2RD )
+      SJ = SIN(ALAT(I)*DG2RD)
+      CJ = SQRT(ONE-SJ*SJ)
+
+          COSZ(I) = SJ*ZS + CJ*ZC*HC
+      IF( COSZ(I).LT.ZERO ) COSZ(I) = ZERO
+      ENDDO
+
+      RETURN
+      END
