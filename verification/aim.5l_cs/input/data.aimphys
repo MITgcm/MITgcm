@@ -59,7 +59,9 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #      SDALB  = Snow depth (mm water) corresponding to maximum albedo
 #      SWCAP  = Soil wetness at field capacity (volume fraction)
 #      SWWIL  = Soil wetness at wilting point  (volume fraction)
+#      hSnowWetness :: snow depth (m) corresponding to maximum wetness
  &AIM_PAR_FOR
+   hSnowWetness = 0.,
  &
 
 #--   Constants for surface fluxes (namelist AIM_PAR_SFL):

@@ -38,6 +38,7 @@
 #     land_rhoLiqW    :: density of liquid water (kg/m3)
 #     land_rhoSnow    :: density of snow (kg/m3)
 #     land_Lfreez     :: Latent heat of freezing (J/kg)
+#     land_hMaxSnow   :: Maximum snow-thickness  (m)
 #     diffKsnow       :: thermal conductivity of snow (W/m/K)
 #     timeSnowAge     :: snow aging time scale   (s)
 #     hNewSnowAge     :: new snow thickness that refresh the snow-age (by 1/e)
