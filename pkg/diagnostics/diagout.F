@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.16 2004/07/08 00:34:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.17 2004/07/20 17:47:01 adcroft Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -69,7 +69,7 @@ CEOP
 #endif /*  ALLOW_MNC  */
 
       undef = getcon('UNDEF')
-      glf = .FALSE.
+      glf = globalFiles
       WRITE(suff,'(I10.10)') myIter
       pref = fnames(listnum)
       ilen=ilnblnk( pref )
