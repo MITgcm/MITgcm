@@ -1,6 +1,0 @@
-# Packages
- &PACKAGES
- useGMRedi=.TRUE.,
- useBulkforce=.TRUE.,
- useThSIce=.TRUE.,
- &
