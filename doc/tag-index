@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.277 2004/04/18 20:36:56 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.278 2004/04/18 21:43:24 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint52m_post
 o commented out call to cal_GetMonthsRec in swfrac.F and added some comments;
   this does not change any of the results, because myIter=0 in swfrac always
   lead to jwtype=2 (the default anyway), but the call makes little sense
