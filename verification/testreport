@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.45 2004/07/17 02:08:45 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.46 2004/07/18 21:27:42 jmc Exp $
 #  $Name:  $
 #
 
@@ -422,11 +422,13 @@ runmodel()
 	printf 'runmodel ... ' 1>&2
 	# make output.txt
 	echo
+	rm -f run.log
 	# echo "COMMAND='$COMMAND'"
 	# echo "pwd='"`pwd`"'"
-	( eval $COMMAND ) >> run.log 2>&1
+	( eval $COMMAND ) > run.log 2>&1
 	RETVAL=$?
 	if test "x$RETVAL" = x0 ; then
+	    tail run.log
 	    echo successful 1>&2
 	    # === Reduce the size of the testing emails!
 	    # if test "x$ADM" = x ; then
