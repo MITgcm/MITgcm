@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.3 2001/06/15 15:14:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_uv_s2.F,v 1.4 2002/01/19 01:10:57 heimbach Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -106,30 +106,30 @@ C     Special stuff for Cubed Sphere
              J=1
              vort3(I,J)=
      &          tmpFldV(I,J,k,bi,bj)
-c    &         -tmpFldV(I-1,J,k,bi,bj)
      &         -tmpFldU(I,J,k,bi,bj)
      &         +tmpFldU(I,J-1,k,bi,bj)
+c    &         -tmpFldV(I-1,J,k,bi,bj)
              I=sNx+1
              J=1
              vort3(I,J)=
-c    &          tmpFldV(I,J,k,bi,bj)
      &         -tmpFldV(I-1,J,k,bi,bj)
      &         -tmpFldU(I,J,k,bi,bj)
      &         +tmpFldU(I,J-1,k,bi,bj)
+c    &          tmpFldV(I,J,k,bi,bj)
              I=1
              J=sNy+1
              vort3(I,J)=
      &          tmpFldV(I,J,k,bi,bj)
-c    &         -tmpFldV(I-1,J,k,bi,bj)
      &         -tmpFldU(I,J,k,bi,bj)
      &         +tmpFldU(I,J-1,k,bi,bj)
+c    &         -tmpFldV(I-1,J,k,bi,bj)
              I=sNx+1
              J=sNy+1
              vort3(I,J)=
-c    &          tmpFldV(I,J,k,bi,bj)
      &         -tmpFldV(I-1,J,k,bi,bj)
      &         -tmpFldU(I,J,k,bi,bj)
      &         +tmpFldU(I,J-1,k,bi,bj)
+c    &          tmpFldV(I,J,k,bi,bj)
            ENDIF
          ENDIF
 
