@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.109 2004/10/22 11:46:02 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.110 2004/10/27 18:25:05 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1588,7 +1588,7 @@ EOF
 	PACKAGES=`echo $PACKAGES | sed -e 's/mnc//g'`
 	DISABLE="$DISABLE mnc"
     else
-	( cd $ROOTDIR"/pkg/mnc" && $MAKE templates ) > make_mnc.errors 2>&1
+	( cd $ROOTDIR"/pkg/mnc" && $MAKE testclean && $MAKE templates ) > make_mnc.errors 2>&1
 	RETVAL=$?
 	if test "x${RETVAL}" = x0 ; then
 	    rm -f make_mnc.errors
