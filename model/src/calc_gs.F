@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.26 2001/02/06 05:12:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.27 2001/02/07 16:27:29 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -89,8 +89,8 @@ C     I, J, K - Loop counters
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   only the kUp part of fverS is set in this subroutine
 C--   the kDown is still required
-
       fVerS(1,1,kDown) = fVerS(1,1,kDown)
+#endif
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
         fZon(i,j)      = 0.0
@@ -98,7 +98,6 @@ C--   the kDown is still required
         fVerS(i,j,kUp) = 0.0
        ENDDO
       ENDDO
-#endif
 
       afFacS = 1. _d 0
       dfFacS = 1. _d 0
