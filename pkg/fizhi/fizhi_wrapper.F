@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.7 2004/06/14 20:34:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.8 2004/06/15 20:22:26 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -18,14 +18,13 @@ c-----------------------------------------------------------------------
        implicit none
 #include "SIZE.h"
 #include "GRID.h"
-#include "fizhi_land_SIZE.h"
-#include "fizhi_SIZE.h"
-#include "DYNVARS.h"
-#include "fizhi_coms.h"
-#include "gridalt_mapping.h"
-#include "fizhi_land_coms.h"
 #include "EEPARAMS.h"
 #include "SURFACE.h"
+#include "DYNVARS.h"
+#include "fizhi_land_SIZE.h"
+#include "fizhi_SIZE.h"
+#include "fizhi_coms.h"
+#include "gridalt_mapping.h"
 
        integer myTime, myIter, myThid 
 
@@ -38,14 +37,14 @@ c pe on dynamics and physics grid refers to bottom edge
        integer i, j, L, Lbotij, bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
 
-       im1 = 1-OLx
-       im2 = sNx+OLx
-       jm1 = 1-OLy
-       jm2 = sNy+OLy
-       idim1 = 1
-       idim2 = sNx
-       jdim1 = 1
-       jdim2 = sNy
+       idim1 = 1-OLx
+       idim2 = sNx+OLx
+       jdim1 = 1-OLy
+       jdim2 = sNy+OLy
+       im1 = 1
+       im2 = sNx
+       jm1 = 1
+       jm2 = sNy
 
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
@@ -104,11 +103,11 @@ c Do not use a zero field as the top edge pressure for interpolation
        do bi = myBxLo(myThid), myBxHi(myThid)
 c
 c Compute physics increments
-        call do_fizhi(uphy,vphy,thphy,sphy,pephy4fiz,
-     .                              ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     .                  xC,yC,
-     .            im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,1,sNx,1,sNy,bi,bj,nchp,
-     .                                         duphy,dvphy,dthphy,dsphy)
+        call do_fizhi(uphy,vphy,thphy,sphy,pephy4fiz,xC,yC,
+     .     ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
+     .     idim1,idim2,jdim1,jdim2,Nrphys,Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,
+     .     nchp,
+     .     duphy,dvphy,dthphy,dsphy)
        enddo
        enddo
        CALL TIMER_STOP ('DO_FIZHI          [FIZHI_WRAPPER]',mythid)
@@ -126,8 +125,8 @@ C   into bottom-up arrays for interpolation to dynamics grid
          enddo
         enddo
         enddo
-        call phys2dyn(tmpphys,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
-     .       1,sNx,1,sNy,bi,bj,pedyn,ksurfC,Nr,nlperdyn,guphy)
+        call phys2dyn(tmpphys,pephy,idim1,idim2,jdim1,jdim2,Nrphys,
+     . Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,pedyn,ksurfC,Nr,nlperdyn,guphy)
         do j = 1,sNy
         do i = 1,sNx
          do L = 1,Nrphys
@@ -135,8 +134,8 @@ C   into bottom-up arrays for interpolation to dynamics grid
          enddo
         enddo
         enddo
-        call phys2dyn(tmpphys,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
-     .       1,sNx,1,sNy,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gvphy)
+        call phys2dyn(tmpphys,pephy,idim1,idim2,jdim1,jdim2,Nrphys,
+     . Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gvphy)
         do j = 1,sNy
         do i = 1,sNx
          do L = 1,Nrphys
@@ -144,8 +143,8 @@ C   into bottom-up arrays for interpolation to dynamics grid
          enddo
         enddo
         enddo
-        call phys2dyn(tmpphys,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
-     .       1,sNx,1,sNy,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gthphy)
+        call phys2dyn(tmpphys,pephy,idim1,idim2,jdim1,jdim2,Nrphys,
+     . Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gthphy)
         do j = 1,sNy
         do i = 1,sNx
          do L = 1,Nrphys
@@ -153,8 +152,8 @@ C   into bottom-up arrays for interpolation to dynamics grid
          enddo
         enddo
         enddo
-        call phys2dyn(tmpphys,pephy,im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,
-     .       1,sNx,1,sNy,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gsphy)
+        call phys2dyn(tmpphys,pephy,idim1,idim2,jdim1,jdim2,Nrphys,
+     . Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gsphy)
 
        enddo
        enddo
@@ -162,8 +161,8 @@ C   into bottom-up arrays for interpolation to dynamics grid
 
 c Convert guphy and gvphy from A-grid to C-grid for use by dynamics
        CALL TIMER_START ('ATOC              [FIZHI_WRAPPER]',mythid)
-       call AtoC(myThid,guphy,gvphy,maskC,im1,im2,jm1,jm2,Nr,
-     .                      Nsx,Nsy,1,sNx,1,sNy,guphy,gvphy)
+       call AtoC(myThid,guphy,gvphy,maskC,idim1,idim2,jdim1,jdim2,Nr,
+     .                      Nsx,Nsy,im1,im2,jm1,jm2,guphy,gvphy)
        CALL TIMER_STOP ('ATOC              [FIZHI_WRAPPER]',mythid)
 
        CALL TIMER_START ('EXCHANGES         [FIZHI_WRAPPER]',mythid)
