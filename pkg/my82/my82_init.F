@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/Attic/my82_init.F,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/Attic/my82_init.F,v 1.2 2004/10/17 23:12:31 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -52,7 +52,7 @@ C-----------------------------------------------------------------------
           do i = 1-OLx, sNx+OLx
            MYhbl    (i,j  ,bi,bj) = 0.
            MYviscAr (i,j,k,bi,bj) = viscAr
-           MYdiffKr (i,j,k,bi,bj) = diffKrT
+           MYdiffKr (i,j,k,bi,bj) = diffKrNrT(k)
           end do
          end do
         end do

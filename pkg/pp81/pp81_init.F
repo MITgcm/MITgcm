@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/Attic/pp81_init.F,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/Attic/pp81_init.F,v 1.2 2004/10/17 23:12:59 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -40,7 +40,7 @@ C-----------------------------------------------------------------------
          do j = 1-OLy, sNy+OLy
           do i = 1-OLx, sNx+OLx
            PPviscAr (i,j,k,bi,bj) = viscAr
-           PPdiffKr (i,j,k,bi,bj) = diffKrT
+           PPdiffKr (i,j,k,bi,bj) = diffKrNrT(k)
           end do
          end do
         end do

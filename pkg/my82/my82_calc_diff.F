@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc_diff.F,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc_diff.F,v 1.2 2004/10/17 23:12:31 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -47,7 +47,7 @@ C     I, J, K - Loop counters
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
      &                     - diffKr(i,j,k,bi,bj) )
 #else
-     &                     - diffKrT )
+     &                     - diffKrNrT(k) )
 #endif
        ENDDO
       ENDDO
@@ -59,7 +59,7 @@ C     I, J, K - Loop counters
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_DIFFKR_CONTROL))
      &                     - diffKr(i,j,k,bi,bj) )
 #else
-     &                     - diffKrS )
+     &                     - diffKrNrS(k) )
 #endif
        ENDDO
       ENDDO

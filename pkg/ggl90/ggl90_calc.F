@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.2 2004/09/27 08:02:04 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.3 2004/10/17 23:11:59 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -365,7 +365,7 @@ C     Eq. (11), (18) and (21)
          KappaH = KappaM/TKEPrandtlNumber(I,J,K)
 C     Set a minium (= background) value
          KappaM = MAX(KappaM,viscAr)
-         KappaH = MAX(KappaH,diffKrT)
+         KappaH = MAX(KappaH,diffKrNrT(k))
 C     Set a maximum and mask land point
          GGL90viscAr(I,J,K,bi,bj) = MIN(KappaM,GGL90viscMax)
      &        * maskC(I,J,K,bi,bj)

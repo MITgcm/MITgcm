@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc.F,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/pp81/pp81_calc.F,v 1.2 2004/10/17 23:12:59 jmc Exp $
 C $Name:  $
 
 #include "PP81_OPTIONS.h"
@@ -87,7 +87,7 @@ CEOP
 C     assign a minium ( = background ) value
          PPviscAr(I,J,K,bi,bj) = MAX(PPviscTmp,viscAr)
          PPdiffKr(I,J,K,bi,bj) = MAX(PPviscAr(I,J,K,bi,bj)/denom,
-     &        diffKrT)
+     &        diffKrNrT(k))
 CML         if ( k.eq.2 .and. i.ge.1 .and. i.le.sNx .and. j.eq.1)
 CML     &        print '(A,3I3,5E14.5)', 'ml-pp81', I,J,K, RiLimit,
 CML     &        RiNumber(I,J),denom,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc.F,v 1.1 2004/09/02 09:11:54 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/my82/my82_calc.F,v 1.2 2004/10/17 23:12:31 jmc Exp $
 C $Name:  $
 
 #include "MY82_OPTIONS.h"
@@ -170,7 +170,8 @@ C     M. Satoh: Eq. (11.3.43)
          MYdiffKr(I,J,K,bi,bj) = MYhbl(I,J,bi,bj)*tkel*SH(I,J,K)
 C     Set a minium (= background) value
          MYviscAr(I,J,K,bi,bj) = MAX(MYviscAr(I,J,K,bi,bj),viscAr)
-         MYdiffKr(I,J,K,bi,bj) = MAX(MYdiffKr(I,J,K,bi,bj),diffKrT)
+         MYdiffKr(I,J,K,bi,bj) = MAX(MYdiffKr(I,J,K,bi,bj),
+     &                               diffKrNrT(k) )
 C     Set a maximum and mask land point
          MYviscAr(I,J,K,bi,bj) = MIN(MYviscAr(I,J,K,bi,bj),MYviscMax)
      &        * maskC(I,J,K,bi,bj)
