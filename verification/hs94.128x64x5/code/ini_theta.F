@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.128x64x5/code/Attic/ini_theta.F,v 1.4 2001/06/04 20:30:49 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.128x64x5/code/Attic/ini_theta.F,v 1.5 2001/06/06 16:59:07 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -65,7 +65,7 @@ C--    Initialise temperature field to Held & Saurez equilibrium theta
            DO I=1,sNx
             theta(I,J,K,bi,bj) = MAX( thetaLim, thetaEq )
 c    &                          + 0.01 _d 0*(RAND()-0.5)
-     &                          + 0.01 _d 0*(PORT_RAND()-0.5)
+     &                          + 0.01 _d 0*(PORT_RAND()-0.5 _d 0)
 C           theta(I,J,K,bi,bj) = tRef(K)
            ENDDO
           ENDDO
