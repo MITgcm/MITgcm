@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.62 2003/12/30 02:33:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.63 2004/01/03 01:01:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -175,7 +175,7 @@ CEOP
 
 #ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_ENTER('FORWARD_STEP',myThid)
+     &    CALL DEBUG_ENTER('THERMODYNAMICS',myThid)
 #endif
  
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -571,18 +571,22 @@ C disable this section of code.
           IF ( debugLevel .GE. debLevB ) 
      &     CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 #endif
-          CALL GAD_ADVECTION(bi,bj,tempAdvScheme,GAD_TEMPERATURE,
-     U                      theta,gT,
-     I                      myTime,myIter,myThid)
+          CALL GAD_ADVECTION(
+     I             tempImplVertAdv,tempAdvScheme,GAD_TEMPERATURE,
+     I             uVel, vVel, wVel, theta,
+     O             gT,
+     I             bi,bj,myTime,myIter,myThid)
         ENDIF
         IF (saltMultiDimAdvec) THEN
 #ifdef ALLOW_DEBUG
           IF ( debugLevel .GE. debLevB ) 
      &     CALL DEBUG_CALL('GAD_ADVECTION',myThid)
 #endif
-          CALL GAD_ADVECTION(bi,bj,saltAdvScheme,GAD_SALINITY,
-     U                      salt,gS,
-     I                      myTime,myIter,myThid)
+          CALL GAD_ADVECTION(
+     I             saltImplVertAdv,saltAdvScheme,GAD_SALINITY,
+     I             uVel, vVel, wVel, salt,
+     O             gS,
+     I             bi,bj,myTime,myIter,myThid)
         ENDIF
 C Since passive tracers are configurable separately from T,S we
 C call the multi-dimensional method for PTRACERS regardless
@@ -599,7 +603,7 @@ C of whether multiDimAdvection is set or not.
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 
 #ifdef ALLOW_DEBUG
-       IF ( debugLevel .GE. debLevB ) 
+        IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_MSG('ENTERING DOWNWARD K LOOP',myThid)
 #endif
 
@@ -744,35 +748,53 @@ C--     end of thermodynamic k loop (Nr:1)
         ENDDO
 
 
-C--     Implicit diffusion
-        IF (implicitDiffusion) THEN
-
-         IF (tempStepping) THEN
+C--     Implicit vertical advection & diffusion 
+#ifdef INCLUDE_IMPLVERTADV_CODE
+        IF ( tempImplVertAdv ) THEN
+          CALL GAD_IMPLICIT_R(
+     I         tempImplVertAdv, tempAdvScheme, GAD_TEMPERATURE,
+     I         kappaRT, wVel, theta, 
+     U         gT,
+     I         bi, bj, myTime, myIter, myThid )
+        ELSEIF ( tempStepping .AND. implicitDiffusion ) THEN
+#else /* INCLUDE_IMPLVERTADV_CODE */
+        IF     ( tempStepping .AND. implicitDiffusion ) THEN
+#endif /* INCLUDE_IMPLVERTADV_CODE */
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE KappaRT(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-            CALL IMPLDIFF(
+          CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         deltaTtracer, KappaRT, recip_HFacC,
      U         gT,
      I         myThid )
-         ENDIF
+        ENDIF
 
-         IF (saltStepping) THEN
+#ifdef INCLUDE_IMPLVERTADV_CODE
+        IF ( saltImplVertAdv ) THEN
+          CALL GAD_IMPLICIT_R(
+     I         saltImplVertAdv, saltAdvScheme, GAD_SALINITY,
+     I         kappaRS, wVel, salt, 
+     U         gS,
+     I         bi, bj, myTime, myIter, myThid )
+        ELSEIF ( saltStepping .AND. implicitDiffusion ) THEN
+#else /* INCLUDE_IMPLVERTADV_CODE */
+        IF     ( saltStepping .AND. implicitDiffusion ) THEN
+#endif /* INCLUDE_IMPLVERTADV_CODE */
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE KappaRS(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
-            CALL IMPLDIFF(
+          CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         deltaTtracer, KappaRS, recip_HFacC,
      U         gS,
      I         myThid )
-         ENDIF
+        ENDIF
 
 #ifdef ALLOW_PASSIVE_TRACER
-         IF (tr1Stepping) THEN
+        IF ( tr1Stepping .AND. implicitDiffusion ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE gTr1(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -781,30 +803,33 @@ CADJ STORE gTr1(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
      I      deltaTtracer, KappaRT, recip_HFacC,
      U      gTr1,
      I      myThid )
-         ENDIF
+        ENDIF
 #endif
 
 #ifdef ALLOW_PTRACERS
-C Vertical diffusion (implicit) for passive tracers
-         IF ( usePTRACERS ) THEN
+c #ifdef INCLUDE_IMPLVERTADV_CODE
+c       IF ( usePTRACERS .AND. ptracerImplVertAdv ) THEN
+c       ELSEIF ( usePTRACERS .AND. implicitDiffusion ) THEN
+c #else
+        IF     ( usePTRACERS .AND. implicitDiffusion ) THEN
+C--     Vertical diffusion (implicit) for passive tracers
            CALL PTRACERS_IMPLDIFF( bi,bj,KappaRS,myThid )
-         ENDIF
+        ENDIF
 #endif /* ALLOW_PTRACERS */
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
-         IF (useOBCS) THEN
+        IF ( ( implicitDiffusion
+     &    .OR. tempImplVertAdv
+     &    .OR. saltImplVertAdv
+     &       ) .AND. useOBCS     ) THEN
            DO K=1,Nr
              CALL OBCS_APPLY_TS( bi, bj, k, gT, gS, myThid )
            ENDDO
-         END IF
+        ENDIF
 #endif   /* ALLOW_OBCS */
 
-C--     End If implicitDiffusion
-        ENDIF
-
 #ifdef ALLOW_TIMEAVE
-ceh3 needs an IF ( useTIMEAVE ) THEN
         IF (taveFreq.GT.0. .AND. ivdc_kappa.NE.0.) THEN
           CALL TIMEAVE_CUMUL_1T(ConvectCountTave, ConvectCount,
      I                           Nr, deltaTclock, bi, bj, myThid)
@@ -848,7 +873,7 @@ C--   end bi,bj loops.
 
 #ifdef ALLOW_DEBUG
          IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_LEAVE('FORWARD_STEP',myThid)
+     &    CALL DEBUG_LEAVE('THERMODYNAMICS',myThid)
 #endif
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.105 2003/11/04 19:51:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.106 2004/01/03 01:01:34 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -412,8 +412,17 @@ C--      Apply open boundary conditions
 C--     end of dynamics k loop (1:Nr)
         ENDDO
 
-C--     Implicit viscosity
-        IF (implicitViscosity.AND.momStepping) THEN
+C--     Implicit Vertical advection & viscosity
+#ifdef INCLUDE_IMPLVERTADV_CODE
+        IF ( momImplVertAdv ) THEN
+          CALL MOM_U_IMPLICIT_R( kappaRU, 
+     I                           bi, bj, myTime, myIter, myThid )
+          CALL MOM_V_IMPLICIT_R( kappaRV,
+     I                           bi, bj, myTime, myIter, myThid )
+        ELSEIF ( implicitViscosity ) THEN
+#else /* INCLUDE_IMPLVERTADV_CODE */
+        IF     ( implicitViscosity ) THEN
+#endif /* INCLUDE_IMPLVERTADV_CODE */
 #ifdef    ALLOW_AUTODIFF_TAMC
 CADJ STORE KappaRU(:,:,:) = comlev1_bibj , key=idynkey, byte=isbyte
 CADJ STORE gU(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
@@ -432,17 +441,19 @@ CADJ STORE gV(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
      I         deltaTmom, KappaRV,recip_HFacS,
      U         gV,
      I         myThid )
+        ENDIF
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
-         IF (useOBCS) THEN
+        IF ( useOBCS .AND.(implicitViscosity.OR.momImplVertAdv) ) THEN
            DO K=1,Nr
              CALL OBCS_APPLY_UV( bi, bj, k, gU, gV, myThid )
            ENDDO
-         END IF
+        ENDIF
 #endif   /* ALLOW_OBCS */
 
 #ifdef    ALLOW_CD_CODE
+        IF (implicitViscosity.AND.useCDscheme) THEN
 #ifdef    ALLOW_AUTODIFF_TAMC
 CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
@@ -459,9 +470,9 @@ CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
      I         deltaTmom, KappaRV,recip_HFacS,
      U         uVelD,
      I         myThid )
-#endif    /* ALLOW_CD_CODE */
-C--     End If implicitViscosity.AND.momStepping
         ENDIF
+#endif    /* ALLOW_CD_CODE */
+C--     End implicit Vertical advection & viscosity
  
        ENDDO
       ENDDO
