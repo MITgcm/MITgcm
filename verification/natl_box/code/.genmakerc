@@ -1,0 +1,12 @@
+# $Header: /u/gcmpack/MITgcm/verification/natl_box/code/Attic/.genmakerc,v 1.1 2001/07/30 20:44:24 heimbach Exp $
+# $Name:  $
+
+# Disable packages that are not needed
+set DISABLE=( aim obcs zonal_filt autodiff cost ctrl grdchk )
+
+# Enable packages that are needed but are disabled by default
+set ENABLE=( cal ecco exf kpp gmredi shap_filt )
+
+# We can also specify other defaults
+set ROOTDIR=..
+set MODS=../verification/natl_box/code

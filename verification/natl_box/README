@@ -5,11 +5,9 @@ Example: Subtropical North Atlantic Subduction area
 
 To apply the changes to the default configuration of MITgcmUV:
   cd bin
-  ln -s ../verification/natl_box/code/SIZE.h ../bin/
-  ln -s ../verification/natl_box/code/CPP_OPTIONS.h ../bin/
-  ln -s ../verification/natl_box/code/CPP_EEOPTIONS.h ../bin/
-  ln -s ../verification/natl_box/code/KPP_OPTIONS.h ../bin/
-  ln -s ../verification/natl_box/code/external_fields_load.F ../bin/
+  ln -s ../verification/natl_box/code/.genmakerc .
+  ln -s ../verification/natl_box/code/*.h .
+  ln -s ../verification/natl_box/code/*.F .
 
 Configure and compile the code:
   cd ../bin
