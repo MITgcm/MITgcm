@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/do_fizhi.F,v 1.3 2004/09/29 14:47:54 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/do_fizhi.F,v 1.4 2004/09/30 16:11:00 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -140,180 +140,180 @@ c     save imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw,fccavelw
 c     save qq
 c     save pl,ple,dpres,pkle,pkl
        
-c     common /saver/ lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq
-c     common /saver/ moistu,moistv,moistt,moistq
-c     common /saver/ radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
-c     common /saver/ st4,dst4,dlwdtg,rainlsp,raincon,snowfall
-c     common /saver/ cldtot_lw,cldras_lw,cldlsp_lw,lwlz
-c     common /saver/ cldtot_sw,cldras_sw,cldlsp_sw,swlz
-c     common /saver/ imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw
-c     common /saver/ fccavelw
-c     common /saver/ qq
-c     common /saver/ pl,ple,dpres,pkle,pkl
-c     common /saver/ nlwcld,nlwlz
-c     common /saver/ nswcld,nswlz
-c     common /saver/ iras
+      common /saver/ lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq
+      common /saver/ moistu,moistv,moistt,moistq
+      common /saver/ radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
+      common /saver/ st4,dst4,dlwdtg,rainlsp,raincon,snowfall
+      common /saver/ cldtot_lw,cldras_lw,cldlsp_lw,lwlz
+      common /saver/ cldtot_sw,cldras_sw,cldlsp_sw,swlz
+      common /saver/ imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw
+      common /saver/ fccavelw
+      common /saver/ qq
+      common /saver/ pl,ple,dpres,pkle,pkl
+      common /saver/ nlwcld,nlwlz
+      common /saver/ nswcld,nswlz
+      common /saver/ iras
 
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
 C***********************************************************************
 
-c     if( (nhms.eq.nhms0) .and. (nymd.eq.nymd0) ) then
-c      _BEGIN_MASTER(myid)
-c      if(myid.eq.1.and.bi.eq.1) print *,' Initializing fizhi arrays '
-c      _END_MASTER(myid)
-c      imstturblw = 0
-c      imstturbsw = 0
-c      iras = 0
-c      nlwcld = 0
-c      nlwlz = 0
-c      nswcld = 0
-c      nswlz = 0
-c      do L = 1,Nrphys
-c      do j = jm1,jm2
-c      do i = im1,im2
-c       swlz(i,j,L,bi,bj) = 0.
-c       lwlz(i,j,L,bi,bj) = 0.
-c       qliqavesw(i,j,L,bi,bj) = 0.
-c       qliqavelw(i,j,L,bi,bj) = 0.
-c       fccavesw(i,j,L,bi,bj) = 0.
-c       fccavelw(i,j,L,bi,bj) = 0.
-c       cldtot_sw(i,j,L,bi,bj) = 0.
-c       cldras_sw(i,j,L,bi,bj) = 0.
-c       cldlsp_sw(i,j,L,bi,bj) = 0.
-c       cldtot_lw(i,j,L,bi,bj) = 0.
-c       cldras_lw(i,j,L,bi,bj) = 0.
-c       cldlsp_lw(i,j,L,bi,bj) = 0.
-c       lwdt(i,j,L,bi,bj) = 0.
-c       swdt(i,j,L,bi,bj) = 0.
-c       turbt(i,j,L,bi,bj) = 0.
-c       moistt(i,j,L,bi,bj) = 0.
-c       turbq(i,j,L,1,bi,bj) = 0.
-c       moistq(i,j,L,1,bi,bj) = 0.
-c       turbu(i,j,L,bi,bj) = 0.
-c       moistu(i,j,L,bi,bj) = 0.
-c       turbv(i,j,L,bi,bj) = 0.
-c       moistv(i,j,L,bi,bj) = 0.
-c      enddo
-c      enddo
-c      enddo
-c      do j = jm1,jm2
-c      do i = im1,im2
-c       rainlsp(i,j,bi,bj) = 0.
-c       raincon(i,j,bi,bj) = 0.
-c       snowfall(i,j,bi,bj) = 0.
-c      enddo
-c      enddo
-c     endif
-c
-c     kappa = getcon('KAPPA')
-c     p0kappa = 1000.0 ** kappa
-c     S0 = getcon('S0')
-c      
-c     do j = jm1,jm2
-c     do i = im1,im2
-c      xlats(i,j) = lats(i,j,bi,bj)
-c      xlons(i,j) = lons(i,j,bi,bj)
-c     enddo
-c     enddo
-c
-c     call astro ( nymd,nhms, xlats,xlons, im2*jm2, cosz,ra )
-c     do j=jm1,jm2
-c     do i=im1,im2
-c      radswt(i,j,bi,bj) = S0*(1.0/ra**2)*cosz(i,j)
-c     enddo
-c     enddo
-c
-c     if( alarm('moist') .or. alarm('turb')   .or.
-c    .    alarm('radsw') .or. alarm('radlw') ) then
-c
-C compute pressures - all pressure are converted here to hPa
-c     do j = jm1,jm2
-c     do i = im1,im2
-c      ple(i,j,Nrphys+1,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)/100.
-c      pkle(i,j,Nrphys+1,bi,bj)=(pephy(i,j,Nrphys+1,bi,bj)/100.) **kappa
-c      p(i,j,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)/100.
-c      sea_ice(i,j) = sice(i,j,bi,bj)
-c     enddo
-c     enddo
-c     do L = 1,Nrphys
-c     do j = jm1,jm2
-c     do i = im1,im2
-c      u(i,j,L) = uphy(i,j,L,bi,bj)
-c      v(i,j,L) = vphy(i,j,L,bi,bj)
-c      t(i,j,L) = thphy(i,j,L,bi,bj)/p0kappa
-c      q(i,j,L,1) = sphy(i,j,L,bi,bj)
-c      pl(i,j,L,bi,bj) = (pephy(i,j,L,bi,bj)+pephy(i,j,L+1,bi,bj))/200.
-c      dpres(i,j,L,bi,bj)=(pephy(i,j,L+1,bi,bj)-pephy(i,j,L,bi,bj))/100.
-c      ple(i,j,L,bi,bj) = pephy(i,j,L,bi,bj)/100.
-c      if (ple(i,j,L,bi,bj).gt.0.) then
-c       pkle(i,j,L,bi,bj) = ple(i,j,L,bi,bj) **kappa
-c      else
-c       pkle(i,j,L,bi,bj) = 0.
-c      endif
-c     enddo
-c     enddo
-c     enddo
-c
-c     call pkappa (im2,jm2,Nrphys,ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),
-c    .                                                 pkl(1,1,1,bi,bj))
-c
-c     call fizhi_driver(myid,im2,jm2,Nrphys,bi,bj,ptracer,ntracer,xlats,
-c    . xlons,p(1,1,bi,bj),u,v,t,q,pl(1,1,1,bi,bj),ple(1,1,1,bi,bj),
-c    . dpres(1,1,1,bi,bj),pkle(1,1,1,bi,bj),pkl(1,1,1,bi,bj),
-c    . fracland(1,1,bi,bj),landtype(1,1,bi,bj),radswt(1,1,bi,bj),
-c    . phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,nchp,chlat(1,bi,bj),
-c    . chlon(1,bi,bj),igrd(1,bi,bj),nchptot(bi,bj),nchpland(bi,bj),
-c    . chfr(1,bi,bj),ityp(1,bi,bj),tcanopy(1,bi,bj),tdeep(1,bi,bj),
-c    . ecanopy(1,bi,bj),swetshal(1,bi,bj),swetroot(1,bi,bj),
-c    . swetdeep(1,bi,bj),capac(1,bi,bj),snodep(1,bi,bj),
-c    . ctmt(1,bi,bj),xxmt(1,bi,bj),yymt(1,bi,bj),zetamt(1,bi,bj),
-c    . xlmt(1,1,bi,bj),khmt(1,1,bi,bj),tke(1,1,bi,bj),
-c    . albvisdr(1,1,bi,bj),albvisdf(1,1,bi,bj),albnirdr(1,1,bi,bj),
-c    . albnirdf(1,1,bi,bj),emiss(1,1,1,bi,bj),alai(1,bi,bj),
-c    . agrn(1,bi,bj),
-c    . qstr(1,1,1,bi,bj),o3(1,1,1,bi,bj),
-c    . co2,cfc11,cfc12,cfc22,methane,n2o,
-c    . lwdt(1,1,1,bi,bj),lwdtclr(1,1,1,bi,bj),swdt(1,1,1,bi,bj),
-c    . swdtclr(1,1,1,bi,bj),turbu(1,1,1,bi,bj),turbv(1,1,1,bi,bj),
-c    . turbt(1,1,1,bi,bj),turbq(1,1,1,1,bi,bj),moistu(1,1,1,bi,bj),
-c    . moistv(1,1,1,bi,bj),moistt(1,1,1,bi,bj),moistq(1,1,1,1,bi,bj),
-c    . radswg(1,1,bi,bj),swgclr(1,1,bi,bj),fdirpar(1,1,bi,bj),
-c    . fdifpar(1,1,bi,bj),osr(1,1,bi,bj),osrclr(1,1,bi,bj),
-c    . tg0(1,1,bi,bj),radlwg(1,1,bi,bj),lwgclr(1,1,bi,bj),
-c    . st4(1,1,bi,bj),dst4(1,1,bi,bj),dlwdtg(1,1,1,bi,bj),
-c    . rainlsp(1,1,bi,bj),raincon(1,1,bi,bj),snowfall(1,1,bi,bj),iras,
-c    . nlwcld,cldtot_lw(1,1,1,bi,bj),cldras_lw(1,1,1,bi,bj),
-c    . cldlsp_lw(1,1,1,bi,bj),nlwlz,lwlz(1,1,1,bi,bj),
-c    . nswcld,cldtot_sw(1,1,1,bi,bj),cldras_sw(1,1,1,bi,bj),
-c    . cldlsp_sw(1,1,1,bi,bj),nswlz,swlz(1,1,1,bi,bj),
-c    . imstturbsw,imstturblw,qliqavesw(1,1,1,bi,bj),
-c    . qliqavelw(1,1,1,bi,bj),fccavesw(1,1,1,bi,bj),
-c    . fccavelw(1,1,1,bi,bj),qq(1,1,1,bi,bj))
-c
-c     do L = 1,Nrphys
-c     do j = jm1,jm2
-c     do i = im1,im2
-c      duphy(i,j,L,bi,bj) = moistu(i,j,L,bi,bj) + turbu(i,j,L,bi,bj)
-c      dvphy(i,j,L,bi,bj) = moistv(i,j,L,bi,bj) + turbv(i,j,L,bi,bj)
-c      dthphy(i,j,L,bi,bj) = ((moistt(i,j,L,bi,bj)+turbt(i,j,L,bi,bj)+
-c    .   lwdt(i,j,L,bi,bj) + 
-c    .   dlwdtg(i,j,L,bi,bj) * (tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) +
-c    .   swdt(i,j,L,bi,bj)*radswt(i,j,bi,bj) )*p0kappa ) / p(i,j,bi,bj)
-c      dsphy(i,j,L,bi,bj) = (moistq(i,j,L,1,bi,bj)+turbq(i,j,L,1,bi,bj))
-c    .                                    /p(i,j,bi,bj)
-c     enddo
-c     enddo
-c     enddo
-c
-c     endif
-c
-c     call fizhi_step_diag(myid,p,uphy,vphy,thphy,sphy,qq,pkl,dpres,
-c    .  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,
-c    .  turbu,turbv,turbt,turbq,moistu,moistv,moistt,moistq,
-c    .  lwdt,swdt,lwdtclr,swdtclr,dlwdtg,
-c    .  im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,bi,bj,ntracer)
-
+Creal if( (nhms.eq.nhms0) .and. (nymd.eq.nymd0) ) then
+Creal  _BEGIN_MASTER(myid)
+Creal  if(myid.eq.1.and.bi.eq.1) print *,' Initializing fizhi arrays '
+Creal  _END_MASTER(myid)
+Creal  imstturblw = 0
+Creal  imstturbsw = 0
+Creal  iras = 0
+Creal  nlwcld = 0
+Creal  nlwlz = 0
+Creal  nswcld = 0
+Creal  nswlz = 0
+Creal  do L = 1,Nrphys
+Creal  do j = jm1,jm2
+Creal  do i = im1,im2
+Creal   swlz(i,j,L,bi,bj) = 0.
+Creal   lwlz(i,j,L,bi,bj) = 0.
+Creal   qliqavesw(i,j,L,bi,bj) = 0.
+Creal   qliqavelw(i,j,L,bi,bj) = 0.
+Creal   fccavesw(i,j,L,bi,bj) = 0.
+Creal   fccavelw(i,j,L,bi,bj) = 0.
+Creal   cldtot_sw(i,j,L,bi,bj) = 0.
+Creal   cldras_sw(i,j,L,bi,bj) = 0.
+Creal   cldlsp_sw(i,j,L,bi,bj) = 0.
+Creal   cldtot_lw(i,j,L,bi,bj) = 0.
+Creal   cldras_lw(i,j,L,bi,bj) = 0.
+Creal   cldlsp_lw(i,j,L,bi,bj) = 0.
+Creal   lwdt(i,j,L,bi,bj) = 0.
+Creal   swdt(i,j,L,bi,bj) = 0.
+Creal   turbt(i,j,L,bi,bj) = 0.
+Creal   moistt(i,j,L,bi,bj) = 0.
+Creal   turbq(i,j,L,1,bi,bj) = 0.
+Creal   moistq(i,j,L,1,bi,bj) = 0.
+Creal   turbu(i,j,L,bi,bj) = 0.
+Creal   moistu(i,j,L,bi,bj) = 0.
+Creal   turbv(i,j,L,bi,bj) = 0.
+Creal   moistv(i,j,L,bi,bj) = 0.
+Creal  enddo
+Creal  enddo
+Creal  enddo
+Creal  do j = jm1,jm2
+Creal  do i = im1,im2
+Creal   rainlsp(i,j,bi,bj) = 0.
+Creal   raincon(i,j,bi,bj) = 0.
+Creal   snowfall(i,j,bi,bj) = 0.
+Creal  enddo
+Creal  enddo
+Creal endif
+Creal
+Creal kappa = getcon('KAPPA')
+Creal p0kappa = 1000.0 ** kappa
+Creal S0 = getcon('S0')
+Creal  
+Creal do j = jm1,jm2
+Creal do i = im1,im2
+Creal  xlats(i,j) = lats(i,j,bi,bj)
+Creal  xlons(i,j) = lons(i,j,bi,bj)
+Creal enddo
+Creal enddo
+Creal
+Creal call astro ( nymd,nhms, xlats,xlons, im2*jm2, cosz,ra )
+Creal do j=jm1,jm2
+Creal do i=im1,im2
+Creal  radswt(i,j,bi,bj) = S0*(1.0/ra**2)*cosz(i,j)
+Creal enddo
+Creal enddo
+Creal
+Creal if( alarm('moist') .or. alarm('turb')   .or.
+Creal.    alarm('radsw') .or. alarm('radlw') ) then
+Creal
+Crealpute pressures - all pressure are converted here to hPa
+Creal do j = jm1,jm2
+Creal do i = im1,im2
+Creal  ple(i,j,Nrphys+1,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)/100.
+Creal  pkle(i,j,Nrphys+1,bi,bj)=(pephy(i,j,Nrphys+1,bi,bj)/100.) **kappa
+Creal  p(i,j,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)/100.
+Creal  sea_ice(i,j) = sice(i,j,bi,bj)
+Creal enddo
+Creal enddo
+Creal do L = 1,Nrphys
+Creal do j = jm1,jm2
+Creal do i = im1,im2
+Creal  u(i,j,L) = uphy(i,j,L,bi,bj)
+Creal  v(i,j,L) = vphy(i,j,L,bi,bj)
+Creal  t(i,j,L) = thphy(i,j,L,bi,bj)/p0kappa
+Creal  q(i,j,L,1) = sphy(i,j,L,bi,bj)
+Creal  pl(i,j,L,bi,bj) = (pephy(i,j,L,bi,bj)+pephy(i,j,L+1,bi,bj))/200.
+Creal  dpres(i,j,L,bi,bj)=(pephy(i,j,L+1,bi,bj)-pephy(i,j,L,bi,bj))/100.
+Creal  ple(i,j,L,bi,bj) = pephy(i,j,L,bi,bj)/100.
+Creal  if (ple(i,j,L,bi,bj).gt.0.) then
+Creal   pkle(i,j,L,bi,bj) = ple(i,j,L,bi,bj) **kappa
+Creal  else
+Creal   pkle(i,j,L,bi,bj) = 0.
+Creal  endif
+Creal enddo
+Creal enddo
+Creal enddo
+Creal
+Creal call pkappa (im2,jm2,Nrphys,ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),
+Creal.                                                 pkl(1,1,1,bi,bj))
+Creal
+Creal call fizhi_driver(myid,im2,jm2,Nrphys,bi,bj,ptracer,ntracer,xlats,
+Creal. xlons,p(1,1,bi,bj),u,v,t,q,pl(1,1,1,bi,bj),ple(1,1,1,bi,bj),
+Creal. dpres(1,1,1,bi,bj),pkle(1,1,1,bi,bj),pkl(1,1,1,bi,bj),
+Creal. fracland(1,1,bi,bj),landtype(1,1,bi,bj),radswt(1,1,bi,bj),
+Creal. phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,nchp,chlat(1,bi,bj),
+Creal. chlon(1,bi,bj),igrd(1,bi,bj),nchptot(bi,bj),nchpland(bi,bj),
+Creal. chfr(1,bi,bj),ityp(1,bi,bj),tcanopy(1,bi,bj),tdeep(1,bi,bj),
+Creal. ecanopy(1,bi,bj),swetshal(1,bi,bj),swetroot(1,bi,bj),
+Creal. swetdeep(1,bi,bj),capac(1,bi,bj),snodep(1,bi,bj),
+Creal. ctmt(1,bi,bj),xxmt(1,bi,bj),yymt(1,bi,bj),zetamt(1,bi,bj),
+Creal. xlmt(1,1,bi,bj),khmt(1,1,bi,bj),tke(1,1,bi,bj),
+Creal. albvisdr(1,1,bi,bj),albvisdf(1,1,bi,bj),albnirdr(1,1,bi,bj),
+Creal. albnirdf(1,1,bi,bj),emiss(1,1,1,bi,bj),alai(1,bi,bj),
+Creal. agrn(1,bi,bj),
+Creal. qstr(1,1,1,bi,bj),o3(1,1,1,bi,bj),
+Creal. co2,cfc11,cfc12,cfc22,methane,n2o,
+Creal. lwdt(1,1,1,bi,bj),lwdtclr(1,1,1,bi,bj),swdt(1,1,1,bi,bj),
+Creal. swdtclr(1,1,1,bi,bj),turbu(1,1,1,bi,bj),turbv(1,1,1,bi,bj),
+Creal. turbt(1,1,1,bi,bj),turbq(1,1,1,1,bi,bj),moistu(1,1,1,bi,bj),
+Creal. moistv(1,1,1,bi,bj),moistt(1,1,1,bi,bj),moistq(1,1,1,1,bi,bj),
+Creal. radswg(1,1,bi,bj),swgclr(1,1,bi,bj),fdirpar(1,1,bi,bj),
+Creal. fdifpar(1,1,bi,bj),osr(1,1,bi,bj),osrclr(1,1,bi,bj),
+Creal. tg0(1,1,bi,bj),radlwg(1,1,bi,bj),lwgclr(1,1,bi,bj),
+Creal. st4(1,1,bi,bj),dst4(1,1,bi,bj),dlwdtg(1,1,1,bi,bj),
+Creal. rainlsp(1,1,bi,bj),raincon(1,1,bi,bj),snowfall(1,1,bi,bj),iras,
+Creal. nlwcld,cldtot_lw(1,1,1,bi,bj),cldras_lw(1,1,1,bi,bj),
+Creal. cldlsp_lw(1,1,1,bi,bj),nlwlz,lwlz(1,1,1,bi,bj),
+Creal. nswcld,cldtot_sw(1,1,1,bi,bj),cldras_sw(1,1,1,bi,bj),
+Creal. cldlsp_sw(1,1,1,bi,bj),nswlz,swlz(1,1,1,bi,bj),
+Creal. imstturbsw,imstturblw,qliqavesw(1,1,1,bi,bj),
+Creal. qliqavelw(1,1,1,bi,bj),fccavesw(1,1,1,bi,bj),
+Creal. fccavelw(1,1,1,bi,bj),qq(1,1,1,bi,bj))
+Creal
+Creal do L = 1,Nrphys
+Creal do j = jm1,jm2
+Creal do i = im1,im2
+Creal  duphy(i,j,L,bi,bj) = moistu(i,j,L,bi,bj) + turbu(i,j,L,bi,bj)
+Creal  dvphy(i,j,L,bi,bj) = moistv(i,j,L,bi,bj) + turbv(i,j,L,bi,bj)
+Creal  dthphy(i,j,L,bi,bj) = ((moistt(i,j,L,bi,bj)+turbt(i,j,L,bi,bj)+
+Creal.   lwdt(i,j,L,bi,bj) + 
+Creal.   dlwdtg(i,j,L,bi,bj) * (tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) +
+Creal.   swdt(i,j,L,bi,bj)*radswt(i,j,bi,bj) )*p0kappa ) / p(i,j,bi,bj)
+Creal  dsphy(i,j,L,bi,bj) = (moistq(i,j,L,1,bi,bj)+turbq(i,j,L,1,bi,bj))
+Creal.                                    /p(i,j,bi,bj)
+Creal enddo
+Creal enddo
+Creal enddo
+Creal
+Creal endif
+Creal
+Creal call fizhi_step_diag(myid,p,uphy,vphy,thphy,sphy,qq,pkl,dpres,
+Creal.  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,
+Creal.  turbu,turbv,turbt,turbq,moistu,moistv,moistt,moistq,
+Creal.  lwdt,swdt,lwdtclr,swdtclr,dlwdtg,
+Creal.  im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,bi,bj,ntracer)
+Creal
 
        kF=1. _d 0/86400. _d 0
        sigma_b = 0.7 _d 0
