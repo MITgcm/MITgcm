@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.11 1998/06/10 17:05:59 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.12 1998/08/19 14:20:27 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -152,6 +152,8 @@ C     == Local variables ==
      &'   /* Momentum equation timestep ( s ) */')
       CALL WRITE_1D_R8( deltaTtracer,1, INDEX_NONE,'deltatTtracer =',
      &'   /* Tracer equation timestep ( s ) */')
+      CALL WRITE_1D_R8( deltaTClock ,1, INDEX_NONE,'deltatTClock  =',
+     &'   /* Model clock timestep ( s ) */')
       CALL WRITE_1D_R8( cAdjFreq,1, INDEX_NONE,'cAdjFreq =',
      &'   /* Convective adjustment interval ( s ) */')
       CALL WRITE_1D_R8( abEps,1, INDEX_NONE,'abEps =',
