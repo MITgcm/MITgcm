@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.5 2004/01/08 07:24:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.6 2004/01/14 23:02:52 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -207,12 +207,20 @@ C     Enter define mode
       IF (atype .EQ. 1) THEN
         lens = ILNBLNK(sv)
         err = NF_PUT_ATT_TEXT(fid, NF_GLOBAL, s1, lens, sv)
+        CALL MNC_HANDLE_ERR(myThid, err,
+     &       'adding TEXT attribute in S/R MNC_FILE_ADD_ATTR_ANY')
       ELSEIF (atype .EQ. 2) THEN
         err = NF_PUT_ATT_DOUBLE(fid, NF_GLOBAL, s1, NF_DOUBLE, len, dv)
+        CALL MNC_HANDLE_ERR(myThid, err,
+     &       'adding DOUBLE attribute in S/R MNC_FILE_ADD_ATTR_ANY')
       ELSEIF (atype .EQ. 3) THEN
         err = NF_PUT_ATT_REAL(fid, NF_GLOBAL, s1, NF_FLOAT, len, rv)
+        CALL MNC_HANDLE_ERR(myThid, err,
+     &       'adding REAL attribute in S/R MNC_FILE_ADD_ATTR_ANY')
       ELSEIF (atype .EQ. 4) THEN
         err = NF_PUT_ATT_INT(fid, NF_GLOBAL, s1, NF_INT, len, iv)
+        CALL MNC_HANDLE_ERR(myThid, err,
+     &       'adding INT attribute in S/R MNC_FILE_ADD_ATTR_ANY')
       ELSE
         write(msgbuf,'(a,i10,a)') 'MNC ERROR: atype = ''', atype, 
      &       ''' is invalid--must be: [1-4]'
@@ -220,8 +228,6 @@ C     Enter define mode
         CALL print_error(msgbuf(1:n), mythid)
         stop 'ABNORMAL END: S/R MNC_VAR_ADD_ATTR_ANY'
       ENDIF
-      CALL MNC_HANDLE_ERR(myThid, err,
-     &     'adding attribute in S/R MNC_FILE_ADD_ATTR_DBL')
 
       RETURN
       END

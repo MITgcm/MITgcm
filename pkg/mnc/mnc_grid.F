@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.4 2004/01/08 07:24:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.5 2004/01/14 23:02:52 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -145,11 +145,11 @@ C       Accumulate the dimension names
       ENDDO
 
 C     Add attributes to aid in later parsing
-      CALL MNC_FILE_ADD_ATTR_STR(myThid, file_name, grid_name, 
-     &     dim_names)
-      write(msgbuf,'(5a)') 'creating attribute for grid ''', gname,
-     &     ''' in file ''', fname, ''''
-      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+C      CALL MNC_FILE_ADD_ATTR_STR(myThid, file_name, grid_name, 
+C     &     dim_names)
+C      write(msgbuf,'(5a)') 'creating attribute for grid ''', gname,
+C     &     ''' in file ''', fname, ''''
+C      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
 
 C     Grid successfully added, so update file table
       mnc_f_info(indf,ng_ind) = indg
