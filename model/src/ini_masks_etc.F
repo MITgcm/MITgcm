@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.17 1999/05/18 17:57:01 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.18 2000/04/11 13:39:09 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -32,6 +32,7 @@ C     bi,bj  - Loop counters
 C     I,J,K
       INTEGER bi, bj
       INTEGER  I, J, K
+      _RL hFacTmp
 #ifdef ALLOW_NONHYDROSTATIC
       INTEGER Km1
       _RL hFacUpper,hFacLower
@@ -63,20 +64,13 @@ C           Set hFac to the fraction of the cell that is open.
             hFacC(I,J,K,bi,bj) =
      &       (rF(K)*rkFac-H(I,J,bi,bj)*rkFac)*recip_drF(K)
            ENDIF
-C Impose minimum fraction
-           IF (hFacC(I,J,K,bi,bj).LT.hFacMin) THEN
-            IF (hFacC(I,J,K,bi,bj).LT.hFacMin*0.5) THEN
+C Impose minimum fraction and/or size
+           hFacTmp=max( hFacMin , min(hFacMinDr*recip_drF(k),1.) )
+           IF (hFacC(I,J,K,bi,bj).LT.hFacTmp) THEN
+            IF (hFacC(I,J,K,bi,bj).LT.hFacTmp*0.5) THEN
              hFacC(I,J,K,bi,bj)=0.
             ELSE
-             hFacC(I,J,K,bi,bj)=hFacMin
-            ENDIF
-           ENDIF
-C Impose minimum size (dimensional)
-           IF (drF(k)*hFacC(I,J,K,bi,bj).LT.hFacMinDr) THEN
-            IF (drF(k)*hFacC(I,J,K,bi,bj).LT.hFacMinDr*0.5) THEN
-             hFacC(I,J,K,bi,bj)=0.
-            ELSE
-             hFacC(I,J,K,bi,bj)=hFacMinDr*recip_drF(k)
+             hFacC(I,J,K,bi,bj)=hFacTmp
             ENDIF
            ENDIF
            depthInK(i,j,bi,bj) = depthInK(i,j,bi,bj) + 1.
