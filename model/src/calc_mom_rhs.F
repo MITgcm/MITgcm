@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.14 1998/06/09 15:58:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.15 1998/06/09 16:48:02 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -35,9 +35,9 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "EEPARAMS.h"
 #include "CG2D.h"
 
 C     == Routine arguments ==

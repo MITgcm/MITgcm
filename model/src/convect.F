@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.6 1998/05/27 21:01:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.7 1998/06/09 16:48:02 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -14,6 +14,7 @@ C     \==========================================================/
 
 C     == Global data ==
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"

@@ -11,6 +11,7 @@
 #include "SIZE.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 ! Arguments
       integer bi,bj,iMin,iMax,jMin,jMax,K

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.2 1998/06/08 21:42:59 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.3 1998/06/09 16:48:01 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -345,8 +345,9 @@ C--   Check that file is active
   899 CONTINUE
        WRITE(msgBuf,'(A)') ' S/R DFILE_READ_R4 '
        CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A,I4,A,A)') ' Thread ', myThid, ' read error for ',
-     &  fNam(iLo:iHi)
+       WRITE(msgBuf,'(A,I4,A)') ' Thread ', myThid, ' error reading file'
+       CALL PRINT_ERROR( msgBuf , 1)
+       WRITE(msgBuf,'(A,A,A)') ' "', fNam(iLo:iHi),'"'
        CALL PRINT_ERROR( msgBuf , 1)
        IF ( eMode .EQ. errorModeSTOP ) THEN
         STOP 'ABNORMAL END: S/R DFILE_READ_R4'
@@ -427,8 +428,9 @@ C--   Check that file is active
   899 CONTINUE
        WRITE(msgBuf,'(A)') ' S/R DFILE_READ_R8 '
        CALL PRINT_ERROR( msgBuf , 1)
-       WRITE(msgBuf,'(A,I4,A,A)') ' Thread ', myThid, ' read error for ',
-     &  fNam(iLo:iHi)
+       WRITE(msgBuf,'(A,I4,A)') ' Thread ', myThid, ' error reading file'
+       CALL PRINT_ERROR( msgBuf , 1)
+       WRITE(msgBuf,'(A,A,A)') ' "', fNam(iLo:iHi),'"'
        CALL PRINT_ERROR( msgBuf , 1)
        IF ( eMode .EQ. errorModeSTOP ) THEN
         STOP 'ABNORMAL END: S/R DFILE_READ_R8'

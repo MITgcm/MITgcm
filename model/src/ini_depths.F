@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.3 1998/06/08 21:43:01 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.4 1998/06/09 16:48:02 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -49,37 +49,43 @@ C     I,J,K
       INTEGER bi, bj
       INTEGER  I,  J, K
 
-C     For now set up a flat bottom box with doubly periodic topology.
-C     H is the basic variable from which other terms are derived. It
-C     is the term that would be set from an external file for a 
-C     realistic problem.
       _BARRIER
-      phi = 0. D0
-      DO K=1,Nz
-       phi = phi+delZ(K)
-      ENDDO
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1,sNy
-         DO i=1,sNx
-          iG = myXGlobalLo-1+(bi-1)*sNx+I
-          jG = myYGlobalLo-1+(bj-1)*sNy+J
-C         Default depth of full domain
-          H(i,j,bi,bj) = phi
-C         Test for eastern edge
-          IF ( iG .EQ. nX ) H(i,j,bi,bj) = 0.
-C         Test for northern edge
-          IF ( jG .EQ. nY ) H(i,j,bi,bj) = 0.
-C         Island
-          IF ( iG .EQ. 1 .AND. 
-     &         jG .EQ. 24 ) H(i,j,bi,bj) = 0.75*phi
-C         IF ( iG .EQ. 1 .AND. 
-C    &         jG .EQ. 24 ) H(i,j,bi,bj) = 0.
-           
+      IF ( bathyFile .EQ. ' '  ) THEN
+C      Set up a flat bottom box with doubly periodic topology.
+C      H is the basic variable from which other terms are derived. It
+C      is the term that would be set from an external file for a 
+C      realistic problem.
+       phi = 0. D0
+       DO K=1,Nz
+        phi = phi+delZ(K)
+       ENDDO
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           iG = myXGlobalLo-1+(bi-1)*sNx+I
+           jG = myYGlobalLo-1+(bj-1)*sNy+J
+C          Default depth of full domain
+           H(i,j,bi,bj) = phi
+C          Test for eastern edge
+           IF ( iG .EQ. nX ) H(i,j,bi,bj) = 0.
+C          Test for northern edge
+           IF ( jG .EQ. nY ) H(i,j,bi,bj) = 0.
+C          Island
+           IF ( iG .EQ. 1 .AND. 
+     &          jG .EQ. 24 ) H(i,j,bi,bj) = 0.75*phi
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
+      ELSE
+       _BEGIN_MASTER( myThid )
+       CALL READ_FLD_XY_RS( bathyFile, ' ', H, 0, myThid )
+       _END_MASTER(myThid)
+      ENDIF
+      _EXCH_XY_R4(    H, myThid )
+
+C--   Cacluate quantities derived from XY depth map
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
         DO J=1,sNy
@@ -94,7 +100,6 @@ C         Inverse of depth
         ENDDO
        ENDDO
       ENDDO
-      _EXCH_XY_R4(    H, myThid )
       _EXCH_XY_R4(   rH, myThid )
 
 C--   Now calculate "lopping" factors hFac.

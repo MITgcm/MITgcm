@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_ph.F,v 1.5 1998/05/27 21:01:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_ph.F,v 1.6 1998/06/09 16:48:02 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -15,6 +15,7 @@ C     == Global variables ==
 #include "SIZE.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 C     == Routine arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax,K

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.1 1998/06/01 22:27:14 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.2 1998/06/09 16:48:02 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -13,6 +13,7 @@ C     \==========================================================/
 ! Common
 #include "SIZE.h"
 #include "DYNVARS.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 C     == Routine Arguments ==

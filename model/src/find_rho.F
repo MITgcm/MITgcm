@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.6 1998/06/08 18:45:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.7 1998/06/09 16:48:02 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 #define USE_FACTORIZED_POLY
@@ -23,6 +23,7 @@ C     \==========================================================/
 ! Common
 #include "SIZE.h"
 #include "DYNVARS.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 ! Arguments
       integer bi,bj,iMin,iMax,jMin,jMax

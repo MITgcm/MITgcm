@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/grad_psurf.F,v 1.4 1998/05/28 03:34:52 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/grad_psurf.F,v 1.5 1998/06/09 16:48:02 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -12,9 +12,9 @@ C     \==========================================================/
       IMPLICIT NONE
 C     == Global variables ==
 #include "SIZE.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "EEPARAMS.h"
 #include "CG2D.h"
 C     == Routine Arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax

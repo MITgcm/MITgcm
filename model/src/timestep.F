@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.10 1998/06/09 15:58:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.11 1998/06/09 16:48:03 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -13,6 +13,7 @@ C     \==========================================================/
 ! Common
 #include "SIZE.h"
 #include "DYNVARS.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
 C     == Routine Arguments ==

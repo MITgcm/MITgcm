@@ -1,6 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.3 1998/06/09 15:58:36 adcroft Exp $
-
-#include "CPP_OPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.4 1998/06/09 16:48:03 cnh Exp $
+#include "CPP_EEOPTIONS.h"
 
 C--  File read_write.F: Routines to handle mid-level I/O interface.
 C--   Contents
@@ -15,7 +14,7 @@ C--                   Uses MITgcmUV environment file format.
 C--   o WRITE_FLD_XY_RL  - Write two-dimensional model _RL field.
 C--   o WRITE_FLD_XYZ_RL - Write three-dimensional model _RL field.
 C--   o WRITE_STATE - Write out model state.
-C--   o WRITE_CHKPT - Write out checkpoint files for restarting.
+C--   o WRITE_CHECKPOINT - Write out checkpoint files for restarting.
 
 CStartofinterface
       SUBROUTINE READ_CHECKPOINT ( myIter, myThid )
@@ -148,8 +147,8 @@ C     \==========================================================/
 
 C     == Global variables ==
 #include "SIZE.h"
-#include "PARAMS.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "DFILE.h"
     
       INTEGER  IFNBLNK
@@ -291,6 +290,160 @@ C--   Check errors
       END
 
 CStartofinterface
+      SUBROUTINE READ_FLD_XY_RS(  pref ,suff, fld, myIter, myThid)
+C     /==========================================================\
+C     | SUBROUTINE READ_FLD_XY_RS                                |
+C     | o Generic two-dimensional field IO routine.              |
+C     |==========================================================|
+C     | Call low-level routines to read a 2d model field.        |
+C     | Handles _RS type data ( generally _RS == REAL*4 )        |
+C     \==========================================================/
+
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "DFILE.h"
+    
+      INTEGER  IFNBLNK
+      EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+      INTEGER  IO_ERRCOUNT
+      EXTERNAL IO_ERRCOUNT
+CEndofinterface
+
+C     == Routine arguments ==
+C     pref   - File name prefix
+C     suff   - File name suffix
+C     fld    - Array to be filled
+C     myIter - Timestep number
+C     myThid - Thread number calling this routine
+      CHARACTER*(*) pref
+      CHARACTER*(*) suff
+      _RS fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER myIter
+      INTEGER myThid
+
+C     == Local variables ==
+C     fNamData   - Filename building strings
+C     fNamMeta   
+C     fileHandle - Handle used to refer to an open DFILE file.
+C     lFilled    - Used to indicate the number of elements in the
+C                  IO buffer that have been filled.
+C     nXP, nYp   - Processes domain extents in X and Y.
+C     iP, jP, kP - Index in processes coordinates.
+C     ib         - Index in IO buffer
+C     i, j, k, bi, bj - Loop counters
+C     s1Lo, s1Hi, s2Lo, s2Hi - Substring indices
+C     nDims, dimList - Local and global dataset dimensions
+      CHARACTER*(MAX_LEN_FNAM) fNamData
+      CHARACTER*(MAX_LEN_FNAM) fNamMeta
+      INTEGER fileHandle
+      INTEGER lFilled   
+      INTEGER nXP, nYP
+      INTEGER iP, jP, kP, ib
+      INTEGER i,j, k, bi, bj
+      INTEGER s1Lo, s1Hi, s2Lo, s2Hi
+      INTEGER nDims
+      PARAMETER ( nDims = 2 )
+      INTEGER dimList(nDims*3)
+      INTEGER beginIOErrCount, endIOErrCount
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+C--   Track IO errors
+      beginIOErrCount = IO_ERRCOUNT(myThid)
+
+C--   Build file name
+C     Name has form 'prefix.suffix'
+C     e.g. U.0000000100
+C          U.0000000100
+      s1Lo = IFNBLNK(pref)
+      s1Hi = ILNBLNK(pref)
+      s2Lo = IFNBLNK(suff)
+      s2Hi = ILNBLNK(suff)
+      WRITE( fNamData, '(A,A)' )
+     & pref(s1Lo:s1Hi),
+     & suff(s2Lo:s2Hi)
+      WRITE( fNamMeta, '(A,A)' )
+     & pref(s1Lo:s1Hi),
+     & suff(s2Lo:s2Hi)
+
+C--   Open file
+      CALL DFILE_OPEN( fNamData, fNamMeta, myThid,
+     O                 fileHandle )
+      IF ( fileHandle .LE. 0 ) GOTO 1000
+
+C--   Set local and global data extents
+      nXP=sNx*nSx
+      nYP=sNy*nSy
+      lFilled = sNx*nSx * sNy*nSy
+      dimList(1) = nXP*nPx
+      dimList(2) = myXGlobalLo
+      dimList(3) = myXGlobalLo+nXP-1
+      dimList(4) = nYP*nPy
+      dimList(5) = myYGlobalLo
+      dimList(6) = myYGlobalLo+nYP-1
+
+C--   Read data
+      IF   ( readBinaryPrec .EQ. precFloat32 ) THEN
+       CALL DFILE_READ_R4( lFilled,
+     I                      fileHandle, myThid )
+      ELSE
+       CALL DFILE_READ_R8( lFilled,
+     I                      fileHandle, myThid )
+      ENDIF
+
+C--   Copy data from IO buffer. 
+C     Also regrid it to i,j,k indexing.
+      IF   ( readBinaryPrec .EQ. precFloat32 ) THEN
+       DO bj=1,nSy
+        DO bi=1,nSx
+         DO j=1,sNy
+          DO i=1,sNx
+           iP = (bi-1)*sNx+i
+           jP = (bj-1)*sNy+j
+           ib = (jP-1)*nXP + iP
+           fld(i,j,bi,bj) = ioBuf_R4(ib)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
+       DO bj=1,nSy
+        DO bi=1,nSx
+         DO j=1,sNy
+          DO i=1,sNx
+           iP = (bi-1)*sNx+i
+           jP = (bj-1)*sNy+j
+           ib = (jP-1)*nXP + iP
+           fld(i,j,bi,bj) = ioBuf_R8(ib)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+
+C--   Close file
+      CALL DFILE_CLOSE( fileHandle, myThid )
+
+C--   Check errors
+      endIOerrCount = IO_ERRCOUNT(myThid)
+      IF ( endIOErrCount .EQ. beginIOErrCount ) THEN
+       WRITE(msgBuf,'(A,A,A,A)')  '// Read file(s) ',
+     &  pref(s1Lo:s1Hi),'*',suff(s2Lo:s2Hi)
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+      ELSE
+       WRITE(msgBuf,'(A,A,A)') 'Error reading file ',pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
+       CALL PRINT_ERROR( msgBuf, 1 )
+      ENDIF
+
+ 1000 CONTINUE
+
+      RETURN
+      END
+
+CStartofinterface
       SUBROUTINE READ_FLD_XYZ_RL(  pref ,suff, fld, myIter, myThid)
 C     /==========================================================\
 C     | SUBROUTINE READ_FLD_XYZ_RL                               |
@@ -302,8 +455,8 @@ C     \==========================================================/
 
 C     == Global variables ==
 #include "SIZE.h"
-#include "PARAMS.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "DFILE.h"
     
       INTEGER  IFNBLNK
@@ -323,6 +476,169 @@ C     myThid - Thread number calling this routine
       CHARACTER*(*) pref
       CHARACTER*(*) suff
       _RL fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nZ,nSx,nSy)
+      INTEGER myIter
+      INTEGER myThid
+
+C     == Local variables ==
+C     fNamData   - Filename building strings
+C     fNamMeta   
+C     fileHandle - Handle used to refer to an open DFILE file.
+C     lFilled    - Used to indicate the number of elements in the
+C                  IO buffer that have been filled.
+C     nXP, nYp   - Processes domain extents in X and Y.
+C     iP, jP, kP - Index in processes coordinates.
+C     ib         - Index in IO buffer
+C     i, j, k, bi, bj - Loop counters
+C     s1Lo, s1Hi, s2Lo, s2Hi - Substring indices
+C     nDims, dimList - Local and global dataset dimensions
+      CHARACTER*(MAX_LEN_FNAM) fNamData
+      CHARACTER*(MAX_LEN_FNAM) fNamMeta
+      INTEGER fileHandle
+      INTEGER lFilled   
+      INTEGER nXP, nYP
+      INTEGER iP, jP, kP, ib
+      INTEGER i,j, k, bi, bj
+      INTEGER s1Lo, s1Hi, s2Lo, s2Hi
+      INTEGER nDims
+      PARAMETER ( nDims = 3 )
+      INTEGER dimList(nDims*3)
+      INTEGER beginIOErrCount, endIOErrCount
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
+
+C--   Track IO errors
+      beginIOErrCount = IO_ERRCOUNT(myThid)
+
+C--   Build file name
+C     Name has form 'prefix.suffix'
+C     e.g. U.0000000100
+C          U.0000000100
+      s1Lo = IFNBLNK(pref)
+      s1Hi = ILNBLNK(pref)
+      s2Lo = IFNBLNK(suff)
+      s2Hi = ILNBLNK(suff)
+      WRITE( fNamData, '(A,A)' )
+     & pref(s1Lo:s1Hi),
+     & suff(s2Lo:s2Hi)
+      WRITE( fNamMeta, '(A,A)' )
+     & pref(s1Lo:s1Hi),
+     & suff(s2Lo:s2Hi)
+
+C--   Open file
+      CALL DFILE_OPEN( fNamData, fNamMeta, myThid,
+     O                 fileHandle )
+      IF ( fileHandle .LE. 0 ) GOTO 1000
+
+C--   Set local and global data extents
+      nXP=sNx*nSx
+      nYP=sNy*nSy
+      lFilled = sNx*nSx * sNy*nSy * nZ
+      dimList(1) = nXP*nPx
+      dimList(2) = myXGlobalLo
+      dimList(3) = myXGlobalLo+nXP-1
+      dimList(4) = nYP*nPy
+      dimList(5) = myYGlobalLo
+      dimList(6) = myYGlobalLo+nYP-1
+      dimList(7) = nZ
+      dimList(8) = 1
+      dimList(9) = nZ
+
+C--   Read data
+      IF   ( readBinaryPrec .EQ. precFloat32 ) THEN
+       CALL DFILE_READ_R4( lFilled,
+     I                      fileHandle, myThid )
+      ELSE
+       CALL DFILE_READ_R8( lFilled,
+     I                      fileHandle, myThid )
+      ENDIF
+
+C--   Copy data from IO buffer. 
+C     Also regrid it to i,j,k indexing.
+      IF   ( readBinaryPrec .EQ. precFloat32 ) THEN
+       DO bj=1,nSy
+        DO bi=1,nSx
+         DO K=1,nZ
+          DO j=1,sNy
+           DO i=1,sNx
+            iP = (bi-1)*sNx+i
+            jP = (bj-1)*sNy+j
+            kP = K
+            ib = (kP-1)*nXP*nYP + (jP-1)*nXP + iP
+            fld(i,j,k,bi,bj) = ioBuf_R4(ib)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ELSE
+       DO bj=1,nSy
+        DO bi=1,nSx
+         DO K=1,nZ
+          DO j=1,sNy
+           DO i=1,sNx
+            iP = (bi-1)*sNx+i
+            jP = (bj-1)*sNy+j
+             kP = K
+            ib = (kP-1)*nXP*nYP + (jP-1)*nXP + iP
+            fld(i,j,k,bi,bj) = ioBuf_R8(ib)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+
+C--   Close file
+      CALL DFILE_CLOSE( fileHandle, myThid )
+
+C--   Check errors
+      endIOerrCount = IO_ERRCOUNT(myThid)
+      IF ( endIOErrCount .EQ. beginIOErrCount ) THEN
+       WRITE(msgBuf,'(A,A,A,A)')  '// Read file(s) ',
+     &  pref(s1Lo:s1Hi),'*',suff(s2Lo:s2Hi)
+       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT, 1 )
+      ELSE
+       WRITE(msgBuf,'(A,A,A)') 'Error reading file ',pref(s1Lo:s1Hi),suff(s2Lo:s2Hi)
+       CALL PRINT_ERROR( msgBuf, 1 )
+      ENDIF
+
+ 1000 CONTINUE
+
+      RETURN
+      END
+
+CStartofinterface
+      SUBROUTINE READ_FLD_XYZ_RS(  pref ,suff, fld, myIter, myThid)
+C     /==========================================================\
+C     | SUBROUTINE READ_FLD_XYZ_RS                               |
+C     | o Generic three-dimensional field IO routine.            |
+C     |==========================================================|
+C     | Call low-level routines to read a 3d model field.        |
+C     | Handles _RS type data ( generally _RS == REAL*4 )        |
+C     \==========================================================/
+
+C     == Global variables ==
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "DFILE.h"
+    
+      INTEGER  IFNBLNK
+      EXTERNAL IFNBLNK
+      INTEGER  ILNBLNK
+      EXTERNAL ILNBLNK
+      INTEGER  IO_ERRCOUNT
+      EXTERNAL IO_ERRCOUNT
+CEndofinterface
+
+C     == Routine arguments ==
+C     pref   - File name prefix
+C     suff   - File name suffix
+C     fld    - Array to be filled
+C     myIter - Timestep number
+C     myThid - Thread number calling this routine
+      CHARACTER*(*) pref
+      CHARACTER*(*) suff
+      _RS fld(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nZ,nSx,nSy)
       INTEGER myIter
       INTEGER myThid
 
@@ -591,8 +907,8 @@ C     \==========================================================/
 
 C     == Global variables ==
 #include "SIZE.h"
-#include "PARAMS.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "DFILE.h"
     
       INTEGER  IFNBLNK
@@ -749,8 +1065,8 @@ C     \==========================================================/
 
 C     == Global variables ==
 #include "SIZE.h"
-#include "PARAMS.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "DFILE.h"
     
       INTEGER  IFNBLNK
@@ -907,7 +1223,7 @@ C--   Check errors
 CStartofinterface
       SUBROUTINE WRITE_CHECKPOINT ( modelEnd, myCurrentTime, myIter, myThid )
 C     /==========================================================\
-C     | SUBROUTINE WRITE_CHKPT                                   |
+C     | SUBROUTINE WRITE_CHECKPOINT                              |
 C     | o Controlling routine for IO to write restart file.      |
 C     |==========================================================|
 C     | Write model checkpoint files for use in restart.         |

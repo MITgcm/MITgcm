@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.2 1998/06/01 22:27:14 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.3 1998/06/09 16:48:02 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -14,9 +14,9 @@ C     \==========================================================/
 ! Common
 #include "SIZE.h"
 #include "DYNVARS.h"
+#include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#include "EEPARAMS.h"
 #include "CG2D.h"
 C     == Routine Arguments ==
       INTEGER bi,bj,iMin,iMax,jMin,jMax
