@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code/SIZE.h,v 1.3 2001/02/04 14:38:53 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/code/SIZE.h,v 1.4 2003/02/12 17:02:18 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -38,8 +38,8 @@ C     Nr  - No. points in Z for full process domain.
       PARAMETER (
      &           sNx =   1,
      &           sNy =  64,
-     &           OLx =   5,
-     &           OLy =   5,
+     &           OLx =   2,
+     &           OLy =   2,
      &           nSx =   1,
      &           nSy =   1,
      &           nPx =   1,
