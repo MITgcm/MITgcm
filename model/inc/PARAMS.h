@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.65 2001/09/28 03:25:15 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.66 2001/11/26 17:11:45 adcroft Exp $
 C $Name:  $
 C
 CBOP
@@ -203,6 +203,7 @@ C     nonHydrostatic :: Using non-hydrostatic terms
 C     globalFiles    :: Selects between "global" and "tiled" files
 C     allowFreezing  :: Allows water to freeze and form ice
 C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
+C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 1986)
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & usingCurvilinearGrid,
      & no_slip_sides,no_slip_bottom,
@@ -222,7 +223,8 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & allowFreezing, groundAtK1,
      & usePickupBeforeC35, debugMode,
      & readPickupWithTracer, writePickupWithTracer,
-     & multiDimAdvection, useEnergyConservingCoriolis
+     & multiDimAdvection, useEnergyConservingCoriolis,
+     & useJamartWetPoints
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingCurvilinearGrid
@@ -272,6 +274,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL writePickupWithTracer
       LOGICAL multiDimAdvection
       LOGICAL useEnergyConservingCoriolis
+      LOGICAL useJamartWetPoints
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     gg2dTargetResidual

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.30 2001/09/28 03:25:15 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.31 2001/11/26 17:11:45 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -148,6 +148,7 @@ C--   Set default "physical" parameters
       tracerAdvScheme     = 2
       multiDimAdvection   = .TRUE.
       useEnergyConservingCoriolis = .FALSE.
+      useJamartWetPoints  = .FALSE.
 
 C--   Atmospheric physical parameters (e.g.: EOS)
       atm_po =  1.D5
