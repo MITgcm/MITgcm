@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.48 2004/11/17 21:38:35 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.49 2004/11/23 21:25:24 edhill Exp $
 #  $Name:  $
 #
 
@@ -171,6 +171,27 @@ testoutput_ad()
     rm -f t[01][56].txt t[56].txt
 }
 
+check_for_add_mon_output()
+{
+    # Check for additional types of monitor output
+    if test "x$1" = x ; then
+	return
+    fi
+
+    ptr_add="trcstat_ptracerXX_min trcstat_ptracerXX_max"
+    ptr_add="$ptr_add trcstat_ptracerXX_mean trcstat_ptracerXX_sd"
+    for ii in 1 2 3 4 5 ; do
+	for jj in $ptr_add ; do
+	    name=`eval "echo $jj | sed -e 's|XX|0"$ii"|g'"`
+	    tst=`grep $name $1 | wc -l | awk '{print $1}'`
+	    if test ! "x$tst" = x0 ; then
+		eval "HAVE_PTR0"$ii"=t"
+	    fi
+	done
+	#  eval 'echo "HAVE_PTR0'$ii' = $HAVE_PTR0'$ii'"'
+    done
+}
+
 testoutput()
 {
     # testoutput directory subdir extension
@@ -200,8 +221,28 @@ testoutput()
 	testoutput_for_prop $1 "dynstat_vvel_max" "V maximum" $2 $3; vmax=$?
 	testoutput_for_prop $1 "dynstat_vvel_mean" "V mean" $2 $3; vmean=$?
 	testoutput_for_prop $1 "dynstat_vvel_sd" "V s.d." $2 $3; vsd=$?
-	dashnum $cg2dres $tmin $tmax $tmean $tsd $smin $smax $smean $ssd \
-	    $umin $umax $umean $usd $vmin $vmax $vmean $vsd
+
+	for ii in 1 2 3 4 5 ; do
+	    testoutput_for_prop $1 "trcstat_ptracer0"$ii"_min"  "p0"$ii"_min"  $2 $3
+	    RETVAL=$? ; eval `echo "p0"$ii"_min="$RETVAL`
+	    testoutput_for_prop $1 "trcstat_ptracer0"$ii"_max"  "p0"$ii"_max"  $2 $3
+	    RETVAL=$? ; eval `echo "p0"$ii"_max="$RETVAL`
+	    testoutput_for_prop $1 "trcstat_ptracer0"$ii"_mean" "p0"$ii"_mean" $2 $3
+	    RETVAL=$? ; eval `echo "p0"$ii"_mean="$RETVAL`
+	    testoutput_for_prop $1 "trcstat_ptracer0"$ii"_sd"   "p0"$ii"_sd"   $2 $3
+	    RETVAL=$? ; eval `echo "p0"$ii"_sd="$RETVAL`
+	done
+
+	allargs="$cg2dres $tmin $tmax $tmean $tsd $smin $smax $smean $ssd"
+	allargs="$allargs $umin $umax $umean $usd $vmin $vmax $vmean $vsd"
+	allargs="$allargs $p01_min $p01_max $p01_mean $p01_sd"
+	allargs="$allargs $p02_min $p02_max $p02_mean $p02_sd"
+	allargs="$allargs $p03_min $p03_max $p03_mean $p03_sd"
+	allargs="$allargs $p04_min $p04_max $p04_mean $p04_sd"
+	allargs="$allargs $p05_min $p05_max $p05_mean $p05_sd"
+
+	eval "dashnum $allargs"
+
     else
 	testoutput_ad $1 $2 "precision_grdchk_result"
     fi
@@ -585,6 +626,13 @@ DELDIR=
 
 ADM=
 
+# Additional monitor types
+# HAVE_PTR01=
+# HAVE_PTR02=
+# HAVE_PTR03=
+# HAVE_PTR04=
+# HAVE_PTR05=
+
 printf "parsing options...  "
 
 ac_prev=
@@ -760,14 +808,27 @@ fi
 echo
 echo >> $SUMMARY
 if test "x$ADM" = x ; then
-    cat << EOF | tee -a $SUMMARY
-                T           S           U           V
-G D M    c        m  s        m  s        m  s        m  s
-E p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
-N n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
-2 d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
-
-EOF
+    line_0="            ----T-----  ----S-----  ----U-----  ----V-----"
+    line_1="G D M    c        m  s        m  s        m  s        m  s"
+    line_2="E p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  ."
+    line_3="N n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d"
+    line_4="2 d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  ."
+    for ii in 1 2 3 4 5 ; do
+	#  tst=`eval 'echo $HAVE_PTR0'$ii`
+	#  if test "x$tst" = xt ; then
+	line_0="$line_0  --PTR 0"$ii"--"
+	line_1="$line_1        m  s"
+	line_2="$line_2  m  m  e  ."
+	line_3="$line_3  i  a  a  d"
+	line_4="$line_4  n  x  n  ."
+	#  fi
+    done
+    echo "$line_0" | tee -a $SUMMARY
+    echo "$line_1" | tee -a $SUMMARY
+    echo "$line_2" | tee -a $SUMMARY
+    echo "$line_3" | tee -a $SUMMARY
+    echo "$line_4" | tee -a $SUMMARY
+    echo " "       | tee -a $SUMMARY
 else
     echo "ADJOINT=true" >> $SUMMARY
     echo >> $SUMMARY
@@ -806,6 +867,9 @@ for dir in $TESTDIRS ; do
 	echo "can't read \"$fout\" -- skipping $dir"
 	continue
     fi
+
+    # Check for additional types of monitor output
+    check_for_add_mon_output  $fout
 
     builddir="input"
     rundir="input"

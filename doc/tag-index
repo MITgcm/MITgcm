@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.392 2004/11/23 20:22:12 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.393 2004/11/23 21:25:24 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o add PTRACERS (PTR0[1-5]) to testreport output
 o exf_check_range:
   * default changed to .TRUE.
   * will check values for niter0 if debLevA, every timestep if debLevB
