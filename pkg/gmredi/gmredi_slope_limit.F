@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.9 2001/12/16 18:54:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.10 2002/01/11 17:29:16 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -32,6 +32,10 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "GMREDI.h"
 #include "PARAMS.h"
+#ifdef ALLOW_AUTODIFF_TAMC
+#include "tamc.h"
+#include "tamc_keys.h"
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     == Routine arguments ==
 C
@@ -49,12 +53,27 @@ CEndOfInterface
 C     == Local variables ==
       _RL Small_Number
       PARAMETER(Small_Number=1.D-12)
-      _RL gradSmod,f1,Smod,f2,Rnondim,Cspd,Lrho
-      _RL dSigmaDrLtd, dRdSigmaLtd
+      _RL gradSmod(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dSigmaDrLtd(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dRdSigmaLtd(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL f1,Smod,f2,Rnondim,Cspd,Lrho
       _RL maxSlopeSqr
       _RL fpi
       PARAMETER(fpi=3.141592653589793047592d0)
       INTEGER i,j
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       IF (GM_taper_scheme.EQ.'orig' .OR.
      &    GM_taper_scheme.EQ.'clipping') THEN
@@ -65,18 +84,55 @@ C       (this turns out to be the same as Cox slope clipping)
 C-      Cox 1987 "Slope clipping"
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
-
-          gradSmod=SlopeX(i,j)*SlopeX(i,j)
+          gradSmod(i,j)=SlopeX(i,j)*SlopeX(i,j)
      &            +SlopeY(i,j)*SlopeY(i,j)
-          if (gradSmod .NE. 0.) gradSmod=sqrt(gradSmod)
+         ENDDO
+        ENDDO
 
-          dSigmaDrLtd = -(Small_Number+gradSmod*GM_rMaxSlope)
-          IF (dSigmaDrReal(i,j).GE.dSigmaDrLtd)
-     &        dSigmaDrReal(i,j) = dSigmaDrLtd
-          dRdSigmaLtd = 1./dSigmaDrReal(i,j)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gradSmod(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
+#endif
 
-          SlopeX(i,j)=-SlopeX(i,j)*dRdSigmaLtd
-          SlopeY(i,j)=-SlopeY(i,j)*dRdSigmaLtd
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
+          if (gradSmod(i,j) .NE. 0.) gradSmod(i,j)=sqrt(gradSmod(i,j))
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE gradSmod(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
+#endif
+
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
+          dSigmaDrLtd(i,j) = -(Small_Number+gradSmod(i,j)*GM_rMaxSlope)
+          IF (dSigmaDrReal(i,j).GE.dSigmaDrLtd(i,j))
+     &        dSigmaDrReal(i,j) = dSigmaDrLtd(i,j)
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
+#endif
+
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
+          dRdSigmaLtd(i,j) = 1./dSigmaDrReal(i,j)
+          SlopeX(i,j)=-SlopeX(i,j)*dRdSigmaLtd(i,j)
+          SlopeY(i,j)=-SlopeY(i,j)*dRdSigmaLtd(i,j)
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+#endif
+
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
           SlopeSqr(i,j)=SlopeX(i,j)*SlopeX(i,j)
      &                 +SlopeY(i,j)*SlopeY(i,j)
           taperFct(i,j)=1. _d 0
@@ -86,22 +142,45 @@ C-      Cox 1987 "Slope clipping"
 
       ELSE
 
-C- Compute the slope, no clipping, but avoid reverse slope in negatively 
+C- Compute the slope, no clipping, but avoid reverse slope in negatively
 C                                  stratified (Sigma_Z > 0) region :
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
+#endif
+
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
+          dSigmaDrLtd(i,j) = -Small_Number
+          IF (dSigmaDrReal(i,j).GE.dSigmaDrLtd(i,j))
+     &        dSigmaDrReal(i,j) = dSigmaDrLtd(i,j)
+         ENDDO
+        ENDDO
 
-          dSigmaDrLtd = -Small_Number
-          IF (dSigmaDrReal(i,j).GE.dSigmaDrLtd)
-     &        dSigmaDrReal(i,j) = dSigmaDrLtd
-          dRdSigmaLtd = 1./dSigmaDrReal(i,j)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
+#endif
 
-          SlopeX(i,j) = -SlopeX(i,j)*dRdSigmaLtd
-          SlopeY(i,j) = -SlopeY(i,j)*dRdSigmaLtd
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
+          dRdSigmaLtd(i,j) = 1./dSigmaDrReal(i,j)
+          SlopeX(i,j) = -SlopeX(i,j)*dRdSigmaLtd(i,j)
+          SlopeY(i,j) = -SlopeY(i,j)*dRdSigmaLtd(i,j)
+         ENDDO
+        ENDDO
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+#endif
+
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
           SlopeSqr(i,j)=SlopeX(i,j)*SlopeX(i,j)
      &                 +SlopeY(i,j)*SlopeY(i,j)
           taperFct(i,j)=1. _d 0
-
          ENDDO
         ENDDO
 
