@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.133 2004/10/18 16:04:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.134 2004/10/18 21:32:48 jmc Exp $
 C $Name:  $
 C
 
@@ -245,10 +245,14 @@ C                        climatology is required.
 C     doSaltClimRelax  :: Set true if relaxation to salinity
 C                        climatology is required.
 C     periodicExternalForcing :: Set true if forcing is time-dependant
-C     usingPCoords     :: Set to indicate that we are working in pressure
-C                        coords. (jmc: is it still used ?)
-C     usingZCoords     :: Set to indicate that we are working in height
-C                        coords. (jmc: is it still used ?)
+C     usingPCoords     :: Set to indicate that we are working in a pressure
+C                        type coordinate (p or p*).
+C     usingZCoords     :: Set to indicate that we are working in a height
+C                        type coordinate (z or z*)
+C     fluidIsAir       :: Set to indicate that the fluid major constituent
+C                        is air
+C     fluidIsWater     :: Set to indicate that the fluid major constituent
+C                        is water
 C     useDynP_inEos_Zc :: use the dynamical pressure in EOS (with Z-coord.)
 C                         this requires specific code for restart & exchange
 C     setCenterDr    :: set cell Center depth and put Interface at the middle
@@ -290,6 +294,7 @@ C     monitor_stdio      :: use stdio for monitor output
      & multiDimAdvection, useMultiDimAdvec, forcing_In_AB,
      & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax, 
      & periodicExternalForcing, 
+     & fluidIsAir, fluidIsWater,
      & usingPCoords, usingZCoords, useDynP_inEos_Zc, setCenterDr,
      & nonHydrostatic, quasiHydrostatic, globalFiles, useSingleCpuIO,
      & allowFreezing, useOldFreezing, groundAtK1,
@@ -352,6 +357,8 @@ C     monitor_stdio      :: use stdio for monitor output
       LOGICAL doSaltClimRelax
       LOGICAL doTr1ClimRelax
       LOGICAL periodicExternalForcing
+      LOGICAL fluidIsAir
+      LOGICAL fluidIsWater
       LOGICAL usingPCoords
       LOGICAL usingZCoords
       LOGICAL useDynP_inEos_Zc

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.132 2004/10/18 16:04:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.133 2004/10/18 21:36:08 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -215,8 +215,6 @@ C--   Initialise "which vertical coordinate system used" flags.
       zCoordInputData = .FALSE.
       pCoordInputData = .FALSE.
       rCoordInputData = .FALSE.
-      usingPCoords    = .FALSE.
-      usingZCoords    = .FALSE.
       coordsSet       = 0
 
 C--   Initialise retired parameters to unlikely value
@@ -338,6 +336,28 @@ C--   z,p,r coord input switching.
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; read PARM01 : OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1) 
+      ENDIF
+
+C-    set the type of vertical coordinate and type of fluid 
+C     according to buoyancyRelation
+      usingPCoords    = .FALSE.
+      usingZCoords    = .FALSE.
+      fluidIsAir      = .FALSE.
+      fluidIsWater    = .FALSE.
+      IF ( buoyancyRelation.EQ.'ATMOSPHERIC' ) THEN
+        usingPCoords = .TRUE.
+        fluidIsAir   = .TRUE.
+      ELSEIF ( buoyancyRelation.EQ.'OCEANICP') THEN
+        usingPCoords  = .TRUE.
+        fluidIsWater  = .TRUE.
+      ELSEIF ( buoyancyRelation.EQ.'OCEANIC' ) THEN
+        usingZCoords  = .TRUE.
+        fluidIsWater  = .TRUE.
+      ELSE
+        WRITE(msgBuf,'(2A)') 'S/R INI_PARMS:',
+     &      ' Bad value of buoyancyRelation '
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
 
       IF ( implicitFreeSurface ) freeSurfFac = 1.D0
@@ -928,7 +948,7 @@ C--   Make metric term settings consistent with underlying grid.
        WRITE(msgBuf,'(A)') 'S/R INI_PARMS ; Cylinder OK'
        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                    SQUEEZE_RIGHT , 1)
-                                                                                
+
       ENDIF
 
       IF ( usingSphericalPolarGrid ) THEN
@@ -989,7 +1009,7 @@ C     Check for multiple coordinate systems
 C--   When using the dynamical pressure in EOS (with Z-coord.),
 C     needs to activate specific part of the code (restart & exchange)
 c     useDynP_inEos_Zc = .FALSE.
-      useDynP_inEos_Zc = ( buoyancyRelation .EQ. 'OCEANIC'
+      useDynP_inEos_Zc = ( fluidIsWater .AND. usingZCoords
      &              .AND. ( eosType .EQ. 'JMD95P' .OR.
      &                      eosType .EQ. 'UNESCO' .OR.
      &                      eosType .EQ. 'MDJWF'       )  )
@@ -1039,11 +1059,7 @@ c      rkFac = -1.D0
        horiVertRatio = 1.D0
       ENDIF
       gravitySign = -1. _d 0
-      IF (buoyancyRelation.EQ.'ATMOSPHERIC') THEN
-         gravitySign = 1. _d 0
-         horiVertRatio = Gravity * rhoConst
-      ENDIF
-      IF (buoyancyRelation.EQ.'OCEANICP') THEN
+      IF ( usingPCoords ) THEN
          gravitySign = 1. _d 0
          horiVertRatio = Gravity * rhoConst
       ENDIF
@@ -1051,8 +1067,6 @@ c      rkFac = -1.D0
       IF ( rkFac .EQ. UNSET_RS ) rkFac=rkFacDefault
       recip_rkFac = 1.D0 / rkFac
       recip_horiVertRatio = 1./horiVertRatio
-      IF ( zCoordInputData ) usingZCoords = .TRUE.
-      IF ( pCoordInputData ) usingPCoords = .TRUE.
 
 c-- gradually replacing debugMode by debugLevel
       IF ( debugMode ) debugLevel = debLevB
