@@ -22,16 +22,24 @@ C       |-- KPP_INIT
 C       |-- KPP_OPEN_DIAGS
 C       |
 C       |-- SEAICE_INIT
-C       |
+C       | 
 C       |-- OBCS_INIT_VARIABLES
+C       |
+C       |-- PTRACERS_INIT
 C       |
 C       |-- CTRL_MAP_INI
 C       |
-C       |-- COST_INIT
+C       |-- EXF_INIT
+C       |
+C       |-- INI_FORCING
 C       |
 C       |-- ECCO_INIT
 C       |
-C       |-- INI_FORCING
+C       |-- COST_INIT
+C       |
+C       |-- BULKF_INIT
+C       |
+C       |-- ICE_INIT
 
 C     !USES:
       IMPLICIT NONE
@@ -79,6 +87,12 @@ C--   Open boundaries data
 c--   Map the control variables onto the model state. 
       call ctrl_map_ini( mythid )
       _BARRIER
+#endif
+
+#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+      CALL EXF_INIT( mythid )
+#else
+      CALL INI_FORCING( mythid )
 #endif
 
 #ifdef INCLUDE_ECCO_PACKAGE

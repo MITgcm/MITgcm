@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.44 2002/12/21 00:33:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.45 2002/12/28 10:11:10 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -52,7 +52,7 @@ C     == Global variables ==
 # include "EOS.h"
 # ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
 #  include "exf_fields.h"
-#  ifdef ALLOW_BULK_FORCE
+#  if (defined (ALLOW_BULKFORMULAE) || defined (ALLOW_BULK_FORCE))
 #   include "exf_constants.h"
 #  endif
 # endif
@@ -75,26 +75,27 @@ C     mythid - thread number for this instance of the routine.
       integer mythid 
       integer myiter
       _RL     mytime
+#ifdef ALLOW_BULK_FORCE
       INTEGER bi,bj
+#endif ALLOW_BULK_FORCE
 
 CEOP
 
-
 #ifdef ALLOW_AUTODIFF_TAMC
-C--     Reset the model iteration counter and the model time.
-        myiter = nIter0 + (iloop-1)
-        mytime = startTime + float(iloop-1)*deltaTclock
+C--   Reset the model iteration counter and the model time.
+      myiter = nIter0 + (iloop-1)
+      mytime = startTime + float(iloop-1)*deltaTclock
 #endif
 
 #if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_AUTODIFF_MONITOR))
-C       Include call to a dummy routine. Its adjoint will be 
-C       called at the proper place in the adjoint code.
-C       The adjoint routine will print out adjoint values 
-C       if requested. The location of the call is important, 
-C       it has to be after the adjoint of the exchanges 
-C       (DO_GTERM_BLOCKING_EXCHANGES).
-        CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
-        CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
+C     Include call to a dummy routine. Its adjoint will be 
+C     called at the proper place in the adjoint code.
+C     The adjoint routine will print out adjoint values 
+C     if requested. The location of the call is important, 
+C     it has to be after the adjoint of the exchanges 
+C     (DO_GTERM_BLOCKING_EXCHANGES).
+      CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
+      CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
 #endif
 
 #ifdef EXACT_CONSERV
@@ -116,10 +117,7 @@ C      according to etaH(n+1)
         ENDIF
 #endif /* NONLIN_FRSURF */
 
-
-
-
-C--     Load forcing/external data fields.
+C--   Load forcing/external data fields.
 #ifdef ALLOW_AUTODIFF_TAMC
 c**************************************
 #include "checkpoint_lev1_directives.h"
@@ -148,30 +146,38 @@ C       _EXCH_XY_R8(fv     , mythid)
 cswdblk -- end add ---
 #else
 #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
-        IF ( .not. useSEAICE  ) THEN 
-         CALL TIMER_START('EXF_GETFORCING     [FORWARD_STEP]',mythid)
-         CALL EXF_GETFORCING( mytime, myiter, mythid )
-         CALL TIMER_STOP ('EXF_GETFORCING     [FORWARD_STEP]',mythid)
-        ENDIF
+C     NOTE, that although the exf package is part of the
+C     distribution, it is not currently maintained, i.e.
+C     exf is disabled by default in genmake.
+      CALL TIMER_START('EXF_GETFORCING     [FORWARD_STEP]',mythid)
+      CALL EXF_GETFORCING( mytime, myiter, mythid )
+      CALL TIMER_STOP ('EXF_GETFORCING     [FORWARD_STEP]',mythid)
 #else
-        IF ( .not. useSEAICE  ) THEN 
-         CALL TIMER_START('EXTERNAL_FIELDS_LOAD[FORWARD_STEP]',mythid)
-         CALL EXTERNAL_FIELDS_LOAD( mytime, myiter, mythid )
-         CALL TIMER_STOP ('EXTERNAL_FIELDS_LOAD[FORWARD_STEP]',mythid)
-        ENDIF
+      IF ( .NOT. useSEAICE ) THEN
+       CALL TIMER_START('EXTERNAL_FIELDS_LOAD[FORWARD_STEP]',mythid)
+       CALL EXTERNAL_FIELDS_LOAD( mytime, myiter, mythid )
+       CALL TIMER_STOP ('EXTERNAL_FIELDS_LOAD[FORWARD_STEP]',mythid)
+      ENDIF
 #endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
-#endif
-
-
 
 #ifdef ALLOW_SEAICE
-C--   Call sea ice model to compute forcing/external data fields.
-        IF ( useSEAICE ) THEN
+C--   Call sea ice model to compute forcing/external data fields.  In
+C     addition to computing prognostic sea-ice variables and diagnosing the
+C     forcing/external data fields that drive the ocean model, SEAICE_MODEL
+C     also sets theta to the freezing point under sea-ice.  The implied
+C     surface heat flux is then stored in variable surfaceTendencyTice,
+C     which is needed by KPP package (kpp_calc.F and kpp_transport_t.F)
+C     to diagnose surface buoyancy fluxes and for the non-local transport
+C     term.  Because this call precedes model thermodynamics, temperature
+C     under sea-ice may not be "exactly" at the freezing point by the time
+C     theta is dumped or time-averaged.
+      IF ( useSEAICE ) THEN
          CALL TIMER_START('SEAICE_MODEL       [FORWARD_STEP]',myThid)
          CALL SEAICE_MODEL( myTime, myIter, myThid )
          CALL TIMER_STOP ('SEAICE_MODEL       [FORWARD_STEP]',myThid)
-        ENDIF
+      ENDIF
 #endif ALLOW_SEAICE
+#endif ALLOW_BULK_FORCE
 
 C--     Step forward fields and calculate time tendency terms.
         CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',mythid)
@@ -184,15 +190,15 @@ C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
         CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_SHAP_FILT
-       IF (useSHAP_FILT .AND. 
+      IF (useSHAP_FILT .AND. 
      &     staggerTimeStep .AND. shap_filt_TrStagg ) THEN
         CALL TIMER_START('SHAP_FILT           [FORWARD_STEP]',myThid)
         CALL SHAP_FILT_APPLY_TS( gT, gS, myTime, myIter, myThid )
         CALL TIMER_STOP ('SHAP_FILT           [FORWARD_STEP]',myThid)
-       ENDIF
+      ENDIF
 #endif
 #ifdef ALLOW_ZONAL_FILT
-       IF (useZONAL_FILT .AND. 
+      IF (useZONAL_FILT .AND. 
      &     staggerTimeStep .AND. zonal_filt_TrStagg ) THEN
         CALL TIMER_START('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
         CALL ZONAL_FILT_APPLY_TS( gT, gS, myThid )
@@ -200,34 +206,34 @@ C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
       ENDIF
 #endif   
 
-C--     Step forward fields and calculate time tendency terms.
-        IF ( momStepping ) THEN
+C--   Step forward fields and calculate time tendency terms.
+      IF ( momStepping ) THEN
         CALL TIMER_START('DYNAMICS            [FORWARD_STEP]',mythid)
         CALL DYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('DYNAMICS            [FORWARD_STEP]',mythid)
-        ENDIF
+      ENDIF
 
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Step forward W field in N-H algorithm
-        IF ( momStepping .AND. nonHydrostatic ) THEN
-          CALL TIMER_START('CALC_GW          [FORWARD_STEP]',myThid)
-          CALL CALC_GW(myThid)
-          CALL TIMER_STOP ('CALC_GW          [FORWARD_STEP]',myThid)
-        ENDIF
+      IF ( momStepping .AND. nonHydrostatic ) THEN
+         CALL TIMER_START('CALC_GW          [FORWARD_STEP]',myThid)
+         CALL CALC_GW(myThid)
+         CALL TIMER_STOP ('CALC_GW          [FORWARD_STEP]',myThid)
+      ENDIF
 #endif
 
 #ifdef NONLIN_FRSURF
 C--   update hfacC,W,S and recip_hFac according to etaH(n+1) :
       IF ( nonlinFreeSurf.GT.0) THEN
-        CALL TIMER_START('UPDATE_SURF_DR     [FORWARD_STEP]',mythid)
+        CALL TIMER_START('UPDATE_SURF_DR     [FORWARD_STEP]',myThid)
         CALL UPDATE_SURF_DR( myTime, myIter, myThid )
         CALL TIMER_STOP ('UPDATE_SURF_DR     [FORWARD_STEP]',myThid)
       ENDIF
 C-    update also CG2D matrix (and preconditioner)
       IF ( momStepping .AND. nonlinFreeSurf.GT.2 ) THEN
-        CALL TIMER_START('UPDATE_CG2D        [FORWARD_STEP]',mythid)
+        CALL TIMER_START('UPDATE_CG2D        [FORWARD_STEP]',myThid)
         CALL UPDATE_CG2D( myTime, myIter, myThid )
-        CALL TIMER_STOP ('UPDATE_CG2D        [FORWARD_STEP]',mythid)
+        CALL TIMER_STOP ('UPDATE_CG2D       [FORWARD_STEP]',myThid)
       ENDIF
 #endif
 
@@ -300,7 +306,7 @@ C--   Calculate float trajectories
 
 #ifndef EXCLUDE_MONITOR
 C--   Check status of solution (statistics, cfl, etc...)
-      CALL TIMER_START('MONITOR             [FORWARD_STEP]',mythid)
+      CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
       CALL MONITOR( myIter, myTime, myThid )
       CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
 #endif /* EXCLUDE_MONITOR */

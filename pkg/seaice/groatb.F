@@ -29,19 +29,18 @@ CEndOfInterface
 #ifdef ALLOW_SEAICE
 
 C     === Local variables ===
-C     i,j,k,bi,bj - Loop counters
+C     i,j,bi,bj - Loop counters
 
-      INTEGER i, j, k, bi, bj
+      INTEGER i, j, bi, bj
       INTEGER KOPEN
       _RL U1, V1
 
       _RL HICE (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
-      _RL AR   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL UG   (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
 
 C if this is not done before then do it here
-      _EXCH_XY_R8(GAIRX, myThid)
-      _EXCH_XY_R8(GAIRY, myThid)
+      _EXCH_XY_R8(UWIND, myThid)
+      _EXCH_XY_R8(VWIND, myThid)
 
 c$taf loop = parallel
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -69,10 +68,10 @@ C NOW DETERMINE MIXED LAYER TEMPERATURE
 
         DO J=1,sNy
          DO I=1,sNx
-          U1=0.25 _d 0*(GAIRX(I-1,J-1,bi,bj)+GAIRX(I-1,J,bi,bj)
-     1      +GAIRX(I,J-1,bi,bj)+GAIRX(I,J,bi,bj))
-          V1=0.25 _d 0*(GAIRY(I-1,J-1,bi,bj)+GAIRY(I-1,J,bi,bj)
-     1      +GAIRY(I,J-1,bi,bj)+GAIRY(I,J,bi,bj))
+          U1=0.25 _d 0*(UWIND(I-1,J-1,bi,bj)+UWIND(I-1,J,bi,bj)
+     1      +UWIND(I,J-1,bi,bj)+UWIND(I,J,bi,bj))
+          V1=0.25 _d 0*(VWIND(I-1,J-1,bi,bj)+VWIND(I-1,J,bi,bj)
+     1      +VWIND(I,J-1,bi,bj)+VWIND(I,J,bi,bj))
           UG(I,J)=SQRT(U1**2+V1**2)
          ENDDO
         ENDDO

@@ -113,15 +113,15 @@ C     == Local variables ==
             _BARRIER
 
 #ifdef SEAICE_DEBUG
-c       CALL PLOT_FIELD_XYRS( gairx,'Current gairx ', myIter, myThid )
-c       CALL PLOT_FIELD_XYRS( gairy,'Current gairy ', myIter, myThid )
-c       CALL PLOT_FIELD_XYRS( tair ,'Current tair ' , myIter, myThid )
-c       CALL PLOT_FIELD_XYRS( qa   ,'Current qa '   , myIter, myThid )
-c       CALL PLOT_FIELD_XYRS( flo  ,'Current flo '  , myIter, myThid )
-c       CALL PLOT_FIELD_XYRS( fsh  ,'Current fsh '  , myIter, myThid )
-       CALL PLOT_FIELD_XYRL( fu   ,'Current fu '   , myIter, myThid )
-       CALL PLOT_FIELD_XYRL( fv   ,'Current fv '   , myIter, myThid )
-       CALL PLOT_FIELD_XYRL( Qnet ,'Current Qnet ' , myIter, myThid )
+c      CALL PLOT_FIELD_XYRS( uwind ,'Current uwind ' , myIter, myThid )
+c      CALL PLOT_FIELD_XYRS( vwind ,'Current vwind ' , myIter, myThid )
+c      CALL PLOT_FIELD_XYRS( atemp ,'Current atemp ' , myIter, myThid )
+c      CALL PLOT_FIELD_XYRS( aqh   ,'Current aqh '   , myIter, myThid )
+c      CALL PLOT_FIELD_XYRS( lwflux,'Current lwflux ', myIter, myThid )
+c      CALL PLOT_FIELD_XYRS( swflux,'Current swflux ', myIter, myThid )
+       CALL PLOT_FIELD_XYRL( fu    ,'Current fu '    , myIter, myThid )
+       CALL PLOT_FIELD_XYRL( fv    ,'Current fv '    , myIter, myThid )
+       CALL PLOT_FIELD_XYRL( Qnet  ,'Current Qnet '  , myIter, myThid )
 #endif SEAICE_DEBUG
 
          ENDIF

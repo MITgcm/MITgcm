@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.47 2002/09/25 19:36:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.48 2002/12/28 10:11:10 dimitri Exp $
 C $Name:  $
 
 CBOI
@@ -220,6 +220,7 @@ C/\  | | | |                    :: Simple interpolcation between end-points
 C/\  | | | |                    :: for forcing datasets.
 C/\  | | | |                  
 C/\  | | | |-EXCH :: Sync forcing. in overlap regions.
+C/\  | | |-SEAICE_MODEL   :: Compute sea-ice terms. ( pkg/seaice )
 C/\  | | |
 C/\  | | |-THERMODYNAMICS :: theta, salt + tracer equations driver.
 C/\  | | | |
@@ -454,8 +455,6 @@ C           impose additional synchronisation points when they are
 C           updated.
 C     myCurrentTime - Time counter for this thread
 C     myCurrentIter - Iteration counter for this thread
-      INTEGER I
-      INTEGER bi,bj
       INTEGER myCurrentIter
       _RL     myCurrentTime
 CEOP

@@ -10,6 +10,7 @@ c     o set external forcing sflux
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
 c     changed: heimbach@mit.edu 10-Jan-2002
+c              menemenlis@jpl.nasa.gov 20-Dec-2002
 
 c     ==================================================================
 c     SUBROUTINE exf_set_sflux
@@ -27,7 +28,6 @@ c     == global variables ==
 #include "exf_constants.h"
 #include "exf_fields.h"
 
-
 c     == routine arguments ==
 
       _RL     mycurrenttime
@@ -35,6 +35,7 @@ c     == routine arguments ==
       integer mythid
 
 #ifndef ALLOW_ATM_TEMP
+
 c     == local variables ==
 
       logical first, changed
@@ -96,7 +97,7 @@ c             Interpolate linearly onto the current time.
         enddo
       enddo
 
-#endif
+#endif ALLOW_ATM_TEMP
 
       end
 

@@ -29,9 +29,9 @@ CEndOfInterface
 #ifdef ALLOW_SEAICE
 
 C     === Local variables ===
-C     i,j,k,bi,bj - Loop counters
+C     i,j,bi,bj - Loop counters
 
-      INTEGER i, j, k, bi, bj, j1, j2, im, jm
+      INTEGER i, j, bi, bj, j1, j2, im, jm
       _RL  RADIUS, DELXY, DELXR, DELYR, DELX2, DELY2, RADIUS2
       _RL  ETAMEAN, ZETAMEAN
       _RL  AA1, AA2, AA3, AA4, AA5, AA6, AA9

@@ -37,15 +37,13 @@ CEndOfInterface
 #ifdef ALLOW_SEAICE
 
 C     === Local variables ===
-C     i,j,k,bi,bj - Loop counters
+C     i,j,bi,bj - Loop counters
 
-      INTEGER i, j, k, bi, bj, kii
+      INTEGER i, j, bi, bj, kii
       _RL  DWAT, DAIR, RHOICE, RHOAIR, SINWIN, COSWIN, SINWAT, COSWAT
       _RL  GRAV, ECCEN, ECM2, GMIN, RADIUS, DELT1, DELT2, PSTAR
-      _RL  AAA
 
       _RL PRESS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL DWATN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL FORCEX0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL FORCEY0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
@@ -56,79 +54,123 @@ C     i,j,k,bi,bj - Loop counters
       _RL ZMAX       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL ZMIN       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
-C FIRST SET UP BASIC CONSTANTS
+#ifndef SEAICE_EXTERNAL_FLUXES
+      _RL  AAA
+      _RL DAIRN      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
+#endif SEAICE_EXTERNAL_FLUXES
+
+C--   FIRST SET UP BASIC CONSTANTS
       DWAT=0.59 _d 0
       DAIR=0.01462 _d 0
       RHOICE=0.91 _d +03
       RHOAIR=1.3 _d 0
-C   25 DEG GIVES SIN EQUAL TO 0.4226
+      GRAV=9.832 _d 0
+      ECCEN=TWO
+      ECM2=ONE/(ECCEN**2)
+      GMIN=1.0 _d -20
+      RADIUS=6370. _d 3
+      PSTAR=SEAICE_strength
+
+C--   25 DEG GIVES SIN EQUAL TO 0.4226
       SINWIN=0.4226 _d 0
       COSWIN=0.9063 _d 0
       SINWAT=0.4226 _d 0
       COSWAT=0.9063 _d 0
-c do not introduce truning angle
+
+C--   Do not introduce turning angle
       SINWIN=ZERO
       COSWIN=ONE
       SINWAT=ZERO
       COSWAT=ONE
 
-      GRAV=9.832 _d 0
+C--   NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1,sNy
+         DO i=1,sNx
+          AMASS(I,J,bi,bj)=RHOICE*QUART*(HEFF(i,j,1,bi,bj)
+     &           +HEFF(i+1,j,1,bi,bj)
+     &           +HEFF(i,j+1,1,bi,bj)
+     &           +HEFF(i+1,j+1,1,bi,bj))
+          COR_ICE(I,J,bi,bj)=AMASS(I,J,bi,bj)
+     &         *TWO*OMEGA*SINEICE(I,J,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 
-      ECCEN=TWO
-      ECM2=ONE/(ECCEN**2)
-      GMIN=1.0 _d -20
-      RADIUS=6370. _d 3
+C--   NOW SET UP FORCING FIELDS
 
-      PSTAR=SEAICE_strength
+#ifdef SEAICE_EXTERNAL_FLUXES
+C--   Wind stress computed externally on South-West C-grid
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           FORCEX(I,J,bi,bj)=HALF*(FU(I+1,J,bi,bj)+FU(I+1,J+1,bi,bj))
+           FORCEY(I,J,bi,bj)=HALF*(FV(I,J+1,bi,bj)+FV(I+1,J+1,bi,bj))
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+#else SEAICE_EXTERNAL_FLUXES
+      IF (SEAICEwindOnCgrid) THEN
+C--   Wind stress computed here from wind on South-West C-grid
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           AAA=SQRT((HALF*(UWIND(I+1,J,bi,bj)+UWIND(I+1,J+1,bi,bj)))**2
+     &          +(HALF*(VWIND(I,J+1,bi,bj)+VWIND(I+1,J+1,bi,bj)))**2)
+           DAIRN(I,J,bi,bj)=RHOAIR*SEAICE_drag*
+     &          (2.70 _d 0+0.142 _d 0*AAA+0.0764 _d 0*AAA*AAA)
+           FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
+     &          (COSWIN*HALF*(UWIND(I+1,J,bi,bj)+UWIND(I+1,J+1,bi,bj))
+     &          -SINWIN*HALF*(VWIND(I,J+1,bi,bj)+VWIND(I+1,J+1,bi,bj)))
+           FORCEY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
+     &          (SINWIN*HALF*(UWIND(I+1,J,bi,bj)+UWIND(I+1,J+1,bi,bj))
+     &          +COSWIN*HALF*(VWIND(I,J+1,bi,bj)+VWIND(I+1,J+1,bi,bj)))
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+      ELSE
+C--   Wind stress computed here from wind on South-West B-grid
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           AAA=SQRT(UWIND(I,J,bi,bj)**2+VWIND(I,J,bi,bj)**2)
+           DAIRN(I,J,bi,bj)=RHOAIR*SEAICE_drag*
+     &          (2.70 _d 0+0.142 _d 0*AAA+0.0764 _d 0*AAA*AAA)
+           FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(COSWIN*UWIND(I,J,bi,bj)
+     &          -SINWIN*VWIND(I,J,bi,bj))
+           FORCEY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(SINWIN*UWIND(I,J,bi,bj)
+     &          +COSWIN*VWIND(I,J,bi,bj))
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDIF
+#endif SEAICE_EXTERNAL_FLUXES
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-
-C NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
-          AMASS(I,J,bi,bj)=RHOICE*QUART*(HEFF(i,j,1,bi,bj)
-     &                                 +HEFF(i+1,j,1,bi,bj)
-     &                                 +HEFF(i,j+1,1,bi,bj)
-     &                                 +HEFF(i+1,j+1,1,bi,bj))
-          COR_ICE(I,J,bi,bj)=AMASS(I,J,bi,bj)
-     &                      *TWO*OMEGA*SINEICE(I,J,bi,bj)
-C NOW SET UP FORCING FIELD
-C FIRST WIND
-C IF WIND ON B GRID
-          AAA=SQRT(GAIRX(I,J,bi,bj)**2+GAIRY(I,J,bi,bj)**2)
-C IF WIND ON C GRID
-C         AAA=SQRT((HALF*(GAIRX(I+1,J,bi,bj)+GAIRX(I+1,J+1,bi,bj)))**2
-C     &       +(HALF*(GAIRY(I,J+1,bi,bj)+GAIRY(I+1,J+1,bi,bj)))**2)
-
-          DAIRN(I,J,bi,bj)=RHOAIR*SEAICE_drag*
-     &                    (2.70 _d 0+0.142 _d 0*AAA+0.0764 _d 0*AAA*AAA)
-
-C IF WIND ON B GRID
-          FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(COSWIN*GAIRX(I,J,bi,bj)
-     &                                       -SINWIN*GAIRY(I,J,bi,bj))
-          FORCEY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(SINWIN*GAIRX(I,J,bi,bj)
-     &                                       +COSWIN*GAIRY(I,J,bi,bj))
-C IF WIND ON C GRID
-C          FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-C     &        (COSWIN*HALF*(GAIRX(I+1,J,bi,bj)+GAIRX(I+1,J+1,bi,bj))
-C     &        -SINWIN*HALF*(GAIRY(I,J+1,bi,bj)+GAIRY(I+1,J+1,bi,bj)))
-C          FORCEY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-C     &        (SINWIN*HALF*(GAIRX(I+1,J,bi,bj)+GAIRX(I+1,J+1,bi,bj))
-C     &        +COSWIN*HALF*(GAIRY(I,J+1,bi,bj)+GAIRY(I+1,J+1,bi,bj)))
-
-C STORE WIND ONLY STRESS 
+C--   STORE WIND ONLY STRESS 
           WINDX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
           WINDY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
-
-C NOW ADD IN TILT
+C--   NOW ADD IN TILT
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-     &                    -COR_ICE(I,J,bi,bj)*GWATY(I,J,bi,bj)
+     &         -COR_ICE(I,J,bi,bj)*GWATY(I,J,bi,bj)
           FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)
-     &                    +COR_ICE(I,J,bi,bj)*GWATX(I,J,bi,bj)
-C NOW SET UP ICE PRESSURE AND VISCOSITIES
+     &         +COR_ICE(I,J,bi,bj)*GWATX(I,J,bi,bj)
+C--   NOW SET UP ICE PRESSURE AND VISCOSITIES
           PRESS(I,J,bi,bj)=PSTAR*HEFF(I,J,1,bi,bj)
-     &                    *EXP(-20.0 _d 0*(ONE-AREA(I,J,1,bi,bj)))
+     &         *EXP(-20.0 _d 0*(ONE-AREA(I,J,1,bi,bj)))
           ZMAX(I,J,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS(I,J,bi,bj)
           ZMIN(I,J,bi,bj)=4.0 _d +08
           PRESS(I,J,bi,bj)=PRESS(I,J,bi,bj)*HEFFM(I,J,bi,bj)

@@ -1,16 +1,16 @@
 # SEAICE parameters
  &SEAICE_PARM01
       SEAICEuseDYNAMICS = .FALSE.
-      SEAICEwriteState = .TRUE.
-      gairxFile = 'u10m.labsea79'
-      gairyFile = 'v10m.labsea79'
-      tairFile  = 'tair.labsea1979'
-      qaFile    = 'qa.labsea1979'
-      floFile   = 'flo.labsea1979'
-      fshFile   = 'fsh.labsea1979'
-      rainFile  = 'prate.labsea1979'
-      evapFile  = 'evap.labsea1979'
-      runoffFile= ' '
+      SEAICEwriteState  = .TRUE.
+      uwindFile         = 'u10m.labsea79'
+      vwindFile         = 'v10m.labsea79'
+      atempFile         = 'tair.labsea1979'
+      aqhFile           = 'qa.labsea1979'
+      lwfluxFile        = 'flo.labsea1979'
+      swfluxFile        = 'fsh.labsea1979'
+      precipFile        = 'prate.labsea1979'
+      evapFile          = 'evap.labsea1979'
+      runoffFile        = ' '
       WindForcingStart  = -1317600.
       WindForcingEnd    = 32940000.
       WindForcingPeriod = 2635200.

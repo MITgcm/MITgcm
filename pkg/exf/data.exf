@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/data.exf,v 1.1 2001/05/14 22:08:40 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/data.exf,v 1.2 2002/12/28 10:11:11 dimitri Exp $
 #
 # *********************
 # External Forcing Data
@@ -28,6 +28,10 @@
  aqhstartdate2     = 60000,
  aqhperiod         = 86400.0,
 #
+ evapstartdate1    = 19920601,
+ evapstartdate2    = 60000,
+ evapperiod        = 86400.0,
+#
  precipstartdate1  = 19920601,
  precipstartdate2  = 60000,
  precipperiod      = 86400.0,
@@ -56,10 +60,12 @@
  aqhfile           = 'PH_atm_humid_020_016_23',
  uwindfile         = 'PH_atm_uwind_020_016_23',
  vwindfile         = 'PH_atm_vwind_020_016_23',
+ evapfile          = ' ',
  precipfile        = 'PH_pratesfc_020_016_23',
  lwfluxfile        = 'PH_lwflsfc_020_016_23',
  swfluxfile        = 'PH_swflsfc_020_016_23',
+ runoffFile        = ' '
 #
  exf_iprec         = 32,
  exf_yftype        = 'RL',
- /
+ &

@@ -8,13 +8,26 @@ C     | o Basic parameter header for sea ice model.              |
 C     \==========================================================/
 
 C--   COMMON /SEAICE_PARM_L/ Logical parameters of sea ice model.
-C     SEAICEwriteState    - if true, write sea ice state to file
-C     SEAICEuseLSR        - if true, use LSR rather than ADI solver
-C     SEAICEuseDYNAMICS   - if false, do not use dynamics
 C
-      LOGICAL SEAICEwriteState, SEAICEuseLSR, SEAICEuseDYNAMICS
+C     SEAICEwriteState  - If true, write sea ice state to file;
+C                         default is false.
+C
+C     SEAICEuseDYNAMICS - If false, do not use dynamics;
+C                         default is to use dynamics.
+C
+C     SEAICEuseLSR      - If true, use LSR rather than ADI solver;
+C                         default is ADI solver.
+C
+C     SEAICEwindOnCgrid - By default wind files, uwind and vwind,
+C        are defined on North-East B-grid U and V points.
+C        When this flag is set, wind files are defined on
+C        South-West C-grid U and V points.
+C
+      LOGICAL SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseLSR,
+     &        SEAICEwindOnCgrid
       COMMON /SEAICE_PARM_L/
-     &        SEAICEwriteState, SEAICEuseLSR, SEAICEuseDYNAMICS
+     &        SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseLSR,
+     &        SEAICEwindOnCgrid
 
 C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
 C     LAD        - time stepping used for sea-ice advection:
@@ -29,27 +42,27 @@ C
       COMMON /SEAICE_PARM_I/ LAD, IMAX_TICE, NPSEUDO
 
 C--   COMMON /SEAICE_PARM_C/ Character valued sea ice model parameters.
-C     gairxFile       - File containing 
-C     gairyFile       - File containing 
-C     tairFile        - File containing 
-C     qaFile          - File containing 
-C     floFile         - File containing 
-C     fshFile         - File containing 
-C     rainFile        - File containing 
+C     uwindFile       - File containing 
+C     vwindFile       - File containing 
+C     atempFile       - File containing 
+C     aqhFile         - File containing 
+C     lwfluxFile      - File containing 
+C     swfluxFile      - File containing 
+C     precipFile      - File containing 
 C     evapFile        - File containing 
 C     runoffFile      - File containing 
 C
-      CHARACTER*(MAX_LEN_FNAM) gairxFile
-      CHARACTER*(MAX_LEN_FNAM) gairyFile
-      CHARACTER*(MAX_LEN_FNAM) tairFile
-      CHARACTER*(MAX_LEN_FNAM) qaFile
-      CHARACTER*(MAX_LEN_FNAM) floFile
-      CHARACTER*(MAX_LEN_FNAM) fshFile
-      CHARACTER*(MAX_LEN_FNAM) rainFile
+      CHARACTER*(MAX_LEN_FNAM) uwindFile
+      CHARACTER*(MAX_LEN_FNAM) vwindFile
+      CHARACTER*(MAX_LEN_FNAM) atempFile
+      CHARACTER*(MAX_LEN_FNAM) aqhFile
+      CHARACTER*(MAX_LEN_FNAM) lwfluxFile
+      CHARACTER*(MAX_LEN_FNAM) swfluxFile
+      CHARACTER*(MAX_LEN_FNAM) precipFile
       CHARACTER*(MAX_LEN_FNAM) evapFile
       CHARACTER*(MAX_LEN_FNAM) runoffFile
-      COMMON /SEAICE_PARM_C/ gairxFile, gairyFile, tairFile, qaFile,
-     &                floFile, fshFile, rainFile, evapFile, runoffFile
+      COMMON /SEAICE_PARM_C/ uwindFile, vwindFile, atempFile, aqhFile,
+     &     lwfluxFile, swfluxFile, precipFile, evapFile, runoffFile
 
 C--   COMMON /SEAICE_PARM_RL/ Real valued parameters of sea ice model.
 C     SEAICE_dumpFreq    - SEAICE dump frequency.                     (s)
@@ -118,14 +131,14 @@ C
 
 C--   COMMON /SEAICE_BOUND_RL/ Various bounding values
 C     MAX_HEFF   - maximum ice thickness (m)
-C     MIN_TAIR   - minimum air temperature (deg C)
-C     MIN_FLO    - minimum incoming longwave (W/m^2)
+C     MIN_ATEMP  - minimum air temperature (deg C)
+C     MIN_LWFLUX - minimum incoming longwave (W/m^2)
 C     MAX_TICE   - maximum ice temperature (deg C)
 C     MIN_TICE   - minimum ice temperature (deg C)
 C
-      _RL MAX_HEFF, MIN_TAIR, MIN_FLO, MAX_TICE, MIN_TICE
+      _RL MAX_HEFF, MIN_ATEMP, MIN_LWFLUX, MAX_TICE, MIN_TICE
       COMMON /SEAICE_BOUND_RL/
-     &    MAX_HEFF, MIN_TAIR, MIN_FLO, MAX_TICE, MIN_TICE
+     &    MAX_HEFF, MIN_ATEMP, MIN_LWFLUX, MAX_TICE, MIN_TICE
 
 C--   Seaice time step
       COMMON /SEAICE_R/ SEAICE_DT

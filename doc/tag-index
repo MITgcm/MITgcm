@@ -1,12 +1,22 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.112 2002/12/27 14:26:14 cheisey Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.113 2002/12/28 10:11:10 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint47f_post
+Merging from release1_p10:
+o modifications for using pkg/exf with pkg/seaice
+  - pkg/seaice CPP options SEAICE_EXTERNAL_FORCING
+    and SEAICE_EXTERNAL_FLUXES
+  - pkg/exf CPP options EXF_READ_EVAP and
+    EXF_NO_BULK_COMPUTATIONS
+  - usage examples are Experiments 8 and 9 in
+    verification/lab_sea/README
+  - verification/lab_sea default experiment now uses
+    pkg/gmredi, pkg/kpp, pkg/seaice, and pkg/exf
+
 checkpoint47e_post
 o created a tag prior to creating a branch
-
-
 
 checkpoint47d_post
 o fixed bug in the oceanic pressure coordinates code: vertical viscosity 
@@ -21,7 +31,6 @@ checkpoint47c_post
 o Added a verification experiment for a global cubed-sphere ocean run
   -  verification/global_ocean.cubed32x32x30
   -  uses pkg/therm_seaice and pkg/bulk_forcing
-
 
 o allow to run AIM physics with SPEEDY input files (from Franco Molteni)
 o allow a more accurate definition of Ro_Surf (selectFindRoSurf=1)

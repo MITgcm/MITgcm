@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/CPP_OPTIONS.h,v 1.2 2002/11/12 20:54:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/CPP_OPTIONS.h,v 1.3 2002/12/28 10:11:12 dimitri Exp $
 C $Name:  $
 C
 
@@ -29,7 +29,7 @@ C o Shortwave heating as extra term in external_forcing.F
 #endif
 
 C o Include/exclude code for Shapiro filters
-#define ALLOW_SHAP_FILT
+#undef  ALLOW_SHAP_FILT
 
 C o Include/exclude code for C-D grid method of integrating the 
 C   coriolis terms
@@ -113,7 +113,7 @@ C o Include/exclude phi_hyd calculation code
 #define INCLUDE_PHIHYD_CALCULATION_CODE
 
 C o Include/exclude call to S/R CONVECT
-#define INCLUDE_CONVECT_CALL
+#undef  INCLUDE_CONVECT_CALL
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
@@ -127,7 +127,7 @@ C   instead of the "virtual salt flux"
 
 C o Use "Exact Convervation" of fluid in Free-Surface formulation
 C   so that d/dt(eta) is exactly equal to - Div.Transport
-#define EXACT_CONSERV
+#undef  EXACT_CONSERV
 
 C o Allow the use of Non-Linear Free-Surface formulation
 C   this implies that surface thickness (hFactors) vary with time
@@ -146,9 +146,10 @@ C          because the old code did not have no-slip BCs
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
 
-C o Include/exclude code specific to the ECCO/SEALION version.
-#undef INCLUDE_ECCO_PACKAGE
-#ifdef INCLUDE_ECCO_PACKAGE
-#include "ECCO_CPPOPTIONS.h"
+C o Include/exclude the external forcing package. To use this package,
+C   you have to include the calendar tool as well. KPP can be switched
+C   on or off. The implementation automatically takes care of this.
+#define INCLUDE_EXTERNAL_FORCING_PACKAGE
+#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+# include "ECCO_CPPOPTIONS.h"
 #endif
-

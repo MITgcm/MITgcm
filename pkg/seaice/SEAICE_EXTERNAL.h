@@ -21,7 +21,7 @@ C              point.  But we need to keep track of the
 C              equivalent amount of heat that this surface-level
 C              temperature change implies because it is used by
 C              the KPP package (kpp_calc.F and kpp_transport_t.F).
-C              Units are degrees/s (>0 for ocean warming).
+C              Units are degrees-C/s (>0 for ocean warming).
 C
       COMMON /SEAICE_EXTERNAL/ surfaceTendencyTice
       _RS  surfaceTendencyTice(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)

@@ -43,7 +43,7 @@ C o use divided adjoint to split adjoint computations
 #undef ALLOW_DIVIDED_ADJOINT
 
 C ********************************************************************
-C ***                     Calender Package                         ***
+C ***                     Calendar Package                         ***
 C ********************************************************************
 C 
 C CPP flags controlling which code is included in the files that

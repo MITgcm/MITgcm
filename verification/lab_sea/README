@@ -20,13 +20,13 @@ Surface salinity relaxation is to the monthly mean Levitus climatology
 
 Forcing files are a 1979-1999 monthly climatology computed from the
 NCEP reanalysis (see pkg/seaice/SEAICE_FFIELDS.h for units and signs)
-  gairxFile      = 'u10m.labsea79'    # 10-m zonal wind
-  gairyFile      = 'v10m.labsea79'    # 10-m meridional wind
-  tairFile       = 'tair.labsea1979'  # 2-m air temperature
-  qaFile         = 'qa.labsea1979'    # 2-m specific humidity
-  floFile        = 'flo.labsea1979'   # longwave radiation
-  fshFile        = 'fsh.labsea1979'   # shortwave radiation
-  rainFile       = 'prate.labsea1979' # precipitation
+  uwindFile      = 'u10m.labsea79'    # 10-m zonal wind
+  vwindFile      = 'v10m.labsea79'    # 10-m meridional wind
+  atempFile      = 'tair.labsea1979'  # 2-m air temperature
+  aqhFile        = 'qa.labsea1979'    # 2-m specific humidity
+  lwfluxFile     = 'flo.labsea1979'   # longwave radiation
+  swfluxFile     = 'fsh.labsea1979'   # shortwave radiation
+  precipFile     = 'prate.labsea1979' # precipitation
   evapFile       = 'evap.labsea1979'  # evaporation
 
 
@@ -36,28 +36,31 @@ Using testscript to test sea-ice code
 Running the testscript experiment:
   cd verification
   ./testscript -force lab_sea
+The default experiment is Experiment 8, below.
+It uses pkg/gmredi, pkg/kpp, pkg/seaice, and pkg/exf.
 
 Note that fairly large differences in accuracy occur across different
 platforms.  For example, testscript comparisons between g77 (Linux)
 and f77 (SGI) generated output gives:
 
-   T           S           U           V
-  C D M    c        m  s        m  s        m  s        m  s
-  n p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
-  f n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
-  g d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
+                T           S           U           V
+C D M    c        m  s        m  s        m  s        m  s
+n p a R  g  m  m  e  .  m  m  e  .  m  m  e  .  m  m  e  .
+f n k u  2  i  a  a  d  i  a  a  d  i  a  a  d  i  a  a  d
+g d e n  d  n  x  n  .  n  x  n  .  n  x  n  .  n  x  n  .
 
-  Y Y Y Y  5  5  7  7  7  8 10  9  6  6  6  6  7  5  7  5  7 FAIL  lab_sea
+Y Y Y Y  8 10  9 11 10  9 11 13 10  9  8  8  9  8  9  8  9 FAIL  lab_sea
 
 
 Instructions for generating 1-CPU and 2-CPU executables
 =======================================================
 
 Generating 1-CPU executable:
-  cd ../verification/lab_sea/input
+  cd verification/lab_sea/input
   ln -sf ../code/SIZE.h .
-  ln -sf ../code/CPP_OPTIONS.h .
   ln -sf ../code/CPP_EEOPTIONS.h .
+  ln -sf ../code/CPP_OPTIONS.NOEXF.h CPP_OPTIONS.h
+  rm -f SEAICE_OPTIONS.h
   ../../../tools/genmake -makefile
     ==> on alhena use:
     ../../../tools/genmake -platform=o2k_noopt -makefile
@@ -65,12 +68,43 @@ Generating 1-CPU executable:
   make depend
   make
   mv mitgcmuv mitgcmuv_1
+
+Generating 1-CPU executable with SEAICE_EXTERNAL_FORCING:
+  cd ../../../verification/lab_sea/input
+  ln -sf ../code/SIZE.h .
+  ln -sf ../code/CPP_EEOPTIONS.h .
+  ln -sf ../code/CPP_OPTIONS.h .
+  ln -sf ../code/ECCO_CPPOPTIONS.h .
+  ln -sf ../code/SEAICE_OPTIONS.h .
+  ../../../tools/genmake -makefile
+    ==> on alhena use:
+    ../../../tools/genmake -platform=o2k_noopt -makefile
+  make clean
+  make depend
+  make
+  mv mitgcmuv mitgcmuv_exf_forcing
+
+Generating 1-CPU executable with SEAICE_EXTERNAL_FLUXES:
+  cd ../../../verification/lab_sea/input
+  ln -sf ../code/SIZE.h .
+  ln -sf ../code/CPP_EEOPTIONS.h .
+  ln -sf ../code/CPP_OPTIONS.h .
+  ln -sf ../code/ECCO_CPPOPTIONS.BULK.h ECCO_CPPOPTIONS.h
+  ln -sf ../code/SEAICE_OPTIONS.EXF_FLUXES.h SEAICE_OPTIONS.h
+  ../../../tools/genmake -makefile
+    ==> on alhena use:
+    ../../../tools/genmake -platform=o2k_noopt -makefile
+  make clean
+  make depend
+  make
+  mv mitgcmuv mitgcmuv_exf_fluxes
   
 Generating 2-CPU executable:
   cd ../../../verification/lab_sea/input
-  ln -sf ../code/SIZE_2x1.h SIZE.h
-  ln -sf ../code/CPP_OPTIONS.h .
-  ln -sf ../code/CPP_EEOPTIONS_MPI.h CPP_EEOPTIONS.h
+  ln -sf ../code/SIZE.2x1.h SIZE.h
+  ln -sf ../code/CPP_EEOPTIONS.MPI.h CPP_EEOPTIONS.h
+  ln -sf ../code/CPP_OPTIONS.NOEXF.h CPP_OPTIONS.h
+  rm -f SEAICE_OPTIONS.h
   ../../../tools/genmake -mpi -makefile
     ==> on alhena for comparison purposes use:
       ../../../tools/genmake -mpi -platform=o2k_noopt -makefile
@@ -85,20 +119,21 @@ Generating 2-CPU executable:
 Instructions for running Experiment 1
 =====================================
 
-This is a 1-cpu, 10-hour integration used to make sure that all the
-files are available and that the model compiles and integrates.  It
-is the default experiment of "verification/testscript lab_sea".
+This is a 1-cpu, 10-hour integration used to make sure that all
+the files are available and that the sea-ice model compiles and
+runs.  The reading of atmospheric forcing files and the computation
+of open-water bulk fluxes are carried out within pkg/seaice.
 
 To run Experiment 1:
   cd ../../../verification/lab_sea/input
-  ln -sf data.10hours data
-  ln -sf data.seaice.adi data.seaice
+  ln -sf DATA.10hours data
+  ln -sf DATA.SEAICE.adi data.seaice
   mitgcmuv_1 >&! output.txt
   mkdir exp1
   mv *tave.0000000010.data exp1
 
 Use matlab script lookat_exp1.m to compare the output
-of exp1 with that from release1_patch5 sea-ice code:
+of exp1 with that from release1_p10 sea-ice code:
   cd ../../../verification/lab_sea/matlab
   matlab
   lookat_exp1
@@ -112,8 +147,8 @@ compared to that of experiment 1, which used the ADI solver.
 
 To run Experiment 2:
   cd ../../../verification/lab_sea/input
-  ln -sf data.10hours data
-  ln -sf data.seaice.lsr data.seaice
+  ln -sf DATA.10hours data
+  ln -sf DATA.SEAICE.lsr data.seaice
   mitgcmuv_1 >&! output.txt
   mkdir exp2
   mv *tave.0000000010.data exp2
@@ -135,12 +170,12 @@ All forcing files are null or constant (u10m = v10m = 5 m/s).
 
 To run Experiment 3:
   cd ../../../verification/lab_sea/input
-  ln -sf data.1hour data
-  ln -sf data.seaice.testadi data.seaice
+  ln -sf DATA.1hour data
+  ln -sf DATA.SEAICE.testadi data.seaice
   mitgcmuv_1 >&! output.txt
   mkdir exp3a
   mv *tave.0000000001.data exp3a
-  ln -sf data.seaice.testlsr data.seaice
+  ln -sf DATA.SEAICE.testlsr data.seaice
   mitgcmuv_1 >&! output.txt
   mkdir exp3b
   mv *tave.0000000001.data exp3b
@@ -165,8 +200,8 @@ tile edges for sea-ice dynamic solvers.
 
 To run Experiment 4:
   cd ../../../verification/lab_sea/input
-  ln -sf data.10hours data
-  ln -sf data.seaice.adi data.seaice
+  ln -sf DATA.10hours data
+  ln -sf DATA.SEAICE.adi data.seaice
   mpirun -np 2 mitgcmuv_2x1
   mkdir exp4
   mv *tave.0000000010.data exp4
@@ -193,8 +228,8 @@ convention used by seaice_get_forcing.F for multi-year forcing.
 
 To run Experiment 5:
   cd ../../../verification/lab_sea/input
-  ln -sf      data.2years             data
-  ln -sf  data.seaice.adi      data.seaice
+  ln -sf      DATA.2years             data
+  ln -sf  DATA.SEAICE.adi      data.seaice
   ln -sf  evap.labsea1979  evap.labsea1980  
   ln -sf   flo.labsea1979   flo.labsea1980   
   ln -sf   fsh.labsea1979   fsh.labsea1980   
@@ -224,8 +259,8 @@ The solution is compared to that of experiment 1.
 
 To run Experiment 6:
   cd ../../../verification/lab_sea/input
-  ln -sf data.10hours data
-  ln -sf data.seaice.nodynamics data.seaice
+  ln -sf DATA.10hours data
+  ln -sf DATA.SEAICE.nodynamics data.seaice
   mitgcmuv_1 >&! output.txt
   mkdir exp6
   mv *tave.0000000010.data exp6
@@ -245,8 +280,8 @@ tile edges for sea-ice thermodynamics (no dynamics).
 
 To run Experiment 7:
   cd ../../../verification/lab_sea/input
-  ln -sf data.10hours data
-  ln -sf data.seaice.nodynamics data.seaice
+  ln -sf DATA.10hours data
+  ln -sf DATA.SEAICE.nodynamics data.seaice
   mpirun -np 2 mitgcmuv_2x1
   mkdir exp7
   mv *tave.0000000010.data exp7
@@ -256,3 +291,49 @@ the output of exp7 to that of exp6:
   cd ../verification/lab_sea/matlab
   matlab
   lookat_exp7
+
+
+Instructions for running Experiment 8
+=====================================
+
+This is the default experiment which is executed by
+verification/testscript.  It is a 1-cpu, 10-hour integration
+used to test CPP option SEAICE_EXTERNAL_FORCING.  Atmospheric
+state is read-in using pkg/exf, rather than pkg/seaice routines.
+This experiment uses pkg/gmredi, pkg/kpp, pkg/seaice, and pkg/exf.
+
+To run Experiment 8:
+  cd ../../../verification/lab_sea/input
+  ln -sf DATA.10hours_exf data
+  ln -sf DATA.SEAICE.adi_exf data.seaice
+  mitgcmuv_exf_forcing >&! output.txt
+  mkdir exp8
+  mv *tave.0000000010.data exp8
+
+Use matlab script lookat_exp8.m to compare
+the output of exp8 to that of exp1:
+  cd ../../../verification/lab_sea/matlab
+  matlab
+  lookat_exp8
+
+
+Instructions for running Experiment 9
+=====================================
+
+This is a 1-cpu, 10-hour integration used to test CPP option
+SEAICE_EXTERNAL_FLUXES.  Both the atmospheric state and the
+open-water surface fluxes are provided by pkg/exf.
+
+To run Experiment 9:
+  cd ../../../verification/lab_sea/input
+  ln -sf DATA.10hours_exf data
+  ln -sf DATA.SEAICE.adi_exf data.seaice
+  mitgcmuv_exf_fluxes >&! output.txt
+  mkdir exp9
+  mv *tave.0000000010.data exp9
+
+Use matlab script lookat_exp9.m to compare
+the output of exp9 to that of exp8:
+  cd ../../../verification/lab_sea/matlab
+  matlab
+  lookat_exp9

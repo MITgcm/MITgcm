@@ -6,8 +6,7 @@ CStartOfInterface
       SUBROUTINE SEAICE_GET_FORCING( myTime, myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE SEAICE_GET_FORCING                            |
-C     | o Load wind, thermal, and evaporation minus              |
-C     |   precipitation fields for sea ice model.                |
+C     | o Load atmospheric state and runoff.                     |
 C     |==========================================================|
 C     \==========================================================/
       IMPLICIT NONE
@@ -33,6 +32,7 @@ CEndOfInterface
       EXTERNAL ILNBLNK
  
 #ifdef ALLOW_SEAICE
+#ifndef SEAICE_EXTERNAL_FORCING
 
 C     === Local arrays ===
       COMMON /TDFIELDS_FLAGS/
@@ -94,35 +94,35 @@ C--   Check to see whether myTime is outside available forcing data
 C--   First call requires that we initialize everything for safety
       IF ( myIter .EQ. nIter0 ) THEN
        initValue = ZERO
-       CALL INIT_ARRAY_RS( gairx0 , initValue, myThid )
-       CALL INIT_ARRAY_RS( gairx1 , initValue, myThid )
-       CALL INIT_ARRAY_RS( gairy0 , initValue, myThid )
-       CALL INIT_ARRAY_RS( gairy1 , initValue, myThid )
+       CALL INIT_ARRAY_RS( uwind0  , initValue, myThid )
+       CALL INIT_ARRAY_RS( uwind1  , initValue, myThid )
+       CALL INIT_ARRAY_RS( vwind0  , initValue, myThid )
+       CALL INIT_ARRAY_RS( vwind1  , initValue, myThid )
        initValue = 283. _d 0
-       CALL INIT_ARRAY_RS( tair0  , initValue, myThid )
-       CALL INIT_ARRAY_RS( tair1  , initValue, myThid )
+       CALL INIT_ARRAY_RS( atemp0  , initValue, myThid )
+       CALL INIT_ARRAY_RS( atemp1  , initValue, myThid )
        initValue = 0.005 _d 0
-       CALL INIT_ARRAY_RS( qa0    , initValue, myThid )
-       CALL INIT_ARRAY_RS( qa1    , initValue, myThid )
+       CALL INIT_ARRAY_RS( aqh0    , initValue, myThid )
+       CALL INIT_ARRAY_RS( aqh1    , initValue, myThid )
        initValue = 300. _d 0
-       CALL INIT_ARRAY_RS( flo0   , initValue, myThid )
-       CALL INIT_ARRAY_RS( flo1   , initValue, myThid )
+       CALL INIT_ARRAY_RS( lwflux0 , initValue, myThid )
+       CALL INIT_ARRAY_RS( lwflux1 , initValue, myThid )
        initValue = 200. _d 0
-       CALL INIT_ARRAY_RS( fsh0   , initValue, myThid )
-       CALL INIT_ARRAY_RS( fsh1   , initValue, myThid )
+       CALL INIT_ARRAY_RS( swflux0 , initValue, myThid )
+       CALL INIT_ARRAY_RS( swflux1 , initValue, myThid )
        initValue = ZERO
-       CALL INIT_ARRAY_RS( rain0  , initValue, myThid )
-       CALL INIT_ARRAY_RS( rain1  , initValue, myThid )
-       CALL INIT_ARRAY_RS( evap0  , initValue, myThid )
-       CALL INIT_ARRAY_RS( evap1  , initValue, myThid )
-       CALL INIT_ARRAY_RS( runoff0, initValue, myThid )
-       CALL INIT_ARRAY_RS( runoff1, initValue, myThid )
+       CALL INIT_ARRAY_RS( precip0 , initValue, myThid )
+       CALL INIT_ARRAY_RS( precip1 , initValue, myThid )
+       CALL INIT_ARRAY_RS( evap0   , initValue, myThid )
+       CALL INIT_ARRAY_RS( evap1   , initValue, myThid )
+       CALL INIT_ARRAY_RS( runoff0 , initValue, myThid )
+       CALL INIT_ARRAY_RS( runoff1 , initValue, myThid )
        initValue = 35. _d 0
-       CALL INIT_ARRAY_RS( SSSsi0   , initValue, myThid )
-       CALL INIT_ARRAY_RS( SSSsi1   , initValue, myThid )
+       CALL INIT_ARRAY_RS( SSSsi0  , initValue, myThid )
+       CALL INIT_ARRAY_RS( SSSsi1  , initValue, myThid )
        initValue = 10. _d 0
-       CALL INIT_ARRAY_RS( SSTsi0   , initValue, myThid )
-       CALL INIT_ARRAY_RS( SSTsi1   , initValue, myThid )
+       CALL INIT_ARRAY_RS( SSTsi0  , initValue, myThid )
+       CALL INIT_ARRAY_RS( SSTsi1  , initValue, myThid )
 
        wind0_is_first = .TRUE.
        flux0_is_first = .TRUE.
@@ -134,49 +134,49 @@ C--   First call requires that we initialize everything for safety
      &  'S/R SEAICE_GET_FORCING: initialize',myTime,myIter
 
        iRec = int((YearTime-WindForcingStart)/WindForcingPeriod) + 1
-       IF ( gairxFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( gairxFile ) - 2
-        WRITE(fName,'(A,I2.2)') gairxFile(1:iEnd), CurrentYear2
-        CALL READ_REC_XY_RS( fName,gairx0,iRec  ,myIter,myThid )
-        CALL READ_REC_XY_RS( fName,gairx1,iRec+1,myIter,myThid )
+       IF ( uwindFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( uwindFile ) - 2
+        WRITE(fName,'(A,I2.2)') uwindFile(1:iEnd), CurrentYear2
+        CALL READ_REC_XY_RS( fName,uwind0,iRec  ,myIter,myThid )
+        CALL READ_REC_XY_RS( fName,uwind1,iRec+1,myIter,myThid )
        ENDIF
-       IF ( gairyFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( gairyFile ) - 2
-        WRITE(fName,'(A,I2.2)') gairyFile(1:iEnd), CurrentYear2
-        CALL READ_REC_XY_RS( fName,gairy0,iRec  ,myIter,myThid )
-        CALL READ_REC_XY_RS( fName,gairy1,iRec+1,myIter,myThid )
+       IF ( vwindFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( vwindFile ) - 2
+        WRITE(fName,'(A,I2.2)') vwindFile(1:iEnd), CurrentYear2
+        CALL READ_REC_XY_RS( fName,vwind0,iRec  ,myIter,myThid )
+        CALL READ_REC_XY_RS( fName,vwind1,iRec+1,myIter,myThid )
        ENDIF
 
        iRec = int((YearTime-FluxForcingStart)/FluxForcingPeriod) + 1
-       IF ( tairFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( tairFile ) - 4
-        WRITE(fName,'(A,I4.4)') tairFile(1:iEnd), CurrentYear
-        CALL READ_REC_XY_RS( fName,tair0,iRec  ,myIter,myThid )
-        CALL READ_REC_XY_RS( fName,tair1,iRec+1,myIter,myThid )
+       IF ( atempFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( atempFile ) - 4
+        WRITE(fName,'(A,I4.4)') atempFile(1:iEnd), CurrentYear
+        CALL READ_REC_XY_RS( fName,atemp0,iRec  ,myIter,myThid )
+        CALL READ_REC_XY_RS( fName,atemp1,iRec+1,myIter,myThid )
        ENDIF
-       IF ( qaFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( qaFile ) - 4
-        WRITE(fName,'(A,I4.4)') qaFile(1:iEnd), CurrentYear
-        CALL READ_REC_XY_RS( fName,qa0,iRec  ,myIter,myThid )
-        CALL READ_REC_XY_RS( fName,qa1,iRec+1,myIter,myThid )
+       IF ( aqhFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( aqhFile ) - 4
+        WRITE(fName,'(A,I4.4)') aqhFile(1:iEnd), CurrentYear
+        CALL READ_REC_XY_RS( fName,aqh0,iRec  ,myIter,myThid )
+        CALL READ_REC_XY_RS( fName,aqh1,iRec+1,myIter,myThid )
        ENDIF
-       IF ( floFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( floFile ) - 4
-        WRITE(fName,'(A,I4.4)') floFile(1:iEnd), CurrentYear
-        CALL READ_REC_XY_RS( fName,flo0,iRec  ,myIter,myThid )
-        CALL READ_REC_XY_RS( fName,flo1,iRec+1,myIter,myThid )
+       IF ( lwfluxFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( lwfluxFile ) - 4
+        WRITE(fName,'(A,I4.4)') lwfluxFile(1:iEnd), CurrentYear
+        CALL READ_REC_XY_RS( fName,lwflux0,iRec  ,myIter,myThid )
+        CALL READ_REC_XY_RS( fName,lwflux1,iRec+1,myIter,myThid )
        ENDIF
-       IF ( fshFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( fshFile ) - 4
-        WRITE(fName,'(A,I4.4)') fshFile(1:iEnd), CurrentYear
-        CALL READ_REC_XY_RS( fName,fsh0,iRec  ,myIter,myThid )
-        CALL READ_REC_XY_RS( fName,fsh1,iRec+1,myIter,myThid )
+       IF ( swfluxFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( swfluxFile ) - 4
+        WRITE(fName,'(A,I4.4)') swfluxFile(1:iEnd), CurrentYear
+        CALL READ_REC_XY_RS( fName,swflux0,iRec  ,myIter,myThid )
+        CALL READ_REC_XY_RS( fName,swflux1,iRec+1,myIter,myThid )
        ENDIF
-       IF ( rainFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( rainFile ) - 4
-        WRITE(fName,'(A,I4.4)') rainFile(1:iEnd), CurrentYear
-        CALL READ_REC_XY_RS( fName,rain0,iRec  ,myIter,myThid )
-        CALL READ_REC_XY_RS( fName,rain1,iRec+1,myIter,myThid )
+       IF ( precipFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( precipFile ) - 4
+        WRITE(fName,'(A,I4.4)') precipFile(1:iEnd), CurrentYear
+        CALL READ_REC_XY_RS( fName,precip0,iRec  ,myIter,myThid )
+        CALL READ_REC_XY_RS( fName,precip1,iRec+1,myIter,myThid )
        ENDIF
        IF ( evapFile .NE. ' ' ) THEN
         iEnd = ILNBLNK( evapFile ) - 4
@@ -207,28 +207,28 @@ C--   First call requires that we initialize everything for safety
 
        _END_MASTER(myThid)
 
-       _EXCH_XY_R4( gairx0, myThid )
-       _EXCH_XY_R4( gairx1, myThid )
-       _EXCH_XY_R4( gairy0, myThid )
-       _EXCH_XY_R4( gairy1, myThid )
-       _EXCH_XY_R4( tair0,  myThid )
-       _EXCH_XY_R4( tair1,  myThid )
-       _EXCH_XY_R4( qa0,    myThid )
-       _EXCH_XY_R4( qa1,    myThid )
-       _EXCH_XY_R4( flo0,   myThid )
-       _EXCH_XY_R4( flo1,   myThid )
-       _EXCH_XY_R4( fsh0,   myThid )
-       _EXCH_XY_R4( fsh1,   myThid )
-       _EXCH_XY_R4( rain0,  myThid )
-       _EXCH_XY_R4( rain1,  myThid )
-       _EXCH_XY_R4( evap0,  myThid )
-       _EXCH_XY_R4( evap1,  myThid )
-       _EXCH_XY_R4( runoff0,myThid )
-       _EXCH_XY_R4( runoff1,myThid )
-       _EXCH_XY_R4( SSTsi0,   myThid )
-       _EXCH_XY_R4( SSTsi1,   myThid )
-       _EXCH_XY_R4( SSSsi0,   myThid )
-       _EXCH_XY_R4( SSSsi1,   myThid )
+       _EXCH_XY_R4( uwind0,  myThid )
+       _EXCH_XY_R4( uwind1,  myThid )
+       _EXCH_XY_R4( vwind0,  myThid )
+       _EXCH_XY_R4( vwind1,  myThid )
+       _EXCH_XY_R4( atemp0,  myThid )
+       _EXCH_XY_R4( atemp1,  myThid )
+       _EXCH_XY_R4( aqh0,    myThid )
+       _EXCH_XY_R4( aqh1,    myThid )
+       _EXCH_XY_R4( lwflux0, myThid )
+       _EXCH_XY_R4( lwflux1, myThid )
+       _EXCH_XY_R4( swflux0, myThid )
+       _EXCH_XY_R4( swflux1, myThid )
+       _EXCH_XY_R4( precip0, myThid )
+       _EXCH_XY_R4( precip1, myThid )
+       _EXCH_XY_R4( evap0,   myThid )
+       _EXCH_XY_R4( evap1,   myThid )
+       _EXCH_XY_R4( runoff0, myThid )
+       _EXCH_XY_R4( runoff1, myThid )
+       _EXCH_XY_R4( SSTsi0,  myThid )
+       _EXCH_XY_R4( SSTsi1,  myThid )
+       _EXCH_XY_R4( SSSsi0,  myThid )
+       _EXCH_XY_R4( SSSsi1,  myThid )
 
       ENDIF
 
@@ -241,32 +241,32 @@ C--   Now calculate whether if it is time to update wind speed arrays
        _BEGIN_MASTER(myThid)
        write(0,*)
      &  'S/R SEAICE_GET_FORCING: reading winds',myTime,myIter
-       IF ( gairxFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( gairxFile ) - 2
-        WRITE(fName,'(A,I2.2)') gairxFile(1:iEnd), CurrentYear2
+       IF ( uwindFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( uwindFile ) - 2
+        WRITE(fName,'(A,I2.2)') uwindFile(1:iEnd), CurrentYear2
         IF (wind0_is_first) THEN
-         CALL READ_REC_XY_RS( fName,gairx0,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,uwind0,iRec,myIter,myThid )
         ELSE
-         CALL READ_REC_XY_RS( fName,gairx1,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,uwind1,iRec,myIter,myThid )
         ENDIF
        ENDIF
-       IF ( gairyFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( gairyFile ) - 2
-        WRITE(fName,'(A,I2.2)') gairyFile(1:iEnd), CurrentYear2
+       IF ( vwindFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( vwindFile ) - 2
+        WRITE(fName,'(A,I2.2)') vwindFile(1:iEnd), CurrentYear2
         IF (wind0_is_first) THEN
-         CALL READ_REC_XY_RS( fName,gairy0,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,vwind0,iRec,myIter,myThid )
         ELSE
-         CALL READ_REC_XY_RS( fName,gairy1,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,vwind1,iRec,myIter,myThid )
         ENDIF
        ENDIF
        _END_MASTER(myThid)
        IF (wind0_is_first) THEN
-        _EXCH_XY_R4( gairx0, myThid )
-        _EXCH_XY_R4( gairy0, myThid )
+        _EXCH_XY_R4( uwind0, myThid )
+        _EXCH_XY_R4( vwind0, myThid )
         wind0_is_first=.FALSE.
        ELSE
-        _EXCH_XY_R4( gairx1, myThid )
-        _EXCH_XY_R4( gairy1, myThid )
+        _EXCH_XY_R4( uwind1, myThid )
+        _EXCH_XY_R4( vwind1, myThid )
         wind0_is_first=.TRUE.
        ENDIF
       ENDIF
@@ -280,49 +280,49 @@ C--   Now calculate whether if it is time to update heat and freshwater flux
        _BEGIN_MASTER(myThid)
        write(0,*)
      &  'S/R SEAICE_GET_FORCING: reading fluxes',myTime,myIter
-       IF ( tairFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( tairFile ) - 4
-        WRITE(fName,'(A,I4.4)') tairFile(1:iEnd), CurrentYear
+       IF ( atempFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( atempFile ) - 4
+        WRITE(fName,'(A,I4.4)') atempFile(1:iEnd), CurrentYear
         IF (flux0_is_first) THEN
-         CALL READ_REC_XY_RS( fName,tair0,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,atemp0,iRec,myIter,myThid )
         ELSE
-         CALL READ_REC_XY_RS( fName,tair1,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,atemp1,iRec,myIter,myThid )
         ENDIF
        ENDIF
-       IF ( qaFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( qaFile ) - 4
-        WRITE(fName,'(A,I4.4)') qaFile(1:iEnd), CurrentYear
+       IF ( aqhFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( aqhFile ) - 4
+        WRITE(fName,'(A,I4.4)') aqhFile(1:iEnd), CurrentYear
         IF (flux0_is_first) THEN
-         CALL READ_REC_XY_RS( fName,qa0,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,aqh0,iRec,myIter,myThid )
         ELSE
-         CALL READ_REC_XY_RS( fName,qa1,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,aqh1,iRec,myIter,myThid )
         ENDIF
        ENDIF
-       IF ( floFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( floFile ) - 4
-        WRITE(fName,'(A,I4.4)') floFile(1:iEnd), CurrentYear
+       IF ( lwfluxFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( lwfluxFile ) - 4
+        WRITE(fName,'(A,I4.4)') lwfluxFile(1:iEnd), CurrentYear
         IF (flux0_is_first) THEN
-         CALL READ_REC_XY_RS( fName,flo0,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,lwflux0,iRec,myIter,myThid )
         ELSE
-         CALL READ_REC_XY_RS( fName,flo1,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,lwflux1,iRec,myIter,myThid )
         ENDIF
        ENDIF
-       IF ( fshFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( fshFile ) - 4
-        WRITE(fName,'(A,I4.4)') fshFile(1:iEnd), CurrentYear
+       IF ( swfluxFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( swfluxFile ) - 4
+        WRITE(fName,'(A,I4.4)') swfluxFile(1:iEnd), CurrentYear
         IF (flux0_is_first) THEN
-         CALL READ_REC_XY_RS( fName,fsh0,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,swflux0,iRec,myIter,myThid )
         ELSE
-         CALL READ_REC_XY_RS( fName,fsh1,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,swflux1,iRec,myIter,myThid )
         ENDIF
        ENDIF
-       IF ( rainFile .NE. ' ' ) THEN
-        iEnd = ILNBLNK( rainFile ) - 4
-        WRITE(fName,'(A,I4.4)') rainFile(1:iEnd), CurrentYear
+       IF ( precipFile .NE. ' ' ) THEN
+        iEnd = ILNBLNK( precipFile ) - 4
+        WRITE(fName,'(A,I4.4)') precipFile(1:iEnd), CurrentYear
         IF (flux0_is_first) THEN
-         CALL READ_REC_XY_RS( fName,rain0,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,precip0,iRec,myIter,myThid )
         ELSE
-         CALL READ_REC_XY_RS( fName,rain1,iRec,myIter,myThid )
+         CALL READ_REC_XY_RS( fName,precip1,iRec,myIter,myThid )
         ENDIF
        ENDIF
        IF ( evapFile .NE. ' ' ) THEN
@@ -345,22 +345,22 @@ C--   Now calculate whether if it is time to update heat and freshwater flux
        ENDIF
        _END_MASTER(myThid)
        IF (flux0_is_first) THEN
-        _EXCH_XY_R4(tair0,  myThid )
-        _EXCH_XY_R4(qa0,    myThid )
-        _EXCH_XY_R4(flo0,   myThid )
-        _EXCH_XY_R4(fsh0,   myThid )
-        _EXCH_XY_R4(rain0,  myThid )
-        _EXCH_XY_R4(evap0,  myThid )
-        _EXCH_XY_R4(runoff0,myThid )
+        _EXCH_XY_R4(atemp0,  myThid )
+        _EXCH_XY_R4(aqh0,    myThid )
+        _EXCH_XY_R4(lwflux0, myThid )
+        _EXCH_XY_R4(swflux0, myThid )
+        _EXCH_XY_R4(precip0, myThid )
+        _EXCH_XY_R4(evap0,   myThid )
+        _EXCH_XY_R4(runoff0, myThid )
         flux0_is_first=.FALSE.
        ELSE
-        _EXCH_XY_R4(tair1,  myThid )
-        _EXCH_XY_R4(qa1,    myThid )
-        _EXCH_XY_R4(flo1,   myThid )
-        _EXCH_XY_R4(fsh1,   myThid )
-        _EXCH_XY_R4(rain1,  myThid )
-        _EXCH_XY_R4(evap1,  myThid )
-        _EXCH_XY_R4(runoff1,myThid )
+        _EXCH_XY_R4(atemp1,  myThid )
+        _EXCH_XY_R4(aqh1,    myThid )
+        _EXCH_XY_R4(lwflux1, myThid )
+        _EXCH_XY_R4(swflux1, myThid )
+        _EXCH_XY_R4(precip1, myThid )
+        _EXCH_XY_R4(evap1,   myThid )
+        _EXCH_XY_R4(runoff1, myThid )
         flux0_is_first=.TRUE.
        ENDIF
       ENDIF
@@ -419,10 +419,10 @@ C--   Time interpolation of wind forcing variables.
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           gairx(i,j,bi,bj) = bWghtWind *  gairx0(i,j,bi,bj) +
-     &                        aWghtWind *  gairx1(i,j,bi,bj)
-           gairy(i,j,bi,bj) = bWghtWind *  gairy0(i,j,bi,bj) +
-     &                        aWghtWind *  gairy1(i,j,bi,bj)
+           uwind(i,j,bi,bj) = bWghtWind *  uwind0(i,j,bi,bj) +
+     &                        aWghtWind *  uwind1(i,j,bi,bj)
+           vwind(i,j,bi,bj) = bWghtWind *  vwind0(i,j,bi,bj) +
+     &                        aWghtWind *  vwind1(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -432,10 +432,10 @@ C--   Time interpolation of wind forcing variables.
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-           gairx(i,j,bi,bj) = aWghtWind *  gairx0(i,j,bi,bj) +
-     &                        bWghtWind *  gairx1(i,j,bi,bj)
-           gairy(i,j,bi,bj) = aWghtWind *  gairy0(i,j,bi,bj) +
-     &                        bWghtWind *  gairy1(i,j,bi,bj)
+           uwind(i,j,bi,bj) = aWghtWind *  uwind0(i,j,bi,bj) +
+     &                        bWghtWind *  uwind1(i,j,bi,bj)
+           vwind(i,j,bi,bj) = aWghtWind *  vwind0(i,j,bi,bj) +
+     &                        bWghtWind *  vwind1(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -448,20 +448,20 @@ C--   Time interpolation of flux forcing variables.
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-          tair(i,j,bi,bj)  = bWghtFlux *   tair0(i,j,bi,bj) +
-     &                       aWghtFlux *   tair1(i,j,bi,bj)
-          qa(i,j,bi,bj)    = bWghtFlux *     qa0(i,j,bi,bj) +
-     &                       aWghtFlux *     qa1(i,j,bi,bj)
-          flo(i,j,bi,bj)   = bWghtFlux *    flo0(i,j,bi,bj) +
-     &                       aWghtFlux *    flo1(i,j,bi,bj)
-          fsh(i,j,bi,bj)   = bWghtFlux *    fsh0(i,j,bi,bj) +
-     &                       aWghtFlux *    fsh1(i,j,bi,bj)
-          rain(i,j,bi,bj)  = bWghtFlux *   rain0(i,j,bi,bj) +
-     &                       aWghtFlux *   rain1(i,j,bi,bj)
-          evap(i,j,bi,bj)  = bWghtFlux *   evap0(i,j,bi,bj) +
-     &                       aWghtFlux *   evap1(i,j,bi,bj)
-          runoff(i,j,bi,bj)= bWghtFlux * runoff0(i,j,bi,bj) +
-     &                       aWghtFlux * runoff1(i,j,bi,bj)
+          atemp(i,j,bi,bj)  = bWghtFlux *  atemp0(i,j,bi,bj) +
+     &                        aWghtFlux *  atemp1(i,j,bi,bj)
+          aqh(i,j,bi,bj)    = bWghtFlux *    aqh0(i,j,bi,bj) +
+     &                        aWghtFlux *    aqh1(i,j,bi,bj)
+          lwflux(i,j,bi,bj) = bWghtFlux * lwflux0(i,j,bi,bj) +
+     &                        aWghtFlux * lwflux1(i,j,bi,bj)
+          swflux(i,j,bi,bj) = bWghtFlux * swflux0(i,j,bi,bj) +
+     &                        aWghtFlux * swflux1(i,j,bi,bj)
+          precip(i,j,bi,bj) = bWghtFlux * precip0(i,j,bi,bj) +
+     &                        aWghtFlux *   precip1(i,j,bi,bj)
+          evap(i,j,bi,bj)   = bWghtFlux *   evap0(i,j,bi,bj) +
+     &                        aWghtFlux *   evap1(i,j,bi,bj)
+          runoff(i,j,bi,bj) = bWghtFlux * runoff0(i,j,bi,bj) +
+     &                        aWghtFlux * runoff1(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -471,20 +471,20 @@ C--   Time interpolation of flux forcing variables.
         DO bi = myBxLo(myThid), myBxHi(myThid)
          DO j=1-Oly,sNy+Oly
           DO i=1-Olx,sNx+Olx
-          tair(i,j,bi,bj)  = aWghtFlux *   tair0(i,j,bi,bj) +
-     &                       bWghtFlux *   tair1(i,j,bi,bj)
-          qa(i,j,bi,bj)    = aWghtFlux *     qa0(i,j,bi,bj) +
-     &                       bWghtFlux *     qa1(i,j,bi,bj)
-          flo(i,j,bi,bj)   = aWghtFlux *    flo0(i,j,bi,bj) +
-     &                       bWghtFlux *    flo1(i,j,bi,bj)
-          fsh(i,j,bi,bj)   = aWghtFlux *    fsh0(i,j,bi,bj) +
-     &                       bWghtFlux *    fsh1(i,j,bi,bj)
-          rain(i,j,bi,bj)  = aWghtFlux *   rain0(i,j,bi,bj) +
-     &                       bWghtFlux *   rain1(i,j,bi,bj)
-          evap(i,j,bi,bj)  = aWghtFlux *   evap0(i,j,bi,bj) +
-     &                       bWghtFlux *   evap1(i,j,bi,bj)
-          runoff(i,j,bi,bj)= aWghtFlux * runoff0(i,j,bi,bj) +
-     &                       bWghtFlux * runoff1(i,j,bi,bj)
+          atemp(i,j,bi,bj)  = aWghtFlux *  atemp0(i,j,bi,bj) +
+     &                        bWghtFlux *  atemp1(i,j,bi,bj)
+          aqh(i,j,bi,bj)    = aWghtFlux *    aqh0(i,j,bi,bj) +
+     &                        bWghtFlux *    aqh1(i,j,bi,bj)
+          lwflux(i,j,bi,bj) = aWghtFlux * lwflux0(i,j,bi,bj) +
+     &                        bWghtFlux * lwflux1(i,j,bi,bj)
+          swflux(i,j,bi,bj) = aWghtFlux * swflux0(i,j,bi,bj) +
+     &                        bWghtFlux * swflux1(i,j,bi,bj)
+          precip(i,j,bi,bj) = aWghtFlux * precip0(i,j,bi,bj) +
+     &                        bWghtFlux * precip1(i,j,bi,bj)
+          evap(i,j,bi,bj)   = aWghtFlux *   evap0(i,j,bi,bj) +
+     &                        bWghtFlux *   evap1(i,j,bi,bj)
+          runoff(i,j,bi,bj) = aWghtFlux * runoff0(i,j,bi,bj) +
+     &                        bWghtFlux * runoff1(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -541,6 +541,7 @@ C--   Time interpolation of SST forcing variables.
        ENDDO
       ENDIF
 
+#endif SEAICE_EXTERNAL_FORCING
 #endif ALLOW_SEAICE
 
       RETURN
@@ -561,6 +562,7 @@ C     === Arguments ===
       INTEGER myThid
 
 #ifdef ALLOW_SEAICE
+#ifndef SEAICE_EXTERNAL_FORCING
 
 C     === Local variables ===
       INTEGER i,j,bi,bj
@@ -575,6 +577,7 @@ C
        ENDDO
       ENDDO
 
+#endif SEAICE_EXTERNAL_FORCING
 #endif ALLOW_SEAICE
 
       RETURN

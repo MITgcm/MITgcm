@@ -34,9 +34,9 @@ CEndOfInterface
 #ifdef ALLOW_SEAICE
 
 C     === Local variables ===
-C     i,j,k,bi,bj - Loop counters
+C     i,j,bi,bj - Loop counters
 
-      INTEGER i, j, k, bi, bj
+      INTEGER i, j, bi, bj
       _RL  TBC, salinity_ice, SDF, Q0, QS
       _RL  theta_old
 
@@ -181,20 +181,20 @@ C NOW UPDATE OTHER THINGS
           IF(FICE(I,J,bi,bj).GT.ZERO) THEN
 C FREEZING, PRECIP ADDED AS SNOW
            HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)
-     &               +DELTAT*RAIN(I,J,bi,bj)*AREA(I,J,2,bi,bj)*SDF
+     &          +DELTAT*PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*SDF
           ELSE
 C ADD PRECIP AS RAIN, WATER CONVERTED INTO ICE BY /0.920 _d 0
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &               -RAIN(I,J,bi,bj)*AREA(I,J,2,bi,bj)*DELTAT/0.920 _d 0
+     &         -PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*DELTAT/0.920 _d 0
            WATR(I,J,bi,bj)=WATR(I,J,bi,bj)
-     &               -RAIN(I,J,bi,bj)*AREA(I,J,2,bi,bj)*DELTAT/0.920 _d 0
+     &         -PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*DELTAT/0.920 _d 0
           ENDIF
 c Now add in precip over open water directly into ocean as negative salt
           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &         -RAIN(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
+     &         -PRECIP(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
      &         *DELTAT/0.920 _d 0
           WATR(I,J,bi,bj)=WATR(I,J,bi,bj)
-     &         -RAIN(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
+     &         -PRECIP(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
      &         *DELTAT/0.920 _d 0
 C NOW GET FRESH WATER FLUX
           EmPmR(I,J,bi,bj)=EVAP(I,J,bi,bj)-RUNOFF(I,J,bi,bj)
@@ -203,8 +203,8 @@ C NOW GET FRESH WATER FLUX
         ENDDO
 
 #ifdef SEAICE_DEBUG
-c       CALL PLOT_FIELD_XYRS( GAIRX,'Current GAIRX ', myIter, myThid )
-c       CALL PLOT_FIELD_XYRS( GAIRY,'Current GAIRY ', myIter, myThid )
+c      CALL PLOT_FIELD_XYRS( UWIND,'Current UWIND ', myIter, myThid )
+c      CALL PLOT_FIELD_XYRS( VWIND,'Current VWIND ', myIter, myThid )
        CALL PLOT_FIELD_XYRS( GWATX,'Current GWATX ', myIter, myThid )
        CALL PLOT_FIELD_XYRS( GWATY,'Current GWATY ', myIter, myThid )
        CALL PLOT_FIELD_XYRL( FO,'Current FO ', myIter, myThid )

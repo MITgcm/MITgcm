@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.12 2002/11/21 19:11:42 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.13 2002/12/28 10:11:10 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -42,7 +42,6 @@ C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
 
-C     data.pkg namelists
 C     data.pkg namelists
 cswdblk -- add useBulkforce to NAMELIST
 cswdice -- addd useThermSeaIce to NAMELIST

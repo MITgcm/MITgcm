@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_filter_rs.F,v 1.2 2002/11/12 20:34:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_filter_rs.F,v 1.3 2002/12/28 10:11:11 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -15,6 +15,7 @@ c
 c     o Read a flux record for external forcing.
 c
 c     started: Ralf.Giering@FastOpt.de 24-Mai-2000
+c     changed: menemenlis@jpl.nasa.gov 20-Dec-2002
 c
 c     ==================================================================
 c     SUBROUTINE exf_filter_rs
@@ -27,6 +28,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "GRID.h"
+#include "PARAMS.h"
 #include "exf_constants.h"
 #include "exf.h"
 #include "exf_param.h"
@@ -50,6 +52,9 @@ c     == end of interface ==
       jthi = mybyhi(mythid)
       itlo = mybxlo(mythid)
       ithi = mybxhi(mythid)
+
+c     Don't filter with pkg/seaice because of B/C-grid interpolation
+      IF ( .NOT. useSEAICE ) THEN
 
 c     filter forcing field array
       do bj = jtlo,jthi
@@ -101,5 +106,7 @@ c         Set land points to zero
 
         enddo
       enddo
+
+      ENDIF
 
       end

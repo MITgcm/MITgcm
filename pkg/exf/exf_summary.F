@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.2 2002/11/12 20:34:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_summary.F,v 1.3 2002/12/28 10:11:11 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -23,6 +23,10 @@ c              Patrick Heimbach, heimbach@mit.edu  04-May-2000
 c
 c              - changed the handling of precip and sflux with respect
 c                to CPP options ALLOW_BULKFORMULAE and ALLOW_ATM_TEMP
+c
+c              Dimitris Menemenlis menemenlis@jpl.nasa.gov  20-Dec-2002
+c
+c              - Added EXF_READ_EVAP and EXF_NO_BULK_COMPUTATIONS.
 c
 c     ==================================================================
 c     SUBROUTINE exf_Summary
@@ -106,7 +110,7 @@ c     and the corresponding file from which the data will be read.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
-     &'// ALLOW_ATM_TEMP:                       defined'
+     &'// ALLOW_ATM_TEMP:                     defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
@@ -115,18 +119,29 @@ c     and the corresponding file from which the data will be read.
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
       write(msgbuf,'(a)')
-     &'// ALLOW_ATM_TEMP:                   NOT defined'
+     &'// ALLOW_ATM_TEMP:                 NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 #ifdef ALLOW_ATM_WIND
       write(msgbuf,'(a)')
-     &'// ALLOW_ATM_WIND:                       defined'
+     &'// ALLOW_ATM_WIND:                     defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #else
       write(msgbuf,'(a)')
-     &'// ALLOW_ATM_WIND:                   NOT defined'
+     &'// ALLOW_ATM_WIND:                 NOT defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif
+#ifdef EXF_NO_BULK_COMPUTATIONS
+      write(msgbuf,'(a)')
+     &'// EXF_NO_BULK_COMPUTATIONS:           defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#else
+      write(msgbuf,'(a)')
+     &'// EXF_NO_BULK_COMPUTATIONS:       NOT defined'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
 #endif
@@ -149,7 +164,49 @@ c     and the corresponding file from which the data will be read.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
+#ifdef EXF_READ_EVAP
+      write(msgbuf,'(a)')
+     &'// EXF_READ_EVAP:                      defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      il = ilnblnk(evapfile)
+      call cal_TimeInterval( evapperiod, 'secs', timeint, mythid )
+
+      write(msgbuf,'(a)')
+     &' '
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6,1x,a,a)')
+     &'   Evaporation starts at     ',
+     &    (evapstartdate(i), i=1,2), dayofweek(evapstartdate(4)),
+     &    '.'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,i9.8,i7.6)')
+     &'   Evaporation period is     ',
+     &    (timeint(i), i=1,2)
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a)')
+     &'   Evaporation is read from file:'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+      write(msgbuf,'(a,a,a)')
+     &'   >>  ',evapfile(1:il),'  <<'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#else EXF_READ_EVAP
+      write(msgbuf,'(a)')
+     &'// EXF_READ_EVAP:                  NOT defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif EXF_READ_EVAP
+
 #ifdef ALLOW_RUNOFF
+      write(msgbuf,'(a)')
+     &'// ALLOW_RUNOFF:                       defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
       il = ilnblnk(runofffile)
       call cal_TimeInterval( runoffperiod, 'secs', timeint, mythid )
 
@@ -176,7 +233,12 @@ c     and the corresponding file from which the data will be read.
      &'   >>  ',runofffile(1:il),'  <<'
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
-#endif
+#else ALLOW_RUNOFF
+      write(msgbuf,'(a)')
+     &'// ALLOW_RUNOFF:                   NOT defined'
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
+#endif ALLOW_RUNOFF
 
 #ifdef ALLOW_BULKFORMULAE
 
@@ -662,18 +724,6 @@ c     Short wave radiative flux.
      &                    SQUEEZE_RIGHT , mythid)
 #endif
 
-#endif
-
-#ifdef ALLOW_KPP
-      write(msgbuf,'(a)')
-     &'// ALLOW_KPP:                          defined'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
-#else
-      write(msgbuf,'(a)')
-     &'// ALLOW_KPP:                      NOT defined'
-      call print_message( msgbuf, standardmessageunit,
-     &                    SQUEEZE_RIGHT , mythid)
 #endif
 
       write(msgbuf,'(a)')

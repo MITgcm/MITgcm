@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.2 2002/12/19 13:44:51 cheisey Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffieldrec.F,v 1.3 2002/12/28 10:11:11 dimitri Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -25,13 +25,17 @@ c
 c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
 c
 c     changed: Christian Eckert eckert@mit.edu  14-Jan-2000
-c
 c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
 c
 c              Christian Eckert eckert@mit.edu  12-Feb-2000
-c
 c              - Changed Routine names (package prefix: exf_)
+c
+c              Curtis Heisey cheisey@mit.edu    19-Dec-2002
+c              - added "repeatPeriod" for cycling of forcing datasets
+c
+c              Dimitris Menemenlis menemenlis@jpl.nasa.gov 27-Dec-2002
+c              - bug fix for verification/global_with_exf
 c
 c     ==================================================================
 c     SUBROUTINE exf_GetFFieldRec
@@ -73,6 +77,7 @@ c     == local variables ==
       _RL     prevfldsecs
       integer flddate(4)
 
+
 #ifdef EXF_VERBOSE
       character*(max_len_mbuf) msgbuf
 #endif
@@ -94,20 +99,19 @@ c     Determine the flux record just before mycurrentdate.
       call cal_ToSeconds( difftime, fldsecs, mythid )
       fldsecs  = int(fldsecs/fldperiod)*fldperiod
       fldcount = int(fldsecs/fldperiod) + 1
+
 c     If using repeating data (e.g. monthly means) then make
-C     fldsecs cycle around
+c     fldsecs cycle around
       if (repeatPeriod.ne.0.) then
-       fldsecs0=mod(fldsecs,repeatPeriod)
-c       print *,'repeat: ',fldsecs
-      endif
+         fldsecs0=mod(fldsecs,repeatPeriod)
+c        print *,'repeat: ',fldsecs
 c     Determine the flux record just after mycurrentdate.
-      count0 = int(fldsecs0/fldperiod) + 1
-      fldsecs1  = int((fldsecs+fldperiod)/fldperiod)*fldperiod
-      if (repeatPeriod.ne.0.) then
-       fldsecs1=mod(fldsecs1,repeatPeriod)
-c       print *,'repeat: ',fldsecs1
+         count0 = int(fldsecs0/fldperiod) + 1
+         fldsecs1  = int((fldsecs+fldperiod)/fldperiod)*fldperiod
+         fldsecs1=mod(fldsecs1,repeatPeriod)
+c        print *,'repeat: ',fldsecs1
+         count1 = int(fldsecs1/fldperiod) + 1
       endif
-      count1 = int(fldsecs1/fldperiod) + 1
 
 c     Set switches for reading new records.
       first = ((mytime - modelstart) .lt. 0.5*modelstep)
@@ -129,6 +133,11 @@ c     Set switches for reading new records.
         else
           changed = .false.
         endif
+      endif
+
+      if (.NOT.repeatPeriod.ne.0.) then
+         count0 = fldcount
+         count1 = fldcount + 1
       endif
 
       call cal_TimeInterval( fldsecs, 'secs', difftime, mythid )

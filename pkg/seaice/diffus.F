@@ -28,9 +28,9 @@ CEndOfInterface
 #ifdef ALLOW_SEAICE
 
 C     === Local variables ===
-C     i,j,k,bi,bj - Loop counters
+C     i,j,bi,bj - Loop counters
 
-      INTEGER i, j, k, bi, bj
+      INTEGER i, j, bi, bj
       _RL DELTXX1, DELTYY1, DELTXX, DELTYY
       _RL HEFF1  (1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
 

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.3 2002/11/12 20:34:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.4 2002/12/28 10:11:11 dimitri Exp $
 c
 c
 c     ==================================================================
@@ -10,6 +10,7 @@ c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
 c     changed: field swap in adj. mode; heimbach@mit.edu 10-Jan-2002
 c     included runoff D. Stammer, Nov. 25, 2001
+c     included evaporation; menemenlis@jpl.nasa.gov 20-Dec-2002
 c
 c     ==================================================================
 c     HEADER exf_fields
@@ -40,10 +41,13 @@ c     Atmospheric specific humidity.
 c     Long wave radiative flux.
       _RL lwflux (1-olx:snx+olx,1-oly:sny+oly, nsx,nsy)
 
+c     Evaporation.
+      _RL   evap (1-olx:snx+olx,1-oly:sny+oly, nsx,nsy)
+
 c     Precipitation.
       _RL precip (1-olx:snx+olx,1-oly:sny+oly, nsx,nsy)
 
-      common /exf_atm_temp_r/ atemp, aqh, lwflux, precip
+      common /exf_atm_temp_r/ atemp, aqh, lwflux, evap, precip
 
 c     Short wave radiative flux.
       common /exf_swflux_r/ swflux
@@ -87,6 +91,10 @@ c--   define auxiliary fields for temporal interpolation
       common /exfl_atemp_r/ atemp0, atemp1
       _RL atemp0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL atemp1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+
+      common /exfl_evap_r/ evap0, evap1
+      _RL evap0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL evap1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       common /exfl_precip_r/ precip0, precip1
       _RL precip0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -135,10 +143,8 @@ c--   define auxiliary fields for temporal interpolation
 #endif
 
 #ifdef ALLOW_RUNOFF
-      common /exfl_runoff_r/ runoff, runoff0, runoff1
+      common /exfl_runoff_r/ runoff
       _RL runoff (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL runoff0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL runoff1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
 
 #ifdef ATMOSPHERIC_LOADING

@@ -8,55 +8,71 @@ C     | o Sea ice model forcing fields                           |
 C     |==========================================================|
 C     \==========================================================/
 C
-C     gairx  - Surface (10-m) zonal wind velocity in m/s
-C                 (>0 from West to East)
-C     gairy  - Surface (10-m) meridional wind velocity in m/s
-C                 (>0 from South to North)
-C     tair   - Surface (2-m) air temperature in deg K
+C     uwind  - Surface (10-m) zonal wind velocity in m/s
+C              at North-East B-grid U point
+C              >0 from West to East
+C     vwind  - Surface (10-m) meridional wind velocity in m/s
+C              at North-East B-grid V point
+C              >0 from South to North
+C     atemp  - Surface (2-m) air temperature in deg K
+C              at North-East B-grid tracer point
+C     aqh    - Surface (2m) specific humidity in kg/kg
+C              at North-East B-grid tracer point
+C     lwflux - Downward longwave radiation in W/m^2
+C              at North-East B-grid tracer point
+C              >0 for ocean warming
+C     swflux - Downward shortwave radiation in W/m^2
+C              at North-East B-grid tracer point
+C              >0 for ocean warming
+C     precip - Precipitation in m/s
+C              at North-East B-grid tracer point
+C              >0 decreases salinity
+C     evap   - Evaporation in m/s
+C              at North-East B-grid tracer point
+C              >0 increases salinity
+C     runoff - River and glacier runoff in m/s
+C              at North-East B-grid tracer point
+C              >0 decreases salinity
 C
-C     qa     - Surface (2m) specific humidity
-C
-C     flo    - Downward longwave radiation in W/m^2
-C                 (>0 for ocean warming)
-C     fsh    - Downward shortwave radiation in W/m^2
-C                 (>0 for ocean warming)
-C     rain   - Precipitation in m/s (>0 decreases salinity)
-C
-C     evap   - Evaporation in m/s (>0 increases salinity)
-C
-C     runoff - River and glacier runoff (>0 decreases salinity)
-C
-C
-      COMMON /SEAICE_FFIELDS/
-     &        gairx, gairy, tair, qa, flo, fsh, rain, evap, runoff
-      _RL  gairx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  gairy    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  tair     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  qa       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  flo      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  fsh      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL  rain     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+#ifdef SEAICE_EXTERNAL_FORCING
+
+C--   Define forcing fields outside pkg/seaice.
+#include "exf_fields.h"
+
+#else SEAICE_EXTERNAL_FORCING
+
+C--   Define forcing fields internally.
+      COMMON /SEAICE_FFIELDS/ uwind, vwind, atemp,
+     &     aqh, lwflux, swflux, precip, evap, runoff
+      _RL  uwind    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  vwind    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  atemp    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  aqh      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  lwflux   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  swflux   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  precip   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  evap     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  runoff   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
-      COMMON /SEAICE_TDFIELDS/
-     &     gairx0, gairx1, gairy0, gairy1, tair0, tair1, qa0, qa1,
-     &     flo0, flo1, fsh0, fsh1, rain0, rain1, evap0, evap1,
+      COMMON /SEAICE_TDFIELDS/ uwind0, uwind1, vwind0, vwind1,
+     &     atemp0, atemp1, aqh0, aqh1, lwflux0, lwflux1,
+     &     swflux0, swflux1, precip0, precip1, evap0, evap1,
      &     runoff0, runoff1, SSSsi0, SSSsi1, SSTsi0, SSTsi1
-      _RS  gairx0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  gairx1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  gairy0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  gairy1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  tair0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  tair1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  qa0      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  qa1      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  flo0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  flo1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  fsh0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  fsh1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  rain0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  rain1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  uwind0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  uwind1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  vwind0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  vwind1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  atemp0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  atemp1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  aqh0     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  aqh1     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  lwflux0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  lwflux1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  swflux0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  swflux1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  precip0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  precip1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  evap0    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  evap1    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  runoff0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -65,5 +81,7 @@ C
       _RS  SSSsi1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SSTsi0   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  SSTsi1   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+#endif SEAICE_EXTERNAL_FORCING
 
 #endif ALLOW_SEAICE

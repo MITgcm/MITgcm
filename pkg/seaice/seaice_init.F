@@ -33,7 +33,6 @@ C     i,j,k,bi,bj - Loop counters
 
       INTEGER i, j, k, bi, bj
       _RS  mask_uice
-      CHARACTER*(MAX_LEN_FNAM) fn
 
 #ifdef ALLOW_TIMEAVE
 C     Initialize averages to zero

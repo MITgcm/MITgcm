@@ -1,7 +1,6 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_summary.F,v 1.3 2002/11/12 20:34:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_clim_summary.F,v 1.4 2002/12/28 10:11:11 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
-
 
       subroutine exf_clim_summary(
      I                             mythid
@@ -14,6 +13,7 @@ c
 c     o List all the settings of the external forcing.
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
+c     changed: menemenlis@jpl.nasa.gov 20-Dec-2002
 c
 c     ==================================================================
 c     SUBROUTINE exf_clim_summary
@@ -38,9 +38,14 @@ c     mythid  - thread number for this instance of the routine.
 
 c     == local variables ==
 
+#if defined(ALLOW_CLIMTEMP_RELAXATION) || \
+    defined(ALLOW_CLIMSALT_RELAXATION) || \
+    defined(ALLOW_CLIMSST_RELAXATION ) || \
+    defined(ALLOW_CLIMSSS_RELAXATION )
       integer i
       integer il
       integer timeint(4)
+#endif
 
       character*(max_len_mbuf) msgbuf
 

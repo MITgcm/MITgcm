@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsss.F,v 1.3 2002/11/12 20:34:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsss.F,v 1.4 2002/12/28 10:11:11 dimitri Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -22,6 +22,7 @@ c                for the MITgcmUV.
 c              Christian Eckert eckert@mit.edu 12-Feb-2000
 c              - Changed Routine names (package prefix: exf_)
 c     changed: heimbach@mit.edu 08-Feb-2002
+c     changed: menemenlis@jpl.nasa.gov 20-Dec-2002
 c
 c     ==================================================================
 c     SUBROUTINE exf_set_climsss
@@ -106,16 +107,8 @@ c     get record numbers and interpolation factor for climsss
 c     Loop over tiles.
       do bj = mybylo(mythid),mybyhi(mythid)
         do bi = mybxlo(mythid),mybxhi(mythid)
-          do j = 1-oly,sny+oly
-            do i = 1-olx,snx+olx
-
-c             Set to freezing salterature if less
-              if (climsss0(i,j,bi,bj) .lt. climsaltfreeze) then
-                climsss0(i,j,bi,bj) = climsaltfreeze
-              endif
-              if (climsss1(i,j,bi,bj) .lt. climsaltfreeze) then
-                climsss1(i,j,bi,bj) = climsaltfreeze
-              endif
+          do j = 1,sny
+            do i = 1,snx
 
 c             Interpolate linearly onto the current time.
               climsss(i,j,bi,bj) = fac          *climsss0(i,j,bi,bj)+

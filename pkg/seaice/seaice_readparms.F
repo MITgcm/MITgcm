@@ -26,14 +26,14 @@ C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
 C     errIO       - IO error flag
 C     iUnit       - Work variable for IO unit number
-C     k           - Loop counter
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER errIO, iUnit, k
+      INTEGER errIO, iUnit
 
 C--   SEAICE parameters
       NAMELIST /SEAICE_PARM01/
-     & SEAICEwriteState, SEAICEuseLSR, SEAICEuseDYNAMICS,
+     & SEAICEwriteState, SEAICEuseDYNAMICS, SEAICEuseLSR,
+     & SEAICEwindOnCgrid,
      & LAD, IMAX_TICE, NPSEUDO,
      & SEAICE_dumpFreq, SEAICE_taveFreq,
      & SEAICE_drag, SEAICE_waterDrag, SEAICE_albedo,
@@ -42,15 +42,15 @@ C--   SEAICE parameters
      & SEAICE_sensHeat, SEAICE_latentWater, SEAICE_latentIce,
      & SEAICE_iceConduct, SEAICE_snowConduct, SEAICE_emissivity,
      & SEAICE_snowThick, SEAICE_shortwave,
-     & gairxFile, gairyFile, tairFile, qaFile, floFile, fshFile,
-     & rainFile, evapFile, runoffFile,
+     & uwindFile, vwindFile, atempFile, aqhFile, lwfluxFile,
+     & swfluxFile, precipFile, evapFile, runoffFile,
      & LSR_ERROR, DIFF1, A22, HO,
      & WindForcingStart, WindForcingEnd, WindForcingPeriod,
      & FluxForcingStart, FluxForcingEnd, FluxForcingPeriod,
      & SSTForcingStart,  SSTForcingEnd,  SSTForcingPeriod,
      & SSSForcingStart,  SSSForcingEnd,  SSSForcingPeriod,
      & StartingYear, EndingYear,
-     & MAX_HEFF, MIN_TAIR, MIN_FLO, MAX_TICE, MIN_TICE
+     & MAX_HEFF, MIN_ATEMP, MIN_LWFLUX, MAX_TICE, MIN_TICE
 
       _BEGIN_MASTER(myThid)
 
@@ -65,8 +65,9 @@ C--   SEAICE parameters
 
 C--   set default sea ice parameters
       SEAICEwriteState   = .FALSE.
-      SEAICEuseLSR       = .FALSE.
       SEAICEuseDYNAMICS  = .TRUE.
+      SEAICEuseLSR       = .FALSE.
+      SEAICEwindOnCgrid  = .FALSE.
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
       SEAICE_drag        = 0.001  _d 0
@@ -84,23 +85,23 @@ C--   set default sea ice parameters
       SEAICE_emissivity  = 5.5    _d -08
       SEAICE_snowThick   = 0.15   _d 0
       SEAICE_shortwave   = 0.30   _d 0
-      gairxFile = ' '
-      gairyFile = ' '
-      tairFile  = ' '
-      qaFile    = ' '
-      floFile   = ' '
-      fshFile   = ' '
-      rainFile  = ' '
-      evapFile  = ' '
-      runoffFile= ' '
-      LAD       = 2
-      IMAX_TICE = 10
-      NPSEUDO   = 10
-      LSR_ERROR = 0.0001    _d 0
-      DIFF1     = .002      _d 0
-      DIFF1     = 2.0*DIFF1
-      A22       = 0.15      _d 0
-      HO        = 0.5       _d 0
+      uwindFile  = ' '
+      vwindFile  = ' '
+      atempFile  = ' '
+      aqhFile    = ' '
+      lwfluxFile = ' '
+      swfluxFile = ' '
+      precipFile = ' '
+      evapFile   = ' '
+      runoffFile = ' '
+      LAD        = 2
+      IMAX_TICE  = 10
+      NPSEUDO    = 10
+      LSR_ERROR  = 0.0001    _d 0
+      DIFF1      = .002      _d 0
+      DIFF1      = 2.0*DIFF1
+      A22        = 0.15      _d 0
+      HO         = 0.5       _d 0
 C DOUBLE HO BECAUSE OF MOD IN GROWTH
       HO=2.0*HO
       WindForcingStart  = -99999.
@@ -118,8 +119,8 @@ C DOUBLE HO BECAUSE OF MOD IN GROWTH
       StartingYear      = 1948.
       EndingYear        = 2000.
       MAX_HEFF          = 6.      _d 0
-      MIN_TAIR          = -50.    _d 0
-      MIN_FLO           = 60.     _d 0
+      MIN_ATEMP         = -50.    _d 0
+      MIN_LWFLUX        = 60.     _d 0
       MAX_TICE          = 30.     _d 0
       MIN_TICE          = -50.    _d 0
 
@@ -153,6 +154,7 @@ C      CALL MODELDATA_EXAMPLE( myThid )
 C--   Everyone else must wait for the parameters to be loaded
       _BARRIER
 
+#ifndef SEAICE_EXTERNAL_FORCING
       IF ( FluxForcingStart  .EQ. -99999. .OR.
      &     FluxForcingEnd    .EQ. -99999. .OR.
      &     FluxForcingPeriod .EQ. -99999.      ) THEN
@@ -160,7 +162,6 @@ C--   Everyone else must wait for the parameters to be loaded
          CALL PRINT_ERROR( msgBuf , 1)
          STOP 'ABNORMAL END: S/R SEAICE_GET_FORCING'
       ENDIF
-
       IF ( WindForcingStart  .EQ. -99999. )
      &     WindForcingStart  = FluxForcingStart
       IF ( WindForcingEnd    .EQ. -99999. )
@@ -179,6 +180,7 @@ C--   Everyone else must wait for the parameters to be loaded
      &     SSSForcingEnd    = FluxForcingEnd
       IF ( SSSForcingPeriod .EQ. -99999. )
      &     SSSForcingPeriod = FluxForcingPeriod
+#endif SEAICE_EXTERNAL_FORCING
 
 C--   No pseudo time steps are needed for LSR solver.
       IF ( SEAICEuseLSR ) NPSEUDO = 1

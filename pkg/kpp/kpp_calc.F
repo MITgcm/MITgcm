@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.13 2002/11/12 20:45:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.14 2002/12/28 10:11:11 dimitri Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -184,11 +184,11 @@ c     vRef   (nx,ny)       - Reference meridional velocity              (m/s)
       _KPP_RL vRef  ( ibot:itop    , jbot:jtop                    )
 #endif /* KPP_ESTIMATE_UREF */
       
-      _KPP_RL tempvar1, tempvar2
+      _KPP_RL tempvar2
       integer i, j, k, kp1, im1, ip1, jm1, jp1
 
 #ifdef KPP_ESTIMATE_UREF
-      _KPP_RL dBdz1, dBdz2, ustarX, ustarY
+      _KPP_RL tempvar1, dBdz1, dBdz2, ustarX, ustarY
 #endif
 
 c     Check to see if new vertical mixing coefficient should be computed now?

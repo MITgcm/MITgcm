@@ -1,14 +1,220 @@
-
-- Relaxation: empty files:
-  ----------
-    * exf_relaxsalt.F
-    * exf_relaxtheta.F
-    * exf_relaxsss.F
-    * exf_relaxsst.F
-
-- Atmospheric forcing
-  -------------------
-  1. Test ALLOW_ATM_TEMP
-     with evaporation files (check units)
-  2. Enable inclusion of atmospheric fields
-     as part of the control vector.
+c   To Do:
+c   ------
+c
+c   Atmospheric forcing
+c
+c      1. Test ALLOW_ATM_TEMP with evaporation files (check units)
+c
+c      2. Enable inclusion of atmospheric fields as part of the
+c         control vector. 
+c
+c   Selection of forcing fields
+c
+c      1. 'No forcing' should be possible for each field type,
+c         e.g., by leaving file name blank.
+c
+c      2. Cyclic forcing should be available for each field type
+c         (surface forcing and relaxation to climatology).
+c
+c   Cleaning package (reduce number of subroutines)
+c
+c
+c   Many assumptions that are made in the current version should, and
+c   can, be relaxed in later versions:
+c
+c   - There is an inconsistency in the formulation of forcing variables
+c     defined on southern and western points on the C-grid, since the
+c     the atmospheric stability is calculated on center points of the
+c     C-grid.
+c
+c   - gridded data sets    -->  general data set (other grids, inter-
+c                                                 polation in space)
+c
+c   - equidistancy in time -->  general data set (non-equidistant in
+c                                                 time)
+c
+c   - climatologies        -->  arbitrary subinterval of a year, not
+c                               just monthly values.
+c
+c   - relaxation           -->  relaxation could be done to a given
+c                               data set over the model's integration
+c                               time. This would generalise the clima-
+c                               tology block. One could have 'cyclic'
+c                               and 'non-cyclic' fields. In the first
+c                               case, the cycle length has to be spe-
+c                               cified ('monthly','yearly','period') as
+c                               well as the start of the cycle ( irec=1
+c                               corresponds to a certain calendar date).
+c                               The second case can be treated analog-
+c                               ously.
+c
+c
+c   Notes regarding more complete implementation of relaxation
+c   ==========================================================
+c
+c   Modifications in subroutine
+c   INITIALISE_FIXED (from c27 on):
+c   -------------------------------
+c   .
+c   .
+c   .
+c   C--   Set coriolis operators
+c         CALL INI_CORI( myThid )
+c
+c#ifdef INCLUDE_LAT_CIRC_FFT_FILTER_CODE
+cC--   Latitude circle filter initialisation
+c      CALL FILTER_LATCIRC_FFT_INIT(myThid)
+c      _BARRIER
+c#endif
+c
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c
+c         call exf_Init( mythid )
+c
+c   #ifdef ALLOW_CLIMTEMP_RELAXATION
+c   c--   Set the relaxation coefficient to the temperature climatology.
+c         call exf_GetTempClimLambda(
+c        I                            mythid
+c        &                          )
+c         _BARRIER
+c   #endif
+c   #ifdef ALLOW_CLIMSALT_RELAXATION
+c   c--   Set the relaxation coefficient to the salinity climatology.
+c         call exf_GetSaltClimLambda(
+c        I                            mythid
+c        &                          )
+c         _BARRIER
+c   #endif
+c   #ifdef ALLOW_CLIMSST_RELAXATION
+c   c--   Set the relaxation coefficient to the sst climatology.
+c         call exf_GetSSTClimLambda(
+c        I                           mythid
+c        &                         )
+c         _BARRIER
+c   #endif
+c   #ifdef ALLOW_CLIMSSS_RELAXATION
+c   c--   Set the relaxation coefficient to the sss climatology.
+c         call exf_GetSSSClimLambda(
+c        I                           mythid
+c        &                         )
+c         _BARRIER
+c   #endif
+c   #endif
+c
+c   c--   Finally, summarise the model cofiguration.
+c         CALL CONFIG_SUMMARY( myThid )
+c   .
+c   .
+c   .
+c
+c
+c   external_forcing.F  -  Add relaxation to climatological fields.
+c
+c
+c   Modifications in subroutine
+c   EXTERNAL_FORCING_T (taken from c25):
+c   ------------------------------------
+c   .
+c   .
+c   .
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c   #include "exf_clim.h"
+c   #endif
+c   .
+c   .
+c   .
+c   C--   Forcing term
+c   C     Add heat in top-layer
+c         IF ( kLev .EQ. 1 ) THEN
+c          DO j=jMin,jMax
+c           DO i=iMin,iMax
+c            gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
+c        &  +maskC(i,j)*(
+c        &   -lambdaThetaClimRelax*(theta(i,j,kLev,bi,bj)-SST(i,j,bi,bj))
+c        &   -Qnet(i,j,bi,bj)*recip_Cp*recip_rhoNil*recip_dRf(kLev) )
+c
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c   #ifdef ALLOW_CLIMSST_RELAXATION
+c            gt(i,j,klev,bi,bj) = gt(i,j,klev,bi,bj) -
+c        &                        maskc(i,j)*lambda_climsst(i,j,bi,bj)*
+c        &                        ( theta(i,j,klev,bi,bj) - 
+c        &                          climsst(i,j,bi,bj)     )
+c   #endif
+c   #endif
+c
+c           ENDDO
+c          ENDDO
+c         ENDIF
+c
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c   #ifdef ALLOW_CLIMTEMP_RELAXATION
+c         do j=jmin,jmax
+c          do i=imin,imax
+c           gt(i,j,klev,bi,bj) = gt(i,j,klev,bi,bj) -
+c        &                       maskc(i,j)*lambda_climtemp(i,j,klev,bi,bj)*
+c        &                       ( theta(i,j,klev,bi,bj) - 
+c        &                         climtemp(i,j,klev,bi,bj) )
+c          enddo
+c         enddo
+c   #endif
+c   #endif
+c   .
+c   .
+c   .
+c
+c
+c   Modifications in subroutine
+c   EXTERNAL_FORCING_S (taken from c25):
+c   ------------------------------------
+c   .
+c   .
+c   .
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c   #include "exf_clim.h"
+c   #endif
+c   .
+c   .
+c   .
+c   C--   Forcing term
+c   C     Add fresh-water in top-layer
+c         IF ( kLev .EQ. 1 ) THEN
+c          DO j=jMin,jMax
+c           DO i=iMin,iMax
+c            gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
+c        &   +maskC(i,j)*(
+c        &   -lambdaSaltClimRelax*(salt(i,j,kLev,bi,bj)-SSS(i,j,bi,bj))
+c   #ifdef ALLOW_NATURAL_BCS
+c        &   +EmPmR(i,j,bi,bj)*recip_dRf(1)*salt(i,j,kLev,bi,bj)
+c   #else
+c        &   +EmPmR(i,j,bi,bj)*recip_dRf(1)*35.
+c   #endif
+c        &   )
+c
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c   #ifdef ALLOW_CLIMSSS_RELAXATION
+c            gs(i,j,kLev,bi,bj) = gs(i,j,kLev,bi,bj) -
+c        &                        maskc(i,j)*lambda_climsss(i,j,bi,bj)*
+c        &                        ( salt(i,j,kLev,bi,bj) - 
+c        &                          climsss(i,j,bi,bj)    )
+c   #endif
+c   #endif
+c
+c           ENDDO
+c          ENDDO
+c         ENDIF
+c
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c   #ifdef ALLOW_CLIMSALT_RELAXATION
+c         do j=jmin,jmax
+c          do i=imin,imax
+c           gs(i,j,klev,bi,bj) = gs(i,j,klev,bi,bj) -
+c        &                       maskc(i,j)*lambda_climsalt(i,j,klev,bi,bj)*
+c        &                       ( salt(i,j,klev,bi,bj) - 
+c        &                         climsalt(i,j,klev,bi,bj) )
+c          enddo
+c         enddo
+c   #endif
+c   #endif
+c   .
+c   .
+c   .

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.4 2002/11/12 20:34:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getforcing.F,v 1.5 2002/12/28 10:11:11 dimitri Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -23,9 +23,7 @@ c  exf_getforcing
 c  |
 c  |-- exf_getclim (get climatological fields used e.g. for relax.)
 c  |
-c  |-- exf_getsurfacefluxes
-c  |   |   
-c  |   |-- exf_getffields <- this one does almost everything
+c  |-- exf_getffields <- this one does almost everything
 c  |   |   1. reads in fields, either flux or atmos. state,
 c  |   |      depending on CPP options
 c  |   |   2. If forcing and control is flux, we're already done here
@@ -38,29 +36,31 @@ c  |   |          * ctrl_getuwind
 c  |   |          * ctrl_getvwind
 c  |   |   4. flux fields are interpolated on current time
 c  |   |      (b) next the flux fields are computed via bulk formulae
-c  |   |   5. if forcing and control is flux, then the control vector 
-c  |   |      anomalies are read here
-c  |   |      * ctrl_getheatflux
-c  |   |      * ctrl_getsaltflux
-c  |   |      * ctrl_getzonstress
-c  |   |      * call ctrl_getmerstress
 c  |   |
 c  |   |-- exf_obcs
-c  |   |   If open boundaries are prescribed externally,
-c  |   |   OB values for current time step are read here
-c  |   |   1. for each boundary (north, south, west, east)
-c  |   |      sliced fields are read for T,S,U,V
-c  |   |   2. if OB's are part of control vector,
-c  |   |      control variable anomalies are added to OB values
-c  |   |      * ctrl_getobcsn
-c  |   |      * ctrl_getobcss
-c  |   |      * ctrl_getobcsw
-c  |   |      * ctrl_getobcse
-c  |   |
-c  |   |-- exf_mapfields
-c  |   |   Forcing fields from exf package are mapped onto
-c  |   |   mitgcm forcing arrays.
-c  |   |   Mapping enables a runtime rescaling of fields
+c  |       If open boundaries are prescribed externally,
+c  |       OB values for current time step are read here
+c  |       1. for each boundary (north, south, west, east)
+c  |          sliced fields are read for T,S,U,V
+c  |       2. if OB's are part of control vector,
+c  |          control variable anomalies are added to OB values
+c  |          * ctrl_getobcsn
+c  |          * ctrl_getobcss
+c  |          * ctrl_getobcsw
+c  |          * ctrl_getobcse
+c  |
+c  |-- exf_getsurfacefluxes
+c  |   If forcing and control is flux, then the
+c  |   control vector anomalies are read here
+c  |      * ctrl_getheatflux
+c  |      * ctrl_getsaltflux
+c  |      * ctrl_getzonstress
+c  |      * call ctrl_getmerstress
+c  |
+c  |-- exf_mapfields
+c  |   Forcing fields from exf package are mapped onto
+c  |   mitgcm forcing arrays.
+c  |   Mapping enables a runtime rescaling of fields
 c
 c \ev
 CEOI
@@ -84,6 +84,7 @@ c       model. However, the wind stress forcing is not treated
 c       this way. A positive zonal wind stress accelerates the
 c       model ocean towards the east.
 c       started: eckert@mit.edu, heimbach@mit.edu, ralf@ocean.mit.edu
+c       changed: menemenlis@jpl.nas.gov
 c     *=================================================================
 c     | SUBROUTINE exf_getforcing
 c     *=================================================================

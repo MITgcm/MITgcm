@@ -29,9 +29,9 @@ CEndOfInterface
 #ifdef ALLOW_SEAICE
 
 C     === Local variables ===
-C     i,j,k,bi,bj - Loop counters
+C     i,j,bi,bj - Loop counters
 
-      INTEGER i, j, k, bi, bj, IWIND
+      INTEGER i, j, bi, bj
       _RL  SINWIN, COSWIN, SINWAT, COSWAT
 
 C   25 DEG GIVES SIN EQUAL TO 0.4226
@@ -87,7 +87,8 @@ C--   Update overlap regions
       _EXCH_XY_R8(WINDX, myThid)
       _EXCH_XY_R8(WINDY, myThid)
 
-C Interpolate wind stress (N/m^2) to C-grid for forcing ocean model
+C--   Interpolate wind stress (N/m^2) from North-East B-grid
+C     to South-West C-grid for forcing ocean model.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy

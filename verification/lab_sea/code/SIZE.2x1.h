@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/Attic/SIZE_2x1.h,v 1.2 2002/11/12 20:54:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/Attic/SIZE.2x1.h,v 1.2 2002/12/28 10:11:12 dimitri Exp $
 C
 CBOP
 C    !ROUTINE: SIZE.h

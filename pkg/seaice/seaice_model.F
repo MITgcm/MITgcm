@@ -23,7 +23,11 @@ C     === Global variables ===
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
-#endif /* ALLOW_AUTODIFF_TAMC */
+#endif ALLOW_AUTODIFF_TAMC
+
+#ifdef SEAICE_EXTERNAL_FORCING
+#include "SEAICE_FFIELDS.h"
+#endif SEAICE_EXTERNAL_FORCING
 
 C     === Routine arguments ===
 C     myTime - Simulation time
@@ -37,12 +41,28 @@ CEndOfInterface
 #ifdef ALLOW_SEAICE
 
 C     === Local variables ===
-C     i,j,k,bi,bj - Loop counters
+C     i,j,bi,bj - Loop counters
 
-      INTEGER i, j, k, bi, bj
+      INTEGER i, j, bi, bj
 
-C---  Read wind, thermal, and evaporation minus precipitation if needed
+#ifdef SEAICE_EXTERNAL_FORCING
+C--   Atmospheric state and runoff are from
+C     pkg/exf, which does not update edges.
+         _EXCH_XY_R8( uwind,  myThid )
+         _EXCH_XY_R8( vwind,  myThid )
+         _EXCH_XY_R8( atemp,  myThid )
+         _EXCH_XY_R8( aqh,    myThid )
+         _EXCH_XY_R8( lwflux, myThid )
+         _EXCH_XY_R8( precip, myThid )
+         _EXCH_XY_R8( evap,   myThid )
+         _EXCH_XY_R8( runoff, myThid )
+#ifndef ALLOW_KPP
+         _EXCH_XY_R8( swflux, mythid )
+#endif ALLOW_KPP
+#else SEAICE_EXTERNAL_FORCING
+C--   Load atmospheric state and runoff.
       CALL SEAICE_GET_FORCING ( myTime, myIter, myThid )
+#endif SEAICE_EXTERNAL_FORCING
 
 C--   Third level model velocity is used as proxy for geostrophic velocity
       DO bj=myByLo(myThid),myByHi(myThid)

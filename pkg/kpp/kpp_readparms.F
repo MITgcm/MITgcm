@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.6 2002/07/13 03:12:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_readparms.F,v 1.7 2002/12/28 10:11:11 dimitri Exp $
 C $Name:  $
 #include "KPP_OPTIONS.h"
 
@@ -26,10 +26,9 @@ C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer
 C     errIO       - IO error flag
 C     iUnit       - Work variable for IO unit number
-C     k           - Loop counter
 
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      INTEGER errIO, iUnit, k
+      INTEGER errIO, iUnit
 
 C--   KPP vertical mixing parameters
       NAMELIST /KPP_PARM01/
