@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.17 2004/05/03 06:58:39 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_model.F,v 1.18 2004/05/03 16:30:20 dimitri Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -72,7 +72,7 @@ C--   Load atmospheric state and runoff.
 C--   As a proxy for geostrophic velocity,
 C     choose the level that is >= 50 m with kgeo > 1
       KGEO = 2
-      DO WHILE ( abs(rC(KGEO)) .LT. 50 .AND. KGEO .LT. Nr )
+      DO WHILE ( abs(rC(KGEO)) .LT. 50.0 .AND. KGEO .LT. Nr )
          KGEO = KGEO + 1
       ENDDO
       DO bj=myByLo(myThid),myByHi(myThid)
