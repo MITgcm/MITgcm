@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_strain.F,v 1.2 2004/05/24 18:44:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_strain.F,v 1.3 2004/05/24 20:03:44 adcroft Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -76,7 +76,7 @@ C       Set strain to zero on boundaries (free-slip)
         
 C     Special stuff for Cubed Sphere
       IF (useCubedSphereExchange) THEN
-       STOP 'S/R MOM_CALC_STRAIN: We should not use strain on the cube!'
+c      STOP 'S/R MOM_CALC_STRAIN: We should not use strain on the cube!'
       ENDIF
 
       RETURN

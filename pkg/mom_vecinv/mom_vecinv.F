@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.17 2004/05/24 18:41:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.18 2004/05/24 20:03:49 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -237,9 +237,9 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
 
       CALL MOM_CALC_HDIV(bi,bj,k,2,uFld,vFld,hDiv,myThid)
 
-      CALL MOM_VI_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
+      CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
 
-c     CALL MOM_VI_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
+c     CALL MOM_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
 
       IF (momViscosity) THEN
 C      Calculate del^2 u and del^2 v for bi-harmonic term
@@ -248,7 +248,7 @@ C      Calculate del^2 u and del^2 v for bi-harmonic term
      O                      del2u,del2v,
      &                      myThid)
          CALL MOM_CALC_HDIV(bi,bj,k,2,del2u,del2v,dStar,myThid)
-         CALL MOM_VI_CALC_RELVORT3(
+         CALL MOM_CALC_RELVORT3(
      &                         bi,bj,k,del2u,del2v,hFacZ,zStar,myThid)
        ENDIF
 C      Calculate dissipation terms for U and V equations

@@ -1,10 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_vi_calc_relvort3.F,v 1.10 2004/03/15 01:37:23 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_calc_relvort3.F,v 1.1 2004/05/24 20:03:44 adcroft Exp $
 C $Name:  $
 
-#include "PACKAGES_CONFIG.h"
-#include "CPP_OPTIONS.h"
+#include "MOM_COMMON_OPTIONS.h"
 
-      SUBROUTINE MOM_VI_CALC_RELVORT3( 
+      SUBROUTINE MOM_CALC_RELVORT3( 
      I        bi,bj,k,
      I        uFld, vFld, hFacZ,
      O        vort3,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_uv_s2g.F,v 1.5 2004/05/24 18:41:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/Attic/shap_filt_uv_s2g.F,v 1.6 2004/05/24 20:03:49 adcroft Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -96,7 +96,7 @@ C    [d_xx+d_yy] tmpFld
      I                    tmpFldU(1-OLx,1-OLy,k,bi,bj),
      I                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
      &                    hDiv,myThid)
-           CALL MOM_VI_CALC_RELVORT3(bi,bj,k,
+           CALL MOM_CALC_RELVORT3(bi,bj,k,
      I                    tmpFldU(1-OLx,1-OLy,k,bi,bj),
      I                    tmpFldV(1-OLx,1-OLy,k,bi,bj),
      &                    hFacZ,vort3,myThid)
