@@ -188,6 +188,10 @@ catch (sig)
 #define USGISH
 #endif
 
+#ifdef sparc
+#define USGISH
+#endif
+
 #ifndef USGISH
 #ifndef _POSIX_SOURCE
 #define sigaction sigvec
