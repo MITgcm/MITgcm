@@ -1,10 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.11 1999/07/28 16:21:38 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.12 2000/06/21 19:22:24 adcroft Exp $
 C
 
 C 
 C CPP flags controlling which code in included in the files that
 C will be compiled.
 C
+
+C o Include/exclude code for GM/Redi parameterization
+#undef  ALLOW_GMREDI
 
 C o Include/exclude code for KPP mixing scheme
 #undef  ALLOW_KPP
