@@ -26,6 +26,12 @@
  useCDscheme=.FALSE.,
  vectorInvariantMomentum=.TRUE.,
  exactConserv = .TRUE.,
+ staggerTimeStep=.TRUE.,
+ multiDimAdvection=.TRUE.,
+ tempAdvScheme=3,
+ saltAdvScheme=3,
+ bottomDragQuadratic=1.E-3,
+ bottomDragLinear=1.E-3,
 #ph)
 # turn on looped cells
  hFacMin=.05,
