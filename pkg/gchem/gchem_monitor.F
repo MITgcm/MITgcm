@@ -1,7 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_monitor.F,v 1.4 2004/07/13 18:04:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_monitor.F,v 1.5 2004/09/08 00:23:04 jmc Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
 CBOP
@@ -21,9 +20,11 @@ C !USES: ===============================================================
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#include "MONITOR.h"
 #include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
+#ifdef ALLOW_MONITOR
+#include "MONITOR.h"
+#endif
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
@@ -37,8 +38,8 @@ C     === Functions ====
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
 
-#ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
+#ifdef ALLOW_MONITOR
 
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
@@ -56,6 +57,8 @@ CEOP
 
       IF (myIter.le.nIter0+1.or.DIFFERENT_MULTIPLE(
      &                 monitorFreq,myTime,myTime-dT)) THEN
+
+       mon_write_stdout = .TRUE.
 
 C      Dynamics field monitor start 
        _BEGIN_MASTER(myThid)
@@ -99,6 +102,8 @@ C      Dynamics field monitor finish
      &'// ======================================================='
         CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT , 1)
        _END_MASTER(myThid)
+
+       mon_write_stdout = .FALSE.
 
       ENDIF
 
