@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.2 1998/04/23 20:37:29 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/barrier.F,v 1.3 1998/06/10 17:05:59 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -75,9 +75,7 @@ C     I     - Loop counter
       INTEGER I
 
 CcnhDebugStarts
-C     IF ( myThid .EQ. 1 ) THEN
-C      WRITE(0,*) ' Barrier entered '
-C     ENDIF
+C      WRITE(myThid,*) ' Barrier entered '
 CcnhDebugEnds
 
 C--   Check that thread number is expected range
@@ -203,9 +201,7 @@ C--   door2 because they have to go through door1 first.
       ENDIF
 
 CcnhDebugStarts
-C     IF ( myThid .EQ. 1 ) THEN
-C      WRITE(0,*) ' Barrier exited '
-C     ENDIF
+C      WRITE(myThid,*) ' Barrier exited '
 CcnhDebugEnds
      
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.10 1998/05/25 21:29:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.11 1998/06/10 17:05:59 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -198,14 +198,14 @@ C     == Local variables ==
         xcoord((bi-1)*sNx+I) = xc(I,1,bi,1)
        ENDDO
       ENDDO
-      CALL WRITE_1D_R8( xcoord, Nx, INDEX_I,'xcoord = ',
+      CALL WRITE_1D_R8( xcoord, sNx*nSx, INDEX_I,'xcoord = ',
      &'   /* P-point X coordinate (  m - cartesian, degrees - spherical ) */')
       DO bj=1,nSy
        DO J=1,sNy
         ycoord((bj-1)*sNy+J) = yc(1,J,1,bj)
        ENDDO
       ENDDO
-      CALL WRITE_1D_R8( ycoord, Ny, INDEX_J,'ycoord = ',
+      CALL WRITE_1D_R8( ycoord, sNy*nSy, INDEX_J,'ycoord = ',
      &'   /* P-point Y coordinate (  m - cartesian, degrees - spherical ) */')
       DO K=1,Nz
        zcoord(K) = zc(K)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.5 1998/06/10 01:44:03 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.6 1998/06/10 17:05:59 cnh Exp $
 #include "CPP_EEOPTIONS.h"
 
 C--  File read_write.F: Routines to handle mid-level I/O interface.
@@ -189,7 +189,7 @@ C     nDims, dimList - Local and global dataset dimensions
       INTEGER lFilled   
       INTEGER nXP, nYP
       INTEGER iP, jP, kP, ib
-      INTEGER i,j, k, bi, bj
+      INTEGER i,j, k, bi, bj, iG, jG
       INTEGER s1Lo, s1Hi, s2Lo, s2Hi
       INTEGER nDims
       PARAMETER ( nDims = 2 )
@@ -208,12 +208,19 @@ C          U.0000000100
       s1Hi = ILNBLNK(pref)
       s2Lo = IFNBLNK(suff)
       s2Hi = ILNBLNK(suff)
-      WRITE( fNamData, '(A,A)' )
+      IF ( suff .EQ. ' ' ) THEN
+       WRITE( fNamData, '(A)' )
+     & pref(s1Lo:s1Hi)
+       WRITE( fNamMeta, '(A)' )
+     & pref(s1Lo:s1Hi)
+      ELSE
+       WRITE( fNamData, '(A,A)' )
      & pref(s1Lo:s1Hi),
      & suff(s2Lo:s2Hi)
-      WRITE( fNamMeta, '(A,A)' )
+       WRITE( fNamMeta, '(A,A)' )
      & pref(s1Lo:s1Hi),
      & suff(s2Lo:s2Hi)
+      ENDIF
 
 C--   Open file
       CALL DFILE_OPEN( fNamData, fNamMeta, myThid,
@@ -223,7 +230,7 @@ C--   Open file
 C--   Set local and global data extents
       nXP=sNx*nSx
       nYP=sNy*nSy
-      lFilled = sNx*nSx * sNy*nSy
+      lFilled = sNx*nSx*nPx * sNy*nSy*nPy
       dimList(1) = nXP*nPx
       dimList(2) = myXGlobalLo
       dimList(3) = myXGlobalLo+nXP-1
@@ -249,7 +256,9 @@ C     Also regrid it to i,j,k indexing.
           DO i=1,sNx
            iP = (bi-1)*sNx+i
            jP = (bj-1)*sNy+j
-           ib = (jP-1)*nXP + iP
+           iG = myXGlobalLo-1+(bi-1)*sNx+I
+           jG = myYGlobalLo-1+(bj-1)*sNy+J
+           ib = (jG-1)*nXp*nPx+iG
            fld(i,j,bi,bj) = ioBuf_R4(ib)
           ENDDO
          ENDDO
@@ -262,7 +271,9 @@ C     Also regrid it to i,j,k indexing.
           DO i=1,sNx
            iP = (bi-1)*sNx+i
            jP = (bj-1)*sNy+j
-           ib = (jP-1)*nXP + iP
+           iG = myXGlobalLo-1+(bi-1)*sNx+I
+           jG = myYGlobalLo-1+(bj-1)*sNy+J
+           ib = (jG-1)*nXp*nPx+iG
            fld(i,j,bi,bj) = ioBuf_R8(ib)
           ENDDO
          ENDDO
@@ -343,7 +354,7 @@ C     nDims, dimList - Local and global dataset dimensions
       INTEGER lFilled   
       INTEGER nXP, nYP
       INTEGER iP, jP, kP, ib
-      INTEGER i,j, k, bi, bj
+      INTEGER i,j, k, bi, bj, iG, jG
       INTEGER s1Lo, s1Hi, s2Lo, s2Hi
       INTEGER nDims
       PARAMETER ( nDims = 2 )
@@ -365,11 +376,18 @@ C          U.0000000100
       IF     ( pref .EQ. ' ' ) THEN
        WRITE( fNamData, '(A)' )
      & suff(s2Lo:s2Hi)
+       WRITE( fNamMeta, '(A)' )
+     & suff(s2Lo:s2Hi)
       ELSEIF ( suff .EQ. ' ' ) THEN
        WRITE( fNamData, '(A)' )
      & pref(s1Lo:s1Hi)
+       WRITE( fNamMeta, '(A)' )
+     & pref(s1Lo:s1Hi)
       ELSE
        WRITE( fNamData, '(A,A)' )
+     & pref(s1Lo:s1Hi),
+     & suff(s2Lo:s2Hi)
+       WRITE( fNamMeta, '(A,A)' )
      & pref(s1Lo:s1Hi),
      & suff(s2Lo:s2Hi)
       ENDIF
@@ -382,7 +400,7 @@ C--   Open file
 C--   Set local and global data extents
       nXP=sNx*nSx
       nYP=sNy*nSy
-      lFilled = sNx*nSx * sNy*nSy
+      lFilled = sNx*nSx*nPx * sNy*nSy*nPy
       dimList(1) = nXP*nPx
       dimList(2) = myXGlobalLo
       dimList(3) = myXGlobalLo+nXP-1
@@ -408,7 +426,9 @@ C     Also regrid it to i,j,k indexing.
           DO i=1,sNx
            iP = (bi-1)*sNx+i
            jP = (bj-1)*sNy+j
-           ib = (jP-1)*nXP + iP
+           iG = myXGlobalLo-1+(bi-1)*sNx+I
+           jG = myYGlobalLo-1+(bj-1)*sNy+J
+           ib = (jG-1)*nXp*nPx+iG
            fld(i,j,bi,bj) = ioBuf_R4(ib)
           ENDDO
          ENDDO
@@ -421,7 +441,9 @@ C     Also regrid it to i,j,k indexing.
           DO i=1,sNx
            iP = (bi-1)*sNx+i
            jP = (bj-1)*sNy+j
-           ib = (jP-1)*nXP + iP
+           iG = myXGlobalLo-1+(bi-1)*sNx+I
+           jG = myYGlobalLo-1+(bj-1)*sNy+J
+           ib = (jG-1)*nXp*nPx+iG
            fld(i,j,bi,bj) = ioBuf_R8(ib)
           ENDDO
          ENDDO
@@ -502,7 +524,7 @@ C     nDims, dimList - Local and global dataset dimensions
       INTEGER lFilled   
       INTEGER nXP, nYP
       INTEGER iP, jP, kP, ib
-      INTEGER i,j, k, bi, bj
+      INTEGER i,j, k, bi, bj, iG, jG
       INTEGER s1Lo, s1Hi, s2Lo, s2Hi
       INTEGER nDims
       PARAMETER ( nDims = 3 )
@@ -521,12 +543,19 @@ C          U.0000000100
       s1Hi = ILNBLNK(pref)
       s2Lo = IFNBLNK(suff)
       s2Hi = ILNBLNK(suff)
-      WRITE( fNamData, '(A,A)' )
+      IF ( suff .EQ. ' ' ) THEN
+       WRITE( fNamData, '(A)' )
+     & pref(s1Lo:s1Hi)
+       WRITE( fNamMeta, '(A)' )
+     & pref(s1Lo:s1Hi)
+      ELSE
+       WRITE( fNamData, '(A,A)' )
      & pref(s1Lo:s1Hi),
      & suff(s2Lo:s2Hi)
-      WRITE( fNamMeta, '(A,A)' )
+       WRITE( fNamMeta, '(A,A)' )
      & pref(s1Lo:s1Hi),
      & suff(s2Lo:s2Hi)
+      ENDIF
 
 C--   Open file
       CALL DFILE_OPEN( fNamData, fNamMeta, myThid,
@@ -536,7 +565,7 @@ C--   Open file
 C--   Set local and global data extents
       nXP=sNx*nSx
       nYP=sNy*nSy
-      lFilled = sNx*nSx * sNy*nSy * nZ
+      lFilled = sNx*nSx*nPx * sNy*nSy*nPy * nZ
       dimList(1) = nXP*nPx
       dimList(2) = myXGlobalLo
       dimList(3) = myXGlobalLo+nXP-1
@@ -567,7 +596,9 @@ C     Also regrid it to i,j,k indexing.
             iP = (bi-1)*sNx+i
             jP = (bj-1)*sNy+j
             kP = K
-            ib = (kP-1)*nXP*nYP + (jP-1)*nXP + iP
+            iG = myXGlobalLo-1+(bi-1)*sNx+I
+            jG = myYGlobalLo-1+(bj-1)*sNy+J
+            ib = (kP-1)*nXp*nPx*nYp*nPy+(jG-1)*nXp*nPx+iG
             fld(i,j,k,bi,bj) = ioBuf_R4(ib)
            ENDDO
           ENDDO
@@ -582,8 +613,10 @@ C     Also regrid it to i,j,k indexing.
            DO i=1,sNx
             iP = (bi-1)*sNx+i
             jP = (bj-1)*sNy+j
-             kP = K
-            ib = (kP-1)*nXP*nYP + (jP-1)*nXP + iP
+            kP = K
+            iG = myXGlobalLo-1+(bi-1)*sNx+I
+            jG = myYGlobalLo-1+(bj-1)*sNy+J
+            ib = (kP-1)*nXp*nPx*nYp*nPy+(jG-1)*nXp*nPx+iG
             fld(i,j,k,bi,bj) = ioBuf_R8(ib)
            ENDDO
           ENDDO
@@ -665,7 +698,7 @@ C     nDims, dimList - Local and global dataset dimensions
       INTEGER lFilled   
       INTEGER nXP, nYP
       INTEGER iP, jP, kP, ib
-      INTEGER i,j, k, bi, bj
+      INTEGER i,j, k, bi, bj, iG , jG
       INTEGER s1Lo, s1Hi, s2Lo, s2Hi
       INTEGER nDims
       PARAMETER ( nDims = 3 )
@@ -684,13 +717,20 @@ C          U.0000000100
       s1Hi = ILNBLNK(pref)
       s2Lo = IFNBLNK(suff)
       s2Hi = ILNBLNK(suff)
-      WRITE( fNamData, '(A,A)' )
+      IF ( suff .EQ. ' ' ) THEN
+       WRITE( fNamData, '(A)' )
+     & pref(s1Lo:s1Hi)
+       WRITE( fNamMeta, '(A)' )
+     & pref(s1Lo:s1Hi)
+      ELSE
+       WRITE( fNamData, '(A,A)' )
      & pref(s1Lo:s1Hi),
      & suff(s2Lo:s2Hi)
-      WRITE( fNamMeta, '(A,A)' )
+       WRITE( fNamMeta, '(A,A)' )
      & pref(s1Lo:s1Hi),
      & suff(s2Lo:s2Hi)
-
+      ENDIF
+      
 C--   Open file
       CALL DFILE_OPEN( fNamData, fNamMeta, myThid,
      O                 fileHandle )
@@ -699,7 +739,7 @@ C--   Open file
 C--   Set local and global data extents
       nXP=sNx*nSx
       nYP=sNy*nSy
-      lFilled = sNx*nSx * sNy*nSy * nZ
+      lFilled = sNx*nSx*nPx * sNy*nSy*nPy * nZ
       dimList(1) = nXP*nPx
       dimList(2) = myXGlobalLo
       dimList(3) = myXGlobalLo+nXP-1
@@ -730,7 +770,9 @@ C     Also regrid it to i,j,k indexing.
             iP = (bi-1)*sNx+i
             jP = (bj-1)*sNy+j
             kP = K
-            ib = (kP-1)*nXP*nYP + (jP-1)*nXP + iP
+            iG = myXGlobalLo-1+(bi-1)*sNx+I
+            jG = myYGlobalLo-1+(bj-1)*sNy+J
+            ib = (kP-1)*nXp*nPx*nYp*nPy+(jG-1)*nXp*nPx+iG
             fld(i,j,k,bi,bj) = ioBuf_R4(ib)
            ENDDO
           ENDDO
@@ -745,8 +787,10 @@ C     Also regrid it to i,j,k indexing.
            DO i=1,sNx
             iP = (bi-1)*sNx+i
             jP = (bj-1)*sNy+j
-             kP = K
-            ib = (kP-1)*nXP*nYP + (jP-1)*nXP + iP
+            kP = K
+            iG = myXGlobalLo-1+(bi-1)*sNx+I
+            jG = myYGlobalLo-1+(bj-1)*sNy+J
+            ib = (kP-1)*nXp*nPx*nYp*nPy+(jG-1)*nXp*nPx+iG
             fld(i,j,k,bi,bj) = ioBuf_R8(ib)
            ENDDO
           ENDDO
