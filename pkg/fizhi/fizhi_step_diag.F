@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.10 2004/08/12 15:21:22 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.11 2004/08/29 19:43:43 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -221,24 +221,7 @@ c --------------------------
       enddo
       enddo
       endif
-      if (iudiag2.ne.0) then
-      do j=jm1,jm2
-      do i=im1,im2
-      qdiag(i,j,iudiag2+l-1,bi,bj) = qdiag(i,j,iudiag2+l-1,bi,bj) + 
-     . lwdt(i,j,l,bi,bj) * pk(i,j,l,bi,bj)*pinv(i,j)*86400
-      enddo
-      enddo
-      endif
-      if (iudiag3.ne.0) then
-      do j=jm1,jm2
-      do i=im1,im2
-      qdiag(i,j,iudiag3+l-1,bi,bj) = qdiag(i,j,iudiag3+l-1,bi,bj) + 
-     . dlwdtg (i,j,L,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj))
-     .                      * pk(i,j,l,bi,bj)*pinv(i,j)*86400
-      enddo
-      enddo
-      endif
-                                                                                
+
 c Longwave Heating Clear-Sky (deg/day)
 c ------------------------------------
       if (ilwclr.ne.0) then                                                     
@@ -333,6 +316,7 @@ c -----------------------
       enddo
 
       if( (bi.eq.1) .and. (bj.eq.1) ) then
+
       ndiabu = ndiabu + 1
       ndiabv = ndiabv + 1
       ndiabt = ndiabt + 1
@@ -347,8 +331,6 @@ c -----------------------
       ntke   = ntke   + 1
       nsphu  = nsphu  + 1
 
-      nudiag3 = nudiag3 + 1
-      nudiag2 = nudiag2 + 1
       endif
 
 C **********************************************************************        
