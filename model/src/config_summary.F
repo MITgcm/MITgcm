@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.43 2003/10/15 22:55:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.44 2003/10/29 00:19:22 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -95,30 +95,30 @@ CEOP
      &'   /* Lateral biharmonic viscosity ( m^4/s ) */')
       CALL WRITE_0D_L( no_slip_sides, INDEX_NONE,
      & 'no_slip_sides =', '  /* Viscous BCs: No-slip sides */')
-      IF ( viscAz .NE. UNSET_RL ) THEN
-       CALL WRITE_0D_R8( viscAz, INDEX_NONE,'viscAz =',
-     & '   /* Vertical eddy viscosity ( m^2/s ) */')
-      ENDIF
-      IF ( viscAp .NE. UNSET_RL ) THEN
-       CALL WRITE_0D_R8( viscAp, INDEX_NONE,'viscAp =',
-     & '   /* Vertical eddy viscosity ( Pa^2/s ) */')
-      ENDIF
+c     IF ( viscAz .NE. UNSET_RL ) THEN
+c      CALL WRITE_0D_R8( viscAz, INDEX_NONE,'viscAz =',
+c    & '   /* Vertical eddy viscosity ( m^2/s ) */')
+c     ENDIF
+c     IF ( viscAp .NE. UNSET_RL ) THEN
+c      CALL WRITE_0D_R8( viscAp, INDEX_NONE,'viscAp =',
+c    & '   /* Vertical eddy viscosity ( Pa^2/s ) */')
+c     ENDIF
       CALL WRITE_0D_R8( viscAr,  INDEX_NONE,'viscAr =',
      &'   /* Vertical eddy viscosity ( units of r^2/s ) */')
       CALL WRITE_0D_R8( diffKhT, INDEX_NONE,'diffKhT =',
      &'   /* Laplacian diffusion of heat laterally ( m^2/s ) */')
       CALL WRITE_0D_R8( diffK4T, INDEX_NONE,'diffK4T =',
      &'   /* Bihaarmonic diffusion of heat laterally ( m^4/s ) */')
-      CALL WRITE_0D_R8( diffKzT, INDEX_NONE,'diffKzT =',
-     &'   /* Laplacian diffusion of heat vertically ( m^2/s ) */')
+c     CALL WRITE_0D_R8( diffKzT, INDEX_NONE,'diffKzT =',
+c    &'   /* Laplacian diffusion of heat vertically ( m^2/s ) */')
       CALL WRITE_0D_R8( diffKrT, INDEX_NONE,'diffKrT =',
      &'   /* Laplacian diffusion of heat vertically ( m^2/s ) */')
       CALL WRITE_0D_R8( diffKhS, INDEX_NONE,'diffKhS =',
      &'   /* Laplacian diffusion of salt laterally ( m^2/s ) */')
       CALL WRITE_0D_R8( diffK4S, INDEX_NONE,'diffK4S =',
      &'   /* Bihaarmonic diffusion of salt laterally ( m^4/s ) */')
-      CALL WRITE_0D_R8( diffKzS, INDEX_NONE,'diffKzS =',
-     &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
+c     CALL WRITE_0D_R8( diffKzS, INDEX_NONE,'diffKzS =',
+c    &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
       CALL WRITE_0D_R8( diffKrS, INDEX_NONE,'diffKrS =',
      &'   /* Laplacian diffusion of salt vertically ( m^2/s ) */')
       WRITE(msgBuf,'(2A)') ' Equation of State : eosType = ', eosType

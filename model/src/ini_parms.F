@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.99 2003/10/15 22:55:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.100 2003/10/29 00:19:22 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -88,10 +88,35 @@ C                     :: zCoord..., pCoord..., rCoord... are used to flag when z
 C                     :: used. coordsSet counts how many vertical coordinate systems have been
 C                        used to specify variables. coordsSet > 1 is an error.
 C
+
       LOGICAL zCoordInputData
       LOGICAL pCoordInputData
       LOGICAL rCoordInputData
       INTEGER coordsSet
+
+C     Variables which have vertical coordinate system dependency.
+C     delZ      :: Vertical grid spacing ( m  ).
+C     delP      :: Vertical grid spacing ( Pa ).
+C     viscAz    :: Eddy viscosity coeff. for mixing of
+C                 momentum vertically ( m^2/s )
+C     viscAp    :: Eddy viscosity coeff. for mixing of
+C                 momentum vertically ( Pa^2/s )
+C     diffKzT   :: Laplacian diffusion coeff. for mixing of
+C                 heat vertically ( m^2/s )
+C     diffKpT   :: Laplacian diffusion coeff. for mixing of
+C                 heat vertically ( Pa^2/s )
+C     diffKzS   :: Laplacian diffusion coeff. for mixing of
+C                 salt vertically ( m^2/s )
+C     diffKpS   :: Laplacian diffusion coeff. for mixing of
+C                 salt vertically ( Pa^2/s )
+      _RL delZ(Nr)
+      _RL delP(Nr)
+      _RL viscAz
+      _RL viscAp
+      _RL diffKzT
+      _RL diffKpT
+      _RL diffKzS
+      _RL diffKpS
 
 C     Retired main data file parameters. Kept here to trap use of old data files.
 C     zonal_filt_lat  - Moved to package "zonal_filt"
