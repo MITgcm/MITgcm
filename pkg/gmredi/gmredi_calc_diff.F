@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_diff.F,v 1.4 2001/12/16 18:54:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_diff.F,v 1.5 2002/11/14 22:43:49 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -42,12 +42,14 @@ C     I, J   - Loop counters
       DO j=jMin,jMax
        DO i=iMin,iMax
         KappaRT(i,j,k) = KappaRT(i,j,k)+maskUp(i,j)*Kwz(i,j,k,bi,bj)
+     &                    *GM_adjointRescale*GM_adjointRescale
        ENDDO
       ENDDO
 
       DO j=jMin,jMax
        DO i=iMin,iMax
         KappaRS(i,j,k) = KappaRS(i,j,k)+maskUp(i,j)*Kwz(i,j,k,bi,bj)
+     &                    *GM_adjointRescale*GM_adjointRescale
        ENDDO
       ENDDO
 

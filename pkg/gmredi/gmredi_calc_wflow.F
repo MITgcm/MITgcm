@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_calc_wflow.F,v 1.1 2002/03/06 01:42:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_calc_wflow.F,v 1.2 2002/11/14 22:43:49 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"

@@ -4,8 +4,9 @@
 CStartOfInterface
       SUBROUTINE GMREDI_SLOPE_LIMIT(
      I             dSigmaDrReal,
-     I             depthZ,
+     I             depthZ,K,
      U             SlopeX, SlopeY,
+     U             dSigmaDx, dSigmaDy,
      O             SlopeSqr, taperFct,
      I             bi,bj, myThid )
 C     /==========================================================\
@@ -40,11 +41,13 @@ C     == Routine arguments ==
 C
       _RL SlopeX(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL SlopeY(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dSigmaDx(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL dSigmaDy(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL dSigmaDrReal(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL SlopeSqr(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL taperFct(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL depthZ
-      INTEGER bi,bj,myThid
+      INTEGER bi,bj,K,myThid
 CEndOfInterface
 
 #ifdef ALLOW_GMREDI
@@ -86,41 +89,47 @@ C     == Local variables ==
       IF (GM_taper_scheme.EQ.'orig' .OR.
      &    GM_taper_scheme.EQ.'clipping') THEN
 
+#if (defined (GM_TAPER_ORIG_CLIPPING))
+
 C-      Original implementation in mitgcmuv
 C       (this turns out to be the same as Cox slope clipping)
 
 C-      Cox 1987 "Slope clipping"
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
-          IF ( SlopeX(i,j)*SlopeX(i,j) + SlopeY(i,j)*SlopeY(i,j)
+          IF ( DSigmaDX(i,j)*DSigmaDX(i,j) + 
+     &        DSigmaDY(i,j)*DSigmaDY(i,j)
      &        .EQ. 0. ) THEN
            gradSmod(i,j) = 0. _d 0
           ELSE
-           gradSmod(i,j) = sqrt(SlopeX(i,j)*SlopeX(i,j)
-     &                         +SlopeY(i,j)*SlopeY(i,j))
+           gradSmod(i,j) = sqrt(DSigmaDX(i,j)*DSigmaDX(i,j)
+     &                         +DSigmaDY(i,j)*DSigmaDY(i,j))
           ENDIF
          ENDDO
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gradSmod(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
+cnostore CADJ STORE gradSmod(:,:)     = comlev1_bibj, key=ikey, byte=isbyte
+cnostore CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
           IF (gradSmod(i,j) .NE. 0.) THEN
            dSigmaDrLtd(i,j) = -gradSmod(i,j)*GM_rMaxSlope
-           IF (dSigmaDrReal(i,j) .GE. dSigmaDrLtd(i,j))
-     &         dSigmaDrReal(i,j) = dSigmaDrLtd(i,j)
+           IF ( dSigmaDrReal(i,j) .GE. 
+     &          GM_adjointRescale*dSigmaDrLtd(i,j) )
+     &          dSigmaDrReal(i,j) = 
+     &          dSigmaDrLtd(i,j)*GM_adjointRescale
+ctest           dSigmaDrReal(i,j) = dSigmaDrLtd(i,j)
           ENDIF
          ENDDO
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
+cnostore CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+cnostore CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 
         DO j=1-Oly+1,sNy+Oly-1
@@ -129,16 +138,16 @@ CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
            SlopeX(i,j) = 0. _d 0
            SlopeY(i,j) = 0. _d 0
           ELSE
-           dRdSigmaLtd(i,j) = 1./dSigmaDrReal(i,j)
-           SlopeX(i,j)=-SlopeX(i,j)*dRdSigmaLtd(i,j)
-           SlopeY(i,j)=-SlopeY(i,j)*dRdSigmaLtd(i,j)
+           dRdSigmaLtd(i,j) = 1./( dSigmaDrReal(i,j) )
+           SlopeX(i,j)=-DSigmaDX(i,j)*dRdSigmaLtd(i,j)
+           SlopeY(i,j)=-DSigmaDY(i,j)*dRdSigmaLtd(i,j)
           ENDIF
          ENDDO
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+cnostore CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 
         DO j=1-Oly+1,sNy+Oly-1
@@ -149,7 +158,56 @@ CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
          ENDDO
         ENDDO
 
+#else
+
+        STOP 'Need to set runtime flag GM_taper_scheme correctly'
+
+#endif /* GM_TAPER_ORIG_CLIPPING */
+
+      ELSE IF (GM_taper_scheme.EQ.'ac02') THEN
+
+#if (defined (GM_TAPER_AC02))
+
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=1-Olx+1,sNx+Olx-1
+          dRdSigmaLtd(i,j)= 
+     &                      dSigmaDx(i,j)*dSigmaDx(i,j)
+     &                      + dSigmaDy(i,j)*dSigmaDy(i,j)
+     &                      + dSigmaDrReal(i,j)**2
+ctest
+          IF (dRdSigmaLtd(i,j).NE.0.) then
+             dRdSigmaLtd(i,j)=1. _d 0
+     &            / ( dRdSigmaLtd(i,j) )
+             SlopeSqr(i,j)=(dSigmaDx(i,j)*dSigmaDx(i,j)
+     &            +dSigmaDy(i,j)*dSigmaDy(i,j))*dRdSigmaLtd(i,j)
+             SlopeX(i,j)=-dSigmaDx(i,j)
+     &            *dRdSigmaLtd(i,j)*dSigmaDrReal(i,j)
+             SlopeY(i,j)=-dSigmaDy(i,j)
+     &            *dRdSigmaLtd(i,j)*dSigmaDrReal(i,j)
+cph             T11(i,j)=(dSigmaDrReal(i,j)**2)*dRdSigmaLtd(i,j)
+             taperFct(i,j) = 1. _d 0
+cph          ELSE
+cph             SlopeSqr(i,j) = 0. _d 0
+cph             SlopeX(i,j)   = 0. _d 0
+cph             SlopeY(i,j)   = 0. _d 0
+cph             T11(i,j)      = 0. _d 0
+cph             taperFct(i,j) = 0. _d 0
+          ENDIF
+cph          IF ( SlopeSqr(i,j) .GT. GM_maxSlope**2 ) THEN
+cph           taperFct(i,j) = GM_maxSlope**2/SlopeSqr(i,j)
+cph          ENDIF
+         ENDDO
+        ENDDO
+
+#else
+       
+        STOP 'Need to set runtime flag GM_taper_scheme correctly'
+
+#endif /* GM_TAPER_AC02 */
+
       ELSE
+
+#if (defined (GM_TAPER_REST))
 
 C----------------------------------------------------------------------
 
@@ -157,7 +215,7 @@ C- Compute the slope, no clipping, but avoid reverse slope in negatively
 C                                  stratified (Sigma_Z > 0) region :
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
+cnostore CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 
         DO j=1-Oly+1,sNy+Oly-1
@@ -170,29 +228,29 @@ CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
+cnostore CADJ STORE dSigmaDx(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+cnostore CADJ STORE dSigmaDy(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+cnostore CADJ STORE dSigmaDrReal(:,:) = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
           IF ( dSigmaDrReal(i,j) .EQ. 0. ) THEN
-           IF ( SlopeX(i,j) .NE. 0. )
-     &      SlopeX(i,j) = SIGN(Small_taper,SlopeX(i,j))
-           IF ( SlopeY(i,j) .NE. 0. )
-     &      SlopeY(i,j) = SIGN(Small_taper,SlopeY(i,j))
+           IF ( dSigmaDx(i,j) .NE. 0. )
+     &      SlopeX(i,j) = SIGN(Small_taper,dSigmaDx(i,j))
+           IF ( dSigmaDy(i,j) .NE. 0. )
+     &      SlopeY(i,j) = SIGN(Small_taper,dSigmaDy(i,j))
           ELSE
            dRdSigmaLtd(i,j) = 1./dSigmaDrReal(i,j)
-           SlopeX(i,j) = -SlopeX(i,j)*dRdSigmaLtd(i,j)
-           SlopeY(i,j) = -SlopeY(i,j)*dRdSigmaLtd(i,j)
+           SlopeX(i,j) = -dSigmaDx(i,j)*dRdSigmaLtd(i,j)
+           SlopeY(i,j) = -dSigmaDy(i,j)*dRdSigmaLtd(i,j)
           ENDIF
          ENDDO
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+cnostore CADJ STORE slopeX(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
+cnostore CADJ STORE slopeY(:,:)       = comlev1_bibj, key=ikey, byte=isbyte
 #endif
 
         DO j=1-Oly+1,sNy+Oly-1
@@ -279,6 +337,8 @@ C-      Large, Danabasoglu and Doney, JPO 1997
        ELSEIF (GM_taper_scheme.NE.' ') THEN
         STOP 'GMREDI_SLOPE_LIMIT: Bad GM_taper_scheme'
        ENDIF
+
+#endif
 
       ENDIF
 

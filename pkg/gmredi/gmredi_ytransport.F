@@ -1,5 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.8 2002/11/12 20:42:24 heimbach Exp $
-C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
 
@@ -37,8 +35,8 @@ C     df               - Diffusive flux component work array.
       INTEGER iMin,iMax,jMin,jMax,bi,bj,k
       _RS yA(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      integer tracerIdentity
       _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER tracerIdentity
       INTEGER myThid
 
 #ifdef ALLOW_GMREDI
@@ -92,7 +90,7 @@ C--   Area integrated meridional flux
 #else
      &    *(GM_isopycK
 #ifdef GM_VISBECK_VARIABLE_K
-     &     +0.5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
+cph     &     +0.5*(VisbeckK(i,j,bi,bj)+VisbeckK(i,j-1,bi,bj))
 #endif
      &     )
 #endif /* GM_NON_UNITY_DIAGONAL */

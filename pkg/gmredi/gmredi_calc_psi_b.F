@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.1 2001/12/16 18:54:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.2 2002/11/14 22:43:49 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -24,6 +24,11 @@ C     == Global variables ==
 #include "GMREDI.h"
 #include "GMREDI_DIAGS.h"
 
+#ifdef ALLOW_AUTODIFF_TAMC
+#include "tamc.h"
+#include "tamc_keys.h"
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C     == Routine arguments ==
 C
       _RL sigmaX(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -47,11 +52,35 @@ C     == Local variables ==
 
 C-    Initialization : <= done in S/R gmredi_init
 
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
       IF (GM_AdvForm) THEN
        DO k=2,Nr
-C-----
+       km1 = k-1
 
-      km1 = k-1
+#ifdef ALLOW_AUTODIFF_TAMC
+       kkey = (ikey-1)*Nr + k
+       DO j=1-Oly,sNy+Oly
+        DO i=1-Olx,sNx+Olx
+         SlopeX(i,j)       = 0. _d 0
+         SlopeY(i,j)       = 0. _d 0
+         dSigmaDrW(i,j)    = 0. _d 0
+         dSigmaDrS(i,j)    = 0. _d 0
+        ENDDO
+       ENDDO
+#endif
+
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1
 
@@ -71,10 +100,17 @@ C      Gradient of Sigma below U and V points
 C     Calculate slopes , taper and/or clip
       CALL GMREDI_SLOPE_PSI_B(
      I             dSigmaDrW, dSigmaDrS,
-     I             rF(K),
+     I             rF(K),K,
      U             SlopeX, SlopeY,
      O             taperX, taperY,
      I             bi, bj, myThid )
+
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE taperX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE taperY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 
       DO j=1-Oly+1,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx-1

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.8 2002/11/12 20:42:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.9 2002/11/14 22:43:49 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -31,8 +31,8 @@ C     Tracer           - 3D Tracer field
 C     df               - Diffusive flux component work array.
       INTEGER iMin,iMax,jMin,jMax,bi,bj,k
       _RL Tracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER tracerIdentity
+      _RL df    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
 #ifdef ALLOW_GMREDI
@@ -50,14 +50,14 @@ C     Surface flux is zero
        DO i=iMin,iMax
 
 C-      Horizontal gradients interpolated to W points
-        dTdx = 0.5*(
-     &   +0.5*(_maskW(i+1,j,k,bi,bj)
+        dTdx = 0.5d0*(
+     &   +0.5d0*(_maskW(i+1,j,k,bi,bj)
      &         *_recip_dxC(i+1,j,bi,bj)*
      &           (Tracer(i+1,j,k,bi,bj)-Tracer(i,j,k,bi,bj))
      &        +_maskW(i,j,k,bi,bj)
      &         *_recip_dxC(i,j,bi,bj)*
      &           (Tracer(i,j,k,bi,bj)-Tracer(i-1,j,k,bi,bj)))
-     &   +0.5*(_maskW(i+1,j,k-1,bi,bj)
+     &   +0.5d0*(_maskW(i+1,j,k-1,bi,bj)
      &         *_recip_dxC(i+1,j,bi,bj)*
      &           (Tracer(i+1,j,k-1,bi,bj)-Tracer(i,j,k-1,bi,bj))
      &        +_maskW(i,j,k-1,bi,bj)
@@ -65,14 +65,14 @@ C-      Horizontal gradients interpolated to W points
      &           (Tracer(i,j,k-1,bi,bj)-Tracer(i-1,j,k-1,bi,bj)))
      &       )
 
-        dTdy = 0.5*(
-     &   +0.5*(_maskS(i,j,k,bi,bj)
+        dTdy = 0.5d0*(
+     &   +0.5d0*(_maskS(i,j,k,bi,bj)
      &         *_recip_dyC(i,j,bi,bj)*
      &           (Tracer(i,j,k,bi,bj)-Tracer(i,j-1,k,bi,bj))
      &        +_maskS(i,j+1,k,bi,bj)
      &         *_recip_dyC(i,j+1,bi,bj)*
      &           (Tracer(i,j+1,k,bi,bj)-Tracer(i,j,k,bi,bj)))
-     &   +0.5*(_maskS(i,j,k-1,bi,bj)
+     &   +0.5d0*(_maskS(i,j,k-1,bi,bj)
      &         *_recip_dyC(i,j,bi,bj)*
      &           (Tracer(i,j,k-1,bi,bj)-Tracer(i,j-1,k-1,bi,bj))
      &        +_maskS(i,j+1,k-1,bi,bj)
@@ -84,6 +84,7 @@ C-      Off-diagonal components of vertical flux
         df(i,j) = df(i,j)
      &      - _rA(i,j,bi,bj)
      &        *( Kwx(i,j,k,bi,bj)*dTdx +Kwy(i,j,k,bi,bj)*dTdy )
+     &        *GM_adjointRescale
 
        ENDDO
       ENDDO
@@ -98,7 +99,7 @@ C-      Off-diagonal components of vertical flux
      &     +dxG(i,j+1,bi,bj)*GM_PsiY(i,j+1,k,bi,bj)
      &     -dxG(i, j ,bi,bj)*GM_PsiY(i, j ,k,bi,bj)
          df(i,j) = df(i,j)
-     &    +rTrans*0.5
+     &    +rTrans*0.5d0
      &           *(Tracer(i,j,k,bi,bj)+Tracer(i,j,k-1,bi,bj))
         ENDDO
        ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.4 2001/12/16 18:54:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI_OPTIONS.h,v 1.5 2002/11/14 22:43:49 heimbach Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -11,6 +11,14 @@ C GM/Redi is enabled with ALLOW_GMREDI in CPP_OPTIONS.h
 
 #ifdef ALLOW_GMREDI
 
+C Specify as tapering scheme either 'orig' or 'clipping',
+C otherwise one of the following is used:
+C 'linear', 'gkw91', 'dm95', 'ldd97'
+#define GM_TAPER_ORIG_CLIPPING
+#undef GM_TAPER_AC02
+ 
+C This allows to use Visbeck et al formulation to compute K_GM+Redi
+#undef GM_VISBECK_VARIABLE_K
 
 C This allows the leading diagonal (top two rows) to be non-unity
 C (a feature required when tapering adiabatically).
@@ -23,9 +31,6 @@ C be used with the advective form (Bolus velocity) of GM
 C Allows to use the advective form (Bolus velocity) of GM
 C  instead of the Skew-Flux form (=default)
 #undef  GM_BOLUS_ADVEC
-
-C This allows to use Visbeck et al formulation to compute K_GM+Redi
-#undef  GM_VISBECK_VARIABLE_K
 
 
 #endif /* ALLOW_GMREDI */

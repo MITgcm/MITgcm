@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.6 2002/03/06 01:56:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.7 2002/11/14 22:43:49 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"

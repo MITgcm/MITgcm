@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/GMREDI_DIAGS.h,v 1.4 2001/12/16 18:54:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/GMREDI_DIAGS.h,v 1.5 2002/11/14 22:43:49 heimbach Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
