@@ -1,3 +1,5 @@
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_sponge.F,v 1.5 2004/10/14 17:08:06 adcroft Exp $
+C $Name:  $
 
 #include "OBCS_OPTIONS.h"
 #include "PACKAGES_CONFIG.h"
