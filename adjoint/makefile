@@ -84,6 +84,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/calc_common_factors.f		\
 		$(SOURCE_CODE)/calc_diffusivity.f		\
 		$(SOURCE_CODE)/calc_div_ghat.f			\
+		$(SOURCE_CODE)/calc_grad_phi_hyd.f		\
 		$(SOURCE_CODE)/calc_grad_phi_surf.f		\
 		$(SOURCE_CODE)/calc_gs.f			\
 		$(SOURCE_CODE)/calc_gt.f			\
@@ -99,6 +100,8 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/convectively_mixtracer.f		\
 		$(SOURCE_CODE)/correction_step.f		\
 		$(SOURCE_CODE)/cycle_tracer.f			\
+		$(SOURCE_CODE)/diags_phi_hyd.f			\
+		$(SOURCE_CODE)/diags_phi_rlow.f			\
 		$(SOURCE_CODE)/different_multiple.f		\
 		$(SOURCE_CODE)/do_fields_blocking_exchanges.f	\
 		$(SOURCE_CODE)/do_stagger_fields_exchanges.f	\
@@ -176,6 +179,7 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/mom_vecinv.f			\
 		$(SOURCE_CODE)/mom_calc_hfacz.f			\
 		$(SOURCE_CODE)/mom_calc_ke.f			\
+		$(SOURCE_CODE)/mom_calc_rtrans.f		\
 		$(SOURCE_CODE)/mom_calc_strain.f		\
 		$(SOURCE_CODE)/mom_calc_tension.f		\
 		$(SOURCE_CODE)/mom_cdscheme.f			\
@@ -220,10 +224,10 @@ SRC_MODEL	= \
 		  						\
 		$(SOURCE_CODE)/packages_init_variables.f	\
 		$(SOURCE_CODE)/plot_field.f			\
+		$(SOURCE_CODE)/pressure_for_eos.f		\
 		$(SOURCE_CODE)/quasihydrostaticterms.f		\
 		$(SOURCE_CODE)/solve_for_pressure.f		\
 		$(SOURCE_CODE)/state_summary.f			\
-		$(SOURCE_CODE)/store_pressure.f			\
 		$(SOURCE_CODE)/timestep.f			\
 		$(SOURCE_CODE)/the_correction_step.f		\
 		$(SOURCE_CODE)/the_main_loop.f			\

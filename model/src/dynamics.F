@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.94 2003/02/18 15:25:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.95 2003/02/28 02:20:52 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -329,8 +329,8 @@ C--       kDown  Cycles through 2,1 to point to current layer
 
 #ifdef ALLOW_AUTODIFF_TAMC 
          kkey = (idynkey-1)*Nr + k
-CADJ STORE pressure(:,:,k,bi,bj) = comlev1_bibj_k , 
-CADJ &     key=kkey , byte=isbyte
+CADJ STORE totphihyd (:,:,k,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--      Integrate hydrostatic balance for phiHyd with BC of 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.37 2003/02/07 21:59:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.38 2003/02/28 02:20:52 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -281,6 +281,8 @@ cph although some of these are re-initialised later.
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE totphihyd
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 #ifdef ALLOW_KPP
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
@@ -324,8 +326,6 @@ c         IF ( k.GT.1 .AND. (useGMRedi.OR.ivdc_kappa.NE.0.) ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE pressure(:,:,k,bi,bj) = 
-CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL FIND_RHO(
      I        bi, bj, iMin, iMax, jMin, jMax, k, k,
@@ -337,8 +337,6 @@ CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE pressure(:,:,k-1,bi,bj) = 
-CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
              CALL FIND_RHO(
      I        bi, bj, iMin, iMax, jMin, jMax, k-1, k,
@@ -375,8 +373,6 @@ C--     end of diagnostic k loop (Nr:1)
 #ifdef ALLOW_AUTODIFF_TAMC
 cph avoids recomputation of integrate_for_w
 CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE pressure (:,:,:,bi,bj) = 
-CADJ &     comlev1_bibj, key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  ALLOW_OBCS

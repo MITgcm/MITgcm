@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.50 2003/02/18 05:33:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.51 2003/02/28 02:20:52 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -302,7 +302,7 @@ C     three-dimensional for non-hydrostatic and/or IGW scheme.
 #ifdef ALLOW_AUTODIFF_TAMC
 cph This is needed because convective_adjustment calls
 cph find_rho which may use pressure()
-CADJ STORE pressure  = comlev1, key = ikey_dynamics
+CADJ STORE totphihyd  = comlev1, key = ikey_dynamics
 #endif
 C--   Correct divergence in flow field and cycle time-stepping
 C     arrays (for all fields) ; update time-counter

@@ -15,7 +15,7 @@ CADJ STORE wvel      = tapelev3, key = ilev_3
 CADJ STORE etan      = tapelev3, key = ilev_3
 CADJ STORE gu        = tapelev3, key = ilev_3
 CADJ STORE gv        = tapelev3, key = ilev_3
-CADJ STORE pressure  = tapelev3, key = ilev_3
+CADJ STORE totphihyd = tapelev3, key = ilev_3
 
 #ifdef INCLUDE_CD_CODE
 CADJ STORE uveld     = tapelev3, key = ilev_3
