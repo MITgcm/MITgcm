@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_init_vals.F,v 1.21 2004/07/07 03:10:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics_init_vals.F,v 1.22 2004/07/19 19:10:14 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -374,6 +374,7 @@ c ----------------
       cdiag(295) = 'RELHUM  '
       cdiag(296) = 'PRECLS  '
       cdiag(297) = 'ENPREC  '
+      cdiag(298) = 'VISCA4  '
 
 c Diagnostic Descriptions
 c ----------------------------------------------------------------------
@@ -747,6 +748,7 @@ c ----------------------------------------------------------------------
       tdiag(295)  = 'Relative Humidity (fraction)'
       tdiag(296)  = 'Large Scale Precipitation (g/m2/sec)'
       tdiag(297)  = 'Energy of Precipitation (snow, rain Temp) in (J/g)'
+      tdiag(298)  = 'Biharmonic Viscosity Coefficient in (m4/s)        '
 
 c Diagnostic Units
 c ----------------
@@ -1047,6 +1049,7 @@ c ----------------
       udiag(295) = 'Fraction        '
       udiag(296) = 'g/m2/sec        '
       udiag(297) = 'J/g             '
+      udiag(298) = 'm4/sec          '
 
 c Diagnostic Parms
 c ----------------  123456789
@@ -1347,6 +1350,7 @@ c ----------------  123456789
       gdiag(295) = 'SM      MR      '
       gdiag(296) = 'SM      M1      '
       gdiag(297) = 'SM      M1      '
+      gdiag(298) = 'SM      MR      '
 
 c     Diagnostic Levels
 c     -----------------

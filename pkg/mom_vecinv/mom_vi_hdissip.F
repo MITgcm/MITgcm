@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.6 2004/05/26 14:50:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.7 2004/07/19 19:10:14 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -192,6 +192,12 @@ C and should be less than 1/8, for example viscAh=0.01
 
        ENDDO
       ENDDO
+
+#ifdef ALLOW_DIAGNOSTICS
+      if (useDiagnostics) then
+       call fill_diagnostics(myThid,'VISCA4  ',k,1,3,bi,bj,viscA4_D)
+      endif
+#endif
 
       RETURN
       END

@@ -1,0 +1,7 @@
+# Diagnostic Package Choices
+ &diagnostics_list
+  frequency(1) = 10,
+   levels(1,1) = 1.,2.,3.,4.,5.,
+   fields(1,1) = 'VISCA4  ',
+   filename(1) = 'visc',
+ &end
