@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.7 2001/02/04 14:38:50 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.8 2004/07/18 01:18:56 jmc Exp $
 C $Name:  $
 
 C     /==========================================================\
@@ -36,6 +36,7 @@ C     nzmax (nx,ny)   - Maximum number of wet levels in each column
 C     pMask           - Mask relating to Pressure/Tracer point grid.
 C                       0. if P point is on land.
 C                       1. if P point is in water.
+C                 Note: use now maskC since pMask is identical to maskC
 C     zgrid (0:Nr+1)  - vertical levels of tracers (<=0)                (m)
 C     hwide (0:Nr+1)  - layer thicknesses          (>=0)                (m)
 C     kpp_freq        - Re-computation frequency for KPP parameters     (s)
@@ -44,7 +45,7 @@ C     kpp_taveFreq    - KPP time-averaging frequency.                   (s)
 
 
       INTEGER nzmax ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy,     nSx, nSy )
-      _KPP_RL pMask ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr, nSx, nSy )
+c     _KPP_RL pMask ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, Nr, nSx, nSy )
       _KPP_RL zgrid ( 0:Nr+1 )
       _KPP_RL hwide ( 0:Nr+1 )
       _RL kpp_freq
@@ -53,7 +54,7 @@ C     kpp_taveFreq    - KPP time-averaging frequency.                   (s)
 
       COMMON /kpp_i/  nzmax
 
-      COMMON /kpp_r1/ pMask, zgrid, hwide
+      COMMON /kpp_r1/ zgrid, hwide
 
       COMMON /kpp_r2/ kpp_freq, kpp_dumpFreq, kpp_taveFreq
 

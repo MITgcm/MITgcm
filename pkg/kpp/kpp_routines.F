@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.19 2004/05/11 20:57:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_routines.F,v 1.20 2004/07/18 01:18:55 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -902,6 +902,7 @@ c     Apply horizontal smoothing to KPP array
 
       IMPLICIT NONE
 #include "SIZE.h"
+#include "GRID.h"
 #include "KPP_PARAMS.h"
 
 c     input
@@ -933,26 +934,26 @@ c     local
             im1 = i-1
             ip1 = i+1
             tempVar =
-     &           p25   *   pMask(i  ,j  ,k,bi,bj)   +
-     &           p125  * ( pMask(im1,j  ,k,bi,bj)   +
-     &                     pMask(ip1,j  ,k,bi,bj)   +
-     &                     pMask(i  ,jm1,k,bi,bj)   +
-     &                     pMask(i  ,jp1,k,bi,bj) ) +
-     &           p0625 * ( pMask(im1,jm1,k,bi,bj)   +
-     &                     pMask(im1,jp1,k,bi,bj)   +
-     &                     pMask(ip1,jm1,k,bi,bj)   +
-     &                     pMask(ip1,jp1,k,bi,bj) )
+     &           p25   *   maskC(i  ,j  ,k,bi,bj)   +
+     &           p125  * ( maskC(im1,j  ,k,bi,bj)   +
+     &                     maskC(ip1,j  ,k,bi,bj)   +
+     &                     maskC(i  ,jm1,k,bi,bj)   +
+     &                     maskC(i  ,jp1,k,bi,bj) ) +
+     &           p0625 * ( maskC(im1,jm1,k,bi,bj)   +
+     &                     maskC(im1,jp1,k,bi,bj)   +
+     &                     maskC(ip1,jm1,k,bi,bj)   +
+     &                     maskC(ip1,jp1,k,bi,bj) )
             IF ( tempVar .GE. p25 ) THEN
                fld_tmp(i,j) = (
-     &              p25  * fld(i  ,j  )*pMask(i  ,j  ,k,bi,bj) +
-     &              p125 *(fld(im1,j  )*pMask(im1,j  ,k,bi,bj) +
-     &                     fld(ip1,j  )*pMask(ip1,j  ,k,bi,bj) +
-     &                     fld(i  ,jm1)*pMask(i  ,jm1,k,bi,bj) +
-     &                     fld(i  ,jp1)*pMask(i  ,jp1,k,bi,bj))+
-     &              p0625*(fld(im1,jm1)*pMask(im1,jm1,k,bi,bj) +
-     &                     fld(im1,jp1)*pMask(im1,jp1,k,bi,bj) +
-     &                     fld(ip1,jm1)*pMask(ip1,jm1,k,bi,bj) +
-     &                     fld(ip1,jp1)*pMask(ip1,jp1,k,bi,bj)))
+     &              p25  * fld(i  ,j  )*maskC(i  ,j  ,k,bi,bj) +
+     &              p125 *(fld(im1,j  )*maskC(im1,j  ,k,bi,bj) +
+     &                     fld(ip1,j  )*maskC(ip1,j  ,k,bi,bj) +
+     &                     fld(i  ,jm1)*maskC(i  ,jm1,k,bi,bj) +
+     &                     fld(i  ,jp1)*maskC(i  ,jp1,k,bi,bj))+
+     &              p0625*(fld(im1,jm1)*maskC(im1,jm1,k,bi,bj) +
+     &                     fld(im1,jp1)*maskC(im1,jp1,k,bi,bj) +
+     &                     fld(ip1,jm1)*maskC(ip1,jm1,k,bi,bj) +
+     &                     fld(ip1,jp1)*maskC(ip1,jp1,k,bi,bj)))
      &              / tempVar
             ELSE
                fld_tmp(i,j) = fld(i,j)
@@ -982,6 +983,7 @@ c     Apply horizontal smoothing to global _RL 2-D array
 
       IMPLICIT NONE
 #include "SIZE.h"
+#include "GRID.h"
 #include "KPP_PARAMS.h"
 
 c     input
@@ -1013,26 +1015,26 @@ c     local
             im1 = i-1
             ip1 = i+1
             tempVar =
-     &           p25   *   pMask(i  ,j  ,k,bi,bj)   +
-     &           p125  * ( pMask(im1,j  ,k,bi,bj)   +
-     &                     pMask(ip1,j  ,k,bi,bj)   +
-     &                     pMask(i  ,jm1,k,bi,bj)   +
-     &                     pMask(i  ,jp1,k,bi,bj) ) +
-     &           p0625 * ( pMask(im1,jm1,k,bi,bj)   +
-     &                     pMask(im1,jp1,k,bi,bj)   +
-     &                     pMask(ip1,jm1,k,bi,bj)   +
-     &                     pMask(ip1,jp1,k,bi,bj) )
+     &           p25   *   maskC(i  ,j  ,k,bi,bj)   +
+     &           p125  * ( maskC(im1,j  ,k,bi,bj)   +
+     &                     maskC(ip1,j  ,k,bi,bj)   +
+     &                     maskC(i  ,jm1,k,bi,bj)   +
+     &                     maskC(i  ,jp1,k,bi,bj) ) +
+     &           p0625 * ( maskC(im1,jm1,k,bi,bj)   +
+     &                     maskC(im1,jp1,k,bi,bj)   +
+     &                     maskC(ip1,jm1,k,bi,bj)   +
+     &                     maskC(ip1,jp1,k,bi,bj) )
             IF ( tempVar .GE. p25 ) THEN
                fld_tmp(i,j) = (
-     &              p25  * fld(i  ,j  )*pMask(i  ,j  ,k,bi,bj) +
-     &              p125 *(fld(im1,j  )*pMask(im1,j  ,k,bi,bj) +
-     &                     fld(ip1,j  )*pMask(ip1,j  ,k,bi,bj) +
-     &                     fld(i  ,jm1)*pMask(i  ,jm1,k,bi,bj) +
-     &                     fld(i  ,jp1)*pMask(i  ,jp1,k,bi,bj))+
-     &              p0625*(fld(im1,jm1)*pMask(im1,jm1,k,bi,bj) +
-     &                     fld(im1,jp1)*pMask(im1,jp1,k,bi,bj) +
-     &                     fld(ip1,jm1)*pMask(ip1,jm1,k,bi,bj) +
-     &                     fld(ip1,jp1)*pMask(ip1,jp1,k,bi,bj)))
+     &              p25  * fld(i  ,j  )*maskC(i  ,j  ,k,bi,bj) +
+     &              p125 *(fld(im1,j  )*maskC(im1,j  ,k,bi,bj) +
+     &                     fld(ip1,j  )*maskC(ip1,j  ,k,bi,bj) +
+     &                     fld(i  ,jm1)*maskC(i  ,jm1,k,bi,bj) +
+     &                     fld(i  ,jp1)*maskC(i  ,jp1,k,bi,bj))+
+     &              p0625*(fld(im1,jm1)*maskC(im1,jm1,k,bi,bj) +
+     &                     fld(im1,jp1)*maskC(im1,jp1,k,bi,bj) +
+     &                     fld(ip1,jm1)*maskC(ip1,jm1,k,bi,bj) +
+     &                     fld(ip1,jp1)*maskC(ip1,jp1,k,bi,bj)))
      &              / tempVar
             ELSE
                fld_tmp(i,j) = fld(i,j)
