@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.3 1998/04/29 21:31:09 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.4 1998/04/30 14:03:28 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -79,6 +79,8 @@ C                          into fVerTerm
       _RL pH    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL rhokm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhokp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL pSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL pSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin, iMax
       INTEGER jMin, jMax
       INTEGER bi, bj
@@ -140,11 +142,20 @@ C--   Boundary condition on hydrostatic pressure is pH(z=0)=0
         jMin = 1-OLy+1
         jMax = sNy+OLy
 
-C--     Update fields according to tendency terms
+C--     Calculate gradient of surface pressure
+        CALL GRAD_PSURF(
+     I       bi,bj,iMin,iMax,jMin,jMax,
+     O       pSurfX,pSurfY,
+     I       myThid)
+
+C--     Update fields in top level according to tendency terms
         CALL TIMESTEP(
-     I       bi,bj,iMin,iMax,jMin,jMax,myThid)
+     I       bi,bj,iMin,iMax,jMin,jMax,1,pSurfX,pSurfY,myThid)
 
         DO K=2,Nz
+C--     Update fields in Kth level according to tendency terms
+        CALL TIMESTEP(
+     I       bi,bj,iMin,iMax,jMin,jMax,K,pSurfX,pSurfY,myThid)
 C Density of K-1 level (above W(K)) reference to K level
          CALL FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax,  K-1, K, 'LINEAR',
