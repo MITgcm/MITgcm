@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.75 2004/04/07 20:28:09 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.76 2004/04/08 21:32:11 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -76,42 +76,84 @@ expand_pkg_groups() {
 #  Check for broken environments (eg. cygwin, MacOSX w/HFS+) that
 #  cannot distinguish [*.F/*.F90] from [*.f/*.f90] files.
 check_for_broken_Ff()  {
+    #  Do we have defaults for $FS and/or $FS90 ?
+    tfs=f
+    tfs9=f90
+    if test "x$FS" != x ; then
+	tfs="$FS"
+    fi
+    if test "x$FS90" != x ; then
+	tfs9="$FS90"
+    fi
+
     #  First check the ability to create a *.F/.f pair.
-    cat <<EOF >> ./hello.F
+    cat <<EOF >> genmake_hello.F
       program hello
       write(*,*) 'hi'
       stop
       end
 EOF
-    cp ./hello.F ./hello.f
+    cp genmake_hello.F "genmake_hello."$tfs > /dev/null 2>&1
     RETVAL=$?
     if test "x$RETVAL" != x0 ; then
-	FEXT='fp'
-	F90EXT='fp90'
+	if test "x$FS" = x ; then
+	    FS='fs'
+	    FS90='fs90'
+	    check_for_broken_Ff
+	else
+	    cat <<EOF 2>&1
+ERROR: Your file system cannot distinguish between *.F and *.f files 
+  (fails the "cp" test) and this program cannot find a suitable 
+  replacement extension.  Please try a different build environment or 
+  contact the <MITgcm-support@mitgcm.org> list for help.
+
+EOF
+	    exit -1
+	fi
 	return
     fi
-    rm -f ./hello.f
+    rm -f genmake_hello.*
 
-    #  Then check the ability of ${MAKE} to use the two.
+    #  Check the ability of ${MAKE} and ${LN} to use the current set
+    #  of extensions.
+    cat <<EOF >> genmake_hello.F
+      program hello
+      write(*,*) 'hi'
+      stop
+      end
+EOF
     test -e Makefile  &&  mv -f Makefile Makefile.bak
     cat <<EOF >> Makefile
 .SUFFIXES:
-hello.f: hello.F
-	cp -f hello.F hello.f
+genmake_hello.$tfs: genmake_hello.F
+	$LN genmake_hello.F genmake_hello.$tfs
 EOF
-    ( $MAKE hello.f ) > /dev/null 2>&1
+    $MAKE "genmake_hello."$tfs > /dev/null 2>&1
     RETVAL=$?
-    if test "x$RETVAL" != x0 -o ! -f ./hello.f ; then
-	FEXT='fp'
-	F90EXT='fp90'
-	return
+    if test "x$RETVAL" != x0 -o ! -e "genmake_hello."$tfs ; then
+	if test "x$FS" = x ; then
+	    FS='fs'
+	    FS90='fs9'
+	    check_for_broken_Ff
+	else
+	    cat <<EOF 2>&1
+ERROR: Your file system cannot distinguish between *.F and *.f files 
+  (fails the "make/ln" test) and this program cannot find a suitable 
+  replacement extension.  Please try a different build environment or 
+  contact the <MITgcm-support@mitgcm.org> list for help.
+
+EOF
+	    exit -1
+	    return
+	fi
     fi
-    rm -f ./hello.f ./hello.F Makefile
+    rm -f genmake_hello.* Makefile
     test -e Makefile  &&  mv -f Makefile.bak Makefile
 
-    #  Both tests passed, so use the default.
-    FEXT='F'
-    F90EXT='F90'
+    #  If we make it here, use the extensions
+    FS=$tfs
+    FS90=$tfs9
+    return
 }
 
 
@@ -646,8 +688,8 @@ IEEE=
 if test "x$MITGCM_IEEE" != x ; then
     IEEE=$MITGCM_IEEE
 fi
-FEXT=
-F90EXT=
+FS=
+FS90=
 
 AUTODIFF_PKG_USED=f
 AD_OPTFILE=
@@ -825,6 +867,16 @@ for ac_option ; do
 	-fc=* | --fc=*)
 	    FC=$ac_optarg ;;
 	
+	-fs | --fs)
+	    ac_prev=FS ;;
+	-fs=* | --fs=*)
+	    FS=$ac_optarg ;;
+	
+	-fs90 | --fs90)
+	    ac_prev=FS90 ;;
+	-fs90=* | --fs90=*)
+	    FS90=$ac_optarg ;;
+	
 	-ieee | --ieee)
 	    IEEE=true ;;
 	-noieee | --noieee)
@@ -935,9 +987,7 @@ if test "x$OPTFILE" != xNONE ; then
 fi
 
 #  Check for broken systems that cannot correctly distinguish *.F and *.f files
-if test "x$FEXT" = x -a "x$F90EXT" = x ; then
-    check_for_broken_Ff
-fi
+check_for_broken_Ff
 
 echo "  getting AD_OPTFILE information:  "
 if test "x${AD_OPTFILE}" = x ; then
@@ -992,8 +1042,8 @@ if test "x$CPP" = x ; then
     CPP=cpp
 fi
 #EH3 === UGLY ===
-#  The following an ugly little hack to check for $CPP in /lib/ and it
-#  should eventually be replaced with a more general function that
+#  The following is an ugly little hack to check for $CPP in /lib/ and
+#  it should eventually be replaced with a more general function that
 #  searches a combo of the user's path and a list of "usual suspects"
 #  to find the correct location for binaries such as $CPP.
 for i in " " "/lib/" ; do
@@ -1698,13 +1748,12 @@ cat f90srclist.inc    >> $MAKEFILE
 cat hlist.inc         >> $MAKEFILE
 cat ad_flow_files.inc >> $MAKEFILE
 echo >> $MAKEFILE
-echo 'F77FILES =  $(SRCFILES:.'$FEXT'=.f)'        >> $MAKEFILE
-echo 'F90FILES =  $(F90SRCFILES:.'$F90EXT'=.f90)' >> $MAKEFILE
-echo 'OBJFILES =  $(SRCFILES:.'$FEXT'=.o) $(CSRCFILES:.c=.o) $(F90SRCFILES:.'$F90EXT'=.o)' >> $MAKEFILE
+echo 'F77FILES =  $(SRCFILES:.F=.'$FS')'      >> $MAKEFILE
+echo 'F90FILES =  $(F90SRCFILES:.F=.'$FS90')' >> $MAKEFILE
+echo 'OBJFILES =  $(SRCFILES:.F=.o) $(CSRCFILES:.c=.o) $(F90SRCFILES:.F90=.o)' >> $MAKEFILE
 echo >> $MAKEFILE
 echo '.SUFFIXES:' >> $MAKEFILE
-echo '.SUFFIXES: .o .f .p .'$FEXT' .c .'$F90EXT' .f90' >> $MAKEFILE
-
+echo '.SUFFIXES: .o .F .p .'$FS' .c .F90 .'$FS90 >> $MAKEFILE
 rm -f srclist.inc csrclist.inc hlist.inc flist.tmp clist.tmp f90srclist.inc
 rm -f ad_flow_files.inc
 
@@ -1716,7 +1765,7 @@ all: \$(EXECUTABLE)
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(LIBS)
 depend:
 	@make links
-	\$(MAKEDEPEND) -o .f \$(DEFINES) \$(INCLUDES) \$(SRCFILES)
+	\$(MAKEDEPEND) -o .$FS \$(DEFINES) \$(INCLUDES) \$(SRCFILES)
 	\$(TOOLSDIR)/f90mkdepend >> \$(MAKEFILE)
 	-rm -f makedepend.out
 
@@ -1729,7 +1778,7 @@ output.txt: \$(EXECUTABLE)
 	@\$(EXECUTABLE) > \$@
 
 clean:
-	-rm -rf *.o *.f *.p *.f90 *.mod ${RMFILES} work.{pc,pcl} *.template
+	-rm -rf *.o *.$FS *.p *.$FS90 *.mod ${RMFILES} work.{pc,pcl} *.template
 Clean:
 	@make clean
 	@make cleanlinks
@@ -1759,22 +1808,25 @@ FC_NAMEMANGLE.h:
 	@echo Creating \$@ ...
 	echo "$FC_NAMEMANGLE" > \$@
 
-# The normal chain of rules is (  .$FEXT - .f - .o  )
-.$FEXT.f:
+# The normal chain of rules is (  .F - .$FS - .o  )
+
+%.o : %.F
+
+.F.$FS:
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
-.f.o:
+.$FS.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
-.$F90EXT.f90:
+.F90.$FS90:
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
-.f90.o:
+.$FS90.o:
 	\$(F90C) \$(F90FLAGS) \$(F90OPTIM) -c \$<
 .c.o:
 	\$(CC) \$(CFLAGS) -c \$<
 
-# Special exceptions that use the ( .$FEXT - .p - .f - .o ) rule-chain
-.$FEXT.p:
+# Special exceptions that use the ( .F - .p - .$FS - .o ) rule-chain
+.F.p:
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
-.p.f:
+.p.$FS:
 	\$(KPP) \$(KFLAGS1)\$@ \$(KFLAGS2) \$<
 
 #=========================================
@@ -1899,7 +1951,7 @@ for i in $KPPFILES ; do
     if test "x$RETVAL" != x0 ; then
 	echo "Error: unable to add file \"$i\" to the exceptions list"
     fi
-    echo "$base.f: $base.p" >> $MAKEFILE
+    echo "$base.$FS: $base.p" >> $MAKEFILE
 done
 
 echo "  Making list of NOOPTFILES"
@@ -1909,7 +1961,7 @@ for i in $NOOPTFILES ; do
     if test "x$RETVAL" != x0 ; then
 	echo "Error: unable to add file \"$i\" to the exceptions list"
     fi
-    echo "$base.o: $base.f" >> $MAKEFILE
+    echo "$base.o: $base.$FS" >> $MAKEFILE
     printf "\t\$(FC) \$(FFLAGS) \$(NOOPTFLAGS) -c \$<\n" >> $MAKEFILE
 done
 
