@@ -149,7 +149,7 @@ cgg    surface level. This velocity is not independent; it must
 cgg    exactly balance the volume flux, since we are dealing with
 cgg    the baroclinic velocity structure.. 
                       vtop = tmpfldxz(i,k,bi,bj)*
-     &                maskS(i,j+jp1,k,bi,bj) * delZ(k) + vtop
+     &                maskS(i,j+jp1,k,bi,bj) * delR(k) + vtop
 cgg    Add the barotropic velocity component. 
                       if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
                         tmpfldxz(i,k,bi,bj) = tmpfldxz(i,k,bi,bj)+ vbaro
@@ -157,7 +157,7 @@ cgg    Add the barotropic velocity component.
                     enddo
 cgg    Compute the baroclinic velocity at level 1. Should balance flux.
                     tmpfldxz(i,1,bi,bj) = tmpfldxz(i,1,bi,bj) 
-     &                                      - vtop / delZ(1)
+     &                                      - vtop / delR(1)
                   enddo
                 enddo
               enddo
@@ -185,7 +185,7 @@ cgg    surface level. This velocity is not independent; it must
 cgg    exactly balance the volume flux, since we are dealing with
 cgg    the baroclinic velocity structure.. 
                       vtop = tmpfldxz(i,k,bi,bj)*
-     &                maskW(i,j,k,bi,bj) * delZ(k) + vtop
+     &                maskW(i,j,k,bi,bj) * delR(k) + vtop
 cgg    Add the barotropic velocity component. 
                       if (maskW(i,j,k,bi,bj) .ne. 0.) then
                         tmpfldxz(i,k,bi,bj) = tmpfldxz(i,k,bi,bj)+ vbaro
@@ -193,7 +193,7 @@ cgg    Add the barotropic velocity component.
                     enddo
 cgg    Compute the baroclinic velocity at level 1. Should balance flux.
                     tmpfldxz(i,1,bi,bj) = tmpfldxz(i,1,bi,bj) 
-     &                                      - vtop / delZ(1)
+     &                                      - vtop / delR(1)
                   enddo
                 enddo
               enddo
@@ -264,7 +264,7 @@ cgg    surface level. This velocity is not independent; it must
 cgg    exactly balance the volume flux, since we are dealing with
 cgg    the baroclinic velocity structure.. 
                       vtop = tmpfldxz(i,k,bi,bj)*
-     &                maskS(i,j+jp1,k,bi,bj) * delZ(k) + vtop
+     &                maskS(i,j+jp1,k,bi,bj) * delR(k) + vtop
 cgg    Add the barotropic velocity component. 
                       if (maskS(i,j+jp1,k,bi,bj) .ne. 0.) then
                         tmpfldxz(i,k,bi,bj) = tmpfldxz(i,k,bi,bj)+ vbaro
@@ -272,7 +272,7 @@ cgg    Add the barotropic velocity component.
                     enddo
 cgg    Compute the baroclinic velocity at level 1. Should balance flux.
                     tmpfldxz(i,1,bi,bj) = tmpfldxz(i,1,bi,bj) 
-     &                                      - vtop / delZ(1)
+     &                                      - vtop / delR(1)
                   enddo
                 enddo
               enddo
@@ -300,7 +300,7 @@ cgg    surface level. This velocity is not independent; it must
 cgg    exactly balance the volume flux, since we are dealing with
 cgg    the baroclinic velocity structure.. 
                       vtop = tmpfldxz(i,k,bi,bj)*
-     &                maskW(i,j,k,bi,bj) * delZ(k) + vtop
+     &                maskW(i,j,k,bi,bj) * delR(k) + vtop
 cgg    Add the barotropic velocity component. 
                       if (maskW(i,j,k,bi,bj) .ne. 0.) then
                         tmpfldxz(i,k,bi,bj) = tmpfldxz(i,k,bi,bj)+ vbaro
@@ -308,7 +308,7 @@ cgg    Add the barotropic velocity component.
                     enddo
 cgg    Compute the baroclinic velocity at level 1. Should balance flux.
                     tmpfldxz(i,1,bi,bj) = tmpfldxz(i,1,bi,bj) 
-     &                                      - vtop / delZ(1)
+     &                                      - vtop / delR(1)
                   enddo
                 enddo
               enddo

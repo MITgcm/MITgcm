@@ -190,8 +190,8 @@ cgg -- Do not let the corners contribute to the volume flux.
                   if(ob_iw(j,bi,bj).ne.i .and. ob_ie(j,bi,bj).ne.i) then
                     tmpx = tmpfldxz(i,k,bi,bj)
 cgg -- Positive is flux in.
-                    tmpflux = tmpflux - tmpx* delZ(k)*dxg(i,j+jp1,bi,bj)
-                    tmparea = tmparea + delZ(k) * dxg(i,j+jp1,bi,bj)
+                    tmpflux = tmpflux - tmpx* delR(k)*dxg(i,j+jp1,bi,bj)
+                    tmparea = tmparea + delR(k) * dxg(i,j+jp1,bi,bj)
                   endif
                 endif
               enddo
@@ -226,8 +226,8 @@ cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_iw(j,bi,bj).ne.i .and.ob_ie(j,bi,bj).ne.i) then
                     tmpx = tmpfldxz(i,k,bi,bj)
 cgg -- Positive is flux in.
-                    tmpflux = tmpflux + tmpx* delZ(k)*dxg(i,j+jp1,bi,bj)
-                    tmparea = tmparea + delZ(k) * dxg(i,j+jp1,bi,bj)
+                    tmpflux = tmpflux + tmpx* delR(k)*dxg(i,j+jp1,bi,bj)
+                    tmparea = tmparea + delR(k) * dxg(i,j+jp1,bi,bj)
                   endif
                 endif
               enddo
@@ -262,8 +262,8 @@ cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
                     tmpy = tmpfldyz(j,k,bi,bj)
 cgg -- Positive is flux in.
-                    tmpflux = tmpflux + tmpy* delZ(k)*dyg(i+ip1,j,bi,bj)
-                    tmparea = tmparea + delZ(k)*dyg(i+ip1,j,bi,bj)
+                    tmpflux = tmpflux + tmpy* delR(k)*dyg(i+ip1,j,bi,bj)
+                    tmparea = tmparea + delR(k)*dyg(i+ip1,j,bi,bj)
                   endif
                 endif
               enddo
@@ -298,8 +298,8 @@ cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
                     tmpy = tmpfldyz(j,k,bi,bj)
 cgg -- Positive is flux in.
-                    tmpflux = tmpflux - tmpy* delZ(k)*dyg(i+ip1,j,bi,bj)
-                    tmparea = tmparea + delZ(k) *dyg(i+ip1,j,bi,bj)
+                    tmpflux = tmpflux - tmpy* delR(k)*dyg(i+ip1,j,bi,bj)
+                    tmparea = tmparea + delR(k) *dyg(i+ip1,j,bi,bj)
                   endif
                 endif
               enddo
@@ -348,8 +348,8 @@ cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_iw(j,bi,bj).ne.i .and. ob_ie(j,bi,bj).ne.i)then
                     tmpx = tmpfldxz(i,k,bi,bj)
 cgg -- Positive is flux in.
-                    tmpflux = tmpflux - tmpx* delZ(k)*dxg(i,j+jp1,bi,bj)
-                    tmparea = tmparea + delZ(k) * dxg(i,j+jp1,bi,bj)
+                    tmpflux = tmpflux - tmpx* delR(k)*dxg(i,j+jp1,bi,bj)
+                    tmparea = tmparea + delR(k) * dxg(i,j+jp1,bi,bj)
                   endif
                 endif
               enddo
@@ -384,8 +384,8 @@ cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_iw(j,bi,bj).ne.i .and. ob_ie(j,bi,bj).ne.i)then
                     tmpx = tmpfldxz(i,k,bi,bj)
 cgg -- Positive is flux in.
-                    tmpflux = tmpflux + tmpx* delZ(k)*dxg(i,j+jp1,bi,bj)
-                    tmparea = tmparea + delZ(k) * dxg(i,j+jp1,bi,bj)
+                    tmpflux = tmpflux + tmpx* delR(k)*dxg(i,j+jp1,bi,bj)
+                    tmparea = tmparea + delR(k) * dxg(i,j+jp1,bi,bj)
                   endif
                 endif
               enddo
@@ -420,8 +420,8 @@ cgg -- Don't let corners contribute.
                   if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
                     tmpy = tmpfldyz(j,k,bi,bj)
 cgg -- Positive is flux in.
-                    tmpflux = tmpflux + tmpy* delZ(k)*dyg(i+ip1,j,bi,bj)
-                    tmparea = tmparea + delZ(k)*dyg(i+ip1,j,bi,bj)
+                    tmpflux = tmpflux + tmpy* delR(k)*dyg(i+ip1,j,bi,bj)
+                    tmparea = tmparea + delR(k)*dyg(i+ip1,j,bi,bj)
                   endif
                 endif
               enddo
@@ -456,8 +456,8 @@ cgg -- Do not let the corners contribute to the volume flux.
                   if (ob_jn(i,bi,bj).ne.j .and. ob_js(i,bi,bj).ne.j)then
                     tmpy = tmpfldyz(j,k,bi,bj)
 cgg -- Positive is flux in.
-                    tmpflux = tmpflux - tmpy* delZ(k)*dyg(i+ip1,j,bi,bj)
-                    tmparea = tmparea + delZ(k) *dyg(i+ip1,j,bi,bj)
+                    tmpflux = tmpflux - tmpy* delR(k)*dyg(i+ip1,j,bi,bj)
+                    tmparea = tmparea + delR(k) *dyg(i+ip1,j,bi,bj)
                   endif
                 endif
               enddo

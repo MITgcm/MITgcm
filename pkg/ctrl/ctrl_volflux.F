@@ -195,11 +195,11 @@ cgg -- Add up the cross-sectional area of this column for later calculations.
                       if (ob_iw(j,bi,bj).eq.(i-1) .and. 
      &                    ob_iw(j,bi,bj).ne. 0) then
                         tmpx = 0.
-                        tmparea = tmparea + delZ(k) * dxg(i,j+jp1,bi,bj)
+                        tmparea = tmparea + delR(k) * dxg(i,j+jp1,bi,bj)
                         print*,'tmparea',tmparea
                       endif
 cgg -- Positive is flux in.
-                    tmpflux = tmpflux -tmpx*delZ(k)*dxg(i,j+jp1,bi,bj)
+                    tmpflux = tmpflux -tmpx*delR(k)*dxg(i,j+jp1,bi,bj)
                     endif
                   endif
                 endif
@@ -244,12 +244,12 @@ cgg -- warning: never been tested.
                       if (ob_iw(j,bi,bj).eq.(i-1).and.
      &                    ob_iw(j,bi,bj).ne. 0) then
                         tmpx = 0.
-                        tmparea = tmparea + delZ(k) * dxg(i,j+jp1,bi,bj)
+                        tmparea = tmparea + delR(k) * dxg(i,j+jp1,bi,bj)
                         print*,'tmparea',tmparea
                       endif
 #endif
 cgg -- Positive is flux in.
-                      tmpflux = tmpflux +tmpx*delZ(k)*dxg(i,j+jp1,bi,bj)
+                      tmpflux = tmpflux +tmpx*delR(k)*dxg(i,j+jp1,bi,bj)
                     endif
                   endif
                 endif
@@ -299,13 +299,13 @@ cgg -- This is an untested backup case.
                       if (ob_jn(i,bi,bj).eq.(j+1) .and.
      &                    ob_jn(i,bi,bj).ne. 0) then
                         tmpy = 0.
-                        tmparea = tmparea + delZ(k) * dyg(i+ip1,j,bi,bj)
+                        tmparea = tmparea + delR(k) * dyg(i+ip1,j,bi,bj)
                         print*,'tmparea',tmparea
                       endif
 #endif
 #endif
 cgg -- Positive is flux in.
-                    tmpflux = tmpflux + tmpy* delZ(k)*dyg(i+ip1,j,bi,bj)
+                    tmpflux = tmpflux + tmpy* delR(k)*dyg(i+ip1,j,bi,bj)
                   endif
                   endif
                 endif
@@ -362,7 +362,7 @@ cgg -- This is an untested backup case.
                       if (ob_jn(i,bi,bj).eq.(j+1) .and.
      &                    ob_jn(i,bi,bj).ne. 0) then
                         tmpy = 0.
-                        tmparea = tmparea + delZ(k) * dyg(i+ip1,j,bi,bj)
+                        tmparea = tmparea + delR(k) * dyg(i+ip1,j,bi,bj)
                         print*,'tmparea',tmparea
                       endif
 #endif
@@ -370,11 +370,11 @@ cgg -- This is an untested backup case.
 #endif
 
 cgg -- Positive is flux in.
-                    tmpflux = tmpflux - tmpy* delZ(k)*dyg(i+ip1,j,bi,bj)
+                    tmpflux = tmpflux - tmpy* delR(k)*dyg(i+ip1,j,bi,bj)
 #ifndef ALLOW_OBCSN_CONTROL
 #ifndef ALLOW_OBCSS_CONTROL
 #ifndef ALLOW_OBCSW_CONTROL
-                    tmparea = tmparea + delZ(k) *dyg(i+ip1,j,bi,bj)
+                    tmparea = tmparea + delR(k) *dyg(i+ip1,j,bi,bj)
 #endif
 #endif
 #endif
