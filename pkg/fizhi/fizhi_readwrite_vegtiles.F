@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.1 2004/08/06 21:12:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.2 2004/08/06 23:17:55 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -13,6 +13,7 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
+#include "SIZE.h"
 #include "fizhi_SIZE.h"
 #include "fizhi_land_SIZE.h"
 #include "fizhi_coms.h"
@@ -33,10 +34,11 @@ CEOP
 C     !LOCAL VARIABLES:
       CHARACTER*80 bnam
       integer ilst
+      integer i
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-      DO i = 1:80
+      DO i = 1,80
         bnam(i:i) = ' '
       ENDDO
       ilst = ILNBLNK(fn)
@@ -96,6 +98,7 @@ C     !USES:
       IMPLICIT NONE
 
 C     == Global variables ===
+#include "SIZE.h"
 #include "fizhi_SIZE.h"
 #include "fizhi_land_SIZE.h"
 #include "fizhi_coms.h"
@@ -116,8 +119,9 @@ CEOP
 C     !LOCAL VARIABLES:
       CHARACTER*80 bnam
       integer ilst
+      integer i
 
-      DO i = 1:80
+      DO i = 1,80
         bnam(i:i) = ' '
       ENDDO
       ilst = ILNBLNK(fn)
