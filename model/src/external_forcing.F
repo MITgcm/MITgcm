@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.14 2002/03/24 02:18:36 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.15 2002/03/25 16:17:31 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,11 +59,11 @@ C     Add windstress momentum impulse into the top-layer
       ENDIF
 
 #ifdef ALLOW_OBCS
-      IF (useOBCS) THEN
-       CALL OBCS_SPONGE_U(
-     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           myCurrentTime,myThid)
-      ENDIF
+C     IF (useOBCS) THEN
+C      CALL OBCS_SPONGE_U(
+C    I           iMin, iMax, jMin, jMax,bi,bj,kLev,
+C    I           myCurrentTime,myThid)
+C     ENDIF
 #endif
 
       RETURN
@@ -124,11 +124,11 @@ C     Add windstress momentum impulse into the top-layer
       ENDIF
 
 #ifdef ALLOW_OBCS
-      IF (useOBCS) THEN
-       CALL OBCS_SPONGE_V(
-     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           myCurrentTime,myThid)
-      ENDIF
+C     IF (useOBCS) THEN
+C      CALL OBCS_SPONGE_V(
+C    I           iMin, iMax, jMin, jMax,bi,bj,kLev,
+C    I           myCurrentTime,myThid)
+C     ENDIF
 #endif
 
       RETURN
@@ -212,11 +212,11 @@ C Penetrating SW radiation
 #endif
 
 #ifdef ALLOW_OBCS
-      IF (useOBCS) THEN
-       CALL OBCS_SPONGE_T(
-     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           myCurrentTime,myThid)
-      ENDIF
+C     IF (useOBCS) THEN
+C      CALL OBCS_SPONGE_T(
+C    I           iMin, iMax, jMin, jMax,bi,bj,kLev,
+C    I           myCurrentTime,myThid)
+C     ENDIF
 #endif
 
       RETURN
@@ -277,11 +277,11 @@ C     Add fresh-water in top-layer
       ENDIF
 
 #ifdef ALLOW_OBCS
-      IF (useOBCS) THEN
-       CALL OBCS_SPONGE_S(
-     I           iMin, iMax, jMin, jMax,bi,bj,kLev,
-     I           myCurrentTime,myThid)
-      ENDIF
+C     IF (useOBCS) THEN
+C      CALL OBCS_SPONGE_S(
+C    I           iMin, iMax, jMin, jMax,bi,bj,kLev,
+C    I           myCurrentTime,myThid)
+C     ENDIF
 #endif
 
       RETURN
