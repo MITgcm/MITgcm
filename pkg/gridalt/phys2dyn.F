@@ -45,15 +45,15 @@ C***********************************************************************
       integer Lbot(im1:im2,jm1:jm2,Nsx,Nsy)
 
       integer  i,j,L,Lout1,Lout1p1,Lout2,Lphy
-      _RL getcon, kappa, dpkephy, dpkedyn, dpksum
+      _RL getcon, kappa, dpkephy, dpkedyn, sum
 
       kappa = getcon('KAPPA')
 
-c do loop for all grid points
-      do j = jdim1,jdim2
-       do i = idim1,idim2
 c do loop for all dynamics (output) levels
-        do L = 1,lmdyn
+      do L = 1,lmdyn
+c do loop for all grid points
+       do j = jdim1,jdim2
+        do i = idim1,idim2
          qdyn(i,j,L,bi,bj) = 0.
 c Check to make sure we are above ground - otherwise do nothing
          if(L.ge.Lbot(i,j,bi,bj))then
@@ -67,16 +67,17 @@ c do loop for all physics levels contained in this dynamics level
 cinterp1  dpkedyn = (pedyn(i,j,L,bi,bj)**kappa)-
 cinterp1                                   (pedyn(i,j,L+1,bi,bj)**kappa)
           dpkedyn = pedyn(i,j,L,bi,bj)-pedyn(i,j,L+1,bi,bj)
-          dpksum = 0.
+          sum = 0.
           Lout1p1 = Lout1+1
           do Lphy = Lout1p1,Lout2
 cinterp1   dpkephy = (pephy(i,j,Lphy,bi,bj)**kappa)-
 cinterp1                                (pephy(i,j,Lphy+1,bi,bj)**kappa)
            dpkephy = pephy(i,j,Lphy,bi,bj)-pephy(i,j,Lphy+1,bi,bj)
-           dpksum=dpksum+dpkephy
-           qdyn(i,j,L,bi,bj) = qdyn(i,j,L,bi,bj) + 
-     .                            qphy(i,j,Lphy,bi,bj)*(dpkephy/dpkedyn)
+           sum=sum+qphy(i,j,Lphy,bi,bj)*(dpkephy/dpkedyn)
+c          qdyn(i,j,L,bi,bj) = qdyn(i,j,L,bi,bj) + 
+c    .                            qphy(i,j,Lphy,bi,bj)*(dpkephy/dpkedyn)
           enddo
+          qdyn(i,j,L,bi,bj) = sum
          endif
         enddo
        enddo

@@ -50,17 +50,18 @@ C***********************************************************************
       integer Lbot(im1:im2,jm1:jm2,Nsx,Nsy)
 
       _RL weights(im1:im2,jm1:jm2,lmphy)
-      _RL dpkedyn, dpkephy, windsum
+      _RL dpkedyn, dpkephy, windsum, qd
       integer  i,j,L,Lout1,Lout2,Lphy
       _RL getcon, kappa
 
       kappa = getcon('KAPPA')
 
-c do loop for all grid points
-      do j = jdim1,jdim2
-       do i = idim1,idim2
 c do loop for all dynamics (input) levels
-        do L = 1,lmdyn
+      do L = 1,lmdyn
+c do loop for all grid points
+       do j = jdim1,jdim2
+        do i = idim1,idim2
+         qd = qdyn(i,j,L,bi,bj)
 c Check to make sure we are above ground - if not, do nothing
          if(L.ge.Lbot(i,j,bi,bj))then
           if(L.eq.Lbot(i,j,bi,bj)) then
@@ -87,7 +88,7 @@ c do loop for all physics levels contained in this dynamics level
            weights(i,j,Lphy) = 1.
            if( (flg.eq.1).and.(windsum.ne.0.) )
      .                weights(i,j,Lphy)=windphy(i,j,Lphy,bi,bj)/windsum
-           qphy(i,j,Lphy,bi,bj) = qdyn(i,j,L,bi,bj) * weights(i,j,Lphy)
+           qphy(i,j,Lphy,bi,bj) = qd * weights(i,j,Lphy)
           enddo
          endif
         enddo
