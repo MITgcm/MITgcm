@@ -1,9 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tracer.F,v 1.4 2003/06/27 01:54:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tracer.F,v 1.5 2004/07/13 18:08:06 jmc Exp $
+C $Name:  $
 
 #include "COST_CPPOPTIONS.h"
-#ifdef ALLOW_PTRACERS
-# include "PTRACERS_OPTIONS.h"
-#endif
 
       subroutine cost_tracer( bi, bj, myThid )
 C     /==========================================================\
@@ -27,6 +25,7 @@ C     == Global variables ===
 # if (defined (ALLOW_PASSIVE_TRACER))
 #  include "TR1.h"
 # elif (defined (ALLOW_PTRACERS))
+#  include "PTRACERS_SIZE.h"
 #  include "PTRACERS.h"
 # endif
 #endif

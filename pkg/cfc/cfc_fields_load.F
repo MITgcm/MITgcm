@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/cfc/cfc_fields_load.F,v 1.3 2004/07/13 18:09:07 jmc Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
@@ -16,6 +19,7 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #include "GCHEM.h"
 #include "CFC.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_monitor.F,v 1.3 2004/01/28 18:49:05 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_monitor.F,v 1.4 2004/07/13 18:04:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -22,6 +22,7 @@ C !USES: ===============================================================
 #include "DYNVARS.h"
 #include "GRID.h"
 #include "MONITOR.h"
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 
 C !INPUT PARAMETERS: ===================================================

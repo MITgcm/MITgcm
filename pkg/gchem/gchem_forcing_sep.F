@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.5 2004/07/13 18:04:42 jmc Exp $
+C $Name:  $
+
 #include "CPP_OPTIONS.h"
 #include "PTRACERS_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
@@ -19,6 +22,7 @@ C !USES: ===============================================================
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #ifdef ALLOW_PTRACERS
+#include "PTRACERS_SIZE.h"
 #include "PTRACERS.h"
 #endif
 #ifdef DIC_BIOTIC
