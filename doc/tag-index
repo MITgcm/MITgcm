@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.359 2004/09/27 14:56:42 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.360 2004/09/27 18:01:22 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o pkg/cost
+  extend simple cost functions to treat time mean quantities
+  (T,U,V) via cost_accumulate_state from cost_tile
 o multidimAdvection on CS-grid: implement the full 3 pass ; overlap needs to
     be 2 times larger than the minimum size the advection scheme requires.
     now get a perfect conservation of salt in advect_cs test-exp (updated)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.22 2004/09/17 23:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/checkpoint_lev2_directives.h,v 1.23 2004/09/27 18:00:19 heimbach Exp $
 C $Name:  $
 c
 c     store directives for checkpoint level 2
@@ -85,3 +85,9 @@ CADJ STORE sss   = tapelev2, key = ilev_2
 CADJ STORE empmr = tapelev2, key = ilev_2
 # include "ebm_ad_check_lev2_dir.h"
 #endif /* ALLOW_ebm */
+
+#ifdef ALLOW_COST_ATLANTIC_HEAT
+CADJ STORE cMeanTheta = tapelev2, key = ilev_2
+CADJ STORE cMeanUVel  = tapelev2, key = ilev_2
+CADJ STORE cMeanVVel  = tapelev2, key = ilev_2
+#endif

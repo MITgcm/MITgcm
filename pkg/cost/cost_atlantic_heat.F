@@ -25,21 +25,23 @@ C     myThid - Thread number for this instance of the routine.
 #ifdef ALLOW_COST_ATLANTIC_HEAT
 C     ========= Local variables =========================
       integer    isecbeg      , isecend      , jsec
+      integer    jsecbeg      , jsecend      , isec
       integer    kmaxdepth
       integer i, j, k
       integer ig, jg
       integer bi, bj
       _RL     locfc
-      _RL     vVel_bar(Nr), theta_bar(Nr) 
-      _RL     countT(Nr), countV(Nr)
+      _RL     uVel_bar(Nr), vVel_bar(Nr), theta_bar(Nr) 
+      _RL     countU(Nr), countV(Nr), countT(Nr)
       _RL     petawatt
       _RL     sum
       parameter( petawatt = 1.e+15 )
 
 C     80W - 0W at 24N
-cph      parameter( isecbeg = 66, isecend = 86, jsec = 27 )
-      parameter( isecbeg = 70, isecend = 90, jsec = 27 )
-      parameter ( kmaxdepth = 12 )
+      parameter( isecbeg = 69, isecend = 87, jsec = 28 )
+cph      parameter( isecbeg = 70, isecend = 90, jsec = 30 )
+      parameter( jsecbeg = 10, jsecend = 27, isec = 59 )
+      parameter ( kmaxdepth = 5 )
 C     80W - 0W at 48N
 C      parameter( isecbeg = 70, isecend = 90, jsec = 33 )
 C      parameter ( kmaxdepth = 14 )
@@ -58,12 +60,11 @@ C------------------------------------------------------
         locfc = 0.0
         sum = 0.0
 
-        do j=1,sNy
-         jg = myYGlobalLo-1+(bj-1)*sNy+j
-         if (jg .eq. jsec) then
+#define MERID_TRANSPORT
+
+#ifdef MERID_TRANSPORT
 
 #undef ENERGYNORM
-
 #ifdef ENERGYNORM
 
         do i=1,sNx
@@ -81,6 +82,10 @@ C------------------------------------------------------
 
 #else
 
+        do j=1,sNy
+         jg = myYGlobalLo-1+(bj-1)*sNy+j
+         if (jg .eq. jsec) then
+
           do k = 1, Nr
            vVel_bar(k) = 0.0
            theta_bar(k) = 0.0
@@ -91,15 +96,20 @@ C------------------------------------------------------
 c
             if ((ig .ge. isecbeg) .and. (ig .le. isecend)) then
              vVel_bar(k) = vVel_bar(k) 
-     &                      + vVel(i,j,k,bi,bj)
+     &                      + cMeanVVel(i,j,k,bi,bj)
      &                      *maskS(i,j,k,bi,bj)
-             theta_bar(k) = theta_bar(k)
-     &                      + theta(i,j,k,bi,bj)*dxG(i,j,bi,bj)
-     &                      *maskC(i,j,k,bi,bj)
-cph     &            0.5*(theta(i,j,k,bi,bj)+theta(i,j-1,k,bi,bj) )
-cph     &               *maskS(i,j,k,bi,bj)*dxG(i,j,bi,bj)
-             countT(k) = countT(k) + maskC(i,j,k,bi,bj)
+     &                      *maskC(i,j,k,bi,bj)*maskC(i,j-1,k,bi,bj)
+             theta_bar(k) = theta_bar(k) +
+cph     &                      theta(i,j,k,bi,bj)*dxG(i,j,bi,bj)
+cph     &                      *maskC(i,j,k,bi,bj)
+     &            0.5*( cMeanTheta(i,j,k,bi,bj)
+     &                 +cMeanTheta(i,j-1,k,bi,bj) )
+     &                 *maskS(i,j,k,bi,bj)*dxG(i,j,bi,bj)
+     &                 *maskC(i,j,k,bi,bj)*maskC(i,j-1,k,bi,bj)
+             countT(k) = countT(k) + maskS(i,j,k,bi,bj)
+     &                      *maskC(i,j,k,bi,bj)*maskC(i,j-1,k,bi,bj)
              countV(k) = countV(k) + maskS(i,j,k,bi,bj)
+     &                      *maskC(i,j,k,bi,bj)*maskC(i,j-1,k,bi,bj)
             end if
 
            enddo
@@ -114,13 +124,59 @@ c
            end if
           end do
 
+#endif /* ENERGYNORM */
+
+#else
+
+        do i=1,sNx
+         ig = myXGlobalLo-1+(bi-1)*sNx+i
+         if (ig .eq. isec) then
+
+          do k = 1, Nr
+           uVel_bar(k) = 0.0
+           theta_bar(k) = 0.0
+           countT(k) = 0.0
+           countU(k) = 0.0
+           do j=1,sNy
+            jg = myYGlobalLo-1+(bj-1)*sNy+j
+c
+            if ((jg .ge. jsecbeg) .and. (jg .le. jsecend)) then
+             uVel_bar(k) = uVel_bar(k)
+     &                      + cMeanUVel(i,j,k,bi,bj)
+     &                      *maskW(i,j,k,bi,bj)
+     &                      *maskC(i,j,k,bi,bj)*maskC(i-1,j,k,bi,bj)
+             theta_bar(k) = theta_bar(k) +
+cph     &                      + theta(i,j,k,bi,bj)*dyG(i,j,bi,bj)
+cph     &                      *maskC(i,j,k,bi,bj)
+     &            0.5*( cMeanTheta(i,j,k,bi,bj)
+     &                 +cMeanTheta(i-,j,k,bi,bj) )
+     &                 *maskW(i,j,k,bi,bj)*dyG(i,j,bi,bj)
+     &                 *maskC(i,j,k,bi,bj)*maskC(i-1,j,k,bi,bj)
+             countT(k) = countT(k) + maskW(i,j,k,bi,bj)
+     &                   *maskC(i,j,k,bi,bj)*maskC(i-1,j,k,bi,bj)
+             countU(k) = countU(k) + maskW(i,j,k,bi,bj)
+     &                   *maskC(i,j,k,bi,bj)*maskC(i-1,j,k,bi,bj)
+            end if
+
+           enddo
+          enddo
+c
+          do k = 1, Nr
+           if ( k .LE. kmaxdepth .AND.
+     &          countT(k) .NE. 0 .AND. countU(k) .NE. 0) then
+            sum = sum
+     &            + uVel_bar(k) * theta_bar(k) * drF(k)
+     &            / ( countT(k) * countU(k) )
+           end if
+          end do
+
 #endif
 
          end if
         end do
 
         objf_atl(bi,bj) = 
-     &   sum*HeatCapacity_Cp*rhoConst/petawatt
+     &     sum*HeatCapacity_Cp*rhoConst/petawatt
 
 c--   end of bi,bj loop
        end do

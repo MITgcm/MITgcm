@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.54 2004/09/17 23:02:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.55 2004/09/27 18:00:19 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -323,15 +323,6 @@ c--     >>> Loop body start <<<
         CALL TIMER_START('FORWARD_STEP        [THE_MAIN_LOOP]',mythid)
         CALL FORWARD_STEP( iloop, mytime, myiter, mythid )
         CALL TIMER_STOP ('FORWARD_STEP        [THE_MAIN_LOOP]',mythid)
-
-#ifdef ALLOW_COST
-C--     compare model with data and compute cost function
-C--     this is done after exchanges to allow interpolation
-ceh3 perhaps needs an IF ( useCOST ) THEN
-        CALL TIMER_START('COST_TILE           [THE_MAIN_LOOP]',myThid)
-        CALL COST_TILE  ( myThid )
-        CALL TIMER_STOP ('COST_TILE           [THE_MAIN_LOOP]',myThid)
-#endif
 
 c--     >>> Loop body end <<<
 

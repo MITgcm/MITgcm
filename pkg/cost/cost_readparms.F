@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.5 2003/11/06 22:03:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_readparms.F,v 1.6 2004/09/27 18:00:19 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -36,6 +36,7 @@ c     == end of interface ==
 c--   Read the namelist input.
       namelist /cost_nml/ 
      &                   mult_atl, mult_test, mult_tracer
+     &                 , lastinterval
 
       _BEGIN_MASTER( myThid )
 
@@ -43,6 +44,9 @@ c--     Set default values.
         mult_atl              =      0. _d 0
         mult_test             =      0. _d 0
         mult_tracer           =      0. _d 0
+
+c--     30*24*3600 = 2592000 = 1 model month
+        lastinterval = 2592000.
 
 c--     Next, read the cost data file.
         call nml_filter( 'data.cost', scrunit1, myThid )

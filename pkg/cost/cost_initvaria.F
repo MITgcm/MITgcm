@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/Attic/cost_initvaria.F,v 1.4 2003/11/06 22:03:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/Attic/cost_initvaria.F,v 1.5 2004/09/27 18:00:19 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -61,6 +61,19 @@ c--   Initialize the tiled cost function contributions.
             objf_vector(i,bi,bj) = 0. _d 0
           end do
 #endif
+c
+#ifdef ALLOW_COST_ATLANTIC_HEAT
+          do k=1,nr
+            do j=1,sNy
+              do i=1,sNx
+                cMeanTheta(i,j,k,bi,bj) = 0. _d 0
+                cMeanUVel(i,j,k,bi,bj)  = 0. _d 0
+                cMeanVVel(i,j,k,bi,bj)  = 0. _d 0
+              end do
+            end do
+          end do
+#endif
+c
 #ifdef ALLOW_COST_STATE_FINAL
 c          do k=1,nr
             do j=1,sNy

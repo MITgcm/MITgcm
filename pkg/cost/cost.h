@@ -51,6 +51,10 @@ c                  function contributions.
       _RL  objf_t_misfit (nsx,nsy)
       _RL  objf_eflux (nsx,nsy)
 
+      common /cost_param_r/
+     &                lastinterval
+      _RL lastinterval
+
 #ifdef ALLOW_COST_STATE_FINAL
       common /cost_state_final_r/
      &                objf_state_final
@@ -87,6 +91,14 @@ cph      _RL  objf_state_final (snx,sny,nr,nsx,nsy,2)
       integer iLocOut
       integer jLocOut
       integer kLocOut
+#endif
+
+#ifdef ALLOW_COST_ATLANTIC_HEAT
+      COMMON /COST_MEAN_R/
+     &                     cMeanTheta, cMeanUVel, cMeanVVel
+      _RL cMeanTheta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL cMeanUVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL cMeanVVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
 
 c     ==================================================================

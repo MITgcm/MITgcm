@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.3 2001/09/28 15:56:14 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.4 2004/09/27 18:00:19 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -55,7 +55,7 @@ CEOI
 CBOP
 C     !ROUTINE: THE_MAIN_LOOP
 C     !INTERFACE:
-      subroutine cost_tile( myThid )
+      subroutine cost_tile( mytime, myiter, myThid )
 
 C     !DESCRIPTION: \bv
 C     *================================================================*
@@ -74,10 +74,13 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#include "cost.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
+      _RL myTime
+      integer myiter
       integer myThid
 
 #ifdef ALLOW_COST
@@ -92,8 +95,13 @@ C--   TAMC need a stmt in front of a HPF directive
       DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
 
+#ifdef ALLOW_COST_ATLANTIC_HEAT
+           IF ( myTime .GT. (EndTime - lastinterval) )
+     &          CALL COST_ACCUMULATE_MEAN (myThid)
+#endif
+
 #ifdef ALLOW_COST_TRACER
-          CALL COST_TRACER( bi, bj, myThid )
+           CALL COST_TRACER( bi, bj, myThid )
 #endif
 
         ENDDO

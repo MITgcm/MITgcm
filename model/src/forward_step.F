@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.102 2004/09/17 23:02:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.103 2004/09/27 18:00:19 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -523,11 +523,21 @@ C--   Check status of solution (statistics, cfl, etc...)
 #endif /* ALLOW_MONITOR */
 #endif
 
+#ifdef ALLOW_COST
+C--     compare model with data and compute cost function
+C--     this is done after exchanges to allow interpolation
+ceh3 perhaps needs an IF ( useCOST ) THEN
+CADJ STORE theta, uvel, vvel = comlev1, key = ikey_dynamics
+      CALL TIMER_START('COST_TILE           [FORWARD_STEP]',myThid)
+      CALL COST_TILE  ( mytime, myiter, myThid )
+      CALL TIMER_STOP ('COST_TILE           [FORWARD_STEP]',myThid)
+#endif
+
 C--   Do IO if needed.
 #ifdef ALLOW_OFFLINE
-      CALL TIMER_START('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
+      CALL TIMER_START('OFFLINE_MODEL_IO    [FORWARD_STEP]',myThid)
       CALL OFFLINE_MODEL_IO( myTime, myIter, myThid )
-      CALL TIMER_STOP ('OFFLINE_MODEL_IO     [FORWARD_STEP]',myThid)
+      CALL TIMER_STOP ('OFFLINE_MODEL_IO    [FORWARD_STEP]',myThid)
 #else
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
       CALL DO_THE_MODEL_IO( myTime, myIter, myThid )

@@ -1,3 +1,4 @@
+cost_accumulate_mean.f
 cost_final.f
 cost_initvaria.f	
 cost_tile.f	
