@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.31 2003/12/07 05:30:37 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.32 2003/12/07 07:06:13 edhill Exp $
 #  $Name:  $
 #
 
@@ -676,6 +676,8 @@ createcodelet
 
 #  build the mpack utility
 if test "x$ADDRESSES" = xNONE -o "x$ADDRESSES" = x ; then
+    echo "skipping mpack build"
+else
     build_mpack
 fi
 
