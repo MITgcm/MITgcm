@@ -1,7 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.43 2001/07/30 20:47:52 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.44 2001/07/31 18:42:13 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint40pre5
+o proper initialization of Adams-Bashforth time stepping
+  + uses forward step for very first step of model (iter=0)
+o re-generated *all* output since almost all output is modified by this
+  change (sorry but we've been putting this one off for about 2 years)
+  + natl_box, aim.5l_Equatorial_Channel and aim.5l_zon-ave were
+    *not* regenerated since they are already out of date and I don't
+    want to create the impression that they are suddenly working.
+o removed KAP stuff for DEC's
+o modified/added many .cvsignore files in */code and */input
+o added new expt "solid-body.cs-32x32x1"
+  + this uses an alternative form of ini_curvilinear_grid.F which
+    is not necessarily any better than the current one...
 
 checkpoint40pre4
 o added re-initialisations of utrans,vtrans,rtrans in
