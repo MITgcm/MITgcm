@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.35 2004/03/29 22:14:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.36 2004/07/06 01:05:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -70,6 +70,13 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#include "SURFACE.h"
+#ifdef ALLOW_SHAP_FILT
+# include "SHAP_FILT.h"
+#endif
+#ifdef ALLOW_ZONAL_FILT
+# include "ZONAL_FILT.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -162,8 +169,8 @@ CADJ loop = parallel
 #ifdef NONLIN_FRSURF
 C--   Compute the surface level thickness <-- function of etaH(n)
 C     and modify hFac(C,W,S) accordingly :
-c     IF ( select_rStar.NE.0 )
-        CALL CALC_R_STAR(etaH, startTime, -1 , myThid )
+      IF ( select_rStar.NE.0 )
+     &  CALL CALC_R_STAR(etaH, startTime, -1 , myThid )
       IF (nonlinFreeSurf.GT.0) THEN
        IF ( select_rStar.GT.0 ) THEN
         CALL UPDATE_R_STAR( startTime, nIter0, myThid )
@@ -185,7 +192,45 @@ C--   Integrate continuity vertically for vertical velocity
         CALL INTEGR_CONTINUITY( bi, bj, uVel, vVel,
      I                          startTime, nIter0, myThid )
  
+       ENDDO
+      ENDDO
+
+#ifdef EXACT_CONSERV
+      IF ( exactConserv ) THEN
+C--   Update etaH(n) :
+         CALL UPDATE_ETAH( startTime, nIter0, myThid )
+      ENDIF
+#endif /* EXACT_CONSERV */
+
+#ifdef NONLIN_FRSURF
+      IF ( select_rStar.NE.0 ) THEN
+C--   r* : compute the future level thickness according to etaH(n+1)
+          CALL CALC_R_STAR(etaH, startTime, nIter0, myThid )
+      ELSEIF ( nonlinFreeSurf.GT.0) THEN
+C--   compute the future surface level thickness according to etaH(n+1)
+          CALL CALC_SURF_DR(etaH, startTime, nIter0, myThid )
+      ENDIF
+#endif /* NONLIN_FRSURF */
+
+      IF ( nIter0.EQ.0 .AND. staggerTimeStep ) THEN
+C--    Filter initial T & S fields if staggerTimeStep 
+C       (only for backward compatibility ; to be removed later)
+#ifdef ALLOW_SHAP_FILT
+       IF ( useSHAP_FILT .AND. shap_filt_TrStagg ) THEN
+        CALL SHAP_FILT_APPLY_TS(theta,salt,startTime,nIter0,myThid)
+       ENDIF
+#endif
+#ifdef ALLOW_ZONAL_FILT
+       IF ( useZONAL_FILT .AND. zonal_filt_TrStagg ) THEN
+        CALL ZONAL_FILT_APPLY_TS( theta, salt, myThid )
+       ENDIF
+#endif
+      ENDIF
+
 #ifdef ALLOW_TIMEAVE
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+
 C--   initialise time-average arrays with initial state values
         IF (taveFreq.GT.0.) THEN
            CALL TIMEAVE_STATVARS(startTime, nIter0, bi, bj, myThid)
@@ -196,11 +241,11 @@ che3 needs an IF ( usePTRACERS ) THEN
            CALL PTRACERS_STATVARS(startTime, nIter0, bi, bj, myThid)
 #endif
 cswdptr -- end add ---
-#endif /* ALLOW_TIMEAVE */
 
 C--   end bi,bj loop.
        ENDDO
       ENDDO
+#endif /* ALLOW_TIMEAVE */
 
 C AMM
 #ifdef ALLOW_GRIDALT

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.4 2004/06/29 22:21:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.5 2004/07/06 01:05:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -51,36 +51,32 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   Update etaH at the beginning of the time step : 
+C--   before updating etaH, save current etaH field in etaHnm1
+         DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+             etaHnm1(i,j,bi,bj) = etaH(i,j,bi,bj) 
+           ENDDO
+         ENDDO
+
+C--   Update etaH at the end of the time step : 
 C     Incorporate the Explicit part of -Divergence(Barotropic_Flow)
 
-       IF ( useRealFreshWaterFlux .AND. myTime.EQ.startTime ) THEN
-C     needs previous time-step value of E-P-R, that has not been loaded
-C     and was not in pickup-file ; try to use etaN & etaH instead.
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-           etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
-     &        + (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
-     &             *(1. - implicDiv2Dflow)/implicDiv2Dflow
+        IF (implicDiv2Dflow.EQ. 1. _d 0) THEN
+         DO j=1-Oly,sNy+Oly
+          DO i=1-Olx,sNx+Olx
+            etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
+          ENDDO
          ENDDO
-        ENDDO
 
-       ELSEIF (implicDiv2Dflow.EQ. 1. _d 0) THEN
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-           etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
+        ELSE
+         DO j=1,sNy
+          DO i=1,sNx
+            etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
+     &       + (1. - implicDiv2Dflow)*dEtaHdt(i,j,bi,bj)
+     &                               *deltaTfreesurf
+          ENDDO
          ENDDO
-        ENDDO
-
-       ELSE
-        DO j=1,sNy
-         DO i=1,sNx
-           etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
-     &      + (1. - implicDiv2Dflow)*dEtaHdt(i,j,bi,bj)
-     &                              *deltaTfreesurf
-         ENDDO
-        ENDDO
-       ENDIF
+        ENDIF
 
 #ifdef ALLOW_OBCS
 #ifdef NONLIN_FRSURF
@@ -103,14 +99,11 @@ C- end bi,bj loop.
       ENDDO 
 
       IF (implicDiv2Dflow .NE. 1. _d 0 .OR. useOBCS )
-     &    _EXCH_XY_RL(etaH, myThid ) 
+     &    _EXCH_XY_RL( etaH, myThid ) 
 
+      IF (useRealFreshWaterFlux .AND. myTime.EQ.startTime)
+     &    _EXCH_XY_R4( PmEpR, myThid )
 
-      IF ( buoyancyRelation.EQ.'OCEANICP'
-     &     .AND. useRealFreshWaterFlux
-     &     .AND. myTime.EQ.startTime ) THEN
-          _EXCH_XY_RS(PmEpR, myThid ) 
-      ENDIF
 #endif /* EXACT_CONSERV */
 
       RETURN

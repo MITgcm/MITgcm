@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.8 2003/04/11 13:00:21 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.9 2004/07/06 01:05:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -242,9 +242,6 @@ C-- Global diagnostic :
 
       _EXCH_XY_R4(hFac_surfC, myThid ) 
       CALL EXCH_UV_XY_RS(hFac_surfW,hFac_surfS,.FALSE.,myThid)
-
-      IF (useRealFreshWaterFlux .AND. myTime.EQ.startTime)
-     & _EXCH_XY_R4( PmEpR, myThid )
 
 C-----
 C Note: testing ksurfW,S is equivalent to a full height mask 

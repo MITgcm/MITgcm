@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.6 2004/06/29 22:21:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.7 2004/07/06 01:05:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -71,7 +71,6 @@ C--   Compute the Divergence of The Barotropic Flow :
 C-    Initialise 
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-         dEtaHdt(i,j,bi,bj) = 0. _d 0
          hDivFlow(i,j)      = 0. _d 0
          utrans(i,j)        = 0. _d 0
          vtrans(i,j)        = 0. _d 0
@@ -105,28 +104,34 @@ C-    End DO k=1,Nr
 C------------------------------------
        facEmP = 0.
        IF (useRealFreshWaterFlux) facEmP = convertEmP2rUnit
-       IF ( myTime.EQ.startTime ) THEN
-        IF (myTime.NE. 0. _d 0 .AND. useRealFreshWaterFlux) THEN
+       IF ( myTime.EQ.startTime .AND. myTime.NE. 0. _d 0 
+     &                          .AND. useRealFreshWaterFlux) THEN
+
 C     needs previous time-step value of E-P-R, that has not been loaded
-C     and was not in pickup-file ; try to use etaN & etaH instead.
+C     and was not in old pickup-file ; try to use etaN & etaH instead.
+         IF ( usePickupBeforeC54 ) THEN
           DO j=1,sNy
            DO i=1,sNx
-            dEtaHdt(i,j,bi,bj) =
-     &                         (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
-     &                        /(implicDiv2Dflow*deltaTfreesurf)
+            dEtaHdt(i,j,bi,bj) = (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
+     &                         / (implicDiv2Dflow*deltaTfreesurf)
+           ENDDO
+          ENDDO
+         ENDIF
+
+         DO j=1,sNy
+          DO i=1,sNx
             PmEpR(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)
      &                       + hDivFlow(i,j)*recip_rA(i,j,bi,bj)
             PmEpR(i,j,bi,bj) = PmEpR(i,j,bi,bj)/convertEmP2rUnit
-           ENDDO
           ENDDO
-        ELSE
+         ENDDO
+       ELSEIF ( myTime.EQ.startTime ) THEN
          DO j=1,sNy
           DO i=1,sNx
             PmEpR(i,j,bi,bj) = 0. _d 0
             dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
           ENDDO
          ENDDO      
-        ENDIF
        ELSE
          DO j=1,sNy
           DO i=1,sNx

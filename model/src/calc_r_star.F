@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.2 2003/04/11 13:02:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_r_star.F,v 1.3 2004/07/06 01:05:53 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -201,14 +201,11 @@ C-- Usefull warning when r*Fac becomes very large:
         ENDDO
 
 C-    end 1rst bi,bj loop.
-        ENDDO
        ENDDO
+      ENDDO
 
        _EXCH_XY_RL( rStarFacC, myThid ) 
       CALL EXCH_UV_XY_RL(rStarFacW,rStarFacS,.FALSE.,myThid)
-
-      IF (useRealFreshWaterFlux .AND. myTime.EQ.startTime)
-     & _EXCH_XY_R4( PmEpR, myThid )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

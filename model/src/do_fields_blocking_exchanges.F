@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.13 2003/10/30 12:00:41 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.14 2004/07/06 01:05:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -50,15 +50,13 @@ c     _EXCH_XYZ_R8( uVel , myThid )
 c     _EXCH_XYZ_R8( vVel , myThid )
       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
       _EXCH_XYZ_R8( wVel , myThid )
-      IF ( exactConserv .AND. implicDiv2Dflow .NE. 0. _d 0)
-     & _EXCH_XY_R8( etaN , myThid )
-      IF ( .NOT.staggerTimeStep .OR. cAdjFreq .NE. 0. _d 0) THEN
-      _EXCH_XYZ_R8( theta , myThid )
+c     IF ( exactConserv .AND. implicDiv2Dflow .NE. 0. _d 0)
+c    & _EXCH_XY_R8( etaN , myThid )
+      _EXCH_XYZ_R8( theta, myThid )
       _EXCH_XYZ_R8( salt , myThid )
-      ENDIF
 #ifdef ALLOW_PASSIVE_TRACER
-ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
-      _EXCH_XYZ_R8( Tr1  , myThid )
+      IF ( tr1Stepping ) 
+     & _EXCH_XYZ_R8( Tr1 , myThid )
 #endif
 
 #ifdef ALLOW_CD_CODE
@@ -71,8 +69,8 @@ c     _EXCH_XYZ_R8( gvCD , myThid )
      & _EXCH_XYZ_RL( totPhiHyd , myThid )
 
 #ifdef ALLOW_PTRACERS
-ceh3 needs an IF ( usePTRACER ) THEN
-      CALL PTRACERS_FIELDS_BLOCKING_EXCHANGES(myThid)
+      IF (usePTRACERS)
+     &  CALL PTRACERS_FIELDS_BLOCKING_EXCHANGES(myThid)
 #endif /* ALLOW PTRACERS */
 
       RETURN

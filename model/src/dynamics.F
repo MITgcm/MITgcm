@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.106 2004/01/03 01:01:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.107 2004/07/06 01:05:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -360,22 +360,12 @@ CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 
 C--      Integrate hydrostatic balance for phiHyd with BC of 
 C        phiHyd(z=0)=0
-C        distinguishe between Stagger and Non Stagger time stepping
-         IF (staggerTimeStep) THEN
-           CALL CALC_PHI_HYD(
-     I        bi,bj,iMin,iMax,jMin,jMax,k,
-     I        gT, gS,
-     U        phiHydF,
-     O        phiHydC, dPhiHydX, dPhiHydY,
-     I        myTime, myIter, myThid )
-         ELSE
-           CALL CALC_PHI_HYD(
+         CALL CALC_PHI_HYD(
      I        bi,bj,iMin,iMax,jMin,jMax,k,
      I        theta, salt,
      U        phiHydF,
      O        phiHydC, dPhiHydX, dPhiHydY,
      I        myTime, myIter, myThid )
-         ENDIF
 
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gU, gV, etc...

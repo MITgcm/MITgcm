@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.95 2004/06/14 22:42:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.96 2004/07/06 01:05:53 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -98,7 +98,6 @@ C     myThid - thread number for this instance of the routine.
       _RL     myTime
 
 C     == Local variables ==
-      integer i,L
       INTEGER myItP1
 CEOP
 
@@ -126,29 +125,6 @@ cph   However, need to check whether that's still consistent
 cph   with the ecco-branch (it should).
 cph      CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
 #endif
-
-#ifdef EXACT_CONSERV
-      IF (exactConserv) THEN
-C--   Update etaH(n+1) :
-         CALL TIMER_START('UPDATE_ETAH        [FORWARD_STEP]',mythid)
-         CALL UPDATE_ETAH( myTime, myIter, myThid )
-         CALL TIMER_STOP ('UPDATE_ETAH        [FORWARD_STEP]',mythid)
-      ENDIF
-#endif /* EXACT_CONSERV */ 
-
-#ifdef NONLIN_FRSURF
-      IF ( select_rStar.NE.0 ) THEN
-C--   r* : compute the future level thickness according to etaH(n+1) 
-          CALL TIMER_START('CALC_R_STAR       [FORWARD_STEP]',mythid)
-          CALL CALC_R_STAR(etaH, myTime, myIter, myThid )
-          CALL TIMER_STOP ('CALC_R_STAR       [FORWARD_STEP]',mythid)
-      ELSEIF ( nonlinFreeSurf.GT.0) THEN
-C--   compute the future surface level thickness according to etaH(n+1) 
-          CALL TIMER_START('CALC_SURF_DR      [FORWARD_STEP]',mythid)
-          CALL CALC_SURF_DR(etaH, myTime, myIter, myThid )
-          CALL TIMER_STOP ('CALC_SURF_DR      [FORWARD_STEP]',mythid)
-      ENDIF
-#endif /* NONLIN_FRSURF */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c**************************************
@@ -315,47 +291,23 @@ C AMM
 #endif
 
 #ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) 
+       IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('DO_OCEANIC_PHYS',myThid)
+#endif
+       CALL TIMER_START('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
+       CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
+       CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
+
+      IF ( .NOT.staggerTimeStep ) THEN
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('THERMODYNAMICS',myThid)
 #endif
         CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',mythid)
         CALL THERMODYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('THERMODYNAMICS      [FORWARD_STEP]',mythid)
-
-C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
-#ifdef ALLOW_DEBUG
-      IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('DO_STAGGER_FIELDS_EXCH.',myThid)
-#endif
-        CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
-        CALL DO_STAGGER_FIELDS_EXCHANGES( myTime, myIter, myThid )
-        CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
-
-#ifdef ALLOW_SHAP_FILT
-      IF (useSHAP_FILT .AND. 
-     &     staggerTimeStep .AND. shap_filt_TrStagg ) THEN
-#ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('SHAP_FILT_APPLY_TS',myThid)
-#endif
-        CALL TIMER_START('SHAP_FILT           [FORWARD_STEP]',myThid)
-        CALL SHAP_FILT_APPLY_TS(gT,gS,myTime+deltaT,myIter+1,myThid)
-        CALL TIMER_STOP ('SHAP_FILT           [FORWARD_STEP]',myThid)
+C--    if not staggerTimeStep: end
       ENDIF
-#endif
-
-#ifdef ALLOW_ZONAL_FILT
-      IF (useZONAL_FILT .AND. 
-     &     staggerTimeStep .AND. zonal_filt_TrStagg ) THEN
-#ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('ZONAL_FILT_APPLY_TS',myThid)
-#endif
-        CALL TIMER_START('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
-        CALL ZONAL_FILT_APPLY_TS( gT, gS, myThid )
-        CALL TIMER_STOP ('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
-      ENDIF
-#endif   
 
 #ifdef COMPONENT_MODULE
        IF ( useCoupler .AND. .NOT.cpl_earlyExpImpCall ) THEN
@@ -402,8 +354,13 @@ C--   Step forward W field in N-H algorithm
       ENDIF
 #endif
 
+C--   Update time-counter
+      myIter = nIter0 + iLoop
+      myTime = startTime + deltaTClock * float(iLoop)
+
+C--   Update geometric factors:
 #ifdef NONLIN_FRSURF
-C--   update hfacC,W,S and recip_hFac according to etaH(n+1) :
+C-    update hfacC,W,S and recip_hFac according to etaH(n+1) :
       IF ( nonlinFreeSurf.GT.0) THEN
        IF ( select_rStar.GT.0 ) THEN
         CALL TIMER_START('UPDATE_R_STAR      [FORWARD_STEP]',myThid)
@@ -431,9 +388,9 @@ C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
 C--   Explicit+Implicit part of the Barotropic Flow Divergence
 C      => Filtering of uVel,vVel is necessary
           CALL SHAP_FILT_APPLY_UV( uVel,vVel,
-     &                             myTime+deltaT, myIter+1, myThid )
+     &                             myTime, myIter, myThid )
         ENDIF
-        CALL SHAP_FILT_APPLY_UV( gU,gV,myTime+deltaT,myIter+1,myThid)
+        CALL SHAP_FILT_APPLY_UV( gU,gV,myTime,myIter,myThid)
         CALL TIMER_STOP ('SHAP_FILT           [FORWARD_STEP]',myThid)
       ENDIF
 #endif
@@ -454,23 +411,65 @@ C--   Solve elliptic equation(s).
 C     Two-dimensional only for conventional hydrostatic or 
 C     three-dimensional for non-hydrostatic and/or IGW scheme.
       IF ( momStepping ) THEN
-      CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
-      CALL SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
-      CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
+        CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
+        CALL SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
+        CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
       ENDIF
+
+C--   Correct divergence in flow field and cycle time-stepping momentum
+c     IF ( momStepping ) THEN
+        CALL TIMER_START('UV_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+        CALL MOMENTUM_CORRECTION_STEP(myTime, myIter, myThid)
+        CALL TIMER_STOP ('UV_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+c     ENDIF
+
+#ifdef EXACT_CONSERV
+      IF (exactConserv) THEN
+C--   Update etaH(n+1) :
+        CALL TIMER_START('UPDATE_ETAH        [FORWARD_STEP]',mythid)
+        CALL UPDATE_ETAH( myTime, myIter, myThid )
+        CALL TIMER_STOP ('UPDATE_ETAH        [FORWARD_STEP]',mythid)
+      ENDIF
+#endif /* EXACT_CONSERV */ 
+
+#ifdef NONLIN_FRSURF
+      IF ( select_rStar.NE.0 ) THEN
+C--   r* : compute the future level thickness according to etaH(n+1) 
+        CALL TIMER_START('CALC_R_STAR       [FORWARD_STEP]',mythid)
+        CALL CALC_R_STAR(etaH, myTime, myIter, myThid )
+        CALL TIMER_STOP ('CALC_R_STAR       [FORWARD_STEP]',mythid)
+      ELSEIF ( nonlinFreeSurf.GT.0) THEN
+C--   compute the future surface level thickness according to etaH(n+1) 
+        CALL TIMER_START('CALC_SURF_DR      [FORWARD_STEP]',mythid)
+        CALL CALC_SURF_DR(etaH, myTime, myIter, myThid )
+        CALL TIMER_STOP ('CALC_SURF_DR      [FORWARD_STEP]',mythid)
+      ENDIF
+#endif /* NONLIN_FRSURF */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      IF ( staggerTimeStep ) THEN
+
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('THERMODYNAMICS',myThid)
+#endif
+        CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',mythid)
+        CALL THERMODYNAMICS( myTime, myIter, myThid )
+        CALL TIMER_STOP ('THERMODYNAMICS      [FORWARD_STEP]',mythid)
+
+C--    if staggerTimeStep: end
+      ENDIF
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph This is needed because convective_adjustment calls
 cph find_rho which may use pressure()
 CADJ STORE totphihyd  = comlev1, key = ikey_dynamics
 #endif
-C--   Correct divergence in flow field and cycle time-stepping
-C     arrays (for all fields) ; update time-counter
-      myIter = nIter0 + iLoop
-      myTime = startTime + deltaTClock * float(iLoop)
-      CALL TIMER_START('THE_CORRECTION_STEP [FORWARD_STEP]',myThid)
-      CALL THE_CORRECTION_STEP(myTime, myIter, myThid)
-      CALL TIMER_STOP ('THE_CORRECTION_STEP [FORWARD_STEP]',myThid)
+C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
+        CALL TIMER_START('TS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
+        CALL TRACERS_CORRECTION_STEP(myTime, myIter, myThid)
+        CALL TIMER_STOP ('TS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
 
 C--   Do "blocking" sends and receives for tendency "overlap" terms
 c     CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
