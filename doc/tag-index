@@ -1,7 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.254 2004/02/03 22:51:50 afe Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.255 2004/02/18 22:34:52 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint52j_post
+o fix nchklev in tamc.h for global_ocean...
+o Bringing flow and store directives up-to-date
+o Really weird thing!
+  call do_the_model_io from the_main_loop with parameters
+  starttime, niter0, instead of mytime, myiter, screws up the adjoint: 
+  TAF places a faulty re-call of initialise_varia
+  after cost_final call which should not be there!
+checkpoint52j_pre
 
 o tweaked pkg/mdsio/mdsio_readfield.F to have more useful logic and
   error messages
