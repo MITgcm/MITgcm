@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.1 2004/05/14 17:43:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_sidedrag.F,v 1.2 2004/05/24 14:10:06 adcroft Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -49,6 +49,7 @@ C  hFacZClosedN         :: fractional open water to north
 C  hFacZClosedS         :: fractional open water to south
       INTEGER I,J
       _RS hFacZClosedS,hFacZClosedN
+      _RL Ahtmp,A4tmp
 CEOP
 
 C     - Laplacian  and bi-harmonic terms
@@ -56,6 +57,10 @@ C     - Laplacian  and bi-harmonic terms
        DO i=1-Olx,sNx+Olx-1
         hFacZClosedS = _hFacW(i,j,k,bi,bj) - hFacZ(i,j)
         hFacZClosedN = _hFacW(i,j,k,bi,bj) - hFacZ(i,j+1)
+        Ahtmp=min(viscAh+viscAhGrid*rA(i,j,bi,bj)/deltaTmom,
+     &            viscAhMax)
+        A4tmp=min(viscA4+viscA4Grid*(rA(i,j,bi,bj)**2)/deltaTmom,
+     &            viscA4Max)
         uDragTerms(i,j) =
      &   -_recip_hFacW(i,j,k,bi,bj)
      &   *recip_drF(k)*recip_rAw(i,j,bi,bj)
@@ -72,10 +77,8 @@ C     - Laplacian  and bi-harmonic terms
      &               -viscA4*del2u(i,j)*cosFacU(J,bi,bj)
 #endif
 #else
-     &     min(viscAh+viscAhGrid* rA(i,j,bi,bj)    /deltaTmom,viscAhMax)
-     &                *uFld(i,j)
-     &    -min(viscA4+viscA4Grid*(rA(i,j,bi,bj)**2)/deltaTmom,viscA4Max)
-     &                *del2u(i,j)
+     &                Ahtmp*uFld(i,j)
+     &               -A4tmp*del2u(i,j)
 #endif
      &              )
        ENDDO

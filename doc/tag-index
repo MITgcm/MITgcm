@@ -1,7 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.300 2004/05/21 21:48:53 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.301 2004/05/24 14:10:02 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+
+o fix mom_common/mom_*_sidedrag.F to recover numeric output prior to creation
+  of mom_common/
+  - simple re-arrangement of instructions within computing loop
+checkpoint53d_pre
 
 checkpoint53c_post
 o new version of coupler for AIM+thSIce and Ocean models

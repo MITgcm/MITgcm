@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_sidedrag.F,v 1.1 2004/05/14 17:43:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_v_sidedrag.F,v 1.2 2004/05/24 14:10:06 adcroft Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -49,6 +49,7 @@ C  hFacZClosedE         :: fractional open water to east
 C  hFacZClosedW         :: fractional open water to west
       INTEGER I,J
       _RS hFacZClosedE,hFacZClosedW
+      _RL Ahtmp,A4tmp
 CEOP
 
 C     - Laplacian  and bi-harmonic terms
@@ -56,6 +57,10 @@ C     - Laplacian  and bi-harmonic terms
        DO i=1-Olx,sNx+Olx-1
         hFacZClosedW = _hFacS(i,j,k,bi,bj) - hFacZ(i,j)
         hFacZClosedE = _hFacS(i,j,k,bi,bj) - hFacZ(i+1,j)
+        Ahtmp=min(viscAh+viscAhGrid*rA(i,j,bi,bj)/deltaTmom,
+     &            viscAhMax)
+        A4tmp=min(viscA4+viscA4Grid*(rA(i,j,bi,bj)**2)/deltaTmom,
+     &            viscA4Max)
         vDragTerms(i,j) =
      &   -_recip_hFacS(i,j,k,bi,bj)
      &   *recip_drF(k)*recip_rAs(i,j,bi,bj)
@@ -64,10 +69,8 @@ C     - Laplacian  and bi-harmonic terms
      &     +hFacZClosedE*_dyU(i+1,j,bi,bj)
      &      *_recip_dxV(i+1,j,bi,bj) )
      &   *drF(k)*2.*(
-     &     min(viscAh+viscAhGrid* rA(i,j,bi,bj)    /deltaTmom,viscAhMax)
-     &                *vFld(i,j)*cosFacV(J,bi,bj)
-     &    -min(viscA4+viscA4Grid*(rA(i,j,bi,bj)**2)/deltaTmom,viscA4Max)
-     &                *del2v(i,j)*cosFacV(J,bi,bj)
+     &                Ahtmp*vFld(i,j)*cosFacV(J,bi,bj)
+     &               -A4tmp*del2v(i,j)*cosFacV(J,bi,bj)
 #ifdef COSINEMETH_III
      &               -viscA4*del2v(i,j)*sqcosFacV(J,bi,bj)
 #else
