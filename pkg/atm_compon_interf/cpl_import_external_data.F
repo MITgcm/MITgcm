@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/cpl_import_external_data.F,v 1.1 2003/12/15 02:44:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/cpl_import_external_data.F,v 1.2 2004/05/21 20:00:48 jmc Exp $
 C $Name:  $  
 
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE CPL_IMPORT_EXTERNAL_DATA(
-     I           myCurrentIter, myCurrentTime, myThid )
+     I                      myIter, myTime, myThid )
 C     /==========================================================\
 C     | SUBROUTINE CPL_IMPORT_EXTERNAL_DATA                      |
 C     | o Routine for controlling import of coupling data from   |
@@ -20,26 +20,27 @@ C     \==========================================================/
 #include "CPL_PARAMS.h"
 
 C     == Routine arguments ==
-C     myCurrentIter - Current timestep number.
-C     myCurrentTime - Current internal time.
-C     myThid        - Thread number for this instance 
-C                     of the routine.
-      INTEGER myCurrentIter
-      _RL     myCurrentTime
+C     myIter - Current timestep number.
+C     myTime - Current internal time.
+C     myThid - Thread number for this instance of the routine.
+      INTEGER myIter
+      _RL     myTime
       INTEGER myThid
 CEndOfInterface
 
+#ifdef COMPONENT_MODULE
 C     == Local variables ==
 
 C     Fetch data from coupling layer. Note MIT Coupler checkpoint1
 C     does not allow asynchronous extraction of data, so ordering 
 C     has to be consistent with ordering coupling layer.
-c     IF ( (myCurrentIter/96)*96 .EQ. myCurrentIter ) THEN
-      IF ( (myCurrentIter/cplSendFrq_iter)*cplSendFrq_iter
-     &      .EQ. myCurrentIter ) THEN
-       WRITE(0,*) ' Importing fluxes at iteration ', myCurrentIter
-       CALL ATM_IMPORT_SST (     myThid )
+
+      IF ( (myIter/cplSendFrq_iter)*cplSendFrq_iter .EQ. myIter ) THEN
+       WRITE(0,*) ' Importing oceanic fields at iteration ', myIter
+       CALL ATM_IMPORT_FIELDS( myThid )
       ENDIF
+
+#endif /* COMPONENT_MODULE */
 
       RETURN
       END

@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/atm_store_evmpr.F,v 1.1 2003/12/15 02:44:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/Attic/atm_store_evmpr.F,v 1.2 2004/05/21 20:00:48 jmc Exp $
 C $Name:  $  
 
-#include "AIM_OPTIONS.h"
+#include "CPP_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE ATM_STORE_EVMPR( bi,bj,
-     I                             myCurrentTime, 
-     I                             myCurrentIter, 
+     I                             myTime, 
+     I                             myIter, 
      I                             myThid )
 C     /==========================================================\
 C     | SUBROUTINE ATM_STORE_EVMPR                               |
@@ -22,53 +22,44 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
+C     == Global variables (main model)
+#include "FFIELDS.h"
 C     == Global variables for coupling interface ==
 #include "ATMCPL.h"
-C     == AIMPHYS specific global data ==
-#include "com_physvar.h"
 
 
 C     == Routine arguments ==
-C     bi,bj         - Tile index
-C     myThid        - Thread number for this instance of the routine
-C     myCurrentIter - Current timestep number
-C     myCurrentTime - Current model time
+C     bi,bj  - Tile index
+C     myThid - Thread number for this instance of the routine
+C     myIter - Current timestep number
+C     myTime - Current model time
       INTEGER bi, bj
-      _RL     myCurrentTime
-      INTEGER myCurrentIter
+      _RL     myTime
+      INTEGER myIter
       INTEGER myThid
 CEndOfInterface
 
+#ifdef COMPONENT_MODULE
 C     == Local variables ==
-C     I,J,K,II - Loop counters
-C     conv_precip  :: conversion factor for precip: from g.m-2.s-1 to m/s
-      INTEGER I,J,K,II
-      _RL conv_precip
+C     i,j - Loop counters
+      INTEGER i,j
       _RL cplTimeFraction
-
-C     from g/(m^2.s) to m/s :
-      conv_Precip = 1. _d -3 / rhoConstFresh
 
 C     o Accumulate fresh water flux that will be exported to the 
 C       coupling layer. Fresh-water flux is in units of g/m^2/s. 
 C       To convert to meters per second divide by density in 
 C       g/m^3. Positive flux is into the atmosphere (E-P).
-      cplTimeFraction = 1. _d 0 / DFLOAT(cplSendFrq_iter)
-c     DO bj=myByLo(myThid),myByHi(myThid)
-c      DO bi=myBxLo(myThid),myBxHi(myThid)
-        EvMPrTime(bi,bj) = EvMPrTime(bi,bj) + cplTimeFraction
-        DO J=1,sNy
-         DO I=1,sNx
-          II = (sNx)*(J-1)+I
-          EvMPrFlux(I,J,bi,bj) = EvMPrFlux(I,J,bi,bj) 
-     &                         +( EVAP(II,2,myThid)
-     &                           -PRECNV(II,myThid)
-     &                           -PRECLS(II,myThid)
-     &                           )*conv_precip*cplTimeFraction
+
+       cplTimeFraction = 1. _d 0 / DFLOAT(cplSendFrq_iter)
+       EvMPrTime(bi,bj) = EvMPrTime(bi,bj) + cplTimeFraction
+       DO j=1,sNy
+         DO i=1,sNx
+          EvMPrFlux(i,j,bi,bj) = EvMPrFlux(i,j,bi,bj) 
+     &                         + EmPmR(i,j,bi,bj)*cplTimeFraction
          ENDDO
-        ENDDO
-c      ENDDO
-c     ENDDO
+       ENDDO
+
+#endif /* COMPONENT_MODULE */
 
       RETURN
       END

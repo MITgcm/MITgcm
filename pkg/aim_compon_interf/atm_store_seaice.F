@@ -1,17 +1,17 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_store_runoff.F,v 1.2 2004/05/21 20:00:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_store_seaice.F,v 1.1 2004/05/21 19:59:38 jmc Exp $
 C $Name:  $  
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE ATM_STORE_RUNOFF( bi,bj,
+      SUBROUTINE ATM_STORE_SEAICE( bi,bj,
      I                             myTime, 
      I                             myIter, 
      I                             myThid )
 C     /==========================================================\
-C     | SUBROUTINE ATM_STORE_RUNOFF                              |
-C     | o Routine for saving atmos. RunOff from land bucket      |
+C     | SUBROUTINE ATM_STORE_SEAICE                              |
+C     | o Routine for saving atmos. Sea-Ice Mass from thSIce pkg |
 C     |   for export to coupling layer.                          |
 C     |==========================================================|
 C     | This version interfaces to the LAND package.             |
@@ -19,19 +19,14 @@ C     \==========================================================/
       IMPLICIT NONE
 
 C     == Global variables ==
-#ifdef ALLOW_LAND
-#include "LAND_SIZE.h"
-#else
 #include "SIZE.h"
-#endif
 
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
-
-#ifdef ALLOW_LAND
-c #include "LAND_PARAMS.h"
-#include "LAND_VARS.h"
+#ifdef ALLOW_THSICE
+#include "THSICE_PARAMS.h"
+#include "THSICE_VARS.h"
 #endif
 C     == Global variables for coupling interface ==
 #include "ATMCPL.h"
@@ -48,25 +43,30 @@ C     myTime - Current model time
       INTEGER myThid
 CEndOfInterface
 
-#ifdef ALLOW_LAND
+#ifdef ALLOW_THSICE
 C     == Local variables ==
-C     I,J,K,II - Loop counters
-C     conv_precip  :: conversion factor for precip: from g.m-2.s-1 to m/s
-      INTEGER I,J,K
+C     i,j - Loop counters
+      INTEGER i,j
       _RL cplTimeFraction
 
-C     o Accumulate RunOff from land bucket that will be exported to the 
-C       coupling layer. RunOff is per surface unit, in m/s. 
+C     o Accumulate Sea-Ice Mass from thSIce pkg that will be exported
+C       to the coupling layer. seaIceMass is per surface unit, in kg/m2. 
        cplTimeFraction = 1. _d 0 / DFLOAT(cplSendFrq_iter)
-       RunOffTime(bi,bj) = RunOffTime(bi,bj) + cplTimeFraction
-       DO J=1,sNy
-         DO I=1,sNx
-          RunOffFlux(I,J,bi,bj) = RunOffFlux(I,J,bi,bj) 
-     &                 + land_runOff(I,J,bi,bj)*cplTimeFraction
+       seaIceTime(bi,bj) = seaIceTime(bi,bj) + cplTimeFraction
+C-     Needs really to store the last time-step value and not the average
+       cplTimeFraction = 1. _d 0
+       seaIceTime(bi,bj) = cplTimeFraction
+       DO j=1,sNy
+         DO i=1,sNx
+c         seaIceMass(i,j,bi,bj) = seaIceMass(i,j,bi,bj) +
+          seaIceMass(i,j,bi,bj) = 
+     &                   ( snowHeight(i,j,bi,bj)*rhos 
+     &                    + iceHeight(i,j,bi,bj)*rhoi 
+     &                   )*iceMask(i,j,bi,bj)*cplTimeFraction
          ENDDO
        ENDDO
 
-#endif /* ALLOW_LAND */
+#endif /* ALLOW_THSICE */
 
       RETURN
       END

@@ -1,29 +1,38 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_store_evmpr.F,v 1.2 2004/05/21 20:00:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_store_roenfx.F,v 1.1 2004/05/21 19:59:38 jmc Exp $
 C $Name:  $  
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE ATM_STORE_EVMPR( bi,bj,
+      SUBROUTINE ATM_STORE_ROENFX( bi,bj,
      I                             myTime, 
      I                             myIter, 
      I                             myThid )
 C     /==========================================================\
-C     | SUBROUTINE ATM_STORE_EVMPR                               |
-C     | o Routine for saving atmos. fresh water flux             |
-C     |   (=Evap-Precip) for export to coupling layer.           |
+C     | SUBROUTINE ATM_STORE_ROENFX                              |
+C     | o Routine for saving atmos. RunOff Energy Flux from land |
+C     |   for export to coupling layer.                          |
 C     |==========================================================|
-C     | This version interfaces to the MITgcm AIMPHYS package.   |
+C     | This version interfaces to the LAND package.             |
 C     \==========================================================/
       IMPLICIT NONE
 
 C     == Global variables ==
-#include "AIM_SIZE.h"
+#ifdef ALLOW_LAND
+#include "LAND_SIZE.h"
+#else
+#include "SIZE.h"
+#endif
+
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "CPL_PARAMS.h"
-C     == Global variables (main model)
-#include "FFIELDS.h"
+
+#ifdef ALLOW_LAND
+c #include "LAND_PARAMS.h"
+#include "LAND_VARS.h"
+#endif
 C     == Global variables for coupling interface ==
 #include "ATMCPL.h"
 
@@ -39,27 +48,24 @@ C     myTime - Current model time
       INTEGER myThid
 CEndOfInterface
 
-#ifdef COMPONENT_MODULE
+#ifdef ALLOW_LAND
 C     == Local variables ==
-C     i,j - Loop counters
+C     i,j     :: Loop counters
       INTEGER i,j
       _RL cplTimeFraction
 
-C     o Accumulate fresh water flux that will be exported to the 
-C       coupling layer. Fresh-water flux is in units of g/m^2/s. 
-C       To convert to meters per second divide by density in 
-C       g/m^3. Positive flux is into the atmosphere (E-P).
-
+C     o Accumulate RunOff Energy from land bucket that will be exported
+C       to the coupling layer. RunOff Energy is per surface unit, in W/m2. 
        cplTimeFraction = 1. _d 0 / DFLOAT(cplSendFrq_iter)
-       EvMPrTime(bi,bj) = EvMPrTime(bi,bj) + cplTimeFraction
+       ROEnFxTime(bi,bj) = ROEnFxTime(bi,bj) + cplTimeFraction
        DO j=1,sNy
          DO i=1,sNx
-          EvMPrFlux(i,j,bi,bj) = EvMPrFlux(i,j,bi,bj) 
-     &                         + EmPmR(i,j,bi,bj)*cplTimeFraction
+          RunOffEnFx(i,j,bi,bj) = RunOffEnFx(i,j,bi,bj) 
+     &                 + land_enRnOf(i,j,bi,bj)*cplTimeFraction
          ENDDO
        ENDDO
 
-#endif /* COMPONENT_MODULE */
+#endif /* ALLOW_LAND */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/CPL_PARAMS.h,v 1.1 2003/12/15 02:44:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/CPL_PARAMS.h,v 1.2 2004/05/21 20:00:48 jmc Exp $
 C $Name:  $
 
 #ifdef COMPONENT_MODULE
@@ -10,10 +10,19 @@ C     |   this version is specific to 1 component (atmos)
 C     *==========================================================*
 
 C--   COMMON /CPL_ATM_PAR_L/: logical parameters
-C     useImportSST   :: True => use the Imported SST from couler
-      COMMON /LAND_PAR_L/
-     &  useImportSST
-      LOGICAL useImportSST
+C     cpl_earlyExpImpCall :: call coupler early in the time stepping call sequence
+C     cpl_oldPickup :: restart from an old pickup (= until checkpoint 52m_post)
+C     useImportMxlD :: True => use Imported Mix.Layer Detph from coupler
+C     useImportSST  :: True => use the Imported SST from coupler
+C     useImportSSS  :: True => use the Imported SSS from coupler
+C     useImportVsq  :: True => use the Imported Surf. velocity^2
+      COMMON /CPL_ATM_PAR_L/
+     &  cpl_earlyExpImpCall, cpl_oldPickup,
+     &  useImportMxlD, useImportSST, useImportSSS, useImportVsq
+
+      LOGICAL cpl_earlyExpImpCall
+      LOGICAL cpl_oldPickup
+      LOGICAL useImportMxlD, useImportSST, useImportSSS, useImportVsq
 
 C--   COMMON /CPL_ATM_PAR_I/: Integer valued parameters
 C     cplSendFrq_iter :: send data to coupler every "cplSendFrq" iter

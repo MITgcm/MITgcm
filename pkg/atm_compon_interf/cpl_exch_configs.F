@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_exch_configs.F,v 1.1 2003/12/15 02:44:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_exch_configs.F,v 1.2 2004/05/21 20:00:48 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -30,6 +30,7 @@ C     *==========================================================*
 C     == Global variables ==
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "PARAMS.h"
 #include "GRID.h"
 #include "ATMCPL.h"
 
@@ -58,8 +59,8 @@ C     o Get ocean model configuration
 
 C     Summarise fields that were imported.
 C     o Plot ocean depths
-      CALL PLOT_FIELD_XYRL( Hocn, 
-     &                      'Ocean depths on atmos grid',
+      CALL PLOT_FIELD_XYRL( ocMxlD, 
+     &                      'Ocean mixed-layer depth on atmos grid',
      &                      1, myThid )
 
 C     Do consistency checks on imported fields.
@@ -72,12 +73,13 @@ C       atmospheres full depth is 10^5 Pa.
       biDiff = 0
       bjDiff = 0
       seaSurface_ocn    = 0. _d 0
-      groundLevel_atm   = 1. _d 5
+c     groundLevel_atm   = 1. _d 5
+      groundLevel_atm   = Ro_SeaLevel
       DO bj=myByLo(myTHid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1,sNy
          DO I=1,sNx
-          IF ( Hocn(I,J,bi,bj)  .NE. seaSurface_ocn  .AND.
+          IF ( ocMxlD(I,J,bi,bj)  .NE. seaSurface_ocn  .AND.
      &         Ro_surf(I,J,bi,bj) .NE. groundLevel_atm ) THEN
            iDiff  = I
            jDiff  = J
@@ -91,7 +93,7 @@ C       atmospheres full depth is 10^5 Pa.
      &     'H (atmosphere) ==',Ro_surf(I,J,bi,bj)
            CALL PRINT_ERROR( msgBuf, 1 )
            WRITE(msgBuf,'(A,E30.15)')
-     &     'H (ocean)      ==',Hocn(I,J,bi,bj)
+     &     'H (ocean)      ==',ocMxlD(I,J,bi,bj)
            CALL PRINT_ERROR( msgBuf, 1 )
           ENDIF
          ENDDO

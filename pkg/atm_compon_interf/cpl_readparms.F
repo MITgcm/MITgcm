@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.1 2003/12/15 02:44:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/atm_compon_interf/cpl_readparms.F,v 1.2 2004/05/21 20:00:48 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -52,17 +52,29 @@ C     iL         :: Work variable for length of file-name
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Coupling parameters: 
-C     useImportSST   :: True => use the Imported SST from couler
+C     cpl_earlyExpImpCall :: call coupler early in the time stepping call sequence
+C     cpl_oldPickup  :: restart from an old pickup (= until checkpoint 52m_post)
+C     useImportMxlD  :: True => use Imported Mix.Layer Detph from coupler
+C     useImportSST   :: True => use the Imported SST from coupler
+C     useImportSSS   :: True => use the Imported SSS from coupler
+C     useImportVsq   :: True => use the Imported Surf. velocity^2
 C     cpl_atmSendFrq :: Frequency^-1 for sending data to coupler (s) 
       NAMELIST /CPL_ATM_PARAM/
-     &    useImportSST,
+     &    cpl_earlyExpImpCall,
+     &    cpl_oldPickup,
+     &    useImportMxlD, useImportSST, useImportSSS, useImportVsq,
      &    cpl_atmSendFrq
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-    Set default value:
-      useImportSST = .TRUE. 
-      cpl_atmSendFrq  = deltaTClock
+      cpl_earlyExpImpCall = .FALSE. 
+      cpl_oldPickup = .FALSE. 
+      useImportMxlD = .TRUE. 
+      useImportSST  = .TRUE. 
+      useImportSSS  = .TRUE. 
+      useImportVsq  = .TRUE. 
+      cpl_atmSendFrq= deltaTClock
       
       _BEGIN_MASTER(myThid)
       
@@ -105,15 +117,29 @@ C--   Print out parameter values :
       CALL PRINT_MESSAGE(msgBuf,iUnit,SQUEEZE_RIGHT,1)
 
 C- namelist CPL_ATM_PARAM:
+       CALL WRITE_0D_L( cpl_earlyExpImpCall, INDEX_NONE,
+     &                 'cpl_earlyExpImpCall=',
+     &   ' /* call coupler early in the time-stepping */')
+       CALL WRITE_0D_L( cpl_oldPickup , INDEX_NONE,
+     &                 'cpl_oldPickup =',
+     &   ' /* restart from old pickup on/off flag */')       
+       CALL WRITE_0D_L( useImportMxlD , INDEX_NONE,
+     &                 'useImportMxlD =',
+     &   ' /* use Imported MxL. Depth from Coupler flag */')       
        CALL WRITE_0D_L( useImportSST , INDEX_NONE,
      &                 'useImportSST =',
      &   ' /* use Imported SST from Coupler on/off flag */')       
+       CALL WRITE_0D_L( useImportSSS , INDEX_NONE,
+     &                 'useImportSSS =',
+     &   ' /* use Imported SSS from Coupler on/off flag */')       
+       CALL WRITE_0D_L( useImportVsq , INDEX_NONE,
+     &                 'useImportVsq =',
+     &   ' /* use Imported surf.Vel^2 from Coupler flag */')       
        CALL WRITE_0D_R8( cpl_atmSendFrq, INDEX_NONE, 'cpl_atmSendFrq =',
      &   ' /* Frequency^o-1 for sending data to Coupler (s) */')
 C     cpl_atmSendFrq  :: Frequency^-1 for sending data to coupler (s) 
        CALL WRITE_0D_I( cplSendFrq_iter, INDEX_NONE,'cplSendFrq_iter =',
      &'   /* send data to coupler every "cplSendFrq" iter */')
-
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

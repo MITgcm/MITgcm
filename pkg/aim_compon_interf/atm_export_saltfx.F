@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_export_qlatent.F,v 1.1 2003/12/15 02:44:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_export_saltfx.F,v 1.1 2004/05/21 19:59:38 jmc Exp $
 C $Name:  $  
 
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
-      SUBROUTINE ATM_EXPORT_QLATENT( myThid )
+      SUBROUTINE ATM_EXPORT_SALTFX( myThid )
 C     /==========================================================\
-C     | SUBROUTINE ATM_EXPORT_QLATENT                            |
-C     | o Routine for exporting atmos. latent heat    flux at    |
-C     |   lower boundary to coupling layer.                      |
+C     | SUBROUTINE ATM_EXPORT_SALTFX                             |
+C     | o Routine for exporting atmos. saltFlux from thSIce pkg  |
+C     |   to coupling layer.                                     |
 C     |==========================================================|
 C     | This version talks to the MIT Coupler. It uses the MIT   |
 C     | Coupler "checkpoint1" library calls.                     |
@@ -38,35 +38,35 @@ C     bi, bj   ::
       INTEGER bi
       INTEGER bj
 
-C     Convert time integrated flux to mean value ready for
+C     Convert time integrated heatflux to mean value ready for
 C     export.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        IF ( ABS(qLatentTime(bi,bj) -1. _d 0).GT. 1. _d -12
-     &     .AND. qLatentTime(bi,bj) .NE. 0. ) THEN
-         recipAvT = 1. _d 0/qLatentTime(bi,bj)
+        IF ( ABS(saltFxTime(bi,bj) -1. _d 0).GT. 1. _d -12
+     &     .AND. saltFxTime(bi,bj) .NE. 0. ) THEN 
+         recipAvT = 1. _d 0/saltFxTime(bi,bj)
          DO J=1,sNy
           DO I=1,sNx
-           qLatent(I,J,bi,bj) = qLatent(I,J,bi,bj)*recipAvT
+           iceSaltFlx(I,J,bi,bj) = iceSaltFlx(I,J,bi,bj)*recipAvT
           ENDDO
          ENDDO
-         WRITE(errorMessageUnit,*) 'ATM_EXPORT_QLATENT: 1-CountTime=',
-     &                             bi,bj,1.-qLatentTime(bi,bj)
+         WRITE(errorMessageUnit,*)'ATM_EXPORT_SALTFX: 1-CountTime=',
+     &                             bi,bj,1.-saltFxTime(bi,bj)
         ENDIF
        ENDDO
       ENDDO
 
-C     o Send momentum flux to coupling layer.
-      CALL COMPSEND_R8TILES( atmQLatentName,
-     I     sNx, OLx, sNy, OLy, 1, nSx, nSy, qLatent )
+C     o Send freshwater flux to coupling layer.
+      CALL COMPSEND_R8TILES( atmSaltFxName,
+     I     sNx, OLx, sNy, OLy, 1, nSx, nSy, iceSaltFlx )
 
-C     Reset flux to start accumulating again.
+C     Reset fresh water flux to start accumulating again.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        qLatentTime(bi,bj) = 0.
+        saltFxTime(bi,bj) = 0.
         DO J=1,sNy
          DO I=1,sNx
-          qLatent(I,J,bi,bj) = 0.
+          iceSaltFlx(I,J,bi,bj) = 0.
          ENDDO
         ENDDO
        ENDDO

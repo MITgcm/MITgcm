@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_export_qshortwave.F,v 1.1 2003/12/15 02:44:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_compon_interf/Attic/atm_export_qshortwave.F,v 1.2 2004/05/21 20:00:48 jmc Exp $
 C $Name:  $  
 
 #include "CPP_OPTIONS.h"
@@ -42,31 +42,31 @@ C     Convert time integrated flux to mean value ready for
 C     export.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        IF ( ABS(QshortwaveTime(bi,bj) -1. _d 0).GT. 1. _d -12
-     &     .AND. QshortwaveTime(bi,bj) .NE. 0. ) THEN
-         recipAvT = 1. _d 0/QshortwaveTime(bi,bj)
+        IF ( ABS(qShortWaveTime(bi,bj) -1. _d 0).GT. 1. _d -12
+     &     .AND. qShortWaveTime(bi,bj) .NE. 0. ) THEN
+         recipAvT = 1. _d 0/qShortWaveTime(bi,bj)
          DO J=1,sNy
           DO I=1,sNx
-           Qshortwave(I,J,bi,bj) = Qshortwave(I,J,bi,bj)*recipAvT
+           qShortWave(I,J,bi,bj) = qShortWave(I,J,bi,bj)*recipAvT
           ENDDO
          ENDDO
          WRITE(errorMessageUnit,*)'ATM_EXPORT_QSHORTWAVE: 1-CountTime=',
-     &                             bi,bj,1.-QshortwaveTime(bi,bj)
+     &                             bi,bj,1.-qShortWaveTime(bi,bj)
         ENDIF
        ENDDO
       ENDDO
 
 C     o Send flux to coupling layer.
-      CALL COMPSEND_R8TILES( atmQshortwaveName,
-     I     sNx, OLx, sNy, OLy, 1, nSx, nSy, Qshortwave )
+      CALL COMPSEND_R8TILES( atmQshortWaveName,
+     I     sNx, OLx, sNy, OLy, 1, nSx, nSy, qShortWave )
 
 C     Reset flux to start accumulating again.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-        QshortwaveTime(bi,bj) = 0.
+        qShortWaveTime(bi,bj) = 0.
         DO J=1,sNy
          DO I=1,sNx
-          Qshortwave(I,J,bi,bj) = 0.
+          qShortWave(I,J,bi,bj) = 0.
          ENDDO
         ENDDO
        ENDDO
