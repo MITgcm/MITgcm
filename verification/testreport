@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.59 2004/12/11 02:48:45 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.60 2004/12/12 04:25:54 edhill Exp $
 #  $Name:  $
 #
 
@@ -450,7 +450,7 @@ linkdata()
 	    if test "x$ADM" = x ; then
 		files=`( cd ../input ; ls -1 | grep -v CVS )`
 		for i in $files ; do
-		    if test ! -d "../input/"$i ; then
+		    if test ! -d "../input/"$i -a ! -f $i ; then
 			ln -sf "../input/"$i $i
 		    fi
 		done
