@@ -1,10 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_cs_corner_uv.F,v 1.1 2004/09/20 21:53:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_cs_corner_uv.F,v 1.2 2004/09/24 17:01:09 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
 c #include "DEBUG_OPTIONS.h"
 
       SUBROUTINE DEBUG_CS_CORNER_UV( 
+     I        word2print,
      I        uFld, vFld,
      I        k, ioUnit, bi,bj, myThid)
 C     *==========================================================*
@@ -31,15 +32,17 @@ c #include "PARAMS.h"
 c #include "GRID.h"
 
 C     == Routine arguments ==
+C     word2print - a string to print
 C     uFld   - u component of 2D vector 
 C     vFld   - v component of 2D vector 
 C     k      - current level
 C     ioUnit - I/O unit number
 C     bi,bj  - tile indices
 C     myThid - Instance number for this invocation of 
+      CHARACTER*(*) word2print
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      INTEGER k, ioUnit
+      INTEGER ic, k, ioUnit
       INTEGER bi,bj
       INTEGER myThid
 
@@ -52,6 +55,9 @@ C     == Local variables in common block :
 
 C     == Local variables ==
       INTEGER n1,n2,n3
+
+      EXTERNAL ILNBLNK
+      INTEGER  ILNBLNK
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -69,6 +75,9 @@ c     IF (k.EQ.4 .AND. myIter.EQ.nIter0 ) THEN
        IF (bi.EQ.nSx .AND. nSx.EQ.6) THEN
         WRITE(ioUnit,'(2A)') 'DEBUG_CS_CORNER_UV: ',
      &   '------------------------------------------------------------'
+        ic = MAX(1,ILNBLNK(word2print))
+        WRITE(ioUnit,'(2A)') 'DEBUG_CS_CORNER_UV: ',
+     &        word2print(1:ic)
         WRITE(ioUnit,'(2A,I4)') 'DEBUG_CS_CORNER_UV: ',
      &       ' Edges values near a corner, lev=',k 
         WRITE(ioUnit,'(2A)') 'DEBUG_CS_CORNER_UV: ',
