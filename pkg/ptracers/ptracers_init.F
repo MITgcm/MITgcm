@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.6 2003/09/23 04:34:25 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_init.F,v 1.7 2003/09/24 06:50:26 dimitri Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -63,6 +63,11 @@ C Initialize arrays in common blocks :
             gPtr(i,j,k,bi,bj,iTracer)    = 0. _d 0
             gPtrNM1(i,j,k,bi,bj,iTracer) = 0. _d 0
            ENDDO
+          ENDDO
+         ENDDO
+         DO j=1-Oly,sNy+OLy
+          DO i=1-Olx,sNx+Olx
+           surfaceTendencyPtr(i,j,bi,bj,iTracer) = 0. _d 0
           ENDDO
          ENDDO
 

@@ -1,10 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.177 2003/09/23 04:34:23 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.178 2003/09/24 06:50:26 dimitri Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 untagged
-o Mods and bug fixes to pkg/cal and pkg/exf needed for computation
+o Mods and bug fixes to pkg/cal, pkg/exf, etc., needed for computation
   of tracer Green's fucntions for ocean inversion project.
 
 checkpoint51f_pre
