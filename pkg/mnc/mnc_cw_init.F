@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_init.F,v 1.2 2004/12/17 21:28:25 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_init.F,v 1.3 2005/02/23 05:17:36 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -49,7 +49,7 @@ CEOP
 
 C     !LOCAL VARIABLES:
       integer CW_MAX_LOC
-      parameter ( CW_MAX_LOC = 5 )
+      parameter ( CW_MAX_LOC = 6 )
       integer i, ihorz,ihsub,ivert,itime,ihalo, is,ih, n,ntot
       integer ndim, ncomb, nvch
       character*(MNC_MAX_CHAR) name
@@ -65,15 +65,15 @@ C     Functions
 
 C     ......12345....12345....12345....12345....12345...
       data horz_dat /
-     &     '-    ', 'U    ', 'V    ', 'Cen  ', 'Cor  '  /
+     &     '-    ', 'U    ', 'V    ', 'Cen  ', 'Cor  ', '     '  /
       data hsub_dat /
-     &     'xy   ', 'x    ', 'y    ', '-    ', '     '  /
+     &     'xy   ', 'x    ', 'y    ', '-    ', '     ', '     '  /
       data halo_dat /
-     &     'Hn   ', 'Hy   ', '--   ', '     ', '     '  /
+     &     'Hn   ', 'Hy   ', '--   ', '     ', '     ', '     '  /
       data vert_dat /
-     &     '-    ', 'C    ', 'I    ', '     ', '     '  /
+     &     '-    ', 'C    ', 'I    ', 'L    ', 'U    ', 'S    '  /
       data time_dat /
-     &     '-    ', 't    ', '     ', '     ', '     '  /
+     &     '-    ', 't    ', '     ', '     ', '     ', '     '  /
 
 C     Create the types
       ncomb = 0
@@ -93,7 +93,7 @@ C           Loop just ONCE if the Horiz component is "-"
               ENDIF
             ENDIF
             
-            DO ivert = 1,3
+            DO ivert = 1,6
               DO itime = 1,2
                 
 C               horiz and hsub
@@ -196,6 +196,27 @@ C               Vertical dimension
                   dim(ndim) = Nr + 1
                   ib(ndim)  = 1
                   ie(ndim)  = Nr + 1
+                ENDIF
+                IF (vert_dat(ivert)(1:1) .EQ. 'L') THEN
+                  ndim = ndim + 1
+                  dn(ndim)(1:2) = 'Zl'
+                  dim(ndim) = Nr
+                  ib(ndim)  = 1
+                  ie(ndim)  = Nr
+                ENDIF
+                IF (vert_dat(ivert)(1:1) .EQ. 'U') THEN
+                  ndim = ndim + 1
+                  dn(ndim)(1:2) = 'Zu'
+                  dim(ndim) = Nr
+                  ib(ndim)  = 1
+                  ie(ndim)  = Nr
+                ENDIF
+                IF (vert_dat(ivert)(1:1) .EQ. 'M') THEN
+                  ndim = ndim + 1
+                  dn(ndim)(1:3) = 'Zm1'
+                  dim(ndim) = Nr - 1
+                  ib(ndim)  = 1
+                  ie(ndim)  = Nr - 1
                 ENDIF
 
 C               Time dimension

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.4 2004/12/20 17:10:27 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.5 2005/02/23 05:17:36 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -150,6 +150,30 @@ C     Check all the coordinate variables that we know about
         cv_count(1) = Nr + 1
         DO i = cv_start(1),cv_count(1)
           rtmp(i) = rF(i)
+        ENDDO
+
+      ELSEIF (cvname(nnf:nnl) .EQ. 'Zu') THEN
+
+        cv_start(1) = 1
+        cv_count(1) = Nr
+        DO i = cv_start(1),cv_count(1)
+          rtmp(i) = rF(i + 1)
+        ENDDO
+
+      ELSEIF (cvname(nnf:nnl) .EQ. 'Zl') THEN
+
+        cv_start(1) = 1
+        cv_count(1) = Nr
+        DO i = cv_start(1),cv_count(1)
+          rtmp(i) = rF(i)
+        ENDDO
+
+      ELSEIF (cvname(nnf:nnl) .EQ. 'Zm1') THEN
+
+        cv_start(1) = 1
+        cv_count(1) = Nr - 1
+        DO i = cv_start(1),cv_count(1)
+          rtmp(i) = rF(i + 1)
         ENDDO
 
       ELSE

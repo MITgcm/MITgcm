@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.15 2005/02/22 17:25:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_model_io.F,v 1.16 2005/02/23 05:17:36 edhill Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -111,6 +111,20 @@ C     RF
       CALL MNC_CW_ADD_VATTR_TEXT('RF','description',
      &     'R coordinate of cell interface',myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('RF',
+     &     'units', 'm', myThid)
+
+C     RL
+      CALL MNC_CW_ADD_VNAME('RL', '-_-_--__L__-', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('RL','description',
+     &     'R coordinate of lower interface',myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('RL',
+     &     'units', 'm', myThid)
+
+C     RU
+      CALL MNC_CW_ADD_VNAME('RU', '-_-_--__U__-', 0,0, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('RU','description',
+     &     'R coordinate of upper interface',myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('RU',
      &     'units', 'm', myThid)
 C     End define coordinates for all MNC files ----------------------------
 

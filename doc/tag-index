@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.457 2005/02/21 05:34:17 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.458 2005/02/23 05:17:36 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o add more "Z" dimensions and associated coordinate vars to MNC
 o pkg/exf: added twoDigitYear capability for option useExfYearlyFields
 o parameter calendarDumps: when set, approximate months (30-31 days) and years
   (360-372 days) for parameters chkPtFreq, pChkPtFreq, taveFreq, SEAICE_taveFreq,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.10 2005/02/22 17:09:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_grid.F,v 1.11 2005/02/23 05:17:36 edhill Exp $
 C $Name:  $
       
 #include "PACKAGES_CONFIG.h"
@@ -107,7 +107,7 @@ c       CALL MNC_CW_ADD_VNAME('saFac', '-_-_--__C__-', 0,0, myThid)
         CALL MNC_CW_ADD_VNAME('rAz', 'Cor_xy_Hn__-__-', 3,4, myThid)
         CALL MNC_CW_ADD_VNAME('fCori', 'Cen_xy_Hn__-__-', 3,4,myThid)
         CALL MNC_CW_ADD_VNAME('fCoriG','Cor_xy_Hn__-__-', 3,4,myThid)
-        CALL MNC_CW_ADD_VNAME('R_low','Cen_xy_Hn__-__-', 3,4, myThid)
+        CALL MNC_CW_ADD_VNAME('R_low', 'Cen_xy_Hn__-__-', 3,4,myThid)
         CALL MNC_CW_ADD_VNAME('Ro_surf','Cen_xy_Hn__-__-',3,4,myThid)
         CALL MNC_CW_ADD_VNAME('Depth', 'Cen_xy_Hn__-__-', 3,4,myThid)
         CALL MNC_CW_ADD_VNAME('HFacC', 'Cen_xy_Hn__C__-', 4,5,myThid)
@@ -165,6 +165,8 @@ C       Write the GRID.h variables to a file
         CALL MNC_CW_SET_UDIM(bfname, 0, myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'RC',rC,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'RF',rF,myThid)
+        CALL MNC_CW_RL_W('D',bfname,0,0,'RU',rF(2),myThid)
+        CALL MNC_CW_RL_W('D',bfname,0,0,'RL',rF,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'drC',drC,myThid)
         CALL MNC_CW_RL_W('D',bfname,0,0,'drF',drF,myThid)
 c       CALL MNC_CW_RL_W('D',bfname,0,0,'saFac',saFac,myThid)
