@@ -29,7 +29,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
    aim_vegFile = 'vegetFrc.FM.bin',
    aim_sstFile = 'seaSurfT.FM.bin',
    aim_lstFile = 'lndSurfT.2f2.bin',
-   aim_oiceFile= 'seaIce.FM.bin',
+   aim_oiceFile= 'seaIce.2f2.bin',
    aim_snowFile= 'snowDepth.FM.bin',
    aim_swcFile = 'soilMoist.FM.bin',
 #  aim_dragStrato= 2592000.,
