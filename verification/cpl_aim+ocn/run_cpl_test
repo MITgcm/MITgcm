@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.3 2004/10/28 01:31:36 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/run_cpl_test,v 1.4 2004/10/28 02:49:00 edhill Exp $
 # $Name:  $
 
 Np=3
@@ -142,7 +142,8 @@ then
  done
 
  cd $ROOTDIR
- /usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpirun.ch_gm -pg pr_group -wd $ROOTDIR --gm-kill 5 -v  ./build_cpl/mitgcmuv > std_outp 2>&1
+ #  -wd $ROOTDIR
+ /usr/local/pkg/mpi/mpi-1.2.4..8a-gm-1.5/pgi/bin/mpirun.ch_gm -pg pr_group --gm-kill 5 -v  ./build_cpl/mitgcmuv > std_outp 2>&1
  tail -20 std_outp
  ls -l rank_?/pickup*.ckptA.001.001.data
 
