@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.20 2003/10/22 15:27:07 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.21 2003/10/22 18:00:49 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -121,6 +121,7 @@ EOF
 	    p_FC="$p_FC $c"
 	fi
     done
+    rm -f ./hello.f ./hello
     if test "x${p_FC}" = x ; then
 	cat 1>&2 <<EOF
 
@@ -1172,6 +1173,11 @@ echo "# by the command:" >> $MAKEFILE
 echo "#    $0 $@" >> $MAKEFILE
 echo "# executed by:" >> $MAKEFILE
 echo "#    $USER@${THISHOSTNAME}:${THISCWD}" >> $MAKEFILE
+
+EXE_AD=$EXECUTABLE"_ad"
+EXE_FTL=$EXECUTABLE"_ftl"
+EXE_SVD=$EXECUTABLE"_svd"
+
 cat >>$MAKEFILE <<EOF
 # 
 # BUILDDIR     : Directory where object files are written
@@ -1202,6 +1208,9 @@ TOOLSDIR    = ${TOOLSDIR}
 
 #eh3  new defines for the adjoint work
 AUTODIFF    = ${ROOTDIR}/pkg/autodiff
+EXE_AD      = ${EXE_AD}
+EXE_FTL     = ${EXE_FTL}
+EXE_SVD     = ${EXE_SVD}
 
 EOF
 
@@ -1350,6 +1359,7 @@ for i in $AD_FILES ; do
     echo -n " $i" >> $MAKEFILE
 done
 echo >> $MAKEFILE
+rm -f ad_files
 
 cat >>$MAKEFILE <<EOF
 
@@ -1358,44 +1368,55 @@ ad_input_code.f: \$(F77FILES)
 	cat \$(AD_FLOW_FILES) \$(AD_FILES) > ad_input_code.f
 
 # ... AD ...
+ad: ad_taf
+ad_taf_f: ad_taf_output.f
+ad_tamc_f: ad_tamc_output.f
+
 ad_taf_output.f: ad_input_code.f
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.f
 	cat ad_input_code_ad.f | sed -f adjoint_sed > ad_taf_output.f
 
 ad_taf: ad_taf_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_taf_output.o \$(LIBS) 
+	\$(LINK) -o ${EXE_AD} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_taf_output.o \$(LIBS) 
 
 ad_tamc_output.f: ad_input_code.f
 	\$(TAMC) \$(AD_TAMC_FLAGS) \$(TAMC_EXTRA) ad_input_code.f
 	cat ad_input_code_ad.f | sed -f adjoint_sed > ad_tamc_output.f
 
 ad_tamc: ad_tamc_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_tamc_output.o \$(LIBS) 
+	\$(LINK) -o ${EXE_AD} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ad_tamc_output.o \$(LIBS) 
 
 
 # ... FTL ...
+ftl: ftl_taf
+ftl_taf_f: ftl_taf_output.f
+ftl_tamc_f: ftl_tamc_output.f
+
 ftl_taf_output.f: ad_input_code.f
 	\$(TAF) \$(FTL_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.f
 	cat ad_input_code_ftl.f | sed -f adjoint_sed > ftl_taf_output.f
 
 ftl_taf: ftl_taf_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ftl_taf_output.o \$(LIBS) 
+	\$(LINK) -o ${EXE_FTL} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ftl_taf_output.o \$(LIBS) 
 
 ftl_tamc_output.f: ad_input_code.f
 	\$(TAMC) \$(FTL_TAMC_FLAGS) \$(TAMC_EXTRA) ad_input_code.f
 	cat ad_input_code_ftl.f | sed -f adjoint_sed > ftl_tamc_output.f
 
 ftl_tamc: ftl_tamc_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ftl_tamc_output.o \$(LIBS) 
+	\$(LINK) -o ${EXE_FTL} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) ftl_tamc_output.o \$(LIBS) 
 
 
 # ... SVD ...
+svd: svd_taf
+svd_taf_f: svd_taf_output.f
+
 svd_taf_output.f: ad_input_code.f
 	\$(TAF) \$(SVD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.f
 	cat ad_input_code_ad.f | sed -f adjoint_sed > svd_taf_output.f
 
 svd_taf: svd_taf_output.o \$(OBJFILES)
-	\$(LINK) -o ${EXECUTABLE} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) svd_taf_output.o \$(LIBS) 
+	\$(LINK) -o ${EXE_SVD} \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) svd_taf_output.o \$(LIBS) 
 
 
 #=========================================
