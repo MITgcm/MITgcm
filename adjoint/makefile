@@ -9,9 +9,9 @@ ADJOINT_SCRIPT   = ../adjoint
 BASE             = ..
 PKG		= $(BASE)/pkg
 ADTAMCFLAGS      = -reverse -i4 -r4 -admark  ad
-ADTAFFLAGS       = -reverse -i4 -r4 -admark  ad
+ADTAFFLAGS       = -reverse -i4 -r4 -admark  ad -nonew_arg
 TLTAMCFLAGS      = -forward -i4 -r4 -ftlmark g_
-TLTAFFLAGS       = -forward -i4 -r4 -ftlmark g_
+TLTAFFLAGS       = -forward -i4 -r4 -ftlmark g_ -nonew_arg
 # -warn_step -flow taf_flow.log
 
 DIFF_FLAGS       = -toplevel the_main_loop		\
@@ -234,7 +234,6 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/cost_test.f			\
 		$(SOURCE_CODE)/cost_tracer.f			\
 		  						\
-		$(SOURCE_CODE)/shap_filt_apply.f		\
 		$(SOURCE_CODE)/shap_filt_apply_ts.f		\
 		$(SOURCE_CODE)/shap_filt_tracer_s1.f		\
 		$(SOURCE_CODE)/shap_filt_tracer_s2.f		\
