@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.50 2001/09/10 00:25:45 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.51 2001/09/10 02:28:20 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -286,6 +286,7 @@ set LINK       = ( 'f77' )
 set INCLUDES   = ( -I. )
 set FFLAGS     = (  )
 set FOPTIM     = (  )
+set CFLAGS     = (  )
 set KFLAGS1    = (  )
 set KFLAGS2    = (  )
 set LIBS       = (  )
@@ -385,20 +386,21 @@ switch ($platform$USEMPI)
     set LN         = ( '/usr/bin/ln -s' )
     set CPP        = ( '/usr/ccs/lib/cpp -P' )
     set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4' )
-    set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar')
-    set FOPTIM     = ( '-dalign -O3' )
-    set NOOPTFLAGS = ( '-O0' )
-    set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F ini_vertical_grid.F ini_spherical_polar_grid.F ini_cori.F mon_printstats_rl.F mon_printstats_rs.F')
+    set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar -xtypemap=real:64,double:64,integer:32 -fsimple=0' )
+    set FOPTIM     = ( '-dalign -O3 -xarch=v9' )
+    set CFLAGS     = ( '-dalign -O3 -xarch=v9' )
+    set NOOPTFLAGS = ( '-dalign -O0 -xarch=v9' )
+    set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F ini_vertical_grid.F ini_spherical_polar_grid.F ini_cori.F mon_printstats_rl.F mon_printstats_rs.F aim_aim2dyn.F aim_dyn2aim.F aim_aim2dyn_exchanges.F aim_external_fields_load.F aim_calc_diags.F aim_external_forcing.F aim_do_atmos_physics.F aim_write_diags.F aim_do_inphys.F ')
     breaksw
   case SunOS+mpi:
     set LN         = ( '/usr/bin/ln -s' )
     set CPP        = ( '/usr/ccs/lib/cpp -P' )
     set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4' )
     set INCLUDES   = ( '-I/usr/local/mpi/include' )
-    set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar')
-    set FOPTIM     = ( '-dalign -O3' )
-    set NOOPTFLAGS = ( '-O0' )
     set LIBS       = ( '-L/usr/local/mpi/lib/solaris/ch_shmem -lmpi -lthread' \
+    set FFLAGS     = ( '-stackvar -explicitpar -vpara -e -u -noautopar -xtypemap=real:64,double:64,integer:32 -fsimple=0' )
+    set FOPTIM     = ( '-dalign -O3 -xarch=v9' )
+    set NOOPTFLAGS = ( '-dalign -O0 -xarch=v9' )
                        '-lsocket -lnsl' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F ini_vertical_grid.F ini_spherical_polar_grid.F ini_cori.F mon_printstats_rl.F mon_printstats_rs.F')
     breaksw
@@ -656,6 +658,8 @@ KFLAGS2 = ${KFLAGS2}
 # Optim./debug for FC
 FFLAGS = ${FFLAGS}
 FOPTIM = ${FOPTIM}
+# Flags for CC
+CFLAGS = ${CFLAGS}
 # Files that should not be optimized
 NOOPTFILES = ${NOOPTFILES}
 NOOPTFLAGS = ${NOOPTFLAGS}
@@ -714,6 +718,8 @@ cleanlinks:
 	\$(CPP) \$(DEFINES) \$(INCLUDES) > \$@
 .f.o:
 	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
+.c.o:
+	\$(CC) \$(CFLAGS) -c \$<
 
 # Special exceptions that use the ( .F - .p - .f - .o ) rule-chain
 .F.p:
