@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.57 2004/12/09 16:52:08 jmc Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.58 2004/12/10 17:36:43 edhill Exp $
 #  $Name:  $
 #
 
@@ -539,14 +539,15 @@ int main( int argc, char** argv )  {
   return 0;
 }
 EOF
-    cc -o tmp_cmpnum tmp_cmpnum.c -lm
+    $CC -o tmp_cmpnum tmp_cmpnum.c -lm
 
     if [ -x ./tmp_cmpnum ]; then
 	echo "OK"
 	return 0
     else
 	echo
-	echo "ERROR: failed to compile comparison code" 
+	echo "ERROR: failed to compile comparison code -- please specify" 
+	echo "  a C compiler using the CC environment variable."
 	exit 1
     fi
 }
