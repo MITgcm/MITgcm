@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.7 2004/09/29 22:23:29 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readparms.F,v 1.8 2005/03/01 18:56:21 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -50,7 +50,7 @@ C     Read Fizhi Namelist
       close (ku)
 
 C     Read Supplemental Ascii File with Current Time Info
-      open(10,file='datetime',form='formatted')
+      open(10,file='datetime0',form='formatted')
       read(10,1000)nymdcurrent,nhmscurrent
       close (10)
  1000 format(i8,2x,i6)
