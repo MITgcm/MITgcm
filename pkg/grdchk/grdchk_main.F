@@ -1,5 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.9 2003/10/02 21:30:22 heimbach Exp $
+C
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.10 2003/10/23 04:41:40 edhill Exp $
+C $Name:  $
 
+#include "AD_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOI

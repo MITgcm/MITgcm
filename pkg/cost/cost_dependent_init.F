@@ -1,5 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.3 2003/10/02 21:34:45 heimbach Exp $
+C
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_dependent_init.F,v 1.4 2003/10/23 04:41:40 edhill Exp $
+C $Name:  $
 
+#include "AD_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
 
 

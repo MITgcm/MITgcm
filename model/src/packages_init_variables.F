@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.24 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.25 2003/10/23 04:41:40 edhill Exp $
 C $Name:  $
 
+#include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.60 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.61 2003/10/23 04:41:40 edhill Exp $
 C $Name:  $
 
 CBOI
@@ -402,6 +402,7 @@ C
 CEOI
 
 
+#include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

@@ -1,5 +1,8 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.6 2003/10/09 04:19:19 edhill Exp $
+C
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.7 2003/10/23 04:41:40 edhill Exp $
+C $Name:  $
 
+#include "AD_CONFIG.h"
 #include "EXF_OPTIONS.h"
 
       subroutine exf_GetSurfaceFluxes(

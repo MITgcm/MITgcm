@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.17 2003/10/10 20:30:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.18 2003/10/23 04:41:40 edhill Exp $
 C $Name:  $
 
+#include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 

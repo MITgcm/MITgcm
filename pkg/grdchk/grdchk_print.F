@@ -1,5 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.7 2003/06/24 16:08:45 heimbach Exp $
+C
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_print.F,v 1.8 2003/10/23 04:41:41 edhill Exp $
+C $Name:  $
 
+#include "AD_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 

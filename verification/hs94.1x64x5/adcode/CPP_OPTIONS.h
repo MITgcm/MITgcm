@@ -1,4 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/adcode/Attic/CPP_OPTIONS.h,v 1.3 2001/11/20 21:24:23 heimbach Exp $
+C
+C $Header: /u/gcmpack/MITgcm/verification/hs94.1x64x5/adcode/Attic/CPP_OPTIONS.h,v 1.4 2003/10/23 04:41:41 edhill Exp $
+C $Name:  $
+
+#include "AD_CONFIG.h"
+
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.

@@ -1,8 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ECCO_CPPOPTIONS.h,v 1.3 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/ECCO_CPPOPTIONS.h,v 1.4 2003/10/23 04:41:40 edhill Exp $
 C $Name:  $
 
 #ifndef ECCO_CPPOPTIONS_H
 #define ECCO_CPPOPTIONS_H
+#include "AD_CONFIG.h"
 #include "PACKAGES_CONFIG.h"
 #ifdef ALLOW_ECCO
 

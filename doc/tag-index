@@ -1,10 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.192 2003/10/22 16:35:47 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.193 2003/10/23 04:41:40 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 untagged
 o added "#undef ALLOW_USE_MPI" support to eesupp/src/gather_2d.F
+o added [#include "AD_CONFIG.h"] to all files that use the following
+  defines:
+  - ALLOW_ADJOINT_RUN
+  - ALLOW_TANGENTLINEAR_RUN
+  - ALLOW_ECCO_OPTIMIZATION
 
 checkpoint51m_post
 o incorporating changes to get TAMC/TAF working in genmake2

@@ -1,8 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/CPP_OPTIONS.h,v 1.1 2002/09/16 18:18:38 heimbach Exp $
-C $Name:  $
 C
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/CPP_OPTIONS.h,v 1.2 2003/10/23 04:41:41 edhill Exp $
+C $Name:  $
 
-C 
+#include "AD_CONFIG.h"
+
+C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
 C

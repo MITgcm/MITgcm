@@ -1,5 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.9 2003/06/24 16:07:06 heimbach Exp $
+C
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.10 2003/10/23 04:41:40 edhill Exp $
+C $Name:  $
 
+#include "AD_CONFIG.h"
 #include "CTRL_CPPOPTIONS.h"
 
 
