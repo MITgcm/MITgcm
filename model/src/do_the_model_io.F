@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.36 2003/12/15 02:07:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.37 2004/01/18 22:47:12 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -89,12 +89,12 @@ C--   Do time averages
 
 #ifdef ALLOW_AIM
 C--   Do AIM time averages
-      IF (useAIM .AND. myIter.NE.nIter0 )
+      IF ( useAIM )
      &  CALL AIM_WRITE_TAVE( myTime, myIter, myThid )
 #endif                                                             
 #ifdef ALLOW_LAND
 C--   Do LAND time averages
-      IF (useLAND .AND. myIter.NE.nIter0 )
+      IF ( useLAND )
      &  CALL LAND_WRITE_TAVE( myTime, myIter, myThid )
 #endif                                                             
 
