@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.462 2005/02/28 17:53:29 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.463 2005/03/01 16:54:32 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o change port_rand funtion to allow to set the seed.
 o fix obscure MNC bug involving conversion between reals and integers
   - it caused no problems with certain (eg. gcc, ifc) compilers but the 
     new version is now more standards-compliant
