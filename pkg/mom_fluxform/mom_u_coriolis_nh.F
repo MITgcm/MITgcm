@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_u_coriolis_nh.F,v 1.2 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_u_coriolis_nh.F,v 1.3 2003/10/15 22:53:55 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -53,7 +53,7 @@ C Energy conserving discretization of 2*Omega*cos(phi)*w
       DO j=1-Oly,sNy+Oly-1
        DO i=1-Olx+1,sNx+Olx
         uCoriolisTerm(i,j) =
-     &   -0.5*( fCoriCos( i ,j,bi,bj)
+     &    0.5*( fCoriCos( i ,j,bi,bj)
      &         *0.5*( wFld( i ,j,k,bi,bj)+wFld( i ,j,kp1,bi,bj)*wMsk )
      &        + fCoriCos(i-1,j,bi,bj)
      &         *0.5*( wFld(i-1,j,k,bi,bj)+wFld(i-1,j,kp1,bi,bj)*wMsk ) )

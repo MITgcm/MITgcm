@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_weights.F,v 1.3 2002/08/15 17:25:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_weights.F,v 1.4 2003/10/15 22:55:01 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -58,7 +58,7 @@ CEOP
        DO i=1-Olx,sNx+Olx
          IF ( _hFacC(i,j,k-1,bi,bj)
      &       *_hFacC(i,j,k,bi,bj) .GT. 0.
-     &  .AND. (rhokm1(i,j)-rhok(i,j))*rKfac*gravitySign .GT. 0.
+     &  .AND. (rhokm1(i,j)-rhok(i,j))*rKfac*gravitySign .LT. 0.
      &      ) THEN
 
 C      Where statically unstable, mix the tracers conserving volume

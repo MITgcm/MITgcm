@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_v_metric_nh.F,v 1.5 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_v_metric_nh.F,v 1.6 2003/10/15 22:53:55 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -53,7 +53,7 @@ CEOP
 
       DO j=1-Olx+1,sNy+Oly
        DO i=1-Olx,sNx+Olx
-         vMetricTerms(i,j) = -vFld(i,j)*recip_RSphere
+         vMetricTerms(i,j) = vFld(i,j)*recip_RSphere
      &    *0.25*(wVelBottomOverride*
      &           (wFld(i,j,kp1,bi,bj)+wFld(i,j-1,kp1,bi,bj))
      &           +wFld(i,j, k ,bi,bj)+wFld(i,j-1, k ,bi,bj)
