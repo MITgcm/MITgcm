@@ -1,9 +1,6 @@
        subroutine gridalt_initialise (myThid)
-CBOP
 c-----------------------------------------------------------------------
-c  !DESCRIPTION: Routine to initialise the gridalt package.
-c  !ROUTINE: gridalt_initialise
-c  !INTERFACE: subroutine gridalt_initialise (myThid)
+c  Routine to initialise the gridalt package.
 c  
 c  Input: myThid       - Process number calling this routine
 c
@@ -20,8 +17,6 @@ c-----------------------------------------------------------------------
 #include "fizhi_SIZE.h"
 #include "gridalt_mapping.h"
 #include "SURFACE.h"
-c-----------------------------------------------------------------------
-CEOP
 
        integer myThid
 

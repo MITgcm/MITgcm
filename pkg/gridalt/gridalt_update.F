@@ -39,9 +39,9 @@ c
 c
         do L = 1,Nrphys
          do j = j1,j2
-         do i = i1,i2+1
+         do i = i1,i2
           dpphys(i,j,L,bi,bj) = dpphys0(i,j,L,bi,bj) *
-     .                                   rstarfacC(i,j,bi,bj)
+     .                     rstarfacC(i,j,bi,bj)
          enddo
          enddo
         enddo

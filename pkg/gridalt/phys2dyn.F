@@ -44,8 +44,8 @@ C***********************************************************************
       _RL qdyn(im1:im2,jm1:jm2,lmdyn,Nsx,Nsy)
       integer Lbot(im1:im2,jm1:jm2,Nsx,Nsy)
 
-      integer  i,j,L,Lout1,Lout2,Lphy
-      _RL getcon, kappa, dpkephy, dpkedyn
+      integer  i,j,L,Lout1,Lout1p1,Lout2,Lphy
+      _RL getcon, kappa, dpkephy, dpkedyn, dpksum, dpsum
 
       kappa = getcon('KAPPA')
 
@@ -66,9 +66,14 @@ c Check to make sure we are above ground - otherwise do nothing
 c do loop for all physics levels contained in this dynamics level
           dpkedyn = (pedyn(i,j,L,bi,bj)**kappa)-
      .                                     (pedyn(i,j,L+1,bi,bj)**kappa)
-          do Lphy = Lout1+1,Lout2
+          dpksum = 0.
+          dpsum = 0.
+          Lout1p1 = Lout1+1
+          do Lphy = Lout1p1,Lout2
            dpkephy = (pephy(i,j,Lphy,bi,bj)**kappa)-
      .                                  (pephy(i,j,Lphy+1,bi,bj)**kappa)
+           dpksum=dpksum+dpkephy
+           dpsum=dpsum+(pephy(i,j,Lphy,bi,bj)-pephy(i,j,Lphy+1,bi,bj))
            qdyn(i,j,L,bi,bj) = qdyn(i,j,L,bi,bj) + 
      .                            qphy(i,j,Lphy,bi,bj)*(dpkephy/dpkedyn)
           enddo

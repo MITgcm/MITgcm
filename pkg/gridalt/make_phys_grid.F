@@ -58,6 +58,9 @@ c Require 12 bottom levels (300 mb worth) for the physics, the dp's are:
      .            2500.000,2500.000,2500.000,5000.000,5000.000,5000.000/
        _RL deltap, dpstar_accum
        integer nlbotmax, nstart, nlevs, nlphys, ndone
+       integer nextra
+c
+       nextra = ntry
 c
        do L = 1,Nr
         do j = j1,j2
@@ -86,7 +89,7 @@ c
 c
 c      do for each grid point:
        do j = j1,j2
-       do i = i1,i2+1
+       do i = i1,i2
         Lbotij = Lbot(i,j,bi,bj)
 c
 c Find the maximum number of physics levels to fit in the bottom level
@@ -166,6 +169,18 @@ c Make the one below thicker
             endif
            endif
           enddo
+C Need one more peice of logic - if we finished Lnew loop and
+C  now we are done adding new physics layers, we need to be sure
+C  that we are at the edge of a dynamics layer. if not, we need
+C  to add one more layer.
+          if(nlphys.ge.ntry)then
+           if(abs(deltap-hfacC(i,j,L-1,bi,bj)*drF(L-1)).gt.0.001)then
+            nlphys = nlphys + 1
+            dpphys(i,j,nlphys,bi,bj) = hfacC(i,j,L-1,bi,bj)*drF(L-1)
+     .                                                          - deltap
+           endif
+          endif
+
          elseif(nlphys.eq.ntry)then
 c Mostly done with new layers - make sure we end at dynamics edge,
 c      if not, make one more thinner (thinner than dyn grid) layer
