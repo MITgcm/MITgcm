@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_impldiff.F,v 1.6 2004/11/24 22:58:05 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_impldiff.F,v 1.7 2004/11/24 23:24:57 mlosch Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -44,8 +44,6 @@ C  iTracer :: tracer index
       INTEGER iTracer
       INTEGER iMin,iMax,jMin,jMax
       INTEGER GAD_TR
-      INTEGER I,J,K
-      _RL gPtrTmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 CEOP
 
       iMin=0
@@ -90,34 +88,11 @@ c       IF ( ptracerImplVertAdv ) THEN
 c       ELSEIF ( implicitDiffusion ) THEN
 c #else
 
-C     This is a quick-fix for the broken implicit diffusion for
-C     ptracers. It would be nice to aviod the copies (and the
-C     corresponding declaration of the 5D field gPtrTmp)
-          DO K = 1, Nr
-           DO J = 1-Oly, sNy+Oly
-            DO I = 1-Olx, sNx+Olx
-             gPtrTmp(I,J,K,bi,bj) = gPtr(I,J,K,bi,bj,iTracer)
-            ENDDO
-           ENDDO
-          ENDDO	
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
      I         deltaTtracer, kappaRk, recip_HFacC,
-     U         gPtrTmp,
+     U         gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I         myThid )
-          DO K = 1, Nr
-           DO J = 1-Oly, sNy+Oly
-            DO I = 1-Olx, sNx+Olx
-             gPtr(I,J,K,bi,bj,iTracer) = gPtrTmp(I,J,K,bi,bj) 
-            ENDDO
-           ENDDO
-          ENDDO	
-C     original code gets the offsets wrong for bi,bi>1
-Cml          CALL IMPLDIFF(
-Cml     I         bi, bj, iMin, iMax, jMin, jMax,
-Cml     I         deltaTtracer, kappaRk, recip_HFacC,
-Cml     U         gPtr(1-Olx,1-Oly,1,bi,bj,iTracer),
-Cml     I         myThid )
 
 C End of tracer loop
       ENDDO
