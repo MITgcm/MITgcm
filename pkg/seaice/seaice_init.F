@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.12 2003/10/24 05:29:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.13 2003/11/06 22:13:00 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -22,10 +22,6 @@ C     === Global variables ===
 #include "SEAICE_DIAGS.h"
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_EXTERNAL.h"
-
-#ifdef ALLOW_COST
-# include "cost.h"
-#endif
 
 C     === Routine arguments ===
 C     myThid - Thread no. that called this routine.
@@ -126,7 +122,7 @@ C---  initialize grid info
          DO i=1-OLx,sNx+OLx
           TICE(I,J,bi,bj)=273.0 _d 0
 #ifdef SEAICE_MULTILEVEL
-          DO k=1,7
+          DO k=1,MULTDIM
            TICES(I,J,k,bi,bj)=273.0 _d 0
           ENDDO
 #endif

@@ -10,4 +10,7 @@ CADJ STORE vvel          = comlev1, key = ikey_dynamics
 CADJ STORE uice          = comlev1, key = ikey_dynamics
 CADJ STORE vice          = comlev1, key = ikey_dynamics
 # endif
+# ifdef SEAICE_MULTILEVEL
+CADJ STORE tices         = comlev1, key = ikey_dynamics
+# endif
 #endif /* ALLOW_SEAICE */

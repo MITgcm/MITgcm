@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/groatb.F,v 1.10 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/groatb.F,v 1.11 2003/11/06 22:13:00 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -50,6 +50,7 @@ C     i,j,bi,bj - Loop counters
 
 #ifdef SEAICE_MULTILEVEL
       INTEGER it
+      INTEGER ilockey
       _RL RK
       _RL HICEP(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
       _RL FICEP(1-OLx:sNx+OLx, 1-OLy:sNy+OLy)
@@ -126,21 +127,26 @@ CADJ &                           key = iicekey, byte = isbyte
 CADJ STORE lwdown(:,:,bi,bj) = comlev1_bibj, 
 CADJ &                           key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
+
 C NOW DETERMINE GROWTH RATES
 C FIRST DO OPEN WATER
         KOPEN=-1
         CALL BUDGET(UG, TMIX, HICE, FO, KOPEN, bi, bj)
 
-#ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE atemp(:,:,bi,bj)  = comlev1_bibj, 
-CADJ &                           key = iicekey, byte = isbyte
-CADJ STORE lwdown(:,:,bi,bj) = comlev1_bibj, 
-CADJ &                           key = iicekey, byte = isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
 C NOW DO ICE
         KOPEN=1
 #ifdef SEAICE_MULTILEVEL
-        DO IT=1,7
+C--  Start loop over muli-levels
+        DO IT=1,MULTDIM
+#ifdef ALLOW_AUTODIFF_TAMC
+         ilockey = (iicekey-1)*MULTDIM + IT
+CADJ STORE atemp(:,:,bi,bj)    = comlev1_multdim, 
+CADJ &                           key = ilockey, byte = isbyte
+CADJ STORE lwdown(:,:,bi,bj)   = comlev1_multdim, 
+CADJ &                           key = ilockey, byte = isbyte
+CADJ STORE tices(:,:,it,bi,bj) = comlev1_multdim, 
+CADJ &                           key = ilockey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
          DO J=1,sNy
           DO I=1,sNx
            RK=IT*1.0
@@ -156,12 +162,19 @@ C NOW DO ICE
           ENDDO
          ENDDO
         ENDDO
+C--  End loop over muli-levels
         DO J=1,sNy
          DO I=1,sNx
           FICE(I,J,bi,bj)=FICEP(I,J)
          ENDDO
         ENDDO
 #else  /* SEAICE_MULTILEVEL */
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE atemp(:,:,bi,bj)   = comlev1_bibj, 
+CADJ &                           key = iicekey, byte = isbyte
+CADJ STORE lwdown(:,:,bi,bj)  = comlev1_bibj, 
+CADJ &                           key = iicekey, byte = isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
         CALL BUDGET(UG, TICE, HICE, FICE, KOPEN, bi, bj)
 #endif /* SEAICE_MULTILEVEL */
 

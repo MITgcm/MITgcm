@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.11 2003/10/24 05:29:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.12 2003/11/06 22:13:00 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -155,6 +155,9 @@ CADJ STORE lwdown = comlev1, key = ikey_dynamics
 CADJ STORE tice   = comlev1, key = ikey_dynamics
 CADJ STORE uwind  = comlev1, key = ikey_dynamics
 CADJ STORE vwind  = comlev1, key = ikey_dynamics
+# ifdef SEAICE_MULTILEVEL
+CADJ STORE tices  = comlev1, key = ikey_dynamics
+# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 cph)
 C GROWTH SUBROUTINE CALCULATES TOTAL GROWTH TENDENCIES,

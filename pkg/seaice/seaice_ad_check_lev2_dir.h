@@ -8,4 +8,7 @@ CADJ STORE runoff   = tapelev2, key = ilev_2
 CADJ STORE uice     = tapelev2, key = ilev_2
 CADJ STORE vice     = tapelev2, key = ilev_2
 # endif
+# ifdef SEAICE_MULTILEVEL
+CADJ STORE tices    = tapelev2, key = ilev_2
+# endif
 #endif /* ALLOW_SEAICE */

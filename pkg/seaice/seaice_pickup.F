@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.5 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_pickup.F,v 1.6 2003/11/06 22:13:00 heimbach Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -41,7 +41,8 @@ C--    Going to do some IO. Make everyone except master thread wait.
 C--    Read ice model fields
        WRITE(fn,'(A,I10.10)') 'pickup_seaice.',nIter0
 #ifdef SEAICE_MULTILEVEL
-       CALL MDSREADFIELD( fn, precFloat64, 'RL', 7, TICES, 1, myThid )
+       CALL MDSREADFIELD
+     &      ( fn, precFloat64, 'RL', MULTDIM, TICES, 1, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, YNEG , 8, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 1, HSNOW, 9, myThid )
        CALL MDSREADFIELD( fn, precFloat64, 'RL', 3, UICE , 4, myThid )
@@ -159,7 +160,8 @@ C--    Write model fields
         WRITE(fn,'(A,A)') 'pickup_seaice.',checkPtSuff(nCheckLev)
        ENDIF
 #ifdef SEAICE_MULTILEVEL
-       CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 7,  TICES,1, myIt,myThid)
+       CALL MDSWRITEFIELD
+     &      (fn,prec,lgf,'RL', MULTDIM,  TICES,1, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1,  YNEG, 8, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 1, HSNOW, 9, myIt,myThid)
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL', 3,  UICE, 4, myIt,myThid)
