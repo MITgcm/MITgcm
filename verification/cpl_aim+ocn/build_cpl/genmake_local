@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# $Header: /u/gcmpack/MITgcm/verification/cpl_aim+ocn/build_cpl/genmake_local,v 1.1 2003/12/15 21:06:50 jmc Exp $
+
+#  This is the local options file for the "new" version of genmake
+#
+#  EH3 initial version 2003-08
+
+STANDARDDIRS=""
+
+MODS="../code_cpl ../shared_code"
