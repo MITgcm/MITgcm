@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.20 2004/04/05 06:01:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.21 2004/09/13 18:42:11 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -109,7 +109,7 @@ CEOP
       integer MNC_CW_MAX_I
       parameter ( MNC_MAX_ID   = 1000 )
       parameter ( MNC_MAX_CHAR =  100 )
-      parameter ( MNC_MAX_INFO =  200 )
+      parameter ( MNC_MAX_INFO =  400 )
       parameter ( MNC_CW_MAX_I =  150 )
 
       COMMON /MNC_VARS/
