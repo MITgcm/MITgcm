@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.61 2001/09/10 01:22:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.62 2001/09/13 17:43:55 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -555,7 +555,8 @@ C Logical flags for selecting packages
       LOGICAL useGrdchk
       LOGICAL useECCO
       LOGICAL useSHAP_FILT
+      LOGICAL useFLT
       COMMON /PARM_PACKAGES/
      &        useKPP, useGMRedi, useOBCS, useAIM, useECCO, 
-     &        useSHAP_FILT, useGrdchk
+     &        useSHAP_FILT, useGrdchk, useFLT
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.5 2001/07/13 14:26:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.6 2001/09/13 17:43:55 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -35,7 +35,8 @@ C--   data.pkg namelists
      &          useAIM,
      &          useGrdchk,
      &          useECCO,
-     &          useSHAP_FILT
+     &          useSHAP_FILT,
+     &          useFLT
 
 C     === Local variables ===
 C     msgBuf      - Informational/error meesage buffer

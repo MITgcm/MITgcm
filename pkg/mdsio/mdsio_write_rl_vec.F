@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_write_rl_vec.F,v 1.1 2001/03/06 15:28:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_write_rl_vec.F,v 1.2 2001/09/13 17:43:56 adcroft Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -28,8 +28,12 @@ C Local
 C     ------------------------------------------------------------------
       write(msgbuf,'(a,i9.8,2x,i9.8)')
      &  ' MDS_WRITE_RL_VEC: irec = ',irec,narr
+cab change start
+#ifndef ALLOW_FLT
       call print_message( msgbuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
+#endif
+can change end
       write(dUnit,rec=irec) arr
 C     ------------------------------------------------------------------
       return

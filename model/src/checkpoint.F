@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.11 2001/08/27 18:50:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.12 2001/09/13 17:43:55 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -395,13 +395,20 @@ c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
         ENDIF
 #endif
 
-C SPK 4/9/01: Open boundary checkpointing
 #ifdef  ALLOW_OBCS
+C SPK 4/9/01: Open boundary checkpointing
         IF (useOBCS) THEN
           CALL OBCS_WRITE_CHECKPOINT(
      &               prec, lgf, permCheckPoint, myIter, myThid)
         ENDIF
 #endif  /* ALLOW_OBCS */
+
+#ifdef ALLOW_FLT
+C--     Write restart file for floats
+        IF (useFLT) THEN
+          CALL FLT_RESTART(myCurrentTime, myIter, myThid)
+        ENDIF
+#endif
 
         IF ( .NOT. permCheckPoint ) THEN
          nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.19 2001/09/04 14:44:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.20 2001/09/13 17:43:55 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -181,6 +181,15 @@ C--   Do "blocking" sends and receives for field "overlap" terms
       CALL TIMER_START('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
       CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
       CALL TIMER_STOP ('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
+
+#ifdef ALLOW_FLT
+C--   Calculate float trajectories
+      IF (useFLT) THEN
+        CALL TIMER_START('FLOATS            [THE_MAIN_LOOP]',myThid)
+        CALL FLT_MAIN(myIter,myTime, myThid)
+        CALL TIMER_STOP ('FLOATS            [THE_MAIN_LOOP]',myThid)
+      ENDIF
+#endif
 
 #ifndef EXCLUDE_MONITOR
 C--   Check status of solution (statistics, cfl, etc...)

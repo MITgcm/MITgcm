@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.7 2001/02/20 19:39:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.8 2001/09/13 17:43:55 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,6 +49,10 @@ C     msgBuf      - Informational/error meesage buffer
 
 #ifndef ALLOW_AIM
       IF (useAIM) CALL PACKAGES_CHECK_ERROR('AIM', myThid)
+#endif
+
+#ifndef ALLOW_FLT
+      IF (useFLT) CALL PACKAGES_CHECK_ERROR('FLT', myThid)
 #endif
 
       RETURN

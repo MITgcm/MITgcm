@@ -1,0 +1,11 @@
+#
+# *********************
+# Float Namelist
+# *********************
+ &FLT_NML
+      flt_int_traj = 3600.,
+      flt_int_prof = 432000.,
+      flt_noise    = 0.0,
+      flt_file     = 'float_pos',
+ /
+

@@ -1,0 +1,211 @@
+C $Header: /u/gcmpack/MITgcm/pkg/flt/README.flt,v 1.1 2001/09/13 17:43:55 adcroft Exp $
+C $Name:  $
+c
+c     ==============================
+c     FLOAT Package for the MITgcmUV
+c     ==============================
+c
+c
+c     This package allows the advection of floats during a model run.
+c     Although originally intended to simulate PALACE floats
+c     (floats that drift in at depth and to the surface at a defined
+c     time interval) it can also run ALACE floats (non-profiling) 
+c     and surface drifters as well as sample moorings (simply a 
+c     non-advective, profiling float).
+c
+c     The stepping of the float advection is done using a second
+c     order Runga-Kutta scheme (Press et al., 1992, Numerical
+c     Recipes), whereby velocities and positions are bilinear
+c     interpolated between the grid points.
+c
+c     Current version: 1.0                              06-AUG-2001
+c
+c     Please report any bugs and suggestions to:
+c            
+c            Arne Biastoch (abiastoch@ucsd.edu)
+c
+c     
+c     Implementation in MITgcmUV
+c     --------------------------
+c
+c     The package has only few interfaces to the model. Despite a 
+c     general introduction of the flag useFLT and an initialization in 
+c     packages_init_fixed.F the interfaces are in:
+c
+c     - forward_step.F where the main float routine is called:
+c
+c     #ifdef ALLOW_FLT
+c     C--    Calculate float trajectories
+c           if (useFLT) then
+c                   CALL TIMER_START('FLOATS    [THE_MAIN_LOOP]',myThid)
+c                   CALL FLT_MAIN(myIter,myTime, myThid)
+c                   CALL TIMER_STOP ('FLOATS     [THE_MAIN_LOOP]',myThid)
+c           endif
+c     #endif
+c
+c     - write_checkpoint.F where float positions are written to a restart file: 
+c
+c     #ifdef ALLOW_FLT
+c           if (useFLT) then
+c                  CALL FLT_RESTART (myCurrentTime, myCurrentIter, myThid )
+c           endif
+c     #endif
+c
+c     The rest is done in the routines residing in pkg/flt. Please make
+c     sure that this directory is enabled in genmake when compiling the
+c     Makefile.
+c
+c
+c     Settings at compilation time
+c     ----------------------------
+c
+c     The main flag for switching on the float package has to be done
+c     in CPP_OPTIONS.h where
+c        #define ALLOW_FLT   has to be set
+c
+c     The package itself has its own option file called FLT_CPPOPTIONS.h.
+c     Currently there are only two flags available:
+c        #define FLT_NOISE   to add white noise to the advection velocity
+c        #undef ALLOW_3D_FLT to allow three-dimensional float advection 
+c                            (not tested yet!) instead of drifting on a
+c                            pre-defined (integer) vertical level.
+c
+c     Other specifications are done in FLT.h:
+c
+c     parameter (max_npart_tile = 300) 
+c        is the maximum number of floats per tile. Should be smaller
+c        than the total number of floats when running on a parallel
+c        environment but as small as possible to avoid too large
+c        arrays. The model will stop if the number of floats per tile
+c        exceeds max_npart_tile at any time.
+c     parameter (max_npart_exch = 50)
+c        is the maximum number of floats per tile that can be exchanged 
+c        with other tiles to one side (there are 4 arrays) in one 
+c        timestep. Should be generally small because only few floats 
+c        leave the tile exactly at the same time.     
+c
+c
+c     Settings at runtime
+c     -------------------
+c
+c     useFLT=.TRUE.    
+c        has to be set in namelist PACKAGES (data.pkg) to use floats
+c
+c     data.flt contains a namelist FLT_NML with the parameters:
+c        flt_int_traj  is the time interval in seconds to sample
+c                      float position and dynamic variables (T,S,U,V,Eta).
+c                      To capture the whole profile cycle of a PALACE float
+c                      this has to be at least as small as the
+c                      shortest surface time
+c
+c        flt_int_prof  is the time interval in seconds to sample
+c                      a whole profile of T,S,U,V (as well as
+c                      positions and Eta). This has to chosen at
+c                      least as small as the shortest profiling
+c                      interval.
+c                      Note: All profiling intervals have to be an integer
+c                            multiple of this interval
+c                      Note: The profile is always taken over the whole
+c                            water column
+c
+c        Example: if one would set two sets of profiling floats,
+c        - one with  5 days profiling interval and 24 hours surface time
+c        - one with 10 days profiling interval and 12 hours surface time
+c        one would have to set 
+c        - flt_int_traj=43200
+c        - flt_int_prof=432000 
+c        to capture all of the floats motions
+c
+c        flt_noise     If FLT_NOISE is defined this is the amplitude
+c                      that is added to the advection velocity by the 
+c                      random number generator.
+c
+c        flt_file      the base filename of the float positions
+c                      without tile information and ending (e.g. float_pos) 
+c
+c
+c     Input
+c     -----
+c
+c     The initialization is written in a way that it first looks for a
+c     global file (e.g. float_pos.data). A global file is mainly used
+c     for first-time initialization. If that not exists the routine looks
+c     for local files (e.g. float_pos.001.001.data, etc.) that have
+c     been used for storing the float positions for restart (note that
+c     float restarts are ALWAYS local files). The structure of the
+c     file is always the same:
+c
+c     Each float contains a 9 element double precision record of a 
+c     direct access file. The records are:
+c     
+c     - npart   A unique float identifier (1,2,3,...)
+c     - tstart  start date of integration of float (in s)
+c               Note: If tstart=-1 floats are integrated right from the 
+c               beginning
+c     - xpart   x position of float (in units of XC)
+c     - ypart   y position of float (in units of YC)
+c     - kpart   actual vertical level of float
+c     - kfloat  target level of float (should be the same as kpart at
+c               the beginning)
+c     - iup     flag if the float 
+c               - should profile   ( >  0 = return cycle (in s) to surface) 
+c               - remain at depth  ( =  0 )
+c               - is a 3D float    ( = -1 ).
+c               - should be advected WITHOUT additional noise ( = -2 ). 
+c                 (This implies that the float is non-profiling)
+c               - is a mooring     ( = -3 ), i.e. the float is not advected
+c     - itop    time of float the surface (in s)
+c     - tend    end  date of integration of float (in s)
+c               Note: If tend=-1 floats are integrated till the end of
+c               the integration
+c
+c     In addition the first line of the file contains a record with 
+c     - the number of floats on that tile in the first record
+c     - the total number of floats in the sixth record
+c     Note: At first-time initialization in a global file both fields
+c     should be the same.
+c
+c     An example how to write a float file (write_float.F) is included
+c     in the verification experiment (see below)
+c
+c
+c     Output/Visualization
+c     --------------------
+c
+c     The output always consists of 3 series of local files:
+c     - files with last positions of floats that can be used for restart
+c     - files with trajectories of floats and actual values at depth
+c     - files with profiles throughout the whole water column
+c
+c     Examples and conversion routines for the second and third series
+c     into NetCDF are included in verification/flt_example/aux/.
+c
+c
+c     Verification Experiment
+c     -----------------------
+c
+c     The verification experiment is based on exp 4 (flow over a
+c     Gaussian in a channel). There are, however, two main differences
+c     to the original experiment:
+c
+c     - The domain has closed boundaries. Currently the float package
+c       is not able to treat floats that leave the domain via open boundaries
+c     - There is an additional wind forcing to speed up the currents
+c       to get significant advection rates in time
+c
+c
+c     ToDo
+c     ----
+c
+c     - testing of 3D-floats
+c     - allow floats to leave the domain via open boundaries
+c
+c
+c     History
+c     -------
+c
+c     - first release: Arne Biastoch (abiastoch@ucsd.edu)  06-AUG-2001
+c       implemented and verified for checkpoint 40pre1
+c     - incorporated into c40p9 by adcroft@mit.edu on 11/13/01
+c
+c=========================================================================

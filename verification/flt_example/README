@@ -1,0 +1,23 @@
+Example: Testing of floats (based on EXP 4)
+================================================
+
+To apply the changes to the default configuration of MITgcmUV:
+  cp ../verification/exp4_flt/code/*.[Fh] ../bin/
+
+Configure and compile the code:
+  cd bin
+  ../tools/genmake -makefile -enable=flt
+  make depend
+  make
+
+To run:
+  cd ../exe
+  cp ../verification/exp4_flt/input/* .
+  ./mitgcmuv
+
+There is comparison output in the directory:
+ ../verification/exp4_flt/results
+
+Comments:
+The input data is real*8.
+

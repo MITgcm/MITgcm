@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.2 2001/02/02 21:04:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.3 2001/09/13 17:43:55 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -24,6 +24,13 @@ C--   Initialize fixed arrays for OBCS
 #ifdef ALLOW_OBCS
       IF (useOBCS) THEN
        CALL OBCS_INIT_FIXED( myThid )
+      ENDIF
+#endif
+#ifdef ALLOW_FLT
+C--   Initialise Float positions
+      IF (useFLT) then
+       CALL FLT_INIT(nIter0,startTime,myThid )
+      _BARRIER
       ENDIF
 #endif
 
