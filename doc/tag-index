@@ -1,8 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.464 2005/03/03 15:16:28 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.465 2005/03/24 14:51:34 baylor Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o added modified Leith scheme with viscosity proportional to grad(Hdiv) 
+  as well as grad(vort3).  Made it compatible with both approximate form
+  for the cubed sphere and full form of these gradients.  Added flag
+  useFullLeith to select between approximate and full form.  
 o add "d0" in getcon.F to reduce differences between compilers/platforms
   update output.txt of exp. fizhi-gridalt-hs
 o change port_rand funtion to allow to set the seed.
