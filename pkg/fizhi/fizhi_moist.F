@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.28 2005/03/01 17:23:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.29 2005/03/02 00:44:59 jmc Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -1377,18 +1377,19 @@ c ---------------------------------------------------------
       implicit none
       integer n,iras,nrnd,myid
       _RL random_numbx
-      _RL rnd(nrnd)
+c     _RL rnd(nrnd)
+      _RL rnd(*)
       integer irm
       parameter (irm = 1000)
       _RL random(irm)
-      integer i,mcheck,numrand,iseed,indx
+      integer i,mcheck,iseed,indx
       logical first
       data    first /.true./
       integer iras0
       data    iras0 /0/
       save random, iras0
  
-      if(nrnd.eq.0.)then
+      if(nrnd.eq.0)then
        do i = 1,nrnd
         rnd(i) = 0
        enddo
@@ -1398,31 +1399,30 @@ c ---------------------------------------------------------
 
       mcheck = mod(iras-1,irm/nrnd)
 
-c First Time In From a Continuing RESTART (IRAS.GT.1) or Reading a New RESTART
-c ----------------------------------------------------------------------------
 c     print *,' RNDCLOUD: first ',first,' iras ',iras,' iras0 ',iras0
 c     print *,' RNDCLOUD: irm,nrnd,mcheck=',irm,nrnd,mcheck
-      if( first.and.(iras.gt.1) .or. iras.ne.iras0+1 )then
-       print *,' first ',first,' iras ',iras,' iras0 ',iras0
-       if( myid.eq.1 ) print *, 'Recreating Rand Numb Array in RNDCLOUD'
-       if( myid.eq.1 ) print *, 'IRAS: ',iras,'  IRAS0: ',iras0
-       numrand = mod(iras,irm/nrnd) * nrnd
-       iseed   = iras * nrnd - numrand
+
+      if ( iras.eq.iras0 ) then
+C-    Not the 1rst tile: we are all set (already done for the 1rst tile):
+c -----------------------------------------------------------------------
+          indx = (iras-1)*nrnd
+
+c First Time In From a Continuing RESTART (IRAS.GT.1) or Reading a New RESTART
+c   -- or --
+c Multiple Time In But have Used Up all 1000 numbers (MCHECK.EQ.0)
+c ----------------------------------------------------------------------------
+      elseif ( first.and.(iras.gt.1) .or. mcheck.eq.0 ) then
+       iseed = (iras-1-mcheck)*nrnd
        call random_seedx(iseed)
        do i = 1,irm
         random(i) = random_numbx(iseed)
        enddo
        indx = (iras-1)*nrnd
 
-c Multiple Time In But have Used Up all 1000 numbers (MCHECK.EQ.0)
-c ----------------------------------------------------------------
-      else if (mcheck.eq.0) then
-          iseed = (iras-1)*nrnd
-          call random_seedx(iseed)
-          do i = 1,irm
-           random(i) = random_numbx(iseed)
-          enddo
-          indx = iseed
+       if( myid.eq.1 ) print *, 'Creating Rand Numb Array in RNDCLOUD'
+     &                        ,', iseed=', iseed
+       if( myid.eq.1 ) print *, 'IRAS: ',iras,'  IRAS0: ',iras0,
+     &    ' indx: ', mod(indx,irm)
 
 c Multiple Time In But have NOT Used Up all 1000 numbers (MCHECK.NE.0)
 c --------------------------------------------------------------------
@@ -1431,8 +1431,12 @@ c --------------------------------------------------------------------
       endif
 
           indx = mod(indx,irm)
-      if( indx+nrnd.gt.1000 ) indx=1000-nrnd
- 
+      if( indx+nrnd.gt.irm ) then
+c       if( myid.eq.1 .AND. iras.ne.iras0 ) print *,
+c    &   'reach end of Rand Numb Array in RNDCLOUD',indx,irm-nrnd
+        indx=irm-nrnd
+      endif
+
       do n = 1,nrnd
        rnd(n) = random(indx+n)
       enddo
@@ -1440,6 +1444,7 @@ c --------------------------------------------------------------------
  100  continue
       first = .false.
       iras0 = iras
+
       return
       end
       function random_numbx(iseed)
