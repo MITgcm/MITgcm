@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_stepfwd.F,v 1.3 2004/05/14 16:14:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_stepfwd.F,v 1.4 2004/05/15 20:43:27 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -123,11 +123,7 @@ C--   step forward ground temperature: end
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef LAND_OLD_VERSION
-      IF ( .TRUE. ) THEN
-#else
-      IF ( land_calc_grW ) THEN
-#endif
+      IF ( land_calc_grW .OR. land_calc_snow ) THEN
 C--   Initialize run-off arrays.
         DO j=1,sNy
          DO i=1,sNx
@@ -135,6 +131,13 @@ C--   Initialize run-off arrays.
            land_enRnOf(i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
+      ENDIF
+
+#ifdef LAND_OLD_VERSION
+      IF ( .TRUE. ) THEN
+#else
+      IF ( land_calc_grW ) THEN
+#endif
 C--   need (later on) ground temp. to be consistent with updated enthalpy:
         DO k=1,land_nLev
          DO j=1,sNy
