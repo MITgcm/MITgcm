@@ -17,6 +17,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #     aim_snowFile :: file name for Snow depth          (F.M. surfBC)
 #     aim_swcFile  :: file name for Soil Water content  (F.M. surfBC)
 #     aim_dragStrato :: stratospheric-drag damping time scale (s)
+#     aim_clrSkyDiag :: compute clear-sky radiation for diagnostics
 #     aim_taveFreq :: Frequency^-1 for time-average output (s)
 #     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 #     aim_tendFreq :: Frequency^-1 for tendencies output (s)
@@ -37,6 +38,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
    aim_snowFile= 'snowDepth.FM.bin',
    aim_swcFile = 'soilMoist.FM.bin',
 #  aim_dragStrato= 2592000.,
+#  aim_clrSkyDiag=.TRUE.,
 #  aim_diagFreq=3600.,
  &
 
@@ -79,6 +81,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #      VGUST  = wind speed for sub-grid-scale gusts
 #      CTDAY  = daily-cycle correction (dTskin/dSSRad)
 #      DTHETA = Potential temp. gradient for stability correction
+#      dTstab = potential temp. increment for stability function derivative
 #      FSTAB  = Amplitude of stability correction (fraction)
 #      HDRAG  = Height scale for orographic correction
 #      FHDRAG = Amplitude of orographic correction (fraction)
