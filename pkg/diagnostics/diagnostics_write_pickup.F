@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.2 2005/02/20 05:11:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.3 2005/02/20 05:28:20 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -43,7 +43,7 @@ C     fn      :: character buffer for creating filename
 C     prec    :: precision of pickup files
 C     lgf     :: flag to write "global" files
 c     INTEGER prec, iChar, lChar, k
-      INTEGER prec, lChar, k, i
+      INTEGER prec, lChar, i
       CHARACTER*(MAX_LEN_FNAM) fn
       LOGICAL lgf
 
@@ -53,7 +53,6 @@ c     INTEGER prec, iChar, lChar, k
 #ifdef ALLOW_MNC
       INTEGER ii
       CHARACTER*(MAX_LEN_FNAM) diag_mnc_bn
-      CHARACTER*(5) ctmp
       INTEGER CW_DIMS, NLEN
       PARAMETER ( CW_DIMS = 10 )
       PARAMETER ( NLEN    = 80 )
