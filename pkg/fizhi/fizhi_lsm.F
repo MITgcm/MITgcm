@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lsm.F,v 1.2 2004/07/16 19:52:21 molod Exp $
+C $Name:  $
+
       SUBROUTINE TILE (
      I                 NCH, DTSTEP, ITYP, TRAINL,TRAINC, TSNOW,  UM,
      I                 ETURB,  DEDQA,  DEDTC,  HSTURB, DHSDQA, DHSDTC,
@@ -23,7 +26,7 @@ C****
       IMPLICIT NONE
 C
 C****
-      include 'sibber.h'
+#include "sibber.h"
 C****
       INTEGER NCH
       INTEGER ITYP(NCH)
@@ -51,7 +54,7 @@ C****
      &                    DELEA,    VGPH1(NTYPS),     VGPH2(NTYPS),
      &            VGRPLN(NTYPS),    CSOIL0(NTYPS),          WSOI12,
      &             VGBEE(NTYPS),    DELZ12(NTYPS),
-     &            DELZ23(NTYPS),    SNWMID(NTYPS)
+     &            DELZ23(NTYPS)
 C****
 
       REAL PHLAY(nch,NLAY), AKLAY(nch,NLAY), SWET12(nch),
@@ -154,7 +157,7 @@ c       to obtain improved albedo, radswg, and annual/diurnal cycle (L.Takacs 2/
 c ------------------------------------------------------------------------------------
       DATA CSOIL0 /175000.,175000.,175000.,175000.,175000.,
      .             175000.,175000.,120000.,175000., 70000./
-      include 'snwmid.h'
+#include "snwmid.h"
 
 C****
 C**** --------------------------------------------------------------------- 
@@ -366,7 +369,7 @@ C****         EIRFRC=fraction of total evap. coming from interception res.
      I              ETURB,  DEDEA,  DEDTC, HSTURB, DHSDEA, DHSDTC, 
      I                 RC, DRCDEA, DRCDTC, 
      I              SWNET, HLWDWN, ALWRAD, BLWRAD, ESNFRC,
-     I                 TM,     EM,  CSOIL,   PSUR, EMAXRT, VGWMAX,              
+     I                 TM,     EM,  CSOIL,   PSUR, EMAXRT, VGWMAX,
      U                 TC,     TD,     EA,   SWET,   SNOW,
      O             RUNOFF,   EVAP, SHFLUX,  SMELT,  HLWUP, BOMB,STRDG1,
      O             STRDG2, STRDG3, STRDG4, STRDG5, STRDG6, STRDG7,
@@ -507,7 +510,7 @@ C**** runs-off, rather than freezes.
 C****
       IMPLICIT NONE
 C****
-      include 'sibber.h'
+#include "sibber.h"
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
@@ -552,7 +555,7 @@ C**** (Time scale TIMFRL for large scale storms set to one for FWETL=1
 C**** to reflect the effective loss of "position memory" when storm 
 C**** covers entire grid square.)
 
-      XTCORR= (1.-TIMFRL) * MIN( 1.,(CAPAC(CHNO)/SATCAP(CHNO))/FWETL )    
+      XTCORR= (1.-TIMFRL) * MIN( 1.,(CAPAC(CHNO)/SATCAP(CHNO))/FWETL )
 
 C****
 C**** Fill interception reservoir with precipitation.
@@ -586,7 +589,7 @@ C****
 C**** Determine XTCORR, the fraction of a storm that falls on a previously
 C**** wet surface due to the time correlation of precipitation position.
 
-      XTCORR= (1.-TIMFRC) * MIN( 1.,(CAPAC(CHNO)/SATCAP(CHNO))/FWETC )    
+      XTCORR= (1.-TIMFRC) * MIN( 1.,(CAPAC(CHNO)/SATCAP(CHNO))/FWETC )
 
 C****
 C**** Fill interception reservoir with precipitation.
@@ -683,7 +686,7 @@ C**** (p. 1353, Sellers 1985.)  Extinction coefficients are computed first.
 C****
       IMPLICIT NONE
 C****
-      include 'sibber.h'
+#include "sibber.h"
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
@@ -781,7 +784,7 @@ C**** This subroutine returns soil moisture potential and conductivity.
 
       IMPLICIT NONE
 C****
-      include 'sibber.h'
+#include "sibber.h"
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
@@ -831,7 +834,7 @@ C**** from the surface through an energy balance calculation.
 C****
       IMPLICIT NONE
 C****
-      include 'sibber.h'
+#include "sibber.h"
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
@@ -1001,7 +1004,7 @@ C****
         CHOKE = .FALSE.
         DEA = EM(CHNO) - EA(CHNO)
         DTC = 
-     &   (Q0 + ALHX(CHNO)*(ETURB(ChNo)-EMAXRT(CHNO)) - DHSDEA(CHNO)*DEA) 
+     &   (Q0 + ALHX(CHNO)*(ETURB(ChNo)-EMAXRT(CHNO)) - DHSDEA(CHNO)*DEA)
      &          /  ( A11 - ALHX(CHNO)*DEDTC(ChNo) )
  
           STRDG1(ChNo)=DTC
@@ -1131,7 +1134,7 @@ C**** This subroutine computes the vapor pressure deficit stress.
 C****
       IMPLICIT NONE
 C****
-      include 'sibber.h'
+#include "sibber.h"
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
@@ -1172,7 +1175,7 @@ C**** Compute temperature stress factor.
 C****
       IMPLICIT NONE
 C****
-      include 'sibber.h'
+#include "sibber.h"
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo, TypPtr
@@ -1242,7 +1245,7 @@ C**** leaf water potential stress.
 C****
       IMPLICIT NONE
 C****
-      include 'sibber.h'
+#include "sibber.h"
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
@@ -1412,7 +1415,7 @@ C**** contents of the interception reservoir and the soil layers.
 C****
       IMPLICIT NONE
 C****
-      include 'sibber.h'
+#include "sibber.h"
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
@@ -1562,7 +1565,7 @@ C**** This subroutine computes diffusion between soil layers.
 C****
       IMPLICIT NONE
 C****
-      include 'sibber.h'
+#include "sibber.h"
 C****
       INTEGER NCH
       INTEGER ITYP(NCH), ChNo
