@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.23 2004/07/12 20:19:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.24 2004/07/16 01:19:30 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -74,7 +74,11 @@ c     Meridional wind stress fv:
      &           *recip_drF(ks)*recip_hFacS(i,j,ks,bi,bj)
 c     Net heat flux Qnet:
           surfaceTendencyT(i,j,bi,bj) = 
-     &      -Qnet(i,j,bi,bj)*recip_Cp*horiVertRatio*recip_rhoConst
+     &       - ( Qnet(i,j,bi,bj)
+#ifdef SHORTWAVE_HEATING
+     &           -Qsw(i,j,bi,bj)
+#endif
+     &         ) *recip_Cp*horiVertRatio*recip_rhoConst
      &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)
 C     Net Salt Flux : 
           surfaceTendencyS(i,j,bi,bj) = 

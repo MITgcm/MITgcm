@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.19 2004/07/06 06:35:04 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.20 2004/07/16 01:21:46 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -252,9 +252,9 @@ C NOW GET TOTAL QNET AND QSW
      &                    +(ONE-AR(I,J,bi,bj))*QNETO(I,J,bi,bj)
           QSW(I,J,bi,bj)=QSWI(I,J,bi,bj)*AR(I,J,bi,bj)
      &                    +(ONE-AR(I,J,bi,bj))*QSWO(I,J,bi,bj)
-#ifndef SHORTWAVE_HEATING
-          QNET(I,J,bi,bj)=QNET(I,J,bi,bj)+QSW(I,J,bi,bj)
-#endif
+c #ifndef SHORTWAVE_HEATING
+c         QNET(I,J,bi,bj)=QNET(I,J,bi,bj)+QSW(I,J,bi,bj)
+c #endif
 C Add YNEG contribution to QNET
           QNET(I,J,bi,bj)=QNET(I,J,bi,bj)
      &         +YNEG(I,J,bi,bj)/SEAICE_deltaTtherm*maskC(I,J,1,bi,bj)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.119 2004/07/09 22:31:16 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.120 2004/07/16 01:18:47 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -65,8 +65,10 @@ C     thetaClimFile   :: File containing theta climataology used
 C                       in relaxation term -lambda(theta-theta*)
 C     saltClimFile    :: File containing salt climataology used
 C                       in relaxation term -lambda(salt-salt*)
-C     surfQfile       :: File containing surface heat flux
-C     surfQswfile     :: File containing surface shortwave radiation
+C     surfQfile       :: File containing surface heat flux, excluding SW
+C                        (old version, kept for backward compatibility)
+C     surfQnetFile    :: File containing surface net heat flux
+C     surfQswFile     :: File containing surface shortwave radiation
 C     dQdTfile        :: File containing thermal relaxation coefficient
 C     EmPmRfile       :: File containing surface fresh water flux
 C     pLoadFile       :: File containing pressure loading
@@ -79,7 +81,7 @@ C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
      &                hydrogThetaFile, hydrogSaltFile,
      &                zonalWindFile, meridWindFile, thetaClimFile,
      &                saltClimFile, buoyancyRelation,
-     &                EmPmRfile, surfQfile, surfQswfile,
+     &                EmPmRfile, surfQfile, surfQnetFile, surfQswFile,
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                dQdTfile, ploadFile,
      &                eosType, pickupSuff,
@@ -93,7 +95,8 @@ C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
       CHARACTER*(MAX_LEN_FNAM) thetaClimFile
       CHARACTER*(MAX_LEN_FNAM) saltClimFile
       CHARACTER*(MAX_LEN_FNAM) surfQfile
-      CHARACTER*(MAX_LEN_FNAM) surfQswfile
+      CHARACTER*(MAX_LEN_FNAM) surfQnetFile
+      CHARACTER*(MAX_LEN_FNAM) surfQswFile
       CHARACTER*(MAX_LEN_FNAM) EmPmRfile
       CHARACTER*(MAX_LEN_FNAM) buoyancyRelation
       CHARACTER*(MAX_LEN_FNAM) uVelInitFile

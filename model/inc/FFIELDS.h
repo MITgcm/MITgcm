@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.24 2004/07/12 20:18:56 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.25 2004/07/16 01:18:47 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -42,14 +42,11 @@ C              	        in g/kg, saltFlux unit becomes g/m^2/s.
 C              > 0 for decrease in SSS.
 C              Southwest C-grid tracer point
 C
-C     Qnet  :: Net upward surface heat flux excluding shortwave in W/m^2
-C              Qnet = latent + sensible + net longwave
+C     Qnet  :: Net upward surface heat flux (including shortwave) in W/m^2
+C              Qnet = latent + sensible + net longwave + net shortwave
 C              > 0 for decrease in theta (ocean cooling)
 C              Typical range: -250 < Qnet < 600
 C              Southwest C-grid tracer point
-C
-C              NOTE: #ifndef SHORTWAVE_HEATING,
-C              Qnet = latent + sensible + net longwave + net shortwave
 C
 C     Qsw   :: Net upward shortwave radiation in W/m^2
 C              Qsw = - ( downward - ice and snow absorption - reflected )

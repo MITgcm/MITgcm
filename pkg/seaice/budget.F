@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/budget.F,v 1.11 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/budget.F,v 1.12 2004/07/16 01:21:47 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -104,7 +104,8 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
          DO J=1,sNy
           DO I=1,sNx
 #ifdef SEAICE_EXTERNAL_FLUXES
-           FICE1(I,J,bi,bj)=QNET(I,J,bi,bj)+Qsw(I,J,bi,bj)
+c          FICE1(I,J,bi,bj)=QNET(I,J,bi,bj)+Qsw(I,J,bi,bj)
+           FICE1(I,J,bi,bj)=QNET(I,J,bi,bj)
            QSWO(I,J,bi,bj)=Qsw(I,J,bi,bj)
 #else /* SEAICE_EXTERNAL_FLUXES undefined */
            ALB(I,J)=SEAICE_waterAlbedo                                
@@ -119,7 +120,8 @@ C WATER ALBEDO IS ASSUMED TO BE THE CONSTANT SEAICE_waterAlbedo
            FICE1(I,J,bi,bj)=-A1(I,J)-A2(I,J)    
            QSWO(I,J,bi,bj)=-(ONE-ALB(I,J))*SWDOWN(I,J,bi,bj)
 #endif /* SEAICE_EXTERNAL_FLUXES */
-           QNETO(I,J,bi,bj)=FICE1(I,J,bi,bj)-QSWO(I,J,bi,bj)
+c          QNETO(I,J,bi,bj)=FICE1(I,J,bi,bj)-QSWO(I,J,bi,bj)
+           QNETO(I,J,bi,bj)=FICE1(I,J,bi,bj)
           ENDDO
          ENDDO
 

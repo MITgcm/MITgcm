@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.117 2004/07/09 22:32:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.118 2004/07/16 01:19:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -203,7 +203,7 @@ C--   Input files
      & bathyFile, topoFile, hydrogThetaFile, hydrogSaltFile, 
      & zonalWindFile, meridWindFile,
      & thetaClimFile, saltClimFile,
-     & surfQfile, EmPmRfile, surfQswfile, 
+     & surfQfile, surfQnetFile, surfQswFile, EmPmRfile,
      & uVelInitFile, vVelInitFile, pSurfInitFile,
      & dQdTFile, ploadFile,tCyl,
      & mdsioLocalDir

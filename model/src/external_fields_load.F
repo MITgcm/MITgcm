@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.17 2004/04/22 22:17:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.18 2004/07/16 01:19:30 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -139,6 +139,11 @@ C      data for the period ahead and the period behind myTime.
      &        'RS', 1, Qnet0, intime0, myThid )
        CALL MDSREADFIELD ( surfQFile, readBinaryPrec,
      &        'RS', 1, Qnet1, intime1, myThid )
+      ELSEIF ( surfQnetFile .NE. ' '  ) THEN
+       CALL MDSREADFIELD ( surfQnetFile, readBinaryPrec,
+     &        'RS', 1, Qnet0, intime0, myThid )
+       CALL MDSREADFIELD ( surfQnetFile, readBinaryPrec,
+     &        'RS', 1, Qnet1, intime1, myThid )
       ENDIF
       IF ( EmPmRfile .NE. ' '  ) THEN
        CALL MDSREADFIELD ( EmPmRfile, readBinaryPrec,
@@ -164,6 +169,19 @@ C      data for the period ahead and the period behind myTime.
      &        'RS', 1, Qsw0, intime0, myThid )
        CALL MDSREADFIELD ( surfQswFile, readBinaryPrec,
      &        'RS', 1, Qsw1, intime1, myThid )
+       IF ( surfQFile .NE. ' '  ) THEN
+C-     Qnet is now (after c54) the net Heat Flux (including SW)
+        DO bj=1,nSy
+         DO bi=1,nSx
+          DO j=1-Oly,sNy+Oly
+           DO i=1-Olx,sNx+Olx
+            Qnet0(i,j,bi,bj) = Qnet0(i,j,bi,bj) + Qsw0(i,j,bi,bj)
+            Qnet1(i,j,bi,bj) = Qnet1(i,j,bi,bj) + Qsw1(i,j,bi,bj)
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDIF
       ENDIF
 #endif
 #ifdef ATMOSPHERIC_LOADING
