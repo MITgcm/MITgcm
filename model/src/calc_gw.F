@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.7 2001/03/06 17:10:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.8 2001/03/12 20:51:03 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -65,6 +65,7 @@ C     Adams-Bashforth timestepping weights
         DO K=1,Nr
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
+           gWNM1(i,j,k,bi,bj) = gW(i,j,k,bi,bj) 
            gW(i,j,k,bi,bj) = 0.
           ENDDO
          ENDDO
@@ -161,17 +162,6 @@ caja           and an hFacUS (above V points) too...
      &     +deltatMom*( ab15*gW(i,j,k,bi,bj)
      &                 +ab05*gWNM1(i,j,k,bi,bj) )
            IF (hFacC(I,J,K,bi,bj).EQ.0.) wVel(i,j,k,bi,bj)=0.
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO K=1,Nr
-         DO j=J0,Jn
-          DO i=I0,In
-           gWNM1(i,j,k,bi,bj) = gW(i,j,k,bi,bj) 
           ENDDO
          ENDDO
         ENDDO
