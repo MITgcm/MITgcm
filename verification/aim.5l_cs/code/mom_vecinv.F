@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/mom_vecinv.F,v 1.3 2003/04/11 13:42:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/mom_vecinv.F,v 1.4 2003/04/17 13:49:41 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -312,11 +312,11 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 
-C--   Forcing term
-      IF (momForcing)
-     &  CALL EXTERNAL_FORCING_U(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,
-     I     myCurrentTime,myThid)
+C--   Forcing term (moved to timestep.F)
+c     IF (momForcing)
+c    &  CALL EXTERNAL_FORCING_U(
+c    I     iMin,iMax,jMin,jMax,bi,bj,k,
+c    I     myCurrentTime,myThid)
 
 C--   Metric terms for curvilinear grid systems
 c     IF (usingSphericalPolarMTerms) THEN
@@ -378,11 +378,11 @@ C-    No-slip BCs impose a drag at bottom
        ENDDO
       ENDIF
 
-C--   Forcing term
-      IF (momForcing)
-     & CALL EXTERNAL_FORCING_V(
-     I     iMin,iMax,jMin,jMax,bi,bj,k,
-     I     myCurrentTime,myThid)
+C--   Forcing term (moved to timestep.F)
+c     IF (momForcing)
+c    & CALL EXTERNAL_FORCING_V(
+c    I     iMin,iMax,jMin,jMax,bi,bj,k,
+c    I     myCurrentTime,myThid)
 
 C--   Metric terms for curvilinear grid systems
 c     IF (usingSphericalPolarMTerms) THEN
@@ -396,9 +396,7 @@ c      ENDDO
 c     ENDIF
 
 C--   Horizontal Coriolis terms
-      CALL MOM_VI_MASK_VORT3(bi,bj,k,hFacZ,r_hFacZ,vort3,myThid)
-c     CALL MOM_VI_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
-      IF (useCoriolis) THEN
+      IF (useCoriolis .AND. .NOT.useCDscheme) THEN
        CALL MOM_VI_CORIOLIS(bi,bj,k,uFld,vFld,omega3,hFacZ,r_hFacZ,
      &                      uCf,vCf,myThid)
        DO j=jMin,jMax
@@ -410,6 +408,7 @@ c     CALL MOM_VI_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
       ENDIF
 
       IF (momAdvection) THEN
+       CALL MOM_VI_MASK_VORT3(bi,bj,k,hFacZ,r_hFacZ,vort3,myThid)
 C--   Horizontal advection of relative vorticity
 c      CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,omega3,r_hFacZ,uCf,myThid)
        CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,vort3,hFacZ,r_hFacZ,
