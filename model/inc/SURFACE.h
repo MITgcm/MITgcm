@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.2 2001/05/29 14:01:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.3 2001/08/27 18:41:44 jmc Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -18,6 +18,24 @@ C     recip_Bo     = 1/Bo_surf
       _RL  recip_Bo(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C--   COMMON /SURF_INDEX/ Common block for surface related index
-C     k_surf - vertical index of the surface tracer cell
-      COMMON /SURF_INDEX/ k_surf
-      INTEGER k_surf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C     ksurfC - vertical index of the surface tracer cell
+C     ksurfW - vertical index of the surface U point 
+C     ksurfS - vertical index of the surface V point 
+C IMPORTANT:  ksurfC,W,S = Nr+1  where the fluid column is empty (continent)
+      COMMON /SURF_INDEX/ ksurfC, ksurfW, ksurfS
+      INTEGER ksurfC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER ksurfW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      INTEGER ksurfS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
+#ifdef NONLIN_FRSURF
+C--   COMMON /SURF_CHANGE/ transient varariable used for Non-Lin Free-Surf
+C     hFac_surfC - New thickness factor of the surface level
+C                        center (Tracer point)
+C     hFac_surfW - idem, West  interface (U point)
+C     hFac_surfS - idem, South interface (V point)
+      COMMON /SURF_CHANGE/
+     &     hFac_surfC, hFac_surfW, hFac_surfS
+      _RS  hFac_surfC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  hFac_surfW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  hFac_surfS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+#endif /* NONLIN_FRSURF */
