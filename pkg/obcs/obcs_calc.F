@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.7 2004/09/20 23:22:57 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_calc.F,v 1.8 2004/09/21 20:33:07 heimbach Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -6,13 +6,13 @@ C $Name:  $
       SUBROUTINE OBCS_CALC( bi, bj, futureTime, futureIter,
      &                      uVel, vVel, wVel, theta, salt, 
      &                      myThid )
-C     /==========================================================\
+C     |==========================================================|
 C     | SUBROUTINE OBCS_CALC                                     |
 C     | o Calculate future boundary data at open boundaries      |
 C     |   at time = futureTime                                   |
 C     |==========================================================|
 C     |                                                          |
-C     \==========================================================/
+C     |==========================================================|
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -40,11 +40,13 @@ C     == Local variables ==
       _RL Tr_T, Ar_T, Tr, Ar 
 
 #ifdef ALLOW_OBCS_PRESCRIBE
+
 C--     Calculate future values on open boundaries
         CALL EXF_GETOBCS(futureTime, futureIter, mythid)
-#endif
 
-C--     OB values are calculated
+C ------------------------------------------------------------------------------
+
+#else /* undef ALLOW_OBCS_PRESCRIBE */
 
 C ------------------------------------------------------------------------------
 
@@ -76,44 +78,7 @@ C     Eastern OB
           ENDDO
         ENDDO
       ENDIF
-
-#ifdef ALLOW_OBCS_BALANCE
-
-      IF ( useOBCSbalance) THEN
-
-        Tr_T = 0. _d 0
-        Ar_T = 0. _d 0
-        DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-            I_obc=OB_Ie(J,bi,bj)
-            IF (I_obc.ne.0) THEN
-              Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
-              Ar_T = Ar_T + Ar 
-              Tr_T = Tr_T + Ar * OBEu(J,K,bi,bj)
-            ENDIF
-          ENDDO
-        ENDDO
-      
-        _GLOBAL_SUM_R8( Ar_T , myThid )
-        _GLOBAL_SUM_R8( Tr_T , myThid )
-
-        Tr_T = (0. - Tr_T)/Ar_T
-
-        DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-            I_obc=OB_Ie(J,bi,bj)
-            IF (I_obc.ne.0) THEN
-              OBEu(J,K,bi,bj) = OBEu(J,K,bi,bj) + Tr_T
-              OBEv(J,K,bi,bj) = 0. 
-            ENDIF
-          ENDDO
-        ENDDO
-
-      ENDIF
-
-#endif /* ALLOW_OBCS_BALANCE */
-
-#endif
+#endif /* ALLOW_OBCS_EAST */
 
 C ------------------------------------------------------------------------------
 
@@ -145,43 +110,6 @@ C     Western OB
           ENDDO
         ENDDO
       ENDIF
-
-#ifdef ALLOW_OBCS_BALANCE
-
-      IF ( useOBCSbalance) THEN
-
-        Tr_T = 0. _d 0
-        Ar_T = 0. _d 0
-        DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-            I_obc=OB_Iw(J,bi,bj)
-            IF (I_obc.ne.0) THEN
-              Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
-              Ar_T = Ar_T + Ar 
-              Tr_T = Tr_T + Ar * OBWu(J,K,bi,bj)
-            ENDIF
-          ENDDO
-        ENDDO
-      
-        _GLOBAL_SUM_R8( Ar_T , myThid )
-        _GLOBAL_SUM_R8( Tr_T , myThid )
-
-        Tr_T = (0. - Tr_T)/Ar_T
-
-        DO K=1,Nr
-          DO J=1-Oly,sNy+Oly
-            I_obc=OB_Iw(J,bi,bj)
-            IF (I_obc.ne.0) THEN
-                OBWu(J,K,bi,bj) = OBWu(J,K,bi,bj) + Tr_T
-                OBWv(J,K,bi,bj) = 0. 
-            ENDIF
-          ENDDO
-        ENDDO
-
-      ENDIF
-
-#endif /* ALLOW_OBCS_BALANCE */
-
 #endif /* ALLOW_OBCS_WEST */
 
 C ------------------------------------------------------------------------------
@@ -214,44 +142,7 @@ C         Northern OB
           ENDDO
         ENDDO
       ENDIF
-
-#ifdef ALLOW_OBCS_BALANCE
-
-      IF ( useOBCSbalance) THEN
-
-        Tr_T = 0. _d 0
-        Ar_T = 0. _d 0
-        DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-            J_obc=OB_Jn(I,bi,bj)
-            IF (J_obc.ne.0) THEN
-              Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
-              Ar_T = Ar_T + Ar 
-              Tr_T = Tr_T + Ar * OBNv(I,K,bi,bj)
-            ENDIF
-          ENDDO
-        ENDDO
-      
-        _GLOBAL_SUM_R8( Ar_T , myThid )
-        _GLOBAL_SUM_R8( Tr_T , myThid )
-
-        Tr_T = (0. - Tr_T)/Ar_T
-
-        DO K=1,Nr
-          DO I=1-Olx,sNx+Olx
-            J_obc=OB_Jn(I,bi,bj)
-            IF (J_obc.ne.0) THEN
-                OBNu(I,K,bi,bj) = 0.
-                OBWv(I,K,bi,bj) = OBNv(I,K,bi,bj) + Tr_T
-            ENDIF
-          ENDDO
-        ENDDO
-
-      ENDIF
-
-#endif /* ALLOW_OBCS_BALANCE */
-
-#endif
+#endif /* ALLOW_OBCS_NORTH */
 
 C ------------------------------------------------------------------------------
 
@@ -283,11 +174,100 @@ C         Southern OB
           ENDDO
         ENDDO
       ENDIF
+#endif /* ALLOW_OBCS_SOUTH */
+
+
+C ------------------------------------------------------------------------------
+
+#endif /* ALLOW_OBCS_PRESCRIBE */
+
+C ------------------------------------------------------------------------------
 
 #ifdef ALLOW_OBCS_BALANCE
-
       IF ( useOBCSbalance) THEN
 
+#ifdef ALLOW_OBCS_EAST
+        Tr_T = 0. _d 0
+        Ar_T = 0. _d 0
+        DO K=1,Nr
+          DO J=1-Oly,sNy+Oly
+            I_obc=OB_Ie(J,bi,bj)
+            IF (I_obc.ne.0) THEN
+              Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
+              Ar_T = Ar_T + Ar 
+              Tr_T = Tr_T + Ar * OBEu(J,K,bi,bj)
+            ENDIF
+          ENDDO
+        ENDDO
+        _GLOBAL_SUM_R8( Ar_T , myThid )
+        _GLOBAL_SUM_R8( Tr_T , myThid )
+        Tr_T = (0. - Tr_T)/Ar_T
+        DO K=1,Nr
+          DO J=1-Oly,sNy+Oly
+            I_obc=OB_Ie(J,bi,bj)
+            IF (I_obc.ne.0) THEN
+              OBEu(J,K,bi,bj) = OBEu(J,K,bi,bj) + Tr_T
+              OBEv(J,K,bi,bj) = 0. 
+            ENDIF
+          ENDDO
+        ENDDO
+#endif
+
+#ifdef ALLOW_OBCS_WEST
+        Tr_T = 0. _d 0
+        Ar_T = 0. _d 0
+        DO K=1,Nr
+          DO J=1-Oly,sNy+Oly
+            I_obc=OB_Iw(J,bi,bj)
+            IF (I_obc.ne.0) THEN
+              Ar = drF(k)*hFacC(I_obc,j,k,bi,bj)*dyG(I_obc,j,bi,bj)
+              Ar_T = Ar_T + Ar 
+              Tr_T = Tr_T + Ar * OBWu(J,K,bi,bj)
+            ENDIF
+          ENDDO
+        ENDDO
+        _GLOBAL_SUM_R8( Ar_T , myThid )
+        _GLOBAL_SUM_R8( Tr_T , myThid )
+        Tr_T = (0. - Tr_T)/Ar_T
+        DO K=1,Nr
+          DO J=1-Oly,sNy+Oly
+            I_obc=OB_Iw(J,bi,bj)
+            IF (I_obc.ne.0) THEN
+                OBWu(J,K,bi,bj) = OBWu(J,K,bi,bj) + Tr_T
+                OBWv(J,K,bi,bj) = 0. 
+            ENDIF
+          ENDDO
+        ENDDO
+#endif
+
+#ifdef ALLOW_OBCS_NORTH
+        Tr_T = 0. _d 0
+        Ar_T = 0. _d 0
+        DO K=1,Nr
+          DO I=1-Olx,sNx+Olx
+            J_obc=OB_Jn(I,bi,bj)
+            IF (J_obc.ne.0) THEN
+              Ar = drF(k)*hFacC(i,J_obc,k,bi,bj)*dxG(i,J_obc,bi,bj)
+              Ar_T = Ar_T + Ar 
+              Tr_T = Tr_T + Ar * OBNv(I,K,bi,bj)
+            ENDIF
+          ENDDO
+        ENDDO
+        _GLOBAL_SUM_R8( Ar_T , myThid )
+        _GLOBAL_SUM_R8( Tr_T , myThid )
+        Tr_T = (0. - Tr_T)/Ar_T
+        DO K=1,Nr
+          DO I=1-Olx,sNx+Olx
+            J_obc=OB_Jn(I,bi,bj)
+            IF (J_obc.ne.0) THEN
+                OBNu(I,K,bi,bj) = 0.
+                OBWv(I,K,bi,bj) = OBNv(I,K,bi,bj) + Tr_T
+            ENDIF
+          ENDDO
+        ENDDO
+#endif
+
+#ifdef ALLOW_OBCS_SOUTH
         Tr_T = 0. _d 0
         Ar_T = 0. _d 0
         DO K=1,Nr
@@ -300,12 +280,9 @@ C         Southern OB
             ENDIF
           ENDDO
         ENDDO
-      
         _GLOBAL_SUM_R8( Ar_T , myThid )
         _GLOBAL_SUM_R8( Tr_T , myThid )
-
         Tr_T = (0. - Tr_T)/Ar_T
-
         DO K=1,Nr
           DO I=1-Olx,sNx+Olx
             J_obc=OB_Js(I,bi,bj)
@@ -315,12 +292,10 @@ C         Southern OB
             ENDIF
           ENDDO
         ENDDO
+#endif
 
       ENDIF
-
 #endif /* ALLOW_OBCS_BALANCE */
-
-#endif
 
 #endif /* ALLOW_OBCS */
 

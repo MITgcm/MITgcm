@@ -40,7 +40,7 @@ c     == routine arguments ==
       integer mycurrentiter
       integer mythid
 
-#ifdef ALLOW_OBCS
+#if (defined (ALLOW_OBCS) && defined (ALLOW_OBCS_PRESCRIBE))
 
 c     == local variables ==
 
