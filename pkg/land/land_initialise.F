@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_initialise.F,v 1.2 2004/03/11 14:42:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/Attic/land_initialise.F,v 1.3 2005/02/14 00:41:07 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -58,6 +58,8 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Read LAND parameters (from file data.land):
       CALL LAND_READPARMS( myThid )
+
+      IF ( useDiagnostics ) CALL LAND_DIAGNOSTICS_INIT( myThid )
 
 #endif /* ALLOW_LAND */
 
