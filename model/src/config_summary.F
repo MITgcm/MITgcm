@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.44 2003/10/29 00:19:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.45 2003/12/15 22:42:02 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -91,7 +91,7 @@ CEOP
      &'   /* Reference salinity profile ( ppt ) */')
       CALL WRITE_0D_R8( viscAh, INDEX_NONE,'viscAh =',
      &'   /* Lateral eddy viscosity ( m^2/s ) */')
-      CALL WRITE_0D_R8( viscA4, INDEX_NONE,'viscAh =',
+      CALL WRITE_0D_R8( viscA4, INDEX_NONE,'viscA4 =',
      &'   /* Lateral biharmonic viscosity ( m^4/s ) */')
       CALL WRITE_0D_L( no_slip_sides, INDEX_NONE,
      & 'no_slip_sides =', '  /* Viscous BCs: No-slip sides */')
