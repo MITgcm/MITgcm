@@ -56,6 +56,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "ctrl.h"
 
 c     == routine arguments ==
 
@@ -94,8 +95,8 @@ c     == end of interface ==
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec
-      readBinaryPrec = precFloat32
-      prec           = precFloat32
+      readBinaryPrec = ctrlprec
+      prec           = ctrlprec
 
       write(adfname(1:80),'(80a)') ' '
       adpref = 'ad'
@@ -275,6 +276,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "ctrl.h"
 
 c     == routine arguments ==
 
@@ -300,8 +302,8 @@ c     == end of interface ==
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec
-      readBinaryPrec = precFloat32
-      prec           = precFloat32
+      readBinaryPrec = ctrlprec
+      prec           = ctrlprec
 
 c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
@@ -440,6 +442,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "ctrl.h"
 
 c     == routine arguments ==
 
@@ -478,8 +481,8 @@ c     == end of interface ==
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec
-      readBinaryPrec = precFloat32
-      prec           = precFloat32
+      readBinaryPrec = ctrlprec
+      prec           = ctrlprec
 
       write(adfname(1:80),'(80a)') ' '
       adpref = 'ad'
@@ -659,6 +662,7 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "PARAMS.h"
+#include "ctrl.h"
 
 c     == routine arguments ==
 
@@ -684,8 +688,8 @@ c     == end of interface ==
 
 c     force 64-bit io
       oldPrec        = readBinaryPrec
-      readBinaryPrec = precFloat32
-      prec           = precFloat32
+      readBinaryPrec = ctrlprec
+      prec           = ctrlprec
 
 c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>> FORWARD RUN <<<<<<<<<<<<<<<<<<<
