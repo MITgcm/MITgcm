@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.20 2004/01/10 16:59:08 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.21 2004/01/27 15:59:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -117,7 +117,14 @@ C       The write statement may need to be marked as a critical section.
 #endif
        ENDIF
       ENDIF
-C
+
+#ifndef DISABLE_WRITE_TO_UNIT_ZERO
+C--   also write directly to unit 0 :
+      IF ( numberOfProcs .EQ. 1 .AND. nThreads .EQ. 1 ) THEN
+        IF (iEnd.NE.0) WRITE(0,'(A)') message(1:iEnd)
+      ENDIF
+#endif
+
  1000 CONTINUE
       RETURN
 
@@ -1424,6 +1431,15 @@ C       The write statement may need to ne marked as a critical section.
 #endif
        ENDIF
       ENDIF
+
+#ifndef DISABLE_WRITE_TO_UNIT_ZERO
+C--   if error message, also write directly to unit 0 :
+      IF ( numberOfProcs .EQ. 1 .AND. nThreads .EQ. 1
+     &     .AND. unit.EQ.errorMessageUnit ) THEN
+        iEnd   = ILNBLNK( message )
+        IF (iEnd.NE.0) WRITE(0,'(A)') message(1:iEnd)
+      ENDIF
+#endif
 C
  1000 CONTINUE
       RETURN
