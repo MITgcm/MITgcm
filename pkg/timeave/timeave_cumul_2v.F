@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_2v.F,v 1.1 2001/03/06 15:50:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_2v.F,v 1.2 2002/01/03 16:25:44 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -23,7 +23,8 @@ C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
 C     fldtave - time averaged Field
 C     fld1,fld2  - Input Field
-C     dir - type of grid for 2nd array (0: tracer, 1: zonal, 2 merid)
+C     dir - type of grid for 2nd array relatively to the 1rst array
+C     0: same grid ; 1: dX/2 shift ; 2: dY/2 shift ; 3: dr/2 shift
 C     Ksize - 3rd dimension of local arrays (Input and Output fields)
       INTEGER Ksize, dir
       _RL fld1(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Ksize,nSx,nSy)
@@ -79,6 +80,23 @@ C      DO bi = myBxLo(myThid), myBxHi(myThid)
           DO i=1,sNx
              fldtave(i,j,k,bi,bj)= fldtave(i,j,k,bi,bj)
      &       + .5 * ( fld1(i,j-1,k,bi,bj) + fld1(i,j,k,bi,bj) )
+     &                *   fld2(i,j,k,bi,bj)
+     &                *   deltaT
+           ENDDO
+          ENDDO
+         ENDDO
+C       ENDDO
+C      ENDDO
+
+      ELSEIF ( dir.eq.3 ) THEN
+ 
+C     DO bj = myByLo(myThid), myByHi(myThid)
+C      DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO k=2,Ksize
+         DO j=1,sNy
+          DO i=1,sNx
+             fldtave(i,j,k,bi,bj)= fldtave(i,j,k,bi,bj)
+     &       + .5 * ( fld1(i,j,k-1,bi,bj) + fld1(i,j,k,bi,bj) )
      &                *   fld2(i,j,k,bi,bj)
      &                *   deltaT
            ENDDO
