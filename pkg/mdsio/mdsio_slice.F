@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice.F,v 1.6 2004/04/08 18:50:23 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice.F,v 1.7 2004/04/08 20:23:36 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -838,7 +838,7 @@ C If we are writing to a tiled MDS file then we open each one here
             iG = (myXGlobalLo-1)/sNx + (bi-1)
             jG = myYGlobalLo-1 + (bj-1)*sNy
             irec=1 + INT(jG/sNy) + nSy*nPy*iG + nSy*nPy*(k-1)
-     &           + nSy*nPy*nNz*(irecord1)
+     &           + nSy*nPy*nNz*(irecord-1)
            else
             iG = 0
             jG = 0
