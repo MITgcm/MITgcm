@@ -1,7 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.278 2004/04/18 21:43:24 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.279 2004/04/18 22:31:33 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o fix in pkg/thsice:
+  - update Evap (Tsf changes) to be consistent with Latent heat flux
+  - maintain snow precipitation unchanged (even if Tsf >=0).
+ both affect global_ocean.cs32x15/(.thsice) results ; update output.txt.thsice
 
 checkpoint52m_post
 o commented out call to cal_GetMonthsRec in swfrac.F and added some comments;
