@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.7 1998/05/21 18:25:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.8 1998/05/25 16:17:36 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -51,7 +51,7 @@ C     K, I, J - Loop counters
 
 C--   Continuous equation parameters
       NAMELIST /PARM01/
-     & gravity, rhonil, tAlpha, sBeta, f0, beta,
+     & gravity, gBaro, rhonil, tAlpha, sBeta, f0, beta,
      &   viscAh,  viscAz,  viscA4,
      &  diffKhT, diffKzT, diffK4T,
      &  diffKhS, diffKzS, diffK4S,
@@ -59,7 +59,8 @@ C--   Continuous equation parameters
      &  tRef, sRef,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
      & tempDiffusion, tempAdvection, tempForcing,
-     & saltDiffusion, saltAdvection, saltForcing
+     & saltDiffusion, saltAdvection, saltForcing,
+     & implicitFreeSurface, rigidLid, freeSurfFac
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
@@ -142,6 +143,7 @@ C--   Set default "physical" parameters
        tRef(K) = 30.D0 - FLOAT(K)
       ENDDO
       gravity =   9.81 D0
+      gBaro   = gravity
       rhoNil   = 999.8 D0
       tAlpha=2.d-4
       sBeta=1.d-5
@@ -161,6 +163,9 @@ C--   Set default "physical" parameters
       GMalpha=0.
       GMdepth=1000.
       GMkbackground=0.
+      implicitFreeSurface = .TRUE.
+      rigidLid            = .FALSE.
+      freeSurfFac         = 1. _d 0
       READ(UNIT=iUnit,NML=PARM01,IOSTAT=errIO,err=3)
       IF ( errIO .GE. 0 ) GOTO 4
     3 CONTINUE
@@ -179,6 +184,15 @@ C--   Set default "physical" parameters
        CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
    4  CONTINUE
+      IF ( implicitFreeSurface ) freeSurfFac = 1. _d 0
+      IF ( rigidLid            ) freeSurfFac = 0. _d 0
+
+      IF ( implicitFreeSurface .AND.  rigidLid ) THEN
+       WRITE(msgBuf,'(A)')
+     &  'S/R INI_PARMS: Cannot select implicitFreeSurface and rigidLid.'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R INI_PARMS'
+      ENDIF
 
 C--   Elliptic solver parameters
       cg2dMaxIters   = 150

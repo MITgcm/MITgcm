@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.6 1998/05/20 21:29:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.7 1998/05/25 16:17:36 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -120,25 +120,11 @@ C     uninitialised but inert locations.
         rhokp1(i,j)  = 0. _d 0
        ENDDO
       ENDDO
-C--   Set up work arrays that need valid initial values
-      DO j=1-OLy,sNy+OLy
-       DO i=1-OLx,sNx+OLx
-        wTrans(i,j)  = 0. _d 0
-        fVerT(i,j,1) = 0. _d 0
-        fVerT(i,j,2) = 0. _d 0
-        fVerS(i,j,1) = 0. _d 0
-        fVerS(i,j,2) = 0. _d 0
-        fVerU(i,j,1) = 0. _d 0
-        fVerU(i,j,2) = 0. _d 0
-        fVerV(i,j,1) = 0. _d 0
-        fVerV(i,j,2) = 0. _d 0
-       ENDDO
-      ENDDO
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
 
-C--   Boundary condition on hydrostatic pressure is pH(z=0)=0
+C--     Boundary condition on hydrostatic pressure is pH(z=0)=0
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           pH(i,j,1) = 0. _d 0
@@ -146,6 +132,21 @@ C--   Boundary condition on hydrostatic pressure is pH(z=0)=0
           K23(i,j,1) = 0. _d 0
           K33(i,j,1) = 0. _d 0
           KapGM(i,j) = 0. _d 0
+         ENDDO
+        ENDDO
+
+C--     Set up work arrays that need valid initial values
+        DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+          wTrans(i,j)  = 0. _d 0
+          fVerT(i,j,1) = 0. _d 0
+          fVerT(i,j,2) = 0. _d 0
+          fVerS(i,j,1) = 0. _d 0
+          fVerS(i,j,2) = 0. _d 0
+          fVerU(i,j,1) = 0. _d 0
+          fVerU(i,j,2) = 0. _d 0
+          fVerV(i,j,1) = 0. _d 0
+          fVerV(i,j,2) = 0. _d 0
          ENDDO
         ENDDO
 
@@ -164,57 +165,57 @@ C--     Update fields in top level according to tendency terms
         CALL TIMESTEP(
      I       bi,bj,iMin,iMax,jMin,jMax,1,pSurfX,pSurfY,myThid)
 
-C Density of 1st level (below W(1)) reference to level 1
-         CALL FIND_RHO(
-     I      bi, bj, iMin, iMax, jMin, jMax, 1, 1, 'LINEAR',
-     O      rhoKm1,
-     I      myThid )
+C--     Density of 1st level (below W(1)) reference to level 1
+        CALL FIND_RHO(
+     I     bi, bj, iMin, iMax, jMin, jMax, 1, 1, 'LINEAR',
+     O     rhoKm1,
+     I     myThid )
 C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
-         CALL CALC_PH(
-     I       bi,bj,iMin,iMax,jMin,jMax,1,rhoKm1,rhoKm1,
-     U       pH,
-     I       myThid )
+        CALL CALC_PH(
+     I      bi,bj,iMin,iMax,jMin,jMax,1,rhoKm1,rhoKm1,
+     U      pH,
+     I      myThid )
 
         DO K=2,Nz
 C--     Update fields in Kth level according to tendency terms
         CALL TIMESTEP(
      I       bi,bj,iMin,iMax,jMin,jMax,K,pSurfX,pSurfY,myThid)
-C Density of K-1 level (above W(K)) reference to K level
-         CALL FIND_RHO(
-     I      bi, bj, iMin, iMax, jMin, jMax,  K-1, K, 'LINEAR',
-     O      rhoKm1,
-     I      myThid )
-C Density of K level (below W(K)) reference to K level
-         CALL FIND_RHO(
-     I      bi, bj, iMin, iMax, jMin, jMax,  K, K, 'LINEAR',
-     O      rhoKp1,
-     I      myThid )
+C--     Density of K-1 level (above W(K)) reference to K level
+        CALL FIND_RHO(
+     I     bi, bj, iMin, iMax, jMin, jMax,  K-1, K, 'LINEAR',
+     O     rhoKm1,
+     I     myThid )
+C--     Density of K level (below W(K)) reference to K level
+        CALL FIND_RHO(
+     I     bi, bj, iMin, iMax, jMin, jMax,  K, K, 'LINEAR',
+     O     rhoKp1,
+     I     myThid )
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
-         CALL CALC_ISOSLOPES(
-     I             bi, bj, iMin, iMax, jMin, jMax, K,
-     I             rhoKm1, rhoKp1,
-     O             K13, K23, K33, KapGM,
-     I             myThid )
+        CALL CALC_ISOSLOPES(
+     I            bi, bj, iMin, iMax, jMin, jMax, K,
+     I            rhoKm1, rhoKp1,
+     O            K13, K23, K33, KapGM,
+     I            myThid )
 C--     Calculate static stability and mix where convectively unstable
-         CALL CONVECT(
-     I       bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoKp1,myThid)
-C Density of K-1 level (above W(K)) reference to K-1 level
-         CALL FIND_RHO(
-     I      bi, bj, iMin, iMax, jMin, jMax,  K-1, K-1, 'LINEAR',
-     O      rhoKm1,
-     I      myThid )
-C Density of K level (below W(K)) referenced to K level
-         CALL FIND_RHO(
-     I      bi, bj, iMin, iMax, jMin, jMax,  K, K, 'LINEAR',
-     O      rhoKp1,
-     I      myThid )
+        CALL CONVECT(
+     I      bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoKp1,myThid)
+C--     Density of K-1 level (above W(K)) reference to K-1 level
+        CALL FIND_RHO(
+     I     bi, bj, iMin, iMax, jMin, jMax,  K-1, K-1, 'LINEAR',
+     O     rhoKm1,
+     I     myThid )
+C--     Density of K level (below W(K)) referenced to K level
+        CALL FIND_RHO(
+     I     bi, bj, iMin, iMax, jMin, jMax,  K, K, 'LINEAR',
+     O     rhoKp1,
+     I     myThid )
 C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
-         CALL CALC_PH(
-     I       bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoKp1,
-     U       pH,
-     I       myThid )
+        CALL CALC_PH(
+     I      bi,bj,iMin,iMax,jMin,jMax,K,rhoKm1,rhoKp1,
+     U      pH,
+     I      myThid )
 
-        ENDDO ! K
+        ENDDO
 
         DO K = Nz, 1, -1
          kM1  =max(1,k-1)   ! Points to level above k (=k-1)
@@ -254,7 +255,7 @@ Cdbg I        K13,K23,K33,KapGM,
 Cdbg U        aTerm,xTerm,fZon,fMer,fVerS,
 Cdbg I        myThid)
 
-        ENDDO ! K
+        ENDDO
  
        ENDDO
       ENDDO

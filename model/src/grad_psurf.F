@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/grad_psurf.F,v 1.1 1998/04/30 14:01:53 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/grad_psurf.F,v 1.2 1998/05/25 16:17:36 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -9,8 +9,8 @@ C     \==========================================================/
       SUBROUTINE GRAD_PSURF( bi, bj, iMin, iMax, jMin, jMax,
      O                       pSurfX, pSurfY,
      I                       myThid )
-      implicit none
-! Common
+      IMPLICIT NONE
+C     == Global variables ==
 #include "SIZE.h"
 #include "PARAMS.h"
 #include "GRID.h"
@@ -29,7 +29,7 @@ C     Zonal pressure term
        DO i=iMin,iMax
         pSurfX(i,j)=rDxC(i,j,bi,bj)*
      &   (cg2d_x(i,j,bi,bj)-cg2d_x(i-1,j,bi,bj))
-     &   *gravity*rhonil
+     &   *gBaro*rhonil
        ENDDO
       ENDDO
 
@@ -38,7 +38,7 @@ C     Meridional pressure term
        DO i=iMin,iMax
         pSurfY(i,j)=rDyC(i,j,bi,bj)*
      &   (cg2d_x(i,j,bi,bj)-cg2d_x(i,j-1,bi,bj))
-     &   *gravity*rhonil
+     &   *gBaro*rhonil
        ENDDO
       ENDDO
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.2 1998/04/24 02:05:40 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.3 1998/05/25 16:17:36 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -132,7 +132,7 @@ C     uDudxFac, AhDudxFac, etc ... individual term tracer parameters
       _RS  ab05, ab15
 
       wMaskOverride=1.
-      IF ( k .EQ. 1 ) wMaskOverride=0.
+      IF ( k .EQ. 1 ) wMaskOverride=freeSurfFac
 
       DO J=1-OLy,sNy+OLy
        DO I=1-OLx,sNx+OLx
@@ -210,10 +210,10 @@ C     Mean flow component of meridional flux
      &   (vTrans(i,j)+vTrans(i-1,j))
      &  *(uVel(i,j,k,bi,bj)+uVel(i,j-1,k,bi,bj))*0.25 _d 0
      &  *maskW(i,j,k,bi,bj)*maskW(i,j-1,k,bi,bj)
-C    Note!!!! The line "*maskW(i,j,k,bi,bj)*maskW(i,j-1,k,bi,bj)" is
-C    Note!!!! boundary condition in the standard v010 CM5 code. The
-C    Note!!!! FV paper used a different bc in which this line is
-C    Note!!!! omitted.
+C       Note!!!! The line "*maskW(i,j,k,bi,bj)*maskW(i,j-1,k,bi,bj)" is
+C       Note!!!! boundary condition in the standard v010 CM5 code. The
+C       Note!!!! FV paper used a different bc in which this line is
+C       Note!!!! omitted.
        ENDDO
       ENDDO
 C     Eddy component of meridional flux
@@ -255,24 +255,13 @@ C     Mean flow component of vertical flux
      &  *( uVel(i,j,k,bi,bj)+uVel(i,j,kM1,bi,bj) )
      &  *0.25 _d 0
      &  *(maskW(i,j,k,bi,bj)*maskW(i,j,kM1,bi,bj))
-C    Note!!!! The line "*(maskW(i,j,k,bi,bj)*maskW(i,j,kM1,bi,bj))" is
-C    Note!!!! boundary condition in the standard v010 CM5 code. The
-C    Note!!!! FV paper used a different bc in which this line is
-C    Note!!!! omitted.
-C    Note!!!! Is wMaskOverridde right for implicit free-surface?
+C       Note!!!! The line "*(maskW(i,j,k,bi,bj)*maskW(i,j,kM1,bi,bj))" is
+C       Note!!!! boundary condition in the standard v010 CM5 code. The
+C       Note!!!! FV paper used a different bc in which this line is
+C       Note!!!! omitted.
+C       Note!!!! Is wMaskOverridde right for implicit free-surface?
        ENDDO
       ENDDO
-
-CcnhDebugStarts
-C     IF ( k .EQ. 2 ) THEN
-C      DO j=jMin,jMax
-C       DO i=iMin,iMax
-C        vf(i,j) = wTrans(i,j)*rDxF(i,j,bi,bj)*rDyF(i,j,bi,bj)
-C       ENDDO
-C      ENDDO
-C      CALL PLOT_FIELD_XYR8(vf,'CALC_MOM_RHS.1 wTrans',1,myThid)
-C     ENDIF
-CcnhDebugEnds
 C     Eddy component of vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
@@ -374,10 +363,10 @@ C     Mean flow component of zonal flux
      &   (uTrans(i,j)+uTrans(i,j-1) )
      &  *(vVel(i,j,k,bi,bj)+vVel(i-1,j,k,bi,bj))*0.25 _d 0
      &  *maskS(i,j,k,bi,bj)*maskS(i-1,j,k,bi,bj)
-C    Note!!!! The line "*maskS(i,j,k,bi,bj)*maskS(i-1,j,k,bi,bj)" is
-C    Note!!!! boundary condition in the standard v010 CM5 code. The
-C    Note!!!! FV paper used a different bc in which this line is
-C    Note!!!! omitted.
+C       Note!!!! The line "*maskS(i,j,k,bi,bj)*maskS(i-1,j,k,bi,bj)" is
+C       Note!!!! boundary condition in the standard v010 CM5 code. The
+C       Note!!!! FV paper used a different bc in which this line is
+C       Note!!!! omitted.
        ENDDO
       ENDDO
 C     Eddy component of zonal flux
@@ -444,11 +433,11 @@ C     Mean flow component of vertical flux
      &  *( vVel(i,j,k,bi,bj)+vVel(i,j,kM1,bi,bj) )
      &  *0.25 _d 0
      &  *maskS(i,j,k,bi,bj)*maskS(i,j,kM1,bi,bj)
-C    Note!!!! The line "*(maskS(i,j,k,bi,bj)*maskS(i,j,kM1,bi,bj))" is
-C    Note!!!! boundary condition in the standard v010 CM5 code. The
-C    Note!!!! FV paper used a different bc in which this line is
-C    Note!!!! omitted.
-C    Note!!!! Is wMaskOverridde right for implicit free-surface?
+C       Note!!!! The line "*(maskS(i,j,k,bi,bj)*maskS(i,j,kM1,bi,bj))" is
+C       Note!!!! boundary condition in the standard v010 CM5 code. The
+C       Note!!!! FV paper used a different bc in which this line is
+C       Note!!!! omitted.
+C       Note!!!! Is wMaskOverridde right for implicit free-surface?
 
        ENDDO
       ENDDO
@@ -546,55 +535,25 @@ C--   Set dv/dt on boundaries to zero
 
 C--   Pressure equation source term
 C     Term is the vertical integral of the divergence of the 
-C     time tendency terms along with a 
-CcnhDebugStarts
-      IF ( k .EQ. nZ ) THEN
-C      DO j=1-OLy,sNy+OLy
-C       DO i=1-OLx,sNx+OLx
-C        cg2d_b(i,j,bi,bj) = 0. _d 0
-C       ENDDO
-C      ENDDO
-C      DO j=jMin,jMax
-C       DO i=iMin,iMax
-C        cg2d_b(i,j,bi,bj) = cg2d_x(i,j,bi,bj)
-C       ENDDO
-C      ENDDO
-C      CALL PLOT_FIELD_XYR8( cg2d_b, 'CALC_MOM_RHS.1 SSH',k,myThid)
-C     CALL PLOT_FIELD_XYZR8( ph, 'CALC_MOM_RHS.1 PH',nZ,k,myThid)
-      ENDIF
-CcnhDebugEnds
+C     time tendency terms along with a relaxation term that
+C     pulls div(U) + dh/dt back toward zero.
 
       IF ( k .EQ. nZ ) THEN
 C      Initialise source term on first pass
        DO j=jMin,jMax
         DO i=iMin,iMax
-         cg2d_b(i,j,bi,bj) = 0. _d 0
+         cg2d_b(i,j,bi,bj) =
+     &    -freeSurfFac*zA(i,j,bi,bj)*
+     &     cg2d_x(I  ,J  ,bi,bj)/deltaTMom/deltaTMom
         ENDDO
        ENDDO
       ENDIF
-
-CcnhDebugStarts
-C     Needs pfFacMom = 0
-C---  Pressure term ( -1/rho . dp/dx )
-Cdbg  DO j=jMin,jMax
-Cdbg   DO i=iMin,iMax
-Cdbg    vf(i,j) = -rdxC(i,j,bi,bj)
-Cdbg &   *(pH(i,j,k)-pH(i-1,j,k))/rhonil
-Cdbg   ENDDO
-Cdbg  ENDDO
-Cdbg  DO j=jMin,jMax
-Cdbg   DO i=iMin,iMax
-Cdbg    pHSave(i,j,k,bi,bj) = pH(i,j,k)
-Cdbg   ENDDO
-Cdbg  ENDDO
-CcnhDebugEnds
 
       DO j=jMin,jMax
        DO i=iMin,iMax
         pf(i,j) = uTrans(i,j)/deltatmom
      &   + xA(i,j)*(
      &       ab15*gU(i,j,k,bi,bj)+ab05*gUNM1(i,j,k,bi,bj)
-Cdbg &      +vf(i,j)
      &     )
        ENDDO
       ENDDO
@@ -605,23 +564,11 @@ Cdbg &      +vf(i,j)
        ENDDO
       ENDDO
 
-CcnhDebugStarts
-C     Needs pfFacMom = 0
-C---  Pressure term (-1/rho . dp/dy )
-Cdbg  DO j=jMin,jMax
-Cdbg   DO i=iMin,iMax
-Cdbg    vf(i,j) = -rdyC(i,j,bi,bj)
-Cdbg &   *(pH(i,j,k)-pH(i,j-1,k))/rhonil
-Cdbg   ENDDO
-Cdbg  ENDDO
-CcnhDebugEnds
-
       DO j=jMin,jMax
        DO i=iMin,iMax
         pf(i,j) = vTrans(i,j)/deltatmom
      &   + yA(i,j)*(
      &      ab15*gV(i,j,k,bi,bj)+ab05*gVNM1(i,j,k,bi,bj)
-Cdbg &      +vf(i,j)
      &     )
        ENDDO
       ENDDO

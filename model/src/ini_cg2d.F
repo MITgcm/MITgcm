@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.4 1998/05/21 18:26:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.5 1998/05/25 16:17:36 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -56,10 +56,10 @@ C     aS2d: integral in Z Ay/dY
           DO I=1,sNx
            faceArea = dyG(I,J,bi,bj)*dzF(K)*HFacW(I,J,K,bi,bj)
            aW2d(I,J,bi,bj) = aW2d(I,J,bi,bj) + 
-     &      gravity*faceArea*rDxC(I,J,bi,bj)
+     &      gBaro*faceArea*rDxC(I,J,bi,bj)
            faceArea = dxG(I,J,bi,bj)*dzF(K)*HFacS(I,J,K,bi,bj)
            aS2d(I,J,bi,bj) = aS2d(I,J,bi,bj) + 
-     &      gravity*faceArea*rDyC(I,J,bi,bj)
+     &      gBaro*faceArea*rDyC(I,J,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -78,8 +78,8 @@ C     aS2d: integral in Z Ay/dY
       ELSE
        myNorm = 1. _d 0
       ENDIF
-      _BEGIN_MASTER( myThid )
        cg2dNorm = myNorm
+      _BEGIN_MASTER( myThid )
 CcnhDebugStarts
        WRITE(msgBuf,'(A,F)') '// CG2D normalisation factor = ', cg2dNorm
        CALL PRINT_MESSAGE( msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
@@ -132,14 +132,20 @@ C           defaults to 0.51 but can be set at runtime.
           aC = -(
      &     aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
      &    +aS2d(I,J,bi,bj) + aS2D(I  ,J+1,bi,bj)
+     &    +freeSurfFac*myNorm*
+     &     zA(I,J,bi,bj)/deltaTMom/deltaTMom
      &    )
           aCs = -(
      &     aW2d(I,J-1,bi,bj) + aW2d(I+1,J-1,bi,bj)
      &    +aS2d(I,J-1,bi,bj) + aS2d(I  ,J  ,bi,bj)
+     &    +freeSurfFac*myNorm*
+     &     zA(I,J-1,bi,bj)/deltaTMom/deltaTMom
      &    )
           aCw = -(
      &     aW2d(I-1,J,bi,bj) + aW2d(I  ,J  ,bi,bj)
      &    +aS2d(I-1,J,bi,bj) + aS2d(I-1,J+1,bi,bj)
+     &    +freeSurfFac*myNorm*
+     &     zA(I-1,J,bi,bj)/deltaTMom/deltaTMom
      &    )
           IF ( aC .EQ. 0. ) THEN
             pC(I,J,bi,bj) = 0. _d 0
@@ -158,6 +164,9 @@ C           defaults to 0.51 but can be set at runtime.
            pS(I,J,bi,bj) =
      &     -aS2d(I  ,J  ,bi,bj)/((cg2dpcOffDFac *(aCs+aC))**2 )
           ENDIF
+          pC(I,J,bi,bj) = 1.
+          pW(I,J,bi,bj) = 0.
+          pS(I,J,bi,bj) = 0.
          ENDDO
         ENDDO
        ENDDO
@@ -167,19 +176,21 @@ C--   Update overlap regions
       _EXCH_XY_R4(pW, myThid)
       _EXCH_XY_R4(pS, myThid)
 
-C--   Set default values for initial guess
+C--   Set default values for initial guess and RHS
       IF ( startTime .EQ. 0 ) THEN
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO J=1,sNy
           DO I=1,sNx
            cg2d_x(I,J,bi,bj) = 0. _d 0
+           cg2d_b(I,J,bi,bj) = 0. _d 0
           ENDDO
          ENDDO
         ENDDO
        ENDDO
 C--    Update overlap regions
        _EXCH_XY_R8(cg2d_x, myThid)
+       _EXCH_XY_R8(cg2d_b, myThid)
       ENDIF
 
       RETURN

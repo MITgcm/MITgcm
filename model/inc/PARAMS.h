@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.7 1998/05/21 18:28:50 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.8 1998/05/25 16:17:36 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -85,10 +85,13 @@ C     saltAdvection - Flag which turns advection of salinit on
 C                     and off.
 C     saltForcing   - Flag which turns external forcing of salinit on
 C                     and off.
+C     implicitFreeSurface - Set to true to use implcit free surface
+C     rigidLid            - Set to true to use rigid lid
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & momViscosity, momAdvection, momForcing, useCoriolis,
      & tempDiffusion, tempAdvection, tempForcing,
-     & saltDiffusion, saltAdvection, saltForcing
+     & saltDiffusion, saltAdvection, saltForcing,
+     & implicitFreeSurface, rigidLid
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL momViscosity
@@ -101,6 +104,8 @@ C                     and off.
       LOGICAL saltDiffusion
       LOGICAL saltAdvection
       LOGICAL saltForcing
+      LOGICAL implicitFreeSurface
+      LOGICAL rigidLid
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual
@@ -124,6 +129,7 @@ C                 between "w" surfaces.
 C     delX      - Separation between cell faces (m) or (deg), depending
 C     delY        on input flags.
 C     gravity   - Accel. due to gravity ( m/s^2 )
+C     gBaro     - Accel. due to gravity used in barotropic equation ( m/s^2 )
 C     ronil     - Reference density
 C     startTime - Start time for model ( s )
 C     phiMin    - Latitude of southern most cell face.
@@ -161,13 +167,16 @@ C                    Frequency of checkpointing and dumping of the model state
 C                    are referenced to this clock. ( s )
 C     deltaTMom    - Timestep for momemtum equations ( s )
 C     deltaTtracer - Timestep for tracer equations ( s )
+C     freesurfFac  - Parameter to turn implicit free surface term on or off
+C                    freesurfac = 1. uses implicit free surface
+C                    freesurfac = 0. uses rigid lid
 C     tauCD     - CD scheme coupling timescale ( 1/s )
 C     rCD       - CD scheme normalised coupling parameter ( 0-1 )
 C     GMmaxslope  - max. slope allowed in GM/Redi tensor
-C     GMlength  - Length to use in Visbeck et al. formula for K
+C     GMlength  - Length to use in Visbeck et al. formula for K (m)
 C     GMalpha   - alpha to use in Visbeck et al. formula for K
 C     GMdepth   - Depth over which to integrate Richardson # (Visbeck et al.)
-C     GMbackground - background value of GM/Redi coefficient
+C     GMkbackground - background value of GM/Redi coefficient
 C     startTime - Starting time for this integration ( s ).
 C     endTime   - Ending time for this integration ( s ).
 C     chkPtFreq  - Frequency of rolling check pointing ( s ).
@@ -178,9 +187,9 @@ C                 post-processing files ( s ).
      & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, phiMin, 
      & thetaMin, rSphere, f0, fCori, beta, viscAh, viscAz, viscA4, 
      & diffKhT, diffKzT, diffK4T, diffKhS, diffKzS, diffK4S, delT, 
-     & tauCD, rCD, 
+     & tauCD, rCD, freeSurfFac,
      & GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,
-     & gravity, rhonil, tRef, sRef,
+     & gravity, gBaro, rhonil, tRef, sRef,
      & endTime, chkPtFreq, pchkPtFreq, dumpFreq
       _RL cg2dTargetResidual
       _RL cg2dpcOffDFac
@@ -196,6 +205,7 @@ C                 post-processing files ( s ).
       _RL thetaMin
       _RL rSphere
       _RL f0
+      _RL freeSurfFac
       _RL beta
       _RL viscAh
       _RL viscAz
@@ -215,6 +225,7 @@ C                 post-processing files ( s ).
       _RL GMdepth
       _RL GMkbackground
       _RL gravity
+      _RL gBaro
       _RL rhonil
       _RL tRef(Nz)
       _RL sRef(Nz)

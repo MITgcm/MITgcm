@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.7 1998/05/21 18:25:48 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.8 1998/05/25 16:17:36 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -86,10 +86,30 @@ C     == Local variables ==
      &'   /* Reference density ( kg/m^3 ) */')
       CALL WRITE_1D_R8( gravity,1, INDEX_NONE,'gravity =',
      &'   /* Gravitational acceleration ( m/s^2 ) */')
+      CALL WRITE_1D_R8( gBaro,1, INDEX_NONE,'gBaro =',
+     &'   /* Barotropic gravity ( m/s^2 ) */')
       CALL WRITE_1D_R8( f0,1, INDEX_NONE,'f0 =',
      &'   /* Reference coriolis parameter ( 1/s ) */')
       CALL WRITE_1D_R8( beta,1, INDEX_NONE,'beta =',
      &'   /* Beta ( 1/(m.s) ) */')
+      CALL WRITE_1D_R8( freeSurfFac,1, INDEX_NONE,'freeSurfFac =',
+     &'   /* Implcit free surface factor */')
+      CALL WRITE_1D_L( implicitFreeSurface,1, INDEX_NONE,
+     &                 'implicitFreeSurface =',
+     &'   /* Implicit free surface on/off flag */')
+      CALL WRITE_1D_L( rigidLid,1, INDEX_NONE,
+     &                 'rigidLid =',
+     &'   /* Rigid lid on/off flag */')
+      CALL WRITE_1D_R8( GMMaxSlope,1, INDEX_NONE,'GMMaxSlope =',
+     &'   /* Max. slope allowed in GM/Redi tensor */')
+      CALL WRITE_1D_R8( GMLength,1, INDEX_NONE,'GMLength =',
+     &'   /* Length to use in Visbeck et al. formula for K (m) */')
+      CALL WRITE_1D_R8( GMAlpha,1, INDEX_NONE,'GMAlpha =',
+     &'   /* alpha to use in Visbeck et al. formula for K */')
+      CALL WRITE_1D_R8( GMdepth,1, INDEX_NONE,'GMdepth =',
+     &'   /* Depth to integrate for Visbeck et. al Richardson # (m) */')
+      CALL WRITE_1D_R8( GMkbackground,1, INDEX_NONE,'GMkbackground =',
+     &'   /* background value of GM/Redi coefficient m^2/s */')
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, SQUEEZE_RIGHT , 1)
       WRITE(msgBuf,'(A)') '// Elliptic solver(s) paramters ( PARM02 in namelist ) '
