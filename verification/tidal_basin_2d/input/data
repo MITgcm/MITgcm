@@ -4,8 +4,9 @@
 #
 # Continuous equation parameters
  &PARM01
- tRef=20.,
- sRef=35.,
+ tRef=20., 19.5, 19., 18.5, 18.,
+      17.5, 17., 16.5, 16., 15.5,
+ sRef=10*35.,
  viscAh=1.E2,
  viscAz=1.E-3,
  no_slip_sides=.FALSE.,
@@ -49,7 +50,7 @@
  &PARM04
  usingCartesianGrid=.TRUE.,
  usingSphericalPolarGrid=.FALSE.,
- delZ=500.,
+ delZ=10*50.,
  delY=10.e3,
  delX=80*50.e3,
  &

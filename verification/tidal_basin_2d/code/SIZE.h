@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/SIZE.h,v 1.1 2003/01/30 18:33:57 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/tidal_basin_2d/code/SIZE.h,v 1.2 2003/01/30 20:19:16 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -46,7 +46,7 @@ C     Nr  - No. points in Z for full process domain.
      &           nPy =   1,
      &           Nx  = sNx*nSx*nPx,
      &           Ny  = sNy*nSy*nPy,
-     &           Nr  =   1)
+     &           Nr  =   10)
 
 C     MAX_OLX  - Set to the maximum overlap region size of any array
 C     MAX_OLY    that will be exchanged. Controls the sizing of exch
