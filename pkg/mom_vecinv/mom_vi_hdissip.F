@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.23 2005/03/28 15:40:20 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.24 2005/04/03 15:58:51 heimbach Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -108,8 +108,18 @@ C Using it in Leith serves to damp instabilities in w.
      &      +((hDiv(i-1,j)-hDiv(i,j))*recip_DXG(i-1,j,bi,bj))**2
      &      +((hDiv(i,j-1)-hDiv(i,j))*recip_DYG(i,j-1,bi,bj))**2)
 
-           Alth2=sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)*L3
-           Alth4=sqrt(viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)*L5
+           IF ( (viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)
+     &          .NE. 0. ) THEN
+            Alth2=sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)*L3
+           ELSE
+            Alth2=0. _d 0
+           ENDIF
+           IF ( (viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)
+     &          .NE. 0. ) THEN
+            Alth4=sqrt(viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)*L5
+           ELSE
+            Alth4=0. _d 0
+           ENDIF
          ELSE
 C but this approximation will work on cube
 c (and differs by as much as 4X)
@@ -197,8 +207,18 @@ C This is the vector magnitude of grad(div.v) squared
      &      +((hDiv(i+1,j+1)-hDiv(i,j+1))*recip_DXG(i,j+1,bi,bj))**2
      &      +((hDiv(i+1,j+1)-hDiv(i+1,j))*recip_DYG(i+1,j,bi,bj))**2)
 
-           Alth2=sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)*L3
-           Alth4=sqrt(viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)*L5
+           IF ( (viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)
+     &          .NE. 0. ) THEN
+            Alth2=sqrt(viscC2leith**2*grdVrt+viscC2leithD**2*grdDiv)*L3
+           ELSE
+            Alth2=0. _d 0
+           ENDIF
+           IF ( (viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)
+     &          .NE. 0. ) THEN
+            Alth4=sqrt(viscC4leith**2*grdVrt+viscC4leithD**2*grdDiv)*L5
+           ELSE
+            Alth4=0. _d 0
+           ENDIF
          ELSE
 C but this approximation will work on cube (and differs by as much as 4X)
            grdVrt=abs((vort3(i+1,j)-vort3(i,j))*recip_DXG(i,j,bi,bj))
