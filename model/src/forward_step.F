@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.7 2001/02/14 22:50:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.8 2001/02/20 15:10:15 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -106,9 +106,11 @@ C--   Step forward all tiles, filter and exchange.
 #endif
 
 #ifdef ALLOW_ZONAL_FILT
+      IF (zonal_filt_lat.LT.90.) THEN 
       CALL ZONAL_FILT_APPLY(
      U           gUnm1, gVnm1, gTnm1, gSnm1,
      I           myThid )
+      ENDIF
 #endif
 
 C--   Solve elliptic equation(s).
