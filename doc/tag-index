@@ -1,10 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.186 2003/10/16 16:29:58 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.187 2003/10/16 17:14:34 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint51k_post
+o change default to: useNHMTerms=.FALSE.
+ - new output.txt for atmos. exp (NHMTerms were wrong but now turned off):
+   adjustment.128x64x1, aim.5l_Eq_Ch, aim.5l_LatLon, hs94.128x64x5, hs94.1x64x5
+ - new output.txt for idealized oceanic exp (NHMTerms are now turned off):
+    exp1, ideal_2D_oce
+ - change data file of oceanic exp (leave the results unchanged for now)
+   exp2, global_ocean[90x40x15,pressure,with_exf], lab_sea, natl_box
+o set gravitySign automatically according to the vertical coordinate used
+  (and change sign: back to "logical" value: +1 when R increases downward)
 o added an include barrier to the default CPP_OPTIONS.h and 
   removed the #include "PACKAGES_CONFIG.h" from it
+o fix a bug in mom_fluxform (from chk51j_post)
 
 checkpoint51j_post
 o Added some AD-related initialisations in mom_vecinv/ mom_fluxform/
