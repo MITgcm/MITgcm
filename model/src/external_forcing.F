@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.6 1999/06/29 18:39:45 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.7 2000/09/11 20:45:57 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -22,7 +22,6 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
-
 C     == Routine arguments ==
 C     iMin - Working range of tile for applying forcing.
 C     iMax
@@ -41,11 +40,12 @@ C     Loop counters
 C--   Forcing term
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. 1 ) THEN
+       CALL EXTERNAL_FORCING_SURF_U( 
+     &           iMin, iMax, jMin, jMax,bi,bj,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
-     &   +foFacMom*fu(i,j,bi,bj)
-     &   *horiVertRatio*recip_rhoNil*recip_dRf(kLev)
+     &   +foFacMom*surfaceTendencyU(i,j,bi,bj)
      &   *_maskW(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
@@ -92,11 +92,12 @@ C     Loop counters
 C--   Forcing term
 C     Add windstress momentum impulse into the top-layer
       IF ( kLev .EQ. 1 ) THEN
+       CALL EXTERNAL_FORCING_SURF_V( 
+     I           iMin, iMax, jMin, jMax,bi,bj,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
-     &   +foFacMom*fv(i,j,bi,bj)
-     &   *horiVertRatio*recip_rhoNil*recip_dRf(kLev)
+     &   +foFacMom*surfaceTendencyV(i,j,bi,bj)
      &   *_maskS(i,j,kLev,bi,bj)
         ENDDO
        ENDDO
@@ -125,6 +126,13 @@ C     == Global data ==
 #include "GRID.h"
 #include "DYNVARS.h"
 #include "FFIELDS.h"
+#ifdef SHORTWAVE_HEATING
+      integer    two, k
+      _RS one
+      parameter (two=2,one=1.)
+       _RS ztmp(two), swfracb(two)
+#endif
+
 
 C     == Routine arguments ==
 C     iMin - Working range of tile for applying forcing.
@@ -145,27 +153,31 @@ C     Loop counters
 C--   Forcing term
 C     Add heat in top-layer
       IF ( kLev .EQ. 1 ) THEN
+       CALL EXTERNAL_FORCING_SURF_T( 
+     I           iMin, iMax, jMin, jMax,bi,bj,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
-     &  +maskC(i,j)*(
-     &   -lambdaThetaClimRelax*(theta(i,j,kLev,bi,bj)-SST(i,j,bi,bj))
-     &   -Qnet(i,j,bi,bj)*recip_Cp*recip_rhoNil*recip_dRf(kLev) )
+     &     +maskC(i,j)*surfaceTendencyT(i,j,bi,bj)
         ENDDO
        ENDDO
       ENDIF
 
 #ifdef SHORTWAVE_HEATING
 C Penetrating SW radiation
+      ztmp(1)=0.0
+      do k=1,klev-1
+         ztmp(1)=ztmp(1)-delZ(k)
+      enddo
+      ztmp(2)=ztmp(1)-delZ(klev)
+      call SWFRAC(two,one,ztmp, swfracb)
       DO j=jMin,jMax
        DO i=iMin,iMax
-        gT(i,j,k,bi,bj) = gT(i,j,k,bi,bj)
-     &    - maskC(i,j)*Qsw(i,j,bi,bj)*swfracb(k)
-     &      *recip_Cp*recip_rhoNil*recip_dRf(k)
+        gT(i,j,klev,bi,bj) = gT(i,j,klev,bi,bj)
+     &    +maskC(i,j)*Qsw(i,j,bi,bj)*(swfracb(1)-swfracb(2))
        ENDDO
       ENDDO
 #endif
-
       RETURN
       END
 CStartOfInterface
@@ -209,17 +221,12 @@ C     Loop counters
 C--   Forcing term
 C     Add fresh-water in top-layer
       IF ( kLev .EQ. 1 ) THEN
+       CALL EXTERNAL_FORCING_SURF_S( 
+     I           iMin, iMax, jMin, jMax,bi,bj,myThid )
        DO j=jMin,jMax
         DO i=iMin,iMax
          gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
-     &   +maskC(i,j)*(
-     &   -lambdaSaltClimRelax*(salt(i,j,kLev,bi,bj)-SSS(i,j,bi,bj))
-#ifdef USE_NATURAL_BCS
-     &   +EmPmR(i,j,bi,bj)*recip_dRf(1)*salt(i,j,kLev,bi,bj)
-#else
-     &   +EmPmR(i,j,bi,bj)*recip_dRf(1)*35.
-#endif
-     &   )
+     &   +maskC(i,j)*surfaceTendencyS(i,j,bi,bj)
         ENDDO
        ENDDO
       ENDIF
