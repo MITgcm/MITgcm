@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.5 2004/09/07 21:32:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.6 2004/09/07 23:51:22 jmc Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -28,7 +28,9 @@ C     !LOCAL VARIABLES:
       INTEGER i
       character*(MAX_LEN_MBUF) msgbuf
 
-      mon_write_stdout = .FALSE.
+C     set those 2 flags to write monitor of the grid (S/R ini_grid) 
+C     and coriolis (S/R ini_cori) to standard output
+      mon_write_stdout = .TRUE.
       mon_write_mnc    = .FALSE.
 
       IF ((monitorFreq .GT. 0.0) .AND. (mon_iotype .LT. 1)) THEN
