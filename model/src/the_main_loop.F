@@ -1,10 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.49 2004/02/18 22:30:40 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.50 2004/03/01 19:13:58 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_PTRACERS
 # include "PTRACERS_OPTIONS.h"
+#endif
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
 #endif
 
 CBOP

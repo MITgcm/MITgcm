@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.31 2003/12/15 23:00:44 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.32 2004/03/01 19:13:58 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -123,9 +123,10 @@ c--   Map the control variables onto the model state.
 
 #ifdef ALLOW_EXF
       CALL EXF_INIT( mythid )
-#else
-      CALL INI_FORCING( mythid )
+cph#else
 #endif
+      CALL INI_FORCING( mythid )
+cph#endif
 
 #ifdef ALLOW_COST
 c--   Initialise the cost function.
