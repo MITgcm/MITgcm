@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.7 2002/08/09 22:55:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_surf_dr.F,v 1.8 2003/04/11 13:00:21 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -171,20 +171,18 @@ C-- Set hFac_surfC :
      &         ( rSurftmp(i,j) - MAX(rF(ks+1), R_low(i,j,bi,bj))
      &         )*recip_drF(ks)*maskC(i,j,ks,bi,bj)
 
-           IF (hFac_surfC(i,j,bi,bj).GT.hFacSup) THEN
 C-- Usefull warning when hFac becomes very large:
+           IF ( numbWrite.LE.numbWrMax .AND.
+     &          hFac_surfC(i,j,bi,bj).GT.hFacSup ) THEN
+              numbWrite = numbWrite + 1 
               WRITE(errorMessageUnit,'(2A,6I4,I10)') 
      &         'WARNING: hFacC > hFacSup at:',
      &         ' i,j,k,bi,bj,Thid,Iter=',i,j,ks,bi,bj,myThid,myIter
               WRITE(errorMessageUnit,'(A,2F10.6,1PE14.6)') 
      &         'hFac_n-1,hFac_n,eta =', hfacC(i,j,ks,bi,bj),
      &          hFac_surfC(i,j,bi,bj), etaFld(i,j,bi,bj)
-C-- Decide to STOP :
-c             WRITE(errorMessageUnit,'(A)') 
-c    &         'STOP in CALC_SURF_DR : too LARGE hFac !'
-c             STOP 'ABNORMAL END: S/R CALC_SURF_DR' 
-C----------
            ENDIF
+C----------
           ENDIF
 
          ENDDO
