@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_land2aim.F,v 1.3 2004/03/11 14:33:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_land2aim.F,v 1.4 2004/05/14 16:08:38 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -79,9 +79,12 @@ C     == Local variables ==
 C     i,j,k        :: Loop counters
 C     grd_HeatCp   :: Heat capacity of the ground [J/m3/K]
 C     mWater       :: water content of the ground [kg/m3]
+C     recip_hSnWet :: reciprol effective snow depth for wetness (m^-1)
+C     recip_mSnWet :: reciprol effective snow cover for wetness (mm^-1)
       INTEGER i,j,k
       _RL grd_HeatCp, mWater
       _RL RSD
+      _RL recip_hSnWet, recip_mSnWet
 
 c     IF (useLand) THEN
 
@@ -110,11 +113,32 @@ C-    Fill in land-pkg ground Temp. using AIM surf. fields
 
        IF (land_calc_grW) THEN
 C-    Use land-pkg output instead of prescribed soil moisture
-        DO j=1,sNy
-         DO i=1,sNx
+        IF ( land_calc_snow ) THEN
+C        Units: hSnow & hSnowWetness are in meter (of snow)
+         recip_hSnWet = 0. _d 0
+         IF ( hSnowWetness .NE. 0. _d 0 )
+     &   recip_hSnWet = 1. _d 0 / hSnowWetness
+         DO j=1,sNy
+          DO i=1,sNx
            aimSWA(i,j) = land_groundW(i,j,1,bi,bj)
+     &                 + land_hSnow(i,j,bi,bj)*recip_hSnWet
+           aimSWA(i,j) = MIN( aimSWA(i,j), 1. _d 0 )
+          ENDDO
          ENDDO
-        ENDDO
+        ELSE
+C        Units: snowFld is in milimeter of equivalent liquid water
+         recip_mSnWet = 0. _d 0
+         IF ( hSnowWetness .NE. 0. _d 0 )
+     &   recip_mSnWet = land_rhoLiqW 
+     &                / (land_rhoSnow*hSnowWetness*1000. _d 0)
+         DO j=1,sNy
+          DO i=1,sNx
+           aimSWA(i,j) = land_groundW(i,j,1,bi,bj)
+     &                 + snowFld(i,j)*recip_mSnWet
+           aimSWA(i,j) = MIN( aimSWA(i,j), 1. _d 0 )
+          ENDDO
+         ENDDO
+        ENDIF
        ELSE
 C-    Fill in land-pkg soil moisture using AIM surf. fields
         DO k=1,land_nLev

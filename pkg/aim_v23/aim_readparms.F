@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.6 2004/03/11 14:33:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.7 2004/05/14 16:08:38 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -103,9 +103,10 @@ C      ALBSN  = Albedo over snow (for snow depth > SDALB)
 C      SDALB  = Snow depth (mm water) corresponding to maximum albedo
 C      SWCAP  = Soil wetness at field capacity (volume fraction)
 C      SWWIL  = Soil wetness at wilting point  (volume fraction)
+C      hSnowWetness :: snow depth (m) corresponding to maximum wetness
       NAMELIST /AIM_PAR_FOR/
      &    SOLC, ALBSEA, ALBICE, ALBSN,
-     &    SDALB, SWCAP, SWWIL
+     &    SDALB, SWCAP, SWWIL, hSnowWetness
 
 C--   Constants for surface fluxes (common SFLCON) : 
 C      FWIND0 = ratio of near-sfc wind to lowest-level wind
@@ -301,6 +302,9 @@ C- namelist AIM_PAR_FOR:
      &  '   /* Soil wetness at field capacity (Vol.fract.) */')
        CALL WRITE_0D_R8( SWWIL, INDEX_NONE,'AIM_FOR:  SWWIL =',
      &  '   /* Soil wetness at wilting point  (Vol.fract.) */')
+       CALL WRITE_0D_R8( hSnowWetness, INDEX_NONE,
+     &  'AIM_FOR: hSnowWetness=',
+     &  '   /* snow depth corresp. maximum wetness (m) */')
 
 C- namelist AIM_PAR_SFL:
        CALL WRITE_0D_R8( FWIND0,INDEX_NONE,'AIM_SFL: FWIND0 =',

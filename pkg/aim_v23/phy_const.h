@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_const.h,v 1.1 2002/11/22 17:16:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/phy_const.h,v 1.2 2004/05/14 16:08:38 jmc Exp $
 C $Name:  $
 
 C--   Constants for physical parametrization routines:
@@ -14,6 +14,7 @@ C--   Constants for boundary forcing (common FORCON):
 
       SWCAP = 0.30 _d 0
       SWWIL = 0.17 _d 0
+      hSnowWetness = 1. _d -2
 
 C--   Constants for convection (common CNVCON):
 
