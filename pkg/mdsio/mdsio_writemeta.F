@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writemeta.F,v 1.1 2001/03/06 15:28:54 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writemeta.F,v 1.2 2001/08/29 14:16:24 adcroft Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -109,7 +109,7 @@ C Write the integer time (integer iteration number) for later record
 C keeping. If the timestep number is less than 0 then we assume
 C that the information is superfluous and do not write it.
       if (myIter .ge. 0)
-     & write(mUnit,'(x,a,i8,a)') 'timeStepNumber = [ ',myIter,' ];'
+     & write(mUnit,'(x,a,i10,a)') 'timeStepNumber = [ ',myIter,' ];'
 
 C Close meta-file
       close(mUnit)
