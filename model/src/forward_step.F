@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.8 2001/02/20 15:10:15 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.9 2001/02/20 22:08:57 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -102,6 +102,11 @@ C--   Step forward all tiles, filter and exchange.
       CALL SHAP_FILT_APPLY( 
      I                     gUnm1, gVnm1, gTnm1, gSnm1,
      I                     myCurrentTime, myCurrentIter, myThid )
+      IF (implicDiv2Dflow.LT.1.) THEN
+C--   Explicit+Implicit part of the Barotropic Flow Divergence
+C      => Filtering of uVel,vVel is necessary
+         CALL SHAP_FILT_UV( uVel, vVel, myCurrentTime, myThid )
+      ENDIF
       CALL TIMER_STOP ('SHAP_FILT          [FORWARD_STEP]',myThid)
 #endif
 
