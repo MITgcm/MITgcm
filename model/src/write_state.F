@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.40 2004/07/02 17:43:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.41 2004/07/05 16:39:29 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,9 +78,6 @@ C     myTime - Current time of simulation ( s )
 C     !LOCAL VARIABLES:
       CHARACTER*(MAX_LEN_MBUF) suff
       INTEGER iRec
-#ifdef ALLOW_MNC
-      _RL mnc_iter
-#endif
 CEOP
 
       IF ( 
@@ -168,9 +165,8 @@ c       CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
 C       Write dynvars using the MNC package
-        mnc_iter = myIter
         CALL MNC_CW_SET_UDIM('state', -1, myThid)
-        CALL MNC_CW_RL_W('D','state',0,0,'iter',mnc_iter, myThid)
+        CALL MNC_CW_I_W('I','state',0,0,'iter', myIter, myThid)
         CALL MNC_CW_SET_UDIM('state', 0, myThid)
         CALL MNC_CW_RL_W('D','state',0,0,'model_time',myTime, myThid)
         CALL MNC_CW_RL_W('D','state',0,0,'U', uVel, myThid)
@@ -181,7 +177,7 @@ C       Write dynvars using the MNC package
         CALL MNC_CW_RL_W('D','state',0,0,'W', wVel, myThid)
         IF ( useDynP_inEos_Zc .OR. myIter.NE.nIter0 ) THEN
           CALL MNC_CW_SET_UDIM('phiHyd', -1, myThid)
-          CALL MNC_CW_RL_W('R','phiHyd',0,0,'iter',mnc_iter,myThid)
+          CALL MNC_CW_I_W('I','phiHyd',0,0,'iter',myIter,myThid)
           CALL MNC_CW_SET_UDIM('phiHyd', 0, myThid)
           CALL MNC_CW_RL_W('D','phiHyd',0,0,'phiHyd',
      &         totPhiHyd, myThid)
@@ -189,7 +185,7 @@ C       Write dynvars using the MNC package
         IF ((buoyancyRelation .NE. 'ATMOSPHERIC')
      &       .AND. (myIter .NE. nIter0)) THEN
           CALL MNC_CW_SET_UDIM('phiHydLow', -1, myThid)
-          CALL MNC_CW_RL_W('D','phiHydLow',0,0,'iter',mnc_iter,myThid)
+          CALL MNC_CW_I_W('I','phiHydLow',0,0,'iter',myIter,myThid)
           CALL MNC_CW_SET_UDIM('phiHydLow', 0, myThid)
           CALL MNC_CW_RL_W('D','phiHydLow',0,0,'phiHydLow',
      &         phiHydLow, myThid)
