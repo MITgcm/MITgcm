@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.7 2001/02/14 22:51:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.8 2001/02/23 00:30:03 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -40,6 +40,12 @@ C     are set here. Fields are either set to default or read from
 C     stored files.
       CALL INI_FIELDS( myThid )
       _BARRIER
+
+C-- IMPORTANT : Need to activate the following call to restart from 
+C     a pickup file written by MITgcmUV_checkpoint34 or earlier.
+C     IF ( startTime .NE. 0. ) THEN
+C       CALL THE_CORRECTION_STEP(startTime, nIter0, myThid)
+C     ENDIF
 
 C--   Initial conditions are convectively adjusted (for historical reasons)
       IF ( startTime .EQ. 0. ) THEN
