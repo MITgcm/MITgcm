@@ -1,0 +1,256 @@
+#!/bin/csh -f
+#
+# $Header: /u/gcmpack/MITgcm/tools/Attic/configure,v 1.1 1998/07/01 14:01:12 adcroft Exp $
+#
+# Makefile generator for MITgcm UV codes
+#   created by cnh 03/98
+#   adapted by aja 06/98
+
+# Process command-line arguments
+set allargs=( $argv )
+foreach arg ($allargs)
+ switch ($arg)
+ case -mpi:
+   echo "Enabling MPI options"
+   set USEMPI
+   breaksw
+ default:
+   echo "Unknown command-line option: " $arg
+   exit
+   breaksw
+ endsw
+ shift allargs
+end
+ 
+set platform = (`uname -p`)
+set mfile = ( Makefile.$platform )
+set mach  = ( `uname -a` )
+echo Operating system: $mach
+
+# Directories for source, includes, binaries and executables
+# Note
+# o If you prefer/need everything under a single directory
+#   copy everything in ../eesupp/src, ../model/src,
+#   ../eesupp/inc and ../model/inc into a directory and then
+#   edit the paths below to ./
+set SOURCEDIRS  = ( ../eesupp/src/ ../model/src/ )
+set INCLUDEDIRS = ( ../eesupp/inc/ ../model/inc/ )
+set BUILDDIR    = ( ../bin/ )
+set EXEDIR      = ( ../exe/ )
+set EXECUTABLE  = ( mitgcmuv )
+
+# This is the generic configuration.
+# Platform specific options are chosen below
+set CPP        = ( '/lib/cpp -P' )
+set KPP        = (  )
+set FC         = ( 'f77' )
+set LINK       = ( 'f77' )
+set DEFINES    = (  )
+set INCLUDES   = (  )
+set FFLAGS     = (  )
+set FOPTIM     = (  )
+set KFLAGS1    = (  )
+set KFLAGS2    = (  )
+set LIBS       = (  )
+set KPPFILES   = (  )
+set NOOPTFILES = (  )
+set NOOPTFLAGS = (  )
+set RMFILES    = (  )
+
+# We often want to use different compile/link options is using MPI
+if ($?USEMPI) then
+  set USEMPI = ( '+mpi' )
+  set DEFINES = ( ${DEFINES} '-DALLOW_USE_MPI -DALWAYS_USE_MPI' )
+else
+  set USEMPI
+# set DEFINES = ( ${DEFINES} '-UALLOW_USE_MPI -UALWAYS_USE_MPI' )
+endif
+
+# Platform specific options
+switch ($platform$USEMPI)
+  case alpha:
+  case alpha+mpi:
+    echo "Configuring for DEC Alpha"
+    set CPP        = ( '/usr/bin/cpp -P' )
+    set DEFINES    = ( ${DEFINES}  '-DTARGET_DEC' )
+    set KPP        = ( 'kapf90' )
+    set KFLAGS1    = ( '-scan=132 -noconc -cmp=' )
+    set FC         = ( 'f90' )
+    set FFLAGS     = ( '-convert big_endian -r8 -extend_source -u -automatic -call_shared -notransform_loops -align dcommons -p1' )
+    set FOPTIM     = ( '-O5 -fast -tune host -inline all' )
+    set LIBS       = ( '-lfmpi -lmpi -lkmp_osfp10 -pthread' )
+    set KPPFILES   = ( 'main.F' )
+    set RMFILES    = ( '*.p.out' )
+    breaksw
+  case mips+mpi:
+    echo "Configuring for SGI Mips with MPI"
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI' )
+    set INCLUDES   = ( ${INCLUDES} '-I/usr/local/mpi/include' )
+    set FC         = ( 'mpif77' )
+    set LINK       = ( 'mpif77' )
+    set FFLAGS     = ( '-extend_source -bytereclen -r10000' )
+    set FOPTIM     = ( '-O3' )
+    set RMFILES    = ( 'rii_files' )
+    breaksw
+  case mips:
+    echo "Configuring for SGI Mips"
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI' )
+    set FFLAGS     = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4' )
+    set FOPTIM     = ( '-O3' )
+    set RMFILES    = ( 'rii_files' )
+    breaksw
+  case sparc:
+    set CPP        = ( '/usr/ccs/lib/cpp -P' )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SUN' )
+    breaksw
+  default:
+    echo "Error: platform not recognized: uname -p = " $platform$USEMPI
+    exit
+    breaksw
+endsw      
+
+###############################################################################
+##                                                                           ##
+##  Everything below here should not need to be changed. Platform specific   ##
+##  changes and code specific changes should be configured above this line.  ##
+##                                                                           ##
+###############################################################################
+
+# Create list of files
+set Fsrclist = ( )
+set fsrclist = ( )
+set objlist = ( )
+set flist = `ls -1 ${SOURCEDIRS} | grep '.*\.F'`
+if ( $#flist ) then
+ foreach ff ( ${flist} )
+  set fname = ( ${ff:t}       )
+  set Fsrclist = ( ${Fsrclist} ${fname:r}.F  )
+  set fsrclist = ( ${fsrclist} ${fname:r}.f  )
+  set objlist = ( ${objlist} ${fname:r}.o )
+ end
+else
+ echo No source files found...\!
+ exit
+endif
+
+# Convert lists of directories into command-line options
+foreach inc ($INCLUDEDIRS)
+ set INCLUDES = ($INCLUDES -I$inc)
+end
+set SRCSTARS = ( )
+foreach dr ($SOURCEDIRS)
+ set SRCSTARS = ("${SRCSTARS}" $dr/\*.F)
+end
+
+set THISHOSTNAME = ( `hostname` )
+set THISCWD = ( `pwd` )
+set THISDATE = ( `date` )
+
+###########################################
+## This is the template for the makefile ##
+###########################################
+echo Creating makefile: $mfile
+echo "# Multithreaded + multi-processing makefile for $mach" > ${mfile}
+echo "# This makefile was generated automatically pn" >> ${mfile}
+echo "#    $THISDATE" >> ${mfile}
+echo "# by the command:" >> ${mfile}
+echo "#    ${0} $argv" >> ${mfile}
+echo "# executed by:" >> ${mfile}
+echo "#    $USER@${THISHOSTNAME}:${THISCWD}" >> ${mfile}
+cat >> ${mfile} <<EOF
+# 
+# BUILDDIR     : Directory where object files are written
+# SOURCEDIRS   : Directories containing the source (.F) files
+# INCLUDEDIRS  : Directories containing the header-source (.h) files
+# EXEDIR       : Directory where executable that is generated is written
+# EXECUTABLE   : Full path of executable binary
+#
+# CPP          : C-preprocessor command
+# INCLUDES     : Directories searched for header files
+# DEFINES      : Macro definitions for CPP
+# KPP          : Special preprocessor command (specific to platform)
+# KFLAGS       : Flags for KPP
+# FC           : Fortran compiler command
+# FFLAGS       : Configuration/debugging options for FC
+# FOPTIM       : Optimization options for FC
+# LINK         : Command for link editor program
+# LIBS         : Library flags /or/ additional optimization/debugging flags
+
+BUILDDIR   = ${BUILDDIR}  
+SOURCEDIRS = ${SOURCEDIRS}
+INCLUDEDIRS = ${INCLUDEDIRS}
+EXEDIR     = ${EXEDIR}
+EXECUTABLE = \$(EXEDIR)${EXECUTABLE}
+
+# C preprocessor
+CPP = ${CPP}
+# Special preprocessor (KAP on DECs, FPP on Crays)
+KPP = ${KPP}
+# Fortran compiler
+FC = ${FC}
+# Link editor
+LINK = ${LINK}
+
+# Defines for CPP
+DEFINES = ${DEFINES}
+# Includes for CPP
+INCLUDES = ${INCLUDES}
+# Flags for KPP
+KFLAGS1 = ${KFLAGS1}
+KFLAGS2 = ${KFLAGS2}
+# Optim./debug for FC
+FFLAGS = ${FFLAGS}
+FOPTIM = ${FOPTIM}
+# Files that should not be optimized
+NOOPTFILES = ${NOOPTFILES}
+NOOPTFLAGS = ${NOOPTFLAGS}
+# Flags and libraries needed for linking
+LIBS = ${LIBS}
+
+SRCFILES = ${Fsrclist}
+
+F77FILES = ${fsrclist}
+
+OBJFILES = ${objlist}
+
+.SUFFIXES:
+.SUFFIXES: .o .f .p .F
+
+all: \$(EXECUTABLE)
+\$(EXECUTABLE): \$(OBJFILES)
+	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(LIBS) \$(OBJFILES)
+links:
+	@-ln -sf $SRCSTARS .
+depend:
+	@make links
+	makedepend -o .f \$(INCLUDES) \$(SRCFILES)
+clean:
+	-rm -rf *.o *.f *.p ${RMFILES}
+
+# The normal chain of rules is (  .F - .f - .o  )
+.F.f:
+	\$(CPP) \$(DEFINES) \$(INCLUDES) \$< > \$@
+.f.o:
+	\$(FC) \$(FFLAGS) \$(FOPTIM) -c \$<
+
+# Special exceptions that use the ( .F - .p - .f - .o ) rule-chain
+.F.p:
+	\$(CPP) \$(DEFINES) \$(INCLUDES) \$< > \$@
+.p.f:
+	\$(KPP) \$(KFLAGS1)\$@ \$(KFLAGS2) \$<
+EOF
+
+# Make list of "exceptions" that need ".p" files
+foreach sf ($KPPFILES)
+ set fname=( ${sf:t} )
+ echo "${fname:r}.f: ${fname:r}.p" >> ${mfile}
+end
+foreach sf ($NOOPTFILES)
+ set fname=( ${sf:t} )
+ echo "${fname:r}.o: ${fname:r}.f" >> ${mfile}
+ echo '	$(FC) $(FFLAGS) $(NOOPTFLAGS) -c $<' >> ${mfile}
+end
+echo >> ${mfile}
+echo "# DO NOT DELETE" >> ${mfile}
+
+exit
