@@ -1,0 +1,14 @@
+
+- Relaxation: empty files:
+  ----------
+    * exf_relaxsalt.F
+    * exf_relaxtheta.F
+    * exf_relaxsss.F
+    * exf_relaxsst.F
+
+- Atmospheric forcing
+  -------------------
+  1. Test ALLOW_ATM_TEMP
+     with evaporation files (check units)
+  2. Enable inclusion of atmospheric fields
+     as part of the control vector.

@@ -1,0 +1,728 @@
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/README,v 1.1 2001/05/14 22:08:40 heimbach Exp $
+c
+c
+c   =========================================
+c   External Forcing Package for the MITgcmUV
+c   =========================================
+c
+c   Current Version: 0.2.0 (20-Jun-2000)
+c
+c
+c   General Outline:
+c   ----------------
+c
+c   This package contains routines to handle external forcing of the
+c   MITgcmUV general circulation model. The following features are
+c   available:
+c
+c   (a) Surface flux forcing by:
+c
+c         surface heat flux        -->  qnet
+c         fresh water flux         -->  empmr
+c         zonal wind stress        -->  fu
+c         meridional wind stress   -->  fv
+c
+c         In order to get the appropriate fluxes users can either use
+c         flux data directly or they can provide atmospheric states
+c         (atmospheric temperature, atmospheric specific humidity, etc.)
+c         which are subsequently used to estimate the fluxes by using
+c         bulk parameterizations.
+c
+c   (b) Relaxation to monthly climatologies of:
+c
+c         potential temperature    -->  theta( k = 1,nr )
+c         salinity                 -->  salt ( k = 1,nr )
+c         sea surface temperature  -->  theta( k = 1 )
+c         sea surface salinity     -->  salt ( k = 1 )
+c
+c         The relaxation can be done with relaxation coefficients
+c         that vary spatially. The corresponding routines will have
+c         to be customized.
+c
+c   (c) Generic Routine prefix for this package:
+c
+c         exf_<RoutineName>
+c
+c
+c   Modifying the MITgcmUV:
+c   -----------------------
+c
+c   The package is set up such that it can be easily added to the
+c   MITgcmUV standard distribution. The following MITgcmUV files
+c   have to be modified:
+c
+c     EXF_CPPOPTIONS.h    -  Append this file at of the MITgcmUV's
+c                            "CPP_OPTIONS.h" file:
+c
+c                              #include "EXF_CPPOPTIONS.h"
+c
+c     the_model_main.F    -  Replace the call to initialise by two
+c                            calls ( see below) and replace the call
+c                            of load_external_fields by get_forcing.
+c
+c
+c   Modifications in subroutine
+c   THE_MODEL_MAIN (before c27):
+c   ----------------------------
+c   .
+c   .
+c   .
+c   CALL TIMER_START('SPIN-UP',myThid)
+c
+c   C--   Set model initial conditions 
+c         CALL TIMER_START('INITIALISE          [SPIN-UP]',myThid)
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c         call exf_InitialiseFixed( mythid )
+c         call exf_InitialiseVaria( mythid )
+c   #else
+c         CALL INITIALISE( myThid )
+c   #endif
+c   .
+c   .
+c   .
+c   C--   Begin time stepping loop
+c         CALL TIMER_START('MAIN LOOP',myThid)
+c         DO I=1, nTimeSteps
+c
+c   C--    Load forcing/external data fields
+c          CALL TIMER_START('I/O (READ)         [MAIN LOOP]',myThid)
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c          call exf_GetForcing(
+c        I                      mycurrenttime,
+c        I                      mycurrentiter,
+c        I                      mythid
+c        &                    )
+c   #else
+c          CALL LOAD_EXTERNAL_FIELDS( myCurrentTime, myCurrentIter, myThid )
+c   #endif
+c          CALL TIMER_STOP ('I/O (READ)         [MAIN LOOP]',myThid)
+c   .
+c   .
+c   .
+c
+c
+c   Modifications in subroutine
+c   THE_MODEL_MAIN (from c27 on):
+c   -----------------------------
+c   .
+c   .
+c   .
+c
+c
+c   Modifications in subroutine
+c   FORWARD_STEP (from c27 on):
+c   ---------------------------
+c   .
+c   .
+c   .
+c   C--    Load forcing/external data fields
+c          CALL TIMER_START('I/O (READ)         [MAIN LOOP]',myThid)
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c          call exf_GetForcing(
+c        I                      myCurrentTime,
+c        I                      myCurrentIter,
+c        I                      myThid
+c        &                    )
+c   #else
+c          CALL LOAD_EXTERNAL_FIELDS( myCurrentTime, myCurrentIter, myThid )
+c   #endif
+c          CALL TIMER_STOP ('I/O (READ)         [MAIN LOOP]',myThid)
+c   .
+c   .
+c   .
+c
+c
+c   Modifications in subroutine
+c   INITIALISE_FIXED (from c27 on):
+c   -------------------------------
+c   .
+c   .
+c   .
+c   C--   Set coriolis operators
+c         CALL INI_CORI( myThid )
+c
+c#ifdef INCLUDE_LAT_CIRC_FFT_FILTER_CODE
+cC--   Latitude circle filter initialisation
+c      CALL FILTER_LATCIRC_FFT_INIT(myThid)
+c      _BARRIER
+c#endif
+c
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c
+c         call exf_Init( mythid )
+c
+c   #ifdef ALLOW_CLIMTEMP_RELAXATION
+c   c--   Set the relaxation coefficient to the temperature climatology.
+c         call exf_GetTempClimLambda(
+c        I                            mythid
+c        &                          )
+c         _BARRIER
+c   #endif
+c   #ifdef ALLOW_CLIMSALT_RELAXATION
+c   c--   Set the relaxation coefficient to the salinity climatology.
+c         call exf_GetSaltClimLambda(
+c        I                            mythid
+c        &                          )
+c         _BARRIER
+c   #endif
+c   #ifdef ALLOW_CLIMSST_RELAXATION
+c   c--   Set the relaxation coefficient to the sst climatology.
+c         call exf_GetSSTClimLambda(
+c        I                           mythid
+c        &                         )
+c         _BARRIER
+c   #endif
+c   #ifdef ALLOW_CLIMSSS_RELAXATION
+c   c--   Set the relaxation coefficient to the sss climatology.
+c         call exf_GetSSSClimLambda(
+c        I                           mythid
+c        &                         )
+c         _BARRIER
+c   #endif
+c   #endif
+c
+c   c--   Finally, summarise the model cofiguration.
+c         CALL CONFIG_SUMMARY( myThid )
+c   .
+c   .
+c   .
+c
+c
+c   external_forcing.F  -  Add relaxation to climatological fields.
+c
+c
+c   Modifications in subroutine
+c   EXTERNAL_FORCING_T (taken from c25):
+c   ------------------------------------
+c   .
+c   .
+c   .
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c   #include "exf_clim.h"
+c   #endif
+c   .
+c   .
+c   .
+c   C--   Forcing term
+c   C     Add heat in top-layer
+c         IF ( kLev .EQ. 1 ) THEN
+c          DO j=jMin,jMax
+c           DO i=iMin,iMax
+c            gT(i,j,kLev,bi,bj)=gT(i,j,kLev,bi,bj)
+c        &  +maskC(i,j)*(
+c        &   -lambdaThetaClimRelax*(theta(i,j,kLev,bi,bj)-SST(i,j,bi,bj))
+c        &   -Qnet(i,j,bi,bj)*recip_Cp*recip_rhoNil*recip_dRf(kLev) )
+c
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c   #ifdef ALLOW_CLIMSST_RELAXATION
+c            gt(i,j,klev,bi,bj) = gt(i,j,klev,bi,bj) -
+c        &                        maskc(i,j)*lambda_climsst(i,j,bi,bj)*
+c        &                        ( theta(i,j,klev,bi,bj) - 
+c        &                          climsst(i,j,bi,bj)     )
+c   #endif
+c   #endif
+c
+c           ENDDO
+c          ENDDO
+c         ENDIF
+c
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c   #ifdef ALLOW_CLIMTEMP_RELAXATION
+c         do j=jmin,jmax
+c          do i=imin,imax
+c           gt(i,j,klev,bi,bj) = gt(i,j,klev,bi,bj) -
+c        &                       maskc(i,j)*lambda_climtemp(i,j,klev,bi,bj)*
+c        &                       ( theta(i,j,klev,bi,bj) - 
+c        &                         climtemp(i,j,klev,bi,bj) )
+c          enddo
+c         enddo
+c   #endif
+c   #endif
+c   .
+c   .
+c   .
+c
+c
+c   Modifications in subroutine
+c   EXTERNAL_FORCING_S (taken from c25):
+c   ------------------------------------
+c   .
+c   .
+c   .
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c   #include "exf_clim.h"
+c   #endif
+c   .
+c   .
+c   .
+c   C--   Forcing term
+c   C     Add fresh-water in top-layer
+c         IF ( kLev .EQ. 1 ) THEN
+c          DO j=jMin,jMax
+c           DO i=iMin,iMax
+c            gS(i,j,kLev,bi,bj)=gS(i,j,kLev,bi,bj)
+c        &   +maskC(i,j)*(
+c        &   -lambdaSaltClimRelax*(salt(i,j,kLev,bi,bj)-SSS(i,j,bi,bj))
+c   #ifdef ALLOW_NATURAL_BCS
+c        &   +EmPmR(i,j,bi,bj)*recip_dRf(1)*salt(i,j,kLev,bi,bj)
+c   #else
+c        &   +EmPmR(i,j,bi,bj)*recip_dRf(1)*35.
+c   #endif
+c        &   )
+c
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c   #ifdef ALLOW_CLIMSSS_RELAXATION
+c            gs(i,j,kLev,bi,bj) = gs(i,j,kLev,bi,bj) -
+c        &                        maskc(i,j)*lambda_climsss(i,j,bi,bj)*
+c        &                        ( salt(i,j,kLev,bi,bj) - 
+c        &                          climsss(i,j,bi,bj)    )
+c   #endif
+c   #endif
+c
+c           ENDDO
+c          ENDDO
+c         ENDIF
+c
+c   #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+c   #ifdef ALLOW_CLIMSALT_RELAXATION
+c         do j=jmin,jmax
+c          do i=imin,imax
+c           gs(i,j,klev,bi,bj) = gs(i,j,klev,bi,bj) -
+c        &                       maskc(i,j)*lambda_climsalt(i,j,klev,bi,bj)*
+c        &                       ( salt(i,j,klev,bi,bj) - 
+c        &                         climsalt(i,j,klev,bi,bj) )
+c          enddo
+c         enddo
+c   #endif
+c   #endif
+c   .
+c   .
+c   .
+c
+c
+c   CPP options:
+c   ------------
+c
+c   The following CPP options are available for this package:
+c
+c   >>> INCLUDE_EXTERNAL_FORCING_PACKAGE <<<
+c       Include this package into the setup.
+c
+c   >>> EXTERNAL_FORCING_VERBOSE <<<
+c       Do a bit more printout for the log file than usual.
+c
+c   >>> ALLOW_BULKFORMULAE <<<
+c       Use bulk formulae to in order to estimate the turbulent
+c       fluxes at the ocean's surface.
+c                                        
+c   >>> ALLOW_ATM_TEMP <<<
+c       If defined use the atmospheric temperature and specific
+c       humidity to estimate the sensible and latent heat fluxes.
+c
+c   >>> ALLOW_ATM_WIND <<<
+c       If defined use the atmospheric wind field to estimate the
+c       wind stress at the ocean's surface.
+c
+c   >>> ALLOW_CLIMTEMP_RELAXATION <<<
+c       Allow the relaxation to a monthly climatology of potential
+c       temperature, e.g. the Levitus climatology.
+c
+c   >>> ALLOW_CLIMSALT_RELAXATION <<<
+c       Allow the relaxation to a monthly climatology of salinity,
+c       e.g. the Levitus climatology.
+c
+c   >>> ALLOW_CLIMSST_RELAXATION <<<
+c       Allow the relaxation to a monthly climatology of sea surface
+c       temperature, e.g. the Reynolds climatology.
+c
+c   >>> ALLOW_CLIMSSS_RELAXATION <<<
+c       Allow the relaxation to a monthly climatology of sea surface
+c       salinity, e.g. the Levitus climatology.
+c
+c
+c
+c   Unit and sign conventions for forcing fields (valid for c28 !)
+c   --------------------------------------------------------------
+
+- tflux/qnet: net heat flux (ATTENTION: distinguish qnet vs. qnet-sw)
+---------------------------
+        -> read in as tflux:   W/m**2 = kg/s**3 (>0 for oceanic cooling)
+        -> scaled to qnet:     scal_hfl = +1
+        -> transformed to gT:  Qnet     ->   Qnet/(rhonil*Cp*dR)
+                               W/m**2   ->   K/s
+        -> usage in gT:        gT = gT - qnet[K/s]
+
+- swflux/qsw: shortwave flux
+----------------------------
+        -> read in as swflux: W/m**2 = kg/s**3 (>0 for oceanic cooling)
+        -> for bulk forcing:  swflux ADDED to hfl = tflux
+        -> scaled to qsw:     scal_swf = +1
+        -> transformed to gT: only for #ifdef SHORTWAVE_HEATING
+                              (currently not used)
+
+- lwflux/qlw: longwave flux
+---------------------------
+        -> read in as lwflux:  m/s (>0 for oceanic cooling)
+        -> for bulk forcing:  lwflux ADDED to hfl = tflux
+        -> scaled to qlw:     not used.
+        -> transformed to gT: not used.
+
+- sflux/empmr: freshwater flux (Evap. minus precip. minus runoff)
+------------------------------
+        -> read in as tflux:   m/s (>0 for ocean salting)
+        -> scaled to empmr:    scal_hfl = +1
+        -> transformed to gS:  empmr     ->   empmr*35./*dR
+                               m/s       ->   psu/s
+        -> usage in gS:        gS = gS + empmr[psu/s]
+
+- ustress/fu: zonal wind stress (West/East)
+-------------------------------
+        -> read in as ustress: N/m**2 (>0 from West to East)
+        -> scaled to fu   :    scal_ust = -1
+        -> transformed to gU:  fu        ->   fu/(rhoNil*dR)
+                               N/m**2    ->   m/s**2
+        -> usage in gU:        gU = gU + fu[m/s**2]
+
+- vstress/fv: meridional wind stress (South/North)
+------------------------------------
+        -> read in as vstress: N/m**2 (>0 from South to North)
+        -> scaled to fv   :    scal_vst = -1
+        -> transformed to gV:  fv        ->   fv/(rhoNil*dR)
+                               N/m**2    ->   m/s**2
+        -> usage in gV:        gV = gV + fv[m/s**2]
+c
+c
+c   Data files:
+c   -----------
+c
+c   There are 10 possible setups that can be covered by the external
+c   forcing package. For each of these setups a data file is available.
+c
+c   data.forcing__blk__uat__uaw__kpp
+c   data.forcing__blk__uat__uaw_nkpp
+c   data.forcing__blk__uat_nuaw__kpp
+c   data.forcing__blk__uat_nuaw_nkpp
+c   data.forcing__blk_nuat__uaw__kpp
+c   data.forcing__blk_nuat__uaw_nkpp
+c   data.forcing__blk_nuat_nuaw__kpp
+c   data.forcing__blk_nuat_nuaw_nkpp
+c   data.forcing_nblk_nuat_nuaw__kpp
+c   data.forcing_nblk_nuat_nuaw_nkpp
+c
+c   The naming convention is self-explanatory (hopefully).
+c
+c   Once a specified setup is decided upon use the corresponding data
+c   file in order to set the file names for the individual variables and
+c   provide the necessary calendar information.
+c
+c   Copy the appropriate data file to .../exe/data.exf  .
+c                                     
+c
+c   Routines:
+c   ----------
+c
+c   The package consists of two sets of routines. The first set is
+c   related to surface fluxes, the second set allows one to include
+c   relaxation to climatological fields.
+c
+c   Call trees:
+c   -----------
+c
+c
+c   exf_Init
+c     |
+c     |---- exf_Summary
+c     |---- exf_InitSurfaceFluxes
+c     |---- exf_InitClimatology
+c
+c
+c   exf_GetForcing
+c     |
+c     |----  exf_GetTempClim
+c     |----  exf_GetSaltClim
+c     |----  exf_GetSSTClim
+c     |----  exf_GetSSSClim
+c     |----  exf_GetSurfaceFluxes
+c     |----  exf_MapFields
+c
+c
+c   ===============
+c   Surface fluxes:
+c   ===============
+c
+c   Getting the forcing fields:
+c
+c   o exf_InitSurfaceFluxes - Initialise the external forcing fields.
+c
+c   o exf_GetsurfaceFluxes  - Mid-level routine for adding fluxes as
+c                             control variables.
+c
+c   o exf_GetFFields        - Get the current field values.
+c
+c   o exf_SwapFFields       - Swap data fields.
+c
+c   Routines specific to bulk formulae:
+c
+c   o exf_qSat              - Compute the saturation specific humidity.
+c
+c   o exf_Cdn               - Evaluate the neutral drag coefficient as a
+c                             function of the mean wind speed at a given
+c                             height.
+c
+c   o exf_Rhn               - Evaluate the Stanton number.
+c
+c   Getting the time data (calendar):
+c
+c   o exf_GetFFieldsRec     - Get the record number for the current
+c                             timestep of a given field, some flags,
+c                             and the linear interpolation factor.
+c
+c   Reading the forcing data:
+c
+c   o exf_ReadAtmTemp       - Read an atmospheric temperature record.
+c
+c   o exf_ReadAtmQh         - Read an atmospheric humidity record.
+c
+c   o exf_ReadHeatFlux      - Read an atmospheric heat flux record.
+c
+c   o exf_ReadZonStress     - Read an atmospheric zonal wind stress record.
+c
+c   o exf_ReadMerStress     - Read an atmospheric meridional wind stress
+c                             record.
+c
+c   o exf_ReadZonWind       - Read an atmospheric zonal wind record.
+c
+c   o exf_ReadMerWind       - Read an atmospheric meridional wind record.
+c
+c   o exf_ReadAtmPrecip     - Read  a precipitation record.
+c
+c   o exf_ReadSaltFlux      - Read  a salt flux record.
+c
+c   o exf_ReadLwFlux        - Read  a long  wave radiative flux record.
+c
+c   o exf_ReadSwFlux        - Read  a short wave radiative flux record.
+c
+c
+c   At the moment, a basic premise of this package is that the external
+c   forcing fields are available as data sets that are regularly spaced
+c   in time and space. In later versions this assumption will be relaxed
+c   for time as well as for space.
+c
+c
+c   ============
+c   Climatology:
+c   ============
+c
+c   o exf_InitClimatology   - Initialise the climatology code.
+c
+c   o exf_GetMonthsRec      - Get the record number of a monthly
+c                             climatology data set for a given model
+c                             timestep.
+c
+c   Temperature climatology:
+c
+c   o exf_GetTempClim       - Get the temperature climatology's
+c                             value for a given model timestep.
+c
+c   o exf_GetTempClimRec    - Get the record number, the linear
+c                             interpolation factor, and some flags
+c                             for the temperature climatology.
+c
+c   o exf_ReadTempClim      - Read a temperature climatology's
+c                             data record.
+c
+c   o exf_GetTempClimLambda - Calculate the relaxation coefficient
+c                             for the temperature climatology.
+c
+c   Salinity climatology.
+c
+c   o exf_GetSaltClim       - Get the salinity climatology's
+c                             value for a given model timestep.
+c
+c   o exf_GetSaltClimRec    - Get the record number, the linear
+c                             interpolation factor, and some flags
+c                             for the salinity climatology.
+c
+c   o exf_ReadSaltClim      - Read a salinity climatology's
+c                             data record.
+c
+c   o exf_GetSaltClimLambda - Calculate the relaxation coefficient
+c                             for salinity climatology.
+c
+c   Sea surface temperature climatology.
+c
+c   o exf_GetSSTClim        - Get the sea surface temp. climatology's
+c                             value for a given model timestep.
+c
+c   o exf_GetSSTClimRec     - Get the record number, the linear
+c                             interpolation factor, and some flags
+c                             for the sea surface temp. climatology.
+c
+c   o exf_ReadSSTClim       - Read a sea surface temp. climatology's
+c                             data record.
+c
+c   o exf_GetSSTClimLambda  - Calculate the relaxation coefficient
+c                             for the sea surface temperature
+c                             climatology.
+c
+c   Sea surface salinity climatology:
+c
+c   o exf_GetSSSClim        - Get the sea surface salin. climatology's
+c                             value for a given model timestep.
+c
+c   o exf_GetSSSClimRec     - Get the record number, the linear
+c                             interpolation factor, and some flags
+c                             for the sea surface salin. climatology.
+c
+c   o exf_ReadSSSClim       - Read a sea surface salin. climatology's
+c                             data record.
+c
+c   o exf_GetSSSClimLambda  - Calculate the relaxation coefficient
+c                             for the sea surface salinity
+c                             climatology.
+c
+c
+c   HOW TO GET STARTED?
+c
+c   Copy the routines and headers to the distribution after you have
+c   installed the latter. Next, install the calendar tool, which is
+c   quite extenisvely used by the external forcing package.
+c
+c   http://mitgcm.lcs.mit.edu/cgi-bin/cvsweb/packages/calendar_tool/
+c
+c
+c   ATTENTION:
+c   ==========
+c
+c   Users of this package are urged to CHECK THE SIGNS AND UNITS of
+c   their data sets, especially in relation to the sign conventions
+c   of the MITgcmUV!
+c
+c   Relevant MITgcmUV routines are:
+c
+c     calc_gt.F
+c     calc_gs.F
+c     calc_mom_rhs.F
+c     external_forcing.F
+c
+c   Relevant external forcing package routines are:
+c
+c     exf_ReadHeatFlux
+c     .
+c     .
+c     exf_ReadZonWind
+c     exf_MapFields
+c
+c   All adaptations of signs and units to specific data sets should be
+c   done in the routines that read the respective data. Users should
+c   neither modify "external_forcing" nor "exf_MapFields" for this
+c   purpose.Each data set has its own read routine. This eases customi-
+c   zation (signs and units etc.).
+c
+c   Some routines have to be customized for the current specific
+c   application:
+c
+c     e.g. exf_GetClimTempLambda
+c          exf_GetClimSaltLambda
+c          exf_GetClimSSTLambda
+c          exf_GetClimSSSLambda
+c
+c
+c
+c   To Do:
+c   ------
+c
+c   Many assumptions that are made in the current version should, and
+c   can, be relaxed in later versions:
+c
+c   - gridded data sets    -->  general data set (other grids, inter-
+c                                                 polation in space)
+c
+c   - equidistancy in time -->  general data set (non-equidistant in
+c                                                 time)
+c
+c   - climatologies        -->  arbitrary subinterval of a year, not
+c                               just monthly values.
+c
+c   - relaxation           -->  relaxation could be done to a given
+c                               data set over the model's integration
+c                               time. This would generalise the clima-
+c                               tology block. One could have 'cyclic'
+c                               and 'non-cyclic' fields. In the first
+c                               case, the cycle length has to be spe-
+c                               cified ('monthly','yearly','period') as
+c                               well as the start of the cycle ( irec=1
+c                               corresponds to a certain calendar date).
+c                               The second case can be treated analog-
+c                               ously.
+c
+c   - There is an inconsistency in the formulation of frocing variables
+c     defined on southern and western points on the C-grid, since the
+c     the atmospheric stability is calculated on center points of the
+c     C-grid.
+c
+c   ========
+c   HISTORY:
+c   ========
+c
+c
+c   started: Christian Eckert eckert@mit.edu  30-Jun-1999
+c
+c   changed: Christian Eckert eckert@mit.edu  11-Jan-2000
+c
+c            - Restructured the code in order to create a package
+c              for the MITgcmUV.
+c
+c            Christian Eckert eckert@mit.edu  12-Feb-2000
+c
+c            - Changed Routine names (package prefix: exf_)
+c
+c            Christian Eckert eckert@mit.edu  02-May-2000
+c
+c            - CVS version of the package.
+c
+c            Patrick Heimbach, heimbach@mit.edu  04-May-2000
+c
+c            - Added computation of evaporation rate for
+c              ALLOW_ATM_TEMP case
+c
+c            - changed the handling of precip and sflux with respect
+c              to CPP options ALLOW_BULKFORMULAE and ALLOW_ATM_TEMP
+c
+c            - included some CPP flags ALLOW_BULKFORMULAE to make
+c              sure ALLOW_ATM_TEMP, ALLOW_ATM_WIND are used only in
+c              conjunction with defined ALLOW_BULKFORMULAE
+c
+c            - statement functions discarded and external functions
+c              initialised.
+c
+c            - file precision and field type are now prescribed in 
+c              data.exf;
+c              separately possible for exf_sflx.h and exf_clim.h
+c              related fields.
+c
+c            - created exf_constants.h that contains
+c              1. numbers
+c              2. physical constants
+c              3. empirical parameters
+c              4. control parameters
+c
+c            Ralf Giering ralf.giering@fastopt.de 18-Jun-2000
+c
+c            - exf_getffields.F:
+c              Swapping of forcing fields has to be switched off
+c              if TAMC is used, because of generation of spurious
+c              dependencies. (P.H.)
+c
+c            Patrick Heimbach heimbach@mit.edu 20-Jun-2000
+c
+c            - sign change of ustress/vstress incorporated into
+c              scaling factors scal_ust, scal_vst in exf_mapfields.F
+c
+c            - Corrected description on how to implement exf package
+c              for c27 onwards.
+c
+c            - Included unit and sign conventions valid for c28
+c              in README.
+c
+c   ==================================================================

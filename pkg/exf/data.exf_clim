@@ -1,0 +1,30 @@
+# $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/data.exf_clim,v 1.1 2001/05/14 22:08:40 heimbach Exp $
+#
+# *********************************
+# External Forcing Climatology Data
+# *********************************
+ &EXF_CLIM_NML
+ climtempstartdate1 = 19920601,
+ climtempstartdate2 = 60000,
+ climtempperiod     = 86400.0,
+#
+ climsaltstartdate1 = 19920601,
+ climsaltstartdate2 = 60000,
+ climsaltperiod     = 86400.0,
+#
+ climsststartdate1  = 19920601,
+ climsststartdate2  = 60000,
+ climsstperiod      = 86400.0,
+#
+ climsssstartdate1  = 19920601,
+ climsssstartdate2  = 60000,
+ climsssperiod      = 86400.0,
+#
+ climtempfile       = '',
+ climsaltfile       = '',
+ climsstfile        = '',
+ climsssfile        = '',
+#
+ exf_clim_iprec     = 32,
+ exf_clim_yftype    = 'RL',
+ /
