@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.10 2000/06/12 13:38:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.11 2000/09/11 20:50:39 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -61,8 +61,8 @@ C--    Beginning of forward sweep (top level)
       ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store bet   = comlev1_impl3d, key = idkey
-CADJ store gXNm1 = comlev1_impl2d, key = idkey
+CADJ store bet                 = comlev1_impl, key = idkey
+CADJ store gXNm1(:,:,:,bi,bj)  = comlev1_impl, key = idkey
 #endif
 
        DO j=jMin,jMax
@@ -92,8 +92,7 @@ C--   Middle of forward sweep
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store ckm1 = comlev1_impl3d, key = kkey
-CADJ store bet  = comlev1_impl3d, key = kkey
+CADJ store ckm1, bet = comlev1_impl_k, key = kkey
 #endif
 
         DO j=jMin,jMax
@@ -110,8 +109,8 @@ CADJ store bet  = comlev1_impl3d, key = kkey
         ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store bet = comlev1_impl3d, key = kkey
-CADJ store gXNm1(:,:,k-1:k,bi,bj) = comlev1_impl3d, key = kkey
+CADJ store bet                    = comlev1_impl_k, key = kkey
+CADJ store gXNm1(:,:,k-1:k,bi,bj) = comlev1_impl_k, key = kkey
 #endif
 
         DO j=jMin,jMax
@@ -125,7 +124,9 @@ CADJ store gXNm1(:,:,k-1:k,bi,bj) = comlev1_impl3d, key = kkey
 
       ENDIF
 
+
       IF (Nr.GT.1) THEN
+
 C--    End of forward sweep (bottom level)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -137,9 +138,9 @@ C--    End of forward sweep (bottom level)
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store ckm1 = comlev1_impl2d, key = idkey
-CADJ store a,b  = comlev1_impl2d, key = idkey
-CADJ store bet  = comlev1_impl2d, key = idkey
+CADJ store ckm1 = comlev1_impl, key = idkey
+CADJ store a,b  = comlev1_impl, key = idkey
+CADJ store bet  = comlev1_impl, key = idkey
 #endif
 
        DO j=jMin,jMax
@@ -155,7 +156,8 @@ CADJ store bet  = comlev1_impl2d, key = idkey
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store gXnm1 = comlev1_impl2d, key = idkey
+CADJ store a,bet              = comlev1_impl, key = idkey
+CADJ store gXnm1(:,:,:,bi,bj) = comlev1_impl, key = idkey
 #endif
 
        DO j=jMin,jMax
@@ -166,7 +168,7 @@ CADJ store gXnm1 = comlev1_impl2d, key = idkey
        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ store gam                = comlev1_impl2d, key = idkey
+CADJ store gam   = comlev1_impl, key = idkey
 #endif
 
 C--    Backward sweep
