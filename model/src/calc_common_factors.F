@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.19 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_common_factors.F,v 1.20 2004/01/07 21:18:01 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -110,7 +110,7 @@ C--   Calculate vertical "volume transport" through
 C--   tracer cell face *above* this level.
       DO j=jMin,jMax
         DO i=iMin,iMax
-          rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)
+          rTrans(i,j) = wVel(i,j,k,bi,bj)*rA(i,j,bi,bj)*maskUp(i,j)
         ENDDO
       ENDDO
 

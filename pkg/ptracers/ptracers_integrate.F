@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.12 2003/12/11 03:20:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.13 2004/01/07 21:21:26 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -14,7 +14,8 @@ C !ROUTINE: PTRACERS_INTEGRATE
 C !INTERFACE: ==========================================================
       SUBROUTINE PTRACERS_INTEGRATE(
      I                               bi,bj,k,
-     I                               xA,yA,uTrans,vTrans,rTrans,maskUp,
+     I                               xA,yA,uTrans,vTrans,rTrans,
+     I                               rTransKp1,maskUp,
      X                               rFlx,KappaRtr,
      I                               myIter,myTime,myThid )
 
@@ -27,6 +28,7 @@ C !USES: ===============================================================
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "DYNVARS.h"
 #include "PTRACERS.h"
 #include "GAD.h"
 
@@ -37,7 +39,8 @@ C  xA                   :: face area at U points in level k
 C  yA                   :: face area at V points in level k
 C  uTrans               :: zonal transport in level k
 C  vTrans               :: meridional transport in level k
-C  rTrans               :: vertical transport across level k
+C  rTrans               :: vertical volume transport at interface k
+C  rTransKp1            :: vertical volume transport at interface k+1
 C  maskUp               :: mask for vertical transport
 C  rFlx			:: vertical flux
 C  KappaRtr		:: vertical diffusion of passive tracers
@@ -54,6 +57,7 @@ C  myThid               :: thread number
       _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rFlx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
       _RL KappaRtr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
@@ -99,18 +103,20 @@ C (advection, [explicit] diffusion, parameterizations,...)
      &      .OR. PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD
      &      .OR. PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH
        GAD_TR = GAD_TR1 + iTracer - 1
-         CALL GAD_CALC_RHS(
-     I                     bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     I                     xA,yA,uTrans,vTrans,rTrans,maskUp,
-     I                     PTRACERS_diffKh(iTracer),
-     I                     PTRACERS_diffK4(iTracer),
-     I                     KappaRtr,
-     I                     pTracer(1-Olx,1-Oly,1,1,1,iTracer),
-     I                     GAD_TR,
-     I                     PTRACERS_advScheme(iTracer),calcAdvection,
-     U                     rFlx(1-Olx,1-Oly,1,iTracer),
-     U                     gPtr(1-Olx,1-Oly,1,1,1,iTracer),
-     I                     myThid )
+       CALL GAD_CALC_RHS(
+     I                   bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
+     I                   xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
+     I                   uVel, vVel, wVel,
+     I                   PTRACERS_diffKh(iTracer),
+     I                   PTRACERS_diffK4(iTracer),
+     I                   KappaRtr,
+     I                   pTracer(1-Olx,1-Oly,1,1,1,iTracer),
+     I                   GAD_TR,
+     I                   PTRACERS_advScheme(iTracer),
+     I                   calcAdvection, .FALSE.,
+     U                   rFlx(1-Olx,1-Oly,1,iTracer),
+     U                   gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+     I                   myThid )
 
 C External forcing term(s)
 cswdptr --add --

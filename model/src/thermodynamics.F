@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.63 2004/01/03 01:01:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.64 2004/01/07 21:18:01 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -121,6 +121,7 @@ C                              transport
 C                              o uTrans: Zonal transport
 C                              o vTrans: Meridional transport
 C                              o rTrans: Vertical transport
+C     rTransKp1                o vertical volume transp. at interface k+1
 C     maskUp                   o maskUp: land/water mask for W points
 C     fVer[STUV]               o fVer: Vertical flux term - note fVer
 C                                      is "pipelined" in the vertical
@@ -143,6 +144,7 @@ C                      index into fVerTerm.
       _RL uTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerS   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -163,6 +165,7 @@ C                      index into fVerTerm.
       _RL sigmaR  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
 C     This is currently used by IVDC and Diagnostics
       _RL ConvectCount (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL kp1Msk
       LOGICAL useVariableK
       INTEGER iMin, iMax
       INTEGER jMin, jMax
@@ -231,6 +234,7 @@ C     uninitialised but inert locations.
           phiSurfX(i,j)  = 0. _d 0
           phiSurfY(i,j)  = 0. _d 0
           rTrans (i,j)   = 0. _d 0
+          rTransKp1(i,j) = 0. _d 0
           fVerT  (i,j,1) = 0. _d 0
           fVerT  (i,j,2) = 0. _d 0
           fVerS  (i,j,1) = 0. _d 0
@@ -629,11 +633,35 @@ C--       kDown  Cycles through 2,1 to point to current layer
           jMin = 1-OLy
           jMax = sNy+OLy
 
+          kp1Msk=1.
+          IF (k.EQ.Nr) kp1Msk=0.
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             rTransKp1(i,j) = kp1Msk*rTrans(i,j)
+            ENDDO
+           ENDDO
+
 C--       Get temporary terms used by tendency routines
           CALL CALC_COMMON_FACTORS (
      I         bi,bj,iMin,iMax,jMin,jMax,k,
      O         xA,yA,uTrans,vTrans,rTrans,maskUp,
      I         myThid)
+
+          IF (k.EQ.1) THEN
+C- Surface interface :
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             rTrans(i,j) = 0.
+            ENDDO
+           ENDDO
+          ELSE
+C- Interior interface :
+           DO j=1-Oly,sNy+Oly
+            DO i=1-Olx,sNx+Olx
+             rTrans(i,j) = rTrans(i,j)*maskC(i,j,k-1,bi,bj)
+            ENDDO
+           ENDDO
+          ENDIF
 
 #ifdef ALLOW_GMREDI
 
@@ -678,7 +706,7 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
          IF ( tempStepping ) THEN
            CALL CALC_GT(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
-     I         xA,yA,uTrans,vTrans,rTrans,maskUp,
+     I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
      I         KappaRT,
      U         fVerT,
      I         myTime,myIter,myThid)
@@ -691,7 +719,7 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
          IF ( saltStepping ) THEN
            CALL CALC_GS(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
-     I         xA,yA,uTrans,vTrans,rTrans,maskUp,
+     I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
      I         KappaRS,
      U         fVerS,
      I         myTime,myIter,myThid)
@@ -705,7 +733,7 @@ ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
          IF ( tr1Stepping ) THEN
            CALL CALC_GTR1(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
-     I         xA,yA,uTrans,vTrans,rTrans,maskUp,
+     I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
      I         KappaRT,
      U         fVerTr1,
      I         myTime,myIter,myThid)
@@ -719,7 +747,7 @@ ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
          IF ( usePTRACERS ) THEN
            CALL PTRACERS_INTEGRATE(
      I         bi,bj,k,
-     I         xA,yA,uTrans,vTrans,rTrans,maskUp,
+     I         xA,yA,uTrans,vTrans,rTrans,rTransKp1,maskUp,
      X         fVerP, KappaRS,
      I         myIter,myTime,myThid)
          ENDIF
