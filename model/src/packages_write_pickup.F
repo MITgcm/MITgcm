@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.6 2004/08/06 21:12:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.7 2004/08/18 15:48:24 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -192,7 +192,7 @@ C     Write pickup file for Lnad package:
 C     Write pickup file for fizhi package
       IF (usefizhi) THEN
         CALL FIZHI_WRITE_PICKUP(fn,myTime,myIter,myThid)
-C        CALL FIZHI_WRITE_VEGTILES(fn,'D',myTime,myIter,myThid)
+        CALL FIZHI_WRITE_VEGTILES(fn,'D',myTime,myIter,myThid)
       ENDIF
 #endif
 
