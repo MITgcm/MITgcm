@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.61 2003/11/23 01:28:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.62 2003/12/30 02:33:42 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -431,6 +431,7 @@ C--     Calculate future values on open boundaries
         ENDIF
 #endif  /* ALLOW_OBCS */
 
+        IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
 C--     Determines forcing terms based on external fields
 C       relaxation terms, etc.
 #ifdef ALLOW_DEBUG
@@ -456,6 +457,7 @@ CADJ STORE surfacetendencyTice(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
+        ENDIF
 
 C--     Attention: by defining "SINGLE_LAYER_MODE" in CPP_OPTIONS.h 
 C--     MOST of THERMODYNAMICS will be disabled
