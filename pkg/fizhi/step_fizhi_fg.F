@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.8 2004/08/04 22:50:41 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_fg.F,v 1.9 2004/08/04 22:57:35 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -29,7 +29,7 @@ c-----------------------------------------------------------------------
 
        _RL tempij(sNx,sNy)
        integer i,j,L
-       _RL psurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nsx,Nsy)
+       _RL psurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
        idim1 = 1-OLx
        idim2 = sNx+OLx
@@ -86,12 +86,12 @@ c      print *,' sphy at level ',l,' ',tempij
 
         do j = jm1,jm2
         do i = im1,im2
-         psurf(i,j,bi,bj)=Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
+         psurf(i,j)=Ro_surf(i,j,bi,bj) + etaH(i,j,bi,bj)
         enddo
         enddo
 
         call qcheck (idim1,idim2,jdim1,jdim2,Nrphys,im1,im2,jm1,jm2,
-     .                                                dpphys,psurf,sphy)
+     .                      dpphys(1,1,1,bi,bj),psurf,sphy(1,1,1,bi,bj))
 
        enddo
        enddo

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.9 2004/08/04 18:23:44 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/step_fizhi_corr.F,v 1.10 2004/08/04 22:57:35 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -284,7 +284,8 @@ c      print *,' sphy at level ',l,' ',tempij
       enddo
       endif
 
-
+        call qcheck (im1,im2,jm1,jm2,Nrphys,idim1,idim2,jdim1,jdim2,
+     .         dpphys(1,1,1,bi,bj),pephy(1,1,1,bi,bj),sphy(1,1,1,bi,bj))
        enddo
        enddo
 
