@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_mnc_init.F,v 1.1 2004/09/03 20:10:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_mnc_init.F,v 1.2 2004/09/04 03:08:03 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -29,13 +29,18 @@ CEOP
 #ifdef ALLOW_MNC
 
 C     !LOCAL VARIABLES:
-      INTEGER ii, ilnb
+      INTEGER ii, jj, ilnb
+      character*(80) name
       character*(MAX_LEN_MBUF) msgbuf
 
 C     Functions
       integer ILNBLNK
 
-      DO ii=1,PTRACERS_numInUse
+      DO ii = 1,PTRACERS_numInUse
+
+        DO jj = 1,80
+          name(jj:jj) = ' '
+        ENDDO
 
 C       Create the tracer
         ilnb = ILNBLNK(PTRACERS_names(ii))
@@ -48,6 +53,8 @@ C       Create the tracer
         ENDIF
         CALL MNC_CW_ADD_VNAME(
      &       PTRACERS_names(ii),'Cen_xy_Hn__C__t',4,5,myThid)
+        WRITE(name,'(a,a)') 'surf_',PTRACERS_names(ii)(1:ilnb)
+        CALL MNC_CW_ADD_VNAME(name,'Cen_xy_Hn__-__t',3,4,myThid)
 
 C       Add the long_name attribute if its defined
         ilnb = ILNBLNK(PTRACERS_long_names(ii))

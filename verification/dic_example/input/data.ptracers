@@ -6,7 +6,7 @@
 #
 # tracer 1 - dic
  PTRACERS_names(1)='dic',
- PTRACERS_long_names(1)='g/cm^3',
+ PTRACERS_long_names(1)='Dissolved Inorganic Carbon',
  PTRACERS_units(1)='g/cm^3',
  PTRACERS_advScheme(1)=77,
  PTRACERS_diffKh(1)=0.E3,
@@ -16,6 +16,7 @@
  PTRACERS_initialFile(1)=' ',
 # tracer 2 - alk
  PTRACERS_names(2)='alk',
+ PTRACERS_units(2)='g/cm^3',
  PTRACERS_advScheme(2)=77,
  PTRACERS_diffKh(2)=0.E3,
  PTRACERS_diffKr(2)=5.E-5,
@@ -40,6 +41,8 @@
  PTRACERS_initialFile(4)=' ',
 # tracer 5 - o2
  PTRACERS_names(5)='o2',
+ PTRACERS_long_names(5)='Dissolved Oxygen',
+ PTRACERS_units(5)='g/cm^3',
  PTRACERS_advScheme(5)=77,
  PTRACERS_diffKh(5)=0.E3,
  PTRACERS_diffKr(5)=3.E-5,
