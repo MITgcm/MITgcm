@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.43 2004/07/08 20:58:24 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.44 2004/07/12 14:02:25 edhill Exp $
 #  $Name:  $
 #
 
@@ -236,7 +236,8 @@ genmakemodel()
 	    printf 'genmake ... ' 1>&2
 	    $command > make.log 2>&1
 	    RETVAL=$?
-	    cp Makefile $CDIR
+	    #  Reduce the size of the testing emails!
+	    #  cp Makefile $CDIR
 	    if test "x$RETVAL" != x0 ; then
 		tail make.log
 		echo "genmakemodel: genmake failed" 1>&2
@@ -426,11 +427,12 @@ runmodel()
 	RETVAL=$?
 	if test "x$RETVAL" = x0 ; then
 	    echo successful 1>&2
-	    if test "x$ADM" = x ; then
-		cp output.txt $CDIR"/output.txt"
-	    else
-		cp output.txt_adm $CDIR"/output.txt_adm"
-	    fi
+	    # === Reduce the size of the testing emails!
+	    # if test "x$ADM" = x ; then
+	    #   cp output.txt $CDIR"/output.txt"
+	    # else
+	    #   cp output.txt_adm $CDIR"/output.txt_adm"
+	    # fi
 	    return 0
 	else
 	    tail run.log
@@ -938,7 +940,7 @@ else
     if test "x$HAVE_MPACK" = xt ; then
 	tar -cf $DRESULTS".tar" $DRESULTS > /dev/null 2>&1 \
 	    && gzip $DRESULTS".tar" \
-	    && $MPACK -s MITgcm-test -m 1500000 $DRESULTS".tar.gz" $ADDRESSES
+	    && $MPACK -s MITgcm-test -m 3555000 $DRESULTS".tar.gz" $ADDRESSES
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    echo
