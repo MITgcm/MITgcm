@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.24 2004/07/16 01:19:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.25 2004/07/17 23:35:20 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -67,11 +67,11 @@ C--   Surface Fluxes :
 c     Zonal wind stress fu:
           surfaceTendencyU(i,j,bi,bj) = 
      &      fu(i,j,bi,bj)*horiVertRatio*recip_rhoConst
-     &           *recip_drF(ks)*recip_hFacW(i,j,ks,bi,bj)
+c    &           *recip_drF(ks)*recip_hFacW(i,j,ks,bi,bj)
 c     Meridional wind stress fv:
           surfaceTendencyV(i,j,bi,bj) = 
      &      fv(i,j,bi,bj)*horiVertRatio*recip_rhoConst
-     &           *recip_drF(ks)*recip_hFacS(i,j,ks,bi,bj)
+c    &           *recip_drF(ks)*recip_hFacS(i,j,ks,bi,bj)
 c     Net heat flux Qnet:
           surfaceTendencyT(i,j,bi,bj) = 
      &       - ( Qnet(i,j,bi,bj)
@@ -79,11 +79,11 @@ c     Net heat flux Qnet:
      &           -Qsw(i,j,bi,bj)
 #endif
      &         ) *recip_Cp*horiVertRatio*recip_rhoConst
-     &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)
+c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)
 C     Net Salt Flux : 
           surfaceTendencyS(i,j,bi,bj) = 
      &      -saltFlux(i,j,bi,bj)*horiVertRatio*recip_rhoConst
-     &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)
+c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)
 
          ENDDO
       ENDDO
@@ -116,7 +116,7 @@ c
           surfaceTendencyT(i,j,bi,bj) = surfaceTendencyT(i,j,bi,bj)
      &      + PmEpR(i,j,bi,bj)
      &         *( temp_EvPrRn - theta(i,j,ks,bi,bj) )
-     &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj) 
+c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj) 
      &         *convertEmP2rUnit
          ENDDO
         ENDDO
@@ -128,7 +128,7 @@ c
           surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
      &      + PmEpR(i,j,bi,bj)
      &         *( salt_EvPrRn - salt(i,j,ks,bi,bj) )
-     &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj) 
+c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj) 
      &         *convertEmP2rUnit
          ENDDO
         ENDDO
@@ -149,7 +149,7 @@ c- converts EmPmR to salinity tendency using surface local salinity
          DO i = iMin, iMax
           surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
      &      + EmPmR(i,j,bi,bj)*salt(i,j,ks,bi,bj)
-     &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)
+c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj)
      &         *convertEmP2rUnit
          ENDDO
         ENDDO
@@ -159,7 +159,7 @@ c- converts EmPmR to virtual salt flux using uniform salinity (default=35)
          DO i = iMin, iMax
           surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
      &      + EmPmR(i,j,bi,bj)*convertFW2Salt
-     &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj) 
+c    &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj) 
      &         *convertEmP2rUnit
          ENDDO
         ENDDO
@@ -168,6 +168,21 @@ c- converts EmPmR to virtual salt flux using uniform salinity (default=35)
       ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+C--   Convert to tendency:
+      DO j=jMin,jMax
+        DO i=iMin,iMax
+          surfaceTendencyU(i,j,bi,bj) = surfaceTendencyU(i,j,bi,bj)
+     &           *recip_drF(ks)*recip_hFacW(i,j,ks,bi,bj)
+          surfaceTendencyV(i,j,bi,bj) = surfaceTendencyV(i,j,bi,bj)
+     &           *recip_drF(ks)*recip_hFacS(i,j,ks,bi,bj)
+          surfaceTendencyT(i,j,bi,bj) = surfaceTendencyT(i,j,bi,bj)
+     &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj) 
+          surfaceTendencyS(i,j,bi,bj) = surfaceTendencyS(i,j,bi,bj)
+     &           *recip_drF(ks)*recip_hFacC(i,j,ks,bi,bj) 
+        ENDDO
+      ENDDO
+
 #ifdef NONLIN_FRSURF
 C-    T,S surface tendencies will be applied (thermodynamics) after the update
 C     of surf.thickness (hFac): account for change in surf.thickness
