@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/shap_filt.F,v 1.3 2000/03/24 16:03:04 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/shap_filt.F,v 1.4 2000/09/11 20:52:57 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -104,7 +104,7 @@ C     == Local variables ==
       _RL shapYWk1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL shapYWk2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  coeff
-      INTEGER I,J
+      INTEGER I,J,iShap
 
       DO J=1-OLy,sNy+OLy
        DO I=1-OLx,sNx+OLx
@@ -114,7 +114,7 @@ C     == Local variables ==
         shapYWk2(i,j) = uVel(i,j,k,bi,bj)
        ENDDO
       ENDDO
-      DO N=1,nShap,2
+      DO iShap=1,nShap,2
        DO J=1-OLy,sNy+OLy
         DO I=1-OLx+1,sNx+OLx-1
          shapXWk2(i,j) = shapXWk1(i-1,j)
@@ -137,7 +137,7 @@ C     == Local variables ==
 C     o ********************************************
 C     o *** "No-slip" lateral bc hard coded below **
 C     o ********************************************
-      DO N=1,nShap,2
+      DO ishap=1,nShap,2
        DO J=1-OLy+1,sNy+OLy-1
         DO I=1-OLx+1,sNx+OLx
          shapYWk2(i,j) =
@@ -223,7 +223,7 @@ C     == Local variables ==
       _RL shapYWk1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL shapYWk2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  coeff
-      INTEGER I,J
+      INTEGER I,J,iShap
 
       DO J=1-OLy,sNy+OLy
        DO I=1-OLx,sNx+OLx
@@ -236,7 +236,7 @@ C     == Local variables ==
 C     o ********************************************
 C     o *** "No-slip" lateral bc hard coded below **
 C     o ********************************************
-      DO N=1,nShap,2
+      DO iShap=1,nShap,2
        DO J=1-OLy+1,sNy+OLy
         DO I=1-OLx+1,sNx+OLx-1
          shapXWk1(i,j) =
@@ -260,7 +260,7 @@ C     o ********************************************
         ENDDO
        ENDDO
       ENDDO
-      DO N=1,nShap,2
+      DO iShap=1,nShap,2
        DO J=1-OLy+1,sNy+OLy-1
         DO I=1-OLx,sNx+OLx
          shapYWk1(i,j) = shapYWk2(i,j-1)
@@ -342,7 +342,7 @@ C     == Local variables ==
       _RL shapYWk1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL shapYWk2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  coeff
-      INTEGER I,J
+      INTEGER I,J,iShap
 
       DO J=1-OLy,sNy+OLy
        DO I=1-OLx,sNx+OLx
@@ -352,7 +352,7 @@ C     == Local variables ==
         shapYWk2(i,j) = field(i,j,k,bi,bj)
        ENDDO
       ENDDO
-      DO N=1,nShap,2
+      DO iShap=1,nShap,2
        DO J=1-OLy,sNy+OLy
         DO I=1-OLx+1,sNx+OLx-1
          shapXWk2(i,j) = 
@@ -376,7 +376,7 @@ C     == Local variables ==
         ENDDO
        ENDDO
       ENDDO
-      DO N=1,nShap,2
+      DO iShap=1,nShap,2
        DO J=1-OLy+1,sNy+OLy-1
         DO I=1-OLx,sNx+OLx
          shapYWk2(i,j) =
