@@ -28,14 +28,6 @@ c     == global variables ==
 #include "exf_param.h"
 #include "exf_constants.h"
 
-cph      common /exfl_obcs_r/ 
-cph     &                    obcs_xz_0, obcs_xz_1,
-cph     &                    obcs_yz_0, obcs_yz_1
-      _RL obcs_xz_0(1-olx:snx+olx,Nr,nsx,nsy)
-      _RL obcs_xz_1(1-olx:snx+olx,Nr,nsx,nsy)
-      _RL obcs_yz_0(1-oly:sny+oly,Nr,nsx,nsy)
-      _RL obcs_yz_1(1-oly:sny+oly,Nr,nsx,nsy)
-
 c     == routine arguments ==
 
       _RL obcs_fld_xz(1-olx:snx+olx,Nr,nsx,nsy)
@@ -53,14 +45,17 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi, bj
-      integer i, j, k
+      integer i, k
+
+      _RL obcs_xz_0(1-olx:snx+olx,Nr,nsx,nsy)
+      _RL obcs_xz_1(1-olx:snx+olx,Nr,nsx,nsy)
 
 c     == end of interface ==
 
 #ifndef ALLOW_AUTODIFF_TAMC
       if ( first ) then
 #endif
-        call mdsreadfieldxz( obcs_file, exf_iprec, exf_yftype, 1
+        call mdsreadfieldxz( obcs_file, exf_iprec, exf_yftype, Nr
      &                     , obcs_xz_1, count0, mythid
      &                     )
 #ifndef ALLOW_AUTODIFF_TAMC
@@ -72,7 +67,7 @@ c     == end of interface ==
 #endif
         call exf_swapffields_xz( obcs_xz_0, obcs_xz_1, mythid )
 
-        call mdsreadfieldxz( obcs_file, exf_iprec, exf_yftype, 1
+        call mdsreadfieldxz( obcs_file, exf_iprec, exf_yftype, Nr
      &                     , obcs_xz_1, count1, mythid
      &                     )
 #ifndef ALLOW_AUTODIFF_TAMC
@@ -123,14 +118,6 @@ c     == global variables ==
 #include "exf_param.h"
 #include "exf_constants.h"
 
-cph      common /exfl_obcs_r/ 
-cph     &                    obcs_xz_0, obcs_xz_1,
-cph     &                    obcs_yz_0, obcs_yz_1
-      _RL obcs_xz_0(1-olx:snx+olx,Nr,nsx,nsy)
-      _RL obcs_xz_1(1-olx:snx+olx,Nr,nsx,nsy)
-      _RL obcs_yz_0(1-oly:sny+oly,Nr,nsx,nsy)
-      _RL obcs_yz_1(1-oly:sny+oly,Nr,nsx,nsy)
-
 c     == routine arguments ==
 
       _RL obcs_fld_yz(1-oly:sny+oly,Nr,nsx,nsy)
@@ -148,14 +135,17 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi, bj
-      integer i, j, k
+      integer j, k
+
+      _RL obcs_yz_0(1-oly:sny+oly,Nr,nsx,nsy)
+      _RL obcs_yz_1(1-oly:sny+oly,Nr,nsx,nsy)
 
 c     == end of interface ==
 
 #ifndef ALLOW_AUTODIFF_TAMC
       if ( first ) then
 #endif
-        call mdsreadfieldyz( obcs_file, exf_iprec, exf_yftype, 1
+        call mdsreadfieldyz( obcs_file, exf_iprec, exf_yftype, Nr
      &                     , obcs_yz_1, count0, mythid
      &                     )
 #ifndef ALLOW_AUTODIFF_TAMC
@@ -167,7 +157,7 @@ c     == end of interface ==
 #endif
         call exf_swapffields_yz( obcs_yz_0, obcs_yz_1, mythid )
 
-        call mdsreadfieldyz( obcs_file, exf_iprec, exf_yftype, 1
+        call mdsreadfieldyz( obcs_file, exf_iprec, exf_yftype, Nr
      &                     , obcs_yz_1, count1, mythid
      &                     )
 #ifndef ALLOW_AUTODIFF_TAMC
@@ -213,14 +203,6 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-cph      common /exfl_obcs_r/ 
-cph     &                    obcs_xz_0, obcs_xz_1,
-cph     &                    obcs_yz_0, obcs_yz_1
-      _RL obcs_xz_0(1-olx:snx+olx,Nr,nsx,nsy)
-      _RL obcs_xz_1(1-olx:snx+olx,Nr,nsx,nsy)
-      _RL obcs_yz_0(1-oly:sny+oly,Nr,nsx,nsy)
-      _RL obcs_yz_1(1-oly:sny+oly,Nr,nsx,nsy)
-
 c     == routine arguments ==
 
       integer mythid
@@ -230,7 +212,10 @@ c     == routine arguments ==
 c     == local variables ==
 
       integer bi, bj
-      integer i, j, k
+      integer i, k
+
+      _RL obcs_xz_0(1-olx:snx+olx,Nr,nsx,nsy)
+      _RL obcs_xz_1(1-olx:snx+olx,Nr,nsx,nsy)
 
 c     == end of interface ==
 
@@ -272,17 +257,12 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-cph      common /exfl_obcs_r/ 
-cph     &                    obcs_xz_0, obcs_xz_1,
-cph     &                    obcs_yz_0, obcs_yz_1
-      _RL obcs_xz_0(1-olx:snx+olx,Nr,nsx,nsy)
-      _RL obcs_xz_1(1-olx:snx+olx,Nr,nsx,nsy)
-      _RL obcs_yz_0(1-oly:sny+oly,Nr,nsx,nsy)
-      _RL obcs_yz_1(1-oly:sny+oly,Nr,nsx,nsy)
-
 c     == routine arguments ==
 
       integer mythid
+
+      _RL obcs_yz_0(1-oly:sny+oly,Nr,nsx,nsy)
+      _RL obcs_yz_1(1-oly:sny+oly,Nr,nsx,nsy)
 
 #ifdef ALLOW_OBCS
 

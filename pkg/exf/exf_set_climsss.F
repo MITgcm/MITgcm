@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsss.F,v 1.1 2001/05/14 22:08:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsss.F,v 1.2 2002/02/07 20:00:09 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -65,21 +65,15 @@ c     == local variables ==
 
 c     == end of interface ==
 
-
-cph(
-cph   Routine exf_GetSSSClimRec has standard cyclic forcing
-cph   assuming 12 monthly climatological records on file
-cph   with irec=1: Jan, ... irec=12: Dec
-cph   Will be included as optional choice of to the above.
-cph
-cph      call exf_GetSSSClimRec(
-cph     O                        fac, first, changed,
-cph     O                        count0,count1,
-cph     I                        mytime, myiter, mythid
-cph     &                            )
-cph)
-
-
+#ifdef ALLOW_CLIM_CYCLIC
+c     record numbers are assumed 1 to 12 corresponding to
+c     Jan. through Dec.
+      call cal_GetMonthsRec(
+     O                       fac, first, changed,
+     O                       count0, count1,
+     I                       mycurrenttime, mycurrentiter, mythid
+     &                     )
+#else
 c     get record numbers and interpolation factor for climsss
       call exf_GetFFieldRec(
      I                       climsssstartdate, climsssperiod
@@ -87,8 +81,11 @@ c     get record numbers and interpolation factor for climsss
      O                     , count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid
      &                     )
+#endif
 
+#ifndef ALLOW_AUTODIFF_TAMC
       if ( first ) then
+#endif
         call mdsreadfield( climsssfile, exf_clim_iprec
      &                   , exf_clim_yftype, 1
      &                   , climsss1, count0, mythid
@@ -98,9 +95,13 @@ c     get record numbers and interpolation factor for climsss
         else
            call exf_filter_rs( climsss1, climsssmask, mythid )
         end if
+#ifndef ALLOW_AUTODIFF_TAMC
       endif
+#endif
 
+#ifndef ALLOW_AUTODIFF_TAMC
       if (( first ) .or. ( changed )) then
+#endif
         call exf_SwapFFields( climsss0, climsss1, mythid )
 
         call mdsreadfield( climsssfile, exf_clim_iprec
@@ -112,7 +113,9 @@ c     get record numbers and interpolation factor for climsss
         else
            call exf_filter_rs( climsss1, climsssmask, mythid )
         end if
+#ifndef ALLOW_AUTODIFF_TAMC
       endif
+#endif
 
 c     Loop over tiles.
       do bj = mybylo(mythid),mybyhi(mythid)

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.1 2001/05/14 22:08:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.2 2002/02/07 20:00:09 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -33,8 +33,6 @@ c     == routine arguments ==
       integer mythid
 
 c     == local variables ==
-
-      integer i
 
 c     == end of interface ==
 

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.1 2001/05/14 22:08:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getsurfacefluxes.F,v 1.2 2002/02/07 20:00:09 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -41,9 +41,6 @@ c     == routine arguments ==
 c     == global variables ==
 
 c     == end of interface ==
-
-c     Get the surface forcing fields.
-      call exf_GetFFields(  mytime, myiter, mythid )
 
 #ifdef ALLOW_HFLUX_CONTROL
       call ctrl_getheatflux ( mytime, myiter, mythid )

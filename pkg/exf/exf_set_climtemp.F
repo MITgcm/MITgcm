@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climtemp.F,v 1.1 2001/05/14 22:08:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climtemp.F,v 1.2 2002/02/07 20:00:09 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -65,6 +65,15 @@ c     == local variables ==
 
 c     == end of interface ==
 
+#ifdef ALLOW_CLIM_CYCLIC
+c     record numbers are assumed 1 to 12 corresponding to
+c     Jan. through Dec.
+      call cal_GetMonthsRec(
+     O                       fac, first, changed,
+     O                       count0, count1,
+     I                       mycurrenttime, mycurrentiter, mythid
+     &                     )
+#else
 c     get record numbers and interpolation factor for climtemp
       call exf_GetFFieldRec(
      I                       climtempstartdate, climtempperiod
@@ -72,8 +81,11 @@ c     get record numbers and interpolation factor for climtemp
      O                     , count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid
      &                     )
+#endif
 
+#ifndef ALLOW_AUTODIFF_TAMC
       if ( first ) then
+#endif
         call mdsreadfield( climtempfile, exf_clim_iprec
      &                   , exf_clim_yftype, nr
      &                   , climtemp1, count0, mythid
@@ -83,9 +95,13 @@ c     get record numbers and interpolation factor for climtemp
         else
            call exf_filter_rs( climtemp1, climtempmask, mythid )
         end if
+#ifndef ALLOW_AUTODIFF_TAMC
       endif
+#endif
 
+#ifndef ALLOW_AUTODIFF_TAMC
       if (( first ) .or. ( changed )) then
+#endif
         call exf_SwapFFields_3d( climtemp0, climtemp1, mythid )
 
         call mdsreadfield( climtempfile, exf_clim_iprec
@@ -97,7 +113,9 @@ c     get record numbers and interpolation factor for climtemp
         else
            call exf_filter_rs( climtemp1, climtempmask, mythid )
         end if
+#ifndef ALLOW_AUTODIFF_TAMC
       endif
+#endif
 
 c     Loop over tiles.
       do bj = mybylo(mythid),mybyhi(mythid)
@@ -107,11 +125,11 @@ c     Loop over tiles.
               do i = 1-olx,snx+olx
 
 c             Set to freezing temperature if less
-              if (climtemp0(i,j,bi,bj) .lt. climtempfreeze) then
-                climtemp0(i,j,bi,bj) = climtempfreeze
+              if (climtemp0(i,j,k,bi,bj) .lt. climtempfreeze) then
+                  climtemp0(i,j,k,bi,bj) = climtempfreeze
               endif
-              if (climtemp1(i,j,bi,bj) .lt. climtempfreeze) then
-                climtemp1(i,j,bi,bj) = climtempfreeze
+              if (climtemp1(i,j,k,bi,bj) .lt. climtempfreeze) then
+                  climtemp1(i,j,k,bi,bj) = climtempfreeze
               endif
 
 c             Interpolate linearly onto the current time.

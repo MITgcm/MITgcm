@@ -1,7 +1,19 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.57 2002/01/31 14:53:22 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.58 2002/02/07 20:00:09 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint44b_pre/_post
+o merge of relevant stuff from the ecco-branch:
+  - genmake: removed $S64 overwrite for case SunOS
+  - pkg/exf: update and corrections for field swapping and obcs
+  - pkg/ecco: parameter lists for the_model_main, the_main_loop
+              harmonized between ECCO and MITgcm
+  - pkg/autodiff: added flow directives for obcs, mdsio_gl_slice
+                  updated checkpointing_lev... lists for obcs
+  - model/src: minor changes in forward_step, plot_field
+               added directive for divided adjoint in the_main_loop
+  - pkg/mdsio: added mdsio_gl_slice
 
 next checkpoint:
 o check parameters & config (chkpt44a_pre,post)

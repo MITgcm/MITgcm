@@ -40,3 +40,28 @@ C subroutine mds_byteswapr4
 C---------------------------------------- 
 CADJ SUBROUTINE mds_byteswapr4  INPUT  = 1,2
 CADJ SUBROUTINE mds_byteswapr4  OUTPUT = 2
+
+C----------------------------------------
+C subroutine mdsreadfieldxz
+C----------------------------------------
+CADJ SUBROUTINE mdsreadfieldxz  INPUT  = 1,2,3,4,  6,7
+CADJ SUBROUTINE mdsreadfieldxz  OUTPUT =         5
+
+C----------------------------------------
+C subroutine mdswritefieldxz
+C----------------------------------------
+CADJ SUBROUTINE mdswritefieldxz  INPUT  = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE mdswritefieldxz  OUTPUT =
+
+C----------------------------------------
+C subroutine mdsreadfieldyz
+C----------------------------------------
+CADJ SUBROUTINE mdsreadfieldyz  INPUT  = 1,2,3,4,  6,7
+CADJ SUBROUTINE mdsreadfieldyz  OUTPUT =         5
+
+C----------------------------------------
+C subroutine mdswritefield
+C----------------------------------------
+CADJ SUBROUTINE mdswritefieldyz  INPUT  = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE mdswritefieldyz  OUTPUT =
+

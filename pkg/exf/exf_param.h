@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.1 2001/05/14 22:08:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.2 2002/02/07 20:00:09 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -106,10 +106,25 @@ c     Calendar data.
       character*1 lwfluxmask
       parameter(  lwfluxmask = 's' )
 
-      integer obcsstartdate1
-      integer obcsstartdate2
-      integer obcsstartdate(4)
-      _RL     obcsperiod
+      integer obcsNstartdate1
+      integer obcsNstartdate2
+      integer obcsNstartdate(4)
+      _RL     obcsNperiod
+
+      integer obcsSstartdate1
+      integer obcsSstartdate2
+      integer obcsSstartdate(4)
+      _RL     obcsSperiod
+
+      integer obcsEstartdate1
+      integer obcsEstartdate2
+      integer obcsEstartdate(4)
+      _RL     obcsEperiod
+
+      integer obcsWstartdate1
+      integer obcsWstartdate2
+      integer obcsWstartdate(4)
+      _RL     obcsWperiod
 
 c     File names.
       character*(128) hfluxfile
@@ -123,21 +138,23 @@ c     File names.
       character*(128) vwindfile
       character*(128) swfluxfile
       character*(128) lwfluxfile
-      character*(128) obcsfile
 
       common /exf_param_i/
-     &                          hfluxstartdate1,  hfluxstartdate2,
-     &                          atempstartdate1,  atempstartdate2,
-     &                          aqhstartdate1,    aqhstartdate2,
-     &                          sfluxstartdate1,  sfluxstartdate2,
-     &                          precipstartdate1, precipstartdate2,
-     &                          ustressstartdate1,ustressstartdate2,
-     &                          vstressstartdate1,vstressstartdate2,
-     &                          uwindstartdate1,  uwindstartdate2,
-     &                          vwindstartdate1,  vwindstartdate2,
-     &                          swfluxstartdate1, swfluxstartdate2,
-     &                          lwfluxstartdate1, lwfluxstartdate2,
-     &                          obcsstartdate1,   obcsstartdate2,
+     &                          hfluxstartdate1,   hfluxstartdate2,
+     &                          atempstartdate1,   atempstartdate2,
+     &                          aqhstartdate1,     aqhstartdate2,
+     &                          sfluxstartdate1,   sfluxstartdate2,
+     &                          precipstartdate1,  precipstartdate2,
+     &                          ustressstartdate1, ustressstartdate2,
+     &                          vstressstartdate1, vstressstartdate2,
+     &                          uwindstartdate1,   uwindstartdate2,
+     &                          vwindstartdate1,   vwindstartdate2,
+     &                          swfluxstartdate1,  swfluxstartdate2,
+     &                          lwfluxstartdate1,  lwfluxstartdate2,
+     &                          obcsNstartdate1,   obcsNstartdate2,
+     &                          obcsSstartdate1,   obcsSstartdate2,
+     &                          obcsEstartdate1,   obcsEstartdate2,
+     &                          obcsWstartdate1,   obcsWstartdate2,
      &                          hfluxstartdate,
      &                          atempstartdate,
      &                          aqhstartdate,
@@ -149,7 +166,10 @@ c     File names.
      &                          vwindstartdate,
      &                          swfluxstartdate,
      &                          lwfluxstartdate,
-     &                          obcsstartdate
+     &                          obcsNstartdate,
+     &                          obcsSstartdate,
+     &                          obcsEstartdate,
+     &                          obcsWstartdate
 
       common /exf_param_r/
      &                          hfluxperiod,
@@ -163,7 +183,10 @@ c     File names.
      &                          vwindperiod,
      &                          swfluxperiod,
      &                          lwfluxperiod,
-     &                          obcsperiod
+     &                          obcsNperiod,
+     &                          obcsSperiod,
+     &                          obcsEperiod,
+     &                          obcsWperiod
 
       common /exf_param_c/
      &                          hfluxfile,
@@ -176,8 +199,7 @@ c     File names.
      &                          uwindfile,
      &                          vwindfile,
      &                          swfluxfile,
-     &                          lwfluxfile,
-     &                          obcsfile
+     &                          lwfluxfile
 
 c     file precision and field type
 

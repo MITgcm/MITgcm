@@ -70,3 +70,31 @@ CADJ STORE vstress0  = tapelev2, key = ilev_2
 CADJ STORE vstress1  = tapelev2, key = ilev_2
 # endif  /* ALLOW_ATM_WIND */
 #endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+
+#ifdef ALLOW_OBCS
+#ifdef ALLOW_OBCS_NORTH
+CADJ STORE OBNu    = tapelev2, key = ilev_2
+CADJ STORE OBNv    = tapelev2, key = ilev_2
+CADJ STORE OBNt    = tapelev2, key = ilev_2
+CADJ STORE OBNs    = tapelev2, key = ilev_2
+#endif /* ALLOW_OBCS_NORTH */
+#ifdef ALLOW_OBCS_SOUTH
+CADJ STORE OBSu    = tapelev2, key = ilev_2
+CADJ STORE OBSv    = tapelev2, key = ilev_2
+CADJ STORE OBSt    = tapelev2, key = ilev_2
+CADJ STORE OBSs    = tapelev2, key = ilev_2
+#endif /* ALLOW_OBCS_SOUTH */
+#ifdef ALLOW_OBCS_EAST
+CADJ STORE OBEu    = tapelev2, key = ilev_2
+CADJ STORE OBEv    = tapelev2, key = ilev_2
+CADJ STORE OBEt    = tapelev2, key = ilev_2
+CADJ STORE OBEs    = tapelev2, key = ilev_2
+#endif /* ALLOW_OBCS_EAST */
+#ifdef ALLOW_OBCS_WEST
+CADJ STORE OBWu    = tapelev2, key = ilev_2
+CADJ STORE OBWv    = tapelev2, key = ilev_2
+CADJ STORE OBWt    = tapelev2, key = ilev_2
+CADJ STORE OBWs    = tapelev2, key = ilev_2
+#endif /* ALLOW_OBCS_WEST */
+#endif  /* ALLOW_OBCS */
+

@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.1 2001/05/14 22:08:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.2 2002/02/07 20:00:09 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -14,26 +14,24 @@ c
 c     o This routine initialises the package that calculates external
 c       forcing fields for a given timestep of the MITgcmUV. Parameters
 c       for this package are set in "data.externalforcing". Some additional
-c       precompiler switches have to be specified in "EXF_CPPOPTIONS.h" .
+c       precompiler switches have to be specified in "EXF_CPPOPTIONS.h".
 c
 c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
 c
 c     changed: Christian Eckert eckert@mit.edu  11-Jan-2000
 c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
-c
 c              Christian Eckert eckert@mit.edu  12-Feb-2000
 c              - Changed Routine names (package prefix: exf_)
-c
-c              Patrick Heimbach, heimbach@mit.edu  04-May-2000
+c     changed: Patrick Heimbach, heimbach@mit.edu  04-May-2000
 c              - changed the handling of precip and sflux with respect
 c                to CPP options ALLOW_BULKFORMULAE and ALLOW_ATM_TEMP
-c
 c     changed: Ralf.Giering@FastOpt.de 25-Mai-20000
-c              - moved relaxation and climatology stuff to extra routines
-c
+c              - moved relaxation and climatology to extra routines
 c              Patrick Heimbach, heimbach@mit.edu  04-May-2000
 c              - added obcs parameters
+c     changed: Virginie Thierry, vthierry@ucsd.edu 04-June-2001
+c              - added new obcs parameters (for each boundaries) 
 c
 c     ==================================================================
 c     SUBROUTINE exf_readparms
@@ -49,6 +47,9 @@ c     == global variables ==
 #include "exf.h"
 #include "exf_param.h"
 #include "exf_constants.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#endif
 
 c     == routine arguments ==
 
@@ -78,11 +79,14 @@ c     Surface flux data.
      &    vwindstartdate1,    vwindstartdate2,   vwindperiod,
      &   swfluxstartdate1,   swfluxstartdate2,  swfluxperiod,
      &   lwfluxstartdate1,   lwfluxstartdate2,  lwfluxperiod,
-     &     obcsstartdate1,     obcsstartdate2,    obcsperiod,
+     &    obcsNstartdate1,    obcsNstartdate2,   obcsNperiod,
+     &    obcsSstartdate1,    obcsSstartdate2,   obcsSperiod,
+     &    obcsEstartdate1,    obcsEstartdate2,   obcsEperiod,
+     &    obcsWstartdate1,    obcsWstartdate2,   obcsWperiod,
      &          hfluxfile,          atempfile,       aqhfile,
      &         precipfile,          sfluxfile,   ustressfile,
      &        vstressfile,          uwindfile,     vwindfile,
-     &         swfluxfile,         lwfluxfile,      obcsfile,
+     &         swfluxfile,         lwfluxfile,
      &          exf_iprec,         exf_yftype
 
       _BEGIN_MASTER(mythid)
@@ -134,9 +138,21 @@ c     Calendar data.
       lwfluxstartdate2   = 0
       lwfluxperiod       = 0.0 _d 0
 
-      obcsstartdate1     = 0
-      obcsstartdate2     = 0
-      obcsperiod         = 0.0 _d 0
+      obcsNstartdate1    = 0
+      obcsNstartdate2    = 0
+      obcsNperiod        = 0.0 _d 0
+
+      obcsSstartdate1    = 0
+      obcsSstartdate2    = 0
+      obcsSperiod        = 0.0 _d 0
+
+      obcsEstartdate1    = 0
+      obcsEstartdate2    = 0
+      obcsEperiod        = 0.0 _d 0
+
+      obcsWstartdate1    = 0
+      obcsWstartdate2    = 0
+      obcsWperiod        = 0.0 _d 0
 
 c     Data files.
       hfluxfile          = ' '
@@ -150,7 +166,6 @@ c     Data files.
       vwindfile          = ' '
       swfluxfile         = ' '
       lwfluxfile         = ' '
-      obcsfile           = ' '
 
 c     Initialise the date arrays.
       do i = 1,4
@@ -165,7 +180,10 @@ c     Initialise the date arrays.
          vwindstartdate(i)    = 0
          swfluxstartdate(i)   = 0
          lwfluxstartdate(i)   = 0
-         obcsstartdate(i)     = 0
+         obcsNstartdate(i)    = 0
+         obcsSstartdate(i)    = 0
+         obcsEstartdate(i)    = 0
+         obcsWstartdate(i)    = 0
       enddo
 
 c     Initialise file type and field precision
@@ -260,8 +278,22 @@ c     check for consistency
 #endif
 
 #ifdef ALLOW_OBCS
-      call cal_FullDate(   obcsstartdate1,  obcsstartdate2,
-     &                     obcsstartdate,           mythid )
+#ifdef ALLOW_OBCS_NORTH
+      call cal_FullDate(  obcsNstartdate1,  obcsNstartdate2,
+     &                    obcsNstartdate,           mythid )
+#endif
+#ifdef ALLOW_OBCS_SOUTH
+      call cal_FullDate(  obcsSstartdate1,  obcsSstartdate2,
+     &                    obcsSstartdate,           mythid )
+#endif
+#ifdef ALLOW_OBCS_EAST
+      call cal_FullDate(  obcsEstartdate1,  obcsEstartdate2,
+     &                    obcsEstartdate,           mythid )
+#endif
+#ifdef ALLOW_OBCS_WEST
+      call cal_FullDate(  obcsWstartdate1,  obcsWstartdate2,
+     &                    obcsWstartdate,           mythid )
+#endif
 #endif
 
       _END_MASTER( mythid )

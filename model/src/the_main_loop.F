@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.25 2002/01/17 16:58:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.26 2002/02/07 20:00:09 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -141,6 +141,12 @@ c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
       endif
       max_lev3=nTimeSteps/(nchklev_1*nchklev_2)+1
       max_lev2=nTimeSteps/nchklev_1+1
+
+c**************************************
+#ifdef ALLOW_DIVIDED_ADJOINT
+CADJ loop = divided
+#endif
+c**************************************
 
       do ilev_3 = 1,nchklev_3
          if(ilev_3.le.max_lev3) then
