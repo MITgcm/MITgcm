@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.16 2004/09/22 15:29:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.17 2004/09/23 21:27:04 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -359,11 +359,11 @@ c     CALL EXCH_Z_XY_RS(DYU,myThid)
 
 #endif /* OLD_GRID_IO */
 
-c     CALL WRITE_FULLARRAY_RL('DXV',DXV,1,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('DYU',DYU,1,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('RAZ',RAZ,1,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('XG',XG,1,0,myThid)
-c     CALL WRITE_FULLARRAY_RL('YG',YG,1,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('DXV',DXV,1,0,0,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('DYU',DYU,1,0,0,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('RAZ',RAZ,1,0,0,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('XG',XG,1,0,0,0,myThid)
+c     CALL WRITE_FULLARRAY_RL('YG',YG,1,0,0,0,myThid)
 
 C--   Require that 0 <= longitude < 360 if using exf package
 #ifdef ALLOW_EXF
