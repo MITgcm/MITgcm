@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.9 2005/02/18 20:21:15 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.10 2005/02/18 21:41:44 heimbach Exp $
 
 #include "MDSIO_OPTIONS.h"
 
@@ -83,7 +83,7 @@ C Functions
       integer MDS_RECLEN
 C Local variables
       character*(80) dataFName
-      integer ip,jp,iG,jG,irec,bi,bj,ii,i,j,k,dUnit,IL
+      integer ip,jp,iG,jG,irec,bi,bj,i,j,k,dUnit,IL
       logical exst
       _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,Nr,nSx,nSy)
       Real*4 r4seg(sNx)
@@ -792,7 +792,7 @@ C Functions
       integer MDS_RECLEN
 C Local variables
       character*(80) dataFName
-      integer ip,jp,iG,jG,irec,bi,bj,ii,i,j,k,dUnit,IL
+      integer ip,jp,iG,jG,irec,bi,bj,i,j,k,dUnit,IL
       logical exst
       _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nLocz,nSx,nSy)
       Real*4 r4seg(sNx)
