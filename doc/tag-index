@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.325 2004/07/08 16:15:20 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.326 2004/07/08 16:27:31 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o diagnostics can now write NetCDF files through the mnc package
 o staggerTimeStep & NLFS: update pkg aim_v23 & thsice; update aim.5l_cs output
 o staggerTimeStep & multi-Dim-Advec: Exch(U,V) added 
 o staggerTimeStep & NLFS: rescale T & S surface tendencies.
