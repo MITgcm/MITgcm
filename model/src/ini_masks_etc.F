@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.9 1998/10/28 03:11:37 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.10 1998/11/02 03:34:12 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -136,24 +136,24 @@ C     Masks and reciprocals of hFac[CWS]
         DO K=1,Nr
          DO J=1,sNy
           DO I=1,sNx
-           IF (HFacC(I,J,K,bi,bj) .NE. 0. D0 ) THEN
-            recip_HFacC(I,J,K,bi,bj) = 1. D0 / HFacC(I,J,K,bi,bj)
+           IF (HFacC(I,J,K,bi,bj) .NE. 0. _d 0 ) THEN
+            recip_HFacC(I,J,K,bi,bj) = 1. _d 0 / HFacC(I,J,K,bi,bj)
            ELSE
-            recip_HFacC(I,J,K,bi,bj) = 0. D0
+            recip_HFacC(I,J,K,bi,bj) = 0. _d 0
            ENDIF
-           IF (HFacW(I,J,K,bi,bj) .NE. 0. D0 ) THEN
-            recip_HFacW(I,J,K,bi,bj) = 1. D0 / HFacW(I,J,K,bi,bj)
-            maskW(I,J,K,bi,bj) = 1. D0
+           IF (HFacW(I,J,K,bi,bj) .NE. 0. _d 0 ) THEN
+            recip_HFacW(I,J,K,bi,bj) = 1. _d 0 / HFacW(I,J,K,bi,bj)
+            maskW(I,J,K,bi,bj) = 1. _d 0
            ELSE
-            recip_HFacW(I,J,K,bi,bj) = 0. D0
-            maskW(I,J,K,bi,bj) = 0.0 D0
+            recip_HFacW(I,J,K,bi,bj) = 0. _d 0
+            maskW(I,J,K,bi,bj) = 0.0 _d 0
            ENDIF
-           IF (HFacS(I,J,K,bi,bj) .NE. 0. D0 ) THEN
-            recip_HFacS(I,J,K,bi,bj) = 1. D0 / HFacS(I,J,K,bi,bj)
-            maskS(I,J,K,bi,bj) = 1. D0
+           IF (HFacS(I,J,K,bi,bj) .NE. 0. _d 0 ) THEN
+            recip_HFacS(I,J,K,bi,bj) = 1. _d 0 / HFacS(I,J,K,bi,bj)
+            maskS(I,J,K,bi,bj) = 1. _d 0
            ELSE
-            recip_HFacS(I,J,K,bi,bj) = 0. D0
-            maskS(I,J,K,bi,bj) = 0. D0
+            recip_HFacS(I,J,K,bi,bj) = 0. _d 0
+            maskS(I,J,K,bi,bj) = 0. _d 0
            ENDIF
           ENDDO
          ENDDO

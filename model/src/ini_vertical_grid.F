@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.5 1998/09/06 14:45:11 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_vertical_grid.F,v 1.6 1998/11/02 03:34:12 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -45,7 +45,7 @@ C      drC(K)     = 0.5 _d 0 *(delZ(K-1)+delZ(K))
 C      rC(K)      = rC(K-1) - drC(K)
       ENDDO
       DO K=1,Nr
-       saFac(K)  = 1. D0
+       saFac(K)  = 1. _d 0
        recip_drC(K)   = 1. _d 0/drC(K)
        recip_drF(K)   = 1. _d 0/drF(K)
       ENDDO
