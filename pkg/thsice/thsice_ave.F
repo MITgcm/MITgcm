@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.5 2005/01/04 00:25:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.6 2005/01/31 19:42:59 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -70,6 +70,9 @@ C-- area weighted average (with ice-fraction)
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
        CALL TIMEAVE_CUMUL_2V( ice_snowPr_Ave,snowPrc, iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
+C--    notes: siceAlb is already multiplied by iceFraction
+       CALL TIMEAVE_CUMULATE(ice_albedo_Ave, siceAlb, 
+     &                       1, thSIce_deltaT, bi, bj, myThid )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- simple average (without ice-fraction)
 c      CALL TIMEAVE_CUMULATE(ice_iceH_Ave,iceheight,
@@ -125,11 +128,28 @@ C-- average of Ocean Mixed-Layer temp. & salinity
      &                      bi,bj,1,wrtIter,myThid)
       ENDIF
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
+#ifdef ALLOW_DIAGNOSTICS
       IF ( useDiagnostics ) THEN
-        CALL THSICE_DIAGNOSTICS_FILL( 
-     I                   frwAtm, flxAtm,
-     I                   myTime, myIter, bi,bj, myThid )
+
+        CALL DIAGNOSTICS_FILL(siceAlb,'SIalbedo',0,1,1,bi,bj,myThid)
+
+C-- Atmospheric fluxes :
+       IF ( fluidIsWater ) THEN
+        CALL DIAGNOSTICS_FILL(flxAtm, 'SIflxAtm',0,1,2,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(frwAtm, 'SIfrwAtm',0,1,2,bi,bj,myThid)
+       ENDIF
+
+C-- Oceanic fluxes :
+c #ifndef CHECK_ENERGY_CONSERV
+        CALL DIAGNOSTICS_FILL(Qnet,    'SIflx2oc',0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(EmPmR,   'SIfrw2oc',0,1,1,bi,bj,myThid)
+        CALL DIAGNOSTICS_FILL(saltFlux,'SIsaltFx',0,1,1,bi,bj,myThid)
+c #endif /* CHECK_ENERGY_CONSERV */
+
       ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif  /* ALLOW_THSICE */
 
