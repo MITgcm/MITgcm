@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.13 2004/06/17 21:45:29 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.14 2004/06/21 16:23:56 molod Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
        subroutine do_fizhi(myid,uphy,vphy,thphy,sphy,pephy,lons,lats,
@@ -66,25 +66,34 @@ c
       real pl(im2,jm2,Nrphys),pkl(im2,jm2,Nrphys+1)
       real ple(im2,jm2,Nrphys+1),pkle(im2,jm2,Nrphys)
       real dpres(im2,jm2,Nrphys)
-      real lwdt(im2,jm2,Nrphys),lwdtclr(im2,jm2,Nrphys) 
-      real swdt(im2,jm2,Nrphys),swdtclr(im2,jm2,Nrphys)
-      real turbu(im2,jm2,Nrphys),turbv(im2,jm2,Nrphys)
-      real turbt(im2,jm2,Nrphys),turbq(im2,jm2,Nrphys)
-      real moistu(im2,jm2,Nrphys),moistv(im2,jm2,Nrphys)
-      real moistt(im2,jm2,Nrphys),moistq(im2,jm2,Nrphys)
-      real radswt(im2,jm2),radswg(im2,jm2),swgclr(im2,jm2)
-      real fdirpar(im2,jm2),fdifpar(im2,jm2)
-      real osr(im2,jm2),osrclr(im2,jm2)
-      real tg0(im2,jm2),radlwg(im2,jm2),st4(im2,jm2)
-      real dst4(im2,jm2),dlwdtg(im2,jm2,Nrphys)
-      real rainlsp(im2,jm2),raincon(im2,jm2),snowfall(im2,jm2)
-      real cldtot_lw(im2,jm2,Nrphys),clras_lw(im2,jm2,Nrphys)
-      real cldlsp_lw(im2,jm2,Nrphys),lwlz(im2,jm2,Nrphys)
-      real cldtot_sw(im2,jm2,Nrphys),clras_sw(im2,jm2,Nrphys)
-      real cldlsp_sw(im2,jm2,Nrphys),swlz(im2,jm2,Nrphys)
-      real qliqavesw(im2,jm2,Nrphys),qliqavelw(im2,jm2,Nrphys)
-      real fccavesw(im2,jm2,Nrphys),fccavelw(im2,jm2,Nrphys)
-      real qq(im2,jm2,Nrphys)
+      real lwdt(im2,jm2,Nrphys,Nsx,Nsy),lwdtclr(im2,jm2,Nrphys,Nsx,Nsy) 
+      real swdt(im2,jm2,Nrphys,Nsx,Nsy),swdtclr(im2,jm2,Nrphys,Nsx,Nsy)
+      real turbu(im2,jm2,Nrphys,Nsx,Nsy),turbv(im2,jm2,Nrphys,Nsx,Nsy)
+      real turbt(im2,jm2,Nrphys,Nsx,Nsy),turbq(im2,jm2,Nrphys,Nsx,Nsy)
+      real moistu(im2,jm2,Nrphys,Nsx,Nsy),moistv(im2,jm2,Nrphys,Nsx,Nsy)
+      real moistt(im2,jm2,Nrphys,Nsx,Nsy),moistq(im2,jm2,Nrphys,Nsx,Nsy)
+      real radswt(im2,jm2,Nsx,Nsy),radswg(im2,jm2,Nsx,Nsy)
+      real swgclr(im2,jm2,Nsx,Nsy)
+      real fdirpar(im2,jm2,Nsx,Nsy),fdifpar(im2,jm2,Nsx,Nsy)
+      real osr(im2,jm2,Nsx,Nsy),osrclr(im2,jm2,Nsx,Nsy)
+      real tg0(im2,jm2,Nsx,Nsy),radlwg(im2,jm2,Nsx,Nsy)
+      real st4(im2,jm2,Nsx,Nsy)
+      real dst4(im2,jm2,Nsx,Nsy),dlwdtg(im2,jm2,Nrphys,Nsx,Nsy)
+      real rainlsp(im2,jm2,Nsx,Nsy),raincon(im2,jm2,Nsx,Nsy)
+      real snowfall(im2,jm2,Nsx,Nsy)
+      real cldtot_lw(im2,jm2,Nrphys,Nsx,Nsy)
+      real clras_lw(im2,jm2,Nrphys,Nsx,Nsy)
+      real cldlsp_lw(im2,jm2,Nrphys,Nsx,Nsy)
+      real lwlz(im2,jm2,Nrphys,Nsx,Nsy)
+      real cldtot_sw(im2,jm2,Nrphys,Nsx,Nsy)
+      real clras_sw(im2,jm2,Nrphys,Nsx,Nsy)
+      real cldlsp_sw(im2,jm2,Nrphys,Nsx,Nsy)
+      real swlz(im2,jm2,Nrphys,Nsx,Nsy)
+      real qliqavesw(im2,jm2,Nrphys,Nsx,Nsy)
+      real qliqavelw(im2,jm2,Nrphys,Nsx,Nsy)
+      real fccavesw(im2,jm2,Nrphys,Nsx,Nsy)
+      real fccavelw(im2,jm2,Nrphys,Nsx,Nsy)
+      real qq(im2,jm2,Nrphys,Nsx,Nsy)
 
       integer i,j,L
       real getcon, kappa, p0kappa, s0, ra
@@ -164,25 +173,37 @@ C***********************************************************************
      . albvisdr(1,bi,bj),albvisdf(1,bi,bj),albnirdr(1,bi,bj),
      . albnirdf(1,bi,bj),emiss(1,bi,bj),alai(1,bi,bj),agrn(1,bi,bj),
      . qstr(1,1,bi,bj),o3(1,1,bi,bj),co2,cfc11,cfc12,cfc22,methane,n2o,
-     . lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq,
-     . moistu,moistv,moistt,moistq,
-     . radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg,
-     . st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras,nlwcld,
-     . cldtot_lw,clras_lw,cldlsp_lw,nlwlz,lwlz,nswcld,cldtot_sw,
-     . clras_sw,cldlsp_sw,nswlz,swlz,imstturbsw,imstturblw,qliqavesw,
-     . qliqavelw,fccavesw,fccavelw,qq)
+     . lwdt(1,1,1,bi,bj),lwdtclr(1,1,1,bi,bj),swdt(1,1,1,bi,bj),
+     . swdtclr(1,1,1,bi,bj),turbu(1,1,1,bi,bj),turbv(1,1,1,bi,bj),
+     . turbt(1,1,1,bi,bj),turbq(1,1,1,bi,bj),
+     . moistu(1,1,1,bi,bj),moistv(1,1,1,bi,bj),moistt(1,1,1,bi,bj),
+     . moistq(1,1,1,bi,bj),
+     . radswg(1,1,bi,bj),swgclr(1,1,bi,bj),fdirpar(1,1,bi,bj),
+     . fdifpar(1,1,bi,bj),osr(1,1,bi,bj),osrclr(1,1,bi,bj),
+     . tg0(1,1,bi,bj),radlwg(1,1,bi,bj),
+     . st4(1,1,bi,bj),dst4(1,1,bi,bj),dlwdtg(1,1,1,bi,bj),
+     . rainlsp(1,1,bi,bj),raincon(1,1,bi,bj),snowfall(1,1,bi,bj),iras,
+     . nlwcld,cldtot_lw(1,1,1,bi,bj),clras_lw(1,1,1,bi,bj),
+     . cldlsp_lw(1,1,1,bi,bj),nlwlz,lwlz(1,1,1,bi,bj),
+     . nswcld,cldtot_sw(1,1,1,bi,bj),clras_sw(1,1,1,bi,bj),
+     . cldlsp_sw(1,1,1,bi,bj),nswlz,swlz(1,1,1,bi,bj),
+     . imstturbsw,imstturblw,qliqavesw(1,1,1,bi,bj),
+     . qliqavelw(1,1,1,bi,bj),fccavesw(1,1,1,bi,bj),
+     . fccavelw(1,1,1,bi,bj),qq(1,1,1,bi,bj))
 
       endif
 
       do L = 1,Nrphys
       do j = jm1,jm2
       do i = im1,im2
-       duphy(i,j,L,bi,bj) = moistu(i,j,L) + turbu(i,j,L)
-       dvphy(i,j,L,bi,bj) = moistv(i,j,L) + turbv(i,j,L)
-       dthphy(i,j,L,bi,bj) = ( ( moistt(i,j,L) + turbt(i,j,L) +
-     .           lwdt(i,j,L) + dlwdtg(i,j,L) * (tgz(i,j)-tg0(i,j)) +
-     .           swdt(i,j,L) * radswt(i,j) ) * p0kappa ) / p(i,j)
-       dsphy(i,j,L,bi,bj) = (moistq(i,j,L,1) + turbq(i,j,L,1))/p(i,j)
+       duphy(i,j,L,bi,bj) = moistu(i,j,L,bi,bj) + turbu(i,j,L,bi,bj)
+       dvphy(i,j,L,bi,bj) = moistv(i,j,L,bi,bj) + turbv(i,j,L,bi,bj)
+       dthphy(i,j,L,bi,bj) = ((moistt(i,j,L,bi,bj)+turbt(i,j,L,bi,bj)+
+     .   lwdt(i,j,L,bi,bj) + 
+     .   dlwdtg(i,j,L,bi,bj) * (tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) +
+     .   swdt(i,j,L,bi,bj) * radswt(i,j,bi,bj) ) * p0kappa ) / p(i,j)
+       dsphy(i,j,L,bi,bj) = (moistq(i,j,L,1,bi,bj)+turbq(i,j,L,1,bi,bj))
+     .                                    /p(i,j)
       enddo
       enddo
       enddo
