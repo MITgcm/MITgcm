@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_east.F,v 1.3 2001/09/27 18:13:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/orlanski_east.F,v 1.4 2002/07/11 16:22:30 jmc Exp $
 C $Name:  $
 
 #include "OBCS_OPTIONS.h"
@@ -112,7 +112,7 @@ C              uVel
      &                f2*CVEL_UE(J,K,bi,bj)
 C              update OBC to next timestep
                OBEu(J,K,bi,bj)=uVel(I_obc,J,K,bi,bj)-
-     &           CVEL_UE(J,K,bi,bj)*(deltaT/dxF(I_obc-1,J,bi,bj))*
+     &           CVEL_UE(J,K,bi,bj)*deltaT*recip_dxF(I_obc-1,J,bi,bj)*
      &           (ab1*(uVel(I_obc,J,K,bi,bj)-uVel(I_obc-1,J,K,bi,bj)) +
      &           ab2*(UE_STORE_4(J,K,bi,bj)-UE_STORE_1(J,K,bi,bj)))
 C              vVel
@@ -132,7 +132,7 @@ C              vVel
      &                f2*CVEL_VE(J,K,bi,bj)
 C              update OBC to next timestep
                OBEv(J,K,bi,bj)=vVel(I_obc,J,K,bi,bj)-
-     &           CVEL_VE(J,K,bi,bj)*(deltaT/dxV(I_obc,J,bi,bj))*
+     &           CVEL_VE(J,K,bi,bj)*deltaT*recip_dxV(I_obc,J,bi,bj)*
      &           (ab1*(vVel(I_obc,J,K,bi,bj)-vVel(I_obc-1,J,K,bi,bj)) + 
      &           ab2*(VE_STORE_4(J,K,bi,bj)-VE_STORE_1(J,K,bi,bj)))            
 C              Temperature
@@ -152,7 +152,7 @@ C              Temperature
      &                f2*CVEL_TE(J,K,bi,bj)
 C              update OBC to next timestep
                OBEt(J,K,bi,bj)=theta(I_obc,J,K,bi,bj)-
-     &           CVEL_TE(J,K,bi,bj)*(deltaT/dxC(I_obc,J,bi,bj))*
+     &           CVEL_TE(J,K,bi,bj)*deltaT*recip_dxC(I_obc,J,bi,bj)*
      &           (ab1*(theta(I_obc,J,K,bi,bj)-theta(I_obc-1,J,K,bi,bj))+ 
      &           ab2*(TE_STORE_4(J,K,bi,bj)-TE_STORE_1(J,K,bi,bj)))
 C              Salinity
@@ -172,7 +172,7 @@ C              Salinity
      &                f2*CVEL_SE(J,K,bi,bj)
 C              update OBC to next timestep
                OBEs(J,K,bi,bj)=salt(I_obc,J,K,bi,bj)-
-     &           CVEL_SE(J,K,bi,bj)*(deltaT/dxC(I_obc,J,bi,bj))*
+     &           CVEL_SE(J,K,bi,bj)*deltaT*recip_dxC(I_obc,J,bi,bj)*
      &           (ab1*(salt(I_obc,J,K,bi,bj)-salt(I_obc-1,J,K,bi,bj))+
      &           ab2*(SE_STORE_4(J,K,bi,bj)-SE_STORE_1(J,K,bi,bj))) 
 C              wVel
@@ -193,7 +193,7 @@ C              wVel
      &                   + f2*CVEL_WE(J,K,bi,bj)
 C                 update OBC to next timestep
                   OBEw(J,K,bi,bj)=wVel(I_obc,J,K,bi,bj)-
-     &             CVEL_WE(J,K,bi,bj)*(deltaT/dxC(I_obc,J,bi,bj))*
+     &             CVEL_WE(J,K,bi,bj)*deltaT*recip_dxC(I_obc,J,bi,bj)*
      &             (ab1*(wVel(I_obc,J,K,bi,bj)-wVel(I_obc-1,J,K,bi,bj))+
      &             ab2*(WE_STORE_4(J,K,bi,bj)-WE_STORE_1(J,K,bi,bj)))
 #endif
