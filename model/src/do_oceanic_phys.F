@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.11 2004/09/27 14:56:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.12 2004/10/13 07:05:50 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -98,6 +98,11 @@ C                      index into fVerTerm.
 
 CEOP
 
+#ifdef ALLOW_AUTODIFF_TAMC
+C--   dummy statement to end declaration part
+      itdkey = 1
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_ENTER('DO_OCEANIC_PHYS',myThid)
@@ -121,7 +126,8 @@ C--   Freeze water at the surface
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta = comlev1, key = ikey_dynamics
 #endif
-      IF ( allowFreezing .AND. .NOT. useSEAICE
+      IF ( allowFreezing
+     &                   .AND. .NOT. useSEAICE
      &                   .AND. .NOT. useThSIce ) THEN
         CALL FREEZE_SURFACE(  myTime, myIter, myThid )
       ENDIF
@@ -135,12 +141,6 @@ C jmc: do not know precisely where to put this call (bf or af thSIce ?)
        ENDIF
 # endif
 #endif /* COMPONENT_MODULE */
-
-#ifdef ALLOW_AUTODIFF_TAMC
-C--   dummy statement to end declaration part
-      ikey = 1
-      itdkey = 1
-#endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   HPF directive to help TAMC
@@ -228,7 +228,7 @@ cph although some of these are re-initialised later.
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE totphihyd
+CADJ STORE totphihyd(:,:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 # ifdef ALLOW_KPP
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
@@ -296,9 +296,9 @@ CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
           ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifndef GM_EXCLUDE_CLIPPING
+ctest# ifndef GM_EXCLUDE_CLIPPING
 CADJ STORE rhok   (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
-# endif
+ctest# endif
 CADJ STORE rhokm1 (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C--       Implicit Vertical Diffusion for Convection
@@ -364,10 +364,8 @@ CADJ STORE surfaceForcingS(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE surfaceForcingT(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
-# ifdef ALLOW_SEAICE
 CADJ STORE surfaceForcingTice(:,:,bi,bj)
 CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
-# endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  ALLOW_GMREDI
@@ -380,7 +378,7 @@ cph keep it although TAF says you dont need to.
 cph but I've avoided the #ifdef for now, in case more things change
 CADJ STORE sigmaX(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE sigmaY(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
-cnewCADJ STORE sigmaR(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE sigmaR(:,:,:)        = comlev1_bibj, key=itdkey, byte=isbyte
 # endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 

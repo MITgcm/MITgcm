@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.10 2004/10/12 15:14:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.11 2004/10/13 07:05:51 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -9,6 +9,9 @@ C $Name:  $
 #endif
 #ifdef ALLOW_SEAICE
 # include "SEAICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
 #endif
 
       subroutine the_main_loop( myTime, myIter, mythid )
@@ -107,6 +110,12 @@ c They provide the fields to be stored.
 # endif /* ALLOW_EXF */
 # ifdef ALLOW_SEAICE
 #  include "SEAICE.h"
+# endif
+# ifdef ALLOW_KPP
+#  include "KPP.h"
+# endif
+# ifdef ALLOW_GMREDI
+#  include "GMREDI.h"
 # endif
 # ifdef ALLOW_DIVIDED_ADJOINT_MPI
 #  include "mpif.h"
@@ -415,6 +424,13 @@ cph      IF ( useSEAICE ) THEN
 cph      ENDIF
 #endif /* ALLOW_SEAICE */
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_PTRACERS
+cph this replaces _bibj storing of ptracer within thermodynamics
+CADJ STORE ptracer  = comlev1, key = ikey_dynamics
+# endif
+#endif
+
 #if (defined (ALLOW_AUTODIFF_TAMC) && \
      defined (ALLOW_AUTODIFF_MONITOR))
 C       Include call to a dummy routine. Its adjoint will be 
@@ -457,6 +473,23 @@ C--     Step forward fields and calculate time tendency terms.
        CALL DO_OCEANIC_PHYS( myTime, myIter, myThid )
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
 #endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+cph needed to be moved here from do_oceanic_physics
+cph to be visible down the road
+c
+CADJ STORE surfaceForcingS    = comlev1, key = ikey_dynamics
+CADJ STORE surfaceForcingT    = comlev1, key = ikey_dynamics
+CADJ STORE surfaceForcingTice = comlev1, key = ikey_dynamics
+c
+CADJ STORE Kwx                = comlev1, key = ikey_dynamics
+CADJ STORE Kwy                = comlev1, key = ikey_dynamics
+CADJ STORE Kwz                = comlev1, key = ikey_dynamics
+c
+CADJ STORE KPPghat            = comlev1, key = ikey_dynamics
+CADJ STORE KPPfrac            = comlev1, key = ikey_dynamics
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 
       IF ( .NOT.staggerTimeStep ) THEN
 #ifdef ALLOW_DEBUG

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_kapgm.F,v 1.1 2003/11/06 22:10:07 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/cost_kapgm.F,v 1.2 2004/10/13 07:05:51 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -31,9 +31,15 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-#include "GMREDI.h"
+#ifdef ALLOW_GMREDI
+# include "GMREDI.h"
+#endif
 
-#include "ecco_cost.h"
+#ifdef ALLOW_ECCO
+# include "ecco_cost.h"
+#else
+# include "ecco_cost.h"
+#endif
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"

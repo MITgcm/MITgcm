@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code/Attic/GMREDI_OPTIONS.h,v 1.2 2003/11/06 22:30:59 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/natl_box_adjoint/code/Attic/GMREDI_OPTIONS.h,v 1.3 2004/10/13 07:05:51 heimbach Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -28,7 +28,7 @@ C (a feature required when tapering adiabatically).
 
 C Allows to use different values of K_GM and K_Redi ; also to
 C be used with the advective form (Bolus velocity) of GM
-#undef  GM_EXTRA_DIAGONAL
+#define  GM_EXTRA_DIAGONAL
 
 C Allows to use the advective form (Bolus velocity) of GM
 C  instead of the Skew-Flux form (=default)
