@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.18 2000/06/21 20:42:30 heimbach Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.19 2000/09/12 19:20:35 heimbach Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -60,8 +60,8 @@ echo Operating system: $mach
 #   copy everything in ../eesupp/src, ../model/src,
 #   ../eesupp/inc and ../model/inc into a directory and then
 #   edit the paths below to ./
-set SOURCEDIRS  = ( ../eesupp/src/ ../model/src/ ../diags/src/ ../pkg/*/)
-set INCLUDEDIRS = ( ./ ../eesupp/inc/ ../model/inc/ ../diags/inc/ ../pkg/*/)
+set SOURCEDIRS  = ( ../eesupp/src/ ../model/src/ ../diags/src/ ../pkg/*/ )
+set INCLUDEDIRS = ( ./ ../eesupp/inc/ ../model/inc/ ../diags/inc/ ../pkg/*/ )
 set BUILDDIR    = ( ../bin/ )
 set EXEDIR      = ( ../exe/ )
 set EXECUTABLE  = ( mitgcmuv )
@@ -222,9 +222,9 @@ switch ($platform$USEMPI)
     set FC         = ( 'f90' )
     set LINK       = ( 'f90' )
     set LN         = ( '/bin/ln -fs' )
-    set CPP        = ( '/opt/ctl/bin/cpp -P' )
-    set DEFINES    = ( ${DEFINES} '-DTARGET_CRAY_VECTOR -DCRAY_TS -DWORDLENGTH=4' )
-    set FFLAGS     = ( '-Rabc -N 132')
+    set CPP        = ( '/opt/ctl/bin/cpp -N -P' )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_CRAY_VECTOR -DWORDLENGTH=4' )
+    set FFLAGS     = ( '-m3 -Rabc -N 132')
     set FOPTIM     = ( '-O0' )
     set NOOPTFLAGS = ( '-O0' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
@@ -234,9 +234,9 @@ switch ($platform$USEMPI)
     set FC         = ( 'f90' )
     set LINK       = ( 'f90' )
     set LN         = ( '/bin/ln -fs' )
-    set CPP        = ( '/opt/ctl/bin/cpp -P' )
-    set DEFINES    = ( ${DEFINES} '-DTARGET_CRAY_VECTOR -DCRAY_TS -DWORDLENGTH=4' )
-    set FFLAGS     = ( '-m2 -ea -Rabc -N 132')
+    set CPP        = ( '/opt/ctl/bin/cpp -N -P' )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_CRAY_VECTOR -DWORDLENGTH=4' )
+    set FFLAGS     = ( '-m3 -Rabc -ei -eI -s cf77types -N 132')
     set FOPTIM     = ( '-O0' )
     set NOOPTFLAGS = ( '-O0' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F load_external_fields.F')
@@ -257,32 +257,29 @@ endsw
 # Create list of files
 set flist = `ls -1 ${SOURCEDIRS} | grep '.*\.[F]$'`
 if ( $#flist ) then
- echo -n "SRCFILES = " > srclist.inc
- echo -n "F77FILES = " > f77list.inc
- echo -n "OBJFILES = " > objlist.inc
+ echo -n 'SRCFILES = ' > srclist.inc
  foreach ff ( ${flist} )
   set fname = ( ${ff:t}       )
-  echo ' \' >> srclist.inc
+  echo    ' \'                       >> srclist.inc
   echo -n "           " ${fname:r}.F >> srclist.inc
-  echo ' \' >> f77list.inc
-  echo -n "           " ${fname:r}.f >> f77list.inc
-  echo ' \' >> objlist.inc
-  echo -n "           " ${fname:r}.o >> objlist.inc
  end
 else
  echo No source files found...\!
  exit
 endif
+echo " " >> srclist.inc
+
 set flist = `ls -1 ${SOURCEDIRS} | grep '.*\.[c]$'`
 if ( $#flist ) then
+ echo -n 'CSRCFILES = ' > csrclist.inc
  foreach ff ( ${flist} )
   set fname = ( ${ff:t}       )
-  echo ' \' >> objlist.inc
-  echo -n "           " ${fname:r}.o >> objlist.inc
+  echo    ' \'                   >> csrclist.inc
+  echo -n "           " ${fname} >> csrclist.inc
+else
+ echo -n 'CSRCFILES =' > csrclist.inc
 endif
-echo " " >> srclist.inc
-echo " " >> f77list.inc
-echo " " >> objlist.inc
+echo " " >> csrclist.inc
 
 # Convert lists of directories into command-line options
 foreach inc ($INCLUDEDIRS)
@@ -399,10 +396,12 @@ LIBS = ${LIBS} \$(XLIBS)
 
 EOF
 
-cat srclist.inc >> ${mfile}
-cat f77list.inc >> ${mfile}
-cat objlist.inc >> ${mfile}
-rm -f srclist.inc f77list.inc objlist.inc
+cat srclist.inc  >> ${mfile}
+cat csrclist.inc >> ${mfile}
+echo 'F77FILES =  $(SRCFILES:.F=.f)'                    >> ${mfile}
+echo 'OBJFILES =  $(SRCFILES:.F=.o) $(CSRCFILES:.c=.o)' >> ${mfile}
+
+rm -f srclist.inc
 
 cat >> ${mfile} <<EOF
 
@@ -417,6 +416,9 @@ links:
 depend:
 	@make links
 	makedepend -o .f \$(INCLUDES) \$(SRCFILES)
+
+small_f: \$(F77FILES)
+
 clean:
 	-rm -rf *.o *.f *.p ${RMFILES}
 Clean:
