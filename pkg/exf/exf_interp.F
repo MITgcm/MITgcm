@@ -166,14 +166,27 @@ C enlarge boundary
        do bi = mybxlo(mythid), mybxhi(mythid)
 
 C check validity of input/output coordinates
-        if ( xG(1,1  ,bi,bj) .le. x_in(0)       .or.
-     &       xG(snx,1,bi,bj) .ge. x_in(nx_in+1) .or.
-     &       yG(1,1  ,bi,bj) .lt. y_in(1)       .or.
-     &       yG(1,sny,bi,bj) .gt. y_in(ny_in) ) then
-           print*,'ERROR in S/R EXF_INTERP:'
-           print*,'   input grid must encompass output grid.'
-           STOP   ' ABNORMAL END: S/R EXF_INTERP'
+#ifdef ALLOW_DEBUG
+        if ( debugLevel .ge. debLevB ) then
+         do i=1,snx
+          do j=1,sny
+           if ( xG(i,j,bi,bj) .lt. x_in(0)         .or.
+     &          xG(i,j,bi,bj) .ge. x_in(nx_in+1)   .or.
+     &          yG(i,j,bi,bj) .lt. y_in(0)         .or.
+     &          yG(i,j,bi,bj) .ge. y_in(ny_in+1) ) then
+              print*,'ERROR in S/R EXF_INTERP:'
+              print*,'   input grid must encompass output grid.'
+              print*,'i,j,bi,bj'      ,i,j,bi,bj
+              print*,'xG,yG'          ,xG(i,j,bi,bj),yG(i,j,bi,bj)
+              print*,'nx_in,ny_in'    ,nx_in        ,ny_in
+              print*,'x_in(0,nx_in+1)',x_in(0)      ,x_in(nx_in+1)
+              print*,'y_in(0,ny_in+1)',y_in(0)      ,y_in(ny_in+1)
+              STOP   ' ABNORMAL END: S/R EXF_INTERP'
+             endif
+           enddo
+         enddo
         endif
+#endif /* ALLOW_DEBUG */
 
 C compute interpolation indices 
         do i=1,snx
@@ -184,9 +197,9 @@ C compute interpolation indices
            w_ind(i,j) = int((xG(i,j,bi,bj)-x_in(1))/lon_inc)
           endif
           e_ind(i,j) = w_ind(i,j) + 1
-          js = ny_in/2
+          js = ny_in*.5
           do while (yG(i,j,bi,bj) .lt. y_in(js))
-           js = (js + 1)/2
+           js = (js - 1)*.5
           enddo
           do while (yG(i,j,bi,bj) .ge. y_in(js+1))
            js = js + 1
