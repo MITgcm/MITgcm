@@ -1,12 +1,5 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.18 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.19 2004/01/21 21:10:03 adcroft Exp $
 C $Name:  $
-
-  These lines are here to deliberately cause a compile-time error.
-  If you see these lines in your .F files or the compiler shows them
-  as an error then it means you have not placed your configuration
-  files in the appropriate place. 
-  You need to place you own copy of CPP_EEOPTIONS.h in the include
-  path for the model.
 
 CBOP
 C     !ROUTINE: CPP_EEOPTIONS.h
@@ -60,8 +53,11 @@ C     undef this option.
 #undef  FMTFTN_IO_THREADSAFE
 
 C--   Control MPI based parallel processing
-#undef  ALLOW_USE_MPI
-#undef  ALWAYS_USE_MPI
+CXXX We no longer select the use of MPI via this file (CPP_EEOPTIONS.h)
+CXXX To use MPI, use an appropriate genmake2 options file or use
+CXXX genmake2 -mpi .
+CXXX #undef  ALLOW_USE_MPI
+CXXX #undef  ALWAYS_USE_MPI
  
 C--   Control use of communication that might overlap computation.
 C     Under MPI selects/deselects "non-blocking" sends and receives.
