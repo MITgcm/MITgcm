@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.27 2004/10/13 04:37:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.28 2004/11/02 01:04:08 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -278,9 +278,10 @@ C      Calculate del^2 u and del^2 v for bi-harmonic term
        ENDIF
 C      Calculate dissipation terms for U and V equations
 C      in terms of vorticity and divergence
-       IF (viscAh.NE.0. .OR. viscA4.NE.0.
-     &    .OR.  viscAhGrid.NE.0. .OR. viscA4Grid.NE.0.
-     &    .OR.  viscC2leith.NE.0. .OR. viscC4leith.NE.0.
+       IF (    viscAhD.NE.0. .OR. viscAhZ.NE.0. 
+     &    .OR. viscA4D.NE.0. .OR. viscA4Z.NE.0.
+     &    .OR. viscAhGrid.NE.0. .OR. viscA4Grid.NE.0.
+     &    .OR. viscC2leith.NE.0. .OR. viscC4leith.NE.0.
      &    ) THEN
          CALL MOM_VI_HDISSIP(bi,bj,k,hDiv,vort3,hFacZ,dStar,zStar,
      O                       uDiss,vDiss,
