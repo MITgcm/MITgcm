@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.16 2002/12/10 03:02:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.17 2003/01/26 21:08:36 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -426,6 +426,29 @@ C--   Divergence of fluxes
      &    )
        ENDDO
       ENDDO
+
+#ifdef NONLIN_FRSURF
+C-- account for 3.D divergence of the flow in rStar coordinate:
+      IF (calcAdvection .AND. select_rStar.GT.0) THEN
+       DO j=1-Oly,sNy+Oly-1
+        DO i=1-Olx,sNx+Olx-1
+         gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
+     &     - (rStarExpC(i,j,bi,bj) - 1. _d 0)/deltaTfreesurf
+     &       *tracer(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+      IF (calcAdvection .AND. select_rStar.LT.0) THEN
+       DO j=1-Oly,sNy+Oly-1
+        DO i=1-Olx,sNx+Olx-1
+         gTracer(i,j,k,bi,bj) = gTracer(i,j,k,bi,bj)
+     &     - rStarDhCDt(i,j,bi,bj)
+     &       *tracer(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* NONLIN_FRSURF */
+      
 
       RETURN
       END
