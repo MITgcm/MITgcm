@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.9 2004/07/06 03:55:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.10 2004/07/06 05:22:48 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -118,24 +118,9 @@ C **********************************************************************
           enddo
           do m=1,nfields(n)
             flds(m,n) = fields(m,n)
-
-#ifdef ALLOW_MNC
-            IF (useMNC .and. diag_use_mnc) THEN
-              CALL DIAG_MNC_ADD_GNAME(
-     &             nlevels(n), ndim, mnc_lev_used, myThid)
-            ENDIF
-#endif /*  ALLOW_MNC  */
-
           enddo
         endif
       enddo
-
-#ifdef ALLOW_MNC
-      IF (useMNC .and. diag_use_mnc) THEN
-C       CALL MNC_CW_ADD_GNAME()
-      ENDIF
-#endif /*  ALLOW_MNC  */
-
 
 C **********************************************************************
 C ****               Echo History List Data Structure               ****
@@ -160,44 +145,3 @@ C **********************************************************************
 
       return
       end
-
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-CBOP 1
-C     !ROUTINE: DIAG_MNC_ADD_GNAME
-
-C     !INTERFACE:
-      SUBROUTINE DIAG_MNC_ADD_GNAME(nlev, ndim, mnc_lev_used, myThid)
-
-C     !DESCRIPTION:
-C     Create MNC Gnames for the diagnostics output.
-      
-C     !USES:
-      implicit none
-#include "SIZE.h"
-
-C     !INPUT PARAMETERS:
-      integer nlev, ndim, myThid
-      integer mnc_lev_used(nlev)
-CEOP
-
-C     !LOCAL VARIABLES:
-      integer i, NCHAR
-      parameter ( NCHAR = 150 )
-      character*(100) gname
-
-      do i = 1,ndim
-        if (nlev .eq. mnc_lev_used(i)) then
-          return
-        endif
-      enddo
-
-      do i = 1,NCHAR
-        gname(i:i) = ' '
-      enddo
-
-      write(gname, '(a)') 
-
-      return
-      end
-
