@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_surf_flux.F,v 1.2 2004/07/18 01:16:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_surf_flux.F,v 1.3 2004/10/19 02:41:31 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -38,7 +38,7 @@ C     == Local variables ==
       _RL tmpFld (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
  
 C-    Time Averages of surface fluxes
-       IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+       IF ( usingPCoords ) THEN
         k=Nr
        ELSE
         k=1
@@ -80,7 +80,7 @@ C     tFlux (=Heat flux [W/m2], positive <-> increasing Theta)
         ENDDO
        ENDDO
 #ifdef NONLIN_FRSURF
-       IF ( (nonlinFreeSurf.GT.0 .OR. buoyancyRelation.EQ.'OCEANICP')
+       IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &     .AND. useRealFreshWaterFlux ) THEN
         DO j=1,sNy
          DO i=1,sNx
@@ -103,7 +103,7 @@ C     sFlux (=salt flux [psu.kg/m2/s], positive <-> increasing Theta)
         ENDDO
        ENDDO
 #ifdef NONLIN_FRSURF
-       IF ( (nonlinFreeSurf.GT.0 .OR. buoyancyRelation.EQ.'OCEANICP')
+       IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &     .AND. useRealFreshWaterFlux ) THEN
         DO j=1,sNy
          DO i=1,sNx

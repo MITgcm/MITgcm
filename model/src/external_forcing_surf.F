@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.27 2004/09/07 17:29:15 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.28 2004/10/19 02:39:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,7 +53,7 @@ C     number of surface interface layer
       INTEGER ks
 CEOP
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
        ks        = Nr 
       ELSE
        ks        = 1
@@ -181,7 +181,7 @@ c     to stay consitent with volume change (=d/dt etaH).
         ENDDO
       ENDIF
 
-      IF ( (nonlinFreeSurf.GT.0 .OR. buoyancyRelation.EQ.'OCEANICP')
+      IF ( (nonlinFreeSurf.GT.0 .OR. usingPCoords)
      &     .AND. useRealFreshWaterFlux ) THEN
 
 c-  NonLin_FrSurf and RealFreshWaterFlux : PmEpR effectively changes 
@@ -256,7 +256,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C-- Atmospheric surface Pressure loading :
 
-      IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
+      IF ( usingZCoords ) THEN
        IF ( useRealFreshWaterFlux ) THEN
         DO j = jMin, jMax
          DO i = iMin, iMax
@@ -272,7 +272,7 @@ C-- Atmospheric surface Pressure loading :
          ENDDO
         ENDDO
        ENDIF
-      ELSEIF ( buoyancyRelation .eq. 'OCEANICP' ) THEN 
+      ELSEIF ( usingPCoords ) THEN
 C-- This is a hack used to read phi0surf from a file (ploadFile)
 C   instead of computing it from bathymetry & density ref. profile.
 C   The true atmospheric P-loading is not yet implemented for P-coord
@@ -296,12 +296,6 @@ cph      IF ( useEBM ) THEN
      I        myTime,myIter,myThid )
 cph      ENDIF
 #endif
-
-#ifdef ALLOW_TIMEAVE
-c     IF ( taveFreq .NE. 0. _d 0 ) THEN
-c       CALL TIMEAVE_SURF_FLUX( bi, bj, myTime, myIter, myThid)
-c     ENDIF
-#endif /* ALLOW_TIMEAVE */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.23 2004/10/13 04:37:38 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statv_write.F,v 1.24 2004/10/19 02:41:31 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -164,7 +164,7 @@ C         CALL WRITE_FLD_XYZ_RL('KEtave.',suff,KEtave,myIter,myThid)
           CALL WRITE_FLD_XYZ_RL('PhHytave.',suff,phiHydtave,
      &         myIter,myThid)
 #endif /* ndef HRCUBE */
-          IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
+          IF ( fluidIsWater ) THEN
 #ifndef HRCUBE
             CALL WRITE_FLD_XY_RL('PHLtave.',suff,phiHydLowtave,
      &           myIter,myThid)
@@ -259,7 +259,7 @@ C         CALL MNC_CW_RL_W('D','tave',0,0,'KEtave',KEtave,myThid)
           CALL MNC_CW_RL_W('D','tave',0,0,'PhHytave',
      &         phiHydtave,myThid)
 #endif /* ndef HRCUBE */
-          IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
+          IF ( fluidIsWater ) THEN
 #ifndef HRCUBE
             CALL MNC_CW_RL_W('D','tave',0,0,'PHLtave',
      &           phiHydLowtave,myThid)

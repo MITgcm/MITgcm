@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/freeze_surface.F,v 1.4 2004/07/18 01:04:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/freeze_surface.F,v 1.5 2004/10/19 02:39:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -42,10 +42,10 @@ C     Tfreezing :: Freezing threshold temperature.
       _RL Tfreezing
 CEOP
 
-      IF ( buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      IF ( usingPCoords ) THEN
         k = Nr
       ELSE
-        k= 1
+        k = 1
       ENDIF
 
       Tfreezing = -1.9 _d 0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.8 2004/07/18 22:00:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.9 2004/10/19 02:39:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -194,8 +194,7 @@ C--    Integrate continuity vertically for vertical velocity
  
 #ifdef EXACT_CONSERV
        IF ( k.EQ.Nr .AND. myTime.NE. 0. _d 0 .AND.
-     &      useRealFreshWaterFlux .AND. 
-     &      buoyancyRelation .EQ. 'OCEANICP' ) THEN
+     &      useRealFreshWaterFlux .AND. usingPCoords ) THEN
 
           DO j=1,sNy
            DO i=1,sNx

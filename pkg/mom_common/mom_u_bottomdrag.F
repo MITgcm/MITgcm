@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.2 2004/07/05 01:57:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_common/mom_u_bottomdrag.F,v 1.3 2004/10/19 02:42:36 jmc Exp $
 C $Name:  $
 
 #include "MOM_COMMON_OPTIONS.h"
@@ -52,21 +52,14 @@ C  Kp1                  :: =k+1 for k<Nr, =Nr for k>=Nr
 CEOP
 
 C-  No-slip BCs impose a drag at bottom
-      IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
+      IF ( usingZCoords ) THEN
        kBottom = Nr
        kDown   = min(k+1,kBottom)
        kDownC  = kDown
-      ELSEIF ( buoyancyRelation .EQ. 'OCEANICP' .OR.
-     &         buoyancyRelation .EQ. 'ATMOSPHERIC' ) THEN
+      ELSE
        kBottom = 1
        kDown   = max(k-1,kBottom)
        kDownC  = k
-      ELSE
-cph k-assignments here are redundant but good for TAF	
-       kBottom = Nr
-       kDown   = min(k+1,kBottom)
-       kDownC  = kDown
-       STOP 'S/R MOM_U_BOTTOMDRAG: We should never reach this point!'
       ENDIF	
       rdrckp1=recip_drC(kDownC)
       IF (k.EQ.kBottom) rdrckp1=recip_drF(k)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/pressure_for_eos.F,v 1.1 2003/02/18 15:25:09 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/pressure_for_eos.F,v 1.2 2004/10/19 02:39:58 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -47,7 +47,7 @@ CEOP
 C
 C     provide the pressure for use in the equation of state
 C
-      IF ( buoyancyRelation .EQ. 'OCEANIC' ) THEN
+      IF ( usingZCoords ) THEN
 C     in Z coordinates the pressure is rho0 * (hydrostatic) Potential
         IF ( useDynP_inEos_Zc ) THEN  
 C----------
@@ -71,8 +71,7 @@ C----------
           ENDDO
          ENDDO
        ENDIF
-      ELSEIF ( buoyancyRelation .EQ. 'ATMOSPHERIC'
-     &    .OR. buoyancyRelation .EQ. 'OCEANICP' ) THEN
+      ELSEIF ( usingPCoords ) THEN
 C     in P coordinates the pressure is just the coordinate of
 C     the tracer point
          DO j=1-Oly,sNy+Oly

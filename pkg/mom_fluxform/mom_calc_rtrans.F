@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_calc_rtrans.F,v 1.2 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_calc_rtrans.F,v 1.3 2004/10/19 02:43:06 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -67,8 +67,7 @@ CEOP
 
 #ifdef NONLIN_FRSURF
       IF ( k.EQ.Nr+1 .AND.
-     &     useRealFreshWaterFlux .AND.
-     &     buoyancyRelation .EQ. 'OCEANICP' ) THEN
+     &     useRealFreshWaterFlux .AND. usingPCoords ) THEN
         DO j=1-OLy+1,sNy+OLy
          DO i=1-OLx+1,sNx+OLx
           rTransU(i,j) = convertEmP2rUnit*

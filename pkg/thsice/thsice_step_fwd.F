@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.7 2004/07/22 22:52:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.8 2004/10/19 02:42:04 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -100,7 +100,7 @@ C-    Initialise flxAtm
         ENDDO
        ENDDO
 
-      IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
+      IF ( fluidIsWater ) THEN
        DO j = jMin, jMax
         DO i = iMin, iMax
 c        dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.11 )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.10 2003/02/18 15:34:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_eos.F,v 1.11 2004/10/19 02:39:58 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -39,7 +39,7 @@ C     I,J,K
       INTEGER  I,  J,  K
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       
-      IF ( buoyancyRelation .EQ. 'ATMOSPHERIC' ) RETURN
+      IF ( .NOT.fluidIsWater ) RETURN
 
       equationOfState = eosType
 
@@ -94,8 +94,7 @@ C     rho = R(salinity, potential temperature, pressure)
 C     pressure needs to be available (from the previous 
 C     time step to linearize the problem)
 C
-         if ( equationOfState .eq. 'JMD95Z' 
-     &        .and. buoyancyRelation .eq. 'OCEANICP' ) then
+         if ( equationOfState .eq. 'JMD95Z' .and. usingPCoords ) then
             write(msgBuf,'(A)')
      &      'ini_eos: equation of state ''JMD95Z'' should not'
             CALL PRINT_ERROR( msgBuf , 1)

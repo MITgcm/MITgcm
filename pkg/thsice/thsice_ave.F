@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.3 2004/04/08 18:54:26 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.4 2004/10/19 02:42:04 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -87,7 +87,7 @@ c    &                       1, thSIce_deltaT, bi, bj, myThid )
 
 C-- average of atmospheric fluxes : 
 #ifdef ALLOW_TIMEAVE
-      IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
+      IF ( fluidIsWater ) THEN
        CALL TIMEAVE_CUMUL_1T(ice_flxAtm_Ave, flxAtm,
      &                       1, thSIce_deltaT, bi, bj, myThid )
        CALL TIMEAVE_CUMUL_1T(ice_frwAtm_Ave, frwAtm,
@@ -119,7 +119,7 @@ C-- average of Ocean Mixed-Layer temp. & salinity
 #endif /* ALLOW_TIMEAVE */
 
       IF ( DIFFERENT_MULTIPLE(thSIce_diagFreq,myTime+deltaTClock,myTime)
-     &     .AND. buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN 
+     &     .AND. fluidIsWater ) THEN 
         wrtIter = myIter+1
         CALL WRITE_LOCAL_RL('ice_flxAtm','I10',1,flxAtm,
      &                      bi,bj,1,wrtIter,myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.47 2004/10/13 04:37:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.48 2004/10/19 02:39:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -129,8 +129,7 @@ C         easier to transfer analyse a particular snap-shots
           IF ( useDynP_inEos_Zc .OR. myIter.NE.nIter0 ) THEN
             CALL WRITE_FLD_XYZ_RL('PH.',suff,totPhiHyd,myIter,myThid)
           ENDIF
-          IF ((buoyancyRelation.NE.'ATMOSPHERIC')
-     &         .AND. (myIter.NE.nIter0)) THEN
+          IF ( fluidIsWater .AND. (myIter.NE.nIter0) ) THEN
             CALL WRITE_FLD_XY_RL('PHL.',suff,phiHydLow,myIter,myThid)
           ENDIF
 #ifdef ALLOW_NONHYDROSTATIC
@@ -176,8 +175,7 @@ C         Write dynvars using the MNC package
             CALL MNC_CW_RL_W('D','phiHyd',0,0,'phiHyd',
      &           totPhiHyd, myThid)
           ENDIF
-          IF ((buoyancyRelation .NE. 'ATMOSPHERIC')
-     &         .AND. (myIter .NE. nIter0)) THEN
+          IF ( fluidIsWater .AND. (myIter .NE. nIter0) ) THEN
             CALL MNC_CW_SET_UDIM('phiHydLow', -1, myThid)
             CALL MNC_CW_I_W_S('I','phiHydLow',0,0,'iter',myIter,myThid)
             CALL MNC_CW_SET_UDIM('phiHydLow', 0, myThid)

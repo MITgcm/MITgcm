@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_adv_wv.F,v 1.7 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_adv_wv.F,v 1.8 2004/10/19 02:43:06 jmc Exp $
 C $Name:  $
 
 #include "MOM_FLUXFORM_OPTIONS.h"
@@ -51,8 +51,7 @@ CEOP
       _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
       IF ( k.EQ.Nr+1 .AND.
-     &     useRealFreshWaterFlux .AND.
-     &     buoyancyRelation .EQ. 'OCEANICP' ) THEN
+     &     useRealFreshWaterFlux .AND. usingPCoords ) THEN
        DO j=1-Oly+1,sNy+Oly
         DO i=1-Olx+1,sNx+Olx
          advectiveFluxWV(i,j) = rTrans(i,j)*vFld(i,j,k-1,bi,bj)

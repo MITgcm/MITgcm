@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.15 2004/09/17 22:57:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment_ini.F,v 1.16 2004/10/19 02:39:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -96,23 +96,18 @@ C-      Initialisation of Convection Counter
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-         IF ( buoyancyRelation .eq. 'OCEANIC' ) THEN
+         IF ( rkFac*gravitySign .LT. 0. ) THEN
+C-          <=> usingZCoords:
           kTop    =  2
           kBottom = Nr
           kDir    =  1
           deltaK  = -1
-         ELSEIF ( buoyancyRelation .eq. 'OCEANICP' ) THEN
-          kTop    = Nr
-          kBottom =  2
-          kDir    = -1
-          deltaK  =  0
-         ELSEIF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
-          kTop    = Nr
-          kBottom =  2
-          kDir    = -1
-          deltaK  =  0
          ELSE
-          STOP 'CONVECTIVE_ADJUSTMENT: We should never reach this point'
+C-          <=> usingPCoords:
+          kTop    = Nr
+          kBottom =  2
+          kDir    = -1
+          deltaK  =  0
          ENDIF	
 
 C--       Loop over all *interior* layers

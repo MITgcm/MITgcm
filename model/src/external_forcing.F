@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.27 2004/07/18 15:34:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.28 2004/10/19 02:39:58 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -52,13 +52,13 @@ C     number of surface interface layer
       INTEGER kSurface
 CEOP
 
-      if ( buoyancyRelation .eq. 'ATMOSPHERIC' ) then
+      IF ( fluidIsAir ) THEN
        kSurface = 0
-      elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
+      ELSEIF ( usingPCoords ) THEN
        kSurface = Nr
-      else
+      ELSE
        kSurface = 1
-      endif
+      ENDIF
 
 C--   Forcing term
 #ifdef ALLOW_AIM
@@ -140,13 +140,13 @@ C     number of surface interface layer
       INTEGER kSurface
 CEOP
 
-      if ( buoyancyRelation .eq. 'ATMOSPHERIC' ) then
+      IF ( fluidIsAir ) THEN
        kSurface = 0
-      elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
+      ELSEIF ( usingPCoords ) THEN
        kSurface = Nr
-      else
+      ELSE
        kSurface = 1
-      endif
+      ENDIF
 
 C--   Forcing term
 #ifdef ALLOW_AIM
@@ -236,13 +236,13 @@ C     number of surface interface layer
 #endif
 CEOP
 
-      if ( buoyancyRelation .eq. 'ATMOSPHERIC' ) then
+      IF ( fluidIsAir ) THEN
        kSurface = 0
-      elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
+      ELSEIF ( usingPCoords ) THEN
        kSurface = Nr
-      else
+      ELSE
        kSurface = 1
-      endif
+      ENDIF
 
 C--   Forcing term
 #ifdef ALLOW_AIM
@@ -350,14 +350,13 @@ C     number of surface interface layer
       INTEGER kSurface
 CEOP
 
-      if ( buoyancyRelation .eq. 'ATMOSPHERIC' ) then
+      IF ( fluidIsAir ) THEN
        kSurface = 0
-      elseif ( buoyancyRelation .eq. 'OCEANICP' ) then
+      ELSEIF ( usingPCoords ) THEN
        kSurface = Nr
-      else
+      ELSE
        kSurface = 1
-      endif
-
+      ENDIF
 
 C--   Forcing term
 #ifdef ALLOW_AIM
