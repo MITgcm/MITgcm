@@ -8,7 +8,8 @@ C     !INTERFACE:
 C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | SUBROUTINE INI_AUTODIFF                                    
-C     | o Initialise to zero some active arrays                  
+C     | o Initialise to zero some active arrays  
+C     |   These ini                
 C     *==========================================================*
 C     \ev
 
@@ -18,7 +19,12 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
-#include "SURFACE.h"
+#ifdef EXACT_CONSERV
+# include "SURFACE.h"
+#endif
+#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+# include "FFIELDS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -46,6 +52,9 @@ C-      2D arrays
          DO I=1-Olx,sNx+Olx
 #ifdef EXACT_CONSERV
           hDivFlow(I,J,bi,bj)=0. _d 0
+#endif
+#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+          EmPmR(I,J,bi,bj) = 0. _d 0
 #endif
          ENDDO
         ENDDO
