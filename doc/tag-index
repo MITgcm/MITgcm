@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.349 2004/09/21 23:20:17 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.350 2004/09/22 15:55:24 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint55b_post
+o add a 2D scalar, Z location, exchange_2 routine.
 o EXCH_UV for CS-grid: add one u,v in the corner-halo region, allows
   to compute vorticity on a wider stencil [e.g., vort3(0,1)&(1,0)]
   affects advect_cs results (for the wrong reason): update output.txt
