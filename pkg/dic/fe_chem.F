@@ -1,10 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.4 2004/07/13 18:03:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/fe_chem.F,v 1.5 2004/10/18 16:01:13 jmc Exp $
 C $Name:  $
 
 #include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-#ifdef ALLOW_FE
 CStartOfInterFace
       SUBROUTINE Fe_CHEM(
      I           bi,bj,iMin,iMax,jMin,jMax,
@@ -37,6 +36,7 @@ C     myThid - Instance number for this innvocation of CALC_GT
       INTEGER myIter,myThid
 CEndOfInterface
 
+#ifdef ALLOW_FE
 
       INTEGER I,J,K
       _RL  lig, FeL
@@ -75,6 +75,6 @@ C   Ligand,FeL,Fe calculation
         ENDDO
        ENDDO    
 c
+#endif 
         RETURN
         END                      
-#endif
