@@ -1,13 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.20 2002/03/24 02:36:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.21 2002/04/30 22:53:17 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-#ifdef ALLOW_GMREDI
-# include "GMREDI_OPTIONS.h"
-#endif
-#ifdef ALLOW_KPP
-# include "KPP_OPTIONS.h"
-#endif
+#ifdef ALLOW_AUTODIFF_TAMC
+# ifdef ALLOW_GMREDI
+#  include "GMREDI_OPTIONS.h"
+# endif
+# ifdef ALLOW_KPP
+#  include "KPP_OPTIONS.h"
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 CBOP
 C     !ROUTINE: THERMODYNAMICS
@@ -257,9 +259,9 @@ C This is currently also used by IVDC and Diagnostics
          ENDDO
         ENDDO
 
-        iMin = 1-OLx+1
+        iMin = 1-OLx
         iMax = sNx+OLx
-        jMin = 1-OLy+1
+        jMin = 1-OLy
         jMax = sNy+OLy
 
 
