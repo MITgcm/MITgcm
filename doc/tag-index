@@ -1,7 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.409 2004/12/10 20:10:46 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.410 2004/12/10 20:17:38 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint57a_post
+o this set of changes restores TAMC compatibility
+  tested for global_ocean.90x40x15 adjoint on trough
+  (what a pain)
 
 checkpoint57a_pre
 o some modifs in tools/build_options for sunos
