@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.44 2001/02/04 14:38:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.45 2001/02/06 03:08:59 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -245,8 +245,8 @@ C     Calculate tracer cell mask
        ENDDO
       ENDDO
 C     Calculate tracer cell face open areas
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         xA(i,j) = _dyG(i,j,bi,bj)
      &   *drF(k)*_hFacW(i,j,k,bi,bj)
         yA(i,j) = _dxG(i,j,bi,bj)
@@ -254,8 +254,8 @@ C     Calculate tracer cell face open areas
        ENDDO
       ENDDO
 C     Calculate velocity field "volume transports" through tracer cell faces.
-      DO j=jMin,jMax
-       DO i=iMin,iMax
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
         uTrans(i,j) = uVel(i,j,k,bi,bj)*xA(i,j)
         vTrans(i,j) = vVel(i,j,k,bi,bj)*yA(i,j)
        ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.29 2001/02/04 14:38:46 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.30 2001/02/06 03:08:59 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -101,6 +101,16 @@ C--   the kDown is still required
        ENDDO
       ENDDO
 #endif
+
+CcnhDebugStarts
+      DO j=1-OLy,sNy+OLy
+       DO i=1-OLx,sNx+OLx
+        fZon(i,j)      = 0.0
+        fMer(i,j)      = 0.0
+        fVerT(i,j,kUp) = 0.0
+       ENDDO
+      ENDDO
+CcnhDebugEnds
 
       afFacT = 1. _d 0
       dfFacT = 1. _d 0
