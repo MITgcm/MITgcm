@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.5 2001/12/16 18:54:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.6 2002/03/06 01:56:27 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -96,7 +96,7 @@ C-      Off-diagonal components of horizontal flux
 #endif /* GM_EXTRA_DIAGONAL */   
 
 #ifdef GM_BOLUS_ADVEC
-      IF (GM_AdvForm) THEN
+      IF (GM_AdvForm .AND. GM_AdvSeparate) THEN
        kp1 = MIN(k+1,Nr)
        maskp1 = 1.
        IF (k.GE.Nr) maskp1 = 0.

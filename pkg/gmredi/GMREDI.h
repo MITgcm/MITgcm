@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.6 2001/12/16 18:54:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/GMREDI.h,v 1.7 2002/03/06 01:56:27 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_GMREDI
@@ -6,8 +6,11 @@ C $Name:  $
 C     Package flag
       logical GMREDIisON
       logical GM_AdvForm
+      logical GM_AdvSeparate 
       logical GM_ExtraDiag 
-      COMMON /GM_PACKAGE/ GMREDIisON, GM_AdvForm, GM_ExtraDiag
+      COMMON /GM_PACKAGE/ GMREDIisON, 
+     &                    GM_AdvForm, GM_AdvSeparate, 
+     &                    GM_ExtraDiag
 
 C     GM/Redi parameters
       _RL GM_isopycK

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.5 2001/12/16 18:54:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.6 2002/03/06 01:56:27 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,6 +43,8 @@ C      GM/Redi needs implicit diffusion (will be packaged later)
 C- print out some kee parameters :
        CALL WRITE_0D_L( GM_AdvForm, INDEX_NONE,
      &  'GM_AdvForm =', '  /* if FALSE => use SkewFlux Form */')     
+       CALL WRITE_0D_L( GM_AdvSeparate, INDEX_NONE,
+     & 'GM_AdvSeparate =',' /* Calc Bolus & Euler Adv. separately */')     
        CALL WRITE_0D_L( GM_ExtraDiag, INDEX_NONE,
      &  'GM_ExtraDiag =','  /* Tensor Extra Diag (line 1&2) non 0 */')
        CALL WRITE_0D_R8( GM_isopycK, INDEX_NONE,'GM_isopycK =',
