@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.7 1998/11/06 22:44:49 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.8 1998/12/08 18:08:51 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -340,7 +340,8 @@ clean:
 	-rm -rf *.o *.f *.p ${RMFILES}
 Clean:
 	@make clean
-	-rm -rf *.[Fc]
+	-find . -type l -exec rm {} \;
+	-rm Makefile.bak
 
 # The normal chain of rules is (  .F - .f - .o  )
 .F.f:
