@@ -1,8 +1,40 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.18 2004/09/10 12:19:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.19 2004/10/07 01:48:08 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C !ROUTINE: MNC_CW_RX_W_S
+
+C !INTERFACE:
+      SUBROUTINE MNC_CW_RX_W_S(
+     I     stype, 
+     I     fbname, bi,bj, 
+     I     vtype, 
+     I     var, 
+     I     myThid )
+
+C     !DESCRIPTION:
+C     A scalar version of MNC_CW_RX_W() for compilers that cannot
+C     gracefully handle the conversion on their own.
+      
+C     !USES:
+      implicit none
+
+C     !INPUT PARAMETERS:
+      integer myThid, bi,bj, indu
+      character*(*) stype, fbname, vtype
+      __V var
+      __V var_arr(1)
+CEOP
+
+      var_arr(1) = var
+      CALL MNC_CW_RX_W(stype,fbname,bi,bj,vtype, var_arr, myThid)
+
+      RETURN
+      END
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0
 C !ROUTINE: MNC_CW_RX_W
@@ -337,6 +369,39 @@ C         Sync the file
       RETURN
       END
       
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP 0
+C !ROUTINE: MNC_CW_RX_R_S
+
+C !INTERFACE:
+      SUBROUTINE MNC_CW_RX_R_S( 
+     I     stype, 
+     I     fbname, bi,bj, 
+     I     vtype, 
+     I     var, 
+     I     myThid )
+
+C     !DESCRIPTION:
+C     A scalar version of MNC_CW_RX_R() for compilers that cannot
+C     gracefully handle the conversion on their own.
+      
+C     !USES:
+      implicit none
+
+C     !INPUT PARAMETERS:
+      integer myThid, bi,bj, indu
+      character*(*) stype, fbname, vtype
+      __V var
+      __V var_arr(1)
+CEOP
+      var_arr(1) = var
+
+      CALL MNC_CW_RX_R(stype,fbname,bi,bj,vtype, var_arr, myThid)
+
+      RETURN
+      END
+
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.11 2004/09/30 15:17:42 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.12 2004/10/07 01:48:07 edhill Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -70,7 +70,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C       Write fizhi veg-space variables using the MNC package
         CALL MNC_CW_SET_UDIM(bnam, 1, myThid)
-        CALL MNC_CW_I_W('I',bnam,0,0,'iter', myIter, myThid)
+        CALL MNC_CW_I_W_S('I',bnam,0,0,'iter', myIter, myThid)
 
 C       fizhi_coms.h
         CALL MNC_CW_RL_W(prec,bnam,0,0,'ctmt', ctmt, myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.5 2004/09/10 12:19:31 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_write_state.F,v 1.6 2004/10/07 01:48:08 edhill Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -47,7 +47,7 @@ C     iRec      :: record number
 
       IF (useMNC .AND. PTRACERS_write_mnc) THEN
         CALL MNC_CW_SET_UDIM('ptracers', -1, myThid)
-        CALL MNC_CW_I_W('I','ptracers',0,0,'iter',myIter,myThid)
+        CALL MNC_CW_I_W_S('I','ptracers',0,0,'iter',myIter,myThid)
         CALL MNC_CW_SET_UDIM('ptracers', 0, myThid)
         DO ii = 1,PTRACERS_numInUse
           CALL MNC_CW_RL_W('D','ptracers',0,0,PTRACERS_names(ii),

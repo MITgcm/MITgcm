@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.44 2004/09/27 17:50:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.45 2004/10/07 01:48:07 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -160,9 +160,9 @@ c         CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
         IF (useMNC .AND. snapshot_mnc) THEN
 C         Write dynvars using the MNC package
           CALL MNC_CW_SET_UDIM('state', -1, myThid)
-          CALL MNC_CW_I_W('I','state',0,0,'iter', myIter, myThid)
+          CALL MNC_CW_I_W_S('I','state',0,0,'iter', myIter, myThid)
           CALL MNC_CW_SET_UDIM('state', 0, myThid)
-          CALL MNC_CW_RL_W('D','state',0,0,'model_time',myTime,myThid)
+          CALL MNC_CW_RL_W_S('D','state',0,0,'model_time',myTime,myThid)
           CALL MNC_CW_RL_W('D','state',0,0,'U', uVel, myThid)
           CALL MNC_CW_RL_W('D','state',0,0,'V', vVel, myThid)
           CALL MNC_CW_RL_W('D','state',0,0,'Temp', theta, myThid)
@@ -171,7 +171,7 @@ C         Write dynvars using the MNC package
           CALL MNC_CW_RL_W('D','state',0,0,'W', wVel, myThid)
           IF ( useDynP_inEos_Zc .OR. myIter.NE.nIter0 ) THEN
             CALL MNC_CW_SET_UDIM('phiHyd', -1, myThid)
-            CALL MNC_CW_I_W('I','phiHyd',0,0,'iter',myIter,myThid)
+            CALL MNC_CW_I_W_S('I','phiHyd',0,0,'iter',myIter,myThid)
             CALL MNC_CW_SET_UDIM('phiHyd', 0, myThid)
             CALL MNC_CW_RL_W('D','phiHyd',0,0,'phiHyd',
      &           totPhiHyd, myThid)
@@ -179,7 +179,7 @@ C         Write dynvars using the MNC package
           IF ((buoyancyRelation .NE. 'ATMOSPHERIC')
      &         .AND. (myIter .NE. nIter0)) THEN
             CALL MNC_CW_SET_UDIM('phiHydLow', -1, myThid)
-            CALL MNC_CW_I_W('I','phiHydLow',0,0,'iter',myIter,myThid)
+            CALL MNC_CW_I_W_S('I','phiHydLow',0,0,'iter',myIter,myThid)
             CALL MNC_CW_SET_UDIM('phiHydLow', 0, myThid)
             CALL MNC_CW_RL_W('D','phiHydLow',0,0,'phiHydLow',
      &           phiHydLow, myThid)

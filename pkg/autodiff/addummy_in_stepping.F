@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.15 2004/09/29 14:04:52 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.16 2004/10/07 01:48:07 edhill Exp $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -160,9 +160,10 @@ c
         IF (useMNC .AND. autodiff_mnc) THEN
 c
           CALL MNC_CW_SET_UDIM('adstate', -1, myThid)
-          CALL MNC_CW_I_W('I','adstate',0,0,'iter', myIter, myThid)
+          CALL MNC_CW_I_W_S('I','adstate',0,0,'iter',myIter,myThid)
           CALL MNC_CW_SET_UDIM('adstate', 0, myThid)
-          CALL MNC_CW_RL_W('D','adstate',0,0,'model_time',myTime,myThid)
+          CALL MNC_CW_RL_W_S('D','adstate',0,0,'model_time',myTime,
+     &         myThid)
 c
           CALL MNC_CW_RL_W('D','adstate',0,0,'adU', aduVel, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,'adV', advVel, myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.20 2004/09/23 03:28:42 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagout.F,v 1.21 2004/10/07 01:48:07 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -90,7 +90,7 @@ CEOP
 
 C       Update the record dimension by writing the iteration number
         CALL MNC_CW_SET_UDIM(diag_mnc_bn, -1, myThid)
-        CALL MNC_CW_I_W('I',diag_mnc_bn,0,0,'iter', myIter, myThid)
+        CALL MNC_CW_I_W_S('I',diag_mnc_bn,0,0,'iter',myIter,myThid)
         CALL MNC_CW_SET_UDIM(diag_mnc_bn, 0, myThid)
 
         dn(1)(1:NLEN) = dn_blnk(1:NLEN)
@@ -211,7 +211,7 @@ C             Z is special since it varies
               CALL MNC_CW_ADD_VATTR_TEXT(cdiag(m),'units',
      &             udiag(m),myThid)
 
-              CALL MNC_CW_RL_W('D',diag_mnc_bn,0,0,
+              CALL MNC_CW_RL_W_S('D',diag_mnc_bn,0,0,
      &             cdiag(m), qtmp1, myThid)
 
               CALL MNC_CW_DEL_VNAME(cdiag(m), myThid)

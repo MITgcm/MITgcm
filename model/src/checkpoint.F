@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.46 2004/09/27 17:50:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.47 2004/10/07 01:48:07 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -488,7 +488,7 @@ C         &    myIter,myThid)
 #ifdef ALLOW_MNC
       IF (useMNC .AND. pickup_write_mnc) THEN
         CALL MNC_CW_SET_UDIM(fn, -1, myThid)
-        CALL MNC_CW_I_W('I',fn,0,0,'iter', myIter, myThid)
+        CALL MNC_CW_I_W_S('I',fn,0,0,'iter', myIter, myThid)
         CALL MNC_CW_SET_UDIM(fn, 0, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'U', uVel, myThid)
         CALL MNC_CW_RL_W('D',fn,0,0,'V', vVel, myThid)
