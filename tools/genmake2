@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.56 2003/12/06 23:33:10 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.57 2003/12/09 18:58:24 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -478,7 +478,7 @@ MODS=
 TOOLSDIR=
 SOURCEDIRS=
 INCLUDEDIRS=
-STANDARDDIRS=
+STANDARDDIRS="USE_THE_DEFAULT"
 
 PWD=`pwd`
 MAKE=make
@@ -1189,27 +1189,29 @@ done
 
 echo "  Adding STANDARDDIRS"
 BUILDDIR=${BUILDDIR:-.}
-if test "x$STANDARDDIRS" = x ; then
+if test "x$STANDARDDIRS" = xUSE_THE_DEFAULT ; then
     STANDARDDIRS="eesupp model"
 fi
-for d in $STANDARDDIRS ; do
-    adr="$ROOTDIR/$d/src"
-    if test ! -d $adr ; then
-	echo "Error:  directory $adr not found -- please check that ROOTDIR=\"$ROOTDIR\""
-	echo "  is correct and that you correctly specified the STANDARDDIRS option"
-	exit 1
-    else
-	SOURCEDIRS="$SOURCEDIRS $adr"
-    fi
-    adr="$ROOTDIR/$d/inc"
-    if test ! -d $adr ; then
-	echo "Error:  directory $adr not found -- please check that ROOTDIR=\"$ROOTDIR\""
-	echo "  is correct and that you correctly specified the STANDARDDIRS option"
-	exit 1
-    else
-	INCLUDEDIRS="$INCLUDEDIRS $adr"
-    fi
-done
+if test "x$STANDARDDIRS" != x ; then
+    for d in $STANDARDDIRS ; do
+	adr="$ROOTDIR/$d/src"
+	if test ! -d $adr ; then
+	    echo "Error:  directory $adr not found -- please check that ROOTDIR=\"$ROOTDIR\""
+	    echo "  is correct and that you correctly specified the STANDARDDIRS option"
+	    exit 1
+	else
+	    SOURCEDIRS="$SOURCEDIRS $adr"
+	fi
+	adr="$ROOTDIR/$d/inc"
+	if test ! -d $adr ; then
+	    echo "Error:  directory $adr not found -- please check that ROOTDIR=\"$ROOTDIR\""
+	    echo "  is correct and that you correctly specified the STANDARDDIRS option"
+	    exit 1
+	else
+	    INCLUDEDIRS="$INCLUDEDIRS $adr"
+	fi
+    done
+fi
 
 echo "  Searching for *OPTIONS.h files in order to warn about the presence"
 echo "    of \"#define \"-type statements that are no longer allowed:"
