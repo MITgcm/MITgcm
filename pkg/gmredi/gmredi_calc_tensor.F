@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.5 2001/02/04 14:38:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.6 2001/03/06 17:58:21 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -132,7 +132,7 @@ C       Limit range that KapGM can take
 #endif /* GM_VISBECK_VARIABLE_K */
 
 
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifdef ALLOW_TIMEAVE
 C--     Time-average
         GM_Kwx_T(i,j,k,bi,bj)=GM_Kwx_T(i,j,k,bi,bj)
      &                       +Kwx(i,j,k,bi,bj)*deltaTclock
@@ -145,11 +145,11 @@ C--     Time-average
      &  Visbeck_K_T(i,j,bi,bj)=Visbeck_K_T(i,j,bi,bj)
      &                       +VisbeckK(i,j,bi,bj)*deltaTclock
 #endif
-#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
+#endif /* ALLOW_TIMEAVE */
        ENDDO
       ENDDO
 
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifdef ALLOW_TIMEAVE
       GM_TimeAve(k,bi,bj)=GM_TimeAve(k,bi,bj)+deltaTclock
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_open_diags.F,v 1.3 2001/02/04 14:38:50 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_open_diags.F,v 1.4 2001/03/06 17:58:15 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -30,7 +30,7 @@ C     == Local variables ==
 
 C     Initialize record numbers in KPP_DIAGS
       kpp_drctrec=1
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifdef ALLOW_TIMEAVE
       kpp_drctrecTave=1
 #endif
 

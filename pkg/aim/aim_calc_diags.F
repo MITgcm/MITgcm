@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_calc_diags.F,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C     $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_calc_diags.F,v 1.3 2001/03/06 17:58:25 jmc Exp $
 C     $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -45,7 +45,7 @@ C     == Local variables ==
       INTEGER I,J,I2
       _RL DDTT
 
-#ifdef INCLUDE_DIAGNOSTICS_INTERFACE_CODE
+#ifdef ALLOW_TIMEAVE
 
       DDTT = deltaTclock
 
@@ -67,7 +67,7 @@ C     == Local variables ==
       ENDDO
 
 
-#endif /* INCLUDE_DIAGNOSTICS_INTERFACE_CODE */
+#endif /* ALLOW_TIMEAVE */
 
 #endif /* ALLOW_AIM */
 
