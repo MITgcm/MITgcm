@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.40 2002/11/21 19:11:42 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.41 2002/11/23 21:47:03 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -167,7 +167,7 @@ cswdblk -- end add ---
 C--   Call sea ice model to compute forcing/external data fields.
         IF ( useSEAICE ) THEN
          CALL TIMER_START('SEAICE_MODEL       [FORWARD_STEP]',myThid)
-Cxxxx         CALL SEAICE_MODEL( myTime, myIter, myThid )
+         CALL SEAICE_MODEL( myTime, myIter, myThid )
          CALL TIMER_STOP ('SEAICE_MODEL       [FORWARD_STEP]',myThid)
         ENDIF
 #endif ALLOW_SEAICE
