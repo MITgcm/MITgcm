@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.4 1998/06/09 15:58:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEOPTIONS.h,v 1.5 1998/06/22 15:26:24 adcroft Exp $
 C
 C     /==========================================================\
 C     | CPP_EEOPTIONS.h                                          |
@@ -119,7 +119,7 @@ C     can use 4-byte precision, reducing memory utilisation and
 C     boosting performance because of a smaller working
 C     set size. However, on vector CRAY systems this degrades
 C     performance.
-#define REAL4_IS_SLOW
+#undef  REAL4_IS_SLOW
  
 #ifdef REAL4_IS_SLOW
 #define real Real*8

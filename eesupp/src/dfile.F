@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.3 1998/06/09 16:48:01 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/dfile.F,v 1.4 1998/06/22 15:26:25 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -325,7 +325,7 @@ C--   Check that file is active
        iLo = IFNBLNK(fNam)
        iHi = ILNBLNK(fNam)
        ioUnit = dUnitNumber(fileHandle,myThid)
-       READ(ioUnit,ERR=899) (ioBuf_R4(I),I=1,lBuffer)
+       READ(ioUnit) (ioBuf_R4(I),I=1,lBuffer)
 
 
  1000 CONTINUE

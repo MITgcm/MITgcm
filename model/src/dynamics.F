@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.20 1998/06/15 05:17:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.21 1998/06/22 15:26:25 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -223,7 +223,13 @@ C--     Calculate gradient of surface pressure
 
 C--     Update fields in top level according to tendency terms
         CALL CORRECTION_STEP(
-     I       bi,bj,iMin,iMax,jMin,jMax,K,pSurfX,pSurfY,myThid)
+     I       bi,bj,iMin,iMax,jMin,jMax,K,pSurfX,pSurfY,myTime,myThid)
+
+        IF ( .NOT. BOTTOM_LAYER ) THEN
+C--      Update fields in layer below according to tendency terms
+         CALL CORRECTION_STEP(
+     I        bi,bj,iMin,iMax,jMin,jMax,K+1,pSurfX,pSurfY,myTime,myThid)
+        ENDIF
 
 C--     Density of 1st level (below W(1)) reference to level 1
         CALL FIND_RHO(
@@ -258,9 +264,15 @@ C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
 
          BOTTOM_LAYER = K .EQ. Nz
 
-C--      Update fields in Kth level according to tendency terms
-         CALL CORRECTION_STEP(
-     I        bi,bj,iMin,iMax,jMin,jMax,K,pSurfX,pSurfY,myThid)
+         IF ( .NOT. BOTTOM_LAYER ) THEN
+C--       Update fields in layer below according to tendency terms
+          CALL CORRECTION_STEP(
+     I         bi,bj,iMin,iMax,jMin,jMax,K+1,pSurfX,pSurfY,myTime,myThid)
+         ENDIF
+C--      Update fields in layer below according to tendency terms
+C        CALL CORRECTION_STEP(
+C    I        bi,bj,iMin,iMax,jMin,jMax,K,pSurfX,pSurfY,myTime,myThid)
+
 C--      Density of K level (below W(K)) reference to K level
          CALL FIND_RHO(
      I      bi, bj, iMin, iMax, jMin, jMax,  K, K, eosType,
@@ -343,7 +355,7 @@ C--      Calculate active tracer tendencies
          IF ( tempStepping ) THEN
           CALL CALC_GT(
      I         bi,bj,iMin,iMax,jMin,jMax, k,kM1,kUp,kDown,
-     I         xA,yA,uTrans,vTrans,wTrans,maskUp,
+     I         xA,yA,uTrans,vTrans,wTrans,maskUp,maskC,
      I         K13,K23,KappaZT,KapGM,
      U         aTerm,xTerm,fZon,fMer,fVerT,
      I         myThid)
@@ -351,7 +363,7 @@ C--      Calculate active tracer tendencies
          IF ( saltStepping ) THEN
           CALL CALC_GS(
      I         bi,bj,iMin,iMax,jMin,jMax, k,kM1,kUp,kDown,
-     I         xA,yA,uTrans,vTrans,wTrans,maskUp,
+     I         xA,yA,uTrans,vTrans,wTrans,maskUp,maskC,
      I         K13,K23,KappaZS,KapGM,
      U         aTerm,xTerm,fZon,fMer,fVerS,
      I         myThid)
@@ -383,15 +395,15 @@ C--     Implicit diffusion
 C     write(0,*) 'dynamics: pS ',minval(cg2d_x(1:sNx,1:sNy,:,:)),
 C    &                           maxval(cg2d_x(1:sNx,1:sNy,:,:))
 C     write(0,*) 'dynamics: U  ',minval(uVel(1:sNx,1:sNy,1,:,:),mask=uVel(1:sNx,1:sNy,1,:,:).NE.0.),
-C    &                           maxval(uVel(1:sNx,1:sNy,1,:,:))
+C    &                           maxval(uVel(1:sNx,1:sNy,1,:,:),mask=uVel(1:sNx,1:sNy,1,:,:).NE.0.)
 C     write(0,*) 'dynamics: V  ',minval(vVel(1:sNx,1:sNy,1,:,:),mask=vVel(1:sNx,1:sNy,1,:,:).NE.0.),
-C    &                           maxval(vVel(1:sNx,1:sNy,1,:,:))
+C    &                           maxval(vVel(1:sNx,1:sNy,1,:,:),mask=vVel(1:sNx,1:sNy,1,:,:).NE.0.)
 C     write(0,*) 'dynamics: wVel(1) ',
 C    &            minval(wVel(1:sNx,1:sNy,1),mask=wVel(1:sNx,1:sNy,1).NE.0.),
-C    &            maxval(wVel(1:sNx,1:sNy,1))
+C    &            maxval(wVel(1:sNx,1:sNy,1),mask=wVel(1:sNx,1:sNy,1).NE.0.)
 C     write(0,*) 'dynamics: wVel(2) ',
 C    &            minval(wVel(1:sNx,1:sNy,2),mask=wVel(1:sNx,1:sNy,2).NE.0.),
-C    &            maxval(wVel(1:sNx,1:sNy,2))
+C    &            maxval(wVel(1:sNx,1:sNy,2),mask=wVel(1:sNx,1:sNy,2).NE.0.)
 cblk  write(0,*) 'dynamics: K13',minval(K13(1:sNx,1:sNy,:)),
 cblk &                           maxval(K13(1:sNx,1:sNy,:))
 cblk  write(0,*) 'dynamics: K23',minval(K23(1:sNx,1:sNy,:)),

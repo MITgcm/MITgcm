@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.10 1998/06/17 21:07:02 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.11 1998/06/22 15:26:25 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -70,7 +70,7 @@ C          tauX  = -tauMax*cos(2. _d 0*PI*distY)
          ENDDO
         ENDDO
        ENDDO
-       fu(4,4,1,1) = fu(4,4,1,1)*0.917d0
+C      fu(4,4,1,1) = fu(4,4,1,1)*0.917d0
       ENDIF
 C
       _BARRIER

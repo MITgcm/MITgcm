@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.5 1998/06/16 17:07:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.6 1998/06/22 15:26:25 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -9,7 +9,7 @@ C     |   pressure gradient.                                     |
 C     \==========================================================/
       SUBROUTINE CORRECTION_STEP( bi, bj, iMin, iMax, jMin, jMax,
      I                       K, pSurfX, pSurfY,
-     I                       myThid )
+     I                       myCurrentTime, myThid )
       implicit none
 ! Common
 #include "SIZE.h"
@@ -24,6 +24,7 @@ C     == Routine Arguments ==
       _RL  pSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  pSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
+      _RL myCurrentTime
 C     == Local variables ==
       INTEGER i,j
       _RL hxFac,hyFac,rRhoNil

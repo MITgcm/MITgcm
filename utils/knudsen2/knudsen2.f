@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/utils/knudsen2/knudsen2.f,v 1.1 1998/05/28 16:26:56 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/utils/knudsen2/knudsen2.f,v 1.2 1998/06/22 15:26:26 adcroft Exp $
 
       PROGRAM KNUDSEN2
       implicit none
@@ -12,7 +12,7 @@ C     OF POTENTIAL TEMPERATURE, SALINITY, AND DEPTH.
 C
 C     Number of levels
       integer NumLevels
-      PARAMETER (NumLevels=2)
+      PARAMETER (NumLevels=15)
 
 C     Number of Temperature and Salinity callocation points
       integer NumTempPt,NumSalPt,NumCallocPt
@@ -73,11 +73,10 @@ C           SMax(K) = UPPER BND OF S          "
 
 C  ENTER LEVEL THICKNESSES IN CENTIMETERS  
 C     DATA dz/ 4*50.E2, 2*100.E2, 200.E2, 400.E2, 7*500.E2, 6*10.E2 /
-c      DATA dz/   5.00e+03,7.00e+03,1.00e+04,1.40e+04,
-c    &1.90e+04,2.40e+04,2.90e+04,3.40e+04,3.90e+04,
-c    &4.40e+04,4.90e+04,5.40e+04,5.90e+04,6.40e+04,
-c    &6.90e+04/ ! ,6.90e+04/
-      DATA dz/ 2*500.e2/
+       DATA dz/   5.00e+03,7.00e+03,1.00e+04,1.40e+04,
+     &1.90e+04,2.40e+04,2.90e+04,3.40e+04,3.90e+04,
+     &4.40e+04,4.90e+04,5.40e+04,5.90e+04,6.40e+04,
+     &6.90e+04/ ! ,6.90e+04/
 
 C     CALC DEPTHS OF LEVELS FROM DZ (IN METERS)
 C     THE MAXIMUM ALLOWABLE DEPTH IS 8000 METERS

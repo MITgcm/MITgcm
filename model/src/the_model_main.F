@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.14 1998/06/18 13:56:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.15 1998/06/22 15:26:26 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -109,6 +109,9 @@ C--   Set model initial conditions
       myCurrentTime = startTime
       myCurrentIter = nIter0
 
+C--   Dump for start state
+      CALL WRITE_STATE( .TRUE., myCurrentTime, myCurrentIter, myThid )
+
 C--   Begin time stepping loop
       DO I=1, nTimeSteps
 
@@ -171,7 +174,7 @@ C--   Do time averages
       ENDIF
 
 C--   Dump for end state
-      CALL WRITE_STATE( myCurrentTime, myCurrentIter, myThid )
+      CALL WRITE_STATE( .FALSE., myCurrentTime, myCurrentIter, myThid )
 
 
       RETURN

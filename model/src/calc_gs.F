@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.9 1998/06/17 21:07:01 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.10 1998/06/22 15:26:25 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
 CStartOfInterFace
       SUBROUTINE CALC_GS( 
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     I           xA,yA,uTrans,vTrans,wTrans,maskup,
+     I           xA,yA,uTrans,vTrans,wTrans,maskup,maskC,
      I           K13,K23,KappaZS,KapGM,
      U           af,df,fZon,fMer,fVerS,
      I           myThid )
@@ -52,6 +52,7 @@ C               direction at the south face of a cell.
 C     fVerS   - Flux of salt (S) in the vertical 
 C               direction at the upper(U) and lower(D) faces of a cell.
 C     maskUp  - Land mask used to denote base of the domain.
+C     maskC   - Land mask for salt cells (used in TOP_LAYER only)
 C     xA      - Tracer cell face area normal to X
 C     yA      - Tracer cell face area normal to X
 C     uTrans  - Zonal volume transport through cell face
@@ -71,6 +72,7 @@ C     myThid - Instance number for this innvocation of CALC_GT
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL wTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RS maskC (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL K23   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL KappaZS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
@@ -258,7 +260,7 @@ C     o Surface relaxation term
        DO j=jMin,jMax
         DO i=iMin,iMax
          gS(i,j,k,bi,bj)=gS(i,j,k,bi,bj)
-     &   +maskUp(i,j)*(
+     &   +maskC(i,j)*(
      &   -lambdaSaltClimRelax*(salt(i,j,k,bi,bj)-SSS(i,j,bi,bj))
      &   -EmPpR(i,j,bi,bj) )
         ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.6 1998/06/10 17:05:59 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/read_write.F,v 1.7 1998/06/22 15:26:26 adcroft Exp $
 #include "CPP_EEOPTIONS.h"
 
 C--  File read_write.F: Routines to handle mid-level I/O interface.
@@ -13,8 +13,8 @@ C--   o WRITE_1D_R8 - Write list of real*8 values
 C--                   Uses MITgcmUV environment file format.
 C--   o WRITE_FLD_XY_RL  - Write two-dimensional model _RL field.
 C--   o WRITE_FLD_XYZ_RL - Write three-dimensional model _RL field.
-C--   o WRITE_STATE - Write out model state.
 C--   o WRITE_CHECKPOINT - Write out checkpoint files for restarting.
+C--   o WRITE_STATE - Write out model state.
 
 CStartofinterface
       SUBROUTINE READ_CHECKPOINT ( myIter, myThid )
@@ -383,6 +383,8 @@ C          U.0000000100
      & pref(s1Lo:s1Hi)
        WRITE( fNamMeta, '(A)' )
      & pref(s1Lo:s1Hi)
+       s2Lo=1
+       s2Hi=1
       ELSE
        WRITE( fNamData, '(A,A)' )
      & pref(s1Lo:s1Hi),
@@ -1423,7 +1425,7 @@ C        Wrote OK so step forward to use next checkpoint in loop.
       END
 
 CStartofinterface
-      SUBROUTINE WRITE_STATE ( myCurrentTime, myIter, myThid )
+      SUBROUTINE WRITE_STATE ( forceOutput, myCurrentTime, myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE WRITE_STATE                                   |
 C     | o Controlling routine for IO to dump model state.        |
@@ -1448,6 +1450,7 @@ C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
 C     myIter - Iteration number
 C     myCurrentTime - Current time of simulation ( s )
+      LOGICAL forceOutput
       INTEGER myThid
       INTEGER myIter
       REAL    myCurrentTime
@@ -1463,9 +1466,10 @@ C     msgBuf - Error message buffer
       INTEGER endIOErrCount
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
-      IF ( .NOT.
+      IF ( 
      &  DIFFERENT_MULTIPLE(dumpFreq,myCurrentTime,myCurrentTime-deltaTClock)
-     & ) RETURN
+     &  .OR. forceOutput
+     & ) THEN
 
 C--    Going to really do some IO. Make everyone except master thread wait.
        _BARRIER
@@ -1519,6 +1523,8 @@ C--     Check for IO errors
 
        _END_MASTER( myThid )
        _BARRIER
+
+      ENDIF
 
       RETURN
       END

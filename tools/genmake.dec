@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake.dec,v 1.3 1998/05/18 15:11:06 cnh Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake.dec,v 1.4 1998/06/22 15:26:26 adcroft Exp $
 #
 #  Makefile generator for MITgcm UV codes
 #
@@ -31,7 +31,7 @@ set MODEL_IDIR  = ( ../model/inc/  )
 set TDIR        = ( ../tools/      )
 set BDIR        = ( ../bin/        )
 set EDIR        = ( ../exe/        )
-set EXE         = ( barrier        )
+set EXE         = ( MITgcmUV       )
 
 # ***************************************************************************************************
 # Pathnames and arguments for the commands used on this platform
@@ -42,9 +42,9 @@ set EXE         = ( barrier        )
 set CPP      = ( '/usr/bin/cpp -P $(INCLUDES) -DTARGET_DEC' )
 set FCOMP1p  = ( 'kapf90 -scan=132 -noconc -cmp=' )
 set FCOMP1s  = ( 'cat >' )
-set FCOMP2   = ( 'f90 $(INCLUDES) -r8 -extend_source -u -O5 -fast -tune host -automatic -call_shared -c -notransform_loops -align dcommons -p1 -g1 -inline all' )
-set FCOMP20  = ( 'f90 $(INCLUDES) -extend_source -u -g -c -automatic -align dcommons -r8 -p1 -g1' )
-set LINK1    = ( 'f77 -O5 -fast -tune host -automatic -call_shared -align dcommons -p1 -g1' )
+set FCOMP2   = ( 'f90 $(INCLUDES) -r8 -extend_source -u -O5 -fast -tune host -automatic -call_shared -c -notransform_loops -align dcommons -p1 -inline all' )
+set FCOMP20  = ( 'f90 $(INCLUDES) -r8 -extend_source -u -O0 -c -automatic -align dcommons -p1' )
+set LINK1    = ( 'f77 -O5 -fast -tune host -automatic -call_shared -align dcommons -p1' )
 set LINK2    = ( '-lfmpi -lmpi -lkmp_osfp10 -pthread' )
 set INCLUDES = ( '-I. -I$(EESUPP_IDIR) -I$(MODEL_IDIR)' )
 set MAKEDEPEND  = ( /usr/bin/X11/makedepend )
@@ -238,7 +238,7 @@ if ( "${flist}" != "" ) then
    echo '	@echo KAP '${pf} >> ${mfile}.$$
    echo '	@ $(FCOMP1s)'$kf ${pf} >> ${mfile}.$$
   endif
-  if ( "$fname" == "barrier.F" || "$fname" == "different_multiple.F" ) then
+  if ( "$fname" == "barrier.F" || "$fname" == "different_multiple.F" || "$fname" == "load_external_fields.F" ) then
    echo ${of}: ${kf}  >> ${mfile}.$$
    echo '	@echo Compiling '${kf} >> ${mfile}.$$
    echo '	@ $(FCOMP20)'    ${kf} >> ${mfile}.$$
