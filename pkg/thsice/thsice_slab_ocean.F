@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.1 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.2 2004/06/03 16:34:36 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -78,14 +78,15 @@ C--    add restoring (backward) toward climatological Temp. & fixed Salinity
        DO j=1,sNy
         DO i=1,sNx
          IF ( hOceMxL(i,j,bi,bj).NE.0. _d 0 ) THEN
+          sOceMxL(i,j,bi,bj) = 
+     &         (sOceMxL(i,j,bi,bj) + dtFac*sMxL_default)*dtFacR
+          oceTfreez = -mu_Tf*sOceMxL(i,j,bi,bj)
           locTemp = ( aim_sWght0*aim_sst0(i,j,bi,bj)
      &              + aim_sWght1*aim_sst1(i,j,bi,bj) 
      &              ) - celsius2K
           locTemp = MAX( locTemp , oceTfreez )
           tOceMxL(i,j,bi,bj) = 
      &         (tOceMxL(i,j,bi,bj) + dtFac*locTemp)*dtFacR
-          sOceMxL(i,j,bi,bj) = 
-     &         (sOceMxL(i,j,bi,bj) + dtFac*sMxL_default)*dtFacR
          ENDIF
         ENDDO
        ENDDO
