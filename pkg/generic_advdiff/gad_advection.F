@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.23 2004/06/26 02:38:54 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.24 2004/06/28 21:10:55 dimitri Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -45,6 +45,10 @@ C !USES: ===============================================================
 # include "tamc.h"
 # include "tamc_keys.h"
 #endif
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif /* ALLOW_EXCH2 */
 
 C !INPUT PARAMETERS: ===================================================
 C  implicitAdvection :: implicit vertical advection (later on)
@@ -96,6 +100,9 @@ C  calc_fluxes_X :: logical to indicate to calculate fluxes in X dir
 C  calc_fluxes_Y :: logical to indicate to calculate fluxes in Y dir
 C  nipass        :: number of passes in multi-dimensional method
 C  ipass         :: number of the current pass being made
+C  myTile        :: variables used to determine which cube face 
+C  nCFace        :: owns a tile for cube grid runs using
+C                :: multi-dim advection.
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i,j,k,kup,kDown
@@ -112,6 +119,11 @@ C  ipass         :: number of the current pass being made
       _RL kp1Msk
       LOGICAL calc_fluxes_X,calc_fluxes_Y
       INTEGER nipass,ipass
+      INTEGER myTile, nCFace
+      LOGICAL southWestCorner
+      LOGICAL southEastCorner
+      LOGICAL northWestCorner
+      LOGICAL northEastCorner
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -187,6 +199,25 @@ C--   Make local copy of tracer array
       ENDDO
 
       IF (useCubedSphereExchange) THEN
+       southWestCorner = .TRUE.
+       southEastCorner = .TRUE.
+       northWestCorner = .TRUE.
+       northEastCorner = .TRUE.
+#ifdef ALLOW_EXCH2
+       myTile = W2_myTileList(bi)
+       nCFace = exch2_myFace(myTile)
+       southWestCorner = exch2_isWedge(myTile).EQ.1
+     &             .AND. exch2_isSedge(myTile).EQ.1
+       southEastCorner = exch2_isEedge(myTile).EQ.1
+     &             .AND. exch2_isSedge(myTile).EQ.1
+       northEastCorner = exch2_isEedge(myTile).EQ.1
+     &             .AND. exch2_isNedge(myTile).EQ.1
+       northWestCorner = exch2_isWedge(myTile).EQ.1
+     &             .AND. exch2_isNedge(myTile).EQ.1
+#else
+       nCFace = bi
+#endif
+
        nipass=3
 #ifdef ALLOW_AUTODIFF_TAMC
        if ( nipass.GT.maxcube )
@@ -198,6 +229,7 @@ C--   Make local copy of tracer array
 cph       nipass=1
 
 C--   Multiple passes for different directions on different tiles
+C--   For cube need one pass for each of red, green and blue axes.
       DO ipass=1,nipass
 #ifdef ALLOW_AUTODIFF_TAMC
          passkey = ipass + (k-1)      *maxcube
@@ -210,17 +242,17 @@ C--   Multiple passes for different directions on different tiles
       IF (nipass.EQ.3) THEN
        calc_fluxes_X=.FALSE.
        calc_fluxes_Y=.FALSE.
-       IF (ipass.EQ.1 .AND. (bi.EQ.1 .OR. bi.EQ.2) ) THEN
+       IF (ipass.EQ.1 .AND. (nCFace.EQ.1 .OR. nCFace.EQ.2) ) THEN
         calc_fluxes_X=.TRUE.
-       ELSEIF (ipass.EQ.1 .AND. (bi.EQ.4 .OR. bi.EQ.5) ) THEN
+       ELSEIF (ipass.EQ.1 .AND. (nCFace.EQ.4 .OR. nCFace.EQ.5) ) THEN
         calc_fluxes_Y=.TRUE.
-       ELSEIF (ipass.EQ.2 .AND. (bi.EQ.1 .OR. bi.EQ.6) ) THEN
+       ELSEIF (ipass.EQ.2 .AND. (nCFace.EQ.1 .OR. nCFace.EQ.6) ) THEN
         calc_fluxes_Y=.TRUE.
-       ELSEIF (ipass.EQ.2 .AND. (bi.EQ.3 .OR. bi.EQ.4) ) THEN
+       ELSEIF (ipass.EQ.2 .AND. (nCFace.EQ.3 .OR. nCFace.EQ.4) ) THEN
         calc_fluxes_X=.TRUE.
-       ELSEIF (ipass.EQ.3 .AND. (bi.EQ.2 .OR. bi.EQ.3) ) THEN
+       ELSEIF (ipass.EQ.3 .AND. (nCFace.EQ.2 .OR. nCFace.EQ.3) ) THEN
         calc_fluxes_Y=.TRUE.
-       ELSEIF (ipass.EQ.3 .AND. (bi.EQ.5 .OR. bi.EQ.6) ) THEN
+       ELSEIF (ipass.EQ.3 .AND. (nCFace.EQ.5 .OR. nCFace.EQ.6) ) THEN
         calc_fluxes_X=.TRUE.
        ENDIF
       ELSE
@@ -233,14 +265,55 @@ C--   X direction
 
 C--   Internal exchange for calculations in X
       IF (useCubedSphereExchange) THEN
-       DO j=1,Oly
-        DO i=1,Olx
-         localTij( 1-i , 1-j )=localTij( 1-j ,    i    )
-         localTij( 1-i ,sNy+j)=localTij( 1-j , sNy+1-i )
-         localTij(sNx+i, 1-j )=localTij(sNx+j,    i    )
-         localTij(sNx+i,sNy+j)=localTij(sNx+j, sNy+1-i )
-        ENDDO
-       ENDDO
+C--    For cube face corners we need to duplicate the
+C--    i-1 and i+1 values into the null space as follows:
+C
+C
+C      o NW corner: copy T(    0,sNy  ) into T(    0,sNy+1) e.g.
+C                      |
+C         x T(0,sNy+1) |
+C        /\            |
+C      --||------------|-----------
+C        ||            |
+C         x T(0,sNy)   |   x T(1,sNy)
+C                      |
+C
+C      o SW corner: copy T(0,1) into T(0,0) e.g.
+C                      |
+C         x T(0,1)     |  x T(1,1)
+C        ||            |
+C      --||------------|-----------
+C        \/            |
+C         x T(0,0)     |
+C                      |
+C
+C      o NE corner: copy T(sNx+1,sNy  ) into T(sNx+1,sNy+1) e.g.
+C                      |
+C                      |   x T(sNx+1,sNy+1)
+C                      |  /\
+C      ----------------|--||-------
+C                      |  ||
+C         x T(sNx,sNy) |   x T(sNx+1,sNy  )
+C                      |
+C      o SE corner: copy T(sNx+1,1    ) into T(sNx+1,0    ) e.g.
+C                      |
+C         x T(sNx,1)   |   x T(sNx+1,    1) 
+C                      |  ||
+C      ----------------|--||-------
+C                      |  \/
+C                      |   x T(sNx+1,    0)
+       IF ( southWestCorner ) THEN
+        localTij(0    ,0    )= localTij(0    ,1  )
+       ENDIF
+       IF ( southEastCorner ) THEN
+        localTij(sNx+1,0    )= localTij(sNx+1,1  )
+       ENDIF
+       IF ( northWestCorner ) THEN
+        localTij(0    ,sNy+1)= localTij(0    ,sNy)
+       ENDIF
+       IF ( northEastCorner ) THEN
+        localTij(sNx+1,sNy+1)= localTij(sNx+1,sNy)
+       ENDIF
       ENDIF
 
 C-    Advective flux in X
@@ -298,16 +371,56 @@ C--   End of X direction
 C--   Y direction
       IF (calc_fluxes_Y) THEN
 
-C--   Internal exchange for calculations in Y
       IF (useCubedSphereExchange) THEN
-       DO j=1,Oly
-        DO i=1,Olx
-         localTij( 1-i , 1-j )=localTij(   j   , 1-i )
-         localTij( 1-i ,sNy+j)=localTij(   j   ,sNy+i)
-         localTij(sNx+i, 1-j )=localTij(sNx+1-j, 1-i )
-         localTij(sNx+i,sNy+j)=localTij(sNx+1-j,sNy+i)
-        ENDDO
-       ENDDO
+C--   Internal exchange for calculations in Y
+C--    For cube face corners we need to duplicate the
+C--    j-1 and j+1 values into the null space as follows:
+C
+C      o SW corner: copy T(0,1) into T(0,0) e.g.
+C                      |
+C                      |  x T(1,1)
+C                      |
+C      ----------------|-----------
+C                      |
+C         x T(0,0)<====== x T(1,0)
+C                      |
+C
+C      o NW corner: copy T(    0,sNy  ) into T(    0,sNy+1) e.g.
+C                      |
+C         x T(0,sNy+1)<=== x T(1,sNy+1)
+C                      |
+C      ----------------|-----------
+C                      |
+C                      |   x T(1,sNy)
+C                      |
+C
+C      o NE corner: copy T(sNx+1,sNy  ) into T(sNx+1,sNy+1) e.g.
+C                      |
+C      x T(sNx,sNy+1)=====>x T(sNx+1,sNy+1)
+C                      |     
+C      ----------------|-----------
+C                      |     
+C      x T(sNx,sNy)    |                       
+C                      |
+C      o SE corner: copy T(sNx+1,1    ) into T(sNx+1,0    ) e.g.
+C                      |
+C         x T(sNx,1)   |                    
+C                      |    
+C      ----------------|-----------
+C                      |     
+C         x T(sNx,0) =====>x T(sNx+1,    0)
+       IF ( southWestCorner ) THEN
+         localTij(    0,0    ) = localTij(  1,0    )
+       ENDIF
+       IF ( southEastCorner ) THEN
+         localTij(sNx+1,0    ) = localTij(sNx,0    )
+       ENDIF
+       IF ( northWestCorner ) THEN
+         localTij(0    ,sNy+1) = localTij(  1,sNy+1)
+       ENDIF
+       IF ( northEastCorner ) THEN
+         localTij(sNx+1,sNy+1) = localTij(sNx,sNy+1)
+       ENDIF
       ENDIF
 
 C-    Advective flux in Y
