@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.40 2003/03/17 17:10:42 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.41 2003/04/17 13:16:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -260,6 +260,10 @@ CEOP
      & 'saltForcing  =', '  /* Salinity forcing on/off flag */')
       CALL WRITE_0D_L( nonHydrostatic, INDEX_NONE,
      & 'nonHydrostatic =', '  /* Non-Hydrostatic on/off flag */')
+      CALL WRITE_0D_L( useCDscheme,  INDEX_NONE,
+     & 'useCDscheme =', '  /* CD scheme on/off flag */')
+      CALL WRITE_0D_L( useJamartWetPoints,  INDEX_NONE,
+     & 'useJamartWetPoints=',' /* Coriolis WetPoints method flag */')
       WRITE(msgBuf,'(A)') '//  '
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit, 
      &                    SQUEEZE_RIGHT , 1)
@@ -307,10 +311,12 @@ CEOP
      &'   /* put T,S Forcing in Adams-Bash. stepping */')
       CALL WRITE_0D_R8( abeps, INDEX_NONE,'abeps =',
      &'   /* Adams-Bashforth stabilizing weight */')
+      IF (useCDscheme) THEN
       CALL WRITE_0D_R8( tauCD, INDEX_NONE,'tauCD =',
      &'   /* CD coupling time-scale ( s ) */')
       CALL WRITE_0D_R8( rCD, INDEX_NONE,'rCD =',
      &'   /* Normalised CD coupling parameter */')
+      ENDIF
       CALL WRITE_0D_R8( startTime, INDEX_NONE,'startTime =',
      &'   /* Run start time ( s ). */')
       CALL WRITE_0D_R8( endTime, INDEX_NONE,'endTime =',

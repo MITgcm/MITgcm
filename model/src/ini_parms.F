@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.94 2003/03/18 14:37:33 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.95 2003/04/17 13:16:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -135,7 +135,7 @@ C--   Continuous equation parameters
      & readPickupWithTracer, writePickupWithTracer,
      & tempAdvScheme, saltAdvScheme, tracerAdvScheme,
      & multiDimAdvection, useEnergyConservingCoriolis,
-     & useJamartWetPoints, useNHMTerms,
+     & useCDscheme, useJamartWetPoints, useNHMTerms,
      & useRealFreshWaterFlux, convertFW2Salt,
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & zonal_filt_lat
@@ -565,12 +565,10 @@ C     o Convection frequency
        CALL PRINT_ERROR( msgBuf , myThid)
        STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
-C     o CD coupling
-      IF ( tauCD .EQ. 0.D0 ) THEN
-        tauCD = deltaTmom
-      ENDIF
-      IF ( rCD .LT. 0. ) THEN
-       rCD = 1. - deltaTMom/tauCD
+      IF (useCDscheme) THEN
+C     o CD coupling (CD scheme):
+        IF ( tauCD .EQ. 0.D0 ) tauCD = deltaTmom
+        IF ( rCD .LT. 0. ) rCD = 1. _d 0 - deltaTMom/tauCD
       ENDIF
 C     o Temperature climatology relaxation time scale
       IF ( tauThetaClimRelax .EQ. 0.D0 ) THEN

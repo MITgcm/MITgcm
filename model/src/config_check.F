@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.8 2003/02/11 04:05:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.9 2003/04/17 13:16:23 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -39,6 +39,18 @@ CEOP
 
 C-  check that CPP option is "defined" when running-flag parameter is on:
 
+#ifndef INCLUDE_CD_CODE
+      IF (useCDscheme) THEN
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: #undef INCLUDE_CD_CODE and'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: useCDscheme is TRUE'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif
+
 #ifndef ALLOW_NONHYDROSTATIC
       IF (nonHydrostatic) THEN 
         WRITE(msgBuf,'(A)') 
@@ -74,6 +86,18 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
 #endif
+
+#ifndef NONLIN_FRSURF
+      IF (select_rStar .NE. 0) THEN
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: rStar is part of NonLin-FS '
+        CALL PRINT_ERROR( msgBuf, myThid)                      
+        WRITE(msgBuf,'(A)')
+     &   'CONFIG_CHECK: ==> use #define NONLIN_FRSURF to use it'
+        CALL PRINT_ERROR( msgBuf, myThid)                      
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
+#endif /* NONLIN_FRSURF */
 
 #ifdef USE_NATURAL_BCS
         WRITE(msgBuf,'(A)') 
@@ -269,18 +293,34 @@ c     ENDIF
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)                      
       ENDIF
+#endif /* NONLIN_FRSURF */
 
-      IF (select_rStar .NE. 0) THEN
+      IF (.NOT.useCDscheme .AND. (tauCD.NE.0. .OR. rCD.NE.-1.) ) THEN
+C- jmc: since useCDscheme is a new [04-13-03] flag (default=F), 
+C       put this WARNING to stress that even if CD-scheme parameters 
+C       (tauCD,rCD) are set, CD-scheme is not used without useCDscheme=T 
+C-    and STOP if using mom_fluxform (following Chris advise).
+C- jmc: but ultimately, this block can/will be removed.
+       IF (.NOT.vectorInvariantMomentum.AND.momStepping) THEN
         WRITE(msgBuf,'(A)') 
-     &   'CONFIG_CHECK: rStar is part of NonLin-FS '
+     &   'CONFIG_CHECK: CD-scheme is OFF but params(tauCD,rCD) are set'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)')
+     &   'CONFIG_CHECK: to turn ON CD-scheme: => "useCDscheme=.TRUE."',
+     &   ' in "data", namelist PARM01' 
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+       ENDIF
+        WRITE(msgBuf,'(2A)') '**WARNNING** ',
+     &   'CONFIG_CHECK: CD-scheme is OFF but params(tauCD,rCD) are set'
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)                      
-        WRITE(msgBuf,'(A)')
-     &   'CONFIG_CHECK: ==> use #define NONLIN_FRSURF to use it'
+        WRITE(msgBuf,'(2A)')
+     &   'CONFIG_CHECK: to turn ON CD-scheme: => "useCDscheme=.TRUE."',
+     &   ' in "data", namelist PARM01' 
         CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT , myThid)                      
       ENDIF
-#endif /* NONLIN_FRSURF */
 
       WRITE(msgBuf,'(A)') 'CONFIG_CHECK: OK'
       CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.88 2003/03/17 16:59:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.89 2003/04/17 13:11:31 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -198,6 +198,7 @@ C     tr1Stepping   :: Turns passive tracer 1 time-stepping on/off
 C     useConstantF  :: Coriolis parameter set to f0
 C     useBetaPlaneF :: Coriolis parameter set to f0 + beta.y
 C     useSphereF    :: Coriolis parameter set to 2.omega.sin(phi)
+C     useCDscheme   :: use CD-scheme to calculate Coriolis terms.
 C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 1986)
 C     implicitDiffusion :: Turns implicit vertical diffusion on
 C     implicitViscosity :: Turns implicit vertical viscosity on
@@ -238,6 +239,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & momStepping, tempStepping, saltStepping, tr1Stepping,
      & metricTerms, usingSphericalPolarMTerms, useNHMTerms,
      & useConstantF, useBetaPlaneF, useSphereF,
+     & useCDscheme,
      & useEnergyConservingCoriolis, useJamartWetPoints,
      & implicitDiffusion, implicitViscosity,
      & multiDimAdvection, forcing_In_AB,
@@ -281,6 +283,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL useConstantF
       LOGICAL useBetaPlaneF
       LOGICAL useSphereF
+      LOGICAL useCDscheme
       LOGICAL useEnergyConservingCoriolis
       LOGICAL useJamartWetPoints
       LOGICAL implicitDiffusion
