@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.76 2003/03/19 23:25:53 jmc Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.77 2003/05/14 09:21:13 mlosch Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -506,6 +506,21 @@ switch ($platform$USEMPI)
     set NOOPTFLAGS = ( '-dalign -O0 -xarch=v9' )
                        '-lsocket -lnsl' )
     set NOOPTFILES = ( 'barrier.F different_multiple.F external_fields_load.F ini_vertical_grid.F ini_spherical_polar_grid.F ini_cori.F mon_printstats_rl.F mon_printstats_rs.F')
+    breaksw
+  case SunFire+mpi:
+    set FC         = ( 'mpf77' )  
+    set LINK       = ( 'mpf77' )
+    set LN         = ( '/usr/bin/ln -s' )
+    set CPP        = ( '/usr/ccs/lib/cpp -P' )
+    set MAKEDEPEND = ( ${TOOLSDIR}/xmakedepend )
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SUN -DWORDLENGTH=4' )
+    set INCLUDES   = ( '-I/opt/SUNWhpc/include' )
+    set LIBS       = ( '-lmpi -lthread -lsocket -lnsl' )
+    set FFLAGS     = ( '-e -u -noautopar ' \
+                       '-xtypemap=real:64,double:64,integer:32 -fsimple=0' )
+    set FOPTIM     = ( '-dalign -O4 -xarch=native' )
+    set CFLAGS     = ( '-dalign -xO4 -xarch=native' )
+    set NOOPTFLAGS = ( '-dalign -O0 -xarch=native' )
     breaksw
   case IRIX32:
     echo "Configuring for SGI ONYX running IRIX64"
