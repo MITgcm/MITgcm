@@ -1,7 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.410 2004/12/10 20:17:38 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.411 2004/12/13 23:12:03 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+o re-arrange diagnostics pkg initialisation:
+ - allow each package to extend the available diagnostics list
+ - add some checking and fix small problems (multi-threaded, ...)
+ - new S/R diagnostics_fill (replace fill_diagnostics):
+   look through the short list of active diag. (instead of the long list)
+   create function DIAGNOSTICS_IS_ON to tell if a diagnostics is active
 
 checkpoint57a_post
 o this set of changes restores TAMC compatibility
