@@ -7,20 +7,26 @@
  tRef = 15*20.,
  sRef = 15*35.,
  viscAr=1.E-3,
- viscAh=1.E6,
+ viscAh=5.E5,
  diffKhT=0.0, 
  diffKrT=3.E-5,
  diffKhS=0.0,  
  diffKrS=3.E-5,
  rhonil=1035.,
  gravity=9.81,
- eosType = 'POLY3',
+#ph( new test
+ eosType = 'JMD95Z',
+# eosType = 'POLY3',
+#ph)
  ivdc_kappa=100.,
  implicitDiffusion=.TRUE.,
  allowFreezing=.TRUE.,
  useRealFreshWaterFlux=.TRUE.,
+#ph( new test
  useCDscheme=.FALSE.,
  vectorInvariantMomentum=.TRUE.,
+ exactConserv = .TRUE.,
+#ph)
 # turn on looped cells
  hFacMin=.05,
  hFacMindr=50.,
