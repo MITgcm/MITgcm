@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.335 2004/07/27 00:44:10 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.336 2004/07/27 14:55:23 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o data.diagnostics: if levels() is unspecified then ALL levels are diagnosed
 o update global_ocean.cs32x15/thsice: use z* + RealFW + staggerTimeStep
 o start with no AB and no initial filtering (staggerTimeStep):
   change the results of test-exp: hs94.128x64x5, hs94.1x64x5 & hs94.cs-32x32x5
