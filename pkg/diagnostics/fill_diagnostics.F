@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/fill_diagnostics.F,v 1.9 2004/06/21 15:41:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/fill_diagnostics.F,v 1.10 2004/06/21 15:42:38 molod Exp $
 C $Name:  $
 
       subroutine fill_diagnostics (myThid, chardiag, levflg, nlevs, 
@@ -63,7 +63,8 @@ C If-sequence to see if we are a valid and an active diagnostic
       IF ( ndiagnum.ne.0 .and. ipointer.ne.0 ) THEN
 
 C Increment the counter for the diagnostic (if we are at bi=bj=1)
-      if ((bi.eq.1).and.(bj.eq.1)) ndiag(ndiagnum) = ndiag(ndiagnum) + 1
+      if ((bi.eq.1).and.(bj.eq.1).and.(levflg.le.1)) 
+     .                     ndiag(ndiagnum) = ndiag(ndiagnum) + 1
 
 C   Check to see if we need to do a bi-bj loop here
 
