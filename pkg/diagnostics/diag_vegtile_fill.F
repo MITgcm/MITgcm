@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.3 2005/02/18 16:20:26 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diag_vegtile_fill.F,v 1.4 2005/02/18 19:44:11 molod Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -81,6 +81,9 @@ C we are trying to fill a valid diagnostic
        ENDDO
       ENDDO
 
+      print *,' in diag_vegtile_fill for ',chardiag,
+     .     ' ndiagnum ',ndiagnum,' ipointer ',ipointer
+
 C If-sequence to see if we are a valid and an active diagnostic
 
       IF ( ndiagnum.NE.0 .AND. ipointer.NE.0 ) THEN
@@ -145,25 +148,26 @@ C-      Check for consistency with Nb of levels reserved in storage array
 
        DO k = kFirst,kLast
         kd = kd0 + ksgn*k
+        print *,' level slot in qdiag= ',kd, ' level from input= ',k
         if( check ) then
          undef = getcon('UNDEF')
          do i= 1,Lena
           jindx = 1 + int((indx(i+offset-1)-1)/sNx)
-          newindx = indx(i+offset-1)+(jindx-1)*2*Olx+(sNx+2*Olx)*Oly+Olx
+          newindx = indx(i+offset-1)+(jindx-1)*2*Olx
           if(qdiag(newindx,1,kd,bi,bj).eq.undef 
      .                                  .or.field(i,k).eq.undef)then
            qdiag(newindx,1,kd,bi,bj) = undef
           else
            qdiag(newindx,1,kd,bi,bj)=qdiag(newindx,1,kd,bi,bj)+
-     .                                             field(i,k)*chfr(i)
+     .                                                field(i,k)*chfr(i)
           endif
          enddo
         else
          do i= 1,Lena
           jindx = 1 + int((indx(i+offset-1)-1)/sNx)
-          newindx = indx(i+offset-1)+(jindx-1)*2*Olx+(sNx+2*Olx)*Oly+Olx
+          newindx = indx(i+offset-1)+(jindx-1)*2*Olx
           qdiag(newindx,1,kd,bi,bj)=qdiag(newindx,1,kd,bi,bj)+
-     .                                             field(i,k)*chfr(i)
+     .                                                field(i,k)*chfr(i)
          enddo
         endif
        ENDDO
