@@ -44,6 +44,12 @@ compare_lines()
  return $worst_so_far
 }
 
+compare_lines2()
+{
+# use codelet to compare lines
+ return `./a.out < tmp3.txt`
+}
+
 testoutput_for_prop()
 {
 # testoutput_for_prop dir s1 label
@@ -71,7 +77,8 @@ testoutput_for_prop()
  if [ $debug -gt 0 ]; then
   echo testoutput_for_prop: compare_lines 1>&2
  fi
- compare_lines 99 < tmp3.txt
+ #compare_lines 99 < tmp3.txt
+ compare_lines2
  digits_of_similarity=$?
  if [ $digits_of_similarity -eq 99 ]; then
   if [ $verbose -gt 0 ]; then
@@ -217,6 +224,44 @@ runmodel()
  )
 }
 
+createcodelet()
+{
+# create codelet for comparing model output
+cat > tmp_cmpnum.f <<EOFA
+      program cmpnum
+      implicit none
+      real*8 a,b,diff
+      integer linnum,best
+      best=-16
+  99  read(*,*,end=70,err=60) linnum,a,b
+      diff=0.5*(abs(a)+abs(b))
+      if (diff.gt.0.) then
+        diff=abs(a-b)/diff
+        if (diff.gt.0.) then
+c         print *,int(log10(diff)),diff
+          linnum=int(log10(diff))
+          best=max(best,linnum)
+c       else
+c         print *,-16
+        endif
+c     else
+c       diff=0.
+c       print *,-16
+      endif
+      goto 99
+  60  stop 'cmpnum: An error occured reading a,b'
+  70  print *,-best
+      end
+EOFA
+f77 tmp_cmpnum.f
+if [ -x ./a.out ]; then
+ return 0
+else
+ echo createcodelet: failed to compile codelet 1>&2
+ exit 1
+fi
+}
+
 formatresults()
 {
 # formatresults expt genmake depend make run results*
@@ -276,6 +321,8 @@ do
  esac
 done
 
+createcodelet
+
 cat << EOF > summary.txt
                 T           S           U           V
 C D M    c        m  s        m  s        m  s        m  s
@@ -315,6 +362,8 @@ do
  formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results >> summary.txt
  fi
 done
+
+rm tmp_cmpnum.f a.out
 
 echo -------------------------------------------------------------------------------
 echo 
