@@ -1,7 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_v_bottomdrag.F,v 1.6 2002/12/16 21:40:07 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_v_bottomdrag.F,v 1.7 2003/03/07 04:40:44 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+
+crg butterflies
+crg using undefined values of kapparv in mom_v_bottomdrag
+crg mom_v_bottomdrag must have iMin,iMax,jMin,jMax as arguments
+crg and only use values being calculated in calc_viscosity
+crg There are probably many more routines in mom_fluxform and mom_vecin
+crg using undefined values.
 
 CBOP
 C !ROUTINE: MOM_V_BOTTOMDRAG
