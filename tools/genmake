@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.16 2000/03/24 19:28:46 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.17 2000/06/21 19:57:55 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -60,8 +60,8 @@ echo Operating system: $mach
 #   copy everything in ../eesupp/src, ../model/src,
 #   ../eesupp/inc and ../model/inc into a directory and then
 #   edit the paths below to ./
-set SOURCEDIRS  = ( ../eesupp/src/ ../model/src/ ../diags/src/)
-set INCLUDEDIRS = ( ../eesupp/inc/ ../model/inc/ ../diags/inc/)
+set SOURCEDIRS  = ( ../eesupp/src/ ../model/src/ ../diags/src/ ../pkg/*/)
+set INCLUDEDIRS = ( ./ ../eesupp/inc/ ../model/inc/ ../diags/inc/ ../pkg/*/)
 set BUILDDIR    = ( ../bin/ )
 set EXEDIR      = ( ../exe/ )
 set EXECUTABLE  = ( mitgcmuv )
