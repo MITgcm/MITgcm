@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.5 2004/07/07 19:33:48 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.6 2004/07/13 21:18:41 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+#include "PACKAGES_CONFIG.h"
       subroutine swrio (nymd,nhms,bi,bj,ndswr,myid,istrip,npcs,
      .        low_level,mid_level,
      .        pz,plz,plze,dpres,pkht,pkz,tz,qz,oz,co2,

@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.5 2004/07/12 21:33:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.6 2004/07/13 21:18:41 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+#include "PACKAGES_CONFIG.h"
       subroutine lwrio (nymd,nhms,bi,bj,istrip,npcs,low_level,mid_level,
      .                  pz,plz,plze,dpres,pkht,pkz,tz,qz,oz,
      .                  co2,cfc11,cfc12,cfc22,methane,n2o,emissivity,
@@ -13,7 +14,7 @@ C $Name:  $
 
       implicit none
 #ifdef ALLOW_DIAGNOSTICS
-#include 'diagnostics.h'
+#include "diagnostics.h"
 #endif
 
 c Input Variables
@@ -769,9 +770,9 @@ c     o3 (band 5), and h2o (bands 1, 2, and 7) transmission functions.
       logical first
       data first /.true./
 
-      include "h2o.tran3"
-      include "co2.tran3"
-      include "o3.tran3"
+#include "h2o.tran3"
+#include "co2.tran3"
+#include "o3.tran3"
 
       save c1,c2,c3,o1,o2,o3
       save h11,h12,h13,h21,h22,h23,h81,h82,h83

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.6 2004/07/08 14:53:45 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.7 2004/07/13 21:18:41 molod Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
       subroutine moistio (ndmoist,istrip,npcs,
      .   lowlevel,midlevel,nltop,nsubmin,nsubmax,Lup,
