@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.2 1998/04/24 02:05:41 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_salt.F,v 1.3 1998/06/09 18:57:38 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -45,18 +45,26 @@ C     I,J,K
       INTEGER  I,  J, K
       REAL rad, rD
 
-C--   Initialise salinity field to the vertical reference profile
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO K=1,Nz
-         DO J=1,sNy
-          DO I=1,sNx
-           salt(I,J,K,bi,bj) = sRef(K)
+      _BARRIER
+
+      IF ( hydrogSaltFile .EQ. ' ' ) THEN
+C--    Initialise salinity field to the vertical reference profile
+       DO bj = myByLo(myThid), myByHi(myThid)
+        DO bi = myBxLo(myThid), myBxHi(myThid)
+         DO K=1,Nz
+          DO J=1,sNy
+           DO I=1,sNx
+            salt(I,J,K,bi,bj) = sRef(K)
+           ENDDO
           ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
+      ELSE
+       _BEGIN_MASTER( myThid )
+       CALL READ_FLD_XYZ_RS( hydrogSaltFile, ' ', salt, 0, myThid )
+       _END_MASTER(myThid)
+      ENDIF
 C     Set initial tendency terms
       DO bj = myByLo(myThid), myByHi(myThid)
        DO bi = myBxLo(myThid), myBxHi(myThid)
