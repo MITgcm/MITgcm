@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.12 2004/07/08 00:30:45 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.13 2004/07/08 16:16:09 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !INTERFACE:
       SUBROUTINE GETDIAG (myThid,lev,ipoint,undef,qtmp)
 
 C     !DESCRIPTION:
-      Retrieve averaged model diagnostic
+C     Retrieve averaged model diagnostic
       
 C     !USES:
       implicit none
