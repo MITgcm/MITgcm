@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.8 2005/01/12 20:33:13 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/mdsio_gl.F,v 1.9 2005/02/18 20:21:15 heimbach Exp $
 
 #include "MDSIO_OPTIONS.h"
 
@@ -83,7 +83,7 @@ C Functions
       integer MDS_RECLEN
 C Local variables
       character*(80) dataFName
-      integer ip,jp,iG,jG,irec,bi,bj,ii,j,k,dUnit,IL
+      integer ip,jp,iG,jG,irec,bi,bj,ii,i,j,k,dUnit,IL
       logical exst
       _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,Nr,nSx,nSy)
       Real*4 r4seg(sNx)
@@ -91,6 +91,17 @@ C Local variables
       logical globalFile,fileIsOpen
       integer length_of_rec
       character*(max_len_mbuf) msgbuf
+cph-usesingle(
+      integer ii,jj
+      integer x_size,y_size,iG_IO,jG_IO,npe
+      PARAMETER ( x_size = Nx )
+      PARAMETER ( y_size = Ny )
+      Real*4 xy_buffer_r4(x_size,y_size)
+      Real*8 xy_buffer_r8(x_size,y_size)
+      Real*8 global(Nx,Ny)
+      _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+cph-usesingle)
+
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -116,30 +127,80 @@ C Assume nothing
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
 
+      if ( useSingleCPUIO ) then
+
+#ifdef ALLOW_USE_MPI
+        IF( mpiMyId .EQ. 0 ) THEN
+#else
+        IF ( .TRUE. ) THEN
+#endif /* ALLOW_USE_MPI */
+
 C Check first for global file with simple name (ie. fName)
-      dataFName = fName
-      inquire( file=dataFname, exist=exst )
-      if (exst) then
-       write(msgbuf,'(a,a)')
-     &   ' MDSREADFIELD: opening global file: ',dataFName
-       call print_message( msgbuf, standardmessageunit,
-     &                     SQUEEZE_RIGHT , mythid)
-      endif
+         dataFName = fName
+         inquire( file=dataFname, exist=exst )
+         if (exst) globalFile = .TRUE.
 
 C If negative check for global file with MDS name (ie. fName.data)
-      if (.NOT. globalFile) then
-       write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+         if (.NOT. globalFile) then
+          write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+          inquire( file=dataFname, exist=exst )
+          if (exst) globalFile = .TRUE.
+         endif
+
+C If global file is visible to process 0, then open it here.
+C Otherwise stop program.
+         if ( globalFile) then
+          length_of_rec=MDS_RECLEN( filePrec, x_size*y_size, mythid )
+          open( dUnit, file=dataFName, status='old',
+     &         access='direct', recl=length_of_rec )
+         else
+          write(msgbuf,'(2a)') ' MDSREADFIELD: filename: ',dataFName
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
+          write(msgbuf,'(a)')
+     &      ' MDSREADFIELD: File does not exist'
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
+          stop 'ABNORMAL END: S/R MDSREADFIELD'
+         endif
+
+        ENDIF
+
+c-- useSingleCpuIO
+      else
+C Only do I/O if I am the master thread
+
+C Check first for global file with simple name (ie. fName)
+       dataFName = fName
        inquire( file=dataFname, exist=exst )
        if (exst) then
         write(msgbuf,'(a,a)')
-     &    ' MDSREADFIELD_GL: opening global file: ',dataFName
+     &    ' MDSREADFIELD: opening global file: ',dataFName
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
-        globalFile = .TRUE.
        endif
+
+C If negative check for global file with MDS name (ie. fName.data)
+       if (.NOT. globalFile) then
+        write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+        inquire( file=dataFname, exist=exst )
+        if (exst) then
+         write(msgbuf,'(a,a)')
+     &     ' MDSREADFIELD_GL: opening global file: ',dataFName
+         call print_message( msgbuf, standardmessageunit,
+     &                       SQUEEZE_RIGHT , mythid)
+         globalFile = .TRUE.
+        endif
+       endif
+
+c-- useSingleCpuIO
       endif
 
-      if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
+      if ( .not. useSingleCpuIO ) then
+cph      if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
+      if ( .not. ( globalFile ) ) then
 
 C If we are reading from a global file then we open it here
       if (globalFile) then
@@ -265,6 +326,68 @@ C If global file was opened then close it
        close( dUnit )
        fileIsOpen = .FALSE.
       endif
+
+c      end of if ( .not. ( globalFile ) ) then
+      endif
+
+c      else of if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
+      else
+
+       DO k=1,nNz
+
+#ifdef ALLOW_USE_MPI
+         IF( mpiMyId .EQ. 0 ) THEN
+#else
+         IF ( .TRUE. ) THEN
+#endif /* ALLOW_USE_MPI */
+          irec = k+nNz*(irecord-1)
+          if (filePrec .eq. precFloat32) then
+           read(dUnit,rec=irec) xy_buffer_r4
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR4( x_size*y_size, xy_buffer_r4 )
+#endif
+           DO J=1,Ny
+            DO I=1,Nx
+             global(I,J) = xy_buffer_r4(I,J)
+            ENDDO
+           ENDDO
+          elseif (filePrec .eq. precFloat64) then
+           read(dUnit,rec=irec) xy_buffer_r8
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR8( x_size*y_size, xy_buffer_r8 )
+#endif
+           DO J=1,Ny
+            DO I=1,Nx
+             global(I,J) = xy_buffer_r8(I,J)
+            ENDDO
+           ENDDO
+          else
+           write(msgbuf,'(a)')
+     &            ' MDSREADFIELD: illegal value for filePrec'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSREADFIELD'
+          endif
+         ENDIF
+        DO jp=1,nPy
+         DO ip=1,nPx
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO J=1,sNy
+             JJ=((jp-1)*nSy+(bj-1))*sNy+J
+             DO I=1,sNx
+              II=((ip-1)*nSx+(bi-1))*sNx+I
+              arr_gl(i,bi,ip,j,bj,jp,k) = global(II,JJ)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
+       ENDDO
+c      ENDDO k=1,nNz
+
+        close( dUnit )
 
       endif
 c      end of if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
@@ -669,7 +792,7 @@ C Functions
       integer MDS_RECLEN
 C Local variables
       character*(80) dataFName
-      integer ip,jp,iG,jG,irec,bi,bj,ii,j,k,dUnit,IL
+      integer ip,jp,iG,jG,irec,bi,bj,ii,i,j,k,dUnit,IL
       logical exst
       _RL arr(1-oLx:sNx+oLx,1-oLy:sNy+oLy,nLocz,nSx,nSy)
       Real*4 r4seg(sNx)
@@ -677,6 +800,17 @@ C Local variables
       logical globalFile,fileIsOpen
       integer length_of_rec
       character*(max_len_mbuf) msgbuf
+cph-usesingle(
+      integer ii,jj
+      integer x_size,y_size,iG_IO,jG_IO,npe
+      PARAMETER ( x_size = Nx )
+      PARAMETER ( y_size = Ny )
+      Real*4 xy_buffer_r4(x_size,y_size)
+      Real*8 xy_buffer_r8(x_size,y_size)
+      Real*8 global(Nx,Ny)
+      _RL    local(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+cph-usesingle)
+
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -702,30 +836,80 @@ C Assume nothing
 C Assign a free unit number as the I/O channel for this routine
       call MDSFINDUNIT( dUnit, mythid )
 
+      if ( useSingleCPUIO ) then
+
+C master thread of process 0, only, opens a global file
+#ifdef ALLOW_USE_MPI
+        IF( mpiMyId .EQ. 0 ) THEN
+#else
+        IF ( .TRUE. ) THEN
+#endif /* ALLOW_USE_MPI */
+
 C Check first for global file with simple name (ie. fName)
-      dataFName = fName
-      inquire( file=dataFname, exist=exst )
-      if (exst) then
-       write(msgbuf,'(a,a)')
-     &   ' MDSREADFIELD: opening global file: ',dataFName
-       call print_message( msgbuf, standardmessageunit,
-     &                     SQUEEZE_RIGHT , mythid)
-      endif
+         dataFName = fName
+         inquire( file=dataFname, exist=exst )
+         if (exst) globalFile = .TRUE.
 
 C If negative check for global file with MDS name (ie. fName.data)
-      if (.NOT. globalFile) then
-       write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+         if (.NOT. globalFile) then
+          write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+          inquire( file=dataFname, exist=exst )
+          if (exst) globalFile = .TRUE.
+         endif
+
+C If global file is visible to process 0, then open it here.
+C Otherwise stop program.
+         if ( globalFile) then
+          length_of_rec=MDS_RECLEN( filePrec, x_size*y_size, mythid )
+          open( dUnit, file=dataFName, status='old',
+     &         access='direct', recl=length_of_rec )
+         else
+          write(msgbuf,'(2a)') ' MDSREADFIELD: filename: ',dataFName
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
+          write(msgbuf,'(a)')
+     &      ' MDSREADFIELD: File does not exist'
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          call print_error( msgbuf, mythid )
+          stop 'ABNORMAL END: S/R MDSREADFIELD'
+         endif
+
+        ENDIF
+
+c-- useSingleCpuIO
+      else
+
+C Check first for global file with simple name (ie. fName)
+       dataFName = fName
        inquire( file=dataFname, exist=exst )
        if (exst) then
         write(msgbuf,'(a,a)')
-     &    ' MDSREADFIELD_GL: opening global file: ',dataFName
+     &    ' MDSREADFIELD: opening global file: ',dataFName
         call print_message( msgbuf, standardmessageunit,
      &                      SQUEEZE_RIGHT , mythid)
-        globalFile = .TRUE.
        endif
+
+C If negative check for global file with MDS name (ie. fName.data)
+       if (.NOT. globalFile) then
+        write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+        inquire( file=dataFname, exist=exst )
+        if (exst) then
+         write(msgbuf,'(a,a)')
+     &     ' MDSREADFIELD_GL: opening global file: ',dataFName
+         call print_message( msgbuf, standardmessageunit,
+     &                       SQUEEZE_RIGHT , mythid)
+         globalFile = .TRUE.
+        endif
+       endif
+
+c-- useSingleCpuIO
       endif
 
-      if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
+      if ( .not. useSingleCpuIO ) then
+cph      if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
+      if ( .not. ( globalFile ) ) then
 
 C If we are reading from a global file then we open it here
       if (globalFile) then
@@ -851,6 +1035,68 @@ C If global file was opened then close it
        close( dUnit )
        fileIsOpen = .FALSE.
       endif
+
+c      end of if ( .not. ( globalFile ) ) then
+      endif
+
+c      else of if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
+      else
+
+       DO k=1,nLocz
+
+#ifdef ALLOW_USE_MPI
+         IF( mpiMyId .EQ. 0 ) THEN
+#else
+         IF ( .TRUE. ) THEN
+#endif /* ALLOW_USE_MPI */
+          irec = k+nNz*(irecord-1)
+          if (filePrec .eq. precFloat32) then
+           read(dUnit,rec=irec) xy_buffer_r4
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR4( x_size*y_size, xy_buffer_r4 )
+#endif
+           DO J=1,Ny
+            DO I=1,Nx
+             global(I,J) = xy_buffer_r4(I,J)
+            ENDDO
+           ENDDO
+          elseif (filePrec .eq. precFloat64) then
+           read(dUnit,rec=irec) xy_buffer_r8
+#ifdef _BYTESWAPIO
+           call MDS_BYTESWAPR8( x_size*y_size, xy_buffer_r8 )
+#endif
+           DO J=1,Ny
+            DO I=1,Nx
+             global(I,J) = xy_buffer_r8(I,J)
+            ENDDO
+           ENDDO
+          else
+           write(msgbuf,'(a)')
+     &            ' MDSREADFIELD: illegal value for filePrec'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSREADFIELD'
+          endif
+         ENDIF
+        DO jp=1,nPy
+         DO ip=1,nPx
+          DO bj = myByLo(myThid), myByHi(myThid)
+           DO bi = myBxLo(myThid), myBxHi(myThid)
+            DO J=1,sNy
+             JJ=((jp-1)*nSy+(bj-1))*sNy+J
+             DO I=1,sNx
+              II=((ip-1)*nSx+(bi-1))*sNx+I
+              arr_gl(i,bi,ip,j,bj,jp,k) = global(II,JJ)
+             ENDDO
+            ENDDO
+           ENDDO
+          ENDDO
+         ENDDO
+        ENDDO
+
+       ENDDO
+c      ENDDO k=1,nNz
+
+        close( dUnit )
 
       endif
 c      end of if ( .not. ( globalFile .and. useSingleCPUIO ) ) then
