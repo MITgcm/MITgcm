@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.3 2004/02/16 22:21:43 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_model_attr.F,v 1.4 2004/02/23 19:28:29 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -49,11 +49,39 @@ C     Grid info included as attributes
 #ifdef ALLOW_EXCH2
 C     W2/exch2 information
       CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
+     &     'exch2_nNeighbours', 1, exch2_nNeighbours(tnum))
+      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
+     &     'exch2_neighbourId', exch2_nNeighbours(tnum), 
+     &     exch2_neighbourId(1,tnum))
+
+      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
+     &     'exch2_pi', 2*exch2_nNeighbours(tnum), exch2_pi(1,1,tnum))
+      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
+     &     'exch2_pj', 2*exch2_nNeighbours(tnum), exch2_pj(1,1,tnum))
+      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
+     &     'exch2_oi', exch2_nNeighbours(tnum), exch2_oi(1,tnum))
+      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
+     &     'exch2_oj', exch2_nNeighbours(tnum), exch2_oj(1,tnum))
+      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
+     &     'exch2_oi_f', exch2_nNeighbours(tnum), exch2_oi_f(1,tnum))
+      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
+     &     'exch2_oj_f', exch2_nNeighbours(tnum), exch2_oj_f(1,tnum))
+
+      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
+     &     'exch2_isNedge', 1, exch2_isNedge(tnum))
+      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
+     &     'exch2_isSedge', 1, exch2_isSedge(tnum))
+      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
+     &     'exch2_isEedge', 1, exch2_isEedge(tnum))
+      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
+     &     'exch2_isWedge', 1, exch2_isWedge(tnum))
+
+      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
+     &     'exch2_myFace', 1, exch2_myFace(tnum))
+      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
      &     'exch2_txglobalo', 1, exch2_txglobalo(tnum))
       CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
      &     'exch2_tyglobalo', 1, exch2_tyglobalo(tnum))
-      CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
-     &     'exch2_myFace', 1, exch2_myFace(tnum))
       CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
      &     'exch2_tbasex', 1, exch2_tbasex(tnum))
       CALL MNC_FILE_ADD_ATTR_INT(myThid,fname, 
