@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.18 1998/07/01 19:57:22 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.19 1998/07/15 22:11:33 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -104,28 +104,46 @@ C     I             - Loop counter
       INTEGER I, myCurrentIter
       REAL    myCurrentTime
 
+C--   This timer encompasses the whole code
+      CALL TIMER_START('ALL',myThid)
+
+      CALL TIMER_START('SPIN-UP',myThid)
+
 C--   Set model initial conditions 
+      CALL TIMER_START('INITIALISE          [SPIN-UP]',myThid)
       CALL INITIALISE( myThid )
       myCurrentTime = startTime
       myCurrentIter = nIter0
+      CALL TIMER_STOP ('INITIALISE          [SPIN-UP]',myThid)
 
 C--   Dump for start state
+      CALL TIMER_START('I/O (WRITE)         [SPIN-UP]',myThid)
       CALL WRITE_STATE( .TRUE., myCurrentTime, myCurrentIter, myThid )
+      CALL TIMER_STOP ('I/O (WRITE)         [SPIN-UP]',myThid)
+
+      CALL TIMER_STOP ('SPIN-UP',myThid)
 
 C--   Begin time stepping loop
+      CALL TIMER_START('MAIN LOOP',myThid)
       DO I=1, nTimeSteps
 
 C--    Load forcing/external data fields
+       CALL TIMER_START('I/O (READ)         [MAIN LOOP]',myThid)
        CALL LOAD_EXTERNAL_FIELDS( myCurrentTime, myCurrentIter, myThid )
+       CALL TIMER_STOP ('I/O (READ)         [MAIN LOOP]',myThid)
 
 C--    Step forward fields and calculate time tendency terms
+       CALL TIMER_START('DYNAMICS           [MAIN LOOP]',myThid)
        CALL DYNAMICS( myCurrentTime, myCurrentIter, myThid )
+       CALL TIMER_STOP ('DYNAMICS           [MAIN LOOP]',myThid)
 
 C--    Do time averages
 #ifdef ALLOW_DIAGNOSTICS
+       CALL TIMER_START('I/O (WRITE)        [MAIN LOOP]',myThid)
        IF (taveFreq.GT.0.) THEN
         CALL WRITE_TIME_AVERAGES( myCurrentTime, myCurrentIter, myThid )
        ENDIF
+       CALL TIMER_STOP ('I/O (WRITE)        [MAIN LOOP]',myThid)
 #endif
 
 C--    Do IO if needed.
@@ -134,15 +152,21 @@ C      =====
 C      At this point model arrays hold U,V,T,S  at "time-level" N 
 C      and cg2d_x at "time-level" N-1/2 where N = I+timeLevBase-1. 
 C      By convention this is taken to be the model "state". 
+       CALL TIMER_START('I/O (WRITE)        [MAIN LOOP]',myThid)
        CALL DO_THE_MODEL_IO( myCurrentTime, myCurrentIter, myThid )
+       CALL TIMER_STOP ('I/O (WRITE)        [MAIN LOOP]',myThid)
 
 C--    Solve elliptic equation(s).
 C      Two-dimensional only for conventional hydrostatic or 
 C      three-dimensional for non-hydrostatic and/or IGW scheme.
+       CALL TIMER_START('SOLVE_FOR_PRESSURE [MAIN LOOP]',myThid)
        CALL SOLVE_FOR_PRESSURE( myThid )
+       CALL TIMER_STOP ('SOLVE_FOR_PRESSURE [MAIN LOOP]',myThid)
 
 C--    Do "blocking" sends and receives for tendency "overlap" terms
+       CALL TIMER_START('BLOCKING_EXCHANGES [MAIN LOOP]',myThid)
        CALL DO_GTERM_BLOCKING_EXCHANGES( myThid )
+       CALL TIMER_STOP ('BLOCKING_EXCHANGES [MAIN LOOP]',myThid)
 
        myCurrentIter = myCurrentIter + 1
        myCurrentTime = myCurrentTime + deltaTClock 
@@ -160,26 +184,43 @@ C      Thus a checkpoint contains U.0000000000, GU.0000000001 and
 C      cg2d_x.0000000001 in the indexing scheme used for the model 
 C      "state" files. This example is referred to as a checkpoint 
 C      at time level 1 
+       CALL TIMER_START('I/O (WRITE)        [MAIN LOOP]',myThid)
        CALL WRITE_CHECKPOINT( .FALSE., myCurrentTime, myCurrentIter, myThid )
+       CALL TIMER_STOP ('I/O (WRITE)        [MAIN LOOP]',myThid)
 
       ENDDO
+      CALL TIMER_STOP ('MAIN LOOP',myThid)
+      CALL TIMER_START('SPIN-DOWN',myThid)
 
 C--   Final checkpoint (incase the in-loop checkpoint was missed)
+      CALL TIMER_START('I/O (WRITE)         [SPIN-DOWN]',myThid)
       CALL WRITE_CHECKPOINT( .TRUE., myCurrentTime, myCurrentIter, myThid )
+      CALL TIMER_STOP ('I/O (WRITE)         [SPIN-DOWN]',myThid)
 
 C--   Step-forward U/V/Theta/Salt for purposes of final I/O dump
+      CALL TIMER_START('DYNAMICS            [SPIN-DOWN]',myThid)
       CALL DYNAMICS( myCurrentTime, myCurrentIter, myThid )
+      CALL TIMER_STOP ('DYNAMICS            [SPIN-DOWN]',myThid)
 
 C--   Do time averages
 #ifdef ALLOW_DIAGNOSTICS
       IF (taveFreq.GT.0.) THEN
-        CALL WRITE_TIME_AVERAGES( myCurrentTime, myCurrentIter, myThid )
+       CALL TIMER_START('I/O (WRITE)        [SPIN-DOWN]',myThid)
+       CALL WRITE_TIME_AVERAGES( myCurrentTime, myCurrentIter, myThid )
+       CALL TIMER_STOP ('I/O (WRITE)        [SPIN-DOWN]',myThid)
       ENDIF
 #endif
 
 C--   Dump for end state
+      CALL TIMER_START('I/O (WRITE)         [SPIN-DOWN]',myThid)
       CALL WRITE_STATE( .FALSE., myCurrentTime, myCurrentIter, myThid )
+      CALL TIMER_STOP ('I/O (WRITE)         [SPIN-DOWN]',myThid)
 
+      CALL TIMER_STOP ('SPIN-DOWN',myThid)
+      CALL TIMER_STOP ('ALL',myThid)
+
+C--   Write timer statistics
+      IF ( myThid .EQ. 1 ) CALL TIMER_PRINTALL( myThid )
 
       RETURN
       END
