@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.17 1998/08/18 16:32:42 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.18 1998/08/18 20:26:45 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -572,8 +572,8 @@ C     Pressure extrapolated forward in time
       DO j=jMin,jMax
        DO i=iMin,iMax
         pf(i,j) = 
-     &   ab15*(   cg2d_x(i,j,bi,bj)*gBaro*rhonil )
-     &  +ab05*(cg2d_xNM1(i,j,bi,bj)*gBaro*rhonil )
+     &   ab15*(   cg2d_x(i,j,bi,bj)*gBaro )
+     &  +ab05*(cg2d_xNM1(i,j,bi,bj)*gBaro )
        ENDDO
       ENDDO
 #endif
@@ -585,7 +585,7 @@ C     grady(p) + gV
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) = -_maskS(i,j,k,bi,bj)*_rdyC(i,j,bi,bj)
-     &            *(pf(i,j)-pf(i,j-1))/rhonil 
+     &            *(pf(i,j)-pf(i,j-1))
      &            +gV(i,j,k,bi,bj)
        ENDDO
       ENDDO
@@ -659,7 +659,7 @@ C     gradx(p)+gU
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) = -_maskW(i,j,k,bi,bj)*_rdxC(i,j,bi,bj)*
-     &            (pf(i,j)-pf(i-1,j))/rhonil
+     &            (pf(i,j)-pf(i-1,j))
      &            +gU(i,j,k,bi,bj)
        ENDDO
       ENDDO
