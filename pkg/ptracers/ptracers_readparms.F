@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.10 2004/10/18 16:04:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.11 2004/10/22 16:01:20 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -28,13 +28,14 @@ CEOP
 #ifdef ALLOW_PTRACERS
 
 C     !LOCAL VARIABLES:
-C     iTracer    :: loop indices
+C     k,iTracer  :: loop indices
 C     iUnit      :: unit number for I/O
 C     msgBuf     :: message buffer
-      INTEGER iTracer
+      INTEGER k, iTracer
       INTEGER iUnit
       INTEGER ic
       CHARACTER*(MAX_LEN_MBUF) msgBuf
+      _RL PTRACERS_diffKr(PTRACERS_num)
 
 C     PTRACERS_taveFreq :: Frequency with which time-averaged PTRACERS
 C                          are written to post-processing files.
@@ -44,6 +45,7 @@ C                          are written to post-processing files.
      &     PTRACERS_diffKh,
      &     PTRACERS_diffK4,
      &     PTRACERS_diffKr,
+     &     PTRACERS_diffKrNr,
      &     PTRACERS_useGMRedi,
      &     PTRACERS_useKPP,
      &     PTRACERS_numInUse,
@@ -66,7 +68,10 @@ C     Set defaults values for parameters in PTRACERS.h
         PTRACERS_advScheme(iTracer)=saltAdvScheme
         PTRACERS_diffKh(iTracer)=diffKhS
         PTRACERS_diffK4(iTracer)=diffK4S
-        PTRACERS_diffKr(iTracer)=diffKrNrS(1)
+        PTRACERS_diffKr(iTracer)=UNSET_RL
+        DO k=1,Nr
+          PTRACERS_diffKrNr(k,iTracer)=diffKrNrS(k)
+        ENDDO
         PTRACERS_useGMRedi(iTracer)=useGMRedi
         PTRACERS_useKPP(iTracer)=useKPP
         PTRACERS_initialFile(iTracer)=' '
@@ -130,6 +135,17 @@ C     Check that enough parameters were specified
      &         iTracer
           CALL PRINT_ERROR(msgBuf, 1)
           STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
+        ENDIF
+      ENDDO
+      DO iTracer=1,PTRACERS_numInUse
+        PTRACERS_useGMRedi(iTracer) = PTRACERS_useGMRedi(iTracer)
+     &                           .AND.useGMRedi
+        PTRACERS_useKPP(iTracer) = PTRACERS_useKPP(iTracer)
+     &                        .AND.useKPP
+        IF ( PTRACERS_diffKr(iTracer).NE.UNSET_RL ) THEN
+         DO k=1,Nr
+          PTRACERS_diffKrNr(k,iTracer)=PTRACERS_diffKr(iTracer)
+         ENDDO
         ENDIF
       ENDDO
 
