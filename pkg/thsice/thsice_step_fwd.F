@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.8 2004/10/19 02:42:04 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.9 2005/01/31 19:37:06 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -88,6 +88,11 @@ C     TFrzOce   :: sea-water freezing temperature [oC] (function of S)
       _RL oceV2s, oceTs
       _RL compact, hIce, hSnow, Tsf, Tice(nlyr), qicen(nlyr)
       _RL tmpflx(0:2), tmpdTs
+#ifdef ALLOW_DIAGNOSTICS
+      _RL tmpFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON      
+#endif
 
       LOGICAL dBug
 
@@ -147,10 +152,7 @@ C--    Update Sea-Ice state :
           Tice2(i,j,bi,bj)=Tice(2)
           Qice1(i,j,bi,bj)=qicen(1)
           Qice2(i,j,bi,bj)=qicen(2)
-#ifdef ALLOW_TIMEAVE
-          ice_albedo_Ave(i,j,bi,bj) = ice_albedo_Ave(i,j,bi,bj)
-     &                              + icFrac*albedo*thSIce_deltaT
-#endif /*ALLOW_TIMEAVE*/
+          siceAlb(i,j,bi,bj) = icFrac*albedo
           IF ( dBug ) THEN
            WRITE(6,1010) 'ThSI_FWD: Tsf, Tice(1,2), frzmltMxL =',
      &                              Tsf, Tice, frzmltMxL
@@ -163,6 +165,21 @@ C--    Update Sea-Ice state :
        ENDDO
       ENDIF
       dBug = .FALSE.
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+
+       IF ( DIAGNOSTICS_IS_ON('SIsnwPrc',myThid) ) THEN
+        DO j=1,sNy
+         DO i=1,sNx
+          tmpFld(i,j) = iceMask(i,j,bi,bj)*snowPrc(i,j,bi,bj)
+         ENDDO
+        ENDDO
+        CALL DIAGNOSTICS_FILL(tmpFld,'SIsnwPrc',0,1,2,bi,bj,myThid)
+       ENDIF
+
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C    part.2 : ice-covered fraction ; 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.3 2004/07/08 15:56:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_main.F,v 1.4 2005/01/31 19:37:06 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -119,6 +119,7 @@ C--     Mixed layer thickness: take the 1rst layer
            evpAtm(i,j) = 0.
            flxSW (i,j) = 0.
            snowPrc(i,j,bi,bj) = 0. _d 0
+           siceAlb(i,j,bi,bj) = 0. _d 0
 #ifdef ALLOW_BULK_FORCE
            prcAtm(i,j) = ( rain(i,j,bi,bj)+runoff(i,j,bi,bj) )*rhofw
            flxSW (i,j) = solar(i,j,bi,bj)

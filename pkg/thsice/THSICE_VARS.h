@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.1 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_VARS.h,v 1.2 2005/01/31 19:37:06 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -38,6 +38,7 @@ C-- COMMON /THSICE_FLUX/ hold fluxes needed for thsice model
 C   sHeating :: surf heating left to melt snow or ice (= Atmos-Conduction)
 C   flxCndBt :: heat flux conducted through the ice to bottom surface
 C   snowPrc  :: snow precipitation                        [kg/m2/s]
+C   siceAlb  :: area weighted sea-ice albedo           [0-1]
 C   dFdT     :: heat deriveative for coupled model
 C   oceQnet  :: net heat flux  to the ocean         (+=down) [W/m2]
 C   oceQsw   :: net short-wave that enter the ocean (+=down) [W/m2]
@@ -46,7 +47,7 @@ C   oceSflx  :: net salt flux to the ocean      (+=down) [psu.kg/m2]
       COMMON / THSICE_FLUX /
 c    &       oceQsw, oceQnet, oceFWfx, oceSflx,
      &       sHeating, flxCndBt,
-     &       snowPrc
+     &       snowPrc, siceAlb
 #ifdef COUPLE_MODEL
      &     , dFdT 
 #endif
@@ -58,6 +59,7 @@ c     _RL oceSflx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL sHeating(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL flxCndBt(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL snowPrc (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL siceAlb (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef COUPLE_MODEL
       _RL dFdT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
