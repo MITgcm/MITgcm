@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.4 2001/11/28 16:45:16 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_curvilinear_grid.F,v 1.5 2001/12/06 16:36:13 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -87,6 +87,28 @@ C !!! _EXCH_OUV_XY_R4(DXF, DYF, unSigned, myThid )
 cs!   this is not correct! <= need paired exchange for DXF,DYF
       _EXCH_XY_R4(DXF,myThid)
       _EXCH_XY_R4(DYF,myThid)
+cs! fix overlaps:
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO j=1,sNy
+         DO i=1,Olx
+          DXF(1-i,j,bi,bj)=DXF(i,j,bi,bj)
+          DXF(sNx+i,j,bi,bj)=DXF(sNx+1-i,j,bi,bj)
+          DYF(1-i,j,bi,bj)=DYF(i,j,bi,bj)
+          DYF(sNx+i,j,bi,bj)=DYF(sNx+1-i,j,bi,bj)
+         ENDDO
+        ENDDO
+        DO j=1,Oly
+         DO i=1,sNx
+          DXF(i,1-j,bi,bj)=DXF(i,j,bi,bj)
+          DXF(i,sNy+j,bi,bj)=DXF(i,sNy+1-j,bi,bj)
+          DYF(i,1-j,bi,bj)=DYF(i,j,bi,bj)
+          DYF(i,sNy+j,bi,bj)=DYF(i,sNy+1-j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+cs
 
       CALL MDSREADFIELD('RA.bin',readBinaryPrec,'RS',1,RA,  1,myThid)
       _EXCH_XY_R4(RA,myThid )
@@ -127,13 +149,30 @@ cs!   this is not correct <= need paired exchange for dxv,dyu
         DXV(1,sNy+1,bi,bj)=DXV(1,1,bi,bj)
         DYU(sNx+1,1,bi,bj)=DYU(1,1,bi,bj)
         DYU(1,sNy+1,bi,bj)=DYU(1,1,bi,bj)
+cs! fix overlaps:
+        DO j=1,sNy
+         DO i=1,Olx
+          DXV(1-i,j,bi,bj)=DXV(1+i,j,bi,bj)
+          DXV(sNx+i,j,bi,bj)=DXV(sNx-i,j,bi,bj)
+          DYU(1-i,j,bi,bj)=DYU(1+i,j,bi,bj)
+          DYU(sNx+i,j,bi,bj)=DYU(sNx-i,j,bi,bj)
+         ENDDO
+        ENDDO
+        DO j=1,Oly
+         DO i=1,sNx
+          DXV(i,1-j,bi,bj)=DXV(i,1+j,bi,bj)
+          DXV(i,sNy+j,bi,bj)=DXV(i,sNy-j,bi,bj)
+          DYU(i,1-j,bi,bj)=DYU(i,1+j,bi,bj)
+          DYU(i,sNy+j,bi,bj)=DYU(i,sNy-j,bi,bj)
+         ENDDO
+        ENDDO
        ENDDO
       ENDDO
 cs-   end block
 C !!! _EXCH_ZUV_XY_R4(DXV, DYU, unSigned, myThid)
 cs!   this is not correct <= need paired exchange for dxv,dyu
-      CALL EXCH_Z_XY_RS(DXV,myThid)
-      CALL EXCH_Z_XY_RS(DYU,myThid)
+cs    CALL EXCH_Z_XY_RS(DXV,myThid)
+cs    CALL EXCH_Z_XY_RS(DYU,myThid)
 
       CALL MDSREADFIELD('RAZ.bin',readBinaryPrec,'RS',1,RAZ,  1,myThid)
 cs-   this block needed by cubed sphere until we write more useful I/O routines
