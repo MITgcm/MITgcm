@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.35 2005/03/21 17:34:51 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.36 2005/03/21 18:47:04 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -652,8 +652,8 @@ c -----------
      1 tracers,ntracers-ptracers,ntracedim,dttrb,itrtrb,rmu,edle,qbeg,
      2 tprof,stuflux,stvflux,sri,skh,skm,swinds,sustar,sz0,frqtrb,
      3 pbldpth,sct,scu,stu2m,stv2m,stt2m,stq2m,stu10m,stv10m,stt10m,
-     4 stq10m,istrip,nlay,nymd,nhms,grav,cp,rgas,faceps,virtcon,undef,
-     5 dshdthg,dshdshg,dthdthg,dthdshg,eturb,dedqa,dedtc,
+     4 stq10m,istrip,nlay,nltop,nymd,nhms,grav,cp,rgas,faceps,virtcon,
+     5 undef,dshdthg,dshdshg,dthdthg,dthdshg,eturb,dedqa,dedtc,
      6 hsturb,dhsdqa,dhsdtc,transth,transsh,
      7 ctsave,xxsave,yysave,zetasave,xlsave,khsave,qliq,turbfcc)
 
@@ -1424,7 +1424,7 @@ c *********************************************************************
      1 IWATER,Z0,tracers,ntrace,ntracedim,DTAU,ITRTRB,KMBG,KHBG,QBEG,
      2 TPROF,WU,WV,SRI,ET,EU,SWINDS,sustar,sz0,freqdg,pbldpth,
      3 sct,scu,stu2m,stv2m,stt2m,stq2m,stu10m,stv10m,stt10m,stq10m,
-     4 irun,nlev,NYMD,NHMS,grav,cp,rgas,faceps,virtcon,undef,
+     4 irun,nlev,nltop,NYMD,NHMS,grav,cp,rgas,faceps,virtcon,undef,
      5 dshdthg,dshdshg,dthdthg,dthdshg,eturb,dedqa,dedtc,
      6 hsturb,dhsdqa,dhsdtc,transth,transsh,
      7 ctsave,xxsave,yysave,zetasave,xlsave,khsave,qliq,turbfcc)
@@ -1458,6 +1458,7 @@ C    ITRTRB        -         NUMBER OF ITERATIONS OF TRBFLX
 C    KMBG          -         BACKGROUND VALUE OF MOMENTUM TRANSFER COEF
 C    KHBG          -         BACKGROUND VALUE OF HEAT TRANSFER COEF
 C    NLEV          -         NUMBER OF ATMOSPHERIC LEVELS TO CALCULATE
+C    nltop         -         Top level allowed for turbulence
 C    QBEG          -         LOGICAL .TRUE. FOR INITIAL START OF GCM
 C    TPROF         -         LOGICAL .TRUE. TO CALCULATE PT BY PT DIAGS
 C
@@ -1469,7 +1470,7 @@ C**********************************************************************
       implicit none
 
 C Argument list declarations
-      integer nn,irun,nlev,ntrace,ntracedim,itrtrb,nhms,nymd
+      integer nn,irun,nlev,nltop,ntrace,ntracedim,itrtrb,nhms,nymd
       _RL TH(irun,NLEV+1),THV(irun,NLEV+1),SH(irun,NLEV+1)
       _RL U(irun,NLEV+1),V(irun,NLEV+1),QQ(irun,NLEV)
       _RL PL(irun,NLEV),PLE(irun,NLEV+1),PLK(irun,NLEV)
