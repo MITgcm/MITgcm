@@ -1,7 +1,13 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.109 2002/12/10 04:28:01 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.110 2002/12/16 17:12:23 cheisey Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint47c_post
+o Added a verification experiment for a global cubed-sphere ocean run
+  -  verification/global_ocean.cubed32x32x30
+  -  uses pkg/therm_seaice and pkg/bulk_forcing
+
 
 o allow to run AIM physics with SPEEDY input files (from Franco Molteni)
 o allow a more accurate definition of Ro_Surf (selectFindRoSurf=1)
