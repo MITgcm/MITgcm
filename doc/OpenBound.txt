@@ -65,7 +65,7 @@ The examples supplied are the barotropic zonal flow over a Gaussian bump in
 a channel.
 
    * Header files: Copy or link SIZE.h, CPP_OPTIONS.h and CP_EEOPTIONS.h
-     from .../verification/exp4/ to .../model/inc/, .../model/inc/ and
+     from .../verification/exp4/code/ to .../model/inc/, .../model/inc/ and
      .../eesupp.inc/ respectively
    * Modified source: Copy set_obcs.F to .../model/src/
 
@@ -78,7 +78,7 @@ Now compile the code as usual:
 
 To run the code you must first choose a data file to use:
 
-   * cd ../verification/exp4
+   * cd ../verification/exp4/input
    * cp data.bump data
    * ../../exe/mitgcmuv
 
