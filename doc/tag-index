@@ -1,7 +1,27 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.46 2001/08/14 00:25:20 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.47 2001/08/21 16:38:41 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint40
+o all changes of checkpoint40pre?
+o new package rw/
+  Added method for dumping intermediate local arrays:
+  mdsio_writetile - same as mdsio_writefield except works from inside
+                    bi,bj loop
+  mdsio_writelocal - same as mdsio_writetile except works for local
+                     arrays
+  write_local_r? - higher-level wrapper for mdsio_writelocal
+  Controlled by diagFreq. Defaults to zero (ie. no dumps)
+  Example given at end of mom_vecinv.F that dumps some local arrays.
+o replaced calc_mom_rhs.F by mom_fluxform.F/mom_vecinc.F to
+  control flux-form versus vector invariant code.
+  Switch is runtime flag vectorInvariantMomentum (defaults to false)
+  or genmake -DISABLE ...
+o TAMC-related update to cope with mom_fluxform.F/mom_vecinc.F
+  (additional storing is now needed for case vecinv;
+  currently nothing implemented to switch this storing off
+  in case fluxform is used since no CPP flag available).
 
 checkpoint40pre7
 o bug fix in dynamics.F
