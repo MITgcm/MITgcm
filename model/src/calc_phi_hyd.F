@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.27 2003/02/09 02:58:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.28 2003/02/11 02:31:32 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -173,7 +173,7 @@ C           conserve KE+PE exactly even though it is more natural
 C
            IF (k.LT.Nr) phiHyd(i,j,k+1)=phiHyd(i,j,k)
      &            + drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
-           phiHyd(i,j,k)=phiHyd(i,j,k)+
+           phiHyd(i,j,k)=phiHyd(i,j,k)
      &       + half*drF(K)*gravity*alphaRho(i,j)*recip_rhoConst
 
           ENDDO
