@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.22 2001/07/05 21:44:25 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_masks_etc.F,v 1.23 2001/08/27 18:42:37 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -117,16 +117,17 @@ C      o Impose minimum fraction and/or size (dimensional)
 
 C-  Re-calculate Reference surface position, taking into account hFacC
 C   initialize Total column fluid thickness and surface k index
+C       Note: if no fluid (continent) ==> ksurf = Nr+1
         DO J=1-Oly,sNy+Oly
          DO I=1-Olx,sNx+Olx
           tmpfld(I,J,bi,bj) = 0.
-          k_surf(I,J,bi,bj) = Nr
+          ksurfC(I,J,bi,bj) = Nr+1
           Ro_surf(I,J,bi,bj) = R_low(I,J,bi,bj)
           DO K=Nr,1,-1
            Ro_surf(I,J,bi,bj) = Ro_surf(I,J,bi,bj)
      &                        + drF(k)*hFacC(I,J,K,bi,bj)
            IF (hFacC(I,J,K,bi,bj).NE.0.) THEN
-            k_surf(I,J,bi,bj) = k
+            ksurfC(I,J,bi,bj) = k
             tmpfld(i,j,bi,bj) = tmpfld(i,j,bi,bj) + 1.
            ENDIF
           ENDDO
@@ -240,6 +241,18 @@ C     Masks and reciprocals of hFac[CWS]
           ENDDO
          ENDDO
         ENDDO
+C-    Calculate surface k index for interface W & S (U & V points)
+        DO J=1-Oly,sNy+Oly
+         DO I=1-Olx,sNx+Olx
+          ksurfW(I,J,bi,bj) = Nr+1
+          ksurfS(I,J,bi,bj) = Nr+1
+          DO k=Nr,1,-1
+           IF (hFacW(I,J,K,bi,bj).NE.0.) ksurfW(I,J,bi,bj) = k
+           IF (hFacS(I,J,K,bi,bj).NE.0.) ksurfS(I,J,bi,bj) = k
+          ENDDO
+         ENDDO
+        ENDDO
+C - end bi,bj loops.
        ENDDO
       ENDDO
 C     _EXCH_XYZ_R4(recip_HFacC    , myThid )
