@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.21 2005/01/27 01:21:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.22 2005/01/27 04:01:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -62,6 +62,7 @@ C     === Local arrays ===
 C     aWght, bWght :: Interpolation weights
       INTEGER bi,bj,i,j,intime0,intime1
       _RL aWght,bWght,rdt
+      _RL tmp1Wght, tmp2Wght
       INTEGER nForcingPeriods,Imytm,Ifprd,Ifcyc,Iftm
 CEOP
 
@@ -108,8 +109,12 @@ C-jmc: with some option of g77, FLOAT results in real*4 evaluation
 C      of aWght; using DFLOAT always force real*8 computation:
 C-ph: however, TAF doesnt recognize DFLOAT, 
 C     so I put it back to FLOAT for now 
-      aWght =  FLOAT( Iftm-Ifprd*(intime0 - 1) ) /  FLOAT( Ifprd )
-c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
+c     aWght =  FLOAT( Iftm-Ifprd*(intime0 - 1) ) /  FLOAT( Ifprd )
+c     aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
+C-jmc: so let's try this:
+      tmp1Wght = FLOAT( Iftm-Ifprd*(intime0 - 1) )
+      tmp2Wght = FLOAT( Ifprd )
+      aWght =  tmp1Wght / tmp2Wght
       bWght = 1. _d 0 - aWght
 
       IF (
