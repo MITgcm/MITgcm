@@ -35,12 +35,12 @@ if meanfields
   %
   mit_loadglobaldata
   %
-  u=rdmds('uVeltave',timesteps(2:end)');
-  v=rdmds('vVeltave',timesteps(2:end)');
-  w=rdmds('wVeltave',timesteps(2:end)');
-  t=rdmds('Ttave',timesteps(2:end)');
-  s=rdmds('Stave',timesteps(2:end)');
-  eta=rdmds('ETAtave',timesteps(2:end)').*repmat(squeeze(grd.cmask(:,:,1)),[1 1 nt-1]);
+  u=rdmds('uVeltave',timesteps(2:nt)');
+  v=rdmds('vVeltave',timesteps(2:nt)');
+  w=rdmds('wVeltave',timesteps(2:nt)');
+  t=rdmds('Ttave',timesteps(2:nt)');
+  s=rdmds('Stave',timesteps(2:nt)');
+  eta=rdmds('ETAtave',timesteps(2:nt)').*repmat(squeeze(grd.cmask(:,:,1)),[1 1 nt-1]);
   k=1;
   u=cat(4,zeros([nx ny nz 1]),u);
   v=cat(4,zeros([nx ny nz 1]),v);
@@ -134,17 +134,14 @@ if meanfields
   empr_diag = - (s(:,:,1,k)-sdmean)*grd.dz(1).*grd.hfacc(:,:,1)*recip_tauSalt/35;
   clear sh;
   sh(1) = subplot(2,2,1);imagesc(grd.lonc,grd.latc,qnet_diag'); 
-  axis xy; axis image; colorbar('h')
   title(['Q_{diag} from T-T_{lev} at the surface']) 
   sh(2) =subplot(2,2,2);imagesc(grd.lonc,grd.latc,qnet'.*grd.cmask(:,:,1)');
-  axis xy; axis image; colorbar('h')
   title('annual mean Q_{net} (data)')
   sh(3) =subplot(2,2,3);imagesc(grd.lonc,grd.latc,empr_diag'); 
-  axis xy; axis image; colorbar('h')
   title(['(E-P)_{diag} from S-S_{lev} at the surface'])
   sh(4) =subplot(2,2,4);imagesc(grd.lonc,grd.latc,empr'.*grd.cmask(:,:,1)');
-  axis xy; axis image; colorbar('h')
   title('annual mean E-P (data)')
+  axis(sh,'image'); axis(sh,'xy')
   suptitle(['experiment ' dname ', timestep = ' num2str(timesteps(k)) ...
 	   ', ' tuname ' = ' num2str(tim(k))])
   set(sh(1:2),'clim',[-1 1]*200); 
