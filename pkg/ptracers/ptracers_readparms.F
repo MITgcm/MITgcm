@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.11 2004/10/22 16:01:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.12 2004/10/28 00:32:21 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -161,6 +161,48 @@ C       Initialize the MNC variable types for PTRACERS
       ENDIF
 #endif /*  ALLOW_MNC  */
       
+C--   Print a summary of pTracer parameter values:
+      iUnit = standardMessageUnit
+      WRITE(msgBuf,'(A)') '// ==================================='
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') '// PTRACERS parameters '
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , 1)
+      WRITE(msgBuf,'(A)') '// ==================================='
+      CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , 1)
+      CALL WRITE_0D_I( PTRACERS_numInUse, INDEX_NONE,
+     &   'PTRACERS_numInUse =',
+     &   ' /* number of tracers */')
+      CALL WRITE_0D_R8(PTRACERS_taveFreq, INDEX_NONE,
+     &   'PTRACERS_taveFreq =',
+     &   ' /* Frequency^-1 for time-Aver. output (s) */')
+      CALL WRITE_0D_L( PTRACERS_useRecords, INDEX_NONE,
+     &   'PTRACERS_useRecords =', ' /* all tracers in 1 file */')
+      CALL WRITE_0D_L( PTRACERS_write_mdsio, INDEX_NONE,
+     &   'PTRACERS_write_mdsio =', ' /* write mdsio files */')
+      CALL WRITE_0D_L( PTRACERS_write_mnc, INDEX_NONE,
+     &   'PTRACERS_write_mnc =', ' /* write mnc files */')
+
+      DO iTracer=1,PTRACERS_numInUse
+        WRITE(msgBuf,'(A)') ' -----------------------------------'
+        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , 1)
+        WRITE(msgBuf,'(A,I4)') ' tracer number : ',iTracer
+        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , 1)
+        CALL WRITE_0D_I( PTRACERS_advScheme(iTracer), INDEX_NONE,
+     &     'PTRACERS_advScheme =', ' /* Advection Scheme */')
+        CALL WRITE_0D_R8( PTRACERS_diffKh(iTracer), INDEX_NONE,
+     &     'PTRACERS_diffKh =', ' /* Laplacian Diffusivity */')
+        CALL WRITE_0D_R8( PTRACERS_diffK4(iTracer), INDEX_NONE,
+     &     'PTRACERS_diffK4 =', ' /* Biharmonic Diffusivity */')
+        CALL WRITE_1D_R8( PTRACERS_diffKrNr(1,iTracer), Nr, INDEX_K,
+     &     'PTRACERS_diffKrNr =', ' /* Vertical Diffusivity */')
+        CALL WRITE_0D_L( PTRACERS_useGMRedi(iTracer), INDEX_NONE,
+     &     'PTRACERS_useGMRedi =', ' /* apply GM-Redi */')
+        CALL WRITE_0D_L( PTRACERS_useKPP(iTracer), INDEX_NONE,
+     &     'PTRACERS_useKPP =', ' /* apply KPP scheme */')
+
+      ENDDO
+        WRITE(msgBuf,'(A)') ' -----------------------------------'
+        CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , 1)
 #endif /* ALLOW_PTRACERS */
 
       RETURN
