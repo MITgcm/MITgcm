@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.11 2004/09/21 12:57:50 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.12 2004/11/02 01:05:02 jmc Exp $
 C $Name:  $
 
 #include "MOM_VECINV_OPTIONS.h"
@@ -41,7 +41,7 @@ C     == Local variables ==
       _RL Zip,Zij,Zpj,Dim,Dij,Dmj,uD2,vD2,uD4,vD4
       _RL Alin,Alth,grdVrt,vg2,vg4
       LOGICAL useVariableViscosity
-      integer klev
+      INTEGER klev
 
       useVariableViscosity=
      &      (viscAhGrid*deltaTmom.NE.0.)
@@ -76,11 +76,11 @@ C but this approximation will work on cube (and differs by as much as 4X)
          grdVrt=max(grdVrt,
      &        abs((vort3(i+1,j+1)-vort3(i+1,j))*recip_DYG(i+1,j,bi,bj)))
          Alth=viscC2leith*grdVrt*(rA(i,j,bi,bj)**1.5)
-         Alin=viscAh+vg2*rA ( i , j ,bi,bj)
+         Alin=viscAhD+vg2*rA ( i , j ,bi,bj)
          viscAh_D(i,j)=min(viscAhMax,Alin+Alth)
 
          Alth=viscC4leith*grdVrt*0.125*(rA(i,j,bi,bj)**2.5)
-         Alin=viscA4+vg4*(rA ( i , j ,bi,bj)**2)
+         Alin=viscA4D+vg4*(rA ( i , j ,bi,bj)**2)
          viscA4_D(i,j)=min(viscA4Max,Alin+Alth)
 
 C This is the vector magnitude of the vorticity gradient
@@ -98,40 +98,42 @@ C but this approximation will work on cube (and differs by as much as 4X)
          grdVrt=max(grdVrt,
      &          abs((vort3(i,j-1)-vort3(i,j))*recip_DYG(i,j-1,bi,bj)))
          Alth=viscC2leith*grdVrt*(rAz(i,j,bi,bj)**1.5)
-         Alin=viscAh+vg2*rAz( i , j ,bi,bj)
+         Alin=viscAhZ+vg2*rAz( i , j ,bi,bj)
          viscAh_Z(i,j)=min(viscAhMax,Alin+Alth)
 
          Alth=viscC4leith*grdVrt*0.125*(rAz(i,j,bi,bj)**2.5)
-         Alin=viscA4+vg4*(rAz( i , j ,bi,bj)**2)
+         Alin=viscA4Z+vg4*(rAz( i , j ,bi,bj)**2)
          viscA4_Z(i,j)=min(viscA4Max,Alin+Alth)
         ENDDO
        ENDDO
       ELSE
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
-         viscAh_D(i,j)=viscAh
-         viscAh_Z(i,j)=viscAh
-         viscA4_D(i,j)=viscA4
-         viscA4_Z(i,j)=viscA4
+         viscAh_D(i,j)=viscAhD
+         viscAh_Z(i,j)=viscAhZ
+         viscA4_D(i,j)=viscA4D
+         viscA4_Z(i,j)=viscA4Z
         ENDDO
        ENDDO
       ENDIF
 
-C     - Laplacian  and bi-harmonic terms
-      DO j=2-Oly,sNy+Oly-1
-       DO i=2-Olx,sNx+Olx-1
+C     - Laplacian  terms
+      IF ( viscC2leith.NE.0. .OR. viscAhGrid.NE.0.
+     &    .OR. viscAhD.NE.0. .OR. viscAhZ.NE.0. ) THEN
+       DO j=2-Oly,sNy+Oly-1
+        DO i=2-Olx,sNx+Olx-1
 
-        Dim=hDiv( i ,j-1)
-        Dij=hDiv( i , j )
-        Dmj=hDiv(i-1, j )
-        Zip=hFacZ( i ,j+1)*vort3( i ,j+1)
-        Zij=hFacZ( i , j )*vort3( i , j )
-        Zpj=hFacZ(i+1, j )*vort3(i+1, j )
+         Dim=hDiv( i ,j-1)
+         Dij=hDiv( i , j )
+         Dmj=hDiv(i-1, j )
+         Zip=hFacZ( i ,j+1)*vort3( i ,j+1)
+         Zij=hFacZ( i , j )*vort3( i , j )
+         Zpj=hFacZ(i+1, j )*vort3(i+1, j )
 
 C This bit scales the harmonic dissipation operator to be proportional
 C to the grid-cell area over the time-step. viscAh is then non-dimensional
 C and should be less than 1/8, for example viscAh=0.01 
-        if (useVariableViscosity) then
+         IF (useVariableViscosity) THEN
           Dij=Dij*viscAh_D(i,j)
           Dim=Dim*viscAh_D(i,j-1)
           Dmj=Dmj*viscAh_D(i-1,j)
@@ -145,39 +147,58 @@ C and should be less than 1/8, for example viscAh=0.01
      &       recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
      &                                           *cosFacV(j,bi,bj)
      &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
-        else
-          uD2 = viscAh*(
+         ELSE
+          uD2 = viscAhD*
      &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
-     &      -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj) )
-          vD2 = viscAh*(
-     &       recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
-     &                                           *cosFacV(j,bi,bj)
-     &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
-        endif
+     &        - viscAhZ*recip_hFacW(i,j,k,bi,bj)*
+     &                                ( Zip-Zij )*recip_DYG(i,j,bi,bj)
+          vD2 = viscAhZ*recip_hFacS(i,j,k,bi,bj)*
+     &               cosFacV(j,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
+     &        + viscAhD*              ( Dij-Dim )*recip_DYC(i,j,bi,bj)
+         ENDIF
+
+         uDissip(i,j) = uD2
+         vDissip(i,j) = vD2
+
+        ENDDO
+       ENDDO
+      ELSE
+       DO j=2-Oly,sNy+Oly-1
+        DO i=2-Olx,sNx+Olx-1
+         uDissip(i,j) = 0.
+         vDissip(i,j) = 0.
+        ENDDO
+       ENDDO
+      ENDIF
+
+C     - Bi-harmonic terms
+      IF ( viscC4leith.NE.0. .OR. viscA4Grid.NE.0.
+     &    .OR. viscA4D.NE.0. .OR. viscA4Z.NE.0. ) THEN
+       DO j=2-Oly,sNy+Oly-1
+        DO i=2-Olx,sNx+Olx-1
 
 #ifdef MOM_VI_ORIGINAL_VISCA4
-        Dim=dyF( i ,j-1,bi,bj)*dStar( i ,j-1)
-        Dij=dyF( i , j ,bi,bj)*dStar( i , j )
-        Dmj=dyF(i-1, j ,bi,bj)*dStar(i-1, j )
+         Dim=dyF( i ,j-1,bi,bj)*dStar( i ,j-1)
+         Dij=dyF( i , j ,bi,bj)*dStar( i , j )
+         Dmj=dyF(i-1, j ,bi,bj)*dStar(i-1, j )
 
-        Zip=dxV( i ,j+1,bi,bj)*hFacZ( i ,j+1)*zStar( i ,j+1)
-        Zij=dxV( i , j ,bi,bj)*hFacZ( i , j )*zStar( i , j )
-        Zpj=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*zStar(i+1, j )
+         Zip=dxV( i ,j+1,bi,bj)*hFacZ( i ,j+1)*zStar( i ,j+1)
+         Zij=dxV( i , j ,bi,bj)*hFacZ( i , j )*zStar( i , j )
+         Zpj=dxV(i+1, j ,bi,bj)*hFacZ(i+1, j )*zStar(i+1, j )
 #else
-        Dim=dStar( i ,j-1)
-        Dij=dStar( i , j )
-        Dmj=dStar(i-1, j )
+         Dim=dStar( i ,j-1)
+         Dij=dStar( i , j )
+         Dmj=dStar(i-1, j )
 
-        Zip=hFacZ( i ,j+1)*zStar( i ,j+1)
-        Zij=hFacZ( i , j )*zStar( i , j )
-        Zpj=hFacZ(i+1, j )*zStar(i+1, j )
+         Zip=hFacZ( i ,j+1)*zStar( i ,j+1)
+         Zij=hFacZ( i , j )*zStar( i , j )
+         Zpj=hFacZ(i+1, j )*zStar(i+1, j )
 #endif
-
 
 C This bit scales the harmonic dissipation operator to be proportional
 C to the grid-cell area over the time-step. viscAh is then non-dimensional
 C and should be less than 1/8, for example viscAh=0.01 
-        IF (useVariableViscosity) THEN
+         IF (useVariableViscosity) THEN
           Dij=Dij*viscA4_D(i,j)
           Dim=Dim*viscA4_D(i,j-1)
           Dmj=Dmj*viscA4_D(i-1,j)
@@ -192,7 +213,7 @@ C and should be less than 1/8, for example viscAh=0.01
           vD4 = recip_rAs(i,j,bi,bj)*(
      &    recip_hFacS(i,j,k,bi,bj)*( (Zpj-Zij)*cosFacV(j,bi,bj) )
      &   +                         ( Dij-Dim ) )
-        ELSE
+         ELSE
           uD4 = recip_rAw(i,j,bi,bj)*(
      &                             viscA4*( (Dij-Dmj)*cosFacU(j,bi,bj) )
      &   -recip_hFacW(i,j,k,bi,bj)*viscA4*( Zip-Zij ) )
@@ -207,22 +228,23 @@ C and should be less than 1/8, for example viscAh=0.01
      &       recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
      &                                           *cosFacV(j,bi,bj)
      &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
-        ELSE
-          uD4 = viscA4*(
+         ELSE
+          uD4 = viscA4D* 
      &               cosFacU(j,bi,bj)*( Dij-Dmj )*recip_DXC(i,j,bi,bj)
-     &      -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj) )
-          vD4 = viscA4*(
-     &       recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
-     &                                           *cosFacV(j,bi,bj)
-     &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
+     &        - viscA4Z*recip_hFacW(i,j,k,bi,bj)*
+     &                                ( Zip-Zij )*recip_DYG(i,j,bi,bj)
+          vD4 = viscA4Z*recip_hFacS(i,j,k,bi,bj)*
+     &               cosFacV(j,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
+     &        + viscA4D*              ( Dij-Dim )*recip_DYC(i,j,bi,bj)
 #endif /* MOM_VI_ORIGINAL_VISCA4 */
-        ENDIF
+         ENDIF
 
-        uDissip(i,j) = uD2 - uD4
-        vDissip(i,j) = vD2 - vD4
+         uDissip(i,j) = uDissip(i,j) - uD4
+         vDissip(i,j) = vDissip(i,j) - vD4
 
+        ENDDO
        ENDDO
-      ENDDO
+      ENDIF
 
 #ifdef ALLOW_DIAGNOSTICS
       if (useDiagnostics) then
