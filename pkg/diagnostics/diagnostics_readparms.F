@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.2 2004/12/14 03:48:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.3 2004/12/20 01:52:58 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -12,7 +12,7 @@ C     !INTERFACE:
 
 C     !DESCRIPTION:
 C     Read Diagnostics Namelists to specify output sequence.
-      
+
 C     !USES:
       IMPLICIT NONE
 #include "SIZE.h"
@@ -71,8 +71,8 @@ C     Initialize and Read Diagnostics Namelist
       WRITE(msgBuf,'(A)')
      &     ' DIAGNOSTICS_READPARMS: opening data.diagnostics'
       CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,SQUEEZE_RIGHT,1)
-      
-      CALL OPEN_COPY_DATA_FILE('data.diagnostics', 
+
+      CALL OPEN_COPY_DATA_FILE('data.diagnostics',
      &     'DIAGNOSTICS_READPARMS', ku, myThid )
       READ  (ku,NML=diagnostics_list)
       CLOSE (ku)
@@ -95,11 +95,11 @@ C     Initialise diag_choices common block
       diag_mdsio = .TRUE.
 
 C     Fill Diagnostics Common Block with Namelist Info
-      IF ( useMNC .AND. diag_mnc 
+      IF ( useMNC .AND. diag_mnc
      &            .AND. (.NOT. outputTypesInclusive)) THEN
         diag_mdsio = .FALSE.
       ENDIF
-      
+
       DO l = 1,ldimLoc
        IF ( frequency(l).NE.0 .AND. nlists.LT.numlists ) THEN
          n = nlists + 1
@@ -108,7 +108,7 @@ C     Fill Diagnostics Common Block with Namelist Info
          nlevels(n) = 0
          IF ( levels(1,l).NE.undef ) THEN
            DO k=1,kdimLoc
-             IF ( levels(k,l).NE.undef .AND. 
+             IF ( levels(k,l).NE.undef .AND.
      &            nlevels(n).LT.numLevels ) THEN
                nlevels(n) = nlevels(n) + 1
                levs(nlevels(n),n) = levels(k,l)
@@ -117,7 +117,7 @@ C     Fill Diagnostics Common Block with Namelist Info
      &         'Exceed Max.Num. of Levels numLevels=', numLevels
               CALL PRINT_ERROR( msgBuf , myThid )
               WRITE(msgBuf,'(2A,I3,A,F3.0)') 'DIAGNOSTICS_READPARMS: ',
-     &         'when trying to add level(k=', k, ' )=', levels(k,l) 
+     &         'when trying to add level(k=', k, ' )=', levels(k,l)
               CALL PRINT_ERROR( msgBuf , myThid )
               WRITE(msgBuf,'(2A,I3,2A)') 'DIAGNOSTICS_READPARMS: ',
      &         ' for list l=', l, ', filename: ', filename(l)
@@ -126,14 +126,12 @@ C     Fill Diagnostics Common Block with Namelist Info
              ENDIF
            ENDDO
          ELSE
-           nlevels(n) = Nr
-           DO k=1,nlevels(n)
-             levs(k,n) = k
-           ENDDO
+C-       will set levels later, once the Nb of levels of each diag is known
+           nlevels(n) = -1
          ENDIF
          nfields(n) = 0
          DO m=1,fdimLoc
-           IF ( fields(m,l).NE.blk8c .AND. 
+           IF ( fields(m,l).NE.blk8c .AND.
      &          nfields(n).LT.numperlist ) THEN
              nfields(n) = nfields(n) + 1
              flds(nfields(n),n) = fields(m,l)
@@ -183,11 +181,16 @@ C     Echo History List Data Structure
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
         WRITE(msgBuf,*) 'Frequency: ',freq(n)
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-	DO l=1,nlevels(n),20
+        IF ( nlevels(n).EQ.-1 ) THEN
+          WRITE(msgBuf,'(A,A)') ' Levels:    ','will be set later'
+          CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
+        ELSE
+         DO l=1,nlevels(n),20
           m = MIN(nlevels(n),l+19)
           WRITE(msgBuf,'(A,20F5.0)') ' Levels:    ', (levs(k,n),k=l,m)
           CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
-	ENDDO
+         ENDDO
+        ENDIF
         WRITE(msgBuf,*) 'Fields:   ',(' ',flds(l,n),l=1,nfields(n))
         CALL PRINT_MESSAGE( msgBuf, stdUnit,SQUEEZE_RIGHT, myThid)
       ENDDO

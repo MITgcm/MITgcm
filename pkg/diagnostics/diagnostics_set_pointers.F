@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.2 2004/12/15 00:18:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_pointers.F,v 1.3 2004/12/20 01:52:58 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -35,6 +35,7 @@ C     == Local variables ==
       INTEGER ndiagcount
       INTEGER m,mm,n
       INTEGER mate, nActiveMax
+      INTEGER l, k, kLev
       LOGICAL found
       CHARACTER*(MAX_LEN_MBUF) msgBuf
 
@@ -77,16 +78,9 @@ C        Search all possible model diagnostics
 
       IF (  ndiagcount.LE.numdiags .AND.
      &      nActiveMax.LE.numperlist ) THEN
-        WRITE(msgBuf,'(A)') 'DIAGNOSTICS_SET_POINTERS: done'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
         WRITE(msgBuf,'(A,I6,A)')
      &    '  space allocated for all diagnostics:', 
      &    ndiagcount, ' levels'
-        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
-     &                      SQUEEZE_RIGHT , myThid)
-        WRITE(msgBuf,'(2A)')
-     &   '------------------------------------------------------------'
         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
      &                      SQUEEZE_RIGHT , myThid)
       ELSE
@@ -112,6 +106,76 @@ C        Search all possible model diagnostics
        ENDIF
        STOP 'ABNORMAL END: S/R DIAGNOSTICS_SET_POINTERS'
       ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Set list of levels to write (if not specified in data.diagnostics)
+
+      DO n=1,nlists
+        IF ( nlevels(n).EQ.-1 ) THEN
+C-      set Nb of levels to the minimum size of all diag of this list:
+          kLev = numLevels
+          DO m=1,nfields(n)
+            mm = jdiag(m,n)
+            kLev = MIN(kdiag(mm),kLev)
+          ENDDO
+          IF ( kLev.LE.0 ) THEN
+            WRITE(msgBuf,'(2A,I4,2A)')
+     &      'DIAGNOSTICS_SET_POINTERS: kLev < 1 in ',
+     &      ' setting levs of list n=',n,', fnames: ', fnames(n)
+            CALL PRINT_ERROR( msgBuf , myThid )
+            STOP 'ABNORMAL END: S/R DIAGNOSTICS_SET_POINTERS'
+          ENDIF
+          nlevels(n) = kLev
+          DO k=1,kLev
+           levs(k,n) = k
+          ENDDO
+          WRITE(msgBuf,'(3A)') 'DIAGNOSTICS_SET_POINTERS: ',
+     &      'Set levels for Outp.Stream: ',fnames(n)
+          CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                        SQUEEZE_RIGHT, myThid)
+          DO l=1,nlevels(n),20
+            m = MIN(nlevels(n),l+19)
+            WRITE(msgBuf,'(A,20F5.0)')' Levels:    ',(levs(k,n),k=l,m)
+            CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                          SQUEEZE_RIGHT, myThid)
+          ENDDO
+        ELSE
+C-      Check for levels out of range ( > kdiag)
+          kLev = 0
+          DO k=1,nlevels(n)
+            kLev = MAX(NINT(levs(k,n)),kLev)
+          ENDDO
+          DO m=1,nfields(n)
+            mm = jdiag(m,n)
+            IF ( kLev.GT.kdiag(mm) ) THEN
+C- Note: diagnostics_out take care (in some way) of this case 
+C        so that it does not cause "index out-off bounds" error.
+C        However, the output file looks strange.
+C- For now, choose to stop, but could change it to just a warning
+             WRITE(msgBuf,'(A,I3,A,I3,2A)')
+     &       'DIAGNOSTICS_SET_POINTERS: Ask for level=',kLev,
+     &         ' in list n=', n, ', filename: ', fnames(n)
+             CALL PRINT_ERROR( msgBuf , myThid )
+             WRITE(msgBuf,'(2A,I3,A,I3,2A)')
+     &       'DIAGNOSTICS_SET_POINTERS: ==> exceed Max.Nb of lev.',
+     &       '(=',kdiag(mm),') for Diag. #', mm, ' : ',cdiag(mm)
+             CALL PRINT_ERROR( msgBuf , myThid )
+             WRITE(msgBuf,'(4A)') 'DIAGNOSTICS_SET_POINTERS: ',
+     &       ' parsing code >>',gdiag(mm),'<<'
+             CALL PRINT_ERROR( msgBuf , myThid )
+             STOP 'ABNORMAL END: S/R DIAGNOSTICS_SET_POINTERS'
+            ENDIF
+          ENDDO
+        ENDIF
+      ENDDO
+
+        WRITE(msgBuf,'(A)') 'DIAGNOSTICS_SET_POINTERS: done'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
+        WRITE(msgBuf,'(2A)')
+     &   '------------------------------------------------------------'
+        CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                      SQUEEZE_RIGHT , myThid)
 
       _END_MASTER( myThid )
 
