@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.383 2004/11/10 19:36:30 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.384 2004/11/14 03:36:51 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o mnc: cleanup "full" files--fixes out-of-memory problem
 
 checkpoint55j_post
 o isolate dissipation tendency (allow to keep it out off AB) in V.I form.
