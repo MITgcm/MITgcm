@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.11 2002/11/15 19:58:21 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.12 2002/11/21 19:11:42 cheisey Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -44,8 +44,8 @@ C     iUnit       - Work variable for IO unit number
 
 C     data.pkg namelists
 C     data.pkg namelists
-cswdblk -- add useBulkf to NAMELIST
-cswdice -- addd useTSeaIce to NAMELIST
+cswdblk -- add useBulkforce to NAMELIST
+cswdice -- addd useThermSeaIce to NAMELIST
 
       NAMELIST /PACKAGES/
      &          useKPP,
@@ -59,8 +59,8 @@ cswdice -- addd useTSeaIce to NAMELIST
      &          useFLT,
      &          usePTRACERS,
      &          useSEAICE,
-     &          useBulkf,
-     &          useTSEAICE
+     &          useBulkforce,
+     &          useThermSEAICE
 
 
 CEOP
@@ -90,10 +90,10 @@ C--   Default package configuration
       usePTRACERS=.FALSE.
       useSeaIce=.FALSE.
 cswdblk -- add
-      useBulkf=.FALSE.
+      useBulkforce=.FALSE.
 cswdblk -- end add ---
 cswdice --- add ---
-      useTSeaIce=.FALSE.
+      useThermSeaIce=.FALSE.
 cswdice --- end add ---
 
 

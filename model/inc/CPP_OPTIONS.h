@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.20 2002/11/15 19:58:21 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CPP_OPTIONS.h,v 1.21 2002/11/21 19:11:42 cheisey Exp $
 C $Name:  $
 
   These lines are here to deliberately cause a compile-time error.
@@ -30,11 +30,11 @@ C o Include/exclude code for KPP mixing scheme
 
 cswdblk --- add ---
 C o Include/exclude code for bulk formula
-#define  ALLOW_BULKFORMULA
-#ifdef ALLOW_BULKFORMULA
+#define  ALLOW_BULK_FORCE
+#ifdef ALLOW_BULK_FORCE
 cswdice -- add ---
 C o allow seaice
-#define ALLOW_TSEAICE
+#define ALLOW_THERM_SEAICE
 cswdice -- end add ---
 
 C o try to conserve qnet and emp

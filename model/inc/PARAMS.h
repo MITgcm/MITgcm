@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.81 2002/11/15 19:58:21 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.82 2002/11/21 19:11:42 cheisey Exp $
 C $Name:  $
 C
 CBOP
@@ -610,13 +610,13 @@ C Logical flags for selecting packages
       LOGICAL usePTRACERS
       LOGICAL useSEAICE
 cswdblk -- add ---
-      LOGICAL useBulkf
-      LOGICAL useTSEAICE
+      LOGICAL useBulkforce
+      LOGICAL useThermSEAICE
 cswdblk --- end add ---
       COMMON /PARM_PACKAGES/
      &        useKPP, useGMRedi, useOBCS, useAIM, useECCO, 
      &        useSHAP_FILT, useZONAL_FILT, useGrdchk, useFLT,
      &        usePTRACERS, useSEAICE, 
 cswdblk -- add ---
-     &        useTSEAICE, useBulkf
+     &        useThermSEAICE, useBulkforce
 cswdblk --- end add ---

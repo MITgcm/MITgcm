@@ -89,16 +89,16 @@ C--   Initialize SEAICE parameters
 #endif
 
 cswdblk -- add ---
-#ifdef ALLOW_BULKFORMULA
+#ifdef ALLOW_BULK_FORCE
 C -- initialize Bulkf parameters
-      IF (useBulkf) call BULKF_READPARMS( myThid )
+      IF (useBulkForce) call BULKF_READPARMS( myThid )
 #endif
 cswdblk --- end add ---
 
 cswdice -- add ---
-#ifdef ALLOW_TSEAICE
+#ifdef ALLOW_THERM_SEAICE
 C -- initialize Sea Ice parameters
-      IF (useSeaIce) call ICE_READPARMS( myThid )
+      IF (useThermSeaIce) call ICE_READPARMS( myThid )
 #endif
 cswdice --- end add ---
 

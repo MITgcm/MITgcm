@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.39 2002/11/20 19:08:25 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.40 2002/11/21 19:11:42 cheisey Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -52,7 +52,7 @@ C     == Global variables ==
 # include "EOS.h"
 # ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
 #  include "exf_fields.h"
-#  ifdef ALLOW_BULKFORMULAE
+#  ifdef ALLOW_BULK_FORCE
 #   include "exf_constants.h"
 #  endif
 # endif
@@ -129,7 +129,7 @@ c**************************************
 
 C--   Call external forcing package
 cswdblk -- add ---
-#ifdef ALLOW_BULKFORMULA
+#ifdef ALLOW_BULK_FORCE
        CALL TIMER_START('BULKF_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
        CALL BULKF_FIELDS_LOAD( mytime, myiter, mythid )
        CALL TIMER_STOP ('BULKF_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
@@ -147,13 +147,13 @@ c     Update the tile edges.
 cswdblk -- end add ---
 #endif
 #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
-        IF ( .not. useSEAICE ) THEN 
+        IF ( .not. useSEAICE .and. .not. useBulkForce ) THEN 
          CALL TIMER_START('EXF_GETFORCING     [FORWARD_STEP]',mythid)
          CALL EXF_GETFORCING( mytime, myiter, mythid )
          CALL TIMER_STOP ('EXF_GETFORCING     [FORWARD_STEP]',mythid)
         ENDIF
 #else
-        IF ( .not. useSEAICE ) THEN 
+        IF ( .not. useSEAICE .and. .not. useBulkForce ) THEN 
          CALL TIMER_START('EXTERNAL_FIELDS_LOAD[FORWARD_STEP]',mythid)
          CALL EXTERNAL_FIELDS_LOAD( mytime, myiter, mythid )
          CALL TIMER_STOP ('EXTERNAL_FIELDS_LOAD[FORWARD_STEP]',mythid)

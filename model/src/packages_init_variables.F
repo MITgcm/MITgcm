@@ -94,14 +94,14 @@ c--   Initialise the cost function.
 #endif
 
 cswdblk -- begin add ---
-#ifdef ALLOW_BULKFORMULA
-      IF (useBulkf) call BULKF_INIT( mythid)
+#ifdef ALLOW_BULK_FORCE
+      IF (useBulkForce) call BULKF_INIT( mythid)
 #endif
 cswdblk ---end add ---
 
 cswdice ---begin add ---
-#ifdef ALLOW_TSEAICE
-      IF (useSeaIce) call ICE_INIT( mythid)
+#ifdef ALLOW_THERM_SEAICE
+      IF (useThermSeaIce) call ICE_INIT( mythid)
 #endif
 cswdice ---end add ---
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.23 2002/11/15 19:58:21 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.24 2002/11/21 19:11:42 cheisey Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -36,13 +36,13 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 cswdblk --- add ---
-#ifdef ALLOW_BULKFORMULA
+#ifdef ALLOW_BULK_FORCE
 #include "BULKF.h"
 #include "FFIELDS.h"
 #endif
 cswdblk -- end add ---
 cswdice -- add ---
-#ifdef ALLOW_TSEAICE
+#ifdef ALLOW_THERM_SEAICE
 #include "ICE.h"
 #include "ICE_DIAGS.h"
 #endif
@@ -112,17 +112,17 @@ C--   Do KPP diagnostics.
 #endif
 
 cswdblk ---  add ---
-#ifdef ALLOW_BULKFORMULA
+#ifdef ALLOW_BULK_FORCE
 C--   Do bulkf diagnostics.
-      IF (useBulkf)
+      IF (useBulkforce)
      & CALL BULKF_DIAGS( myCurrentTime, myIter, myThid )
 #endif
 cswdblk -- end add ---
 
 cswdice ---  add ---
-#ifdef ALLOW_TSEAICE
+#ifdef ALLOW_THERM_SEAICE
 C--   Do seaice diagnostics.
-      IF (useSeaice)
+      IF (useThermSeaice)
      & CALL ICE_DIAGS( myCurrentTime, myIter, myThid )
 #endif
 cswdice -- end add ---

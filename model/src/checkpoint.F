@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.16 2002/11/15 19:58:21 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.17 2002/11/21 19:11:42 cheisey Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -257,7 +257,7 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 cswdice -- add ---
-#ifdef ALLOW_TSEAICE
+#ifdef ALLOW_THERM_SEAICE
 #include "ICE.h"
 #endif
 cswdice -- end add --
@@ -356,8 +356,9 @@ C       Raw fields
         CALL WRITE_REC_XYZ_RL(  'vNM1',  vNM1,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL(  'guCD',  guCD,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL(  'gvCD',  gvCD,  1,myIter, myThid)
+#endif
 cswdice - add --
-#ifdef ALLOW_SEAICE
+#ifdef ALLOW_THERM_SEAICE
         WRITE(fn,'(A,I10.10)') 'pickup_ic.',myIter
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,iceMask,   1,
      &                                               myIter,myThid)
@@ -370,9 +371,12 @@ cswdice - add --
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Tice2,6,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Qice1,7,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Qice2,8,myIter,myThid)
-#endif
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,sage ,9,myIter,myThid)
 cswdice -- end add ---
 #endif
+
+
+
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
          CALL WRITE_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
@@ -439,7 +443,7 @@ c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
         ENDIF
 #endif
 cswdice - add --
-#ifdef ALLOW_SEAICE
+#ifdef ALLOW_THERM_SEAICE
         WRITE(fn,'(A,I10.10)') 'pickup_ic.',myIter
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,iceMask,   1,
      &                                               myIter,myThid)
@@ -452,6 +456,7 @@ cswdice - add --
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Tice2,6,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Qice1,7,myIter,myThid)
         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,Qice2,8,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',1,sage ,9,myIter,myThid)
 #endif
 cswdice -- end add ---
 

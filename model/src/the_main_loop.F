@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.29 2002/11/15 03:01:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.30 2002/11/21 19:11:42 cheisey Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -187,12 +187,12 @@ CADJ INIT comlev1_bibj_k_gad_pass
 CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass*maxcube
 #endif /* DISABLE_MULTIDIM_ADVECTION */
 c--
-#ifdef ALLOW_BULKFORMULAE
+#ifdef ALLOW_BULK_FORCE
 CADJ INIT comlev1_exf_1
 CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
 CADJ INIT comlev1_exf_2
 CADJ &     = COMMON,niter_bulk*nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
-#endif /* ALLOW_BULKFORMULAE */
+#endif /* ALLOW_BULK_FORCE */
 
           do ilev_1 = 1,nchklev_1
 
