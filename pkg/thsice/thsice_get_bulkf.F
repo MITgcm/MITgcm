@@ -1,17 +1,24 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_bulkf.F,v 1.1 2003/11/23 01:20:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_get_bulkf.F,v 1.2 2004/04/07 23:40:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: THSICE_GET_BULKF
+C     !INTERFACE:
       SUBROUTINE THSICE_GET_BULKF(
      I                         iceornot, Tsf, 
-     O                         flxExceptSw, df0dT, evap,
+     O                         flxExceptSw, df0dT, evap, dEvdT,
      I                         i,j,bi,bj,myThid )
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R  THSICE_GET_BULKF                                       
 C     *==========================================================*
 C     | Interface S/R : get Surface Fluxes from pkg BULK_FORCE
 C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global data ==
@@ -21,12 +28,14 @@ C     == Global data ==
 #include "BULKF.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
 C     iceornot    :: 0=open water, 1=ice cover
-C     Tsf         :: surface (ice or snow) temperature
-C     flxExceptSw :: net (downward) surface heat flux, except short-wave (W/m2)
-C     df0dT       :: deriv of flx wrt Tsf (W m-2 deg-1)
-C     evap        :: -surface evaporation (<0 if evaporate)
+C     Tsf         :: surface (ice or snow) temperature (oC)
+C     flxExceptSw :: net (downward) surface heat flux, except short-wave [W/m2]
+C     df0dT       :: deriv of flx with respect to Tsf    [W/m/K]
+C     evap        :: surface evaporation (>0 if evaporate) [kg/m2/s]
+C     dEvdT       :: deriv of evap. with respect to Tsf  [kg/m2/s/K]
 C     i,j, bi,bj  :: current grid point indices
 C     myThid      :: Thread no. that called this routine.
       INTEGER i,j, bi,bj
@@ -36,6 +45,8 @@ C     myThid      :: Thread no. that called this routine.
       _RL  flxExceptSw
       _RL  df0dT
       _RL  evap
+      _RL  dEvdT
+CEOP
 
 #ifdef ALLOW_THSICE
 #ifdef ALLOW_BULK_FORCE
@@ -53,11 +64,11 @@ C     === Local variables ===
       vst = 0. 
       ssq = 0. 
 
-      CALL BULKF_FORMULA_LANL(uwind(i,j,bi,bj), vwind(i,j,bi,bj),
-     &        wspeed(i,j,bi,bj),
-     &        Tair(i,j,bi,bj), Qair(i,j,bi,bj), cloud(i,j,bi,bj), Tsf,
-     &        flwup, flh, fsh, df0dT, ust, vst, evap, ssq, iceornot,
-     &        readwindstress)
+      CALL BULKF_FORMULA_LANL(
+     I        uwind(i,j,bi,bj), vwind(i,j,bi,bj), wspeed(i,j,bi,bj),
+     I        Tair(i,j,bi,bj), Qair(i,j,bi,bj), cloud(i,j,bi,bj), Tsf,
+     O        flwup, flh, fsh, df0dT, ust, vst, evap, ssq, dEvdT,
+     I        iceornot, readwindstress)
 
       flwNet_dwn = flw(i,j,bi,bj) - flwup
       flxExceptSw = flwNet_dwn + fsh + flh

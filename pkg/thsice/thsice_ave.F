@@ -1,12 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.1 2003/11/23 01:20:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_ave.F,v 1.2 2004/04/07 23:40:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
 
-CStartofinterface
+CBOP
 C     !ROUTINE: THSICE_AVE
 C     !INTERFACE:
-      SUBROUTINE THSICE_AVE( bi, bj, myThid )
+      SUBROUTINE THSICE_AVE( 
+     I                      frwAtm, flxAtm,
+     I                      bi, bj, myTime, myIter, myThid )
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R  THSICE_AVE                                              
 C     | o save values for timeaveraging
@@ -15,57 +18,112 @@ C     \ev
 
 C     !USES:
       IMPLICIT NONE
+
 C     == Global variables ==
 #include "SIZE.h"
-c #include "EEPARAMS.h"
-c #include "PARAMS.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "FFIELDS.h"
 #include "THSICE_PARAMS.h"
-#include "THSICE.h"
-#include "THSICE_DIAGS.h"
+#include "THSICE_VARS.h"
+#include "THSICE_TAVE.h"
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
+C     frwAtm  :: net fresh-water flux (E-P) to the atmosphere [kg/m2/s]
+C     flxAtm  :: net heat flux from the atmosphere (+=down) [W/m2]
+C     myTime  :: time counter for this thread
+C     bi,bj   :: tile indices
+C     myIter  :: iteration counter for this thread
+C     myThid  :: thread number for this instance of the routine.
+      _RL frwAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL flxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER bi,bj
+      _RL  myTime
+      INTEGER myIter
       INTEGER myThid
-CEndofinterface
+CEOP
 
 #ifdef ALLOW_THSICE
+C     == Local variables ==
+      LOGICAL  DIFFERENT_MULTIPLE
+      EXTERNAL DIFFERENT_MULTIPLE
+      INTEGER wrtIter
+
 #ifdef ALLOW_TIMEAVE
 
+      IF ( thSIce_taveFreq .LE. 0. _d 0 ) RETURN
+
 C--    Time-average
-       CALL TIMEAVE_CUMULATE(ICE_iceMask_AVE,iceMask, 
+       CALL TIMEAVE_CUMULATE(ice_fract_Ave, iceMask, 
      &                       1, thSIce_deltaT, bi, bj, myThid )
 C-- area weighted average (with ice-fraction)
-       CALL TIMEAVE_CUMUL_2V( ICE_iceH_AVE, iceheight, iceMask,
+       CALL TIMEAVE_CUMUL_2V( ice_iceH_Ave,  iceheight, iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMUL_2V( ICE_snowH_AVE, snowheight, iceMask,
+       CALL TIMEAVE_CUMUL_2V( ice_snowH_Ave, snowheight, iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMUL_2V( ICE_Tsrf_AVE,  Tsrf,  iceMask,
+       CALL TIMEAVE_CUMUL_2V( ice_Tsrf_Ave,  Tsrf,  iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMUL_2V( ICE_Tice1_AVE, Tice1, iceMask,
+       CALL TIMEAVE_CUMUL_2V( ice_Tice1_Ave, Tice1, iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMUL_2V( ICE_Tice2_AVE, Tice2, iceMask,
+       CALL TIMEAVE_CUMUL_2V( ice_Tice2_Ave, Tice2, iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
-       CALL TIMEAVE_CUMUL_2V( ICE_snow_AVE,  snow,  iceMask,
+       CALL TIMEAVE_CUMUL_2V( ice_snowPr_Ave,snowPrc, iceMask,
      &                    1, 0, thSIce_deltaT, bi, bj, myThid )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C-- simple average (without ice-fraction)
-c      CALL TIMEAVE_CUMULATE(ICE_iceH_AVE,iceheight,
+c      CALL TIMEAVE_CUMULATE(ice_iceH_Ave,iceheight,
 c    &                       1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE(ICE_snowH_AVE,snowHeight,
+c      CALL TIMEAVE_CUMULATE(ice_snowH_Ave,snowHeight,
 c    &                       1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE(ICE_Tsrf_AVE, Tsrf,
+c      CALL TIMEAVE_CUMULATE(ice_Tsrf_Ave, Tsrf,
 c    &                       1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE(ICE_Tice1_AVE,Tice1,
+c      CALL TIMEAVE_CUMULATE(ice_Tice1_Ave,Tice1,
 c    &                       1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE(ICE_Tice2_AVE,Tice2,
+c      CALL TIMEAVE_CUMULATE(ice_Tice2_Ave,Tice2,
 c    &                       1, thSIce_deltaT, bi, bj, myThid )
-c      CALL TIMEAVE_CUMULATE(ICE_snow_AVE, snow,
+c      CALL TIMEAVE_CUMULATE(ice_snowPr_Ave, snowPrc,
 c    &                       1, thSIce_deltaT, bi, bj, myThid )
 
-       ICE_timeave(1,bi,bj)=ICE_timeave(1,bi,bj)+thSIce_deltaT
+C-- average of atmospheric fluxes : 
+#ifdef ALLOW_TIMEAVE
+       CALL TIMEAVE_CUMUL_1T(ice_flxAtm_Ave, flxAtm,
+     &                       1, thSIce_deltaT, bi, bj, myThid )
+       CALL TIMEAVE_CUMUL_1T(ice_frwAtm_Ave, frwAtm,
+     &                       1, thSIce_deltaT, bi, bj, myThid )
+#endif /*ALLOW_TIMEAVE*/
+
+C-- average of oceanic fluxes : 
+#ifndef CHECK_ENERGY_CONSERV
+       CALL TIMEAVE_CUMULATE(ice_flx2oc_Ave, Qnet,
+     &                       1, thSIce_deltaT, bi, bj, myThid )
+       CALL TIMEAVE_CUMULATE(ice_frw2oc_Ave, EmPmR,
+     &                       1, thSIce_deltaT, bi, bj, myThid )
+       CALL TIMEAVE_CUMULATE(ice_salFx_Ave, saltFlux,
+     &                       1, thSIce_deltaT, bi, bj, myThid )
+#endif /* CHECK_ENERGY_CONSERV */
+
+C-- average of Ocean Mixed-Layer temp. & salinity
+      IF ( stepFwd_oceMxL ) THEN
+       CALL TIMEAVE_CUMULATE(ice_tMxL_Ave, tOceMxL,
+     &                       1, thSIce_deltaT, bi, bj, myThid )
+       CALL TIMEAVE_CUMULATE(ice_sMxL_Ave, sOceMxL,
+     &                       1, thSIce_deltaT, bi, bj, myThid )
+      ENDIF
+
+       ice_timeAve(1,bi,bj)=ice_timeAve(1,bi,bj)+thSIce_deltaT
 
 #endif /* ALLOW_TIMEAVE */
+
+      IF ( DIFFERENT_MULTIPLE(thSIce_diagFreq,myTime+deltaTClock,myTime)
+     &   ) THEN
+        wrtIter = myIter+1
+        CALL WRITE_LOCAL_RL('ice_flxAtm','I10',1,flxAtm,
+     &                      bi,bj,1,wrtIter,myThid)
+        CALL WRITE_LOCAL_RL('ice_frwAtm','I10',1,frwAtm,
+     &                      bi,bj,1,wrtIter,myThid)
+      ENDIF
+
 #endif  /* ALLOW_THSICE */
 
       RETURN

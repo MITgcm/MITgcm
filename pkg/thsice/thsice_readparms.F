@@ -1,15 +1,23 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.2 2003/12/31 17:44:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.3 2004/04/07 23:40:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
 
+CBOP
+C     !ROUTINE: THSICE_READPARMS
+C     !INTERFACE:
       SUBROUTINE THSICE_READPARMS( myThid )
-C     /==========================================================*
-C     | SUBROUTINE THSICE_READPARMS
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R THSICE_READPARMS
 C     | o Routine to initialize THSICE parameters and constants
-C     |==========================================================*
+C     *==========================================================*
 C     | Initialize Th-Sea-ICE parameters, read in data.ice
-C     \==========================================================*
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -18,15 +26,16 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "THSICE_PARAMS.h"
-c #include "THSICE.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_THSICE
 
 C     === Local variables ===
-C     msgBuf      - Informational/error meesage buffer
+C     msgBuf      - Informational/error message buffer
 C     iUnit       - Work variable for IO unit number
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER iUnit
@@ -47,8 +56,9 @@ C--   Th-Sea-ICE parameter
      &  frac_energy, hihig
  
       NAMELIST /THSICE_PARM01/
-     &         startIceModel, 
-     &         thSIce_deltaT, 
+     &         startIceModel, stepFwd_oceMxL,
+     &         thSIce_deltaT, ocean_deltaT, tauRelax_MxL,
+     &         hMxL_default, sMxL_default, vMxL_default,
      &         stressReduction,
      &         thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq
 
@@ -101,8 +111,14 @@ C--   Default values (constants)
       hihig      = 2.5 _d 0
 
 C--   Default values (parameters)
-      startIceModel  = 0
+      stepFwd_oceMxL  = .FALSE.
+      startIceModel   = 0
       thSIce_deltaT   = deltaTtracer 
+      ocean_deltaT    = deltaTtracer 
+      tauRelax_MxL    = 0. _d 0
+      hMxL_default    = 50. _d 0
+      sMxL_default    = 35. _d 0
+      vMxL_default    = 5. _d -2
       stressReduction = 1. _d 0
       thSIce_taveFreq = taveFreq 
       thSIce_diagFreq = dumpFreq
@@ -168,7 +184,13 @@ c     OPEN(iUnit,file='thsice_check_params',status='unknown')
       WRITE(iUnit,*) 'ThSI: frac_energy',frac_energy
       WRITE(iUnit,*) 'ThSI: hihig   =',hihig
       WRITE(iUnit,*) 'ThSI: stressReduction =',stressReduction
-      WRITE(iUnit,*) 'ThSI: thSIce_deltaT  =',thSIce_deltaT
+      WRITE(iUnit,*) 'ThSI: thSIce_deltaT =',thSIce_deltaT
+      WRITE(iUnit,*) 'ThSI: ocean_deltaT  =',ocean_deltaT
+      WRITE(iUnit,*) 'ThSI: stepFwd_oceMxL=',stepFwd_oceMxL
+      WRITE(iUnit,*) 'ThSI: tauRelax_MxL  =',tauRelax_MxL
+      WRITE(iUnit,*) 'ThSI: hMxL_default  =',hMxL_default
+      WRITE(iUnit,*) 'ThSI: sMxL_default  =',sMxL_default
+      WRITE(iUnit,*) 'ThSI: vMxL_default  =',vMxL_default
       WRITE(iUnit,*) 'ThSI: thSIce_taveFreq=',thSIce_taveFreq
       WRITE(iUnit,*) 'ThSI: thSIce_diagFreq=',thSIce_diagFreq
       WRITE(iUnit,*) 'ThSI: thSIce_monFreq =',thSIce_monFreq

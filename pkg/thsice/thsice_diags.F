@@ -1,15 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diags.F,v 1.3 2003/12/31 17:44:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/Attic/thsice_diags.F,v 1.4 2004/04/07 23:40:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: THSICE_DIAGS
+C     !INTERFACE:
       SUBROUTINE THSICE_DIAGS( myTime, myIter, myThid )
-C     /==========================================================\
-C     | SUBROUTINE THSICE_DIAGS                                     |
-C     | o Do ICE diagnostic output                               |
-C     |==========================================================|
-C     \==========================================================/
+
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R THSICE_DIAGS
+C     | o Do ICE diagnostic output
+C     *==========================================================*
+C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -17,9 +24,10 @@ C     === Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "THSICE_PARAMS.h"
-#include "THSICE.h"
-#include "THSICE_DIAGS.h"
+#include "THSICE_VARS.h"
+#include "THSICE_TAVE.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myTime - Current time of simulation ( s )
 C     myIter - Iteration number
@@ -27,7 +35,7 @@ C     myThid -  Number of this instance of INI_FORCING
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef ALLOW_THSICE
 
@@ -43,20 +51,22 @@ c set arrays to zero if first timestep
       IF ( myIter .EQ. nIter0 ) THEN
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(ICE_iceMask_AVE, 1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(ICE_iceH_AVE,    1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(ICE_snowH_AVE,   1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(ICE_Tsrf_AVE,    1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(ICE_Tice1_AVE,   1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(ICE_Tice2_AVE,   1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(ICE_snow_AVE,    1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(ICE_qleft_AVE,   1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(ICE_fresh_AVE,   1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(ICE_salFx_AVE,   1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(ICE_Qnet_AVE,    1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(ICE_FWfx_AVE,    1, bi, bj, myThid)
-         CALL TIMEAVE_RESET(ICE_albedo_AVE,  1, bi, bj, myThid)
-         ICE_TimeAve(1,bi,bj)=0.
+         CALL TIMEAVE_RESET(ice_fract_Ave,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_iceH_Ave,   1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_snowH_Ave,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_Tsrf_Ave,   1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_Tice1_Ave,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_Tice2_Ave,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_snowPr_Ave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_flx2oc_Ave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_frw2oc_Ave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_salFx_Ave,  1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_flxAtm_Ave,   1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_frwAtm_Ave,   1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_albedo_Ave, 1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_tMxL_Ave,   1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_sMxL_Ave,   1, bi, bj, myThid)
+         ice_timeAve(1,bi,bj)=0.
         ENDDO
        ENDDO
 
@@ -69,96 +79,110 @@ C      Normalize by integrated time
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
 C-- area weighted average (with ice-fraction)
-         CALL TIMEAVE_NORMA_2V( ICE_iceH_AVE,
-     &                          ICE_iceMask_AVE, 1, bi, bj, myThid )
-         CALL TIMEAVE_NORMA_2V( ICE_snowH_AVE,
-     &                          ICE_iceMask_AVE, 1, bi, bj, myThid )
-         CALL TIMEAVE_NORMA_2V( ICE_Tsrf_AVE,
-     &                          ICE_iceMask_AVE, 1, bi, bj, myThid )
-         CALL TIMEAVE_NORMA_2V( ICE_Tice1_AVE,
-     &                          ICE_iceMask_AVE, 1, bi, bj, myThid )
-         CALL TIMEAVE_NORMA_2V( ICE_Tice2_AVE,
-     &                          ICE_iceMask_AVE, 1, bi, bj, myThid )
-         CALL TIMEAVE_NORMA_2V( ICE_snow_AVE,
-     &                          ICE_iceMask_AVE, 1, bi, bj, myThid )
-         CALL TIMEAVE_NORMA_2V( ICE_albedo_AVE,
-     &                          ICE_iceMask_AVE, 1, bi, bj, myThid )
+         CALL TIMEAVE_NORMA_2V( ice_iceH_Ave,
+     &                          ice_fract_Ave, 1, bi, bj, myThid )
+         CALL TIMEAVE_NORMA_2V( ice_snowH_Ave,
+     &                          ice_fract_Ave, 1, bi, bj, myThid )
+         CALL TIMEAVE_NORMA_2V( ice_Tsrf_Ave,
+     &                          ice_fract_Ave, 1, bi, bj, myThid )
+         CALL TIMEAVE_NORMA_2V( ice_Tice1_Ave,
+     &                          ice_fract_Ave, 1, bi, bj, myThid )
+         CALL TIMEAVE_NORMA_2V( ice_Tice2_Ave,
+     &                          ice_fract_Ave, 1, bi, bj, myThid )
+         CALL TIMEAVE_NORMA_2V( ice_snowPr_Ave,
+     &                          ice_fract_Ave, 1, bi, bj, myThid )
+         CALL TIMEAVE_NORMA_2V( ice_albedo_Ave,
+     &                          ice_fract_Ave, 1, bi, bj, myThid )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--  simple time average :
-         CALL TIMEAVE_NORMALIZ(ICE_iceMask_AVE,ICE_timeave,1 ,
+         CALL TIMEAVE_NORMALIZ(ice_fract_Ave,ice_timeAve,1 ,
      &                 bi,bj,myThid)
-c        CALL TIMEAVE_NORMALIZ(ICE_iceH_AVE,  ICE_timeave, 1 ,
+c        CALL TIMEAVE_NORMALIZ(ice_iceH_Ave,   ice_timeAve, 1 ,
 c    &                 bi,bj,myThid)
-c        CALL TIMEAVE_NORMALIZ(ICE_snowH_AVE, ICE_timeave, 1 ,
+c        CALL TIMEAVE_NORMALIZ(ice_snowH_Ave,  ice_timeAve, 1 ,
 c    &                 bi,bj,myThid)
-c        CALL TIMEAVE_NORMALIZ(ICE_Tsrf_AVE,  ICE_timeave, 1 ,
+c        CALL TIMEAVE_NORMALIZ(ice_Tsrf_Ave,   ice_timeAve, 1 ,
 c    &                 bi,bj,myThid)
-c        CALL TIMEAVE_NORMALIZ(ICE_Tice1_AVE, ICE_timeave, 1 ,
+c        CALL TIMEAVE_NORMALIZ(ice_Tice1_Ave,  ice_timeAve, 1 ,
 c    &                 bi,bj,myThid)
-c        CALL TIMEAVE_NORMALIZ(ICE_Tice2_AVE, ICE_timeave, 1 ,
+c        CALL TIMEAVE_NORMALIZ(ice_Tice2_Ave,  ice_timeAve, 1 ,
 c    &                 bi,bj,myThid)
-c        CALL TIMEAVE_NORMALIZ(ICE_snow_AVE,  ICE_timeave, 1 ,
+c        CALL TIMEAVE_NORMALIZ(ice_snowPr_Ave, ice_timeAve, 1 ,
 c    &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(ICE_qleft_AVE, ICE_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZ(ice_flx2oc_Ave, ice_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(ICE_fresh_AVE, ICE_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZ(ice_frw2oc_Ave, ice_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(ICE_salFx_AVE, ICE_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZ(ice_salFx_Ave,  ice_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(ICE_Qnet_AVE,  ICE_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZ(ice_flxAtm_Ave, ice_timeAve, 1 ,
      &                 bi,bj,myThid)
-         CALL TIMEAVE_NORMALIZ(ICE_FWfx_AVE,  ICE_timeave, 1 ,
+         CALL TIMEAVE_NORMALIZ(ice_frwAtm_Ave, ice_timeAve, 1 ,
      &                 bi,bj,myThid)
+         IF ( stepFwd_oceMxL ) THEN
+          CALL TIMEAVE_NORMALIZ(ice_tMxL_Ave,  ice_timeAve, 1 ,
+     &                 bi,bj,myThid)
+          CALL TIMEAVE_NORMALIZ(ice_sMxL_Ave,  ice_timeAve, 1 ,
+     &                 bi,bj,myThid)
+         ENDIF
         ENDDO
        ENDDO
          
        WRITE(suff,'(I10.10)') myIter
 
-       CALL WRITE_FLD_XY_RL('ICE_icemask-T.',suff,
-     &                       ICE_iceMask_AVE,myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_iceheight-T.',suff,
-     &                       ICE_iceH_AVE,   myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_snowheight-T.',suff,
-     &                       ICE_snowH_AVE,  myIter,myThid)
+       CALL WRITE_FLD_XY_RL('ICE_fract-T.',  suff,
+     &                       ice_fract_Ave,  myIter,myThid)
+       CALL WRITE_FLD_XY_RL('ICE_iceH-T.',   suff,
+     &                       ice_iceH_Ave,   myIter,myThid)
+       CALL WRITE_FLD_XY_RL('ICE_snowH-T.',  suff,
+     &                       ice_snowH_Ave,  myIter,myThid)
        CALL WRITE_FLD_XY_RL('ICE_Tsrf-T.',   suff,
-     &                       ICE_Tsrf_AVE,   myIter,myThid)
+     &                       ice_Tsrf_Ave,   myIter,myThid)
        CALL WRITE_FLD_XY_RL('ICE_Tice1-T.',  suff,
-     &                       ICE_Tice1_AVE,  myIter,myThid)
+     &                       ice_Tice1_Ave,  myIter,myThid)
        CALL WRITE_FLD_XY_RL('ICE_Tice2-T.',  suff,
-     &                       ICE_Tice2_AVE,  myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_snow-T.',   suff,
-     &                       ICE_snow_AVE,   myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_Qleft-T.',  suff,
-     &                       ICE_qleft_AVE,  myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_fresh-T.',  suff,
-     &                       ICE_fresh_AVE,  myIter,myThid)
+     &                       ice_Tice2_Ave,  myIter,myThid)
+       CALL WRITE_FLD_XY_RL('ICE_snowPr-T.', suff,
+     &                       ice_snowPr_Ave, myIter,myThid)
+       CALL WRITE_FLD_XY_RL('ICE_flx2oc-T.', suff,
+     &                       ice_flx2oc_Ave, myIter,myThid)
+       CALL WRITE_FLD_XY_RL('ICE_frw2oc-T.', suff,
+     &                       ice_frw2oc_Ave, myIter,myThid)
        CALL WRITE_FLD_XY_RL('ICE_salFx-T.',  suff,
-     &                       ICE_salFx_AVE,  myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_Qnet-T.',   suff,
-     &                       ICE_Qnet_AVE,   myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ICE_FWfx-T.',   suff,
-     &                       ICE_FWfx_AVE,   myIter,myThid)
+     &                       ice_salFx_Ave,  myIter,myThid)
+       CALL WRITE_FLD_XY_RL('ICE_flxAtm-T.', suff,
+     &                       ice_flxAtm_Ave, myIter,myThid)
+       CALL WRITE_FLD_XY_RL('ICE_frwAtm-T.', suff,
+     &                       ice_frwAtm_Ave, myIter,myThid)
        CALL WRITE_FLD_XY_RL('ICE_albedo-T.', suff,
-     &                       ICE_albedo_AVE, myIter,myThid)
+     &                       ice_albedo_Ave, myIter,myThid)
+       IF ( stepFwd_oceMxL ) THEN
+        CALL WRITE_FLD_XY_RL('ICE_tMxL-T.', suff,
+     &                       ice_tMxL_Ave, myIter,myThid)
+        CALL WRITE_FLD_XY_RL('ICE_sMxL-T.', suff,
+     &                       ice_sMxL_Ave, myIter,myThid)
+       ENDIF
 
          
 C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
-         CALL TIMEAVE_RESET(ICE_iceMask_AVE,1, bi,bj, myThid)
-         CALL TIMEAVE_RESET(ICE_iceH_AVE,   1, bi,bj, myThid)
-         CALL TIMEAVE_RESET(ICE_snowH_AVE,  1, bi,bj, myThid)
-         CALL TIMEAVE_RESET(ICE_Tsrf_AVE,   1, bi,bj, myThid)
-         CALL TIMEAVE_RESET(ICE_Tice1_AVE,  1, bi,bj, myThid)
-         CALL TIMEAVE_RESET(ICE_Tice2_AVE,  1, bi,bj, myThid)
-         CALL TIMEAVE_RESET(ICE_snow_AVE,   1, bi,bj, myThid)
-         CALL TIMEAVE_RESET(ICE_qleft_AVE,  1, bi,bj, myThid)
-         CALL TIMEAVE_RESET(ICE_fresh_AVE,  1, bi,bj, myThid)
-         CALL TIMEAVE_RESET(ICE_salFx_AVE,  1, bi,bj, myThid)
-         CALL TIMEAVE_RESET(ICE_Qnet_AVE,   1, bi,bj, myThid)
-         CALL TIMEAVE_RESET(ICE_FWfx_AVE,   1, bi,bj, myThid)
-         CALL TIMEAVE_RESET(ICE_albedo_AVE, 1, bi,bj, myThid)
-         ICE_TimeAve(1,bi,bj) = 0.
+         CALL TIMEAVE_RESET(ice_fract_Ave,  1, bi,bj, myThid)
+         CALL TIMEAVE_RESET(ice_iceH_Ave,   1, bi,bj, myThid)
+         CALL TIMEAVE_RESET(ice_snowH_Ave,  1, bi,bj, myThid)
+         CALL TIMEAVE_RESET(ice_Tsrf_Ave,   1, bi,bj, myThid)
+         CALL TIMEAVE_RESET(ice_Tice1_Ave,  1, bi,bj, myThid)
+         CALL TIMEAVE_RESET(ice_Tice2_Ave,  1, bi,bj, myThid)
+         CALL TIMEAVE_RESET(ice_snowPr_Ave, 1, bi,bj, myThid)
+         CALL TIMEAVE_RESET(ice_flx2oc_Ave, 1, bi,bj, myThid)
+         CALL TIMEAVE_RESET(ice_frw2oc_Ave, 1, bi,bj, myThid)
+         CALL TIMEAVE_RESET(ice_salFx_Ave,  1, bi,bj, myThid)
+         CALL TIMEAVE_RESET(ice_flxAtm_Ave,   1, bi,bj, myThid)
+         CALL TIMEAVE_RESET(ice_frwAtm_Ave,   1, bi,bj, myThid)
+         CALL TIMEAVE_RESET(ice_albedo_Ave, 1, bi,bj, myThid)
+         CALL TIMEAVE_RESET(ice_tMxL_Ave,   1, bi, bj, myThid)
+         CALL TIMEAVE_RESET(ice_sMxL_Ave,   1, bi, bj, myThid)
+         ice_timeAve(1,bi,bj) = 0.
         ENDDO
        ENDDO
          
@@ -173,26 +197,32 @@ C     Dump a snap-shot of main state variables:
 
        WRITE(suff,'(I10.10)') myIter
 
-       CALL WRITE_FLD_XY_RL('ice_icemask.',  suff,iceMask,
+       CALL WRITE_FLD_XY_RL('ice_fract.',  suff,iceMask,
      &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_iceheight.',suff,iceheight,
+       CALL WRITE_FLD_XY_RL('ice_iceH.',   suff,iceheight,
      &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_snowheight.',suff,snowheight,
+       CALL WRITE_FLD_XY_RL('ice_snowH.',  suff,snowheight,
      &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_Tsrf.', suff,Tsrf,
+       CALL WRITE_FLD_XY_RL('ice_Tsrf.',   suff,Tsrf,
      &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_Tice1.',suff,Tice1,
+       CALL WRITE_FLD_XY_RL('ice_Tice1.',  suff,Tice1,
      &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_Tice2.',suff,Tice2,
+       CALL WRITE_FLD_XY_RL('ice_Tice2.',  suff,Tice2,
      &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_Qice1.',suff,Qice1,
+       CALL WRITE_FLD_XY_RL('ice_Qice1.',  suff,Qice1,
      &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_Qice2.',suff,Qice2,
+       CALL WRITE_FLD_XY_RL('ice_Qice2.',  suff,Qice2,
      &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_snow.',suff,snow,
+       CALL WRITE_FLD_XY_RL('ice_snowPrc.',suff,snowPrc,
      &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('ice_sage.',suff,sage,
+       CALL WRITE_FLD_XY_RL('ice_snowAge.',suff,snowAge,
      &     myIter,myThid)
+       IF ( stepFwd_oceMxL ) THEN
+        CALL WRITE_FLD_XY_RL('ice_tOceMxL.', suff, tOceMxL,
+     &     myIter,myThid)
+        CALL WRITE_FLD_XY_RL('ice_sOceMxL.', suff, sOceMxL,
+     &     myIter,myThid)
+       ENDIF
 
       ENDIF
          

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.2 2003/12/31 17:44:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/THSICE_PARAMS.h,v 1.3 2004/04/07 23:40:34 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_THSICE
@@ -118,9 +118,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
+C--   COMMON / THSICE_PAR_L / ice model (logical) parameters
+c     stepFwd_oceMxL  :: step forward mixed-layer T & S (slab-ocean)
+      COMMON / THSICE_PAR_L / 
+     &  stepFwd_oceMxL
+
+      LOGICAL stepFwd_oceMxL
+
 C--   COMMON / THSICE_PAR_I / ice model (integer) parameters
-c  startIceModel :: =1 : start ice model at nIter0 ; =0 : use pickup files
-c  nitMaxTsf     :: maximum Nb of iter to find Surface Temp (Trsf) 
+c     startIceModel :: =1 : start ice model at nIter0 ; =0 : use pickup files
+c     nitMaxTsf     :: maximum Nb of iter to find Surface Temp (Trsf) 
       COMMON / THSICE_PAR_I / 
      &  startIceModel, nitMaxTsf
 
@@ -128,17 +135,24 @@ c  nitMaxTsf     :: maximum Nb of iter to find Surface Temp (Trsf)
       INTEGER nitMaxTsf
 
 C--   COMMON / THSICE_PAR_R / ice model (real) parameters
-C     thSIce_deltaT     :: ice model time-step
-C     stressReduction  :: reduction factor for wind-stress under sea-ice [0-1]
-C     thSIce_taveFreq   :: Frequency^-1 for time-Aver. output (s)
-C     thSIce_diagFreq   :: Frequency^-1 for diagnostic output (s)
-C     thSIce_monFreq    :: Frequency^-1 for monitor    output (s)
+C     thSIce_deltaT   :: ice model time-step
+C     ocean_deltaT    :: ocean mixed-layer time-step
+C     tauRelax_MxL    :: Relaxation time scale for MixLayer T & S [s]
+C     hMxL_default    :: default value for ocean MixLayer thickness [m]
+C     sMxL_default    :: default value for salinity in MixLayer [psu]
+C     vMxL_default    :: default value for ocean current velocity in MxL [m/s]
+C     stressReduction :: reduction factor for wind-stress under sea-ice [0-1]
+C     thSIce_taveFreq :: Frequency^-1 for time-Aver. output [s]
+C     thSIce_diagFreq :: Frequency^-1 for diagnostic output [s]
+C     thSIce_monFreq  :: Frequency^-1 for monitor    output [s]
       COMMON / THSICE_PAR_R /
-     &  thSIce_deltaT, 
+     &  thSIce_deltaT, ocean_deltaT, tauRelax_MxL,
+     &  hMxL_default,  sMxL_default, vMxL_default,
      &  stressReduction,
      &  thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq
 
-      _RL  thSIce_deltaT 
+      _RL  thSIce_deltaT, ocean_deltaT, tauRelax_MxL 
+      _RL  hMxL_default, sMxL_default, vMxL_default 
       _RL  stressReduction 
       _RL  thSIce_taveFreq, thSIce_diagFreq, thSIce_monFreq
 

@@ -1,25 +1,39 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_albedo.F,v 1.1 2003/12/31 17:44:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_albedo.F,v 1.2 2004/04/07 23:40:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
 
-      SUBROUTINE THSICE_ALBEDO(hi,hs,Tsf,age,albedo)
+CBOP
+C     !ROUTINE: THSICE_READPARMS
+C     !INTERFACE:
+      SUBROUTINE THSICE_ALBEDO(
+     I                         hi, hs, Tsf, age, 
+     O                         albedo,
+     I                         myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
 C     | S/R THSICE_ALBEDO
 C     *==========================================================*
 C     | Compute surface albedo
 C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     == Global data ==
 #include "THSICE_PARAMS.h"
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
       _RL  hi                  ! ice height
       _RL  hs                  ! snow height
       _RL  Tsf                 ! surface temperature
       _RL  age                 ! snow age
       _RL  albedo              ! surface albedo
+      INTEGER myThid
+CEOP
 
 #ifdef ALLOW_THSICE
 C     == Local variables ==
@@ -27,7 +41,7 @@ C     frsnow     :: fractional snow cover
 C     albsno     :: albedo of snow
 C     albice     :: albedo of ice
 C     albNewSnow :: albedo of new (fresh) snow
-      _RL  frsnow
+c     _RL  frsnow
       _RL albsno, albice
       _RL albNewSnow
 

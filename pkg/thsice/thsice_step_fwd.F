@@ -1,144 +1,224 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.2 2003/12/31 17:44:32 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_step_fwd.F,v 1.3 2004/04/07 23:40:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
- 
+
+CBOP
 C     !ROUTINE: THSICE_STEP_FWD
 C     !INTERFACE:
       SUBROUTINE THSICE_STEP_FWD( 
      I             bi, bj, iMin, iMax, jMin, jMax,
+     I             prcAtm,
+     U             evpAtm, flxSW,
      I             myTime, myIter, myThid )
+C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE  THSICE_STEP_FWD             
+C     | S/R  THSICE_STEP_FWD             
 C     | o Step Forward Therm-SeaIce model.
 C     *==========================================================*
+C     \ev
 
 C     !USES:
       IMPLICIT NONE
+
 C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "FFIELDS.h"
-#include "DYNVARS.h"
-#include "GRID.h"
-#ifdef ALLOW_BULK_FORCE
-#include "BULKF.h"
-#endif
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
-#include "THSICE.h"
-#include "THSICE_DIAGS.h"
+#include "THSICE_VARS.h"
+#include "THSICE_TAVE.h"
  
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
-C     myIter :: iteration counter for this thread
-C     myTime :: time counter for this thread
-C     myThid :: thread number for this instance of the routine.
+C     bi,bj   :: tile indices
+C   iMin,iMax :: computation domain: 1rst index range
+C   jMin,jMax :: computation domain: 2nd  index range
+C- input:
+C     prcAtm  :: total precip from the atmosphere [kg/m2/s] 
+C     evpAtm  :: (Inp) evaporation to the atmosphere [kg/m2/s] (>0 if evaporate)
+C     flxSW   :: (Inp) short-wave heat flux (+=down): downward comp. only
+C                      (part.1), becomes net SW flux into ocean (part.2).
+C- output
+C     evpAtm  :: (Out) net fresh-water flux (E-P) from the atmosphere [m/s] (+=up)
+C     flxSW   :: (Out) net surf. heat flux from the atmosphere [W/m2], (+=down)
+C     myTime  :: time counter for this thread
+C     myIter  :: iteration counter for this thread
+C     myThid  :: thread number for this instance of the routine.
       INTEGER bi,bj
       INTEGER iMin, iMax
       INTEGER jMin, jMax
+      _RL prcAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL evpAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL flxSW (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL  myTime
       INTEGER myIter
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_THSICE
 C     !LOCAL VARIABLES:
 C     === Local variables ===
-C     snowAge       :: snow age (s)
-C     albedo        :: surface albedo [0-1]
-C     fSWabs        :: net Short-Wave (+ = down) at surface (W m-2)
-C     Fbot          :: the oceanic heat flux already incorporated (ice_therm)
-C     flxAtm        :: net heat flux from the atmosphere ( >0 downward)
-C     evpAtm        :: evaporation to the atmosphere
-C     frwAtm        :: net fresh-water flux (E-P-R) to the atmosphere (m/s)
-C     qleft         :: net heat flux from the ice to the ocean
-C     ffresh        :: fresh-water flux from the ice to the ocean
-C     fsalt         :: mass salt flux to the ocean
+C     snowPr    :: snow precipitation [kg/m2/s]
+C     agingTime :: aging time scale (s)
+C     ageFac    :: snow aging factor [1]
+C     albedo    :: surface albedo [0-1]
+C     flxAtm    :: net heat flux from the atmosphere (+=down) [W/m2]
+C     frwAtm    :: net fresh-water flux (E-P) to the atmosphere  [kg/m2/s]
+C     Fbot      :: the oceanic heat flux already incorporated (ice_therm)
+C     flx2oc    :: net heat flux from the ice to the ocean (+=down) [W/m2]
+C     frw2oc    :: fresh-water flux from the ice to the ocean
+C     fsalt     :: mass salt flux to the ocean
+C     frzmltMxL :: ocean mixed-layer freezing/melting potential [W/m2]
+C     TFrzOce   :: sea-water freezing temperature [oC] (function of S)
       INTEGER i,j
-      _RL snowAge
+      _RL snowPr
+      _RL agingTime, ageFac
       _RL albedo
-      _RL fSWabs
-      _RL qleft, qNewIce 
+      _RL flxAtm(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL frwAtm
+      _RL flx2oc
+      _RL frw2oc
       _RL fsalt
-      _RL ffresh
-      _RL Tf, cphm, frzmlt
+      _RL TFrzOce, cphm, frzmltMxL
       _RL Fbot, esurp
-      _RL flxAtm, evpAtm, frwAtm 
-      _RL openFrac, iceFrac, qicAv
-      _RL oceHs, oceV2s, oceSs, oceTs
+      _RL opFrac, icFrac
+      _RL oceV2s, oceTs
       _RL compact, hIce, hSnow, Tsf, Tice(nlyr), qicen(nlyr)
+      _RL tmpflx(0:2), tmpdTs
 
       LOGICAL dBug
 
       dBug = .FALSE.
  1010 FORMAT(A,1P4E11.3)
 
-      DO j = jMin, jMax
-       DO i = iMin, iMax
-c       dBug = ( bi.EQ.3 .AND. i.EQ.13 .AND. j.EQ.13 )
-
-        Tf     = -mu_Tf*salt(i,j,1,bi,bj)
-        cphm   = cpwater*rhosw*drF(1)*hFacC(i,j,1,bi,bj)
-        oceTs  = theta(i,j,1,bi,bj)
-        frzmlt = (Tf-oceTs)*cphm/thSIce_deltaT
-        compact= iceMask(i,j,bi,bj)
-        hIce   = iceHeight(i,j,bi,bj)
-        hSnow  = snowHeight(i,j,bi,bj)
-        Fbot   = 0. _d 0
-        snow(i,j,bi,bj)     = 0. _d 0
-        saltFlux(i,j,bi,bj) = 0. _d 0
-
-        IF (dBug .AND. (frzmlt.GT.0. .OR. compact.GT.0.) ) THEN
-          WRITE(6,1010) 'ThSI_FWD:-0- iceMask,hIc,hSn,Qnet=',
-     &                  compact, hIce, hSnow, Qnet(i,j,bi,bj)
-          WRITE(6,1010) 'ThSI_FWD: ocTs,Tf,frzmlt=',
-     &                            oceTs,Tf,frzmlt
-        ENDIF
+      IF ( buoyancyRelation(1:7) .EQ. 'OCEANIC' ) THEN
+       DO j = jMin, jMax
+        DO i = iMin, iMax
+c        dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.15 )
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C    part.1 : ice-covered fraction ; 
-C     can only reduce the ice-fraction but not increase it.
+C     Solve for surface and ice temperature (implicitly) ; compute surf. fluxes
 C-------
-        IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN 
-          oceHs   = hfacC(i,j,1,bi,bj)*drF(1)
-          oceSs   = salt (i,j,1,bi,bj)
-          oceV2s  = ( uvel(i,j,1,bi,bj)*uvel(i,j,1,bi,bj)
-     &              + uvel(i+1,j,1,bi,bj)*uvel(i+1,j,1,bi,bj)
-     &              + vvel(i,j+1,1,bi,bj)*vvel(i,j+1,1,bi,bj)
-     &              + vvel(i,j,1,bi,bj)*vvel(i,j,1,bi,bj) )*0.5 _d 0
-          snowAge = sage(i,j,bi,bj)
-c         snowAge = thSIce_deltaT
+         IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN 
+          icFrac  = iceMask(i,j,bi,bj)
+          TFrzOce = -mu_Tf*sOceMxL(i,j,bi,bj)
+          hIce    = iceHeight(i,j,bi,bj)
+          hSnow   = snowHeight(i,j,bi,bj)
           Tsf     = Tsrf(i,j,bi,bj)
-          Tice(1) = Tice1(i,j,bi,bj)
-          Tice(2) = Tice2(i,j,bi,bj)
           qicen(1)= Qice1(i,j,bi,bj)
           qicen(2)= Qice2(i,j,bi,bj)
-          CALL THSICE_ALBEDO(hIce,hSnow,Tsf,snowAge,albedo)
-          fSWabs = solar(i,j,bi,bj)*(1. _d 0 - albedo)
-          CALL THSICE_THERM(
-     I          fSWabs, oceHs, oceV2s, oceSs, oceTs,
-     U          compact, hIce, hSnow, Tsf, Tice, qicen,
-     O          qleft, ffresh, fsalt, Fbot,
-     O          flxAtm, evpAtm,
+
+          CALL THSICE_ALBEDO(
+     I               hIce, hSnow, Tsf, snowAge(i,j,bi,bj),
+     O               albedo,
+     I               myThid )
+          flxSW(i,j) = flxSW(i,j)*(1. _d 0 - albedo)
+
+          CALL THSICE_SOLVE4TEMP(
+     I          useBulkforce, tmpflx, TFrzOce, hIce, hSnow,
+     U          flxSW(i,j), Tsf, qicen,
+     O          Tice, sHeating(i,j,bi,bj), flxCndBt(i,j,bi,bj),
+     O          tmpdTs, flxAtm(i,j), evpAtm(i,j),
      I          i,j, bi,bj, myThid)
 
-C-- Diagnostic of Atmospheric Fluxes over sea-ice :
-          frwAtm = evpAtm - snow(i,j,bi,bj)*rhos/rhofw
-C note: Any flux of mass (here fresh water) that enter or leave the system
-C       with a non zero energy HAS TO be counted: add snow precip.
-          flxAtm = flxAtm - Lfresh*snow(i,j,bi,bj)*rhos
+#ifdef SHORTWAVE_HEATING
+C--    Update Fluxes :
+          opFrac= 1. _d 0-icFrac
+          Qsw(i,j,bi,bj)=-icFrac*flxSW(i,j) +opFrac*Qsw(i,j,bi,bj)
+#endif
+C--    Update Sea-Ice state :
+          Tsrf(i,j,bi,bj) =Tsf
+          Tice1(i,j,bi,bj)=Tice(1)
+          Tice2(i,j,bi,bj)=Tice(2)
+          Qice1(i,j,bi,bj)=qicen(1)
+          Qice2(i,j,bi,bj)=qicen(2)
+#ifdef ALLOW_TIMEAVE
+          ice_albedo_Ave(i,j,bi,bj) = ice_albedo_Ave(i,j,bi,bj)
+     &                              + icFrac*albedo*thSIce_deltaT
+#endif /*ALLOW_TIMEAVE*/
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
+      dBug = .FALSE.
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      IF (dBug) WRITE(6,1010) 'ThSI_FWD: iceFrac,flxAtm,evpAtm,flxSnw=',
-     &  iceMask(i,j,bi,bj),flxAtm,evpAtm,-Lfresh*snow(i,j,bi,bj)*rhos
-      IF (dBug) WRITE(6,1010) 'ThSI_FWD: compact,qleft,fsalt,ffresh=',
-     &   compact,qleft,fsalt,ffresh
+C    part.2 : ice-covered fraction ; 
+C     change in ice/snow thickness and ice-fraction 
+C     note: can only reduce the ice-fraction but not increase it.
+C-------
+      agingTime = 50. _d 0 * 86400. _d 0
+      ageFac = 1. _d 0 - thSIce_deltaT/agingTime
+      DO j = jMin, jMax
+       DO i = iMin, iMax
+c       dBug = ( bi.EQ.3 .AND. i.EQ.15 .AND. j.EQ.15 )
+
+        TFrzOce = -mu_Tf*sOceMxL(i,j,bi,bj)
+        oceTs   = tOceMxL(i,j,bi,bj)
+        cphm    = cpwater*rhosw*hOceMxL(i,j,bi,bj)
+        frzmltMxL = (TFrzOce-oceTs)*cphm/ocean_deltaT
+
+        Fbot   = 0. _d 0
+        saltFlux(i,j,bi,bj) = 0. _d 0
+        compact= iceMask(i,j,bi,bj)
+C-------
+        IF (dBug .AND. (frzmltMxL.GT.0. .OR. compact.GT.0.) ) THEN
+          WRITE(6,1010) 'ThSI_FWD:-1- iceMask,hIc,hSn,Qnet=',
+     &                  compact, hIce, hSnow, Qnet(i,j,bi,bj)
+          WRITE(6,1010) 'ThSI_FWD: ocTs,TFrzOce,frzmltMxL=',
+     &                            oceTs,TFrzOce,frzmltMxL
+        ENDIF
+C-------
+        IF (iceMask(i,j,bi,bj).GT.0. _d 0) THEN 
+
+          oceV2s  = v2ocMxL(i,j,bi,bj)
+          snowPr  = snowPrc(i,j,bi,bj)
+          hIce    = iceHeight(i,j,bi,bj)
+          hSnow   = snowHeight(i,j,bi,bj)
+          Tsf     = Tsrf(i,j,bi,bj)
+          qicen(1)= Qice1(i,j,bi,bj)
+          qicen(2)= Qice2(i,j,bi,bj)
+          flx2oc  = flxSW(i,j)
+
+          CALL THSICE_CALC_THICKN(
+     I          frzmltMxL, TFrzOce, oceTs, oceV2s, snowPr,
+     I          sHeating(i,j,bi,bj), flxCndBt(i,j,bi,bj), evpAtm(i,j),
+     U          compact, hIce, hSnow, Tsf, qicen, flx2oc,
+     O          frw2oc, fsalt, Fbot,
+     I          dBug, myThid)
+
+C- note : snowPr was not supposed to be modified in THSICE_THERM ;
+C         but to reproduce old results, is reset to zero if Tsf >= 0
+          snowPrc(i,j,bi,bj) = snowPr
+
+C--  Snow aging :
+          snowAge(i,j,bi,bj) = thSIce_deltaT 
+     &                       + snowAge(i,j,bi,bj)*ageFac
+          IF ( snowPr.GT.0. _d 0 ) 
+     &      snowAge(i,j,bi,bj) = snowAge(i,j,bi,bj) 
+     &          * EXP( -(thSIce_deltaT*snowPr/rhos)/hNewSnowAge )
+C--
+
+C-- Diagnostic of Atmospheric Fluxes over sea-ice :
+          frwAtm = evpAtm(i,j) - prcAtm(i,j)
+C note: Any flux of mass (here fresh water) that enter or leave the system
+C       with a non zero energy HAS TO be counted: add snow precip.
+          flxAtm(i,j) = flxAtm(i,j) - Lfresh*snowPrc(i,j,bi,bj)
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      IF (dBug) WRITE(6,1010) 'ThSI_FWD: icFrac,flxAtm,evpAtm,flxSnw=',
+     &  iceMask(i,j,bi,bj),flxAtm(i,j),evpAtm(i,j),-Lfresh*snowPr
+      IF (dBug) WRITE(6,1010) 'ThSI_FWD: compact,flx2oc,fsalt,frw2oc=',
+     &   compact,flx2oc,fsalt,frw2oc
 #ifdef CHECK_ENERGY_CONSERV
-          iceFrac = iceMask(i,j,bi,bj)
+          icFrac = iceMask(i,j,bi,bj)
           CALL THSICE_CHECK_CONSERV( dBug, i, j, bi, bj, 0,
-     I            iceFrac, compact, hIce, hSnow, qicen,
-     I            qleft, ffresh, fsalt, flxAtm, frwAtm,
+     I            icFrac, compact, hIce, hSnow, qicen,
+     I            flx2oc, frw2oc, fsalt, flxAtm(i,j), frwAtm,
      I            myTime, myIter, myThid )
 #endif /* CHECK_ENERGY_CONSERV */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -148,105 +228,89 @@ c         iceMask(i,j,bi,bj)=compact
           iceheight(i,j,bi,bj) = hIce
           snowheight(i,j,bi,bj)= hSnow
           Tsrf(i,j,bi,bj) =Tsf
-          Tice1(i,j,bi,bj)=Tice(1)
-          Tice2(i,j,bi,bj)=Tice(2)
           Qice1(i,j,bi,bj)=qicen(1)
           Qice2(i,j,bi,bj)=qicen(2)
 
 C--    Net fluxes :
-          ffresh = ffresh/rhofw
-          ffresh = -ffresh-rain(i,j,bi,bj)-runoff(i,j,bi,bj)
-          frwAtm =  frwAtm-rain(i,j,bi,bj)-runoff(i,j,bi,bj)
-          iceFrac = iceMask(i,j,bi,bj)
-          openFrac= 1. _d 0-iceFrac
-#ifdef ALLOW_TIMEAVE
-          ICE_Qnet_AVE(i,j,bi,bj) = ICE_Qnet_AVE(i,j,bi,bj)
-     &          + ( -iceFrac*flxAtm + openFrac*Qnet(i,j,bi,bj)
-     &            )*thSIce_deltaT
-          ICE_FWfx_AVE(i,j,bi,bj) = ICE_FWfx_AVE(i,j,bi,bj)
-     &          + ( iceFrac*frwAtm + openFrac*EmPmR(i,j,bi,bj)
-     &            )*thSIce_deltaT
-          ICE_albedo_AVE(i,j,bi,bj) = ICE_albedo_AVE(i,j,bi,bj)
-     &          + iceFrac*albedo*thSIce_deltaT
-#endif /*ALLOW_TIMEAVE*/
-          Qnet(i,j,bi,bj)=-iceFrac*qleft + openFrac*Qnet(i,j,bi,bj)
-          EmPmR(i,j,bi,bj)=iceFrac*ffresh+openFrac*EmPmR(i,j,bi,bj)
-          saltFlux(i,j,bi,bj)=-iceFrac*fsalt
+          frw2oc = frw2oc + (prcAtm(i,j)-snowPrc(i,j,bi,bj))
+C-     weighted average net fluxes:
+          icFrac = iceMask(i,j,bi,bj)
+          opFrac= 1. _d 0-icFrac
+          flxAtm(i,j) = icFrac*flxAtm(i,j) - opFrac*Qnet(i,j,bi,bj)
+          frwAtm =     icFrac*frwAtm + opFrac*rhofw*EmPmR(i,j,bi,bj)
+          Qnet(i,j,bi,bj)=-icFrac*flx2oc +opFrac*Qnet(i,j,bi,bj)
+          EmPmR(i,j,bi,bj)=-icFrac*frw2oc/rhofw+opFrac*EmPmR(i,j,bi,bj)
+          saltFlux(i,j,bi,bj)=-icFrac*fsalt
 
-          IF (dBug) WRITE(6,1010)'ThSI_FWD:-1- compact,hIc,hSn,Qnet=',
+          IF (dBug) WRITE(6,1010)'ThSI_FWD:-3- compact,hIc,hSn,Qnet=',
      &                      compact,hIce,hSnow,Qnet(i,j,bi,bj)
 
-        ELSEIF (hFacC(i,j,1,bi,bj).gt.0. _d 0) THEN
-
-#ifdef ALLOW_TIMEAVE
-         ICE_Qnet_AVE(i,j,bi,bj) = ICE_Qnet_AVE(i,j,bi,bj)
-     &                   +Qnet(i,j,bi,bj)*thSIce_deltaT
-         ICE_FWfx_AVE(i,j,bi,bj) = ICE_FWfx_AVE(i,j,bi,bj)
-     &                   +EmPmR(i,j,bi,bj)*thSIce_deltaT
-#endif /*ALLOW_TIMEAVE*/
-
+        ELSEIF (hOceMxL(i,j,bi,bj).gt.0. _d 0) THEN
+          flxAtm(i,j) =  -Qnet(i,j,bi,bj)
+          frwAtm = rhofw*EmPmR(i,j,bi,bj)
+        ELSE
+          flxAtm(i,j) = 0. _d 0
+          frwAtm      = 0. _d 0
         ENDIF
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C    part.2 : freezing of sea-water
+C    part.3 : freezing of sea-water
 C     over ice-free fraction and what is left from ice-covered fraction
 C-------
-        esurp = frzmlt - Fbot*iceMask(i,j,bi,bj)
+c       compact= iceMask(i,j,bi,bj)
+        hIce   = iceHeight(i,j,bi,bj)
+        hSnow  = snowHeight(i,j,bi,bj)
+
+        esurp  = frzmltMxL - Fbot*iceMask(i,j,bi,bj)
         IF (esurp.GT.0. _d 0) THEN
-          iceFrac = compact
-          IF ( compact.GT.0. _d 0 ) THEN
-            qicen(1)= Qice1(i,j,bi,bj)
-            qicen(2)= Qice2(i,j,bi,bj)
-          ELSE
-            qicen(1)= -cpwater*Tmlt1
-     &               + cpice *(Tmlt1-Tf) + Lfresh*(1. _d 0-Tmlt1/Tf)
-            qicen(2)= -cpice *Tf + Lfresh 
-          ENDIF
-          qicAv = rhoi*(qicen(1)+qicen(2))*0.5 _d 0
-          CALL THSICE_START( myThid,
-     I             esurp, qicAv, Tf,
-     O             qNewIce, ffresh, fsalt,
-     U             oceTs, compact, hIce, hSnow )
+          icFrac = compact
+          qicen(1)= Qice1(i,j,bi,bj)
+          qicen(2)= Qice2(i,j,bi,bj)
+          CALL THSICE_EXTEND(
+     I               esurp, TFrzOce,
+     U               oceTs, compact, hIce, hSnow, qicen,
+     O               flx2oc, frw2oc, fsalt,
+     I               dBug, myThid )
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-      IF (dBug) WRITE(6,1010) 'ThSI_FWD: compact,qNewIce,fsalt,ffresh='
-     &                 ,compact,qNewIce,fsalt,ffresh
+      IF (dBug) WRITE(6,1010) 'ThSI_FWD: compact,flx2oc,fsalt,frw2oc='
+     &                 ,compact,flx2oc,fsalt,frw2oc
 #ifdef CHECK_ENERGY_CONSERV 
-          flxAtm = 0. 
-          frwAtm = 0. 
+          tmpflx(1) = 0. 
+          tmpflx(2) = 0. 
           CALL THSICE_CHECK_CONSERV( dBug, i, j, bi, bj, 1,
-     I            iceFrac, compact, hIce, hSnow, qicen,
-     I            qNewIce, ffresh, fsalt, flxAtm, frwAtm,
+     I            icFrac, compact, hIce, hSnow, qicen,
+     I            flx2oc, frw2oc, fsalt, tmpflx(1), tmpflx(2),
      I            myTime, myIter, myThid )
 #endif /* CHECK_ENERGY_CONSERV */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--    Update Sea-Ice state :
-          IF ( compact.GT.0. _d 0 .AND. iceFrac.EQ.0. _d 0) THEN
-             Tsrf(i,j,bi,bj)  = Tf
-             Tice1(i,j,bi,bj) = Tf
-             Tice2(i,j,bi,bj) = Tf
+          IF ( compact.GT.0. _d 0 .AND. icFrac.EQ.0. _d 0) THEN
+             Tsrf(i,j,bi,bj)  = TFrzOce
+             Tice1(i,j,bi,bj) = TFrzOce
+             Tice2(i,j,bi,bj) = TFrzOce
              Qice1(i,j,bi,bj) = qicen(1)
              Qice2(i,j,bi,bj) = qicen(2)
           ENDIF
           iceheight(i,j,bi,bj) = hIce
           snowheight(i,j,bi,bj)= hSnow
 C--    Net fluxes :
-          Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj) - qNewIce
-          EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- ffresh/rhofw 
+          Qnet(i,j,bi,bj) = Qnet(i,j,bi,bj) - flx2oc
+          EmPmR(i,j,bi,bj)= EmPmR(i,j,bi,bj)- frw2oc/rhofw 
           saltFlux(i,j,bi,bj)=saltFlux(i,j,bi,bj) - fsalt
 
-          IF (dBug) WRITE(6,1010)'ThSI_FWD:-2- compact,hIc,hSn,Qnet=',
+          IF (dBug) WRITE(6,1010)'ThSI_FWD:-4- compact,hIc,hSn,Qnet=',
      &                        compact,hIce,hSnow,Qnet(i,j,bi,bj)
 C--   - if esurp > 0 : end
         ENDIF
 
         IF ( compact .GT. 0. _d 0 ) THEN
           iceMask(i,j,bi,bj)=compact
-          IF ( hSnow .EQ. 0. _d 0 ) sage(i,j,bi,bj) = 0. _d 0
+          IF ( hSnow .EQ. 0. _d 0 ) snowAge(i,j,bi,bj) = 0. _d 0
         ELSE
           iceMask(i,j,bi,bj)  = 0. _d 0
           iceHeight(i,j,bi,bj)= 0. _d 0
           snowHeight(i,j,bi,bj)=0. _d 0
-          sage(i,j,bi,bj)     = 0. _d 0
+          snowAge(i,j,bi,bj)  = 0. _d 0
           Tsrf(i,j,bi,bj)     = oceTs
           Tice1(i,j,bi,bj)    = 0. _d 0
           Tice2(i,j,bi,bj)    = 0. _d 0
@@ -254,19 +318,9 @@ C--   - if esurp > 0 : end
           Qice2(i,j,bi,bj)    = 0. _d 0
         ENDIF
 
-#ifndef CHECK_ENERGY_CONSERV
-#ifdef ALLOW_TIMEAVE
-          ICE_qleft_AVE(i,j,bi,bj)=ICE_qleft_AVE(i,j,bi,bj)
-     &         + ( Qnet(i,j,bi,bj)
-     &            )*thSIce_deltaT
-          ICE_fresh_AVE(i,j,bi,bj)=ICE_fresh_AVE(i,j,bi,bj)
-     &         + ( EmPmR(i,j,bi,bj)
-     &            )*thSIce_deltaT
-          ICE_salFx_AVE(i,j,bi,bj)=ICE_salFx_AVE(i,j,bi,bj)
-     &            +saltFlux(i,j,bi,bj)*thSIce_deltaT
-#endif /* ALLOW_TIMEAVE */
-#endif /* CHECK_ENERGY_CONSERV */
-
+C--     Return atmospheric fluxes in evpAtm & flxSW (same sign and units):
+        evpAtm(i,j) = frwAtm
+        flxSW (i,j) = flxAtm(i,j)
        ENDDO
       ENDDO
 

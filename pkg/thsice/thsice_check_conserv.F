@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check_conserv.F,v 1.1 2003/11/23 01:20:13 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_check_conserv.F,v 1.2 2004/04/07 23:40:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -11,7 +11,7 @@ C     !INTERFACE:
      I             qleft, ffresh, fsalt, flxAtm, frwAtm,
      I             myTime, myIter, myThid )
 C     *==========================================================*
-C     | SUBROUTINE  THSICE_CHECK_CONSERV             
+C     | S/R  THSICE_CHECK_CONSERV             
 C     | o Check Conservation of Energy, water and salt
 C     *==========================================================*
 
@@ -23,8 +23,8 @@ C     === Global variables ===
 c #include "PARAMS.h"
 #include "THSICE_SIZE.h"
 #include "THSICE_PARAMS.h"
-#include "THSICE.h"
-#include "THSICE_DIAGS.h"
+#include "THSICE_VARS.h"
+#include "THSICE_TAVE.h"
  
 C     !INPUT/OUTPUT PARAMETERS:
 C     === Routine arguments ===
@@ -50,7 +50,6 @@ C     === Local variables ===
 
  1010 FORMAT(A,1P4E11.3)
 
-c         iceFrac = iceMask(i,j,bi,bj)
           flxFrac = iceFrac
           IF (iceStart.EQ.1) flxFrac = 1.
 
@@ -75,24 +74,24 @@ C--
          IF (dBug) WRITE(6,1010) 'ThSI_CHK: dEner,dH20,dSal /dt=',
      &    dEnerg/thSIce_deltaT,dWater/thSIce_deltaT,dSalt/thSIce_deltaT
          IF (dBug) WRITE(6,1010) 'ThSI_CHK: fxH,fxW,fxS=',flxAtm-qleft,
-     &     -ffresh-frwAtm*rhofw,-fsalt
+     &     -ffresh-frwAtm,-fsalt
           dEnerg = dEnerg + thSIce_deltaT*flxFrac*(flxAtm-qleft)
-          dWater = dWater - thSIce_deltaT*flxFrac*(ffresh+frwAtm*rhofw)
+          dWater = dWater - thSIce_deltaT*flxFrac*(ffresh+frwAtm)
           dSalt  = dSalt  - thSIce_deltaT*flxFrac*fsalt
 
 #ifdef ALLOW_TIMEAVE
-          ICE_qleft_AVE(i,j,bi,bj) = ICE_qleft_AVE(i,j,bi,bj)
+          ice_flx2oc_Ave(i,j,bi,bj) = ice_flx2oc_Ave(i,j,bi,bj)
      &          + dEnerg
-          ICE_fresh_AVE(i,j,bi,bj) = ICE_fresh_AVE(i,j,bi,bj)
+          ice_frw2oc_Ave(i,j,bi,bj) = ice_frw2oc_Ave(i,j,bi,bj)
      &          + dWater
-          ICE_salFx_AVE(i,j,bi,bj) = ICE_salFx_AVE(i,j,bi,bj)
+          ice_salFx_Ave(i,j,bi,bj) = ice_salFx_Ave(i,j,bi,bj)
      &          + dSalt
 #endif /*ALLOW_TIMEAVE*/
 C--
          IF (dBug) WRITE(6,1010) 'ThSI_CHK: resid.H,W,S=',
      &    dEnerg/thSIce_deltaT,dWater/thSIce_deltaT,dSalt/thSIce_deltaT
          IF (dBug) WRITE(6,1010) 'ThSI_CHK: hIc,hSn,snow*dt=',
-     &    hIce, hSnow, snow(i,j,bi,bj)*thSIce_deltaT
+     &    hIce, hSnow, snowPrc(i,j,bi,bj)*thSIce_deltaT/rhos
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 

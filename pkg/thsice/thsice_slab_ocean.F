@@ -1,0 +1,98 @@
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_slab_ocean.F,v 1.1 2004/04/07 23:40:34 jmc Exp $
+C $Name:  $
+
+#include "THSICE_OPTIONS.h"
+
+CBOP
+C     !ROUTINE: THSICE_SLAB_OCEAN
+C     !INTERFACE:
+      SUBROUTINE THSICE_SLAB_OCEAN( 
+     I                      bi, bj, myThid )
+C     !DESCRIPTION: \bv
+C     *==========================================================*
+C     | S/R  THSICE_SLAB_OCEAN
+C     | o Slab ocean for atmosphere (and sea-ice) model 
+C     *==========================================================*
+C     | o add ocean-surface fluxes + restoring term
+C     |   and step forward ocean mixed-layer Temp. & Salinity
+C     *==========================================================*
+C     \ev
+
+C     !USES:
+      IMPLICIT NONE
+
+C     == Global variables ==
+C-- MITgcm
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "FFIELDS.h"
+
+C-- Sea-Ice package
+#include "THSICE_PARAMS.h"
+#include "THSICE_VARS.h"
+
+C-- Physics package
+#ifdef ALLOW_AIM
+#include "AIM_FFIELDS.h"
+#endif
+
+C     !INPUT/OUTPUT PARAMETERS:
+C     == Routine Arguments ==
+      INTEGER bi,bj
+      INTEGER myThid
+CEOP
+
+#ifdef ALLOW_THSICE
+
+C     == Local variables ==
+C     i,j          :: Loop counters
+      _RL dtFac, dtFacR, fwFac, heatFac, locTemp
+      _RL oceTfreez
+      INTEGER i,j
+
+      IF ( .NOT.stepFwd_oceMxL ) RETURN
+
+C--    add heat flux and fresh-water + salt flux :
+       dtFac   = ocean_deltaT/rhosw
+       fwFac   = ocean_deltaT*sMxL_default*rhofw/rhosw
+       heatFac = ocean_deltaT/(cpwater*rhosw)
+       DO j=1,sNy
+        DO i=1,sNx
+         IF ( hOceMxL(i,j,bi,bj).NE.0. _d 0 ) THEN
+          tOceMxL(i,j,bi,bj) = tOceMxL(i,j,bi,bj)
+     &       - heatFac*Qnet(i,j,bi,bj) / hOceMxL(i,j,bi,bj)
+          sOceMxL(i,j,bi,bj) = sOceMxL(i,j,bi,bj)
+     &       + (fwFac*EmPmR(i,j,bi,bj) - dtFac*saltFlux(i,j,bi,bj))
+     &                                 / hOceMxL(i,j,bi,bj)
+         ENDIF
+        ENDDO
+       ENDDO
+
+#ifdef ALLOW_AIM
+      IF ( tauRelax_MxL .GT. 0. _d 0 ) THEN
+C--    add restoring (backward) toward climatological Temp. & fixed Salinity
+       dtFac   = ocean_deltaT/tauRelax_MxL
+       dtFacR  = 1. _d 0 /(1. _d 0 + dtFac)
+       oceTfreez = - 1.9 _d 0
+       DO j=1,sNy
+        DO i=1,sNx
+         IF ( hOceMxL(i,j,bi,bj).NE.0. _d 0 ) THEN
+          locTemp = ( aim_sWght0*aim_sst0(i,j,bi,bj)
+     &              + aim_sWght1*aim_sst1(i,j,bi,bj) 
+     &              ) - celsius2K
+          locTemp = MAX( locTemp , oceTfreez )
+          tOceMxL(i,j,bi,bj) = 
+     &         (tOceMxL(i,j,bi,bj) + dtFac*locTemp)*dtFacR
+          sOceMxL(i,j,bi,bj) = 
+     &         (sOceMxL(i,j,bi,bj) + dtFac*sMxL_default)*dtFacR
+         ENDIF
+        ENDDO
+       ENDDO
+      ENDIF
+#endif /* ALLOW_AIM */
+
+#endif  /* ALLOW_THSICE */
+
+      RETURN
+      END

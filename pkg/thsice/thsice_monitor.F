@@ -1,15 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.2 2004/03/03 14:16:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_monitor.F,v 1.3 2004/04/07 23:40:34 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
 
-CStartOfInterface
+CBOP
+C     !ROUTINE: THSICE_MONITOR
+C     !INTERFACE
       SUBROUTINE THSICE_MONITOR( myTime, myIter, myThid )
+
+C     !DESCRIPTION: \bv
 C     *==========================================================*
-C     | SUBROUTINE THSICE_MONITOR
+C     | S/R THSICE_MONITOR
 C     | o Do ICE global & Hemispheric diagnostic
 C     *==========================================================*
 C     *==========================================================*
+C     \ev
+
+C     !USES:
       IMPLICIT NONE
 
 C     === Global variables ===
@@ -18,11 +25,12 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "THSICE_PARAMS.h"
-#include "THSICE.h"
+#include "THSICE_VARS.h"
 #ifdef ALLOW_MONITOR
 #include "MONITOR.h"
 #endif
 
+C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
 C     myTime - Current time of simulation ( s )
 C     myIter - Iteration number
@@ -30,7 +38,7 @@ C     myThid -  Number of this instance of INI_FORCING
       _RL     myTime
       INTEGER myIter
       INTEGER myThid
-CEndOfInterface
+CEOP
 
 #ifdef ALLOW_THSICE
 #ifdef ALLOW_MONITOR
