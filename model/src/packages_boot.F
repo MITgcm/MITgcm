@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.18 2004/02/23 23:03:20 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.19 2004/02/26 22:47:49 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -61,7 +61,8 @@ C     data.pkg namelists
      &          useBulkForce,
      &          useThSIce,
      &          usefizhi,
-     &          usegridalt
+     &          usegridalt,
+     &          usediagnostics
 
 
 CEOP
@@ -96,6 +97,7 @@ C--   Default package configuration
       useThSIce=.FALSE.
       usefizhi=.FALSE.
       usegridalt=.FALSE.
+      usediagnostics=.FALSE.
 
 
 C--   Read parameters from open data file
