@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.24 2004/08/26 14:30:20 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.25 2004/09/09 20:51:09 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -167,6 +167,7 @@ C ====================
 C LONG WAVE RADIATION
 C ===================
       IF ( alarm('radlw') ) THEN
+       print *,' calling lw '
 
 c Set Reference Ground Temperature
 c --------------------------------
@@ -205,48 +206,48 @@ C ==========
       enddo
       enddo
       print *,' radswg ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = st4(i,j)
-      enddo
-      enddo
-      print *,' st4 ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = dst4(i,j)
-      enddo
-      enddo
-      print *,' dst4 ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = radlwg(i,j)
-      enddo
-      enddo
-      print *,' radlwg ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = fdifpar(i,j)
-      enddo
-      enddo
-      print *,' fdifpar ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = fdirpar(i,j)
-      enddo
-      enddo
-      print *,' fdirpar ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = tgz(i,j)
-      enddo
-      enddo
-      print *,' tgz ',tempij
-      do j = 1,jm
-      do i = 1,im
-       tempij(i,j) = tg0(i,j)
-      enddo
-      enddo
-      print *,' tg0 ',tempij
+c     do j = 1,jm
+c     do i = 1,im
+c      tempij(i,j) = st4(i,j)
+c     enddo
+c     enddo
+c     print *,' st4 ',tempij
+c     do j = 1,jm
+c     do i = 1,im
+c      tempij(i,j) = dst4(i,j)
+c     enddo
+c     enddo
+c     print *,' dst4 ',tempij
+c     do j = 1,jm
+c     do i = 1,im
+c      tempij(i,j) = radlwg(i,j)
+c     enddo
+c     enddo
+c     print *,' radlwg ',tempij
+c     do j = 1,jm
+c     do i = 1,im
+c      tempij(i,j) = fdifpar(i,j)
+c     enddo
+c     enddo
+c     print *,' fdifpar ',tempij
+c     do j = 1,jm
+c     do i = 1,im
+c      tempij(i,j) = fdirpar(i,j)
+c     enddo
+c     enddo
+c     print *,' fdirpar ',tempij
+c     do j = 1,jm
+c     do i = 1,im
+c      tempij(i,j) = tgz(i,j)
+c     enddo
+c     enddo
+c     print *,' tgz ',tempij
+c     do j = 1,jm
+c     do i = 1,im
+c      tempij(i,j) = tg0(i,j)
+c     enddo
+c     enddo
+c     print *,' tg0 ',tempij
       endif
 
       call turbio (im,jm,lm,istrip,nymd,nhms,bi,bj,ndturb,

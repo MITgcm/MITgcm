@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.25 2004/08/26 14:41:56 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.26 2004/09/09 20:51:09 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -833,20 +833,20 @@ c**********************************************************************
 c     print *,' field: rainls ',rainls
 c     print *,' field: newsnow ',newsnow
 c     print *,' field: wspeed ',wspeed
-c     print *,' field: eturb ',eturb
-c     print *,' field: dedqa ',dedqa
-c     print *,' field: dedtc ',dedtc
-c     print *,' field: hsturb ',hsturb
-c     print *,' field: dhsdqa ',dhsdqa
-c     print *,' field: dhsdtc ',dhsdtc
+      print *,' field: eturb ',eturb
+      print *,' field: dedqa ',dedqa
+      print *,' field: dedtc ',dedtc
+      print *,' field: hsturb ',hsturb
+      print *,' field: dhsdqa ',dhsdqa
+      print *,' field: dhsdtc ',dhsdtc
 c     print *,' field: tmpnlay ',tmpnlay
 c     print *,' field: sh(nlay) ',(sh(i,nlay),i=1,istrip)
 c     print *,' field: cd ',cd
 c     print *,' field: cosz ',cosz
 c     print *,' field: pardr ',pardr
 c     print *,' field: pardf ',pardf
-c     print *,' field: swnet ',swnet
-c     print *,' field: hlwdwn ',hlwdwn
+      print *,' field: swnet ',swnet
+      print *,' field: hlwdwn ',hlwdwn
 c     print *,' field: psurf ',psurf
 c     print *,' field: laistrip ',laistrip
 c     print *,' field: grnstrip ',grnstrip
@@ -858,10 +858,10 @@ c     print *,' field: rs1str ',rs2str
 c     print *,' field: rdcstr ',rdcstr
 c     print *,' field: u2fstr ',u2fstr
 c     print *,' field: dqsdtstr ',dqsdtstr
-c     print *,' field: alwrad ',alwrad
-c     print *,' field: blwrad ',blwrad
+      print *,' field: alwrad ',alwrad
+      print *,' field: blwrad ',blwrad
       print *,' field: tc ',tc
-c     print *,' field: td ',td
+      print *,' field: td ',td
 c     print *,' field: swet1 ',swet1
 c     print *,' field: swet2 ',swet2
 c     print *,' field: swet3 ',swet3
@@ -900,7 +900,7 @@ c     print *,' field: snowdepth ',snowdepth
       print *,' In turbio, Just after tile for strip ',nn
       print *,' calling tile for ',nland,' land points '
       print *,' field: tc ',tc
-      print *,' field: td ',td
+c     print *,' field: td ',td
       print *,' field: strdg1 ',strdg1
       print *,' field: strdg2 ',strdg2
       print *,' field: strdg3 ',strdg3
@@ -910,11 +910,11 @@ c     print *,' field: snowdepth ',snowdepth
       print *,' field: strdg7 ',strdg7
       print *,' field: strdg8 ',strdg8
       print *,' field: strdg9 ',strdg9
-      print *,' field: swet1 ',swet1
-      print *,' field: swet2 ',swet2
-      print *,' field: swet3 ',swet3
-      print *,' field: capacity ',capacity
-      print *,' field: snowdepth ',snowdepth
+c     print *,' field: swet1 ',swet1
+c     print *,' field: swet2 ',swet2
+c     print *,' field: swet3 ',swet3
+c     print *,' field: capacity ',capacity
+c     print *,' field: snowdepth ',snowdepth
       endif
       if( nice.gt.0 ) then
        print *,' Calling sea ice routine - SHOULD NOT BE HERE!'
