@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.28 2004/07/18 01:20:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.29 2004/07/18 15:29:52 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -490,7 +490,7 @@ c     Estimate reference velocity uRef and vRef.
      &                       surfaceForcingU(ip1,j,bi,bj) ) * p5
      &                   *recip_drF(1)
                   ustarY = ( surfaceForcingV(i,j,  bi,bj) +
-     &                       surfaceForcingU(i,jp1,bi,bj) ) * p5
+     &                       surfaceForcingV(i,jp1,bi,bj) ) * p5
      &                   *recip_drF(1)
                   tempVar1 = ustarX * ustarX + ustarY * ustarY
                   if ( tempVar1 .lt. (epsln*epsln) ) then
