@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.31 2003/12/14 23:18:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.32 2003/12/15 00:53:09 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -289,7 +289,6 @@ C--    Going to really do some IO. Make everyone except master thread wait.
 C       Force 64-bit IO
         oldPrec = writeBinaryPrec
         writeBinaryPrec = precFloat64
-        WRITE(fn,'(A,I10.10)') 'many_files.',myIter
 
 C--     Write model fields
 C       Raw fields
@@ -373,6 +372,13 @@ c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
 
 #endif /* OLD_STYLE_WITH_MANY_FILES */
 
+C--     Write suffix for stdout information
+        IF ( permCheckPoint ) THEN
+          WRITE(fn,'(I10.10)') myIter
+        ELSE
+          WRITE(fn,'(A)') checkPtSuff(nCheckLev)
+        ENDIF
+
         IF ( .NOT. permCheckPoint ) THEN
          nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
         ENDIF
@@ -380,8 +386,8 @@ c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
        _END_MASTER(myThid)
        _BARRIER
 
-C Write information to stdout so there is a record that the
-C checkpoint was completed
+C--     Write information to stdout so there is a record that the
+C       checkpoint was completed
        _BEGIN_MASTER(myThid)
         WRITE(msgBuf,'(A11,I10,1X,A10)')
      &   "%CHECKPOINT ",myIter,fn
