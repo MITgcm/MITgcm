@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.37 2002/06/15 03:28:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.38 2002/06/20 23:45:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -119,6 +119,11 @@ C--   External thermal forcing term(s) outside Adams-Bashforth:
         CALL FREESURF_RESCALE_G(
      I                          bi, bj, K,
      U                          gT,
+     I                          myThid )
+        IF ( tempAdamsBashforth )
+     &  CALL FREESURF_RESCALE_G(
+     I                          bi, bj, K,
+     U                          gTnm1,
      I                          myThid )
       ENDIF
 #endif /* NONLIN_FRSURF */

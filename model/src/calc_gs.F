@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.33 2002/06/15 03:28:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.34 2002/06/20 23:45:30 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -120,6 +120,11 @@ C--   External salinity forcing term(s) outside Adams-Bashforth:
         CALL FREESURF_RESCALE_G(
      I                          bi, bj, K,
      U                          gS,
+     I                          myThid )
+        IF ( saltAdamsBashforth )
+     &  CALL FREESURF_RESCALE_G(
+     I                          bi, bj, K,
+     U                          gSnm1,
      I                          myThid )
       ENDIF
 #endif /* NONLIN_FRSURF */

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.3 2002/06/15 03:37:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.4 2002/06/20 23:46:22 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -144,6 +144,13 @@ C Account for change in level thickness
         CALL FREESURF_RESCALE_G(
      I                          bi,bj,K,
      U                          gPtr(1-Olx,1-Oly,1,1,1,iTracer),
+     I                          myThid )
+        IF ( PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_2ND
+     &   .OR.PTRACERS_advScheme(iTracer).EQ.ENUM_UPWIND_3RD
+     &   .OR.PTRACERS_advScheme(iTracer).EQ.ENUM_CENTERED_4TH )
+     &  CALL FREESURF_RESCALE_G(
+     I                          bi,bj,K,
+     U                          gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),
      I                          myThid )
       ENDIF
 #endif /* NONLIN_FRSURF */
