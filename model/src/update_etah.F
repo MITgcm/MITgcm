@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.5 2004/07/06 01:05:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.6 2004/07/07 01:28:18 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -101,8 +101,8 @@ C- end bi,bj loop.
       IF (implicDiv2Dflow .NE. 1. _d 0 .OR. useOBCS )
      &    _EXCH_XY_RL( etaH, myThid ) 
 
-      IF (useRealFreshWaterFlux .AND. myTime.EQ.startTime)
-     &    _EXCH_XY_R4( PmEpR, myThid )
+c     IF (useRealFreshWaterFlux .AND. myTime.EQ.startTime)
+c    &    _EXCH_XY_R4( PmEpR, myThid )
 
 #endif /* EXACT_CONSERV */
 
