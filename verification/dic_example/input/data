@@ -30,7 +30,6 @@
  saltAdvScheme       = 2
  tempStepping        = .TRUE.
  saltStepping        = .TRUE.
- tr1Stepping         = .FALSE.
  multiDimAdvection   = .FALSE.
  allowFreezing=.TRUE.,
  useCDscheme=.TRUE.,
