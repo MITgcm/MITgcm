@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_2v.F,v 1.5 2003/10/09 04:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_cumul_2v.F,v 1.6 2004/07/26 16:57:29 jmc Exp $
 C $Name:  $
 #include "TIMEAVE_OPTIONS.h"
 
@@ -41,6 +41,7 @@ CEndofinterface
 C     == Local variables ==
 C     i,j,k,bi,bj  - Loop counters
       INTEGER i, j, k
+      INTEGER km1
  
       IF ( dir.eq.0 ) THEN 
 c-    both fields at the same location :
@@ -89,11 +90,12 @@ c-    2nd field shifted by -dY/2 (e.g.: 1=T, 2=V) :
       ELSEIF ( dir.eq.3 ) THEN
 c-    2nd field shifted by -dR/2 (e.g.: 1=T, 2=W) :
  
-        DO k=2,Ksize
+        DO k=1,Ksize
+         km1 = MAX(k-1,1)
          DO j=1,sNy
           DO i=1,sNx
              fldtave(i,j,k,bi,bj)= fldtave(i,j,k,bi,bj)
-     &       + .5 * ( fld1(i,j,k-1,bi,bj) + fld1(i,j,k,bi,bj) )
+     &       + .5 * ( fld1(i,j,km1,bi,bj) + fld1(i,j,k,bi,bj) )
      &                *   fld2(i,j,k,bi,bj)
      &                *   deltaT
           ENDDO
@@ -118,11 +120,12 @@ c           (e.g.: 1=U, 2=V, product at the corner) :
       ELSEIF ( dir.eq.13 ) THEN
 c-    1rst & 2nd fields shifted by -dR/2 & -dX/2 (e.g.: 1=U, 2=W):
  
-        DO k=2,Ksize
+        DO k=1,Ksize
+         km1 = MAX(k-1,1)
          DO j=1,sNy
           DO i=1,sNx
            fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
-     &      + .25 _d 0*( fld1(i,j,k-1,bi,bj) + fld1(i,j,k,bi,bj) )
+     &      + .25 _d 0*( fld1(i,j,km1,bi,bj) + fld1(i,j,k,bi,bj) )
      &                *( fld2(i-1,j,k,bi,bj)*rA(i-1,j,bi,bj)
      &                  +fld2( i ,j,k,bi,bj)*rA( i ,j,bi,bj)
      &                 )*recip_rAw(i,j,bi,bj)
@@ -134,11 +137,12 @@ c-    1rst & 2nd fields shifted by -dR/2 & -dX/2 (e.g.: 1=U, 2=W):
       ELSEIF ( dir.eq.23 ) THEN
 c-    1rst & 2nd fields shifted by -dR/2 & -dY/2 (e.g.: 1=V, 2=W):
  
-        DO k=2,Ksize
+        DO k=1,Ksize
+         km1 = MAX(k-1,1)
          DO j=1,sNy
           DO i=1,sNx
            fldtave(i,j,k,bi,bj) = fldtave(i,j,k,bi,bj)
-     &      + .25 _d 0*( fld1(i,j,k-1,bi,bj) + fld1(i,j,k,bi,bj) )
+     &      + .25 _d 0*( fld1(i,j,km1,bi,bj) + fld1(i,j,k,bi,bj) )
      &                *( fld2(i,j-1,k,bi,bj)*rA(i,j-1,bi,bj)
      &                  +fld2(i, j ,k,bi,bj)*rA(i, j ,bi,bj)
      &                 )*recip_rAs(i,j,bi,bj)
