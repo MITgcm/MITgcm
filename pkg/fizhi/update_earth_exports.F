@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.13 2004/07/16 19:37:04 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_earth_exports.F,v 1.14 2004/07/16 20:08:08 molod Exp $
 C $Name:  $
 
        subroutine update_earth_exports (myTime, myIter, myThid)
@@ -634,8 +634,8 @@ C**** -----------------------------------------------------------
      &             .65, .38, .65, .38
      `            /
 
-#if CRAY
-#if f77
+#ifdef CRAY
+#ifdef f77
 cfpp$ expand (coeff)
 #endif
 #endif

@@ -350,8 +350,8 @@ c ------------------------------------
       integer  i,n
       logical  ldqdt
       real tt(n), p(n), q(n), dqdt(n)
-#if CRAY
-#if f77
+#ifdef CRAY
+#ifdef f77
 cfpp$ expand (qsat)
 #endif
 #endif

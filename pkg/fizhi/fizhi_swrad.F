@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.10 2004/07/14 17:31:57 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.11 2004/07/16 20:08:08 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -771,8 +771,8 @@ c**************************************************************************
 
 c-----Explicit Inline Directives
 
-#if CRAY
-#if f77
+#ifdef CRAY
+#ifdef f77
 cfpp$ expand (expmn)
 #endif
 #endif
@@ -1231,8 +1231,8 @@ c*************************************************************************
 
 c-----Explicit Inline Directives 
  
-#if CRAY
-#if f77 
+#ifdef CRAY
+#ifdef f77 
 cfpp$ expand (deledd)
 cfpp$ expand (sagpol)
 cfpp$ expand (expmn) 
@@ -1640,8 +1640,8 @@ c***********************************************************************
 
 c-----Explicit Inline Directives  
   
-#if CRAY 
-#if f77  
+#ifdef CRAY 
+#ifdef f77  
 cfpp$ expand (deledd) 
 cfpp$ expand (sagpol) 
 #endif  
@@ -1955,8 +1955,8 @@ c*********************************************************************
 
 c-----Explicit Inline Directives  
   
-#if CRAY 
-#if f77  
+#ifdef CRAY 
+#ifdef f77  
 cfpp$ expand (expmn)
 #endif  
 #endif
@@ -2079,8 +2079,8 @@ c*********************************************************************
 
 c-----Explicit Inline Directives  
   
-#if CRAY 
-#if f77  
+#ifdef CRAY 
+#ifdef f77  
 cfpp$ expand (expmn)
 #endif  
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.9 2004/07/14 00:47:28 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.10 2004/07/16 20:08:08 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -1310,11 +1310,11 @@ c --------------------------------------------------------------------
       function random_numbx()
       implicit none
       real random_numbx
-#if CRAY
+#ifdef CRAY
       real ranf
       random_numbx = ranf()
 #endif
-#if SGI
+#ifdef SGI
       real rand
       random_numbx = rand()
 #endif
@@ -1323,10 +1323,10 @@ c --------------------------------------------------------------------
       subroutine random_seedx (iseed)
       implicit none
       integer  iseed
-#if CRAY
+#ifdef CRAY
       call ranset (iseed)
 #endif
-#if SGI
+#ifdef SGI
       integer*4   seed
                   seed = iseed
       call srand (seed)
@@ -1500,8 +1500,8 @@ C
  
 c Explicit Inline Directives
 c --------------------------
-#if CRAY
-#if f77
+#ifdef CRAY
+#ifdef f77
 cfpp$ expand (qsat)
 #endif
 #endif
@@ -2230,8 +2230,8 @@ C
 
 c Explicit Inline Directives
 c --------------------------
-#if CRAY
-#if f77
+#ifdef CRAY
+#ifdef f77
 cfpp$ expand (qsat)
 #endif
 #endif
@@ -2452,8 +2452,8 @@ C***********************************************************************
 
 c Explicit Inline Directives
 c --------------------------
-#if CRAY
-#if f77
+#ifdef CRAY
+#ifdef f77
 cfpp$ expand (qsat)
 #endif
 #endif
