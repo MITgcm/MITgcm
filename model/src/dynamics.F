@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.112 2005/01/24 17:00:17 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.113 2005/01/28 01:00:13 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -108,7 +108,6 @@ C      |-- IMPLDIFF
 C      |
 C      |-- OBCS_APPLY_UV
 C      |
-C      |-- CALL TIMEAVE_CUMUL_1T
 C      |-- CALL DEBUG_STATS_RL
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -122,10 +121,10 @@ C     myThid - Thread number for this instance of the routine.
 
 C     !LOCAL VARIABLES:
 C     == Local variables
-C     fVer[STUV]               o fVer: Vertical flux term - note fVer
-C                                      is "pipelined" in the vertical
-C                                      so we need an fVer for each
-C                                      variable.
+C     fVer[UV]               o fVer: Vertical flux term - note fVer
+C                                    is "pipelined" in the vertical
+C                                    so we need an fVer for each
+C                                    variable.
 C     phiHydC    :: hydrostatic potential anomaly at cell center
 C                   In z coords phiHyd is the hydrostatic potential
 C                      (=pressure/rho0) anomaly
@@ -163,6 +162,13 @@ C                      index into fVerTerm.
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
+
+#ifdef ALLOW_DIAGNOSTICS
+      _RL tmpFld  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      LOGICAL  DIAGNOSTICS_IS_ON
+      EXTERNAL DIAGNOSTICS_IS_ON
+#endif /* ALLOW_DIAGNOSTICS */
+
  
 C---    The algorithm...
 C
@@ -471,6 +477,8 @@ C--     End implicit Vertical advection & viscosity
       ENDIF
 #endif
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+
 Cml(
 C     In order to compare the variance of phiHydLow of a p/z-coordinate
 C     run with etaH of a z/p-coordinate run the drift of phiHydLow
@@ -479,6 +487,28 @@ C      CALL REMOVE_MEAN_RL( 1, phiHydLow, maskH, maskH, rA, drF,
 C     &                'phiHydLow', myThid )
 Cml)
 
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( usediagnostics ) THEN
+
+       CALL DIAGNOSTICS_FILL(totPhihyd,'PHIHYD  ',0,Nr,0,1,1,myThid)
+       CALL DIAGNOSTICS_FILL(phiHydLow,'PHIBOT  ',0,1,0,1,1,myThid)
+
+       IF ( DIAGNOSTICS_IS_ON('PHIBOTSQ',myThid) ) THEN
+        DO bj = myByLo(myThid), myByHi(myThid)
+         DO bi = myBxLo(myThid), myBxHi(myThid)
+          DO j = 1,sNy
+           DO i = 1,sNx
+             tmpFld(i,j) = phiHydLow(i,j,bi,bj)*phiHydLow(i,j,bi,bj)
+           ENDDO
+          ENDDO
+          CALL DIAGNOSTICS_FILL(tmpFld,'PHIBOTSQ',0,1,2,bi,bj,myThid)
+         ENDDO
+        ENDDO
+       ENDIF
+
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+      
 #ifdef ALLOW_DEBUG
       If ( debugLevel .GE. debLevB ) THEN
        CALL DEBUG_STATS_RL(1,EtaN,'EtaN (DYNAMICS)',myThid)
