@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.30 2003/12/05 17:46:32 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.31 2003/12/07 05:30:37 edhill Exp $
 #  $Name:  $
 #
 
@@ -675,7 +675,9 @@ echo "OK"
 createcodelet
 
 #  build the mpack utility
-build_mpack
+if test "x$ADDRESSES" = xNONE -o "x$ADDRESSES" = x ; then
+    build_mpack
+fi
 
 #  Create a uniquely named directory to store results
 MACH=`hostname`
