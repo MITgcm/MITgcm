@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs1.F,v 1.4 1999/08/30 18:29:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs1.F,v 1.5 2000/06/29 18:26:37 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -26,7 +26,6 @@ C     == Routine Arguments ==
 C     == Local variables ==
       INTEGER I,J,I_obc,J_obc
       _RL obc_mask
-      _RL vTn,vTs,uTe,uTw,wTa,wTb
 
 C     Set model variables to OB values on North/South Boundaries
       DO I=1-Olx,sNx+Olx

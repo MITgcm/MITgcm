@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs3.F,v 1.1 2000/03/14 17:47:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/apply_obcs3.F,v 1.2 2000/06/29 18:28:20 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -31,7 +31,6 @@ C     == Routine Arguments ==
 C     == Local variables ==
       INTEGER I,J,Kp1,I_obc,J_obc
       _RL wMaskFac,obc_mask
-      _RL vTn,vTs,uTe,uTw,wTa,wTb
 
 #ifdef ALLOW_NONHYDROSTATIC
 
