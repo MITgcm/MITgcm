@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.1 2004/07/02 20:23:33 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/getpwhere.F,v 1.2 2004/07/16 16:11:36 molod Exp $
 C $Name:  $
 
-       subroutine getpwhere(myThid,numpres,pressures,levpressures)
+       subroutine getpwhere(myThid,numpress,pressures,levpressures)
 c***********************************************************************
 c subroutine getpwhere
 c 
@@ -43,12 +43,11 @@ c    Counting from bottom to top, the dp's are:
        integer ntry
        parameter (ntry=12)
        real dptry(ntry), dptry_pedge(ntry+1)
-       real drF_pedge(Nr+1),drF_accum(Nr)
+       real drF_pedge(Nr+1),drF_pmid(Nr),drF_accum(Nr)
        real pref(Nrphys) 
-       integer levpflip(numpress)
+       integer plevref(Nrphys)
        data dptry /300.000, 600.000,1000.000,1400.000,1700.000,2500.000,
      .            2500.000,2500.000,2500.000,5000.000,5000.000,5000.000/
-       integer nlbotmax, nstart, nlevs, nlphys, ndone
 c
 c define the mid pressure for the levels that are specified - bottom 300 mb.
        dptry_pedge(1) = 100000.

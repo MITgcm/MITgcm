@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.11 2004/07/06 19:47:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.12 2004/07/16 16:11:36 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -109,14 +109,14 @@ c Do not use a zero field as the top edge pressure for interpolation
 c
 c Compute physics increments
         call do_fizhi(myThid,uphy,vphy,thphy,sphy,pephy4fiz,xC,yC,
-     .   ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     .   tgz,sst,sice,phis_var,landtype,fracland,emiss,albnidr,albnirdf,
-     .   albvisdr,albvisdf,ityp,chfr,alai,agrn,igrd,chlat,chlon,
-     .   tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,snodep,capac,
-     .   o3,qstr,co2,cfc11,cfc12,cfc22,n2o,methane,
-     .   idim1,idim2,jdim1,jdim2,Nrphys,Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,
-     .   nchp,nchpland,
-     .   duphy,dvphy,dthphy,dsphy)
+     .  ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
+     .  tgz,sst,sice,phis_var,landtype,fracland,emiss,albnirdr,albnirdf,
+     .  albvisdr,albvisdf,ityp,chfr,alai,agrn,igrd,chlt,chlon,
+     .  tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,snodep,capac,
+     .  o3,qstr,co2,cfc11,cfc12,cfc22,n2o,methane,
+     .  idim1,idim2,jdim1,jdim2,Nrphys,Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,
+     .  nchp,nchpland,
+     .  duphy,dvphy,dthphy,dsphy)
        enddo
        enddo
        CALL TIMER_STOP ('DO_FIZHI          [FIZHI_WRAPPER]',mythid)
@@ -130,38 +130,38 @@ C   into bottom-up arrays for interpolation to dynamics grid
         do j = 1,sNy
         do i = 1,sNx
          do L = 1,Nrphys
-          tempphys(i,j,Nrphys+1-L,bi,bj)=duphy(i,j,L,bi,bj)
+          tempphy(i,j,Nrphys+1-L,bi,bj)=duphy(i,j,L,bi,bj)
          enddo
         enddo
         enddo
-        call phys2dyn(tmpphys,pephy,idim1,idim2,jdim1,jdim2,Nrphys,
+        call phys2dyn(tempphy,pephy,idim1,idim2,jdim1,jdim2,Nrphys,
      . Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,pedyn,ksurfC,Nr,nlperdyn,guphy)
         do j = 1,sNy
         do i = 1,sNx
          do L = 1,Nrphys
-          tempphys(i,j,Nrphys+1-L,bi,bj)=dvphy(i,j,L,bi,bj)
+          tempphy(i,j,Nrphys+1-L,bi,bj)=dvphy(i,j,L,bi,bj)
          enddo
         enddo
         enddo
-        call phys2dyn(tmpphys,pephy,idim1,idim2,jdim1,jdim2,Nrphys,
+        call phys2dyn(tempphy,pephy,idim1,idim2,jdim1,jdim2,Nrphys,
      . Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gvphy)
         do j = 1,sNy
         do i = 1,sNx
          do L = 1,Nrphys
-          tempphys(i,j,Nrphys+1-L,bi,bj)=dthphy(i,j,L,bi,bj)
+          tempphy(i,j,Nrphys+1-L,bi,bj)=dthphy(i,j,L,bi,bj)
          enddo
         enddo
         enddo
-        call phys2dyn(tmpphys,pephy,idim1,idim2,jdim1,jdim2,Nrphys,
+        call phys2dyn(tempphy,pephy,idim1,idim2,jdim1,jdim2,Nrphys,
      . Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gthphy)
         do j = 1,sNy
         do i = 1,sNx
          do L = 1,Nrphys
-          tempphys(i,j,Nrphys+1-L,bi,bj)=dsphy(i,j,L,bi,bj)
+          tempphy(i,j,Nrphys+1-L,bi,bj)=dsphy(i,j,L,bi,bj)
          enddo
         enddo
         enddo
-        call phys2dyn(tmpphys,pephy,idim1,idim2,jdim1,jdim2,Nrphys,
+        call phys2dyn(tempphy,pephy,idim1,idim2,jdim1,jdim2,Nrphys,
      . Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,pedyn,ksurfC,Nr,nlperdyn,gsphy)
 
        enddo

@@ -2,7 +2,7 @@
       implicit none
 #include "CPP_EEOPTIONS.h"
       integer  im, i
-      _RL   q(im), minval
+      real q(im), minval
       minval = 1.e15
       do i=1,im
       if( q(i).lt.minval ) minval = q(i)
@@ -22,7 +22,10 @@ C  REMARKS:
 C        USED TO COMPUTE FRACTIONAL CLOUD COVER AND LIQUID WATER CONTENT
 C          FROM TURBULENCE STATISTICS
 C **********************************************************************
+      implicit none
+      real arg,errf
  
+      real aa1,aa2,aa3,aa4,aa5,pp,x2,x3,x4,x5
       PARAMETER ( AA1  =   0.254829592 )
       PARAMETER ( AA2  =  -0.284496736 )
       PARAMETER ( AA3  =   1.421413741 )
@@ -34,6 +37,8 @@ C **********************************************************************
       PARAMETER ( X4   =   AA5 / AA3   )
       PARAMETER ( X5   =   AA5 / AA4   )
  
+      real aarg,tt
+      
       ERRF = 1.
       AARG=ABS(ARG)
  
@@ -50,9 +55,12 @@ C **********************************************************************
       END
 
       SUBROUTINE STRIP(A,B,IA,IB,L,K)                                           
+      implicit none
 #include "CPP_EEOPTIONS.h"
-      _RL A(IA,L), B(IB,L)                                                
-      INTEGER   OFFSET                                                          
+      integer ia,ib,L,K
+      real A(IA,L), B(IB,L)                                                
+      
+      INTEGER OFFSET,Len,i,j
                                                                                 
       OFFSET = IB*(K-1)                                                         
       LEN    = MIN(IB,IA-OFFSET)                                                
@@ -77,9 +85,12 @@ C **********************************************************************
       RETURN                                                                    
       END                                                                       
       SUBROUTINE PASTE(B,A,IB,IA,L,K)                                           
+      implicit none
 #include "CPP_EEOPTIONS.h"
-      _RL A(IA,L), B(IB,L)                                                
-      INTEGER   OFFSET                                                          
+      integer ia,ib,L,K
+      real A(IA,L), B(IB,L)                                                
+
+      INTEGER OFFSET,LEN,i,j
                                                                                 
       OFFSET = IB*(K-1)                                                         
       LEN    = MIN(IB,IA-OFFSET)                                                
@@ -93,9 +104,12 @@ C **********************************************************************
       RETURN                                                                    
       END                                                                       
       SUBROUTINE PSTBMP(B,A,IB,IA,L,K)                                          
+      implicit none
 #include "CPP_EEOPTIONS.h"
-      _RL A(IA,L), B(IB,L)                                                
-      INTEGER   OFFSET                                                          
+      integer ia,ib,L,K
+      real A(IA,L), B(IB,L)                                                
+
+      INTEGER OFFSET,LEN,i,j
                                                                                 
       OFFSET = IB*(K-1)                                                         
       LEN    = MIN(IB,IA-OFFSET)                                                
@@ -109,8 +123,11 @@ C
       RETURN                                                                    
       END                                                                       
       SUBROUTINE STRINT(A,B,IA,IB,L,K)
-      INTEGER   A(IA,L), B(IB,L)
-      INTEGER   OFFSET
+      implicit none
+      integer ia,ib,L,K
+      INTEGER A(IA,L), B(IB,L)
+
+      INTEGER OFFSET,LEN,i,j
 
       OFFSET = IB*(K-1)
       LEN = MIN(IB,IA-OFFSET)
@@ -154,31 +171,30 @@ C    DQDT ....... Saturation Specific Humidity Derivative wrt Temperature
 C
 C
 C***********************************************************************
-C*                  GODDARD LABORATORY FOR ATMOSPHERES                 *
-C***********************************************************************
 
       IMPLICIT NONE
 #include "CPP_EEOPTIONS.h"
-      _RL TT, P, Q, DQDT
+      real TT, P, Q, DQDT
       LOGICAL LDQDT
-      _RL AIRMW, H2OMW
+
+      real AIRMW, H2OMW
       
       PARAMETER ( AIRMW  = 28.97      )                                         
       PARAMETER ( H2OMW  = 18.01      )                                         
 
-      _RL ESFAC, ERFAC
+      real ESFAC, ERFAC
       PARAMETER ( ESFAC = H2OMW/AIRMW       )
       PARAMETER ( ERFAC = (1.0-ESFAC)/ESFAC )
 
-      _RL aw0, aw1, aw2, aw3, aw4, aw5, aw6
-      _RL bw0, bw1, bw2, bw3, bw4, bw5, bw6
-      _RL ai0, ai1, ai2, ai3, ai4, ai5, ai6
-      _RL bi0, bi1, bi2, bi3, bi4, bi5, bi6
+      real aw0, aw1, aw2, aw3, aw4, aw5, aw6
+      real bw0, bw1, bw2, bw3, bw4, bw5, bw6
+      real ai0, ai1, ai2, ai3, ai4, ai5, ai6
+      real bi0, bi1, bi2, bi3, bi4, bi5, bi6
 
-      _RL d0, d1, d2, d3, d4, d5, d6
-      _RL e0, e1, e2, e3, e4, e5, e6
-      _RL f0, f1, f2, f3, f4, f5, f6
-      _RL g0, g1, g2, g3, g4, g5, g6
+      real d0, d1, d2, d3, d4, d5, d6
+      real e0, e1, e2, e3, e4, e5, e6
+      real f0, f1, f2, f3, f4, f5, f6
+      real g0, g1, g2, g3, g4, g5, g6
 
 c ********************************************************
 c ***  Polynomial Coefficients WRT Water (Lowe, 1977) ****
@@ -268,10 +284,10 @@ c ********************************************************
       parameter ( g5 = 0.262430726e-09 * esfac )
       parameter ( g6 = 0.481960676e-12 * esfac )
 
-      _RL        TMAX, TICE
+      real TMAX, TICE
       PARAMETER ( TMAX=323.15, TICE=273.16)
       
-      _RL T, D, W, QX, DQX
+      real T, D, W, QX, DQX
       T = MIN(TT,TMAX) - TICE
       DQX = 0.
       QX  = 0.
@@ -333,7 +349,7 @@ c ------------------------------------
 #include "CPP_EEOPTIONS.h"
       integer  i,n
       logical  ldqdt
-      _RL     tt(n), p(n), q(n), dqdt(n)
+      real tt(n), p(n), q(n), dqdt(n)
 #if CRAY
 #if f77
 cfpp$ expand (qsat)
@@ -349,7 +365,7 @@ cfpp$ expand (qsat)
       implicit none
 #include "CPP_EEOPTIONS.h"
       integer ia,ib,irun,l,k
-      _RL a(ia,l), b(ib,l)
+      real a(ia,l), b(ib,l)
       integer   i,j,len,offset
 
       offset = ib*(k-1)
@@ -405,9 +421,9 @@ cfpp$ expand (qsat)
       subroutine pastit(b,a,ib,ia,irun,L,k)
       implicit none
 #include "CPP_EEOPTIONS.h"
-      _RL a(ia,l), b(ib,l)
       integer ib,ia,L,k,irun,len,offset
       integer i,j
+      real a(ia,l), b(ib,l)
 
       offset = ib*(k-1)
       len    = min(ib,irun-offset)
@@ -423,9 +439,9 @@ cfpp$ expand (qsat)
       subroutine pstbitint(b,a,ib,ia,irun,l,k)
       implicit none
 #include "CPP_EEOPTIONS.h"
-      _RL a(ia,l)
-      integer b(ib,l)
       integer ib,ia,L,k,irun,len,offset
+      real a(ia,l)
+      integer b(ib,l)
       integer i,j
 
       offset = ib*(k-1)
@@ -443,8 +459,8 @@ cfpp$ expand (qsat)
       subroutine pstbmpit(b,a,ib,ia,irun,l,k)
       implicit none
 #include "CPP_EEOPTIONS.h"
-      _RL a(ia,l), b(ib,l)
       integer ib,ia,L,k,irun,len,offset
+      real a(ia,l), b(ib,l)
       integer i,j
 
       offset = ib*(k-1)
@@ -480,7 +496,7 @@ c-----------------------------------------------------------------------
       implicit none
 #include "CPP_EEOPTIONS.h"
       integer ia,ib,irun,levs,npeice
-      _RL a(ia,levs), b(ib,levs)
+      real a(ia,levs), b(ib,levs)
       integer index(irun)
       integer i,k,len,offset
 
@@ -536,8 +552,7 @@ c-----------------------------------------------------------------------
 #include "CPP_EEOPTIONS.h"
       integer ia,ib,levs,numpts,npeice
       integer index(numpts)
-      _RL a(ia,levs), b(ib,levs), chfr(ib)
-      real b(ib,levs)
+      real a(ia,levs), b(ib,levs), chfr(ib)
 
       integer i,L,offset,len
 
@@ -552,7 +567,8 @@ c-----------------------------------------------------------------------
       enddo
       return
       end
-      subroutine paste2grd (b,index,chfr,ib,numpts,a,ia,levs,npeice,check)
+      subroutine paste2grd (b,index,chfr,ib,numpts,a,ia,levs,npeice,
+     .                                                            check)
 c-----------------------------------------------------------------------
 c subroutine paste2grd - paste one processors worth of grid points
 c                        from a stripped tile array to a grid
@@ -583,11 +599,11 @@ c-----------------------------------------------------------------------
 #include "CPP_EEOPTIONS.h"
       integer ia,ib,levs,numpts,npeice
       integer index(numpts)
-      _RL a(ia,levs), b(ib,levs), chfr(ib)
+      real a(ia,levs), b(ib,levs), chfr(ib)
       logical check
 
       integer i,L,offset,len
-      _RL    undef,getcon
+      real    undef,getcon
 
       offset = ib*(npeice-1)
       len    = min(ib,numpts-offset)
@@ -595,21 +611,21 @@ c-----------------------------------------------------------------------
 
       if( check ) then
       undef = getcon('UNDEF')
-        do L= 1,levs
-        do i= 1,len
-         if( a(index(i+offset-1),L).eq.undef .or. b(i,L).eq.undef ) then
-             a(index(i+offset-1),L) = undef
-         else
-             a(index(i+offset-1),L) = a(index(i+offset-1),L) + b(i,L)*chfr(i)
-         endif
-        enddo
-        enddo
+       do L= 1,levs
+       do i= 1,len
+        if( a(index(i+offset-1),L).eq.undef .or. b(i,L).eq.undef ) then
+         a(index(i+offset-1),L) = undef
+        else
+         a(index(i+offset-1),L)=a(index(i+offset-1),L) + b(i,L)*chfr(i)
+        endif
+       enddo
+       enddo
       else
-        do L= 1,levs
-        do i= 1,len
-         a(index(i+offset-1),L) = a(index(i+offset-1),L) + b(i,L)*chfr(i)
-        enddo
-        enddo
+       do L= 1,levs
+       do i= 1,len
+        a(index(i+offset-1),L)=a(index(i+offset-1),L) + b(i,L)*chfr(i)
+       enddo
+       enddo
       endif
 
       return
@@ -620,7 +636,7 @@ c-----------------------------------------------------------------------
 #include "CPP_EEOPTIONS.h"
       integer im,jm,mxchps,nchp
       integer igrd(mxchps)
-      _RL A(IM,JM), B(MXCHPS)
+      real A(IM,JM), B(MXCHPS)
 
       integer i
 
@@ -639,14 +655,14 @@ c-----------------------------------------------------------------------
 
       implicit none
 #include "CPP_EEOPTIONS.h"
-      _RL zero,one
+      real zero,one
       parameter ( one = 1.)
       parameter (zero = 0.)
       integer im,jm,mxchps,nchp
       integer igrd(mxchps)
-      _RL A(IM,JM), B(MXCHPS), CHFR(MXCHPS), FRACG(IM,JM)
+      real A(IM,JM), B(MXCHPS), CHFR(MXCHPS), FRACG(IM,JM)
 
-      _RL VT1(IM,JM)
+      real VT1(IM,JM)
       integer i
 
       IF(NCHP.GE.0) THEN
@@ -675,11 +691,11 @@ c-----------------------------------------------------------------------
 #include "CPP_EEOPTIONS.h"
 
        integer nymd,nhms,nchp,mxchps,ityp(mxchps)
-       _RL chlt(mxchps)
-       _RL alai(mxchps),agrn(mxchps)
-       _RL zoch(mxchps), z2ch(mxchps), cdrc(mxchps), cdsc(mxchps)
-       _RL sqsc(mxchps), ufac(mxchps), rsl1(mxchps), rsl2(mxchps)
-       _RL rdcs(mxchps)
+       real chlt(mxchps)
+       real alai(mxchps),agrn(mxchps)
+       real zoch(mxchps), z2ch(mxchps), cdrc(mxchps), cdsc(mxchps)
+       real sqsc(mxchps), ufac(mxchps), rsl1(mxchps), rsl2(mxchps)
+       real rdcs(mxchps)
 
 C*********************************************************************
 C********************* SUBROUTINE CHPPRM  ****************************
@@ -689,14 +705,14 @@ C*********************************************************************
       integer ntyps
       parameter (ntyps=10)
 
-      _RL pblzet
+      real pblzet
       parameter (pblzet = 50.)
       integer k1,k2,nymd1,nhms1,nymd2,nhms2,i
-      _RL getcon,vkrm,rootl,vroot,dum1,dum2,alphaf
-      _RL facm,facp
-      _RL scat,d
+      real getcon,vkrm,rootl,vroot,dum1,dum2,alphaf
+      real facm,facp
+      real scat,d
 
-      _RL
+      real
      &     vgdd(12, ntyps),    vgz0(12, ntyps),
      &     vgrd(12, ntyps),    vgrt(12, ntyps),
 
@@ -824,7 +840,7 @@ C*********************************************************************
       vkrm = GETCON('VON KARMAN')
 
       call time_bound  ( nymd,nhms, nymd1,nhms1, nymd2,nhms2, k1,k2 )
-      call interp_time ( nymd,nhms, nymd1,nhms1, nymd2,nhms2, facm,facp )
+      call interp_time ( nymd,nhms, nymd1,nhms1, nymd2,nhms2, facm,facp)
 
       do i=1,nchp
 
