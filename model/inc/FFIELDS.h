@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.14 2002/11/12 20:39:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.15 2002/11/15 03:01:21 heimbach Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -44,15 +44,17 @@ C              for the atmosphere: geopotential of the orography
 C                Units are           meters (converted)
 
       COMMON /FFIELDS/
-     &                 fu,
-     &                 fv,
-     &                 Qnet,
-     &                 Qsw,
-     &                 dQdT,
-     &                 EmPmR,
-     &                 SST,
-     &                 SSS,
-     &                 pload
+     &                 fu
+     &               , fv
+     &               , Qnet
+     &               , Qsw
+     &               , dQdT
+     &               , EmPmR
+     &               , SST
+     &               , SSS
+#ifdef ATMOSPHERIC_LOADING
+     &               , pload
+#endif
 
       _RS  fu       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  fv       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -68,8 +70,6 @@ C                Units are           meters (converted)
       _RS  SSS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ATMOSPHERIC_LOADING
       _RS  pload    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-#else
-      _RS  pload    (1,1,1,1)
 #endif
 
 #ifndef INCLUDE_EXTERNAL_FORCING_PACKAGE

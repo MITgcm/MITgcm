@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.29 2002/11/12 20:45:41 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.30 2002/11/15 03:01:21 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -83,6 +83,7 @@ C     == Global variables ===
 # include "tamc.h"
 # include "tamc_keys.h"
 # include "FFIELDS.h"
+# include "EOS.h"
 # ifdef ALLOW_KPP
 #  include "KPP.h"
 # endif
@@ -164,6 +165,7 @@ CEOP
 #ifdef ALLOW_AUTODIFF_TAMC
 C--   dummy statement to end declaration part
       ikey = 1
+      itdkey = 1
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--   Set up work arrays with valid (i.e. not NaN) values
@@ -209,7 +211,7 @@ CHPF$&                  )
           act3 = myThid - 1
           max3 = nTx*nTy
           act4 = ikey_dynamics - 1
-          ikey = (act1 + 1) + act2*max1
+          itdkey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -232,29 +234,39 @@ C--     Set up work arrays that need valid initial values
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
 C This is currently also used by IVDC and Diagnostics
-           phiHyd(i,j,k)  = 0. _d 0 
+           phiHyd(i,j,k) = 0. _d 0 
            sigmaX(i,j,k) = 0. _d 0
            sigmaY(i,j,k) = 0. _d 0
            sigmaR(i,j,k) = 0. _d 0
            ConvectCount(i,j,k) = 0.
-           KappaRT(i,j,k) = 0. _d 0
-           KappaRS(i,j,k) = 0. _d 0
+           KappaRT(i,j,k)    = 0. _d 0
+           KappaRS(i,j,k)    = 0. _d 0
 #ifdef ALLOW_AUTODIFF_TAMC
-           gT(i,j,k,bi,bj) = 0. _d 0
-           gS(i,j,k,bi,bj) = 0. _d 0
-#ifdef ALLOW_PASSIVE_TRACER
+cph all the following init. are necessary for TAF
+cph although some of these are re-initialised later.
+           gT(i,j,k,bi,bj)   = 0. _d 0
+           gS(i,j,k,bi,bj)   = 0. _d 0
+# ifdef ALLOW_PASSIVE_TRACER
            gTr1(i,j,k,bi,bj) = 0. _d 0
-#endif
-#ifdef ALLOW_GMREDI
-           Kwx(i,j,k,bi,bj)    = 0. _d 0
-           Kwy(i,j,k,bi,bj)    = 0. _d 0
-           Kwz(i,j,k,bi,bj)    = 0. _d 0
-#ifdef GM_NON_UNITY_DIAGONAL
-           Kux(i,j,k,bi,bj)    = 0. _d 0
-           Kvy(i,j,k,bi,bj)    = 0. _d 0
-#endif
-#endif /* ALLOW_GMREDI */
-#endif
+# endif
+# ifdef ALLOW_GMREDI
+           Kwx(i,j,k,bi,bj)  = 0. _d 0
+           Kwy(i,j,k,bi,bj)  = 0. _d 0
+           Kwz(i,j,k,bi,bj)  = 0. _d 0
+#  ifdef GM_NON_UNITY_DIAGONAL
+           Kux(i,j,k,bi,bj)  = 0. _d 0
+           Kvy(i,j,k,bi,bj)  = 0. _d 0
+#  endif
+#  ifdef GM_EXTRA_DIAGONAL
+           Kuz(i,j,k,bi,bj)  = 0. _d 0
+           Kvz(i,j,k,bi,bj)  = 0. _d 0
+#  endif
+#  ifdef GM_BOLUS_ADVEC
+           GM_PsiX(i,j,k,bi,bj)  = 0. _d 0
+           GM_PsiY(i,j,k,bi,bj)  = 0. _d 0
+#  endif
+# endif /* ALLOW_GMREDI */
+#endif /* ALLOW_AUTODIFF_TAMC */
           ENDDO
          ENDDO
         ENDDO
@@ -266,11 +278,11 @@ C This is currently also used by IVDC and Diagnostics
 
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #ifdef ALLOW_KPP
-CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -282,9 +294,7 @@ C? Patrick, is this formula correct now that we change the loop range?
 C? Do we still need this?
 cph kkey formula corrected. 
 cph Needed for rhok, rhokm1, in the case useGMREDI.
-         kkey = (ikey-1)*Nr + k
-CADJ STORE rhokm1(:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
-CADJ STORE rhok  (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
+         kkey = (itdkey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--       Integrate continuity vertically for vertical velocity
@@ -313,16 +323,21 @@ c         IF ( k.GT.1 .AND. (useGMRedi.OR.ivdc_kappa.NE.0.) ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE pressure(:,:,k,bi,bj) = 
+CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL FIND_RHO(
      I        bi, bj, iMin, iMax, jMin, jMax, k, k,
      I        theta, salt,
      O        rhoK,
      I        myThid )
+
             IF (k.GT.1) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE pressure(:,:,k-1,bi,bj) = 
+CADJ &     comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
              CALL FIND_RHO(
      I        bi, bj, iMin, iMax, jMin, jMax, k-1, k,
@@ -337,6 +352,10 @@ CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
      I             myThid )
           ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE rhok   (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
+CADJ STORE rhokm1 (:,:) = comlev1_bibj_k ,       key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
 C--       Implicit Vertical Diffusion for Convection
 c ==> should use sigmaR !!!
           IF (k.GT.1 .AND. ivdc_kappa.NE.0.) THEN
@@ -354,7 +373,9 @@ C--     end of diagnostic k loop (Nr:1)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph avoids recomputation of integrate_for_w
-CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE pressure (:,:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef  ALLOW_OBCS
@@ -374,13 +395,13 @@ C       relaxation terms, etc.
 #ifdef ALLOW_AUTODIFF_TAMC
 cph needed for KPP
 CADJ STORE surfacetendencyU(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE surfacetendencyV(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE surfacetendencyS(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE surfacetendencyT(:,:,bi,bj)
-CADJ &     = comlev1_bibj, key=ikey, byte=isbyte
+CADJ &     = comlev1_bibj, key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Attention: by defining "SINGLE_LAYER_MODE" in CPP_OPTIONS.h 
@@ -410,9 +431,9 @@ C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
         ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE Kwx(:,:,:,bi,bj)   = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE Kwy(:,:,:,bi,bj)   = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE Kwz(:,:,:,bi,bj)   = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE Kwx(:,:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE Kwy(:,:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE Kwz(:,:,:,bi,bj)   = comlev1_bibj, key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #endif  /* ALLOW_GMREDI */
@@ -434,20 +455,20 @@ CADJ STORE KPPghat   (:,:,:,bi,bj)
 CADJ &   , KPPdiffKzT(:,:,:,bi,bj)
 CADJ &   , KPPdiffKzS(:,:,:,bi,bj)
 CADJ &   , KPPfrac   (:,:  ,bi,bj)
-CADJ &                 = comlev1_bibj, key=ikey, byte=isbyte
+CADJ &                 = comlev1_bibj, key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #endif  /* ALLOW_KPP */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KappaRT(:,:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE KappaRS(:,:,:)     = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE KappaRT(:,:,:)     = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE KappaRS(:,:,:)     = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #ifdef ALLOW_PASSIVE_TRACER
-CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -505,7 +526,7 @@ C--     Start of thermodynamics loop
 C? Patrick Is this formula correct?
 cph Yes, but I rewrote it.
 cph Also, the KappaR? need the index and subscript k!
-         kkey = (ikey-1)*Nr + k
+         kkey = (itdkey-1)*Nr + k
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--       km1    Points to level above k (=k-1)
@@ -630,7 +651,7 @@ C--     Implicit diffusion
 
          IF (tempStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
+CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -641,7 +662,7 @@ CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 
          IF (saltStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
+CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -653,7 +674,7 @@ CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
 #ifdef ALLOW_PASSIVE_TRACER
          IF (tr1Stepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE gTr1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
+CADJ STORE gTr1(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I      bi, bj, iMin, iMax, jMin, jMax,

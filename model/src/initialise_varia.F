@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.26 2002/10/07 16:24:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.27 2002/11/15 03:01:21 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -95,6 +95,13 @@ C--   Set laplace operators for use in 3D conjugate gradient solver.
 
 #endif /* ALLOW_TAMC_CHECKPOINTING */
       _BARRIER
+
+c--   Initialise surface fluxes
+#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+      CALL EXF_INIT( mythid )
+#else
+      CALL INI_FORCING( mythid )
+#endif
 
 C--   Initialise 3-dim. diffusivities
       CALL INI_MIXING( myThid )

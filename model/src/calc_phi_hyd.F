@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.22 2002/11/07 21:51:15 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.23 2002/11/15 03:01:21 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -132,8 +132,8 @@ C       P(z=eta) = P(atmospheric_loading)
 
 C       Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
-            kkey = (ikey-1)*Nr + k
-CADJ STORE tFld(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+        kkey = (ikey-1)*Nr + k
+CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax, k, k,
@@ -217,7 +217,9 @@ CADJ GENERAL
           DO j=jMin,jMax
             DO i=iMin,iMax
               phiHyd(i,j,k)=0.
+#ifdef ATMOSPHERIC_LOADING
               phiHyd(i,j,k)=pload(i,j,bi,bj)
+#endif
             ENDDO
           ENDDO
         ENDIF
@@ -225,12 +227,16 @@ CADJ GENERAL
 C       Calculate density
 #ifdef ALLOW_AUTODIFF_TAMC
             kkey = (ikey-1)*Nr + k
-CADJ STORE tFld(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE tFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax, k, k,
      &                 tFld, sFld,
      &                 alphaRho, myThid)
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE alphaRho (:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 
 C       Hydrostatic pressure at cell centers
         DO j=jMin,jMax

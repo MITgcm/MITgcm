@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.24 2002/11/12 20:39:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.25 2002/11/15 03:01:21 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -56,8 +56,6 @@ CEOP
 #endif
 #ifdef ATMOSPHERIC_LOADING
           pload           (i,j,bi,bj) = 0. _d 0
-#else
-          pload           (1,1,1,1)   = 0. _d 0
 #endif
           surfaceTendencyU(i,j,bi,bj) = 0. _d 0
           surfaceTendencyV(i,j,bi,bj) = 0. _d 0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.16 2002/11/02 20:07:39 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.17 2002/11/15 03:01:21 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -54,7 +54,7 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     rhoKm1, rhoK :: Density at adjacent levels (common ref. level)
 C     ConvectCount :: Convection mixing freq. counter.
-      INTEGER i, j, K, kTop, kBottom, kDir, kRef
+      INTEGER i, j, K, kTop, kBottom, kDir, deltaK
       _RL rhoKm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhoK  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL ConvectCount(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
@@ -64,6 +64,12 @@ CEOP
 
 C--   Check to see if should convect now
       IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,myTime-deltaTClock) ) THEN
+
+C--   Initialise counters
+        kTop    = 0
+        kBottom = 0
+        kDir    = 0
+        deltaK  = 0
 
 C-      Initialisation of Convection Counter
         DO K=1,Nr
@@ -95,31 +101,26 @@ C--       CONVECT not needed with KPP mixing
 #endif  /* ALLOW_KPP */
 
          IF ( buoyancyRelation .eq. 'OCEANIC' ) THEN
-          kTop    = 2
+          kTop    =  2
           kBottom = Nr
-          kDir    = 1
+          kDir    =  1
+          deltaK  = -1
          ELSEIF ( buoyancyRelation .eq. 'OCEANICP' ) THEN
           kTop    = Nr
           kBottom =  2
           kDir    = -1
+          deltaK  =  0
          ELSEIF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
           kTop    = Nr
           kBottom =  2
           kDir    = -1
+          deltaK  =  0
          ELSE
           STOP 'CONVECTIVE_ADJUSTMENT: We should never reach this point'
          ENDIF	
 
 C--       Loop over all *interior* layers
           DO K=kTop,kBottom,kDir
-
-           IF ( buoyancyRelation .eq. 'OCEANIC' ) THEN
-            kRef = k-1
-           ELSEIF ( buoyancyRelation .eq. 'OCEANICP' ) THEN
-            kRef = k
-           ELSEIF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
-            kRef = k
-           ENDIF	
 
 #ifdef ALLOW_AUTODIFF_TAMC
             kkey = (ikey-1)*Nr + k
@@ -128,7 +129,7 @@ CADJ STORE salt (:,:,k-1,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C-          Density of K-1 layer (above W(K)) reference to K-1 T-level
             CALL FIND_RHO(
-     I           bi,bj,iMin,iMax,jMin,jMax,K-1,KRef,
+     I           bi,bj,iMin,iMax,jMin,jMax,K-1,K+deltaK,
      I           theta,salt,
      O           rhoKm1,
      I           myThid )
@@ -139,7 +140,7 @@ CADJ STORE theta(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE salt (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL FIND_RHO(
-     I           bi,bj,iMin,iMax,jMin,jMax,K,KRef,
+     I           bi,bj,iMin,iMax,jMin,jMax,K,K+deltaK,
      I           theta,salt,
      O           rhoK,
      I           myThid )

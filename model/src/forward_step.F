@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.36 2002/11/12 20:39:46 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.37 2002/11/15 03:01:21 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -49,6 +49,7 @@ C     == Global variables ==
 # include "ctrl.h"
 # include "ctrl_dummy.h"
 # include "cost.h"
+# include "EOS.h"
 # ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
 #  include "exf_fields.h"
 #  ifdef ALLOW_BULKFORMULAE
@@ -122,9 +123,7 @@ c**************************************
 c**************************************
 #endif
 #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
-C       NOTE, that although the exf package is part of the
-C       distribution, it is not currently maintained, i.e.
-C       exf is disabled by default in genmake.
+C--   Call external forcing package
         IF ( .not. useSEAICE ) THEN 
          CALL TIMER_START('EXF_GETFORCING     [FORWARD_STEP]',mythid)
          CALL EXF_GETFORCING( mytime, myiter, mythid )
@@ -139,16 +138,7 @@ C       exf is disabled by default in genmake.
 #endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
 
 #ifdef ALLOW_SEAICE
-C--   Call sea ice model to compute forcing/external data fields.  In
-C     addition to computing prognostic sea-ice variables and diagnosing the
-C     forcing/external data fields that drive the ocean model, SEAICE_MODEL
-C     also sets theta to the freezing point under sea-ice.  The implied
-C     surface heat flux is then stored in variable surfaceTendencyTice,
-C     which is needed by KPP package (kpp_calc.F and kpp_transport_t.F)
-C     to diagnose surface buoyancy fluxes and for the non-local transport
-C     term.  Because this call precedes model thermodynamics, temperature
-C     under sea-ice may not be "exactly" at the freezing point by the time
-C     theta is dumped or time-averaged.
+C--   Call sea ice model to compute forcing/external data fields.
         IF ( useSEAICE ) THEN
          CALL TIMER_START('SEAICE_MODEL       [FORWARD_STEP]',myThid)
          CALL SEAICE_MODEL( myTime, myIter, myThid )
@@ -249,6 +239,11 @@ C     three-dimensional for non-hydrostatic and/or IGW scheme.
       CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
       ENDIF
 
+#ifdef ALLOW_AUTODIFF_TAMC
+cph This is needed because convective_adjustment calls
+cph find_rho which may use pressure()
+CADJ STORE pressure  = comlev1, key = ikey_dynamics
+#endif
 C--   Correct divergence in flow field and cycle time-stepping
 C     arrays (for all fields) ; update time-counter
       myIter = nIter0 + iLoop

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.28 2002/11/12 20:42:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.29 2002/11/15 03:01:21 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -37,6 +37,7 @@ C     == Global variables ==
 # include "cost.h"
 # include "DYNVARS.h"
 # include "FFIELDS.h"
+# include "EOS.h"
 # include "GAD.h"
 # ifdef ALLOW_PASSIVE_TRACER
 #  include "TR1.h"
@@ -245,7 +246,6 @@ c--     >>> Loop body start <<<
         nIter0 = INT( startTime/deltaTClock )
         ikey_dynamics = ilev_1
 #endif
-
 
         CALL TIMER_START('FORWARD_STEP        [THE_MAIN_LOOP]',mythid)
         CALL FORWARD_STEP( iloop, mytime, myiter, mythid )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.90 2002/09/18 16:38:01 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.91 2002/11/15 03:01:21 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -80,6 +80,7 @@ C     == Global variables ===
 # include "tamc.h"
 # include "tamc_keys.h"
 # include "FFIELDS.h"
+# include "EOS.h"
 # ifdef ALLOW_KPP
 #  include "KPP.h"
 # endif
@@ -256,7 +257,7 @@ CHPF$&                  )
           act3 = myThid - 1
           max3 = nTx*nTy
           act4 = ikey_dynamics - 1
-          ikey = (act1 + 1) + act2*max1
+          idynkey = (act1 + 1) + act2*max1
      &                      + act3*max1*max2
      &                      + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
@@ -283,7 +284,8 @@ C--     Start computation of dynamics
         jMax = sNy+OLy-1
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE wvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+CADJ STORE wvel (:,:,:,bi,bj) = 
+CADJ &     comlev1_bibj, key = idynkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Explicit part of the Surface Potentiel Gradient (add in TIMESTEP)
@@ -297,11 +299,11 @@ C       (note: this loop will be replaced by CALL CALC_GRAD_ETA)
         ENDIF
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
-CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=idynkey, byte=isbyte
+CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key=idynkey, byte=isbyte
 #ifdef ALLOW_KPP
 CADJ STORE KPPviscAz (:,:,:,bi,bj) 
-CADJ &                 = comlev1_bibj, key=ikey, byte=isbyte
+CADJ &                 = comlev1_bibj, key=idynkey, byte=isbyte
 #endif /* ALLOW_KPP */
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -328,7 +330,9 @@ C--       kDown  Cycles through 2,1 to point to current layer
           kDown= 1+MOD(k,2)
 
 #ifdef ALLOW_AUTODIFF_TAMC 
-         kkey = (ikey-1)*Nr + k
+         kkey = (idynkey-1)*Nr + k
+CADJ STORE pressure(:,:,k,bi,bj) = comlev1_bibj_k , 
+CADJ &     key=kkey , byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--      Integrate hydrostatic balance for phiHyd with BC of 
@@ -351,7 +355,6 @@ C        distinguishe between Stagger and Non Stagger time stepping
 C        calculate pressure from phiHyd and store it on common block
 C        variable pressure
          CALL STORE_PRESSURE( bi, bj, k, phiHyd, myThid ) 
-
 
 C--      Calculate accelerations in the momentum equations (gU, gV, ...)
 C        and step forward storing the result in gUnm1, gVnm1, etc...
@@ -402,7 +405,7 @@ C--     end of dynamics k loop (1:Nr)
 C--     Implicit viscosity
         IF (implicitViscosity.AND.momStepping) THEN
 #ifdef    ALLOW_AUTODIFF_TAMC
-CADJ STORE gUNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
+CADJ STORE gUNm1(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -410,7 +413,7 @@ CADJ STORE gUNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
      U         gUNm1,
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
-CADJ STORE gVNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
+CADJ STORE gVNm1(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -429,7 +432,7 @@ C--      Apply open boundary conditions
 
 #ifdef    INCLUDE_CD_CODE
 #ifdef    ALLOW_AUTODIFF_TAMC
-CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
+CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
@@ -437,7 +440,7 @@ CADJ STORE vVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
      U         vVelD,
      I         myThid )
 #ifdef    ALLOW_AUTODIFF_TAMC
-CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
+CADJ STORE uVelD(:,:,:,bi,bj) = comlev1_bibj , key=idynkey, byte=isbyte
 #endif    /* ALLOW_AUTODIFF_TAMC */
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
