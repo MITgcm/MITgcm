@@ -88,7 +88,7 @@ ln -s ../build/mitgcmuv_ftl .
 # To verify the results of the gradient check, type:
  grep grad-res output.txt
 # A reference output is in:
- grep grad-res ../results_seaice/output_exp4.txt_adm
+ grep grad-res ../results_bulk/output.txt_adm
 
 
 ####################
