@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.13 2004/01/25 00:31:52 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.14 2004/02/07 23:15:47 dimitri Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -240,7 +240,7 @@ c     CALL MOM_VI_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
 
       IF (momViscosity) THEN
 C      Calculate del^2 u and del^2 v for bi-harmonic term
-       IF (viscA4.NE.0.) THEN
+       IF (viscA4.NE.0. .OR. viscA4Grid.NE.0.) THEN
          CALL MOM_VI_DEL2UV(bi,bj,k,hDiv,vort3,hFacZ,
      O                      del2u,del2v,
      &                      myThid)
@@ -250,7 +250,8 @@ C      Calculate del^2 u and del^2 v for bi-harmonic term
        ENDIF
 C      Calculate dissipation terms for U and V equations
 C      in terms of vorticity and divergence
-       IF (viscAh.NE.0. .OR. viscA4.NE.0.) THEN
+       IF (viscAh.NE.0. .OR. viscA4.NE.0. .OR.
+     &      viscAhGrid.NE.0. .OR. viscA4Grid.NE.0. ) THEN
          CALL MOM_VI_HDISSIP(bi,bj,k,hDiv,vort3,hFacZ,dStar,zStar,
      O                       uDiss,vDiss,
      &                       myThid)

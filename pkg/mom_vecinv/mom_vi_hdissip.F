@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.4 2004/02/07 16:27:19 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_hdissip.F,v 1.5 2004/02/07 23:15:47 dimitri Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -95,7 +95,7 @@ c    &   +recip_hFacS(i,j,k,bi,bj)*viscAh*( Dij-Dim ) )
 c       vD2 = recip_rAs(i,j,bi,bj)*(
 c    &    recip_hFacS(i,j,k,bi,bj)*viscAh*( (Zpj-Zij)*cosFacV(j,bi,bj) )
 c    &   +                         viscAh*( Dij-Dim ) )
-        vD2 = viscAh*(
+          vD2 = viscAh*(
      &       recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
      &                                           *cosFacV(j,bi,bj)
      &                               +( Dij-Dim )*recip_DYC(i,j,bi,bj) )
@@ -115,7 +115,7 @@ c       Dmj=dyF(i-1, j ,bi,bj)*hFacC(i-1, j ,k,bi,bj)*dStar(i-1, j )
 C This bit scales the harmonic dissipation operator to be proportional
 C to the grid-cell area over the time-step. viscAh is then non-dimensional
 C and should be less than 1/8, for example viscAh=0.01 
-        if (viscAhGrid*deltaTmom.NE.0.) then
+        if (viscA4Grid*deltaTmom.NE.0.) then
           Dij = Dij * min(
      &         viscA4+viscA4Grid*(rA ( i , j ,bi,bj)**2)/deltaTmom,
      &         viscA4Max)
