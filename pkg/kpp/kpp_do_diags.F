@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.14 2004/10/13 04:37:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/Attic/kpp_do_diags.F,v 1.15 2004/12/13 15:52:04 edhill Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -89,8 +89,8 @@ C     Dump snapshot of KPP variables.
         IF (KPPwriteState .AND. snapshot_mdsio) THEN
 #ifdef MULTIPLE_RECORD_KPP_STATE_FILES
 C         Write each snap-shot as a new record in one file per variable
-C         - creates relatively few files but these files can become
-C         huge
+C         - creates relatively few files but these files can become huge
+C         NOTE: file size and number problems are *SOLVED* by MNC
           CALL WRITE_REC_XYZ_RL('KPPviscAz',KPPviscAz,kpp_drctrec,
      &         myIter,myThid)
           CALL WRITE_REC_XYZ_RL('KPPdiffKzT',KPPdiffKzT,kpp_drctrec,
@@ -103,8 +103,8 @@ C         huge
      &         myIter,myThid)
 #else /* MULTIPLE_RECORD_KPP_STATE_FILES */
 C         Write each snap-shot as a new file - creates many files but
-C         for large configurations is easier to transfer analyse a
-C         particular snap-shots
+C         for large configurations is easier to transfer
+C         NOTE: file size and number problems are *SOLVED* by MNC
           WRITE(suff,'(I10.10)') myIter
           CALL WRITE_FLD_XYZ_RL('KPPviscAz.',suff,KPPviscAz,
      &         myIter,myThid)
@@ -210,10 +210,11 @@ C       Normalize by integrated time
           ENDDO
         ENDDO
         
-        IF (KPPwriteState .AND. snapshot_mdsio) THEN
+        IF (KPPwriteState .AND. timeave_mdsio) THEN
 #ifdef MULTIPLE_RECORD_KPP_STATE_FILES
-C         Write each snap-shot as a new record in one file per variable
+C         Write each tave output as a new record in one file per variable
 C         - creates relatively few files but these files can become huge
+C         NOTE: file size and number problems are *SOLVED* by MNC
           CALL WRITE_REC_XYZ_RL('KPPviscAz-T',KPPviscAzTave,
      &         kpp_drctrecTave,myIter,myThid)
           CALL WRITE_REC_XYZ_RL('KPPdiffKzT-T',KPPdiffKzTTave,
@@ -226,12 +227,10 @@ C         - creates relatively few files but these files can become huge
      &         kpp_drctrecTave,myIter,myThid)
 C--       Increment record counter
           kpp_drctrecTave = kpp_drctrecTave + 1
-          
 #else /* MULTIPLE_RECORD_KPP_STATE_FILES */
-          
-C         Write each snap-shot as a new file - creates many files but for
-C         large configurations is easier to transfer analyse a particular
-C         snap-shots
+C         Write each tave output as a new file - creates many files but for
+C         large configurations is easier to transfer
+C         NOTE: file size and number problems are *SOLVED* by MNC
           WRITE(suff,'(I10.10)') myIter
           CALL WRITE_FLD_XYZ_RL('KPPviscAz-T.',suff,KPPviscAzTave,
      &         myIter,myThid)
