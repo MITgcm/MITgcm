@@ -1,7 +1,12 @@
-$Header: /u/gcmpack/MITgcm/doc/notes,v 1.2 1998/04/24 02:36:52 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/notes,v 1.3 1998/04/24 03:12:35 cnh Exp $
 
 Miscellaneous notes relating to MITgcm UV
 =========================================
+
+This files form is close to that of an FAQ. If you are having
+a problem getting the model to behave as you might expect they
+may be some helpful clues in this file.
+
 
 o Something really weird is happening - variables keep
   changing value!
