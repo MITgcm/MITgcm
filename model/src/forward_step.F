@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.106 2004/11/16 05:42:11 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.107 2004/11/18 23:31:00 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -516,16 +516,6 @@ C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
         CALL TRACERS_CORRECTION_STEP(myTime, myIter, myThid)
         CALL TIMER_STOP ('TS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
 
-C--   Do "blocking" sends and receives for tendency "overlap" terms
-c     CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
-c     CALL DO_GTERM_BLOCKING_EXCHANGES( myThid )
-c     CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
-
-C--   Do "blocking" sends and receives for field "overlap" terms
-      CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
-      CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
-      CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
-
 cswdptr -- add for seperate timestepping of chemical/biological/forcing
 cswdptr    of ptracers ---
 #ifdef ALLOW_GCHEM
@@ -536,6 +526,17 @@ ceh3 needs an IF ( use GCHEM ) THEN
 #endif /* PTRACERS_SEPARATE_FORCING */
 #endif /* ALLOW_GCHEM */
 cswdptr -- end add ---
+
+C--   Do "blocking" sends and receives for tendency "overlap" terms
+c     CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+c     CALL DO_GTERM_BLOCKING_EXCHANGES( myThid )
+c     CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+
+C--   Do "blocking" sends and receives for field "overlap" terms
+      CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+      CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
+      CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+
 
 C AMM
 #ifdef ALLOW_GRIDALT

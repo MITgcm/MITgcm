@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.6 2004/09/01 16:22:52 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/gchem_forcing_sep.F,v 1.7 2004/11/18 23:31:00 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -79,10 +79,10 @@ C$taf loop = parallel
 C$taf loop = parallel
         DO bi=myBxLo(myThid),myBxHi(myThid)
 
-        jMin=1-OLy
-        jMax=sNy+OLy
-        iMin=1-OLx
-        iMax=sNx+OLx
+        jMin=1
+        jMax=sNy
+        iMin=1
+        iMax=sNx
 c
 ccccccccccccccccccccccccccc DIC cccccccccccccccccccccccccccccccc
 c
