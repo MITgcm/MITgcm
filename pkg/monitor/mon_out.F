@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.2 2001/06/25 20:35:23 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.3 2003/05/13 18:18:05 adcroft Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "MONITOR_OPTIONS.h"
 
       SUBROUTINE MON_OUT_I(pref, value, foot, myThid )
 C.sh  /==========================================================\

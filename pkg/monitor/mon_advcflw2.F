@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_advcflw2.F,v 1.1 2001/07/03 21:34:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_advcflw2.F,v 1.2 2003/05/13 18:18:05 adcroft Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "MONITOR_OPTIONS.h"
 
       SUBROUTINE MON_ADVCFLW2(
      I                label, W, rHFac, rDrF, dT,

@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.11 2003/05/02 22:29:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.12 2003/05/13 18:18:05 adcroft Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "MONITOR_OPTIONS.h"
 
       SUBROUTINE MONITOR(
      I                myIter, myTime, myThid )
@@ -87,6 +87,9 @@ C-     Print stats for KE
 
 C-     Print stats for (relative,absolute) Vorticity AND Pot.Vort. 
        CALL MON_VORT3(myIter, myThid)
+
+C      Check that solution is within reasonable bounds
+       CALL MON_SOLUTION(myIter,myTime,myThid)
 
 C      Print stats for surface correction terms (Linear Free-Surf)
        CALL MON_SURFCOR(myThid)

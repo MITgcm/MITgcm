@@ -1,8 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.1 2003/05/02 22:27:01 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_vort3.F,v 1.2 2003/05/13 18:18:05 adcroft Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
-#undef MONITOR_TEST_HFACZ
+#include "MONITOR_OPTIONS.h"
 
       SUBROUTINE MON_VORT3(
      I                     myIter, myThid )
