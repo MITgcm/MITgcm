@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.466 2005/03/25 00:30:46 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.467 2005/03/28 15:48:14 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o introduced an alternative length scale calculation for use in the limiting
+  maximum viscosity (off by default, see mom_vi_hdissip.F for details)
 o S/R ptracers_calc_diff: argument list bug for CALL KPP_CALC_DIFF_S
 o added modified Leith scheme with viscosity proportional to grad(Hdiv) 
   as well as grad(vort3).  Made it compatible with both approximate form
