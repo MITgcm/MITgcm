@@ -116,7 +116,7 @@ C   Check to see if we need to do a bi-bj loop here
          do j = 1,sNy
          do i = 1,sNx
           qdiag(i,j,ipointer+levhere-1,bi,bj) =
-     .  qdiag(i,j,ipointer+levhere-1,bi,bj) + array(i,j,levhere,bi,bj)
+     .  qdiag(i,j,ipointer+levhere-1,bi,bj) + array(i,j,levhere,1,1)
          enddo
          enddo
         enddo
