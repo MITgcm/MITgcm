@@ -1,40 +1,59 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_calc_strain.F,v 1.1 2001/09/06 14:23:58 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/Attic/mom_calc_strain.F,v 1.2 2001/11/27 15:39:15 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
+CBOP
+C !ROUTINE: MOM_CALC_STRAIN
+
+C !INTERFACE: ==========================================================
       SUBROUTINE MOM_CALC_STRAIN( 
      I        bi,bj,k,
      I        uFld, vFld, hFacZ,
      O        strain,
      I        myThid)
-      IMPLICIT NONE
-C     /==========================================================\
-C     | S/R MOM_CALC_STRAIN                                      |
-C     |==========================================================|
-C     \==========================================================/
 
-C     == Global variables ==
+C !DESCRIPTION:
+C Calculates the strain of the horizontal flow field (at vorticity points):
+C \begin{equation*}
+C D_S = \frac{\Delta y_u}{\Delta x_v} \delta_i \frac{v}{\Delta y_c}
+C       \frac{\Delta x_v}{\Delta y_u} \delta_j \frac{u}{\Delta x_c}
+C \end{equation*}
+C assuming free-slip boundaries.
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-C     == Routine arguments ==
-C     myThid - Instance number for this innvocation of CALC_MOM_RHS
+
+C !INPUT PARAMETERS: ===================================================
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
+C  uFld                 :: zonal flow
+C  vFld                 :: meridional flow
+C  hFacZ                :: open-water thickness at vorticity points
+C  myThid               :: thread number
       INTEGER bi,bj,k
       _RL uFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vFld(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS hFacZ(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER myThid
 
-C     == Local variables ==
+C !OUTPUT PARAMETERS: ==================================================
+C  strain               :: strain of horizontal flow
+      _RL strain(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
       INTEGER i,j
+CEOP
 
       DO J=2-Oly,sNy+Oly
        DO I=2-Olx,sNx+Olx
 
-C       Horizontal curl of flow field - ignoring lopping factors
+C       Strain of horizontal flow field (ignoring lopping factors)
         strain(I,J)=
      &    dyu(I,J,bi,bj)*recip_dxv(I,J,bi,bj)*(
      &              vFld( I , J )*recip_dyc( I , J ,bi,bj)
@@ -43,7 +62,7 @@ C       Horizontal curl of flow field - ignoring lopping factors
      &             +uFld( I , J )*recip_dxc( I , J ,bi,bj)
      &             -uFld( I ,J-1)*recip_dxc( I ,J-1,bi,bj) )
 
-C       Horizontal curl of flow field - including lopping factors
+C       Set strain to zero on boundaries (free-slip)
         IF (hFacZ(i,j).EQ.0.) THEN
          strain(I,J)=0.
         ENDIF
