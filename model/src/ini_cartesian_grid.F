@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.5 1998/06/08 21:43:01 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cartesian_grid.F,v 1.6 1998/06/25 20:43:23 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -225,12 +225,18 @@ C     other threads.
       _EXCH_XYZ_R4(maskS    , myThid )
       _EXCH_XY_R4 (zA       , myThid )
 
-CcnhDebugStarts
-      tanPhiAtU = 0. _d 0
-      tanPhiAtV = 0. _d 0
+      DO bj = myByLo(myThid), myByHi(myThid)
+       DO bi = myBxLo(myThid), myBxHi(myThid)
+        DO J=1,sNy
+         DO I=1,sNx
+          tanPhiAtU(I,J,bi,bj) = 0. _d 0
+          tanPhiAtV(I,J,bi,bj) = 0. _d 0
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
       _EXCH_XY_R4 (tanPhiAtU , myThid )
       _EXCH_XY_R4 (tanPhiAtV , myThid )
-CcnhDebugEnds
 
 C
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.14 1998/06/15 05:13:56 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.15 1998/06/25 20:43:23 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -37,7 +37,7 @@ C     myNorm - Work variable used in clculating normalisation factor
       INTEGER bi, bj
       INTEGER I,  J, K
       _RL     faceArea
-      _RL     myNorm
+      _RS     myNorm
       _RL     aC, aCw, aCs
 
 C--   Initialise laplace operator

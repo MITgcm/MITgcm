@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.15 1998/06/09 16:48:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.16 1998/06/25 20:43:23 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -105,7 +105,7 @@ C     uDudxFac, AhDudxFac, etc ... individual term tracer parameters
       INTEGER i,j,k
 
       REAL wMaskOverride
-      REAL hFacZOpen
+      _RS  hFacZOpen
       REAL hFacZClosed
 
       REAL uDudxFac
