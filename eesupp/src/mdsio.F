@@ -1,14 +1,14 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio.F,v 1.3 1999/05/17 14:40:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio.F,v 1.4 1999/07/28 17:39:17 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
-C The three "public" routines supplied here are:
+C The five "public" routines supplied here are:
 C
-C MDSREADFIELD  - read model field from direct access global or tiled MDS file
-C MDSWRITEFIELD - write model field to direct access global or tiled MDS file
-C MDSFINDUNIT   - returns an available (unused) I/O channel
-C MDSREADVECTOR - read vector from direct access global or tiled MDS file
-C MDSWRITEVECTOR- write vector to direct access global or tiled MDS file
+C MDSREADFIELD   - read model field from direct access global or tiled MDS file
+C MDSWRITEFIELD  - write model field to direct access global or tiled MDS file
+C MDSFINDUNIT    - returns an available (unused) I/O channel
+C MDSREADVECTOR  - read vector from direct access global or tiled MDS file
+C MDSWRITEVECTOR - write vector to direct access global or tiled MDS file
 C
 C all other routines are "private" to these utilities and ought
 C not be accessed directly from the main code.
@@ -18,7 +18,13 @@ C Modified: 03/23/99 adcroft@mit.edu
 C           To work with multiple records
 C Modified: 03/29/99 eckert@mit.edu
 C           Added arbitrary vector capability
-C 
+C Modified: 07/27/99 eckert@mit.edu
+C           Customized for state estimation (--> active_file_control.F)
+C           this relates only to *mdsreadvector* and *mdswritevector*
+C Modified: 07/28/99 eckert@mit.edu
+C           inserted calls to *print_message* and *print_error*
+C
+C To be modified to work with MITgcmuv message routines.
 
 #undef  SAFE_IO
 
@@ -90,6 +96,7 @@ C Local variables
       Real*8 r8seg(sNx)
       logical globalFile,fileIsOpen
       integer length_of_rec
+      character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -97,8 +104,14 @@ C Only do I/O if I am the master thread
 
 C Record number must be >= 1
       if (irecord .LT. 1) then
-       write(0,'(a,i)') 'MDSREADFIELD: argument irecord = ',irecord
-       stop 'MDSREADFIELD: *ERROR* Invalid value for irecord'
+       write(msgbuf,'(a,i9.8)')
+     &   ' MDSREADFIELD: argument irecord = ',irecord
+       call print_message( msgbuf, standardmessageunit,
+     &                     SQUEEZE_RIGHT , mythid)
+       write(msgbuf,'(a)')
+     &   ' MDSREADFIELD: Invalid value for irecord'
+       call print_error( msgbuf, mythid )
+       stop 'ABNORMAL END: S/R MDSREADFIELD'
       endif
 
 C Assume nothing
@@ -107,13 +120,16 @@ C Assume nothing
       IL=ILNBLNK( fName )
 
 C Assign a free unit number as the I/O channel for this routine
-      call MDSFINDUNIT( dUnit )
+      call MDSFINDUNIT( dUnit, mythid )
 
 C Check first for global file with simple name (ie. fName)
       dataFName = fName
       inquire( file=dataFname, exist=exst )
       if (exst) then
-       write(0,'(2a)') 'MDSREADFIELD: opening global file: ',dataFName
+       write(msgbuf,'(a,a)')
+     &   ' MDSREADFIELD: opening global file: ',dataFName
+       call print_message( msgbuf, standardmessageunit,
+     &                     SQUEEZE_RIGHT , mythid)
        globalFile = .TRUE.
       endif
 
@@ -122,14 +138,17 @@ C If negative check for global file with MDS name (ie. fName.data)
        write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
        inquire( file=dataFname, exist=exst )
        if (exst) then
-        write(0,'(2a)') 'MDSREADFIELD: opening global file: ',dataFName
+        write(msgbuf,'(a,a)')
+     &    ' MDSREADFIELD: opening global file: ',dataFName
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
         globalFile = .TRUE.
        endif
       endif
 
 C If we are reading from a global file then we open it here
       if (globalFile) then
-       length_of_rec=MDS_RECLEN( filePrec, sNx )
+       length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
        open( dUnit, file=dataFName, status='old',
      &      access='direct', recl=length_of_rec )
        fileIsOpen=.TRUE.
@@ -148,16 +167,24 @@ C If we are reading from a tiled MDS file then we open each one here
 C Of course, we only open the file if the tile is "active"
 C (This is a place-holder for the active/passive mechanism
          if (exst) then
-          write(0,'(2a)') 'MDSREADFIELD: opening file: ',dataFName
-          length_of_rec=MDS_RECLEN( filePrec, sNx )
+          write(msgbuf,'(a,a)')
+     &      ' MDSREADFIELD: opening file: ',dataFName
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
           open( dUnit, file=dataFName, status='old',
      &        access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          else
           fileIsOpen=.FALSE.
-          write(0,*) 'MDSREADFIELD: filename=',dataFName
-          stop 'MDSREADFIELD: File does not exist'
-C         stop 'MDSREADFIELD: un-active tiles not implemented yet'
+          write(msgbuf,'(a,a)')
+     &      ' MDSREADFIELD: filename: ',dataFName
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          write(msgbuf,'(a)')
+     &      ' MDSREADFIELD: File does not exist'
+          call print_error( msgbuf, mythid )
+          stop 'ABNORMAL END: S/R MDSREADFIELD'
          endif
         endif
 
@@ -184,7 +211,10 @@ C         stop 'MDSREADFIELD: un-active tiles not implemented yet'
             elseif (arrType .eq. 'RL') then
              call MDS_SEG4toRL( j,bi,bj,k,nNz, r4seg, .TRUE., arr )
             else
-             stop 'MDSREADFIELD: illegal value for arrType'
+             write(msgbuf,'(a)')
+     &         ' MDSREADFIELD: illegal value for arrType'
+             call print_error( msgbuf, mythid )
+             stop 'ABNORMAL END: S/R MDSREADFIELD'
             endif
            elseif (filePrec .eq. precFloat64) then
             read(dUnit,rec=irec) r8seg
@@ -196,10 +226,16 @@ C         stop 'MDSREADFIELD: un-active tiles not implemented yet'
             elseif (arrType .eq. 'RL') then
              call MDS_SEG8toRL( j,bi,bj,k,nNz, r8seg, .TRUE., arr )
             else
-             stop 'MDSREADFIELD: illegal value for arrType'
+             write(msgbuf,'(a)')
+     &         ' MDSREADFIELD: illegal value for arrType'
+             call print_error( msgbuf, mythid )
+             stop 'ABNORMAL END: S/R MDSREADFIELD'
             endif
            else
-            stop 'MDSREADFIELD: illegal value for filePrec'
+            write(msgbuf,'(a)')
+     &        ' MDSREADFIELD: illegal value for filePrec'
+            call print_error( msgbuf, mythid )
+            stop 'ABNORMAL END: S/R MDSREADFIELD'
            endif
 C End of j loop
           enddo
@@ -300,6 +336,7 @@ C Local variables
       integer dimList(3,3),ndims
       integer length_of_rec
       logical fileIsOpen
+      character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -307,8 +344,14 @@ C Only do I/O if I am the master thread
 
 C Record number must be >= 1
       if (irecord .LT. 1) then
-       write(0,'(a,i)') 'MDSWRITEFIELD: argument irecord = ',irecord
-       stop 'MDSWRITEFIELD: *ERROR* Invalid value for irecord'
+       write(msgbuf,'(a,i9.8)')
+     &   ' MDSWRITEFIELD: argument irecord = ',irecord
+       call print_message( msgbuf, standardmessageunit,
+     &                     SQUEEZE_RIGHT , mythid)
+       write(msgbuf,'(a)')
+     &   ' MDSWRITEFIELD: invalid value for irecord'
+       call print_error( msgbuf, mythid )
+       stop 'ABNORMAL END: S/R MDSWRITEFIELD'
       endif
 
 C Assume nothing
@@ -316,18 +359,18 @@ C Assume nothing
       IL=ILNBLNK( fName )
 
 C Assign a free unit number as the I/O channel for this routine
-      call MDSFINDUNIT( dUnit )
+      call MDSFINDUNIT( dUnit, mythid )
 
 C If we are writing to a global file then we open it here
       if (globalFile) then
        write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
        if (irecord .EQ. 1) then
-        length_of_rec=MDS_RECLEN( filePrec, sNx )
+        length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
         open( dUnit, file=dataFName, status=_NEW_STATUS,
      &      access='direct', recl=length_of_rec )
         fileIsOpen=.TRUE.
        else
-        length_of_rec=MDS_RECLEN( filePrec, sNx )
+        length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
         open( dUnit, file=dataFName, status='old',
      &      access='direct', recl=length_of_rec )
         fileIsOpen=.TRUE.
@@ -344,12 +387,12 @@ C If we are writing to a tiled MDS file then we open each one here
          write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
-          length_of_rec=MDS_RECLEN( filePrec, sNx )
+          length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
           open( dUnit, file=dataFName, status=_NEW_STATUS,
      &       access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          else
-          length_of_rec=MDS_RECLEN( filePrec, sNx )
+          length_of_rec=MDS_RECLEN( filePrec, sNx, mythid )
           open( dUnit, file=dataFName, status='old',
      &       access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
@@ -374,7 +417,10 @@ C If we are writing to a tiled MDS file then we open each one here
             elseif (arrType .eq. 'RL') then
              call MDS_SEG4toRL( j,bi,bj,k,nNz, r4seg, .FALSE., arr )
             else
-             stop 'MDSWRITEFIELD: illegal value for arrType'
+             write(msgbuf,'(a)')
+     &         ' MDSWRITEFIELD: illegal value for arrType'
+             call print_error( msgbuf, mythid )
+             stop 'ABNORMAL END: S/R MDSWRITEFIELD'
             endif
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR4( sNx, r4seg )
@@ -386,21 +432,30 @@ C If we are writing to a tiled MDS file then we open each one here
             elseif (arrType .eq. 'RL') then
              call MDS_SEG8toRL( j,bi,bj,k,nNz, r8seg, .FALSE., arr )
             else
-             stop 'MDSWRITEFIELD: illegal value for arrType'
+             write(msgbuf,'(a)')
+     &         ' MDSWRITEFIELD: illegal value for arrType'
+             call print_error( msgbuf, mythid )
+             stop 'ABNORMAL END: S/R MDSWRITEFIELD'
             endif
 #ifdef _BYTESWAPIO
             call MDS_BYTESWAPR8( sNx, r8seg )
 #endif
             write(dUnit,rec=irec) r8seg
            else
-            stop 'MDSWRITEFIELD: illegal value for filePrec'
+            write(msgbuf,'(a)')
+     &        ' MDSWRITEFIELD: illegal value for filePrec'
+            call print_error( msgbuf, mythid )
+            stop 'ABNORMAL END: S/R MDSWRITEFIELD'
            endif
 C End of j loop
           enddo
 C End of k loop
          enddo
         else
-         stop 'MDSWRITEFIELD: I should not ever get to this point'
+         write(msgbuf,'(a)')
+     &     ' MDSWRITEFIELD: I should never get to this point'
+         call print_error( msgbuf, mythid )
+         stop 'ABNORMAL END: S/R MDSWRITEFIELD'
         endif
 C If we were writing to a tiled MDS file then we close it here
         if (fileIsOpen .AND. (.NOT. globalFile)) then
@@ -425,7 +480,7 @@ C Create meta-file for each tile if we are tiling
          ndims=3
          if (nNz .EQ. 1) ndims=2
          call MDSWRITEMETA( metaFName, dataFName,
-     &     filePrec, ndims, dimList, irecord, myIter )
+     &     filePrec, ndims, dimList, irecord, myIter, mythid )
         endif
 C End of bi,bj loops
        enddo
@@ -443,11 +498,23 @@ C We can't do this operation using threads (yet) because of the
 C "barrier" at the next step. The barrier could be removed but
 C at the cost of "safe" distributed I/O.
        if (nThreads.NE.1) then
-        write(0,*)
-     & 'MDSWRITEFIELD: A threads version of this routine does not exist'
-        write(0,*) 'MDSWRITEFIELD: This needs to be fixed...'
-        write(0,*) 'MDSWRITEFIELD: nThreads = ',nThreads
-        stop 'MDSWRITEFIELD: Stopping because you are using threads'
+        write(msgbuf,'(a,a)')
+     &    ' MDSWRITEFIELD: A threads version of this routine',
+     &    ' does not exist.'
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a)')
+     &    ' MDSWRITEFIELD: This needs to be fixed...'
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a,i3.2)')
+     &    ' MDSWRITEFIELD: nThreads = ',nThreads
+        call print_message( msgbuf, standardmessageunit,
+     &                      SQUEEZE_RIGHT , mythid)
+        write(msgbuf,'(a)')
+     &    ' MDSWRITEFIELD: Stopping because you are using threads'
+        call print_error( msgbuf, mythid )
+        stop 'ABNORMAL END: S/R MDSWRITEFIELD'
        endif
 C We put a barrier here to ensure that all processes have finished
 C writing their data before we update the meta-file
@@ -465,7 +532,7 @@ C writing their data before we update the meta-file
        ndims=3
        if (nNz .EQ. 1) ndims=2
        call MDSWRITEMETA( metaFName, dataFName,
-     &   filePrec, ndims, dimList, irecord, myIter )
+     &   filePrec, ndims, dimList, irecord, myIter, mythid )
        fileIsOpen=.TRUE.
       endif
 
@@ -635,7 +702,8 @@ C=======================================================================
      I    ndims,
      I    dimList,
      I    nrecords,
-     I    myIter )
+     I    myIter,
+     I    mythid )
 
 C IN:
 C     mFileName	string  - complete name of meta-file
@@ -644,6 +712,7 @@ C     ndims	integer - number of dimensions
 C     dimList	integer - array of dimensions, etc.
 C     nrecords	integer - record number
 C     myIter	integer - time-step number
+C     mythid    integer - thread id
 C OUT:
 C
 C Created: 03/20/99 adcroft@mit.edu
@@ -657,6 +726,7 @@ C Arguments
       integer dimList(3,ndims)
       integer nrecords
       integer myIter
+      integer mythid
 
 C Global variables / common blocks
 #include "SIZE.h"
@@ -668,6 +738,7 @@ C Functions
 C Local
       integer i,ii,mUnit
       logical ex
+      character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
 
 C We should *read* the met-file if it exists to check
@@ -681,7 +752,7 @@ C and that the last record is written to the
 C last consecutive record in the file.
 
 C Assign a free unit number as the I/O channel for this subroutine
-      call MDSFINDUNIT( mUnit )
+      call MDSFINDUNIT( mUnit, mythid )
 
 C Open meta-file
       open( mUnit, file=mFileName, status='unknown',
@@ -711,7 +782,10 @@ C Record the precision of the file
       elseif (filePrec .EQ. precFloat64) then
        write(mUnit,'(x,a)') "format = [ 'float64' ];"
       else
-       stop 'MDSWRITEMETA: invalid filePrec'
+       write(msgbuf,'(a)')
+     &   ' MDSWRITEMETA: invalid filePrec'
+       call print_error( msgbuf, mythid )
+       stop 'ABNORMAL END: S/R MDSWRITEMETA'
       endif
 
 C Record the current record number
@@ -738,7 +812,7 @@ C     ------------------------------------------------------------------
 C=======================================================================
 
 C=======================================================================
-      subroutine MDSFINDUNIT( iounit )
+      subroutine MDSFINDUNIT( iounit, mythid )
 C OUT:
 C     iounit   integer - unit number
 C
@@ -749,12 +823,17 @@ C
 C Created: 03/20/99 adcroft@mit.edu
 
       implicit none
+
+#include "EEPARAMS.h"
+
 C Arguments
       integer iounit
+      integer mythid
 C Local
       integer ii
       logical op
       integer ios
+      character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
 
 C Sweep through a valid range of unit numbers
@@ -763,8 +842,14 @@ C Sweep through a valid range of unit numbers
         if (iounit.eq.-1) then
           inquire(unit=ii,iostat=ios,opened=op)
           if (ios.ne.0) then
-            write(0,*) 'MDSFINDUNIT: inquiring unit number =',ii
-            stop 'MDSFINDUNIT: inquire statement failed!'
+            write(msgbuf,'(a,i2.2)')
+     &        ' MDSFINDUNIT: inquiring unit number = ',ii
+            call print_message( msgbuf, standardmessageunit,
+     &                          SQUEEZE_RIGHT , mythid)
+            write(msgbuf,'(a)')
+     &        ' MDSFINDUNIT: inquire statement failed!'
+            call print_error( msgbuf, mythid )
+            stop 'ABNORMAL END: S/R MDSFINDUNIT'
           endif
           if (.NOT. op) then
             iounit=ii
@@ -774,7 +859,10 @@ C Sweep through a valid range of unit numbers
 
 C Was there an available unit number
       if (iounit.eq.-1) then
-        stop 'MDSFINDUNIT: could not find an available unit number!'
+        write(msgbuf,'(a)')
+     &    ' MDSFINDUNIT: could not find an available unit number!'
+        call print_error( msgbuf, mythid )
+        stop 'ABNORMAL END: S/R MDSFINDUNIT'
       endif
 
 C     ------------------------------------------------------------------
@@ -783,7 +871,7 @@ C     ------------------------------------------------------------------
 C=======================================================================
 
 C=======================================================================
-      integer function MDS_RECLEN( filePrec, nnn )
+      integer function MDS_RECLEN( filePrec, nnn, mythid )
 C IN:
 C   filePrec	integer - precision of file in bits
 C   nnn		integer - number of elements in record
@@ -796,11 +884,13 @@ C Created: 03/29/99 eckert@mit.edu + adcroft@mit.edu
 C Arguments
       integer filePrec
       integer nnn
+      integer mythid
 C Global variables
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 C Local
+      character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
 
       if (filePrec .EQ. precFloat32) then
@@ -808,8 +898,14 @@ C     ------------------------------------------------------------------
       elseif (filePrec .EQ. precFloat64) then
        MDS_RECLEN=nnn*WORDLENGTH*2
       else
-       write(0,*) 'MDS_RECLEN: filePrec = ',filePrec
-       stop 'MDS_RECLEN: Illegal value for filePrec'
+       write(msgbuf,'(a,i2.2)')
+     &   ' MDS_RECLEN: filePrec = ',filePrec
+       call print_message( msgbuf, standardmessageunit,
+     &                     SQUEEZE_RIGHT , mythid)
+       write(msgbuf,'(a)')
+     &   ' MDS_RECLEN: illegal value for filePrec'
+       call print_error( msgbuf, mythid )
+       stop 'ABNORMAL END: S/R MDS_RECLEN'
       endif
 
 C     ------------------------------------------------------------------
@@ -824,6 +920,8 @@ C=======================================================================
      I   arrType,
      I   narr,
      O   arr,
+     I   bi,
+     I   bj,
      I   irecord,
      I   myThid )
 C
@@ -834,12 +932,16 @@ C filePrec	integer	number of bits per word in file (32 or 64)
 C arrType	char(2)	declaration of "arr": either "RS" or "RL"
 C narr		integer	size of third dimension: normally either 1 or Nr
 C arr		RS/RL	array to read into, arr(narr)
+ce bi           integer x tile index
+ce bj           integer y tile index
 C irecord	integer	record number to read
 C myThid	integer thread identifier
 C
 C Created: 03/26/99 eckert@mit.edu
 C Modified: 03/29/99 adcroft@mit.edu + eckert@mit.edu
 C           Fixed to work work with _RS and _RL declarations
+C Modified: 07/27/99 eckert@mit.edu
+C           Customized  for state estimation (--> active_file_control.F)
 
       implicit none
 C Global variables / common blocks
@@ -855,15 +957,20 @@ C Routine arguments
       Real arr(narr)
       integer irecord
       integer myThid
+ce
+      integer bi,bj
+ce
+
 C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
       character*(80) dataFName
-      integer iG,jG,irec,bi,bj,dUnit,IL
+      integer iG,jG,irec,dUnit,IL
       logical exst
       logical globalFile,fileIsOpen
       integer length_of_rec
+      character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -871,8 +978,14 @@ C Only do I/O if I am the master thread
 
 C Record number must be >= 1
       if (irecord .LT. 1) then
-       write(0,'(a,i)') 'MDSREADVECTOR: argument irecord = ',irecord
-       stop 'MDSREADVECTOR: *ERROR* Invalid value for irecord'
+       write(msgbuf,'(a,i9.8)')
+     &   ' MDSREADVECTOR: argument irecord = ',irecord
+       call print_message( msgbuf, standardmessageunit,
+     &                     SQUEEZE_RIGHT , mythid)
+       write(msgbuf,'(a)')
+     &   ' MDSREADVECTOR: invalid value for irecord'
+       call print_error( msgbuf, mythid )
+       stop 'ABNORMAL END: S/R MDSREADVECTOR'
       endif
 
 C Assume nothing
@@ -881,13 +994,16 @@ C Assume nothing
       IL=ILNBLNK( fName )
 
 C Assign a free unit number as the I/O channel for this routine
-      call MDSFINDUNIT( dUnit )
+      call MDSFINDUNIT( dUnit, mythid )
 
 C Check first for global file with simple name (ie. fName)
       dataFName = fName
       inquire( file=dataFname, exist=exst )
       if (exst) then
-       write(0,'(2a)') 'MDSREADVECTOR: opening global file: ',dataFName
+       write(msgbuf,'(a,a)')
+     &   ' MDSREADVECTOR: opening global file: ',dataFName
+       call print_message( msgbuf, standardmessageunit,
+     &                     SQUEEZE_RIGHT , mythid)
        globalFile = .TRUE.
       endif
 
@@ -896,22 +1012,25 @@ C If negative check for global file with MDS name (ie. fName.data)
        write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
        inquire( file=dataFname, exist=exst )
        if (exst) then
-        write(0,'(2a)') 'MDSREADVECTOR: opening global file: ',dataFName
+         write(msgbuf,'(a,a)')
+     &     ' MDSREADVECTOR: opening global file: ',dataFName
+         call print_message( msgbuf, standardmessageunit,
+     &                       SQUEEZE_RIGHT , mythid)
         globalFile = .TRUE.
        endif
       endif
 
 C If we are reading from a global file then we open it here
       if (globalFile) then
-       length_of_rec=MDS_RECLEN( filePrec, narr )
+       length_of_rec=MDS_RECLEN( filePrec, narr, mythid )
        open( dUnit, file=dataFName, status='old',
      &      access='direct', recl=length_of_rec )
        fileIsOpen=.TRUE.
       endif
 
 C Loop over all tiles
-      do bj=1,nSy
-       do bi=1,nSx
+ce      do bj=1,nSy
+ce       do bi=1,nSx
 C If we are reading from a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
@@ -922,14 +1041,20 @@ C If we are reading from a tiled MDS file then we open each one here
 C Of course, we only open the file if the tile is "active"
 C (This is a place-holder for the active/passive mechanism)
          if (exst) then
-          write(0,'(2a)') 'MDSREADVECTOR: opening file: ',dataFName
-          length_of_rec=MDS_RECLEN( filePrec, narr )
+          write(msgbuf,'(a,a)')
+     &      ' MDSREADVECTOR: opening file: ',dataFName
+          call print_message( msgbuf, standardmessageunit,
+     &                        SQUEEZE_RIGHT , mythid)
+          length_of_rec=MDS_RECLEN( filePrec, narr, mythid )
           open( dUnit, file=dataFName, status='old',
      &        access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          else
           fileIsOpen=.FALSE.
-          stop 'MDSREADVECTOR: un-active tiles not implemented yet'
+          write(msgbuf,'(a)')
+     &      ' MDSREADVECTOR: un-active tiles not implemented yet'
+          call print_error( msgbuf, mythid )
+          stop 'ABNORMAL END: S/R MDSREADVECTOR'
          endif
         endif
         if (fileIsOpen) then
@@ -948,7 +1073,10 @@ C (This is a place-holder for the active/passive mechanism)
           elseif (filePrec .eq. precFloat64) then
            call MDS_READ_RL_VEC( dUnit, irec, narr, arr )
           else
-            stop 'MDSREADVECTOR: illegal value for filePrec'
+            write(msgbuf,'(a)')
+     &        ' MDSREADVECTOR: illegal value for filePrec'
+            call print_error( msgbuf, mythid )
+            stop 'ABNORMAL END: S/R MDSREADVECTOR'
           endif
           if (.NOT. globalFile) then
             close( dUnit )
@@ -956,8 +1084,8 @@ C (This is a place-holder for the active/passive mechanism)
           endif
         endif
 C End of bi,bj loops
-       enddo
-      enddo
+ce       enddo
+ce      enddo
 
 C If global file was opened then close it
       if (fileIsOpen .AND. globalFile) then
@@ -980,6 +1108,8 @@ C=======================================================================
      I   arrType,
      I   narr,
      I   arr,
+     I   bi,
+     I   bj,
      I   irecord,
      I   myIter,
      I   myThid )
@@ -991,6 +1121,8 @@ C globalFile	logical	selects between writing a global or tiled file
 C arrType	char(2)	declaration of "arr": either "RS" or "RL"
 C narr		integer	size of third dimension: normally either 1 or Nr
 C arr		RS/RL	array to write, arr(narr)
+ce bi           integer x tile index
+ce bj           integer y tile index
 C irecord	integer	record number to read
 C myIter	integer	time step number
 C myThid	integer thread identifier
@@ -998,6 +1130,8 @@ C
 C Created: 03/26/99 eckert@mit.edu
 C Modified: 03/29/99 adcroft@mit.edu + eckert@mit.edu
 C           Fixed to work work with _RS and _RL declarations
+C Modified: 07/27/99 eckert@mit.edu
+C           Customized  for state estimation (--> active_file_control.F)
 
       implicit none
 C Global variables / common blocks
@@ -1015,15 +1149,20 @@ C Routine arguments
       integer irecord
       integer myIter
       integer myThid
+ce
+      integer bi,bj
+ce
+
 C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
       character*(80) dataFName,metaFName
-      integer iG,jG,irec,bi,bj,dUnit,IL
+      integer iG,jG,irec,dUnit,IL
       logical fileIsOpen
       integer dimList(3,3),ndims
       integer length_of_rec
+      character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
 
 C Only do I/O if I am the master thread
@@ -1031,8 +1170,14 @@ C Only do I/O if I am the master thread
 
 C Record number must be >= 1
       if (irecord .LT. 1) then
-       write(0,'(a,i)') 'MDSWRITEVECTOR: argument irecord = ',irecord
-       stop 'MDSWRITEVECTOR: *ERROR* Invalid value for irecord'
+       write(msgbuf,'(a,i9.8)')
+     &   ' MDSWRITEVECTOR: argument irecord = ',irecord
+       call print_message( msgbuf, standardmessageunit,
+     &                     SQUEEZE_RIGHT , mythid)
+       write(msgbuf,'(a)')
+     &   ' MDSWRITEVECTOR: invalid value for irecord'
+       call print_error( msgbuf, mythid )
+       stop 'ABNORMAL END: S/R MDSWRITEVECTOR'
       endif
 
 C Assume nothing
@@ -1040,18 +1185,18 @@ C Assume nothing
       IL=ILNBLNK( fName )
 
 C Assign a free unit number as the I/O channel for this routine
-      call MDSFINDUNIT( dUnit )
+      call MDSFINDUNIT( dUnit, mythid )
 
 C If we are writing to a global file then we open it here
       if (globalFile) then
        write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
        if (irecord .EQ. 1) then
-        length_of_rec = MDS_RECLEN( filePrec, narr )
+        length_of_rec = MDS_RECLEN( filePrec, narr, mythid )
         open( dUnit, file=dataFName, status=_NEW_STATUS,
      &      access='direct', recl=length_of_rec )
         fileIsOpen=.TRUE.
        else
-        length_of_rec = MDS_RECLEN( filePrec, narr )
+        length_of_rec = MDS_RECLEN( filePrec, narr, mythid )
         open( dUnit, file=dataFName, status='old',
      &      access='direct', recl=length_of_rec )
         fileIsOpen=.TRUE.
@@ -1059,8 +1204,8 @@ C If we are writing to a global file then we open it here
       endif
 
 C Loop over all tiles
-      do bj=1,nSy
-       do bi=1,nSx
+ce      do bj=1,nSy
+ce       do bi=1,nSx
 C If we are writing to a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
@@ -1068,12 +1213,12 @@ C If we are writing to a tiled MDS file then we open each one here
          write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
-          length_of_rec = MDS_RECLEN( filePrec, narr )
+          length_of_rec = MDS_RECLEN( filePrec, narr, mythid )
           open( dUnit, file=dataFName, status=_NEW_STATUS,
      &       access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
          else
-          length_of_rec = MDS_RECLEN( filePrec, narr )
+          length_of_rec = MDS_RECLEN( filePrec, narr, mythid )
           open( dUnit, file=dataFName, status='old',
      &       access='direct', recl=length_of_rec )
           fileIsOpen=.TRUE.
@@ -1095,10 +1240,16 @@ C If we are writing to a tiled MDS file then we open each one here
           elseif (filePrec .eq. precFloat64) then
            call MDS_WRITE_RL_VEC( dUnit, irec, narr, arr )
           else
-            stop 'MDSWRITEVECTOR: illegal value for filePrec'
+           write(msgbuf,'(a)')
+     &       ' MDSWRITEVECTOR: illegal value for filePrec'
+           call print_error( msgbuf, mythid )
+           stop 'ABNORMAL END: S/R MDSWRITEVECTOR'
           endif
         else
-         stop 'MDSWRITEVECTOR: I should not ever get to this point'
+         write(msgbuf,'(a)')
+     &     ' MDSWRITEVECTOR: I should never get to this point'
+         call print_error( msgbuf, mythid )
+         stop 'ABNORMAL END: S/R MDSWRITEVECTOR'
         endif
 C If we were writing to a tiled MDS file then we close it here
         if (fileIsOpen .AND. (.NOT. globalFile)) then
@@ -1112,21 +1263,21 @@ C Create meta-file for each tile file
          write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
      &              fName(1:IL),'.',iG,'.',jG,'.meta'
          dimList(1,1) = nPx*nSx*narr
-         dimList(2,1) = (int(myXGlobalLo/sNx)+(bi-1))*narr
-         dimList(3,1) = (int(myXGlobalLo/sNx)+  bi  )*narr - 1
+         dimList(2,1) = ((myXGlobalLo-1)/sNx + (bi-1))*narr + 1
+         dimList(3,1) = ((myXGlobalLo-1)/sNx +   bi  )*narr
          dimList(1,2) = nPy*nSy
-         dimList(2,2) = int(myYGlobalLo/sNy) + bj - 1
-         dimList(3,2) = int(myYGlobalLo/sNy) + bj - 1
+         dimList(2,2) = (myYGlobalLo-1)/sNy + bj
+         dimList(3,2) = (myYGlobalLo-1)/sNy + bj
          dimList(1,3) = 1
          dimList(2,3) = 1
          dimList(3,3) = 1
          ndims=1
          call MDSWRITEMETA( metaFName, dataFName,
-     &     filePrec, ndims, dimList, irecord, myIter )
+     &     filePrec, ndims, dimList, irecord, myIter, mythid )
         endif
 C End of bi,bj loops
-       enddo
-      enddo
+ce       enddo
+ce      enddo
 
 C If global file was opened then close it
       if (fileIsOpen .AND. globalFile) then
@@ -1148,7 +1299,7 @@ C Create meta-file for global file
        dimList(3,3) = 1
        ndims=1
        call MDSWRITEMETA( metaFName, dataFName,
-     &   filePrec, ndims, dimList, irecord, myIter )
+     &   filePrec, ndims, dimList, irecord, myIter, mythid )
       endif
 
       _END_MASTER( myThid )
@@ -1158,24 +1309,33 @@ C     ------------------------------------------------------------------
 C=======================================================================
 
 C=======================================================================
-      subroutine MDS_WRITE_RS_VEC( dUnit, irec, narr, arr )
+      subroutine MDS_WRITE_RS_VEC( dUnit, irec, narr, arr, mythid )
 C IN:
 C   dunit	integer - 'Opened' I/O channel
 C   irec	integer - record number to write
 C   narr	integer - dimension off array "arr"
 C   arr		_RS     - model tiled vector
+C   mythid      integer - thread id
 C
 C Created: 03/29/99 eckert@mit.edu + adcroft@mit.edu
 
       implicit none
+
+#include "EEPARAMS.h"
+
 C Arguments
       integer dUnit
       integer irec
       integer narr
+      integer mythid
       _RS arr(narr)
 C Local
+      character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
-      write(0,*) 'MDS_WRITE_RS_VEC: irec=',irec,narr
+      write(msgbuf,'(a,i9.8,2x,i9.8)')
+     &  ' MDS_WRITE_RS_VEC: irec = ',irec,narr
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
       write(dUnit,rec=irec) arr
 C     ------------------------------------------------------------------
       return
@@ -1183,24 +1343,33 @@ C     ------------------------------------------------------------------
 C=======================================================================
 
 C=======================================================================
-      subroutine MDS_WRITE_RL_VEC( dUnit, irec, narr, arr )
+      subroutine MDS_WRITE_RL_VEC( dUnit, irec, narr, arr, mythid )
 C IN:
 C   dunit	integer - 'Opened' I/O channel
 C   irec	integer - record number to write
 C   narr	integer - dimension off array "arr"
 C   arr		_RL     - model tiled vector
+C   mythid      integer - thread id
 C
 C Created: 03/29/99 eckert@mit.edu + adcroft@mit.edu
 
       implicit none
+
+#include "EEPARAMS.h"
+
 C Arguments
       integer dUnit
       integer irec
       integer narr
+      integer mythid
       _RL arr(narr)
 C Local
+      character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
-      write(0,*) 'MDS_WRITE_RL_VEC: irec=',irec,narr
+      write(msgbuf,'(a,i9.8,2x,i9.8)')
+     &  ' MDS_WRITE_RL_VEC: irec = ',irec,narr
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
       write(dUnit,rec=irec) arr
 C     ------------------------------------------------------------------
       return
@@ -1208,24 +1377,34 @@ C     ------------------------------------------------------------------
 C=======================================================================
 
 C=======================================================================
-      subroutine MDS_READ_RS_VEC( dUnit, irec, narr, arr )
+      subroutine MDS_READ_RS_VEC( dUnit, irec, narr, arr, mythid )
 C IN:
 C   dunit	integer - 'Opened' I/O channel
 C   irec	integer - record number to write
 C   narr	integer - dimension off array "arr"
+C   mythid      integer - thread id
 C OUT:
 C   arr		_RS     - model tiled vector
 C
 C Created: 03/29/99 eckert@mit.edu + adcroft@mit.edu
 
       implicit none
+
+#include "EEPARAMS.h"
+
 C Arguments
       integer dUnit
       integer irec
       integer narr
       _RS arr(narr)
+      integer mythid
 C Local
+      character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
+      write(msgbuf,'(a,i9.8,2x,i9.8)')
+     &  ' MDS_READ_RS_VEC: irec = ',irec,narr
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
       read(dUnit,rec=irec) arr
 C     ------------------------------------------------------------------
       return
@@ -1233,24 +1412,34 @@ C     ------------------------------------------------------------------
 C=======================================================================
 
 C=======================================================================
-      subroutine MDS_READ_RL_VEC( dUnit, irec, narr, arr )
+      subroutine MDS_READ_RL_VEC( dUnit, irec, narr, arr, mythid )
 C IN:
 C   dunit	integer - 'Opened' I/O channel
 C   irec	integer - record number to write
 C   narr	integer - dimension off array "arr"
+C   mythid      integer - thread id
 C OUT:
 C   arr		_RL     - model tiled vector
 C
 C Created: 03/29/99 eckert@mit.edu + adcroft@mit.edu
 
       implicit none
+
+#include "EEPARAMS.h"
+
 C Arguments
       integer dUnit
       integer irec
       integer narr
       _RL arr(narr)
+      integer mythid
 C Local
+      character*(max_len_mbuf) msgbuf
 C     ------------------------------------------------------------------
+      write(msgbuf,'(a,i9.8,2x,i9.8)')
+     &  ' MDS_READ_RL_VEC: irec = ',irec,narr
+      call print_message( msgbuf, standardmessageunit,
+     &                    SQUEEZE_RIGHT , mythid)
       read(dUnit,rec=irec) arr
 C     ------------------------------------------------------------------
       return
@@ -1324,3 +1513,4 @@ C     ------------------------------------------------------------------
       end
 C=======================================================================
 #endif
+
