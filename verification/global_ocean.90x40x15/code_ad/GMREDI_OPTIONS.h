@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/GMREDI_OPTIONS.h,v 1.5 2003/01/13 19:41:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad/GMREDI_OPTIONS.h,v 1.6 2003/01/21 19:37:33 heimbach Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -18,7 +18,7 @@ C  exclude the clipping/tapering part of the code that is not used
 #undef  GM_EXCLUDE_TAPERING 
  
 C This allows to use Visbeck et al formulation to compute K_GM+Redi
-#define GM_VISBECK_VARIABLE_K
+#undef GM_VISBECK_VARIABLE_K
 
 C This allows the leading diagonal (top two rows) to be non-unity
 C (a feature required when tapering adiabatically).
