@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_diags.F,v 1.3 2001/02/04 14:38:49 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_diags.F,v 1.4 2001/02/15 18:43:13 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -41,9 +41,7 @@ C     == Local variables ==
 
 
 C     Dump files and restart average computation if needed
-      IF ( myIter.NE.nIter0 .AND. 
-     &     DIFFERENT_MULTIPLE(taveFreq,myTime,
-     &     myTime-deltaTClock)
+      IF ( DIFFERENT_MULTIPLE(taveFreq,myTime,myTime-deltaTClock)
      &     ) THEN
          
 C      Normalize by integrated time
@@ -66,11 +64,11 @@ C      Normalize by integrated time
          
        WRITE(suff,'(I10.10)') myIter
 
-       CALL WRITE_FLD_XYZ_RL('GM_Kwx-T',suff,GM_Kwx_T,myIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('GM_Kwy-T',suff,GM_Kwy_T,myIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('GM_Kwz-T',suff,GM_Kwz_T,myIter,myThid)
+       CALL WRITE_FLD_XYZ_RL('GM_Kwx-T.',suff,GM_Kwx_T,myIter,myThid)
+       CALL WRITE_FLD_XYZ_RL('GM_Kwy-T.',suff,GM_Kwy_T,myIter,myThid)
+       CALL WRITE_FLD_XYZ_RL('GM_Kwz-T.',suff,GM_Kwz_T,myIter,myThid)
 #ifdef GM_VISBECK_VARIABLE_K
-       CALL WRITE_FLD_XY_RL('Visbeck_K-T',suff,Visbeck_K_T,
+       CALL WRITE_FLD_XY_RL('Visbeck_K-T.',suff,Visbeck_K_T,
      &                        myIter,myThid)
 #endif
          
