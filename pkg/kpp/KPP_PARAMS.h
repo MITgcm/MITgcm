@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.3 2000/09/12 18:13:48 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/KPP_PARAMS.h,v 1.4 2000/09/13 17:07:11 heimbach Exp $
 
 C     /==========================================================\
 C     | KPP_PARAMS.h                                             |
@@ -25,10 +25,6 @@ C     Nrm1, Nrp1, Nrp2 = number of vertical levels
       parameter (Nrp2  = Nr+2)
 
 #ifdef ALLOW_KPP
-
-C     Package on/off information
-      LOGICAL kppPackageIsOn
-      COMMON /KPP_PKG/ kppPackageIsOn
 
 C Time invariant parameters initialized by subroutine kmixinit
 C     nzmax (nx,ny)   - Maximum number of wet levels in each column

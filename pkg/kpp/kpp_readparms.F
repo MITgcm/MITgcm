@@ -47,8 +47,6 @@ C--   KPP vertical mixing parameters
      & difmcon, difscon, diftcon,
      & cstar
 
-      kppPackageIsOn = .TRUE.
-
       _BEGIN_MASTER(myThid)
 
       WRITE(msgBuf,'(A)') ' KPP_INIT: opening data.kpp'
