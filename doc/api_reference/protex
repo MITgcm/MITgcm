@@ -1,6 +1,6 @@
 #! /usr/bin/env perl
 #
-#  $Id: protex,v 1.3 2004/03/29 03:33:51 edhill Exp $
+#  $Id: protex,v 1.4 2004/04/01 04:23:33 edhill Exp $
 #
 #BOP
 #
@@ -569,7 +569,7 @@ $begdoc = 0;            # has \begin{document} been written?
 		if ($prologue) {
 		    if ($verb) {
 			&end_verbatim();
-			printf "\n{\\sf DESCRIPTION:\\\\ }\n\n";
+			printf "\n{\\sf DESCRIPTION: }\n\\medskip\n";
 		    }
 		    else {                          # probably never occurs
 		    }
@@ -597,19 +597,14 @@ $begdoc = 0;            # has \begin{document} been written?
 			    &end_verbatim();
 			}
 			else {
-			    printf "\n\\bigskip";
+			    printf "\n\\medskip\n";
 			}
 			$k = sprintf('%s', $key);
 			$ln = length($k);
 			###printf "\\subsubsection*{%s}\n", substr($k, 2, $ln - 1);
 			###printf "{\\Large \\em %s}\n", ucfirst lc substr($k, 2, $ln - 1);
 			$_ = $key;
-			if( /USES/ || /INPUT/ || /OUTPUT/ || /PARAMETERS/ || 
-			    /VALUE/  || /ARGUMENTS/ ) {
-			    printf "{\\em %s}\n", substr($k, 2, $ln - 1); } # italics
-			else {
-			    printf "{\\sf %s}\n", substr($k, 2, $ln - 1); # san serif
-			}
+			printf "{\\sf %s}\n", substr($k, 2, $ln - 1); # san serif
 			&begin_verbatim();
 			$first_verb = 1;
 			if ( $key eq "!INTERFACE:" )        { $have_intf = 1; }
@@ -716,7 +711,7 @@ unless ( $opt_b ) {
 
 sub begin_verbatim
 {
-    printf "\n{\\small \\begin{verbatim} ";
+    printf "\n{\\footnotesize \\begin{verbatim} ";
     $verb = 1;
     return 0;
 }

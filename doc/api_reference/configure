@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.3 2004/03/28 19:28:34 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.4 2004/04/01 04:23:33 edhill Exp $
 #
 #  A script to generate the Makefile for the API Reference
 
@@ -30,7 +30,7 @@ cat <<EOF > Makefile
 all: all_protex
 
 clean:
-	-rm -f *.tex *.aux *.dvi *.log *.toc *.out
+	-rm -f *_*.tex *.aux *.dvi *.log *.toc *.out
 
 EOF
 
@@ -117,7 +117,7 @@ cat <<EOF >> Makefile
 makefile:
 	$0
 
-api_main.tex: \$(ALLTEX)
+api_main.tex: introduction.tex \$(ALLTEX)
 	-./build_main \$(ALLTEX)
 
 api_main.dvi:  api_main.tex
