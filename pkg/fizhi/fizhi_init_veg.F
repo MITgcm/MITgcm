@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.12 2004/07/13 21:11:08 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.13 2004/07/20 16:24:49 molod Exp $
 C $Name:  $
 
       subroutine fizhi_init_veg(mythid,vegdata,im,jm,Nsx,Nsy,Nxg,Nyg,
@@ -50,6 +50,7 @@ C                 10:  DARK DESERT
 C                100:  OCEAN
 C***********************************************************************
       implicit none
+#include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 #include "EEPARAMS.h"
 
@@ -104,7 +105,9 @@ C***********************************************************************
 
       biglobal=bi+(myXGlobalLo-1)/im
       bjglobal=bj+(myYGlobalLo-1)/jm
-                                                                                 
+#ifdef _BYTESWAPIO
+      call MDS_BYTESWAPR4(im*jm*maxtyp,veg_32(1,1,1,biglobal,bjglobal))
+#endif
       do k = 1,maxtyp
       do j = 1,jm
       do i = 1,im

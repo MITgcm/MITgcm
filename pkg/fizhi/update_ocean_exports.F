@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.11 2004/07/19 22:06:59 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.12 2004/07/20 16:24:49 molod Exp $
 C $Name:  $
 
        subroutine update_ocean_exports (myTime, myIter, myThid)
@@ -570,6 +570,7 @@ C!      field2(im,jm,nPx,nPy)  data field after the model time
 C
 C--------------------------------------------------------------------------
       implicit none
+#include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 
       integer iunit,im,jm,nPx,nPy,nrec1,nrec2
@@ -586,6 +587,10 @@ C--------- Read file -----------------------------------------------
 
       do n2=1,nPy
       do n1=1,nPx
+#ifdef _BYTESWAPIO
+      call MDS_BYTESWAPR4( im*jm, f1(1,1,n1,n2))
+      call MDS_BYTESWAPR4( im*jm, f2(1,1,n1,n2))
+#endif
       do j=1,jm
       do i=1,im
        field1(i,j,n1,n2) = f1(i,j,n1,n2)
@@ -627,6 +632,7 @@ C!      error         logical TRUE if dataset problem
 C
 C--------------------------------------------------------------------------
       implicit none
+#include "PACKAGES_CONFIG.h"
 #include "CPP_EEOPTIONS.h"
 
       integer iunit, ndmax, nrec
@@ -648,6 +654,11 @@ C--------- Read file -----------------------------------------------
      .     im_32, jm_32, npx_32, npy_32, lat0_32, lon0_32, 
      .     ndatebc_32, undef_32,
      .     (nymdbc_32(i), nhmsbc_32(i), i=1,ndatebc_32)
+#ifdef _BYTESWAPIO
+      call MDS_BYTESWAPR4( 1, lat0_32)
+      call MDS_BYTESWAPR4( 1, lon0_32)
+      call MDS_BYTESWAPR4( 1, undef_32)
+#endif
 
       im = im_32
       jm = jm_32
