@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.2 2004/10/11 16:38:53 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.3 2004/12/09 15:35:51 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -283,7 +283,7 @@ c--       is no need to add the zonal and meridional directions.
      defined (ALLOW_CTDSCLIM_COST_CONTRIBUTION))
 
       if ( salterrfile .NE. ' ' ) then
-         call mdsreadfield( salterrfile, 32, 'RL', 1, wsalt2, 1,
+         call mdsreadfield( salterrfile, 32, 'RL', Nr, wsalt2, 1,
      &                      mythid)
 
          do bj = jtlo,jthi
@@ -328,7 +328,7 @@ c--           Test for missing values.
      defined (ALLOW_XBT_COST_CONTRIBUTION))
 
       if ( temperrfile .NE. ' ' ) then
-         call mdsreadfield( temperrfile, 32, 'RL', 1, wtheta2, 1,
+         call mdsreadfield( temperrfile, 32, 'RL', Nr, wtheta2, 1,
      &                      mythid)
          do bj = jtlo,jthi
           do bi = itlo,ithi
