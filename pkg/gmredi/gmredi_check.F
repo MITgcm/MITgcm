@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.8 2003/01/13 19:02:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_check.F,v 1.9 2003/10/09 04:19:19 edhill Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "GMREDI_OPTIONS.h"
 
       SUBROUTINE GMREDI_CHECK( myThid )
 C     /==========================================================\

@@ -1,7 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.18 2003/04/17 13:40:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.19 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+
 CBOP
 C     !ROUTINE: CALC_DIV_GHAT
 C     !INTERFACE:

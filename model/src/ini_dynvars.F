@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.9 2003/04/17 13:36:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_dynvars.F,v 1.10 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -74,6 +75,7 @@ C-      3D arrays
 #endif
 
 #ifdef ALLOW_NONHYDROSTATIC
+ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
            gW(I,J,K,bi,bj)=0. _d 0
            gWnm1(I,J,K,bi,bj)=0. _d 0
 #endif

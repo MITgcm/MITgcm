@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/dummy_in_stepping.F,v 1.1 2001/03/25 22:33:54 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/dummy_in_stepping.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
 
-#include "CPP_OPTIONS.h"
+#include "AUTODIFF_OPTIONS.h"
 
       subroutine dummy_in_stepping( mytime, myiter, myThid )
       IMPLICIT NONE

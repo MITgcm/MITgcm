@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_stats_rs.F,v 1.2 2002/02/15 21:25:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_stats_rs.F,v 1.3 2003/10/09 04:19:19 edhill Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "DEBUG_OPTIONS.h"
 
       SUBROUTINE DEBUG_STATS_RS(
      I                myNr, arr, arrName,

@@ -1,47 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/CPP_OPTIONS.h,v 1.1 2003/10/03 15:54:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/CPP_OPTIONS.h,v 1.2 2003/10/09 04:19:30 edhill Exp $
 C $Name:  $
 
 C 
 C CPP flags controlling which code in included in the files that
 C will be compiled.
 C
-
-C o Include/exclude code for AIM package
-#undef  ALLOW_AIM
-
-C o Include/exclude code for GM/Redi parameterization
-#define ALLOW_GMREDI
-
-C o Include/exclude code for KPP mixing scheme
-#undef  ALLOW_KPP
-
-C o Shortwave heating as extra term in external_forcing.F
-#ifdef ALLOW_KPP
-#define  SHORTWAVE_HEATING
-#endif
-
-C o Include/exclude code for bulk formula
-#define ALLOW_BULK_FORCE
-#ifdef ALLOW_BULK_FORCE
-C o allow thermo-seaice
-#define ALLOW_THERM_SEAICE
-#endif
-
-C o Include/exclude code for Shapiro filters
-#undef  ALLOW_SHAP_FILT
-
-C o Include/exclude code for C-D grid method of integrating the 
-C   coriolis terms
-#undef  INCLUDE_CD_CODE
-
-C o Include/exclude code for open-boundary conditions
-#undef  ALLOW_OBCS
-
-C o Include/exclude diagnostics package interface code
-#define ALLOW_TIMEAVE
-
-C o Include/exclude zonal FFT filter code
-#undef  ALLOW_ZONAL_FILT
 
 C o Include/exclude temperature advection code
 #define  INCLUDE_T_ADVECTION_CODE
@@ -116,9 +79,6 @@ C o Include/exclude call to S/R CONVECT
 
 C o Include/exclude call to S/R CALC_DIFFUSIVITY
 #define INCLUDE_CALC_DIFFUSIVITY_CALL
-
-C o Allow nonHydrostatic code
-#undef  ALLOW_NONHYDROSTATIC
 
 C o Use "Exact Convervation" of fluid in Free-Surface formulation
 C   so that d/dt(eta) is exactly equal to - Div.Transport

@@ -1,6 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/THE_MODEL_COMMON_BLOCKS.h,v 1.6 2001/03/06 17:27:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/THE_MODEL_COMMON_BLOCKS.h,v 1.7 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
-C
+
+#include "PACKAGES_CONFIG.h"
+
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"

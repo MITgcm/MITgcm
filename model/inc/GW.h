@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/Attic/GW.h,v 1.4 2001/09/21 15:13:31 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/Attic/GW.h,v 1.5 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
+
+#include "PACKAGES_CONFIG.h"
 
 #ifdef ALLOW_NONHYDROSTATIC
 CBOP

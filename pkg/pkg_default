@@ -1,4 +1,6 @@
 #
+# $Header: /u/gcmpack/MITgcm/pkg/Attic/pkg_default,v 1.2 2003/10/09 04:19:18 edhill Exp $
+#
 #  This is the list of packages that genmake will, by default, add to MITgcm.
 #
 #  To override this list, please specify a different file to genmake using, for 
@@ -10,18 +12,6 @@
 
 # JMC says that aim, aim_v23, land should be off by default
 # bulk_forcing
-debug
-generic_advdiff
-gmredi
-kpp
-mdsio
-mom_fluxform
-mom_vecinv
-monitor
-obcs
-rw
-sbo
-shap_filt
-timeave
-zonal_filt
+
+oceanic
 

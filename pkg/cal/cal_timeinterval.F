@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_timeinterval.F,v 1.2 2003/10/07 16:35:04 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_timeinterval.F,v 1.3 2003/10/09 04:19:19 edhill Exp $
+C $Name:  $
 
-#include "CAL_CPPOPTIONS.h"
+#include "CAL_OPTIONS.h"
 
       subroutine cal_TimeInterval(
      I                             timeint,

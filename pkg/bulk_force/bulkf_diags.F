@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_diags.F,v 1.4 2002/12/11 14:23:35 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_diags.F,v 1.5 2003/10/09 04:19:19 edhill Exp $
 C $Name:  $
 cswdblk modified for bulk formula -- Dec 01
 
-#include "CPP_OPTIONS.h"
+#include "BULK_FORCE_OPTIONS.h"
 
 CStartOfInterface
       SUBROUTINE BULKF_DIAGS( myTime, myIter, myThid )

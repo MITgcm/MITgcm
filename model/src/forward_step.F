@@ -1,7 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.63 2003/10/07 04:31:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.64 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+
 cswdptr -- add --
 #ifdef ALLOW_GCHEM
 # include "GCHEM_OPTIONS.h"
@@ -147,8 +149,8 @@ c**************************************
 
 C--   Call external forcing package
 #ifdef ALLOW_BULK_FORCE
-#ifndef DISABLE_DEBUGMODE
       IF ( useBulkforce ) THEN
+#ifndef DISABLE_DEBUGMODE
        IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('BULKF_FIELDS_LOAD',myThid)
 #endif
@@ -170,7 +172,7 @@ C       _EXCH_XY_R8(fv     , mythid)
       ELSE
 #endif /* ALLOW_BULK_FORCE */
 
-# ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+# ifdef ALLOW_EXF
 C     NOTE, that although the exf package is part of the
 C     distribution, it is not currently maintained, i.e.
 C     exf is disabled by default in genmake.
@@ -181,7 +183,7 @@ C     exf is disabled by default in genmake.
       CALL TIMER_START('EXF_GETFORCING     [FORWARD_STEP]',mythid)
       CALL EXF_GETFORCING( mytime, myiter, mythid )
       CALL TIMER_STOP ('EXF_GETFORCING     [FORWARD_STEP]',mythid)
-# else /* INCLUDE_EXTERNAL_FORCING_PACKAGE undef */
+# else /* ALLOW_EXF undef */
 cph The following IF-statement creates an additional dependency
 cph for the forcing fields requiring additional storing.
 cph Therefore, the IF-statement will be put between CPP-OPTIONS,
@@ -199,7 +201,7 @@ cph assuming that ALLOW_SEAICE has not yet been differentiated.
 #  ifdef ALLOW_SEAICE
       ENDIF
 #  endif
-# endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
+# endif /* ALLOW_EXF */
 #ifdef ALLOW_BULK_FORCE
 C--   end of if/else block useBulfforce --
       ENDIF
@@ -400,10 +402,12 @@ C--   Do "blocking" sends and receives for field "overlap" terms
 cswdptr -- add for seperate timestepping of chemical/biological/forcing
 cswdptr    of ptracers ---
 #ifdef ALLOW_GCHEM
+ceh3 This is broken -- this ifdef should not be visible!
 #ifdef PTRACERS_SEPARATE_FORCING
+ceh3 needs an IF ( use GCHEM ) THEN
         call GCHEM_FORCING_SEP( myTime,myIter,myThid )
-#endif
-#endif
+#endif /* PTRACERS_SEPARATE_FORCING */
+#endif /* ALLOW_GCHEM */
 cswdptr -- end add ---
 
 

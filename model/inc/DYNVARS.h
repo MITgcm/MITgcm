@@ -1,5 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.21 2003/04/17 13:12:41 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.22 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
+
+#include "PACKAGES_CONFIG.h"
+
 CBOP
 C     !ROUTINE: DYNVARS.h
 C     !INTERFACE:

@@ -1,6 +1,6 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.16 2003/08/07 02:31:29 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.17 2003/10/09 04:19:19 edhill Exp $
 
-#include "EXF_CPPOPTIONS.h"
+#include "EXF_OPTIONS.h"
 
       subroutine exf_getffields( mycurrenttime, mycurrentiter, mythid )
 

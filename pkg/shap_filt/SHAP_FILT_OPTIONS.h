@@ -1,7 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/SHAP_FILT_OPTIONS.h,v 1.4 2002/03/04 01:31:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/SHAP_FILT_OPTIONS.h,v 1.5 2003/10/09 04:19:20 edhill Exp $
 C $Name:  $
 
 C Header file for package pkg/shap_filt
+
+#ifndef SHAP_FILT_OPTIONS_H
+#define SHAP_FILT_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#ifdef ALLOW_SHAP_FILT
 
 #include "CPP_OPTIONS.h"
 
@@ -26,3 +31,5 @@ C   it is replaced by parameter "Shap_noSlip=1." in new S/R.
 #undef  NO_SLIP_SHAP
 #endif
 
+#endif /* ALLOW_SHAP_FILT */
+#endif /* SHAP_FILT_OPTIONS_H */

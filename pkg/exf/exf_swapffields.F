@@ -1,6 +1,6 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_swapffields.F,v 1.3 2002/11/12 20:34:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_swapffields.F,v 1.4 2003/10/09 04:19:19 edhill Exp $
 
-#include "EXF_CPPOPTIONS.h"
+#include "EXF_OPTIONS.h"
 
 
       subroutine exf_SwapFFields(

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.38 2003/07/08 15:00:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.39 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -125,7 +126,7 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
         ELSEIF ( exactConserv ) THEN
 #else
         IF ( exactConserv ) THEN
-#endif
+#endif /* ALLOW_NONHYDROSTATIC */
          DO j=1,sNy
           DO i=1,sNx
            cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)

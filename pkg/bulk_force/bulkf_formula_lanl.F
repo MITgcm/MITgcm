@@ -1,7 +1,9 @@
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_formula_lanl.F,v 1.3 2003/10/09 04:19:19 edhill Exp $
+C $Name:  $
 c swd -- bulkf formula used in bulkf and ice pkgs
 
 c taken from exf package 
-#include "CPP_OPTIONS.h"
+#include "BULK_FORCE_OPTIONS.h"
       subroutine bulkf_formula_lanl(
      I                           uw, vw, us, Ta, Qa, nc, tsf_in,
      I                           flwupa, flha, fsha, df0dT,

@@ -1,5 +1,6 @@
-cswdptr -- added routine ---
-#include "CPP_OPTIONS.h"
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_statvars.F,v 1.3 2003/10/09 04:19:20 edhill Exp $
+C $Name:  $
+
 #include "PTRACERS_OPTIONS.h"
 #ifdef ALLOW_GCHEM
 # include "GCHEM_OPTIONS.h"
@@ -75,11 +76,8 @@ C-    Keep record of how much time has been integrated over
         ptracer_half(k,bi,bj)=ptracer_half(k,bi,bj)+DDTT
       ENDDO
 
-
-
-
 #endif /* ALLOW_TIMEAVE */ 
-#endif
+#endif /* ALLOW_PTRACERS */
 
       RETURN
       END

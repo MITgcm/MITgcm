@@ -4,9 +4,9 @@ Online computation of angular momentume terms
 Subdirectory pkg/sbo contains a small diagnostic package that computes IERS
 Special Bureau for the Oceans (SBO) core products, including oceanic mass,
 center-of-mass, angular, and bottom pressure.  The package is enabled by
-setting "#define ALLOW_SBO" in CPP_OPTIONS.h at compile time and
-"useSBO=.TRUE." in data.pkg during model execution.  There are two separate
-output products, SBO_DIAG.* and OBPtave*, which are described below.
+adding sbo to packages.conf and "useSBO=.TRUE." in data.pkg during model
+execution.  There are two separate output products, SBO_DIAG.* and
+OBPtave*, which are described below.
 
 ===========
 

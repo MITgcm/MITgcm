@@ -1,5 +1,7 @@
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_set.F,v 1.4 2003/10/09 04:19:19 edhill Exp $
+C $Name:  $
 
-#include "CAL_CPPOPTIONS.h"
+#include "CAL_OPTIONS.h"
 
       subroutine cal_Set(
      I                    modstart,

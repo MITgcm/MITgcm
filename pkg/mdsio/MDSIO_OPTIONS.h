@@ -1,5 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_OPTIONS.h,v 1.2 2001/09/27 18:07:56 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/MDSIO_OPTIONS.h,v 1.3 2003/10/09 04:19:19 edhill Exp $
 C $Name:  $
+
+#ifndef MDSIO_OPTIONS_H
+#define MDSIO_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#ifdef ALLOW_MDSIO
 
 #include "CPP_OPTIONS.h"
 
@@ -19,3 +24,6 @@ C Defining SAFE_IO stops the model from overwriting its own files
 #undef  ALLOW_BROKEN_MDSIO_GL
 #define _OLD_STATUS 'old'
 #endif
+
+#endif /* ALLOW_MDSIO */
+#endif /* MDSIO_OPTIONS_H */

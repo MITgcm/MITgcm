@@ -6,7 +6,7 @@ c modified to use with c44 and ptracers: swd May 2002
 c modified to have carbonate and biological influences: swd June 2002
 C
 
-#include "CPP_OPTIONS.h"
+#include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
 CStartOfInterFace

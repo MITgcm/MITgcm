@@ -1,4 +1,4 @@
-#include "EXF_CPPOPTIONS.h"
+#include "EXF_OPTIONS.h"
 
       subroutine exf_set_obcs_xz ( 
      &       obcs_fld_xz, obcs_xz_0, obcs_xz_1

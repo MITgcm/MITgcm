@@ -1,4 +1,4 @@
-#include "CPP_OPTIONS.h"
+#include "DIC_OPTIONS.h"
 
 CStartOfInterFace
       SUBROUTINE CAR_FLUX( bioac, cflux,

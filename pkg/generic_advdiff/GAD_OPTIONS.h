@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.4 2001/09/28 03:36:16 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD_OPTIONS.h,v 1.5 2003/10/09 04:19:19 edhill Exp $
 C $Name:  $
 
 CBOP
@@ -14,13 +14,13 @@ CEOP
 C CPP options file for GAD (Generic Advection Diffusion) package
 C
 C Use this file for selecting options within the GAD package
-C
-C GAD is enabled with ALLOW_GAD in CPP_OPTIONS.h
+
+#ifndef GAD_OPTIONS_H
+#define GAD_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
+#ifndef DISABLE_GENERIC_ADVDIFF
 
 #include "CPP_OPTIONS.h"
-
-#ifndef __GAD_OPTIONS
-#ifndef DISABLE_GENERIC_ADVDIFF
 
 C The selects the form of COSINE(lat) scaling of bi-harmonic term.
 C *only for use on a lat-lon grid*
@@ -41,5 +41,4 @@ C If GAD is disabled then so is multi-dimensional advection
 #define DISABLE_MULTIDIM_ADVECTION
 
 #endif /* DISABLE_GENERIC_ADVDIFF */
-#define __GAD_OPTIONS
-#endif /* __GAD_OPTIONS */
+#endif /* GAD_OPTIONS_H */

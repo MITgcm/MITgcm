@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.13 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.14 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -37,6 +37,7 @@ C     myThid - Thread no. that called this routine.
       INTEGER myThid
 
 #ifdef ALLOW_NONHYDROSTATIC
+ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
 
 C     !LOCAL VARIABLES:
 C     === Local variables ===
@@ -111,6 +112,7 @@ caja &     +drF(K-1)*_hFacC(i,j,k-1,bi,bj)*0.5
          ENDDO
         ENDDO
 #ifdef ALLOW_OBCS
+ceh3 needs an IF ( useOBCS ) THEN
         DO K=1,Nr
          IF (useOBCS) THEN
           DO I=1,sNx

@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_enter.F,v 1.1 2003/05/13 17:42:00 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_enter.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "DEBUG_OPTIONS.h"
 
       SUBROUTINE DEBUG_ENTER(
      I                text,

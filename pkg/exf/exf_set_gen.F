@@ -1,4 +1,4 @@
-#include "EXF_CPPOPTIONS.h"
+#include "EXF_OPTIONS.h"
 
       subroutine exf_set_gen( 
      &     genfile, genstartdate, genperiod, exf_inscal_gen,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.32 2003/04/17 13:41:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.33 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -155,6 +155,7 @@ C-     for CD-scheme, compute gU,Vtmp = gU,V^n + forcing
       ENDIF
 
 #ifdef INCLUDE_CD_CODE
+#ifdef ALLOW_MOM_FLUXFORM
       IF (useCDscheme) THEN
 C-     Step forward D-grid velocity using C-grid gU,Vtmp = gU,V^n + forcing
 C      and return coriolis terms on C-grid (guCor,gvCor)
@@ -171,6 +172,7 @@ C      and return coriolis terms on C-grid (guCor,gvCor)
          ENDDO
         ENDDO
       ENDIF
+#endif /* ALLOW_MOM_FLUXFORM */
 #endif /* INCLUDE_CD_CODE */
 
 #ifdef NONLIN_FRSURF

@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.9 2003/09/16 18:16:03 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.10 2003/10/09 04:19:20 edhill Exp $
 #
 
 usage()
@@ -11,6 +11,7 @@ usage()
     echo "where possible OPTIONS are:"
     echo "  (-help|-h)               print usage"
     echo "  (-mpi)                   use MPI input files"
+    echo "  (-ieee|-noieee)          if possible, use IEEE compiler flags"
     echo "  (-optfile=|-of=)STRING   list of optfiles to use"
     echo "  (-a|-addr)STRING         list of email recipients"
     echo "                             (DEF=\"edhill@mitgcm.org\")"
@@ -18,10 +19,15 @@ usage()
     echo "                             (DEF=\"\" which builds all)"
     echo "  (-b|-bash)STRING         location of \"bash\" executable"
     echo "                             (DEF=\"\" for \"/bin/bash\")"
-    echo "  (-c|-command)STRING      command to run"
+    echo "  (-command)STRING         command to run"
     echo "                             (DEF=\"make output.txt\")"
     echo "  (-m|-make)STRING         command to use for \"make\""
     echo "                             (DEF=\"make\")"
+    echo "  (-clean)                 *ONLY* run \"make CLEAN\""
+    echo "  (-quick|-q)              same as \"-nogenmake -noclean -nodepend\""
+    echo "  (-nogenmake|-ng)         skip the genmake stage"
+    echo "  (-noclean|-nc)           skip the \"make clean\" stage"
+    echo "  (-nodepend|-nd)          skip the \"make depend\" stage"
     echo
     echo "and where STRING follows a whitespace-delimited format"
     echo "such as:"
@@ -174,70 +180,90 @@ testoutput()
 genmakemodel()
 {
     # genmakemodel directory
-    GENMAKE2="$BASH ../../../tools/genmake2"
-    (
-	cd $1;
-	printf 'genmake ... ' 1>&2
-        # ../../../tools/genmake -ieee -mods=../code > make.log 2>&1
-	$GENMAKE2  -ds -m $MAKE --mods=../code "--optfile="$OPTFILE > make.log 2>&1
-	RETVAL=$?
-	for i in gm_state gm_optfile gm_local Makefile ; do
-	    if test -r $i ; then
-		cp $i $CDIR
+    if test "x$NOGENMAKE" = xt ; then
+	echo "genmake skipped!"
+    else
+	GENMAKE2="$BASH ../../../tools/genmake2"
+	(
+	    cd $1;
+	    command="$GENMAKE2  -ds -m $MAKE --mods=../code"
+	    if test "x$OPTFILE" != xNONE ; then
+		command="$command --optfile=$OPTFILE"
+		# echo "  command=\"$command\""
 	    fi
-	done
-	if test "x$RETVAL" != x0 ; then
-	    tail make.log
-	    echo "genmakemodel: genmake failed" 1>&2
-	    cp make.log $CDIR
-	    return 1
-	else
-	    echo "succesful" 1>&2
-	fi
-    )
+	    if test "x$IEEE" != x ; then
+		command="$command -ieee"
+	    fi
+	    # echo "command: \"$command\""
+	    printf 'genmake ... ' 1>&2
+	    $command > make.log 2>&1
+	    RETVAL=$?
+	    for i in genmake_state genmake_optfile genmake_local Makefile ; do
+		if test -r $i ; then
+		    cp $i $CDIR
+		fi
+	    done
+	    if test "x$RETVAL" != x0 ; then
+		tail make.log
+		echo "genmakemodel: genmake failed" 1>&2
+		cp make.log $CDIR
+		return 1
+	    else
+		echo "succesful" 1>&2
+	    fi
+	)
+    fi
 }
 
 makeclean()
 {
     # makeclean directory
-    (
-	cd $1;
-	if test -e output.txt ; then
-	    rm -f output.txt
-	fi
-	printf 'make CLEAN ... ' 2>&1
-	if test -r Makefile ; then
-	    $MAKE CLEAN >> make.log 2>&1
-	    RETVAL=$?
-	    if test "x$RETVAL" != x0 ; then
-		tail make.log
-		echo "makeclean: \"make CLEAN\" failed" 1>&2
-		cp make.log $CDIR"/make.log"
-		return 1
+    if test "x$NOCLEAN" = xt ; then
+	echo "make CLEAN skipped!"
+    else
+	(
+	    cd $1;
+	    if test -e output.txt ; then
+		rm -f output.txt
 	    fi
-	fi
-	echo succesful 1>&2
-	exit 0
-    )
+	    printf 'make CLEAN ... ' 2>&1
+	    if test -r Makefile ; then
+		$MAKE CLEAN >> make.log 2>&1
+		RETVAL=$?
+		if test "x$RETVAL" != x0 ; then
+		    tail make.log
+		    echo "makeclean: \"make CLEAN\" failed" 1>&2
+		    cp make.log $CDIR"/make.log"
+		    return 1
+		fi
+	    fi
+	    echo succesful 1>&2
+	    exit 0
+	)
+    fi
 }
 
 makedependmodel()
 {
     # makedependmodel directory
-    (
-	cd $1;
-	printf 'make depend ... ' 1>&2
-	$MAKE depend >> make.log 2>&1
-	RETVAL=$?
-	if test "x$RETVAL" != x0 ; then
-	    tail make.log
-	    echo "makedependmodel: make depend failed" 1>&2
-	    cp make.log $CDIR"/make.log"
-	    return 1
-	else
-	    echo succesful 1>&2
-	fi
-    )
+    if test "x$NODEPEND" = xt ; then
+	echo "make depend skipped!"
+    else
+	(
+	    cd $1;
+	    printf 'make depend ... ' 1>&2
+	    $MAKE depend >> make.log 2>&1
+	    RETVAL=$?
+	    if test "x$RETVAL" != x0 ; then
+		tail make.log
+		echo "makedependmodel: make depend failed" 1>&2
+		cp make.log $CDIR"/make.log"
+		return 1
+	    else
+		echo succesful 1>&2
+	    fi
+	)
+    fi
 }
 
 makemodel()
@@ -360,14 +386,13 @@ show_help()
 {
     cat - << EOF
 $0 [-help] [-quick] [-verbose] dir1 [dir2] [...]
- -help      Show this help message
- -quick     Skip "genmake" and "make depend" if the Makefile exists
+
+ -help|-h      Show this help message
  -quiet     Reduce the amount of output
  -verbose   Produce copious amounts of output
  -debug     Produce even more output which will mean nothing to most
  -force     Do "make CLEAN" before compiling. This forces a complete rebuild.
  -clean     Do "make CLEAN" after compiling and testing.
- -noieee    By default, $0 uses the -ieee option for genmake. This turns it off.
  -cleanup   Aggresively removes all model output, executables and object files
             and then exits. Use with care.
 
@@ -399,11 +424,22 @@ verbose=1
 clean=0
 expts=''
 # ieee=1
-# quick=0
+
+IEEE=
+if test "x$MITGCM_IEEE" != x ; then
+    IEEE=$MITGCM_IEEE
+fi
+
+
+CLEANUP=f
+QUICK=f
+NOGENMAKE=f
+NOCLEAN=f
+NODEPEND=f
 
 BASH=
-OPTFILES=
-ADDRESSES=edhill@mitgcm.org
+OPTFILE=NONE
+ADDRESSES=
 TESTDIRS=
 MPACKDIR="../tools/mpack-1.6"
 MPACK="$MPACKDIR/mpack"
@@ -431,9 +467,9 @@ for ac_option ; do
 	    usage ;;
 	
 	-optfile | --optfile | -of | --of)
-            ac_prev=OPTFILES ;;
+            ac_prev=OPTFILE ;;
         -optfile=* | --optfile=* | -of=* | --of=*)
-            OPTFILES=$ac_optarg ;;
+            OPTFILE=$ac_optarg ;;
 	
 	-addr | --addr | -a | --a)
             ac_prev=ADDRESSES ;;
@@ -460,10 +496,25 @@ for ac_option ; do
 	-make=* | --make=*)
 	    MAKE=$ac_optarg ;;
 
-	-mpi) MPI=t ;;
+	-clean | --clean)
+	    CLEANUP=t ;;
+
+	-quick | --quick | -q | --q)
+	    QUICK=t ;;
+	-nogenmake | --nogenmake | -ng | --ng)
+	    NOGENMAKE=t ;;
+	-noclean | --noclean | -nc | --nc)
+	    NOCLEAN=t ;;
+	-nodepend | --nodepend | -nd | --nd)
+	    NODEPEND=t ;;
+
+	-mpi) MPI=true ;;
+
+	-ieee) IEEE=true ;;
+	-noieee) IEEE= ;;
+
 	-verbose) verbose=2 ;;
 	-debug) debug=1 ;;
-	-clean) clean=1 ;;
 	-quiet) verbose=0 ;;
 
         -*)
@@ -480,8 +531,18 @@ for ac_option ; do
      
 done
 
+if test "x$QUICK" = xt ; then
+    NOGENMAKE=t
+    NOCLEAN=t
+    NODEPEND=t
+fi
+
 if test "x$TESTDIRS" = x ; then
     TESTDIRS=`scandirs`
+fi
+
+if test "x$OPTFILE" = xNONE -a "x$MITGCM_OF" != x ; then
+    OPTFILE=$MITGCM_OF
 fi
 
 echo "OK"
@@ -522,74 +583,102 @@ EOF
 
 NDIR=0
 
-#  For each optfile...
-for OPTFILE in $OPTFILES ; do
-
-    OPTFILE=`pwd`"/$OPTFILE"
-    if test ! -r $OPTFILE ; then
-	echo "Error: can't read optfile \"$OPTFILE\""
-	exit 1
+if test "x$OPTFILE" != xNONE ; then
+    if test -r $OPTFILE ; then
+	OPTFILE=`pwd`"/$OPTFILE"
     fi
-    echo
-    echo "OPTFILE=$OPTFILE" >> $SUMMARY
-    echo >> $SUMMARY
+fi
+echo
+echo "OPTFILE=$OPTFILE" >> $SUMMARY
+echo >> $SUMMARY
+
+#  ...and each test directory...
+for dir in $TESTDIRS ; do
     
-    #  ...and each test directory...
-    for dir in $TESTDIRS ; do
-
-	#  Verify that the testdir exists and contains previous 
-	#  results in the correct location--or skip this directory!
-	if test ! -r $dir"/results/output.txt" ; then
-	    echo | tee -a $SUMMARY
-	    echo "can't read \"$dir/results/output.txt\" -- skipping $dir" \
-		| tee -a $SUMMARY
-	    continue
+    #  Cleanup only!
+    if test "x$CLEANUP" = xt ; then
+	if test -r $dir/build/Makefile ; then
+	    ( cd $dir/build ; make CLEAN )
 	fi
+	if test -r $dir/input/Makefile ; then
+	    ( cd $dir/input ; make CLEAN )
+	fi
+	continue
+    fi
 
-	#  Is this an MPI run?
-	if test "x$MPI" = xt ; then
-	    if test ! -r $dir"/code/CPP_EEOPTIONS.h_mpi" -o ! -r $dir"/code/SIZE.h_mpi" ; then
-		echo | tee -a $SUMMARY
-		echo "can't read \"$dir/code/CPP_EEOPTIONS.h_mpi\" or \"$dir/code/SIZE.h_mpi\"" \
-		    | tee -a $SUMMARY
-		continue
-	    else
-		cp $dir"/code/CPP_EEOPTIONS.h_mpi" $dir"/code/CPP_EEOPTIONS.h"
-		cp $dir"/code/SIZE.h_mpi" $dir"/code/SIZE.h"
+    #  Verify that the testdir exists and contains previous 
+    #  results in the correct location--or skip this directory!
+    if test ! -r $dir"/results/output.txt" ; then
+	echo "can't read \"$dir/results/output.txt\" -- skipping $dir"
+	continue
+    fi
+
+    echo "-------------------------------------------------------------------------------"
+    echo
+    echo "Experiment:  $dir"
+    echo
+    unset genmake makedepend make run
+    results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
+
+    if [ -r $dir/build ]; then
+	seperatebuilddir=1
+	builddir=build
+	rundir=build
+	( cd $dir/build; ln -sf ../input/* . )
+    else
+	seperatebuilddir=0
+	builddir=input
+	rundir=input
+    fi
+    
+    CODE_DIR=$dir/code
+    BUILD_DIR=$dir/$builddir
+    MPI_FILES="CPP_EEOPTIONS.h_mpi SIZE.h_mpi"
+    NOMPI_FILES="CPP_EEOPTIONS.h_nompi SIZE.h_nompi"
+
+    #  Is this an MPI run?
+    if test "x$MPI" = xt ; then
+	FILES=$MPI_FILES
+	endings="_mpi"
+    else
+	FILES=$NOMPI_FILES
+	endings="_nompi"
+    fi
+    
+    #  Check to see that we have the files
+    have_files=t
+    for i in $FILES ; do
+	if test ! -r $CODE_DIR/$i ; then
+	    echo "Warning: can't read file $CODE_DIR/$i"
+	    have_files=f
+	fi
+    done
+    if test "x$have_files" != xt -a "x$MPI" = xt ; then
+	echo "Skipping $dir due to lack of input files (see above warning)"
+	continue
+    fi
+    
+    #  If we have the $FILES and they differ, copy the $FILES to $BUILD_DIR
+    if test "x$have_files" = xt ; then
+	for i in $FILES ; do
+	    sstr="s|$endings||"
+	    name=`echo $i | sed -e $sstr `
+	    cmp $CODE_DIR/$i $BUILD_DIR/$name > /dev/null 2>&1
+	    RETVAL=$?
+	    if test "x$RETVAL" != x0 ; then
+		cp $CODE_DIR/$i $BUILD_DIR/$name
 	    fi
-	else
-	    if test -r $dir"/code/CPP_EEOPTIONS.h_nompi" ; then
-		cp $dir"/code/CPP_EEOPTIONS.h_nompi" $dir"/code/CPP_EEOPTIONS.h"
-	    fi
-            if test -r $dir"/code/SIZE.h_nompi" ; then
-                cp $dir"/code/SIZE.h_nompi" $dir"/code/SIZE.h"
-            fi
-	fi
-
-	#  Create an output dir for each OPTFILE/tdir combination
-	CDIR=$DRESULTS"/"$DRESULTS"_"$NDIR
-	mkdir $CDIR
-	CDIR=`pwd`"/$CDIR"
-
-	#  ...configue, make, run, and compare the output.
-	echo "-------------------------------------------------------------------------------"
-	echo
-	echo "Experiment:  $dir"
-	echo
-	unset genmake makedepend make run
-	results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
-	( cd $dir/input; rm -f *.{o,f,c,F} *.[f,F]90 work* output.txt Make* make.log; )
-	if [ -r $dir/build ]; then
-	    seperatebuilddir=1
-	    builddir=build
-	    rundir=build
-	    ( cd $dir/build; ln -sf ../input/* . )
-	else
-	    seperatebuilddir=0
-	    builddir=input
-	    rundir=input
-	fi
-
+	done
+    fi
+    
+    #  Create an output dir for each OPTFILE/tdir combination
+    CDIR=$DRESULTS"/"$DRESULTS"_"$NDIR
+    mkdir $CDIR
+    CDIR=`pwd`"/$CDIR"
+    
+    if test "x$CLEANUP" = xt ; then
+	makeclean $dir/$builddir
+    else
 	genmakemodel $dir/$builddir && genmake=Y \
 	    && makeclean $dir/$builddir \
 	    && makedependmodel $dir/$builddir && makedepend=Y \
@@ -597,27 +686,32 @@ for OPTFILE in $OPTFILES ; do
 	    && linkdata $seperatebuilddir $dir/$rundir \
 	    && runmodel $dir/$builddir && run=Y \
 	    && results=`testoutput $dir $rundir`
-	echo
-	formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} \
-	    ${run:-N} $results
-	echo
-	formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} \
-	    ${run:-N} $results >> $SUMMARY
-	echo "fresults='" > $CDIR"/summary.txt"
-	formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} \
-	    ${run:-N} $results >> $CDIR"/summary.txt"
-	echo "'" >> $CDIR"/summary.txt"
-	echo "MACH='$MACH'" >> $CDIR"/summary.txt"
-	echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
-	echo "DATE='$DATE'" >> $CDIR"/summary.txt"
-	echo "tdir='$dir'" >> $CDIR"/summary.txt"
-
-	(
-	    cd $DRESULTS
-	    tar -cf $NDIR".tar" $DRESULTS"_"$NDIR > /dev/null 2>&1
-	    gzip $NDIR".tar"
-	)
-
+    fi
+    
+    echo
+    formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} \
+	${run:-N} $results
+    echo
+    formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} \
+	${run:-N} $results >> $SUMMARY
+    echo "fresults='" > $CDIR"/summary.txt"
+    formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} \
+	${run:-N} $results >> $CDIR"/summary.txt"
+    echo "'" >> $CDIR"/summary.txt"
+    echo "MACH='$MACH'" >> $CDIR"/summary.txt"
+    echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
+    echo "DATE='$DATE'" >> $CDIR"/summary.txt"
+    echo "tdir='$dir'" >> $CDIR"/summary.txt"
+    
+    (
+	cd $DRESULTS
+	tar -cf $NDIR".tar" $DRESULTS"_"$NDIR > /dev/null 2>&1
+	gzip $NDIR".tar"
+    )
+    
+    if test "x$ADDRESSES" = xNONE -o "x$ADDRESSES" = x ; then
+	echo "No mail sent"
+    else
 	$MPACK -s MITgcm-test -m 1000000 $DRESULTS"/"$NDIR".tar.gz" $ADDRESSES
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
@@ -625,10 +719,12 @@ for OPTFILE in $OPTFILES ; do
 	else
 	    rm -f $DRESULTS"/"$NDIR".tar*"
 	fi
+    fi
 
-	NDIR=$(( $NDIR + 1 ))
-	
-    done
+    echo "-------------------------------------------------------------------------------"
+    
+    NDIR=$(( $NDIR + 1 ))
+    
 done
 
 rm tmp_cmpnum.f a.out

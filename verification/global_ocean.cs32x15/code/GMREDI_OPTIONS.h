@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/Attic/GMREDI_OPTIONS.h,v 1.1 2003/10/03 15:54:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code/Attic/GMREDI_OPTIONS.h,v 1.2 2003/10/09 04:19:30 edhill Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -7,6 +7,7 @@ C Use this file for selecting options within the GM/Redi package
 C
 C GM/Redi is enabled with ALLOW_GMREDI in CPP_OPTIONS.h
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_GMREDI

@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.11 2003/09/10 17:25:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.12 2003/10/09 04:19:19 edhill Exp $
 C $Name:  $
 
-#include "EXF_CPPOPTIONS.h"
+#include "EXF_OPTIONS.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
 #endif
@@ -15,7 +15,7 @@ c
 c     o This routine initialises the package that calculates external
 c       forcing fields for a given timestep of the MITgcmUV. Parameters
 c       for this package are set in "data.externalforcing". Some additional
-c       precompiler switches have to be specified in "EXF_CPPOPTIONS.h".
+c       precompiler switches have to be specified in "EXF_OPTIONS.h".
 c
 c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
 c

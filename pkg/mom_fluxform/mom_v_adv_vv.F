@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_adv_vv.F,v 1.3 2001/09/26 19:05:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_v_adv_vv.F,v 1.4 2003/10/09 04:19:20 edhill Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "MOM_FLUXFORM_OPTIONS.h"
 
 CBOP
 C !ROUTINE: MOM_V_ADV_VV

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/nml_filter.F,v 1.3 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/nml_filter.F,v 1.4 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -79,6 +79,10 @@ c--   open the filtered data file
          close(outunit)
          outunit = 0
          stop ' stopped in nml_filter'
+      else
+         write(msgBuf,'(3a)') 'Processing namelist file ', fname, ' ...'
+         call PRINT_MESSAGE(msgBuf,standardMessageUnit,
+     &                      SQUEEZE_RIGHT,myThid)
       endif
 
       do while ( .true. )

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gtr1.F,v 1.9 2002/07/18 23:17:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gtr1.F,v 1.10 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -58,6 +59,8 @@ C     myThid - Instance number for this innvocation of CALC_GT
       INTEGER myThid
 
 CEOP
+
+ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
 
 #ifdef ALLOW_PASSIVE_TRACER
 C     === Local variables ===

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_tr1.F,v 1.3 2002/07/18 23:17:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_tr1.F,v 1.4 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -54,6 +55,8 @@ C     I,J,K
 CEOP
 
       _BARRIER
+
+ceh3 this perhaps needs an IF ( usePASSIVE_TRACER ) THEN
 
 C--   Initialise tracer to inline.
       DO bj = myByLo(myThid), myByHi(myThid)

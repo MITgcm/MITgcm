@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.10 2003/02/18 15:26:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_fields_blocking_exchanges.F,v 1.11 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -53,6 +54,7 @@ c     _EXCH_XYZ_R8( vVel , myThid )
       _EXCH_XYZ_R8( salt , myThid )
       ENDIF
 #ifdef ALLOW_PASSIVE_TRACER
+ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
       _EXCH_XYZ_R8( Tr1  , myThid )
 #endif
 
@@ -66,6 +68,7 @@ c     _EXCH_XYZ_R8( gvCD , myThid )
      & _EXCH_XYZ_RL( totPhiHyd , myThid )
 
 #ifdef ALLOW_PTRACERS
+ceh3 needs an IF ( usePTRACER ) THEN
       CALL PTRACERS_FIELDS_BLOCKING_EXCHANGES(myThid)
 #endif /* ALLOW PTRACERS */
 

@@ -1,4 +1,4 @@
-C $Header:
+C $Header: /u/gcmpack/MITgcm/verification/lab_sea/code/Attic/SEAICE_OPTIONS.MULTILEVEL.h,v 1.3 2003/10/09 04:19:31 edhill Exp $
 
 C     /==========================================================\
 C     | SEAICE_OPTIONS.h                                         |
@@ -9,6 +9,7 @@ C     | package.  Sea ice model is enabled with ALLOW_SEAICE in  |
 C     | CPP_OPTIONS.h                                            |
 C     \==========================================================/
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 #ifdef ALLOW_SEAICE

@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_reset_1k.F,v 1.1 2001/03/06 15:46:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_reset_1k.F,v 1.2 2003/10/09 04:19:20 edhill Exp $
 C $Name:  $
-#include "CPP_OPTIONS.h"
+#include "TIMEAVE_OPTIONS.h"
 
 CStartofinterface
       SUBROUTINE TIMEAVE_RESET_1K( fldtave, bi, bj, K, myThid )

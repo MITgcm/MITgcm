@@ -1,9 +1,16 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.183 2003/10/08 19:35:00 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.184 2003/10/09 04:19:17 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-checkpoint 51i_pre
+checkpoint51i_post
+o merge of the branch-genmake2
+  - knowingly breaks the older genmake
+  - automatic generation of all ALLOW_${PKG_NAME} defines
+  - new testreport supersedes older testscript
+o large number of package inclusion and header cleanups
+checkpoint51i_pre
+
 o new output for adjoin of global ocean vector invariant
 o fix for checkpoint of thermodynamic seaice and bulk_force
 o Steph gchem various cleanups

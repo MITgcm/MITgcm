@@ -1,4 +1,7 @@
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.22 2003/10/09 04:19:18 edhill Exp $
+C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CStartOfInterface
@@ -134,13 +137,18 @@ C--   Initialise gradient check parameters
       if (useGrdchk) call grdchk_readparms( myThid )
 #endif
 
-#ifdef ALLOW_CALENDAR
+ceh3 #ifdef ALLOW_CALENDAR
+#ifdef ALLOW_CAL
 C--   Initialise the calendar package.
+ceh3 should have an IF ( useCAL ) THEN
       call cal_readparms( myThid )
 #endif
 
 C--   Custom routine to set forcing fields.
-#ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+#if (defined (INCLUDE_EXTERNAL_FORCING_PACKAGE) || defined(ALLOW_EXF))
+ceh3 #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
+ceh3 #ifdef ALLOW_EXF
+ceh3 needs an IF ( useEXF ) THEN
       call exf_readparms  ( mythid )
 #endif
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.12 2003/04/17 13:44:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.13 2003/10/09 04:19:20 edhill Exp $
 C $Name:  $
 
 CBOI
@@ -25,7 +25,7 @@ C where ${\bf v}=(u,v,w)$ and $\tau$, the stress tensor, includes surface
 C stresses as well as internal viscous stresses.
 CEOI
 
-#include "CPP_OPTIONS.h"
+#include "MOM_FLUXFORM_OPTIONS.h"
 
 CBOP
 C !ROUTINE: MOM_FLUXFORM

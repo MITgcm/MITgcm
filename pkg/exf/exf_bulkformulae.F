@@ -1,6 +1,6 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.3 2003/06/24 16:07:32 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_bulkformulae.F,v 1.4 2003/10/09 04:19:19 edhill Exp $
 
-#include "EXF_CPPOPTIONS.h"
+#include "EXF_OPTIONS.h"
 
       subroutine exf_bulkformulae(mycurrenttime, mycurrentiter, mythid)
 
@@ -16,7 +16,7 @@ c
 c     NOTES:
 c     ======
 c
-c     See EXF_CPPOPTIONS.h for a description of the various possible
+c     See EXF_OPTIONS.h for a description of the various possible
 c     ocean-model forcing configurations.
 c
 c     The bulk formulae of pkg/exf are not valid for sea-ice covered

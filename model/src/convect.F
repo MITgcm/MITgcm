@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.19 2002/11/01 22:00:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/convect.F,v 1.20 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -59,6 +60,7 @@ C     dSum   :: Temp. for layer thicknesses
       _RL tMix(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL sMix(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #ifdef ALLOW_PASSIVE_TRACER
+ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
       _RL tr1Mix(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 #endif
       _RL dSum(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -79,6 +81,7 @@ C--    Calculate heat content of two level column
      &              +salt (i,j,k,bi,bj)
      &               *_hFacC(i,j,k,bi,bj)*drF(k)
 #ifdef ALLOW_PASSIVE_TRACER
+ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
          tr1Mix(i,j) = Tr1 (i,j,k-1,bi,bj)
      &               *_hFacC(i,j,k-1,bi,bj)*drF(k-1)
      &              +Tr1  (i,j,k,bi,bj)
@@ -100,6 +103,7 @@ C--    Where statically unstable, mix the heat and salt
           salt(i,j,k-1,bi,bj)  = sMix(i,j)/dSum(i,j)
           salt(i,j,k  ,bi,bj)  = sMix(i,j)/dSum(i,j)
 #ifdef ALLOW_PASSIVE_TRACER
+ceh3 needs an IF ( usePASSIVE_TRACER ) THEN
           Tr1(i,j,k-1,bi,bj)   = Tr1Mix(i,j)/dSum(i,j)
           Tr1(i,j,k  ,bi,bj)   = Tr1Mix(i,j)/dSum(i,j)
 #endif

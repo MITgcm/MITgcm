@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_pnh.F,v 1.2 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/ini_pnh.F,v 1.3 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -40,6 +41,7 @@ C     == Local variables ==
 CEOP
 
 #ifdef ALLOW_NONHYDROSTATIC
+ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
 
 C--   Initialise surface position anomaly to zero
       DO bj = myByLo(myThid), myByHi(myThid)

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.12 2003/02/26 03:13:28 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.13 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -124,6 +125,7 @@ C--   Set laplace operators for use in 2D conjugate gradient solver.
 
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Set laplace operators for use in 3D conjugate gradient solver.
+ceh3 needs an IF ( useNONHYDROSTATIC ) THEN
       CALL INI_CG3D( myThid )
 #endif
 

@@ -1,6 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.8 2003/08/03 02:58:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/timeave_statvars.F,v 1.9 2003/10/09 04:19:20 edhill Exp $
 C $Name:  $
-#include "CPP_OPTIONS.h"
+#include "TIMEAVE_OPTIONS.h"
 
       SUBROUTINE TIMEAVE_STATVARS(
      I     myTime, myIter, bi, bj, myThid)

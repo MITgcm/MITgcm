@@ -137,13 +137,13 @@ genmakemodel()
    if [ $quick -eq 0 -o ! -r Makefile ]; then
     printf 'genmake ... ' 1>&2
     if [ $ieee -eq 0 ]; then
-     ../../../tools/genmake -mods=../code > make.log 2>&1
+     ../../../tools/$genmake -mods=../code > make.log 2>&1
     else
-     ../../../tools/genmake -ieee -mods=../code > make.log 2>&1
+     ../../../tools/$genmake -ieee -mods=../code > make.log 2>&1
     fi
     if [ $? -ne 0 ]; then
      tail make.log
-     echo genmakemodel: genmake failed 1>&2
+     echo genmakemodel: $genmake failed 1>&2
      return 1
     else
       echo succesful 1>&2
@@ -331,6 +331,7 @@ $0 [-help] [-quick] [-verbose] dir1 [dir2] [...]
  -noieee    By default, $0 uses the -ieee option for genmake. This turns it off.
  -cleanup   Aggresively removes all model output, executables and object files
             and then exits. Use with care.
+ -2        Use genmake2 rather than genmake
 
 Normal usage:
  $0 *       Configure, compile, run and analyze in all experiment directories
@@ -375,6 +376,7 @@ clean=0
 ieee=1
 longtest=1
 expts=''
+genmake=genmake
 
 # Process arguments
 for arg in $@
@@ -386,6 +388,7 @@ do
    -debug) debug=1;;
    -force) force=1;;
    -clean) clean=1;;
+   -2) genmake=genmake2;;
    -noieee) ieee=0;;
    -shorttest) longtest=0;;
    -quiet) verbose=0;;
@@ -441,7 +444,7 @@ do
  echo
  echo Experiment: $dir
  echo
- unset genmake makedepend make run
+ unset genmakepass makedepend make run
  if [ $longtest -gt 0 ]; then
   results='-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --'
  else
@@ -458,7 +461,7 @@ do
   builddir=input
   rundir=input
  fi
- genmakemodel $dir/$builddir && genmake=Y \
+ genmakemodel $dir/$builddir && genmakepass=Y \
  && makecleancompile $dir/$builddir \
  && makedependmodel $dir/$builddir && makedepend=Y \
  && makemodel $dir/$builddir && make=Y \
@@ -467,9 +470,9 @@ do
  && results=`testoutput $dir $rundir` \
  && makecleanupafter $dir/$builddir
  echo
- formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results
+ formatresults $dir ${genmakepass:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results
  echo
- formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results >> summary.txt
+ formatresults $dir ${genmakepass:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results >> summary.txt
  fi
 done
 

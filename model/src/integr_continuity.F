@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.4 2003/01/27 20:45:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.5 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.4 2003/09/25 03:01:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/PTRACERS.h,v 1.5 2003/10/09 04:19:20 edhill Exp $
 C $Name:  $
 
 #ifdef ALLOW_PTRACERS
@@ -19,8 +19,7 @@ C NUMBER_OF_PTRACERS defines how many passive tracers are allocated/exist.
 C This CPP macro is *only* used in PTRACERS.h to set an integer parameter.
 C <Please> do not make use of it elsewhere.
 C
-C NUMBER_OF_PTRACERS can be defined in CPP_OPTIONS.h, or in the Makefile
-C with DEFINES=-DNUMBER_OF_PTRACERS=4
+C NUMBER_OF_PTRACERS should be defined in PTRACERS_OPTIONS.h
 C
 C If NUMBER_OF_PTRACERS is not specified elsewhere and ALLOW_PTRACERS
 C is set then NUMBER_OF_PTRACERS is set here (default 1)

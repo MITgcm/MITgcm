@@ -1,7 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.3 2002/02/10 20:04:51 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_cg2d.F,v 1.4 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
+
 CBOP
 C     !ROUTINE: UPDATE_CG2D
 C     !INTERFACE:

@@ -1,4 +1,4 @@
-#include "EXF_CPPOPTIONS.h"
+#include "EXF_OPTIONS.h"
 
       subroutine exf_init_runoff( mythid )
 

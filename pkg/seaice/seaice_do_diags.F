@@ -1,4 +1,5 @@
-C $Header:
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_do_diags.F,v 1.7 2003/10/09 04:19:20 edhill Exp $
+C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
 

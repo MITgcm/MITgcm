@@ -1,14 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice_loc.F,v 1.2 2003/07/18 21:10:50 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_slice_loc.F,v 1.3 2003/10/09 04:19:19 edhill Exp $
 
-#include "CPP_OPTIONS.h"
-
-#undef  SAFE_IO
-
-#ifdef SAFE_IO
-#define _NEW_STATUS 'new'
-#else
-#define _NEW_STATUS 'unknown'
-#endif
+#include "MDSIO_OPTIONS.h"
 
 C=======================================================================
       SUBROUTINE MDSREADFIELDXZ_LOC(

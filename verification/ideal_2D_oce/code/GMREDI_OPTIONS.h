@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/GMREDI_OPTIONS.h,v 1.1 2003/01/17 14:15:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/ideal_2D_oce/code/GMREDI_OPTIONS.h,v 1.2 2003/10/09 04:19:30 edhill Exp $
 C $Name:  $
 
 C CPP options file for GM/Redi package
@@ -7,9 +7,12 @@ C Use this file for selecting options within the GM/Redi package
 C
 C GM/Redi is enabled with ALLOW_GMREDI in CPP_OPTIONS.h
 
-#include "CPP_OPTIONS.h"
-
+#ifndef GMREDI_OPTIONS_H
+#define GMREDI_OPTIONS_H
+#include "PACKAGES_CONFIG.h"
 #ifdef ALLOW_GMREDI
+
+#include "CPP_OPTIONS.h"
 
 C Designed to simplify the Ajoint code:
 C  exclude the clipping/tapering part of the code that is not used
@@ -34,3 +37,4 @@ C This allows to use Visbeck et al formulation to compute K_GM+Redi
 
 
 #endif /* ALLOW_GMREDI */
+#endif /* GMREDI_OPTIONS_H */

@@ -1,4 +1,4 @@
-#include "EXF_CPPOPTIONS.h"
+#include "EXF_OPTIONS.h"
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 C Flux Coupler using                       C
 C Bilinear interpolation of forcing fields C

@@ -1,9 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.2 2003/10/06 20:11:10 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/carbon_chem.F,v 1.3 2003/10/09 04:19:19 edhill Exp $
+C $Name:  $
 
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 CC     Modified from calc_gs.F, 27/8/98, Mick       CC
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-#include "CPP_OPTIONS.h"
+#include "DIC_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
 CStartOfInterFace
@@ -332,7 +333,7 @@ CC                             Taka Ito             CC
 CC                             Stephanie Dutkiewicz CC
 CC  20 April 2003                                   CC
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-#include "CPP_OPTIONS.h"
+#include "DIC_OPTIONS.h"
 CStartOfInterFace
        SUBROUTINE CALC_PCO2_APPROX(
      I                       t,s,diclocal,pt,sit,ta,

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.9 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/swfrac.F,v 1.10 2003/10/09 04:19:18 edhill Exp $
 C $Name:  $
 
+#include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 
 CBOP
@@ -77,6 +78,7 @@ C
 CEOP
 
 #ifdef ALLOW_CALENDAR
+ceh3 this should have an IF ( useCALENDAR ) THEN
       myiter=0
       call  cal_GetMonthsRec(
      O     fac, first, changed, count0, count1,

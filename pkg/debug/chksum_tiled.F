@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/chksum_tiled.F,v 1.3 2001/04/10 22:35:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/chksum_tiled.F,v 1.4 2003/10/09 04:19:19 edhill Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "DEBUG_OPTIONS.h"
 
       SUBROUTINE CHKSUM_TILED( str,fld,NN,bi,bj,myThid )
       IMPLICIT NONE

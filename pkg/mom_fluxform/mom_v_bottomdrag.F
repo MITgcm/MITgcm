@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_v_bottomdrag.F,v 1.7 2003/03/07 04:40:44 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_v_bottomdrag.F,v 1.8 2003/10/09 04:19:20 edhill Exp $
 C $Name:  $
 
-#include "CPP_OPTIONS.h"
+#include "MOM_FLUXFORM_OPTIONS.h"
 
 crg butterflies
 crg using undefined values of kapparv in mom_v_bottomdrag

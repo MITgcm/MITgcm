@@ -1,0 +1,13 @@
+#
+# $Header: /u/gcmpack/MITgcm/pkg/pkg_groups,v 1.2 2003/10/09 04:19:18 edhill Exp $
+#
+#  This is the package "groups" definition file where groups of packages
+#  are defined so they can be conveniently substituted.
+#
+
+
+# JMC says that aim, aim_v23, land should be off by default
+# bulk_forcing
+
+oceanic : debug generic_advdiff gmredi kpp mdsio mom_fluxform mom_vecinv monitor obcs rw sbo shap_filt timeave zonal_filt
+

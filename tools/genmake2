@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.11 2003/09/29 16:15:23 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.12 2003/10/09 04:19:20 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -8,13 +8,71 @@
 #   modified by aja 01/00
 #   rewritten in bash by eh3 08/03
 
+# Search for particular CPP #cmds associated with packages
+# usage: test_for_package_in_cpp_options CPP_file package_name
+test_for_package_in_cpp_options() {
+    cpp_options=$1
+    pkg=$2
+    grep -i "#define.*ALLOW_$pkg" $cpp_options > /dev/null 2>&1
+    RETVAL=$?
+    if test "x${RETVAL}" = x0 ; then
+	echo "Error: In $cpp_options there is an illegal line: #define ALLOW_$pkg"
+	exit 99
+    fi
+    grep -i "#undef.*ALLOW_$pkg" $cpp_options > /dev/null 2>&1
+    RETVAL=$?
+    if test "x${RETVAL}" = x0 ; then
+	echo "Error: In $cpp_options there is an illegal line: #undef ALLOW_$pkg"
+	exit 99
+    fi
+    grep -i "#define.*DISABLE_$pkg" $cpp_options > /dev/null 2>&1
+    RETVAL=$?
+    if test "x${RETVAL}" = x0 ; then
+	echo "Error: In $cpp_options there is an illegal line: #define DISABLE_$pkg"
+	exit 99
+    fi
+    grep -i "#undef.*DISABLE_$pkg" $cpp_options > /dev/null 2>&1
+    RETVAL=$?
+    if test "x${RETVAL}" = x0 ; then
+	echo "Error: In $cpp_options there is an illegal line: #undef DISABLE_$pkg"
+	exit 99
+   fi
+}
+
+# Read the $ROOTDIR/pkg/pkg_groups file and expand any references to
+# the package list.
+expand_pkg_groups() {
+    new_packages=
+    PKG_GROUPS=$ROOTDIR"/pkg/pkg_groups"
+    if test -r $PKG_GROUPS ; then
+	cat $PKG_GROUPS | sed -e 's/#.*$//g' | sed -e 's/:/ : /g' > ./p1.tmp
+	cat ./p1.tmp | awk '(NF>2 && $2==":"){ print $0 }' > ./p2.tmp
+	matched=0
+	for i in $PACKAGES ; do
+	    line=`grep "^ *$i" ./p2.tmp`
+	    RETVAL=$?
+	    if test "x$RETVAL" = x0 ; then
+		matched=1
+		replace=`echo $line | awk '{ $1=""; $2=""; print $0 }'`
+		echo "    replacing \"$i\" with: $replace"
+		new_packages="$new_packages $replace"
+	    else
+		new_packages="$new_packages $i"
+	    fi
+	done
+	PACKAGES=$new_packages
+	rm -f ./p[1,2].tmp
+    else
+	echo "Warning: can't read package groups definition file: $PKG_GROUPS"
+    fi
+}
 
 # Guess possible config options for this host
 find_possible_configs()  {
 
     tmp1=`uname`"_"`uname -m`
     tmp2=`echo $tmp1 | sed -e 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/'`
-    PLATFORM=`echo $tmp2 | sed -e 's/i[3-6]86/ia32/'`
+    PLATFORM=`echo $tmp2 | sed -e 's/i[3-6]86/ia32/' | sed -e 's/athlon/ia32/'`
     OFLIST=`(cd $ROOTDIR/tools/build_options; ls | grep "^$PLATFORM")`
     echo "  The platform appears to be:  $PLATFORM"
 #     if test "x$OFLIST" = x ; then
@@ -181,6 +239,8 @@ usage()  {
     echo "      -disable=NAME | --disable=NAME"
     echo "    -enable NAME | --enable NAME"
     echo "      -enable=NAME | --enable=NAME"
+    echo "    -standarddirs NAME | --standarddirs NAME"
+    echo "      -standarddirs=NAME | --standarddirs=NAME"
     echo "    -noopt NAME | --noopt NAME"
     echo "      -noopt=NAME | --noopt=NAME"
 #    echo "    -cpp NAME | --cpp NAME"
@@ -255,6 +315,7 @@ MODS=
 TOOLSDIR=
 SOURCEDIRS=
 INCLUDEDIRS=
+STANDARDDIRS=
 
 PWD=`pwd`
 MAKE=make
@@ -265,23 +326,34 @@ MACHINE=`uname -a`
 EXECUTABLE=
 EXEHOOK=
 EXEDIR=
+PACKAGES_CONF=
+IEEE=
+if test "x$MITGCM_IEEE" != x ; then
+    IEEE=$MITGCM_IEEE
+fi
 
 #  The following state can be set directly by command-line switches
 gm_s1="OPTFILE PDEPEND PDEFAULT MAKEFILE PLATFORM ROOTDIR MODS DISABLE ENABLE NOOPT"
-gm_s2="FC IEEE MPI JAM DUMPSTATE"
+gm_s2="FC IEEE MPI JAM DUMPSTATE STANDARDDIRS"
 
 #  The following state is not directly set by command-line switches
 gm_s3="LN S64 KPP LINK PACKAGES MAKEDEPEND PDEPEND PDEFAULT INCLUDES FFLAGS FOPTIM "
 gm_s4="CFLAGS KFLAGS1 KFLAGS2 LIBS KPPFILES NOOPTFILES NOOPTFLAGS"
 gm_s5="TOOLSDIR SOURCEDIRS INCLUDEDIRS PWD MAKE THISHOSTNAME THISDATE MACHINE"
-gm_s6="EXECUTABLE EXEHOOK EXEDIR"
+gm_s6="EXECUTABLE EXEHOOK EXEDIR PACKAGES_CONF"
 
 gm_state="COMMANDL $gm_s1 $gm_s2 $gm_s3 $gm_s4 $gm_s5 $gm_s6"
 
 
 echo
 echo "===  Processing options files and arguments  ==="
-gm_local="./gm_local"
+gm_local="genmake_local"
+for i in . $MODS ; do
+    if test -r $i/$gm_local ; then
+	source $i/$gm_local
+	break
+    fi
+done
 echo -n "  getting local config information:  "
 if test -e $gm_local ; then
     echo "using $gm_local"
@@ -373,6 +445,11 @@ for ac_option ; do
 	-enable=* | --enable=*)
 	    ENABLE=$ac_optarg ;;
 	
+	-standarddirs | --standarddirs)
+	    ac_prev=STANDARDDIRS ;;
+	-standarddirs=* | --standarddirs=*)
+	    STANDARDDIRS=$ac_optarg ;;
+
 	-noopt | --noopt)
 	    ac_prev=NOOPT ;;
 	-noopt=* | --noopt=*)
@@ -389,14 +466,14 @@ for ac_option ; do
 	    FC=$ac_optarg ;;
 	
 	-ieee | --ieee)
-	    IEEE=1 ;;
+	    IEEE=true ;;
 	-noieee | --noieee)
-	    IEEE=0 ;;
+	    IEEE= ;;
 	
 	-mpi | --mpi)
-	    MPI=1 ;;
+	    MPI=true ;;
 	-nompi | --nompi)
-	    MPI=0 ;;
+	    MPI= ;;
 	
 	-jam | --jam)
 	    JAM=1 ;;
@@ -419,6 +496,18 @@ for ac_option ; do
     esac
     
 done
+
+if test -f ./.genmakerc ; then
+    echo
+    echo "WARNING: genmake2 has detected a copy of the old-style \"./.genmakerc\""
+    echo "  file.  This file format is no longer supported.  Please see:"
+    echo 
+    echo "    http://mitgcm.org/devel_HOWTO/"
+    echo
+    echo "  for directions on how to setup and use the new \"genmake2\" input"
+    echo "  files and send an email to MITgcm-support@mitgcm.org if you want help."
+    echo 
+fi
 
 if test "x${ROOTDIR}" = x ; then
     if test "${PWD##/*/}" = "bin" -a -d ../model -a -d ../eesup -a -d ../pkg ; then
@@ -466,7 +555,7 @@ if test "x$OPTFILE" != xNONE ; then
 	    exit 1
 	fi
 	if test "x$DUMPSTATE" != xf ; then
-	    cp -f $OPTFILE "gm_optfile"
+	    cp -f $OPTFILE "genmake_optfile"
 	fi
     else
 	echo "Error: can't read OPTFILE=\"$OPTFILE\""
@@ -482,7 +571,7 @@ if test "x$FC" = x ; then
 Error: no Fortran compiler: please specify using one of the following:
   1) within the options file ("FC=...") as specified by "-of=OPTFILE"
   2) the "-fc=XXX" command-line option
-  3) the "./gm_local" file
+  3) the "./genmake_local" file
 EOF
     exit 1
 fi
@@ -500,7 +589,7 @@ if test "x$RETVAL" != x0 ; then
 Error: C pre-processor "$CPP" failed the test case: please specify using:
 
   1) within the options file ("CPP=...") as specified by "-of=OPTFILE"
-  2) the "./gm_local" file
+  2) the "./genmake_local" file
 
 EOF
     exit 1
@@ -603,7 +692,18 @@ fi
 source ./.pd_tmp
 rm -f ./.pd_tmp
 
+#  Search for default packages.  Note that a "$ROOTDIR/pkg/pkg_groups"
+#  file should eventually be added so that, for convenience, one can 
+#  specify groups of packages using names like "ocean" and "atmosphere".
 echo  -n "  checking default package list:  "
+if test "x${PDEFAULT}" = x ; then
+    for i in "." $MODS ; do
+	if test -r $i"/packages.conf" ; then
+		PDEFAULT=$i"/packages.conf"
+		break
+	fi
+    done
+fi
 if test "x${PDEFAULT}" = x ; then
     PDEFAULT="$ROOTDIR/pkg/pkg_default"
 fi
@@ -626,7 +726,9 @@ else
 	for i in $def ; do
 	    PACKAGES="$PACKAGES $i"
 	done
-	echo "    packages are:  $PACKAGES"
+	echo "    before group expansion packages are: $PACKAGES"
+	expand_pkg_groups
+	echo "    after group expansion packages are:  $PACKAGES"
     fi
 fi
 
@@ -645,7 +747,7 @@ for p in $PACKAGES ; do
 done
 PACKAGES="$pack"
 echo "  applying ENABLE settings"
-rm -f ./.tmp_pack
+echo "" > ./.tmp_pack
 PACKAGES="$PACKAGES $ENABLE"
 for i in $PACKAGES ; do
     if test ! -d "$ROOTDIR/pkg/$i" ; then
@@ -761,39 +863,17 @@ done
 # done
 # echo
 
-echo "  Searching for CPP_OPTIONS.h (macros and flags for configuring the model):"
-CPP_OPTIONS=
-spaths=". $SOURCEDIRS"
-for i in $spaths ; do
-    try="$i/CPP_OPTIONS.h"
-    #  echo -n "    trying $try : "
-    if test -f $try -a -r $try ; then
-	echo "    found CPP_OPTIONS=\"$try\""
-	CPP_OPTIONS="$try"
-	if test "x$i" != "x." ; then
-	    cp -f $CPP_OPTIONS .
-	fi
-	break
-    fi
-done
-if test "x$CPP_OPTIONS" = x ; then
-    echo "Error: can't find \"CPP_OPTIONS.h\" in the path list: $spaths"
-    exit 1
-fi
-if test -e CPP_OPTIONS.h ; then
-    if test ! -e CPP_OPTIONS.h.bak ; then
-	cp -f CPP_OPTIONS.h CPP_OPTIONS.h.bak
-    fi
-    cat CPP_OPTIONS.h \
-	| awk 'BEGIN{p=1;} ($1=="C===" && $2=="GENMAKE"){p=0;} {if (p==1) print $0}' \
-	> CPP_OPTIONS.h.tmp
-fi
-cat <<EOF >>CPP_OPTIONS.h.tmp
+# Create a list of #define and #undef to enable/disable packages
+PACKAGES_DOT_H=PACKAGES_CONFIG.h
+cat <<EOF >$PACKAGES_DOT_H".tmp"
 C=== GENMAKE v2 ===
 C  The following defines have been set by GENMAKE, so please do not
 C  edit anything below these comments.  In general, you should
 C  add or remove packages by re-running genmake with different 
 C  "-enable" and/or "-disable" options.
+
+#ifndef PACKAGES_H
+#define PACKAGES_H
 
 C  Packages disabled by genmake:
 EOF
@@ -814,7 +894,8 @@ for n in $names ; do
 	done
 	if test "x$has_pack" = xf ; then
 	    undef=`echo "ALLOW_$n" | awk '{print toupper($0)}'`
-	    echo "#undef $undef" >> CPP_OPTIONS.h.tmp
+	    echo "#undef $undef" >> $PACKAGES_DOT_H".tmp"
+#           DEFINES="$DEFINES -U$undef"
 
 #EH3  WARNING :  This is an UGLY HACK that needs to be removed!!!
 	    case $n in 
@@ -823,9 +904,6 @@ for n in $names ; do
 		    ;;
 		mom_vecinv)
 		    DEFINES="$DEFINES -DDISABLE_MOM_VECINV"
-		    ;;
-		generic_advdiff)
-		    DEFINES="$DEFINES -DDISABLE_GENERIC_ADVDIFF"
 		    ;;
 		debug)
 		    DEFINES="$DEFINES -DDISABLE_DEBUGMODE"
@@ -836,28 +914,49 @@ for n in $names ; do
 	fi
     fi
 done
-cat <<EOF >>CPP_OPTIONS.h.tmp
+cat <<EOF >>$PACKAGES_DOT_H".tmp"
 
 C  Packages enabled by genmake:
 EOF
 for i in $PACKAGES ; do
     def=`echo "ALLOW_$i" | awk '{print toupper($0)}'`
-    echo "#define $def" >> CPP_OPTIONS.h.tmp
+    echo "#define $def" >> $PACKAGES_DOT_H".tmp"
+#eh3 DEFINES="$DEFINES -D$def"
 
 #EH3  WARNING :  This is an UGLY HACK that needs to be removed!!!
     case $i in 
 	aim_v23)
-	    echo "#define   ALLOW_AIM" >> CPP_OPTIONS.h.tmp
+	    echo "#define   ALLOW_AIM" >> $PACKAGES_DOT_H".tmp"
+	    DEFINES="$DEFINES -DALLOW_AIM"
+	    echo "Warning: ALLOW_AIM is set to enable aim_v23. This is REALLY ugly Jean-Michel :-)"
 	    ;;
     esac
 #EH3  WARNING :  This is an UGLY HACK that needs to be removed!!!
 
 done
-mv -f CPP_OPTIONS.h.tmp CPP_OPTIONS.h
+cat <<EOF >>$PACKAGES_DOT_H".tmp"
+
+#endif /* PACKAGES_H */
+EOF
+
+if test ! -f $PACKAGES_DOT_H ; then
+    mv -f $PACKAGES_DOT_H".tmp" $PACKAGES_DOT_H
+else
+    cmp $PACKAGES_DOT_H".tmp" $PACKAGES_DOT_H
+    RETVAL=$?
+    if test "x$RETVAL" = x0 ; then
+	rm -f $PACKAGES_DOT_H".tmp"
+    else
+	mv -f $PACKAGES_DOT_H $PACKAGES_DOT_H".bak"
+	mv -f $PACKAGES_DOT_H".tmp" $PACKAGES_DOT_H
+    fi
+fi
 
 echo "  Adding STANDARDDIRS"
 BUILDDIR=${BUILDDIR:-.}
-STANDARDDIRS=${STANDARDDIRS:-"eesupp model"}
+if test "x$STANDARDDIRS" = x ; then
+    STANDARDDIRS="eesupp model"
+fi
 for d in $STANDARDDIRS ; do
     adr="$ROOTDIR/$d/src"
     if test ! -d $adr ; then
@@ -877,14 +976,37 @@ for d in $STANDARDDIRS ; do
     fi
 done
 
+echo " Searching for CPP_OPTIONS.h in order to warn about the presence"
+echo " of \"#define ALLOW_PKGNAME\"-type statements:"
+CPP_OPTIONS=
+spaths=". $INCLUDEDIRS"
+for i in $spaths ; do
+    try="$i/CPP_OPTIONS.h"
+    #  echo -n "    trying $try : "
+    if test -f $try -a -r $try ; then
+	echo "    found CPP_OPTIONS=\"$try\""
+	CPP_OPTIONS="$try"
+	break
+    fi
+done
+if test "x$CPP_OPTIONS" = x ; then
+    echo "Error: can't find \"CPP_OPTIONS.h\" in the path list: $spaths"
+    exit 1
+fi
+# New safety test: make sure packages are not mentioned in CPP_OPTIONS.h
+names=`ls -1 "$ROOTDIR/pkg"`
+for n in $names ; do
+    test_for_package_in_cpp_options $CPP_OPTIONS $n
+done
+
 
 echo
 echo "===  Creating the Makefile  ==="
 echo "  setting INCLUDES"
 for i in $INCLUDEDIRS ; do
-    if test -d $i ; then
-	INCLUDES="$INCLUDES -I$i"
-    else
+    if ! test -d $i ; then
+#	INCLUDES="$INCLUDES -I$i"
+#   else
 	echo "Warning: can't find INCLUDEDIRS=\"$i\""
     fi
 done
@@ -1064,13 +1186,13 @@ clean:
 Clean:
 	@make clean
 	@make cleanlinks
-	-rm -f Makefile.bak
+	-rm -f Makefile.bak genmake_state genmake_optfile make.log
 CLEAN:
 	@make Clean
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
 	-find \$(EXEDIR) -name "*.data" -exec rm {} \;
 	-find \$(EXEDIR) -name "fort.*" -exec rm {} \;
-	-rm -f \$(EXECUTABLE)
+	-rm -f \$(EXECUTABLE) output.txt
 
 makefile:
 	${0} $@
@@ -1134,10 +1256,10 @@ printf "\n===  Done  ===\n"
 
 #  Write the "state" for future records
 if test "x$DUMPSTATE" != xf ; then
-    echo -n "" > gm_state
+    echo -n "" > genmake_state
     for i in $gm_state ; do
 	t1="t2=\$$i"
 	eval $t1
-	echo "$i='$t2'" >> gm_state
+	echo "$i='$t2'" >> genmake_state
     done
 fi
