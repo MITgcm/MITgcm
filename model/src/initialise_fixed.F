@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.1 2000/04/05 19:04:14 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.2 2000/06/21 19:02:52 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -35,8 +35,11 @@ C     == Local variables ==
 C--   Set model parameters.
 C     Parameters are set to defaults and then updates are read from
 C     an input file called data.
-      CALL INI_PARMS(  myThid )
+      CALL INI_PARMS( myThid )
       _BARRIER
+
+C--   Configure packages
+      CALL PACKAGE_INIT( myThid )
 
 #ifdef ALLOW_OBCS
 C--   Open boundaries positions
@@ -77,5 +80,8 @@ C--   Set laplace operators for use in 3D conjugate gradient solver.
 
 C--   Finally summarise the model cofiguration
       CALL CONFIG_SUMMARY( myThid )
+
+C--   Check dependances between packages
+      CALL PACKAGE_CHECK( myThid )
 
       END
