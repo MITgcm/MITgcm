@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_mnc_init.F,v 1.2 2004/07/13 23:44:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_mnc_init.F,v 1.3 2004/07/22 15:56:01 edhill Exp $
 C $Name:  $
       
 #include "FIZHI_OPTIONS.h"
@@ -8,39 +8,20 @@ CBOP 0
 C     !ROUTINE: FIZHI_MNC_INIT
 
 C     !INTERFACE:
-      SUBROUTINE FIZHI_MNC_INIT( 
-     I     sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, NrPhys, 
-     I     myThid )
+      SUBROUTINE FIZHI_MNC_INIT( myThid )
 
 C     !DESCRIPTION:
-C     Create the pre-defined grid types and variable types.
+C     Create some pre-defined MNC grid types and variable types useful
+C     for the FIZHI package.  Borrows heavily from MNC_CW_INIT().
 
-C     The grid type is a character string that encodes the presence and
-C     types associated with the four possible dimensions.  The character
-C     string follows the format
-C     \begin{center}
-C       \texttt{H0\_H1\_H2\_\_V\_\_T}
-C     \end{center}
-C     where the terms \textit{H0}, \textit{H1}, \textit{H2}, \textit{V},
-C     \textit{T} can be almost any combination of the following:
-C     \begin{center}
-C       \begin{tabular}[h]{|ccc|c|c|}\hline
-C         \multicolumn{3}{|c|}{Horizontal} & Vertical & Time \\
-C         \textit{H0}: location & \textit{H1}: dimensions & \textit{H2}: halo 
-C               & \textit{V}: location & \textit{T}: level  \\\hline
-C         \texttt{-} & xy & Hn & \texttt{-} & \texttt{-} \\
-C         U  &  x  &  Hy  &  i  &  t  \\
-C         V  &  y  &      &  c  &     \\
-C         Cen  &   &      &     &     \\
-C         Cor  &   &      &     &     \\\hline
-C       \end{tabular}
-C     \end{center}
-
+C     !USES:
       implicit none
+#include "SIZE.h"
+#include "fizhi_SIZE.h"
+#include "fizhi_land_SIZE.h"
+
 C     !INPUT PARAMETERS:
       integer myThid
-      integer sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy
-      integer NrPhys
 
 C     !USES:
 #ifdef ALLOW_MNC
@@ -79,7 +60,7 @@ C     ......12345....12345....12345....12345....12345...
       data time_dat /
      &     '-    ', 't    ', '     ', '     ', '     '  /
 
-
+C     Define a few "standard" or "convenience" types
       ncomb = 0
       DO ihorz = 1,5
         DO is = 1,3
@@ -225,6 +206,28 @@ C               Time dimension
           ENDDO
         ENDDO
       ENDDO
+
+C     Define a "fizhi_veg" type to be used in FIZHI_INIT_VEG()
+C
+C     name           1234567890
+      ndim = 3
+      dn(1)(1:10) = 'X         '
+      dim(1)      = sNx + 2*OLx
+      ib(1)       = OLx + 1
+      ie(1)       = OLx + sNx
+      dn(2)(1:10) = 'Y         '
+      dim(2)      = sNy + 2*OLy
+      ib(2)       = OLy + 1
+      ie(2)       = OLy + sNy
+      dn(3)(1:10) = 'VegType   '
+      dim(3)      = maxtyp
+      ib(3)       = 1
+      ie(3)       = maxtyp
+
+      CALL MNC_CW_ADD_GNAME('fizhi_veg', ndim, dim, dn,ib,ie, myThid)
+      CALL MNC_CW_ADD_VNAME('surftype', 'fizhi_veg', 4,5, myThid)
+      CALL MNC_CW_ADD_VNAME('tilefrac', 'fizhi_veg', 4,5, myThid)
+      
 
 #endif  /*  ALLOW_MNC  */
       

@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.13 2004/07/20 16:24:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.14 2004/07/22 15:56:01 edhill Exp $
 C $Name:  $
+
+#include "FIZHI_OPTIONS.h"
 
       subroutine fizhi_init_veg(mythid,vegdata,im,jm,Nsx,Nsy,Nxg,Nyg,
      . maxtyp,nchp,nchpland,lons,lats,surftype,tilefrac,igrd,ityp,chfr,
@@ -50,8 +52,6 @@ C                 10:  DARK DESERT
 C                100:  OCEAN
 C***********************************************************************
       implicit none
-#include "PACKAGES_CONFIG.h"
-#include "CPP_EEOPTIONS.h"
 #include "EEPARAMS.h"
 
       integer mythid,im,jm,maxtyp,nchp,nchpland,Nsx,Nsy,Nxg,Nyg
@@ -70,6 +70,14 @@ C***********************************************************************
 
       integer i,j,k,bi,bj,ierr1,kveg
 
+#ifdef ALLOW_MNC
+      character*(MAX_LEN_FNAM) fizhi_veg_bn
+#endif
+
+C     Allow for MDSIO format if someday needed
+#ifdef ALLOW_MDSIO
+      IF ( .FALSE. ) THEN
+
       call mdsfindunit( kveg, myThid )
       close(kveg)
       open(kveg,file=vegdata,form='unformatted',access='sequential', 
@@ -83,6 +91,7 @@ C***********************************************************************
        call exit(101)
       endif
       close(kveg)
+
       IF (myThid.eq.1) THEN
       imdata = im_32
       jmdata = jm_32
@@ -105,7 +114,7 @@ C***********************************************************************
 
       biglobal=bi+(myXGlobalLo-1)/im
       bjglobal=bj+(myYGlobalLo-1)/jm
-#ifdef _BYTESWAPIO
+#if defined( _BYTESWAPIO ) && defined( ALLOW_MDSIO )
       call MDS_BYTESWAPR4(im*jm*maxtyp,veg_32(1,1,1,biglobal,bjglobal))
 #endif
       do k = 1,maxtyp
@@ -117,61 +126,91 @@ C***********************************************************************
       enddo
       enddo
 
-c   create chip arrays for :
+      ENDDO
+      ENDDO
+
+      ENDIF
+#endif
+
+#ifdef ALLOW_MNC
+      _BEGIN_MASTER( myThid )
+      
+      do i = 1,MAX_LEN_FNAM
+        fizhi_veg_bn(i:i) = ' '
+      enddo
+      
+C     The following base name should be handled by some sort of input
+C     name parameter in FIZHI_READPARMS() plus a possible size.
+      
+C     Set the base name     1234567890
+      fizhi_veg_bn(1:10) = 'fizhi_veg '
+      
+      CALL MNC_CW_I_R('I', fizhi_veg_bn, 0,0, 
+     &     'surftype',surftype,myThid)
+      CALL MNC_CW_RL_R('R', fizhi_veg_bn, 0,0,
+     &     'tilefrac', tilefrac, myThid)
+      
+      _END_MASTER( myThid )
+#endif
+
+c     create chip arrays for :
 c      igrd :  grid index
 c      ityp :  veg. type
 c      chfr :  vegetation fraction
 c      chlon:  chip longitude
 c      chlt :  chip latitude
 
-c  nchpland<=nchplocal is the actual number of land chips
+c     nchpland<=nchplocal is the actual number of land chips
 
-c land points
-c -----------
-      nchpland = 0
-      do k=1,maxtyp
-      do j=1,jm
-      do i=1,im
-      if(surftype(i,j,k,bi,bj).lt.100.and.
-     .                                  tilefrac(i,j,k,bi,bj).gt.0.)then
-             nchpland  = nchpland + 1
-       igrd (nchpland,bi,bj) = i + (j-1)*im
-       ityp (nchpland,bi,bj) = surftype(i,j,k,bi,bj)
-       chfr (nchpland,bi,bj) = tilefrac(i,j,k,bi,bj)
-       chlon(nchpland,bi,bj) = lons(i,j,bi,bj)
-       chlt (nchpland,bi,bj) = lats(i,j,bi,bj)
-      endif
-      enddo
-      enddo
-      enddo
+      DO BJ = myByLo(myThid), myByHi(myThid)
+        DO BI = myBxLo(myThid), myBxHi(myThid)
 
-c ocean points
-c ------------
-      nchplocal = nchpland
-
-      do k=1,maxtyp
-      do j=1,jm
-      do i=1,im
-      if(surftype(i,j,k,bi,bj).ge.100 .and. 
-     .                                  tilefrac(i,j,k,bi,bj).gt.0.)then
-             nchplocal  = nchplocal + 1
-       igrd (nchplocal,bi,bj) = i + (j-1)*im
-       ityp (nchplocal,bi,bj) = surftype(i,j,k,bi,bj)
-       chfr (nchplocal,bi,bj) = tilefrac(i,j,k,bi,bj)
-       chlon(nchplocal,bi,bj) = lons(i,j,bi,bj)
-       chlt (nchplocal,bi,bj) = lats(i,j,bi,bj)
-      endif
-      enddo
-      enddo
-      enddo
-
-      print *, 'bi ',bi,' bj ',bj
-      print *, 'Number of Total Tiles: ',nchplocal
-      print *, 'Number of Land  Tiles: ',nchpland
-      print *
-
+c         land points
+c         -----------
+          nchpland = 0
+          do k=1,maxtyp
+            do j=1,jm
+              do i=1,im
+                if(surftype(i,j,k,bi,bj).lt.100 .and.
+     .               tilefrac(i,j,k,bi,bj).gt.0.) then
+                  nchpland  = nchpland + 1
+                  igrd (nchpland,bi,bj) = i + (j-1)*im
+                  ityp (nchpland,bi,bj) = surftype(i,j,k,bi,bj)
+                  chfr (nchpland,bi,bj) = tilefrac(i,j,k,bi,bj)
+                  chlon(nchpland,bi,bj) = lons(i,j,bi,bj)
+                  chlt (nchpland,bi,bj) = lats(i,j,bi,bj)
+                endif
+              enddo
+            enddo
+          enddo
+          
+c         ocean points
+c         ------------
+          nchplocal = nchpland
+          
+          do k=1,maxtyp
+            do j=1,jm
+              do i=1,im
+                if(surftype(i,j,k,bi,bj).ge.100 .and. 
+     .               tilefrac(i,j,k,bi,bj).gt.0.) then
+                  nchplocal  = nchplocal + 1
+                  igrd (nchplocal,bi,bj) = i + (j-1)*im
+                  ityp (nchplocal,bi,bj) = surftype(i,j,k,bi,bj)
+                  chfr (nchplocal,bi,bj) = tilefrac(i,j,k,bi,bj)
+                  chlon(nchplocal,bi,bj) = lons(i,j,bi,bj)
+                  chlt (nchplocal,bi,bj) = lats(i,j,bi,bj)
+                endif
+              enddo
+            enddo
+          enddo
+          
+          print *, 'bi ',bi,' bj ',bj
+          print *, 'Number of Total Tiles: ',nchplocal
+          print *, 'Number of Land  Tiles: ',nchpland
+          print *
+          
+        ENDDO
       ENDDO
-      ENDDO
-
+      
       RETURN
       END
