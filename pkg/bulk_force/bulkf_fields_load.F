@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.8 2004/04/07 23:42:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/bulkf_fields_load.F,v 1.9 2005/01/25 22:30:00 jmc Exp $
 C $Name:  $
 
 #include "BULK_FORCE_OPTIONS.h"
@@ -186,7 +186,8 @@ C Now calculate whether it is time to update the forcing arrays
 
       intime0=int(Iftm/Ifprd)
       intime1=mod(intime0+1,nForcingPeriods)
-      aWght=float( Iftm-Ifprd*intime0 )/float( Ifprd )
+c     aWght=float( Iftm-Ifprd*intime0 )/float( Ifprd )
+      aWght=dfloat( Iftm-Ifprd*intime0 )/dfloat( Ifprd )
       bWght=1.-aWght
 
       intime0=intime0+1
