@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.13 1999/05/05 18:32:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/load_external_fields.F,v 1.14 1999/06/29 18:44:03 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
  
@@ -153,18 +153,18 @@ c      CALL READ_REC_XY_RS( surfQswFile,Qnet1,intime1,myIter,myThid )
 c     ENDIF
 
 C      Convert units and sign (!)
-       DO bj = myByLo(myThid), myByHi(myThid)
-        DO bi = myBxLo(myThid), myBxHi(myThid)
-         DO j=1,sNy
-          DO i=1,sNx
+Caja   DO bj = myByLo(myThid), myByHi(myThid)
+Caja    DO bi = myBxLo(myThid), myBxHi(myThid)
+Caja     DO j=1,sNy
+Caja      DO i=1,sNx
 C sign change is becuase data is infact P-E not E-P
 C also change units from mm/day to m/s
-           EmPmR0(i,j,bi,bj) = -EmPmR0(i,j,bi,bj)/3153600000.
-           EmPmR1(i,j,bi,bj) = -EmPmR1(i,j,bi,bj)/3153600000.
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
+Caja       EmPmR0(i,j,bi,bj) = -EmPmR0(i,j,bi,bj)/3153600000.
+Caja       EmPmR1(i,j,bi,bj) = -EmPmR1(i,j,bi,bj)/3153600000.
+Caja      ENDDO
+Caja     ENDDO
+Caja    ENDDO
+Caja   ENDDO
 C
        _END_MASTER(myThid)
 C
@@ -210,13 +210,14 @@ C-- Diagnostics
         write(0,'(a,1p7e12.4,2i6,2e12.4)')
      &   'time,SST,SSS,fu,fv,Q,E-P,i0,i1,a,b = ',
      &   myTime,
-     &   SST(1,12,1,1),SSS(1,12,1,1),fu(1,12,1,1),fv(1,12,1,1),
-     &   Qnet(1,12,1,1),EmPmR(1,12,1,1),
+     &   SST(1,sNy,1,1),SSS(1,sNy,1,1),
+     &   fu(1,sNy,1,1),fv(1,sNy,1,1),
+     &   Qnet(1,sNy,1,1),EmPmR(1,sNy,1,1),
      &   intime0,intime1,aWght,bWght
         write(0,'(a,1p7e12.4)')
      &   'time,fu0,fu1,fu = ',
      &   myTime,
-     &   taux0(1,12,1,1),taux1(1,12,1,1),fu(1,12,1,1),
+     &   taux0(1,sNy,1,1),taux1(1,sNy,1,1),fu(1,sNy,1,1),
      &   aWght,bWght
       ENDIF
 
