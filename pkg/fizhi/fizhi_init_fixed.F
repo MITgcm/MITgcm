@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.2 2004/06/07 18:11:37 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.3 2004/06/07 20:26:43 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_fixed (myThid)
@@ -17,8 +17,8 @@ c                   now and interpolate between values later)
 c      the other fixed parameters are:
 c         N2O, Methane (vary with space)
 c         CO2, CFC11, CFC12, CFC22 (set to a global value)
-c   2) This routine will also read the data.fizhi namelist interface
-c      to obtain information about diagnostic selection.
+c   3) For now, the fizhi package contains the alarms and clocks
+c      routines, so this routine will also initialize the alarms.
 c-----------------------------------------------------------------------
        implicit none
 #include "CPP_OPTIONS.h"
@@ -28,11 +28,15 @@ c-----------------------------------------------------------------------
 #include "EEPARAMS.h"
 #include "fizhi_chemistry_coms.h"
 #include "fizhi_earth_coms.h"
+#include "fizhi_land_coms.h"
+#include "chronos.h"
 
        integer myThid
 
        integer bi, bj
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
+       integer nymdb,nhmsb
+       character*40 vegdata
 
        im1 = 1-OLx
        im2 = sNx+OLx
@@ -42,12 +46,23 @@ c-----------------------------------------------------------------------
        idim2 = sNx
        jdim1 = 1
        jdim2 = sNy
+       nymdb = nymd0
+       nhmsb = nhms0
 
+       call fizhi_alarms(nymdb,nhmsb,deltaTClock)
+       call fizhi_init_veg ( mythid, vegdata,idim2,jdim2,Nsx,Nsy,maxtyp,
+     .            surftype,tilefrac,igrd,ityp,chfr )
+
+C Compute pressure profile to get methane and n2o values (bottom-up)
        do bj = myByLo(myThid), myByHi(myThid)
        do bi = myBxLo(myThid), myBxHi(myThid)
-C Dummy routine - nothing to do for now
+
        enddo
        enddo
+
+       call fizhi_init_chem(mythid,nozlats,nozlevs,ozlats,ozlevs,
+     . ozone,nwatlats,nwatlevs,watlats,watlevs,water,
+     . Nrphys,pressure,n20,methane,co2,cfc11,cfc12,cfc22)
 
        return
        end

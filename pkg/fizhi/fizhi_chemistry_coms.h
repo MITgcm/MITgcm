@@ -1,6 +1,3 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_chemistry_coms.h,v 1.1 2004/06/07 16:57:39 molod Exp $
-C $Name:  $
-
 c Chemistry Variables Dimensions
 c -------------------------------
       integer nlatsoz, nlevsoz, ntimesoz, nlatsq, nlevsq, ntimesq,
@@ -26,6 +23,6 @@ c -------------------------
 c Chemistry Exports
 c -------------------
       common /chem_exports/ o3, qstr 
-      _RL o3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,nSx,Nsy)
-      _RL qstr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,nSx,Nsy)
+      _RL o3(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
+      _RL qstr(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nrphys,Nsx,Nsy)
 

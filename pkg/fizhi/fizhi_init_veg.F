@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.4 2004/06/07 18:32:21 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.5 2004/06/07 20:26:43 molod Exp $
 C $Name:  $
 
       subroutine fizhi_init_veg(mythid,vegdata,im,jm,Nsx,Nsy,maxtyp,
@@ -47,6 +47,7 @@ C                 10:  DARK DESERT
 C                100:  OCEAN
 C***********************************************************************
       implicit none
+#include "EEPARAMS.h"
 
       integer mythid,im,jm,maxtyp,nchpmax,Nsx,Nsy
       integer surftype(im,jm,maxtyp,Nsx,Nsy)
@@ -55,7 +56,7 @@ C***********************************************************************
       real chfr(nchpmax,Nsx,Nsy)
       character*40 vegdata
       integer imdata,jmdata,Nsxdata,Nsydata
-      integer nchp,nchpland
+      integer nchp,nchpland,biglobal,bjglobal
 
       integer*4 im_32, jm_32, Nsx_32, Nsy_32
       integer*4 iveg_32(im,jm,maxtyp,Nsx,Nsy)
@@ -92,14 +93,17 @@ C***********************************************************************
        call exit(102)
       ENDIF
                                                                                  
-      DO BJ = 1,Nsx
-      DO BI = 1,Nsy
+      DO BJ = myByLo(myThid), myByHi(myThid)
+      DO BI = myBxLo(myThid), myBxHi(myThid)
+
+      biglobal=bi+(myXGlobalLo-1)/im
+      bjglobal=bj+(myYGlobalLo-1)/jm
                                                                                  
       do k = 1,maxtyp
       do j = 1,jm
       do i = 1,im
-       surftype(i,j,k,bi,bj) = iveg_32(i,j,k,bi,bj) 
-       tilefrac(i,j,k,bi,bj) = veg_32(i,j,k,bi,bj)
+       surftype(i,j,k,bi,bj) = iveg_32(i,j,k,biglobal,bjglobal) 
+       tilefrac(i,j,k,bi,bj) = veg_32(i,j,k,biglobal,bjglobal)
       enddo
       enddo
       enddo
