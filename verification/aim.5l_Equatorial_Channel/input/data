@@ -29,6 +29,7 @@
  readBinaryPrec=64,
  writeBinaryPrec=64,
  hFacMin=1.0,
+ saltAdvScheme=3, 
  &
 
 # Elliptic solver parameters
@@ -41,15 +42,16 @@
 # Time stepping parameters
  &PARM03
  niter0=8640,
-#endTime=31104000.,
  nTimeSteps=10,
- deltaT=300.0,
+#endTime=31104000.,
+ deltaT=600.0,
  abEps=0.1,
  cAdjFreq=0.,
  pChkptFreq=2592000.0,
  chkptFreq=0.0,
  dumpFreq=2592000.0,
  taveFreq=2592000.0,
+#monitorFreq=7200.0,
  monitorFreq=1.0,
  &
 
