@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.25 2004/10/22 14:52:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_wrapper.F,v 1.26 2004/10/26 17:46:16 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -111,7 +111,7 @@ c Do not use a zero field as the top edge pressure for interpolation
 c
 c Compute physics increments
 
-        call do_fizhi(myThid,
+        call do_fizhi(myIter,myThid,
      .  idim1,idim2,jdim1,jdim2,Nrphys,Nsx,Nsy,im1,im2,jm1,jm2,bi,bj,
      .  nchp,nchptot,nchpland,
      .  uphy,vphy,thphy,sphy,pephy4fiz,xC,yC,topoZ,

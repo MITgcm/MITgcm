@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.47 2004/10/21 16:35:23 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.48 2004/10/26 17:46:16 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
-       subroutine do_fizhi(myid,
+       subroutine do_fizhi(myIter,myid,
      . idim1,idim2,jdim1,jdim2,Nrphin,Nsxin,Nsyin,im1,im2,jm1,jm2,bi,bj,
      . nchp,nchptot,nchpland,
      . uphy,vphy,thphy,sphy,pephy,lons,lats,Zsurf,
@@ -31,7 +31,7 @@ c-----------------------------------------------------------------------
 #include "chronos.h"
 
 C Argument list declarations
-      integer myid,im1,im2,jm1,jm2,idim1,idim2,jdim1,jdim2
+      integer myIter,myid,im1,im2,jm1,jm2,idim1,idim2,jdim1,jdim2
       integer Nrphin,Nsxin,Nsyin,bi,bj,nchp
       integer nchptot(Nsxin,Nsyin),nchpland(Nsxin,Nsyin)
       _RL uphy(idim1:idim2,jdim1:jdim2,Nrphin,Nsxin,Nsyin)
@@ -161,8 +161,10 @@ c Local Variables
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
 C***********************************************************************
+C Some initialization is for start of experiment, some for segment start
+C***********************************************************************
 
-      if( (nhms.eq.nhms0) .and. (nymd.eq.nymd0) ) then
+      if((nhms.eq.nhms0) .and. (nymd.eq.nymd0) .and. (myIter.eq.0)) then
        _BEGIN_MASTER(myid)
        if(myid.eq.1) print *,' Initializing fizhi arrays '
        _END_MASTER(myid)
