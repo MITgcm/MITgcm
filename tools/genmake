@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.41 2001/08/13 19:34:57 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.42 2001/08/14 14:27:10 adcroft Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -171,10 +171,10 @@ endif
 # source code in the standard directories
 if (! $?MODS) then
  set SOURCEDIRS  = ( )
- set INCLUDEDIRS = ( . )
+ set INCLUDEDIRS = ( )
 else
  set SOURCEDIRS  = ( $MODS )
- set INCLUDEDIRS = ( . $MODS )
+ set INCLUDEDIRS = ( $MODS )
 endif
 if (! $?BUILDDIR) set BUILDDIR = ( . )
 if (! -d $BUILDDIR) then
@@ -275,7 +275,7 @@ set KPP        = (  )
 set FC         = ( 'f77' )
 set LINK       = ( 'f77' )
 set DEFINES    = (  )
-set INCLUDES   = (  )
+set INCLUDES   = ( -I. )
 set FFLAGS     = (  )
 set FOPTIM     = (  )
 set KFLAGS1    = (  )
@@ -507,7 +507,7 @@ echo "" >> srclinks.tmp
 echo -n 'SRCFILES = ' > srclist.inc
 echo -n 'CSRCFILES = ' > csrclist.inc
 echo -n 'HEADERFILES = ' > hlist.inc
-foreach dr ($SOURCEDIRS $INCLUDEDIRS)
+foreach dr ($SOURCEDIRS $INCLUDEDIRS .)
  set deplist=( )
  foreach srcfile (`cd $dr; ls *.[hcF]`)
   if (! -r .links.tmp/$srcfile) then
