@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.14 2004/10/22 14:52:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.15 2005/02/25 18:14:45 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -126,6 +126,7 @@ C Maximum number of dates in one year for the data
 
       character*8  cname
       character*80 cdscrip
+      character*40 sicedata
       _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
       logical first, found, error
       integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybc
@@ -139,6 +140,7 @@ C--------- Variable Initialization ---------------------------------
 
       data first /.true./
       data error /.false./
+      sicedata='sice19232.weekly.clim'
 
 c  save header info
       save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
@@ -176,7 +178,7 @@ C---------- Read in Header file ----------------------------------
       if( iyear.ne.iyearbc ) then
 
        close(iunit)
-       open (iunit,form='unformatted',access='direct',
+       open (iunit,file=sicedata,form='unformatted',access='direct',
      .                                         recl=im2*jm2*nPgx*nPgy*4)
        nrec = 1
        call bcheader (iunit, ndmax, nrec,
@@ -372,6 +374,7 @@ C Maximum number of dates in one year for the data
 
       character*8  cname
       character*80 cdscrip
+      character*40 sstdata
       _RL fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
       logical first, found, error
       integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,npxbc,npybc
@@ -385,6 +388,7 @@ C--------- Variable Initialization ---------------------------------
 
       data first /.true./
       data error /.false./
+      sstdata='sst19232.weekly.clim'
 
 c  save header info
       save imbc,jmbc,npxbc,npybc,lat0,lon0,ndatebc,undef,nymdbc,nhmsbc
@@ -421,7 +425,7 @@ C---------- Read in Header file ----------------------------------
       if( iyear.ne.iyearbc ) then
 
        close(iunit)
-       open (iunit,form='unformatted',access='direct',
+       open (iunit,file=sstdata,form='unformatted',access='direct',
      .                                        recl=im2*jm2*nPgx*nPgy*4)
        nrec = 1
        call bcheader (iunit, ndmax, nrec,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.21 2004/10/22 14:52:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.22 2005/02/25 18:14:45 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -73,6 +73,7 @@ c-----------------------------------------------------------------------
        enddo
        enddo
        enddo
+       vegdata = 'veg19232.data'
        call fizhi_init_veg ( mythid, vegdata,im2,jm2,Nsx,Nsy,
      .         nSx*nPx,nSy*nPy,maxtyp,nchp,nchptot,nchpland,lons,lats,
      .         surftype,tilefrac,igrd,ityp,chfr,chlt,chlon)
