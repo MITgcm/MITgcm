@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.21 2004/04/09 06:08:08 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/seaice_init.F,v 1.22 2004/04/28 12:00:53 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -94,12 +94,26 @@ C--   Initialize grid info
          DO I=1-OLx,sNx+OLx
           CSTICE(i,j,bi,bj) =cos(yC(I,J,bi,bj)*deg2rad)
           CSUICE(i,j,bi,bj) =cos(yG(I,J,bi,bj)*deg2rad)
+CML(
+C     inverses of CSTICE and CSUICE. Let's hope we are never
+C     at the poles
+          IF ( CSTICE(I,J,bi,bj) .ne. 0. _d 0 ) THEN
+           RECIP_CSTICE(I,J,bi,bj) = 1./CSTICE(I,J,bi,bj)
+          ELSE	
+           RECIP_CSTICE(I,J,bi,bj) =0. _d 0
+          ENDIF
+          IF ( CSUICE(I,J,bi,bj) .ne. 0. _d 0 ) THEN
+           RECIP_CSUICE(I,J,bi,bj) = 1./CSUICE(I,J,bi,bj)
+          ELSE	
+           RECIP_CSUICE(I,J,bi,bj) =0. _d 0
+          ENDIF
+CML)
           SINEICE(i,j,bi,bj)=sin(yC(I,J,bi,bj)*deg2rad)
-          TNGTICE(i,j,bi,bj)=SINEICE(i,j,bi,bj)/CSTICE(i,j,bi,bj)
+          TNGTICE(i,j,bi,bj)=SINEICE(i,j,bi,bj)*RECIP_CSTICE(i,j,bi,bj)
           SINEICE(i,j,bi,bj)=sin(yG(I,J,bi,bj)*deg2rad)
-          TNGICE(i,j,bi,bj) =SINEICE(i,j,bi,bj)/CSUICE(i,j,bi,bj)
-          DXTICE(i,j,bi,bj)=dxF(i,j,bi,bj)/CSTICE(i,j,bi,bj)
-          DXUICE(i,j,bi,bj)=dxV(i,j,bi,bj)/CSUICE(i,j,bi,bj)
+          TNGICE(i,j,bi,bj) =SINEICE(i,j,bi,bj)*RECIP_CSUICE(i,j,bi,bj)
+          DXTICE(i,j,bi,bj)=dxF(i,j,bi,bj)*RECIP_CSTICE(i,j,bi,bj)
+          DXUICE(i,j,bi,bj)=dxV(i,j,bi,bj)*RECIP_CSUICE(i,j,bi,bj)
           DYTICE(i,j,bi,bj)=dyF(i,j,bi,bj)
           DYUICE(i,j,bi,bj)=dyU(i,j,bi,bj)
          ENDDO

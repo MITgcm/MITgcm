@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.282 2004/04/20 19:16:48 mlosch Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.283 2004/04/28 12:01:30 mlosch Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o replaced all occurrences of 1/CSTICE or 1/CSUICE
+  - they caused a segmentation fault under certain circumstances
+  - removed unused field WATR
 o bug fix in exf-package:
   -  u/vwind are defined at tracer/pressure points. The values of u/vwindmask
      now reflect that.

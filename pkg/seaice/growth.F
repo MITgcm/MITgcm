@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.13 2003/11/13 06:35:15 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/Attic/growth.F,v 1.14 2004/04/28 12:00:53 mlosch Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -82,7 +82,6 @@ cph)
         DO J=1,sNy
          DO I=1,sNx
           SEAICE_SALT(I,J,bi,bj)=ZERO
-          WATR(I,J,bi,bj)=ZERO
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -129,7 +128,7 @@ C NOW CORRECT YNEG
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
      &                          +(HEFF(I,J,1,bi,bj)-GHEFF(I,J))
            theta_old=theta(I,J,1,bi,bj)
-           theta(I,J,1,bi,bj)=
+           theta(I,J,1,bi,bj)= 
      &                    (YNEG(I,J,bi,bj)*72.0764 _d 0/dRf(1)+TBC)
 C HERE YNEG IS THE OCEAN TEMP. DIFFERENCE WITH NO SUPER-COOLING
            YNEG(I,J,bi,bj)=theta(I,J,1,bi,bj)-theta_old
@@ -203,15 +202,11 @@ C SNOW CONVERTED INTO WATER AND THEN INTO ICE
 C The factor 0.920 is used to convert m of sea-ice to m of freshwater
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
      &                  -(GHEFF(I,J)/QS)/SDF/0.920 _d 0*AR(I,J,bi,bj)
-           WATR(I,J,bi,bj)=WATR(I,J,bi,bj)
-     &                  -(GHEFF(I,J)/QS)/SDF/0.920 _d 0*AR(I,J,bi,bj)
            FICE(I,J,bi,bj)=ZERO
           ELSE IF(GHEFF(I,J).GT.GAREA(I,J)) THEN
            FICE(I,J,bi,bj)=-(GHEFF(I,J)-GAREA(I,J))/DELTAT
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
      &               -HSNOW(I,J,bi,bj)/SDF/0.920 _d 0*AR(I,J,bi,bj)
-           WATR(I,J,bi,bj)=WATR(I,J,bi,bj)
-     &               -HSNOW(I,J,bi,bj)/SDF/0.920*AR(I,J,bi,bj)
            HSNOW(I,J,bi,bj)=0.0
           END IF
 
@@ -283,14 +278,9 @@ C FREEZING, PRECIP ADDED AS SNOW
 C ADD PRECIP AS RAIN, WATER CONVERTED INTO ICE BY /0.920 _d 0
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
      &         -PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*DELTAT/0.920 _d 0
-           WATR(I,J,bi,bj)=WATR(I,J,bi,bj)
-     &         -PRECIP(I,J,bi,bj)*AREA(I,J,2,bi,bj)*DELTAT/0.920 _d 0
           ENDIF
 c Now add in precip over open water directly into ocean as negative salt
           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &         -PRECIP(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
-     &         *DELTAT/0.920 _d 0
-          WATR(I,J,bi,bj)=WATR(I,J,bi,bj)
      &         -PRECIP(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
      &         *DELTAT/0.920 _d 0
 C NOW GET FRESH WATER FLUX

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.8 2003/11/06 22:13:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/SEAICE.h,v 1.9 2004/04/28 12:00:53 mlosch Exp $
 C $Name:  $
 
 #ifdef ALLOW_SEAICE
@@ -45,7 +45,7 @@ C
       COMMON/ARRAY/HEFFM,UVM
       COMMON/OFL/YNEG
       COMMON/RIV/RIVER
-      COMMON/SALT_WATER/SEAICE_SALT,WATR
+      COMMON/SALT_WATER/SEAICE_SALT
       _RL HEFF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,3,nSx,nSy)
       _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL HEFFM      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
@@ -53,7 +53,6 @@ C
       _RL YNEG       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL RIVER      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
       _RL SEAICE_SALT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
-      _RL WATR       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
 #ifdef SEAICE_MULTILEVEL
       INTEGER MULTDIM
