@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.9 2004/09/30 15:59:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.10 2004/10/12 19:30:57 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -161,6 +161,30 @@ c         Physics works top-down. so -> need to flip arrays
         do j = 1,sNy
         do i = 1,sNx
          sphy(i,j,Nrphys+1-L,bi,bj) = tempphy(i,j,L,bi,bj)
+        enddo
+        enddo
+        enddo
+
+c Zero out fizhi tendency arrays on the fizhi grid
+        do L = 1,Nrphys
+        do j = 1,sNy
+        do i = 1,sNx
+         duphy(i,j,L,bi,bj) = 0.
+         dvphy(i,j,L,bi,bj) = 0.
+         dthphy(i,j,L,bi,bj) = 0.
+         dsphy(i,j,L,bi,bj) = 0.
+        enddo
+        enddo
+        enddo
+
+c Zero out fizhi tendency arrays on the dynamics grid
+        do L = 1,Nr
+        do j = jm1,jm2
+        do i = im1,im2
+         guphy(i,j,L,bi,bj) = 0.
+         gvphy(i,j,L,bi,bj) = 0.
+         gthphy(i,j,L,bi,bj) = 0.
+         gsphy(i,j,L,bi,bj) = 0.
         enddo
         enddo
         enddo
