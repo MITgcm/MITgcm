@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.16 2004/03/27 03:51:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.17 2004/06/30 00:58:06 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -495,7 +495,12 @@ C     EXTERNAL MPI_Wtime
       systemTime    = 0.
       wallClockTime = 0.
 #else
+#ifdef HAVE_ETIME
       ACTUAL = ETIME(TARRAY)
+#else
+      TARRAY(1) = 0.
+      TARRAY(2) = 0.
+#endif
       userTime      = TARRAY(1)
       systemTime    = TARRAY(2)
 #ifdef HAVE_CLOC

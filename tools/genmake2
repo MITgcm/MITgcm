@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.80 2004/06/29 19:00:41 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.81 2004/06/30 00:58:06 cnh Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -682,6 +682,7 @@ HAVE_FDATE=
 FC_NAMEMANGLE=
 HAVE_CLOC=
 HAVE_NETCDF=
+HAVE_ETIME=
 
 MODS=
 TOOLSDIR=
@@ -732,7 +733,7 @@ gm_s3="LN S64 KPP LINK PACKAGES MAKEDEPEND PDEPEND PDEFAULT INCLUDES FFLAGS FOPT
 gm_s4="CFLAGS KFLAGS1 KFLAGS2 LIBS KPPFILES NOOPTFILES NOOPTFLAGS"
 gm_s5="TOOLSDIR SOURCEDIRS INCLUDEDIRS PWD MAKE THISHOSTNAME THISDATE MACHINE"
 gm_s6="EXECUTABLE EXEHOOK EXEDIR PACKAGES_CONF"
-gm_s7="HAVE_SYSTEM HAVE_FDATE FC_NAMEMANGLE"
+gm_s7="HAVE_SYSTEM HAVE_FDATE FC_NAMEMANGLE HAVE_ETIME"
 
 #  The following are all related to adjoint/tangent-linear stuff
 gm_s10="AUTODIFF_PKG_USED AD_OPTFILE TAMC TAF AD_TAMC_FLAGS AD_TAF_FLAGS"
@@ -1148,6 +1149,26 @@ if test "x$RETVAL" = x0 ; then
     echo "yes"
 else
     HAVE_FDATE=
+    echo "no"
+fi
+rm -f genmake_tcomp*
+
+printf "  Do we have the etime() command using $FC...  "
+cat > genmake_tcomp.f <<EOF
+      program hello
+      REAL*4 TARRAY(2)
+      call etime( tarray )
+      print *, tarray
+      end
+EOF
+$FC $FFLAGS $DEFINES -o genmake_tcomp genmake_tcomp.f > genmake_tcomp.log 2>&1
+RETVAL=$?
+if test "x$RETVAL" = x0 ; then
+    HAVE_ETIME=t
+    DEFINES="$DEFINES -DHAVE_ETIME"
+    echo "yes"
+else
+    HAVE_ETIME=
     echo "no"
 fi
 rm -f genmake_tcomp*
