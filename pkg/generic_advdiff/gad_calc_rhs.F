@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.17 2003/01/26 21:08:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.18 2003/05/14 09:20:06 mlosch Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -402,7 +402,15 @@ C *note* should update KPP_TRANSPORT_T to set df  *aja*
      I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
      I     KappaRT,
      U     df )
+#ifdef ALLOW_PTRACERS
+       ELSEIF (tracerIdentity.EQ.GAD_TR1) THEN
+        CALL KPP_TRANSPORT_PTR(
+     I     iMin,iMax,jMin,jMax,bi,bj,k,km1,
+     I     KappaRT,
+     U     df )
+#endif
        ELSE
+        PRINT*,'invalid tracer indentity: ', tracerIdentity
         STOP 'GAD_CALC_RHS: Ooops'
        ENDIF
        DO j=1-Oly,sNy+Oly
