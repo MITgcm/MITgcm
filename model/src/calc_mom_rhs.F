@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.47 2001/03/06 16:51:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.48 2001/03/08 20:19:28 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -20,7 +20,7 @@ C     | deal "properly" with thin walls.                         |
 C     \==========================================================/
       SUBROUTINE CALC_MOM_RHS( 
      I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
-     I        phi_hyd,KappaRU,KappaRV,
+     I        phiHyd,KappaRU,KappaRV,
      U        fVerU, fVerV,
      I        myCurrentTime, myThid)
 
@@ -33,6 +33,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#include "SURFACE.h"
 
 C     == Routine arguments ==
 C     fZon    - Work array for flux of momentum in the east-west
@@ -42,12 +43,12 @@ C               direction at the south face of a cell.
 C     fVerU   - Flux of momentum in the vertical
 C     fVerV     direction out of the upper face of a cell K
 C               ( flux into the cell above ).
-C     phi_hyd - Hydrostatic pressure
+C     phiHyd  - Hydrostatic Potential (pressure/rho)
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
 C                                      results will be set.
 C     kUp, kDown                     - Index for upper and lower layers.
 C     myThid - Instance number for this innvocation of CALC_MOM_RHS
-      _RL phi_hyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL phiHyd(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL KappaRV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL fVerU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -482,7 +483,7 @@ C---  Hydrostatic term ( -1/rhoConst . dphi/dx )
       DO j=jMin,jMax
        DO i=iMin,iMax
         pf(i,j) = - _recip_dxC(i,j,bi,bj)
-     &   *(phi_hyd(i,j,k)-phi_hyd(i-1,j,k))*recip_rhoConst
+     &   *(phiHyd(i,j,k)-phiHyd(i-1,j,k))
        ENDDO
       ENDDO
 #endif /* INCLUDE_GRADPH_CODE */
@@ -807,7 +808,7 @@ C---  Hydorstatic term (-1/rho . dp/dy )
       DO j=jMin,jMax
        DO i=iMin,iMax
         pF(i,j) = -_recip_dyC(i,j,bi,bj)
-     &   *(phi_hyd(i,j,k)-phi_hyd(i,j-1,k))*recip_rhoConst
+     &   *(phiHyd(i,j,k)-phiHyd(i,j-1,k))
        ENDDO
       ENDDO
 #endif /* INCLUDE_GRADPH_CODE */
@@ -927,14 +928,14 @@ C     Pressure extrapolated forward in time
       DO j=jMin,jMax
        DO i=iMin,iMax
         pf(i,j) = 
-     &   ab15*(   etaN(i,j,bi,bj)*gBaro )
-     &  +ab05*(etaNm1(i,j,bi,bj)*gBaro )
+     &   ab15*(  etaN(i,j,bi,bj)*Bo_surf(i,j,bi,bj) )
+     &  +ab05*(etaNm1(i,j,bi,bj)*Bo_surf(i,j,bi,bj) )
        ENDDO
       ENDDO
       IF (staggerTimeStep) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-         pf(i,j) = pf(i,j)+phi_hyd(i,j,k)*recip_rhoConst
+         pf(i,j) = pf(i,j)+phiHyd(i,j,k)
         ENDDO
        ENDDO
       ENDIF
