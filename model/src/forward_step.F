@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.75 2003/11/17 23:43:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.76 2003/11/23 01:28:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -147,26 +147,17 @@ c**************************************
 
 C--   Call external forcing package
 #ifdef ALLOW_BULK_FORCE
-      IF ( useBulkforce ) THEN
+      IF ( useBulkForce ) THEN
 #ifdef ALLOW_DEBUG
        IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('BULKF_FIELDS_LOAD',myThid)
 #endif
-       CALL TIMER_START('BULKF_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
-       CALL BULKF_FIELDS_LOAD( mytime, myiter, mythid )
-       CALL TIMER_STOP ('BULKF_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
-c calculate qnet and empmr (and wind stress)
-       DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-          CALL BULKF_FORCING( bi,bj, mytime, myiter, mythid )
-         ENDDO
-       ENDDO
-c     Update the tile edges.
-       _EXCH_XY_R8(Qnet,   mythid)
-       _EXCH_XY_R8(EmPmR,   mythid)
-       CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
-C       _EXCH_XY_R8(fu     , mythid)
-C       _EXCH_XY_R8(fv     , mythid)
+       CALL TIMER_START('BULKF_FORCING      [FORWARD_STEP]',mythid)
+C-    load all forcing fields at current time
+       CALL BULKF_FIELDS_LOAD( myTime, myIter, myThid )
+C-    calculate qnet and empmr (and wind stress)
+       CALL BULKF_FORCING( myTime, myIter, myThid )
+       CALL TIMER_STOP ('BULKF_FORCING      [FORWARD_STEP]',mythid)
       ELSE
 #endif /* ALLOW_BULK_FORCE */
 
@@ -208,6 +199,20 @@ c--   Add control vector for forcing and parameter fields
      &     CALL CTRL_MAP_FORCING (mythid)
 #endif
 
+#ifdef ALLOW_THSICE
+      IF (useThSIce) THEN
+#ifdef ALLOW_DEBUG
+        IF ( debugLevel .GE. debLevB )
+     &    CALL DEBUG_CALL('THSICE_MAIN',myThid)
+#endif
+C--     Step forward Therm.Sea-Ice variables
+C       and modify forcing terms including effects from ice
+        CALL TIMER_START('THSICE_MAIN        [FORWARD_STEP]', myThid)
+        CALL THSICE_MAIN( myTime, myIter, myThid )
+        CALL TIMER_STOP( 'THSICE_MAIN        [FORWARD_STEP]', myThid)
+      ENDIF
+#endif /* ALLOW_THSICE */
+
 # ifdef ALLOW_SEAICE
 C--   Call sea ice model to compute forcing/external data fields.  In
 C     addition to computing prognostic sea-ice variables and diagnosing the
@@ -235,7 +240,7 @@ C--   Freeze water at the surface
 CADJ STORE theta = comlev1, key = ikey_dynamics
 #endif
       IF ( allowFreezing .AND. .NOT. useSEAICE
-     &     .AND. .NOT. useThermSeaIce ) THEN
+     &                   .AND. .NOT. useThSIce ) THEN
         CALL FREEZE_SURFACE(  myTime, myIter, myThid )
       ENDIF
 

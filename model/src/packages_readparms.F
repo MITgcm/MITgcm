@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.26 2003/11/06 22:01:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.27 2003/11/23 01:28:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -96,19 +96,15 @@ C--   Initialize SEAICE parameters
       IF (useOBCS) CALL OBCS_READPARMS( myThid )
 #endif
 
-cswdblk -- add ---
 #ifdef ALLOW_BULK_FORCE
 C -- initialize Bulkf parameters
-      IF (useBulkForce) call BULKF_READPARMS( myThid )
+      IF (useBulkForce) CALL BULKF_READPARMS( myThid )
 #endif
-cswdblk --- end add ---
 
-cswdice -- add ---
-#ifdef ALLOW_THERM_SEAICE
-C -- initialize Sea Ice parameters
-      IF (useThermSeaIce) call ICE_READPARMS( myThid )
+#ifdef ALLOW_THSICE
+C -- initialize Therm.Sea-Ice parameters
+      IF (useThSIce) CALL THSICE_READPARMS( myThid )
 #endif
-cswdice --- end add ---
 
 #ifdef ALLOW_PTRACERS
       IF (usePTRACERS) CALL PTRACERS_READPARMS( myThid )
@@ -152,4 +148,5 @@ c--   Initialize ECCO package parameters
       IF (useECCO) call ecco_readparms ( myThid )
 #endif
 
+      RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.34 2003/11/20 03:50:22 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.35 2003/11/23 01:28:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -125,14 +125,14 @@ C--   Do SBO diagnostics.
 
 #ifdef ALLOW_BULK_FORCE
 C--   Do bulkf diagnostics.
-      IF (useBulkforce .AND. myIter.NE.nIter0 )
+      IF (useBulkForce .AND. myIter.NE.nIter0 )
      & CALL BULKF_DIAGS( myTime, myIter, myThid )
 #endif
 
-#ifdef ALLOW_THERM_SEAICE
+#ifdef ALLOW_THSICE
 C--   Do seaice diagnostics.
-      IF (useThermSeaice)
-     & CALL ICE_DIAGS( myTime, myIter, myThid )
+      IF (useThSIce)
+     & CALL THSICE_DIAGS( myTime, myIter, myThid )
 #endif
 
 cswdptr ---  add ---

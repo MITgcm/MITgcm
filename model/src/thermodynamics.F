@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.60 2003/11/20 03:46:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.61 2003/11/23 01:28:05 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -431,21 +431,6 @@ C--     Calculate future values on open boundaries
         ENDIF
 #endif  /* ALLOW_OBCS */
 
-
-#ifdef ALLOW_THERM_SEAICE
-       IF (useThermSeaIce) THEN
-#ifdef ALLOW_DEBUG
-        IF ( debugLevel .GE. debLevB ) 
-     &    CALL DEBUG_CALL('ICE_FORCING',myThid)
-#endif
-C--     Determines forcing terms based on external fields
-C       including effects from ice
-        CALL ICE_FORCING(
-     I             bi, bj, iMin, iMax, jMin, jMax,
-     I             myThid )
-       ELSE
-#endif /* ALLOW_THERM_SEAICE */
-
 C--     Determines forcing terms based on external fields
 C       relaxation terms, etc.
 #ifdef ALLOW_DEBUG
@@ -455,11 +440,6 @@ C       relaxation terms, etc.
         CALL EXTERNAL_FORCING_SURF(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myTime, myIter, myThid )
-
-#ifdef ALLOW_THERM_SEAICE
-C--    end of if/else block useThermSeaIce --
-       ENDIF
-#endif /* ALLOW_THERM_SEAICE */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph needed for KPP
@@ -702,12 +682,6 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         myIter, myThid)
          ENDIF
 
-#ifdef ALLOW_THERM_SEAICE
-         IF (useThermSeaIce .AND. k.EQ.1) THEN
-           CALL ICE_FREEZE( bi,bj, iMin,iMax,jMin,jMax, myThid )
-         ENDIF
-#endif
-
          IF ( saltStepping ) THEN
            CALL CALC_GS(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
@@ -756,7 +730,7 @@ C--      Freeze water
 C  this bit of code is left here for backward compatibility.
 C  freezing at surface level has been moved to FORWARD_STEP 
          IF ( useOldFreezing .AND. .NOT. useSEAICE
-     &       .AND. .NOT.(useThermSeaIce.AND.k.EQ.1) ) THEN
+     &       .AND. .NOT.(useThSIce.AND.k.EQ.1) ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE gT(:,:,k,bi,bj) = comlev1_bibj_k
 CADJ &   , key = kkey, byte = isbyte
@@ -766,16 +740,6 @@ CADJ &   , key = kkey, byte = isbyte
 
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO
-
-cswdice -- add ---
-#ifdef ALLOW_THERM_SEAICE
-c timeaveraging for ice model values
-ceh3 This should be wrapped in an IF ( useThermSeaIce ) THEN
-           CALL ICE_AVE(bi,bj,iMin,iMax,jMin,jMax,myThid )
-#endif
-cswdice --- end add ---
-
-
 
 
 C--     Implicit diffusion
