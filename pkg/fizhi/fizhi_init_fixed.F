@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.5 2004/06/08 15:09:01 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_fixed.F,v 1.6 2004/06/08 22:26:08 molod Exp $
 C $Name:  $
 
        subroutine fizhi_init_fixed (myThid)
@@ -52,8 +52,8 @@ c-----------------------------------------------------------------------
        nhmsb = nhms0
 
        call fizhi_alarms(nymdb,nhmsb,deltaTClock)
-       call fizhi_init_veg ( mythid, vegdata,idim2,jdim2,Nsx,Nsy,maxtyp,
-     .            surftype,tilefrac,igrd,ityp,chfr )
+       call fizhi_init_veg ( mythid, vegdata,idim2,jdim2,Nsx,Nsy,
+     .  nSx*nPx,nSy*nPy,maxtyp,nchp,surftype,tilefrac,igrd,ityp,chfr )
 
 C Compute pressure profile to get methane and n2o values (bottom-up)
 

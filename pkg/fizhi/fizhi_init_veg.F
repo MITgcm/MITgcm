@@ -1,8 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.5 2004/06/07 20:26:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.6 2004/06/08 22:26:08 molod Exp $
 C $Name:  $
 
-      subroutine fizhi_init_veg(mythid,vegdata,im,jm,Nsx,Nsy,maxtyp,
-     . surftype,tilefrac,igrd,ityp,chfr )
+      subroutine fizhi_init_veg(mythid,vegdata,im,jm,Nsx,Nsy,Nxg,Nyg,
+     . maxtyp,nchp,surftype,tilefrac,igrd,ityp,chfr )
 C***********************************************************************
 C Subroutine fizhi_init_veg - routine to read in the land surface types,
 C      interpolate to the models grid, and set up tile space for use by 
@@ -18,7 +18,7 @@ C jm       - model grid latitude dimension (number of lat. points)
 C Nsx      - Number of processors in x-direction
 C Nsy      - Number of processors in y-direction
 C maxtyp   - maximum allowable number of land surface types per grid box
-C nchpmax  - integer maximum per-processor number of tiles in tile space
+C nchp     - integer per-processor number of tiles in tile space
 C
 C OUTPUT:
 C
@@ -49,18 +49,18 @@ C***********************************************************************
       implicit none
 #include "EEPARAMS.h"
 
-      integer mythid,im,jm,maxtyp,nchpmax,Nsx,Nsy
+      integer mythid,im,jm,maxtyp,nchp,Nsx,Nsy,Nxg,Nyg
       integer surftype(im,jm,maxtyp,Nsx,Nsy)
-      integer igrd(nchpmax,Nsx,Nsy),ityp(nchpmax,Nsx,Nsy)
+      integer igrd(nchp,Nsx,Nsy),ityp(nchp,Nsx,Nsy)
       real tilefrac(im,jm,maxtyp,Nsx,Nsy)
-      real chfr(nchpmax,Nsx,Nsy)
+      real chfr(nchp,Nsx,Nsy)
       character*40 vegdata
-      integer imdata,jmdata,Nsxdata,Nsydata
-      integer nchp,nchpland,biglobal,bjglobal
+      integer imdata,jmdata,Nxgdata,Nygdata
+      integer nchplocal,nchpland,biglobal,bjglobal
 
-      integer*4 im_32, jm_32, Nsx_32, Nsy_32
-      integer*4 iveg_32(im,jm,maxtyp,Nsx,Nsy)
-         real*4  veg_32(im,jm,maxtyp,Nsx,Nsy)
+      integer*4 im_32, jm_32, Nxg_32, Nyg_32
+      integer*4 iveg_32(im,jm,maxtyp,Nxg,Nyg)
+         real*4  veg_32(im,jm,maxtyp,Nxg,Nyg)
 
       integer i,j,k,bi,bj,ierr1,kveg
 
@@ -69,7 +69,7 @@ C***********************************************************************
       open(kveg,file=vegdata,form='unformatted',access='sequential', 
      .                      iostat=ierr1)
       if( ierr1.eq.0 ) then
-          read(kveg)im_32,jm_32,Nsx_32,Nsy_32,IVEG_32,VEG_32
+          read(kveg)im_32,jm_32,Nxg_32,Nyg_32,IVEG_32,VEG_32
       else
        print *
        print *, 'Veg Dataset: ',vegdata,' not found!'
@@ -80,15 +80,15 @@ C***********************************************************************
       IF (myThid.eq.1) THEN
       imdata = im_32
       jmdata = jm_32
-      Nsxdata = Nsx_32
-      Nsydata = Nsy_32
+      Nxgdata = Nxg_32
+      Nygdata = Nyg_32
       if( (imdata.ne.im) .or. (jmdata.ne.jm) .or. 
-     .                     (Nsxdata.ne.Nsx) .or. (Nsydata.ne.Nsy) ) then
+     .                     (Nxgdata.ne.Nxg) .or. (Nygdata.ne.Nyg) ) then
        print *
        print *, 'Veg Data Resolution is Incorrect! '
        print *,' Model Res: ',im,'x',jm,' Data Res: ',imdata,'x',jmdata
-       print *,' Model Nsx Nsy: ',Nsx,' ',Nsy,' Data Nsx Nsy: ',Nsxdata,
-     .                    ' ',Nsydata
+       print *,' Model Nxg Nyg: ',Nxg,' ',Nyg,' Data Nxg Nyg: ',Nxgdata,
+     .                    ' ',Nygdata
        print *
        call exit(102)
       ENDIF
@@ -113,7 +113,7 @@ c      igrd :  grid index
 c      ityp :  veg. type
 c      chfr :  vegetation fraction
 
-c  nchplnd<=nchp is the actual number of land chips
+c  nchplnd<=nchplocal is the actual number of land chips
 
 c land points
 c -----------
@@ -134,24 +134,24 @@ c -----------
 
 c ocean points
 c ------------
-      nchp = nchplnd
+      nchplocal = nchplnd
 
       do k=1,maxtyp
       do j=1,jm
       do i=1,im
       if(surftype(i,j,k,bi,bj).ge.100 .and. 
      .                                  tilefrac(i,j,k,bi,bj).gt.0.)then
-             nchp  = nchp + 1
-       igrd (nchp,bi,bj) = i + (j-1)*im
-       ityp (nchp,bi,bj) = surftype(i,j,k,bi,bj)
-       chfr (nchp,bi,bj) = tilefrac(i,j,k,bi,bj)
+             nchplocal  = nchplocal + 1
+       igrd (nchplocal,bi,bj) = i + (j-1)*im
+       ityp (nchplocal,bi,bj) = surftype(i,j,k,bi,bj)
+       chfr (nchplocal,bi,bj) = tilefrac(i,j,k,bi,bj)
       endif
       enddo
       enddo
       enddo
 
       print *, 'bi ',bi,' bj ',bj
-      print *, 'Number of Total Tiles: ',nchp
+      print *, 'Number of Total Tiles: ',nchplocal
       print *, 'Number of Land  Tiles: ',nchplnd
       print *
 

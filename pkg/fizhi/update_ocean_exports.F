@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.3 2004/06/08 16:42:54 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/update_ocean_exports.F,v 1.4 2004/06/08 22:26:08 molod Exp $
 C $Name:  $
 
        subroutine update_ocean_exports (myTime, myIter, myThid)
@@ -20,140 +20,124 @@ c-----------------------------------------------------------------------
 
        integer myTime, myIter, myThid
 
-       integer i, j, L, bi, bj
+       integer i, j, bi, bj, biglobal, bjglobal
        integer im1, im2, jm1, jm2, idim1, idim2, jdim1, jdim2
-
-       im1 = 1-OLx
-       im2 = sNx+OLx
-       jm1 = 1-OLy
-       jm2 = sNy+OLy
-       idim1 = 1
-       idim2 = sNx
-       jdim1 = 1
-       jdim2 = sNy
-
+       integer nSxglobal, nSyglobal
        integer ksst,kice
-
-c Declare Local Variables
-c -----------------------
        real        sstmin 
        parameter ( sstmin = 273.16 )
 
-       integer i,j,im,jm
+       idim1 = 1-OLx
+       idim2 = sNx+OLx
+       jdim1 = 1-OLy
+       jdim2 = sNy+OLy
+       im1 = 1
+       im2 = sNx
+       jm1 = 1
+       jm2 = sNy
+       nSxglobal = nSx*nPx
+       nSyglobal = nSy*nPy
 
-C*********************************************************************
-C****             Interpolate Data to Current Time                ****
-C*********************************************************************
+       call mdsfindunit( ksst, myThid )
+       call mdsfindunit( kice, myThid )
+ 
+C***********************************************************************
 
-       call getsst (ksst,nymd,nhms,sst,im,jm)
-       call getsice (kice,nymd,nhms,sice,im,jm)
+       DO BJ = myByLo(myThid),myByHi(myThid)
+       DO BI = myBxLo(myThid),myBxHi(myThid)
+
+       biglobal=bi+(myXGlobalLo-1)/im2
+       bjglobal=bj+(myYGlobalLo-1)/jm2
+
+       call getsst(ksst,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,
+     .  nSy,nSxglobal,nSyglobal,bi,bj,biglobal,bjglobal,nymd,nhms,sst)
+       call getsice(kice,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,
+     .  nSy,nSxglobal,nSyglobal,bi,bj,biglobal,bjglobal,nymd,nhms,sice)
 
 c Check for Minimum Open-Water SST
 c --------------------------------
-       do j=1,jm
-       do i=1,im
-       if(sice(i,j).eq.0.0 .and. sst(i,j).lt.sstmin)sst(i,j) = sstmin
+       do j=jm1,jm2
+       do i=im1,im2
+       if(sice(i,j,bi,bj).eq.0.0 .and. sst(i,j,bi,bj).lt.sstmin)
+     .                                          sst(i,j,bi,bj) = sstmin
        enddo
        enddo
+
+       ENDDO
+       ENDDO
 
        return
        end
 
-       subroutine getsice ( iunit,nymd,nhms,sice,im,jm )
-C************************************************************************
-C!GETSICE
+       subroutine getsice(iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,
+     .            nSx,nSy,nPx,nPy,bi,bj,biglobal,bjglobal,nymd,nhms,sice)
 C************************************************************************
 C
 C!ROUTINE:	GETSICE
-C!PROGRAMMER:	Sharon Nebuda
-C!DATE CODED:	May 8, 1996
 C!DESCRIPTION:	GETSICE returns the sea ice depth.
 C!		This routine is adaptable for any frequency
 C!		data upto a daily frequency.  
 C!		note: for diurnal data ndmax should be increased.
 C
 C!INPUT PARAMETERS:
-C!		iunit   Unit number assigned to the sice data file
-C!		nymd	YYMMDD of the current model timestep
-C!		nhms	HHMMSS of the model time
-C!            im     Number of x points
-C!            jm     Number of y points
-C!       lattice     Grid Decomposition defined by Dynamics
+C!	iunit     Unit number assigned to the sice data file
+C!      idim1     Start dimension in x-direction
+C!      idim2     End dimension in x-direction
+C!      jdim1     Start dimension in y-direction
+C!      jdim2     End dimension in y-direction
+C!      im1       Begin of x-direction span for filling sice
+C!      im2       End of x-direction span for filling sice
+C!      jm1       Begin of y-direction span for filling sice
+C!      jm2       End of y-direction span for filling sice
+C!      nSx       Number of processors in x-direction (local processor)
+C!      nSy       Number of processors in y-direction (local processor)
+C!      nPx       Number of processors in x-direction (global)
+C!      nPy       Number of processors in y-direction (global)
+C!      bi        Processor number in x-direction (local to processor)
+C!      bj        Processor number in y-direction (local to processor)
+C!      biglobal  Processor number in x-direction (global)
+C!      bjglobal  Processor number in y-direction (global)
+C!	nymd	  YYMMDD of the current model timestep
+C!	nhms	  HHMMSS of the model time
 C
 C!OUTPUT PARAMETERS:
-C!		sice(im,jm)	Sea ice depth in meters
+C!	sice(idim1:idim2,jdim1:jdim2,nSx,nSy) Sea ice depth in meters
 C
 C!ROUTINES CALLED:
 C
-C!	bcdata		Reads the data for a given unit number
-C!	bcheader	Reads the header info for a given unit number
-C!     interp_time   Returns weights for linear interpolation
+C!	bcdata	     Reads the data for a given unit number
+C!	bcheader     Reads the header info for a given unit number
+C!      interp_time  Returns weights for linear interpolation
 C
 C--------------------------------------------------------------------------
 
-      use dynamics_lattice_module
       implicit none
-      type ( dynamics_lattice_type ) lattice
+#include "CPP_OPTIONS.h"
+
+      integer iunit,idim1,idim2,jdim1,jdim2,im1,im2,jm1,jm2,nSx,nSy
+      integer bi,bj,biglobal.bjglobal,nymd,nhms
+
+      _RL sice(idim1:idim2,jdim1:jdim2,nSx,nSy)
 
 c MPI Utilities
 c -------------
       include 'mpif.h'
       integer  ierror
 
-C  Parameter statements
-      integer 	ndmax 	! Maximum number of dates in one year for the data
+C Maximum number of dates in one year for the data
+      integer 	ndmax
       parameter (ndmax = 370)
 
-C  Variables passed to the routine:
-      integer 	iunit	! Unit number assigned to the sea ice data file
-      integer 	nymd	! YYMMDD of the current model timestep
-      integer 	nhms	! HHMMSS of the model time
-      integer        im     ! Number of x points
-      integer        jm     ! Number of y points
-
-C  Variables returned by the routine:
-      real 	sice(im,jm)	! Sea ice depth in meters
-
-C  Variables unique to the routine:
-      character*8  cname	! Name of the data in the file header
-      character*80 cdscrip	! Description of the data in the file header
-      real	fac1		! Weighted value (fraction) of the data
-				! before the model time
-      real	fac2		! Weighted value (fraction) of the data
-				! after the model time
-      logical	first		! True for first time using the dates for the
-				! BC data file.  Then read in the header file.
-      logical	found		! If false, then the data surrounding the model
-				! time was not found
-      logical	error		! TRUE if problem with data
-      integer 	i,j,n,nn	! DO loop counters
-      integer 	iyear		! Year of model 
-      integer 	iyearbc		! Year of boundary condition data 
-      real 	lat0		! Starting lat of the bc data set (future use)
-      real 	lon0		! Starting lon of the bc data set (future use)
-      integer 	nd		! Counter for record number of data to read
-      integer 	ndby3		! int(ndatebc/3) used for write statement
-      integer 	imbc  		! IM read from the BC data
-      integer 	jmbc		! JM read from the BC data
-      integer	ndatebc		! Number of dates in the BC file
-      integer 	nhmsbc(ndmax)	! HHMMSS of the data time (not needed currently)
-      integer	nhmsbc1	! HHMMSS of the earlier data kept from last timestep
-      integer	nhmsbc2 ! HHMMSS of the later data kept from last timestep
-      integer 	nrec		! Record number of the header (set to 1)
-      integer	nymdbc(ndmax)	! YYYYMMDD of each data
-      integer	nymdbc1	! YYYYMMDD of the earlier data kept from last timestep
-      integer	nymdbc2	! YYYYMMDD of the later data kept from last timestep
-      integer 	nymdmod	 	! YYYYMMDD of the current model timestep
-      real 	timebc1		! YYYYMMDD.HHMMSS of the earlier bc data 
-      real 	timebc2		! YYYYMMDD.HHMMSS of the later bc data 
-      real 	timemod		! YYYYMMDD.HHMMSS of the current timestep
-      real 	undef		! Undefined value for missing data
+      character*8  cname
+      character*80 cdscrip
+      real fac1, fac2, lat0, lon0, timebc1, timebc2, timemod, undef
+      logical first, found, error
+      integer i,j,n,nn,iyear,iyearbc,nd,ndby3,imbc,jmbc,ndatebc
+      integer nhmsbc(ndmax), nhmsbc1, nhmsbc2,nrec
+      integer nymdbc(ndmax),nymdbc1,nymdbc2,nymdmod
 
 C Define Allocatable Arrays
-      real, allocatable, save :: sicebc1(:,:)    ! Sea ice 0=no 1=yes from the bc data
-                                                 ! of the date before the model time
-      real, allocatable, save :: sicebc2(:,:)    ! Sea ice 0=no 1=yes from bc data
-                                                 ! of the date after the model time
+      real sicebc1(im2,jm2,nPx,nPy),sicebc2(im2,jm2,nPx,nPy)
 
 C--------- Variable Initialization ---------------------------------
 
@@ -164,6 +148,7 @@ c  save header info
       save imbc, jmbc, lat0, lon0, ndatebc, undef, nymdbc, nhmsbc
       save nymdbc1, nymdbc2, nhmsbc1, nhmsbc2
       save first
+      save sicebc1, sicebc2
 
 c  this only works for between 1950-2050
       if (nymd .lt. 500101) then
@@ -179,8 +164,6 @@ c  these vaules make the iyear .ne. iyearbc true anyways for
 c  for the first time so first isnt checked below.
 
       if (first) then
-      allocate ( sicebc1(lattice%imglobal,lattice%jmglobal) )    ! Allocate Memory for sicebc1
-      allocate ( sicebc2(lattice%imglobal,lattice%jmglobal) )    ! Allocate Memory for sicebc2
         nymdbc(2) = 0
         nymdbc1   = 0
         nymdbc2   = 0
@@ -195,10 +178,9 @@ C---------- Read in Header file ----------------------------------
       iyearbc = nymdbc(2)/10000
 
       if( iyear.ne.iyearbc ) then
-        if( lattice%myid.eq.0 ) then
 
         close(iunit)
-        open (iunit, form='unformatted', access='direct',recl=lattice%imglobal*lattice%jmglobal*4)
+        open (iunit, form='unformatted', access='direct',recl=im2*jm2*4)
         nrec = 1
         call bcheader (iunit, ndmax, nrec,
      .                 cname, cdscrip, imbc, jmbc, lat0, lon0, 
@@ -208,149 +190,131 @@ C--------- Check data for Compatibility ------------------------------
 
 C Check for correct data in boundary condition file
        if (.not.error .and. cname.ne.'SICE') then
-            write(6,*) 'Wrong data in SICE boundary condition file => ',cname
-            error = .true.
+        write(6,*)'Wrong data in SICE boundary condition file => ',cname
+        error = .true.
        endif
 
 C Check Horizontal Resolution
-       if (.not.error .and. imbc*jmbc.ne.lattice%imglobal*lattice%jmglobal) then
-            write(6,*) 'Boundary Condition Resolution DOES NOT match Model Resolution!'
-            write(6,*) 'Boundary Condition Resolution:  ',imbc*jmbc
-            write(6,*) '             Model Resolution:  ',lattice%imglobal*lattice%jmglobal
-            error = .true.
+       if (.not.error .and. imbc*jmbc.ne.im2*jm2) then
+        write(6,*) ' B.C. Resolution DOES NOT match Model Resolution!'
+        write(6,*) ' B.C. Resolution:  ',imbc*jmbc
+        write(6,*) 'Model Resolution:  ',im2*jm2
+        error = .true.
        endif
 
 C Check Year 
        iyearbc = nymdbc(2)/10000
        if (.not.error .and. iyear.ne.iyearbc .and. iyearbc.ne.0) then
-            write(6,*) 'Boundary Condition Year DOES NOT match REQUESTED Year!'
-            write(6,*) 'Boundary Condition Year:  ', iyearbc
-            write(6,*) '         Requested Year:  ', iyear
-            error = .true.
+        write(6,*) '     B.C. Year DOES NOT match REQUESTED Year!'
+        write(6,*) '     B.C. Year:  ', iyearbc
+        write(6,*) 'Requested Year:  ', iyear
+        error = .true.
        endif
 
-       if (.not.error)   then		
+       if (.not.error)   then
 C if climatology, fill dates for data with current model year
-            if (iyearbc.eq.0) then		
-            write(6,*)
-            write(6,*) 'Climatological Dataset is being used.'  
-            write(6,*) 'Current model year will be used to fill Header Dates'
-              do n = 2, ndatebc-1
-               nymdbc(n) = nymdbc(n) +(nymdmod/10000)*10000 
-              enddo
+        if (iyearbc.eq.0) then		
+         write(6,*)
+         write(6,*) 'Climatological Dataset is being used.'  
+         write(6,*) 'Current model year to be used to fill Header Dates'
+         do n = 2, ndatebc-1
+          nymdbc(n) = nymdbc(n) +(nymdmod/10000)*10000 
+         enddo
 C  For the first date subtract 1 year from the current model NYMD
-              n = 1
-              nymdbc(n) = nymdbc(n) +(nymdmod/10000-1)*10000 
+         n = 1
+         nymdbc(n) = nymdbc(n) +(nymdmod/10000-1)*10000 
 C  For the last date add 1 year to the current model NYMD
-              n = ndatebc
-              nymdbc(n) = nymdbc(n) +(nymdmod/10000+1)*10000 
-            endif
+         n = ndatebc
+         nymdbc(n) = nymdbc(n) +(nymdmod/10000+1)*10000 
+        endif
 
 C  Write out header info
-       write(6,*) ' Updated boundary condition data'
-       write(6,*) ' ---------------------------------'
-       write(6,*) ' Variable: ',cname
-       write(6,*) ' Description: ',cdscrip
-       write(6,*) ' Resolution: x= ',imbc,' y= ',jmbc,' Undefined value = ',undef
-       write(6,*) ' Starting latitude = ',lat0,' longitude =',lon0
-       write(6,*) ' Data valid at these times: '
-       ndby3 = ndatebc/3
-       do n = 1, ndby3*3,3
-        write(6,1000) (nn,nymdbc(nn),nhmsbc(nn),nn=n,n+2)
- 1000   format(3(2x,i3,':',i8,2x,i8))
-       enddo
-       write(6,1000) (nn,nymdbc(nn),nhmsbc(nn),nn=ndby3*3+1,ndatebc)
-      endif  ! End error  Check
+        write(6,*) ' Updated boundary condition data'
+        write(6,*) ' ---------------------------------'
+        write(6,*) ' Variable: ',cname
+        write(6,*) ' Description: ',cdscrip
+        write(6,*) ' Resolution: x= ',imbc,' y= ',jmbc,
+     .                                       ' Undefined value = ',undef
+        write(6,*) ' Starting latitude = ',lat0,' longitude =',lon0
+        write(6,*) ' Data valid at these times: '
+        ndby3 = ndatebc/3
+        do n = 1, ndby3*3,3
+         write(6,1000) (nn,nymdbc(nn),nhmsbc(nn),nn=n,n+2)
+ 1000    format(3(2x,i3,':',i8,2x,i8))
+        enddo
+        write(6,1000) (nn,nymdbc(nn),nhmsbc(nn),nn=ndby3*3+1,ndatebc)
+       endif  
 
-      endif  ! End MYID=0 Check
-
-c Broadcast information to other PEs
-c ----------------------------------
-#if (mpi)
-       call mpi_bcast ( error,1,mpi_logical,0,lattice%comm,ierror )
-#endif
-       if( error ) call my_exit (101)
-
-#if (mpi)
-       call mpi_bcast ( ndatebc,1     ,mpi_integer,0,lattice%comm,ierror )
-       call mpi_bcast ( nymdbc,ndatebc,mpi_integer,0,lattice%comm,ierror )
-       call mpi_bcast ( nhmsbc,ndatebc,mpi_integer,0,lattice%comm,ierror )
-#endif
-
-      endif  ! New Year Info Check
+      endif
 
 C---------- Read sice data if necessary -------------------------------
 
-        found = .false.
-        nd = 2
+      found = .false.
+      nd = 2
 
 c  If model time is not within the times of saved sice data 
 c  from previous call to getsice then read new data 
 
-        timemod = float(nymdmod) + float(nhms)   /1000000
-        timebc1 = float(nymdbc1) + float(nhmsbc1)/1000000
-        timebc2 = float(nymdbc2) + float(nhmsbc2)/1000000
-        if (timemod .lt. timebc1 .or. timemod .ge. timebc2) then
+      timemod = float(nymdmod) + float(nhms)   /1000000
+      timebc1 = float(nymdbc1) + float(nhmsbc1)/1000000
+      timebc2 = float(nymdbc2) + float(nhmsbc2)/1000000
 
-        do while (.not.found .and. nd .le. ndatebc)
-          timebc2 = float(nymdbc(nd)) + float(nhmsbc(nd))/1000000
-          if (timebc2 .gt. timemod) then	
-            nymdbc1 = nymdbc(nd-1)
-            nymdbc2 = nymdbc(nd)
-            nhmsbc1 = nhmsbc(nd-1)
-            nhmsbc2 = nhmsbc(nd)
-            if ( lattice%myid.eq.0 ) call bcdata (iunit, imbc, jmbc, nd, nd+1, sicebc1, sicebc2)
-#if (mpi)
-            call mpi_bcast ( sicebc1,lattice%imglobal*lattice%jmglobal,mpi_double_precision,0,lattice%comm,ierror )
-            call mpi_bcast ( sicebc2,lattice%imglobal*lattice%jmglobal,mpi_double_precision,0,lattice%comm,ierror )
-#endif
-            found = .true.
-          else
-            nd = nd + 1
-          endif
-        enddo
+      if (timemod .lt. timebc1 .or. timemod .ge. timebc2) then
+
+       do while (.not.found .and. nd .le. ndatebc)
+        timebc2 = float(nymdbc(nd)) + float(nhmsbc(nd))/1000000
+        if (timebc2 .gt. timemod) then	
+          nymdbc1 = nymdbc(nd-1)
+          nymdbc2 = nymdbc(nd)
+          nhmsbc1 = nhmsbc(nd-1)
+          nhmsbc2 = nhmsbc(nd)
+          call bcdata (iunit, imbc, jmbc, nd, nd+1, sicebc1, sicebc2)
+          found = .true.
+        else
+          nd = nd + 1
+        endif
+       enddo
 
 c  Otherwise the data from the last time in getsice surrounds the 
 c  current model time.
 
-        else
-          found = .true.
-        endif
- 
-          if (.not.found) then
-            if( lattice%myid.eq.0 ) print *, 'STOP: Could not find SICE boundary condition dates surrounding the model time.' 
-            call my_finalize
-            call my_exit (101)
-          endif
+      else
+       found = .true.
+      endif
+
+      if (.not.found) then
+       print *, 'STOP: Could not find SICE dates for model time.' 
+       call my_finalize
+       call my_exit (101)
+      endif
 
 C---------- Interpolate sice data ------------------------------------
 
-          call interp_time ( nymdmod,nhms, nymdbc1,nhmsbc1, nymdbc2,nhmsbc2, fac1,fac2 )
+      call interp_time(nymdmod,nhms,nymdbc1,nhmsbc1,nymdbc2,nhmsbc2,
+     .                                                       fac1,fac2)
 
-          do j = 1, jm
-          do i = 1, im
-            sice(i,j) = sicebc1( lattice%iglobal(i),lattice%jglobal(j) )*fac1 
-     .                + sicebc2( lattice%iglobal(i),lattice%jglobal(j) )*fac2 
+      do j = jm1,jm2
+      do i = im1,im2
+       sice(i,j,bi,bj) = sicebc1(i,j,biglobal,bjglobal)*fac1 
+     .                 + sicebc2(i,j,biglobal,bjglobal)*fac2 
 c average to 0 or 1
 c -----------------
-            if (sice(i,j) .ge. 0.5) then
-                sice(i,j) = 1.
-            else
-                sice(i,j) = 0.
-            endif
-          enddo
-          enddo
+       if (sice(i,j,bi,bj) .ge. 0.5) then
+        sice(i,j,bi,bj) = 1.
+       else
+        sice(i,j,bi,bj) = 0.
+       endif
+      enddo
+      enddo
 
 C---------- Fill sice with depth of ice ------------------------------------
-
-          do j = 1, jm
-          do i = 1, im
-            if (sice(i,j) .eq. 1.) then		! sea ice present
-                sice(i,j) = 3.
-            endif
-          enddo
-          enddo
-
+      do j = jm1,jm2
+      do i = im1,im2
+       if (sice(i,j,bi,bj) .eq. 1.) then		
+        sice(i,j,bi,bj) = 3.
+       endif
+      enddo
+      enddo
 C---------------------------------------------------------------------------
  
       return
