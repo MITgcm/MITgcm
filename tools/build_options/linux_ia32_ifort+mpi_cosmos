@@ -1,0 +1,26 @@
+#!/bin/bash
+#
+#  D. Menemenlis
+#
+#  for JPL's 1024-CPU Dell cluster called cosmos
+
+FC=mpif90
+CC=mpicc
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -D_BYTESWAPIO -DWORDLENGTH=1'
+LINK=mpif90
+CPP='cpp  -traditional -P'
+INCLUDES='-I/opt/mpich/gm/intel8.0/include'
+
+#  Note that the -mp switch is for ieee "maintain precision" and is
+#  roughly equivalent to -ieee
+if test "x$IEEE" = x ; then
+    FOPTIM='-O3 -align'
+#P3 FOPTIM=$FOPTIM' -tpp6 -xWKM'
+#P4 FOPTIM=$FOPTIM' -tpp7 -xWKM'
+    FFLAGS='-132 -r8 -i4 -w95 -W0 -WB'
+else
+    FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -CB'
+fi
+
+
+
