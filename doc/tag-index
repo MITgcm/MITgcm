@@ -1,7 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.5 1998/06/15 05:13:55 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.6 1998/06/22 16:09:37 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint8
+ Inludes time-dependant forcing and time-averaging.
+ Works at 4x4 and 2.8125x2.8125 global
+
+checkpoint7-4degree-ref
+ Branch from checkpoint7. Released for application to
+ global modeling and general modeling - process studies, regional
+ model etc.. 
+ Configured for verification/exp2 - 4 degree global, two process.
 
 checkpoint7
  Created by cnh
