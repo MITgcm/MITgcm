@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.11 2004/03/29 17:58:40 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_gw.F,v 1.12 2004/04/05 21:46:18 jmc Exp $
 C     !DESCRIPTION: \bv
 C $Name:  $
 
@@ -61,7 +61,7 @@ C     I,J,K - Loop counters
       _RS  hFacROpen
       _RS  hFacRClosed
       _RL ab15,ab05
-      _RL slipSideFac, slipBotFac
+      _RL slipSideFac
       _RL tmp_VbarZ, tmp_UbarZ, tmp_WbarZ
 
       _RL  Half
@@ -87,15 +87,6 @@ C     Lateral friction (no-slip, free slip, or half slip):
       ENDIF
 C-    half slip was used before ; keep it for now.
         slipSideFac = 0. _d 0
-
-C     Bottom friction (no-slip, free slip, or half slip):
-      IF ( no_slip_bottom ) THEN
-        slipBotFac = -1. _d 0
-      ELSE
-        slipBotFac =  1. _d 0
-      ENDIF
-C-    half slip was used before ; keep it for now.
-        slipBotFac = 0. _d 0
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -168,8 +159,6 @@ C Flux on Lower face
            Flx_Dn(I,J,bi,bj)=
      &     tmp_WbarZ*tmp_WbarZ
      &    -viscAr*recip_drF(K) 
-     &      *( 1. _d 0 + slipBotFac*
-     &         (wOverRide*maskC(I,J,Kp1,bi,bj)-1. _d 0) )
      &       *( wVel(I,J,K,bi,bj)-wOverRide*wVel(I,J,Kp1,bi,bj) )
           ENDDO
          ENDDO
