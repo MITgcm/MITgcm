@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_coriolis.F,v 1.5 2001/11/26 17:11:45 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_u_coriolis.F,v 1.6 2001/11/26 17:15:56 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -43,6 +43,8 @@ C  uCoriolisTerm        :: Coriolis term
 C !LOCAL VARIABLES: ====================================================
 C  i,j                  :: loop indices
       INTEGER I,J
+      _RL one
+      PARAMETER(one=1.d0)
 CEOP
 
       IF (useEnergyConservingCoriolis) THEN
