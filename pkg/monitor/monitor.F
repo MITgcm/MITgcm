@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.9 2002/06/15 03:14:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.10 2002/11/22 02:33:24 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -85,6 +85,9 @@ C      Print the numerical stablility parameters for current state
 C      Print stats for KE
        CALL MON_SET_PREF('ke',myThid)
        CALL MON_KE(myThid)
+
+C      Print stats for surface correction terms (Linear Free-Surf)
+       CALL MON_SURFCOR(myThid)
 
 C      Dynamics field monitor finish
        _BEGIN_MASTER(myThid)
