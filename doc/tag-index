@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.440 2005/02/01 23:27:34 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.441 2005/02/02 20:20:09 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o update exp. aim.5l_cs (use default LAND_OPTIONS.h file) and add
+  new test for AIM with thSIce + slab-ocean
 o cpl_aim+ocn test: update output (optfile & default GMREDI_OPTIONS.h)
 o move state variable diagnostics to the beginning of the time step ;
   (note: still needs some work specially for snap-shot diagnostics)
