@@ -7,6 +7,7 @@ function [AA,iters] = rdmds(fnamearg,varargin)
 % A = RDMDS(FNAME,NaN)
 % A = RDMDS(FNAME,Inf)
 % [A,ITS] = RDMDS(FNAME,[...])
+% A = RDMDS(FNAME,[...],'rec',RECNUM)
 %
 %   A = RDMDS(FNAME) reads data described by meta/data file format.
 %   FNAME is a string containing the "head" of the file names.
@@ -35,7 +36,7 @@ function [AA,iters] = rdmds(fnamearg,varargin)
 %   number in the file name.
 %   If ITER=NaN, all iterations will be read.
 %   If ITER=Inf, the last (highest) iteration will be read.
-%  
+%
 %   eg. To repeat above operation
 %      >> A=rdmds('T',2880);
 %   eg. To read multiple time steps
@@ -45,14 +46,24 @@ function [AA,iters] = rdmds(fnamearg,varargin)
 %   eg. To read the last time step
 %      >> [A,IT]=rdmds('T',Inf);
 %   Note: this form can not read files with no iteration count in file name.
+%
+%
+%   A = RDMDS(FNAME,[...],'rec',RECNUM) reads individual records from
+%   multiple record files.
 %  
-%   A = RDMDS(FNAME,MACHINEFORMAT)
+%   eg. To read a single record from a multi-record file
+%      >> [A,IT]=rdmds('pickup.ckptA',11);
+%   eg. To read several records from a multi-record file
+%      >> [A,IT]=rdmds('pickup',Inf,'rec',[1:5 8 12]);
+%
+%  
 %   A = RDMDS(FNAME,ITER,MACHINEFORMAT) allows the machine format to be
+%   A = RDMDS(FNAME,MACHINEFORMAT)
 %   specified which MACHINEFORMAT is on of the following strings:
 %     'n' 'l' 'b' 'd' 'g' 'c' 'a' 's'  - see FOPEN for more details
+%
 %  
-%  
-% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.14 2002/10/11 13:45:36 adcroft Exp $
+% $Header: /u/gcmpack/MITgcm/utils/matlab/rdmds.m,v 1.15 2002/10/11 14:29:45 adcroft Exp $
 
 AA=[];
 iters=[];
@@ -60,7 +71,8 @@ iters=[];
 % Default options
 ieee='b';
 fname=fnamearg;
-iters=-1;
+userecords=0;
+recnum=[];
 
 % Check optional arguments
 for ind=1:size(varargin,2);
@@ -78,10 +90,15 @@ for ind=1:size(varargin,2);
    ieee='a';
   elseif strcmp(arg,'s') | strcmp(arg,'ieee-be.l64')
    ieee='s';
+  elseif strcmp(arg,'rec')
+   userecords=1;
   else
    error(['Optional argument ' arg ' is unknown'])
   end
  else
+  if userecords==1
+   recnum=arg;
+  elseif isempty(iters)
   if isnan(arg)
    iters=scanforfiles(fname);
    disp([ sprintf('Reading %i time levels:',size(iters,2)) sprintf(' %i',iters) ]);
@@ -100,7 +117,14 @@ for ind=1:size(varargin,2);
   else
    error(sprintf('Argument %i must be a positive integer',arg))
   end
+  else
+   error('Multiple iterations should be specified as a vector')
+  end
  end
+end
+
+if isempty(iters)
+ iters=-1;
 end
 
 % Loop over each iteration
@@ -129,7 +153,7 @@ end
 for j=1:size(allfiles,1);
 
 % Read meta- and data-file
-[A,N] = localrdmds([Dir allfiles(j).name],ieee);
+[A,N] = localrdmds([Dir allfiles(j).name],ieee,recnum);
 
 bdims=N(1,:);
 r0=N(2,:);
@@ -154,7 +178,7 @@ end % iterations
 
 %-------------------------------------------------------------------------------
 
-function [A,N] = localrdmds(fname,ieee)
+function [A,N] = localrdmds(fname,ieee,recnum)
 
 mname=strrep(fname,' ','');
 dname=strrep(mname,'.meta','.data');
@@ -213,8 +237,14 @@ allstr=strrep(allstr,'format','dataprec');
 eval(allstr);
 
 N=reshape( dimlist , 3 , prod(size(dimlist))/3 );
-if ~isnan(nrecords) & nrecords > 1
+if ~isnan(nrecords) & nrecords > 1 & isempty(recnum)
  N=[N,[nrecords 1 nrecords]'];
+elseif ~isempty(recnum) & recnum>nrecords
+ error('Requested record number is higher than the number of available records')
+end
+
+if isempty(recnum)
+ recnum=1;
 end
 
 if isnan(nrecords)
@@ -253,12 +283,21 @@ else
 % This is the new MDS format that uses direct access
 
  ldims=N(3,:)-N(2,:)+1;
+ for r=1:size(recnum(:),1);
  if dataprec == 'float32'
-  A=myrdda(dname,ldims,1,'real*4',ieee);
+  A(:,r)=myrdda(dname,ldims,recnum(r),'real*4',ieee);
  elseif dataprec == 'float64'
-  A=myrdda(dname,ldims,1,'real*8',ieee);
+  A(:,r)=myrdda(dname,ldims,recnum(r),'real*8',ieee);
  else
   error(['Unrecognized format in meta-file = ' format]);
+ end
+ end
+
+ A=reshape(A,[ldims size(recnum(:),1)]);
+ if size(recnum(:),1)>1
+  N(1,end+1)=size(recnum(:),1);
+  N(2,end)=1;
+  N(3,end)=size(recnum(:),1);
  end
 
 end
@@ -350,7 +389,7 @@ if count ~= nnn
  error('Not enough data was available to be read: off EOF?')
 end
 st=fclose(fid);
-arr=reshape(arr,N);
+%arr=reshape(arr,N);
 
 %
 function [iters] = scanforfiles(fname)
