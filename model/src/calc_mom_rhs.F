@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.24 1998/08/23 16:57:50 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.25 1998/08/23 17:02:51 cnh Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -498,6 +498,35 @@ C     o Biharmonic term
         v4F(i,j) =
      &  _dyU(i,j,bi,bj)*drF(K)*hFacROpen*
      &  (vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj))
+     &  *_recip_dxV(i,j,bi,bj)
+#endif
+       ENDDO
+      ENDDO
+      DO j=jMin,jMax
+       DO i=1-2, sNx+2
+        vF(i,j)         =
+     &   -recip_hFacS(i,j,k,bi,bj)*recip_drF(k)/
+     &     ( 0.5 _d 0 *( _rA(i,j,bi,bj)+ _rA(i,j-1,bi,bj)) )
+     &  *(v4F(i+1,j)          - v4F(i,j  ) )
+       ENDDO
+      ENDDO
+      DO j=jMin,jMax
+       DO i=iMin, iMax
+         hFacROpen=min(_hFacW(i,j,k,bi,bj),_hFacW(i,j-1,k,bi,bj))
+         hFacROpen=min(_hFacS(i,j,k,bi,bj),hFacROpen)
+         hFacROpen=min(_hFacS(i-1,j,k,bi,bj),hFacROpen)
+         hFacRClosed=1. _d 0 -hFacROpen
+         hFacRClosed=1. _d 0
+#ifdef NO_LATERAL_SLIP
+         v4F(i,j) =
+     &   viscA4*_XAatVBX(i,j,k,bi,bj)*hFacRClosed*
+     &   ( (2.-_maskS(i-1,j,k,bi,bj))*_maskS(i,j,k,bi,bj)*vF(i  ,j)
+     &    -(2.-_maskS(i,j,k,bi,bj))*_maskS(i-1,j,k,bi,bj)*vF(i-1,j)
+     &   )*_recip_dxV(i,j,bi,bj)
+#else
+        v4F(i,j) =
+     &  viscA4*_dyU(i,j,bi,bj)*drF(K)*hFacROpen*
+     &  (vF(i,j,k,bi,bj)-vF(i-1,j,k,bi,bj))
      &  *_recip_dxV(i,j,bi,bj)
 #endif
        ENDDO
