@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.68 2003/11/13 06:35:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.69 2003/12/14 23:18:49 jmc Exp $
 C $Name:  $
 
 CBOI
@@ -631,8 +631,10 @@ C--   Sea-ice checkpoint (in case the in-loop checkpoint was missed)
 
 C--   Final checkpoint (in case the in-loop checkpoint was missed)
       CALL TIMER_START('WRITE_CHECKPOINT       [THE_MODEL_MAIN]',myThid)
+      CALL PACKAGES_WRITE_PICKUP(
+     I        .TRUE., myCurrentTime, myCurrentIter, myThid )
       CALL WRITE_CHECKPOINT(
-     &        .TRUE., myCurrentTime, myCurrentIter, myThid )
+     I        .TRUE., myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('WRITE_CHECKPOINT       [THE_MODEL_MAIN]',myThid)
 
       CALL TIMER_STOP ('ALL                    [THE_MODEL_MAIN]',myThid)

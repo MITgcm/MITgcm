@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.30 2003/11/23 01:28:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.31 2003/12/14 23:18:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -78,11 +78,12 @@ C--    Going to really do some IO. Make everyone except master thread wait.
        _BARRIER
        _BEGIN_MASTER( myThid )
 
+#ifdef OLD_STYLE_WITH_MANY_FILES
+
 C       Force 64-bit IO
         oldPrec        = readBinaryPrec
         readBinaryPrec = precFloat64
 
-#ifdef OLD_STYLE_WITH_MANY_FILES
 C--     Read model fields
 C       Raw fields
         CALL READ_REC_XYZ_RL(  'uVel',   uVel, 1,myIter, myThid)
@@ -106,6 +107,10 @@ C       Raw fields
 c        CALL READ_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
         ENDIF
 #endif
+
+C       Reset default IO precision
+        readBinaryPrec = oldPrec
+
 #else /* OLD_STYLE_WITH_MANY_FILES */
 
         prec = precFloat64
@@ -160,31 +165,13 @@ C SPK 4/9/01: Open boundary checkpointing
 
 #endif /* OLD_STYLE_WITH_MANY_FILES */
 
-C       Reset default IO precision
-        readBinaryPrec = oldPrec
-
        _END_MASTER( myThid )
        _BARRIER
-
-cswdptr -- remove (moved to ptracers_init)
-cswdptr#ifdef ALLOW_PTRACERS
-cswdptrC Write restart file for passive tracers
-cswdptr       IF (usePTRACERS) THEN
-cswdptr         CALL PTRACERS_READ_CHECKPOINT(myIter,myThid)
-cswdptr       ENDIF
-cswdptr#endif /* ALLOW_PTRACERS */
-cswdptr -- end remove ----
 
 C--    Fill in edge regions
       CALL EXCH_UV_XYZ_RL(uVel,vVel,.TRUE.,myThid)
       CALL EXCH_UV_XYZ_RL(gU,gV,.TRUE.,myThid)
       CALL EXCH_UV_XYZ_RL(gUnm1,gVnm1,.TRUE.,myThid)
-c     _EXCH_XYZ_R8(uVel  , myThid )
-c     _EXCH_XYZ_R8(gu    , myThid )
-c     _EXCH_XYZ_R8(guNM1 , myThid )
-c     _EXCH_XYZ_R8(vVel  , myThid )
-c     _EXCH_XYZ_R8(gv    , myThid )
-c     _EXCH_XYZ_R8(gvNM1 , myThid )
       _EXCH_XYZ_R8(theta , myThid )
       _EXCH_XYZ_R8(gt    , myThid )
       _EXCH_XYZ_R8(gtNM1 , myThid )
@@ -244,9 +231,6 @@ C     == Global variables ===
 #include "GW.h"
 #include "SOLVE_FOR_PRESSURE3D.h"
 #endif
-#ifdef ALLOW_CD_CODE
-#include "CD_CODE_VARS.h"
-#endif
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER  IO_ERRCOUNT
@@ -271,10 +255,12 @@ C     !LOCAL VARIABLES:
 C     == Local variables ==
 C     permCheckPoint :: Flag indicating whether a permanent checkpoint will
 C                       be written.
+C     tempCheckPoint :: Flag indicating if it is time to write a non-permanent
+C                       checkpoint (that will be permanent if permCheckPoint=T)
 C     oldPrc :: Temp. for holding I/O precision
 C     fn     :: Temp. for building file name string.
 C     lgf    :: Flag to indicate whether to use global file mode.
-      LOGICAL permCheckPoint  
+      LOGICAL permCheckPoint, tempCheckPoint  
       INTEGER oldPrec
       CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*(MAX_LEN_MBUF) msgBuf
@@ -283,38 +269,28 @@ C     lgf    :: Flag to indicate whether to use global file mode.
 CEOP
 
       permCheckPoint = .FALSE.
+      tempCheckPoint = .FALSE.
       permCheckPoint=
-     & DIFFERENT_MULTIPLE(pChkptFreq,myTime,
-     &                    myTime-deltaTClock)
+     &  DIFFERENT_MULTIPLE(pChkptFreq,myTime,myTime-deltaTClock)
+      tempCheckPoint=
+     &  DIFFERENT_MULTIPLE( ChkptFreq,myTime,myTime-deltaTClock)
 
       IF (
-     &    (.NOT. modelEnd .AND. (
-     &     permCheckPoint
-     &     .OR.
-     &     DIFFERENT_MULTIPLE(chkptFreq,
-     &    myTime,myTime-deltaTClock)
-     &     ) .AND. myIter.NE.nIter0
-     &    ) 
-     &     .OR.
-     &    (
-     &     modelEnd 
-     &     .AND. .NOT.
-     &     permCheckPoint 
-     &     .AND. .NOT.
-     &     DIFFERENT_MULTIPLE(chkptFreq,
-     &    myTime,myTime-deltaTClock)
-     &    )
-     & ) THEN
+     &    ( .NOT.modelEnd .AND. (permCheckPoint.OR.tempCheckPoint) )
+     &   .OR.
+     &    ( modelEnd .AND. .NOT.(permCheckPoint.OR.tempCheckPoint) )
+     &   ) THEN
 
 C--    Going to really do some IO. Make everyone except master thread wait.
        _BARRIER
        _BEGIN_MASTER( myThid )
 
+#ifdef OLD_STYLE_WITH_MANY_FILES
 C       Force 64-bit IO
         oldPrec = writeBinaryPrec
         writeBinaryPrec = precFloat64
+        WRITE(fn,'(A,I10.10)') 'many_files.',myIter
 
-#ifdef OLD_STYLE_WITH_MANY_FILES
 C--     Write model fields
 C       Raw fields
         CALL WRITE_REC_XYZ_RL(  'uVel',   uVel,  1,myIter, myThid)
@@ -330,19 +306,6 @@ C       Raw fields
         CALL WRITE_REC_XYZ_RL(    'gS',     gS,  1,myIter, myThid)
         CALL WRITE_REC_XYZ_RL( 'gSNm1',  gSNm1,  1,myIter, myThid)
         CALL WRITE_REC_XY_RL ('etaN', etaN,  1,myIter, myThid)
-#ifdef ALLOW_CD_CODE
-        IF (useCDscheme) THEN
-        CALL WRITE_REC_XY_RL
-     &   ( 'etaNm1', etaNm1,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'uVelD', uVelD,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'vVelD', vVelD,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'uNM1',  uNM1,  1,myIter, myThid)
-        CALL WRITE_REC_XYZ_RL(  'vNM1',  vNM1,  1,myIter, myThid)
-c       CALL WRITE_REC_XYZ_RL(  'guCD',  guCD,  1,myIter, myThid)
-c       CALL WRITE_REC_XYZ_RL(  'gvCD',  gvCD,  1,myIter, myThid)
-        ENDIF
-#endif /* ALLOW_CD_CODE */
-
 
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
@@ -351,6 +314,9 @@ c       CALL WRITE_REC_XYZ_RL(  'gvCD',  gvCD,  1,myIter, myThid)
 c        CALL WRITE_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
         ENDIF
 #endif
+
+C--     Reset binary precision
+        writeBinaryPrec = oldPrec
 
 #else /* OLD_STYLE_WITH_MANY_FILES */
 
@@ -399,82 +365,28 @@ C--     Write model fields
          ELSE
           WRITE(fn,'(A,A)') 'pickup_nh.',checkPtSuff(nCheckLev)
          ENDIF
-         WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,phi_nh,1,myIter,myThid)
          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gW,   2,myIter,myThid)
 c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
         ENDIF
 #endif
 
-C Create suffix to pass on to package pickup routines
-         IF ( permCheckPoint ) THEN
-          WRITE(fn,'(I10.10)') myIter
-         ELSE
-          WRITE(fn,'(A)') checkPtSuff(nCheckLev)
-         ENDIF
-
-#ifdef ALLOW_CD_CODE
-        IF (useCDscheme) THEN
-          CALL CD_CODE_WRITE_CHECKPOINT(
-     &               prec, lgf, permCheckPoint, myIter, myThid)
-        ENDIF
-#endif /* ALLOW_CD_CODE */
-
-#ifdef  ALLOW_OBCS
-C SPK 4/9/01: Open boundary checkpointing
-        IF (useOBCS) THEN
-          CALL OBCS_WRITE_CHECKPOINT(
-     &               prec, lgf, permCheckPoint, myIter, myThid)
-        ENDIF
-#endif  /* ALLOW_OBCS */
-
-#ifdef ALLOW_THSICE
-        IF (useThSIce) THEN
-          CALL THSICE_WRITE_CHECKPOINT(
-     &               prec, lgf, permCheckPoint, myIter, myThid)
-        ENDIF
-#endif /* ALLOW_THSICE */
-
-#ifdef ALLOW_FLT
-C--     Write restart file for floats
-        IF (useFLT) THEN
-          CALL FLT_RESTART(myTime, myIter, myThid)
-        ENDIF
-#endif
-
-#ifdef ALLOW_LAND
-C--     Write pickup file for Lnad package:
-        IF (useLand) THEN
-          CALL LAND_WRITE_PICKUP(fn,myTime,myIter,myThid)
-        ENDIF
-#endif
+#endif /* OLD_STYLE_WITH_MANY_FILES */
 
         IF ( .NOT. permCheckPoint ) THEN
          nCheckLev = MOD(nCheckLev, maxNoChkptLev)+1
         ENDIF
 
-#endif /* OLD_STYLE_WITH_MANY_FILES */
-
-C--     Reset binary precision
-        writeBinaryPrec = oldPrec
-
-       _END_MASTER( myThid )
+       _END_MASTER(myThid)
        _BARRIER
-
-#ifdef ALLOW_PTRACERS
-C Write restart file for passive tracers
-       IF (usePTRACERS) THEN
-         CALL PTRACERS_WRITE_CHECKPOINT(fn,myIter,myTime,myThid)
-       ENDIF
-#endif /* ALLOW_PTRACERS */
 
 C Write information to stdout so there is a record that the
 C checkpoint was completed
-      _BEGIN_MASTER(myThid)
+       _BEGIN_MASTER(myThid)
         WRITE(msgBuf,'(A11,I10,1X,A10)')
      &   "%CHECKPOINT ",myIter,fn
         CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
-      _END_MASTER(myThid)
+       _END_MASTER(myThid)
 
       ENDIF
 

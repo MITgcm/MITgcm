@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.76 2003/11/23 01:28:05 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.77 2003/12/14 23:18:49 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -455,8 +455,10 @@ C     etaN.0000000001 in the indexing scheme used for the model
 C     "state" files. This example is referred to as a checkpoint 
 C     at time level 1 
       CALL TIMER_START('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
+      CALL PACKAGES_WRITE_PICKUP(
+     I               .FALSE., myTime, myIter, myThid )
       CALL WRITE_CHECKPOINT(
-     &        .FALSE., myTime, myIter, myThid )
+     I               .FALSE., myTime, myIter, myThid )   
       CALL TIMER_STOP ('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
 
 #ifdef ALLOW_DEBUG
@@ -464,4 +466,5 @@ C     at time level 1
      &    CALL DEBUG_LEAVE('FORWARD_STEP',myThid)
 #endif
 
+      RETURN
       END
