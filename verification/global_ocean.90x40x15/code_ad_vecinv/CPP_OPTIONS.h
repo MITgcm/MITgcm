@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad_vecinv/Attic/CPP_OPTIONS.h,v 1.7 2003/10/28 22:58:00 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.90x40x15/code_ad_vecinv/Attic/CPP_OPTIONS.h,v 1.8 2003/11/03 22:40:22 edhill Exp $
 C $Name:  $
 
 C CPP flags controlling which code in included in the files that
@@ -39,9 +39,6 @@ C o Read/write of checkpoint files for restarting.
 
 C o Exact volume conservation
 #define EXACT_CONSERV
-
-C o Include/exclude monitor package
-#define EXCLUDE_MONITOR
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"

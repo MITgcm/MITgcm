@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.42 2003/11/01 04:50:02 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.43 2003/11/03 22:40:22 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -142,7 +142,7 @@ c--   Dump for start state.
       CALL WRITE_STATE( mytime, myiter, mythid )
       CALL TIMER_STOP ('WRITE_STATE         [THE_MAIN_LOOP]', mythid)
 
-#ifndef EXCLUDE_MONITOR
+#ifdef ALLOW_MONITOR
 #ifndef DISABLE_DEBUGMODE
       IF (debugMode) CALL DEBUG_CALL('MONITOR',myThid)
 #endif
@@ -150,7 +150,7 @@ C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_START('MONITOR             [THE_MAIN_LOOP]', mythid)
       CALL MONITOR( myIter, myTime, myThid )
       CALL TIMER_STOP ('MONITOR             [THE_MAIN_LOOP]', mythid)
-#endif /* EXCLUDE_MONITOR */
+#endif /* ALLOW_MONITOR */
 
 #ifdef ALLOW_AUTODIFF_TAMC
       CALL TIMER_STOP ('ADJOINT SPIN-UP', mythid)

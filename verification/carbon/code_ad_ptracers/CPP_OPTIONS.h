@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad_ptracers/Attic/CPP_OPTIONS.h,v 1.3 2003/10/28 22:57:59 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code_ad_ptracers/Attic/CPP_OPTIONS.h,v 1.4 2003/11/03 22:40:22 edhill Exp $
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -34,9 +34,6 @@ C   instead of the "virtual salt flux"
 
 C o Exact volume conservation
 #define EXACT_CONSERV
-
-C o Include/exclude monitor package
-#define EXCLUDE_MONITOR
 
 c o Allow atmospheric loading
 #define ATMOSPHERIC_LOADING 

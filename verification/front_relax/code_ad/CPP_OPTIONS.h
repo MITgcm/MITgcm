@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/CPP_OPTIONS.h,v 1.5 2003/10/28 22:58:00 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/front_relax/code_ad/CPP_OPTIONS.h,v 1.6 2003/11/03 22:40:22 edhill Exp $
 C $Name:  $
 
 C CPP flags controlling which code in included in the files that
@@ -47,9 +47,6 @@ C o Execution environment support options
 
 C o Add passive tracer advection routines
 #define ALLOW_PASSIVE_TRACER
-
-C o Include/exclude monitor package
-#define EXCLUDE_MONITOR
 
 #ifdef ALLOW_AUTODIFF 
 # include "ECCO_CPPOPTIONS.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.13 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_fixed.F,v 1.14 2003/11/03 22:40:22 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -77,7 +77,7 @@ C     an input file called data.
       CALL INI_PARMS( myThid )
       _BARRIER
 
-#ifndef EXCLUDE_MONITOR
+#ifdef ALLOW_MONITOR
 C--   Initialise MONITOR I/O streams so we can report config. info
       CALL MON_INIT( myThid )
       _BARRIER

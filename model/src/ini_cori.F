@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.15 2002/12/02 16:04:22 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cori.F,v 1.16 2003/11/03 22:40:22 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -111,7 +111,7 @@ c     _EXCH_XY_R4(fCori,myThid)
 c     CALL EXCH_Z_XY_RS(fCoriG,myThid)
 c     _EXCH_XY_R4(fCoriCos,myThid)
 
-#ifndef EXCLUDE_MONITOR
+#ifdef ALLOW_MONITOR
       CALL MON_PRINTSTATS_RS(1,fCori,'fCori',myThid)
       CALL MON_PRINTSTATS_RS(1,fCoriG,'fCoriG',myThid)
       CALL MON_PRINTSTATS_RS(1,fCoriCos,'fCoriCos',myThid)

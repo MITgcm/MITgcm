@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.69 2003/11/01 04:50:02 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.70 2003/11/03 22:40:22 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -420,12 +420,12 @@ C--   Calculate float trajectories
       ENDIF
 #endif
 
-#ifndef EXCLUDE_MONITOR
+#ifdef ALLOW_MONITOR
 C--   Check status of solution (statistics, cfl, etc...)
       CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
       CALL MONITOR( myIter, myTime, myThid )
       CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
-#endif /* EXCLUDE_MONITOR */
+#endif /* ALLOW_MONITOR */
 
 C--   Do IO if needed.
       CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
