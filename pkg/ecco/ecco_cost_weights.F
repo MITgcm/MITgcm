@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.4 2005/01/13 00:24:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.5 2005/02/24 00:03:51 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -67,6 +67,9 @@ c     == local variables ==
       _RL wsflux0m
       _RL wtau0
       _RL wtau0m
+      _RL watemp0
+      _RL waqh0
+      _RL wwind0
       _RL ratio
       _RL dummy
 
@@ -87,6 +90,16 @@ c     == end of interface ==
       jmax = sny+oly
       imin = 1-olx
       imax = snx+olx
+
+c--   Initialize background weights
+      wtau0    = 0.
+      whflux0  = 0.
+      wsflux0  = 0.
+      whflux0m = 0
+      wsflux0m = 0.
+      watemp0  = 0.
+      waqh0    = 0.
+      wwind0   = 0.
 
 c--   Initialize variance (weight) fields.
       do k = 1,nr
@@ -208,15 +221,29 @@ c--   Read error information and set up weight matrices.
         open(gwunit, file=data_errfile(ilo:ihi),
      &               status='old', form='formatted')
 
-        read(gwunit,*) whflux0, wsflux0, wtau0, ratio
-#if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || \
-     defined (ALLOW_OBCS_CONTROL))
+        read(gwunit,*) 
+#if (defined (ALLOW_HFLUX_COST_CONTRIBUTION) || defined (ALLOW_HFLUX_CONTROL))
+     &         whflux0
+#elif (defined (ALLOW_ATEMP_COST_CONTRIBUTION) || defined (ALLOW_ATEMP_CONTROL))
+     &         watemp0
+#endif
+#if (defined (ALLOW_SFLUX_COST_CONTRIBUTION) || defined (ALLOW_SFLUX_CONTROL))
+     &       , wsflux0
+#elif (defined (ALLOW_AQH_COST_CONTRIBUTION) || defined (ALLOW_AQH_CONTROL))
+     &       , waqh0
+#endif
+#if (defined (ALLOW_USTRESS_COST_CONTRIBUTION) || defined (ALLOW_USTRESS_CONTROL))
+     &       , wtau0
+#elif (defined (ALLOW_UWIND_COST_CONTRIBUTION) || defined (ALLOW_UWIND_CONTROL))
+     &       , wwind0
+#endif
+     &       , ratio
+#if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || defined (ALLOW_OBCS_CONTROL))
      &       , wbaro
 #endif
         do k = 1,nr
           read(gwunit,*) wti(k), wsi(k)
-#if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || \
-     defined (ALLOW_OBCS_CONTROL))
+#if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || defined (ALLOW_OBCS_CONTROL))
      &               , wvi(k)
 #endif
         end do
@@ -579,16 +606,13 @@ c--           Test for missing values.
                 wuwind(i,j,bi,bj) = 0. _d 0
               endif
               wuwind(i,j,bi,bj) = wuwind(i,j,bi,bj)*0.1
-              wuwind(i,j,bi,bj) = max(wuwind(i,j,bi,bj),wtau0)
-              wuwind(i,j,bi,bj) = wuwind(i,j,bi,bj)*maskw(i,j,k,bi,bj)
+              wuwind(i,j,bi,bj) = max(wuwind(i,j,bi,bj),wwind0)
+              wuwind(i,j,bi,bj) = wuwind(i,j,bi,bj)*maskc(i,j,k,bi,bj)
      &                            *frame(i,j)
              enddo
           enddo
         enddo
       enddo
-cph(
-      print *, 'WARNING: wtau0 needs to be replaced by wwind0!!!'
-cph)
 #endif
 
 c--   Read meridional wind stress variance.
@@ -639,8 +663,8 @@ c--           Test for missing values.
                 wvwind(i,j,bi,bj) = 0. _d 0
               endif
               wvwind(i,j,bi,bj) = wvwind(i,j,bi,bj)*0.1
-              wvwind(i,j,bi,bj) = max(wvwind(i,j,bi,bj),wtau0)
-              wvwind(i,j,bi,bj) = wvwind(i,j,bi,bj)*masks(i,j,k,bi,bj)
+              wvwind(i,j,bi,bj) = max(wvwind(i,j,bi,bj),wwind0)
+              wvwind(i,j,bi,bj) = wvwind(i,j,bi,bj)*maskc(i,j,k,bi,bj)
      &                            *frame(i,j)
             enddo
           enddo
@@ -700,15 +724,12 @@ c--           Test for missing values.
               endif
 c--           Data are in units of W/m**2.
               watemp(i,j,bi,bj) = watemp(i,j,bi,bj)/3.
-              watemp(i,j,bi,bj) = max(watemp(i,j,bi,bj),whflux0)
+              watemp(i,j,bi,bj) = max(watemp(i,j,bi,bj),watemp0)
      &                            *frame(i,j)
             enddo
           enddo
         enddo
       enddo
-cph(
-      print *, 'WARNING: whflux0 needs to be replaced by watemp0!!!'
-cph)
 #endif
 
 #if (defined (ALLOW_SFLUX_COST_CONTRIBUTION))
@@ -763,15 +784,12 @@ c--           Test for missing values.
               endif
 c--           Data are in units of m/s.
               waqh(i,j,bi,bj) = waqh(i,j,bi,bj) / 3.
-              waqh(i,j,bi,bj) = max(waqh(i,j,bi,bj),wsflux0)
+              waqh(i,j,bi,bj) = max(waqh(i,j,bi,bj),waqh0)
      &                            *frame(i,j)
             enddo
           enddo
         enddo
       enddo
-cph(
-      print *, 'WARNING: wsflux0 needs to be replaced by waqh0!!!'
-cph)
 #endif
 
 c--   Units have to be checked!
