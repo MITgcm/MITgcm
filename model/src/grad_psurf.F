@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/grad_psurf.F,v 1.3 1998/05/27 21:01:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/grad_psurf.F,v 1.4 1998/05/28 03:34:52 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -36,7 +36,7 @@ C     Zonal pressure term
 C     Meridional pressure term
       DO j=jMin,jMax
        DO i=iMin,iMax
-        pSurfY(i,j)=rDyC(i,j,bi,bj)*
+        pSurfY(i,j)=_rdyC(i,j,bi,bj)*
      &   (cg2d_x(i,j,bi,bj)-cg2d_x(i,j-1,bi,bj))
      &   *gBaro*rhonil
        ENDDO

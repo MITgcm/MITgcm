@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.5 1998/05/27 21:01:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.6 1998/05/28 03:34:52 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -134,7 +134,7 @@ C       Advective component of meridional flux
 C     Zonal tracer gradient
       DO j=jMin,jMax
        DO i=iMin,iMax
-        dTdy(i,j) = rdyC(i,j,bi,bj)*
+        dTdy(i,j) = _rdyC(i,j,bi,bj)*
      &  (theta(i,j,k,bi,bj)-theta(i,j-1,k,bi,bj))
        ENDDO
       ENDDO
@@ -170,13 +170,13 @@ C--   Interpolate terms for Redi/GM scheme
       DO j=jMin,jMax
        DO i=iMin,iMax
         dTdy(i,j) = 0.5*(
-     &   +0.5*(maskS(i,j,k,bi,bj)*rdyC(i,j,bi,bj)*
+     &   +0.5*(maskS(i,j,k,bi,bj)*_rdyC(i,j,bi,bj)*
      &           (theta(i,j,k,bi,bj)-theta(i,j-1,k,bi,bj))
-     &        +maskS(i,j+1,k,bi,bj)*rdyC(i,j+1,bi,bj)*
+     &        +maskS(i,j+1,k,bi,bj)*_rdyC(i,j+1,bi,bj)*
      &           (theta(i,j+1,k,bi,bj)-theta(i,j,k,bi,bj)))
-     &   +0.5*(maskS(i,j,km1,bi,bj)*rdyC(i,j,bi,bj)*
+     &   +0.5*(maskS(i,j,km1,bi,bj)*_rdyC(i,j,bi,bj)*
      &           (theta(i,j,km1,bi,bj)-theta(i,j-1,km1,bi,bj))
-     &        +maskS(i,j+1,km1,bi,bj)*rdyC(i,j+1,bi,bj)*
+     &        +maskS(i,j+1,km1,bi,bj)*_rdyC(i,j+1,bi,bj)*
      &           (theta(i,j+1,km1,bi,bj)-theta(i,j,km1,bi,bj)))
      &       )
        ENDDO
@@ -221,7 +221,7 @@ C           are not used.
       DO j=jMin,jMax
        DO i=iMin,iMax
         gT(i,j,k,bi,bj)=
-     &   -rHFacC(i,j,k,bi,bj)*rdzF(k)*rDxF(i,j,bi,bj)*rDyF(i,j,bi,bj)
+     &   -rHFacC(i,j,k,bi,bj)*rdzF(k)*_rdxF(i,j,bi,bj)*_rdyF(i,j,bi,bj)
      &   *(
      &    +( fZon(i+1,j)-fZon(i,j) )
      &    +( fMer(i,j+1)-fMer(i,j) )

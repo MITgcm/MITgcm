@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.3 1998/05/27 21:01:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gs.F,v 1.4 1998/05/28 03:34:52 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -124,7 +124,7 @@ C     Diffusive component of meridional flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         df(i,j) =
-     &   -diffKhS*yA(i,j)*rdyC(i,j,bi,bj)
+     &   -diffKhS*yA(i,j)*_rdyC(i,j,bi,bj)
      &   *(salt(i,j,k,bi,bj)-salt(i,j-1,k,bi,bj))
        ENDDO
       ENDDO
@@ -169,7 +169,7 @@ C           are not used.
       DO j=jMin,jMax
        DO i=iMin,iMax
         gS(i,j,k,bi,bj)=
-     &   -rHFacC(i,j,k,bi,bj)*rdzF(k)*rDxF(i,j,bi,bj)*rDyF(i,j,bi,bj)
+     &   -rHFacC(i,j,k,bi,bj)*rdzF(k)*_rdxF(i,j,bi,bj)*_rdyF(i,j,bi,bj)
      &   *(
      &    +( fZon(i+1,j)-fZon(i,j) )
      &    +( fMer(i,j+1)-fMer(i,j) )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/find_wvel.F,v 1.4 1998/05/27 05:57:02 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/find_wvel.F,v 1.5 1998/05/28 03:34:52 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -58,7 +58,7 @@ C $Header: /u/gcmpack/MITgcm/model/src/Attic/find_wvel.F,v 1.4 1998/05/27 05:57:
        do j=jMin,jMax
         do i=iMin,iMax
          Wvel(i,j,k)=Wtrans(i,j)
-     &          *rdxF(i,j,bi,bj)*rdyF(i,j,bi,bj)	! should be 1/zA(...)
+     &          *_rdxF(i,j,bi,bj)*_rdyF(i,j,bi,bj)	! should be 1/zA(...)
         enddo
        enddo
 

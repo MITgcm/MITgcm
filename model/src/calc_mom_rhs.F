@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.8 1998/05/27 21:01:47 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.9 1998/05/28 03:34:52 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -181,7 +181,7 @@ C     Eddy component of zonal flux
        DO i=iMin,iMax
         vf(i,j) =
      &   -viscAh*_dyF(i,j,bi,bj)*dzF(k)*_hFacC(i,j,k,bi,bj)
-     &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))*rDxF(i,j,bi,bj)
+     &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))*_rdxF(i,j,bi,bj)
        ENDDO
       ENDDO
       DO j=jMin,jMax
@@ -216,16 +216,16 @@ C     Eddy component of meridional flux
         vF(i,j) =
      &  -viscAh*_dxV(i,j,bi,bj)*dzF(k)*hFacZOpen
      &   *( uVel(i,j  ,k,bi,bj)-uVel(i,j-1,k,bi,bj) )
-     &   *rDyU(i,j,bi,bj)
+     &   *_rdyU(i,j,bi,bj)
      &  -viscAh*_dxV(i,j,bi,bj)*dzF(k)*hFacZClosed
      &   *( (2.-maskW(i,j-1,k,bi,bj))*maskW(i,j,k,bi,bj)*uVel(i,j  ,k,bi,bj)
      &     -(2.-maskW(i,j,k,bi,bj))*maskW(i,j-1,k,bi,bj)*uVel(i,j-1,k,bi,bj)
-     &    )*rDyU(i,j,bi,bj)
+     &    )*_rdyU(i,j,bi,bj)
 #else
         vF(i,j) =
      &  -viscAh*_dxV(i,j,bi,bj)*dzF(k)*hFacZOpen
      &   *( uVel(i,j  ,k,bi,bj)-uVel(i,j-1,k,bi,bj) )
-     &   *rDyU(i,j,bi,bj)
+     &   *_rdyU(i,j,bi,bj)
 #endif
        ENDDO
       ENDDO
@@ -316,7 +316,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
       DO j=jMin,jMax
        DO i=iMin,iMax
         gU(i,j,k,bi,bj) =
-     &   -rHFacW(i,j,k,bi,bj)*rdzF(k)*_rdxC(i,j,bi,bj)*rDyG(i,j,bi,bj)*(
+     &   -rHFacW(i,j,k,bi,bj)*rdzF(k)*_rdxC(i,j,bi,bj)*_rdyG(i,j,bi,bj)*(
      &    fZon(i,j  )    - fZon(i-1,j)
      &   +fMer(i,j+1)    - fMer(i  ,j)
      &   +fVerU(i,j,kUp) - fVerU(i,j,kDown)
@@ -369,16 +369,16 @@ C     Eddy component of zonal flux
         vf(i,j) =
      &  -viscAh*_dyU(i,j,bi,bj)*dzF(K)*hFacZOpen*
      &  ( vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj)
-     &  )*rDxV(i,j,bi,bj)
+     &  )*_rdxV(i,j,bi,bj)
      &  -viscAh*_dyU(i,j,bi,bj)*dzF(K)*hFacZClosed*
      &  ( (2.-maskS(i-1,j,k,bi,bj))*maskS(i,j,k,bi,bj)*vVel(i  ,j,k,bi,bj)
      &   -(2.-maskS(i,j,k,bi,bj))*maskS(i-1,j,k,bi,bj)*vVel(i-1,j,k,bi,bj)
-     &  )*rDxV(i,j,bi,bj)
+     &  )*_rdxV(i,j,bi,bj)
 #else
         vf(i,j) =
      &  -viscAh*_dyU(i,j,bi,bj)*dzF(K)*hFacZOpen*
      &  (vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj))
-     &  *rDxV(i,j,bi,bj)
+     &  *_rdxV(i,j,bi,bj)
 #endif
        ENDDO
       ENDDO
@@ -403,7 +403,7 @@ C     Eddy component of meridional flux
        DO i=iMin,iMax
         vF(i,j) =
      &  -viscAh*_dxF(i,j,bi,bj)*dzF(k)*_hFacC(i,j,k,bi,bj)
-     &   *( vVel(i,j+1,k,bi,bj) - vVel(i,j,k,bi,bj) )*rDyC(i,j,bi,bj)
+     &   *( vVel(i,j+1,k,bi,bj) - vVel(i,j,k,bi,bj) )*_rdyC(i,j,bi,bj)
        ENDDO
       ENDDO
       DO j=jMin,jMax
@@ -486,7 +486,7 @@ C---  Coriolis term(s)
 C---  Pressure term (-1/rho . dp/dy )
       DO j=jMin,jMax
        DO i=iMin,iMax
-        pf(i,j) = -rdyC(i,j,bi,bj)
+        pf(i,j) = - _rdyC(i,j,bi,bj)
      &   *(pH(i,j,k)-pH(i,j-1,k))/rhonil
        ENDDO
       ENDDO
@@ -495,7 +495,7 @@ C--   Tendency is minus divergence of the fluxes + coriolis + pressure term
       DO j=jMin,jMax
        DO i=iMin,iMax
         gV(i,j,k,bi,bj) =
-     &   -rHFacS(i,j,k,bi,bj)*rdzF(k)*rDyC(i,j,bi,bj)*rDxG(i,j,bi,bj)*(
+     &   -rHFacS(i,j,k,bi,bj)*rdzF(k)*_rdyC(i,j,bi,bj)*_rdxG(i,j,bi,bj)*(
      &    fZon(i+1,j)    - fZon(i,j  )
      &   +fMer(i,j  )    - fMer(i,j-1)
      &   +fVerV(i,j,kUp) - fVerV(i,j,kDown)
