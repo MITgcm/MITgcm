@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.380 2004/11/02 23:57:29 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.381 2004/11/04 20:19:17 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o add consistent build directories and .cvsignore files to verification
 o added viscA4GridMin and viscA4GridMax for more control on biharmonic viscosity
 o make all subroutines 30 or less characters in length for certain older 
   compilers to work (a thorough search only turns up two routines in 
