@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics.h,v 1.17 2004/07/23 17:32:27 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diagnostics.h,v 1.18 2004/09/08 01:49:26 jmc Exp $
 C $Name:  $
 
 C ======================================================================
@@ -327,6 +327,8 @@ C diagarrays common
       CHARACTER*8   CENPREC
       CHARACTER*8   CVISCA4
       CHARACTER*8   CVISCAH
+      CHARACTER*8   CdRhoDr
+      CHARACTER*8   CdEtaDt2
 
       EQUIVALENCE ( CDIAG( 1) ,  CUFLUX  )
       EQUIVALENCE ( CDIAG( 2) ,  CVFLUX  )
@@ -619,6 +621,8 @@ C diagarrays common
       EQUIVALENCE ( CDIAG(297),  CENPREC   )
       EQUIVALENCE ( CDIAG(298),  CVISCA4   )
       EQUIVALENCE ( CDIAG(299),  CVISCAH   )
+      EQUIVALENCE ( CDIAG(300),  CdRhoDr   )
+      EQUIVALENCE ( CDIAG(301),  CdEtaDt2  )
 
       integer       iUFLUX   , kUFLUX   , nUFLUX
       integer       iVFLUX   , kVFLUX   , nVFLUX
@@ -911,6 +915,8 @@ C diagarrays common
       integer       iENPREC  , kENPREC ,  nENPREC
       integer       iVISCA4  , kVISCA4 ,  nVISCA4
       integer       iVISCAH  , kVISCAH ,  nVISCAH
+      integer       idRhoDr  , kdRhoDr ,  ndRhoDr
+      integer       idEtaDt2 , kdEtaDt2,  ndEtaDt2
 
 
 c Diagnostic Pointers
@@ -1206,6 +1212,8 @@ c -------------------
       EQUIVALENCE ( IDIAG(297),  IENPREC   )
       EQUIVALENCE ( IDIAG(298),  IVISCA4   )
       EQUIVALENCE ( IDIAG(299),  IVISCAH   )
+      EQUIVALENCE ( IDIAG(300),  IdRhoDr   )
+      EQUIVALENCE ( IDIAG(301),  IdEtaDt2  )
 
 
 c Diagnostic Levels
@@ -1501,6 +1509,8 @@ c -----------------
       EQUIVALENCE ( KDIAG(297),  KENPREC   )
       EQUIVALENCE ( KDIAG(298),  KVISCA4   )
       EQUIVALENCE ( KDIAG(299),  KVISCAH   )
+      EQUIVALENCE ( KDIAG(300),  KdRhoDr   )
+      EQUIVALENCE ( KDIAG(301),  KdEtaDt2  )
 
 
 c Diagnostic Counters
@@ -1796,6 +1806,8 @@ c -------------------
       EQUIVALENCE ( NDIAG(297),  NENPREC   )
       EQUIVALENCE ( NDIAG(298),  NVISCA4   )
       EQUIVALENCE ( NDIAG(299),  NVISCAH   )
+      EQUIVALENCE ( NDIAG(300),  NdRhoDr   )
+      EQUIVALENCE ( NDIAG(301),  NdEtaDt2  )
 
 
 C diagnostics common

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.11 2004/07/07 03:10:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.12 2004/09/08 01:49:26 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -10,6 +10,7 @@ C $Name:  $
 #include "EEPARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "SURFACE.h"
 
       integer myThid 
 
@@ -31,6 +32,19 @@ C $Name:  $
         enddo
       enddo
       call fill_diagnostics(myThid,'ETANSQ  ',0,1,0,1,1,dummys)
+      
+#ifdef EXACT_CONSERV
+      do bj = myByLo(myThid), myByHi(myThid)
+        do bi = myBxLo(myThid), myBxHi(myThid)
+          do j = 1,sNy
+            do i = 1,sNx
+              dummys(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)*dEtaHdt(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+      call fill_diagnostics(myThid,'DETADT2 ',0,1,0,1,1,dummys)
+#endif
       
       call fill_diagnostics(myThid,'UVEL    ',0,Nr,0,1,1,uVel)
       call fill_diagnostics(myThid,'VVEL    ',0,Nr,0,1,1,vVel)
