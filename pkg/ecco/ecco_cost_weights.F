@@ -1,0 +1,1421 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_weights.F,v 1.1 2003/11/06 22:10:08 heimbach Exp $
+
+#include "COST_CPPOPTIONS.h"
+
+      subroutine ecco_cost_weights( mythid )
+
+c     ==================================================================
+c     SUBROUTINE ecco_cost_weights
+c     ==================================================================
+c
+c     o Read the weights used for the cost function evaluation.
+c
+c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
+c
+c     changed: Christian Eckert eckert@mit.edu 25-Feb-2000
+c
+c              - Restructured the code in order to create a package
+c                for the MITgcmUV.
+c
+c              Christian Eckert eckert@mit.edu 02-May-2000
+c
+c              - corrected typo in mdsreadfield( sflux_errfile );
+c                wp --> wsflux. Spotted by Patrick Heimbach.
+c
+c              - merged gebbie@mit.edu obcs development 
+c                heimbach@mit.edu 16-Jun-2003
+c
+c     ==================================================================
+c     SUBROUTINE ecco_cost_weights
+c     ==================================================================
+
+      implicit none
+
+c     == global variables ==
+
+#include "EEPARAMS.h"
+#include "SIZE.h"
+#include "PARAMS.h"
+#include "GRID.h"
+#if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || \
+     defined (ALLOW_OBCS_CONTROL))
+# include "OBCS.h"
+#endif
+
+#include "ctrl.h"
+#include "ecco_cost.h"
+
+c     == routine arguments ==
+
+      integer  mythid
+
+c     == local variables ==
+
+      integer bi,bj
+      integer i,j,k
+      integer itlo,ithi
+      integer jtlo,jthi
+      integer jmin,jmax
+      integer imin,imax
+      integer gwunit
+      integer irec,nnz
+      integer ilo,ihi
+      integer iobcs
+
+      _RL factor
+      _RL wti(nr)
+      _RL wsi(nr)
+      _RL wvi(nr)
+      _RL whflux0
+      _RL whflux0m
+      _RL wsflux0
+      _RL wsflux0m
+      _RL wtau0
+      _RL wtau0m
+      _RL ratio
+      _RL dummy
+
+c     == external ==
+
+      integer  ifnblnk
+      external ifnblnk
+      integer  ilnblnk
+      external ilnblnk
+
+c     == end of interface ==
+
+      jtlo = mybylo(mythid)
+      jthi = mybyhi(mythid)
+      itlo = mybxlo(mythid)
+      ithi = mybxhi(mythid)
+      jmin = 1-oly
+      jmax = sny+oly
+      imin = 1-olx
+      imax = snx+olx
+
+c--   Initialize variance (weight) fields.
+      do k = 1,nr
+         wti(k) = 0. _d 0
+         wsi(k) = 0. _d 0
+         wvi(k) = 0. _d 0
+      enddo
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              whflux  (i,j,bi,bj) = 0. _d 0
+              whfluxm (i,j,bi,bj) = 0. _d 0
+              wsflux  (i,j,bi,bj) = 0. _d 0
+              wsfluxm (i,j,bi,bj) = 0. _d 0
+              wtauu   (i,j,bi,bj) = 0. _d 0
+              wtauum  (i,j,bi,bj) = 0. _d 0
+              wtauv   (i,j,bi,bj) = 0. _d 0
+              wtauvm  (i,j,bi,bj) = 0. _d 0
+              watemp  (i,j,bi,bj) = 0. _d 0
+              waqh    (i,j,bi,bj) = 0. _d 0
+              wuwind  (i,j,bi,bj) = 0. _d 0
+              wvwind  (i,j,bi,bj) = 0. _d 0
+              wsst    (i,j,bi,bj) = 0. _d 0
+              wsss    (i,j,bi,bj) = 0. _d 0
+              wtp     (i,j,bi,bj) = 0. _d 0
+              wers    (i,j,bi,bj) = 0. _d 0
+              wp      (i,j,bi,bj) = 0. _d 0
+              wudrift (i,j,bi,bj) = 0. _d 0
+              wvdrift (i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,Nr
+            wtheta (k,bi,bj) = 0. _d 0
+            wsalt  (k,bi,bj) = 0. _d 0
+            wctdt  (k,bi,bj) = 0. _d 0
+            wctds  (k,bi,bj) = 0. _d 0
+            do j = jmin,jmax
+              do i = imin,imax
+                wtheta2 (i,j,k,bi,bj)   = 0. _d 0
+                wsalt2  (i,j,k,bi,bj)   = 0. _d 0
+                wthetaLev (i,j,k,bi,bj) = 0. _d 0
+                wsaltLev  (i,j,k,bi,bj) = 0. _d 0
+              enddo
+            enddo
+          enddo
+        enddo
+      enddo
+
+#if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || \
+     defined (ALLOW_OBCS_CONTROL))
+      do iobcs = 1,nobcs
+        do k = 1,Nr
+#if (defined (ALLOW_OBCSN_CONTROL) || \
+     defined (ALLOW_OBCSN_COST_CONTRIBUTION))
+          wobcsn(k,iobcs) = 0. _d 0
+#endif
+#if (defined (ALLOW_OBCSS_CONTROL) || \
+     defined (ALLOW_OBCSS_COST_CONTRIBUTION))
+          wobcss(k,iobcs) = 0. _d 0
+#endif
+#if (defined (ALLOW_OBCSW_CONTROL) || \
+     defined (ALLOW_OBCSW_COST_CONTRIBUTION))
+          wobcsw(k,iobcs) = 0. _d 0
+#endif
+#if (defined (ALLOW_OBCSE_CONTROL) || \
+     defined (ALLOW_OBCSE_COST_CONTRIBUTION))
+          wobcse(k,iobcs) = 0. _d 0
+#endif
+        enddo
+      enddo
+#endif
+
+c--   Build area weighting matrix used in the cost function
+c--   contributions.
+
+c--   Define frame.
+      do j = jmin,jmax
+        do i = imin,imax
+c--       North/South and West/East edges set to zero.
+          if ( (j .lt. 1) .or. (j .gt. sny) .or.
+     &         (i .lt. 1) .or. (i .gt. snx)      ) then
+            frame(i,j) = 0. _d 0
+          else
+            frame(i,j) = 1. _d 0
+          endif
+        enddo
+      enddo
+
+c--   First account for the grid used.
+      if (usingCartesianGrid) then
+        factor = 0. _d 0
+      else if (usingSphericalPolarGrid) then
+        factor = 1. _d 0
+      endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              cosphi(i,j,bi,bj) = cos(yc(i,j,bi,bj)*deg2rad*factor)*
+     &                            frame(i,j)
+cdscphcgg              cosphi(i,j,bi,bj) = frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+
+c--   Read error information and set up weight matrices.
+      _BEGIN_MASTER(myThid)
+        call mdsfindunit( gwunit, mythid )
+        ilo = ifnblnk(data_errfile)
+        ihi = ilnblnk(data_errfile)
+        open(gwunit, file=data_errfile(ilo:ihi),
+     &               status='old', form='formatted')
+
+        read(gwunit,*) whflux0, wsflux0, wtau0, ratio
+#if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || \
+     defined (ALLOW_OBCS_CONTROL))
+     &       , wbaro
+#endif
+        do k = 1,nr
+          read(gwunit,*) wti(k), wsi(k)
+#if (defined (ALLOW_OBCS_COST_CONTRIBUTION) || \
+     defined (ALLOW_OBCS_CONTROL))
+     &               , wvi(k)
+#endif
+        end do
+        close(gwunit)
+
+        whflux0m = whflux0
+        wsflux0m = wsflux0
+        wtau0m   = wtau0
+      _END_MASTER(myThid)
+
+      _BARRIER
+
+cph      jmin = 1
+cph      jmax = sny
+cph      imin = 1
+cph      imax = snx
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+
+          wsfluxmm(bi,bj) = 1.
+          whfluxmm(bi,bj) = 1.
+
+c--       The "classic" state estimation tool wastes memory here;
+c--       as long as there is not more information available there
+c--       is no need to add the zonal and meridional directions.
+          do k = 1,nr
+            wtheta  (k,bi,bj) = wti(k)
+            wsalt   (k,bi,bj) = wsi(k)
+            wcurrent(k,bi,bj) = wvi(k)
+          enddo
+
+          do k = 1,nr
+#ifdef ALLOW_OBCSN_COST_CONTRIBUTION
+            wobcsn(k,1) = wti(k)
+            wobcsn(k,2) = wsi(k)
+            wobcsn(k,3) = wvi(k)
+            wobcsn(k,4) = wvi(k)
+#endif
+#ifdef ALLOW_OBCSS_COST_CONTRIBUTION
+            wobcss(k,1) = wti(k)
+            wobcss(k,2) = wsi(k)
+            wobcss(k,3) = wvi(k)
+            wobcss(k,4) = wvi(k)
+#endif
+#ifdef ALLOW_OBCSW_COST_CONTRIBUTION
+            wobcsw(k,1) = wti(k)
+            wobcsw(k,2) = wsi(k)
+            wobcsw(k,3) = wvi(k)
+            wobcsw(k,4) = wvi(k)
+#endif
+#ifdef ALLOW_OBCSE_COST_CONTRIBUTION
+            wobcse(k,1) = wti(k)
+            wobcse(k,2) = wsi(k)
+            wobcse(k,3) = wvi(k)
+            wobcse(k,4) = wvi(k)
+#endif
+          enddo
+
+          k = 1
+          do j = jmin,jmax
+            do i = imin,imax
+              if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
+                wsst(i,j,bi,bj) = 0. _d 0
+                wsss(i,j,bi,bj) = 0. _d 0
+              else
+                wsst(i,j,bi,bj) = wtheta(k,bi,bj)*10.
+                wsss(i,j,bi,bj) = wsalt(k,bi,bj)*10.
+cph                wsst(i,j,bi,bj) = wthetaLev(i,j,k,bi,bj)*frame(i,j)
+cph                wsss(i,j,bi,bj) = wsaltLev(i,j,k,bi,bj)*frame(i,j)
+cph       factor 5. by D Stammer
+cph                wsst(i,j,bi,bj) = wtheta(k,bi,bj)*frame(i,j)*5.
+cph                wsss(i,j,bi,bj) = wsalt(k,bi,bj)*frame(i,j)*5.
+              endif
+            enddo
+          enddo
+        enddo
+      enddo
+
+#if (defined (ALLOW_ARGO_SALT_COST_CONTRIBUTION) || \
+     defined (ALLOW_CTDS_COST_CONTRIBUTION) || \
+     defined (ALLOW_CTDSCLIM_COST_CONTRIBUTION) || \
+     defined (ALLOW_OBCS_COST_CONTRIBUTION) || \
+     defined (ALLOW_SALT_COST_CONTRIBUTION))
+
+      if ( salterrfile .NE. ' ' ) then
+         call mdsreadfield( salterrfile, cost_iprec, 'RL', 1, wsalt2,
+     &                    1, mythid)
+
+cgg    Choose the proper energy of wtheta2 depending on the situation.
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+#ifdef COST_WEIGHTS_EDDY_NOISE
+cgg         58 percent of energy is at less than 400km, which I call the
+cgg         eddy signal. sqrt(.58)= .75 .
+cgg                wsalt2(i,j,k,bi,bj) = wsalt2(i,j,k,bi,bj)
+cgg                                      *0.75*_hFacC(i,j,k,bi,bj)
+
+cgg         48 percent of energy is at less than 300km.
+cgg         sqrt(.48) = .69 .
+                wsalt2(i,j,k,bi,bj) = wsalt2(i,j,k,bi,bj)*0.69
+     &                                *_hFacC(i,j,k,bi,bj)*frame(i,j)
+cgg         The instrumental error is much less than the eddy signal.
+#endif
+#ifdef COST_WEIGHTS_2X_EDDY_NOISE
+cgg    P.Huybers has reminded me that 2x eddy energy is 1.41x eddy std's.
+cgg    However, the model doesn't have enough variability. Figure that in.
+cgg    Suppose model has 40% of eddy energy. sqrt(1 + .4) = 1.18
+cgg                wsalt2(i,j,k,bi,bj)=1.41*(wsalt2(i,j,k,bi,bj)*0.75)
+                wsalt2(i,j,k,bi,bj) = wsalt2(i,j,k,bi,bj)*1.18*0.69
+     &                                *_hFacC(i,j,k,bi,bj)*frame(i,j)
+#endif
+#ifdef COST_WEIGHTS_EDDY_RESOLVE
+cgg         6 percent of energy is at less than 100km, which we never hope
+cgg         to really resolve. sqrt(.06)= .25 .
+                wsalt2(i,j,k,bi,bj) = wsalt2(i,j,k,bi,bj)*0.25
+     &                                *_hFacC(i,j,k,bi,bj)*frame(i,j)
+#endif
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo
+
+cgg     For Levitus comparisons, make the proper weight, and call it wthetaLev.
+
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+c--           Test for missing values.
+              if (wsalt(k,bi,bj).eq.0 .and. 
+     $            wsalt2(i,j,k,bi,bj).eq.0) then
+                 wsaltLev(i,j,k,bi,bj) = 0. _d 0
+              else
+cgg    Flags are confusing here...
+#ifdef COST_WEIGHTS_EDDY_NOISE
+                 wsaltLev(i,j,k,bi,bj) = wsalt2(i,j,k,bi,bj)
+     &                                   *_hFacC(i,j,k,bi,bj)*frame(i,j)
+#endif
+#if (defined (COST_WEIGHTS_2X_EDDY_NOISE) || \
+     defined (COST_WEIGHTS_EDDY_RESOLVE))
+                 wsaltLev(i,j,k,bi,bj) = 
+     $                ( wsalt(k,bi,bj)*wsalt(k,bi,bj) +
+     $                  wsalt2(i,j,k,bi,bj)*wsalt2(i,j,k,bi,bj) )
+                 wsaltLev(i,j,k,bi,bj) = sqrt(wsaltLev(i,j,k,bi,bj))
+     &                                   *_hFacC(i,j,k,bi,bj)*frame(i,j)
+#endif
+              endif
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo
+      else
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+                wsaltLev(i,j,k,bi,bj) = wsalt(k,bi,bj)
+     &                                  *_hFacC(i,j,k,bi,bj)*frame(i,j)
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo            
+      endif
+#endif
+
+#if (defined (ALLOW_ARGO_THETA_COST_CONTRIBUTION) || \
+     defined (ALLOW_CTDT_COST_CONTRIBUTION) || \
+     defined (ALLOW_CTDTCLIM_COST_CONTRIBUTION) || \
+     defined (ALLOW_XBT_COST_CONTRIBUTION) || \
+     defined (ALLOW_THETA_COST_CONTRIBUTION) || \
+     defined (ALLOW_OBCS_COST_CONTRIBUTION))
+
+      if ( temperrfile .NE. ' ' ) then
+         call mdsreadfield( temperrfile, cost_iprec, 'RL', 1, wtheta2,
+     &                    1, mythid)
+
+cgg    Choose the proper energy of wtheta2 depending on the situation.
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+#ifdef COST_WEIGHTS_EDDY_NOISE
+cgg         58 percent of energy is at less than 400km, which I call the
+cgg         eddy signal. sqrt(.58)= .75 .
+cgg                wtheta2(i,j,k,bi,bj) = (wtheta2(i,j,k,bi,bj)*0.75) 
+
+cgg         To be consistent with SSH, change to .69 . 
+                wtheta2(i,j,k,bi,bj) = wtheta2(i,j,k,bi,bj)*0.69
+     &                                 *_hFacC(i,j,k,bi,bj)*frame(i,j)
+cgg         The instrumental error is much less than the eddy signal.
+#endif
+#ifdef COST_WEIGHTS_2X_EDDY_NOISE
+cgg                wtheta2(i,j,k,bi,bj)=1.41*(wtheta2(i,j,k,bi,bj)*0.75)
+                wtheta2(i,j,k,bi,bj)=1.18*wtheta2(i,j,k,bi,bj)*0.69
+     &                                *_hFacC(i,j,k,bi,bj)*frame(i,j)
+#endif
+#ifdef COST_WEIGHTS_EDDY_RESOLVE
+cgg         6 percent of energy is at less than 100km, which we never hope
+cgg         to really resolve. sqrt(.06)= .25 .
+                wtheta2(i,j,k,bi,bj)= wtheta2(i,j,k,bi,bj)*0.25
+     &                                *_hFacC(i,j,k,bi,bj)*frame(i,j)
+#endif
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo
+
+cgg     For Levitus comparisons, make the proper weight, and call it wthetaLev.
+
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+c--           Test for missing values.
+              if (wtheta(k,bi,bj).eq.0 .and. 
+     $            wtheta2(i,j,k,bi,bj).eq.0) then
+                 wthetaLev(i,j,k,bi,bj) = 0. _d 0
+              else
+cgg    Flags are confusing here...
+#ifdef COST_WEIGHTS_EDDY_NOISE
+cgg    EDDY_NOISE refers to a coarse resolution run.
+                 wthetaLev(i,j,k,bi,bj) = wtheta(k,bi,bj)*frame(i,j)
+     &                                    *_hFacC(i,j,k,bi,bj)
+#endif
+#ifdef COST_WEIGHTS_EDDY_RESOLVE
+cgg    EDDY_RESOLVE refers to a model run with eddies, and we 
+cgg    want a fit to eddies in data. Because Levitus does not 
+cgg    include eddies, we must consider this error.
+                 wthetaLev(i,j,k,bi,bj) = 
+     $                ( wtheta(k,bi,bj)*wtheta(k,bi,bj) +
+     $                3*wtheta2(i,j,k,bi,bj)*3*wtheta2(i,j,k,bi,bj) )
+                 wthetaLev(i,j,k,bi,bj)= sqrt(wthetaLev(i,j,k,bi,bj)) 
+     &                                   *_hFacC(i,j,k,bi,bj)*frame(i,j)
+#endif
+#ifdef COST_WEIGHTS_2X_EDDY_NOISE
+cgg    2X_EDDY_NOISE refers to a model run with eddies, and we 
+cgg    DON'T want a fit to eddies in data. Because Levitus does not 
+cgg    include eddies, we must consider this error.
+cgg     1/1.18 = .847 .
+                 wthetaLev(i,j,k,bi,bj) = 
+     $               ( wtheta(k,bi,bj)*wtheta(k,bi,bj) +
+     $           0.847*wtheta2(i,j,k,bi,bj)*0.847*wtheta2(i,j,k,bi,bj) )
+                 wthetaLev(i,j,k,bi,bj) = sqrt(wthetaLev(i,j,k,bi,bj)) 
+     &                                   *_hFacC(i,j,k,bi,bj)*frame(i,j)
+#endif
+              endif
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo
+      else
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+                wthetaLev(i,j,k,bi,bj) = wtheta(k,bi,bj)
+     &                                   *_hFacC(i,j,k,bi,bj)*frame(i,j)
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo            
+      endif
+#endif
+
+cgg    Read in the current meter velocity error field.
+#if (defined (ALLOW_CURMTR_COST_CONTRIBUTION) || \
+     defined (ALLOW_OBCS_COST_CONTRIBUTION))
+
+      if ( velerrfile .NE. ' ' ) then
+         call mdsreadfield( velerrfile, cost_iprec, 'RL', nr, wcurrent2,
+     &                     1, mythid)
+
+cgg    Choose the proper energy of wcurrent2 depending on the situation.
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+               if (wcurrent2(i,j,k,bi,bj) .lt. 0.)
+     &               wcurrent2(i,j,k,bi,bj) = 0.
+#ifdef COST_WEIGHTS_EDDY_NOISE
+cgg         95 percent of energy is at less than 400km, which I call the
+cgg         eddy signal. sqrt(.95)= .97 .
+cgg         CHANGED .97 -> .90, 1.41 -> 1.18 .
+cgg                wcurrent2(i,j,k,bi,bj) = (wcurrent2(i,j,k,bi,bj)*0.97) 
+                wcurrent2(i,j,k,bi,bj) = wcurrent2(i,j,k,bi,bj)*0.90
+     &                                   *_hFacC(i,j,k,bi,bj)*frame(i,j)
+cgg         The instrumental error is much less than the eddy signal.
+#endif
+#ifdef COST_WEIGHTS_2X_EDDY_NOISE
+cgg     P.huybers Fix.
+cgg                wcurrent2(i,j,k,bi,bj)=1.41*(wcurrent2(i,j,k,bi,bj)
+                wcurrent2(i,j,k,bi,bj) = wcurrent2(i,j,k,bi,bj)*1.18*0.9
+     &                                   *_hFacC(i,j,k,bi,bj)*frame(i,j)
+#endif
+#ifdef COST_WEIGHTS_EDDY_RESOLVE
+cgg         47 percent of energy is at less than 100km, which we never hope
+cgg         to really resolve. sqrt(.47)= .69 .
+                wcurrent2(i,j,k,bi,bj) = wcurrent2(i,j,k,bi,bj)*0.69
+     &                                   *_hFacC(i,j,k,bi,bj)*frame(i,j)
+#endif
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo
+
+cgg     For the O.B. velocity comparisons, make the proper weight, 
+cgg     and call it wcurrentLev.
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+c--           Test for missing values.
+              if (wcurrent(k,bi,bj).eq.0 .and. 
+     $            wcurrent2(i,j,k,bi,bj).eq.0) then
+                 wcurrentLev(i,j,k,bi,bj) = 0. _d 0
+              else
+cgg    Flags are confusing here...
+#ifdef COST_WEIGHTS_EDDY_NOISE
+cgg    EDDY_NOISE refers to a coarse resolution run.
+                 wcurrentLev(i,j,k,bi,bj) = wcurrent(k,bi,bj)
+     &                *_hFacC(i,j,k,bi,bj)*frame(i,j)
+#endif
+#ifdef COST_WEIGHTS_EDDY_RESOLVE
+cgg    EDDY_RESOLVE refers to a model run with eddies, and we 
+cgg    want a fit to eddies in data. Because Levitus does not 
+cgg    include eddies, we must consider this error.
+cgg    .98/.69 = 1.4 .
+                 wcurrentLev(i,j,k,bi,bj) = 
+     $                ( wcurrent(k,bi,bj)*wcurrent(k,bi,bj) +
+     $         1.4*wcurrent2(i,j,k,bi,bj)*1.4*wcurrent2(i,j,k,bi,bj) )
+                 wcurrentLev(i,j,k,bi,bj) = 
+     &                sqrt(wcurrentLev(i,j,k,bi,bj))
+     &                *_hFacC(i,j,k,bi,bj)*frame(i,j)
+#endif
+#ifdef COST_WEIGHTS_2X_EDDY_NOISE
+cgg    2X_EDDY_NOISE refers to a model run with eddies, and we 
+cgg    DON'T want a fit to eddies in data. Because Levitus does not 
+cgg    include eddies, we must consider this error.
+cgg    .707 = sqrt(1/2). P Huybers Fix.
+                 wcurrentLev(i,j,k,bi,bj) = 
+     $                ( wcurrent(k,bi,bj)*wcurrent(k,bi,bj) 
+     $      +0.847*wcurrent2(i,j,k,bi,bj)*0.847*wcurrent2(i,j,k,bi,bj) )
+                 wcurrentLev(i,j,k,bi,bj) = 
+     &                sqrt(wcurrentLev(i,j,k,bi,bj))
+     &                *_hFacC(i,j,k,bi,bj)*frame(i,j)
+#endif
+              endif
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo
+      else
+         do bj = jtlo,jthi
+          do bi = itlo,ithi
+           do k = 1,nr
+            do j = jmin,jmax
+             do i = imin,imax
+                wcurrentLev(i,j,k,bi,bj) = wcurrent(k,bi,bj)
+     &               *_hFacC(i,j,k,bi,bj)*frame(i,j)
+             enddo
+            enddo
+           enddo
+          enddo
+         enddo            
+      endif
+#endif
+
+#ifdef ALLOW_SSH_COST_CONTRIBUTION
+c--   Read T/P SSH anomaly rms field. Data in units of centimeters.
+      nnz   =   1
+      irec  =   1
+      if ( ssh_errfile .NE. ' ' ) then
+        call mdsreadfield( ssh_errfile, cost_iprec, cost_yftype, nnz, 
+     &                   wtp, irec, mythid )
+      else
+        STOP 'ssh_errfile not available for ALLOW_SSH_COST_CONTRIBUTION'
+      endif
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          k = 1
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Unit conversion to meters. ERS error is set to
+c--           T/P error + 5cm
+              if (_hFacC(i,j,k,bi,bj) .eq. 0.) then
+                wtp (i,j,bi,bj) = 0. _d 0
+                wers(i,j,bi,bj) = 0. _d 0
+              else
+cgg                wtp (i,j,bi,bj) = wtp(i,j,bi,bj) * 0.01 * 0.5 * frame(i,j)
+cgg                wers(i,j,bi,bj) = (wtp(i,j,bi,bj)+0.05)*frame(i,j)
+cgg  I estimate that .70 of the dynamical signal should be noise.
+cgg  This flag should only be for 2 degree runs. See cost.README.
+cgg  4.1 cm is the instrumental error, Fu textbook. Assume 
+cgg  geographical independence.
+cgg  Its more explicit to me this way.
+#ifdef COST_WEIGHTS_EDDY_NOISE
+cgg         58 percent of energy is at less than 400km, which I call the
+cgg         eddy signal. sqrt(.58)= .75 .
+cgg                wtp (i,j,bi,bj) = (wtp(i,j,bi,bj)*0.01*0.75)*frame(i,j)
+cgg                wtp (i,j,bi,bj) = (wtp(i,j,bi,bj)*0.01*0.69)*frame(i,j)
+cgg    OK go with D. Stammer's weight without any reason.
+                wtp (i,j,bi,bj) = wtp(i,j,bi,bj)*0.01*0.50*frame(i,j)
+                wtp (i,j,bi,bj) = wtp(i,j,bi,bj)*wtp(i,j,bi,bj) +
+     &                            .041*.041
+                wtp (i,j,bi,bj) = sqrt(wtp(i,j,bi,bj)) * frame(i,j)
+#endif
+#ifdef COST_WEIGHTS_2X_EDDY_NOISE
+cgg    P Huybers Fix. formerly 2 instead of 1.41 .
+cgg                wtp (i,j,bi,bj) = (wtp(i,j,bi,bj)*0.01*0.75)*frame(i,j)
+                wtp (i,j,bi,bj) = wtp(i,j,bi,bj)*0.01*0.50*frame(i,j)
+cgg                wtp (i,j,bi,bj) =1.41*wtp(i,j,bi,bj)*1.41*wtp(i,j,bi,bj) 
+                wtp (i,j,bi,bj) =1.18*wtp(i,j,bi,bj)*1.18*wtp(i,j,bi,bj)
+     &                           + .041*.041
+                wtp (i,j,bi,bj) = sqrt(wtp(i,j,bi,bj)) * frame(i,j)
+#endif
+#ifdef COST_WEIGHTS_EDDY_RESOLVE
+Cgg         6 percent of energy is at less than 100km, which we never hope
+cgg         to really resolve. sqrt(.06)= .25 .
+                wtp (i,j,bi,bj) = wtp(i,j,bi,bj)*0.01*0.25*frame(i,j)
+                wtp (i,j,bi,bj) = wtp(i,j,bi,bj)*wtp(i,j,bi,bj) +
+     &                            .041*.041
+                wtp (i,j,bi,bj) = sqrt(wtp(i,j,bi,bj)) * frame(i,j)
+#endif
+              endif
+            enddo
+          enddo
+        enddo
+      enddo
+#endif /* ALLOW_SSH_COST_CONTRIBUTION */
+
+#if (defined (ALLOW_READ_EGM_DATA) || \
+     defined (ALLOW_EGM96_ERROR_DIAG))
+c--   Read egm-96 geoid covariance. Data in units of meters.
+
+      nnz   =  1
+      irec  =  1
+      if ( geoid_errfile .NE. ' ' ) then
+        call mdsreadfield( geoid_errfile, cost_iprec, cost_yftype, nnz, 
+     &                    wp, irec, mythid )
+c--   Set all tile edges to zero.
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do j = jmin,jmax
+              do i = imin,imax
+                wp (i,j,bi,bj) = wp(i,j,bi,bj)*frame(i,j)
+              enddo
+            enddo
+          enddo
+        enddo
+      else
+        STOP 'geoid_errfile not available for ALLOW_READ_EGM_DATA'
+      endif
+#else
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              wp(i,j,bi,bj) = 0. _d 0
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+c--   Read zonal wind stress variance.
+#if (defined (ALLOW_SCAT_COST_CONTRIBUTION))
+
+      nnz   =   1
+      irec  =   1
+      call mdsreadfield( scatx_errfile, cost_iprec, cost_yftype, nnz, 
+     &                   wscatx, irec, mythid )
+      call mdsreadfield( scaty_errfile, cost_iprec, cost_yftype, nnz, 
+     &                   wscaty, irec, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          k = 1
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wscatx(i,j,bi,bj) .lt. -9900.) then
+                wscatx(i,j,bi,bj) = 0. _d 0
+              endif
+              wscatx(i,j,bi,bj) = wscatx(i,j,bi,bj)*0.1
+              wscatx(i,j,bi,bj) = max(wscatx(i,j,bi,bj),wtau0)
+              wscatx(i,j,bi,bj) = wscatx(i,j,bi,bj)*maskw(i,j,k,bi,bj)
+     &                            *frame(i,j)
+              if (wscaty(i,j,bi,bj) .lt. -9900.) then
+                wscaty(i,j,bi,bj) = 0. _d 0
+              endif
+              wscaty(i,j,bi,bj) = wscaty(i,j,bi,bj)*0.1
+              wscaty(i,j,bi,bj) = max(wscaty(i,j,bi,bj),wtau0)
+              wscaty(i,j,bi,bj) = wscaty(i,j,bi,bj)*masks(i,j,k,bi,bj)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+
+#endif
+
+c--   Read zonal wind stress variance.
+#if (defined (ALLOW_STRESS_MEAN_COST_CONTRIBUTION))
+      nnz   =   1
+      irec  =   1
+cph      call mdsreadfield( tauum_errfile, cost_iprec, cost_yftype,
+cph     &                   nnz, wtauum, irec, mythid )
+cph      call mdsreadfield( tauvm_errfile, cost_iprec, cost_yftype,
+cph     &                   nnz, wtauvm, irec, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          k = 1
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wtauum(i,j,bi,bj) .lt. -9900.) then
+                wtauum(i,j,bi,bj) = 0. _d 0
+              endif
+              wtauum(i,j,bi,bj) = max(wtauum(i,j,bi,bj),wtau0m)
+     &                            *frame(i,j)
+c--           Test for missing values.
+              if (wtauvm(i,j,bi,bj) .lt. -9900.) then
+                wtauvm(i,j,bi,bj) = 0. _d 0
+              endif
+              wtauvm(i,j,bi,bj) = max(wtauvm(i,j,bi,bj),wtau0m)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#if (defined (ALLOW_USTRESS_COST_CONTRIBUTION))
+      nnz   =   1
+ce      irec  =   2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      call mdsreadfield( tauu_errfile, cost_iprec, cost_yftype, nnz, 
+     &                   wtauu, irec, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          k = 1
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wtauu(i,j,bi,bj) .lt. -9900.) then
+                wtauu(i,j,bi,bj) = 0. _d 0
+              endif
+              wtauu(i,j,bi,bj) = wtauu(i,j,bi,bj)*0.1
+              wtauu(i,j,bi,bj) = max(wtauu(i,j,bi,bj),wtau0)
+              wtauu(i,j,bi,bj) = wtauu(i,j,bi,bj)*maskw(i,j,k,bi,bj)
+     &                            *frame(i,j)
+             enddo
+          enddo
+        enddo
+      enddo
+
+#elif (defined (ALLOW_UWIND_COST_CONTRIBUTION))
+
+      nnz   =   1
+ce      irec  =   2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      call mdsreadfield( uwind_errfile, cost_iprec, cost_yftype, nnz, 
+     &                   wuwind, irec, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          k = 1
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wuwind(i,j,bi,bj) .lt. -9900.) then
+                wuwind(i,j,bi,bj) = 0. _d 0
+              endif
+              wuwind(i,j,bi,bj) = wuwind(i,j,bi,bj)*0.1
+              wuwind(i,j,bi,bj) = max(wuwind(i,j,bi,bj),wtau0)
+              wuwind(i,j,bi,bj) = wuwind(i,j,bi,bj)*maskw(i,j,k,bi,bj)
+     &                            *frame(i,j)
+             enddo
+          enddo
+        enddo
+      enddo
+cph(
+      print *, 'WARNING: wtau0 needs to be replaced by wwind0!!!'
+cph)
+#endif
+
+c--   Read meridional wind stress variance.
+#if (defined (ALLOW_VSTRESS_COST_CONTRIBUTION))
+      nnz   =   1
+ce      irec  =   2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+
+      call mdsreadfield( tauv_errfile, cost_iprec, cost_yftype, nnz, 
+     &                   wtauv, irec, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wtauv(i,j,bi,bj) .lt. -9900.) then
+                wtauv(i,j,bi,bj) = 0. _d 0
+              endif
+              wtauv(i,j,bi,bj) = wtauv(i,j,bi,bj)*0.1
+              wtauv(i,j,bi,bj) = max(wtauv(i,j,bi,bj),wtau0)
+              wtauv(i,j,bi,bj) = wtauv(i,j,bi,bj)*masks(i,j,k,bi,bj)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+
+#elif (defined (ALLOW_VWIND_COST_CONTRIBUTION))
+
+      nnz   =   1
+ce      irec  =   2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+
+      call mdsreadfield( vwind_errfile, cost_iprec, cost_yftype, nnz, 
+     &                   wvwind, irec, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wvwind(i,j,bi,bj) .lt. -9900.) then
+                wvwind(i,j,bi,bj) = 0. _d 0
+              endif
+              wvwind(i,j,bi,bj) = wvwind(i,j,bi,bj)*0.1
+              wvwind(i,j,bi,bj) = max(wvwind(i,j,bi,bj),wtau0)
+              wvwind(i,j,bi,bj) = wvwind(i,j,bi,bj)*masks(i,j,k,bi,bj)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#if (defined (ALLOW_HFLUX_COST_CONTRIBUTION))
+c--   Read heat flux flux variance.
+      nnz   =  1
+c--   First  record in data file:  mean field.
+c--   Second record in data file:  rms  field.
+ce      irec  =  2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      call mdsreadfield( hflux_errfile, cost_iprec, cost_yftype, nnz, 
+     &                   whflux, irec, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (whflux(i,j,bi,bj) .lt. -9900.) then
+                whflux(i,j,bi,bj) = 0. _d 0
+              endif
+c--           Data are in units of W/m**2.
+              whflux(i,j,bi,bj) = whflux(i,j,bi,bj)/3.
+              whflux(i,j,bi,bj) = max(whflux(i,j,bi,bj),whflux0)
+     &                            *frame(i,j)
+              whfluxm(i,j,bi,bj) = max(whfluxm(i,j,bi,bj),whflux0m)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+#elif (defined (ALLOW_ATEMP_COST_CONTRIBUTION))
+c--   Read atmos. temp. variance.
+      nnz   =  1
+c--   First  record in data file:  mean field.
+c--   Second record in data file:  rms  field.
+ce      irec  =  2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      call mdsreadfield( atemp_errfile, cost_iprec, cost_yftype, nnz, 
+     &                   watemp, irec, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (watemp(i,j,bi,bj) .lt. -9900.) then
+                watemp(i,j,bi,bj) = 0. _d 0
+              endif
+c--           Data are in units of W/m**2.
+              watemp(i,j,bi,bj) = watemp(i,j,bi,bj)/3.
+              watemp(i,j,bi,bj) = max(watemp(i,j,bi,bj),whflux0)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+cph(
+      print *, 'WARNING: whflux0 needs to be replaced by watemp0!!!'
+cph)
+#endif
+
+#if (defined (ALLOW_SFLUX_COST_CONTRIBUTION))
+c--   Read salt flux variance. Second read: data in units of m/s.
+      nnz   =  1
+c--   First  record in data file:  mean field.
+c--   Second record in data file:  rms  field.
+ce      irec  =  2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      call mdsreadfield( sflux_errfile, cost_iprec, cost_yftype, nnz, 
+     &                   wsflux, irec, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (wsflux(i,j,bi,bj) .lt. -9900.) then
+                wsflux(i,j,bi,bj) = 0. _d 0
+              endif
+c--           Data are in units of m/s.
+cgg           ADHOC change by G.gebbie, factor 3->6.
+              wsflux(i,j,bi,bj) = wsflux(i,j,bi,bj) / 6.
+              wsflux(i,j,bi,bj) = max(wsflux(i,j,bi,bj),wsflux0)
+     &                            *frame(i,j)
+              wsfluxm(i,j,bi,bj) = max(wsfluxm(i,j,bi,bj),wsflux0m)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+#elif (defined (ALLOW_AQH_COST_CONTRIBUTION))
+c--   Secific humid. variance. Second read: data in units of m/s.
+      nnz   =  1
+c--   First  record in data file:  mean field.
+c--   Second record in data file:  rms  field.
+ce      irec  =  2
+ce(   due to Patrick's processing:
+      irec  = 1
+ce)
+      call mdsreadfield( aqh_errfile, cost_iprec, cost_yftype, nnz, 
+     &                   waqh, irec, mythid )
+
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+c--           Test for missing values.
+              if (waqh(i,j,bi,bj) .lt. -9900.) then
+                waqh(i,j,bi,bj) = 0. _d 0
+              endif
+c--           Data are in units of m/s.
+              waqh(i,j,bi,bj) = waqh(i,j,bi,bj) / 3.
+              waqh(i,j,bi,bj) = max(waqh(i,j,bi,bj),wsflux0)
+     &                            *frame(i,j)
+            enddo
+          enddo
+        enddo
+      enddo
+cph(
+      print *, 'WARNING: wsflux0 needs to be replaced by waqh0!!!'
+cph)
+#endif
+
+c--   Units have to be checked!
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+              if (wtp(i,j,bi,bj) .ne. 0.) then
+                wtp (i,j,bi,bj) = 1./wtp(i,j,bi,bj)/wtp(i,j,bi,bj)
+              endif
+              if (wers(i,j,bi,bj) .ne. 0.) then
+                wers(i,j,bi,bj) = 1./wers(i,j,bi,bj)/wers(i,j,bi,bj)
+              endif
+              if (wsst(i,j,bi,bj) .ne. 0.) then
+                wsst(i,j,bi,bj) = 1./wsst(i,j,bi,bj)/wsst(i,j,bi,bj)
+              endif
+              if (wsss(i,j,bi,bj) .ne. 0.) then
+                wsss(i,j,bi,bj) = 1./wsss(i,j,bi,bj)/wsss(i,j,bi,bj)
+              endif
+              if (wp(i,j,bi,bj) .ne. 0.) then
+                wp(i,j,bi,bj) = 1./wp(i,j,bi,bj)/wp(i,j,bi,bj)
+              endif
+              if (wtauu(i,j,bi,bj) .ne. 0.) then
+                wtauu(i,j,bi,bj) = 1./wtauu(i,j,bi,bj)/wtauu(i,j,bi,bj)
+              else
+                wtauu(i,j,bi,bj) = 1.0 _d 0
+              endif
+              if (wtauum(i,j,bi,bj) .ne. 0.) then
+                wtauum(i,j,bi,bj) = 
+     &            1./wtauum(i,j,bi,bj)/wtauum(i,j,bi,bj)
+              else
+                wtauum(i,j,bi,bj) = 1.0 _d 0
+              endif
+              if (wscatx(i,j,bi,bj) .ne. 0.) then
+                wscatx(i,j,bi,bj) = 
+     &            1./wscatx(i,j,bi,bj)/wscatx(i,j,bi,bj)
+              else
+                wscatx(i,j,bi,bj) = 1.0 _d 0
+              endif
+              if (wtauv(i,j,bi,bj) .ne. 0.) then
+                wtauv(i,j,bi,bj) = 1./wtauv(i,j,bi,bj)/wtauv(i,j,bi,bj)
+              else
+                wtauv(i,j,bi,bj) = 1.0 _d 0
+              endif
+              if (wtauvm(i,j,bi,bj) .ne. 0.) then
+                wtauvm(i,j,bi,bj) =
+     &           1./wtauvm(i,j,bi,bj)/wtauvm(i,j,bi,bj)
+              else
+                wtauvm(i,j,bi,bj) = 1.0 _d 0
+              endif
+              if (wscaty(i,j,bi,bj) .ne. 0.) then
+                wscaty(i,j,bi,bj) =
+     &           1./wscaty(i,j,bi,bj)/wscaty(i,j,bi,bj)
+              else
+                wscaty(i,j,bi,bj) = 1.0 _d 0
+              endif
+              if (whflux(i,j,bi,bj) .ne. 0.) then
+                whflux(i,j,bi,bj) =
+     &                1./whflux(i,j,bi,bj)/whflux(i,j,bi,bj)
+              else
+                whflux(i,j,bi,bj) = 1.0 _d 0
+              endif
+              if (whfluxm(i,j,bi,bj) .ne. 0.) then
+                whfluxm(i,j,bi,bj) = 
+     &                1./whfluxm(i,j,bi,bj)/whfluxm(i,j,bi,bj)
+              else    
+                whfluxm(i,j,bi,bj) = 1.0 _d 0
+              endif
+              if (wsflux(i,j,bi,bj) .ne. 0.) then
+                wsflux(i,j,bi,bj) =
+     &                1./wsflux(i,j,bi,bj)/wsflux(i,j,bi,bj)
+              else
+                wsflux(i,j,bi,bj) = 1.0 _d 0
+              endif
+              if (wsfluxm(i,j,bi,bj) .ne. 0.) then
+                wsfluxm(i,j,bi,bj) = 
+     &                1./wsfluxm(i,j,bi,bj)/wsfluxm(i,j,bi,bj)
+              else
+                wsfluxm(i,j,bi,bj) = 1.0 _d 0
+              endif
+              if (wuwind(i,j,bi,bj) .ne. 0.) then
+                wuwind(i,j,bi,bj) = 
+     &                1./wuwind(i,j,bi,bj)/wuwind(i,j,bi,bj)
+              else
+                wuwind(i,j,bi,bj) = 1.0 _d 0
+              endif
+              if (wvwind(i,j,bi,bj) .ne. 0.) then
+                wvwind(i,j,bi,bj) = 
+     &                1./wvwind(i,j,bi,bj)/wvwind(i,j,bi,bj)
+              else
+                wvwind(i,j,bi,bj) = 1.0 _d 0
+              endif
+              if (watemp(i,j,bi,bj) .ne. 0.) then
+                watemp(i,j,bi,bj) =
+     &                1./watemp(i,j,bi,bj)/watemp(i,j,bi,bj)
+              else
+                watemp(i,j,bi,bj) = 1.0 _d 0
+              endif
+              if (waqh(i,j,bi,bj) .ne. 0.) then
+                waqh(i,j,bi,bj) =
+     &                1./waqh(i,j,bi,bj)/waqh(i,j,bi,bj)
+              else
+                waqh(i,j,bi,bj) = 1.0 _d 0
+              endif
+
+              if (wsfluxmm(bi,bj).ne.0.) 
+     &             wsfluxmm(bi,bj) = 1./wsfluxmm(bi,bj)*wsfluxmm(bi,bj)
+              if (whfluxmm(bi,bj).ne.0.) 
+     &             whfluxmm(bi,bj) = 1./whfluxmm(bi,bj)*whfluxmm(bi,bj)
+
+            enddo
+          enddo
+
+          do k = 1,nr
+            if (wtheta(k,bi,bj) .ne. 0.) then
+              wtheta(k,bi,bj) = 1./wtheta(k,bi,bj)/wtheta(k,bi,bj)
+            else
+              wtheta(k,bi,bj) = 1. _d 0
+            endif
+            if (wsalt(k,bi,bj) .ne. 0.) then
+              wsalt(k,bi,bj) = 1./wsalt(k,bi,bj)/wsalt(k,bi,bj)
+            else
+              wsalt(k,bi,bj) = 1. _d 0
+            endif
+            if (wcurrent(k,bi,bj) .ne. 0.) then
+              wcurrent(k,bi,bj) = 1./
+     &                            wcurrent(k,bi,bj)/wcurrent(k,bi,bj)
+            else
+              wcurrent(k,bi,bj) = 1. _d 0
+            endif
+
+            do j = jmin,jmax
+              do i = imin,imax
+                 if (wtheta2(i,j,k,bi,bj) .ne. 0.) then
+                    wtheta2(i,j,k,bi,bj) = 1.
+     &                   /wtheta2(i,j,k,bi,bj)/wtheta2(i,j,k,bi,bj)
+                 endif
+                 if (wthetaLev(i,j,k,bi,bj) .ne. 0.) then
+                    wthetaLev(i,j,k,bi,bj) = 1.
+     &                   /wthetaLev(i,j,k,bi,bj)/wthetaLev(i,j,k,bi,bj)
+                 endif
+                 if (wsalt2(i,j,k,bi,bj) .ne. 0.) then
+                    wsalt2(i,j,k,bi,bj) = ratio
+     &                   /wsalt2(i,j,k,bi,bj)/wsalt2(i,j,k,bi,bj)
+                 endif
+                 if (wsaltLev(i,j,k,bi,bj) .ne. 0.) then
+                    wsaltLev(i,j,k,bi,bj) = 1.
+     &                   /wsaltLev(i,j,k,bi,bj)/wsaltLev(i,j,k,bi,bj)
+                 endif
+                 if (wcurrent2(i,j,k,bi,bj) .ne. 0.) then
+                    wcurrent2(i,j,k,bi,bj) = 1.
+     &                   /wcurrent2(i,j,k,bi,bj)/wcurrent2(i,j,k,bi,bj)
+                 endif
+                 if (wcurrentLev(i,j,k,bi,bj) .ne. 0.) then
+                    wcurrentLev(i,j,k,bi,bj) = 1.
+     &                /wcurrentLev(i,j,k,bi,bj)/wcurrentLev(i,j,k,bi,bj)
+                 endif
+              enddo
+            enddo
+          enddo
+
+#ifdef ALLOW_OBCS_COST_CONTRIBUTION
+          do iobcs = 1,nobcs
+            do k = 1,nr
+#ifdef ALLOW_OBCSN_COST_CONTRIBUTION
+              if (wobcsn(k,iobcs) .ne. 0.) then
+                 wobcsn(k,iobcs) = 
+     &                1./wobcsn(k,iobcs)/wobcsn(k,iobcs)
+              else
+                 wobcsn(k,iobcs) = 1.0 _d 0
+              endif
+#endif
+#ifdef ALLOW_OBCSS_COST_CONTRIBUTION
+              if (wobcss(k,iobcs) .ne. 0.) then
+                 wobcss(k,iobcs) = 
+     &                1./wobcss(k,iobcs)/wobcss(k,iobcs)
+              else
+                 wobcss(k,iobcs) = 1.0 _d 0
+              endif
+#endif
+#ifdef ALLOW_OBCSW_COST_CONTRIBUTION
+              if (wobcsw(k,iobcs) .ne. 0.) then
+                 wobcsw(k,iobcs) = 
+     &                1./wobcsw(k,iobcs)/wobcsw(k,iobcs)
+              else
+                 wobcsw(k,iobcs) = 1.0 _d 0
+              endif
+#endif
+#ifdef ALLOW_OBCSE_COST_CONTRIBUTION
+              if (wobcse(k,iobcs) .ne. 0.) then
+                 wobcse(k,iobcs) = 
+     &                1./wobcse(k,iobcs)/wobcse(k,iobcs)
+              else
+                 wobcse(k,iobcs) = 1.0 _d 0
+              endif
+#endif
+            enddo
+          enddo
+#endif
+
+        enddo
+      enddo
+
+      wbaro = 1./wbaro/wbaro
+
+#ifdef ALLOW_OBCS_COST_CONTRIBUTION
+cgg   Compile the geographically varying o.b. cost weights.
+cgg   Pick out the proper slices.
+      do iobcs = 1,nobcs
+        if (iobcs.eq. 1) then
+          do bj = jtlo,jthi
+            do bi = itlo,ithi
+              do k = 1,nr
+                do i = imin,imax
+#ifdef ALLOW_OBCSN_COST_CONTRIBUTION
+                    j = OB_Jn(I,bi,bj) 
+                    wobcsnLev(i,k,bi,bj,iobcs) = 
+     &                  wthetaLev(i,j,k,bi,bj)
+#endif
+#ifdef ALLOW_OBCSS_COST_CONTRIBUTION                    
+                    j = OB_Js(I,bi,bj)
+                    wobcssLev(i,k,bi,bj,iobcs) =
+     &                  wthetaLev(i,j,k,bi,bj)
+#endif
+                enddo
+                do j = jmin,jmax
+#ifdef ALLOW_OBCSW_COST_CONTRIBUTION
+                    i = OB_Iw(J,bi,bj)
+                    wobcswLev(j,k,bi,bj,iobcs) =
+     &                  wthetaLev(i,j,k,bi,bj)
+#endif
+#ifdef ALLOW_OBCSE_COST_CONTRIBUTION
+                    i = OB_Ie(J,bi,bj)
+                    wobcseLev(j,k,bi,bj,iobcs) =
+     &                  wthetaLev(i,j,k,bi,bj)
+#endif          
+                enddo        
+              enddo
+            enddo
+          enddo
+        elseif (iobcs.eq.2) then
+          do bj = jtlo,jthi
+            do bi = itlo,ithi
+              do k = 1,nr
+                do i = imin,imax
+#ifdef ALLOW_OBCSN_COST_CONTRIBUTION
+                    j = OB_Jn(I,bi,bj) 
+                    wobcsnLev(i,k,bi,bj,iobcs) = 
+     &                  wsaltLev(i,j,k,bi,bj)
+#endif
+#ifdef ALLOW_OBCSS_COST_CONTRIBUTION                    
+                    j = OB_Js(I,bi,bj)
+                    wobcssLev(i,k,bi,bj,iobcs) =
+     &                  wsaltLev(i,j,k,bi,bj)
+#endif
+                enddo
+                do j = jmin,jmax
+#ifdef ALLOW_OBCSW_COST_CONTRIBUTION
+                    i = OB_Iw(J,bi,bj)
+                    wobcswLev(j,k,bi,bj,iobcs) =
+     &                  wsaltLev(i,j,k,bi,bj)
+#endif
+#ifdef ALLOW_OBCSE_COST_CONTRIBUTION
+                    i = OB_Ie(J,bi,bj)
+                    wobcseLev(j,k,bi,bj,iobcs) =
+     &                  wsaltLev(i,j,k,bi,bj)
+#endif                  
+                enddo
+              enddo
+            enddo
+          enddo
+        elseif (iobcs .eq. 3 .or. iobcs .eq. 4) then
+          do bj = jtlo,jthi
+            do bi = itlo,ithi
+              do k = 1,nr
+                do i = imin,imax
+#ifdef ALLOW_OBCSN_COST_CONTRIBUTION
+                    j = OB_Jn(I,bi,bj) 
+                    wobcsnLev(i,k,bi,bj,iobcs) = 
+     &                  wcurrentLev(i,j,k,bi,bj)
+#endif
+#ifdef ALLOW_OBCSS_COST_CONTRIBUTION                    
+                    j = OB_Js(I,bi,bj)
+                    wobcssLev(i,k,bi,bj,iobcs) =
+     &                  wcurrentLev(i,j,k,bi,bj)
+#endif
+                enddo
+                do j = jmin,jmax
+#ifdef ALLOW_OBCSW_COST_CONTRIBUTION
+                    i = OB_Iw(J,bi,bj)
+                    wobcswLev(j,k,bi,bj,iobcs) =
+     &                  wcurrentLev(i,j,k,bi,bj)
+#endif
+#ifdef ALLOW_OBCSE_COST_CONTRIBUTION
+                    i = OB_Ie(J,bi,bj)
+                    wobcseLev(j,k,bi,bj,iobcs) =
+     &                  wcurrentLev(i,j,k,bi,bj)
+#endif                  
+                enddo
+              enddo
+            enddo
+          enddo
+        endif
+      enddo
+#endif
+
+c     write masks and weights to files to be read by a master process
+c
+      call active_write_xyz_loc( 'hFacC',hFacC ,   1, 0, mythid, dummy)
+      call active_write_xyz_loc( 'maskW', maskW,   1, 0, mythid, dummy)
+      call active_write_xyz_loc( 'maskS', maskS,   1, 0, mythid, dummy)
+
+#if   (defined (ALLOW_HFLUX_COST_CONTRIBUTION))
+      call active_write_xy_loc(  'whflux', whflux, 1, 0, mythid, dummy)
+#elif (defined (ALLOW_ATEMP_COST_CONTRIBUTION))
+      call active_write_xy_loc(  'watemp', watemp, 1, 0, mythid, dummy)
+#endif
+
+#if   (defined (ALLOW_SFLUX_COST_CONTRIBUTION))
+      call active_write_xy_loc(  'wsflux', wsflux, 1, 0, mythid, dummy)
+#elif (defined (ALLOW_AQH_COST_CONTRIBUTION))
+      call active_write_xy_loc(  'waqh', waqh, 1, 0, mythid, dummy)
+#endif
+
+#if   (defined (ALLOW_USTRESS_COST_CONTRIBUTION))
+      call active_write_xy_loc(  'wtauu', wtauu,   1, 0, mythid, dummy)
+#elif (defined (ALLOW_UWIND_COST_CONTRIBUTION))
+      call active_write_xy_loc(  'wuwind', wuwind, 1, 0, mythid, dummy)
+#endif
+
+#if   (defined (ALLOW_VSTRESS_COST_CONTRIBUTION))
+      call active_write_xy_loc(  'wtauv', wtauv,   1, 0, mythid, dummy)
+#elif (defined (ALLOW_VWIND_COST_CONTRIBUTION))
+      call active_write_xy_loc(  'wvwind', wvwind, 1, 0, mythid, dummy)
+#endif
+
+#ifdef ALLOW_THETA0_COST_CONTRIBUTION
+      CALL active_write_xyz_loc( 'wtheta',wthetaLev, 1,0,mythid,dummy)
+#endif 
+#ifdef ALLOW_SALT0_COST_CONTRIBUTION
+      CALL active_write_xyz_loc( 'wsalt',wsaltLev, 1,0,mythid,dummy)
+#endif 
+
+#ifdef ALLOW_OBCS_COST_CONTRIBUTION
+      DO iobcs = 1,nobcs
+
+#ifdef ALLOW_OBCSN_COST_CONTRIBUTION
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nr
+              do i = imin,imax
+                 tmpfldxz(i,k,bi,bj) = wobcsnLev(i,k,bi,bj,iobcs)
+
+              enddo
+            enddo
+          enddo
+        enddo
+        call active_write_xz_loc( 'wobcsn', 
+     &        tmpfldxz,   iobcs, 0, mythid, dummy)
+#endif
+#ifdef ALLOW_OBCSS_COST_CONTRIBUTION
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nr
+              do i = imin,imax
+                 tmpfldxz(i,k,bi,bj) = wobcssLev(i,k,bi,bj,iobcs)
+
+              enddo
+            enddo
+          enddo
+        enddo
+        call active_write_xz_loc( 'wobcss', 
+     &        tmpfldxz,   iobcs, 0, mythid, dummy)
+#endif
+#ifdef ALLOW_OBCSW_COST_CONTRIBUTION
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nr
+              do j = jmin,jmax
+                 tmpfldyz(j,k,bi,bj) = wobcswLev(j,k,bi,bj,iobcs)
+              enddo
+            enddo
+          enddo
+        enddo
+        call active_write_yz_loc( 'wobcsw', 
+     &        tmpfldyz,   iobcs, 0, mythid, dummy)
+#endif
+#ifdef ALLOW_OBCSE_COST_CONTRIBUTION
+        do bj = jtlo,jthi
+          do bi = itlo,ithi
+            do k = 1,nr
+              do j = jmin,jmax
+                 tmpfldyz(j,k,bi,bj) = wobcseLev(j,k,bi,bj,iobcs)
+              enddo
+            enddo
+          enddo
+        enddo
+        call active_write_yz_loc( 'wobcse', 
+     &        tmpfldyz,   iobcs, 0, mythid, dummy)
+#endif
+      enddo
+#endif
+
+      end

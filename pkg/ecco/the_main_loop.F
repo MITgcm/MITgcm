@@ -1,0 +1,874 @@
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.1 2003/11/06 22:10:08 heimbach Exp $
+
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
+
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
+
+      subroutine the_main_loop( myTime, myIter, mythid )
+
+c     ==================================================================
+c     SUBROUTINE the_main_loop
+c     ==================================================================
+c
+c     o Run the ocean model and evaluate the specified cost function.
+c
+c     *the_main_loop* is the top-level routine for the Tangent Linear and
+c     Adjoint Model Compiler (TAMC). For this purpose, the initialization
+c     of the model was split into two parts. Those parameters that do
+c     not depend on a specific model run are set in *initialise_fixed*,
+c     whereas those that do depend on the specific realization are
+c     initialized in *initialise_varia*. In order to do a so called
+c     checkpointing during the adjoint calculation and to account for the
+c     typical data involved in oceanographic applications a call tree
+c     that is divided into yearly, monthly, daily, and step parts can
+c     be used.
+c
+c     This routine is to be used in conjuction with the MITgcmuv release
+c     checkpoint 24.
+c
+c     started: Christian Eckert eckert@mit.edu 30-Jun-1999
+c
+c     changed: Christian Eckert eckert@mit.edu 14-Jul-1999
+c
+c              - The call to mapping was moved to initialise_varia,
+c                since this routine has to be called before 
+c                ini_predictor.
+c
+c              Christian Eckert eckert@mit.edu 11-Feb-2000
+c
+c              - Restructured the code in order to create a package
+c                for the MITgcmUV.
+c
+c              Patrick Heimbach heimbach@mit.edu 3-Jun-2000
+c              - corrected computation of ikey_dynamics and
+c                added computation of ikey_dynamics for the case
+c                undef ALLOW_TAMC_CHECKPOINTING
+c
+c              Patrick Heimbach heimbach@mit.edu 6-Jun-2000
+c              - corrected initialisation of comlev1 common blocks
+c
+c              Dimitris Menemenlis  menemenlis@jpl.nasa.gov 26-Feb-2003
+c              - modifications for pkg/seaice
+c
+c     ==================================================================
+c     SUBROUTINE the_main_loop
+c     ==================================================================
+
+      implicit none
+
+c     == global variables ==
+
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+
+c**************************************
+#ifdef ALLOW_AUTODIFF_TAMC
+
+c These includes are needed for 
+c AD-checkpointing. 
+c They provide the fields to be stored.
+
+# include "GRID.h"
+# include "DYNVARS.h"
+# include "FFIELDS.h"
+# include "EOS.h"
+# include "GAD.h"
+
+# ifdef ALLOW_CD_CODE
+#  include "CD_CODE_VARS.h"
+# endif
+# ifdef ALLOW_PASSIVE_TRACER
+#  include "TR1.h"
+# endif
+# ifdef ALLOW_PTRACERS
+#  include "PTRACERS.h"
+# endif
+# ifdef ALLOW_NONHYDROSTATIC
+#  include "CG3D.h"
+# endif
+# ifdef EXACT_CONSERV
+#  include "SURFACE.h"
+# endif
+# ifdef ALLOW_OBCS
+#  include "OBCS.h"
+# endif
+# ifdef ALLOW_EXF
+#  include "exf_fields.h"
+#  include "exf_clim_fields.h"
+#  ifdef ALLOW_BULKFORMULAE
+#   include "exf_constants.h"
+#  endif
+# endif /* ALLOW_EXF */
+# ifdef ALLOW_SEAICE
+#  include "SEAICE.h"
+# endif
+# ifdef ALLOW_DIVIDED_ADJOINT_MPI
+#  include "mpif.h"
+# endif
+
+# include "tamc.h"
+# include "ctrl.h"
+# include "ctrl_dummy.h"
+# include "cost.h"
+
+#endif /* ALLOW_AUTODIFF_TAMC */
+c**************************************
+
+c     == routine arguments ==
+c     note: under the multi-threaded model myiter and 
+c           mytime are local variables passed around as routine 
+c           arguments. Although this is fiddly it saves the need to 
+c           impose additional synchronisation points when they are 
+c           updated.
+c     myiter - iteration counter for this thread
+c     mytime - time counter for this thread
+c     mythid - thread number for this instance of the routine.
+      integer mythid 
+      integer myiter
+      _RL     mytime 
+
+c     == local variables ==
+
+      integer bi,bj
+      integer iloop
+      integer mydate(4)
+#ifdef ALLOW_SNAPSHOTS
+      character yprefix*3
+#endif
+
+#ifdef ALLOW_TAMC_CHECKPOINTING
+      integer ilev_1
+      integer ilev_2
+      integer ilev_3
+      integer max_lev2
+      integer max_lev3
+#endif
+
+c--   == end of interface ==
+
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_ENTER('THE_MAIN_LOOP',myThid)
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+c--   Initialize storage for the initialisations.
+CADJ  INIT tapelev3 = USER
+c--   Some more initialisations to please TAMC
+CADJ INIT tapelev_ini_bibj_k   = USER
+# ifdef ALLOW_DIVIDED_ADJOINT
+CADJ INIT onetape = user
+cphCADJ INIT onetape = common, 1
+cph We want to avoid common blocks except in the inner loop.
+cph Reason: the active write and consecutive read may occur
+cph         in separate model executions for which the info
+cph         in common blocks are lost.
+cph Thus, we can only store real values (no integers)
+cph because we only have active file handling to real available.
+# endif
+# ifdef ALLOW_TAMC_CHECKPOINTING
+       nIter0 = INT( startTime/deltaTClock )
+       ikey_dynamics = 1
+# endif
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+      myTime = startTime
+      myIter = nIter0
+
+      CALL TIMER_START('ECCO SPIN-UP', mythid)
+
+c--   Get the current date.
+      call CAL_TIMESTAMP( myiter, mytime, mydate, mythid )
+
+C--   Set initial conditions (variable arrays)
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('INITIALISE_VARIA',myThid)
+#endif
+      CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
+      CALL INITIALISE_VARIA( mythid )
+      CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
+
+c--   Dump for start state.
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('WRITE_STATE',myThid)
+#endif
+      CALL TIMER_START('WRITE_STATE         [THE_MAIN_LOOP]', mythid)
+      CALL WRITE_STATE( mytime, myiter, mythid )
+      CALL TIMER_STOP ('WRITE_STATE         [THE_MAIN_LOOP]', mythid)
+
+#ifdef ALLOW_MONITOR
+C--   Check status of solution (statistics, cfl, etc...)
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('MONITOR',myThid)
+#endif
+      CALL TIMER_START('MONITOR             [THE_MAIN_LOOP]', mythid)
+      CALL MONITOR( myIter, myTime, myThid )
+      CALL TIMER_STOP ('MONITOR             [THE_MAIN_LOOP]', mythid)
+#endif /* ALLOW_MONITOR */
+
+
+#ifdef ALLOW_COST
+c--   Compute the cost function contribution of the boundary forcing,
+c--   i.e. heat flux, salt flux, zonal and meridional wind stress.
+      call timer_start('COST_FORCING        [ECCO SPIN-UP]', mythid)
+      call cost_forcing( myiter, mytime, mythid )
+      call timer_stop ('COST_FORCING        [ECCO SPIN-UP]', mythid)
+
+# ifdef ALLOW_OBCS_COST_CONTRIBUTION
+      call timer_start('cost_obcs           [ECCO SPIN-UP]', mythid)
+      call cost_obcs( myiter, mytime, mythid )
+      call timer_stop ('cost_obcs           [ECCO SPIN-UP]', mythid)
+# endif
+
+#endif /* ALLOW_COST */
+
+      call timer_stop ('ECCO SPIN-UP', mythid)
+      _BARRIER
+
+c--   Do the model integration.
+      call timer_start('ECCO MAIN LOOP',mythid)
+
+c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_TAMC_CHECKPOINTING
+c--   Implement a three level checkpointing. For a two level
+c--   checkpointing delete the middle loop; for n levels (n > 3)
+c--   insert more loops.
+
+c--   Check the choice of the checkpointing parameters in relation
+c--   to nTimeSteps: (nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps)
+      if (nchklev_1*nchklev_2*nchklev_3 .lt. nTimeSteps) then
+        print*
+        print*, ' the_main_loop: TAMC checkpointing parameters'
+        print*, '            nchklev_1*nchklev_2*nchklev_3 = ',
+     &       nchklev_1*nchklev_2*nchklev_3
+        print*, '            are not consistent with nTimeSteps = ',
+     &       nTimeSteps
+        stop    ' ... stopped in the_main_loop.'
+      endif
+      max_lev3=nTimeSteps/(nchklev_1*nchklev_2)+1
+      max_lev2=nTimeSteps/nchklev_1+1
+
+c**************************************
+#ifdef ALLOW_DIVIDED_ADJOINT
+CADJ loop = divided
+#endif
+c**************************************
+
+      do ilev_3 = 1,nchklev_3
+         if(ilev_3.le.max_lev3) then
+c**************************************
+#include "checkpoint_lev3_directives.h"
+c**************************************
+
+c--     Initialise storage for the middle loop.
+CADJ    INIT tapelev2 = USER
+
+        do ilev_2 = 1,nchklev_2
+         if(ilev_2.le.max_lev2) then
+c**************************************
+#include "checkpoint_lev2_directives.h"
+c**************************************
+
+
+c**************************************
+#ifdef ALLOW_AUTODIFF_TAMC
+c--       Initialize storage for the innermost loop.
+c--       Always check common block sizes for the checkpointing!
+c--
+CADJ INIT comlev1        = COMMON,nchklev_1
+CADJ INIT comlev1_bibj   = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt
+CADJ INIT comlev1_bibj_k = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt
+c--
+# ifdef ALLOW_KPP
+CADJ INIT comlev1_kpp    = COMMON,nchklev_1*nsx*nsy
+# endif /* ALLOW_KPP */
+c--
+# ifdef ALLOW_GMREDI
+CADJ INIT comlev1_gmredi_k_gad
+CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
+# endif /* ALLOW_GMREDI */
+c--
+# ifdef ALLOW_PTRACERS
+CADJ INIT comlev1_bibj_ptracers = COMMON,
+CADJ &    nchklev_1*nsx*nsy*nthreads_chkpt*NUMBER_OF_PTRACERS
+# endif /* ALLOW_PTRACERS */
+c--
+# ifndef DISABLE_MULTIDIM_ADVECTION
+CADJ INIT comlev1_bibj_k_gad
+CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass
+CADJ INIT comlev1_bibj_k_gad_pass
+CADJ &    = COMMON,nchklev_1*nsx*nsy*nr*nthreads_chkpt*maxpass*maxcube
+# endif /* DISABLE_MULTIDIM_ADVECTION */
+c--
+# if (defined (ALLOW_EXF) && defined (ALLOW_BULKFORMULAE))
+CADJ INIT comlev1_exf_1
+CADJ &     = COMMON,nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
+CADJ INIT comlev1_exf_2
+CADJ &     = COMMON,niter_bulk*nchklev_1*snx*nsx*sny*nsy*nthreads_chkpt
+# endif
+c--
+# ifdef ALLOW_SEAICE
+#  ifdef SEAICE_ALLOW_DYNAMICS
+CADJ INIT comlev1_lsr = COMMON,nchklev_1*2
+#  endif
+#  ifdef SEAICE_MULTILEVEL
+CADJ INIT comlev1_multdim 
+CADJ &    = COMMON,nchklev_1*nsx*nsy*nthreads_chkpt*multdim
+#  endif
+# endif /* ALLOW_SEAICE */
+c--
+#endif /* ALLOW_AUTODIFF_TAMC */
+c**************************************
+
+          do ilev_1 = 1,nchklev_1
+
+c--         The if-statement below introduces a some flexibility in the
+c--         choice of the 3-tupel ( nchklev_1, nchklev_2, nchklev_3 ).
+c--
+c--         Requirement: nchklev_1*nchklev_2*nchklev_3 .ge. nTimeSteps .
+
+            iloop = (ilev_3 - 1)*nchklev_2*nchklev_1 +
+     &              (ilev_2 - 1)*nchklev_1           + ilev_1
+
+            if ( iloop .le. nTimeSteps ) then
+
+#else /* ALLOW_TAMC_CHECKPOINTING  undefined */
+c--   Initialise storage for the reference trajectory without TAMC check-
+c--   pointing.
+CADJ INIT history        = USER
+CADJ INIT comlev1_bibj   = COMMON,nchklev_0*nsx*nsy*nthreads_chkpt
+CADJ INIT comlev1_bibj_k = COMMON,nchklev_0*nsx*nsy*nr*nthreads_chkpt
+CADJ INIT comlev1_kpp    = COMMON,nchklev_0*nsx*nsy
+
+c--   Check the choice of the checkpointing parameters in relation
+c--   to nTimeSteps: (nchklev_0 .ge. nTimeSteps)
+      if (nchklev_0 .lt. nTimeSteps) then
+        print*
+        print*, ' the_main_loop: ',
+     &       'TAMC checkpointing parameter nchklev_0 = ', 
+     &       nchklev_0
+        print*, '            is not consistent with nTimeSteps = ', 
+     &       nTimeSteps
+        stop    ' ... stopped in the_main_loop.'
+      endif
+
+      do iloop = 1, nTimeSteps
+
+#endif /* ALLOW_TAMC_CHECKPOINTING */
+
+#else /* ALLOW_AUTODIFF_TAMC  undefined */
+c--   Start the main loop of ecco_Objfunc. Automatic differentiation is
+c--   NOT enabled.
+      do iloop = 1, nTimeSteps
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+#ifdef ALLOW_TAMC_CHECKPOINTING
+        nIter0 = INT( startTime/deltaTClock )
+        ikey_dynamics = ilev_1
+#endif
+
+c--     Set the model iteration counter and the model time.
+        myiter = nIter0 + (iloop-1)
+        mytime = startTime + float(iloop-1)*deltaTclock
+
+#ifdef ALLOW_COST
+
+c--     Accumulate time averages of temperature, salinity, and SSH.
+        call timer_start('COST_AVERAGESFIELDS   [ECCO MAIN]', mythid)
+        call cost_averagesFields( mytime, mythid )
+        call timer_stop ('COST_AVERAGESFIELDS   [ECCO MAIN]', mythid)
+#ifdef ALLOW_COST_ATLANTIC
+c--     Compute meridional heat transport 
+        call timer_start('cost_atlantic         [ECCO MAIN]', mythid)
+        call cost_atlantic(  mytime, myiter,mythid )
+        call timer_stop ('cost_atlantic         [ECCO MAIN]', mythid)
+#endif
+#endif /* ALLOW_COST */
+
+#ifdef EXACT_CONSERV
+      IF (exactConserv) THEN
+C--   Update etaH(n+1) :
+         CALL TIMER_START('UPDATE_ETAH        [FORWARD_STEP]',mythid)
+         CALL UPDATE_ETAH( myTime, myIter, myThid )
+         CALL TIMER_STOP ('UPDATE_ETAH        [FORWARD_STEP]',mythid)
+      ENDIF
+#endif /* EXACT_CONSERV */ 
+
+#ifdef NONLIN_FRSURF
+      IF ( select_rStar.NE.0 ) THEN
+C--   r* : compute the future level thickness according to etaH(n+1) 
+          CALL TIMER_START('CALC_R_STAR       [FORWARD_STEP]',mythid)
+          CALL CALC_R_STAR(etaH, myTime, myIter, myThid )
+          CALL TIMER_STOP ('CALC_R_STAR       [FORWARD_STEP]',mythid)
+      ELSEIF ( nonlinFreeSurf.GT.0) THEN
+C--   compute the future surface level thickness according to etaH(n+1) 
+          CALL TIMER_START('CALC_SURF_DR      [FORWARD_STEP]',mythid)
+          CALL CALC_SURF_DR(etaH, myTime, myIter, myThid )
+          CALL TIMER_STOP ('CALC_SURF_DR      [FORWARD_STEP]',mythid)
+      ENDIF
+#endif /* NONLIN_FRSURF */
+
+#ifdef ALLOW_AUTODIFF_TAMC
+c**************************************
+#include "checkpoint_lev1_directives.h"
+c**************************************
+#endif
+
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('EXF_GETFORCING',myThid)
+#endif
+      CALL TIMER_START('EXF_GETFORCING     [FORWARD_STEP]',mythid)
+      CALL EXF_GETFORCING( mytime, myiter, mythid )
+      CALL TIMER_STOP ('EXF_GETFORCING     [FORWARD_STEP]',mythid)
+
+#ifdef ALLOW_SEAICE
+C--   Call sea ice model to compute forcing/external data fields.  In
+C     addition to computing prognostic sea-ice variables and diagnosing the
+C     forcing/external data fields that drive the ocean model, SEAICE_MODEL
+C     also sets theta to the freezing point under sea-ice.  The implied
+C     surface heat flux is then stored in variable surfaceTendencyTice,
+C     which is needed by KPP package (kpp_calc.F and kpp_transport_t.F)
+C     to diagnose surface buoyancy fluxes and for the non-local transport
+C     term.  Because this call precedes model thermodynamics, temperature
+C     under sea-ice may not be "exactly" at the freezing point by the time
+C     theta is dumped or time-averaged.
+cph this simple runtime flag causes a lot of recomp.
+cph      IF ( useSEAICE ) THEN
+#ifndef DISABLE_DEBUGMODE
+         IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('SEAICE_MODEL',myThid)
+#endif
+         CALL TIMER_START('SEAICE_MODEL       [FORWARD_STEP]',myThid)
+         CALL SEAICE_MODEL( myTime, myIter, myThid )
+         CALL TIMER_STOP ('SEAICE_MODEL       [FORWARD_STEP]',myThid)
+#ifdef ALLOW_COST_ICE
+         CALL COST_ICE    ( myTime, myIter, myThid )
+#endif
+cph      ENDIF
+#endif /* ALLOW_SEAICE */
+
+#if (defined (ALLOW_AUTODIFF_TAMC) && \
+     defined (ALLOW_AUTODIFF_MONITOR))
+C       Include call to a dummy routine. Its adjoint will be 
+C       called at the proper place in the adjoint code.
+C       The adjoint routine will print out adjoint values 
+C       if requested. The location of the call is important, 
+C       it has to be after the adjoint of the exchanges 
+C       (DO_GTERM_BLOCKING_EXCHANGES).
+        myiter = niter0 + iloop
+        mytime = starttime + float(iloop)*deltaTClock
+        CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
+        CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
+        myiter = nIter0 + (iloop-1)
+        mytime = startTime + float(iloop-1)*deltaTclock
+#endif
+
+cph(
+#ifdef ALLOW_SNAPSHOTS
+        yprefix = 'kf_'
+        call ecco_check_exp( mythid, myiter, mytime, yprefix )
+#endif
+cph)
+
+C--     Step forward fields and calculate time tendency terms.
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('THERMODYNAMICS',myThid)
+#endif
+        CALL TIMER_START('THERMODYNAMICS      [FORWARD_STEP]',mythid)
+        CALL THERMODYNAMICS( myTime, myIter, myThid )
+        CALL TIMER_STOP ('THERMODYNAMICS      [FORWARD_STEP]',mythid)
+
+C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('DO_STAGGER_FIELDS_EXCH.',myThid)
+#endif
+        CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+        CALL DO_STAGGER_FIELDS_EXCHANGES( myTime, myIter, myThid )
+        CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+
+#ifdef ALLOW_SHAP_FILT
+      IF (useSHAP_FILT .AND. 
+     &     staggerTimeStep .AND. shap_filt_TrStagg ) THEN
+#ifndef DISABLE_DEBUGMODE
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('SHAP_FILT_APPLY_TS',myThid)
+#endif
+        CALL TIMER_START('SHAP_FILT           [FORWARD_STEP]',myThid)
+        CALL SHAP_FILT_APPLY_TS( gT, gS, myTime, myIter, myThid )
+        CALL TIMER_STOP ('SHAP_FILT           [FORWARD_STEP]',myThid)
+      ENDIF
+#endif
+
+#ifdef ALLOW_ZONAL_FILT
+      IF (useZONAL_FILT .AND. 
+     &     staggerTimeStep .AND. zonal_filt_TrStagg ) THEN
+#ifndef DISABLE_DEBUGMODE
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('ZONAL_FILT_APPLY_TS',myThid)
+#endif
+        CALL TIMER_START('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
+        CALL ZONAL_FILT_APPLY_TS( gT, gS, myThid )
+        CALL TIMER_STOP ('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
+      ENDIF
+#endif   
+
+C--   Step forward fields and calculate time tendency terms.
+#ifndef ALLOW_AUTODIFF_TAMC
+      IF ( momStepping ) THEN
+#endif
+#ifndef DISABLE_DEBUGMODE
+        IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('DYNAMICS',myThid)
+#endif
+        CALL TIMER_START('DYNAMICS            [FORWARD_STEP]',mythid)
+        CALL DYNAMICS( myTime, myIter, myThid )
+        CALL TIMER_STOP ('DYNAMICS            [FORWARD_STEP]',mythid)
+#ifndef ALLOW_AUTODIFF_TAMC
+      ENDIF
+#endif
+
+#ifdef ALLOW_NONHYDROSTATIC
+C--   Step forward W field in N-H algorithm
+      IF ( momStepping .AND. nonHydrostatic ) THEN
+#ifndef DISABLE_DEBUGMODE
+         IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('CALC_GW',myThid)
+#endif
+         CALL TIMER_START('CALC_GW          [FORWARD_STEP]',myThid)
+         CALL CALC_GW(myThid)
+         CALL TIMER_STOP ('CALC_GW          [FORWARD_STEP]',myThid)
+      ENDIF
+#endif
+
+#ifdef NONLIN_FRSURF
+C--   update hfacC,W,S and recip_hFac according to etaH(n+1) :
+      IF ( nonlinFreeSurf.GT.0) THEN
+       IF ( select_rStar.GT.0 ) THEN
+        CALL TIMER_START('UPDATE_R_STAR      [FORWARD_STEP]',myThid)
+        CALL UPDATE_R_STAR( myTime, myIter, myThid )
+        CALL TIMER_STOP ('UPDATE_R_STAR      [FORWARD_STEP]',myThid)
+       ELSE
+        CALL TIMER_START('UPDATE_SURF_DR     [FORWARD_STEP]',myThid)
+        CALL UPDATE_SURF_DR( myTime, myIter, myThid )
+        CALL TIMER_STOP ('UPDATE_SURF_DR     [FORWARD_STEP]',myThid)
+       ENDIF
+      ENDIF
+C-    update also CG2D matrix (and preconditioner)
+      IF ( momStepping .AND. nonlinFreeSurf.GT.2 ) THEN
+        CALL TIMER_START('UPDATE_CG2D        [FORWARD_STEP]',myThid)
+        CALL UPDATE_CG2D( myTime, myIter, myThid )
+        CALL TIMER_STOP ('UPDATE_CG2D        [FORWARD_STEP]',myThid)
+      ENDIF
+#endif
+
+C--   Apply Filters to u*,v* before SOLVE_FOR_PRESSURE
+#ifdef ALLOW_SHAP_FILT
+      IF (useSHAP_FILT .AND. shap_filt_uvStar) THEN
+        CALL TIMER_START('SHAP_FILT           [FORWARD_STEP]',myThid)
+        IF (implicDiv2Dflow.LT.1.) THEN
+C--   Explicit+Implicit part of the Barotropic Flow Divergence
+C      => Filtering of uVel,vVel is necessary
+          CALL SHAP_FILT_APPLY_UV( uVel,vVel,
+     &                             myTime+deltaT, myIter+1, myThid )
+        ENDIF
+        CALL SHAP_FILT_APPLY_UV( gU,gV,myTime+deltaT,myIter+1,myThid)
+        CALL TIMER_STOP ('SHAP_FILT           [FORWARD_STEP]',myThid)
+      ENDIF
+#endif
+
+#ifdef ALLOW_ZONAL_FILT
+      IF (useZONAL_FILT .AND. zonal_filt_uvStar) THEN
+        CALL TIMER_START('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
+        IF (implicDiv2Dflow.LT.1.) THEN
+C--   Explicit+Implicit part of the Barotropic Flow Divergence
+C      => Filtering of uVel,vVel is necessary
+          CALL ZONAL_FILT_APPLY_UV( uVel, vVel, myThid )
+        ENDIF
+        CALL ZONAL_FILT_APPLY_UV( gU, gV, myThid )
+        CALL TIMER_STOP ('ZONAL_FILT_APPLY    [FORWARD_STEP]',myThid)
+      ENDIF
+#endif  
+
+C--   Solve elliptic equation(s).
+C     Two-dimensional only for conventional hydrostatic or 
+C     three-dimensional for non-hydrostatic and/or IGW scheme.
+      IF ( momStepping ) THEN
+      CALL TIMER_START('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
+      CALL SOLVE_FOR_PRESSURE(myTime, myIter, myThid)
+      CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [FORWARD_STEP]',myThid)
+      ENDIF
+
+#ifdef ALLOW_AUTODIFF_TAMC
+cph This is needed because convective_adjustment calls
+cph find_rho which may use pressure()
+CADJ STORE totphihyd  = comlev1, key = ikey_dynamics
+#endif
+C--   Correct divergence in flow field and cycle time-stepping
+C     arrays (for all fields) ; update time-counter
+      myIter = nIter0 + iLoop
+      myTime = startTime + deltaTClock * float(iLoop)
+      CALL TIMER_START('THE_CORRECTION_STEP [FORWARD_STEP]',myThid)
+      CALL THE_CORRECTION_STEP(myTime, myIter, myThid)
+      CALL TIMER_STOP ('THE_CORRECTION_STEP [FORWARD_STEP]',myThid)
+
+C--   Do "blocking" sends and receives for tendency "overlap" terms
+c     CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+c     CALL DO_GTERM_BLOCKING_EXCHANGES( myThid )
+c     CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+
+C--   Do "blocking" sends and receives for field "overlap" terms
+      CALL TIMER_START('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+      CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
+      CALL TIMER_STOP ('BLOCKING_EXCHANGES  [FORWARD_STEP]',myThid)
+
+#ifdef ALLOW_FLT
+C--   Calculate float trajectories
+      IF (useFLT) THEN
+        CALL TIMER_START('FLOATS            [FORWARD_STEP]',myThid)
+        CALL FLT_MAIN(myIter,myTime, myThid)
+        CALL TIMER_STOP ('FLOATS            [FORWARD_STEP]',myThid)
+      ENDIF
+#endif
+
+#ifdef ALLOW_MONITOR
+C--   Check status of solution (statistics, cfl, etc...)
+      CALL TIMER_START('MONITOR             [FORWARD_STEP]',myThid)
+      CALL MONITOR( myIter, myTime, myThid )
+      CALL TIMER_STOP ('MONITOR             [FORWARD_STEP]',myThid)
+#endif /* ALLOW_MONITOR */
+
+C--   Do IO if needed.
+      CALL TIMER_START('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
+      CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
+      CALL TIMER_STOP ('DO_THE_MODEL_IO     [FORWARD_STEP]',myThid)
+
+C--   Save state for restarts
+C     Note:    (jmc: is it still the case after ckp35 ?)
+C     =====
+C     Because of the ordering of the timestepping code and
+C     tendency term code at end of loop model arrays hold
+C     U,V,T,S  at "time-level" N but gu, gv, gs, gt, guNM1,... 
+C     at "time-level" N+1/2 (guNM1 at "time-level" N+1/2 is 
+C     gu at "time-level" N-1/2) and etaN at "time-level" N+1/2.
+C      where N = I+timeLevBase-1
+C     Thus a checkpoint contains U.0000000000, GU.0000000001 and 
+C     etaN.0000000001 in the indexing scheme used for the model 
+C     "state" files. This example is referred to as a checkpoint 
+C     at time level 1 
+      CALL TIMER_START('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
+      CALL WRITE_CHECKPOINT(
+     &        .FALSE., myTime, myIter, myThid )
+      CALL TIMER_STOP ('WRITE_CHECKPOINT    [FORWARD_STEP]',myThid)
+
+ctest      myiter = niter0 + iloop
+ctest      mytime = starttime + float(iloop)*deltaTClock
+c     Calculate current date.
+ctest      call cal_TimeStamp( myiter, mytime, mydate, mythid )
+
+#ifdef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_TAMC_CHECKPOINTING
+            endif
+          enddo
+          endif
+        enddo
+        endif
+      enddo
+#else
+      enddo
+#endif
+
+#else
+      enddo
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+      _BARRIER
+      call timer_stop ('ECCO MAIN LOOP', mythid)
+
+      call timer_start('ECCO SPIN-DOWN', mythid)
+
+#ifdef ALLOW_COST
+
+#ifdef ALLOW_DIVIDED_ADJOINT
+CADJ STORE mytime = onetape
+#endif
+c--   Accumulate time averages of temperature, salinity, and SSH.
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_averagesfields',myThid)
+#endif
+      call timer_start('cost_averagesfields [ECCO SPIN-DOWN]', mythid)
+      call cost_averagesfields( mytime, mythid )
+      call timer_stop ('cost_averagesfields [ECCO SPIN-DOWN]', mythid)
+#ifdef ALLOW_DIVIDED_ADJOINT
+c**************************************
+#include "checkpoint_bar_directives.h"
+c**************************************
+#endif
+
+#ifdef ALLOW_COST_ATLANTIC
+c--   Compute meridional heat transport 
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_atlantic',myThid)
+#endif
+      call timer_start('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
+      call cost_atlantic(  mytime, myiter,mythid )
+      call timer_stop ('cost_atlantic      [ECCO SPIN-DOWN]', mythid)
+#endif
+
+c--   Compute cost function contribution of Temperature and Salinity.
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_hyd',myThid)
+#endif
+      call timer_start('cost_hyd           [ECCO SPIN-DOWN]', mythid)
+      call cost_hyd( myiter, mytime, mythid )
+      call timer_stop ('cost_hyd           [ECCO SPIN-DOWN]', mythid)
+
+#ifdef ALLOW_CURMTR_COST_CONTRIBUTION
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_curmtr',myThid)
+#endif
+      call timer_start('cost_curmtr        [ECCO SPIN-DOWN]', mythid)
+      call cost_curmtr( myiter, mytime, mythid )
+      call timer_stop ('cost_curmtr        [ECCO SPIN-DOWN]', mythid)
+#endif
+
+c--   Compute cost function contribution of SSH.
+#ifdef ALLOW_SSH_COST_CONTRIBUTION
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_ssh',myThid)
+#endif
+      call timer_start('cost_ssh           [ECCO SPIN-DOWN]', mythid)
+      call cost_ssh( myiter, mytime, mythid )
+      call timer_stop ('cost_ssh           [ECCO SPIN-DOWN]', mythid)
+#endif
+
+c--   Compute cost function contribution of SSS. 
+#ifdef ALLOW_SST_COST_CONTRIBUTION 
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_sst',myThid)
+#endif
+      call timer_start('cost_sst           [ECCO SPIN-DOWN]', mythid)
+      call cost_sst( myiter, mytime, mythid )
+      call timer_stop ('cost_sst           [ECCO SPIN-DOWN]', mythid)
+#endif
+
+c--   Compute cost function contribution of SSS.
+#ifdef ALLOW_SSS_COST_CONTRIBUTION
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_sss',myThid)
+#endif
+      call timer_start('cost_sss           [ECCO SPIN-DOWN]', mythid)
+      call cost_sss( myiter, mytime, mythid )
+      call timer_stop ('cost_sss           [ECCO SPIN-DOWN]', mythid)
+#endif
+
+c--   Compute cost function contribution of drifter's velocities.
+#ifdef ALLOW_DRIFTER_COST_CONTRIBUTION
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_drifter',myThid)
+#endif
+      call timer_start('cost_drifter         [ECCO SPIN-DOWN]', mythid)
+      call cost_drifter( myiter, mytime, mythid )
+      call timer_stop ('cost_drifter         [ECCO SPIN-DOWN]', mythid)
+#endif
+
+c--   Compute cost function contribution of wind stress observations.
+#ifdef ALLOW_SCAT_COST_CONTRIBUTION
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_scat',myThid)
+#endif
+      call timer_start('cost_scat            [ECCO SPIN-DOWN]', mythid) 
+      call cost_scat( myiter, mytime, mythid )
+      call timer_stop ('cost_scat            [ECCO SPIN-DOWN]', mythid)
+#endif
+
+c--   Compute cost function contribution of wind stress observations.  
+#ifdef ALLOW_MEAN_HFLUX_COST_CONTRIBUTION
+      call timer_start('cost_mean_heatflux   [ECCO SPIN-DOWN]', mythid)
+      call cost_mean_heatflux( myiter, mytime, mythid )
+      call timer_stop ('cost_mean_heatflux   [ECCO SPIN-DOWN]', mythid)
+#endif
+
+c--   Compute cost function contribution of wind stress observations.
+#ifdef ALLOW_MEAN_SFLUX_COST_CONTRIBUTION
+      call timer_start('cost_mean_saltflux   [ECCO SPIN-DOWN]', mythid)
+      call cost_mean_saltflux( myiter, mytime, mythid )
+      call timer_stop ('cost_mean_saltflux   [ECCO SPIN-DOWN]', mythid)        
+#endif
+
+c--   Compute cost function contribution of drift between the first 
+c     and the last year.
+#ifdef ALLOW_DRIFT_COST_CONTRIBUTION
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_drift',myThid)
+#endif
+      call timer_start('cost_drift         [ECCO SPIN-DOWN]', mythid)
+      call cost_drift( myiter, mytime, mythid )
+      call timer_stop ('cost_drift         [ECCO SPIN-DOWN]', mythid)
+#endif
+#ifdef ALLOW_DRIFTW_COST_CONTRIBUTION
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_driftw',myThid)
+#endif
+      call timer_start('cost_driftw        [ECCO SPIN-DOWN]', mythid)
+      call cost_driftw( myiter, mytime, mythid )
+      call timer_stop ('cost_driftw        [ECCO SPIN-DOWN]', mythid)
+#endif
+      _BARRIER
+
+c--   Compute initial vs. final T/S deviation
+#ifdef ALLOW_COST_INI_FIN
+      call timer_start('cost_ini_fin       [ECCO SPIN-DOWN]', mythid)
+      call cost_theta_ini_fin( myiter, mytime, mythid )
+      call cost_salt_ini_fin( myiter, mytime, mythid )
+      call timer_stop ('cost_ini_fin       [ECCO SPIN-DOWN]', mythid)
+#endif
+      _BARRIER
+
+c--   Sum all cost function contributions.
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_CALL('cost_final',myThid)
+#endif
+      call timer_start('COST_FINAL         [ECCO SPIN-DOWN]', mythid)
+      call cost_final( mythid )
+      call timer_stop ('COST_FINAL         [ECCO SPIN-DOWN]', mythid)
+
+#endif /* ALLOW_COST */
+
+      call timer_stop ('ECCO SPIN-DOWN', mythid)
+
+#ifndef DISABLE_DEBUGMODE
+      IF ( debugLevel .GE. debLevB ) 
+     &    CALL DEBUG_LEAVE('THE_MAIN_LOOP',myThid)
+#endif
+
+      return
+      end
+
