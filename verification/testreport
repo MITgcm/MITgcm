@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.1 2003/08/27 22:12:31 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.2 2003/09/01 16:50:27 edhill Exp $
 #
 
 usage()
@@ -413,9 +413,9 @@ for ac_option ; do
 	-help | --help | -h | --h)
 	    usage ;;
 	
-	-optfile | --optfile | -f | --f)
+	-optfile | --optfile | -of | --of)
             ac_prev=OPTFILES ;;
-        -optfile=* | --optfile=*)
+        -optfile=* | --optfile=* | -of=* | --of=*)
             OPTFILES=$ac_optarg ;;
 	
 	-addr | --addr | -a | --a)
@@ -463,6 +463,7 @@ build_mpack
 
 #  Create a uniquely named directory to store results
 MACH=`hostname`
+UNAMEA=`uname -a`
 DATE=`date +%Y%m%d`
 BASE=$MACH"_"$DATE"_"
 DNUM=0
@@ -506,7 +507,7 @@ for OPTFILE in $OPTFILES ; do
     for dir in $TESTDIRS ; do
 	
 	#  Create an output dir for each OPTFILE/tdir combination
-	CDIR=$DRESULTS"/"$NDIR
+	CDIR=$DRESULTS"/"$DRESULTS"_"$NDIR
 	mkdir $CDIR
 	CDIR=`pwd`"/$CDIR"
 
@@ -528,6 +529,16 @@ for OPTFILE in $OPTFILES ; do
 	    builddir=input
 	    rundir=input
 	fi
+
+	#  Verify that the testdir exists and contains previous 
+	#  results in the correct location--or skip this directory!
+	if test ! -r $dir"/results/output.txt" ; then
+	    echo | tee $SUMMARY
+	    echo "can't read \"$dir/results/output.txt\" -- skipping $dir" \
+		| tee $SUMMARY
+	    continue
+	fi
+
 	genmakemodel $dir/$builddir && genmake=Y \
 	    && makeclean $dir/$builddir \
 	    && makedependmodel $dir/$builddir && makedepend=Y \
@@ -536,29 +547,40 @@ for OPTFILE in $OPTFILES ; do
 	    && runmodel $dir/$builddir mitgcmuv && run=Y \
 	    && results=`testoutput $dir $rundir`
 	echo
-	formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results
+	formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} \
+	    ${run:-N} $results
 	echo
-	formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} ${run:-N} $results >> $SUMMARY
+	formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} \
+	    ${run:-N} $results >> $SUMMARY
+	echo "fresults='" > $CDIR"/summary.txt"
+	formatresults $dir ${genmake:-N} ${makedepend:-N} ${make:-N} \
+	    ${run:-N} $results >> $CDIR"/summary.txt"
+	echo "'" >> $CDIR"/summary.txt"
+	echo "MACH='$MACH'" >> $CDIR"/summary.txt"
+	echo "UNAMEA='$UNAMEA'" >> $CDIR"/summary.txt"
+	echo "DATE='$DATE'" >> $CDIR"/summary.txt"
+	echo "tdir='$dir'" >> $CDIR"/summary.txt"
 
-	( cd $DRESULTS"/"$NDIR ; gzip * )
+	(
+	    cd $DRESULTS
+	    tar -cf $NDIR".tar" $DRESULTS"_"$NDIR > /dev/null 2>&1
+	    gzip $NDIR".tar"
+	)
 
-	tar -cf $DRESULTS"/"$NDIR".tar" $DRESULTS"/"$NDIR
-	$MPACK -s MITgcm-test -m 1000000 $DRESULTS"/"$NDIR".tar" $ADDRESSES
+	$MPACK -s MITgcm-test -m 1000000 $DRESULTS"/"$NDIR".tar.gz" $ADDRESSES
+	RETVAL=$?
+	if test "x$RETVAL" != x0 ; then
+	    echo "Warning: \"$MPACK\" failed -- please contact <edhill@mitgcm.org>"
+	else
+	    rm -f $DRESULTS"/"$NDIR".tar*"
+	fi
 
 	NDIR=$(( $NDIR + 1 ))
 	
     done
 done
 
-# rm tmp_cmpnum.f a.out
+rm tmp_cmpnum.f a.out
 
-echo -------------------------------------------------------------------------------
-echo 
-echo >> $SUMMARY
-date >> $SUMMARY
 cat $SUMMARY
-
-# tar -cf $DRESULTS".tar" $DRESULTS
-#
-# $MPACK -s MITgcm-test -m 1000000 $DRESULTS".tar" $ADDRESSES
 
