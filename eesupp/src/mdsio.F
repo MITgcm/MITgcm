@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio.F,v 1.5 2000/03/14 15:49:40 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/mdsio.F,v 1.6 2000/03/27 19:01:14 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -734,7 +734,7 @@ C Global variables / common blocks
 #include "PARAMS.h"
 
 C Functions
-      integer ILNBLNK
+
 C Local
       integer i,ii,mUnit
       logical ex
@@ -1069,9 +1069,9 @@ C (This is a place-holder for the active/passive mechanism)
             irec = irecord
           endif
           if (filePrec .eq. precFloat32) then
-           call MDS_READ_RS_VEC( dUnit, irec, narr, arr )
+           call MDS_READ_RS_VEC( dUnit, irec, narr, arr, myThid )
           elseif (filePrec .eq. precFloat64) then
-           call MDS_READ_RL_VEC( dUnit, irec, narr, arr )
+           call MDS_READ_RL_VEC( dUnit, irec, narr, arr, myThid )
           else
             write(msgbuf,'(a)')
      &        ' MDSREADVECTOR: illegal value for filePrec'
@@ -1236,9 +1236,9 @@ C If we are writing to a tiled MDS file then we open each one here
             irec = irecord
           endif
           if (filePrec .eq. precFloat32) then
-           call MDS_WRITE_RS_VEC( dUnit, irec, narr, arr )
+           call MDS_WRITE_RS_VEC( dUnit, irec, narr, arr, myThid )
           elseif (filePrec .eq. precFloat64) then
-           call MDS_WRITE_RL_VEC( dUnit, irec, narr, arr )
+           call MDS_WRITE_RL_VEC( dUnit, irec, narr, arr, myThid )
           else
            write(msgbuf,'(a)')
      &       ' MDSWRITEVECTOR: illegal value for filePrec'
