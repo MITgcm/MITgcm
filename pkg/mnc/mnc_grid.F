@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.9 2004/02/04 05:45:09 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_grid.F,v 1.10 2004/03/10 05:50:16 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -83,10 +83,10 @@ C     Check for sufficient space in memory
       i = ds_last + ndim
       j = 3 + 3*(ngrid + 1)
       IF ((i .GE. MNC_MAX_INFO) .OR. (j .GE. MNC_MAX_INFO)) THEN
-        write(msgbuf,'(2a)') 'MNC ERROR: insufficient space--',
-     &       'please increase MNC_MAX_INFO'
+        write(msgbuf,'(2a)') 'MNC_GRID_INIT_ALL ERROR: insufficient',
+     &       ' space--please increase MNC_MAX_INFO'
         CALL print_error( msgbuf, mythid )
-        stop 'ABNORMAL END: S/R MNC_GRID_INIT'
+        stop 'ABNORMAL END: S/R MNC_GRID_INIT_ALL'
       ENDIF
 
 C     Enter DEFINE mode

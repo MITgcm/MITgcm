@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.7 2004/03/09 14:43:16 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.8 2004/03/10 05:50:16 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -227,6 +227,10 @@ C         Add the per-variable attributes
 
           CALL MNC_FILE_ENDDEF(myThid,fname)
 
+          write(msgbuf,'(5a)') 'writing variable type ''', 
+     &         vtype(nvf:nvl), ''' within file ''', 
+     &         fname(1:nfname), ''''
+
 C         Write the variable one vector at a time
           DO j7 = s(7),e(7)
             k7 = (j7 - 1)*p(6)
@@ -272,6 +276,8 @@ C         Write the variable one vector at a time
 #ifdef  mnc_rtype_I
       err = NF_PUT_VARA_INT(fid, idv, vstart, vcount, resh)
 #endif
+
+      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
 
                     ENDDO
                   ENDDO
@@ -323,7 +329,7 @@ C     Functions
       integer IFNBLNK, ILNBLNK
 
 C     Local Variables
-      integer i,k, indv,nvf,nvl, n1,n2, igrid, ntot
+      integer i,k, nvf,nvl, n1,n2, igrid, ntot
       integer bis,bie, bjs,bje, uniq_tnum, nfname, fid, idv
       integer ndim, indf, err, lbi,lbj, bidim,bjdim, unlim_sz, kr
       integer ind_fv_ids, ind_vt, ierr, atype, alen
@@ -392,7 +398,6 @@ C         Create the file name
           fname(ntot:ntot) = '.'
           write(fname((ntot+1):(ntot+9)),'(i6.6,a3)') uniq_tnum, '.nc'
           nfname = ntot+9
-      write(*,*) 'The read file is: ', fname(1:nfname)
 
 C         Open the existing file 
           CALL MNC_FILE_TRY_READ(myThid, fname, ierr, indf)
@@ -408,8 +413,6 @@ C         Check that the variable (VType) is defined within the file
           ENDIF
           fid = mnc_f_info(indf,2)
           idv = mnc_fv_ids(indf,ind_fv_ids+1)
-
-      write(*,*) 'indf,ind_fv_ids = ', indf,ind_fv_ids
 
 C         Check that the current sNy,sNy values and the in-file values
 C         are compatible and WARN (only warn) if not
@@ -437,23 +440,22 @@ C         are compatible and WARN (only warn) if not
 
 C         Check that the in-memory variable and the in-file variables
 C         are of compatible sizes
-          ires = 1
-          CALL MNC_CHK_VTYP_R_NCVAR(myThid, ind_vt, 
-     &         indf, ind_fv_ids, indu, ires)
-          IF (ires .LT. 0) THEN
-            write(msgbuf,'(7a)') 'MNC_CW_RX_R_YY WARNING: the sizes ',
-     &           'of the in-program variable ''', vtype(nvf:nvl), 
-     &           ''' and the corresponding variable within file ''',
-     &           fname(1:nfname), ''' are not compatible -- please ',
-     &           'check the sizes'
-            CALL print_error(msgbuf, mythid)
-            STOP 'ABNORMAL END: S/R MNC_CW_RX_R_YY'
-          ENDIF
+C           ires = 1
+C           CALL MNC_CHK_VTYP_R_NCVAR(myThid, ind_vt, 
+C      &         indf, ind_fv_ids, indu, ires)
+C           IF (ires .LT. 0) THEN
+C             write(msgbuf,'(7a)') 'MNC_CW_RX_R_YY WARNING: the sizes ',
+C      &           'of the in-program variable ''', vtype(nvf:nvl), 
+C      &           ''' and the corresponding variable within file ''',
+C      &           fname(1:nfname), ''' are not compatible -- please ',
+C      &           'check the sizes'
+C             CALL print_error(msgbuf, mythid)
+C             STOP 'ABNORMAL END: S/R MNC_CW_RX_R_YY'
+C           ENDIF
 
 C         Check for bi,bj indicies
           bidim = mnc_cw_vbij(1,ind_vt)
           bjdim = mnc_cw_vbij(2,ind_vt)
-          write(*,*) 'bidim,bjdim = ', bidim,bjdim
 
 C         Set the dimensions for the in-memory array
           ndim = mnc_cw_ndim(igrid)
@@ -513,9 +515,9 @@ C               Use the current unlimited dim size
             e(bjdim) = lbj
           ENDIF
 
-      DO i = 9,1,-1
-        write(*,*) 'i,p(i),s(i),e(i) = ', i,': ',p(i),s(i),e(i)
-      ENDDO
+C     DO i = 9,1,-1
+C     write(*,*) 'i,p(i),s(i),e(i) = ', i,': ',p(i),s(i),e(i)
+C     ENDDO
           
           CALL MNC_FILE_ENDDEF(myThid,fname)
 
@@ -578,6 +580,9 @@ C         Read the variable one vector at a time
               ENDDO
             ENDDO
           ENDDO
+
+C         Close the file
+          CALL MNC_FILE_CLOSE(myThid, fname)
 
 C         End the lbj,lbi loops
         ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.35 2004/03/09 03:57:25 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.36 2004/03/10 05:50:16 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -177,6 +177,10 @@ C     Write dynvars using the MNC package
       IF ( nonlinFreeSurf.GE.0)
      &CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'EtaNH', 0, etaH)
 #endif
+      CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'Unm1', 0, gUnm1)
+      CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'Vnm1', 0, gVnm1)
+      CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'Tnm1', 0, gTnm1)
+      CALL MNC_CW_RL_W_D(myThid,'pickup',0,0,'Snm1', 0, gSnm1)
 
       DO bj = myByLo(myThid), myByHi(myThid)
         DO bi = myBxLo(myThid), myBxHi(myThid)
@@ -193,6 +197,16 @@ C     Write dynvars using the MNC package
                 vVel(i,j,k,bi,bj)  = 0.0D0
                 theta(i,j,k,bi,bj) = 0.0D0
                 salt(i,j,k,bi,bj)  = 0.0D0
+C               g?nm1 variables
+                gUnm1(i,j,k,bi,bj) = 0.0D0
+                gVnm1(i,j,k,bi,bj) = 0.0D0
+                gTnm1(i,j,k,bi,bj) = 0.0D0
+                gSnm1(i,j,k,bi,bj) = 0.0D0
+C               g? variables
+                gU(i,j,k,bi,bj) = 0.0D0
+                gV(i,j,k,bi,bj) = 0.0D0
+                gT(i,j,k,bi,bj) = 0.0D0
+                gS(i,j,k,bi,bj) = 0.0D0
               ENDDO
             ENDDO
           ENDDO
@@ -211,6 +225,10 @@ C     Read variables from the pickup file
       IF ( nonlinFreeSurf.GE.0)
      &CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'EtaNH', 1, etaH)
 #endif
+      CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'Unm1',1,gUnm1)
+      CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'Vnm1',1,gVnm1)
+      CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'Tnm1',1,gTnm1)
+      CALL MNC_CW_RL_R_D(myThid,'pickup',0,0,'Snm1',1,gSnm1)
 
 #endif /* ALLOW_MNC */
 
