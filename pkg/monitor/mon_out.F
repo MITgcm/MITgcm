@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.8 2004/04/05 06:01:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.9 2004/09/07 21:32:10 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -178,6 +178,8 @@ C     I0     - Temps used in calculating string length
       ENDIF
 
 C     write(*,*) 'mon_vname = ''', mon_vname(1:nvname), ''''
+C     write(*,*) 'mon_write_mnc = ''', mon_write_mnc, ''''
+C     write(*,*) 'mon_write_stdout = ''', mon_write_stdout, ''''
 
       msgBuf(35:35) = '='
 
@@ -185,14 +187,17 @@ C     write(*,*) 'mon_vname = ''', mon_vname(1:nvname), ''''
 #ifdef ALLOW_USE_MPI
         IF ( .NOT. useSingleCPUIO .OR. mpiMyId .EQ. 0 ) THEN
 #endif /* ALLOW_USE_MPI */
-          IF (itype .EQ. 1)
-     &         WRITE(msgBuf(36:57),'(1X,I21)')       ival
-          IF (itype .EQ. 2)
-     &         WRITE(msgBuf(36:57),'(1X,1P1E21.13)') dval
-          CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1 )
+
+          IF (mon_write_stdout) THEN
+            IF (itype .EQ. 1)
+     &           WRITE(msgBuf(36:57),'(1X,I21)')       ival
+            IF (itype .EQ. 2)
+     &           WRITE(msgBuf(36:57),'(1X,1P1E21.13)') dval
+            CALL PRINT_MESSAGE(msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1)
+          ENDIF
 
 #ifdef ALLOW_MNC
-          IF (useMNC .AND. mnc_use_for_mon .AND. mon_do_fwrite) THEN
+          IF (useMNC .AND. mon_write_mnc) THEN
             CALL MNC_CW_APPEND_VNAME(
      &           mon_vname, '-_-_--__-__t', 0,0, myThid)
             IF (itype .EQ. 1)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.55 2004/09/01 14:04:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.56 2004/09/07 21:32:10 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -367,6 +367,10 @@ CEOP
      &'   /* Rolling restart/checkpoint file interval ( s ). */')
       CALL WRITE_0D_R8( dumpFreq, INDEX_NONE,'dumpFreq =',
      &'   /* Model state write out interval ( s ). */')
+      CALL WRITE_0D_R8( monitorFreq, INDEX_NONE,'monitorFreq =',
+     &'   /* Monitor output interval ( s ). */')
+      CALL WRITE_0D_I( mon_iotype, INDEX_NONE,'mon_iotype =',
+     &'   /* Monitor IO flags. */')
       CALL WRITE_0D_R8( externForcingPeriod, INDEX_NONE,
      &   'externForcingPeriod =', '   /* forcing period (s) */')
       CALL WRITE_0D_R8( externForcingCycle, INDEX_NONE,

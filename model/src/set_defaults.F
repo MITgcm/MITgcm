@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.68 2004/09/04 18:19:22 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.69 2004/09/07 21:32:10 edhill Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -232,6 +232,7 @@ C--   Time stepping parameters
       adjDumpFreq       = deltaT*0
       diagFreq          = deltaT*0
       monitorFreq       = -1.
+      mon_iotype        = 1
       taveFreq          = deltaT*0
       tave_lastIter     = 0.5 _d 0
       writeStatePrec    = precFloat64

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.4 2004/04/05 06:01:07 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_init.F,v 1.5 2004/09/07 21:32:10 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -26,12 +26,29 @@ CEOP
 
 C     !LOCAL VARIABLES:
       INTEGER i
+      character*(MAX_LEN_MBUF) msgbuf
 
-      IF (useMNC .AND. mnc_use_for_mon) THEN
+      mon_write_stdout = .FALSE.
+      mon_write_mnc    = .FALSE.
+
+      IF ((monitorFreq .GT. 0.0) .AND. (mon_iotype .LT. 1)) THEN
+        write(msgbuf,'(3a)') 'MONITOR ERROR: mon_freq>0 and',
+     &       'mon_iotype<1 are incompatible'
+        CALL print_error(msgbuf, mythid)
+        stop 'ABNORMAL END: S/R MON_INIT'
+      ENDIF
+
+      IF ((mon_iotype .LT. 2) .AND. mnc_use_for_mon) THEN
+        mon_iotype = 2
+      ENDIF
+      IF ((mon_iotype .GE. 2) .AND. (.NOT. mnc_use_for_mon)) THEN
+        mon_iotype = 1
+      ENDIF
+
+      IF (useMNC .AND. (mon_iotype .GT. 1)) THEN
         DO i = 1,MAX_LEN_MBUF
           mon_fname(i:i) = ' '
         ENDDO
-        mon_do_fwrite = .FALSE.
       ENDIF
 
 C     Set monitor I/O to standard output by default

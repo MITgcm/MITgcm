@@ -34,6 +34,7 @@
  chkptFreq=120000.0,
  dumpFreq=2592000.0,
  monitorFreq=1.,
+ mon_iotype=3,
  &
 # Gridding parameters
  &PARM04
