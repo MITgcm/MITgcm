@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.86 2002/11/05 18:41:59 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.87 2002/11/05 18:48:56 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -128,7 +128,7 @@ C--   Continuous equation parameters
      & readPickupWithTracer, writePickupWithTracer,
      & tempAdvScheme, saltAdvScheme, tracerAdvScheme,
      & multiDimAdvection, useEnergyConservingCoriolis,
-     & useJamartWetPoints, 
+     & useJamartWetPoints, useNHMTerms,
      & useRealFreshWaterFlux, convertFW2Salt,
      & temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
      & zonal_filt_lat
@@ -778,6 +778,7 @@ C--   Make metric term settings consistent with underlying grid.
       IF ( usingCartesianGrid ) THEN
        usingSphericalPolarMterms = .FALSE.
        metricTerms = .FALSE.
+       useNHMTerms = .FALSE.
        mTFacMom = 0.
        useBetaPlaneF = .TRUE.
       ENDIF
@@ -789,6 +790,8 @@ C--   Make metric term settings consistent with underlying grid.
       ENDIF
       IF ( usingCurvilinearGrid ) THEN
        useSphereF    = .TRUE.
+       metricTerms = .FALSE.
+       useNHMTerms = .FALSE.
       ENDIF
 C--   set cell Center depth and put Interface at the middle between 2 C
       setCenterDr = .FALSE.

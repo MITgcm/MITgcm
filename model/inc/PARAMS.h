@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.76 2002/10/07 16:18:07 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.77 2002/11/05 18:48:46 adcroft Exp $
 C $Name:  $
 C
 CBOP
@@ -166,6 +166,7 @@ C     momPressureForcing :: Flag which turns pressure term in momentum equation
 C                          on and off.
 C     metricTerms   :: Flag which turns metric terms on or off.
 C     usingSphericalPolarMTerms :: If TRUE use spherical polar metric terms.
+C     useNHMTerms :: If TRUE use non-hydrostatic metric terms.
 C     useCoriolis   :: Flag which turns the coriolis terms on and off.
 C     tempDiffusion :: Flag which turns diffusion of temperature on
 C                     and off.
@@ -225,7 +226,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & useRealFreshWaterFlux,
      & rigidLid, implicitFreeSurface, exactConserv, uniformLin_PhiSurf,
      & momStepping, tempStepping, saltStepping, tr1Stepping,
-     & metricTerms, usingSphericalPolarMTerms,
+     & metricTerms, usingSphericalPolarMTerms, useNHMTerms,
      & useConstantF, useBetaPlaneF, useSphereF,
      & useEnergyConservingCoriolis, useJamartWetPoints,
      & implicitDiffusion, implicitViscosity,
@@ -241,6 +242,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingCurvilinearGrid
       LOGICAL usingSphericalPolarMTerms
+      LOGICAL useNHMTerms
       LOGICAL no_slip_sides
       LOGICAL no_slip_bottom
       LOGICAL staggerTimeStep
