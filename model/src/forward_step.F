@@ -1,7 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.54 2003/06/25 21:06:35 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.55 2003/06/25 23:47:48 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+cswdptr -- add --
+#ifdef ALLOW_PTRACERS
+#include "GCHEM_OPTIONS.h"
+#endif
+cswdptr -- end add ---
 
 CBOP
 C     !ROUTINE: FORWARD_STEP
