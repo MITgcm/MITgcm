@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.12 2003/11/04 20:47:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_main.F,v 1.13 2004/02/23 19:16:16 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -303,6 +303,7 @@ cphadmtlm(
             fcpertplus = fc
 cphadmtlm            fcpertplus = objf_state_final(45,4,1,1)
 cphadmtlm)
+            print *, 'ph-check fcpertplus = ', fcpertplus
             _BARRIER
                   
 c--   Reset control vector.
@@ -316,6 +317,7 @@ c--   Reset control vector.
             _BARRIER
 
             fcpertminus = fcref
+            print *, 'ph-check fcpertminus = ', fcpertminus
 
             if ( useCentralDiff ) then
 
