@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.32 2004/12/02 19:06:17 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.33 2004/12/11 00:34:24 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -106,7 +106,8 @@ c ---------------
       parameter (numpcheck = 5)
       integer pchecklevs(numpcheck)
       _RL pcheckpress(numpcheck)
-      data pcheckpress/950.,750.,700.,400.,10./
+C     data pcheckpress/950.,750.,700.,400.,10./
+      data pcheckpress/950.,900.,700.,400.,150./
 
       integer low_level,mid_level,nltop,nsubmin,nsubmax,Lup
       integer ndmoist,ndturb,ndlw,ndsw

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.23 2004/12/03 23:12:14 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.24 2004/12/11 00:34:24 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -196,8 +196,7 @@ C Threshold for Cloud Liquid Water Memory
 
 c Determine Total number of Random Clouds to Check
 c ---------------------------------------------
-C     ncrnd = (lm-nltop+1)/2
-      ncrnd = 0
+      ncrnd = (lm-nltop+1)/2
 
       if(first .and. myid.eq.1 .and. bi.eq.1 ) then
        print *
@@ -370,7 +369,6 @@ C **********************************************************************
        depths(numdeps) = L
        endif
       enddo
-
 
 C Initiate a do-loop around RAS for the number of different
 C    sub-cloud layer depths in this strip
@@ -1218,6 +1216,9 @@ C Local Variables
       integer IC(ICM),   IRND(icm)
       _RL cmass(lng,K)
       LOGICAL SETRAS
+      integer ifound
+      _RL temp
+      _RL thbef(lng,K)
 
       integer i,L,nc,ib,nt
       integer km1,kp1,kprv,kcr,kfx,ncmx
@@ -1236,6 +1237,7 @@ C The numerator here is the fraction of the subcloud layer mass flux
 C      allowed to entrain into the cloud
 
 CCC   FRAC = 1./dt
+CCC   FRAC = 0.5/dt
       FRAC = 0.5/dt
 
       KM1    = K  - 1
@@ -1246,8 +1248,7 @@ C
        KPRV  = KM1
 C Removed KRMAX parameter
        KCR   = MIN(KM1,nlayr-2)     
-CCC    KFX   = KM1 - KCR
-       KFX   = KM1
+       KFX   = KM1 - KCR
        NCMX  = KFX + NCRND
 C
        IF (KFX .GT. 0) THEN
@@ -1327,6 +1328,7 @@ c *****************************
 
       DO L=IB,K
        DO I=1,LENC
+        thbef(I,L) = POI(I,L)
         POI(I,L) = POI(I,L) + TCU(I,L) * DT * rhfrac(i)
         QOI(I,L) = QOI(I,L) + QCU(I,L) * DT * rhfrac(i)
        ENDDO
@@ -1342,7 +1344,23 @@ c *****************************
        rains(I,ib) = rains(I,ib) + PCU(I)*dt * rhfrac(i)
       ENDDO
 
+      do i = 1,lenc
+       ifound = 0
+       do L = 1,k
+        if(tcu(i,L).ne.0.)ifound = ifound + 1
+       enddo
+       if(ifound.ne.0) then
+c       print *,i,' made a cloud detraining at ',ib
+        do L = 1,k
+         temp = TCU(I,L) * DT * rhfrac(i)
+c        write(6,122)L,thbef(i,L),poi(i,L),temp
+        enddo
+       endif
+      enddo
+
   100 CONTINUE
+
+ 122  format(' ',i3,' TH B ',e10.3,' TH A ',e10.3,' DTH ',e10.3)
  
 c Fill Convective Cloud Fractions based on 3-D Rain Amounts
 c ---------------------------------------------------------
