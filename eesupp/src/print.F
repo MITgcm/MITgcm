@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.14 1999/05/24 15:15:11 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/print.F,v 1.15 1999/05/24 15:22:00 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -188,7 +188,7 @@ C     K    - Loop counter
      &    WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
      &    commOpen,index_lab,iLo,commClose
         ELSE
-         WRITE(msgBuf,'(I,'' '',A,I9,A)') nDup,'@',xOld,punc
+         WRITE(msgBuf,'(I5,'' '',A,I9,A)') nDup,'@',xOld,punc
          IF ( index_type .NE. INDEX_NONE ) 
      &    WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
      &    commOpen,index_lab,iLo,':',iHi,commClose
@@ -210,7 +210,7 @@ C     K    - Loop counter
      &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
      &  commOpen,index_lab,iLo,commClose
       ELSEIF( nDup .GT. 1 ) THEN
-       WRITE(msgBuf,'(I,'' '',A,I9,A)') nDup,'@',xOld,punc
+       WRITE(msgBuf,'(I5,'' '',A,I9,A)') nDup,'@',xOld,punc
        IF ( index_type .NE. INDEX_NONE ) 
      &  WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
      &  commOpen,index_lab,iLo,':',iHi,commClose
@@ -302,7 +302,7 @@ C     K    - Loop counter
      &    WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
      &    commOpen,index_lab,iLo,commClose
         ELSE
-         WRITE(msgBuf,'(I,'' '',A,L5,A)') nDup,'@',xOld,punc
+         WRITE(msgBuf,'(I5,'' '',A,L5,A)') nDup,'@',xOld,punc
          IF ( index_type .NE. INDEX_NONE ) 
      &    WRITE(msgBuf(45:),'(A,1X,A,L3,A,I3,1X,A)') 
      &    commOpen,index_lab,iLo,':',iHi,commClose
@@ -324,7 +324,7 @@ C     K    - Loop counter
      &  WRITE(msgBuf(45:),'(A,1X,A,I3,1X,A)') 
      &    commOpen,index_lab,iLo,commClose
       ELSEIF( nDup .GT. 1 ) THEN
-       WRITE(msgBuf,'(I,'' '',A,L5,A)') nDup,'@',xOld,punc
+       WRITE(msgBuf,'(I5,'' '',A,L5,A)') nDup,'@',xOld,punc
        IF ( index_type .NE. INDEX_NONE ) 
      &  WRITE(msgBuf(45:),'(A,1X,A,I3,A,I3,1X,A)') 
      &  commOpen,index_lab,iLo,':',iHi,commClose
