@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.3 1998/04/26 23:41:54 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg2d.F,v 1.4 1998/05/21 18:26:36 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -37,6 +37,7 @@ C     myNorm - Work variable used in clculating normalisation factor
       INTEGER I,  J, K
       real    faceArea
       _RL     myNorm
+      _RL     aC, aCw, aCs
 
 C--   Initialise laplace operator
 C     aW2d: integral in Z Ax/dX
@@ -110,18 +111,53 @@ C     CALL PLOT_FIELD_XYR8( aS2d, 'AS2D INI_CG2D.2' , 1, myThid )
 CcnhDebugEnds
 
 C--   Initialise preconditioner
+C     Note. 20th May 1998
+C           I made a weird discovery! In the model paper we argue
+C           for the form of the preconditioner used here ( see
+C           A Finite-volume, Incompressible Navier-Stokes Model
+C           ...., Marshall et. al ). The algebra gives a simple
+C           0.5 factor for the averaging of ac and aCw to get a
+C           symmettric pre-conditioner. By using a factor of 0.51
+C           i.e. scaling the off-diagonal terms in the
+C           preconditioner down slightly I managed to get the
+C           number of iterations for convergence in a test case to
+C           drop form 192 -> 134! Need to investigate this further!
+C           For now I have introduced a parameter cg2dpcOffDFac which
+C           defaults to 0.51 but can be set at runtime.
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1,sNy
          DO I=1,sNx
           pC(I,J,bi,bj) = 1. _d 0
-          IF (
-     &     aW2d(I,J,bi,bj) + aW2d(I+1,J,bi,bj) 
-     &    +aS2d(I,J,bi,bj) + aS2D(I,J+1,bi,bj)
-     &     .EQ. 0. 
-     &       )  pC(I,J,bi,bj) = 0. _d 0
-          pW(I,J,bi,bj) = 0.
-          pS(I,J,bi,bj) = 0.
+          aC = -(
+     &     aW2d(I,J,bi,bj) + aW2d(I+1,J  ,bi,bj)
+     &    +aS2d(I,J,bi,bj) + aS2D(I  ,J+1,bi,bj)
+     &    )
+          aCs = -(
+     &     aW2d(I,J-1,bi,bj) + aW2d(I+1,J-1,bi,bj)
+     &    +aS2d(I,J-1,bi,bj) + aS2d(I  ,J  ,bi,bj)
+     &    )
+          aCw = -(
+     &     aW2d(I-1,J,bi,bj) + aW2d(I  ,J  ,bi,bj)
+     &    +aS2d(I-1,J,bi,bj) + aS2d(I-1,J+1,bi,bj)
+     &    )
+          IF ( aC .EQ. 0. ) THEN
+            pC(I,J,bi,bj) = 0. _d 0
+          ELSE
+           pC(I,J,bi,bj) =  1. _d 0 / aC
+          ENDIF
+          IF ( aC + aCw .EQ. 0. ) THEN
+           pW(I,J,bi,bj) = 0.
+          ELSE
+           pW(I,J,bi,bj) = 
+     &     -aW2d(I  ,J  ,bi,bj)/((cg2dpcOffDFac *(aCw+aC))**2 )
+          ENDIF
+          IF ( aC + aCs .EQ. 0. ) THEN
+           pS(I,J,bi,bj) = 0.
+          ELSE
+           pS(I,J,bi,bj) =
+     &     -aS2d(I  ,J  ,bi,bj)/((cg2dpcOffDFac *(aCs+aC))**2 )
+          ENDIF
          ENDDO
         ENDDO
        ENDDO
@@ -132,17 +168,19 @@ C--   Update overlap regions
       _EXCH_XY_R4(pS, myThid)
 
 C--   Set default values for initial guess
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO J=1,sNy
-         DO I=1,sNx
-          cg2d_x(I,J,bi,bj) = 0. _d 0
+      IF ( startTime .EQ. 0 ) THEN
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO J=1,sNy
+          DO I=1,sNx
+           cg2d_x(I,J,bi,bj) = 0. _d 0
+          ENDDO
          ENDDO
         ENDDO
        ENDDO
-      ENDDO
-C--   Update overlap regions
-      _EXCH_XY_R8(cg2d_x, myThid)
+C--    Update overlap regions
+       _EXCH_XY_R8(cg2d_x, myThid)
+      ENDIF
 
       RETURN
       END
