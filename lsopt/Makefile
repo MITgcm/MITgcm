@@ -7,6 +7,9 @@
 # prebuilt Fortran77 reference implementation BLAS libraries at
 # http://www.netlib.org/blas/archives/
 #
+# Further high-performance BLAS libraries by Kazushige Goto at
+# http://www.cs.utexas.edu/users/kgoto/
+#
 #***********************************************************************
 
 # The optimization routines.
