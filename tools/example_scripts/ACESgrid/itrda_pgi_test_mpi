@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-#PBS -q four
+#PBS -q long
 #PBS -N eh3_pgf77
 #PBS -l nodes=2:ppn=1
 #PBS -e /home/edhill/test_outp/eh3_pgi.stderr

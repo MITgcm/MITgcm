@@ -15,8 +15,8 @@ date_str=`date +%Y%m%d`"_0"
 minutes=0
 while test ! "x_"$M_g77"_"$M_ifc"_"$M_pgf77 = x_done_done_done ; do
 
-    sleep 120
-    minutes=$(( $minutes + 2 ))
+    sleep 300
+    minutes=$(( $minutes + 5 ))
 
     for i in g77 ifc pgf77 ; do
 
@@ -41,8 +41,9 @@ while test ! "x_"$M_g77"_"$M_ifc"_"$M_pgf77 = x_done_done_done ; do
         fi
     done
     
-    if test $minutes -gt 125 ; then
-        echo "Time expired with $minutes minutes."
+    hrs=$(( $minutes / 60 ));
+    if test $minutes -gt 600 ; then
+        echo "Time expired with $minutes minutes ($hrs hours)."
         exit 1
     fi
 
