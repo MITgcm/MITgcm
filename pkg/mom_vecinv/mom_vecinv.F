@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.14 2004/02/07 23:15:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.15 2004/02/25 00:56:47 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -8,7 +8,7 @@ C $Name:  $
      I        bi,bj,iMin,iMax,jMin,jMax,k,kUp,kDown,
      I        dPhiHydX,dPhiHydY,KappaRU,KappaRV,
      U        fVerU, fVerV,
-     I        myCurrentTime, myIter, myThid)
+     I        myTime, myIter, myThid)
 C     /==========================================================\
 C     | S/R MOM_VECINV                                           |
 C     | o Form the right hand-side of the momentum equation.     |
@@ -52,7 +52,7 @@ C     myThid - Instance number for this innvocation of CALC_MOM_RHS
       _RL fVerU(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RL fVerV(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       INTEGER kUp,kDown
-      _RL     myCurrentTime
+      _RL     myTime
       INTEGER myIter
       INTEGER myThid
       INTEGER bi,bj,iMin,iMax,jMin,jMax
@@ -118,6 +118,7 @@ C     xxxFac - On-off tracer parameters used for switching terms off.
       _RL  mtFacV
       _RL wVelBottomOverride
       LOGICAL bottomDragTerms
+      LOGICAL writeDiag
       _RL KE(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL omega3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vort3(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -136,6 +137,8 @@ C--   (at least in part)
       IF ( k .EQ. 1 ) rVelMaskOverride=freeSurfFac
       wVelBottomOverride=1.
       IF (k.EQ.Nr) wVelBottomOverride=0.
+      writeDiag = DIFFERENT_MULTIPLE(diagFreq, myTime,
+     &                                         myTime-deltaTClock)
 
 C     Initialise intermediate terms
       DO J=1-OLy,sNy+OLy
@@ -403,6 +406,10 @@ C--   Horizontal Coriolis terms
          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
         ENDDO
        ENDDO
+       IF ( writeDiag ) THEN
+        CALL WRITE_LOCAL_RL('fV','I10',1,uCf,bi,bj,k,myIter,myThid)
+        CALL WRITE_LOCAL_RL('fU','I10',1,vCf,bi,bj,k,myIter,myThid)
+       ENDIF
       ENDIF
 
       IF (momAdvection) THEN
@@ -426,6 +433,10 @@ c      CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,vort3,r_hFacZ,vCf,myThid)
         ENDDO
        ENDDO
 
+       IF ( writeDiag ) THEN
+        CALL WRITE_LOCAL_RL('zV','I10',1,uCf,bi,bj,k,myIter,myThid)
+        CALL WRITE_LOCAL_RL('zU','I10',1,vCf,bi,bj,k,myIter,myThid)
+       ENDIF
 #ifdef ALLOW_TIMEAVE
 #ifndef HRCUBE
        IF (taveFreq.GT.0.) THEN
@@ -466,6 +477,11 @@ C--   Bernoulli term
          gV(i,j,k,bi,bj) = gV(i,j,k,bi,bj)+vCf(i,j)
         ENDDO
        ENDDO
+       IF ( writeDiag ) THEN
+        CALL WRITE_LOCAL_RL('KEx','I10',1,uCf,bi,bj,k,myIter,myThid)
+        CALL WRITE_LOCAL_RL('KEy','I10',1,vCf,bi,bj,k,myIter,myThid)
+       ENDIF
+
 C--   end if momAdvection
       ENDIF
 
@@ -478,14 +494,9 @@ C--   Set du/dt & dv/dt on boundaries to zero
       ENDDO
 
 
-      IF (
-     &  DIFFERENT_MULTIPLE(diagFreq,myCurrentTime,
-     &                     myCurrentTime-deltaTClock)
-     & ) THEN
+      IF ( writeDiag ) THEN
        CALL WRITE_LOCAL_RL('Ds','I10',1,strain,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('Dt','I10',1,tension,bi,bj,k,myIter,myThid)
-       CALL WRITE_LOCAL_RL('fV','I10',1,uCf,bi,bj,k,myIter,myThid)
-       CALL WRITE_LOCAL_RL('fU','I10',1,vCf,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('Du','I10',1,uDiss,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('Dv','I10',1,vDiss,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('Z3','I10',1,vort3,bi,bj,k,myIter,myThid)
