@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.19 2004/11/21 15:55:38 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.20 2005/01/04 00:19:38 jmc Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -22,7 +22,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GMREDI.h"
-#include "GMREDI_DIAGS.h"
+#include "GMREDI_TAVE.h"
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #include "tamc.h"
@@ -533,6 +533,36 @@ C--   Time-average
 
       ENDIF
 #endif /* ALLOW_TIMEAVE */
+
+#ifdef ALLOW_DIAGNOSTICS
+      IF ( useDiagnostics ) THEN
+
+#ifdef GM_VISBECK_VARIABLE_K
+       IF ( GM_Visbeck_alpha.NE.0. ) THEN
+         CALL DIAGNOSTICS_FILL(VisbeckK,'GM_VisbK',0,1,1,bi,bj,myThid)
+       ENDIF
+#endif
+#ifdef GM_NON_UNITY_DIAGONAL
+         CALL DIAGNOSTICS_FILL(Kux,'GM_Kux  ',0,Nr,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(Kvy,'GM_Kvy  ',0,Nr,1,bi,bj,myThid)
+#endif
+#ifdef GM_EXTRA_DIAGONAL
+       IF ( GM_ExtraDiag ) THEN
+         CALL DIAGNOSTICS_FILL(Kuz,'GM_Kuz  ',0,Nr,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(Kvz,'GM_Kvz  ',0,Nr,1,bi,bj,myThid)
+       ENDIF
+#endif
+         CALL DIAGNOSTICS_FILL(Kwx,'GM_Kwx  ',0,Nr,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(Kwy,'GM_Kwy  ',0,Nr,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(Kwz,'GM_Kwz  ',0,Nr,1,bi,bj,myThid)
+#ifdef GM_BOLUS_ADVEC
+       IF ( GM_AdvForm ) THEN
+         CALL DIAGNOSTICS_FILL(GM_PsiX,'GM_PsiX ',0,Nr,1,bi,bj,myThid)
+         CALL DIAGNOSTICS_FILL(GM_PsiY,'GM_PsiY ',0,Nr,1,bi,bj,myThid)
+       ENDIF
+#endif
+      ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
 #endif /* ALLOW_GMREDI */
 
