@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.11 2005/03/17 01:22:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_out.F,v 1.12 2005/04/04 22:05:14 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -348,11 +348,11 @@ C--     end of Processing Fld # n
         ENDIF
       ENDDO
 
- 2000 format(1x,'Computing Diagnostic # ',i3,2x,a8,5x,'Counter: ',
-     &     i4,6x,'Parms: ',a16)
+ 2000 format(1x,'Computing Diagnostic # ',i3,2x,a8,5x,
+     &     'Counter:',i8,3x,'Parms: ',a16)
  2001 format(1x,'          Vector  Mate for  ',a8,5x,
      &     'Diagnostic # ',i3,2x,a8,' exists ')
- 2002 format(1x,'        Vector  Mate for  ',a8,5x,
+ 2002 format(1x,'          Vector  Mate for  ',a8,5x,
      &     'Diagnostic # ',i3,2x,a8,' not enabled')
  2003 format(1x,'      use Counter Mate for  ',a8,5x,
      &     'Diagnostic # ',i3,2x,a8)
