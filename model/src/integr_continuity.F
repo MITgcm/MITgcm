@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.5 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/integr_continuity.F,v 1.6 2004/06/29 22:21:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,9 +53,11 @@ C     Local variables
 C     i,j,k  :: Loop counters
 C     uTrans :: Volume transports ( uVel.xA )
 C     vTrans :: Volume transports ( vVel.yA )
+C     hDivFlow :: Div. Barotropic Flow [transport unit m3/s]
       INTEGER i,j,k
       _RL uTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL vTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL hDivFlow(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL wSurf, facEmP
 CEOP
 
@@ -69,9 +71,10 @@ C--   Compute the Divergence of The Barotropic Flow :
 C-    Initialise 
       DO j=1-Oly,sNy+Oly
        DO i=1-Olx,sNx+Olx
-         hDivFlow(i,j,bi,bj) = 0. _d 0
-         utrans(i,j)         = 0. _d 0
-         vtrans(i,j)         = 0. _d 0
+         dEtaHdt(i,j,bi,bj) = 0. _d 0
+         hDivFlow(i,j)      = 0. _d 0
+         utrans(i,j)        = 0. _d 0
+         vtrans(i,j)        = 0. _d 0
        ENDDO
       ENDDO
 
@@ -90,7 +93,7 @@ C-    Calculate velocity field "volume transports" through tracer cell faces
 C-    Integrate vertically the Horizontal Divergence 
         DO j=1,sNy
          DO i=1,sNx
-           hDivFlow(i,j,bi,bj) = hDivFlow(i,j,bi,bj)
+           hDivFlow(i,j) = hDivFlow(i,j)
      &       +maskC(i,j,k,bi,bj)*( uTrans(i+1,j)-uTrans(i,j)
      &                            +vTrans(i,j+1)-vTrans(i,j) )
          ENDDO
@@ -98,6 +101,42 @@ C-    Integrate vertically the Horizontal Divergence
 
 C-    End DO k=1,Nr
       ENDDO
+
+C------------------------------------
+       facEmP = 0.
+       IF (useRealFreshWaterFlux) facEmP = convertEmP2rUnit
+       IF ( myTime.EQ.startTime ) THEN
+        IF (myTime.NE. 0. _d 0 .AND. useRealFreshWaterFlux) THEN
+C     needs previous time-step value of E-P-R, that has not been loaded
+C     and was not in pickup-file ; try to use etaN & etaH instead.
+          DO j=1,sNy
+           DO i=1,sNx
+            dEtaHdt(i,j,bi,bj) =
+     &                         (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
+     &                        /(implicDiv2Dflow*deltaTfreesurf)
+            PmEpR(i,j,bi,bj) = dEtaHdt(i,j,bi,bj)
+     &                       + hDivFlow(i,j)*recip_rA(i,j,bi,bj)
+            PmEpR(i,j,bi,bj) = PmEpR(i,j,bi,bj)/convertEmP2rUnit
+           ENDDO
+          ENDDO
+        ELSE
+         DO j=1,sNy
+          DO i=1,sNx
+            PmEpR(i,j,bi,bj) = 0. _d 0
+            dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
+          ENDDO
+         ENDDO      
+        ENDIF
+       ELSE
+         DO j=1,sNy
+          DO i=1,sNx
+            PmEpR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)
+            dEtaHdt(i,j,bi,bj) = -hDivFlow(i,j)*recip_rA(i,j,bi,bj)
+     &                           -facEmP*EmPmR(i,j,bi,bj)
+          ENDDO
+         ENDDO
+       ENDIF
+C------------------------------------
 
       ENDIF
 
@@ -113,21 +152,11 @@ C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
            etaN(i,j,bi,bj) = etaH(i,j,bi,bj) 
          ENDDO
         ENDDO
-       ELSEIF (useRealFreshWaterFlux) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-           etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
-     &      - implicDiv2Dflow*( convertEmP2rUnit*EmPmR(i,j,bi,bj)
-     &                    +hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
-     &                        )*deltaTfreesurf
-         ENDDO
-        ENDDO
        ELSE
         DO j=1,sNy
          DO i=1,sNx
            etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
-     &      - implicDiv2Dflow*hDivFlow(i,j,bi,bj)
-     &                       *recip_rA(i,j,bi,bj)*deltaTfreesurf
+     &      + implicDiv2Dflow*dEtaHdt(i,j,bi,bj)*deltaTfreesurf
          ENDDO
         ENDDO
        ENDIF
@@ -138,31 +167,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #ifdef NONLIN_FRSURF
       IF (select_rStar .NE. 0) THEN
-        facEmP = 0.
-        IF (useRealFreshWaterFlux) facEmP = convertEmP2rUnit
-       
-        IF ( useRealFreshWaterFlux .AND. myTime.EQ.startTime ) THEN
-C     needs previous time-step value of E-P-R, that has not been loaded
-C     and was not in pickup-file ; try to use etaN & etaH instead.
-          DO j=1,sNy
-           DO i=1,sNx
-            rStarDhCDt(i,j,bi,bj) = 
-     &         ( etaN(i,j,bi,bj)-etaH(i,j,bi,bj) )
-     &           /(implicDiv2Dflow*deltaTfreesurf)
-     &           * recip_Rcol(i,j,bi,bj)
-           ENDDO
-          ENDDO      
-        ELSE
-         DO j=1,sNy
-          DO i=1,sNx
-            rStarDhCDt(i,j,bi,bj) = 
-     &         (-hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
-     &          -facEmP*EmPmR(i,j,bi,bj)
-     &         ) * recip_Rcol(i,j,bi,bj)
-          ENDDO
+        DO j=1,sNy
+         DO i=1,sNx
+           rStarDhCDt(i,j,bi,bj) =
+     &            dEtaHdt(i,j,bi,bj)*recip_Rcol(i,j,bi,bj)
          ENDDO
-        ENDIF
-
+        ENDDO      
       ENDIF
 #endif /* NONLIN_FRSURF */
 #endif /* EXACT_CONSERV */
@@ -182,26 +192,12 @@ C--    Integrate continuity vertically for vertical velocity
      &      useRealFreshWaterFlux .AND. 
      &      buoyancyRelation .EQ. 'OCEANICP' ) THEN
 
-        IF ( myTime.NE.startTime ) THEN
           DO j=1,sNy
            DO i=1,sNx
              wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj) 
-     &         -convertEmP2rUnit*EmPmR(i,j,bi,bj)*maskC(i,j,k,bi,bj)
+     &         +convertEmP2rUnit*PmEpR(i,j,bi,bj)*maskC(i,j,k,bi,bj)
            ENDDO
           ENDDO
-        ELSEIF (nonlinFreeSurf.GE.0) THEN
-C     needs previous time-step value of E-P-R, that has not been loaded
-C     and was not in pickup-file ; try to use etaN & etaH instead.
-          DO j=1,sNy
-           DO i=1,sNx
-             wSurf = hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
-     &             + (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
-     &              /(implicDiv2Dflow*deltaTfreesurf)
-             wVel(i,j,k,bi,bj) = wVel(i,j,k,bi,bj) 
-     &                  + wSurf*maskC(i,j,k,bi,bj) 
-           ENDDO
-          ENDDO      
-        ENDIF
 
        ENDIF
 #endif /* EXACT_CONSERV & NONLIN_FRSURF */

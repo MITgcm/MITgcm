@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.3 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/update_etah.F,v 1.4 2004/06/29 22:21:43 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -48,48 +48,6 @@ CEOP
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid) 
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
-#ifdef NONLIN_FRSURF
-c      IF (useRealFreshWaterFlux .AND. nonlinFreeSurf.GT.0) THEN
-       IF ( (nonlinFreeSurf.GT.0 .OR. buoyancyRelation.EQ.'OCEANICP')
-     &      .AND. useRealFreshWaterFlux ) THEN
-
-C-- Called at the beginning of the time step : 
-C-  keep present time EmPmR to compute later (S/R EXTERNAL_FORCING_SURF)
-C   tracers and momentum flux associated with fresh water input. 
-
-        IF ( myTime.NE.startTime ) THEN
-         DO j=1-Oly,sNy+Oly
-          DO i=1-Olx,sNx+Olx
-            PmEpR(i,j,bi,bj) = -EmPmR(i,j,bi,bj)
-          ENDDO
-         ENDDO
-
-        ELSE
-          DO j=1-Oly,sNy+Oly
-           DO i=1-Olx,sNx+Olx
-            PmEpR(i,j,bi,bj) = 0. _d 0
-           ENDDO
-          ENDDO
-
-          IF( myTime .NE. 0. _d 0 .AND. nonlinFreeSurf.GE.0 ) THEN
-C     needs previous time-step value of E-P-R, that has not been loaded
-C     and was not in pickup-file ; try to use etaN & etaH instead.
-          DO j=1,sNy
-           DO i=1,sNx
-            PmEpR(i,j,bi,bj) = 
-     &        hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
-     &      + (etaN(i,j,bi,bj)-etaH(i,j,bi,bj))
-     &       /(implicDiv2Dflow*deltaTfreesurf)
-            PmEpR(i,j,bi,bj) = PmEpR(i,j,bi,bj)/convertEmP2rUnit
-           ENDDO
-          ENDDO
-          ENDIF
-        ENDIF
-
-       ENDIF
-#endif /* NONLIN_FRSURF */
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
@@ -114,22 +72,12 @@ C     and was not in pickup-file ; try to use etaN & etaH instead.
          ENDDO
         ENDDO
 
-       ELSEIF (useRealFreshWaterFlux) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-           etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
-     &      - (1. - implicDiv2Dflow)*( convertEmP2rUnit*EmPmR(i,j,bi,bj)
-     &                    +hDivFlow(i,j,bi,bj)*recip_rA(i,j,bi,bj)
-     &                               )*deltaTfreesurf
-         ENDDO
-        ENDDO
-
        ELSE
         DO j=1,sNy
          DO i=1,sNx
            etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
-     &      - (1. - implicDiv2Dflow)*hDivFlow(i,j,bi,bj)
-     &                              *recip_rA(i,j,bi,bj)*deltaTfreesurf
+     &      + (1. - implicDiv2Dflow)*dEtaHdt(i,j,bi,bj)
+     &                              *deltaTfreesurf
          ENDDO
         ENDDO
        ENDIF
@@ -157,15 +105,13 @@ C- end bi,bj loop.
       IF (implicDiv2Dflow .NE. 1. _d 0 .OR. useOBCS )
      &    _EXCH_XY_RL(etaH, myThid ) 
 
-#endif /* EXACT_CONSERV */
 
-#ifdef NONLIN_FRSURF
       IF ( buoyancyRelation.EQ.'OCEANICP'
      &     .AND. useRealFreshWaterFlux
      &     .AND. myTime.EQ.startTime ) THEN
           _EXCH_XY_RS(PmEpR, myThid ) 
       ENDIF
-#endif /* NONLIN_FRSURF */
+#endif /* EXACT_CONSERV */
 
       RETURN
       END

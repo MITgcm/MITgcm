@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.10 2003/05/13 17:25:22 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/SURFACE.h,v 1.11 2004/06/29 22:21:07 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -39,9 +39,11 @@ C IMPORTANT:  ksurfC,W,S = Nr+1  where the fluid column is empty (continent)
       INTEGER ksurfS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 #ifdef EXACT_CONSERV
-C     hDivFlow :: Div. Barotropic Flow at current time [transport unit m3/s]
-      COMMON /EXACT_ETA_LOCAL/ hDivFlow
-      _RL hDivFlow(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+C     dEtaHdt :: time derivative of total column height [r_unit/s = w unit]
+C     PmEpR   :: keep the fresh water input (=-EmPmR) of the previous time step
+      COMMON /EXACT_ETA_LOCAL/ dEtaHdt, PmEpR
+      _RL dEtaHdt(1-Olx:sNx+Olx,1-Oly:sNy+Oly,nSx,nSy)
+      _RS  PmEpR (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #ifdef NONLIN_FRSURF
@@ -50,14 +52,11 @@ C     hFac_surfC ::  New thickness factor of the surface level
 C                        center (Tracer point)
 C     hFac_surfW ::  idem, West  interface (U point)
 C     hFac_surfS ::  idem, South interface (V point)
-C     PmEpR :: keep the fresh water input (=-EmPmR) of the previous time step
       COMMON /SURF_CHANGE/
-     &     hFac_surfC, hFac_surfW, hFac_surfS, 
-     &     PmEpR
+     &     hFac_surfC, hFac_surfW, hFac_surfS
       _RS  hFac_surfC(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  hFac_surfW(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  hFac_surfS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  PmEpR(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C--   COMMON /RSTAR_CHANGE/ transient variables used with r* Coordinate
 C     rStarFacC :: = dr/dr* = ratio of r-thickness / r*-thickness = h^n / H
