@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.94 2004/06/08 16:15:10 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.95 2004/06/14 22:42:00 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -536,7 +536,7 @@ C AMM  -- Diagnostics package
 
 # ifdef ALLOW_PTRACERS
       if(useptracers)then
-       call diagnostics_fill_ptracers(myThid)
+       CALL PTRACERS_FILL_DIAGNOSTICS(myThid)
       endif
 # endif
 
