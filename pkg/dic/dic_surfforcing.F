@@ -36,7 +36,7 @@ C     == Routine arguments ==
 #ifdef ALLOW_PTRACERS
 #ifdef DIC_ABIOTIC
 C     == Local variables ==
-       INTEGER I,J, kLev
+       INTEGER I,J, kLev, it
 C Number of iterations for pCO2 solvers...
       INTEGER inewtonmax
       INTEGER ibrackmax
@@ -50,7 +50,6 @@ C local variables for carbon chem
       _RL surfphos(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL surfsi(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL VirtualFlux(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL FluxCO2(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 
@@ -119,6 +118,7 @@ c for first few timesteps
 c first approxmation
        DO j=1-OLy,sNy+OLy
         DO i=1-OLx,sNx+OLx
+         do it=1,10
           CALL CALC_PCO2_APPROX(
      I        theta(i,j,kLev,bi,bj),salt(i,j,kLev,bi,bj),
      I        PTR_CO2(i,j,kLev), surfphos(i,j),
@@ -129,6 +129,7 @@ c first approxmation
      I        aksi(i,j,bi,bj),akf(i,j,bi,bj),ff(i,j,bi,bj),
      I        bt(i,j,bi,bj),st(i,j,bi,bj),ft(i,j,bi,bj),
      U        pH(i,j,bi,bj),pCO2(i,j,bi,bj) )
+         enddo
         ENDDO
        ENDDO
 #else
@@ -202,16 +203,16 @@ C Calculate flux in terms of DIC units using K0, solubility
 C Flux = Vp * ([CO2sat] - [CO2])
 C CO2sat = K0*pCO2atmos*P/P0
 C Converting pCO2 to [CO2] using ff, as in CALC_PCO2
-              FluxCO2(i,j) = 
+              FluxCO2(i,j,bi,bj) = 
      &         maskC(i,j,kLev,bi,bj)*Kwexch(i,j)*( 
      &         ak0(i,j,bi,bj)*pCO2sat(i,j) - 
      &         ff(i,j,bi,bj)*pCO2(i,j,bi,bj) 
      &         ) 
             ELSE
-               FluxCO2(i,j) = 0.
+               FluxCO2(i,j,bi,bj) = 0.
             ENDIF
 C convert flux (mol kg-1 m s-1) to (mol m-2 s-1)
-            FluxCO2(i,j) = FluxCO2(i,j)/permil
+            FluxCO2(i,j,bi,bj) = FluxCO2(i,j,bi,bj)/permil
 
             IF (maskC(i,j,kLev,bi,bj).NE.0.) THEN
 c calculate virtual flux
@@ -236,7 +237,7 @@ C update tendency
          DO j=1-OLy,sNy+OLy
           DO i=1-OLx,sNx+OLx
            GDC(i,j)= maskC(i,j,kLev,bi,bj)*(
-     &                    FluxCO2(i,j)*recip_drF(kLev)
+     &                    FluxCO2(i,j,bi,bj)*recip_drF(kLev)
      &                    + VirtualFlux(i,j)
      &                                              )
           ENDDO

@@ -34,13 +34,21 @@ C     == Routine arguments ==
 
 #ifdef ALLOW_PTRACERS
 C     == Local variables ==
+      COMMON /dic_load/
+     &    wspeed0, wspeed1, ice0, ice1, atmosp0,
+     &    atmosp1, silica0, silica1
+#ifdef DIC_BIOTIC
+     &    ,feinput0,feinput1
+#endif
       _RS wspeed0  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  wspeed1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS wspeed1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS wind  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS ice0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS ice1  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS atmosp0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS atmosp1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS silica0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS silica1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef DIC_BIOTIC
       _RS feinput0 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS feinput1 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -60,6 +68,8 @@ cQQQ need to check timing
          CALL LEF_ZERO( wspeed1,myThid )
          CALL LEF_ZERO( atmosp0,myThid )
          CALL LEF_ZERO( atmosp1,myThid )
+         CALL LEF_ZERO( silica0,myThid )
+         CALL LEF_ZERO( silica1,myThid )
          CALL LEF_ZERO( ice0,myThid )
          CALL LEF_ZERO( ice1,myThid )
 #ifdef DIC_BIOTIC
@@ -116,6 +126,12 @@ C      data for the period ahead and the period behind myTime.
          CALL READ_REC_XY_RS( AtmospFile,atmosp1,intime1,
      &        myIter,myThid )
        ENDIF 
+       IF ( SilicaFile .NE. ' '  ) THEN
+         CALL READ_REC_XY_RS( SilicaFile,silica0,intime0,
+     &        myIter,myThid )
+         CALL READ_REC_XY_RS( SilicaFile,silica1,intime1,
+     &        myIter,myThid )
+       ENDIF
 #ifndef ALLOW_SEAICE
        IF ( IceFile .NE. ' '  ) THEN
          CALL READ_REC_XY_RS( IceFile,ice0,intime0,
@@ -140,6 +156,8 @@ C
        _EXCH_XY_R4(wspeed1, myThid )
        _EXCH_XY_R4(atmosp0, myThid )
        _EXCH_XY_R4(atmosp1, myThid )
+       _EXCH_XY_R4(silica0, myThid )
+       _EXCH_XY_R4(silica1, myThid )
 #ifndef ALLOW_SEAICE
        _EXCH_XY_R4(ice0, myThid )
        _EXCH_XY_R4(ice1, myThid )
@@ -171,6 +189,12 @@ c QQ         also need to check units, and conversion factors
      &                        +aWght*atmosp1(i,j,bi,bj)
            ELSE
              ATMOSP(i,j,bi,bj)   =1.d0*maskC(i,j,1,bi,bj)
+           ENDIF
+           IF ( SilicaFile .NE. ' '  ) THEN
+             SILICA(i,j,bi,bj)    = bWght*silica0(i,j,bi,bj)
+     &                        +aWght*silica1(i,j,bi,bj)
+           ELSE
+             SILICA(i,j,bi,bj)   =7.6838e-3*maskC(i,j,1,bi,bj)
            ENDIF
 #ifndef ALLOW_SEAICE
            IF ( IceFile .NE. ' '  ) THEN

@@ -215,6 +215,8 @@ c save averages
      &                           pCO2(i,j,bi,bj)*deltaTclock
               pHave(i,j,bi,bj)=pHave(i,j,bi,bj)+
      &                           pH(i,j,bi,bj)*deltaTclock
+              fluxCO2ave(i,j,bi,bj)=fluxCO2ave(i,j,bi,bj)+
+     &                           fluxCO2(i,j,bi,bj)*deltaTclock
             endif
           ENDDO
          ENDDO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.1 2003/06/25 21:00:36 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/dic/dic_biotic_diags.F,v 1.2 2003/07/09 19:59:18 stephd Exp $
 C $Name:  $
 cswdice modified for ice -- 25 Oct 01
 cswddic modified for dic -- 16 July 02
@@ -56,6 +56,7 @@ c set arrays to zero if first timestep
           CALL TIMEAVE_RESET(SUROave,   1,  bi, bj, myThid)
           CALL TIMEAVE_RESET(pCO2ave,   1,  bi, bj, myThid)
           CALL TIMEAVE_RESET(pHave,   1,  bi, bj, myThid)
+          CALL TIMEAVE_RESET(fluxCO2ave,   1,  bi, bj, myThid)
           print*,'QQ start timeave'
           do k=1,Nr
             DIC_TimeAve(bi,bj,k)=0.d0
@@ -83,6 +84,8 @@ C      Normalize by integrated time
      &                 bi,bj,myThid)
          CALL TIMEAVE_NORMALIZ(pHave,dic_timeave, 1 ,
      &                 bi,bj,myThid)
+         CALL TIMEAVE_NORMALIZ(fluxCO2ave,dic_timeave, 1 ,
+     &                 bi,bj,myThid)
         ENDDO
        ENDDO
          
@@ -96,10 +99,13 @@ C      Normalize by integrated time
      &     myIter,myThid)
        CALL WRITE_FLD_XY_RL('DIC_SurOtave.',suff,SUROave,
      &     myIter,myThid)
-       CALL WRITE_FLD_XY_RL('DIC_pCO2tave.',suff,pCO2ave,
-     &     myIter,myThid)
        CALL WRITE_FLD_XY_RL('DIC_pHtave.',suff,pHave,
      &     myIter,myThid)
+       CALL WRITE_FLD_XY_RL('DIC_pCO2tave.',suff,pCO2ave,
+     &     myIter,myThid)
+       CALL WRITE_FLD_XY_RL('DIC_fluxCO2ave.',suff,fluxCO2ave,
+     &     myIter,myThid)
+
          
 C      Reset averages to zero
        DO bj = myByLo(myThid), myByHi(myThid)
@@ -110,6 +116,7 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(SUROave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(pCO2ave,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(pHave,1,bi,bj,myThid)
+         CALL TIMEAVE_RESET(fluxCO2ave,1,bi,bj,myThid)
          do k=1,Nr
            DIC_TimeAve(bi,bj,k)=0.d0
          enddo

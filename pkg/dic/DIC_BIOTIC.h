@@ -5,7 +5,8 @@ C     | o Biological Carbon Variables                                      |
 C     |==========================================================|
 
        COMMON /BIOTIC_NEEDS/
-     &    BIOave, CARave, SURave, SUROave, pCO2ave, pHave, dic_timeave,
+     &    BIOave, CARave, SURave, SUROave, pCO2ave, pHave, 
+     &    fluxCO2ave, dic_timeave,
      &    alpha, rain_ratio, InputFe,
      &    Kpo4, DOPfraction, zcrit, KRemin,
      &    KDOPremin,zca,R_op,R_cp,R_np, R_fep, nlev,
@@ -19,6 +20,8 @@ c for averages
       _RL SUROave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL pHave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL fluxCO2ave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+
       _RL DIC_timeave(nSx,nSy,nR)
 c values for biogeochemistry
       _RL alpha(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
