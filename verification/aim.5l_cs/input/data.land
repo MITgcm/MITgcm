@@ -3,6 +3,8 @@
 #--  Land model parameter (namelist LAND_MODEL_PAR):
 #     land_calc_grT :: step forward ground Temperature
 #     land_calc_grW :: step forward soil moiture
+#     land_grT_iniFile :: File containing initial ground Temp.
+#     land_grW_iniFile :: File containing initial ground Water.
 #     land_deltaT   :: land model time-step
 #     land_taveFreq :: Frequency^-1 for time-Aver. output (s)
 #     land_diagFreq :: Frequency^-1 for diagnostic output (s)

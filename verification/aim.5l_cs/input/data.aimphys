@@ -14,6 +14,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #     aim_oiceFile :: file name for Sea Ice fraction    (F.M. surfBC)
 #     aim_snowFile :: file name for Snow depth          (F.M. surfBC)
 #     aim_swcFile  :: file name for Soil Water content  (F.M. surfBC)
+#     aim_dragStrato :: stratospheric-drag damping time scale (s)
 #     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 #     aim_tendFreq :: Frequency^-1 for tendencies output (s)
  &AIM_PARAMS
@@ -22,6 +23,7 @@ C--   AIM interface parameter (namelist AIM_PARAMS):
 #  aim_surfPotTemp=.TRUE.,
    aim_MMsufx = '.cs.bin',
    aim_MMsufxLength = 7,
+#  aim_dragStrato= 2592000.,
  &
 
 #--   Physical constants
