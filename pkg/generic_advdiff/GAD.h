@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.1 2001/05/30 19:34:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.2 2001/07/12 00:31:59 jmc Exp $
 C $Name:  $
 
 C Parameter common bloack
@@ -12,6 +12,10 @@ C Enumerated constants for selecting advection schemes
 C Centered 2nd order
       INTEGER ENUM_CENTERED_2ND
       PARAMETER(ENUM_CENTERED_2ND=2)
+
+C 3rd order upwind 
+      INTEGER ENUM_UPWIND_3RD
+      PARAMETER(ENUM_UPWIND_3RD=3)
 
 C Centered 4th order
       INTEGER ENUM_CENTERED_4TH

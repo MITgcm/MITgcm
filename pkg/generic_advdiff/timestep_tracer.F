@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/timestep_tracer.F,v 1.1 2001/05/30 19:34:48 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/timestep_tracer.F,v 1.2 2001/07/12 00:31:59 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -36,8 +36,9 @@ C     Adams-Bashforth timestepping weights
       ab05 = -tauAB
 
 C     Step forward temperature
-      IF (gad_advection_scheme.EQ.ENUM_CENTERED_2ND
-     &.OR.gad_advection_scheme.EQ.ENUM_CENTERED_4TH) THEN
+      IF ( gad_advection_scheme.EQ.ENUM_CENTERED_2ND
+     & .OR.gad_advection_scheme.EQ.ENUM_UPWIND_3RD
+     & .OR.gad_advection_scheme.EQ.ENUM_CENTERED_4TH ) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
           gTrNm1(i,j,k,bi,bj)=tracer(i,j,k,bi,bj)
