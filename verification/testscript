@@ -48,7 +48,7 @@ end
 foreach dr ([a-zA-Z01-9]*)
  if (! -d $dr/input ) continue
  foreach skip ($SKIP)
-  if ($skip == $dr) continue;continue
+  if ( `echo $dr | sed s/$skip.'*'//` == '' ) continue;continue
  end
  set config=-
  set makedepend=-
