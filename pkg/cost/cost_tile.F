@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.2 2001/09/28 14:17:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_tile.F,v 1.3 2001/09/28 15:56:14 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -50,7 +50,7 @@ c         |   enddo
 c         |
 c         |-- cost_final
 C \ev
-CEOP
+CEOI
 
 CBOP
 C     !ROUTINE: THE_MAIN_LOOP

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.3 2001/09/28 15:15:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.4 2001/09/28 15:56:14 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -46,7 +46,7 @@ c         |  ...                                 control variables
 c         |
 c         |-- ctrl_pack                        - pack control vector
 C \ev
-CEOP
+CEOI
 
 CBOP
 C     !ROUTINE: ctrl_unpack

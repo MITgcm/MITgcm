@@ -37,7 +37,7 @@ c     http://puddle.mit.edu/~ralf/tamc/tamc.html
 c     For more info on TAF see:
 c     http://www.fastopt.de
 C \ev
-CBOP
+CBOI
 
 #include "CPP_OPTIONS.h"
 
