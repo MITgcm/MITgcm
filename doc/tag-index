@@ -1,7 +1,17 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.345 2004/09/16 22:25:23 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.346 2004/09/17 23:19:12 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint55
+o up-to-date adjoint of previous breaks
+  - natl_box_adjoint: problem for exp 12, 13: cost = 0. needs fix
+  - global_ocean_ebm: adjoint still needs fix (TLM ok)
+  - global_ocean.90x40x15: extended GMREDI_OPTIONS.h
+  - carbon: * remove tr1-related adjoint verification
+            * add ptracer as control variable
+o remove all tr1-related code (ALLOW_PASSIVE_TRACER)
+  (adjoint stuff still has some tr1 'names', but all use ptracer arrays)
 
 checkpoint54f_post
 o in verification/carbin/ remove experiment related to
