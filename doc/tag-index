@@ -1,7 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.469 2005/04/03 16:11:00 heimbach Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.470 2005/04/06 17:36:42 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint57f_pre
 
 o mnc-ifying the seaice package
 o introduced an alternative length scale calculation for use in the limiting
