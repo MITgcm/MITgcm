@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_obcs_mask.F,v 1.2 2003/06/24 16:08:45 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/grdchk/grdchk_get_obcs_mask.F,v 1.3 2003/07/18 21:10:16 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -64,12 +64,13 @@ c     == end of interface ==
 
       _BEGIN_MASTER( mythid )
 
+      if ( grdchkvarindex .EQ. 11 ) then
 #ifdef ALLOW_OBCSN_CONTROL
       write(fname(1:80),'(80a)') ' '
       write(fname(1:80),'(a)') 'maskobcsn'
 c
       do iobcs = 1,nobcs
-         call active_read_xz(  fname, tmpfldxz, iobcs,
+         call active_read_xz_loc(  fname, tmpfldxz, iobcs,
      &        .false., .false., 0, mythid, dummy)
 c
          do bj = jtlo,jthi
@@ -86,12 +87,13 @@ c
       enddo
 #endif
 
+      else if ( grdchkvarindex .EQ. 12 ) then
 #ifdef ALLOW_OBCSS_CONTROL
       write(fname(1:80),'(80a)') ' '
       write(fname(1:80),'(a)') 'maskobcss'
 c
       do iobcs = 1,nobcs
-         call active_read_xz(  fname, tmpfldxz, iobcs,
+         call active_read_xz_loc(  fname, tmpfldxz, iobcs,
      &        .false., .false., 0, mythid, dummy)
 c
          do bj = jtlo,jthi
@@ -108,12 +110,13 @@ c
       enddo
 #endif
 
+      else if ( grdchkvarindex .EQ. 13 ) then
 #ifdef ALLOW_OBCSW_CONTROL
       write(fname(1:80),'(80a)') ' '
       write(fname(1:80),'(a)') 'maskobcsw'
 c
       do iobcs = 1,nobcs
-         call active_read_yz(  fname, tmpfldyz, iobcs,
+         call active_read_yz_loc(  fname, tmpfldyz, iobcs,
      &        .false., .false., 0, mythid, dummy)
 c
          do bj = jtlo,jthi
@@ -130,12 +133,13 @@ c
       enddo
 #endif
 
+      else if ( grdchkvarindex .EQ. 14 ) then
 #ifdef ALLOW_OBCSE_CONTROL
       write(fname(1:80),'(80a)') ' '
       write(fname(1:80),'(a)') 'maskobcse'
 c
       do iobcs = 1,nobcs
-         call active_read_yz(  fname, tmpfldyz, iobcs,
+         call active_read_yz_loc(  fname, tmpfldyz, iobcs,
      &        .false., .false., 0, mythid, dummy)
 c
          do bj = jtlo,jthi
@@ -151,6 +155,7 @@ c
 c
       enddo
 #endif
+      endif
 
       _END_MASTER( mythid )
 

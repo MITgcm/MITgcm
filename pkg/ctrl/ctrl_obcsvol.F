@@ -158,12 +158,6 @@ c
          write(fnameflde(1:80),'(2a,i10.10)') 
      &        xx_obcse_file(1:ilfld),'.',optimcycle
 c
-      else
-         print*
-         print*,' ctrl_obcsvol: optimcycle has a wrong value.'
-         print*,'                 optimcycle = ',optimcycle
-         print*
-         stop   '  ... stopped in ctrl_obcsvol.'
       endif
 
 c--   Loop over records. For north boundary, we only need V velocity.
@@ -176,8 +170,8 @@ c--   Loop over records. For north boundary, we only need V velocity.
 #ifdef ALLOW_OBCSN_CONTROL
         jp1 = 0
 
-        call active_read_xz(fnamefldn,tmpfldxz,(obcsncount0-1)*nobcs+4,
-     &                         doglobalread,
+        call active_read_xz_loc(fnamefldn,tmpfldxz,
+     &                         (obcsncount0-1)*nobcs+4, doglobalread,
      &                         ladinit, optimcycle, mythid
      &                       , xx_obcsn_dummy )
 
@@ -212,8 +206,8 @@ cgg -- Positive is flux in.
 #ifdef ALLOW_OBCSS_CONTROL
         jp1 = 1
 
-        call active_read_xz(fnameflds,tmpfldxz,(obcsncount0-1)*nobcs+4,
-     &                         doglobalread,
+        call active_read_xz_loc(fnameflds,tmpfldxz,
+     &                         (obcsncount0-1)*nobcs+4, doglobalread,
      &                         ladinit, optimcycle, mythid
      &                       , xx_obcss_dummy )
 
@@ -247,7 +241,7 @@ cgg -- Positive is flux in.
 #ifdef ALLOW_OBCSW_CONTROL
         ip1 = 1
 
-        call active_read_yz( fnamefldw, tmpfldyz,
+        call active_read_yz_loc( fnamefldw, tmpfldyz,
      &      (obcsncount0-1)*nobcs+3, doglobalread,
      &                ladinit, optimcycle, mythid
      &                       , xx_obcsw_dummy )
@@ -283,7 +277,7 @@ cgg -- Positive is flux in.
 #ifdef ALLOW_OBCSE_CONTROL
         ip1 = 0
 
-        call active_read_yz( fnameflde, tmpfldyz,
+        call active_read_yz_loc( fnameflde, tmpfldyz,
             (obcsncount0-1)*nobcs+3, doglobalread,
                       ladinit, optimcycle, mythid
      &                       , xx_obcse_dummy )
@@ -335,8 +329,8 @@ cgg     Swap the value.
 #ifdef ALLOW_OBCSN_CONTROL
         jp1 = 0
 
-        call active_read_xz(fnamefldn,tmpfldxz,(obcsncount1-1)*nobcs+4,
-     &                         doglobalread,
+        call active_read_xz_loc(fnamefldn,tmpfldxz,
+     &                         (obcsncount1-1)*nobcs+4, doglobalread,
      &                         ladinit, optimcycle, mythid
      &                       , xx_obcsn_dummy )
 c--     Loop over this thread's tiles.
@@ -370,8 +364,8 @@ cgg -- Positive is flux in.
 #ifdef ALLOW_OBCSS_CONTROL
         jp1 = 1
 
-        call active_read_xz(fnameflds,tmpfldxz,(obcsncount1-1)*nobcs+4,
-     &                         doglobalread,
+        call active_read_xz_loc(fnameflds,tmpfldxz,
+     &                         (obcsncount1-1)*nobcs+4, doglobalread,
      &                         ladinit, optimcycle, mythid
      &                       , xx_obcss_dummy )
 
@@ -405,7 +399,7 @@ cgg -- Positive is flux in.
 #ifdef ALLOW_OBCSW_CONTROL
         ip1 = 1
 
-        call active_read_yz( fnamefldw, tmpfldyz,
+        call active_read_yz_loc( fnamefldw, tmpfldyz,
      &      (obcsncount1-1)*nobcs+3, doglobalread,
      &                ladinit, optimcycle, mythid
      &                       , xx_obcsw_dummy )
@@ -441,7 +435,7 @@ cgg -- Positive is flux in.
 #ifdef ALLOW_OBCSE_CONTROL
         ip1 = 0
 
-        call active_read_yz( fnameflde, tmpfldyz,
+        call active_read_yz_loc( fnameflde, tmpfldyz,
             (obcsncount1-1)*nobcs+3, doglobalread,
                       ladinit, optimcycle, mythid
      &                       , xx_obcse_dummy )

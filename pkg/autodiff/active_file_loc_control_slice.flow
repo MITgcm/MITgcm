@@ -1,0 +1,44 @@
+
+CBOP
+C     !ROUTINE: flow directives for active_file_loc_control_slice.F
+C     !INTERFACE:
+C     !DESCRIPTION: \bv
+c     ==================================================================
+c     active_file_loc_control_slice.flow
+c     ==================================================================
+c     provides flow directives for routines in active_file_loc_control.F
+c     required by TAMC/TAF
+c     * active_read_xz_rl_loc
+c     * active_read_yz_rl_loc
+c     * active_write_xz_rl_loc
+c     * active_write_yz_rl_loc
+c     ==================================================================
+c     active_file_loc_control_slice.flow
+c     ==================================================================
+C     \ev
+CEOP
+
+c----------------------------------------
+c subroutine active_read_xz_rl_loc
+c----------------------------------------
+cadj SUBROUTINE active_read_xz_rl_loc INPUT  = 1, 2, 3, 4, 5, 6, 7, 8, 9
+cadj SUBROUTINE active_read_xz_rl_loc OUTPUT =    2
+
+c----------------------------------------
+c subroutine active_write_xz_rl_loc
+c----------------------------------------
+cadj SUBROUTINE active_write_xz_rl_loc INPUT  = 1, 2, 3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_write_xz_rl_loc OUTPUT =    2
+
+c----------------------------------------
+c subroutine active_read_yz_rl_loc
+c----------------------------------------
+cadj SUBROUTINE active_read_yz_rl_loc INPUT  = 1, 2, 3, 4, 5, 6, 7, 8, 9
+cadj SUBROUTINE active_read_yz_rl_loc OUTPUT =    2
+
+c----------------------------------------
+c subroutine active_write_yz_rl_loc
+c----------------------------------------
+cadj SUBROUTINE active_write_yz_rl_loc INPUT  = 1, 2, 3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_write_yz_rl_loc OUTPUT =    2
+

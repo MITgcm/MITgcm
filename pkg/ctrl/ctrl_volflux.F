@@ -167,8 +167,8 @@ c
 #ifdef ALLOW_OBCSN_CONTROL
         jp1 = 0
 
-        call active_read_xz(fnamefldn,tmpfldxz,(obcsncount-1)*nobcs+3,
-     &                         doglobalread,
+        call active_read_xz_loc(fnamefldn,tmpfldxz,
+     &                         (obcsncount-1)*nobcs+3, doglobalread,
      &                         ladinit, optimcycle, mythid
      &                       , xx_obcsn_dummy )
 
@@ -215,8 +215,8 @@ cgg -- Positive is flux in.
 #ifdef ALLOW_OBCSS_CONTROL
         jp1 = 1
 
-        call active_read_xz(fnameflds,tmpfldxz,(obcsncount-1)*nobcs+3,
-     &                         doglobalread,
+        call active_read_xz_loc(fnameflds,tmpfldxz,
+     &                         (obcsncount-1)*nobcs+3, doglobalread,
      &                         ladinit, optimcycle, mythid
      &                       , xx_obcss_dummy )
 
@@ -266,7 +266,7 @@ cgg -- Positive is flux in.
 #ifdef ALLOW_OBCSW_CONTROL
         ip1 = 1
 
-        call active_read_yz( fnamefldw, tmpfldyz,
+        call active_read_yz_loc( fnamefldw, tmpfldyz,
      &      (obcsncount-1)*nobcs+3, doglobalread,
      &                ladinit, optimcycle, mythid
      &                       , xx_obcsw_dummy )
@@ -324,7 +324,7 @@ cgg -- Positive is flux in.
 #ifdef ALLOW_OBCSE_CONTROL
         ip1 = 0
 
-        call active_read_yz( fnameflde, tmpfldyz,
+        call active_read_yz_loc( fnameflde, tmpfldyz,
             (obcsncount-1)*nobcs+3, doglobalread,
                       ladinit, optimcycle, mythid
      &                       , xx_obcse_dummy )

@@ -1,0 +1,106 @@
+
+CBOP
+C     !ROUTINE: flow directives for active_file_loc.F
+C     !INTERFACE:
+C     !DESCRIPTION: \bv
+c     ==================================================================
+c     active_file_loc.flow
+c     ==================================================================
+c     provides flow directives for routines in active_file_loc.F
+c     required by TAMC/TAF
+c     * active_read_xy_loc
+c     * active_read_xyz_loc
+c     * active_read_xz_loc
+c     * active_read_yz_loc
+c     * active_write_xy_loc
+c     * active_write_xyz_loc
+c     * active_write_xz_loc
+c     * active_write_yz_loc
+c     _tile_ routines are not used nd my not be up-to-date. PH
+c     ==================================================================
+c     active_file_loc.flow
+c     ==================================================================
+C     \ev
+CEOP
+
+c----------------------------------------
+c subroutine active_read_xy_loc
+c----------------------------------------
+cadj SUBROUTINE active_read_xy_loc FTLNAME = g_active_read_xy_loc
+cadj SUBROUTINE active_read_xy_loc ADNAME  = adactive_read_xy_loc
+cadj SUBROUTINE active_read_xy_loc INPUT   = 1   , 3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_read_xy_loc OUTPUT  =    2
+cadj SUBROUTINE active_read_xy_loc ACTIVE  =    2
+cadj SUBROUTINE active_read_xy_loc DEPEND  = 1,    3, 4, 5, 6, 7
+
+c----------------------------------------
+c subroutine active_read_xyz_loc
+c----------------------------------------
+cadj SUBROUTINE active_read_xyz_loc FTLNAME = g_active_read_xyz_loc
+cadj SUBROUTINE active_read_xyz_loc ADNAME  = adactive_read_xyz_loc
+cadj SUBROUTINE active_read_xyz_loc INPUT   = 1   , 3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_read_xyz_loc OUTPUT  =    2
+cadj SUBROUTINE active_read_xyz_loc ACTIVE  =    2
+cadj SUBROUTINE active_read_xyz_loc DEPEND  = 1,    3, 4, 5, 6, 7
+
+c----------------------------------------
+c subroutine active_read_xz_loc
+c----------------------------------------
+cadj SUBROUTINE active_read_xz_loc FTLNAME = g_active_read_xz_loc
+cadj SUBROUTINE active_read_xz_loc ADNAME  = adactive_read_xz_loc
+cadj SUBROUTINE active_read_xz_loc INPUT   = 1   , 3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_read_xz_loc OUTPUT  =    2
+cadj SUBROUTINE active_read_xz_loc ACTIVE  =    2
+cadj SUBROUTINE active_read_xz_loc DEPEND  = 1,    3, 4, 5, 6, 7
+
+c----------------------------------------
+c subroutine active_read_yz_loc
+c----------------------------------------
+cadj SUBROUTINE active_read_yz_loc FTLNAME = g_active_read_yz_loc
+cadj SUBROUTINE active_read_yz_loc ADNAME  = adactive_read_yz_loc
+cadj SUBROUTINE active_read_yz_loc INPUT   = 1   , 3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_read_yz_loc OUTPUT  =    2
+cadj SUBROUTINE active_read_yz_loc ACTIVE  =    2
+cadj SUBROUTINE active_read_yz_loc DEPEND  = 1,    3, 4, 5, 6, 7
+
+c----------------------------------------
+c subroutine active_write_xy_loc
+c----------------------------------------
+cadj SUBROUTINE active_write_xy_loc FTLNAME = g_active_write_xy_loc
+cadj SUBROUTINE active_write_xy_loc ADNAME  = adactive_write_xy_loc
+cadj SUBROUTINE active_write_xy_loc INPUT   = 1, 2, 3, 4, 5, 6
+cadj SUBROUTINE active_write_xy_loc OUTPUT  =                6
+cadj SUBROUTINE active_write_xy_loc ACTIVE  =    2         , 6
+cadj SUBROUTINE active_write_xy_loc DEPEND  = 1,    3, 4, 5
+
+c----------------------------------------
+c subroutine active_write_xyz_loc
+c----------------------------------------
+cadj SUBROUTINE active_write_xyz_loc FTLNAME = g_active_write_xyz_loc
+cadj SUBROUTINE active_write_xyz_loc ADNAME  = adactive_write_xyz_loc
+cadj SUBROUTINE active_write_xyz_loc INPUT   = 1, 2, 3, 4, 5, 6
+cadj SUBROUTINE active_write_xyz_loc OUTPUT  =                6
+cadj SUBROUTINE active_write_xyz_loc ACTIVE  =    2         , 6
+cadj SUBROUTINE active_write_xyz_loc DEPEND  = 1,    3, 4, 5
+
+c----------------------------------------
+c subroutine active_write_xz_loc
+c----------------------------------------
+cadj SUBROUTINE active_write_xz_loc FTLNAME = g_active_write_xz_loc
+cadj SUBROUTINE active_write_xz_loc ADNAME  = adactive_write_xz_loc
+cadj SUBROUTINE active_write_xz_loc INPUT   = 1   , 3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_write_xz_loc OUTPUT  =    2
+cadj SUBROUTINE active_write_xz_loc ACTIVE  =    2
+cadj SUBROUTINE active_write_xz_loc DEPEND  = 1,    3, 4, 5, 6, 7
+
+c----------------------------------------
+c subroutine active_write_yz_loc
+c----------------------------------------
+cadj SUBROUTINE active_write_yz_loc FTLNAME = g_active_write_yz_loc
+cadj SUBROUTINE active_write_yz_loc ADNAME  = adactive_write_yz_loc
+cadj SUBROUTINE active_write_yz_loc INPUT   = 1   , 3, 4, 5, 6, 7, 8
+cadj SUBROUTINE active_write_yz_loc OUTPUT  =    2
+cadj SUBROUTINE active_write_yz_loc ACTIVE  =    2
+cadj SUBROUTINE active_write_yz_loc DEPEND  = 1,    3, 4, 5, 6, 7
+
+

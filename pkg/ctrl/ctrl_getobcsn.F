@@ -124,7 +124,7 @@ c--   Get the counters, flags, and the interpolation factor.
 
       do iobcs = 1,nobcs
         if ( obcsnfirst ) then
-          call active_read_xz( fnameobcsn, tmpfldxz, 
+          call active_read_xz_loc( fnameobcsn, tmpfldxz, 
      &                         (obcsncount0-1)*nobcs+iobcs,
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, xx_obcsn_dummy )
@@ -250,7 +250,7 @@ cgg     &                                        *   maskxz (i,k,bi,bj)
             enddo
           enddo
 
-          call active_read_xz( fnameobcsn, tmpfldxz, 
+          call active_read_xz_loc( fnameobcsn, tmpfldxz, 
      &                         (obcsncount1-1)*nobcs+iobcs,
      &                         doglobalread, ladinit, optimcycle,
      &                         mythid, xx_obcsn_dummy )

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.2 2003/07/08 15:00:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_writevector.F,v 1.3 2003/07/18 21:10:50 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -61,7 +61,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName,metaFName,pfName
+      character*(128) dataFName,metaFName,pfName
       integer iG,jG,irec,dUnit,IL,pIL
       logical fileIsOpen
       integer dimList(3,3),ndims
@@ -91,7 +91,8 @@ C Assume nothing
 
 C Assign special directory
       if ( mdsioLocalDir .NE. ' ' ) then
-       write(pFname(1:80),'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
+       write(pFname(1:128),'(2a)') 
+     &  mdsioLocalDir(1:pIL), fName(1:IL)
       else
        pFname= fName
       endif
@@ -102,7 +103,7 @@ C Assign a free unit number as the I/O channel for this routine
 
 C If we are writing to a global file then we open it here
       if (globalFile) then
-       write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+       write(dataFname(1:128),'(2a)') fName(1:IL),'.data'
        if (irecord .EQ. 1) then
         length_of_rec = MDS_RECLEN( filePrec, narr, mythid )
         open( dUnit, file=dataFName, status=_NEW_STATUS,
@@ -123,8 +124,8 @@ C If we are writing to a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
-     &              fName(1:IL),'.',iG,'.',jG,'.data'
+         write(dataFname(1:128),'(2a,i3.3,a,i3.3,a)')
+     &              pfName(1:pIL),'.',iG,'.',jG,'.data'
          if (irecord .EQ. 1) then
           length_of_rec = MDS_RECLEN( filePrec, narr, mythid )
           open( dUnit, file=dataFName, status=_NEW_STATUS,
@@ -173,8 +174,8 @@ C Create meta-file for each tile file
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(metaFname(1:80),'(2a,i3.3,a,i3.3,a)')
-     &              fName(1:IL),'.',iG,'.',jG,'.meta'
+         write(metaFname(1:128),'(2a,i3.3,a,i3.3,a)')
+     &              pfName(1:pIL),'.',iG,'.',jG,'.meta'
          dimList(1,1) = nPx*nSx*narr
          dimList(2,1) = ((myXGlobalLo-1)/sNx + (bi-1))*narr + 1
          dimList(3,1) = ((myXGlobalLo-1)/sNx +   bi  )*narr
@@ -200,7 +201,7 @@ C If global file was opened then close it
 
 C Create meta-file for global file
       if (globalFile) then
-       write(metaFName(1:80),'(2a)') fName(1:IL),'.meta'
+       write(metaFName(1:128),'(2a)') fName(1:IL),'.meta'
        dimList(1,1) = nPx*nSx*narr
        dimList(2,1) = 1
        dimList(3,1) = nPx*nSx*narr

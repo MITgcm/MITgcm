@@ -62,8 +62,57 @@ CADJ SUBROUTINE mdsreadfieldyz  INPUT  = 1,2,3,4,  6,7
 CADJ SUBROUTINE mdsreadfieldyz  OUTPUT =         5
 
 C----------------------------------------
-C subroutine mdswritefield
+C subroutine mdswritefieldyz
 C----------------------------------------
 CADJ SUBROUTINE mdswritefieldyz  INPUT  = 1,2,3,4,5,6,7,8,9
 CADJ SUBROUTINE mdswritefieldyz  OUTPUT =
 
+C----------------------------------------
+C subroutine mdsreadfield_loc
+C----------------------------------------
+CADJ SUBROUTINE mdsreadfield_loc  INPUT  = 1,2,3,4,  6,7
+CADJ SUBROUTINE mdsreadfield_loc  OUTPUT =         5
+CADJ SUBROUTINE mdsreadfield_loc  DEPEND = 1,2,3,4,5,6,7
+CADJ SUBROUTINE mdsreadfield_loc  REQUIRED
+
+C----------------------------------------
+C subroutine mdswritefield_loc
+C----------------------------------------
+CADJ SUBROUTINE mdswritefield_loc  INPUT  = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE mdswritefield_loc  OUTPUT =
+
+C----------------------------------------
+C subroutine mdsreadvector_loc
+C----------------------------------------
+CADJ SUBROUTINE mdsreadvector_loc  INPUT  = 1,2,3,4,  6,7,8,9
+CADJ SUBROUTINE mdsreadvector_loc  OUTPUT =         5
+
+C----------------------------------------
+C subroutine mdswritevector_loc
+C----------------------------------------
+CADJ SUBROUTINE mdswritevector_loc  INPUT  = 1,2,3,4,5,6,7,8,9,10,11
+CADJ SUBROUTINE mdswritevector_loc  OUTPUT =
+
+C----------------------------------------
+C subroutine mdsreadfieldxz_loc
+C----------------------------------------
+CADJ SUBROUTINE mdsreadfieldxz_loc  INPUT  = 1,2,3,4,  6,7
+CADJ SUBROUTINE mdsreadfieldxz_loc  OUTPUT =         5
+
+C----------------------------------------
+C subroutine mdswritefieldxz_loc
+C----------------------------------------
+CADJ SUBROUTINE mdswritefieldxz_loc  INPUT  = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE mdswritefieldxz_loc  OUTPUT =
+
+C----------------------------------------
+C subroutine mdsreadfieldyz_loc
+C----------------------------------------
+CADJ SUBROUTINE mdsreadfieldyz_loc  INPUT  = 1,2,3,4,  6,7
+CADJ SUBROUTINE mdsreadfieldyz_loc  OUTPUT =         5
+
+C----------------------------------------
+C subroutine mdswritefieldyz_loc
+C----------------------------------------
+CADJ SUBROUTINE mdswritefieldyz_loc  INPUT  = 1,2,3,4,5,6,7,8,9
+CADJ SUBROUTINE mdswritefieldyz_loc  OUTPUT =

@@ -1,9 +1,6 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.10 2003/06/27 01:54:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.11 2003/07/18 21:10:16 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
-#ifdef ALLOW_PTRACERS
-# include "PTRACERS_OPTIONS.h"
-#endif
 
 CBOP
 C     !ROUTINE: ctrl_map_ini
@@ -28,13 +25,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
-#ifdef ALLOW_PASSIVE_TRACER
-# include "TR1.h"
-#endif
-#ifdef ALLOW_PTRACERS
-# include "PTRACERS.h"
-#endif
-
+#include "TR1.h"
 #include "ctrl.h"
 #include "ctrl_dummy.h"
 #include "optim.h"
@@ -101,7 +92,7 @@ c--   Temperature field.
       il=ilnblnk( xx_theta_file )
       write(fnametheta(1:80),'(2a,i10.10)')
      &     xx_theta_file(1:il),'.',optimcycle
-      call active_read_xyz( fnametheta, tmpfld3d, 1,
+      call active_read_xyz_loc( fnametheta, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_theta_dummy )
 
@@ -126,7 +117,7 @@ c--   Temperature field.
       il=ilnblnk( xx_salt_file )
       write(fnamesalt(1:80),'(2a,i10.10)')
      &     xx_salt_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamesalt, tmpfld3d, 1,
+      call active_read_xyz_loc( fnamesalt, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_salt_dummy )
 
@@ -149,7 +140,7 @@ c--   Temperature field.
       il=ilnblnk( xx_tr1_file )
       write(fnametr1(1:80),'(2a,i10.10)')
      &     xx_tr1_file(1:il),'.',optimcycle
-      call active_read_xyz( fnametr1, tmpfld3d, 1,
+      call active_read_xyz_loc( fnametr1, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_tr1_dummy )
 
@@ -158,15 +149,8 @@ c--   Temperature field.
           do k = 1,nr
             do j = jmin,jmax
               do i = imin,imax
-#if (defined (ALLOW_PASSIVE_TRACER))
                 tr1(i,j,k,bi,bj) = tr1(i,j,k,bi,bj) +
      &                               fac*tmpfld3d(i,j,k,bi,bj)
-#elif (defined (ALLOW_PTRACERS))
-                IF ( NUMBER_OF_PTRACERS .GT. 1 ) STOP
-     & 'ALLOW_TR10_CONTROL with ALLOW_PTRACERS implemented for 1 tracer'
-                ptracer(i,j,k,bi,bj,1) = ptracer(i,j,k,bi,bj,1) +
-     &                               fac*tmpfld3d(i,j,k,bi,bj)
-#endif
               enddo
             enddo
           enddo
@@ -179,7 +163,7 @@ c--   diffkr.
       il=ilnblnk( xx_diffkr_file )
       write(fnamediffkr(1:80),'(2a,i10.10)')
      &     xx_diffkr_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamediffkr, tmpfld3d, 1,
+      call active_read_xyz_loc( fnamediffkr, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_diffkr_dummy )
       do bj = jtlo,jthi
@@ -201,7 +185,7 @@ c--   kapgm.
       il=ilnblnk( xx_kapgm_file )
       write(fnamekapgm(1:80),'(2a,i10.10)')
      &     xx_kapgm_file(1:il),'.',optimcycle
-      call active_read_xyz( fnamekapgm, tmpfld3d, 1,
+      call active_read_xyz_loc( fnamekapgm, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_kapgm_dummy )
       do bj = jtlo,jthi
@@ -223,7 +207,7 @@ c--   y-component EP-flux field.
       il=ilnblnk( xx_efluxy_file )
       write(fnameefluxy(1:80),'(2a,i10.10)')
      &     xx_efluxy_file(1:il),'.',optimcycle
-      call active_read_xyz( fnameefluxy, tmpfld3d, 1,
+      call active_read_xyz_loc( fnameefluxy, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_efluxy_dummy )
 
@@ -250,7 +234,7 @@ c--   p-component EP-flux field.
       il=ilnblnk( xx_efluxp_file )
       write(fnameefluxp(1:80),'(2a,i10.10)')
      &     xx_efluxp_file(1:il),'.',optimcycle
-      call active_read_xyz( fnameefluxp, tmpfld3d, 1,
+      call active_read_xyz_loc( fnameefluxp, tmpfld3d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_efluxp_dummy )
 
@@ -279,7 +263,7 @@ c--   bottom drag
       il=ilnblnk( xx_bottomdrag_file )
       write(fnamebottomdrag(1:80),'(2a,i10.10)')
      &     xx_bottomdrag_file(1:il),'.',optimcycle
-      call active_read_xy ( fnamebottomdrag, tmpfld2d, 1,
+      call active_read_xy_loc ( fnamebottomdrag, tmpfld2d, 1,
      &                      doglobalread, ladinit, optimcycle,
      &                      mythid, xx_bottomdrag_dummy )
       do bj = jtlo,jthi
@@ -299,16 +283,15 @@ c--   Update the tile edges.
 
 #ifdef ALLOW_THETA0_CONTROL
       _EXCH_XYZ_R8( theta, mythid )
+cph      _EXCH_XYZ_R8( gtNm1, mythid )
 #endif
 #ifdef ALLOW_SALT0_CONTROL
       _EXCH_XYZ_R8(  salt, mythid )
+cph      _EXCH_XYZ_R8( gsNm1, mythid )
 #endif
 #ifdef ALLOW_TR10_CONTROL
-# if (defined (ALLOW_PASSIVE_TRACER))
       _EXCH_XYZ_R8(     tr1, mythid )
-# elif (defined (ALLOW_PTRACERS))
-      _EXCH_XYZ_R8(pTracer(1-Olx,1-Oly,1,1,1,1),myThid)
-# endif
+cph      _EXCH_XYZ_R8( gTr1Nm1, mythid )
 #endif
 #ifdef ALLOW_DIFFKR_CONTROL
       _EXCH_XYZ_R8( diffkr, mythid)

@@ -64,6 +64,7 @@ SRC_MODEL	= \
 		$(PKG)/autodiff/dummy_in_stepping.flow	\
 		$(PKG)/autodiff/eesupp.flow		\
 		$(PKG)/autodiff/active_file.flow	\
+		$(PKG)/autodiff/active_file_loc.flow	\
 		$(PKG)/autodiff/write_state.flow	\
 		$(PKG)/autodiff/ecco_check_exp.flow	\
 		$(PKG)/autodiff/exch_ad.flow		\
@@ -261,6 +262,17 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/cost_atlantic_heat.f		\
 		$(SOURCE_CODE)/cost_vector.f			\
 		  						\
+
+#		$(PKG)/autodiff/ptracers.flow			\
+#		$(SOURCE_CODE)/ptracers_advection.f		\
+#		$(SOURCE_CODE)/ptracers_convect.f		\
+#		$(SOURCE_CODE)/ptracers_cycle.f			\
+#		$(SOURCE_CODE)/ptracers_fields_blocking_exchanges.f\
+#		$(SOURCE_CODE)/ptracers_forcing.f		\
+#		$(SOURCE_CODE)/ptracers_impldiff.f		\
+#		$(SOURCE_CODE)/ptracers_init.f			\
+#		$(SOURCE_CODE)/ptracers_integrate.f		\
+
 
 #		$(SOURCE_CODE)/kpp_calc.f			\
 #		$(SOURCE_CODE)/kpp_calc_diff.f			\

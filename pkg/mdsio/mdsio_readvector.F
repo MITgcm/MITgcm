@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.3 2003/07/08 15:00:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readvector.F,v 1.4 2003/07/18 21:10:50 heimbach Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -54,7 +54,7 @@ C Functions
       integer ILNBLNK
       integer MDS_RECLEN
 C Local variables
-      character*(80) dataFName,pfName
+      character*(128) dataFName,pfName
       integer iG,jG,irec,dUnit,IL,pIL
       logical exst
       logical globalFile,fileIsOpen
@@ -85,7 +85,8 @@ C Assume nothing
 
 C Assign special directory
       if ( mdsioLocalDir .NE. ' ' ) then
-       write(pFname(1:80),'(2a)') mdsioLocalDir(1:pIL), fName(1:IL)
+       write(pFname(1:128),'(2a)') 
+     &  mdsioLocalDir(1:pIL), fName(1:IL)
       else
        pFname= fName
       endif
@@ -109,7 +110,7 @@ C Check first for global file with simple name (ie. fName)
 
 C If negative check for global file with MDS name (ie. fName.data)
       if (.NOT. globalFile) then
-       write(dataFname(1:80),'(2a)') fName(1:IL),'.data'
+       write(dataFname(1:128),'(2a)') fName(1:IL),'.data'
        inquire( file=dataFname, exist=exst )
        if (exst) then
         if ( debugLevel .GE. debLevA ) then
@@ -137,7 +138,7 @@ C If we are reading from a tiled MDS file then we open each one here
         if (.NOT. globalFile) then
          iG=bi+(myXGlobalLo-1)/sNx ! Kludge until unstructered tiles
          jG=bj+(myYGlobalLo-1)/sNy ! Kludge until unstructered tiles
-         write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
+         write(dataFname(1:128),'(2a,i3.3,a,i3.3,a)')
      &              pfName(1:pIL),'.',iG,'.',jG,'.data'
          inquire( file=dataFname, exist=exst )
 C Of course, we only open the file if the tile is "active"
