@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/do_fizhi.F,v 1.2 2004/08/20 13:40:03 molod Exp $
+C $Header: /u/gcmpack/MITgcm/verification/fizhi-gridalt-hs/code/do_fizhi.F,v 1.3 2004/09/29 14:47:54 molod Exp $
 C $Name:  $
 #include "FIZHI_OPTIONS.h"
        subroutine do_fizhi(myid,
@@ -122,6 +122,7 @@ c Local Variables
       _RL cosz(sNx,sNy)
 
       _RL tempij(sNx,sNy)
+      _RL tempi(2)
 
       _RL kF,sigma_b,ks,ka,deg2rad,pi,atm_po,atm_kappa,termp,kv,kT
       _RL term1,term2,thetalim,thetaeq,recip_p0g
@@ -139,413 +140,179 @@ c     save imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw,fccavelw
 c     save qq
 c     save pl,ple,dpres,pkle,pkl
        
-      common /saver/ lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq
-      common /saver/ moistu,moistv,moistt,moistq
-      common /saver/ radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
-      common /saver/ st4,dst4,dlwdtg,rainlsp,raincon,snowfall
-      common /saver/ cldtot_lw,cldras_lw,cldlsp_lw,lwlz
-      common /saver/ cldtot_sw,cldras_sw,cldlsp_sw,swlz
-      common /saver/ imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw
-      common /saver/ fccavelw
-      common /saver/ qq
-      common /saver/ pl,ple,dpres,pkle,pkl
-      common /saver/ nlwcld,nlwlz
-      common /saver/ nswcld,nswlz
-      common /saver/ iras
+c     common /saver/ lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq
+c     common /saver/ moistu,moistv,moistt,moistq
+c     common /saver/ radswg,swgclr,fdirpar,fdifpar,osr,osrclr,tg0,radlwg
+c     common /saver/ st4,dst4,dlwdtg,rainlsp,raincon,snowfall
+c     common /saver/ cldtot_lw,cldras_lw,cldlsp_lw,lwlz
+c     common /saver/ cldtot_sw,cldras_sw,cldlsp_sw,swlz
+c     common /saver/ imstturbsw,imstturblw,qliqavesw,qliqavelw,fccavesw
+c     common /saver/ fccavelw
+c     common /saver/ qq
+c     common /saver/ pl,ple,dpres,pkle,pkl
+c     common /saver/ nlwcld,nlwlz
+c     common /saver/ nswcld,nswlz
+c     common /saver/ iras
 
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
 C***********************************************************************
 
-      if( (nhms.eq.nhms0) .and. (nymd.eq.nymd0) ) then
-       _BEGIN_MASTER(myid)
-       if(myid.eq.1) print *,' Initializing fizhi arrays '
-       _END_MASTER(myid)
-       imstturblw = 0
-       imstturbsw = 0
-       iras = 0
-       nlwcld = 0
-       nlwlz = 0
-       nswcld = 0
-       nswlz = 0
-       do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        swlz(i,j,L,bi,bj) = 0.
-        lwlz(i,j,L,bi,bj) = 0.
-        qliqavesw(i,j,L,bi,bj) = 0.
-        qliqavelw(i,j,L,bi,bj) = 0.
-        fccavesw(i,j,L,bi,bj) = 0.
-        fccavelw(i,j,L,bi,bj) = 0.
-        cldtot_sw(i,j,L,bi,bj) = 0.
-        cldras_sw(i,j,L,bi,bj) = 0.
-        cldlsp_sw(i,j,L,bi,bj) = 0.
-        cldtot_lw(i,j,L,bi,bj) = 0.
-        cldras_lw(i,j,L,bi,bj) = 0.
-        cldlsp_lw(i,j,L,bi,bj) = 0.
-        lwdt(i,j,L,bi,bj) = 0.
-        swdt(i,j,L,bi,bj) = 0.
-        turbt(i,j,L,bi,bj) = 0.
-        moistt(i,j,L,bi,bj) = 0.
-        turbq(i,j,L,1,bi,bj) = 0.
-        moistq(i,j,L,1,bi,bj) = 0.
-        turbu(i,j,L,bi,bj) = 0.
-        moistu(i,j,L,bi,bj) = 0.
-        turbv(i,j,L,bi,bj) = 0.
-        moistv(i,j,L,bi,bj) = 0.
-       enddo
-       enddo
-       enddo
-       do j = jm1,jm2
-       do i = im1,im2
-        rainlsp(i,j,bi,bj) = 0.
-        raincon(i,j,bi,bj) = 0.
-        snowfall(i,j,bi,bj) = 0.
-       enddo
-       enddo
-      endif
-
-      kappa = getcon('KAPPA')
-      p0kappa = 1000.0 ** kappa
-      S0 = getcon('S0')
-      
-      do j = jm1,jm2
-      do i = im1,im2
-       xlats(i,j) = lats(i,j,bi,bj)
-       xlons(i,j) = lons(i,j,bi,bj)
-      enddo
-      enddo
-
-      call astro ( nymd,nhms, xlats,xlons, im2*jm2, cosz,ra )
-      do j=jm1,jm2
-      do i=im1,im2
-       radswt(i,j,bi,bj) = S0*(1.0/ra**2)*cosz(i,j)
-      enddo
-      enddo
-
-      if( alarm('moist') .or. alarm('turb')   .or.
-     .    alarm('radsw') .or. alarm('radlw') ) then
-
+c     if( (nhms.eq.nhms0) .and. (nymd.eq.nymd0) ) then
+c      _BEGIN_MASTER(myid)
+c      if(myid.eq.1.and.bi.eq.1) print *,' Initializing fizhi arrays '
+c      _END_MASTER(myid)
+c      imstturblw = 0
+c      imstturbsw = 0
+c      iras = 0
+c      nlwcld = 0
+c      nlwlz = 0
+c      nswcld = 0
+c      nswlz = 0
+c      do L = 1,Nrphys
+c      do j = jm1,jm2
+c      do i = im1,im2
+c       swlz(i,j,L,bi,bj) = 0.
+c       lwlz(i,j,L,bi,bj) = 0.
+c       qliqavesw(i,j,L,bi,bj) = 0.
+c       qliqavelw(i,j,L,bi,bj) = 0.
+c       fccavesw(i,j,L,bi,bj) = 0.
+c       fccavelw(i,j,L,bi,bj) = 0.
+c       cldtot_sw(i,j,L,bi,bj) = 0.
+c       cldras_sw(i,j,L,bi,bj) = 0.
+c       cldlsp_sw(i,j,L,bi,bj) = 0.
+c       cldtot_lw(i,j,L,bi,bj) = 0.
+c       cldras_lw(i,j,L,bi,bj) = 0.
+c       cldlsp_lw(i,j,L,bi,bj) = 0.
+c       lwdt(i,j,L,bi,bj) = 0.
+c       swdt(i,j,L,bi,bj) = 0.
+c       turbt(i,j,L,bi,bj) = 0.
+c       moistt(i,j,L,bi,bj) = 0.
+c       turbq(i,j,L,1,bi,bj) = 0.
+c       moistq(i,j,L,1,bi,bj) = 0.
+c       turbu(i,j,L,bi,bj) = 0.
+c       moistu(i,j,L,bi,bj) = 0.
+c       turbv(i,j,L,bi,bj) = 0.
+c       moistv(i,j,L,bi,bj) = 0.
+c      enddo
+c      enddo
+c      enddo
+c      do j = jm1,jm2
+c      do i = im1,im2
+c       rainlsp(i,j,bi,bj) = 0.
+c       raincon(i,j,bi,bj) = 0.
+c       snowfall(i,j,bi,bj) = 0.
+c      enddo
+c      enddo
+c     endif
+c
+c     kappa = getcon('KAPPA')
+c     p0kappa = 1000.0 ** kappa
+c     S0 = getcon('S0')
+c      
+c     do j = jm1,jm2
+c     do i = im1,im2
+c      xlats(i,j) = lats(i,j,bi,bj)
+c      xlons(i,j) = lons(i,j,bi,bj)
+c     enddo
+c     enddo
+c
+c     call astro ( nymd,nhms, xlats,xlons, im2*jm2, cosz,ra )
+c     do j=jm1,jm2
+c     do i=im1,im2
+c      radswt(i,j,bi,bj) = S0*(1.0/ra**2)*cosz(i,j)
+c     enddo
+c     enddo
+c
+c     if( alarm('moist') .or. alarm('turb')   .or.
+c    .    alarm('radsw') .or. alarm('radlw') ) then
+c
 C compute pressures - all pressure are converted here to hPa
-      do j = jm1,jm2
-      do i = im1,im2
-       ple(i,j,Nrphys+1,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)/100.
-       pkle(i,j,Nrphys+1,bi,bj)=(pephy(i,j,Nrphys+1,bi,bj)/100.) **kappa
-       p(i,j,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)/100.
-       sea_ice(i,j) = sice(i,j,bi,bj)
-      enddo
-      enddo
-      do L = 1,Nrphys
-      do j = jm1,jm2
-      do i = im1,im2
-       u(i,j,L) = uphy(i,j,L,bi,bj)
-       v(i,j,L) = vphy(i,j,L,bi,bj)
-       t(i,j,L) = thphy(i,j,L,bi,bj)/p0kappa
-       q(i,j,L,1) = sphy(i,j,L,bi,bj)
-       pl(i,j,L,bi,bj) = (pephy(i,j,L,bi,bj)+pephy(i,j,L+1,bi,bj))/200.
-       dpres(i,j,L,bi,bj)=(pephy(i,j,L+1,bi,bj)-pephy(i,j,L,bi,bj))/100.
-       ple(i,j,L,bi,bj) = pephy(i,j,L,bi,bj)/100.
-       if (ple(i,j,L,bi,bj).gt.0.) then
-        pkle(i,j,L,bi,bj) = ple(i,j,L,bi,bj) **kappa
-       else
-        pkle(i,j,L,bi,bj) = 0.
-       endif
-      enddo
-      enddo
-      enddo
-
-      call pkappa (im2,jm2,Nrphys,ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),
-     .                                                 pkl(1,1,1,bi,bj))
-
-      if(2.eq.1 )then
-      print *,' In do fizhi, before fizhi driver - bi = ',bi
-      do L = 1,Nrphys+1
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = pephy(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' pephy at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = u(i,j,L)
-       enddo
-       enddo
-c      print *,' u at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = v(i,j,L)
-       enddo
-       enddo
-c      print *,' v at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = t(i,j,L)
-       enddo
-       enddo
-       print *,' t at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = q(i,j,L,1)
-       enddo
-       enddo
-       print *,' q at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = qstr(i,j,L,bi,bj)
-       enddo
-       enddo
-       print *,' radiation q at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = pl(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' pl at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys+1
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = ple(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' ple at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = pkl(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' pkl at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys+1
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = pkle(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' pkle at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = dpres(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' dpres at level ',l,' ',tempij
-      enddo
-      do j = jm1,jm2
-      do i = im1,im2
-       tempij(i,j) = tgz(i,j,bi,bj)
-      enddo
-      enddo
-c     print *,' tgz ',tempij
-
-      print *,' Just before fizhi driver call '
-
-      endif
-
-      
-
-      call fizhi_driver(myid,im2,jm2,Nrphys,bi,bj,ptracer,ntracer,xlats,
-     . xlons,p(1,1,bi,bj),u,v,t,q,pl(1,1,1,bi,bj),ple(1,1,1,bi,bj),
-     . dpres(1,1,1,bi,bj),pkle(1,1,1,bi,bj),pkl(1,1,1,bi,bj),
-     . fracland(1,1,bi,bj),landtype(1,1,bi,bj),radswt(1,1,bi,bj),
-     . phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,nchp,chlat(1,bi,bj),
-     . chlon(1,bi,bj),igrd(1,bi,bj),nchptot(bi,bj),nchpland(bi,bj),
-     . chfr(1,bi,bj),ityp(1,bi,bj),tcanopy(1,bi,bj),tdeep(1,bi,bj),
-     . ecanopy(1,bi,bj),swetshal(1,bi,bj),swetroot(1,bi,bj),
-     . swetdeep(1,bi,bj),capac(1,bi,bj),snodep(1,bi,bj),
-     . ctmt(1,bi,bj),xxmt(1,bi,bj),yymt(1,bi,bj),zetamt(1,bi,bj),
-     . xlmt(1,1,bi,bj),khmt(1,1,bi,bj),tke(1,1,bi,bj),
-     . albvisdr(1,1,bi,bj),albvisdf(1,1,bi,bj),albnirdr(1,1,bi,bj),
-     . albnirdf(1,1,bi,bj),emiss(1,1,1,bi,bj),alai(1,bi,bj),
-     . agrn(1,bi,bj),
-     . qstr(1,1,1,bi,bj),o3(1,1,1,bi,bj),
-     . co2,cfc11,cfc12,cfc22,methane,n2o,
-     . lwdt(1,1,1,bi,bj),lwdtclr(1,1,1,bi,bj),swdt(1,1,1,bi,bj),
-     . swdtclr(1,1,1,bi,bj),turbu(1,1,1,bi,bj),turbv(1,1,1,bi,bj),
-     . turbt(1,1,1,bi,bj),turbq(1,1,1,1,bi,bj),moistu(1,1,1,bi,bj),
-     . moistv(1,1,1,bi,bj),moistt(1,1,1,bi,bj),moistq(1,1,1,1,bi,bj),
-     . radswg(1,1,bi,bj),swgclr(1,1,bi,bj),fdirpar(1,1,bi,bj),
-     . fdifpar(1,1,bi,bj),osr(1,1,bi,bj),osrclr(1,1,bi,bj),
-     . tg0(1,1,bi,bj),radlwg(1,1,bi,bj),lwgclr(1,1,bi,bj),
-     . st4(1,1,bi,bj),dst4(1,1,bi,bj),dlwdtg(1,1,1,bi,bj),
-     . rainlsp(1,1,bi,bj),raincon(1,1,bi,bj),snowfall(1,1,bi,bj),iras,
-     . nlwcld,cldtot_lw(1,1,1,bi,bj),cldras_lw(1,1,1,bi,bj),
-     . cldlsp_lw(1,1,1,bi,bj),nlwlz,lwlz(1,1,1,bi,bj),
-     . nswcld,cldtot_sw(1,1,1,bi,bj),cldras_sw(1,1,1,bi,bj),
-     . cldlsp_sw(1,1,1,bi,bj),nswlz,swlz(1,1,1,bi,bj),
-     . imstturbsw,imstturblw,qliqavesw(1,1,1,bi,bj),
-     . qliqavelw(1,1,1,bi,bj),fccavesw(1,1,1,bi,bj),
-     . fccavelw(1,1,1,bi,bj),qq(1,1,1,bi,bj))
-
-      if(2.eq.1)then
-      print *,' In do fizhi, after fizhi driver - bi = ',bi
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = turbu(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' turbu at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = turbv(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' turbv at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = turbt(i,j,L,bi,bj)*p0kappa/p(i,j,bi,bj)
-       enddo
-       enddo
-       print *,' turbt at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = turbq(i,j,L,1,bi,bj)/p(i,j,bi,bj)
-       enddo
-       enddo
-c      print *,' turbq at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = moistu(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' moistu at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = moistv(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' moistv at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = moistt(i,j,L,bi,bj)*p0kappa/p(i,j,bi,bj)
-       enddo
-       enddo
-       print *,' moistt at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = moistq(i,j,L,1,bi,bj)/p(i,j,bi,bj)
-       enddo
-       enddo
-c      print *,' moistq at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = swdt(i,j,L,bi,bj)*radswt(i,j,bi,bj) *p0kappa /
-     .                        p(i,j,bi,bj)
-       enddo
-       enddo
-       print *,' swdt at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = lwdt(i,j,L,bi,bj)
-       enddo
-       enddo
-       print *,' lwdt alone at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = (lwdt(i,j,L,bi,bj)+
-     .         dlwdtg(i,j,L,bi,bj)*(tgz(i,j,bi,bj)-tg0(i,j,bi,bj)))
-     .                 *p0kappa/p(i,j,bi,bj)
-       enddo
-       enddo
-       print *,' net lwdt at level ',l,' ',tempij
-      enddo
-      endif
-
-      do L = 1,Nrphys
-      do j = jm1,jm2
-      do i = im1,im2
-       duphy(i,j,L,bi,bj) = moistu(i,j,L,bi,bj) + turbu(i,j,L,bi,bj)
-       dvphy(i,j,L,bi,bj) = moistv(i,j,L,bi,bj) + turbv(i,j,L,bi,bj)
-       dthphy(i,j,L,bi,bj) = ((moistt(i,j,L,bi,bj)+turbt(i,j,L,bi,bj)+
-     .   lwdt(i,j,L,bi,bj) + 
-     .   dlwdtg(i,j,L,bi,bj) * (tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) +
-     .   swdt(i,j,L,bi,bj)*radswt(i,j,bi,bj) )*p0kappa ) / p(i,j,bi,bj)
-       dsphy(i,j,L,bi,bj) = (moistq(i,j,L,1,bi,bj)+turbq(i,j,L,1,bi,bj))
-     .                                    /p(i,j,bi,bj)
-      enddo
-      enddo
-      enddo
-
-      if(2.eq.1 )then
-      print *,' In do fizhi, computed fizhi tendencies ',bi
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = duphy(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' duphy at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = dvphy(i,j,L,bi,bj)
-       enddo
-       enddo
-c      print *,' dvphy at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = dthphy(i,j,L,bi,bj)
-       enddo
-       enddo
-       print *,' dthphy at level ',l,' ',tempij
-      enddo
-      do L = 1,Nrphys
-       do j = jm1,jm2
-       do i = im1,im2
-        tempij(i,j) = dsphy(i,j,L,bi,bj)
-       enddo
-       enddo
-       print *,' dsphy at level ',l,' ',tempij
-      enddo
-      endif
-
-      endif
-
-      call fizhi_step_diag(myid,p,uphy,vphy,thphy,sphy,qq,pkl,dpres,
-     .  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,
-     .  turbu,turbv,turbt,turbq,moistu,moistv,moistt,moistq,
-     .  lwdt,swdt,lwdtclr,swdtclr,dlwdtg,
-     .  im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,bi,bj,ntracer)
+c     do j = jm1,jm2
+c     do i = im1,im2
+c      ple(i,j,Nrphys+1,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)/100.
+c      pkle(i,j,Nrphys+1,bi,bj)=(pephy(i,j,Nrphys+1,bi,bj)/100.) **kappa
+c      p(i,j,bi,bj) = pephy(i,j,Nrphys+1,bi,bj)/100.
+c      sea_ice(i,j) = sice(i,j,bi,bj)
+c     enddo
+c     enddo
+c     do L = 1,Nrphys
+c     do j = jm1,jm2
+c     do i = im1,im2
+c      u(i,j,L) = uphy(i,j,L,bi,bj)
+c      v(i,j,L) = vphy(i,j,L,bi,bj)
+c      t(i,j,L) = thphy(i,j,L,bi,bj)/p0kappa
+c      q(i,j,L,1) = sphy(i,j,L,bi,bj)
+c      pl(i,j,L,bi,bj) = (pephy(i,j,L,bi,bj)+pephy(i,j,L+1,bi,bj))/200.
+c      dpres(i,j,L,bi,bj)=(pephy(i,j,L+1,bi,bj)-pephy(i,j,L,bi,bj))/100.
+c      ple(i,j,L,bi,bj) = pephy(i,j,L,bi,bj)/100.
+c      if (ple(i,j,L,bi,bj).gt.0.) then
+c       pkle(i,j,L,bi,bj) = ple(i,j,L,bi,bj) **kappa
+c      else
+c       pkle(i,j,L,bi,bj) = 0.
+c      endif
+c     enddo
+c     enddo
+c     enddo
+c
+c     call pkappa (im2,jm2,Nrphys,ple(1,1,1,bi,bj),pkle(1,1,1,bi,bj),
+c    .                                                 pkl(1,1,1,bi,bj))
+c
+c     call fizhi_driver(myid,im2,jm2,Nrphys,bi,bj,ptracer,ntracer,xlats,
+c    . xlons,p(1,1,bi,bj),u,v,t,q,pl(1,1,1,bi,bj),ple(1,1,1,bi,bj),
+c    . dpres(1,1,1,bi,bj),pkle(1,1,1,bi,bj),pkl(1,1,1,bi,bj),
+c    . fracland(1,1,bi,bj),landtype(1,1,bi,bj),radswt(1,1,bi,bj),
+c    . phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,nchp,chlat(1,bi,bj),
+c    . chlon(1,bi,bj),igrd(1,bi,bj),nchptot(bi,bj),nchpland(bi,bj),
+c    . chfr(1,bi,bj),ityp(1,bi,bj),tcanopy(1,bi,bj),tdeep(1,bi,bj),
+c    . ecanopy(1,bi,bj),swetshal(1,bi,bj),swetroot(1,bi,bj),
+c    . swetdeep(1,bi,bj),capac(1,bi,bj),snodep(1,bi,bj),
+c    . ctmt(1,bi,bj),xxmt(1,bi,bj),yymt(1,bi,bj),zetamt(1,bi,bj),
+c    . xlmt(1,1,bi,bj),khmt(1,1,bi,bj),tke(1,1,bi,bj),
+c    . albvisdr(1,1,bi,bj),albvisdf(1,1,bi,bj),albnirdr(1,1,bi,bj),
+c    . albnirdf(1,1,bi,bj),emiss(1,1,1,bi,bj),alai(1,bi,bj),
+c    . agrn(1,bi,bj),
+c    . qstr(1,1,1,bi,bj),o3(1,1,1,bi,bj),
+c    . co2,cfc11,cfc12,cfc22,methane,n2o,
+c    . lwdt(1,1,1,bi,bj),lwdtclr(1,1,1,bi,bj),swdt(1,1,1,bi,bj),
+c    . swdtclr(1,1,1,bi,bj),turbu(1,1,1,bi,bj),turbv(1,1,1,bi,bj),
+c    . turbt(1,1,1,bi,bj),turbq(1,1,1,1,bi,bj),moistu(1,1,1,bi,bj),
+c    . moistv(1,1,1,bi,bj),moistt(1,1,1,bi,bj),moistq(1,1,1,1,bi,bj),
+c    . radswg(1,1,bi,bj),swgclr(1,1,bi,bj),fdirpar(1,1,bi,bj),
+c    . fdifpar(1,1,bi,bj),osr(1,1,bi,bj),osrclr(1,1,bi,bj),
+c    . tg0(1,1,bi,bj),radlwg(1,1,bi,bj),lwgclr(1,1,bi,bj),
+c    . st4(1,1,bi,bj),dst4(1,1,bi,bj),dlwdtg(1,1,1,bi,bj),
+c    . rainlsp(1,1,bi,bj),raincon(1,1,bi,bj),snowfall(1,1,bi,bj),iras,
+c    . nlwcld,cldtot_lw(1,1,1,bi,bj),cldras_lw(1,1,1,bi,bj),
+c    . cldlsp_lw(1,1,1,bi,bj),nlwlz,lwlz(1,1,1,bi,bj),
+c    . nswcld,cldtot_sw(1,1,1,bi,bj),cldras_sw(1,1,1,bi,bj),
+c    . cldlsp_sw(1,1,1,bi,bj),nswlz,swlz(1,1,1,bi,bj),
+c    . imstturbsw,imstturblw,qliqavesw(1,1,1,bi,bj),
+c    . qliqavelw(1,1,1,bi,bj),fccavesw(1,1,1,bi,bj),
+c    . fccavelw(1,1,1,bi,bj),qq(1,1,1,bi,bj))
+c
+c     do L = 1,Nrphys
+c     do j = jm1,jm2
+c     do i = im1,im2
+c      duphy(i,j,L,bi,bj) = moistu(i,j,L,bi,bj) + turbu(i,j,L,bi,bj)
+c      dvphy(i,j,L,bi,bj) = moistv(i,j,L,bi,bj) + turbv(i,j,L,bi,bj)
+c      dthphy(i,j,L,bi,bj) = ((moistt(i,j,L,bi,bj)+turbt(i,j,L,bi,bj)+
+c    .   lwdt(i,j,L,bi,bj) + 
+c    .   dlwdtg(i,j,L,bi,bj) * (tgz(i,j,bi,bj)-tg0(i,j,bi,bj)) +
+c    .   swdt(i,j,L,bi,bj)*radswt(i,j,bi,bj) )*p0kappa ) / p(i,j,bi,bj)
+c      dsphy(i,j,L,bi,bj) = (moistq(i,j,L,1,bi,bj)+turbq(i,j,L,1,bi,bj))
+c    .                                    /p(i,j,bi,bj)
+c     enddo
+c     enddo
+c     enddo
+c
+c     endif
+c
+c     call fizhi_step_diag(myid,p,uphy,vphy,thphy,sphy,qq,pkl,dpres,
+c    .  radswt,radswg,swgclr,osr,osrclr,st4,dst4,tgz,tg0,radlwg,lwgclr,
+c    .  turbu,turbv,turbt,turbq,moistu,moistv,moistt,moistq,
+c    .  lwdt,swdt,lwdtclr,swdtclr,dlwdtg,
+c    .  im1,im2,jm1,jm2,Nrphys,Nsx,Nsy,bi,bj,ntracer)
 
 
        kF=1. _d 0/86400. _d 0
