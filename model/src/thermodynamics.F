@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.43 2003/07/08 15:00:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.44 2003/07/11 16:00:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -100,11 +100,6 @@ C     == Global variables ===
 # ifdef ALLOW_PTRACERS
 #  include "PTRACERS.h"
 # endif
-cswdice --- add ----
-# ifdef ALLOW_THERM_SEAICE
-#  include "ICE.h"
-# endif
-cswdice ------
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -419,21 +414,21 @@ C--     Calculate future values on open boundaries
 #endif  /* ALLOW_OBCS */
 
 
-c********************************************
-cswdice --- add ---
 #ifdef ALLOW_THERM_SEAICE
+       IF (useThermSeaIce) THEN
 #ifndef DISABLE_DEBUGMODE
         IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('ICE_FORCING',myThid)
 #endif
 C--     Determines forcing terms based on external fields
-c--     including effects from ice
+C       including effects from ice
         CALL ICE_FORCING(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myThid )
-#else
-
-cswdice --- end add ---
+       ELSE
+#else  /* ALLOW_THERM_SEAICE */
+       IF (.TRUE.) THEN
+#endif /* ALLOW_THERM_SEAICE */
 
 C--     Determines forcing terms based on external fields
 C       relaxation terms, etc.
@@ -444,12 +439,9 @@ C       relaxation terms, etc.
         CALL EXTERNAL_FORCING_SURF(
      I             bi, bj, iMin, iMax, jMin, jMax,
      I             myThid )
-cswdice --- add ----
-#endif
-cswdice --- end add ---
-c******************************************
 
-
+C--    end of if/else block useThermSeaIce --
+       ENDIF
 
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -691,13 +683,13 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      I         theta, gT,
      I         myIter, myThid)
          ENDIF
-cswdice ---- add ---
+
 #ifdef ALLOW_THERM_SEAICE
-       if (k.eq.1) then
-        call ICE_FREEZE(bi, bj, iMin, iMax, jMin, jMax, myThid )
-       endif
+         IF (useThermSeaIce .AND. k.EQ.1) THEN
+           CALL ICE_FREEZE( bi,bj, iMin,iMax,jMin,jMax, myThid )
+         ENDIF
 #endif
-cswdice -- end add ---
+
          IF ( saltStepping ) THEN
            CALL CALC_GS(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
@@ -742,13 +734,14 @@ C--      Apply open boundary conditions
 #endif   /* ALLOW_OBCS */
 
 C--      Freeze water
-         IF ( allowFreezing .AND. .NOT. useSEAICE ) THEN
+         IF ( allowFreezing .AND. .NOT. useSEAICE
+     &       .AND. .NOT.(useThermSeaIce.AND.k.EQ.1) ) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE gT(:,:,k,bi,bj) = comlev1_bibj_k
 CADJ &   , key = kkey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL FREEZE( bi, bj, iMin, iMax, jMin, jMax, k, myThid )
-         END IF
+         ENDIF
 
 C--     end of thermodynamic k loop (Nr:1)
         ENDDO
