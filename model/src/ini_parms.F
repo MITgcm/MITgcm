@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.9 1998/05/25 20:05:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.10 1998/05/25 21:29:45 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -61,7 +61,8 @@ C--   Continuous equation parameters
      & momPressureForcing,
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
-     & implicitFreeSurface, rigidLid, freeSurfFac
+     & implicitFreeSurface, rigidLid, freeSurfFac,
+     & tempStepping, momStepping
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
@@ -173,6 +174,8 @@ C--   Set default "physical" parameters
       momForcing          = .TRUE.
       useCoriolis         = .TRUE.
       momPressureForcing  = .TRUE.
+      momStepping         = .TRUE.
+      tempStepping        = .TRUE.
       READ(UNIT=iUnit,NML=PARM01,IOSTAT=errIO,err=3)
       IF ( errIO .GE. 0 ) GOTO 4
     3 CONTINUE

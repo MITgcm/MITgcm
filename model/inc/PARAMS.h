@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.9 1998/05/25 20:05:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.10 1998/05/25 21:29:44 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -89,11 +89,13 @@ C     saltForcing   - Flag which turns external forcing of salinit on
 C                     and off.
 C     implicitFreeSurface - Set to true to use implcit free surface
 C     rigidLid            - Set to true to use rigid lid
+C     momStepping   - Turns momentum equation time-stepping off
+C     momStepping   - Turns temperature equation time-stepping off
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & momViscosity, momAdvection, momForcing, useCoriolis, momPressureForcing,
      & tempDiffusion, tempAdvection, tempForcing,
      & saltDiffusion, saltAdvection, saltForcing,
-     & implicitFreeSurface, rigidLid
+     & implicitFreeSurface, rigidLid, momStepping, tempStepping
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL momViscosity
@@ -109,6 +111,8 @@ C     rigidLid            - Set to true to use rigid lid
       LOGICAL saltForcing
       LOGICAL implicitFreeSurface
       LOGICAL rigidLid
+      LOGICAL momStepping
+      LOGICAL tempStepping
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual

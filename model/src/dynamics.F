@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.8 1998/05/25 20:05:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.9 1998/05/25 21:29:45 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -238,21 +238,25 @@ C--      Get temporary terms used by tendency routines
      I        myThid)
 
 C--      Calculate accelerations in the momentum equations
-         CALL CALC_MOM_RHS(
-     I        bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
-     I        xA,yA,uTrans,vTrans,wTrans,maskC,
-     I        pH,
-     U        aTerm,xTerm,cTerm,mTerm,pTerm,
-     U        fZon, fMer, fVerU, fVerV,
-     I        myThid)
+         IF ( momStepping ) THEN
+          CALL CALC_MOM_RHS(
+     I         bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
+     I         xA,yA,uTrans,vTrans,wTrans,maskC,
+     I         pH,
+     U         aTerm,xTerm,cTerm,mTerm,pTerm,
+     U         fZon, fMer, fVerU, fVerV,
+     I         myThid)
+         ENDIF
 
 C--      Calculate active tracer tendencies
-         CALL CALC_GT(
-     I        bi,bj,iMin,iMax,jMin,jMax, k,kM1,kUp,kDown,
-     I        xA,yA,uTrans,vTrans,wTrans,maskUp,
-     I        K13,K23,K33,KapGM,
-     U        aTerm,xTerm,fZon,fMer,fVerT,
-     I        myThid)
+         IF ( tempStepping ) THEN
+          CALL CALC_GT(
+     I         bi,bj,iMin,iMax,jMin,jMax, k,kM1,kUp,kDown,
+     I         xA,yA,uTrans,vTrans,wTrans,maskUp,
+     I         K13,K23,K33,KapGM,
+     U         aTerm,xTerm,fZon,fMer,fVerT,
+     I         myThid)
+         ENDIF
 Cdbg     CALL CALC_GS(
 Cdbg I        bi,bj,iMin,iMax,jMin,jMax, k,kM1,kUp,kDown,
 Cdbg I        xA,yA,uTrans,vTrans,wTrans,maskUp,

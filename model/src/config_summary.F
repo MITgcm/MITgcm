@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.9 1998/05/25 20:05:55 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.10 1998/05/25 21:29:44 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -100,9 +100,10 @@ C     == Local variables ==
       CALL WRITE_1D_L( rigidLid,1, INDEX_NONE,
      &                 'rigidLid =',
      &'   /* Rigid lid on/off flag */')
+      CALL WRITE_1D_L( momStepping,1, INDEX_NONE,
+     & 'momStepping =', '  /* Momentum equation on/off flag */')
       CALL WRITE_1D_L( momAdvection,1, INDEX_NONE,
-     & 'momAdvection =', 
-     & '  /* Momentum advection on/off flag */')
+     & 'momAdvection =', '  /* Momentum advection on/off flag */')
       CALL WRITE_1D_L( momViscosity,1, INDEX_NONE,
      & 'momViscosity =', '  /* Momentum viscosity on/off flag */')
       CALL WRITE_1D_L( useCoriolis,1, INDEX_NONE,
@@ -111,6 +112,8 @@ C     == Local variables ==
      & 'momForcing =', '  /* Momentum forcing on/off flag */')
       CALL WRITE_1D_L( momPressureForcing,1, INDEX_NONE,
      & 'momPressureForcing =', '  /* Momentum pressure term on/off flag */')
+      CALL WRITE_1D_L( tempStepping,1, INDEX_NONE,
+     & 'tempStepping =', '  /* Temperature equation on/off flag */')
       CALL WRITE_1D_R8( GMMaxSlope,1, INDEX_NONE,'GMMaxSlope =',
      &'   /* Max. slope allowed in GM/Redi tensor */')
       CALL WRITE_1D_R8( GMLength,1, INDEX_NONE,'GMLength =',
