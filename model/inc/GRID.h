@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.4 1998/06/08 21:43:00 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.5 1998/08/15 16:55:47 cnh Exp $
 C
 C     /==========================================================\
 C     | GRID.h                                                   |
@@ -98,9 +98,9 @@ C     |                                                          |
 C     |      "WB"                                                |
 C     |       +                                                  |
 C     |       +                                                  |
-C     |      \+/        |                         |              |
-C     |"UB"++>|--------\|/-----------------etc.. \|/----*---     |
-C     |       |    w,om(i=1,        |        w,om(i=Nx, *  |     |
+C     |      \+/       /|\                       /|\             |
+C     |"UB"++>|-------- | -----------------etc..  | ----*---     |
+C     |       |    rVel(i=1,        |        rVel(i=Nx, *  |     |
 C     |       |         j=1,        |             j=1,  *  |     |
 C     |       |         k=1)        |             k=1)  *  |     |
 C     |       |                     |                   *  |     |
@@ -109,9 +109,9 @@ C     |  j=1, |      T(i=1,         |  j=1,    T(i=Nx,  *(i=Nx+1,|
 C     |  k=1) |        j=1,         |  k=1)      j=1,   *  |j=1, |
 C     |       |        k=1)         |            k=1)   *  |k=1) |
 C     |       |                     |                   *  |     |
-C     |       |         |           |             |     *  |     |
-C     |       |--------\|/-----------------etc.. \|/----*---     |
-C     |       |    w,om(i=1,        |        w,om(i=Nx, *  |     |
+C     |       |        /|\          |            /|\    *  |     |
+C     |       |-------- | -----------------etc..  | ----*---     |
+C     |       |    rVel(i=1,        |        rVel(i=Nx, *  |     |
 C     |       |         j=1,        |             j=1,  *  |     |
 C     |       |         k=2)        |             k=2)  *  |     |
 C     |                                                          |
@@ -125,9 +125,9 @@ C     |       |                     |                   *  |     |
 C     |       |                     |                   *  |     |
 C     |       |                     |                   *  |     |
 C     |       |                     |                   *  |     |
-C     |       |         |           |             |     *  |     |
-C     |       |--------\|/-----------------etc.. \|/----*---     |
-C     |       |    w,om(i=1,        |        w,om(i=Nx, *  |     |
+C     |       |        /|\          |            /|\    *  |     |
+C     |       |-------- | -----------------etc..  | ----*---     |
+C     |       |    rVel(i=1,        |        rVel(i=Nx, *  |     |
 C     |       |         j=1,        |             j=1,  *  |     |
 C     |       |         k=Nz)       |             k=Nz) *  |     |
 C     |U(i=1, ==>       x         ==>U(i=2,       x     *==>U    |
@@ -138,7 +138,7 @@ C     |       |                     |                   *  |     |
 C     |"LB"++>==============================================     |
 C     |                                               "PWX"      |
 C     |                                                          |
-C     | Up,z increasing upwards.                                 |
+C     | Up   increasing upwards.                                 | 
 C     |/|\                                                       |
 C     | |                                                        |
 C     | |                                                        |
@@ -148,15 +148,18 @@ C     | |                                                        |
 C     |\|/                                                       |
 C     | Down,k increasing downwards.                             |
 C     |                                                          |
+C     | Note: r => height (m) => r increases upwards             |
+C     |       r => pressure (Pa) => r increases downwards        |
+C     |                                                          |
+C     |                                                          |
 C     |    i: East-west index                                    |
 C     |    j: North-south index                                  |
 C     |    k: up-down index                                      |
 C     |    U: x-velocity (m/s)                                   |
-C     | w,om: z-velocity (Pa/s - therefore +ve is down)          |
-C     |       The vertical velocity variable is sometimes named  |
-C     |       "w" in the model code. The vertical coordinate and |
-C     |       also gridding are both under review - watch this   |
-C     |       space!                                             |
+C     | rVel: z-velocity ( units of r )                          |
+C     |       The vertical velocity variable rVel is in units of |
+C     |       "r" the vertical coordinate. r in m will give      |
+C     |       rVel m/s. r in Pa will give rVel Pa/s.             |
 C     |    T: potential temperature (oC)                         |
 C     | "UB": Upper boundary.                                    |
 C     | "LB": Lower boundary (always solid - therefore om|w == 0)|
@@ -298,8 +301,8 @@ C     dyC    - Cell center separation in Y across southern cell wall (m)
 C     dyG    - Cell face separation in Y along western cell wall (m)
 C     dyF    - Cell face separation in Y thru cell center (m)
 C     dyU    - U-point separation in Y across south-west corner of cell (m)
-C     dzC    - Cell center separation in Z (Pa).
-C     dzF    - Cell face separation in Z (Pa).
+C     drC    - Cell center separation along Z axis ( units of r ).
+C     drF    - Cell face separation along Z axis ( units of r ).
 C     H      - Depth of base of fluid from upper surface f[X,Y] (m).
 C     hFac   - Fraction of cell in vertical which is open i.e how 
 C              "lopped" a cell is (dimensionless scale factor).
@@ -308,20 +311,20 @@ C                    On some platforms it may be better to precompute
 C                    hFacW, hFacE, ... here than do MIN on the fly.
 C     maskW  - West face land mask
 C     maskS  - South face land mask
-C     rdxC   - Recipricol of dxC
-C     rdxG   - Recipricol of dxG
-C     rdxF   - Recipricol of dxF
-C     rdxV   - Recipricol of dxV
-C     rdyC   - Recipricol of dxC
-C     rdyG   - Recipricol of dyG
-C     rdyF   - Recipricol of dyF
-C     rdyU   - Recipricol of dyU
-C     rdzC   - Recipricol of dzC
-C     rdzF   - Recipricol of dzF
-C     rh     - Inverse of cell center open-depth
-C     rhFacC - Inverse of cell open-depth f[X,Y,Z] ( dimensionless ).
-C     rhFacW   rhFacC center, rhFacW west, rhFacS south.
-C     rhFacS   Note: This is precomputed here because it involves division.
+C     recip_dxC   - Recipricol of dxC
+C     recip_dxG   - Recipricol of dxG
+C     recip_dxF   - Recipricol of dxF
+C     recip_dxV   - Recipricol of dxV
+C     recip_dyC   - Recipricol of dxC
+C     recip_dyG   - Recipricol of dyG
+C     recip_dyF   - Recipricol of dyF
+C     recip_dyU   - Recipricol of dyU
+C     recip_drC   - Recipricol of drC
+C     recip_drF   - Recipricol of drF
+C     recip_H     - Inverse of cell center open-depth
+C     recip_hFacC - Inverse of cell open-depth f[X,Y,Z] ( dimensionless ).
+C     recip_hFacW   rhFacC center, rhFacW west, rhFacS south.
+C     recip_hFacS   Note: This is precomputed here because it involves division.
 C     saFac  - Shallow atmosphere factor (dimensionless scale factor).
 C     xC     - X-coordinate of center of cell f[X,Y]. The units of xc, yc
 C              depend on the grid. They are not used in differencing or
@@ -331,66 +334,69 @@ C              coordinates but degrees for spherical polar.
 C     yC     - Y-coordinate of center of cell f[X,Y].
 C     xC0, yC0 - West edge x coord  ( metres or degrees )
 C                South edge y coord ( metres or degrees )
-C     zA     - Z-face are f[X,Y] (m^2).
+C     rA     - R-face are f[X,Y] ( m^2 ).
 C              Note: In a cartesian framework zA is simply dx*dy,
 C                    however we use zA to allow for non-globally
 C                    orthogonal coordinate frames (with appropriate
 C                    metric terms).
-C     zC     - Z-coordinate of center of cell f[Z]
-C     zFace  - Z-coordinate of face of cell f[Z] (Pa).
+C     rC     - R-coordinate of center of cell f[Z] (units of r).
+C     rF     - R-coordinate of face of cell f[Z] (units of r).
 C     tanPhiAtU - tan of the latitude at U point. Used for spherical polar 
 C                 metric term in U equation.
 C     tanPhiAtV - tan of the latitude at V point. Used for spherical polar 
 C                 metric term in V equation.
       COMMON /GRID_R/
-     &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,dzC,dzF,
+     &  dxC,dxF,dxG,dxV,dyC,dyF,dyG,dyU,dzC,drF,
      &  H,HFacC,HFacW,HFacS,
-     &  rdxC,rdxF,rdxG,rdxV,rdyC,rdyF,rdyG,rdyU,rdzC,rdzF,
-     &  rH, rhFacC,rhFacW,rhFacS, 
-     &  saFac,xC,yC,zA,zC,zFace,
-     &  yC0, xC0,
+     &  recip_dxC,recip_dxF,recip_dxG,recip_dxV,
+     &  recip_dyC,recip_dyF,recip_dyG,recip_dyU,
+     &  recip_drC,recip_drF,
+     &  recip_H, 
+     &  recip_hFacC,recip_hFacW,recip_hFacS, 
+     &  saFac,
+     &  xC,yC,rA,rC,rF,yC0,xC0,
      &  maskW,maskS,
      &  tanPhiAtU, tanPhiAtV
-      _RS dxC       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dxF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dxG       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dxV       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dyC       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dyF       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dyG       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dyU       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS dzC       (1:Nz)
-      _RS dzF       (1:Nz)
-      _RS H         (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS HFacC     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS HFacW     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS HFacS     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS rdxC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdxF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdxG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdxV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdyC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdyF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdyG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdyU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rdzC      (1:Nz)
-      _RS rdzF      (1:Nz)
-      _RS rh        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS rhFacC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS rhFacW    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS rhFacS    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS saFac     (1:Nz)
-      _RS xC        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dxC            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dxF            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dxG            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dxV            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dyC            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dyF            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dyG            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS dyU            (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS drC            (1:Nz)
+      _RS drF            (1:Nz)
+      _RS H              (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS HFacC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS HFacW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS HFacS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS recip_dxC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS recip_dxF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS recip_dxG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS recip_dxV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS recip_dyC      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS recip_dyF      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS recip_dyG      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS recip_dyU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS recip_dzC      (1:Nz)
+      _RS recip_drF      (1:Nz)
+      _RS recip_h        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS recip_hFacC    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS recip_hFacW    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS recip_hFacS    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS saFac          (1:Nz)
+      _RS xC             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS xC0
-      _RS yC        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS yC             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS yC0
-      _RS zA        (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS zC        (1:Nz)
-      _RS zFace     (1:Nz+1)
-      _RS maskW     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS maskS     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
-      _RS tanPhiAtU (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS tanPhiAtV (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rA             (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS rC             (1:Nz)
+      _RS rF             (1:Nz+1)
+      _RS maskW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS maskS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nz,nSx,nSy)
+      _RS tanPhiAtU      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS tanPhiAtV      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 
 C--   COMMON /GRID_I/ Integer valued grid defining variables

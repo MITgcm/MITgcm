@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.22 1998/07/29 18:33:47 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.23 1998/08/15 16:55:48 cnh Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -182,8 +182,7 @@ C           number of iterations for convergence in a test case to
 C           drop form 192 -> 134! Need to investigate this further!
 C           For now I have introduced a parameter cg2dpcOffDFac which
 C           defaults to 0.51 but can be set at runtime.
-C     delZ      - Vertical grid spacing ( m ) - delZ is the distance
-C                 between "w" surfaces.
+C     delR      - Vertical grid spacing ( units of r ).
 C     delX      - Separation between cell faces (m) or (deg), depending
 C     delY        on input flags.
 C     gravity   - Accel. due to gravity ( m/s^2 )
@@ -263,7 +262,7 @@ C     externForcingPeriod - Is the period of which forcing varies (eg. 1 month)
 C     externForcingCycle - Is the repeat time of the forcing (eg. 1 year)
 C                          (note: externForcingCycle must be an integer
 C                           number times externForcingPeriod)
-      COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, delZ, delX, delY, 
+      COMMON /PARM_R/ cg2dTargetResidual, cg2dpcOffDFac, delR, delX, delY, 
      & deltaT,deltaTmom, deltaTtracer, deltaTClock,abeps, startTime, phiMin, 
      & thetaMin, rSphere, rRSphere, f0, fCori, beta, viscAh, viscAz, viscA4, 
      & diffKhT, diffKzT, diffK4T, diffKhS, diffKzS, diffK4S, delT, 
@@ -277,7 +276,7 @@ C                           number times externForcingPeriod)
      & externForcingCycle, externForcingPeriod
       _RL cg2dTargetResidual
       _RL cg2dpcOffDFac
-      _RL delZ(Nz)
+      _RL delR(Nz)
       _RL delX(Nx)
       _RL delY(Ny)
       _RL deltaT

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.7 1998/06/08 21:43:00 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.8 1998/08/15 16:58:55 cnh Exp $
 C
 C     /==========================================================\
 C     | GRID_MACROS.h                                            |
@@ -75,63 +75,63 @@ C     \==========================================================/
 #undef    HFACW_FXY
 #include "HFACW_MACROS.h"
 
-#undef    RDXC_CONST
-#undef    RDXC_FX
-#undef    RDXC_FY
-#include "RDXC_MACROS.h"
+#undef    RECIP_DXC_CONST
+#undef    RECIP_DXC_FX
+#undef    RECIP_DXC_FY
+#include "RECIP_DXC_MACROS.h"
 
-#undef    RDXF_CONST
-#undef    RDXF_FX
-#undef    RDXF_FY
-#include "RDXF_MACROS.h"
+#undef    RECIP_DXF_CONST
+#undef    RECIP_DXF_FX
+#undef    RECIP_DXF_FY
+#include "RECIP_DXF_MACROS.h"
 
-#undef    RDXG_CONST
-#undef    RDXG_FX
-#undef    RDXG_FY
-#include "RDXG_MACROS.h"
+#undef    RECIP_DXG_CONST
+#undef    RECIP_DXG_FX
+#undef    RECIP_DXG_FY
+#include "RECIP_DXG_MACROS.h"
 
-#undef    RDXV_CONST
-#undef    RDXV_FX
-#undef    RDXV_FY
-#include "RDXV_MACROS.h"
+#undef    RECIP_DXV_CONST
+#undef    RECIP_DXV_FX
+#undef    RECIP_DXV_FY
+#include "RECIP_DXV_MACROS.h"
 
-#undef    RDYC_CONST
-#undef    RDYC_FX
-#undef    RDYC_FY
-#include "RDYC_MACROS.h"
+#undef    RECIP_DYC_CONST
+#undef    RECIP_DYC_FX
+#undef    RECIP_DYC_FY
+#include "RECIP_DYC_MACROS.h"
 
-#undef    RDYF_CONST
-#undef    RDYF_FX
-#undef    RDYF_FY
-#include "RDYF_MACROS.h"
+#undef    RECIP_DYF_CONST
+#undef    RECIP_DYF_FX
+#undef    RECIP_DYF_FY
+#include "RECIP_DYF_MACROS.h"
 
-#undef    RDYG_CONST
-#undef    RDYG_FX
-#undef    RDYG_FY
-#include "RDYG_MACROS.h"
+#undef    RECIP_DYG_CONST
+#undef    RECIP_DYG_FX
+#undef    RECIP_DYG_FY
+#include "RECIP_DYG_MACROS.h"
 
-#undef    RDYU_CONST
-#undef    RDYU_FX
-#undef    RDYU_FY
-#include "RDYU_MACROS.h"
+#undef    RECIP_DYU_CONST
+#undef    RECIP_DYU_FX
+#undef    RECIP_DYU_FY
+#include "RECIP_DYU_MACROS.h"
 
-#undef    RHFACC_CONST   
-#undef    RHFACC_FX
-#undef    RHFACC_FY
-#undef    RHFACC_FXY
-#include "RHFACC_MACROS.h"
+#undef    RECIP_HFACC_CONST   
+#undef    RECIP_HFACC_FX
+#undef    RECIP_HFACC_FY
+#undef    RECIP_HFACC_FXY
+#include "RECIP_HFACC_MACROS.h"
 
-#undef    RHFACS_CONST   
-#undef    RHFACS_FX
-#undef    RHFACS_FY
-#undef    RHFACS_FXY
-#include "RHFACS_MACROS.h"
+#undef    RECIP_HFACS_CONST   
+#undef    RECIP_HFACS_FX
+#undef    RECIP_HFACS_FY
+#undef    RECIP_HFACS_FXY
+#include "RECIP_HFACS_MACROS.h"
 
-#undef    RHFACW_CONST   
-#undef    RHFACW_FX
-#undef    RHFACW_FY
-#undef    RHFACW_FXY
-#include "RHFACW_MACROS.h"
+#undef    RECIP_HFACW_CONST   
+#undef    RECIP_HFACW_FX
+#undef    RECIP_HFACW_FY
+#undef    RECIP_HFACW_FXY
+#include "RECIP_HFACW_MACROS.h"
 
 #undef    XC_CONST   
 #undef    XC_FX

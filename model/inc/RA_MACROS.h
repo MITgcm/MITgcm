@@ -1,25 +1,25 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/Attic/RDYG_MACROS.h,v 1.2 1998/06/10 01:44:03 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/RA_MACROS.h,v 1.1 1998/08/15 16:55:48 cnh Exp $
 C
 C     /==========================================================\
-C     | RDYG_MACROS.h                                             |
+C     | RA_MACROS.h                                              |
 C     |==========================================================|
 C     | These macros are used to reduce memory requirement and/or|
 C     | memory references when variables are fixed along a given |
 C     | axis or axes.                                            |
 C     \==========================================================/
 
-#ifdef RDYG_CONST
-#define  _rdyG(i,j,bi,bj) rdyG(1,1,1,1)
+#ifdef RA_CONST
+#define  _rA(i,j,bi,bj) rA(1,1,1,1)
 #endif
 
-#ifdef RDYG_FX
-#define  _rdyG(i,j,bi,bj) rdyG(i,1,bi,1)
+#ifdef RA_FX
+#define  _rA(i,j,bi,bj) rA(i,1,bi,1)
 #endif
 
-#ifdef RDYG_FY
-#define  _rdyG(i,j,bi,bj) rdyG(1,j,1,bj)
+#ifdef RA_FY
+#define  _rA(i,j,bi,bj) rA(1,j,1,bj)
 #endif
 
-#ifndef _rdyG
-#define  _rdyG(i,j,bi,bj) rdyG(i,j,bi,bj)
+#ifndef _rA
+#define  _rA(i,j,bi,bj) rA(i,j,bi,bj)
 #endif
