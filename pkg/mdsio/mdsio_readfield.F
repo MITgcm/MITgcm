@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.8 2004/01/26 21:08:07 afe Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mdsio/Attic/mdsio_readfield.F,v 1.9 2004/02/03 22:51:50 afe Exp $
 C $Name:  $
 
 #include "MDSIO_OPTIONS.h"
@@ -151,23 +151,23 @@ C If we are reading from a global file then we open it here
 
 #ifdef USE_W2
 
-
+      if (globalFile) then
        domainLength = exch2_domain_nxt
        domainHeight = exch2_domain_nyt
 
-          write(*,fmt='(1X,A,I3,A,I3)') 'L=', domainlength,
-     &            'H=', domainheight
+cafe          write(*,fmt='(1X,A,I3,A,I3)') 'L=', domainlength,
+cafe     &            'H=', domainheight
 C Loop over all tiles
       do bj=1,nSy
        do bi=1,nSx
 C If we are reading from a tiled MDS file then we open each one here
-        if (.NOT. globalFile) then
-             write(msgbuf,'(a)')
-     &         ' MDSREADFIELD: non-global input files not 
-     &           implemented with exch2'
-             call print_error( msgbuf, mythid )
-             stop 'ABNORMAL END: S/R MDSREADFIELD'
-        endif
+cafe        if (.NOT. globalFile) then
+cafe             write(msgbuf,'(a)')
+cafe     &         ' MDSREADFIELD: non-global input files not 
+cafe     &           implemented with exch2'
+cafe             call print_error( msgbuf, mythid )
+cafe             stop 'ABNORMAL END: S/R MDSREADFIELD'
+cafe        endif
         tn = W2_myTileList(bi)
         tby = exch2_tbasey(tn)
         tgx = exch2_txglobalo(tn)
@@ -176,17 +176,17 @@ C If we are reading from a tiled MDS file then we open each one here
         if (fileIsOpen) then
          do k=1,nNz
           do j=1,tNy
-c          write(*,fmt='(1X,A,I3,A,I3,A,I3,A,I3,A,I3,A,I3)') 'tby=', tby,
-c     &        ', tgx=', tgx,
-c     &            ', tnx=',tnx, ', tny=', tny, ', j=',j,', tn=',tn
+cafe          write(*,fmt='(1X,A,I3,A,I3,A,I3,A,I3,A,I3,A,I3)') 'tby=', tby,
+cafe     &        ', tgx=', tgx,
+cafe     &            ', tnx=',tnx, ', tny=', tny, ', j=',j,', tn=',tn
             
             irec = domainLength*tby + (tgx-1)/tnx + 1 +
      &             domainLength*(j-1) + 
      &             domainLength*domainHeight*tny*(k-1) +
      &             domainLength*domainHeight*tny*nNz*(irecord-1) 
-c             write(*,fmt='(1X,A,I6,A,I3)') 'record = ',irec,',thingy=',
-c     &          (tgx-1)/tnx
-c             write(*,fmt='(1X,A,I6)') 'record = ',irec
+cafe             write(*,fmt='(1X,A,I6,A,I3)') 'record = ',irec,',thingy=',
+cafe     &          (tgx-1)/tnx
+cafe             write(*,fmt='(1X,A,I6)') 'record = ',irec
  
            if (filePrec .eq. precFloat32) then
             read(dUnit,rec=irec) r4seg
@@ -236,9 +236,9 @@ C End of k loop
 C End of bi,bj loops
        enddo
       enddo
-
-#else /* .not. USE_W2 */
-
+      else ! if globalFile
+c#else /* .not. USE_W2 */
+#endif /* USE_W2 */
 
 
 C Loop over all tiles
@@ -338,6 +338,9 @@ C End of k loop
 C End of bi,bj loops
        enddo
       enddo
+
+#ifdef USE_W2
+      endif ! globalFile
 
 #endif /* USE_W2 */
 

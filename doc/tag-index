@@ -1,8 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.253 2004/01/27 19:55:02 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.254 2004/02/03 22:51:50 afe Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o tweaked pkg/mdsio/mdsio_readfield.F to have more useful logic and
+  error messages
 o fix errorMessageUnit problem. remove old version of mdsio from eesup/src
 o modified pkg/mdsio/mdsio_readfield.F -- commented out diskspace-eating
   debug output
