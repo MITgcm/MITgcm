@@ -109,7 +109,7 @@ CEOP
      &                     doglobalread, lAdInit, irec, mynr,
      &                     FORWARD_SIMULATION, myOptimIter, mythid)
 
-      call active_read_rl_loc( fname, g_active_var, doglobalread,
+      call active_read_rl_loc( fname, g_active_var,
      &                     doglobalread, lAdInit, irec, mynr,
      &                     TANGENT_SIMULATION, myOptimIter, mythid)
 
