@@ -1,4 +1,4 @@
-C     $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/external_forcing.F,v 1.1 2001/06/18 17:40:07 cnh Exp $
+C     $Header: /u/gcmpack/MITgcm/verification/aim.5l_cs/code/Attic/external_forcing.F,v 1.2 2002/11/22 17:20:09 jmc Exp $
 C     $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -40,7 +40,7 @@ C     Loop counters
 
 C--   Forcing term
 #ifdef ALLOW_AIM
-      IF ( useAIM ) CALL AIM_EXTERNAL_FORCING_U( iMin, iMax, jMin, jMax,
+      IF ( useAIM ) CALL AIM_TENDENCY_APPLY_U( iMin, iMax, jMin, jMax,
      &                                           bi,bj,kLev,
      &                                           myCurrentTime, myThid )
 #endif /* ALLOW_AIM */
@@ -85,7 +85,7 @@ C     Loop counters
 
 C--   Forcing term
 #ifdef ALLOW_AIM
-      IF ( useAIM ) CALL AIM_EXTERNAL_FORCING_V( iMin, iMax, jMin, jMax,
+      IF ( useAIM ) CALL AIM_TENDENCY_APPLY_V( iMin, iMax, jMin, jMax,
      &                                           bi,bj,kLev,
      &                                           myCurrentTime, myThid )
 #endif /* ALLOW_AIM */
@@ -129,7 +129,7 @@ C     Loop counters
 
 C--   Forcing term
 #ifdef ALLOW_AIM
-      IF ( useAIM ) CALL AIM_EXTERNAL_FORCING_T( iMin, iMax,
+      IF ( useAIM ) CALL AIM_TENDENCY_APPLY_T( iMin, iMax,
      &              jMin, jMax,bi,bj,kLev,
      &              myCurrentTime, myThid )
 #endif /* ALLOW_AIM */
@@ -174,7 +174,7 @@ C     Loop counters
 
 C--   Forcing term
 #ifdef ALLOW_AIM
-      IF ( useAIM ) CALL AIM_EXTERNAL_FORCING_S( iMin, iMax, 
+      IF ( useAIM ) CALL AIM_TENDENCY_APPLY_S( iMin, iMax, 
      &                   jMin, jMax,bi,bj,kLev,
      &                   myCurrentTime, myThid )
 #endif /* ALLOW_AIM */
