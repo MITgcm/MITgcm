@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/Attic/phy_suflux.F,v 1.1 2002/11/22 17:17:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/Attic/phy_suflux.F,v 1.2 2003/05/22 03:00:49 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
 
-      SUBROUTINE SUFLUX (PSA,TA,QA,RH,Vsurf2,WVS,CLAT,FOROG,
+      SUBROUTINE SUFLUX (PSA,TA,QA,RH,ThA,Vsurf2,WVS,CLAT,FOROG,
      I                   FMASK,TLAND,TSEA,SWAV,SSR,SLRD,
      O                   SPEED0,DRAG,SHF,EVAP,SLRU,
      O                   TSFC,TSKIN,T0,Q0,
@@ -22,6 +22,7 @@ C--            VA     = v-wind                          (3-dim)
 C--            TA     = temperature                     (3-dim)
 C--            QA     = specific humidity [g/kg]        (3-dim)
 C--            RH     = relative humidity [0-1]         (3-dim)
+C              ThA    = Pot.temperature    [K]          (3-dim)
 C              Vsurf2 = square of surface wind speed (2-dim,input)
 C                         ==> UA,VA are no longer used
 C              WVS    = weights for near surf interp    (2-dim)
@@ -71,6 +72,7 @@ C     Surface flux constants
 
 C-- Routine arguments:
       _RL  PSA(NGP), TA(NGP,NLEV), QA(NGP,NLEV), RH(NGP,NLEV)
+      _RL  ThA(NGP,NLEV)
       _RL  Vsurf2(NGP), WVS(NGP), CLAT(NGP), FOROG(NGP)
       _RL  FMASK(NGP), TLAND(NGP), TSEA(NGP), SWAV(NGP)
       _RL  SSR(NGP), SLRD(NGP)
@@ -122,8 +124,9 @@ C
 c_FM    T0(J) = TA(J,NLEV)+WVI(NLEV,2)*(TA(J,NLEV)-TA(J,NL1))
 c_FM    T1(J) = TA(J,NLEV)+RCP*(PHI(J,NLEV)-PHI0(J))
         T0(J) = TA(J,Ktmp) +    WVS(J)*(TA(J,Ktmp)-TA(J,NL1))
-        T1(J) = TA(J,Ktmp)*(SIGH(Ktmp)/SIG(Ktmp))**kappa
-c       T1(J) = TA(J,Ktmp)*(1.+kappa*0.5 _d 0*DSIG(Ktmp)/SIG(Ktmp) )
+Cjmc: used previously but not valid with partial cell !
+c       T1(J) = TA(J,Ktmp)*(SIGH(Ktmp)/SIG(Ktmp))**kappa
+        T1(J) = ThA(J,Ktmp)*(PSA(J)**kappa)
         tmpRH(J)=RH(J,Ktmp)
        ELSE
         T0(J) = 273.16 _d 0
@@ -221,9 +224,9 @@ C     2.3 Evaporation
 
       DO J=1,NGP
 C       EVAP(J,1) = CDENVV(J,1)*SWAV(J)*MAX(0. _d 0,QSAT0(J,1)-Q0(J))
-        EVAP(J,1) = CDENVV(J,1)*MAX(0. _d 0,SWAV(J)*QSAT0(J,1)-Q0(J))
-c_jmc - try the old formulation:
-c       EVAP(J,1)=CDENVV(J,1)*MIN(1. _d 0,SWAV(J))*(QSAT0(J,1)-Q0(J))
+c       EVAP(J,1) = CDENVV(J,1)*MAX(0. _d 0,SWAV(J)*QSAT0(J,1)-Q0(J))
+Cjmc: try the other formulation (= described in F.M paper):
+        EVAP(J,1) = CDENVV(J,1)*SWAV(J)*MAX(0. _d 0,QSAT0(J,1)-Q0(J))
         EVAP(J,2) = CDENVV(J,2)*                   (QSAT0(J,2)-Q0(J))
       ENDDO
 
