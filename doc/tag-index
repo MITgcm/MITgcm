@@ -1,9 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.179 2003/10/02 17:43:57 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.180 2003/10/02 21:23:59 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-untagged
+checkpoint51f_post
 o update advect_xz/output.txt (left from chekpoint50f_pre, ini_vel modif)
 o Mods and bug fixes to pkg/cal, pkg/exf, etc., needed for computation
   of tracer Green's fucntions for ocean inversion project.
