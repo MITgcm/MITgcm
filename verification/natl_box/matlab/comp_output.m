@@ -1,7 +1,7 @@
 % Compare output of new and reference (c32) codes.
 
 p1='../output/';                     % reference (c32)output location
-p2='../../../../../ecco_c32_e1/exe/';                  % new output file location
+p2='../../../exe/';                  % new output file location
 
 lat=13:2:43; lon=322:2:360;          % latitude, longitude
 
