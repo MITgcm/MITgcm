@@ -1,16 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.207 2003/11/13 06:35:13 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.208 2003/11/13 22:51:32 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-o modifications to make FREEZE flux visible to pkg/kpp
+o modifications to make FREEZE (_SURFACE) flux visible to pkg/kpp
   - moved surfaceTendencyTice from pkg/seaice to main code
-  - FREEZE moved to FORWARD_STEP
-  - subroutine FREEZE now limits only surface temperature
-    this means new output.txt for global_ocean.90x40x15,
-    global_ocean.cs32x15, and global_with_exf, but note
-    that results for these three experiments remain
-    bit-identical to before if allowFreezing=.FALSE.
+  - subroutine FREEZE_SURFACE now limits only surface temperature
+    and is called in FORWARD_STEP (if allowFreezing=.TRUE.)
+    => new output.txt for global_ocean.cs32x15 & global_with_exf
+  - keep the old version of FREEZE for backward compatibility;
+    global_ocean.90x40x15 left unchanged using useOldFreezing=.TRUE.
 o added surface flux output variables to TIMEAVE_STATVARS
 o time-averaged output for pkg/ptracers
 
