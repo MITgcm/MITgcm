@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.14 2004/03/29 03:33:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.15 2004/04/02 05:13:33 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -279,7 +279,7 @@ CEOP
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
-C     !ROUTINE: 
+C     !ROUTINE: MNC_VAR_ADD_ATTR_REAL
 
 C     !INTERFACE:
       SUBROUTINE MNC_VAR_ADD_ATTR_REAL( 

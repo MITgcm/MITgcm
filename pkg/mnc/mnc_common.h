@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.17 2004/03/29 03:33:51 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_common.h,v 1.18 2004/04/02 05:13:33 edhill Exp $
 C $Name:  $
 C
 C     ==========================================
@@ -103,8 +103,7 @@ C     mnc_cw_vdat (i,v) :: REAL*8 attributes
 C     .
 C     g                 :: Gtype index
 C     v                 :: Vtype index
-C     .
-C     .
+CEOP
 
       integer MNC_MAX_ID, MNC_MAX_CHAR, MNC_MAX_INFO
       integer MNC_CW_MAX_I
@@ -163,8 +162,6 @@ C     .
       integer mnc_cw_fgud(MNC_MAX_ID)
 
       character*(MNC_MAX_CHAR) mnc_out_path
-
-CEOP
 
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|

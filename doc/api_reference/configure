@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.6 2004/04/01 05:34:41 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.7 2004/04/02 05:13:33 edhill Exp $
 #
 #  A script to generate the Makefile for the API Reference
 
@@ -132,6 +132,10 @@ api_main.pdf: api_main.ps
 	ps2pdf \$(PDFOPTS) api_main.ps api_main.pdf
 
 all_protex: api_main.pdf
+
+distclean:
+	@make clean
+	-rm -f Makefile
 
 clean:
 	-rm -f *.aux *.dvi *.log *.toc *.out

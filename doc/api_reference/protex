@@ -1,6 +1,6 @@
 #! /usr/bin/env perl
 #
-#  $Id: protex,v 1.5 2004/04/01 05:00:06 edhill Exp $
+#  $Id: protex,v 1.6 2004/04/02 05:13:33 edhill Exp $
 #
 #BOP
 #
@@ -20,19 +20,20 @@
 #
 # \begin{center}
 # \begin{tabular}{|c|l|} \hline \hline
-#   -h   & Help mode: list command line options   \\ \hline
-#   -b   & Bare mode, meaning no preamble, etc.  \\ \hline
-#   -i   & internal mode: omit prologues marked !BOPI  \\ \hline
-#   +/-n & New Page for each subsection (wastes paper) \\ \hline
-#   +/-l & Listing mode, default is prologues only \\ \hline
-#   +/-s & Shut-up mode, i.e., ignore any code from BOC to EOC \\ \hline
-#   +/-x & No LaTeX mode, i.e., put !DESCRIPTION: in verbatim mode \\ \hline
-#   +/-f & No source file info \\ \hline
-#   -A   & Ada code \\ \hline
-#   -C   & C++ code \\ \hline
-#   -F   & F90 code (default) \\ \hline
-#   -7   & F77 code \\ \hline
-#   -S   & Shell script \\ \hline \hline
+#   -h    & Help mode: list command line options   \\ \hline
+#   -b    & Bare mode, meaning no preamble, etc.  \\ \hline
+#   -i    & internal mode: omit prologues marked !BOPI  \\ \hline
+#   +/-n  & New Page for each subsection (wastes paper) \\ \hline
+#   +/-l  & Listing mode, default is prologues only \\ \hline
+#   +/-s  & Shut-up mode, i.e., ignore any code from BOC to EOC \\ \hline
+#   +/-x  & No LaTeX mode, i.e., put !DESCRIPTION: in verbatim mode \\ \hline
+#   +/-f  & No source file info \\ \hline
+#   -A    & Ada code \\ \hline
+#   -C    & C++ code \\ \hline
+#   -F    & F90 code (default) \\ \hline
+#   -7    & F77 code \\ \hline
+#   -S    & Shell script \\ \hline \hline
+#   -v    & Verbosity level (default=99) \\ \hline \hline
 # \end{tabular}
 # \end{center}
 #
@@ -99,7 +100,7 @@ $\ = "\n";              # set output record separator
 
 # Set valid options lists
 # -----------------------
-$GlobOptions = 'hb';    # Global options (i.e for all files)
+$GlobOptions = 'hbv';    # Global options (i.e for all files)
 $LangOptions = 'ACFS7';  # Options for setting programming languages
 $SwOptions   = 'flinsx'; # Options that can change for each input  file
 $RegOptions  = "$GlobOptions$LangOptions";
@@ -109,17 +110,16 @@ $RegOptions  = "$GlobOptions$LangOptions";
 # Scan for global options
 # -----------------------
 $NFiles = 0;
- Arg:
-    foreach $arg (@ARGV) {
-	$option = &CheckOpts ( $arg, $RegOptions, $SwOptions ) + 1;
-	if ( $option ) {
-	    $rc = &GetOpts    ( $arg, $GlobOptions );
-	    next Arg;
-	}
-	else {
-	    $NFiles++;
-	}
-    }
+ Arg: foreach $arg (@ARGV) {
+     $option = &CheckOpts ( $arg, $RegOptions, $SwOptions ) + 1;
+     if ( $option ) {
+	 $rc = &GetOpts    ( $arg, $GlobOptions );
+	 next Arg;
+     }
+     else {
+	 $NFiles++;
+     }
+ }
 
 # If all input arguments are options, then assume the
 # filename, "-", for the standard input
@@ -179,520 +179,519 @@ $begdoc = 0;            # has \begin{document} been written?
 
 # Main loop -- for each command-line argument
 # -------------------------------------------
- ARG:
-    foreach $arg (@ARGV) {
-	
-	# Scan for non-global command-line options
-	$option = &CheckOpts ( $arg, $RegOptions, $SwOptions, "quiet" ) + 1;
-	if ( $option ) {
-	    &GetOpts  ( $arg, $SwOptions   );
-	    &SetOpt   ( $arg, $LangOptions );
-	    next ARG;
-	}
-	
-	# Determine the type of code, set corresponding search strings
-  	$comment_string = '!';  # DEFAULT is FORTRAN
-        $boi_string = '!BOI';
-        $eoi_string = '!EOI';
-        $bop_string = '!BOP';
-        $eop_string = '!EOP';
-        $bopi_string = '!BOPI';
-        $eopi_string = '!EOPI';
-        $boc_string = '!BOC';
-        $eoc_string = '!EOC';
+ ARG: foreach $arg (@ARGV) {
+     
+     # Scan for non-global command-line options
+     $option = &CheckOpts ( $arg, $RegOptions, $SwOptions, "quiet" ) + 1;
+     if ( $option ) {
+	 &GetOpts  ( $arg, $SwOptions   );
+	 &SetOpt   ( $arg, $LangOptions );
+	 next ARG;
+     }
+     
+     # Determine the type of code, set corresponding search strings
+     $comment_string = '!';  # DEFAULT is FORTRAN
+     $boi_string = '!BOI';
+     $eoi_string = '!EOI';
+     $bop_string = '!BOP';
+     $eop_string = '!EOP';
+     $bopi_string = '!BOPI';
+     $eopi_string = '!EOPI';
+     $boc_string = '!BOC';
+     $eoc_string = '!EOC';
+     
+     if ( $opt_7 ) {            # f77
+	 $comment_string = 'C';
+	 $boi_string = 'CBOI';
+	 $eoi_string = 'CEOI';
+	 $bop_string = 'CBOP';
+	 $eop_string = 'CEOP';
+	 $bopi_string = 'CBOPI';
+	 $eopi_string = 'CEOPI';
+	 $boc_string = 'CBOC';
+	 $eoc_string = 'CEOC';
+     }
+     
+     if ( $opt_A ) {            # ADA
+	 $comment_string = '--';
+	 $boi_string = '--BOI';
+	 $eoi_string = '--EOI';
+	 $bop_string = '--BOP';
+	 $eop_string = '--EOP';
+	 $bopi_string = '--BOPI';
+	 $eopi_string = '--EOPI';
+	 $boc_string = '--BOC';
+	 $eoc_string = '--EOC';
+     }
+     
+     if ( $opt_C ) {
+	 $comment_string = '//'; # C 
+	 $boi_string = '//BOI';
+	 $eoi_string = '//EOI';
+	 $bop_string = '//BOP';
+	 $eop_string = '//EOP';
+	 $bopi_string = '//BOPI';
+	 $eopi_string = '//EOPI';
+	 $boc_string = '//BOC';
+	 $eoc_string = '//EOC';
+     }
+     
+     if ( $opt_S ) {            # Script
+	 $comment_string = '#';
+	 $boi_string = '#BOI';
+	 $eoi_string = '#EOI';
+	 $bop_string = '#BOP';
+	 $eop_string = '#EOP';
+	 $bopi_string = '#BOPI'; 
+	 $eopi_string = '#EOPI';
+	 $boc_string = '#BOC';
+	 $eoc_string = '#EOC';
+     }
+     
+     # Set file name parameters
+     $InputFile           = $arg;
+     @all_path_components = split( /\//, $InputFile     );
+     $FileBaseName        = pop  ( @all_path_components );
+     $FileBaseName        =~ s/_/\\_/g;
+     if ( $InputFile eq "-" ) {$FileBaseName = "Standard Input";}
+     
+     # Set date
+     $Date                = `date`;
+     
+     # Open current file
+     open ( InputFile, "$InputFile" )
+	 or print STDERR "Unable to open $InputFile: $!";
+     
+     # Print page header
+     chomp($Date);
+     # printf "\n\\markboth{Left}{Source File: %s,  Date: %s}\n\n", 
+     printf "\n\\markboth{Source File: %s}{Date: %s}\n\n", 
+     $FileBaseName, $Date;
+     
+     # Inner loop --- for processing each line of the input file
+   LINE: while ( <InputFile> ) {
+       chop;     # strip record separator
+       
+       @Fld = split(' ', $_, 9999);
+       
+       # Straight quote
+       if ($Fld[1] eq '!QUOTE:') {
+	   for ($i = 2; $i <= $#Fld; $i++) {
+	       printf '%s ', $Fld[$i];
+	   }
+	   print " ";
+	   next LINE;
+       }
+       
+       # Handle optional Title Page and Introduction
+       if ($Fld[1] eq $boi_string) {
+	   print ' ';
+	   $intro = 1;
+	   next LINE;
+       }
+       
+       if ($Fld[2] eq '!TITLE:') {
+	   if ( $intro ) {
+	       shift @Fld;
+	       shift @Fld;
+	       @title = @Fld;
+	       $tpage = 1;
+	       next LINE;
+	   }
+       }
+       
+       if ($Fld[2] eq '!AUTHORS:') {
+	   if ( $intro ) {
+	       shift @Fld;
+	       shift @Fld;
+	       @author = @Fld;
+	       $tpage = 1;
+	       next LINE;
+	   }
+       }
 
-	if ( $opt_7 ) {            # f77
-	    $comment_string = 'C';  # ---
-	    $boi_string = 'CBOI';
-	    $eoi_string = 'CEOI';
-	    $bop_string = 'CBOP';
-	    $eop_string = 'CEOP';
-	    $bopi_string = 'CBOPI';
-	    $eopi_string = 'CEOPI';
-	    $boc_string = 'CBOC';
-	    $eoc_string = 'CEOC';
-	}
+       if ($Fld[2] eq '!AFFILIATION:') {
+	   if ( $intro ) {
+	       shift @Fld;
+	       shift @Fld;
+	       @affiliation = @Fld;
+	       $tpage = 1;
+	       next LINE;
+	   }
+       }
 
-	if ( $opt_A ) {            # ADA
-	    $comment_string = '--'; # ---
-	    $boi_string = '--BOI';
-	    $eoi_string = '--EOI';
-	    $bop_string = '--BOP';
-	    $eop_string = '--EOP';
-	    $bopi_string = '--BOPI';
-	    $eopi_string = '--EOPI';
-	    $boc_string = '--BOC';
-	    $eoc_string = '--EOC';
-	}
+       if ($Fld[2] eq '!DATE:') {
+	   if ( $intro ) {
+	       shift @Fld;
+	       shift @Fld;
+	       @date = @Fld;
+	       $tpage = 1;
+	       next LINE;
+	   }
+       }
+       
+       if ($Fld[2] eq '!INTRODUCTION:') {
+	   if ( $intro ) {
+	       &do_beg();
+	       print ' ';
+	       print '%..............................................';
+	       shift @Fld;
+	       shift @Fld;
+	       print "\\section{@Fld}";
+	       next LINE;
+	   }
+       }
+       
+       
+       # End of introduction
+       if ($Fld[1] eq $eoi_string) {
+	   print ' ';
+	   print '%/////////////////////////////////////////////////////////////';
+	   print "\\newpage";
+	   $intro = 0;
+	   next LINE;
+       }
+       
+       # Beginning of prologue
+       if ( ($Fld[1] eq $bop_string) 
+	    && (($Fld[2] eq "") || ($Fld[2] <= $opt_v)) )  {
+	   if ( $source ) { &do_eoc(); }
+	   print ' ';
+	   print '%/////////////////////////////////////////////////////////////'; 
+	   &do_beg();
+	   $first = 0;
+	   if ($first == 0) {
+	       print " ";
+	       print "\\mbox{}\\hrulefill\\ ";
+	       print " ";}
+	   else {
+	       unless($opt_b){
+		   print 
+		       "\\section{Routine/Function Prologues} \\label{app:ProLogues}";
+	       }
+	   }
+	   $first = 0;
+	   $prologue = 1;
+	   $verb = 0;
+	   $source = 0;
+	   &set_missing();   # no required keyword yet
+	   next LINE;
+       }
+       
+       # Beginning of internal prologue
+       if ( ($Fld[1] eq $bopi_string)) {
+	   if ($opt_i) {$prologue = 0;}
+	   else {
+	       if ($source) { &do_eoc(); }
+	       print ' ';
+	       print '%/////////////////////////////////////////////////////////////';  
+	       &do_beg();
+	       if ($first ==0) {
+		   ### print "\\newpage";
+		   print " ";
+		   print "\\mbox{}\\hrulefill\\";
+		   print " ";}
+	       else {
+		   unless($opt_b) {
+		       print 
+			   "\\section{Routine/Function Prologues} \\label{app:ProLogues}";
+		   }
+	       }
+	       $first = 0;
+	       $prologue = 1;
+	       $verb = 0;
+	       $source = 0;
+	       &set_missing();    # no required keyword yet
+	       next LINE;
+	   }
+       }
+       
+       # A new subroutine/function
+       if ($Fld[2] eq '!ROUTINE:' ) { 
+	   if ($prologue) {
+	       shift @Fld;
+	       shift @Fld;
+	       $_ = join(' ', @Fld);
+	       $name_is = $_;
+	       s/_/\\_/g;
+	       # Replace "_" with "\_"
+	       if ( $opt_n && $not_first ) {
+		   printf "\\newpage\n";
+	       }
+	       unless ($opt_f) {
+		   printf "\\subsection{%s (File: %s)}\n\n", $_, $FileBaseName;
+	       }
+	       else {
+		   printf "\\subsection{%s}\n\n", $_;
+		   printf "\n{\\sf FILE:} %s\n\\medskip\n", $FileBaseName;
+	       }
+	       $have_name = 1;
+	       $not_first = 1;
+	       next LINE;
+	   }
+       }
+       
+       # A new Module
+       if ($Fld[2] eq '!MODULE:' ) { 
+	   if ($prologue) {
+	       shift @Fld;
+	       shift @Fld;
+	       $_ = join(' ', @Fld);
+	       $name_is = $_;
+	       s/_/\\_/g;                         # Replace "_" with "\_"
+	       if ( $opt_n && $not_first ) { printf "\\newpage\n"; }
+	       unless($opt_f) {
+		   printf 
+		       "\\subsection{Fortran:  Module Interface %s (File: %s)}\n\n", 
+		       $_, $FileBaseName;
+	       }
+	       else {
+		   printf "\\subsection{Fortran:  Module Interface %s }\n\n", $_;
+	       }
+	       $have_name = 1;
+	       $have_intf = 1;  # fake it, it does not need one.
+	       $not_first = 1;
+	       next LINE;
+	   }
+       }
+       
+       # A new include file
+       if ($Fld[2] eq '!INCLUDE:' ) { 
+	   if ($prologue) {
+	       shift @Fld;
+	       shift @Fld;
+	       $_ = join(' ', @Fld);
+	       $name_is = $_;
+	       s/_/\\_/g;                         # Replace "_" with "\_"
+	       if ( $opt_n && $not_first ) {
+		   printf "\\newpage\n";
+	       }
+	       unless($opt_f) {
+		   printf 
+		       "\\subsubsection{Include File %s (File: %s)}\n\n", 
+		       $_, $FileBaseName;}
+	       else {
+		   printf "\\subsubsection{Include File %s }\n\n", $_;
+	       }  
+	       $have_name = 1;
+	       $have_intf = 1;  # fake it, it does not need one.
+	       $not_first = 1;
+	       next LINE;
+	   }
+       }
+       
+       # A new INTERNAL subroutine/function
+       if ($Fld[2] eq '!IROUTINE:') {            # Internal routine
+	   if ($prologue) {
+	       shift @Fld;
+	       shift @Fld;
+	       $_ = join(' ', @Fld);
+	       $name_is = $_;
+	       s/_/\\_/g;                        # Replace "_" with "\_"
+	       @words = split " ", $_;
+	       printf "\\subsubsection [$words[1]] {$_}\n\n";
+	       $have_name = 1;
+	       next LINE;
+	   }
+       }
+       
+       # A new CLASS
+       if ($Fld[2] eq '!CLASS:' ) { 
+	   if ($prologue) {
+	       shift @Fld;
+	       shift @Fld;
+	       $_ = join(' ', @Fld);
+	       $name_is = $_;
+	       s/_/\\_/g;                         # Replace "_" with "\_"
+	       if ( $opt_n && $not_first ) { printf "\\newpage\n"; }
+	       unless($opt_f) {
+		   printf 
+		       "\\subsection{C++:  Class Interface %s (File: %s)}\n\n", 
+		       $_, $FileBaseName;}
+	       else {
+		   printf "\\subsection{C++:  Class Interface %s }\n\n", $_;
+	       }
+	       $have_name = 1;
+	       $have_intf = 1;  # fake it, it does not need one.
+	       $not_first = 1;
+	       next LINE;
+	   }
+       }
+       
+       # A new Method
+       if ($Fld[2] eq '!METHOD:' ) { 
+	   if ($prologue) {
+	       shift @Fld;
+	       shift @Fld;
+	       $_ = join(' ', @Fld);
+	       $name_is = $_;
+	       s/_/\\_/g;                         # Replace "_" with "\_"
+	       if ( $opt_n && $not_first ) { printf "\\newpage\n"; }
+	       unless ($opt_f) {
+		   printf "\\subsubsection{%s (File: %s)}\n\n", $_, $FileBaseName;
+	       }
+	       else {
+		   printf "\\subsubsection{%s }\n\n", $_;
+	       }
+	       $have_name = 1;
+	       $not_first = 1;
+	       next LINE;
+	   }
+       }
+       
+       # A new function
+       if ($Fld[2] eq '!FUNCTION:' ) { 
+	   if ($prologue) {
+	       shift @Fld;
+	       shift @Fld;
+	       $_ = join(' ', @Fld);
+	       $name_is = $_;
+	       s/_/\\_/g;                         # Replace "_" with "\_"
+	       if ( $opt_n && $not_first ) {
+		   printf "\\newpage\n";
+	       }
+	       unless ($opt_f) {
+		   printf 
+		       "\\subsubsection{%s (File: %s)}\n\n",
+		       $_, $FileBaseName;
+	       }
+	       else {
+		   printf "\\subsubsection{%s }\n\n", $_;
+	       }
+	       $have_name = 1;
+	       $not_first = 1;
+	       next LINE;
+	   }
+       }
+       
+       # Description: what follows will be regular LaTeX (no verbatim)
+       if (/!DESCRIPTION:/) {
+	   if ($prologue) {
+	       if ($verb) {
+		   &end_verbatim();
+		   printf "\n{\\sf DESCRIPTION: }\n\\medskip\n";
+	       }
+	       else {                          # probably never occurs
+	       }
+	       if ($opt_x) {
+		   &begin_verbatim();
+		   $first_verb = 1;
+	       }
+	       else {
+		   for ($i = 3; $i <= $#Fld; $i++) {
+		       printf '%s ', $Fld[$i];
+		   }
+	       }
+	       ### print " ";
+	       $have_desc = 1;
+	       next LINE;
+	   }
+       }
+       
+       # Handle optional keywords (these will appear as verbatim)
+       if ($prologue) {
+	 KEY:
+	   foreach $key ( @keys ) {
+	       if ( /$key/ ) {
+		   if ($verb) {
+		       &end_verbatim();
+		   }
+		   else {
+		       printf "\n\\medskip\n";
+		   }
+		   $k = sprintf('%s', $key);
+		   $ln = length($k);
+		   ###printf "\\subsubsection*{%s}\n", substr($k, 2, $ln - 1);
+		   ###printf "{\\Large \\em %s}\n", ucfirst lc substr($k, 2, $ln - 1);
+		   $_ = $key;
+		   printf "{\\sf %s}\n", substr($k, 2, $ln - 1); # san serif
+		   &begin_verbatim();
+		   $first_verb = 1;
+		   if ( $key eq "!INTERFACE:" )        { $have_intf = 1; }
+		   if ( $key eq "!CALLING SEQUENCE:" ) { $have_intf = 1; }
+		   if ( $key eq "!REVISION HISTORY:" ) { $have_hist = 1; }
+		   next LINE;
+	       }
+	   }
+       }
+       
+       # End of prologue
+       if ($Fld[1] eq $eop_string) {
+	   if ($verb) {
+	       &end_verbatim();
+	   }
+	   $prologue = 0;
+	   # &check_if_all_there(); # check if all required keywords are there.
+	   if ( $opt_l ) {
+	       $Fld[1] = $boc_string;}
+	   else {
+	       next LINE;
+	   }
+       }
+       
+       unless ( $opt_s ) {
+	   
+	   # End of Internal Prologue
+	   if ($Fld[1] eq $eopi_string) {
+	       if ($verb) {
+		   &end_verbatim();
+	       }
+	       $prologue = 0;
+	       # &check_if_all_there(); # check if all required keywords are there.
+	       if ($opt_l) {
+		   $Fld[1] = $boc_string;}
+	       else { next LINE; }
+	   }
+	   
+	   # Beginning of source code section
+	   if ($Fld[1] eq $boc_string) {
+	       print ' ';
+	       print '%/////////////////////////////////////////////////////////////';
+	       $first = 0;
+	       $prologue = 0;
+	       $source = 1;
+	       ### printf "\\subsubsection*{CONTENTS:}\n\n", $Fld[3];
+	       printf "{\\sf CONTENTS:}";
+	       &begin_verbatim();
+	       next LINE;
+	   }
+	   
+	   # End of source code
+	   if ($Fld[1] eq $eoc_string) {
+	       &do_eoc();
+	       $prologue = 0;
+	       next LINE;
+	   }
+       }
+       
+       # Prologue or Introduction, print regular line (except for !)
+       if ($prologue||$intro) {
+	   if ( $verb && $#Fld == 1 && ( $Fld[1] eq $comment_string ) ) {
+	       next LINE;                # to eliminate excessive blanks 
+	   }
+	   if ( $Fld[2] eq "\\ev" ) {
+	       # special handling
+	       $_ = $comment_string . " \\end{verbatim}";
+	   }
+	   s/^$comment_string/ /;       # replace comment string with blank
+	   # $line = sprintf('%s', $_);   # not necessary -- comment str is absent
+	   # $ln = length($line);         # not necessary -- comment str is absent
+	   unless ( $first_verb ) { printf "\n "; }
+	   printf '%s', $_;
+	   # printf '%s', substr($line, 1, $ln - 1);     # comment str is absent
+	   $first_verb = 0;
+	   next LINE;
+       }
+       
+       # Source code: print the full line
+       if ($source) {
+	   print $_;
+	   next LINE;
+       }
 
-	if ( $opt_C ) {
-	    $comment_string = '//'; # C 
-	    $boi_string = '//BOI';  # -
-	    $eoi_string = '//EOI';
-	    $bop_string = '//BOP';
-	    $eop_string = '//EOP';
-	    $bopi_string = '//BOPI';
-	    $eopi_string = '//EOPI';
-	    $boc_string = '//BOC';
-	    $eoc_string = '//EOC';
-	}
+   }  # end inner loop for processing each line of the input file
 
-	if ( $opt_S ) {            # Script
-	    $comment_string = '#';  # ------
-	    $boi_string = '#BOI';
-	    $eoi_string = '#EOI';
-	    $bop_string = '#BOP';
-	    $eop_string = '#EOP';
-	    $bopi_string = '#BOPI'; 
-	    $eopi_string = '#EOPI';
-	    $boc_string = '#BOC';
-	    $eoc_string = '#EOC';
-	}
-
-	# Set file name parameters
-	$InputFile           = $arg;
-	@all_path_components = split( /\//, $InputFile     );
-	$FileBaseName        = pop  ( @all_path_components );
-	$FileBaseName        =~ s/_/\\_/g;
-	if ( $InputFile eq "-" ) {$FileBaseName = "Standard Input";}
-
-	# Set date
-	$Date                = `date`;
-
-	# Open current file
-	open ( InputFile, "$InputFile" )
-	    or print STDERR "Unable to open $InputFile: $!";
-	
-	# Print page header
-	chomp($Date);
-	# printf "\n\\markboth{Left}{Source File: %s,  Date: %s}\n\n", 
-	printf "\n\\markboth{Source File: %s}{Date: %s}\n\n", 
-	$FileBaseName, $Date;
-	
-	# Inner loop --- for processing each line of the input file
-      LINE:
-	while ( <InputFile> ) {
-	    chop;     # strip record separator
-	    
-	    @Fld = split(' ', $_, 9999);
-
-	    # Straight quote
-	    if ($Fld[1] eq '!QUOTE:') {
-		for ($i = 2; $i <= $#Fld; $i++) {
-		    printf '%s ', $Fld[$i];
-		}
-		print " ";
-		next LINE;
-	    }
-
-	    # Handle optional Title Page and Introduction
-	    if ($Fld[1] eq $boi_string) {
-		print ' ';
-		$intro = 1;
-		next LINE;
-	    }
-
-	    if ($Fld[2] eq '!TITLE:') {
-		if ( $intro ) {
-		    shift @Fld;
-		    shift @Fld;
-		    @title = @Fld;
-		    $tpage = 1;
-		    next LINE;
-		}
-	    }
-
-	    if ($Fld[2] eq '!AUTHORS:') {
-		if ( $intro ) {
-		    shift @Fld;
-		    shift @Fld;
-		    @author = @Fld;
-		    $tpage = 1;
-		    next LINE;
-		}
-	    }
-
-	    if ($Fld[2] eq '!AFFILIATION:') {
-		if ( $intro ) {
-		    shift @Fld;
-		    shift @Fld;
-		    @affiliation = @Fld;
-		    $tpage = 1;
-		    next LINE;
-		}
-	    }
-
-	    if ($Fld[2] eq '!DATE:') {
-		if ( $intro ) {
-		    shift @Fld;
-		    shift @Fld;
-		    @date = @Fld;
-		    $tpage = 1;
-		    next LINE;
-		}
-	    }
-	    
-	    if ($Fld[2] eq '!INTRODUCTION:') {
-		if ( $intro ) {
-		    &do_beg();
-		    print ' ';
-		    print '%..............................................';
-		    shift @Fld;
-		    shift @Fld;
-		    print "\\section{@Fld}";
-		    next LINE;
-		}
-	    }
-
-
-	    # End of introduction
-	    if ($Fld[1] eq $eoi_string) {
-		print ' ';
-		print '%/////////////////////////////////////////////////////////////';
-		print "\\newpage";
-		$intro = 0;
-		next LINE;
-	    }
-	    
-	    # Beginning of prologue
-	    if ($Fld[1] eq $bop_string) {
-		if ( $source ) { &do_eoc(); }
-		print ' ';
-		print '%/////////////////////////////////////////////////////////////'; 
-		&do_beg();
-		if ($first == 0) {
-		    ### print "\\newpage";
-		    print " ";
-		    print "\\mbox{}\\hrulefill\\ ";
-		    print " ";}
-		else {
-		    unless($opt_b){
-			print 
-			    "\\section{Routine/Function Prologues} \\label{app:ProLogues}";
-		    }
-		}
-		$first = 0;
-		$prologue = 1;
-		$verb = 0;
-		$source = 0;
-		&set_missing();   # no required keyword yet
-		next LINE;
-	    }
-
-	    # Beginning of internal prologue
-	    if ($Fld[1] eq $bopi_string) {
-		if ($opt_i) {$prologue = 0;}
-		else {
-		    if ($source) { &do_eoc(); }
-		    print ' ';
-		    print '%/////////////////////////////////////////////////////////////';  
-		    &do_beg();
-		    if ($first ==0) {
-			### print "\\newpage";
-			print " ";
-			print "\\mbox{}\\hrulefill\\";
-			print " ";}
-		    else {
-			unless($opt_b) {
-			    print 
-				"\\section{Routine/Function Prologues} \\label{app:ProLogues}";
-			}
-		    }
-		    $first = 0;
-		    $prologue = 1;
-		    $verb = 0;
-		    $source = 0;
-		    &set_missing();    # no required keyword yet
-		    next LINE;
-		}
-	    }
-
-	    # A new subroutine/function
-	    if ($Fld[2] eq '!ROUTINE:' ) { 
-		if ($prologue) {
-		    shift @Fld;
-		    shift @Fld;
-		    $_ = join(' ', @Fld);
-		    $name_is = $_;
-		    s/_/\\_/g;
-		    # Replace "_" with "\_"
-		    if ( $opt_n && $not_first ) {
-			printf "\\newpage\n";
-		    }
-		    unless ($opt_f) {
-			printf "\\subsection{%s (File: %s)}\n\n", $_, $FileBaseName;
-		    }
-		    else {
-			printf "\\subsection{%s}\n\n", $_;
-			printf "\n{\\sf FILE:} %s\n\\medskip\n", $FileBaseName;
-		    }
-		    $have_name = 1;
-		    $not_first = 1;
-		    next LINE;
-		}
-	    }
-
-	    # A new Module
-	    if ($Fld[2] eq '!MODULE:' ) { 
-		if ($prologue) {
-		    shift @Fld;
-		    shift @Fld;
-		    $_ = join(' ', @Fld);
-		    $name_is = $_;
-		    s/_/\\_/g;                         # Replace "_" with "\_"
-		    if ( $opt_n && $not_first ) { printf "\\newpage\n"; }
-		    unless($opt_f) {
-			printf 
-			    "\\subsection{Fortran:  Module Interface %s (File: %s)}\n\n", 
-			    $_, $FileBaseName;
-		    }
-		    else {
-			printf "\\subsection{Fortran:  Module Interface %s }\n\n", $_;
-		    }
-		    $have_name = 1;
-		    $have_intf = 1;  # fake it, it does not need one.
-		    $not_first = 1;
-		    next LINE;
-		}
-	    }
-
-	    # A new include file
-	    if ($Fld[2] eq '!INCLUDE:' ) { 
-		if ($prologue) {
-		    shift @Fld;
-		    shift @Fld;
-		    $_ = join(' ', @Fld);
-		    $name_is = $_;
-		    s/_/\\_/g;                         # Replace "_" with "\_"
-		    if ( $opt_n && $not_first ) {
-			printf "\\newpage\n";
-		    }
-		    unless($opt_f) {
-			printf 
-			    "\\subsubsection{Include File %s (File: %s)}\n\n", 
-			    $_, $FileBaseName;}
-		    else {
-			printf "\\subsubsection{Include File %s }\n\n", $_;
-		    }  
-		    $have_name = 1;
-		    $have_intf = 1;  # fake it, it does not need one.
-		    $not_first = 1;
-		    next LINE;
-		}
-	    }
-
-	    # A new INTERNAL subroutine/function
-	    if ($Fld[2] eq '!IROUTINE:') {            # Internal routine
-		if ($prologue) {
-		    shift @Fld;
-		    shift @Fld;
-		    $_ = join(' ', @Fld);
-		    $name_is = $_;
-		    s/_/\\_/g;                        # Replace "_" with "\_"
-		    @words = split " ", $_;
-		    printf "\\subsubsection [$words[1]] {$_}\n\n";
-		    $have_name = 1;
-		    next LINE;
-		}
-	    }
-
-	    # A new CLASS
-	    if ($Fld[2] eq '!CLASS:' ) { 
-		if ($prologue) {
-		    shift @Fld;
-		    shift @Fld;
-		    $_ = join(' ', @Fld);
-		    $name_is = $_;
-		    s/_/\\_/g;                         # Replace "_" with "\_"
-		    if ( $opt_n && $not_first ) { printf "\\newpage\n"; }
-		    unless($opt_f) {
-			printf 
-			    "\\subsection{C++:  Class Interface %s (File: %s)}\n\n", 
-			    $_, $FileBaseName;}
-		    else {
-			printf "\\subsection{C++:  Class Interface %s }\n\n", $_;
-		    }
-		    $have_name = 1;
-		    $have_intf = 1;  # fake it, it does not need one.
-		    $not_first = 1;
-		    next LINE;
-		}
-	    }
-
-	    # A new Method
-	    if ($Fld[2] eq '!METHOD:' ) { 
-		if ($prologue) {
-		    shift @Fld;
-		    shift @Fld;
-		    $_ = join(' ', @Fld);
-		    $name_is = $_;
-		    s/_/\\_/g;                         # Replace "_" with "\_"
-		    if ( $opt_n && $not_first ) { printf "\\newpage\n"; }
-		    unless ($opt_f) {
-			printf "\\subsubsection{%s (File: %s)}\n\n", $_, $FileBaseName;
-		    }
-		    else {
-			printf "\\subsubsection{%s }\n\n", $_;
-		    }
-		    $have_name = 1;
-		    $not_first = 1;
-		    next LINE;
-		}
-	    }
-    
-	    # A new function
-	    if ($Fld[2] eq '!FUNCTION:' ) { 
-		if ($prologue) {
-		    shift @Fld;
-		    shift @Fld;
-		    $_ = join(' ', @Fld);
-		    $name_is = $_;
-		    s/_/\\_/g;                         # Replace "_" with "\_"
-		    if ( $opt_n && $not_first ) {
-			printf "\\newpage\n";
-		    }
-		    unless ($opt_f) {
-			printf 
-			    "\\subsubsection{%s (File: %s)}\n\n",
-			    $_, $FileBaseName;
-		    }
-		    else {
-			printf "\\subsubsection{%s }\n\n", $_;
-		    }
-		    $have_name = 1;
-		    $not_first = 1;
-		    next LINE;
-		}
-	    }
-
-	    # Description: what follows will be regular LaTeX (no verbatim)
-	    if (/!DESCRIPTION:/) {
-		if ($prologue) {
-		    if ($verb) {
-			&end_verbatim();
-			printf "\n{\\sf DESCRIPTION: }\n\\medskip\n";
-		    }
-		    else {                          # probably never occurs
-		    }
-		    if ($opt_x) {
-			&begin_verbatim();
-			$first_verb = 1;
-		    }
-		    else {
-			for ($i = 3; $i <= $#Fld; $i++) {
-			    printf '%s ', $Fld[$i];
-			}
-		    }
-		    ### print " ";
-		    $have_desc = 1;
-		    next LINE;
-		}
-	    }
-    
-	    # Handle optional keywords (these will appear as verbatim)
-	    if ($prologue) {
-	      KEY:
-		foreach $key ( @keys ) {
-		    if ( /$key/ ) {
-			if ($verb) {
-			    &end_verbatim();
-			}
-			else {
-			    printf "\n\\medskip\n";
-			}
-			$k = sprintf('%s', $key);
-			$ln = length($k);
-			###printf "\\subsubsection*{%s}\n", substr($k, 2, $ln - 1);
-			###printf "{\\Large \\em %s}\n", ucfirst lc substr($k, 2, $ln - 1);
-			$_ = $key;
-			printf "{\\sf %s}\n", substr($k, 2, $ln - 1); # san serif
-			&begin_verbatim();
-			$first_verb = 1;
-			if ( $key eq "!INTERFACE:" )        { $have_intf = 1; }
-			if ( $key eq "!CALLING SEQUENCE:" ) { $have_intf = 1; }
-			if ( $key eq "!REVISION HISTORY:" ) { $have_hist = 1; }
-			next LINE;
-		    }
-		}
-	    }
-
-	    # End of prologue
-	    if ($Fld[1] eq $eop_string) {
-		if ($verb) {
-		    &end_verbatim();
-		}
-		$prologue = 0;
-		# &check_if_all_there(); # check if all required keywords are there.
-		if ( $opt_l ) {
-		    $Fld[1] = $boc_string;}
-		else {
-		    next LINE;
-		}
-	    }
-	    
-	    unless ( $opt_s ) {
-		
-		# End of Internal Prologue
-		if ($Fld[1] eq $eopi_string) {
-		    if ($verb) {
-			&end_verbatim();
-		    }
-		    $prologue = 0;
-		    # &check_if_all_there(); # check if all required keywords are there.
-		    if ($opt_l) {
-			$Fld[1] = $boc_string;}
-		    else { next LINE; }
-		}
-		
-		# Beginning of source code section
-		if ($Fld[1] eq $boc_string) {
-		    print ' ';
-		    print '%/////////////////////////////////////////////////////////////';
-		    $first = 0;
-		    $prologue = 0;
-		    $source = 1;
-		    ### printf "\\subsubsection*{CONTENTS:}\n\n", $Fld[3];
-		    printf "{\\sf CONTENTS:}";
-		    &begin_verbatim();
-		    next LINE;
-		}
-		
-		# End of source code
-		if ($Fld[1] eq $eoc_string) {
-		    &do_eoc();
-		    $prologue = 0;
-		    next LINE;
-		}
-	    }
-	    
-	    # Prologue or Introduction, print regular line (except for !)
-	    if ($prologue||$intro) {
-		if ( $verb && $#Fld == 1 && ( $Fld[1] eq $comment_string ) ) {
-		    next LINE;                # to eliminate excessive blanks 
-		}
-		if ( $Fld[2] eq "\\ev" ) {
-		    # special handling
-		    $_ = $comment_string . " \\end{verbatim}";
-		}
-		s/^$comment_string/ /;       # replace comment string with blank
-		# $line = sprintf('%s', $_);   # not necessary -- comment str is absent
-		# $ln = length($line);         # not necessary -- comment str is absent
-		unless ( $first_verb ) { printf "\n "; }
-		printf '%s', $_;
-		# printf '%s', substr($line, 1, $ln - 1);     # comment str is absent
-		$first_verb = 0;
-		next LINE;
-	    }
-    
-	    # Source code: print the full line
-	    if ($source) {
-		print $_;
-		next LINE;
-	    }
-
-	}  # end inner loop for processing each line of the input file
-
-    }  # end main loop for each command-line argument
+ }  # end main loop for each command-line argument
 
 print $_;
 if ( $source ) { &do_eoc(); }     
@@ -901,6 +900,7 @@ sub print_help
     print " Options:";
     print "     -h   Help mode: list command line options";
     print "     -b   Bare mode, meaning no preamble, etc."; 
+    print "     +-v  Verbosity level"; 
     print "     +-n  New Page for each subsection (wastes paper)";
     print "     +-l  Listing mode, default is prologues only";
     print "     +-s  Shut-up mode, i.e., ignore any code from BOC to EOC";
