@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.30 2004/12/23 21:28:47 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.31 2004/12/23 21:42:56 dimitri Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -101,7 +101,7 @@ C       Print some statistics about input forcing fields
 
 #ifdef ALLOW_SEAICE
 C       Print some statistics about pkg/seaice fields
-        IF (useSEAICE) CALL EXF_SEAICE( myIter, myTime, myThid )
+        IF (useSEAICE) CALL SEAICE_MONITOR( myIter, myTime, myThid )
 #endif /* ALLOW_SEAICE */
 
 C       Print the basic statistics of model state variables
