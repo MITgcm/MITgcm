@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_stats_rl.F,v 1.4 2004/12/14 16:54:08 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/debug/debug_stats_rl.F,v 1.5 2005/02/09 21:15:03 heimbach Exp $
 C $Name:  $
 
 #include "DEBUG_OPTIONS.h"
@@ -38,13 +38,13 @@ C     === Local variables ====
      I                myThid )
 
       _BEGIN_MASTER( myThid )
-      WRITE(*,'(A,A30,A,1PE22.14)')
+      WRITE(standardmessageunit,'(A,A30,A,1PE22.14)')
      &      'DEBUG_STATS_RL: ',arrName,'  min=',theMin
-      WRITE(*,'(A,A30,A,1PE22.14)')
+      WRITE(standardmessageunit,'(A,A30,A,1PE22.14)')
      &      'DEBUG_STATS_RL: ',arrName,'  max=',theMax
-      WRITE(*,'(A,A30,A,1PE22.14)')
+      WRITE(standardmessageunit,'(A,A30,A,1PE22.14)')
      &      'DEBUG_STATS_RL: ',arrName,' mean=',theMean
-      WRITE(*,'(A,A30,A,1PE22.14)')
+      WRITE(standardmessageunit,'(A,A30,A,1PE22.14)')
      &      'DEBUG_STATS_RL: ',arrName,' S.D.=',theSD
       _END_MASTER( myThid )
 
