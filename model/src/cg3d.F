@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.2 1999/05/18 17:36:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.3 1999/05/24 14:15:15 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -518,7 +518,7 @@ C--   Un-normalise the answer
        ENDDO
       ENDDO
 
-      _EXCH_XYZ_R8(cg3d_x, myThid )
+Cadj  _EXCH_XYZ_R8(cg3d_x, myThid )
       _BEGIN_MASTER( myThid )
        WRITE(0,'(A,I6,1PE30.14)') ' CG3D iters, err = ',
      &  actualIts, actualResidual

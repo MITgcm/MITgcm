@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.9 1999/03/22 15:54:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.10 1999/05/24 14:15:15 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -56,6 +56,8 @@ C     see CG2D.h for the interface to this routine.
      I           cg2d_b,
      U           cg2d_x,
      I           myThid )
+
+      _EXCH_XY_R8(cg2d_x, myThid )
 
 #ifdef ALLOW_NONHYDROSTATIC
       IF ( nonHydrostatic ) THEN
@@ -117,6 +119,8 @@ c           cg3d_x(i,j,k,bi,bj) = 0.
        ENDDO ! bj
 
        CALL CG3D( myThid )
+
+       _EXCH_XYZ_R8(cg3d_x, myThid )
 
       ENDIF
 #endif
