@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.7 2001/03/25 22:33:55 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.8 2001/05/14 21:42:07 heimbach Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -676,5 +676,54 @@ C     the bottom of the mixing layer.
 
 #endif ALLOW_KPP
 
+      RETURN
+      END
+
+      subroutine KPP_CALC_DUMMY(
+     I     bi, bj, myTime, myThid )
+C     /==========================================================\
+C     | SUBROUTINE KPP_CALC_DUMMY                                |
+C     | o Compute all KPP fields defined in KPP.h                |
+C     | o Dummy routine for TAMC
+C     |==========================================================|
+C     | This subroutine serves as an interface between MITGCMUV  |
+C     | code and NCOM 1-D routines in kpp_routines.F             |
+C     \==========================================================/
+      IMPLICIT NONE
+
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
+#include "KPP.h"
+#include "KPP_PARAMS.h"
+#include "GRID.h"
+
+c Routine arguments
+c     bi, bj - array indices on which to apply calculations
+c     myTime - Current time in simulation
+
+      INTEGER bi, bj
+      INTEGER myThid
+      _RL     myTime
+
+#ifdef ALLOW_KPP
+
+c Local constants
+      integer i, j, k
+
+      DO j=1-OLy,sNy+OLy
+         DO i=1-OLx,sNx+OLx
+            KPPhbl (i,j,bi,bj) = 1.0
+            KPPfrac(i,j,bi,bj) = 0.0
+            DO k = 1,Nr
+               KPPghat   (i,j,k,bi,bj) = 0.0
+               KPPviscAz (i,j,k,bi,bj) = viscAz
+               KPPdiffKzT(i,j,k,bi,bj) = diffKzT
+               KPPdiffKzS(i,j,k,bi,bj) = diffKzS
+            ENDDO
+         ENDDO
+      ENDDO
+      
+#endif
       RETURN
       END
