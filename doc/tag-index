@@ -1,9 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.217 2003/12/05 02:46:41 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.218 2003/12/06 00:35:13 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o surface flux time-av diagnostic modified for NLFS & RealFreshWater 
+o add call to AIM pendant S/R in external_forcing & external_fields_load.F
 
 checkpoint52c_post
 o Fixing OPTIONS files for use of exf:
