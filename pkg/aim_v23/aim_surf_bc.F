@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.6 2004/05/06 15:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_surf_bc.F,v 1.7 2004/05/21 17:49:59 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -270,27 +270,12 @@ C-- endif/else aim_useFMsurfBC
 
 #ifdef COMPONENT_MODULE
       IF ( useCoupler ) THEN
-       IF ( useImportSST ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-
-c         IF ( SSTocn(I,J,bi,bj) .NE. 0. ) THEN
-          IF ( aim_landFr(i,j,bi,bj) .LT. 1. ) THEN
-           I2 = i+(j-1)*sNx
-C--   take SST from the ocean compon where Sea-Ice fraction is zero
-           IF ( oice1(I2).EQ.0. ) THEN
-            sst1(I2,myThid) = SSTocn(i,j,bi,bj)+celsius2K
-           ELSEIF ( SSTocn(i,j,bi,bj).GE. -1. _d 0)  THEN
-C--   take SST from the ocean compon if clearly warmer than freezing
-C       then reset sea-ice fraction
-            sst1(I2,myThid) = SSTocn(i,j,bi,bj)+celsius2K
-            oice1(I2) = 0.
-           ENDIF
-          ENDIF
-
-         ENDDO
-        ENDDO
-       ENDIF
+C--   take surface data from the ocean component 
+C     to replace MxL fields (if use sea-ice) or directly AIM SST
+        CALL ATM_APPLY_IMPORT(
+     I           aim_landFr,
+     U           sst1(1,mythid), oice1, 
+     I           myTime, myIter, bi, bj, myThid ) 
       ENDIF
 #endif /* COMPONENT_MODULE */
 
@@ -308,8 +293,9 @@ C-    Use land model output instead of prescribed Temp & moisture
       IF (useThSIce) THEN
 C-    Use thermo. sea-ice model output instead of prescribed Temp & albedo
         CALL AIM_SICE2AIM( 
-     I           aim_landFr, sst1(1,mythid),
-     U           oice1, sti1(1,mythid), alb1(1,3,myThid),
+     I           aim_landFr,
+     U           sst1(1,mythid), oice1, 
+     O           sti1(1,mythid), alb1(1,3,myThid),
      I           myTime, myIter, bi, bj, myThid ) 
       ENDIF
 #endif /* ALLOW_THSICE */
