@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.22 2004/03/17 23:08:09 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.23 2004/10/11 16:41:01 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -53,14 +53,18 @@ c     == end of interface ==
 
 c--   read forcing fields from files and temporal interpolation
 
+cph-exf-print      print *, 'ph-exf --------- ----------------------------------'
+
 c     Zonal and meridional wind stress.
 #ifdef USE_EXF_INTERPOLATION
       call exf_set_uv(
      &     ustressfile, ustressstartdate, ustressperiod,
+     &     ustressstartdate1, ustressstartdate2,
      &     exf_inscal_ustress, ustress, ustress0, ustress1, ustressmask,
      &     ustress_lon0, ustress_lon_inc, ustress_lat0, ustress_lat_inc,
      &     ustress_nlon, ustress_nlat,
      &     vstressfile, vstressstartdate, vstressperiod,
+     &     vstressstartdate1, vstressstartdate2,
      &     exf_inscal_vstress, vstress, vstress0, vstress1, vstressmask,
      &     vstress_lon0, vstress_lon_inc, vstress_lat0, vstress_lat_inc,
      &     vstress_nlon, vstress_nlat,
@@ -68,11 +72,13 @@ c     Zonal and meridional wind stress.
 #else /* ifndef USE_EXF_INTERPOLATION */
       call exf_set_gen( 
      &     ustressfile, ustressstartdate, ustressperiod,
+     &     ustressstartdate1, ustressstartdate2,
      &     exf_inscal_ustress,
      &     ustress, ustress0, ustress1, ustressmask,
      &     mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen(
      &     vstressfile, vstressstartdate, vstressperiod,
+     &     ustressstartdate1, ustressstartdate2,
      &     exf_inscal_vstress,
      &     vstress, vstress0, vstress1, vstressmask,
      &     mycurrenttime, mycurrentiter, mythid )
@@ -84,10 +90,12 @@ c     Zonal and meridional wind.
 #ifdef USE_EXF_INTERPOLATION
       call exf_set_uv(
      &     uwindfile, uwindstartdate, uwindperiod,
+     &     uwindstartdate1, uwindstartdate2,
      &     exf_inscal_uwind, uwind, uwind0, uwind1, uwindmask,
      &     uwind_lon0, uwind_lon_inc, uwind_lat0, uwind_lat_inc,
      &     uwind_nlon, uwind_nlat,
      &     vwindfile, vwindstartdate, vwindperiod,
+     &     vwindstartdate1, vwindstartdate2,
      &     exf_inscal_vwind, vwind, vwind0, vwind1, vwindmask,
      &     vwind_lon0, vwind_lon_inc, vwind_lat0, vwind_lat_inc,
      &     vwind_nlon, vwind_nlat,
@@ -95,11 +103,13 @@ c     Zonal and meridional wind.
 #else /* ifndef USE_EXF_INTERPOLATION */
       call exf_set_gen(
      &     uwindfile, uwindstartdate, uwindperiod,
+     &     uwindstartdate1, uwindstartdate2,
      &     exf_inscal_uwind,
      &     uwind, uwind0, uwind1, uwindmask,
      &     mycurrenttime, mycurrentiter, mythid )
       call exf_set_gen(
      &     vwindfile, vwindstartdate, vwindperiod,
+     &     vwindstartdate1, vwindstartdate2,
      &     exf_inscal_vwind,
      &     vwind, vwind0, vwind1, vwindmask,
      &     mycurrenttime, mycurrentiter, mythid )
@@ -123,7 +133,9 @@ c     Zonal and meridional wind.
 
 c     Atmospheric heat flux.
       call exf_set_gen  ( 
-     &     hfluxfile, hfluxstartdate, hfluxperiod, exf_inscal_hflux,
+     &     hfluxfile, hfluxstartdate, hfluxperiod, 
+     &     hfluxstartdate1, hfluxstartdate2,
+     &     exf_inscal_hflux,
      &     hflux, hflux0, hflux1, hfluxmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     hflux_lon0, hflux_lon_inc, hflux_lat0, hflux_lat_inc,
@@ -133,7 +145,9 @@ c     Atmospheric heat flux.
 
 c     Salt flux.
       call exf_set_gen  ( 
-     &     sfluxfile, sfluxstartdate, sfluxperiod, exf_inscal_sflux,
+     &     sfluxfile, sfluxstartdate, sfluxperiod, 
+     &     sfluxstartdate1, sfluxstartdate2,
+     &     exf_inscal_sflux,
      &     sflux, sflux0, sflux1, sfluxmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     sflux_lon0, sflux_lon_inc, sflux_lat0, sflux_lat_inc,
@@ -146,6 +160,7 @@ c     Salt flux.
 c     Atmospheric temperature.
       call exf_set_gen( 
      &     atempfile, atempstartdate, atempperiod, 
+     &     atempstartdate1, atempstartdate2,
      &     exf_inscal_atemp,
      &     atemp, atemp0, atemp1, atempmask, 
 #ifdef USE_EXF_INTERPOLATION
@@ -166,6 +181,7 @@ c     Atmospheric temperature.
 c     Atmospheric humidity.
       call exf_set_gen( 
      &     aqhfile, aqhstartdate, aqhperiod, 
+     &     aqhstartdate1, aqhstartdate2,
      &     exf_inscal_aqh,
      &     aqh, aqh0, aqh1, aqhmask, 
 #ifdef USE_EXF_INTERPOLATION
@@ -177,6 +193,7 @@ c     Atmospheric humidity.
 c     Net long wave radiative flux.
       call exf_set_gen( 
      &     lwfluxfile, lwfluxstartdate, lwfluxperiod, 
+     &     lwfluxstartdate1, lwfluxstartdate2,
      &     exf_inscal_lwflux,
      &     lwflux, lwflux0, lwflux1, lwfluxmask, 
 #ifdef USE_EXF_INTERPOLATION
@@ -188,6 +205,7 @@ c     Net long wave radiative flux.
 c     Precipitation.
       call exf_set_gen( 
      &     precipfile, precipstartdate, precipperiod, 
+     &     precipstartdate1, precipstartdate2,
      &     exf_inscal_precip,
      &     precip, precip0, precip1, precipmask, 
 #ifdef USE_EXF_INTERPOLATION
@@ -215,7 +233,9 @@ c     Precipitation.
 #if defined(ALLOW_ATM_TEMP) || defined(SHORTWAVE_HEATING)
 c     Net short wave radiative flux.
       call exf_set_gen  ( 
-     &     swfluxfile, swfluxstartdate, swfluxperiod, exf_inscal_swflux,
+     &     swfluxfile, swfluxstartdate, swfluxperiod, 
+     &     swfluxstartdate1, swfluxstartdate2,
+     &     exf_inscal_swflux,
      &     swflux, swflux0, swflux1, swfluxmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     swflux_lon0, swflux_lon_inc, swflux_lat0, swflux_lat_inc,
@@ -227,7 +247,9 @@ c     Net short wave radiative flux.
 #ifdef EXF_READ_EVAP
 c     Evaporation
       call exf_set_gen  ( 
-     &     evapfile, evapstartdate, evapperiod, exf_inscal_evap,
+     &     evapfile, evapstartdate, evapperiod, 
+     &     evapstartdate1, evapstartdate2,
+     &     exf_inscal_evap,
      &     evap, evap0, evap1, evapmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     evap_lon0, evap_lon_inc, evap_lat0, evap_lat_inc,
@@ -240,7 +262,9 @@ c     Evaporation
 
 c     Downward shortwave radiation.
       call exf_set_gen  ( 
-     &     swdownfile, swdownstartdate, swdownperiod, exf_inscal_swdown,
+     &     swdownfile, swdownstartdate, swdownperiod, 
+     &     swdownstartdate1, swdownstartdate2,
+     &     exf_inscal_swdown,
      &     swdown, swdown0, swdown1, swdownmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     swdown_lon0, swdown_lon_inc, swdown_lat0, swdown_lat_inc,
@@ -250,7 +274,9 @@ c     Downward shortwave radiation.
 
 c     Downward longwave radiation.
       call exf_set_gen  ( 
-     &     lwdownfile, lwdownstartdate, lwdownperiod, exf_inscal_lwdown,
+     &     lwdownfile, lwdownstartdate, lwdownperiod, 
+     &     lwdownstartdate1, lwdownstartdate2,
+     &     exf_inscal_lwdown,
      &     lwdown, lwdown0, lwdown1, lwdownmask, 
 #ifdef USE_EXF_INTERPOLATION
      &     lwdown_lon0, lwdown_lon_inc, lwdown_lat0, lwdown_lat_inc,
@@ -264,6 +290,7 @@ c     Downward longwave radiation.
 c     Atmos. pressure forcing
       call exf_set_gen  ( 
      &     apressurefile, apressurestartdate, apressureperiod, 
+     &     apressurestartdate1, apressurestartdate2,
      &     exf_inscal_apressure,
      &     apressure, apressure0, apressure1, apressuremask, 
 #ifdef USE_EXF_INTERPOLATION

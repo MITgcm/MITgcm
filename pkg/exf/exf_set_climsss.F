@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsss.F,v 1.12 2004/03/17 23:08:09 dimitri Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsss.F,v 1.13 2004/10/11 16:41:01 heimbach Exp $
 
 #include "EXF_OPTIONS.h"
 
@@ -53,6 +53,7 @@ c     == local variables ==
       integer count0, count1
       _RL     fac
       integer bi, bj, i, j, interp_method
+      integer year0, year1
 
 c     == end of interface ==
 
@@ -73,8 +74,10 @@ c     Jan. through Dec.
 c     get record numbers and interpolation factor for climsss
             call exf_GetFFieldRec(
      I           climsssstartdate, climsssperiod
+     I           , climsssstartdate1, climsssstartdate2
+     I           , .false.
      O           , fac, first, changed
-     O           , count0, count1
+     O           , count0, count1, year0, year1
      I           , mycurrenttime, mycurrentiter, mythid
      &           )
 

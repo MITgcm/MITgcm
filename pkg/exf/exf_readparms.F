@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.19 2004/10/07 01:10:43 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_readparms.F,v 1.20 2004/10/11 16:41:01 heimbach Exp $
 C $Name:  $
 
 #include "EXF_OPTIONS.h"
@@ -63,11 +63,6 @@ c     == local variables ==
       integer i
       integer date_array(4), difftime(4)
 
-c     == external ==
-
-      integer  ilnblnk
-      external ilnblnk
-
 c     == end of interface ==
 
 c     Surface flux data.
@@ -99,7 +94,8 @@ c     Surface flux data.
      &          uwindfile,          vwindfile,
      &         swfluxfile,         lwfluxfile, apressurefile,
      &         swdownfile,         lwdownfile,
-     &          exf_iprec,         exf_yftype,
+     &          exf_iprec,         exf_yftype, 
+     & useExfYearlyFields,   useExfCheckRange,
      &   exf_inscal_hflux,  exf_inscal_sflux,
      & exf_inscal_ustress,  exf_inscal_vstress,
      &   exf_inscal_uwind,  exf_inscal_vwind,    exf_inscal_evap,
@@ -309,8 +305,10 @@ c     Start dates.
       apressurestartdate = 0
 
 c     Initialise file type and field precision
-      exf_iprec       = 32
-      exf_yftype      = 'RL'
+      exf_iprec            = 32
+      exf_yftype           = 'RL'
+      useExfYearlyFields   = .FALSE.
+      useExfCheckRange     = .FALSE.
 
 c     Input scaling factors.
       exf_inscal_hflux     =  1. _d 0
@@ -482,21 +480,10 @@ c     Next, read the forcing data file.
       read(  scrunit1, nml = exf_nml )
       close( scrunit1 )
 
+      call exf_check( mythid )
+
 c     Complete the start date specifications for the forcing
 c     fields to get a complete calendar date array.
-
-c     check for consistency
-
-      if (.NOT. 
-     &     (exf_iprec .EQ. 32 .OR. exf_iprec .EQ. 64)
-     &     ) then
-         stop 'stop in exf_readparms: value of exf_iprec not allowed'
-      else if (.NOT. 
-     &        (exf_yftype .EQ. 'RS' .OR. 
-     &        exf_yftype .EQ. 'RL')
-     &        ) then
-         stop 'stop in exf_readparms: value of exf_yftype not allowed'
-      end if
 
 #ifdef ALLOW_ATM_WIND
       if ( uwindfile .NE. ' ' ) then

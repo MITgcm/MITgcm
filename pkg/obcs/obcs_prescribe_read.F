@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.2 2004/09/24 12:32:09 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/obcs/obcs_prescribe_read.F,v 1.3 2004/10/11 16:41:01 heimbach Exp $
 C $Name:  $
 
 # include "OBCS_OPTIONS.h"
@@ -48,7 +48,10 @@ c     == end of interface ==
 #ifdef ALLOW_OBCS_NORTH
       call exf_getffieldrec(
      I                       obcsNstartdate, obcsNperiod
-     O                     , fac, first, changed, count0, count1
+     I                     , obcsNstartdate1, obcsNstartdate2
+     I                     , false.
+     O                     , fac, first, changed,
+     O                     , count0, count1, year0, year1
      I                     , mycurrenttime, mycurrentiter, mythid
      &                     )
 
@@ -69,6 +72,8 @@ c     == end of interface ==
 #ifdef ALLOW_OBCS_SOUTH
       call exf_getffieldrec(
      I                       obcsSstartdate, obcsSperiod
+     I                     , obcsSstartdate1, obcsSstartdate2
+     I                     , false.
      O                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid
      &                     )
@@ -91,6 +96,8 @@ c     == end of interface ==
 #ifdef ALLOW_OBCS_EAST
       call exf_getffieldrec(
      I                       obcsEstartdate, obcsEperiod
+     I                     , obcsEstartdate1, obcsEstartdate2
+     I                     , false.
      O                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid
      &                     )
@@ -113,6 +120,8 @@ c     == end of interface ==
 #ifdef ALLOW_OBCS_WEST
       call exf_getffieldrec(
      I                       obcsWstartdate, obcsWperiod
+     I                     , obcsWstartdate1, obcsWstartdate2
+     I                     , false.
      O                     , fac, first, changed, count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid
      &                     )

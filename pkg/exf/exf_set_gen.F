@@ -1,7 +1,9 @@
 #include "EXF_OPTIONS.h"
 
       subroutine exf_set_gen( 
-     &     genfile, genstartdate, genperiod, exf_inscal_gen,
+     &     genfile, genstartdate, genperiod, 
+     &     genstartdate1, genstartdate2,
+     &     exf_inscal_gen,
      &     genfld, gen0, gen1, genmask,
 #ifdef USE_EXF_INTERPOLATION
      &     gen_lon0, gen_lon_inc, gen_lat0, gen_lat_inc,
@@ -40,13 +42,14 @@ c     == global variables ==
 
 c     == routine arguments ==
 
+      integer genstartdate1, genstartdate2
       _RL     genstartdate, genperiod
       _RL     exf_inscal_gen
       _RL     genfld(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     gen0  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     gen1  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       character*1 genmask
-      character*(128) genfile
+      character*(128) genfile, genfile0, genfile1
       _RL     mycurrenttime
       integer mycurrentiter
       integer mythid
@@ -68,34 +71,53 @@ c     == local variables ==
 
       logical first, changed
       integer count0, count1
+      integer year0, year1
       _RL     fac
 
       integer bi, bj
-      integer i, j, interp_method
+      integer i, j
+      integer il, interp_method
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
 
 c     == end of interface ==
 
       if ( genfile .NE. ' ' ) then
 
+cph(
+cph-exf-print         if (genfile .EQ. hfluxfile)  year0 = 3000
+cph)
 c     get record numbers and interpolation factor for gen
          call exf_GetFFieldRec(
      I        genstartdate, genperiod
+     I        , genstartdate1, genstartdate2
+     I        , useExfYearlyFields
      O        , fac, first, changed
-     O        , count0, count1
+     O        , count0, count1, year0, year1
      I        , mycurrenttime, mycurrentiter, mythid
      &        )
 
          if ( first ) then
+            if (useExfYearlyFields) then
+               il = ilnblnk( genfile )
+               write(genfile0(1:128),'(2a,i4.4)')
+     &              genfile(1:il),'_',year0
+            else
+               genfile0 = genfile
+            endif
 #ifdef USE_EXF_INTERPOLATION
             interp_method = 2
-            call exf_interp( genfile, exf_iprec
+            call exf_interp( genfile0, exf_iprec
      &           , gen1, count0, gen_xout, gen_yout
      &           , gen_lon0,gen_lon_inc
      &           , gen_lat0,gen_lat_inc
      &           , gen_nlon,gen_nlat,interp_method,mythid
      &           )
 #else
-            call mdsreadfield( genfile, exf_iprec, exf_yftype, 1
+            call mdsreadfield( genfile0, exf_iprec, exf_yftype, 1
      &           , gen1, count0, mythid
      &           )
 #endif
@@ -110,16 +132,23 @@ c     get record numbers and interpolation factor for gen
          if (( first ) .or. ( changed )) then
             call exf_SwapFFields( gen0, gen1, mythid )
             
+            if (useExfYearlyFields) then
+               il = ilnblnk( genfile )
+               write(genfile1(1:128),'(2a,i4.4)')
+     &              genfile(1:il),'_',year1
+            else
+               genfile1 = genfile
+            endif
 #ifdef USE_EXF_INTERPOLATION
             interp_method = 2
-            call exf_interp( genfile, exf_iprec
+            call exf_interp( genfile1, exf_iprec
      &           , gen1, count1, gen_xout, gen_yout
      &           , gen_lon0,gen_lon_inc
      &           , gen_lat0,gen_lat_inc
      &           , gen_nlon,gen_nlat,interp_method,mythid
      &           )
 #else
-            call mdsreadfield( genfile, exf_iprec, exf_yftype, 1
+            call mdsreadfield( genfile1, exf_iprec, exf_yftype, 1
      &           , gen1, count1, mythid
      &           )
 #endif

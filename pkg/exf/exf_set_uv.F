@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.4 2004/03/24 21:46:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exf/exf_set_uv.F,v 1.5 2004/10/11 16:41:01 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -6,10 +6,12 @@ C $Name:  $
 
       subroutine exf_set_uv(
      &     uvecfile, uvecstartdate, uvecperiod,
+     &     uvecstartdate1, uvecstartdate2,
      &     exf_inscal_uvec, uvec, uvec0, uvec1, uvecmask,
      &     uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
      &     uvec_nlon, uvec_nlat,
      &     vvecfile, vvecstartdate, vvecperiod,
+     &     vvecstartdate1, vvecstartdate2,
      &     exf_inscal_vvec, vvec, vvec0, vvec1, vvecmask,
      &     vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
      &     vvec_nlon, vvec_nlat,
@@ -55,8 +57,9 @@ c     *vec_nlon, *vec_nlat :: input x-grid and y-grid size for *vec
 c     *vec_lon_inc         :: scalar x-grid increment for *vec
 c     *vec_lat_inc         :: vector y-grid increments for *vec
 
-      character*(128) uvecfile
+      character*(128) uvecfile, uvecfile0, uvecfile1
       _RL     uvecstartdate, uvecperiod
+      _RL     uvecstartdate1, uvecstartdate2
       _RL     exf_inscal_uvec
       _RL     uvec  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     uvec0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -65,8 +68,9 @@ c     *vec_lat_inc         :: vector y-grid increments for *vec
       _RL uvec_lon0, uvec_lon_inc
       _RL uvec_lat0, uvec_lat_inc(MAX_LAT_INC)
       INTEGER uvec_nlon, uvec_nlat
-      character*(128) vvecfile
+      character*(128) vvecfile, vvecfile0, vvecfile1
       _RL     vvecstartdate, vvecperiod
+      _RL     vvecstartdate1, vvecstartdate2
       _RL     exf_inscal_vvec
       _RL     vvec  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     vvec0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
@@ -88,8 +92,14 @@ c     == local variables ==
       _RL     tmp_v (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       integer count0, count1
       integer i, j, bi, bj
-      integer   interp_method
+      integer   il, interp_method
       parameter(interp_method=2)
+      integer year0, year1
+
+c     == external ==
+
+      integer  ilnblnk
+      external ilnblnk
 
 c     == end of interface ==
 
@@ -97,32 +107,36 @@ c     == end of interface ==
 
          if ( uvecfile .NE. ' ' .and. vvecfile .NE. ' ' ) then
 
-c     some restrictions that can be relaxed later on
-            if ( uvecstartdate .ne. vvecstartdate .or.
-     &           uvecperiod    .ne. vvecperiod ) then
-               print*,'For useCubedSphereExchange, S/R exf_set_uv.F'
-               print*,'assumes that the u and v wind or wind stress'
-               print*,'files have the same startdate and period.'
-               stop
-            endif
-
 c     get record numbers and interpolation factor
             call exf_GetFFieldRec(
      I           uvecstartdate, uvecperiod
+     I           , uvecstartdate1, uvecstartdate2
+     I           , useExfYearlyFields
      O           , fac, first, changed
-     O           , count0, count1
+     O           , count0, count1, year0, year1
      I           , mycurrenttime, mycurrentiter, mythid
      &           )
 
             if ( first ) then
+               if (useExfYearlyFields) then
+                  il = ilnblnk( uvecfile )
+                  write(uvecfile0(1:128),'(2a,i4.4)')
+     &                 uvecfile(1:il),'_',year0
+                  il = ilnblnk( vvecfile )
+                  write(vvecfile0(1:128),'(2a,i4.4)')
+     &                 vvecfile(1:il),'_',year0
+               else
+                  uvecfile0 = uvecfile
+                  vvecfile0 = vvecfile
+               endif
 c     scalar interpolation to (xC,yC) locations
-               call exf_interp( uvecfile, exf_iprec
+               call exf_interp( uvecfile0, exf_iprec
      &              , tmp_u, count0, xC, yC
      &              , uvec_lon0,uvec_lon_inc
      &              , uvec_lat0,uvec_lat_inc
      &              , uvec_nlon,uvec_nlat,interp_method,mythid
      &              )
-               call exf_interp( vvecfile, exf_iprec
+               call exf_interp( vvecfile0, exf_iprec
      &              , tmp_v, count0, xC, yC
      &              , vvec_lon0,vvec_lon_inc
      &              , vvec_lat0,vvec_lat_inc
@@ -174,14 +188,25 @@ c     apply mask
             if (( first ) .or. ( changed )) then
                call exf_SwapFFields( uvec0, uvec1, mythid )
                call exf_SwapFFields( vvec0, vvec1, mythid )
+               if (useExfYearlyFields) then
+                  il = ilnblnk( uvecfile )
+                  write(uvecfile1(1:128),'(2a,i4.4)')
+     &                 uvecfile(1:il),'_',year0
+                  il = ilnblnk( vvecfile )
+                  write(vvecfile1(1:128),'(2a,i4.4)')
+     &                 vvecfile(1:il),'_',year0
+               else
+                  uvecfile1 = uvecfile
+                  vvecfile1 = vvecfile
+               endif
 c     scalar interpolation to (xC,yC) locations
-               call exf_interp( uvecfile, exf_iprec
+               call exf_interp( uvecfile1, exf_iprec
      &              , tmp_u, count1, xC, yC
      &              , uvec_lon0,uvec_lon_inc
      &              , uvec_lat0,uvec_lat_inc
      &              , uvec_nlon,uvec_nlat,interp_method,mythid
      &              )
-               call exf_interp( vvecfile, exf_iprec
+               call exf_interp( vvecfile1, exf_iprec
      &              , tmp_v, count1, xC, yC
      &              , vvec_lon0,vvec_lon_inc
      &              , vvec_lat0,vvec_lat_inc
@@ -253,6 +278,7 @@ c     IF ( .NOT. useCubedSphereExchange )
 
             call exf_set_gen(
      &           uvecfile, uvecstartdate, uvecperiod,
+     I           uvecstartdate1, uvecstartdate2,
      &           exf_inscal_uvec,
      &           uvec, uvec0, uvec1, uvecmask,
      &           uvec_lon0, uvec_lon_inc, uvec_lat0, uvec_lat_inc,
@@ -260,6 +286,7 @@ c     IF ( .NOT. useCubedSphereExchange )
      &           mycurrenttime, mycurrentiter, mythid )
             call exf_set_gen(
      &           vvecfile, vvecstartdate, vvecperiod,
+     I           vvecstartdate1, vvecstartdate2,
      &           exf_inscal_vvec,
      &           vvec, vvec0, vvec1, vvecmask,
      &           vvec_lon0, vvec_lon_inc, vvec_lat0, vvec_lat_inc,
