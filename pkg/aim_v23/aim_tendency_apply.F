@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.6 2004/07/26 03:29:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.7 2004/12/14 04:37:29 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -107,8 +107,8 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 #ifdef ALLOW_DIAGNOSTICS
       IF (usediagnostics .AND. kLev.EQ.Nr) THEN
-        CALL FILL_DIAGNOSTICS(myThid,
-     &            'UFLUX   ',0,1,1,bi,bj,aim_uStress)
+        CALL DIAGNOSTICS_FILL( aim_uStress, 'UFLUX   ',
+     &                         0,1,1,bi,bj,myThid)
       ENDIF
 #endif
 
@@ -220,8 +220,8 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #endif
 #ifdef ALLOW_DIAGNOSTICS
       IF (usediagnostics .AND. kLev.EQ.Nr) THEN
-        CALL FILL_DIAGNOSTICS(myThid,
-     &            'VFLUX   ',0,1,1,bi,bj,aim_vStress)
+        CALL DIAGNOSTICS_FILL( aim_vStress, 'VFLUX   ',
+     &                         0,1,1,bi,bj,myThid)
       ENDIF
 #endif
 
