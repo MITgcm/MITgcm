@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.115 2004/06/26 02:37:17 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.116 2004/07/02 15:09:46 afe Exp $
 C $Name:  $
 C
 CBOP
@@ -83,7 +83,7 @@ C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
      &                uVelInitFile, vVelInitFile, pSurfInitFile,
      &                dQdTfile, ploadFile,
      &                eosType, pickupSuff,
-     &                mdsioLocalDir, tCyl
+     &                mdsioLocalDir
       CHARACTER*(5) checkPtSuff(maxNoChkptLev)
       CHARACTER*(MAX_LEN_FNAM) bathyFile, topoFile
       CHARACTER*(MAX_LEN_FNAM) hydrogThetaFile
@@ -104,7 +104,6 @@ C                        LINEAR, POLY3, UNESCO, JMD95Z, JMD95P, MDJWF, IDEALGAS
       CHARACTER*(MAX_LEN_FNAM) mdsioLocalDir
       CHARACTER*(6) eosType
       CHARACTER*(10) pickupSuff
-      _RL tCyl
 
 C--   COMMON /PARM_I/ Integer valued parameters used by the model.
 C     cg2dMaxIters        :: Maximum number of iterations in the
@@ -528,7 +527,8 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & hFacMinDr, hFacMinDp,
      & horiVertRatio, recip_horiVertRatio,
      & ivdc_kappa, Ro_SeaLevel,
-     & bottomDragLinear,bottomDragQuadratic
+     & bottomDragLinear,bottomDragQuadratic,
+     & tCyl
 
       _RL cg2dTargetResidual
       _RL cg2dTargetResWunit
@@ -636,6 +636,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL Ro_SeaLevel
       _RL bottomDragLinear
       _RL bottomDragQuadratic
+      _RL tCyl
 
 C--   COMMON /PARM_A/ Thermodynamics constants ?
       COMMON /PARM_A/ HeatCapacity_Cp,recip_Cp
