@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.62 2004/10/18 21:36:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.63 2004/10/29 16:30:11 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -95,6 +95,12 @@ C     zcoord ::
      &'   /* Reference salinity profile ( ppt ) */')
       CALL WRITE_0D_R8( viscAh, INDEX_NONE,'viscAh =',
      &'   /* Lateral eddy viscosity ( m^2/s ) */')
+      IF ( viscAhD.NE.viscAh ) 
+     & CALL WRITE_0D_R8( viscAhD, INDEX_NONE,'viscAhD =',
+     & '  /* Lateral eddy viscosity (Divergence)( m^2/s ) */')
+      IF ( viscAhZ.NE.viscAh ) 
+     & CALL WRITE_0D_R8( viscAhZ, INDEX_NONE,'viscAhZ =',
+     & '  /* Lateral eddy viscosity (Vorticity) ( m^2/s ) */')
       CALL WRITE_0D_R8( viscAhMax, INDEX_NONE,'viscAhMax =',
      &'   /* Maximum lateral eddy viscosity ( m^2/s ) */')
       CALL WRITE_0D_R8( viscAhGrid, INDEX_NONE,'viscAhGrid =',
@@ -103,6 +109,12 @@ C     zcoord ::
      &'   /* Leith harmonic viscosity factor ( non-dom. ) */')
       CALL WRITE_0D_R8( viscA4, INDEX_NONE,'viscA4 =',
      &'   /* Lateral biharmonic viscosity ( m^4/s ) */')
+      IF ( viscA4D.NE.viscA4 ) 
+     & CALL WRITE_0D_R8( viscA4D, INDEX_NONE,'viscA4D =',
+     & '  /* Lateral biharmonic viscosity (Divergence)( m^4/s ) */')
+      IF ( viscA4Z.NE.viscA4 ) 
+     & CALL WRITE_0D_R8( viscA4D, INDEX_NONE,'viscA4Z =',
+     & '  /* Lateral biharmonic viscosity (Vorticity) ( m^4/s ) */')
       CALL WRITE_0D_R8( viscA4Max, INDEX_NONE,'viscA4Max =',
      &'   /* Maximum biharmonic viscosity ( m^2/s ) */')
       CALL WRITE_0D_R8( viscA4Grid, INDEX_NONE,'viscA4Grid =',

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.133 2004/10/18 21:36:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.134 2004/10/29 16:30:11 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -124,6 +124,7 @@ C--   Continuous equation parameters
      & gravity, gBaro, rhonil, tAlpha, sBeta, 
      & f0, beta, omega, rotationPeriod,
      & viscAh, viscAhW, viscAhMax, viscAhGrid, viscC2leith,
+     & viscAhD, viscAhZ, viscA4D, viscA4Z,
      & viscA4, viscA4Max, viscA4Grid, viscC4leith,
      & viscAz,  cosPower, viscAstrain, viscAtension,
      & diffKhT, diffKzT, diffK4T, 
@@ -287,6 +288,10 @@ C--   Read settings from model parameter file "data".
 
 C--   Set default "physical" parameters
       viscAhW  = UNSET_RL
+      viscAhD  = UNSET_RL
+      viscAhZ  = UNSET_RL
+      viscA4D  = UNSET_RL
+      viscA4Z  = UNSET_RL
       viscAz   = UNSET_RL    
       viscAr   = UNSET_RL
       viscAp   = UNSET_RL
@@ -444,6 +449,11 @@ C--   Advection and Forcing for Temp and salt  on/off flags
       IF (saltVertAdvScheme.EQ.0) saltVertAdvScheme = saltAdvScheme
 C--  horizontal viscosity for vertical moments
       IF ( viscAhW .EQ. UNSET_RL ) viscAhW = viscAh
+C--  horizontal viscosity (acting on Divergence or Vorticity)
+      IF ( viscAhD .EQ. UNSET_RL ) viscAhD = viscAh
+      IF ( viscAhZ .EQ. UNSET_RL ) viscAhZ = viscAh
+      IF ( viscA4D .EQ. UNSET_RL ) viscA4D = viscA4
+      IF ( viscA4Z .EQ. UNSET_RL ) viscA4Z = viscA4
 C--   z,p,r coord input switching.
       IF ( viscAz .NE. UNSET_RL ) zCoordInputData = .TRUE.
       IF ( viscAp .NE. UNSET_RL ) pCoordInputData = .TRUE.
