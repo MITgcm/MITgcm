@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.2 1998/04/24 02:11:36 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CG2D.h,v 1.3 1998/07/16 16:59:27 cnh Exp $
 C
 C     /==========================================================\
 C     | CG2D.h                                                   |
@@ -27,7 +27,7 @@ C     cg2dNorm - A matrix normalisation factor.
      &      aS2d,
      &      pW, pS, pC,
      &      errBuf, nrmBuf, etaNbuf, etaNM1Buf, alphaBuf, sumRhsBuf,
-     &      cg2dNBuf,cg2dNorm, rhsMaxBuf
+     &      cg2dNorm, rhsMaxBuf, cg2dNBuf
       _RS  aW2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  aS2d (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS  pW   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -39,7 +39,7 @@ C     cg2dNorm - A matrix normalisation factor.
       _RL  errBuf(lShare8,MAX_NO_THREADS)
       _RL  nrmBuf(lShare8,MAX_NO_THREADS)
       _RL  sumRHSBuf(lShare8,MAX_NO_THREADS)
-      _RL  cg2dNBuf(lShare8,MAX_NO_THREADS)
+      _RS  cg2dNBuf(lShare8,MAX_NO_THREADS)
       _RL  rhsMaxBuf(lShare8,MAX_NO_THREADS)
       _RL  cg2dNorm
 
