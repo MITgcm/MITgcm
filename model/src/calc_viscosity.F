@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_viscosity.F,v 1.6 2004/09/02 09:13:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_viscosity.F,v 1.7 2004/09/16 09:35:11 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -73,6 +73,13 @@ CEOP
 
 #ifdef ALLOW_MY82
       IF (useMY82) CALL MY82_CALC_VISC(
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,K,
+     O        KappaRU,KappaRV,
+     I        myThid)
+#endif
+
+#ifdef ALLOW_GGL90
+      IF (useGGL90) CALL GGL90_CALC_VISC(
      I        bi,bj,iMin+1,iMax,jMin+1,jMax,K,
      O        KappaRU,KappaRV,
      I        myThid)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.8 2004/08/18 15:56:05 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_write_pickup.F,v 1.9 2004/09/16 09:35:10 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -195,6 +195,13 @@ C     Write pickup file for fizhi package
         CALL FIZHI_WRITE_VEGTILES(fn,0,myTime,myIter,myThid)
       ENDIF
 #endif
+
+#ifdef  ALLOW_GGL90
+      IF ( useGGL90 ) THEN
+        CALL GGL90_WRITE_CHECKPOINT(
+     &       prec, lgf, permCheckPoint, myIter, myThid)
+      ENDIF
+#endif  /* ALLOW_GGL90 */
 
        _END_MASTER( myThid )
        _BARRIER

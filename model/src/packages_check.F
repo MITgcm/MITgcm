@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.22 2004/09/02 09:13:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.23 2004/09/16 09:35:11 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -55,6 +55,18 @@ CEOP
       IF (useMY82) CALL MY82_CHECK( myThid )
 #else
       IF (useMY82) CALL PACKAGES_CHECK_ERROR('MY82', myThid)
+#endif
+
+#ifdef ALLOW_GGL90
+      IF (useGGL90) CALL GGL90_CHECK( myThid )
+#else
+      IF (useGGL90) CALL PACKAGES_CHECK_ERROR('GGL90', myThid)
+#endif
+
+#ifdef ALLOW_OPPS
+      IF (useOPPS) CALL OPPS_CHECK( myThid )
+#else
+      IF (useOPPS) CALL PACKAGES_CHECK_ERROR('OPPS', myThid)
 #endif
 
 #ifdef ALLOW_GMREDI

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.3 2004/09/01 16:25:06 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/tracers_correction_step.F,v 1.4 2004/09/16 09:35:10 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -130,9 +130,19 @@ C--     Convectively adjust new fields to be statically stable
         iMax = sNx
         jMin = 1
         jMax = sNy
-        CALL CONVECTIVE_ADJUSTMENT(
-     I       bi, bj, iMin, iMax, jMin, jMax,
-     I       myTime, myIter, myThid )
+#ifdef ALLOW_OPPS
+        IF ( useOPPS ) THEN
+         CALL OPPS_INTERFACE(
+     I        bi, bj, iMin, iMax, jMin, jMax,
+     I        myTime, myIter, myThid )
+        ELSE
+#endif /* ALLOW_OPPS */
+         CALL CONVECTIVE_ADJUSTMENT(
+     I        bi, bj, iMin, iMax, jMin, jMax,
+     I        myTime, myIter, myThid )
+#ifdef ALLOW_OPPS
+        ENDIF
+#endif /* ALLOW_OPPS */
 
 C--    End of 2nd bi,bj loop
        ENDDO

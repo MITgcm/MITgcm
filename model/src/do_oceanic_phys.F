@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.8 2004/09/08 01:50:24 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.9 2004/09/16 09:35:11 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -455,6 +455,18 @@ C--     Compute MY82 mixing coefficients
      I                  bi, bj, myTime, myThid )
         ENDIF
 #endif /* ALLOW_MY82 */
+
+#ifdef  ALLOW_GGL90
+C--     Compute GGL90 mixing coefficients
+        IF (useGGL90) THEN
+#ifdef ALLOW_DEBUG
+          IF ( debugLevel .GE. debLevB ) 
+     &     CALL DEBUG_CALL('GGL90_CALC',myThid)
+#endif
+          CALL GGL90_CALC(
+     I                  bi, bj, myTime, myThid )
+        ENDIF
+#endif /* ALLOW_GGL90 */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.43 2004/09/10 12:19:29 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.44 2004/09/16 09:35:11 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -123,6 +123,18 @@ C     Do PP81 diagnostics.
 C     Do MY82 diagnostics.
       IF (useMY82 .AND. myIter.NE.nIter0 )
      &     CALL MY82_DO_DIAGS( myTime, myIter, myThid )
+#endif
+
+#ifdef ALLOW_OPPS
+C--   Do OPPS diagnostics.
+      IF (useOPPS .AND. myIter.NE.nIter0 )
+     & CALL OPPS_DO_DIAGS( myTime, myIter, myThid )
+#endif
+
+#ifdef ALLOW_GGL90
+C--   Do GGL90 diagnostics.
+      IF (useGGL90 .AND. myIter.NE.nIter0 )
+     & CALL GGL90_DO_DIAGS( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_SBO

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.35 2004/09/02 09:13:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_variables.F,v 1.36 2004/09/16 09:35:11 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -30,6 +30,8 @@ C       |
 C       |-- PP81_INIT
 C       |
 C       |-- MY82_INIT
+C       |
+C       |-- GGL90_INIT
 C       |
 C       |-- SEAICE_INIT
 C       | 
@@ -101,9 +103,16 @@ C--   Initialize PP81 vertical mixing scheme.
 #endif
 
 #ifdef ALLOW_MY82
-C--   Initialize KMY82 vertical mixing scheme.
+C--   Initialize MY82 vertical mixing scheme.
       IF (useMY82) THEN
        CALL MY82_INIT( myThid )
+      ENDIF
+#endif
+
+#ifdef ALLOW_GGL90
+C--   Initialize GGL90 vertical mixing scheme.
+      IF (useGGL90) THEN
+       CALL GGL90_INIT( myThid )
       ENDIF
 #endif
 

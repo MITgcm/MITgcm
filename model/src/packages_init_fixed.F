@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.26 2004/09/10 12:19:30 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.27 2004/09/16 09:35:11 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -40,6 +40,8 @@ C       |
 C       |-- CTRL_INIT
 C       |
 C       |-- GCHEM_INIT_FIXED
+C       |
+C       |-- OPPS_INIT
 C       |
 C       |-- DIAGNOSTICS_INITIALISE
 
@@ -139,6 +141,10 @@ C--   Initialise the control variables
       ENDIF
 #endif
 #endif
+
+#ifdef ALLOW_OPPS
+      IF (useOPPS) CALL OPPS_INIT( myThid )
+#endif /* ALLOW_OPPS */
 
 CAMM
 #ifdef ALLOW_DIAGNOSTICS

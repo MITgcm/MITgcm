@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.24 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.25 2004/09/16 09:35:10 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -184,9 +184,19 @@ C--     Convectively adjust new fields to be statically stable
         iMax = sNx
         jMin = 1
         jMax = sNy
-        CALL CONVECTIVE_ADJUSTMENT(
-     I       bi, bj, iMin, iMax, jMin, jMax,
-     I       myTime, myIter, myThid )
+#ifdef ALLOW_OPPS
+        IF ( useOPPS ) THEN
+         CALL OPPS_INTERFACE(
+     I        bi, bj, iMin, iMax, jMin, jMax,
+     I        myTime, myIter, myThid )
+        ELSE
+#endif /* ALLOW_OPPS */
+         CALL CONVECTIVE_ADJUSTMENT(
+     I        bi, bj, iMin, iMax, jMin, jMax,
+     I        myTime, myIter, myThid )
+#ifdef ALLOW_OPPS
+        ENDIF
+#endif /* ALLOW_OPPS */
 
 C--     Integrate continuity vertically
 C--     for vertical velocity and "etaN" (exact volume conservation) :

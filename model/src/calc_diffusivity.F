@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.22 2004/09/06 06:42:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.23 2004/09/16 09:35:11 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -115,6 +115,14 @@ CEOP
 
 #ifdef ALLOW_MY82
       IF (useMY82) CALL MY82_CALC_DIFF(
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,K,
+     I        maskUp,
+     O        KappaRT,KappaRS,
+     I        myThid)
+#endif
+      
+#ifdef ALLOW_GGL90
+      IF (useGGL90) CALL GGL90_CALC_DIFF(
      I        bi,bj,iMin+1,iMax,jMin+1,jMax,K,
      I        maskUp,
      O        KappaRT,KappaRS,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.23 2004/09/02 09:13:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_boot.F,v 1.24 2004/09/16 09:35:11 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -45,8 +45,10 @@ C     iUnit       - Work variable for IO unit number
 C     data.pkg namelists
 
       NAMELIST /PACKAGES/
+     &          useOPPS,
      &          usePP81,
      &          useMY82,
+     &          useGGL90,
      &          useKPP,
      &          useGMRedi,
      &          useOBCS,
@@ -85,6 +87,7 @@ CEOP
 C--   Default package configuration
       usePP81=.FALSE.
       useMY82=.FALSE.
+      useGGL90=.FALSE.
       useKPP=.FALSE.
       useGMRedi=.FALSE.
       useOBCS=.FALSE.

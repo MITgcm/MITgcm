@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.33 2004/09/02 09:13:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_readparms.F,v 1.34 2004/09/16 09:35:11 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -35,6 +35,10 @@ C       |
 C       |-- PP81_READPARMS
 C       |
 C       |-- MY82_READPARMS
+C       |
+C       |-- GGL90_READPARMS
+C       |
+C       |-- OPPS_READPARMS
 C       |
 C       |-- SBO_READPARMS
 C       |
@@ -90,6 +94,16 @@ C--   Initialize PP81 parameters
 #ifdef ALLOW_MY82
 C--   Initialize MY82 parameters
       IF (useMY82) CALL MY82_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_GGL90
+C--   Initialize GGL90 parameters
+      IF (useGGL90) CALL GGL90_READPARMS( myThid )
+#endif
+
+#ifdef ALLOW_OPPS
+C--   Initialize OPPS parameters
+      IF (useOPPS) CALL OPPS_READPARMS( myThid )
 #endif
 
 #ifdef ALLOW_SBO
