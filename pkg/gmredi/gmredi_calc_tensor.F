@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.15 2003/01/12 21:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_tensor.F,v 1.16 2003/01/21 19:34:13 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -152,7 +152,11 @@ C       Mask Iso-neutral slopes
       ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE SlopeX(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE SlopeY(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE SlopeSqr(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE dsigmadrreal(:,:) = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE taperfct(:,:)     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
       DO j=1-Oly+1,sNy+Oly-1
@@ -216,6 +220,11 @@ C-     Limit range that KapGM can take
         ENDDO
        ENDDO
       ENDIF
+cph( NEW
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
+#endif
+cph)
 #endif /* GM_VISBECK_VARIABLE_K */
 
 
@@ -229,7 +238,8 @@ C-- 2nd loop on k : compute Tensor Coeff. at U,V levels.
 
 #ifdef ALLOW_AUTODIFF_TAMC
        kkey = (igmkey-1)*Nr + k
-#ifdef GM_NON_UNITY_DIAGONAL
+#if (defined (GM_NON_UNITY_DIAGONAL) || \
+     defined (GM_VISBECK_VARIABLE_K))
 CADJ STORE Kwx(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE Kwy(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
 CADJ STORE Kwz(:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -241,7 +251,7 @@ C-    express the Tensor in term of Diffusivity (= m**2 / s )
        DO i=1-Olx+1,sNx+Olx-1
         Kgm_tmp = GM_isopycK + GM_skewflx*GM_background_K
 #ifdef GM_VISBECK_VARIABLE_K
-     &          + VisbeckK(i,j,bi,bj)*(1.+GM_skewflx)     
+     &          + VisbeckK(i,j,bi,bj)*(1. _d 0 + GM_skewflx)     
 #endif
         Kwx(i,j,k,bi,bj)= Kgm_tmp*Kwx(i,j,k,bi,bj)
         Kwy(i,j,k,bi,bj)= Kgm_tmp*Kwy(i,j,k,bi,bj)
@@ -284,6 +294,14 @@ C     Calculate slopes for use in tensor, taper and/or clip
      O             SlopeSqr, taperFct,
      I             bi, bj, myThid )
 
+cph( NEW
+#ifdef ALLOW_AUTODIFF_TAMC
+cph(
+CADJ STORE taperfct(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+cph)
+#endif /* ALLOW_AUTODIFF_TAMC */
+cph)
+
 #ifdef GM_NON_UNITY_DIAGONAL
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
@@ -297,7 +315,7 @@ C     Calculate slopes for use in tensor, taper and/or clip
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifndef GM_TAPER_ORIG_CLIPPING
+# ifdef GM_EXCLUDE_CLIPPING
 CADJ STORE Kux(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif
@@ -357,6 +375,14 @@ C     Calculate slopes for use in tensor, taper and/or clip
      O             SlopeSqr, taperFct,
      I             bi, bj, myThid )
 
+cph(
+#ifdef ALLOW_AUTODIFF_TAMC
+cph(
+CADJ STORE taperfct(:,:)       = comlev1_bibj_k, key=kkey, byte=isbyte
+cph)
+#endif /* ALLOW_AUTODIFF_TAMC */
+cph)
+
 #ifdef GM_NON_UNITY_DIAGONAL
         DO j=1-Oly+1,sNy+Oly-1
          DO i=1-Olx+1,sNx+Olx-1
@@ -370,7 +396,7 @@ C     Calculate slopes for use in tensor, taper and/or clip
          ENDDO
         ENDDO
 #ifdef ALLOW_AUTODIFF_TAMC
-# ifndef GM_TAPER_ORIG_CLIPPING
+# ifdef GM_EXCLUDE_CLIPPING
 CADJ STORE Kvy(:,:,k,bi,bj)  = comlev1_bibj_k, key=kkey, byte=isbyte
 # endif
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.4 2003/01/12 21:27:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_calc_psi_b.F,v 1.5 2003/01/21 19:34:12 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -60,14 +60,14 @@ C-    Initialization : <= done in S/R gmredi_init
           act3 = myThid - 1
           max3 = nTx*nTy
           act4 = ikey_dynamics - 1
-          ikey = (act1 + 1) + act2*max1
-     &                      + act3*max1*max2
-     &                      + act4*max1*max2*max3
+          igmkey = (act1 + 1) + act2*max1
+     &                        + act3*max1*max2
+     &                        + act4*max1*max2*max3
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # ifdef GM_VISBECK_VARIABLE_K
-CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=igmkey, byte=isbyte
 # endif
 #endif
       IF (GM_AdvForm) THEN
@@ -75,7 +75,7 @@ CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
        km1 = k-1
 
 #ifdef ALLOW_AUTODIFF_TAMC
-       kkey = (ikey-1)*Nr + k
+       kkey = (igmkey-1)*Nr + k
        DO j=1-Oly,sNy+Oly
         DO i=1-Olx,sNx+Olx
          SlopeX(i,j)       = 0. _d 0
@@ -90,13 +90,13 @@ CADJ STORE VisbeckK(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
        DO i=1-Olx+1,sNx+Olx-1
 
 C      Gradient of Sigma below U and V points
-        SlopeX(i,j)=0.5*( sigmaX(i,j,km1)+sigmaX(i,j,k) )
+        SlopeX(i,j)=op5*( sigmaX(i,j,km1)+sigmaX(i,j,k) )
      &                 *maskW(i,j,k,bi,bj)
-        dSigmaDrW(i,j)=0.5*( sigmaR(i-1,j,k)+sigmaR(i,j,k) )
+        dSigmaDrW(i,j)=op5*( sigmaR(i-1,j,k)+sigmaR(i,j,k) )
      &                 *maskW(i,j,k,bi,bj)
-        SlopeY(i,j)=0.5*( sigmaY(i,j,km1)+sigmaY(i,j,k) )
+        SlopeY(i,j)=op5*( sigmaY(i,j,km1)+sigmaY(i,j,k) )
      &                 *maskS(i,j,k,bi,bj)
-        dSigmaDrS(i,j)=0.5*( sigmaR(i,j-1,k)+sigmaR(i,j,k) )
+        dSigmaDrS(i,j)=op5*( sigmaR(i,j-1,k)+sigmaR(i,j,k) )
      &                 *maskS(i,j,k,bi,bj)
 
        ENDDO
@@ -124,13 +124,13 @@ C-  Compute the 2 stream-function Components ( GM bolus vel.)
         GM_PsiX(i,j,k,bi,bj) = SlopeX(i,j)*taperX(i,j)
      &   *( GM_background_K
 #ifdef GM_VISBECK_VARIABLE_K
-     &    +0.5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
+     &    +op5*(VisbeckK(i-1,j,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
      &    )*maskW(i,j,k,bi,bj)
         GM_PsiY(i,j,k,bi,bj) = SlopeY(i,j)*taperY(i,j)
      &   *( GM_background_K
 #ifdef GM_VISBECK_VARIABLE_K
-     &    +0.5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
+     &    +op5*(VisbeckK(i,j-1,bi,bj)+VisbeckK(i,j,bi,bj))
 #endif
      &    )*maskS(i,j,k,bi,bj)
 

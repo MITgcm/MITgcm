@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.18 2003/01/13 19:02:45 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_slope_limit.F,v 1.19 2003/01/21 19:34:13 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -195,13 +195,15 @@ c
      &            *dRdSigmaLtd(i,j)*dSigmaDrReal(i,j)
 cph             T11(i,j)=(dSigmaDrReal(i,j)**2)*dRdSigmaLtd(i,j)
           ENDIF
+#ifndef ALLOWW_AUTODIFF_TAMC
 cph-- this part doesn't adjoint well
-cph          IF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
-cph     &         SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
-cph           taperFct(i,j) = maxSlopeSqr/SlopeSqr(i,j)
-cph          ELSE IF ( SlopeSqr(i,j) .GT. GM_slopeSqCutoff ) THEN
-cph           taperFct(i,j) = 0. _d 0
-cph          ENDIF
+          IF ( SlopeSqr(i,j) .GT. maxSlopeSqr .AND.
+     &         SlopeSqr(i,j) .LT. GM_slopeSqCutoff ) THEN
+           taperFct(i,j) = maxSlopeSqr/SlopeSqr(i,j)
+          ELSE IF ( SlopeSqr(i,j) .GT. GM_slopeSqCutoff ) THEN
+           taperFct(i,j) = 0. _d 0
+          ENDIF
+#endif
          ENDDO
         ENDDO
 

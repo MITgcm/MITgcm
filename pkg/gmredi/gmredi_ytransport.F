@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.11 2003/01/12 21:13:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_ytransport.F,v 1.12 2003/01/21 19:34:13 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -46,8 +46,14 @@ C     df               - Diffusive flux component work array.
 C     == Local variables ==
 C     I, J - Loop counters
       INTEGER I, J
-      INTEGER km1,kp1 
-      _RL vTrans, maskp1, dTdz
+      INTEGER km1,kp1
+      _RL maskp1
+#ifdef GM_EXTRA_DIAGONAL
+      _RL dTdz(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
+#ifdef GM_BOLUS_ADVEC
+      _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
           act0 = tracerIdentity - 1
@@ -110,7 +116,7 @@ C--   Area integrated meridional flux
         DO i=iMin,iMax
  
 C-      Vertical gradients interpolated to V points
-        dTdz =  op5*(
+        dTdz(i,j) =  op5*(
      &   +op5*recip_drC(k)*
      &       ( maskC(i,j-1,k,bi,bj)*
      &           (Tracer(i,j-1,km1,bi,bj)-Tracer(i,j-1,k,bi,bj))
@@ -123,9 +129,16 @@ C-      Vertical gradients interpolated to V points
      &        +maskC(i, j ,kp1,bi,bj)*
      &           (Tracer(i, j ,k,bi,bj)-Tracer(i, j ,kp1,bi,bj))
      &       )      )
- 
+        ENDDO
+       ENDDO
+#ifdef GM_AUTODIFF_EXCESSIVE_STORE
+CADJ STORE dtdz(:,:) = 
+CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
+#endif
+       DO j=jMin,jMax
+        DO i=iMin,iMax 
 C-      Off-diagonal components of horizontal flux
-          df(i,j) = df(i,j) - yA(i,j)*Kvz(i,j,k,bi,bj)*dTdz               
+          df(i,j) = df(i,j) - yA(i,j)*Kvz(i,j,k,bi,bj)*dTdz(i,j)
 
         ENDDO
        ENDDO
@@ -139,11 +152,19 @@ C-      Off-diagonal components of horizontal flux
        IF (k.GE.Nr) maskp1 = 0.
        DO j=jMin,jMax
         DO i=iMin,iMax
-         vTrans = dxG(i,j,bi,bj)*( GM_PsiY(i,j,kp1,bi,bj)*maskp1
-     &                            -GM_PsiY(i,j,k,bi,bj) )
-     &                          *maskS(i,j,k,bi,bj)
+         vTrans(i,j) = dxG(i,j,bi,bj)*( GM_PsiY(i,j,kp1,bi,bj)*maskp1
+     &                                 -GM_PsiY(i,j,k,bi,bj) )
+     &                               *maskS(i,j,k,bi,bj)
+        ENDDO
+       ENDDO
+#ifdef GM_AUTODIFF_EXCESSIVE_STORE
+CADJ STORE vtrans(:,:) = 
+CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
+#endif
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          df(i,j) = df(i,j)
-     &    +vTrans*op5*(Tracer(i,j,k,bi,bj)+Tracer(i,j-1,k,bi,bj))
+     &    +vTrans(i,j)*op5*(Tracer(i,j,k,bi,bj)+Tracer(i,j-1,k,bi,bj))
         ENDDO
        ENDDO
       ENDIF

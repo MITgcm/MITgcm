@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.11 2003/01/10 00:48:39 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/gmredi_rtransport.F,v 1.12 2003/01/21 19:34:13 heimbach Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -23,6 +23,11 @@ C     == GLobal variables ==
 #include "GRID.h"
 #include "GMREDI.h"
 
+#ifdef ALLOW_AUTODIFF_TAMC
+#include "tamc.h"
+#include "tamc_keys.h"
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C     == Routine arguments ==
 C     iMin,iMax,jMin,  - Range of points for which calculation
 C     jMax,bi,bj,k       results will be set.
@@ -40,17 +45,39 @@ C     df               - Diffusive flux component work array.
 C     == Local variables ==
 C     I, J - Loop counters
       INTEGER I, J
-      _RL dTdx,dTdy
-      _RL rTrans
+      _RL dTdx  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL dTdy  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#ifdef GM_BOLUS_ADVEC
+      _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+#endif
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act0 = tracerIdentity - 1
+          max0 = maxpass
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          igadkey = (act0 + 1) 
+     &                      + act1*max0
+     &                      + act2*max0*max1
+     &                      + act3*max0*max1*max2
+     &                      + act4*max0*max1*max2*max3
+          kkey = (igadkey-1)*Nr + k
+          if (tracerIdentity.GT.maxpass)
+     &         STOP 'maxpass seems smaller than tracerIdentity'
+#endif /* ALLOW_AUTODIFF_TAMC */
 
 C     Surface flux is zero
       IF (useGMRedi .AND. K.GT.1) THEN
 
+C-      Horizontal gradients interpolated to W points
       DO j=jMin,jMax
        DO i=iMin,iMax
-
-C-      Horizontal gradients interpolated to W points
-        dTdx = op5*(
+        dTdx(i,j) = op5*(
      &   +op5*(_maskW(i+1,j,k,bi,bj)
      &         *_recip_dxC(i+1,j,bi,bj)*
      &           (Tracer(i+1,j,k,bi,bj)-Tracer(i,j,k,bi,bj))
@@ -65,7 +92,7 @@ C-      Horizontal gradients interpolated to W points
      &           (Tracer(i,j,k-1,bi,bj)-Tracer(i-1,j,k-1,bi,bj)))
      &       )
 
-        dTdy = op5*(
+        dTdy(i,j) = op5*(
      &   +op5*(_maskS(i,j,k,bi,bj)
      &         *_recip_dyC(i,j,bi,bj)*
      &           (Tracer(i,j,k,bi,bj)-Tracer(i,j-1,k,bi,bj))
@@ -79,11 +106,22 @@ C-      Horizontal gradients interpolated to W points
      &         *_recip_dyC(i,j+1,bi,bj)*
      &           (Tracer(i,j+1,k-1,bi,bj)-Tracer(i,j,k-1,bi,bj)))
      &       )
+       ENDDO
+      ENDDO
+ 
+#ifdef GM_AUTODIFF_EXCESSIVE_STORE
+CADJ STORE dTdx(:,:) = 
+CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
+CADJ STORE dTdy(:,:) = 
+CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
+#endif
 
 C-      Off-diagonal components of vertical flux
+      DO j=jMin,jMax
+       DO i=iMin,iMax
         df(i,j) = df(i,j)
      &      - _rA(i,j,bi,bj)
-     &        *( Kwx(i,j,k,bi,bj)*dTdx +Kwy(i,j,k,bi,bj)*dTdy )
+     &        *( Kwx(i,j,k,bi,bj)*dTdx(i,j)+Kwy(i,j,k,bi,bj)*dTdy(i,j) )
 
        ENDDO
       ENDDO
@@ -92,14 +130,22 @@ C-      Off-diagonal components of vertical flux
       IF (GM_AdvForm .AND. GM_AdvSeparate) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
-         rTrans = 
+         rTrans(i,j) = 
      &      dyG(i+1,j,bi,bj)*GM_PsiX(i+1,j,k,bi,bj)
      &     -dyG( i ,j,bi,bj)*GM_PsiX( i ,j,k,bi,bj)
      &     +dxG(i,j+1,bi,bj)*GM_PsiY(i,j+1,k,bi,bj)
      &     -dxG(i, j ,bi,bj)*GM_PsiY(i, j ,k,bi,bj)
+        ENDDO
+       ENDDO
+#ifdef GM_AUTODIFF_EXCESSIVE_STORE
+CADJ STORE rtrans(:,:) = 
+CADJ &     comlev1_gmredi_k_gad, key=kkey, byte=isbyte
+#endif
+       DO j=jMin,jMax
+        DO i=iMin,iMax
          df(i,j) = df(i,j)
-     &    +rTrans*op5
-     &           *(Tracer(i,j,k,bi,bj)+Tracer(i,j,k-1,bi,bj))
+     &    +rTrans(i,j)*op5
+     &                *(Tracer(i,j,k,bi,bj)+Tracer(i,j,k-1,bi,bj))
         ENDDO
        ENDDO
       ENDIF
