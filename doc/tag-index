@@ -1,7 +1,30 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.195 2003/10/24 05:29:35 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.196 2003/10/27 22:56:29 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint51o_post
+o bringing AD-related verif's up to date with genmake2
+  - carbon/
+  - global_ocean.90x40x15/
+  - hs.94.1x64x5/
+  - (front_relax/ )
+o (more) consistent directory structure for AD-related verif.'s
+o cleaning ALLOW_GRADIENT_CHECK -> ALLOW_GRDCHK
+o cleaning some ALLOW_TANGENTLINEAR_RUN -> ALLOW_AUTODIFF
+o bug fix in find_alpha.F for MDJWF:
+  - modif. to alpha = 1/D*( dN/dT - rho*dD/Dt) to account for
+    change rho -> rho-rhoConst
+  - replace call find_rho to find_rhonum
+o initialisation of rFlx extended to full array (required by TAF)
+  and shifted to thermodynamics
+o removed PTRACERS.h in ptracers routine
+o added surfacetendencyPtr to S/R parameter list pracers_forcing
+o Correcting initialisations for fVerU, fVerV.
+o helping TAF to recognize dependency on kUp for
+  fVerU, fVerV
+o Replacing delZ by delR in pkg/ctrl/
+checkpoint51o_pre
 
 o undid all of cp51 pending some cleanups and discussion
 
