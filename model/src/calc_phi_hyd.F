@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.21 2002/09/25 19:36:50 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.22 2002/11/07 21:51:15 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -139,6 +139,11 @@ CADJ STORE sFld (:,:,k,bi,bj) = comlev1_bibj_k, key=kkey, byte=isbyte
         CALL FIND_RHO( bi, bj, iMin, iMax, jMin, jMax, k, k,
      &                 tFld, sFld,
      &                 alphaRho, myThid)
+
+C Quasi-hydrostatic terms are added in as if they modify the buoyancy
+        IF (quasiHydrostatic) THEN
+         CALL QUASIHYDROSTATICTERMS(bi,bj,k,alphaRho,myThid)
+        ENDIF
 
 C       Hydrostatic pressure at cell centers
         DO j=jMin,jMax

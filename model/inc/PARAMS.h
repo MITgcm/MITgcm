@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.78 2002/11/05 19:58:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.79 2002/11/07 21:51:15 adcroft Exp $
 C $Name:  $
 C
 CBOP
@@ -212,6 +212,7 @@ C     usingZCoords     :: Set to indicate that we are working in height
 C                        coords.
 C     setCenterDr    :: set cell Center depth and put Interface at the middle
 C     nonHydrostatic :: Using non-hydrostatic terms
+C     quasiHydrostatic :: Using non-hydrostatic terms in hydrostatic algorithm
 C     globalFiles    :: Selects between "global" and "tiled" files
 C     allowFreezing  :: Allows water to freeze and form ice
 C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
@@ -234,7 +235,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & doThetaClimRelax, doSaltClimRelax, doTr1ClimRelax, 
      & periodicExternalForcing, 
      & usingPCoords, usingZCoords, setCenterDr,
-     & nonHydrostatic, globalFiles,
+     & nonHydrostatic, quasiHydrostatic, globalFiles,
      & allowFreezing, groundAtK1,
      & usePickupBeforeC35, debugMode,
      & readPickupWithTracer, writePickupWithTracer
@@ -285,6 +286,7 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL usingZCoords
       LOGICAL setCenterDr
       LOGICAL nonHydrostatic
+      LOGICAL quasiHydrostatic
       LOGICAL globalFiles
       LOGICAL allowFreezing
       LOGICAL groundAtK1

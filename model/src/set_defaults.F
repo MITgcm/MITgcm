@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.41 2002/11/05 18:48:56 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.42 2002/11/07 21:51:15 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -133,6 +133,7 @@ Cml      sBeta               = 7.4D-4
       implicitDiffusion   = .FALSE.
       implicitViscosity   = .FALSE.
       nonHydrostatic      = .FALSE.
+      quasiHydrostatic    = .FALSE.
       globalFiles         = .FALSE.
       allowFreezing       = .FALSE.
       ivdc_kappa          = 0.D0

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.6 2002/11/05 19:58:21 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/mom_fluxform.F,v 1.7 2002/11/07 21:51:15 adcroft Exp $
 C $Name:  $
 
 CBOI
@@ -567,7 +567,7 @@ C     Note. As coded here, coriolis will not work with "thin walls"
        ENDDO
       ENDDO
 #endif /* INCLUDE_CD_CODE */
-      IF (nonHydrostatic) THEN
+      IF (nonHydrostatic.OR.quasiHydrostatic) THEN
        CALL MOM_U_CORIOLIS_NH(bi,bj,k,wVel,cf,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax

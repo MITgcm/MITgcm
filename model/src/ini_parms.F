@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.87 2002/11/05 18:48:56 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.88 2002/11/07 21:51:15 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -121,7 +121,7 @@ C--   Continuous equation parameters
      & viscAp, diffKpT, diffKpS, hFacMinDp,
      & rhoConst, rhoConstFresh, buoyancyRelation, HeatCapacity_Cp,
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
-     & nonHydrostatic, globalFiles,
+     & nonHydrostatic, quasiHydrostatic, globalFiles,
      & allowFreezing, ivdc_kappa,
      & bottomDragLinear,bottomDragQuadratic,
      & usePickupBeforeC35, debugMode, 
@@ -327,6 +327,13 @@ C--   Metric terms on/off flag.
        mTFacMom = 1.D0
       ELSE
        mTFacMom = 0.D0
+      ENDIF
+C--   Non-hydrostatic/quasi-hydrostatic
+      IF (nonHydrostatic.AND.quasiHydrostatic) THEN
+       WRITE(msgBuf,'(A)')
+     &   'Illegal: both nonHydrostatic = quasiHydrostatic = TRUE'
+       CALL PRINT_ERROR( msgBuf , myThid)
+       STOP 'ABNORMAL END: S/R INI_PARMS'
       ENDIF
 C--   Advection and Forcing for Temp and salt  on/off flags
       tempAdvection = tempStepping .AND. tempAdvection
