@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.2 2001/09/05 17:46:03 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_y.F,v 1.3 2001/09/10 00:24:14 adcroft Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -32,12 +32,12 @@ C     == Routine arguments ==
 
 C     == Local variables ==
       INTEGER i,j
-      _RL Rjm,Rj,Rjp,cfl,d0,d1,psiP,thetaP,psiM,thetaM
+      _RL Rjm,Rj,Rjp,cfl,d0,d1,psiP,psiM,thetaP,thetaM
 
       DO i=1-Olx,sNx+Olx
-       vT(i,1-Olx)=0.
-       vT(i,2-Olx)=0.
-       vT(i,sNx+Olx)=0.
+       vT(i,1-Oly)=0.
+       vT(i,2-Oly)=0.
+       vT(i,sNy+Oly)=0.
       ENDDO
       DO j=1-Oly+2,sNy+Oly-1
        DO i=1-Olx,sNx+Olx
@@ -45,26 +45,24 @@ C     == Local variables ==
         Rj =(tracer(i,j)-tracer(i,j-1))*maskS(i,j,k,bi,bj)
         Rjm=(tracer(i,j-1)-tracer(i,j-2))*maskS(i,j-1,k,bi,bj)
 
-        cfl=vVel(i,j,k,bi,bj)*deltaT*recip_dyc(i,j,bi,bj)
-        d0=(2.-abs(cfl))*(1.-abs(cfl))*oneSixth
-        d1=(1.-cfl)*(1.+cfl)*oneSixth
-        thetaP=Rjm/(1.D-30+Rj)
+        cfl=abs(vVel(i,j,k,bi,bj)*deltaT*recip_dyc(i,j,bi,bj))
+        d0=(2.-cfl)*(1.-cfl)*oneSixth
+        d1=(1.-cfl*cfl)*oneSixth
+c       thetaP=0.
+c       IF (Rj.NE.0.) thetaP=Rjm/Rj
+        thetaP=Rjm/(1.D-20+Rj)
         psiP=d0+d1*thetaP
-        psiP=max(0., min(min(1.,psiP),(1.-cfl)/cfl*thetaP) )
-        thetaM=Rjp/(-1.D-30+Rj)
+        psiP=max(0., min(min(1.,psiP),(1.-cfl)/(1.D-20+cfl)*thetaP))
+        thetaM=Rjp/(1.D-20+Rj)
+c       thetaM=0.
+c       IF (Rj.NE.0.) thetaM=Rjp/Rj
         psiM=d0+d1*thetaM
-        psiM=max(0., min(min(1.,psiM),(1.-cfl)/cfl*thetaM) )
+        psiM=max(0., min(min(1.,psiM),(1.-cfl)/(1.D-20+cfl)*thetaM))
         vT(i,j)=
      &   0.5*(vTrans(i,j)+abs(vTrans(i,j)))
      &      *( Tracer(i,j-1) + psiP*Rj )
      &  +0.5*(vTrans(i,j)-abs(vTrans(i,j)))
      &      *( Tracer(i, j ) - psiM*Rj )
-cph *note* put these comments after end of continued line
-cph        to ensure TAMC compatibility
-c    &   0.5*(vTrans(i,j)+abs(vTrans(i,j)))
-c    &      *( Tracer(i,j-1) + d0*Rj + d1*Rjm )
-c    &  +0.5*(vTrans(i,j)-abs(vTrans(i,j)))
-c    &      *( Tracer(i, j ) - d0*Rj + d1*Rjp )
 
        ENDDO
       ENDDO
