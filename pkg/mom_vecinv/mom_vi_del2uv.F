@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_del2uv.F,v 1.2 2001/05/29 14:01:39 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_del2uv.F,v 1.3 2001/10/27 02:04:43 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -59,7 +59,7 @@ c    &   +                         ( Dij-Dmj )
 c    &   -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij ) )
         del2u(i,j) =
      &   +                         ( Dij-Dmj )*recip_DXC(i,j,bi,bj)
-     &   -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYU(i,j,bi,bj)
+     &   -recip_hFacW(i,j,k,bi,bj)*( Zip-Zij )*recip_DYG(i,j,bi,bj)
 
 c       del2v(i,j) = recip_rAs(i,j,bi,bj)*(
 c    &    recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )
@@ -68,7 +68,7 @@ c       del2v(i,j) = recip_rAs(i,j,bi,bj)*(
 c    &    recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )
 c    &   +                         ( Dij-Dim ) )
         del2v(i,j) =
-     &    recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXV(i,j,bi,bj)
+     &    recip_hFacS(i,j,k,bi,bj)*( Zpj-Zij )*recip_DXG(i,j,bi,bj)
      &   +                         ( Dij-Dim )*recip_DYC(i,j,bi,bj)
 
        ENDDO
