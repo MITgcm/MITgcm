@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.51 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.52 2003/10/10 22:56:08 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -529,8 +529,6 @@ CADJ &                 = comlev1_bibj, key=itdkey, byte=isbyte
 #endif  /* ALLOW_KPP */
 
 #ifdef ALLOW_AUTODIFF_TAMC
-CADJ STORE KappaRT(:,:,:)     = comlev1_bibj, key=itdkey, byte=isbyte
-CADJ STORE KappaRS(:,:,:)     = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key=itdkey, byte=isbyte
@@ -654,11 +652,6 @@ CADJ STORE rTrans(:,:)    = comlev1_bibj_k, key=kkey, byte=isbyte
 
 #endif /* ALLOW_GMREDI */
 
-#ifdef ALLOW_AUTODIFF_TAMC 
-CADJ STORE KappaRT(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
-CADJ STORE KappaRS(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
-#endif /* ALLOW_AUTODIFF_TAMC */
-
 #ifdef  INCLUDE_CALC_DIFFUSIVITY_CALL
 C--      Calculate the total vertical diffusivity
          CALL CALC_DIFFUSIVITY(
@@ -666,6 +659,10 @@ C--      Calculate the total vertical diffusivity
      I        maskUp,
      O        KappaRT,KappaRS,
      I        myThid)
+# ifdef ALLOW_AUTODIFF_TAMC 
+CADJ STORE KappaRT(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE KappaRS(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
+# endif /* ALLOW_AUTODIFF_TAMC */
 #endif
 
           iMin = 1-OLx+2
@@ -767,6 +764,7 @@ C--     Implicit diffusion
 
          IF (tempStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KappaRT(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL IMPLDIFF(
@@ -778,6 +776,7 @@ CADJ STORE gT(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 
          IF (saltStepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE KappaRS(:,:,:) = comlev1_bibj , key=itdkey, byte=isbyte
 CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
             CALL IMPLDIFF(
