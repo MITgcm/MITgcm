@@ -41,6 +41,7 @@ C Set defaults values for parameters in GCHEM.h
        atmospFile=' ' 
        IceFile=' '
        IronFile=' '
+       SilicaFile=' '
 
 
 C Open and read the data.ptracers file

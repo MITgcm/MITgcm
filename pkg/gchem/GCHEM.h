@@ -13,6 +13,7 @@ C Contains tracer parameters and input files for chemical tracers.
       CHARACTER*(MAX_LEN_FNAM) AtmospFile
       CHARACTER*(MAX_LEN_FNAM) IceFile
       CHARACTER*(MAX_LEN_FNAM) IronFile
+      CHARACTER*(MAX_LEN_FNAM) SilicaFile
 
       COMMON /GCHEM_PARAMS/
      &                   tIter0,
@@ -20,6 +21,7 @@ C Contains tracer parameters and input files for chemical tracers.
      &                   AtmospFile,
      &                   IceFile,
      &                   IronFile,
+     &                   SilicaFile,
      &                   nsubtime
       NAMELIST /GCHEM_PARM01/
      &                   tIter0,
@@ -27,5 +29,6 @@ C Contains tracer parameters and input files for chemical tracers.
      &                   IceFile,
      &                   AtmospFile,
      &                   IronFile,
+     &                   SilicaFile,
      &                   nsubtime
 #endif /* ALLOW_PTRACERS */
