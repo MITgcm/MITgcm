@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.14 2004/12/01 22:54:02 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_readparms.F,v 1.15 2004/12/05 22:22:06 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -44,6 +44,7 @@ C                          are written to post-processing files.
      &     PTRACERS_taveFreq,
      &     PTRACERS_monitorFreq,
      &     PTRACERS_advScheme,
+     &     PTRACERS_ImplVertAdv,
      &     PTRACERS_diffKh,
      &     PTRACERS_diffK4,
      &     PTRACERS_diffKr,
@@ -70,6 +71,7 @@ C     Set defaults values for parameters in PTRACERS.h
       PTRACERS_numInUse=-1
       DO iTracer=1,PTRACERS_num
         PTRACERS_advScheme(iTracer)=saltAdvScheme
+        PTRACERS_ImplVertAdv(iTracer) = .FALSE.
         PTRACERS_diffKh(iTracer)=diffKhS
         PTRACERS_diffK4(iTracer)=diffK4S
         PTRACERS_diffKr(iTracer)=UNSET_RL
@@ -141,6 +143,19 @@ C     Check that enough parameters were specified
           STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
         ENDIF
       ENDDO
+#ifndef INCLUDE_IMPLVERTADV_CODE
+      DO iTracer=1,PTRACERS_numInUse
+       IF ( PTRACERS_ImplVertAdv(iTracer) ) THEN
+        WRITE(msgBuf,'(A)')
+     &   'PTRACERS_READPARMS: #undef INCLUDE_IMPLVERTADV_CODE'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A,I2,A)') 'PTRACERS_READPARMS:',
+     &   ' but pTracers_ImplVertAdv(',iTracer,' ) is TRUE'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R PTRACERS_READPARMS'
+       ENDIF
+      ENDDO
+#endif
       DO iTracer=1,PTRACERS_numInUse
         PTRACERS_useGMRedi(iTracer) = PTRACERS_useGMRedi(iTracer)
      &                           .AND.useGMRedi
@@ -198,6 +213,9 @@ C--   Print a summary of pTracer parameter values:
         CALL PRINT_MESSAGE( msgBuf, iUnit, SQUEEZE_RIGHT , 1)
         CALL WRITE_0D_I( PTRACERS_advScheme(iTracer), INDEX_NONE,
      &     'PTRACERS_advScheme =', ' /* Advection Scheme */')
+        CALL WRITE_0D_L( PTRACERS_ImplVertAdv(iTracer), INDEX_NONE,
+     &     'PTRACERS_ImplVertAdv =',
+     &     ' /* implicit vert. advection flag */')
         CALL WRITE_0D_R8( PTRACERS_diffKh(iTracer), INDEX_NONE,
      &     'PTRACERS_diffKh =', ' /* Laplacian Diffusivity */')
         CALL WRITE_0D_R8( PTRACERS_diffK4(iTracer), INDEX_NONE,

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.85 2004/12/04 05:59:50 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.86 2004/12/05 22:23:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -603,9 +603,11 @@ CADJ STORE gS(:,:,:,bi,bj) = comlev1_bibj , key=itdkey, byte=isbyte
 #endif
 
 #ifdef ALLOW_PTRACERS
-        IF     ( usePTRACERS .AND. implicitDiffusion ) THEN
-C--     Vertical diffusion (implicit) for passive tracers
-           CALL PTRACERS_IMPLDIFF( bi,bj,kappaRk,myThid )
+        IF     ( usePTRACERS ) THEN
+C--     Vertical advection/diffusion (implicit) for passive tracers
+           CALL PTRACERS_IMPLICIT( 
+     U                             kappaRk,
+     I                             bi, bj, myTime, myIter, myThid )
         ENDIF
 #endif /* ALLOW_PTRACERS */
 

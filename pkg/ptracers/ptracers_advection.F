@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.5 2004/07/13 16:47:48 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_advection.F,v 1.6 2004/12/05 22:22:06 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -56,7 +56,7 @@ C Loop over tracers
      &     PTRACERS_advScheme(iTracer).NE.ENUM_UPWIND_3RD .AND.
      &     PTRACERS_advScheme(iTracer).NE.ENUM_CENTERED_4TH ) THEN
             CALL GAD_ADVECTION(
-     I                        .FALSE.,
+     I                        PTRACERS_ImplVertAdv(iTracer),
      I                        PTRACERS_advScheme(iTracer),
      I                        PTRACERS_advScheme(iTracer),
      I                        GAD_TR1,

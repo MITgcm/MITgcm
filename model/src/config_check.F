@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.18 2004/12/04 00:12:14 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_check.F,v 1.19 2004/12/05 22:23:17 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -105,6 +105,17 @@ C-  check that CPP option is "defined" when running-flag parameter is on:
         CALL PRINT_ERROR( msgBuf , myThid)
         STOP 'ABNORMAL END: S/R CONFIG_CHECK'
       ENDIF
+      IF ( dTtracerLev(1).NE.dTtracerLev(Nr) .AND. implicitDiffusion
+     &     .AND. ( saltStepping .OR. tempStepping .OR. usePTRACERS ) 
+     &   ) THEN
+        WRITE(msgBuf,'(A)') 
+     &   'CONFIG_CHECK: #undef INCLUDE_IMPLVERTADV_CODE'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        WRITE(msgBuf,'(2A)') 'CONFIG_CHECK: ',
+     &   'but implicitDiffusion=T with non-uniform dTtracerLev'
+        CALL PRINT_ERROR( msgBuf , myThid)
+        STOP 'ABNORMAL END: S/R CONFIG_CHECK'
+      ENDIF
 #endif
 
 #ifndef EXACT_CONSERV
@@ -183,9 +194,9 @@ C       code is being compiled
 #endif
 
 #ifndef ALLOW_GENERIC_ADVDIFF
-      IF ( tempStepping .OR. saltStepping .OR. usePTRACERS ) THEN
+      IF ( tempStepping .OR. saltStepping ) THEN
         WRITE(msgBuf,'(2A)')
-     &  'CONFIG_CHECK: cannot step forward Temp,Salt or pTracers',
+     &  'CONFIG_CHECK: cannot step forward Temp or Salt',
      &  ' without pkg/generic_advdiff'
         CALL PRINT_ERROR( msgBuf , 1)
         WRITE(msgBuf,'(A)')
