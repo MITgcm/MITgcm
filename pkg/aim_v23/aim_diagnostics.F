@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.5 2004/03/31 14:49:20 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.6 2004/06/11 16:06:27 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -21,6 +21,7 @@ C-- size for MITgcm & Physics package :
 #include "AIM_PARAMS.h"
 #include "AIM_DIAGS.h"
 #include "com_physvar.h"
+#include "com_forcing.h"
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -109,6 +110,8 @@ C--   Write AIM Physics diagnostics (2D, all in 1 file) :
      &                      bi,bj,15,myIter,myThid)
        CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,EnPrec(1,myThid),
      &                      bi,bj,16,myIter,myThid)
+       CALL AIM_WRITE_LOCAL('aimPhyDiag.',suff,1,alb1(1,0,myThid),
+     &                      bi,bj,17,myIter,myThid)
 C--
       ENDIF
 
