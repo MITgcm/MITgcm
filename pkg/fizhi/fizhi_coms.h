@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_coms.h,v 1.6 2004/10/07 01:20:47 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_coms.h,v 1.7 2004/10/14 22:11:42 molod Exp $
 C $Name:  $
 
 
@@ -61,6 +61,7 @@ c ----------------------------------------------------------------------
       _RL raincon(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nsx,Nsy)
       _RL rainlsp(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nsx,Nsy)
       _RL snowfall(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nsx,Nsy)
-      integer iras,nlwcld,nlwlz,nswcld,nswlz
-      integer imstturbsw,imstturblw
-
+      integer iras(Nsx,Nsy)
+      integer nlwcld(Nsx,Nsy),nlwlz(Nsx,Nsy)
+      integer nswcld(Nsx,Nsy),nswlz(Nsx,Nsy)
+      integer imstturbsw(Nsx,Nsy),imstturblw(Nsx,Nsy)

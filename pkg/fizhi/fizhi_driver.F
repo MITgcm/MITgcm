@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.27 2004/10/07 03:20:56 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.28 2004/10/14 22:11:42 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -115,8 +115,6 @@ c ---------------
       _RL ptop
       logical lpnt
 
-      _RL tempij(im,jm)
-
       istrip = im*jm
       npcs   = 1
 
@@ -225,7 +223,6 @@ C ===============
      .    nswcld,cldtot_sw,cldras_sw,cldlsp_sw,nswlz,swlz,
      .    nlwcld,cldtot_lw,cldras_lw,cldlsp_lw,nlwlz,lwlz,
      .              .false.,myid)
-
       endif
 
       return

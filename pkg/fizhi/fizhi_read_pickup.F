@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.12 2004/10/10 06:08:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_read_pickup.F,v 1.13 2004/10/14 22:11:42 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -81,16 +81,17 @@ C       Read fields as consecutive records
         snowfall(i,j,bi,bj) = temp(i,j,3,bi,bj)
        enddo
        enddo
-       enddo
-       enddo
 
-       iras       = nint(temp(1,1,4,1,1))
-       nlwcld     = nint(temp(2,1,4,1,1))
-       nlwlz      = nint(temp(3,1,4,1,1))
-       nswcld     = nint(temp(4,1,4,1,1))
-       nswlz      = nint(temp(5,1,4,1,1))
-       imstturbsw = nint(temp(6,1,4,1,1))
-       imstturblw = nint(temp(7,1,4,1,1))
+       iras(bi,bj)       = nint(temp(1,1,4,bi,bj))
+       nlwcld(bi,bj)     = nint(temp(2,1,4,bi,bj))
+       nlwlz(bi,bj)      = nint(temp(3,1,4,bi,bj))
+       nswcld(bi,bj)     = nint(temp(4,1,4,bi,bj))
+       nswlz(bi,bj)      = nint(temp(5,1,4,bi,bj))
+       imstturbsw(bi,bj) = nint(temp(6,1,4,bi,bj))
+       imstturblw(bi,bj) = nint(temp(7,1,4,bi,bj))
+
+       enddo
+       enddo
 
       ENDIF
 
