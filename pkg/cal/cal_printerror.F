@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printerror.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printerror.F,v 1.3 2004/03/04 19:34:21 heimbach Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -12,7 +12,7 @@ c     ==================================================================
 c     SUBROUTINE cal_PrintError
 c     ==================================================================
 c
-c     Purpose: Use the MITgcmuv's print routines to document errors that
+c     Purpose: Use the MITgcmuvs print routines to document errors that
 c              occured during the execution of the calendar tool.
 c
 c     o Calling this routine allows to print out an error message for

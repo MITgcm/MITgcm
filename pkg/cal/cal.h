@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.1 2001/05/14 22:07:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal.h,v 1.2 2004/03/04 19:33:31 heimbach Exp $
 
 
 c     ==================================================================
@@ -32,8 +32,8 @@ c     modelend         - end   time of the numerical model.
 c     modelenddate     - end   date of the numerical model.
 c     modelstep        - timestep of the numerical model.
 c     modelintsteps    - number of timestep that are to be performed.
-c     modeliter0       - the numerical model's initial timestep number.
-c     modeliterend     - the model's last timestep number.
+c     modeliter0       - the numerical models initial timestep number.
+c     modeliterend     - the models last timestep number.
 c     modelstepsperday - number of model time steps per calendar day.
 c
 c
@@ -47,13 +47,13 @@ c                        not used a 360 days year with 30 days months is
 c                        used instead.
 c     ndaysnoleap      - number of days in a usual year.
 c     ndaysleap        - number of days in a leap year.
-c     nmaxdaymonth     - maximum number of days in a year's month.
-c     hoursperday      - number of hours   in a calendar's day.
-c     minutesperday    - number of minutes in a calendar's day.
-c     minutesperhour   - number of minutes in a calendar's hour.
-c     secondsperday    - number of seconds in a calendar's day.
-c     secondsperhour   - number of seconds in a calendar's hour.
-c     secondsperminute - number of seconds in a calendar's minute.
+c     nmaxdaymonth     - maximum number of days in a years month.
+c     hoursperday      - number of hours   in a calendars day.
+c     minutesperday    - number of minutes in a calendars day.
+c     minutesperhour   - number of minutes in a calendars hour.
+c     secondsperday    - number of seconds in a calendars day.
+c     secondsperhour   - number of seconds in a calendars hour.
+c     secondsperminute - number of seconds in a calendars minute.
 
 
       common /cal_rl/

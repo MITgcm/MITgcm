@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printdate.F,v 1.2 2003/10/09 04:19:19 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cal/cal_printdate.F,v 1.3 2004/03/04 19:34:21 heimbach Exp $
 C $Name:  $
 
 #include "CAL_OPTIONS.h"
@@ -15,7 +15,7 @@ c
 c     o Print a calendar date.
 c
 c     Purpose: Print a date as used by the calendar tool in some nice
-c              format by using the MITgcmuv's print routine
+c              format by using the MITgcmuvs print routine
 c
 c     started: Christian Eckert eckert@mit.edu  30-Jun-1999
 c
