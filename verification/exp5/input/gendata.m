@@ -42,4 +42,4 @@ z=-dz/2:-dz:-H;
 Q=Qo*(1+0.01*rand([nx,ny]));
 r=sqrt(X.^2+Y.^2);
 %% Q( find(r>L) )=0;
-f77write('Qnet.circle',Q,'real*8','b');
+fid=fopen('Qnet.circle','w','b'); fwrite(fid,Q,'real*8'); fclose(fid);

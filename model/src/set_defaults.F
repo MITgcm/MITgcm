@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.2 1999/03/22 15:54:04 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.3 1999/05/05 18:32:35 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -109,6 +109,8 @@ C--   Set default "physical" parameters
       implicitDiffusion   = .FALSE.
       openBoundaries      = .FALSE.
       nonHydrostatic      = .FALSE.
+      globalFiles         = .FALSE.
+      allowFreezing       = .FALSE.
 
 C--   Elliptic solver parameters
       cg2dMaxIters       = 150

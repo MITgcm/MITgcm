@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.18 1998/12/15 00:20:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_depths.F,v 1.19 1999/05/05 18:32:34 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -68,7 +68,15 @@ C          IF ( jG .EQ. nY ) H(i,j,bi,bj) = 0.
        ENDDO
       ELSE
        _BEGIN_MASTER( myThid )
-       CALL READ_FLD_XY_RS( bathyFile, ' ', H, 0, myThid )
+C Read the bathymetry using the mid-level I/O pacakage read_write_rec
+C The 0 is the "iteration" argument. The 1 is the record number.
+       CALL READ_REC_XY_RS( bathyFile, H, 1, 0, myThid )
+C Read the bathymetry using the mid-level I/O pacakage read_write_fld
+C The 0 is the "iteration" argument. The ' ' is an empty suffix
+C      CALL READ_FLD_XY_RS( bathyFile, ' ', H, 0, myThid )
+C Read the bathymetry using the low-level I/O package
+C      CALL MDSREADFIELD( bathyFile, readBinaryPrec,
+C    &                    'RS', 1, H, 1, myThid )
        _END_MASTER(myThid)
       ENDIF
       

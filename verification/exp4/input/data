@@ -29,6 +29,7 @@
  openBoundaries=.TRUE.,
  nonHydrostatic=.FALSE.,
  readBinaryPrec=64,
+ globalFiles=.TRUE.,
  &
 
 # Elliptic solver parameters
@@ -42,12 +43,12 @@
 # Time stepping parameters
  &PARM03
  niter0=0,
- nTimeSteps=10.,
+ nTimeSteps=10,
  deltaT=600.0,
  abEps=0.1,
- pChkptFreq=0.0,
+ pChkptFreq=3000.0,
  chkptFreq=0.0,
- dumpFreq=86400.0,
+ dumpFreq=6000.0,
  &
 
 # Gridding parameters

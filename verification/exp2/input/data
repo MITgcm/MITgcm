@@ -71,11 +71,11 @@
 
 # Input datasets
  &PARM05
- bathyFile='topog-z',
- hydrogThetaFile='thetaLevCli',
- hydrogSaltFile='saltLevCli',
- zonalWindFile='windx',
- meridWindFile='windy',
+ hydrogThetaFile='theta.bin',
+ hydrogSaltFile='salt.bin',
+ bathyFile='topog.bin',
+ zonalWindFile='windx.bin',
+ meridWindFile='windy.bin',
  thetaClimFile='SST.bin'
  saltClimFile='SSS.bin'
  &

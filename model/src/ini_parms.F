@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.41 1999/03/22 15:54:04 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.42 1999/05/05 18:32:34 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -97,7 +97,8 @@ C--   Continuous equation parameters
      & viscAp, diffKpT, diffKpS, hFacMinDp,
      & rhoConst, buoyancyRelation, HeatCapacity_Cp,
      & writeBinaryPrec, readBinaryPrec, writeStatePrec,
-     & openBoundaries, nonHydrostatic
+     & openBoundaries, nonHydrostatic, globalFiles,
+     & allowFreezing
 
 C--   Elliptic solver parameters
       NAMELIST /PARM02/
@@ -357,6 +358,12 @@ C--   z,p,r coord input switching.
       ELSE
        recip_gravity = 1.D0 / gravity
       ENDIF
+C     Set globalFiles flag for READ_WRITE_FLD package
+      CALL SET_WRITE_GLOBAL_FLD( globalFiles )
+C     Set globalFiles flag for READ_WRITE_REC package
+      CALL SET_WRITE_GLOBAL_REC( globalFiles )
+C     Set globalFiles flag for READ_WRITE_REC package
+      CALL SET_WRITE_GLOBAL_PICKUP( globalFiles )
 
 C--   Elliptic solver parameters
       READ(UNIT=iUnit,NML=PARM02) !,IOSTAT=errIO)

@@ -36,17 +36,20 @@ z=-dz/2:-dz:-H;
 % Temperature profile
 [sprintf('Tref =') sprintf(' %8.6g,',Tz*z-mean(Tz*z))]
 
+ieee='b';
+accuracy='real*8';
+
 % Gaussian bump
 h=-H+dh*exp( -(X.^2+Y.^2)/(2*(L^2)) );
-f77write('topog.bump',h,'real*8','b');
+fid=fopen('topog.bump','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
 
 % Side walls + bump
 h(:,1)=0;
 h(:,ny)=0;
-f77write('topog.bumpchannel',h,'real*8','b');
+fid=fopen('topog.bumpchannel','w',ieee); fwrite(fid,h,accuracy); fclose(fid);
 
 % Simple channel
 h(:,1)=0;
 h(:,2:ny-1)=-H;
 h(:,ny)=0;
-f77write('topog.channel',h,'real*8','b');
+fid=fopen('topog.channel','w',ieee); fwrite(fid,h,accuracy); fclose(fid);

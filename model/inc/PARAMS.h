@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.37 1999/03/22 15:54:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.38 1999/05/05 18:32:34 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -171,6 +171,8 @@ C     usingZCoords     - Set to indicate that we are working in height
 C                        coords.
 C     openBoundaries - Using open-boundaries
 C     nonHydrostatic - Using non-hydrostatic terms
+C     globalFiles    - Selects between "global" and "tiled" files
+C     allowFreezing  - Allows water to freeze and form ice
       COMMON /PARM_L/ usingCartesianGrid, usingSphericalPolarGrid,
      & no_slip_sides,no_slip_bottom,
      & momViscosity, momAdvection, momForcing, useCoriolis, 
@@ -182,7 +184,8 @@ C     nonHydrostatic - Using non-hydrostatic terms
      & useConstantF, useBetaPlaneF, useSphereF,
      & implicitDiffusion, doThetaClimRelax, doSaltClimRelax,
      & periodicExternalForcing, usingPCoords, usingZCoords,
-     & openBoundaries, nonHydrostatic
+     & openBoundaries, nonHydrostatic, globalFiles,
+     & allowFreezing
       LOGICAL usingCartesianGrid
       LOGICAL usingSphericalPolarGrid
       LOGICAL usingSphericalPolarMTerms
@@ -216,6 +219,8 @@ C     nonHydrostatic - Using non-hydrostatic terms
       LOGICAL usingZCoords
       LOGICAL openBoundaries
       LOGICAL nonHydrostatic
+      LOGICAL globalFiles
+      LOGICAL allowFreezing
 
 C--   COMMON /PARM_R/ "Real" valued parameters used by the model.
 C     cg2dTargetResidual

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/CPP_OPTIONS.h,v 1.2 1999/03/22 16:25:13 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/verification/exp2/code/Attic/CPP_OPTIONS.h,v 1.3 1999/05/05 18:32:36 adcroft Exp $
 C
 
 C 
@@ -114,7 +114,7 @@ C o Include/exclude call to S/R CALC_DIFFUSIVITY
 
 C o Use "natural" boundary conditions for salinity
 C   instead of the "virtual salt flux"
-#undef USE_NATURAL_BCS
+#undef  USE_NATURAL_BCS
 
 C o Use "OLD" UV discretisation near boundaries (*not* recommended)
 C   Note - only works with  #undef NO_SLIP_LATERAL  in calc_mom_rhs.F

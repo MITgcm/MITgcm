@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.9 1999/03/22 16:27:13 adcroft Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.10 1999/05/05 18:32:35 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created by cnh 03/98
@@ -96,7 +96,7 @@ switch ($platform$USEMPI)
   case OSF1+mpi:
     echo "Configuring for DEC Alpha"
     set CPP        = ( '/usr/bin/cpp -P' )
-    set DEFINES    = ( ${DEFINES}  '-DTARGET_DEC' )
+    set DEFINES    = ( ${DEFINES}  '-DTARGET_DEC -DWORDLENGTH=1' )
     set KPP        = ( 'kapf' )
     set KPPFILES   = ( 'main.F' )
     set KFLAGS1    = ( '-scan=132 -noconc -cmp=' )
@@ -181,6 +181,7 @@ switch ($platform$USEMPI)
   case Linux:
     set LN         = ( '/bin/ln -fs' )
     set CPP        = ( '/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/cpp  -traditional -P' )
+    set DEFINES    = ( ${DEFINES} '-DWORDLENGTH=4' )
     set INCLUDES   = ( '-I/usr/local/include' )
     set FC         = ( 'g77' )
     set FFLAGS     = ( ' ' )
@@ -190,6 +191,7 @@ switch ($platform$USEMPI)
   case Linux+pgi:
     set LN         = ( '/bin/ln -fs' )
     set CPP        = ( '/usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/cpp -P' )
+    set DEFINES    = ( ${DEFINES} '-DWORDLENGTH=4' )
     set INCLUDES   = ( '-I/usr/local/include' )
     set FC         = ( 'pgf77' )
     set FFLAGS     = ( '-byteswapio' )

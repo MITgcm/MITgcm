@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.15 1998/12/15 00:20:34 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.16 1999/05/05 18:32:34 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -42,10 +42,35 @@ C     I,J,K
           EmPmR(i,j,bi,bj) = 0. _d 0
           SST  (i,j,bi,bj) = 0. _d 0
           SSS  (i,j,bi,bj) = 0. _d 0
+          Qsw  (i,j,bi,bj) = 0. _d 0
          ENDDO
         ENDDO
        ENDDO
       ENDDO
+C
+      _BEGIN_MASTER(myThid)
+      IF ( zonalWindFile .NE. ' '  ) THEN
+       CALL READ_FLD_XY_RS( zonalWindFile, ' ', fu, 0, myThid )
+      ENDIF
+      IF ( meridWindFile .NE. ' '  ) THEN
+       CALL READ_FLD_XY_RS( meridWindFile, ' ', fv, 0, myThid )
+      ENDIF
+      IF ( surfQFile .NE. ' '  ) THEN
+       CALL READ_FLD_XY_RS( surfQFile, ' ', Qnet, 0, myThid )
+      ENDIF
+      IF ( EmPmRfile .NE. ' '  ) THEN
+       CALL READ_FLD_XY_RS( EmPmRfile, ' ', EmPmR, 0, myThid )
+      ENDIF
+      IF ( thetaClimFile .NE. ' '  ) THEN
+       CALL READ_FLD_XY_RS( thetaClimFile, ' ', SST, 0, myThid )
+      ENDIF
+      IF ( saltClimFile .NE. ' '  ) THEN
+       CALL READ_FLD_XY_RS( saltClimFile, ' ', SSS, 0, myThid )
+      ENDIF
+c     IF ( surfQswFile .NE. ' '  ) THEN
+c      CALL READ_FLD_XY_RS( surfQswFile, ' ', Qsw, 0, myThid )
+c     ENDIF
+      _END_MASTER(myThid)
 C
       _EXCH_XY_R4(fu   , myThid )
       _EXCH_XY_R4(fv   , myThid )
@@ -53,31 +78,10 @@ C
       _EXCH_XY_R4(EmPmR, myThid )
       _EXCH_XY_R4(SST  , myThid )
       _EXCH_XY_R4(SSS  , myThid )
+      _EXCH_XY_R4(Qsw  , myThid )
 
 C     CALL PLOT_FIELD_XYRS( fu, 'S/R INI_FORCING FU',1,myThid)
 C     CALL PLOT_FIELD_XYRS( fv, 'S/R INI_FORCING FV',1,myThid)
-
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-OLy,sNy+OLy
-         DO i=1-OLx,sNx+OLx
-          fudot   (i,j,bi,bj) = 0. _d 0
-          fvdot   (i,j,bi,bj) = 0. _d 0
-          Qnetdot (i,j,bi,bj) = 0. _d 0
-          EmPmRdot(i,j,bi,bj) = 0. _d 0
-          SSTdot  (i,j,bi,bj) = 0. _d 0
-          SSSdot  (i,j,bi,bj) = 0. _d 0
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-C
-      _EXCH_XY_R4(fudot   , myThid )
-      _EXCH_XY_R4(fvdot   , myThid )
-      _EXCH_XY_R4(Qnetdot , myThid )
-      _EXCH_XY_R4(EmPmRdot, myThid )
-      _EXCH_XY_R4(SSTdot  , myThid )
-      _EXCH_XY_R4(SSSdot  , myThid )
 
       RETURN
       END
