@@ -1,7 +1,8 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.29 2004/09/24 16:52:44 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.30 2004/09/27 14:42:40 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
+#undef MULTIDIM_OLD_VERSION
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
@@ -88,6 +89,8 @@ C  maskLocW      :: 2-D array for mask at West points
 C  maskLocS      :: 2-D array for mask at South points
 C  iMin,iMax,    :: loop range for called routines
 C  jMin,jMax     :: loop range for called routines
+C [iMin,iMax]Upd :: loop range to update tracer field
+C [jMin,jMax]Upd :: loop range to update tracer field
 C  i,j,k         :: loop indices
 C  kup           :: index into 2 1/2D array, toggles between 1 and 2
 C  kdown         :: index into 2 1/2D array, toggles between 2 and 1
@@ -96,6 +99,7 @@ C  xA,yA         :: areas of X and Y face of tracer cells
 C  uTrans,vTrans :: 2-D arrays of volume transports at U,V points
 C  rTrans        :: 2-D arrays of volume transports at W points
 C  rTransKp1     :: vertical volume transport at interface k+1
+C  af            :: 2-D array for horizontal advective flux
 C  afx           :: 2-D array for horizontal advective flux, x direction
 C  afy           :: 2-D array for horizontal advective flux, y direction
 C  fVerT         :: 2 1/2D arrays for vertical advective flux
@@ -104,15 +108,19 @@ C  localTijk     :: 3-D array, temporary local copy of tracer fld
 C  kp1Msk        :: flag (0,1) for over-riding mask for W levels
 C  calc_fluxes_X :: logical to indicate to calculate fluxes in X dir
 C  calc_fluxes_Y :: logical to indicate to calculate fluxes in Y dir
+C  interiorOnly  :: only update the interior of myTile, but not the edges
+C  overlapOnly   :: only update the edges of myTile, but not the interior
 C  nipass        :: number of passes in multi-dimensional method
 C  ipass         :: number of the current pass being made
 C  myTile        :: variables used to determine which cube face 
 C  nCFace        :: owns a tile for cube grid runs using
 C                :: multi-dim advection.
+C [N,S,E,W]_edge :: true if N,S,E,W edge of myTile is an Edge of the cube
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocW(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskLocS(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin,iMax,jMin,jMax
+      INTEGER iMinUpd,iMaxUpd,jMinUpd,jMaxUpd
       INTEGER i,j,k,kup,kDown
       _RS xA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -120,6 +128,7 @@ C                :: multi-dim advection.
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTransKp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL af      (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afx     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL afy     (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fVerT   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
@@ -127,8 +136,10 @@ C                :: multi-dim advection.
       _RL localTijk(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       _RL kp1Msk
       LOGICAL calc_fluxes_X, calc_fluxes_Y, withSigns
+      LOGICAL interiorOnly, overlapOnly
       INTEGER nipass,ipass
       INTEGER myTile, nCFace
+      LOGICAL N_edge, S_edge, E_edge, W_edge
 CEOP
 
 #ifdef ALLOW_AUTODIFF_TAMC
@@ -170,6 +181,34 @@ C     uninitialised but inert locations.
        ENDDO
       ENDDO
 
+C--   Set tile-specific parameters for horizontal fluxes
+      IF (useCubedSphereExchange) THEN
+       nipass=3
+#ifdef ALLOW_AUTODIFF_TAMC
+       IF ( nipass.GT.maxcube ) STOP 'maxcube needs to be = 3'
+#endif
+#ifdef ALLOW_EXCH2
+       myTile = W2_myTileList(bi)
+       nCFace = exch2_myFace(myTile)
+       N_edge = exch2_isNedge(myTile).EQ.1
+       S_edge = exch2_isSedge(myTile).EQ.1
+       E_edge = exch2_isEedge(myTile).EQ.1
+       W_edge = exch2_isWedge(myTile).EQ.1
+#else
+       nCFace = bi
+       N_edge = .TRUE.
+       S_edge = .TRUE.
+       E_edge = .TRUE.
+       W_edge = .TRUE.
+#endif
+      ELSE
+       nipass=2
+       N_edge = .FALSE.
+       S_edge = .FALSE.
+       E_edge = .FALSE.
+       W_edge = .FALSE.
+      ENDIF
+
       iMin = 1-OLx
       iMax = sNx+OLx
       jMin = 1-OLy
@@ -191,7 +230,7 @@ C--   Get temporary terms used by tendency routines
 
 #ifdef ALLOW_GMREDI
 C--   Residual transp = Bolus transp + Eulerian transp
-       IF (useGMRedi)
+      IF (useGMRedi)
      &   CALL GMREDI_CALC_UVFLOW(
      &            uTrans, vTrans, bi, bj, k, myThid)
 #endif /* ALLOW_GMREDI */
@@ -199,9 +238,9 @@ C--   Residual transp = Bolus transp + Eulerian transp
 C--   Make local copy of tracer array and mask West & South
       DO j=1-OLy,sNy+OLy
        DO i=1-OLx,sNx+OLx
-        localTij(i,j)=tracer(i,j,k,bi,bj)
-        maskLocW(i,j)=maskW(i,j,k,bi,bj)
-        maskLocS(i,j)=maskS(i,j,k,bi,bj)
+         localTij(i,j)=tracer(i,j,k,bi,bj)
+         maskLocW(i,j)=maskW(i,j,k,bi,bj)
+         maskLocS(i,j)=maskS(i,j,k,bi,bj)
        ENDDO
       ENDDO
 
@@ -209,22 +248,6 @@ C--   Make local copy of tracer array and mask West & South
         withSigns = .FALSE.
         CALL FILL_CS_CORNER_UV_RS( 
      &            withSigns, maskLocW,maskLocS, bi,bj, myThid )
-      ENDIF
-#ifdef ALLOW_EXCH2
-       myTile = W2_myTileList(bi)
-       nCFace = exch2_myFace(myTile)
-#else
-       nCFace = bi
-#endif
-      IF (useCubedSphereExchange) THEN
-
-       nipass=3
-#ifdef ALLOW_AUTODIFF_TAMC
-       if ( nipass.GT.maxcube )
-     &      STOP 'maxcube needs to be = 3'
-#endif
-      ELSE
-       nipass=1
       ENDIF
 
 C--   Multiple passes for different directions on different tiles
@@ -238,42 +261,64 @@ C--   For cube need one pass for each of red, green and blue axes.
          ENDIF
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      IF (nipass.EQ.3) THEN
-       calc_fluxes_X=.FALSE.
-       calc_fluxes_Y=.FALSE.
-       IF (ipass.EQ.1 .AND. (nCFace.EQ.1 .OR. nCFace.EQ.2) ) THEN
-        calc_fluxes_X=.TRUE.
-       ELSEIF (ipass.EQ.1 .AND. (nCFace.EQ.4 .OR. nCFace.EQ.5) ) THEN
-        calc_fluxes_Y=.TRUE.
-       ELSEIF (ipass.EQ.2 .AND. (nCFace.EQ.1 .OR. nCFace.EQ.6) ) THEN
-        calc_fluxes_Y=.TRUE.
-       ELSEIF (ipass.EQ.2 .AND. (nCFace.EQ.3 .OR. nCFace.EQ.4) ) THEN
-        calc_fluxes_X=.TRUE.
-       ELSEIF (ipass.EQ.3 .AND. (nCFace.EQ.2 .OR. nCFace.EQ.3) ) THEN
-        calc_fluxes_Y=.TRUE.
-       ELSEIF (ipass.EQ.3 .AND. (nCFace.EQ.5 .OR. nCFace.EQ.6) ) THEN
-        calc_fluxes_X=.TRUE.
+      interiorOnly = .FALSE.
+      overlapOnly  = .FALSE.
+      IF (useCubedSphereExchange) THEN
+#ifdef MULTIDIM_OLD_VERSION
+C-    CubedSphere : pass 3 times, with full update of local tracer field
+       IF (ipass.EQ.1) THEN
+        calc_fluxes_X = nCFace.EQ.1 .OR. nCFace.EQ.2
+        calc_fluxes_Y = nCFace.EQ.4 .OR. nCFace.EQ.5
+       ELSEIF (ipass.EQ.2) THEN
+        calc_fluxes_X = nCFace.EQ.3 .OR. nCFace.EQ.4
+        calc_fluxes_Y = nCFace.EQ.6 .OR. nCFace.EQ.1
+#else /* MULTIDIM_OLD_VERSION */
+C-    CubedSphere : pass 3 times, with partial update of local tracer field
+       IF (ipass.EQ.1) THEN
+        overlapOnly  = MOD(nCFace,3).EQ.0
+        interiorOnly = MOD(nCFace,3).NE.0
+        calc_fluxes_X = nCFace.EQ.6 .OR. nCFace.EQ.1 .OR. nCFace.EQ.2
+        calc_fluxes_Y = nCFace.EQ.3 .OR. nCFace.EQ.4 .OR. nCFace.EQ.5
+       ELSEIF (ipass.EQ.2) THEN
+        overlapOnly  = MOD(nCFace,3).EQ.2
+        calc_fluxes_X = nCFace.EQ.2 .OR. nCFace.EQ.3 .OR. nCFace.EQ.4
+        calc_fluxes_Y = nCFace.EQ.5 .OR. nCFace.EQ.6 .OR. nCFace.EQ.1
+#endif /* MULTIDIM_OLD_VERSION */
+       ELSE
+        calc_fluxes_X = nCFace.EQ.5 .OR. nCFace.EQ.6
+        calc_fluxes_Y = nCFace.EQ.2 .OR. nCFace.EQ.3
        ENDIF
       ELSE
-       calc_fluxes_X=.TRUE.
-       calc_fluxes_Y=.TRUE.
+C-    not CubedSphere
+        calc_fluxes_X = MOD(ipass,2).EQ.1
+        calc_fluxes_Y = .NOT.calc_fluxes_X
       ENDIF
  
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   X direction
       IF (calc_fluxes_X) THEN
 
-C--   Internal exchange for calculations in X
-      IF (useCubedSphereExchange) THEN
-         CALL FILL_CS_CORNER_TR_RL( .TRUE., localTij, bi,bj, myThid )
-      ENDIF
+C-     Do not compute fluxes if
+C       a) needed in overlap only 
+C   and b) the overlap of myTile are not cube-face Edges
+       IF ( .NOT.overlapOnly .OR. N_edge .OR. S_edge ) THEN
 
-C-    Advective flux in X
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        afx(i,j) = 0.
-       ENDDO
-      ENDDO
+C-     Internal exchange for calculations in X
+#ifdef MULTIDIM_OLD_VERSION
+        IF ( useCubedSphereExchange ) THEN
+#else
+        IF ( useCubedSphereExchange .AND.
+     &       ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
+#endif
+         CALL FILL_CS_CORNER_TR_RL( .TRUE., localTij, bi,bj, myThid )
+        ENDIF
+
+C-     Advective flux in X
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          af(i,j) = 0.
+         ENDDO
+        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC
 #ifndef DISABLE_MULTIDIM_ADVECTION
@@ -282,44 +327,103 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-        CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, deltaTtracer,
-     I                            uTrans, uVel, maskLocW, localTij,
-     O                            afx, myThid )
-      ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-        CALL GAD_DST3_ADV_X(      bi,bj,k, deltaTtracer,
-     I                            uTrans, uVel, maskLocW, localTij,
-     O                            afx, myThid )
-      ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-        CALL GAD_DST3FL_ADV_X(    bi,bj,k, deltaTtracer,
-     I                            uTrans, uVel, maskLocW, localTij,
-     O                            afx, myThid )
-      ELSE
-       STOP 'GAD_ADVECTION: adv. scheme incompatibale with multi-dim'
-      ENDIF
+        IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+          CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, deltaTtracer,
+     I                              uTrans, uVel, maskLocW, localTij,
+     O                              af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+          CALL GAD_DST3_ADV_X(      bi,bj,k, deltaTtracer,
+     I                              uTrans, uVel, maskLocW, localTij,
+     O                              af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+          CALL GAD_DST3FL_ADV_X(    bi,bj,k, deltaTtracer,
+     I                              uTrans, uVel, maskLocW, localTij,
+     O                              af, myThid )
+        ELSE
+         STOP 'GAD_ADVECTION: adv. scheme incompatibale with multi-dim'
+        ENDIF
 
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx-1
-        localTij(i,j)=localTij(i,j)-deltaTtracer*
-     &    _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &    *recip_rA(i,j,bi,bj)
-     &    *( afx(i+1,j)-afx(i,j)
-     &      -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
-     &     )
-       ENDDO
-      ENDDO
+C-     Advective flux in X : done
+       ENDIF
+
+C-     Internal exchange for next calculations in Y
+       IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
+         CALL FILL_CS_CORNER_TR_RL(.FALSE., localTij, bi,bj, myThid )
+       ENDIF
+
+C-     Update the local tracer field where needed:
+
+C      update in overlap-Only
+       IF ( overlapOnly ) THEN
+        iMinUpd = 1-Olx+1
+        iMaxUpd = sNx+Olx-1
+C- notes: these 2 lines below have no real effect (because recip_hFac=0 
+C         in corner region) but safer to keep them.
+        IF ( W_edge ) iMinUpd = 1
+        IF ( E_edge ) iMaxUpd = sNx
+
+        IF ( S_edge ) THEN
+         DO j=1-Oly,0
+          DO i=iMinUpd,iMaxUpd
+           localTij(i,j)=localTij(i,j)-deltaTtracer*
+     &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)
+     &       *( af(i+1,j)-af(i,j)
+     &         -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
+     &        )
+          ENDDO
+         ENDDO
+        ENDIF
+        IF ( N_edge ) THEN
+         DO j=sNy+1,sNy+Oly
+          DO i=iMinUpd,iMaxUpd
+           localTij(i,j)=localTij(i,j)-deltaTtracer*
+     &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)
+     &       *( af(i+1,j)-af(i,j)
+     &         -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
+     &        )
+          ENDDO
+         ENDDO
+        ENDIF
+
+       ELSE
+C      do not only update the overlap
+        jMinUpd = 1-Oly 
+        jMaxUpd = sNy+Oly
+        IF ( interiorOnly .AND. S_edge ) jMinUpd = 1
+        IF ( interiorOnly .AND. N_edge ) jMaxUpd = sNy
+        DO j=jMinUpd,jMaxUpd
+         DO i=1-Olx+1,sNx+Olx-1
+           localTij(i,j)=localTij(i,j)-deltaTtracer*
+     &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)
+     &       *( af(i+1,j)-af(i,j)
+     &         -tracer(i,j,k,bi,bj)*(uTrans(i+1,j)-uTrans(i,j))
+     &        )
+         ENDDO
+        ENDDO
+C-      keep advective flux (for diagnostics)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          afx(i,j) = af(i,j)
+         ENDDO
+        ENDDO
 
 #ifdef ALLOW_OBCS
-C--   Apply open boundary conditions
-      IF (useOBCS) THEN
-       IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN
-        CALL OBCS_APPLY_TLOC( bi, bj, k, localTij, myThid )
-       ELSEIF (tracerIdentity.EQ.GAD_SALINITY) THEN
-        CALL OBCS_APPLY_SLOC( bi, bj, k, localTij, myThid )
-       END IF
-      END IF
+C-     Apply open boundary conditions
+        IF ( useOBCS ) THEN
+         IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN
+          CALL OBCS_APPLY_TLOC( bi, bj, k, localTij, myThid )
+         ELSEIF (tracerIdentity.EQ.GAD_SALINITY) THEN
+          CALL OBCS_APPLY_SLOC( bi, bj, k, localTij, myThid )
+         ENDIF
+        ENDIF
 #endif /* ALLOW_OBCS */
 
+C-     end if/else update overlap-Only
+       ENDIF
+        
 C--   End of X direction
       ENDIF
 
@@ -327,17 +431,27 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Y direction
       IF (calc_fluxes_Y) THEN
 
-C--   Internal exchange for calculations in Y
-      IF (useCubedSphereExchange) THEN
-         CALL FILL_CS_CORNER_TR_RL(.FALSE., localTij, bi,bj, myThid )
-      ENDIF
+C-     Do not compute fluxes if
+C       a) needed in overlap only
+C   and b) the overlap of myTile are not cube-face edges
+       IF ( .NOT.overlapOnly .OR. E_edge .OR. W_edge ) THEN
 
-C-    Advective flux in Y
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
-        afy(i,j) = 0.
-       ENDDO
-      ENDDO
+C-     Internal exchange for calculations in Y
+#ifdef MULTIDIM_OLD_VERSION
+        IF ( useCubedSphereExchange ) THEN
+#else
+        IF ( useCubedSphereExchange .AND.
+     &       ( overlapOnly .OR. ipass.EQ.1 ) ) THEN
+#endif
+         CALL FILL_CS_CORNER_TR_RL(.FALSE., localTij, bi,bj, myThid )
+        ENDIF
+
+C-     Advective flux in Y
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          af(i,j) = 0.
+         ENDDO
+        ENDDO
 
 #ifdef ALLOW_AUTODIFF_TAMC 
 #ifndef DISABLE_MULTIDIM_ADVECTION
@@ -346,43 +460,102 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 #endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-      IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-        CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, deltaTtracer,
-     I                            vTrans, vVel, maskLocS, localTij,
-     O                            afy, myThid )
-      ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-        CALL GAD_DST3_ADV_Y(      bi,bj,k, deltaTtracer,
-     I                            vTrans, vVel, maskLocS, localTij,
-     O                            afy, myThid )
-      ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-        CALL GAD_DST3FL_ADV_Y(    bi,bj,k, deltaTtracer,
-     I                            vTrans, vVel, maskLocS, localTij,
-     O                            afy, myThid )
-      ELSE
-       STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
-      ENDIF
+        IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
+          CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, deltaTtracer,
+     I                              vTrans, vVel, maskLocS, localTij,
+     O                              af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
+          CALL GAD_DST3_ADV_Y(      bi,bj,k, deltaTtracer,
+     I                              vTrans, vVel, maskLocS, localTij,
+     O                              af, myThid )
+        ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
+          CALL GAD_DST3FL_ADV_Y(    bi,bj,k, deltaTtracer,
+     I                              vTrans, vVel, maskLocS, localTij,
+     O                              af, myThid )
+        ELSE
+         STOP 'GAD_ADVECTION: adv. scheme incompatibale with mutli-dim'
+        ENDIF
 
-      DO j=1-Oly,sNy+Oly-1
-       DO i=1-Olx,sNx+Olx
-        localTij(i,j)=localTij(i,j)-deltaTtracer*
-     &    _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
-     &    *recip_rA(i,j,bi,bj)
-     &    *( afy(i,j+1)-afy(i,j)
-     &      -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
-     &     )
-       ENDDO
-      ENDDO
+C-     Advective flux in Y : done
+       ENDIF
+
+C-     Internal exchange for next calculations in X
+       IF ( overlapOnly .AND. ipass.EQ.1 ) THEN
+         CALL FILL_CS_CORNER_TR_RL( .TRUE., localTij, bi,bj, myThid )
+       ENDIF
+
+C-     Update the local tracer field where needed:
+
+C      update in overlap-Only
+       IF ( overlapOnly ) THEN
+        jMinUpd = 1-Oly+1 
+        jMaxUpd = sNy+Oly-1
+C- notes: these 2 lines below have no real effect (because recip_hFac=0 
+C         in corner region) but safer to keep them.
+        IF ( S_edge ) jMinUpd = 1
+        IF ( N_edge ) jMaxUpd = sNy
+
+        IF ( W_edge ) THEN
+         DO j=jMinUpd,jMaxUpd
+          DO i=1-Olx,0
+           localTij(i,j)=localTij(i,j)-deltaTtracer*
+     &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)
+     &       *( af(i,j+1)-af(i,j)
+     &         -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
+     &        )
+          ENDDO
+         ENDDO
+        ENDIF
+        IF ( E_edge ) THEN
+         DO j=jMinUpd,jMaxUpd
+          DO i=sNx+1,sNx+Olx
+           localTij(i,j)=localTij(i,j)-deltaTtracer*
+     &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)
+     &       *( af(i,j+1)-af(i,j)
+     &         -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
+     &        )
+          ENDDO
+         ENDDO
+        ENDIF
+
+       ELSE
+C      do not only update the overlap
+        iMinUpd = 1-Olx
+        iMaxUpd = sNx+Olx
+        IF ( interiorOnly .AND. W_edge ) iMinUpd = 1
+        IF ( interiorOnly .AND. E_edge ) iMaxUpd = sNx
+        DO j=1-Oly+1,sNy+Oly-1
+         DO i=iMinUpd,iMaxUpd
+           localTij(i,j)=localTij(i,j)-deltaTtracer*
+     &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
+     &       *recip_rA(i,j,bi,bj)
+     &       *( af(i,j+1)-af(i,j)
+     &         -tracer(i,j,k,bi,bj)*(vTrans(i,j+1)-vTrans(i,j))
+     &        )
+         ENDDO
+        ENDDO
+C-      keep advective flux (for diagnostics)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          afy(i,j) = af(i,j)
+         ENDDO
+        ENDDO
 
 #ifdef ALLOW_OBCS
-C--   Apply open boundary conditions
-      IF (useOBCS) THEN
-       IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN
-        CALL OBCS_APPLY_TLOC( bi, bj, k, localTij, myThid )
-       ELSEIF (tracerIdentity.EQ.GAD_SALINITY) THEN
-        CALL OBCS_APPLY_SLOC( bi, bj, k, localTij, myThid )
-       END IF
-      END IF
+C-     Apply open boundary conditions
+        IF (useOBCS) THEN
+         IF (tracerIdentity.EQ.GAD_TEMPERATURE) THEN
+          CALL OBCS_APPLY_TLOC( bi, bj, k, localTij, myThid )
+         ELSEIF (tracerIdentity.EQ.GAD_SALINITY) THEN
+          CALL OBCS_APPLY_SLOC( bi, bj, k, localTij, myThid )
+         ENDIF
+        ENDIF
 #endif /* ALLOW_OBCS */
+
+C      end if/else update overlap-Only
+       ENDIF
 
 C--   End of Y direction
       ENDIF
@@ -409,7 +582,8 @@ C-    horizontal advection done; store intermediate result in 3D array:
 
 #ifdef ALLOW_DEBUG
       IF ( debugLevel .GE. debLevB
-     &   .AND. k.EQ.3 .AND. myIter.EQ.1+nIter0
+     &   .AND. tracerIdentity.EQ.GAD_TEMPERATURE
+     &   .AND. k.LE.3 .AND. myIter.EQ.1+nIter0
      &   .AND. nPx.EQ.1 .AND. nPy.EQ.1
      &   .AND. useCubedSphereExchange ) THEN
         CALL DEBUG_CS_CORNER_UV( ' afx,afy from GAD_ADVECTION',
