@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.18 2004/02/12 16:01:32 molod Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.19 2004/02/26 19:41:48 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -114,7 +114,7 @@ C--   Initialise the control variables
 CAMM
 #ifdef ALLOW_DIAGNOSTICS
       IF (usediagnostics) then
-       call diagnostics_init(mythid)
+       call diagnostics_initialise(mythid)
       ENDIF
 #endif
 CAMM
