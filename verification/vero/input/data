@@ -27,6 +27,8 @@
  implicitFreeSurface=.TRUE.,
  eosType='POLY3',
  readBinaryPrec=32,
+ usePickupBeforeC35=.FALSE.,
+ implicitDiffusion=.TRUE.,
  &
 
 # Elliptic solver parameters
@@ -37,28 +39,22 @@
 
 # Time stepping parameters
  &PARM03
- startTime = 132503040000.,
- endTime   = 132627456000.,
-# startTime = 186624000000.,
-# endTime   = 186748416000.,
+ startTime = 62208000000.,
+ endTime   = 62239104000.,
  deltaTmom=2400.0,
  tauCD=321428.,
-# deltaTtracer=86400.0,
-# deltaTClock =86400.0,
- deltaTtracer=5400.0,
- deltaTClock =5400.0,
+ deltaTtracer=21600.0,
+ deltaTClock =21600.0,
  cAdjFreq=-1.,
  abEps=0.1,
 #
- pChkptFreq = 124416000.,
- chkptFreq  = 124416000.,
- dumpFreq         = 31104000.0,
- taveFreq         = 31104000.0,
+ pChkptFreq = 5184000.,
+ chkptFreq  = 5184000.,
+ dumpFreq   = 432000.,
+ taveFreq   = 0.,
 #
-#tauThetaClimRelax=2592000.0,
-#tauSaltClimRelax=2592000.0,
- tauThetaClimRelax=0.0,
- tauSaltClimRelax=0.0,
+ tauThetaClimRelax = 5184000.0,
+ tauSaltClimRelax  = 5184000.0,
  &
 
 # Gridding parameters
@@ -75,13 +71,13 @@
 
 # Input datasets
  &PARM05
- hydrogThetaFile='thetaZonCli.be',
- hydrogSaltFile='saltZonCli.be',
- bathyFile='topog.be',
- zonalWindFile='windx.be',
- meridWindFile=' ',
- thetaClimFile=' ',
- saltClimFile=' ',
- surfQFile='qnetZon.be',
- EmPmRfile='empZon.be'
+ hydrogThetaFile = 'thetaZonCli.be',
+ hydrogSaltFile  = 'saltZonCli.be',
+ bathyFile       = 'topog.be',
+ zonalWindFile   = 'windx.be',
+ meridWindFile   = ' ',
+ thetaClimFile   = 'thetaZonCli.be',
+ saltClimFile    = 'saltZonCli.be',
+ surfQFile       = 'qnetZon.be',
+ EmPmRfile       = 'empZon.be'
  &

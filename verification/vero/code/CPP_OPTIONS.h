@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/vero/code/Attic/CPP_OPTIONS.h,v 1.2 2001/04/10 22:35:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/vero/code/Attic/CPP_OPTIONS.h,v 1.3 2001/05/14 21:59:44 heimbach Exp $
 C
 
 C 
@@ -24,12 +24,14 @@ C o Include/exclude code for open-boundary conditions
 #undef  ALLOW_OBCS
 
 C o Include/exclude diagnostics package interface code
+cph
 #define  INCLUDE_DIAGNOSTICS_INTERFACE_CODE
 
 C o Include/exclude latitude circle FFT filter
 #undef  INCLUDE_LAT_CIRC_FFT_FILTER_CODE
 
 C o Include/exclude temperature advection code
+cph
 #define  INCLUDE_T_ADVECTION_CODE
 #ifdef   INCLUDE_T_ADVECTION_CODE
 #define  _ADT(a)a
@@ -50,9 +52,11 @@ C o Include/exclude temperature diffusion code
 #endif
 
 C o Include/exclude temperature forcing code
+cph
 #define  INCLUDE_T_FORCING_CODE
 
 C o Include/exclude momentum advection code
+cph
 #define  INCLUDE_MOMENTUM_ADVECTION_CODE
 #ifdef   INCLUDE_MOMENTUM_ADVECTION_CODE
 #define  _ADM(a)a
@@ -86,6 +90,7 @@ C o Include/exclude gradient of phy_hyd code
 #endif
 
 C o Include/exclude momentum forcing code
+cph
 #define INCLUDE_MOMENTUM_FORCING_CODE
 
 C o Include/exclude momentum eqn metric terms code

@@ -4,5 +4,5 @@
              40,    1,   40
           ];
  format = [ 'float64' ];
- nrecords = [    91 ];
- timeStepNumber = [  6134400 ];
+ nrecords = [   181 ];
+ timeStepNumber = [   720000 ];
