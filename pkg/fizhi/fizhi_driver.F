@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.34 2004/12/14 19:56:44 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.35 2005/03/21 17:34:51 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -194,7 +194,7 @@ C TURBULENCE
 C ==========
       IF ( alarm('turb') ) THEN
 
-      call turbio (im,jm,lm,istrip,nymd,nhms,bi,bj,ndturb,
+      call turbio (im,jm,lm,istrip,nymd,nhms,bi,bj,ndturb,nltop,
      .  ptop,p,u,v,t,q,ntracer,ptracer,pl,ple,dpres,pkht,pkl,
      .  ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
      .  tgz,fracland,landtype,

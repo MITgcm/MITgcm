@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.34 2005/02/25 17:02:46 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_turb.F,v 1.35 2005/03/21 17:34:51 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
       subroutine turbio (im,jm,nlay,istrip,nymd,nhms,bi,bj
-     1 ,ndturb,ptop, pz, uz, vz, tz, qz, ntracers,ptracers
+     1 ,ndturb,nltop,ptop, pz, uz, vz, tz, qz, ntracers,ptracers
      2 ,plz,plze,dpres,pkht,pkz,ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke
      3 ,tgz,fracland,landtype
      4 ,tcanopy,ecanopy,tdeep,swetshal,swetroot,swetdeep,snodep,capac
@@ -25,6 +25,7 @@ c      istrip  - number of horizontal points to be handled at a time on
 c      nymd    - year and date integer in YYMMDD format (ie, 790212)
 c      nhms    - date and time integer in HHMMSS format (ie, 123000)
 c      ndturb  - turbulence time step integer in HHMMSS format
+c      nltop   - Top level at which to allow turbulence
 c      ptop    - model top pressure - rigid lid assumed - real
 c      pz      - surface pressure minus ptop in mb - real[lon,lat]
 c      uz      - zonal wind in m/sec - real[lon,lat,level]
@@ -96,7 +97,7 @@ c-----------------------------------------------------------------------
 #include "mpif.h"
 #endif
 
-      integer im,jm,nlay,istrip,nymd,nhms,bi,bj,ndturb
+      integer im,jm,nlay,istrip,nymd,nhms,bi,bj,ndturb,nltop
       integer ntracers, ptracers
       integer nchp,nchptot,nchplnd
       _RL ptop
