@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.9 2004/07/06 03:55:53 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_utils.F,v 1.10 2004/07/07 03:47:05 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -26,44 +26,44 @@ C***********************************************************************
 #ifdef ALLOW_FIZHI 
 #include "fizhi_SIZE.h"
 #else
-       integer Nrphys
-       parameter (Nrphys=0)
+      integer Nrphys
+      parameter (Nrphys=0)
 #endif
 
 #include "diagnostics_SIZE.h"
 #include "diagnostics.h"
-
+       
       integer myThid,lev,ipoint
       _RL undef
       _RL qtmp(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr+Nrphys,Nsx,Nsy)
-
+      
       _RL factor
       integer i,j,ipnt,klev
       integer bi,bj
-
+      
       if (ipoint.lt.1) go to 999
-
+      
       klev = kdiag(ipoint)
       if(klev.ge.lev) then
-      ipnt = idiag(ipoint) + lev - 1
-      factor = 1.0
-      if(ndiag(ipoint).ne.0) factor = 1.0/ndiag(ipoint)
+        ipnt = idiag(ipoint) + lev - 1
+        factor = 1.0
+        if(ndiag(ipoint).ne.0) factor = 1.0/ndiag(ipoint)
 
-      do bj=myByLo(myThid), myByHi(myThid)
-      do bi=myBxLo(myThid), myBxHi(myThid)
-
-      do j = 1,sNy
-      do i = 1,sNx
-       if( qdiag(i,j,ipnt,bi,bj).ne.undef ) then
-        qtmp(i,j,lev,bi,bj) = qdiag(i,j,ipnt,bi,bj)*factor
-       else
-        qtmp(i,j,lev,bi,bj) = undef
-       endif
-      enddo
-      enddo
-
-      enddo
-      enddo
+        do bj=myByLo(myThid), myByHi(myThid)
+          do bi=myBxLo(myThid), myBxHi(myThid)
+            
+            do j = 1,sNy
+              do i = 1,sNx
+                if( qdiag(i,j,ipnt,bi,bj).ne.undef ) then
+                  qtmp(i,j,lev,bi,bj) = qdiag(i,j,ipnt,bi,bj)*factor
+                else
+                  qtmp(i,j,lev,bi,bj) = undef
+                endif
+              enddo
+            enddo
+            
+          enddo
+        enddo
 
       endif
 
@@ -107,31 +107,29 @@ C***********************************************************************
       integer bi,bj
 
       if (ipoint.lt.1) go to 999
-
+      
       klev = kdiag(ipoint)
-      if(klev.ge.lev) then
-      ipnt = idiag(ipoint) + lev - 1
-
-      do bj=myByLo(myThid), myByHi(myThid)
-      do bi=myBxLo(myThid), myBxHi(myThid)
-
-      do j = 1,sNy
-      do i = 1,sNx
-       if( qdiag(i,j,ipnt,bi,bj).ne.undef ) then
-        qtmp(i,j,lev,bi,bj) = qdiag(i,j,ipnt,bi,bj)
-       else
-        qtmp(i,j,lev,bi,bj) = undef
-       endif
-      enddo
-      enddo
-
-      enddo
-      enddo
-
+      if (klev .ge. lev) then
+        ipnt = idiag(ipoint) + lev - 1
+        
+        do bj=myByLo(myThid), myByHi(myThid)
+          do bi=myBxLo(myThid), myBxHi(myThid)
+            
+            do j = 1,sNy
+              do i = 1,sNx
+                qtmp(i,j,lev,bi,bj) = qdiag(i,j,ipnt,bi,bj)
+              enddo
+            enddo
+            
+          enddo
+        enddo
+        
       endif
 
  999  return
       end
+
+
       subroutine clrindx (myThid,listnum)
 C***********************************************************************
 C
@@ -161,20 +159,19 @@ C***********************************************************************
       equivalence (     parms1 , parse1(1) )
       equivalence ( mate_index , parse1(6) )
 
-      do n=1,nfields(listnum)
-       do m=1,ndiagt
-        if( flds(n,listnum).eq.cdiag(m) .and. idiag(m).ne.0 ) then
-         call clrdiag (myThid,m)
+      do n = 1,nfields(listnum)
+        do m = 1,ndiagt
+          if( flds(n,listnum).eq.cdiag(m) .and. idiag(m).ne.0 ) then
+            call clrdiag (myThid,m)
 
-c Check for Counter Diagnostic
-c ----------------------------
-         parms1 =  gdiag(m)
-         if( parse1(5).eq.'C' ) then
-          read (mate_index,100) mate
-          call clrdiag (myThid,mate)
-         endif
-        endif
-       enddo
+C           Check for Counter Diagnostic
+            parms1 =  gdiag(m)
+            if ( parse1(5).eq.'C' ) then
+              read (mate_index,100) mate
+              call clrdiag (myThid,mate)
+            endif
+          endif
+        enddo
       enddo
                    
   100 format(i3)
@@ -205,17 +202,17 @@ C ****              SET DIAGNOSTIC AND COUNTER TO ZERO              ****
 C **********************************************************************        
                                                                                 
       do bj=myByLo(myThid), myByHi(myThid)
-      do bi=myBxLo(myThid), myBxHi(myThid)
-       do k = 1,kdiag(index)
-        do j = 1,sNy
-        do i = 1,sNx
-         qdiag(i,j,idiag(index)+k-1,bi,bj) = 0.0
+        do bi=myBxLo(myThid), myBxHi(myThid)
+          do k = 1,kdiag(index)
+            do j = 1,sNy
+              do i = 1,sNx
+                qdiag(i,j,idiag(index)+k-1,bi,bj) = 0. _d 0
+              enddo
+            enddo
+          enddo
         enddo
-        enddo
-       enddo
       enddo
-      enddo
-
+      
       ndiag(index) = 0
 
       return
@@ -261,29 +258,31 @@ C **********************************************************************
           IDIAG(NUM) = IPOINTER
           IPOINTER   = IPOINTER + KDIAG(NUM)
           ndiagmx    = ndiagmx  + KDIAG(NUM)
-          if(myThid.eq.1) WRITE(6,2000)KDIAG(NUM),NUM,CDIAG(NUM),ndiagmx
+          if (myThid.eq.1)
+     &         WRITE(6,2000)KDIAG(NUM),NUM,CDIAG(NUM),ndiagmx
         endif
       ELSE
-          if(myThid.eq.1) WRITE(6,3000) NUM, CDIAG(NUM)
+          if (myThid.eq.1)
+     &       WRITE(6,3000) NUM, CDIAG(NUM)
       ENDIF
 
-c Check for Counter Diagnostic
-c ----------------------------
-      if( parse1(5).eq.'C') then
-      read (mate_index,100) mate
+C     Check for Counter Diagnostic
+      if ( parse1(5).eq.'C') then
+        read (mate_index,100) mate
 
-      IF( IDIAG(mate).EQ.0 ) THEN
-       if(ndiagmx+kdiag(num).gt.numdiags) then
-        write(6,5000)num,cdiag(num)
-       else
-        IDIAG(mate) = IPOINTER
-        IPOINTER    = IPOINTER + KDIAG(mate)
-        ndiagmx     = ndiagmx  + KDIAG(mate)
-        if(myThid.eq.1)WRITE(6,2000)KDIAG(mate),mate,CDIAG(mate),ndiagmx
-       endif
-      ELSE
+        IF( IDIAG(mate).EQ.0 ) THEN
+          if(ndiagmx+kdiag(num).gt.numdiags) then
+            write(6,5000)num,cdiag(num)
+          else
+            IDIAG(mate) = IPOINTER
+            IPOINTER    = IPOINTER + KDIAG(mate)
+            ndiagmx     = ndiagmx  + KDIAG(mate)
+            if (myThid.eq.1)
+     &           WRITE(6,2000)KDIAG(mate),mate,CDIAG(mate),ndiagmx
+          endif
+        ELSE
           if(myThid.eq.1) WRITE(6,3000) mate, CDIAG(mate)
-      ENDIF
+        ENDIF
       endif
 
       RETURN
