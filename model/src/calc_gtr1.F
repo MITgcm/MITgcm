@@ -1,38 +1,18 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/calc_gt.F,v 1.2 2001/08/30 00:40:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gtr1.F,v 1.3 2001/09/18 19:07:35 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-      SUBROUTINE CALC_GT( 
+      SUBROUTINE CALC_GTR1( 
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
      I           KappaRT,
      U           fVerT,
      I           myCurrentTime, myThid )
 C     /==========================================================\
-C     | SUBROUTINE CALC_GT                                       |
-C     | o Calculate the temperature tendency terms.              |
+C     | SUBROUTINE CALC_GTR1                                     |
+C     | o Calculate the passive tracer tendency terms.           |
 C     |==========================================================|
-C     | A procedure called EXTERNAL_FORCING_T is called from     |
-C     | here. These procedures can be used to add per problem    |
-C     | heat flux source terms.                                  |
-C     | Note: Although it is slightly counter-intuitive the      |
-C     |       EXTERNAL_FORCING routine is not the place to put   |
-C     |       file I/O. Instead files that are required to       |
-C     |       calculate the external source terms are generally  |
-C     |       read during the model main loop. This makes the    |
-C     |       logisitics of multi-processing simpler and also    |
-C     |       makes the adjoint generation simpler. It also      |
-C     |       allows for I/O to overlap computation where that   |
-C     |       is supported by hardware.                          |
-C     | Aside from the problem specific term the code here       |
-C     | forms the tendency terms due to advection and mixing     |
-C     | The baseline implementation here uses a centered         |
-C     | difference form for the advection term and a tensorial   |
-C     | divergence of a flux form for the diffusive term. The    |
-C     | diffusive term is formulated so that isopycnal mixing and|
-C     | GM-style subgrid-scale terms can be incorporated b simply|
-C     | setting the diffusion tensor terms appropriately.        |
 C     \==========================================================/
       IMPLICIT NONE
 
@@ -42,6 +22,7 @@ C     == GLobal variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GAD.h"
+#include "TR1.h"
 
 C     == Routine arguments ==
 C     fVerT   - Flux of temperature (T) in the vertical 
@@ -79,17 +60,17 @@ C--   the kDown is still required
       CALL GAD_CALC_RHS(
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
-     I           diffKhT, diffK4T, KappaRT, theta,
-     I           GAD_TEMPERATURE, tempAdvScheme,
-     U           fVerT, gT,
+     I           diffKhT, diffK4T, KappaRT, tr1,
+     I           GAD_TR1, tracerAdvScheme,
+     U           fVerT, gTr1,
      I           myThid )
 
-#ifdef INCLUDE_T_FORCING_CODE
+#ifdef INCLUDE_TR_FORCING_CODE
 C--   External thermal forcing term(s)
-      CALL EXTERNAL_FORCING_T(
+      CALL EXTERNAL_FORCING_TR(
      I     iMin,iMax,jMin,jMax,bi,bj,k,
      I     myCurrentTime,myThid)
-#endif /*  INCLUDE_T_FORCING_CODE */
+#endif /*  INCLUDE_TR_FORCING_CODE */
 
       RETURN
       END

@@ -1,21 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/Attic/calc_gs.F,v 1.2 2001/08/30 00:40:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_gt.F,v 1.34 2001/09/18 19:07:35 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 
-      SUBROUTINE CALC_GS( 
+      SUBROUTINE CALC_GT( 
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
-     I           KappaRS,
-     U           fVerS,
+     I           KappaRT,
+     U           fVerT,
      I           myCurrentTime, myThid )
 C     /==========================================================\
-C     | SUBROUTINE CALC_GS                                       |
-C     | o Calculate the salt tendency terms.                     |
+C     | SUBROUTINE CALC_GT                                       |
+C     | o Calculate the temperature tendency terms.              |
 C     |==========================================================|
-C     | A procedure called EXTERNAL_FORCING_S is called from     |
+C     | A procedure called EXTERNAL_FORCING_T is called from     |
 C     | here. These procedures can be used to add per problem    |
-C     | E-P  flux source terms.                                  |
+C     | heat flux source terms.                                  |
 C     | Note: Although it is slightly counter-intuitive the      |
 C     |       EXTERNAL_FORCING routine is not the place to put   |
 C     |       file I/O. Instead files that are required to       |
@@ -44,7 +44,7 @@ C     == GLobal variables ==
 #include "GAD.h"
 
 C     == Routine arguments ==
-C     fVerS   - Flux of salt (S) in the vertical 
+C     fVerT   - Flux of temperature (T) in the vertical 
 C               direction at the upper(U) and lower(D) faces of a cell.
 C     maskUp  - Land mask used to denote base of the domain.
 C     xA      - Tracer cell face area normal to X
@@ -55,39 +55,41 @@ C     rTrans  - Vertical volume transport through cell face
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation
 C                                      results will be set.
 C     myThid - Instance number for this innvocation of CALC_GT
-      _RL fVerS (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
+      _RL fVerT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
       _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS yA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL uTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
-      _RL KappaRS(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
+      _RL KappaRT(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER k,kUp,kDown,kM1
       INTEGER bi,bj,iMin,iMax,jMin,jMax
-      _RL     myCurrentTime
       INTEGER myThid
+      _RL     myCurrentTime
 
 C     == Local variables ==
 
 #ifdef ALLOW_AUTODIFF_TAMC
-C--   only the kUp part of fverS is set in this subroutine
+C--   only the kUp part of fverT is set in this subroutine
 C--   the kDown is still required
-      fVerS(1,1,kDown) = fVerS(1,1,kDown)
+      fVerT(1,1,kDown) = fVerT(1,1,kDown)
 #endif
 
       CALL GAD_CALC_RHS(
      I           bi,bj,iMin,iMax,jMin,jMax,k,kM1,kUp,kDown,
      I           xA,yA,uTrans,vTrans,rTrans,maskUp,
-     I           diffKhS, diffK4S, KappaRS, Salt,
-     I           GAD_SALINITY, saltAdvScheme,
-     U           fVerS, gS,
+     I           diffKhT, diffK4T, KappaRT, theta,
+     I           GAD_TEMPERATURE, tempAdvScheme,
+     U           fVerT, gT,
      I           myThid )
 
-C--   External forcing term(s)
-      CALL EXTERNAL_FORCING_S(
+#ifdef INCLUDE_T_FORCING_CODE
+C--   External thermal forcing term(s)
+      CALL EXTERNAL_FORCING_T(
      I     iMin,iMax,jMin,jMax,bi,bj,k,
      I     myCurrentTime,myThid)
+#endif /*  INCLUDE_T_FORCING_CODE */
 
       RETURN
       END
