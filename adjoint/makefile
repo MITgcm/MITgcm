@@ -137,7 +137,6 @@ SRC_MODEL	= \
 		$(SOURCE_CODE)/ini_mixing.f			\
 		$(SOURCE_CODE)/ini_p_ground.f			\
 		$(SOURCE_CODE)/ini_pnh.f			\
-		$(SOURCE_CODE)/ini_procs.f			\
 		$(SOURCE_CODE)/ini_psurf.f			\
 		$(SOURCE_CODE)/ini_salt.f			\
 		$(SOURCE_CODE)/ini_spherical_polar_grid.f	\
