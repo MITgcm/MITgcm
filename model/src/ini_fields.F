@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.10 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_fields.F,v 1.11 2001/06/29 17:14:49 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -32,6 +32,7 @@ C--   Set model variables to initial/restart conditions
        CALL INI_THETA( myThid )
        CALL INI_SALT( myThid )
        CALL INI_PSURF( myThid )
+       IF (nonHydrostatic) CALL INI_PNH( myThid )
       ELSE
        IF ( nIter0 .EQ. 0 ) THEN
         nIter0 = INT(startTime/deltaTClock )

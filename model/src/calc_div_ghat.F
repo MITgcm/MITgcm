@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.14 2001/06/25 20:38:15 ljmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.15 2001/06/29 17:14:49 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -25,9 +25,7 @@ C     == Global variables ==
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "GRID.h"
-#ifdef ALLOW_NONHYDROSTATIC
-#include "CG3D.h"
-#endif
+#include "SOLVE_FOR_PRESSURE3D.h"
 
 C     == Routine arguments ==
 C     bi, bj, iMin, iMax, jMin, jMax - Range of points for which calculation

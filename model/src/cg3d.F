@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.10 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.11 2001/06/29 17:14:49 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -6,6 +6,11 @@ C $Name:  $
 #define VERBOSE
 
       SUBROUTINE CG3D(  
+     I                cg3d_b,
+     U                cg3d_x,
+     O                firstResidual,
+     O                lastResidual,
+     U                numIters,
      I                myThid )
 C     /==========================================================\
 C     | SUBROUTINE CG3D                                          |
@@ -39,8 +44,20 @@ C     === Global data ===
 #include "CG3D.h"
 
 C     === Routine arguments ===
-C     myThid - Thread on which I am working.
+C     myThid    - Thread on which I am working.
+C     cg2d_b    - The source term or "right hand side"
+C     cg2d_x    - The solution
+C     firstResidual - the initial residual before any iterations
+C     lastResidual  - the actual residual reached
+C     numIters  - Entry: the maximum number of iterations allowed
+C                 Exit:  the actual number of iterations used
+      _RL  cg3d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  cg3d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL  firstResidual
+      _RL  lastResidual
+      INTEGER numIters
       INTEGER myThid
+
 
 #ifdef ALLOW_NONHYDROSTATIC
 
@@ -187,25 +204,27 @@ C     _EXCH_XYZ_R8( cg3d_s, myThid )
       _GLOBAL_SUM_R8( err   , myThid )
       
       _BEGIN_MASTER( myThid )
-      write(*,'(A,1PE30.14)') ' cg3d: Sum(rhs) = ',sumRHS
+      write(*,'(A,1P2E22.14)')
+     &     ' cg3d: Sum(rhs),rhsMax = ',sumRHS,rhsMax
       _END_MASTER( )
 
       actualIts      = 0
       actualResidual = SQRT(err)
 C     _BARRIER
-      _BEGIN_MASTER( myThid )
-       WRITE(*,'(A,I6,1PE30.14)') ' CG3D iters, err = ',
-     &  actualIts, actualResidual
-      _END_MASTER( )
+c     _BEGIN_MASTER( myThid )
+c      WRITE(*,'(A,I6,1PE30.14)') ' CG3D iters, err = ',
+c    &  actualIts, actualResidual
+c     _END_MASTER( )
+      firstResidual=actualResidual
 
 C     >>>>>>>>>>>>>>> BEGIN SOLVER <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
       DO 10 it3d=1, cg3dMaxIters
 
 CcnhDebugStarts
 #ifdef VERBOSE
-       IF ( mod(it3d-1,10).EQ.0)
-     &   WRITE(*,*) ' CG3D: Iteration ',it3d-1,
-     &      ' residual = ',actualResidual
+c      IF ( mod(it3d-1,10).EQ.0)
+c    &   WRITE(*,*) ' CG3D: Iteration ',it3d-1,
+c    &      ' residual = ',actualResidual
 #endif
 CcnhDebugEnds
        IF ( actualResidual .LT. cg3dTargetResidual ) GOTO 11
@@ -459,10 +478,12 @@ C--   Un-normalise the answer
       ENDDO
 
 Cadj  _EXCH_XYZ_R8(cg3d_x, myThid )
-      _BEGIN_MASTER( myThid )
-       WRITE(*,'(A,I6,1PE30.14)') ' CG3D iters, err = ',
-     &  actualIts, actualResidual
-      _END_MASTER( )
+c     _BEGIN_MASTER( myThid )
+c      WRITE(*,'(A,I6,1PE30.14)') ' CG3D iters, err = ',
+c    &  actualIts, actualResidual
+c     _END_MASTER( )
+      lastResidual=actualResidual
+      numIters=actualIts
 
 #endif /* ALLOW_NONHYDROSTATIC */
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/CG3D.h,v 1.3 2001/02/04 14:38:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/CG3D.h,v 1.4 2001/06/29 17:14:49 adcroft Exp $
 C $Name:  $
 
 #ifdef ALLOW_NONHYDROSTATIC
@@ -43,11 +43,9 @@ C     cg3d_s -   "
 C     cg3d_x   Solution vector
 C     cg3d_b   Right-hand side vector
       COMMON /CG3D_WK_R/
-     & cg3d_b, cg3d_q, cg3d_r, cg3d_s, cg3d_x
+     & cg3d_q, cg3d_r, cg3d_s
       _RL  cg3d_q(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
       _RL  cg3d_r(1-1  :sNx+1  ,1-1  :sNy+1  ,nR,nSx,nSy)
       _RL  cg3d_s(1-1  :sNx+1  ,1-1  :sNy+1  ,nR,nSx,nSy)
-      _RL  cg3d_x(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
-      _RL  cg3d_b(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nR,nSx,nSy)
 
 #endif /* ALLOW_NONHYDROSTATIC */

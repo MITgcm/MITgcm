@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.24 2001/06/06 15:14:06 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.25 2001/06/29 17:14:49 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -20,7 +20,7 @@ C     == Global variables
 #include "GRID.h"
 #include "SURFACE.h"
 #ifdef ALLOW_NONHYDROSTATIC
-#include "CG3D.h"
+#include "SOLVE_FOR_PRESSURE3D.h"
 #include "GW.h"
 #endif
 #ifdef ALLOW_OBCS
@@ -39,6 +39,7 @@ C     == Local variables ==
       _RS vf(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL firstResidual,lastResidual
       INTEGER numIters
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
 
 C--   Save previous solution & Initialise Vector solution and source term :
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -86,14 +87,14 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
      &      -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTMom
      &        *( etaN(i,j,bi,bj)
-     &          +cg3d_x(i,j,1,bi,bj)*horiVertRatio/gravity )
+     &          +phi_nh(i,j,1,bi,bj)*horiVertRatio/gravity )
           cg3d_b(i,j,1,bi,bj) = cg3d_b(i,j,1,bi,bj)
      &      -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTMom
      &        *( etaN(i,j,bi,bj)
-     &          +cg3d_x(i,j,1,bi,bj)*horiVertRatio/gravity )
+     &          +phi_nh(i,j,1,bi,bj)*horiVertRatio/gravity )
 C-jmc
 c    &      -freeSurfFac*_rA(i,j,bi,bj)*recip_Bo(i,j,bi,bj)
-c    &        *( cg2d_x(i,j,bi,bj) + cg3d_x(i,j,1,bi,bj) )
+c    &        *( cg2d_x(i,j,bi,bj) + phi_nh(i,j,1,bi,bj) )
 c    &        /deltaTMom/deltaTMom
 C-jmc
          ENDDO
@@ -165,10 +166,12 @@ C     see CG2D.h for the interface to this routine.
 #endif
 
       _BEGIN_MASTER( myThid )
-       WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ',
-     &                               0, firstResidual
-       WRITE(*,'(A,I6,1PE30.14)') ' CG2D iters, err = ',
-     &                         numIters, lastResidual
+      WRITE(msgBuf,'(A34,1PE24.14)') 'cg2d_init_res =',firstResidual
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A34,I6)') 'cg2d_iters =',numIters
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A34,1PE24.14)') 'cg2d_res =',lastResidual
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
       _END_MASTER( )
 
 C--   Transfert the 2D-solution to "etaN" :
@@ -295,8 +298,26 @@ C Western boundary
         ENDDO ! bi
        ENDDO ! bj
 
-       CALL CG3D( myThid )
-       _EXCH_XYZ_R8(cg3d_x, myThid )
+      firstResidual=0.
+      lastResidual=0.
+      numIters=cg2dMaxIters
+      CALL CG3D(
+     U           cg3d_b,
+     U           phi_nh,
+     O           firstResidual,
+     O           lastResidual,
+     U           numIters,
+     I           myThid )
+      _EXCH_XYZ_R8(phi_nh, myThid )
+
+      _BEGIN_MASTER( myThid )
+      WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_init_res =',firstResidual
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A34,I6)') 'cg3d_iters =',numIters
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      WRITE(msgBuf,'(A34,1PE24.14)') 'cg3d_res =',lastResidual
+      CALL PRINT_MESSAGE(msgBuf,standardMessageUnit,SQUEEZE_RIGHT,1)
+      _END_MASTER( )
 
       ENDIF
 #endif

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.17 2001/03/08 20:35:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/correction_step.F,v 1.18 2001/06/29 17:14:49 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -20,7 +20,7 @@ C     == Global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #ifdef ALLOW_NONHYDROSTATIC
-#include "CG3D.h"
+#include "SOLVE_FOR_PRESSURE3D.h"
 #endif
 C     == Routine Arguments ==
 C     phiSurfX, phiSurfY           - Surface Potential gradient
@@ -58,7 +58,7 @@ C     Step forward zonal velocity
      &       -deltaTmom*hxFac*implicSurfPress*phiSurfX(i,j)
 #ifdef ALLOW_NONHYDROSTATIC
      &       -deltaTmom*hx3dFac*_recip_dxC(i,j,bi,bj)*
-     &          (cg3d_x(i,j,k,bi,bj)-cg3d_x(i-1,j,k,bi,bj))
+     &          (phi_nh(i,j,k,bi,bj)-phi_nh(i-1,j,k,bi,bj))
 #endif
      &                    )*_maskW(i,j,k,bi,bj)
         gUNm1(i,j,k,bi,bj)=gU(i,j,k,bi,bj)
@@ -72,7 +72,7 @@ C     Step forward meridional velocity
      &       -deltaTmom*hyFac*implicSurfPress*phiSurfY(i,j)
 #ifdef ALLOW_NONHYDROSTATIC
      &       -deltaTmom*hy3dFac*_recip_dyC(i,j,bi,bj)*
-     &          (cg3d_x(i,j,k,bi,bj)-cg3d_x(i,j-1,k,bi,bj))
+     &          (phi_nh(i,j,k,bi,bj)-phi_nh(i,j-1,k,bi,bj))
 #endif
      &                    )*_maskS(i,j,k,bi,bj)
         gVNm1(i,j,k,bi,bj)=gV(i,j,k,bi,bj)

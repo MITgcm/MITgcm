@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.11 2001/04/10 22:35:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.12 2001/06/29 17:14:49 adcroft Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -53,10 +53,6 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
-#ifdef ALLOW_NONHYDROSTATIC
-#include "CG3D.h"
-#include "GW.h"
-#endif
 
       LOGICAL  DIFFERENT_MULTIPLE
       EXTERNAL DIFFERENT_MULTIPLE
@@ -100,7 +96,7 @@ C       - creates relatively few files but these files can become huge
         CALL WRITE_REC_XYZ_RL( 'W',wVel,iRec,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
         IF (nonHydroStatic) THEN
-         CALL WRITE_REC_XYZ_RL( 'PNH',cg3d_x,iRec,myIter,myThid)
+         CALL WRITE_REC_XYZ_RL( 'PNH',phi_nh,iRec,myIter,myThid)
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 #else
@@ -116,7 +112,7 @@ C         transfer analyse a particular snap-shots
         CALL WRITE_FLD_XYZ_RL( 'W.',suff,wVel,myIter,myThid)
 #ifdef ALLOW_NONHYDROSTATIC
         IF (nonHydroStatic) THEN
-         CALL WRITE_FLD_XYZ_RL( 'PNH.',suff,cg3d_x,myIter,myThid)
+         CALL WRITE_FLD_XYZ_RL( 'PNH.',suff,phi_nh,myIter,myThid)
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
 #endif /* MULTIPLE_RECORD_STATE_FILES */

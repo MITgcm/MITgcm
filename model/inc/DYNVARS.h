@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.13 2001/05/29 14:01:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/DYNVARS.h,v 1.14 2001/06/29 17:14:49 adcroft Exp $
 C $Name:  $
 C
 C     /==========================================================\
@@ -49,3 +49,7 @@ C     vVelD  - D grid meridional velocity
       _RL  guCD  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL  gvCD  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
+#ifdef ALLOW_NONHYDROSTATIC
+      COMMON /DYNVARS_NH/ phi_nh
+      _RL  phi_nh(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+#endif /* ALLOW_NONHYDROSTATIC */

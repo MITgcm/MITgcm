@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.11 2001/06/29 16:08:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_cg3d.F,v 1.12 2001/06/29 17:14:49 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -21,6 +21,7 @@ C     === Global variables ===
 #include "GRID.h"
 c_jmc #include "DYNVARS.h"
 #include "CG3D.h"
+#include "SOLVE_FOR_PRESSURE3D.h"
 #ifdef ALLOW_OBCS
 #include "OBCS.h"
 #endif
@@ -304,7 +305,6 @@ C--   Set default values for initial guess and RHS
          DO K=1,Nr
           DO J=1-OLy,sNy+OLy
            DO I=1-OLx,sNx+OLx
-            cg3d_x(I,J,K,bi,bj) = 0. _d 0
             cg3d_b(I,J,K,bi,bj) = 0. _d 0
            ENDDO
           ENDDO
@@ -312,7 +312,6 @@ C--   Set default values for initial guess and RHS
         ENDDO
        ENDDO
 C--    Update overlap regions
-       _EXCH_XYZ_R8(cg3d_x, myThid)
        _EXCH_XYZ_R8(cg3d_b, myThid)
       ENDIF
 

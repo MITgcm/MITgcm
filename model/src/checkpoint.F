@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.9 2001/05/29 14:01:37 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.10 2001/06/29 17:14:49 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -45,7 +45,7 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "GW.h"
-#include "CG3D.h"
+#include "SOLVE_FOR_PRESSURE3D.h"
 #endif
 
       INTEGER  IO_ERRCOUNT
@@ -99,7 +99,7 @@ C       Raw fields
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
-         CALL READ_REC_XYZ_RL('cg3d_x',cg3d_x,1,myIter,myThid)
+         CALL READ_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
          CALL READ_REC_XYZ_RL( 'gW',gW,       1,myIter,myThid)
 c        CALL READ_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
         ENDIF
@@ -136,7 +136,7 @@ C--     Read model fields
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
          WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
-         CALL MDSREADFIELD(fn,prec,'RL',Nr,cg3d_x,1,myThid)
+         CALL MDSREADFIELD(fn,prec,'RL',Nr,phi_nh,1,myThid)
          CALL MDSREADFIELD(fn,prec,'RL',Nr,gW,   2,myThid)
 c        CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
         ENDIF
@@ -188,7 +188,7 @@ c     _EXCH_XYZ_R8( vNM1,     myThid )
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
-         _EXCH_XYZ_R8(cg3d_x, myThid )
+         _EXCH_XYZ_R8(phi_nh, myThid )
          _EXCH_XYZ_R8(gW    , myThid )
 c        _EXCH_XYZ_R8(gWNM1 , myThid )
         ENDIF
@@ -226,7 +226,7 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "GW.h"
-#include "CG3D.h"
+#include "SOLVE_FOR_PRESSURE3D.h"
 #endif
 
       LOGICAL  DIFFERENT_MULTIPLE
@@ -318,7 +318,7 @@ C       Raw fields
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
-         CALL WRITE_REC_XYZ_RL('cg3d_x',cg3d_x,1,myIter,myThid)
+         CALL WRITE_REC_XYZ_RL('phi_nh',phi_nh,1,myIter,myThid)
          CALL WRITE_REC_XYZ_RL( 'gW',gW, 1,myIter,myThid)
 c        CALL WRITE_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
         ENDIF
@@ -372,7 +372,7 @@ C--     Write model fields
           WRITE(fn,'(A,A)') 'pickup_nh.',checkPtSuff(nCheckLev)
          ENDIF
          WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
-         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,cg3d_x,1,myIter,myThid)
+         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,phi_nh,1,myIter,myThid)
          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gW,   2,myIter,myThid)
 c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
         ENDIF
