@@ -314,7 +314,7 @@ $0 [-help] [-quick] [-verbose] dir1 [dir2] [...]
  -debug     Produce even more output which will mean nothing to most
  -force     Do "make CLEAN" before compiling. This forces a complete rebuild.
  -clean     Do "make CLEAN" after compiling and testing.
- -longtest  Compare numeric output for mean and s.d. of variables.
+ -shorttest Don't compare numeric output for mean and s.d. of variables.
  -noieee    By default, $0 uses the -ieee option for genmake. This turns it off.
 
 Normal usage:
@@ -345,7 +345,7 @@ quick=0
 force=0
 clean=0
 ieee=1
-longtest=0
+longtest=1
 expts=''
 
 # Process arguments
@@ -358,7 +358,7 @@ do
    -force) force=1;;
    -clean) clean=1;;
    -noieee) ieee=0;;
-   -longtest) longtest=1;;
+   -shorttest) longtest=0;;
    -quiet) verbose=0;;
    -help) show_help; exit 0;;
    -*) echo Unrecognized option:$arg; exit 9;;
