@@ -60,7 +60,6 @@ Y Y Y Y  8 10  9 11 10  9 11 13 10  9  8  8  9  8  9  8  9 FAIL  lab_sea
 Instructions for generating and running a 1-CPU experiment
 ==========================================================
 
-Generating 1-CPU executable:
   cd MITgcm/verification/lab_sea
   mkdir build
   cd build
@@ -68,8 +67,6 @@ Generating 1-CPU executable:
   ../../../tools/genmake2
   make depend
   make
-
-To run Experiment 1:
   cd ../input
   ../build/mitgcmuv > output.txt
 
@@ -78,3 +75,18 @@ of exp1 with that from checkpoint51f sea-ice code:
   cd ../../../verification/lab_sea/matlab
   matlab
   lookat_ice
+
+
+Instructions for generating and running a 2-CPU experiment on kalpana
+=====================================================================
+
+  cd MITgcm/verification/lab_sea
+  mkdir build
+  cd build
+  \cp ../code/*.h ../code/packages.conf .
+  \cp ../code/SIZE.h_mpi SIZE.h
+  ../../../tools/genmake2 -of ../../../tools/build_options/linux_ia64_efc+mpi_altix
+  make depend
+  make
+  cd ../input
+  mpirun -np 2 ../build/mitgcmuv
