@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_amd64_pgf77,v 1.1 2005/01/12 22:04:59 ce107 Exp $
+#  $Name:  $
+#
+# Build options for Suse SLES-8.1 Opteron
+# tested on (Linux ln0127en 2.4.21-143-numa #1 SMP Fri Oct 31 00:17:52 UTC 2003 x86_64 unknown) system 20041512
+#
+
+FC=pgf77
+DEFINES='-DWORDLENGTH=4'
+CPP='cpp  -traditional -P'
+NOOPTFLAGS='-O0'
+MAKEDEPEND=/usr/X11R6/bin/makedepend
+if test "x$IEEE" = x ; then
+    #  No need for IEEE-754
+    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend -Ktrap=fp'
+    FOPTIM='-tp k8-64 -pc=64 -O2 -scalarsse -Mvect=sse' #-fastsse -O3 -Msmart -Mvect=cachesize:1048576,transform'
+else
+    #  Try to follow IEEE-754
+    FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend -Ktrap=fp'
+    FOPTIM='-tp k8-64 -pc=64 -O2 -scalarsse -Mvect=sse -Kieee' #-fastsse -O3 -Msmart -Kieee -Mvect=cachesize:1048576,transform'
+fi
+
