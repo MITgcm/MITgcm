@@ -1,9 +1,21 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.60 2002/02/10 20:07:14 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.61 2002/02/15 21:31:57 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
 o real fresh water flux implemented with non-linear free-surface.
+
+chkpt44d_pre,post
+o added missing EXCLUDE_MONITOR flags
+o changed "e" to "_d" in gmredi_slope_limit, gmredi_slope_psi
+  (incompatible typ in MIN/MAX expressions caused problems
+  on IBM SP3)
+o in genmake added variable MAKEDEPEND
+  plus resetting for case SunOS
+o added timer_stats.c routine for IBM SP3
+o removed variables in dynamics
+!!! I forgot to create tag chkpt44d_pre !!!
+!!! But chkpt44d_pre = chkpt44c_post    !!!
 
 chkpt44c_pre,post
 o few fix (mask in shap_s2, EmPmR in external_field_load, 
