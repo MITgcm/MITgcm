@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.50 2003/11/29 19:58:36 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.51 2003/12/03 19:46:10 adcroft Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1447,7 +1447,7 @@ cat >>$MAKEFILE <<EOF
 .SUFFIXES: .o .f .p .F .c .F90 .f90
 
 all: \$(EXECUTABLE)
-\$(EXECUTABLE): links \$(OBJFILES)
+\$(EXECUTABLE): ${PACKAGES_DOT_H} AD_CONFIG.h \$(SRCFILES) \$(CSRCFILES) \$(HEADERFILES) \$(F90SRCFILES) \$(OBJFILES)
 	@echo Creating \$@ ...
 	\$(LINK) -o \$@ \$(FFLAGS) \$(FOPTIM) \$(OBJFILES) \$(LIBS)
 depend:
@@ -1469,7 +1469,7 @@ Clean:
 	@make clean
 	@make cleanlinks
 	-rm -f ${PACKAGES_DOT_H} AD_CONFIG.h
-	-rm -f Makefile.bak genmake_state genmake_*optfile genmake_warnings make.log
+	-rm -f genmake_state genmake_*optfile genmake_warnings make.log run.log *.bak
 CLEAN:
 	@make Clean
 	-find \$(EXEDIR) -name "*.meta" -exec rm {} \;
