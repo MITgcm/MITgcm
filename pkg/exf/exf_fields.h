@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.2 2002/01/11 19:24:24 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_fields.h,v 1.3 2002/11/12 20:34:41 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -8,7 +8,8 @@ c
 c     o Header file for the surface flux data.
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
-c     changed: heimbach@mit.edu 10-Jan-2002
+c     changed: field swap in adj. mode; heimbach@mit.edu 10-Jan-2002
+c     included runoff D. Stammer, Nov. 25, 2001
 c
 c     ==================================================================
 c     HEADER exf_fields
@@ -132,3 +133,19 @@ c--   define auxiliary fields for temporal interpolation
       _RL vstress0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL vstress1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 #endif
+
+#ifdef ALLOW_RUNOFF
+      common /exfl_runoff_r/ runoff, runoff0, runoff1
+      _RL runoff (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL runoff0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL runoff1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+
+#ifdef ATMOSPHERIC_LOADING
+c     atmospheric pressure field.
+      common /exf_apressure_r/ apressure, apressure0, apressure1
+      _RL apressure  (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL apressure0 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+      _RL apressure1 (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#endif
+

@@ -1,14 +1,12 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.1 2001/05/14 22:08:41 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_mapfields.F,v 1.2 2002/11/12 20:34:41 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
 
-      subroutine exf_MapFields(
-     I                          mythid
-     &                        )
+      subroutine exf_mapfields( mythid )
 
 c     ==================================================================
-c     SUBROUTINE exf_MapFields
+c     SUBROUTINE exf_mapfields
 c     ==================================================================
 c
 c     o Map the external forcing fields on the ocean model arrays. This
@@ -52,7 +50,7 @@ c              - sign change of ustress/vstress incorporated into
 c                scaling factors scal_ust, scal_vst
 c
 c     ==================================================================
-c     SUBROUTINE exf_MapFields
+c     SUBROUTINE exf_mapfields
 c     ==================================================================
 
       implicit none
@@ -62,10 +60,14 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 #include "FFIELDS.h"
+#include "exf_param.h"
 #include "exf_constants.h"
 #include "exf_fields.h"
 #include "exf_clim_fields.h"
-
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+# include "tamc_keys.h"
+#endif
 c     == routine arguments ==
 
 c     mythid - thread number for this instance of the routine.
@@ -84,17 +86,6 @@ c     == local variables ==
       integer jmax
       integer imin
       integer imax
-      _RL     scal_hfl
-      _RL     scal_ust
-      _RL     scal_vst
-      _RL     scal_swf
-      _RL     scal_sst
-      _RL     scal_sss
-#if (defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_TEMP))
-      _RL     scal_prc
-#else
-      _RL     scal_sfl
-#endif
 
 c     == end of interface ==
 
@@ -107,54 +98,130 @@ c     == end of interface ==
       imin = 1-olx
       imax = snx+olx
 
-      scal_hfl =  1. _d 0
-      scal_ust =  -1. _d 0
-      scal_vst =  -1. _d 0
-      scal_swf =  1. _d 0
-      scal_sst =  1. _d 0
-      scal_sss =  1. _d 0
-#if (defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_TEMP))
-      scal_prc =  1. _d 0
-#else
-      scal_sfl =  1. _d 0     
-#endif
-
       do bj = jtlo,jthi
         do bi = itlo,ithi
+
+#ifdef ALLOW_AUTODIFF_TAMC
+          act1 = bi - myBxLo(myThid)
+          max1 = myBxHi(myThid) - myBxLo(myThid) + 1
+          act2 = bj - myByLo(myThid)
+          max2 = myByHi(myThid) - myByLo(myThid) + 1
+          act3 = myThid - 1
+          max3 = nTx*nTy
+          act4 = ikey_dynamics - 1
+          ikey = (act1 + 1) + act2*max1
+     &                      + act3*max1*max2
+     &                      + act4*max1*max2*max3
+#endif /* ALLOW_AUTODIFF_TAMC */
+
           do j = jmin,jmax
             do i = imin,imax
-
 c             Heat flux.
               qnet(i,j,bi,bj)  = scal_hfl*hflux(i,j,bi,bj)
+            enddo
+          enddo
 
+
+          do j = jmin,jmax
+            do i = imin,imax
 c             Salt flux.
 #if (defined (ALLOW_BULKFORMULAE)  && defined (ALLOW_ATM_TEMP))
               empmr(i,j,bi,bj) = scal_prc*precip(i,j,bi,bj)
 #else
               empmr(i,j,bi,bj) = scal_sfl*sflux(i,j,bi,bj)
 #endif
+            enddo
+          enddo
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ustress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+#endif
+          do j = jmin,jmax
+            do i = imin,imax
 c             Zonal wind stress.
+              if (ustress(i,j,bi,bj).gt.2.0D0) then
+                ustress(i,j,bi,bj)=2.0D0
+              endif
+            enddo
+          enddo
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE ustress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+#endif
+          do j = jmin,jmax
+            do i = imin,imax
+              if (ustress(i,j,bi,bj).lt.-2.0D0) then
+                ustress(i,j,bi,bj)=-2.0D0
+              endif
+            enddo
+          enddo
+          do j = jmin,jmax
+            do i = imin,imax
               fu(i,j,bi,bj)    = scal_ust*ustress(i,j,bi,bj)
+            enddo
+          enddo
 
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE vstress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+#endif
+          do j = jmin,jmax
+            do i = imin,imax
 c             Meridional wind stress.
+              if (vstress(i,j,bi,bj).gt.2.0D0) then
+                vstress(i,j,bi,bj)=2.0D0
+              endif
+            enddo
+          enddo
+#ifdef ALLOW_AUTODIFF_TAMC
+CADJ STORE vstress(:,:,bi,bj) = comlev1_bibj, key=ikey, byte=isbyte
+#endif
+          do j = jmin,jmax
+            do i = imin,imax
+              if (vstress(i,j,bi,bj).lt.-2.0D0) then
+                vstress(i,j,bi,bj)=-2.0D0
+              endif
+            enddo
+          enddo
+          do j = jmin,jmax
+            do i = imin,imax
               fv(i,j,bi,bj)    = scal_vst*vstress(i,j,bi,bj)
+            enddo
+          enddo
 
-#ifdef ALLOW_KPP || (defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_TEMP)))
+#ifdef ALLOW_KPP || \
+ (defined (ALLOW_BULKFORMULAE) && defined (ALLOW_ATM_TEMP)))
 c             Short wave radiative flux.
+          do j = jmin,jmax
+            do i = imin,imax
               qsw(i,j,bi,bj)   = scal_swf*swflux(i,j,bi,bj)
+            enddo
+          enddo
 #endif
 
 #ifdef ALLOW_CLIMSST_RELAXATION
+          do j = jmin,jmax
+            do i = imin,imax
               sst(i,j,bi,bj)   = scal_sst*climsst(i,j,bi,bj)
+            enddo
+          enddo
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
+          do j = jmin,jmax
+            do i = imin,imax
               sss(i,j,bi,bj)   = scal_sss*climsss(i,j,bi,bj)
-#endif
-
             enddo
           enddo
+#endif
+
+#ifdef ATMOSPHERIC_LOADING
+          do j = jmin,jmax
+            do i = imin,imax
+              pload(i,j,bi,bj) = scal_apressure*apressure(i,j,bi,bj)
+            enddo
+          enddo
+#endif
+
+
         enddo
       enddo
 
@@ -172,6 +239,9 @@ c     Update the tile edges.
 #endif
 #ifdef ALLOW_CLIMSSS_RELAXATION
       _EXCH_XY_R4(   sss, mythid )
+#endif
+#ifdef ATMOSPHERIC_LOADING
+      _EXCH_XY_R4( pload, mythid )
 #endif
 
       end

@@ -54,7 +54,8 @@ c     get record numbers and interpolation factor for vwind
      &                     )
 
       if ( first ) then
-        call mdsreadfield( vwindfile, exf_iprec, exf_yftype, 1
+        if ( vwindfile .NE. ' ' )
+     &        call mdsreadfield( vwindfile, exf_iprec, exf_yftype, 1
      &                   , vwind1, count0, mythid
      &                   )
         if (exf_yftype .eq. 'RL') then
@@ -67,7 +68,8 @@ c     get record numbers and interpolation factor for vwind
       if (( first ) .or. ( changed )) then
         call exf_SwapFFields( vwind0, vwind1, mythid )
 
-        call mdsreadfield( vwindfile, exf_iprec, exf_yftype, 1
+        if ( vwindfile .NE. ' ' )
+     &       call mdsreadfield( vwindfile, exf_iprec, exf_yftype, 1
      &                   , vwind1, count1, mythid
      &                   )
         if (exf_yftype .eq. 'RL') then
@@ -140,6 +142,7 @@ c     == end of interface ==
         do bi = mybxlo(mythid), mybxhi(mythid)
           do j = 1, sny
             do i = 1, snx
+              vwind(i,j,bi,bj)  = 0. _d 0
               vwind0(i,j,bi,bj) = 0. _d 0
               vwind1(i,j,bi,bj) = 0. _d 0
             enddo

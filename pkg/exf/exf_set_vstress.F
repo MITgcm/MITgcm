@@ -54,7 +54,8 @@ c     get record numbers and interpolation factor for vstress
      &                     )
 
       if ( first ) then
-        call mdsreadfield( vstressfile, exf_iprec, exf_yftype, 1
+        if ( vstressfile .NE. ' ' )
+     &        call mdsreadfield( vstressfile, exf_iprec, exf_yftype, 1
      &                   , vstress1, count0, mythid
      &                   )
         if (exf_yftype .eq. 'RL') then
@@ -67,7 +68,8 @@ c     get record numbers and interpolation factor for vstress
       if (( first ) .or. ( changed )) then
         call exf_SwapFFields( vstress0, vstress1, mythid )
 
-        call mdsreadfield( vstressfile, exf_iprec, exf_yftype, 1
+        if ( vstressfile .NE. ' ' )
+     &       call mdsreadfield( vstressfile, exf_iprec, exf_yftype, 1
      &                   , vstress1, count1, mythid
      &                   )
         if (exf_yftype .eq. 'RL') then
@@ -140,6 +142,7 @@ c     == end of interface ==
         do bi = mybxlo(mythid), mybxhi(mythid)
           do j = 1, sny
             do i = 1, snx
+              vstress(i,j,bi,bj)  = 0. _d 0
               vstress0(i,j,bi,bj) = 0. _d 0
               vstress1(i,j,bi,bj) = 0. _d 0
             enddo

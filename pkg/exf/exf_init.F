@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.2 2002/02/07 20:00:09 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_init.F,v 1.3 2002/11/12 20:34:41 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -41,6 +41,10 @@ c     == end of interface ==
 
       call exf_init_ustress( mythid )
       call exf_init_vstress( mythid )
+
+#ifdef ALLOW_RUNOFF
+      call exf_init_runoff ( mythid )
+#endif /* ALLOW_RUNOFF */
 
 #ifdef ALLOW_BULKFORMULAE
 c     Use bulk formulae estimates of the surface fluxes.

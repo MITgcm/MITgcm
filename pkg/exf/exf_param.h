@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.2 2002/02/07 20:00:09 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_param.h,v 1.3 2002/11/12 20:34:41 heimbach Exp $
 c
 c
 c     ==================================================================
@@ -64,6 +64,13 @@ c     Calendar data.
       character*1 precipmask
       parameter(  precipmask = 's' )
 
+      integer runoffstartdate1
+      integer runoffstartdate2
+      integer runoffstartdate(4)
+      _RL     runoffperiod
+      character*1 runoffmask
+      parameter(  runoffmask = 's' )
+
       integer ustressstartdate1
       integer ustressstartdate2
       integer ustressstartdate(4)
@@ -126,24 +133,34 @@ c     Calendar data.
       integer obcsWstartdate(4)
       _RL     obcsWperiod
 
+      integer apressurestartdate1
+      integer apressurestartdate2
+      integer apressurestartdate(4)
+      _RL     apressureperiod
+      character*1 apressuremask
+      parameter(  apressuremask = 's' )
+
 c     File names.
       character*(128) hfluxfile
       character*(128) atempfile
       character*(128) aqhfile
       character*(128) precipfile
       character*(128) sfluxfile
+      character*(128) runofffile
       character*(128) ustressfile
       character*(128) vstressfile
       character*(128) uwindfile
       character*(128) vwindfile
       character*(128) swfluxfile
       character*(128) lwfluxfile
+      character*(128) apressurefile
 
       common /exf_param_i/
      &                          hfluxstartdate1,   hfluxstartdate2,
      &                          atempstartdate1,   atempstartdate2,
      &                          aqhstartdate1,     aqhstartdate2,
      &                          sfluxstartdate1,   sfluxstartdate2,
+     &                          runoffstartdate1,  runoffstartdate2,
      &                          precipstartdate1,  precipstartdate2,
      &                          ustressstartdate1, ustressstartdate2,
      &                          vstressstartdate1, vstressstartdate2,
@@ -155,11 +172,13 @@ c     File names.
      &                          obcsSstartdate1,   obcsSstartdate2,
      &                          obcsEstartdate1,   obcsEstartdate2,
      &                          obcsWstartdate1,   obcsWstartdate2,
+     &                          apressurestartdate1,apressurestartdate2,
      &                          hfluxstartdate,
      &                          atempstartdate,
      &                          aqhstartdate,
      &                          sfluxstartdate,
      &                          precipstartdate,
+     &                          runoffstartdate,
      &                          ustressstartdate,
      &                          vstressstartdate,
      &                          uwindstartdate,
@@ -169,7 +188,8 @@ c     File names.
      &                          obcsNstartdate,
      &                          obcsSstartdate,
      &                          obcsEstartdate,
-     &                          obcsWstartdate
+     &                          obcsWstartdate,
+     &                          apressurestartdate
 
       common /exf_param_r/
      &                          hfluxperiod,
@@ -177,6 +197,7 @@ c     File names.
      &                          aqhperiod,
      &                          sfluxperiod,
      &                          precipperiod,
+     &                          runoffperiod,
      &                          ustressperiod,
      &                          vstressperiod,
      &                          uwindperiod,
@@ -186,7 +207,8 @@ c     File names.
      &                          obcsNperiod,
      &                          obcsSperiod,
      &                          obcsEperiod,
-     &                          obcsWperiod
+     &                          obcsWperiod,
+     &                          apressureperiod
 
       common /exf_param_c/
      &                          hfluxfile,
@@ -194,12 +216,14 @@ c     File names.
      &                          aqhfile,
      &                          sfluxfile,
      &                          precipfile,
+     &                          runofffile,
      &                          ustressfile,
      &                          vstressfile,
      &                          uwindfile,
      &                          vwindfile,
      &                          swfluxfile,
-     &                          lwfluxfile
+     &                          lwfluxfile,
+     &                          apressurefile
 
 c     file precision and field type
 
@@ -209,3 +233,26 @@ c     file precision and field type
 
       integer exf_iprec
       character*(2) exf_yftype
+
+c     scaling between exf units and MITgcm units
+
+      _RL     scal_hfl
+      _RL     scal_ust
+      _RL     scal_vst
+      _RL     scal_swf
+      _RL     scal_sst
+      _RL     scal_sss
+      _RL     scal_apressure
+      _RL     scal_prc
+      _RL     scal_sfl
+
+      common /exf_param_scal/
+     &                      scal_hfl
+     &                    , scal_ust
+     &                    , scal_vst
+     &                    , scal_swf
+     &                    , scal_sst
+     &                    , scal_sss
+     &                    , scal_apressure
+     &                    , scal_prc
+     &                    , scal_sfl

@@ -54,7 +54,8 @@ c     get record numbers and interpolation factor for sflux
      &                     )
 
       if ( first ) then
-        call mdsreadfield( sfluxfile, exf_iprec, exf_yftype, 1
+        if ( sfluxfile .NE. ' ' )
+     &        call mdsreadfield( sfluxfile, exf_iprec, exf_yftype, 1
      &                   , sflux1, count0, mythid
      &                   )
         if (exf_yftype .eq. 'RL') then
@@ -67,7 +68,8 @@ c     get record numbers and interpolation factor for sflux
       if (( first ) .or. ( changed )) then
         call exf_SwapFFields( sflux0, sflux1, mythid )
 
-        call mdsreadfield( sfluxfile, exf_iprec, exf_yftype, 1
+        if ( sfluxfile .NE. ' ' )
+     &       call mdsreadfield( sfluxfile, exf_iprec, exf_yftype, 1
      &                   , sflux1, count1, mythid
      &                   )
         if (exf_yftype .eq. 'RL') then
@@ -140,6 +142,7 @@ c     == end of interface ==
         do bi = mybxlo(mythid), mybxhi(mythid)
           do j = 1, sny
             do i = 1, snx
+              sflux(i,j,bi,bj)  = 0. _d 0
               sflux0(i,j,bi,bj) = 0. _d 0
               sflux1(i,j,bi,bj) = 0. _d 0
             enddo

@@ -1,11 +1,10 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsst.F,v 1.2 2002/02/07 20:00:09 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/Attic/exf_set_climsst.F,v 1.3 2002/11/12 20:34:41 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
 
       subroutine exf_set_climsst( 
-     O                            climsst
-     I                          , mycurrenttime
+     O                            mycurrenttime
      I                          , mycurrentiter
      I                          , mythid
      &                         )
@@ -15,17 +14,13 @@ c     SUBROUTINE exf_set_climsst
 c     ==================================================================
 c
 c     o  Get the current climatological sea surface salinity field.
-c
 c     started: Christian Eckert eckert@mit.edu 27-Aug-1999
-c
 c     changed: Christian Eckert eckert@mit.edu 11-Jan-2000
-c
 c              - Restructured the code in order to create a package
 c                for the MITgcmUV.
-c
 c              Christian Eckert eckert@mit.edu 12-Feb-2000
-c
 c              - Changed Routine names (package prefix: exf_)
+c     changed: heimbach@mit.edu 08-Feb-2002
 c
 c     ==================================================================
 c     SUBROUTINE exf_set_climsst
@@ -40,10 +35,10 @@ c     ==================================================================
 #include "exf_param.h"
 #include "exf_constants.h"
 #include "exf_clim_param.h"
+#include "exf_clim_fields.h"
 
 c     == routine arguments ==
 
-      _RL     climsst(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     mycurrenttime
       integer mycurrentiter
       integer mythid
@@ -51,10 +46,6 @@ c     == routine arguments ==
 #ifdef ALLOW_CLIMSST_RELAXATION
 
 c     == local variables ==
-
-      common /exf_csst_r/ climsst0, climsst1
-      _RL climsst0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL climsst1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       logical first, changed
       integer count0, count1
@@ -83,10 +74,9 @@ c     get record numbers and interpolation factor for climsst
      &                     )
 #endif
 
-#ifndef ALLOW_AUTODIFF_TAMC
       if ( first ) then
-#endif
-        call mdsreadfield( climsstfile, exf_clim_iprec
+        if ( climsstfile .NE. ' ' )
+     &        call mdsreadfield( climsstfile, exf_clim_iprec
      &                   , exf_clim_yftype, 1
      &                   , climsst1, count0, mythid
      &                   )
@@ -95,13 +85,9 @@ c     get record numbers and interpolation factor for climsst
         else
            call exf_filter_rs( climsst1, climsstmask, mythid )
         end if
-#ifndef ALLOW_AUTODIFF_TAMC
       endif
-#endif
 
-#ifndef ALLOW_AUTODIFF_TAMC
       if (( first ) .or. ( changed )) then
-#endif
         call exf_SwapFFields( climsst0, climsst1, mythid )
 
         call mdsreadfield( climsstfile, exf_clim_iprec
@@ -113,9 +99,7 @@ c     get record numbers and interpolation factor for climsst
         else
            call exf_filter_rs( climsst1, climsstmask, mythid )
         end if
-#ifndef ALLOW_AUTODIFF_TAMC
       endif
-#endif
 
 c     Loop over tiles.
       do bj = mybylo(mythid),mybyhi(mythid)
@@ -180,10 +164,6 @@ c     == routine arguments ==
 #ifdef ALLOW_CLIMSST_RELAXATION
 
 c     == local variables ==
-
-      common /exf_csst_r/ climsst0, climsst1
-      _RL climsst0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL climsst1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
 
       integer bi, bj
       integer i, j

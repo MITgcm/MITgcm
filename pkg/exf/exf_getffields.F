@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.3 2002/01/11 19:24:24 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getffields.F,v 1.4 2002/11/12 20:34:41 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -93,28 +93,27 @@ c
 c       started: Christian Eckert eckert@mit.edu 27-Aug-1999
 c
 c       changed: Christian Eckert eckert@mit.edu 14-Jan-2000
-c
 c              - restructured the original version in order to have a
 c                better interface to the MITgcmUV.
 c
 c              Christian Eckert eckert@mit.edu  12-Feb-2000
-c
 c              - Changed Routine names (package prefix: exf_)
 c
 c              Patrick Heimbach, heimbach@mit.edu  04-May-2000
-c
 c              - changed the handling of precip and sflux with respect
 c                to CPP options ALLOW_BULKFORMULAE and ALLOW_ATM_TEMP
-c
 c              - included some CPP flags ALLOW_BULKFORMULAE to make
 c                sure ALLOW_ATM_TEMP, ALLOW_ATM_WIND are used only in
 c                conjunction with defined ALLOW_BULKFORMULAE
-c
 c              - statement functions discarded
 c
 c              Ralf.Giering@FastOpt.de 25-Mai-2000
-c
 c              - total rewrite using new subroutines
+c
+c              Detlef Stammer: include river run-off. Nov. 21, 2001
+c
+c              heimbach@mit.edu, 10-Jan-2002
+c              - changes to enable field swapping
 c
 c     ==================================================================
 c     SUBROUTINE exf_GetFFields
@@ -215,6 +214,8 @@ c     determine forcing field records
 #ifdef ALLOW_BULKFORMULAE
 
 #if (defined (ALLOW_ATM_TEMP) || defined (ALLOW_ATM_WIND))
+cph   This statement cannot be a PARAMETER statement in the header,
+cph   but must come here; it's not fortran77 standard
       aln = log(ht/zref)
 #endif
 
@@ -513,13 +514,9 @@ CADJ STORE sw     = comlev1_exf_1, key = ikey_1
 
                 hs(i,j,bi,bj)      = atmcp*tau*tstar/ustar
                 hl(i,j,bi,bj)      = flamb*tau*qstar/ustar
-
                 evap(i,j,bi,bj)    = tau*qstar/ustar
-
                 ustress(i,j,bi,bj) = tau*cw
                 vstress(i,j,bi,bj) = tau*sw
-ce              hflux(i,j,bi,bj)   = atmcp*tau*tstar/ustar +
-ce     &                             flamb*tau*qstar/ustar
               else
                 ustress(i,j,bi,bj) = 0. _d 0
                 vstress(i,j,bi,bj) = 0. _d 0
@@ -565,6 +562,12 @@ c             Salt flux from Precipitation and Evaporation.
               hflux(i,j,bi,bj) = hflux(i,j,bi,bj)*maskc(i,j,1,bi,bj)
               sflux(i,j,bi,bj) = sflux(i,j,bi,bj)*maskc(i,j,1,bi,bj)
 #endif /* ALLOW_BULKFORMULAE */
+
+#ifdef ALLOW_RUNOFF
+              sflux(i,j,bi,bj) = sflux(i,j,bi,bj) + 
+     &                           runoff(i,j,bi,bj)*maskc(i,j,1,bi,bj)
+#endif /* ALLOW_RUNOFF */
+
             enddo
           enddo
         enddo

@@ -1,22 +1,18 @@
 #include "EXF_CPPOPTIONS.h"
 
-      subroutine exf_set_hfluxa(
-     O                            hfluxa
-     I                          , mycurrenttime
-     I                          , mycurrentiter
-     I                          , mythid
-     &                          )
+      subroutine exf_set_apressure( mycurrenttime,mycurrentiter,mythid )
 
 c     ==================================================================
-c     SUBROUTINE exf_set_hfluxa
+c     SUBROUTINE exf_set_apressure
 c     ==================================================================
 c
-c     o set external forcing hfluxa
+c     o set external forcing apressure
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
+c     changed: heimbach@mit.edu 10-Jan-2002
 
 c     ==================================================================
-c     SUBROUTINE exf_set_hfluxa
+c     SUBROUTINE exf_set_apressure
 c     ==================================================================
 
       implicit none
@@ -27,20 +23,17 @@ c     == global variables ==
 #include "SIZE.h"
 #include "GRID.h"
 
-#include "exfa_param.h"
+#include "exf_param.h"
 #include "exf_constants.h"
-
-      common /exfl_hfluxa_r/ hfluxa0, hfluxa1
-      _RL hfluxa0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL hfluxa1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#include "exf_fields.h"
 
 c     == routine arguments ==
 
-      _RL     hfluxa(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
       _RL     mycurrenttime
       integer mycurrentiter
       integer mythid
 
+#ifdef ATMOSPHERIC_LOADING
 c     == local variables ==
 
       logical first, changed
@@ -52,45 +45,39 @@ c     == local variables ==
 
 c     == end of interface ==
 
-c     get record numbers and interpolation factor for hfluxa
+c     get record numbers and interpolation factor for apressure
       call exf_GetFFieldRec(
-     I                       hfluxastartdate, hfluxaperiod
+     I                       apressurestartdate, apressureperiod
      O                     , fac, first, changed
      O                     , count0, count1
      I                     , mycurrenttime, mycurrentiter, mythid
      &                     )
 
-#ifndef ALLOW_AUTODIFF_TAMC
       if ( first ) then
-#endif
-        call mdsreadfield( hfluxafile, exf_iprec, exf_yftype, 1
-     &                   , hfluxa1, count0, mythid
+        if ( apressurefile .NE. ' ' )
+     &        call mdsreadfield( apressurefile, exf_iprec, exf_yftype, 1
+     &                   , apressure1, count0, mythid
      &                   )
         if (exf_yftype .eq. 'RL') then
-           call exf_filter_rl( hfluxa1, hfluxamask, mythid )
+           call exf_filter_rl( apressure1, apressuremask, mythid )
         else
-           call exf_filter_rs( hfluxa1, hfluxamask, mythid )
+           call exf_filter_rs( apressure1, apressuremask, mythid )
         end if
-#ifndef ALLOW_AUTODIFF_TAMC
       endif
-#endif
 
-#ifndef ALLOW_AUTODIFF_TAMC
       if (( first ) .or. ( changed )) then
-#endif
-        call exf_SwapFFields( hfluxa0, hfluxa1, mythid )
+        call exf_SwapFFields( apressure0, apressure1, mythid )
 
-        call mdsreadfield( hfluxafile, exf_iprec, exf_yftype, 1
-     &                   , hfluxa1, count1, mythid
+        if ( apressurefile .NE. ' ' )
+     &       call mdsreadfield( apressurefile, exf_iprec, exf_yftype, 1
+     &                   , apressure1, count1, mythid
      &                   )
         if (exf_yftype .eq. 'RL') then
-           call exf_filter_rl( hfluxa1, hfluxamask, mythid )
+           call exf_filter_rl( apressure1, apressuremask, mythid )
         else
-           call exf_filter_rs( hfluxa1, hfluxamask, mythid )
+           call exf_filter_rs( apressure1, apressuremask, mythid )
         end if
-#ifndef ALLOW_AUTODIFF_TAMC
       endif
-#endif
 
 c     Loop over tiles.
       do bj = mybylo(mythid),mybyhi(mythid)
@@ -100,32 +87,33 @@ c     Loop over tiles.
 
 c             Interpolate linearly onto the current time.
 
-              hfluxa(i,j,bi,bj) = fac          *hfluxa0(i,j,bi,bj)+
-     &                          (exf_one - fac) *hfluxa1(i,j,bi,bj)
+              apressure(i,j,bi,bj) = fac *apressure0(i,j,bi,bj)+
+     &                   (exf_one - fac) *apressure1(i,j,bi,bj)
 
             enddo
           enddo
         enddo
       enddo
 
+#endif
+
       end
 
 
 
-      subroutine exf_init_hfluxa(
-     I                             mythid
-     &                           )
+      subroutine exf_init_apressure( mythid )
 
 c     ==================================================================
-c     SUBROUTINE exf_init_hfluxa
+c     SUBROUTINE exf_init_apressure
 c     ==================================================================
 c
 c     o 
 c
 c     started: Ralf.Giering@FastOpt.de 25-Mai-2000
+c     changed: heimbach@mit.edu 10-Jan-2002
 c
 c     ==================================================================
-c     SUBROUTINE exf_init_hfluxa
+c     SUBROUTINE exf_init_apressure
 c     ==================================================================
 
       implicit none
@@ -135,16 +123,14 @@ c     == global variables ==
 #include "EEPARAMS.h"
 #include "SIZE.h"
 
-#include "exfa_param.h"
-
-      common /exfl_hfluxa_r/ hfluxa0, hfluxa1
-      _RL hfluxa0(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL hfluxa1(1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
+#include "exf_param.h"
+#include "exf_fields.h"
 
 c     == routine arguments ==
 
       integer mythid
 
+#ifdef ATMOSPHERIC_LOADING
 c     == local variables ==
 
       integer bi, bj
@@ -156,11 +142,14 @@ c     == end of interface ==
         do bi = mybxlo(mythid), mybxhi(mythid)
           do j = 1, sny
             do i = 1, snx
-              hfluxa0(i,j,bi,bj) = 0. _d 0
-              hfluxa1(i,j,bi,bj) = 0. _d 0
+              apressure(i,j,bi,bj)  = 0. _d 0
+              apressure0(i,j,bi,bj) = 0. _d 0
+              apressure1(i,j,bi,bj) = 0. _d 0
             enddo
           enddo
         enddo
       enddo
+
+#endif
 
       end

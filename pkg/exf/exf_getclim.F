@@ -1,4 +1,4 @@
-c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.1 2001/05/14 22:08:40 heimbach Exp $
+c $Header: /u/gcmpack/MITgcm/pkg/exf/exf_getclim.F,v 1.2 2002/11/12 20:34:41 heimbach Exp $
 
 #include "EXF_CPPOPTIONS.h"
 
@@ -53,42 +53,30 @@ c     == end of interface ==
 
 #ifdef ALLOW_CLIMTEMP_RELAXATION
 c     Get values of climatological temperature fields.
-      call exf_set_climtemp ( climtemp
-     I                      , mytime, myiter, mythid )
+      call exf_set_climtemp ( mytime, myiter, mythid )
 c--   Update the tile edges.
       _EXCH_XY_R8(climtemp, mythid)
-#else
-c     Do not include relaxation to climatological temperature fields.
 #endif
 
 #ifdef ALLOW_CLIMSALT_RELAXATION
 c     Get values of climatological salinity fields.
-      call exf_set_climsalt ( climsalt
-     I                      , mytime, myiter, mythid )
+      call exf_set_climsalt ( mytime, myiter, mythid )
 c--   Update the tile edges.
       _EXCH_XY_R8(climsalt, mythid)
-#else
-c     Do not include relaxation to climatological salinity fields.
 #endif
 
 #ifdef ALLOW_CLIMSST_RELAXATION
 c     Get values of climatological sst fields.
-      call exf_set_climsst ( climsst
-     I                     , mytime, myiter, mythid )
+      call exf_set_climsst ( mytime, myiter, mythid )
 c--   Update the tile edges.
       _EXCH_XY_R8(climsst, mythid)
-#else
-c     Do not include relaxation to climatological sst fields.
 #endif
 
 #ifdef ALLOW_CLIMSSS_RELAXATION
 c     Get values of climatological sst fields.
-      call exf_set_climsss ( climsss
-     I                     , mytime, myiter, mythid )
+      call exf_set_climsss ( mytime, myiter, mythid )
 c--   Update the tile edges.
       _EXCH_XY_R8(climsss, mythid)
-#else
-c     Do not include relaxation to climatological sst fields.
 #endif
 
       end
