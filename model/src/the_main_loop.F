@@ -1,10 +1,16 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.57 2004/10/14 05:22:21 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.58 2004/12/03 00:40:40 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
 #include "CPP_OPTIONS.h"
 #ifdef ALLOW_OBCS
 # include "OBCS_OPTIONS.h"
+#endif
+#ifdef ALLOW_SEAICE
+# include "SEAICE_OPTIONS.h"
+#endif
+#ifdef ALLOW_GMREDI
+# include "GMREDI_OPTIONS.h"
 #endif
 
 CBOP
