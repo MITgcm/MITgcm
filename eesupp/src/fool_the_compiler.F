@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/fool_the_compiler.F,v 1.6 2001/09/21 03:54:35 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/fool_the_compiler.F,v 1.7 2002/10/10 20:07:37 adcroft Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -8,7 +8,7 @@ CBOP
 C      !ROUTINE: FOOL_THE_COMPILER
 
 C      !INTERFACE:
-       SUBROUTINE FOOL_THE_COMPILER
+       SUBROUTINE FOOL_THE_COMPILER( foolishArg )
        IMPLICIT NONE
 C      !DESCRIPTION:
 C      *=================================================================*
@@ -21,5 +21,6 @@ C      | thread. Calling this routine introduces the possibility of side |
 C      | effects on global data ensuring that memory locs. are reread.   |
 C      *=================================================================*
 CEOP
+       INTEGER foolishArg
        RETURN
        END
