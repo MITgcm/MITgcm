@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.15 2002/11/01 22:00:33 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/convective_adjustment.F,v 1.16 2002/11/02 20:07:39 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -99,12 +99,12 @@ C--       CONVECT not needed with KPP mixing
           kBottom = Nr
           kDir    = 1
          ELSEIF ( buoyancyRelation .eq. 'OCEANICP' ) THEN
-          kTop    = Nr-1
-          kBottom =  1
+          kTop    = Nr
+          kBottom =  2
           kDir    = -1
          ELSEIF ( buoyancyRelation .eq. 'ATMOSPHERIC' ) THEN
-          kTop    = Nr-1
-          kBottom =  1
+          kTop    = Nr
+          kBottom =  2
           kDir    = -1
          ELSE
           STOP 'CONVECTIVE_ADJUSTMENT: We should never reach this point'
