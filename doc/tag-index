@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.208 2003/11/13 22:51:32 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.209 2003/11/17 23:45:57 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint52a_post
 o modifications to make FREEZE (_SURFACE) flux visible to pkg/kpp
   - moved surfaceTendencyTice from pkg/seaice to main code
   - subroutine FREEZE_SURFACE now limits only surface temperature
@@ -10,8 +11,12 @@ o modifications to make FREEZE (_SURFACE) flux visible to pkg/kpp
     => new output.txt for global_ocean.cs32x15 & global_with_exf
   - keep the old version of FREEZE for backward compatibility;
     global_ocean.90x40x15 left unchanged using useOldFreezing=.TRUE.
+  - corresponding modifs for TAF directives
 o added surface flux output variables to TIMEAVE_STATVARS
 o time-averaged output for pkg/ptracers
+o fix problem with ECCO-related divided adjoint
+  snapshot file was missing some ad-variables,
+  but no warning issued by TAF
 
 checkpoint52a_pre
 o some bug fixes for #undef REAL4_IS_SLOW
