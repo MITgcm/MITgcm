@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.3 2003/08/03 03:12:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_uv.F,v 1.4 2005/02/15 01:51:24 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -116,6 +116,16 @@ C               are directly proportional to Delta-U,V due to the Filter
            _END_MASTER( myThid )
            _BARRIER
           ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+          IF ( Shap_funct.NE.1 .AND. Shap_funct.NE.4
+     &                         .AND. useDiagnostics ) THEN
+            CALL DIAGNOSTICS_FILL(Shap_tmpFld1,'SHAP_dU ',0,Nr,
+     &                                                  0,1,1,myThid)
+            CALL DIAGNOSTICS_FILL(Shap_tmpFld2,'SHAP_dV ',0,Nr,
+     &                                                  0,1,1,myThid)
+          ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
         ENDIF
 

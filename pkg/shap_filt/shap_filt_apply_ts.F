@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.5 2004/06/26 01:15:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_apply_ts.F,v 1.6 2005/02/15 01:51:24 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -112,6 +112,14 @@ C               is directly proportional to Delta-Tr due to the Filter
            _BARRIER
           ENDIF
 
+#ifdef ALLOW_DIAGNOSTICS
+          IF ( Shap_funct.NE.1 .AND. Shap_funct.NE.4
+     &                         .AND. useDiagnostics ) THEN
+            CALL DIAGNOSTICS_FILL(Shap_tmpFld1,'SHAP_dT ',0,Nr,
+     &                                                  0,1,1,myThid)
+          ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
+
         ENDIF
 
         IF ( saltStepping .AND. nShapS.GT.0) THEN 
@@ -149,6 +157,14 @@ C               is directly proportional to Delta-Tr due to the Filter
            _END_MASTER( myThid )
            _BARRIER
           ENDIF
+
+#ifdef ALLOW_DIAGNOSTICS
+          IF ( Shap_funct.NE.1 .AND. Shap_funct.NE.4
+     &                         .AND. useDiagnostics ) THEN
+            CALL DIAGNOSTICS_FILL(Shap_tmpFld1,'SHAP_dS ',0,Nr,
+     &                                                  0,1,1,myThid)
+          ENDIF
+#endif /* ALLOW_DIAGNOSTICS */
 
         ENDIF
 
