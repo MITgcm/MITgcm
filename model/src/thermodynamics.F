@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.23 2002/06/15 03:28:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/thermodynamics.F,v 1.24 2002/07/03 20:22:39 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -479,12 +479,12 @@ C to be able to exclude this scheme to avoid excessive storage and
 C recomputation. It *is* differentiable, if you need it.
 C Edit GAD_OPTIONS.h and #define DISABLE_MULTIDIM_ADVECTION to
 C disable this section of code.
-        IF (tempAdvection .AND. tempMultiDimAdvec) THEN
+        IF (tempMultiDimAdvec) THEN
           CALL GAD_ADVECTION(bi,bj,tempAdvScheme,GAD_TEMPERATURE,
      U                      theta,gT,
      I                      myTime,myIter,myThid)
         ENDIF
-        IF (saltAdvection .AND. saltMultiDimAdvec) THEN
+        IF (saltMultiDimAdvec) THEN
           CALL GAD_ADVECTION(bi,bj,saltAdvScheme,GAD_SALINITY,
      U                      salt,gS,
      I                      myTime,myIter,myThid)
@@ -705,14 +705,17 @@ Ccs-
       IF ( useAIM ) THEN
        CALL AIM_AIM2DYN_EXCHANGES( myTime, myThid )
       ENDIF
-       _EXCH_XYZ_R8(gT,myThid)
-       _EXCH_XYZ_R8(gS,myThid)
-#else
-      IF (staggerTimeStep.AND.useCubedSphereExchange) THEN
-       _EXCH_XYZ_R8(gT,myThid)
-       _EXCH_XYZ_R8(gS,myThid)
-      ENDIF
 #endif /* ALLOW_AIM */
+      IF ( staggerTimeStep ) THEN
+       IF ( useAIM .OR. useCubedSphereExchange ) THEN 
+         IF (tempStepping) _EXCH_XYZ_R8(gT,myThid)
+         IF (saltStepping) _EXCH_XYZ_R8(gS,myThid)
+       ELSEIF ( useGMRedi .AND. Oly.LT.4 ) THEN
+c        .AND. GM_AdvForm .AND. .NOT.GM_AdvSeparate ) THEN
+         IF (tempMultiDimAdvec) _EXCH_XYZ_R8(gT,myThid)
+         IF (saltMultiDimAdvec) _EXCH_XYZ_R8(gS,myThid)
+       ENDIF  
+      ENDIF  
 
 #ifndef DISABLE_DEBUGMODE
       If (debugMode) THEN
