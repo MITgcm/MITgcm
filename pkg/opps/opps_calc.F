@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.1 2004/09/16 11:28:16 mlosch Exp $
+C$Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.2 2004/10/18 18:20:45 edhill Exp $
 C$Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -1114,4 +1114,4 @@ c
       ENDDO
       END
 
-#endif /* OPPS_ORGCODE
+#endif /* OPPS_ORGCODE */
