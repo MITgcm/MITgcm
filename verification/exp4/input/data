@@ -47,6 +47,7 @@
  pChkptFreq=3000.0,
  chkptFreq=0.0,
  dumpFreq=10800.0,
+ monitorFreq=1.,
  &
 
 # Gridding parameters

@@ -9,7 +9,7 @@
 # in error before the test is classified as a "fail".
 
 set on_error_die
-set passaccuracy=7
+set digitsOfAccuracy=8
 set SKIP=( )
 printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' " " Make " " " " Exact "# of" " " " " > summary.txt
 printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' Config Depend Compile Execute Match Digits Status Experiment >> summary.txt
@@ -49,6 +49,7 @@ end
 unlimit
 
 foreach dr ([a-zA-Z01-9]*)
+
  if (! -d $dr/input ) continue
  foreach skip ($SKIP)
   if ( `echo $dr | sed s/$skip.'*'//` == '' ) continue;continue
@@ -95,65 +96,64 @@ foreach dr ([a-zA-Z01-9]*)
   echo " done."
   echo -n "  running model ..."
   if ($compile == 'Yes') then
-# ./mitgcmuv | & grep "D iters" > output.txt
   ./mitgcmuv > & output.txt
   if ($status == 0) then
     set execute=Yes
     set exactmatch=NO
     set accuracy=-
     echo " done."
-    grep "D iters" output.txt | sed 's/.*D iters, err =//' \
-    | grep "   0    " \
-    > high.txt
-    grep "D iters" ../results/output.txt \
-     | sed 's/.*D iters, err =//' \
-     | grep "   0    " \
-     > oldhigh.txt
-    diff oldhigh.txt high.txt > /dev/null
-    if ($status) then
-      echo "  output differs:"
-      diff oldhigh.txt high.txt
-      echo ""
-      @ lvl=0
-      set accuracy='.'
-      set fail
-      echo -n Trying reduced accuracy
-      while ($lvl <= $passaccuracy)
-        @ lvl+=1
-        echo -n " " $lvl
-        sed s/{$accuracy}E/E/ high.txt > low.txt
-        sed s/{$accuracy}E/E/ oldhigh.txt > oldlow.txt
-        diff oldlow.txt low.txt > /dev/null
-        if ($status == 0) then
-          unset fail
-          break
-        endif
-        set accuracy=`echo $accuracy | sed 's/\./../'`
-      end
-      echo ""
-      if ($?fail ) then
-        if (! $?fails) set fails
-        set fails=($fails $dr)
-        set pass=FAIL
-        echo "                        ***** FAIL *****"
-      else
-        if (! $?passes) set passes
-        set passes=($passes $dr)
-        set pass=Pass
-        echo ""
-        echo "                   ***** PASS (grade $lvl) *****"
+
+# Compare output based on cg2d residual
+    grep "cg2d_init_res" output.txt | sed 's/.*=//' | nl > high.txt
+    grep "cg2d_init_res" ../results/output.txt | sed 's/.*=//' | nl > oldhigh.txt
+    join high.txt oldhigh.txt > low.txt
+    set nlines=`wc -l low.txt | awk '{print $1}'`
+    echo "  comparing $nlines lines of output"
+    @ line = 1
+    set bestacc=99;
+    set worstline='Exact match'
+    while ($line <= $nlines)
+     set vals=(`grep "^$line" low.txt | awk '{print $2,$3}'`)
+     @ line += 1
+     unset acc
+     foreach dp (14 13 12 11 10 9 8 7 6 5 4 3 2 1 0)
+      set cmp=(`printf '%23.'$dp'e %23.'$dp'e\n' $vals[1] $vals[2]`)
+      if ($cmp[1] =~ $cmp[2]) then
+       if (! $?acc) then
+        set acc=$dp
+        break
+       endif
       endif
-      set accuracy=$lvl
-    else
-      set exactmatch=Yes
-      set pass=Pass
-      echo ""
-      echo Model passed at highest accuracy.
-      echo ""
-      echo "                        ***** PASS *****"
-      if (! $?passes) set passes
-      set passes=($passes $dr)
+     end
+     if (! $?acc) set acc=0
+     if ($acc < $bestacc) then
+       set worstline=($line $vals[1] $vals[2] `printf '%23.'$acc'e' $vals[1]` $acc)
+       set bestacc=$acc
+     endif
+#    echo $line $vals[1] $vals[2] `printf '%23.'$acc'e' $vals[1]` $acc
+    end
+    if ($nlines == 0) then
+     set bestacc=0
+     set worstline="Could find no lines in output.txt to compare"
     endif
+    if ($bestacc == 14 & $?exactmatch) then
+     set exactmatch=Yes
+     echo " "
+     echo "                        ***** EXACT MATCH *****"
+    endif
+    if ($bestacc > $digitsOfAccuracy) then
+     set pass=Pass
+     echo " "
+     echo "                      ***** PASS (digits=$bestacc) *****"
+     echo " "
+     echo " worstline: " $worstline
+    else
+     echo " "
+     echo "                      ***** FAIL (digits=$bestacc) *****"
+     echo " "
+     echo " worstline: " $worstline
+    endif
+    set accuracy=$bestacc
   else
     echo " error"
     echo "               ***** An error occured running the model *****"

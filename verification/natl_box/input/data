@@ -93,6 +93,7 @@
  periodicExternalForcing = .TRUE.,
  externForcingPeriod = 43200.0,
  externForcingCycle = 2764800.0,
+ monitorFreq=1.,
  &
 
 # Gridding parameters

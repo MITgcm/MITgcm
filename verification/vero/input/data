@@ -55,6 +55,7 @@
 #
  tauThetaClimRelax = 5184000.0,
  tauSaltClimRelax  = 5184000.0,
+ monitorFreq=1.,
  &
 
 # Gridding parameters
