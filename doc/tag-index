@@ -1,7 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.1 1998/05/26 14:38:05 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.2 1998/05/30 02:19:49 cnh Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint4
+ Created by cnh
+ Contains memory saving macros ( _rdxc etc..) for when
+ grid variations are limited.
+ Contains polynomial coeffs for EOS and knudsen program
+ for generation.
+
 checkpoint3
  Created by cnh
  Added extra flags for runtime options
@@ -20,5 +28,6 @@ checkpoint1
  Restructured kloop in dynamics.F
  Added non-linear EOS
 
-baseline - Original checked in code
+baseline
+ Original checked in code
 
