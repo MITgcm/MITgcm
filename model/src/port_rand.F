@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/port_rand.F,v 1.3 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/port_rand.F,v 1.4 2004/07/19 15:13:07 molod Exp $
 C $Name:  $
 
 C Portable random number generator
@@ -9,7 +9,7 @@ C Portable random number generator
 CBOP
 C     !ROUTINE: port_rand
 C     !INTERFACE:
-      real*8 function port_rand()
+      real*8 function port_rand(seed)
 
 C     !DESCRIPTION: \bv
 C     Portable random number generator
@@ -20,15 +20,17 @@ C     !LOCAL VARIABLES:
       integer nff
       parameter(nff=55)
 #ifdef _USE_INTEGERS
-      integer mbig,mseed,mZ
+      integer mbig,mseed,mZ,seed
 #else
-      real*8 mbig,mseed,mz
+      real*8 mbig,mseed,mz,seed
 #endif
       real*8 fac
 #ifdef _USE_INTEGERS
-      parameter (mbig=1000000000,mseed=161803398,mz=0,fac=1./mbig)
+      parameter (mbig=1000000000,mz=0,fac=1./mbig)
+      data mseed/161803398/
 #else
-      parameter (mbig=4000000.,mseed=1618033.,mz=0.,fac=1./mbig)
+      parameter (mbig=4000000.,mz=0.,fac=1./mbig)
+      data mseed/1618033./
 #endif
       integer i,ii,inext,inextp,k,idum
       parameter(idum=-2)
@@ -42,6 +44,7 @@ C     !LOCAL VARIABLES:
       data firstCall /.true./
 CEOP
 ! ------------------------------------------------------------------------------
+      mseed = seed
       if(firstCall)then
         firstCall=.false.
         mj=mseed-iabs(idum)
@@ -80,10 +83,11 @@ CEOP
       implicit none
       integer n,i
       real arr(n)
-      real*8 port_rand
+      real*8 port_rand,seed
+      seed=1618033.0d0
 ! ------------------------------------------------------------------------------
       do i=1,n
-       arr(i)=port_rand()
+       arr(i)=port_rand(seed)
       enddo
 
       return

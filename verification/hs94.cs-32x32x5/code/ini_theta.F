@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/ini_theta.F,v 1.4 2001/07/06 22:13:37 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/verification/hs94.cs-32x32x5/code/ini_theta.F,v 1.5 2004/07/19 15:13:07 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -35,6 +35,7 @@ CEndOfInterface
 
 C     == Functions ==
       Real*8  PORT_RAND
+      real *8 seed
 
 C     == Local variables ==
 C     bi,bj  - Loop counters
@@ -47,6 +48,7 @@ C     I,J,K
 
       J = 99+myBxLo(myThid)+nPx*myByLo(myThid)
 c     CALL SRAND( J )
+c     seed = j
 
       IF ( hydrogThetaFile .EQ. ' ' ) THEN
 C--    Initialise temperature field to Held & Suarez equilibrium theta
@@ -62,7 +64,7 @@ C--    Initialise temperature field to Held & Suarez equilibrium theta
            thetaEq=315. _d 0-term1-term2
             theta(I,J,K,bi,bj) = MAX( thetaLim, thetaEq )
 c    &                          + 0.01*(RAND()-0.5)
-c    &                          + 0.01*(PORT_RAND()-0.5)
+c    &                          + 0.01*(PORT_RAND(seed)-0.5)
 c           theta(I,J,K,bi,bj) = tRef(K)
            ENDDO
           ENDDO
