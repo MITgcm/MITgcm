@@ -13,15 +13,16 @@ PKG		= $(BASE)/pkg
 #
 ADTAMCFLAGS      = -reverse -admark ad -i4 -r4
 ADTAFFLAGS       = -reverse -admark ad -i4 -r4 \
-			-flow taf_flow.log -nonew_arg
+			-l taf_ad.log -flow taf_ad_flow.log -nonew_arg
 FTLTAMCFLAGS     = -forward -ftlmark g_ -i4 -r4
 FTLTAFFLAGS      = -forward -ftlmark g_ -i4 -r4 \
-			-flow taf_flow.log -nonew_arg
+			-l taf_ftl.log -flow taf_ftl_flow.log -nonew_arg
 SVDTAMCFLAGS     = -reverse -forward -pure -i4 -r4
 SVDTAFFLAGS      = -reverse -forward -pure -i4 -r4 \
 			-flow taf_flow.log -nonew_arg
 #
-# -warn_step -flow taf_flow.log
+# further useful options: -warn_step -flow taf_flow.log
+# NB: the svd option recommended in the TAMC manual doesn't work.
 
 DIFF_FLAGS       = -toplevel the_main_loop		\
 		   -input  '    xx_theta_dummy		\
@@ -330,6 +331,8 @@ ftlchange:
            $(PKG)/autodiff/tangentlinear_model.F_old ;		\
         cat tamc_code_ftl.f >> $(PKG)/autodiff/tangentlinear_model.F
 
+bothchange:   adchange ftlchange
+
 adrestore:
 	cp $(PKG)/autodiff/adjoint_model.F_template	\
            $(PKG)/autodiff/adjoint_model.F
@@ -337,6 +340,8 @@ adrestore:
 ftlrestore:
 	cp $(PKG)/autodiff/tangentlinear_model.F_template	\
            $(PKG)/autodiff/tangentlinear_model.F
+
+bothrestore: adrestore ftlrestore
 
 adtamc:  adrestore ftlrestore small_f allcode admodeltamc
 
@@ -346,5 +351,7 @@ ftltamc:  adrestore ftlrestore small_f allcode ftlmodeltamc
 
 ftltaf:  adrestore ftlrestore small_f allcode ftlmodeltaf
 
-svdtaf:  adrestore ftlrestore allcode svdmodeltaf
+bothtaf:  bothrestore small_f allcode admodeltaf ftlmodeltaf
+
+svdtaf:  adrestore ftlrestore small_f allcode svdmodeltaf
 
