@@ -1,13 +1,14 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/o3k+mpi_gfdl,v 1.2 2003/11/13 15:30:36 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/Attic/irix64_ip35+mpi_gfdl,v 1.1 2003/11/14 05:22:49 heimbach Exp $
 #
 
 S64='$(TOOLSDIR)/set64bitConst.sh'
 MAKEDEPEND=makedepend
+CPP='/lib/cpp -P -traditional'
 DEFINES='-DTARGET_SGI -DWORDLENGTH=4'
 FC='f77'
 FFLAGS='-extend_source -mp -mpio -bytereclen -mips4 -r8 -static'
 FOPTIM='-O3'
 LIBS='-L/opt/mpt/1510/usr/lib64 -lmpi'
-INCLUDEDIRS='-I/opt/mpt/1510/usr/include'
+INCLUDEDIRS='/opt/mpt/1510/usr/include'
