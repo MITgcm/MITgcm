@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.24 2003/11/30 01:28:51 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.25 2003/12/04 16:36:18 edhill Exp $
 #  $Name:  $
 #
 
@@ -55,7 +55,7 @@ build_mpack()
 	    HAVE_MPACK=f
 	fi
 	echo -n "building mpack...  "
-	( cd $MPACKDIR && ./configure && $MAKE ) > build_mpack.out 2>&1
+	( cd $MPACKDIR && ./configure && $MAKE ) > tr_build_mpack.out 2>&1
 	RETVAL=$?
 	if test "x$RETVAL" != x0 ; then
 	    echo
@@ -63,6 +63,7 @@ build_mpack()
 	    echo
 	    HAVE_MPACK=f
 	else
+	    rm -f tr_build_mpack.out
 	    HAVE_MPACK=t
 	fi
     else
@@ -630,7 +631,7 @@ build_mpack
 MACH=`hostname`
 UNAMEA=`uname -a`
 DATE=`date +%Y%m%d`
-BASE=$MACH"_"$DATE"_"
+BASE="tr_"$MACH"_"$DATE"_"
 DNUM=0
 DRESULTS="$BASE$DNUM"
 while test -e $DRESULTS ; do
@@ -857,9 +858,9 @@ rm -f tmp_cmpnum.c tmp_cmpnum
 
 if test "x$CLEANUP" != xt ; then
     cat $SUMMARY
-    if test -e tr.out ; then
-        mv tr.out tr.out.old
+    if test -e tr_out.txt ; then
+        mv tr_out.txt tr_out.txt.old
     fi
-    cat $SUMMARY > tr.out
+    cat $SUMMARY > tr_out.txt
 fi
 

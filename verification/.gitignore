@@ -6,6 +6,7 @@
 *.meta
 STD*
 output.txt
+tr_*
 mfile*
 mitgcmuv*
 work.pc*
