@@ -1,15 +1,15 @@
-C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.13 2000/11/29 22:38:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/impldiff.F,v 1.14 2001/01/29 20:04:43 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
-C     /==========================================================\
+C     |==========================================================|
 C     | S/R IMPLDIFF                                             |
 C     | o Solve implicit diffusion equation for vertical         |
 C     |   diffusivity.                                           |
 C     | o Recoded from 2d intermediate fields to 3d to reduce    |
 C     |   TAMC storage                                           |
 C     | o Fixed missing masks for fields a(), c()                |
-C     \==========================================================/
+C     |==========================================================|
       SUBROUTINE IMPLDIFF( bi, bj, iMin, iMax, jMin, jMax,
      I                     deltaTX,KappaRX,recip_hFac,
      U                     gXNm1,
@@ -43,21 +43,17 @@ C     == Local variables ==
       _RL bet(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       _RL gam(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
 
-#ifdef ALLOW_AUTODIFF_TAMC
-      INTEGER kkey
-#endif
-
 C--   Initialise
 
 C--   Old aLower
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=jMin,jMax
+       DO i=iMin,iMax
          a(i,j,1) = 0. _d 0 
        ENDDO
       ENDDO
       DO k=2,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=jMin,jMax
+        DO i=iMin,iMax
           a(i,j,k) = -deltaTX*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
      &               *KappaRX(i,j, k )*recip_drC( k )
         ENDDO
@@ -66,24 +62,24 @@ C--   Old aLower
 
 C--   Old aUpper
       DO k=1,Nr-1
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=jMin,jMax
+        DO i=iMin,iMax
           c(i,j,k) = -deltaTX*recip_hFac(i,j,k,bi,bj)*recip_drF(k)
      &               *KappaRX(i,j,k+1)*recip_drC(k+1)
           IF (recip_hFac(i,j,k+1,bi,bj).EQ.0.) c(i,j,k)=0.
         ENDDO
        ENDDO
       ENDDO
-      DO j=1-Oly,sNy+Oly
-       DO i=1-Olx,sNx+Olx
+      DO j=jMin,jMax
+       DO i=iMin,iMax
          c(i,j,Nr) = 0. _d 0
        ENDDO
       ENDDO
 
 C--   Old aCenter
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=jMin,jMax
+        DO i=iMin,iMax
           b(i,j,k) = 1. _d 0 - c(i,j,k) - a(i,j,k)
         ENDDO
        ENDDO
@@ -91,8 +87,8 @@ C--   Old aCenter
 
 C--   Old and new gam, bet are the same
       DO k=1,Nr
-       DO j=1-Oly,sNy+Oly
-        DO i=1-Olx,sNx+Olx
+       DO j=jMin,jMax
+        DO i=iMin,iMax
           bet(i,j,k) = 0. _d 0
           gam(i,j,k) = 0. _d 0
         ENDDO
@@ -117,10 +113,6 @@ C--   Middle of forward sweep
 
 CADJ loop = sequential
        DO k=2,Nr
-
-#ifdef ALLOW_AUTODIFF_TAMC
-        kkey = (idkey-1)*(Nr-2) + k-1
-#endif
 
         DO j=jMin,jMax
          DO i=iMin,iMax
