@@ -1,7 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.3 2004/06/07 18:04:06 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_veg.F,v 1.4 2004/06/07 18:32:21 molod Exp $
 C $Name:  $
 
-      subroutine fizhi_init_veg(mythid,vegdata,im,jm,maxbi,maxbj,maxtyp,
+      subroutine fizhi_init_veg(mythid,vegdata,im,jm,Nsx,Nsy,maxtyp,
      . surftype,tilefrac,igrd,ityp,chfr )
 C***********************************************************************
 C Subroutine fizhi_init_veg - routine to read in the land surface types,
@@ -15,22 +15,22 @@ C mythid   - thread number (processor number)
 C vegdata  - Character*40 Vegetation Dataset name
 C im       - model grid longitude dimension
 C jm       - model grid latitude dimension (number of lat. points)
-C maxbi    - Number of processors in x-direction
-C maxbj    - Number of processors in y-direction
+C Nsx      - Number of processors in x-direction
+C Nsy      - Number of processors in y-direction
 C maxtyp   - maximum allowable number of land surface types per grid box
 C nchpmax  - integer maximum per-processor number of tiles in tile space
 C
 C OUTPUT:
 C
-C surftype - integer array of land surface types [im,jm,maxtyp,bi,bj]
+C surftype - integer array of land surface types [im,jm,maxtyp,Nsx,Nsy]
 C tilefrac - real array of corresponding land surface type fractions 
-C            [im,jm,maxtyp,bi,bj]
+C            [im,jm,maxtyp,Nsx,Nsy]
 C igrd     - integer array in tile space of grid point number for each 
-C            tile [nchp,bi,bj]
+C            tile [nchp,Nsx,Nsy]
 C ityp     - integer array in tile space of land surface type for each 
-C            tile [nchp,bi,bj]
+C            tile [nchp,Nsx,Nsy]
 C chfr     - real array in tile space of land surface type fraction for 
-C            each tile [nchp,bi,bj]
+C            each tile [nchp,Nsx,Nsy]
 C
 C NOTES:
 C       Vegetation type as follows:
@@ -47,20 +47,19 @@ C                 10:  DARK DESERT
 C                100:  OCEAN
 C***********************************************************************
       implicit none
-#include "EEPARAMS.h"
 
-      integer mythid,im,jm,maxtyp,nchpmax,maxbi,maxbj
-      integer surftype(im,jm,maxtyp,maxbi,maxbj)
-      integer igrd(nchpmax,bi,bj),ityp(nchpmax,maxbi,maxbj)
-      real tilefrac(im,jm,maxtyp,maxbi,maxbj)
-      real chfr(nchpmax,maxbi,maxbj)
+      integer mythid,im,jm,maxtyp,nchpmax,Nsx,Nsy
+      integer surftype(im,jm,maxtyp,Nsx,Nsy)
+      integer igrd(nchpmax,Nsx,Nsy),ityp(nchpmax,Nsx,Nsy)
+      real tilefrac(im,jm,maxtyp,Nsx,Nsy)
+      real chfr(nchpmax,Nsx,Nsy)
       character*40 vegdata
-      integer imdata,jmdata,bidata,bjdata
+      integer imdata,jmdata,Nsxdata,Nsydata
       integer nchp,nchpland
 
-      integer*4 im_32, jm_32, bi_32, bj_32
-      integer*4 iveg_32(im,jm,maxtyp,bi,bj)
-         real*4  veg_32(im,jm,maxtyp,bi,bj)
+      integer*4 im_32, jm_32, Nsx_32, Nsy_32
+      integer*4 iveg_32(im,jm,maxtyp,Nsx,Nsy)
+         real*4  veg_32(im,jm,maxtyp,Nsx,Nsy)
 
       integer i,j,k,bi,bj,ierr1,kveg
 
@@ -69,7 +68,7 @@ C***********************************************************************
       open(kveg,file=vegdata,form='unformatted',access='sequential', 
      .                      iostat=ierr1)
       if( ierr1.eq.0 ) then
-          read(kveg)im_32,jm_32,bi_32,bj_32,IVEG_32,VEG_32
+          read(kveg)im_32,jm_32,Nsx_32,Nsy_32,IVEG_32,VEG_32
       else
        print *
        print *, 'Veg Dataset: ',vegdata,' not found!'
@@ -80,29 +79,25 @@ C***********************************************************************
       IF (myThid.eq.1) THEN
       imdata = im_32
       jmdata = jm_32
-      bidata = bi_32
-      bjdata = bj_32
+      Nsxdata = Nsx_32
+      Nsydata = Nsy_32
       if( (imdata.ne.im) .or. (jmdata.ne.jm) .or. 
-     .                        (bi.ne.bidata) .or. (bjdata.ne.bj) ) then
+     .                     (Nsxdata.ne.Nsx) .or. (Nsydata.ne.Nsy) ) then
        print *
        print *, 'Veg Data Resolution is Incorrect! '
        print *,' Model Res: ',im,'x',jm,' Data Res: ',imdata,'x',jmdata
-       print *,' Model Bij: ',bi,'x',bj,' Data Bij: ',bidata,'x',bjdata
+       print *,' Model Nsx Nsy: ',Nsx,' ',Nsy,' Data Nsx Nsy: ',Nsxdata,
+     .                    ' ',Nsydata
        print *
        call exit(102)
       ENDIF
                                                                                  
-      imdata = im_32
-      jmdata = jm_32
-      bidata = bi_32
-      bjdata = bj_32
-
-      DO BJ = myByLo(myThid), myByHi(myThid)
-      DO BI = myBxLo(myThid), myBxHi(myThid)
+      DO BJ = 1,Nsx
+      DO BI = 1,Nsy
                                                                                  
       do k = 1,maxtyp
-      do j = 1,jm_32
-      do i = 1,im_32
+      do j = 1,jm
+      do i = 1,im
        surftype(i,j,k,bi,bj) = iveg_32(i,j,k,bi,bj) 
        tilefrac(i,j,k,bi,bj) = veg_32(i,j,k,bi,bj)
       enddo
