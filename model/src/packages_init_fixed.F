@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.7 2003/06/12 18:21:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_init_fixed.F,v 1.8 2003/06/19 15:00:45 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -75,6 +75,19 @@ C--   Initialise & Read AIM physical parameters
 #ifdef ALLOW_LAND
 C--   Initialise & Read Land package parameters
       IF (useLand) CALL LAND_INITIALISE( myThid )
+#endif
+
+#if (defined (ALLOW_ADJOINT_RUN) || \
+     defined (ALLOW_TANGENTLINEAR_RUN) || \
+     defined (ALLOW_ECCO_OPTIMIZATION))
+C--   Initialise the control variables
+      CALL CTRL_INIT( myThid )
+      _BARRIER
+#endif
+
+#ifdef INCLUDE_ECCO_PACKAGE
+C--   Initialise ecco-specific cost function.
+       IF (useECCO) CALL COST_INIT( myThid )
 #endif
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.14 2003/06/12 18:21:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/packages_check.F,v 1.15 2003/06/19 15:00:45 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -90,6 +90,14 @@ CEOP
       IF (useSEAICE) CALL SEAICE_CHECK( myThid )
 #else
       IF (useSEAICE) CALL PACKAGES_CHECK_ERROR('SEAICE', myThid)
+#endif
+
+#if ( defined (ALLOW_ADJOINT_RUN) || \
+      defined (ALLOW_TANGENTLINEAR_RUN) || \
+      defined (ALLOW_GRADIENT_CHECK) || \
+      defined (ALLOW_ECCO_OPTIMIZATION) )
+      CALL CTRL_CHECK( myThid )
+      CALL COST_CHECK( myThid )
 #endif
 
       RETURN

@@ -1,7 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.18 2003/02/18 05:33:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing.F,v 1.19 2003/06/19 15:00:45 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
+#ifdef ALLOW_OBCS
+# include "OBCS_OPTIONS.h"
+#endif
 
 CBOP
 C     !ROUTINE: EXTERNAL_FORCING_U

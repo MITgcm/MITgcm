@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.28 2003/06/12 18:29:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.29 2003/06/19 15:00:45 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -106,6 +106,11 @@ C--   Do LAND time averages
       IF (useLAND)
      &  CALL LAND_WRITE_TAVE( myCurrentTime, myIter, myThid )
 #endif                                                             
+
+#ifdef ALLOW_OBCS
+      IF (useOBCS)
+     & CALL OBCS_DIAGS( myCurrentTime, myIter, myThid )
+#endif
 
 #ifdef ALLOW_GMREDI
 C--   Do KPP diagnostics.

@@ -112,12 +112,15 @@ cswdice --- end add ---
       IF (usePTRACERS) CALL PTRACERS_READPARMS( myThid )
 #endif
 
-#if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
+#if (defined (ALLOW_ADJOINT_RUN) || \
+     defined (ALLOW_TANGENTLINEAR_RUN) || \
+     defined (ALLOW_ECCO_OPTIMIZATION))
 C--   Initialise the optim. parameters.
       call optim_readparms( myThid )
-      _BARRIER
-C--   Initialise the control vector.
-      CALL ctrl_init( myThid )
+C--   Initialise the control parameters
+      call ctrl_readparms( myThid )
+C--   Initialise the cost parameters
+      call cost_readparms( mythid )
       _BARRIER
 #endif
 
@@ -138,13 +141,7 @@ C--   Custom routine to set forcing fields.
 
 #ifdef INCLUDE_ECCO_PACKAGE
 c--   Initialize ECCO package parameters
-      IF (useECCO) CALL ECCO_READPARMS ( myThid )
-#else
-# ifdef ALLOW_COST
-C--   Initialise the cost function.
-      call cost_readparms( mythid )
-      _BARRIER
-# endif
+      IF (useECCO) call ecco_readparms ( myThid )
 #endif
 
       END
