@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.19 1999/03/22 15:54:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg2d.F,v 1.20 1999/05/18 17:36:55 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -87,9 +87,6 @@ CcnhDebugEnds
 
 
 C--   Initialise inverter
-      etaNBuf(1,myThid)   = 0. _d 0
-      errBuf(1,myThid)    = 0. _d 0
-      sumRHSBuf(1,myThid) = 0. _d 0
       etaNM1              = 1. _d 0
 
 CcnhDebugStarts
@@ -112,9 +109,7 @@ C--   Normalise RHS
         ENDDO
        ENDDO
       ENDDO
-      rhsMaxBuf(1,myThid) = rhsMax
-      _GLOBAL_MAX_R8( rhsMaxbuf, rhsMax, myThid )
-      rhsMax =  rhsMaxBuf(1,1)
+      _GLOBAL_MAX_R8( rhsMax, myThid )
       rhsNorm = 1. _d 0
       IF ( rhsMax .NE. 0. ) rhsNorm = 1. _d 0 / rhsMax
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -189,13 +184,9 @@ C     _EXCH_XY_R8( cg2d_s, myThid )
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
-      sumRHSBuf(1,myThid) = sumRHS
-      _GLOBAL_SUM_R8( sumRHSBuf , sumRHS, myThid )
-      sumRHS = sumRHSBuf(1,1)
-      errBuf(1,myThid)    = err
+      _GLOBAL_SUM_R8( sumRHS, myThid )
 C     WRITE(6,*) ' mythid, err = ', mythid, SQRT(err)
-      _GLOBAL_SUM_R8( errBuf    , err   , myThid )
-      err    = errBuf(1,1)
+      _GLOBAL_SUM_R8( err   , myThid )
       
       _BEGIN_MASTER( myThid )
       write(0,'(A,1PE30.14)') ' cg2d: Sum(rhs) = ',sumRHS
@@ -240,9 +231,7 @@ CcnhDebugEnds
         ENDDO
        ENDDO
 
-       etanBuf(1,myThid) = etaN
-       _GLOBAL_SUM_R8(etaNbuf,etaN, myThid)
-       etaN = etaNBuf(1,1)
+       _GLOBAL_SUM_R8(etaN, myThid)
 CcnhDebugStarts
 C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' etaN = ',etaN
 CcnhDebugEnds
@@ -302,9 +291,7 @@ C==    q = A.s
          ENDDO
         ENDDO
        ENDDO
-       alphaBuf(1,myThid) = alpha
-       _GLOBAL_SUM_R8(alphaBuf,alpha,myThid)
-       alpha = alphaBuf(1,1)
+       _GLOBAL_SUM_R8(alpha,myThid)
 CcnhDebugStarts
 C      WRITE(0,*) ' CG2D: Iteration ',it2d-1,' SUM(s*q)= ',alpha
 CcnhDebugEnds
@@ -328,9 +315,7 @@ C      Now compute "interior" points.
         ENDDO
        ENDDO
 
-       errBuf(1,myThid) = err
-       _GLOBAL_SUM_R8( errBuf    , err   , myThid )
-       err = errBuf(1,1)
+       _GLOBAL_SUM_R8( err   , myThid )
        err = SQRT(err)
        actualIts      = it2d
        actualResidual = err
@@ -390,9 +375,7 @@ C        ENDDO
 C       ENDDO
 C      ENDDO
 C     ENDDO
-C     errBuf(1,myThid)    = err
-C     _GLOBAL_SUM_R8( errBuf    , err   , myThid )
-C     err    = errBuf(1,1)
+C     _GLOBAL_SUM_R8( err   , myThid )
 C     write(0,*) 'cg2d: Ax - b = ',SQRT(err)
 CcnhDebugEnds
 

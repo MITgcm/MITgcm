@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.1 1999/03/22 15:54:03 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/cg3d.F,v 1.2 1999/05/18 17:36:55 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -87,9 +87,6 @@ CcnhDebugEnds
 #ifdef ALLOW_NONHYDROSTATIC
 
 C--   Initialise inverter
-      etaNcg3Buf(1,myThid)   = 0. D0
-      errcg3Buf(1,myThid)    = 0. D0
-      sumRHScg3Buf(1,myThid) = 0. D0
       etaNM1              = 1. D0
 
 C--   Normalise RHS
@@ -106,9 +103,7 @@ C--   Normalise RHS
         ENDDO
        ENDDO
       ENDDO
-      rhsMaxcg3Buf(1,myThid) = rhsMax
-      _GLOBAL_MAX_R8( rhsMaxcg3Buf, rhsMax, myThid )
-      rhsMax =  rhsMaxcg3Buf(1,1)
+      _GLOBAL_MAX_R8( rhsMax, myThid )
       rhsNorm = 1. _d 0
       IF ( rhsMax .NE. 0. ) rhsNorm = 1. _d 0 / rhsMax
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -167,13 +162,9 @@ C--   Initial residual calculation
         ENDDO
        ENDDO
       ENDDO
-      errcg3Buf(1,myThid)    = err
       WRITE(6,*) 'DEBUG  mythid, err = ', mythid, SQRT(err)
-      _GLOBAL_SUM_R8( errcg3Buf    , err   , myThid )
-      err    = errcg3Buf(1,1)
-      errcg3Buf(1,myThid)    = sumRHS
-      _GLOBAL_SUM_R8( errcg3Buf    , err   , myThid )
-      sumRHS = errcg3Buf(1,1)
+      _GLOBAL_SUM_R8( err   , myThid )
+      _GLOBAL_SUM_R8( sumRHS   , myThid )
       _BEGIN_MASTER( myThid )
       write(0,*) 'DEBUG cg3d: Sum(rhs) = ',sumRHS
       _END_MASTER( )
@@ -252,12 +243,8 @@ C     _EXCH_XYZ_R8( cg3d_s, myThid )
      I            OLw, OLe, OLs, OLn, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_IGNORE_CORNERS, myThid )
-      sumRHScg3Buf(1,myThid) = sumRHS
-      _GLOBAL_SUM_R8( sumRHScg3Buf , sumRHS, myThid )
-      sumRHS = sumRHScg3Buf(1,1)
-      errcg3Buf(1,myThid)    = err
-      _GLOBAL_SUM_R8( errcg3Buf    , err   , myThid )
-      err    = errcg3Buf(1,1)
+      _GLOBAL_SUM_R8( sumRHS, myThid )
+      _GLOBAL_SUM_R8( err   , myThid )
       
       _BEGIN_MASTER( myThid )
       write(0,'(A,1PE30.14)') ' cg3d: Sum(rhs) = ',sumRHS
@@ -358,9 +345,7 @@ caja    ENDDO
 caja   ENDDO
 caja
 
-       etaNcg3Buf(1,myThid) = etaN
-       _GLOBAL_SUM_R8(etaNcg3Buf,etaN, myThid)
-       etaN = etaNcg3Buf(1,1)
+       _GLOBAL_SUM_R8(etaN, myThid)
 CcnhDebugStarts
 C      WRITE(0,*) ' CG3D: Iteration ',it3d-1,' etaN = ',etaN
 CcnhDebugEnds
@@ -471,9 +456,7 @@ C==    q = A.s
          ENDIF
         ENDDO
        ENDDO
-       alphacg3Buf(1,myThid) = alpha
-       _GLOBAL_SUM_R8(alphacg3Buf,alpha,myThid)
-       alpha = alphacg3Buf(1,1)
+       _GLOBAL_SUM_R8(alpha,myThid)
 CcnhDebugStarts
 C      WRITE(0,*) ' CG3D: Iteration ',it3d-1,' SUM(s*q)= ',alpha
 CcnhDebugEnds
@@ -501,9 +484,7 @@ C      Now compute "interior" points.
         ENDDO
        ENDDO
 
-       errcg3Buf(1,myThid) = err
-       _GLOBAL_SUM_R8( errcg3Buf    , err   , myThid )
-       err = errcg3Buf(1,1)
+       _GLOBAL_SUM_R8( err   , myThid )
        err = SQRT(err)
        actualIts      = it3d
        actualResidual = err
@@ -565,9 +546,7 @@ C        ENDDO
 C       ENDDO
 C      ENDDO
 C     ENDDO
-C     errcg3Buf(1,myThid)    = err
-C     _GLOBAL_SUM_R8( errcg3Buf    , err   , myThid )
-C     err    = errcg3Buf(1,1)
+C     _GLOBAL_SUM_R8( err   , myThid )
 C     write(0,*) 'cg2d: Ax - b = ',SQRT(err)
 CcnhDebugEnds
 

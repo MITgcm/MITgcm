@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.5 1999/03/22 17:37:43 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/global_sum.F,v 1.6 1999/05/18 17:35:23 adcroft Exp $
 
 C--   File global_sum.F: Routines that perform global sum on an array
 C                        of thread values.
@@ -9,8 +9,7 @@ C      o global_sum_r8
 
 CStartOfInterface
       SUBROUTINE GLOBAL_SUM_R4( 
-     I                       phi, 
-     O                       sumPhi,
+     U                       sumPhi,
      I                       myThid )
 C     /==========================================================\
 C     | SUBROUTINE GLOBAL_SUM_R4                                 |
@@ -26,6 +25,7 @@ C     | The same thread also does the inter-process sum for      |
 C     | example with MPI and then writes the result into a shared|
 C     | location. All threads wait until the sum is avaiailable. |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     == Global data ==
 #include "SIZE.h"
@@ -33,22 +33,25 @@ C     == Global data ==
 #include "EESUPPORT.h"
 
 C     == Routine arguments ==
-C     phi    - Array to be summed.
 C     sumPhi - Result of sum.
 C     myThid - My thread id.
-      Real*4 phi(lShare4,MAX_NO_THREADS)
       Real*4 sumPhi
       INTEGER myThid
 CEndOfInterface
 
 C     == Local variables ==
+C     phi    - Array to be summed.
 C     I      - Loop counters
 C     mpiRC  - MPI return code
+      Real*4 phi(lShare4,MAX_NO_THREADS)
       INTEGER I
       Real*4  tmp
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif /* ALLOW_USE_MPI */
+
+C--   write local sum into array
+      phi(1,myThid) = sumPhi
 
 C--   Can not start until everyone is ready
       _BARRIER
@@ -65,24 +68,28 @@ C--   Sum within the process first
        IF ( usingMPI ) THEN
 #endif
         CALL MPI_Allreduce(tmp,sumPhi,1,MPI_REAL,MPI_SUM,
-     &                   MPI_COMM_MODEL,mpiRC)
+     &                   MPI_COMM_WORLD,mpiRC)
 #ifndef ALWAYS_USE_MPI
        ENDIF
 #endif
 #endif /*  ALLOW_USE_MPI */
+C--     Write solution to place where all threads can see it
        phi(1,1) = sumPhi
+
       _END_MASTER( myThid )
 C--
       _BARRIER
-C
+
+C--   set result for every process
+      sumPhi = phi(1,1)
+
       RETURN
       END
       
 
 CStartOfInterface
       SUBROUTINE GLOBAL_SUM_R8( 
-     I                       phi, 
-     O                       sumPhi,
+     U                       sumPhi,
      I                       myThid )
 C     /==========================================================\
 C     | SUBROUTINE GLOBAL_SUM_R8                                 |
@@ -98,6 +105,7 @@ C     | The same thread also does the inter-process sum for      |
 C     | example with MPI and then writes the result into a shared|
 C     | location. All threads wait until the sum is avaiailable. |
 C     \==========================================================/
+      IMPLICIT NONE
 
 C     === Global data ===
 #include "SIZE.h"
@@ -105,22 +113,25 @@ C     === Global data ===
 #include "EESUPPORT.h"
 
 C     === Routine arguments ===
-C     phi    - Array to be summed.
 C     sumPhi - Result of sum.
 C     myThid - My thread id.
-      Real*8 phi(lShare8,MAX_NO_THREADS)
       Real*8 sumPhi
       INTEGER myThid
 CEndOfInterface
 
 C     === Local variables ===
+C     phi    - Array to be summed.
 C     I      - Loop counters
 C     mpiRC  - MPI return code
+      Real*8 phi(lShare8,MAX_NO_THREADS)
       INTEGER I
       Real*8  tmp
 #ifdef   ALLOW_USE_MPI
       INTEGER mpiRC
 #endif   /* ALLOW_USE_MPI */
+
+C--   write local sum into array
+      phi(1,myThid) = sumPhi
 
 C--   Can not start until everyone is ready
       _BARRIER
@@ -137,7 +148,7 @@ C--   Sum within the process first
        IF ( usingMPI ) THEN
 #endif
         CALL MPI_Allreduce(tmp,sumPhi,1,MPI_DOUBLE_PRECISION,MPI_SUM,
-     &                   MPI_COMM_MODEL,mpiRC)
+     &                   MPI_COMM_WORLD,mpiRC)
 #ifndef ALWAYS_USE_MPI
        ENDIF
 #endif
@@ -148,6 +159,9 @@ C--     Write solution to place where all threads can see it
 
 C--   Do not leave until we are sure that the sum is done
       _BARRIER
-C
+
+C--   set result for every process
+      sumPhi = phi(1,1)
+
       RETURN
       END
