@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.26 1999/03/22 15:54:05 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.27 1999/03/22 16:44:17 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -87,7 +87,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "CG2D.h"
+#ifdef ALLOW_NONHYDROSTATIC
 #include "CG3D.h"
+#endif
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
@@ -180,14 +182,6 @@ C      By convention this is taken to be the model "state".
        CALL TIMER_START('I/O (WRITE)        [MAIN LOOP]',myThid)
        CALL DO_THE_MODEL_IO( myCurrentTime, myCurrentIter, myThid )
        CALL TIMER_STOP ('I/O (WRITE)        [MAIN LOOP]',myThid)
-
-Caja
-       WRITE(suff,'(I10.10)') myCurrentIter
-       CALL WRITE_FLD_XY_RL('B2d.',suff,cg2d_b,
-     &            myCurrentIter,myThid)
-       CALL WRITE_FLD_XYZ_RL('B3d.',suff,cg3d_b,
-     &            myCurrentIter,myThid)
-Caja
 
 C--    Solve elliptic equation(s).
 C      Two-dimensional only for conventional hydrostatic or 
