@@ -238,7 +238,12 @@ for ivar = 1:length(vars)
     myvars(imy).atts       = myatt;
     myvars(imy).has_horiz  = has_horiz;
     
-    addl = setdiff(mydim_names,[mydims.names]);
+    % this is necessary to make it work with Matlab 6.5
+    if isempty([mydims.names])
+      addl = mydim_names;
+    else
+      addl = setdiff(mydim_names,[mydims.names]);
+    end
     for iaddl = 1:length(addl)
       np1 = length(mydims) + 1;
       mydims(np1).names = addl(iaddl);
