@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.111 2004/12/16 23:20:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.112 2005/01/24 17:00:17 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -260,10 +260,7 @@ C     uninitialised but inert locations.
 #ifdef ALLOW_AUTODIFF_TAMC
 cph(
 c--   need some re-initialisation here to break dependencies
-c--   totphihyd is assumed zero from ini_pressure, i.e.
-c--   avoiding iterate pressure p = integral of (g*rho(p)*dz)
 cph)
-           totPhiHyd(i,j,k,bi,bj) = 0. _d 0
            gu(i,j,k,bi,bj) = 0. _d 0
            gv(i,j,k,bi,bj) = 0. _d 0
 #endif
