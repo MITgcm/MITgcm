@@ -7,4 +7,6 @@ Makefile
 *.log
 *.out
 *.toc
+*.pdf
+*.ps
 

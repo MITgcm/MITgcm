@@ -1,6 +1,6 @@
 #! /usr/bin/env sh
 #
-#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.5 2004/04/01 05:00:06 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/doc/api_reference/configure,v 1.6 2004/04/01 05:34:41 edhill Exp $
 #
 #  A script to generate the Makefile for the API Reference
 
@@ -29,17 +29,15 @@ cat <<EOF > Makefile
 
 all: all_protex
 
-clean:
-	-rm -f *_*.tex *.aux *.dvi *.log *.toc *.out
-
 EOF
 
-rm -rf ./.targets
+rm -rf ./.targets ./.all_clean
 cat ./.dir_list_nocomments | while read line ; do
 
     echo >> Makefile
     base_target=`echo $line | awk '{print $1}' | sed -e 's|/|__|g'`
     target=$base_target".tex"
+    printf " $target" >> ./.all_clean
     echo "Finding files for \"$target\" in: $line"
     tex_files=""
     h_files=""
@@ -126,10 +124,23 @@ api_main.dvi:  api_main.tex
 	latex api_main
 	latex api_main
 
-all_protex: api_main.dvi
+api_main.ps: api_main.dvi
+	dvips -Pcmz -Pamz -o api_main.ps api_main.dvi
 
+PDFOPTS = -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true 
+api_main.pdf: api_main.ps
+	ps2pdf \$(PDFOPTS) api_main.ps api_main.pdf
+
+all_protex: api_main.pdf
+
+clean:
+	-rm -f *.aux *.dvi *.log *.toc *.out
+	-rm -f api_main.*
 EOF
+
+printf "\t-rm -f " >> Makefile
+cat ./.all_clean >> Makefile
 
 rm -f ./.dir_list_nocomments
 rm -f ./.targets
-
+rm -f ./.all_clean
