@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.11 2004/06/16 20:23:55 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/do_fizhi.F,v 1.12 2004/06/17 16:07:06 molod Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
        subroutine do_fizhi(myid,uphy,vphy,thphy,sphy,pephy,lons,lats,
@@ -36,7 +36,7 @@ C Argument list declarations
       _RL zetamt(nchp,Nsx,Nsy)
       _RL xlmt(nchp,Nrphys,Nsx,Nsy),khmt(nchp,Nrphys,Nsx,Nsy)
       _RL tke(nchp,Nrphys,Nsx,Nsy)
-      _RL tgz(im2,jm2)
+      _RL tgz(im2,jm2,Nsx,Nsy)
       _RL sice(idim1:idim2,jdim1:jdim2,Nsx,Nsy)
       _RL phis_var(im2,jm2,Nsx,Nsy),landtype(im2,jm2,Nsx,Nsy)
       _RL fracland(im2,jm2,Nsx,Nsy),emiss(im2,jm2,10,Nsx,Nsy)
@@ -74,8 +74,8 @@ c
       real radswt(im2,jm2),radswg(im2,jm2),swgclr(im2,jm2)
       real albedo(im2,jm2),fdirpar(im2,jm2),fdifpar(im2,jm2)
       real osr(im2,jm2),osrclr(im2,jm2)
-      real tg0(im2,jm2),tg0c(im2,jm2),radlwg(im2,jm2),st4(im2,jm2)
-      real dst4(im2,jm2),dlwdtg(im2,jm2),lwclr(im2,jm2)
+      real tg0(im2,jm2),radlwg(im2,jm2),st4(im2,jm2)
+      real dst4(im2,jm2),dlwdtg(im2,jm2,Nrphys)
       real rainlsp(im2,jm2),raincon(im2,jm2),snowfall(im2,jm2)
       real cldtot_lw(im2,jm2,Nrphys),clras_lw(im2,jm2,Nrphys)
       real cldlsp_lw(im2,jm2,Nrphys),lwlz(im2,jm2,Nrphys)
@@ -89,7 +89,8 @@ c
       real gwet(im2,jm2),snow(im2,jm2)
 
       integer i,j,L
-      real getcon, kappa, p0kappa
+      real getcon, kappa, p0kappa, s0, ra
+      real cosz(im2,jm2)
 
 C***********************************************************************
 C Unshadow input arrays (and make 'fizhi theta' from true theta)
@@ -97,13 +98,14 @@ C***********************************************************************
 
       kappa = getcon('KAPPA')
       p0kappa = 1000.0 ** kappa
+      S0 = getcon('S0')
       
       do L = 1,Nrphys
       do j = jm1,jm2
       do i = im1,im2
        u(i,j,L) = uphys(i,j,L,bi,bj)
        v(i,j,L) = vphys(i,j,L,bi,bj)
-       t(i,j,L) = thphys(i,j,L,bi,bj)
+       t(i,j,L) = thphys(i,j,L,bi,bj)/p0kappa
        q(i,j,L,1) = sphys(i,j,L,bi,bj)
       enddo
       enddo
@@ -117,25 +119,52 @@ C***********************************************************************
       enddo
       enddo
 
+      call astro ( nymd,nhms, xlats,xlons, im2*jm2, cosz,ra )
+      do j=jm1,jm2
+      do i=im1,im2
+       radswt(i,j) = S0*(1.0/ra**2)*cosz(i,j)
+      enddo
+      enddo
+
+
       ptracer = 1
       ntracer = 1
 
       call fizhi_driver(myid,im2,jm2,Nrphys,ptracer,ntracer,xlats,xlons,
-     . p,u,v,t,q,pl,ple,dpres,pkht,pkl,fracland,landtype,radswt,
-     . phis_var,tgz,sea_ice,
-     . nchp,chlat,chlon,igrd,nchpland,chfr,ityp,
-     . tcanopy,tdeep,ecanopy,swetshal,swetroot,swetdeep,capac,snodep,
-     . ctmt,xxmt,yymt,zetamt,xlmt,khmt,tke,
-     . albvisdr,albvisdf,albnirdr,albnirdf,emiss,alai,agrn,
-     . qstr,o3,co2,cfc11,cfc12,cfc22,methane,n2o,
+     . p,u,v,t,q,pl,ple,dpres,pkht,pkl,fracland(1,1,bi,bj),
+     . landtype(1,1,bi,bj),radswt,
+     . phis_var(1,1,bi,bj),tgz(1,1,bi,bj),sea_ice,
+     . nchp,chlat(1,bi,bj),chlon(1,bi,bj),igrd(1,bi,bj),nchpland,
+     . chfr(1,bi,bj),ityp(1,bi,bj),
+     . tcanopy(1,bi,bj),tdeep(1,bi,bj),ecanopy(1,bi,bj),
+     . swetshal(1,bi,bj),swetroot(1,bi,bj),swetdeep(1,bi,bj),
+     . capac(1,bi,bj),snodep(1,bi,bj),
+     . ctmt(1,bi,bj),xxmt(1,bi,bj),yymt(1,bi,bj),zetamt(1,bi,bj),
+     . xlmt(1,1,bi,bj),khmt(1,1,bi,bj),tke(1,1,bi,bj),
+     . albvisdr(1,bi,bj),albvisdf(1,bi,bj),albnirdr(1,bi,bj),
+     . albnirdf(1,bi,bj),emiss(1,bi,bj),alai(1,bi,bj),agrn(1,bi,bj),
+     . qstr(1,1,bi,bj),o3(1,1,bi,bj),co2,cfc11,cfc12,cfc22,methane,n2o,
      . lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq,
      . moistu,moistv,moistt,moistq,
-     . radswg,swgclr,albedo,fdirpar,fdifpar,osr,osrclr,tg0,tg0c,radlwg,
-     . st4,dst4,dlwdtg,lwclr,rainlsp,raincon,snowfall,iras,nlwcld,
+     . radswg,swgclr,albedo,fdirpar,fdifpar,osr,osrclr,tg0,radlwg,
+     . st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras,nlwcld,
      . cldtot_lw,clras_lw,cldlsp_lw,nlwlz,lwlz,nswcld,cldtot_sw,
      . clras_sw,cldlsp_sw,nswlz,swlz,imstturbsw,imstturblw,qliqavesw,
      . qliqavelw,fccavesw,fccavelw,qq,u2m,v2m,t2m,q2m,u10m,v10m,t10m,
      . q10m,gwet,snow)
+
+      do L = 1,Nrphys
+      do j = jm1,jm2
+      do i = im1,im2
+       duphys(i,j,L,bi,bj) = moistu(i,j,L) + turbu(i,j,L)
+       dvphys(i,j,L,bi,bj) = moistv(i,j,L) + turbv(i,j,L)
+       dthphys(i,j,L,bi,bj) = ( ( moistt(i,j,L) + turbt(i,j,L) +
+     .           lwdt(i,j,L) + dlwdtg(i,j,L) * (tgz(i,j)-tg0(i,j)) +
+     .           swdt(i,j,L) * radswt(i,j) ) * p0kappa ) / p(i,j)
+       dsphys(i,j,L,bi,bj) = (moistq(i,j,L,1) + turbq(i,j,L,1))/p(i,j)
+      enddo
+      enddo
+      enddo
 
       return
       end

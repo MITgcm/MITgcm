@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.2 2004/06/16 19:19:49 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.3 2004/06/17 16:07:06 molod Exp $
 C $Name:  $
                                                                                  
 #include "CPP_OPTIONS.h"
@@ -13,8 +13,8 @@ C $Name:  $
      . chemq,chemo3,co2,cfc11,cfc12,cfc22,methane,n2o,
      . lwdt,lwdtclr,swdt,swdtclr,turbu,turbv,turbt,turbq,
      . moistu,moistv,moistt,moistq,
-     . radswg,swgclr,albedo,fdirpar,fdifpar,osr,osrclr,tg0,tg0c,radlwg,
-     . st4,dst4,dlwdtg,lwclr,rainlsp,raincon,snowfall,iras,nlwcld,
+     . radswg,swgclr,albedo,fdirpar,fdifpar,osr,osrclr,tg0,radlwg,
+     . st4,dst4,dlwdtg,rainlsp,raincon,snowfall,iras,nlwcld,
      . cldtot_lw,clras_lw,cldlsp_lw,nlwlz,lwlz,nswcld,cldtot_sw,
      . clras_sw,cldlsp_sw,nswlz,swlz,imstturbsw,imstturblw,qliqavesw,
      . qliqavelw,fccavesw,fccavelw,qq,u2m,v2m,t2m,q2m,u10m,v10m,t10m,
@@ -83,8 +83,8 @@ c ----------------
       real alai(nchp),agrn(nchp)
       real radswg(im,jm),swgclr(im,jm),albedo(im,jm)
       real fdirpar(im,jm),fdifpar(im,jm),osr(im,jm),osrclr(im,jm)
-      real tg0(im,jm),tg0c(im,jm),radlwg(im,jm),st4(im,jm),dst4(im,jm)
-      real dlwdtg(im,jm),lwclr(im,jm)
+      real tg0(im,jm),radlwg(im,jm),st4(im,jm),dst4(im,jm)
+      real dlwdtg(im,jm,lm)
       real rainlsp(im,jm),raincon(im,jm),snowfall(im,jm)
       real cldtot_lw(im,jm,lm),clras_lw(im,jm,lm),cldlsp_lw(im,jm,lm)
       real lwlz(im,jm,lm)
@@ -158,11 +158,6 @@ c --------------------------------
       do j=1,jm
       do i=1,im
       tg0(i,j) = tgz(i,j)
-      enddo
-      enddo
-      do j=1,jm
-      do i=1,im
-      tg0c(i,j) = tg0(i,j)
       enddo
       enddo
 
