@@ -4,5 +4,6 @@
  usePTRACERS=.TRUE.,
  useGCHEM=.TRUE.,
  useMNC=.TRUE.,
+ useDiagnostics=.TRUE.,
  &
   
