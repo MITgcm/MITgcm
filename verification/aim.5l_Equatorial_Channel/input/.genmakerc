@@ -6,4 +6,4 @@ set ENABLE=( aim )
 
 # We can also specify other defaults
 set ROOTDIR=../../..
-set MYMODS=../code
+set MODS=../code
