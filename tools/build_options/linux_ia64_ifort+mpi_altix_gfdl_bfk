@@ -1,0 +1,27 @@
+#!/bin/bash
+#
+#  Ed Hill
+#
+#  tested on orion.jpl.nasa.gov (Linux orion 2.4.21-sgi230r7 #1 SMP Tue Oct 7 22:38:53 PDT 2003 ia64 unknown), 20031029
+#
+# adapted to GFDL's Itanium cluster
+# heimbach@mit.edu
+
+CPP='/lib/cpp  -traditional -P'
+
+# the '-convert big_endian' is crucial on this platform
+# -D_BYTESWAPIO doesn't work
+    FFLAGS='-mp -132 -r8 -i4 -w95 -W0 -WB -convert big_endian'
+
+FOPTIM='-O3 -align'
+#P3  FOPTIM     = ( $FOPTIM '-tpp6 -xWKM' ) 
+#P4  FOPTIM     = ( $FOPTIM '-tpp7 -xWKM' ) 
+LIBS='-L/opt/ifort/8.1.024/lib -lmpi -L/home/bfk/fortran/netcdf-3.6.0-p1/ic/lib -lnetcdf'
+
+FC=ifort
+CC=icc
+DEFINES='-DALLOW_USE_MPI -DALWAYS_USE_MPI -DWORDLENGTH=4'
+
+# These paths will likely change to newer versions of ifort
+INCLUDES='-I/opt/ifort/8.1.024/include -I/home/bfk/fortran/netcdf-3.6.0-p1/ic/include'
+INCLUDEDIRS='/opt/ifort/8.1.024/include'
