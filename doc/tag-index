@@ -1,7 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.129 2003/02/08 03:45:30 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.130 2003/02/09 02:31:57 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint48d_post
+o in preparation for r*:
+ a) use pre-computed gradient of hydrostatic potential:
+    changes in timestep.F & mom_cdscheme.F affects results of ideal_2D_oce
+ b) move phi0surf from calc_phi_hyd to calc_grad_phi_hyd:
+    => affects results of glob_oce_pressure (different truncation error)  
+  update output.txt of ideal_2D_oce & global_ocean_pressure
 
 checkpoint48d_pre
 o in preparation for r*:
