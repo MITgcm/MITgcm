@@ -24,3 +24,12 @@ exch_uv_xyz_rl.F
 exch_uv_xyz_rs.F
 exch_xy_rl.F
 exch_xy_rs.F
+exch2_uv_agrid_xy_rl.F
+exch2_uv_agrid_xy_rs.F
+exch2_uv_agrid_xyz_rl.F
+exch2_uv_agrid_xyz_rs.F
+exch_uv_agrid_xy_rl.F
+exch_uv_agrid_xy_rs.F
+exch_uv_agrid_xyz_rl.F
+exch_uv_agrid_xyz_rs.F
+
