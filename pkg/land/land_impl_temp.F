@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_impl_temp.F,v 1.1 2004/03/11 14:41:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_impl_temp.F,v 1.2 2004/06/03 16:43:14 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -76,7 +76,7 @@ C     delT         :: time step            [s]
 C     mSnEpsil     :: small snow mass      [kg/m2]
 C     i,j,k        :: loop counters
 C     msgBuf       :: Informational/error meesage buffer
-C     tmpFlag      :: temp. flag, =.F. when final groung temp is found 
+C     tmpFlag      :: temp. flag, =.T. until found final groung temp
       _RL aLoc, bLoc, cLoc, eLoc, fLoc, alpha, beta
       _RL tSurf, tg(land_nLev), eg(land_nLev)
       _RL cg(land_nLev), mW(land_nLev)
@@ -85,11 +85,18 @@ C     tmpFlag      :: temp. flag, =.F. when final groung temp is found
       _RL mSnEpsil
       _RL tmp1, tmp2
       INTEGER i,j,k
+      LOGICAL tmpFlag
+
+#ifdef LAND_DEBUG
       CHARACTER*(MAX_LEN_MBUF) msgBuf
-      LOGICAL tmpFlag, debugFlag
+      LOGICAL dBug, debugFlag
+      INTEGER iprt,jprt,lprt
+      DATA iprt, jprt , lprt / 19 , 20 , 6 /
+      DATA debugFlag / .FALSE. /
+ 1010 FORMAT(A,I3,1P4E11.3)
+#endif
 
       DATA    mSnEpsil / 1. _d -6 /
-      debugFlag = .FALSE.
 
 C-------------------------------------------------------------------------
 C  solve implicitly the coupled 3 eq. (time level n+1 omitted) :
@@ -135,9 +142,16 @@ C--   initialise local variables
             eg(k) = land_dzF(k)*land_enthalp(i,j,k,bi,bj)
             mW(k) = land_dzF(k)*land_groundW(i,j,k,bi,bj)
      &                         *land_waterCap*land_rhoLiqW
+            mW(k) = MAX( mW(k), 0. _d 0 )
             cg(k) = land_dzF(k)*land_heatCs + mW(k)*land_CpWater
             tg(k) = land_groundT(i,j,k,bi,bj)
           ENDDO
+#ifdef LAND_DEBUG
+          dBug = bi.eq.lprt .AND. i.EQ.iprt .AND. j.EQ.jprt
+          IF (dBug) write(6,1010)
+     &         'LAND_IMPL_TEMP: 0 , ts,tg1&2,mSw=',0,tSurf,tg,mSnow
+#endif
+
 C---   Solve for temp as if no freezing/melting was occuring :
           tg(1) = ( cg(1)*tg(1) + fLoc*delT*beta
      &                          + cg(2)*tg(2)*aLoc/(cg(2)+aLoc)
@@ -148,6 +162,10 @@ C---   Solve for temp as if no freezing/melting was occuring :
           tg(2) = ( cg(2)*tg(2) + aLoc*tg(1) ) / (cg(2)+aLoc)
           tSurf = ( tg(1) + alpha*fLoc ) * beta
           
+#ifdef LAND_DEBUG
+          IF (dBug) write(6,1010)
+     &         'LAND_IMPL_TEMP: 1 , ts,tg1&2,mW1=',1,tSurf,tg,mW(1)
+#endif
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C---   If melting/freezing (top of snow layer, ground water level 1 or 2)
 C      set corresponding temp to freezing point and update enthalpy 
@@ -169,6 +187,7 @@ C--    freezing/melting in level 2: set Tg2 to freezing point
              tmpFlag = .FALSE.
              eg(1) = eLoc - (aLoc + bLoc*delT*beta)*tg(1)
              eg(2) = eg(2) + aLoc*tg(1) 
+#ifdef LAND_DEBUG
            ELSEIF ( debugFlag ) THEN
              WRITE(msgBuf,'(A,2I4,2I3,I10)')
      &             'LAND_IMPL_TEMP: i,j,bi,bj,Iter=',
@@ -190,6 +209,7 @@ C--    freezing/melting in level 2: set Tg2 to freezing point
      &             'LAND_IMPL_TEMP: eg,mW=', eg,mW
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
+#endif
            ENDIF
 
 C-  if tg2_new*tg2_old < 0 : end
@@ -214,7 +234,13 @@ C-           melt snow from bottom
               land_Pr_m_Ev(i,j,bi,bj) = dMsn/delT
               land_hSnow(i,j,bi,bj) = (mSnow - dMsn)/land_rhoSnow 
               eg(1) = eg(1) - dMsn*land_Lfreez
+#ifdef LAND_DEBUG
+              IF (dBug) write(6,1010)
+     &         'LAND_IMPL_TEMP: Bot-Melt : dMsn,dEg1,eg1=',
+     &         1, dMsn, -dMsn*land_Lfreez, eg(1) 
+#endif
              ENDIF
+#ifdef LAND_DEBUG
            ELSEIF ( debugFlag ) THEN
              WRITE(msgBuf,'(A,2I4,2I3,I10)')
      &             'LAND_IMPL_TEMP: i,j,bi,bj,Iter=',
@@ -240,6 +266,7 @@ C-           melt snow from bottom
      &             'LAND_IMPL_TEMP: snow with ts > 0 ! but continue'
              CALL PRINT_MESSAGE( msgBuf, errorMessageUnit,
      &                    SQUEEZE_RIGHT, myThid )
+#endif
            ENDIF
 
 C-  if tg1_new*tg1_old < 0 : end
@@ -249,6 +276,11 @@ C--------------
 
           IF ( tmpFlag .AND. tSurf*mSnow .GT. 0. _d 0 ) THEN
 C--    snow is melting at the surface: set ts=0 & use fixed heat flux Flx(ts=0)
+#ifdef LAND_DEBUG
+              IF (dBug) write(6,1010)
+     &         'LAND_IMPL_TEMP: Top-Melt : fx0, fx1, fx1-b*Ts =',
+     &         1, sFlx(i,j,0), fLoc, fLoc-bLoc*tSurf
+#endif
            tSurf = 0. _d 0
            fLoc = sFlx(i,j,0)
            dTsurf(i,j) = 1000.
@@ -277,7 +309,14 @@ C      (surf.Flx - diffusion.Flx) is used to melt the snow from top.
               tg(2) = cg(2)*tg(2) / (cg(2)+aLoc)
             ENDIF
             dMsn = ( fLoc+tg(1)/alpha )*delT*recip_Lfreez
-            dMsn = MIN( dMsn, mSnow )
+#ifdef LAND_DEBUG
+              IF (dBug) write(6,1010)
+     &         'LAND_IMPL_TEMP: Surf-Melt: dMsn,fLoc,tg1/alpha=',
+     &          2, dMsn, fLoc,tg(1)/alpha
+#endif
+C-  note: Fx0 < -tg(1)/alpha can happen (due to non-linearity in Fx(Ts)), 
+C-     => do not melt nor accumulate snow but put d.Flx in Eg1
+            dMsn = MIN( MAX(dMsn, 0. _d 0), mSnow )
            ENDIF
            tmpFlag = .FALSE.
            eg(2) = eg(2) + aLoc*(tg(1)-tg(2))
@@ -305,6 +344,13 @@ C---  Save new values :
             land_enthalp(i,j,k,bi,bj) = eg(k)/land_dzF(k)
             land_groundT(i,j,k,bi,bj) = tg(k)
           ENDDO
+
+#ifdef LAND_DEBUG
+          IF (dBug) write(6,1010) 'LAND_IMPL_TEMP: 9, ts,tg1&2,dTs=',9,
+     &         tSurf, tg, dTsurf(i,j)
+          IF (dBug) write(6,1010) 'LAND_IMPL_TEMP: 9, Eg1,Eg2,mPmE=',9,
+     &       (land_enthalp(i,j,k,bi,bj),k=1,2), land_Pr_m_Ev(i,j,bi,bj)
+#endif
 
         ENDIF
        ENDDO

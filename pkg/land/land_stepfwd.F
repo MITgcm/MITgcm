@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/land/land_stepfwd.F,v 1.5 2004/05/21 13:41:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/land/land_stepfwd.F,v 1.6 2004/06/03 16:43:14 jmc Exp $
 C $Name:  $
 
 #include "LAND_OPTIONS.h"
@@ -80,6 +80,13 @@ C     ageFac       :: snow aging factor [1]
       _RL hNewSnow, dhSnowMx, dhSnow, mIceDt, ageFac
       INTEGER i,j,k,kp1
 
+#ifdef LAND_DEBUG
+      LOGICAL dBug
+      INTEGER iprt,jprt,lprt
+      DATA iprt, jprt , lprt / 19 , 20 , 6 /
+ 1010 FORMAT(A,I3,1P4E11.3)
+#endif
+
       IF (land_calc_grT .AND. .NOT.land_impl_grT ) THEN
 C--   Step forward ground temperature:
 
@@ -145,12 +152,19 @@ C--   need (later on) ground temp. to be consistent with updated enthalpy:
            IF ( land_frc(i,j,bi,bj).GT.0. ) THEN
             mWater = land_rhoLiqW*land_waterCap
      &              *land_groundW(i,j,k,bi,bj)
+            mWater = MAX( mWater, 0. _d 0 )
             grd_HeatCp = land_heatCs + land_CpWater*mWater
             temp_bf = (land_enthalp(i,j,k,bi,bj)+land_Lfreez*mWater)
      &                                           / grd_HeatCp
             temp_af =  land_enthalp(i,j,k,bi,bj) / grd_HeatCp
             land_groundT(i,j,k,bi,bj) = 
      &              MIN( temp_bf, MAX(temp_af, 0. _d 0) )
+#ifdef LAND_DEBUG
+            dBug = bi.eq.lprt .AND. i.EQ.iprt .AND. j.EQ.jprt
+            IF (dBug) write(6,1010)
+     &        'LAND_STEPFWD: k,temp,af,bf=',
+     &       k,land_groundT(i,j,k,bi,bj),temp_af,temp_bf
+#endif
            ENDIF
           ENDDO
          ENDDO
@@ -166,6 +180,12 @@ C--   Step forward Snow thickness (also account for rain temperature)
            mPmE  = land_Pr_m_Ev(i,j,bi,bj)
            enWfx = land_EnWFlux(i,j,bi,bj)
            enGr1 = land_enthalp(i,j,1,bi,bj)*land_dzF(1)
+#ifdef LAND_DEBUG
+           dBug = bi.eq.lprt .AND. i.EQ.iprt .AND. j.EQ.jprt
+           IF (dBug) write(6,1010)
+     &       'LAND_STEPFWD:mPmE,enWfx,enGr1/dt,hSnow=',0,
+     &       mPmE,enWfx,enGr1/land_deltaT,land_hSnow(i,j,bi,bj)
+#endif
 C-    snow aging:
            land_snowAge(i,j,bi,bj) = 
      &         ( land_deltaT + land_snowAge(i,j,bi,bj)*ageFac )
@@ -192,6 +212,11 @@ C     glacier & ice-sheet missing: excess of snow put directly into run-off
             mIceDt = land_rhoSnow * (hNewSnow-dhSnow) / land_deltaT
             land_runOff(i,j,bi,bj) = mIceDt/land_rhoLiqW
             land_enRnOf(i,j,bi,bj) = -mIceDt*land_Lfreez
+#ifdef LAND_DEBUG
+            IF (dBug) write(6,1010)
+     &        'LAND_STEPFWD: 3,snP,mPmE,hNsnw,hSnw=',
+     &         3,snowPrec,mPmE,hNewSnow,land_hSnow(i,j,bi,bj)
+#endif
            ELSE
 C-    rain precip (whatever Evap is) or Evap of snow exceeds snow precip:
 C     => snow melts or sublimates
@@ -210,6 +235,11 @@ c    &                 land_hSnow(i,j,bi,bj)*land_rhoSnow/land_deltaT )
             ENDIF
 c           IF (mPmE.GT.0.) land_snowAge(i,j,bi,bj) = timeSnowAge
             mPmE = mPmE + dMsn/land_deltaT
+#ifdef LAND_DEBUG
+            IF (dBug) write(6,1010)
+     &        'LAND_STEPFWD: 4,dMsn,mPmE,hSnw,enWfx=',
+     &         4,dMsn,mPmE,land_hSnow(i,j,bi,bj),flxEngU(i,j)
+#endif
            ENDIF
            flxkup(i,j) = mPmE/land_rhoLiqW
 c          land_Pr_m_Ev(i,j,bi,bj) = mPmE
@@ -251,6 +281,9 @@ C--   Step forward ground Water:
        DO j=1,sNy
         DO i=1,sNx
          IF ( land_frc(i,j,bi,bj).GT.0. ) THEN
+#ifdef LAND_DEBUG
+          dBug = bi.eq.lprt .AND. i.EQ.iprt .AND. j.EQ.jprt
+#endif
 
 #ifdef LAND_OLD_VERSION
           IF ( .TRUE. ) THEN
@@ -305,6 +338,12 @@ C-     Step forward soil moisture, level k :
            groundWnp1 = land_groundW(i,j,k,bi,bj)
      &       + land_deltaT * (flxkup(i,j)-flxkdw(i,j)) / fieldCapac
 
+#ifdef LAND_DEBUG
+           IF(dBug)write(6,1010)'LAND_STEPFWD: grdW-1,fx_ku,kd,grdW-1='
+     &      ,5,land_groundW(i,j,k,bi,bj)-1.,
+     &         flxkup(i,j),flxkdw(i,j),groundWnp1-1.
+#endif
+
 C-     Water in excess will leave as run-off or go to level below
            land_groundW(i,j,k,bi,bj) = MIN(1. _d 0, groundWnp1)
            grdWexcess = ( groundWnp1 - MIN(1. _d 0, groundWnp1) )
@@ -331,8 +370,16 @@ C-     prepare fluxes for next level:
             flxEngU(i,j) = flxEngL
      &              + (1. _d 0-fractRunOff)*grdWexcess*enthalpGrdW
            ENDIF
+#ifdef LAND_DEBUG
+           IF (dBug) write(6,1010) 'LAND_STEPFWD: Temp,FlxE,FlxW=',
+     &      7, land_groundT(i,j,k,bi,bj), flxEngU(i,j), flxkup(i,j)
+#endif
           ENDIF
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+#ifdef LAND_DEBUG
+           IF (dBug) write(6,1010) 'LAND_STEPFWD: RO,enRO=',
+     &      8, land_runOff(i,j,bi,bj),land_enRnOf(i,j,bi,bj)
+#endif
 
          ENDIF
         ENDDO
@@ -353,6 +400,7 @@ C--   Compute ground temperature from enthalpy (if not already done):
 C-     Ground Heat capacity, layer k:
           mWater = land_rhoLiqW*land_waterCap
      &            *land_groundW(i,j,k,bi,bj)
+          mWater = MAX( mWater, 0. _d 0 )
           grd_HeatCp = land_heatCs + land_CpWater*mWater
 C         temperature below freezing:
           temp_bf = (land_enthalp(i,j,k,bi,bj)+land_Lfreez*mWater)
