@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.333 2004/07/21 16:34:46 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.334 2004/07/24 02:47:35 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fix a bug in Flux deriv. vs Ts (pkg/aim_v23/phy_suflux_sice.F);
 o genmake2 fixes so netcdf now works on halem ("osf1_alpha_*")
+o bugs fixed in kpp_calc.F (ustarY) and external_forcing.F (Qsw & Partial-cell)
 
 checkpoint54c_post
 o replace surfaceTendency U,V,S,T,Tice,Ptr by surfaceForcing U,V,S,T,Tice,Ptr
