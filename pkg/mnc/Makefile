@@ -1,3 +1,8 @@
+#
+#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.5 2004/01/16 03:32:42 edhill Exp $
+#
+#  A Makefile for MNC templates and testing
+#
 
 FC = f77
 
@@ -29,6 +34,8 @@ OBJECTS = $(FILES:.F=.o)
 
 ALL_TEST = $(TEST_LINKS) $(TEST_HEADERS) $(TEST_FILES) $(TEST_OBJECTS)
 
+all: templates
+
 noexe: $(TEST_LINKS) $(TEST_HEADERS) $(TEST_FILES) $(FILES) $(OBJECTS)
 	echo "compiled"
 
@@ -41,7 +48,7 @@ TEMPLATE_FILES = \
   MNC_RESHAPE_RS_D.F MNC_RESHAPE_RL_D.F \
   MNC_RESHAPE_RS_R.F MNC_RESHAPE_RL_R.F
 
-templates: $(TEMPLATE_FILES)
+templates: $(TEMPLATE_FILES) mnc_id_header.h
 
 MNC_RESHAPE_RS_D.F: mnc_reshape.template
 	cat mnc_reshape.template | sed -e 's/RX/RS/g' | sed -e 's/YY/D/g' > $@
@@ -52,6 +59,11 @@ MNC_RESHAPE_RS_R.F: mnc_reshape.template
 MNC_RESHAPE_RL_R.F: mnc_reshape.template
 	cat mnc_reshape.template | sed -e 's/RX/RL/g' | sed -e 's/YY/R/g' > $@
 
+tag = ../../doc/tag-index
+
+mnc_id_header.h:
+	-./parse_local_info > $@
+
 test: mnc_test_001
 	echo "running mnc_test_001 ..."
 	./mnc_test_001 && ncdump test_001.nc | head -50
@@ -60,8 +72,11 @@ test: mnc_test_001
 mnc_test_001: $(ALL_TEST) $(FILES) $(OBJECTS) mnc_test_001.o
 	$(FC) -o mnc_test_001 mnc_test_001.o $(OBJECTS) $(TEST_OBJECTS) -lnetcdf
 
-
+CLEAN:
+	@make clean
+Clean:
+	@make clean
 clean:
 	-rm -f *.o $(TEST_LINKS) $(TEST_HEADERS) $(TEST_FILES) $(TEST_OBJECTS)
 	-rm -f mnc_test_???.F mnc_test_??? test_???.nc
-	-rm -f MNC_RESHAPE_R?_?.F
+	-rm -f MNC_RESHAPE_R?_?.F mnc_id_header.h

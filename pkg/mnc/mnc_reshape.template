@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_reshape.template,v 1.1 2004/01/15 19:23:05 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_reshape.template,v 1.2 2004/01/16 03:32:42 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -32,13 +32,20 @@ C     Locals
             ENDDO
           ENDDO
         ENDDO
-      ELSE
+      ELSEIF (nj .GT. 1) THEN
         k = 1
         DO i = istart(1),iend(1)
           DO j = istart(2),iend(2)
             n = n + 1
             dout(n) = din(i,j,k)
           ENDDO
+        ENDDO
+      ELSE
+        j = 1
+        k = 1
+        DO i = istart(1),iend(1)
+          n = n + 1
+          dout(n) = din(i,j,k)
         ENDDO
       ENDIF
 

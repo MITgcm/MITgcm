@@ -1,0 +1,13 @@
+#! /usr/bin/env bash
+#
+# $Header: /u/gcmpack/MITgcm/pkg/mnc/parse_local_info,v 1.1 2004/01/16 03:32:42 edhill Exp $
+#
+
+tag="../../doc/tag-index"
+if test -r $tag ; then
+    a=`cat $tag | grep '^.Header:' | awk '{print $3 " " $4}'`
+else
+    a="unknown"
+fi
+echo "#define MNC_TAG_ID '$a'"
+

@@ -82,3 +82,17 @@ To-Do:
  1) CNH pointed out that grid interpolation needs to be handled
     "on-the-fly" since pre-processing would result in overly large
     input files.  We need an interpolation API...
+
+ 2) AM described her "diags" (or "myDiags" or "mDiags") interface
+    which should use MNC for output.  The data storage idea is similar
+    to the MNC tables-of-indicies approach but also includes one huge
+    double-precision "accumulator" to hold all the temporary values
+    (eg. partial sums for averages, current max/mins):
+
+      vname ( ni ) 
+      vlen  ( ni ) 
+      vind  ( ni ) -----+
+		        |
+
+      vij_diag ( i, j, [...] )  w/ lat/lon indicies
+      vgl_diag ( [...] )        wo/ lat/lon indicies (global)
