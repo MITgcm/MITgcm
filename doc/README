@@ -1,4 +1,4 @@
-$Header: /u/gcmpack/MITgcm/doc/README,v 1.4 1998/04/24 15:28:21 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/README,v 1.5 1998/04/26 17:42:46 cnh Exp $
 
 MITgcmUV Getting Started
 ========================
@@ -15,6 +15,24 @@ o Install
   make
   setenv PARALLEL 1
   ../exe/barrier
+
+o Running
+  
+  eedata
+  data
+
+  - Serial execution
+
+  - Parallel execution. Threads
+    nSx, nSy
+    setenv PARALLEL n
+    nTx=2, nTy=2
+
+  - Parallel execution. MPI
+    mPx, nPy
+    dmpirun
+
+  - Parallel execution. Hybrid
 
 o References
 
