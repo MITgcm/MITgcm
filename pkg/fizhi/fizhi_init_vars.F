@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.8 2004/08/12 15:21:22 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_init_vars.F,v 1.9 2004/09/30 15:59:50 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -167,8 +167,14 @@ c         Physics works top-down. so -> need to flip arrays
 
 c Now initialize tke, xlmt, khmt, xxmt, yymt, ctmt, zetamt,
 c Now initialize land state too - tcanopy, etc...
+        do i = 1,nchp
+         ctmt(i,bi,bj) = 0.
+         xxmt(i,bi,bj) = 0.
+         yymt(i,bi,bj) = 0.
+         zetamt(i,bi,bj) = 0.
+        enddo
         do L = 1,Nrphys
-        do i = 1,nchptot(bi,bj)
+        do i = 1,nchp
          tke(i,L,bi,bj) = 0.
          xlmt(i,L,bi,bj) = 0.
          khmt(i,L,bi,bj) = 0.
@@ -176,7 +182,7 @@ c Now initialize land state too - tcanopy, etc...
         enddo
 c Now initialize land state too - tcanopy, etc... SET FOR NOW, 
 c                                              READ CLIM FOR REAL
-        do i = 1,nchptot(bi,bj)
+        do i = 1,nchp
         tcanopy(i,bi,bj) = 283.
         tdeep(i,bi,bj) = 282.5
         ecanopy(i,bi,bj) = 2.e-2
@@ -194,6 +200,7 @@ c                                              READ CLIM FOR REAL
       print *,' In fizhi_init_vars: Read from restart '
                                                                                    
 C--   Read fizhi package state variables from pickup file
+
        call fizhi_read_pickup( nIter0, myThid )
        CALL FIZHI_READ_VEGTILES( nIter0, 'D', myThid )
 
