@@ -1,4 +1,4 @@
 c Diagnostics Array Dimension
 c ---------------------------
       integer numdiags
-      parameter (numdiags = 25)
+      parameter (numdiags = 1*Nr)
