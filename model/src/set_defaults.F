@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.21 2001/06/06 14:55:45 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.22 2001/07/06 21:34:12 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -99,7 +99,8 @@ C--   Set default "physical" parameters
       hFacMin             = 1.D0
       hFacMinDrDefault    = 0.D0
       exactConserv        = .FALSE.
-      nonlinFreeSurf      = .FALSE.
+      uniformLin_PhiSurf  = .TRUE.
+      nonlinFreeSurf      = 0
       hFacInf             = 1.D0
       hFacSup             = 1.D0
       staggerTimeStep     = .FALSE.
@@ -126,6 +127,12 @@ C--   Set default "physical" parameters
       bottomDragQuadratic = 0.
       usePickupBeforeC35  = .FALSE.
       debugMode           = .FALSE.
+
+C--   Atmospheric physical parameters (e.g.: EOS)
+      atm_po =  1.D5
+      atm_cp =  1004.D0
+      atm_kappa = 2.D0 / 7.D0
+      Integr_GeoPot = 2
 
 C--   Elliptic solver parameters
       cg2dMaxIters       = 150
@@ -166,6 +173,7 @@ C--   Time stepping parameters
 
 C--   Input files
       bathyFile       = ' '
+      topoFile        = ' '
       hydrogSaltFile  = ' '
       hydrogThetaFile = ' '
       zonalWindFile   = ' '

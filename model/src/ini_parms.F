@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.62 2001/06/29 15:38:42 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.63 2001/07/06 21:34:12 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -86,7 +86,7 @@ C--   Continuous equation parameters
      & viscAh,  viscAz,  viscA4, cosPower,
      & diffKhT, diffKzT, diffK4T, 
      & diffKhS, diffKzS, diffK4S,
-     & tRef, sRef, eosType,
+     & tRef, sRef, eosType, Integr_GeoPot,
      & no_slip_sides,no_slip_bottom,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
      & momPressureForcing, metricTerms,
@@ -94,7 +94,7 @@ C--   Continuous equation parameters
      & saltDiffusion, saltAdvection, saltForcing,
      & implicSurfPress, implicDiv2DFlow,
      & implicitFreeSurface, rigidLid, freeSurfFac, hFacMin, hFacMinDz,
-     & exactConserv, nonlinFreeSurf, hFacInf, hFacSup,
+     & exactConserv,uniformLin_PhiSurf,nonlinFreeSurf,hFacInf,hFacSup,
      & staggerTimeStep,
      & tempStepping, saltStepping, momStepping,
      & implicitDiffusion, implicitViscosity,
@@ -133,7 +133,7 @@ C--   Gridding parameters
 
 C--   Input files
       NAMELIST /PARM05/
-     & bathyFile, hydrogThetaFile, hydrogSaltFile, 
+     & bathyFile, topoFile, hydrogThetaFile, hydrogSaltFile, 
      & zonalWindFile, meridWindFile,
      & thetaClimFile, saltClimFile,
      & surfQfile, EmPmRfile, surfQswfile, 
