@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.48 2004/10/19 02:39:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.49 2004/12/01 22:53:12 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -147,11 +147,6 @@ c         CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
 
         ENDIF
         
-#ifdef ALLOW_PTRACERS
-        IF (usePTRACERS) THEN
-          CALL PTRACERS_WRITE_STATE(myIter,myTime,myThid)
-        ENDIF
-#endif /* ALLOW_PTRACERS */
         _END_MASTER( myThid )
         _BARRIER
 

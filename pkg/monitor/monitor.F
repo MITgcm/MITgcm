@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.25 2004/11/28 23:51:24 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/monitor.F,v 1.26 2004/12/01 22:53:25 mlosch Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -163,12 +163,6 @@ C         Dynamics field monitor finish
         ENDIF
         
       ENDIF
-
-#ifdef ALLOW_PTRACERS
-      IF ( usePTRACERS ) THEN
-       CALL PTRACERS_MONITOR( myIter, myTime, myThid )
-      ENDIF
-#endif /* ALLOW_PTRACERS */
 
       RETURN
       END

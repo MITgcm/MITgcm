@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.46 2004/11/19 01:33:31 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.47 2004/12/01 22:53:12 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -74,10 +74,6 @@ C     Write model state to binary file
 C     Do time averages
       IF (taveFreq.GT.0. .AND. myIter.NE.nIter0 ) THEN
         CALL TIMEAVE_STATV_WRITE( myTime, myIter, myThid )
-#ifdef ALLOW_PTRACERS
-        IF ( usePTRACERS )
-     &       CALL PTRACERS_STATV_WRITE( myTime, myIter, myThid )
-#endif
       ENDIF
 #endif
 
@@ -163,13 +159,17 @@ C     Do seaice diagnostics.
      &     CALL THSICE_DIAGS( myTime, myIter, myThid )
 #endif
 
-cswdptr ---  add ---
+#ifdef ALLOW_PTRACERS
+C--   Do ptracer output.
+      IF ( usePTRACERS )
+     & CALL PTRACERS_OUTPUT( myTime, myIter, myThid )
+#endif
+
 #ifdef ALLOW_GCHEM
-C--   Do ptracer diagnostics.
+C--   Do GCHEM diagnostics.
       IF (useGCHEM)
      & CALL GCHEM_DIAGS( myTime, myIter, myThid )
 #endif
-cswdptr -- end add ---
 
 #ifdef COMPONENT_MODULE
       IF ( useCoupler )
