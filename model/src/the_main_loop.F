@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.9 2001/06/04 13:25:35 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_main_loop.F,v 1.10 2001/06/07 16:33:55 adcroft Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -80,25 +80,26 @@ CADJ  INIT tapelev3 = USER
 #ifdef ALLOW_TAMC_CHECKPOINTING
        ikey_dynamics = 1
 #endif
+      CALL TIMER_START('ADJOINT SPIN-UP', mythid)
 #endif
 
-      CALL TIMER_START('ADJOINT SPIN-UP', mythid)
-
 C--   Set initial conditions (variable arrays)
-      CALL TIMER_START('INITIALISE_VARIA   [ADJOINT SPIN-UP]', mythid)
+      CALL TIMER_START('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
       CALL INITIALISE_VARIA( mythid )
-      CALL TIMER_STOP ('INITIALISE_VARIA   [ADJOINT SPIN-UP]', mythid)
+      CALL TIMER_STOP ('INITIALISE_VARIA    [THE_MAIN_LOOP]', mythid)
 
 #ifndef ALLOW_AUTODIFF_TAMC
 c--   Dump for start state.
-      CALL TIMER_START('I/O (WRITE)        [ADJOINT SPIN-UP]', mythid)
+      CALL TIMER_START('WRITE_STATE         [THE_MAIN_LOOP]', mythid)
       CALL WRITE_STATE( mytime, myiter, mythid )
-      CALL TIMER_STOP ('I/O (WRITE)        [ADJOINT SPIN-UP]', mythid)
+      CALL TIMER_STOP ('WRITE_STATE         [THE_MAIN_LOOP]', mythid)
 #endif
 
 #ifndef EXCLUDE_MONITOR
 C--   Check status of solution (statistics, cfl, etc...)
+      CALL TIMER_START('MONITOR             [THE_MAIN_LOOP]', mythid)
       CALL MONITOR( myIter, myTime, myThid )
+      CALL TIMER_STOP ('MONITOR             [THE_MAIN_LOOP]', mythid)
 #endif /* EXCLUDE_MONITOR */
 
 #ifdef ALLOW_COST_TEST
@@ -106,11 +107,13 @@ c--   Add control vector for forcing and parameter fields
       CALL CTRL_MAP_FORCING (mythid)
 #endif
 
+#ifdef ALLOW_AUTODIFF_TAMC
       CALL TIMER_STOP ('ADJOINT SPIN-UP', mythid)
       _BARRIER
+#endif
 
 c--   Do the model integration.
-      call timer_start('ADJOINT MAIN LOOP',mythid)
+      CALL TIMER_START('MAIN LOOP           [THE_MAIN_LOOP]', mythid)
 
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>   LOOP   <<<<<<<<<<<<<<<<<<<<<<<<<<<<
 c     >>>>>>>>>>>>>>>>>>>>>>>>>>>  STARTS  <<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -225,7 +228,7 @@ c--   to nTimeSteps: (nchklev_0 .ge. nTimeSteps)
         stop    ' ... stopped in the_main_loop.'
       endif
 
-      do iloop = 1, nTimeSteps
+      DO iloop = 1, nTimeSteps
 
 #endif /* ALLOW_TAMC_CHECKPOINTING */
 
@@ -233,52 +236,52 @@ c--   to nTimeSteps: (nchklev_0 .ge. nTimeSteps)
 
 c--   Start the main loop of adjoint_Objfunc. Automatic differentiation
 c--   NOT enabled.
-      do iloop = 1, nTimeSteps
+      DO iloop = 1, nTimeSteps
 
 #endif /* ALLOW_AUTODIFF_TAMC */
 
-c--           >>> Loop body start <<<
+c--     >>> Loop body start <<<
 
 #ifdef ALLOW_AUTODIFF_TAMC
-c--           Set the model iteration counter and the model time.
-              myiter = nIter0 + (iloop-1)
-              mytime = startTime + float(iloop-1)*deltaTclock
+c--     Set the model iteration counter and the model time.
+        myiter = nIter0 + (iloop-1)
+        mytime = startTime + float(iloop-1)*deltaTclock
 #endif
 
-c--           Load forcing/external data fields.
-              call timer_start('EXTERNAL_FIELDS_LOAD [ADJOINT]',mythid)
+c--     Load forcing/external data fields.
 #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
-c             NOTE, that although the exf package is part of the
-c             distribution, it is not currently maintained, i.e.
-c             exf is disabled by default in genmake.
-              call exf_getforcing( mytime, myiter, mythid )
+c       NOTE, that although the exf package is part of the
+c       distribution, it is not currently maintained, i.e.
+c       exf is disabled by default in genmake.
+        call exf_getforcing( mytime, myiter, mythid )
 #else
-              call external_fields_load( mytime, myiter, mythid )
+        CALL TIMER_START('EXTERNAL_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
+        CALL EXTERNAL_FIELDS_LOAD( mytime, myiter, mythid )
+        CALL TIMER_STOP ('EXTERNAL_FIELDS_LOAD[THE_MAIN_LOOP]',mythid)
 #endif
-              call timer_stop ('EXTERNAL_FIELDS_LOAD [ADJOINT]',mythid)
 
 #ifdef ALLOW_TAMC_CHECKPOINTING
               ikey_dynamics = ilev_1
 #endif
-c--           Step forward fields and calculate time tendency terms.
-              call timer_start('DYNAMICS           [ADJOINT]',mythid)
-              call dynamics( mytime, myiter, mythid )
-              call timer_stop ('DYNAMICS           [ADJOINT]',mythid)
+c--     Step forward fields and calculate time tendency terms.
+        CALL TIMER_START('DYNAMICS            [THE_MAIN_LOOP]',mythid)
+        CALL DYNAMICS( myTime, myIter, myThid )
+        CALL TIMER_STOP ('DYNAMICS            [THE_MAIN_LOOP]',mythid)
 
 #ifndef ALLOW_AUTODIFF_TAMC
 
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Step forward W field in N-H algorithm
-              IF ( nonHydrostatic ) THEN
-                 CALL TIMER_START('CALC_GW         [ADJOINT]',myThid)
-                 CALL CALC_GW( myThid)
-                 CALL TIMER_STOP ('CALC_GW         [ADJOINT]',myThid)
-              ENDIF
+        IF ( nonHydrostatic ) THEN
+          CALL TIMER_START('CALC_GW          [THE_MAIN_LOOP]',myThid)
+          CALL CALC_GW(myThid)
+          CALL TIMER_STOP ('CALC_GW          [THE_MAIN_LOOP]',myThid)
+        ENDIF
 #endif
 
 #ifdef ALLOW_SHAP_FILT
 C--   Step forward all tiles, filter and exchange.
-      CALL TIMER_START('SHAP_FILT          [ADJOINT]',myThid)
+      CALL TIMER_START('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
       CALL SHAP_FILT_APPLY( 
      I                     gUnm1, gVnm1, gTnm1, gSnm1,
      I                     myTime, myIter, myThid )
@@ -287,14 +290,16 @@ C--   Explicit+Implicit part of the Barotropic Flow Divergence
 C      => Filtering of uVel,vVel is necessary
          CALL SHAP_FILT_UV( uVel, vVel, myTime, myThid )
       ENDIF
-      CALL TIMER_STOP ('SHAP_FILT          [ADJOINT]',myThid)
+      CALL TIMER_STOP ('SHAP_FILT           [THE_MAIN_LOOP]',myThid)
 #endif
 
 #ifdef ALLOW_ZONAL_FILT
       IF (zonal_filt_lat.LT.90.) THEN 
-      CALL ZONAL_FILT_APPLY(
+        CALL TIMER_START('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
+        CALL ZONAL_FILT_APPLY(
      U           gUnm1, gVnm1, gTnm1, gSnm1,
      I           myThid )
+        CALL TIMER_STOP ('ZONAL_FILT_APPLY    [THE_MAIN_LOOP]',myThid)
       ENDIF
 #endif
 
@@ -303,9 +308,9 @@ C      => Filtering of uVel,vVel is necessary
 C--   Solve elliptic equation(s).
 C     Two-dimensional only for conventional hydrostatic or 
 C     three-dimensional for non-hydrostatic and/or IGW scheme.
-      CALL TIMER_START('SOLVE_FOR_PRESSURE [FORWARD_STEP]',myThid)
+      CALL TIMER_START('SOLVE_FOR_PRESSURE  [THE_MAIN_LOOP]',myThid)
       CALL SOLVE_FOR_PRESSURE( myThid )
-      CALL TIMER_STOP ('SOLVE_FOR_PRESSURE [FORWARD_STEP]',myThid)
+      CALL TIMER_STOP ('SOLVE_FOR_PRESSURE  [THE_MAIN_LOOP]',myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC
 c     Include call to a dummy routine. Its adjoint will be 
@@ -321,17 +326,19 @@ C--   Correct divergence in flow field and cycle time-stepping
 C     arrays (for all fields) ; update time-counter
       myIter = nIter0 + iLoop
       myTime = startTime + deltaTClock * float(iLoop)
+      CALL TIMER_START('THE_CORRECTION_STEP [THE_MAIN_LOOP]',myThid)
       CALL THE_CORRECTION_STEP(myTime, myIter, myThid)
+      CALL TIMER_STOP ('THE_CORRECTION_STEP [THE_MAIN_LOOP]',myThid)
 
 C--   Do "blocking" sends and receives for tendency "overlap" terms
-c     CALL TIMER_START('BLOCKING_EXCHANGES [FORWARD_STEP]',myThid)
+c     CALL TIMER_START('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
 c     CALL DO_GTERM_BLOCKING_EXCHANGES( myThid )
-c     CALL TIMER_STOP ('BLOCKING_EXCHANGES [FORWARD_STEP]',myThid)
+c     CALL TIMER_STOP ('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
 
 C--   Do "blocking" sends and receives for field "overlap" terms
-      CALL TIMER_START('BLOCKING_EXCHANGES [FORWARD_STEP]',myThid)
+      CALL TIMER_START('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
       CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
-      CALL TIMER_STOP ('BLOCKING_EXCHANGES [FORWARD_STEP]',myThid)
+      CALL TIMER_STOP ('BLOCKING_EXCHANGES  [THE_MAIN_LOOP]',myThid)
 
 #ifndef EXCLUDE_MONITOR
 C--   Check status of solution (statistics, cfl, etc...)
@@ -340,9 +347,9 @@ C--   Check status of solution (statistics, cfl, etc...)
 
 #ifndef ALLOW_AUTODIFF_TAMC
 C--   Do IO if needed.
-      CALL TIMER_START('I/O (WRITE)        [FORWARD_STEP]',myThid)
+      CALL TIMER_START('DO_THE_MODEL_IO     [THE_MAIN_LOOP]',myThid)
       CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
-      CALL TIMER_STOP ('I/O (WRITE)        [FORWARD_STEP]',myThid)
+      CALL TIMER_STOP ('DO_THE_MODEL_IO     [THE_MAIN_LOOP]',myThid)
 
 C--   Save state for restarts
 C     Note:    (jmc: is it still the case after ckp35 ?)
@@ -357,10 +364,10 @@ C     Thus a checkpoint contains U.0000000000, GU.0000000001 and
 C     etaN.0000000001 in the indexing scheme used for the model 
 C     "state" files. This example is referred to as a checkpoint 
 C     at time level 1 
-      CALL TIMER_START('I/O (WRITE)        [FORWARD_STEP]',myThid)
+      CALL TIMER_START('WRITE_CHECKPOINT    [THE_MAIN_LOOP]',myThid)
       CALL WRITE_CHECKPOINT(
      &        .FALSE., myTime, myIter, myThid )
-      CALL TIMER_STOP ('I/O (WRITE)        [FORWARD_STEP]',myThid)
+      CALL TIMER_STOP ('WRITE_CHECKPOINT    [THE_MAIN_LOOP]',myThid)
 
 #endif /* ALLOW_AUTODIFF_TAMC */
 
@@ -383,11 +390,10 @@ c--           >>> Loop body end <<<
 #endif
 
       _BARRIER
-      call timer_stop ('ADJOINT MAIN LOOP', mythid)
-
-      call timer_start('ADJOINT FINALIZE COST', mythid)
+      CALL TIMER_STOP ('MAIN LOOP           [THE_MAIN_LOOP]', mythid)
 
 #ifdef ALLOW_COST_TEST
+      call timer_start('ADJOINT FINALIZE COST', mythid)
 c--   Veronique's test case
       call timer_start('cost_test          [ADJOINT SPIN-DOWN]', mythid)
       call cost_test( myThid )
@@ -397,9 +403,8 @@ c--   Sum all cost function contributions.
       call timer_start('COST_FINAL         [ADJOINT SPIN-DOWN]', mythid)
       call cost_Final( mythid )
       call timer_stop ('COST_FINAL         [ADJOINT SPIN-DOWN]', mythid)
+      call timer_stop ('ADJOINT FINALIZE COST', mythid)
 #endif
 
-      call timer_stop ('ADJOINT FINALIZE COST', mythid)
 
-      end
-
+      END
