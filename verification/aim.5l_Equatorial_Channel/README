@@ -1,30 +1,41 @@
 Five level intermediate atmospheric physics example.
-Experimental configuration is an equatorial channel.
-+/- 30 degrees wide with a warm pool SST anomaly extending over 
-twenty degrees zonally and +/- 10 degrees meridionally.
+ Experimental configuration is an equatorial channel
+ of 65 degrees wide cented on the Equator. A warm SST anomaly 
+ with a gaussian shape is defined at the center of the domain
+ with an extension of ~30 degrees meridionally and ~60 degrees 
+ zonally.
+
+The local copy of S/R aim_surf_bc.F (in code directory) provide 
+a) the SST field (hard coded).
+b) the time in the year is fixed and corresponds to the spring equinox;
+ this ensures a symetric forcing between N & S hemispheres.
+The model uses the standard 5-level vertical resolution of the Speedy_v23
+ code; the horizontal resolution is 2.8125 with 128x23 grid points.
+
 ==================================================================== 
 
 o To reproduce the run : 
 
 The genmake options are in .genmakerc, so that the simplest form
 of genmake can be used :
-cd input
-../../../tools/genmake
+cd build
+../../../tools/genmake2 -mods=../code [-of= ... if needed]
 make depend
 make
 
+ln -s ../input/* .
 mitgcmuv
 
 --------------------------- 
 Notes:
 * To produce a short test that is relevant for the Atmosphere physics part,
-  a restart file (pickup.0000008640) is included. Otherwise, starting from
-  rest requires several days of spin up.
-* Need to add a sink of heat or a restoring term near N & S boundaries
-  to balance the radiative heating. As it is now, it cannot be integrated
-  more than 7 or 8 months.
-* many sources in "code" are identical or very similar to the "aim_5l_LatLon"
-  test and will became part of the pkg/aim code.
+  a restart file (pickup.0000051840) is included. The model reaches
+  a statistical equilibrium after 1 year.
+* the file aim_SST.* contains the SST field.
+* Since aim pkg uses arrays with MAX_NO_THREADS as dimension, the maximum
+  number of treads is set to 1 (in code/EEPARAMS.h) instead of 32, so that the
+  size of the executable is reduced. This obviously needs to be changed 
+  before compiling on a multi-threaded platform.
 --------------------------- 
 Northern boundary : 
 o initially, the domain (SIZE.h) 128x24x5 with a land line as the Northern 
