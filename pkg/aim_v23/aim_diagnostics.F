@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.2 2002/12/10 02:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.3 2003/01/03 03:51:27 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -37,7 +37,7 @@ CEndOfInterface
 #ifdef ALLOW_AIM
 
 C     == Local variables ==
-      INTEGER I,J,I2,K
+      INTEGER I,J,K, I2,Katm
       _RL DDTT
       CHARACTER*(MAX_LEN_MBUF) suff
 
@@ -112,9 +112,9 @@ C--
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-#ifdef ALLOW_TIMEAVE
+#ifdef ALLOW_AIM_TAVE
 
-      IF (taveFreq.GT.0.) THEN
+      IF (aim_taveFreq.GT.0.) THEN
 
         DDTT = deltaTclock
 
@@ -139,17 +139,41 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      &                          + PRECLS(I2,myThid)*DDTT
           CLOUDCtave(i,j,bi,bj) = CLOUDCtave(i,j,bi,bj)
      &                          + CLOUDC(I2,myThid)*DDTT
+          CLTOPtave(i,j,bi,bj)  = CLTOPtave(i,j,bi,bj)
+     &                          + CLTOP(I2,myThid)*DDTT
+          CBMFtave(i,j,bi,bj)   = CBMFtave(i,j,bi,bj)
+     &                          + CBMF(I2,myThid)*DDTT
+          DRAGtave(i,j,bi,bj)   = DRAGtave(i,j,bi,bj)
+     &                          + DRAG(I2,3,myThid)*DDTT
+          aimV0tave(i,j,bi,bj)  = aimV0tave(i,j,bi,bj)
+     &                          + SPEED0(I2,myThid)*DDTT
+          aimT0tave(i,j,bi,bj)  = aimT0tave(i,j,bi,bj)
+     &                          + T0(I2,myThid)*DDTT
+          aimQ0tave(i,j,bi,bj)  = aimQ0tave(i,j,bi,bj)
+     &                          + Q0(I2,myThid)*DDTT
+         ENDDO
+        ENDDO
+
+C-      Relative Humidity :
+        DO k=1,Nr
+         Katm = _KD2KA( k )
+         DO j=1,sNy
+          DO i=1,sNx
+           I2 = i+(j-1)*sNx
+           aimRHtave(i,j,k,bi,bj) = aimRHtave(i,j,k,bi,bj)
+     &                            + RH(I2,Katm,myThid)*DDTT
+          ENDDO
          ENDDO
         ENDDO
 
 C-    Keep record of how much time has been integrated over
         DO K=1,Nr
-          AIM_TimeAve(k,bi,bj)=AIM_TimeAve(k,bi,bj)+DDTT
+          aim_timeAve(k,bi,bj)=aim_timeAve(k,bi,bj)+DDTT
         ENDDO
 
       ENDIF
 
-#endif /* ALLOW_TIMEAVE */
+#endif /* ALLOW_AIM_TAVE */
 
 #endif /* ALLOW_AIM */
 

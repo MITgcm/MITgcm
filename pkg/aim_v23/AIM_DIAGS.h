@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/Attic/AIM_DIAGS.h,v 1.1 2002/11/22 17:16:06 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/Attic/AIM_DIAGS.h,v 1.2 2003/01/03 03:51:27 jmc Exp $
 C $Name:  $
 
 #ifdef ALLOW_AIM
@@ -11,11 +11,11 @@ C     | Declares global arrays used for holding/accumulating     |
 C     | diagnostic output from AIM.                              |
 C     \==========================================================/
 
-#ifdef ALLOW_TIMEAVE
+#ifdef ALLOW_AIM_TAVE
 
 C     Timer for AIM diags
-      _RL AIM_TimeAve(Nr,nSx,nSy)
-      COMMON /AIM_TAVE/ AIM_TimeAve
+      _RL aim_timeAve(Nr,nSx,nSy)
+      COMMON /AIM_TAVE/ aim_timeAve
 
 C     USTRtave  - u-stress (Pa)
 C     VSTRtave  - v-stress (Pa)
@@ -28,11 +28,21 @@ C     EVAPtave  - evaporation [g/ (m2 s)]
 C     PRECNVtave- convective precipitation [g/ (m2 s)]
 C     PRECLStave- large-scale precipitation [g/ (m2 s)]
 C     CLOUDCtave- total cloud cover (fraction)
+C     CLTOPtave - normalized pressure at cloud top
+C     CBMFtave  - cloud-base mass flux
+C     DRAGtave  - surface Drag term (= Cd*Rho*|V|) (land+sea combined)
+C     aimV0tave - surface wind speed [m/s]
+C     aimT0tave - surface air absolute temp. [K]
+C     aimQ0tave - surface air spec. humidity [g/kg]
+C     aimRHtave - Relative Humidity [0-1]
 C
       COMMON /AIM_TAVE_A/
-     &                   USTRTave,VSTRtave,
-     &                   TSRtave,OLRtave,SSRtave,SLRtave,SHFtave,
-     &                   EVAPtave,PRECNVtave,PRECLStave,CLOUDCtave
+     &                   USTRTave, VSTRtave,
+     &                   TSRtave, OLRtave, SSRtave, SLRtave, SHFtave,
+     &                   EVAPtave, PRECNVtave, PRECLStave,
+     &                   CLOUDCtave, CLTOPtave, CBMFtave, DRAGtave,
+     &                   aimV0tave, aimT0tave, aimQ0tave,
+     &                   aimRHtave
       _RL  USTRtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  VSTRtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  TSRtave   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -44,8 +54,15 @@ C
       _RL  PRECNVtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  PRECLStave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL  CLOUDCtave(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  CLTOPtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  CBMFtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  DRAGtave  (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  aimV0tave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  aimT0tave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  aimQ0tave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  aimRHtave (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 
-#endif /* ALLOW_TIMEAVE */
+#endif /* ALLOW_AIM_TAVE */
 
 
 #endif /* ALLOW_AIM */

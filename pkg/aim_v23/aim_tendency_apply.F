@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.1 2002/11/22 17:17:03 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_tendency_apply.F,v 1.2 2003/01/03 03:51:27 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -53,7 +53,7 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
      &                       + uStr_tmp*gravity*recip_drF(kLev)
      &                       * recip_hFacW(i,j,kLev,bi,bj)
-#ifdef ALLOW_TIMEAVE
+#ifdef ALLOW_AIM_TAVE
           USTRtave(i,j,bi,bj) = USTRtave(i,j,bi,bj) + uStr_tmp*DDTT
 #endif
          ENDIF
@@ -70,7 +70,7 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           gU(i,j,kLev,bi,bj) = gU(i,j,kLev,bi,bj)
      &                       + uStr_tmp*gravity*recip_drF(kLev)
      &                       * recip_hFacW(i,j,kLev,bi,bj)
-#ifdef ALLOW_TIMEAVE
+#ifdef ALLOW_AIM_TAVE
           USTRtave(i,j,bi,bj) = USTRtave(i,j,bi,bj) + uStr_tmp*DDTT
 #endif
          ENDIF
@@ -133,7 +133,7 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
      &                       + vStr_tmp*gravity*recip_drF(kLev)
      &                       * recip_hFacS(i,j,kLev,bi,bj)
-#ifdef ALLOW_TIMEAVE
+#ifdef ALLOW_AIM_TAVE
           VSTRtave(i,j,bi,bj) = VSTRtave(i,j,bi,bj) + vStr_tmp*DDTT
 #endif
          ENDIF
@@ -150,7 +150,7 @@ c---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
           gV(i,j,kLev,bi,bj) = gV(i,j,kLev,bi,bj)
      &                       + vStr_tmp*gravity*recip_drF(kLev)
      &                       * recip_hFacS(i,j,kLev,bi,bj)
-#ifdef ALLOW_TIMEAVE
+#ifdef ALLOW_AIM_TAVE
           VSTRtave(i,j,bi,bj) = VSTRtave(i,j,bi,bj) + vStr_tmp*DDTT
 #endif
          ENDIF

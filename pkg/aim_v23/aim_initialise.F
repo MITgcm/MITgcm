@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.2 2002/12/10 02:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_initialise.F,v 1.3 2003/01/03 03:51:27 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -54,6 +54,7 @@ C--  Set default value for AIM interface code (AIM_PARAMS.h):
       aim_oiceFile = ' '
       aim_snowFile = ' '
       aim_swcFile  = ' '
+      aim_taveFreq = taveFreq
       aim_diagFreq = dumpFreq
       aim_tendFreq = 0.
       
@@ -122,7 +123,7 @@ c       ENDDO
 c      ENDDO
 c     ENDDO
 
-#ifdef ALLOW_TIMEAVE 
+#ifdef ALLOW_AIM_TAVE 
 C     Initialise diagnostic counters (these are cleared on model start
 C      i.e. not loaded from history file for now ).
       DO bj = myByLo(myThid), myByHi(myThid)
@@ -135,13 +136,22 @@ C      i.e. not loaded from history file for now ).
         CALL TIMEAVE_RESET(SLRtave, 1, bi, bj, myThid)
         CALL TIMEAVE_RESET(SHFtave, 1, bi, bj, myThid)
         CALL TIMEAVE_RESET(EVAPtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(PRECNVtave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(PRECLStave, 1, bi, bj, myThid)
-        CALL TIMEAVE_RESET(CLOUDCtave, 1, bi, bj, myThid)
-        AIM_TimeAve(1,bi,bj) = 0.
+        CALL TIMEAVE_RESET(PRECNVtave,1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(PRECLStave,1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(CLOUDCtave,1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(CLTOPtave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(CBMFtave,  1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(DRAGtave,  1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(aimV0tave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(aimT0tave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(aimQ0tave, 1, bi, bj, myThid)
+        CALL TIMEAVE_RESET(aimRHtave,Nr, bi, bj, myThid)
+        DO k=1,Nr
+          aim_timeAve(k,bi,bj) = 0.
+        ENDDO
        ENDDO
       ENDDO
-#endif /* ALLOW_TIMEAVE */
+#endif /* ALLOW_AIM_TAVE */
 
 #endif /* ALLOW_AIM */
 

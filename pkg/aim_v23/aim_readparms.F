@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.2 2002/12/10 02:35:27 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_readparms.F,v 1.3 2003/01/03 03:51:26 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -67,6 +67,7 @@ C     aim_lstFile  :: file name for Land.Surf.Temp      (F.M. surfBC)
 C     aim_oiceFile :: file name for Sea Ice fraction    (F.M. surfBC)
 C     aim_snowFile :: file name for Snow depth          (F.M. surfBC)
 C     aim_swcFile  :: file name for Soil Water content  (F.M. surfBC)
+C     aim_taveFreq :: Frequency^-1 for time-average output (s)
 C     aim_diagFreq :: Frequency^-1 for diagnostic output (s)
 C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
       NAMELIST /AIM_PARAMS/
@@ -75,7 +76,7 @@ C     aim_tendFreq :: Frequency^-1 for tendencies output (s)
      &    aim_LandFile, aim_albFile, aim_vegFile,
      &    aim_sstFile, aim_lstFile, aim_oiceFile, aim_snowFile,
      &    aim_swcFile,
-     &    aim_diagFreq, aim_tendFreq
+     &    aim_taveFreq, aim_diagFreq, aim_tendFreq
 
 C--   Physical constants (common PHYCON) :
 C      P0   = reference pressure
@@ -219,6 +220,23 @@ C--   Close the open data file
       CLOSE(iUnit)
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C--   Check parameters and model configuration
+
+C-    If aim_taveFreq is positive, then must compile the aim-diagnostics code
+#ifndef ALLOW_AIM_TAVE
+      IF (aim_taveFreq.GT.0.) THEN
+        WRITE(msgBuf,'(A)')
+     &  'AIM_READPARMS: aim_taveFreq > 0 but ALLOW_AIM_TAVE undefined'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        WRITE(msgBuf,'(2A)')
+     &  'Re-compile with: #define ALLOW_AIM_TAVE',
+     &                    '  or -DALLOW_AIM_TAVE'
+        CALL PRINT_ERROR( msgBuf, myThid)
+        STOP 'ABNORMAL END: S/R AIM_READPARMS'
+      ENDIF
+#endif /* ALLOW_AIM_TAVE */
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C--   Print out parameter values :
 
       WRITE(msgBuf,'(A)') ' '
@@ -240,6 +258,8 @@ C- namelist AIM_PARAMS:
        CALL WRITE_0D_L( aim_surfPotTemp, INDEX_NONE,
      &                 'aim_surfPotTemp =',
      &'   /* Surf Temp file in Pot.Temp on/off flag */')       
+       CALL WRITE_0D_R8( aim_taveFreq, INDEX_NONE,'aim_taveFreq =',
+     &  '   /* Frequency^-1 for time-Aver. output (s) */')
        CALL WRITE_0D_R8( aim_diagFreq, INDEX_NONE,'aim_diagFreq =',
      &  '   /* Frequency^-1 for diagnostic output (s) */')
        CALL WRITE_0D_R8( aim_tendFreq, INDEX_NONE,'aim_tendFreq =',
