@@ -3,7 +3,7 @@
 ! ==============================================================================
       subroutine CALC_ISOSLOPES(
      I             bi, bj, iMin, iMax, jMin, jMax, K,
-     I             rhoKm1, rhoKp1,
+     I             rhoKm1, rhoKp1, rhotmp,
      O             K13, K23, K33, KapGM,
      I             myThid )
       implicit none
@@ -16,6 +16,7 @@
       integer bi,bj,iMin,iMax,jMin,jMax,K
       _RL rhoKm1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL rhoKp1(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
+      _RL rhotmp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL K13(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
       _RL K23(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
       _RL K33(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nz)
@@ -54,7 +55,7 @@
 
 ! Limit Stratification
         stratLimit=-Small_Number-gradSmod*rMaxSlope
-        dSigmaDz=rDzC(k)*(rhoKm1(i,j)-rhoKp1(i,j))
+        dSigmaDz=rDzC(k)*(rhotmp(i,j)-rhoKp1(i,j))
 !altern if (dSigmaDz.gt.stratLimit) dSigmaDz=stratLimit
         dSigmaDz=min(dSigmaDz,stratLimit)
         dZdSigma=1. _d 0 / dSigmaDz
@@ -62,6 +63,10 @@
 ! Iso-neutral slopes
         SlopeX=-dSigmaDx*dZdSigma
         SlopeY=-dSigmaDy*dZdSigma
+        if (hFacC(i,j,k,bi,bj).eq.0.) then
+         SlopeX=0.
+         SlopeY=0.
+        endif
 
 ! Components of Redi/GM tensor
         K13(i,j,k)=2. _d 0 * SlopeX

@@ -1,6 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.4 1998/04/29 21:30:18 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/find_rho.F,v 1.5 1998/05/28 16:19:50 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
+#define USE_FACTORIZED_POLY
 
 ! ==============================================================================
       subroutine FIND_RHO(
@@ -56,23 +57,34 @@ C **********
 
        refTemp=eosRefT(kRef)
        refSalt=eosRefS(kRef)
-       sigRef=eosSig0(kRef)
+       sigRef=eosSig0(kRef) + (1000.-Rhonil)
 
        do j=jMin,jMax
         do i=iMin,iMax
          tP=theta(i,j,k,bi,bj)-refTemp
          sP=salt(i,j,k,bi,bj)-refSalt
+#ifdef USE_FACTORIZED_POLY
          deltaSig=
-     &     eosC(kRef,1)*tP
-     &    +eosC(kRef,2)         *sP
-     &    +eosC(kRef,3)*tP*tP
-     &    +eosC(kRef,4)*tP      *sP
-     &    +eosC(kRef,5)         *sP*sP
-     &    +eosC(kRef,6)*tP*tP*tP
-     &    +eosC(kRef,7)*tP*tP   *sP
-     &    +eosC(kRef,8)*tP      *sP*sP
-     &    +eosC(kRef,9)         *sP*sP*sP
-         rholoc(i,j)=1000.*(1.+sigRef+deltaSig)-Rhonil
+     &    (( eosC(9,kRef)*sP + eosC(5,kRef) )*sP + eosC(2,kRef) )*sP
+     &   + ( ( eosC(6,kRef)
+     &         *tP
+     &        +eosC(7,kRef)*sP + eosC(3,kRef)
+     &       )*tP
+     &      +(eosC(8,kRef)*sP + eosC(4,kRef) )*sP + eosC(1,kRef)
+     &     )*tP
+#else
+         deltaSig=
+     &     eosC(1,kRef)*tP
+     &    +eosC(2,kRef)         *sP
+     &    +eosC(3,kRef)*tP*tP
+     &    +eosC(4,kRef)*tP      *sP
+     &    +eosC(5,kRef)         *sP*sP
+     &    +eosC(6,kRef)*tP*tP*tP
+     &    +eosC(7,kRef)*tP*tP   *sP
+     &    +eosC(8,kRef)*tP      *sP*sP
+     &    +eosC(9,kRef)         *sP*sP*sP
+#endif
+         rholoc(i,j)=sigRef+deltaSig
         enddo
        enddo
 

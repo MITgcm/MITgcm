@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.9 1998/05/25 21:29:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.10 1998/05/28 16:19:50 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -84,6 +84,7 @@ C                          into fVerTerm
       _RL pH    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
       _RL rhokm1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rhokp1(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rhotmp(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pSurfX(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL pSurfY(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL K13   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nz)
@@ -122,6 +123,7 @@ C     uninitialised but inert locations.
         ENDDO
         rhokm1(i,j)  = 0. _d 0
         rhokp1(i,j)  = 0. _d 0
+        rhotmp(i,j)  = 0. _d 0
        ENDDO
       ENDDO
 
@@ -171,7 +173,7 @@ C--     Update fields in top level according to tendency terms
 
 C--     Density of 1st level (below W(1)) reference to level 1
         CALL FIND_RHO(
-     I     bi, bj, iMin, iMax, jMin, jMax, 1, 1, 'LINEAR',
+     I     bi, bj, iMin, iMax, jMin, jMax, 1, 1, eosType,
      O     rhoKm1,
      I     myThid )
 C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
@@ -179,25 +181,41 @@ C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
      I      bi,bj,iMin,iMax,jMin,jMax,1,rhoKm1,rhoKm1,
      U      pH,
      I      myThid )
+        DO J=1-Oly,sNy+Oly
+         DO I=1-Olx,sNx+Olx
+          rhoKp1(I,J)=rhoKm1(I,J)
+         ENDDO
+        ENDDO
 
         DO K=2,Nz
 C--     Update fields in Kth level according to tendency terms
         CALL TIMESTEP(
      I       bi,bj,iMin,iMax,jMin,jMax,K,pSurfX,pSurfY,myThid)
-C--     Density of K-1 level (above W(K)) reference to K level
-        CALL FIND_RHO(
-     I     bi, bj, iMin, iMax, jMin, jMax,  K-1, K, 'LINEAR',
-     O     rhoKm1,
-     I     myThid )
+C--     Density of K-1 level (above W(K)) reference to K-1 level
+copt    CALL FIND_RHO(
+copt I     bi, bj, iMin, iMax, jMin, jMax,  K-1, K-1, eosType,
+copt O     rhoKm1,
+copt I     myThid )
+C       rhoKm1=rhoKp1
+        DO J=1-Oly,sNy+Oly
+         DO I=1-Olx,sNx+Olx
+          rhoKm1(I,J)=rhoKp1(I,J)
+         ENDDO
+        ENDDO
 C--     Density of K level (below W(K)) reference to K level
         CALL FIND_RHO(
-     I     bi, bj, iMin, iMax, jMin, jMax,  K, K, 'LINEAR',
+     I     bi, bj, iMin, iMax, jMin, jMax,  K, K, eosType,
      O     rhoKp1,
+     I     myThid )
+C--     Density of K-1 level (above W(K)) reference to K level
+        CALL FIND_RHO(
+     I     bi, bj, iMin, iMax, jMin, jMax,  K-1, K, eosType,
+     O     rhotmp,
      I     myThid )
 C--     Calculate iso-neutral slopes for the GM/Redi parameterisation
         CALL CALC_ISOSLOPES(
      I            bi, bj, iMin, iMax, jMin, jMax, K,
-     I            rhoKm1, rhoKp1,
+     I            rhoKm1, rhoKp1, rhotmp,
      O            K13, K23, K33, KapGM,
      I            myThid )
 C--     Calculate static stability and mix where convectively unstable
@@ -206,12 +224,12 @@ C--     Calculate static stability and mix where convectively unstable
      I      myTime,myIter,myThid)
 C--     Density of K-1 level (above W(K)) reference to K-1 level
         CALL FIND_RHO(
-     I     bi, bj, iMin, iMax, jMin, jMax,  K-1, K-1, 'LINEAR',
+     I     bi, bj, iMin, iMax, jMin, jMax,  K-1, K-1, eosType,
      O     rhoKm1,
      I     myThid )
 C--     Density of K level (below W(K)) referenced to K level
         CALL FIND_RHO(
-     I     bi, bj, iMin, iMax, jMin, jMax,  K, K, 'LINEAR',
+     I     bi, bj, iMin, iMax, jMin, jMax,  K, K, eosType,
      O     rhoKp1,
      I     myThid )
 C--     Integrate hydrostatic balance for pH with BC of pH(z=0)=0
@@ -274,6 +292,12 @@ Cdbg I        myThid)
 !dbg &                         maxval(uVel(1:sNx,1:sNy,:,:,:))
 !dbg  write(0,*) 'dynamics: V',minval(vVel(1:sNx,1:sNy,:,:,:)),
 !dbg &                         maxval(vVel(1:sNx,1:sNy,:,:,:))
+!dbg  write(0,*) 'dynamics: K13',minval(K13(1:sNx,1:sNy,:)),
+!dbg &                         maxval(K13(1:sNx,1:sNy,:))
+!dbg  write(0,*) 'dynamics: K23',minval(K23(1:sNx,1:sNy,:)),
+!dbg &                         maxval(K23(1:sNx,1:sNy,:))
+!dbg  write(0,*) 'dynamics: K33',minval(K33(1:sNx,1:sNy,:)),
+!dbg &                         maxval(K33(1:sNx,1:sNy,:))
 !dbg  write(0,*) 'dynamics: gT',minval(gT(1:sNx,1:sNy,:,:,:)),
 !dbg &                         maxval(gT(1:sNx,1:sNy,:,:,:))
 !dbg  write(0,*) 'dynamics: T',minval(Theta(1:sNx,1:sNy,:,:,:)),

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.10 1998/05/25 21:29:45 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.11 1998/05/28 16:19:50 adcroft Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -56,7 +56,7 @@ C--   Continuous equation parameters
      &  diffKhT, diffKzT, diffK4T,
      &  diffKhS, diffKzS, diffK4S,
      &  GMmaxslope,GMlength,GMalpha,GMdepth,GMkbackground,
-     &  tRef, sRef,
+     &  tRef, sRef, eosType,
      & momViscosity,  momAdvection, momForcing, useCoriolis,
      & momPressureForcing,
      & tempDiffusion, tempAdvection, tempForcing,
@@ -148,8 +148,6 @@ C--   Set default "physical" parameters
       gravity =   9.81 D0
       gBaro   = gravity
       rhoNil   = 999.8 D0
-      tAlpha=2.d-4
-      sBeta=1.d-5
       f0=1.D-4 
       beta = 1. _d -11
       viscAh=1.d3
@@ -166,6 +164,9 @@ C--   Set default "physical" parameters
       GMalpha=0.
       GMdepth=1000.
       GMkbackground=0.
+      tAlpha=2.d-4
+      sBeta=1.d-5
+      eosType='POLY3'
       implicitFreeSurface = .TRUE.
       rigidLid            = .FALSE.
       freeSurfFac         = 1. _d 0
@@ -356,6 +357,24 @@ C     In spherical polar distances are in degrees
        CALL MODELDATA_EXAMPLE( myThid )
        STOP 'ABNORMAL END: S/R INI_PARMS'
   10  CONTINUE
+
+C     Initialize EOS coefficients (3rd order polynomial)
+      IF (eostype.eq.'POLY3') THEN
+       OPEN(37,FILE='POLY3.COEFFS',STATUS='OLD',FORM='FORMATTED')
+       READ(37,*) I
+       IF (I.NE.Nz) THEN
+        WRITE(0,*) 'ini_parms: attempt to read POLY3.COEFFS failed'
+        WRITE(0,*) '           because bad # of levels in data'
+        STOP 'Bad data in POLY3.COEFFS'
+       ENDIF
+       READ(37,*) (eosRefT(K),eosRefS(K),eosSig0(K),K=1,Nz)
+       DO K=1,Nz
+        READ(37,*) (eosC(I,K),I=1,9)
+        write(0,'(i3,13f8.3)') K,eosRefT(K),eosRefS(K),eosSig0(K),
+     &                (eosC(I,K),I=1,9)
+       ENDDO
+       CLOSE(37)
+      ENDIF
 
       goptCount = 0
       IF ( usingCartesianGrid )      goptCount = goptCount+1

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.11 1998/05/26 21:29:44 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.12 1998/05/28 16:19:50 adcroft Exp $
 C
 C     /==========================================================\
 C     | PARAMS.h                                                 |
@@ -264,11 +264,12 @@ C     cAdjFreq  - Frequency of convective adjustment
 
 C Equation of State (polynomial coeffients)
       COMMON /PARM_EOS_NL/ eosC,eosSig0,eosRefT,eosRefS
-      _RL eosC(Nz+1,9),eosSig0(Nz+1),eosRefT(Nz+1),eosRefS(Nz+1)
+      _RL eosC(9,Nz+1),eosSig0(Nz+1),eosRefT(Nz+1),eosRefS(Nz+1)
 C Linear equation of state
 C     tAlpha    - Linear EOS thermal expansion coefficient ( 1/degree ).
 C     sBeta     - Linear EOS haline contraction coefficient.
-      COMMON /PARM_EOS_LIN/ tAlpha,sBeta
+      COMMON /PARM_EOS_LIN/ tAlpha,sBeta,eosType
       _RL tAlpha
       _RL sBeta
+      character*(6) eosType
 
