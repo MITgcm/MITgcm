@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.26 2003/12/05 14:56:45 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.27 2003/12/05 16:21:40 edhill Exp $
 #  $Name:  $
 #
 
@@ -317,6 +317,53 @@ makemodel()
 	    fi
 	fi
     )
+}
+
+symlink_mpifiles()
+{
+    # Put special links so that MPI specific files are used
+    # This MUST be invoked between makeclean and makelinks because
+    # the Makefile will link to non-mpi files by default
+
+    dir=$1
+    code_dir=$2
+    BUILD_DIR=$dir/$3
+    CODE_DIR=$dir/$code_dir
+
+    # These are files that should replace their counter-part when using -mpi
+    MPI_FILES=`(cd $CODE_DIR; find . -name "*_mpi")`
+
+    #  Is this an MPI run?
+    if test "x$MPI" = xt ; then
+	# YES: We symbolically link these files to the build
+	# dir so long as there is no real file in place
+	for ii in $MPI_FILES ; do
+	    i=`echo $ii | sed 's:^\./::'`
+	    name=`echo $i | sed 's:_mpi::' `
+	    cmp $CODE_DIR/$i $BUILD_DIR/$name > /dev/null 2>&1
+	    RETVAL=$?
+	    if test "x$RETVAL" != x0 ; then
+		if ! test -f $BUILD_DIR/$i ; then
+	        #echo Linking $name to $i
+		    (cd $BUILD_DIR; ln -sf ../$code_dir/$i $name)
+		fi
+	    fi
+	done
+    else
+    # NO: We undo any _mpi symbolically linked files
+	for ii in $MPI_FILES ; do
+	    i=`echo $ii | sed 's:^\./::'`
+	    name=`echo $i | sed 's:_mpi::' `
+	    if test -L $BUILD_DIR/$name ; then
+		linktarg=`(cd $BUILD_DIR; readlink $name)`
+		if test $linktarg = "../$code_dir/$name"_mpi ; then
+	        #echo Un-linking $name from $linktarg
+		    rm -f $BUILD_DIR/$name
+		fi
+	    fi
+	done
+    fi
+    
 }
 
 linkdata()
@@ -745,49 +792,14 @@ for dir in $TESTDIRS ; do
     fi
     
     if test "x$ADM" = x ; then
+	code_dir=code
 	CODE_DIR=$dir/code
     else
+	code_dir=code_ad
 	CODE_DIR=$dir/code_ad
     fi
     BUILD_DIR=$dir/$builddir
-    MPI_FILES="CPP_EEOPTIONS.h_mpi SIZE.h_mpi"
-    NOMPI_FILES="CPP_EEOPTIONS.h_nompi SIZE.h_nompi"
 
-    #  Is this an MPI run?
-    if test "x$MPI" = xt ; then
-	FILES=$MPI_FILES
-	endings="_mpi"
-    else
-	FILES=$NOMPI_FILES
-	endings="_nompi"
-    fi
-    
-    #  Check to see that we have the files
-    have_files=t
-    for i in $FILES ; do
-	if test ! -r $CODE_DIR/$i ; then
-	    echo "Warning: can't read file $CODE_DIR/$i"
-	    have_files=f
-	fi
-    done
-    if test "x$have_files" != xt -a "x$MPI" = xt ; then
-	echo "Skipping $dir due to lack of input files (see above warning)"
-	continue
-    fi
-    
-    #  If we have the $FILES and they differ, copy the $FILES to $BUILD_DIR
-    if test "x$have_files" = xt ; then
-	for i in $FILES ; do
-	    sstr="s|$endings||"
-	    name=`echo $i | sed -e $sstr `
-	    cmp $CODE_DIR/$i $BUILD_DIR/$name > /dev/null 2>&1
-	    RETVAL=$?
-	    if test "x$RETVAL" != x0 ; then
-		cp $CODE_DIR/$i $BUILD_DIR/$name
-	    fi
-	done
-    fi
-    
     #  Create an output dir for each OPTFILE/tdir combination
     rel_CDIR=$DRESULTS"/"$dir
     mkdir $rel_CDIR
@@ -798,6 +810,7 @@ for dir in $TESTDIRS ; do
     else
 	genmakemodel $dir/$builddir && genmake=Y \
 	    && makeclean $dir/$builddir \
+            && symlink_mpifiles $dir $code_dir $builddir \
 	    && makedependmodel $dir/$builddir && makedepend=Y \
 	    && makemodel $dir/$builddir && make=Y \
 	    && linkdata $use_seperate_build $dir/$rundir \
