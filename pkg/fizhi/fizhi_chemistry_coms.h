@@ -1,3 +1,6 @@
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_chemistry_coms.h,v 1.5 2004/06/16 19:22:18 molod Exp $
+C $Name:  $
+
 c Chemistry Variables Dimensions
 c -------------------------------
       common /chemistry_grid/ nlatsoz, nlevsoz, ntimesoz, latsoz, levsoz
