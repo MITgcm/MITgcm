@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.45 2003/02/18 05:33:54 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.46 2003/03/17 17:10:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -91,7 +91,8 @@ Cml       sRef(K) = 35.D0
       rhoConstFresh       = 999.8D0
       f0                  = 1.D-4
       beta                = 1.D-11
-      omega               = 2.D0 * PI / ( 3600.D0 * 24.D0 )
+C-    Always use 1 day in the past but should be 86164 (=86400*365.25/366.25)
+      rotationPeriod      = 86400. _d 0
       viscAh              = 0.D3
       viscAstrain         = 0.D3
       viscAtension        = 0.D3
@@ -160,8 +161,8 @@ C--   Set (free)surface-related parameters
       exactConserv        = .FALSE.
       uniformLin_PhiSurf  = .TRUE.
       nonlinFreeSurf      = 0
-      hFacInf             = 1.D0
-      hFacSup             = 1.D0
+      hFacInf             = 0.2 _d 0
+      hFacSup             = 2.0 _d 0
       select_rStar        = 0
       useRealFreshWaterFlux = .FALSE.
       temp_EvPrRn = UNSET_RL

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.39 2003/02/26 03:21:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/config_summary.F,v 1.40 2003/03/17 17:10:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -163,6 +163,10 @@ CEOP
      &'   /* Gravitational acceleration ( m/s^2 ) */')
       CALL WRITE_0D_R8( gBaro,   INDEX_NONE,'gBaro =',
      &'   /* Barotropic gravity ( m/s^2 ) */')
+      CALL WRITE_0D_R8(rotationPeriod,INDEX_NONE,'rotationPeriod =',
+     &'   /* Rotation Period ( s ) */')
+      CALL WRITE_0D_R8( omega,   INDEX_NONE,'omega =',
+     &'   /* Angular velocity ( rad/s ) */')
       CALL WRITE_0D_R8( f0,      INDEX_NONE,'f0 =',
      &'   /* Reference coriolis parameter ( 1/s ) */')
       CALL WRITE_0D_R8( beta,    INDEX_NONE,'beta =',

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.92 2003/02/18 15:35:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.93 2003/03/17 17:10:42 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -105,7 +105,8 @@ CEOP
 C--   Continuous equation parameters
       NAMELIST /PARM01/
      & gravitySign,
-     & gravity, gBaro, rhonil, tAlpha, sBeta, f0, beta, omega,
+     & gravity, gBaro, rhonil, tAlpha, sBeta, 
+     & f0, beta, omega, rotationPeriod,
      & viscAh,  viscAz,  viscA4, cosPower, viscAstrain, viscAtension,
      & diffKhT, diffKzT, diffK4T, 
      & diffKhS, diffKzS, diffK4S,
@@ -267,6 +268,7 @@ C--   Set default "physical" parameters
       diffKrS  = UNSET_RL
       gBaro    = UNSET_RL
       rhoConst = UNSET_RL
+      omega    = UNSET_RL
       hFacMinDr           = UNSET_RL
       hFacMinDz           = UNSET_RL
       hFacMinDp           = UNSET_RL
@@ -299,6 +301,11 @@ C--   Set default "physical" parameters
       IF ( rigidLid            ) freeSurfFac = 0.D0
       IF ( gBaro .EQ. UNSET_RL ) gBaro=gravity
       IF ( rhoConst .EQ. UNSET_RL ) rhoConst=rhoNil
+      IF ( omega .EQ. UNSET_RL ) THEN
+        omega = 2.D0 * PI / rotationPeriod
+      ELSE
+        rotationPeriod = 2.D0 * PI / omega
+      ENDIF
       IF (atm_Rd .EQ. UNSET_RL) THEN
         atm_Rd = atm_Cp * atm_kappa
       ELSE
