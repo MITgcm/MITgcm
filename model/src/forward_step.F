@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.109 2004/11/23 20:20:19 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.110 2004/11/28 23:49:03 mlosch Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -296,28 +296,34 @@ CADJ STORE pmepr              = comlev1, key = ikey_dynamics
        CALL TIMER_STOP ('DO_OCEANIC_PHYS     [FORWARD_STEP]',mythid)
 #endif
 
-Cml#ifdef ALLOW_GCHEM
-CmlC     GCHEM package is an interface for any bio-geochemical or
-CmlC     ecosystem model you would like to include. 
-CmlC     If GCHEM_SEPARATE_FORCING is not defined, you are 
-CmlC     responsible for computing tendency terms for passive 
-CmlC     tracers and storing them on a 3DxNumPtracers-array called
-CmlC     gchemTendency in GCHEM_FORCING. This tendency is then added
-CmlC     to gPtr in ptracers_forcing later-on.
-CmlC     If GCHEM_SEPARATE_FORCING is defined, you are reponsible for
-CmlC     UPDATING ptracers directly in GCHEM_FORCING_SEP. This amounts
-CmlC     to a completely separate time step that you have to implement
-CmlC     yourself (Eulerian seems to be fine in most cases).
-Cml#ifdef ALLOW_DEBUG
-Cml       IF ( debugLevel .GE. debLevB ) 
-Cml     &      CALL DEBUG_CALL('GCHEM_FORCING',myThid)
-Cml#endif
-Cml       IF ( useGCHEM ) THEN
-Cml        CALL TIMER_START('GCHEM_FORCING     [FORWARD_STEP]',myThid)
-Cml        CALL GCHEM_FORCING( myTime, myIter, myThid )
-Cml        CALL TIMER_STOP ('GCHEM_FORCING     [FORWARD_STEP]',myThid)
-Cml       ENDIF
-Cml#endif /* ALLOW_GCHEM */
+#ifdef ALLOW_GCHEM
+C     GCHEM package is an interface for any bio-geochemical or
+C     ecosystem model you would like to include. 
+C     If GCHEM_SEPARATE_FORCING is not defined, you are 
+C     responsible for computing tendency terms for passive 
+C     tracers and storing them on a 3DxNumPtracers-array called
+C     gchemTendency in GCHEM_CALC_TENDENCY. This tendency is then added
+C     to gPtr in ptracers_forcing later-on.
+C     If GCHEM_SEPARATE_FORCING is defined, you are reponsible for
+C     UPDATING ptracers directly in GCHEM_FORCING_SEP. This amounts
+C     to a completely separate time step that you have to implement
+C     yourself (Eulerian seems to be fine in most cases).
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+C     CAVEAT: Up to now, when GCHEM is turned on the field ptracerForcingSurf,
+C     which is needed for KPP is not set properly. ptracerForcingSurf must
+C     be treated differently depending on whether GCHEM_SEPARATE_FORCING
+C     is define or not. TBD.
+CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+#ifdef ALLOW_DEBUG
+       IF ( debugLevel .GE. debLevB ) 
+     &      CALL DEBUG_CALL('GCHEM_CALC_TENDENCY',myThid)
+#endif
+       IF ( useGCHEM ) THEN
+        CALL TIMER_START('GCHEM_CALC_TENDENCY [FORWARD_STEP]',myThid)
+        CALL GCHEM_CALC_TENDENCY( myTime, myIter, myThid )
+        CALL TIMER_STOP ('GCHEM_CALC_TENDENCY [FORWARD_STEP]',myThid)
+       ENDIF
+#endif /* ALLOW_GCHEM */
 
 #ifdef ALLOW_AUTODIFF_TAMC
 cph needed to be moved here from do_oceanic_physics
@@ -538,9 +544,9 @@ C--   Cycle time-stepping Tracers arrays (T,S,+pTracers)
         CALL TRACERS_CORRECTION_STEP(myTime, myIter, myThid)
         CALL TIMER_STOP ('TS_CORRECTION_STEP  [FORWARD_STEP]',myThid)
 
+#ifdef ALLOW_GCHEM
 C     Add separate timestepping of chemical/biological/forcing
 C     of ptracers here in GCHEM_FORCING_SEP
-#ifdef ALLOW_GCHEM
 #ifdef ALLOW_DEBUG
         IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('GCHEM_FORCING_SEP',myThid)
