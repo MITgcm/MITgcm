@@ -1,27 +1,37 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.10 2004/03/19 03:28:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.11 2004/03/29 03:33:52 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_HANDLE_ERR
 
-
+C     !INTERFACE:
       SUBROUTINE MNC_HANDLE_ERR( status, msg, myThid )
 
+C     !DESCRIPTION:
+C     Handle all MNC and NetCDF library errors.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !DESCRIPTION:
+C     Create an MNC grid within a NetCDF file context.
+      
+C     !USES:
       INTEGER  myThid, status
       character*(*) msg
 
+C     !LOCAL VARIABLES:
+      integer i,lenm
+      character*(MAX_LEN_MBUF) msgbuf
+CEOP
 C     Functions
       integer ILNBLNK
 
-C     Locals
-      integer i,lenm
-      character*(MAX_LEN_MBUF) msgbuf
       DO i = 1,MAX_LEN_MBUF
         msgbuf(i:i) = ' '
       ENDDO
@@ -41,8 +51,10 @@ C     Locals
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_GET_IND
 
-
+C     !INTERFACE:
       SUBROUTINE MNC_GET_IND(
      I     NT,
      I     aname,
@@ -50,20 +62,24 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      O     ind,
      I     myThid )
 
+C     !DESCRIPTION:
+C     Get the index of the specified name.
+      
+C     !USES:
       implicit none
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, nt
       character*(*) aname
       character*(*) name_list(NT)
 
-C     Functions
-      integer ILNBLNK
-
-C     Locals
+C     !LOCAL VARIABLES:
       integer n, i, nf, ind, lenm
       character*(MAX_LEN_MBUF) msgbuf
+CEOP
+C     Functions
+      integer ILNBLNK
 
 C     Check that aname contains a valid name
       n = ILNBLNK( aname )
@@ -91,27 +107,34 @@ C     Search for the index
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_GET_NEXT_EMPTY_IND
 
-
+C     !INTERFACE:
       SUBROUTINE MNC_GET_NEXT_EMPTY_IND(
      I     NT,
      I     name_list,
      O     ind,
      I     myThid )
 
+C     !DESCRIPTION:
+C     Get the index of the next empty entry.
+      
+C     !USES:
       implicit none
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, nt
       character*(*) name_list(NT)
 
+C     !LOCAL VARIABLES:
+      integer n, i, ind
+      character*(MAX_LEN_MBUF) msgbuf
+CEOP
 C     Functions
       integer ILNBLNK
 
-C     Locals
-      integer n, i, ind
-      character*(MAX_LEN_MBUF) msgbuf
 
 C     Search for the index
       DO i=1,NT
@@ -134,7 +157,10 @@ C     If this is code is reached, we have exceeded the array size
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_GET_FVINDS
 
+C     !INTERFACE:
       SUBROUTINE MNC_GET_FVINDS( 
      I     fname, 
      I     vname, 
@@ -142,20 +168,24 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      O     ind_fv_ids,
      I     myThid )
 
+C     !DESCRIPTION:
+C     Get the variable indicies.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       INTEGER  myThid, fid, indf, ind_fv_ids
       character*(*) fname
       character*(*) vname
 
+C     !LOCAL VARIABLES:
+      integer i,j,k, n, lenv
+CEOP
 C     Functions
       integer ILNBLNK
-
-C     Locals
-      integer i,j,k, n, lenv
 
 C     Strip trailing spaces
       lenv = ILNBLNK(vname)

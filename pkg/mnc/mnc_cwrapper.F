@@ -1,10 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.10 2004/03/20 23:51:23 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cwrapper.F,v 1.11 2004/03/29 03:33:51 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_CW_ADD_GNAME
 
+C     !INTERFACE:
       SUBROUTINE MNC_CW_ADD_GNAME( 
      I     name, 
      I     ndim, 
@@ -13,22 +16,26 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     inds_beg, inds_end, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Add a grid name to the MNC convenience wrapper layer.
+      
+C     !USES:
       implicit none
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, ndim
       character*(*) name
       integer dlens(*), inds_beg(*), inds_end(*)
       character*(*) dnames(*)
 
-C     Functions
-      integer IFNBLNK, ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i, nnf,nnl, indg
       character*(MAX_LEN_MBUF) msgbuf
+CEOP
+C     Functions
+      integer IFNBLNK, ILNBLNK
 
       nnf = IFNBLNK(name)
       nnl = ILNBLNK(name)
@@ -62,24 +69,32 @@ C     Check that this name is not already defined
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_CW_DUMP
 
+C     !INTERFACE:
       SUBROUTINE MNC_CW_DUMP( myThid )
 
+C     !DESCRIPTION:
+C     Write a condensed view of the current state of the MNC look-up
+C     tables for the convenience wrapper section.
+      
+C     !USES:
       implicit none
 #include "mnc_common.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
 
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i,j, ntot
       integer NBLNK
       parameter ( NBLNK = 150 )
       character s1*(NBLNK), blnk*(NBLNK)
-
+CEOP
 
       _BEGIN_MASTER(myThid)
       
@@ -173,23 +188,27 @@ C     Local Variables
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_CW_INIT
 
+C     !INTERFACE:
       SUBROUTINE MNC_CW_INIT( 
      I     sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Create the pre-defined grid types and variable types
+      
+C     !USES:
       implicit none
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
       integer sNx,sNy, OLx,OLy, nSx,nSy, nPx,nPy, Nr
 
-C     Functions
-      integer IFNBLNK, ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer CW_MAX_LOC
       parameter ( CW_MAX_LOC = 5 )
       integer i, ihorz,ihsub,ivert,itime,ihalo, is,ih, n,ntot
@@ -201,6 +220,9 @@ C     Local Variables
      &     vert_dat(CW_MAX_LOC), time_dat(CW_MAX_LOC), 
      &     halo_dat(CW_MAX_LOC)
       integer dim(CW_MAX_LOC), ib(CW_MAX_LOC), ie(CW_MAX_LOC)
+CEOP
+C     Functions
+      integer IFNBLNK, ILNBLNK
 
 C     ......12345....12345....12345....12345....12345...
       data horz_dat /
@@ -369,27 +391,34 @@ C               Time dimension
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_CW_ADD_VNAME
 
+C     !INTERFACE:
       SUBROUTINE MNC_CW_ADD_VNAME( 
      I     vname, 
      I     gname, 
      I     bi_dim, bj_dim, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Add a variable type.
+      
+C     !USES:
       implicit none
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, bi_dim, bj_dim
       character*(*) vname, gname
 
-C     Functions
-      integer IFNBLNK, ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i, nvf,nvl, ngf,ngl, indv,indg
       character*(MAX_LEN_MBUF) msgbuf
+CEOP
+C     Functions
+      integer IFNBLNK, ILNBLNK
 
       nvf = IFNBLNK(vname)
       nvl = ILNBLNK(vname)
@@ -431,7 +460,10 @@ C     Check that gname exists
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_CW_ADD_VATTR_TEXT
 
+C     !INTERFACE:
       SUBROUTINE MNC_CW_ADD_VATTR_TEXT( 
      I     vname, 
      I     ntat, 
@@ -439,11 +471,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     tvals, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Add a text attribute
+      
+C     !USES:
       implicit none
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, ntat
       character*(*) vname, tnames(*), tvals(*)
+CEOP
 
       CALL MNC_CW_ADD_VATTR_ANY(vname, 
      &     ntat, 0, 0, 
@@ -454,7 +491,10 @@ C     Arguments
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_CW_ADD_VATTR_INT
 
+C     !INTERFACE:
       SUBROUTINE MNC_CW_ADD_VATTR_INT( 
      I     vname, 
      I     niat, 
@@ -462,12 +502,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     ivals, 
      I     myThid )
 
+C     !DESCRIPTION:
+
+C     !USES:
       implicit none
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, niat
       character*(*) vname, inames(*)
       integer ivals(*)
+CEOP
 
       CALL MNC_CW_ADD_VATTR_ANY(vname, 
      &     0, niat, 0, 
@@ -478,7 +522,10 @@ C     Arguments
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: MNC_CW_ADD_VATTR_DBL
 
+C !INTERFACE:
       SUBROUTINE MNC_CW_ADD_VATTR_DBL( 
      I     vname, 
      I     ndat, 
@@ -486,12 +533,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     dvals, 
      I     myThid )
 
+C     !DESCRIPTION:
+
+C     !USES:
       implicit none
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, ndat
       character*(*) vname, dnames(*)
       REAL*8 dvals(*)
+CEOP
 
       CALL MNC_CW_ADD_VATTR_ANY(vname, 
      &     0, 0, ndat, 
@@ -502,7 +553,10 @@ C     Arguments
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_CW_ADD_VATTR_ANY
 
+C     !INTERFACE:
       SUBROUTINE MNC_CW_ADD_VATTR_ANY( 
      I     vname, 
      I     ntat,   niat,   ndat,
@@ -510,11 +564,14 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     tvals,  ivals,  dvals, 
      I     myThid )
 
+C     !DESCRIPTION:
+
+C     !USES:
       implicit none
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, ntat, niat, ndat
       character*(*) vname
       character*(*) tnames(*), inames(*), dnames(*)
@@ -522,12 +579,12 @@ C     Arguments
       integer ivals(*)
       REAL*8 dvals(*)
 
-C     Functions
-      integer IFNBLNK, ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i, n, nvf,nvl, n1,n2, indv
       character*(MAX_LEN_MBUF) msgbuf
+CEOP
+C     Functions
+      integer IFNBLNK, ILNBLNK
 
       nvf = IFNBLNK(vname)
       nvl = ILNBLNK(vname)
@@ -577,12 +634,18 @@ C     Double Attributes
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_CW_GET_TILE_NUM
 
+C     !INTERFACE:
       SUBROUTINE MNC_CW_GET_TILE_NUM( 
      I     bi, bj, 
      O     uniq_tnum, 
      I     myThid )
 
+C     !DESCRIPTION:
+
+C     !USES:
       implicit none
 #include "EEPARAMS.h"
 #include "SIZE.h"
@@ -591,11 +654,12 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #include "W2_EXCH2_PARAMS.h"
 #endif
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, bi,bj, uniq_tnum
 
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer iG,jG
+CEOP
 
       iG = 0
       jG = 0
@@ -620,24 +684,31 @@ CEH3      write(*,*) 'iG,jG,uniq_tnum :', iG,jG,uniq_tnum
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
+CBOP
+C     !ROUTINE: MNC_CW_FILE_AORC
+      
+C     !INTERFACE:
       SUBROUTINE MNC_CW_FILE_AORC( 
      I     fname, 
      O     indf, 
      I     myThid )
 
+C     !DESCRIPTION:
+
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, indf
       character*(*) fname
 
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i, ierr
       character*(MAX_LEN_MBUF) msgbuf
+CEOP
 
 C     Check if the file is already open
       CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, indf, myThid)

@@ -1,22 +1,30 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.14 2004/03/19 03:28:36 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.15 2004/03/29 03:33:51 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_FILE_CREATE
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_CREATE( 
      I     fname, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Create a NetCDF file.
+      
+C     !USES:
       implicit none
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname
 
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer indf
+CEOP
 
       CALL MNC_FILE_OPEN(fname, 0, indf, myThid)
 
@@ -24,30 +32,37 @@ C     Local Variables
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_FILE_OPEN
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_OPEN( 
      I     fname, 
      I     itype, 
      O     indf, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Open or create a NetCDF file.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid,indf
       character*(*) fname
       integer itype
 C     itype => [ 0=new | 1=append | 2=read-only ]
 
-C     Functions
-      integer ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer n, err, fid, nf
       character*(MAX_LEN_MBUF) msgbuf
+CEOP
+C     Functions
+      integer ILNBLNK
 
 C     Is the file already open?
       nf = ILNBLNK(fname)
@@ -92,17 +107,26 @@ C       Error
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_FILE_ADD_ATTR_STR
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_ADD_ATTR_STR( 
      I     fname, 
      I     atname, 
      I     sval, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Add a character string attribute to a NetCDF file.
+
+C     !USES:
       implicit none
-C     Arguments
+
+C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname, atname, sval
+CEOP
 
       CALL MNC_FILE_ADD_ATTR_ANY(fname,atname, 1, 
      &     sval, 0, 0.0D0, 0.0, 0, myThid )
@@ -110,7 +134,10 @@ C     Arguments
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_FILE_ADD_ATTR_DBL
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_ADD_ATTR_DBL( 
      I     fname, 
      I     atname, 
@@ -118,11 +145,17 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     dval, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Add a double-precision real attribute to a NetCDF file.
+
+C     !USES:
       implicit none
-C     Arguments
+
+C     !INPUT PARAMETERS:
       integer myThid, len
       character*(*) fname, atname
       REAL*8 dval
+CEOP
 
       CALL MNC_FILE_ADD_ATTR_ANY(fname,atname, 2, 
      &     ' ', len, dval, 0.0, 0, myThid )
@@ -130,7 +163,10 @@ C     Arguments
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_FILE_ADD_ATTR_REAL
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_ADD_ATTR_REAL( 
      I     fname, 
      I     atname, 
@@ -138,11 +174,17 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     rval, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Add a single-precision real attribute to a NetCDF file.
+
+C     !USES:
       implicit none
-C     Arguments
+
+C     !INPUT PARAMETERS:
       integer myThid, len
       character*(*) fname, atname
       REAL*4 rval
+CEOP
 
       CALL MNC_FILE_ADD_ATTR_ANY(fname,atname, 3, 
      &     ' ', len, 0.0D0, rval, 0, myThid )
@@ -150,7 +192,10 @@ C     Arguments
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_FILE_ADD_ATTR_INT
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_ADD_ATTR_INT( 
      I     fname, 
      I     atname, 
@@ -158,10 +203,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     ival, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Add an integer attribute to a NetCDF file.
+
+C     !USES:
       implicit none
-C     Arguments
+
+C     !INPUT PARAMETERS:
       integer myThid, len, ival
       character*(*) fname, atname
+CEOP
 
       CALL MNC_FILE_ADD_ATTR_ANY(fname,atname, 4, 
      &     ' ', len, 0.0D0, 0.0, ival, myThid )
@@ -169,32 +220,39 @@ C     Arguments
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_FILE_ADD_ATTR_ANY
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_ADD_ATTR_ANY( 
      I     fname, 
      I     atname, 
      I     atype, sv, len,dv,rv,iv, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Add all attributes to a NetCDF file.
+
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, atype, len, iv
       character*(*) fname, atname, sv
       REAL*8 dv
       REAL*4 rv
       
-C     Functions
-      integer ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer n, err, fid, ind, n1, lens
       character*(MNC_MAX_CHAR) s1
       character*(MAX_LEN_MBUF) msgbuf
-      
+CEOP
+C     Functions
+      integer ILNBLNK
+
 C     Verify that the file is open
       CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, ind, myThid)
       IF (ind .LT. 0) THEN
@@ -245,26 +303,33 @@ C     Enter define mode
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_FILE_CLOSE
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_CLOSE( 
      I     fname, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Close a NetCDF file.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname
 
-C     Functions
-      integer ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i,j,k,n, err, fid, indf, nf
       character*(MAX_LEN_MBUF) msgbuf
+CEOP
+C     Functions
+      integer ILNBLNK
 
       nf = ILNBLNK(fname)
 
@@ -324,25 +389,32 @@ C     file name
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_FILE_CLOSE_ALL_MATCHING
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_CLOSE_ALL_MATCHING( 
      I     fname, 
      I     myThid ) 
 
+C     !DESCRIPTION:
+C     Close all files matching a character string.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname
 
+C     !LOCAL VARIABLES:
+      integer i,n
+CEOP
 C     Functions
       integer ILNBLNK
-
-C     Local Variables
-      integer i,n
 
       n = ILNBLNK(fname)
       DO i = 1,MNC_MAX_ID
@@ -358,20 +430,28 @@ C       Check that the file is open
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_FILE_CLOSE_ALL
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_CLOSE_ALL( 
      I     myThid ) 
 
+C     !DESCRIPTION:
+C     Close all NetCDF files matching a string.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
 
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i
+CEOP
 
       DO i = 1,MNC_MAX_ID
 
@@ -387,26 +467,33 @@ C       Check that the file is open
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_FILE_REDEF
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_REDEF( 
      I     fname, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Set the NetCDF file to DEFINE mode.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname
 
-C     Functions
-      integer ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer ind, fid, def, err, n
       character*(MAX_LEN_MBUF) msgbuf
+CEOP
+C     Functions
+      integer ILNBLNK
 
 C     Verify that the file is open
       CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, ind, myThid)
@@ -432,26 +519,33 @@ C       Enter define mode
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_FILE_ENDDEF
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_ENDDEF( 
      I     fname, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     End DEFINE mode for a NetCDF file.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname
 
-C     Functions
-      integer ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer ind, fid, def, err, n
       character*(MAX_LEN_MBUF) msgbuf
+CEOP
+C     Functions
+      integer ILNBLNK
 
 C     Verify that the file is open
       CALL MNC_GET_IND(MNC_MAX_ID, fname, mnc_f_names, ind, myThid)
@@ -486,7 +580,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 #include "netcdf.inc"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname
 
@@ -508,26 +602,30 @@ C     Local Variables
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_FILE_TRY_READ
 
+C     !INTERFACE:
       SUBROUTINE MNC_FILE_TRY_READ( 
      I     fname, 
      O     ierr, 
      O     indf, 
      I     myThid ) 
 
+C     !DESCRIPTION:
+C     Try to open and read a NetCDF file.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, ierr, indf
       character*(*) fname
 
-C     Functions
-      integer IFNBLNK, ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i,j,k, fid, err, ndim,nvar,ngat,unlimid
       integer dlen, id, xtype, nat, nff,nlf, iv
       integer ndv, did, ns,ne, n1,n2, indg, indv
@@ -535,6 +633,9 @@ C     Local Variables
       character*(NF_MAX_NAME) name
       integer idlist(NF_MAX_VAR_DIMS)
       character*(MNC_MAX_CHAR) dnames(20)
+CEOP
+C     Functions
+      integer IFNBLNK, ILNBLNK
 
 C     Open and save the filename and fID
       nff = IFNBLNK(fname)

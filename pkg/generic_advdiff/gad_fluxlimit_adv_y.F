@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_y.F,v 1.4 2002/03/06 01:29:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_fluxlimit_adv_y.F,v 1.5 2004/03/29 03:33:51 edhill Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -33,12 +33,12 @@ C !USES: ===============================================================
 #include "GRID.h"
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
-C  k                    :: vertical level
-C  vTrans               :: meridional volume transport
-C  vVel                 :: meridional flow
-C  tracer               :: tracer field
-C  myThid               :: thread number
+C  bi,bj             :: tile indices
+C  k                 :: vertical level
+C  vTrans            :: meridional volume transport
+C  vVel              :: meridional flow
+C  tracer            :: tracer field
+C  myThid            :: thread number
       INTEGER bi,bj,k
       _RL deltaT
       _RL vTrans(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -47,14 +47,14 @@ C  myThid               :: thread number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  vT                   :: meridional advective flux
+C  vT                :: meridional advective flux
       _RL vT    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
 
 C !LOCAL VARIABLES: ====================================================
-C  i,j                  :: loop indices
-C  Cr                   :: slope ratio
-C  Rjm,Rj,Rjp           :: differences at j-1,j,j+1
-C  vFld                 :: velocity [m/s], meridional component
+C  i,j               :: loop indices
+C  Cr                :: slope ratio
+C  Rjm,Rj,Rjp        :: differences at j-1,j,j+1
+C  vFld              :: velocity [m/s], meridional component
       INTEGER i,j
       _RL Cr,Rjm,Rj,Rjp
       _RL vFld

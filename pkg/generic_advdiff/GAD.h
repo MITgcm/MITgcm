@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.10 2002/11/12 20:42:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/GAD.h,v 1.11 2004/03/29 03:33:51 edhill Exp $
 C $Name:  $
 
 CBOP
@@ -48,8 +48,8 @@ C oneSixth :: Third/fourth order interpolation factor
       _RL oneSixth
       PARAMETER(oneSixth=1.D0/6.D0)
 
-C Differentiate between tracers (only needed for KPP -  arrgh!!!)
-cph                              and for GMRedi arrgh*arrgh!!!)
+C Differentiate between tracers (needed for KPP - arrgh!!!)
+cph                              and GMRedi arrgh*arrgh!!!)
 cph  indices are used for TAF key computations, so need to
 cph  running from 1, 2, ...
 c
@@ -65,10 +65,10 @@ C GAD_TR1 :: pssive tracer 1
 CEOP
 
 C--   COMMON /GAD_PARM_L/ Logical parameters for GAD pkg routines
-C     tempMultiDimAdvec :: set to T if using multi-dimension advection for Temp
-C     saltMultiDimAdvec :: set to T if using multi-dimension advection for Salt
-C     tempAdamsBashforth :: set to T if using Adams-Bashforth stepping for Temp
-C     saltAdamsBashforth :: set to T if using Adams-Bashforth stepping for Salt
+C tempMultiDimAdvec :: set to T if using multi-dim advection for Temp
+C saltMultiDimAdvec :: set to T if using multi-dim advection for Salt
+C tempAdamsBashforth :: set to T if using Adams-Bashforth stepping for Temp
+C saltAdamsBashforth :: set to T if using Adams-Bashforth stepping for Salt
       LOGICAL tempMultiDimAdvec
       LOGICAL saltMultiDimAdvec
       LOGICAL tr1_MultiDimAdvec
@@ -78,3 +78,7 @@ C     saltAdamsBashforth :: set to T if using Adams-Bashforth stepping for Salt
       COMMON /GAD_PARM_L/
      & tempMultiDimAdvec , saltMultiDimAdvec , tr1_MultiDimAdvec,
      & tempAdamsBashforth, saltAdamsBashforth, tr1_AdamsBashforth
+
+CEH3 ;;; Local Variables: ***
+CEH3 ;;; mode:fortran ***
+CEH3 ;;; End: ***

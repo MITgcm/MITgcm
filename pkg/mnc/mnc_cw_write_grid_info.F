@@ -1,32 +1,40 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.6 2004/03/24 15:29:33 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_write_grid_info.F,v 1.7 2004/03/29 03:33:51 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: MNC_CW_WRITE_GRID_INFO
 
+C !INTERFACE:
       SUBROUTINE MNC_CW_WRITE_GRID_INFO(
      I     bfname,  
      I     myThid )
 
+C     !DESCRIPTION:
+C     This subroutine writes all the grid information (\textit{eg.}
+C     locations, spacings, areas, \textit{etc.}) to one grid file
+C     (\texttt{grid.xxxxx.nc}) per tile.
+      
+C     !USES:
       implicit none
 #include "mnc_common.h"
-
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "EESUPPORT.h"
 #include "PARAMS.h"
 #include "GRID.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
       character*(*) bfname
 
+C     !LOCAL VARIABLES:
+      integer nf,nl
+CEOP
 C     Functions
       integer IFNBLNK, ILNBLNK
-
-C     Local Variables
-      integer nf,nl
 
       nf = IFNBLNK(bfname)
       nl = ILNBLNK(bfname)

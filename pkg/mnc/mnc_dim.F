@@ -1,12 +1,12 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.8 2004/03/28 19:28:34 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.9 2004/03/29 03:33:51 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 CBOP
 C     !ROUTINE: MNC_DIM_INIT
+
 C     !INTERFACE:
       SUBROUTINE MNC_DIM_INIT( 
      I     fname, 
@@ -15,10 +15,9 @@ C     !INTERFACE:
      I     myThid )
 
 C     !DESCRIPTION:
-C     Creates a NetCDF dimension within an existing NetCDF file
+C     Create a dimension within the MNC look-up tables.
 
 C     !INPUT PARAMETERS:
-C     Arguments
       integer myThid, dlen
       character*(*) fname, dname
 CEOP
@@ -30,9 +29,9 @@ CEOP
 
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-
 CBOP
 C     !ROUTINE: MNC_DIM_INIT_ALL
+
 C     !INTERFACE:
       SUBROUTINE MNC_DIM_INIT_ALL( 
      I     fname, 
@@ -42,7 +41,7 @@ C     !INTERFACE:
      I     myThid ) 
 
 C     !DESCRIPTION:
-C     Creates a NetCDF dimension within an existing NetCDF file
+C     Create a dimension within the MNC look-up tables.
 
 C     !USES:
       implicit none
@@ -55,13 +54,13 @@ C     !INPUT PARAMETERS:
       character*(*) fname, dname
       character*(1) doWrite
 
-C     Functions
-      integer ILNBLNK, IFNBLNK
-
 C     !LOCAL VARIABLES:
-      integer i,j, indf,indd, n,nf, dnf,dnl, ntmp, idd, err, tlen
+      integer i,j, indf,indd, n,nf, dnf,dnl
+      integer ntmp, idd, err, tlen
       character*(MAX_LEN_MBUF) msgbuf
 CEOP
+C     Functions
+      integer ILNBLNK, IFNBLNK
 
       nf = ILNBLNK(fname)
 
@@ -130,27 +129,34 @@ C     Add to tables
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_DIM_UNLIM_SIZE
 
+C     !INTERFACE:
       SUBROUTINE MNC_DIM_UNLIM_SIZE( 
      I     fname, 
      I     unlim_sz, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Get the size of the unlimited dimension.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, unlim_sz
       character*(*) fname
 
-C     Functions
-      integer ILNBLNK, IFNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i,j, nf, indf, fid, unlimid, err
       character*(MAX_LEN_MBUF) msgbuf
+CEOP
+C     Functions
+      integer ILNBLNK, IFNBLNK
 
       nf = ILNBLNK(fname)
 

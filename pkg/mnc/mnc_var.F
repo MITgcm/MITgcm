@@ -1,67 +1,96 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.13 2004/03/19 03:28:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.14 2004/03/29 03:33:52 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_VAR_INIT_DBL
 
+C     !INTERFACE:
       SUBROUTINE MNC_VAR_INIT_DBL( 
      I     fname, 
      I     gname, 
      I     vname, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Create a double-precision real variable within a NetCDF file
+C     context.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname,gname,vname
+CEOP
 
       CALL MNC_VAR_INIT_ANY(fname,gname,vname, NF_DOUBLE, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_VAR_INIT_REAL
 
+C     !INTERFACE:
       SUBROUTINE MNC_VAR_INIT_REAL( 
      I     fname, 
      I     gname, 
      I     vname, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Create a single-precision real variable within a NetCDF file
+C     context.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname,gname,vname
+CEOP
 
       CALL MNC_VAR_INIT_ANY(fname,gname,vname, NF_FLOAT, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_VAR_INIT_INT
 
+C     !INTERFACE:
       SUBROUTINE MNC_VAR_INIT_INT( 
      I     fname, 
      I     gname, 
      I     vname, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Create an integer variable within a NetCDF file context.
+  
+C     !USES:
       implicit none
 #include "netcdf.inc"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname,gname,vname
+CEOP
 
       CALL MNC_VAR_INIT_ANY(fname,gname,vname, NF_INT, myThid)
       RETURN
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_VAR_INIT_ANY
 
+C     !INTERFACE:
       SUBROUTINE MNC_VAR_INIT_ANY( 
      I     fname, 
      I     gname, 
@@ -69,25 +98,30 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     vtype, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     General function for creating variables within a NetCDF file
+C     context.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname,gname,vname
       integer vtype
 
-C     Functions
-      integer ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i,j,k, n, indf,indv, fid, nd, ngrid, is,ie, err
       integer vid, nv, ind_g_finfo, needed, nvar
       character*(MAX_LEN_MBUF) msgbuf
       integer ids(20)
       integer lenf,leng,lenv
+CEOP
+C     Functions
+      integer ILNBLNK
 
 C     Strip trailing spaces
       lenf = ILNBLNK(fname)
@@ -185,7 +219,10 @@ C     Success, so save the variable info
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_VAR_ADD_ATTR_STR
 
+C     !INTERFACE:
       SUBROUTINE MNC_VAR_ADD_ATTR_STR( 
      I     fname, 
      I     vname, 
@@ -193,17 +230,27 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     sval, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Subroutine for adding a character string attribute to a NetCDF
+C     file.
+      
+C     !USES:
       implicit none
-C     Arguments
+
+C     !INPUT PARAMETERS:
       integer myThid
       character*(*) fname,vname,atname,sval
+CEOP
 
       CALL MNC_VAR_ADD_ATTR_ANY(fname,vname,atname, 
      &     1, sval, 0, 0.0D0, 0.0, 0, myThid)
       RETURN
       END
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_VAR_ADD_ATTR_DBL
 
+C     !INTERFACE:
       SUBROUTINE MNC_VAR_ADD_ATTR_DBL( 
      I     fname, 
      I     vname, 
@@ -212,11 +259,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     dval, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Subroutine for adding a double-precision real attribute to a
+C     NetCDF file.
+   
+C     !USES:
       implicit none
-C     Arguments
+
+C     !INPUT PARAMETERS:
       integer myThid,nv
       character*(*) fname,vname,atname
       REAL*8 dval(*)
+CEOP
 
       CALL MNC_VAR_ADD_ATTR_ANY(fname,vname,atname, 
      &     2, ' ', nv, dval, 0.0, 0, myThid)
@@ -224,7 +278,10 @@ C     Arguments
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: 
 
+C     !INTERFACE:
       SUBROUTINE MNC_VAR_ADD_ATTR_REAL( 
      I     fname, 
      I     vname, 
@@ -233,11 +290,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     rval, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Subroutine for adding a single-precision real attribute to a
+C     NetCDF file.
+   
+C     !USES:
       implicit none
-C     Arguments
+
+C     !INPUT PARAMETERS:
       integer myThid,nv
       character*(*) fname,vname,atname
       REAL*4 rval(*)
+CEOP
 
       CALL MNC_VAR_ADD_ATTR_ANY(fname,vname,atname, 
      &     3, ' ', nv, 0.0D0, rval, 0, myThid)
@@ -245,7 +309,10 @@ C     Arguments
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_VAR_ADD_ATTR_INT
 
+C     !INTERFACE:
       SUBROUTINE MNC_VAR_ADD_ATTR_INT( 
      I     fname, 
      I     vname, 
@@ -254,11 +321,18 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     ival, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     Subroutine for adding an integer attribute to a
+C     NetCDF file.
+      
+C     !USES:
       implicit none
-C     Arguments
+
+C     !INPUT PARAMETERS:
       integer myThid,nv
       character*(*) fname,vname,atname
       integer ival(*)
+CEOP
 
       CALL MNC_VAR_ADD_ATTR_ANY(fname,vname,atname, 
      &     4, ' ', nv, 0.0D0, 0.0, ival, myThid)
@@ -266,7 +340,10 @@ C     Arguments
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_VAR_ADD_ATTR_ANY
 
+C     !INTERFACE:
       SUBROUTINE MNC_VAR_ADD_ATTR_ANY( 
      I     fname, 
      I     vname, 
@@ -274,12 +351,16 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     atype, cs,len,dv,rv,iv, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     General subroutine for adding attributes to a NetCDF file.
+      
+C     !USES:
       implicit none
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid,atype,len
       character*(*) fname,vname,atname
       character*(*) cs
@@ -287,13 +368,13 @@ C     Arguments
       REAL*4 rv(*)
       integer iv(*)
 
-C     Functions
-      integer ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer n, indf,ind_fv_ids, fid,vid, err
       character*(MAX_LEN_MBUF) msgbuf
       integer lenf,lenv,lenat,lens
+CEOP
+C     Functions
+      integer ILNBLNK
 
 C     Strip trailing spaces
       lenf = ILNBLNK(fname)

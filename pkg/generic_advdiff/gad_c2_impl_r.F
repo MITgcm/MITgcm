@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_impl_r.F,v 1.1 2004/01/07 21:37:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_c2_impl_r.F,v 1.2 2004/03/29 03:33:51 edhill Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -12,16 +12,10 @@ C     !INTERFACE:
      O           a3d, b3d, c3d,
      I           myThid )
 
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | S/R GAD_C2_IMPL_R
-C     | o Compute matrix element to solve vertical advection
-C     |   implicitly using centered second-order scheme
-C     *==========================================================*
-C     | o contribution of vertical transport at interface k
-C     |   is added to matrix lines k & k-1 
-C     *==========================================================*
-C     \ev
+C     !DESCRIPTION:
+C     Compute matrix element to solve vertical advection implicitly
+C     using centered second-order scheme The contribution of vertical
+C     transport at interface k is added to matrix lines k and k-1.
 
 C     !USES:
       IMPLICIT NONE
@@ -34,15 +28,16 @@ C     == Global variables ===
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine Arguments ==
-C     bi,bj                :: tile indices
-C     k                    :: vertical level
-C     iMin,iMax,jMin,jMax  :: computation domain
-C     deltaTarg            :: time step
-C     rTrans               :: vertical volume transport
-C     a3d                  :: lower diagonal of the tridiagonal matrix 
-C     b3d                  :: main  diagonal of the tridiagonal matrix 
-C     c3d                  :: upper diagonal of the tridiagonal matrix 
-C     myThid               :: thread number
+C     bi,bj         :: tile indices
+C     k             :: vertical level
+C     iMin,iMax     :: computation domain
+C     jMin,jMax     :: computation domain
+C     deltaTarg     :: time step
+C     rTrans        :: vertical volume transport
+C     a3d           :: lower diagonal of the tridiagonal matrix 
+C     b3d           :: main  diagonal of the tridiagonal matrix 
+C     c3d           :: upper diagonal of the tridiagonal matrix 
+C     myThid        :: thread number
       INTEGER bi,bj,k
       INTEGER iMin,iMax,jMin,jMax
       _RL deltaTarg
@@ -53,8 +48,8 @@ C     myThid               :: thread number
       INTEGER myThid
 
 C     == Local Variables ==
-C     i,j                  :: loop indices
-C     rCenter              :: centered contribution
+C     i,j           :: loop indices
+C     rCenter       :: centered contribution
       INTEGER i,j
       _RL rCenter
 CEOP

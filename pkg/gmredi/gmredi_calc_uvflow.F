@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_calc_uvflow.F,v 1.2 2002/11/14 22:43:49 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gmredi/Attic/gmredi_calc_uvflow.F,v 1.3 2004/03/29 03:33:51 edhill Exp $
 C $Name:  $
 
 #include "GMREDI_OPTIONS.h"
@@ -9,12 +9,8 @@ C     !INTERFACE:
       SUBROUTINE GMREDI_CALC_UVFLOW(
      U     uTrans, vTrans,
      I     bi, bj, k, myThid)
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | o SUBROUTINE GMREDI_CALC_UVFLOW
-C     |   Add GM-bolus flow to Eulerian horizontal transport
-C     *==========================================================*
-C     \ev
+C     !DESCRIPTION:
+C     Add GM-bolus flow to Eulerian horizontal transport.
 
 C     !USES:
       IMPLICIT NONE

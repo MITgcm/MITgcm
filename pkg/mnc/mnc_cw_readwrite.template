@@ -1,10 +1,13 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.14 2004/03/24 15:29:33 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.15 2004/03/29 03:33:51 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
       
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: MNC_CW_RX_W
 
+C !INTERFACE:
       SUBROUTINE MNC_CW_RX_W(
      I     stype, 
      I     fbname, bi,bj, 
@@ -12,38 +15,41 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
      I     var, 
      I     myThid )
 
+C     !DESCRIPTION:
+C     This subroutine writes one variable to a file or a file group,
+C     depending upon the tile indicies.
+      
+C     !USES:
       implicit none
-
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, bi,bj, indu
       character*(*) stype, fbname, vtype
       __V var(*)
 
-C     Functions
-      integer IFNBLNK, ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i,j,k, indv,nvf,nvl, n1,n2, igrid, ntot
-      integer bis,bie, bjs,bje, uniq_tnum, nfname, fid, idv, indvids
-      integer ndim, indf, err, lbi,lbj, bidim,bjdim, unlim_sz, kr
-      integer p(9),s(9),e(9), dimnc(9), vstart(9),vcount(9), udo(9)
+      integer bis,bie, bjs,bje, uniq_tnum, nfname
+      integer fid, idv, indvids, ndim, indf, err, 
+      integer lbi,lbj, bidim,bjdim, unlim_sz, kr
+      integer p(9),s(9),e(9), dimnc(9)
+      integer vstart(9),vcount(9), udo(9)
       integer j1,j2,j3,j4,j5,j6,j7, k1,k2,k3,k4,k5,k6,k7
       integer indfg, fg1,fg2, npath
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) fname
       character*(MNC_MAX_CHAR) path_fname
-
-C     Temporary storage for the simultaneous type conversion and
-C     re-shaping before passing to NetCDF
       REAL*8  resh_d( sNx + 2*OLx + sNy + 2*OLy )
       REAL*4  resh_r( sNx + 2*OLx + sNy + 2*OLy )
       INTEGER resh_i( sNx + 2*OLx + sNy + 2*OLy )
+CEOP
+C     Functions
+      integer IFNBLNK, ILNBLNK
 
 C     Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )
@@ -331,8 +337,10 @@ C         Sync the file
       
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C !ROUTINE: MNC_CW_RX_R
 
-
+C !INTERFACE:
       SUBROUTINE MNC_CW_RX_R( 
      I     stype, 
      I     fbname, bi,bj, 
@@ -342,21 +350,23 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
       implicit none
 
+C     !DESCRIPTION:
+C     This subroutine reads one variable from a file or a file group,
+C     depending upon the tile indicies.
+      
+C     !USES:
 #include "netcdf.inc"
 #include "mnc_common.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid, bi,bj, indu
       character*(*) stype, fbname, vtype
       __V var(*)
 
-C     Functions
-      integer IFNBLNK, ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i,k, nvf,nvl, n1,n2, igrid, ntot
       integer bis,bie, bjs,bje, uniq_tnum, nfname, fid, idv
       integer ndim, indf, err, lbi,lbj, bidim,bjdim, unlim_sz, kr
@@ -368,12 +378,12 @@ C     Local Variables
       character*(MNC_MAX_CHAR) fname
       character*(MNC_MAX_CHAR) path_fname
       integer indfg, fg1,fg2
-
-C     Temporary storage for the simultaneous type conversion and
-C     re-shaping before passing to NetCDF
       REAL*8  resh_d( sNx + 2*OLx + sNy + 2*OLy )
       REAL*4  resh_r( sNx + 2*OLx + sNy + 2*OLy )
       INTEGER resh_i( sNx + 2*OLx + sNy + 2*OLy )
+CEOP
+C     Functions
+      integer IFNBLNK, ILNBLNK
 
 C     Only do I/O if I am the master thread
       _BEGIN_MASTER( myThid )

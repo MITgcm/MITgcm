@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3c4_impl_r.F,v 1.1 2004/01/07 21:37:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_u3c4_impl_r.F,v 1.2 2004/03/29 03:33:51 edhill Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -12,17 +12,15 @@ C     !INTERFACE:
      O           a5d, b5d, c5d, d5d, e5d,
      I           myThid )
 
-C     !DESCRIPTION: \bv
-C     *==========================================================*
-C     | S/R GAD_U3C4_IMPL_R
-C     | o Compute matrix element to solve vertical advection
-C     |   implicitly using 3rd order upwind 
-C     |                 or 4th order Centered advection schemes
-C     *==========================================================*
-C     | o contribution of vertical transport at interface k
-C     |   is added to matrix lines k & k-1 
-C     *==========================================================*
-C     \ev
+C     !DESCRIPTION:
+
+C     Compute matrix element to solve vertical advection
+C     \begin{enumerate}
+C     \item implicitly using 3rd order upwind, or 
+C     \item 4th order Centered advection schemes.
+C     \end{enumerate}
+C     Also, the contribution of vertical transport at interface k
+C     is added to matrix lines k and k-1 
 
 C     !USES:
       IMPLICIT NONE
@@ -34,21 +32,22 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "GAD.h"
 
-C     !INPUT/OUTPUT PARAMETERS:
-C     == Routine Arguments ==
-C     bi,bj                :: tile indices
-C     k                    :: vertical level
-C     iMin,iMax,jMin,jMax  :: computation domain
-C     advectionScheme      :: advection scheme to use
-C     deltaTarg            :: time step
-C     rTrans               :: vertical volume transport
-C     tFld                 :: tracer field
-C     a5d                  :: 2nd  lower diagonal of the pentadiagonal matrix 
-C     b5d                  :: 1rst lower diagonal of the pentadiagonal matrix 
-C     c5d                  :: main diagonal       of the pentadiagonal matrix 
-C     d5d                  :: 1rst upper diagonal of the pentadiagonal matrix 
-C     e5d                  :: 2nd  upper diagonal of the pentadiagonal matrix 
-C     myThid               :: thread number
+C !INPUT/OUTPUT PARAMETERS:
+C == Routine Arguments ==
+C bi,bj           :: tile indices
+C k               :: vertical level
+C iMin,iMax       :: computation domain
+C jMin,jMax       :: computation domain
+C advectionScheme :: advection scheme to use
+C deltaTarg       :: time step
+C rTrans          :: vertical volume transport
+C tFld            :: tracer field
+C a5d             :: 2nd  lower diag of pentadiagonal matrix 
+C b5d             :: 1rst lower diag of pentadiagonal matrix 
+C c5d             :: main diag       of pentadiagonal matrix 
+C d5d             :: 1rst upper diag of pentadiagonal matrix 
+C e5d             :: 2nd  upper diag of pentadiagonal matrix 
+C myThid          :: thread number
       INTEGER bi,bj,k
       INTEGER iMin,iMax,jMin,jMax
       INTEGER advectionScheme
@@ -61,12 +60,12 @@ C     myThid               :: thread number
       _RL e5d   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr)
       INTEGER myThid
 
-C     == Local Variables ==
-C     i,j                  :: loop indices
-C     kp1                  :: =min( k+1 , Nr )
-C     km2                  :: =max( k-2 , 1 )
-C     rCenter              :: centered contribution
-C     rUpwind              :: upwind   contribution
+C == Local Variables ==
+C i,j             :: loop indices
+C kp1             :: =min( k+1 , Nr )
+C km2             :: =max( k-2 , 1 )
+C rCenter         :: centered contribution
+C rUpwind         :: upwind   contribution
       LOGICAL flagC4
       INTEGER i,j,kp1,km2
       _RL rCenter, rUpwind

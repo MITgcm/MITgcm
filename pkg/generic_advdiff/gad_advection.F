@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.20 2004/03/28 19:28:34 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.21 2004/03/29 03:33:51 edhill Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -9,10 +9,10 @@ C !ROUTINE: GAD_ADVECTION
 
 C !INTERFACE: ==========================================================
       SUBROUTINE GAD_ADVECTION(
-     I           implicitAdvection, advectionScheme, tracerIdentity,
-     I           uVel, vVel, wVel, tracer,
-     O           gTracer,
-     I           bi,bj, myTime,myIter,myThid)
+     I     implicitAdvection, advectionScheme, tracerIdentity,
+     I     uVel, vVel, wVel, tracer,
+     O     gTracer,
+     I     bi,bj, myTime,myIter,myThid)
 
 C !DESCRIPTION:
 C Calculates the tendancy of a tracer due to advection.
@@ -46,17 +46,17 @@ C !USES: ===============================================================
 #endif
 
 C !INPUT PARAMETERS: ===================================================
-C  implicitAdvection    :: vertical advection treated implicitly (later on)
-C  advectionScheme      :: advection scheme to use
-C  tracerIdentity       :: identifier for the tracer (required only for OBCS)
-C  uVel                 :: velocity, zonal component
-C  vVel                 :: velocity, meridional component
-C  wVel                 :: velocity, vertical component
-C  tracer               :: tracer field
-C  bi,bj                :: tile indices
-C  myTime               :: current time
-C  myIter               :: iteration number
-C  myThid               :: thread number
+C  implicitAdvection :: implicit vertical advection (later on)
+C  advectionScheme   :: advection scheme to use
+C  tracerIdentity    :: tracer identifier (required only for OBCS)
+C  uVel              :: velocity, zonal component
+C  vVel              :: velocity, meridional component
+C  wVel              :: velocity, vertical component
+C  tracer            :: tracer field
+C  bi,bj             :: tile indices
+C  myTime            :: current time
+C  myIter            :: iteration number
+C  myThid            :: thread number
       LOGICAL implicitAdvection
       INTEGER advectionScheme
       INTEGER tracerIdentity
@@ -70,28 +70,30 @@ C  myThid               :: thread number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  gTracer              :: tendancy array
+C  gTracer           :: tendancy array
       _RL gTracer(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
 
 C !LOCAL VARIABLES: ====================================================
-C  maskUp               :: 2-D array for mask at W points
-C  iMin,iMax,jMin,jMax  :: loop range for called routines
-C  i,j,k                :: loop indices
-C  kup                  :: index into 2 1/2D array, toggles between 1 and 2
-C  kdown                :: index into 2 1/2D array, toggles between 2 and 1
-C  kp1                  :: =k+1 for k<Nr, =Nr for k=Nr
-C  xA,yA                :: areas of X and Y face of tracer cells
-C  uTrans,vTrans,rTrans :: 2-D arrays of volume transports at U,V and W points
-C  rTransKp1            :: vertical volume transport at interface k+1
-C  af                   :: 2-D array for horizontal advective flux
-C  fVerT                :: 2 1/2D arrays for vertical advective flux
-C  localTij             :: 2-D array used as temporary local copy of tracer fld
-C  localTijk            :: 3-D array used as temporary local copy of tracer fld
-C  kp1Msk               :: flag (0,1) to act as over-riding mask for W levels
-C  calc_fluxes_X        :: logical to indicate to calculate fluxes in X dir
-C  calc_fluxes_Y        :: logical to indicate to calculate fluxes in Y dir
-C  nipass               :: number of passes to make in multi-dimensional method
-C  ipass                :: number of the current pass being made
+C  maskUp        :: 2-D array for mask at W points
+C  iMin,iMax,    :: loop range for called routines
+C  jMin,jMax     :: loop range for called routines
+C  i,j,k         :: loop indices
+C  kup           :: index into 2 1/2D array, toggles between 1 and 2
+C  kdown         :: index into 2 1/2D array, toggles between 2 and 1
+C  kp1           :: =k+1 for k<Nr, =Nr for k=Nr
+C  xA,yA         :: areas of X and Y face of tracer cells
+C  uTrans,vTrans :: 2-D arrays of volume transports at U,V points
+C  rTrans        :: 2-D arrays of volume transports at W points
+C  rTransKp1     :: vertical volume transport at interface k+1
+C  af            :: 2-D array for horizontal advective flux
+C  fVerT         :: 2 1/2D arrays for vertical advective flux
+C  localTij      :: 2-D array, temporary local copy of tracer fld
+C  localTijk     :: 3-D array, temporary local copy of tracer fld
+C  kp1Msk        :: flag (0,1) for over-riding mask for W levels
+C  calc_fluxes_X :: logical to indicate to calculate fluxes in X dir
+C  calc_fluxes_Y :: logical to indicate to calculate fluxes in Y dir
+C  nipass        :: number of passes in multi-dimensional method
+C  ipass         :: number of the current pass being made
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       INTEGER iMin,iMax,jMin,jMax
       INTEGER i,j,k,kup,kDown

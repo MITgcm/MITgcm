@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.23 2004/01/07 21:35:00 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.24 2004/03/29 03:33:51 edhill Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -51,25 +51,27 @@ C !USES: ===============================================================
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C !INPUT PARAMETERS: ===================================================
-C  bi,bj                :: tile indices
-C  iMin,iMax,jMin,jMax  :: loop range for called routines
-C  kup                  :: index into 2 1/2D array, toggles between 1 and 2
-C  kdown                :: index into 2 1/2D array, toggles between 2 and 1
-C  kp1                  :: =k+1 for k<Nr, =Nr for k=Nr
-C  xA,yA                :: areas of X and Y face of tracer cells
-C  uTrans,vTrans,rTrans :: 2-D arrays of volume transports at U,V and W points
-C  rTransKp1            :: 2-D array of volume transport at W pt, interface k+1
-C  maskUp               :: 2-D array for mask at W points
-C  uVel, vVel, wVel     :: 3 components of the velcity field (3-D array)
-C  diffKh               :: horizontal diffusion coefficient
-C  diffK4               :: bi-harmonic diffusion coefficient
-C  KappaRT              :: 3-D array for vertical diffusion coefficient
-C  Tracer               :: tracer field
-C  tracerIdentity       :: identifier for the tracer (required for KPP and GM)
-C  advectionScheme      :: advection scheme to use
-C  calcAdvection        :: =False if Advec terms computed with multiDim scheme
-C  implicitAdvection    :: =True if vertical Advec term is computed implicitly
-C  myThid               :: thread number
+C bi,bj            :: tile indices
+C iMin,iMax        :: loop range for called routines
+C jMin,jMax        :: loop range for called routines
+C kup              :: index into 2 1/2D array, toggles between 1|2
+C kdown            :: index into 2 1/2D array, toggles between 2|1
+C kp1              :: =k+1 for k<Nr, =Nr for k=Nr
+C xA,yA            :: areas of X and Y face of tracer cells
+C uTrans,vTrans    :: 2-D arrays of volume transports at U,V points
+C rTrans           :: 2-D arrays of volume transports at W points
+C rTransKp1        :: 2-D array of volume trans at W pts, interf k+1
+C maskUp           :: 2-D array for mask at W points
+C uVel,vVel,wVel   :: 3 components of the velcity field (3-D array)
+C diffKh           :: horizontal diffusion coefficient
+C diffK4           :: bi-harmonic diffusion coefficient
+C KappaRT          :: 3-D array for vertical diffusion coefficient
+C Tracer           :: tracer field
+C tracerIdentity   :: tracer identifier (required for KPP,GM)
+C advectionScheme  :: advection scheme to use
+C calcAdvection    :: =False if Advec computed with multiDim scheme
+C implicitAdvection:: =True if vertical Advec computed implicitly
+C myThid           :: thread number
       INTEGER bi,bj,iMin,iMax,jMin,jMax
       INTEGER k,kUp,kDown,kM1
       _RS xA    (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
@@ -92,19 +94,19 @@ C  myThid               :: thread number
       INTEGER myThid
 
 C !OUTPUT PARAMETERS: ==================================================
-C  gTracer              :: tendancy array
-C  fVerT                :: 2 1/2D arrays for vertical advective flux
+C gTracer          :: tendancy array
+C fVerT            :: 2 1/2D arrays for vertical advective flux
       _RL gTracer(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL fVerT (1-OLx:sNx+OLx,1-OLy:sNy+OLy,2)
 
 C !LOCAL VARIABLES: ====================================================
-C  i,j                  :: loop indices
-C  df4                  :: used for storing del^2 T for bi-harmonic term
-C  fZon                 :: zonal flux
-C  fmer                 :: meridional flux
-C  af                   :: advective flux
-C  df                   :: diffusive flux
-C  localT               :: local copy of tracer field
+C i,j              :: loop indices
+C df4              :: used for storing del^2 T for bi-harmonic term
+C fZon             :: zonal flux
+C fmer             :: meridional flux
+C af               :: advective flux
+C df               :: diffusive flux
+C localT           :: local copy of tracer field
       INTEGER i,j
       _RL df4   (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL fZon  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)

@@ -1,26 +1,29 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.4 2004/03/23 05:24:44 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_readparms.F,v 1.5 2004/03/29 03:33:52 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_READPARMS
 
+C     !INTERFACE:
       SUBROUTINE MNC_READPARMS( myThid )
 
+C     !DESCRIPTION:
+C     Create an MNC grid within a NetCDF file context.
+      
+C     !USES:
       implicit none
-
 #include "SIZE.h"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
 
-C     Functions
-      integer ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i, iUnit, nl, isu1,isu2,mdu, errio, IL
       character*(MAX_LEN_MBUF) data_file
       character*(MAX_LEN_MBUF) msgBuf
@@ -31,6 +34,9 @@ C     Local Variables
      &     mnc_outdir_str, mnc_indir_str, 
      &     mnc_echo_gvtypes, mnc_pickup_create, mnc_pickup_read
       LOGICAL  exst
+CEOP
+C     Functions
+      integer ILNBLNK
 
 C     Set default values for MNC run-time parameters
       DO i = 1,MAX_LEN_FNAM
@@ -151,28 +157,34 @@ C     Create the MNC output directory
       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+CBOP
+C     !ROUTINE: MNC_SET_OUTDIR
 
+C     !INTERFACE:
       SUBROUTINE MNC_SET_OUTDIR( myThid )
 
+C     !DESCRIPTION:
+C     Set the output directory for the MNC output files.
+      
+C     !USES:
       implicit none
-
 #include "mnc_common.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 
-C     Arguments
+C     !INPUT PARAMETERS:
       integer myThid
 
-C     Functions
-      integer ILNBLNK
-
-C     Local Variables
+C     !LOCAL VARIABLES:
       integer i,j,k, ntot, npathd, idate
       character*(100) pathd
       character*(100) cenc
       integer ienc(100)
       integer ncenc
+CEOP
+C     Functions
+      integer ILNBLNK
 
       cenc(1:26)  = 'abcdefghijklmnopqrstuvwxyz'
       cenc(27:52) = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
