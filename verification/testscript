@@ -137,9 +137,9 @@ genmakemodel()
    if [ $quick -eq 0 -o ! -r Makefile ]; then
     printf 'genmake ... ' 1>&2
     if [ $ieee -eq 0 ]; then
-     ../../../tools/$genmake -mods=../code > make.log 2>&1
+     ../../../tools/genmake2 -mods=../code > make.log 2>&1
     else
-     ../../../tools/$genmake -ieee -mods=../code > make.log 2>&1
+     ../../../tools/genmake2 -ieee -mods=../code > make.log 2>&1
     fi
     if [ $? -ne 0 ]; then
      tail make.log
@@ -235,7 +235,7 @@ linkdata()
 # if [ ! -r $2 ]; then
 #  mkdir $2
 # fi
-  ( cd $2; ln -sf ../input/* .)
+  ( cd $2; ln -sf ../input/{eedata,data*,*.bin,POLY3*,pickup*} .)
  fi
 }
 
@@ -331,7 +331,6 @@ $0 [-help] [-quick] [-verbose] dir1 [dir2] [...]
  -noieee    By default, $0 uses the -ieee option for genmake. This turns it off.
  -cleanup   Aggresively removes all model output, executables and object files
             and then exits. Use with care.
- -2        Use genmake2 rather than genmake
 
 Normal usage:
  $0 *       Configure, compile, run and analyze in all experiment directories
@@ -388,7 +387,6 @@ do
    -debug) debug=1;;
    -force) force=1;;
    -clean) clean=1;;
-   -2) genmake=genmake2;;
    -noieee) ieee=0;;
    -shorttest) longtest=0;;
    -quiet) verbose=0;;
