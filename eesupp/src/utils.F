@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.8 2000/03/15 16:00:52 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.9 2000/06/21 20:44:06 heimbach Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -35,7 +35,9 @@ C
       IF ( LEN(string) .LT. lDate ) GOTO 901
       string = ' '
 #ifndef TARGET_T3E
+#ifndef TARGET_CRAY_VECTOR
       CALL FDATE( string )
+#endif
 #endif
 C   
  1000 CONTINUE
@@ -190,7 +192,7 @@ C
       strTmp = 'UNKNOWN'
       iFree  = 1
       idSize = LEN(string)
-#ifdef TARGET_T3E
+#if (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR))
       IFirst = 0
       CALL PXFGETENV('USER',iFirst,strTmp,ILast,Iend  )
 #else
@@ -210,7 +212,7 @@ C
         ENDIF
       ENDIF
       strTmp = 'UNKNOWN'
-#ifdef TARGET_T3E
+#if (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR))
       IFirst = 0
       CALL PXFGETENV('HOST',iFirst,strTmp,ILast,Iend  )
 #else
