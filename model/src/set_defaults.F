@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.60 2004/05/26 14:50:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/set_defaults.F,v 1.61 2004/06/02 13:23:55 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -164,6 +164,10 @@ Cml      sBeta               = 7.4D-4
       useCDscheme         = .FALSE.
       useEnergyConservingCoriolis = .FALSE.
       useJamartWetPoints  = .FALSE.
+      SadournyCoriolis    = .FALSE.
+      upwindVorticity     = .FALSE.
+      highOrderVorticity  = .FALSE.
+      useAbsVorticity     = .FALSE.
       debugLevel          = debLevA
 
 C--   Set (free)surface-related parameters

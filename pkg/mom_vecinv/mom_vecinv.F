@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.19 2004/05/26 14:50:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vecinv.F,v 1.20 2004/06/02 13:23:55 adcroft Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -239,7 +239,8 @@ c     CALL MOM_VI_HFACZ_DISS(bi,bj,k,hFacZ,r_hFacZ,myThid)
 
       CALL MOM_CALC_RELVORT3(bi,bj,k,uFld,vFld,hFacZ,vort3,myThid)
 
-c     CALL MOM_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
+      IF (useAbsVorticity)
+     & CALL MOM_CALC_ABSVORT3(bi,bj,k,vort3,omega3,myThid)
 
       IF (momViscosity) THEN
 C      Calculate del^2 u and del^2 v for bi-harmonic term
@@ -402,8 +403,9 @@ c      ENDDO
 c     ENDIF
 
 C--   Horizontal Coriolis terms
-      IF (useCoriolis .AND. .NOT.useCDscheme) THEN
-       CALL MOM_VI_CORIOLIS(bi,bj,k,uFld,vFld,omega3,hFacZ,r_hFacZ,
+      IF (useCoriolis .AND. .NOT.useCDscheme
+     &    .AND. .NOT. useAbsVorticity) THEN
+       CALL MOM_VI_CORIOLIS(bi,bj,k,uFld,vFld,hFacZ,r_hFacZ,
      &                      uCf,vCf,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -419,18 +421,26 @@ C--   Horizontal Coriolis terms
 
       IF (momAdvection) THEN
 C--   Horizontal advection of relative vorticity
-c      CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,omega3,r_hFacZ,uCf,myThid)
-       CALL MOM_VI_U_CORIOLIS(bi,bj,k,vFld,vort3,hFacZ,r_hFacZ,
-     &                        uCf,myThid)
+       IF (useAbsVorticity) THEN
+        CALL MOM_VI_U_CORIOLIS(bi,bj,K,vFld,omega3,hFacZ,r_hFacZ,
+     &                         uCf,myThid)
+       ELSE
+        CALL MOM_VI_U_CORIOLIS(bi,bj,k,vFld,vort3,hFacZ,r_hFacZ,
+     &                         uCf,myThid)
+       ENDIF
 c      CALL MOM_VI_U_CORIOLIS_C4(bi,bj,K,vFld,vort3,r_hFacZ,uCf,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
          gU(i,j,k,bi,bj) = gU(i,j,k,bi,bj)+uCf(i,j)
         ENDDO
        ENDDO
-c      CALL MOM_VI_V_CORIOLIS(bi,bj,K,uFld,omega3,r_hFacZ,vCf,myThid)
-       CALL MOM_VI_V_CORIOLIS(bi,bj,k,uFld,vort3,hFacZ,r_hFacZ,
-     &                        vCf,myThid)
+       IF (useAbsVorticity) THEN
+        CALL MOM_VI_V_CORIOLIS(bi,bj,K,uFld,omega3,hFacZ,r_hFacZ,
+     &                         vCf,myThid)
+       ELSE
+        CALL MOM_VI_V_CORIOLIS(bi,bj,k,uFld,vort3,hFacZ,r_hFacZ,
+     &                         vCf,myThid)
+       ENDIF
 c      CALL MOM_VI_V_CORIOLIS_C4(bi,bj,K,uFld,vort3,r_hFacZ,vCf,myThid)
        DO j=jMin,jMax
         DO i=iMin,iMax
@@ -505,7 +515,7 @@ C--   Set du/dt & dv/dt on boundaries to zero
        CALL WRITE_LOCAL_RL('Du','I10',1,uDiss,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('Dv','I10',1,vDiss,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('Z3','I10',1,vort3,bi,bj,k,myIter,myThid)
-c      CALL WRITE_LOCAL_RL('W3','I10',1,omega3,bi,bj,k,myIter,myThid)
+       CALL WRITE_LOCAL_RL('W3','I10',1,omega3,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('KE','I10',1,KE,bi,bj,k,myIter,myThid)
        CALL WRITE_LOCAL_RL('D','I10',1,hdiv,bi,bj,k,myIter,myThid)
       ENDIF

@@ -1,9 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.304 2004/05/26 14:50:09 adcroft Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.305 2004/06/02 13:23:55 adcroft Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
-
+o added Sadourny discretization of Coriolis
+  - moved some PARAMETERS from mom_*_coriolis.F to PARAMS.h
+  - re-enabled use of omega3 (useAbsVorticity)
 o added Leith (Phys. Fluids, 1968, 10, 1409-1416) variable viscosity for
   vector-invarianet equations
   - note: does *NOT* yet use same variable visc. for no-slip BC's.

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.110 2004/05/26 14:50:09 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.111 2004/06/02 13:23:55 adcroft Exp $
 C $Name:  $
 C
 CBOP
@@ -213,6 +213,10 @@ C     useBetaPlaneF :: Coriolis parameter set to f0 + beta.y
 C     useSphereF    :: Coriolis parameter set to 2.omega.sin(phi)
 C     useCDscheme   :: use CD-scheme to calculate Coriolis terms.
 C     useJamartWetPoints :: Use wet-point method for Coriolis (Jamart and Ozer, 1986)
+C     SadournyCoriolis :: use the enstrophy conserving scheme by Sadourny
+C     upwindVorticity :: bias interpolation of vorticity in the Coriolis term
+C     highOrderVorticity :: use 3rd/4th order interp. of vorticity in Coriolis
+C     useAbsVorticity :: work with f+zeta in Coriolis terms
 C     implicitDiffusion :: Turns implicit vertical diffusion on
 C     implicitViscosity :: Turns implicit vertical viscosity on
 C     tempImplVertAdv :: Turns on implicit vertical advection for Temperature
@@ -258,6 +262,8 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
      & useConstantF, useBetaPlaneF, useSphereF,
      & useCDscheme,
      & useEnergyConservingCoriolis, useJamartWetPoints,
+     & SadournyCoriolis, upwindVorticity, highOrderVorticity,
+     & useAbsVorticity,
      & implicitDiffusion, implicitViscosity,
      & tempImplVertAdv, saltImplVertAdv, momImplVertAdv,
      & multiDimAdvection, forcing_In_AB,
@@ -304,6 +310,10 @@ C     groundAtK1  :: put the surface(k=1) at the Lower Boundary (=ground)
       LOGICAL useCDscheme
       LOGICAL useEnergyConservingCoriolis
       LOGICAL useJamartWetPoints
+      LOGICAL SadournyCoriolis
+      LOGICAL upwindVorticity
+      LOGICAL highOrderVorticity
+      LOGICAL useAbsVorticity
       LOGICAL implicitDiffusion
       LOGICAL implicitViscosity
       LOGICAL tempImplVertAdv 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.4 2003/08/03 02:49:35 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_vecinv/mom_vi_v_coriolis.F,v 1.5 2004/06/02 13:23:55 adcroft Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -30,11 +30,10 @@ C     == Routine arguments ==
       INTEGER myThid
 
 C     == Local variables ==
-      LOGICAL upwindVort3, use_original_hFac
+      LOGICAL use_original_hFac
       INTEGER I,J
-      _RL uBarXY,vort3v
+      _RL uBarXY,vort3v,Zp,Zm
       _RS epsil
-      PARAMETER ( upwindVort3      =.FALSE. )
       PARAMETER ( use_original_hFac=.FALSE. )
 
       epsil = 1. _d -9
@@ -47,7 +46,7 @@ C     == Local variables ==
      &      +uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacW(i+1, j ,k,bi,bj)
      &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacW( i ,j-1,k,bi,bj)
      &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacW(i+1,j-1,k,bi,bj))
-         IF (upwindVort3) THEN
+         IF (upwindVorticity) THEN
           IF (uBarXY.GT.0.) THEN
            vort3v=omega3(i,j)*r_hFacZ(i,j)
           ELSE
@@ -57,6 +56,25 @@ C     == Local variables ==
            vort3v=0.5*(omega3(i,j)*r_hFacZ(i,j)
      &                +omega3(i+1,j)*r_hFacZ(i+1,j))
          ENDIF
+        ELSEIF ( SadournyCoriolis ) THEN
+         Zm=0.5*(
+     &       uFld( i , j )*dyG( i , j ,bi,bj)*hFacW( i , j ,k,bi,bj)
+     &      +uFld( i ,j-1)*dyG( i ,j-1,bi,bj)*hFacW( i ,j-1,k,bi,bj) )
+         Zp=0.5*(
+     &       uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacW(i+1, j ,k,bi,bj)
+     &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacW(i+1,j-1,k,bi,bj) )
+         IF (upwindVorticity) THEN
+          IF ( (Zm+Zp) .GT.0.) THEN
+           vort3v=Zm*r_hFacZ( i ,j)*omega3( i ,j)
+          ELSE
+           vort3v=Zp*r_hFacZ(i+1,j)*omega3(i+1,j)
+          ENDIF
+         ELSE
+          Zm=Zm*r_hFacZ( i ,j)*omega3( i ,j)
+          Zp=Zp*r_hFacZ(i+1,j)*omega3(i+1,j)
+          vort3v=0.5*( Zm + Zp )
+         ENDIF
+         uBarXY=1.
         ELSE
 c--      test a different formulation (relatively to hFac)
          uBarXY=0.5*(
@@ -65,7 +83,7 @@ c--      test a different formulation (relatively to hFac)
      &      +uFld(i+1, j )*dyG(i+1, j ,bi,bj)*hFacZ(i+1,j)
      &      +uFld(i+1,j-1)*dyG(i+1,j-1,bi,bj)*hFacZ(i+1,j)
      &              )/MAX( epsil, hFacZ(i,j)+hFacZ(i+1,j) )
-         IF (upwindVort3) THEN
+         IF (upwindVorticity) THEN
           IF (uBarXY.GT.0.) THEN
            vort3v=omega3(i,j)
           ELSE
@@ -75,6 +93,11 @@ c--      test a different formulation (relatively to hFac)
            vort3v=0.5*(omega3(i,j)+omega3(i+1,j))
          ENDIF
         ENDIF
+
+        IF (useJamartWetpoints)
+     &   uBarXY = uBarXY * 4. _d 0 * hFacS(i,j,k,bi,bj)
+     &   * MAX( epsil, hFacW( i , j ,k,bi,bj)+hFacW( i ,j-1,k,bi,bj)
+     &                +hFacW(i+1, j ,k,bi,bj)+hFacW(i+1,j-1,k,bi,bj) )
 
         vCoriolisTerm(i,j)=
      &   -vort3v*uBarXY*recip_dyC(i,j,bi,bj)*_maskS(i,j,k,bi,bj)
