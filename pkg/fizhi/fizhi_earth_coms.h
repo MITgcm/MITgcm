@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/Attic/earth_coms.h,v 1.2 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_earth_coms.h,v 1.1 2004/06/07 16:57:39 molod Exp $
 C $Name:  $
 
 c Solid-Earth State Variables
