@@ -29,7 +29,7 @@ c     the original code. Christian Eckert contributed the interface
 c     to the ECCO release of the MITgcmUV in order to get the off-
 c     line version going. The on-line optimisation uses a simple
 c     example, whereas the off-line version deals with the ECCO
-c     release's output. The off-line version can, of course, only
+c     release output. The off-line version can, of course, only
 c     do one optimization step at a time.
 c
 c     started:  Christian Eckert  eckert@mit.edu  15-Feb-2000
@@ -148,6 +148,7 @@ c--   Preset the optimization parameters.
       eps        = -1.e-6
       nupdate    =  1
       ff         = 0.
+      expId      = 'MIT_CE_000'
 
       modeldataunit = 14
       scrunit1      = 11

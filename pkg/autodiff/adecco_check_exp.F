@@ -292,6 +292,8 @@ cph        call mdswritefield( yprefix//'snapshot_xx_tauv', 32, .false.,
 cph     &                      'RS', 1, xx_tauv, irec,
 cph     &                      mycurrentiter, mythid )
 
+#ifdef I_HAVE_FIXED_THIS
+
 #ifdef ALLOW_BULKFORMULAE
 c--     Atmospheric zonal wind:
         write(yfname,'(128a)') ' '
@@ -345,49 +347,7 @@ c--     Long wave radiative flux:
      &                      mycurrentiter, mythid )
 #endif / * ALLOW_BULKFORMULAE * /
 
-#ifdef ALLOW_KPP
-c--     Short wave radiative flux:
-      DO bj = myByLo(myThid), myByHi(myThid)
-       DO bi = myBxLo(myThid), myBxHi(myThid)
-        DO j=1-oLy,sNy+oLy
-         DO i=1-oLx,sNx+oLx
-            tmpflux(i,j,bi,bj) =
-     &            -Qsw(i,j,bi,bj)*HeatCapacity_Cp*rhoConst*dRf(1)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-        write(yfname,'(128a)') ' '
-        write(yfname,'(2a)') yprefix, 'snapshot_swflux'
-        call mdswritefield( yfname, 32, .false.,
-     &                      'RS', 1, tmpflux, irec,
-     &                      mycurrentiter, mythid )
-
-c--     Boundary layer depth:
-        write(yfname,'(128a)') ' '
-        write(yfname,'(2a)') yprefix, 'snapshot_kpphbl'
-        call mdswritefield( yfname, 32, .false.,
-     &                      'RL', 1, kpphbl, irec,
-     &                      mycurrentiter, mythid )
-#endif / * ALLOW_KPP * /
-
-#ifdef ALLOW_CLIMSST_RELAXATION
-c--     SST climatology:
-        write(yfname,'(128a)') ' '
-        write(yfname,'(2a)') yprefix, 'snapshot_sst'
-        call mdswritefield( yfname, 32, .false.,
-     &                      'RS', 1, sst, irec,
-     &                      mycurrentiter, mythid )
-#endif / * ALLOW_CLIMSST_RELAXATION * /
-
-#ifdef ALLOW_CLIMSSS_RELAXATION
-c--     SSS climatology:
-        write(yfname,'(128a)') ' '
-        write(yfname,'(2a)') yprefix, 'snapshot_sss'
-        call mdswritefield( yfname, 32, .false.,
-     &                      'RS', 1, sss, irec,
-     &                      mycurrentiter, mythid )
-#endif / * ALLOW_CLIMSSS_RELAXATION * /
+#endif /* I_HAVE_FIXED_THIS */
 
       endif
 
