@@ -17,7 +17,7 @@ C         for the first-component, once for second.
 C
 C  NOTES: 1) This code, as written, only works on ONE PROCESSOR!
 C         2) This code assumes that the faces are square (sNx=sNy....)
-C               (also - we don't worry about barriers)
+C               (also - we do not worry about barriers)
 C*=====================================================================*
 
 #include "SIZE.h"

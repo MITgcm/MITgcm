@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.26 2004/07/18 01:04:23 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.27 2004/09/07 17:29:15 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -67,7 +67,7 @@ C--   Start with surface restoring term :
        DO j = jMin, jMax
         DO i = iMin, iMax
 #ifdef ALLOW_SEAICE
-C     Don't restore under sea-ice
+C     Do not restore under sea-ice
 C     Heat Flux (restoring term) : 
           surfaceForcingT(i,j,bi,bj) = 
      &      -lambdaThetaClimRelax * (1-AREA(i,j,1,bi,bj))

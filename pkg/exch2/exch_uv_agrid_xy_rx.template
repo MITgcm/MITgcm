@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch_uv_agrid_xy_rx.template,v 1.2 2004/04/05 15:27:06 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/Attic/exch_uv_agrid_xy_rx.template,v 1.3 2004/09/07 17:29:14 edhill Exp $
 C $Name:  $
 
       subroutine exch_uv_agrid_xy_RX( component1,component2, myThid )
@@ -20,7 +20,7 @@ C         for the first-component, once for second.
 C
 C  NOTES: 1) This code, as written, only works on ONE PROCESSOR!
 C         2) This code assumes that the faces are square (sNx=sNy....)
-C               (also - we don't worry about barriers)
+C               (also - we do not worry about barriers)
 C*=====================================================================*
 
 #include "SIZE.h"

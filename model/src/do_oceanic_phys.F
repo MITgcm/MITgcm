@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.6 2004/09/02 09:13:49 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_oceanic_phys.F,v 1.7 2004/09/07 17:29:14 edhill Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -129,7 +129,7 @@ CADJ STORE theta = comlev1, key = ikey_dynamics
 #ifdef COMPONENT_MODULE
 # ifndef ALLOW_AIM
 C--    Apply imported data (from coupled interface) to forcing fields
-C jmc: don't know precisely where to put this call (bf or af thSIce ?) 
+C jmc: do not know precisely where to put this call (bf or af thSIce ?) 
        IF ( useCoupler ) THEN
          CALL OCN_APPLY_IMPORT( .TRUE., myTime, myIter, myThid )
        ENDIF

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.3 2004/04/06 00:42:17 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/exch2/w2_eeboot.F,v 1.4 2004/09/07 17:29:14 edhill Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -38,7 +38,7 @@ C     == Local variables ==
       INTEGER istatus(MPI_STATUS_SIZE)
 #endif
 
-C     Set dummy myThid value (we aren't multi-threaded here)
+C     Set dummy myThid value (we are not multi-threaded here)
       myThid = 1
  
 C     Define toplogy for every tile
