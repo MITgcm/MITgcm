@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.8 2002/07/13 03:30:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.9 2003/01/21 19:17:03 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -71,6 +71,35 @@ CEOP
 
          write(*,*) 'myIter= ',myiter
 
+
+       call adexch_xyz_rl( mythid,adtheta)
+       call adexch_xyz_rl( mythid,adsalt)
+       call adexch_xy_rl( mythid,adfu )
+       call adexch_xy_rl( mythid,adfv )
+       call adexch_xy_rl( mythid,adqnet )
+       call adexch_xy_rl( mythid,adempmr )
+#ifdef ALLOW_EDTAUX_CONTROL
+       call adexch_xyz_rl( mythid,adeddytaux )
+#endif
+#ifdef ALLOW_EDTAUY_CONTROL
+       call adexch_xyz_rl( mythid,adeddytauy )
+#endif
+#ifdef ALLOW_TR1_CONTROL
+       call adexch_xyz_rl( mythid,adtr1 )
+#endif
+#ifdef ALLOW_DIFFKR_CONTROL
+       call adexch_xyz_rl( mythid,addiffkr )
+#endif
+#ifdef ALLOW_KAPGM_CONTROL
+       call adexch_xyz_rl( mythid,adkapgm )
+#endif
+#ifdef ALLOW_SSTO_CONTROL
+       call adexch_xy_rl( mythid,adsst )
+#endif
+#ifdef ALLOW_SSSO_CONTROL
+       call adexch_xy_rl( mythid,adsss )
+#endif
+
        _BARRIER
        _BEGIN_MASTER( myThid )
 
@@ -81,24 +110,6 @@ C--     Set suffix for this set of data files.
 C--     Read IO error counter
         beginIOErrCount = IO_ERRCOUNT(myThid)
 
-        CALL WRITE_FLD_XY_RL ( 'ADJtaux.',suff, adfu, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJtauy.',suff, adfv, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJqnet.',suff, adqnet, myIter, myThid)
-        CALL WRITE_FLD_XY_RL ( 'ADJempr.',suff, adempmr, myIter, myThid)
-c
-        CALL WRITE_FLD_XYZ_RL( 
-     &       'ADJgtnm1.',suff, adgtnm1, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
-     &       'ADJgsnm1.',suff, adgsnm1, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
-     &       'ADJgunm1.',suff, adgunm1, myIter, myThid)
-        CALL WRITE_FLD_XYZ_RL( 
-     &       'ADJgvnm1.',suff, adgvnm1, myIter, myThid)
-#ifdef ALLOW_PASSIVE_TRACER
-        CALL WRITE_FLD_XYZ_RL( 
-     &       'ADJgtr1nm1. ',suff, adgtr1nm1, myIter, myThid)
-#endif
-c
         CALL WRITE_FLD_XYZ_RL( 
      &       'ADJtheta.',suff, adtheta, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL( 
@@ -107,8 +118,12 @@ c
      &       'ADJuvel.',suff, aduvel, myIter, myThid)
         CALL WRITE_FLD_XYZ_RL( 
      &       'ADJvvel.',suff, advvel, myIter, myThid)
-
-#ifdef ALLOW_PASSIVE_TRACER
+        CALL WRITE_FLD_XY_RL ( 'ADJtaux.',suff, adfu, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJtauy.',suff, adfv, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJqnet.',suff, adqnet, myIter, myThid)
+        CALL WRITE_FLD_XY_RL ( 'ADJempr.',suff, adempmr, myIter, myThid)
+c
+#ifdef ALLOW_TR1_CONTROL
         CALL WRITE_FLD_XYZ_RL( 
      &       'ADJtr1. ',suff, adtr1, myIter, myThid)
 #endif
@@ -120,9 +135,21 @@ c
         CALL WRITE_FLD_XYZ_RL ( 'ADJkagm.',suff, adkapgm, 
      &       myIter, myThid)
 #endif
-
-cph        CALL WRITE_FLD_XY_RL( 'ADJ_sst.',suff, adsst, myIter, myThid)
-cph        CALL WRITE_FLD_XY_RL( 'ADJ_sss.',suff, adsss, myIter, myThid)
+#ifdef ALLOW_EDTAUX_CONTROL
+        CALL WRITE_FLD_XYZ_RL(
+     &       'ADJedtaux. ',suff, adeddytaux, myIter, myThid)
+#endif
+#ifdef ALLOW_EDTAUY_CONTROL
+        CALL WRITE_FLD_XYZ_RL(
+     &       'ADJedtauy. ',suff, adeddytauy, myIter, myThid)
+#endif
+#ifdef ALLOW_SSTO_CONTROL
+        CALL WRITE_FLD_XY_RL( 'ADJsst.',suff, adsst, myIter, myThid)
+#endif
+#ifdef ALLOW_SSSO_CONTROL
+        CALL WRITE_FLD_XY_RL( 'ADJsss.',suff, adsss, myIter, myThid)
+#endif
+c
 
 C--     Reread IO error counter
         endIOErrCount = IO_ERRCOUNT(myThid)
