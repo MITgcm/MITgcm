@@ -8,14 +8,13 @@ subroutines:
 
   1) "stubs" of the form:  MNC_WV_[G|L]2D_R[S|L] ()
 
-  2) MNC_INIT_VGRID( 'V_GRID_TYPE', nx, ny, nz, zc, zg )
-				    1   1
+  2) MNC_INIT_VGRID('V_GRID_TYPE', nx, ny, nz, zc, zg)
 
-  3) MNC_INIT_HGRID( 'H_GRID_TYPE', nx, ny, xc, yc, xg, yg )
+  3) MNC_INIT_HGRID('H_GRID_TYPE', nx, ny, xc, yc, xg, yg)
 
-  4) MNC_INIT_VAR( 'file', 'Vname', 'Vunits', 'H_GTYPE', 'V_GTYPE', PREC, FillVal )
+  4) MNC_INIT_VAR('file', 'Vname', 'Vunits', 'H_GTYPE', 'V_GTYPE', PREC, FillVal)
 
-  5) MNC_WRITE_VAR( 'file', 'Vname', var, bi, bj, myThid )
+  5) MNC_WRITE_VAR('file', 'Vname', var, bi, bj, myThid)
 
 This is a reasonable start but its inflexible since it isn't easily
 generalized to grids with dimensions other than [2,3,4] or grids with
@@ -35,10 +34,10 @@ all the relevant information:
 which can then be manipulated (created, associated, destroyed, etc.)
 using a simple interface such as:
 
-  MNC_INIT(		 myThid )
+  MNC_INIT(              myThid )
 
-  MNC_FILE_CREATE(	 myThid, fname )
-  MNC_FILE_OPEN(	 myThid, fname, itype )
+  MNC_FILE_CREATE(       myThid, fname )
+  MNC_FILE_OPEN(         myThid, fname, itype )
   MNC_FILE_ADD_ATTR_STR( myThid, fname, atname, sval )
   MNC_FILE_ADD_ATTR_DBL( myThid, fname, atname, len, dval )
   MNC_FILE_ADD_ATTR_REAL(myThid, fname, atname, len, rval )
@@ -47,32 +46,42 @@ using a simple interface such as:
   ...
   MNC_FILE_READ_HEADER(  myThid, fname )
 
-  MNC_DIM_INIT(		 myThid, fname, dname, dunits, dlen )
+  MNC_DIM_INIT(          myThid, fname, dname, dlen )
 
-  MNC_GRID_INIT(	 myThid, fname, gname, ndim, dnames )
-  MNC_GRID_SET_LL(	 myThid, fname, gname, type, lats, lons )
+  MNC_GRID_INIT(         myThid, fname, gname, ndim, dnames )
 
-  MNC_VAR_INIT_DBL(	 myThid, fname, gname, vname, units )
-  MNC_VAR_INIT_REAL(	 myThid, fname, gname, vname, units )
-  MNC_VAR_INIT_INT(	 myThid, fname, gname, vname, units )
-  MNC_VAR_INIT_ANY(	 myThid, fname, gname, vname, units, type )
-  MNC_VAR_ADD_ATTR_STR(	 myThid, fname, vname, atname, sval )
-  MNC_VAR_ADD_ATTR_DBL(	 myThid, fname, vname, atname, nv, dval )
+  MNC_VAR_INIT_DBL(      myThid, fname, gname, vname, units )
+  MNC_VAR_INIT_REAL(     myThid, fname, gname, vname, units )
+  MNC_VAR_INIT_INT(      myThid, fname, gname, vname, units )
+  MNC_VAR_INIT_ANY(      myThid, fname, gname, vname, units, type )
+  MNC_VAR_ADD_ATTR_STR(  myThid, fname, vname, atname, sval )
+  MNC_VAR_ADD_ATTR_DBL(  myThid, fname, vname, atname, nv, dval )
   MNC_VAR_ADD_ATTR_REAL( myThid, fname, vname, atname, nv, rval )
-  MNC_VAR_ADD_ATTR_INT(	 myThid, fname, vname, atname, nv, ival )
-  MNC_VAR_ADD_ATTR_ANY(	 myThid, fname, vname, atname, atype, cs,len,dv,rv,iv )
-  MNC_VAR_WRITE_DBL(	 myThid, fname, vname, var )
-  MNC_VAR_WRITE_REAL(	 myThid, fname, vname, var )
-  MNC_VAR_WRITE_INT(	 myThid, fname, vname, var )
-  MNC_VAR_WRITE_ANY(	 myThid, fname, vname, vtype, dv, rv, iv )
+  MNC_VAR_ADD_ATTR_INT(  myThid, fname, vname, atname, nv, ival )
+  MNC_VAR_ADD_ATTR_ANY(  myThid, fname, vname, atname, atype, cs,len,dv,rv,iv )
+  MNC_VAR_WRITE_DBL(     myThid, fname, vname, var )
+  MNC_VAR_WRITE_REAL(    myThid, fname, vname, var )
+  MNC_VAR_WRITE_INT(     myThid, fname, vname, var )
+  MNC_VAR_WRITE_ANY(     myThid, fname, vname, vtype, dv, rv, iv )
   ...
   MNC_VAR_READ(          myThid, fname, vname, var )
 
-  MNC_FILE_CLOSE(	 myThid, fname )
+  MNC_FILE_CLOSE(        myThid, fname )
 
-The above interface is powerful yet easy to use (easier than the
-entire NetCDF interface) since it helps the user keep track of the
-associations between files, "grids", variables, and dimensions.
+
+Heres a further "convenience wrapper" written on top of the above UI:
+
+  MNC_UGRID_INIT(        myThid, ugname, Htype, Hsub, Vtype, Ttype )
+
+    with pre-defined individual          -      xy    -      -
+    types and combinations:              U      x     c      t
+                                         V      y     i
+    'U_xy_i_t' or 'Cor_x_-_-'            Cen
+                                         Cor
+
+  MNC_UGRID_W_VAR(       myThid, myIter, fbase,bi,bj, ugname, 'RX', var )
+
+
 
 
 To-Do:
@@ -92,7 +101,7 @@ To-Do:
       vname ( ni ) 
       vlen  ( ni ) 
       vind  ( ni ) ------+
-		         |
+                         |
 
       vij_diag ( i, j, [...] )  w/ lat/lon indicies
       vgl_diag ( [...] )        wo/ lat/lon indicies (global)
@@ -100,4 +109,18 @@ To-Do:
  4) CNH pointed out that grid interpolation needs to be handled
     "on-the-fly" since pre-processing would result in overly large
     input files.  We need an interpolation API...
+
+ 5) From the group meeting on 2004/01/21, we need to define
+    "sub-grids" corresponding to:
+
+         var_name       HGRID       VGRID       TIME
+         ===========================================
+         u              U_xy        r_c         t
+         eta            T_xy        -           t
+         rac            T_xy        -           -
+
+    And write a convenience wrapper so that users can write variables
+    using just two function calls.  JMC and I worked out the
+    following:
+
 

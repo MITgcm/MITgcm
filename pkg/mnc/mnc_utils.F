@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.5 2004/01/14 23:02:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_utils.F,v 1.6 2004/01/25 00:22:57 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -52,7 +52,7 @@ C==================================================================
 #include "EEPARAMS.h"
 
 C     Arguments
-      integer myThid, nt, id
+      integer myThid, nt
       character*(*) aname
       character*(*) name_list(NT)
 
@@ -100,7 +100,7 @@ C==================================================================
 #include "EEPARAMS.h"
 
 C     Arguments
-      integer myThid, nt, id
+      integer myThid, nt
       character*(*) name_list(NT)
 
 C     Functions
@@ -152,10 +152,9 @@ C     Functions
       integer ILNBLNK
 
 C     Locals
-      integer i,j,k, n, nv, lenf,lenv
+      integer i,j,k, n, lenv
 
 C     Strip trailing spaces
-      lenf = ILNBLNK(fname)
       lenv = ILNBLNK(vname)
 
 C     Check that the file exists
@@ -167,9 +166,8 @@ C     Check that the file exists
       fid = mnc_f_info(indf,2)
 
 C     Find the vID
-      nv = mnc_fv_ids(indf,1)
-      DO i = 1,nv
-        k = 2 + (i - 1)*3
+      DO i = 1,mnc_fv_ids(indf,1)
+        k = 2 + 3*(i - 1)
         j = mnc_fv_ids(indf,k)
         n = ILNBLNK(mnc_v_names(j))
         IF ((n .EQ. lenv) 

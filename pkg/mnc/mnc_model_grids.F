@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_model_grids.F,v 1.5 2004/01/17 13:55:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_model_grids.F,v 1.6 2004/01/25 00:22:57 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -81,21 +81,25 @@ C         Kludge until unstructered tiles -- mimics mdsio tile numbering
           jG = bj+(myYGlobalLo-1)/sNy
           
           n = ILNBLNK(RefName)
-          write(fnm(1:100),'(3a,i3.3,a,i3.3,a)') "grid_",
-     &         RefName(1:n), '-',iG,'-',jG,'.nc '
+          IF (n .GT. (100-5-11))  n = 100-5-11
+          fnm(1:5) = 'grid_'
+          fnm(6:(6+n-1)) = RefName(1:n)
+          n = n + 6
+          write(fnm(n:(n+11-1)),'(a1,i3.3,a1,i3.3,a3)') 
+     &         '-',iG,'-',jG,'.nc'
           CALL MNC_FILE_CREATE(myThid, fnm)
 
 C         Create the dimensions
           IF (withHalo(1:1) .EQ. 'N') THEN
-            CALL MNC_DIM_INIT(myThid,fnm,dnms(11),dnms(11), sNx  )
-            CALL MNC_DIM_INIT(myThid,fnm,dnms(12),dnms(12), sNy  )
-            CALL MNC_DIM_INIT(myThid,fnm,dnms(13),dnms(13), Nr   )
-            CALL MNC_DIM_INIT(myThid,fnm,dnms(14),dnms(14), Nr+1 )
+            CALL MNC_DIM_INIT(myThid,fnm,dnms(11), sNx  )
+            CALL MNC_DIM_INIT(myThid,fnm,dnms(12), sNy  )
+            CALL MNC_DIM_INIT(myThid,fnm,dnms(13), Nr   )
+            CALL MNC_DIM_INIT(myThid,fnm,dnms(14), Nr+1 )
           ELSEIF (withHalo(1:1) .EQ. 'Y') THEN
-            CALL MNC_DIM_INIT(myThid,fnm,dnms(11),dnms(11), sNx+2*OLx )
-            CALL MNC_DIM_INIT(myThid,fnm,dnms(12),dnms(12), sNy+2*OLy )
-            CALL MNC_DIM_INIT(myThid,fnm,dnms(13),dnms(13), Nr        )
-            CALL MNC_DIM_INIT(myThid,fnm,dnms(14),dnms(14), Nr+1)
+            CALL MNC_DIM_INIT(myThid,fnm,dnms(11), sNx+2*OLx )
+            CALL MNC_DIM_INIT(myThid,fnm,dnms(12), sNy+2*OLy )
+            CALL MNC_DIM_INIT(myThid,fnm,dnms(13), Nr        )
+            CALL MNC_DIM_INIT(myThid,fnm,dnms(14), Nr+1)
           ELSE
             write(msgbuf,'(a)') 'MNC ERROR: withHalo must be [Y|N]'
             CALL print_error( msgbuf, mythid )
@@ -484,7 +488,9 @@ C         Add long_name attributes to the variables
      &         'W-facing vertical fraction of open cell')
           CALL MNC_VAR_ADD_ATTR_STR(mt,fnm,'HFacS',atnm,
      &         'S-facing vertical fraction of open cell')
-            
+
+C          CALL MNC_DUMP()
+
 C         Close the grid file
           CALL MNC_FILE_CLOSE(myThid, fnm)
 

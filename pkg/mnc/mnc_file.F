@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.8 2004/01/18 23:23:15 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_file.F,v 1.9 2004/01/25 00:22:57 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -56,13 +56,16 @@ C     Is the file already open?
 
       write(msgbuf,'(3a)') 'opening ''', fname, ''''
       IF ( itype .EQ. 0 ) THEN
+
 C       Create new file
-        err = NF_CREATE( fname, NF_CLOBBER, fid )
+        err = NF_CREATE(fname, NF_CLOBBER, fid)
         CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+
       ELSEIF ( itype .EQ. 1 ) THEN
+
 C       Append to existing file
-        err = NF_OPEN( fname, NF_WRITE, fid )
-        CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+        CALL MNC_FILE_READALL(myThid, fname)
+
       ELSE
 C       Error
         write(msgbuf,'(a,i5,a)') 'MNC_FILE_OPEN ERROR: ''', itype, 
@@ -264,24 +267,43 @@ C     Check that the file is open
       write(msgbuf,'(3a)') ' cannot close file ''', fname, ''''
       CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
 
-C     Clear all the file, grid, variable, and dim names and refs
+C     Clear all the info associated with this file
+C     variables
       n = mnc_fv_ids(ind,1)
       IF (n .GE. 1) THEN
         DO i = 1,n
-          j = 2*i
+          j = 2 + 3*(i - 1)
           k = mnc_fv_ids(ind,j)
           mnc_v_names(k)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
         ENDDO
+        DO i = 1,(1 + 3*n)
+          mnc_fv_ids(ind,i) = 0
+        ENDDO
       ENDIF
+C     dims
       n = mnc_f_alld(ind,1)
+      mnc_f_alld(ind,1) = 0
       DO i = 1,n
         j = mnc_f_alld(ind,i+1)
+        mnc_d_ids(j)  = 0
+        mnc_d_size(j) = 0
         mnc_d_names(j)(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+        mnc_f_alld(ind,i+1) = 0
       ENDDO
-      mnc_f_alld(ind,1) = 0
-      DO i = 1,3
-        mnc_f_info(ind,i) = 0
-      ENDDO
+C     grids
+      n = mnc_f_info(ind,3)
+      IF (n .GT. 0) THEN
+        DO i = 1,n
+          j = 4 + 3*(i - 1)
+          k = mnc_f_info(ind,j)
+          mnc_g_names(k)(1:MNC_MAX_CHAR)=mnc_blank_name(1:MNC_MAX_CHAR)
+        ENDDO
+        DO i = 1,MNC_MAX_INFO
+          mnc_fd_ind(ind,i) = 0
+          mnc_f_info(ind,i) = 0
+        ENDDO
+      ENDIF
+C     file name
       mnc_f_names(ind)(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
 
       RETURN
@@ -436,6 +458,115 @@ C       Enter define mode
      &       'ending define mode in S/R MNC_FILE_ENDDEF')
         mnc_f_info(ind,1) = 2
       ENDIF
+
+      RETURN
+      END
+
+C==================================================================
+
+      SUBROUTINE MNC_FILE_READALL( 
+     I     myThid, 
+     I     fname ) 
+
+      implicit none
+#include "netcdf.inc"
+#include "mnc_common.h"
+#include "EEPARAMS.h"
+
+C     Arguments
+      integer myThid
+      character*(*) fname
+
+C     Functions
+      integer IFNBLNK, ILNBLNK
+
+C     Local Variables
+      integer i,j,k, fid, err, ndim,nvar,ngat,unlimid
+      integer dlen, id, indf, xtype, nat, nff,nlf, iv
+      integer ndv, did, ns,ne, n1,n2, indg, indv
+      character*(MAX_LEN_MBUF) msgbuf
+      character*(NF_MAX_NAME) name
+      integer idlist(NF_MAX_VAR_DIMS)
+      character*(MNC_MAX_CHAR) dnames(20)
+
+C     Open and save the filename and fID
+      nff = IFNBLNK(fname)
+      nlf = ILNBLNK(fname)
+      err = NF_OPEN(fname, NF_WRITE, fid)
+      write(msgbuf,'(3a)') 'MNC ERROR: cannot open file ''', 
+     &     fname(nff:nlf), ''' for read/write access'
+      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+      CALL MNC_GET_NEXT_EMPTY_IND(myThid,MNC_MAX_ID,mnc_f_names,indf) 
+      mnc_f_names(indf)(1:(nlf-nff+1)) = fname(nff:nlf)
+      mnc_f_info(indf,2) = fid
+
+C     Get the overall number of entities
+      err = NF_INQ(fid, ndim, nvar, ngat, unlimid)
+      write(msgbuf,'(4a)') 'MNC ERROR: cannot read number of dims',
+     &     ' in file ''', fname(nff:nlf), ''''
+      CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+
+C     Read each dimension and save the information
+      DO id = 1,ndim
+        err = NF_INQ_DIM(fid, id, name, dlen)
+        write(msgbuf,'(2a,i5,3a)') 'MNC ERROR: cannot read dimension',
+     &       ' info for dim ''', id, ''' in file ''', 
+     &       fname(nff:nlf), ''''
+        CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+        IF (id .EQ. unlimid) THEN
+          dlen = -1
+        ENDIF
+        ns = IFNBLNK(name)
+        ne = ILNBLNK(name)
+        CALL MNC_DIM_INIT_ALL(myThid,fname,name(ns:ne),dlen,'N')
+        DO i = 1,mnc_f_alld(indf,1)
+          j = mnc_f_alld(indf,i+1)
+          n1 = IFNBLNK(mnc_d_names(j))
+          n2 = ILNBLNK(mnc_d_names(j))
+          IF (((ne-ns) .EQ. (n2-n1)) 
+     &         .AND. (mnc_d_names(j)(ns:ne) .EQ. name(ns:ne))) THEN
+            mnc_d_ids(j) = id
+            goto 10
+          ENDIF
+        ENDDO
+ 10     CONTINUE
+      ENDDO
+
+C     Read and save each variable
+      DO id = 1,nvar
+        err = NF_INQ_VAR(fid, id, name, xtype, ndv, idlist, nat)
+        write(msgbuf,'(2a,i5,3a)') 'MNC ERROR: cannot read variable',
+     &       ' info for variable ''', id, ''' in file ''', 
+     &       fname(nff:nlf), ''''
+        CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+        n1 = IFNBLNK(name)
+        n2 = ILNBLNK(name)
+        
+C       Create a grid for this variable
+        DO i = 1,ndv
+          did = idlist(i)
+          dnames(i)(1:MNC_MAX_CHAR) = mnc_d_names(did)(1:MNC_MAX_CHAR)
+        ENDDO
+        CALL MNC_GRID_INIT_ALL(myThid, fname, name, ndv, dnames, indg)
+
+C       Update the tables
+        CALL MNC_GET_NEXT_EMPTY_IND(myThid,MNC_MAX_ID,mnc_v_names,indv)
+        mnc_v_names(indv)(1:(n2-n1+1)) = name(n1:n2)
+        iv = 2 + 3*mnc_fv_ids(indf,1)
+        mnc_fv_ids(indf,iv)   = indv
+        mnc_fv_ids(indf,iv+1) = id
+        DO i = 1,mnc_f_info(indf,3)
+          j = 4 + 3*(i-1)
+          k = mnc_f_info(indf,j)
+          IF (k .EQ. indg) THEN
+            mnc_fv_ids(indf,iv+2) = j
+            GOTO 20
+          ENDIF
+        ENDDO
+ 20     CONTINUE
+        mnc_fv_ids(indf,1) = mnc_fv_ids(indf,1) + 1
+        
+      ENDDO
 
       RETURN
       END

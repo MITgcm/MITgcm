@@ -1,8 +1,41 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_utils.T,v 1.1 2004/01/05 21:38:27 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_utils.T,v 1.2 2004/01/25 00:22:57 edhill Exp $
 C $Name:  $
 
 C     MNC utilities duplicating things in MITgcm
       
+C====================================================================
+C     Copied from: eesupp/src/utils.F
+
+      INTEGER FUNCTION IFNBLNK( string )
+      IMPLICIT NONE
+
+C     !DESCRIPTION:
+C     *==========================================================*
+C     | FUNCTION IFNBLNK                                         |
+C     | o Find first non-blank in character string.              |
+C     *==========================================================*
+C
+C     !INPUT PARAMETERS:
+C     string :: String to find first non-blank in.
+      CHARACTER*(*) string
+
+C     !LOCAL VARIABLES:
+C     L, LS :: Temps for string locations
+      INTEGER L, LS
+CEOP
+C
+      LS     = LEN(string)
+      IFNBLNK = 0
+      DO 10 L = 1, LS
+       IF ( string(L:L) .EQ. ' ' ) GOTO 10
+        IFNBLNK = L
+        GOTO 11
+   10 CONTINUE
+   11 CONTINUE
+C
+      RETURN
+      END
+
 C====================================================================
 C     Copied from: eesupp/src/utils.F
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_001.T,v 1.8 2004/01/18 23:23:15 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_test_001.T,v 1.9 2004/01/25 00:22:57 edhill Exp $
 C $Name:  $
 
 C     Simple test program for MNC
@@ -80,12 +80,10 @@ C     In FORTRAN, the first variable cycles most quickly
 
       print*, ' Calling MNC_DIM_INIT() ...'
       DO i = 1,ndim
-        CALL MNC_DIM_INIT(myThid,fname, dnames(i),dnames(i),dims(i))
+        CALL MNC_DIM_INIT(myThid,fname, dnames(i),dims(i))
         ii = ILNBLNK(dnames(i))
         print*, '   ... created dimension: ', dnames(i)(1:ii)
       ENDDO
-
-      CALL MNC_DUMP()
 
       print*, ' Calling MNC_GRID_INIT() ...'
       gname1(1:10) = 'xyzt      '
@@ -118,6 +116,15 @@ C     In FORTRAN, the first variable cycles most quickly
 
       print*, ' Calling MNC_FILE_CLOSE() ...'
       CALL MNC_FILE_CLOSE(myThid, fname)
+
+      CALL MNC_DUMP()
+
+      print*, '=========================================='
+
+      print*, ' Calling MNC_FILE_READALL() ...'
+      CALL MNC_FILE_READALL(myThid, fname)
+
+      CALL MNC_DUMP()
 
       print*, '=== Ending Program:  mnc_test_001 ==='
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.9 2004/01/18 23:23:15 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_var.F,v 1.10 2004/01/25 00:22:57 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -139,7 +139,7 @@ C     Get the grid information
           nd = 0
           DO k = is,ie
             nd = nd + 1
-            ids(nd) = mnc_fg_ids(indf,k)
+            ids(nd) = mnc_d_ids(mnc_fd_ind(indf,k))
           ENDDO
           GOTO 10
         ENDIF
@@ -162,11 +162,9 @@ C     Success, so save the variable info
       mnc_v_names(indv)(1:lenv) = vname(1:lenv)
       nv = mnc_fv_ids(indf,1)
       i = 2 + nv*3
-      j = i + 1
-      k = i + 2
-      mnc_fv_ids(indf,i) = indv
-      mnc_fv_ids(indf,j) = vid
-      mnc_fv_ids(indf,k) = ind_g_finfo
+      mnc_fv_ids(indf,i)   = indv
+      mnc_fv_ids(indf,i+1) = vid
+      mnc_fv_ids(indf,i+2) = ind_g_finfo
       mnc_fv_ids(indf,1) = nv + 1
 
 C     Add the units
@@ -501,7 +499,7 @@ C     Get the lengths from the dim IDs
 C     Check for the unlimited dimension
       j = mnc_d_size( mnc_fd_ind(indf,de) )
       IF (j .LT. 1) THEN
-        did = mnc_fg_ids(indf,de)
+        did = mnc_d_ids( mnc_fd_ind(indf,de) )
         err = NF_INQ_DIMLEN(fid, did, lend)
         write(msgbuf,'(a)') 'reading current length of unlimited dim'
         CALL MNC_HANDLE_ERR(myThid, err, msgbuf)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.2 2004/01/17 13:55:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_dim.F,v 1.3 2004/01/25 00:22:57 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -9,28 +9,48 @@ C==================================================================
      I     myThid, 
      I     fname, 
      I     dname, 
-     I     dunits, 
      I     dlen )
 
+C     Arguments
+      integer myThid, dlen
+      character*(*) fname, dname
+
+      CALL MNC_DIM_INIT_ALL(myThid, fname, dname, dlen, 'Y')
+
+      RETURN
+      END
+
+
+C==================================================================
+
+      SUBROUTINE MNC_DIM_INIT_ALL( 
+     I     myThid, 
+     I     fname, 
+     I     dname, 
+     I     dlen, 
+     I     doWrite ) 
+
       implicit none
+#include "netcdf.inc"
 #include "mnc_common.h"
 #include "EEPARAMS.h"
 
 C     Arguments
-      integer myThid
-      character*(*) fname, dname, dunits
-      integer dlen
+      integer myThid, dlen
+      character*(*) fname, dname
+      character*(1) doWrite
 
 C     Functions
-      integer ILNBLNK
+      integer ILNBLNK, IFNBLNK
 
 C     Local Variables
-      integer i,j, indf,indd, n,nf,ndn,ndu
+      integer i,j, indf,indd, n,nf, dnf,dnl, ntmp, idd, err, tlen
       character*(MAX_LEN_MBUF) msgbuf
 
       nf = ILNBLNK(fname)
-      ndn = ILNBLNK(dname)
-      ndu = ILNBLNK(dunits)
+
+      dnf = IFNBLNK(dname)
+      dnl = ILNBLNK(dname)
 
 C     Verify that the file exists
       CALL MNC_GET_IND(myThid, MNC_MAX_ID, fname, mnc_f_names, indf)
@@ -44,9 +64,12 @@ C     Verify that the file exists
 C     Verify that the dim is not currently defined within the file
       n = mnc_f_alld(indf,1)
       DO i = 1,n
+        ntmp = ILNBLNK(mnc_d_names(j))
         j = mnc_f_alld(indf,i+1)
-        IF (dname(1:ndn) .EQ. mnc_d_names(j)(1:ndn)) THEN
-          write(msgbuf,'(5a)') 'MNC ERROR: dimension ''', dname(1:ndn), 
+        IF ((ntmp .EQ. (dnl-dnf+1)) 
+     &       .AND. (dname(dnf:dnl) .EQ. mnc_d_names(j)(1:n))) THEN
+          write(msgbuf,'(5a)') 'MNC ERROR: dimension ''', 
+     &         dname(dnf:dnl), 
      &         ''' already exists within file ''', fname(1:nf), 
      &         ''' and cannot be re-initalized'
           CALL print_error( msgbuf, mythid )
@@ -56,22 +79,24 @@ C     Verify that the dim is not currently defined within the file
 
       CALL MNC_GET_NEXT_EMPTY_IND(myThid, MNC_MAX_ID, mnc_d_names, indd)
 
-C     Check that the dimension name fits in the table
-      IF ( ndn .GT. MNC_MAX_CHAR) THEN
-        ndn = MNC_MAX_CHAR
-        write(msgbuf,'(a)') 'MNC WARNING: dimension name too long'
-        CALL print_error(msgbuf, mythid)
-      ENDIF
-      IF ( ndu .GT. MNC_MAX_CHAR) THEN
-        ndu = MNC_MAX_CHAR
-        write(msgbuf,'(a)') 'MNC WARNING: dimension units too long'
-        CALL print_error(msgbuf, mythid)
+C     Create the dim within the file
+      IF (doWrite(1:1) .EQ. 'Y') THEN
+
+        tlen = dlen
+        IF (dlen .LT. 1)  tlen = NF_UNLIMITED
+
+        CALL MNC_FILE_REDEF(myThid, fname)
+        err = NF_DEF_DIM(mnc_f_info(indf,2), dname(dnf:dnl), tlen, idd)
+        write(msgbuf,'(5a)') 'MNC_DIM_INIT ERROR: cannot create ',
+     &       'dim ''', dname(dnf:dnl), ''' in file ''', fname(1:nf)
+        CALL MNC_HANDLE_ERR(myThid, err, msgbuf)
+
       ENDIF
 
 C     Add to tables
-      mnc_d_names(indd)(1:ndn) = dname(1:ndn)
-      mnc_d_units(indd)(1:ndu) = dunits(1:ndu)
+      mnc_d_names(indd)(1:(dnl-dnf+1)) = dname(dnf:dnl)
       mnc_d_size(indd) = dlen
+      mnc_d_ids(indd) = idd
       mnc_f_alld(indf,1) = n + 1
       mnc_f_alld(indf,n+2) = indd
 

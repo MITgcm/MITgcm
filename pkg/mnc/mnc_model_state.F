@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_model_state.F,v 1.1 2004/01/18 23:23:15 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/Attic/mnc_model_state.F,v 1.2 2004/01/25 00:22:57 edhill Exp $
 C $Name:  $
 
 #include "MNC_OPTIONS.h"
@@ -48,8 +48,7 @@ C     Local Variables
       parameter ( MAX_GRIDS_LOC = 20 )
       integer i, n, bi,bj, iG,jG, rnX,rnY,rnZ, bf,bl
       integer istart(3,MAX_GRIDS_LOC), iend(3,MAX_GRIDS_LOC)
-      character*(MNC_MAX_CHAR) fname, fnm, gnms(20),dnms(20)
-      character*(MAX_LEN_MBUF) msgbuf
+      character*(MNC_MAX_CHAR) fname, gnms(20),dnms(20)
       REAL*4 t_R((sNx+2*OLx)*(sNy+2*OLy)*(Nr+1))
       REAL*8 t_D((sNx+2*OLx)*(sNy+2*OLy)*(Nr+1))
 
@@ -133,7 +132,6 @@ C           v = 3
             iend(3,3)   = Nr
           ENDIF
         
-
 C         Increment (by 1) the current length of the NetCDF UNLIMITED
 C         dimension by increasing the length of the iteration variable
           CALL MNC_VAR_APPEND_INT(myThid,fname, 'iter', myIter, 1)
@@ -250,7 +248,7 @@ C     Arguments
       character*(1) withHalo, RorD
 
 C     Functions
-      integer ILNBLNK, IFNBLNK
+      integer ILNBLNK
 
 C     Local Variables
       integer MAX_GRIDS_LOC
@@ -285,19 +283,19 @@ C       dim names        123456789
         dnms(20)(1:9) = 'T        '
 
 C       Create the dimensions
-        CALL MNC_DIM_INIT(myThid,fname,dnms(13),dnms(13), Nr   )
-        CALL MNC_DIM_INIT(myThid,fname,dnms(16),dnms(16), Nr+1 )
-        CALL MNC_DIM_INIT(myThid,fname,dnms(20),dnms(20), -1   )
+        CALL MNC_DIM_INIT(myThid,fname,dnms(13), Nr   )
+        CALL MNC_DIM_INIT(myThid,fname,dnms(16), Nr+1 )
+        CALL MNC_DIM_INIT(myThid,fname,dnms(20), -1   )
         IF (withHalo(1:1) .EQ. 'N') THEN
-          CALL MNC_DIM_INIT(myThid,fname,dnms(11),dnms(11), sNx   )
-          CALL MNC_DIM_INIT(myThid,fname,dnms(12),dnms(12), sNy   )
-          CALL MNC_DIM_INIT(myThid,fname,dnms(14),dnms(14), sNx+1 )
-          CALL MNC_DIM_INIT(myThid,fname,dnms(15),dnms(15), sNy+1 )
+          CALL MNC_DIM_INIT(myThid,fname,dnms(11), sNx   )
+          CALL MNC_DIM_INIT(myThid,fname,dnms(12), sNy   )
+          CALL MNC_DIM_INIT(myThid,fname,dnms(14), sNx+1 )
+          CALL MNC_DIM_INIT(myThid,fname,dnms(15), sNy+1 )
         ELSEIF (withHalo(1:1) .EQ. 'Y') THEN
-          CALL MNC_DIM_INIT(myThid,fname,dnms(11),dnms(11), sNx+2*OLx )
-          CALL MNC_DIM_INIT(myThid,fname,dnms(12),dnms(12), sNy+2*OLy )
-          CALL MNC_DIM_INIT(myThid,fname,dnms(14),dnms(14), sNx+2*OLx )
-          CALL MNC_DIM_INIT(myThid,fname,dnms(15),dnms(15), sNy+2*OLy )
+          CALL MNC_DIM_INIT(myThid,fname,dnms(11), sNx+2*OLx )
+          CALL MNC_DIM_INIT(myThid,fname,dnms(12), sNy+2*OLy )
+          CALL MNC_DIM_INIT(myThid,fname,dnms(14), sNx+2*OLx )
+          CALL MNC_DIM_INIT(myThid,fname,dnms(15), sNy+2*OLy )
         ELSE
           write(msgbuf,'(a)') 'MNC ERROR: withHalo must be [Y|N]'
           CALL print_error( msgbuf, mythid )

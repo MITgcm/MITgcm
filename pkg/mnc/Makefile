@@ -1,5 +1,5 @@
 #
-#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.5 2004/01/16 03:32:42 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/pkg/mnc/Makefile,v 1.6 2004/01/25 00:22:57 edhill Exp $
 #
 #  A Makefile for MNC templates and testing
 #
@@ -64,7 +64,7 @@ tag = ../../doc/tag-index
 mnc_id_header.h:
 	-./parse_local_info > $@
 
-test: mnc_test_001
+test: all mnc_test_001
 	echo "running mnc_test_001 ..."
 	./mnc_test_001 && ncdump test_001.nc | head -50
 

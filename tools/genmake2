@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.63 2004/01/23 16:12:45 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.64 2004/01/25 00:22:57 edhill Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1218,7 +1218,7 @@ if test "x$RETVAL" = x0 ; then
 	cat make_mnc.errors 1>&2
 	exit 1
     fi
-    if test -a "x$HAVE_NETCDF" != xt ; then
+    if test "x$HAVE_NETCDF" != xt ; then
 	cat <<EOF
 
 WARNING: the "mnc" package has been enabled but tests failed to 
