@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.29 2003/02/08 02:09:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/timestep.F,v 1.30 2003/02/09 02:00:50 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -61,8 +61,8 @@ C     Adams-Bashforth timestepping weights
       ENDIF
 
 C-- stagger time step: grad Phi_Hyp is not in gU,gV => add it in this S/R
-c     IF (staggerTimeStep) THEN
-      IF (.FALSE.) THEN
+      IF (staggerTimeStep) THEN
+c     IF (.FALSE.) THEN
         phxFac = pfFacMom
         phyFac = pfFacMom
       ELSE
@@ -119,14 +119,13 @@ C     Step forward zonal velocity (store in Gu)
         ENDDO
       ENDDO
 
-c     IF (.FALSE.) THEN
-      IF (staggerTimeStep) THEN
+      IF (.FALSE.) THEN
+c     IF (staggerTimeStep) THEN
 C--   -grad Phi_Hyd has not been incorporated to gU and is added here:
         phxFac = pfFacMom*deltaTmom
         DO j=jMin,jMax
           DO i=iMin,iMax
             gUNm1(i,j,k,bi,bj)=gUNm1(i,j,k,bi,bj)
-c    &       - phxFac*dPhiHydX(i,j)*_maskW(i,j,k,bi,bj)
      &       - _recip_dxC(i,j,bi,bj)
      &         *(phiHyd(i,j,k)-phiHyd(i-1,j,k))*phxFac
      &         *_maskW(i,j,k,bi,bj)
@@ -180,14 +179,13 @@ C     Step forward meridional velocity (store in Gv)
         ENDDO
       ENDDO
 
-c     IF (.FALSE.) THEN
-      IF (staggerTimeStep) THEN
+      IF (.FALSE.) THEN
+c     IF (staggerTimeStep) THEN
 C--   -grad Phi_Hyd has not been incorporated to gV and is added here:
         phyFac = pfFacMom*deltaTmom
         DO j=jMin,jMax
           DO i=iMin,iMax
             gVNm1(i,j,k,bi,bj)=gVNm1(i,j,k,bi,bj)
-c    &       - phyFac*dPhiHydY(i,j)*_maskS(i,j,k,bi,bj)
      &       - _recip_dyC(i,j,bi,bj)
      &         *(phiHyd(i,j,k)-phiHyd(i,j-1,k))*phyFac
      &         *_maskS(i,j,k,bi,bj)

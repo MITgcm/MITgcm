@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.1 2003/02/08 02:09:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_grad_phi_hyd.F,v 1.2 2003/02/09 02:00:50 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -61,8 +61,8 @@ CEOP
 
       DO j=jMin-1,jMax
        DO i=iMin-1,iMax
-c       varLoc(i,j) = phiHyd(i,j,k)+phi0surf(i,j,bi,bj)
-        varLoc(i,j) = phiHyd(i,j,k)
+        varLoc(i,j) = phiHyd(i,j,k)+phi0surf(i,j,bi,bj)
+c       varLoc(i,j) = phiHyd(i,j,k)
        ENDDO
       ENDDO
 

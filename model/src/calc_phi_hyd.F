@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.25 2003/02/08 02:09:20 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_phi_hyd.F,v 1.26 2003/02/09 02:00:50 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -128,8 +128,8 @@ C       P(z=eta) = P(atmospheric_loading)
         IF (k.EQ.1) THEN
           DO j=jMin,jMax
             DO i=iMin,iMax
-              phiHyd(i,j,k) = phi0surf(i,j,bi,bj)
-c             phiHyd(i,j,k) = 0.
+c             phiHyd(i,j,k) = phi0surf(i,j,bi,bj)
+              phiHyd(i,j,k) = 0.
             ENDDO
           ENDDO
         ENDIF
@@ -227,8 +227,8 @@ CADJ GENERAL
         IF (k.EQ.1) THEN
           DO j=jMin,jMax
             DO i=iMin,iMax
-              phiHyd(i,j,k) = phi0surf(i,j,bi,bj)
-c             phiHyd(i,j,k) = 0.
+c             phiHyd(i,j,k) = phi0surf(i,j,bi,bj)
+              phiHyd(i,j,k) = 0.
             ENDDO
           ENDDO
         ENDIF
@@ -331,8 +331,8 @@ C-----------------------------------------------------------------------
      &                  -((rC(K)/atm_Po)**atm_kappa) )
           DO j=jMin,jMax
            DO i=iMin,iMax
-c            phiHyd(i,j,K)= 
-             phiHyd(i,j,K)= phi0surf(i,j,bi,bj)+
+c            phiHyd(i,j,K)= phi0surf(i,j,bi,bj)+
+             phiHyd(i,j,K)= 
      &          ddPIp*maskC(i,j,K,bi,bj)
      &               *(tFld(I,J,K,bi,bj)-tRef(K))
            ENDDO
@@ -372,8 +372,8 @@ C---------
      &                  -((rC(K)/atm_Po)**atm_kappa) )
           DO j=jMin,jMax
            DO i=iMin,iMax
-c            phiHyd(i,j,K)=
-             phiHyd(i,j,K)= phi0surf(i,j,bi,bj)+
+c            phiHyd(i,j,K)= phi0surf(i,j,bi,bj)+
+             phiHyd(i,j,K)=
      &          ddPIp*_hFacC(I,J, K ,bi,bj)
      &               *(tFld(I,J, K ,bi,bj)-tRef( K ))
            ENDDO
@@ -411,8 +411,8 @@ C---------
      &                  -((rC(Kp1)/atm_Po)**atm_kappa) )  
           DO j=jMin,jMax
            DO i=iMin,iMax
-c            phiHyd(i,j,K)=
-             phiHyd(i,j,K)= phi0surf(i,j,bi,bj)+
+c            phiHyd(i,j,K)= phi0surf(i,j,bi,bj)+
+             phiHyd(i,j,K)=
      &        ( ddPIm*max(zero, _hFacC(i,j,K,bi,bj)-half)
      &         +ddPIp*min(zero, _hFacC(i,j,K,bi,bj)-half) )
      &               *(tFld(i,j, K ,bi,bj)-tRef( K ))
@@ -457,8 +457,8 @@ C---------
      &                  -((rC(Kp1)/atm_Po)**atm_kappa) )  
           DO j=jMin,jMax
            DO i=iMin,iMax
-c            phiHyd(i,j,K)=
-             phiHyd(i,j,K)= phi0surf(i,j,bi,bj)+
+c            phiHyd(i,j,K)= phi0surf(i,j,bi,bj)+
+             phiHyd(i,j,K)=
      &        ( ddPIm*max(zero,(_hFacC(i,j,K,bi,bj)-one)*ratioRm+half)
      &         +ddPIp*min(zero, _hFacC(i,j,K,bi,bj)*ratioRp     -half) )
      &               *(tFld(i,j, K ,bi,bj)-tRef( K ))
