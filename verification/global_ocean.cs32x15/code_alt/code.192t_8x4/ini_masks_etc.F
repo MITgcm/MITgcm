@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_alt/code.192t_8x4/Attic/ini_masks_etc.F,v 1.1 2004/03/15 01:37:23 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/verification/global_ocean.cs32x15/code_alt/code.192t_8x4/Attic/ini_masks_etc.F,v 1.2 2004/03/15 19:23:06 cnh Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -29,6 +29,10 @@ C     === Global variables ===
 #include "PARAMS.h"
 #include "GRID.h"
 #include "SURFACE.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif
 
 C     !INPUT/OUTPUT PARAMETERS:
 C     == Routine arguments ==
@@ -53,6 +57,7 @@ C     I,J,K
       _RL hFacCtmp
       _RL hFacMnSz
 
+      CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER nF
 CEOP
 
@@ -174,7 +179,11 @@ C         IF ( Ro_surf(i,j,bi,bj) .NE. 0. ) THEN
          ENDDO
         ENDDO
         IF ( nF .EQ. 0 ) THEN
-         WRITE(0,*) 'Empty tile number ', bi, bj
+#ifdef ALLOW_EXCH2
+         WRITE(msgBuf,'(A,I6,I6)') 'Empty tile number ', bi, W2_myTileList(bi)
+         CALL PRINT_MESSAGE( msgBuf, standardMessageUnit,
+     &                       SQUEEZE_RIGHT, 1)
+#endif
         ENDIF
        ENDDO
       ENDDO
