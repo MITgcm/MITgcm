@@ -45,6 +45,7 @@ c     == global variables ==
 #include "FFIELDS.h"
 #ifdef ALLOW_BULK_FORCE
 #include "BULKF.h"
+#include "BULKF_INT.h"
 #include "BULKF_DIAG.h"
 #endif
 #ifdef ALLOW_THERM_SEAICE
@@ -62,15 +63,6 @@ C     == Local variables ==
 
 #ifdef ALLOW_BULK_FORCE
 
-      _RL     evap(1-olx:snx+olx,1-oly:sny+oly)
-      _RL     ustress(1-olx:snx+olx,1-oly:sny+oly)
-      _RL     vstress(1-olx:snx+olx,1-oly:sny+oly)
-      _RL     savssq(1-olx:snx+olx,1-oly:sny+oly)
-      _RL     fsh(1-olx:snx+olx,1-oly:sny+oly)
-      _RL     flh(1-olx:snx+olx,1-oly:sny+oly)
-      _RL     flwup(1-olx:snx+olx,1-oly:sny+oly)
-      _RL     flwupnet(1-olx:snx+olx,1-oly:sny+oly)
-      _RL     fswnet(1-olx:snx+olx,1-oly:sny+oly)
 
       _RL     df0dT,hfl
 
@@ -87,7 +79,6 @@ c     determine forcing field records
 
 #ifdef ALLOW_BULK_FORCE
 
-      
           k = 1
           do j = 1-oly,sny+oly
             do i = 1-olx,snx+olx
@@ -108,17 +99,23 @@ c     determine forcing field records
                tmp=theta(i,j,1,bi,bj)
                iceornot=0
 #endif
+
+
                 call BULKF_FORMULA_LANL(
      &            uwind(i,j,bi,bj), vwind(i,j,bi,bj),
      &            wspeed(i,j,bi,bj), Tair(i,j,bi,bj), Qair(i,j,bi,bj),
      &            cloud(i,j,bi,bj), tmp,
-     &            flwup(i,j), flh(i,j), 
-     &            fsh(i,j), df0dT,
-     &            ustress(i,j), vstress(i,j),
-     &            evap(i,j), savssq(i,j),
+     &            flwup(i,j,bi,bj), flh(i,j,bi,bj), 
+     &            fsh(i,j,bi,bj), df0dT,
+     &            ustress(i,j,bi,bj), vstress(i,j,bi,bj),
+     &            evap(i,j,bi,bj), savssq(i,j,bi,bj),
      &            iceornot, readwindstress)
+
+C               Note that the LANL flux conventions are opposite
+C               of what they are in the model.
+
 cQQ use down long wave data
-                  flwupnet(i,j)=flwup(i,j)-flw(i,j,bi,bj)
+                  flwupnet(i,j,bi,bj)=flwup(i,j,bi,bj)-flw(i,j,bi,bj)
 cQQ using down solar, need to have water albedo -- .1
 #ifdef ALLOW_THERM_SEAICE
                   if (ICEMASK(i,j,bi,bj).gt.0.d0) then
@@ -132,16 +129,16 @@ cQQ using down solar, need to have water albedo -- .1
 #else
                   albedo=.1                  
 #endif
-                   fswnet(i,j)=solar(i,j,bi,bj)*(1.d0-albedo)
+                   fswnet(i,j,bi,bj)=solar(i,j,bi,bj)*(1.d0-albedo)
               else
-                  ustress(i,j) = 0. _d 0
-                  vstress(i,j) = 0. _d 0
-                  fsh(i,j)      = 0. _d 0
-                  flh(i,j)      = 0. _d 0
-                  flwup(i,j)      =0. _d 0
-                  evap(i,j)     =0. _d 0
-                  fswnet(i,j)   =0. _d 0
-                  savssq(i,j)   =0. _d 0
+                  ustress(i,j,bi,bj) = 0. _d 0
+                  vstress(i,j,bi,bj) = 0. _d 0
+                  fsh(i,j,bi,bj)      = 0. _d 0
+                  flh(i,j,bi,bj)      = 0. _d 0
+                  flwup(i,j,bi,bj)      =0. _d 0
+                  evap(i,j,bi,bj)     =0. _d 0
+                  fswnet(i,j,bi,bj)   =0. _d 0
+                  savssq(i,j,bi,bj)   =0. _d 0
               endif
           enddo
          enddo
@@ -152,10 +149,10 @@ cswd move wind stresses to u and v points
            do j = 1,sny
              do i = 1,snx
                 fu(i,j,bi,bj)=
-     &            (ustress(i,j)+ustress(i-1,j))/2*
+     &            (ustress(i,j,bi,bj)+ustress(i-1,j,bi,bj))/2*
      &                         maskW(i,j,1,bi,bj)
                 fv(i,j,bi,bj)=
-     &            (vstress(i,j)+vstress(i,j-1))/2*
+     &            (vstress(i,j,bi,bj)+vstress(i,j-1,bi,bj))/2*
      &                          maskS(i,j,1,bi,bj)
              enddo
            enddo
@@ -169,14 +166,14 @@ c     Add all contributions.
              if (hFacC(i,j,1,bi,bj).ne.0.0) then
 c             Net surface heat flux.
               hfl = 0. _d 0
-              hfl = hfl + fsh(i,j)
-              hfl = hfl + flh(i,j)
-              hfl = hfl + flwupnet(i,j)
+              hfl = hfl + fsh(i,j,bi,bj)
+              hfl = hfl + flh(i,j,bi,bj)
+              hfl = hfl + flwupnet(i,j,bi,bj)
 c QQ minus solar for ncep data
 c QQ plus solar for dasilva
 c             hfl = hfl - solar(i,j,bi,bj)
 cQQ for calculated sw net
-              hfl = hfl - fswnet(i,j)
+              hfl = hfl - fswnet(i,j,bi,bj)
 c Heat flux:
               Qnet(i,j,bi,bj) = -hfl*maskc(i,j,k,bi,bj)
 cswdcou -- add ---
@@ -185,7 +182,7 @@ cswdcou -- add ---
 #endif
 cswdcou -- end add ---
 c Salt flux from Precipitation and Evaporation.
-              EmPmR(i,j,bi,bj) = (-evap(i,j)+rain(i,j,bi,bj)
+              EmPmR(i,j,bi,bj) = (-evap(i,j,bi,bj)+rain(i,j,bi,bj)
      &                           - runoff(i,j,bi,bj))*maskc(i,j,k,bi,bj)
 
 cccccccccccCHEATccccccccccccccccccccccccc
@@ -213,8 +210,7 @@ c      _EXCH_XY_R8(fv     , mythid)
 
 
 #ifdef ALLOW_TIMEAVE
-        call BULKF_AVE(bi,bj,mythid, fswnet,
-     &                 flh, fsh, flwup, evap, savssq, flwupnet)
+        call BULKF_AVE(bi,bj,mythid)
 #endif  /*ALLOW_TIMEAVE*/
 
 #endif  /*ALLOW_BULK_FORCE*/

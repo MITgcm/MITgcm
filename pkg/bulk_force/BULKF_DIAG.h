@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/BULKF_DIAG.h,v 1.3 2002/12/05 16:15:58 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/BULKF_DIAG.h,v 1.4 2002/12/11 14:23:35 cheisey Exp $
 C $Name:  $
 cswdblk -- change to keep bulk formula fields --
 
@@ -27,7 +27,6 @@ C     Storage arrays for time-averages
       _RL BULK_flwupnet_AVE (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BULK_solar_AVE    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL BULK_ssq_AVE      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-
 
 
       COMMON /BULKF_TAVE_ARRAYS/

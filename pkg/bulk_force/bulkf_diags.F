@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_diags.F,v 1.3 2002/12/05 16:15:58 cheisey Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/bulk_force/Attic/bulkf_diags.F,v 1.4 2002/12/11 14:23:35 cheisey Exp $
 C $Name:  $
 cswdblk modified for bulk formula -- Dec 01
 
@@ -39,6 +39,8 @@ C     == Local variables ==
       EXTERNAL DIFFERENT_MULTIPLE
       INTEGER bi, bj
       CHARACTER*(MAX_LEN_MBUF) suff
+
+      INTEGER I,J
 
 #ifdef ALLOW_BULK_FORCE
 

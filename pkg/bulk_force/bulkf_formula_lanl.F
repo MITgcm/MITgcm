@@ -4,7 +4,7 @@ c taken from exf package
 #include "CPP_OPTIONS.h"
       subroutine bulkf_formula_lanl(
      I                           uw, vw, us, Ta, Qa, nc, tsf_in,
-     I                           flwup, flha, fsha, df0dT,
+     I                           flwupa, flha, fsha, df0dT,
      I                           ust, vst, evp, ssq, iceornot, windread
      &                           )
 
@@ -35,7 +35,7 @@ c input
       integer iceornot       ! 0=open water, 1=ice cover
       logical windread       !
 c output
-      _RL flwup              ! upward long wave radiation
+      _RL flwupa              ! upward long wave radiation
       _RL flha                ! latent heat flux
       _RL fsha                ! sensible heat flux
       _RL df0dT              ! derivative of heat flux with respect to Tsf
@@ -179,16 +179,16 @@ c
 c up long wave radiation
 cQQ           mixratio=Qa/(1-Qa)
 cQQ           ea=p0*mixratio/(0.62197+mixratio)
-cQQ           flwup=-0.985*stefan*tsf**4
+cQQ           flwupa=-0.985*stefan*tsf**4
 cQQ  &                  *(0.39-0.05*sqrt(ea))
 cQQ  &                  *(1-0.6*nc**2)
               if (iceornot.eq.0) then
-               flwup=-ocean_emissivity*stefan*tsf**4
+               flwupa=-ocean_emissivity*stefan*tsf**4
               else
                if (iceornot.eq.2) then
-                 flwup=-snow_emissivity*stefan*tsf**4
+                 flwupa=-snow_emissivity*stefan*tsf**4
                else 
-                 flwup=-ice_emissivity*stefan*tsf**4
+                 flwupa=-ice_emissivity*stefan*tsf**4
                endif
               endif
 #ifdef ALLOW_THERM_SEAICE

@@ -338,6 +338,8 @@ C
        _EXCH_XY_R4(uwind1, myThid )
        _EXCH_XY_R4(vwind0, myThid )
        _EXCH_XY_R4(vwind1, myThid )
+CXXXX       CALL EXCH_UV_XY_RS(uwind0, vwind0, .TRUE., myThid)
+CXXXX       CALL EXCH_UV_XY_RS(uwind1, vwind1, .TRUE., myThid)
        _EXCH_XY_R4(runoff0, myThid )
        _EXCH_XY_R4(runoff1, myThid )
        _EXCH_XY_R4(wspeed0, myThid )
@@ -351,10 +353,12 @@ C
        _EXCH_XY_R4(snow0 , myThid )
        _EXCH_XY_R4(snow1 , myThid )
        if (readwindstress) then
-       _EXCH_XY_R4(taux0Local , myThid )
-       _EXCH_XY_R4(taux1Local , myThid )
-       _EXCH_XY_R4(tauy0Local , myThid )
-       _EXCH_XY_R4(tauy1Local , myThid )
+c       _EXCH_XY_R4(taux0Local , myThid )
+c       _EXCH_XY_R4(taux1Local , myThid )
+c       _EXCH_XY_R4(tauy0Local , myThid )
+c       _EXCH_XY_R4(tauy1Local , myThid )
+       CALL EXCH_UV_XY_RS(taux0Local, tauy0Local, .TRUE., myThid)
+       CALL EXCH_UV_XY_RS(taux1Local, tauy1Local, .TRUE., myThid)
        endif
        if (readsurface) then
        _EXCH_XY_R4(SST0Local  , myThid )
@@ -431,8 +435,9 @@ c       -- dasilva data in g, ncep in kg ---
        _EXCH_XY_R8(qnetch, myThid )
        _EXCH_XY_R8(empch, myThid )
        if (readwindstress) then
-       _EXCH_XY_R8(fu , myThid )
-       _EXCH_XY_R8(fv , myThid )
+c       _EXCH_XY_R8(fu , myThid )
+c       _EXCH_XY_R8(fv , myThid )
+       CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
        endif
        if (readsurface) then
        _EXCH_XY_R8(SST  , myThid )
