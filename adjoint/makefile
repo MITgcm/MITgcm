@@ -140,7 +140,7 @@ adcode:
 	cd $(DEST) ; cat $(SRC_MODEL) >! tamc_code_ecco.f
 admodel:
 	cd $(DEST) ; $(TAMC) $(TAMCFLAG) tamc_code_ecco.f	\
-           >! tamc_code_ecco.prot
+           >! tamc_code_ecco_ad.prot
 
 adchange:
 	${ADJOINT_SCRIPT}/adjoint_ecco_sed.com \

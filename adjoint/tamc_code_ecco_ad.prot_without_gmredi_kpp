@@ -26,6 +26,7 @@ tamc_code_ecco.f:
  parsing subroutine ** comm_stats **
  parsing subroutine ** convect **
  parsing subroutine ** convective_adjustment **
+ parsing subroutine ** convective_adjustment_ini **
  parsing subroutine ** correction_step **
  parsing subroutine ** cycle_tracer **
  parsing function   ** different_multiple **
@@ -74,10 +75,11 @@ tamc_code_ecco.f:
  parsing subroutine ** state_summary **
  parsing subroutine ** timestep **
  parsing subroutine ** the_correction_step **
- parsing subroutine ** the_main_sens **
+ parsing subroutine ** the_main_loop **
  parsing subroutine ** timestep_tracer **
  parsing subroutine ** swfrac **
  parsing subroutine ** kpp_calc **
+ parsing subroutine ** kpp_calc_dummy **
  parsing subroutine ** kpp_calc_diff **
  parsing subroutine ** kpp_do_diags **
  parsing subroutine ** kpp_init **
@@ -130,16 +132,19 @@ control flow analysis of subroutine nml_filter
 =========================================
  global data flow analysis
 =========================================
- determine required routines and statements for subroutine : the_main_sens
+ determine required routines and statements for subroutine : the_main_loop
  dependent variable(s) = 
  fc
 
+ the cost function does not depend on the variable(s) :
+ xx_sss_dummy xx_sst_dummy
+
  determine dependent routines and statements :
  independent variable(s) = 
- xx_hflux_dummy xx_salt_dummy xx_sflux_dummy xx_sss_dummy xx_sst_dummy xx_tauu_dummy xx_tauv_dummy xx_theta_dummy
+ xx_hflux_dummy xx_salt_dummy xx_sflux_dummy xx_tauu_dummy xx_tauv_dummy xx_theta_dummy
 
  the independent variable(s) are :
- xx_hflux_dummy xx_salt_dummy xx_sflux_dummy xx_sss_dummy xx_sst_dummy xx_tauu_dummy xx_tauv_dummy xx_theta_dummy
+ xx_hflux_dummy xx_salt_dummy xx_sflux_dummy xx_tauu_dummy xx_tauv_dummy xx_theta_dummy
 
  the dependent variable(s) are   :
  fc
@@ -155,26 +160,20 @@ TAMC WARNING: toplevel routine overwrites the input variables:
  original   common block (   14): cost_r
  derivative common block (    2): adcost_r
  original   common block (   10): ctrl_dummy
- derivative common block (    8): adctrl_dummy
+ derivative common block (    6): adctrl_dummy
  original   common block (    7): dynvars_cd
  derivative common block (    7): addynvars_cd
  original   common block (   14): dynvars_r
  derivative common block (   14): addynvars_r
  original   common block (    7): ffields
- derivative common block (    6): adffields
- original   common block (    3): gm_wtensor
- derivative common block (    3): adgm_wtensor
- original   common block (    5): kpp
- derivative common block (    5): adkpp
- original   common block (    1): kpp_short
- derivative common block (    1): adkpp_short
+ derivative common block (    4): adffields
  original   common block (    5): tendency_forcing
  derivative common block (    4): adtendency_forcing
 
 =========================================
  generate adjoint routines
 =========================================
- begin generate adjoint computations of : the_main_sens
+ begin generate adjoint computations of : the_main_loop
  begin generate adjoint computations of : cost_final
  end   generate adjoint computations of : cost_final
  begin generate adjoint computations of : cost_test
@@ -196,20 +195,14 @@ TAMC WARNING: toplevel routine overwrites the input variables:
  end   generate adjoint computations of : calc_grad_phi_surf
  end   generate adjoint computations of : the_correction_step
  begin generate adjoint computations of : solve_for_pressure
-TAMC INFO    tamc_code_ecco.f:122841 : subroutine cg2d is self adjoint
-TAMC WARNING tamc_code_ecco.f:122841 : self adjoint routine has more than one active input
-TAMC WARNING tamc_code_ecco.f:122841 : adjoint input variable adcg2d_x will be reset
+TAMC INFO    tamc_code_ecco.f:126533 : subroutine cg2d is self adjoint
+TAMC WARNING tamc_code_ecco.f:126533 : self adjoint routine has more than one active input
+TAMC WARNING tamc_code_ecco.f:126533 : adjoint input variable adcg2d_x will be reset
  begin generate adjoint computations of : calc_div_ghat
  end   generate adjoint computations of : calc_div_ghat
  end   generate adjoint computations of : solve_for_pressure
  begin generate adjoint computations of : dynamics
  begin generate adjoint computations of : impldiff
-TAMC INFO DOLOOP_STMT tamc_code_ecco.f:67555 in impldiff
- handled as sequential loop, only flow dependencies for : gynm1
-TAMC INFO DOLOOP_STMT tamc_code_ecco.f:67543 in impldiff
- handled as sequential loop, only flow dependencies for : gynm1
-TAMC INFO DOLOOP_STMT tamc_code_ecco.f:67522 in impldiff
- handled as sequential loop, only flow dependencies for : bet
  end   generate adjoint computations of : impldiff
  begin generate adjoint computations of : timestep
  end   generate adjoint computations of : timestep
@@ -228,72 +221,21 @@ TAMC INFO DOLOOP_STMT tamc_code_ecco.f:67522 in impldiff
  begin generate adjoint computations of : calc_gs
  begin generate adjoint computations of : external_forcing_s
  end   generate adjoint computations of : external_forcing_s
- begin generate adjoint computations of : kpp_transport_s
- end   generate adjoint computations of : kpp_transport_s
- begin generate adjoint computations of : gmredi_rtransport
- end   generate adjoint computations of : gmredi_rtransport
- begin generate adjoint computations of : gmredi_ytransport
- end   generate adjoint computations of : gmredi_ytransport
- begin generate adjoint computations of : gmredi_xtransport
- end   generate adjoint computations of : gmredi_xtransport
  end   generate adjoint computations of : calc_gs
  begin generate adjoint computations of : calc_gt
  begin generate adjoint computations of : external_forcing_t
  end   generate adjoint computations of : external_forcing_t
- begin generate adjoint computations of : kpp_transport_t
- end   generate adjoint computations of : kpp_transport_t
  end   generate adjoint computations of : calc_gt
- begin generate adjoint computations of : calc_diffusivity
- begin generate adjoint computations of : kpp_calc_diff
- end   generate adjoint computations of : kpp_calc_diff
- begin generate adjoint computations of : gmredi_calc_diff
- end   generate adjoint computations of : gmredi_calc_diff
- end   generate adjoint computations of : calc_diffusivity
  begin generate adjoint computations of : calc_common_factors
  end   generate adjoint computations of : calc_common_factors
- begin generate adjoint computations of : kpp_calc
- begin generate adjoint computations of : swfrac
- end   generate adjoint computations of : swfrac
- begin generate adjoint computations of : kppmix
- begin generate adjoint computations of : enhance
- end   generate adjoint computations of : enhance
- begin generate adjoint computations of : blmix
- begin generate adjoint computations of : wscale
- end   generate adjoint computations of : wscale
- end   generate adjoint computations of : blmix
- begin generate adjoint computations of : bldepth
- end   generate adjoint computations of : bldepth
- begin generate adjoint computations of : ri_iwmix
- end   generate adjoint computations of : ri_iwmix
- end   generate adjoint computations of : kppmix
- begin generate adjoint computations of : kpp_smooth_horiz
- end   generate adjoint computations of : kpp_smooth_horiz
- begin generate adjoint computations of : statekpp
- begin generate adjoint computations of : find_beta
- end   generate adjoint computations of : find_beta
- begin generate adjoint computations of : find_alpha
- end   generate adjoint computations of : find_alpha
- end   generate adjoint computations of : statekpp
- end   generate adjoint computations of : kpp_calc
- begin generate adjoint computations of : gmredi_calc_tensor
- begin generate adjoint computations of : gmredi_slope_limit
- end   generate adjoint computations of : gmredi_slope_limit
- end   generate adjoint computations of : gmredi_calc_tensor
- begin generate adjoint computations of : gmredi_calc_tensor_dummy
- end   generate adjoint computations of : gmredi_calc_tensor_dummy
  begin generate adjoint computations of : external_forcing_surf
  end   generate adjoint computations of : external_forcing_surf
- begin generate adjoint computations of : calc_ivdc
- end   generate adjoint computations of : calc_ivdc
- begin generate adjoint computations of : grad_sigma
- end   generate adjoint computations of : grad_sigma
-TAMC INFO     avoiding recomputation of : help_h
  begin generate adjoint computations of : integrate_for_w
  end   generate adjoint computations of : integrate_for_w
  end   generate adjoint computations of : dynamics
-TAMC INFO    tamc_code_ecco.f:131666 : tape computations inserted
-TAMC INFO    tamc_code_ecco.f:131666 : tape computations inserted
-TAMC INFO    tamc_code_ecco.f:131642 : tape computations inserted
+TAMC INFO    tamc_code_ecco.f:135410 : tape computations inserted
+TAMC INFO    tamc_code_ecco.f:135410 : tape computations inserted
+TAMC INFO    tamc_code_ecco.f:135386 : tape computations inserted
  begin generate adjoint computations of : ctrl_map_forcing
  end   generate adjoint computations of : ctrl_map_forcing
  begin generate adjoint computations of : initialise_varia
@@ -302,20 +244,36 @@ TAMC INFO    tamc_code_ecco.f:131642 : tape computations inserted
  end   generate adjoint computations of : ctrl_map_ini
  end   generate adjoint computations of : packages_init_variables
  end   generate adjoint computations of : initialise_varia
-TAMC INFO    tamc_code_ecco.f:131666 : tape computations inserted
-TAMC INFO    tamc_code_ecco.f:131666 : tape computations inserted
-TAMC INFO    tamc_code_ecco.f:131642 : tape computations inserted
+TAMC INFO    tamc_code_ecco.f:135410 : tape computations inserted
+TAMC INFO    tamc_code_ecco.f:135410 : tape computations inserted
+TAMC INFO    tamc_code_ecco.f:135386 : tape computations inserted
 TAMC INFO     avoiding recomputation of : max_lev2
 TAMC INFO     avoiding recomputation of : max_lev3
-TAMC INFO     avoiding recomputation of : empmr,fu,fv,qnet,sss,sst
-TAMC INFO     avoiding recomputation of : kmixcbm2,kmixcws1,kmixcws2,kmixcws3,kmixcws4,kpp_bldepth15,kpp_i1,kpp_r11,kpp_r12,kpp_r13,niter0,qsw
-TAMC INFO    tamc_code_ecco.f:131573 : function and tape computations inserted
-TAMC WARNING tamc_code_ecco.f:131688 : storing of variable uvel not necessary
-TAMC WARNING tamc_code_ecco.f:131689 : storing of variable vvel not necessary
-TAMC WARNING tamc_code_ecco.f:131673 : tape comlev1_kpp_sm not used
-TAMC WARNING tamc_code_ecco.f:131573 : tape dummytape not used
-TAMC WARNING tamc_code_ecco.f:150702 : tape z121tape not used
- end   generate adjoint computations of : the_main_sens
+TAMC INFO     avoiding recomputation of : empmr,fu,fv,qnet
+TAMC INFO     avoiding recomputation of : niter0,sss,sst
+TAMC INFO    tamc_code_ecco.f:135314 : function and tape computations inserted
+TAMC WARNING tamc_code_ecco.f:135410 : tape comlev1 not used
+TAMC WARNING tamc_code_ecco.f:47658 : storing of variable theta(:,:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:47659 : storing of variable salt(:,:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:47660 : storing of variable uvel(:,:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:47661 : storing of variable vvel(:,:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:47743 : storing of variable surfacetendencyu(:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:47745 : storing of variable surfacetendencyv(:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:47747 : storing of variable surfacetendencys(:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:47749 : storing of variable surfacetendencyt(:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:47871 : storing of variable gtnm1(:,:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:47883 : storing of variable gsnm1(:,:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:47979 : storing of variable gunm1(:,:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:47988 : storing of variable gvnm1(:,:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:48001 : storing of variable vveld(:,:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:48010 : storing of variable uveld(:,:,:,bi,bj) not necessary
+TAMC WARNING tamc_code_ecco.f:47673 : storing of variable rhokm1(:,:) not necessary
+TAMC WARNING tamc_code_ecco.f:47674 : storing of variable rhok(:,:) not necessary
+TAMC WARNING tamc_code_ecco.f:135414 : tape comlev1_kpp not used
+TAMC WARNING tamc_code_ecco.f:135417 : tape comlev1_kpp_sm not used
+TAMC WARNING tamc_code_ecco.f:135314 : tape dummytape not used
+TAMC WARNING tamc_code_ecco.f:38432 : tape tapelev_ini_bibj_k not used
+ end   generate adjoint computations of : the_main_loop
 
 =========================================
  generate auxiliary routines
@@ -328,8 +286,6 @@ TAMC INFO      adjoint of common block variable xx_hflux_dummy not initialized
 TAMC INFO      adjoint of common block variable xx_sflux_dummy not initialized
 TAMC INFO      adjoint of common block variable xx_tauu_dummy not initialized
 TAMC INFO      adjoint of common block variable xx_tauv_dummy not initialized
-TAMC INFO      adjoint of common block variable xx_sss_dummy not initialized
-TAMC INFO      adjoint of common block variable xx_sst_dummy not initialized
 
 =========================================
  Fortran dialect transformations
@@ -339,18 +295,13 @@ TAMC INFO      adjoint of common block variable xx_sst_dummy not initialized
  write modified and adjoint code
 =========================================
 tamc_code_ecco_ad.f:
- writing subroutine ** mdbldepth **
- writing subroutine ** adbldepth **
- writing subroutine ** mdblmix **
- writing subroutine ** adblmix **
  writing subroutine ** adcalc_common_factors **
- writing subroutine ** adcalc_diffusivity **
  writing subroutine ** adcalc_div_ghat **
  writing subroutine ** adcalc_grad_phi_surf **
  writing subroutine ** adcalc_gs **
  writing subroutine ** adcalc_gt **
- writing subroutine ** adcalc_ivdc **
  writing subroutine ** adcalc_mom_rhs **
+ writing subroutine ** mdcalc_phi_hyd **
  writing subroutine ** adcalc_phi_hyd **
  writing subroutine ** adconvect **
  writing subroutine ** mdconvective_adjustment **
@@ -364,46 +315,24 @@ tamc_code_ecco_ad.f:
  writing subroutine ** addo_fields_blocking_exchanges **
  writing subroutine ** mddynamics **
  writing subroutine ** addynamics **
- writing subroutine ** adenhance **
  writing subroutine ** adexternal_forcing_s **
  writing subroutine ** adexternal_forcing_surf **
  writing subroutine ** adexternal_forcing_t **
  writing subroutine ** adexternal_forcing_u **
  writing subroutine ** adexternal_forcing_v **
- writing subroutine ** adfind_alpha **
- writing subroutine ** adfind_beta **
  writing subroutine ** adfind_rho **
  writing subroutine ** adfreeze **
- writing subroutine ** adgmredi_calc_diff **
- writing subroutine ** adgmredi_calc_tensor **
- writing subroutine ** adgmredi_calc_tensor_dummy **
- writing subroutine ** adgmredi_rtransport **
- writing subroutine ** adgmredi_slope_limit **
- writing subroutine ** adgmredi_xtransport **
- writing subroutine ** adgmredi_ytransport **
- writing subroutine ** adgrad_sigma **
  writing subroutine ** adimpldiff **
+ writing subroutine ** mdinitialise_varia **
  writing subroutine ** adinitialise_varia **
  writing subroutine ** adintegrate_for_w **
- writing subroutine ** mdkpp_calc **
- writing subroutine ** adkpp_calc **
- writing subroutine ** adkpp_calc_diff **
- writing subroutine ** adkpp_smooth_horiz **
- writing subroutine ** adkpp_transport_s **
- writing subroutine ** adkpp_transport_t **
- writing subroutine ** mdkppmix **
- writing subroutine ** adkppmix **
  writing subroutine ** adpackages_init_variables **
- writing subroutine ** adri_iwmix **
  writing subroutine ** adsolve_for_pressure **
- writing subroutine ** adstatekpp **
- writing subroutine ** adswfrac **
  writing subroutine ** mdthe_correction_step **
  writing subroutine ** adthe_correction_step **
- writing subroutine ** adthe_main_sens **
+ writing subroutine ** adthe_main_loop **
  writing subroutine ** adtimestep **
  writing subroutine ** adtimestep_tracer **
- writing subroutine ** adwscale **
  writing subroutine ** adzero **
 
 
