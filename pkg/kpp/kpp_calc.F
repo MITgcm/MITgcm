@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.27 2004/05/11 20:57:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/kpp/kpp_calc.F,v 1.28 2004/07/18 01:20:22 jmc Exp $
 C $Name:  $
 
 #include "KPP_OPTIONS.h"
@@ -90,7 +90,7 @@ c     KPPfrac     - Fraction of short-wave flux penetrating mixing layer
 
 c--   KPP_CALC computes vertical viscosity and diffusivity for region
 c     (-2:sNx+3,-2:sNy+3) as required by CALC_DIFFUSIVITY and requires
-c     values of uVel, vVel, SurfaceTendencyU, SurfaceTendencyV in the
+c     values of uVel, vVel, surfaceForcingU, surfaceForcingV in the
 c     region (-2:sNx+4,-2:sNy+4).
 c     Hence overlap region needs to be set OLx=4, OLy=4.
 c     When option FRUGAL_KPP is used, computation in overlap regions
@@ -305,9 +305,9 @@ c     horizontally smooth density related quantities with 121 filters
 
 c     zero out dbloc over land points (so that the convective
 c     part of the interior mixing can be diagnosed)
-               dbloc(i,j,k) = dbloc(i,j,k) * pMask(i,j,k,bi,bj)
-               ghat(i,j,k)  = ghat(i,j,k)  * pMask(i,j,k,bi,bj)
-               Ritop(i,j,k) = Ritop(i,j,k) * pMask(i,j,k,bi,bj)
+               dbloc(i,j,k) = dbloc(i,j,k) * maskC(i,j,k,bi,bj)
+               ghat(i,j,k)  = ghat(i,j,k)  * maskC(i,j,k,bi,bj)
+               Ritop(i,j,k) = Ritop(i,j,k) * maskC(i,j,k,bi,bj)
                if(k.eq.nzmax(i,j,bi,bj)) then
                   dbloc(i,j,k) = p0
                   ghat(i,j,k)  = p0
@@ -335,11 +335,11 @@ cph)
 c------------------------------------------------------------------------
 c     friction velocity, turbulent and radiative surface buoyancy forcing
 c     -------------------------------------------------------------------
-c     taux / rho = SurfaceTendencyU * drF(1)                     (N/m^2)
-c     tauy / rho = SurfaceTendencyV * drF(1)                     (N/m^2)
+c     taux / rho = surfaceForcingU                               (N/m^2)
+c     tauy / rho = surfaceForcingV                               (N/m^2)
 c     ustar = sqrt( sqrt( taux^2 + tauy^2 ) / rho )                (m/s)
-c     bo    = - g * ( alpha*SurfaceTendencyT +
-c                     beta *SurfaceTendencyS ) * drF(1) / rho  (m^2/s^3)
+c     bo    = - g * ( alpha*surfaceForcingT +
+c                     beta *surfaceForcingS ) / rho            (m^2/s^3)
 c     bosol = - g * alpha * Qsw * drF(1) / rho                 (m^2/s^3)
 c------------------------------------------------------------------------
 
@@ -357,10 +357,10 @@ c initialize arrays to zero
        DO i = imin, imax
         ip1 = i+1
         work3(i,j) =
-     &   (SurfaceTendencyU(i,j,bi,bj) + SurfaceTendencyU(ip1,j,bi,bj)) *
-     &   (SurfaceTendencyU(i,j,bi,bj) + SurfaceTendencyU(ip1,j,bi,bj)) +
-     &   (SurfaceTendencyV(i,j,bi,bj) + SurfaceTendencyV(i,jp1,bi,bj)) *
-     &   (SurfaceTendencyV(i,j,bi,bj) + SurfaceTendencyV(i,jp1,bi,bj))
+     &   (surfaceForcingU(i,j,bi,bj) + surfaceForcingU(ip1,j,bi,bj)) *
+     &   (surfaceForcingU(i,j,bi,bj) + surfaceForcingU(ip1,j,bi,bj)) +
+     &   (surfaceForcingV(i,j,bi,bj) + surfaceForcingV(i,jp1,bi,bj)) *
+     &   (surfaceForcingV(i,j,bi,bj) + surfaceForcingV(i,jp1,bi,bj))
        END DO
       END DO
 cph(
@@ -371,22 +371,22 @@ cph)
        DO i = imin, imax
         ip1 = i+1
 
-        if ( work3(i,j) .lt. (phepsi*phepsi) ) then
+        if ( work3(i,j) .lt. (phepsi*phepsi*drF(1)*drF(1)) ) then
            ustar(i,j) = SQRT( phepsi * p5 * drF(1) )
         else
-           tempVar2 =  SQRT( work3(i,j) ) * p5 * drF(1)
+           tempVar2 =  SQRT( work3(i,j) ) * p5
            ustar(i,j) = SQRT( tempVar2 )
         endif
 
         bo(I,J) = - gravity *
-     &       ( vddiff(I,J,1,1) * (SurfaceTendencyT(i,j,bi,bj)+
-     &       SurfaceTendencyTice(i,j,bi,bj)) +
-     &       vddiff(I,J,1,2) * SurfaceTendencyS(i,j,bi,bj) ) *
-     &       drF(1) / work2(I,J)
+     &       ( vddiff(I,J,1,1) * (surfaceForcingT(i,j,bi,bj)+
+     &       surfaceForcingTice(i,j,bi,bj)) +
+     &       vddiff(I,J,1,2) * surfaceForcingS(i,j,bi,bj) )
+     &       / work2(I,J)
 
         bosol(I,J) = gravity * vddiff(I,J,1,1) * Qsw(i,j,bi,bj) *
-     &       recip_Cp*recip_rhoConst*recip_dRf(1) *
-     &       drF(1) / work2(I,J)
+     &       recip_Cp*recip_rhoConst
+     &       / work2(I,J)
 
        END DO
       END DO
@@ -486,10 +486,12 @@ c     Estimate reference velocity uRef and vRef.
                vRef(i,j) = p5 *
      &                     ( vVel(i,j,1,bi,bj) + vVel(i,jp1,1,bi,bj) )
                IF ( zRef(i,j) .LT. drF(1) ) THEN
-                  ustarX = ( SurfaceTendencyU(i,  j,bi,bj) + 
-     &                       SurfaceTendencyU(ip1,j,bi,bj) ) * p5
-                  ustarY = ( SurfaceTendencyV(i,j,  bi,bj) +
-     &                       SurfaceTendencyU(i,jp1,bi,bj) ) * p5
+                  ustarX = ( surfaceForcingU(i,  j,bi,bj) + 
+     &                       surfaceForcingU(ip1,j,bi,bj) ) * p5
+     &                   *recip_drF(1)
+                  ustarY = ( surfaceForcingV(i,j,  bi,bj) +
+     &                       surfaceForcingU(i,jp1,bi,bj) ) * p5
+     &                   *recip_drF(1)
                   tempVar1 = ustarX * ustarX + ustarY * ustarY
                   if ( tempVar1 .lt. (epsln*epsln) ) then
                      tempVar2 = epsln
@@ -665,12 +667,12 @@ c-----------------------------------------------------------------------
       DO j = jmin, jmax
        DO i = imin, imax
         DO k = 1, Nr
-         KPPviscAz(i,j,k,bi,bj) = vddiff(i,j,k-1,1) * pMask(i,j,k,bi,bj)
-         KPPdiffKzS(i,j,k,bi,bj)= vddiff(i,j,k-1,2) * pMask(i,j,k,bi,bj)
-         KPPdiffKzT(i,j,k,bi,bj)= vddiff(i,j,k-1,3) * pMask(i,j,k,bi,bj)
-         KPPghat(i,j,k,bi,bj)   = ghat(i,j,k)       * pMask(i,j,k,bi,bj)
+         KPPviscAz(i,j,k,bi,bj) = vddiff(i,j,k-1,1) * maskC(i,j,k,bi,bj)
+         KPPdiffKzS(i,j,k,bi,bj)= vddiff(i,j,k-1,2) * maskC(i,j,k,bi,bj)
+         KPPdiffKzT(i,j,k,bi,bj)= vddiff(i,j,k-1,3) * maskC(i,j,k,bi,bj)
+         KPPghat(i,j,k,bi,bj)   = ghat(i,j,k)       * maskC(i,j,k,bi,bj)
         END DO
-        KPPhbl(i,j,bi,bj) = hbl(i,j) * pMask(i,j,1,bi,bj)
+        KPPhbl(i,j,bi,bj) = hbl(i,j) * maskC(i,j,1,bi,bj)
        END DO
       END DO
 #ifdef FRUGAL_KPP
