@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.6 2001/03/06 16:51:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/checkpoint.F,v 1.7 2001/03/12 20:44:27 jmc Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -44,6 +44,7 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "GW.h"
+#include "CG3D.h"
 #endif
 
       INTEGER  IO_ERRCOUNT
@@ -97,9 +98,9 @@ C       Raw fields
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
-         CALL READ_REC_XYZ_RL( 'wVel',wVel,   1,myIter,myThid)
+         CALL READ_REC_XYZ_RL('cg3d_x',cg3d_x,1,myIter,myThid)
          CALL READ_REC_XYZ_RL( 'gW',gW,       1,myIter,myThid)
-         CALL READ_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
+c        CALL READ_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
         ENDIF
 #endif
 #else
@@ -134,9 +135,9 @@ C--     Read model fields
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
          WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
-         CALL MDSREADFIELD(fn,prec,'RL',Nr,wVel, 1,myThid)
+         CALL MDSREADFIELD(fn,prec,'RL',Nr,cg3d_x,1,myThid)
          CALL MDSREADFIELD(fn,prec,'RL',Nr,gW,   2,myThid)
-         CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
+c        CALL MDSREADFIELD(fn,prec,'RL',Nr,gWnm1,3,myThid)
         ENDIF
 #endif
 
@@ -173,9 +174,9 @@ C--    Fill in edge regions
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
-         _EXCH_XYZ_R8(wVel  , myThid )
+         _EXCH_XYZ_R8(cg3d_x, myThid )
          _EXCH_XYZ_R8(gW    , myThid )
-         _EXCH_XYZ_R8(gWNM1 , myThid )
+c        _EXCH_XYZ_R8(gWNM1 , myThid )
         ENDIF
 #endif
 
@@ -211,6 +212,7 @@ C     == Global variables ===
 #include "DYNVARS.h"
 #ifdef ALLOW_NONHYDROSTATIC
 #include "GW.h"
+#include "CG3D.h"
 #endif
 
       LOGICAL  DIFFERENT_MULTIPLE
@@ -302,9 +304,9 @@ C       Raw fields
 #endif
 #ifdef ALLOW_NONHYDROSTATIC
         IF ( nonHydrostatic ) THEN
-         CALL WRITE_REC_XYZ_RL( 'wVel',wVel, 1,myIter,myThid)
+         CALL WRITE_REC_XYZ_RL('cg3d_x',cg3d_x,1,myIter,myThid)
          CALL WRITE_REC_XYZ_RL( 'gW',gW, 1,myIter,myThid)
-         CALL WRITE_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
+c        CALL WRITE_REC_XYZ_RL( 'gWnm1',gWnm1, 1,myIter,myThid)
         ENDIF
 #endif
 
@@ -356,9 +358,9 @@ C--     Write model fields
           WRITE(fn,'(A,A)') 'pickup_nh.',checkPtSuff(nCheckLev)
          ENDIF
          WRITE(fn,'(A,I10.10)') 'pickup_nh.',myIter
-         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,wVel, 1,myIter,myThid)
+         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,cg3d_x,1,myIter,myThid)
          CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gW,   2,myIter,myThid)
-         CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
+c        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,gWnm1,3,myIter,myThid)
         ENDIF
 #endif
         IF ( .NOT. permCheckPoint ) THEN
