@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.10 2004/04/06 21:03:14 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/inc/CPP_EEMACROS.h,v 1.11 2005/01/13 00:10:39 ce107 Exp $
 C $Name:  $
 
 CBOP
@@ -121,7 +121,7 @@ C     performance.
 #define _EXCH_XYZ_RL(a,b) CALL EXCH_XYZ_RL ( a, b )
 
 #define _MPI_TYPE_R4 MPI_REAL
-#ifdef TARGET_SGI
+#if (defined (TARGET_SGI) || defined (TARGET_AIX))
 #define _MPI_TYPE_R8 MPI_DOUBLE_PRECISION
 #else
 #define _MPI_TYPE_R8 MPI_REAL8

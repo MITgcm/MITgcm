@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.17 2004/06/30 00:58:06 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/timers.F,v 1.18 2005/01/13 00:10:38 ce107 Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -472,8 +472,13 @@ CEH3 that is diagnosed by genmake
 CEH3 #ifndef HAVE_FDATE
       Real*8 system_time, user_time, timenow
 CEH3 #else
+#ifdef TARGET_AIX
+      Real*4 ETIME_
+      EXTERNAL ETIME_
+#else
       Real*4 ETIME
       EXTERNAL ETIME
+#endif
 CEH3 #endif
 
 C     !LOCAL VARIABLES:
@@ -486,38 +491,38 @@ CEOP
 C     Real*8 MPI_Wtime
 C     EXTERNAL MPI_Wtime
 
-#if (defined (TARGET_PWR3))
-      userTime      = user_time()
-      systemTime    = system_time()
+CCE107 Fixed for AIX and UNICOS
+#ifdef TARGET_AIX
+      ACTUAL = ETIME_(TARRAY)
+      userTime      = TARRAY(1)
+      systemTime    = TARRAY(2)
       wallClockTime = timenow()
 #elif (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR))
-      userTime      = 0.
+      userTime      = SECOND()
       systemTime    = 0.
-      wallClockTime = 0.
+      wallClockTime = SECONDR()
 #else
 #ifdef HAVE_ETIME
       ACTUAL = ETIME(TARRAY)
 #else
-      TARRAY(1) = 0.
-      TARRAY(2) = 0.
+      TARRAY(1) = user_time()
+      TARRAY(2) = system_time()
 #endif
       userTime      = TARRAY(1)
       systemTime    = TARRAY(2)
 #ifdef HAVE_CLOC
       CALL CLOC(wTime)
 #else 
-      wtime = 0.
+      wtime = timenow()
 #endif /* HAVE_CLOC */
       wallClockTime = wtime
 #endif /* CRAY defines */
 
-#ifdef ALLOW_USE_MPI
-C     wtime         = MPI_Wtime()
-C     wallClockTime = wtime
-#endif /* ALLOW_USE_MPI */
-#ifndef ALLOW_USE_MPI
-C     wallClockTime = 0.
-#endif
+CCE107 Sometimes MPI_Wtime has better resolution...
+#if (defined (ALLOW_USE_MPI) && defined (USE_MPI_WTIME))
+      wtime         = MPI_Wtime()
+      wallClockTime = wtime
+#endif /* ALLOW_USE_MPI && USE_MPI_WTIME */
       
       RETURN
       END

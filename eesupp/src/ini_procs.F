@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.20 2004/04/06 01:20:44 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/ini_procs.F,v 1.21 2005/01/13 00:10:38 ce107 Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 CBOP
@@ -337,7 +337,7 @@ C      xFace (y=constant) for XY arrays with real*4 declaration.
        elCount   = sNy+OLy*2
        elLen     = OLx
        elStride  = arrElSep
-#ifdef TARGET_SGI
+#if (defined (TARGET_SGI) || defined (TARGET_AIX))
        CALL MPI_TYPE_VECTOR(elCount,elLen,elStride,MPI_REAL,
      &                       mpiTypeXFaceBlock_xy_r4, mpiRC)
 #else
@@ -361,7 +361,7 @@ C      xFace (y=constant) for XY arrays with real*4 declaration.
        ENDIF
 
 C      xFace (y=constant) for XY arrays with real*8 declaration.
-#ifdef TARGET_SGI
+#if (defined (TARGET_SGI) || defined (TARGET_AIX))
        CALL MPI_TYPE_VECTOR(elCount,elLen,elStride,MPI_DOUBLE_PRECISION,
      &                       mpiTypeXFaceBlock_xy_r8, mpiRC)
 #else
@@ -435,7 +435,7 @@ C--    yFace datatypes (north<-->south messages)
 C--
 C      yFace (x=constant) for XY arrays with real*4 declaration
        elCount  = OLy*(sNx+OLx*2)
-#ifdef TARGET_SGI
+#if (defined (TARGET_SGI) || defined (TARGET_AIX))
        CALL MPI_TYPE_CONTIGUOUS(elCount,MPI_REAL,
      &                          mpiTypeYFaceBlock_xy_r4, mpiRC)
 #else
@@ -458,7 +458,7 @@ C      yFace (x=constant) for XY arrays with real*4 declaration
         CALL PRINT_ERROR( msgBuffer , myThid)
        ENDIF
 C      yFace (x=constant) for XY arrays with real*8 declaration
-#ifdef TARGET_SGI
+#if (defined (TARGET_SGI) || defined (TARGET_AIX))
        CALL MPI_TYPE_CONTIGUOUS(elCount,MPI_DOUBLE_PRECISION,
      &                          mpiTypeYFaceBlock_xy_r8, mpiRC)
 #else
@@ -547,4 +547,4 @@ C
       RETURN
       END
 
-C $Id: ini_procs.F,v 1.20 2004/04/06 01:20:44 dimitri Exp $
+C $Id: ini_procs.F,v 1.21 2005/01/13 00:10:38 ce107 Exp $
