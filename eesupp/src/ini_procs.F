@@ -141,7 +141,7 @@ C      Could be periodic in X and/or Y - set at run time or compile time!
      O  mpiComm, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &        'S/R INI_PROCS: MPI_CART_CREATE return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -152,7 +152,7 @@ C--    Get my location on the grid
        CALL MPI_CART_COORDS( mpiComm, mpiMyId, 2, mpiGridSpec, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &        'S/R INI_PROCS: MPI_CART_COORDS return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -176,7 +176,7 @@ C--    Get MPI id for neighboring procs.
        CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidW , mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &        'S/R INI_PROCS: MPI_CART_RANK (pidW) return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -191,7 +191,7 @@ C--    Get MPI id for neighboring procs.
        CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidE , mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &        'S/R INI_PROCS: MPI_CART_RANK (pidE) return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -206,7 +206,7 @@ C--    Get MPI id for neighboring procs.
        CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidS , mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &        'S/R INI_PROCS: MPI_CART_RANK (pidS) return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -221,7 +221,7 @@ C--    Get MPI id for neighboring procs.
        CALL MPI_CART_RANK( mpiComm, mpiGridSpec, mpiPidN , mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &        'S/R INI_PROCS: MPI_CART_RANK (pidN) return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -233,7 +233,7 @@ C--    Print summary of processor mapping on standard output
        CALL MPI_GET_PROCESSOR_NAME( mpiProcNam, mpilProcNam, mpiRC )
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &        'S/R INI_PROCS: MPI_GET_PROCESSOR_NAME return code',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -296,7 +296,7 @@ C      xFace (y=constant) for XY arrays with real*4 declaration.
      &                       mpiTypeXFaceBlock_xy_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_VECTOR (mpiTypeXFaceBlock_xy_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -304,7 +304,7 @@ C      xFace (y=constant) for XY arrays with real*4 declaration.
        CALL MPI_TYPE_COMMIT( mpiTypeXFaceBlock_xy_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeXFaceBlock_xy_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -315,7 +315,7 @@ C      xFace (y=constant) for XY arrays with real*8 declaration.
      &                       mpiTypeXFaceBlock_xy_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_VECTOR (mpiTypeXFaceBlock_xy_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -323,7 +323,7 @@ C      xFace (y=constant) for XY arrays with real*8 declaration.
        CALL MPI_TYPE_COMMIT( mpiTypeXFaceBlock_xy_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeXFaceBlock_xy_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -340,7 +340,7 @@ C      xFace (y=constant) for XYZ arrays with real*4 declaration.
      &                       mpiTypeXFaceBlock_xyz_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeXFaceBlock_xyz_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -348,7 +348,7 @@ C      xFace (y=constant) for XYZ arrays with real*4 declaration.
        CALL MPI_TYPE_COMMIT( mpiTypeXFaceBlock_xyz_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT  (mpiTypeXFaceBlock_xyz_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -362,7 +362,7 @@ C      xFace (y=constant) for XYZ arrays with real*8 declaration.
      &                       mpiTypeXFaceBlock_xyz_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeXFaceBlock_xyz_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -370,7 +370,7 @@ C      xFace (y=constant) for XYZ arrays with real*8 declaration.
        CALL MPI_TYPE_COMMIT( mpiTypeXFaceBlock_xyz_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeXFaceBlock_xyz_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -384,7 +384,7 @@ C      yFace (x=constant) for XY arrays with real*4 declaration
      &                          mpiTypeYFaceBlock_xy_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_CONTIGUOUS (mpiTypeYFaceBlock_xy_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -392,7 +392,7 @@ C      yFace (x=constant) for XY arrays with real*4 declaration
        CALL MPI_TYPE_COMMIT( mpiTypeYFaceBlock_xy_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xy_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -402,7 +402,7 @@ C      yFace (x=constant) for XY arrays with real*8 declaration
      &                          mpiTypeYFaceBlock_xy_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_CONTIGUOUS (mpiTypeYFaceBlock_xy_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -410,7 +410,7 @@ C      yFace (x=constant) for XY arrays with real*8 declaration
        CALL MPI_TYPE_COMMIT( mpiTypeYFaceBlock_xy_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xy_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -426,7 +426,7 @@ C      yFace (x=constant) for XYZ arrays with real*4 declaration
      &                       mpiTypeYFaceBlock_xyz_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeYFaceBlock_xyz_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -434,7 +434,7 @@ C      yFace (x=constant) for XYZ arrays with real*4 declaration
        CALL MPI_TYPE_COMMIT( mpiTypeYFaceBlock_xyz_r4, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xyz_r4)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -447,7 +447,7 @@ C      yFace (x=constant) for XYZ arrays with real*8 declaration
      &                       mpiTypeYFaceBlock_xyz_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_HVECTOR (mpiTypeYFaceBlock_xyz_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -455,7 +455,7 @@ C      yFace (x=constant) for XYZ arrays with real*8 declaration
        CALL MPI_TYPE_COMMIT( mpiTypeYFaceBlock_xyz_r8, mpiRC)
        IF ( mpiRC .NE. MPI_SUCCESS ) THEN
         eeBootError = .TRUE.
-        WRITE(msgBuffer,'(A,I)')
+        WRITE(msgBuffer,'(A,I5)')
      &   'S/R INI_PROCS: MPI_TYPE_COMMIT (mpiTypeYFaceBlock_xyz_r8)',
      &        mpiRC 
         CALL PRINT_ERROR( msgBuffer , myThid)
@@ -482,4 +482,4 @@ C
       RETURN
       END
 
-C $Id: ini_procs.F,v 1.10 1999/05/24 15:15:11 adcroft Exp $
+C $Id: ini_procs.F,v 1.11 1999/05/24 15:19:53 adcroft Exp $
