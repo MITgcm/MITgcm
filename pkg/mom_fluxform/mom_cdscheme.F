@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_cdscheme.F,v 1.4 2003/02/08 02:13:02 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mom_fluxform/Attic/mom_cdscheme.F,v 1.5 2003/02/09 02:01:49 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -62,8 +62,8 @@ C     Adams-Bashforth weighting factors
       ab05   = -0.5 - abEps
 
 C-- stagger time stepping: grad Phi_Hyp is not in gU,gV and needs to be added:
-      IF (.FALSE.) THEN
-c     IF (staggerTimeStep) THEN
+c     IF (.FALSE.) THEN
+      IF (staggerTimeStep) THEN
         phxFac = pfFacMom
         phyFac = pfFacMom
       ELSE
@@ -79,7 +79,8 @@ C     Pressure extrapolated forward in time
      &  +ab05*(etaNm1(i,j,bi,bj)*Bo_surf(i,j,bi,bj) )
        ENDDO
       ENDDO
-      IF (staggerTimeStep) THEN
+      IF (.FALSE.) THEN
+c     IF (staggerTimeStep) THEN
        DO j=jMin,jMax
         DO i=iMin,iMax
          pf(i,j) = pf(i,j)+phi_hyd(i,j,k)
