@@ -1,78 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.3 2004/12/18 19:42:39 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.4 2004/12/20 17:10:27 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
-
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-C CBOP 1
-C C     !ROUTINE: MNC_CW_DEF_CVAR
-      
-C C     !INTERFACE:
-C       SUBROUTINE MNC_CW_DEF_CVAR( 
-C      I     cvname, 
-C      I     cvnum,
-C      I     cvdat, 
-C      I     myThid )
-
-C C     !DESCRIPTION:
-C C     Store data for a CF-convention coordinate variable (a vector) for
-C C     the given dimension name.
-
-C C     !USES:
-C       implicit none
-C #include "mnc_common.h"
-C #include "EEPARAMS.h"
-
-C C     !INPUT PARAMETERS:
-C       character*(*) cvname
-C       _RL cvdat(*)
-C       integer cvnum, myThid
-C CEOP
-
-C C     !LOCAL VARIABLES:
-C       integer i, imx, ind, nnf,nnl
-C       character*(MAX_LEN_MBUF) msgbuf
-
-C C     Functions
-C       integer IFNBLNK, ILNBLNK
-
-C       nnf = IFNBLNK(cvname)
-C       nnl = ILNBLNK(cvname)
-
-C C     Check that this name is not already defined
-C       CALL MNC_GET_IND(MNC_MAX_ID, cvname, mnc_cw_cvnm, ind, myThid)
-C       IF (ind .GT. 0) THEN
-C         write(msgbuf,'(3a)') 'MNC_CW_DEF_CVAR ERROR: ''', 
-C      &       cvname(nnf:nnl), ''' is already defined'
-C         CALL print_error(msgbuf, mythid)
-C         stop 'ABNORMAL END: S/R MNC_CW_DEF_CVAR'
-C       ENDIF
-C       CALL MNC_GET_NEXT_EMPTY_IND(MNC_MAX_ID, mnc_cw_cvnm, 
-C      &     ind, myThid)
-
-C       imx = 0
-C       DO i = 1,MNC_MAX_ID
-C         IF (mnc_cw_cvnm(i)(1:1) .NE. ' ') THEN
-C           imx = max(imx, mnc_cw_cvse(2,i))
-C         ENDIF
-C       ENDDO
-
-C       IF ((MNC_CW_CVDAT - imx - 1) .LT. cvnum) THEN
-C         write(msgbuf,'(3a)') 'MNC_CW_DEF_CVAR ERROR: out of space',
-C      &       '--please increase size of MNC_CW_CVDAT in the file ',
-C      &       '''mnc_common.h'''
-C         CALL print_error(msgbuf, mythid)
-C         stop 'ABNORMAL END: S/R MNC_CW_DEF_CVAR'
-C       ENDIF
-
-C       DO i = 1,cvnum
-C         mnc_cw_cvdt(imx+i) = cvdat(i)
-C       ENDDO
-C       mnc_cw_cvse(1,ind) = imx + 1
-C       mnc_cw_cvse(2,ind) = imx + cvnum
-
-C       RETURN
-C       END
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP 1
@@ -99,6 +28,13 @@ C     !USES:
 #include "EESUPPORT.h"
 #include "PARAMS.h"
 #include "GRID.h"
+#ifdef ALLOW_EXCH2
+#include "W2_EXCH2_TOPOLOGY.h"
+#include "W2_EXCH2_PARAMS.h"
+#endif
+
+C     Functions
+      integer IFNBLNK, ILNBLNK
 
 C     !INPUT PARAMETERS:
       character*(*) fname
@@ -108,19 +44,22 @@ C     !INPUT PARAMETERS:
 CEOP
 
 C     !LOCAL VARIABLES:
-      integer i, vid, nnf,nnl, doit, err
-      integer nids, cv_did(1)
+      integer i,j, vid, nnf,nnl, doit, err
+      integer nids, cv_did(1), xtmin,ytmin
       character*(MAX_LEN_MBUF) msgbuf
       integer cv_start(1), cv_count(1)
       _RS rtmp(sNx + 2*OLx + sNy + 2*OLy + Nr)
 
-C     Functions
-      integer IFNBLNK, ILNBLNK
-
       nnf = IFNBLNK(cvname)
       nnl = ILNBLNK(cvname)
 
-      doit = 0
+      xtmin = 0
+      ytmin = 0
+#ifdef ALLOW_EXCH2
+      xtmin = exch2_tbasex(W2_myTileList(bi))
+      ytmin = exch2_tbasey(W2_myTileList(bi))
+#endif
+      doit = 1
       nids = 1
       cv_did(1)= did
 
@@ -130,54 +69,72 @@ C     Check all the coordinate variables that we know about
         cv_start(1) = 1
         cv_count(1) = sNx
         DO i = cv_start(1),cv_count(1)
+#ifdef ALLOW_EXCH2
+          rtmp(i) = xtmin + i
+#else
           rtmp(i) = xC(i,1,bi,bj)
+#endif
         ENDDO
-        doit = 1
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Xp1') THEN
 
         cv_start(1) = 1
         cv_count(1) = sNx + 1
         DO i = cv_start(1),cv_count(1)
+#ifdef ALLOW_EXCH2
+          rtmp(i) = xtmin + i
+#else
           rtmp(i) = xG(i,1,bi,bj)
+#endif
         ENDDO
-        doit = 1
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Xwh') THEN
 
         cv_start(1) = 1
         cv_count(1) = sNx + 2*OLx
         DO i = cv_start(1),cv_count(1)
+#ifdef ALLOW_EXCH2
+          rtmp(i) = xtmin - OLx + i
+#else
           rtmp(i) = xC(i,1,bi,bj)
+#endif
         ENDDO
-        doit = 1
-
+        
       ELSEIF (cvname(nnf:nnl) .EQ. 'Y') THEN
 
         cv_start(1) = 1
         cv_count(1) = sNy
         DO i = cv_start(1),cv_count(1)
+#ifdef ALLOW_EXCH2
+          rtmp(i) = ytmin + i
+#else
           rtmp(i) = yC(1,i,bi,bj)
+#endif
         ENDDO
-        doit = 1
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Yp1') THEN
 
         cv_start(1) = 1
         cv_count(1) = sNy + 1
         DO i = cv_start(1),cv_count(1)
+#ifdef ALLOW_EXCH2
+          rtmp(i) = ytmin + i
+#else
           rtmp(i) = yG(1,i,bi,bj)
+#endif
         ENDDO
-        doit = 1
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Ywh') THEN
 
         cv_start(1) = 1
         cv_count(1) = sNy + 2*OLy
         DO i = cv_start(1),cv_count(1)
+#ifdef ALLOW_EXCH2
+          rtmp(i) = ytmin - OLy + i
+#else
           rtmp(i) = yC(1,i-OLy,bi,bj)
+#endif
         ENDDO
-        doit = 1
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Z') THEN
 
@@ -186,7 +143,6 @@ C     Check all the coordinate variables that we know about
         DO i = cv_start(1),cv_count(1)
           rtmp(i) = rC(i)
         ENDDO
-        doit = 1
 
       ELSEIF (cvname(nnf:nnl) .EQ. 'Zp1') THEN
 
@@ -195,7 +151,10 @@ C     Check all the coordinate variables that we know about
         DO i = cv_start(1),cv_count(1)
           rtmp(i) = rF(i)
         ENDDO
-        doit = 1
+
+      ELSE
+
+        doit = 0
 
       ENDIF
 

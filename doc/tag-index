@@ -1,8 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.422 2004/12/20 02:42:42 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.423 2004/12/20 17:10:27 edhill Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+o fix MNC coordinate variables so that they now contain per-face index
+  values (instead of xC,xG,yC,yG values) when run with EXCH2 since, in 
+  general, EXCH2 grids are only aligned to a "local" coordinate system
 o test diagnostics pkg in dic_example (no output) and ideal_2D_oce (with ouput)
 o Implement instantaneous output within pkg diagnostics:
   setting a negative frequency in data.diagnostics produces
