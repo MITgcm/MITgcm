@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.17 2001/09/27 18:18:31 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID.h,v 1.18 2001/11/08 16:34:57 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -323,6 +323,7 @@ C     rkFac     - Vertical coordinate to vertical index orientation.
 C                 ( -1 same orientation, 1 opposite orientation )
 C                 ( vertical coord == m  -> rkFac =  1 )
 C                 ( vertical coord == Pa -> rkFac = -1 )
+C     maskH  - cell Center full-column mask (= 2D mask)
 C     maskC  - cell Center land mask
 C     maskW  - West face land mask
 C     maskS  - South face land mask
@@ -370,7 +371,8 @@ C                 metric term in V equation.
      &  recip_hFacC,recip_hFacW,recip_hFacS, 
      &  saFac,
      &  xC,yC,rA,rAw,rAs,rAz,xG,yG,
-     &  maskC,maskW,maskS,recip_rA,recip_rAw,recip_rAs,recip_rAz,
+     &  maskH, maskC,maskW,maskS,
+     &  recip_rA,recip_rAw,recip_rAs,recip_rAz,
      &  tanPhiAtU, tanPhiAtV,
      &  cosfacU,cosfacV,sqcosfacU,sqcosfacV,
      &  drC,drF,recip_drC,recip_drF,rC,rF,
@@ -412,6 +414,7 @@ C                 metric term in V equation.
       _RS recip_rAw      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_rAs      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS recip_rAz      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS maskH          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RS maskC          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS maskW          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
       _RS maskS          (1-OLx:sNx+OLx,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
