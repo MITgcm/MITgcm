@@ -1,4 +1,4 @@
-# $Header: /u/gcmpack/MITgcm/pkg/exch2/Makefile,v 1.1 2004/01/09 20:46:09 afe Exp $
+# $Header: /u/gcmpack/MITgcm/pkg/exch2/Makefile,v 1.2 2004/04/01 15:47:03 molod Exp $
 # $Name:  $
 
 # Makefile for generate eesupp source code from templates.
@@ -15,7 +15,11 @@ RL_FILES = exch_xy_rl.F  exch_uv_xy_rl.F  \
            exch2_uv_xy_rl.F \
            exch2_uv_xyz_rl.F \
            exch2_xy_rl.F \
-           exch2_xyz_rl.F
+           exch2_xyz_rl.F \
+           exch2_uv_agrid_xy.rl.F \
+           exch2_uv_agrid_xyz.rl.F \
+           exch_uv_agrid_xy.rl.F \
+           exch_uv_agrid_xyz.rl.F
 
 
 RS_FILES = exch_xy_rs.F  exch_uv_xy_rs.F  \
@@ -29,7 +33,11 @@ RS_FILES = exch_xy_rs.F  exch_uv_xy_rs.F  \
            exch2_uv_xy_rs.F \
            exch2_uv_xyz_rs.F \
            exch2_xy_rs.F \
-           exch2_xyz_rs.F
+           exch2_xyz_rs.F \
+           exch2_uv_agrid_xy.rs.F \
+           exch2_uv_agrid_xyz.rs.F \
+           exch_uv_agrid_xy.rs.F \
+           exch_uv_agrid_xyz.rs.F
 
 all: $(RL_FILES) $(RS_FILES)
 
@@ -179,4 +187,28 @@ exch2_xyz_rl.F: exch2_xyz_rx.template
 	sed 's/RX/RL/g' exch2_xyz_rx.template > $@
 exch2_xyz_rs.F: exch2_xyz_rx.template
 	sed 's/RX/RS/g' exch2_xyz_rx.template > $@
+
+# exch2_uv_agrid_xyz.rx
+exch2_uv_agrid_xyz_rl.F: exch2_uv_agrid_xyz_rx.template
+	sed 's/RX/RL/g' exch2_uv_agrid_xyz_rx.template > $@
+exch2_uv_agrid_xyz_rs.F: exch2_xyz_rx.template
+	sed 's/RX/RS/g' exch2_uv_agrid_xyz_rx.template > $@
+
+# exch2_uv_agrid_xy.rx
+exch2_uv_agrid_xy_rl.F: exch2_uv_agrid_xy_rx.template
+	sed 's/RX/RL/g' exch2_uv_agrid_xy_rx.template > $@
+exch2_uv_agrid_xy_rs.F: exch2_xy_rx.template
+	sed 's/RX/RS/g' exch2_uv_agrid_xy_rx.template > $@
+
+# exch_uv_agrid_xy.rx
+exch_uv_agrid_xy_rl.F: exch_uv_agrid_xy_rx.template
+	sed 's/RX/RL/g' exch_uv_agrid_xy_rx.template > $@
+exch_uv_agrid_xy_rs.F: exch_xy_rx.template
+	sed 's/RX/RS/g' exch_uv_agrid_xy_rx.template > $@
+
+# exch_uv_agrid_xyz.rx
+exch_uv_agrid_xyz_rl.F: exch_uv_agrid_xyz_rx.template
+	sed 's/RX/RL/g' exch_uv_agrid_xyz_rx.template > $@
+exch_uv_agrid_xyz_rs.F: exch_xyz_rx.template
+	sed 's/RX/RS/g' exch_uv_agrid_xyz_rx.template > $@
 
