@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.6 2004/04/03 21:17:10 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/monitor/mon_out.F,v 1.7 2004/04/03 22:49:14 edhill Exp $
 C $Name:  $
 
 #include "MONITOR_OPTIONS.h"
@@ -23,7 +23,7 @@ C     foot   - Field suffix ( ignored if == mon_string_none )
       INTEGER  myThid
 CEOP
 
-      CALL MON_OUT_ALL(pref, foot, 1, value, 0.0, 0.0d0, myThid)
+      CALL MON_OUT_ALL(pref, foot, 1, value, 0.0d0, myThid)
       RETURN
       END
 
@@ -46,8 +46,10 @@ C     foot   - Field suffix ( ignored if == mon_string_none )
       CHARACTER*(*) foot
       INTEGER  myThid
 CEOP
+      REAL*8 dtmp
+      dtmp = value
 
-      CALL MON_OUT_ALL(pref, foot, 2, 0, value, 0.0d0, myThid)
+      CALL MON_OUT_ALL(pref, foot, 2, 0, dtmp, myThid)
       RETURN
       END
 
@@ -56,7 +58,7 @@ CBOP
 C     !ROUTINE: MON_OUT_RL
 
 C     !INTERFACE:
-      SUBROUTINE MON_OUT_RL(pref, value, foot, myThid )
+      SUBROUTINE MON_OUT_RL( pref, value, foot, myThid )
 
 C     !DESCRIPTION:
 C     Formatted RL I/O for monitor print out.
@@ -70,8 +72,10 @@ C     foot   - Field suffix ( ignored if == mon_string_none )
       CHARACTER*(*) foot
       INTEGER  myThid
 CEOP
+      REAL*8 dtmp
+      dtmp = value
 
-      CALL MON_OUT_ALL(pref, foot, 3, 0, 0.0, value, myThid)
+      CALL MON_OUT_ALL(pref, foot, 2, 0, dtmp, myThid)
       RETURN
       END
 
@@ -82,7 +86,7 @@ C     !ROUTINE: MON_OUT_ALL
 C     !INTERFACE:
       SUBROUTINE MON_OUT_ALL(
      I     pref, foot, 
-     I     itype, ival, rval, dval,
+     I     itype, ival, dval,
      I     myThid )
 
 C     !DESCRIPTION:
@@ -104,8 +108,7 @@ C     foot   - Field suffix ( ignored if == mon_string_none )
       CHARACTER*(*) pref, foot
       INTEGER itype
       INTEGER ival
-      _RS     rval
-      _RL     dval
+      REAL*8  dval
       INTEGER myThid
 CEOP
 
@@ -115,7 +118,7 @@ C     lBuf   - Buffer for length
 C     I0     - Temps used in calculating string length
       CHARACTER*(MAX_LEN_MBUF) msgBuf
       INTEGER  lBuf
-      INTEGER  I0, I1, IL
+      INTEGER  I0,I1, I2,I3, IL
 
       msgBuf = ' '
       lBuf   = 0
@@ -148,19 +151,22 @@ C     I0     - Temps used in calculating string length
        ENDIF
       ENDIF
 
-      I0 = IFNBLNK(foot)
-      I1 = ILNBLNK(foot)
-      IL = I1-I0+1
+      I2 = IFNBLNK(foot)
+      I3 = ILNBLNK(foot)
+      IL = I3-I2+1
       IF ( IL .GT. 0 ) THEN
-       IF ( foot(I0:I1) .NE. mon_string_none .AND. 
+       IF ( foot(I2:I3) .NE. mon_string_none .AND. 
      &      lBuf+IL+1   .LE. MAX_LEN_MBUF ) THEN
         lBuf = lBuf+1
-        msgBuf(lBuf:lBuf+IL-1) = foot(I0:I1)
+        msgBuf(lBuf:lBuf+IL-1) = foot(I2:I3)
         lBuf = lBuf+IL-1
        ENDIF
       ENDIF
 
       msgBuf(35:35) = '='
+
+CEH3  write(*,*) 'pref = ''', pref(I0:I1), ''''
+CEH3  write(*,*) 'foot = ''', foot(I2:I3), ''''
 
       _BEGIN_MASTER(myThid)
 #ifdef ALLOW_USE_MPI
@@ -169,8 +175,6 @@ C     I0     - Temps used in calculating string length
           IF (itype .EQ. 1)
      &         WRITE(msgBuf(36:57),'(1X,I21)')       ival
           IF (itype .EQ. 2)
-     &         WRITE(msgBuf(36:57),'(1X,1P1E21.13)') rval
-          IF (itype .EQ. 3)
      &         WRITE(msgBuf(36:57),'(1X,1P1E21.13)') dval
           CALL PRINT_MESSAGE( msgBuf, mon_ioUnit, SQUEEZE_RIGHT, 1 )
 #ifdef ALLOW_USE_MPI
