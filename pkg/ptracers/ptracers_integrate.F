@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.11 2003/10/26 01:10:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/ptracers_integrate.F,v 1.12 2003/12/11 03:20:30 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -39,6 +39,7 @@ C  uTrans               :: zonal transport in level k
 C  vTrans               :: meridional transport in level k
 C  rTrans               :: vertical transport across level k
 C  maskUp               :: mask for vertical transport
+C  rFlx			:: vertical flux
 C  KappaRtr		:: vertical diffusion of passive tracers
 C            NOTE!         This is infact KappaRS from thermodynamics()
 C                          and is being used only temporarily
@@ -54,6 +55,7 @@ C  myThid               :: thread number
       _RL vTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL rTrans  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RS maskUp  (1-OLx:sNx+OLx,1-OLy:sNy+OLy)
+      _RL rFlx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
       _RL KappaRtr(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr)
       INTEGER myIter
       _RL myTime
@@ -69,12 +71,10 @@ C  i,j,k,bi,bj,iTracer  :: loop indices
 C  iMin,iMax,jMin,jMax  :: loop ranges
 C  kUp,kDown            :: toggle indices for even/odd level fluxes
 C  km1                  :: =min(1,k-1)
-C  rFlx			:: vertical flux
 C  GAD_TR               :: passive tracer id (GAD_TR1+iTracer-1)
       INTEGER i,j,iTracer
       INTEGER iMin,iMax,jMin,jMax
       INTEGER kUp,kDown,km1
-      _RL rFlx(1-OLx:sNx+OLx,1-OLy:sNy+OLy,2,PTRACERS_num)
       INTEGER GAD_TR
       LOGICAL calcAdvection
 CEOP
