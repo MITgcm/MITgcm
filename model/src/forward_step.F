@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.60 2003/09/25 03:01:59 dimitri Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.61 2003/10/02 21:33:54 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -167,9 +167,7 @@ c     Update the tile edges.
        CALL EXCH_UV_XY_RS(fu, fv, .TRUE., myThid)
 C       _EXCH_XY_R8(fu     , mythid)
 C       _EXCH_XY_R8(fv     , mythid)
-      ELSE
-#else /* ALLOW_BULK_FORCE undef */
-      IF ( .TRUE. ) THEN
+      END IF
 #endif /* ALLOW_BULK_FORCE */
 # ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
 C     NOTE, that although the exf package is part of the
@@ -201,8 +199,6 @@ cph assuming that ALLOW_SEAICE has not yet been differentiated.
       ENDIF
 #  endif
 # endif /* INCLUDE_EXTERNAL_FORCING_PACKAGE */
-C--   end of if/else block useBulfforce --
-      ENDIF
 
 #if (defined (ALLOW_ADJOINT_RUN) || defined (ALLOW_TANGENTLINEAR_RUN))
 c--   Add control vector for forcing and parameter fields
@@ -282,7 +278,9 @@ C--   do exchanges (needed for DYNAMICS) when using stagger time-step :
 #endif   
 
 C--   Step forward fields and calculate time tendency terms.
+#ifndef ALLOW_AUTODIFF_TAMC
       IF ( momStepping ) THEN
+#endif
 #ifndef DISABLE_DEBUGMODE
         IF ( debugLevel .GE. debLevB ) 
      &    CALL DEBUG_CALL('DYNAMICS',myThid)
@@ -290,7 +288,9 @@ C--   Step forward fields and calculate time tendency terms.
         CALL TIMER_START('DYNAMICS            [FORWARD_STEP]',mythid)
         CALL DYNAMICS( myTime, myIter, myThid )
         CALL TIMER_STOP ('DYNAMICS            [FORWARD_STEP]',mythid)
+#ifndef ALLOW_AUTODIFF_TAMC
       ENDIF
+#endif
 
 #ifdef ALLOW_NONHYDROSTATIC
 C--   Step forward W field in N-H algorithm

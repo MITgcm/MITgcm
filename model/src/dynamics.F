@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.98 2003/07/08 15:00:26 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.99 2003/10/02 21:33:54 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -334,7 +334,16 @@ C--       kDown  Cycles through 2,1 to point to current layer
 
 #ifdef ALLOW_AUTODIFF_TAMC 
          kkey = (idynkey-1)*Nr + k
+c
 CADJ STORE totphihyd (:,:,k,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gt (:,:,k,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE gs (:,:,k,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE theta (:,:,k,bi,bj) 
+CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
+CADJ STORE salt  (:,:,k,bi,bj) 
 CADJ &     = comlev1_bibj_k, key=kkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
