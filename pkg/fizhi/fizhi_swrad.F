@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.8 2004/07/14 15:49:07 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.9 2004/07/14 15:52:04 molod Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -1034,7 +1034,7 @@ c-----pre-computed table
 c-----include the pre-computed table for cai
 
 #include "cai-dat.h"
-#     save caib,caif
+c     save caib,caif
 
 
 c-----clouds within each of the high, middle, and low clouds are
@@ -2509,7 +2509,7 @@ c********************************************************************
 c-----include co2 look-up table
 
 #include "cah-dat.h"
-#     save cah
+c     save cah
  
 c********************************************************************
 c-----table look-up for the reduction of clear-sky solar
