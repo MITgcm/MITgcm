@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.3 2004/04/07 23:40:34 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/thsice/thsice_readparms.F,v 1.4 2004/12/04 00:19:32 jmc Exp $
 C $Name:  $
 
 #include "THSICE_OPTIONS.h"
@@ -113,8 +113,8 @@ C--   Default values (constants)
 C--   Default values (parameters)
       stepFwd_oceMxL  = .FALSE.
       startIceModel   = 0
-      thSIce_deltaT   = deltaTtracer 
-      ocean_deltaT    = deltaTtracer 
+      thSIce_deltaT   = dTtracerLev(1)
+      ocean_deltaT    = dTtracerLev(1)
       tauRelax_MxL    = 0. _d 0
       hMxL_default    = 50. _d 0
       sMxL_default    = 35. _d 0

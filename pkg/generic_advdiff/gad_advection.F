@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.31 2004/09/29 04:53:30 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_advection.F,v 1.32 2004/12/04 00:20:27 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -332,15 +332,15 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-          CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, deltaTtracer,
+          CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, dTtracerLev(k),
      I                              uTrans, uVel, maskLocW, localTij,
      O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-          CALL GAD_DST3_ADV_X(      bi,bj,k, deltaTtracer,
+          CALL GAD_DST3_ADV_X(      bi,bj,k, dTtracerLev(k),
      I                              uTrans, uVel, maskLocW, localTij,
      O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-          CALL GAD_DST3FL_ADV_X(    bi,bj,k, deltaTtracer,
+          CALL GAD_DST3FL_ADV_X(    bi,bj,k, dTtracerLev(k),
      I                              uTrans, uVel, maskLocW, localTij,
      O                              af, myThid )
         ELSE
@@ -371,7 +371,7 @@ C         in corner region) but safer to keep them.
         IF ( S_edge ) THEN
          DO j=1-Oly,0
           DO i=iMinUpd,iMaxUpd
-           localTij(i,j)=localTij(i,j)-deltaTtracer*
+           localTij(i,j)=localTij(i,j)-dTtracerLev(k)*
      &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)
      &       *( af(i+1,j)-af(i,j)
@@ -383,7 +383,7 @@ C         in corner region) but safer to keep them.
         IF ( N_edge ) THEN
          DO j=sNy+1,sNy+Oly
           DO i=iMinUpd,iMaxUpd
-           localTij(i,j)=localTij(i,j)-deltaTtracer*
+           localTij(i,j)=localTij(i,j)-dTtracerLev(k)*
      &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)
      &       *( af(i+1,j)-af(i,j)
@@ -401,7 +401,7 @@ C      do not only update the overlap
         IF ( interiorOnly .AND. N_edge ) jMaxUpd = sNy
         DO j=jMinUpd,jMaxUpd
          DO i=1-Olx+1,sNx+Olx-1
-           localTij(i,j)=localTij(i,j)-deltaTtracer*
+           localTij(i,j)=localTij(i,j)-dTtracerLev(k)*
      &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)
      &       *( af(i+1,j)-af(i,j)
@@ -469,15 +469,15 @@ CADJ &     comlev1_bibj_k_gad_pass, key=passkey, byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 
         IF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-          CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, deltaTtracer,
+          CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, dTtracerLev(k),
      I                              vTrans, vVel, maskLocS, localTij,
      O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-          CALL GAD_DST3_ADV_Y(      bi,bj,k, deltaTtracer,
+          CALL GAD_DST3_ADV_Y(      bi,bj,k, dTtracerLev(k),
      I                              vTrans, vVel, maskLocS, localTij,
      O                              af, myThid )
         ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-          CALL GAD_DST3FL_ADV_Y(    bi,bj,k, deltaTtracer,
+          CALL GAD_DST3FL_ADV_Y(    bi,bj,k, dTtracerLev(k),
      I                              vTrans, vVel, maskLocS, localTij,
      O                              af, myThid )
         ELSE
@@ -508,7 +508,7 @@ C         in corner region) but safer to keep them.
         IF ( W_edge ) THEN
          DO j=jMinUpd,jMaxUpd
           DO i=1-Olx,0
-           localTij(i,j)=localTij(i,j)-deltaTtracer*
+           localTij(i,j)=localTij(i,j)-dTtracerLev(k)*
      &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)
      &       *( af(i,j+1)-af(i,j)
@@ -520,7 +520,7 @@ C         in corner region) but safer to keep them.
         IF ( E_edge ) THEN
          DO j=jMinUpd,jMaxUpd
           DO i=sNx+1,sNx+Olx
-           localTij(i,j)=localTij(i,j)-deltaTtracer*
+           localTij(i,j)=localTij(i,j)-dTtracerLev(k)*
      &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)
      &       *( af(i,j+1)-af(i,j)
@@ -538,7 +538,7 @@ C      do not only update the overlap
         IF ( interiorOnly .AND. E_edge ) iMaxUpd = sNx
         DO j=1-Oly+1,sNy+Oly-1
          DO i=iMinUpd,iMaxUpd
-           localTij(i,j)=localTij(i,j)-deltaTtracer*
+           localTij(i,j)=localTij(i,j)-dTtracerLev(k)*
      &       _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &       *recip_rA(i,j,bi,bj)
      &       *( af(i,j+1)-af(i,j)
@@ -578,7 +578,7 @@ C-    explicit advection is done ; store tendency in gTracer:
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
           gTracer(i,j,k,bi,bj)=
-     &     (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTtracer
+     &     (localTij(i,j)-tracer(i,j,k,bi,bj))/dTtracerLev(k)
          ENDDO
         ENDDO
       ELSE
@@ -668,15 +668,15 @@ CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 C-    Compute vertical advective flux in the interior:
          IF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-           CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, deltaTtracer,
+           CALL GAD_FLUXLIMIT_ADV_R( bi,bj,k, dTtracerLev(k),
      I                               rTrans, wVel, localTijk,
      O                               fVerT(1-Olx,1-Oly,kUp), myThid )
          ELSEIF (vertAdvecScheme.EQ.ENUM_DST3 ) THEN
-           CALL GAD_DST3_ADV_R(      bi,bj,k, deltaTtracer,
+           CALL GAD_DST3_ADV_R(      bi,bj,k, dTtracerLev(k),
      I                               rTrans, wVel, localTijk,
      O                               fVerT(1-Olx,1-Oly,kUp), myThid )
          ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-           CALL GAD_DST3FL_ADV_R(    bi,bj,k, deltaTtracer,
+           CALL GAD_DST3FL_ADV_R(    bi,bj,k, dTtracerLev(k),
      I                               rTrans, wVel, localTijk,
      O                               fVerT(1-Olx,1-Oly,kUp), myThid )
          ELSE
@@ -696,14 +696,14 @@ CADJ &     = comlev1_bibj_k_gad, key=kkey, byte=isbyte
 C--   Divergence of vertical fluxes
         DO j=1-Oly,sNy+Oly
          DO i=1-Olx,sNx+Olx
-          localTij(i,j)=localTijk(i,j,k)-deltaTtracer*
+          localTij(i,j)=localTijk(i,j,k)-dTtracerLev(k)*
      &     _recip_hFacC(i,j,k,bi,bj)*recip_drF(k)
      &     *recip_rA(i,j,bi,bj)
      &     *( fVerT(i,j,kUp)-fVerT(i,j,kDown)
      &       -tracer(i,j,k,bi,bj)*(rTrans(i,j)-rTransKp1(i,j))
      &      )*rkFac
           gTracer(i,j,k,bi,bj)=
-     &     (localTij(i,j)-tracer(i,j,k,bi,bj))/deltaTtracer
+     &     (localTij(i,j)-tracer(i,j,k,bi,bj))/dTtracerLev(k)
          ENDDO
         ENDDO
  

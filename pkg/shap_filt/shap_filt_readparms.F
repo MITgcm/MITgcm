@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.9 2004/06/26 01:15:30 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/shap_filt/shap_filt_readparms.F,v 1.10 2004/12/04 00:19:12 jmc Exp $
 C $Name:  $
 
 #include "SHAP_FILT_OPTIONS.h"
@@ -58,7 +58,7 @@ C--   Default flags and values for Shapiro Filter
       nShapUV = 0
       nShapTrPhys = 0
       nShapUVPhys = 0
-      Shap_Trtau = deltaTtracer
+      Shap_Trtau = dTtracerLev(1)
       Shap_TrLength = 0.
       Shap_uvtau = deltaTMom
       Shap_TrLength = 0.

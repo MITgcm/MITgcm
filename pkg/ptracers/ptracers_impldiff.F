@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_impldiff.F,v 1.7 2004/11/24 23:24:57 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_impldiff.F,v 1.8 2004/12/04 00:17:50 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -90,7 +90,7 @@ c #else
 
           CALL IMPLDIFF(
      I         bi, bj, iMin, iMax, jMin, jMax,
-     I         deltaTtracer, kappaRk, recip_HFacC,
+     I         dTtracerLev(1), kappaRk, recip_HFacC,
      U         gPtr(1-Olx,1-Oly,1,1,1,iTracer),
      I         myThid )
 

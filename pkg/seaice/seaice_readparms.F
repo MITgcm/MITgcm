@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.17 2004/09/07 17:29:14 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/seaice/seaice_readparms.F,v 1.18 2004/12/04 00:18:21 jmc Exp $
 C $Name:  $
 
 #include "SEAICE_OPTIONS.h"
@@ -72,8 +72,8 @@ C--   set default sea ice parameters
 #else
       SEAICEuseDYNAMICS  = .FALSE.
 #endif
-      SEAICE_deltaTtherm = deltaTtracer
-      SEAICE_deltaTdyn   = deltaTtracer
+      SEAICE_deltaTtherm = dTtracerLev(1)
+      SEAICE_deltaTdyn   = dTtracerLev(1)
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
       SEAICE_initialHEFF = ZERO
@@ -171,7 +171,7 @@ C     Check that requested time step size is supported.  The combination
 C     below is the only one that is supported at this time.  Does not
 C     mean that something fancier will not work, just that it has not
 C     yet been tried nor thought through.
-      IF ( SEAICE_deltaTtherm .NE. deltaTtracer       .OR.
+      IF ( SEAICE_deltaTtherm .NE. dTtracerLev(1)     .OR.
      &     SEAICE_deltaTdyn   .LT. SEAICE_deltaTtherm .OR.
      &     (SEAICE_deltaTdyn/SEAICE_deltaTtherm) .NE.
      &     INT(SEAICE_deltaTdyn/SEAICE_deltaTtherm) ) THEN
@@ -179,7 +179,7 @@ C     yet been tried nor thought through.
      &        'Unsupported combination of SEAICE_deltaTtherm,'
          CALL PRINT_ERROR( msgBuf , 1)
          WRITE(msgBuf,'(A)')
-     &        ' SEAICE_deltaTdyn, and deltaTtracer'
+     &        ' SEAICE_deltaTdyn, and dTtracerLev(1)'
          CALL PRINT_ERROR( msgBuf , 1)
          STOP 'ABNORMAL END: S/R SEAICE_READPARMS'
       ENDIF

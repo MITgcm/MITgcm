@@ -1,4 +1,4 @@
-C$Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.2 2004/10/18 18:20:45 edhill Exp $
+C$Header: /u/gcmpack/MITgcm/pkg/opps/opps_calc.F,v 1.3 2004/12/04 00:17:18 jmc Exp $
 C$Name:  $
 
 #include "OPPS_OPTIONS.h"
@@ -120,7 +120,7 @@ C      IF ( DIFFERENT_MULTIPLE(cAdjFreq,myTime,myTime-deltaTClock) ) THEN
 C     local initialization
 
 C     Copy some arrays
-      dtts = deltaTtracer
+      dtts = dTtracerLev(1)
 C     
 C     start k-loop
 C

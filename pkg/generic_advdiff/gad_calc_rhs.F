@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.30 2004/10/21 21:26:10 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_calc_rhs.F,v 1.31 2004/12/04 00:20:27 jmc Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -179,7 +179,7 @@ C-    Advective flux in X
       IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
        CALL GAD_C2_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
       ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-       CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, deltaTtracer,
+       CALL GAD_FLUXLIMIT_ADV_X( bi,bj,k, dTtracerLev(k),
      I          uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
      O          af, myThid )
       ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
@@ -187,11 +187,11 @@ C-    Advective flux in X
       ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
        CALL GAD_C4_ADV_X(bi,bj,k,uTrans,localT,af,myThid)
       ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-       CALL GAD_DST3_ADV_X( bi,bj,k, deltaTtracer,
+       CALL GAD_DST3_ADV_X( bi,bj,k, dTtracerLev(k),
      I          uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
      O          af, myThid )
       ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-       CALL GAD_DST3FL_ADV_X( bi,bj,k, deltaTtracer,
+       CALL GAD_DST3FL_ADV_X( bi,bj,k, dTtracerLev(k),
      I          uTrans, uVel, maskW(1-Olx,1-Oly,k,bi,bj), localT,
      O          af, myThid )
       ELSE
@@ -254,7 +254,7 @@ C-    Advective flux in Y
       IF (advectionScheme.EQ.ENUM_CENTERED_2ND) THEN
        CALL GAD_C2_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
       ELSEIF (advectionScheme.EQ.ENUM_FLUX_LIMIT) THEN
-       CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, deltaTtracer,
+       CALL GAD_FLUXLIMIT_ADV_Y( bi,bj,k, dTtracerLev(k),
      I          vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
      O          af, myThid )
       ELSEIF (advectionScheme.EQ.ENUM_UPWIND_3RD ) THEN
@@ -262,11 +262,11 @@ C-    Advective flux in Y
       ELSEIF (advectionScheme.EQ.ENUM_CENTERED_4TH) THEN
        CALL GAD_C4_ADV_Y(bi,bj,k,vTrans,localT,af,myThid)
       ELSEIF (advectionScheme.EQ.ENUM_DST3 ) THEN
-       CALL GAD_DST3_ADV_Y( bi,bj,k, deltaTtracer,
+       CALL GAD_DST3_ADV_Y( bi,bj,k, dTtracerLev(k),
      I          vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
      O          af, myThid )
       ELSEIF (advectionScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
-       CALL GAD_DST3FL_ADV_Y( bi,bj,k, deltaTtracer,
+       CALL GAD_DST3FL_ADV_Y( bi,bj,k, dTtracerLev(k),
      I          vTrans, vVel, maskS(1-Olx,1-Oly,k,bi,bj), localT,
      O          af, myThid )
       ELSE
@@ -332,17 +332,17 @@ C-    Compute vertical advective flux in the interior:
         CALL GAD_C2_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
        ELSEIF (vertAdvecScheme.EQ.ENUM_FLUX_LIMIT) THEN
         CALL GAD_FLUXLIMIT_ADV_R(
-     &       bi,bj,k,deltaTtracer,rTrans,wVel,tracer,af,myThid)
+     &       bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
        ELSEIF (vertAdvecScheme.EQ.ENUM_UPWIND_3RD ) THEN
         CALL GAD_U3_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
        ELSEIF (vertAdvecScheme.EQ.ENUM_CENTERED_4TH) THEN
         CALL GAD_C4_ADV_R(bi,bj,k,rTrans,tracer,af,myThid)
        ELSEIF (vertAdvecScheme.EQ.ENUM_DST3 ) THEN
         CALL GAD_DST3_ADV_R(
-     &       bi,bj,k,deltaTtracer,rTrans,wVel,tracer,af,myThid)
+     &       bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
        ELSEIF (vertAdvecScheme.EQ.ENUM_DST3_FLUX_LIMIT ) THEN
         CALL GAD_DST3FL_ADV_R(
-     &       bi,bj,k,deltaTtracer,rTrans,wVel,tracer,af,myThid)
+     &       bi,bj,k,dTtracerLev(k),rTrans,wVel,tracer,af,myThid)
        ELSE
         STOP 'GAD_CALC_RHS: Bad vertAdvecScheme (R)'
        ENDIF

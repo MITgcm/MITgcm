@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.3 2004/10/17 23:11:59 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ggl90/ggl90_calc.F,v 1.4 2004/12/04 00:16:49 jmc Exp $
 C $Name:  $
 
 #include "GGL90_OPTIONS.h"
@@ -110,7 +110,7 @@ CEOP
       jMax = sNy+OLy-1
 
 C     set separate time step (should be deltaTtracer)
-      deltaTggl90 = deltaTtracer
+      deltaTggl90 = dTtracerLev(1)
 C     
       kSurf = 1
 C     implicit timestepping weights for dissipation
