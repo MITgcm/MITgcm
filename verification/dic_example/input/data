@@ -47,6 +47,7 @@
  &PARM03
 #startTime = 0.,
  nIter0  = 4248000,
+#EH3 nTimeSteps = 20,
  nTimeSteps = 4,
  deltaTmom = 900.0,
  tauCD =     321428.,
@@ -54,10 +55,16 @@
  deltaTClock = 43200.0,
  abEps = 0.1,
 #cAdjFreq = -1,
- pChkptFreq=3110400000.,
- chkptFreq= 3110400000.,
- dumpFreq=  3110400000.,
- taveFreq=  3110400000.,
+#EH3   These following *very* small periods are 
+#EH3   for IO testing purposes only
+#EH3 pChkptFreq=3110400000.,
+#EH3 chkptFreq= 3110400000.,
+#EH3 dumpFreq=  3110400000.,
+#EH3 taveFreq=  3110400000.,
+ pChkptFreq=216000.0,
+ chkptFreq= 216000.0,
+ dumpFreq=  216000.0,
+ taveFreq=  216000.0,
  monitorFreq=86400.,
  tauThetaClimRelax = 5184000.0,
  tauSaltClimRelax =  7776000.0,
