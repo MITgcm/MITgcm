@@ -1,6 +1,8 @@
        subroutine diagnostics_fill_state(myThid)
+       implicit none
 #include "SIZE.h"
 #include "EEPARAMS.h"
+#include "CPP_OPTIONS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
 # ifdef ALLOW_PTRACERS

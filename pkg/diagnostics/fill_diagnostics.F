@@ -1,5 +1,5 @@
       subroutine fill_diagnostics (myThid, chardiag, levflg, nlevs, 
-     .          bibjflg, bi, bj, array) 
+     .          bibjflg, bi, bj, arrayin) 
 C***********************************************************************
 C  Purpose
 C  -------
@@ -20,7 +20,7 @@ C                  2 indicates that the bi-bj loop is done OUTSIDE
 C                      AND that we have been sent a local array
 C     bi ......... X-direction process(or) number - used for bibjflg=1
 C     bj ......... Y-direction process(or) number - used for bibjflg=1
-C     array ...... Field to increment diagnostics array
+C     arrayin .... Field to increment diagnostics array
 C                  NOTE: User beware! If a local (1 tile only) array
 C                        is sent here, bibjflg MUST NOT be set to 0
 C                        or there will be out of bounds problems!
@@ -34,11 +34,14 @@ C***********************************************************************
 
       integer myThid,levflg,nlevs,bibjflg,bi,bj
       character *8 chardiag
-      _RL array(1-OLx:sNx+Olx,1-Oly:sNy+Oly,nlevs,Nsx,Nsy)
+      _RL arrayin(*)
 
 c Local variables
 c ===============
       integer i, j, n, ndiagnum, bihere, bjhere, levhere, ipointer
+      _RL array(1-OLx:sNx+Olx,1-Oly:sNy+Oly,nlevs,Nsx,Nsy)
+      _RL arrayloc(sNx,sNy,nlevs)
+      integer irun,jrun,krun,birun,bjrun
 
 C Run through list of active diagnostics to make sure
 C we are trying to fill a valid diagnostic
@@ -62,12 +65,19 @@ C Increment the counter for the diagnostic
 C   Check to see if we need to do a bi-bj loop here
 
       if(bibjflg.eq.0) then
+       irun = sNx+2*Olx
+       jrun = sNy+2*Oly
+       krun = nlevs
+       birun = myBxHi(myThid)-myBxLo(myThid)+1
+       bjrun = myByHi(myThid)-myByLo(myThid)+1
 
        do bjhere=myByLo(myThid), myByHi(myThid)
        do bihere=myBxLo(myThid), myBxHi(myThid)
 
        if(levflg.eq.0)then
         do levhere = 1,nlevs
+         call fillit(arrayin,irun,jrun,krun,levhere,birun,bjrun,
+     .                                              bihere,bjhere,array)
          do j = 1,sNy
          do i = 1,sNx
           qdiag(i,j,ipointer+levhere-1,bihere,bjhere) = 
@@ -77,6 +87,8 @@ C   Check to see if we need to do a bi-bj loop here
          enddo
         enddo
        else
+        call fillit(arrayin,irun,jrun,krun,levflg,birun,bjrun,
+     .                                              bihere,bjhere,array)
         do j = 1,sNy
         do i = 1,sNx
          qdiag(i,j,ipointer+levflg-1,bihere,bjhere) = 
@@ -90,9 +102,16 @@ C   Check to see if we need to do a bi-bj loop here
        enddo
 
       elseif(bibjflg.eq.1) then
+       irun = sNx+2*Olx
+       jrun = sNy+2*Oly
+       krun = nlevs
+       birun = myBxHi(myThid)-myBxLo(myThid)+1
+       bjrun = myByHi(myThid)-myByLo(myThid)+1
 
        if(levflg.eq.0)then
         do levhere = 1,nlevs
+         call fillit(arrayin,irun,jrun,krun,levhere,birun,bjrun,
+     .                                              bi,bj,array)
          do j = 1,sNy
          do i = 1,sNx
           qdiag(i,j,ipointer+levhere-1,bi,bj) =
@@ -101,6 +120,8 @@ C   Check to see if we need to do a bi-bj loop here
          enddo
         enddo
        else
+        call fillit(arrayin,irun,jrun,krun,levflg,birun,bjrun,
+     .                                              bi,bj,array)
         do j = 1,sNy
         do i = 1,sNx
          qdiag(i,j,ipointer+levflg-1,bi,bj) =
@@ -110,21 +131,30 @@ C   Check to see if we need to do a bi-bj loop here
        endif
 
       elseif(bibjflg.eq.2) then
+       irun = sNx
+       jrun = sNy
+       krun = nlevs
+       birun = 1
+       bjrun = 1
 
        if(levflg.eq.0)then
         do levhere = 1,nlevs
+         call fillit(arrayin,irun,jrun,krun,levhere,birun,bjrun,
+     .                                              1,1,arrayloc)
          do j = 1,sNy
          do i = 1,sNx
           qdiag(i,j,ipointer+levhere-1,bi,bj) =
-     .  qdiag(i,j,ipointer+levhere-1,bi,bj) + array(i,j,levhere,1,1)
+     .  qdiag(i,j,ipointer+levhere-1,bi,bj) + arrayloc(i,j,levhere)
          enddo
          enddo
         enddo
        else
+        call fillit(arrayin,irun,jrun,krun,levflg,birun,bjrun,
+     .                                              1,1,arrayloc)
         do j = 1,sNy
         do i = 1,sNx
          qdiag(i,j,ipointer+levflg-1,bi,bj) =
-     .  qdiag(i,j,ipointer+levflg-1,bi,bj) + array(i,j,nlevs,1,1)
+     .  qdiag(i,j,ipointer+levflg-1,bi,bj) + arrayloc(i,j,nlevs)
         enddo
         enddo
        endif
@@ -139,5 +169,26 @@ C   Check to see if we need to do a bi-bj loop here
 
  1000 format(' ',' Warning: Trying to write to diagnostic ',a8,
      .        ' But it is not a valid (or active) name ')
+      return
+      end
+
+      subroutine fillit(arrayin,irun,jrun,krun,klev,birun,bjrun,
+     .                                              bi,bj,arrayout)
+
+      implicit none
+#include "EEPARAMS.h"
+
+      integer irun, jrun, krun, klev, birun, bjrun, bi, bj
+      _RL arrayin(irun,jrun,krun,birun,bjrun)
+      _RL arrayout(irun,jrun,krun,birun,bjrun)
+
+      integer i, j
+
+      do j = 1,jrun
+       do i = 1,irun
+        arrayout(i,j,klev,bi,bj) = arrayin(i,j,klev,bi,bj)
+       enddo
+      enddo
+
       return
       end

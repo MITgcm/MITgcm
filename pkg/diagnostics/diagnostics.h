@@ -829,7 +829,7 @@ C diagarrays common
       integer       iWTHMASS , kWTHMASS,  nWTHMASS
       integer       iUSLTMASS, kUSLTMASS, nUSLTMASS
       integer       iVSLTMASS, kVSLTMASS, nVSLTMASS
-      integer       iWSLTMASS, kVSLTMASS, nVSLTMASS
+      integer       iWSLTMASS, kWSLTMASS, nWSLTMASS
       integer       iUVELTH  , kUVELTH,   nUVELTH
       integer       iVVELTH  , kVVELTH,   nVVELTH
       integer       iWVELTH  , kWVELTH,   nWVELTH
