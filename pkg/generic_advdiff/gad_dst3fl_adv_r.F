@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.1 2001/09/10 13:09:04 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/generic_advdiff/gad_dst3fl_adv_r.F,v 1.2 2001/11/08 23:39:34 heimbach Exp $
 C $Name:  $
 
 #include "GAD_OPTIONS.h"
@@ -64,18 +64,20 @@ C      for maskC(...) and wVel(...)
      &         *maskC(i,j,km1,bi,bj)
 
         cfl=abs(wVel(i,j,k,bi,bj)*dTarg*recip_drc(k))
-        d0=(2.-cfl)*(1.-cfl)*oneSixth
-        d1=(1.-cfl*cfl)*oneSixth
-c       thetaP=0.
-c       IF (Rj.NE.0.) thetaP=Rjm/Rj
+        d0=(2.D0-cfl)*(1.-cfl)*oneSixth
+        d1=(1.D0-cfl*cfl)*oneSixth
+c       thetaP=0.D0
+c       IF (Rj.NE.0.D0) thetaP=Rjm/Rj
         thetaP=Rjm/(1.D-20+Rj)
         psiP=d0+d1*thetaP
-        psiP=max(0.,min(min(1.,psiP),(1.-cfl)/(1.D-20+cfl)*thetaP))
+        psiP=max(0.D0,min(min(1.D0,psiP),
+     &       (1.D0-cfl)/(1.D-20+cfl)*thetaP))
         thetaM=Rjp/(1.D-20+Rj)
-c       thetaM=0.
-c       IF (Rj.NE.0.) thetaM=Rjp/Rj
+c       thetaM=0.D0
+c       IF (Rj.NE.0.D0) thetaM=Rjp/Rj
         psiM=d0+d1*thetaM
-        psiM=max(0.,min(min(1.,psiM),(1.-cfl)/(1.D-20+cfl)*thetaM))
+        psiM=max(0.D0,min(min(1.D0,psiM),
+     &       (1.D0-cfl)/(1.D-20+cfl)*thetaM))
         wT(i,j)=
      &   0.5*(rTrans(i,j)+abs(rTrans(i,j)))
      &      *( Tracer(i,j, k ,bi,bj) + psiM*Rj )
