@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.3 2004/12/20 01:52:58 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_readparms.F,v 1.4 2005/02/07 20:49:09 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -66,7 +66,7 @@ C     Initialize and Read Diagnostics Namelist
           fields (m,l) = blk8c
         ENDDO
       ENDDO
-      diag_mnc   = .FALSE.
+      diag_mnc = useMNC
 
       WRITE(msgBuf,'(A)')
      &     ' DIAGNOSTICS_READPARMS: opening data.diagnostics'
@@ -92,13 +92,10 @@ C     Initialise diag_choices common block
           jdiag(m,n) = 0
         ENDDO
       ENDDO
-      diag_mdsio = .TRUE.
 
 C     Fill Diagnostics Common Block with Namelist Info
-      IF ( useMNC .AND. diag_mnc
-     &            .AND. (.NOT. outputTypesInclusive)) THEN
-        diag_mdsio = .FALSE.
-      ENDIF
+      diag_mnc = diag_mnc .AND. useMNC
+      diag_mdsio = (.NOT. diag_mnc) .OR. outputTypesInclusive
 
       DO l = 1,ldimLoc
        IF ( frequency(l).NE.0 .AND. nlists.LT.numlists ) THEN
