@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.11 2005/02/10 00:46:06 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.12 2005/02/10 01:04:33 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -73,11 +73,11 @@ c--   Sum up all contributions.
       do bj = jtlo,jthi
         do bi = itlo,ithi
 
-          write(standardmessageunit,'(A,E22.14)') 
+          write(standardmessageunit,'(A,D22.15)') 
      &          ' --> objf_test(bi,bj)   = ', objf_test(bi,bj)
-          write(standardmessageunit,'(A,E22.14)') 
+          write(standardmessageunit,'(A,D22.15)') 
      &         ' --> objf_tracer(bi,bj) = ', objf_tracer(bi,bj)
-          write(standardmessageunit,'(A,E22.14)') 
+          write(standardmessageunit,'(A,D22.15)') 
      &         ' --> objf_atl(bi,bj)    = ', objf_atl(bi,bj)
 
           fc = fc
@@ -87,12 +87,12 @@ c--   Sum up all contributions.
         enddo
       enddo
 
-      write(standardmessageunit,'(A,E22.14)') '  local fc = ', fc
+      write(standardmessageunit,'(A,D22.15)') '  local fc = ', fc
 
 c--   Do global summation.
       _GLOBAL_SUM_R8( fc , myThid )
 
-      write(standardmessageunit,'(A,E22.14)') ' global fc = ', fc
+      write(standardmessageunit,'(A,D22.15)') ' global fc = ', fc
 
 #endif /* ALLOW_ECCO */
 
