@@ -1,7 +1,10 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.113 2002/12/28 10:11:10 dimitri Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.114 2003/01/03 04:07:52 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o time-average AIM output: becomes independent from statvars time-average
+  (can be used with #undef ALLOW_TIMEAVE) ; add new variables (e.g., RH)
 
 checkpoint47f_post
 Merging from release1_p10:
