@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.1 2001/05/14 22:10:37 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_readparms.F,v 1.2 2001/07/13 13:42:16 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -88,7 +88,7 @@ C--   Initialise the ECCO State Estimation package.
 #ifdef ALLOW_CALENDAR
 C--   Initialise the calendar package.
 #ifdef ALLOW_CAL_NENDITER
-      CALL cal_Init(
+      call cal_init(
      I               startTime,
      I               endTime,
      I               deltaTclock,
@@ -98,7 +98,7 @@ C--   Initialise the calendar package.
      I               myThid
      &             )
 #else
-      CALL cal_Init(
+      call cal_init(
      I               startTime,
      I               endTime,
      I               deltaTclock,
@@ -119,7 +119,7 @@ C--   Custom routine to set forcing fields.
 #ifdef ALLOW_ECCO_OPTIMIZATION
 c--   Initialise the optimization-related parts of the ECCO State
 c--   Estimation package.
-      CALL optim_Init( myThid )
+      call optim_init( myThid )
       _BARRIER
 #else
 c--   Optimization not enabled.
@@ -132,26 +132,15 @@ C--   Initialise the cost function.
       _BARRIER
 
 C--   Initialise the control vector.
-      CALL ctrl_Init( myThid )
+      call ctrl_init( myThid )
       _BARRIER
 #else
 c     not needed for forward run only
 #endif
 
-
-#ifdef ALLOW_ECCO_GRADIENT_CHECK
-c--   Initialise the gradient check for the TAMC generated adjoint
-c--   model.
-      CALL grdchk_Init( myThid )
-      _BARRIER
-#else
-c--   Gradient check not enabled.
-#endif
-
-
 #ifdef ALLOW_ECCO_DIAGNOSTICS_RUN
 c--   Initialise the ECCO diagnostics package.
-      CALL diagnos_Init( myThid )
+      call diagnos_init( myThid )
       _BARRIER
 #else
 c--   Diagnostics not enabled.
@@ -162,7 +151,7 @@ c--   Diagnostics not enabled.
 c-------------------------------- ECCO --------------------------------
 
 c--     Summarize the setup of the ECCO release.
-c        call ecco_Summary( mythid )
+c        call ecco_summary( mythid )
       _END_MASTER( mythid )
 
 c--   Everyone else must wait for the parameters to be loaded and
