@@ -1,0 +1,6 @@
+# KPP parameters
+ &KPP_PARM01
+ KPPmixingMaps   = .FALSE.,
+ KPPwriteState   = .TRUE.,
+ kpp_dumpFreq    = 864000.0
+ &

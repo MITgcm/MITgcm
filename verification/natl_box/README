@@ -1,0 +1,48 @@
+Example: Subtropical North Atlantic Subduction area
+===================================================
+- with KPP & shortwave heating
+- no GMRedi
+
+To apply the changes to the default configuration of MITgcmUV:
+  cd bin
+  ln -s ../verification/natl_box/code/SIZE.h ../bin/
+  ln -s ../verification/natl_box/code/CPP_OPTIONS.h ../bin/
+  ln -s ../verification/natl_box/code/CPP_EEOPTIONS.h ../bin/
+  ln -s ../verification/natl_box/code/KPP_OPTIONS.h ../bin/
+  ln -s ../verification/natl_box/code/external_fields_* ../bin/
+
+Configure and compile the code:
+  cd ../bin
+  ../tools/genmake -makefile
+  make depend
+  make
+
+To run:
+  cd ../exe
+  cp ../verification/natl_box/input/* .
+  mitgcmuv >&! run.out
+
+There is comparison output in:
+ ../verification/natl_box/output/run.out
+
+A FORTRAN program provides a verification procedure.
+It is based on the boundary layer depth and will either issue:
+'North Atlantic test passed.  KPPhbl file is unchanged.'
+or:
+'North Atlantic test failed.  KPPhbl file has changed.'
+
+  cd ../exe
+  ln -sf ../verification/natl_box/output/KPPhbl.001.001.data \
+         KPPhbl_orig
+  f77 ../verification/natl_box/output/comp_orig.F -o comp_orig
+  comp_orig
+
+N.B.: On ORIGIN 2000 use f77 -bytereclen 
+
+A matlab script, comp_output.m, creates plots for
+reference (c32) and new surface temperature, boundary layer depth,
+meridional section of tracer diffusivities, and 
+corresponding differences.
+
+Comments:
+The input data is real*4.

@@ -1,0 +1,6 @@
+# Packages
+ &PACKAGES
+  useGMRedi=.FALSE.,
+  useKPP=.TRUE.,
+  useECCO=.FALSE.,
+ &
