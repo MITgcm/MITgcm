@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_write_diags.F,v 1.2 2001/02/02 21:36:29 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim/Attic/aim_write_diags.F,v 1.3 2001/02/05 15:42:01 adcroft Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -65,17 +65,28 @@ C      Normalize by integrated time
        _BARRIER
        _BEGIN_MASTER( myThid )
         WRITE(fn,'(A,I10.10)') 'aimphyvars.',myIter
-        CALL MDSWRITEFIELD(fn,precFloat32,gf,'RL',1,USTRtave,   1,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,precFloat32,gf,'RL',1,VSTRtave,   2,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,precFloat32,gf,'RL',1,TSRtave ,   3,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,precFloat32,gf,'RL',1,OLRtave ,   4,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,precFloat32,gf,'RL',1,SSRtave ,   5,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,precFloat32,gf,'RL',1,SLRtave ,   6,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,precFloat32,gf,'RL',1,SHFtave ,   7,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,precFloat32,gf,'RL',1,EVAPtave,   8,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,precFloat32,gf,'RL',1,PRECNVtave, 9,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,precFloat32,gf,'RL',1,PRECLStave,10,myIter,myThid)
-        CALL MDSWRITEFIELD(fn,precFloat32,gf,'RL',1,CLOUDCtave,11,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,precFloat32,gf,
+     &        'RL',1,USTRtave,   1,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,precFloat32,gf,
+     &        'RL',1,VSTRtave,   2,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,precFloat32,gf,
+     &        'RL',1,TSRtave ,   3,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,precFloat32,gf,
+     &        'RL',1,OLRtave ,   4,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,precFloat32,gf,
+     &        'RL',1,SSRtave ,   5,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,precFloat32,gf,
+     &        'RL',1,SLRtave ,   6,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,precFloat32,gf,
+     &        'RL',1,SHFtave ,   7,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,precFloat32,gf,
+     &        'RL',1,EVAPtave,   8,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,precFloat32,gf,
+     &        'RL',1,PRECNVtave, 9,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,precFloat32,gf,
+     &        'RL',1,PRECLStave,10,myIter,myThid)
+        CALL MDSWRITEFIELD(fn,precFloat32,gf,
+     &        'RL',1,CLOUDCtave,11,myIter,myThid)
        _END_MASTER( myThid )
        _BARRIER
 
