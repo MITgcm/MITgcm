@@ -1,8 +1,9 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.327 2004/07/08 20:58:24 edhill Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.328 2004/07/09 14:40:35 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint54b_post
 o add testreport "-j JOBS" option for parallel builds (tested and pretty 
    impressive on Altix and Opteron systems)
 o diagnostics can now write NetCDF files through the mnc package
