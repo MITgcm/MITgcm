@@ -19,7 +19,7 @@
  diffK4S=0.E17,
  buoyancyRelation='ATMOSPHERIC',
  eosType='IDEALGAS',
- Integr_GeoPot=1,
+ Integr_GeoPot=2,
  gravity=9.81,
  rhonil=1.0,
  rhoConst=1.0,
@@ -31,7 +31,7 @@
  writeBinaryPrec=64,
  hFacMin=1.0,
  zonal_filt_lat=45.0,
- saltAdvScheme=77,
+ saltAdvScheme=3,
  &
 
 # Elliptic solver parameters
@@ -43,10 +43,10 @@
 
 # Time stepping parameters
  &PARM03
- niter0=25920,
+ niter0=17280,
  nTimeSteps=10,
 #endTime=31104000.,
- deltaT=300.0,
+ deltaT=450.0,
  abEps=0.1,
  cAdjFreq=0.,
  pChkptFreq=2592000.0,
