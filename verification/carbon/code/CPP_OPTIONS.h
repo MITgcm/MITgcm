@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/CPP_OPTIONS.h,v 1.1 2001/07/13 13:19:00 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/verification/carbon/code/Attic/CPP_OPTIONS.h,v 1.2 2001/07/30 20:43:42 heimbach Exp $
 C
 C CPP flags controlling which code in included in the files that
 C will be compiled.
@@ -132,6 +132,9 @@ C          because the old code did not have no-slip BCs
 
 C o Read/write of checkpoint files for restarting.
 #undef OLD_STYLE_WITH_MANY_FILES
+
+C o Add passive tracer advection routines
+#define ALLOW_PASSIVE_TRACER
 
 C o Execution environment support options
 #include "CPP_EEOPTIONS.h"
