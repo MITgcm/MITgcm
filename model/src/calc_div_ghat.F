@@ -1,9 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.15 2001/06/29 17:14:49 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/calc_div_ghat.F,v 1.16 2001/09/19 13:58:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-#undef ALLOW_ZONAL_FILT
-#undef ALLOW_SHAP_FILT
 
 C     /==========================================================\
 C     | S/R CALC_DIV_GHAT                                        |
@@ -50,24 +48,37 @@ C     Term is the vertical integral of the divergence of the
 C     time tendency terms along with a relaxation term that
 C     pulls div(U) + dh/dt back toward zero.
 
-      IF (implicDiv2Dflow.EQ.1.) then
+      IF (implicDiv2Dflow.EQ.1.) THEN
 C     Fully Implicit treatment of the Barotropic Flow Divergence
         DO j=1,sNy
          DO i=1,sNx+1
           pf(i,j) = xA(i,j)*gUNm1(i,j,k,bi,bj) / deltaTmom
          ENDDO
         ENDDO
+      ELSEIF (exactConserv) THEN
+c     ELSEIF (nonlinFreeSurf.GT.0) THEN
+C     Implicit treatment of the Barotropic Flow Divergence
+        DO j=1,sNy
+         DO i=1,sNx+1
+          pf(i,j) = implicDiv2Dflow 
+     &             *xA(i,j)*gUNm1(i,j,k,bi,bj) / deltaTmom
+         ENDDO
+        ENDDO
       ELSE
 C     Explicit+Implicit part of the Barotropic Flow Divergence
 C      => Filtering of uVel,vVel is necessary
-#ifdef ALLOW_ZONAL_FILT
-        IF (zonal_filt_lat.LT.90.) THEN 
-          CALL ZONAL_FILTER(
-     &      uVel, hFacW, 1-1, sNy+1, k, k, bi, bj, 1, myThid)
-          CALL ZONAL_FILTER(
-     &      vVel, hFacS, 1-1, sNy+1, k, k, bi, bj, 2, myThid)
-        ENDIF
-#endif
+C-- Now the filter are applied in the_correction_step().
+C   We have left this code here to indicate where the filters used to be
+C   in the algorithm before JMC moved them to after the pressure solver. 
+C- 
+C#ifdef ALLOW_ZONAL_FILT
+C        IF (zonal_filt_lat.LT.90.) THEN 
+C          CALL ZONAL_FILTER(
+C     &      uVel, hFacW, 1-1, sNy+1, k, k, bi, bj, 1, myThid)
+C          CALL ZONAL_FILTER(
+C     &      vVel, hFacS, 1-1, sNy+1, k, k, bi, bj, 2, myThid)
+C        ENDIF
+C#endif
         DO j=1,sNy
          DO i=1,sNx+1
           pf(i,j) = ( implicDiv2Dflow * gUNm1(i,j,k,bi,bj)
@@ -93,11 +104,20 @@ C      => Filtering of uVel,vVel is necessary
       ENDIF
 #endif
 
-      IF (implicDiv2Dflow.EQ.1.) then
+      IF (implicDiv2Dflow.EQ.1.) THEN
 C     Fully Implicit treatment of the Barotropic Flow Divergence
         DO j=1,sNy+1
          DO i=1,sNx
           pf(i,j) = yA(i,j)*gVNm1(i,j,k,bi,bj) / deltatmom
+         ENDDO
+        ENDDO
+      ELSEIF (exactConserv) THEN
+c     ELSEIF (nonlinFreeSurf.GT.0) THEN
+C     Implicit treatment of the Barotropic Flow Divergence
+        DO j=1,sNy+1
+         DO i=1,sNx
+          pf(i,j) = implicDiv2Dflow
+     &             *yA(i,j)*gVNm1(i,j,k,bi,bj) / deltatmom
          ENDDO
         ENDDO
       ELSE

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.25 2001/06/29 17:14:49 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/solve_for_pressure.F,v 1.26 2001/09/19 13:58:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -46,7 +46,9 @@ C--   Save previous solution & Initialise Vector solution and source term :
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
+#ifdef INCLUDE_CD_CODE
           etaNm1(i,j,bi,bj) = etaN(i,j,bi,bj)
+#endif
           cg2d_x(i,j,bi,bj) = Bo_surf(i,j,bi,bj)*etaN(i,j,bi,bj)
           cg2d_b(i,j,bi,bj) = 0.
 #ifdef USE_NATURAL_BCS
@@ -92,21 +94,27 @@ C--   Add source term arising from w=d/dt (p_s + p_nh)
      &      -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTMom
      &        *( etaN(i,j,bi,bj)
      &          +phi_nh(i,j,1,bi,bj)*horiVertRatio/gravity )
-C-jmc
-c    &      -freeSurfFac*_rA(i,j,bi,bj)*recip_Bo(i,j,bi,bj)
-c    &        *( cg2d_x(i,j,bi,bj) + phi_nh(i,j,1,bi,bj) )
-c    &        /deltaTMom/deltaTMom
-C-jmc
          ENDDO
         ENDDO
 #else
-        DO j=1,sNy
-         DO i=1,sNx
-          cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
-     &      -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTMom
-     &        * etaN(i,j,bi,bj)
+        IF ( exactConserv ) THEN
+c       IF (nonlinFreeSurf.GT.0) THEN
+         DO j=1,sNy
+          DO i=1,sNx
+           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+     &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTMom
+     &         * etaH(i,j,bi,bj)
+          ENDDO
          ENDDO
-        ENDDO
+        ELSE
+         DO j=1,sNy
+          DO i=1,sNx
+           cg2d_b(i,j,bi,bj) = cg2d_b(i,j,bi,bj)
+     &       -freeSurfFac*_rA(i,j,bi,bj)/deltaTMom/deltaTMom
+     &         * etaN(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDIF
 #endif
 
 #ifdef ALLOW_OBCS

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.20 2001/09/13 17:43:55 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.21 2001/09/19 13:58:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -50,6 +50,7 @@ C     mythid - thread number for this instance of the routine.
       integer mythid 
       integer myiter
       _RL     mytime
+      INTEGER bi,bj
 
 C     == local variables ==
 
@@ -70,13 +71,27 @@ C       (DO_GTERM_BLOCKING_EXCHANGES).
         CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
 #endif
 
+#ifdef EXACT_CONSERV
+      IF (exactConserv) THEN
+C--   Update etaH(n+1) :
+        DO bj=myByLo(myThid),myByHi(myThid)
+         DO bi=myBxLo(myThid),myBxHi(myThid)
+           CALL CALC_EXACT_ETA( .FALSE., bi,bj, uVel,vVel,
+     I                          startTime, nIter0, myThid )
+         ENDDO
+        ENDDO
+        IF (implicDiv2Dflow .NE. 1. _d 0 )
+     &     _EXCH_XY_R8(etaH, myThid )
+      ENDIF
+#endif /* EXACT_CONSERV */ 
+
 #ifdef NONLIN_FRSURF
 C--   compute the future surface level thickness
-C      according to the current Eta field 
+C      according to etaH(n+1) 
         IF ( nonlinFreeSurf.GT.0) THEN
-          CALL CALC_SURF_DR(etaN, myTime, myIter, myThid )
+          CALL CALC_SURF_DR(etaH, myTime, myIter, myThid )
         ENDIF
-#endif
+#endif /* NONLIN_FRSURF */
 
 C--     Load forcing/external data fields.
 #ifdef INCLUDE_EXTERNAL_FORCING_PACKAGE
@@ -114,7 +129,7 @@ C--   Step forward W field in N-H algorithm
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef NONLIN_FRSURF
-C--   update hfacC,W,S and recip_hFac according to the current Eta field
+C--   update hfacC,W,S and recip_hFac according to etaH(n+1) :
       IF ( momStepping ) THEN
       IF ( nonlinFreeSurf.GT.0) THEN
         CALL UPDATE_SURF_DR( myTime, myIter, myThid )

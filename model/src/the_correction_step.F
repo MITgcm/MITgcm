@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.12 2001/07/30 20:23:09 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/the_correction_step.F,v 1.13 2001/09/19 13:58:08 jmc Exp $
 C Tag $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -193,7 +193,7 @@ C--     Convectively adjust new fields to be statically stable
 #ifdef EXACT_CONSERV
         IF (exactConserv) THEN
 C--     Compute again "eta" to satisfy exactly the total Volume Conservation :
-          CALL CALC_EXACT_ETA( bi,bj, uVel,vVel,
+          CALL CALC_EXACT_ETA( .TRUE., bi,bj, uVel,vVel,
      I                         myTime, myIter, myThid )
         ENDIF
 #endif /* EXACT_CONSERV */ 
@@ -209,7 +209,8 @@ C--    End of 2nd bi,bj loop
       ENDDO
 
 #ifdef EXACT_CONSERV
-       IF (exactConserv) _EXCH_XY_R8(etaN, myThid ) 
+       IF (exactConserv .AND. implicDiv2Dflow .NE. 0. _d 0) 
+     &    _EXCH_XY_R8(etaN, myThid ) 
 #endif /* EXACT_CONSERV */ 
 
       RETURN

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.18 2001/09/10 16:35:27 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/initialise_varia.F,v 1.19 2001/09/19 13:58:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -104,10 +104,10 @@ C--   Initialize variable data for packages
       CALL PACKAGES_INIT_VARIABLES( myThid )
 
 #ifdef NONLIN_FRSURF
-C--   Compute the surface level thickness, function of eta_n-1
+C--   Compute the surface level thickness <-- function of etaH(n)
 C     and modify hFac(C,W,S) accordingly :
       IF (nonlinFreeSurf.GT.0) THEN
-        CALL CALC_SURF_DR(etaNm1, startTime, nIter0, myThid )
+        CALL CALC_SURF_DR(etaH, startTime, nIter0, myThid )
         CALL UPDATE_SURF_DR( startTime, nIter0, myThid )
       ENDIF
 C-    update also CG2D matrix (and preconditioner)
@@ -130,17 +130,5 @@ C--   initialise time-average arrays with initial state values
       ENDIF
 #endif /* ALLOW_TIMEAVE */
 
-#ifdef EXACT_CONSERV
-      IF (exactConserv) THEN
-C--   Compute the initial Barotropic Flow Divergence :
-        DO bj=myByLo(myThid),myByHi(myThid)
-         DO bi=myBxLo(myThid),myBxHi(myThid)
-           CALL CALC_EXACT_ETA( bi,bj, uVel,vVel,
-     I                          startTime, nIter0, myThid )
-         ENDDO
-        ENDDO
-      ENDIF
-#endif /* EXACT_CONSERV */ 
-      
       RETURN
       END

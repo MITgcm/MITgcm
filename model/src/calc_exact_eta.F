@@ -1,10 +1,10 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.3 2001/08/27 18:43:46 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_exact_eta.F,v 1.4 2001/09/19 13:58:08 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
-#undef DBUG_EXACT_ETA
 
-      SUBROUTINE CALC_EXACT_ETA( bi,bj, uFld,vFld,
+      SUBROUTINE CALC_EXACT_ETA( UpdateEtaN_EtaH, 
+     I                           bi,bj, uFld,vFld,
      I                           myTime, myIter, myThid )
 C     /==========================================================\
 C     | SUBROUTINE CALC_EXACT_ETA                                |
@@ -22,6 +22,10 @@ C     == Global variables
 #include "SURFACE.h"
 
 C     == Routine arguments ==
+C    UpdateEtaN_EtaH - flag to distinguishe if this S/R is called
+C           at the end of a time step (TRUE) to update EtaN,
+C        or at the beginning of the time sptep (FALSE) to update EtaH
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 C     bi,bj   - tile index
 C     myTime - Current time in simulation
 C     myIter - Current iteration number in simulation
@@ -30,6 +34,7 @@ C     myThid - Thread number for this instance of the routine.
       INTEGER myIter
       INTEGER myThid
       INTEGER bi,bj
+      LOGICAL UpdateEtaN_EtaH
       _RL uFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       _RL vFld(1-Olx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy) 
 
@@ -44,36 +49,9 @@ C     Local variables
       _RL uTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
       _RL vTrans(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
 
-#ifdef DBUG_EXACT_ETA
-C     sumArea - Work variable used to compute the total Domain Area
-C     eta_sum1,2 - Eta mean value before and after this routine
-C     eta_dif1,2,3 - Mean change of Eta: 1=before this call - iterNm1
-C                                        2=this call
-C                                        3=iterN-iterNm1
-      _RL eta_tmp(1-Olx:sNx+Olx,1-Oly:sNy+Oly)
-      _RL  sumArea, eta_sum1, eta_sum2, eta_dif1, eta_dif2, eta_dif3
-      SAVE sumArea, eta_sum1, eta_sum2, eta_dif1, eta_dif2, eta_dif3
-      _RL  recip_sumArea
-      DATA recip_sumArea / 0. _d 0 / 
-#endif
-
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   Change of Eta <== -Divergence of The Barotropic Flow : Explicit part
-      IF ( myTime.NE.StartTime ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-#ifdef DBUG_EXACT_ETA
-           eta_tmp(i,j) = etaN(i,j,bi,bj) 
-#endif
-           etaN(i,j,bi,bj) = etaNm1(i,j,bi,bj) 
-     &      - (1. - implicDiv2Dflow)*hDivFlow(i,j,bi,bj)
-     &                              *recip_rA(i,j,bi,bj)*DeltaTmom
-         ENDDO
-        ENDDO
-      ENDIF
-        
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+      IF ( UpdateEtaN_EtaH .OR. myTime.EQ.StartTime ) THEN
 
 C--   Compute the Divergence of The Barotropic Flow :
 
@@ -108,65 +86,53 @@ C-    Integrate vertically the Horizontal Divergence
 C-    End DO k=1,Nr
       ENDDO
 
+      ENDIF
+
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
-C--   Change of Eta <== -Divergence of The Barotropic Flow : Implicit part
-      IF ( myTime.NE.StartTime ) THEN
+      IF ( UpdateEtaN_EtaH ) THEN
+
+C--   Update etaN at the end of the time step : 
+C     Incorporate the Implicit part of -Divergence(Barotropic_Flow)
+       IF (implicDiv2Dflow .NE. 0. _d 0 ) THEN
         DO j=1,sNy
          DO i=1,sNx
-           etaN(i,j,bi,bj) = etaN(i,j,bi,bj) 
+           etaN(i,j,bi,bj) = etaH(i,j,bi,bj)
      &      - implicDiv2Dflow*hDivFlow(i,j,bi,bj)
      &                       *recip_rA(i,j,bi,bj)*DeltaTmom
          ENDDO
         ENDDO
-#ifdef DBUG_EXACT_ETA
-        IF (bi.EQ.1 .AND. bj.EQ.1) THEN
-          eta_sum1 = 0.
-          eta_sum2 = 0.
-          eta_dif1 = 0.
-          eta_dif2 = 0.
-          eta_dif3 = 0.
-        ENDIF
-        DO j=1,sNy
-         DO i=1,sNx
-           eta_sum1 = eta_sum1
-     &              + rA(i,j,bi,bj)*eta_tmp(i,j)
-           eta_sum2 = eta_sum2
-     &              + rA(i,j,bi,bj)*etaN(i,j,bi,bj)
-           eta_dif1 = eta_dif1
-     &              + rA(i,j,bi,bj)*abs(etaNm1(i,j,bi,bj)-eta_tmp(i,j))
-           eta_dif2 = eta_dif2
-     &              + rA(i,j,bi,bj)*abs( etaN(i,j,bi,bj) -eta_tmp(i,j))
-           eta_dif3 = eta_dif3
-     &           + rA(i,j,bi,bj)*abs(etaN(i,j,bi,bj)-etaNm1(i,j,bi,bj))
+       ELSE
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+           etaN(i,j,bi,bj) = etaH(i,j,bi,bj) 
          ENDDO
         ENDDO
-        IF (bi.EQ.nSx .AND. bj.EQ.nSy) THEN
-          eta_sum1 = recip_sumArea*eta_sum1
-          eta_sum2 = recip_sumArea*eta_sum2
-          eta_dif1 = recip_sumArea*eta_dif1
-          eta_dif2 = recip_sumArea*eta_dif2
-          eta_dif3 = recip_sumArea*eta_dif3
-         write(6,'(A,I9,I2,1P5E14.6)') 'ETA_SUM,DIF:',
-     &    myIter,myThid, eta_sum1,eta_sum2, eta_dif1,eta_dif2,eta_dif3
-        ENDIF
+       ENDIF
+
       ELSE
-        IF (bi.EQ.1 .AND. bj.EQ.1) sumArea = 0.
+
+C--   Update etaH at the beginning of the time step : 
+C     Incorporate the Explicit part of -Divergence(Barotropic_Flow)
+       IF (implicDiv2Dflow .NE. 1. _d 0 ) THEN
         DO j=1,sNy
          DO i=1,sNx
-           k = ksurfC(i,j,bi,bj)
-           if (k.le.Nr) sumArea = sumArea + rA(i,j,bi,bj)
+           etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
+     &      - (1. - implicDiv2Dflow)*hDivFlow(i,j,bi,bj)
+     &                              *recip_rA(i,j,bi,bj)*DeltaTmom
          ENDDO
         ENDDO
-        IF (bi.EQ.nSx .AND. bj.EQ.nSy .AND. recip_sumArea.EQ.0.
-     &                .AND. sumArea.GT.0.) THEN
-          recip_sumArea=1./sumArea
-          write(6,'(2A,I9,I2,1P2E22.14)') 'ETA_SUM,DIF:',
-     &     ' sumArea,recip_=', myIter,myThid, sumArea, recip_sumArea
-        ENDIF
-C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
-#endif /* DBUG_EXACT_ETA */
+       ELSE
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+           etaH(i,j,bi,bj) = etaN(i,j,bi,bj) 
+         ENDDO
+        ENDDO
+       ENDIF
+
       ENDIF
+
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #endif /* EXACT_CONSERV */
 
