@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.95 2003/10/15 22:57:43 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.96 2003/10/29 00:17:44 jmc Exp $
 C $Name:  $
 C
 CBOP
@@ -343,8 +343,6 @@ C           number of iterations for convergence in a test case to
 C           drop form 192 -> 134! Need to investigate this further!
 C           For now I have introduced a parameter cg2dpcOffDFac which
 C           defaults to 0.51 but can be set at runtime.
-C     delP      :: Vertical grid spacing ( Pa ).
-C     delZ      :: Vertical grid spacing ( m  ).
 C     delR      :: Vertical grid spacing ( units of r ).
 C     delRc     :: Vertical grid spacing between cell centers (r unit).
 C     delX      :: Separation between cell faces (m) or (deg), depending
@@ -369,30 +367,18 @@ C     omega     :: Angular velocity ( rad/s )
 C     rotationPeriod :: Rotation period (s) (= 2.pi/omega)
 C     viscAh    :: Eddy viscosity coeff. for mixing of
 C                 momentum laterally ( m^2/s )
-C     viscAz    :: Eddy viscosity coeff. for mixing of
-C                 momentum vertically ( m^2/s )
-C     viscAp    :: Eddy viscosity coeff. for mixing of
-C                 momentum vertically ( Pa^2/s )
 C     viscAr    :: Eddy viscosity coeff. for mixing of
 C                 momentum vertically ( units of r^2/s )
 C     viscA4    :: Biharmonic viscosity coeff. for mixing of
 C                 momentum laterally ( m^4/s )
 C     diffKhT   :: Laplacian diffusion coeff. for mixing of
 C                 heat laterally ( m^2/s )
-C     diffKzT   :: Laplacian diffusion coeff. for mixing of
-C                 heat vertically ( m^2/s )
-C     diffKpT   :: Laplacian diffusion coeff. for mixing of
-C                 heat vertically ( Pa^2/s )
 C     diffKrT   :: Laplacian diffusion coeff. for mixing of
 C                 heat vertically ( units of r^2/s )
 C     diffK4T   :: Biharmonic diffusion coeff. for mixing of
 C                 heat laterally ( m^4/s )
 C     diffKhS  ::  Laplacian diffusion coeff. for mixing of
 C                 salt laterally ( m^2/s )
-C     diffKzS   :: Laplacian diffusion coeff. for mixing of
-C                 salt vertically ( m^2/s )
-C     diffKpS   :: Laplacian diffusion coeff. for mixing of
-C                 salt vertically ( Pa^2/s )
 C     diffKrS   :: Laplacian diffusion coeff. for mixing of
 C                 salt vertically ( units of r^2/s )
 C     diffK4S   :: Biharmonic diffusion coeff. for mixing of
@@ -471,14 +457,14 @@ C     bottomDragLinear   :: Drag coefficient built in to core dynamics
 C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       COMMON /PARM_R/ cg2dTargetResidual, cg2dTargetResWunit, 
      & cg2dpcOffDFac, cg3dTargetResidual,
-     & delP, delZ, delR, delRc, delX, delY,
+     & delR, delRc, delX, delY,
      & deltaT, deltaTmom, deltaTtracer, deltaTfreesurf, deltaTClock,
      & abeps, startTime, 
      & phiMin, thetaMin, rSphere, recip_RSphere, f0, beta,
      & fCori, fCoriG, fCoriCos,
-     & viscAh,  viscAz,  viscA4,  viscAr, viscAstrain, viscAtension,
-     & diffKhT, diffKzT, diffK4T, diffKrT,
-     & diffKhS, diffKzS, diffK4S, diffKrS,
+     & viscAh,  viscA4,  viscAr, viscAstrain, viscAtension,
+     & diffKhT, diffK4T, diffKrT,
+     & diffKhS, diffK4S, diffKrS,
      & delT, tauCD, rCD, freeSurfFac, implicSurfPress, implicDiv2Dflow,
      & hFacMin, hFacMinDz, hFacInf, hFacSup,
      & gravity, recip_Gravity, gBaro, rhonil, recip_rhonil, 
@@ -493,7 +479,7 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
      & tauTr1ClimRelax, lambdaTr1ClimRelax, latBandClimRelax,
      & externForcingCycle, externForcingPeriod,
      & convertFW2Salt, temp_EvPrRn, salt_EvPrRn, trac_EvPrRn,
-     & viscAp, diffKpT, diffKpS, hFacMinDr, hFacMinDp,
+     & hFacMinDr, hFacMinDp,
      & horiVertRatio, recip_horiVertRatio,
      & ivdc_kappa, Ro_SeaLevel,
      & bottomDragLinear,bottomDragQuadratic
@@ -502,8 +488,6 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL cg2dTargetResWunit
       _RL cg3dTargetResidual
       _RL cg2dpcOffDFac
-      _RL delZ(Nr)
-      _RL delP(Nr)
       _RL delR(Nr)
       _RL delRc(Nr+1)
       _RL delX(Nx)
@@ -532,19 +516,13 @@ C      --"-"--  Quadratic  ( linear: 1/s, quadratic: 1/m )
       _RL viscAh
       _RL viscAstrain
       _RL viscAtension
-      _RL viscAz
-      _RL viscAp
       _RL viscAr
       _RL viscA4 
       _RL diffKhT 
       _RL diffKrT
-      _RL diffKzT
-      _RL diffKpT
       _RL diffK4T 
       _RL diffKhS 
       _RL diffKrS
-      _RL diffKzS
-      _RL diffKpS
       _RL diffK4S 
       _RL delt
       _RL tauCD
