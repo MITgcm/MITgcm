@@ -1,21 +1,22 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.6 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_fill_state.F,v 1.7 2004/06/14 21:54:47 jmc Exp $
 C $Name:  $
+
+#include "PACKAGES_CONFIG.h"
+#include "CPP_OPTIONS.h"
 
        subroutine diagnostics_fill_state(myThid)
        implicit none
-#include "PACKAGES_CONFIG.h"
 #include "SIZE.h"
 #include "EEPARAMS.h"
-#include "CPP_OPTIONS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
-# ifdef ALLOW_PTRACERS
-#  include "PTRACERS.h"
-# endif
 
       integer myThid 
-      _RL dummy(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr,Nsx,Nsy)
+
+#ifdef ALLOW_DIAGNOSTICS
+      _RL dummy(1-OLx:sNx+Olx,1-Oly:sNy+Oly,Nr,nSx,nSy)
       integer i,j,K,bi,bj
+      integer km1
 
         call fill_diagnostics(myThid,'ETAN    ',0,1,0,1,1,etaN)
 
@@ -119,7 +120,8 @@ C $Name:  $
          do K=1,Nr
           do j = 1,sNy
           do i = 1,sNx
-           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
+           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*
+     &         0.5*(theta(i,j,K,bi,bj)+theta(i-1,j,K,bi,bj))
           enddo
           enddo
          enddo
@@ -132,7 +134,8 @@ C $Name:  $
          do K=1,Nr
           do j = 1,sNy
           do i = 1,sNx
-           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*theta(i,j,K,bi,bj)
+           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*
+     &         0.5*(theta(i,j,K,bi,bj)+theta(i,j-1,K,bi,bj))
           enddo
           enddo
          enddo
@@ -141,27 +144,17 @@ C $Name:  $
         call fill_diagnostics(myThid,'VVELTH  ',0,Nr,0,1,1,dummy)
 
         do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=2,Nr
-          do j = 1,sNy
-          do i = 1,sNx
-           dummy(i,j,K,bi,bj) = 0.
-          enddo
-          enddo
-         enddo
-        enddo
-        enddo
-        do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=2,Nr
-          do j = 1,sNy
-          do i = 1,sNx
-           dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*0.5*
-     .                 (theta(i,j,K,bi,bj)+theta(i,j,K-1,bi,bj))
-          enddo
+         do bi = myBxLo(myThid), myBxHi(myThid)
+          do K=1,Nr
+           km1 = MAX(k-1,1)
+           do j = 1,sNy
+            do i = 1,sNx
+             dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*0.5*
+     &                 (theta(i,j,K,bi,bj)+theta(i,j,km1,bi,bj))
+            enddo
+           enddo
           enddo
          enddo
-        enddo
         enddo
         call fill_diagnostics(myThid,'WVELTH  ',0,Nr,0,1,1,dummy)
 
@@ -170,7 +163,8 @@ C $Name:  $
          do K=1,Nr
           do j = 1,sNy
           do i = 1,sNx
-           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
+           dummy(i,j,K,bi,bj) = uVel(i,j,K,bi,bj)*
+     &         0.5*(salt(i,j,K,bi,bj)+salt(i-1,j,K,bi,bj))
           enddo
           enddo
          enddo
@@ -183,7 +177,8 @@ C $Name:  $
          do K=1,Nr
           do j = 1,sNy
           do i = 1,sNx
-           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*salt(i,j,K,bi,bj)
+           dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*
+     &         0.5*(salt(i,j,K,bi,bj)+salt(i,j-1,K,bi,bj))
           enddo
           enddo
          enddo
@@ -192,16 +187,17 @@ C $Name:  $
         call fill_diagnostics(myThid,'VVELSLT ',0,Nr,0,1,1,dummy)
 
         do bj = myByLo(myThid), myByHi(myThid)
-        do bi = myBxLo(myThid), myBxHi(myThid)
-         do K=1,Nr
-          do j = 1,sNy
-          do i = 1,sNx
-           dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*0.5*
-     .                 (salt(i,j,K,bi,bj)+salt(i,j,K-1,bi,bj))
-          enddo
+         do bi = myBxLo(myThid), myBxHi(myThid)
+          do K=1,Nr
+           km1 = MAX(k-1,1)
+           do j = 1,sNy
+            do i = 1,sNx
+             dummy(i,j,K,bi,bj) = wVel(i,j,K,bi,bj)*0.5*
+     &                 (salt(i,j,K,bi,bj)+salt(i,j,km1,bi,bj))
+            enddo
+           enddo
           enddo
          enddo
-        enddo
         enddo
         call fill_diagnostics(myThid,'WVELSLT ',0,Nr,0,1,1,dummy)
 
@@ -253,7 +249,7 @@ C $Name:  $
           do i = 1,sNx
            dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*
      .         0.5*(theta(i,j,K,bi,bj)+theta(i,j-1,K,bi,bj))
-     .                                * hFacW(i,j,K,bi,bj)
+     .                                * hFacS(i,j,K,bi,bj)
           enddo
           enddo
          enddo
@@ -283,7 +279,7 @@ C $Name:  $
           do i = 1,sNx
            dummy(i,j,K,bi,bj) = vVel(i,j,K,bi,bj)*
      .         0.5*(salt(i,j,K,bi,bj)+salt(i,j-1,K,bi,bj))
-     .                                * hFacW(i,j,K,bi,bj)
+     .                                * hFacS(i,j,K,bi,bj)
           enddo
           enddo
          enddo
@@ -291,6 +287,8 @@ C $Name:  $
         enddo
         call fill_diagnostics(myThid,'VSLTMASS',0,Nr,0,1,1,dummy)
 
+
+#endif /* ALLOW_DIAGNOSTICS */
 
       return
       end

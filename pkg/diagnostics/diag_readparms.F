@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.6 2004/05/05 00:39:21 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/Attic/diag_readparms.F,v 1.7 2004/06/14 21:54:47 jmc Exp $
 C $Name:  $
 
       subroutine diag_readparms (myThid)
@@ -34,6 +34,7 @@ c -----------------------
       character*8 fields(ndim,ndim)  ! List Output Fields
       character*8 filename(ndim)    ! List Output Filename
       character*8 blank
+      INTEGER ioUnit
 
       namelist / diagnostics_list / frequency,levels,fields,filename
 
@@ -106,12 +107,14 @@ C **********************************************************************
 C ****               Echo History List Data Structure               ****
 C **********************************************************************
 
+      ioUnit = standardMessageUnit
       do n=1,nlists
-         print *, 'Creating Output Stream: ',fnames(n)
-         print *, 'Frequency: ',freq(n)
-         print *, 'Levels:    ',(levs(l,n),l=1,nlevels(n))
-         print *, 'Fields:    ',(flds(l,n),l=1,nfields(n))
-         print *
+         WRITE(ioUnit,*) 'Creating Output Stream: ',fnames(n)
+         WRITE(ioUnit,*) 'Frequency: ',freq(n)
+         WRITE(ioUnit,*) 'Levels:    ',(levs(l,n),l=1,nlevels(n))
+         WRITE(ioUnit,'(8(1X,A))') 'Fields:   ',
+     &                                 (flds(l,n),l=1,nfields(n))
+         WRITE(ioUnit,*)
       enddo
 
       _END_MASTER(myThid)
