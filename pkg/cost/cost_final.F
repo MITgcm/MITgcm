@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.10 2004/12/04 23:22:28 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/cost/cost_final.F,v 1.11 2005/02/10 00:46:06 heimbach Exp $
 
 #include "PACKAGES_CONFIG.h"
 #include "COST_CPPOPTIONS.h"
@@ -73,9 +73,12 @@ c--   Sum up all contributions.
       do bj = jtlo,jthi
         do bi = itlo,ithi
 
-          print*,' --> objf_test(bi,bj)   =',objf_test(bi,bj)
-          print*,' --> objf_tracer(bi,bj) =',objf_tracer(bi,bj)
-          print*,' --> objf_atl(bi,bj)    =',objf_atl(bi,bj)
+          write(standardmessageunit,'(A,E22.14)') 
+     &          ' --> objf_test(bi,bj)   = ', objf_test(bi,bj)
+          write(standardmessageunit,'(A,E22.14)') 
+     &         ' --> objf_tracer(bi,bj) = ', objf_tracer(bi,bj)
+          write(standardmessageunit,'(A,E22.14)') 
+     &         ' --> objf_atl(bi,bj)    = ', objf_atl(bi,bj)
 
           fc = fc
      &            + mult_test   * objf_test(bi,bj)
@@ -84,12 +87,12 @@ c--   Sum up all contributions.
         enddo
       enddo
 
-      print*,' local fc = ', fc
+      write(standardmessageunit,'(A,E22.14)') '  local fc = ', fc
 
 c--   Do global summation.
       _GLOBAL_SUM_R8( fc , myThid )
 
-      print*,' global fc = ', fc
+      write(standardmessageunit,'(A,E22.14)') ' global fc = ', fc
 
 #endif /* ALLOW_ECCO */
 
