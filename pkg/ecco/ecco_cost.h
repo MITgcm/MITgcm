@@ -332,7 +332,8 @@ c                  function contributions.
      &                objf_ice,
      &                objf_diffkr,
      &                objf_theta_ini_fin,
-     &                objf_salt_ini_fin
+     &                objf_salt_ini_fin,
+     &                objf_eddytau
 
       _RL  objf_hflux  (nsx,nsy)
       _RL  objf_hfluxm (nsx,nsy)
@@ -384,6 +385,7 @@ c                  function contributions.
       _RL  objf_diffkr(nsx,nsy)
       _RL  objf_theta_ini_fin(nsx,nsy)
       _RL  objf_salt_ini_fin(nsx,nsy)
+      _RL  objf_eddytau(nsx,nsy)
 
       common /ecco_cost_aux_r/
      &                    mult_hflux,
@@ -426,7 +428,8 @@ c                  function contributions.
      &                    mult_ice,
      &                    mult_kapgm,
      &                    mult_diffkr,
-     &                    mult_ini_fin
+     &                    mult_ini_fin,
+     &                    mult_eddytau
 
       _RL  mult_hflux
       _RL  mult_sflux
@@ -469,7 +472,7 @@ c                  function contributions.
       _RL  mult_kapgm
       _RL  mult_diffkr
       _RL  mult_ini_fin
-
+      _RL  mult_eddytau
 
 c     Record counters relevant for the cost function evaluation.
 c     ==========================================================

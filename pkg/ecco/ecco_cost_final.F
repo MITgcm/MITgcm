@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.5 2005/02/10 01:04:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/ecco_cost_final.F,v 1.6 2005/02/28 17:33:02 heimbach Exp $
 
 #include "COST_CPPOPTIONS.h"
 
@@ -56,6 +56,7 @@ c     == local variables ==
       _RL f_ice
       _RL f_ini_fin
       _RL f_kapgm, f_diffkr
+      _RL f_eddytau
 
       character*20 cfname
 #ifdef ECCO_VERBOSE
@@ -115,6 +116,7 @@ c     == end of interface ==
       f_ini_fin = 0. _d 0
       f_kapgm   = 0. _d 0
       f_diffkr  = 0. _d 0
+      f_eddytau = 0. _d 0
 
 c--   Sum up all contributions.
       do bj = jtlo,jthi
@@ -221,6 +223,8 @@ c--   Sum up all contributions.
           write(standardmessageunit,'(A,D22.15)')
      &          ' --> objf_ini_fin(bi,bj) =',
      &         objf_theta_ini_fin(bi,bj) + objf_salt_ini_fin(bi,bj)
+          write(standardmessageunit,'(A,D22.15)')
+     &          ' --> objf_eddytau(bi,bj) =', objf_eddytau(bi,bj)
  
           fc = fc
      &            + mult_temp    * objf_temp(bi,bj)
@@ -270,6 +274,7 @@ c--   Sum up all contributions.
      &            + mult_diffkr  * objf_diffkr(bi,bj)
      &            + mult_ini_fin *(objf_theta_ini_fin(bi,bj) +
      &                             objf_salt_ini_fin(bi,bj))
+     &            + mult_eddytau * objf_eddytau(bi,bj)
 
           f_temp = f_temp + objf_temp(bi,bj)
           f_salt = f_salt + objf_salt(bi,bj)
@@ -312,7 +317,7 @@ c--   Sum up all contributions.
           f_diffkr = f_diffkr + objf_diffkr(bi,bj)
           f_ini_fin = f_ini_fin +
      &         objf_theta_ini_fin(bi,bj) + objf_salt_ini_fin(bi,bj)
- 
+          f_eddytau = f_eddytau + objf_eddytau(bi,bj) 
 
         enddo
       enddo
@@ -369,6 +374,7 @@ c--   Do global summation for each part of the cost function
       _GLOBAL_SUM_R8( f_diffkr , myThid )
       _GLOBAL_SUM_R8( f_ice , myThid )
       _GLOBAL_SUM_R8( f_ini_fin , myThid )
+      _GLOBAL_SUM_R8( f_eddytau , myThid )
 
 c--   Each process has calculated the global part for itself.
       _BEGIN_MASTER( mythid )
@@ -430,6 +436,7 @@ c--   Each process has calculated the global part for itself.
         write(ifc,*) 'f_kapgm =', f_kapgm
         write(ifc,*) 'f_diffkr=', f_diffkr
         write(ifc,*) 'f_ini_fin =', f_ini_fin
+        write(ifc,*) 'f_eddytau =', f_eddytau
 
         close(ifc)
         

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.16 2005/02/10 05:33:22 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.17 2005/02/28 17:33:02 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -905,6 +905,13 @@ c--   Compute initial vs. final T/S deviation
       call timer_stop ('cost_ini_fin       [ECCO SPIN-DOWN]', mythid)
 #endif
       _BARRIER
+
+c--   Eddy stress penalty term
+#ifdef ALLOW_COST_TAU_EDDY
+      call timer_start('cost_tau_eddy      [ECCO SPIN-DOWN]', mythid)
+      call cost_tau_eddy( mythid )
+      call timer_stop ('cost_tau_eddy      [ECCO SPIN-DOWN]', mythid)
+#endif
 
 c--   Sum all cost function contributions.
 #ifndef DISABLE_DEBUGMODE

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.1 2004/10/12 15:14:16 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini_ecco.F,v 1.2 2005/02/28 17:29:38 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -33,6 +33,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "DYNVARS.h"
+#include "FFIELDS.h"
 
 #include "ctrl.h"
 #include "ctrl_dummy.h"
@@ -67,6 +68,8 @@ c     == local variables ==
 
       character*( 80)   fnametheta
       character*( 80)   fnamesalt
+      character*( 80)   fnameedtaux
+      character*( 80)   fnameedtauy
 
 c     == external ==
 
@@ -220,6 +223,50 @@ CADJ STORE salt = tapelev_init, key = ikey
 
 #endif
 
+#ifdef ALLOW_EDTAUX_CONTROL
+c-- zonal eddy stress : edtaux
+      il=ilnblnk( xx_edtaux_file )
+      write(fnameedtaux(1:80),'(2a,i10.10)')
+     &     xx_edtaux_file(1:il),'.',optimcycle
+      call active_read_xyz( fnameedtaux, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_edtaux_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                Eddytaux(i,j,k,bi,bj) = Eddytaux(i,j,k,bi,bj) +
+     &                                tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
+#ifdef ALLOW_EDTAUY_CONTROL
+c-- meridional eddy stress : edtauy
+      il=ilnblnk( xx_edtauy_file )
+      write(fnameedtauy(1:80),'(2a,i10.10)')
+     &     xx_edtauy_file(1:il),'.',optimcycle
+      call active_read_xyz( fnameedtauy, tmpfld3d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_edtauy_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do k = 1,nr
+            do j = jmin,jmax
+              do i = imin,imax
+                Eddytauy(i,j,k,bi,bj) = Eddytauy(i,j,k,bi,bj) +
+     &                                tmpfld3d(i,j,k,bi,bj)
+              enddo
+            enddo
+          enddo
+       enddo
+      enddo
+#endif
+
 
 c--   Update the tile edges.
 
@@ -229,6 +276,12 @@ c--   Update the tile edges.
 #ifdef ALLOW_SALT0_CONTROL
       _EXCH_XYZ_R8(  salt, mythid )
 #endif
+#if (defined (ALLOW_EDTAUX_CONTROL) && defined (ALLOW_EDTAUY_CONTROL))
+       CALL EXCH_UV_XYZ_RS(Eddytaux,Eddytauy,.TRUE.,myThid)
+#elif (defined (ALLOW_EDTAUX_CONTROL) || defined (ALLOW_EDTAUY_CONTROL))
+       STOP 'ctrl_map_forcing: need BOTH ALLOW_EDTAU[X,Y]_CONTROL'
+#endif
+
 
 #endif
 

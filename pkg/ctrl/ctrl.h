@@ -381,6 +381,8 @@ c     xx_obcse_file - control vector salin. at boundary
      &                    , xx_efluxy_file
      &                    , xx_efluxp_file
      &                    , xx_bottomdrag_file
+     &                    , xx_edtaux_file
+     &                    , xx_edtauy_file
      &                    , xx_theta_ini_fin_file
      &                    , xx_salt_ini_fin_file
 
@@ -407,6 +409,8 @@ c     xx_obcse_file - control vector salin. at boundary
       character*(MAX_LEN_FNAM) xx_efluxy_file
       character*(MAX_LEN_FNAM) xx_efluxp_file
       character*(MAX_LEN_FNAM) xx_bottomdrag_file
+      character*(MAX_LEN_FNAM) xx_edtaux_file
+      character*(MAX_LEN_FNAM) xx_edtauy_file
       character*(MAX_LEN_FNAM) xx_theta_ini_fin_file
       character*(MAX_LEN_FNAM) xx_salt_ini_fin_file
 
@@ -575,6 +579,8 @@ c                         control part.
       character*( 80)   fname_efluxy(2)
       character*( 80)   fname_efluxp(2)
       character*( 80)   fname_bottomdrag(2)
+      character*( 80)   fname_edtaux(2)
+      character*( 80)   fname_edtauy(2)
 
 c     ==================================================================
 c     END OF HEADER CONTROLVARS

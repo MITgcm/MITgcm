@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.14 2005/02/24 05:08:34 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.15 2005/02/28 17:29:38 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -556,6 +556,22 @@ c--
      &       xx_bottomdrag_file, 23, 123, 1, 1, 1,
      &       snx, sny, 1, 'c', 'xy', mythid )
 #endif /* ALLOW_BOTTOMDRAG_CONTROL */
+
+c-------------------------------------------------------------------------------
+c--
+#ifdef ALLOW_EDTAUX_CONTROL
+        call ctrl_init_ctrlvar (
+     &       xx_edtaux_file, 25, 125, 1, 1, 1,
+     &       snx, sny, nr, 'w', '3d', mythid )
+#endif /* ALLOW_EDTAUX_CONTROL */
+
+c-------------------------------------------------------------------------------
+c--
+#ifdef ALLOW_EDTAUY_CONTROL
+        call ctrl_init_ctrlvar (
+     &       xx_edtauy_file, 26, 126, 1, 1, 1,
+     &       snx, sny, nr, 's', '3d', mythid )
+#endif /* ALLOW_EDTAUY_CONTROL */
 
 c-------------------------------------------------------------------------------
 c-------------------------------------------------------------------------------

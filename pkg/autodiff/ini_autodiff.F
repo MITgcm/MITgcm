@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/ini_autodiff.F,v 1.7 2004/09/17 23:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/Attic/ini_autodiff.F,v 1.8 2005/02/28 17:34:36 heimbach Exp $
 C $Name:  $
 
 #include "AUTODIFF_OPTIONS.h"
@@ -21,11 +21,9 @@ C     === Global variables ===
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
+#include "FFIELDS.h"
 #ifdef EXACT_CONSERV
 # include "SURFACE.h"
-#endif
-#ifdef ALLOW_EXF
-# include "FFIELDS.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -40,7 +38,7 @@ C     == Local variables ==
 C     bi,bj  - Loop counters
 C     I,J,K
       INTEGER bi, bj
-      INTEGER  I,  J, K
+      INTEGER  I, J, K
 CEOP
 
 C--   Over all tiles
@@ -48,6 +46,16 @@ C--   Over all tiles
        DO bi = myBxLo(myThid), myBxHi(myThid)
 
 C-      3D arrays
+        DO K=1,Nr
+         DO J=1-Oly,sNy+Oly
+          DO I=1-Olx,sNx+Olx
+#ifdef ALLOW_EP_FLUX
+           EfluxY(i,j,k,bi,bj)=0.
+           EfluxP(i,j,k,bi,bj)=0.
+#endif
+          ENDDO
+         ENDDO
+        ENDDO
 
 C-      2D arrays
         DO J=1-Oly,sNy+Oly

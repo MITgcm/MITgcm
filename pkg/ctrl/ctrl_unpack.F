@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.17 2005/01/04 22:02:31 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_unpack.F,v 1.18 2005/02/28 17:29:38 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -136,6 +136,8 @@ c--   Assign file names.
       call ctrl_set_fname(xx_efluxy_file, fname_efluxy, mythid)
       call ctrl_set_fname(xx_efluxp_file, fname_efluxp, mythid)
       call ctrl_set_fname(xx_bottomdrag_file, fname_bottomdrag, mythid)
+      call ctrl_set_fname(xx_edtaux_file, fname_edtaux, mythid)
+      call ctrl_set_fname(xx_edtauy_file, fname_edtauy, mythid)
 
 c--     Only the master thread will do I/O.
         _BEGIN_MASTER( mythid )
@@ -503,6 +505,24 @@ c----------------------------------------------------------------------
           call ctrl_set_unpack_xy( lxxadxx, cunit, ivartype,
      &         fname_bottomdrag(ictrlgrad), "hFacC",
      &         weighttype, nwetcglobal, mythid)
+#endif
+
+#ifdef ALLOW_EDTAUX_CONTROL
+          ivartype    = 25
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wedtaux"
+          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
+     &         fname_edtaux(ictrlgrad), "maskW",
+     &         weighttype, wunit, nwetwglobal, mythid)
+#endif
+
+#ifdef ALLOW_EDTAUY_CONTROL
+          ivartype    = 26
+          write(weighttype(1:80),'(80a)') ' '
+          write(weighttype(1:80),'(a)') "wedtauy"
+          call ctrl_set_unpack_xyz( lxxadxx, cunit, ivartype,
+     &         fname_edtauy(ictrlgrad), "maskS",
+     &         weighttype, wunit, nwetsglobal, mythid)
 #endif
 
          close ( cunit )

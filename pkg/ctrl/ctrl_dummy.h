@@ -32,6 +32,8 @@ c     ==================================================================
      &                  , xx_efluxy_dummy
      &                  , xx_efluxp_dummy
      &                  , xx_bottomdrag_dummy
+     &                  , xx_edtaux_dummy
+     &                  , xx_edtauy_dummy
      &                  , xx_tbar_mean_dummy
      &                  , xx_sbar_mean_dummy
      &                  , xx_ubar_mean_dummy
@@ -68,6 +70,8 @@ c     ==================================================================
       _RL xx_efluxy_dummy
       _RL xx_efluxp_dummy
       _RL xx_bottomdrag_dummy
+      _RL xx_edtaux_dummy
+      _RL xx_edtauy_dummy
       _RL xx_tbar_mean_dummy
       _RL xx_sbar_mean_dummy
       _RL xx_ubar_mean_dummy
