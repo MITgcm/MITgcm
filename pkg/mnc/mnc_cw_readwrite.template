@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.12 2004/03/23 05:24:44 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_readwrite.template,v 1.13 2004/03/24 03:38:50 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -115,9 +115,9 @@ C         Add the path to the file name
             path_fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
             npath = ILNBLNK(mnc_out_path)
             path_fname(1:npath) = mnc_out_path(1:npath)
-            path_fname((npath+1):(npath+1+nfname)) = fname(1:nfname)
+            path_fname((npath+1):(npath+nfname)) = fname(1:nfname)
             fname(1:MNC_MAX_CHAR) = path_fname(1:MNC_MAX_CHAR)
-            nfname = npath + 1 + nfname
+            nfname = npath + nfname
           ENDIF
 
 C         Append to an existing or create a new file
@@ -340,8 +340,9 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 #include "netcdf.inc"
 #include "mnc_common.h"
-#include "EEPARAMS.h"
 #include "SIZE.h"
+#include "EEPARAMS.h"
+#include "PARAMS.h"
 
 #define mnc_rtype_YY
 
@@ -358,11 +359,12 @@ C     Local Variables
       integer bis,bie, bjs,bje, uniq_tnum, nfname, fid, idv
       integer ndim, indf, err, lbi,lbj, bidim,bjdim, unlim_sz, kr
       integer ind_fv_ids, ind_vt, ierr, atype, alen
-      integer f_sNx,f_sNy
+      integer f_sNx,f_sNy, npath
       integer p(9),s(9),e(9), vstart(9),vcount(9), udo(9)
       integer j1,j2,j3,j4,j5,j6,j7, k1,k2,k3,k4,k5,k6,k7
       character*(MAX_LEN_MBUF) msgbuf
       character*(MNC_MAX_CHAR) fname
+      character*(MNC_MAX_CHAR) path_fname
       integer indfg, fg1,fg2
 
 C     Temporary storage for the simultaneous type conversion and
@@ -438,6 +440,16 @@ C         Create the file name
           fname(ntot:ntot) = '.'
           write(fname((ntot+1):(ntot+9)),'(i6.6,a3)') uniq_tnum, '.nc'
           nfname = ntot+9
+
+C         Add the path to the file name
+          IF (mnc_use_indir) THEN
+            path_fname(1:MNC_MAX_CHAR) = mnc_blank_name(1:MNC_MAX_CHAR)
+            npath = ILNBLNK(mnc_indir_str)
+            path_fname(1:npath) = mnc_indir_str(1:npath)
+            path_fname((npath+1):(npath+nfname)) = fname(1:nfname)
+            fname(1:MNC_MAX_CHAR) = path_fname(1:MNC_MAX_CHAR)
+            nfname = npath + nfname
+          ENDIF
 
 C         Open the existing file 
           CALL MNC_FILE_TRY_READ( fname, ierr, indf, myThid)
