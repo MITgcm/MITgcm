@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/aim_surf_bc.F,v 1.3 2004/05/06 15:19:20 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/verification/aim.5l_Equatorial_Channel/code/aim_surf_bc.F,v 1.4 2004/11/14 20:25:04 jmc Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -53,10 +53,10 @@ C     myThid - Number of this instance of the routine
 
 #ifdef ALLOW_AIM
 C     == Local variables ==
-C     i,j,k,I2      - Loop counters
-      INTEGER i,j,I2
+C     i,j,k,I2,k   - Loop counters
+      INTEGER i,j,I2,k
       _RL SDEP1, IDEP2, SDEP2, SWWIL2, RSW, soilw_0, soilw_1
-      _RL RSD, alb_land, tFreez
+      _RL RSD, alb_land, oceTfreez
 c     _RL DALB, alb_sea
 
 C_EqCh: start
@@ -70,25 +70,25 @@ C_EqCh: Fix solar insolation with Sun directly overhead on Equator
       tYear = 0.25 _d 0 - 10. _d 0/365. _d 0
 C_EqCh: end
 
+C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
+C-    Set Land-sea mask (in [0,1]) from aim_landFr to fMask1:
+      DO j=1,sNy
+        DO i=1,sNx
+          I2 = i+(j-1)*sNx
+          fMask1(I2,1,myThid) = aim_landFr(i,j,bi,bj)
+        ENDDO
+      ENDDO
+
       IF (aim_useFMsurfBC) THEN
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 
 C--   Compute surface forcing at present time (linear Interp in time)
 C     using F.Molteni surface BC form ; fields needed are:
-C     1. Land sea mask  
-C     2. Sea  Surface temperatures  (in situ Temp. [K])
-C     3. Land Surface temperatures  (in situ Temp. [K])
-C     4. Soil moisture         (between 0-1)
-C     5. Snow depth, Sea Ice : used to compute albedo (=> local arrays)
-C     6. Albedo                (between 0-1)
-
-C-     Set Land-sea mask (in [0,1]) from aim_landFr to fMask1:
-        DO j=1,sNy
-         DO i=1,sNx
-          I2 = i+(j-1)*sNx
-          fMask1(I2,1,myThid) = aim_landFr(i,j,bi,bj)
-         ENDDO
-        ENDDO
+C     1. Sea  Surface temperatures  (in situ Temp. [K])
+C     2. Land Surface temperatures  (in situ Temp. [K])
+C     3. Soil moisture         (between 0-1)
+C     4. Snow depth, Sea Ice : used to compute albedo (=> local arrays)
+C     5. Albedo                (between 0-1)
 
 C-    Surface Temperature: 
         DO j=1,sNy
@@ -139,11 +139,12 @@ C-    Set snow depth & sea-ice fraction :
 
         IF (aim_splitSIOsFx) THEN
 C-    Split Ocean and Sea-Ice surf. temp. ; remove ice-fraction < 1 %
-         tFreez = celsius2K - 1.9 _d 0
+c        oceTfreez = tFreeze - 1.9 _d 0
+         oceTfreez = celsius2K - 1.9 _d 0
          DO J=1,NGP
           sti1(J,myThid) = sst1(J,myThid) 
           IF ( oice1(J) .GT. 1. _d -2 ) THEN
-            sst1(J,myThid) = MAX(sst1(J,myThid),tFreez)
+            sst1(J,myThid) = MAX(sst1(J,myThid),oceTfreez)
             sti1(J,myThid) = sst1(J,myThid) 
      &                     +(sti1(J,myThid)-sst1(J,myThid))/oice1(J)
           ELSE
@@ -187,7 +188,6 @@ C     1. Albedo                (between 0-1)
 C     2. Sea  Surface temperatures  (in situ Temp. [K])
 C     3. Land Surface temperatures  (in situ Temp. [K])
 C     4. Soil moisture         (between 0-1)
-C     5. Land sea mask  (infer from exact zeros in soil moisture)
 C        Snow depth, Sea Ice (<- no need for now)   
 
 C      Set surface albedo data (in [0,1]) from aim_albedo to alb1 :
@@ -262,23 +262,6 @@ C-     Set soil water availability (in [0,1]) from aim_soilWater to soilw1 :
         ENDDO
        ENDIF
 
-C-     Set Land-sea mask (in [0,1]) 
-C          from aim_landFr to fMask1 (aim_useFMsurfBC)
-C       or from where soil moisture is exactly zero (aim_useMMsurfFc)
-       IF (aim_useMMsurfFc) THEN
-        DO J=1,NGP
-          fMask1(J,1,myThid) = 1.
-          IF ( soilw1(J,myThid).EQ.0. ) fMask1(J,1,myThid) = 0.
-        ENDDO
-       ELSE
-        DO j=1,sNy
-         DO i=1,sNx
-          I2 = i+(j-1)*sNx
-          fMask1(I2,1,myThid) = 0.
-         ENDDO
-        ENDDO
-       ENDIF
-
 C-     Set Snow depth and Sea Ice 
 C      (not needed here since albedo is loaded from file)
         DO j=1,sNy
@@ -294,27 +277,12 @@ C-- endif/else aim_useFMsurfBC
 
 #ifdef COMPONENT_MODULE
       IF ( useCoupler ) THEN
-       IF ( useImportSST ) THEN
-        DO j=1,sNy
-         DO i=1,sNx
-
-c         IF ( SSTocn(I,J,bi,bj) .NE. 0. ) THEN
-          IF ( aim_landFr(i,j,bi,bj) .LT. 1. ) THEN
-           I2 = i+(j-1)*sNx
-C--   take SST from the ocean compon where Sea-Ice fraction is zero
-           IF ( oice1(I2).EQ.0. ) THEN
-            sst1(I2,myThid) = SSTocn(i,j,bi,bj)+celsius2K
-           ELSEIF ( SSTocn(i,j,bi,bj).GE. -1. _d 0)  THEN
-C--   take SST from the ocean compon if clearly warmer than freezing
-C       then reset sea-ice fraction
-            sst1(I2,myThid) = SSTocn(i,j,bi,bj)+celsius2K
-            oice1(I2) = 0.
-           ENDIF
-          ENDIF
-
-         ENDDO
-        ENDDO
-       ENDIF
+C--   take surface data from the ocean component 
+C     to replace MxL fields (if use sea-ice) or directly AIM SST
+        CALL ATM_APPLY_IMPORT(
+     I           aim_landFr,
+     U           sst1(1,mythid), oice1, 
+     I           myTime, myIter, bi, bj, myThid ) 
       ENDIF
 #endif /* COMPONENT_MODULE */
 
@@ -327,6 +295,17 @@ C-    Use land model output instead of prescribed Temp & moisture
      I           myTime, myIter, bi, bj, myThid ) 
       ENDIF
 #endif /* ALLOW_LAND */
+
+#ifdef ALLOW_THSICE
+      IF (useThSIce) THEN
+C-    Use thermo. sea-ice model output instead of prescribed Temp & albedo
+        CALL AIM_SICE2AIM( 
+     I           aim_landFr,
+     U           sst1(1,mythid), oice1, 
+     O           sti1(1,mythid), alb1(1,3,myThid),
+     I           myTime, myIter, bi, bj, myThid ) 
+      ENDIF
+#endif /* ALLOW_THSICE */
 
 C-- set the sea-ice & open ocean fraction :
         DO J=1,NGP
@@ -341,6 +320,13 @@ C-- set the mean albedo :
           alb1(J,0,myThid) = fMask1(J,1,myThid)*alb1(J,1,myThid)
      &                     + fMask1(J,2,myThid)*alb1(J,2,myThid)
      &                     + fMask1(J,3,myThid)*alb1(J,3,myThid)
+        ENDDO
+
+C-- initialize surf. temp. change to zero:
+        DO k=1,3
+         DO J=1,NGP
+          dTsurf(J,k,myThid) = 0.
+         ENDDO
         ENDDO
 
         IF (.NOT.aim_splitSIOsFx) THEN
