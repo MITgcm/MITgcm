@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 #
-#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.50 2004/11/24 17:06:07 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/verification/testreport,v 1.51 2004/11/29 21:38:08 mlosch Exp $
 #  $Name:  $
 #
 
@@ -527,9 +527,9 @@ int main( int argc, char** argv )  {
     if (linnum == -1)  break;
     scanf("%lf", &a);  scanf("%lf", &b);
     diff = 0.5*(fabs(a)+fabs(b));
-    if (diff > 1.e-12) {
+    if (diff > 0.0) {
       diff=fabs(a-b)/diff;
-      if (diff > 0.0) {
+      if (diff > 1.e-12) {
         linnum = (int)log10(diff);
         best = (best > linnum) ? best : linnum;
       }
