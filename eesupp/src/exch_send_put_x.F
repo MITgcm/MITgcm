@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_send_put_x.F,v 1.4 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_send_put_x.F,v 1.5 2001/05/14 21:31:42 heimbach Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_SEND_PUT_X( array,
-     I             myOLw, myOLe, myOLs, myOLn, myNz,
+     I             myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I             exchWidthX, exchWidthY,
      I             thesimulationMode, thecornerMode, myThid )
 C     /==========================================================\
@@ -38,9 +38,11 @@ C     eBl               - Edge buffer level
       INTEGER myOLe
       INTEGER myOLs
       INTEGER myOLn
+      INTEGER mysNx
+      INTEGER mysNy
       INTEGER myNz
-      _RL array(1-myOLw:sNx+myOLe,
-     &          1-myOLs:sNy+myOLn, 
+      _RL array(1-myOLw:mysNx+myOLe,
+     &          1-myOLs:mysNy+myOLn, 
      &          myNZ, nSx, nSy)
       INTEGER exchWidthX
       INTEGER exchWidthY
@@ -114,7 +116,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         IF ( westCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             westSendBuf_RL(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
@@ -142,7 +144,7 @@ C        Send the data
         ELSEIF ( westCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             eastRecvBuf_RL(iB,eBl,biW,bjW) = array(I,J,K,bi,bj)
@@ -155,12 +157,12 @@ C        Send the data
         ENDIF
 
 C       o Send or Put east edge
-         iMin = sNx-exchWidthX+1
-         iMax = sNx
+         iMin = mysNx-exchWidthX+1
+         iMax = mysNx
         IF ( eastCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             eastSendBuf_RL(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
@@ -188,7 +190,7 @@ C        Send the data
         ELSEIF ( eastCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             westRecvBuf_RL(iB,eBl,biE,bjE) = array(I,J,K,bi,bj)
@@ -208,7 +210,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         IF ( westCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             westSendBuf_RL(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
@@ -237,7 +239,7 @@ C        Send the data
         ELSEIF ( westCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             eastRecvBuf_RL(iB,eBl,biW,bjW) = array(I,J,K,bi,bj)
@@ -251,12 +253,12 @@ C        Send the data
         ENDIF
 
 C       o Send or Put east edge
-         iMin = sNx+1
-         iMax = sNx+exchWidthX
+         iMin = mysNx+1
+         iMax = mysNx+exchWidthX
         IF ( eastCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             eastSendBuf_RL(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
@@ -285,7 +287,7 @@ C        Send the data
         ELSEIF ( eastCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             westRecvBuf_RL(iB,eBl,biE,bjE) = array(I,J,K,bi,bj)
@@ -344,7 +346,7 @@ C     per process preemption is not a problem.
       END
 
       SUBROUTINE EXCH_RS_SEND_PUT_X( array,
-     I             myOLw, myOLe, myOLs, myOLn, myNz,
+     I             myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I             exchWidthX, exchWidthY,
      I             thesimulationMode, thecornerMode, myThid )
 C     /==========================================================\
@@ -379,9 +381,11 @@ C     eBl               - Edge buffer level
       INTEGER myOLe
       INTEGER myOLs
       INTEGER myOLn
+      INTEGER mysNx
+      INTEGER mysNy
       INTEGER myNz
-      _RS array(1-myOLw:sNx+myOLe,
-     &          1-myOLs:sNy+myOLn, 
+      _RS array(1-myOLw:mysNx+myOLe,
+     &          1-myOLs:mysNy+myOLn, 
      &          myNZ, nSx, nSy)
       INTEGER exchWidthX
       INTEGER exchWidthY
@@ -456,7 +460,7 @@ C       o Send or Put west edge
         IF ( westCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             westSendBuf_RS(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
@@ -487,7 +491,7 @@ C        Send the data
         ELSEIF ( westCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             eastRecvBuf_RS(iB,eBl,biW,bjW) = array(I,J,K,bi,bj)
@@ -500,12 +504,12 @@ C        Send the data
         ENDIF
 
 C       o Send or Put east edge
-         iMin = sNx-exchWidthX+1
-         iMax = sNx
+         iMin = mysNx-exchWidthX+1
+         iMax = mysNx
         IF ( eastCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             eastSendBuf_RS(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
@@ -536,7 +540,7 @@ C        Send the data
         ELSEIF ( eastCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             westRecvBuf_RS(iB,eBl,biE,bjE) = array(I,J,K,bi,bj)
@@ -558,7 +562,7 @@ c     >>>>>>>>>>>>>>>>>>>             <<<<<<<<<<<<<<<<<<<
         IF ( westCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             westSendBuf_RS(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
@@ -589,7 +593,7 @@ C        Send the data
         ELSEIF ( westCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             eastRecvBuf_RS(iB,eBl,biW,bjW) = array(I,J,K,bi,bj)
@@ -602,12 +606,12 @@ C        Send the data
         ENDIF
 
 C       o Send or Put east edge
-         iMin = sNx+1
-         iMax = sNx+exchWidthX
+         iMin = mysNx+1
+         iMax = mysNx+exchWidthX
         IF ( eastCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             eastSendBuf_RS(iB,eBl,bi,bj) = array(I,J,K,bi,bj)
@@ -638,7 +642,7 @@ C        Send the data
         ELSEIF ( eastCommMode .EQ. COMM_PUT  ) THEN
          iB  = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             westRecvBuf_RS(iB,eBl,biE,bjE) = array(I,J,K,bi,bj)

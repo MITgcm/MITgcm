@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_send_put_y.F,v 1.5 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_send_put_y.F,v 1.6 2001/05/14 21:31:42 heimbach Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_SEND_PUT_Y( array,
-     I             myOLw, myOLe, myOLs, myOLn, myNz,
+     I             myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I             exchWidthX, exchWidthY,
      I             thesimulationMode, thecornerMode, myThid )
 C     /==========================================================\
@@ -45,9 +45,11 @@ C     eBl               - Edge buffer level
       INTEGER myOLe
       INTEGER myOLs
       INTEGER myOLn
+      INTEGER mysNx
+      INTEGER mysNy
       INTEGER myNz
-      _RL array(1-myOLw:sNx+myOLe,
-     &          1-myOLs:sNy+myOLn, 
+      _RL array(1-myOLw:mysNx+myOLe,
+     &          1-myOLs:mysNy+myOLn, 
      &          myNZ, nSx, nSy)
       INTEGER exchWidthX
       INTEGER exchWidthY
@@ -111,10 +113,10 @@ C
         biN =  _tileBiN(bi,bj)
         bjN =  _tileBjN(bi,bj)
         iMin = 1
-        iMax = sNx
+        iMax = mysNx
         IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
          iMin =   1-exchWidthX
-         iMax = sNx+exchWidthX
+         iMax = mysNx+exchWidthX
         ENDIF
 
 
@@ -170,8 +172,8 @@ C        Send the data
         ENDIF
 
 C       o Send or Put north edge
-         jMin = sNy-exchWidthY+1
-         jMax = sNy
+         jMin = mysNy-exchWidthY+1
+         jMax = mysNy
         IF ( northCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
@@ -268,8 +270,8 @@ C        Send the data
         ENDIF
 
 C       o Send or Put north edge
-         jMin = sNy+1
-         jMax = sNy+exchWidthY
+         jMin = mysNy+1
+         jMax = mysNy+exchWidthY
         IF ( northCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
@@ -359,7 +361,7 @@ C     per process preemption is not a problem.
       END
 
       SUBROUTINE EXCH_RS_SEND_PUT_Y( array,
-     I             myOLw, myOLe, myOLs, myOLn, myNz,
+     I             myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I             exchWidthX, exchWidthY,
      I             thesimulationMode, thecornerMode, myThid )
 C     /==========================================================\
@@ -394,9 +396,11 @@ C     eBl               - Edge buffer level
       INTEGER myOLe
       INTEGER myOLs
       INTEGER myOLn
+      INTEGER mysNx
+      INTEGER mysNy
       INTEGER myNz
-      _RS array(1-myOLw:sNx+myOLe,
-     &          1-myOLs:sNy+myOLn, 
+      _RS array(1-myOLw:mysNx+myOLe,
+     &          1-myOLs:mysNy+myOLn, 
      &          myNZ, nSx, nSy)
       INTEGER exchWidthX
       INTEGER exchWidthY
@@ -460,10 +464,10 @@ C
         biN =  _tileBiN(bi,bj)
         bjN =  _tileBjN(bi,bj)
         iMin = 1
-        iMax = sNx
+        iMax = mysNx
         IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
          iMin =   1-exchWidthX
-         iMax = sNx+exchWidthX
+         iMax = mysNx+exchWidthX
         ENDIF
 
 C       o Send or Put south edge
@@ -521,8 +525,8 @@ C        Send the data
         ENDIF
 
 C       o Send or Put north edge
-         jMin = sNy-exchWidthY+1
-         jMax = sNy
+         jMin = mysNy-exchWidthY+1
+         jMax = mysNy
         IF ( northCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz
@@ -625,8 +629,8 @@ C        Send the data
         ENDIF
 
 C       o Send or Put north edge
-         jMin = sNy+1
-         jMax = sNy+exchWidthY
+         jMin = mysNy+1
+         jMax = mysNy+exchWidthY
         IF ( northCommMode .EQ. COMM_MSG  ) THEN
          iB = 0
          DO K=1,myNz

@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_x.F,v 1.6 2001/04/10 22:35:24 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_x.F,v 1.7 2001/05/14 21:31:42 heimbach Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_RECV_GET_X( array,
-     I            myOLw, myOLe, myOLs, myOLn, myNz,
+     I            myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I            exchWidthX, exchWidthY,
      I            theSimulationMode, theCornerMode, myThid )
 C     /==========================================================\
@@ -39,9 +39,11 @@ C     eBl               - Edge buffer level
       INTEGER myOLe
       INTEGER myOLs
       INTEGER myOLn
+      INTEGER mysNx
+      INTEGER mysNy
       INTEGER myNz
-      _RL array(1-myOLw:sNx+myOLe,
-     &          1-myOLs:sNy+myOLn,
+      _RL array(1-myOLw:mysNx+myOLe,
+     &          1-myOLs:mysNy+myOLn,
      &          myNZ, nSx, nSy)
       INTEGER exchWidthX
       INTEGER exchWidthY
@@ -101,7 +103,7 @@ C--   iii. Set data read flag + memory sync.
          theProc = tilePidW(bi,bj)
          theTag  = _tileTagRecvW(bi,bj)
          theType = MPI_DOUBLE_PRECISION
-         theSize = sNy*exchWidthX*myNz
+         theSize = mysNy*exchWidthX*myNz
          CALL MPI_Recv( westRecvBuf_RL(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
@@ -118,7 +120,7 @@ C--   iii. Set data read flag + memory sync.
          theProc = tilePidE(bi,bj)
          theTag  = _tileTagRecvE(bi,bj)
          theType = MPI_DOUBLE_PRECISION
-         theSize = sNy*exchWidthX*myNz
+         theSize = mysNy*exchWidthX*myNz
          CALL MPI_Recv( eastRecvBuf_RL(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
@@ -196,14 +198,14 @@ C--   Read from the buffers
         westCommMode = _tileCommModeW(bi,bj)
         eastCommMode = _tileCommModeE(bi,bj)
         IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
-         iMin = sNx+1
-         iMax = sNx+exchWidthX
+         iMin = mysNx+1
+         iMax = mysNx+exchWidthX
          iB0  = 0
          IF (     eastCommMode .EQ. COMM_PUT
      &       .OR. eastCommMode .EQ. COMM_MSG ) THEN
           iB  = 0
           DO K=1,myNz
-           DO J=1,sNy
+           DO J=1,mysNy
             DO I=iMin,iMax
              iB = iB + 1
              array(I,J,K,bi,bj) = eastRecvBuf_RL(iB,eBl,bi,bj)
@@ -212,7 +214,7 @@ C--   Read from the buffers
           ENDDO
          ELSEIF ( eastCommMode .EQ. COMM_GET ) THEN
           DO K=1,myNz
-           DO J=1,sNy
+           DO J=1,mysNy
             iB = iB0
             DO I=iMin,iMax
              iB = iB+1
@@ -222,14 +224,14 @@ C--   Read from the buffers
           ENDDO
          ENDIF
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
-         iMin = sNx-exchWidthX+1
-         iMax = sNx
+         iMin = mysNx-exchWidthX+1
+         iMax = mysNx
          iB0  = 1-exchWidthX-1
          IF (     eastCommMode .EQ. COMM_PUT 
      &       .OR. eastCommMode .EQ. COMM_MSG ) THEN
           iB  = 0
           DO K=1,myNz
-           DO J=1,sNy
+           DO J=1,mysNy
             DO I=iMin,iMax
              iB = iB + 1
              array(I,J,K,bi,bj) = 
@@ -239,7 +241,7 @@ C--   Read from the buffers
           ENDDO
          ELSEIF ( eastCommMode .EQ. COMM_GET ) THEN
           DO K=1,myNz
-           DO J=1,sNy
+           DO J=1,mysNy
             iB = iB0
             DO I=iMin,iMax
              iB = iB+1
@@ -253,12 +255,12 @@ C--   Read from the buffers
         IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
          iMin = 1-exchWidthX
          iMax = 0
-         iB0  = sNx-exchWidthX
+         iB0  = mysNx-exchWidthX
          IF (      westCommMode .EQ. COMM_PUT
      &        .OR. westCommMode .EQ. COMM_MSG ) THEN
           iB  = 0
           DO K=1,myNz
-           DO J=1,sNy
+           DO J=1,mysNy
             DO I=iMin,iMax
              iB = iB + 1
              array(I,J,K,bi,bj) = westRecvBuf_RL(iB,eBl,bi,bj)
@@ -267,7 +269,7 @@ C--   Read from the buffers
           ENDDO
          ELSEIF ( westCommMode .EQ. COMM_GET ) THEN
           DO K=1,myNz
-           DO J=1,sNy
+           DO J=1,mysNy
             iB = iB0
             DO I=iMin,iMax
              iB = iB+1
@@ -279,12 +281,12 @@ C--   Read from the buffers
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
          iMin = 1
          iMax = 1+exchWidthX-1
-         iB0  = sNx
+         iB0  = mysNx
          IF (      westCommMode .EQ. COMM_PUT 
      &        .OR. westCommMode .EQ. COMM_MSG ) THEN
           iB  = 0
           DO K=1,myNz
-           DO J=1,sNy
+           DO J=1,mysNy
             DO I=iMin,iMax
              iB = iB + 1
              array(I,J,K,bi,bj) = 
@@ -294,7 +296,7 @@ C--   Read from the buffers
           ENDDO
          ELSEIF ( westCommMode .EQ. COMM_GET ) THEN
           DO K=1,myNz
-           DO J=1,sNy
+           DO J=1,mysNy
             iB = iB0
             DO I=iMin,iMax
              iB = iB+1
@@ -314,7 +316,7 @@ C--   Read from the buffers
 
 
       SUBROUTINE EXCH_RS_RECV_GET_X( array,
-     I            myOLw, myOLe, myOLs, myOLn, myNz,
+     I            myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I            exchWidthX, exchWidthY,
      I            theSimulationMode, theCornerMode, myThid )
 C     /==========================================================\
@@ -350,9 +352,11 @@ C     eBl               - Edge buffer level
       INTEGER myOLe
       INTEGER myOLs
       INTEGER myOLn
+      INTEGER mysNx
+      INTEGER mysNy
       INTEGER myNz
-      _RS array(1-myOLw:sNx+myOLe,
-     &          1-myOLs:sNy+myOLn,
+      _RS array(1-myOLw:mysNx+myOLe,
+     &          1-myOLs:mysNy+myOLn,
      &          myNZ, nSx, nSy)
       INTEGER exchWidthX
       INTEGER exchWidthY
@@ -415,7 +419,7 @@ C--   iii. Set data read flag + memory sync.
 #ifdef RS_IS_REAL4
          theType = MPI_REAL4
 #endif
-         theSize = sNy*exchWidthX*myNz
+         theSize = mysNy*exchWidthX*myNz
          CALL MPI_Recv( westRecvBuf_RS(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
@@ -435,7 +439,7 @@ C--   iii. Set data read flag + memory sync.
 #ifdef RS_IS_REAL4
          theType = MPI_REAL4
 #endif
-         theSize = sNy*exchWidthX*myNz
+         theSize = mysNy*exchWidthX*myNz
          CALL MPI_Recv( eastRecvBuf_RS(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
@@ -513,19 +517,19 @@ C--   Read from the buffers
         westCommMode = _tileCommModeW(bi,bj)
         eastCommMode = _tileCommModeE(bi,bj)
         IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
-         iMin = sNx+1
-         iMax = sNx+exchWidthX
+         iMin = mysNx+1
+         iMax = mysNx+exchWidthX
          iB0  = 0
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
-         iMin = sNx-exchWidthX+1
-         iMax = sNx
+         iMin = mysNx-exchWidthX+1
+         iMax = mysNx
          iB0  = 1-exchWidthX-1
         ENDIF
         IF (     eastCommMode .EQ. COMM_PUT 
      &      .OR. eastCommMode .EQ. COMM_MSG ) THEN
          iB  = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             array(I,J,K,bi,bj) = eastRecvBuf_RS(iB,eBl,bi,bj)
@@ -534,7 +538,7 @@ C--   Read from the buffers
          ENDDO
         ELSEIF ( eastCommMode .EQ. COMM_GET ) THEN
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            iB = iB0
            DO I=iMin,iMax
             iB = iB+1
@@ -546,17 +550,17 @@ C--   Read from the buffers
         IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
          iMin = 1-exchWidthX
          iMax = 0
-         iB0  = sNx-exchWidthX
+         iB0  = mysNx-exchWidthX
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
          iMin = 1
          iMax = 1+exchWidthX-1
-         iB0  = sNx
+         iB0  = mysNx
         ENDIF
         IF (      westCommMode .EQ. COMM_PUT 
      &       .OR. westCommMode .EQ. COMM_MSG ) THEN
          iB  = 0
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            DO I=iMin,iMax
             iB = iB + 1
             array(I,J,K,bi,bj) = westRecvBuf_RS(iB,eBl,bi,bj)
@@ -565,7 +569,7 @@ C--   Read from the buffers
          ENDDO
         ELSEIF ( westCommMode .EQ. COMM_GET ) THEN
          DO K=1,myNz
-          DO J=1,sNy
+          DO J=1,mysNy
            iB = iB0
            DO I=iMin,iMax
             iB = iB+1

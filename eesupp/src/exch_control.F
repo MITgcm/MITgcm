@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_control.F,v 1.6 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_control.F,v 1.7 2001/05/14 21:31:41 heimbach Exp $
 C $Name:  $
 
 C      MITgcmUV Exchange routine
@@ -86,7 +86,7 @@ C
 CStartOfInterface
        SUBROUTINE EXCH_RL( 
      U            array,
-     I            myOLw, myOLe, myOLs, myOLn, myNz,
+     I            myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I            exchWidthX, exchWidthY,
      I            simulationMode, cornerMode, myThid )
 C     /==========================================================\
@@ -147,14 +147,16 @@ C      myThid         - Thread number of this instance of S/R EXCH...
        INTEGER myOLe
        INTEGER myOLs
        INTEGER myOLn
+       INTEGER mysNx
+       INTEGER mysNy
        INTEGER myNz
        INTEGER exchWidthX
        INTEGER exchWidthY
        INTEGER simulationMode
        INTEGER cornerMode
        INTEGER myThid
-       _RL array(1-myOLw:sNx+myOLe,
-     &           1-myOLs:sNy+myOLn, 
+       _RL array(1-myOLw:mysNx+myOLe,
+     &           1-myOLs:mysNy+myOLn, 
      &           myNZ, nSx, nSy)
 CEndOfInterface
 
@@ -200,7 +202,7 @@ C--    Cycle edge buffer level
        IF ( theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
 C--    "Put" east and west edges.
        CALL EXCH_RL_SEND_PUT_X( array,
-     I             myOLw, myOLe, myOLs, myOLn, myNz,
+     I             myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I             exchWidthX, exchWidthY,
      I             theSimulationMode, theCornerMode, myThid )
 
@@ -208,14 +210,14 @@ C--    If corners are important then sync and update east and west edges
 C--    before doing north and south exchanges.
        IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
         CALL EXCH_RL_RECV_GET_X( array,
-     I             myOLw, myOLe, myOLs, myOLn, myNz,
+     I             myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I             exchWidthX, exchWidthY,
      I             theSimulationMode, theCornerMode, myThid )
        ENDIF
 
 C      "Put" north and south edges.
        CALL EXCH_RL_SEND_PUT_Y( array,
-     I             myOLw, myOLe, myOLs, myOLn, myNz,
+     I             myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I             exchWidthX, exchWidthY,
      I             theSimulationMode, theCornerMode, myThid )
 
@@ -224,12 +226,12 @@ C--    Sync and update north, south (and east, west if corner updating
 C--    not active).
        IF ( theCornerMode .NE. EXCH_UPDATE_CORNERS ) THEN
         CALL EXCH_RL_RECV_GET_X( array,
-     I             myOLw, myOLe, myOLs, myOLn, myNz,
+     I             myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I             exchWidthX, exchWidthY,
      I             theSimulationMode, theCornerMode, myThid )
        ENDIF
        CALL EXCH_RL_RECV_GET_Y( array,
-     I            myOLw, myOLe, myOLs, myOLn, myNz,
+     I            myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I            exchWidthX, exchWidthY,
      I            theSimulationMode, theCornerMode, myThid )
        ENDIF
@@ -237,32 +239,32 @@ C--    not active).
        IF ( theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
 C       "Put" north and south edges.
         CALL EXCH_RL_SEND_PUT_Y( array,
-     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I              exchWidthX, exchWidthY,
      I              theSimulationMode, theCornerMode, myThid )
 C--     If corners are important then sync and update east and west edges
 C--     before doing north and south exchanges.
         IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
          CALL EXCH_RL_RECV_GET_Y( array,
-     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I              exchWidthX, exchWidthY,
      I              theSimulationMode, theCornerMode, myThid )
         ENDIF
 C--     "Put" east and west edges.
         CALL EXCH_RL_SEND_PUT_X( array,
-     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I              exchWidthX, exchWidthY,
      I              theSimulationMode, theCornerMode, myThid )
 C--     Sync and update east, west (and north, south if corner updating
 C--     not active).
         IF ( theCornerMode .NE. EXCH_UPDATE_CORNERS ) THEN
          CALL EXCH_RL_RECV_GET_Y( array,
-     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I              exchWidthX, exchWidthY,
      I              theSimulationMode, theCornerMode, myThid )
         ENDIF
         CALL EXCH_RL_RECV_GET_X( array,
-     I             myOLw, myOLe, myOLs, myOLn, myNz,
+     I             myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I             exchWidthX, exchWidthY,
      I             theSimulationMode, theCornerMode, myThid )
        ENDIF
@@ -277,9 +279,9 @@ C      the i=1 value for all i.
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO K = 1,myNz
-           DO J = 1-myOLs,sNy+myOLn
-            DO I = 1-myOLw,sNx+myOLe
-             array(I,J,K,bi,bj) = array(sNx,J,K,bi,bj)
+           DO J = 1-myOLs,mysNy+myOLn
+            DO I = 1-myOLw,mysNx+myOLe
+             array(I,J,K,bi,bj) = array(mysNx,J,K,bi,bj)
             ENDDO
            ENDDO
           ENDDO
@@ -293,7 +295,7 @@ C      the i=1 value for all i.
 CStartOfInterface
        SUBROUTINE EXCH_RS( 
      U            array,
-     I            myOLw, myOLe, myOLs, myOLn, myNz,
+     I            myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I            exchWidthX, exchWidthY,
      I            simulationMode, cornerMode, myThid )
 C     /==========================================================\
@@ -354,14 +356,16 @@ C      myThid         - Thread number of this instance of S/R EXCH...
        INTEGER myOLe
        INTEGER myOLs
        INTEGER myOLn
+       INTEGER mysNx
+       INTEGER mysNy
        INTEGER myNz
        INTEGER exchWidthX
        INTEGER exchWidthY
        INTEGER simulationMode
        INTEGER cornerMode
        INTEGER myThid
-       _RS array(1-myOLw:sNx+myOLe,
-     &           1-myOLs:sNy+myOLn, 
+       _RS array(1-myOLw:mysNx+myOLe,
+     &           1-myOLs:mysNy+myOLn, 
      &           myNZ, nSx, nSy)
 CEndOfInterface
 
@@ -407,32 +411,32 @@ C--    Cycle edge buffer level
        IF ( theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
 C--     "Put" east and west edges.
         CALL EXCH_RS_SEND_PUT_X( array,
-     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I              exchWidthX, exchWidthY,
      I              theSimulationMode, theCornerMode, myThid )
 C--     If corners are important then sync and update east and west edges 
 C--     before doing north and south exchanges.
         IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
          CALL EXCH_RS_RECV_GET_X( array,
-     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I              exchWidthX, exchWidthY,
      I              theSimulationMode, theCornerMode, myThid )
         ENDIF
 C       "Put" north and south edges.
         CALL EXCH_RS_SEND_PUT_Y( array,
-     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I              exchWidthX, exchWidthY,
      I              theSimulationMode, theCornerMode, myThid )
 C--     Sync and update north, south (and east, west if corner updating
 C--     not active).
         IF ( theCornerMode .NE. EXCH_UPDATE_CORNERS ) THEN
          CALL EXCH_RS_RECV_GET_X( array,
-     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I              exchWidthX, exchWidthY,
      I              theSimulationMode, theCornerMode, myThid )
         ENDIF
         CALL EXCH_RS_RECV_GET_Y( array,
-     I             myOLw, myOLe, myOLs, myOLn, myNz,
+     I             myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I             exchWidthX, exchWidthY,
      I             theSimulationMode, theCornerMode, myThid )
        ENDIF
@@ -440,32 +444,32 @@ C--     not active).
        IF ( theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
 C       "Put" north and south edges.
         CALL EXCH_RS_SEND_PUT_Y( array,
-     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I              exchWidthX, exchWidthY,
      I              theSimulationMode, theCornerMode, myThid )
 C--     If corners are important then sync and update east and west edges
 C--     before doing north and south exchanges.
         IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
          CALL EXCH_RS_RECV_GET_Y( array,
-     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I              exchWidthX, exchWidthY,
      I              theSimulationMode, theCornerMode, myThid )
         ENDIF
 C--     "Put" east and west edges.
         CALL EXCH_RS_SEND_PUT_X( array,
-     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I              exchWidthX, exchWidthY,
      I              theSimulationMode, theCornerMode, myThid )
 C--     Sync and update east, west (and north, south if corner updating
 C--     not active).
         IF ( theCornerMode .NE. EXCH_UPDATE_CORNERS ) THEN
          CALL EXCH_RS_RECV_GET_Y( array,
-     I              myOLw, myOLe, myOLs, myOLn, myNz,
+     I              myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I              exchWidthX, exchWidthY,
      I              theSimulationMode, theCornerMode, myThid )
         ENDIF
         CALL EXCH_RS_RECV_GET_X( array,
-     I             myOLw, myOLe, myOLs, myOLn, myNz,
+     I             myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I             exchWidthX, exchWidthY,
      I             theSimulationMode, theCornerMode, myThid )
        ENDIF
@@ -476,9 +480,9 @@ C      the i=1 value for all i.
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
           DO K = 1,myNz
-           DO J = 1-myOLs,sNy+myOLn
-            DO I = 1-myOLw,sNx+myOLe
-             array(I,J,K,bi,bj) = array(sNx,J,K,bi,bj)
+           DO J = 1-myOLs,mysNy+myOLn
+            DO I = 1-myOLw,mysNx+myOLe
+             array(I,J,K,bi,bj) = array(mysNx,J,K,bi,bj)
             ENDDO
            ENDDO
           ENDDO

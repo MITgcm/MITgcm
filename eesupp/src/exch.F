@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch.F,v 1.10 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch.F,v 1.11 2001/05/14 21:31:41 heimbach Exp $
 C $Name:  $
 C--   File exch.F: Routines that perform atomic communication operations 
 C                  i.e. communication operations that are completed by
@@ -8,6 +8,10 @@ C      o exch_xy_r4   - Does overlap updates for REAL*4 2d XY fields
 C      o exch_xy_r8   - Does overlap updates for REAL*8 2d XY fields
 C      o exch_xyz_r4  - Does overlap updates for REAL*4 3d XYZ fields
 C      o exch_xyz_r8  - Does overlap updates for REAL*8 3d XYZ fields
+C      o exch_xz_r4   - Does overlap updates for REAL*4 2d XZ fields
+C      o exch_xz_r8   - Does overlap updates for REAL*8 2d XZ fields
+C      o exch_yz_r4   - Does overlap updates for REAL*4 2d XZ fields
+C      o exch_yz_r8   - Does overlap updates for REAL*8 2d XZ fields
 #include "CPP_EEOPTIONS.h"
 
 CStartOfInterface
@@ -43,7 +47,8 @@ CEndOfInterface
 C     == Local variables ==
 C     OL[wens]       - Overlap extents in west, east, north, south.
 C     exchWidth[XY]  - Extent of regions that will be exchanged.
-      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
+      INTEGER mysNx, mysNy, myNz
 
       OLw        = OLx
       OLe        = OLx
@@ -51,6 +56,8 @@ C     exchWidth[XY]  - Extent of regions that will be exchanged.
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
+      mysNx      = sNx
+      mysNy      = sNy
       myNz       = 1
 C     ** NOTE ** The exchange routine we use here does not 
 C                require the preceeding and following barriers.
@@ -60,7 +67,7 @@ C                that threads are synchronised before exchanges
 C                begine.
       _BARRIER
       CALL EXCH_RS( phi,
-     I            OLw, OLe, OLs, OLn, myNz,
+     I            OLw, OLe, OLs, OLn, mysNx, mysNy, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
       _BARRIER
@@ -101,7 +108,8 @@ CEndOfInterface
 C     == Local variables ==
 C     OL[wens]       - Overlap extents in west, east, north, south.
 C     exchWidth[XY]  - Extent of regions that will be exchanged.
-      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
+      INTEGER mysNx, mysNy, myNz
 
       OLw        = OLx
       OLe        = OLx
@@ -109,6 +117,8 @@ C     exchWidth[XY]  - Extent of regions that will be exchanged.
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
+      mysNx      = sNx
+      mysNy      = sNy
       myNz       = Nr
 C     ** NOTE ** The exchange routine we use here does not 
 C                require the preceeding and following barriers.
@@ -118,7 +128,7 @@ C                that threads are synchronised before exchanges
 C                begine.
       _BARRIER
       CALL EXCH_RS( phi,
-     I            OLw, OLe, OLs, OLn, myNz,
+     I            OLw, OLe, OLs, OLn, mysNx, mysNy, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
       _BARRIER
@@ -170,7 +180,8 @@ CEndOfInterface
 C     == Local variables ==
 C     OL[wens]       - Overlap extents in west, east, north, south.
 C     exchWidth[XY]  - Extent of regions that will be exchanged.
-      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
+      INTEGER mysNx, mysNy, myNz
 
       OLw        = OLx
       OLe        = OLx
@@ -178,6 +189,8 @@ C     exchWidth[XY]  - Extent of regions that will be exchanged.
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
+      mysNx      = sNx
+      mysNy      = sNy
       myNz       = 1 
 C     ** NOTE ** The exchange routine we use here does not 
 C                require the preceeding and following barriers.
@@ -187,7 +200,7 @@ C                that threads are synchronised before exchanges
 C                begine.
       _BARRIER
       CALL EXCH_RL( phi,
-     I            OLw, OLe, OLs, OLn, myNz,
+     I            OLw, OLe, OLs, OLn, mysNx, mysNy, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
       _BARRIER
@@ -242,7 +255,8 @@ CEndOfInterface
 C     == Local variables ==
 C     OL[wens]       - Overlap extents in west, east, north, south.
 C     exchWidth[XY]  - Extent of regions that will be exchanged.
-      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY, myNz
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
+      INTEGER mysNx, mysNy, myNz
 
       OLw        = OLx
       OLe        = OLx
@@ -250,6 +264,8 @@ C     exchWidth[XY]  - Extent of regions that will be exchanged.
       OLs        = OLy
       exchWidthX = OLx
       exchWidthY = OLy
+      mysNx      = sNx
+      mysNy      = sNy
       myNz       = Nr
 C     ** NOTE ** The exchange routine we use here does not 
 C                require the preceeding and following barriers.
@@ -259,7 +275,7 @@ C                that threads are synchronised before exchanges
 C                begine.
       _BARRIER
       CALL EXCH_RL( phi,
-     I            OLw, OLe, OLs, OLn, myNz,
+     I            OLw, OLe, OLs, OLn, mysNx, mysNy, myNz,
      I            exchWidthX, exchWidthY,
      I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
       _BARRIER
@@ -267,4 +283,247 @@ C                begine.
       RETURN
       END
 
-C $Id: exch.F,v 1.10 2001/02/04 14:38:43 cnh Exp $
+CStartOfInterface
+      SUBROUTINE EXCH_XZ_R4( 
+     U                       phi, 
+     I                       myThid )
+C     /==========================================================\
+C     | SUBROUTINE EXCH_XZ_R4                                    |
+C     | o Handle exchanges for real*4, three-dimensional arrays. |
+C     |==========================================================|
+C     | Do true shared-memory data transfers and "messaging"     |
+C     | tranfers for blocking case of data transfers.            |
+C     | Applications call this routine using                     |
+C     |  CALL EXCH..( x, myThid )                                |
+C     | where x is a three-dimensional array with overlaps.      |
+C     | This routine does true-shared-memory copies for blocks   |
+C     | within a thread. It will also do MPI meesaging between   |
+C     | different processes.                                     |
+C     \==========================================================/
+      IMPLICIT NONE
+
+C     === Global data ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+
+C     === Routine arguments ===
+C     phi    - Array with overlap regions are to be exchanged
+C     myThid - My thread id.
+      Real*4 phi(1-OLx:sNx+OLx,1,1:Nr,nSx,nSy)
+      INTEGER myThid
+CEndOfInterface
+C     == Local variables ==
+C     OL[wens]       - Overlap extents in west, east, north, south.
+C     exchWidth[XY]  - Extent of regions that will be exchanged.
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
+      INTEGER mysNx, mysNy, myNz
+
+      OLw        = OLx
+      OLe        = OLx
+      OLn        = 0
+      OLs        = 0
+      exchWidthX = OLx
+      exchWidthY = 0
+      mysNx      = sNx
+      mysNy      = 1
+      myNz       = Nr
+C     ** NOTE ** The exchange routine we use here does not 
+C                require the preceeding and following barriers.
+C                However, the slow, simple exchange interface 
+C                that is calling it here is meant to ensure 
+C                that threads are synchronised before exchanges
+C                begine.
+      _BARRIER
+      CALL EXCH_RS( phi,
+     I            OLw, OLe, OLs, OLn, mysNx, mysNy, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      _BARRIER
+
+      RETURN
+      END
+
+CStartOfInterface
+      SUBROUTINE EXCH_XZ_R8( 
+     U                       phi, 
+     I                       myThid )
+C     /==========================================================\
+C     | SUBROUTINE EXCH_XZ_R8                                    |
+C     | o Handle exchanges for real*8, three-dimensional arrays. |
+C     |==========================================================|
+C     | Do true shared-memory data transfers and "messaging"     |
+C     | tranfers for blocking case of data transfers.            |
+C     | Applications call this routine using                     |
+C     |  CALL EXCH..( x, myThid )                                |
+C     | where x is a three-dimensional array with overlaps.      |
+C     | This routine does true-shared-memory copies for blocks   |
+C     | within a thread. It will also do MPI meesaging between   |
+C     | different processes.                                     |
+C     \==========================================================/
+      IMPLICIT NONE
+
+C     === Global data ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+
+C     === Routine arguments ===
+C     phi    - Array with overlap regions are to be exchanged
+C     myThid - My thread id.
+      Real*8 phi(1-OLx:sNx+OLx,1,1:Nr,nSx,nSy)
+      INTEGER myThid
+CEndOfInterface
+C     == Local variables ==
+C     OL[wens]       - Overlap extents in west, east, north, south.
+C     exchWidth[XY]  - Extent of regions that will be exchanged.
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
+      INTEGER mysNx, mysNy, myNz
+
+      OLw        = OLx
+      OLe        = OLx
+      OLn        = 0
+      OLs        = 0
+      exchWidthX = OLx
+      exchWidthY = 0
+      mysNx      = sNx
+      mysNy      = 1
+      myNz       = Nr
+C     ** NOTE ** The exchange routine we use here does not 
+C                require the preceeding and following barriers.
+C                However, the slow, simple exchange interface 
+C                that is calling it here is meant to ensure 
+C                that threads are synchronised before exchanges
+C                begine.
+      _BARRIER
+      CALL EXCH_RL( phi,
+     I            OLw, OLe, OLs, OLn, mysNx, mysNy, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      _BARRIER
+
+      RETURN
+      END
+
+CStartOfInterface
+      SUBROUTINE EXCH_YZ_R4( 
+     U                       phi, 
+     I                       myThid )
+C     /==========================================================\
+C     | SUBROUTINE EXCH_YZ_R4                                    |
+C     | o Handle exchanges for real*4, three-dimensional arrays. |
+C     |==========================================================|
+C     | Do true shared-memory data transfers and "messaging"     |
+C     | tranfers for blocking case of data transfers.            |
+C     | Applications call this routine using                     |
+C     |  CALL EXCH..( x, myThid )                                |
+C     | where x is a three-dimensional array with overlaps.      |
+C     | This routine does true-shared-memory copies for blocks   |
+C     | within a thread. It will also do MPI meesaging between   |
+C     | different processes.                                     |
+C     \==========================================================/
+      IMPLICIT NONE
+
+C     === Global data ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+
+C     === Routine arguments ===
+C     phi    - Array with overlap regions are to be exchanged
+C     myThid - My thread id.
+      Real*4 phi(1,1-OLy:sNy+OLy,1:Nr,nSx,nSy)
+      INTEGER myThid
+CEndOfInterface
+C     == Local variables ==
+C     OL[wens]       - Overlap extents in west, east, north, south.
+C     exchWidth[XY]  - Extent of regions that will be exchanged.
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
+      INTEGER mysNx, mysNy, myNz
+
+      OLw        = 0
+      OLe        = 0
+      OLn        = OLy
+      OLs        = OLy
+      exchWidthX = 0
+      exchWidthY = OLy
+      mysNx      = 1
+      mysNy      = sNy
+      myNz       = Nr
+C     ** NOTE ** The exchange routine we use here does not 
+C                require the preceeding and following barriers.
+C                However, the slow, simple exchange interface 
+C                that is calling it here is meant to ensure 
+C                that threads are synchronised before exchanges
+C                begine.
+      _BARRIER
+      CALL EXCH_RS( phi,
+     I            OLw, OLe, OLs, OLn, mysNx, mysNy, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      _BARRIER
+
+      RETURN
+      END
+
+CStartOfInterface
+      SUBROUTINE EXCH_YZ_R8( 
+     U                       phi, 
+     I                       myThid )
+C     /==========================================================\
+C     | SUBROUTINE EXCH_YZ_R8                                    |
+C     | o Handle exchanges for real*8, three-dimensional arrays. |
+C     |==========================================================|
+C     | Do true shared-memory data transfers and "messaging"     |
+C     | tranfers for blocking case of data transfers.            |
+C     | Applications call this routine using                     |
+C     |  CALL EXCH..( x, myThid )                                |
+C     | where x is a three-dimensional array with overlaps.      |
+C     | This routine does true-shared-memory copies for blocks   |
+C     | within a thread. It will also do MPI meesaging between   |
+C     | different processes.                                     |
+C     \==========================================================/
+      IMPLICIT NONE
+
+C     === Global data ===
+#include "SIZE.h"
+#include "EEPARAMS.h"
+#include "EESUPPORT.h"
+
+C     === Routine arguments ===
+C     phi    - Array with overlap regions are to be exchanged
+C     myThid - My thread id.
+      Real*8 phi(1-OLx:sNx+OLx,1,1:Nr,nSx,nSy)
+      INTEGER myThid
+CEndOfInterface
+C     == Local variables ==
+C     OL[wens]       - Overlap extents in west, east, north, south.
+C     exchWidth[XY]  - Extent of regions that will be exchanged.
+      INTEGER OLw, OLe, OLn, OLs, exchWidthX, exchWidthY
+      INTEGER mysNx, mysNy, myNz
+
+      OLw        = 0
+      OLe        = 0
+      OLn        = OLy
+      OLs        = OLy
+      exchWidthX = 0
+      exchWidthY = OLy
+      mysNx      = 1
+      mysNy      = sNy
+      myNz       = Nr
+C     ** NOTE ** The exchange routine we use here does not 
+C                require the preceeding and following barriers.
+C                However, the slow, simple exchange interface 
+C                that is calling it here is meant to ensure 
+C                that threads are synchronised before exchanges
+C                begine.
+      _BARRIER
+      CALL EXCH_RL( phi,
+     I            OLw, OLe, OLs, OLn, mysNx, mysNy, myNz,
+     I            exchWidthX, exchWidthY,
+     I            FORWARD_SIMULATION, EXCH_UPDATE_CORNERS, myThid )
+      _BARRIER
+
+      RETURN
+      END
+

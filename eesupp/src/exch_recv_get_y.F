@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_y.F,v 1.5 2001/02/04 14:38:43 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/exch_recv_get_y.F,v 1.6 2001/05/14 21:31:42 heimbach Exp $
 C $Name:  $
 #include "CPP_EEOPTIONS.h"
 
       SUBROUTINE EXCH_RL_RECV_GET_Y( array,
-     I            myOLw, myOLe, myOLs, myOLn, myNz,
+     I            myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I            exchWidthX, exchWidthY,
      I            theSimulationMode, theCornerMode, myThid )
 C     /==========================================================\
@@ -39,9 +39,11 @@ C     eBl               - Edge buffer level
       INTEGER myOLe
       INTEGER myOLs
       INTEGER myOLn
+      INTEGER mysNx
+      INTEGER mysNy
       INTEGER myNz
-      _RL array(1-myOLw:sNx+myOLe,
-     &          1-myOLs:sNy+myOLn,
+      _RL array(1-myOLw:mysNx+myOLe,
+     &          1-myOLs:mysNy+myOLn,
      &          myNZ, nSx, nSy)
       INTEGER exchWidthX
       INTEGER exchWidthY
@@ -102,9 +104,9 @@ C--   iii. Set data read flag + memory sync.
          theProc = tilePidS(bi,bj)
          theTag  = _tileTagRecvS(bi,bj)
          theType = MPI_DOUBLE_PRECISION
-         theSize = sNx*exchWidthY*myNz
+         theSize = mysNx*exchWidthY*myNz
          IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS )
-     &    theSize = (sNx+2*exchWidthX)*exchWidthY*myNz
+     &    theSize = (mysNx+2*exchWidthX)*exchWidthY*myNz
          CALL MPI_Recv( southRecvBuf_RL(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
@@ -121,9 +123,9 @@ C--   iii. Set data read flag + memory sync.
          theProc = tilePidN(bi,bj)
          theTag  = _tileTagRecvN(bi,bj)
          theType = MPI_DOUBLE_PRECISION
-         theSize = sNx*exchWidthY*myNz
+         theSize = mysNx*exchWidthY*myNz
          IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS )
-     &    theSize = (sNx+2*exchWidthX)*exchWidthY*myNz
+     &    theSize = (mysNx+2*exchWidthX)*exchWidthY*myNz
          CALL MPI_Recv( northRecvBuf_RL(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
@@ -202,14 +204,14 @@ C--   Read from the buffers
         northCommMode = _tileCommModeN(bi,bj)
         IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
          iMin =   1-exchWidthX
-         iMax = sNx+exchWidthX
+         iMax = mysNx+exchWidthX
         ELSE
          iMin = 1
-         iMax = sNx
+         iMax = mysNx
         ENDIF
         IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
-         jMin = sNy+1
-         jMax = sNy+exchWidthY
+         jMin = mysNy+1
+         jMax = mysNy+exchWidthY
          iB0  = 0
          IF (  northCommMode .EQ. COMM_PUT
      &        .OR. northCommMode .EQ. COMM_MSG  ) THEN
@@ -234,8 +236,8 @@ C--   Read from the buffers
           ENDDO
          ENDIF
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
-         jMin = sNy-exchWidthY+1
-         jMax = sNy
+         jMin = mysNy-exchWidthY+1
+         jMax = mysNy
          iB0  = 1-exchWidthY-1
          IF (  northCommMode .EQ. COMM_PUT 
      &        .OR. northCommMode .EQ. COMM_MSG  ) THEN
@@ -266,7 +268,7 @@ C--   Read from the buffers
         IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
          jMin = 1-exchWidthY
          jMax = 0
-         iB0  = sNy-exchWidthY
+         iB0  = mysNy-exchWidthY
          IF (      southCommMode .EQ. COMM_PUT
      &        .OR. southCommMode .EQ. COMM_MSG ) THEN
           iB  = 0
@@ -292,7 +294,7 @@ C--   Read from the buffers
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
          jMin = 1
          jMax = 1+exchWidthY-1
-         iB0  = sNy
+         iB0  = mysNy
          IF (      southCommMode .EQ. COMM_PUT 
      &        .OR. southCommMode .EQ. COMM_MSG ) THEN
           iB  = 0
@@ -326,7 +328,7 @@ C--   Read from the buffers
 
 
       SUBROUTINE EXCH_RS_RECV_GET_Y( array,
-     I            myOLw, myOLe, myOLs, myOLn, myNz,
+     I            myOLw, myOLe, myOLs, myOLn, mysNx, mysNy, myNz,
      I            exchWidthX, exchWidthY,
      I            theSimulationMode, theCornerMode, myThid )
 C     /==========================================================\
@@ -362,9 +364,11 @@ C     eBl               - Edge buffer level
       INTEGER myOLe
       INTEGER myOLs
       INTEGER myOLn
+      INTEGER mysNx
+      INTEGER mysNy
       INTEGER myNz
-      _RS array(1-myOLw:sNx+myOLe,
-     &          1-myOLs:sNy+myOLn,
+      _RS array(1-myOLw:mysNx+myOLe,
+     &          1-myOLs:mysNy+myOLn,
      &          myNZ, nSx, nSy)
       INTEGER exchWidthX
       INTEGER exchWidthY
@@ -428,9 +432,9 @@ C--   iii. Set data read flag + memory sync.
 #ifdef RS_IS_REAL4
          theType = MPI_REAL4
 #endif
-         theSize = sNx*exchWidthY*myNz
+         theSize = mysNx*exchWidthY*myNz
          IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS )
-     &    theSize = (sNx+2*exchWidthX)*exchWidthY*myNz
+     &    theSize = (mysNx+2*exchWidthX)*exchWidthY*myNz
          CALL MPI_Recv( southRecvBuf_RS(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
@@ -450,9 +454,9 @@ C--   iii. Set data read flag + memory sync.
 #ifdef RS_IS_REAL4
          theType = MPI_REAL4
 #endif
-         theSize = sNx*exchWidthY*myNz
+         theSize = mysNx*exchWidthY*myNz
          IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS )
-     &    theSize = (sNx+2*exchWidthX)*exchWidthY*myNz
+     &    theSize = (mysNx+2*exchWidthX)*exchWidthY*myNz
          CALL MPI_Recv( northRecvBuf_RS(1,eBl,bi,bj), theSize, theType,
      &                  theProc, theTag, MPI_COMM_MODEL,
      &                  mpiStatus, mpiRc )
@@ -531,14 +535,14 @@ C--   Read from the buffers
         northCommMode = _tileCommModeN(bi,bj)
         IF ( theCornerMode .EQ. EXCH_UPDATE_CORNERS ) THEN
          iMin =   1-exchWidthX
-         iMax = sNx+exchWidthX
+         iMax = mysNx+exchWidthX
         ELSE
          iMin = 1
-         iMax = sNx
+         iMax = mysNx
         ENDIF
         IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
-         jMin = sNy+1
-         jMax = sNy+exchWidthY
+         jMin = mysNy+1
+         jMax = mysNy+exchWidthY
          iB0  = 0
          IF (     northCommMode .EQ. COMM_PUT
      &       .OR. northCommMode .EQ. COMM_MSG ) THEN
@@ -563,8 +567,8 @@ C--   Read from the buffers
           ENDDO
          ENDIF
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
-         jMin = sNy-exchWidthY+1
-         jMax = sNy
+         jMin = mysNy-exchWidthY+1
+         jMax = mysNy
          iB0  = 1-exchWidthY-1
          IF (     northCommMode .EQ. COMM_PUT 
      &       .OR. northCommMode .EQ. COMM_MSG ) THEN
@@ -595,7 +599,7 @@ C--   Read from the buffers
         IF     ( _theSimulationMode .EQ. FORWARD_SIMULATION ) THEN
          jMin = 1-exchWidthY
          jMax = 0
-         iB0  = sNy-exchWidthY
+         iB0  = mysNy-exchWidthY
          IF (      southCommMode .EQ. COMM_PUT
      &        .OR. southCommMode .EQ. COMM_MSG ) THEN
           iB  = 0
@@ -621,7 +625,7 @@ C--   Read from the buffers
         ELSEIF ( _theSimulationMode .EQ. REVERSE_SIMULATION ) THEN
          jMin = 1
          jMax = 1+exchWidthY-1
-         iB0  = sNy
+         iB0  = mysNy
          IF (      southCommMode .EQ. COMM_PUT 
      &        .OR. southCommMode .EQ. COMM_MSG ) THEN
           iB  = 0
