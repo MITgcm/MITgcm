@@ -1,22 +1,20 @@
 #!/bin/bash
 #
-#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.6 2004/09/25 00:42:14 heimbach Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/build_options/linux_ia32_pgf77,v 1.7 2005/01/31 19:30:14 ce107 Exp $
 #
 
 FC='pgf77'
-CC='gcc'
+CC='pgcc'
 DEFINES='-DWORDLENGTH=4'
 CPP='cpp -traditional -P'
 
 if test "x$IEEE" = x ; then
     #  No need for IEEE-754
     FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-tp p6 -v -O2 -Munroll'
-# -Mvect=cachesize:512000,transform
+    FOPTIM='-fastsse -Mvect=cachesize:524288,transform'
 else
     #  Try to follow IEEE-754
     FFLAGS='-byteswapio -r8 -Mnodclchk -Mextend'
-    FOPTIM='-tp p6 -v -O2 -Munroll -Kieee'
-# -Mvect=cachesize:512000,transform
+    FOPTIM='-O0 -Mvect=sse -Mscalarsse -Mcache_align -Mnoflushz -Kieee'
 fi
 
