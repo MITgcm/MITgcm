@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.13 2001/07/20 15:53:10 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.14 2001/08/01 22:12:12 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -56,17 +56,9 @@ C     == local variables ==
 
 
 #ifdef ALLOW_AUTODIFF_TAMC
-C--     Set the model iteration counter and the model time.
+C--     Reset the model iteration counter and the model time.
         myiter = nIter0 + (iloop-1)
         mytime = startTime + float(iloop-1)*deltaTclock
-
-C       Include call to a dummy routine. Its adjoint will be 
-C       called at the proper place in the adjoint code.
-C       The adjoint routine will print out adjoint values 
-C       if requested. The location of the call is important, 
-C       it has to be after the adjoint of the exchanges 
-C       (DO_GTERM_BLOCKING_EXCHANGES).
-        CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
 #endif
 
 C--     Load forcing/external data fields.
@@ -156,7 +148,15 @@ C--   Check status of solution (statistics, cfl, etc...)
       CALL MONITOR( myIter, myTime, myThid )
 #endif /* EXCLUDE_MONITOR */
 
-#ifndef ALLOW_AUTODIFF_TAMC
+#ifdef ALLOW_AUTODIFF_TAMC
+C     Include call to a dummy routine. Its adjoint will be 
+C     called at the proper place in the adjoint code.
+C     The adjoint routine will print out adjoint values 
+C     if requested. The location of the call is important, 
+C     it has to be after the adjoint of the exchanges 
+C     (DO_GTERM_BLOCKING_EXCHANGES).
+      CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
+#else
 C--   Do IO if needed.
       CALL TIMER_START('DO_THE_MODEL_IO     [THE_MAIN_LOOP]',myThid)
       CALL DO_THE_MODEL_IO( myTime, myIter, myThid )
