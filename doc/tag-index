@@ -1,10 +1,27 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.36 2001/02/20 22:24:48 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.37 2001/03/13 01:15:09 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint37
+ o mdsio.F routine split and packaged in pkg/mdsio
+   (mdsio.F and mdsio_gl.F still exist in eesupp/src but are not
+    used unless genmake -disable=mdsio)
+ o allow a more precise surface-geopotential gradient for the atmosphere
+   taking into account the change in space of Alpha (=1/rho) at the surface.
+ o variable "etaN" (replace cg2d_x) is the surface R-anomaly [r unit]
+   (ocean: sea surface height [m] / atmos: surface pressure anomaly [Pa])
+ o Change units: Phi_Hydrostatic (=phiHyd), Phi_Surface(=cg2d_x) and
+   Phi_NonHydrostatic (=cg3d_x), all have now the dimension of a potential
+   [m2/s2] (pressure/rhoConst in the ocean ; Geo-Potential in the atmosphere).
+ o Time-Average diagnostics defined as a pseudo package "timeave".
+ o pickup files : old pickup (before c35) did not work with new code (c35
+   and after) unless activating 2 commented lines in initialise-varia.
+ o Non-Hydrostatic pickup file Pb fixed.
+ o bug with Rigid-lid version (since c35) fixed.  
+
 checkpoint36
- o implement Crank-Nirotropic time-stepping
+ o implement Crank-Nickelson barotropic time-stepping
  o recover Time-Average diagnostics
  o fix Pb in checkpoint (PR#19) 
  o AIM become a standard package ; clean unused CPP_kees
