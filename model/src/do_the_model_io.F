@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.37 2004/01/18 22:47:12 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/do_the_model_io.F,v 1.38 2004/02/23 22:41:27 molod Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -85,6 +85,10 @@ C--   Do time averages
      & CALL PTRACERS_STATV_WRITE( myTime, myIter, myThid )
 #endif
       ENDIF
+#endif
+
+#ifdef ALLOW_FIZHI
+      if(useFIZHI) call fizhi_write_state( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_AIM
