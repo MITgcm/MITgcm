@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.4 2005/02/21 04:41:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_write_pickup.F,v 1.5 2005/02/23 05:31:03 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -37,6 +37,7 @@ C     myThid  :: Number of this instance
       INTEGER myThid
 
 #ifdef ALLOW_DIAGNOSTICS
+#ifdef DIAGNOSTICS_HAS_PICKUP
 
 C     !LOCAL VARIABLES:
 C     fn      :: character buffer for creating filename
@@ -188,6 +189,7 @@ C         Write ndiag()
       ENDIF
 
 #endif /* ALLOW_DIAGNOSTICS */
+#endif /* DIAGNOSTICS_HAS_PICKUP */
 
       RETURN
       END

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.4 2005/02/21 04:41:52 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_init_varia.F,v 1.5 2005/02/23 05:31:03 edhill Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -60,6 +60,8 @@ C     Zero out the qdiag array which accumulates during integration
         ENDDO
       ENDDO
 
+
+#ifdef DIAGNOSTICS_HAS_PICKUP
 
 C     Add pickup capability
       IF (diag_pickup_read) THEN
@@ -166,6 +168,8 @@ C         Read ndiag()
 #endif /* ALLOW_MDSIO */
 
       ENDIF
+
+#endif /* DIAGNOSTICS_HAS_PICKUP */
 
       RETURN 
       END
