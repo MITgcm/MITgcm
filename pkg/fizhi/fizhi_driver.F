@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.30 2004/10/26 01:03:41 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.31 2004/10/26 15:36:17 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -58,7 +58,7 @@ c ----------------
       _RL u(im,jm,lm),v(im,jm,lm),t(im,jm,lm)
       _RL q(im,jm,lm,ntracer)
       _RL pl(im,jm,lm),ple(im,jm,lm+1),dpres(im,jm,lm)
-      _RL pkht(im,jm,lm)
+      _RL pkht(im,jm,lm+1)
       _RL pkl(im,jm,lm)
       _RL surfz(im,jm)
       _RL radswt(im,jm), fracland(im,jm)
