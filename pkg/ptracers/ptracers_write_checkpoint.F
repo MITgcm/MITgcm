@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_write_checkpoint.F,v 1.4 2004/07/13 16:47:49 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ptracers/Attic/ptracers_write_checkpoint.F,v 1.5 2004/07/26 17:06:57 jmc Exp $
 C $Name:  $
 
 #include "PTRACERS_OPTIONS.h"
@@ -54,17 +54,16 @@ CEOP
       prec = precFloat64
       lgf = globalFiles
 
-C Write fields as consecutive records
+C Write fields & tendancies (needed for AB) as consecutive records,
+C  one tracer after the other, for all available tracers.
+C  note: this allow to restart from a pickup with a different number of
+C      tracers, with read_pickup reading only the tracers "InUse".
       DO iTracer=1,PTRACERS_num
-       iRec = iTracer
+       iRec = 2*iTracer - 1 
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,
      &      pTracer(1-Olx,1-Oly,1,1,1,iTracer),iRec,myIter,myThid)
-      ENDDO
-c     print *, 'hallo 1'
 
-C Write tendancies as consecutive records (needed for AB restart)
-      DO iTracer=1,PTRACERS_num
-       iRec = iTracer + PTRACERS_num
+       iRec = 2*iTracer
        CALL MDSWRITEFIELD(fn,prec,lgf,'RL',Nr,
      &      gPtrNm1(1-Olx,1-Oly,1,1,1,iTracer),iRec,myIter,myThid)
       ENDDO
