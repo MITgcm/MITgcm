@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.32 2004/04/06 00:23:08 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_forcing.F,v 1.33 2004/07/12 20:19:24 jmc Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -54,6 +54,7 @@ CEOP
           Qsw             (i,j,bi,bj) = 0. _d 0
 #ifdef ATMOSPHERIC_LOADING
           pload           (i,j,bi,bj) = 0. _d 0
+          sIceLoad        (i,j,bi,bj) = 0. _d 0
 #endif
           surfaceTendencyU(i,j,bi,bj) = 0. _d 0
           surfaceTendencyV(i,j,bi,bj) = 0. _d 0

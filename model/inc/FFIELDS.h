@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.23 2004/04/05 23:42:52 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/FFIELDS.h,v 1.24 2004/07/12 20:18:56 jmc Exp $
 C $Name:  $
 CBOP
 C     !ROUTINE: FFIELDS.h 
@@ -70,6 +70,9 @@ C     pload :: for the ocean:      atmospheric pressure at z=eta
 C                Units are           Pa=N/m^2
 C              for the atmosphere: geopotential of the orography 
 C                Units are           meters (converted)
+C  sIceLoad :: sea-ice loading, expressed in Mass of ice+snow / area unit
+C                Units are           kg/m^2
+C              Note: only used with Sea-Ice & RealFreshWater formulation
 
       COMMON /FFIELDS/
      &                 fu
@@ -83,6 +86,7 @@ C                Units are           meters (converted)
      &               , SSS
 #ifdef ATMOSPHERIC_LOADING
      &               , pload
+     &               , sIceLoad
 #endif
 
       _RS  fu       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
@@ -96,6 +100,7 @@ C                Units are           meters (converted)
       _RS  SSS      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #ifdef ATMOSPHERIC_LOADING
       _RS  pload    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RS  sIceLoad (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 #endif
 
 #ifndef ALLOW_EXF
