@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.15 2003/12/15 02:02:39 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/eeset_parms.F,v 1.16 2004/02/24 16:54:46 cnh Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -119,8 +119,10 @@ C     Make scratch copies of input data file with and without comments
  1000 CONTINUE
        READ(eeDataUnit,FMT='(A)',END=1001) RECORD
        IL = MAX(ILNBLNK(RECORD),1)
-       IF ( RECORD(1:1) .NE. commentCharacter )
-     &     WRITE(UNIT=scrUnit1,FMT='(A)') RECORD(:IL)
+        IF ( RECORD(1:1) .NE. commentCharacter ) THEN
+         CALL NML_SET_TERMINATOR( RECORD )
+         WRITE(UNIT=scrUnit1,FMT='(A)') RECORD(:IL)
+        ENDIF
         WRITE(UNIT=scrUnit2,FMT='(A)') RECORD(:IL)
        GOTO 1000
  1001 CONTINUE

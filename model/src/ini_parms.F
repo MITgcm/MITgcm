@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.106 2004/02/07 16:27:19 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_parms.F,v 1.107 2004/02/24 16:54:46 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -248,9 +248,11 @@ C--   Open the parameter file
       DO WHILE ( .TRUE. )
        READ(modelDataUnit,FMT='(A)',END=1001) RECORD
        IL = MAX(ILNBLNK(RECORD),1)
-       IF ( RECORD(1:1) .NE. commentCharacter )
-     &     WRITE(UNIT=scrUnit1,FMT='(A)') RECORD(:IL)
-        WRITE(UNIT=scrUnit2,FMT='(A)') RECORD(:IL)
+       IF ( RECORD(1:1) .NE. commentCharacter ) THEN
+        CALL NML_SET_TERMINATOR( RECORD )
+        WRITE(UNIT=scrUnit1,FMT='(A)') RECORD(:IL)
+       ENDIF
+       WRITE(UNIT=scrUnit2,FMT='(A)') RECORD(:IL)
       ENDDO
  1001 CONTINUE
       CLOSE(modelDataUnit)

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/nml_filter.F,v 1.4 2003/10/09 04:19:18 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/Attic/nml_filter.F,v 1.5 2004/02/24 16:54:46 cnh Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -105,6 +105,7 @@ c--   open the filtered data file
             write(outunit, fmt='(a)') ' &'
 #endif
          else
+            CALL NML_SET_TERMINATOR( RECORD )
             write(outunit, fmt='(a)') record(:il)
          end if
       enddo
