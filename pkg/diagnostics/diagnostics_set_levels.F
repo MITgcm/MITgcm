@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.3 2004/12/16 21:46:36 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/diagnostics/diagnostics_set_levels.F,v 1.4 2005/01/03 19:50:14 jmc Exp $
 C $Name:  $
 
 #include "DIAG_OPTIONS.h"
@@ -99,8 +99,8 @@ C     write a summary of the (long) list of all available diagnostics:
         ENDDO
 
         CALL MDSFINDUNIT( dUnit, mythid )
-        OPEN(dUnit, file='available_diagnostics', status='unknown',
-     &        form='formatted')
+        OPEN(dUnit, file='available_diagnostics.log',
+     &              status='unknown', form='formatted')
         WRITE(dUnit,'(A,I4)')
      &   ' Total Nb of available Diagnostics: ndiagt=', ndiagt
         WRITE(dUnit,'(A)') ccLine
