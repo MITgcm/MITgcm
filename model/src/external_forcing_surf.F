@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.8 2002/09/25 20:04:27 mlosch Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_forcing_surf.F,v 1.9 2002/10/02 17:59:57 mlosch Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -112,7 +112,8 @@ c- converts EmPmR to virtual salt flux using uniform salinity (default=35)
      &      + EmPmR(i,j,bi,bj)*convertFW2Salt
      &           *recip_drF(kSurface)*recip_hFacC(i,j,kSurface,bi,bj) 
      &         *convertVol2Mass
-     &      -lambdaSaltClimRelax*(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
+     &      -lambdaSaltClimRelax
+     &         *(salt(i,j,kSurface,bi,bj)-SSS(i,j,bi,bj))
          ENDDO
         ENDDO
        ENDIF
