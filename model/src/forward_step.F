@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.28 2002/01/11 19:00:43 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.29 2002/01/30 04:12:12 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -93,10 +93,10 @@ C--   Update etaH(n+1) :
         DO bj=myByLo(myThid),myByHi(myThid)
          DO bi=myBxLo(myThid),myBxHi(myThid)
            CALL CALC_EXACT_ETA( .FALSE., bi,bj, uVel,vVel,
-     I                          startTime, nIter0, myThid )
+     I                          myTime, myIter, myThid )
          ENDDO
         ENDDO
-        IF (implicDiv2Dflow .NE. 1. _d 0 )
+        IF (implicDiv2Dflow .NE. 1. _d 0 .OR. useOBCS )
      &     _EXCH_XY_R8(etaH, myThid )
       ENDIF
 #endif /* EXACT_CONSERV */ 

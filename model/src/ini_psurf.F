@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.4 2001/09/26 18:09:15 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/ini_psurf.F,v 1.5 2002/01/30 04:12:12 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -74,6 +74,19 @@ C--   By default, initialize etaNm1 with etaN :
       ENDDO
 
 C     _EXCH_XY_R8(etaNm1, myThid)
+#endif
+
+#ifdef NONLIN_FRSURF
+C--   By default, initialize etaH with etaN : 
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO J=1-Oly,sNy+Oly
+         DO I=1-Olx,sNx+Olx
+          etaH(I,J,bi,bj) = etaN(I,J,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
 #endif
 
       RETURN

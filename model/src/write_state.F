@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.15 2001/09/26 18:09:16 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/write_state.F,v 1.16 2002/01/30 04:12:12 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
@@ -55,6 +55,7 @@ C     == Global variables ===
 #include "EEPARAMS.h"
 #include "PARAMS.h"
 #include "DYNVARS.h"
+#include "GRID.h" 
 #ifdef ALLOW_PASSIVE_TRACER
 #include "TR1.h"
 #endif
@@ -91,7 +92,9 @@ C--   Going to really do some IO. Make everyone except master thread wait.
          _BEGIN_MASTER( myThid )
 
 C--     Write model fields
+
 #ifdef MULTIPLE_RECORD_STATE_FILES
+
 C       Write each snap-shot as a new record in one file per variable
 C       - creates relatively few files but these files can become huge
         CALL WRITE_REC_XYZ_RL( 'U',  uVel,iRec,myIter,myThid)
@@ -108,7 +111,14 @@ C       - creates relatively few files but these files can become huge
          CALL WRITE_REC_XYZ_RL( 'PNH',phi_nh,iRec,myIter,myThid)
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
-#else
+#ifdef NONLIN_FRSURF
+        CALL WRITE_REC_XYZ_RS('hFacC.',hFacC,iRec,myIter,myThid)
+        CALL WRITE_FLD_XYZ_RS('hFacW.',hFacW,iRec,myIter,myThid)
+        CALL WRITE_FLD_XYZ_RS('hFacS.',hFacS,iRec,myIter,myThid)
+#endif /* NONLIN_FRSURF */
+
+#else /* MULTIPLE_RECORD_STATE_FILES */
+
 C       Write each snap-shot as a new file (original and default method)
 C       - creates many files but for large configurations is easier to
 C         transfer analyse a particular snap-shots
@@ -127,6 +137,12 @@ C         transfer analyse a particular snap-shots
          CALL WRITE_FLD_XYZ_RL( 'PNH.',suff,phi_nh,myIter,myThid)
         ENDIF
 #endif /* ALLOW_NONHYDROSTATIC */
+#ifdef NONLIN_FRSURF
+        CALL WRITE_FLD_XYZ_RS('hFacC.',suff,hFacC,myIter,myThid)
+        CALL WRITE_FLD_XYZ_RS('hFacW.',suff,hFacW,myIter,myThid)
+        CALL WRITE_FLD_XYZ_RS('hFacS.',suff,hFacS,myIter,myThid)
+#endif /* NONLIN_FRSURF */
+
 #endif /* MULTIPLE_RECORD_STATE_FILES */
 
          _END_MASTER( myThid )
