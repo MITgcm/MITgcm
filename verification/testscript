@@ -143,6 +143,7 @@ makeclean()
 # makedependmodel directory
  ( cd $1;
    if [ $clean -gt 0 ]; then
+    rm -f output.txt
     printf 'make clean ... ' 2>&1
     make CLEAN >> make.log 2>&1
     if [ $? -ne 0 ]; then
@@ -203,6 +204,7 @@ runmodel()
    if [ -x $2 ]; then
     if [ ! -r output.txt -o $quick -eq 0 ]; then
      echo runmodel: running... 1>&2
+     rm -f output.txt
      ( ./$2 > output.txt 2>&1 ) && return 0
      return 1
     else
@@ -334,6 +336,12 @@ do
    *) test -d $arg && expts=`echo $expts $arg`;;
  esac
 done
+
+if [ $clean -gt 0 -a $quick -gt 0 ]; then
+ echo You specified -quick and -clean together which conflict.
+ echo Please specify either -quick or -clean or neither but not both.
+ exit 1
+fi
 
 #if [ ${#expts} -eq 0 ]; then
 # echo Scanning all directories
