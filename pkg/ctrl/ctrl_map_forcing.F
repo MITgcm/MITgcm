@@ -150,7 +150,7 @@ c--   hflux0.
       enddo
 #endif
 
-#ifdef ALLOW_SSS0_CONTROL
+#ifdef ALLOW_SSS_CONTROL
 c--   sss0.
       il=ilnblnk( xx_sss_file )
       write(fnamesss(1:80),'(2a,i10.10)')
@@ -169,7 +169,7 @@ c--   sss0.
       enddo
 #endif
 
-#ifdef ALLOW_SST0_CONTROL
+#ifdef ALLOW_SST_CONTROL
 c--   sst0.
       il=ilnblnk( xx_sst_file )
       write(fnamesst(1:80),'(2a,i10.10)')

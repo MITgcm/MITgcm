@@ -1,5 +1,4 @@
-C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.3 2004/11/11 06:28:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init_ctrlvar.F,v 1.4 2004/11/16 05:42:12 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -38,10 +37,7 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "ctrl.h"
-
-#ifdef ALLOW_ECCO_OPTIMIZATION
-# include "optim.h"
-#endif
+#include "optim.h"
 
 c     == routine arguments ==
       character*(MAX_LEN_FNAM) xx_fname
@@ -58,15 +54,8 @@ c     == routine arguments ==
       integer mythid
 
 c     == local variables ==
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      integer optimcycle
-#endif
       character*( 80) fname(2)
       logical  exst
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      optimcycle = 0
-#endif
 
       _BEGIN_MASTER( mythid )
 
@@ -85,19 +74,23 @@ c     == local variables ==
       IF ( .NOT. exst) THEN
 
          if ( whichxyz .EQ. '3d') then
-            call ctrl_set_globfld_xyz( fname(2), ivarindex, mythid)
+            if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
+     &           call ctrl_set_globfld_xyz( fname(2), ivarindex, mythid)
             if ( doInitXX .AND. optimcycle.eq.0 )
      &           call ctrl_set_globfld_xyz( fname(1), ivarindex, mythid)
          else if ( whichxyz .EQ. 'xy') then
-            call ctrl_set_globfld_xy( fname(2), ivarindex, mythid)
+            if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
+     &           call ctrl_set_globfld_xy( fname(2), ivarindex, mythid)
             if ( doInitXX .AND. optimcycle.eq.0 )
      &           call ctrl_set_globfld_xy( fname(1), ivarindex, mythid )
          else if ( whichxyz .EQ. 'xz') then
-            call ctrl_set_globfld_xz( fname(2), ivarindex, mythid)
+            if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
+     &           call ctrl_set_globfld_xz( fname(2), ivarindex, mythid)
             if ( doInitXX .AND. optimcycle.eq.0 )
      &           call ctrl_set_globfld_xz( fname(1), ivarindex, mythid )
          else if ( whichxyz .EQ. 'yz') then
-            call ctrl_set_globfld_yz( fname(2), ivarindex, mythid)
+            if ( .NOT.doAdmTlm .OR. (doAdmTlm.AND.yadprefix.EQ.'ad') )
+     &           call ctrl_set_globfld_yz( fname(2), ivarindex, mythid)
             if ( doInitXX .AND. optimcycle.eq.0 )
      &           call ctrl_set_globfld_yz( fname(1), ivarindex, mythid )
          else

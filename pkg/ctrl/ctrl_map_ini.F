@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.13 2004/09/17 23:02:01 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_map_ini.F,v 1.14 2004/11/16 05:42:12 heimbach Exp $
 
 #include "CTRL_CPPOPTIONS.h"
 
@@ -63,6 +63,8 @@ c     == local variables ==
       character*( 80)   fnameefluxy
       character*( 80)   fnameefluxp
       character*( 80)   fnamebottomdrag
+      character*( 80)   fnamesss
+      character*( 80)   fnamesst
 
       _RL     fac
       _RL tmptest
@@ -179,6 +181,48 @@ c--   Temperature field.
        enddo
       enddo
 #endif
+#endif
+
+#ifdef ALLOW_SST0_CONTROL
+c--   sst0.
+      il=ilnblnk( xx_sst_file )
+      write(fnamesst(1:80),'(2a,i10.10)')
+     &     xx_sst_file(1:il),'.',optimcycle
+      call active_read_xy_loc ( fnamesst, tmpfld2d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_sst_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+cph              sst(i,j,bi,bj) = sst(i,j,bi,bj) + tmpfld2d(i,j,bi,bj)
+              theta(i,j,1,bi,bj) = theta(i,j,1,bi,bj) 
+     &                             + tmpfld2d(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
+#endif
+
+#ifdef ALLOW_SSS0_CONTROL
+c--   sss0.
+      il=ilnblnk( xx_sss_file )
+      write(fnamesss(1:80),'(2a,i10.10)')
+     &     xx_sss_file(1:il),'.',optimcycle
+      call active_read_xy_loc ( fnamesss, tmpfld2d, 1,
+     &                      doglobalread, ladinit, optimcycle,
+     &                      mythid, xx_sss_dummy )
+      do bj = jtlo,jthi
+        do bi = itlo,ithi
+          do j = jmin,jmax
+            do i = imin,imax
+cph              sss(i,j,bi,bj) = sss(i,j,bi,bj) + tmpfld2d(i,j,bi,bj)
+              salt(i,j,1,bi,bj) = salt(i,j,1,bi,bj)
+     &                             + tmpfld2d(i,j,bi,bj)
+            enddo
+          enddo
+        enddo
+      enddo
 #endif
 
 #ifdef ALLOW_DIFFKR_CONTROL
@@ -304,10 +348,10 @@ c--   bottom drag
 
 c--   Update the tile edges.
 
-#ifdef ALLOW_THETA0_CONTROL
+#if (defined (ALLOW_THETA0_CONTROL) || defined (ALLOW_SST0_CONTROL))
       _EXCH_XYZ_R8( theta, mythid )
 #endif
-#ifdef ALLOW_SALT0_CONTROL
+#if (defined (ALLOW_SALT0_CONTROL) || defined (ALLOW_SSS0_CONTROL))
       _EXCH_XYZ_R8(  salt, mythid )
 #endif
 #ifdef ALLOW_TR10_CONTROL

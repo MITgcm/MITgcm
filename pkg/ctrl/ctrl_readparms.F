@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.7 2004/11/11 06:28:33 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_readparms.F,v 1.8 2004/11/16 05:42:12 heimbach Exp $
 C $Name:  $
 
 #include "AD_CONFIG.h"
@@ -117,6 +117,13 @@ c--   Read the namelist input.
       _BEGIN_MASTER( myThid )
 
 c--     Set default values.
+        doInitXX            = .TRUE.
+#ifdef ALLOW_ADMTLM
+        doAdmTlm            = .TRUE.
+#else
+        doAdmTlm            = .FALSE.
+#endif
+
         xx_theta_file      = ' '
         xx_salt_file       = ' '
         xx_hfluxstartdate1 =   0
@@ -176,8 +183,6 @@ c--     Set default values.
         xx_efluxy_file      = ' '
         xx_efluxp_file      = ' '
         xx_bottomdrag_file  = ' '
-
-        doInitXX            = .TRUE.
 
 #ifdef ALLOW_TANGENTLINEAR_RUN
         yadprefix           = 'g_'

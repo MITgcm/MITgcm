@@ -362,6 +362,9 @@ c     %------------------------------------------------%
 c     | M A I N   L O O P (Reverse communication loop) |
 c     %------------------------------------------------%
 c
+C--   Set model configuration (fixed arrays)
+      CALL INITIALISE_FIXED( myThid )
+
       iphcount = 0
 c
  10   continue
@@ -381,7 +384,7 @@ cph(
 cph         if ( iphcount .GT. 3 ) then
 cph         endif
 cph)
-         call dsaupd ( ido, bmat, n, which, nev, tol, resid, 
+         CALL DSAUPD ( ido, bmat, n, which, nev, tol, resid, 
      &                 ncv, v, ldv, iparam, ipntr, workd, workl,
      &                 lworkl, info )
 c
@@ -418,7 +421,8 @@ cph)
             enddo
             ldoadjoint = .TRUE.
 c--          MWMWMWMWMWMWMW
-            call the_model_main( mythid )
+            CALL ADMTLM_DRIVER( mythid )
+cph            call the_model_main( mythid )
 cph            call box_main( phtmpin, phtmpout, metricLoc, ldoadjoint )
 c--          MWMWMWMWMWMWMW
 

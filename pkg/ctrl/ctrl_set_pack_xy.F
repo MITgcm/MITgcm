@@ -29,26 +29,19 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ctrl.h"
-
-#ifdef ALLOW_ECCO_OPTIMIZATION
 #include "optim.h"
-#endif
 
 c     == routine arguments ==
 
       integer cunit
       integer ivartype
-      character*( 80) fname
+      character*( 80) fname, fnameGlobal
       character*(  5) masktype
       character*( 80) weighttype
       logical lxxadxx
       integer mythid
 
 c     == local variables ==
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      integer optimcycle
-#endif
 
       integer bi,bj
       integer ip,jp
@@ -77,10 +70,6 @@ c     == external ==
 
 c     == end of interface ==
 
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      optimcycle = 0
-#endif
-
       jtlo = 1
       jthi = nsy
       itlo = 1
@@ -89,6 +78,8 @@ c     == end of interface ==
       jmax = sny
       imin = 1
       imax = snx
+
+      nbuffglobal = nbuffglobal + 1
 
 c     Initialise temporary file
       do k = 1,nr
@@ -204,6 +195,9 @@ c     -- end of irec loop --
 #else
                      cbuff(cbuffindex) = globfld3d(i,bi,ip,j,bj,jp,k)
 #endif
+#ifdef ALLOW_ADMTLM
+                     cbuffGlobal(cbuffindex) = cbuff(cbuffindex)
+#endif
                   endif
                  enddo
                 enddo
@@ -217,6 +211,13 @@ c           --> check cbuffindex.
                write(cunit) k
                write(cunit) (cbuff(ii), ii=1,cbuffindex)
             endif
+#ifdef ALLOW_ADMTLM
+            write(fnameGlobal(1:80),'(a)') ' '
+            write(fnameGlobal,'(a,i4.4)') 
+     &           'admtlm_vector.it', optimcycle
+            call mdswritevector( fnameGlobal, 64, .false., 'RL',
+     &           cbuffindex, cbuffGlobal, 1, 1, nbuffGlobal, 0, mythid )
+#endif
          enddo
 c
 c     -- end of irec loop --

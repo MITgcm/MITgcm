@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_xyz.F,v 1.7 2003/11/06 22:05:08 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_set_globfld_xyz.F,v 1.8 2004/11/16 05:42:12 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -27,10 +27,7 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ctrl.h"
-
-#ifdef ALLOW_ECCO_OPTIMIZATION
 #include "optim.h"
-#endif
 
 c     == routine arguments ==
 
@@ -39,10 +36,6 @@ c     == routine arguments ==
       integer mythid
 
 c     == local variables ==
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      integer optimcycle
-#endif
 
       integer bi,bj
       integer ip,jp
@@ -84,10 +77,6 @@ c     Initialise temporary file
             enddo
          enddo
       enddo
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      optimcycle = 0
-#endif
 
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )

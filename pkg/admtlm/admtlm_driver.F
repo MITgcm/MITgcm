@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.1 2004/10/26 20:11:47 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/admtlm/admtlm_driver.F,v 1.2 2004/11/16 05:42:11 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -26,9 +26,10 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 
-#ifdef ALLOW_AUTODIFF_TAMC
-#include "tamc.h"
-#include "ctrl.h"
+#ifdef ALLOW_ADMTLM
+# include "tamc.h"
+# include "ctrl.h"
+# include "optim.h"
 #endif
 
 C     !INPUT/OUTPUT PARAMETERS:
@@ -38,22 +39,22 @@ C     == Routine arguments ==
 C     == Local ==
       INTEGER myCurrentIter
       _RL     myCurrentTime
-
+C
 CEOP
 
 #ifndef DISABLE_DEBUGMODE
       IF (debugMode) CALL DEBUG_ENTER('ADMTLM_DRIVER',myThid)
 #endif
 
-#if ( defined (ALLOW_ADMTLM_RUN) )
+#if ( defined (ALLOW_ADMTLM) )
 
       myCurrentTime = startTime
       myCurrentIter = nIter0
       yadprefix = 'g_'
 
       _BEGIN_MASTER( mythid )
-      IF (myProcId .eq. 0) THEN
-         CALL CTRL_UNPACK( mycurrentiter, mycurrenttime, mythid )
+      IF ( myProcId .eq. 0 .AND. optimcycle .GT. 0 ) THEN
+         CALL CTRL_UNPACK( .false., mythid )
       ENDIF
       _END_MASTER( mythid )
 c
@@ -61,11 +62,11 @@ c
       CALL G_THE_MAIN_LOOP ( myCurrentTime, myCurrentIter, myThid )
       CALL TIMER_STOP ('G_THE_MAIN_LOOP           [TANGENT RUN]',mythid)
 c
-      _BEGIN_MASTER( mythid )
-      IF ( myProcId .eq. 0) THEN
-         call CTRL_PACK( mycurrentiter, mycurrenttime, mythid )
-      ENDIF
-      _END_MASTER( mythid )
+c      _BEGIN_MASTER( mythid )
+c      IF ( myProcId .eq. 0) THEN
+c         call CTRL_PACK( mycurrentiter, mycurrenttime, mythid )
+c      ENDIF
+c      _END_MASTER( mythid )
 c
       CALL ADMTLM_METRIC ( mythid )
       CALL ADMTLM_MAP ( mythid )
@@ -74,31 +75,23 @@ c
       myCurrentIter = nIter0
       yadprefix = 'ad'
 c
-      _BEGIN_MASTER( mythid )
-      IF (myProcId .eq. 0) THEN
-         CALL CTRL_UNPACK( mycurrentiter, mycurrenttime, mythid )
-      ENDIF
-      _END_MASTER( mythid )
+c      _BEGIN_MASTER( mythid )
+c      IF (myProcId .eq. 0) THEN
+c         CALL CTRL_UNPACK( mycurrentiter, mycurrenttime, mythid )
+c      ENDIF
+c      _END_MASTER( mythid )
+c
+      CALL CTRL_INIT( mythid )
 c
       CALL TIMER_START('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
-      CALL ADTHE_MAIN_LOOP ( mythid )
+      CALL ADTHE_MAIN_LOOP (  myCurrentTime, myCurrentIter, mythid )
       CALL TIMER_STOP ('ADTHE_MAIN_LOOP          [ADJOINT RUN]', mythid)
 c
       _BEGIN_MASTER( mythid )
-      IF ( myProcId .eq. 0) THEN
-         call CTRL_PACK( mycurrentiter, mycurrenttime, mythid )
+      IF ( myProcId .eq. 0 ) THEN
+         call CTRL_PACK( .FALSE., mythid )
       ENDIF
       _END_MASTER( mythid )
-c
-# ifdef ALLOW_GRADIENT_CHECK
-      IF ( useGrdchk ) THEN
-         yadprefix = 'g_'
-         CALL TIMER_START('GRDCHK_MAIN         [THE_MODEL_MAIN]',mythid)
-         CALL GRDCHK_MAIN( mythid )
-         CALL TIMER_STOP ('GRDCHK_MAIN         [THE_MODEL_MAIN]',mythid)
-         _BARRIER
-      ENDIF
-# endif
 c
 #endif
 

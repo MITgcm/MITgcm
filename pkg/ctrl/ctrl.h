@@ -31,9 +31,17 @@ cph Need to put this in namelist at some point!
       integer     ctrlprec
       parameter ( ctrlprec = 64 )
 
+#ifdef ALLOW_ADMTLM
+      common / controlvars_admtlm_r /
+     &                       cbuffGlobal
+      _RL cbuffGlobal( 2315 )
+#endif
+    
       common /controlvars_l /
-     &                       doInitXX
+     &                       doInitXX,
+     &                       doAdmTlm
       logical doInitXX
+      logical doAdmTlm
 
       common /controlvars_i/
      &                       nvartype,
@@ -52,7 +60,8 @@ cph Need to put this in namelist at some point!
      &                       nwetcglobal,
      &                       nwetsglobal,
      &                       nwetwglobal,
-     &                       nwetvglobal
+     &                       nwetvglobal,
+     &                       nbuffglobal
       integer nvartype
       integer nvarlength
       integer ncvarindex    ( maxcvars )
@@ -70,6 +79,7 @@ cph Need to put this in namelist at some point!
       integer nwetsglobal     ( nr )
       integer nwetwglobal     ( nr )
       integer nwetvglobal     ( nr )
+      integer nbuffglobal
 
 #ifdef ALLOW_OBCSN_CONTROL
       common /controlvars_i_obcsn/

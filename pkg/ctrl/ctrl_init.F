@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.11 2003/10/30 19:09:05 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_init.F,v 1.12 2004/11/16 05:42:12 heimbach Exp $
 C $Name:  $
 
 #include "CTRL_CPPOPTIONS.h"
@@ -67,15 +67,13 @@ c     == global variables ==
 #include "PARAMS.h"
 #include "GRID.h"
 #include "ctrl.h"
+#include "optim.h"
 
 #ifdef ALLOW_CAL
 # include "cal.h"
 #endif
 #ifdef ALLOW_OBCS_CONTROL
 # include "OBCS.h"
-#endif
-#ifdef ALLOW_ECCO_OPTIMIZATION
-# include "optim.h"
 #endif
 
 c     == routine arguments ==
@@ -84,9 +82,6 @@ c     == routine arguments ==
 
 c     == local variables ==
 
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      integer optimcycle
-#endif
       integer ntmp
       integer ivar
 
@@ -109,10 +104,6 @@ c     == external ==
       external ilnblnk
 
 c     == end of interface ==
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      optimcycle = 0
-#endif
 
 c--     Set default values.
       do ivar = 1,maxcvars

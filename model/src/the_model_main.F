@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.81 2004/10/10 06:08:47 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.82 2004/11/16 05:42:11 heimbach Exp $
 C $Name:  $
 
 CBOI
@@ -488,14 +488,8 @@ C     myCurrentIter - Iteration counter for this thread
       _RL     myCurrentTime
       logical  exst
       logical  lastdiva
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      integer optimcycle
-#endif
 CEOP
 c--   set default:
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      optimcycle = 0
-#endif
       lastdiva = .TRUE.
 
 #ifdef ALLOW_DEBUG
@@ -519,9 +513,7 @@ C--   Set model configuration (fixed arrays)
 
 #if ( defined (ALLOW_ADMTLM) )
 c
-      CALL TIMER_START('ADMTLM_DRIVER          [THE_MODEL_MAIN]',mythid)
-      CALL ADMTLM_DRIVER ( myThid )
-      CALL TIMER_STOP ('ADMTLM_DRIVER          [THE_MODEL_MAIN]',mythid)
+      STOP 'should never get here; ADMTLM_DSVD calls ADMTLM_DRIVER'
 c
 #elif ( defined (ALLOW_AUTODIFF))
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.105 2004/11/11 02:24:20 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/forward_step.F,v 1.106 2004/11/16 05:42:11 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -126,20 +126,6 @@ C--   Reset the model iteration counter and the model time.
       mytime = startTime + float(iloop-1)*deltaTclock
 #endif
 
-#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_AUTODIFF_MONITOR))
-C     Include call to a dummy routine. Its adjoint will be 
-C     called at the proper place in the adjoint code.
-C     The adjoint routine will print out adjoint values 
-C     if requested. The location of the call is important, 
-C     it has to be after the adjoint of the exchanges 
-C     (DO_GTERM_BLOCKING_EXCHANGES).
-      CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
-cph   I've commented this line since it may conflict with MITgcm's adjoint
-cph   However, need to check whether that's still consistent
-cph   with the ecco-branch (it should).
-cph      CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
-#endif
-
 #ifdef ALLOW_AUTODIFF_TAMC
 c**************************************
 #include "checkpoint_lev1_directives.h"
@@ -198,6 +184,20 @@ C--   end of if/else block useBulfforce --
 c--   Add control vector for forcing and parameter fields
       if ( myiter .EQ. nIter0 )
      &     CALL CTRL_MAP_FORCING (mythid)
+#endif
+
+#if (defined (ALLOW_AUTODIFF_TAMC) && defined (ALLOW_AUTODIFF_MONITOR))
+C     Include call to a dummy routine. Its adjoint will be 
+C     called at the proper place in the adjoint code.
+C     The adjoint routine will print out adjoint values 
+C     if requested. The location of the call is important, 
+C     it has to be after the adjoint of the exchanges 
+C     (DO_GTERM_BLOCKING_EXCHANGES).
+      CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
+cph   I've commented this line since it may conflict with MITgcm's adjoint
+cph   However, need to check whether that's still consistent
+cph   with the ecco-branch (it should).
+cph      CALL DO_FIELDS_BLOCKING_EXCHANGES( myThid )
 #endif
 
 # ifdef ALLOW_SEAICE

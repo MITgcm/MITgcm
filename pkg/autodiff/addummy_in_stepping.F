@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.18 2004/10/13 04:37:37 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/addummy_in_stepping.F,v 1.19 2004/11/16 05:42:11 heimbach Exp $
 
 #include "AUTODIFF_OPTIONS.h"
 
@@ -95,10 +95,10 @@ CEOP
 #ifdef ALLOW_KAPGM_CONTROL
        call adexch_xyz_rl( mythid,adkapgm )
 #endif
-#ifdef ALLOW_SSTO_CONTROL
+#ifdef ALLOW_SST0_CONTROL
        call adexch_xy_rl( mythid,adsst )
 #endif
-#ifdef ALLOW_SSSO_CONTROL
+#ifdef ALLOW_SSS0_CONTROL
        call adexch_xy_rl( mythid,adsss )
 #endif
 
@@ -145,10 +145,10 @@ c
         CALL WRITE_FLD_XYZ_RL(
      &       'ADJedtauy. ',suff, adeddytauy, myIter, myThid)
 #endif
-#ifdef ALLOW_SSTO_CONTROL
+#ifdef ALLOW_SST0_CONTROL
         CALL WRITE_FLD_XY_RL( 'ADJsst.',suff, adsst, myIter, myThid)
 #endif
-#ifdef ALLOW_SSSO_CONTROL
+#ifdef ALLOW_SSS0_CONTROL
         CALL WRITE_FLD_XY_RL( 'ADJsss.',suff, adsss, myIter, myThid)
 #endif
 c
@@ -156,8 +156,11 @@ c
        _END_MASTER( myThid )
        _BARRIER
 
+        print *, 'ph-mnc in addummy param ', useMNC, autodiff_mnc
 #ifdef ALLOW_MNC
         IF (useMNC .AND. autodiff_mnc) THEN
+c
+          print *, 'ph-mnc in addummy myiter ', myiter
 c
           CALL MNC_CW_SET_UDIM('adstate', -1, myThid)
           CALL MNC_CW_I_W_S('I','adstate',0,0,'iter',myIter,myThid)
@@ -171,6 +174,9 @@ c
           CALL MNC_CW_RL_W('D','adstate',0,0,'adS', adsalt, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,'adEta', adetaN, myThid)
           CALL MNC_CW_RL_W('D','adstate',0,0,'adW', adwVel, myThid)
+
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adSST', adsst, myThid)
+          CALL MNC_CW_RL_W('D','adstate',0,0,'adSSS', adsss, myThid)
 c
         ENDIF
 #endif /* ALLOW_MNC */

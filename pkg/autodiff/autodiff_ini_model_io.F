@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.2 2004/10/10 06:08:48 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/autodiff/autodiff_ini_model_io.F,v 1.3 2004/11/16 05:42:11 heimbach Exp $
 C $Name:  $
 
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
@@ -90,6 +90,21 @@ c      CALL MNC_CW_ADD_VATTR_TEXT('model_time','units','s', myThid)
       CALL MNC_CW_ADD_VATTR_TEXT('adW',
      &     'coordinates','XC YC RC iter', myThid)
 
+      CALL MNC_CW_ADD_VNAME('adSST', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adSST',
+     &     'units','[cost]/[degC]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adSST','long_name',
+     &     'adj. sea_surface_temperature', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adSST',
+     &     'coordinates','XC YC RC iter', myThid)
+
+      CALL MNC_CW_ADD_VNAME('adSSS', 'Cen_xy_Hn__-__t', 3,4, myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adSSS',
+     &     'units','[cost]/[degC]', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adSSS','long_name',
+     &     'adj. sea_surface_temperature', myThid)
+      CALL MNC_CW_ADD_VATTR_TEXT('adSSS',
+     &     'coordinates','XC YC RC iter', myThid)
 
 C     Write coordinates to "adstate" file
       CALL MNC_CW_SET_UDIM('adstate', 0, myThid)

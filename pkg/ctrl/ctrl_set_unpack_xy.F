@@ -29,26 +29,19 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ctrl.h"
-
-#ifdef ALLOW_ECCO_OPTIMIZATION
 #include "optim.h"
-#endif
 
 c     == routine arguments ==
 
       integer cunit
       integer ivartype
-      character*( 80)   fname
+      character*( 80)   fname, fnameGlobal
       character*(  5)   masktype
       character*( 80) weighttype
       integer nwetglobal(nr)
       integer mythid
 
 c     == local variables ==
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      integer optimcycle
-#endif
 
       integer bi,bj
       integer ip,jp
@@ -87,6 +80,8 @@ c     == end of interface ==
       imin = 1
       imax = snx
 
+      nbuffGlobal = nbuffGlobal + 1
+
 c     Initialise temporary file
       do k = 1,nr
          do jp = 1,nPy
@@ -104,10 +99,6 @@ c     Initialise temporary file
             enddo
          enddo
       enddo
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      optimcycle = 0
-#endif
 
 c--   Only the master thread will do I/O.
       _BEGIN_MASTER( mythid )
@@ -218,6 +209,13 @@ c
                endif
                read(cunit) (cbuff(ii), ii=1,cbuffindex)
             endif
+#ifdef ALLOW_ADMTLM
+            write(fnameGlobal(1:80),'(a)') ' '
+            write(fnameGlobal,'(a,i4.4)') 
+     &           'admtlm_vector.it', optimcycle
+            call mdsreadvector( fnameGlobal, 64, 'RL',
+     &           cbuffindex, cbuffGlobal, 1, 1, nbuffGlobal, mythid )
+#endif
             cbuffindex = 0
             do jp = 1,nPy
              do bj = jtlo,jthi

@@ -29,10 +29,7 @@ c     == global variables ==
 #include "GRID.h"
 
 #include "ctrl.h"
-
-#ifdef ALLOW_ECCO_OPTIMIZATION
 #include "optim.h"
-#endif
 
 c     == routine arguments ==
 
@@ -46,10 +43,6 @@ c     == routine arguments ==
       integer mythid
 
 c     == local variables ==
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      integer optimcycle
-#endif
 
       integer bi,bj
       integer ip,jp
@@ -79,10 +72,6 @@ c     == external ==
       external ilnblnk
 
 c     == end of interface ==
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      optimcycle = 0
-#endif
 
       jtlo = 1
       jthi = nsy

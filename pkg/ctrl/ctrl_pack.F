@@ -1,5 +1,5 @@
 C
-C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.13 2004/05/28 16:04:42 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ctrl/ctrl_pack.F,v 1.14 2004/11/16 05:42:12 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -44,15 +44,12 @@ c     == global variables ==
 
 #include "ctrl.h"
 #include "cost.h"
+#include "optim.h"
 
 #ifdef ALLOW_ECCO
 # include "ecco_cost.h"
 #else
 # include "ctrl_weights.h"
-#endif
-
-#ifdef ALLOW_ECCO_OPTIMIZATION
-# include "optim.h"
 #endif
 
 c     == routine arguments ==
@@ -62,11 +59,6 @@ c     == routine arguments ==
 
 #ifndef EXCLUDE_CTRL_PACK
 c     == local variables ==
-
-#ifndef ALLOW_ECCO_OPTIMIZATION
-      integer optimcycle
-      _RL    fmin
-#endif
 
       _RL    fcloc
 
@@ -97,7 +89,6 @@ c     == external ==
 c     == end of interface ==
 
 #ifndef ALLOW_ECCO_OPTIMIZATION
-      optimcycle = 0
       fmin       = 0. _d 0
 #endif
 
@@ -106,6 +97,9 @@ c--   Tiled files are used.
 
 c--   Initialise adjoint variables on active files.
       ladinit = .false.
+
+c--   Initialise global buffer index
+      nbuffglobal = 0
 
 c--   Assign file names.
 
