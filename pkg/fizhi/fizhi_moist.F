@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.15 2004/07/28 01:25:07 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_moist.F,v 1.16 2004/08/10 15:13:47 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -140,7 +140,7 @@ c ---------------
       DATA      FIRST /.TRUE./
 
       integer imstp,nsubcl,nlras
-      integer i,j,iloop,index,l,nn,num,numdeps,nt
+      integer i,j,iloop,indx,indgath,l,nn,num,numdeps,nt
       _RL tmstp,tminv,sday,grav,alhl,cp,elocp,gamfac
       _RL rkappa,p0kappa,p0kinv,ptopkap,pcheck
       _RL tice,getcon,pi
@@ -230,40 +230,40 @@ c --------------------------------------------------------------------
 
 c Set up the array of indeces of subcloud levels for the gathering
 c ----------------------------------------------------------------
-      index = 0
+      indx = 0
       do L = nsubmin,nltop,-1
        do j = 1,jm
        do i = 1,im
         if(levpbl(i,j).eq.L) then
-         index = index + 1
-         pblindex(index) = (j-1)*im + i
+         indx = indx + 1
+         pblindex(indx) = (j-1)*im + i
         endif
        enddo
        enddo
       enddo
 
-      do index = 1,im*jm
-       levgather(index) = levpbl(pblindex(index),1)
-        pigather(index) =     pz(pblindex(index),1)
-        pkegather(index,lm+1) = pkht(pblindex(index),1,lm+1)
-        plegather(index,lm+1) = plze(pblindex(index),1,lm+1)
+      do indx = 1,im*jm
+       levgather(indx) = levpbl(pblindex(indx),1)
+        pigather(indx) =     pz(pblindex(indx),1)
+        pkegather(indx,lm+1) = pkht(pblindex(indx),1,lm+1)
+        plegather(indx,lm+1) = plze(pblindex(indx),1,lm+1)
       enddo
 
       do L = 1,lm
-       do index = 1,im*jm
-         thgather(index,L) = tz(pblindex(index),1,L)
-         shgather(index,L) = qz(pblindex(index),1,L,1)
-        pkegather(index,L) = pkht(pblindex(index),1,L)
-        pkzgather(index,L) = pkl(pblindex(index),1,L)
-        plegather(index,L) = plze(pblindex(index),1,L)
-        plzgather(index,L) = plz(pblindex(index),1,L)
-         dpgather(index,L) = dpres(pblindex(index),1,L)
+       do indx = 1,im*jm
+         thgather(indx,L) = tz(pblindex(indx),1,L)
+         shgather(indx,L) = qz(pblindex(indx),1,L,1)
+        pkegather(indx,L) = pkht(pblindex(indx),1,L)
+        pkzgather(indx,L) = pkl(pblindex(indx),1,L)
+        plegather(indx,L) = plze(pblindex(indx),1,L)
+        plzgather(indx,L) = plz(pblindex(indx),1,L)
+         dpgather(indx,L) = dpres(pblindex(indx),1,L)
        enddo
       enddo
       do nt = 1,ntracer-ptracer
       do L = 1,lm
-       do index = 1,im*jm
-        ugather(index,L,nt) = qz(pblindex(index),1,L,nt+ptracer)
+       do indx = 1,im*jm
+        ugather(indx,L,nt) = qz(pblindex(indx),1,L,nt+ptracer)
        enddo
       enddo
       enddo
@@ -776,6 +776,7 @@ C **********************************************************************
 C                          BUMP DIAGNOSTICS
 C **********************************************************************
 
+
 c Sub-Cloud Layer
 c -------------------------
       if( ipsubcld.ne.0 ) then
@@ -807,9 +808,12 @@ c Moist Processes Heating Rate
 c ----------------------------
       if(imoistt.gt.0) then
       do L = 1,lm
-      do i = 1,im*jm
-      qdiag(i,1,imoistt+L-1,bi,bj) = qdiag(i,1,imoistt+L-1,bi,bj) + 
-     .                      (dtmoist(i,1,L)*sday*pkzgather(i,L)/pz(i,1))
+      do j = 1,jm
+      do i = 1,im
+       indgath = (j-1)*im + i
+      qdiag(i,j,imoistt+L-1,bi,bj) = qdiag(i,j,imoistt+L-1,bi,bj) + 
+     .    (dtmoist(i,j,L)*sday*pkzgather(indgath,L)/pz(i,j))
+      enddo
       enddo
       enddo
       endif
@@ -831,9 +835,12 @@ c Cloud Mass Flux
 c ---------------
       if(icldmas.gt.0) then
       do L = 1,lm
-      do i = 1,im*jm
-      qdiag(i,1,icldmas+L-1,bi,bj) = qdiag(i,1,icldmas+L-1,bi,bj) + 
-     .                                                  tmpgather(i,L)
+      do j = 1,jm
+      do i = 1,im
+       indgath = (j-1)*im + i
+      qdiag(i,j,icldmas+L-1,bi,bj) = qdiag(i,j,icldmas+L-1,bi,bj) + 
+     .                               tmpgather(indgath,L)
+      enddo
       enddo
       enddo
       endif
@@ -842,9 +849,12 @@ c Detrained Cloud Mass Flux
 c -------------------------
       if(idtrain.gt.0) then
       do L = 1,lm
-      do i = 1,im*jm
-      qdiag(i,1,idtrain+L-1,bi,bj) = qdiag(i,1,idtrain+L-1,bi,bj) + 
-     .                                                  pkegather(i,L)
+      do j = 1,jm
+      do i = 1,im
+       indgath = (j-1)*im + i
+      qdiag(i,j,idtrain+L-1,bi,bj) = qdiag(i,j,idtrain+L-1,bi,bj) + 
+     .                                pkegather(indgath,L)
+      enddo
       enddo
       enddo
       endif
@@ -853,9 +863,12 @@ c Grid-Scale Condensational Heating Rate
 c --------------------------------------
       if(idtls.gt.0) then
       do L = 1,lm
-      do i = 1,im*jm
-      qdiag(i,1,idtls+L-1,bi,bj) = qdiag(i,1,idtls+L-1,bi,bj) + 
-     .                                                  deltrnev(i,L)
+      do j = 1,jm
+      do i = 1,im
+       indgath = (j-1)*im + i
+      qdiag(i,j,idtls+L-1,bi,bj) = qdiag(i,j,idtls+L-1,bi,bj) + 
+     .                               deltrnev(indgath,L)
+      enddo
       enddo
       enddo
       endif
@@ -864,9 +877,12 @@ c Grid-Scale Condensational Moistening Rate
 c -----------------------------------------
       if(idqls.gt.0) then
       do L = 1,lm
-      do i = 1,im*jm
-      qdiag(i,1,idqls+L-1,bi,bj) = qdiag(i,1,idqls+L-1,bi,bj) + 
-     .                                                  delqrnev(i,L)
+      do j = 1,jm
+      do i = 1,im
+       indgath = (j-1)*im + i
+      qdiag(i,j,idqls+L-1,bi,bj) = qdiag(i,j,idqls+L-1,bi,bj) + 
+     .                                delqrnev(indgath,L)
+      enddo
       enddo
       enddo
       endif
@@ -887,9 +903,12 @@ c -------------------
 c Convective Precipitation
 c ------------------------
       if(iprecon.gt.0) then
-      do i = 1,im*jm
-      qdiag(i,1,iprecon,bi,bj) = qdiag(i,1,iprecon,bi,bj) + 
-     .                                         raincgath(i)*sday*tminv
+      do j = 1,jm
+      do i = 1,im
+       indgath = (j-1)*im + i
+      qdiag(i,j,iprecon,bi,bj) = qdiag(i,j,iprecon,bi,bj) + 
+     .                      raincgath(indgath)*sday*tminv
+      enddo
       enddo
       endif
 
@@ -1043,6 +1062,8 @@ C **********************************************************************
        nlwcld   = nlwcld   + 1
        nswcld   = nswcld   + 1
 
+#ifdef ALLOW_DIAGNOSTICS
+       if( (bi.eq.1) .and. (bj.eq.1) ) then
        nmoistt  = nmoistt  + 1
        nmoistq  = nmoistq  + 1
        npreacc  = npreacc  + 1
@@ -1053,10 +1074,12 @@ C **********************************************************************
 
        ndtls  = ndtls  + 1
        ndqls  = ndqls  + 1
+       endif
+#endif
  
       RETURN
       END
-      SUBROUTINE RAS( NN, LEN, LENC, K, NLTOP, nlayr, DT
+      SUBROUTINE RAS( NN, LNG, LENC, K, NLTOP, nlayr, DT
      *,               UOI, ntracer, POI, QOI, PRS, PRJ, rnd, ncrnd
      *,               RAINS, CLN, CLF, cldmas, detrain
      *,               cp,grav,rkappa,alhl,rhfrac,rasmax )
@@ -1069,32 +1092,32 @@ C
       implicit none
 
 C Argument List
-      integer nn,len,lenc,k,nltop,nlayr
+      integer nn,lng,lenc,k,nltop,nlayr
       integer ntracer
       integer ncrnd
       _RL dt
-      _RL UOI(len,nlayr,ntracer),   POI(len,K)
-      _RL QOI(len,K), PRS(len,K+1), PRJ(len,K+1)
+      _RL UOI(lng,nlayr,ntracer),   POI(lng,K)
+      _RL QOI(lng,K), PRS(lng,K+1), PRJ(lng,K+1)
       _RL rnd(ncrnd)
-      _RL RAINS(len,K), CLN(len,K), CLF(len,K)
-      _RL cldmas(len,K), detrain(len,K)
-      _RL cp,grav,rkappa,alhl,rhfrac(len),rasmax
+      _RL RAINS(lng,K), CLN(lng,K), CLF(lng,K)
+      _RL cldmas(lng,K), detrain(lng,K)
+      _RL cp,grav,rkappa,alhl,rhfrac(lng),rasmax
 
 C Local Variables
-      _RL TCU(len,K), QCU(len,K)
-      _RL ucu(len,K,ntracer)
-      _RL ALF(len,K), BET(len,K), GAM(len,K)
-     *,         ETA(len,K), HOI(len,K)
-     *,         PRH(len,K), PRI(len,K)
-      _RL HST(len,K), QOL(len,K), GMH(len,K)
+      _RL TCU(lng,K), QCU(lng,K)
+      _RL ucu(lng,K,ntracer)
+      _RL ALF(lng,K), BET(lng,K), GAM(lng,K)
+     *,         ETA(lng,K), HOI(lng,K)
+     *,         PRH(lng,K), PRI(lng,K)
+      _RL HST(lng,K), QOL(lng,K), GMH(lng,K)
  
-      _RL TX1(len), TX2(len), TX3(len), TX4(len), TX5(len)
-     *,         TX6(len), TX7(len), TX8(len), TX9(len)
-     *,         TX11(len), TX12(len), TX13(len), TX14(len,ntracer)
-     *,         TX15(len)
-     *,         WFN(len) 
-      integer IA1(len), IA2(len), IA3(len)
-      _RL cloudn(len), pcu(len)
+      _RL TX1(lng), TX2(lng), TX3(lng), TX4(lng), TX5(lng)
+     *,         TX6(lng), TX7(lng), TX8(lng), TX9(lng)
+     *,         TX11(lng), TX12(lng), TX13(lng), TX14(lng,ntracer)
+     *,         TX15(lng)
+     *,         WFN(lng) 
+      integer IA1(lng), IA2(lng), IA3(lng)
+      _RL cloudn(lng), pcu(lng)
 
       integer krmin,icm
       _RL rknob, cmb2pa
@@ -1104,7 +1127,7 @@ C Local Variables
       PARAMETER (rknob = 10.)
 
       integer IC(ICM),   IRND(icm)
-      _RL cmass(len,K)
+      _RL cmass(lng,K)
       LOGICAL SETRAS
 
       integer i,L,nc,ib,nt
@@ -1163,13 +1186,15 @@ C
        ENDIF
        IB = IC(NC)
 
+       print *,' Calling cloud for cloud ',nc,' det at ',ic(nc)
+
 c Initialize Cloud Fraction Array
 c -------------------------------
       do i = 1,lenc
       cloudn(i) = 0.0
       enddo
 
-       CALL CLOUD(nn,LEN, LENC, K, NLTOP, nlayr, IB, RASBLF,SETRAS,FRAC
+       CALL CLOUD(nn,lng, LENC, K, NLTOP, nlayr, IB, RASBLF,SETRAS,FRAC
      *,           CP,  ALHL, RKAPPA, GRAV, P00, CRTMSF
      *,           POI, QOI, UOI, Ntracer, PRS, PRJ
      *,           PCU, CLOUDN, TCU, QCU, UCU, CMASS
@@ -1250,7 +1275,7 @@ c ---------------------------------------------------------
       integer irm
       parameter (irm = 1000)
       _RL random(irm)
-      integer i,mcheck,numrand,iseed,index
+      integer i,mcheck,numrand,iseed,indx
       logical first
       data    first /.true./
       integer iras0
@@ -1278,7 +1303,7 @@ c ----------------------------------------------------------------------------
        do i = 1,irm
         random(i) = random_numbx(iseed)
        enddo
-       index = (iras-1)*nrnd
+       indx = (iras-1)*nrnd
 
 c Multiple Time In But have Used Up all 1000 numbers (MCHECK.EQ.0)
 c ----------------------------------------------------------------
@@ -1288,19 +1313,19 @@ c ----------------------------------------------------------------
           do i = 1,irm
            random(i) = random_numbx(iseed)
           enddo
-          index = iseed
+          indx = iseed
 
 c Multiple Time In But have NOT Used Up all 1000 numbers (MCHECK.NE.0)
 c --------------------------------------------------------------------
       else
-          index = (iras-1)*nrnd
+          indx = (iras-1)*nrnd
       endif
 
-          index = mod(index,irm)
-      if( index+nrnd.gt.1000 ) index=1000-nrnd
+          indx = mod(indx,irm)
+      if( indx+nrnd.gt.1000 ) indx=1000-nrnd
  
       do n = 1,nrnd
-       rnd(n) = random(index+n)
+       rnd(n) = random(indx+n)
       enddo
  
  100  continue
@@ -1339,7 +1364,7 @@ c --------------------------------------------------------------------
 #endif
       return
       end
-      SUBROUTINE CLOUD(nn,LEN, LENC, K, NLTOP, nlayr, IC, RASALF
+      SUBROUTINE CLOUD(nn,lng, LENC, K, NLTOP, nlayr, IC, RASALF
      *,                 SETRAS, FRAC
      *,                 CP,  ALHL, RKAP, GRAV, P00, CRTMSF
      *,                 POI, QOI, UOI, Ntracer, PRS,  PRJ
@@ -1381,16 +1406,16 @@ C
 C  Input:
 C  ------
 C
-C     LEN     : The inner dimension of update and input arrays.
+C     lng     : The inner dimension of update and input arrays.
 C
 C     LENC    : The run: the number of soundings processes in a single call.
-C               RAS works on the first LENC of the LEN soundings
+C               RAS works on the first LENC of the lng soundings
 C               passed. This allows working on pieces of the world
 C               say for multitasking, without declaring temporary arrays
 C               and copying the data to and from them.  This is an f77
 C               version. An F90 version would have to allow more
 C               flexibility in the argument declarations.  Obviously
-C               (LENC<=LEN).  
+C               (LENC<=lng).  
 C 
 C     K       : Number of vertical layers (increasing downwards).
 C               Need not be the same as the number of layers in the
@@ -1421,41 +1446,41 @@ C     CRTMSF  : Critical value of mass flux above which cloudiness at
 C               the detrainment layer of that cloud-type is assumed.
 C               Affects only cloudiness calculation.
 C
-C     POI     : 2D array of dimension (LEN,K) containing potential
+C     POI     : 2D array of dimension (lng,K) containing potential
 C               temperature. Updated but not initialized by RAS.
 C
-C     QOI     : 2D array of dimension (LEN,K) containing specific
+C     QOI     : 2D array of dimension (lng,K) containing specific
 C               humidity. Updated but not initialized by RAS.
 C
-C     UOI     : 3D array of dimension (LEN,K,NTRACER) containing tracers
+C     UOI     : 3D array of dimension (lng,K,NTRACER) containing tracers
 C               Updated but not initialized by RAS.
 C
-C     PRS     : 2D array of dimension (LEN,K+1) containing pressure
+C     PRS     : 2D array of dimension (lng,K+1) containing pressure
 C               in hPa at the interfaces of K-layers from top of the 
 C               atmosphere to the bottom. Not modified.
 C
-C     PRJ     : 2D array of dimension (LEN,K+1) containing (PRS/P00) **
+C     PRJ     : 2D array of dimension (lng,K+1) containing (PRS/P00) **
 C               RKAP.  i.e. Exner function at layer edges. Not modified.
 C
-C     rhfrac  : 1D array of dimension (LEN) containing a rel.hum. scaling
+C     rhfrac  : 1D array of dimension (lng) containing a rel.hum. scaling
 C               fraction. Not modified.
 C
 C  Output:
 C  -------
 C
-C     PCU     : 1D array of length LEN containing accumulated
+C     PCU     : 1D array of length lng containing accumulated
 C               precipitation in mm/sec.
 C
-C     CLN     : 2D array of dimension (LEN,K) containing cloudiness
+C     CLN     : 2D array of dimension (lng,K) containing cloudiness
 C               Note:  CLN is bumped but NOT initialized
 C
-C     TCU     : 2D array of dimension (LEN,K) containing accumulated 
+C     TCU     : 2D array of dimension (lng,K) containing accumulated 
 C               convective heating (K/sec). 
 C
-C     QCU     : 2D array of dimension (LEN,K) containing accumulated 
+C     QCU     : 2D array of dimension (lng,K) containing accumulated 
 C               convective drying (kg/kg/sec).
 C
-C     CMASS   : 2D array of dimension (LEN,K) containing the
+C     CMASS   : 2D array of dimension (lng,K) containing the
 C               cloud mass flux (kg/sec). Filled from cloud top
 C               to base.
 C
@@ -1475,24 +1500,24 @@ C
 C************************************************************************
       implicit none
 C Argument List declarations
-      integer nn,LEN,LENC,K,NLTOP,nlayr,ic,ntracer
+      integer nn,lng,LENC,K,NLTOP,nlayr,ic,ntracer
       _RL rasalf
       LOGICAL SETRAS
       _RL frac, cp,  alhl, rkap, grav, p00, crtmsf
-      _RL POI(LEN,K),QOI(LEN,K),PRS(LEN,K+1),PRJ(LEN,K+1)
-      _RL uoi(len,nlayr,ntracer)
-      _RL PCU(LENC), CLN(LEN)
-      _RL TCU(LEN,K),  QCU(LEN,K),  ucu(len,k,ntracer), CMASS(LEN,K)
-      _RL ALF(LEN,K), BET(LEN,K),  GAM(LEN,K), PRH(LEN,K), PRI(LEN,K)
+      _RL POI(lng,K),QOI(lng,K),PRS(lng,K+1),PRJ(lng,K+1)
+      _RL uoi(lng,nlayr,ntracer)
+      _RL PCU(LENC), CLN(lng)
+      _RL TCU(lng,K),  QCU(lng,K),  ucu(lng,k,ntracer), CMASS(lng,K)
+      _RL ALF(lng,K), BET(lng,K),  GAM(lng,K), PRH(lng,K), PRI(lng,K)
       _RL HOL(LENC,K), ETA(LENC,K), HST(LENC,K), QOL(LENC,K)
       _RL GMH(LENC,K)
       _RL TX1(LENC), TX2(LENC), TX3(LENC), TX4(LENC)
       _RL TX5(LENC), TX6(LENC), TX7(LENC), TX8(LENC)
       _RL ALM(LENC), WFN(LENC), AKM(LENC), QS1(LENC)
       _RL WLQ(LENC), CLF(LENC)
-      _RL uht(len,ntracer)
+      _RL uht(lng,ntracer)
       integer IA(LENC), I1(LENC),I2(LENC)
-      _RL      rhfrac(len)
+      _RL      rhfrac(lng)
 
 C Local Variables
       _RL daylen,half,one,zero,cmb2pa,rhmax
@@ -1502,7 +1527,8 @@ C Local Variables
       _RL rkapp1,onebcp,albcp,onebg,cpbg,twobal
 C
       integer nt,km1,ic1,i,L,len1,len2,isav,len11,ii
-      integer lena,lena1,lenb,tem,tem1
+      integer lena,lena1,lenb
+      _RL tem,tem1
  
 c Explicit Inline Directives
 c --------------------------
@@ -1551,7 +1577,7 @@ C
 C
 C
       DO 10 L=1,K
-      DO 10 I=1,LEN
+      DO 10 I=1,lng
       TCU(I,L) = 0.0
       QCU(I,L) = 0.0
       CMASS(I,L) = 0.0
@@ -2085,7 +2111,7 @@ C
 
       RETURN
       END
-      SUBROUTINE RNCL(LEN, PL, RNO, CLF)
+      SUBROUTINE RNCL(lng, PL, RNO, CLF)
 C
 C*********************************************************************
 C********************** Relaxed Arakawa-Schubert *********************
@@ -2094,8 +2120,8 @@ C**************************** 23 July 1992 ***************************
 C*********************************************************************
       implicit none
 C Argument List declarations
-      integer len
-      _RL PL(LEN),  RNO(LEN), CLF(LEN)
+      integer lng
+      _RL PL(lng),  RNO(lng), CLF(lng)
 
 C Local Variables
       _RL p5,p8,pt8,pt2,pfac,p4,p6,p7,p9,cucld,cfac
@@ -2107,7 +2133,7 @@ C Local Variables
 
       integer i
 C
-      DO 10 I=1,LEN
+      DO 10 I=1,lng
                            rno(i) = 1.0
 ccc   if( pl(i).le.400.0 ) rno(i) = max( 0.75, 1.0-0.0025*(400.0-pl(i)) )
 
@@ -2134,7 +2160,7 @@ CARIES
 C
       RETURN
       END
-      SUBROUTINE ACRITN ( LEN,PL,PLB,ACR )
+      SUBROUTINE ACRITN ( lng,PL,PLB,ACR )
  
 C*********************************************************************
 C********************** Relaxed Arakawa-Schubert *********************
@@ -2147,8 +2173,8 @@ C****                                                            *****
 C*********************************************************************
       implicit none
 C Argument List declarations
-      integer len
-      _RL PL(LEN), PLB(LEN), ACR(LEN)
+      integer lng
+      _RL PL(lng), PLB(lng), ACR(lng)
 
 C Local variables
       integer lma
@@ -2170,7 +2196,7 @@ C Local variables
 
  
       do L=1,lma-1
-      do i=1,len
+      do i=1,lng
          if( pl(i).ge.p(L)   .and.
      .       pl(i).le.p(L+1)) then
          temp = ( pl(i)-p(L) )/( p(L+1)-p(L) )
@@ -2179,12 +2205,12 @@ C Local variables
       enddo
       enddo
 
-      do i=1,len
+      do i=1,lng
       if( pl(i).lt.p(1)   ) acr(i) = a(1)
       if( pl(i).gt.p(lma) ) acr(i) = a(lma)
       enddo
 
-      do i=1,len
+      do i=1,lng
       acr(i) = acr(i) * (plb(i)-pl(i))
       enddo
 

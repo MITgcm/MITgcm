@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.21 2004/07/30 18:59:32 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_driver.F,v 1.22 2004/08/10 15:13:47 molod Exp $
 C $Name:  $
                                                                                  
 #include "FIZHI_OPTIONS.h"
@@ -191,7 +191,7 @@ C TURBULENCE
 C ==========
       IF ( alarm('turb') ) THEN
 
-      if(bi.eq.1 .and. 2.eq.1)then
+      if(2.eq.1)then
       print *,' In fizhi driver, before turb - bi = ',bi
       do j = 1,jm
       do i = 1,im

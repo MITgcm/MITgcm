@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.12 2004/07/28 20:38:53 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_utils.F,v 1.13 2004/08/10 15:13:47 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -62,24 +62,24 @@ C **********************************************************************
       integer ia,ib,L,K
       _RL A(IA,L), B(IB,L)                                                
       
-      INTEGER OFFSET,Len,i,j
+      INTEGER OFFSET,Lena,i,j
                                                                                 
       OFFSET = IB*(K-1)                                                         
-      LEN    = MIN(IB,IA-OFFSET)                                                
+      Lena    = MIN(IB,IA-OFFSET)                                                
       OFFSET = OFFSET+1                                                         
                                                                                 
-      IF(LEN.EQ.IB) THEN                                                        
+      IF(Lena.EQ.IB) THEN                                                        
         DO 100 J=1,L                                                            
-        DO 100 I=1,LEN                                                          
+        DO 100 I=1,Lena                                                          
         B(I,J) = A(I+OFFSET-1,J)                                                
 100     CONTINUE                                                                
       ELSE                                                                      
         DO 200 J=1,L                                                            
-        DO 300 I=1,LEN                                                          
+        DO 300 I=1,Lena                                                          
         B(I,J) = A(I+OFFSET-1,J)                                                
 300     CONTINUE                                                                
-        DO 400 I=1,IB-LEN                                                       
-        B(LEN+I,J) = A(LEN+OFFSET-1,J)                                            
+        DO 400 I=1,IB-Lena                                                       
+        B(Lena+I,J) = A(Lena+OFFSET-1,J)                                            
 400     CONTINUE                                                                
 200     CONTINUE                                                                
       ENDIF                                                                     
@@ -91,14 +91,14 @@ C **********************************************************************
       integer ia,ib,L,K
       _RL A(IA,L), B(IB,L)                                                
 
-      INTEGER OFFSET,LEN,i,j
+      INTEGER OFFSET,Lena,i,j
                                                                                 
       OFFSET = IB*(K-1)                                                         
-      LEN    = MIN(IB,IA-OFFSET)                                                
+      Lena    = MIN(IB,IA-OFFSET)                                                
       OFFSET = OFFSET+1                                                         
                                                                                 
       DO 100 J=1,L                                                              
-      DO 100 I=1,LEN                                                            
+      DO 100 I=1,Lena                                                            
       A(I+OFFSET-1,J) = B(I,J)                                                  
 100   CONTINUE                                                                  
                                                                                 
@@ -109,14 +109,14 @@ C **********************************************************************
       integer ia,ib,L,K
       _RL A(IA,L), B(IB,L)                                                
 
-      INTEGER OFFSET,LEN,i,j
+      INTEGER OFFSET,Lena,i,j
                                                                                 
       OFFSET = IB*(K-1)                                                         
-      LEN    = MIN(IB,IA-OFFSET)                                                
+      Lena    = MIN(IB,IA-OFFSET)                                                
       OFFSET = OFFSET+1                                                         
                                                                                 
       DO 100 J=1,L                                                              
-      DO 100 I=1,LEN                                                            
+      DO 100 I=1,Lena                                                            
       A(I+OFFSET-1,J) = A(I+OFFSET-1,J) + B(I,J)                                
 100   CONTINUE                                                                  
 C                                                                               
@@ -127,24 +127,24 @@ C
       integer ia,ib,L,K
       INTEGER A(IA,L), B(IB,L)
 
-      INTEGER OFFSET,LEN,i,j
+      INTEGER OFFSET,Lena,i,j
 
       OFFSET = IB*(K-1)
-      LEN = MIN(IB,IA-OFFSET)
+      Lena = MIN(IB,IA-OFFSET)
       OFFSET = OFFSET+1
 
-      IF(LEN.EQ.IB) THEN
+      IF(Lena.EQ.IB) THEN
         DO 100 J=1,L
-        DO 100 I=1,LEN
+        DO 100 I=1,Lena
         B(I,J) = A(I+OFFSET-1,J)
 100     CONTINUE
       ELSE
         DO 200 J=1,L
-        DO 300 I=1,LEN
+        DO 300 I=1,Lena
         B(I,J) = A(I+OFFSET-1,J)
 300     CONTINUE
-        DO 400 I=1,IB-LEN
-        B(LEN+I,J) = A(LEN+OFFSET-1,J)
+        DO 400 I=1,IB-Lena
+        B(Lena+I,J) = A(Lena+OFFSET-1,J)
 400     CONTINUE
 200     CONTINUE
       ENDIF
@@ -363,24 +363,24 @@ cfpp$ expand (qsat)
       implicit none
       integer ia,ib,irun,l,k
       _RL a(ia,l), b(ib,l)
-      integer   i,j,len,offset
+      integer   i,j,Lena,offset
 
       offset = ib*(k-1)
-      len    = min(ib,irun-offset)
+      Lena    = min(ib,irun-offset)
       offset = offset+1
 
-      if(len.eq.ib) then
+      if(Lena.eq.ib) then
         do 100 j=1,l
-        do 100 i=1,len
+        do 100 i=1,Lena
         b(i,j) = a(i+offset-1,j)
 100     continue
       else
         do 200 j=1,l
-        do 300 i=1,len
+        do 300 i=1,Lena
         b(i,j) = a(i+offset-1,j)
 300     continue
-        do 400 i=1,ib-len
-        b(len+i,j) = a(len+offset-1,j)
+        do 400 i=1,ib-Lena
+        b(Lena+i,j) = a(Lena+offset-1,j)
 400     continue
 200     continue
       endif
@@ -390,24 +390,24 @@ cfpp$ expand (qsat)
       subroutine stripitint(a,b,irun,ia,ib,l,k)
       implicit none
       integer ia,ib,irun,l,k,a(ia,l),b(ib,l)
-      integer i,j,len,offset
+      integer i,j,Lena,offset
 
       offset = ib*(k-1)
-      len = min(ib,irun-offset)
+      Lena = min(ib,irun-offset)
       offset = offset+1
 
-      if(len.eq.ib) then
+      if(Lena.eq.ib) then
         do 100 j=1,l
-        do 100 i=1,len
+        do 100 i=1,Lena
         b(i,j) = a(i+offset-1,j)
 100     continue
       else
         do 200 j=1,l
-        do 300 i=1,len
+        do 300 i=1,Lena
         b(i,j) = a(i+offset-1,j)
 300     continue
-        do 400 i=1,ib-len
-        b(len+i,j) = a(len+offset-1,j)
+        do 400 i=1,ib-Lena
+        b(Lena+i,j) = a(Lena+offset-1,j)
 400     continue
 200     continue
       endif
@@ -416,16 +416,16 @@ cfpp$ expand (qsat)
 
       subroutine pastit(b,a,ib,ia,irun,L,k)
       implicit none
-      integer ib,ia,L,k,irun,len,offset
+      integer ib,ia,L,k,irun,Lena,offset
       integer i,j
       _RL a(ia,l), b(ib,l)
 
       offset = ib*(k-1)
-      len    = min(ib,irun-offset)
+      Lena    = min(ib,irun-offset)
       offset = offset+1
 
       do 100 j=1,L
-      do 100 i=1,len
+      do 100 i=1,Lena
       a(i+offset-1,j) = b(i,j)
 100   continue
       return
@@ -433,17 +433,17 @@ cfpp$ expand (qsat)
 
       subroutine pstbitint(b,a,ib,ia,irun,l,k)
       implicit none
-      integer ib,ia,L,k,irun,len,offset
+      integer ib,ia,L,k,irun,Lena,offset
       _RL a(ia,l)
       integer b(ib,l)
       integer i,j
 
       offset = ib*(k-1)
-      len    = min(ib,irun-offset)
+      Lena    = min(ib,irun-offset)
       offset = offset+1
                
       do 100 j=1,L
-      do 100 i=1,len
+      do 100 i=1,Lena
       a(i+offset-1,j) = a(i+offset-1,j) + float(b(i,j))
 100   continue
       return  
@@ -452,22 +452,22 @@ cfpp$ expand (qsat)
 
       subroutine pstbmpit(b,a,ib,ia,irun,l,k)
       implicit none
-      integer ib,ia,L,k,irun,len,offset
+      integer ib,ia,L,k,irun,Lena,offset
       _RL a(ia,l), b(ib,l)
       integer i,j
 
       offset = ib*(k-1)
-      len    = min(ib,irun-offset)
+      Lena    = min(ib,irun-offset)
       offset = offset+1
                
       do 100 j=1,L
-      do 100 i=1,len
+      do 100 i=1,Lena
       a(i+offset-1,j) = a(i+offset-1,j) + b(i,j)
 100   continue
       return  
       end        
 
-      subroutine strip2tile(a,index,b,irun,ia,ib,levs,npeice)
+      subroutine strip2tile(a,indx,b,irun,ia,ib,levs,npeice)
 c-----------------------------------------------------------------------
 c subroutine strip2tile - extract one processors worth of grid points
 c                         from a grid space array to a stripped tile
@@ -475,7 +475,7 @@ c                         space array
 c 
 c  input:
 c      a      - array to be stripped FROM [ia,levs]
-c      index  - array of horizontal indeces of grid points to convert to
+c      indx   - array of horizontal indeces of grid points to convert to
 c               tile space
 c      irun   - number of points in array a that need to be stripped
 c      ia     - inner of dimension of source array
@@ -489,32 +489,32 @@ c-----------------------------------------------------------------------
       implicit none
       integer ia,ib,irun,levs,npeice
       _RL a(ia,levs), b(ib,levs)
-      integer index(irun)
-      integer i,k,len,offset
+      integer indx(irun)
+      integer i,k,Lena,offset
 
       offset = ib*(npeice-1)
-      len    = min(ib,irun-offset)
+      Lena    = min(ib,irun-offset)
       offset = offset+1
 
-      if(len.eq.ib) then
+      if(Lena.eq.ib) then
         do 100 k=1,levs
-        do 100 i=1,len
-        b(i,k) = a(index(i+offset-1),k)
+        do 100 i=1,Lena
+        b(i,k) = a(indx(i+offset-1),k)
 100     continue
       else
         do 200 k=1,levs
-        do 300 i=1,len
-        b(i,k) = a(index(i+offset-1),k)
+        do 300 i=1,Lena
+        b(i,k) = a(indx(i+offset-1),k)
 300     continue
-        do 400 i=1,ib-len
-        b(len+i,k) = a(index(len+offset-1),k)
+        do 400 i=1,ib-Lena
+        b(Lena+i,k) = a(indx(Lena+offset-1),k)
 400     continue
 200     continue
       endif
       return
       end
 
-      subroutine paste2grd_old(b,index,chfr,ib,numpts,a,ia,levs,npeice)
+      subroutine paste2grd_old(b,indx,chfr,ib,numpts,a,ia,levs,npeice)
 c-----------------------------------------------------------------------
 c subroutine paste2grd - paste one processors worth of grid points
 c                        from a stripped tile array to a grid
@@ -522,7 +522,7 @@ c                        space array
 c 
 c  input:
 c      b      - array to be pasted back into grid space [ib,levs]
-c      index  - array of horizontal indeces of grid points to convert to
+c      indx   - array of horizontal indeces of grid points to convert to
 c               tile space[numpts]
 c      chfr   - fractional area covered by the tile [ib]
 c      ib     - inner dimension of source array AND number of points in 
@@ -542,23 +542,23 @@ c-----------------------------------------------------------------------
 
       implicit none
       integer ia,ib,levs,numpts,npeice
-      integer index(numpts)
+      integer indx(numpts)
       _RL a(ia,levs), b(ib,levs), chfr(ib)
 
-      integer i,L,offset,len
+      integer i,L,offset,Lena
 
       offset = ib*(npeice-1)
-      len    = min(ib,numpts-offset)
+      Lena    = min(ib,numpts-offset)
       offset = offset+1
 
       do L = 1,levs
-      do i=1,len
-       a(index(i+offset-1),L) = a(index(i+offset-1),L) + b(i,L)*chfr(i)
+      do i=1,Lena
+       a(indx(i+offset-1),L) = a(indx(i+offset-1),L) + b(i,L)*chfr(i)
       enddo
       enddo
       return
       end
-      subroutine paste2grd (b,index,chfr,ib,numpts,a,ia,levs,npeice,
+      subroutine paste2grd (b,indx,chfr,ib,numpts,a,ia,levs,npeice,
      .                                                            check)
 c-----------------------------------------------------------------------
 c subroutine paste2grd - paste one processors worth of grid points
@@ -567,7 +567,7 @@ c                        space array
 c 
 c  input:
 c      b      - array to be pasted back into grid space [ib,levs]
-c      index  - array of horizontal indeces of grid points to convert to
+c      indx   - array of horizontal indeces of grid points to convert to
 c               tile space[numpts]
 c      chfr   - fractional area covered by the tile [ib]
 c      ib     - inner dimension of source array AND number of points in 
@@ -588,32 +588,32 @@ c-----------------------------------------------------------------------
 
       implicit none
       integer ia,ib,levs,numpts,npeice
-      integer index(numpts)
+      integer indx(numpts)
       _RL a(ia,levs), b(ib,levs), chfr(ib)
       logical check
 
-      integer i,L,offset,len
+      integer i,L,offset,Lena
       _RL    undef,getcon
 
       offset = ib*(npeice-1)
-      len    = min(ib,numpts-offset)
+      Lena    = min(ib,numpts-offset)
       offset = offset+1
 
       if( check ) then
       undef = getcon('UNDEF')
        do L= 1,levs
-       do i= 1,len
-        if( a(index(i+offset-1),L).eq.undef .or. b(i,L).eq.undef ) then
-         a(index(i+offset-1),L) = undef
+       do i= 1,Lena
+        if( a(indx(i+offset-1),L).eq.undef .or. b(i,L).eq.undef ) then
+         a(indx(i+offset-1),L) = undef
         else
-         a(index(i+offset-1),L)=a(index(i+offset-1),L) + b(i,L)*chfr(i)
+         a(indx(i+offset-1),L)=a(indx(i+offset-1),L) + b(i,L)*chfr(i)
         endif
        enddo
        enddo
       else
        do L= 1,levs
-       do i= 1,len
-        a(index(i+offset-1),L)=a(index(i+offset-1),L) + b(i,L)*chfr(i)
+       do i= 1,Lena
+        a(indx(i+offset-1),L)=a(indx(i+offset-1),L) + b(i,L)*chfr(i)
        enddo
        enddo
       endif

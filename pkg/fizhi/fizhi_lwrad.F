@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.15 2004/08/04 22:23:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_lwrad.F,v 1.16 2004/08/10 15:13:47 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -240,12 +240,12 @@ C **********************************************************************
 C ****            PASTE AND BUMP SOME DIAGNOSTICS                   ****
 C **********************************************************************
 
-      IF(IOLR.GT.0)CALL PSTBMP(flx(1,1),QDIAG(1,1,IOLR,bi,bj),ISTRIP,
-     .                                                      im*jm, 1,NN)
-      IF(IOLRCLR.GT.0)CALL PSTBMP(flxclr(1,1),QDIAG(1,1,IOLRCLR,bi,bj),
-     .                                                ISTRIP,im*jm,1,NN)
-      IF(IOZLW.GT.0)CALL PSTBMP(OZL(1,1),QDIAG(1,1,IOZLW,bi,bj),ISTRIP,
-     .                                                      im*jm,lm,NN)
+c     IF(IOLR.GT.0)CALL PSTBMP(flx(1,1),QDIAG(1,1,IOLR,bi,bj),ISTRIP,
+c    .                                                      im*jm, 1,NN)
+c     IF(IOLRCLR.GT.0)CALL PSTBMP(flxclr(1,1),QDIAG(1,1,IOLRCLR,bi,bj),
+c    .                                                ISTRIP,im*jm,1,NN)
+c     IF(IOZLW.GT.0)CALL PSTBMP(OZL(1,1),QDIAG(1,1,IOZLW,bi,bj),ISTRIP,
+c    .                                                      im*jm,lm,NN)
 
 C **********************************************************************
 C ****                 TENDENCY UPDATES                             ****
@@ -303,12 +303,16 @@ C **********************************************************************
 C ****    Increment Diagnostics Counters and Zero-Out Cloud Info    ****
 C **********************************************************************
 
+#ifdef ALLOW_DIAGNOSTICS
+      if ( (bi.eq.1) .and. (bj.eq.1) ) then
       ntlw     = ntlw     + 1
       nshrad   = nshrad   + 1
       nozlw    = nozlw    + 1
       ntgrlw   = ntgrlw   + 1
       nolr     = nolr     + 1
       nolrclr  = nolrclr  + 1
+      endif
+#endif
 
       nlwlz    = 0
       nlwcld   = 0

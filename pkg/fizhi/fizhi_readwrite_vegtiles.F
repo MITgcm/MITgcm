@@ -1,11 +1,11 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.2 2004/08/06 23:17:55 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.3 2004/08/10 15:13:47 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
 CBOP
 C     !ROUTINE: FIZHI_WRITE_VEGTILES 
 C     !INTERFACE:
-      SUBROUTINE FIZHI_WRITE_VEGTILES( fn, prec, myTime, myIter, myThid )
+      SUBROUTINE FIZHI_WRITE_VEGTILES( fn, prec,myTime,myIter,myThid)
 
 C     !DESCRIPTION:
 
@@ -24,7 +24,7 @@ C     == Global variables ===
       INTEGER ILNBLNK
 
 C     !INPUT/OUTPUT PARAMETERS:
-      CHARACTER*(*) fn
+      CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*1 prec
       _RL myTime
       INTEGER myIter
@@ -90,7 +90,7 @@ C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
 CBOP
 C     !ROUTINE: FIZHI_READ_VEGTILES
 C     !INTERFACE:
-      SUBROUTINE FIZHI_READ_VEGTILES( fn, prec, myTime, myIter, myThid )
+      SUBROUTINE FIZHI_READ_VEGTILES(fn,prec,myTime,myIter,myThid)
 
 C     !DESCRIPTION:
 
@@ -109,7 +109,7 @@ C     == Global variables ===
       INTEGER ILNBLNK
 
 C     !INPUT/OUTPUT PARAMETERS:
-      CHARACTER*(*) fn
+      CHARACTER*(MAX_LEN_FNAM) fn
       CHARACTER*1 prec
       _RL myTime
       INTEGER myIter

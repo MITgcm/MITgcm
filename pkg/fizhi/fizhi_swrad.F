@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.17 2004/08/04 22:23:43 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_swrad.F,v 1.18 2004/08/10 15:13:47 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -238,7 +238,7 @@ c -------------------------
       enddo
       enddo
       enddo
-      ncldras = ncldras + 1
+      if ( (bi.eq.1) .and. (bj.eq.1) ) ncldras = ncldras + 1
       endif
 
       if( icldtot.gt.0 ) then
@@ -250,7 +250,7 @@ c -------------------------
       enddo
       enddo
       enddo
-      ncldtot = ncldtot + 1
+      if ( (bi.eq.1) .and. (bj.eq.1) ) ncldtot = ncldtot + 1
       endif
 
       if( icldlow.gt.0 ) then
@@ -259,7 +259,7 @@ c -------------------------
       qdiag(i,j,icldlow,bi,bj) = qdiag(i,j,icldlow,bi,bj) + cldlow(i,j)
       enddo
       enddo
-      ncldlow = ncldlow + 1
+      if ( (bi.eq.1) .and. (bj.eq.1) ) ncldlow = ncldlow + 1
       endif
 
       if( icldmid.gt.0 ) then
@@ -268,7 +268,7 @@ c -------------------------
       qdiag(i,j,icldmid,bi,bj) = qdiag(i,j,icldmid,bi,bj) + cldmid(i,j)
       enddo
       enddo
-      ncldmid = ncldmid + 1
+      if ( (bi.eq.1) .and. (bj.eq.1) ) ncldmid = ncldmid + 1
       endif
 
       if( icldhi.gt.0 ) then
@@ -277,7 +277,7 @@ c -------------------------
       qdiag(i,j,icldhi,bi,bj) = qdiag(i,j,icldhi,bi,bj) + cldhi(i,j)
       enddo
       enddo
-      ncldhi = ncldhi + 1
+      if ( (bi.eq.1) .and. (bj.eq.1) ) ncldhi = ncldhi + 1
       endif
 
       if( ilzrad.gt.0 ) then
@@ -289,7 +289,7 @@ c -------------------------
       enddo
       enddo
       enddo
-      nlzrad = nlzrad + 1
+      if ( (bi.eq.1) .and. (bj.eq.1) ) nlzrad = nlzrad + 1
       endif
 
 c Albedo Diagnostics
@@ -301,7 +301,7 @@ c ------------------
      .                                                     albvisdr(i,j)
       enddo
       enddo
-      nalbvisdr = nalbvisdr + 1
+      if ( (bi.eq.1) .and. (bj.eq.1) ) nalbvisdr = nalbvisdr + 1
       endif
 
       if( ialbvisdf.gt.0 ) then
@@ -311,7 +311,7 @@ c ------------------
      .                                                     albvisdf(i,j)
       enddo
       enddo
-      nalbvisdf = nalbvisdf + 1
+      if ( (bi.eq.1) .and. (bj.eq.1) ) nalbvisdf = nalbvisdf + 1
       endif
 
       if( ialbnirdr.gt.0 ) then
@@ -321,7 +321,7 @@ c ------------------
      .                                                     albnirdr(i,j)
       enddo
       enddo
-      nalbnirdr = nalbnirdr + 1
+      if ( (bi.eq.1) .and. (bj.eq.1) ) nalbnirdr = nalbnirdr + 1
       endif
 
       if( ialbnirdf.gt.0 ) then
@@ -331,7 +331,7 @@ c ------------------
      .                                                     albnirdf(i,j)
       enddo
       enddo
-      nalbnirdf = nalbnirdf + 1
+      if ( (bi.eq.1) .and. (bj.eq.1) ) nalbnirdf = nalbnirdf + 1
       endif
 
 C Compute Optical Thicknesses and Diagnostics
@@ -356,7 +356,7 @@ C -------------------------------------------
       enddo
       enddo
       enddo
-      ntauave = ntauave + 1
+      if ( (bi.eq.1) .and. (bj.eq.1) ) ntauave = ntauave + 1
       endif
 
       if( itaucld.gt.0 ) then

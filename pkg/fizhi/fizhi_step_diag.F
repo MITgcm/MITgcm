@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.8 2004/07/30 18:55:50 molod Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_step_diag.F,v 1.9 2004/08/10 15:13:47 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -146,6 +146,7 @@ c --------------------------------------------------
       enddo
       endif
                                                                                 
+      if( (bi.eq.1) .and. (bj.eq.1) ) then
       nradswt = nradswt + 1
       nradswg = nradswg + 1
       nswgclr = nswgclr + 1
@@ -154,6 +155,7 @@ c --------------------------------------------------
       nradlwg = nradlwg + 1
       nlwgclr = nlwgclr + 1
       nlwgup  = nlwgup  + 1
+      endif
                                                                                 
 C **********************************************************************        
       do L=1,Nrphys
@@ -313,6 +315,7 @@ c -----------------------
                                                                                 
       enddo
 
+      if( (bi.eq.1) .and. (bj.eq.1) ) then
       ndiabu = ndiabu + 1
       ndiabv = ndiabv + 1
       ndiabt = ndiabt + 1
@@ -326,6 +329,7 @@ c -----------------------
       ntmpu  = ntmpu  + 1                           
       ntke   = ntke   + 1
       nsphu  = nsphu  + 1
+      endif
 
 C **********************************************************************        
 
@@ -426,10 +430,12 @@ c -------------------------------------------------------
       enddo
       endif
 
+      if( (bi.eq.1) .and. (bj.eq.1) ) then
       nvdtmoist = nvdtmoist + 1
       nvdtturb  = nvdtturb  + 1
       nvdtradlw = nvdtradlw + 1
       nvdtradsw = nvdtradsw + 1
+      endif
  
 #endif
       return
