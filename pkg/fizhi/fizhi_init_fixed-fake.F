@@ -25,7 +25,6 @@ c-----------------------------------------------------------------------
 #include "EEPARAMS.h"
 #include "chemistry_coms.h"
 #include "earth_coms.h"
-#include "diag.h"
 
        integer myThid
 
