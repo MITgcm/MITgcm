@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.73 2001/07/20 19:16:28 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/dynamics.F,v 1.74 2001/07/30 20:37:45 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -29,7 +29,9 @@ C     == Global variables ===
 #include "PARAMS.h"
 #include "DYNVARS.h"
 #include "GRID.h"
+#ifdef ALLOW_PASSIVE_TRACER
 #include "TR1.h"
+#endif
 
 #ifdef ALLOW_AUTODIFF_TAMC
 # include "tamc.h"
@@ -273,7 +275,9 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+#ifdef ALLOW_PASSIVE_TRACER
 CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 C--     Start of diagnostic loop
@@ -443,7 +447,9 @@ CADJ STORE theta(:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE salt (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE uvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
 CADJ STORE vvel (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+#ifdef ALLOW_PASSIVE_TRACER
 CADJ STORE tr1  (:,:,:,bi,bj) = comlev1_bibj, key = ikey, byte = isbyte
+#endif
 #endif /* ALLOW_AUTODIFF_TAMC */
 
 #ifdef ALLOW_AIM
@@ -474,16 +480,16 @@ C--       kDown  Cycles through 2,1 to point to current layer
           kup  = 1+MOD(k+1,2)
           kDown= 1+MOD(k,2)
 
-          iMin = 1-OLx+2
-          iMax = sNx+OLx-1
-          jMin = 1-OLy+2
-          jMax = sNy+OLy-1
+          iMin = 1-OLx
+          iMax = sNx+OLx
+          jMin = 1-OLy
+          jMax = sNy+OLy
 
-C--      Get temporary terms used by tendency routines
-         CALL CALC_COMMON_FACTORS (
-     I        bi,bj,iMin,iMax,jMin,jMax,k,
-     O        xA,yA,uTrans,vTrans,rTrans,maskUp,
-     I        myThid)
+C--       Get temporary terms used by tendency routines
+          CALL CALC_COMMON_FACTORS (
+     I         bi,bj,iMin,iMax,jMin,jMax,k,
+     O         xA,yA,uTrans,vTrans,rTrans,maskUp,
+     I         myThid)
 
 #ifdef ALLOW_AUTODIFF_TAMC 
 CADJ STORE KappaRT(:,:,k)    = comlev1_bibj_k, key=kkey, byte=isbyte
@@ -498,6 +504,11 @@ C--      Calculate the total vertical diffusivity
      O        KappaRT,KappaRS,KappaRU,KappaRV,
      I        myThid)
 #endif
+
+          iMin = 1-OLx+2
+          iMax = sNx+OLx-1
+          jMin = 1-OLy+2
+          jMax = sNy+OLy-1
 
 C--      Calculate active tracer tendencies (gT,gS,...)
 C        and step forward storing result in gTnm1, gSnm1, etc.
@@ -529,6 +540,7 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      U         gSnm1,
      I         myIter, myThid)
          ENDIF
+#ifdef ALLOW_PASSIVE_TRACER
          IF ( tr1Stepping ) THEN
            CALL CALC_GTR1(
      I         bi,bj,iMin,iMax,jMin,jMax, k,km1,kup,kDown,
@@ -543,6 +555,7 @@ C        and step forward storing result in gTnm1, gSnm1, etc.
      U         gTr1NM1,
      I         myIter, myThid)
          ENDIF
+#endif
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions
@@ -601,6 +614,7 @@ CADJ STORE gSNm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
      I         myThid )
          ENDIF
 
+#ifdef ALLOW_PASSIVE_TRACER
          IF (tr1Stepping) THEN
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE gTr1Nm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
@@ -611,6 +625,7 @@ CADJ STORE gTr1Nm1(:,:,:,bi,bj) = comlev1_bibj , key=ikey, byte=isbyte
      U      gTr1Nm1,
      I      myThid )
          ENDIF
+#endif
 
 #ifdef   ALLOW_OBCS
 C--      Apply open boundary conditions

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.13 2001/05/29 14:01:36 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_diffusivity.F,v 1.14 2001/07/30 20:37:45 heimbach Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -83,7 +83,7 @@ C     I, J, K - Loop counters
 
 #ifdef ALLOW_KPP
       IF (useKPP) CALL KPP_CALC_DIFF(
-     I        bi,bj,iMin,iMax,jMin,jMax,K,
+     I        bi,bj,iMin+1,iMax,jMin+1,jMax,K,
      I        maskUp,
      O        KappaRT,KappaRS,KappaRU,KappaRV,
      I        myThid)
