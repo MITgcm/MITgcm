@@ -76,7 +76,8 @@ C      before filling buffer.
       oj=exch2_oj(nN,thisTile)
       iBufr=0
 #ifdef W2_E2_DEBUG_ON
-      WRITE(messageBuffer,'(A,I4,A,I4)') 'EXCH2_SEND_RX1 sourceTile= ', thisTile,
+      WRITE(messageBuffer,'(A,I4,A,I4)') 'EXCH2_SEND_RX1 sourceTile= ', 
+     &                                    thisTile,
      &                                   'targetTile= ',tt
       CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_BOTH,
@@ -94,22 +95,26 @@ C      before filling buffer.
          jsl=jsc-jsb
          e2Bufr1_RX(iBufr)=array(isl,jsl,ktl)
 #ifdef W2_E2_DEBUG_ON
-         WRITE(messageBuffer,'(A,2I4)') 'EXCH2_SEND_RX1 target t(itl,jtl) = ', itl, jtl
+      WRITE(messageBuffer,'(A,2I4)') 
+     &     'EXCH2_SEND_RX1 target t(itl,jtl) = ', itl, jtl
          CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_RIGHT,
      I      myThid)
-         WRITE(messageBuffer,'(A,2I4)') '               source  (isl,jsl) = ', isl, jsl
+         WRITE(messageBuffer,'(A,2I4)') 
+     &           '               source  (isl,jsl) = ', isl, jsl
          CALL PRINT_MESSAGE(messageBuffer,
      I      standardMessageUnit,SQUEEZE_RIGHT,
      I      myThid)
          IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
-          WRITE(messageBuffer,'(A,2I4)') '              *** isl is out of bounds'        
+          WRITE(messageBuffer,'(A,2I4)') 
+     &        '              *** isl is out of bounds'        
           CALL PRINT_MESSAGE(messageBuffer,
      I       standardMessageUnit,SQUEEZE_RIGHT,
      I       myThid)
          ENDIF
          IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
-          WRITE(messageBuffer,'(A,2I4)') '              *** jsl is out of bounds'        
+          WRITE(messageBuffer,'(A,2I4)') 
+     &        '              *** jsl is out of bounds'        
           CALL PRINT_MESSAGE(messageBuffer,
      I       standardMessageUnit,SQUEEZE_RIGHT,
      I       myThid)

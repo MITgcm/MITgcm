@@ -144,32 +144,39 @@ C       DO itl=1,32,31
      &       +sa2*array2(isl,jsl,ktl)
          e2Bufr1_RX(iBufr1)=val1
 #ifdef W2_E2_DEBUG_ON
-         WRITE(messageBuffer,'(A,2I4)') 'EXCH2_SEND_RX2 target  u(itl, jtl) = ', itl, jtl
+         WRITE(messageBuffer,'(A,2I4)') 
+     &           'EXCH2_SEND_RX2 target  u(itl, jtl) = ', itl, jtl
          CALL PRINT_MESSAGE(messageBuffer,
      I         standardMessageUnit,SQUEEZE_RIGHT,
      I         myThid)
          IF (     pi(1) .EQ. 1 ) THEN
 C         i index aligns
-          WRITE(messageBuffer,'(A,2I4)') '               source +u(isl, jsl) = ', isl, jsl
+          WRITE(messageBuffer,'(A,2I4)') 
+     &           '               source +u(isl, jsl) = ', isl, jsl
          ELSEIF ( pi(1) .EQ. -1 ) THEN
 C         reversed i index aligns
-          WRITE(messageBuffer,'(A,2I4)') '               source -u(isl, jsl) = ', isl, jsl
+          WRITE(messageBuffer,'(A,2I4)') 
+     &            '               source -u(isl, jsl) = ', isl, jsl
          ELSEIF ( pj(1) .EQ.  1 ) THEN
-          WRITE(messageBuffer,'(A,2I4)') '               source +v(isl, jsl) = ', isl, jsl
+          WRITE(messageBuffer,'(A,2I4)') 
+     &            '               source +v(isl, jsl) = ', isl, jsl
          ELSEIF ( pj(1) .EQ. -1 ) THEN
-          WRITE(messageBuffer,'(A,2I4)') '               source -v(isl, jsl) = ', isl, jsl
+          WRITE(messageBuffer,'(A,2I4)') 
+     &            '               source -v(isl, jsl) = ', isl, jsl
          ENDIF
          CALL PRINT_MESSAGE(messageBuffer,
      I         standardMessageUnit,SQUEEZE_RIGHT,
      I         myThid)
          IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
-          WRITE(messageBuffer,'(A,2I4)') '               *** isl is out of bounds '
+          WRITE(messageBuffer,'(A,2I4)') 
+     &           '               *** isl is out of bounds '
           CALL PRINT_MESSAGE(messageBuffer,
      I     standardMessageUnit,SQUEEZE_RIGHT,
      I     myThid)
          ENDIF
          IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
-          WRITE(messageBuffer,'(A,2I4)') '               *** jsl is out of bounds '
+          WRITE(messageBuffer,'(A,2I4)') 
+     &           '               *** jsl is out of bounds '
           CALL PRINT_MESSAGE(messageBuffer,
      I     standardMessageUnit,SQUEEZE_RIGHT,
      I     myThid)
@@ -275,32 +282,39 @@ C       DO itl=1,32,31
      &       +sa2*array2(isl,jsl,ktl)
          e2Bufr2_RX(iBufr2)=val2
 #ifdef W2_E2_DEBUG_ON
-         WRITE(messageBuffer,'(A,2I4)') 'EXCH2_SEND_RX2 target  v(itl, jtl) = ', itl, jtl
+         WRITE(messageBuffer,'(A,2I4)') 
+     &            'EXCH2_SEND_RX2 target  v(itl, jtl) = ', itl, jtl
          CALL PRINT_MESSAGE(messageBuffer,
      I         standardMessageUnit,SQUEEZE_RIGHT,
      I         myThid)
          IF (     pi(2) .EQ. 1 ) THEN
 C         i index aligns
-          WRITE(messageBuffer,'(A,2I4)') '               source +u(isl, jsl) = ', isl, jsl
+          WRITE(messageBuffer,'(A,2I4)') 
+     &        	'               source +u(isl, jsl) = ', isl, jsl
          ELSEIF ( pi(2) .EQ. -1 ) THEN
 C         reversed i index aligns
-          WRITE(messageBuffer,'(A,2I4)') '               source -u(isl, jsl) = ', isl, jsl
+          WRITE(messageBuffer,'(A,2I4)') 
+     &		'               source -u(isl, jsl) = ', isl, jsl
          ELSEIF ( pj(2) .EQ.  1 ) THEN
-          WRITE(messageBuffer,'(A,2I4)') '               source +v(isl, jsl) = ', isl, jsl
+          WRITE(messageBuffer,'(A,2I4)') 
+     &		'               source +v(isl, jsl) = ', isl, jsl
          ELSEIF ( pj(2) .EQ. -1 ) THEN
-          WRITE(messageBuffer,'(A,2I4)') '               source -v(isl, jsl) = ', isl, jsl
+          WRITE(messageBuffer,'(A,2I4)') 
+     &		'               source -v(isl, jsl) = ', isl, jsl
          ENDIF
          CALL PRINT_MESSAGE(messageBuffer,
      I         standardMessageUnit,SQUEEZE_RIGHT,
      I         myThid)
          IF ( isl .LT. i1Lo .OR. isl .GT. i1Hi ) THEN
-          WRITE(messageBuffer,'(A,2I4)') '               *** isl is out of bounds '
+          WRITE(messageBuffer,'(A,2I4)') 
+     &		'               *** isl is out of bounds '
           CALL PRINT_MESSAGE(messageBuffer,
      I     standardMessageUnit,SQUEEZE_RIGHT,
      I     myThid)
          ENDIF
          IF ( jsl .LT. j1Lo .OR. jsl .GT. j1Hi ) THEN
-          WRITE(messageBuffer,'(A,2I4)') '               *** jsl is out of bounds '
+          WRITE(messageBuffer,'(A,2I4)') 
+     &		'               *** jsl is out of bounds '
           CALL PRINT_MESSAGE(messageBuffer,
      I     standardMessageUnit,SQUEEZE_RIGHT,
      I     myThid)
