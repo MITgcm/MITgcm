@@ -1,9 +1,9 @@
-C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_norma_1k.F,v 1.1 2001/03/06 15:47:31 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/timeave/Attic/timeave_norma_1k.F,v 1.2 2002/10/02 15:47:17 jmc Exp $
 C $Name:  $
 #include "CPP_OPTIONS.h"
 
 CStartofinterface
-      SUBROUTINE TIMEAVER_NORMA_1K( fldtave, timeave, 
+      SUBROUTINE TIMEAVE_NORMA_1K( fldtave, timeave, 
      &                               bi, bj, K, myThid )
 C     /==========================================================\
 C     | SUBROUTINE TIMEAVE_NORMA_1K                              |
