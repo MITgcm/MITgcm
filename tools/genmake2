@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.36 2003/11/14 02:48:18 edhill Exp $
+# $Header: /u/gcmpack/MITgcm/tools/genmake2,v 1.37 2003/11/14 05:25:46 heimbach Exp $
 #
 # Makefile generator for MITgcm UV codes
 #   created  by cnh 03/98
@@ -1492,6 +1492,10 @@ ad_input_code.f: \$(AD_FILES) \$(HEADERFILES)
 	cat \$(AD_FLOW_FILES) \$(AD_FILES) > ad_input_code.f
 
 ad_taf_output.f: ad_input_code.f
+	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.f
+	cat ad_input_code_ad.f | sed -f adjoint_sed > ad_taf_output.f
+
+adtafonly:
 	\$(TAF) \$(AD_TAF_FLAGS) \$(TAF_EXTRA) ad_input_code.f
 	cat ad_input_code_ad.f | sed -f adjoint_sed > ad_taf_output.f
 
