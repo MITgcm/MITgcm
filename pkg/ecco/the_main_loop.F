@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.17 2005/02/28 17:33:02 heimbach Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/ecco/Attic/the_main_loop.F,v 1.18 2005/03/29 20:10:53 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -376,7 +376,17 @@ c--     Set the model iteration counter and the model time.
 
 #ifdef ALLOW_AUTODIFF_TAMC
         CALL AUTODIFF_INADMODE_UNSET( myThid )
+# if (defined (ALLOW_AUTODIFF_MONITOR))
+C       Include call to a dummy routine. Its adjoint will be 
+C       called at the proper place in the adjoint code.
+C       The adjoint routine will print out adjoint values 
+C       if requested. The location of the call is important, 
+C       it has to be after the adjoint of the exchanges 
+C       (DO_GTERM_BLOCKING_EXCHANGES).
+        CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
+# endif
 #endif
+
 
 #ifdef ALLOW_COST
 
@@ -430,17 +440,6 @@ CADJ STORE area  = comlev1, key = ikey_dynamics
 cph this replaces _bibj storing of ptracer within thermodynamics
 CADJ STORE ptracer  = comlev1, key = ikey_dynamics
 # endif
-#endif
-
-#if (defined (ALLOW_AUTODIFF_TAMC) && \
-     defined (ALLOW_AUTODIFF_MONITOR))
-C       Include call to a dummy routine. Its adjoint will be 
-C       called at the proper place in the adjoint code.
-C       The adjoint routine will print out adjoint values 
-C       if requested. The location of the call is important, 
-C       it has to be after the adjoint of the exchanges 
-C       (DO_GTERM_BLOCKING_EXCHANGES).
-        CALL DUMMY_IN_STEPPING( myTime, myIter, myThid )
 #endif
 
 #ifdef ALLOW_EBM
