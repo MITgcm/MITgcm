@@ -1,7 +1,11 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.322 2004/07/06 02:44:27 jmc Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.323 2004/07/07 02:12:08 jmc Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+o staggerTimeStep & NLFS: rescale T & S surface tendencies.
+  affects (truncation error) output of lab_sea & natl_box exp.: updated
+o change pickup _cd & _ptracers (old pickup restart: usePickupBeforeC54=.T.)
 
 checkpoint54a_post
 o re-write staggerTimeStep: step fwd U,V and then T,S (reverse the order).
