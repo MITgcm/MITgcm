@@ -1,8 +1,0 @@
-#  crontab from "bs1101en"
-
-SHELL=/usr/bin/bash
-# HOME=/home/bluesky/edhill
-
-0 * * * * echo `date +%Y%m%d` >> ~/the_date
-30 10 * * * /home/bluesky/edhill/bin/mitgcm_dr_bluesky >> ~/cron_out/`date +%Y%m%d` 2>&1
-

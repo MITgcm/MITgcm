@@ -1,17 +1,46 @@
 #
-#  $Header: /u/gcmpack/MITgcm/tools/example_scripts/README,v 1.1 2003/09/18 17:03:02 edhill Exp $
+#  $Header: /u/gcmpack/MITgcm/tools/example_scripts/README,v 1.2 2004/12/01 22:13:35 edhill Exp $
 #
+
+=====  What is this?  =====
 
 This directory is a collection of scripts and "crontab" entries mostly
 intended for automated testing.  These scripts are not intended for
 casual users.  If you have any questions about them or would like help
-writing one for your system, please contact Ed Hill <eh3@mit.edu>.
+writing one for your system, please contact the folks at:
 
-The naming convention is "$MACHINE_$INFO" where $MACHINE gives some
-indication of where the script is supposed to run and $INFO gives some
-idea of its purpose.
+  MITgcm-support <MITgcm-support@mitgcm.org>
+
+The convention is to name the directories here after the machine (or
+"system" or site) where the scripts are known (or were known at one
+time) to run.  Directories are used since each system may use multiple
+different testing scripts.
 
 
+=====  Why does it work this way?  =====
 
-  bs1101en
+We're sorry that testreport does not work 100% automatically on all
+MPI systems.  The problem is that the $MPIRUN or equivalent command is
+different on almost every system.  Even on a single system, there may
+be a variety of different $MPIRUN executables and each one might take
+slightly different arguments, etc.  And these $MPIRUN issues are
+further complicated by their (often *forced*) interactions with
+whatever queueing system is in effect.  Many systems (eg. UCAR/NCAR)
+will not allow a user to run any MPI programs--even small
+ones--outside of their queueing system.  So the MPI programs *MUST* be
+submitted through the queue.
+
+And this means that you have to get all of the queue system details
+right including (but not limited to!):
+
+  - $QRUN syntax (PBS vs LoadLeveler vs Condor vs ...)
+  - paths to /scratch disks for input and output
+  - shells and shell parameters
+  - "module" conventions (PATHs)
+  - etc-etc-etc...
+
+Unfortunately, these details can vary wildly from one system to the
+next and often require per-user customizations.
+
+These example scripts are meant only as templates!
 
