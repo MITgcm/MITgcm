@@ -17,7 +17,8 @@ C
      &        SEAICEwriteState, SEAICEuseLSR, SEAICEuseDYNAMICS
 
 C--   COMMON /SEAICE_PARM_I/ Integer valued parameters of sea ice model.
-C     LAD        -
+C     LAD        - time stepping used for sea-ice advection:
+C                  1 = LEAPFROG,  2 = BACKWARD EULER.
 C     IMAX_TICE  - number of iterations for ice heat budget   10
 C     NPSEUDO    - number of pseudo-timesteps used in dynsolver
 C DO PSEUDO-TIMESTEPS TO OBTAIN AN ACCURATE VISCOUS-PLASTIC SOLUTION
@@ -125,5 +126,15 @@ C
       _RL MAX_HEFF, MIN_TAIR, MIN_FLO, MAX_TICE, MIN_TICE
       COMMON /SEAICE_BOUND_RL/
      &    MAX_HEFF, MIN_TAIR, MIN_FLO, MAX_TICE, MIN_TICE
+
+C--   Seaice time step
+      COMMON /SEAICE_R/ SEAICE_DT
+      _RL               SEAICE_DT
+
+C--   Constants used by sea-ice model
+      _RL         ZERO           , ONE           , TWO
+      parameter ( ZERO = 0.0 _d 0, ONE = 1.0 _d 0, TWO = 2.0 _d 0 )
+      _RL         QUART            , HALF
+      parameter ( QUART = 0.25 _d 0, HALF = 0.5 _d 0 ) 
 
 #endif ALLOW_SEAICE

@@ -218,7 +218,7 @@ C      Reset averages to zero
          CALL TIMEAVE_RESET(HEFFtave ,1,bi,bj,myThid)
          CALL TIMEAVE_RESET(AREAtave ,1,bi,bj,myThid)
          DO k=1,Nr
-          SEAICE_TimeAve(k,bi,bj)=0.
+          SEAICE_TimeAve(k,bi,bj)=ZERO
          ENDDO
         ENDDO
        ENDDO

@@ -1,7 +1,7 @@
 % need to be in verification/lab_sea/matlab directory
 % and to specify location of exp1 output
 cd ../../../verification/lab_sea/matlab
-exp1_path='../../../exe/exp1/';
+exp1_path='../input/exp1/';
 
 % load monthly-mean SMMR-SSM/I data
 load SSMI
@@ -32,26 +32,35 @@ udir1(in)=uice1(in)./icespeed1(in);
 vdir1(in)=vice1(in)./icespeed1(in);
 
 % plot comparison figures
-clf
-subplot(321)
+
+clf, subplot(321)
 mypcolor(lon,lat,area1'); caxis([0 1]), colorbar
 title('Sea-ice concentration')
+set(gca,'xticklabel',[])
+
 subplot(322)
 mypcolor(lon,lat,area1'-area'); colorbar
-title('Difference with release1 beta1')
+title('Difference with release1 patch5')
+set(gca,'xticklabel',[])
+
 subplot(323)
 mypcolor(lon,lat,heff1'); caxis([0 .3]), colorbar
 title('Effective sea-ice thickness (m)')
+set(gca,'xticklabel',[])
+
 subplot(324)
 mypcolor(lon,lat,heff1'-heff'); colorbar
-title('Difference with release1 beta1')
+title('Difference with release1 patch5')
+set(gca,'xticklabel',[])
+
 subplot(325)
 mypcolor(Blon,Blat,icespeed1'); caxis([0 10]), colorbar
-hold on,myquiver(Blon,Blat,udir1',vdir1','k');
+hold on, myquiver(Blon,Blat,udir1',vdir1','k');
 title('Sea-ice velocity (cm/s)')
+
 subplot(326)
 mypcolor(Blon,Blat,icespeed1'-icespeed'); colorbar
 if mmax(abs(udir1-udir)) | mmax(abs(vdir1-vdir))
-  hold on,myquiver(Blon,Blat,udir1'-udir',vdir1'-vdir','k');
+  hold on, myquiver(Blon,Blat,udir1'-udir',vdir1'-vdir','k');
 end
-title('Difference with release1 beta1')
+title('Difference with release1 patch5')

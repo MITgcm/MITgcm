@@ -69,21 +69,21 @@ C--   set default sea ice parameters
       SEAICEuseDYNAMICS  = .TRUE.
       SEAICE_dumpFreq    = dumpFreq
       SEAICE_taveFreq    = taveFreq
-      SEAICE_drag        = 0.001
-      SEAICE_waterDrag   = 5.5
-      SEAICE_albedo      = 0.66
-      SEAICE_drySnowAlb  = 0.84
-      SEAICE_wetSnowAlb  = 0.7
-      SEAICE_waterAlbedo = 0.1D+00
-      SEAICE_strength    = 2.75D+04
-      SEAICE_sensHeat    = 2.284D+00
-      SEAICE_latentWater = 5.6875D+03
-      SEAICE_latentIce   = 6.4474D+03
-      SEAICE_iceConduct  = 2.1656D+00
-      SEAICE_snowConduct = 3.1D-01
-      SEAICE_emissivity  = 5.5D-08
-      SEAICE_snowThick   = 0.15
-      SEAICE_shortwave   = 0.30
+      SEAICE_drag        = 0.001  _d 0
+      SEAICE_waterDrag   = 5.5    _d 0
+      SEAICE_albedo      = 0.66   _d 0
+      SEAICE_drySnowAlb  = 0.84   _d 0
+      SEAICE_wetSnowAlb  = 0.7    _d 0
+      SEAICE_waterAlbedo = 0.1    _d +00
+      SEAICE_strength    = 2.75   _d +04
+      SEAICE_sensHeat    = 2.284  _d +00
+      SEAICE_latentWater = 5.6875 _d +03
+      SEAICE_latentIce   = 6.4474 _d +03
+      SEAICE_iceConduct  = 2.1656 _d +00
+      SEAICE_snowConduct = 3.1    _d -01
+      SEAICE_emissivity  = 5.5    _d -08
+      SEAICE_snowThick   = 0.15   _d 0
+      SEAICE_shortwave   = 0.30   _d 0
       gairxFile = ' '
       gairyFile = ' '
       tairFile  = ' '
@@ -96,11 +96,11 @@ C--   set default sea ice parameters
       LAD       = 2
       IMAX_TICE = 10
       NPSEUDO   = 10
-      LSR_ERROR = 0.0001
-      DIFF1     = .002
+      LSR_ERROR = 0.0001    _d 0
+      DIFF1     = .002      _d 0
       DIFF1     = 2.0*DIFF1
-      A22       = 0.15
-      HO        = 0.5
+      A22       = 0.15      _d 0
+      HO        = 0.5       _d 0
 C DOUBLE HO BECAUSE OF MOD IN GROWTH
       HO=2.0*HO
       WindForcingStart  = -99999.
@@ -117,11 +117,11 @@ C DOUBLE HO BECAUSE OF MOD IN GROWTH
       SSSForcingPeriod  = -99999.
       StartingYear      = 1948.
       EndingYear        = 2000.
-      MAX_HEFF          = 6.
-      MIN_TAIR          = -50.
-      MIN_FLO           = 60.
-      MAX_TICE          = 30.
-      MIN_TICE          = -50.
+      MAX_HEFF          = 6.      _d 0
+      MIN_TAIR          = -50.    _d 0
+      MIN_FLO           = 60.     _d 0
+      MAX_TICE          = 30.     _d 0
+      MIN_TICE          = -50.    _d 0
 
 C--   Read settings from model parameter file "data.seaice".
       READ(UNIT=iUnit,NML=SEAICE_PARM01,IOSTAT=errIO)

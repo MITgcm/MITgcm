@@ -39,7 +39,7 @@ C     i,j,k,bi,bj - Loop counters
 
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFF1(I,J)=0.0
+          HEFF1(I,J)=0.0 _d 0
          ENDDO
         ENDDO
 

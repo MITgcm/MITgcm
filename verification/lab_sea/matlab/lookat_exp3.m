@@ -1,8 +1,8 @@
 % need to be in verification/lab_sea/matlab directory
 % and to specify location of exp1 output
 cd ../../../verification/lab_sea/matlab
-exp1_path='../../../exe/exp3a/';
-exp2_path='../../../exe/exp3b/';
+exp1_path='../input/exp3a/';
+exp2_path='../input/exp3b/';
 
 % load model output
 uice1=readbin([exp1_path 'UICEtave.0000000001.data'],[20 16 1],1);

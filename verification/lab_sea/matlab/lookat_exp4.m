@@ -1,8 +1,8 @@
 % need to be in verification/lab_sea/matlab directory
 % and to specify location of exp1 and exp2 output
 cd ../../../verification/lab_sea/matlab
-exp1_path='../../../exe/exp1/';
-exp2_path='../../../exe/exp4/';
+exp1_path='../input/exp1/';
+exp2_path='../input/exp4/';
 
 % load monthly-mean SMMR-SSM/I data
 load SSMI
@@ -34,7 +34,7 @@ subplot(425), mypcolor(lon,lat,uice2'); colorbar
 title('Uice')
 subplot(426), mypcolor(lon,lat,uice2'-uice1'); colorbar
 title('2cpu - 1cpu solution')
-subplot(427), mypcolor(lon,lat,area2'); colorbar
+subplot(427), mypcolor(lon,lat,vice2'); colorbar
 title('Vice')
 subplot(428), mypcolor(lon,lat,vice2'-vice1'); colorbar
 title('2cpu - 1cpu solution')

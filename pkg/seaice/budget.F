@@ -56,15 +56,15 @@ C     i,j,k,bi,bj - Loop counters
 C IF KOPEN LT 0 THAN DO OPEN WATER BUDGET
 C NOW DEFINE ASSORTED CONSTANTS
 C SATURATION VAPOR PRESSURE CONSTANT
-      QS1=0.622D+00/1013.0D+00
+      QS1=0.622 _d +00/1013.0 _d +00
 C MAYKUTS CONSTANTS FOR SAT. VAP. PRESSURE TEMP. POLYNOMIAL
-      C1=2.7798202D-06
-      C2=-2.6913393D-03
-      C3=0.97920849D+00
-      C4=-158.63779D+00
-      C5=9653.1925D+00
+      C1=2.7798202 _d -06
+      C2=-2.6913393 _d -03
+      C3=0.97920849 _d +00
+      C4=-158.63779 _d +00
+      C5=9653.1925 _d +00
 C FREEZING TEMPERATURE OF SEAWATER
-      TB=271.2D+00
+      TB=271.2 _d +00
 C SENSIBLE HEAT CONSTANT
       D1=SEAICE_sensHeat
 C WATER LATENT HEAT CONSTANT
@@ -74,8 +74,8 @@ C ICE LATENT HEAT CONSTANT
 C STEFAN BOLTZMAN CONSTANT TIMES 0.97 EMISSIVITY
       D3=SEAICE_emissivity
 C MELTING TEMPERATURE OF ICE
-      TMELT=273.16D+00
-      TMELTP=273.159D+00
+      TMELT=273.16 _d +00
+      TMELTP=273.159 _d +00
 C ICE CONDUCTIVITY
       XKI=SEAICE_iceConduct
 C SNOW CONDUCTIVITY
@@ -87,8 +87,8 @@ C PENETRATION SHORTWAVE RADIATION FACTOR
 
       DO J=1,sNy
        DO I=1,sNx
-        TICE(I,J,bi,bj)=MIN(273.16+MAX_TICE,TICE(I,J,bi,bj))
-        TAIR(I,J,bi,bj)=MAX(273.16+MIN_TAIR,TAIR(I,J,bi,bj))
+        TICE(I,J,bi,bj)=MIN(273.16 _d 0+MAX_TICE,TICE(I,J,bi,bj))
+        TAIR(I,J,bi,bj)=MAX(273.16 _d 0+MIN_TAIR,TAIR(I,J,bi,bj))
         FLO(I,J,bi,bj)=MAX(MIN_FLO,FLO(I,J,bi,bj))
        ENDDO
       ENDDO
@@ -101,14 +101,15 @@ C WATER ALBEDO IS ASSUMED TO BE 0.1
          DO J=1,sNy
           DO I=1,sNx
            ALB(I,J)=SEAICE_waterAlbedo                                
-           A1(I,J)=(1.0-ALB(I,J))*FSH(I,J,bi,bj)+FLO(I,J,bi,bj)
-     &            +D1*UG(I,J)*TAIR(I,J,bi,bj)+D1W*UG(I,J)*QA(I,J,bi,bj)
-           B(I,J)=QS1*6.11D+00*EXP(17.2694D+00*(TICE(I,J,bi,bj)-TMELT)
-     &           /(TICE(I,J,bi,bj)-TMELT+237.3D+00))                   
+           A1(I,J)=(1.0 _d 0-ALB(I,J))*FSH(I,J,bi,bj)+FLO(I,J,bi,bj)
+     &          +D1*UG(I,J)*TAIR(I,J,bi,bj)+D1W*UG(I,J)*QA(I,J,bi,bj)
+           B(I,J)=QS1*6.11 _d +00*EXP(17.2694 _d +00
+     &          *(TICE(I,J,bi,bj)-TMELT)
+     &          /(TICE(I,J,bi,bj)-TMELT+237.3 _d +00))                   
            A2(I,J)=-D1*UG(I,J)*TICE(I,J,bi,bj)-D1W*UG(I,J)*B(I,J)
-     &            -D3*(TICE(I,J,bi,bj)**4)
+     &          -D3*(TICE(I,J,bi,bj)**4)
            FICE1(I,J,bi,bj)=-A1(I,J)-A2(I,J)    
-           QSWO(I,J,bi,bj)=-(1.0-ALB(I,J))*FSH(I,J,bi,bj)
+           QSWO(I,J,bi,bj)=-(ONE-ALB(I,J))*FSH(I,J,bi,bj)
            QNETO(I,J,bi,bj)=FICE1(I,J,bi,bj)-QSWO(I,J,bi,bj)
           ENDDO
          ENDDO
@@ -119,14 +120,14 @@ C COME HERE IF ICE COVER
 C FIRST PUT MINIMUM ON ICE THICKNESS               
          DO J=1,sNy
           DO I=1,sNx
-           HICE(I,J)=MAX(HICE1(I,J),0.05D+00) 
-           HICE(I,J)=MIN(HICE(I,J),9.0D+00)
+           HICE(I,J)=MAX(HICE1(I,J),0.05 _d +00) 
+           HICE(I,J)=MIN(HICE(I,J),9.0 _d +00)
           ENDDO
          ENDDO
 C NOW DECIDE ON ALBEDO                       
          DO J=1,sNy
           DO I=1,sNx
-           ALB(I,J)=0.75E+00
+           ALB(I,J)=0.75 _d +00
            IF(TICE(I,J,bi,bj).GT.TMELTP) ALB(I,J)=SEAICE_albedo
            ASNOW=SEAICE_drySnowAlb
            IF(TICE(I,J,bi,bj).GT.TMELTP) ASNOW=SEAICE_wetSnowAlb
@@ -143,18 +144,21 @@ C NOW DETERMINE FIXED FORCING TERM IN HEAT BUDGET
           DO I=1,sNx
            IF(HSNOW(I,J,bi,bj).GT.0.0) THEN
 C NO SW PENETRATION WITH SNOW
-            A1(I,J)=(1.0-ALB(I,J))*FSH(I,J,bi,bj)+FLO(I,J,bi,bj)
+            A1(I,J)=(ONE-ALB(I,J))*FSH(I,J,bi,bj)+FLO(I,J,bi,bj)
      &       +D1*UG(I,J)*TAIR(I,J,bi,bj)+D1I*UG(I,J)*QA(I,J,bi,bj)
            ELSE
 C SW PENETRATION UNDER ICE
-            A1(I,J)=(1.0-ALB(I,J))*FSH(I,J,bi,bj)
-     &       *(1.0-XIO*EXP(-1.5*HICE(I,J)))+FLO(I,J,bi,bj)
+            A1(I,J)=(ONE-ALB(I,J))*FSH(I,J,bi,bj)
+     &       *(ONE-XIO*EXP(-1.5 _d 0*HICE(I,J)))+FLO(I,J,bi,bj)
      &       +D1*UG(I,J)*TAIR(I,J,bi,bj)+D1I*UG(I,J)*QA(I,J,bi,bj)
            ENDIF
           ENDDO
          ENDDO
 C NOW COMPUTE OTHER TERMS IN HEAT BUDGET                        
-C COME HERE AT START OF ITERATION                              
+C COME HERE AT START OF ITERATION
+
+crg check wether a2 is needed in the list of variables
+c$taf loop = iteration TICE,A2
          DO ITER=1,IMAX_TICE
 
           DO J=1,sNy
@@ -164,7 +168,7 @@ C COME HERE AT START OF ITERATION
             A2(I,J)=-D1*UG(I,J)*TICE(I,J,bi,bj)-D1I*UG(I,J)*B(I,J)
      ?             -D3*(TICE(I,J,bi,bj)**4)
             B(I,J)=XKS/(HSNOW(I,J,bi,bj)/HICE(I,J)+XKS/XKI)/HICE(I,J)
-            A3(I,J)=4.0D+00*D3*(TICE(I,J,bi,bj)**3)+B(I,J)+D1*UG(I,J)
+            A3(I,J)=4.0 _d +00*D3*(TICE(I,J,bi,bj)**3)+B(I,J)+D1*UG(I,J)
             B(I,J)=B(I,J)*(TB-TICE(I,J,bi,bj))
 cdm
 cdm   if(TICE(I,J,bi,bj).le.206.)
@@ -179,7 +183,7 @@ C NOW DETERMINE NEW ICE TEMPERATURE
            DO I=1,sNx
             TICE(I,J,bi,bj)=TICE(I,J,bi,bj)
      &                     +(A1(I,J)+A2(I,J)+B(I,J))/A3(I,J) 
-            TICE(I,J,bi,bj)=MAX(273.16+MIN_TICE,TICE(I,J,bi,bj))
+            TICE(I,J,bi,bj)=MAX(273.16 _d 0+MIN_TICE,TICE(I,J,bi,bj))
            ENDDO
           ENDDO
 C NOW DECIDE IF ITERATIONS ARE COMPLETE                  
@@ -192,6 +196,7 @@ c          IF(ITER.EQ.IMAX_TICE) THEN
             ENDDO
 c          ENDIF
 
+C END OF ITERATION
          ENDDO
 
          DO J=1,sNy
@@ -199,11 +204,11 @@ c          ENDIF
            FICE1(I,J,bi,bj)=-A1(I,J)-A2(I,J)    
            IF(HSNOW(I,J,bi,bj).GT.0.0) THEN
 C NO SW PENETRATION WITH SNOW
-            QSWI(I,J,bi,bj)=0.0
+            QSWI(I,J,bi,bj)=ZERO
            ELSE
 C SW PENETRATION UNDER ICE
-            QSWI(I,J,bi,bj)=-(1.0-ALB(I,J))*FSH(I,J,bi,bj)
-     &       *XIO*EXP(-1.5*HICE(I,J))
+            QSWI(I,J,bi,bj)=-(ONE-ALB(I,J))*FSH(I,J,bi,bj)
+     &       *XIO*EXP(-1.5 _d 0*HICE(I,J))
            ENDIF
           ENDDO
          ENDDO

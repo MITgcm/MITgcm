@@ -35,15 +35,15 @@ C     i,j,k,bi,bj - Loop counters
       _RL  SINWIN, COSWIN, SINWAT, COSWAT
 
 C   25 DEG GIVES SIN EQUAL TO 0.4226
-      SINWIN=0.4226
-      COSWIN=0.9063
-      SINWAT=0.4226
-      COSWAT=0.9063
+      SINWIN=0.4226 _d 0
+      COSWIN=0.9063 _d 0
+      SINWAT=0.4226 _d 0
+      COSWAT=0.9063 _d 0
 c do not introduce turning angle
-      SINWIN=0.0
-      COSWIN=1.0
-      SINWAT=0.0
-      COSWAT=1.0
+      SINWIN=ZERO
+      COSWIN=ONE
+      SINWAT=ZERO
+      COSWAT=ONE
 
 #ifdef SEAICE_ALLOW_DYNAMICS
       IF ( SEAICEuseDYNAMICS ) THEN
@@ -63,9 +63,9 @@ C--   Compute ice-affected wind stress
            WINDY(I,J,bi,bj)=WINDY(I,J,bi,bj)-(-COR_ICE(I,J,bi,bj)
      &          *GWATX(I,J,bi,bj)+COR_ICE(I,J,bi,bj)*UICEC(I,J,bi,bj))
            WINDX(I,J,bi,bj)=WINDX(I,J,bi,bj)-(UICE(I,J,1,bi,bj)
-     &          -UICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/DELTAT*2.0
+     &          -UICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/SEAICE_DT*TWO
            WINDY(I,J,bi,bj)=WINDY(I,J,bi,bj)-(VICE(I,J,1,bi,bj)
-     &          -VICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/DELTAT*2.0
+     &          -VICE(I,J,3,bi,bj))*AMASS(I,J,bi,bj)/SEAICE_DT*TWO
           ENDDO
          ENDDO
         ENDDO
@@ -83,7 +83,7 @@ C--   Compute ice-affected wind stress
       ENDIF
 #endif SEAICE_ALLOW_DYNAMICS
 
-C--   Update overlap regions for PRESS
+C--   Update overlap regions
       _EXCH_XY_R8(WINDX, myThid)
       _EXCH_XY_R8(WINDY, myThid)
 
@@ -92,8 +92,10 @@ C Interpolate wind stress (N/m^2) to C-grid for forcing ocean model
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-          fu(I,J,bi,bj)=0.5*(WINDX(I-1,J-1,bi,bj)+WINDX(I-1,J,bi,bj))
-          fv(I,J,bi,bj)=0.5*(WINDY(I-1,J-1,bi,bj)+WINDY(I,J-1,bi,bj))
+            fu(I,J,bi,bj)=HALF
+     &           *(WINDX(I-1,J-1,bi,bj)+WINDX(I-1,J,bi,bj))
+            fv(I,J,bi,bj)=HALF
+     &           *(WINDY(I-1,J-1,bi,bj)+WINDY(I,J-1,bi,bj))
          ENDDO
         ENDDO
        ENDDO

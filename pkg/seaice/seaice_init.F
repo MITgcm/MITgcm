@@ -49,7 +49,7 @@ C     Initialize averages to zero
         CALL TIMEAVE_RESET(HEFFtave ,1,bi,bj,myThid)
         CALL TIMEAVE_RESET(AREAtave ,1,bi,bj,myThid)
         DO k=1,Nr
-         SEAICE_TimeAve(k,bi,bj)=0.
+         SEAICE_TimeAve(k,bi,bj)=ZERO
         ENDDO
        ENDDO
       ENDDO
@@ -73,24 +73,24 @@ C---  initialize grid info
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          HEFFM(i,j,bi,bj)=1.0
-          IF (_hFacC(i,j,1,bi,bj).eq.0.) HEFFM(i,j,bi,bj)=0.0
+          HEFFM(i,j,bi,bj)=ONE
+          IF (_hFacC(i,j,1,bi,bj).eq.0.) HEFFM(i,j,bi,bj)=ZERO
          ENDDO
         ENDDO
         DO J=1,sNy
          DO I=1,sNx
-          UVM(i,j,bi,bj)=0.0
+          UVM(i,j,bi,bj)=ZERO
           mask_uice=HEFFM(I,J,  bi,bj)+HEFFM(I+1,J+1,bi,bj)
      &             +HEFFM(I,J+1,bi,bj)+HEFFM(I+1,J,  bi,bj)
-          IF(mask_uice.GT.3.5) UVM(I,J,bi,bj)=1.0
+          IF(mask_uice.GT.3.5) UVM(I,J,bi,bj)=ONE
          ENDDO
         ENDDO
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           TICE(I,J,bi,bj)=273.0 _d 0
-          UICEC(I,J,bi,bj)=0.0 _d 0
-          VICEC(I,J,bi,bj)=0.0 _d 0
-          AMASS(I,J,bi,bj)=1000.0
+          UICEC(I,J,bi,bj)=ZERO
+          VICEC(I,J,bi,bj)=ZERO
+          AMASS(I,J,bi,bj)=1000.0 _d 0
          ENDDO
         ENDDO
        ENDDO
@@ -115,13 +115,13 @@ C--   Set model variables to initial/restart conditions
                DO j=1-OLy,sNy+OLy
                   DO i=1-OLx,sNx+OLx
                      HSNOW(I,J,bi,bj)=0.2 _d 0
-                     YNEG(I,J,bi,bj)=0.0 _d 0
+                     YNEG(I,J,bi,bj)=ZERO
                      TMIX(I,J,bi,bj)=TICE(I,J,bi,bj)
                      DO k=1,3
-                        HEFF(I,J,k,bi,bj)=1.0 _d 0
+                        HEFF(I,J,k,bi,bj)=ONE
                         AREA(I,J,k,bi,bj)=HEFFM(i,j,bi,bj)
-                        UICE(I,J,k,bi,bj)=0.0 _d 0
-                        VICE(I,J,k,bi,bj)=0.0 _d 0
+                        UICE(I,J,k,bi,bj)=ZERO
+                        VICE(I,J,k,bi,bj)=ZERO
                      ENDDO
                   ENDDO
                ENDDO
@@ -137,8 +137,8 @@ C---  Complete initialization
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
           ZETA(I,J,bi,bj)=HEFF(I,J,1,bi,bj)*(1.0 _d 11)
-          ETA(I,J,bi,bj)=ZETA(I,J,bi,bj)/4.0
-          surfaceTendencyTice(i,j,bi,bj) = 0.0
+          ETA(I,J,bi,bj)=ZETA(I,J,bi,bj)/4.0 _d 0
+          surfaceTendencyTice(i,j,bi,bj) = ZERO
          ENDDO
         ENDDO
        ENDDO

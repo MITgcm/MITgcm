@@ -1,8 +1,8 @@
 % need to be in verification/lab_sea/matlab directory
 % and to specify location of exp1 output
 cd ../../../verification/lab_sea/matlab
-exp1_path='../../../exe/exp1/';
-exp2_path='../../../exe/exp2/';
+exp1_path='../input/exp1/';
+exp2_path='../input/exp2/';
 
 % load monthly-mean SMMR-SSM/I data
 load SSMI
@@ -33,26 +33,34 @@ udir2(in)=uice2(in)./icespeed2(in);
 vdir2(in)=vice2(in)./icespeed2(in);
 
 % plot comparison figures
-clf
-subplot(321)
+clf, subplot(321)
 mypcolor(lon,lat,area2'); caxis([0 1]), colorbar
 title('Sea-ice concentration using LSR solver')
+set(gca,'xticklabel',[])
+
 subplot(322)
 mypcolor(lon,lat,area2'-area1'); colorbar
 title('Difference with ADI solver')
+set(gca,'xticklabel',[])
+
 subplot(323)
 mypcolor(lon,lat,heff2'); caxis([0 .3]), colorbar
 title('Effective sea-ice thickness (m)')
+set(gca,'xticklabel',[])
+
 subplot(324)
 mypcolor(lon,lat,heff2'-heff1'); colorbar
 title('Difference with ADI solver')
+set(gca,'xticklabel',[])
+
 subplot(325)
 mypcolor(Blon,Blat,icespeed2'); caxis([0 10]), colorbar
-hold on,myquiver(Blon,Blat,udir2',vdir2','k');
+hold on, myquiver(Blon,Blat,udir2',vdir2','k');
 title('Sea-ice velocity (cm/s)')
+
 subplot(326)
 mypcolor(Blon,Blat,icespeed2'-icespeed1'); colorbar
 if mmax(abs(udir2-udir1)) | mmax(abs(vdir2-vdir1))
-  hold on,myquiver(Blon,Blat,udir2'-udir1',vdir2'-vdir1','k');
+  hold on, myquiver(Blon,Blat,udir2'-udir1',vdir2'-vdir1','k');
 end
 title('Difference with ADI solver')

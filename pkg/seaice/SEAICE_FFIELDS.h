@@ -29,15 +29,15 @@ C
 C
       COMMON /SEAICE_FFIELDS/
      &        gairx, gairy, tair, qa, flo, fsh, rain, evap, runoff
-      _RS  gairx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  gairy    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  tair     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  qa       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  flo      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  fsh      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  rain     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  evap     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RS  runoff   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  gairx    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  gairy    (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  tair     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  qa       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  flo      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  fsh      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  rain     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  evap     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL  runoff   (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       COMMON /SEAICE_TDFIELDS/
      &     gairx0, gairx1, gairy0, gairy1, tair0, tair1, qa0, qa1,

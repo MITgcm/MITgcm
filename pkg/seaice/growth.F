@@ -37,30 +37,29 @@ C     === Local variables ===
 C     i,j,k,bi,bj - Loop counters
 
       INTEGER i, j, k, bi, bj
-      _RL  ZERO, ONE, TBC, salinity_ice, SDF, Q0, QS
+      _RL  TBC, salinity_ice, SDF, Q0, QS
       _RL  theta_old
 
       _RL GAREA( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy           )
       _RL GHEFF( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy           )
       _RL AR   ( 1-OLx:sNx+OLx, 1-OLy:sNy+OLy, nSx, nSy )
 
-      ZERO=0.0
-      ONE=1.0
-      salinity_ice=4.0     ! ICE SALINITY
-      TBC=271.2-273.16     ! FREEZING TEMP. OF SEA WATER
-      SDF=1000.0/330.0     ! RATIO OF WATER DESITY AND SNOW DENSITY
-      Q0=1.0D-06/302.0D+00 ! INVERSE HEAT OF FUSION OF ICE
-      QS=1.1D+08           ! HEAT OF FUSION OF SNOW
+      salinity_ice=4.0 _d 0      ! ICE SALINITY
+      TBC=271.2 _d 0-273.16 _d 0 ! FREEZING TEMP. OF SEA WATER
+      SDF=1000.0 _d 0/330.0 _d 0 ! RATIO OF WATER DESITY AND SNOW DENSITY
+      Q0=1.0D-06/302.0 _d +00    ! INVERSE HEAT OF FUSION OF ICE
+      QS=1.1 _d +08              ! HEAT OF FUSION OF SNOW
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO J=1,sNy
          DO I=1,sNx
-          SEAICE_SALT(I,J,bi,bj)=0.0
-          WATR(I,J,bi,bj)=0.0
-          AR(I,J,bi,bj)=MIN(AREA(I,J,2,bi,bj),HEFF(I,J,2,bi,bj)*1.0E+04)
+          SEAICE_SALT(I,J,bi,bj)=ZERO
+          WATR(I,J,bi,bj)=ZERO
+          AR(I,J,bi,bj)=MIN(AREA(I,J,2,bi,bj),
+     &         HEFF(I,J,2,bi,bj)*1.0 _d +04)
 C NOW BALANCE THE HEAT IN OCEAN FIRT LEVEL
-          YNEG(I,J,bi,bj)=(theta(I,J,1,bi,bj)-TBC)*dRf(1)/72.0764
+          YNEG(I,J,bi,bj)=(theta(I,J,1,bi,bj)-TBC)*dRf(1)/72.0764 _d 0
           IF(YNEG(I,J,bi,bj).LE.ZERO) THEN
 C SUPERCOOLING, CONVERT TO ICE
            HEFF(I,J,1,bi,bj)=HEFF(I,J,1,bi,bj)-YNEG(I,J,bi,bj)
@@ -72,14 +71,14 @@ C HERE YNEG IS THE OCEAN TEMP. DIFFERENCE WITH SUPER-COOLING
 C NOW CORRECT ICE THICKNESS
            GHEFF(I,J)=HEFF(I,J,1,bi,bj)
            HEFF(I,J,3,bi,bj)=HEFF(I,J,1,bi,bj)-YNEG(I,J,bi,bj)
-           HEFF(I,J,1,bi,bj)=MAX(0.0,HEFF(I,J,3,bi,bj))
+           HEFF(I,J,1,bi,bj)=MAX(ZERO,HEFF(I,J,3,bi,bj))
 C NOW CORRECT YNEG
            YNEG(I,J,bi,bj)=HEFF(I,J,1,bi,bj)-HEFF(I,J,3,bi,bj)
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
      &                          +(HEFF(I,J,1,bi,bj)-GHEFF(I,J))
            theta_old=theta(I,J,1,bi,bj)
            theta(I,J,1,bi,bj)=
-     &                    (YNEG(I,J,bi,bj)*72.0764/dRf(1)+TBC)
+     &                    (YNEG(I,J,bi,bj)*72.0764 _d 0/dRf(1)+TBC)
 C HERE YNEG IS THE OCEAN TEMP. DIFFERENCE WITH NO SUPER-COOLING
            YNEG(I,J,bi,bj)=theta(I,J,1,bi,bj)-theta_old
           ENDIF
@@ -102,21 +101,21 @@ C NOW CALCULATE CORRECTED GROWTH
         DO J=1,sNy
          DO I=1,sNx
 cdm ===> why is following line here?
-          FICE(I,J,bi,bj)=FICE(I,J,bi,bj)
+cdm       FICE(I,J,bi,bj)=FICE(I,J,bi,bj)
           GHEFF(I,J)=-DELTAT*FICE(I,J,bi,bj)
           GAREA(I,J)=HSNOW(I,J,bi,bj)*QS
           IF(GHEFF(I,J).GT.ZERO.AND.GHEFF(I,J).LE.GAREA(I,J)) THEN
            HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)-GHEFF(I,J)/QS
 C SNOW CONVERTED INTO WATER AND THEN INTO ICE
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &                  -(GHEFF(I,J)/QS)/SDF/0.920*AR(I,J,bi,bj)
+     &                  -(GHEFF(I,J)/QS)/SDF/0.920 _d 0*AR(I,J,bi,bj)
            WATR(I,J,bi,bj)=WATR(I,J,bi,bj)
-     &                  -(GHEFF(I,J)/QS)/SDF/0.920*AR(I,J,bi,bj)
-           FICE(I,J,bi,bj)=0.0D+00
+     &                  -(GHEFF(I,J)/QS)/SDF/0.920 _d 0*AR(I,J,bi,bj)
+           FICE(I,J,bi,bj)=ZERO
           ELSE IF(GHEFF(I,J).GT.GAREA(I,J)) THEN
            FICE(I,J,bi,bj)=-(GHEFF(I,J)-GAREA(I,J))/DELTAT
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &               -HSNOW(I,J,bi,bj)/SDF/0.920*AR(I,J,bi,bj)
+     &               -HSNOW(I,J,bi,bj)/SDF/0.920 _d 0*AR(I,J,bi,bj)
            WATR(I,J,bi,bj)=WATR(I,J,bi,bj)
      &               -HSNOW(I,J,bi,bj)/SDF/0.920*AR(I,J,bi,bj)
            HSNOW(I,J,bi,bj)=0.0
@@ -129,7 +128,7 @@ C NOW GET TOTAL GROWTH RATE
         DO J=1,sNy
          DO I=1,sNx
           FHEFF(I,J,bi,bj)=FICE(I,J,bi,bj)*AR(I,J,bi,bj)
-     &                    +(1.0-AR(I,J,bi,bj))*FO(I,J,bi,bj)
+     &                    +(ONE-AR(I,J,bi,bj))*FO(I,J,bi,bj)
          ENDDO
         ENDDO
 
@@ -139,16 +138,16 @@ C NOW UPDATE AREA
          DO I=1,sNx
           GHEFF(I,J)=-DELTAT*FHEFF(I,J,bi,bj)*Q0
           GAREA(I,J)=DELTAT*FO(I,J,bi,bj)*Q0
-          GHEFF(I,J)=-1.0*MIN(HEFF(I,J,1,bi,bj),GHEFF(I,J))
+          GHEFF(I,J)=-ONE*MIN(HEFF(I,J,1,bi,bj),GHEFF(I,J))
           GAREA(I,J)=MAX(ZERO,GAREA(I,J))
           HCORR(I,J,bi,bj)=MIN(ZERO,GHEFF(I,J))
          ENDDO
         ENDDO
         DO J=1,sNy
          DO I=1,sNx
-          GAREA(I,J)=2.0*(1.0-AREA(I,J,2,bi,bj))*GAREA(I,J)/HO
-     &    +0.5*HCORR(I,J,bi,bj)*AREA(I,J,2,bi,bj)
-     &    /(HEFF(I,J,1,bi,bj)+.00001)
+          GAREA(I,J)=TWO*(ONE-AREA(I,J,2,bi,bj))*GAREA(I,J)/HO
+     &    +HALF*HCORR(I,J,bi,bj)*AREA(I,J,2,bi,bj)
+     &    /(HEFF(I,J,1,bi,bj)+.00001 _d 0)
           AREA(I,J,1,bi,bj)=AREA(I,J,1,bi,bj)+GAREA(I,J)
          ENDDO
         ENDDO
@@ -157,7 +156,7 @@ C NOW UPDATE HEFF
         DO J=1,sNy
          DO I=1,sNx
           GHEFF(I,J)=-DELTAT*FICE(I,J,bi,bj)*Q0*AR(I,J,bi,bj)
-          GHEFF(I,J)=-1.0*MIN(HEFF(I,J,1,bi,bj),GHEFF(I,J))
+          GHEFF(I,J)=-ONE*MIN(HEFF(I,J,1,bi,bj),GHEFF(I,J))
           HEFF(I,J,1,bi,bj)=HEFF(I,J,1,bi,bj)+GHEFF(I,J)
           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)+GHEFF(I,J)
 C NOW CALCULATE QNETI UNDER ICE IF ANY
@@ -170,9 +169,9 @@ C NOW GET TOTAL QNET AND QSW
         DO J=1,sNy
          DO I=1,sNx
           QNET(I,J,bi,bj)=QNETI(I,J,bi,bj)*AR(I,J,bi,bj)
-     &                    +(1.0-AR(I,J,bi,bj))*QNETO(I,J,bi,bj)
+     &                    +(ONE-AR(I,J,bi,bj))*QNETO(I,J,bi,bj)
           QSW(I,J,bi,bj)=QSWI(I,J,bi,bj)*AR(I,J,bi,bj)
-     &                    +(1.0-AR(I,J,bi,bj))*QSWO(I,J,bi,bj)
+     &                    +(ONE-AR(I,J,bi,bj))*QSWO(I,J,bi,bj)
          ENDDO
         ENDDO
 
@@ -184,20 +183,22 @@ C FREEZING, PRECIP ADDED AS SNOW
            HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)
      &               +DELTAT*RAIN(I,J,bi,bj)*AREA(I,J,2,bi,bj)*SDF
           ELSE
-C ADD PRECIP AS RAIN, WATER CONVERTED INTO ICE BY /0.920
+C ADD PRECIP AS RAIN, WATER CONVERTED INTO ICE BY /0.920 _d 0
            SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &               -RAIN(I,J,bi,bj)*AREA(I,J,2,bi,bj)*DELTAT/0.920
+     &               -RAIN(I,J,bi,bj)*AREA(I,J,2,bi,bj)*DELTAT/0.920 _d 0
            WATR(I,J,bi,bj)=WATR(I,J,bi,bj)
-     &               -RAIN(I,J,bi,bj)*AREA(I,J,2,bi,bj)*DELTAT/0.920
+     &               -RAIN(I,J,bi,bj)*AREA(I,J,2,bi,bj)*DELTAT/0.920 _d 0
           ENDIF
 c Now add in precip over open water directly into ocean as negative salt
           SEAICE_SALT(I,J,bi,bj)=SEAICE_SALT(I,J,bi,bj)
-     &          -RAIN(I,J,bi,bj)*(1.0-AREA(I,J,2,bi,bj))*DELTAT/0.920
+     &         -RAIN(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
+     &         *DELTAT/0.920 _d 0
           WATR(I,J,bi,bj)=WATR(I,J,bi,bj)
-     &          -RAIN(I,J,bi,bj)*(1.0-AREA(I,J,2,bi,bj))*DELTAT/0.920
+     &         -RAIN(I,J,bi,bj)*(ONE-AREA(I,J,2,bi,bj))
+     &         *DELTAT/0.920 _d 0
 C NOW GET FRESH WATER FLUX
           EmPmR(I,J,bi,bj)=EVAP(I,J,bi,bj)-RUNOFF(I,J,bi,bj)
-     &                    +SEAICE_SALT(I,J,bi,bj)*0.92/DELTAT
+     &                    +SEAICE_SALT(I,J,bi,bj)*0.92 _d 0/DELTAT
          ENDDO
         ENDDO
 
@@ -227,25 +228,31 @@ c       CALL PLOT_FIELD_XYRS( GAIRY,'Current GAIRY ', myIter, myThid )
      &            HEFF(i,j,1,bi,bj),theta(I,J,1,bi,bj),yneg(I,J,bi,bj)
              print '(A,3f10.2)','QSW, QNET before/after correction',
      &            QSW(I,J,bi,bj),QNETI(I,J,bi,bj)*AR(I,J,bi,bj)
-     &           +(1.0-AR(I,J,bi,bj))*QNETO(I,J,bi,bj), QNET(I,J,bi,bj)
+     &           +(ONE-AR(I,J,bi,bj))*QNETO(I,J,bi,bj), QNET(I,J,bi,bj)
           endif
          ENDDO
         ENDDO
 #endif SEAICE_DEBUG
 
+crg Added by Ralf Giering: do we need DO_WE_NEED_THIS ?
+#define DO_WE_NEED_THIS
 C NOW ZERO OUTSIDE POINTS
         DO J=1,sNy
          DO I=1,sNx
 C NOW SET AREA(I,J,1,bi,bj)=0 WHERE NO ICE IS
           AREA(I,J,1,bi,bj)=MIN(AREA(I,J,1,bi,bj)
-     &                         ,HEFF(I,J,1,bi,bj)/.0001)
+     &                         ,HEFF(I,J,1,bi,bj)/.0001 _d 0)
 C NOW TRUNCATE AREA
+#ifdef DO_WE_NEED_THIS
           AREA(I,J,1,bi,bj)=MIN(ONE,AREA(I,J,1,bi,bj))
           AREA(I,J,1,bi,bj)=MAX(ZERO,AREA(I,J,1,bi,bj))
           HSNOW(I,J,bi,bj)=MAX(ZERO,HSNOW(I,J,bi,bj))
+#endif DO_WE_NEED_THIS
           AREA(I,J,1,bi,bj)=AREA(I,J,1,bi,bj)*HEFFM(I,J,bi,bj)
           HEFF(I,J,1,bi,bj)=HEFF(I,J,1,bi,bj)*HEFFM(I,J,bi,bj)
+#ifdef DO_WE_NEED_THIS
           HEFF(I,J,1,bi,bj)=MIN(MAX_HEFF,HEFF(I,J,1,bi,bj))
+#endif DO_WE_NEED_THIS
           HSNOW(I,J,bi,bj)=HSNOW(I,J,bi,bj)*HEFFM(I,J,bi,bj)
          ENDDO
         ENDDO

@@ -21,6 +21,10 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_FFIELDS.h"
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C     === Routine arguments ===
 C     myTime - Simulation time
 C     myIter - Simulation timestep number
@@ -53,27 +57,27 @@ C     i,j,k,bi,bj - Loop counters
       _RL ZMIN       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,  nSx,nSy)
 
 C FIRST SET UP BASIC CONSTANTS
-      DWAT=0.59
-      DAIR=0.01462
-      RHOICE=0.91D+03
-      RHOAIR=1.3
+      DWAT=0.59 _d 0
+      DAIR=0.01462 _d 0
+      RHOICE=0.91 _d +03
+      RHOAIR=1.3 _d 0
 C   25 DEG GIVES SIN EQUAL TO 0.4226
-      SINWIN=0.4226
-      COSWIN=0.9063
-      SINWAT=0.4226
-      COSWAT=0.9063
+      SINWIN=0.4226 _d 0
+      COSWIN=0.9063 _d 0
+      SINWAT=0.4226 _d 0
+      COSWAT=0.9063 _d 0
 c do not introduce truning angle
-      SINWIN=0.0
-      COSWIN=1.0
-      SINWAT=0.0
-      COSWAT=1.0
+      SINWIN=ZERO
+      COSWIN=ONE
+      SINWAT=ZERO
+      COSWAT=ONE
 
-      GRAV=9.832
+      GRAV=9.832 _d 0
 
-      ECCEN=2.0
-      ECM2=1.0/(ECCEN**2)
-      GMIN=1.0D-20
-      RADIUS=6370.E3
+      ECCEN=TWO
+      ECM2=ONE/(ECCEN**2)
+      GMIN=1.0 _d -20
+      RADIUS=6370. _d 3
 
       PSTAR=SEAICE_strength
 
@@ -83,22 +87,22 @@ c do not introduce truning angle
          DO i=1,sNx
 
 C NOW SET UP MASS PER UNIT AREA AND CORIOLIS TERM
-          AMASS(I,J,bi,bj)=RHOICE*0.25*(HEFF(i,j,1,bi,bj)
+          AMASS(I,J,bi,bj)=RHOICE*QUART*(HEFF(i,j,1,bi,bj)
      &                                 +HEFF(i+1,j,1,bi,bj)
      &                                 +HEFF(i,j+1,1,bi,bj)
      &                                 +HEFF(i+1,j+1,1,bi,bj))
           COR_ICE(I,J,bi,bj)=AMASS(I,J,bi,bj)
-     &                      *2.0*OMEGA*SINEICE(I,J,bi,bj)
+     &                      *TWO*OMEGA*SINEICE(I,J,bi,bj)
 C NOW SET UP FORCING FIELD
 C FIRST WIND
 C IF WIND ON B GRID
           AAA=SQRT(GAIRX(I,J,bi,bj)**2+GAIRY(I,J,bi,bj)**2)
 C IF WIND ON C GRID
-C          AAA=SQRT((0.5*(GAIRX(I+1,J,bi,bj)+GAIRX(I+1,J+1,bi,bj)))**2
-C     &       +(0.5*(GAIRY(I,J+1,bi,bj)+GAIRY(I+1,J+1,bi,bj)))**2)
+C         AAA=SQRT((HALF*(GAIRX(I+1,J,bi,bj)+GAIRX(I+1,J+1,bi,bj)))**2
+C     &       +(HALF*(GAIRY(I,J+1,bi,bj)+GAIRY(I+1,J+1,bi,bj)))**2)
 
           DAIRN(I,J,bi,bj)=RHOAIR*SEAICE_drag*
-     &                     (2.70+0.142*AAA+0.0764*AAA*AAA)
+     &                    (2.70 _d 0+0.142 _d 0*AAA+0.0764 _d 0*AAA*AAA)
 
 C IF WIND ON B GRID
           FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*(COSWIN*GAIRX(I,J,bi,bj)
@@ -107,11 +111,11 @@ C IF WIND ON B GRID
      &                                       +COSWIN*GAIRY(I,J,bi,bj))
 C IF WIND ON C GRID
 C          FORCEX(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-C     &          (COSWIN*0.5*(GAIRX(I+1,J,bi,bj)+GAIRX(I+1,J+1,bi,bj))
-C     &          -SINWIN*0.5*(GAIRY(I,J+1,bi,bj)+GAIRY(I+1,J+1,bi,bj)))
+C     &        (COSWIN*HALF*(GAIRX(I+1,J,bi,bj)+GAIRX(I+1,J+1,bi,bj))
+C     &        -SINWIN*HALF*(GAIRY(I,J+1,bi,bj)+GAIRY(I+1,J+1,bi,bj)))
 C          FORCEY(I,J,bi,bj)=DAIRN(I,J,bi,bj)*
-C     &          (SINWIN*0.5*(GAIRX(I+1,J,bi,bj)+GAIRX(I+1,J+1,bi,bj))
-C     &          +COSWIN*0.5*(GAIRY(I,J+1,bi,bj)+GAIRY(I+1,J+1,bi,bj)))
+C     &        (SINWIN*HALF*(GAIRX(I+1,J,bi,bj)+GAIRX(I+1,J+1,bi,bj))
+C     &        +COSWIN*HALF*(GAIRY(I,J+1,bi,bj)+GAIRY(I+1,J+1,bi,bj)))
 
 C STORE WIND ONLY STRESS 
           WINDX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
@@ -124,9 +128,9 @@ C NOW ADD IN TILT
      &                    +COR_ICE(I,J,bi,bj)*GWATX(I,J,bi,bj)
 C NOW SET UP ICE PRESSURE AND VISCOSITIES
           PRESS(I,J,bi,bj)=PSTAR*HEFF(I,J,1,bi,bj)
-     &                    *EXP(-20.0*(1.0-AREA(I,J,1,bi,bj)))
-          ZMAX(I,J,bi,bj)=(5.0D+12/(2.0D+04))*PRESS(I,J,bi,bj)
-          ZMIN(I,J,bi,bj)=4.0E+08
+     &                    *EXP(-20.0 _d 0*(ONE-AREA(I,J,1,bi,bj)))
+          ZMAX(I,J,bi,bj)=(5.0 _d +12/(2.0 _d +04))*PRESS(I,J,bi,bj)
+          ZMIN(I,J,bi,bj)=4.0 _d +08
           PRESS(I,J,bi,bj)=PRESS(I,J,bi,bj)*HEFFM(I,J,bi,bj)
          ENDDO
         ENDDO
@@ -145,10 +149,10 @@ C--   Update overlap regions for PRESS
          DO i=1,sNx
 C NOW CALCULATE PRESSURE FORCE AND ADD TO EXTERNAL FORCE
           FORCEX(I,J,bi,bj)=FORCEX(I,J,bi,bj)
-     &          -(0.25/(DXUICE(I,J,bi,bj)*CSUICE(I,J,bi,bj)))
+     &          -(QUART/(DXUICE(I,J,bi,bj)*CSUICE(I,J,bi,bj)))
      &          *(PRESS(I+1,J,bi,bj)+PRESS(I+1,J+1,bi,bj)
      &          -PRESS(I,J,bi,bj)-PRESS(I,J+1,bi,bj))
-          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)-0.25/DYUICE(I,J,bi,bj)
+          FORCEY(I,J,bi,bj)=FORCEY(I,J,bi,bj)-QUART/DYUICE(I,J,bi,bj)
      &          *(PRESS(I,J+1,bi,bj)+PRESS(I+1,J+1,bi,bj)
      &          -PRESS(I,J,bi,bj)-PRESS(I+1,J,bi,bj))
 C NOW KEEP FORCEX0
@@ -164,8 +168,16 @@ C 10 PSEUDO-TIMESTEPS OR MORE ARE SUGGESTED FOR HIGH-RESOLUTION (~10KM)
 C 1 PSEUDO-TIMESTEP CAN BE USED FOR LOW-RESOLUTION GLOBAL MODELING
 C NPSEUDO is now set in data.seaice input file
 C TIMESTEP FOR PSEUDO-TIMESTEPPING
-      DELTAT=DELTAT/NPSEUDO
+      SEAICE_DT = DELTAT/NPSEUDO
+
+crg what about DWAIN,DRAGS,DRAGA,ETA,ZETA
+
+crg later c$taf loop = iteration uice,vice
+
       DO 5000 KII=1,NPSEUDO
+
+c$taf store uice,vice = comlev1_seaice_ds,
+c$taf&                key = kii + (ikey_dynamics-1)*NPSEUDO
 
 C NOW DO PREDICTOR TIME STEP
       DO bj=myByLo(myThid),myByHi(myThid)
@@ -185,11 +197,11 @@ C NOW DO PREDICTOR TIME STEP
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1,sNy
          DO i=1,sNx
-C NOW SET UP NON-LINEAR WATER DRAG
+C NOW SET UP NON-LINEAR WATER DRAG, FORCEX, FORCEY
           DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT((UICE(I,J,1,bi,bj)
      &                    -GWATX(I,J,bi,bj))**2
      &                    +(VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj))**2)
-          DWATN(I,J,bi,bj)=MAX(DWATN(I,J,bi,bj),0.25 d 0) 
+          DWATN(I,J,bi,bj)=MAX(DWATN(I,J,bi,bj),QUART) 
 C NOW SET UP SYMMETTRIC DRAG
           DRAGS(I,J,bi,bj)=DWATN(I,J,bi,bj)*COSWAT
 C NOW SET UP ANTI SYMMETTRIC DRAG PLUS CORIOLIS
@@ -211,31 +223,31 @@ C NOW ADD IN CURRENT FORCE
         DO j=1,sNy
          DO i=1,sNx
 C NOW EVALUATE STRAIN RATES
-          E11(I,J,bi,bj)=0.5/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
+          E11(I,J,bi,bj)=HALF/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
      &                  *(UICE(I,J,1,bi,bj)+UICE(I,J-1,1,bi,bj)
      &                  -UICE(I-1,J,1,bi,bj)-UICE(I-1,J-1,1,bi,bj))
-     &                  -0.25*(VICE(I,J,1,bi,bj)+VICE(I-1,J,1,bi,bj)
+     &                  -QUART*(VICE(I,J,1,bi,bj)+VICE(I-1,J,1,bi,bj)
      &                  +VICE(I-1,J-1,1,bi,bj)+VICE(I,J-1,1,bi,bj))
      &                  *TNGTICE(I,J,bi,bj)/RADIUS
-          E22(I,J,bi,bj)=0.5/DYTICE(I,J,bi,bj)
+          E22(I,J,bi,bj)=HALF/DYTICE(I,J,bi,bj)
      &                  *(VICE(I,J,1,bi,bj)+VICE(I-1,J,1,bi,bj)
      &                  -VICE(I,J-1,1,bi,bj)-VICE(I-1,J-1,1,bi,bj))
-          E12(I,J,bi,bj)=0.5*(0.5/DYTICE(I,J,bi,bj)
+          E12(I,J,bi,bj)=HALF*(HALF/DYTICE(I,J,bi,bj)
      &                  *(UICE(I,J,1,bi,bj)+UICE(I-1,J,1,bi,bj)
      &                  -UICE(I,J-1,1,bi,bj)-UICE(I-1,J-1,1,bi,bj))
-     &                  +0.5/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
+     &                  +HALF/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
      &                  *(VICE(I,J,1,bi,bj)+VICE(I,J-1,1,bi,bj)
      &                  -VICE(I-1,J,1,bi,bj)-VICE(I-1,J-1,1,bi,bj))
-     &                  +0.25*(UICE(I,J,1,bi,bj)+UICE(I-1,J,1,bi,bj)
+     &                  +QUART*(UICE(I,J,1,bi,bj)+UICE(I-1,J,1,bi,bj)
      &                  +UICE(I-1,J-1,1,bi,bj)+UICE(I,J-1,1,bi,bj))
      &                  *TNGTICE(I,J,bi,bj)/RADIUS)
 C  NOW EVALUATE VISCOSITIES
-          DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(1.0+ECM2)
-     &        +4.0*ECM2*E12(I,J,bi,bj)**2
-     1        +2.0*E11(I,J,bi,bj)*E22(I,J,bi,bj)*(1.0-ECM2)
+          DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(ONE+ECM2)
+     &        +4.0 _d 0*ECM2*E12(I,J,bi,bj)**2
+     1        +TWO*E11(I,J,bi,bj)*E22(I,J,bi,bj)*(ONE-ECM2)
           DELT2=SQRT(DELT1)
           DELT2=MAX(GMIN,DELT2)
-          ZETA(I,J,bi,bj)=0.5*PRESS(I,J,bi,bj)/DELT2
+          ZETA(I,J,bi,bj)=HALF*PRESS(I,J,bi,bj)/DELT2
 C NOW PUT MIN AND MAX VISCOSITIES IN
           ZETA(I,J,bi,bj)=MIN(ZMAX(I,J,bi,bj),ZETA(I,J,bi,bj))
           ZETA(I,J,bi,bj)=MAX(ZMIN(I,J,bi,bj),ZETA(I,J,bi,bj))
@@ -263,8 +275,8 @@ C NOW DO MODIFIED EULER STEP
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=1-OLy,sNy+OLy
          DO i=1-OLx,sNx+OLx
-          UICE(I,J,1,bi,bj)=0.5*(UICE(I,J,1,bi,bj)+UICE(I,J,2,bi,bj))
-          VICE(I,J,1,bi,bj)=0.5*(VICE(I,J,1,bi,bj)+VICE(I,J,2,bi,bj))
+          UICE(I,J,1,bi,bj)=HALF*(UICE(I,J,1,bi,bj)+UICE(I,J,2,bi,bj))
+          VICE(I,J,1,bi,bj)=HALF*(VICE(I,J,1,bi,bj)+VICE(I,J,2,bi,bj))
           UICEC(I,J,bi,bj)=UICE(I,J,1,bi,bj)
           VICEC(I,J,bi,bj)=VICE(I,J,1,bi,bj)
          ENDDO
@@ -280,7 +292,7 @@ C NOW SET UP NON-LINEAR WATER DRAG
           DWATN(I,J,bi,bj)=SEAICE_waterDrag*SQRT((UICE(I,J,1,bi,bj)
      &                    -GWATX(I,J,bi,bj))**2
      &                    +(VICE(I,J,1,bi,bj)-GWATY(I,J,bi,bj))**2)
-          DWATN(I,J,bi,bj)=MAX(DWATN(I,J,bi,bj),0.25 d 0) 
+          DWATN(I,J,bi,bj)=MAX(DWATN(I,J,bi,bj),QUART) 
 C NOW SET UP SYMMETTRIC DRAG
           DRAGS(I,J,bi,bj)=DWATN(I,J,bi,bj)*COSWAT
 C NOW SET UP ANTI SYMMETTRIC DRAG PLUS CORIOLIS
@@ -302,31 +314,31 @@ C NOW ADD IN CURRENT FORCE
         DO j=1,sNy
          DO i=1,sNx
 C NOW EVALUATE STRAIN RATES
-          E11(I,J,bi,bj)=0.5/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
+          E11(I,J,bi,bj)=HALF/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
      &                  *(UICE(I,J,1,bi,bj)+UICE(I,J-1,1,bi,bj)
      &                  -UICE(I-1,J,1,bi,bj)-UICE(I-1,J-1,1,bi,bj))
-     &                  -0.25*(VICE(I,J,1,bi,bj)+VICE(I-1,J,1,bi,bj)
+     &                  -QUART*(VICE(I,J,1,bi,bj)+VICE(I-1,J,1,bi,bj)
      &                  +VICE(I-1,J-1,1,bi,bj)+VICE(I,J-1,1,bi,bj))
      &                  *TNGTICE(I,J,bi,bj)/RADIUS
-          E22(I,J,bi,bj)=0.5/DYTICE(I,J,bi,bj)
+          E22(I,J,bi,bj)=HALF/DYTICE(I,J,bi,bj)
      &                  *(VICE(I,J,1,bi,bj)+VICE(I-1,J,1,bi,bj)
      &                  -VICE(I,J-1,1,bi,bj)-VICE(I-1,J-1,1,bi,bj))
-          E12(I,J,bi,bj)=0.5*(0.5/DYTICE(I,J,bi,bj)
+          E12(I,J,bi,bj)=HALF*(HALF/DYTICE(I,J,bi,bj)
      &                  *(UICE(I,J,1,bi,bj)+UICE(I-1,J,1,bi,bj)
      &                  -UICE(I,J-1,1,bi,bj)-UICE(I-1,J-1,1,bi,bj))
-     &                  +0.5/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
+     &                  +HALF/(DXTICE(I,J,bi,bj)*CSTICE(I,J,bi,bj))
      &                  *(VICE(I,J,1,bi,bj)+VICE(I,J-1,1,bi,bj)
      &                  -VICE(I-1,J,1,bi,bj)-VICE(I-1,J-1,1,bi,bj))
-     &                  +0.25*(UICE(I,J,1,bi,bj)+UICE(I-1,J,1,bi,bj)
+     &                  +QUART*(UICE(I,J,1,bi,bj)+UICE(I-1,J,1,bi,bj)
      &                  +UICE(I-1,J-1,1,bi,bj)+UICE(I,J-1,1,bi,bj))
      &                  *TNGTICE(I,J,bi,bj)/RADIUS)
 C  NOW EVALUATE VISCOSITIES
-          DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(1.0+ECM2)
-     &        +4.0*ECM2*E12(I,J,bi,bj)**2
-     1        +2.0*E11(I,J,bi,bj)*E22(I,J,bi,bj)*(1.0-ECM2)
+          DELT1=(E11(I,J,bi,bj)**2+E22(I,J,bi,bj)**2)*(ONE+ECM2)
+     &        +4. _d 0*ECM2*E12(I,J,bi,bj)**2
+     1        +TWO*E11(I,J,bi,bj)*E22(I,J,bi,bj)*(ONE-ECM2)
           DELT2=SQRT(DELT1)
           DELT2=MAX(GMIN,DELT2)
-          ZETA(I,J,bi,bj)=0.5*PRESS(I,J,bi,bj)/DELT2
+          ZETA(I,J,bi,bj)=HALF*PRESS(I,J,bi,bj)/DELT2
 C NOW PUT MIN AND MAX VISCOSITIES IN
           ZETA(I,J,bi,bj)=MIN(ZMAX(I,J,bi,bj),ZETA(I,J,bi,bj))
           ZETA(I,J,bi,bj)=MAX(ZMIN(I,J,bi,bj),ZETA(I,J,bi,bj))
@@ -363,6 +375,8 @@ C NOW ADI SCHEME (ZHANG-J/ROTHROCK 1999)
 
 5000  CONTINUE
 
+c$taf store uice,vice = comlev1, key=ikey_dynamics
+
       ENDIF
 #endif SEAICE_ALLOW_DYNAMICS
 
@@ -371,9 +385,6 @@ C Calculate ocean surface stress
 
 #ifdef SEAICE_ALLOW_DYNAMICS
       IF ( SEAICEuseDYNAMICS ) THEN
-
-C NOW BACK TO NORMAL TIMESTEP
-      DELTAT=DELTAT*NPSEUDO
 
 c Put a cap on ice velocity
 c limit velocity to 0.40 m s-1 to avoid potential CFL violations
@@ -390,10 +401,10 @@ c     &     ,forcex(I,J,bi,bj),forcey(i,j,bi,bj)
 c     &     ,uice(i,j,1,bi,bj)
 c     &     ,vice(i,j,1,bi,bj)
 #endif SEAICE_DEBUG
-          UICE(i,j,1,bi,bj)=min(UICE(i,j,1,bi,bj),0.40D+00)
-          VICE(i,j,1,bi,bj)=min(VICE(i,j,1,bi,bj),0.40D+00)
-          UICE(i,j,1,bi,bj)=max(UICE(i,j,1,bi,bj),-0.40D+00)
-          VICE(i,j,1,bi,bj)=max(VICE(i,j,1,bi,bj),-0.40D+00)
+          UICE(i,j,1,bi,bj)=min(UICE(i,j,1,bi,bj),0.40 _d +00)
+          VICE(i,j,1,bi,bj)=min(VICE(i,j,1,bi,bj),0.40 _d +00)
+          UICE(i,j,1,bi,bj)=max(UICE(i,j,1,bi,bj),-0.40 _d +00)
+          VICE(i,j,1,bi,bj)=max(VICE(i,j,1,bi,bj),-0.40 _d +00)
          ENDDO
         ENDDO
        ENDDO

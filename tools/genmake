@@ -1,6 +1,6 @@
 #!/bin/csh -f
 #
-# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.72 2002/11/21 19:36:38 cheisey Exp $
+# $Header: /u/gcmpack/MITgcm/tools/Attic/genmake,v 1.73 2002/12/05 08:43:03 dimitri Exp $
 # $Name:  $
 #
 # Makefile generator for MITgcm UV codes
@@ -411,9 +411,8 @@ switch ($platform$USEMPI)
     set INCLUDES   = ( '-I/usr/local/mpi/include' )
     set FFLAGS     = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4 -r8 -static' )
     set FOPTIM     = ( '-O3' )
-#   set NOOPTFLAGS = ( '-O0' )
-#   set NOOPTFILES = ( 'barrier.F different_multiple.F ' \
-#                      'external_fields_load.F' )
+    if ($?IEEE) set FFLAGS = ( '-extend_source -mp -mpio -bytereclen -r10000 -mips4 -static' )
+    if ($?IEEE) set FOPTIM = ( '-O0 -OPT:IEEE_arithmetic=1 -OPT:IEEE_NaN_inf=ON' )
     set RMFILES    = ( 'rii_files' )
     breaksw
   case o2:
@@ -439,10 +438,17 @@ switch ($platform$USEMPI)
     set DEFINES    = ( ${DEFINES} '-DTARGET_SGI -DWORDLENGTH=4' )
     set INCLUDES   = ( '-I/usr/include' )
     set FFLAGS     = ( '-n32 -extend_source -bytereclen' )
-    set FOPTIM     = ( '-O2' )
-    set NOOPTFILES = ( 'calc_mom_rhs.F' )
-    set NOOPTFLAGS = ( '-O1' )
+    set FOPTIM     = ( '-O3 -OPT:Olimit=0:roundoff=3:div_split=ON:alias=typed' )
     set LIBS       = ( '-lmpi -lscs' )
+    breaksw
+  case o2k_noopt:
+  case o2k_noopt+mpi:
+    echo "Configuring for SGI Origin2000 running IRIX 6.5"
+    set DEFINES    = ( ${DEFINES} '-DTARGET_SGI -DWORDLENGTH=4' )
+    set INCLUDES   = ( '-I/usr/include' )
+    set FFLAGS     = ( '-n32 -extend_source -bytereclen' )
+    set FOPTIM     = ( '-O0' )
+    set LIBS       = ( '-lmpi' )
     breaksw
   case onyx:
   case onyx+mpi:

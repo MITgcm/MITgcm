@@ -21,6 +21,10 @@ C     === Global variables ===
 #include "SEAICE_PARAMS.h"
 #include "SEAICE_EXTERNAL.h"
 
+#ifdef ALLOW_AUTODIFF_TAMC
+# include "tamc.h"
+#endif /* ALLOW_AUTODIFF_TAMC */
+
 C     === Routine arguments ===
 C     myTime - Simulation time
 C     myIter - Simulation timestep number
@@ -45,9 +49,9 @@ C--   Third level model velocity is used as proxy for geostrophic velocity
        DO bi=myBxLo(myThid),myBxHi(myThid)
         DO j=0,sNy+1
          DO i=0,sNx+1
-          GWATX(I,J,bi,bj)=0.5*(uVel(i+1,j,3,bi,bj)
+          GWATX(I,J,bi,bj)=HALF*(uVel(i+1,j,3,bi,bj)
      &                         +uVel(i+1,j+1,3,bi,bj))
-          GWATY(I,J,bi,bj)=0.5*(vVel(i,j+1,3,bi,bj)
+          GWATY(I,J,bi,bj)=HALF*(vVel(i,j+1,3,bi,bj)
      &                         +vVel(i+1,j+1,3,bi,bj))
 #ifdef SEAICE_DEBUG
 c          write(*,'(2i4,2i2,f7.1,7f12.3)')
@@ -94,6 +98,16 @@ C--   Sea ice diagnostics.
 C--   Write sea ice restart files
       CALL SEAICE_WRITE_PICKUP ( .FALSE.,
      &     myTime+deltaTClock, myIter+1, myThid )
+
+C---------------------------------------------------
+C OOH NOOOO we need to move the whole stuff
+C---------------------------------------------------
+#ifdef ALLOW_AUTODIFF_TAMC
+CRG CADJ store UICE,VICE,AREA,HEFF,fu,fv,EmPmR,Qnet,Qsw = comlev1_bibj
+#endif /* ALLOW_AUTODIFF_TAMC */
+
+C--   Call sea-ice cost function routine
+CRG      CALL SEAICE_COST( myTime, myIter, myThid )
 
 #endif ALLOW_SEAICE
 

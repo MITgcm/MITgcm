@@ -93,34 +93,34 @@ C--   Check to see whether myTime is outside available forcing data
 
 C--   First call requires that we initialize everything for safety
       IF ( myIter .EQ. nIter0 ) THEN
-       initValue = 0.
+       initValue = ZERO
        CALL INIT_ARRAY_RS( gairx0 , initValue, myThid )
        CALL INIT_ARRAY_RS( gairx1 , initValue, myThid )
        CALL INIT_ARRAY_RS( gairy0 , initValue, myThid )
        CALL INIT_ARRAY_RS( gairy1 , initValue, myThid )
-       initValue = 283.
+       initValue = 283. _d 0
        CALL INIT_ARRAY_RS( tair0  , initValue, myThid )
        CALL INIT_ARRAY_RS( tair1  , initValue, myThid )
-       initValue = 0.005
+       initValue = 0.005 _d 0
        CALL INIT_ARRAY_RS( qa0    , initValue, myThid )
        CALL INIT_ARRAY_RS( qa1    , initValue, myThid )
-       initValue = 300.
+       initValue = 300. _d 0
        CALL INIT_ARRAY_RS( flo0   , initValue, myThid )
        CALL INIT_ARRAY_RS( flo1   , initValue, myThid )
-       initValue = 200.
+       initValue = 200. _d 0
        CALL INIT_ARRAY_RS( fsh0   , initValue, myThid )
        CALL INIT_ARRAY_RS( fsh1   , initValue, myThid )
-       initValue = 0.
+       initValue = ZERO
        CALL INIT_ARRAY_RS( rain0  , initValue, myThid )
        CALL INIT_ARRAY_RS( rain1  , initValue, myThid )
        CALL INIT_ARRAY_RS( evap0  , initValue, myThid )
        CALL INIT_ARRAY_RS( evap1  , initValue, myThid )
        CALL INIT_ARRAY_RS( runoff0, initValue, myThid )
        CALL INIT_ARRAY_RS( runoff1, initValue, myThid )
-       initValue = 35.
+       initValue = 35. _d 0
        CALL INIT_ARRAY_RS( SSSsi0   , initValue, myThid )
        CALL INIT_ARRAY_RS( SSSsi1   , initValue, myThid )
-       initValue = 10.
+       initValue = 10. _d 0
        CALL INIT_ARRAY_RS( SSTsi0   , initValue, myThid )
        CALL INIT_ARRAY_RS( SSTsi1   , initValue, myThid )
 
@@ -236,7 +236,7 @@ C--   Now calculate whether if it is time to update wind speed arrays
       iRec = int((YearTime-WindForcingStart)/WindForcingPeriod) + 2
       aWghtWind = mod(YearTime-WindForcingStart,WindForcingPeriod) /
      &        WindForcingPeriod
-      bWghtWind=1.-aWghtWind
+      bWghtWind=ONE-aWghtWind
       IF ( aWghtWind .EQ. 0 ) THEN
        _BEGIN_MASTER(myThid)
        write(0,*)
@@ -275,7 +275,7 @@ C--   Now calculate whether if it is time to update heat and freshwater flux
       iRec = int((YearTime-FluxForcingStart)/FluxForcingPeriod) + 2
       aWghtFlux = mod(YearTime-FluxForcingStart,FluxForcingPeriod) /
      &        FluxForcingPeriod
-      bWghtFlux=1.-aWghtFlux
+      bWghtFlux=ONE-aWghtFlux
       IF ( aWghtFlux .EQ. 0 ) THEN
        _BEGIN_MASTER(myThid)
        write(0,*)
@@ -369,10 +369,10 @@ C--   Now calculate whether if it is time to update SST array
       iRec = int((YearTime-SSTforcingStart)/SSTforcingPeriod) + 2
       aWghtSST = mod(YearTime-SSTforcingStart,SSTforcingPeriod) /
      &        SSTforcingPeriod
-      bWghtSST=1.-aWghtSST
+      bWghtSST=ONE-aWghtSST
       IF ( aWghtSST .EQ. 0 .AND. thetaClimFile .NE. ' ' ) THEN
        _BEGIN_MASTER(myThid)
-       write(0,*) 'S/R EXTERNAL_FIELDS_LOAD: reading SST',myTime,myIter
+       write(0,*) 'S/R SEAICE_GET_FORCING: reading SST',myTime,myIter
        iEnd = ILNBLNK( thetaClimFile ) - 2
        WRITE(fName,'(A,I2.2)') thetaClimFile(1:iEnd), CurrentYear2
        IF (SST0_is_first) THEN
@@ -394,10 +394,10 @@ C--   Now calculate whether if it is time to update SSS array
       iRec = int((YearTime-SSSforcingStart)/SSSforcingPeriod) + 2
       aWghtSSS = mod(YearTime-SSSforcingStart,SSSforcingPeriod) /
      &        SSSforcingPeriod
-      bWghtSSS=1.-aWghtSSS
+      bWghtSSS=ONE-aWghtSSS
       IF ( aWghtSSS .EQ. 0 .AND. saltClimFile .NE. ' ') THEN
        _BEGIN_MASTER(myThid)
-       write(0,*) 'S/R EXTERNAL_FIELDS_LOAD: reading SSS',myTime,myIter
+       write(0,*) 'S/R SEAICE_GET_FORCING: reading SSS',myTime,myIter
        IF (SSS0_is_first) THEN
         CALL READ_REC_XY_RS( saltClimFile,SSSsi0,iRec,myIter,myThid )
        ELSE
