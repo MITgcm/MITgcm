@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.45 2001/02/06 03:08:59 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.46 2001/03/01 16:45:29 jmc Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -456,7 +456,7 @@ C     Eddy component of vertical flux (interior component only)
      & *_RA_AT_W
      &   *( uVel(i,j,k,bi,bj)-uVel(i,j,kp1,bi,bj)
      &    )*rkFac*recip_drC(kp1)
-     &    *_maskW(i,j,kp1,bi,bj)*rVelMaskOverride
+     &    *_maskW(i,j,kp1,bi,bj)
         ENDDO
        ENDDO
       ENDIF
@@ -751,7 +751,7 @@ C     o Mean flow component of vertical flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         af(i,j) =
-     &   rVelMaskOverride*wVelBottomOverride*(
+     &   wVelBottomOverride*(
      &        wVel(i, j ,kp1,bi,bj)*rA(i, j ,bi,bj)
      &       +wVel(i,j-1,kp1,bi,bj)*rA(i,j-1,bi,bj)
      &                    )
@@ -783,7 +783,7 @@ C     Eddy component of vertical flux
      & *_RA_AT_S
      &   *(vVel(i,j,k,bi,bj)-vVel(i,j,kp1,bi,bj))
      &   *rkFac*recip_drC(kp1)
-     &   *_maskS(i,j,kp1,bi,bj)*rVelMaskOverride
+     &   *_maskS(i,j,kp1,bi,bj)
         ENDDO
        ENDDO
       ENDIF
