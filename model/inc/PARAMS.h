@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.120 2004/07/16 01:18:47 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/PARAMS.h,v 1.121 2004/09/02 09:13:08 mlosch Exp $
 C $Name:  $
 C
 CBOP
@@ -673,6 +673,8 @@ C             derived from the orography. Implemented: 0,1 (see INI_P_GROUND)
       INTEGER integr_GeoPot, selectFindRoSurf
 
 C Logical flags for selecting packages
+      LOGICAL usePP81
+      LOGICAL useMY82
       LOGICAL useKPP
       LOGICAL useGMRedi
       LOGICAL useOBCS
@@ -696,7 +698,8 @@ C Logical flags for selecting packages
      &        useKPP, useGMRedi, useOBCS, useAIM, useLand, useECCO, 
      &        useSHAP_FILT, useZONAL_FILT, useGrdchk, useFLT,
      &        usePTRACERS,  useSBO, useSEAICE, useThSIce, useBulkForce, 
-     &        usefizhi,  usegridalt, usediagnostics, useEBM
+     &        usefizhi,  usegridalt, usediagnostics, useEBM,
+     &        usePP81, useMY82
 
 C     Run-time flags for early-initialization of MNC
       LOGICAL
