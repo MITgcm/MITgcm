@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/set_obcs.F,v 1.7 2000/03/14 17:47:25 adcroft Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/set_obcs.F,v 1.8 2000/09/11 20:49:33 heimbach Exp $
 
 #include "CPP_OPTIONS.h"
 
@@ -58,7 +58,6 @@ C     I,i,K
        OBSv(I,K,bi,bj)=0.
        OBSt(I,K,bi,bj)=tRef(K)
       ENDDO
-     ENDDO
 
 #endif
       RETURN
