@@ -1,0 +1,4 @@
+# SEAICE parameters
+ &SEAICE_PARM01
+      SEAICEwriteState  = .TRUE.
+ &
