@@ -5,6 +5,11 @@
 C !INTERFACE: ==========================================================
       SUBROUTINE GCHEM_INIT_FIXED(myThid )
 
+C !DESCRIPTION:
+C calls subroutines that initialized fixed variables for any tracer
+C experiment
+
+C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
@@ -15,6 +20,7 @@ C !INTERFACE: ==========================================================
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER myThid
+CEOP
 
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM

@@ -1,17 +1,27 @@
 #include "CPP_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
-CStartOfInterFace
+CBOP
+C !ROUTINE: GCHEM_FIELDS_LOAD
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GCHEM_FIELDS_LOAD (
      I           myTime,myIter, myThid)
 
-C     /==========================================================\
-C     | SUBROUTINE GCHEM_FIELDS_LOAD  i                          |
-C     | o calls routines to read in fields needed for gchem pkgs |
-C     |==========================================================|
+C !DESCRIPTION:
+C  calls routines which read in fields needed for any tracer experiment
+C !USES: ===============================================================
       IMPLICIT NONE
       INTEGER myThid, myIter
-      _RL myTime
+      _RL myTime 
+
+C !INPUT PARAMETERS: ===================================================
+C  myThid               :: thread number
+C  myIter               :: current timestep
+C  myTime               :: current timestep
+
+C !LOCAL VARIABLES: ====================================================
+CEOP
 
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM

@@ -2,10 +2,19 @@
 #include "PTRACERS_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GCHEM_FORCING_INT
+
 C !INTERFACE: ==========================================================
       SUBROUTINE GCHEM_FORCING_INT(bi,bj,iMin,iMax,jMin,jMax,k,
      &                           iTracer, myTime,myIter, myThid )
 
+C !DESCRIPTION:
+C calls subroutine that will update tracer tendencies
+C this will be incorporated into regular timestepping in
+C ptracers_intergrate.F
+
+C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
@@ -18,12 +27,21 @@ C !INTERFACE: ==========================================================
 
 C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
+C  myIter               :: current timestep
+C  myTime               :: current time
+C  iTracer              :: ptracer number
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
       INTEGER myThid, myIter
       _RL myTime
       INTEGER iTracer
-      INTEGER bi,bj,imin,imax,jmin,jmax
-      INTEGER i,j,k
+      INTEGER bi,bj,imin,imax,jmin,jmax,k
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+      INTEGER i,j
       INTEGER niter
+CEOP
 
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM

@@ -2,9 +2,16 @@
 #include "PTRACERS_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
+CBOP
 C !INTERFACE: ==========================================================
       SUBROUTINE GCHEM_FORCING_SEP(myTime,myIter, myThid )
 
+C !DESCRIPTION:
+C calls subroutine that will update tracers values.
+C this will be in a secondary timestep after that used for
+C advection and diffusion in ptracers_intergrate.F
+
+C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
@@ -23,9 +30,15 @@ C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER myThid, myIter
       _RL myTime
+
+ !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+C  bi,bj                :: tile indices
+C  k                    :: vertical level
       INTEGER bi,bj,imin,imax,jmin,jmax
       INTEGER i,j
       INTEGER niter
+CEOP
 
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM

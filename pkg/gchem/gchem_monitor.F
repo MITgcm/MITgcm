@@ -1,19 +1,21 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_monitor.F,v 1.2 2003/10/06 20:04:29 stephd Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_monitor.F,v 1.3 2004/01/28 18:49:05 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
 #include "GCHEM_OPTIONS.h"
 
+CBOP
+C !ROUTINE: GCHEM_MONITOR
+
+C !INTERFACE: ==========================================================
       SUBROUTINE GCHEM_MONITOR(
      I                myIter, myTime, myThid )
-C     /==========================================================\
-C     | SUBROUTINE CHEM_MONITOR                                  |
-C     | o Calculate bare statistics of global array "arr"        |
-C     |==========================================================|
-C     \==========================================================/
-      IMPLICIT NONE
 
-C     === Global data ===
+C !DESCRIPTION:
+C writes out ptracer statistics
+
+C !USES: ===============================================================
+      IMPLICIT NONE
 #include "SIZE.h"
 #include "EEPARAMS.h"
 #include "PARAMS.h"
@@ -22,7 +24,10 @@ C     === Global data ===
 #include "MONITOR.h"
 #include "PTRACERS.h"
 
-C     === Routine arguments ===
+C !INPUT PARAMETERS: ===================================================
+C  myThid               :: thread number
+C  myIter               :: current timestep
+C  myTime               :: current time
       INTEGER myIter
       _RL myTime
       INTEGER myThid
@@ -33,7 +38,10 @@ C     === Functions ====
 
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
-C     === Local variables ====
+
+C !LOCAL VARIABLES: ====================================================
+C  i,j                  :: loop indices
+C  ip                   :: ptracer number
       CHARACTER*(MAX_LEN_MBUF) msgBuf   
       CHARACTER*(MAX_LEN_MBUF) suff
       _RL dT
@@ -41,6 +49,7 @@ C     === Local variables ====
       INTEGER time_as_int
       integer i,j,k,bi,bj
       integer ip
+CEOP
 
       dT=deltaTclock
 

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_diags.F,v 1.4 2003/11/20 03:52:29 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/gchem/Attic/gchem_diags.F,v 1.5 2004/01/28 18:49:05 stephd Exp $
 C $Name:  $
 
 #include "CPP_OPTIONS.h"
@@ -8,6 +8,12 @@ C $Name:  $
 C !INTERFACE: ==========================================================
       SUBROUTINE GCHEM_DIAGS(myTime,myIter, myThid )
 
+C !DESCRIPTION:
+C calls subroutine that calculate diagnostic specific to
+C any tracer epxperiment
+C also calls gchem monitor 
+
+C !USES: ===============================================================
       IMPLICIT NONE
 #include "SIZE.h"
 #include "GRID.h"
@@ -19,6 +25,7 @@ C !INPUT PARAMETERS: ===================================================
 C  myThid               :: thread number
       INTEGER myThid, myIter
       _RL myTime
+CEOP
 
 #ifdef ALLOW_PTRACERS
 #ifdef ALLOW_GCHEM
