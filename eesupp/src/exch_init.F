@@ -1,5 +1,7 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_init.F,v 1.4 2001/09/21 03:54:34 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/exch_init.F,v 1.5 2003/11/13 14:40:14 heimbach Exp $
 C $Name:  $
+
+#include "CPP_EEOPTIONS.h"
 
 CBOP
 C     !ROUTINE: EXCH_INIT

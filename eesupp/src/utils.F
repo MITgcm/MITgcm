@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.13 2003/11/11 20:38:26 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/eesupp/src/utils.F,v 1.14 2003/11/13 14:40:14 heimbach Exp $
 C $Name:  $
 
 #include "CPP_EEOPTIONS.h"
@@ -259,7 +259,7 @@ CEOP
       strTmp = 'UNKNOWN'
       iFree  = 1
       idSize = LEN(string)
-#if (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR))
+#if (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR) && !defined (TARGET_NEC_VECTOR))
       IFirst = 0
       CALL PXFGETENV('USER',iFirst,strTmp,ILast,Iend  )
 #else
@@ -279,7 +279,7 @@ CEOP
         ENDIF
       ENDIF
       strTmp = 'UNKNOWN'
-#if (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR))
+#if (defined (TARGET_T3E) || defined (TARGET_CRAY_VECTOR) && !defined (TARGET_NEC_VECTOR))
       IFirst = 0
       CALL PXFGETENV('HOST',iFirst,strTmp,ILast,Iend  )
 #else
