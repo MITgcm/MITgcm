@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.4 1998/04/24 03:24:29 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/the_model_main.F,v 1.5 1998/04/24 03:32:40 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -32,7 +32,7 @@ C     == Global variables ===
 
 C     == Routine arguments ==
 C     myThid - Thread number for this instance of the routine.
-      INTEGER myThid
+      INTEGER myThid 
 
 C     == Local variables ==
 C     Note: Under the multi-threaded model myCurrentIter and myCurrentTime
