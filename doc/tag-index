@@ -1,7 +1,15 @@
-$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.289 2004/05/06 13:51:15 cnh Exp $
+$Header: /u/gcmpack/MITgcm/doc/tag-index,v 1.290 2004/05/11 20:59:19 heimbach Exp $
 
     Notes on tags used in MITgcmUV
     ==============================
+
+checkpoint53a_post
+o restore TAMC compatiility for exf_constants.h
+  (no usage of _d in .h)
+o Additional storing in KPP in an attempt to fix
+  TAMC problem with adjoint of KPP code.
+  (no success...)
+  Identical code works fine with TAF.
 
 checkpoint53
 o stable checkpoint with up to date adjoint
