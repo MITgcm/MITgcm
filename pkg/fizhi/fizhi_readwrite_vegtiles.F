@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.13 2004/10/10 06:08:49 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/fizhi/fizhi_readwrite_vegtiles.F,v 1.14 2004/11/02 21:15:13 molod Exp $
 C $Name:  $
 
 #include "FIZHI_OPTIONS.h"
@@ -308,7 +308,7 @@ C     !INPUT/OUTPUT PARAMETERS:
 
 CEOP
 C     !LOCAL VARIABLES:
-      CHARACTER*(MAX_LEN_FNAM) fn
+      CHARACTER*80 fn
       CHARACTER*80 bnam
       integer ilst
       character*(80) dataFName
@@ -325,8 +325,7 @@ C     !LOCAL VARIABLES:
       ilst = ILNBLNK(fn)
       WRITE(bnam,'(a,I10.10)') 'pickup_vegtiles.',Iter
       fileprec = 64
-      prec = 'D'
-      
+
 #ifdef ALLOW_MNC
       IF (useMNC) THEN
 
@@ -374,6 +373,7 @@ C       fizhi_land_coms.h
 
        write(dataFname(1:80),'(2a,i3.3,a,i3.3,a)')
      &              fn(1:ilst),'.',iG,'.',jG,'.data'
+       print *,' Opening ',dataFName
        open( iUnit, file=dataFName, status='old',
      &       access='direct', recl=length_of_rec )
 
@@ -444,7 +444,6 @@ C And now read Multi-level turbulence fields
          tke(n,k,bi,bj) = r8seg(n)
         enddo
        enddo
-
 
 C And finally, read land surface fields
        irec = 4 + 3*Nrphys + 1
