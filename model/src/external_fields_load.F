@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.20 2005/01/25 22:28:53 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/external_fields_load.F,v 1.21 2005/01/27 01:21:54 heimbach Exp $
 C $Name:  $
 
 #include "PACKAGES_CONFIG.h"
@@ -106,8 +106,10 @@ C Now calculate whether it is time to update the forcing arrays
       intime1 = 1 + MOD(intime0,nForcingPeriods)
 C-jmc: with some option of g77, FLOAT results in real*4 evaluation
 C      of aWght; using DFLOAT always force real*8 computation:
-c     aWght =  FLOAT( Iftm-Ifprd*(intime0 - 1) ) /  FLOAT( Ifprd )
-      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
+C-ph: however, TAF doesnt recognize DFLOAT, 
+C     so I put it back to FLOAT for now 
+      aWght =  FLOAT( Iftm-Ifprd*(intime0 - 1) ) /  FLOAT( Ifprd )
+c      aWght = DFLOAT( Iftm-Ifprd*(intime0 - 1) ) / DFLOAT( Ifprd )
       bWght = 1. _d 0 - aWght
 
       IF (
