@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.2 2004/12/18 19:18:08 edhill Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/mnc/mnc_cw_cvars.F,v 1.3 2004/12/18 19:42:39 edhill Exp $
 C $Name:  $
       
 #include "MNC_OPTIONS.h"
@@ -112,7 +112,7 @@ C     !LOCAL VARIABLES:
       integer nids, cv_did(1)
       character*(MAX_LEN_MBUF) msgbuf
       integer cv_start(1), cv_count(1)
-      _RS rtmp(sNx + sNy + Nr)
+      _RS rtmp(sNx + 2*OLx + sNy + 2*OLy + Nr)
 
 C     Functions
       integer IFNBLNK, ILNBLNK
@@ -143,6 +143,15 @@ C     Check all the coordinate variables that we know about
         ENDDO
         doit = 1
 
+      ELSEIF (cvname(nnf:nnl) .EQ. 'Xwh') THEN
+
+        cv_start(1) = 1
+        cv_count(1) = sNx + 2*OLx
+        DO i = cv_start(1),cv_count(1)
+          rtmp(i) = xC(i,1,bi,bj)
+        ENDDO
+        doit = 1
+
       ELSEIF (cvname(nnf:nnl) .EQ. 'Y') THEN
 
         cv_start(1) = 1
@@ -158,6 +167,15 @@ C     Check all the coordinate variables that we know about
         cv_count(1) = sNy + 1
         DO i = cv_start(1),cv_count(1)
           rtmp(i) = yG(1,i,bi,bj)
+        ENDDO
+        doit = 1
+
+      ELSEIF (cvname(nnf:nnl) .EQ. 'Ywh') THEN
+
+        cv_start(1) = 1
+        cv_count(1) = sNy + 2*OLy
+        DO i = cv_start(1),cv_count(1)
+          rtmp(i) = yC(1,i-OLy,bi,bj)
         ENDDO
         doit = 1
 
