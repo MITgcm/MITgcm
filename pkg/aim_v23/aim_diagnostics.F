@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.4 2004/03/11 14:33:19 jmc Exp $
+C $Header: /u/gcmpack/MITgcm/pkg/aim_v23/aim_diagnostics.F,v 1.5 2004/03/31 14:49:20 molod Exp $
 C $Name:  $
 
 #include "AIM_OPTIONS.h"
@@ -180,6 +180,36 @@ C-    Keep record of how much time has been integrated over
       ENDIF
 
 #endif /* ALLOW_AIM_TAVE */
+
+#ifdef ALLOW_DIAGNOSTICS
+       if(usediagnostics)then
+        call fill_diagnostics(myThid,'RADSW   ',0,Nr,2,bi,bj,TT_RSW)
+        call fill_diagnostics(myThid,'RADLW   ',0,Nr,2,bi,bj,TT_RLW)
+        call fill_diagnostics(myThid,'DTCONV  ',0,Nr,2,bi,bj,TT_CNV)
+        call fill_diagnostics(myThid,'TURBT   ',0,Nr,2,bi,bj,TT_PBL)
+        call fill_diagnostics(myThid,'DTLS    ',0,Nr,2,bi,bj,TT_LSC)
+        call fill_diagnostics(myThid,'DQCONV  ',0,Nr,2,bi,bj,QT_CNV)
+        call fill_diagnostics(myThid,'TURBQ   ',0,Nr,2,bi,bj,QT_PBL)
+        call fill_diagnostics(myThid,'DQLS    ',0,Nr,2,bi,bj,QT_LSC)
+        call fill_diagnostics(myThid,'RELHUM  ',0,Nr,2,bi,bj,RH)
+        call fill_diagnostics(myThid,'DRAG    ',1,1,2,bi,bj,DRAG)
+        call fill_diagnostics(myThid,'WINDS   ',1,1,2,bi,bj,SPEED0)
+        call fill_diagnostics(myThid,'OSR     ',1,1,2,bi,bj,TSR)
+        call fill_diagnostics(myThid,'OLR     ',1,1,2,bi,bj,OLR)
+        call fill_diagnostics(myThid,'RADSWG  ',1,1,2,bi,bj,SSR)
+        call fill_diagnostics(myThid,'RADLWG  ',1,1,2,bi,bj,SLR)
+        call fill_diagnostics(myThid,'HFLUX   ',1,1,2,bi,bj,SHF)
+        call fill_diagnostics(myThid,'EVAP    ',1,1,2,bi,bj,EVAP)
+        call fill_diagnostics(myThid,'PRECON  ',1,1,2,bi,bj,PRECNV)
+        call fill_diagnostics(myThid,'PRECLS  ',1,1,2,bi,bj,PRECLS)
+        call fill_diagnostics(myThid,'CLDTOT  ',1,1,2,bi,bj,CLOUDC)
+        call fill_diagnostics(myThid,'CLDPRS  ',1,1,2,bi,bj,CLTOP)
+        call fill_diagnostics(myThid,'CLDMAS  ',1,1,2,bi,bj,CBMF)
+        call fill_diagnostics(myThid,'TS      ',1,1,2,bi,bj,T0)
+        call fill_diagnostics(myThid,'QS      ',1,1,2,bi,bj,Q0)
+        call fill_diagnostics(myThid,'ENPREC  ',1,1,2,bi,bj,EnPrec)
+       endif
+#endif ALLOW_DIAGNOSTICS
 
 #endif /* ALLOW_AIM */
 
