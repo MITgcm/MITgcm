@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.2 1998/05/27 05:18:38 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/inc/GRID_MACROS.h,v 1.3 1998/05/27 05:57:02 cnh Exp $
 C
 C     /==========================================================\
 C     | GRID_MACROS.h                                            |
@@ -36,3 +36,23 @@ C     \==========================================================/
 #undef  DXV_FX
 #undef  DXV_FY
 #include "DXV_MACROS.h"
+
+#undef  DYC_CONST   
+#undef  DYC_FX
+#undef  DYC_FY
+#include "DYC_MACROS.h"
+
+#undef  DYF_CONST   
+#undef  DYF_FX
+#undef  DYF_FY
+#include "DYF_MACROS.h"
+
+#undef  DYG_CONST   
+#undef  DYG_FX
+#undef  DYG_FY
+#include "DYG_MACROS.h"
+
+#undef  DYU_CONST   
+#undef  DYU_FX
+#undef  DYU_FY
+#include "DYU_MACROS.h"

@@ -1,4 +1,4 @@
-C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.6 1998/05/27 05:18:39 cnh Exp $
+C $Header: /u/gcmpack/MITgcm/model/src/Attic/calc_mom_rhs.F,v 1.7 1998/05/27 05:57:02 cnh Exp $
 
 #include "CPP_EEOPTIONS.h"
 
@@ -180,7 +180,7 @@ C     Eddy component of zonal flux
       DO j=jMin,jMax
        DO i=iMin,iMax
         vf(i,j) =
-     &   -viscAh*dyF(i,j,bi,bj)*dzF(k)*hFacC(i,j,k,bi,bj)
+     &   -viscAh*_dyF(i,j,bi,bj)*dzF(k)*hFacC(i,j,k,bi,bj)
      &    *(uVel(i+1,j,k,bi,bj)-uVel(i,j,k,bi,bj))*rDxF(i,j,bi,bj)
        ENDDO
       ENDDO
@@ -256,13 +256,13 @@ C     Eddy component of vertical flux
        DO i=iMin,iMax
 #ifdef NO_BOTTOM_SLIP
         vf(i,j) =
-     &   -viscAz*_dxC(i,j,bi,bj)*dyG(i,j,bi,bj)*wMaskOverride
+     &   -viscAz*_dxC(i,j,bi,bj)*_dyG(i,j,bi,bj)*wMaskOverride
      &   *( ( 2.-maskW(i,j,k,bi,bj) )
      &     *uVel(i,j,kM1,bi,bj) - uVel(i,j,k,bi,bj)*maskW(i,j,k,bi,bj)
      &    )*rDzC(k)
 #else
         vf(i,j) =
-     &   -viscAz*_dxC(i,j,bi,bj)*dyG(i,j,bi,bj)
+     &   -viscAz*_dxC(i,j,bi,bj)*_dyG(i,j,bi,bj)
      &   *(uVel(i,j,km1,bi,bj)-uVel(i,j,k,bi,bj))
     &    *maskW(i,j,k,bi,bj)*wMaskOverride
 #endif
@@ -280,7 +280,7 @@ C     Bottom boundary condition
        DO j=jMin,jMax
         DO i=iMin,iMax
          vf(i,j) =
-     &    -viscAz*_dxC(i,j,bi,bj)*dyG(i,j,bi,bj)*maskW(i,j,k,bi,bj)
+     &    -viscAz*_dxC(i,j,bi,bj)*_dyG(i,j,bi,bj)*maskW(i,j,k,bi,bj)
      &    *uVel(i,j,k,bi,bj)*rDzF(k)*2. _d 0
         ENDDO
        ENDDO
@@ -367,16 +367,16 @@ C     Eddy component of zonal flux
         hFacZClosed=1. _d 0 -hFacZOpen
 #ifdef NO_LATERAL_SLIP
         vf(i,j) =
-     &  -viscAh*dyU(i,j,bi,bj)*dzF(K)*hFacZOpen*
+     &  -viscAh*_dyU(i,j,bi,bj)*dzF(K)*hFacZOpen*
      &  ( vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj)
      &  )*rDxV(i,j,bi,bj)
-     &  -viscAh*dyU(i,j,bi,bj)*dzF(K)*hFacZClosed*
+     &  -viscAh*_dyU(i,j,bi,bj)*dzF(K)*hFacZClosed*
      &  ( (2.-maskS(i-1,j,k,bi,bj))*maskS(i,j,k,bi,bj)*vVel(i  ,j,k,bi,bj)
      &   -(2.-maskS(i,j,k,bi,bj))*maskS(i-1,j,k,bi,bj)*vVel(i-1,j,k,bi,bj)
      &  )*rDxV(i,j,bi,bj)
 #else
         vf(i,j) =
-     &  -viscAh*dyU(i,j,bi,bj)*dzF(K)*hFacZOpen*
+     &  -viscAh*_dyU(i,j,bi,bj)*dzF(K)*hFacZOpen*
      &  (vVel(i,j,k,bi,bj)-vVel(i-1,j,k,bi,bj))
      &  *rDxV(i,j,bi,bj)
 #endif
@@ -435,13 +435,13 @@ C     Eddy component of vertical flux
        DO i=iMin,iMax
 #ifdef NO_BOTTOM_SLIP
         vf(i,j) =
-     &   -viscAz*dyC(i,j,bi,bj)*_dxG(i,j,bi,bj)*wMaskOverride
+     &   -viscAz*_dyC(i,j,bi,bj)*_dxG(i,j,bi,bj)*wMaskOverride
      &   *( ( 2.-maskS(i,j,k,bi,bj) )
      &     *vVel(i,j,kM1,bi,bj) - vVel(i,j,k,bi,bj)*maskS(i,j,k,bi,bj)
      &    )*rDzC(k)
 #else
         vf(i,j) =
-     &   -viscAz*dyC(i,j,bi,bj)*_dxG(i,j,bi,bj)
+     &   -viscAz*_dyC(i,j,bi,bj)*_dxG(i,j,bi,bj)
      &   *(vVel(i,j,km1,bi,bj)-vVel(i,j,k,bi,bj))
      &    *maskS(i,j,k,bi,bj)*wMaskOverride
 #endif
@@ -459,7 +459,7 @@ C     Bottom level boundary condition
        DO j=jMin,jMax
         DO i=iMin,iMax
          vf(i,j) =
-     &    -viscAz*dyC(i,j,bi,bj)*_dxG(i,j,bi,bj)*maskS(i,j,k,bi,bj)
+     &    -viscAz*_dyC(i,j,bi,bj)*_dxG(i,j,bi,bj)*maskS(i,j,k,bi,bj)
      &    *vVel(i,j,k,bi,bj)*rDzF(k)*2. _d 0
         ENDDO
        ENDDO
